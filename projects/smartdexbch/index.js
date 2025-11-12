@@ -10,7 +10,7 @@ module.exports = {
     methodology: "Count TVL as liquidity on the dex",
     misrepresentedTokens: true,
     smartbch: {
-        tvl: getUniTVL({ factory: FACTORY, chain: 'smartbch', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true }),
         staking: stakingPricedLP(xDSMART, DSMART, 'smartbch', DSMART_WBCH_PAIR, 'bitcoin-cash', false, 18)
     }
 }

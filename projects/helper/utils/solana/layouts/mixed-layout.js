@@ -194,6 +194,20 @@ const TokenSwapLayout = BufferLayout.struct([
   publicKey("curveParameters"),
 ])
 
+
+const Hub3Layout = BufferLayout.struct([
+  publicKey("issuerKey"),
+  u64("price"),
+  u64("totalShares"),
+  u64("totalFees"),
+  u8("bump"),
+  u32("holders"),
+  u8("migration"), // bool
+  u64("a"),
+  u64("b"),
+  u64("d"),
+])
+
 const eSOL_feeFields = [u64('denominator'), u64('numerator')];
 const eSOL_rateOfExchangeFields = [u64('denominator'), u64('numerator')];
 
@@ -236,7 +250,171 @@ const ESOLStakePoolLayout = BufferLayout.struct([
   u32("maxValidatorYieldPerEpochNumerator")
 ]);
 
+
+const PARLAY_LAYOUT_PARTIAL = BufferLayout.struct([
+  publicKey('mint'),
+  u32("entryCount"),
+  u64('entryCost'),
+]);
+
+const HH_PARI_LAYOUT_PARTIAL = BufferLayout.struct([
+  publicKey('mint'),
+  u64("closeTimestamp"),
+  u64("resolveTimestamp"),
+  u64("outcomeTimestamp"),
+  u16("creatorFee"),
+  u16("platformFee"),
+  u8('state'),
+  u8('outcome'),
+  BufferLayout.seq(u64(), u8().span, 'amounts'), 
+]);
+
+const ACCESS_LAYOUT = BufferLayout.struct([
+  BufferLayout.u8('tag'),
+  BufferLayout.u8('bumpSeed'),
+  uint64('dailyInflation'),
+  publicKey('tokenMint'),
+  publicKey('authority'),
+  uint64('creationTime'),
+  uint64('totalStaked'),
+  uint64('totalStakedSnapshot'),
+  uint64('lastSnapshotOffset'),
+  uint128('ixGate'),
+  publicKey('freezeAuthority'),
+  uint128('adminIxGate'),
+  BufferLayout.u16('feeBasisPoints'),
+  uint64('lastFeeDistributionTime'),
+  BufferLayout.u32('feeRecipientsCount'),
+  BufferLayout.seq(
+    BufferLayout.struct([
+      publicKey('owner'),
+      uint64('percentage'),
+    ]),
+    10,
+    'recipients'
+  ),
+]);
+
+const bool = BufferLayout.u8
+// https://github.com/mercurial-finance/stable-swap-n-pool-js/blob/main/src/state.ts#L32
+const METEORA_STABLE_SWAP_LAYOUT = BufferLayout.struct([
+  BufferLayout.u8('version'),
+  bool('isInitialized'),
+  BufferLayout.u8('nonce'),
+  u64('amplificationCoefficient'),
+  u64('feeNumerator'),
+  u64('adminFeeNumerator'),
+  BufferLayout.u32('tokenAccountsLength'),
+  u64('precisionFactor'),
+  BufferLayout.seq(u64(), 4, 'precisionMultipliers'),
+  BufferLayout.seq(publicKey(), 4, 'tokenAccounts'),
+  publicKey('poolMint'),
+  publicKey('adminTokenMint'),
+  BufferLayout.struct([
+    bool('swapEnabled'),
+    bool('addLiquidityEnabled'),
+  ]),
+]);
+
+const ZEUS_GUARDIAN_SETTING_LAYOUT = BufferLayout.struct([
+  publicKey("spl_token_escrow_authority"),
+  publicKey("spl_token_vault_authority"),
+
+  u32("seed"),
+  u8("status"),
+  publicKey("guardian_certificate"),
+
+  u64("max_quota"),
+  u64("available_quota"),
+  u64("accumulated_amount"),
+  u64("penalty_rate"),
+  u8("delegation_removal_lock_days"),
+  u64("quota_increasing_rate"),
+
+  u64("created_at"),
+  u64("updated_at"),
+
+  BufferLayout.seq(u8(), 64, "delegate_options"), // Adjust size based on typical vector length
+
+  blob(128, "_padding"), // Ensuring 128-byte padding for safety
+]);
+
+// SendIt Reserve Layout
+const ReserveLayoutSendit = BufferLayout.struct([
+  BufferLayout.u8("version"),
+  LastUpdateLayout,
+  publicKey("lendingMarket"),
+  
+  // Liquidity section
+  publicKey("liquidityMintPubkey"),
+  BufferLayout.u8("liquidityMintDecimals"),
+  publicKey("liquiditySupplyPubkey"),
+  publicKey("liquidityPythOracle"),
+  publicKey("liquiditySwitchboardOracle"),
+  uint64("liquidityAvailableAmount"),
+  uint128("liquidityBorrowedAmountWads"),
+  uint128("liquidityCumulativeBorrowRateWads"),
+  uint128("liquidityMarketPrice"),
+  
+  // Collateral section
+  publicKey("collateralMintPubkey"),
+  uint64("collateralMintTotalSupply"),
+  publicKey("collateralSupplyPubkey"),
+  
+  // Config section
+  BufferLayout.u8("optimalUtilizationRate"),
+  BufferLayout.u8("loanToValueRatio"),
+  BufferLayout.u8("liquidationBonus"),
+  BufferLayout.u8("liquidationThreshold"),
+  BufferLayout.u8("minBorrowRate"),
+  BufferLayout.u8("optimalBorrowRate"),
+  BufferLayout.u8("maxBorrowRate"),
+  uint64("borrowFeeWad"),
+  uint64("flashLoanFeeWad"),
+  BufferLayout.u8("hostFeePercentage"),
+  uint64("depositLimit"),
+  uint64("borrowLimit"),
+  publicKey("feeReceiver"),
+  BufferLayout.u8("protocolLiquidationFee"),
+  BufferLayout.u8("protocolTakeRate"),
+  uint128("accumulatedProtocolFeesWads"),
+  uint64("addedBorrowWeightBPS"),
+  uint128("liquiditySmoothedMarketPrice"),
+  BufferLayout.u8("reserveType"),
+  BufferLayout.u8("maxUtilizationRate"),
+  uint64("superMaxBorrowRate"),
+  BufferLayout.u8("maxLiquidationBonus"),
+  BufferLayout.u8("maxLiquidationThreshold"),
+  uint64("scaledPriceOffsetBPS"),
+  publicKey("extraOracle"),
+  BufferLayout.u8("liquidityExtraMarketPriceFlag"),
+  uint128("liquidityExtraMarketPrice"),
+  uint128("attributedBorrowValue"),
+  uint64("attributedBorrowLimitOpen"),
+  uint64("attributedBorrowLimitClose"),
+  
+  // VestingFees
+  uint128("rewardsPerSlot"),
+  uint64("lastUpdateSlotVesting"),
+  BufferLayout.u8("lastHourIndex"),
+  BufferLayout.seq(uint128(), 72, "hourlyDeltas"),
+  
+  // LiquidityIncentives
+  uint128("incentivesPerSlot"),
+  uint64("lastUpdateSlotIncentives"),
+  BufferLayout.u32("dailyDeltasLength"),
+  BufferLayout.seq(uint128(), 365, "dailyDeltas"),
+  uint128("cumulativeIncentivesPerShare"),
+  publicKey("incentiveTokenMint"),
+  publicKey("incentiveTokenAccount"),
+  BufferLayout.u8("incentiveTokenDecimals"),
+  publicKey("tokenProgramId"),
+  
+  BufferLayout.blob(17, "padding"),
+]);
+
 module.exports = {
-  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout,
+  ReserveLayout, ReserveLayoutLarix, ReserveLayoutSendit, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
+  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT, METEORA_STABLE_SWAP_LAYOUT, ZEUS_GUARDIAN_SETTING_LAYOUT,
 }
 

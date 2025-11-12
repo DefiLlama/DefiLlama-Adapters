@@ -4,7 +4,7 @@ const { staking, } = require("../helper/staking");
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 
 const USDC = ADDRESSES.ethereum.USDC;
-const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
+const FXS = ADDRESSES.ethereum.FXS;
 const FRAX_3CRV = '0xd632f22692fac7611d2aa1c0d552930d43caed3b'
 const T_3CRV = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
 
@@ -154,6 +154,10 @@ const ethereumTvl = async (api) => {
     addInvestorAMO(api, balances),
     addCvxFXSFRAX_BP(api, balances),
   ])
+  await sumTokens2({ balances, api, tokensAndOwners: [
+    ['0x1feCF3d9d4Fee7f2c02917A66028a48C6706c179', '0x860cc723935fc9a15ff8b1a94237a711dfef7857'],  // WTGXX
+    ['0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e', '0x5fbAa3A3B489199338fbD85F7E3D444dc0504F33'], // USTB
+  ], })
   return balances
 };
 

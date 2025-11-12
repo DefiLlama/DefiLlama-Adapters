@@ -1,0 +1,129 @@
+{
+  "address": "1oopBoJG58DgkUVKkEzKgyG9dvRmpgeEm1AVjoHkF78",
+  "metadata": {"name": "loopscale", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [{"name": "Strategy", "discriminator": [174, 110, 39, 119, 82, 106, 169, 102]},
+
+    {"name": "Loan", "discriminator": [20, 195, 70, 117, 165, 227, 182, 1]}],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "Loan",
+      "serialization": "bytemuck",
+      "repr": {"kind": "c", "packed": true},
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "version", "type": "u8"},
+          {"name": "bump", "type": "u8"},
+          {"name": "loan_status", "type": "u8"},
+          {"name": "borrower", "type": "pubkey"},
+          {"name": "nonce", "type": "u64"},
+          {"name": "start_time", "type": {"defined": {"name": "PodU64"}}},
+          {"name": "ledgers", "type": {"array": [{"defined": {"name": "Ledger"}}, 5]}},
+          {"name": "collateral", "type": {"array": [{"defined": {"name": "CollateralData"}}, 5]}},
+          {"name": "weight_matrix", "type": {"array": [{"array": [{"defined": {"name": "PodU32CBPS"}}, 5]}, 5]}},
+          {"name": "ltv_matrix", "type": {"array": [{"array": [{"defined": {"name": "PodU32CBPS"}}, 5]}, 5]}},
+          {"name": "lqt_matrix", "type": {"array": [{"array": [{"defined": {"name": "PodU32CBPS"}}, 5]}, 5]}}
+        ]
+      }
+    },
+    {
+      "name": "Strategy",
+      "serialization": "bytemuck",
+      "repr": {"kind": "c", "packed": true},
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "version", "type": "u8"},
+          {"name": "nonce", "type": "pubkey"},
+          {"name": "bump", "type": "u8"},
+          {"name": "principal_mint", "type": "pubkey"},
+          {"name": "lender", "type": "pubkey"},
+          {"name": "originations_enabled", "type": {"defined": {"name": "PodBool"}}},
+          {"name": "external_yield_source", "type": "u8"},
+          {"name": "interest_per_second", "type": {"defined": {"name": "PodDecimal"}}},
+          {
+            "name": "last_accrued_timestamp",
+            "docs": ["timestamp interest per second's interest was last accrued"],
+            "type": {"defined": {"name": "PodU64"}}
+          },
+          {
+            "name": "liquidity_buffer",
+            "docs": ["the is the amount of liquidity % that always needs to be in the strategy"],
+            "type": {"defined": {"name": "PodU64CBPS"}}
+          },
+          {"name": "token_balance", "docs": ["amount of principal in the strategy"], "type": {"defined": {"name": "PodU64"}}},
+          {
+            "name": "interest_fee",
+            "docs": ["this is the fee charged by and accrued to the manager on the interest accrued via external yield and loans"],
+            "type": {"defined": {"name": "PodU64CBPS"}}
+          },
+          {
+            "name": "principal_fee",
+            "docs": ["this is the fee charged by and accrued to the manager on the origination fee"],
+            "type": {"defined": {"name": "PodU64CBPS"}}
+          },
+          {"name": "origination_fee", "docs": ["fee charged on origination of new loans"], "type": {"defined": {"name": "PodU64CBPS"}}},
+          {"name": "origination_cap", "docs": ["the maximum size of a loan that can be originated"], "type": {"defined": {"name": "PodU64"}}},
+          {
+            "name": "external_yield_amount",
+            "docs": ["this is the amount of principal currently in external yield. has to always be updated on any new nav action"],
+            "type": {"defined": {"name": "PodU64"}}
+          },
+          {
+            "name": "current_deployed_amount",
+            "docs": ["this is the amount of principal currently deployed in loans"],
+            "type": {"defined": {"name": "PodU64"}}
+          },
+          {
+            "name": "outstanding_interest_amount",
+            "docs": ["this is the interest that has not been repaid yet but accrued"],
+            "type": {"defined": {"name": "PodU64"}}
+          },
+          {"name": "fee_claimable", "docs": ["this is the amount that has accrued to the manager"], "type": {"defined": {"name": "PodU64"}}},
+          {"name": "cumulative_principal_originated", "type": {"defined": {"name": "PodU128"}}},
+          {"name": "cumulative_interest_accrued", "type": {"defined": {"name": "PodU128"}}},
+          {"name": "cumulative_loan_count", "type": {"defined": {"name": "PodU64"}}},
+          {"name": "active_loan_count", "type": {"defined": {"name": "PodU64"}}},
+          {"name": "market_information", "type": "pubkey"},
+          {"name": "collateral_map", "type": {"array": [{"array": [{"defined": {"name": "PodU64"}}, 5]}, 200]}},
+          {"name": "external_yield_accounts", "type": {"defined": {"name": "ExternalYieldAccounts"}}}
+        ]
+      }
+    },
+    {"name": "PodBool", "docs": ["Represents a bool stored as a byte"], "repr": {"kind": "transparent"}, "type": {"kind": "struct", "fields": ["u8"]}},
+    {
+      "name": "PodDecimal",
+      "docs": [
+        "this is the scaled representation of a whole number. The whole number is scaled by 10^18 to avoid floating point errors when performing arithmetic operations."
+      ],
+      "repr": {"kind": "c"},
+      "type": {"kind": "struct", "fields": [{"array": ["u8", 24]}]}
+    },
+    {
+      "name": "PodU64",
+      "docs": ["Represents a 64-bit unsigned integer stored as bytes (little-endian)"],
+      "repr": {"kind": "transparent"},
+      "type": {"kind": "struct", "fields": [{"array": ["u8", 8]}]}
+    },
+    {
+      "name": "PodU64CBPS",
+      "docs": ["helper type to store u64 cbps values"],
+      "repr": {"kind": "c"},
+      "type": {"kind": "struct", "fields": [{"array": ["u8", 8]}]}
+    },
+    {
+      "name": "PodU128",
+      "docs": ["Represents a 128-bit unsigned integer stored as bytes (little-endian)"],
+      "repr": {"kind": "c"},
+      "type": {"kind": "struct", "fields": [{"array": ["u8", 16]}]}
+    },
+    {
+      "name": "ExternalYieldAccounts",
+      "repr": {"kind": "c", "packed": true},
+      "type": {"kind": "struct", "fields": [{"name": "external_yield_account", "type": "pubkey"}, {"name": "external_yield_vault", "type": "pubkey"}]}
+    }
+  ]
+}

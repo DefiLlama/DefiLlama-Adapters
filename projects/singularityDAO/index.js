@@ -1,10 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
 const { cachedGraphQuery } = require('../helper/cache')
-const sdk = require("@defillama/sdk");
 
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getParamCalls } = require("../helper/utils");
 
 const AGIX_TOKEN = "0x5B7533812759B45C2B44C19e320ba2cD2681b542";
 const NUNET_TOKEN = "0xF0d33BeDa4d734C72684b5f9abBEbf715D0a7935";
@@ -27,7 +25,7 @@ const graphEndpoint =
   "https://singularitydao.ai/api/dynaset-server/api/graphql";
 
 
-async function tvl(_, block) {
+async function tvl(api) {
   const blacklistedTokens = [
     SDAO_TOKEN,
     LP_TOKEN_SDAO_ETH,
@@ -38,63 +36,26 @@ async function tvl(_, block) {
 
   const response = await cachedGraphQuery('singularity-dao', graphEndpoint, getDynasetQuery);
   const dynasets = response.dynaset.map((d) => d.address).flat();
-  const { output: tokens } = await sdk.api.abi.multiCall({
-    calls: dynasets.map((addr) => ({ target: addr })),
-    abi: abi.getCurrentTokens,
-    block,
-    permitFailure: true,
-  });
-  const tokensAndOwners = [];
-  tokens
-    .filter((t) => t.output)
-    .map((t, index) =>
-      t.output.forEach((token) =>
-        tokensAndOwners.push([token, dynasets[index]])
-      )
-    );
+  const tokens = await api.multiCall({ calls: dynasets, abi: abi.getCurrentTokens, permitFailure: true, });
+  const ownerTokens = [];
+  tokens.map((t, index) => t && ownerTokens.push([t, dynasets[index]]))
 
-  let { output: forgetCount } = await sdk.api.abi.multiCall({
-    abi: abis.totalForges,
-    calls: DYNASET_FORGES.map((i) => ({ target: i })),
-    block,
-  });
+  const tokenInfos = await api.fetchList({ lengthAbi: abis.totalForges, itemAbi: abis.forgeInfo, targets: DYNASET_FORGES, groupedByInput: true })
+  tokenInfos.forEach((info, i) => ownerTokens.push([info.map(i => i.contributionToken), DYNASET_FORGES[i]]))
 
-  const calls = [];
-  forgetCount = forgetCount.map(({ input: { target }, output }) => {
-    let arry = getParamCalls(output);
-    arry.forEach((i) => (i.target = target));
-    calls.push(...arry);
-  });
 
-  let { output: tokenInfo } = await sdk.api.abi.multiCall({
-    abi: abis.forgeInfo,
-    calls,
-    block,
-  });
-
-  tokenInfo.forEach(({ input: { target }, output }) => {
-    tokensAndOwners.push([output.contributionToken, target]);
-  });
-
-  return sumTokens2({ tokensAndOwners, block, blacklistedTokens });
+  return sumTokens2({ ownerTokens, api, blacklistedTokens });
 }
 
-// LP Pools ERC
-
-// Staked LP tokens where one side of the market is the platform's own governance token.
-
-async function pool2(ts, block) {
+async function pool2(api) {
   const tokensAndOwners = [
     [LP_TOKEN_SDAO_ETH, "0xfB85B9Ec50560e302Ab106F1E2857d95132120D0"], // Unbonded
     [LP_TOKEN_SDAO_USDT, "0xfB85B9Ec50560e302Ab106F1E2857d95132120D0"], // Bonded 6M
   ];
-  return sumTokens2({ tokensAndOwners, block, resolveLP: true });
+  return sumTokens2({ tokensAndOwners, api, resolveLP: true });
 }
 
-// Staking pools ERC
-// The platform's own tokens
-
-async function staking(ts, block) {
+async function staking(api) {
   const tokensAndOwners = [
     [SDAO_TOKEN, "0xfB85B9Ec50560e302Ab106F1E2857d95132120D0"], // Unbonded
     [SDAO_TOKEN, "0x74641ed232dbB8CBD9847484dD020d44453F0368"], // Bonded 6M
@@ -105,16 +66,10 @@ async function staking(ts, block) {
     [AGIX_TOKEN, "0xfB85B9Ec50560e302Ab106F1E2857d95132120D0"],
     [AGIX_TOKEN, "0xb267deaace0b8c5fcb2bb04801a364e7af7da3f4"],
   ];
-  return sumTokens2({ tokensAndOwners, block });
+  return sumTokens2({ tokensAndOwners, api });
 }
 
-//////////////////////////////////
-////// BNB CHAIN ////////////////
-////////////////////////////////
-
-// DYNASET BNB CHAIN
-
-async function tvlBNB(ts, EthBlock, { bsc: block }) {
+async function tvlBNB(api) {
   const tokensAndOwners = [
     [ADDRESSES.bsc.WBNB, DYNASETSBNB], // BNB
     [ADDRESSES.bsc.BUSD, DYNASETSBNB], // BUSD
@@ -127,22 +82,18 @@ async function tvlBNB(ts, EthBlock, { bsc: block }) {
     ["0xCC42724C6683B7E57334c4E856f4c9965ED682bD", DYNASETSBNB], // BMATIC
     ["0xfA54fF1a158B5189Ebba6ae130CEd6bbd3aEA76e", DYNASETSBNB], // BSOL
   ];
-  return sumTokens2({ tokensAndOwners, block, chain: "bsc" });
+  return sumTokens2({ tokensAndOwners, api });
 }
 
-// Staking pools BNB
-
-async function stakingBNB(ts, EthBlock, { bsc: block }) {
+async function stakingBNB(api) {
   const tokensAndOwners = [
     [SDAO_TOKEN_BNB, "0x79292c62f593e08d9b850b790b07e7a0903fd007"], // Unbonded
     [SDAO_TOKEN_BNB, "0x17de46760F4c18C26eEc36117C23793299F564A8"], // Bonded
   ];
-  return sumTokens2({ tokensAndOwners, block, chain: "bsc" });
+  return sumTokens2({ tokensAndOwners, api });
 }
 
-// LP Pools BNB
-
-async function pool2BNB(ts, EthBlock, { bsc: block }) {
+async function pool2BNB(api) {
   const tokensAndOwners = [
     [
       "0x6c805d2077025eaaa42fae7f764e61df42aadb14",
@@ -157,7 +108,7 @@ async function pool2BNB(ts, EthBlock, { bsc: block }) {
       "0x79292c62f593e08d9b850b790b07e7a0903fd007",
     ],
   ];
-  return sumTokens2({ tokensAndOwners, block, chain: "bsc", resolveLP: true });
+  return sumTokens2({ tokensAndOwners, api, resolveLP: true });
 }
 
 module.exports = {

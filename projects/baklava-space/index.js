@@ -17,7 +17,6 @@ const config = {
       '0x17bc0557D5946b1304f8c0b5af18f4FadDBf9D49',
       '0xc331aF15574d80a4a34FEd8Ee1369E7900dCD47E',
       '0x9841c066021Bfb9D1c79e8E82A597Dd133d8804F',
-      '0x9841c066021Bfb9D1c79e8E82A597Dd133d8804F',
     ],
     tjVaults: [
       '0xFec19beb4e68B4c93622c51d4ad8AF804fe421AA',
@@ -37,7 +36,19 @@ const config = {
         '0x37f716f6693EB2681879642e38BbD9e922A53CDf',
         '0x49AF8CAf88CFc8394FcF08Cf997f69Cee2105f2b',
         '0x83B2D994A1d16E6A3A44281D12542E2bc0d5EBFD',
-        '0xea505C49B43CD0F9Ed3b40D77CAF1e32b0097328'
+        '0xea505C49B43CD0F9Ed3b40D77CAF1e32b0097328',
+        '0xc5DFb9698440Eaeb0A7C9dAA5a795e9B48CacadF',
+        '0x6067776741a82Ad90Dff7e8D9af495F245b71782',
+        '0x0324a1a68d6Ef3C5037DCc5a305F941eD240197A',
+        '0x21c502F430A0Ff9Cbc37dcb60a0528e8C76d559f',
+        '0x3C27C6a8cD5A60dE337772c2c441fF83279d5855',
+        '0xFefa438D90227Bb6312b0846a28787Db8A0f0c2A',
+        '0xf81Ac49CEeA834deC340aB08a544fB1E79d44c31',
+        '0xed1031885D7DE7DB78BE921F5FeAacD3f6E9a127',
+        '0x9bD9b6600eeE5f8318913cCb17BF836E1e9d2f4F',
+        '0x25F0Bc213ED49ABe3AD36CB8D0919A138d19b648',
+        '0x59639E20A17EaD110aaBAF249001Ab140917C18e',
+        '0x90011B2AB095c9a9f70a8eBEe21313FB3989029f'    // CLM pool(Not calculated by defillama)
   ],
   bsc: [
     '0x6659B42C106222a50EE555F76BaD09b68EC056f9',
@@ -47,6 +58,9 @@ const config = {
 
 const bavaStakingRewards = "0x2F445C4cC8E114893279fa515C291A3d02160b02"
 const bavaToken = "0xe19A1684873faB5Fb694CfD06607100A632fF21c"
+
+const baseBavaStakingRewards = "0xD62634fe21A6c050CF4a05a36d1D9315a9c379b7"
+const baseBavaToken = "0x3fbdE9864362CE4Abb244EbeF2EF0482ABA8eA39"
 
 module.exports = {
   doublecounted: true,
@@ -93,3 +107,5 @@ module.exports.avax = {
 
 module.exports.avax.staking = staking(bavaStakingRewards, bavaToken)
 module.exports.avax.pool2 = pool2('0xdcedb18047945de1f05f649569b3d2b0e648d9c8', '0x2c3601fe09c23df8beb8216298d1502c985e376f')
+
+module.exports.base.staking = staking(baseBavaStakingRewards, baseBavaToken)

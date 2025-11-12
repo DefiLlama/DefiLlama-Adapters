@@ -10,9 +10,8 @@ const { calxMOLEtvl } = require('./xmole');
 //   return await calxMOLEtvl('avax', chainBlocks.avax);
 // }
 
-async function aptosTvl() {
-  const lyfTvl = await calLyfTvlAptos()
-  return {...lyfTvl};
+async function aptosTvl(api) {
+  return calLyfTvlAptos(api)
 }
 
 async function suiTvl(api) {
@@ -22,15 +21,11 @@ async function suiTvl(api) {
 // run command： node test.js projects/mole/index.js
 module.exports = {
   timetravel: false,
-  start: 1653840000,
+  start: '2022-05-29',
   // avax: {
   //   tvl: avaxTvl,
   //   staking: avaxStaking,
   // },
-  aptos: {
-    tvl: aptosTvl
-  },
-  sui: {
-    tvl: suiTvl
-  }
+  aptos: { tvl: aptosTvl },
+  sui: { tvl: suiTvl }
 };

@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 
 // Ethereum Vaults
 const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
@@ -36,6 +36,22 @@ const indexBTC_BiWeekly_B = "0xB1105529305f166531b7d857B1d6f28000278aff"
 const PTeETH_27JUN24 = '0xc69Ad9baB1dEE23F4605a82b3354F8E40d1E5966'
 const aPTeETH_27JUN24 = '0xE6A9465B9DA25Ddacc55AF5F2a111Db4E80Ba20D'
 const aWETH = '0xE41645Db7C6813993eEA1cBA83912cE07d8a6d29'
+const PTUSDe_25JUL24 = '0xa0021EF8970104c2d008F38D92f115ad56a9B8e1'
+const aPTUSDe_25JUL24 = '0xCe51Ca8D61dAb1f84bD95329218b87E95054aB22'
+const aUSDC = '0xFB3CbdA3145Fac86040bE8501e0750cd1ddDA0Af'
+const  PTweeths_29AUG24 = '0xda6530efafd63a42d7b9a0a5a60a03839cdb813a'
+const aPTweeths_29AUG24 = '0xb33587882dEe85B3dCcd5C82d942BB10119f8BB0'
+const  PTunieth_26SEP24 = '0x15fA86404BFbA8b46684552F792558128bFB6418'
+const aPTunieth_26SEP24 = '0x4390a8E941b0B16a8E6B670D878a9eF6d3e11725'
+const  PTweeth_26DEC24  = '0x6ee2b5E19ECBa773a352E5B21415Dc419A700d1d'
+const aPTweeth_26DEC24  = '0xBE8b41bDd18b0f0f47DbF338cfA837469F755d95'
+const  PTezeth_26DEC24  = '0xf7906F274c174A52d444175729E3fa98f9bde285'
+const aPTezeth_26DEC24  = '0xD9309EA9e2336A9Fe2A15b04D9036Db15A729047'
+const  PTksusde_26SEP24 = '0xd351de53277c4218CC29f793263FB60E2fcFC1dC'
+const aPTksusde_26SEP24 = '0x2b04E9ebeCC71BC3450C1C7B1FB8E0404E870d59'
+const  PTsusde_26SEP24  = '0x6c9f097e044506712B58EAC670c9a5fd4BCceF13'
+const aPTsusde_26SEP24  = '0x024F400F55dc1b877695Ba4e8e53a509Fb3F0BF2'
+
 
 // Avalanche Vaults
 const avaxCallVault = '0xd06Bd68d58eD40CC2031238A3993b99172ea37cA'
@@ -45,7 +61,6 @@ const avaxPutVault = '0xa84aA41B6287aFE467ccE688f3796A2205198F07'
 const ftmCallVault = '0x302ABD505757FD355C8ef3cF8b4918D6404f4996'
 const ftmPutVault = '0x7EDa4C29726355D0d8E85001B9152158b35Eae4f'
 
-//BSC Vaults
 //BSC Vaults
 const adaCallVault = '0xF98297A842f52Cd1f6c6f5f003Cd701813b1C461'
 const adaPutVault = '0x8BE731cB3b301b4a209C1A38ea14D6438e6913F6'
@@ -85,14 +100,30 @@ const arbPutVault = '0xf94ea5B18401821BE07FBfF535B8211B061A7F70'
 const ethCallVaultArb = '0x1D1CD4abe0F2AF9d79b5e3149BF4A503f97C1EAd'
 const ethPutVaultArb = '0xA8459eC6DF0D9a61058C43a308dD8A2CEc9d550E'
 // Assets locked in Aave V2 fork
-const aArb = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5' 
-const aUsdc = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
-const aWeth = '0xBbf03fC0C8441e9cc50cC087f74899C137597b6e'
+const aArb_ARB = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5' 
+const aUsdc_ARB = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
+const aWeth_ARB = '0xBbf03fC0C8441e9cc50cC087f74899C137597b6e'
 // LongLiquidityVaults - Holds aAssets (not counted) and V3 liquidity NFTs
 const arbC_LLV = '0x721Bba1556649e9c70E2dF1EAFC04270376025f7'
 const arbP_LLV = '0x57eD79afD32c616E4631231636F4597188d20C5e'
 const ethC_LLV = '0x078F98Be8A1bb1bD64799B8F05Aca08f5850A69D'
 const ethP_LLV = '0xE84CB9daF67644734051c7f6e978968f04F6751e'
+// Boosted assets (Selling options backed by yielding assets) (locked in Aave V2 Fork)
+const  PTezETH_27JUN24 = '0x8EA5040d423410f1fdc363379Af88e1DB5eA1C34'
+const aPTezETH_27JUN24 = '0x2F741a91dCe2a1e1Ed24c88F93A0f3530f1CBf2C'
+const  PTrsETH_27JUN24 = '0xAFD22F824D51Fb7EeD4778d303d4388AC644b026'
+const aPTrsETH_27JUN24 = '0x121b956D11EaeCFD3f0CdF259D6faFFEbEDD0bC9'
+const  PTweETH_27JUN24 = '0x1c27Ad8a19Ba026ADaBD615F6Bc77158130cfBE4'
+const aPTweETH_27JUN24 = '0x1B38B4586003E64c6c87F4acaF4f15415C2034EB'
+
+const   PTweETH_26SEP24 = '0xb8b0a120F6A68Dd06209619F62429fB1a8e92feC'
+const  aPTweETH_26SEP24 = '0xF5d0866646DF182Fb9BC7FB27B26B84F96b2239d'
+const   PTezETH_26SEP24 = '0x2CCFce9bE49465CC6f947b5F6aC9383673733Da9'
+const  aPTezETH_26SEP24 = '0x3F9ca12e7D4867E45b289484a3F33bbA2A1b8723'
+const   PTrsETH_26SEP24 = '0x30c98c0139B62290E26aC2a2158AC341Dcaf1333'
+const  aPTrsETH_26SEP24 = '0x0B6Ef11254edCab4b164daa7e626Dc0d0c2Ad51f'
+const  PTuniETH_26DEC24 = '0x22e9ad26ea0e65a7073571d5d7172ff6336084ad'
+const aPTuniETH_26DEC24 = '0x3D3a1CAA95D427b9fF63b93cB90e1a470eeBA5D7'
 
 // Polygon zkEVM vaults
 const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
@@ -136,11 +167,12 @@ let boba = ADDRESSES.boba.BOBA
 const bobaUSDC = ADDRESSES.boba.USDC
 
 // cronos assets
-const wcro = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23'
+const wcro = ADDRESSES.cronos.WCRO_1
 
 // Arbitrum assets
 const arb = ADDRESSES.arbitrum.ARB
 const usdc_arb = ADDRESSES.arbitrum.USDC_CIRCLE
+const weth_arb = ADDRESSES.arbitrum.WETH
 const univ3nft_arb = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
 
 // Polygon zkEVM assets
@@ -190,8 +222,19 @@ const config = {
       [ausdc, indexUSDC_BNB_2wk_b,],
       [ausdc, ethPutVault,],
 
-      [PTeETH_27JUN24, aPTeETH_27JUN24,],
       [weth, aWETH,],
+      [PTeETH_27JUN24, aPTeETH_27JUN24,],
+      [PTweeths_29AUG24, aPTweeths_29AUG24,],
+      [PTunieth_26SEP24, aPTunieth_26SEP24,],
+
+      [PTweeth_26DEC24, aPTweeth_26DEC24,],
+      [PTezeth_26DEC24, aPTezeth_26DEC24,],
+
+      [usdc, aUSDC,],
+      [PTUSDe_25JUL24, aPTUSDe_25JUL24,],
+      [PTsusde_26SEP24, aPTsusde_26SEP24,],
+      [PTksusde_26SEP24, aPTksusde_26SEP24,],
+
     ]
   },
   avax: {
@@ -204,16 +247,26 @@ const config = {
     tokensAndOwners: [
       [arb, arbCallVault,],
       [usdc_arb, arbPutVault,],
-      [arb, ethCallVaultArb,],
+      [weth_arb, ethCallVaultArb,],
       [usdc_arb, ethPutVaultArb,],
-      [arb, aArb,],
-      [usdc_arb, aUsdc,],
+      [arb, aArb_ARB,],
+      [weth_arb, aWeth_ARB,],
+      [usdc_arb, aUsdc_ARB,],      
+
+      [PTezETH_27JUN24, aPTezETH_27JUN24,],
+      [PTrsETH_27JUN24, aPTrsETH_27JUN24,],
+      [PTweETH_27JUN24, aPTweETH_27JUN24,],
+
+      [PTezETH_26SEP24, aPTezETH_26SEP24,],
+      [PTrsETH_26SEP24, aPTrsETH_26SEP24,],
+      [PTweETH_26SEP24, aPTweETH_26SEP24,],
+      [PTuniETH_26DEC24, aPTuniETH_26DEC24,],
     ],
-    LLVOwners: [
-      [univ3nft_arb, arbC_LLV,],
-      [univ3nft_arb, arbP_LLV,],
-      [univ3nft_arb, ethC_LLV,],
-      [univ3nft_arb, ethP_LLV,],
+    uniV3Owners: [
+       arbC_LLV,
+       arbP_LLV,
+       ethC_LLV,
+       ethP_LLV,
     ]
   },
   fantom: {
@@ -279,8 +332,11 @@ const config = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { tokensAndOwners, LLVOwners } = config[chain]
+  const { tokensAndOwners, uniV3Owners } = config[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ tokensAndOwners, resolveUniV3 : LLVOwners != null && LLVOwners.length > 0 ? true : false,  uniV3nftsAndOwners : LLVOwners })
+    tvl: async (api) => {
+      if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true})
+      return sumTokens2({ api, tokensAndOwners})
+    }
   }
 })

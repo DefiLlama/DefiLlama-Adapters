@@ -3,7 +3,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 
 module.exports = {
   methodology: 'Lists the number of owned USDC tokens in the Deepp LP and BetLock contracts.',
-  start: 1696118400,
+  start: '2023-10-01',
   arbitrum: {
     tvl: sumTokensExport({
       owners: Object.values({

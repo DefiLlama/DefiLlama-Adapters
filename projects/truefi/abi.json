@@ -9,5 +9,7 @@
   "liquidValue": "uint256:liquidValue",
   "getAssetVaults": "address[]:getAssetVaults",
   "liquidAssets": "uint256:liquidAssets",
-  "outstandingAssets": "uint256:outstandingAssets"
+  "outstandingAssets": "uint256:outstandingAssets",
+  "getAlocVaults": "address[]:getPortfolios",
+  "borrowedAssets": "uint256:borrowedAmount"
 }

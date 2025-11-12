@@ -12,6 +12,6 @@ module.exports={
           '0x5b5fe1238aca91c65683acd7f9d9bf922e271eaa', // SUS
         ]
       }),
-        staking: staking("0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254", "0xadbd1231fb360047525BEdF962581F3eee7b49fe", 'cronos')
+        staking: staking("0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254", "0xadbd1231fb360047525BEdF962581F3eee7b49fe")
     }
 }

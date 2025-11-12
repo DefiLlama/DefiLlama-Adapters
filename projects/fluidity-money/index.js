@@ -1,5 +1,5 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getTokenSupply } = require("../helper/solana")
+const { getTokenSupplies } = require("../helper/solana")
 const ATOKENS_ETHEREUM = ['0x028171bCA77440897B824Ca71D1c56caC55b68A3', '0x101cc05f4A51C0319f570d5E146a8C625198e636', '0xd4937682df3C8aEF4FE912A96A74121C0829E664'];
 const APOOL_ETHEREUM = ['0xFC66c25dbDb0606e7F9cA1d2754Eb0A0f8306dA9', '0x5E88f6dc0aa126FA28A137B24d0B4d7231352a0B', '0xB7a2930e66D84Da74CdcFE4f97FaE9fC8f1114e8'];
 const ATOKENS_ARBITRUM = ['0x6ab707Aca953eDAeFBc4fD23bA73294241490620', '0x625E7708f30cA75bfd92586e17077590C60eb4cD', '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE', '0x724dc807b04555b71ed48a6896b6f41593b8c637'];
@@ -19,8 +19,8 @@ async function tvl_arb(api) {
 
 async function tvl_sol(api) {
   const fUSDC = 'Ez2zVjw85tZan1ycnJ5PywNNxR6Gm4jbXQtZKyQNu3Lv'
-  const supply = await getTokenSupply(fUSDC)
-  api.add(fUSDC, supply * 1e6)
+  const res = await getTokenSupplies([fUSDC])
+  api.add(fUSDC, res[fUSDC])
 }
 
 module.exports = {

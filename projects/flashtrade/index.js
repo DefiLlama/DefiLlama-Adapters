@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/solana");
 
 async function tvl() {
-  return sumTokens2({ owner: '81xGAvJ27ZeRThU2JEfKAUeT4Fx6qCCd8WHZpujZbiiG', getAllTokenAccounts: true, });
+  return sumTokens2({ owner: '81xGAvJ27ZeRThU2JEfKAUeT4Fx6qCCd8WHZpujZbiiG', });
 }
 
 module.exports = {

@@ -17,7 +17,7 @@ module.exports = {
       useDefaultCoreAssets: true,
       factory: factoryContract,
     }),
-    staking: staking(thorusMaster_avax, THO_avax, "avax"),
+    staking: staking(thorusMaster_avax, THO_avax),
   },
   moonbeam: {
     tvl: getUniTVL({
