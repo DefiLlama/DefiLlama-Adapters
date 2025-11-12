@@ -1,85 +1,121 @@
-const { getTableRows, getCurrencyBalance, getAllOracleData, getTokenPriceUsd } = require("../helper/chain/proton");
-const { toUSDTBalances } = require('../helper/balances');
+const { getCurrencyBalance, } = require("../helper/chain/proton");
 
-const LENDING_CONTRACT = 'lending.loan';
 const LOAN_TOKEN_CONTRACT = 'loan.token';
 const STAKING_CONTRACT = 'lock.token';
 
-async function getAllMarkets(lower_bound) {
-  try {
-    let { rows, more, next_key } = await getTableRows({
-      code: LENDING_CONTRACT,
-      scope: LENDING_CONTRACT,
-      table: 'markets',
-      limit: -1,
-      lower_bound: lower_bound,
-    });
+const { post } = require('../helper/http')
+const sdk = require('@defillama/sdk')
 
-    if (more) {
-      rows = rows.concat(await getAllMarkets(next_key));
-    }
-
-    return rows;
-  } catch (e) {
-    return [];
-  }
+const tokenMapping = {
+  'xtokens:XBTC': 'bitcoin',
+  'xtokens:XLTC': 'litecoin',
+  'xtokens:XETH': 'ethereum',
+  'xtokens:XXRP': 'ripple',
+  'eosio.token:XPR': 'proton',
+  'xtokens:XMT': 'metal',
+  'xtokens:XUSDC': 'usd-coin',
+  'xtokens:XDOGE': 'dogecoin',
+  'xtokens:XUSDT': 'tether',
+  'xtokens:XUST': 'terrausd-wormhole',
+  'xtokens:XLUNA': 'terra-luna-2',
+  'xtokens:XADA': 'cardano',
+  'xtokens:XXLM': 'stellar',
+  'xtokens:XHBAR': 'hedera-hashgraph',
+  'xtokens:XSOL': 'solana',
 }
 
-function getLendingTvl(returnBorrowed = false) {
-  return async () => {
-    const oracles = await getAllOracleData();
-    const markets = await getAllMarkets();
-  
-    let available = 0;
-    let borrowed = 0;
-    let tvl = 0;
-  
-    for (const market of markets) {
-      // Find oracle
-      const oracle = oracles.find(
-        (oracle) => oracle.feed_index === market.oracle_feed_index
-      );
-      if (!oracle || !oracle.aggregate.d_double) continue;
-  
-      // Determine pool amount
-      const [, symbol] = market.underlying_symbol.sym.split(',');
-      const [cash] = await getCurrencyBalance(
-        market.underlying_symbol.contract,
-        LENDING_CONTRACT,
-        symbol
-      );
-      const [cashAmount] = cash.split(' ');
-      const [borrowAmount] = market.total_variable_borrows.quantity.split(' ');
-      const total = +cashAmount + +borrowAmount;
-  
-      available += +cashAmount * oracle.aggregate.d_double;
-      borrowed += +borrowAmount * oracle.aggregate.d_double;
-      tvl += total * oracle.aggregate.d_double;
-    }
-  
-    if (returnBorrowed) {
-      return toUSDTBalances(borrowed)
-    } else {
-      return toUSDTBalances(tvl - borrowed)
-    }
-  }
+const API_ENDPOINT = 'https://proton.eosusa.io'
+const LENDING_CONTRACT = 'lending.loan'
+
+function parseAsset(assetString) {
+  if (!assetString) return { amount: 0, symbol: '' }
+  const [amount, symbol] = assetString.split(' ')
+  return { amount: parseFloat(amount), symbol }
 }
 
-async function getTotalStaking() {
-  const loanPrice = await getTokenPriceUsd('LOAN', LOAN_TOKEN_CONTRACT)
+async function fetchMarkets() {
+  const res = await post(`${API_ENDPOINT}/v1/chain/get_table_rows`, {
+    code: LENDING_CONTRACT,
+    scope: LENDING_CONTRACT,
+    table: 'markets',
+    limit: 100,
+    json: true,
+  })
+  return res.rows || []
+}
+
+async function fetchLiquidity(tokenContract, symbol) {
+  // available liquidity (cash) held by lending.loan for a given token
+  const res = await post(`${API_ENDPOINT}/v1/chain/get_table_rows`, {
+    code: tokenContract,
+    scope: LENDING_CONTRACT,
+    table: 'accounts',
+    limit: 100,
+    json: true,
+  })
+  const rows = res.rows || []
+  const tokenBalance = rows.find(b => parseAsset(b.balance).symbol === symbol)
+  return tokenBalance ? parseAsset(tokenBalance.balance).amount : 0
+}
+
+// ----------------------------
+// TVL = only available liquidity (cash)
+// ----------------------------
+async function tvl() {
+  const balances = {}
+  const markets = await fetchMarkets()
+
+  const promises = markets.map(async (market) => {
+    const [ , symbol ] = market.underlying_symbol.sym.split(',')
+    const tokenContract = market.underlying_symbol.contract
+    const internalId = `${tokenContract}:${symbol}`
+    const cgkId = tokenMapping[internalId]
+    if (!cgkId) return
+
+    const cashAvailable = await fetchLiquidity(tokenContract, symbol)
+    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, cashAvailable)
+  })
+
+  await Promise.all(promises)
+  return balances
+}
+
+// ----------------------------
+// Borrowed = total variable + stable borrows
+// ----------------------------
+async function borrowed() {
+  const balances = {}
+  const markets = await fetchMarkets()
+
+  markets.forEach(market => {
+    const totalVar = parseAsset(market.total_variable_borrows.quantity).amount
+    const totalStable = parseAsset(market.total_stable_borrows.quantity).amount
+    const totalBorrows = totalVar + totalStable
+
+    const [ , symbol ] = market.underlying_symbol.sym.split(',')
+    const tokenContract = market.underlying_symbol.contract
+    const internalId = `${tokenContract}:${symbol}`
+    const cgkId = tokenMapping[internalId]
+    if (!cgkId) return
+
+    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, totalBorrows)
+  })
+
+  return balances
+}
+
+async function getTotalStaking(api) {
   const [staked] = await getCurrencyBalance(LOAN_TOKEN_CONTRACT, STAKING_CONTRACT, 'LOAN')
   const [stakedAmount] = staked.split(' ');
-  let stakingTvl = toUSDTBalances(stakedAmount * loanPrice)
-  return stakingTvl
+  api.addCGToken('proton-loan', BigInt(Math.floor(stakedAmount)))
+  return api.getBalances()
 }
 
 module.exports = {
-  deadFrom: '2024-09-09',
-  misrepresentedTokens: true,
-  methodology: `Proton Loan TVL is the sum of all lending deposits in the Proton Loan smart contract and single-side staked LOAN.`,
+  methodology: 'TVL = only available liquidity (cash held by lending.loan). Borrowed = total variable + stable borrows (outstanding debt). Deposits = TVL + Borrowed, but we report liquidity as TVL per DefiLlama standards.',
   proton: {
-    tvl: getLendingTvl(false),
-    borrowed: () => ({}), // bad debt getLendingTvl(true),
+    tvl,
+    borrowed,
     staking: getTotalStaking
   }, 
 }

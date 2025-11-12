@@ -64,5 +64,23 @@
       "factory": "0x64FCC3A02eeEba05Ef701b7eed066c6ebD5d4E51",
       "fromBlock": 62814000
     }
+  ],
+  "bsc": [
+    {
+      "factory": "0x64FCC3A02eeEba05Ef701b7eed066c6ebD5d4E51",
+      "fromBlock": 50421500
+    }
+  ],
+  "hyperliquid": [
+    {
+      "factory": "0xd187cb71fe8201935e6676ff872239fff552d4a5",
+      "fromBlock": 6375000
+    }
+  ],
+  "katana": [
+    {
+      "factory": "0xac61e44816160028474fd9f5baae492b5620f370",
+      "fromBlock": 4715236
+    }
   ]
 }
