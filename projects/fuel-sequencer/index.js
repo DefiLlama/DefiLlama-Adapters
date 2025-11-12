@@ -7,6 +7,8 @@ async function fetchStakingPool() {
     return response.pool;
 }
 
+// Appendix; not used in the main function, but useful additional metrics not exposed through DefiLlama
+/*
 async function fetchValidators() {
     const validators = [];
     let paginationKey = null;
@@ -97,6 +99,7 @@ async function fetchAllMetrics() {
         },
     };
 }
+*/
 
 // Fetch all accounts with vesting and calculate locked vesting amount
 async function fetchVestingAmount() {
