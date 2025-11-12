@@ -117,7 +117,7 @@ async function queryV1Beta1({ chain, paginationKey, block, url, api } = {}) {
     endpoint += `?height=${block - (block % 100)}`;
   }
   if (paginationKey) {
-    const paginationQueryParam = `pagination.key=${paginationKey}`;
+    const paginationQueryParam = `pagination.key=${encodeURIComponent(paginationKey)}`;
     if (block === undefined) {
       endpoint += "?";
     } else {
