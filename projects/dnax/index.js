@@ -3,19 +3,7 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const VAULT = '0xafc43faE32302D725fC4d448525c44c522a9a1B9'
 const NATIVE_PLACEHOLDER = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 
-const pairsAbi = {
-  inputs: [],
-  name: 'pairs',
-  outputs: [
-    {
-      internalType: 'address[2][]',
-      name: '',
-      type: 'address[2][]',
-    },
-  ],
-  stateMutability: 'view',
-  type: 'function',
-}
+const pairsAbi = 'function pairs() external view returns (address[2][])'
 
 module.exports = {
   methodology: 'Reads the DNAX vault `pairs` list, then sums the balances of every listed token plus native BNB held by the vault.',
