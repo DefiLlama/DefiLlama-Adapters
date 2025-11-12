@@ -1014,7 +1014,7 @@ group by
     Object.entries(balances).forEach(([token, value]) => {
       if (token.includes(nullAddress)) return;
       if (!token.startsWith('tron:0x')) return;
-      api.removeTokenBalance(token)
+      delete balances[token]
       const tronToken = sdk.util.evmToTronAddress(token.split(':')[1])
       sdk.util.sumSingleBalance(balances, tronToken, value, chain)
     })

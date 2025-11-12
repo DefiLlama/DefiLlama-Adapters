@@ -46,6 +46,18 @@ const ARBITRUM_PROTOCOLS = {
     ]
 };
 
+// Arbitrum chain protocol addresses
+const HYPEREVM_PROTOCOLS = {
+    hyperlendPoolDataProvider: '0x5481bf8d3946E6A3168640c1D7523eB59F055a29', // Hyperlend Pool Data Provider
+    tokens: [
+        "0xFc5126377F0efc0041C0969Ef9BA903Ce67d151e", // Morpho Felix USDT0
+        "0x9896a8605763106e57A51aa0a97Fe8099E806bb3", // Morpho Felix USDT0 Frontier
+        "0xe5ADd96840F0B908ddeB3Bd144C0283Ac5ca7cA0", // Morpho Hypertihm USDT0
+        "0x3Bcc0a5a66bB5BdCEEf5dd8a659a4eC75F3834d8", // Morpho MEV Capital USDT0
+        "0x53A333e51E96FE288bC9aDd7cdC4B1EAD2CD2FfA", // Morpho Gauntlet USDT0
+    ]
+};
+
 const abi = {
     getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
 };
@@ -149,8 +161,43 @@ async function arbitrumTvl(api) {
     });
 }
 
+async function hyperevmTvl(api) {
+    // For HyperEVM chain
+    const owners = await getConfig('giza/arma/' + api.chain, 'https://api.arma.xyz/api/v1/999/smart-accounts');
+
+    api.log(`[Arma] Found ${owners.length} smart accounts on HyperEVM`);
+
+    // Get aUSDT0 token from Hyperlend Pool Data Provider
+    const USDT0 = ADDRESSES.hyperliquid.USDT0;
+    const aaveReserveData = await api.call({
+        target: HYPEREVM_PROTOCOLS.hyperlendPoolDataProvider,
+        abi: abi.getReserveTokensAddresses,
+        params: [USDT0]
+    });
+
+    const allTokens = [
+        ...HYPEREVM_PROTOCOLS.tokens,
+        aaveReserveData.aTokenAddress // Add the actual aUSDT0 token
+    ];
+
+    // Build tokensAndOwners array for each token-owner combination
+    const tokensAndOwners = [];
+    allTokens.forEach(token => {
+        owners.forEach(owner => {
+            tokensAndOwners.push([token, owner]);
+        });
+    });
+
+    return api.sumTokens({
+        tokensAndOwners,
+        permitFailure: true
+    });
+}
+
+
 module.exports = {
     base: { tvl: baseTvl },
     plasma: { tvl: plasmaTvl },
-    arbitrum: { tvl: arbitrumTvl }
+    arbitrum: { tvl: arbitrumTvl },
+    hyperliquid: { tvl: hyperevmTvl }
 };
