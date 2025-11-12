@@ -9,7 +9,8 @@ const config = {
 module.exports = {
   hallmarks: [
     [1680134400, "Rugpull"]
-  ]
+  ],
+  deadFrom: '2023-03-30'
 };
 
 Object.keys(config).forEach(chain => { module.exports[chain] = {tvl} })

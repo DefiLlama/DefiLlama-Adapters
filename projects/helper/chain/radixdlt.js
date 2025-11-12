@@ -1,6 +1,6 @@
 
 const { getUniqueAddresses, } = require('../tokenMapping')
-const { getFixBalancesSync } = require('../portedTokens')
+const { getFixBalances } = require('../portedTokens')
 const { sliceIntoChunks } = require('../utils')
 const BigNumber = require('bignumber.js')
 const { post } = require('../http')
@@ -12,8 +12,9 @@ const chain = 'radixdlt'
 
 const ENTITY_DETAILS_URL = `https://mainnet.radixdlt.com/state/entity/details`
 
-async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
-  const fixBalances = getFixBalancesSync(chain)
+async function sumTokens({ owner, owners = [], api, transformLSU = false,  blacklistedTokens = [] }) {
+  const blacklistSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
+  const fixBalances = getFixBalances(chain)
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners)
@@ -23,6 +24,7 @@ async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
   let items = await queryAddresses({ addresses: owners })
   items.forEach((item) => {
     item.fungible_resources.items.forEach(({ resource_address, amount }) => {
+      if (blacklistSet.has(resource_address.toLowerCase())) return;
       api.add(resource_address, +amount)
     });
   });
@@ -30,11 +32,12 @@ async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
   return fixBalances(api.getBalances())
 }
 
-async function queryAddresses({ addresses = [], }) {
+async function queryAddresses({ addresses = [], miscQuery = {} }) {
   let items = []
-  const chunks  = sliceIntoChunks(addresses, 20)
+  const chunks = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     const body = {
+      ...miscQuery,
       "addresses": chunk,
       "opt_ins": { "explicit_metadata": ["name"] }
     }
@@ -69,7 +72,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
   addresses = addresses.filter(i => i !== ADDRESSES.radixdlt.XRD)
   let lsuRedemptionValues = {}
 
-  const chunks  = sliceIntoChunks(addresses, 20)
+  const chunks = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     let body = {
       "addresses": chunk,
@@ -81,7 +84,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
       let validators = []
       for (const lsuResource of data.items) {
         let v = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")
-        if (v !== undefined) {
+        if (v !== undefined && v.length > 0) {
           let validator = v[0]
           if (validator.value.typed.type === "GlobalAddress" && validator.value.typed.value.startsWith("validator_")) {
             lsuRedemptionValues[lsuResource.address] = {
@@ -97,6 +100,11 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
         }
 
       }
+
+      if (validators.length == 0) {
+        continue
+      }
+
       let validatorsDetailsBody = {
         "addresses": validators,
         "aggregation_level": "Vault"
@@ -111,10 +119,10 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
         let xrdStakeVaultBalance = new BigNumber(xrdStakeVault[0].amount)
 
         let totalSupplyOfStakeUnits = new BigNumber(lsuRedemptionValues[stakeUnitResourceAddress]["totalSupplyOfStakeUnits"])
-        let xrdRedemptionValue =  xrdStakeVaultBalance / totalSupplyOfStakeUnits
+        let xrdRedemptionValue = xrdStakeVaultBalance / totalSupplyOfStakeUnits
         lsuRedemptionValues[stakeUnitResourceAddress]["xrdRedemptionValue"] = xrdRedemptionValue
       }
-    } catch(error) {
+    } catch (error) {
       console.log("There was an error getting the xrd redemption value. Check that all addressed used are LSU resource addresses")
       return {}
     }
@@ -122,7 +130,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
   return lsuRedemptionValues
 }
 
-function sumTokensExport({...args}) {
+function sumTokensExport({ ...args }) {
   return async (api) => sumTokens({ ...args, api, })
 }
 

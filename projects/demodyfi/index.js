@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
@@ -5,7 +6,7 @@ const { pool2 } = require('../helper/pool2')
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    staking: staking('0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683', '0x5f6c5C2fB289dB2228d159C69621215e354218d7'),
+    staking: staking('0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683', ADDRESSES.moonbeam.WGLMR),
     pool2: pool2('0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683', '0xD5B1Cd8D245A93E0697707AEe82497388508b132'),
   },
   bsc: {

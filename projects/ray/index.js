@@ -51,7 +51,7 @@ const allPortfolioManagers = [
 owners.push(allPortfolioManagers[0].address)
 
 module.exports = {
-  start: 1568274392,  // 09/12/2019 @ 7:46am (UTC)
+  start: '2019-09-12',  // 09/12/2019 @ 7:46am (UTC)
   ethereum: {
     tvl: sumTokensExport({
       owners,

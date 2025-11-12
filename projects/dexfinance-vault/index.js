@@ -33,53 +33,57 @@ const CONFIG = {
 };
 
 const getVaults = async (api, factory) => {
-  const vaults = await api.fetchList({ lengthAbi: abi.factory.vaultsLength, itemAbi: abi.factory.vaults, target: factory, });
-  const farmsAll = await api.fetchList({ lengthAbi: abi.vault.farmsLength, itemAbi: abi.vault.farms, targets: vaults, groupedByInput: true })
-  const items = []
-  vaults.map((vault, i) => items.push(farmsAll[i].map((farm) => ({ vault, farm }))))
-  return items.flat()
+  const vaults = await api.fetchList({ lengthAbi: abi.factory.vaultsLength, itemAbi: abi.factory.vaults, target: factory, permitFailure:true });
+  const farmsAll = await api.fetchList({ lengthAbi: abi.vault.farmsLength, itemAbi: abi.vault.farms, targets: vaults, groupedByInput: true, permitFailure:true })
+
+  return vaults.map((vault, i) => {
+    const farms = farmsAll[i] || [];
+    return farms.map(farm => ({ vault, farm }));
+  }).flat();
 };
 
 const getVaultsConnectors = async (api, factory, vaultFarms) => {
-  const connectorsCalls = vaultFarms.map(({ farm, vault }) => ({ params: farm.beacon, target: vault, }));
+  const connectorsCalls = vaultFarms.map(({ farm, vault }) => ({ params: farm.beacon, target: vault }));
   const calculationConnectorCalls = vaultFarms.map(({ farm }) => farm.beacon);
-  const connectors = await api.multiCall({ abi: abi.vault.farmConnector, calls: connectorsCalls })
-  const calculationConnectors = await api.multiCall({ abi: abi.factory.farmCalculationConnector, calls: calculationConnectorCalls, target: factory })
+  const connectors = await api.multiCall({ abi: abi.vault.farmConnector, calls: connectorsCalls, permitFailure: true });
+  const calculationConnectors = await api.multiCall({ abi: abi.factory.farmCalculationConnector, calls: calculationConnectorCalls, target: factory, permitFailure: true });
 
-  vaultFarms.forEach((item, i) => {
-    delete item.farm.data
-    item.connector = connectors[i]
-    item.calculationConnector = calculationConnectors[i]
-  })
-}
-
-const getVaultsDatas = async (api, vaultFarms) => {
-  const calls = vaultFarms.map(({ connector }) => connector)
-  const liquidityCalls = vaultFarms.map(({ calculationConnector, connector }) => ({ target: calculationConnector, params: [connector] }))
-
-  const [types, stakingTokens, liquidities] =
-    await Promise.all([
-      api.multiCall({ calls, abi: abi.farm.type }),
-      api.multiCall({ calls, abi: abi.farm.stakingToken }),
-      api.multiCall({ calls: liquidityCalls, abi: abi.vault.liquidity }),
-    ]);
-
-  vaultFarms.forEach((item, i) => {
-    item.type = types[i]
-    item.stakingToken = stakingTokens[i]
-    item.liquidity = liquidities[i]
-  })
+  return vaultFarms
+    .map((item, i) => {
+      const connector = connectors[i]
+      const calculationConnector = calculationConnectors[i]
+      if (!connector || !calculationConnector) return null;
+      delete item.farm.data;
+      return { ...item, connector, calculationConnector };
+    }).filter(item => item !== null);
 };
 
-const groupBy = (array, keyFn) => {
-  return array.reduce((acc, item) => {
-    const key = keyFn(item);
-    if (!acc[key]) {
-      acc[key] = [];
+const getVaultsDatas = async (api, vaultFarms) => {
+  const v2Farms = [];
+  const v3Farms = [];
+  const calls = vaultFarms.map(({ connector }) => connector);
+  const liquidityCalls = vaultFarms.map(({ calculationConnector, connector }) => ({ target: calculationConnector, params: [connector] }));
+  const stakingDatasCalls = vaultFarms.map(({ calculationConnector }) => ({ target: calculationConnector }))
+
+  const [stakingTokens, liquidities, datas] = await Promise.all([
+    api.multiCall({ calls, abi: abi.farm.stakingToken, permitFailure: true }),
+    api.multiCall({ calls: liquidityCalls, abi: abi.vault.liquidity }),
+    api.multiCall({ calls: stakingDatasCalls, abi: abi.farm.stakingTokenData, permitFailure: true })
+  ]);
+
+  vaultFarms.forEach(( item, i ) => {
+    const stakingToken = stakingTokens[i]
+    const liquidity = liquidities[i]
+    const data = datas[i]
+    if (!stakingToken || !liquidity ) return
+    if (!data) {
+      v2Farms.push({ ...item, stakingToken, liquidity })
+    } else {
+      v3Farms.push({ ...item, stakingToken, liquidity, data })
     }
-    acc[key].push(item);
-    return acc;
-  }, {});
+  })
+
+  return { v2Farms, v3Farms }
 };
 
 const lpv2Balances = async (api, farms) => {
@@ -100,34 +104,25 @@ async function addERC721Data(api, vaultFarms) {
     nftPositionMapping[nft].push(positionIds[i])
   })
   for (const [nftAddress, positionIds] of Object.entries(nftPositionMapping))
-    await sumTokens2({ api, uniV3ExtraConfig: { nftAddress, positionIds, } })
+    await sumTokens2({ api, uniV3ExtraConfig: { nftAddress, positionIds } })
 }
 
 const tvl = async (api) => {
   const { factory, USDEX_PLUS, gDEX } = CONFIG[api.chain];
   const vaultFarms = await getVaults(api, factory);
-  await getVaultsConnectors(api, factory, vaultFarms);
-  await getVaultsDatas(api, vaultFarms);
-  const sortedFarms = groupBy(vaultFarms, ({ type }) => `${type}`);
+  const vaultFarmsWithConnectors = await getVaultsConnectors(api, factory, vaultFarms);
+  const { v2Farms, v3Farms } = await getVaultsDatas(api, vaultFarmsWithConnectors);
 
-  const lpv2Farms = Object.keys(sortedFarms)
-    .filter((key) => !key.includes("ERC721"))
-    .flatMap((key) => sortedFarms[key]);
-
-  const lpv3Farms = Object.keys(sortedFarms)
-    .filter((key) => key.includes("ERC721"))
-    .flatMap((key) => sortedFarms[key]);
-
-  await Promise.all([
-    lpv2Balances(api, lpv2Farms),
-    addERC721Data(api, lpv3Farms)
+    await Promise.all([
+    lpv2Balances(api, v2Farms),
+    addERC721Data(api, v3Farms)
   ])
-  
+
   await sumTokens2({ api, resolveLP: true });
   if (USDEX_PLUS) api.removeTokenBalance(USDEX_PLUS);
   if (gDEX) api.removeTokenBalance(gDEX);
 };
 
 Object.keys(CONFIG).forEach((chain) => {
-  module.exports[chain] = { tvl, };
+  module.exports[chain] = { tvl };
 })

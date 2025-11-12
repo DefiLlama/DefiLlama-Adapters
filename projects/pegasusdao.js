@@ -14,7 +14,7 @@ const lps = [
 const shareLps = "0x72c1f5fb7e5513a07e1ff663ad861554887a0a0a";
 const genesisPool = "0x64bfCBe4480B53E8234Ca258a96720F29fe6A6fB";
 const genesisTokens = [
-    "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
+    ADDRESSES.cronos.WCRO_1,
     ADDRESSES.cronos.USDC,
     "0x97749c9b61f878a880dfe312d2594ae07aed7656",
     "0xb8df27c687c6af9afe845a2afad2d01e199f4878",

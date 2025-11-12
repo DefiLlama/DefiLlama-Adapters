@@ -127,7 +127,7 @@ const ethereumTvl = tvlForChain('ethereum')
 const polygonTvl = tvlForChain('polygon')
 
 module.exports = {
-  start: 1590624000, // May-28-2020 00:00:00
+  start: '2020-05-28', // May-28-2020 00:00:00
   polygon: {
     tvl: polygonTvl,
   },

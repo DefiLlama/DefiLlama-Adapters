@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const STONE = '0xEc901DA9c68E90798BbBb74c11406A32A70652C3';
+const STONE = ADDRESSES.berachain.STONE;
 const AtomicLockContract = '0x19727db22Cba70B1feE40337Aba69D83c6741caF';
 
 const USDC = ADDRESSES.ethereum.USDC;

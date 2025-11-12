@@ -2,7 +2,8 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
-  avax: { factory: '0x4df3038C2C7e13F46F0d63eC3AF5728F75Be3775', fromBlock: 46950081, }
+  avax: { factory: '0x4df3038C2C7e13F46F0d63eC3AF5728F75Be3775', fromBlock: 46950081, },
+  scroll: { factory: '0xA218beD0C2b487599A3799Bc318428e5219A7978', fromBlock: 8563591, },
 }
 
 Object.keys(config).forEach(chain => {
