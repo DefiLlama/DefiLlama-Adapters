@@ -58,8 +58,8 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  start: 33674950,
   timetravel: false,
+  deadFrom: '2025-09-21',
   bsc: {
     tvl, borrowed,
   },

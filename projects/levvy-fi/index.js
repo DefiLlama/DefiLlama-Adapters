@@ -1,19 +1,21 @@
 const { post } = require('../helper/http')
 
+const ENDPOINT = 'https://levvy-api-v2-testnet.up.railway.app/api/v1/nft/platform/stats'
+const DECIMALS = 1e6
+
+const fetchPlatformStats = () => post(ENDPOINT, {})
+
+const getValue = async (isBorrowed = false) => {
+  const data = await fetchPlatformStats()
+  const value = isBorrowed ? data.totalValueBorrowed : data.totalValueLocked
+  return { cardano: value / DECIMALS }
+}
+
 module.exports = {
   misrepresentedTokens: true,
   cardano: {
-    tvl: async () => {
-      const data = await post('https://citizens.theapesociety.io/api/getLevvyData', {})
-      return {
-        cardano: data.adaTVL,
-      }
-    },
-    borrowed: async () => {
-      const data = await post('https://citizens.theapesociety.io/api/getLevvyData', {})
-      return {
-        cardano: data.borrowed,
-      }
-    }
+    tvl: () => getValue(false),
+    borrowed: () => getValue(true),
   },
 }
+

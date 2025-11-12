@@ -6,7 +6,7 @@ async function sumLPBalances(api, gauges, sickles, lpTokens) {
   lpTokens.forEach((lpToken, index) => lpTokens[index] = lpToken.toLowerCase())
   let minLPValue = 4e3
   if (lpTokens.length > 200) minLPValue = 15e3
-  if (lpTokens.length > 400) minLPValue = 25e3
+  if (lpTokens.length > 400) minLPValue = 40e3
 
   const filteredLPSet = new Set(await filteredLPTokens({ api, lpTokens, minLPValue, }))
 
@@ -24,7 +24,7 @@ async function sumLPBalances(api, gauges, sickles, lpTokens) {
     token = token.toLowerCase()
     return `${api.chain}:${gaugeTokenMapping[token] ?? token}`
   }
-  await sumTokens2({ api, transformAddress, tokens, owners: sickles })
+  await sumTokens2({ api, transformAddress, tokens, owners: sickles, sumChunkSize: 10000, })
 }
 
 // we are going to filter out tokens that we dont have price in the server and LP tokens with less than 1k value in it
@@ -67,6 +67,35 @@ async function filteredLPTokens({ api, lpTokens, minLPValue = 10e3 }) {
 }
 
 
+// we are going to filter out tokens that we dont have price in the server and LP tokens with less than 1k value in it
+async function filteredV3LPTokens({ api, lpTokens, minLPValue = 10e3 }) {
+  const token0s = await api.multiCall({ abi: 'address:token0', calls: lpTokens, permitFailure: true, })
+  const token1s = await api.multiCall({ abi: 'address:token1', calls: lpTokens, permitFailure: true, })
+  const tok1n0Bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: lpTokens.map((i, idx) => ({ target: token0s[idx], params: i})), permitFailure: true, })
+  const tok1n1Bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: lpTokens.map((i, idx) => ({ target: token1s[idx], params: i})), permitFailure: true, })
+  const allTokens = [token0s, token1s,].flat().filter(i => i).map(i => i.toLowerCase())
+  const dummyBals = {}
+  allTokens.forEach(i => dummyBals[api.chain + ':' + i] = 1e20) // hack to cache token prices to memory
+  await Balances.getUSDValue(dummyBals)
+
+  const filteredLPTokens = []
+  for (let i = 0; i < lpTokens.length; i++) {
+    const lpBalance = new Balances({ chain: api.chain, })
+    lpBalance.add(token0s[i], tok1n0Bals[i] ?? 0)
+    lpBalance.add(token1s[i], tok1n1Bals[i] ?? 0)
+    const lpValue = await lpBalance.getUSDValue()
+    if (lpValue < minLPValue) { // LP has less than 2k value, we ignore it
+      continue;
+    }
+    filteredLPTokens.push(lpTokens[i])
+  }
+
+  api.log(api.chain, 'filteredLPTokens', filteredLPTokens.length, 'out of', lpTokens.length, 'LP tokens are filtered out.')
+  return filteredLPTokens
+}
+
+
 module.exports = {
   sumLPBalances,
+  filteredV3LPTokens,
 }

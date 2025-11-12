@@ -1,5 +1,6 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking.js");
 
 const config = {
   ethereum: {
@@ -24,7 +25,7 @@ const config = {
       "0xfB0Ad0B3C2605A7CA33d6badd0C685E11b8F5585",
     ],
     tokens: [
-      "0x4186BFC76E2E237523CBC30FD220FE055156b41F",  // rsETH
+      ADDRESSES.berachain.rsETH,  // rsETH
       "0x3082CC23568eA640225c2467653dB90e9250AaA0", // RDNT
     ],
   },
@@ -62,7 +63,7 @@ const config = {
       ADDRESSES.mantle.WETH,//weth
       ADDRESSES.mantle.USDC, //usdc
       "0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2", // WBTC
-      "0xcDA86A272531e8640cD7F1a92c01839911B90bb0", // meth
+      ADDRESSES.mantle.mETH, // meth
       "0x779f4E5fB773E17Bc8E809F4ef1aBb140861159a", // KTC
     ],
   },
@@ -75,7 +76,7 @@ const config = {
       ...Object.values(ADDRESSES.manta),
       ADDRESSES.null,
       "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5", //MANTA
-      "0xEc901DA9c68E90798BbBb74c11406A32A70652C3", //STONE
+      ADDRESSES.berachain.STONE, //STONE
       "0xbdAd407F77f44F7Da6684B416b1951ECa461FB07", //WUSDM
       "0x34c7Ad65E4163306f8745996688b476914201cE0", //uniETH
     ],
@@ -99,7 +100,7 @@ const config = {
       "0x80d12A78EfE7604F00ed07aB2f16F643301674D5",
     ],
     tokens: [
-      "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",  // wstETH
+      ADDRESSES.base.wstETH,  // wstETH
     ],
   },
   optimism: {
@@ -134,3 +135,7 @@ async function tvl(api) {
 Object.keys(config).forEach(async chain => {
   module.exports[chain] = { tvl }
 })
+module.exports.ethereum.staking = staking(
+  '0xAd16eDCF7DEB7e90096A259c81269d811544B6B6', 
+  '0xfC385A1dF85660a7e041423DB512f779070FCede'
+);

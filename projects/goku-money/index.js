@@ -30,7 +30,7 @@ const COLLATERALS = {
     defaultPool: "0xF79BA93C02dD2B0529eF254075428aAdb2416595",
   },
   // STONE
-  "0xEc901DA9c68E90798BbBb74c11406A32A70652C3": {
+  [ADDRESSES.berachain.STONE]: {
     activePool: "0x5Ee4DC855Ca71158CB0516a27e01bDB18C05D923",
     defaultPool: "0x558a64CB6e2e335Fc468ab3215d5c7Fe5dF26F31",
   },
@@ -48,7 +48,7 @@ function getCollateralOwnersAndToken() {
 
 
 module.exports = {
-  start: 1698768000, // 01 Nov 2023
+  start: '2023-10-31', // 01 Nov 2023
   methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked GAI in StabilityPool",
   manta: {
     tvl: sumTokensExport({

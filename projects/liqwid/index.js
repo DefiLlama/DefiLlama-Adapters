@@ -11,59 +11,19 @@ module.exports = {
   }
 };
 
+const endpoint = 'https://v2.api.liqwid.finance/graphql'
 
-const endpoint = 'https://api.liqwid.finance/graphql'
-
-const queryAdaLoans = `query ($page: Int) {
-  Page (page: $page) {
-    pageInfo {
-      currentPage
-      hasNextPage
-    }
-    loan(marketId: "Ada") {
-      collaterals {
-        id
-        amount
-      }
-    }
-  }
-}
-`
-
-const query = `query ($page: Int) {
-  Page (page: $page) {
-    pageInfo {
-      currentPage
-      hasNextPage
-    }
-    market {
-      asset {
-        marketId
-        name
-        qTokenId
-        qTokenPolicyId
-      }
-      state {
-        totalSupply
-        utilization
-      }
-      marketId
-      decimals
-      info {
-        params {
-          underlyingClass {
-            value0 {
-              symbol
-              name
-            }
-          }
-        }
-        scripts {
-          actionToken {
-            script {
-              value0 {
-                value0
-              }
+const queryAdaLoans = `query($input: LoansInput){
+  liqwid {
+    data {
+      loans(input: $input) {
+        page
+        pagesCount
+        results {
+          collaterals {
+            qTokenAmount
+            market {
+              id
             }
           }
         }
@@ -72,43 +32,73 @@ const query = `query ($page: Int) {
   }
 }
 `
+
+const query = `query($input: MarketsInput)  {
+  liqwid {
+    data {
+      markets(input: $input) {
+        page
+        pagesCount
+        results {
+          id
+          asset {
+            id
+            currencySymbol
+            name
+            decimals
+          }
+          supply
+          liquidity
+          borrow
+          utilization
+        }
+      }
+    }
+  }
+}
+`
+
 const tokenMapping = {
-  ADA: 'lovelace',
+  Ada: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
+  USDM: 'c48cbb3d5e57ed56e276bc45f99ab39abe94e6cd7ac39fb402da47ad0014df105553444d',
   DAI: 'dai',
-
+  USDC: 'usd-coin',
+  USDT: 'tether',
 }
 
-const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? market.info.params.underlyingClass.value0.symbol + toHex(market.info.params.underlyingClass.value0.name)
-
-const getOptimBondTVL = async () => {
-  const getLoans = async (pageIndex) => {
-    const { Page: { pageInfo, loan: loans } } = await graphQuery(endpoint, queryAdaLoans, { page: pageIndex })
-
-    if (!pageInfo.hasNextPage) {
-      return loans
-    }
-    return [...loans, ...(await getLoans(pageIndex + 1))]
-  }
-  const loans = await getLoans(0)
-  const relevantLoans =
-    loans.filter(l => (l.collaterals.filter(c => c.id === "OptimBond1")).length != 0)
-  const bonds =
-    relevantLoans.map(l => l.collaterals[0].amount).reduce((acc, amount) =>
-      acc + Number(amount), 0)
-
-  return bonds
-}
+const getToken = (market) => tokenMapping[market.id] ?? market.asset.currencySymbol + market.asset.name
 
 async function tvl(api) {
-  const { Page: { market: markets } } = await graphQuery(endpoint, query, { page: 0 })
+  const getMarkets = async (pageIndex = 0, collectedMarkets = []) => {
+    const {
+      liqwid: {
+        data: { markets },
+      },
+    } = await graphQuery(endpoint, query, {
+      input: {
+        page: pageIndex,
+      },
+    })
 
-  markets.forEach(market => add(api, market, market.state.totalSupply))
-  add(api, "OptimBond1", await getOptimBondTVL())
+    const allMarkets = [...collectedMarkets, ...markets.results]
+
+    // Check if we've reached the last page
+    if (pageIndex < markets.pagesCount - 1) {
+      return await getMarkets(pageIndex + 1, allMarkets)
+    }
+
+    return allMarkets
+  }
+
+  const markets = await getMarkets()
+  markets.forEach((market) =>
+    add(api, market, market.liquidity * 10 ** market.asset.decimals),
+  )
 }
 
 function add(api, market, bal) {
-  const token = market === "OptimBond1" ? "OptimBond1" : getToken(market)
+  const token = getToken(market)
   if (["usd-coin", "tether",].includes(token)) bal /= 1e8
   if (["dai",].includes(token)) bal /= 1e6
   api.add(token, bal, {
@@ -117,36 +107,29 @@ function add(api, market, bal) {
 }
 
 async function borrowed(api) {
-  const { Page: { market: markets } } = await graphQuery(endpoint, query)
+  const getMarkets = async (pageIndex = 0, collectedMarkets = []) => {
+    const {
+      liqwid: {
+        data: { markets },
+      },
+    } = await graphQuery(endpoint, query, {
+      input: {
+        page: pageIndex,
+      },
+    })
 
-  markets.forEach(market => {
-    const utilization = market.state.utilization
-    const availability = 1 - utilization
-    const totalBorrowed = market.state.totalSupply * utilization / availability
-    add(api, market, totalBorrowed)
+    const allMarkets = [...collectedMarkets, ...markets.results]
+
+    // Check if we've reached the last page
+    if (pageIndex < markets.pagesCount - 1) {
+      return await getMarkets(pageIndex + 1, allMarkets)
+    }
+
+    return allMarkets
+  }
+
+  const markets = await getMarkets()
+  markets.forEach((market) => {
+    add(api, market, market.borrow * 10 ** market.asset.decimals)
   })
-}
-
-function base64ToHex(base64) {
-  return base64
-  /* // Step 1: Decode the Base64 string to a byte array
-  const binaryData = atob(base64);
-
-  // Step 2: Convert each byte to its hexadecimal representation
-  const hexArray = [];
-  for (let i = 0; i < binaryData.length; i++) {
-    const byte = binaryData.charCodeAt(i).toString(16).padStart(2, '0');
-    hexArray.push(byte);
-  }
-
-  // Step 3: Concatenate the hexadecimal values to form the final hexadecimal string
-  return hexArray.join(''); */
-}
-
-function toHex(str) {
-  let hex = ''
-  for (let i = 0; i < str.length; i++) {
-    hex += str.charCodeAt(i).toString(16);
-  }
-  return hex
 }

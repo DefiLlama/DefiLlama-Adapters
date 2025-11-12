@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const positions = require('./positions.json');
@@ -13,6 +12,33 @@ const cvx_abi = {
   cvxBRP_stakingToken: "address:stakingToken",
   cvxBooster_poolInfo: "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
   stkcvxFRAXBP_lockedStakesOf: "function lockedStakesOf(address account) view returns (tuple(bytes32 kek_id, uint256 start_timestamp, uint256 liquidity, uint256 ending_timestamp, uint256 lock_multiplier)[])",
+}
+
+const AUTOPILOT_SYSTEM_REGISTRIES_BY_CHAIN = {
+  1: '0x2218F90A98b0C070676f249EF44834686dAa4285',
+  8453: '0x18Dc926095A7A007C01Ef836683Fdef4c4371b4e',
+  146: '0x1a912EB51D3cF8364eBAEE5A982cA37f25aD8848',
+  42161: '0xBFd8E6C9bF2CD5466f5651746f8E946A6C7b4220',
+  9745: '0x9065C0E33Bc8FB31A21874f399985e39bC187D48',
+}
+
+const autopilotContracts = {
+  systemRegistry: {    
+    abi: {
+      autoPoolRegistry: "function autoPoolRegistry() view returns (address)"
+    }
+  },
+  autoPoolRegistry: {
+    abi: {
+      listVaults: "function listVaults() view returns (address[] memory)"
+    }
+  },
+  autopool: {
+    abi: {
+      totalAssets: "function totalAssets() view returns (uint256)",
+      asset: "function asset() view returns (address)"
+    }
+  }
 }
 
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
@@ -31,9 +57,9 @@ const fxs = ADDRESSES.ethereum.FXS;
 const tcrPool = "0x15A629f0665A3Eb97D7aE9A7ce7ABF73AeB79415";
 const tcr = "0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050";
 const toke = ADDRESSES.ethereum.TOKE;
-const rtoke1 = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930";
-const rtoke2 = "0x96f98ed74639689c3a11daf38ef86e59f43417d3";
-const rtoke3 = "0xA374A62DdBd21e3d5716cB04821CB710897c0972";
+const tTokeReactor = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930";
+const stakingVestingV1 = "0x96f98ed74639689c3a11daf38ef86e59f43417d3";
+const accTokeV1 = "0xA374A62DdBd21e3d5716cB04821CB710897c0972";
 const sushiPool = "0xf49764c9C5d644ece6aE2d18Ffd9F1E902629777";
 const sushi = ADDRESSES.ethereum.SUSHI;
 const fraxPool = "0x94671A3ceE8C7A12Ea72602978D1Bb84E920eFB2";
@@ -110,7 +136,6 @@ async function tvl(api) {
     [cvxFRAXPool, tokeManager],
     [cvxalUSDPool, tokeManager],
   ]
-  const balances = {}
 
   // cvxcrvFRAX
   const cvxFraxUsdcPool = "0x7e880867363A7e321f5d260Cade2B0Bb2F717B02";
@@ -133,9 +158,9 @@ async function tvl(api) {
     target: cvxcvxFxsPool,
     params: [tokeTreasury],
   });
-  sdk.util.sumSingleBalance(balances, cvxcrvFrax, cvxcrvFraxBal)
-  sdk.util.sumSingleBalance(balances, cvxcrvFrax, treasuryFraxBal[0]['liquidity'])
-  sdk.util.sumSingleBalance(balances, cvxcvxFxs, cvxcvxFxsBal)
+  api.add(cvxcrvFrax, cvxcrvFraxBal)
+  api.add(cvxcrvFrax, treasuryFraxBal[0]['liquidity'])
+  api.add(cvxcvxFxs, cvxcvxFxsBal)
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
@@ -147,10 +172,39 @@ async function tvl(api) {
   lpBalances(curveHoldings, toa, tokens, calls,)
   lpBalances(uniHoldings, toa, tokens, calls)
   const amountRes = await api.multiCall({ abi: abi.userInfo, calls })
-  tokens.forEach((val, i) => sdk.util.sumSingleBalance(balances, val, amountRes[i].amount, api.chain))
+  tokens.forEach((val, i) => api.add(val, amountRes[i].amount))
 
+  await populateAutopilotDetails(1, api);
 
-  return sumTokens2({ balances, api, tokensAndOwners: toa, })
+  return sumTokens2({ api, tokensAndOwners: toa, })
+}
+
+async function populateAutopilotDetails(chainId, api) {
+  // Get the instance of the Autopool Registry from the System Registry
+  const autopoolRegistry = await api.call({ abi: autopilotContracts.systemRegistry.abi.autoPoolRegistry, target: AUTOPILOT_SYSTEM_REGISTRIES_BY_CHAIN[chainId], });
+  // Use the Autopool Registry to get all the Autopools in the system
+  const autopools = await api.call({ abi: autopilotContracts.autoPoolRegistry.abi.listVaults, target: autopoolRegistry, });
+  await api.erc4626Sum2({ calls: autopools})
+}
+
+async function baseTvl(api) {
+  await populateAutopilotDetails(8453, api);
+  return sumTokens2({ api })
+}
+
+async function sonicTvl(api) {
+  await populateAutopilotDetails(146, api);
+  return sumTokens2({ api })
+}
+
+async function arbitrumTvl(api) {
+  await populateAutopilotDetails(42161, api);
+  return sumTokens2({ api })
+}
+
+async function plasmaTvl(api) {
+  await populateAutopilotDetails(9745, api);
+  return sumTokens2({ api })
 }
 
 function lpBalances(holdings, toa, tokens, calls) {
@@ -175,11 +229,11 @@ function lpBalances(holdings, toa, tokens, calls) {
 }
 
 async function staking(api) {
-  let vestedToke = '57238445'
+  let vestedToke = '1438444'
   api.add(ADDRESSES.ethereum.TOKE, vestedToke * 1e18 * -1)
   return sumTokens2({
     api, tokensAndOwners: [
-      [toke, rtoke1], [toke, rtoke2], [toke, rtoke3]
+      [toke, tTokeReactor], [toke, stakingVestingV1], [toke, accTokeV1]
     ]
   })
 }
@@ -198,5 +252,17 @@ module.exports = {
     tvl,
     pool2,
     staking
+  },
+  base: {
+    tvl: baseTvl
+  },
+  sonic: {
+    tvl: sonicTvl
+  },
+  arbitrum: {
+    tvl: arbitrumTvl
+  },
+  plasma: {
+    tvl: plasmaTvl
   }
 }

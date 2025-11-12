@@ -4,6 +4,7 @@ const { PublicKey, } = require("@solana/web3.js");
 const { TokenAmountLayout, KeyLayoutv4 } = require("../helper/utils/solana/layouts/raydium-layout");
 const { transformDexBalances } = require("../helper/portedTokens");
 const { sleep } = require("../helper/utils");
+const { get } = require("../helper/http");
 
 const CLMM = 'CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK'
 const AmmV4 = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8'
@@ -29,7 +30,6 @@ async function tvlCLMM() {
     }]
   })
   const data = accounts.map(i => decodeAccount('raydiumCLMM', i.account))
-  console.log(data.length, 'fetched CLMM accounts')
 
   const tokenAccounts = data.map(i => [i.vaultA, i.vaultB]).flat().map(i => i.toString())
   return sumTokens2({ tokenAccounts })
@@ -44,7 +44,6 @@ async function ammV4Tvl(api) {
   console.time('raydium: ammV4Tvl fetching vault balances')
   const allPoolVaultAmount = await connection.getProgramAccounts(new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), { filters: [{ dataSize: 165 }, { memcmp: { offset: 32, bytes: auth } }], dataSlice: { offset: 64, length: TokenAmountLayout.span } })
   console.timeEnd('raydium: ammV4Tvl fetching vault balances')
-  console.log(allPoolVaultAmount.length, 'fetched vault amounts')
   const vaultIdToAmount = {}
   for (const item of allPoolVaultAmount) {
     vaultIdToAmount[item.pubkey.toString()] = TokenAmountLayout.decode(item.account.data).amount.toString()
@@ -52,7 +51,7 @@ async function ammV4Tvl(api) {
   await sleep(20000)
   const allPoolKeyInfo = await connection.getProgramAccounts(new PublicKey(AmmV4), { filters: [{ dataSize: 752 }], dataSlice: { offset: 336, length: KeyLayoutv4.span } })
 
-  
+
   let i = 0
   let j = 0
   let data = []
@@ -72,13 +71,13 @@ async function ammV4Tvl(api) {
     })
     j++
     if (i > 5000) {
-      await transformDexBalances({ api, data })
+      transformDexBalances({ api, data })
       data = []
       i = 0
     }
     i++
   }
-  await transformDexBalances({ api, data })
+  transformDexBalances({ api, data })
   return api.getBalances()
 }
 
@@ -120,26 +119,26 @@ async function ammV2V3() {
 async function combinedTvl(api) {
   try {
 
-  console.time('raydium: combinedTvl')
+    console.time('raydium: combinedTvl')
 
-  console.time('raydium: tvlCLMM')
-  const balancesCLMM = await tvlCLMM()
-  api.addBalances(balancesCLMM)
-  console.timeEnd('raydium: tvlCLMM')
+/* */  console.time('raydium: tvlCLMM')
+    const balancesCLMM = await tvlCLMM()
+    api.addBalances(balancesCLMM)
+    console.timeEnd('raydium: tvlCLMM')
 
-  console.time('raydium: ammStableTvl')
-  const balancesAmmStable = await ammStableTvl()
-  api.addBalances(balancesAmmStable)
-  console.timeEnd('raydium: ammStableTvl')
+    console.time('raydium: ammStableTvl')
+    const balancesAmmStable = await ammStableTvl()
+    api.addBalances(balancesAmmStable)
+    console.timeEnd('raydium: ammStableTvl')
 
-  console.time('raydium: ammV2V3')
-  const balancesAmmV2V3 = await ammV2V3()
-  api.addBalances(balancesAmmV2V3)
-  console.timeEnd('raydium: ammV2V3')
+    console.time('raydium: ammV2V3')
+    const balancesAmmV2V3 = await ammV2V3()
+    api.addBalances(balancesAmmV2V3)
+    console.timeEnd('raydium: ammV2V3')
 
-  console.time('raydium: ammV4Tvl')
-  await ammV4Tvl(api)
-  console.timeEnd('raydium: ammV4Tvl')
+    console.time('raydium: ammV4Tvl')
+    // await ammV4Tvl(api)
+    console.timeEnd('raydium: ammV4Tvl')
 
   } catch (e) {
     console.error('raydium', e)
@@ -148,16 +147,48 @@ async function combinedTvl(api) {
 
   console.timeEnd('raydium: combinedTvl')
   const tvl = await api.getUSDValue()
-  if (tvl < 1.5e8) throw new Error('TVL is too low :' + tvl/1e6 + 'M')
+  if (tvl < 1.5e8) throw new Error('TVL is too low :' + tvl / 1e6 + 'M')
+
+  api.removeTokenBalance('DS4QiZfkp39PsHXYCRV3NkyDUKV9SpTczp2qnAUg6Nt6') // ZMB
+  api.removeTokenBalance('HDa3zJc12ahykSsBRvgiWzr6WLEByf36yzKKbVvy4gnF') // SOS
   return api.getBalances()
 }
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   misrepresentedTokens: true,
   hallmarks: [[1667865600, "FTX collapse"]],
+
   solana: {
-    tvl: combinedTvl,
+    // tvl: combinedTvl,
+    tvl: tvlApi,
     staking: () => sumTokens2({ tokenAccounts: ['8tnpAECxAT9nHBqR1Ba494Ar5dQMPGhL31MmPJz1zZvY'] })
   },
 };
+
+async function tvlApi(api) {
+  let hasMore = true
+  let page = 1
+  const pageSize = 1000
+  do {
+    const { data: { data } } = await get(`https://api-v3.raydium.io/pools/info/list?poolType=all&poolSortField=liquidity&sortType=desc&pageSize=${pageSize}&page=${page}`)
+    const lastItem = data[data.length - 1]
+    hasMore = data.length === pageSize && lastItem.tvl > 1000
+    api.log('lastItem', lastItem.tvl, page)
+    data.forEach(({ mintA, mintB, mintAmountA, mintAmountB, tvl, }) => {
+      if (tvl < 20_000) {
+        api.addUSDValue(tvl)
+        return;
+      }
+      api.add(mintA.address, mintAmountA * (10 ** mintA.decimals))
+      api.add(mintB.address, mintAmountB * (10 ** mintB.decimals))
+    })
+    page++
+  } while (hasMore)
+
+  api.removeTokenBalance('DS4QiZfkp39PsHXYCRV3NkyDUKV9SpTczp2qnAUg6Nt6') // ZMB
+  api.removeTokenBalance('HDa3zJc12ahykSsBRvgiWzr6WLEByf36yzKKbVvy4gnF') // SOS
+  api.removeTokenBalance('2xaPstY4XqJ2gUA1mpph3XmvmPZGuTuJ658AeqX3gJ6F') // QUP
+  return api.getBalances()
+}

@@ -89,7 +89,7 @@ const config = {
   bevm: { id: 'bevm2'},
   bsc: { id: 'bnb'},
   conflux: { id: 'cfx'},
-  eos_evm: { id: 'eos'},
+  eos_evm: { },
   ethereum: { id: 'eth'},
   fantom: { id: 'ftm'},
   xdai: { id: 'gnosis'},
@@ -101,7 +101,8 @@ const config = {
   era: { id: 'zksync'},
   btr: { id: 'bitlayer'},
   bouncebit: { id: 'bb'},
-  europa: { id: 'skale-europa' }
+  europa: { id: 'skale-europa' },
+  hemi: { id: 'hemi' }
 }
 
 async function addCoinfg(id, ownerTokens) {

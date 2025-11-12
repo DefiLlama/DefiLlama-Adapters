@@ -1,6 +1,6 @@
 const { sumTokensExport } = require('../helper/sumTokens');
 const ADDRESSES = require('../helper/coreAssets.json');
-const {getTotalSupply} = require("./helper");
+const { getTotalSupply } = require("./helper");
 
 module.exports = {
     methodology: "TVL of XLink is the sum of the tokens locked in its contracts",

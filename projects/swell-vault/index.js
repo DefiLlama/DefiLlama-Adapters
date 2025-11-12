@@ -11,4 +11,4 @@ module.exports = {
             ADDRESSES.ethereum.STETH
         ]}),
     }
-}; 
+};

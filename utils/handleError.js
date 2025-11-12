@@ -22,7 +22,7 @@ function getStackMessage(stack) {
   if (!stack) return []
   if (/ at (checkExportKeys)/.test(stack)) return []
 
-  const isNodeMolule = m => /node_modules/.test(m)
+  const isNodeMolule = m => /node_modules/.test(m) && !/defillama/.test(m)
   const isNotLoggerMessage = m => !/log/.test(m)
   const isNotInternalMessage = m => !/node:internal/.test(m)
 

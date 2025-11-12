@@ -25,6 +25,17 @@ const config = {
       "0x07aDF588508b923B8eA0389d27b61b9CB8a197Cb", // FRAX/MONEY
     ],
   },
+  base: {
+    controller: "0x1337F001E280420EcCe9E7B934Fa07D67fdb62CD",
+    MONEY: "0xEbE54BEE7A397919C53850bA68E126b0A6b295ed",
+    stakeLPs: [
+      // "0x9F04112af02CE57C10d946481Ea06373719c1E7E", // MONEY - already included in tvl
+      "0xe0f7c023763d782970ab45e9232255a64290cd6a", // crvUSD/MONEY
+      "0xb7698c690752ae034e914a29a0de67339a94982b", // USDC/MONEY
+      "0x45acdee3c9f7e1c7ad6cc10c9cb9f74eb52d0e70", // USDbC/MONEY
+      "0xac786337dde86b768ea3cc90afa03250bccfff28", // DAI/MONEY
+    ],
+  },
 }
 
 const tvl = async (api) => {

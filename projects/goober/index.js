@@ -1,7 +1,7 @@
 const abis = require("./abis");
 
 module.exports = {
-  start: 1668410449,
+  start: '2022-11-14',
   methodology:
     "Counts GOO balance of the vault then sums it with the total multiplier reserve based on the vaults pricing of a multiplier in GOO",
 }
