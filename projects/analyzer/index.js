@@ -8,7 +8,7 @@ const contracts = {
   bsc: '0xAd1f5252AD29da8eE60956B5B534ab8d22f7B655'
 }
 
-const NATIVE = '0x0000000000000000000000000000000000000000'
+const NATIVE = '0x0000000000000000000000000000000000000000' 
 
 module.exports = {
   methodology: 'TVL counts the native tokens (ETH on L2s/Ethereum and BNB on BSC) currently held in the Subscription contracts.',
