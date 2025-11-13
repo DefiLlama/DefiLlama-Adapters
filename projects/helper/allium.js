@@ -1,9 +1,32 @@
 require('dotenv').config()
 const axios = require("axios");
-const { sleep } = require("./utils");
-const retry = require("async-retry");
 const pLimit = require("p-limit");
 const { getEnv } = require('./env');
+
+// Lightweight retry function to replace async-retry
+const retry = async (fn, options = {}) => {
+  const { retries = 3, minTimeout = 1000, maxTimeout = 10000, randomize = false } = options;
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn((error) => {
+        throw error; // bail function - immediately throw the error
+      });
+    } catch (error) {
+      if (attempt === retries) {
+        throw error;
+      }
+      
+      // Calculate delay with exponential backoff and optional randomization
+      let delay = Math.min(minTimeout * Math.pow(2, attempt), maxTimeout);
+      if (randomize) {
+        delay = delay * (0.5 + Math.random() * 0.5);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+};
 
 const _rateLimited = pLimit(3)
 const rateLimited = (fn) => (...args) => _rateLimited(() => fn(...args))

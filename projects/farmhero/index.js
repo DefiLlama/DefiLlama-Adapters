@@ -2,10 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
-const { unwrapUniswapLPs, sumTokens2, } = require("../helper/unwrapLPs");
-const {
-  getChainTransform,
-} = require("../helper/portedTokens");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 
 // --- BSC Addresses ---
 const masterChefContractBsc = "0xDAD01f1d99191a2eCb78FA9a007604cEB8993B2D";
@@ -120,7 +117,7 @@ const pool2StratsOkex = [
   "0xfa065195657A07f9c9F0A0a5e16DcD0Dff4AF11a",
 ];
 
-const calcTvl = async (balances, chain, block, masterchef, transformAddress, excludePool2) => {
+const calcTvl = async (balances, chain, block, masterchef, excludePool2) => {
   const poolLength = (
     await sdk.api.abi.call({
       abi: abi.poolLength,
@@ -150,14 +147,12 @@ const calcTvl = async (balances, chain, block, masterchef, transformAddress, exc
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await getChainTransform('bsc');
 
   await calcTvl(
     balances,
     "bsc",
     chainBlocks["bsc"],
     masterChefContractBsc,
-    transformAddress,
     excludePool2Bsc
   );
 
@@ -167,14 +162,12 @@ const bscTvl = async (chainBlocks) => {
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await getChainTransform('polygon');
 
   await calcTvl(
     balances,
     "polygon",
     chainBlocks["polygon"],
     masterChefContractPolygon,
-    transformAddress,
     excludePool2Polygon
   );
 
@@ -184,14 +177,11 @@ const polygonTvl = async (chainBlocks) => {
 const okexTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await getChainTransform('okexchain');
-
   await calcTvl(
     balances,
     "okexchain",
     chainBlocks["okexchain"],
     masterChefContractOkex,
-    transformAddress,
     excludePool2Okex
   );
 
