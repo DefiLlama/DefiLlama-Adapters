@@ -8,7 +8,6 @@ function decodeVaultAccount(data) {
   const tokenMintBuffer = data.slice(0, 32);
   const totalLiquidity = data.readBigUInt64LE(64);
   
-  // Используем PublicKey из @solana/web3.js для кодирования адреса
   const tokenMint = new PublicKey(tokenMintBuffer).toString();
   
   return {
@@ -27,12 +26,8 @@ async function tvl(_, _2, _3, { api }) {
 
   for (const { account } of accounts) {
     if (account.data.slice(0, 8).equals(VAULT_DISCRIMINATOR)) {
-      try {
-        const decoded = decodeVaultAccount(account.data.slice(8));
-        api.add(decoded.tokenMint, decoded.totalLiquidity);
-      } catch (e) {
-        console.error(`Failed to decode vault: ${e.message}`);
-      }
+      const decoded = decodeVaultAccount(account.data.slice(8));
+      api.add(decoded.tokenMint, decoded.totalLiquidity);
     }
   }
 }
