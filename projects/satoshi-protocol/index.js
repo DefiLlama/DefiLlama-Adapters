@@ -207,6 +207,10 @@ module.exports = {
         smartVaultAddress: '0xEdE84f536448cC822a9318548Aa8618183743c4f',
         asset: ADDRESSES.bob.uniBTC, // uniBTC
       },
+      {
+        smartVaultAddress: '0x4f4EbFAeEa78d7ebc13c4aAb481fd8E36D9DC1Be',
+        asset: '0x09606e6A94E7a8e94fC1f43728475B82BF12E50b', // uBTC
+      },
     ]
   }),
   bsquared: createExports({
@@ -312,6 +316,10 @@ module.exports = {
       {
         smartVaultAddress: '0xCe07D2B5CC6Ff466BF497ceEa8eD168fB0Eb8F97',
         asset: '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e', // uniBTC
+      },
+      {
+        smartVaultAddress: '0xd72dCb68fF80aB8666f7A800BE438212581914c6',
+        asset: '0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a', // brBTC
       },
     ],
   }),
