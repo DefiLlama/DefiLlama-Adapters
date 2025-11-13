@@ -101,7 +101,7 @@ const fixBalancesTokens = {
     '0x4548a3bcb3c2b5ce42bf0559b1cf2f1ec97a51d0': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
     besc: {
-    '0x33e22f85cc1877697773ca5c85988663388883a0': {coingeckoId: "besc-hyperchain", decimals: 18 },
+    '0x33e22f85cc1877697773ca5c85988663388883a0': {coingeckoId: "wrapped-besc-2", decimals: 18 },
     '0xb54ad626e127f0f228dbeab6f2a61e8e6e029a4b': {coingeckoId: "usd-coin",decimals: 18 },
   },
   chromia: {
