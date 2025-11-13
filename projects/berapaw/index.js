@@ -42,14 +42,6 @@ async function tvl(api) {
     });
 }
 
-// // counts tokens staked in LBGT and pBERA vaults
-// function stakingTvl() {
-//     const stakingContracts = [STAKED_LBGT_VAULT, STAKED_PBERA_VAULT];
-//     const stakingTokens = [LBGT_ADDRESS, PBERA_ADDRESS];
-//    
-//     return stakings(stakingContracts, stakingTokens, "berachain");
-// }
-
 // counts WBERA-LBGT LP tokens
 async function pool2(api) {
     // WBERA-LBGT LP TVL
