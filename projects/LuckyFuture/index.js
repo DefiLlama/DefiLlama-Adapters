@@ -57,8 +57,10 @@ async function tvl(api) {
   // Process positions using the cached account data
   for (const { spotPositions, perpPositions } of deserializedData) {
     if (spotPositions?.length) {
+      console.log(spotPositions)
       spotPositions.forEach(position => {
         const tokenMint = getTokenMintFromMarketIndex(position.market_index)
+        if (!tokenMint) return
         const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index])
         api.add(tokenMint, adjustedBalance)
       })
