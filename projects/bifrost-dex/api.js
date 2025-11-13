@@ -37,12 +37,16 @@ function formatToken(token, type) {
       return "vGLMR";
     case `{"VToken2":"4"}`:
       return "vFIL";
+    case `{"VToken2":"8"}`:
+      return "vMANTA";
     case `{"Token2":"4"}`:
       return "FIL";
     case `{"VToken2":"3"}`:
       return "vASTR";
     case `{"Token2":"3"}`:
       return "ASTR";
+    case `{"Token2":"8"}`:
+      return "MANTA";
     case `{"VToken":"BNC"}`:
       return "vBNC";
     case `{"VToken":"MOVR"}`:
@@ -83,6 +87,8 @@ function formatTokenAmount(amount, tokenSymbol) {
     case "vFIL":
     case "ASTR":
     case "vASTR":
+    case "MANTA":
+    case "vMANTA":
       decimals = 18;
       break;
   }
@@ -100,7 +106,8 @@ const tokenToCoingecko = {
   ZLK: "zenlink-network-token",
   USDT: "tether",
   FIL: "filecoin",
-  ASTR: "astar"
+  ASTR: "astar",
+  MANTA: "manta"
 };
 
 async function tvl() {
@@ -125,7 +132,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
 
       if (isVtoken) {
-        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool(currentToken === "BNC" ? { "native": currentToken } : { "token": currentToken });
+        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool( { "vToken": currentToken });
         const totalIssuance = await kusamaApi.query.tokens.totalIssuance({ "vToken": currentToken });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
@@ -157,7 +164,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
 
       if (isVtoken) {
-        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "token2": poolTokens[0][0].toHuman()[1].VToken2 });
+        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "vToken2": poolTokens[0][0].toHuman()[1].VToken2 });
         const totalIssuance = await polkadotApi.query.tokens.totalIssuance({ "vToken2": poolTokens[0][0].toHuman()[1].VToken2 });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
@@ -186,7 +193,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
       currentToken = isVstoken ? currentToken.slice(2) : currentToken;
       if (isVtoken) {
-        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool(currentToken === "BNC" ? { "native": currentToken } : { "token": currentToken });
+        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool({ "vToken": currentToken });
         const totalIssuance = await kusamaApi.query.tokens.totalIssuance({ "vToken": currentToken });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
@@ -221,7 +228,7 @@ async function tvl() {
       currentToken = isVstoken ? currentToken.slice(2) : currentToken;
 
       if (isVtoken) {
-        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "token2": token.VToken2 });
+        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "vToken2": token.VToken2 });
         const totalIssuance = await polkadotApi.query.tokens.totalIssuance({ "vToken2": token.VToken2 });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }

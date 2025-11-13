@@ -51,9 +51,11 @@ const capABI = {
     Vault: {
         AddAssetEvent: 'event AddAsset(address asset)',
         totalSupplies: 'function totalSupplies(address _token) external view returns (uint256 totalSupply)',
+        availableBalance: 'function availableBalance(address _asset) external view returns (uint256 amount)',
     },
     Lender: {
         ReserveAssetAddedEvent: 'event ReserveAssetAdded(address indexed asset, address vault, address debtToken, address interestReceiver, uint256 id)',
+        debt: 'function debt(address _agent, address _asset) external view returns (uint256 totalDebt)',
     },
     Delegation: {
         AddAgentEvent: 'event AddAgent(address agent, address network, uint256 ltv, uint256 liquidationThreshold)',

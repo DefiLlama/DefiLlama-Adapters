@@ -1,25 +1,54 @@
-const superform_chains = ["ethereum", "polygon", "bsc", "avax", "arbitrum", "optimism", "base", "fantom", "blast", "linea"];
-const factory_contract = "0xD85ec15A9F814D6173bF1a89273bFB3964aAdaEC";
-const fantom_factory_contract = "0xbc85043544CC2b3Fd095d54b6431822979BBB62A";
+const CONFIG = {
+  ethereum: {},
+  arbitrum: { blacklistedVaults: [
+    '0xd3a17928245064b6df5095a76e277fe441d538a4',
+    '0xabc07bf91469c5450d6941dd0770e6e6761b90d6',
+    '0x6f28cafe12bd97e474a52bcbfea6f2c18ae0f53d',
+    '0x0ace2dc3995acd739ae5e0599e71a5524b93b886',
+    '0xb9bfbb35c2ed588a42f9fd1120929c607b463192',
+    '0xbc323e3564fb498e55cdc83a3ea6bb1af8402d6b',
+    '0x1fd865a55eaf5333e6374fb3ad66d22e9885d3aa',
+    '0x866eb09d3d1397b8a28cfe5dceeaed9362840385',
+    '0xd63ace62b925361fc588734022718e919a8081ac',
+    '0xa135d7f10545e3a45e24e79ecd4e4c3c78cf56bf'
+  ] },
+  polygon: {},
+  bsc: {},
+  avax: {},
+  optimism: {},
+  base: {},
+  fantom: { factory: '0xbc85043544CC2b3Fd095d54b6431822979BBB62A' },
+  blast: {},
+  linea: {}
+}
 
-// These vaults have misconfigured implementation affecting TVL
-const blacklisted_vaults = ["0xd3a17928245064b6df5095a76e277fe441d538a4"]
+const DEFAULT_FACTORY = '0xD85ec15A9F814D6173bF1a89273bFB3964aAdaEC'
 
-async function tvl(api) {
-  const forms = await api.fetchList({ lengthAbi: 'getSuperformCount', itemAbi: "function superforms(uint256) external view returns(uint256)", target: api.chainId === 250 ? fantom_factory_contract : factory_contract })
-  const getSuperformRes = await api.multiCall({ abi: "function getSuperform(uint256) external view returns(address, uint32, uint64)", calls: forms, target: api.chainId === 250 ? fantom_factory_contract : factory_contract })
+const previewRedeemFromAbi = "function previewRedeemFrom(uint256) external view returns(uint256)"
+
+const tvl = async (api) => {
+  const { factory = DEFAULT_FACTORY, blacklistedVaults = [] } = CONFIG[api.chain]
+  const forms = await api.fetchList({ lengthAbi: 'getSuperformCount', itemAbi: "function superforms(uint256) external view returns(uint256)", target: factory })
+  const getSuperformRes = await api.multiCall({ abi: "function getSuperform(uint256) external view returns(address, uint32, uint64)", calls: forms, target: factory })
   const super4626 = getSuperformRes.map(v => v[0])
   const vaults = await api.multiCall({ abi: 'address:vault', calls: super4626 })
 
-  // Filter out blacklisted vaults
-  const filteredVaults = vaults.filter(vault => !blacklisted_vaults.includes(vault.toLowerCase()));
-  const filteredSuper4626 = super4626.filter((_, index) => !blacklisted_vaults.includes(vaults[index].toLowerCase()));
+  const pairs = vaults
+    .map((v, i) => ({ vault: v, s: super4626[i] }))
+    .filter(p => p.vault && !blacklistedVaults.includes(p.vault.toLowerCase()))
+
+  if (pairs.length === 0) return;
+  const filteredVaults = pairs.map(p => p.vault);
+  const filteredSuper4626 = pairs.map(p => p.s);
 
   const assets = await api.multiCall({ abi: 'address:asset', calls: filteredSuper4626 })
   const vBals = await api.multiCall({ abi: "erc20:balanceOf", calls: filteredVaults.map((v, i) => ({ target: v, params: filteredSuper4626[i] })) })
-  const bals = await api.multiCall({ abi: "function previewRedeemFrom(uint256) external view returns(uint256)", calls: filteredSuper4626.map((v, i) => ({ target: v, params: vBals[i] })), permitFailure: true })
+  const bals = await api.multiCall({ abi: previewRedeemFromAbi, calls: filteredSuper4626.map((v, i) => ({ target: v, params: vBals[i] })), permitFailure: true })
+
   bals.forEach((bal, i) => {
-    if (bal) api.add(assets[i], bal)
+    const asset = assets[i]
+    if (!bal || !asset) return
+    api.add(asset, bal)
   })
 }
 
@@ -32,4 +61,4 @@ module.exports = {
   ]
 };
 
-superform_chains.forEach(chain => module.exports[chain] = { tvl })
+Object.keys(CONFIG).forEach(chain => module.exports[chain] = { tvl })

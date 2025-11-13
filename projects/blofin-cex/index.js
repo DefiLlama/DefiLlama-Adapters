@@ -10,6 +10,7 @@ const config = {
       "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
       "0xdBdf80D997cFAaAC6150cD0cEC2C127fDaD7A823",
       "0xe5e6c3ced4670697b7cB27a53649a3ED321c18ee",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
     ],
   },
   ethereum: {
@@ -27,7 +28,8 @@ const config = {
       "0x687054E92093DaFf65221fb77420ec6555d7c5a9",
       "0xec5618Db70aE9d88EC40Fdb844455167418f8193",
       "0xafE7EB9d224bC3cd7d9F88099D71B1c1c3BC2f93",
-      "0x055c1C6b09Fb4f5F229125aFcBBF98E734dFC725"
+      "0x055c1C6b09Fb4f5F229125aFcBBF98E734dFC725",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
     ],
   },
   solana: {
@@ -42,10 +44,16 @@ const config = {
     ],
   },
   optimism: {
-    owners: ["0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040"],
+    owners: [
+      "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+    ],
   },
   arbitrum: {
-    owners: ["0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040"],
+    owners: [
+      "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+    ],
   },
   tron: {
     owners: [
@@ -59,11 +67,15 @@ const config = {
       "TTRSjzeqYRghvxZXRdXsiUASt6iU91qtUu",
       "TEVoZgTB3WsjTjDnxm4BY8CHsULmAjboSA",
       "TVdNydXPaPFF4b2x7CKYiNjEWfi5C5AnV8",
-      "TUGmVxfPYzZtctCqxx9CGLnB4jWUZGtFh2"
+      "TUGmVxfPYzZtctCqxx9CGLnB4jWUZGtFh2",
+      "TC3XTY9ZM5hcdadRmtGegTFBmiF6rCLLnb",
     ],
   },
   polygon: {
-    owners: ["0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040"],
+    owners: [
+      "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+    ],
   },
   base: {
     owners: [
@@ -92,6 +104,7 @@ const config = {
     owners: [
       "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
       "0xe5e6c3ced4670697b7cB27a53649a3ED321c18ee",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
     ],
   },
   berachain: {
@@ -102,6 +115,7 @@ const config = {
       "Ldjngq3HdTzVLwGLj7TpryQUaFtqydo3HZ",
       "ltc1qywl4m70amwmrtecxsjz0m08hj64dekmv536asn",
       "LNUyAM2BssY6CqSN5BNoNTAY4W1q4uV7Eb",
+      "ltc1qsvqz9tw4v8kx7wpt2j3q7l8dgvucjwc6zlxm78",
     ],
   },
   sonic: {
@@ -122,6 +136,12 @@ const config = {
       "rPkX96xtMY2cxQ4Az3N54MB2vTHrp1PTjK",
       "rBSojpgcRp9LvBguQXzrvNAyuzkP4Z8pZr",
     ],
+  },
+  hyperliquid: {
+    owners: ["0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5"],
+  },
+  mantle: {
+    owners: ["0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5"],
   },
 };
 
