@@ -1,4 +1,3 @@
-const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
 
@@ -62,7 +61,6 @@ module.exports = {
     methodology: 'TVL includes staked LBGT and pBERA tokens, plus WBERA-LBGT LP tokens',
     berachain: {
         tvl,
-        // staking: stakingTvl(),
         pool2,
     },
 };
