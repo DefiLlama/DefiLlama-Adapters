@@ -1,4 +1,4 @@
-const kodiakFactory = '0x5261c5A5f08818c08Ed0Eb036d9575bA1E02c1d6'
+const kodiakIslandFactory = '0x5261c5A5f08818c08Ed0Eb036d9575bA1E02c1d6'
 
 const abis = {
     token0: 'address:token0',
@@ -9,8 +9,8 @@ const abis = {
   }
   
   const tvl = async (api) => {
-    const deployers = await api.call({ target: kodiakFactory, abi: abis.getDeployers })
-    const islands = (await api.multiCall({ calls: deployers.map((d) => ({ target: kodiakFactory, params: [d] })), abi: abis.getIslands })).flat()
+    const deployers = await api.call({ target: kodiakIslandFactory, abi: abis.getDeployers })
+    const islands = (await api.multiCall({ calls: deployers.map((d) => ({ target: kodiakIslandFactory, params: [d] })), abi: abis.getIslands })).flat()
   
     const [token0s, token1s, balances] = await Promise.all([
       api.multiCall({ calls: islands, abi: abis.token0, permitFailure: true }),
@@ -30,7 +30,7 @@ const abis = {
   }
 
   module.exports = {
-    methodology: "TVL from Kodiak Islands (managed auto-compounding V3 positions). Includes Baults and staked Island tokens since getUnderlyingBalances returns total underlying assets regardless of where Island tokens are staked.",
+    methodology: "TVL from Kodiak Islands (automated liquidity manager V3 positions, wrapped in ERC20 token).",
     doublecounted: true,
     berachain: { tvl }
   }
