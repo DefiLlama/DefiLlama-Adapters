@@ -1,6 +1,7 @@
 const { affluentMarketList, affluentTokenList } = require("./affluentMarketAssets");
 const { call, processTVMSliceReadAddress, getTokenRates } = require("../helper/chain/ton");
 const { get } = require('../helper/http')
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require("../helper/coreAssets.json");
 
 const factorial_ton = "EQDIKEz2BYLnTRWo5W5a6moZ9PXNtyOVOFF7noi8Ufv3axz_";
@@ -9,7 +10,7 @@ async function tvl(api) {
   const pools = Object.keys(affluentMarketList);
 
   for (const pool of pools) {
-    await sleep(3000);
+    await sdk.util.sleepRandom(1000, 3000);
     const pool_data = await call({ target: pool, abi: "get_pool_data" })
 
     const _kv = 1;
@@ -38,7 +39,7 @@ async function borrowed(api) {
   const pools = Object.keys(affluentMarketList);
 
   for (const pool of pools) {
-    await sleep(3000);
+    await sdk.util.sleepRandom(1000, 3000);
     const pool_data = await call({ target: pool, abi: "get_pool_data" })
 
     const _kv = 1;
@@ -66,6 +67,3 @@ module.exports = {
   ton: { tvl, borrowed }
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
