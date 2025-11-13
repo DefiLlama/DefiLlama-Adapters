@@ -6,7 +6,6 @@ const {
   protocolDeploymentBlock,
   fundsEncumberedTopic,
   fundsReleasedTopic,
-  protocolFeeCollectedTopic,
   offerCreatedTopic_v2_0_0,
   offerCreatedTopic_v2_3_0,
   offerCreatedTopic_v2_4_0,
@@ -23,7 +22,6 @@ const {
   RangeReservedEvent,
   FundsEncumberedEvent,
   FundsReleasedEvent,
-  ProtocolFeeCollectedEvent,
   BuyerCommittedEvent_v2_0_0,
   BuyerCommittedEvent_v2_5_0,
 } = require("./constants");
@@ -63,8 +61,6 @@ async function getOffers(api, voidedOffers = []) {
     return iface.parseLog(log)?.args;
   });
 
-  console.log("Total offers fetched:", parsedLogs.length);
-
   const blockTimestamp = BigInt(api.timestamp);
 
   return parsedLogs.filter(
@@ -91,8 +87,6 @@ async function getCommits(api) {
     return iface.parseLog(log)?.args;
   });
 
-  console.log("Total # of commits:", parsedLogs.length);
-
   const commitsByOffer = {};
 
   for (const commit of parsedLogs) {
@@ -117,8 +111,6 @@ async function getReservedRanges(api) {
     eventAbi: RangeReservedEvent,
     onlyArgs: true,
   });
-
-  console.log("Total # of reserved ranges:", logs.length);
 
   const reservedRangeByOffer = {};
 

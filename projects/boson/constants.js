@@ -11,8 +11,6 @@ const protocolDeploymentBlock = {
 /** Event topics **/
 const fundsEncumberedTopic = "0x8080d30eb13935d67dfdc606fa5e4170aa03ffdfaf40136ef3fa4355c88b19f9";
 const fundsReleasedTopic = "0xea32da6ba3310a019ad2eba7e0b3063c1dbe129dbc3bfa2638b5d3165183e6ae";
-const protocolFeeCollectedTopic = "0x9399ed37d26489264206ddf87ad81aaa13557b4e56b5443503a2b64a24ec42db";
-
 const offerCreatedTopic_v2_0_0 = "0x845c99b8425be384387e239b85d44b6cdf63aab6c45c2534f799743e341c74f8";
 const offerCreatedTopic_v2_3_0 = "0xb6a507882e43ec6bae2f276ce4a839f1ca9dcf2da73095eea9e633e96ecf6eb2";
 const offerCreatedTopic_v2_4_0 = "0xa76af238b31b285c9397e2a7c55650ca18a1baf6504de15d7dd1321693144cf7";
@@ -44,8 +42,7 @@ const FundsEncumberedEvent =
   "event FundsEncumbered(uint256 indexed entityId, address indexed exchangeToken, uint256 amount, address indexed executedBy)";
 const FundsReleasedEvent =
   "event FundsReleased(uint256 indexed exchangeId, uint256 indexed entityId, address indexed exchangeToken, uint256 amount, address executedBy)";
-const ProtocolFeeCollectedEvent =
-  "event ProtocolFeeCollected(uint256 indexed exchangeId, address indexed exchangeToken, uint256 amount, address indexed executedBy)";
+
 
 const BuyerCommittedEvent_v2_0_0 =
   "event BuyerCommitted(uint256 indexed offerId, uint256 indexed buyerId, uint256 indexed exchangeId, (uint256 id, uint256 offerId, uint256 buyerId, uint256 finalizedDate, uint8 state) exchange, (uint256 committedDate, uint256 validUntilDate, uint256 redeemedDate, bool expired) voucher, address executedBy)";
@@ -57,7 +54,6 @@ module.exports = {
   protocolDeploymentBlock,
   fundsEncumberedTopic,
   fundsReleasedTopic,
-  protocolFeeCollectedTopic,
   offerCreatedTopic_v2_0_0,
   offerCreatedTopic_v2_3_0,
   offerCreatedTopic_v2_4_0,
@@ -74,7 +70,6 @@ module.exports = {
   RangeReservedEvent,
   FundsEncumberedEvent,
   FundsReleasedEvent,
-  ProtocolFeeCollectedEvent,
   BuyerCommittedEvent_v2_0_0,
   BuyerCommittedEvent_v2_5_0,
 };
