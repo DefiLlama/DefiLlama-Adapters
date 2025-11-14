@@ -9,7 +9,7 @@ const CONFIG = {
     '0xfbadc4f18ddc7ebdbc920d3f9b0ca7a1296788d1',
     '0x7ef4d0168b12b168f14b67c708bc16f7e8bf3dec',
     '0x265329c8f15671d7ca501710e3bd0e6cb257948f'
-  ]},
+  ] },
   arbitrum: { blacklistedVaults: [
     '0xd3a17928245064b6df5095a76e277fe441d538a4',
     '0xabc07bf91469c5450d6941dd0770e6e6761b90d6',
