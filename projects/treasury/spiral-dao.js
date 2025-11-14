@@ -1,4 +1,4 @@
-const { treasuryExports, nullAddress } = require("../helper/treasury");
+const { treasuryExports } = require("../helper/treasury");
 
 const owners = ['0xc47ec74a753acb09e4679979afc428cde0209639']
 
