@@ -10,7 +10,7 @@ async function tvl(api) {
   const pools = Object.keys(affluentMarketList);
 
   for (const pool of pools) {
-    await sdk.util.sleepRandom(1000, 3000);
+    await sdk.util.sleepRandom(2000, 3000);
     const pool_data = await call({ target: pool, abi: "get_pool_data" })
 
     const _kv = 1;
@@ -39,7 +39,7 @@ async function borrowed(api) {
   const pools = Object.keys(affluentMarketList);
 
   for (const pool of pools) {
-    await sdk.util.sleepRandom(1000, 3000);
+    await sdk.util.sleepRandom(2000, 3000);
     const pool_data = await call({ target: pool, abi: "get_pool_data" })
 
     const _kv = 1;
