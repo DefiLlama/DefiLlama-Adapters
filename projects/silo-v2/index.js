@@ -145,7 +145,7 @@ async function getSilosV2(api) {
       let silo1 = log.args[4];
 
       return [silo0, silo1].filter(
-        (address) => ((blacklistedSilos.indexOf(address.toLowerCase()) === -1) && (badDebtSilos[chain].indexOf(address.toLowerCase()) === -1))
+        (address) => ((blacklistedSilos.indexOf(address.toLowerCase()) === -1) && (badDebtSilos[chain]?.indexOf(address.toLowerCase()) === -1))
       );
     });
 
