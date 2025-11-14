@@ -34,7 +34,7 @@ async function borrowed(api) {
 
   const tvlApi = new sdk.ChainApi({ chain: api.chain, block: api.block });
   await sumTokens2({ api: tvlApi, owner: FUNDRAISING_CONTRACT, tokens });
-  api.getBalancesV2().subtract(tvlApi.getBalancesV2());
+  api.getBalancesV2().subtract(tvlApi.getBalances());
 }
 
 module.exports = {
