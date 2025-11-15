@@ -13,7 +13,8 @@ const CONFIG = {
     WHITELISTED_TOKENS: [
       ADDRESSES.optimism.USDC_CIRCLE, // USDC
       ADDRESSES.null, // WETH
-      ADDRESSES.optimism.WBTC  // WBTC
+      ADDRESSES.optimism.WBTC,  // WBTC
+      ADDRESSES.optimism.OP // OP
     ],
     POOL_IDS: [
       // List of pools with the Super DCA Hook: 0xb4f4Ad63BCc0102B10e6227236e569Dce0d97A80
