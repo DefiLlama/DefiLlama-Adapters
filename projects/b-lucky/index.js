@@ -4,6 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 // B-Lucky Protocol Contracts on BSC
 const HOUSE_FUNDING_CONTRACT = '0xA7f03BeAF428801476b1eBB226A5AD434dCFBA50';
 const LOTTERY_CONTRACT = '0xe18EAD45d0B0c04293Ad90Fa4E27C561e935AD5E';
+const LOTTERY_CONTRACT_V2 = '0x98207bb96E5FAE18E930dE1c2AAa27a5A72263CB';
 const STAKING_CONTRACT = '0xbB3BFfaCe9C9bf7FeD9ECBB93c0DCF4449e878fe';
 const LUCKY_TOKEN = '0x67b47971426bb2180453b3993FF2ec319e704444';
 
@@ -11,7 +12,7 @@ const LUCKY_TOKEN = '0x67b47971426bb2180453b3993FF2ec319e704444';
 async function tvl(api) {
   // Get BNB and WBNB balance in House Funding and Lottery contracts
   return api.sumTokens({ 
-    owners: [HOUSE_FUNDING_CONTRACT, LOTTERY_CONTRACT], 
+    owners: [HOUSE_FUNDING_CONTRACT, LOTTERY_CONTRACT, LOTTERY_CONTRACT_V2], 
     tokens: [ADDRESSES.null, ADDRESSES.bsc.WBNB] 
   });
 }

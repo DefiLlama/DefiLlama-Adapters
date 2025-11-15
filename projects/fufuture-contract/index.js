@@ -2,6 +2,7 @@ const {getLogs2, getAddress,} = require('../helper/cache/getLogs');
 const {sumTokens2} = require('../helper/unwrapLPs');
 const { ethers } = require("ethers");
 
+
 async function tvl(api) {
     const {factory, fromBlock} = config[api.chain]
     const privateLogs = await getLogs2({
@@ -100,10 +101,10 @@ const config = {
         factory: '0x09cD4951c43D609Ce01E8A05816537bB17eb1788',
         fromBlock: 10830841,
     },
-    // xlayer:{
-    //     factory: '0x09cD4951c43D609Ce01E8A05816537bB17eb1788',
-    //     fromBlock: 42950554,
-    // },
+    xlayer:{
+         factory: '0x09cD4951c43D609Ce01E8A05816537bB17eb1788',
+         fromBlock: 42950554,
+    }
     // pharos:{
     //     factory: '0x625D25bc601d92F77e321848f4e937c19F79f6c9',
     //     fromBlock: 3078868,
