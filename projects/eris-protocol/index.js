@@ -172,6 +172,10 @@ const config = {
     coinGeckoId: "chihuahua-token",
     hub: "chihuahua1nktfhalzvtx82kyn4dh6l8htcl0prfpnu380a39zj52nzu3j467qqg23ry",
   },
+  nibiru: {
+    coinGeckoId: "nibiru",
+    hub: "nibi1udqqx30cw8nwjxtl4l28ym9hhrp933zlq8dqxfjzcdhvl8y24zcqpzmh8m",
+  },
 };
 
 let assetDecimals = {
@@ -399,7 +403,7 @@ async function productsTvl(chain) {
 
 module.exports = {
   timetravel: false,
-    methodology: "Liquid Staking and Arbitrage Protocol",
+  methodology: "Liquid Staking and Arbitrage Protocol",
   terra2: { tvl: () => productsTvl("terra2") },
   terra: { tvl: () => productsTvl("terra") },
   kujira: { tvl: () => productsTvl("kujira") },
@@ -411,4 +415,5 @@ module.exports = {
   chihuahua: { tvl: () => productsTvl("chihuahua") },
   archway: { tvl: () => productsTvl("archway") },
   sei: { tvl: () => productsTvl("sei") },
+  nibiru: { tvl: () => productsTvl("nibiru") },
 };

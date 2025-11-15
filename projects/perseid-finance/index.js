@@ -38,6 +38,7 @@ module.exports = {
   hallmarks: [
     [1699578000,"Rug Pull"]
   ],
+  deadFrom: '2023-11-10',
   scroll: {
     tvl: getTvl(false),
     staking: getTvl(true),

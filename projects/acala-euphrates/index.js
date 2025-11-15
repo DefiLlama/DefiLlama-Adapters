@@ -16,7 +16,7 @@ async function tvl(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 1695657600,
+  start: '2023-09-25',
   methodology: 'total ldot and tdot locked in the euphrates contract',
   acala: {
     tvl,

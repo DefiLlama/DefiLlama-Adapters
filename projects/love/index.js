@@ -2,7 +2,6 @@
 module.exports = {
   methodology:
     "The liquidity on these three pools + the tokens staked on all three chains (PulseChain, Ethereum, and Binance Smart Chain)",
-  start: 1000235,
 };
 
 const config = {

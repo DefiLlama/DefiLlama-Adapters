@@ -3,8 +3,8 @@ const abi = require('../notional/abi');
 const { cachedGraphQuery } = require('../helper/cache')
 
 const SUBGRAPHS = {
-  arbitrum: 'https://api.studio.thegraph.com/query/36749/notional-v3-arbitrum/version/latest',
-  ethereum: 'https://api.studio.thegraph.com/query/36749/notional-v3-mainnet/version/latest'
+  arbitrum: 'DnghsCNvJ4xmp4czX8Qn7UpkJ8HyHjy7cFN4wcH91Nrx',
+  ethereum: '4oVxkMtN4cFepbiYrSKz1u6HWnJym435k5DQRAFt2vHW'
 };
 const vaultsQuery = `{ vaultConfigurations { id } }`
 

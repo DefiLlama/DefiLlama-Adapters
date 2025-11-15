@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { sumBalancerLps, } = require("../helper/unwrapLPs.js");
 
 const VaultTokens = {
   gOHM: "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1",
@@ -44,12 +43,9 @@ async function tvl(api) {
 }
 
 async function pool2(api) {
-  const balances = {}
-  await sumBalancerLps(balances, [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]], api.block, api.chain);
-
+  await api.sumTokens({ owner: VSTA_FARMING_ADDRESS, token: LP_VSTA_ETH_ADDRESS })
   const curveBalances = await api.call({ target: VST_FARMING_ADDRESS, abi: "uint256:totalStaked" })
-  sdk.util.sumSingleBalance(balances, LP_VST_FRAX_ADDRESS, curveBalances, api.chain)
-  return balances;
+  api.add(LP_VST_FRAX_ADDRESS, curveBalances)
 }
 
 module.exports = {
@@ -57,7 +53,7 @@ module.exports = {
     tvl,
     pool2,
   },
-  start: 1644339600,
+  start: '2022-02-08',
     methodology:
     "Total Value Locked includes all stability pools, troves, and vst pairs",
 };

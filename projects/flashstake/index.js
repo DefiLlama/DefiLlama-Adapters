@@ -18,7 +18,7 @@ async function getData() {
 
 module.exports = {
   doublecounted: true,
-  start: 1659312000,
+  start: '2022-08-01',
   hallmarks: [
     [1659312000, "Protocol Launch"],
     [1666641600, "Optimism Launch"],

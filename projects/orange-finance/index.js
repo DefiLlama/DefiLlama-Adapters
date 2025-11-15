@@ -1,24 +1,41 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const VAULTS = [
-  "0xb9c5425084671221d7d5a547dbf1bdcec26c8b7d", //Camelot ETH-USDC.e DN Vault
-  "0x1c99416c7243563ebEDCBEd91ec8532fF74B9a39", //UniswapV3 ETH-USDC.e Dynamic Hedge Vault
+const ARBITRUM_VAULTS = [
+  { address: "0x8b20087Bb0580bCB827d3ebDF06485aF86ea16cB", asset: ADDRESSES.arbitrum.WETH },
+  { address: "0xa3899444a955Fb1DdDbd7Aea385771DB0a67fB12", asset: ADDRESSES.arbitrum.USDC_CIRCLE },
+  { address: "0x9338a4c3De7082E27802DCB6AC5A4502C93D1808", asset: ADDRESSES.arbitrum.USDC_CIRCLE }
 ];
 
-async function tvl(api) {
-  const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: VAULTS })
+const BERA_VAULTS = [
+  { address: "0x2f852e3102357ffc2283a974d42bd4b4cae9b5aa", asset: ADDRESSES.berachain.WETH },
+  { address: "0xf45747fde3586563e1fb9d50f815b70822176a46", asset: ADDRESSES.berachain.HONEY },
+  { address: "0x4ea6efbecaabd7ba6e13f4847a518fa34729ac9f", asset: ADDRESSES.berachain.WBERA }
+]
 
-  totalAssets.forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i))
+async function arbitrumTvl(api) {
+  const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: ARBITRUM_VAULTS.map(v => v.address) })
+
+  ARBITRUM_VAULTS.forEach((v, i) => api.add(v.asset, totalAssets[i]))
+}
+
+async function beraTvl(api) {
+  const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: BERA_VAULTS.map(v => v.address) })
+
+  BERA_VAULTS.forEach((v, i) => api.add(v.asset, totalAssets[i]))
 }
 
 module.exports = {
   doublecounted: true,
-  start: 107356480,
   arbitrum: {
-    tvl,
+    tvl: arbitrumTvl,
+  },
+  berachain: {
+    tvl: beraTvl
   },
   hallmarks: [
     [1682680200, "Orange Alpha Vault Launch"], //2023 Apr 28
     [1688385600, "Camelot Vault Launch"], //2023 Jul 3
+    [1703462400, "Strategy Vault Launch"], //2023 Dec 25
+    [1709204400, "LPDfi Vault Launch"], //2024 Feb 29
   ],
 };

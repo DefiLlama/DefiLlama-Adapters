@@ -1,39 +1,36 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs');
 const config = {
-  ethereum: {
-    vaultCore: ['0x4026BdCD023331D52533e3374983ded99CcBB6d4'],
-    collaterals: [
-    ADDRESSES.ethereum.WETH, //wETH
-    ADDRESSES.ethereum.WBTC, //wBTC
-    ADDRESSES.ethereum.USDC, //USDC
-    ],
-  },
-  polygon: {
-    vaultCore: ['0x03175c19cb1d30fa6060331a9ec181e04cac6ab0'],
-    collaterals: [
-      ADDRESSES.polygon.WMATIC_2, //wMATIC
-      ADDRESSES.polygon.WETH_1, //wETH
-      ADDRESSES.polygon.WBTC, //wBTC
-      ADDRESSES.polygon.USDC, //USDC
-    ],
-  },
-  fantom: {
-    vaultCore: ['0xB2b4feB22731Ae013344eF63B61f4A0e09fa370e'],
-    collaterals:[
-      ADDRESSES.fantom.WFTM, //wFTM
-      '0x74b23882a30290451A17c44f4F05243b6b58C76d', //ETH
-      '0x321162Cd933E2Be498Cd2267a90534A804051b11', //BTC
-      ADDRESSES.fantom.USDC, //USDC
-    ],
+    ethereum:
+    {
+      vaultCore: [
+        '0x173AE6283A717b6cdD5491EAc5F82C082A8c674b', //PAR
+        '0xE26348D30694aa7E879b9335252362Df3df93204', //paUSD
+      ],
+    },
+    polygon: {
+      vaultCore: [
+        '0x0a9202C6417A7B6B166e7F7fE2719b09261b400f', //PAR
+        '0xcABAbC1Feb7C5298F69B635099D75975aD5E6e5f', //paUSD
+      ],
+    },
+    fantom: {
+      vaultCore: ['0xF6aBf8a89b3dA7C254bb3207e2eBA9810bc51f58'], //PAR
+    }
   }
-}
-
-module.exports = {};
-
-Object.keys(config).forEach(chain => {
-  const { vaultCore: owners, collaterals: tokens } = config[chain]
-  module.exports[chain] = {
-    tvl: sumTokensExport({ chain, owners, tokens, })
-  }
-})
+  
+  
+  Object.keys(config).forEach(chain => {
+    const { vaultCore } = config[chain]
+    module.exports[chain] = { tvl }
+  
+    async function tvl(api) {
+      const ownerTokens = []
+      for (const vault of vaultCore) {
+        const addressProvider = await api.call({  abi: 'address:a', target: vault})
+        const config = await api.call({  abi: 'address:config', target: addressProvider})
+        const tokenConfig = await api.fetchList({  lengthAbi: 'numCollateralConfigs', itemAbi: "function collateralConfigs(uint256 _id) view returns ((address collateralType, uint256 debtLimit, uint256 liquidationRatio, uint256 minCollateralRatio, uint256 borrowRate, uint256 originationFee, uint256 liquidationBonus, uint256 liquidationFee))", target: config})
+        const tokens = tokenConfig.map(t => t.collateralType)
+        ownerTokens.push([tokens, vault])
+      }
+      return api.sumTokens({ ownerTokens })
+    }
+  })

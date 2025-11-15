@@ -3,7 +3,7 @@ const PLANT = "0x23082Dd85355b51BAe42248C961E7F83486e7694";
 const FACTORY = "0xA081Ce40F079A381b59893b4Dc0abf8B1817af70"
 
 
-const dexTVL = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, fetchBalances: true })
+const dexTVL = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, })
 
 
 module.exports = {

@@ -2,35 +2,17 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokensExport: sumBRC20TokensExport } = require("../helper/chain/brc20");
 const { sumTokensExport } = require('../helper/sumTokens');
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 // https://medium.com/@merlinchaincrypto/merlins-seal-the-biggest-fair-launch-of-layer2-5614001b2582
 // https://bridge.merlinchain.io/api/v1/token_mapping?after=0&size=100
-
-const owners = [
-  "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
-  "15zVuow5e9Zwj4nTrxSH3Rvupk32wiKEsr",
-  "bc1q4gfsheqz7ll2wdgfwjh2l5hhr45ytc4ekgxaex",
-  "bc1qua5y9yhknpysslxypd4dahagj9jamf90x4v90x",
-  "bc1qm64dsdz853ntzwleqsrdt5p53w75zfrtnmyzcx",
-  "1EEU18ZvWrbMxdXEuqdii6goDKbAbaXiA1",
-  "bc1qptgujmlkez7e6744yctzjgztu0st372mxs6702",
-  "16LDby5cWxzQqTFJrA1DDmbwABumCQHteG",
-  "bc1qq3c6kehun66sdek3q0wmu540n3vg0hgrekkjce",
-  "124SzTv3bBXZVPz2Li9ADs9oz4zCfT3VmM",
-  "bc1qyqt9zs42qmyf373k7yvy0t3askxd927v304xlv",
-  "bc1qgxdqf7837dxe8xkhvctgc499kwh5xw7ap3uwhs", // add on 25/02/2024
-  "bc1pruhkl5exjt0z824cafauf750f5g08azuvgcjctv0enz5csayaj7ss3j5wc", // add on 25/02/2024
-  "bc1q97vmervc8x9hzr4z4yvzn3x4rk74se6e8x8sgy", // add on 25/02/2024
-  "bc1q2lzqzjcq472x8v0kgdcn4m5y8cq95ysnxm6vemu0qsuqgzyge06sqmqdal", // add on 25/02/2024
-  "bc1qcmj5lkumeycyn35lxc3yr32k3fzue87yrjrna6", //nft_vault_address
-];
 
 module.exports = {
   methodology: "Staking tokens via BitStable counts as TVL",
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
-      sumTokensExport({ owners }),
-      sumBRC20TokensExport({ owners }),
+      sumTokensExport({ owners: bitcoinAddressBook.merlin }),
+      sumBRC20TokensExport({ owners: bitcoinAddressBook.merlin }),
     ]),
   },
   ethereum: {
