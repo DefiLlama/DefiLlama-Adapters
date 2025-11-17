@@ -13,6 +13,17 @@ const MIDAS_MHYPER = {
   }
 };
 
+const MIDAS_MXRP = {
+  bsc: {
+    token: '0xc8739fbBd54C587a2ad43b50CbcC30ae34FE9e34',
+    priceFeed: '0x3BdE0b7B59769Ec00c44C77090D88feB4516E731',
+  },
+  xrplevm: {
+    token: '0x06e0B0F1A644Bb9881f675Ef266CeC15a63a3d47',
+    priceFeed: '0xFF64785Ee22D764F8E79812102d3Fa7f2d3437Af',
+  }
+};
+
 // MIDAS TVL CALCULATION
 async function getMidasTvl(api, config) {
   const totalSupply = await api.call({
@@ -20,14 +31,14 @@ async function getMidasTvl(api, config) {
     abi: 'uint256:totalSupply',
   });
 
-  const price = await api.call({
+  const rate = await api.call({
     target: config.priceFeed,
     abi: 'int256:lastAnswer',
   });
 
   const supply = Number(totalSupply) / 1e18;
-  const priceUSD = Number(price) / 1e8;
-  return supply * priceUSD;
+  const sharePrice = Number(rate) / 1e8;
+  return supply * sharePrice;
 }
 
 // VAULT CONFIGURATIONS BY BLOCKCHAIN
@@ -76,6 +87,24 @@ adapterExport.plasma.tvl = async (api) => {
   await plasmaTvl(api);
   const midasTvl = await getMidasTvl(api, MIDAS_MHYPER.plasma);
   api.add(ADDRESSES.plasma.USDT0, midasTvl * 1e6);
+};
+
+const bscTvl = adapterExport.bsc?.tvl;
+adapterExport.bsc = {
+  tvl: async (api) => {
+    if (bscTvl) await bscTvl(api);
+    const xrpAmount = await getMidasTvl(api, MIDAS_MXRP.bsc);
+    api.add("0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE", xrpAmount * 1e18);
+  }
+};
+
+const xrplevmTvl = adapterExport.xrplevm?.tvl;
+adapterExport.xrplevm = {
+  tvl: async (api) => {
+    if (xrplevmTvl) await xrplevmTvl(api);
+    const xrpAmount = await getMidasTvl(api, MIDAS_MXRP.xrplevm);
+    api.add(ADDRESSES.xrplevm.XRP, xrpAmount * 1e18);
+  }
 };
 
 module.exports = adapterExport;
