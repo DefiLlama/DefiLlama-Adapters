@@ -1,5 +1,36 @@
+const ADDRESSES = require('../helper/coreAssets.json');
 const { getCuratorExport } = require("../helper/curators");
 
+// MIDAS CONTRACTS CONFIGURATION
+const MIDAS_MHYPER = {
+  ethereum: {
+    token: '0x9b5528528656DBC094765E2abB79F293c21191B9',
+    priceFeed: '0x43881b05c3be68b2d33eb70addf9f666c5005f68',
+  },
+  plasma: {
+    token: '0xb31bea5c2a43f942a3800558b1aa25978da75f8a',
+    priceFeed: '0xfc3e47c4da8f3a01ac76c3c5ecfbfc302e1a08f0',
+  }
+};
+
+// MIDAS TVL CALCULATION
+async function getMidasTvl(api, config) {
+  const totalSupply = await api.call({
+    target: config.token,
+    abi: 'uint256:totalSupply',
+  });
+
+  const price = await api.call({
+    target: config.priceFeed,
+    abi: 'int256:lastAnswer',
+  });
+
+  const supply = Number(totalSupply) / 1e18;
+  const priceUSD = Number(price) / 1e8;
+  return supply * priceUSD;
+}
+
+// VAULT CONFIGURATIONS BY BLOCKCHAIN
 const configs = {
   methodology: 'Count all assets are deposited in all vaults curated by Hyperithm.',
   blockchains: {
@@ -9,6 +40,23 @@ const configs = {
       ],
     },
   }
-}
+};
 
-module.exports = getCuratorExport(configs)
+const adapterExport = getCuratorExport(configs);
+
+const morphoTvl = adapterExport.ethereum.tvl;
+adapterExport.ethereum.tvl = async (api) => {
+  await morphoTvl(api);
+
+  const midasTvl = await getMidasTvl(api, MIDAS_MHYPER.ethereum);
+  api.add(ADDRESSES.ethereum.USDC, midasTvl * 1e6);
+};
+
+adapterExport.plasma = {
+  tvl: async (api) => {
+    const midasTvl = await getMidasTvl(api, MIDAS_MHYPER.plasma);
+    api.add(ADDRESSES.plasma.USDT0, midasTvl * 1e6);
+  }
+};
+
+module.exports = adapterExport;
