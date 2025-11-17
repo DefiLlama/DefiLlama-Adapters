@@ -36,7 +36,21 @@ const configs = {
   blockchains: {
     ethereum: {
       morphoVaultOwners: [
-        '0x16fa314141C76D4a0675f5e8e3CCBE4E0fA22C7c',
+        '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
+        '0x16fa314141C76D4a0675f5e8e3CCBE4E0fA22C7c'
+      ],
+      eulerVaultOwners: [
+        '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
+      ]
+    },
+    arbitrum: {
+      morphoVaultOwners: [
+        '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
+      ],
+    },
+    hyperliquid: {
+      morphoVaultOwners: [
+        '0x51afd54ff95c77A15E40E83DB020908f33557c97',
       ],
     },
   }
@@ -44,9 +58,9 @@ const configs = {
 
 const adapterExport = getCuratorExport(configs);
 
-const morphoTvl = adapterExport.ethereum.tvl;
+const ethereumTvl = adapterExport.ethereum.tvl;
 adapterExport.ethereum.tvl = async (api) => {
-  await morphoTvl(api);
+  await ethereumTvl(api);
 
   const midasTvl = await getMidasTvl(api, MIDAS_MHYPER.ethereum);
   api.add(ADDRESSES.ethereum.USDC, midasTvl * 1e6);
