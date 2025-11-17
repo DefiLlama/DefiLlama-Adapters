@@ -53,6 +53,11 @@ const configs = {
         '0x51afd54ff95c77A15E40E83DB020908f33557c97',
       ],
     },
+    plasma: {
+      erc4626: [
+        '0xb74760fd26400030620027dd29d19d74d514700e' // Gearbox Hyperithm USDT0
+      ]
+    }
   }
 };
 
@@ -66,11 +71,11 @@ adapterExport.ethereum.tvl = async (api) => {
   api.add(ADDRESSES.ethereum.USDC, midasTvl * 1e6);
 };
 
-adapterExport.plasma = {
-  tvl: async (api) => {
-    const midasTvl = await getMidasTvl(api, MIDAS_MHYPER.plasma);
-    api.add(ADDRESSES.plasma.USDT0, midasTvl * 1e6);
-  }
+const plasmaTvl = adapterExport.plasma.tvl;
+adapterExport.plasma.tvl = async (api) => {
+  await plasmaTvl(api);
+  const midasTvl = await getMidasTvl(api, MIDAS_MHYPER.plasma);
+  api.add(ADDRESSES.plasma.USDT0, midasTvl * 1e6);
 };
 
 module.exports = adapterExport;
