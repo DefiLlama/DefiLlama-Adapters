@@ -39,8 +39,8 @@ const configs = {
         '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
         '0x16fa314141C76D4a0675f5e8e3CCBE4E0fA22C7c'
       ],
-      eulerVaultOwners: [
-        '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
+      euler: [
+        '0x3cd3718f8f047aA32F775E2cb4245A164E1C99fB',
       ]
     },
     arbitrum: {
