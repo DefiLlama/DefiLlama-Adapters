@@ -92,6 +92,10 @@ const HubPools = {
       tokenAddress: '0x14A84F1a61cCd7D1BE596A6cc11FE33A36Bc1646',
       chainPoolAddress: '0x0aeE2B84bd3E280CFcc9325917bFA0Bb20F3cdC6',
     },
+    { // wstLINK
+      poolAddress: '0x42Bb92684e72707030F59C48FBe5A222A0d8b387',
+      tokenAddress: '0x601486C8Fdc3aD22745b01c920037d6c036A38B9',
+    },
   ],
   'ethereum': [
     // excluding USDC cause bridged
@@ -99,6 +103,7 @@ const HubPools = {
     // excluding SHIB cause bridged
     // excluding YBTCB cause bridged
     // excluding tETH cause bridged
+    // excluding wstLINK cause bridged
     { // ETH_eth      
       poolAddress: "0xB6DF8914C084242A19A4C7fb15368be244Da3c75",
       tokenAddress: ADDRESSES.null,
@@ -227,6 +232,7 @@ const HubPools = {
     // excluding USDC cause bridged
     // excluding SolvBTC cause bridged
     // excluding SHIB cause bridged
+    // excluding wstLINK cause bridged
     { // ETH_arb
       poolAddress: "0x44E0d0809AF8Ee37BFb1A4e75D5EF5B96F6346A3",
       tokenAddress: ADDRESSES.null,
@@ -271,6 +277,7 @@ const HubPools = {
   ],
   'polygon': [
     // excluding USDC cause bridged
+    // excluding wstLINK cause bridged
     { // POL      
       poolAddress: "0x481cF0c02BF17a33753CE32f1931ED9990fFB40E",
       tokenAddress: ADDRESSES.null,
