@@ -31,23 +31,9 @@ const DEFAULTS = {
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
-  FLAME_RPC: "https://rpc.flame.astria.org",
-  BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
-  BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
-  PLUME_RPC: "https://rpc.plume.org",
-  NIBIRU_RPC: "https://evm-rpc.archive.nibiru.fi/",
   IOTA_RPC: "https://api.mainnet.iota.cafe",
-  KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
-  HYDRAGON_RPC: "https://rpc-mainnet.hydrachain.org",
-  TAC_RPC: "https://rpc.tac.build",
-  FRAXTAL_RPC: "https://rpc.frax.com",
-  TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
-  XONE_RPC: 'https://rpc.xone.org',
-  KASPLEX_RPC: "https://evmrpc.kasplex.org",
 }
 
 const ENV_KEYS = [

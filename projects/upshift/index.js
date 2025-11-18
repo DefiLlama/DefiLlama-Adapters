@@ -34,7 +34,7 @@ async function sumV2Vaults(api, vaults) {
 // Merge all chains from both configs
 const allChains = new Set([...Object.keys(config), ...Object.keys(v2Vaults)])
 
-const suiVaultsTvl = async () => {
+const suiVaultsTvl = async (api) => {
   const vaults = (
     await axios.get(suiVaultsEndpoint)
   ).data.Vaults;
