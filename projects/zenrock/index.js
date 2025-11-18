@@ -1,5 +1,3 @@
-const { sumTokens: sumBitcoinTokens } = require('../helper/chain/bitcoin');
-const { zenrock } = require('../helper/bitcoin-book/fetchers');
 const { get } = require('../helper/http');
 const sdk = require('@defillama/sdk');
 
@@ -28,22 +26,23 @@ async function timestampToBlockHeight(timestamp) {
   const status = await get(`${ZRCHAIN_RPC}/status`);
   const latestHeight = parseInt(status.result.sync_info.latest_block_height);
 
-  // Get latest block timestamp
-  const latestBlock = await get(`${ZRCHAIN_RPC}/block?height=${latestHeight}`);
-  const latestBlockTime = new Date(latestBlock.result.block.header.time).getTime() / 1000;
-
-  // Estimate block height (5 seconds per block for zrchain)
-  const avgBlockTime = 5; // seconds
-  const genesisTime = latestBlockTime - (latestHeight * avgBlockTime);
+  // Estimate block height using actual average block time (calculated from chain data)
+  // Average block time is ~5.65 seconds, using 5.65 for better accuracy
+  const avgBlockTime = 5.65; // seconds (calculated from actual chain data)
   let estimatedHeight = Math.max(1, Math.min(
-    Math.floor((timestamp - genesisTime) / avgBlockTime),
+    Math.floor((timestamp - GENESIS_TIMESTAMP) / avgBlockTime),
     latestHeight
   ));
 
   // Refine estimate to ensure accuracy within 60 seconds
   const targetAccuracy = 60; // seconds
-  let low = Math.max(1, estimatedHeight - 1000); // Search range: ±1000 blocks
-  let high = Math.min(latestHeight, estimatedHeight + 1000);
+  // Use search range: ±5% of chain height or ±100000 blocks, whichever is larger
+  // This handles cases where initial estimate might be significantly off (e.g., 36 hours)
+  // Binary search is logarithmic, so larger range adds minimal overhead (13-14 iterations)
+  // 5% ≈ 277k blocks currently, providing good safety margin for edge cases
+  const searchRange = Math.max(100000, Math.floor(latestHeight * 0.05));
+  let low = Math.max(1, estimatedHeight - searchRange);
+  let high = Math.min(latestHeight, estimatedHeight + searchRange);
   let bestHeight = estimatedHeight;
   let bestDiff = Infinity;
 
@@ -101,6 +100,8 @@ async function apiRequest(url, blockHeight = null) {
 }
 
 async function tvl(api) {
+  const balances = {};
+
   // Extract timestamp from api parameter
   const timestamp = api?.timestamp;
   const now = Date.now() / 1000;
@@ -111,17 +112,23 @@ async function tvl(api) {
     blockHeight = await timestampToBlockHeight(timestamp);
   }
 
-  // Fetch all protocol addresses (treasury + change) from the bitcoin-book fetcher
-  const allAddresses = await zenrock();
-
-  if (allAddresses.length === 0) {
-    return { bitcoin: '0' };
+  // Fetch custodied amount from zenbtc supply endpoint with height header
+  let supplyData;
+  try {
+    supplyData = await apiRequest(`${ZRCHAIN_API}/zenbtc/supply`, blockHeight);
+  } catch (error) {
+    // If zenbtc supply API fails, return 0 supply instead of erroring
+    // This can happen for historical queries before the module was launched
+    return balances;
   }
+  if (!supplyData?.custodiedBTC) {
+    return balances;
+  }
+  // custodiedBTC is in satoshis (smallest unit)
+  const custodiedAmount = Number(supplyData.custodiedBTC);
+  const custodiedBTC = custodiedAmount / 1e8;
 
-  // Use Bitcoin helper to sum balances for all addresses
-  // Pass timestamp if available for historical queries
-  const balances = {};
-  await sumBitcoinTokens({ balances, owners: allAddresses, timestamp });
+  sdk.util.sumSingleBalance(balances, 'bitcoin', custodiedBTC);
 
   return balances;
 }
