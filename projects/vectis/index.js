@@ -1,4 +1,4 @@
-const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey, DRIFT_VAULT_PROGRAM_ID, VOLTR_PROGRAM_ID } = require("./spotMarkets");
+const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey, DRIFT_VAULT_PROGRAM_ID, VOLTR_PROGRAM_ID, CUSTOM_PROGRAM_ID } = require("./spotMarkets");
 const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses, fetchPositionAddresses} = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
 const { getMultipleAccounts, getProvider, getAssociatedTokenAddress, sumTokens2} = require('../helper/solana');
@@ -36,15 +36,19 @@ module.exports = {
  * 
  */
 async function tvl(api) {
+  const [vaultAddresses, positionAddresses] = await Promise.all([
+    fetchVaultAddresses(), 
+    fetchPositionAddresses()
+  ]);
+  const driftUserAddresses = positionAddresses.drift ?? []
 
-  const vaultAddresses = await fetchVaultAddresses();
-  const driftVaultAddresses = vaultAddresses.filter(vault => vault.programId === DRIFT_VAULT_PROGRAM_ID.toBase58());
+  const driftVaultAddresses = vaultAddresses.filter(vault => [DRIFT_VAULT_PROGRAM_ID.toBase58(), CUSTOM_PROGRAM_ID.toBase58()].includes(vault.programId) );
   const voltrVaultAddresses = vaultAddresses.filter(vault => vault.programId === VOLTR_PROGRAM_ID.toBase58());
 
   const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
 
   // Get all vault accounts first
-  const accounts = await getMultipleAccounts(vaultUserAddresses)
+  const accounts = await getMultipleAccounts([...vaultUserAddresses, ...driftUserAddresses])
   const deserializedData = accounts.filter((accountInfo) => !!accountInfo).map(deserializeUserPositions)
 
   // Collect unique market indices upfront
@@ -117,8 +121,6 @@ async function tvl(api) {
   })
 
   // HyperLoop Prime A
-  const positionAddresses = await fetchPositionAddresses();
-
   const idl = await ProgramSerum.fetchIdl(JUP_PERP_PROGRAM_ID, provider);
   const program = new ProgramSerum(idl, JUP_PERP_PROGRAM_ID, provider);
   const jupiterAccounts = await program.account["borrowPosition"].fetchMultiple(
