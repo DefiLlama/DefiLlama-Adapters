@@ -33,14 +33,6 @@ const CHAIN_ASSET = {
   },
 }
 
-function offChainPoolTVL(api, poolAddress) {
-  return api.call({
-    abi: 'function externalTVLOfPool(address) view returns (uint256)',
-    target: '0x662379FEBb3e4F91400B5f7d4f7F7ce4699F3c9F',
-    params: [poolAddress],
-  });
-}
-
 function tvl(chain) {
   return async (api) => {
     const result =  await cachedGraphQuery('kasu/' + chain, GRAPH_URLS[chain].uri, GRAPH_URLS[chain].query);
@@ -48,10 +40,14 @@ function tvl(chain) {
     let externalTvl = 0;
     if (chain === 'base') {
       //add externally managed TVL on Base
-      const externalTvlResults = await Promise.all(
-        result.lendingPools.map(async (pool) => Number(await offChainPoolTVL(api, pool.id)))
-      );
-      externalTvl = externalTvlResults.reduce((a, b) => a + b || 0, 0);
+      const externalTvlResults = await api.multiCall({
+        abi: 'function externalTVLOfPool(address) view returns (uint256)',
+        calls: result.lendingPools.map(pool => ({
+          target: '0x662379FEBb3e4F91400B5f7d4f7F7ce4699F3c9F',
+          params: [pool.id],
+        })),
+      });
+      externalTvl = externalTvlResults.reduce((a, b) => a + Number(b || 0), 0);
     }
     api.addTokens([CHAIN_ASSET[chain].asset], [tvl + externalTvl]);
     return api.getBalances()
