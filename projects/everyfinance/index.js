@@ -6,6 +6,8 @@ const config = {
 	polygon: { managers: ['0x8849FCE3fB3d82BBF14e1FC9D7E82EAfEB4b2904', '0xbE49a740c48F9D4347De8994c488333d492a4e19', '0x9C1A18A734dFAe6e6f89942f358e7270BecdB002'] },
 }
 
+module.exports.deadFrom = '2025-05-03'
+
 Object.keys(config).forEach(chain => {
 	const { managers, } = config[chain]
 	module.exports[chain] = {
