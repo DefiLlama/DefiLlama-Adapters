@@ -49,9 +49,7 @@ const PERP_MARKETS = {
 };
 
 function getTokenMintFromMarketIndex(marketIndex) {
-  if (!SPOT_MARKETS[marketIndex]) {
-    throw new Error(`Market index ${marketIndex} not found`);
-  }
+  if (!SPOT_MARKETS[marketIndex]) return null
   return SPOT_MARKETS[marketIndex].mint;
 }
 

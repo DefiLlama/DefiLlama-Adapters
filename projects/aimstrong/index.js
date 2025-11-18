@@ -11,6 +11,17 @@ const CONFIG = {
 };
 
 async function tvl(api) {
+	if (api.chain === "zeta") {
+		const treasury = "0x18351419aE86F3DD3128943ec01b873b4f35801D";
+		const tokens = [
+			"0x1de70f3e971B62A0707dA18100392af14f7fB677",
+			"0xA614Aebf7924A3Eb4D066aDCA5595E4980407f1d",
+			"0x48f80608B672DC30DC7e3dbBd0343c5F02C738Eb",
+		];
+		const tokensAndOwners = tokens.map((t) => [t, treasury]);
+		return api.sumTokens({ tokensAndOwners });
+	}
+
 	const pool = CONFIG[api.chain];
 	const reserves = await api.call({ target: pool, abi: abi.getReservesList });
 	const datas = await api.multiCall({
@@ -48,4 +59,5 @@ module.exports = {
 	arbitrum: { tvl, borrowed },
 	base: { tvl, borrowed },
 	bsc: { tvl, borrowed },
+	zeta: { tvl },
 };
