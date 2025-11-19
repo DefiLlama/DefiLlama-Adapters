@@ -81,11 +81,6 @@ const config = {
       "inj1xm7q4xv75udvq6y62jmhhjwjchnsrjad6pv27w"
     ]
   },
-  kava: {
-    owners: [
-      "kava1xm7q4xv75udvq6y62jmhhjwjchnsrjadva0n63"
-    ]
-  },
   klaytn: {
     owners: [
       "0xfc89c020774524c9d03bd5de48fec149b10bdec3"
@@ -114,11 +109,6 @@ const config = {
   metis: {
     owners: [
       "0xfc89c020774524c9d03bd5de48fec149b10bdec3"
-    ]
-  },
-  move: {
-    owners: [
-      "0x0d9be20998cbf45d6eb64653df6ae8a4ecbe8162f6047a85ef20c1ffa02c1c16"
     ]
   },
   near: {
