@@ -31,22 +31,6 @@ module.exports = {
       '0x77CcA710E21A94B94a26A98eA23027D64e36B9d4', // suBTC
     ]
   }),
-  zklink: compoundExports2({
-    comptroller: '0xe6099D924efEf37845867D45E3362731EaF8A98D',
-    blacklistedTokens: [
-      '0x0Cf1cC35e296931061c263826B5f62DC04ac1C6B', // suBTC
-      '0xbEAf16cFD8eFe0FC97C2a07E349B9411F5dC272C', // solvBTC.m
-      '0x85D431A3a56FDf2d2970635fF627f386b4ae49CC', // M-BTC
-      '0x586E593Ffa60c15Ed722342f3C08cc90410e4fEA', // solvBTC.b
-    ]
-  }),
-  bsquared: compoundExports2({
-    comptroller: '0xdD9C863197df28f47721107f94eb031b548B5e48',
-    blacklistedTokens: [
-      '0x8C38b023Afe895296e2598AE111752223185b35c', // suUSD
-      '0xb1FdC3f660b0953253141B2509c43014d5d3d733', // suBTC
-    ]
-  }),
   core: compoundExports2({
     comptroller: '0x7f5a7aE2688A7ba6a9B36141335044c058a08b3E',
     blacklistedTokens: [
