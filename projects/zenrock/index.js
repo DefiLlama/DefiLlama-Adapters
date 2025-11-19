@@ -1,3 +1,5 @@
+const { sumTokens: sumBitcoinTokens } = require('../helper/chain/bitcoin');
+const { zenrock } = require('../helper/bitcoin-book/fetchers');
 const { get } = require('../helper/http');
 const sdk = require('@defillama/sdk');
 
@@ -6,6 +8,10 @@ const ZRCHAIN_API = 'https://api.diamond.zenrocklabs.io';
 
 // Chain launch timestamp (genesis block): 2024-11-20T17:39:07Z
 const GENESIS_TIMESTAMP = 1732124347;
+
+// Timestamp cutoff: use address-based counting for queries >= 2025-11-09
+// Use supply API for historical queries before this date
+const ADDRESS_COUNTING_CUTOFF_TIMESTAMP = 1762646400; // 2025-11-09T00:00:00Z
 
 // Cache for block height lookups to avoid repeated RPC calls
 const blockHeightCache = new Map();
@@ -105,7 +111,20 @@ async function tvl(api) {
   // Extract timestamp from api parameter
   const timestamp = api?.timestamp;
   const now = Date.now() / 1000;
+  const queryTimestamp = timestamp || now;
 
+  // Use address-based counting for current/recent queries (>= 2025-11-09)
+  // Use supply API for historical queries (before 2025-11-09)
+  if (queryTimestamp >= ADDRESS_COUNTING_CUTOFF_TIMESTAMP) {
+    const allAddresses = await zenrock();
+    if (allAddresses.length === 0) {
+      return { bitcoin: '0' };
+    }
+    await sumBitcoinTokens({ balances, owners: allAddresses, timestamp });
+    return balances;
+  }
+
+  // Historical queries: use supply API
   // Determine block height for historical queries
   let blockHeight = null;
   if (timestamp && (now - timestamp) > 3600) {
