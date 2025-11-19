@@ -12,33 +12,25 @@ const FACTORIES = [
 ];
 
 async function processFactory(api, factoryId) {
-    try {
-        const factory = await sui.getObject(factoryId);
-        const poolsTableId = factory.fields.pools.fields.id.id;
+    const factory = await sui.getObject(factoryId);
+    const poolsTableId = factory.fields.pools.fields.id.id;
 
-        const poolEntries = await sui.getDynamicFieldObjects({ parent: poolsTableId });
-        const poolObjectIds = poolEntries.map((entry) => entry.fields.value);
-        const poolObjects = await sui.getObjects(poolObjectIds);
+    const poolEntries = await sui.getDynamicFieldObjects({ parent: poolsTableId });
+    const poolObjectIds = poolEntries.map((entry) => entry.fields.value);
+    const poolObjects = await sui.getObjects(poolObjectIds);
 
-        for (const pool of poolObjects) {
-            const { balance_a: balanceA, balance_b: balanceB } = pool.fields;
+    for (const pool of poolObjects) {
+        const { balance_a: balanceA, balance_b: balanceB } = pool.fields;
 
-            if (!balanceA || !balanceB || (balanceA === "0" && balanceB === "0")) continue;
+        if (!balanceA || !balanceB || (balanceA === "0" && balanceB === "0")) continue;
 
-            try {
-                const match = pool.type.match(/Pool<(.+?),\s*(.+?)>/);
-                if (!match) continue;
+        const match = pool.type.match(/Pool<(.+?),\s*(.+?)>/);
+        if (!match) continue;
 
-                const [, coinA, coinB] = match;
+        const [, coinA, coinB] = match;
 
-                api.add(coinA.trim(), balanceA);
-                api.add(coinB.trim(), balanceB);
-            } catch (_) {
-                continue;
-            }
-        }
-    } catch (_) {
-        return;
+        api.add(coinA.trim(), balanceA);
+        api.add(coinB.trim(), balanceB);
     }
 }
 
