@@ -9,6 +9,7 @@ const v2 = {
   optimism: { tvl: getUniTVL({ chain: 'optimism', factory: v2Factory, useDefaultCoreAssets: true }) },
   sonic: { tvl: getUniTVL({ chain: 'sonic', factory: v2Factory, useDefaultCoreAssets: true }) },
   base: { tvl: getUniTVL({ chain: 'base', factory: v2Factory, useDefaultCoreAssets: true }) },
+  plasma: { tvl: getUniTVL({ chain: 'plasma', factory: v2Factory, useDefaultCoreAssets: true }) },
 };
 
 module.exports = v2;

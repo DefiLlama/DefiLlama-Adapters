@@ -5,12 +5,12 @@ const graphs = {
     ethereum: sdk.graph.modifyEndpoint('BguCyHCbhwRK4MB4DCFmHLR7KNeDKHE64iDXAY6dp4cR'), 
     base: sdk.graph.modifyEndpoint('5b3mwB9M2TFkD259vzED9sUe8A8j3V2HDobuCgoe8pVh'), 
     optimism: sdk.graph.modifyEndpoint('2tkJQ566D58MzdKzwShZESwgEdTkdWCxCmBKgPyf44bb'), 
+    plasma: 'https://api.goldsky.com/api/public/project_cmhc2ll2b3q1q01xw0u0pf76c/subgraphs/odyssey-subgraph-plasma/1.0.4/gn',
 }
 
 const queries = {
-    current: `query get_current_positions($first: Int, $skip: Int) {
-        positions(first: $first, skip: $skip, orderBy: id, orderDirection: desc) {
-            id
+    current: `query get_current_positions {
+        positionRegistries(first: 1) {
             totalDepositedUSD
         }
     }`, 
@@ -48,15 +48,8 @@ Object.keys(graphs).forEach(chain => {
                 Object.values(depositedUSD).map(({ totalDepositedUSD }) => api.addUSDValue(Number(totalDepositedUSD).toFixed(0)))
             } else {
                 // do current query
-                let isMore = true
-                const first = 1000
-                let skip = 0
-
-                while (isMore) {
-                    const { positions } = await cachedGraphQuery(`odyssey-${chain}-current`, graphs[chain], queries.current, { variables: { first, skip } })
-                    positions.map(({ totalDepositedUSD }) => api.addUSDValue(Number(totalDepositedUSD).toFixed(0)))
-                    isMore = positions.length == first
-                }
+                const { positionRegistries } = await cachedGraphQuery(`odyssey-${chain}-current-2`, graphs[chain], queries.current)
+                api.addUSDValue(Number(positionRegistries[0].totalDepositedUSD).toFixed(0))
             }
             return api.getBalances()
         }

@@ -75,7 +75,7 @@ const getOrderbooks = async () => {
     setTimeout(() => {
       ws.close();
       reject(new Error('WebSocket subscription timed out'));
-    }, 10000);
+    }, 30000);
   });
 }
 

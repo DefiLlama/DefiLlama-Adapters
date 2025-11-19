@@ -68,6 +68,21 @@ async function styTvl(api) {
     }
   }
 
+  // vualt v2
+  const btHooks = {
+    // stApl Vault (bt:hooks)
+    '0x3bb7dc96832f8f98b8aa2e9f2cc88a111f96a118': ['0x110477af9ac7837fd0e8a1b917982fd6065eba88']
+  }
+  const bts = Object.keys(btHooks)
+  const tokenpots = await api.multiCall({ abi: 'address:tokenPot', calls: bts,})
+  const tokenIns = await api.multiCall({ abi: 'address[]:getTokensIn', calls: bts })
+  for (let i=0;i< tokenIns.length; i++) {
+    tokensAndOwners.push([tokenIns[i], tokenpots[i]])
+    const hooks = btHooks[bts[i]]
+    for (const hook of hooks) {
+      tokensAndOwners.push([tokenIns[i], hook])
+    }
+  }
   return api.sumTokens({ tokensAndOwners })
 }
 
