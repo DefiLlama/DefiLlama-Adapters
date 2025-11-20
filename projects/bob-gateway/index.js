@@ -5,6 +5,7 @@ const factories = {
   v1: "0x1831d29376eb94bba3ca855af7984db923768b27",
   v2: "0x37f330e667208633e1da1cf601d01f0ef8484306",
   v3: "0xAE6770a207E86FaE3b191564FA55ce7Bfee0Dde9",
+  v4: "0xa974EFA9408AC360DDD73b3Ae5d6A1827B307D44",
 };
 
 const abis = {
@@ -17,6 +18,9 @@ const abis = {
   v3: {
     allGateways: "function allGateways() view returns (address[])",
   },
+  v4: {
+    allGateways: "function allGateways() view returns (address[])",
+  },
 };
 
 module.exports = {
@@ -25,20 +29,22 @@ module.exports = {
       const gateways = (await api.batchCall([
         { abi: abis.v1.allOnramps, target: factories.v1 },
         { abi: abis.v2.allGateways, target: factories.v2 },
-        { abi: abis.v3.allGateways, target: factories.v3 }
+        { abi: abis.v3.allGateways, target: factories.v3 },
+        { abi: abis.v4.allGateways, target: factories.v4 }
       ])).flat();
 
       return sumTokens2({
         api,
         tokens: [
           ADDRESSES.bob.WBTC,
+          ADDRESSES.bob.WBTC_OFT,
           ADDRESSES.bob.TBTC,
           ADDRESSES.bob.SolvBTC,
           ADDRESSES.bob.SolvBTC_BBN,
           ADDRESSES.bob.FBTC,
           ADDRESSES.bob.uniBTC,
           ADDRESSES.bob.pumpBTC,
-          "0xA45d4121b3D47719FF57a947A9d961539Ba33204", // LBTC
+          ADDRESSES.bob.LBTC,
         ],
         owners: gateways,
       });
