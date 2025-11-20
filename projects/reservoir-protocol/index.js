@@ -10,8 +10,9 @@ const config = {
     '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',
     '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc',
     '0x2Adf038b67a8a29cDA82f0Eceb1fF0dba704b98d',
-    '0xb82749F316CB9c06F38587aBecF3EB1bC842CC93'
-    // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
+    '0xb82749F316CB9c06F38587aBecF3EB1bC842CC93',
+    '0xC5deA68CCe26c014BEC516CDA70c107c534a73C4',
+    '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61'
   ],
   plasma: [],
   arbitrum: []
