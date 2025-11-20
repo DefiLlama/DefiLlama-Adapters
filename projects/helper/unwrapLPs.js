@@ -338,27 +338,42 @@ const factories = {}
 
 const getFactoryKey = (chain, nftAddress) => `${chain}:${nftAddress}`.toLowerCase()
 
-async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, api, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
+async function unwrapUniswapV3NFT({
+  balances,
+  owner,
+  owners,
+  nftAddress,
+  api,
+  blacklistedTokens = [],
+  whitelistedTokens = [],
+  uniV3ExtraConfig = {}
+}) {
   const chain = api.chain
+
+  const blacklistedPools = (uniV3ExtraConfig.blacklistedPools ?? []).map(i => i.toLowerCase())
+  const blacklistedPositionIds = new Set((uniV3ExtraConfig.blacklistedPositionIds ?? []).map(String))
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
+
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const factoryKey = getFactoryKey(chain, nftAddress)
-  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory, })
+  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory })
   let factory = await factories[factoryKey]
-  if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') // thruster finance has a bug where they set the pool deployer instead of the factory
-    factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
+
+  if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
 
   let positionIds = uniV3ExtraConfig.positionIds
   if (!positionIds) {
     if (!owners?.length && owner) owners = [owner]
     owners = getUniqueAddresses(owners, chain)
+
     const lengths = await api.multiCall({
       abi: wildCreditABI.balanceOf,
-      calls: owners.map((params) => ({ target: nftIdFetcher, params, })),
+      calls: owners.map((params) => ({ target: nftIdFetcher, params })),
     })
+
     const positionIDCalls = []
     for (let i = 0; i < owners.length; i++) {
       const length = lengths[i]
@@ -366,25 +381,32 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, api, bl
     }
 
     positionIds = await api.multiCall({
-       abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+      abi: wildCreditABI.tokenOfOwnerByIndex,
+      target: nftIdFetcher,
       calls: positionIDCalls,
     })
   }
 
   const positions = await api.multiCall({
-    abi: wildCreditABI.positions, target: nftAddress,
-    calls: positionIds,
+    abi: wildCreditABI.positions,
+    target: nftAddress,
+    calls: positionIds
   })
+
   const lpInfo = {}
   positions.forEach(position => lpInfo[getKey(position)] = position)
   const lpInfoArray = Object.values(lpInfo)
 
   const poolInfos = await api.multiCall({
-    abi: wildCreditABI.getPool, target: factory,
+    abi: wildCreditABI.getPool,
+    target: factory,
     calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1, info.fee] })),
   })
 
-  const slot0 = await api.multiCall({ abi: wildCreditABI.slot0, calls: poolInfos })
+  const slot0 = await api.multiCall({
+    abi: wildCreditABI.slot0,
+    calls: poolInfos
+  })
 
   slot0.forEach((slot, i) => lpInfoArray[i].tick = slot.tick)
 
@@ -407,6 +429,12 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, api, bl
     const tick = +lpInfo[getKey(position)].tick
     const sa = tickToPrice(bottomTick / 2)
     const sb = tickToPrice(topTick / 2)
+
+    const positionId = position.tokenId ?? position.tokenID ?? position.id
+    if (positionId && blacklistedPositionIds.has(String(positionId))) return
+
+    const poolKey = `${token0.toLowerCase()}-${token1.toLowerCase()}-${position.fee}`.toLowerCase()
+    if (blacklistedPools.includes(poolKey)) return
 
     let amount0 = 0
     let amount1 = 0
