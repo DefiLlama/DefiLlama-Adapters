@@ -38,26 +38,10 @@ async function tvl(api) {
   return api.getBalances();
 }
 
-async function revenue(api) {
-  const fees = await api.multiCall({
-    calls: Object.values(CONTRACTS),
-    abi: abi.accumulatedFees,
-    permitFailure: true,
-  });
-
-  const totalRevenue = fees.reduce((acc, fee) => {
-    return acc + BigInt(fee || 0);
-  }, 0n);
-
-  api.addGasToken(totalRevenue.toString());
-  return api.getBalances();
-}
-
 module.exports = {
-  methodology: 'Hypesino casino on HyperEVM. TVL = bankroll. Revenue = house edge.',
+  methodology: 'Hypesino casino on HyperEVM. TVL = bankroll.',
   hyperliquid: {
     tvl,
-    revenue,
   },
   start: 1704067200,
   hallmarks: [
