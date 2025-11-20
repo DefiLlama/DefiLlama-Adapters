@@ -42,7 +42,7 @@ const ibcMappings = {
 const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  }, 
+  },
   camp: {
     [ADDRESSES.camp.WCAMP]: { coingeckoId: "camp-network", decimals: 18 }, // Wrapped CAMP (ERC-20 wrapper of native CAMP)
     [ADDRESSES.camp.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
@@ -100,9 +100,9 @@ const fixBalancesTokens = {
     '0xd2a4cff31913016155e38e474a2c06d08be276cf': { coingeckoId: 'gas', decimals: 8 },
     '0x4548a3bcb3c2b5ce42bf0559b1cf2f1ec97a51d0': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
-    besc: {
-    '0x33e22f85cc1877697773ca5c85988663388883a0': {coingeckoId: "wrapped-besc-2", decimals: 18 },
-    '0xb54ad626e127f0f228dbeab6f2a61e8e6e029a4b': {coingeckoId: "usd-coin",decimals: 18 },
+  besc: {
+    '0x33e22f85cc1877697773ca5c85988663388883a0': { coingeckoId: "wrapped-besc-2", decimals: 18 },
+    '0xb54ad626e127f0f228dbeab6f2a61e8e6e029a4b': { coingeckoId: "usd-coin", decimals: 18 },
   },
   chromia: {
     '9bacd576f40b6674aa76b8bfa1330077a3b94f581bfdb2ef806122c384dcdf25': { coingeckoId: 'usd-coin', decimals: 18 },
@@ -132,8 +132,8 @@ const fixBalancesTokens = {
     '0x00000000000000000000000000000000002cc823': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
   },
   ethereal: {
-    [ADDRESSES.null]: { coingeckoId: 'ethena-usde', decimals: 18 }, 
-    '0xb6fc4b1bff391e5f6b4a3d2c7bda1fee3524692d': { coingeckoId: 'ethena-usde', decimals: 18 }, 
+    [ADDRESSES.null]: { coingeckoId: 'ethena-usde', decimals: 18 },
+    '0xb6fc4b1bff391e5f6b4a3d2c7bda1fee3524692d': { coingeckoId: 'ethena-usde', decimals: 18 },
   },
   'zigchain': {
     'uzig': { coingeckoId: 'zignaly', decimals: 6 }, // Native ZIG token
@@ -149,6 +149,13 @@ const fixBalancesTokens = {
     '0xea17E5a9efEBf1477dB45082d67010E2245217f1': { coingeckoId: 'wrapped-solana', decimals: 9 },
     '0x10Aeaf63194db8d453d4D85a06E5eFE1dd0b5417': { coingeckoId: 'wrapped-steth', decimals: 18 },
     '0x01bFF41798a0BcF287b996046Ca68b395DbC1071': { coingeckoId: 'tether-gold-tokens', decimals: 6 },
+  },
+  bob: {
+    [ADDRESSES.bob.BOB]: { coingeckoId: "bob-build-on-bitcoin", decimals: 18 },
+    [ADDRESSES.bob.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    [ADDRESSES.bob.WBTC_OFT]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    [ADDRESSES.bob.SolvBTC]: { coingeckoId: "solv-protocol-btc", decimals: 18 },
+    [ADDRESSES.bob.SolvBTC_BBN]: { coingeckoId: "solv-protocol-staked-btc", decimals: 18 },
   }
 }
 
