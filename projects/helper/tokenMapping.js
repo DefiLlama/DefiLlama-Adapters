@@ -138,7 +138,7 @@ const fixBalancesTokens = {
   'zigchain': {
     'uzig': { coingeckoId: 'zignaly', decimals: 6 }, // Native ZIG token
   },
-  mon: {
+  monad: {
     [nullAddress]: { coingeckoId: 'monad', decimals: 18 },
     '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a': { coingeckoId: 'agora-dollar', decimals: 6 },
     '0x754704Bc059F8C67012fEd69BC8A327a5aafb603': { coingeckoId: 'usd-coin', decimals: 6 },
