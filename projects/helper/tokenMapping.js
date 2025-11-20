@@ -150,13 +150,6 @@ const fixBalancesTokens = {
     '0x10Aeaf63194db8d453d4D85a06E5eFE1dd0b5417': { coingeckoId: 'wrapped-steth', decimals: 18 },
     '0x01bFF41798a0BcF287b996046Ca68b395DbC1071': { coingeckoId: 'tether-gold-tokens', decimals: 6 },
   },
-  bob: {
-    [ADDRESSES.bob.BOB]: { coingeckoId: "bob-build-on-bitcoin", decimals: 18 },
-    [ADDRESSES.bob.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-    [ADDRESSES.bob.WBTC_OFT]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-    [ADDRESSES.bob.SolvBTC]: { coingeckoId: "solv-protocol-btc", decimals: 18 },
-    [ADDRESSES.bob.SolvBTC_BBN]: { coingeckoId: "solv-protocol-staked-btc", decimals: 18 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
