@@ -31,24 +31,12 @@ module.exports = {
       '0x77CcA710E21A94B94a26A98eA23027D64e36B9d4', // suBTC
     ]
   }),
-  zklink: compoundExports2({
-    comptroller: '0xe6099D924efEf37845867D45E3362731EaF8A98D',
-    blacklistedTokens: [
-      '0x0Cf1cC35e296931061c263826B5f62DC04ac1C6B', // suBTC
-    ]
-  }),
-  bsquared: compoundExports2({
-    comptroller: '0xdD9C863197df28f47721107f94eb031b548B5e48',
-    blacklistedTokens: [
-      '0x8C38b023Afe895296e2598AE111752223185b35c', // suUSD
-      '0xb1FdC3f660b0953253141B2509c43014d5d3d733', // suBTC
-    ]
-  }),
   core: compoundExports2({
     comptroller: '0x7f5a7aE2688A7ba6a9B36141335044c058a08b3E',
     blacklistedTokens: [
       '0xaAC83D5E45A2f67f2bFd1B804776EFa7DAF6cbF6', // suUSD
       '0xaE6388F58b5b35D5B2eEC828C9633E7D245FEf62', // suBTC
+      '0xe04d21d999faedf1e72ade6629e20a11a1ed14fa', // solvBTC.m
     ]
   }),
   bsc: compoundExports2({
@@ -68,6 +56,7 @@ module.exports = {
       '0x8C38b023Afe895296e2598AE111752223185b35c', // suUSD
       '0xb1FdC3f660b0953253141B2509c43014d5d3d733', // suETH
       '0xc7fFEAa5949d50A408bD92DdB0D1EAcef3F8a3Bc', // suBTC
+      '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e', // brBTC
     ]
   }),
   btr: compoundExports2({
@@ -81,6 +70,7 @@ module.exports = {
     blacklistedTokens: [
       '0xAbcdc5827f92525F56004540459045Ec3e432ebF', // suBTC
       '0x7465fedB29023d11effe8C74E82A7ecEBf15E947', // suETH
+      '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a', // enzoBTC
     ]
   })
 }

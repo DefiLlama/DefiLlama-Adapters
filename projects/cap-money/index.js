@@ -49,11 +49,13 @@ const borrowed = async (api) => {
         agentAndAsset.map(({ agent, asset }) => ({
             abi: capABI.Lender.debt,
             target: infra.lender.address,
-            params: [agent, asset]
+            params: [agent, asset],
+            permitFailure : true
         }))
     );
 
     for (const [{ asset }, debt] of arrayZip(agentAndAsset, results)) {
+        if (!debt) continue;
         api.add(asset, debt)
     }
 }
@@ -61,8 +63,5 @@ const borrowed = async (api) => {
 module.exports = {
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
     start: 1000235,
-    ethereum: {
-        tvl,
-        borrowed,
-    }
+    ethereum: { tvl, borrowed }
 };
