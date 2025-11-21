@@ -11,15 +11,13 @@ const {
   offerCreatedTopic_v2_4_0,
   offerCreatedTopic_v2_5_0,
   offerVoidedTopic,
-  rangeReservedTopic,
-  buyerCommittedTopic_v2_0_0,
+   buyerCommittedTopic_v2_0_0,
   buyerCommittedTopic_v2_5_0,
   OfferCreatedEvent_v2_0_0,
   OfferCreatedEvent_v2_3_0,
   OfferCreatedEvent_v2_4_0,
   OfferCreatedEvent_v2_5_0,
   OfferVoidedEvent,
-  RangeReservedEvent,
   FundsEncumberedEvent,
   FundsReleasedEvent,
   BuyerCommittedEvent_v2_0_0,
@@ -101,30 +99,6 @@ async function getCommits(api) {
   return commitsByOffer;
 }
 
-async function getReservedRanges(api) {
-  const logs = await getLogs({
-    api,
-    target: protocolDiamondAddress,
-    topics: [rangeReservedTopic],
-    fromBlock: protocolDeploymentBlock[api.chain],
-    extraKey: "reservedRanges",
-    eventAbi: RangeReservedEvent,
-    onlyArgs: true,
-  });
-
-  const reservedRangeByOffer = {};
-
-  for (const log of logs) {
-    const offerId = BigInt(log.offerId);
-    const startExchangeId = BigInt(log.startExchangeId);
-    const endExchangeId = BigInt(log.endExchangeId);
-
-    reservedRangeByOffer[offerId] = { startExchangeId, endExchangeId }; // there can be only one reserved range per offer
-  }
-
-  return reservedRangeByOffer;
-}
-
 async function getEncumberedFunds(api) {
   const FundsEncumberedLogs = await getLogs({
     api,
@@ -166,6 +140,5 @@ module.exports = {
   getVoidedOffers,
   getOffers,
   getCommits,
-  getReservedRanges,
   getEncumberedFunds,
 };

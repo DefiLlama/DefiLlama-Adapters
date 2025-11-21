@@ -16,7 +16,6 @@ const offerCreatedTopic_v2_3_0 = "0xb6a507882e43ec6bae2f276ce4a839f1ca9dcf2da730
 const offerCreatedTopic_v2_4_0 = "0xa76af238b31b285c9397e2a7c55650ca18a1baf6504de15d7dd1321693144cf7";
 const offerCreatedTopic_v2_5_0 = "0x5235a4f9db2e479e7353e22e7629a4556897ddaf0ab4eaeb9bb8660c8e49a903";
 const offerVoidedTopic = "0xe7c7f2b8b4a6597a3aa617aff2d206ea5507c118fb6d4e54e130279510796fd5";
-const rangeReservedTopic = "0xede05ffdb8c59f6f9e12923efcf03736da40cda9a4c5ba60ac2b6238b8b86a60";
 
 const buyerCommittedTopic_v2_0_0 = "0x442279a0d0683a12971990518f9f3f874391650139a762c4e94b23b51f04d94f";
 const buyerCommittedTopic_v2_5_0 = "0xb52015a0ea2e0345baee81bf183c410328b8f8d0cfd380c43006bb84b78fc100";
@@ -35,8 +34,6 @@ const OfferCreatedEvent_v2_5_0 =
   "event OfferCreated(uint256 indexed offerId, uint256 indexed sellerId, (uint256 id, uint256 sellerId, uint256 price, uint256 sellerDeposit, uint256 buyerCancelPenalty, uint256 quantityAvailable, address exchangeToken, uint8 priceType, uint8 creator, string metadataUri, string metadataHash, bool voided, uint256 collectionIndex, (address[] recipients, uint256[] bps)[] royaltyInfo, uint256 buyerId) offer, (uint256 validFrom, uint256 validUntil, uint256 voucherRedeemableFrom, uint256 voucherRedeemableUntil) offerDates, (uint256 disputePeriod, uint256 voucherValid, uint256 resolutionPeriod) offerDurations, (uint256 disputeResolverId, uint256 escalationResponsePeriod, uint256 feeAmount, uint256 buyerEscalationDeposit, address mutualizerAddress) disputeResolutionTerms, (uint256 protocolFee, uint256 agentFee) offerFees, uint256 indexed agentId, address executedBy)";
 const OfferVoidedEvent =
   "event OfferVoided(uint256 indexed offerId, uint256 indexed creatorId, address indexed executedBy)";
-const RangeReservedEvent =
-  "event RangeReserved(uint256 indexed offerId, uint256 indexed sellerId, uint256 startExchangeId, uint256 endExchangeId, address owner, address indexed executedBy)";
 
 const FundsEncumberedEvent =
   "event FundsEncumbered(uint256 indexed entityId, address indexed exchangeToken, uint256 amount, address indexed executedBy)";
@@ -59,7 +56,6 @@ module.exports = {
   offerCreatedTopic_v2_4_0,
   offerCreatedTopic_v2_5_0,
   offerVoidedTopic,
-  rangeReservedTopic,
   buyerCommittedTopic_v2_0_0,
   buyerCommittedTopic_v2_5_0,
   OfferCreatedEvent_v2_0_0,
@@ -67,7 +63,6 @@ module.exports = {
   OfferCreatedEvent_v2_4_0,
   OfferCreatedEvent_v2_5_0,
   OfferVoidedEvent,
-  RangeReservedEvent,
   FundsEncumberedEvent,
   FundsReleasedEvent,
   BuyerCommittedEvent_v2_0_0,

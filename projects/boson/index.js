@@ -5,7 +5,6 @@ const {
     getVoidedOffers,
     getOffers,
     getCommits,
-    getReservedRanges,
     getEncumberedFunds,
 } = require("./utils");
 
@@ -14,6 +13,9 @@ async function tvl(api) {
   // Includes all buyer commitments, seller deposits and dispute resolution fees for active exchanges for both Fixed Price and Price Discovery offers.
   // It also includes all additional commits as result of Sequential Commitments
   const tokenBalances = await getEncumberedFunds(api);
+
+  console.log("Encumbered Funds:");
+  console.table(tokenBalances);
 
   // Listed offers with uncommitted quantity
   const voidedOffers = await getVoidedOffers(api);  
@@ -26,52 +28,27 @@ async function tvl(api) {
   // Get the existing commits to avoid double counting
   const commitsByOffer = await getCommits(api);
 
-  // Handle first the offers with upfront known quantityAvailable
-  const limitedOffers = fixedPriceOffers.filter((i) => i.offer?.quantityAvailable !== MaxUint256); // MaxUint256 indicates unlimited quantityAvailable
-  for (const offer of limitedOffers) {
+  for (const offer of fixedPriceOffers) {
     const offerId = BigInt(offer.offerId);
-    // Uncommitted quantity is total quantityAvailable minus already committed quantity
-    // No need to check for reserved ranges since they do not affect the quantityAvailable
+    
+    // Calculate the remaining uncommitted quantity
     const uncommittedQuantity = BigInt(offer.offer.quantityAvailable) - BigInt(commitsByOffer[offerId]?.length || 0);
 
-    addUncommittedQuantityToTokenBalances(offer, uncommittedQuantity, tokenBalances);
-  }
+    if (uncommittedQuantity > 0n) {
+        const exchangeToken = offer.offer.exchangeToken;
+        const price = BigInt(offer.offer.price);
 
-  // Handle the offers with unlimited quantityAvailable
-  // Their uncommitted quantity is determined by the reserved range minus the number of commits that fall within its reserved range
-  // If there are any additional commits outside the reserved range, belonging to the same offer, they are included in TVL in `getEncumberedFunds` already
-  const unlimitedOffers = fixedPriceOffers.filter((i) => i.offer?.quantityAvailable === MaxUint256);
-  const reservedRanges = await getReservedRanges(api);
-  for (const offer of unlimitedOffers) {
-    const offerId = BigInt(offer.offerId);
-    const reservedRange = reservedRanges[offerId];
-    if (reservedRange) {
-      const { startExchangeId, endExchangeId } = reservedRange;
-      // Check if any of the commits fall within the reserved range
-      // Range is inclusive of both startExchangeId and endExchangeId
-      const commitsInRange =
-        commitsByOffer[offerId]?.filter((exchangeId) => {
-          const exId = BigInt(exchangeId);
-          return exId >= startExchangeId && exId <= endExchangeId;
-        }).length || 0n;
-      const uncommittedQuantity = endExchangeId - startExchangeId + 1n - commitsInRange;
-
-      addUncommittedQuantityToTokenBalances(offer, uncommittedQuantity, tokenBalances);
+        // Use only a single price (ignore quantity) to avoid TVL inflation
+        // When buyers are committing, the TVL will increase accordingly
+        tokenBalances[exchangeToken] = (tokenBalances[exchangeToken] || 0n) + price; 
     }
   }
 
+
+  console.log("Offers ")
+  console.table(tokenBalances);
+
   api.addTokens(Object.keys(tokenBalances), Object.values(tokenBalances));
-}
-
-function addUncommittedQuantityToTokenBalances(offer, uncommittedQuantity, tokenBalances) {
-  const exchangeToken = offer.offer.exchangeToken;
-  const price = BigInt(offer.offer.price);
-  const sellerDeposit = BigInt(offer.offer.sellerDeposit);
-  const drFeeAmount = BigInt(offer.disputeResolutionTerms.feeAmount);
-  const lockedPerExchange = price + sellerDeposit + drFeeAmount;
-  const totalLocked = lockedPerExchange * uncommittedQuantity;
-
-  tokenBalances[exchangeToken] = (tokenBalances[exchangeToken] || 0n) + totalLocked;
 }
 
 module.exports = {
@@ -92,13 +69,13 @@ module.exports = {
   polygon: {
     tvl,
   },
-  base: {
-    tvl,
-  },
-  optimism: {
-    tvl,
-  },
-  arbitrum: {
-    tvl,
-  },
+  // base: {
+  //   tvl,
+  // },
+  // optimism: {
+  //   tvl,
+  // },
+  // arbitrum: {
+  //   tvl,
+  // },
 };
