@@ -41,7 +41,7 @@ async function usdStarTvlData() {
   const balances = {};
   for (let i = 0; i < usdStarVaults.length; i++) {
     const vault = usdStarVaults[i];
-    const tvl = vault.account.accounting.yieldingTvl.toNumber() / 10 ** 6;
+    const tvl = vault.account.accounting.yieldingTvl.toNumber();
     const key = "solana:" + vault.account.config.yieldingTokenMint.toString();
 
     if (!(key in balances)) {
