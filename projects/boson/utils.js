@@ -1,25 +1,26 @@
 const ethers = require("ethers");
 const { getLogs } = require("../helper/cache/getLogs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const {
   protocolDiamondAddress,
   protocolDeploymentBlock,
+  fundsDepositedTopic,
   fundsEncumberedTopic,
-  fundsReleasedTopic,
   offerCreatedTopic_v2_0_0,
   offerCreatedTopic_v2_3_0,
   offerCreatedTopic_v2_4_0,
   offerCreatedTopic_v2_5_0,
   offerVoidedTopic,
-   buyerCommittedTopic_v2_0_0,
+  buyerCommittedTopic_v2_0_0,
   buyerCommittedTopic_v2_5_0,
   OfferCreatedEvent_v2_0_0,
   OfferCreatedEvent_v2_3_0,
   OfferCreatedEvent_v2_4_0,
   OfferCreatedEvent_v2_5_0,
   OfferVoidedEvent,
+  FundsDepositedEvent,
   FundsEncumberedEvent,
-  FundsReleasedEvent,
   BuyerCommittedEvent_v2_0_0,
   BuyerCommittedEvent_v2_5_0,
 } = require("./constants");
@@ -42,7 +43,14 @@ async function getOffers(api, voidedOffers = []) {
   const response = await getLogs({
     api,
     target: protocolDiamondAddress,
-    topics: [[offerCreatedTopic_v2_0_0, offerCreatedTopic_v2_3_0, offerCreatedTopic_v2_4_0, offerCreatedTopic_v2_5_0]],
+    topics: [
+      [
+        offerCreatedTopic_v2_0_0,
+        offerCreatedTopic_v2_3_0,
+        offerCreatedTopic_v2_4_0,
+        offerCreatedTopic_v2_5_0,
+      ],
+    ],
     fromBlock: protocolDeploymentBlock[api.chain],
     extraKey: "offerCreated",
   });
@@ -79,7 +87,10 @@ async function getCommits(api) {
   });
 
   // Combine all versions of the BuyerCommitted event
-  const iface = new ethers.Interface([BuyerCommittedEvent_v2_0_0, BuyerCommittedEvent_v2_5_0]);
+  const iface = new ethers.Interface([
+    BuyerCommittedEvent_v2_0_0,
+    BuyerCommittedEvent_v2_5_0,
+  ]);
 
   const parsedLogs = response.map((log) => {
     return iface.parseLog(log)?.args;
@@ -99,46 +110,40 @@ async function getCommits(api) {
   return commitsByOffer;
 }
 
-async function getEncumberedFunds(api) {
-  const FundsEncumberedLogs = await getLogs({
+async function getDepositedAndEncumberedBalances(api) {
+  const response = await getLogs({
     api,
     target: protocolDiamondAddress,
-    topics: [fundsEncumberedTopic],
+    topics: [[fundsDepositedTopic, fundsEncumberedTopic]],
     fromBlock: protocolDeploymentBlock[api.chain],
-    eventAbi: FundsEncumberedEvent,
-    onlyArgs: true,
-    extraKey: "fundsEncumbered",
+    extraKey: "incomingFunds",
   });
 
-  const encumberedByToken = {};
-  for (const log of FundsEncumberedLogs) {
-    const token = log.exchangeToken;
-    const amount = BigInt(log.amount);
-    encumberedByToken[token] = (encumberedByToken[token] || 0n) + amount;
-  }
+  // Combine all versions of the OfferCreated event
+  const iface = new ethers.Interface([
+    FundsDepositedEvent,
+    FundsEncumberedEvent,
+  ]);
 
-  const FundsReleasedLogs = await getLogs({
+  const parsedLogs = response.map((log) => {
+    return iface.parseLog(log)?.args;
+  });
+
+  // Get the token list
+  const uniqueTokens = new Set(
+    parsedLogs.map((i) => i.tokenAddress || i.exchangeToken)
+  );
+
+  return sumTokens2({
     api,
-    target: protocolDiamondAddress,
-    topics: [fundsReleasedTopic],
-    fromBlock: protocolDeploymentBlock[api.chain],
-    eventAbi: FundsReleasedEvent,
-    onlyArgs: true,
-    extraKey: "fundsReleased",
+    tokens: Array.from(uniqueTokens),
+    owner: protocolDiamondAddress,
   });
-
-  for (const log of FundsReleasedLogs) {
-    const token = log.exchangeToken;
-    const amount = BigInt(log.amount);
-    encumberedByToken[token] -= amount;
-  }
-
-  return encumberedByToken;
 }
 
 module.exports = {
   getVoidedOffers,
   getOffers,
   getCommits,
-  getEncumberedFunds,
+  getDepositedAndEncumberedBalances,
 };
