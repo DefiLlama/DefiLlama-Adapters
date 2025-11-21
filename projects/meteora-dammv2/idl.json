@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "name": "cp_amm",
+  "constants": [],
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "docs": ["Pool creator"],
+            "type": "publicKey"
+          },
+          {
+            "name": "config",
+            "docs": ["Pool configuration"],
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAMint",
+            "docs": ["Token A mint"],
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenBMint",
+            "docs": ["Token B mint"],
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAVault",
+            "docs": ["Token A vault"],
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenBVault",
+            "docs": ["Token B vault"],
+            "type": "publicKey"
+          },
+          {
+            "name": "sqrtPrice",
+            "docs": ["Square root price"],
+            "type": "u128"
+          },
+          {
+            "name": "liquidity",
+            "docs": ["Total liquidity"],
+            "type": "u128"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [],
+  "events": [],
+  "errors": []
+}
