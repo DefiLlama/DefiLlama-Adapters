@@ -54,7 +54,7 @@ const fixBalancesTokens = {
     [ADDRESSES.mezo.mUSDC]: { coingeckoId: "usd-coin", decimals: 18 },
     [ADDRESSES.mezo.mUSDT]: { coingeckoId: "tether", decimals: 18 },
     [ADDRESSES.mezo.mDAI]: { coingeckoId: "dai", decimals: 18 },
-    [ADDRESSES.mezo.mSolvBTC]: { coingeckoId: "solv-protocol-btc", decimals: 18 },
+    [ADDRESSES.mezo.mSolvBTC]: { coingeckoId: "solv-btc", decimals: 18 },
     [ADDRESSES.mezo.mT]: { coingeckoId: "threshold-network-token", decimals: 18 },
     [ADDRESSES.mezo.mUSDe]: { coingeckoId: "ethena-usde", decimals: 18 },
     [ADDRESSES.mezo.mcbBTC]: { coingeckoId: "coinbase-wrapped-btc", decimals: 18 },
