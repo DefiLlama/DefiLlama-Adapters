@@ -1,19 +1,14 @@
 const { gql, request } = require("graphql-request");
 
-const SUBGRAPH_ENDPOINTS = {
-  arbitrum:
-    "https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-arbitrum/prod/gn",
-  sonic:
-    "https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-sonic/prod/gn",
-  base: "https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-base/prod/gn",
-  blast:
-    "https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-blast/prod/gn",
-  mantle:
-    "https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-mantle/prod/gn",
-};
+const CONFIG = {
+  arbitrum: 'https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-arbitrum/prod/gn',
+  sonic: 'https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-sonic/prod/gn',
+  base: 'https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-base/prod/gn',
+  blast: 'https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-blast/prod/gn',
+  mantle: 'https://api.0xgraph.xyz/api/public/e2146f32-5728-4755-b1d1-84d17708c119/subgraphs/clamm-mantle/prod/gn'
+}
 
-const abi =
-  "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
+const abi = "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
 
 const query = gql`
   query strikes($limit: Int!, $skip: Int!) {
@@ -43,9 +38,7 @@ async function fetchStrikes(endpoint, limit, skip, allData = []) {
   const { strikes } = await request(endpoint, query, variables);
   allData.push(...strikes);
 
-  if (strikes.length === limit) {
-    return fetchStrikes(endpoint, limit, skip + limit, allData);
-  }
+  if (strikes.length === limit) return fetchStrikes(endpoint, limit, skip + limit, allData);
 
   return allData;
 }
@@ -79,50 +72,32 @@ function addV3PositionBalances(strike, sqrtPricesMap) {
   return { token0, amount0, token1, amount1 };
 }
 
-function tvlByChain(chain) {
-  return async function (api) {
-    const endpoint = SUBGRAPH_ENDPOINTS[chain];
-    if (!endpoint)
-      throw new Error(`No subgraph endpoint configured for chain: ${chain}`);
+const tvl = async (api) => {
+  const chain = api.chain
+  if (chain === 'base' || chain === 'mantle' || chain === 'blast') return
+  const endpoint = CONFIG[chain]
+  const limit = 1000
+  const allData = await fetchStrikes(endpoint, limit, 0)
 
-    const limit = 1000;
-    const allData = await fetchStrikes(endpoint, limit, 0);
-
-    let pools = allData.map((strike) => strike.pool.toLowerCase());
+  let pools = allData.map((strike) => strike.pool.toLowerCase());
     pools = [...new Set(pools)];
     const sqrtPrices = await api.multiCall({ calls: pools, abi });
     const sqrtPricesMap = sqrtPrices.reduce((acc, item, i) => {
       return { ...acc, [pools[i]]: item };
-    }, {});
+  }, {});
 
-    allData.forEach((strike) => {
-      const { token0, amount0, token1, amount1 } = addV3PositionBalances(
-        strike,
-        sqrtPricesMap
-      );
+  allData.forEach((strike) => {
+    const { token0, amount0, token1, amount1 } = addV3PositionBalances(strike, sqrtPricesMap);
       api.add(token0, amount0);
       api.add(token1, amount1);
     });
   };
-}
 
 module.exports = {
-  doublecounted: true, // tokens are stored in UNI-V3 pools
-  arbitrum: {
-    tvl: tvlByChain("arbitrum"),
-  },
-  sonic: {
-    tvl: tvlByChain("sonic"),
-  },
-  base: {
-    tvl: tvlByChain("base"),
-  },
-  blast: {
-    tvl: tvlByChain("blast"),
-  },
-  mantle: {
-    tvl: tvlByChain("mantle"),
-  },
-  methodology:
-    "TVL is calculated by summing the value of all tokens in Stryke liquidity positions across supported chains",
-};
+  doublecounted: true, // tokens are stored in UNI-V3 pools,
+  methodology: 'TVL is calculated by summing the value of all tokens in Stryke liquidity positions across supported chains'
+}
+
+Object.keys(CONFIG).forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

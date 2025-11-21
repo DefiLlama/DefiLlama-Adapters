@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
-const chains = ['ethereum', 'arbitrum', 'merlin', 'bouncebit', 'btr', 'bsc', 'base', 'bsquared', 'core', 'bevm', 'mantle', 'scroll', 'bob', 'ailayer', 'iotex', 'rsk', 'zeta', 'hemi', 'bouncebit', 'goat', 'plume_mainnet', 'hsk']
+const chains = ['ethereum', 'arbitrum', 'merlin', 'btr', 'bsc', 'base', 'bsquared', 'core', 'bevm', 'mantle', 'scroll', 'bob', 'ailayer', 'iotex', 'rsk', 'zeta', 'hemi', 'goat', 'plume_mainnet', 'hsk']
 
 chains.forEach(chain => {
   module.exports[chain] = {

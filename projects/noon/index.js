@@ -13,6 +13,10 @@ const contracts = {
   era: {
     usn: '0x0469d9d1dE0ee58fA1153ef00836B9BbCb84c0B6',
     susn: '0xB6a09d426861c63722Aa0b333a9cE5d5a9B04c4f',
+  },
+  tac: {
+    usn: '0x51A30E647D33A044967FA3DBb04d6ED6F45455F6',
+    susn: '0x5Ced7F73B76A555CCB372cc0F0137bEc5665F81E',
   }
 }
 
@@ -46,6 +50,9 @@ module.exports = {
   },
   era: {
     tvl: tvl('era')
+  },
+  tac: {
+    tvl: tvl('tac'),
   },
   hallmarks: [
     [1737979200, "Public Beta"]

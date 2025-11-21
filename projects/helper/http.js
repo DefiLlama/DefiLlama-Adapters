@@ -24,8 +24,13 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   }
 }
 
-async function get(endpoint, options) {
+async function get(endpoint, options = {}) {
+  const tonApiKey = getEnv('TON_API_KEY')
   try {
+    if (tonApiKey && endpoint.includes('tonapi.io')) {
+      if (!options.headers) options.headers = {}
+      options.headers['Authorization'] = tonApiKey
+    }
     const data = (await axios.get(endpoint, options)).data
     return data
   } catch (e) {
@@ -64,6 +69,20 @@ async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, c
   return request(endpoint, graphQuery, params)
 }
 
+function extractIndexedBlockNumberFromError(errorString) {
+  const patterns = [
+    /Failed to decode.*block\.number.*has only indexed up to block number (\d+)/,
+    /missing block: \d+, latest: (\d+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = errorString.match(pattern);
+    if (match) return +match[1];
+  }
+  
+  return null;
+}
+
 async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   endpoint = sdk.graph.modifyEndpoint(endpoint)
   const graphQLClient = new GraphQLClient(endpoint)
@@ -76,10 +95,9 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
     e.chain = api.chain
     if (!block) throw e
     const errorString = e.toString()
-    const isBlockCatchupIssue = /Failed to decode.*block.number.*has only indexed up to block number \d+/.test(errorString)
-    if (!isBlockCatchupIssue) throw e
-    const indexedBlockNumber = +errorString.match(/indexed up to block number (\d+) /)[1]
-    sdk.log('We have indexed only upto ', indexedBlockNumber, 'requested block: ', block)
+    const indexedBlockNumber = extractIndexedBlockNumberFromError(errorString);
+    if (!indexedBlockNumber) throw e;
+    sdk.log('Block catchup detected: subgraph indexed up to', indexedBlockNumber, 'but requested block was', block, 'falling back to indexed block')
     if (block - blockCatchupLimit > indexedBlockNumber)
       throw e
     return graphQLClient.request(query, { block: indexedBlockNumber })

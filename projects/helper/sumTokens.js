@@ -79,7 +79,7 @@ async function sumTokens(options) {
   const evmAddressExceptions = new Set(['tron', 'xdc'])
   const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
-
+  
   if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
     if (nonEvmOwnerFound) throw new Error('chain handler missing: ' + chain)
     return sumTokensEVM(options)
@@ -108,7 +108,7 @@ async function sumTokens(options) {
   options.blacklistedTokens = blacklistedTokens
   let helper = helpers[chain] || altEVMHelper[chain]
 
-  if (ibcChains.includes(chain)) helper = helpers.cosmos
+  if (ibcChains.includes(chain) && nonEvmOwnerFound) helper = helpers.cosmos
 
   if (helper) {
     switch (chain) {
@@ -127,6 +127,7 @@ async function sumTokens(options) {
     return balances
 
   } else if (!specialChains.includes(chain)) {
+    if (ibcChains.includes(chain)) return sumTokensEVM(options) 
     throw new Error('chain handler missing!!!')
   }
 

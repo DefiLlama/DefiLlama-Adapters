@@ -8,6 +8,36 @@ const configs = {
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
       ],
     },
+    ethereum: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+    },
+    polygon: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+    },
+    unichain: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+    },
+    katana: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+    },
+    arbitrum: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+    },
+    hemi: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458'
+      ],
+    },
   }
 }
 

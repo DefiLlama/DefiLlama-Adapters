@@ -33,6 +33,13 @@ const config = {
       collateralVault: "0xc1A09c3443d578a85DE35368a1a58E8989F4721b",
       pools: []
     }
+  },
+   katana: {
+    dUSD: {
+      address: '0xcA52d08737E6Af8763a2bF6034B3B03868f24DDA',
+      collateralVault: "0xA5f9F6238406B1301D0ED09555a2893dc1A26A49",
+      pools: []
+    },
   }
 }
 
@@ -61,11 +68,14 @@ async function getAMOTvl(api) {
 }
 
 module.exports = {
-  methodology: 'Includes TVL for dLEND and TVL for dSTABLEs (dUSD, dS, etc).',
+  methodology: 'Includes TVL for dLEND and TVL for dSTABLEs (dUSD, dS, dETH).',
   fraxtal: {
     tvl: getAMOTvl
   },
   sonic: {
     tvl: getAMOTvl,
-  }
+  },
+  katana: {
+    tvl: getAMOTvl,
+  },
 };
