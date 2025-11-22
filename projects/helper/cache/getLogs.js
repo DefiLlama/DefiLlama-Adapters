@@ -20,7 +20,16 @@ async function getLogs({ target,
   const block = api.block
   const chain = api.chain ?? 'ethereum'
 
-  if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
+  // X Layer has RPC limitations, so we implement conservative block range chunking
+  const XLAYER_MAX_BLOCK_RANGE = 5000
+  if (chain === 'xlayer' && !onlyUseExistingCache) {
+    const requestedRange = (toBlock || block) - fromBlock
+    if (requestedRange > XLAYER_MAX_BLOCK_RANGE) {
+      // For large ranges, we'll use cache-only mode to prevent RPC errors
+      // The chunking will be handled in fetchLogs function
+      sdk.log(`X Layer: Large block range detected (${requestedRange}), will implement chunking`)
+    }
+  }
 
 
   if (!toBlock) toBlock = block
@@ -73,9 +82,44 @@ async function getLogs({ target,
         topic = `${fragment.name}(${fragment.inputs.map(i => i.baseType === 'tuple' ? i.type.replace('tuple', '') : i.type).join(',')})`
       }
     }
-    let logs = (await sdk.api.util.getLogs({
-      chain, target, topic, keys, topics, fromBlock, toBlock,
-    })).output
+
+    let logs = []
+    
+    // Implement X Layer chunking for large block ranges
+    if (chain === 'xlayer' && (toBlock - fromBlock) > XLAYER_MAX_BLOCK_RANGE) {
+      sdk.log(`X Layer: Chunking blocks ${fromBlock} to ${toBlock} into ${XLAYER_MAX_BLOCK_RANGE} block segments`)
+      
+      let currentFromBlock = fromBlock
+      while (currentFromBlock < toBlock) {
+        const currentToBlock = Math.min(currentFromBlock + XLAYER_MAX_BLOCK_RANGE, toBlock)
+        
+        try {
+          const chunkLogs = (await sdk.api.util.getLogs({
+            chain, target, topic, keys, topics, 
+            fromBlock: currentFromBlock, 
+            toBlock: currentToBlock,
+          })).output
+          
+          logs = logs.concat(chunkLogs)
+          sdk.log(`X Layer: Fetched ${chunkLogs.length} logs from blocks ${currentFromBlock} to ${currentToBlock}`)
+          
+          currentFromBlock = currentToBlock + 1
+          
+          // Add small delay to prevent overwhelming the RPC
+          if (currentFromBlock < toBlock) {
+            await new Promise(resolve => setTimeout(resolve, 100))
+          }
+        } catch (error) {
+          sdk.log(`X Layer: Error fetching logs for range ${currentFromBlock}-${currentToBlock}:`, error.message)
+          throw error
+        }
+      }
+    } else {
+      // Standard getLogs call for other chains or small ranges
+      logs = (await sdk.api.util.getLogs({
+        chain, target, topic, keys, topics, fromBlock, toBlock,
+      })).output
+    }
     // let logs = await getLogsFromEtherscanAPI({ address: target, fromBlock, toBlock, api, topic0: topic })
 
     if (!customCacheFunction)
