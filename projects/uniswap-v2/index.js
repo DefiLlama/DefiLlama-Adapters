@@ -25,6 +25,7 @@ const config = {
   celo: '0x79a530c8e2fA8748B7B40dd3629C0520c2cCf03f',
   zora: '0x0F797dC7efaEA995bB916f268D919d0a1950eE3C',
   unichain: '0x1F98400000000000000000000000000000000002',
+  monad: '0x182a927119d56008d921126764bf884221b10f59',
 }
 
 Object.keys(config).forEach(chain => {
