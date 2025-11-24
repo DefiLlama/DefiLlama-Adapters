@@ -1,4 +1,3 @@
-const { sumTokens2 } = require('../helper/unwrapLPs');
 const { fetchURL } = require('../helper/utils');
 
 const BASE_URL = 'https://mainnet-dapp1.sunube.net:7740/query';
@@ -10,24 +9,15 @@ function buildQueryUrl(queryType, params = {}) {
   return queryParams ? `${url}&${queryParams}` : url;
 }
 
-async function tvl(api, isBorrows) {
-  const { data } = await fetchURL(
-    buildQueryUrl('get_stats_supply_deposit')
-  );
+async function tvl(api) {
+  const { data: totalStakeRaw } = await fetchURL(buildQueryUrl('get_total_stake_all_users'));
 
-
-  data.forEach(({ asset_id, total_borrow, total_deposit }) => {
-    const balance = isBorrows ? total_borrow : total_deposit - total_borrow;
-    api.add(asset_id, balance);
-  });
-
-  return sumTokens2({ api });
+  api.add('5F16D1545A0881F971B164F1601CBBF51C29EFD0633B2730DA18C403C3B428B5', totalStakeRaw);
 }
 
 module.exports = {
   timetravel: false,
   chromia: {
-    tvl: (api) => tvl(api, false),
-    borrowed: (api) => tvl(api, true),
+    tvl
   },
 }
