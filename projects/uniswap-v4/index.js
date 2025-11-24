@@ -21,8 +21,6 @@ const config = {
   monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895 },
 }
 
-const useIndexerChains = ['monad'];
-
 const eventAbi = "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)"
 
 Object.keys(config).forEach(chain => {
@@ -33,7 +31,7 @@ Object.keys(config).forEach(chain => {
 
       let compressType
       if (chain === 'base') compressType = 'v1'
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType, useIndexer: useIndexerChains.includes(chain) })
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType, useIndexer: true, })
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
