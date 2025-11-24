@@ -9,36 +9,37 @@ async function getBalances() {
   const tvlBalances = {};
   const borrowedBalances = {};
   
-  const data = (await api.query.loans.markets.entries());
+  const data = await api.query.loans.markets.entries();
 
   for (let i = 0; i < data.length; i++) {
-    const [underlyingId, marketData] = data[i];
+    const [storageKey, marketData] = data[i];
 
-    const isActive = marketData?.toJSON().state == "Active";
-    if (!isActive) {
-      continue;
-    }
+    const marketJson = marketData?.toJSON();
+    const isActive = marketJson?.state === "Active";
+    if (!isActive) continue;
 
-    const lendTokenId = marketData.toJSON().lendTokenId;
-    
-    const [issuanceExchangeRate, totalIssuance, totalBorrows]  = await Promise.all([
-      api.query.loans.exchangeRate(underlyingId.toHuman()[0]).then((rawExchangeRate) => 
-        parseInt(rawExchangeRate) / (10 ** FIXEDI128_SCALING_FACTOR)
-      ),
+    const lendTokenId = marketJson.lendTokenId;
+
+    const currencyId = storageKey.args[0];
+
+    const [rawExchangeRate, totalIssuanceCodec, totalBorrowsCodec] = await Promise.all([
+      api.query.loans.exchangeRate(currencyId),
       api.query.tokens.totalIssuance(lendTokenId),
-      api.query.loans.totalBorrows(underlyingId.toHuman()[0]),
+      api.query.loans.totalBorrows(currencyId),
     ]);
 
-    const totalTvl = (totalIssuance * issuanceExchangeRate) - totalBorrows;
-    addTokenBalance({ balances: tvlBalances, chain, atomicAmount: totalTvl, ccyArg: underlyingId.__internal__args[0] });
+    const issuanceExchangeRate = Number(rawExchangeRate.toString()) / (10 ** FIXEDI128_SCALING_FACTOR);
 
-    addTokenBalance({ balances: borrowedBalances, chain, atomicAmount: totalBorrows, ccyArg: underlyingId.__internal__args[0] });
+    const totalIssuance = Number(totalIssuanceCodec.toString());
+    const totalBorrows = Number(totalBorrowsCodec.toString());
+
+    const totalTvl = totalIssuance * issuanceExchangeRate - totalBorrows;
+
+    addTokenBalance({ balances: tvlBalances, chain, atomicAmount: totalTvl, ccyArg: currencyId });
+    addTokenBalance({ balances: borrowedBalances, chain, atomicAmount: totalBorrows, ccyArg: currencyId });
   }
 
-  return {
-    tvl: tvlBalances,
-    borrowed: borrowedBalances,
-  };
+  return { tvl: tvlBalances, borrowed: borrowedBalances };
 }
 
 module.exports = {
