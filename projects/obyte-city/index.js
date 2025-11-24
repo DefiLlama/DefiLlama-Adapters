@@ -52,10 +52,11 @@ async function totalTvl() {
 
 module.exports = {
     timetravel: false,
-        misrepresentedTokens: true,
+    misrepresentedTokens: true,
     methodology:
         "The TVL is the total USD-value of funds locked in the agent of the CITY platform",
     obyte: {
-        tvl: totalTvl
+        tvl: () => ({}),
+        staking: totalTvl,
     }
 }
