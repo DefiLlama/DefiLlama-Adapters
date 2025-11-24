@@ -125,7 +125,7 @@ function validateHallmarks(hallmark) {
 
   // throw error if module doesnt start with lowercase letters
   if (!/^[a-z]/.test(moduleArg)) {
-    throw new Error("Module name should start with a lowercase letter");
+    throw new Error("Module name should start with a lowercase letter: " + moduleArg);
   }
 
   let module = {};
