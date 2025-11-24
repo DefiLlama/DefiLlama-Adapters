@@ -117,6 +117,30 @@ const MorphoConfigs = {
       },
     ],
   },
+  arbitrum: {
+    vaultFactories: [
+      {
+        address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
+        fromBlock: 296447195,
+      },
+    ],
+  },
+  hemi: {
+    vaultFactories: [
+      {
+        address: '0x8e52179BeB18E882040b01632440d8Ca0f01da82',
+        fromBlock: 1188885,
+      }
+    ]
+  },
+  sei: {
+    vaultFactories: [
+      {
+        address: '0x8Dea49ec5bd5AeAc8bcf96B3E187F59354118291',
+        fromBlock: 168896078,
+      }
+    ]
+  }
 }
 
 const EulerConfigs = {
@@ -163,6 +187,26 @@ const EulerConfigs = {
   bsc: {
     vaultFactories: [
       '0x7f53e2755eb3c43824e162f7f6f087832b9c9df6',
+    ],
+  },
+  tac: {
+    vaultFactories: [
+      '0x2b21621b8Ef1406699a99071ce04ec14cCd50677',
+    ],
+  },
+  plasma: {
+    vaultFactories: [
+      '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3',
+    ],
+  },
+  linea: {
+    vaultFactories: [
+      '0x84711986fd3bf0bfe4a8e6d7f4e22e67f7f27f04',
+    ],
+  },
+  arbitrum: {
+    vaultFactories: [
+      '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
     ],
   },
 }

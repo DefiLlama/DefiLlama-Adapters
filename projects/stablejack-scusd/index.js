@@ -5,30 +5,21 @@ const stablejackWTokens = [
   '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3',
 ];
 
-// Mapping is no longer necessary for price, but can keep for clarity
-const tokenMapping = {
-  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3': '0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4', // artBTC
-};
-
-const BTCB_TOKEN = '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E'; // Use BTCB token for pricing
-
 async function stablejackTVL(api) {
   const totalUnderlyingValues = await api.multiCall({
     abi: 'function totalUnderlying() view returns (uint256)',
     calls: stablejackWTokens,
   });
 
-  stablejackWTokens.forEach((wToken, i) => {
-    // Use BTCB token address for pricing instead of artBTC
-    api.add(BTCB_TOKEN, totalUnderlyingValues[i]);
-  });
+  stablejackWTokens.forEach((wToken, i) => 
+    api.add(wToken, totalUnderlyingValues[i])
+  );
 
   return api.getBalances();
 }
 
 module.exports = {
   timetravel: true,
-  misrepresentedTokens: true, // Because we use BTCB price for artBTC tokens
   methodology:
     "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts such as artBTC wrapper, priced as BTCB since artBTC price is not indexed.",
   start: 1719292800, // 2024-06-25

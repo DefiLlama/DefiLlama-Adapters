@@ -11,7 +11,7 @@ module.exports = mergeExports([treasuryExports({
   ethereum: {
     tokens: [nullAddress],
     owners: [reserveTreasury],
-    ownTokens: ["0x320623b8e4ff03373931769a31fc52a4e78b5d70"],
+    ownTokens: ["0x320623b8e4ff03373931769a31fc52a4e78b5d70", "0x0d86883faf4ffd7aeb116390af37746f45b6f378"],
   },
 }), {
   base: {
