@@ -35,8 +35,8 @@ const abi = [
   },
 ];
 
-async function monTvl(timestamp, ethBlock, { mon: block }) {
-  const chain = "mon";
+async function monTvl(timestamp, ethBlock, { monad: block }) {
+  const chain = "monad";
   const pooledMON = await sdk.api.abi.call({
     abi,
     target:"0x106d0e2bff74b39d09636bdcd5d4189f24d91433",
@@ -69,7 +69,7 @@ async function monTvl(timestamp, ethBlock, { mon: block }) {
 
 module.exports = {
     methodology:"Counts the total amount deposited in all pools",
-    mon: {
+    monad: {
         tvl: monTvl
     }
 }
