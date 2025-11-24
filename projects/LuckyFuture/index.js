@@ -59,6 +59,7 @@ async function tvl(api) {
     if (spotPositions?.length) {
       spotPositions.forEach(position => {
         const tokenMint = getTokenMintFromMarketIndex(position.market_index)
+        if (!tokenMint) return
         const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index])
         api.add(tokenMint, adjustedBalance)
       })

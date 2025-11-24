@@ -12,6 +12,8 @@ const COINGECKO_MAPPING = {
   USDE: "ethena-usde",
   PUMP: "pump-fun",
   USDC: "usd-coin",
+  THBILL: "theo-short-duration-us-treasury-fund",
+  FARTCOIN: "fartcoin",
   XPL: "plasma"
 };
 
@@ -25,7 +27,7 @@ const getClosestRecord = async (api) => {
   const targetMs = api.timestamp * 1000;
   const { data: records } = await getConfig('liminal-money/tvl-history', API_URL);
 
-  const closest = records
+  const closest = records.customized
     .map((r) => ({ ...r, diff: Math.abs(new Date(r.timestamp).getTime() - targetMs) }))
     .filter((r) => r.diff <= MAX_DIFF_MS)
     .reduce((target, curr) => (!target || curr.diff < target.diff ? curr : target), null);
@@ -44,13 +46,39 @@ const getClosestRecord = async (api) => {
   return { timestamp: ts, totalValueLocked, breakdown: enrichedBreakdown };
 }
 
+async function addTokenizdData(api) {
+  const targetMs = api.timestamp * 1000;
+  const { data: records } = await getConfig('liminal-money/tvl-history', API_URL);
+
+
+  const getClosestRecord = data => data
+    .map((r) => ({ ...r, diff: Math.abs(new Date(r.timestamp).getTime() - targetMs) }))
+    .filter((r) => r.diff <= MAX_DIFF_MS)
+    .reduce((target, curr) => (!target || curr.diff < target.diff ? curr : target), null);
+
+  
+  
+  
+  records.tokenized.forEach(i => {
+    const record = getClosestRecord(i.data)
+    if (record) api.addUSDValue(+record.totalAssets)
+  })
+}
+
 const tvl = async (api) => {
   const record = await getClosestRecord(api);
   if (!record) return;
+
+  await addTokenizdData(api);
+
   const { spotUsdc, perpUsdc, assetBreakdown } = record.breakdown
   api.addCGToken('usd-coin', spotUsdc+perpUsdc)
 
   assetBreakdown.forEach(({ perpName, spotHolding, perpMarginUsed }) => {
+    if (!COINGECKO_MAPPING[perpName]) {
+      api.log(`Liminal Money: Missing Coingecko mapping for asset ${perpName}, skipping TVL addition.`);
+      return;
+    }
     const cgName = COINGECKO_MAPPING[perpName] || perpName.toLowerCase();
     api.addCGToken(cgName, spotHolding);
     api.addCGToken('usd-coin', perpMarginUsed);

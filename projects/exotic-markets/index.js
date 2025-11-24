@@ -49,33 +49,38 @@ async function getTailCandidates(conn) {
 async function filterToSplTokenAccounts(conn, addrs) {
   if (!addrs.length) return []
   // Use owner + data length to verify “is SPL token account” quickly
-  const infos = await conn.getMultipleAccountsInfo(addrs.map(a => new PublicKey(a)))
+
   const out = []
-  for (let i = 0; i < infos.length; i++) {
-    const info = infos[i]
-    if (info && info.owner.equals(TOKEN_PROG) && info.data?.length === 165) out.push(addrs[i])
+  const CHUNK_SIZE = 100
+
+  for (let i = 0; i < addrs.length; i += CHUNK_SIZE) {
+    const chunk = addrs.slice(i, i + CHUNK_SIZE)
+    const infos = await conn.getMultipleAccountsInfo(chunk.map(a => new PublicKey(a)))
+
+    for (let j = 0; j < infos.length; j++) {
+      const info = infos[j]
+      if (info && info.owner.equals(TOKEN_PROG) && info.data?.length === 165) {
+        out.push(chunk[j])
+      }
+    }
   }
+
   return out
 }
 
 async function tvl() {
   const { connection } = getProvider()
 
-  // 1) Backfilled snapshot
   const base = snapshot.tokenAccounts || []
-
-  // 2) Small live tail discovery
   const tailCandidates = await getTailCandidates(connection)
-  const tailVerified = await filterToSplTokenAccounts(connection, tailCandidates)
+  const candidates = [...new Set([...base, ...tailCandidates])]
+  const tokenAccounts = await filterToSplTokenAccounts(connection, candidates)
 
-  // 3) Union & sum
-  const tokenAccounts = [...new Set([...base, ...tailVerified])]
   return sumTokens2({ tokenAccounts })
 }
 
 module.exports = {
   timetravel: false, // discovery uses recent live txs
   solana: { tvl },
-  methodology:
-    'Sums balances of snapshot vault SPL token accounts and unions a small live scan of recent program transactions to discover newly created/funded vaults. The snapshot is updated weekly via a separate process.',
+  methodology: 'Sums balances of snapshot vault SPL token accounts and unions a small live scan of recent program transactions to discover newly created/funded vaults. The snapshot is updated weekly via a separate process.',
 }
