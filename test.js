@@ -120,6 +120,14 @@ function validateHallmarks(hallmark) {
 }
 
 (async () => {
+
+  const moduleArg = process.argv[2]
+
+  // throw error if module doesnt start with lowercase letters
+  if (!/^[a-z]/.test(moduleArg)) {
+    throw new Error("Module name should start with a lowercase letter");
+  }
+
   let module = {};
   module = require(passedFile)
   if (module.hallmarks) {
