@@ -19,6 +19,7 @@ const config = {
   linea: { factory: '0x84711986Fd3BF0bFe4a8e6d7f4E22E67f7f27F04', },
   plasma: { factory: '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3', },
   mantle: { factory: '0x47Aaf2f062aa1D55AFa602f5C9597588f71E2d76', },
+  monad: { factory: '0xba4Dd672062dE8FeeDb665DD4410658864483f1E', },
 }
 
 Object.keys(config).forEach(chain => {
