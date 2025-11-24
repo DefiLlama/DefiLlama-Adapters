@@ -195,7 +195,11 @@ async function getLogs({ target,
   }
 }
 
-async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, useIndexer = false, ...rest }) {
+const indexerChains = new Set(['monad', 'base'])
+
+async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, useIndexer, ...rest }) {
+
+  if (useIndexer === undefined) useIndexer = indexerChains.has(api.chain)
   const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead, compressType, useIndexer, ...rest })
   return res.map(transform)
 }

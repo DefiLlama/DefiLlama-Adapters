@@ -31,7 +31,7 @@ Object.keys(config).forEach(chain => {
 
       let compressType
       if (chain === 'base') compressType = 'v1'
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType, useIndexer: true, })
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType,})
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
