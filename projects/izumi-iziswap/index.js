@@ -41,6 +41,7 @@ const poolHelpers = {
   'kava': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'hemi': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'plume_mainnet': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'monad': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
