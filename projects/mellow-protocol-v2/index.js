@@ -5,7 +5,8 @@ const config = {
   ethereum: {},
   lisk: {},
   bsc: {},
-  fraxtal: {}
+  fraxtal: {},
+  monad: {}
 }
 
 let _vaultsApiResponse
@@ -31,7 +32,7 @@ async function tvl(api) {
   const coreVaultCollectResults = (
     await sdk.api.abi.multiCall({
       calls: coreVaults.map((vault) => ({ target: vault.collector, params: ['0x0000000000000000000000000000000000000000', vault.address, [vault.base_token.address, 0, 0]] })),
-      abi: 'function collect(address,address,(address,uint256,uint256)) view returns ((address,address,address[],uint8[],uint256[],(address,address,bool,bool,bool,uint256,uint256[])[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(address,address,uint256,uint256,uint256)[],(address,address,uint256,uint256,uint256)[],uint256,uint256))',
+      abi: 'function collect(address,address,(address,uint256,uint256)) view returns ((address,address,address[],uint8[],uint256[],(address,address,bool,bool,bool,uint256,uint256[])[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(address,address,uint256,uint256,uint256,uint256)[],(address,address,uint256,uint256,uint256,uint256)[],uint256,uint256))',
       permitFailure: true,
     })
   ).output.map(x => x.output);
