@@ -121,11 +121,11 @@ function validateHallmarks(hallmark) {
 
 (async () => {
 
-  const moduleArg = process.argv[2]
+  const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
 
   // throw error if module doesnt start with lowercase letters
   if (!/^[a-z]/.test(moduleArg)) {
-    throw new Error("Module name should start with a lowercase letter");
+    throw new Error("Module name should start with a lowercase letter: " + moduleArg);
   }
 
   let module = {};
