@@ -8,7 +8,7 @@ const config = {
   berachain: {
     backstopPool: "0xfa158Cf7cD83F418eBD1326121810466972447F6",
   },
-  hyperevm: {
+  hyperliquid: {
     backstopPool: "0x2cD52FF130FD8c4cB1F83c9a179C41FbB06d2363",
   },
   monad: {
