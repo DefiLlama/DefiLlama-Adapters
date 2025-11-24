@@ -8,7 +8,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer = false }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -16,6 +16,8 @@ async function getLogs({ target,
     toBlock = 1e11
   else
     await api.getBlock()
+
+  if (useIndexer === undefined) useIndexer = indexerChains.has(api.chain)
 
   const block = api.block
   const chain = api.chain ?? 'ethereum'
@@ -199,7 +201,6 @@ const indexerChains = new Set(['monad', 'base'])
 
 async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, useIndexer, ...rest }) {
 
-  if (useIndexer === undefined) useIndexer = indexerChains.has(api.chain)
   const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead, compressType, useIndexer, ...rest })
   return res.map(transform)
 }
