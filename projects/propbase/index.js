@@ -1,5 +1,5 @@
-const axios = require("axios");
 const { function_view } = require('../helper/chain/aptos');
+const { getConfig } = require("../helper/cache");
 
 const PROPS_FA = "0x6dba1728c73363be1bdd4d504844c40fbb893e368ccbeff1d1bd83497dbc756d";
 const USDC_FA = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
@@ -16,7 +16,7 @@ module.exports = {
   aptos: {
     tvl: async (api) => {
       const chain = "aptos";
-      const { data } = await axios.get(`https://contractaddress.propbase.app/production`);
+      const data = await getConfig('propbase/config', `https://contractaddress.propbase.app/production`);
 
       // --- RWA Pools (USDC) ---
       for (const pool of data.NOVA_POOLS) {
@@ -81,7 +81,7 @@ module.exports = {
 
     staking: async (api) => {
       const chain = "aptos";
-      const { data } = await axios.get(`https://contractaddress.propbase.app/production`);
+      const data = await getConfig('propbase/config', `https://contractaddress.propbase.app/production`);
 
       for (const pool of data.STAKING_POOLS) {
         const fa_balance = await function_view({

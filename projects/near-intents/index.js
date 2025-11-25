@@ -1,5 +1,4 @@
 const axios = require('axios');
-const chains = require('../helper/chains.json');
 
 let cachedBalances = null;
 let fetchPromise = null;
@@ -17,7 +16,17 @@ async function fetchBalances() {
   // Start a new fetch and cache the promise
   fetchPromise = axios.get('https://platform.data.defuse.org/api/public/tvl')
     .then(response => {
-      cachedBalances = response.data.balances;
+      const allBalances = response.data.balances;
+      
+      // Filter out chains with zero TVL
+      cachedBalances = {};
+      Object.keys(allBalances).forEach(chain => {
+        const balance = allBalances[chain];
+        if (balance && Object.values(balance).some(amount => amount > 0)) {
+          cachedBalances[chain] = balance;
+        }
+      });
+      
       return cachedBalances;
     })
     .finally(() => {
@@ -38,8 +47,20 @@ async function tvl(api) {
   return chainBalances[currentChain];
 }
 
+// Only export the chains that actually have TVL data
+// This list was determined by running the adapter and checking which chains have non-zero balances
+const activeChains = [
+  'bitcoin',  'aptos',     'avax',
+  'doge',     'berachain', 'cardano',
+  'ethereum', 'arbitrum',  'stellar',
+  'optimism', 'sui',       'xdai',
+  'solana',   'bsc',       'near',
+  'polygon',  'base',      'zcash',
+  'tron',     'ripple',    'ton'
+];
+
 module.exports = {
   timetravel: false,
   methodology: 'TVL calculated from tokens locked in NEAR Intents Verifier contract across multiple chains',
-  ...Object.fromEntries(chains.map(chain => [chain, { tvl }]))
+  ...Object.fromEntries(activeChains.map(chain => [chain, { tvl }]))
 };

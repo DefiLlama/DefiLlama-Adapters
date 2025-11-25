@@ -73,7 +73,17 @@ const config = {
             ETH: ADDRESSES.mantle.WETH,
         }
     },
-    
+    xlayer: {
+        mosContract: "0x0000317Bec33Af037b5fAb2028f52d14658F6A56",
+        tokens: {
+            USDT: "0x1e4a5963abfd975d8c9021ce480b42188849d41d",
+            USDC: "0x74b7f16337b8972027f6196a17a631ac6de26d22",
+            ETH: "0x5a77f1443d16ee5761d310e38b62f77f726bc71c",
+            BTC: "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1",
+            OKB: "0xe538905cf8410324e03a5a23c1c177a474d59b2b",
+        }
+    },
+
     klaytn: {
         mosContract: "0x0000317Bec33Af037b5fAb2028f52d14658F6A56",
         tokens: {
@@ -121,7 +131,7 @@ const config = {
             WETH: ADDRESSES.scroll.WETH,
         }
     },
-    
+
     tron: {
         mosContract: "TXsDYB9ovFEFg4cja6gn1t1tpmrnSbYhHA",
         tokens: {
@@ -130,7 +140,7 @@ const config = {
             USDT: ADDRESSES.tron.USDT,
         }
     },
-    
+
     // solana: {
     //   mosContract: "AGwu8gfXJshkB9UMM3eexeq26m7zf8wM1FgNdBt5wkqN",
     //   tokens: {
@@ -139,7 +149,7 @@ const config = {
     //     USDT: ADDRESSES.solana.USDT,
     //   }
     // },
-    
+
     // near: {
     //   mosContract: "mosv21.mfac.butternetwork.near",
     //   tokens: {
@@ -150,7 +160,7 @@ const config = {
     //     // MAP: "mapo.mfac.butternetwork.near"
     //   }
     // },
-    
+
 }
 module.exports = {
     methodology: 'get the amount of token deposited in MOS contract on each supported chain.',

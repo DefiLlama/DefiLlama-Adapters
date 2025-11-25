@@ -132,6 +132,14 @@ const MorphoConfigs = {
         fromBlock: 1188885,
       }
     ]
+  },
+  sei: {
+    vaultFactories: [
+      {
+        address: '0x8Dea49ec5bd5AeAc8bcf96B3E187F59354118291',
+        fromBlock: 168896078,
+      }
+    ]
   }
 }
 

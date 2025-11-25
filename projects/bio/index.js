@@ -64,11 +64,9 @@ async function tvl(api) {
 module.exports = {
   methodology: 'Calculates TVL by summing token balances in staking/vesting contracts across Ethereum and Base chains',
   ethereum: {
-    tvl: () => ({}),
-    staking: tvl,
+    tvl,
   },
   base: {
-    tvl: () => ({}),
-    staking: tvl,
+    tvl,
   },
 }

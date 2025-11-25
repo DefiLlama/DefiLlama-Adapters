@@ -191,6 +191,7 @@ module.exports = {
   getVaultPublicKey,
   VOLTR_PROGRAM_ID,
   DRIFT_VAULT_PROGRAM_ID,
+  CUSTOM_PROGRAM_ID,
 };
 
 function getVaultPublicKey(seed, marketIndex) {

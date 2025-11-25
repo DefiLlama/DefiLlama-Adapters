@@ -119,6 +119,7 @@ const defaultTokens = {
     "0x7712c34205737192402172409a8f7ccef8aa2aec", // BUIDL
     '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
     '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', //USD1
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
   ],
   tron: [
     nullAddress,
@@ -146,6 +147,7 @@ const defaultTokens = {
   solana: [
     ADDRESSES.solana.USDC, // USDC
     ADDRESSES.solana.USDT, // USDT
+    'gtBTCGWvSRYYoZpU9UZj6i3eUGUpgksXzzsbHk2K9So'
   ],
   bsc: [
     nullAddress,
@@ -186,6 +188,7 @@ const defaultTokens = {
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
     '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', // USD1
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3'  //GTBTC
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -203,6 +206,10 @@ const defaultTokens = {
     ADDRESSES.arbitrum.LPT, //lpt
     '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+  ],
+  base: [
+    nullAddress,
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3'
   ],
   avax: [
     nullAddress,

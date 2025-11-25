@@ -126,13 +126,29 @@ async function call({ target, abi, params = [], rawStack = false, }) {
   return stack
 }
 
+async function addJettonBalances({ api, jettonAddress, addresses }) {
+  api.log('Fetching Jetton balances', { jettonAddress, addresses: addresses.length })
+  const chunks = sliceIntoChunks(addresses, 399)
+  let i = 0
+  for (const chunk of chunks) {
+    api.log('Fetching Jetton balances', { jettonAddress, chunk: i++, chunks: chunks.length })
+    const { jetton_wallets } = await get('https://toncenter.com/api/v3/jetton/wallets?owner_address=' + encodeURIComponent(chunk.join(',')) + '&jetton_address=' + encodeURIComponent(jettonAddress) + '&include_boc=false' + (key ? `&api_key=${key}` : ''))
+    jetton_wallets.forEach(({ balance }) => {
+      api.add(jettonAddress, balance)
+    })
+    if (addresses.length > 199) {
+      await sleep(3000)
+    }
+  }
+}
+
 async function addTonBalances({ api, addresses }) {
   api.log('Fetching TON balances', { addresses: addresses.length })
   const chunks = sliceIntoChunks(addresses, 399)
   let i = 0
   for (const chunk of chunks) {
     api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
-    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + (key ? `?api_key=${key}` : '') + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
+    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false' + (key ? `&api_key=${key}` : ''))
     accounts.forEach(({ balance }) => {
       api.add(ADDRESSES.null, balance)
     })
@@ -286,6 +302,7 @@ class BitReader {
 
 module.exports = {
   addTonBalances,
+  addJettonBalances,
   getTonBalance,
   getTokenRates,
   sumTokens,

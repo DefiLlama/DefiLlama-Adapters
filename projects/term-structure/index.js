@@ -24,6 +24,10 @@ const EVENTS = {
     CreateVault:
       "event CreateVault(address indexed vault, address indexed creator, (address admin,address curator,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate) indexed initialParams)",
   },
+  V1Plus: {
+    VaultCreated:
+      "event VaultCreated(address indexed vault, address indexed creator, tuple(address admin,address curator,address guardian,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy,uint64 minIdleFundRate) initialParams)",
+  },
   V2: {
     MarketCreated:
       "event MarketCreated(address indexed market, address indexed collateral, address indexed debtToken, tuple(address collateral,address debtToken,address admin,address gtImplementation,tuple(address treasurer,uint64 maturity,tuple(uint32 lendTakerFeeRatio,uint32 lendMakerFeeRatio,uint32 borrowTakerFeeRatio,uint32 borrowMakerFeeRatio,uint32 mintGtFeeRatio,uint32 mintGtFeeRef) feeConfig) marketConfig,(address oracle,uint32 liquidationLtv,uint32 maxLtv,bool liquidatable) loanConfig,bytes gtInitalParams,string tokenName,string tokenSymbol) params)",
@@ -39,7 +43,7 @@ const ADDRESSES = {
   arbitrum: {
     Factory: {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
-      fromBlock: 322193553,
+      fromBlock: 322190000,
     },
     VaultFactory: [
       {
@@ -52,6 +56,10 @@ const ADDRESSES = {
         address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
         fromBlock: 385228046,
       },
+      {
+        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
+        fromBlock: 385228046,
+      },
     ],
   },
   bsc: {
@@ -59,23 +67,41 @@ const ADDRESSES = {
       address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
       fromBlock: 50519690,
     },
+    FactroryV2: [
+      // Start of TermMax Alpha
+      {
+        address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
+        fromBlock: 67248948,
+      },
+      // End of TermMax Alpha
+    ],
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
-        fromBlock: 50519690,
+        fromBlock: 50519589,
       },
     ],
     VaultFactoryV2: [
       {
         address: "0x1401049368eD6AD8194f8bb7E41732c4620F170b",
-        fromBlock: 63192842,
+        fromBlock: 63100000,
       },
+      {
+        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
+        fromBlock: 63100000,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0xC63858D1eFa377f94392Ba5dEb521233Ec1548eb",
+        fromBlock: 67251242,
+      },
+      // End of TermMax Alpha
     ],
   },
   ethereum: {
     Factory: {
       address: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
-      fromBlock: 22174761,
+      fromBlock: 22174000,
     },
     FactoryV2: [
       {
@@ -97,14 +123,20 @@ const ADDRESSES = {
         fromBlock: 22283092,
       },
     ],
+    VaultFactoryV1Plus: [
+      {
+        address: "0x3a9ECfFDBDc595907f65640F810d3dDDDDe2FA61",
+        fromBlock: 23138659,
+      },
+    ],
     VaultFactoryV2: [
       {
         address: "0xF2BDa87CA467eB90A1b68f824cB136baA68a8177",
-        fromBlock: 23445703,
+        fromBlock: 23430000,
       },
       {
         address: "0x5b8B26a6734B5eABDBe6C5A19580Ab2D0424f027",
-        fromBlock: 23488637,
+        fromBlock: 23430000,
       },
     ],
   },
@@ -112,27 +144,27 @@ const ADDRESSES = {
     FactoryV2: [
       {
         address: "0x4BC4F8f9B212B5a3F9f7Eeb35Ae1A91902670F7f",
-        fromBlock: 11541942,
+        fromBlock: 11541952,
       },
     ],
     VaultFactoryV2: [
       {
         address: "0x65fC69DE62E11592E8Acf57a0c97535209090Ef1",
-        fromBlock: 11541942,
+        fromBlock: 11541953,
       },
     ],
   },
   hyperliquid: {
     FactoryV2: [
       {
-        address: "0xDeC5E1D1E1bC3E3c6b8b7b5E3f0F1A2B3C4D5E6F",
-        fromBlock: 12345678,
+        address: "0xC1Ce945e55506B384daDDEf48FA5A78554560ad3",
+        fromBlock: 15997179,
       },
     ],
     VaultFactoryV2: [
       {
-        address: "0xF1E2D3C4B5A697887766554433221100FFEEDDCC",
-        fromBlock: 12345678,
+        address: "0xA0E0702b701cCaC329732Bb409681612f43E41AD",
+        fromBlock: 15997362,
       },
     ],
   },
@@ -227,6 +259,28 @@ async function getTermMaxVaultAddresses(api) {
   return addresses;
 }
 
+async function getTermMaxVaultV1PlusAddresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactoryV1Plus) return [];
+  const addresses = [];
+  const promises = [];
+  for (const vaultFactory of ADDRESSES[api.chain].VaultFactoryV1Plus) {
+    const promise = async () => {
+      const logs = await getLogs({
+        api,
+        eventAbi: EVENTS.V1Plus.VaultCreated,
+        fromBlock: vaultFactory.fromBlock,
+        target: vaultFactory.address,
+        onlyArgs: true,
+        extraKey: `termmax-vault-v1-plus-${api.chain}`,
+      });
+      for (const [vault] of logs) addresses.push(vault);
+    };
+    promises.push(promise());
+  }
+  await Promise.all(promises);
+  return addresses;
+}
+
 async function getTermMaxVaultV2Addresses(api) {
   if (!ADDRESSES[api.chain].VaultFactoryV2) return [];
   const addresses = [];
@@ -250,13 +304,14 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV2Addresses] = await Promise.all([
-    getTermMaxVaultAddresses(api),
-    getTermMaxVaultV2Addresses(api),
-  ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
+    await Promise.all([
+      getTermMaxVaultAddresses(api),
+      getTermMaxVaultV1PlusAddresses(api),
+    ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
-    .concat(vaultV2Addresses)
+    .concat(vaultV1PlusAddresses)
     .filter((address) => !VAULT_BLACKLIST[api.chain]?.includes(address));
   const assets = await api.multiCall({
     abi: ABIS.Vault.asset,
@@ -266,11 +321,31 @@ async function getTermMaxVaultOwnerTokens(api) {
   return assets.map((asset, idx) => [[asset], vaultAddresses[idx]]);
 }
 
+async function recordVaultV2Assets(api) {
+  const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
+  const [assets, totalAssets] = await Promise.all([
+    api.multiCall({
+      abi: ABIS.Vault.asset,
+      calls: vaultV2Addresses,
+    }),
+    api.multiCall({
+      abi: "uint256:totalAssets",
+      calls: vaultV2Addresses,
+    }),
+  ]);
+  for (let i = 0; i < vaultV2Addresses.length; i += 1) {
+    const asset = assets[i];
+    const totalAsset = totalAssets[i];
+    api.add(asset, totalAsset);
+  }
+}
+
 async function getTermMaxOwnerTokens(api) {
   const [marketOwnerTokens, vaultOwnerTokens] = await Promise.all([
     getTermMaxMarketOwnerTokens(api),
     getTermMaxVaultOwnerTokens(api),
   ]);
+  await recordVaultV2Assets(api);
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
