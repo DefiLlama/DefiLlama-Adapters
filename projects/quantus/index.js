@@ -1,0 +1,6 @@
+const { compoundExports2, methodology } = require('../helper/compound')
+
+module.exports = {
+    monad: compoundExports2({ comptroller: '0x4997bFD5b983A829d15aef6E129D25AA6ec811ba' }),
+    methodology: "Quantus Finance is a decentralized lending platform built on the Monad blockchain, designed to make borrowing and lending crypto simple, fast, and cost-effective. Thanks to Monad’s high speed and low latency, transactions confirm quickly and funds move smoothly, giving users a seamless experience. You can deposit or borrow a wide range of popular crypto assets, and smart algorithms automatically adjust interest rates to make the most of your capital. On top of that, Quantus Finance uses multiple layers of risk control—like over-collateralization, liquidation mechanisms, and real-time monitoring—to keep your assets safe. As an important part of the Monad ecosystem, Quantus Finance doesn’t just serve everyday users; it also gives developers and partners easy-to-use, transparent, and open DeFi tools to integrate into their projects.",
+}
