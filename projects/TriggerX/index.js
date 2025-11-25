@@ -13,7 +13,7 @@ const chains = {
 // ---------------------- PREFETCH ----------------------
 const prefetch = async (options) => {
   const { startTimestamp, endTimestamp } = options;
-
+       
   return queryDuneSql(options, `
     WITH txs AS (
       -- ARBITRUM ONLY
