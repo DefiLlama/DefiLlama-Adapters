@@ -15,7 +15,7 @@ async function tvl({ api }) {
     })
 
     pooled.forEach((pool, i) => {
-        api.add(Object.values(pools)[i], pool.output.totalAmount)
+        api.add(Object.values(pools)[i], pool.totalAmount)
     })
 }
 
