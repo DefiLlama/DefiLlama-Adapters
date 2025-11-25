@@ -1,3 +1,27 @@
+const { cachedGraphQuery } = require('../helper/cache')
+
+// Subgraph endpoint for base chain agent tokens
+const BASE_SUBGRAPH_URL = 'https://subgraph.satsuma-prod.com/02e9db8f44e3/8qxl0hc8dpsfpp0yd7egmv/bio-agents-subgraph-mainnet/version/v8.50/api'
+
+// GraphQL query for agent tokens with staking contracts
+const GET_AGENT_TOKENS_QUERY = `
+  query AgentTokenWithStaking {
+    launches(
+      where: {
+        agentTokenAddress_not: null,
+        stakingContractAddress_not: null
+      },
+      first: 500,
+      orderBy: createdAtTimestamp,
+      orderDirection: asc
+    ) {
+      launchId
+      agentTokenAddress
+      stakingContractAddress
+    }
+  }
+`
+
 // Token and staking contract configurations per chain
 const config = {
   ethereum: [
@@ -43,16 +67,45 @@ const config = {
     { token: '0x492AE2107F952b02f2554cE153841933c09d6d43', staking: '0xec637540aE2DA2b795aFe9427B840A827cF72f9a' },
     // EDMT
     { token: '0x7dB6dFE35158bab10039648CE0e0e119d0ec21ec', staking: '0x9dFF3a11F315288cdb100364D6a81088ea9C6A7F' },
-    // D1CKGPT
-    { token: '0xE183b1A4DD59Ca732211678EcA1836EE35bCE582', staking: '0xf17268f639C67512AB3857bD2113EE147eCD1C18' },
-    // vitastem
-    { token: '0x5D4d258144bc954aEfC00ee6cBdA0433b1B2dcD3', staking: '0x240384103A66B87aB055BfC905306f1BA406941C' },
+    // Additional base tokens are fetched dynamically from subgraph
   ],
 }
 
+/**
+ * Fetches agent token configurations from the subgraph for base chain
+ * @returns {Promise<Array<{token: string, staking: string}>>} Array of token/staking pairs
+ */
+async function fetchBaseAgentTokens() {
+  try {
+    const result = await cachedGraphQuery(
+      'bio-base-agent-tokens',
+      BASE_SUBGRAPH_URL,
+      GET_AGENT_TOKENS_QUERY
+    )
+
+    // Transform subgraph response to internal format
+    // Handles both result.data.launches and result.launches formats
+    const launches = result?.data?.launches || result?.launches || []
+
+    return launches.map(launch => ({
+      token: launch.agentTokenAddress,
+      staking: launch.stakingContractAddress
+    }))
+  } catch (error) {
+    console.error('Failed to fetch base agent tokens from subgraph:', error.message)
+    return [] // Graceful degradation - use static config only
+  }
+}
+
 async function tvl(api) {
-  const chainConfig = config[api.chain]
+  let chainConfig = config[api.chain]
   if (!chainConfig) return {}
+
+  // For base chain, append dynamically fetched agent tokens
+  if (api.chain === 'base') {
+    const dynamicTokens = await fetchBaseAgentTokens()
+    chainConfig = [...chainConfig, ...dynamicTokens]
+  }
 
   const tokens = chainConfig.map(c => c.token)
   const calls = chainConfig.map(c => ({ target: c.token, params: [c.staking] }))
