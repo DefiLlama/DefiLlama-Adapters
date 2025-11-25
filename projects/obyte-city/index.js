@@ -7,49 +7,24 @@
 const {
     getBalances,
     fetchOswapExchangeRates,
-    fetchOswapAssets,
     getDecimalsByAsset,
     executeGetter,
     getAaStateVars,
 } = require('../helper/chain/obyte')
 
 const CITY_AA_ADDRESS = 'CITYC3WWO5DD2UM6HQR3H333RRTD253Q'
+const GBYTE_DECIMALS = 9;
 
 async function totalTvl() {
-    const [assetMetadata, exchangeRates, balances] = await Promise.all([
-        fetchOswapAssets(),
+    const [exchangeRates, balances] = await Promise.all([
         fetchOswapExchangeRates(),
         getBalances([CITY_AA_ADDRESS]).then((balances) => balances[CITY_AA_ADDRESS])
     ]);
 
-    const assetDecimals = {};
-    const decimalGetters = [];
+    const gbyteTvl = balances.base.total / 10 ** GBYTE_DECIMALS;
+    const gbyteTvlInUSD = gbyteTvl * exchangeRates.GBYTE_USD;
 
-    Object.keys(balances).forEach((asset) => {
-        const decimals = assetMetadata[asset]?.decimals;
-
-        if (decimals !== undefined) {
-            assetDecimals[asset] = decimals;
-        } else {
-            decimalGetters.push(getDecimalsByAsset(asset).then((decimals) => assetDecimals[asset] = decimals))
-        }
-    });
-
-    await Promise.all(decimalGetters);
-
-    let tvl = 0;
-
-    Object.entries(balances).forEach(async ([asset, { stable: balance = 0 }]) => {
-        const assetKey = (asset === "base") ? "GBYTE" : asset;
-        const usdRate = exchangeRates[`${assetKey}_USD`] ?? 0;
-        const decimals = assetDecimals[asset];
-
-        if (decimals !== undefined) {
-            tvl += (balance / 10 ** decimals) * usdRate;
-        }
-    });
-
-    return { tether: tvl }
+    return { tether: gbyteTvlInUSD }
 }
 
 async function totalStaking() {
