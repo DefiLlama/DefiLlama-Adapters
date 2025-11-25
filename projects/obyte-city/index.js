@@ -9,6 +9,8 @@ const {
     fetchOswapExchangeRates,
     fetchOswapAssets,
     getDecimalsByAsset,
+    executeGetter,
+    getAaStateVars,
 } = require('../helper/chain/obyte')
 
 const CITY_AA_ADDRESS = 'CITYC3WWO5DD2UM6HQR3H333RRTD253Q'
@@ -50,13 +52,33 @@ async function totalTvl() {
     return { tether: tvl }
 }
 
+async function totalStaking() {
+    const [
+        depositedSupply,
+        exchangeRates,
+        constants
+    ] = await Promise.all([
+        executeGetter(CITY_AA_ADDRESS, 'get_deposited_supply', []),
+        fetchOswapExchangeRates(),
+        getAaStateVars(CITY_AA_ADDRESS, 'constants').then(vars => vars?.constants)
+    ]);
+
+    const decimals = await getDecimalsByAsset(constants.asset);
+
+    const price = exchangeRates[`${constants.asset}_USD`];
+    const staked = price * (depositedSupply / 10 ** decimals);
+
+    return { tether: staked }
+}
+
+
 module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     methodology:
         "The TVL is the total USD-value of funds locked in the agent of the CITY platform",
     obyte: {
-        tvl: () => ({}),
-        staking: totalTvl,
+        tvl: totalTvl,
+        staking: totalStaking,
     }
 }
