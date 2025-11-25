@@ -1,3 +1,4 @@
+const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const config = {
@@ -8,29 +9,24 @@ const config = {
       '0x9BB2c38F57883E5285b7c296c66B9eEA4769eF80',
       '0x99A95a9E38e927486fC878f41Ff8b118Eb632b10',
       '0xE45321525c85fcc418C88E606B96daD8cBcc047f',
-      '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',
+      // '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',  // duplicated in tokensAndOwners
       '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc',
-      '0x2Adf038b67a8a29cDA82f0Eceb1fF0dba704b98d',
+      // '0x2Adf038b67a8a29cDA82f0Eceb1fF0dba704b98d',  // duplicated in tokensAndOwners
       '0xb82749F316CB9c06F38587aBecF3EB1bC842CC93',
       '0xC5deA68CCe26c014BEC516CDA70c107c534a73C4',
-      '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61'
+      // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
     ],
-    usdcHolder: '0x4809010926aec940b550D34a46A52739f996D75D',
     // [token, owner] pairs for direct balance queries
     tokensAndOwners: [
       ['0xe0a80d35bb6618cba260120b279d357978c42bce', '0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'],
       ['0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', '0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'],
-      ['0xBeEf11eCb698f4B5378685C05A210bdF71093521', '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61'],
+      // ['0xBeEf11eCb698f4B5378685C05A210bdF71093521', '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61'], // wrapped version of RUSD, excluded steakRUSD
       ['0xBEeFFF209270748ddd194831b3fa287a5386f5bC', '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC'],
       ['0xA0804346780b4c2e3bE118ac957D1DB82F9d7484', '0x289C204B35859bFb924B9C0759A4FE80f610671c'],
-      ['0x777791C4d6DC2CE140D00D2828a7C93503c67777', '0x2adf038b67a8a29cda82f0eceb1ff0dba704b98d']
+      ['0x777791C4d6DC2CE140D00D2828a7C93503c67777', '0x2adf038b67a8a29cda82f0eceb1ff0dba704b98d'],
+      ['0x62C6E813b9589C3631Ba0Cdb013acdB8544038B7', '0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'],
+      [ADDRESSES.ethereum.USDC, '0x4809010926aec940b550D34a46A52739f996D75D'],
     ],
-    // Special case: query one token but report as another
-    specialMapping: {
-      queryToken: '0x62C6E813b9589C3631Ba0Cdb013acdB8544038B7',
-      queryOwner: '0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903',
-      reportToken: '0x4c9EDD5852cd905f086C759E8383e09bff1E68B3'
-    }
   },
   plasma: {
     tokensAndOwners: [
@@ -51,40 +47,27 @@ const config = {
 
 module.exports.ethereum = {
   tvl: async (api) => {
-    const { funds, usdcHolder, tokensAndOwners, specialMapping } = config.ethereum
-    
-    // Get underlying tokens and balances from funds
-    const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
-    const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
-    const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
-    
-    // Adjust balances and add
-    api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
+    const { funds, tokensAndOwners, } = config.ethereum
 
-    // Add USDC locked
-    await api.sumTokens({ owner: usdcHolder, token: ADDRESSES.ethereum.USDC })
+    const onChainDataTS = new Date('2025-11-22T00:00:00Z').getTime() / 1000
+
+    if (api.timestamp < onChainDataTS) {
+
+      // Get underlying tokens and balances from funds
+      const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
+      const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
+      const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
+
+      // Adjust balances and add
+      api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
+    } else {
+      await sumTokens2({ api, owners: funds, fetchCoValentTokens: true, tokenConfig: { onlyWhitelisted: false } })
+    }
 
     // Add regular token balances
     await api.sumTokens({ tokensAndOwners })
-
-    // Handle special mapping case
-    const specialBalance = await api.call({
-      abi: 'function balanceOf(address) view returns (uint256)',
-      target: specialMapping.queryToken,
-      params: [specialMapping.queryOwner]
-    })
-    api.add(specialMapping.reportToken, specialBalance)
   }
 }
 
-module.exports.plasma = {
-  tvl: async (api) => {
-    await api.sumTokens({ tokensAndOwners: config.plasma.tokensAndOwners })
-  }
-}
-
-module.exports.arbitrum = {
-  tvl: async (api) => {
-    await api.sumTokens({ tokensAndOwners: config.arbitrum.tokensAndOwners })
-  }
-}
+module.exports.plasma = { tvl: sumTokensExport(config.plasma) }
+module.exports.arbitrum = { tvl: sumTokensExport(config.arbitrum) }
