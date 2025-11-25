@@ -1,6 +1,6 @@
 const ethers = require("ethers");
 const { getLogs } = require("../helper/cache/getLogs");
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const sdk = require('@defillama/sdk');
 
 const {
   protocolDiamondAddress,
@@ -129,16 +129,33 @@ async function getDepositedAndEncumberedBalances(api) {
     return iface.parseLog(log)?.args;
   });
 
-  // Get the token list
-  const uniqueTokens = new Set(
+  // Get the ERC20 token list
+  const uniqueTokens = Array.from(new Set(
     parsedLogs.map((i) => i.tokenAddress || i.exchangeToken)
-  );
+  ));
 
-  return sumTokens2({
-    api,
-    tokens: Array.from(uniqueTokens),
-    owner: protocolDiamondAddress,
-  });
+  const balances = {}
+  const uniqueERC20Tokens = uniqueTokens.filter(token => token !== ethers.ZeroAddress);
+  if (uniqueERC20Tokens.length > 0) {
+    const tokenBalances = await sdk.api.abi.multiCall({
+      calls: uniqueERC20Tokens.map(token => ({
+        target: token,
+        params: [protocolDiamondAddress]
+      })),
+      abi: 'erc20:balanceOf',
+      chain: api.chain,
+      block: api.block,
+    });
+    sdk.util.sumMultiBalanceOf(balances, tokenBalances,true);
+
+    api.addTokens(Object.keys(balances), Object.values(balances));
+  }
+
+  // Get native token balance
+  if (uniqueTokens.includes(ethers.ZeroAddress)) {
+    const { output: nativeBalance } = await sdk.api.eth.getBalance({ target: protocolDiamondAddress, chain: api.chain, block: api.block })
+    api.addToken(ethers.ZeroAddress, nativeBalance);
+  }  
 }
 
 module.exports = {
