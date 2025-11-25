@@ -11,12 +11,13 @@ const USDC_monad = "0x754704Bc059F8C67012fEd69BC8A327a5aafb603"; // USDC_monad
 const assets_MONAD = [nullAddress, USDC_monad] // MON, USDC
 
 module.exports = {
-	start: '2024-01-10',
 	arbitrum: {
+		start: '2024-01-10',
 		tvl: sumTokensExport({ owners: [fundStore_arb], tokens: assets_ARB }),
 		staking: sumTokensExport({ owners: [fundStore_arb], tokens: [PINGU_arb] }),
 	},
 	monad: {
+		start: '2025-11-24',
 		tvl: sumTokensExport({ owners: [fundStore_monad], tokens: assets_MONAD }),
 		staking: sumTokensExport({ owners: [fundStore_monad], tokens: [PINGU_monad] }),
 	},
