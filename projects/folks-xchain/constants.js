@@ -347,6 +347,38 @@ const HubPools = {
       tokenAddress: ADDRESSES.bsc.WBTC,
       chainPoolAddress: '0x7218Bd1050D41A9ECfc517abdd294FB8116aEe81',
     },
+  ],
+  'monad': [
+    { // MON
+      poolAddress: "0x10a4481F79aAC209aC6c2959B785F2e303912Dc5",
+      tokenAddress: ADDRESSES.null,
+      chainPoolAddress: '0x531490B7674ef239C9FEC39d2Cf3Cc10645d14d4',
+    },
+    { // wBTC_mon
+      poolAddress: "0xdc887aCFe154BF0048Ae15Cda3693Ab2C237431A",
+      tokenAddress: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
+      chainPoolAddress: '0xF4c542518320F09943C35Db6773b2f9FeB2F847e',
+    },
+    { // wETH_mon 
+      poolAddress: "0xD7Ff49751DAF42Bf7AFC4fF5C958d4bea48358D3",
+      tokenAddress: "0xEE8c0E9f1BFFb4Eb878d8f15f368A02a35481242",
+      chainPoolAddress: '0xe3B0e4Db870aA58A24f87d895c62D3dc5CD05883',
+    },
+    { // sMON
+      poolAddress: "0x5562d84f9891288fc72aaB1d857797c7275Fcedb",
+      tokenAddress: "0xA3227C5969757783154C60bF0bC1944180ed81B9",
+      chainPoolAddress: '0xb39c03297E87032fF69f4D42A6698e4c4A934449',
+    },
+    { // aUSD_mon
+      poolAddress: "0x4fb4c3A33cBe855C5d87078c1BbBe5f371417faC",
+      tokenAddress: "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a",
+      chainPoolAddress: '0xC30107a8e782E98Fe890f0375afa4185aeEa3356',
+    },
+    { // USDT0_mon
+      poolAddress: "0xd9D50D4F73f61A306b47e5BdC825E98cd11139dc",
+      tokenAddress: "0xe7cd86e13AC4309349F30B3435a9d337750fC82D",
+      chainPoolAddress: '0xB1e2939b501B73F4cFEf6a9FB0aa89a75F1774EE',
+    },
   ]
 }
 
