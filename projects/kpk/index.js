@@ -20,24 +20,26 @@ const ERC4626_ABI = {
   convertToAssets: "function convertToAssets(uint256 shares) view returns (uint256)",
 }
 
+const MORPHO_V2_ABI = {
+  adapters: "function adapters(uint256 index) view returns (address)",
+}
+
 // ---- Morpho vault mappings (v1 and v2 by token) ----
-// Maps vault address (lowercase) to { version, type }
-// Note: keys are normalized to lowercase for case-insensitive matching
 const MORPHO_VAULT_MAPPINGS = {
   ethereum: {
     // USDC: v1 Prime, v2
-    "0xe108fbc04852b5df72f9e44d7c29f47e7a993add": { token: null, version: "v1", type: "USDC" },
-    "0x4ef53d2caa51c447fdfeeedee8f07fd1962c9ee6": { token: null, version: "v2", type: "USDC" },
+    "0xe108fbc04852b5df72f9e44d7c29f47e7a993add": { version: "v1", type: "USDC" },
+    "0x4ef53d2caa51c447fdfeeedee8f07fd1962c9ee6": { version: "v2", type: "USDC" },
     // EURC: v1 Yield, v2
-    "0x0c6aec603d48ebf1cecc7b247a2c3da08b398dc1": { token: null, version: "v1", type: "EURC" },
-    "0xa877d5bb0274dccba8556154a30e1ca4021a275f": { token: null, version: "v2", type: "EURC" },
+    "0x0c6aec603d48ebf1cecc7b247a2c3da08b398dc1": { version: "v1", type: "EURC" },
+    "0xa877d5bb0274dccba8556154a30e1ca4021a275f": { version: "v2", type: "EURC" },
     // ETH: v1 Prime, v2
-    "0xd564f765f9ad3e7d2d6ca782100795a885e8e7c8": { token: null, version: "v1", type: "ETH" },
-    "0xbb50a5341368751024ddf33385ba8cf61fe65ff9": { token: null, version: "v2", type: "ETH" },
+    "0xd564f765f9ad3e7d2d6ca782100795a885e8e7c8": { version: "v1", type: "ETH" },
+    "0xbb50a5341368751024ddf33385ba8cf61fe65ff9": { version: "v2", type: "ETH" },
   },
   arbitrum: {
     // Only v1 USDC Yield on Arbitrum
-    "0x2c609d9cfc9dda2db5c128b2a665d921ec53579d": { token: null, version: "v1", type: "USDC" },
+    "0x2c609d9cfc9dda2db5c128b2a665d921ec53579d": { version: "v1", type: "USDC" },
   },
 }
 
@@ -74,21 +76,17 @@ const configs = {
 
 /**
  * Handles Morpho v1/v2 vault deduplication to avoid double-counting.
- * Since v2 vaults deposit into v1 vaults, we need to avoid counting v2's deposits twice.
+ * Since v2 vaults can deposit into v1 vaults, we need to avoid counting v2's deposits twice.
  * 
- * The logic:
- * - v1.totalAssets() = direct deposits to v1 + v2_deposits_in_v1
- * - v2.totalAssets() = v2_all_deposits (includes v2_deposits_in_v1 + v2_deposits_elsewhere)
+ * Logic: Always use V2 + V1 - v2_deposits_in_v1
+ * This formula works for all scenarios:
+ * - If V1 > V2: V1 includes v2 deposits + direct v1 deposits
+ * - If V2 >= V1: V2 has deposits elsewhere in addition to what it deposited into v1
  * 
- * Case 1: v1 > v2
- *   - v2 deposits into v1, and v1 has additional direct deposits
- *   - Unique TVL = v1 - v2 (direct deposits to v1, excluding what v2 deposited)
- * 
- * Case 2: v2 >= v1
- *   - v2 has deposits elsewhere (e.g., Aave) in addition to what it deposited into v1
- *   - We query v1's balance of v2 shares to get v2_deposits_in_v1
- *   - Unique TVL = (v1 - v2_deposits_in_v1) + v2_all_deposits
- *   - This ensures we count: direct deposits to v1 + v2's deposits elsewhere (like Aave)
+ * To get v2_deposits_in_v1, we:
+ * 1. Get v2's adapter address by calling adapters(0) on v2 vault
+ * 2. Call balanceOf(v2.adapter) on v1 vault to get v1 shares held by v2 adapter
+ * 3. Convert v1 shares to assets using convertToAssets on v1 vault
  */
 async function getMorphoDeduplicatedTvl(api, chainKey, erc4626Vaults) {
   const morphoMapping = MORPHO_VAULT_MAPPINGS[chainKey]
@@ -111,22 +109,25 @@ async function getMorphoDeduplicatedTvl(api, chainKey, erc4626Vaults) {
     otherVaults.push(...erc4626Vaults)
   }
 
-  if (morphoVaults.length === 0) {
-    // No Morpho vaults, process all normally
+  // Process non-Morpho vaults normally
+  if (otherVaults.length > 0) {
     const assets = await api.multiCall({
       abi: ERC4626_ABI.asset,
-      calls: erc4626Vaults,
+      calls: otherVaults,
       permitFailure: true,
     })
     const totalAssets = await api.multiCall({
       abi: ERC4626_ABI.totalAssets,
-      calls: erc4626Vaults,
+      calls: otherVaults,
       permitFailure: true,
     })
     for (let i = 0; i < assets.length; i++) {
       if (!assets[i] || !totalAssets[i]) continue
       api.add(assets[i], totalAssets[i])
     }
+  }
+
+  if (morphoVaults.length === 0) {
     return
   }
 
@@ -143,7 +144,7 @@ async function getMorphoDeduplicatedTvl(api, chainKey, erc4626Vaults) {
   })
 
   // Group by token and version
-  const tokenGroups = {} // token address -> { v1: { vault, totalAssets }, v2: { vault, totalAssets } }
+  const tokenGroups = {} // token address -> { v1: { vault, totalAssets }, v2: { vault, totalAssets, adapter } }
 
   for (let i = 0; i < morphoVaults.length; i++) {
     const vault = morphoVaults[i]
@@ -164,6 +165,23 @@ async function getMorphoDeduplicatedTvl(api, chainKey, erc4626Vaults) {
     }
   }
 
+  // Get v2 adapter addresses for deduplication
+  for (const [token, versions] of Object.entries(tokenGroups)) {
+    const v2 = versions.v2
+    if (v2) {
+      // Get v2 adapter address by calling adapters(0)
+      const adapter = await api.call({
+        abi: MORPHO_V2_ABI.adapters,
+        target: v2.vault,
+        params: [0],
+        permitFailure: true,
+      })
+      if (adapter) {
+        v2.adapter = adapter
+      }
+    }
+  }
+
   // Apply deduplication logic per token
   for (const [token, versions] of Object.entries(tokenGroups)) {
     const v1 = versions.v1
@@ -173,68 +191,46 @@ async function getMorphoDeduplicatedTvl(api, chainKey, erc4626Vaults) {
       // Both v1 and v2 exist - apply deduplication
       const v1Total = v1.totalAssets
       const v2Total = v2.totalAssets
-
-      if (v1Total > v2Total) {
-        // v1 > v2: v2 deposits into v1, and v1 has additional direct deposits
-        // Unique TVL = v1 - v2 (direct deposits to v1, excluding what v2 deposited)
-        // This avoids double-counting v2's deposits
-        const uniqueTvl = v1Total - v2Total
-        api.add(token, uniqueTvl)
-      } else {
-        // v2 >= v1: v2 has deposits elsewhere (e.g., Aave) in addition to what it deposited into v1
-        // We need: Unique TVL = (v1 - v2_deposits_in_v1) + v2_all_deposits
-        // To get v2_deposits_in_v1, we check v1's balance of v2 shares and convert to assets
-        const v2SharesInV1 = await api.call({
+      
+      // Always use: V1 + V2 - v2_deposits_in_v1
+      // Get v2's deposits in v1 using the adapter address
+      let v2DepositsInV1 = 0n
+      
+      if (v2.adapter) {
+        // Check v2's deposits in v1 using the adapter address
+        // v2.adapter is what v2 uses to interact with v1
+        // We call v1.balanceOf(v2.adapter) to get how many v1 shares the v2 adapter holds
+        // This represents v2's deposits into v1
+        const v2AdapterSharesInV1 = await api.call({
           abi: ERC4626_ABI.balanceOf,
-          target: v2.vault,
-          params: [v1.vault],
+          target: v1.vault,
+          params: [v2.adapter],
           permitFailure: true,
         })
         
-        let v2DepositsInV1 = 0n
-        if (v2SharesInV1 && BigInt(v2SharesInV1) > 0n) {
-          // Convert v2 shares held by v1 to underlying assets
+        if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
+          // Convert v1 shares held by v2 adapter to underlying assets
           const v2AssetsInV1 = await api.call({
             abi: ERC4626_ABI.convertToAssets,
-            target: v2.vault,
-            params: [v2SharesInV1],
+            target: v1.vault,
+            params: [v2AdapterSharesInV1],
             permitFailure: true,
           })
           if (v2AssetsInV1) {
             v2DepositsInV1 = BigInt(v2AssetsInV1)
           }
         }
-        
-        // Unique TVL = (v1 - v2_deposits_in_v1) + v2_all_deposits
-        // This counts: direct deposits to v1 + v2's deposits elsewhere (like Aave)
-        const directDepositsToV1 = v1Total > v2DepositsInV1 ? v1Total - v2DepositsInV1 : 0n
-        const uniqueTvl = directDepositsToV1 + v2Total
-        api.add(token, uniqueTvl)
       }
+      
+      // Unique TVL = V1 + V2 - v2_deposits_in_v1
+      const uniqueTvl = v1Total + v2Total - v2DepositsInV1
+      api.add(token, uniqueTvl)
     } else if (v1) {
       // Only v1 exists
       api.add(token, v1.totalAssets)
     } else if (v2) {
       // Only v2 exists
       api.add(token, v2.totalAssets)
-    }
-  }
-
-  // Process non-Morpho vaults normally
-  if (otherVaults.length > 0) {
-    const assets = await api.multiCall({
-      abi: ERC4626_ABI.asset,
-      calls: otherVaults,
-      permitFailure: true,
-    })
-    const totalAssets = await api.multiCall({
-      abi: ERC4626_ABI.totalAssets,
-      calls: otherVaults,
-      permitFailure: true,
-    })
-    for (let i = 0; i < assets.length; i++) {
-      if (!assets[i] || !totalAssets[i]) continue
-      api.add(assets[i], totalAssets[i])
     }
   }
 }
