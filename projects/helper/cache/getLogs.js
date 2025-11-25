@@ -8,7 +8,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -16,6 +16,8 @@ async function getLogs({ target,
     toBlock = 1e11
   else
     await api.getBlock()
+
+  if (useIndexer === undefined) useIndexer = indexerChains.has(api.chain)
 
   const block = api.block
   const chain = api.chain ?? 'ethereum'
@@ -73,9 +75,24 @@ async function getLogs({ target,
         topic = `${fragment.name}(${fragment.inputs.map(i => i.baseType === 'tuple' ? i.type.replace('tuple', '') : i.type).join(',')})`
       }
     }
-    let logs = (await sdk.api.util.getLogs({
-      chain, target, topic, keys, topics, fromBlock, toBlock,
-    })).output
+
+    let logs
+
+    if (!useIndexer) {
+
+      logs = (await sdk.api.util.getLogs({
+        chain, target, topic, keys, topics, fromBlock, toBlock,
+      })).output
+
+    } else {
+      // if use indexer flag is enabled, we use the new getLogs method that tries to pull from indexer if it is configured, else from chain rpcs
+
+      logs = await sdk.getEventLogs({
+        chain, target, topic, keys, topics, fromBlock, toBlock, skipIndexer: !useIndexer, entireLog: true,
+      })
+
+    }
+
     // let logs = await getLogsFromEtherscanAPI({ address: target, fromBlock, toBlock, api, topic0: topic })
 
     if (!customCacheFunction)
@@ -180,8 +197,11 @@ async function getLogs({ target,
   }
 }
 
-async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, }) {
-  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead, compressType, })
+const indexerChains = new Set(['monad', 'base'])
+
+async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, useIndexer, ...rest }) {
+
+  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead, compressType, useIndexer, ...rest })
   return res.map(transform)
 }
 

@@ -566,6 +566,7 @@
        "lisk",
        "etlk",
        "plasma",
+       "monad"
      ].map((n) => [n, { tvl, borrowed }])
    ),
    hallmarks: [[1666569600, "LM begins"]],

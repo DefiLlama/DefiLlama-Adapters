@@ -54,7 +54,7 @@ const fixBalancesTokens = {
     [ADDRESSES.mezo.mUSDC]: { coingeckoId: "usd-coin", decimals: 18 },
     [ADDRESSES.mezo.mUSDT]: { coingeckoId: "tether", decimals: 18 },
     [ADDRESSES.mezo.mDAI]: { coingeckoId: "dai", decimals: 18 },
-    [ADDRESSES.mezo.mSolvBTC]: { coingeckoId: "solv-protocol-btc", decimals: 18 },
+    [ADDRESSES.mezo.mSolvBTC]: { coingeckoId: "solv-btc", decimals: 18 },
     [ADDRESSES.mezo.mT]: { coingeckoId: "threshold-network-token", decimals: 18 },
     [ADDRESSES.mezo.mUSDe]: { coingeckoId: "ethena-usde", decimals: 18 },
     [ADDRESSES.mezo.mcbBTC]: { coingeckoId: "coinbase-wrapped-btc", decimals: 18 },
@@ -140,6 +140,7 @@ const fixBalancesTokens = {
   },
   monad: {
     [nullAddress]: { coingeckoId: 'monad', decimals: 18 },
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': { coingeckoId: 'monad', decimals: 18 },
     '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a': { coingeckoId: 'agora-dollar', decimals: 6 },
     '0x754704Bc059F8C67012fEd69BC8A327a5aafb603': { coingeckoId: 'usd-coin', decimals: 6 },
     '0xe7cd86e13AC4309349F30B3435a9d337750fC82D': { coingeckoId: 'usdt0', decimals: 6 },
@@ -151,12 +152,12 @@ const fixBalancesTokens = {
     '0x01bFF41798a0BcF287b996046Ca68b395DbC1071': { coingeckoId: 'tether-gold-tokens', decimals: 6 },
   },
   bob: {
-    [ADDRESSES.bob.BOB]: { coingeckoId: "bob-build-on-bitcoin", decimals: 18 },
-    [ADDRESSES.bob.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-    [ADDRESSES.bob.WBTC_OFT]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-    [ADDRESSES.bob.SolvBTC]: { coingeckoId: "solv-protocol-btc", decimals: 18 },
-    [ADDRESSES.bob.SolvBTC_BBN]: { coingeckoId: "solv-protocol-staked-btc", decimals: 18 },
-  }
+      [ADDRESSES.bob.BOB]: { coingeckoId: "bob-build-on-bitcoin", decimals: 18 },
+      [ADDRESSES.bob.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+      [ADDRESSES.bob.WBTC_OFT]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+      [ADDRESSES.bob.SolvBTC]: { coingeckoId: "solv-btc", decimals: 18 },
+      [ADDRESSES.bob.SolvBTC_BBN]: { coingeckoId: "solv-protocol-solvbtc-bbn", decimals: 18 },
+    }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
