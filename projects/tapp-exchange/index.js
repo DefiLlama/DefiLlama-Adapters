@@ -1,4 +1,5 @@
 const { function_view } = require("../helper/chain/aptos");
+const { sleep } = require("../helper/utils");
 
 const MODULE_VIEW = "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385";
 
@@ -72,7 +73,9 @@ module.exports = {
           const pairedCoin = await getPairedCoin(coin) || coin;
           if (pairedCoin) {
             api.add(pairedCoin, pool.reserves[i]);
-          } 
+          }
+          // Add small delay to avoid rate limiting
+          await sleep(200);
         }
       }
     },

@@ -1,8 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { stakings } = require("../helper/staking");
-const { balanceOf } = require('@defillama/sdk/build/erc20');
-const { ethereum } = require('../helper/whitelistedNfts');
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',

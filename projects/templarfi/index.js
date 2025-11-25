@@ -11,6 +11,27 @@ const CALL_TIMEOUT_MS = 30000
 
 const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
 
+function detectCrossChainToken(tokenId) {
+  if (tokenId.includes('v2_1.omni.hot.tg:1100_')) {
+    const stellarMappings = {
+      '111bzQBB5v7AhLyPMDwS8uJgQV24KaAPXtwyVWu2KXbbfQU6NXRCz': 'coingecko:stellar',
+      '111bzQBB65GxAPAVoxqmMcgYo5oS3txhqs1Uh1cgahKQUeTUq1TJu': 'coingecko:usd-coin',
+    }
+    const match = tokenId.match(/1100_([a-zA-Z0-9]+)$/)
+    if (match && stellarMappings[match[1]]) {
+      return stellarMappings[match[1]]
+    }
+  }
+  
+  if (tokenId === 'btc.omft.near') return 'coingecko:bitcoin'
+  if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
+    const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
+    return `ethereum:0x${match[1].toLowerCase()}`
+  }
+  
+  return tokenId
+}
+
 async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_DELAY_MS) {
   let lastError
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -18,6 +39,9 @@ async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_D
       return await fn()
     } catch (error) {
       lastError = error
+      if (error.message && error.message.includes('does not exist')) {
+        throw error
+      }
       if (attempt === maxAttempts) throw lastError
       console.log(`Attempt ${attempt} failed, retrying in ${delayMs}ms: ${error.message}`)
       await sleep(delayMs)
@@ -48,7 +72,7 @@ function extractTokenAddress(assetConfig, assetType) {
     if (typeof assetConfig.Nep141 !== 'string' || assetConfig.Nep141.length === 0) {
       throw new Error(`Invalid NEP-141 address for ${assetType} asset`)
     }
-    return assetConfig.Nep141
+    return detectCrossChainToken(assetConfig.Nep141)
   }
 
   if (assetConfig.Nep245?.token_id) {
@@ -56,17 +80,21 @@ function extractTokenAddress(assetConfig, assetType) {
     if (typeof tokenId !== 'string' || tokenId.length === 0) {
       throw new Error(`Invalid NEP-245 token ID for ${assetType} asset`)
     }
-    const parts = tokenId.split(':')
-    if (parts.length !== 2) {
-      throw new Error(`Invalid NEP-245 token ID format for ${assetType} asset: ${tokenId}`)
+    
+    const crossChainResult = detectCrossChainToken(tokenId)
+    if (crossChainResult !== tokenId) {
+      return crossChainResult
     }
-    if (parts[0] === 'nep141') {
+    
+    const parts = tokenId.split(':')
+    if (parts.length >= 2 && parts[0] === 'nep141') {
       if (parts[1].length === 0) {
         throw new Error(`Empty NEP-141 address in NEP-245 token for ${assetType} asset`)
       }
-      return parts[1]
+      return detectCrossChainToken(parts[1])
     }
-    throw new Error(`Unsupported NEP-245 token type for ${assetType} asset: ${parts[0]}`)
+    
+    return tokenId
   }
 
   throw new Error(`Unsupported ${assetType} asset format: missing both Nep141 and valid Nep245`)
@@ -76,6 +104,14 @@ function validateConfiguration(configuration) {
   if (!configuration || typeof configuration !== 'object') throw new Error('Configuration is not an object')
   if (!configuration.borrow_asset) throw new Error('Missing borrow_asset in configuration')
   if (!configuration.collateral_asset) throw new Error('Missing collateral_asset in configuration')
+}
+
+function scaleTokenAmount(amount, tokenAddress, decimals) {
+  if (tokenAddress.startsWith('coingecko')) {
+    return amount.div(Math.pow(10, decimals)).toFixed();
+  }
+  
+  return amount.toFixed()
 }
 
 function coerceAndValidateSnapshot(snapshot) {
@@ -172,10 +208,11 @@ async function fetchDeploymentsFromContract(registryContract) {
 }
 
 async function processMarket(marketContract) {
-  const [snapshotRaw, configurationRaw] = await Promise.all([
-    safeCall(marketContract, 'get_current_snapshot', {}),
-    safeCall(marketContract, 'get_configuration', {}),
-  ])
+  try {
+    const [snapshotRaw, configurationRaw] = await Promise.all([
+      safeCall(marketContract, 'get_current_snapshot', {}),
+      safeCall(marketContract, 'get_configuration', {}),
+    ])
 
   const snapshot = coerceAndValidateSnapshot(snapshotRaw)
   const configuration = configurationRaw
@@ -189,6 +226,9 @@ async function processMarket(marketContract) {
   const borrowAssetToken = extractTokenAddress(configuration.borrow_asset, 'borrow')
   const collateralAssetToken = extractTokenAddress(configuration.collateral_asset, 'collateral')
 
+  const borrowDecimals = configuration.price_oracle_configuration.borrow_asset_decimals
+  const collateralDecimals = configuration.price_oracle_configuration.collateral_asset_decimals
+
   const borrow_asset_deposited_active = BigNumber(snapshot.borrow_asset_deposited_active)
   const borrow_asset_deposited_incoming = BigNumber(snapshot.borrow_asset_deposited_incoming)
   const collateral_asset_deposited = BigNumber(snapshot.collateral_asset_deposited)
@@ -198,12 +238,21 @@ async function processMarket(marketContract) {
     .plus(borrow_asset_deposited_incoming)
     .minus(borrow_asset_borrowed)
 
-  return {
-    borrowAssetToken,
-    collateralAssetToken,
-    availableLiquidity,
-    totalBorrowed: borrow_asset_borrowed,
-    totalCollateral: collateral_asset_deposited,
+    return {
+      borrowAssetToken,
+      collateralAssetToken,
+      availableLiquidity,
+      totalBorrowed: borrow_asset_borrowed,
+      totalCollateral: collateral_asset_deposited,
+      borrowDecimals,
+      collateralDecimals,
+    }
+  } catch (error) {
+    if (error.message && error.message.includes('does not exist')) {
+      console.log(`Market ${marketContract} has been deleted, skipping...`)
+      return null
+    }
+    throw error
   }
 }
 
@@ -220,9 +269,12 @@ async function tvl() {
 
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
-      const { borrowAssetToken, collateralAssetToken, availableLiquidity, totalCollateral } = result.value
-      sumSingleBalance(balances, borrowAssetToken, availableLiquidity.toFixed())
-      sumSingleBalance(balances, collateralAssetToken, totalCollateral.toFixed())
+      if (result.value === null) {
+        return
+      }
+      const { borrowAssetToken, collateralAssetToken, availableLiquidity, totalCollateral, borrowDecimals, collateralDecimals } = result.value
+      sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(availableLiquidity, borrowAssetToken, borrowDecimals))
+      sumSingleBalance(balances, collateralAssetToken, scaleTokenAmount(totalCollateral, collateralAssetToken, collateralDecimals))
     } else {
       throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
     }
@@ -244,8 +296,11 @@ async function borrowed() {
 
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
-      const { borrowAssetToken, totalBorrowed } = result.value
-      sumSingleBalance(balances, borrowAssetToken, totalBorrowed.toFixed())
+      if (result.value === null) {
+        return
+      }
+      const { borrowAssetToken, totalBorrowed, borrowDecimals } = result.value
+      sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(totalBorrowed, borrowAssetToken, borrowDecimals))
     } else {
       throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
     }

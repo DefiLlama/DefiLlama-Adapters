@@ -10,22 +10,16 @@ const methodologies = require('../helper/methodologies');
 const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
 
 function ethereum(borrowed) {
-  return async (api)=> {
+  return async (api) => {
     const balances = api.getBalances()
-    const { block } = api
 
-    // V2 TVLs
-    if (block >= 11360925) {
-      const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistryETH, 'ethereum')
-      if(borrowed){
-        await getBorrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
-      } else {
-        await getTvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
-      }
+    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(api, addressesProviderRegistryETH)
+    if (borrowed) {
+      await getBorrowed(balances, api.block, "ethereum", v2ReserveTokens, dataHelper);
+    } else {
+      await getTvl(balances, api.block, 'ethereum', v2Atokens, v2ReserveTokens);
     }
-    if (block >= 11998773) {
-      await ammMarket(api, borrowed)
-    }
+    await ammMarket(api, borrowed)
 
     return balances;
   }
@@ -39,7 +33,7 @@ async function stakingBalancerTvl(api) {
 
 const aaveStakingContract = "0x4da27a545c0c5b758a6ba100e3a049001de870f5";
 
-function v2(chain, v2Registry){
+function v2(chain, v2Registry) {
   const section = borrowed => sdk.util.sumChainTvls([
     aaveChainTvl(chain, v2Registry, undefined, undefined, borrowed),
   ])
@@ -50,7 +44,7 @@ function v2(chain, v2Registry){
 }
 
 module.exports = {
-    methodology: methodologies.lendingMarket,
+  methodology: methodologies.lendingMarket,
   ethereum: {
     staking: staking(aaveStakingContract, aaveTokenAddress),
     pool2: stakingBalancerTvl,
@@ -59,13 +53,13 @@ module.exports = {
   },
   avax: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
   polygon: v2("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
-  hallmarks:[
-      //[1618419730, "Start MATIC V2 Rewards"],
-      [1619470313, "Start Ethereum V2 Rewards"],
-      [1633377983, "Start AVAX V2 Rewards"],
-      [1635339600, "Potential xSUSHI attack found"],
-      [1651881600, "UST depeg"],
-      [1654822801, "stETH depeg"],
-    ],
+  hallmarks: [
+    //[1618419730, "Start MATIC V2 Rewards"],
+    [1619470313, "Start Ethereum V2 Rewards"],
+    [1633377983, "Start AVAX V2 Rewards"],
+    [1635339600, "Potential xSUSHI attack found"],
+    [1651881600, "UST depeg"],
+    [1654822801, "stETH depeg"],
+  ],
 };
 // node test.js projects/aave/index.js

@@ -25,8 +25,8 @@ const M0 = "0x437cc33344a0B27A429f795ff6B469C72698B291";
 const aUSDC = "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c";
 
 // Borrowers
-const BORROWER_NEW_CO = "0x50C72Ff8c5e7498F64BEAeB8Ed5BE83CABEB0Fd5";
-const BORROWER_ZINCLUSIVE = "0xC8d6248fFbc59BFD51B23E69b962C60590d5f026";
+const BORROWER_PORTFOLIO_B = "0x50C72Ff8c5e7498F64BEAeB8Ed5BE83CABEB0Fd5";
+const BORROWER_PORTFOLIO_A = "0xC8d6248fFbc59BFD51B23E69b962C60590d5f026";
 
 const OCC_CYCLE_START_BLOCK = 23484381;
 
@@ -40,6 +40,7 @@ async function tvl(api) {
       [USDC, ST_STT],
       [USDC, OCT_DAO],
       [USDC, OCC_Variable],
+      [USDC, OCC_Cycle],
 
       // USDT balances
       [USDT, DAO],
@@ -83,25 +84,25 @@ async function borrowed(api) {
   const occVariableBorrowed = await api.call({
     abi: "function usage(address) view returns (uint256)",
     target: OCC_Variable,
-    params: [BORROWER_NEW_CO],
+    params: [BORROWER_PORTFOLIO_B],
   });
 
-  const zinclusiveBorrowed = await api.call({
+  const portfolioABorrowed = await api.call({
     abi: "function usage(address) view returns (uint256)",
     target: OCC_Cycle,
-    params: [BORROWER_ZINCLUSIVE],
+    params: [BORROWER_PORTFOLIO_A],
   });
 
-  const newCoBorrowed = await api.call({
+  const portfolioBBorrowed = await api.call({
     abi: "function usage(address) view returns (uint256)",
     target: OCC_Cycle,
-    params: [BORROWER_NEW_CO],
+    params: [BORROWER_PORTFOLIO_B],
   });
 
   const isOCCCycle = api.block >= OCC_CYCLE_START_BLOCK;
   if (isOCCCycle) {
-    api.add(USDC, zinclusiveBorrowed);
-    api.add(USDC, newCoBorrowed);
+    api.add(USDC, portfolioABorrowed);
+    api.add(USDC, portfolioBBorrowed);
   } else {
     api.addTokens([USDC], owedAmounts);
     api.add(USDC, occVariableBorrowed);

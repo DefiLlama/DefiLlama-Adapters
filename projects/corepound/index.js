@@ -1,4 +1,3 @@
-const { abi } = require("@defillama/sdk/build/api");
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const aggregator = "0xF822226491a93046DA650ecb4049E43386497C7D";

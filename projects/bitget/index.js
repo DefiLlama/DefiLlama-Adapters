@@ -183,6 +183,7 @@ const config = {
     owners: [
       "r3AEihLNr81VYUf5PdfH5wLPqtJJyJs6yY",
       "rGDreBvnHrX1get7na3J4oowN19ny4GzFn",
+      "rwTTsHVUDF8Ub2nzV2oAeWxfJzUvobXLEf",
     ],
   },
   solana: {
