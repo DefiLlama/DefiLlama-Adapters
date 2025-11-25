@@ -21,14 +21,9 @@ const config = {
 };
 
 async function fetchAUM(chain) {
-  try {
     const chainId = chainIdMap[chain];
     const response = await axios.get(API_ENDPOINT, { params: { chain_id: chainId } });
     return response.data.aum_usd || 0;
-  } catch (error) {
-    console.error(`Error fetching AUM for ${chain}:`, error);
-    return 0;
-  }
 }
 
 module.exports = {
