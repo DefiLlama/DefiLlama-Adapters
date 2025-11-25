@@ -11,11 +11,96 @@ const { getUniTVL } = require('../cache/uniswap')
 const { getCache } = require('../cache')
 const { getEnv } = require('../env')
 const ADDRESSES = require('../coreAssets.json')
+const { initializeProviders } = require('./starknet-providers')
+const { createCircuitBreaker, log } = require('./starknet-circuit')
+const { retryWithBackoff } = require('./starknet-retry')
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 
-const STARKNET_RPC = getEnv('STARKNET_RPC')
+// Initialize providers and circuit breakers (lazy loading)
+let providers = null
+let circuitBreakers = null
+
+function initializeCircuits() {
+  if (!providers) {
+    providers = initializeProviders()
+    circuitBreakers = providers.map(provider => {
+      const requestFn = async (body) => {
+        const { data } = await axios.post(provider.getEndpoint(), body)
+        return data
+      }
+      return createCircuitBreaker(provider, requestFn)
+    })
+
+    log.info('Starknet RPC providers initialized', {
+      providerCount: providers.length,
+      providers: providers.map(p => p.name),
+    })
+  }
+  return { providers, circuitBreakers }
+}
+
+/**
+ * Make RPC call with automatic failover across providers
+ *
+ * @param {Object|Array} body - RPC request body (single request or batch)
+ * @returns {Promise<Object>} RPC response data
+ * @throws {Error} If all providers fail
+ */
+async function makeRpcCall(body) {
+  const { circuitBreakers, providers } = initializeCircuits()
+
+  let lastError = null
+
+  // Try each provider in order with retry
+  for (let i = 0; i < circuitBreakers.length; i++) {
+    const breaker = circuitBreakers[i]
+    const provider = providers[i]
+
+    try {
+      log.debug('Attempting Starknet RPC call', {
+        provider: provider.name,
+        attempt: i + 1,
+        totalProviders: circuitBreakers.length,
+      })
+
+      // Retry with exponential backoff (up to 3 attempts per provider)
+      const data = await retryWithBackoff(
+        () => breaker.fire(body),
+        { provider: provider.name }
+      )
+
+      log.debug('Starknet RPC call succeeded', {
+        provider: provider.name,
+        attempt: i + 1,
+      })
+
+      return data
+
+    } catch (error) {
+      lastError = error
+
+      log.warn('Starknet RPC provider failed after retries, trying next provider', {
+        provider: provider.name,
+        attempt: i + 1,
+        error: error.message,
+        nextProvider: i + 1 < providers.length ? providers[i + 1].name : 'none',
+      })
+
+      // Continue to next provider
+      continue
+    }
+  }
+
+  // All providers failed
+  log.error('All Starknet RPC providers failed', lastError, {
+    providerCount: providers.length,
+    providers: providers.map(p => ({ name: p.name, stats: p.getStats() })),
+  })
+
+  throw new Error(`All Starknet RPC providers failed. Last error: ${lastError.message}`)
+}
 
 function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   if ((params || params === 0) && !Array.isArray(params))
@@ -59,7 +144,7 @@ function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj =
 }
 
 async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}, ...rest) {
-  const { data } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
+  const data = await makeRpcCall(formCallBody({ abi, target, params, allAbi }))
   return parseOutput(data.result, abi, allAbi, { permitFailure, responseObj: data })
 }
 
@@ -78,8 +163,10 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   const chunks = sliceIntoChunks(callBodies, 25)
   for (const chunk of chunks) {
     await sleep(200)
-    const { data } = await axios.post(STARKNET_RPC, chunk)
-    allData.push(...data)
+    const responseData = await makeRpcCall(chunk)
+    // For batch requests, axios returns the array directly in data
+    const batchResults = Array.isArray(responseData) ? responseData : [responseData]
+    allData.push(...batchResults)
   }
 
   const response = []
@@ -177,7 +264,8 @@ module.exports = {
 async function getLogs({ fromBlock, topic, target }) {
   const cache = await getCache('starknet-logs', topic)
   fromBlock = cache.toBlock || fromBlock
-  const { data: { result: to_block } } = await axios.post(STARKNET_RPC, { "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
+  const blockNumberResponse = await makeRpcCall({ "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
+  const to_block = blockNumberResponse.result
   const params = {
     filter: {
       from_block: fromBlock,
@@ -188,7 +276,8 @@ async function getLogs({ fromBlock, topic, target }) {
   }
 
   const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
-  const { data } = await axios.post(STARKNET_RPC, body)
+  const data = await makeRpcCall(body)
+  return data
 }
 
 api.call = module.exports.call
