@@ -51,7 +51,7 @@ module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     methodology:
-        "The TVL is the total USD-value of funds locked in the agent of the CITY platform",
+        "The TVL is the total USD-value of GBYTE funds locked in the agent of the CITY platform. Staking represents the USD-value of deposited CITY tokens.",
     obyte: {
         tvl: totalTvl,
         staking: totalStaking,
