@@ -905,7 +905,9 @@ async function sumTokens2({
   resolveVlCVX = false,
   permitFailure = false,
   fetchCoValentTokens = false,
-  tokenConfig = {},
+  tokenConfig = {
+    // onlyWhitelisted
+  },
   sumChunkSize = undefined,
   uniV3ExtraConfig = {
     // positionIds
