@@ -2684,5 +2684,8 @@
   },
   "gatelayer": {
     "WGT": "0x6803b8e93b13941f6b73b82e324b80251b3de338"
+  },
+  "monad": {
+    "USDC": "0x754704Bc059F8C67012fEd69BC8A327a5aafb603"
   }
 }

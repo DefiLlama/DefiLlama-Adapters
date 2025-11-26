@@ -1,45 +1,29 @@
-const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
-const BigNumber = require("bignumber.js");
-
-const graphUrl = sdk.graph.modifyEndpoint(`2wvUVLQbwNoV1vWxLuyUz5D2LmtHeusCwoqiHnWhxHvL`);
-const graphQuery = gql`
-{
-  markets(first: 10) {
-    profit
-    totalTrade
-    totalTradeFee
-    totalUsers
-    tradeVolume
-    vaultLock
-    id
-    loss
-  }
-}
-`;
-
-async function tvl(api) {
-  const res = await request(graphUrl, graphQuery);
-
-  const market = res.markets.find(m => m.id === "1");
-
-  if (!market) {
-    throw new Error("Market with id 1 not found");
-  }
-
-  // vaultLock is the TVL in the vault (in wei/18 decimals)
-  const vaultLockUSDC = new BigNumber(market.vaultLock)
-    .dividedBy(new BigNumber(10).pow(18));
-
-  return {
-    "coingecko:tether": vaultLockUSDC.toFixed(0),
-  };
-}
+const {sumTokensExport} = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json');
 
 module.exports = {
-  hallmarks: [],
+  hallmarks: [
+    [1689034511, "Launch on Arbitrum & BSC"],
+  ],
+};
+
+const config = {
+  bsc: {
+    owner: '0x71AF984f825C7BEf79cAEE5De14565ca8A29Fe93',
+    tokens: [ADDRESSES.bsc.USDT,]
+  },
+  arbitrum: {
+    owner: '0x14559479DC1041Ef6565f44028D454F423d2b9E6',
+    tokens: [ADDRESSES.arbitrum.USDT,]
+  },
   monad: {
-    tvl,
-    // volume
-  }
+    owner: '0xb412A5d72c203Df308624e435659c9F70b6960aA',
+    tokens: [ADDRESSES.monad.USDC,]
+  },
 }
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl: sumTokensExport(config[chain])
+  }
+})
