@@ -1,29 +1,29 @@
-const {
-  getTVLData,
-  getERC4626VaultFundsByChain,
-  getL1VaultOnlyFundsByChain,
-} = require("./helper");
+const axios = require("axios");
 
-const ethTvl = async (api) => {
-  await getTVLData(api);
-  await getL1VaultOnlyFundsByChain(api);
-};
+const BASE_URL = 'https://gtw.brahma.fi'
+const ENDPOINTS = {
+  tvl:'/v1/accounts/growth/tvl'
+}
+const SUPPORTED_CHAINS = ['ethereum', 'optimism', 'bsc', 'sei', 'swellchain', 'base', 'mode', 'arbitrum', 'berachain', 'blast', 'scroll']
 
-const polygonTvl = async (api) => {
-  await getERC4626VaultFundsByChain(api)
-  await getL1VaultOnlyFundsByChain(api)
-};
+const getTvlByChain = (chainName) => {
+  const getTvl = async (api) => {
+    const tvls = (await axios.get(`${BASE_URL}${ENDPOINTS.tvl}`))?.data?.data || []
+    const found = tvls.find((t) => t.chainName === chainName)
+    
+    api.addUSDValue(found ? found.tvlUSD : 0)
+  }
+
+  return getTvl
+}
+
+const chainTvlData = SUPPORTED_CHAINS.reduce((acc, chain) => {
+  acc[chain] = { tvl: getTvlByChain(chain) }
+  return acc
+}, {})
 
 module.exports = {
   methodology:
-    "TVL is the total supply of our vault tokens, multiplied by their corresponding share price. The share price is calculated based on the value of positions taken by vaults both on ethereum and optimism networks",
-  ethereum: {
-    tvl: ethTvl,
-  },
-  polygon: {
-    tvl: polygonTvl,
-  },
-  hallmarks: [
-    ['2023-03-28', "Brahma vaults discontinued, Brahma Console announced [not tracked here]"],
-  ],
+    "TVL consists of total deposits in Brahma accounts, automation and agents.",
+  ...chainTvlData 
 };
