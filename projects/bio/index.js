@@ -76,25 +76,20 @@ const config = {
  * @returns {Promise<Array<{token: string, staking: string}>>} Array of token/staking pairs
  */
 async function fetchBaseAgentTokens() {
-  try {
-    const result = await cachedGraphQuery(
-      'bio-base-agent-tokens',
-      BASE_SUBGRAPH_URL,
-      GET_AGENT_TOKENS_QUERY
-    )
+  const result = await cachedGraphQuery(
+    'bio-base-agent-tokens',
+    BASE_SUBGRAPH_URL,
+    GET_AGENT_TOKENS_QUERY
+  )
 
-    // Transform subgraph response to internal format
-    // Handles both result.data.launches and result.launches formats
-    const launches = result?.data?.launches || result?.launches || []
+  // Transform subgraph response to internal format
+  // Handles both result.data.launches and result.launches formats
+  const launches = result?.data?.launches || result?.launches || []
 
-    return launches.map(launch => ({
-      token: launch.agentTokenAddress,
-      staking: launch.stakingContractAddress
-    }))
-  } catch (error) {
-    console.error('Failed to fetch base agent tokens from subgraph:', error.message)
-    return [] // Graceful degradation - use static config only
-  }
+  return launches.map(launch => ({
+    token: launch.agentTokenAddress,
+    staking: launch.stakingContractAddress
+  }))
 }
 
 async function tvl(api) {
