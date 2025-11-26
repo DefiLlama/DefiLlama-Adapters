@@ -1,29 +1,25 @@
-const { getConfig } = require("../helper/cache")
-
 const LHYPE_VAULT = '0x5748ae796AE46A4F1348a1693de4b50560485562'
-const CHAIN_ID_STR = '999'
-const HYPE_TOKEN = '0x5555555555555555555555555555555555555555'
+
+const LHYPE_ACCOUNTANT = '0xcE621a3CA6F72706678cFF0572ae8d15e5F001c3'
+
+const WHYPE = '0x5555555555555555555555555555555555555555'
+
+const totalSupplyAbi = 'function totalSupply() view returns (uint256)'
+const exchangeRateAbi = 'function getRate() view returns (uint256)'
 
 const tvl = async (api) => {
-  const data = await getConfig(
-    'lhype-tokens',
-    `https://backend.nucleusearn.io/v1/vaults/underlying_strategies?vault_address=${LHYPE_VAULT}&chain_id=${CHAIN_ID_STR}`
-  )
+  const [lhypeTotalSupply, lhypeExchangeRate,] = await Promise.all([
+    api.call({ target: LHYPE_VAULT, abi: totalSupplyAbi }),
+    api.call({ target: LHYPE_ACCOUNTANT, abi: exchangeRateAbi, }),
+  ])
 
-  const strat = data?.[CHAIN_ID_STR]
-  if (!strat) return
+  const lhypeTotalValueInHype = lhypeTotalSupply * lhypeExchangeRate / 1e18
 
-  let totalHype = 0
-  for (const pos of Object.values(strat)) {
-    totalHype += Number(pos.valueInBase || 0)
-  }
-
-  const hypeAmount = BigInt(Math.round(totalHype * 1e18))
-  api.add(HYPE_TOKEN, hypeAmount)
+  api.add(WHYPE, lhypeTotalValueInHype)
 }
 
 module.exports = {
   hyperliquid: { tvl },
-  methodology: 'The total value of assets deployed across all LHYPE strategies.',
+  methodology: 'The total value of assets deployed across all LHYPE and WHLP strategies.',
   misrepresentedTokens: true,
 }

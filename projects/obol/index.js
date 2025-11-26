@@ -1,6 +1,9 @@
 const axios = require('axios')
 
+const rstOBOL = '0x1932e815254c53B3Ecd81CECf252A5AC7f0e8BeA'
 const ENDPOINT_BASE = 'https://api.obol.tech/tvs/mainnet';
+const stakeForSharesABI = "function stakeForShares(uint256 _shares) view returns (uint256)"
+
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const buildUrl = ({ limit, page, dateString }) => `${ENDPOINT_BASE}?limit=${limit}&page=${page}&details=true&timestamp=${encodeURIComponent(dateString)}`;
@@ -38,6 +41,14 @@ const tvl = async (api) => {
   })
 }
 
+const staking = async (api) => {
+  const underlying = await api.call({ target: rstOBOL, abi: 'address:STAKE_TOKEN' })
+  const supply = await api.call({ target: rstOBOL, abi: 'uint256:totalShares' })
+  const stakeForShares = await api.call({ target: rstOBOL, abi: stakeForSharesABI, params:[supply] })
+  api.add(underlying, stakeForShares)
+}
+
 module.exports = {
-  ethereum : { tvl }
+  methodology: "Total value of ETH staked on Obol's Distributed Validators",
+  ethereum : { tvl, staking }
 }
