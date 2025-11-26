@@ -5,7 +5,7 @@ const { sumTokens } = require('../helper/sumTokens')
 
 const native = ADDRESSES.null
 const EVM = ['0x2CfF890f0378a11913B6129B2E97417a2c302680', '0x233c5370CCfb3cD7409d9A3fb98ab94dE94Cb4Cd', '0xbb2f33f73ccc2c74e3fb9bb8eb75241ac15337e0']
-const blacklistedTokens = ['0x57ab1e02fee23774580c119740129eac7081e9d3', '0x678df3415fc31947da4324ec63212874be5a82f8']
+const blacklistedTokens = [ADDRESSES.ethereum.sUSD_OLD, ADDRESSES.xdai.DAI_1]
 
 const CONFIG = {
   ethereum: { owners: EVM },
