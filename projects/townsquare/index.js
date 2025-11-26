@@ -2,8 +2,8 @@ const ADDRESSES = require('../helper/coreAssets.json');
 
 const pools = {
     "0x106d0e2bff74b39d09636bdcd5d4189f24d91433": ADDRESSES.null,
-    "0xdb4e67f878289a820046f46f6304fd6ee1449281": "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
-    "0xf358f9e4ba7d210fde8c9a30522bb0063e15c4bb": "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A"
+    "0xdb4e67f878289a820046f46f6304fd6ee1449281": ADDRESSES.monad.USDC,
+    "0xf358f9e4ba7d210fde8c9a30522bb0063e15c4bb": ADDRESSES.monad.WMON
 }
 
 async function tvl({ api }) {

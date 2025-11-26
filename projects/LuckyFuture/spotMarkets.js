@@ -17,7 +17,7 @@ const SPOT_MARKETS = {
   },
   17:{
     name:'dSOL',
-    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
+    mint:ADDRESSES.solana.dSOL, 
     decimals: 9
   },
   19: {
