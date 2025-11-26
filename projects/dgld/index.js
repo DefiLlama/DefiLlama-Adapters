@@ -20,11 +20,7 @@ async function getDGLDPrice() {
     if (response.data && response.data.attributes && response.data.attributes.token_prices) {
       const price = response.data.attributes.token_prices[tokenAddressLower];
       if (price) {
-        const priceNum = Number(price);
-        // Sanity check: DGLD should be priced around gold price (roughly $2000-$5000 per token)
-        if (priceNum > 1000 && priceNum < 10000) {
-          return priceNum;
-        }
+        return Number(price);
       }
     }
   } catch (e) {
@@ -49,7 +45,7 @@ async function ethereumTvl(api) {
     return api.getBalances();
   }
 
-  // Always try GeckoTerminal for price
+  // Try GeckoTerminal for price
   const dgldPrice = await getDGLDPrice();
 
   if (dgldPrice && dgldPrice > 0) {
