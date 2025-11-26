@@ -16,15 +16,7 @@ const CITY_AA_ADDRESS = 'CITYC3WWO5DD2UM6HQR3H333RRTD253Q'
 const GBYTE_DECIMALS = 9;
 
 async function totalTvl() {
-    const [exchangeRates, balances] = await Promise.all([
-        fetchOswapExchangeRates(),
-        getBalances([CITY_AA_ADDRESS]).then((balances) => balances[CITY_AA_ADDRESS])
-    ]);
-
-    const gbyteTvl = balances.base.total / 10 ** GBYTE_DECIMALS;
-    const gbyteTvlInUSD = gbyteTvl * exchangeRates.GBYTE_USD;
-
-    return { tether: gbyteTvlInUSD }
+    return { tether: 0 }
 }
 
 async function totalStaking() {
