@@ -70,7 +70,8 @@ const tvl = async (api) => {
       continue
     }
 
-    const scaled = sixDecimalTokens.includes(underlying) ? supply / 1e18 * 1e6 : supply
+    const sixDecimalTokensLower = sixDecimalTokens.map(t => t.toLowerCase());
+    const scaled = sixDecimalTokensLower.includes(underlying) ? supply / 1e18 * 1e6 : supply
     api.add(underlying, scaled)
   }
 
