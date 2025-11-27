@@ -42,6 +42,10 @@ const config = {
   ton: {
     owners: ["UQAy9dYvynVbnkbv5hynU2456gFGCqNXth7ldjTLsQ1KmsOV"],
   },
+  solana: {
+    owners: ["BLGFthn7CqHsJHkucwiBWyv1BruRYszfmdW5Xg8dFT3m"],
+  },
+
 };
 
 module.exports = cexExports(config);
