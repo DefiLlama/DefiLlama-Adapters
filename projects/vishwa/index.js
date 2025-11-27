@@ -1,15 +1,13 @@
-const {sumTokens} = require("../helper/chain/bitcoin");
-const {get} = require("../../projects/helper/http");
+const { sumTokens } = require('../helper/chain/bitcoin')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
-const addressBook = {
-    bitcoin: 'https://api.btcvc.vishwanetwork.xyz/btc/address',
+async function tvl() {
+  return sumTokens({ owners: await bitcoinAddressBook.vishwa() })
 }
 
-Object.keys(addressBook).forEach(async chain => {
-    module.exports[chain] = {
-        tvl: async () => {
-            let addresses = (await get(addressBook[chain]))?.data || [];
-            return await sumTokens({owners: addresses})
-        }
-    }
-})
+module.exports = {
+  timetravel: false,
+  bitcoin: {
+    tvl
+  },
+};

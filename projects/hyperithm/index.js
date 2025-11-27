@@ -30,33 +30,6 @@ const vaultConfigs = {
   }
 };
 
-const mtokenConfig = {
-  ethereum: {
-    mHYPER: '0x9b5528528656DBC094765E2abB79F293c21191B9',
-  },
-  plasma: {
-    mHYPER: '0xb31bea5c2a43f942a3800558b1aa25978da75f8a',
-  },
-  bsc: {
-    mXRP: '0xc8739fbBd54C587a2ad43b50CbcC30ae34FE9e34',
-  },
-  xrplevm: {
-    mXRP: '0x06e0B0F1A644Bb9881f675Ef266CeC15a63a3d47',
-  }
-};
-
 const adapterExport = getCuratorExport(vaultConfigs);
-
-Object.keys(mtokenConfig).forEach(chain => {
-  const existingTvl = adapterExport[chain]?.tvl;
-  adapterExport[chain] = {
-    tvl: async (api) => {
-      await existingTvl?.(api);
-      const tokens = Object.values(mtokenConfig[api.chain]);
-      const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: tokens });
-      api.add(tokens, bals);
-    }
-  };
-});
 
 module.exports = adapterExport;

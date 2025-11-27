@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 
 const abi = {
@@ -6,7 +7,7 @@ const abi = {
 }
 
 const config = {
-  ethereum: { factory: '0x370a449FeBb9411c95bf897021377fe0B7D100c0', crvUSD: '0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E' }
+  ethereum: { factory: '0x370a449FeBb9411c95bf897021377fe0B7D100c0', crvUSD: ADDRESSES.ethereum.CRVUSD }
 }
 
 Object.keys(config).forEach(chain => {

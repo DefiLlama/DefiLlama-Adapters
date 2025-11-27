@@ -39,11 +39,11 @@ const suiUsdtVault = {
 }
 const walVault = {
   id: '0x4ee20ca2594e137a1388d5de03c0b1f3dd7caddefb4c55b1c7bca15d0fe18c86',
-  tType: '0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL'
+  tType: ADDRESSES.sui.WAL
 }
 const wbtcVault = {
   id: '0x5674aae155d38e09edaf3163f2e3f85fe77790f484485f0b480ca55915d7c446',
-  tType: '0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC'
+  tType: ADDRESSES.sui.BTC
 }
 const lbtcVault = {
   id: '0x362ce1fc1425ec0bdf958f2023b07cda52c924fa42e4ff88a9a48c595fd8437d',

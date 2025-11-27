@@ -59,7 +59,7 @@ const tokens = {
     BRIDGE: "0x92868a5255c628da08f550a858a802f5351c5223",
     // Stablecoins
     BUSD: ADDRESSES.bsc.BUSD,
-    DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    DAI: ADDRESSES.bsc.DAI,
     USDC: ADDRESSES.bsc.USDC,
     USDT: ADDRESSES.bsc.USDT,
     // Network Tokens
