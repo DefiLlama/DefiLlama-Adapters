@@ -25,7 +25,7 @@ const config = {
           number
         }
       }
-      tokenRewards(where: {tokenMappings_: {eid: "30101", oAddress: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}}) {
+      tokenRewards(where: {tokenMappings_: {eid: "30101", oAddress: ${ADDRESSES.GAS_TOKEN_2}}}) {
         reward
       }
     }`

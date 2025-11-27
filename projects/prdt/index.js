@@ -96,4 +96,4 @@ module.exports.solana = {
   tvl: solExports({ owners: solOwners, solOwners })
 }
 
-module.exports.bsc.staking = staking('0x49eFb44831aD88A9cFFB183d48C0c60bF4028da8', '0x854b5f2bfcc5b7cd05d6259cf5d035af57cfa301')
+//module.exports.bsc.staking = staking('0x49eFb44831aD88A9cFFB183d48C0c60bF4028da8', '0x854b5f2bfcc5b7cd05d6259cf5d035af57cfa301') removing since it tracks the pro contract balance which acts as a hot wallet for withdrawals

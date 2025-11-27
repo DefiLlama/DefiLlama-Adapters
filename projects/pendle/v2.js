@@ -57,34 +57,34 @@ const config = {
       }, // v6
     ],
   },
-  // bsc: {
-  //   factory: "0x2bea6bfd8fbff45aa2a893eb3b6d85d10efcc70e",
-  //   fromBlock: 34060741,
-  //   factories: [{
-  //       factory: "0xc40febf5a33b8c92b187d9be0fd3fe0ac2e4b07c",
-  //       fromBlock: 33884419
-  //     }, // v3
-  //     {
-  //       factory: "0x7d20e644d2a9e149e5be9be9ad2ab243a7835d37",
-  //       fromBlock: 40539593
-  //     }, // v4
-  //     {
-  //       factory: "0x7c7f73f7a320364dbb3c9aaa9bccd402040ee0f9",
-  //       fromBlock: 41294178
-  //     }, // v5
-  //     {
-  //       factory: "0x80cE46449DF1c977f6ba60495125ce282F83DdFB", 
-  //       fromBlock: 65609031
-  //     } // v6
-  //   ],
-  //   pts: [
-  //     "0x5ec2ae0afdec891e7702344dc2a31c636b3627eb",
-  //     "0x70c1138b54ba212776d3a9d29b6160c54c31cd5d",
-  //     "0x04eb6b56ff53f457c8e857ca8d4fbc8d9a531c0c",
-  //     "0x541b5eeac7d4434c8f87e2d32019d67611179606",
-  //     "0x5d1735b8e33bae069708cea245066de1a12cd38d"
-  //   ],
-  // },
+  bsc: {
+    factory: "0x2bea6bfd8fbff45aa2a893eb3b6d85d10efcc70e",
+    fromBlock: 34060741,
+    factories: [{
+        factory: "0xc40febf5a33b8c92b187d9be0fd3fe0ac2e4b07c",
+        fromBlock: 33884419
+      }, // v3
+      {
+        factory: "0x7d20e644d2a9e149e5be9be9ad2ab243a7835d37",
+        fromBlock: 40539593
+      }, // v4
+      {
+        factory: "0x7c7f73f7a320364dbb3c9aaa9bccd402040ee0f9",
+        fromBlock: 41294178
+      }, // v5
+      {
+        factory: "0x80cE46449DF1c977f6ba60495125ce282F83DdFB", 
+        fromBlock: 65609031
+      } // v6
+    ],
+    pts: [
+      "0x5ec2ae0afdec891e7702344dc2a31c636b3627eb",
+      "0x70c1138b54ba212776d3a9d29b6160c54c31cd5d",
+      "0x04eb6b56ff53f457c8e857ca8d4fbc8d9a531c0c",
+      "0x541b5eeac7d4434c8f87e2d32019d67611179606",
+      "0x5d1735b8e33bae069708cea245066de1a12cd38d"
+    ],
+  },
   optimism: {
     factory: "0x17f100fb4be2707675c6439468d38249dd993d58",
     fromBlock: 108061448,

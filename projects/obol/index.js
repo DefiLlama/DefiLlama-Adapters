@@ -34,7 +34,7 @@ async function fetchBalancesForTimestamp(tsSeconds, { limit = 1000, delayMs = 50
 }
 
 const tvl = async (api) => {
-  const ts = api.timestamp
+  const ts = api.timestamp - 86400
   const { balances } = await fetchBalancesForTimestamp(ts, { limit: 1000, delayMs: 500 });
   balances.forEach(({ balance_eth }) => {
     api.addGasToken(balance_eth * 1e18)
