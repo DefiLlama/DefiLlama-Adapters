@@ -34,7 +34,7 @@ module.exports = {
         ADDRESSES.bsc.USDT,
         "0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE",
         ADDRESSES.bsc.BUSD,
-        "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+        ADDRESSES.bsc.DAI,
         "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD",
         ADDRESSES.bsc.ETH,
         ADDRESSES.bsc.BTCB,
