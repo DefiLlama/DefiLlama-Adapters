@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
 const ADDRESSES = require('../helper/coreAssets.json')
-const serviceURL = 'https://baby-makenow-backend-backend-dev.dev.babyparrot.xyz/tvl/all'
+const serviceURL = 'https://api.makenow.meme/tvl/all'
 const SOL_DECIMALS = 9
 
 async function tvl(api) {
@@ -10,7 +10,7 @@ async function tvl(api) {
   const response = await get(url)
 
   const solAmount = response.data.length > 0 ? Math.round(response.data[0].tvl * 10 ** SOL_DECIMALS) : 0
-  api.add(ADDRESSES.solana.SOL, solAmount)
+  api.add(ADDRESSES.solana.SOL, solAmount > 0 ? solAmount : 0)
 }
 
 module.exports = {
