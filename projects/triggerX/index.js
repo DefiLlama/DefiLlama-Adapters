@@ -23,34 +23,19 @@ async function tvl() {
       }
     }
 
-    // Get current ETH price in USD from DefiLlama
-    const priceResponse = await axios.get(
-      'https://coins.llama.fi/prices/current/ethereum:0x0000000000000000000000000000000000000000'
-    );
-    
-    const ethPriceUSD = priceResponse.data?.coins?.['ethereum:0x0000000000000000000000000000000000000000']?.price || 0;
+    // Format the output for ETH
+    const formattedETH = totalTvlInEth >= 1e6
+      ? (totalTvlInEth / 1e6).toFixed(2) + "M ETH"
+      : totalTvlInEth >= 1e3
+      ? (totalTvlInEth / 1e3).toFixed(2) + "K ETH"
+      : totalTvlInEth.toFixed(2) + " ETH";
 
-    // Calculate total staked amount in USD
-    const totalStakedUSD = totalTvlInEth * ethPriceUSD;
-
-    // Format the output
-    const formattedUSD = totalStakedUSD >= 1e9 
-      ? (totalStakedUSD / 1e9).toFixed(2) + "B"
-      : totalStakedUSD >= 1e6
-      ? (totalStakedUSD / 1e6).toFixed(2) + "M"
-      : totalStakedUSD.toFixed(2);
-
-    console.log("\n========================================");
-    console.log("     TOTAL STAKED AMOUNT (USD)");
-    console.log("========================================");
-    console.log(`  Total: $${formattedUSD}`);
-    console.log(`  (${totalTvlInEth.toFixed(2)} ETH @ $${ethPriceUSD.toFixed(2)})`);
-    console.log("========================================\n");
 
     // Convert ETH to wei for DefiLlama (REQUIRED)
     const tvlInWei = Math.floor(totalTvlInEth * 1e18);
 
-    // MUST return with ethereum: prefix for the chain
+    // Return both ETH (in wei) and USD values
+    // DefiLlama uses the ethereum: prefix format for the chain
     return {
       "ethereum:0x0000000000000000000000000000000000000000": tvlInWei.toString(),
     };
@@ -61,7 +46,7 @@ async function tvl() {
 }
 
 module.exports = {
-  methodology: "Total staked amount in USD represents total staked assets across all chains for TriggerX AVS on EigenLayer, fetched from EigenExplorer API and converted using current ETH price",
+  methodology: "TVL represents total staked amount across all chains for TriggerX AVS on EigenLayer, fetched from EigenExplorer API.",
   timetravel: false,
   hallmarks: [],
   ethereum: {
