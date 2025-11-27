@@ -1,5 +1,6 @@
 const {sumTokens2} = require('../helper/unwrapLPs')
 const {getLogs2,} = require('../helper/cache/getLogs')
+const axios = require("axios");
 
 const config = {
     monad: {
@@ -12,6 +13,10 @@ const config = {
             fromBlock: 35093818
         }
     },
+}
+
+const chainIds = {
+    monad: 143,
 }
 
 async function getPerpTokens(api, chain) {
@@ -30,6 +35,8 @@ async function getPerpTokens(api, chain) {
     return ownerTokens
 }
 
+// get all spot pools from onChain factory
+// not use is because this error: failed to fetch data from s3 bucket: cache/logs/monad/0xc1e98d0a2a58fb8abd10ccc30a58efff4080aa21.json
 async function getSpotTokens(api, chain) {
     const spotFactoryAddress = config[chain].spotFactory.address
     const spotFactoryFromBlock = config[chain].spotFactory.fromBlock
@@ -42,9 +49,15 @@ async function getSpotTokens(api, chain) {
     return spotLogs.map(i => ([[i.token0, i.token1], i.pool]))
 }
 
+async function getSpotTokensFromSubGraph(api, chain) {
+    const res = await axios.get(`https://mainnet-api.monday.trade/spot/api/defi/llama/spot/address/${chainIds[chain]}`)
+    return res.data
+}
+
 async function tvl(api, chain) {
     const ownerTokens = await getPerpTokens(api, chain)
-    ownerTokens.push(await getSpotTokens(api, chain))
+    ownerTokens.push(...(await getSpotTokensFromSubGraph(api, chain)))
+    console.log(ownerTokens)
     return sumTokens2({api, ownerTokens})
 }
 
