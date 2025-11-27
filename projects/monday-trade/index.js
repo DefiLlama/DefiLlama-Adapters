@@ -57,7 +57,6 @@ async function getSpotTokensFromSubGraph(api, chain) {
 async function tvl(api, chain) {
     const ownerTokens = await getPerpTokens(api, chain)
     ownerTokens.push(...(await getSpotTokensFromSubGraph(api, chain)))
-    console.log(ownerTokens)
     return sumTokens2({api, ownerTokens})
 }
 
