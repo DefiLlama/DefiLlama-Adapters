@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
@@ -30,7 +31,7 @@ async function tvl(api) {
   await api.erc4626Sum({ calls: erc4626Vaults.map(vault => vault.address), tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
 
   const coreVaultCollectResults = await api.multiCall({
-    calls: coreVaults.map((vault) => ({ target: vault.collector, params: ['0x0000000000000000000000000000000000000000', vault.address, [vault.base_token.address, 0, 0]] })),
+    calls: coreVaults.map((vault) => ({ target: vault.collector, params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]] })),
     abi: 'function collect(address,address,(address,uint256,uint256)) view returns ((address,address,address[],uint8[],uint256[],(address,address,bool,bool,bool,uint256,uint256[])[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(address,address,uint256,uint256,uint256,uint256)[],(address,address,uint256,uint256,uint256,uint256)[],uint256,uint256))',
     permitFailure: true,
   })

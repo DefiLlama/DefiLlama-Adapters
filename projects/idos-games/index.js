@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const BSC_OWNERS = [
@@ -5,7 +6,7 @@ const BSC_OWNERS = [
   '0x85Ee4B62B3d6564aBcC7eFC65fA2aD9dB3a875d3',
 ]
 
-const NATIVE_BNB = '0x0000000000000000000000000000000000000000'
+const NATIVE_BNB = ADDRESSES.null
 
 module.exports = {
   start: 1739826962,

@@ -28,15 +28,15 @@ const affluentMarketList = {
 };
 
 const affluentTokenList = {
-    "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c": {
-        address: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
+    [ADDRESSES.ton.TON_3]: {
+        address: ADDRESSES.ton.TON_3,
         name: "TON",
         symbol: "TON",
         decimals: 9,
         isJetton: true,
     },
-    "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs": {
-        address: "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+    [ADDRESSES.ton.USDT]: {
+        address: ADDRESSES.ton.USDT,
         name: "Tether USD",
         symbol: "USDT",
         decimals: 6,
@@ -47,13 +47,13 @@ const affluentTokenList = {
         symbol: "FactorialTON",
         decimals: 9,
     },
-    "EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav": {
-        address: "EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav",
+    [ADDRESSES.ton.tsTON]: {
+        address: ADDRESSES.ton.tsTON,
         name: "Tonstakers TON",
         symbol: "tsTON",
         decimals: 9,
     },
-    "EQDNhy-nxYFgUqzfUzImBEP67JqsyMIcyk2S5_RwNNEYku0k": {
+    [ADDRESSES.ton.stTON]: {
         address: "EQDNhy-nxYFgUqzfUzImBEP67Jqsyk2S5_RwNNEYku0k",
         name: "Staked TON",
         symbol: "stTON",
@@ -83,14 +83,14 @@ const affluentTokenList = {
         symbol: "affTONl",
         decimals: 9,
     },
-    "EQCNY2AQ3ZDYwJAqx_nzl9i9Xhd_Ex7izKJM6JTxXRnO6n1F": {
-        address: "EQCNY2AQ3ZDYwJAqx_nzl9i9Xhd_Ex7izKJM6JTxXRnO6n1F",
+    [ADDRESSES.ton.TON_STORM]: {
+        address: ADDRESSES.ton.TON_STORM,
         name: "TON Storm LP",
         symbol: "TON-SLP",
         decimals: 9,
     },
-    "EQCup4xxCulCcNwmOocM9HtDYPU8xe0449tQLp6a-5BLEegW": {
-        address: "EQCup4xxCulCcNwmOocM9HtDYPU8xe0449tQLp6a-5BLEegW",
+    [ADDRESSES.ton.USDT_STORM]: {
+        address: ADDRESSES.ton.USDT_STORM,
         name: "USDT Storm LP",
         symbol: "USDT-SLP",
         decimals: 9,
@@ -101,14 +101,14 @@ const affluentTokenList = {
         symbol: "TON-TLP",
         decimals: 9,
     },
-    "EQAIb6KmdfdDR7CN1GBqVJuP25iCnLKCvBlJ07Evuu2dzP5f": {
-        address: "EQAIb6KmdfdDR7CN1GBqVJuP25iCnLKCvBlJ07Evuu2dzP5f",
+    [ADDRESSES.ton.USDe]: {
+        address: ADDRESSES.ton.USDe,
         name: "Ethena USDe",
         symbol: "USDe",
         decimals: 6,
     },
-    "EQDQ5UUyPHrLcQJlPAczd_fjxn8SLrlNQwolBznxCdSlfQwr": {
-        address: "EQDQ5UUyPHrLcQJlPAczd_fjxn8SLrlNQwolBznxCdSlfQwr",
+    [ADDRESSES.ton.tsUSDe]: {
+        address: ADDRESSES.ton.tsUSDe,
         name: "Ethena tsUSDe",
         symbol: "tsUSDe",
         decimals: 6,
