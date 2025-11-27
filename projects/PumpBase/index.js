@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const FACTORY = '0x19798E390E69a36814B25BbBC7e75530E8a0A101'
-const WETH = '0x4200000000000000000000000000000000000006'
+const WETH = ADDRESSES.optimism.WETH_1
 const INITIAL_LIQUIDITY = 1500_000_000_000_000_000n
 
 const abi = {

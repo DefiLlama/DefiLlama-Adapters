@@ -51,7 +51,7 @@ const config = {
 			ADDRESSES.bsc.USDT,
 			ADDRESSES.bsc.USDC,
 			ADDRESSES.bsc.BUSD,
-			'0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3', // DAI
+			ADDRESSES.bsc.DAI, // DAI
 			// '0x7728cd70b3dD86210e2bd321437F448231B81733', // NIFTSY
 		]
 	},

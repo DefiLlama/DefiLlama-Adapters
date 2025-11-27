@@ -4,7 +4,7 @@ const abi = require("./abi.json")
 const config = {
   bsc: {
     autoGem: "0xE02CE329281664A5d2BC0006342DC84f6c384663",
-    DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    DAI: ADDRESSES.bsc.DAI,
     pools: [
       "0x13e7a6691fe00de975cf27868386f4ae9aed3cdc",
       "0xc2e8c3c427e0a5baaf512a013516aecb65bd75cb",

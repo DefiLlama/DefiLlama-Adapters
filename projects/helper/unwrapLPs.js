@@ -905,7 +905,9 @@ async function sumTokens2({
   resolveVlCVX = false,
   permitFailure = false,
   fetchCoValentTokens = false,
-  tokenConfig = {},
+  tokenConfig = {
+    // onlyWhitelisted
+  },
   sumChunkSize = undefined,
   uniV3ExtraConfig = {
     // positionIds
@@ -954,7 +956,7 @@ where
 group by
   token_address`
     const alltokens = await queryAllium(sql)
-    tokens = tokens.concat(alltokens.map(t => t.token_address)).concat(["0x0000000000000000000000000000000000000000"])
+    tokens = tokens.concat(alltokens.map(t => t.token_address)).concat([ADDRESSES.null])
   }
 
   if (owner) owners.push(owner)

@@ -385,7 +385,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0x05EA42F72F2e627497423663Faf7b00eA7DdA2C1',
-        asset: '0x8236a87084f8B84306f72007F36F2618A5634494', // LBTC
+        asset: ADDRESSES.ethereum.LBTC, // LBTC
       },
       {
         smartVaultAddress: '0x11054D3584F94B542379Ff4Cf9e7897D50AE8317',
@@ -393,7 +393,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0xaC586e941d5846B79cEF71c8aef3ecC50BE12DCb',
-        asset: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+        asset: ADDRESSES.ethereum.USDT, // USDT
       },
     ],
   }),

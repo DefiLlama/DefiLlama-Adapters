@@ -133,7 +133,7 @@ const TOKEN_INFO = {
     decimals: 9,
   },
   jitoSOL: {
-    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    mint: ADDRESSES.solana.JitoSOL,
     decimals: 9,
   },
   JTO: {
@@ -153,7 +153,7 @@ const TOKEN_INFO = {
     decimals: 9,
   },
   dSOL: {
-    mint: 'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ',
+    mint: ADDRESSES.solana.dSOL,
     decimals: 9,
   },
   JLP: {

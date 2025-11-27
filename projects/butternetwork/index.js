@@ -18,7 +18,7 @@ const config = {
         tokens: {
             USDT: ADDRESSES.bsc.USDT,
             USDC: ADDRESSES.bsc.USDC,
-            DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+            DAI: ADDRESSES.bsc.DAI,
             ETH: ADDRESSES.bsc.ETH,
             BTC: ADDRESSES.bsc.BTCB,
         }
@@ -76,11 +76,11 @@ const config = {
     xlayer: {
         mosContract: "0x0000317Bec33Af037b5fAb2028f52d14658F6A56",
         tokens: {
-            USDT: "0x1e4a5963abfd975d8c9021ce480b42188849d41d",
-            USDC: "0x74b7f16337b8972027f6196a17a631ac6de26d22",
-            ETH: "0x5a77f1443d16ee5761d310e38b62f77f726bc71c",
-            BTC: "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1",
-            OKB: "0xe538905cf8410324e03a5a23c1c177a474d59b2b",
+            USDT: ADDRESSES.astarzk.USDT,
+            USDC: ADDRESSES.xlayer.USDC,
+            ETH: ADDRESSES.xlayer.WETH,
+            BTC: ADDRESSES.astarzk.WBTC,
+            OKB: ADDRESSES.xlayer.WOKB,
         }
     },
 
