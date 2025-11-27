@@ -1,5 +1,15 @@
 const CONFIG = {
-  ethereum: {},
+  ethereum: { blacklistedVaults: [
+    '0x4a9e282635567cc4d3c6a24e16c2335f10dee9b8',
+    '0xaeeafb1259f01f363d09d7027ad80a9d442de762',
+    '0x39a1f8e5d2422ccc5e08c5b4019ab70147f5cc95',
+    '0x4ebfc11ad2dd1c2a450ba194558d797ee5d305a6',
+    '0x54fa13a38a690bc69584a7ac8b834c1770959974',
+    '0x83706a2ec580fe1fdb84744366fa02fb8e25d29d',
+    '0xfbadc4f18ddc7ebdbc920d3f9b0ca7a1296788d1',
+    '0x7ef4d0168b12b168f14b67c708bc16f7e8bf3dec',
+    '0x265329c8f15671d7ca501710e3bd0e6cb257948f'
+  ] },
   arbitrum: { blacklistedVaults: [
     '0xd3a17928245064b6df5095a76e277fe441d538a4',
     '0xabc07bf91469c5450d6941dd0770e6e6761b90d6',
