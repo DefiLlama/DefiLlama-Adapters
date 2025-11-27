@@ -103,6 +103,8 @@ const uniV3Config = {
 
 Object.values(uniV3Config).forEach(i => i.permitFailure = true) // allow failure for all chains
 
+delete uniV3Config.islm
+module.exports.islm = { tvl: () => ({  }) }
 module.exports = uniV3Export(uniV3Config);
 
 const config = {
@@ -131,17 +133,17 @@ Object.keys(config).forEach(chain => {
   }
 })
 
-const config1 = {
-  islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
-}
+// const config1 = {
+//   islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
+// }
 
-Object.keys(config1).forEach(chain => {
-  const { endpoint } = config1[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const pools = await getConfig('sushiswap-v3/' + chain, endpoint)
-      const ownerTokens = pools.map(i => [[i.token0.id.split(':')[1], i.token1.id.split(':')[1]], i.id.split(':')[1]])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, })
-    }
-  }
-})
+// Object.keys(config1).forEach(chain => {
+//   const { endpoint } = config1[chain]
+//   module.exports[chain] = {
+//     tvl: async (api) => {
+//       const pools = await getConfig('sushiswap-v3/' + chain, endpoint)
+//       const ownerTokens = pools.map(i => [[i.token0.id.split(':')[1], i.token1.id.split(':')[1]], i.id.split(':')[1]])
+//       return sumTokens2({ api, ownerTokens, permitFailure: true, })
+//     }
+//   }
+// })
