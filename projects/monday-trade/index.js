@@ -14,11 +14,9 @@ const config = {
     },
 }
 
-async function tvl(api, chain) {
+async function getPerpTokens(api, chain) {
     const gateAddress = config[chain].gate.address
     const gateFromBlock = config[chain].gate.fromBlock
-    const spotFactoryAddress = config[chain].spotFactory.address
-    const spotFactoryFromBlock = config[chain].spotFactory.fromBlock
     // get all gate instruments
     const gateLogs = await getLogs2({
         api,
@@ -29,15 +27,24 @@ async function tvl(api, chain) {
     const ownerTokens = gateLogs.map(i => ([[i.quote], i.instrument]))
     const allTokens = gateLogs.map(i => i.quote)
     ownerTokens.push([allTokens, gateAddress])
+    return ownerTokens
+}
 
-    // get all spot pools
+async function getSpotTokens(api, chain) {
+    const spotFactoryAddress = config[chain].spotFactory.address
+    const spotFactoryFromBlock = config[chain].spotFactory.fromBlock
     const spotLogs = await getLogs2({
         api,
         target: spotFactoryAddress,
         fromBlock: spotFactoryFromBlock,
         eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)',
     })
-    ownerTokens.push(spotLogs.map(i => ([ [i.token0, i.token1], i.pool ])))
+    return spotLogs.map(i => ([[i.token0, i.token1], i.pool]))
+}
+
+async function tvl(api, chain) {
+    const ownerTokens = await getPerpTokens(api, chain)
+    ownerTokens.push(await getSpotTokens(api, chain))
     return sumTokens2({api, ownerTokens})
 }
 
