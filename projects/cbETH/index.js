@@ -1,16 +1,21 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { default: axios } = require("axios")
-const token = ADDRESSES.ethereum.cbETH
+const { get } = require('../helper/http')
+const BigNumber = require('bignumber.js')
+
+const ETH = ADDRESSES.null
 
 module.exports = {
+  timetravel: false,
   ethereum: {
-    tvl: async (timestamp, block) => {
-      if(timestamp < Date.now()/1e3 - 3600){
-        throw new Error("Only works for current info")
-      }
-      const data = await axios.get("https://api.exchange.coinbase.com/wrapped-assets/CBETH")
+    tvl: async () => {
+      const data = await get("https://api.exchange.coinbase.com/wrapped-assets/CBETH")
+      // Convert circulating cbETH to the amount of underlying ETH backing the wrapper
+      const circulatingSupply = new BigNumber(data.circulating_supply || 0)
+      const conversionRate = new BigNumber(data.conversion_rate || 0)
+      const underlyingETH = circulatingSupply.times(conversionRate)
+
       return {
-        [token]: data.data.circulating_supply * 1e18
+        [ETH]: underlyingETH.shiftedBy(18).toFixed(0),
       }
     }
   }

@@ -1,9 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { sumTokens2, nullAddress, sumTokensExport } = require('../helper/unwrapLPs');
-const { getChainTransform } = require('../helper/portedTokens');
 
 // Ethereum Vaults
 const uniCallVault = "0xDD9d1B7dEaB1A843A1B584d2CA5903B8A4735deF";
@@ -34,9 +31,6 @@ const badgerCallVault = "0x270F4a26a3fE5766CcEF9608718491bb057Be238";
 const pauserEth = "0xE04e8Ae290965AD4F7E40c68041c493d2e89cDC3";
 const pauserAvax = "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa";
 
-// Ribbon Earn vaults
-const rearnUSDC = "0x84c2b16FA6877a8fF4F3271db7ea837233DFd6f0";
-
 // Ethereum Assets
 const weth = ADDRESSES.ethereum.WETH;
 const wbtc = ADDRESSES.ethereum.WBTC;
@@ -49,9 +43,6 @@ const reth = ADDRESSES.ethereum.RETH;
 const steth = ADDRESSES.ethereum.STETH;
 const spell = "0x090185f2135308BaD17527004364eBcC2D37e5F6";
 const badger = "0x3472A5A71965499acd81997a54BBA8D852C6E53d";
-const wsteth = ADDRESSES.ethereum.WSTETH;
-const ldo = ADDRESSES.ethereum.LIDO;
-const rbnWeth = "0xdb44a4a457c87225b5ba45f27b7828a4cc03c112";
 const uni = ADDRESSES.ethereum.UNI;
 
 // Avalanche Assets
@@ -59,18 +50,14 @@ const wavax = ADDRESSES.avax.WAVAX;
 const savax = ADDRESSES.avax.SAVAX;
 const usdce = ADDRESSES.avax.USDC_e;
 
-async function addVaults({ balances, chain, vaults, block, transformAddress = a => a }) {
-  const { output: balanceRes } = await sdk.api.abi.multiCall({
-    abi: abi.totalBalance,
-    calls: vaults.map(i => ({ target: i[1]})),
-    chain, block,
-  })
-
-  balanceRes.forEach((data, i) => sdk.util.sumSingleBalance(balances, transformAddress(vaults[i][0]), data.output))
+async function addVaults({ vaults, api }) {
+  const tokens = vaults.map(i => i[0])
+  const calls = vaults.map(i => i[1])
+  const balance = await api.multiCall({ abi: 'uint256:totalBalance', calls })
+  api.add(tokens, balance)
 }
 
-async function ethTvl(_, block) {
-  const balances = {};
+async function ethTvl(api) {
   const vaults = [
     // theta vault
     [uni, uniCallVault],
@@ -93,24 +80,21 @@ async function ethTvl(_, block) {
     [badger, badgerCallVault],
 
   ]
-  
-  await addVaults({ balances, block, vaults, })
+
+  await addVaults({ api, vaults, })
   // pauser holds a variety of coins
-  return sumTokens2({ balances, owner: pauserEth, tokens: [nullAddress, usdc, wbtc, steth, aave, ], block, })
+  return sumTokens2({ api, owner: pauserEth, tokens: [nullAddress, usdc, wbtc, steth, aave,], })
 }
 
-async function avaxTvl(_, _b, { avax: block }) {
-  const balances = {};
-  const chain = 'avax'
-  const transformAddress = await getChainTransform(chain)
+async function avaxTvl(api) {
   const vaults = [
-    [wavax, avaxCallVault], 
-    [savax, savaxCallVault], 
-    [usdce, usdcAvaxPutVault], 
+    [wavax, avaxCallVault],
+    [savax, savaxCallVault],
+    [usdce, usdcAvaxPutVault],
   ]
 
-  await addVaults({ balances, chain, block, vaults, transformAddress, })
-  return sumTokens2({ balances, owner: pauserAvax, tokens: [nullAddress, savax], chain, block, transformAddress, })
+  await addVaults({ api, vaults, })
+  return sumTokens2({ owner: pauserAvax, tokens: [nullAddress, savax], api, })
 }
 
 /**

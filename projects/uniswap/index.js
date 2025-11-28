@@ -88,6 +88,7 @@ module.exports = {
     // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
     rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
     plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
+    monad: { factory: "0x204faca1764b154221e35c0d20abb3c525710498", fromBlock: 29255827 },
   }),
 }
 

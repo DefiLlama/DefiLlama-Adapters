@@ -71,13 +71,13 @@ async function ammV4Tvl(api) {
     })
     j++
     if (i > 5000) {
-      await transformDexBalances({ api, data })
+      transformDexBalances({ api, data })
       data = []
       i = 0
     }
     i++
   }
-  await transformDexBalances({ api, data })
+  transformDexBalances({ api, data })
   return api.getBalances()
 }
 

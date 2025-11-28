@@ -1,7 +1,7 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingUnknownPricedLP } = require('../helper/staking.js')
 
-const dexTVL_neon = getUniTVL({ factory: '0xd43F135f6667174f695ecB7DD2B5f953d161e4d1', useDefaultCoreAssets: true })
+const dexTVL_neon = getUniTVL({ factory: '0xd43F135f6667174f695ecB7DD2B5f953d161e4d1', useDefaultCoreAssets: true, queryBatched: 10, waitBetweenCalls: 1000 })
 
 module.exports = {
     misrepresentedTokens: true,

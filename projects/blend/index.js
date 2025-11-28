@@ -21,6 +21,4 @@ const configs = {
   }
 }
 
-module.exports = {
-  ...getCuratorExport(configs),
-}
+module.exports = getCuratorExport(configs)
