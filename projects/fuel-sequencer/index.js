@@ -209,7 +209,7 @@ async function vesting(api) {
 
 module.exports = {
     timetravel: false,
-    methodology: "TVL represents total locked FUEL tokens (bonded + unbonding). Staking shows actively bonded tokens. Vesting shows tokens locked in time-based vesting schedules. The sequencer is a Cosmos SDK chain where FUEL tokens are bridged for Tendermint PoS consensus.",
+    methodology: "TVL represents total locked FUEL tokens (bonded + unbonding) on the Fuel Shared Decentralised Sequencer. Staking shows only actively bonded tokens. The Sequencer is a standalone Cosmos SDK chain where FUEL tokens from Fuel Ignition and Ethereum are bridged to participate in Tendermint PoS consensus for transaction ordering.",
     fuel: {
         tvl, // Bonded + Unbonding (total locked)
         staking, // Actively bonded tokens
