@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const VAULT = "0xb8a14b03900828f863aedd9dd905363863bc31f4";
-const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
+const USDC = ADDRESSES.avax.USDC;
 const totalAssetsAbi = "uint256:totalAssets";
 
 async function tvl(api) {

@@ -1,5 +1,6 @@
-const sui = require('../helper/chain/sui')
 const axios = require('axios')
+
+const ENDPOINT = 'https://vault-api.volosui.com/api/v1/vaults'
 
 const VAULTS = [
   { address: '0x6e53ffe5b77a85ff609b0813955866ec98a072e4aaf628108e717143ec907bd8', gecko_id: 'bitcoin' },
@@ -8,9 +9,7 @@ const VAULTS = [
   { address: '0x27936e146ec8c695d14a3b900d21a495d2396c0a99e3c6766f86d15fe91d3897', gecko_id: 'usd-coin' },
 ]
 
-const ENDPOINT = 'https://vault-api.volosui.com/api/v1/vaults'
-
-const getVaults = async (api) => {
+const tvl = async (api) => {
   const { data } = await axios.get(ENDPOINT)
   const vaults = data.data
 
@@ -18,17 +17,6 @@ const getVaults = async (api) => {
     const match = VAULTS.find(v => v.address.toLowerCase() === id.toLowerCase())
     if (match) api.addCGToken(match.gecko_id, totalStaked)
   }
-}
-
-const getStakingTvl = async (api) => {
-  const obj = await sui.getObject('0x2d914e23d82fedef1b5f56a32d5c64bdcc3087ccfea2b4d6ea51a71f587840e5')
-  const totalSuiSupply = +obj.fields.validator_pool.fields.total_sui_supply
-  api.add('0x2::sui::SUI', totalSuiSupply)
-}
-
-const tvl = async (api) => {
-  await getStakingTvl(api)
-  await getVaults(api)
 }
 
 module.exports = {

@@ -114,6 +114,7 @@ const xbtc = require('./okx-xbtc.js')
 const leadbtc = require('./leadbtc.js')
 const bitgetBtc = require('./bitget-bgBTC.js')
 const magicEden = require('./magic-eden.js')
+const gateBtc = require('./gate-btc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -272,4 +273,5 @@ module.exports = {
   xbtc,
   leadbtc,
   magicEden,
+  gateBtc
 }
