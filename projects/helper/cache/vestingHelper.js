@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 
-const { stripTokenHeader, getFixBalancesSync, } = require('../portedTokens')
+const { stripTokenHeader, getFixBalances, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
 const { sumTokens2, } = require('../unwrapLPs')
 const { getUniqueAddresses, sliceIntoChunks, sleep, log } = require('../utils')
@@ -36,7 +36,7 @@ async function vestingHelper({
     Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
     if (i > 3 && i % 2 === 0) await sleep(1000)
   }
-  const fixBalances = getFixBalancesSync(chain)
+  const fixBalances = getFixBalances(chain)
   fixBalances(finalBalances)
   return finalBalances
 }

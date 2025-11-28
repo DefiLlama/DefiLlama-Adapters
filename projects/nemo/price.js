@@ -10,17 +10,26 @@ const {
   AFTERMATH,
   ALPAHFI
 } = require("./constants");
-const {textToBytes} = require("./bytes");
-const {hexToBytes, toU64} = require("../allbridge-core/bytes");
+const {hexToBytes, toU64, textToBytes} = require("./bytes");
+const {MMT_TYPE_CONFIG, VAULT_CONFIG, MMT, PYTH_ORACLE_MAP} = require("./coinConfig");
+const sui = require("../helper/chain/sui");
+const {getObjects} = require("./util");
 
 const ProgrammableTransactionIndex = 0;
+const PureIndex = 0;
+const BoolIndex = 1;
+const U64Index = 8;
 const ObjectIndex = 1;
 const SharedObjectIndex = 1;
 const MoveCallIndex = 0;
 const StructIndex = 7;
 const InputIndex = 1;
+const ResultIndex = 2;
 
 function parseSuiAddress(str) {
+  if (str === ADDRESSES.sui.SUI) {
+    str = '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI'
+  }
   const STRUCT_REGEX = /^([^:]+)::([^:]+)::([^<]+)(<(.+)>)?/;
   const structMatch = str.match(STRUCT_REGEX);
   if (structMatch) {
@@ -38,6 +47,8 @@ function parseSuiAddress(str) {
 async function getExchangeRate(coinConfig) {
   if (coinConfig.provider === 'Scallop') {
     return await getScallopTokenExchangeRate(coinConfig);
+  } else if (coinConfig.provider === 'Nemo') {
+    return await getNemoTokenExchangeRate(coinConfig);
   } else if (coinConfig.coinType === '0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI') {
     return await getAfsuiTokenExchangeRate(coinConfig);
   } else if (coinConfig.coinType === '0x790f258062909e3a0ffc78b3c53ac2f62d7084c3bab95644bdeb05add7250001::super_sui::SUPER_SUI') {
@@ -595,13 +606,271 @@ async function getBuckTokenExchangeRate(coinConfig) {
     ],
     [497420735, 497420765, 261896418, 498195773, 497676325, 498195774, 1],
     [true, false, false, true, false, true, false],
-    '0xf6f12cd63d0d6f44c789a2abfed51ae1a5237c783006b016237736a400724566',
+    '0xe33adb7bec8ddc73e73444f15b6703c89a86fa642b3974208228910b8d59f091',
     'buck',
     'get_exchange_rate_from_ssbuck',
     [coinConfig.syCoinType, coinConfig.coinType]
   );
 
   return generateTxBytes(kind, 7);
+}
+
+async function getNemoTokenExchangeRate(coinConfig) {
+  // console.log('getNemoTokenExchangeRate called with coinConfig:', coinConfig.coinType);
+  switch (coinConfig.coinType) {
+    case "0x7f29e761222a44b2141596e920edcc9049f8610f9d33f5354454d088e1f53b62::x_sui_sui_nevlp::X_SUI_SUI_NEVLP": {
+      const lstInfo = SPRING_SUI_STAKING_INFO_LIST.find(
+        (item) =>
+          item.coinType === MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE
+      )?.value
+
+      if (!lstInfo) {
+        throw new Error(`SpringSui: lstInfo not found for ${coinConfig.coinType}`)
+      }
+
+      const objects = await getObjects([
+        coinConfig.priceOracleConfigId,
+        coinConfig.oracleTicket,
+        lstInfo,
+        MMT_TYPE_CONFIG[coinConfig.coinType].VAULT_ID,
+        MMT_TYPE_CONFIG[coinConfig.coinType].POOL_ID,
+        coinConfig.syStateId,
+        coinConfig.pyStateId,
+        coinConfig.marketFactoryConfigId,
+        coinConfig.marketStateId,
+        '0x0000000000000000000000000000000000000000000000000000000000000006'
+      ]);
+      const versionList = objects.map((obj) => obj.data.owner.Shared.initial_shared_version)
+      // console.log('objects', JSON.stringify(objects), JSON.stringify(versionList));
+
+      const kind = generateKind(
+        [
+          coinConfig.priceOracleConfigId,
+          coinConfig.oracleTicket,
+          lstInfo,
+          MMT_TYPE_CONFIG[coinConfig.coinType].VAULT_ID,
+          MMT_TYPE_CONFIG[coinConfig.coinType].POOL_ID,
+          coinConfig.syStateId,
+        ],
+        versionList.splice(0, 6),
+        [true, false, false, false, false, false, true, false],
+        coinConfig.oraclePackageId,
+        'spring',
+        'get_price_voucher_in_sui_from_mmt_vault',
+        [
+          coinConfig.syCoinType,
+          MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE,
+          coinConfig.coinType,
+          MMT_TYPE_CONFIG[coinConfig.coinType].CONFIG_TYPE,
+        ],
+        {
+          syAmount: 1000000,
+          minPtAmount: 0,
+          objectId: [
+            coinConfig.pyStateId,
+            coinConfig.marketFactoryConfigId,
+            coinConfig.marketStateId,
+            "0x0000000000000000000000000000000000000000000000000000000000000006"
+          ],
+          version: versionList.splice(-4),
+          typeArgs: [coinConfig.syCoinType]
+        }
+      );
+      // console.log('Generated kind for X_SUI_SUI_NEVLP:', JSON.stringify(kind));
+      return generateTxBytes(kind, 8);
+    }
+    default:
+      const objects = await getObjects([
+        MMT.MMT_ORACLE_ID,
+        MMT.REGISTRY_ID,
+        MMT.ORACLE_STATE,
+        PYTH_ORACLE_MAP[MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE].priceInfoObjectId,
+        MMT.SET_PRICE_CAP_REGISTRY,
+        MMT.CLOCK_ADDRESS,
+        coinConfig.priceOracleConfigId,
+        coinConfig.oracleTicket,
+        MMT_TYPE_CONFIG[coinConfig.coinType].VAULT_ID,
+        MMT_TYPE_CONFIG[coinConfig.coinType].POOL_ID,
+        coinConfig.syStateId,
+        coinConfig.pyStateId,
+        coinConfig.marketFactoryConfigId,
+        coinConfig.marketStateId,
+        PYTH_ORACLE_MAP[MMT_TYPE_CONFIG[coinConfig.coinType].COIN_B_TYPE].priceInfoObjectId,
+      ]);
+      const versionList = objects.map((obj) => obj.data.owner.Shared.initial_shared_version)
+      // console.log('objects', JSON.stringify(objects), JSON.stringify(versionList));
+
+      const kind = generateMutiMoveCallKind(
+        [
+          MMT.MMT_ORACLE_ID,
+          MMT.REGISTRY_ID,
+          true,
+          MMT.ORACLE_STATE,
+          PYTH_ORACLE_MAP[MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE].priceInfoObjectId,
+          MMT.SET_PRICE_CAP_REGISTRY,
+          MMT.CLOCK_ADDRESS,
+          coinConfig.priceOracleConfigId,
+          coinConfig.oracleTicket,
+          MMT_TYPE_CONFIG[coinConfig.coinType].VAULT_ID,
+          MMT_TYPE_CONFIG[coinConfig.coinType].POOL_ID,
+          coinConfig.syStateId,
+          1000000,
+          0,
+          coinConfig.pyStateId,
+          coinConfig.marketFactoryConfigId,
+          coinConfig.marketStateId,
+          PYTH_ORACLE_MAP[MMT_TYPE_CONFIG[coinConfig.coinType].COIN_B_TYPE].priceInfoObjectId,
+        ],
+        versionList,
+        [
+          true, false, false, false, false, false, true, false, false, false, false, true, false, true, false
+        ],
+        [
+          {
+            packageId: MMT.MMT_ORACLE_PACKAGE_ID,
+            moduleName: 'oracle',
+            functionName: 'get_price_receipt',
+            typeArgs: [
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE,
+            ],
+            argCursors:[{"Input": 0}]
+          },
+          {
+            packageId: MMT.PRICE_ADAPTER_PACKAGE_ID,
+            moduleName: 'price_source',
+            functionName: 'set_k_oracle_price',
+            typeArgs: [
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE,
+            ],
+            argCursors:[{"Result": 0}, {"Input": 0}, {"Input": 1}, {"Input": 2}, {"Input": 3}, {"Input": 4}, {"Input": 5}, {"Input": 6}]
+          },
+          {
+            packageId: MMT.MMT_ORACLE_PACKAGE_ID,
+            moduleName: 'oracle',
+            functionName: 'update_price',
+            typeArgs: [
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE,
+            ],
+            argCursors:[{"Result": 0}, {"Input": 0}]
+          },
+          {
+            packageId: MMT.MMT_ORACLE_PACKAGE_ID,
+            moduleName: 'oracle',
+            functionName: 'get_price_receipt',
+            typeArgs: [
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_B_TYPE,
+            ],
+            argCursors:[{"Input": 0}]
+          },
+          {
+            packageId: MMT.PRICE_ADAPTER_PACKAGE_ID,
+            moduleName: 'price_source',
+            functionName: 'set_k_oracle_price',
+            typeArgs: [
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_B_TYPE,
+            ],
+            argCursors:[{"Result": 3}, {"Input": 0}, {"Input": 1}, {"Input": 2}, {"Input": 3}, {"Input": 17}, {"Input": 5}, {"Input": 6}]
+          },
+          {
+            packageId: MMT.MMT_ORACLE_PACKAGE_ID,
+            moduleName: 'oracle',
+            functionName: 'update_price',
+            typeArgs: [
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_B_TYPE,
+            ],
+            argCursors:[{"Result": 3}, {"Input": 0}]
+          },
+          {
+            packageId: coinConfig.oraclePackageId,
+            moduleName: 'vault',
+            functionName: 'get_pair_price_voucher_usd_from_mmt_vault',
+            typeArgs: [
+              coinConfig.syCoinType,
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_A_TYPE,
+              MMT_TYPE_CONFIG[coinConfig.coinType].COIN_B_TYPE,
+              coinConfig.coinType,
+              MMT_TYPE_CONFIG[coinConfig.coinType].CONFIG_TYPE,
+            ],
+            argCursors:[{"Input": 7}, {"Input": 8}, {"Input": 0}, {"Input": 9}, {"Input": 10}, {"Input": 11}, {"Input": 6}]
+          },
+          {
+            packageId: '0x0f286ad004ea93ea6ad3a953b5d4f3c7306378b0dcc354c3f4ebb1d506d3b47f',
+            moduleName: 'router',
+            functionName: 'get_pt_out_for_exact_sy_in_with_price_voucher',
+            typeArgs: [
+              coinConfig.syCoinType
+            ],
+            argCursors:[
+              {"Input": 12}, {"Input": 13}, {"Result": 6}, {"Input": 14}, {"Input": 15}, {"Input": 16}, {"Input": 6}
+            ]
+          }
+        ]
+      );
+      // console.log('generateMutiMoveCallKind kind:', JSON.stringify(kind));
+      return generateTxBytes(kind, 0);
+  }
+}
+
+async function getOptimalSwapAmountForSingleSidedLiquidity(coinConfig) {
+  const vault = MMT_TYPE_CONFIG[coinConfig.coinType];
+  const objects = await getObjects([
+    vault.VAULT_ID,
+    vault.POOL_ID,
+  ]);
+  const versionList = objects.map((obj) => obj.data.owner.Shared.initial_shared_version)
+  // console.log('objects', JSON.stringify(objects), JSON.stringify(versionList));
+
+  const kind = generateKind(
+    [
+      vault.VAULT_ID,
+      vault.POOL_ID,
+      100000,
+      false,
+      20
+    ],
+    versionList,
+    [false, false],
+    VAULT_CONFIG.VAULT_PACKAGE_ID,
+    'vault',
+    'get_optimal_swap_amount_for_single_sided_liquidity',
+    [
+      vault.COIN_A_TYPE, vault.COIN_B_TYPE, coinConfig.coinType, vault.CONFIG_TYPE
+    ],
+  );
+
+  // console.log('getOptimalSwapAmountForSingleSidedLiquidity kind', JSON.stringify(kind));
+  return generateTxBytes(kind, 0);
+}
+
+async function getConversionRate(coinConfig) {
+  const vault = MMT_TYPE_CONFIG[coinConfig.coinType];
+  const objects = await getObjects([
+    vault.VAULT_ID,
+    vault.POOL_ID,
+  ]);
+  const versionList = objects.map((obj) => obj.data.owner.Shared.initial_shared_version)
+  // console.log('objects', JSON.stringify(objects), JSON.stringify(versionList));
+
+  const kind = generateKind(
+    [
+      vault.VAULT_ID,
+      vault.POOL_ID,
+      1000,
+      false,
+      20
+    ],
+    versionList,
+    [false, false],
+    VAULT_CONFIG.VAULT_PACKAGE_ID,
+    'vault',
+    'get_optimal_swap_amount_for_single_sided_liquidity',
+    [
+      vault.COIN_A_TYPE, vault.COIN_B_TYPE, coinConfig.coinType, vault.CONFIG_TYPE
+    ],
+  );
+
+  // console.log('getOptimalSwapAmountForSingleSidedLiquidity kind', JSON.stringify(kind));
+  return generateTxBytes(kind, 0);
 }
 
 function getScallopVersion(coinType) {
@@ -653,171 +922,8 @@ function getSpringVersion(coinType) {
   return [0, 0, 0, 0, 0, 0, 0]
 }
 
-function generateTxBytes9Args(kind) {
-  const moduleArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.module);
-  const functionArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.function);
-
-  const typeArgs = kind.ProgrammableTransaction.commands[0].MoveCall.typeArguments.map(t => {
-    const parsed = parseSuiAddress(t);
-    return {
-      address: parsed.address,
-      module: parsed.module,
-      name: parsed.name,
-      typeParams: parsed.typeParams || []
-    };
-  });
-
-  let bytes = [
-    ProgrammableTransactionIndex,
-    kind.ProgrammableTransaction.inputs.length,
-  ];
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[0].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[1].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[2].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[3].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[4].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[4].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[4].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[5].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[5].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[5].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[6].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[6].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[6].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[7].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[7].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[7].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[8].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[8].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[8].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    kind.ProgrammableTransaction.commands.length,
-    MoveCallIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.package),
-    moduleArg.length,
-    ...moduleArg,
-    functionArg.length,
-    ...functionArg,
-  ]);
-
-  bytes = bytes.concat([
-    typeArgs.length,
-  ]);
-
-  for (const typeArg of typeArgs) {
-    const typeModule = textToBytes(typeArg.module);
-    const typeName = textToBytes(typeArg.name);
-
-    bytes = bytes.concat([
-      StructIndex,
-      ...hexToBytes(typeArg.address),
-      typeModule.length,
-      ...typeModule,
-      typeName.length,
-      ...typeName,
-      typeArg.typeParams.length,
-    ]);
-  }
-  bytes = bytes.concat([
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments.length,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[0].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[1].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[2].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[3].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[4].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[5].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[6].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[7].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[8].Input,
-    0,
-  ]);
-  return Uint8Array.from(bytes);
-}
-
 function generateTxBytes(kind, argsNum) {
-  const moduleArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.module);
-  const functionArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.function);
-
-  const typeArgs = kind.ProgrammableTransaction.commands[0].MoveCall.typeArguments.map(t => {
-    const parsed = parseSuiAddress(t);
-    return {
-      address: parsed.address,
-      module: parsed.module,
-      name: parsed.name,
-      typeParams: parsed.typeParams || []
-    };
-  });
+  argsNum = kind.ProgrammableTransaction.inputs.length;
 
   let bytes = [
     ProgrammableTransactionIndex,
@@ -825,95 +931,359 @@ function generateTxBytes(kind, argsNum) {
   ];
 
   for (let i = 0; i < argsNum; i++) {
+    if (kind.ProgrammableTransaction.inputs[i].Object) {
+      bytes = bytes.concat([
+        ObjectIndex,
+        SharedObjectIndex,
+        ...hexToBytes(kind.ProgrammableTransaction.inputs[i].Object.SharedObject.objectId),
+        ...toU64(kind.ProgrammableTransaction.inputs[i].Object.SharedObject.initialSharedVersion),
+        kind.ProgrammableTransaction.inputs[i].Object.SharedObject.mutable ? 1 : 0,
+      ]);
+    } else {
+      if (kind.ProgrammableTransaction.inputs[i].Pure.u64 !== undefined) {
+        bytes = bytes.concat([
+          PureIndex,
+          U64Index,
+          ...toU64(kind.ProgrammableTransaction.inputs[i].Pure.u64.value)
+        ]);
+      } else {
+        bytes = bytes.concat([
+          PureIndex,
+          BoolIndex,
+          kind.ProgrammableTransaction.inputs[i].Pure.bool.value ? 1 : 0
+        ]);
+      }
+    }
+  }
+  bytes = bytes.concat([kind.ProgrammableTransaction.commands.length])
+
+  for (let i = 0; i < kind.ProgrammableTransaction.commands.length; i++) {
+    const moduleArg = textToBytes(kind.ProgrammableTransaction.commands[i].MoveCall.module);
+    const functionArg = textToBytes(kind.ProgrammableTransaction.commands[i].MoveCall.function);
+    const typeArgs = kind.ProgrammableTransaction.commands[i].MoveCall.typeArguments.map(t => {
+      const parsed = parseSuiAddress(t);
+      return {
+        address: parsed.address,
+        module: parsed.module,
+        name: parsed.name,
+        typeParams: parsed.typeParams || []
+      };
+    });
+
     bytes = bytes.concat([
-      ObjectIndex,
-      SharedObjectIndex,
-      ...hexToBytes(kind.ProgrammableTransaction.inputs[i].Object.SharedObject.objectId),
-      ...toU64(kind.ProgrammableTransaction.inputs[i].Object.SharedObject.initialSharedVersion),
-      kind.ProgrammableTransaction.inputs[i].Object.SharedObject.mutable ? 1 : 0,
+      MoveCallIndex,
+      ...hexToBytes(kind.ProgrammableTransaction.commands[i].MoveCall.package),
+      moduleArg.length,
+      ...moduleArg,
+      functionArg.length,
+      ...functionArg,
     ]);
+
+    bytes = bytes.concat([
+      typeArgs.length,
+    ]);
+
+    for (const typeArg of typeArgs) {
+      const typeModule = textToBytes(typeArg.module);
+      const typeName = textToBytes(typeArg.name);
+
+      bytes = bytes.concat([
+        StructIndex,
+        ...hexToBytes(typeArg.address),
+        typeModule.length,
+        ...typeModule,
+        typeName.length,
+        ...typeName,
+        typeArg.typeParams.length,
+      ]);
+    }
+
+    let argumentsLength = kind.ProgrammableTransaction.commands[i].MoveCall.arguments.length;
+    bytes = bytes.concat([argumentsLength]);
+    // console.log(`${JSON.stringify(kind.ProgrammableTransaction.commands[i].MoveCall)}`)
+    for (let j = 0; j < argumentsLength; j++) {
+      // console.log(`${JSON.stringify(kind.ProgrammableTransaction.commands[i].MoveCall.arguments[j])}`)
+      if (kind.ProgrammableTransaction.commands[i].MoveCall.arguments[j].Input !== undefined) {
+        // console.log(`${i}, ${j}, Input: ${kind.ProgrammableTransaction.commands[i].MoveCall.arguments[j].Input}`);
+        bytes = bytes.concat([
+          InputIndex,
+          kind.ProgrammableTransaction.commands[i].MoveCall.arguments[j].Input,
+          0
+        ]);
+      } else {
+        // console.log(`${i}, ${j}, Result: ${kind.ProgrammableTransaction.commands[i].MoveCall.arguments[j].Result}`);
+        bytes = bytes.concat([
+          ResultIndex,
+          kind.ProgrammableTransaction.commands[i].MoveCall.arguments[j].Result,
+          0
+        ]);
+      }
+    }
   }
 
-  bytes = bytes.concat([
-    kind.ProgrammableTransaction.commands.length,
-    MoveCallIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.package),
-    moduleArg.length,
-    ...moduleArg,
-    functionArg.length,
-    ...functionArg,
-  ]);
-
-  bytes = bytes.concat([
-    typeArgs.length,
-  ]);
-
-  for (const typeArg of typeArgs) {
-    const typeModule = textToBytes(typeArg.module);
-    const typeName = textToBytes(typeArg.name);
-
-    bytes = bytes.concat([
-      StructIndex,
-      ...hexToBytes(typeArg.address),
-      typeModule.length,
-      ...typeModule,
-      typeName.length,
-      ...typeName,
-      typeArg.typeParams.length,
-    ]);
-  }
-  bytes = bytes.concat([kind.ProgrammableTransaction.commands[0].MoveCall.arguments.length]);
-  for (let i = 0; i < argsNum; i++) {
-    bytes = bytes.concat([
-      InputIndex,
-      kind.ProgrammableTransaction.commands[0].MoveCall.arguments[i].Input,
-      0
-    ]);
-  }
+  // console.log('Generated bytes:', JSON.stringify(bytes));
   return Uint8Array.from(bytes);
 }
 
-function generateKind(objectIdArr, versionArr, mutableArr, packageId, moduleName, functionName, typeArgs) {
+function generateKind(argArr, versionArr, mutableArr, packageId, moduleName, functionName, typeArgs, priceVoucherParam = null) {
   let inputs = [];
   let args = [];
-  for (let i = 0; i < objectIdArr.length; i++) {
-    let objectId = objectIdArr[i];
-    let version = versionArr[i];
-    let mutable = mutableArr[i];
-    inputs.push(
-      {
-        "Object": {
-          "SharedObject": {
-            "objectId": objectId,
-            "initialSharedVersion": version,
-            "mutable": mutable
-          }
-        },
-      }
-    )
+  let moveCall = []
+
+  let versionCursor = 0;
+  let mutableCursor = 0;
+  for (let i = 0; i < argArr.length; i++) {
+    let objectId = argArr[i];
+    let version = versionArr[versionCursor];
+    let mutable = mutableArr[mutableCursor];
+    if (typeof objectId === 'string') {
+      inputs.push(
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": objectId,
+              "initialSharedVersion": version,
+              "mutable": mutable
+            }
+          },
+        }
+      )
+      versionCursor++;
+      mutableCursor++;
+    } else if (typeof objectId === 'number') {
+      inputs.push({"Pure": {"u64": {"value": objectId,}},})
+    } else if (typeof objectId === 'boolean') {
+      inputs.push({"Pure": {"bool": {"value": objectId,}},})
+    }
     args.push(
       {
         "Input": i
       }
     )
   }
+  moveCall.push(
+    {
+      "MoveCall": {
+        "package": packageId,
+        "module": moduleName,
+        "function": functionName,
+        "typeArguments": typeArgs,
+        "arguments": args,
+      }
+    }
+  );
+
+  if (priceVoucherParam != null) {
+    let length = argArr.length;
+    inputs.push({"Pure": {"u64": {"value": priceVoucherParam.syAmount,}},})
+    inputs.push({"Pure": {"u64": {"value": priceVoucherParam.minPtAmount,}},})
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[0],
+            "initialSharedVersion": priceVoucherParam.version[0],
+            "mutable": true
+          }
+        },
+      }
+    )
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[1],
+            "initialSharedVersion": priceVoucherParam.version[1],
+            "mutable": false
+          }
+        },
+      }
+    )
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[2],
+            "initialSharedVersion": priceVoucherParam.version[2],
+            "mutable": true
+          }
+        },
+      }
+    )
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[3],
+            "initialSharedVersion": priceVoucherParam.version[3],
+            "mutable": false
+          }
+        },
+      }
+    )
+
+    moveCall.push(
+      {
+        "MoveCall": {
+          "package": "0x0f286ad004ea93ea6ad3a953b5d4f3c7306378b0dcc354c3f4ebb1d506d3b47f",
+          "module": "router",
+          "function": "get_pt_out_for_exact_sy_in_with_price_voucher",
+          "typeArguments": priceVoucherParam.typeArgs,
+          "arguments": [
+            {"Input": length},
+            {"Input": length + 1},
+            {"Result": 0},
+            {"Input": length + 2},
+            {"Input": length + 3},
+            {"Input": length + 4},
+            {"Input": length + 5},
+          ],
+        }
+      }
+    );
+  }
 
   return {
     "ProgrammableTransaction": {
       "inputs": inputs,
-      "commands": [{
+      "commands": moveCall
+    }
+  };
+}
+
+function generateMutiMoveCallKind(argArr, versionArr, mutableArr, moveCalls, priceVoucherParam = null) {
+  let inputs = [];
+  let moveCall = []
+  let argLength = 0;
+
+  let versionCursor = 0;
+  let mutableCursor = 0;
+
+  for (let i = 0; i < argArr.length; i++) {
+    let objectId = argArr[i];
+    let version = versionArr[versionCursor];
+    let mutable = mutableArr[mutableCursor];
+    if (typeof objectId === 'string') {
+      inputs.push(
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": objectId,
+              "initialSharedVersion": version,
+              "mutable": mutable
+            }
+          },
+        }
+      )
+      versionCursor++;
+      mutableCursor++;
+    } else if (typeof objectId === 'number') {
+      inputs.push({"Pure": {"u64": {"value": objectId,}},})
+    } else if (typeof objectId === 'boolean') {
+      inputs.push({"Pure": {"bool": {"value": objectId,}},})
+    }
+
+  }
+
+  for (const moveCallElement of moveCalls) {
+    const {packageId, moduleName, functionName, typeArgs, argCursors} = moveCallElement;
+    argLength += argArr.length;
+
+    moveCall.push(
+      {
         "MoveCall": {
           "package": packageId,
           "module": moduleName,
           "function": functionName,
           "typeArguments": typeArgs,
-          "arguments": args,
+          "arguments": argCursors,
         }
-      }]
+      }
+    );
+  }
+
+
+  if (priceVoucherParam != null) {
+    let length = argLength;
+    inputs.push({"Pure": {"u64": {"value": priceVoucherParam.syAmount,}},})
+    inputs.push({"Pure": {"u64": {"value": priceVoucherParam.minPtAmount,}},})
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[0],
+            "initialSharedVersion": priceVoucherParam.version[0],
+            "mutable": true
+          }
+        },
+      }
+    )
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[1],
+            "initialSharedVersion": priceVoucherParam.version[1],
+            "mutable": false
+          }
+        },
+      }
+    )
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[2],
+            "initialSharedVersion": priceVoucherParam.version[2],
+            "mutable": true
+          }
+        },
+      }
+    )
+    inputs.push(
+      {
+        "Object": {
+          "SharedObject": {
+            "objectId": priceVoucherParam.objectId[3],
+            "initialSharedVersion": priceVoucherParam.version[3],
+            "mutable": false
+          }
+        },
+      }
+    )
+
+    moveCall.push(
+      {
+        "MoveCall": {
+          "package": "0x0f286ad004ea93ea6ad3a953b5d4f3c7306378b0dcc354c3f4ebb1d506d3b47f",
+          "module": "router",
+          "function": "get_pt_out_for_exact_sy_in_with_price_voucher",
+          "typeArguments": priceVoucherParam.typeArgs,
+          "arguments": [
+            {"Input": length},
+            {"Input": length + 1},
+            {"Result": 0},
+            {"Input": length + 2},
+            {"Input": length + 3},
+            {"Input": length + 4},
+            {"Input": length + 5},
+          ],
+        }
+      }
+    );
+  }
+
+  return {
+    "ProgrammableTransaction": {
+      "inputs": inputs,
+      "commands": moveCall
     }
   };
 }
 
 module.exports = {
-  getExchangeRate
+  getExchangeRate,
+  getOptimalSwapAmountForSingleSidedLiquidity,
+  generateKind,
+  generateTxBytes
 }

@@ -55,7 +55,7 @@ const config = {
       { factory: '0x28cF3b462a1ADdE87fe7144d110BcF0D464C97b7', fromBlock: 22972345, isAlgebra: true, }, // Kim
       { factory: '0x24430E837efB64EF87bb32be03437fc6005EEF74', fromBlock: 22095330, isAlgebra: false, }, // PancakeSwap
       { factory: '0xbA096706A850caF1cADAEfE7529Db1343a0c187E', fromBlock: 25174764, isAlgebra: true, }, // Trebleswap 
-      { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, isAlgebra: false, }, // Uniswap 
+      // { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, isAlgebra: false, }, // Uniswap 
     ]
   },
   blast: {
@@ -168,11 +168,11 @@ const config = {
       { factory: '0x63703A4DdFA51B6CffC1Bb40cc73912dF62535FA', fromBlock: 24151937, isAlgebra: false, }, // Uniswap
     ]
   },
-  real: {
-    vaultConfigs: [
-      { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
-    ]
-  },
+  // real: {
+  //   vaultConfigs: [
+  //     { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
+  //   ]
+  // },
   rsk: {
     vaultConfigs: [
       { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 6753128, isAlgebra: false, }, // Uniswap
@@ -236,22 +236,22 @@ Object.keys(config).forEach(chain => {
         await sumTokens2({ api, owners: uniV3NFTHolders, resolveUniV3: true, blacklistedTokens, })
       }
 
-      for (const {
-        factory,
-        fromBlock,
-        isAlgebra,
-      } of vaultConfigs) {
+      for (const { factory, fromBlock, isAlgebra } of vaultConfigs) {
         const topic = isAlgebra ? algebraTopic : defaultTopic
         const eventAbi = isAlgebra ? algebraEvent : defaultEvent
-        const logs = await getLogs({
-          api,
-          target: factory,
-          topics: [topic],
-          eventAbi: eventAbi,
-          onlyArgs: true,
-          fromBlock,
-        })
-        const vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls: logs.map(l => l.ichiVault), permitFailure: true })
+        const logs = await getLogs({ api, target: factory, topics: [topic], eventAbi, onlyArgs: true, fromBlock })
+
+        let vaultBalances = []
+        const calls = logs.map(l => l.ichiVault)
+
+        if (api.chain === 'hedera') {
+          for (let i = 0; i < calls.length; i += 10) {
+            const batch = calls.slice(i, i + 10)
+            const res = await api.multiCall({ abi: abi.getTotalAmounts, calls: batch, permitFailure: true })
+            vaultBalances.push(...res)
+          }
+        } else vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls, permitFailure: true })
+
         vaultBalances.forEach((b, i) => {
           if (!b) return
           const { tokenA, tokenB } = logs[i]

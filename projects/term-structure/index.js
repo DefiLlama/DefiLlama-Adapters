@@ -1,5 +1,5 @@
 const CORE_ASSETS = require("../helper/coreAssets.json");
-const { getLogs2 } = require("../helper/cache/getLogs");
+const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ABIS = {
@@ -17,16 +17,22 @@ const ABIS = {
   },
 };
 
-const Events = {
-  CreateMarket: {
-    eventAbi:
+const EVENTS = {
+  V1: {
+    CreateMarket:
       "event CreateMarket(address indexed market, address indexed collateral, address indexed debtToken)",
-    topic: "0x3f53d2c2743b2b162c0aa5d678be4058d3ae2043700424be52c04105df3e2411",
+    CreateVault:
+      "event CreateVault(address indexed vault, address indexed creator, (address admin,address curator,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate) indexed initialParams)",
   },
-  CreateVault: {
-    eventAbi:
-      "event CreateVault(address indexed vault, address indexed creator, tuple(address,address,uint256,address,uint256,string,string,uint64) indexed initialParams)",
-    topic: "0x8d49b14f2b628cc0c1a7ad5e098155260cd1881003c9d3107c728be96f706b33",
+  V1Plus: {
+    VaultCreated:
+      "event VaultCreated(address indexed vault, address indexed creator, tuple(address admin,address curator,address guardian,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy,uint64 minIdleFundRate) initialParams)",
+  },
+  V2: {
+    MarketCreated:
+      "event MarketCreated(address indexed market, address indexed collateral, address indexed debtToken, tuple(address collateral,address debtToken,address admin,address gtImplementation,tuple(address treasurer,uint64 maturity,tuple(uint32 lendTakerFeeRatio,uint32 lendMakerFeeRatio,uint32 borrowTakerFeeRatio,uint32 borrowMakerFeeRatio,uint32 mintGtFeeRatio,uint32 mintGtFeeRef) feeConfig) marketConfig,(address oracle,uint32 liquidationLtv,uint32 maxLtv,bool liquidatable) loanConfig,bytes gtInitalParams,string tokenName,string tokenSymbol) params)",
+    VaultCreated:
+      "event VaultCreated(address indexed vault, address indexed creator, (address admin,address curator,address guardian,uint256 timelock,address asset,address pool,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy) initialParams)",
   },
 };
 
@@ -37,7 +43,7 @@ const ADDRESSES = {
   arbitrum: {
     Factory: {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
-      fromBlock: 322193553,
+      fromBlock: 322190000,
     },
     VaultFactory: [
       {
@@ -45,17 +51,15 @@ const ADDRESSES = {
         fromBlock: 322193571,
       },
     ],
-    Vaults: [
-      // TermMax WETH Vault
-      [
-        [CORE_ASSETS.arbitrum.WETH],
-        "0x8c5161f287Cbc9Afa48bC8972eE8CC0a755fcAdC",
-      ],
-      // TermMax USDC Vault
-      [
-        [CORE_ASSETS.arbitrum.USDC],
-        "0xc94b752839a22d2c44e99e298671dd4b2add11b3",
-      ],
+    VaultFactoryV2: [
+      {
+        address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
+        fromBlock: 385228046,
+      },
+      {
+        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
+        fromBlock: 385228046,
+      },
     ],
   },
   bsc: {
@@ -63,24 +67,52 @@ const ADDRESSES = {
       address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
       fromBlock: 50519690,
     },
+    FactroryV2: [
+      // Start of TermMax Alpha
+      {
+        address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
+        fromBlock: 67248948,
+      },
+      // End of TermMax Alpha
+    ],
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
-        fromBlock: 50519690,
+        fromBlock: 50519589,
       },
     ],
-    Vaults: [
-      // TermMax USDT Vault
-      [[CORE_ASSETS.bsc.USDT], "0x86c958CAc8aeE37dE62715691c0D597c710Eca51"],
-      // TermMax WBNB Vault
-      [[CORE_ASSETS.bsc.WBNB], "0x89653E6523fB73284353252b41AE580E6f96dFad"],
+    VaultFactoryV2: [
+      {
+        address: "0x1401049368eD6AD8194f8bb7E41732c4620F170b",
+        fromBlock: 63100000,
+      },
+      {
+        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
+        fromBlock: 63100000,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0xC63858D1eFa377f94392Ba5dEb521233Ec1548eb",
+        fromBlock: 67251242,
+      },
+      // End of TermMax Alpha
     ],
   },
   ethereum: {
     Factory: {
       address: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
-      fromBlock: 22174761,
+      fromBlock: 22174000,
     },
+    FactoryV2: [
+      {
+        address: "0x1c86801e8ad0726298383e30c2c1a844887a61bd",
+        fromBlock: 23430000,
+      },
+      {
+        address: "0xc53ab74eeb5e818147eb6d06134d81d3ac810987",
+        fromBlock: 23488600,
+      },
+    ],
     VaultFactory: [
       {
         address: "0x01D8C1e0584751085a876892151Bf8490e862E3E",
@@ -91,54 +123,106 @@ const ADDRESSES = {
         fromBlock: 22283092,
       },
     ],
-    Vaults: [
-      // TermMax wstETH Vault
-      [
-        [CORE_ASSETS.ethereum.WSTETH],
-        "0xDAdeAcC03a59639C0ecE5ec4fF3BC0d9920A47eC",
-      ],
-      // TermMax USDC Vault
-      [
-        [CORE_ASSETS.ethereum.USDC],
-        "0x984408C88a9B042BF3e2ddf921Cd1fAFB4b735D1",
-      ],
-      // TermMax USDC Prime
-      [
-        [CORE_ASSETS.ethereum.USDC],
-        "0x13e361dC94459a01bc4991F9e681033Dc2b0fA5A",
-      ],
-      // TermMax WETH Vault
-      [
-        [CORE_ASSETS.ethereum.WETH],
-        "0xDEB8a9C0546A01b7e5CeE8e44Fd0C8D8B96a1f6e",
-      ],
-      // TermMax pufETH Vault
-      [
-        ["0xD9A442856C234a39a81a089C06451EBAa4306a72"], // pufETH
-        "0xdC4d99aB6c69943b4E17431357AbC5b54B4C2F56",
-      ],
-      // TermMax XAU Vault
-      [
-        [CORE_ASSETS.ethereum.USDC],
-        "0x240Dd52089899a71454942b6Ba3ef4dbcBAd57fd",
-      ],
+    VaultFactoryV1Plus: [
+      {
+        address: "0x3a9ECfFDBDc595907f65640F810d3dDDDDe2FA61",
+        fromBlock: 23138659,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0xF2BDa87CA467eB90A1b68f824cB136baA68a8177",
+        fromBlock: 23430000,
+      },
+      {
+        address: "0x5b8B26a6734B5eABDBe6C5A19580Ab2D0424f027",
+        fromBlock: 23430000,
+      },
+    ],
+  },
+  berachain: {
+    FactoryV2: [
+      {
+        address: "0x4BC4F8f9B212B5a3F9f7Eeb35Ae1A91902670F7f",
+        fromBlock: 11541952,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x65fC69DE62E11592E8Acf57a0c97535209090Ef1",
+        fromBlock: 11541953,
+      },
+    ],
+  },
+  hyperliquid: {
+    FactoryV2: [
+      {
+        address: "0xC1Ce945e55506B384daDDEf48FA5A78554560ad3",
+        fromBlock: 15997179,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0xA0E0702b701cCaC329732Bb409681612f43E41AD",
+        fromBlock: 15997362,
+      },
     ],
   },
 };
 
+const VAULT_BLACKLIST = {
+  arbitrum: [
+    "0x8531dC1606818A3bc3D26207a63641ac2F1f6Dc8", // misconfigured asset
+  ],
+  ethereum: [],
+  bsc: [
+    "0xe5E01B82904a49Ce5a670c1B7488C3f29433088a", // misconfigured asset
+  ],
+};
+
 async function getTermMaxMarketAddresses(api) {
-  const logs = await getLogs2({
+  if (!ADDRESSES[api.chain].Factory) return [];
+  const logs = await getLogs({
     api,
-    eventAbi: Events.CreateMarket.eventAbi,
-    topic: Events.CreateMarket.topic,
+    eventAbi: EVENTS.V1.CreateMarket,
     fromBlock: ADDRESSES[api.chain].Factory.fromBlock,
     target: ADDRESSES[api.chain].Factory.address,
+    onlyArgs: true,
+    extraKey: `termmax-market-v1-${api.chain}`,
   });
   return logs.map(([market]) => market);
 }
 
+async function getTermMaxMarketV2Addresses(api) {
+  if (!ADDRESSES[api.chain].FactoryV2) return [];
+  const addresses = [];
+  const tasks = [];
+  for (const factory of ADDRESSES[api.chain].FactoryV2) {
+    const task = async () => {
+      const logs = await getLogs({
+        api,
+        eventAbi: EVENTS.V2.MarketCreated,
+        fromBlock: factory.fromBlock,
+        target: factory.address,
+        onlyArgs: true,
+        extraKey: `termmax-market-v2-${api.chain}`,
+      });
+      for (const [market] of logs) addresses.push(market);
+    };
+    tasks.push(task());
+  }
+  await Promise.all(tasks);
+  return addresses;
+}
+
 async function getTermMaxMarketOwnerTokens(api) {
-  const marketAddresses = await getTermMaxMarketAddresses(api);
+  const [marketV1Addresses, marketV2Addresses] = await Promise.all([
+    getTermMaxMarketAddresses(api),
+    getTermMaxMarketV2Addresses(api),
+  ]);
+  const marketAddresses = []
+    .concat(marketV1Addresses)
+    .concat(marketV2Addresses);
   const tokens = await api.multiCall({
     abi: ABIS.Market.tokens,
     calls: marketAddresses,
@@ -154,21 +238,64 @@ async function getTermMaxMarketOwnerTokens(api) {
 }
 
 async function getTermMaxVaultAddresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactory) return [];
   const addresses = [];
   const promises = [];
   for (const vaultFactory of ADDRESSES[api.chain].VaultFactory) {
     const promise = async () => {
-      const logs = await getLogs2({
+      const logs = await getLogs({
         api,
-        eventAbi: Events.CreateVault.eventAbi,
-        topic: Events.CreateVault.topic,
+        eventAbi: EVENTS.V1.CreateVault,
         fromBlock: vaultFactory.fromBlock,
         target: vaultFactory.address,
+        onlyArgs: true,
+        extraKey: `termmax-vault-v1-${api.chain}`,
       });
-      for (const log of logs) {
-        const [vault] = log;
-        addresses.push(vault);
-      }
+      for (const [vault] of logs) addresses.push(vault);
+    };
+    promises.push(promise());
+  }
+  await Promise.all(promises);
+  return addresses;
+}
+
+async function getTermMaxVaultV1PlusAddresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactoryV1Plus) return [];
+  const addresses = [];
+  const promises = [];
+  for (const vaultFactory of ADDRESSES[api.chain].VaultFactoryV1Plus) {
+    const promise = async () => {
+      const logs = await getLogs({
+        api,
+        eventAbi: EVENTS.V1Plus.VaultCreated,
+        fromBlock: vaultFactory.fromBlock,
+        target: vaultFactory.address,
+        onlyArgs: true,
+        extraKey: `termmax-vault-v1-plus-${api.chain}`,
+      });
+      for (const [vault] of logs) addresses.push(vault);
+    };
+    promises.push(promise());
+  }
+  await Promise.all(promises);
+  return addresses;
+}
+
+async function getTermMaxVaultV2Addresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactoryV2) return [];
+  const addresses = [];
+  const promises = [];
+  for (const vaultFactory of ADDRESSES[api.chain].VaultFactoryV2) {
+    const promise = async () => {
+      const logs = await getLogs({
+        api,
+        eventAbi: EVENTS.V2.VaultCreated,
+        fromBlock: vaultFactory.fromBlock,
+        target: vaultFactory.address,
+        onlyArgs: true,
+        extraKey: `termmax-vault-v2-${api.chain}`,
+      });
+      for (const [vault] of logs) addresses.push(vault);
     };
     promises.push(promise());
   }
@@ -177,19 +304,40 @@ async function getTermMaxVaultAddresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const vaultAddresses = await getTermMaxVaultAddresses(api);
+  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
+    await Promise.all([
+      getTermMaxVaultAddresses(api),
+      getTermMaxVaultV1PlusAddresses(api),
+    ]);
+  const vaultAddresses = []
+    .concat(vaultV1Addresses)
+    .concat(vaultV1PlusAddresses)
+    .filter((address) => !VAULT_BLACKLIST[api.chain]?.includes(address));
   const assets = await api.multiCall({
     abi: ABIS.Vault.asset,
     calls: vaultAddresses,
   });
   // TVL factor: idle fund in the vault
-  return (
-    assets
-      .map(([asset], idx) => [[asset], vaultAddresses[idx]])
-      // Hard-code vault addresses here since
-      // CreateVault events are not returned by RPC used by DefiLlama
-      .concat(ADDRESSES[api.chain].Vaults)
-  );
+  return assets.map((asset, idx) => [[asset], vaultAddresses[idx]]);
+}
+
+async function recordVaultV2Assets(api) {
+  const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
+  const [assets, totalAssets] = await Promise.all([
+    api.multiCall({
+      abi: ABIS.Vault.asset,
+      calls: vaultV2Addresses,
+    }),
+    api.multiCall({
+      abi: "uint256:totalAssets",
+      calls: vaultV2Addresses,
+    }),
+  ]);
+  for (let i = 0; i < vaultV2Addresses.length; i += 1) {
+    const asset = assets[i];
+    const totalAsset = totalAssets[i];
+    api.add(asset, totalAsset);
+  }
 }
 
 async function getTermMaxOwnerTokens(api) {
@@ -197,6 +345,7 @@ async function getTermMaxOwnerTokens(api) {
     getTermMaxMarketOwnerTokens(api),
     getTermMaxVaultOwnerTokens(api),
   ]);
+  await recordVaultV2Assets(api);
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
@@ -218,8 +367,14 @@ async function getTermStructureOwnerTokens(api) {
 async function getTermMaxMarketBorrowed(api) {
   const marketAddresses = await getTermMaxMarketAddresses(api);
   const [tokens, configs] = await Promise.all([
-    api.multiCall({ abi: ABIS.Market.tokens, calls: marketAddresses }),
-    api.multiCall({ abi: ABIS.Market.config, calls: marketAddresses }),
+    api.multiCall({
+      abi: ABIS.Market.tokens,
+      calls: marketAddresses,
+    }),
+    api.multiCall({
+      abi: ABIS.Market.config,
+      calls: marketAddresses,
+    }),
   ]);
 
   const activeMarkets = [];
@@ -265,6 +420,7 @@ module.exports = {
       "Sunset Term Structure and launch TermMax",
     ],
   ],
+  // 1st batch deployment
   arbitrum: {
     borrowed: getTermMaxMarketBorrowed,
     tvl: async (api) => {
@@ -289,6 +445,21 @@ module.exports = {
       const ownerTokens = []
         .concat(termStructureOwnerTokens)
         .concat(termMaxOwnerTokens);
+      return sumTokens2({ api, ownerTokens });
+    },
+  },
+  // 2nd batch deployment
+  berachain: {
+    borrowed: getTermMaxMarketBorrowed,
+    tvl: async (api) => {
+      const ownerTokens = await getTermMaxOwnerTokens(api);
+      return sumTokens2({ api, ownerTokens });
+    },
+  },
+  hyperliquid: {
+    borrowed: getTermMaxMarketBorrowed,
+    tvl: async (api) => {
+      const ownerTokens = await getTermMaxOwnerTokens(api);
       return sumTokens2({ api, ownerTokens });
     },
   },
