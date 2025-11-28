@@ -15,6 +15,7 @@ const config = {
     msyrupUSD: "0x20226607b4fa64228ABf3072Ce561d6257683464",
     msyrupUSDp: "0x2fE058CcF29f123f9dd2aEC0418AA66a877d8E50",
     mWildUSD: "0x605A84861EE603e385b01B9048BEa6A86118DB0a",
+    mEVUSD: "0x548857309BEfb6Fb6F20a9C5A56c9023D892785B",
   },
   base: {
     mTBILL: "0xDD629E5241CbC5919847783e6C96B2De4754e438",
@@ -45,6 +46,15 @@ const config = {
   xrplevm: {
     mXRP: "0x06e0B0F1A644Bb9881f675Ef266CeC15a63a3d47",
   },
+  bsc: {
+    mXRP: "0xc8739fbBd54C587a2ad43b50CbcC30ae34FE9e34"
+  },
+  plasma: {
+    mHyper: "0xb31BeA5c2a43f942a3800558B1aa25978da75F8a"
+  },
+  "0g": {
+    mEDGE: "0xA1027783fC183A150126b094037A5Eb2F5dB30BA"
+  }
 };
 
 async function tvl(api) {

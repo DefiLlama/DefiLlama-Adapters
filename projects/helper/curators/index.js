@@ -88,11 +88,164 @@ async function getSiloVaults(api, owners) {
 }
 
 async function getCuratorTvlErc4626(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true, })
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true, })
-  for (let i = 0; i < assets.length; i++) {
-    if (!assets[i] || !totalAssets[i]) continue;
-    api.add(assets[i], totalAssets[i]);
+  if (!vaults || vaults.length === 0) return
+
+  // Get assets and totalAssets for all vaults
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
+
+  // Check which vaults are Morpho v2 (have liquidityAdapter function)
+  const liquidityAdapters = await api.multiCall({
+    abi: ABI.morphoV2.liquidityAdapter,
+    calls: vaults,
+    permitFailure: true,
+  })
+
+  // Separate vaults into Morpho v2 and others
+  const v2Vaults = []
+  const otherVaults = []
+  const vaultMap = new Map() // vault address -> vaultInfo
+
+  for (let i = 0; i < vaults.length; i++) {
+    if (!assets[i] || !totalAssets[i]) continue
+
+    const vaultInfo = {
+      vault: vaults[i],
+      asset: assets[i],
+      totalAssets: BigInt(totalAssets[i] || 0),
+      liquidityAdapter: liquidityAdapters[i],
+    }
+
+    vaultMap.set(vaults[i].toLowerCase(), vaultInfo)
+
+    if (liquidityAdapters[i]) {
+      v2Vaults.push(vaultInfo)
+    } else {
+      otherVaults.push(vaultInfo)
+    }
+  }
+
+  if (v2Vaults.length === 0) {
+    // No v2 vaults, process all normally
+    for (const vaultInfo of otherVaults) {
+      api.add(vaultInfo.asset, vaultInfo.totalAssets)
+    }
+    return
+  }
+
+  // For each v2 vault, get the v1 vault address via the adapter
+  const v1VaultAddresses = await api.multiCall({
+    abi: ABI.morphoAdapter.morphoVaultV1,
+    calls: v2Vaults.map(v => v.liquidityAdapter),
+    permitFailure: true,
+  })
+
+  // Track which v1 vaults are found via v2 adapters (to avoid double-counting)
+  const v1VaultsFromV2 = new Set()
+  for (const v1Address of v1VaultAddresses) {
+    if (v1Address) {
+      v1VaultsFromV2.add(v1Address.toLowerCase())
+    }
+  }
+
+  // Process non-Morpho vaults, but skip v1 vaults that will be handled via v2 de-duplication
+  for (const vaultInfo of otherVaults) {
+    if (!v1VaultsFromV2.has(vaultInfo.vault.toLowerCase())) {
+      api.add(vaultInfo.asset, vaultInfo.totalAssets)
+    }
+  }
+
+  // Build morpho pairs: v2 vault -> v1 vault data
+  const morphoPairs = []
+  const v1AddressesToFetch = []
+
+  for (let i = 0; i < v2Vaults.length; i++) {
+    const v2 = v2Vaults[i]
+    const v1Address = v1VaultAddresses[i]
+
+    if (!v1Address) {
+      // If we can't get v1 address, just process v2 normally
+      api.add(v2.asset, v2.totalAssets)
+      continue
+    }
+
+    const v1InList = vaultMap.get(v1Address.toLowerCase())
+    if (v1InList) {
+      // v1 is in the original list, use its data
+      const v1 = {
+        vault: v1Address,
+        asset: v1InList.asset,
+        totalAssets: v1InList.totalAssets,
+      }
+      morphoPairs.push({ v1, v2 })
+    } else {
+      // v1 is not in the list, need to fetch it
+      v1AddressesToFetch.push({ v1Address, v2Index: i })
+    }
+  }
+
+  // Fetch data for v1 vaults not in the original list
+  if (v1AddressesToFetch.length > 0) {
+    const fetchedAssets = await api.multiCall({
+      abi: ABI.ERC4626.asset,
+      calls: v1AddressesToFetch.map(v => v.v1Address),
+      permitFailure: true,
+    })
+    const fetchedTotalAssets = await api.multiCall({
+      abi: ABI.ERC4626.totalAssets,
+      calls: v1AddressesToFetch.map(v => v.v1Address),
+      permitFailure: true,
+    })
+
+    for (let j = 0; j < v1AddressesToFetch.length; j++) {
+      const { v1Address, v2Index } = v1AddressesToFetch[j]
+      const v2 = v2Vaults[v2Index]
+
+      if (!fetchedAssets[j] || !fetchedTotalAssets[j]) {
+        // If we can't get v1 data, just process v2 normally
+        api.add(v2.asset, v2.totalAssets)
+        continue
+      }
+
+      const v1 = {
+        vault: v1Address,
+        asset: fetchedAssets[j],
+        totalAssets: BigInt(fetchedTotalAssets[j] || 0),
+      }
+      morphoPairs.push({ v1, v2 })
+    }
+  }
+
+  // Process Morpho pairs with de-duplication
+  for (const { v1, v2 } of morphoPairs) {
+    let v2DepositsInV1 = 0n
+
+    if (v2.liquidityAdapter) {
+      // Get v2's deposits in v1 using the adapter address
+      const v2AdapterSharesInV1 = await api.call({
+        abi: ABI.ERC4626.balanceOf,
+        target: v1.vault,
+        params: [v2.liquidityAdapter],
+        permitFailure: true,
+      })
+
+      if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
+        // Convert v1 shares held by v2 adapter to underlying assets
+        const v2AssetsInV1 = await api.call({
+          abi: ABI.ERC4626.convertToAssets,
+          target: v1.vault,
+          params: [v2AdapterSharesInV1],
+          permitFailure: true,
+        })
+        if (v2AssetsInV1) {
+          v2DepositsInV1 = BigInt(v2AssetsInV1)
+        }
+      }
+    }
+
+    // Unique TVL = V1 + V2 - v2_deposits_in_v1
+    const uniqueTvl = v1.totalAssets + v2.totalAssets - v2DepositsInV1
+    api.add(v1.asset, uniqueTvl)
   }
 }
 
@@ -170,6 +323,17 @@ async function getCuratorTvlSymbioticVault(api, vaults) {
   api.add(assets, totalStakes.map(v => v || 0))
 }
 
+async function getNested4626Vaults(api, vaults) {
+  const vaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
+  const nestedVaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaultAsset, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    const resolvedAsset = nestedVaultAsset[i] || vaultAsset[i]
+    if (!resolvedAsset) continue
+    api.add(resolvedAsset, totalAssets[i])
+  }
+}
+
 async function getCuratorTvl(api, vaults) {
   const allVaults = {
     morpho: vaults.morpho ? vaults.morpho : [],
@@ -188,14 +352,23 @@ async function getCuratorTvl(api, vaults) {
     allVaults.silo = allVaults.silo.concat(await getSiloVaults(api, vaults.siloVaultOwners))
   }
 
-  await getCuratorTvlErc4626(api, allVaults.morpho)
+  // Combine all ERC-4626 vaults (morpho, erc4626, etc.) into a single array
+  // This ensures de-duplication works across all ERC-4626 vaults regardless of which array they come from
+  const allErc4626Vaults = [
+    ...allVaults.morpho,
+    ...(vaults.erc4626 || []),
+    ...(vaults.mellow || []),
+    ...(vaults.turtleclub_erc4626 || []),
+  ]
+
+  // Process all ERC-4626 vaults together for proper de-duplication
+  if (allErc4626Vaults.length > 0) {
+    await getCuratorTvlErc4626(api, allErc4626Vaults)
+  }
+
+  // Process other vault types separately
   await getCuratorTvlErc4626(api, allVaults.euler)
   await getCuratorTvlErc4626(api, allVaults.silo)
-
-  // mellow.finance vaults
-  if (vaults.mellow) {
-    await getCuratorTvlErc4626(api, vaults.mellow)
-  }
 
   // aera.finance vaults
   if (vaults.aera) {
@@ -212,19 +385,14 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlBoringVault(api, vaults.turtleclub)
   }
 
-  // turtle.club vaults - ERC626 vaults
-  if (vaults.turtleclub_erc4626) {
-    await getCuratorTvlErc4626(api, vaults.turtleclub_erc4626)
-  }
-
   // symiotic.fi
   if (vaults.symbiotic) {
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
   }
 
-  // custom ERC4626 vaults {
-  if (vaults.erc4626) {
-    await getCuratorTvlErc4626(api, vaults.erc4626)
+  // nested 4626 vaults
+  if (vaults.nestedVaults) {
+    await getNested4626Vaults(api, vaults.nestedVaults)
   }
 }
 

@@ -89,7 +89,7 @@ const config = {
   bevm: { id: 'bevm2'},
   bsc: { id: 'bnb'},
   conflux: { id: 'cfx'},
-  eos_evm: { id: 'eos'},
+  eos_evm: { },
   ethereum: { id: 'eth'},
   fantom: { id: 'ftm'},
   xdai: { id: 'gnosis'},

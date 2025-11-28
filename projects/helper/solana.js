@@ -28,6 +28,8 @@ const blacklistedTokens_default = [
   'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
   'C5xtJBKm24WTt3JiXrvguv7vHCe7CknDB7PNabp4eYX6', //TINY
   '5fTwKZP2AK39LtFN9Ayppu6hdCVKfMGVm79F2EgHCtsi', //WHEY
+  'EtQE3GREPyFBCU3yUXc5nWs3wRtLYuMmtKAFAvXD1yuR', // BITCOIN CAT
+  '7SaitRVfcP3b3KVSGHfamhznJornMXAefXByXstYhTys', // SASHA CAT
 ]
 
 let connection = {}
@@ -201,6 +203,7 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
   computeTokenAccount = false,
+  includeStakedSol = false,
   chain = 'solana',
 }) {
 
@@ -208,6 +211,16 @@ async function sumTokens2({
   if (!balances) {
     if (api) balances = api.getBalances()
     else balances = {}
+  }
+
+  if (includeStakedSol) {
+    let stakeOwners = solOwners.length ? solOwners : owners.length ? owners : owner ? [owner] : []
+    stakeOwners = getUniqueAddresses(stakeOwners, chain)
+    for (const so of stakeOwners) {
+      const staked = await getStakedSol(so)
+      await sleep(2000)
+      sdk.util.sumSingleBalance(balances, `solana:${ADDRESSES.solana.SOL}`, staked)
+    }
   }
 
   const endpoint = getEndpoint(chain)
@@ -226,7 +239,7 @@ async function sumTokens2({
         if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
         sdk.util.sumSingleBalance(tokenBalances, item.mint, item.amount)
       }
-      await transformBalances({ tokenBalances, balances, chain, })
+      transformBalances({ tokenBalances, balances, chain, })
     }
   }
 
@@ -249,7 +262,7 @@ async function sumTokens2({
     tokenAccounts = getUniqueAddresses(tokenAccounts, chain)
 
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError, chain })
-    await transformBalances({ tokenBalances, balances, chain, })
+    transformBalances({ tokenBalances, balances, chain, })
   }
 
   if (solOwners.length) {
@@ -351,8 +364,8 @@ async function sumTokens2({
   }
 }
 
-async function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
-  await transformBalancesOrig(chain, tokenBalances)
+function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
+  transformBalancesOrig(chain, tokenBalances)
   for (const [token, balance] of Object.entries(tokenBalances))
     sdk.util.sumSingleBalance(balances, token, balance)
   return balances
@@ -439,4 +452,5 @@ module.exports = {
   getAssociatedTokenAddress,
   i80f48ToNumber,
   runInChunks,
+  getTokenAccountBalances,
 };

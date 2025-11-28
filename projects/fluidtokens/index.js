@@ -68,7 +68,7 @@ const total_v3 = Math.floor(principal + collateral);
   
   return {
     // cardano: (SC_offers_tvl+repay_tvl+pools_tvl+boosted) / 1e6,
-    cardano: (SC_offers_tvl+pools_tvl+boosted+total_v3) / 1e6,
+    cardano: Math.round((SC_offers_tvl+pools_tvl+boosted,total_v3) / 10 ** 6),
   };
 }
 
