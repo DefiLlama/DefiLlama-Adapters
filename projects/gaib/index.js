@@ -3,9 +3,6 @@ const ADDRESSES = require('../helper/coreAssets.json');
 // AID.v0 token address (same on all chains: Ethereum, BNB Chain, Base, Arbitrum)
 const AID_TOKEN = '0x18F52B3fb465118731d9e0d276d4Eb3599D57596';
 
-// sAID.v0 token address (Ethereum only)
-const SAID_TOKEN = '0xB3B3c527BA57cd61648e2EC2F5e006A0B390A9F8';
-
 // Legacy AIDa (Alpha) pool contracts
 const aidaContracts = {
     ethereum: [
@@ -103,19 +100,8 @@ async function aidSupply(api) {
     return api.getBalances();
 }
 
-// AID staked in sAID contract (Ethereum only)
-async function saidStaking(api) {
-    const stakedAid = await api.call({
-        abi: balanceOfABI,
-        target: AID_TOKEN,
-        params: [SAID_TOKEN],
-    });
-    api.add(`ethereum:${AID_TOKEN}`, stakedAid, { skipChain: true });
-    return api.getBalances();
-}
-
 module.exports = {
-    methodology: 'Tracks: 1) Legacy AIDa (Alpha) pool TVL using totalAssets(), 2) AID.v0 total supply across all chains, 3) AID staked in sAID.v0.',
+    methodology: 'Tracks: 1) Legacy AIDa (Alpha) pool TVL using totalAssets(), 2) AID.v0 total supply across all chains.',
     start: 1715490671,
     timetravel: true,
     misrepresentedTokens: true,
@@ -123,7 +109,6 @@ module.exports = {
     ethereum: {
         tvl: aidaTvl,
         ownTokens: aidSupply,
-        staking: saidStaking,
     },
     arbitrum: {
         tvl: aidaTvl,
