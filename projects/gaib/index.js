@@ -1,11 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const mainnetContracts = {
     ethereum: [
         {
-            token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+            token: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42', // USDC
             poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
         },
         {
-            token: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+            token: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340', // USDT
             poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
         },
         {
@@ -19,20 +20,46 @@ const mainnetContracts = {
     ],
     arbitrum: [
         {
-            token: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC
+            token: ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
             poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
         },
         {
-            token: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', // USDT
+            token: ADDRESSES.arbitrum.USDT, // USDT
             poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
         }
     ],
     base: [
         {
-            token: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
+            token: ADDRESSES.base.USDC, // USDC
             poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
         }
     ],
+    sei: [
+        {
+            token: '0xe15fC38F6D8c56aF07bbCBe3BAf5708A2Bf42392', // USDC
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
+        },
+        {
+            token: '0x9151434b16b9763660705744891fA906F660EcC5', // USDT
+            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
+        }
+    ],
+    sty: [
+        {
+            token: ADDRESSES.flow.stgUSDC, // USDC
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
+        }
+    ],
+    bsc: [
+        {
+            token: ADDRESSES.bsc.USD1, // USD1
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSD1 Pool
+        },
+        {
+            token: ADDRESSES.bsc.USDT, // USDT
+            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
+        }
+    ]
 };
 
 const totalAssetsABI = "function totalAssets() external view returns (uint256)";
@@ -65,7 +92,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    methodology: 'Counts the total underlying assets (e.g., USDC, USDT, USR, CUSDO) reported by GAIB protocol pool contracts using their `totalAssets()` function across supported mainnet chains.',
+    methodology: 'Counts the total underlying assets (e.g., USDC, USDT, USR, CUSDO, USD1) reported by GAIB protocol pool contracts using their `totalAssets()` function across supported mainnet chains.',
     start: 1715490671,
     timetravel: true,
     misrepresentedTokens: false,
@@ -77,6 +104,15 @@ module.exports = {
         tvl,
     },
     base: {
+        tvl,
+    },
+    sei: {
+        tvl,
+    },
+    sty: {
+        tvl,
+    },
+    bsc: {
         tvl,
     },
 };

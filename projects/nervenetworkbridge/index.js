@@ -2,14 +2,16 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
-const { BigNumber } = require("bignumber.js");
 const { sumTokensExport } = require("../helper/sumTokens");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
+
+const tronBridgeContract = 'TXeFBRKUW2x8ZYKPD13RuZDTd9qHbaPGEN';
+const EXCLUDED_TRX_ADDRESS = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'
 
 const getBridgeContract = {
   'ethereum': { address : '0xC707E0854DA2d72c90A7453F8dc224Dd937d7E82' },
   'bsc': { address :'0x75Ab1d50BEDBd32b6113941fcF5359787a4bBEf4' },
-  'heco': { address :'0x2ead2e7a3bd88c6a90b3d464bc6938ba56f1407f' },
+  // 'heco': { address :'0x2ead2e7a3bd88c6a90b3d464bc6938ba56f1407f' },
   'okexchain': { address :'0xE096d12D6cb61e11BCE3755f938b9259B386523a' },
   'harmony': { address :'0x32Fae32961474e6D19b7a6346524B8a6a6fd1D9c' },
   'polygon': { address :'0x9DDc2fB726cF243305349587AE2a33dd7c91460e' },
@@ -45,99 +47,61 @@ const getBridgeContract = {
   'pulse': { address :'0x0035cCA7Ff94156AEFcdd109bFD0C25083c1d89b' }
 }
 
+const nulsConfig = {
+  ethereum: '0xa2791BdF2D5055Cda4d46EC17f9F429568275047',
+  bsc: '0x8CD6e29d3686d24d3C2018CEe54621eA0f89313B',
+  okexchain: '0x8cd6e29d3686d24d3c2018cee54621ea0f89313b',
+}
 
-const tronBridgeContract = 'TXeFBRKUW2x8ZYKPD13RuZDTd9qHbaPGEN';
+const CHAIN_ALIASES = { era: 'zksync' }
+const resolveChain = (chain) => CHAIN_ALIASES[chain] ?? chain;
 
 let tokensConfTest;
 async function getTokensConf() {
-  if (!tokensConfTest) {
-    tokensConfTest = getConfig('nerve-network-bridge', 'https://assets.nabox.io/api/tvltokens');
-  }
-  return tokensConfTest
+  return tokensConfTest ??= getConfig(
+    'nerve-network-bridge',
+    'https://assets.nabox.io/api/tvltokens',
+  )
 }
 
-function getChain(chain) {
-  const chainMapping = {
-    era: 'zksync'
-  }
+async function tvl (api) {
+  const conf = await getTokensConf()
 
-  return chainMapping[chain] ?? chain
-}
-
-async function tvl(api) {
-  let conf = await getTokensConf();
-
+  const chainKey = resolveChain(api.chain)
+  const tokensByLabel = conf[chainKey] ?? {}
+  const tokens = Object.values(tokensByLabel)
   const { address, blackListedTokens = [] } = getBridgeContract[api.chain]
-  const tokens = Object.values(conf[getChain(api.chain)])
-  const owners = [address]
-  return sumTokens2({ api, tokens, owners, blackListedTokens })
+  return sumTokens2({ api, tokens, owners: [address], blackListedTokens })
 }
 
-async function tronTvl(api) {
-  let conf = await getTokensConf();
-  const tokens = conf['tron'];
-  const tokenKeys = Object.keys(conf['tron'])
-  const tokens1 = []
-  for (let label of tokenKeys) {
-    let token = tokens[label];
-    if (token !== 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb') {
-      tokens1.push(token)
-    }
-  }
-  return sumTokens2({ api, owner: tronBridgeContract, tokens: [nullAddress, ...tokens1] })
+async function tronTvl (api) {
+  const conf = await getTokensConf()
+
+  const tronTokensByLabel = conf.tron ?? {}
+  const tokens = Object.values(tronTokensByLabel).filter(a => a !== EXCLUDED_TRX_ADDRESS)
+  return sumTokens2({ api, owner: tronBridgeContract, tokens: [nullAddress, ...tokens] })
+}
+
+async function getSupply (chain) {
+  const chainApi = new sdk.ChainApi({ chain })
+  return chainApi.call({ target: nulsConfig[chain], abi: 'erc20:totalSupply' })
+}
+
+async function nulsTvl () {
+  const url = 'https://public.nerve.network/asset/nuls'
+  const nulsOnNerve = (await get(url)).total
+  const supplies = (await Promise.all(Object.keys(nulsConfig).map(getSupply))).reduce((acc, val) => acc + Number(val), 0)
+  return { nuls: (nulsOnNerve+supplies) / 10 ** 8 }
 }
 
 module.exports = {
   methodology: "Assets staked in the pool and trading contracts",
   doublecounted: true,
+  nuls: { tvl : nulsTvl },
   bitcoin: { tvl: sumTokensExport({ owners: bitcoinAddressBook.nerveNetworkBridge }) },
-  tron: {
-    tvl: tronTvl
-  },
-  nuls: {
-    tvl: async () => {
-      const api = 'https://public.nerve.network/asset/nuls'
-      const nulsOnNerve = (await get(api)).total;
-      const nulsOnEth = (
-        await sdk.api.abi.call({
-          target: '0xa2791BdF2D5055Cda4d46EC17f9F429568275047',
-          abi: 'erc20:totalSupply',
-          chain: 'ethereum'
-        })
-      ).output;
-      const nulsOnBSC = (
-        await sdk.api.abi.call({
-          target: '0x8CD6e29d3686d24d3C2018CEe54621eA0f89313B',
-          abi: 'erc20:totalSupply',
-          chain: 'bsc'
-        })
-      ).output;
-      const nulsOnOKC = (
-        await sdk.api.abi.call({
-          target: '0x8cd6e29d3686d24d3c2018cee54621ea0f89313b',
-          abi: 'erc20:totalSupply',
-          chain: 'okexchain'
-        })
-      ).output;
-      const nulsOnHeco = (
-        await sdk.api.abi.call({
-          target: '0xd938e45680da19ad36646ae8d4c671b2b1270f39',
-          abi: 'erc20:totalSupply',
-          chain: 'heco'
-        })
-      ).output;
-      const all = new BigNumber(nulsOnNerve)
-        .plus(nulsOnEth).plus(nulsOnBSC)
-        .plus(nulsOnOKC).plus(nulsOnHeco);
-      return {
-        'nuls': all.shiftedBy(-8).toFixed(0)
-      }
-    }
-  },
-}
-for (const network of Object.keys(getBridgeContract)) {
-  module.exports[network] = { tvl };
+  tron: { tvl: tronTvl },
 }
 
-
-
+Object.keys(getBridgeContract).forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

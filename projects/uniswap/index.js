@@ -17,7 +17,7 @@ const graphs = {
 const blacklists = {
   base: ['0xb17d69c91135516b0256c67e8bd32cd238b56161'],
   ethereum: ['0xa850478adaace4c08fc61de44d8cf3b64f359bec', '0x055284a4ca6532ecc219ac06b577d540c686669d', '0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51', '0x277667eb3e34f134adf870be9550e9f323d0dc24', '0x4c83a7f819a5c37d64b4c5a2f8238ea082fa1f4e', '0x290a6a7460b308ee3f19023d2d00de604bcf5b42', '0x4b5ab61593a2401b1075b90c04cbcdd3f87ce011', '0x582d23c7ec6b59afd041a522ff64ff081e8c0d2d', '0x1f98431c8ad98523631ae4a59f267346ea31f984', '0xaf44e10ed87d90f28bff2d1fbef1f64b090f5ebb', '0xdfef6416ea3e6ce587ed42aa7cb2e586362cbbfa', '0x7e9c15c43f0d6c4a12e6bdff7c7d55d0f80e3e23', '0x1111111becab3c8866712ebf23fc4741010b8dce', '0x77777777b79f2fa437bf526169f98aa0c884c4b7', '0x630d98424efe0ea27fb1b3ab7741907dffeaad78'],
-  arbitrum: ['0xd4d2f4110878a33ea5b97f0665e518253446161a', '0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1',],
+  arbitrum: ['0xd4d2f4110878a33ea5b97f0665e518253446161a', '0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1', '0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1'],
   polygon: ['0x8d52c2d70a7c28a9daac2ff12ad9bfbf041cd318', '0x1f98431c8ad98523631ae4a59f267346ea31f984', '0xd5302a8ead77b85ea3326b45f4714e0b3432b233', '0xc951ab482ff11d8df636742e1f1c3fc8037427a9', '0xbF7970D56a150cD0b60BD08388A4A75a27777777'],
 }
 
@@ -79,7 +79,6 @@ module.exports = {
     telos: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 386633562 },
     goat: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 848385 },
     hemi: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 1293598 },
-    nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
     sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
     unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
     lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
@@ -88,6 +87,8 @@ module.exports = {
     etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
     // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
     rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
+    plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
+    monad: { factory: "0x204faca1764b154221e35c0d20abb3c525710498", fromBlock: 29255827 },
   }),
 }
 
@@ -102,6 +103,7 @@ chains.forEach(chain => {
 const okuGraphMap = {
   filecoin: 'https://omni.v2.icarus.tools/filecoin',
   rsk: 'https://omni.v2.icarus.tools/rootstock',
+  nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',

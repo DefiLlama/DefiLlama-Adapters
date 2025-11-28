@@ -10,7 +10,7 @@ module.exports = {
       tokens: [
         '0x7A06C4AeF988e7925575C50261297a946aD204A8',
         '0x8154Aaf094c2f03Ad550B6890E1d4264B5DdaD9A',
-        '0x78E26E8b953C7c78A58d69d8B9A91745C2BbB258',
+        ADDRESSES.goat.uBTC,
         ADDRESSES.optimism.WETH_1,
         ADDRESSES.hemi.DAI,
         '0x027a9d301FB747cd972CFB29A63f3BDA551DFc5c',

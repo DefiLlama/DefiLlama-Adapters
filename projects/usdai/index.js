@@ -5,6 +5,7 @@ const USDAI_CONTRACT = "0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF";
 const STAKED_USDAI_CONTRACT = "0x0B2b2B2076d95dda7817e785989fE353fe955ef9";
 const PROTOCOL_CONTRACTS = [USDAI_CONTRACT, STAKED_USDAI_CONTRACT];
 const WRAPPED_M_CONTRACT = "0x437cc33344a0B27A429f795ff6B469C72698B291";
+const QUEUED_DEPOSITOR_CONTRACT = "0x81cc0DEE5e599784CBB4862c605c7003B0aC5A53";
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 
 async function tvl(api) {
@@ -29,6 +30,19 @@ async function tvl(api) {
 
   // Add claimable USDai
   api.add(WRAPPED_M_CONTRACT, claimableWrappedM)
+
+
+  // Add tokens held by the queued depositor  
+  const whitelistedTokens = await api.call({
+    target: QUEUED_DEPOSITOR_CONTRACT,
+    abi: abi.whitelistedTokens,
+  });
+  await sumTokens2({
+    api,
+    owner: QUEUED_DEPOSITOR_CONTRACT, 
+    tokens: whitelistedTokens,
+    permitFailure: true,
+  })
 }
 
 async function borrowed(api) {
@@ -80,4 +94,8 @@ module.exports = {
   },
   methodology:
     "TVL is calculated by summing the value of tokens held by the protocol and outstanding immediately claimable yield.",
+  hallmarks: [
+    [1757548800, "Deposit Caps raised to $250M"],
+    [1758758400, "Deposit Caps raised to $500M"]
+  ],
 };

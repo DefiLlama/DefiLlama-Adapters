@@ -18,7 +18,7 @@ const config = {
         tokens: {
             USDT: ADDRESSES.bsc.USDT,
             USDC: ADDRESSES.bsc.USDC,
-            DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+            DAI: ADDRESSES.bsc.DAI,
             ETH: ADDRESSES.bsc.ETH,
             BTC: ADDRESSES.bsc.BTCB,
         }
@@ -73,7 +73,17 @@ const config = {
             ETH: ADDRESSES.mantle.WETH,
         }
     },
-    
+    xlayer: {
+        mosContract: "0x0000317Bec33Af037b5fAb2028f52d14658F6A56",
+        tokens: {
+            USDT: ADDRESSES.astarzk.USDT,
+            USDC: ADDRESSES.xlayer.USDC,
+            ETH: ADDRESSES.xlayer.WETH,
+            BTC: ADDRESSES.astarzk.WBTC,
+            OKB: ADDRESSES.xlayer.WOKB,
+        }
+    },
+
     klaytn: {
         mosContract: "0x0000317Bec33Af037b5fAb2028f52d14658F6A56",
         tokens: {
@@ -109,7 +119,7 @@ const config = {
             WBTC: ADDRESSES.merlin.WBTC,
             WBTC_1: ADDRESSES.merlin.WBTC_1,
             SolvBTC: "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71",
-            iUSD: "0x0A3BB08b3a15A19b4De82F8AcFc862606FB69A2D"
+            iUSD: ADDRESSES.bsc.iUSD
         }
     },
     scroll: {
@@ -121,7 +131,7 @@ const config = {
             WETH: ADDRESSES.scroll.WETH,
         }
     },
-    
+
     tron: {
         mosContract: "TXsDYB9ovFEFg4cja6gn1t1tpmrnSbYhHA",
         tokens: {
@@ -130,7 +140,7 @@ const config = {
             USDT: ADDRESSES.tron.USDT,
         }
     },
-    
+
     // solana: {
     //   mosContract: "AGwu8gfXJshkB9UMM3eexeq26m7zf8wM1FgNdBt5wkqN",
     //   tokens: {
@@ -139,7 +149,7 @@ const config = {
     //     USDT: ADDRESSES.solana.USDT,
     //   }
     // },
-    
+
     // near: {
     //   mosContract: "mosv21.mfac.butternetwork.near",
     //   tokens: {
@@ -150,7 +160,7 @@ const config = {
     //     // MAP: "mapo.mfac.butternetwork.near"
     //   }
     // },
-    
+
 }
 module.exports = {
     methodology: 'get the amount of token deposited in MOS contract on each supported chain.',

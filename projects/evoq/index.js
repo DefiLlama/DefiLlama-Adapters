@@ -32,5 +32,5 @@ module.exports['bsc'] = {
   tvl: async (api) => {
     return sumTokens2({ api, tokensAndOwners: tokens.map((token) => ([token, evoq])) })
   },
-  borrowed
+  borrowed: () => ({}), // dont think people will repay
 }

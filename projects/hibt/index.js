@@ -14,7 +14,8 @@ const config = {
   tron: {
     owners: [
         'TWVCro8i15sJjmwRKfV53gPnCsgz2ThQSc',
-        'TFBzK6KWDiGMGkcK7mg7YH6Ls2Q4ouDFam'
+        'TFBzK6KWDiGMGkcK7mg7YH6Ls2Q4ouDFam',
+        'TGoPfFBjoZ6wFFia1NAFio21Pi9Sc8KFw5'
     ]
   },
 }

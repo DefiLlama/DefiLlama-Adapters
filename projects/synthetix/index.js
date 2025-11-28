@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
 // const {getExports} = require('../helper/heroku-api')
 // const chains = ['ethereum', 'optimism']
@@ -27,5 +28,5 @@ async function getStakingData(api) {
 // staking in the 420 pool
 async function staking(api) {
   const stakingData = await getStakingData(api)
-  api.add('0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f', stakingData.totalStaked * 1e18)
+  api.add(ADDRESSES.ethereum.SNX, stakingData.totalStaked * 1e18)
 }

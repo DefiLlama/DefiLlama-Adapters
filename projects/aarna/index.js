@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { generateAtvExport } = require('../helper/atv-helper');
 
 // Configuration for all Aarna ATV vaults across chains
@@ -44,11 +45,11 @@ const AARNA_CONFIG = {
     arbitrum: [
       "0x625E7708f30cA75bfd92586e17077590C60eb4cD", // aave arb usdc
       "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf", // compound v3 arb usdc
-      "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC on Arbitrum
-      "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", // USDC.e on Arbitrum
+      ADDRESSES.arbitrum.USDC_CIRCLE, // USDC on Arbitrum
+      ADDRESSES.arbitrum.USDC, // USDC.e on Arbitrum
     ],
     sonic: [
-      "0x29219dd400f2Bf60E5a23d13Be72B486D4038894", // usdc address on sonic
+      ADDRESSES.sonic.USDC_e, // usdc address on sonic
       "0x3F5EA53d1160177445B1898afbB16da111182418", // pendle lp token on sonic
     ]
   },
