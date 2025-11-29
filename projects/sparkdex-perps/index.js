@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const FlareSFLR="0x12e605bc104e93B45e1aD99F9e555f659051c2BB";
-const FlareUSDT0="0xe7cd86e13AC4309349F30B3435a9d337750fC82D"
-const FlareWFLR='0x1d80c49bbbcd1c0911346656b529df9e5c2f783d';
+const FlareUSDT0=ADDRESSES.monad.USDT
+const FlareWFLR=ADDRESSES.flare.WFLR;
 const FlareFXRP='0xad552a648c74d49e10027ab8a618a3ad4901c5be'
 
 async function FlareTvl(api) {

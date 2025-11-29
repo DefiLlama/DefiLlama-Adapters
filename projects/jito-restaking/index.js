@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require("@solana/web3.js");
 const { sumTokens2, getConnection, decodeAccount, getAssociatedTokenAddress } = require("../helper/solana");
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
@@ -37,8 +38,8 @@ async function tvl(api) {
 
 
   const fragSOL = [
-    ['J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
-    ['BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85', 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
+    [ADDRESSES.solana.JitoSOL, 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
+    [ADDRESSES.solana.BNSOL, 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
     ['mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
   ]
 

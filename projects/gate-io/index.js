@@ -1247,14 +1247,14 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "orai": {
-    "owners": [
-      "orai155svs6sgxe55rnvs6ghprtqu0mh69kehsqewps",
-      "orai1jm068whkhkxk48gx80ppm2m0nwy677pr9d3qgc",
-      "orai1xunyznpjmj9jv5e2zwngp2qrzmulr2ggtthag9",
-      "orai1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9j08mk7"
-    ]
-  },
+  // "orai": {
+  //   "owners": [
+  //     "orai155svs6sgxe55rnvs6ghprtqu0mh69kehsqewps",
+  //     "orai1jm068whkhkxk48gx80ppm2m0nwy677pr9d3qgc",
+  //     "orai1xunyznpjmj9jv5e2zwngp2qrzmulr2ggtthag9",
+  //     "orai1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9j08mk7"
+  //   ]
+  // },
   "osmosis": {
     "owners": [
       "osmo155svs6sgxe55rnvs6ghprtqu0mh69kehtguak3",
