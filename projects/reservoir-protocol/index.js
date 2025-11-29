@@ -26,6 +26,8 @@ const config = {
       ['0x777791C4d6DC2CE140D00D2828a7C93503c67777', '0x2adf038b67a8a29cda82f0eceb1ff0dba704b98d'],
       ['0x62C6E813b9589C3631Ba0Cdb013acdB8544038B7', '0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'],
       [ADDRESSES.ethereum.USDC, '0x4809010926aec940b550D34a46A52739f996D75D'],
+      ['0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', '0x289C204B35859bFb924B9C0759A4FE80f610671c'],
+      ['0xba98fc35c9dfd69178ad5dce9fa29c64554783b5', '0x3063C5907FAa10c01B242181Aa689bEb23D2BD65']
     ],
   },
   plasma: {
@@ -38,9 +40,14 @@ const config = {
   },
   arbitrum: {
     tokensAndOwners: [
-      ['0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA', '0x289C204B35859bFb924B9C0759A4FE80f610671c'],
-      ['0x7e97fa6893871A2751B5fE961978DCCb2c201E65', '0x289C204B35859bFb924B9C0759A4FE80f610671c'],
-      ['0x1A996cb54bb95462040408C06122D45D6Cdb6096', '0x289C204B35859bFb924B9C0759A4FE80f610671c']
+      ['0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // Currently 0 TVL
+      ['0x7e97fa6893871A2751B5fE961978DCCb2c201E65', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // Currently 0 TVL
+      ['0x1A996cb54bb95462040408C06122D45D6Cdb6096', '0x289C204B35859bFb924B9C0759A4FE80f610671c']  // Currently 0 TVL
+    ]
+  },
+  base: {
+    tokensAndOwners: [
+      ['0xBEEFE94c8aD530842bfE7d8B397938fFc1cb83b2', '0x289C204B35859bFb924B9C0759A4FE80f610671c']
     ]
   }
 }
@@ -71,3 +78,8 @@ module.exports.ethereum = {
 
 module.exports.plasma = { tvl: sumTokensExport(config.plasma) }
 module.exports.arbitrum = { tvl: sumTokensExport(config.arbitrum) }
+module.exports.base = {
+  tvl: async (api) => {
+    await api.sumTokens({ tokensAndOwners: config.base.tokensAndOwners })
+  }
+}
