@@ -5,7 +5,7 @@ const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const blacklists = {
-  ethereum: ['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb', '0x77e88cA17A6D384DCBB13747F6767F30e3753e63'],
+  ethereum: ['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb', '0x77e88cA17A6D384DCBB13747F6767F30e3753e63', '0xdB06a9D79f5Ff660f611234c963c255E03Cb5554'],
   base: ['0x023577b99e8A59ac18454161EecD840Bd648D782'],
 }
 
