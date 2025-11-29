@@ -23,8 +23,8 @@ const fraxLockVaultsNotRegistered = [
 ];
 
 const hemiBTCVaults = [
-  "0x748973D83d499019840880f61B32F1f83B46f1A5",
-  "0x0b8E088a35879f30a4d63F686B10adAD9cB3DBE1"
+  // "0x748973D83d499019840880f61B32F1f83B46f1A5",
+  // "0x0b8E088a35879f30a4d63F686B10adAD9cB3DBE1"
 ]
 
 const abis = {
