@@ -22,11 +22,23 @@ const AUTO_COMPOUNDERS = [
 ];
 
 // === Treasury Multisigs ===
-const TREASURY_1 = "0xb5dB6e5a301E595B76F40319896a8dbDc277CEfB"
-const TREASURY_2 = "0x1E2cD0E5905AFB73a67c497D82be271Cc65302Eb"
+const TREASURY_1 = "0xb5dB6e5a301E595B76F40319896a8dbDc277CEfB"  // Main DAO treasury
+const TREASURY_2 = "0x1E2cD0E5905AFB73a67c497D82be271Cc65302Eb"  // Secondary treasury
 
 // === cbEGGS Contract (Base) - owned by Infinite Trading ===
 const CBEGGS_CONTRACT = "0xddbabe113c376f51e5817242871879353098c296"
+
+// === dHEDGE Factory Contracts (for vault discovery) ===
+const DHEDGE_FACTORY = {
+  optimism: "0x5e61a079A178f0E5784107a4963baAe0c5a680c6",
+  arbitrum: "0xffFb5fB14606EB3a548C113026355020dDF27535",
+  polygon: "0xfdc7b8bFe0DD3513Cc669bB8d601Cb83e2F69cB0",
+  base: "0x49Afe3abCf66CF09Fab86cb1139D8811C8afe56F"
+}
+
+// dHEDGE ABIs
+const DHEDGE_V2_FACTORY_ABI = "function getManagedPools(address manager) view returns (address[] managedPools)"
+const DHEDGE_V2_VAULT_SUMMARY_ABI = "function getFundSummary() view returns (tuple(string name, uint256 totalSupply, uint256 totalFundValue))"
 
 const getStakedTVL = async (api) => {
   const { chain } = api
@@ -75,15 +87,48 @@ const getAutoCompounderTVL = async (api) => {
   return sumTokens2({ api, resolveLP: true });
 }
 
-// Treasury TVL: sum all tokens in treasury multisigs
+// Treasury TVL: sum all tokens in treasury multisigs + dHEDGE vault tokens
 const getTreasuryTVL = async (api) => {
   return sumTokens2({ 
     api, 
     owners: [TREASURY_1, TREASURY_2],
+    resolveLP: true,  // Resolve LP tokens if treasury holds auto-compounder LPs
   })
 }
 
-// cbEGGS TVL on Base: ETH backing in the contract
+// dHEDGE managed vaults TVL: Infinite Trading manages dHEDGE vaults across chains
+const getDhedgeVaultsTVL = async (api) => {
+  const { chain } = api
+  const factory = DHEDGE_FACTORY[chain]
+  
+  if (!factory) return
+  
+  // Get all vaults managed by TREASURY_1 (the main DAO wallet)
+  const managedVaults = await api.call({
+    abi: DHEDGE_V2_FACTORY_ABI,
+    target: factory,
+    params: [TREASURY_1],
+  })
+  
+  if (!managedVaults || managedVaults.length === 0) return
+  
+  // Get total fund value for each vault
+  const summaries = await api.multiCall({
+    abi: DHEDGE_V2_VAULT_SUMMARY_ABI,
+    calls: managedVaults,
+    permitFailure: true,
+  })
+  
+  // Sum up all vault TVLs (totalFundValue is in USD with 18 decimals)
+  const totalAUM = summaries.reduce((acc, vault) => {
+    return acc + (vault && vault.totalFundValue ? Number(vault.totalFundValue) : 0)
+  }, 0)
+  
+  // Add as USDT (standard for misrepresented tokens in DeFiLlama)
+  return {
+    tether: totalAUM / 1e18
+  }
+}// cbEGGS TVL on Base: ETH backing in the contract
 const getCbEggsTVL = async (api) => {
   // Get ETH balance of the cbEGGS contract (the "backing")
   const ethBalance = await api.call({
@@ -98,25 +143,43 @@ const getCbEggsTVL = async (api) => {
 }
 
 module.exports = {
-  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens), treasury holdings across multiple chains (Ethereum, Arbitrum, Optimism, Polygon, Base), and cbEGGS.finance protocol TVL (ETH backing on Base). cbEGGS is owned by Infinite Trading.",
+  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens), treasury holdings across multiple chains (Ethereum, Arbitrum, Optimism, Polygon, Base), dHEDGE managed vaults AUM (~$300k managed by DAO treasury), and cbEGGS.finance protocol TVL (ETH backing on Base). cbEGGS is owned by Infinite Trading.",
+  misrepresentedTokens: true,
   optimism: {
-    tvl: getAutoCompounderTVL,
+    tvl: async (api) => {
+      await getAutoCompounderTVL(api)
+      await getTreasuryTVL(api)
+      const dhedgeTVL = await getDhedgeVaultsTVL(api)
+      if (dhedgeTVL) api.addUSDValue(dhedgeTVL.tether)
+      return api.getBalances()
+    },
     staking: getStakedTVL
   },
   ethereum: {
     tvl: getTreasuryTVL,
   },
   arbitrum: {
-    tvl: getTreasuryTVL,
+    tvl: async (api) => {
+      await getTreasuryTVL(api)
+      const dhedgeTVL = await getDhedgeVaultsTVL(api)
+      if (dhedgeTVL) api.addUSDValue(dhedgeTVL.tether)
+      return api.getBalances()
+    },
   },
   polygon: {
-    tvl: getTreasuryTVL,
+    tvl: async (api) => {
+      await getTreasuryTVL(api)
+      const dhedgeTVL = await getDhedgeVaultsTVL(api)
+      if (dhedgeTVL) api.addUSDValue(dhedgeTVL.tether)
+      return api.getBalances()
+    },
   },
   base: {
     tvl: async (api) => {
-      // Combine treasury + cbEGGS TVL on Base
-      const treasury = await getTreasuryTVL(api)
-      const cbEggs = await getCbEggsTVL(api)
+      await getTreasuryTVL(api)
+      await getCbEggsTVL(api)
+      const dhedgeTVL = await getDhedgeVaultsTVL(api)
+      if (dhedgeTVL) api.addUSDValue(dhedgeTVL.tether)
       return api.getBalances()
     }
   },
