@@ -1,7 +1,7 @@
 const { getConfig } = require('../helper/cache')
 
-// const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared", "hemi", "bsc", "xsat", "goat", "plume_mainnet", "hsk"];
-const chains = ["ethereum", "arbitrum", "btr", "zklink", "linea", "merlin", "scroll", "xsat", "hsk"];
+const chains = ["arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared", "hemi", "bsc", "xsat", "goat", "plume_mainnet", "hsk"];
+const blacklistChains = ["ethereum", "mode", "core", "ailayer", "bsquared", "hemi", "bsc", "goat", "plume_mainnet",];
 
 const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
@@ -66,6 +66,8 @@ const leverageStaking = '0x1982b2F5814301d4e9a8b0201555376e62F82428'
 
 function getTvlFunction(strategy_type, isDoubleCounted) {
   return async (api) => {
+    if (blacklistChains.includes(api.chain)) return {}
+    
     const pools = await getInfoListPool(strategy_type, api.chain)
     if (!pools?.length) return;
     const tokens = await api.multiCall({ abi: 'address[]:getCurrentTokens', calls: pools })
