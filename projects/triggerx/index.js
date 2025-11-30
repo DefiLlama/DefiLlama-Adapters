@@ -35,6 +35,7 @@ module.exports = {
   methodology: "TVL represents total staked amount across all chains for TriggerX AVS on EigenLayer, fetched from EigenExplorer API.",
   timetravel: false,
   hallmarks: [],
+  doublecounted: true,
   ethereum: {
     tvl,
   },
