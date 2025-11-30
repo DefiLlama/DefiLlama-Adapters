@@ -1,10 +1,53 @@
 const { getConfig } = require('../helper/cache')
 
-const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared", "hemi", "bsc", "xsat", "goat", "plume_mainnet", "hsk"];
+// const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared", "hemi", "bsc", "xsat", "goat", "plume_mainnet", "hsk"];
+const chains = ["ethereum", "arbitrum", "btr", "zklink", "linea", "merlin", "scroll", "xsat", "hsk"];
 
 const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
 }
+
+// for these pools, there is no real users deposits, just a few addresses made deposits
+// ex: check tokens transfers to vaults https://etherscan.io/address/0x50834f6e27FD3b8a06Cb2c57416dd707B15b29e8#tokentxns
+// const blacklistPools = {
+//   ethereum: [
+//     '0x50834f6e27FD3b8a06Cb2c57416dd707B15b29e8',
+//   ],
+//   bsc: [
+//     '0x34fE5b3C613dF9967b4BAd53a3e58470a81781Be',
+//   ],
+//   mode: [
+//     '0xbfB3a640449c9a066d50062B3b4C58A0b1E34C96',
+//     '0x87374d884b67b209F61f8676c7053a4a0eEd3d0A',
+//     '0x34075F46152E2C02762D2E07da6C658583879eeF',
+//     '0x02A9aD4d451407faa6039f07eF596203c0DB78c0',
+//     '0x26f9Fa1615C7eEDc903d329Cbf74BA6d91cD9805',
+//   ],
+//   core: [
+//     '0x203cBBA1D9499c5e4556E88de746b72B40DC7faa', // oBTC
+//     '0xd4D402C9047854EEB3AC36F0eA7222377bF7889a', // oBTC
+//     '0x66a50e286541e1bdd10118fF0D2cb8cbB3d2Dc5c', // SolvBTC.CORE
+//     '0x5d2b9cDf26c5506730Ed07ABDf44C1D86f242cE3', // uBTC
+//     '0xb7669c77745E79cc7B46a2218A5f8E33FD1ef23A', // uBTC
+//     '0x5e69d826D3663094321E2cf3C387b7F9Dd7b44Bb', // 0BTC
+//     '0x6cB698e933f6ba140e79BFb6CB377A32b9518079', // SolvBTC.b
+//     '0xc017af8486D74c06443d01B2Fff16111A18F5943', // SolvBTC.m
+//   ],
+//   ailayer: [
+//     '0xDA8c0bb4c00C187c6DB4Cdb12ddf5b4a37B3e95d', // BFBTC
+//   ],
+//   bsquared: [
+//     '0x7be507eA4DD2e7885b7577fc602EeE92016aD9c6', // uBTC
+//     '0x4BF9D50e81Fcca18f6539e62cb57b41aFaB6244A', // uBTC
+//     '0xDA8c0bb4c00C187c6DB4Cdb12ddf5b4a37B3e95d', // uBTC
+//     '0x76657FeE7bBC6DEbdBBC90fc43925D451d11ea40', // uBTC
+//   ],
+//   hemi: [
+//     '0xfEE4ca2c37455c3899ba71A0D6F6Bc2b09B4c5F7',
+//     '0xdc1929B6A003667FA729E70f980E99464cB044f4', // enzoBTC
+//     '0xAE4eDB90324C56D893d13140D1F65e3DB156d3bF', // enzoBTC
+//   ],
+// }
 
 // The desyn asset arrangement needs to be requested via the rest api form
 async function getInfoListPool(strategy_type, chain) {
