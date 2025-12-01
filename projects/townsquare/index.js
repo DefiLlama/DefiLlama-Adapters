@@ -36,8 +36,5 @@ module.exports = {
     methodology:"Counts the total amount deposited in all pools",
     monad: {
         tvl
-    },
-    hallmarks: [
-        [1732876800, "EarnAUSD Launch"]
-    ]
+    }
 }
