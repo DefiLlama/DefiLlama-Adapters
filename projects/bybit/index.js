@@ -92,7 +92,30 @@ const config = {
       "0x7a84c1f1aa344d466b0f161f57b0321b98faf6ee",
       "0xc63fe58d36bef77a9a98df32a547537f45aac71d",
       "0xf8f061cfc030928a4acb8c4980911b4f5afc4002",
-      "0x1c3944173abee256456b1498299fc501ad5bbd6f"
+      "0x1c3944173abee256456b1498299fc501ad5bbd6f",
+      "0x13f52026493dccf09065952d44101c3e42b41dda",
+      "0x3ef28b7e18c510b8fa031d7f8a1bb24a83ccceb0",
+      "0x25c76fa90e90f5a5a6914da07baed9a9647c3dfd",
+      "0xf833685f98eba1b99947d418c9512d27c8193b1a",
+      "0xa9acc15d8b74a01e5605eb0f1e815ba98e3a16af",
+      "0xdba34cfc849738b2075fd28446902d3f1689c09d",
+      "0x448c642074d7be4c5fc25929bb5536f772cd9d5c",
+      "0x695f7dea85bf8c0aaafef0a9484e74834e28ce8b",
+      "0x495c70e181c45f80806dcbd733140361a0f75cc2",
+      "0x36cf90ac2d130b987aff0bded378525be36d9686",
+      "0x77439637cac35bedd63fc9e769d7819ca1d24a48",
+      "0x855e9a74196764ab41adb3e3b76eaf9e3d6d6d48",
+      "0x35bf33df55472938ad314678962b7c69204f0a8a",
+      "0x8c28e696c89200d423f9a5eea7347747e78ed25f",
+      "0x80d45515a84e762c6497a089913f26b41235bf65",
+      "0x5c4e79cc7d5b66effcbb19e22cae0c92bff7276d",
+      "0x8859eb340330492cb66f3b193e22696de8251e66",
+      "0xe46620553d6b28e5d2520b366942990d8654f243",
+      "0xa4287bc8a021025974a642806cf2ab717b857380",
+      "0x89688768bf9e2e809ca3ac7e22fe5d2f849ef822",
+      "0x8ed5b6bc3d85be31209fac182466e0bcc30ba3eb",
+      "0x076d55c8998da29531ef7fcac2a01fa21582eed2",
+      "0xf358d867bf928cb06408ff2b7564fce336e24de8",
     ],
   },
   bitcoin: {
@@ -136,6 +159,10 @@ const config = {
       "TP39VvzdkdkxvGhmEMtot4hN5R7czR6GVV",
       "TMFuCWAvcEDwtW3evtXFAg8eQzoCWtzwnQ",
       "TZBxnLfD3TRr9tHJNN2geTYwC4CYzfvkS9",
+      "TRdfD4J3ddSMV5nu5hFDvwzQA4MLS3XdiV",
+      "TPsMJ3BE9ixSQ7guFbVLZ4eou6SATBSqHH",
+      "TKhXDEshLkYEYfaPzvKfEj8zCztSqDNUw2",
+      "TJv1ARa4yPATHdETtahhz4h9R3Txspcufg",
     ],
   },
   polygon: {
@@ -156,7 +183,7 @@ const config = {
       "0xa0acdf9fa38b293f0bbdd01ca6bf3e7ed8291dd4",
       "0x7da0b9211020d3775b18116fe751c555b9a7058c",
       "0x9d271a4e9523d74572b618ec10419a0a330e1bf0",
-      "0x1c3944173abee256456b1498299fc501ad5bbd6f"
+      "0x1c3944173abee256456b1498299fc501ad5bbd6f",
     ],
   },
   avax: {
@@ -166,7 +193,7 @@ const config = {
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
       "0x0a7e3e04fb45af4233a27bcf23f2c94f5babcf39",
       "0x3062e4ed0282f86d1b8481d06c30d7f2382776a7",
-      "0x1c3944173abee256456b1498299fc501ad5bbd6f"
+      "0x1c3944173abee256456b1498299fc501ad5bbd6f",
     ],
   },
   ripple: {
@@ -179,6 +206,7 @@ const config = {
       "rpwsiBrcXeVTyNPG445TzPbXSBdL9xHB83",
       "rBdPX224aE6Rsa2cw8uGvaw73fzcpEo5Ue",
       "rKwtFTDNTTeLVcj7ahz9PXBEx2V9bPCg44",
+      "rMXWrmn3FpmA65UPyzDTez4Jt29NeqkKes"
     ],
   },
   optimism: {
@@ -233,6 +261,8 @@ const config = {
       "CMivUnnbDHxLq9ChV1bSuiQE5ycZf6JVvFFDePMHhHYK",
       "6fJxHzqAvnmsfb61Hkh7dNtUqLCaZdBtCvYq5X8BqHYj",
       "6coXmZ8FRDRcuGQnoa1wH9GTrzJ7d1cD7NhiVDdMKt7F",
+      "98Nfcvz1yFgwimcmQNBpqob4bzSBqxCsCynigyFdDaZV",
+      "EVTzXcENdy55DpysRQ5mptcxfzZagucJdEb8jMEKQAxz",
     ],
   },
   cardano: {
@@ -320,6 +350,9 @@ const config = {
       "0xc868d0ea71243f1580f934cdc59620603bf9f1f1",
       "0xd8169f099ce16c87a99d2a8494023574b5eea9c5",
       "0x0d4dc3b8becc98782309e443a6da4b9455b5ca48",
+      "0x98bedfe412dcfc1112aae6effd6e5e083b6b0394",
+      "0xd374a62aa68d01cdb420e17b9840706e86bc840b",
+      "0xf22943d05ab93f63b0a229b12f4425e72a4c1f1c",
     ],
   },
   cosmos: {
@@ -341,7 +374,7 @@ const config = {
     owners: [
       "EQB9Ez1OQlyOAN4BVROkTmbm0WOyHnFyCux1eZZeXeKMVV6_",
       "EQBKHCC8mm-SlPdfHIen84OotzpIOi5tyzYw3b54s8ytANhS",
-      "EQC90NgG5ixY7Ol3SDRQhAEZRvBUUI6dYsWfnfFXw9f3_Ij0"
+      "EQC90NgG5ixY7Ol3SDRQhAEZRvBUUI6dYsWfnfFXw9f3_Ij0",
     ],
   },
   dydx: { owners: ["dydx10sdnqxvrwe3mhducn6plyewul84edgd47rfnfe"] },
