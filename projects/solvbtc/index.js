@@ -34,7 +34,7 @@ async function otherDeposit(api, solvbtc) {
 }
 
 async function solanaTvl(api, solvbtc) {
-  if (!solvbtc[api.chain] || !solvbtc[api.chain]["depositTokens"]) {
+  if (!solvbtc[api.chain] || !solvbtc[api.chain]["depositTokens"] || api.chain !== 'solana') {
     return;
   }
   let depositTokens = solvbtc[api.chain]["depositTokens"];
