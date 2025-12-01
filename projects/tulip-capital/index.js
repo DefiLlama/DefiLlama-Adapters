@@ -46,6 +46,11 @@ const configs = {
         "0x279385c180f5d01c4a4bdff040f17b8957304762", // Lagoon: Noon USN TAC
       ],
     },
+    monad: {
+      erc4626: [
+        "0x0da39b740834090C146dC48357f6A435a1Bb33b3", // Lagoon: MuDigital Tulipa USDC
+      ]
+    }
   }
 }
 
