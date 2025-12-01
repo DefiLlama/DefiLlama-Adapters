@@ -1,4 +1,3 @@
-const { monad } = require('../townSquare')
 let coreAssets = require('./coreAssets.json')
 const { svmChains } = require('./svmChainConfig')
 const ADDRESSES = coreAssets
