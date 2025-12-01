@@ -202,13 +202,8 @@ function generateAtvExport(config) {
           }
 
           // Process fallback vaults if any
-          if (fallbackVaults.length > 0) {
-            const fallbackBalances = await getAtvCumulativeTvl(api, fallbackVaults);
-            // Merge with existing balances
-            Object.entries(fallbackBalances).forEach(([token, amount]) => {
-              api.add(token, amount);
-            });
-          }
+          if (fallbackVaults.length > 0) await getAtvCumulativeTvl(api, fallbackVaults);
+          
 
           return api.getBalances();
         } else {

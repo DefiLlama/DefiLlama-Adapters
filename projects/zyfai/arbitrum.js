@@ -5,6 +5,8 @@ const ARBITRUM_MORPHO_POOLS = {
     'Gauntlet USDC Core': '0x7e97fa6893871A2751B5fE961978DCCb2c201E65',
     'Steakhouse Prime USDC': '0x250CF7c82bAc7cB6cf899b6052979d4B5BA1f9ca',
     'MEV Capital USDC': '0xa60643c90A542A95026C0F1dbdB0615fF42019Cf',
+    'Hyperithm USDC': '0x4B6F1C9E5d470b97181786b26da0d0945A7cf027',
+    'Steakhouse High Yield USDC': '0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA',
 };
 const SPARK_POOLS = {
     USDC: '0x940098b108fB7D0a7E374f6eDED7760787464609',
@@ -16,6 +18,12 @@ const ARBITRUM_SILO_POOLS = {
     'USDC - Varlamore USDC Growth': '0x2BA39e5388aC6C702Cb29AEA78d52aa66832f1ee',
     'Silo Optima Vault': '0x2514A2Ce842705EAD703d02fABFd8250BfCfb8bd',
 };
+const ARBITRUM_EULER_POOLS = {
+    'Euler Earn USDC': '0xe4783824593a50Bfe9dc873204CEc171ebC62dE0',
+};
+const ARBITRUM_HARVEST_POOLS = {
+    'USDC - Autopilot': '0x407D3d942d0911a2fEA7E22417f81E27c02D6c6F',
+};
 
 const allPoolTokens = [
     COMPOUND_CUSDC_POOL,
@@ -24,6 +32,8 @@ const allPoolTokens = [
     ...Object.values(SPARK_POOLS),
     ...Object.values(FLUID_POOLS),
     ...Object.values(ARBITRUM_SILO_POOLS),
+    ...Object.values(ARBITRUM_EULER_POOLS),
+    ...Object.values(ARBITRUM_HARVEST_POOLS),
 ]
 
 module.exports = {

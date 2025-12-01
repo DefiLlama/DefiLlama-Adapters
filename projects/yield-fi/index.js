@@ -1,12 +1,5 @@
 const { api2 } = require("@defillama/sdk");
 
-module.exports = {
-    hallmarks: [
-      ['2025-05-02', 'v2 yUSD Launch'],
-      ['2025-06-16', 'vyUSD Launch'],
-    ],
-}
-
 const yusd_config = {
     ethereum: "0x19Ebd191f7A24ECE672ba13A302212b5eF7F35cb", 
     optimism: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
@@ -18,6 +11,9 @@ const yusd_config = {
     bsc: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     avax: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     tac: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
+    linea: "0x4e559dBCCbe87De66c6a9F3f25231096F24c2e28",
+    plasma: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
+    saga: "0x839e7e610108Cf3DCc9b40329db33b6E6bc9baCE",
 }
 
 const vyusd_config = {
@@ -31,14 +27,22 @@ const vyusd_config = {
     bsc: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     avax: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     tac: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    linea: "0x168BC4DB5dcbecA279983324d3082c47e47569E7",
+    plasma: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    saga: "0x704a58f888f18506C9Fc199e53AE220B5fdCaEd8",
 }
 
 const yeth_config = {
     ethereum: "0x8464F6eCAe1EA58EC816C13f964030eAb8Ec123A",
+    arbitrum: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
+    base: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
+    saga: "0xA6F89de43315B444114258f6E6700765D08bcd56",
 }
 
 const vyeth_config = {
     ethereum: "0x3073112c2c4800b89764973d5790ccc7fba5c9f9",
+    arbitrum: "0x8c93a6752Bfe29FDA26EbA8df4390c642e6A7f90",
+    base: "0x8c93a6752Bfe29FDA26EbA8df4390c642e6A7f90"
 }
 
 const ybtc_config = {
@@ -56,8 +60,16 @@ const l2Chains = Object.keys(yusd_config).filter(chain => chain !== 'ethereum')
 l2Chains.forEach(chain => {
     module.exports[chain] = {
         tvl: async (api) => {
-            const supply = await api.multiCall({ calls: [yusd_config[chain], vyusd_config[chain]], abi: 'erc20:totalSupply' })
-            api.add([yusd_config[chain], vyusd_config[chain]], [supply[0], supply[1]]);
+            const calls = [
+                yusd_config[chain],
+                vyusd_config[chain],
+                yeth_config[chain],
+                vyeth_config[chain],
+                ybtc_config[chain],
+                vybtc_config[chain],
+            ].filter(Boolean)
+            const supply = await api.multiCall({ calls, abi: 'erc20:totalSupply' })
+            api.add(calls, supply);
         }
     }
 });

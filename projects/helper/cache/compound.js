@@ -3,7 +3,7 @@ const ADDRESSES = require('../coreAssets.json')
 const sdk = require('@defillama/sdk');
 const abi = require('../abis/compound.json');
 const { nullAddress, } = require('../unwrapLPs');
-const { getChainTransform, getFixBalancesSync, } = require('../portedTokens');
+const { getChainTransform, getFixBalances, } = require('../portedTokens');
 
 
 function compoundExports(comptroller, { blacklistedTokens = [], transformAdress, abis = {}} = {}) {
@@ -21,8 +21,8 @@ function compoundExports(comptroller, { blacklistedTokens = [], transformAdress,
       }
       const chain = api.chain ?? 'ethereum'
       blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
-      if (!transformAdress) transformAdress = await getChainTransform(chain)
-      const fixBalances = getFixBalancesSync(chain)
+      if (!transformAdress) transformAdress = getChainTransform(chain)
+      const fixBalances = getFixBalances(chain)
 
       let markets = await api.call({
         target: comptroller,

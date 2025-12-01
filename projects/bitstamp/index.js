@@ -27,7 +27,8 @@ const config = {
 
 const chains = [
   'bitcoin', 'litecoin', 'ripple',
-  'ethereum', 'avax', 'solana', 'sui',  'xdc', 'near', 'cardano', 'algorand',
+  'ethereum', 'avax', 'solana', 'sui',  'xdc', 'near', 'cardano',
+  // 'algorand',
 ]
 
 chains.forEach(chain => {

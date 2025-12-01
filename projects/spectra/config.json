@@ -76,5 +76,11 @@
       "factory": "0xd187cb71fe8201935e6676ff872239fff552d4a5",
       "fromBlock": 6375000
     }
+  ],
+  "katana": [
+    {
+      "factory": "0xac61e44816160028474fd9f5baae492b5620f370",
+      "fromBlock": 4715236
+    }
   ]
 }

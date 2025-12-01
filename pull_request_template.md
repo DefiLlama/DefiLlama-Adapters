@@ -15,7 +15,7 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama): 
+##### Name (to be shown on DefiLlama):
 
 
 ##### Twitter Link:
