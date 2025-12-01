@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const credibleContract = "0x907F40d1D6649810E0C6C2Af5e0d42c7C10ad295";
@@ -5,7 +6,7 @@ const credibleContract = "0x907F40d1D6649810E0C6C2Af5e0d42c7C10ad295";
 const supportedTokens = [
   "0x1f3aa82227281ca364bfb3d253b0f1af1da6473e",
   "0x9cc1d782e6dfe5936204c3295cb430e641dcf300",
-  "0x1217bfe6c773eec6cc4a38b5dc45b92292b6e189",
+  ADDRESSES.sseed.oUSDT,
   "0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c",
 ];
 

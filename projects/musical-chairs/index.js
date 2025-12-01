@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 // Actual deployed contract address on Arbitrum One
@@ -16,7 +17,7 @@ async function tvl(api) {
 
   // The result from getBalance is an object, we need its 'output' property.
   // The SDK's `add` function uses the zero address to represent the native token (ETH on Arbitrum).
-  api.add('0x0000000000000000000000000000000000000000', balance.output);
+  api.add(ADDRESSES.null, balance.output);
 }
 
 module.exports = {

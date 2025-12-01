@@ -71,7 +71,8 @@ const endPoints = {
   civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
   echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
   inertia: 'https://rest.inrt.fi',
-  union: 'https://rest.union.build'
+  union: 'https://rest.union.build',
+  zigchain: 'https://public-zigchain-lcd.numia.xyz'
 };
 
 const chainSubpaths = {

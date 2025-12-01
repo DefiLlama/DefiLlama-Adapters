@@ -317,6 +317,10 @@ module.exports = {
         smartVaultAddress: '0xCe07D2B5CC6Ff466BF497ceEa8eD168fB0Eb8F97',
         asset: '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e', // uniBTC
       },
+      {
+        smartVaultAddress: '0xd72dCb68fF80aB8666f7A800BE438212581914c6',
+        asset: '0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a', // brBTC
+      },
     ],
   }),
   arbitrum: createExports({
@@ -381,7 +385,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0x05EA42F72F2e627497423663Faf7b00eA7DdA2C1',
-        asset: '0x8236a87084f8B84306f72007F36F2618A5634494', // LBTC
+        asset: ADDRESSES.ethereum.LBTC, // LBTC
       },
       {
         smartVaultAddress: '0x11054D3584F94B542379Ff4Cf9e7897D50AE8317',
@@ -389,7 +393,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0xaC586e941d5846B79cEF71c8aef3ecC50BE12DCb',
-        asset: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+        asset: ADDRESSES.ethereum.USDT, // USDT
       },
     ],
   }),

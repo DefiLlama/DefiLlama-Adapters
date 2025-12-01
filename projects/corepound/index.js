@@ -1,4 +1,4 @@
-const { abi } = require("@defillama/sdk/build/api");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const aggregator = "0xF822226491a93046DA650ecb4049E43386497C7D";
@@ -16,15 +16,15 @@ const lpInfos = [
 {
   lpAddress:"0xd8F1C33D35CB471681385598D456D49c56Ed2D51",
     farmAddress:"0x7E0B85612bB5E7AE0448100D1C2E011FDA53C9F6",
-    token0:"0x900101d06A7426441Ae63e9AB3B9b0F63Be145F1",
+    token0:ADDRESSES.core.USDT,
     token0Decimals:6,
-    token1:"0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9",
+    token1:ADDRESSES.core.USDC,
     token1Decimals:6
 },
   { 
   lpAddress:"0xeE2c1703d96443fF0B2C3bC7166b4a6e792B5A97",
   farmAddress:"0x66Bcd683a337D1e1939Eb38C10Ad2C49304cc69D",
-  token0:"0x191E94fa59739e188dcE837F7f6978d84727AD01",
+  token0:ADDRESSES.core.WCORE_1,
   token0Decimals:18,
   token1:"0xc5555eA27e63cd89f8b227deCe2a3916800c0f4F",
   token1Decimals:18,}
