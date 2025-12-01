@@ -8,12 +8,12 @@ async function tvl() {
   const { pool_usd, flund_usd, lend_usd } = data.tvl_data;
 
   // Parse strings to floats and sum them
-  const totalUsd =
-    parseFloat(pool_usd) +
-    parseFloat(flund_usd) +
-    parseFloat(lend_usd);
+  // const totalUsd =
+  //   parseFloat(pool_usd) 
+    // parseFloat(flund_usd) +  // FLUND is backed by platforms own token: https://medium.com/flamingo-finance/flamingo-finance-announces-flamingo-flund-single-stake-9be434d0999d
+    // parseFloat(lend_usd); // will be tracked under a new listing
 
-  return { tether: totalUsd };
+  return { tether: +pool_usd };
 }
 
 module.exports = {

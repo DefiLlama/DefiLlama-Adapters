@@ -101,7 +101,7 @@ const b64url = (function () {
       // initialize result and counters
       var bc = 0, bs, buffer, idx = 0, output = '';
       // get next character
-      buffer = str.charAt(idx++); // eslint-disable-line no-cond-assign
+      buffer = str.charAt(idx++);
       // character found in table? initialize bit storage and add its ascii value;
       ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
         // and if not first of each 4 characters,

@@ -36,7 +36,7 @@ const config = {
       "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64",
       "0x7354abb551e41bbd9fb32e2e79f44631349119b8",
       "0x9bb6a22da110c6c9bab745bcaf0ee142ee83af37",
-      "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64"
+      "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64",
     ],
   },
   polygon: {
@@ -74,8 +74,6 @@ const config = {
   solana: {
     owners: [
       "5PAhQiYdLBd6SVdjzBQDxUAEFyDdF5ExNPQfcscnPRj5",
-      "ASTyfSima4LLAdDgoFGkgqoKowG1LZFDr9fAQrg7iaJZ",
-      "5PAhQiYdLBd6SVdjzBQDxUAEFyDdF5ExNPQfcscnPRj5", 
       "ASTyfSima4LLAdDgoFGkgqoKowG1LZFDr9fAQrg7iaJZ"
     ],
   },
@@ -87,11 +85,11 @@ const config = {
   base: {
     owners: ["0x4e3ae00e8323558fa5cac04b152238924aa31b60"],
   },
-  // ton: {
-  //   owners: [
-  //     "eqdyh9di0ct8qsbnhjcnm6sylpqaaorna7sats7mgwd3497j",
-  //   ],
-  // }, 
+  ton: {
+    owners: [
+      "EQDYh9Di0cT8QSbnHJcNM6sYlpQAAOrnA7sats7Mgwd3497j",
+    ],
+  }, 
   ripple: {
     owners: [
       "r3BFHL2EXZN4darZ7vH7BT7tP9tN7tyd6W",

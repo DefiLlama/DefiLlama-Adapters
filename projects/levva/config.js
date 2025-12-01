@@ -72,5 +72,15 @@ module.exports = {
     ],
     contractRegistries:[],
     levvaV2Factories:[],
+  },
+  base: {
+      factories: [],
+      contractRegistries:[],
+      levvaV2Factories:[
+      {
+        factory: "0x391685807Cf005848A0711Deb9Db74209E59662f",
+        fromBlock: 35095203
+      }
+    ],
   }
 };

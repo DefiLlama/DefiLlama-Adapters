@@ -94,4 +94,8 @@ module.exports = {
   },
   methodology:
     "TVL is calculated by summing the value of tokens held by the protocol and outstanding immediately claimable yield.",
+  hallmarks: [
+    [1757548800, "Deposit Caps raised to $250M"],
+    [1758758400, "Deposit Caps raised to $500M"]
+  ],
 };

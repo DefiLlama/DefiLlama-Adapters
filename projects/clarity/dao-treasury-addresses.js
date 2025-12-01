@@ -1,0 +1,18 @@
+export const clarityDaoTreasuryAddresses = [
+  'addr1w8key7kqgzxl9pagwgcr9402e7l69wfnta6grvhy20f6khccfu8ad',
+  'addr1w87vg0x4k2x95dlp7mrlef909lgk25kgajhk2dxzxk0tquclfp0at',
+  'addr1w9u9mw864yszpqk7374wtwtwludpa0rc9dmante78c7c9sqqdlyy9',
+  'addr1w8qd02ncr520yph37erg7z3dfyv8684uhr6eckwht5xz0fc6vn2tg',
+  'addr1wy7xxgdzkg95lvhat8k53tmp02xs37s3nyq7ganznrsrphspd92wt',
+  'addr1wxzzwvyp09r7zlf6hawzkc70w8nys4zg4e6rhmakym3j6ms8au0cl',
+  'addr1wyfvwkmawsx2vm83ccteq86e568y3czad5kardc3a5sh72qfdflct',
+  'addr1wykqxcyc5je68cu9kapp9c6wmsytpl6tge2xhrfk7lx62nsave08m',
+  'addr1w8tpmlmkz4ammw2w2lnrd5xl74xdn9e0dy97vmg08rla83g07rxtd',
+  'addr1w8y6tcq70dlp5n5hzhwa8nam5uukz8828tgny9pzuzyn7scwjyj3e',
+  'addr1w92uqdk86ax0yjx29dngney2v8vsl840m8dethmrtukykwsatvkmp',
+  'addr1w84vlctkqxce5dyceycr79ye0lpn5xzch6wls5kzxw8xtks72mh6q',
+  'addr1w99zjfz7x6td9sc5w9nay86lvau0tw9y4fc95e0d36lh6fqekcsqx',
+  'addr1wx84ytuumke8gxex0l8par4852ey7l4eq6h325rnez0yluc56x0dj',
+  'addr1wy6hyxe5c6nk05ft98m5m8z3prqvfywcwdpeffcg450ssdsecyka2',
+  'addr1w9te3n0ee3kfqe0zvjcap0rtm4dsz5n23l4uywx2hjvltrg0eypvf',
+];

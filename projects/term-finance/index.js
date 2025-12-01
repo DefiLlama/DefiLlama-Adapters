@@ -8,6 +8,8 @@ const graphs = {
     "https://api.mainnet.termfinance.io/avalanche/subgraph/term",
   base:
     "https://api.mainnet.termfinance.io/base/subgraph/term",
+  plasma:
+    "https://api.mainnet.termfinance.io/plasma/subgraph/term",
   // bsc:
   //   "https://api.mainnet.termfinance.io/bnb/subgraph/term",
   // arbitrum:
@@ -70,6 +72,7 @@ const graphStartBlock = {
   ethereum: 5240462,
   avax: 43162227,
   base: 30797402,
+  plasma: 1390659,
   bsc: 54505207,
   arbitrum: 359134348,
 }
