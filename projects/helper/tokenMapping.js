@@ -1,3 +1,4 @@
+const { monad } = require('../townSquare')
 let coreAssets = require('./coreAssets.json')
 const { svmChains } = require('./svmChainConfig')
 const ADDRESSES = coreAssets
@@ -66,6 +67,15 @@ const fixBalancesTokens = {
     YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
   },
+  monad:{
+        '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a': { coingeckoId: 'agora-dollar', decimals: 6 },
+        "0x111111d2bf19e43C34263401e0CAd979eD1cdb61": { coingeckoId: 'usd1-wlfi', decimals: 6 },
+        "0x336D414754967C6682B5A665C7DAF6F1409E63e8": { coingeckoId: 'mu-digital-mubond', decimals: 18 },
+        "0x4917a5ec9fCb5e10f47CBB197aBe6aB63be81fE8": { coingeckoId: 'mu-digital-aznd', decimals: 18 },
+        "0x1B68626dCa36c7fE922fD2d55E4f631d962dE19c": { coingeckoId: 'shmonad', decimals: 18 },
+        "0xa3227c5969757783154c60bf0bc1944180ed81b9": { coingeckoId: 'kintsu-staked-monad', decimals: 18 },
+        
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
