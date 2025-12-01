@@ -11,7 +11,7 @@ const coreMarkets = {
     pool2: staking("0x76ba3eC5f5adBf1C58c91e86502232317EeA72dE", "0x32df62dc3aed2cd6224193052ce665dc18165841"),
   },
   bsc: {
-    ...aaveExports(undefined, '0x1e8323a513e099322aa435d172f1e7836fc620a5'),
+    ...aaveExports(undefined, '0x1e8323a513e099322aa435d172f1e7836fc620a5', undefined, undefined, { v3: true }),
     // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
     pool2: sumTokensExport({ owner: '0x4fd9f7c5ca0829a656561486bada018505dfcb5e', tokens: ['0x346575fc7f07e6994d76199e41d13dc1575322e1'], useDefaultCoreAssets: true, })
   },
@@ -72,7 +72,7 @@ Object.keys(rizMarketsConfig).forEach(chain => {
 
 module.exports = mergeExports([rizMarketExports, coreMarkets])
 
-module.exports.hallmarks = [
-  // [1704178500, "flash loan exploit"],
-  // ['2024-10-16', 'Multisig was compromised'],
-]
+// module.exports.hallmarks = [
+//   // [1704178500, "flash loan exploit"],
+//   // ['2024-10-16', 'Multisig was compromised'],
+// ]

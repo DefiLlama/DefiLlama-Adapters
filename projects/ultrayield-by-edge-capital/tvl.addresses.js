@@ -61,6 +61,10 @@ const CONFIG = {
             '0x0e07999afff029894277c785857b4ca30ec07a5e', // Midas - mEDGE
             '0x06a317991f2f479a6213278b32d17a126fcab501', // Midas TacTON Vault
         ],
+        eulerVaultOwners: [
+            '0xB2b9a27a6160Bf9ffbD1a8d245f5de75541b1DDD', // Edge Capital Euler vault owner
+            '0x1280e86Cd7787FfA55d37759C0342F8CD3c7594a', // Edge Capital Euler vault owner
+        ],
     },
 };
 
