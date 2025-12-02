@@ -1,8 +1,60 @@
 const {getLogs2} = require("../helper/cache/getLogs");
 const {sumTokens} = require("../helper/chain/bitcoin");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+const {queryContractWithRetries, queryV1Beta1} = require("../helper/chain/cosmos");
+const {PromisePool} = require("@supercharge/promise-pool");
+const CORE_ASSETS = require("../helper/coreAssets.json");
 
 module.exports = {
+    babylon: {
+        tvl: async function tvl(api) {
+            const marketplace_contract = "bbn1ts0rxh55zha7gwh6a8q0yd224g0lfjlqsm53zrc85knx602k8fvs0y3mlg"
+            const orderCount = await queryContractWithRetries({
+                contract: marketplace_contract,
+                chain: api.chain,
+                data: {get_order_count: {}},
+            });
+            let data = [];
+            if (orderCount) {
+                let params = [];
+                let batch = 30;
+                for (let i = 0; i < orderCount; i += batch) {
+                    params.push({list_order: {start: i, limit: batch}});
+                }
+
+                const {results, errors} = await PromisePool
+                    .withConcurrency(25)
+                    .for(new Array(params.length).fill(marketplace_contract))
+                    .process(
+                        async (contract, index) => queryContractWithRetries(
+                            {
+                                contract,
+                                chain: api.chain,
+                                data: params[index]
+                            }
+                        )
+                    )
+                data = [...new Set(results.flat().map(el => el.order))]
+            }
+            let totalStakedAmount = 0
+            if (data.length) {
+                const {results, errors} = await PromisePool
+                    .withConcurrency(25)
+                    .for(data)
+                    .process(
+                        async (contract, index) => queryV1Beta1({
+                            chain: api.chain,
+                            url: `staking/v1beta1/delegations/${contract}`
+                        }))
+
+                let delegationAmounts = results.map(el => el.delegation_responses.filter(el => el.balance.denom === "ubbn")).flat().map(el => parseInt(el.balance.amount))
+                totalStakedAmount = delegationAmounts.reduce((acc, el) => acc + el)
+            }
+            const token = CORE_ASSETS.babylon.BABY;
+            api.add(token, totalStakedAmount);
+
+        }
+    },
     core: {
         tvl: async function tvl(api) {
             const logs = await getLogs2({

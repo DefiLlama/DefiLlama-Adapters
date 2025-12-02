@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokensExport, sumTokens2, unwrapSlipstreamNFT } = require('../helper/unwrapLPs')
 
 const LBTCV = '0x5401b8620E5FB570064CA9114fd1e135fd77D57c'            // vault (ETH/Base/BSC)
 const SONIC_VAULT = '0x309f25d839a2fe225e80210e110C99150Db98AAF'      // vault (Sonic)
@@ -62,14 +62,61 @@ async function tvlCurveCorn(_, _b, _cb, { api }) {
   return {}
 }
 
+// Aerodrome Slipstream (Base) - Concentrated Liquidity NFT positions
+async function tvlAerodrome(_, _b, _cb, { api }) {
+  const nftAddress = '0x827922686190790b37229fd06084350E74485b72'  
+  await unwrapSlipstreamNFT({ api, owner: LBTCV, nftAddress })
+  return {}
+}
+
+// Turtle Club Vault (Ethereum) - unwrap katanaLBTCv (BoringVault) to underlying assets
+async function tvlTurtleClub(_, _b, _cb, { api }) {
+  const katanaLBTCv = '0x75231079973c23e9eb6180fa3d2fc21334565ab5'  // Turtle Club BoringVault token
+  
+  // Get vault share balance held by LBTCV
+  const shareBalance = await api.call({
+    target: katanaLBTCv,
+    abi: 'erc20:balanceOf',
+    params: [LBTCV]
+  })
+  
+  if (!shareBalance || shareBalance === '0') return {}
+  
+  // BoringVault architecture: Vault -> Hook -> Accountant -> (base asset + rate)
+  const hook = await api.call({
+    target: katanaLBTCv,
+    abi: 'address:hook'
+  })
+  
+  const accountant = await api.call({
+    target: hook,
+    abi: 'address:accountant'
+  })
+  
+  const [baseAsset, rate, decimals] = await Promise.all([
+    api.call({ target: accountant, abi: 'address:base' }),
+    api.call({ target: accountant, abi: 'uint256:getRate' }),
+    api.call({ target: accountant, abi: 'uint8:decimals' })
+  ])
+  
+  // Calculate underlying amount: shareBalance * rate / 10^decimals
+  const underlyingAmount = BigInt(shareBalance) * BigInt(rate) / BigInt(10 ** Number(decimals))
+  
+  api.add(baseAsset, underlyingAmount)
+  
+  return {}
+}
+
 // universal composer to avoid double counting
-function composeChainTVL(baseScanner, curveFn = tvlCurve) {
+function composeChainTVL(baseScanner, additionalFns = []) {
   return async (...args) => {
     const [, , , { api }] = args
     // 1) base scanner (owners + resolveUniV3)
     if (baseScanner) await baseScanner(...args)
-    // 2) add Curve positions
-    if (curveFn) await curveFn(...args)
+    // 2) add additional TVL functions (Curve, Aerodrome, etc)
+    for (const fn of additionalFns) {
+      await fn(...args)
+    }
     return api.getBalances()
   }
 }
@@ -78,21 +125,31 @@ module.exports = {
   doublecounted: true,
 
   ethereum: {
-    tvl: composeChainTVL(sumTokensExport({
-      owners: [LBTCV], 
-      fetchCoValentTokens: true,
-      tokenConfig: { onlyWhitelisted: false },
-      resolveUniV3: true,
-    })),
+    tvl: composeChainTVL(
+      sumTokensExport({
+        owners: [LBTCV], 
+        fetchCoValentTokens: true,
+        tokenConfig: { 
+          onlyWhitelisted: false,
+          // Exclude Turtle Club vault token to avoid double counting (handled separately in tvlTurtleClub)
+          blacklistedTokens: ['0x75231079973C23e9eB6180fa3D2fc21334565aB5']
+        },
+        resolveUniV3: true,
+      }),
+      [tvlCurve, tvlTurtleClub]
+    ),
   },
 
   base: {
-    tvl: sumTokensExport({
-      owners: [LBTCV],
-      fetchCoValentTokens: true,
-      tokenConfig: { onlyWhitelisted: false },
-      resolveUniV3: true,
-    }),
+    tvl: composeChainTVL(
+      sumTokensExport({
+        owners: [LBTCV],
+        fetchCoValentTokens: true,
+        tokenConfig: { onlyWhitelisted: false },
+        resolveUniV3: true,
+      }),
+      [tvlAerodrome]
+    ),
   },
 
   bsc: {
@@ -109,12 +166,12 @@ module.exports = {
       sumTokensExport({
         owners: [LBTCV],
         tokens: [
-          '0x386E7A3a0c0919c9d53c3b04FF67E73Ff9e45Fb6', // BTCN on Corn
-          '0xda5dDd7270381A7C2717aD10D1c0ecB19e3CDFb2', // wBTCN (Wrapped BTCN)
-          '0xecAc9C5F704e954931349Da37F60E39f515c11c1', // LBTC on Corn
+          ADDRESSES.ethereum.BTCN, // BTCN on Corn
+          ADDRESSES.corn.wBTCN, // wBTCN (Wrapped BTCN)
+          ADDRESSES.etlk.LBTC, // LBTC on Corn
         ],
       }),
-      tvlCurveCorn
+      [tvlCurveCorn]
     ),
   },
 

@@ -82,7 +82,9 @@ const config = {
       "0x8028270e06fca18e212306a7c93bfee52b440fc5",
       "0x0635ac6675e05c7f58383493bb7d1a513cd65688",
       "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D",
-      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+      "0x5bdf85216ec1e38d6458c870992a69e38e03f7ef",
+       "0xec96bbbe895301710a89a06546264ebb4f0cc546"
     ],
     blacklistedTokens: [
       "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
@@ -181,6 +183,7 @@ const config = {
     owners: [
       "r3AEihLNr81VYUf5PdfH5wLPqtJJyJs6yY",
       "rGDreBvnHrX1get7na3J4oowN19ny4GzFn",
+      "rwTTsHVUDF8Ub2nzV2oAeWxfJzUvobXLEf",
     ],
   },
   solana: {

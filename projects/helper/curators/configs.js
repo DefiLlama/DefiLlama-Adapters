@@ -7,6 +7,14 @@ const ABI = {
   ERC4626: {
     asset: 'address:asset',
     totalAssets: 'uint256:totalAssets',
+    balanceOf: 'function balanceOf(address account) view returns (uint256)',
+    convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
+  },
+  morphoV2: {
+    liquidityAdapter: 'address:liquidityAdapter',
+  },
+  morphoAdapter: {
+    morphoVaultV1: 'address:morphoVaultV1',
   },
   aera: {
     assetRegistry: 'address:assetRegistry',
@@ -130,6 +138,14 @@ const MorphoConfigs = {
       {
         address: '0x8e52179BeB18E882040b01632440d8Ca0f01da82',
         fromBlock: 1188885,
+      }
+    ]
+  },
+  sei: {
+    vaultFactories: [
+      {
+        address: '0x8Dea49ec5bd5AeAc8bcf96B3E187F59354118291',
+        fromBlock: 168896078,
       }
     ]
   }
