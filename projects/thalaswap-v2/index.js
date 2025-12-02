@@ -5,7 +5,19 @@ const thalaswapLensAddress = "ff1ac437457a839f7d07212d789b85dd77b3df00f59613fcba
 
 async function getPool(lensAddress, lptAddress) {
   const args = [lptAddress];
-  return function_view({ functionStr: `${lensAddress}::lens::get_pool_info`, args }).catch(() => null);
+  const fn = () => function_view({ functionStr: `${lensAddress}::lens::get_pool_info`, args});
+
+  let lastError;
+  for (let i = 0; i < 3; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastError = err;
+      await new Promise(res => setTimeout(res, 200));
+    }
+  }
+
+  return null;
 }
 
 const tvl = async (api) => {
