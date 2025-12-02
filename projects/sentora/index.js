@@ -6,6 +6,7 @@ const configs = {
     ethereum: {
       eulerVaultOwners: [
         '0x5aB5FE7d04CFDeFb9daf61f6f569a58A53D05eE1',
+        '0xe78C246ea973389F55BAEADF71e04750D50417d1'
       ],
     },
   }
