@@ -12,7 +12,7 @@ const stakeContracts = [
   '0x3b457C670711e0771a8Da4f2589d7d8DbA3D40A0'
 ]
 
-async function bouncebitLSDTvl(api) {
+async function bouncebitLSD(api) {
   const BBBalance = await api.call({  abi: 'erc20:totalSupply', target: '0x22aAC17E571D6651880d057e310703fF4C7c3483'})  
   api.add(ADDRESSES.null, BBBalance)
 
@@ -23,6 +23,7 @@ async function bouncebitLSDTvl(api) {
 
 module.exports = {
   bouncebit: {
-    tvl: bouncebitLSDTvl
+    tvl: ()=> {},
+    staking: bouncebitLSD
   }
 };
