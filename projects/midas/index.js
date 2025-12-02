@@ -90,6 +90,10 @@ const tvl = async (api) => {
   entries.forEach(({ value }) => { api.addUSDValue(value) })
 }
 
+module.exports = {
+  timetravel: false
+}
+
 const chains = ['ethereum', 'arbitrum', 'base', 'katana', 'monad', 'sonic', 'unichain', 'plume_mainnet', 'linea', 'hyperliquid', 'xrplevm', '0g', 'plasma', 'rsk', 'etlk', 'sapphire', 'bitcoin', 'polygon']
 chains.forEach((chain) => {
   module.exports[chain] = { tvl }
