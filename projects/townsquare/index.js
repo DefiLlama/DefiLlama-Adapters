@@ -31,10 +31,24 @@ async function tvl({ api }) {
     })
 }
 
+async function borrowed({ api }) {
+    const pooled = await api.multiCall({
+        abi: 'function getVariableBorrowData() view returns(tuple(uint32 vr0, uint32 vr1, uint32 vr2, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
+        calls: Object.keys(pools).map(target => ({
+            target,
+        }))
+    })
+
+    pooled.forEach((pool, i) => {
+        api.add(Object.values(pools)[i], pool.totalAmount)
+    })
+}
+
 
 module.exports = {
     methodology:"Counts the total amount deposited in all pools",
     monad: {
-        tvl
+        tvl,
+        borrowed
     }
 }
