@@ -1,6 +1,6 @@
 const { get } = require("../helper/http");
 
-const API_URL = "https://hbd6l-tyaaa-aaaaj-a2ixq-cai.icp0.io/metrics_json";
+const API_URL = "https://52mp3-qiaaa-aaaar-qbzja-cai.icp0.io/metrics_json";
 
 // Map Yusan token symbols to CoinGecko IDs
 const TOKEN_MAPPING = {
