@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const abi = {
@@ -8,15 +9,15 @@ const VAQUITA_CONTRACT = '0x2400B4E44878d25597da16659705F48927cadef1';
 
 const assets = {
   USDC: {
-    address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    address: ADDRESSES.base.USDC,
     aToken: '0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB',
   },
   WETH: {
-    address: '0x0000000000000000000000000000000000000000',
+    address: ADDRESSES.null,
     aToken: '0xD4a0e0b9149BCee3C920d2E00b5dE09138fd8bb7',
   },
   cbBTC: {
-    address: '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf',
+    address: ADDRESSES.ethereum.cbBTC,
     aToken: '0xBdb9300b7CDE636d9cD4AFF00f6F009fFBBc8EE6',
   },
 };

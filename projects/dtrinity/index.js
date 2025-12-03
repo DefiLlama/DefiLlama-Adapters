@@ -34,14 +34,7 @@ const config = {
       pools: []
     }
   },
-  ronin: {
-    dUSD: {
-      address: '0x0043a403Ada6b63045112D7e979a057C82714fe7',
-      collateralVault: "0xC40f4303505320F782972ad4756eD2A7390a9d9C",
-      pools: []
-    },
-  },
-  katana: {
+   katana: {
     dUSD: {
       address: '0xcA52d08737E6Af8763a2bF6034B3B03868f24DDA',
       collateralVault: "0xA5f9F6238406B1301D0ED09555a2893dc1A26A49",
@@ -80,9 +73,6 @@ module.exports = {
     tvl: getAMOTvl
   },
   sonic: {
-    tvl: getAMOTvl,
-  },
-  ronin: {
     tvl: getAMOTvl,
   },
   katana: {

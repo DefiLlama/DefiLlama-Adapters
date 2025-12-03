@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = {
 	getReservesList: "function getReservesList() view returns (address[])",
 	getReserveData:
@@ -16,7 +17,7 @@ async function tvl(api) {
 		const tokens = [
 			"0x1de70f3e971B62A0707dA18100392af14f7fB677",
 			"0xA614Aebf7924A3Eb4D066aDCA5595E4980407f1d",
-			"0x48f80608B672DC30DC7e3dbBd0343c5F02C738Eb",
+			ADDRESSES.zeta.BNB,
 		];
 		const tokensAndOwners = tokens.map((t) => [t, treasury]);
 		return api.sumTokens({ tokensAndOwners });
