@@ -1,13 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { get } = require('../helper/http')
+const { getCache } = require('../helper/http')
 
 const API_URL = 'https://5okwm-giaaa-aaaar-qbn6a-cai.raw.icp0.io/api/balances'
 
-// All tokens on ICP chain (for ICP TVL - sum of all tokens)
 const icpTokens = {
   ICP: { decimals: 8, coingeckoId: 'internet-computer' },
   ckBTC: { decimals: 8, coingeckoId: 'bitcoin' },
-  BOB: { decimals: 18, coingeckoId: 'bob-3' },
+  BOB: { decimals: 8, coingeckoId: 'bob-3' },
   CHAT: { decimals: 8, coingeckoId: 'openchat' },
   GLDT: { decimals: 8, coingeckoId: 'gold-dao' },
   USDC: { decimals: 6, coingeckoId: 'usd-coin' },
@@ -15,40 +14,33 @@ const icpTokens = {
   cbBTC: { decimals: 8, coingeckoId: 'coinbase-wrapped-btc' },
 }
 
-// EVM-native tokens (only count on their native EVM chains)
 const evmTokens = {
   ethereum: {
-    USDC: { address: ADDRESSES.ethereum.USDC, decimals: 6 },
-    USDT: { address: ADDRESSES.ethereum.USDT, decimals: 6 },
+    USDC: ADDRESSES.ethereum.USDC,
+    USDT: ADDRESSES.ethereum.USDT,
   },
   arbitrum: {
-    USDC: { address: ADDRESSES.arbitrum.USDC_CIRCLE, decimals: 6 },
+    USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
   },
   base: {
-    USDC: { address: ADDRESSES.base.USDC, decimals: 6 },
-    cbBTC: { address: ADDRESSES.base.cbBTC, decimals: 8 },
+    USDC: ADDRESSES.base.USDC,
+    cbBTC: ADDRESSES.base.cbBTC,
   },
 }
 
-// Parse underscore-separated number format (e.g., "154_526_569" -> 154526569)
 function parseBalance(balanceStr) {
   if (!balanceStr) return 0
   return Number(balanceStr.toString().replace(/_/g, ''))
 }
 
-async function fetchData() {
-  return get(API_URL)
-}
-
 async function icpTvl() {
-  const data = await fetchData()
+  const data = await getCache(API_URL)
   const balances = {}
 
-  for (const [token, config] of Object.entries(icpTokens)) {
+  for (const [token, { decimals, coingeckoId }] of Object.entries(icpTokens)) {
     const balance = parseBalance(data[token]?.icp)
     if (balance > 0) {
-      const key = `coingecko:${config.coingeckoId}`
-      balances[key] = (balances[key] || 0) + balance / 10 ** config.decimals
+      balances[`coingecko:${coingeckoId}`] = balance / 10 ** decimals
     }
   }
 
@@ -57,13 +49,12 @@ async function icpTvl() {
 
 function createEvmTvl(chain) {
   return async (api) => {
-    const data = await fetchData()
-    const chainTokens = evmTokens[chain] || {}
+    const data = await getCache(API_URL)
 
-    for (const [token, config] of Object.entries(chainTokens)) {
+    for (const [token, address] of Object.entries(evmTokens[chain])) {
       const balance = parseBalance(data[token]?.[chain])
       if (balance > 0) {
-        api.add(config.address, balance)
+        api.add(address, balance)
       }
     }
   }
