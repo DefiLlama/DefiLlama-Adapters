@@ -1,100 +1,87 @@
-const { get } = require("../helper/http");
+const { getCache } = require('../helper/http')
 
-const YUSAN_API = "https://52mp3-qiaaa-aaaar-qbzja-cai.icp0.io/metrics_json";
-const ONESEC_API = "https://5okwm-giaaa-aaaar-qbn6a-cai.raw.icp0.io/api/balances";
+const YUSAN_API = 'https://52mp3-qiaaa-aaaar-qbzja-cai.icp0.io/metrics_json'
+const ONESEC_API = 'https://5okwm-giaaa-aaaar-qbn6a-cai.raw.icp0.io/api/balances'
 
-// Map Yusan token symbols to CoinGecko IDs
-const TOKEN_MAPPING = {
-  ICP: "internet-computer",
-  USDC: "usd-coin",
-  USDT: "tether",
-  ckBTC: "bitcoin",
-};
-
-// Parse underscore-separated numbers (e.g., "154_526_569" -> 154526569)
-function parseBalance(str) {
-  if (!str) return 0;
-  return Number(str.replace(/_/g, ""));
+const tokens = {
+  ICP: { decimals: 8, coingeckoId: 'internet-computer' },
+  USDC: { decimals: 6, coingeckoId: 'usd-coin' },
+  USDT: { decimals: 6, coingeckoId: 'tether' },
+  ckBTC: { decimals: 8, coingeckoId: 'bitcoin' },
+  ckDOGE: { decimals: 8, coingeckoId: 'dogecoin' },
 }
 
-// Calculate chain's share of Yusan TVL based on OneSec bridge proportions (EVM chains only)
-function calcChainAmount(yusanSupply, bridgeData, chain) {
-  const bridgeEvmTotal =
+const evmChainTokens = {
+  ethereum: ['USDC', 'USDT'],
+  arbitrum: ['USDC'],
+  base: ['USDC'],
+}
+
+function parseBalance(str) {
+  if (!str) return 0
+  return Number(str.toString().replace(/_/g, ''))
+}
+
+function calcChainShare(yusanSupply, bridgeData, chain) {
+  const evmTotal =
     parseBalance(bridgeData?.ethereum) +
     parseBalance(bridgeData?.arbitrum) +
-    parseBalance(bridgeData?.base);
+    parseBalance(bridgeData?.base)
 
-  if (bridgeEvmTotal === 0) return 0;
+  if (evmTotal === 0) return 0
 
-  const chainBalance = parseBalance(bridgeData?.[chain]);
-  // chainAmount = yusanSupply * (chainBalance / bridgeEvmTotal)
-  return yusanSupply * chainBalance / bridgeEvmTotal;
+  const chainBalance = parseBalance(bridgeData?.[chain])
+  return (yusanSupply * chainBalance) / evmTotal
 }
 
-async function tvl(api) {
-  const data = await get(YUSAN_API);
+async function icpTvl(api) {
+  const data = await getCache(YUSAN_API)
 
-  for (const [symbol, market] of Object.entries(data.tokens)) {
-    const cgId = TOKEN_MAPPING[symbol];
-    if (cgId) {
-      // All values are in e8s (8 decimals)
-      api.addCGToken(cgId, market.total_supply / 1e8);
+  for (const [symbol, { decimals, coingeckoId }] of Object.entries(tokens)) {
+    const balance = data.tokens[symbol]?.total_supply || 0
+    if (balance > 0) {
+      api.addCGToken(coingeckoId, balance / 10 ** decimals)
     }
   }
 }
 
-async function borrowed(api) {
-  const data = await get(YUSAN_API);
+async function icpBorrowed(api) {
+  const data = await getCache(YUSAN_API)
 
-  for (const [symbol, market] of Object.entries(data.tokens)) {
-    const cgId = TOKEN_MAPPING[symbol];
-    if (cgId && market.total_borrow > 0) {
-      api.addCGToken(cgId, market.total_borrow / 1e8);
+  for (const [symbol, { decimals, coingeckoId }] of Object.entries(tokens)) {
+    const balance = data.tokens[symbol]?.total_borrow || 0
+    if (balance > 0) {
+      api.addCGToken(coingeckoId, balance / 10 ** decimals)
     }
   }
 }
 
-async function ckBtcTvl(api) {
-  const data = await get(YUSAN_API);
-  const ckBtcMarket = data.tokens.ckBTC;
-  if (ckBtcMarket) {
-    api.addCGToken("bitcoin", ckBtcMarket.total_supply / 1e8);
+function createNativeChainTvl(token) {
+  return async (api) => {
+    const data = await getCache(YUSAN_API)
+    const { decimals, coingeckoId } = tokens[token]
+    const balance = data.tokens[token]?.total_supply || 0
+    if (balance > 0) {
+      api.addCGToken(coingeckoId, balance / 10 ** decimals)
+    }
   }
 }
 
-async function ethereumTvl(api) {
-  const [yusan, bridge] = await Promise.all([get(YUSAN_API), get(ONESEC_API)]);
-  const usdcAmount = calcChainAmount(yusan.tokens.USDC?.total_supply || 0, bridge.USDC, "ethereum");
-  const usdtAmount = calcChainAmount(yusan.tokens.USDT?.total_supply || 0, bridge.USDT, "ethereum");
-  if (usdcAmount > 0) {
-    api.addCGToken("usd-coin", usdcAmount / 1e8);
-  }
-  if (usdtAmount > 0) {
-    api.addCGToken("tether", usdtAmount / 1e8);
-  }
-}
+function createEvmTvl(chain) {
+  return async (api) => {
+    const [yusan, bridge] = await Promise.all([
+      getCache(YUSAN_API),
+      getCache(ONESEC_API),
+    ])
 
-async function arbitrumTvl(api) {
-  const [yusan, bridge] = await Promise.all([get(YUSAN_API), get(ONESEC_API)]);
-  const usdcAmount = calcChainAmount(yusan.tokens.USDC?.total_supply || 0, bridge.USDC, "arbitrum");
-  const usdtAmount = calcChainAmount(yusan.tokens.USDT?.total_supply || 0, bridge.USDT, "arbitrum");
-  if (usdcAmount > 0) {
-    api.addCGToken("usd-coin", usdcAmount / 1e8);
-  }
-  if (usdtAmount > 0) {
-    api.addCGToken("tether", usdtAmount / 1e8);
-  }
-}
-
-async function baseTvl(api) {
-  const [yusan, bridge] = await Promise.all([get(YUSAN_API), get(ONESEC_API)]);
-  const usdcAmount = calcChainAmount(yusan.tokens.USDC?.total_supply || 0, bridge.USDC, "base");
-  const usdtAmount = calcChainAmount(yusan.tokens.USDT?.total_supply || 0, bridge.USDT, "base");
-  if (usdcAmount > 0) {
-    api.addCGToken("usd-coin", usdcAmount / 1e8);
-  }
-  if (usdtAmount > 0) {
-    api.addCGToken("tether", usdtAmount / 1e8);
+    for (const symbol of evmChainTokens[chain]) {
+      const { decimals, coingeckoId } = tokens[symbol]
+      const supply = yusan.tokens[symbol]?.total_supply || 0
+      const amount = calcChainShare(supply, bridge[symbol], chain)
+      if (amount > 0) {
+        api.addCGToken(coingeckoId, amount / 10 ** decimals)
+      }
+    }
   }
 }
 
@@ -102,13 +89,11 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   methodology:
-    "TVL is the total supply deposited in Yusan lending markets. Borrowed shows total outstanding loans.",
-  icp: {
-    tvl,
-    borrowed,
-  },
-  bitcoin: { tvl: ckBtcTvl },
-  ethereum: { tvl: ethereumTvl },
-  arbitrum: { tvl: arbitrumTvl },
-  base: { tvl: baseTvl },
-};
+    'TVL is the total supply deposited in Yusan lending markets. Borrowed shows total outstanding loans.',
+  icp: { tvl: icpTvl, borrowed: icpBorrowed },
+  bitcoin: { tvl: createNativeChainTvl('ckBTC') },
+  dogechain: { tvl: createNativeChainTvl('ckDOGE') },
+  ethereum: { tvl: createEvmTvl('ethereum') },
+  arbitrum: { tvl: createEvmTvl('arbitrum') },
+  base: { tvl: createEvmTvl('base') },
+}
