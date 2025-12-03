@@ -19,7 +19,7 @@ async function getVaults(api) {
     const vaults = new Set()
 
     for (const factory of FACTORIES) {
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; ; i++) {
             const strategy = await api.call({
                 target: factory,
                 abi: abis.strategyProxies,
