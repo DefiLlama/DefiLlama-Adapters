@@ -71,7 +71,8 @@ function createEvmTvl(chain) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL counts ICP-native tokens on ICP chain and EVM-native tokens locked on their respective EVM chains.',
+  doublecounted: true,
+  methodology: 'TVL counts all tokens on the ICP side of the bridge, plus EVM-native tokens locked on their respective EVM chains. EVM-native tokens are double counted as they appear on both ICP and their native chains.',
   icp: { tvl: icpTvl },
   ethereum: { tvl: createEvmTvl('ethereum') },
   arbitrum: { tvl: createEvmTvl('arbitrum') },
