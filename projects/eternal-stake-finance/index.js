@@ -4,7 +4,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const ADDRESSES_solana_ESF = 'BzMWbt7ko3P8c457gzxuBCCt6q73sJyG98nQNeTfcCom';
 const ADDRESSES_solana_LP_ESF_SOL = '7wTChQDj3KG4kHXYjWrPw5bWUkKzNpJySU5CABEkHogv';
 
-async function tvl() {
+async function staking() {
     const tokensAndOwners = [
             ADDRESSES.solana.USDC,
             ADDRESSES.solana.SOL,
@@ -23,6 +23,7 @@ async function tvl() {
 module.exports = {
     timetravel: false,
     solana: {
-        tvl
+        tvl: () => ({}),
+        staking
     }
 }
