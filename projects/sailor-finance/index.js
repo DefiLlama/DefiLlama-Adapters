@@ -14,8 +14,8 @@ async function tvl(api) {
       return pools
     }
   })
-  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
-  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
-  const ownerTokens = pools.map((v, i) => [[token0s[i], token1s[i]], v])
+  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools, permitFailure: true })
+  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools, permitFailure: true })
+  const ownerTokens = pools.map((v, i) => [[token0s[i], token1s[i]].filter(Boolean), v])
   return sumTokens2({ api, ownerTokens })
 }
