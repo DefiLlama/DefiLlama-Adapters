@@ -1,30 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 const { getCache } = require('../helper/http')
 
 const API_URL = 'https://5okwm-giaaa-aaaar-qbn6a-cai.raw.icp0.io/api/balances'
+const LOCKER = '0x70AE25592209B57F62b3a3e832ab356228a2192C'
 
-// ICP-native tokens (custodied on ICP)
 const icpTokens = {
   ICP: { decimals: 8, coingeckoId: 'internet-computer' },
   ckBTC: { decimals: 8, coingeckoId: 'bitcoin' },
   BOB: { decimals: 8, coingeckoId: 'bob-3' },
   CHAT: { decimals: 8, coingeckoId: 'openchat' },
   GLDT: { decimals: 8, coingeckoId: 'gold-dao' },
-}
-
-// EVM-native tokens (custodied on respective EVM chains)
-const evmTokens = {
-  ethereum: {
-    USDC: ADDRESSES.ethereum.USDC,
-    USDT: ADDRESSES.ethereum.USDT,
-  },
-  arbitrum: {
-    USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
-  },
-  base: {
-    USDC: ADDRESSES.base.USDC,
-    cbBTC: ADDRESSES.base.cbBTC,
-  },
 }
 
 function parseBalance(balanceStr) {
@@ -46,24 +32,17 @@ async function icpTvl() {
   return balances
 }
 
-function createEvmTvl(chain) {
-  return async (api) => {
-    const data = await getCache(API_URL)
-
-    for (const [token, address] of Object.entries(evmTokens[chain])) {
-      const balance = parseBalance(data[token]?.[chain])
-      if (balance > 0) {
-        api.add(address, balance)
-      }
-    }
-  }
-}
-
 module.exports = {
   timetravel: false,
-  methodology: 'TVL counts tokens where collateral is custodied: ICP-native tokens on ICP chain, and EVM-native tokens locked on their respective EVM chains.',
+  methodology: 'TVL counts tokens where collateral is custodied: ICP-native tokens on ICP chain, and EVM-native tokens locked in the locker contract on their respective EVM chains.',
   icp: { tvl: icpTvl },
-  ethereum: { tvl: createEvmTvl('ethereum') },
-  arbitrum: { tvl: createEvmTvl('arbitrum') },
-  base: { tvl: createEvmTvl('base') },
+  ethereum: {
+    tvl: sumTokensExport({ owner: LOCKER, tokens: [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.cbBTC, ADDRESSES.ethereum.USDT] })
+  },
+  arbitrum: {
+    tvl: sumTokensExport({ owner: LOCKER, tokens: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.ethereum.cbBTC] })
+  },
+  base: {
+    tvl: sumTokensExport({ owner: LOCKER, tokens: [ADDRESSES.base.USDC, ADDRESSES.base.cbBTC] })
+  },
 }
