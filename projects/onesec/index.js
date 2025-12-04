@@ -3,17 +3,16 @@ const { getCache } = require('../helper/http')
 
 const API_URL = 'https://5okwm-giaaa-aaaar-qbn6a-cai.raw.icp0.io/api/balances'
 
+// ICP-native tokens (custodied on ICP)
 const icpTokens = {
   ICP: { decimals: 8, coingeckoId: 'internet-computer' },
   ckBTC: { decimals: 8, coingeckoId: 'bitcoin' },
   BOB: { decimals: 8, coingeckoId: 'bob-3' },
   CHAT: { decimals: 8, coingeckoId: 'openchat' },
   GLDT: { decimals: 8, coingeckoId: 'gold-dao' },
-  USDC: { decimals: 6, coingeckoId: 'usd-coin' },
-  USDT: { decimals: 6, coingeckoId: 'tether' },
-  cbBTC: { decimals: 8, coingeckoId: 'coinbase-wrapped-btc' },
 }
 
+// EVM-native tokens (custodied on respective EVM chains)
 const evmTokens = {
   ethereum: {
     USDC: ADDRESSES.ethereum.USDC,
@@ -62,8 +61,7 @@ function createEvmTvl(chain) {
 
 module.exports = {
   timetravel: false,
-  doublecounted: true,
-  methodology: 'TVL counts all tokens on the ICP side of the bridge, plus EVM-native tokens locked on their respective EVM chains. EVM-native tokens are double counted as they appear on both ICP and their native chains.',
+  methodology: 'TVL counts tokens where collateral is custodied: ICP-native tokens on ICP chain, and EVM-native tokens locked on their respective EVM chains.',
   icp: { tvl: icpTvl },
   ethereum: { tvl: createEvmTvl('ethereum') },
   arbitrum: { tvl: createEvmTvl('arbitrum') },
