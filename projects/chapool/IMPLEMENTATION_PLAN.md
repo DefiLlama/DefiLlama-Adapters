@@ -11,10 +11,10 @@
 根据 DefiLlama 的标准要求：
 
 - **TVL 适配器**（本仓库 `DefiLlama-Adapters`）：只需实现 **TVL** 指标
-- **Revenue 适配器**（另一个仓库 `DefiLlama/adapters`）：Revenue 数据需要提交到 [DefiLlama/adapters](https://github.com/DefiLlama/adapters) 仓库，不是这个仓库
+- **Revenue 适配器**（另一个仓库 `DefiLlama/dimension-adapters`）：Revenue 数据需要提交到 [DefiLlama/dimension-adapters](https://github.com/DefiLlama/dimension-adapters) 仓库，不是这个仓库
 
 根据 [DefiLlama PR 模板](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/pull_request_template.md)：
-> If you would like to add a `volume/fees/revenue` adapter please submit the PR [here](https://github.com/DefiLlama/adapters).
+> If you would like to add a `volume/fees/revenue` adapter please submit the PR [here](https://github.com/DefiLlama/dimension-adapters).
 
 ### 1. 总锁仓价值（TVL - Total Value Locked）✅ 必需
 
@@ -53,10 +53,10 @@ TVL = Σ(每个等级的质押数量 × 该等级 NFT 的价格 × ETH 价格)
 ### 2. 协议收入（Revenue）❌ 不在本仓库
 
 #### ⚠️ 注意
-**Revenue 适配器需要提交到另一个仓库：`DefiLlama/adapters`**
+**Revenue 适配器需要提交到另一个仓库：`DefiLlama/dimension-adapters`**
 
 根据 [DefiLlama PR 模板](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/pull_request_template.md)：
-> If you would like to add a `volume/fees/revenue` adapter please submit the PR [here](https://github.com/DefiLlama/adapters).
+> If you would like to add a `volume/fees/revenue` adapter please submit the PR [here](https://github.com/DefiLlama/dimension-adapters).
 
 #### 数据含义（供参考）
 协议收入是指用户向平台支付的费用总额，不包括退款。这是平台实际获得的收入。
@@ -77,7 +77,7 @@ TVL = Σ(每个等级的质押数量 × 该等级 NFT 的价格 × ETH 价格)
 ### 3. 每日收入（Daily Revenue）❌ 不在本仓库
 
 #### ⚠️ 注意
-**每日收入属于 Revenue 指标，同样需要提交到 `DefiLlama/adapters` 仓库**
+**每日收入属于 Revenue 指标，同样需要提交到 `DefiLlama/dimension-adapters` 仓库**
 
 #### 数据含义（供参考）
 每日收入是指协议每天获得的收入金额，用于展示收入趋势。
@@ -231,7 +231,7 @@ ORDER BY level
 
 ### 查询 2：Revenue 查询（协议总收入）📝 供 Revenue 适配器参考
 
-> **注意**：此查询用于 Revenue 适配器，在 `DefiLlama/adapters` 仓库中使用
+> **注意**：此查询用于 Revenue 适配器，在 `DefiLlama/dimension-adapters` 仓库中使用
 
 #### Dune Query SQL
 
@@ -290,7 +290,7 @@ CROSS JOIN eth_price ep
 
 ### 查询 3：每日收入查询（可选）📝 供 Revenue 适配器参考
 
-> **注意**：此查询用于 Revenue 适配器，在 `DefiLlama/adapters` 仓库中使用
+> **注意**：此查询用于 Revenue 适配器，在 `DefiLlama/dimension-adapters` 仓库中使用
 
 #### Dune Query SQL
 
@@ -515,7 +515,7 @@ node test.js projects/chapool/index.js 2024-10-16
 |------|------|---------|------|
 | **TVL** | ✅ 必需 | Dune 查询 Staking 事件 | 展示平台规模 |
 
-### 另一个仓库（DefiLlama/adapters）需要实现
+### 另一个仓库（DefiLlama/dimension-adapters）需要实现
 
 | 指标 | 状态 | 数据来源 | 用途 |
 |------|------|---------|------|
@@ -535,7 +535,7 @@ node test.js projects/chapool/index.js 2024-10-16
 ## 📚 参考资料
 
 - [DefiLlama Adapter 指南](https://docs.llama.fi/submit-a-project)
-- [DefiLlama Revenue Adapter 仓库](https://github.com/DefiLlama/adapters)
+- [DefiLlama Revenue Adapter 仓库](https://github.com/DefiLlama/dimension-adapters)
 - [Dune API 文档](https://docs.dune.com/api-reference)
 - [项目数据需求文档](../../../nft-staking-subgraph/DefiLiama需要的数据以及计算方法%20v1.0.md)
 

@@ -8,7 +8,7 @@ Chapool 是一个基于 opBNB 的 NFT 质押协议。本 adapter 用于向 DefiL
 
 - **TVL**: 按 NFT 等级分别计算质押价值，汇总总锁仓价值 ✅ 必需
 
-> **注意**：Revenue 数据需要提交到另一个仓库 [`DefiLlama/adapters`](https://github.com/DefiLlama/adapters)，不是这个仓库。
+> **注意**：Revenue 数据需要提交到另一个仓库 [`DefiLlama/dimension-adapters`](https://github.com/DefiLlama/dimension-adapters)，不是这个仓库。
 
 ## 数据源
 
