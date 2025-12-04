@@ -118,7 +118,8 @@ const defaultTokens = {
     "0x136471a34f6ef19fe571effc1ca711fdb8e49f2b", //USYC
     "0x7712c34205737192402172409a8f7ccef8aa2aec", // BUIDL
     '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
-    '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', //USD1
+    ADDRESSES.bsc.USD1, //USD1
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
   ],
   tron: [
     nullAddress,
@@ -186,7 +187,7 @@ const defaultTokens = {
     '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
-    '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', // USD1
+    ADDRESSES.bsc.USD1, // USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3'  //GTBTC
   ],
   eos: [

@@ -245,6 +245,15 @@ module.exports = {
     })
     return Array.from(new Set(staticAddresses))
   },
+  vishwa: async () => {
+    const staticAddresses = await getConfig('vishwa', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://api.btcvc.vishwanetwork.xyz/btc/address')
+        return data.data
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
   zenrock: async () => {
     const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
     const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';

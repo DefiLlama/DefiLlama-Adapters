@@ -32,7 +32,7 @@ module.exports = {
       },
       {
         address: '0xD480a0Aab2Bc4A536449B18B7d0C1b3a3c326C93',
-        asset: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d', // USD1
+        asset: ADDRESSES.bsc.USD1, // USD1
       },
       {
         address: '0x9dA4F7DF9d6D4789b9fd47aa98630546FE0DC839',

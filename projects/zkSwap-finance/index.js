@@ -11,7 +11,10 @@ const config = {
   },
   sonic: {
     factoryV2: '0xCe98a0E578b639AA90EE96eD5ba8E5a4022de529'
-  }
+  },
+  monad: {
+    factoryV2: '0x0ff16867BcaC3C5fdc2dc73558e3F8e2ed89EEA2'
+  },
 }
 
 module.exports = {
@@ -22,6 +25,9 @@ module.exports = {
   },
   sonic: {
     tvl: getUniTVL({ factory: config.sonic.factoryV2, useDefaultCoreAssets: true}),
+  },
+  monad: {
+    tvl: getUniTVL({ factory: config.monad.factoryV2, useDefaultCoreAssets: true}),
   },
   methodology: "TVL is total liquidity of all liquidity pools."
 }

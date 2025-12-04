@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/sumTokens')
 
 const ETHEREUM_STAKING_CONTRACT = '0x0e9bD42dE657fF590d214CcC8d4f94B77D2BD908';
-const ETH = '0x0000000000000000000000000000000000000000';
+const ETH = ADDRESSES.null;
 const PTB = '0x30a25CC9c9EADe4D4d9e9349BE6e68c3411367D3';    
-const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';      
+const USDC = ADDRESSES.ethereum.USDC;      
 
 const cfg = {
   ethereum: {

@@ -45,5 +45,6 @@ module.exports = {
     arbitrum: { factory, fromBlock: 101028949, blacklistedTokens: ['0x12d773bb0c679d4dfbaf700086dc5e399656f892', '0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1']},
     base: { factory, fromBlock: 2912007, },
     op_bnb: { factory, fromBlock: 1721753, },
+    monad: { factory, fromBlock: 23058782, },
   })
 }

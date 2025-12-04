@@ -89,4 +89,10 @@ module.exports = {
       '0xb1FdC3f660b0953253141B2509c43014d5d3d733', // suBTC
     ]
   }),
+   monad: compoundExports2({
+    comptroller: '0x2d9b96648C784906253c7FA94817437EF59Cf226',
+    blacklistedTokens: [
+      '0x8bf591eae535f93a242d5a954d3cde648b48a5a8', // suUSD
+    ]
+  }),
 }
