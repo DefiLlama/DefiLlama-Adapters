@@ -18,18 +18,29 @@ const pools = {
     "0x428bebf994c970656854eb66586583fe682cc1d3": "0x8498312A6B3CbD158bf0c93AbdCF29E6e4F55081" //gMON
 }
 
-async function tvl({ api }) {
-    const pooled = await api.multiCall({
+
+const [totalDeposit, totalBorrowed] = await Promise.all([
+     api.multiCall({
         abi: 'function getDepositData() view returns(tuple(uint16 optimalUtilisationRatio, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
         calls: Object.keys(pools).map(target => ({
             target,
         }))
+    }), 
+    api.multiCall({
+        abi: 'function getVariableBorrowData() view returns(tuple(uint32 vr0, uint32 vr1, uint32 vr2, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
+        calls: Object.keys(pools).map(target => ({
+            target,
+        }))
     })
+])
 
-    pooled.forEach((pool, i) => {
-        api.add(Object.values(pools)[i], pool.totalAmount)
-    })
+const tvl = () => {
+     Object.values(pools).forEach((pool, i) => {
+        api.add(pool, totalDeposit[i].totalAmount - totalBorrowed[i].totalAmount)
+     })
 }
+
+
 
 async function borrowed({ api }) {
     const pooled = await api.multiCall({
