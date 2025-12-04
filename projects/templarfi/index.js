@@ -29,10 +29,27 @@ function detectCrossChainToken(tokenId) {
     return { chain: 'bitcoin', token: 'coingecko:bitcoin' }
   }
   
+  // Zcash via omnichain bridge
+  if (tokenId === 'zec.omft.near') {
+    return { chain: 'zcash', token: 'coingecko:zcash' }
+  }
+  
   // Ethereum tokens via omnichain bridge
   if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
     const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
     return { chain: 'ethereum', token: `ethereum:0x${match[1].toLowerCase()}` }
+  }
+  
+  if (tokenId.match(/^sol-([a-fA-F0-9]+)\.omft\.near$/)) {
+    const solanaTokenMappings = {
+      '5ce3bf3a31af18be40ba30f721101b4341690186': 'coingecko:usd-coin',
+    }
+    const match = tokenId.match(/^sol-([a-fA-F0-9]+)\.omft\.near$/)
+    const tokenAddress = match[1].toLowerCase()
+    if (solanaTokenMappings[tokenAddress]) {
+      return { chain: 'solana', token: solanaTokenMappings[tokenAddress] }
+    }
+    return { chain: 'solana', token: `solana:${tokenAddress}` }
   }
   
   // Native NEAR tokens
@@ -328,7 +345,7 @@ async function getChainBorrowed(chain) {
 }
 
 // Supported chains for cross-chain assets
-const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin']
+const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana']
 
 module.exports = {
   methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Bitcoin).',
