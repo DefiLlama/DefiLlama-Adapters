@@ -19,7 +19,10 @@ const pools = {
 }
 
 
-const [totalDeposit, totalBorrowed] = await Promise.all([
+
+
+const tvl = async () => {
+    const [totalDeposit, totalBorrowed] = await Promise.all([
      api.multiCall({
         abi: 'function getDepositData() view returns(tuple(uint16 optimalUtilisationRatio, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
         calls: Object.keys(pools).map(target => ({
@@ -33,8 +36,6 @@ const [totalDeposit, totalBorrowed] = await Promise.all([
         }))
     })
 ])
-
-const tvl = () => {
      Object.values(pools).forEach((pool, i) => {
         api.add(pool, totalDeposit[i].totalAmount - totalBorrowed[i].totalAmount)
      })
