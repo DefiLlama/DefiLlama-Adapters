@@ -342,7 +342,9 @@ ORDER BY date DESC
 
 ## 💻 Adapter 代码结构
 
-### 文件位置
+### TVL Adapter（DefiLlama-Adapters 仓库）
+
+#### 文件位置
 ```
 projects/chapool/
 ├── index.js              # 主 adapter 文件（只实现 TVL）
@@ -350,7 +352,7 @@ projects/chapool/
 └── README.md            # 项目说明（可选）
 ```
 
-### 主要功能模块
+#### 主要功能模块
 
 1. **Dune API 客户端**
    - 使用 Dune API 获取查询结果
@@ -367,7 +369,7 @@ projects/chapool/
    - 避免频繁调用 Dune API
    - 支持时间戳缓存
 
-### Module.exports 结构
+#### Module.exports 结构
 
 ```javascript
 module.exports = {
@@ -377,6 +379,156 @@ module.exports = {
     tvl,  // 只需要实现 tvl，不需要 staking, pool2, borrowed 等
   },
 };
+```
+
+---
+
+### Revenue Adapter（DefiLlama/dimension-adapters 仓库）
+
+#### 文件位置
+```
+fees/chapool/
+└── index.ts              # Revenue 适配器文件（TypeScript）
+```
+
+#### 代码结构
+
+根据 `dimension-adapters` 仓库的标准结构，Revenue 适配器使用 TypeScript 编写：
+
+```typescript
+import { Adapter, FetchOptions, FetchResultV2 } from "../../adapters/types";
+import { CHAIN } from "../../helpers/chains";
+import { queryDune } from "../../helpers/dune";
+
+const methodology = {
+  Fees: "All fees paid by users to the protocol",
+  UserFees: "All fees paid by users (payment amount)",
+  Revenue: "Net revenue to the protocol (total payments - refunds)",
+  ProtocolRevenue: "Net revenue to the protocol (total payments - refunds)",
+}
+
+const adapter: Adapter = {
+  adapter: {
+    [CHAIN.OP_BNB]: {
+      fetch: async (_timestamp: number, _chainBlocks: any, options: FetchOptions): Promise<FetchResultV2> => {
+        const dailyFees = options.createBalances();
+        const dailyRevenue = options.createBalances();
+        
+        // 使用 Dune 查询获取每日收入和费用
+        // 方式1：使用 queryDune（需要 Query ID）
+        const revenueData = await queryDune(
+          process.env.DUNE_QUERY_DAILY_REVENUE || 'YOUR_QUERY_ID',
+          {
+            start_date: new Date(options.startTimestamp * 1000).toISOString(),
+            end_date: new Date(options.endTimestamp * 1000).toISOString(),
+          },
+          options
+        );
+        
+        // 方式2：使用 queryDuneSql（直接执行 SQL）
+        // const revenueData = await queryDuneSql(options, `
+        //   -- SQL 查询（参考查询3：每日收入查询）
+        //   ...
+        // `);
+        
+        if (revenueData && revenueData.length > 0) {
+          const latest = revenueData[0];
+          const dailyRevenueUsd = parseFloat(latest.daily_net_revenue_usd || 0);
+          const dailyFeesUsd = parseFloat(latest.daily_volume_eth || 0) * 2500; // 使用 ETH 价格
+          
+          dailyRevenue.addCGToken('usd', dailyRevenueUsd);
+          dailyFees.addCGToken('usd', dailyFeesUsd);
+        }
+        
+        return {
+          dailyFees,
+          dailyRevenue,
+          dailyProtocolRevenue: dailyRevenue,
+          dailyUserFees: dailyFees,
+        };
+      },
+      start: '2024-XX-XX', // 项目启动日期
+    },
+  },
+  methodology,
+};
+
+export default adapter;
+```
+
+#### 主要功能模块
+
+1. **导入依赖**
+   - `Adapter`, `FetchOptions`, `FetchResultV2` 类型定义
+   - `CHAIN` 常量（链标识符）
+   - `queryDune` 或 `queryDuneSql` 辅助函数
+
+2. **Methodology 定义**
+   - 说明 Fees、Revenue 等指标的计算方法
+   - 用于在 DefiLlama 上展示
+
+3. **Fetch 函数**
+   - 接收时间戳、链区块和选项参数
+   - 使用 Dune 查询获取收入数据
+   - 返回标准的 `FetchResultV2` 格式
+
+4. **数据转换**
+   - 将 Dune 查询结果转换为 DefiLlama 标准格式
+   - 使用 `createBalances()` 创建余额对象
+   - 添加代币余额（USD）
+
+#### 使用 Dune 查询的两种方式
+
+**方式1：使用 queryDune（需要 Query ID）**
+
+```typescript
+const revenueData = await queryDune(
+  'YOUR_DUNE_QUERY_ID',
+  {
+    start_date: '2024-01-01',
+    end_date: '2024-01-02',
+  },
+  options
+);
+```
+
+**方式2：使用 queryDuneSql（直接执行 SQL）**
+
+```typescript
+const revenueData = await queryDuneSql(options, `
+  -- 直接在这里写 SQL 查询
+  SELECT 
+    date,
+    daily_net_revenue_usd,
+    daily_volume_eth
+  FROM ...
+`);
+```
+
+#### 返回数据格式
+
+Revenue 适配器需要返回以下字段：
+
+```typescript
+{
+  dailyFees?: Balances,              // 每日总费用
+  dailyRevenue?: Balances,            // 每日收入
+  dailyProtocolRevenue?: Balances,    // 每日协议收入（通常等于 dailyRevenue）
+  dailyUserFees?: Balances,           // 每日用户费用（通常等于 dailyFees）
+  totalFees?: Balances,               // 总费用（可选）
+  totalRevenue?: Balances,            // 总收入（可选）
+}
+```
+
+#### 测试命令
+
+```bash
+# 测试 Revenue 适配器
+cd dimension-adapters
+pnpm test fees chapool
+
+# 测试指定日期
+pnpm test fees chapool 2024-10-16
 ```
 
 ---
@@ -401,16 +553,29 @@ module.exports = {
 
 ### 3. 配置环境变量
 
-在项目根目录创建或更新 `.env` 文件：
+#### TVL 适配器环境变量（DefiLlama-Adapters 仓库）
+
+在 `DefiLlama-Adapters` 项目根目录创建或更新 `.env` 文件：
 
 ```env
 # TVL 适配器需要的配置
 DUNE_API_KEY=your_dune_api_key_here
 DUNE_QUERY_TVL=your_tvl_query_id
+```
 
-# Revenue 适配器配置（在另一个仓库使用）
-# DUNE_QUERY_REVENUE=your_revenue_query_id
-# DUNE_QUERY_DAILY_REVENUE=your_daily_revenue_query_id
+#### Revenue 适配器环境变量（dimension-adapters 仓库）
+
+在 `dimension-adapters` 项目根目录创建或更新 `.env` 文件：
+
+```env
+# Revenue 适配器需要的配置
+DUNE_API_KEYS=your_dune_api_key_here
+DUNE_QUERY_REVENUE=your_revenue_query_id
+DUNE_QUERY_DAILY_REVENUE=your_daily_revenue_query_id
+
+# 可选：启用批量模式以提高性能
+DUNE_BULK_MODE=true
+DUNE_BULK_MODE_BATCH_TIME=3000
 ```
 
 ### 4. 配置 Query Parameters（如需要）
@@ -426,7 +591,7 @@ const url = `${DUNE_API_BASE}/query/${queryId}/results?parameters.param1=value1`
 
 ## 🧪 测试步骤
 
-### 1. 本地测试
+### 1. TVL Adapter 测试（DefiLlama-Adapters 仓库）
 
 ```bash
 # 测试 TVL 计算
@@ -439,17 +604,42 @@ node test.js projects/chapool/index.js 1729080692
 node test.js projects/chapool/index.js 2024-10-16
 ```
 
-### 2. 验证数据
+### 2. Revenue Adapter 测试（dimension-adapters 仓库）
 
-- 检查 TVL 是否按预期计算
-- 确认价格转换准确
-- 检查缓存是否正常工作
+```bash
+cd dimension-adapters
 
-### 3. 错误处理测试
+# 安装依赖（如果还没有）
+pnpm install
+
+# 测试 Revenue 适配器
+pnpm test fees chapool
+
+# 测试指定日期
+pnpm test fees chapool 2024-10-16
+
+# 测试指定时间戳范围
+pnpm test fees chapool 1729080692
+```
+
+### 3. 验证数据
+
+- **TVL Adapter**：
+  - 检查 TVL 是否按预期计算
+  - 确认价格转换准确
+  - 检查缓存是否正常工作
+
+- **Revenue Adapter**：
+  - 验证每日收入数据是否正确
+  - 检查费用和收入计算是否匹配
+  - 确认退款已正确扣除
+
+### 4. 错误处理测试
 
 - 测试 Dune API 不可用的情况
 - 测试查询返回空结果的情况
 - 测试网络超时情况
+- 测试无效的 Query ID
 
 ---
 
@@ -538,6 +728,202 @@ node test.js projects/chapool/index.js 2024-10-16
 - [DefiLlama Revenue Adapter 仓库](https://github.com/DefiLlama/dimension-adapters)
 - [Dune API 文档](https://docs.dune.com/api-reference)
 - [项目数据需求文档](../../../nft-staking-subgraph/DefiLiama需要的数据以及计算方法%20v1.0.md)
+
+---
+
+## 📦 Dimension-Adapters 仓库详细信息
+
+### 仓库结构
+
+```
+dimension-adapters/
+├── fees/                    # Fees/Revenue 适配器目录
+│   └── chapool/            # 你的项目目录
+│       └── index.ts        # Revenue 适配器主文件
+├── helpers/
+│   ├── dune.ts            # Dune 查询辅助函数
+│   ├── chains.ts          # 链标识符定义
+│   └── ...
+├── adapters/
+│   └── types.ts           # TypeScript 类型定义
+└── ...
+```
+
+### 关键辅助函数
+
+#### queryDune(queryId, parameters, options)
+
+使用 Dune Query ID 执行查询：
+
+```typescript
+import { queryDune } from "../../helpers/dune";
+
+const results = await queryDune(
+  'YOUR_QUERY_ID',
+  {
+    param1: 'value1',
+    param2: 'value2',
+  },
+  options
+);
+```
+
+#### queryDuneSql(options, sqlQuery)
+
+直接执行 SQL 查询：
+
+```typescript
+import { queryDuneSql } from "../../helpers/dune";
+
+const results = await queryDuneSql(options, `
+  SELECT * FROM opbnb.logs
+  WHERE block_time >= from_unixtime(${options.startTimestamp})
+    AND block_time <= from_unixtime(${options.endTimestamp})
+`);
+```
+
+### CHAIN 常量
+
+在 `helpers/chains.ts` 中定义的链标识符：
+
+```typescript
+import { CHAIN } from "../../helpers/chains";
+
+// 对于 opBNB，使用：
+CHAIN.OP_BNB  // 或 'op_bnb'
+```
+
+### FetchResultV2 返回字段说明
+
+Revenue 适配器可以返回以下字段：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `dailyFees` | Balances | 每日总费用（用户支付的总金额） |
+| `dailyRevenue` | Balances | 每日收入（协议获得的净收入） |
+| `dailyProtocolRevenue` | Balances | 每日协议收入（通常等于 dailyRevenue） |
+| `dailyUserFees` | Balances | 每日用户费用（通常等于 dailyFees） |
+| `totalFees` | Balances | 累计总费用（可选） |
+| `totalRevenue` | Balances | 累计总收入（可选） |
+
+### 完整示例代码
+
+```typescript
+import { Adapter, FetchOptions, FetchResultV2 } from "../../adapters/types";
+import { CHAIN } from "../../helpers/chains";
+import { queryDuneSql } from "../../helpers/dune";
+
+const methodology = {
+  Fees: "All fees paid by users to the protocol (total payment volume)",
+  UserFees: "All fees paid by users (total payment volume)",
+  Revenue: "Net revenue to the protocol (total payments - total refunds)",
+  ProtocolRevenue: "Net revenue to the protocol (total payments - total refunds)",
+}
+
+const adapter: Adapter = {
+  adapter: {
+    [CHAIN.OP_BNB]: {
+      fetch: async (_timestamp: number, _chainBlocks: any, options: FetchOptions): Promise<FetchResultV2> => {
+        const dailyFees = options.createBalances();
+        const dailyRevenue = options.createBalances();
+        
+        // 查询每日收入数据
+        const revenueData = await queryDuneSql(options, `
+          WITH daily_payments AS (
+            SELECT 
+              DATE(block_time) as payment_date,
+              SUM(varbinary_to_uint256(bytearray_substring(data, 65, 32))) as daily_volume
+            FROM opbnb.logs
+            WHERE 
+              contract_address = 0xEe83640f0ed07d36E799531CC6d87FB4CDcCaC13
+              AND topic0 = 0x32aced27dfd49efcd31ceb0567a1ef533d2ab1481334c3f316047bf16fe1c8e8
+              AND block_number >= 92328871
+              AND block_time >= from_unixtime(${options.startTimestamp})
+              AND block_time <= from_unixtime(${options.endTimestamp})
+            GROUP BY DATE(block_time)
+          ),
+          daily_refunds AS (
+            SELECT 
+              DATE(block_time) as refund_date,
+              SUM(varbinary_to_uint256(bytearray_substring(data, 65, 32))) as daily_refund_volume
+            FROM opbnb.logs
+            WHERE 
+              contract_address = 0xEe83640f0ed07d36E799531CC6d87FB4CDcCaC13
+              AND topic0 = 0x4d60a9438ba7e18c1fed7577dc8932bfe82f683c1e254a5336b6618ab5301641
+              AND block_number >= 92328871
+              AND block_time >= from_unixtime(${options.startTimestamp})
+              AND block_time <= from_unixtime(${options.endTimestamp})
+            GROUP BY DATE(block_time)
+          ),
+          eth_price AS (
+            SELECT price
+            FROM prices.usd
+            WHERE symbol = 'ETH'
+              AND blockchain = 'opbnb'
+            ORDER BY minute DESC
+            LIMIT 1
+          )
+          SELECT 
+            COALESCE(dp.payment_date, dr.refund_date) as date,
+            COALESCE(dp.daily_volume, 0) / 1e18 as daily_volume_eth,
+            COALESCE(dr.daily_refund_volume, 0) / 1e18 as daily_refund_volume_eth,
+            (COALESCE(dp.daily_volume, 0) - COALESCE(dr.daily_refund_volume, 0)) / 1e18 as daily_net_revenue_eth,
+            (COALESCE(dp.daily_volume, 0) - COALESCE(dr.daily_refund_volume, 0)) / 1e18 * COALESCE(ep.price, 2500) as daily_net_revenue_usd
+          FROM daily_payments dp
+          FULL OUTER JOIN daily_refunds dr ON dp.payment_date = dr.refund_date
+          CROSS JOIN eth_price ep
+          ORDER BY date DESC
+        `);
+        
+        if (revenueData && revenueData.length > 0) {
+          // 汇总所有日期的数据
+          let totalFeesUsd = 0;
+          let totalRevenueUsd = 0;
+          
+          for (const row of revenueData) {
+            const feesUsd = parseFloat(row.daily_volume_eth || 0) * 2500; // 使用 ETH 价格
+            const revenueUsd = parseFloat(row.daily_net_revenue_usd || 0);
+            
+            totalFeesUsd += feesUsd;
+            totalRevenueUsd += revenueUsd;
+          }
+          
+          dailyFees.addCGToken('usd', totalFeesUsd);
+          dailyRevenue.addCGToken('usd', totalRevenueUsd);
+        }
+        
+        return {
+          dailyFees,
+          dailyRevenue,
+          dailyProtocolRevenue: dailyRevenue,
+          dailyUserFees: dailyFees,
+        };
+      },
+      start: '2024-XX-XX', // 替换为项目实际启动日期
+    },
+  },
+  methodology,
+};
+
+export default adapter;
+```
+
+### 提交 PR 到 dimension-adapters
+
+1. Fork `DefiLlama/dimension-adapters` 仓库
+2. 创建新分支：`git checkout -b add-chapool-revenue`
+3. 在 `fees/chapool/index.ts` 创建适配器文件
+4. 提交更改：`git commit -m "feat: add Chapool revenue adapter"`
+5. 推送到你的 fork
+6. 创建 Pull Request 到 `DefiLlama/dimension-adapters` 主仓库
+
+### PR 模板填写说明
+
+根据 `dimension-adapters/pull_request_template.md` 填写：
+
+- **Name**: Chapool
+- **Category**: NFT Staking / Yield
+- **Methodology**: "Revenue is calculated as total payment volume minus total refunds. Payments are tracked from PaymentMade events, and refunds from RefundProcessed events on the Payment contract."
 
 ---
 
