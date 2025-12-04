@@ -12,7 +12,6 @@ async function solanaTvl() {
 
 async function bscTvl(api) {
     const supply = await api.call({abi: 'erc20:totalSupply', target: BSC_TOKEN_ADDRESS})
-    console.log(supply)
     return {
         'usd-coin': supply / 1e18
     }
