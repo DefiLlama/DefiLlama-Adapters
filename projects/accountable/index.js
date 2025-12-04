@@ -17,26 +17,32 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 async function getVaults(api) {
     const vaults = new Set()
+    const batchSize = 20
 
     for (const factory of FACTORIES) {
-        for (let i = 0; ; i++) {
-            const strategy = await api.call({
+        for (let start = 0;; start += batchSize) {
+            const indexes = Array.from({ length: batchSize }, (_, i) => start + i)
+
+            const strategies = await api.multiCall({
                 target: factory,
                 abi: abis.strategyProxies,
-                params: [i],
+                calls: indexes.map((i) => ({ params: [i] })),
                 permitFailure: true,
             })
-            if (!strategy || strategy === NULL_ADDRESS) break
+            const validStrategies = strategies.filter((s) => s && s !== NULL_ADDRESS)
+            if (!validStrategies.length) break
 
-            const vault = await api.call({
+            const factoryVaults = await api.multiCall({
                 target: factory,
                 abi: abis.strategyVaults,
-                params: [strategy],
+                calls: validStrategies.map((strategy) => ({ params: [strategy] })),
                 permitFailure: true,
             })
-            if (!vault || vault === NULL_ADDRESS) continue
 
-            vaults.add(vault.toLowerCase())
+            factoryVaults.forEach((vault) => {
+                if (!vault || vault === NULL_ADDRESS) return
+                vaults.add(vault.toLowerCase())
+            })
         }
     }
 
