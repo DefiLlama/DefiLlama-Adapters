@@ -71,59 +71,68 @@ async function fetchFractionalizedTokens() {
 }
 
 /**
- * Fetches UniswapV3 pools that hold USDC.e (for graduated tokens)
- * These are pools where fractionalized domain tokens trade against USDC.e
+ * Fetches UniswapV3 pools that trade Doma fractionalized tokens
+ * Only includes pools where one of the pair tokens is a Doma fractional token
+ * This ensures we count Doma protocol TVL, not all chain DEX liquidity
  */
-async function fetchUniswapV3Pools() {
-  const pools = []
-  let nextPageParams = null
+async function fetchDomaUniswapV3Pools(fractionalTokenAddresses) {
+  const pools = new Set()
 
-  do {
-    let url = `${EXPLORER_API}/tokens/${USDC_E_ADDRESS}/holders`
-    if (nextPageParams) {
-      const params = new URLSearchParams(nextPageParams)
-      url += `?${params.toString()}`
-    }
+  for (const tokenAddress of fractionalTokenAddresses) {
+    let nextPageParams = null
 
-    const response = await get(url)
-    if (!response?.items) break
-
-    for (const holder of response.items) {
-      const address = holder?.address
-      if (!address?.is_contract || !address?.is_verified) continue
-
-      // Only include UniswapV3Pool contracts
-      if (address.name === 'UniswapV3Pool') {
-        pools.push(address.hash)
+    do {
+      let url = `${EXPLORER_API}/tokens/${tokenAddress}/holders`
+      if (nextPageParams) {
+        const params = new URLSearchParams(nextPageParams)
+        url += `?${params.toString()}`
       }
-    }
 
-    nextPageParams = response.next_page_params
-  } while (nextPageParams)
+      const response = await get(url)
+      if (!response?.items) break
 
-  return pools
+      for (const holder of response.items) {
+        const address = holder?.address
+        if (!address?.is_contract) continue
+
+        // Only include UniswapV3Pool contracts that hold this Doma token
+        if (address.name === 'UniswapV3Pool') {
+          pools.add(address.hash)
+        }
+      }
+
+      nextPageParams = response.next_page_params
+    } while (nextPageParams)
+  }
+
+  return Array.from(pools)
 }
 
 async function tvl(api) {
-  // Get all fractionalized tokens (includes launchpads and vesting wallets)
+  // Get all fractionalized tokens (includes launchpads)
   const fractionalizedTokens = await fetchFractionalizedTokens()
 
-  // Get UniswapV3 pools holding USDC.e (for graduated tokens)
-  const uniV3Pools = await fetchUniswapV3Pools()
+  // Extract fractional token addresses for targeted pool discovery
+  const fractionalTokenAddresses = fractionalizedTokens
+    .map(t => t.fractionalToken)
+    .filter(Boolean)
 
-  // Collect all protocol-owned addresses
+  // Get UniswapV3 pools that specifically trade Doma fractional tokens
+  const uniV3Pools = await fetchDomaUniswapV3Pools(fractionalTokenAddresses)
+
+  // Collect protocol-owned addresses
   const protocolAddresses = new Set()
 
   // Add main fractionalization contract
   protocolAddresses.add(DOMA_FRACTIONALIZATION)
 
-  // Add launchpads and vesting wallets from fractionalization events
+  // Add launchpads from fractionalization events
+  // NOTE: Vesting wallets intentionally excluded - uncirculating tokens per DefiLlama methodology
   for (const token of fractionalizedTokens) {
     if (token.launchpad) protocolAddresses.add(token.launchpad)
-    if (token.vestingWallet) protocolAddresses.add(token.vestingWallet)
   }
 
-  // Add UniswapV3 pools
+  // Add UniswapV3 pools that trade Doma tokens
   for (const pool of uniV3Pools) {
     protocolAddresses.add(pool)
   }
@@ -131,7 +140,7 @@ async function tvl(api) {
   const addressList = Array.from(protocolAddresses)
 
   console.log(`Found ${fractionalizedTokens.length} fractionalized tokens`)
-  console.log(`Found ${uniV3Pools.length} UniswapV3 pools`)
+  console.log(`Found ${uniV3Pools.length} UniswapV3 pools for Doma tokens`)
   console.log(`Total protocol addresses: ${addressList.length}`)
 
   if (addressList.length === 0) {
@@ -153,11 +162,11 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
-    'TVL is calculated by summing USDC.e balances held in Doma protocol contracts. ' +
-    'Protocol addresses are discovered by querying NameTokenFractionalized events from the ' +
-    'DomaFractionalization contract (0xd00000000004f450f1438cfA436587d8f8A55A29) to enumerate ' +
-    'all deployed launchpads and vesting wallets. UniswapV3 pools holding USDC.e liquidity ' +
-    'for graduated fractional tokens are also included. Balances are fetched via on-chain ' +
-    'ERC-20 balanceOf() calls on the Doma network (Chain ID: 97477).',
+    'TVL is calculated by summing USDC.e balances in Doma protocol contracts: ' +
+    '(1) the DomaFractionalization contract, (2) launchpad contracts where users purchase ' +
+    'fractional tokens, and (3) UniswapV3 pools providing liquidity for Doma fractional tokens. ' +
+    'Vesting wallets are excluded as they contain uncirculating tokens. Protocol addresses are ' +
+    'discovered by querying NameTokenFractionalized events. UniV3 pools are identified by ' +
+    'finding pools that hold Doma fractional token addresses.',
   doma: { tvl },
 }
