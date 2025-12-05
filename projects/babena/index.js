@@ -1,4 +1,3 @@
-const axios = require("axios");
 const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const chainId = "3";

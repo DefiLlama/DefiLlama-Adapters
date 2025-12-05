@@ -9,6 +9,7 @@ module.exports = mergeExports([
 async function excludeYES(api) {
   const YES = '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C'
   const bal = await api.call({  abi: 'erc20:balanceOf', target: YES, params: '0x1d16788b97eDB7d9a6aE66D5C5C16469037Faa00'})
+  if (!bal) throw new Error('No YES balance found')
   api.add(YES, -bal)
   return api.getBalances()
 }
