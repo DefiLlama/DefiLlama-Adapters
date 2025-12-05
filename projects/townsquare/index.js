@@ -20,8 +20,7 @@ const pools = {
 
 
 
-
-const tvl = async () => {
+const tvl = async ({ api }) => {
     const [totalDeposit, totalBorrowed] = await Promise.all([
      api.multiCall({
         abi: 'function getDepositData() view returns(tuple(uint16 optimalUtilisationRatio, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
