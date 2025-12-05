@@ -1,6 +1,3 @@
-// Accountable - ERC-4626 vault protocol on Monad
-// Discovers vaults from factories and sums convertToAssets(totalSupply) per vault
-
 const FACTORIES = [
     '0x606556A6B544ecDcbf15aF73A63B67516dc16Ad7',
     '0x8a5Caf00C3EB20aEC11Fc35C153a8601Cd127fEd',
@@ -20,7 +17,7 @@ async function getVaults(api) {
     const batchSize = 20
 
     for (const factory of FACTORIES) {
-        for (let start = 0;; start += batchSize) {
+        for (let start = 0; ; start += batchSize) {
             const indexes = Array.from({ length: batchSize }, (_, i) => start + i)
 
             const strategies = await api.multiCall({
@@ -49,25 +46,36 @@ async function getVaults(api) {
     return Array.from(vaults)
 }
 
-async function tvl(api) {
-    const vaults = await getVaults(api)
-    if (!vaults.length) return
+function tvl(isBorrowed) {
+    return async (api) => {
+        const vaults = await getVaults(api)
+        if (!vaults.length) return
 
-    const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaults, permitFailure: true })
-    const assets = await api.multiCall({
-        abi: abis.convertToAssets,
-        calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })),
-        permitFailure: true,
-    })
-    const underlyings = await api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true })
+        const [supplies, underlyings] = await Promise.all([
+            api.multiCall({ abi: 'erc20:totalSupply', calls: vaults, permitFailure: true }),
+            api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true }),
+        ])
+        
+        const [totalAssets, liquidity] = await Promise.all([
+            api.multiCall({
+                abi: abis.convertToAssets,
+                calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })),
+                permitFailure: true,
+            }),
+            api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
+        ])
 
-    vaults.forEach((_, i) => {
-        if (!underlyings[i] || !assets[i]) return
-        api.add(underlyings[i], assets[i])
-    })
+        vaults.forEach((_, i) => {
+            if (!underlyings[i] || !totalAssets[i]) return
+            isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], liquidity[i])
+        })
+    }
 }
 
 module.exports = {
     methodology: 'TVL converts each vault totalSupply to underlying via convertToAssets(). Vaults are discovered from factory strategyProxies/strategyVaults.',
-    monad: { tvl },
+    monad: {
+        tvl: tvl(false),
+        borrowed: tvl(true)
+    },
 }
