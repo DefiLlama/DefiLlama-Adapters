@@ -28,6 +28,7 @@ const tvl = async ({ api }) => {
             target,
         }))
     }), 
+    
     api.multiCall({
         abi: 'function getVariableBorrowData() view returns(tuple(uint32 vr0, uint32 vr1, uint32 vr2, uint256 totalAmount, uint256 interestRate, uint256 interestIndex))',
         calls: Object.keys(pools).map(target => ({
