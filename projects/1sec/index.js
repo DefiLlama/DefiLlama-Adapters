@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const { getCache } = require('../helper/http')
 
-const API_URL = 'https://5okwm-giaaa-aaaar-qbn6a-cai.raw.icp0.io/api/balances'
+const API_URL = 'https://1sec.to/api/balances'
 const LOCKER = '0x70AE25592209B57F62b3a3e832ab356228a2192C'
 
 const icpTokens = {
