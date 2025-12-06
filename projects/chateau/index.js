@@ -17,7 +17,6 @@ function toNumber(value, decimals = 18) {
 async function chusdSupply(api) {
   const rawSupply = await api.call({ target: CHUSD, abi: "erc20:totalSupply" });
   const totalSupply = BigInt(rawSupply);
-  api.add(`plasma:${CHUSD}`, totalSupply);
   api.addCGToken("usd", toNumber(totalSupply));
 }
 
@@ -32,7 +31,6 @@ async function schusdMetrics(api) {
   const assets = BigInt(totalAssets);
   const preview = previewRedeem ? BigInt(previewRedeem) : null;
 
-  api.add(`plasma:${SCHUSD}`, supply);
   api.addCGToken("usd", toNumber(assets));
 
   const impliedPrice =
@@ -53,7 +51,7 @@ async function staking(api) {
 module.exports = {
   timetravel: true,
   methodology:
-    "chUSD TVL and supply are tracked via totalSupply(). schUSD TVL uses totalAssets() (chUSD held in the vault) and derives price via previewRedeem(1e18). For visibility, raw supplies are surfaced as unknown token balances on Plasma.",
+    "chUSD TVL is tracked via totalSupply(). schUSD staking TVL uses totalAssets() (chUSD held in the ERC-4626 vault).",
   plasma: {
     tvl,
     staking,

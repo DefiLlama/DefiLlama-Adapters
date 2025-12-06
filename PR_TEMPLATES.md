@@ -95,7 +95,7 @@ N/A (original implementation)
 ### Oracle
 - **Provider**: Pyth Network
 - **Feed ID**: `0x73303664bd3a81bf8ef7508a4b50ca2bc5839a9ce78e19ee6f076e12374c1e5f`
-- **Feed Name**: Crypto.NAV.CHUSD/USDT0
+- **Feed Name**: CHATEAU US DOLLAR / USDT0 COLLATERALIZATION
 
 ### Links
 - **Website**: https://chateau.capital
@@ -134,7 +134,7 @@ chUSD supply is tracked via `totalSupply()` on the ERC-20 contract. All chUSD is
 ### Oracle
 - **Provider**: Pyth Network
 - **Feed ID**: `0xdf8468e16ad185361f8841a80906984425a48e8fc3b2cd8750755f705119dc65`
-- **Feed Name**: Crypto.SCHUSD/CHUSD.RR (Redemption Rate)
+- **Feed Name**: STAKED CHATEAU US DOLLAR / CHATEAU US DOLLAR REDEMPTION RATE
 
 ### APY Methodology
 - APY is calculated from the ERC-4626 share price change over a 7-day period
@@ -143,7 +143,7 @@ chUSD supply is tracked via `totalSupply()` on the ERC-20 contract. All chUSD is
 - Yield source: Private credit strategies via Covenant VC
 
 ### Links
-- **Website**: https://chateau.capital
+- **Website**: https://www.chateau.capital
 - **App**: https://app.chateau.capital
 - **Docs**: https://docs.chateau.capital
 - **Twitter**: https://x.com/Chateau_Capital
