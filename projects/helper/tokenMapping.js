@@ -43,6 +43,12 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  saga: {
+    '0x7cF468a019C5bf734311D10C3a429bB504CAF3Ce': { coingeckoId: 'tbtc', decimals: 18 }, // tBTC
+    '0xaa5e2ea42f0a9c3b43f2b7d26eaa2ba17ae41dac': { coingeckoId: 'saga-2', decimals: 18 }, // Wrapped SAGA
+    '0x32604f9ea6c739d0c56b2d01e07a57c7a05ff007': { coingeckoId: 'stride-staked-atom', decimals: 18 }, // Wrapped stATOM
+    '0x58d9fbBc6037dedfBA99cAfA28e4C371b795ad97': { coingeckoId: 'lrt-squared', decimals: 18 }, // KING
+  },
   capx: {
     '0x3046AC3Fe11CcD349aBBa1dF224a48e63076f1f6': {
       coingeckoId: "capx-ai",
