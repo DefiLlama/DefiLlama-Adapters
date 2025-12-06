@@ -59,11 +59,27 @@ Example adapters for chUSD (Chateau's synthetic dollar) on Plasma chain are avai
 **Contract Details:**
 - Chain: Plasma (chainId: 9745)
 - chUSD Contract: `0x22222215d4edc5510d23d0886133e7ece7f5fdc1`
+- schUSD Contract: `0x888888bAb58a7Bd3068110749bC7b63B62Ce874d`
 - Peg Type: `peggedUSD`
 - Decimals: 18
+
+**Pyth Oracle Price Feeds:**
+- chUSD/USDT: `0x73303664bd3a81bf8ef7508a4b50ca2bc5839a9ce78e19ee6f076e12374c1e5f` (Crypto.NAV.CHUSD/USDT0)
+- schUSD/chUSD: `0xdf8468e16ad185361f8841a80906984425a48e8fc3b2cd8750755f705119dc65` (Crypto.SCHUSD/CHUSD.RR)
 
 To use these adapters in peggedassets-server:
 1. Create folder `src/adapters/peggedAssets/chusd/`
 2. Copy adapter content to `src/adapters/peggedAssets/chusd/index.ts`
 3. Import and export in `src/adapters/peggedAssets/index.ts`
 4. Test with: `npx ts-node test chusd/index peggedUSD`
+
+### schUSD Yield Adapter
+
+Example yield adapter for schUSD (Chateau's ERC-4626 yield-bearing vault): [schusd-yield-adapter.js](schusd-yield-adapter.js)
+
+To use in yield-server:
+1. Fork [yield-server](https://github.com/DefiLlama/yield-server)
+2. Create `src/adaptors/chateau/index.js`
+3. Copy adapter content
+4. Test with: `npm run test --adapter=chateau`
+5. Submit PR
