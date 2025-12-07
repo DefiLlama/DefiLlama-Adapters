@@ -71,7 +71,7 @@ const fixBalancesTokens = {
     USD: { coingeckoId: 'usd-coin', decimals: 0 },
     YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
-  },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

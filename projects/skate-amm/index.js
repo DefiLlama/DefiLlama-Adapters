@@ -36,7 +36,10 @@ const svm_config = {
 }
 
 const sui_config = {
-  sui: ['0x6ab1e3d7c02dff309504d53fa06302cb66ce50f576432c369afe07c164c0a853']
+  sui: [
+    '0xde93f10233e575043ae56f71e6a60605c85b9bfee5bb1c67bac37577c8cbc8be',//SUI/USDC
+    '0x9cc884871f937a3ebde84ea0af052b886af392b8d4e77bf94b447a93721e00d9' // USDT/USDC
+  ]
 }
 
 const eventAbis = {
