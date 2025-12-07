@@ -12,6 +12,7 @@ const excludeVaults = [
   '0x4def5abcfba7babe04472ee4835f459daf4bd45f',
   '0x5854c7693459c6e316a96565776b72d94ee0e5fd',
   '0xb04e166fd5d7078bb7b3412406609fd92855a08f',
+  '0x38f20ad5a233c1b2c91ce987853ff3201540db53',
 ]
 
 const tvl = async (api) => {
