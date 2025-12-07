@@ -25,13 +25,8 @@ function parseBalance(str) {
   return Number(str.toString().replace(/_/g, ''))
 }
 
-function calcChainShare(supply, bridgeData, chain, symbol) {
+function calcChainShare(supply, bridgeData, chain, relevantChains) {
   if (!bridgeData) return supply
-
-  // Only sum chains where this token is listed in chainTokens
-  const relevantChains = Object.entries(chainTokens)
-    .filter(([, syms]) => syms.includes(symbol))
-    .map(([c]) => c)
 
   const total = relevantChains
     .reduce((sum, c) => sum + parseBalance(bridgeData[c]), 0)
@@ -61,7 +56,7 @@ function createTvl(chain) {
 
       let amount = supply
       if (chainsWithToken.length > 1) {
-        amount = calcChainShare(supply, bridge[symbol], chain, symbol)
+        amount = calcChainShare(supply, bridge[symbol], chain, chainsWithToken)
       }
 
       if (amount > 0) {
@@ -85,7 +80,7 @@ async function borrowed(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'TVL is counted where value originates: ICP natively, BTC via ckBTC, DOGE via ckDOGE, and EVM stablecoins split by bridge proportions. Borrowed shows total outstanding loans.',
+    'Cross-chain lending protocol. Deposits attributed to origin chains.',
   icp: { tvl: createTvl('icp'), borrowed },
   bitcoin: { tvl: createTvl('bitcoin') },
   dogechain: { tvl: createTvl('dogechain') },
