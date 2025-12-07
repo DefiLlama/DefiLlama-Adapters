@@ -1,7 +1,7 @@
 const { getCache } = require('../helper/http')
 
-const YUSAN_API = 'https://52mp3-qiaaa-aaaar-qbzja-cai.icp0.io/metrics_json'
-const ONESEC_API = 'https://5okwm-giaaa-aaaar-qbn6a-cai.raw.icp0.io/api/balances'
+const YUSAN_API = 'https://yusan.fi/metrics_json'
+const ONESEC_API = 'https://1sec.to/api/balances'
 
 const tokens = {
   ICP: { decimals: 8, coingeckoId: 'internet-computer' },
@@ -11,7 +11,10 @@ const tokens = {
   ckDOGE: { decimals: 8, coingeckoId: 'dogecoin' },
 }
 
-const evmChainTokens = {
+const chainTokens = {
+  icp: ['ICP'],
+  bitcoin: ['ckBTC'],
+  dogechain: ['ckDOGE'],
   ethereum: ['USDC', 'USDT'],
   arbitrum: ['USDC'],
   base: ['USDC'],
@@ -22,30 +25,53 @@ function parseBalance(str) {
   return Number(str.toString().replace(/_/g, ''))
 }
 
-function calcChainShare(yusanSupply, bridgeData, chain) {
-  const evmTotal =
-    parseBalance(bridgeData?.ethereum) +
-    parseBalance(bridgeData?.arbitrum) +
-    parseBalance(bridgeData?.base)
+function calcChainShare(supply, bridgeData, chain, symbol) {
+  if (!bridgeData) return supply
 
-  if (evmTotal === 0) return 0
+  // Only sum chains where this token is listed in chainTokens
+  const relevantChains = Object.entries(chainTokens)
+    .filter(([, syms]) => syms.includes(symbol))
+    .map(([c]) => c)
 
-  const chainBalance = parseBalance(bridgeData?.[chain])
-  return (yusanSupply * chainBalance) / evmTotal
+  const total = relevantChains
+    .reduce((sum, c) => sum + parseBalance(bridgeData[c]), 0)
+
+  if (total === 0) return supply
+
+  const chainBalance = parseBalance(bridgeData[chain])
+  return (supply * chainBalance) / total
 }
 
-async function icpTvl(api) {
-  const data = await getCache(YUSAN_API)
+function createTvl(chain) {
+  return async (api) => {
+    const [yusan, bridge] = await Promise.all([
+      getCache(YUSAN_API),
+      getCache(ONESEC_API),
+    ])
 
-  for (const [symbol, { decimals, coingeckoId }] of Object.entries(tokens)) {
-    const balance = data.tokens[symbol]?.total_supply || 0
-    if (balance > 0) {
-      api.addCGToken(coingeckoId, balance / 10 ** decimals)
+    for (const symbol of chainTokens[chain]) {
+      const { decimals, coingeckoId } = tokens[symbol]
+      const supply = yusan.tokens[symbol]?.total_supply || 0
+      if (supply <= 0) continue
+
+      // Check if token is on multiple chains
+      const chainsWithToken = Object.entries(chainTokens)
+        .filter(([, syms]) => syms.includes(symbol))
+        .map(([c]) => c)
+
+      let amount = supply
+      if (chainsWithToken.length > 1) {
+        amount = calcChainShare(supply, bridge[symbol], chain, symbol)
+      }
+
+      if (amount > 0) {
+        api.addCGToken(coingeckoId, amount / 10 ** decimals)
+      }
     }
   }
 }
 
-async function icpBorrowed(api) {
+async function borrowed(api) {
   const data = await getCache(YUSAN_API)
 
   for (const [symbol, { decimals, coingeckoId }] of Object.entries(tokens)) {
@@ -56,44 +82,14 @@ async function icpBorrowed(api) {
   }
 }
 
-function createNativeChainTvl(token) {
-  return async (api) => {
-    const data = await getCache(YUSAN_API)
-    const { decimals, coingeckoId } = tokens[token]
-    const balance = data.tokens[token]?.total_supply || 0
-    if (balance > 0) {
-      api.addCGToken(coingeckoId, balance / 10 ** decimals)
-    }
-  }
-}
-
-function createEvmTvl(chain) {
-  return async (api) => {
-    const [yusan, bridge] = await Promise.all([
-      getCache(YUSAN_API),
-      getCache(ONESEC_API),
-    ])
-
-    for (const symbol of evmChainTokens[chain]) {
-      const { decimals, coingeckoId } = tokens[symbol]
-      const supply = yusan.tokens[symbol]?.total_supply || 0
-      const amount = calcChainShare(supply, bridge[symbol], chain)
-      if (amount > 0) {
-        api.addCGToken(coingeckoId, amount / 10 ** decimals)
-      }
-    }
-  }
-}
-
 module.exports = {
   timetravel: false,
-  doublecounted: true,
   methodology:
-    'TVL is the total supply deposited in Yusan lending markets. Borrowed shows total outstanding loans.',
-  icp: { tvl: icpTvl, borrowed: icpBorrowed },
-  bitcoin: { tvl: createNativeChainTvl('ckBTC') },
-  dogechain: { tvl: createNativeChainTvl('ckDOGE') },
-  ethereum: { tvl: createEvmTvl('ethereum') },
-  arbitrum: { tvl: createEvmTvl('arbitrum') },
-  base: { tvl: createEvmTvl('base') },
+    'TVL is counted where value originates: ICP natively, BTC via ckBTC, DOGE via ckDOGE, and EVM stablecoins split by bridge proportions. Borrowed shows total outstanding loans.',
+  icp: { tvl: createTvl('icp'), borrowed },
+  bitcoin: { tvl: createTvl('bitcoin') },
+  dogechain: { tvl: createTvl('dogechain') },
+  ethereum: { tvl: createTvl('ethereum') },
+  arbitrum: { tvl: createTvl('arbitrum') },
+  base: { tvl: createTvl('base') },
 }
