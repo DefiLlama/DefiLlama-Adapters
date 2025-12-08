@@ -6,6 +6,7 @@ const { hypercoreHwhlpVaultTvl, hyperCoreSpotBalance } = require('./hypercore/in
 const { mainnetHwhlpVaultTvl, hwhlpVaultTvl, hwhypeVaultTvl, mainnetHwusdVaultTvl, hyperevmHwhusdVaultTvl, baseHwusdVaultTvl } = require('./evm/erc20');
 const { khypeUnstaking } = require('./evm/khype');
 const { behypeUnstaking } = require('./evm/behype');
+const { vkhypeUnstaking } = require('./evm/vkhype');
 
 module.exports = {
     timetravel: false,
@@ -38,6 +39,7 @@ module.exports = {
             hyperevmHwhypeMorphoTvl,
             khypeUnstaking,
             behypeUnstaking,
+            vkhypeUnstaking,
             // hwUSD
             hyperevmHwhusdVaultTvl,
             hyperevmHwusdMorphoTvl,
