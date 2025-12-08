@@ -28,7 +28,7 @@ const tvl = async (api) => {
   }
 } 
 
-const chains = ['ethereum', 'berachain', 'arbitrum', 'katana']
+const chains = ['ethereum', 'berachain', 'arbitrum', 'katana', 'stable']
 chains.forEach((chain) => {
   module.exports[chain] = { tvl }
 })
