@@ -15,13 +15,6 @@ const config = {
       '0xb82749F316CB9c06F38587aBecF3EB1bC842CC93', // bbqUSDCreservoir
       '0xC5deA68CCe26c014BEC516CDA70c107c534a73C4', // bbqUSDC - Steakhouse High Yield Instant
       // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
-      '0x3063C5907FAa10c01B242181Aa689bEb23D2BD65', // eUSDC-2, ePYUSD-6, eUSDC-22, erUSD-1, aEthRLUSD, aEthPYUSD, eRLUSD-7
-      '0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903', // PT-tUSDe-18DEC2025, USDe, tUSDe
-      '0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1', // PT-srUSDe-15JAN2026, sUSDe
-      '0x289C204B35859bFb924B9C0759A4FE80f610671c', // fUSDC, fUSDT, ResHY, gtUSDC, usdcPTstcUSD29JAN2026, usdcstcUSD, usdcPT-cUSD-29JAN2026, usdcPT-srUSDe-15JAN2026, usdcsiUSD, usdcPT-siUSD-8JAN2026
-      '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3', // Pendle-rUSD, Pendle-wsrUSD
-      '0xE94fc572b5E5Abe38F326F7DeDfe4f0Df9851d2A', // S*USDC, S*USDT
-      '0x0b578e123e3725a15F6FCbd43ADf314EaA667c04', // USDS
     ],
     // [token, owner] pairs for direct balance queries
     tokensAndOwners: [
@@ -42,7 +35,6 @@ const config = {
       ['0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // fUSDC
       ['0xc197ad72936b7c558c96417f22041fe9e3c7043f', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // ResHY
       ['0xdd0f28e19C1780eb6396170735D45153D261490d', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // gtUSDC
-      ['0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // usdcPTstcUSD29JAN2026, usdcstcUSD, usdcPT-cUSD-29JAN2026, usdcPT-srUSDe-15JAN2026, usdcsiUSD, usdcPT-siUSD-8JAN2026
       ['0x777791C4d6DC2CE140D00D2828a7C93503c67777', '0x2adf038b67a8a29cda82f0eceb1ff0dba704b98d'], // hyperUSDC
       ['0x1135b22d6e8FD0809392478eEDcd8c107dB6aF9D', '0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'], // PT-tUSDe-18DEC2025
       ['0x4c9EDD5852cd905f086C759E8383e09bff1E68B3', '0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'], // USDe
@@ -121,20 +113,13 @@ module.exports.ethereum = {
   tvl: async (api) => {
     const { funds, tokensAndOwners, } = config.ethereum
 
-    const onChainDataTS = new Date('2025-11-22T00:00:00Z').getTime() / 1000
+    // Get underlying tokens and balances from funds
+    const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
+    const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
+    const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
 
-    if (api.timestamp < onChainDataTS) {
-
-      // Get underlying tokens and balances from funds
-      const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
-      const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
-      const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
-
-      // Adjust balances and add
-      api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
-    } else {
-      await sumTokens2({ api, owners: funds, fetchCoValentTokens: true, tokenConfig: { onlyWhitelisted: false } })
-    }
+    // Adjust balances and add
+    api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
 
     // Add regular token balances
     await api.sumTokens({ tokensAndOwners })
