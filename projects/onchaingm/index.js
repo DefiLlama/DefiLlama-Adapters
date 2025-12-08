@@ -79,6 +79,8 @@ const GM_CONTRACTS = {
   'gatelayer': "0x415c8f95C18AE4d9ea56CC39A7923c1A4a224F8c",
 }
 
+const { getBalance } = require("@defillama/sdk/build/eth")
+
 const abi = {
   feeRecipient: "address:feeRecipient",
 }
@@ -96,13 +98,14 @@ async function tvl(api) {
     abi: abi.feeRecipient,
   })
 
-  // Get native token balance of fee recipient (this represents accumulated fees)
-  const balance = await api.getBalance({
+  // Get native token balance of fee recipient
+  const balance = await getBalance({
     target: feeRecipient,
+    chain: api.chain,
+    block: api.block,
   })
 
-  // Add native token balance as TVL
-  api.addGasToken(balance)
+  api.addGasToken(balance.output)
 }
 
 // Create exports for each supported chain
@@ -118,4 +121,3 @@ module.exports = {
   ...chainExports,
   methodology: 'TVL is calculated as the native token balance of the feeRecipient address, which accumulates fees from GM transactions.',
 }
-
