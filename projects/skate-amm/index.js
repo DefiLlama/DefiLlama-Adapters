@@ -24,14 +24,20 @@ const svm_config = {
 
   ],
   solana: [
-    '5XCdmwR7K2sZAxbWbkqhohnJ6X7v9ZtbuNrzrr19yHgp', // USDT/USDC (USDT)
-    'FL34362VBFeMRqoRuFm3SiFwS2TAXBWhk6C2CBnjbG3E', // USDT/USDC (USDC)
+    'Eicqj6he3DfacaYugVtxSC6AsddFubigqfYFR945X59w', // USDT/USDC (USDT)
+    '4fjfqdJsDCR2Kenfpc3nGZvQMds3D4MgpVydwmTnU7Sv', // USDT/USDC (USDC)
 
     '6Fv84LR6nWFYeWRJAehHF3KXRi1RWQRQkGn3eLK3QMxb', // SOL/USDC (SOL)
     '8NGoaasGcpa8h1JjLY598UCrmxpqgpuWVJtm9F5k3sid', // SOL/USDC (USDC)
 
     'JBfR8XHYRF52WzTqyB14gkNVWtpPr9DUqzfuxASGLmby', // SKATE/USDC (SKATE)
-    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb' // SKATE/USDC (USDC)
+    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb', // SKATE/USDC (USDC)
+
+    'Ah4xbiSfQvsutS8fQiHwGm3HKgphTjq1jAJx1qvmSMw7', // MONAD/USDC (MONAD)
+    '4Bq1iWyKDajv1cuRqd9ExYvk9gCbnR1ejUb29jGMCUrf', // MONAD/USDC (USDC)
+
+    'CXJFEq5QPEkCxFCaiVEFEQpAHCUBDV3nQUTKTzw3mq6F', // PLUME/USDC (PLUME)
+    'ENJRMTjGZs1ChGSZxtD8n4KDu9pimDfbmtb5peh8cxCg', // PLUME/USDC (USDC)
   ]
 }
 
