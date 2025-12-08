@@ -8,8 +8,12 @@ const WETH_ADDRESS = "0x4200000000000000000000000000000000000006";
 
 module.exports = {
   methodology:
-    "Staking TVL counts the tokens locked in the Miner and Multicall contracts. Pool2 TVL counts the tokens in the Liquidity Pool.",
+    "TVL is the sum of tokens in the Miner, Multicall, and LP contracts. Staking TVL counts the tokens locked in the Miner and Multicall contracts. Pool2 TVL counts the tokens in the Liquidity Pool.",
   base: {
+    tvl: sumTokensExport({
+      owners: [MINER_ADDRESS, MULTICALL_ADDRESS, LP_ADDRESS],
+      tokens: [WETH_ADDRESS, DONUT_ADDRESS],
+    }),
     staking: sumTokensExport({
       owners: [MINER_ADDRESS, MULTICALL_ADDRESS],
       tokens: [WETH_ADDRESS, DONUT_ADDRESS],
