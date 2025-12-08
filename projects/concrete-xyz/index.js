@@ -18,7 +18,7 @@ const excludeVaults = [
 const tvl = async (api) => {
   const chainId = api.chainId
   const data = await getConfig('concrete-xyz/vaults', URL)
-  const vaults = Object.values(data[chainId]).map(v => v.address).filter(a => !excludeVaults.includes(String(a).toLowerCase()))
+  const vaults = Object.values(data[chainId]).map(v => v.address).filter(a => a && !excludeVaults.includes(String(a).toLowerCase()))
 
   const assets = await api.multiCall({ calls: vaults, abi: abis.asset })
   const totalAssets = await api.multiCall({ calls: vaults, abi: abis.totalAssets })
