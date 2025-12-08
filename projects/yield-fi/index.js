@@ -29,6 +29,7 @@ const vyusd_config = {
     tac: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     linea: "0x168BC4DB5dcbecA279983324d3082c47e47569E7",
     plasma: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    saga: "0x704a58f888f18506C9Fc199e53AE220B5fdCaEd8",
 }
 
 const yeth_config = {
