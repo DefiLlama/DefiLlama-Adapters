@@ -8,10 +8,10 @@ async function behypeUnstaking(api) {
         abi: "function getUserUnclaimedWithdrawals(address user) view returns (uint256[] ids)",
         chain: 'hyperliquid',
         params: [HWHYPE_VAULT],
-    }).output;
-    // console.log(unclaimedIds);
+    });
+    
     const unstakes = await sdk.api.abi.multiCall({
-        calls: unclaimedIds.map(id => ({
+        calls: unclaimedIds.output.map(id => ({
             target: BEHYPE_DEPLOYMENTS.WITHDRAWALS_MANAGER,
             params: [id],
         })),
@@ -21,9 +21,9 @@ async function behypeUnstaking(api) {
     })
 
     unstakes.output.forEach((unstake) => {
-        if (!data.success) return;
+        if (!unstake.success) return;
         // console.log(data.output);
-        const amount = data.output.hypeAmount;
+        const amount = unstake.output.hypeAmount;
         api.add(ADDRESSES.hyperliquid.WHYPE, amount);
     })
 
