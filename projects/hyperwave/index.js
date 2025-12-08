@@ -1,24 +1,44 @@
 const sdk = require('@defillama/sdk');
 
 // Import vault TVL calculation functions
-const { processVaults } = require('./evm/morpho');
+const { hyperevmHwhypeMorphoTvl, hyperevmHwusdMorphoTvl, mainnetHwusdMorphoTvl, baseHwusdMorphoTvl } = require('./evm/morpho');
 const { hypercoreHwhlpVaultTvl, hyperCoreSpotBalance } = require('./hypercore/index');
-const { mainnetHwhlpVaultTvl, hwhlpVaultTvl, hwhypeVaultTvl } = require('./evm/erc20');
+const { mainnetHwhlpVaultTvl, hwhlpVaultTvl, hwhypeVaultTvl, mainnetHwusdVaultTvl, hyperevmHwhusdVaultTvl, baseHwusdVaultTvl } = require('./evm/erc20');
 const { khypeUnstaking } = require('./evm/khype');
 
 module.exports = {
     timetravel: false,
     methodology: 'TVL represents the sum of tokens deposited in the vault + HLP positions + HyperCore Spot positions.',
     doublecounted: false,
-    ethereum: { tvl: mainnetHwhlpVaultTvl },
+    ethereum: { 
+        tvl: sdk.util.sumChainTvls([
+            // hwHLP
+            mainnetHwhlpVaultTvl,
+            // hwUSD
+            mainnetHwusdVaultTvl,
+            mainnetHwusdMorphoTvl,
+        ]) 
+    },
+    base: { 
+        tvl:sdk.util.sumChainTvls([
+            // hwUSD
+            baseHwusdVaultTvl,
+            baseHwusdMorphoTvl,
+        ])
+    },
     arbitrum: { tvl: hypercoreHwhlpVaultTvl },
     hyperliquid: { 
         tvl: sdk.util.sumChainTvls([
+            // hwHLP
             hwhlpVaultTvl,
             hyperCoreSpotBalance,
+            // hwHYPE
             hwhypeVaultTvl,
-            processVaults,
+            hyperevmHwhypeMorphoTvl,
             khypeUnstaking,
+            // hwUSD
+            hyperevmHwhusdVaultTvl,
+            hyperevmHwusdMorphoTvl,
         ])
     },
 };

@@ -10,6 +10,8 @@ const evm_config = {
   hyperliquid: { kernelEventEmitter: '0x5a428F12a55d6E0ABa77Eb5B340f2ff95dE01BF5', fromBlock: 4470476 },
   plume_mainnet: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
   mantle: { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
+  "0g": { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 },
+  monad: { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 33372521 },
 }
 
 const svm_config = {
@@ -34,7 +36,10 @@ const svm_config = {
 }
 
 const sui_config = {
-  sui: ['0x6ab1e3d7c02dff309504d53fa06302cb66ce50f576432c369afe07c164c0a853']
+  sui: [
+    '0xde93f10233e575043ae56f71e6a60605c85b9bfee5bb1c67bac37577c8cbc8be',//SUI/USDC
+    '0x9cc884871f937a3ebde84ea0af052b886af392b8d4e77bf94b447a93721e00d9' // USDT/USDC
+  ]
 }
 
 const eventAbis = {

@@ -31,7 +31,6 @@ async function tvl(api) {
 async function getMarketIds(chain, factory) {
     const market_ids = [];
 
-    // eslint-disable-next-line no-constant-condition
     while(true) {
       const resp = await queryContract({
         contract: factory,

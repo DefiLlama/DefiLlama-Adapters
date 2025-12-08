@@ -9,6 +9,8 @@ const config = {
     blackList: [
       "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
       ADDRESSES.base.USDC,
+      ADDRESSES.optimism.WSTETH,
+      '0x84b78bc998e4b1a63f2cf9ebfe76c55fc96a5a9b'
     ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
@@ -70,10 +72,10 @@ const config = {
     morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
     fromBlock: 9139027,
   },
-  flame: {
-    morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
-    fromBlock: 5991116,
-  },
+  // flame: {
+  //   morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04", // flame blockchain down from last time I check
+  //   fromBlock: 5991116,
+  // },
   // basecamp:{
   //   morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
   //   fromBlock: 4804080,
@@ -137,6 +139,10 @@ const config = {
     morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
     fromBlock: 450759,
   },
+  monad: {
+    morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
+    fromBlock: 31907457,
+  },
 }
 
 const eventAbis = {
@@ -147,8 +153,9 @@ const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
+  const useIndexer = api.chain === 'monad' ? true: false
   const extraKey = 'reset-v2'
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, })
+  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
@@ -160,7 +167,7 @@ const tvl = async (api) => {
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
   const filterMarkets = marketInfos.filter((_, i) => withdrawQueueLengths[i] == null || withdrawQueueLengths[i] > 30 || withdrawQueueLengths[i] < 0);
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
-  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList })
+  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 }
 
 const borrowed = async (api) => {

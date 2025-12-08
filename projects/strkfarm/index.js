@@ -87,13 +87,33 @@ async function _computeEkuboTVL(
 } 
 
 async function computeEkuboTVL(api) {
-  const fusionContracts = STRATEGIES.EkuboVaults
+  const ekuboContracts = STRATEGIES.EkuboVaults
   
-  for (const c of fusionContracts) {
+  for (const c of ekuboContracts) {
     const assets = await _computeEkuboTVL(c.address)
 
     api.addTokens(c.token1, assets['2'])
     api.addTokens(c.token2, assets['1'])
+  }
+}
+
+async function computeEkuboBTCTvl(api) {
+  const ekuboContracts = STRATEGIES.EkuboVaultsEndurBTC
+
+  for (const c of ekuboContracts) {
+    const assets = await _computeEkuboTVL(c.address)
+
+    const hexValue = '0x' + BigInt(assets['1']).toString(16);
+    // convert lst variant to its btc form
+    const lstAssets = await call ({
+      target: c.token2,
+      params: [hexValue, '0x0'],
+      abi: {...endurABIMap.convert_to_assets, customInput: 'address'}
+    })
+    
+    // add these assets to native btc token
+    let totalAssets = Number(assets['2']) + Number(lstAssets)
+    api.addTokens(c.token1, totalAssets)
   }
 }
 
@@ -106,13 +126,34 @@ async function computeEvergreenTVL(api) {
   api.addTokens(evergreenContracts.map(c => c.token), totalAssets);
 }
 
+async function computeHyperVaultTVL(api) {
+  const hyperContracts = STRATEGIES.HyperVaults;
+  const totalAssets = await multiCall({
+    calls: hyperContracts.map(c => c.address),
+    abi: ERC4626AbiMap.total_assets
+  })
+
+  // convert to asset 
+  const lstAssets = await multiCall({
+    calls: hyperContracts.map((c, i) => ({
+      target: c.lst,
+      params: ['0x' + BigInt(totalAssets[i]).toString(16), '0x0']
+    })),
+    abi: {...endurABIMap.convert_to_assets, customInput: 'address'}
+  })
+
+  api.addTokens(hyperContracts.map(c => c.token), lstAssets)
+} 
+
 async function tvl(api) {
   await computeAutoCompoundingTVL(api);
-  await computeSenseiTVL(api);
+  await computeSenseiTVL(api); 
   await computeXSTRKStratTVL(api);
   await computeFusionTVL(api);
   await computeEkuboTVL(api);
+  await computeEkuboBTCTvl(api);
   await computeEvergreenTVL(api);
+  await computeHyperVaultTVL(api)
 }
 
 module.exports = {
