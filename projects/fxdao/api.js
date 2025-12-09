@@ -1,8 +1,8 @@
-const { SorobanRpc, Networks, Address, xdr, Asset, scValToNative } = require('@stellar/stellar-sdk');
+const { rpc, Networks, Address, xdr, Asset, scValToNative } = require('@stellar/stellar-sdk');
 
 const VAULTS_CONTRACT_ID = "CCUN4RXU5VNDHSF4S4RKV4ZJYMX2YWKOH6L4AKEKVNVDQ7HY5QIAO4UB";
 const rpcUrl = 'https://soroban-rpc.creit.tech/';
-const server = new SorobanRpc.Server(rpcUrl);
+const server = new rpc.Server(rpcUrl);
 
 async function tvl(api) {
   const response = await server.getContractData(
@@ -11,7 +11,7 @@ async function tvl(api) {
       xdr.ScVal.scvSymbol('Balance'),
       new Address(VAULTS_CONTRACT_ID).toScVal(),
     ]),
-    SorobanRpc.Durability.Persistent
+    rpc.Durability.Persistent
   );
   const balance = scValToNative(response.val.value().val()).amount;
   const parsedBalance = Number(balance) / 1e7;

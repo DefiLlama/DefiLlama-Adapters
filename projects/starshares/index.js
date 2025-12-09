@@ -10,9 +10,9 @@ async function tvl(time, ethBlock, _b, {api}) {
 }
 
 module.exports = {
-  hallmarks: [
-    [1696654800,"Reentrancy Attack"]
-  ],
+  // hallmarks: [
+  //   [1696654800,"Reentrancy Attack"]
+  // ],
   methodology: `We count the AVAX on ${contract}`,
   avax: {
     tvl

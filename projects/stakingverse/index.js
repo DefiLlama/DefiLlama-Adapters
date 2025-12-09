@@ -1,11 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*
  * Stakingverse adapter for DefiLlama
  * Tracks TVL for LUKSO staking 
  */
 
 const STAKING_CONTRACT = '0x9F49a95b0c3c9e2A6c77a16C177928294c0F6F04';
-const SLYX_TOKEN_CONTRACT = '0x8a3982f0a7d154d11a5f43eec7f50e52ebbc8f7d'; // Liquid staking token - kept for reference
-const LYX_ADDRESS = '0x0000000000000000000000000000000000000000'; // Native token null address
+const SLYX_TOKEN_CONTRACT = ADDRESSES.lukso.sLYX; // Liquid staking token - kept for reference
+const LYX_ADDRESS = ADDRESSES.null; // Native token null address
 const ETHEREUM_STAKING_CONTRACT = '0x8A93A876912c9F03F88Bc9114847cf5b63c89f56'; // StakeWise V3 vault on Ethereum
 
 /**
@@ -32,7 +33,7 @@ async function ethereumTvl(api) {
   });
 
   // Add native ETH to TVL
-  api.add('0x0000000000000000000000000000000000000000', totalStakedETH);
+  api.add(ADDRESSES.null, totalStakedETH);
 
   return api.getBalances();
 }

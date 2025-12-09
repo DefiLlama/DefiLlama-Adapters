@@ -52,7 +52,7 @@ module.exports = {
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: "0x321162Cd933E2Be498Cd2267a90534A804051b11", //WBTC
+      yieldBearingAsset: ADDRESSES.fantom.WBTC, //WBTC
       yieldProxy: "0xAe708b0F1e131432a6491975c69758f57ccAEB9b",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },

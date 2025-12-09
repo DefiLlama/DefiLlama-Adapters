@@ -31,6 +31,6 @@ module.exports = {
 
 module.exports.deadFrom = '2025-02-01'
 module.exports.hedera.borrowed=  () => ({})
-module.exports.hallmarks = [
-  ['2025-02-01', "Protocol Exploit"],
-]
+// module.exports.hallmarks = [
+//   ['2025-02-01', "Protocol Exploit"],
+// ]

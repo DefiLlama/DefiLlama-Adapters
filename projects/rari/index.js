@@ -67,9 +67,9 @@ module.exports = {
   },
   arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716' }),
   hallmarks: [
-    [1651276800, "FEI hack"],
+    // [1651276800, "FEI hack"],
     [1649548800, "ICHI sell-off"],
-    [1620432000, "First Rari hack"],
+    // [1620432000, "First Rari hack"],
     [1654905600, "Bhavnani's announcement"]
   ]
 }

@@ -19,7 +19,7 @@ module.exports = {
     pool2: pool2(pool2StakingPool, sgtPool2Token),
     staking: staking(sgtStakingPool, sgt)
   },
-  hallmarks: [
-    ['2023-09-01', 'Protocol was hacked for 102 ETH'],
-  ],
+  // hallmarks: [
+  //   ['2023-09-01', 'Protocol was hacked for 102 ETH'],
+  // ],
 }

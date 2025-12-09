@@ -31,5 +31,6 @@ module.exports = {
   methodology: 'Total value of all sell offers in the built-in Stellar Decentralized exchange. This includes XLM and assets issued on the network, converting to USD.',
   stellar: { tvl },
   timetravel: true,
+  misrepresentedTokens: true,
   start: 1659916800, // 2022-08-08 UTC
 };

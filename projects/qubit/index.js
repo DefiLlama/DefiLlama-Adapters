@@ -20,9 +20,9 @@ async function tvlKlaytn(api) {
 }
 
 module.exports = {
-  hallmarks: [
-    [1643241600, "tokenAddress hack"]
-  ],
+  // hallmarks: [
+  //   [1643241600, "tokenAddress hack"]
+  // ],
   methodology: methodologies.lendingMarket,
   bsc: {
     tvl: compoundExports2({ comptroller: qoreComptroller, abis: { getAllMarkets: 'address[]:allMarkets' } }).tvl,

@@ -7,8 +7,6 @@ module.exports = [
   // added on the 15th of july 2024.
   "bc1qa2eu6p5rl9255e3xz7fcgm6snn4wl5kdfh7zpt05qp5fad9dmsys0qjg0e",
   "16jVbMCcqq1deKrMB3esL2HPso7kvqUsec",
-  "1A724HfXFFpuUJPMjXwRoGTF9tj29E2aYs",
-  "1FkhbrtAgP2q7MYjLF8gL4JH3MuzdpwAis",
   "1LrsskS2hmLvevKiqASDymS8xRmJ7Gp83u",
   "1Ko6Sbu8VgZaQNZMfRgNjR8zVzVN9wL7aX",
   "12rFmDggwCNrRL6vuPEjzCDSskTRPjDajP",
@@ -18,5 +16,10 @@ module.exports = [
   "bc1qpz86ltanq6042k36rs0yl0wjpd6tgu8fwckan7",
   "bc1q7enk8z5gkuzk2sla4vnmzh5qq8jq6wptx0pty5",
   "bc1qmv30sf5tnlx52x6vszl0gmey7vae6elzpm2zxw",
-  "bc1q59nmn5v9tz36talq7g090yue5kf7actqr62f96kakte70eu2948sw6ddxr"
+  "bc1q59nmn5v9tz36talq7g090yue5kf7actqr62f96kakte70eu2948sw6ddxr",
+  "12XZMdaAGmcHf4ocFSqpd8jFd1WH7RHUPs",
+  "1DLeNApsHNNzUMNZJVoXeyEY5sdp8vzx3w",
+  "bc1qr7dl0rtnfvzkfqrvctpk068c8zluknkzapwhe9",
+  "bc1q0npwm7hphq4w3pn0m4nr5hmum2sdg725edylgn",
+  "bc1qqc0h2sxt9lvrsqt90rtpjqnjj7qcwv457g28h2",
 ];

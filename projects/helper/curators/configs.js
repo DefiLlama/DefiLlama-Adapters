@@ -7,6 +7,14 @@ const ABI = {
   ERC4626: {
     asset: 'address:asset',
     totalAssets: 'uint256:totalAssets',
+    balanceOf: 'function balanceOf(address account) view returns (uint256)',
+    convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
+  },
+  morphoV2: {
+    liquidityAdapter: 'address:liquidityAdapter',
+  },
+  morphoAdapter: {
+    morphoVaultV1: 'address:morphoVaultV1',
   },
   aera: {
     assetRegistry: 'address:assetRegistry',
@@ -93,6 +101,54 @@ const MorphoConfigs = {
       },
     ],
   },
+  hyperliquid: {
+    vaultFactories: [
+      {
+        address: '0xec051b19d654C48c357dC974376DeB6272f24e53',
+        fromBlock: 1988677,
+      },
+    ],
+  },
+  katana: {
+    vaultFactories: [
+      {
+        address: '0x1c8De6889acee12257899BFeAa2b7e534de32E16',
+        fromBlock: 2741420,
+      },
+    ],
+  },
+  plume_mainnet: {
+    vaultFactories: [
+      {
+        address: '0x2525D453D9BA13921D5aB5D8c12F9202b0e19456',
+        fromBlock: 1912478,
+      },
+    ],
+  },
+  arbitrum: {
+    vaultFactories: [
+      {
+        address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
+        fromBlock: 296447195,
+      },
+    ],
+  },
+  hemi: {
+    vaultFactories: [
+      {
+        address: '0x8e52179BeB18E882040b01632440d8Ca0f01da82',
+        fromBlock: 1188885,
+      }
+    ]
+  },
+  sei: {
+    vaultFactories: [
+      {
+        address: '0x8Dea49ec5bd5AeAc8bcf96B3E187F59354118291',
+        fromBlock: 168896078,
+      }
+    ]
+  }
 }
 
 const EulerConfigs = {
@@ -141,6 +197,26 @@ const EulerConfigs = {
       '0x7f53e2755eb3c43824e162f7f6f087832b9c9df6',
     ],
   },
+  tac: {
+    vaultFactories: [
+      '0x2b21621b8Ef1406699a99071ce04ec14cCd50677',
+    ],
+  },
+  plasma: {
+    vaultFactories: [
+      '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3',
+    ],
+  },
+  linea: {
+    vaultFactories: [
+      '0x84711986fd3bf0bfe4a8e6d7f4e22e67f7f27f04',
+    ],
+  },
+  arbitrum: {
+    vaultFactories: [
+      '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
+    ],
+  },
 }
 
 const SiloConfigs = {
@@ -150,7 +226,35 @@ const SiloConfigs = {
         address: '0x7867f2b584e91d7c3798f4659b6fffa3631ea06a',
         fromBlock: 21718349,
       },
+      {
+        address: '0x02BbB86731EC6aA81B52961e14dD1AebE5171b1d',
+        fromBlock: 32865457,
+      }
     ],
+  },
+  ethereum: {
+    vaultFactories: [
+      {
+        address: '0xe7Ed54e4e432Cf85024f8D4434cB3756338469B0',
+        fromBlock: 22666249,
+      }
+    ]
+  },
+  arbitrum: {
+    vaultFactories: [
+      {
+        address: '0x451b35b2dF223a7Ef71c4ecb451C1C15019e28A5',
+        fromBlock: 345527587,
+      }
+    ]
+  },
+  avax: {
+    vaultFactories: [
+      {
+        address: '0x77cbCB96fFFe44d344c54A5868C49ad1C5AaAC6A',
+        fromBlock: 64052773,
+      }
+    ]
   }
 }
 

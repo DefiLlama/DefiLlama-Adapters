@@ -42,26 +42,24 @@ const blacklist = [
 ].map(i => i.toLowerCase())
 
 async function tvl(api) {
-  let data = await getConfig('yearn/v2-' + api.chain, `https://ydaemon.yearn.finance/vaults/all?chainids=${api.chainId}&limit=100000`)
-  if (!data.length) {
-    data = await getConfig('yearn/old-' + api.chain, `https://api.yexporter.io/v1/chains/${api.chainId}/vaults/all`)
-  }
+  let data = await getConfig('yearn/v2-' + api.chain, `https://ydaemon.yearn.fi/vaults?highlight_multi_single&hideAlways=false&orderBy=featuringScore&orderDirection=desc&strategiesDetails=withDetails&strategiesCondition=inQueue&chainIDs=${api.chainId}&limit=2500`)
+
+  if (!Array.isArray(data))
+    return;
+
   let strategies = data.map(v => v.strategies ?? []).flat().map(v => v.address.toLowerCase())
-  let vaults = data.filter(i => i.tvl.tvl > 0).map(v => v.address.toLowerCase()).filter(i => !blacklist.includes(i) && !strategies.includes(i))
+  let vaults = data.filter(i => +i.tvl.tvl > 0).map(v => v.address.toLowerCase()).filter(i => !blacklist.includes(i) && !strategies.includes(i))
   const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
-  const calls = [...vaults]
-  bals.forEach((bal, i) => {
-    if (+bal === 0)
-      calls[i] = nullAddress // skip empty vaults
+  const calls = []
+  const filteredBals = bals.filter((bal, i) => {
+    const hasBal = +bal > 0
+    if (hasBal) calls.push(vaults[i])
+    return hasBal
   })
   const tokens = await api.multiCall({ abi: 'address:token', calls, permitFailure: true })
 
-  tokens.forEach((token, i) => {
-    if (token)
-      calls[i] = nullAddress // skip vaults that have a token
-  })
   const tokensAlt = await api.multiCall({ abi: 'address:asset', calls, permitFailure: true })
-  bals.forEach((bal, i) => {
+  filteredBals.forEach((bal, i) => {
     const token = tokens[i] || tokensAlt[i]
     if (token) api.add(token, bal)
   })
@@ -72,18 +70,19 @@ async function tvl(api) {
     bals = bals.map((bal, i) => bal * ratio[i] / 1e18)
     api.addTokens(tokens, bals)
   }
-  return sumTokens2({ api, resolveLP: true, })
+  return sumTokens2({ api, resolveLP: true })
 }
 
 
 module.exports = {
   doublecounted: true,
+  timetravel: false,
   hallmarks: [
     [1594944000, "YFI token Launch"],
   ]
 }
 
-const chains = ['ethereum', 'fantom', 'arbitrum', 'optimism', 'polygon', 'base']
+const chains = ['ethereum', 'fantom', 'arbitrum', 'optimism', 'polygon', 'base', 'katana']
 
 chains.forEach(chain => {
   module.exports[chain] = { tvl }

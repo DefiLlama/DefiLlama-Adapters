@@ -1,20 +1,50 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/solana')
+const { getObjects } = require("../helper/chain/sui");
 
 const evm_config = {
   ethereum: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
   bsc: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 },
   base: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 29522359 },
-  arbitrum: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 }
+  arbitrum: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 },
+  hyperliquid: { kernelEventEmitter: '0x5a428F12a55d6E0ABa77Eb5B340f2ff95dE01BF5', fromBlock: 4470476 },
+  plume_mainnet: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
+  mantle: { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
+  "0g": { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 },
+  monad: { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 33372521 },
 }
 
 const svm_config = {
   eclipse: [
-    '4wyA3MfcGu9PmFiegCZ3itNADVxmTrnKt4MDFFRxzctm' // tETH/WETH
+    'BvNLQCQKxq5A7AQUsMdUqRhwXwmnYy7bkpVU67QrakJ8', // tETH/WETH (WETH)
+    '8VSpqv9eAtxew8hbGjN3bWoyHCog9gFEcW42URVNpTH', // tETH/WETH (tETH)
+
+    'ECSRM9wkFyABH55vYGoR2kjSNm3tGEFp1cT3htBWmngd', // tUSD/USDC (USDC)
+    '6uoWjgNs8h7VYNmdrdHmXjty8Y8GrMjTxGcmb3EuDoM8', // tUSD/USDC (tUSD)
+
   ],
   solana: [
-    '78auJTs52UmJbn82tCptdMTgQzgTLA2hg4AS6RKnwkxQ', // USDT/USDC
-    'CjfBGMQJTw4rHFCGdF5U4GMPBK7sE4x1rgatjHyqCocG' // WSOL/USDC
+    'Eicqj6he3DfacaYugVtxSC6AsddFubigqfYFR945X59w', // USDT/USDC (USDT)
+    '4fjfqdJsDCR2Kenfpc3nGZvQMds3D4MgpVydwmTnU7Sv', // USDT/USDC (USDC)
+
+    '6Fv84LR6nWFYeWRJAehHF3KXRi1RWQRQkGn3eLK3QMxb', // SOL/USDC (SOL)
+    '8NGoaasGcpa8h1JjLY598UCrmxpqgpuWVJtm9F5k3sid', // SOL/USDC (USDC)
+
+    'JBfR8XHYRF52WzTqyB14gkNVWtpPr9DUqzfuxASGLmby', // SKATE/USDC (SKATE)
+    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb', // SKATE/USDC (USDC)
+
+    'Ah4xbiSfQvsutS8fQiHwGm3HKgphTjq1jAJx1qvmSMw7', // MONAD/USDC (MONAD)
+    '4Bq1iWyKDajv1cuRqd9ExYvk9gCbnR1ejUb29jGMCUrf', // MONAD/USDC (USDC)
+
+    'CXJFEq5QPEkCxFCaiVEFEQpAHCUBDV3nQUTKTzw3mq6F', // PLUME/USDC (PLUME)
+    'ENJRMTjGZs1ChGSZxtD8n4KDu9pimDfbmtb5peh8cxCg', // PLUME/USDC (USDC)
+  ]
+}
+
+const sui_config = {
+  sui: [
+    '0xde93f10233e575043ae56f71e6a60605c85b9bfee5bb1c67bac37577c8cbc8be',//SUI/USDC
+    '0x9cc884871f937a3ebde84ea0af052b886af392b8d4e77bf94b447a93721e00d9' // USDT/USDC
   ]
 }
 
@@ -29,7 +59,7 @@ const abis = {
 module.exports = {
   methodology: "Assets deployed on periphery chains. For EVM chains, we track the token balances in the pools. For SVM chains, we track the token balances owned by the pool addresses.",
   start: 1742169600, // '2025-03-17 GMT+0'
-  timetravel: false, // Set to false for Solana and Eclipse chains
+  timetravel: false,
 }
 
 const evmTvl = async (api) => {
@@ -49,9 +79,28 @@ Object.keys(evm_config).forEach((chain) => {
 
 const svmTvl = async (api) => {
   const pools = svm_config[api.chain]
-  return sumTokens2({ api, owners: pools })
+  const res = await sumTokens2({ api, tokenAccounts: pools, computeTokenAccount: true })
+  return res;
 }
 
 Object.keys(svm_config).forEach((chain) => {
   module.exports[chain] = { tvl: svmTvl }
+})
+
+const suiTvl = async (api) => {
+  const pools = sui_config[api.chain]
+  const objs = await getObjects(pools)
+  objs.forEach((obj) => {
+    const { fields: { pool_coin0_liquidity, pool_coin1_liquidity } } = obj
+    const coin0Type = pool_coin0_liquidity.type.split('<')[1].replace('>', '')
+    const coin1Type = pool_coin1_liquidity.type.split('<')[1].replace('>', '')
+    const coin0Amount = pool_coin0_liquidity.fields.balance
+    const coin1Amount = pool_coin1_liquidity.fields.balance
+    api.add(coin0Type, coin0Amount)
+    api.add(coin1Type, coin1Amount)
+  })
+}
+
+Object.keys(sui_config).forEach((chain) => {
+  module.exports[chain] = { tvl: suiTvl }
 })

@@ -73,26 +73,20 @@ const config = {
       '0x48168439ca4ef9e95975e3e2488bfcbd8fb1a80c'
     ]
   },
-  real: {
-    factories: [
-      '0x3b1f3a48a70e372144307a4b126a5cda46e169ad',
-      '0x2944e1544cE201ae19e6385490bBA13DaA5f44e4'
-    ]
-  },
-  blast: { 
+  blast: {
     factories: [
       '0x7b816c1ccafa7d3e71e279ed9dc3226484f6ef87',
       '0xb3c80cfcdd177e3fce2e66870e4768d1ead89f6c',
       '0xfff3C004D115002E0fe8Ef08bBB127aEF5B97bE1'
     ]
   },
-  sonic: { 
+  sonic: {
     factories: [
       '0x26fca5916c20D252feEF7A58E39886d3d3112b91',
       '0x6e1E988D828D0102BF93434774cd1a2246062564'
     ]
   },
-  linea: { 
+  linea: {
     factories: [
       '0x7A9212D34DD283e952f8f15f084832e9b48ee746'
     ]
@@ -108,7 +102,7 @@ const blacklistedPools = {
     '0xdf5096804705d135656b50b62f9ee13041253d97', // YPIE-ETH
   ],
   polygon: [
-        // QuickSwap
+    // QuickSwap
     "0x5ed3147F07708A269f744B43c489e6Cf3B60aEC4", //DAI-USDT
     "0x87B94444d0f2c1e4610A2De8504D5d7b81898221", //QUICK-POLYDOGE
     "0x5f819f510ca9b1469e6a3ffe4ecd7f0c1126f8f5", //IMX-ETH [OLD]
@@ -139,7 +133,7 @@ const blacklistedPools = {
     '0x4062f4775bc001595838fbaae38908b250ee07cf', // SWPR-ETH
   ],
   avax: [
-        // Traderjoe
+    // Traderjoe
     "0x21249FC0Ad45fB3e33C12BE0fA2B81000A290C5f", //SPELL-AVAX
     "0xa34862a7de51a0e1aee6d3912c3767594390586d", //IMX-AVAX OLD
     // Pangolin V1
@@ -178,13 +172,15 @@ const blacklistedPools = {
     "0xE8f4895DF06a0c69A9BA87509EfdBBFBAFe86c2d", // weth/tkn - stakedlp
     "0x7c80Be56a6f23A3E598822648baaFD7524fe1239", // chi/wUKRE stakedlp
     "0xDD14d0c651C63e1EeA5bd8b250cf99757425D68F", // chi/usdc stakedlp
+    "0xc90073e1cabcf5069e00c5a6cb10023c9e1d5c4f", // wbtc/eth stakedlp
   ],
   base: [],
   mantle: [],
   optimism: [],
-  real: [],
   blast: [],
-  sonic: [],
+  sonic: [
+    "0xd9de9f15994182518a688933d09787a9a9fb5bc9" // s/shadow stakedlp
+  ],
   linea: []
 }
 

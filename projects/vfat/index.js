@@ -319,7 +319,12 @@ Object.keys(config).forEach(chain => {
     case 'arbitrum':
     case 'sonic':
     case 'hemi':
-    case 'linea': tvl = tvlArbitrumLinea; break;
+    case 'linea':
+    case 'ink':
+    case 'unichain':
+    case 'katana':
+    case 'polygon':
+    case 'lisk': tvl = tvlArbitrumLinea; break;
     case 'fantom': tvl = tvlFantom; break;
     case 'mode': tvl = modeTvl; break;
     case 'mantle': tvl = tvlMantle; break;

@@ -1,4 +1,5 @@
 const { getCuratorExport } = require("../helper/curators");
+const axios = require('axios');
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
@@ -51,9 +52,13 @@ const configs = {
         '0x65B560d887c010c4993C8F8B36E595C171d69D63',
         '0x3ba6930bac1630873f5fd206e293ca543fcea7a2',
         '0x9e405601B645d3484baeEcf17bBF7aD87680f6e8',
+        '0xbA60b6969fAA9b927A0acc750Ea8EEAdcEd644B7',
       ],
       mellow: [
         '0x8327b8BD2561d28F914931aD57370d62C7968e40',
+      ],
+      erc4626: [
+        '0xeea3edc017877c603e2f332fc1828a46432cdf96',
       ],
     },
     base: {
@@ -79,7 +84,6 @@ const configs = {
         '0xdb223128a4524ce733c575421267dc56992c796d',
         '0x70f6fd99a43fce03648b20d44b9f0cd2b14eea68',
         '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
-        '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
       ]
     },
     polygon: {
@@ -90,9 +94,174 @@ const configs = {
     unichain: {
       morphoVaultOwners: [
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
+    },
+    hyperliquid: {
+      morphoVaultOwners: [
+        '0x09346F40e324458A8E211C5317981C78FAcDEc57',
+        '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+      ],
+    },
+    katana: {
+      morphoVaultOwners: [
+        '0x5D8C96b76A342c640d9605187daB780f8365F69f',
+      ],
+    },
+    arbitrum: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
       ],
     },
   }
 }
 
-module.exports = getCuratorExport(configs)
+// --- Drift Solana TVL logic ---
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getMultipleAccounts, getProvider } = require('../helper/solana')
+const { Program, BN } = require("@project-serum/anchor")
+const { PublicKey } = require("@solana/web3.js")
+
+const TOKEN_INFO = {
+  USDC: {
+    mint: ADDRESSES.solana.USDC,
+    decimals: 6,
+  },
+  SOL: {
+    mint: ADDRESSES.solana.SOL,
+    decimals: 9,
+  },
+  jitoSOL: {
+    mint: ADDRESSES.solana.JitoSOL,
+    decimals: 9,
+  },
+  JTO: {
+    mint: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL',
+    decimals: 9,
+  },
+  WIF: {
+    mint: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+    decimals: 6,
+  },
+  DRIFT: {
+    mint: 'DriFtupJYLTosbwoN8koMbEYSx54aFAVLddWsbksjwg7',
+    decimals: 6,
+  },
+  INF: {
+    mint: '5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm',
+    decimals: 9,
+  },
+  dSOL: {
+    mint: ADDRESSES.solana.dSOL,
+    decimals: 9,
+  },
+  JLP: {
+    mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6,
+  },
+  cbBTC: {
+    mint: 'cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij',
+    decimals: 8,
+  },
+  USDS: {
+    mint: 'USDSwr9ApdHk5bvJKMjzff41FfuX8bSxdKcR81vTwcA',
+    decimals: 6,
+  },
+  BONK: {
+    mint: ADDRESSES.solana.BONK,
+    decimals: 5,
+  },
+}
+
+function getTokenInfo(marketIndex) {
+  switch (marketIndex) {
+    case 0: return TOKEN_INFO.USDC
+    case 1: return TOKEN_INFO.SOL
+    case 6: return TOKEN_INFO.jitoSOL
+    case 9: return TOKEN_INFO.JTO
+    case 10: return TOKEN_INFO.WIF
+    case 15: return TOKEN_INFO.DRIFT
+    case 16: return TOKEN_INFO.INF
+    case 17: return TOKEN_INFO.dSOL
+    case 19: return TOKEN_INFO.JLP
+    case 27: return TOKEN_INFO.cbBTC
+    case 28: return TOKEN_INFO.USDS
+    case 32: return TOKEN_INFO.BONK
+    default: return undefined
+  }
+}
+
+const VAULT_USER_ACCOUNTS = [
+  'Fu8AWYqw7bPZJAxumXJHs62BQZTMcsUkgGdwoh4v3js2', // hJLP 1x (USDC)
+  '3fFkCDe3DU3qVK8FD5fBYumK1bjGKA7uTvVPP53j3ydA', // hJLP 2x (USDC)
+  'DMbboHpxpJjTic3CMVRCiJFYKaEEz6izMgE9vB6GBSxv', // Gauntlet Basis Alpha (USDC)
+  '7Lka2kKagwTvTWNas2UtPaFiwpgs7r9BJtUEzQBB4DxT', // hJLP 1x (JLP)
+  '4UF8DgbH8hGmtfFhV369bkwMyRJbJDGN3UtYCZoeKqN3', // SOL Plus
+  '3u3biLVaLsbeQaXKq3Dt7c4di5Un2rqza4QXnFRmVZ7t', // cbBTC Plus
+  'EC2w198qubUWA2Xf73hz2d7vFKNaQc1XN7SYYqXbfLKQ', // dSOL Plus
+  '4Kayz1HkWJiEcYQgyQkXDC8Y6CeCoV5MYFXg3KwaL9ii', // jitoSOL Plus
+  '68oTjvenFJfrr2iYPtBTRiFyXA8N2pXdHDP82YvuhLaC', // DRIFT Plus
+  'GYxrPXFhCQamBxUc4wMYHnB235Aei7GZsjFCfZgfYJ6b', // Carrot hJLP 
+  'FbbcWcg5FfiPdBhkxuBAeoFCyVN2zzSvNPyM7bRiSKAL', // JTO Plus
+]
+
+async function tvl(api) {
+  const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
+  const idl = require("../knightrade/drift_idl.json")
+  const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+  const provider = getProvider()
+  const program = new Program(idl, programId, provider)
+
+  for (let i = 0; i < accounts.length; i++) {
+    const account = accounts[i];
+    if (!account) continue;
+    const userData = program.coder.accounts.decode("User", account.data);
+    for (let j = 0; j < userData.spotPositions.length; j++) {
+      const spotPosition = userData.spotPositions[j];
+      if (!new BN(spotPosition.scaledBalance).isZero()) {
+        const marketIndex = spotPosition.marketIndex
+        const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
+        const scaledBalance = new BN(spotPosition.scaledBalance)
+        const token = getTokenInfo(marketIndex)
+        if (!token) continue;
+        const balance = scaledBalance
+          .mul(new BN(balanceType === 'deposit' ? 1 : -1))
+          .div(new BN(10).pow(new BN(token.decimals - 9)));
+        api.add(token.mint, balance.toString())
+      }
+    }
+  }
+}
+
+async function megavaultTvl(api) {
+  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
+  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
+  const pnlArr = data.megavaultPnl;
+  if (!pnlArr || !pnlArr.length) return;
+  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
+
+  // Report as USD Coin using coingecko identifier
+  api.add('coingecko:usd-coin', (currentTvl * 1e6).toFixed(0));
+}
+
+async function combinedEthereumTvl(api) {
+  // First, get the existing curator TVL
+  const curatorExport = getCuratorExport(configs);
+  if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
+    await curatorExport.ethereum.tvl(api);
+  }
+  
+  // Then add MegaVault TVL
+  console.log("Adding MegaVault TVL to ethereum...");
+  await megavaultTvl(api);
+  console.log("MegaVault TVL added to ethereum");
+}
+
+module.exports = {
+  ...getCuratorExport(configs),
+  solana: { tvl },
+  ethereum: { tvl: combinedEthereumTvl },
+  timetravel: false,
+  methodology: configs.methodology,
+}

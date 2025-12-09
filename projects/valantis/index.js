@@ -1,33 +1,32 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { BigNumber } = require('bignumber.js')
 
-const STEX_CONTRACT = '0x39694eFF3b02248929120c73F90347013Aec834d';
-const STEX_LENS_CONTRACT = '0x68675DC8406252b6950128f6504A5E287Ef24ED0';
-const STEX_LENS_RESERVES_ABI = 'function getAllReserves(address stex) external view returns (uint256 reserve0Pool, uint256 reserve0Unstaking, uint256 reserve1Pool, uint256 reserve1Lending, uint256 amount1PendingLPWithdrawal)';
+const STEX_STHYPE_CONTRACT = '0x39694eFF3b02248929120c73F90347013Aec834d'
+const STEX_KHYPE_CONTRACT = '0xbf747D2959F03332dbd25249dB6f00F62c6Cb526'
+const STEX_LENS_CONTRACT = '0x95e88072c3fe908101a13584d7A0ff87DaDd88f3'
+const STEX_LENS_RESERVES_ABI = 'function getTotalValueToken1(address stex) external view returns (uint256 totalValueToken1)';
 const WHYPE = ADDRESSES.hyperliquid.WHYPE;
-const STHYPE = '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1';
 
 async function tvl(api) {
-    const stexReserves = await api.call({
+    const sthypeStexTvlInTermsOfHype = await api.call({
         abi: STEX_LENS_RESERVES_ABI,
         target: STEX_LENS_CONTRACT,
-        params: [STEX_CONTRACT]
+        params: [STEX_STHYPE_CONTRACT]
     });
 
-    // Calculate human-readable amounts
-    const reserve0Pool = new BigNumber(stexReserves[0]);
-    const reserve0Unstaking = new BigNumber(stexReserves[1]);
-    const reserve1Pool = new BigNumber(stexReserves[2]);
-    const reserve1Lending = new BigNumber(stexReserves[3]);
-    const amount1PendingLPWithdrawal = new BigNumber(stexReserves[4]);
+    const sthypeStexTvlInTermsOfHypeBigNumber = new BigNumber(sthypeStexTvlInTermsOfHype);
 
-    const stHypePoolAmount = reserve0Pool.plus(reserve0Unstaking);
-    const hypePoolAmount = reserve1Pool.plus(reserve1Lending).plus(amount1PendingLPWithdrawal);
+    api.add(WHYPE, sthypeStexTvlInTermsOfHypeBigNumber.toString());
 
-    // Add balances using the token addresses directly
-    // The API will handle the decimals internally
-    api.add(WHYPE, hypePoolAmount.toString());
-    api.add(STHYPE, stHypePoolAmount.toString());
+    const khypeStexTvlInTermsOfHype = await api.call({
+        abi: STEX_LENS_RESERVES_ABI,
+        target: STEX_LENS_CONTRACT,
+        params: [STEX_KHYPE_CONTRACT]
+    });
+
+    const khypeStexTvlInTermsOfHypeBigNumber = new BigNumber(khypeStexTvlInTermsOfHype);
+
+    api.add(WHYPE, khypeStexTvlInTermsOfHypeBigNumber.toString());
 }
 
 module.exports = {

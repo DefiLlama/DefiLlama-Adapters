@@ -7,7 +7,7 @@ const stakingAddress = "0x7dc10Ade8599bf5033577F60C6740479aa39DB41"
 const treasuryTokens = [
     ["0x9cbccdaf10153edd092817a013470a0693852a77", false], //PantherUSD
     [ADDRESSES.fantom.WFTM, false], //WFTM
-    ["0x321162Cd933E2Be498Cd2267a90534A804051b11", false], //WBTC
+    [ADDRESSES.fantom.WBTC, false], //WBTC
     ["0x74b23882a30290451A17c44f4F05243b6b58C76d", false], //WETH
     [ADDRESSES.fantom.DAI, false], //DAI
     [ADDRESSES.fantom.MIM, false], //MIM
