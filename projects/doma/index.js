@@ -1,155 +1,68 @@
-const { get } = require('../helper/http')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-// VERIFIED ADDRESSES - 2024-11-27 via explorer.doma.xyz
 // USDC.e (Bridged USDC via Stargate) - 6 decimals
-// https://explorer.doma.xyz/token/0x31EEf89D5215C305304a2fA5376a1f1b6C5dc477
 const USDC_E_ADDRESS = '0x31EEf89D5215C305304a2fA5376a1f1b6C5dc477'
 
-// DomaFractionalization Diamond Proxy - verified via explorer.doma.xyz
-// https://explorer.doma.xyz/address/0xd00000000004f450f1438cfA436587d8f8A55A29
+// DomaFractionalization Diamond Proxy
 const DOMA_FRACTIONALIZATION = '0xd00000000004f450f1438cfA436587d8f8A55A29'
 
-// Blockscout explorer API (public, no auth required)
-const EXPLORER_API = 'https://explorer.doma.xyz/api/v2'
+// Contract deployment block
+const FROM_BLOCK = 2887493
 
-// NameTokenFractionalized event topic (from explorer logs)
-// Event: NameTokenFractionalized(address indexed tokenAddress, uint256 indexed tokenId,
-//        address tokenOwner, address fractionalTokenAddress, address launchpadAddress,
-//        address vestingWallet, uint256 fractionalizationVersion, tuple params)
+// NameTokenFractionalized event topic (keccak256 hash of event signature)
 const FRACTIONALIZED_EVENT_TOPIC = '0x033884feaa2ca8a3d4414e2f3b49f102e4eeaf1b0baf49466e0407c4770de3e5'
 
 /**
- * Fetches all NameTokenFractionalized events from the DomaFractionalization contract
- * to discover deployed launchpad and vesting wallet addresses
+ * Fetches all launchpad addresses from NameTokenFractionalized events via on-chain logs.
+ * Event data layout: tokenOwner (32) + fractionalTokenAddress (32) + launchpadAddress (32) + ...
  */
-async function fetchFractionalizedTokens() {
-  const tokens = []
-  let nextPageParams = null
+async function fetchLaunchpads(api) {
+  const logs = await api.provider.getLogs({
+    address: DOMA_FRACTIONALIZATION,
+    fromBlock: FROM_BLOCK,
+    toBlock: await api.provider.getBlockNumber(),
+    topics: [FRACTIONALIZED_EVENT_TOPIC]
+  })
 
-  do {
-    let url = `${EXPLORER_API}/addresses/${DOMA_FRACTIONALIZATION}/logs`
-    if (nextPageParams) {
-      const params = new URLSearchParams(nextPageParams)
-      url += `?${params.toString()}`
+  const launchpads = new Set()
+  for (const log of logs) {
+    // launchpadAddress is the 3rd non-indexed param (offset 128 in data, 64 hex chars per 32 bytes)
+    const data = log.data.slice(2) // Remove 0x
+    const launchpadAddress = '0x' + data.slice(128, 192).slice(24) // Extract address from 32-byte word
+    if (launchpadAddress && launchpadAddress.length === 42) {
+      launchpads.add(launchpadAddress)
     }
-
-    const response = await get(url)
-
-    if (!response?.items) {
-      throw new Error(`Invalid explorer response: ${JSON.stringify(response)}`)
-    }
-
-    for (const log of response.items) {
-      // Filter for NameTokenFractionalized events
-      const topics = log.topics || []
-      if (topics[0]?.toLowerCase() !== FRACTIONALIZED_EVENT_TOPIC.toLowerCase()) {
-        continue
-      }
-
-      // Extract addresses from decoded event data
-      const decoded = log.decoded?.parameters
-      if (!decoded) continue
-
-      const fractionalToken = decoded.find(p => p.name === 'fractionalTokenAddress')?.value
-      const launchpad = decoded.find(p => p.name === 'launchpadAddress')?.value
-      const vestingWallet = decoded.find(p => p.name === 'vestingWallet')?.value
-
-      if (fractionalToken && launchpad) {
-        tokens.push({
-          fractionalToken,
-          launchpad,
-          vestingWallet,
-        })
-      }
-    }
-
-    nextPageParams = response.next_page_params
-  } while (nextPageParams)
-
-  return tokens
-}
-
-/**
- * Fetches UniswapV3 pools that trade Doma fractionalized tokens
- * Only includes pools where one of the pair tokens is a Doma fractional token
- * This ensures we count Doma protocol TVL, not all chain DEX liquidity
- */
-async function fetchDomaUniswapV3Pools(fractionalTokenAddresses) {
-  const pools = new Set()
-
-  for (const tokenAddress of fractionalTokenAddresses) {
-    let nextPageParams = null
-
-    do {
-      let url = `${EXPLORER_API}/tokens/${tokenAddress}/holders`
-      if (nextPageParams) {
-        const params = new URLSearchParams(nextPageParams)
-        url += `?${params.toString()}`
-      }
-
-      const response = await get(url)
-      if (!response?.items) break
-
-      for (const holder of response.items) {
-        const address = holder?.address
-        if (!address?.is_contract) continue
-
-        // Only include UniswapV3Pool contracts that hold this Doma token
-        if (address.name === 'UniswapV3Pool') {
-          pools.add(address.hash)
-        }
-      }
-
-      nextPageParams = response.next_page_params
-    } while (nextPageParams)
   }
 
-  return Array.from(pools)
+  return Array.from(launchpads)
 }
 
 async function tvl(api) {
-  // Get all fractionalized tokens (includes launchpads)
-  const fractionalizedTokens = await fetchFractionalizedTokens()
+  const launchpads = await fetchLaunchpads(api)
 
-  // Extract fractional token addresses for targeted pool discovery
-  const fractionalTokenAddresses = fractionalizedTokens
-    .map(t => t.fractionalToken)
-    .filter(Boolean)
+  // TVL = USDC.e in Doma-owned contracts only:
+  // 1. DomaFractionalization contract - holds buyout/redemption funds
+  // 2. Launchpad contracts - holds USDC.e from token sales
+  //
+  // Note: Graduated launchpads are included but will have $0 balance
+  // since their funds migrated to Uniswap V3 pools.
+  //
+  // Excluded:
+  // - Uniswap V3 pools (DEX liquidity, not protocol-locked value)
+  // - Vesting wallets (uncirculating tokens)
+  const protocolAddresses = [
+    DOMA_FRACTIONALIZATION,
+    ...launchpads
+  ]
 
-  // Get UniswapV3 pools that specifically trade Doma fractional tokens
-  const uniV3Pools = await fetchDomaUniswapV3Pools(fractionalTokenAddresses)
+  console.log(`Found ${launchpads.length} launchpads`)
+  console.log(`Total protocol addresses: ${protocolAddresses.length}`)
 
-  // Collect protocol-owned addresses
-  const protocolAddresses = new Set()
-
-  // Add main fractionalization contract
-  protocolAddresses.add(DOMA_FRACTIONALIZATION)
-
-  // Add launchpads from fractionalization events
-  // NOTE: Vesting wallets intentionally excluded - uncirculating tokens per DefiLlama methodology
-  for (const token of fractionalizedTokens) {
-    if (token.launchpad) protocolAddresses.add(token.launchpad)
-  }
-
-  // Add UniswapV3 pools that trade Doma tokens
-  for (const pool of uniV3Pools) {
-    protocolAddresses.add(pool)
-  }
-
-  const addressList = Array.from(protocolAddresses)
-
-  console.log(`Found ${fractionalizedTokens.length} fractionalized tokens`)
-  console.log(`Found ${uniV3Pools.length} UniswapV3 pools for Doma tokens`)
-  console.log(`Total protocol addresses: ${addressList.length}`)
-
-  if (addressList.length === 0) {
-    console.warn('No protocol addresses found - TVL will be empty')
+  if (protocolAddresses.length === 0) {
     return {}
   }
 
-  // Build token-owner pairs for on-chain balance queries
-  const tokensAndOwners = addressList.map(owner => [USDC_E_ADDRESS, owner])
+  const tokensAndOwners = protocolAddresses.map(owner => [USDC_E_ADDRESS, owner])
 
   return sumTokens2({
     api,
@@ -163,10 +76,10 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     'TVL is calculated by summing USDC.e balances in Doma protocol contracts: ' +
-    '(1) the DomaFractionalization contract, (2) launchpad contracts where users purchase ' +
-    'fractional tokens, and (3) UniswapV3 pools providing liquidity for Doma fractional tokens. ' +
-    'Vesting wallets are excluded as they contain uncirculating tokens. Protocol addresses are ' +
-    'discovered by querying NameTokenFractionalized events. UniV3 pools are identified by ' +
-    'finding pools that hold Doma fractional token addresses.',
+    '(1) the DomaFractionalization contract which holds buyout/redemption funds, and ' +
+    '(2) launchpad contracts discovered via on-chain NameTokenFractionalized events. ' +
+    'Graduated launchpads have $0 balance since funds migrate to DEX pools upon graduation. ' +
+    'Uniswap V3 pools are excluded as they represent DEX liquidity, not protocol-locked value. ' +
+    'Vesting wallets are excluded as they contain uncirculating tokens.',
   doma: { tvl },
 }
