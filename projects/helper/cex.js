@@ -188,7 +188,8 @@ const defaultTokens = {
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
     ADDRESSES.bsc.USD1, // USD1
-    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3'  //GTBTC
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
+    '0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16',  //MYX
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
