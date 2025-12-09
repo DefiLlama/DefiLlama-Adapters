@@ -15,9 +15,6 @@ const SPARKDEX_V3_POOLS = [
   '0x38dE858370813ae58af11245962a9b03B661a9Ae', // FXRP/USDT0 1%
 ];
 
-// SparkDEX V2 Pool
-const SPARKDEX_V2_FXRP_WFLR = '0xa76a120567ed3ab3065759d3ad3ab2acd79530bf';
-
 async function lockedXRPL(api) {
   const flareApi = new ChainApi({ chain: 'flare', timestamp: api.timestamp });
   await flareApi.getBlock();
@@ -28,14 +25,7 @@ async function lockedXRPL(api) {
     calls: SPARKDEX_V3_POOLS.map(pool => ({ target: FXRP, params: [pool] })),
   });
 
-  // SparkDEX V2: FXRP balance in pool
-  const v2Balance = await flareApi.call({
-    abi: 'erc20:balanceOf',
-    target: FXRP,
-    params: [SPARKDEX_V2_FXRP_WFLR],
-  });
-
-  const totalFxrp = v3Balances.reduce((sum, b) => sum + BigInt(b), 0n) + BigInt(v2Balance);
+  const totalFxrp = v3Balances.reduce((sum, b) => sum + BigInt(b), 0n);
   api.add(ADDRESSES.ripple.XRP, totalFxrp.toString());
   return api.getBalances();
 }
@@ -44,5 +34,5 @@ module.exports = {
   ripple: {
     tvl: lockedXRPL,
   },
-  methodology: "Counts FXRP in SparkDEX V2 and V3 liquidity pools on Flare. FXRP is 1:1 backed by XRP.",
+  methodology: "Counts FXRP in SparkDEX V3 liquidity pools on Flare. FXRP is 1:1 backed by XRP.",
 };
