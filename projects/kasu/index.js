@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const GRAPH_URLS = {
   base: {
-    uri:  'https://subgraph.satsuma-prod.com/3ed46ea711d3/kasu-finance--314476/kasu-base/api',
+    uri:  'https://api.goldsky.com/api/public/project_cmgzlpxm300765np2a19421om/subgraphs/kasu-base/v1.0.12/gn',
     query: `{
               lendingPools (where:{isStopped: false}){
                 id
