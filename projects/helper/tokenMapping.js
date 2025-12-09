@@ -74,6 +74,7 @@ const fixBalancesTokens = {
   },
   stable: {
     '0x779Ded0c9e1022225f8E0630b35a9b54bE713736': { coingeckoId: 'usdt0', decimals: 6 },
+    '0x0000000000000000000000000000000000001003': { coingeckoId: 'usdt0', decimals: 18 },
   }
 }
 
