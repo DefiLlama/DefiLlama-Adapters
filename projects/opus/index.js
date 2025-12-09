@@ -33,10 +33,12 @@ const tokensAndOwners = [
   ["0x07dd3c80de9fcc5545f0cb83678826819c79619ed7992cc06ff81fc67cd2efe0", "0x0616551ebe73c1ea97ad2d7c7c9575039cc456fea5c8529701a39cc9c0ad4805"],
   // xsBTC
   ["0x0580f3dc564a7b82f21d40d404b3842d490ae7205e6ac07b1b7af2b4a5183dc9", "0x06a5bac0cdaa7126e32dd478c86f84906f4a7ff597cbaa9b0d537312887f5a19"],
-  // Transmuters
+  // Transmuter for bridged USDC with Spiko MMF
   [ADDRESSES.starknet.USDC, "0x0560149706f72ce4560a170c5aa72d20d188c314ddca5763f9189adfc45e2557"],
-  // Spiko US MMF
   ["0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", "0x0560149706f72ce4560a170c5aa72d20d188c314ddca5763f9189adfc45e2557"],
+  // Transmuter for native USDC
+  ["0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb", "0x079eaeb2891acc0d884d22f2626adb734a0ab4038a56c5029c7127e4e9f59bd8"],
+  ["0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", "0x079eaeb2891acc0d884d22f2626adb734a0ab4038a56c5029c7127e4e9f59bd8"],
 ]
 
 async function tvl(api) {
