@@ -1,6 +1,6 @@
 const { sumTokens } = require("../helper/chain/bitcoin");
-const { get } = require("../../projects/helper/http");
 const { getObject } = require("../helper/chain/sui");
+const { getConfig } = require('../helper/cache')
 
 // Vault address
 const btcAddressBook = 'https://api.btcvc.vishwanetwork.xyz/btc/address';
@@ -9,7 +9,7 @@ const btcAddressBook = 'https://api.btcvc.vishwanetwork.xyz/btc/address';
 const suiVaultIds = ['0xb3ccbc12cd633d3a8da0cf97a4d89f771a9bd8c0cd8ce321de13edc11cfb3e1c'];
 
 async function calcBtcVault() {
-  let addresses = (await get(btcAddressBook))?.data || [];
+  let addresses = (await getConfig('vishwa', btcAddressBook))?.data || [];
   return await sumTokens({owners: addresses})
 }
 
