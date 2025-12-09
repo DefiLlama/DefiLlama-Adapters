@@ -11,6 +11,7 @@ const evm_config = {
   plume_mainnet: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
   mantle: { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
   "0g": { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 },
+  monad: { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 33372521 },
 }
 
 const svm_config = {
@@ -23,19 +24,28 @@ const svm_config = {
 
   ],
   solana: [
-    '5XCdmwR7K2sZAxbWbkqhohnJ6X7v9ZtbuNrzrr19yHgp', // USDT/USDC (USDT)
-    'FL34362VBFeMRqoRuFm3SiFwS2TAXBWhk6C2CBnjbG3E', // USDT/USDC (USDC)
+    'Eicqj6he3DfacaYugVtxSC6AsddFubigqfYFR945X59w', // USDT/USDC (USDT)
+    '4fjfqdJsDCR2Kenfpc3nGZvQMds3D4MgpVydwmTnU7Sv', // USDT/USDC (USDC)
 
     '6Fv84LR6nWFYeWRJAehHF3KXRi1RWQRQkGn3eLK3QMxb', // SOL/USDC (SOL)
     '8NGoaasGcpa8h1JjLY598UCrmxpqgpuWVJtm9F5k3sid', // SOL/USDC (USDC)
 
     'JBfR8XHYRF52WzTqyB14gkNVWtpPr9DUqzfuxASGLmby', // SKATE/USDC (SKATE)
-    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb' // SKATE/USDC (USDC)
+    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb', // SKATE/USDC (USDC)
+
+    'Ah4xbiSfQvsutS8fQiHwGm3HKgphTjq1jAJx1qvmSMw7', // MONAD/USDC (MONAD)
+    '4Bq1iWyKDajv1cuRqd9ExYvk9gCbnR1ejUb29jGMCUrf', // MONAD/USDC (USDC)
+
+    'CXJFEq5QPEkCxFCaiVEFEQpAHCUBDV3nQUTKTzw3mq6F', // PLUME/USDC (PLUME)
+    'ENJRMTjGZs1ChGSZxtD8n4KDu9pimDfbmtb5peh8cxCg', // PLUME/USDC (USDC)
   ]
 }
 
 const sui_config = {
-  sui: ['0x6ab1e3d7c02dff309504d53fa06302cb66ce50f576432c369afe07c164c0a853']
+  sui: [
+    '0xde93f10233e575043ae56f71e6a60605c85b9bfee5bb1c67bac37577c8cbc8be',//SUI/USDC
+    '0x9cc884871f937a3ebde84ea0af052b886af392b8d4e77bf94b447a93721e00d9' // USDT/USDC
+  ]
 }
 
 const eventAbis = {

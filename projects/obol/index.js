@@ -34,7 +34,7 @@ async function fetchBalancesForTimestamp(tsSeconds, { limit = 1000, delayMs = 50
 }
 
 const tvl = async (api) => {
-  const ts = api.timestamp
+  const ts = api.timestamp - 86400
   const { balances } = await fetchBalancesForTimestamp(ts, { limit: 1000, delayMs: 500 });
   balances.forEach(({ balance_eth }) => {
     api.addGasToken(balance_eth * 1e18)
@@ -42,6 +42,7 @@ const tvl = async (api) => {
 }
 
 const staking = async (api) => {
+  if (api.block < 22318392) return
   const underlying = await api.call({ target: rstOBOL, abi: 'address:STAKE_TOKEN' })
   const supply = await api.call({ target: rstOBOL, abi: 'uint256:totalShares' })
   const stakeForShares = await api.call({ target: rstOBOL, abi: stakeForSharesABI, params:[supply] })
