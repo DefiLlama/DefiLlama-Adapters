@@ -1,4 +1,4 @@
-const { get } = require('../helper/http');
+const { get } = require('./helper/http');
 
 const ENDPOINT = 'https://api.noble.xyz/noble/dollar/vaults/v1/stats';
 
