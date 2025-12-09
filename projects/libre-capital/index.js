@@ -338,7 +338,14 @@ const RECEIPT_TOKENS = {
       underlying: 'security-token',
       instrumentId:"0x3636653765336666346534363764313238323964396366340000000000000000",
       fundName:'Libre SAF VCC - Access Private Credit Feeder'
-    }
+    },
+    LDCFA: {
+        address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
+        decimals: 18,
+        underlying: 'security-token',
+        instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+        fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+    },
   },
   hedera: {
     UMA: {
