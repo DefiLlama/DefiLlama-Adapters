@@ -110,7 +110,7 @@ const liquidityBridgeTokens = [
   {
     // DAI
     avax: ADDRESSES.avax.DAI,
-    bsc: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    bsc: ADDRESSES.bsc.DAI,
     ethereum: ADDRESSES.ethereum.DAI,
     optimism: ADDRESSES.optimism.DAI,
     polygon: ADDRESSES.polygon.DAI,

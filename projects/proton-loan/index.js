@@ -18,6 +18,10 @@ const tokenMapping = {
   'xtokens:XUSDT': 'tether',
   'xtokens:XUST': 'terrausd-wormhole',
   'xtokens:XLUNA': 'terra-luna-2',
+  'xtokens:XADA': 'cardano',
+  'xtokens:XXLM': 'stellar',
+  'xtokens:XHBAR': 'hedera-hashgraph',
+  'xtokens:XSOL': 'solana',
 }
 
 const API_ENDPOINT = 'https://proton.eosusa.io'

@@ -1,10 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider, sumTokens2, getConnection, getTokenAccountBalances } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, BN, utils } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
-const { getLendingToken, getLendingProgram, convertToAssets, getAssociatedTokenAddressSync } = require('./jupiterLendingHelper');
 
-let blacklistedTokens = []
 const TOKEN_INFO = {
   USDC: {
     mint: ADDRESSES.solana.USDC,
@@ -27,6 +25,7 @@ const TOKEN_INFO = {
     decimals: 8,
   },
 }
+
 
 function getTokenInfo(isSpotMarket, marketIndex) {
   if (isSpotMarket) {
@@ -54,7 +53,6 @@ function getTokenInfo(isSpotMarket, marketIndex) {
 const provider = getProvider()
 
 async function tvlJupiter(api, jupiterVaults) {
-  const connection = getConnection()
 
   // /**
   //  * Jupiter perp Lend
@@ -84,36 +82,9 @@ async function tvlJupiter(api, jupiterVaults) {
   // /**
   //  * Jupiter Earn
   // */
-  const program = getLendingProgram();
-  const lending = await program.account.lending.all();
-  const tokensMints = lending.map((l) => l.account.mint);
-  const lendingTokens = tokensMints.map(getLendingToken)
-  blacklistedTokens.push(...lendingTokens)  // since we are already unwinding them here
-  const lendingTokenOwners = (await  connection.getMultipleAccountsInfo(lendingTokens)).map(i => i?.owner)
-
-  const tokenAccounts = []
-  const tokens = []
-  const lendingTokenToMintMap = {}
-
-  tokensMints.forEach((mint, idx) => {
-    const mintOwner = lendingTokenOwners[idx]
-    const lendingToken = lendingTokens[idx]
-    lendingTokenToMintMap[lendingToken.toBase58()] = mint.toBase58()
-    if (!mintOwner) return;
-    jupiterVaults.forEach(vault => {
-      const userKey = new PublicKey(vault);
-      const tokenAccount = getAssociatedTokenAddressSync(lendingToken, userKey, mintOwner)
-      tokens.push(mint)
-      tokenAccounts.push(tokenAccount)
-    })
-  })
-
-  const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError: true,})
-  for (const [lendingToken, lendingTokenBalance] of Object.entries(tokenBalances)) {
-    const mint = lendingTokenToMintMap[lendingToken]
-    const balance = await convertToAssets(mint, lendingTokenBalance, connection)
-    api.add(mint, balance)
-  }
+  /* 
+    added price support for jupiter earn tokens here: https://github.com/DefiLlama/defillama-server/commit/e496acfb4bec2f8da309da1d18b0f0f9e10cbc3f   
+    */
 }
 
 async function getDriftTvl(api, vaults) {
@@ -185,7 +156,7 @@ async function tvlSolana(api) {
   await tvlJupiter(api, vaults);
 
   // add wallet balance 
-  return sumTokens2({ api, owners: vaults, blacklistedTokens, })
+  return sumTokens2({ api, owners: vaults, })
 }
 
 async function tvlArbitrum(api) {
@@ -268,10 +239,49 @@ async function tvlArbitrum(api) {
 
 }
 
+async function tvlEthereum(api) {
+  const vaults = [
+    "0x5C83942B7919db30634f9Bc9e0e72aD778852FC8",
+  ];
+  const addresses = {
+    weth: ADDRESSES.ethereum.WETH,
+    usdc: ADDRESSES.ethereum.USDC,
+    usdt: ADDRESSES.ethereum.USDT,
+    usde: ADDRESSES.ethereum.USDe,
+    aaveWethAToken: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8',
+    aaveUsdcAToken: '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c',
+    aaveUsdtAToken: '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a',
+    aaveUsdeAToken: '0x4F5923Fc5FD4a93352581b38B7cD26943012DECF',
+    aaveWethDebtToken: '0xeA51d7853EEFb32b6ee06b1C12E6dcCA88Be0fFE',
+    aaveUsdcDebtToken: '0x72E95b8931767C79bA4EeE721354d6E99a61D004',
+    aaveUsdtDebtToken: '0x6df1C1E379bC5a00a7b4C6e67A203333772f45A8',
+    aaveUsdeDebtToken: '0x015396E1F286289aE23a762088E863b3ec465145',
+  };
+
+  await api.sumTokens({
+    tokens: [
+      addresses.weth,
+      addresses.usdc,
+      addresses.usdt,
+      addresses.usde,
+      addresses.aaveWethAToken,
+      addresses.aaveUsdcAToken,
+      addresses.aaveUsdtAToken,
+      addresses.aaveUsdeAToken,
+      addresses.aaveWethDebtToken,
+      addresses.aaveUsdcDebtToken,
+      addresses.aaveUsdtDebtToken,
+      addresses.aaveUsdeDebtToken,
+    ],
+    owners: vaults
+  });
+}
+
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: "Solana: Drift | Arbitrum: Aave, GMX",
+  methodology: "Solana: Drift | Arbitrum: Aave, GMX | Ethereum: Aave",
   solana: { tvl: tvlSolana },
   arbitrum: { tvl: tvlArbitrum },
+  ethereum: { tvl: tvlEthereum },
 };

@@ -6,6 +6,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2025-09-01',
   misrepresentedTokens: true,
   secret: { tvl },
 }

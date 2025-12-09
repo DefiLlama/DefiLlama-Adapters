@@ -8,12 +8,14 @@ const WRAPPED_M_CONTRACT = "0x437cc33344a0B27A429f795ff6B469C72698B291";
 const QUEUED_DEPOSITOR_CONTRACT = "0x81cc0DEE5e599784CBB4862c605c7003B0aC5A53";
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 
+// missing pools call from this upgrade: https://arbiscan.io/address/0x0c4c71f1c3aa5af90b6c7516a26fe5a493c4bf3f#code
+const POOLS = ['0x0f62b8C58E1039F246d69bA2215ad5bF0D2Bb867']
+
 async function tvl(api) {
   // Get all pools engaged by the protocol
-  const pools = await api.call({
-    target: STAKED_USDAI_CONTRACT,
-    abi: abi.pools,
-  });
+  let pools = await api.call({ target: STAKED_USDAI_CONTRACT, abi: abi.pools, permitFailure: true });
+  if (!pools) pools = POOLS;
+
   const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools });
   const ct = await api.multiCall({ abi: abi.collateralToken, calls: pools });
 
@@ -47,10 +49,9 @@ async function tvl(api) {
 
 async function borrowed(api) {
   // Get all pools engaged by the protocol
-  const pools = await api.call({
-    target: STAKED_USDAI_CONTRACT,
-    abi: abi.pools,
-  });
+  let pools = await api.call({ target: STAKED_USDAI_CONTRACT, abi: abi.pools, permitFailure: true });
+  if (!pools) pools = POOLS;
+
   const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools });
   const tokenDecimals = await api.multiCall({
     abi: "erc20:decimals",
@@ -94,4 +95,8 @@ module.exports = {
   },
   methodology:
     "TVL is calculated by summing the value of tokens held by the protocol and outstanding immediately claimable yield.",
+  hallmarks: [
+    [1757548800, "Deposit Caps raised to $250M"],
+    [1758758400, "Deposit Caps raised to $500M"]
+  ],
 };
