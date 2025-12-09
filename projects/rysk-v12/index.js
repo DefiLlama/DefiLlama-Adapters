@@ -5,7 +5,9 @@ module.exports = {
   hyperliquid: {
     tvl: sumTokensExport({
       tokensAndOwners: [
-        [ADDRESSES.hyperliquid.USDT0, '0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d'], // MMarket
+        // MMarket
+        [ADDRESSES.hyperliquid.USDT0, '0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d'],
+        ['0x111111a1a0667d36bD57c0A9f569b98057111111', '0x691a5fc3a81a144e36c6C4fBCa1fC82843c80d0d'], // USDH
         // marginPool
         [ADDRESSES.hyperliquid.USDT0, '0x24a44f1dc25540c62c1196FfC297dFC951C91aB4'],
         [ADDRESSES.hyperliquid.wstHYPE, '0x24a44f1dc25540c62c1196FfC297dFC951C91aB4'],
