@@ -1,15 +1,19 @@
-const { get } = require('../helper/http');
+const { queryV1Beta1 } = require('../helper/chain/cosmos');
 
-const ENDPOINT = 'https://api.noble.xyz/noble/dollar/vaults/v1/stats';
+const NOBLE_SUPPLY_URL = 'bank/v1beta1/supply';
+const IGNORE_DENOMS = ['ufrienzies', 'ustake'];
 
-async function tvl() {
-  const data = await get(ENDPOINT);
-  const tvlUsd = Number(data.staked_total_principal) / 1e6;
-  return { tether: tvlUsd };
+async function tvl(api) {
+  let key
+  do {
+    const { supply, pagination } = await queryV1Beta1({ api, url: `${NOBLE_SUPPLY_URL}?pagination.key=${key || ''}` })
+    key = pagination.next_key
+    supply.forEach(i => api.add(i.denom, i.amount))
+  } while (key);
+  IGNORE_DENOMS.forEach(denom => api.removeTokenBalance(denom))
 }
 
 module.exports = {
-  timetravel: false,
   noble: {
     tvl,
   },
