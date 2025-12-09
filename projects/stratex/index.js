@@ -5,7 +5,7 @@
  * Stratex is a sophisticated vault system with ERC4626-compliant vaults that deploy capital
  * across multiple DeFi strategies.
  *
- * Protocol: https://stratex.finance (UPDATE WITH ACTUAL URL)
+ * Protocol: https://stratex.finance
  * Deployed on: Base (Chain ID: 8453), Flare (Chain ID: 14)
  */
 
