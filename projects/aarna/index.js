@@ -10,7 +10,8 @@ const AARNA_CONFIG = {
     ethereum: {
       'ATV-802': "0xb68e430c56ed9e548e864a68a60f9d41f993b32c",
       'ATV-808': "0x60697825812ecC1Fff07f41E2d3f5cf314674Fa6", 
-      'ATV-111': "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba"
+      'ATV-111': "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba",
+      'ATVPTMAX': "0xb9C1344105FaA4681bc7FFd68c5c526DA61F2AE8"
     },
     arbitrum: {
       'ATV-111': "0xe1a6bda42fbafae38607598386a1050613c1a64b"

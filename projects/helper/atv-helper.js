@@ -167,18 +167,31 @@ function generateAtvExport(config) {
     exportObject[chain] = {
       // Total cumulative TVL with direct method support
       tvl: async (api) => {
-        // Check if we have storage contracts configured for direct method
-        const hasStorageContracts = vaultConfigs.some(config => 
-          config.storage && !config.storage.startsWith('STORAGE_ADDRESS')
+        // Check if we have storage contracts or ATVPTMAX vaults with getCurrentTVL
+        const hasDirectMethods = vaultConfigs.some(config => 
+          (config.storage && !config.storage.startsWith('STORAGE_ADDRESS')) || config.type === 'ATVPTMAX'
         );
 
-        if (hasStorageContracts) {
+        if (hasDirectMethods) {
           // Use mixed approach: direct where available, fallback otherwise
           let totalUsd = 0;
           const fallbackVaults = [];
 
           for (const config of vaultConfigs) {
-            if (config.storage && !config.storage.startsWith('STORAGE_ADDRESS')) {
+            // ATVPTMAX uses getCurrentTVL directly on the vault contract
+            if (config.type === 'ATVPTMAX') {
+              const tvlInUsd = await api.call({
+                abi: ATV_ABIS.getCurrentTVL,
+                target: config.address,
+                permitFailure: true,
+              });
+              
+              if (tvlInUsd) {
+                totalUsd += Number(tvlInUsd) / 1e18;
+              } else {
+                fallbackVaults.push(config);
+              }
+            } else if (config.storage && !config.storage.startsWith('STORAGE_ADDRESS')) {
               const tvlInUsd = await api.call({
                 abi: ATV_ABIS.calculatePoolInUsd,
                 target: config.storage,
@@ -278,6 +291,8 @@ const ATV_ABIS = {
   getUTokens: 'function getUTokens() view returns (address[])',
   // Direct TVL calculation from storage contract
   calculatePoolInUsd: 'function calculatePoolInUsd(address afiContract) view returns (uint256)',
+  // Direct TVL calculation from vault contract (ATVPTMAX)
+  getCurrentTVL: 'function getCurrentTVL() view returns (uint256)',
 };
 
 /**
