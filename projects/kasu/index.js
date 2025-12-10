@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const GRAPH_URLS = {
   base: {
-    uri:  'https://subgraph.satsuma-prod.com/3ed46ea711d3/kasu-finance--314476/kasu-base/api',
+    uri:  'https://api.goldsky.com/api/public/project_cmgzlpxm300765np2a19421om/subgraphs/kasu-base/v1.0.12/gn',
     query: `{
               lendingPools (where:{isStopped: false}){
                 id
@@ -11,7 +11,7 @@ const GRAPH_URLS = {
               }
             }`
   },
-  plume: {
+  plume_mainnet: {
     uri: 'https://api.goldsky.com/api/public/project_cm9t3064xeuyn01tgctdo3c17/subgraphs/kasu-plume/prod/gn',
     query: `{
               lendingPools {
@@ -27,7 +27,7 @@ const CHAIN_ASSET = {
     asset: ADDRESSES.base.USDC,
     decimals: 6
   },
-  plume: {
+  plume_mainnet: {
     asset: ADDRESSES.plume_mainnet.pUSD,
     decimals: 6
   },
@@ -59,7 +59,7 @@ module.exports = {
   base: {
     tvl: tvl('base'),
   },
-  plume: {
-    tvl: tvl('plume'),
+  plume_mainnet: {
+    tvl: tvl('plume_mainnet'),
   },
 };
