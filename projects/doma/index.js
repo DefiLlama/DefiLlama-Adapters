@@ -55,13 +55,8 @@ async function tvl(api) {
     ...launchpads
   ]
 
-  console.log(`Found ${launchpads.length} launchpads`)
-  console.log(`Total protocol addresses: ${protocolAddresses.length}`)
-
-  if (protocolAddresses.length === 0) {
-    return {}
-  }
-
+  if (protocolAddresses.length === 0) return {}
+  
   const tokensAndOwners = protocolAddresses.map(owner => [USDC_E_ADDRESS, owner])
 
   return sumTokens2({
@@ -72,8 +67,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
   methodology:
     'TVL is calculated by summing USDC.e balances in Doma protocol contracts: ' +
     '(1) the DomaFractionalization contract which holds buyout/redemption funds, and ' +
