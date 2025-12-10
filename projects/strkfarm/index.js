@@ -21,29 +21,24 @@ async function computeAutoCompoundingTVL(api) {
 
 async function computeXSTRKStratTVL(api) {
   const pool_id = "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161";
-  console.log("check1");
+
   const contracts = STRATEGIES.xSTRKStrats;
-  const price = await multiCall({
-    calls: contracts.map(c => ({
-      target: c.xSTRK,
-      params: ['0x03e8', '0x0']
-    })),
+  const xSTRKSensei = contracts[0];
+  const price = await call({
+    target: xSTRKSensei.xSTRK,
+    params: ['0x0de0b6b3a7640000', '0x0'],
     abi: { ...endurABIMap.preview_redeem, customInput: 'address' }
   });  
-  let xstrk_price = Number(price[0]) / 10**18 // Assuming `price` is returned as a BigInt array
-  console.log("check2");
+  let xstrk_price = Number(price) / 10**18 // Assuming `price` is returned as a BigInt array
 
-  const data = await multiCall({
-    calls: contracts.map(c => ({
-      target: c.vesu,
-      params: [pool_id, c.xSTRK, c.token, c.address] 
-    })),
+  const data = await call({
+    target: xSTRKSensei.vesu,
+    params: [pool_id, xSTRKSensei.xSTRK, xSTRKSensei.token, xSTRKSensei.address],
     abi: {...SINGLETONabiMap.position, customInput: 'address'},
   })
 
-
-  let collateral = Number(data[0]['2']);
-  let debt = Number(data[0]['3']);
+  let collateral = Number(data['2']);
+  let debt = Number(data['3']);
 
   let tvl = (collateral * xstrk_price) - debt;
   if (tvl < 0) throw new Error("Negative TVL detected, check the xSTRK strategy logic");
