@@ -15,7 +15,19 @@ const configs = {
     scroll: {
       erc4626: [
         '0xd39df22a3cd1C91B22d5E748Cc62b03eD3e8A8aD',
-        '0xd56d212777d25cb3923B515fe0D12E3fd10081AD'
+        '0xec5906675a92e4113a39d719c5c65a62a0995d59'
+      ],
+      nestedVaults: [
+        '0x8a23d825467860edb4ACA0909f29D0a6A8e3a0a7',
+      ]
+    },
+    arbitrum: {
+      erc4626: [
+        '0xa47c5203d22ae173788a9d9be0f2beecc97f4df9',
+        '0xE3637cA4D1D6dD756dE0ecd527c40077029eCE6e',
+        '0x75E9d4FEa6c408097eE4F3C63359D0dc617AcB4F',
+        '0x567c1B5c2E58C66f84B80dff4C97b084B23B4E87',
+        '0x9cE8A73296704d4689586347eF6e2087c2128F45'
       ],
     }
   }
