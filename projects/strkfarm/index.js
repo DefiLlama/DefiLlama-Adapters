@@ -21,15 +21,17 @@ async function computeAutoCompoundingTVL(api) {
 
 async function computeXSTRKStratTVL(api) {
   const pool_id = "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161";
+  console.log("check1");
   const contracts = STRATEGIES.xSTRKStrats;
   const price = await multiCall({
     calls: contracts.map(c => ({
       target: c.xSTRK,
-      params: ['0xDE0B6B3A7640000', '0x0']
+      params: ['0x03e8', '0x0']
     })),
     abi: { ...endurABIMap.preview_redeem, customInput: 'address' }
   });  
   let xstrk_price = Number(price[0]) / 10**18 // Assuming `price` is returned as a BigInt array
+  console.log("check2");
 
   const data = await multiCall({
     calls: contracts.map(c => ({
