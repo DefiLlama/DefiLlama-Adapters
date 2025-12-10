@@ -18,7 +18,7 @@ const PROGRAM_VAULTS = [
   'HBjL14QGKnfVtdxVRQRong1WHnYb89gyjBBQtwLQSLVi', // worker_stake: worker's stake
 ];
 
-async function tvl(api) {
+async function staking(api) {
   const allOwners = [...CORE_WALLETS, ...PROGRAM_VAULTS];
 
   return sumTokens2({
@@ -32,6 +32,7 @@ module.exports = {
   timetravel: false,
   methodology: "Counts the number of BMB tokens locked across Core Anchorage wallets and Beamable Network program vaults.",
   solana: {
-    tvl,
+    tvl: () => ({}),
+    staking,
   },
 };
