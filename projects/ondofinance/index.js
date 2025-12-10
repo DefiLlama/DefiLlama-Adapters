@@ -44,6 +44,7 @@ const config = {
     OUSG: "0x1B19C19393e2d034D8Ff31ff34c81252FcBbee92",
     USDY: "0x96F6eF951840721AdBF46Ac996b59E0235CB985C",
     USDYc: "0xe86845788d6e3e5c2393ade1a051ae617d974c09",
+
   },
   polygon: {
     OUSG: "0xbA11C5effA33c4D6F8f593CFA394241CfE925811",
@@ -65,6 +66,9 @@ const config = {
   },
   ripple: {
      OUSG: "4F55534700000000000000000000000000000000.rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p",
+  },
+  stellar: {
+    USDY: "USDY-GAJMPX5NBOG6TQFPQGRABJEEB2YE7RFRLUKJDZAZGAD5GFX4J7TADAZ6",
   },
 };
 
@@ -110,6 +114,11 @@ Object.keys(config).forEach((chain) => {
         // so we convert to a raw balance by multiplying by 10^6
         const ousgSupply = (await getXrplTokenBalances(XRPL_OUSG_ISSUER, XRPL_OUSG_CURRENCY)) * Math.pow(10, 6);
         api.addTokens(config.ripple.OUSG, ousgSupply);
+      } else if (chain === "stellar") {
+        const [code, issuer] = config.stellar.USDY.split('-');
+        const res = await get(`https://api.stellar.expert/explorer/public/asset/${code}-${issuer}`);
+
+        api.addTokens(config.stellar.USDY, res.supply);
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);

@@ -146,36 +146,6 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
   }
 }
 
-async function getETHTokens(address, onlyWhitelisted) {
-  const endpoint = getEnv('ETHEREUM_TOKENS_ENDPOINT')
-  if (!endpoint) throw new Error('Missing endpoint for ethereum tokens')
-  const url = `${endpoint}/v1/1/address/${address}/balances_v2/`
-  const { data: { items } } = await get(url)
-  const tokenSet = new Set()
-  items.forEach(i => {
-    const token = i.native_token ? ADDRESSES.null : i.contract_address
-    if (i.is_spam && onlyWhitelisted) return;
-    tokenSet.add(token)
-  })
-  return Array.from(tokenSet)
-}
-
-async function getComplexTreasury(owners) {
-  const networks = ["ethereum", "polygon", "optimism", "gnosis", "binance-smart-chain", "fantom", "avalanche", "arbitrum",
-    "celo", "harmony", "moonriver", "bitcoin", "cronos", "aurora", "evmos"]
-  const data = await axios.get(`https://api.zapper.xyz/v2/balances/apps?${owners.map(a => `addresses=${a}`).join("&")}&${networks.map(a => `networks=${a}`).join("&")}`, {
-    headers: {
-      Authorization: `Basic ${btoa(process.env.ZAPPER_API_KEY)}`
-    }
-  })
-  let sum = 0
-  data.data.forEach(d => {
-    sum += d.balanceUSD
-  })
-  return sum
-}
-
-
 module.exports = {
   covalentGetTokens,
   ankrChainMapping,

@@ -11,8 +11,6 @@ const basePar = '1000000000000000000'
 async function getTokensAndBalances(api, supplyOrBorrow) {
   const dolomiteMargin = config[api.chain].margin
   let tokens = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTokenAddress, target: dolomiteMargin })
-  const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens, permitFailure: true, })
-  tokens = tokens.filter((_, i) => !symbols[i]?.startsWith('pol-'));
   
   const underlyingTokens = await api.multiCall({ abi: 'address:UNDERLYING_TOKEN', calls: tokens, permitFailure: true, })
   let bals
@@ -23,8 +21,12 @@ async function getTokensAndBalances(api, supplyOrBorrow) {
     const indices = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketCurrentIndex, target: dolomiteMargin })
     bals = res.map((v, i) => BigNumber(v.borrow.toString()).times(indices[i].borrow).div(basePar).toFixed(0))
   }
+
+  const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens, permitFailure: true, })
   tokens.forEach((v, i) => {
-    api.add(underlyingTokens[i] ?? v, bals[i])
+    if (!symbols[i]?.startsWith('pol-')) {
+      api.add(underlyingTokens[i] ?? v, bals[i])
+    }
   })
 }
 

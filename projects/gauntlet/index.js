@@ -108,6 +108,12 @@ const configs = {
         '0x5D8C96b76A342c640d9605187daB780f8365F69f',
       ],
     },
+    arbitrum: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
+    },
   }
 }
 
@@ -119,15 +125,15 @@ const { PublicKey } = require("@solana/web3.js")
 
 const TOKEN_INFO = {
   USDC: {
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6,
   },
   SOL: {
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     decimals: 9,
   },
   jitoSOL: {
-    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    mint: ADDRESSES.solana.JitoSOL,
     decimals: 9,
   },
   JTO: {
@@ -147,7 +153,7 @@ const TOKEN_INFO = {
     decimals: 9,
   },
   dSOL: {
-    mint: 'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ',
+    mint: ADDRESSES.solana.dSOL,
     decimals: 9,
   },
   JLP: {
@@ -163,7 +169,7 @@ const TOKEN_INFO = {
     decimals: 6,
   },
   BONK: {
-    mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+    mint: ADDRESSES.solana.BONK,
     decimals: 5,
   },
 }

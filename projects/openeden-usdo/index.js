@@ -46,7 +46,7 @@ const config = {
   },
   bsc: {
     owners: ["0x5eaff7af80488033bc845709806d5fae5291eb88"],
-    tokens: ["0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"],
+    tokens: [ADDRESSES.bsc.USDC],
   },
 };
 

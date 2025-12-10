@@ -1,43 +1,100 @@
-const config = {
-  ethereum: {
-    mTBILL: '0xDD629E5241CbC5919847783e6C96B2De4754e438',
-    mBASIS: '0x2a8c22E3b10036f3AEF5875d04f8441d4188b656',
-    mBTC: '0x007115416AB6c266329a03B09a8aa39aC2eF7d9d',
-    mEDGE: "0xbB51E2a15A9158EBE2b0Ceb8678511e063AB7a55",
-    mMEV: "0x030b69280892c888670EDCDCD8B69Fd8026A0BF3",
-    mRe7YIELD:'0x87C9053C819bB28e0D73d33059E1b3DA80AFb0cf',
-    'mF-ONE': '0x238a700eD6165261Cf8b2e544ba797BC11e466Ba'
-  },
-  base: {
-    mTBILL: '0xDD629E5241CbC5919847783e6C96B2De4754e438',
-    mBASIS: '0x1C2757c1FeF1038428b5bEF062495ce94BBe92b2',
-  },
-  sapphire: {
-    mTBILL: '0xDD629E5241CbC5919847783e6C96B2De4754e438',
-  },
-  etlk: {
-    mTBILL: "0xDD629E5241CbC5919847783e6C96B2De4754e438",
-    mBASIS: "0x2247B5A46BB79421a314aB0f0b67fFd11dd37Ee4",
-  },
-  rsk: {
-    mTBILL: "0xDD629E5241CbC5919847783e6C96B2De4754e438",
-    mBTC: "0xEF85254Aa4a8490bcC9C02Ae38513Cae8303FB53",
-  },
-  plume_mainnet: {
-    mTBILL: "0xE85f2B707Ec5Ae8e07238F99562264f304E30109",
-    mBASIS: "0x0c78Ca789e826fE339dE61934896F5D170b66d78",
-    mEDGE: "0x69020311836D29BA7d38C1D3578736fD3dED03ED",
-    mMEV: "0x7d611dC23267F508DE90724731Dc88CA28Ef7473",
-  }
+const axios = require('axios')
+
+const BASE_URL = 'https://upcdq5xkbt.eu-west-2.awsapprunner.com/midas/'
+
+const PROTOCOL_BLACKLIST = {
+  all: ['Unclassified'],
 }
 
-async function tvl(api) {
-  const tokens = Object.values(config[api.chain])
-  const bals = await api.multiCall({  abi: 'uint256:totalSupply', calls: tokens})
-  api.add(tokens, bals)
+const CHAIN_ID_ALIAS = {
+  '999': ['999', 'hypercore'],
 }
 
+const getAllowedBlockchainIds = (chainId) => {
+  const key = String(chainId)
+  if (CHAIN_ID_ALIAS[key]) return CHAIN_ID_ALIAS[key]
+  return [key]
+}
 
-Object.keys(config).forEach((chain) => {
+const isProtocolBlacklisted = (protocol, chainIdStr) => {
+  const global = PROTOCOL_BLACKLIST.all || []
+  const perChain = PROTOCOL_BLACKLIST[chainIdStr] || []
+  return [...global, ...perChain].includes(protocol)
+}
+
+const getLyts = async (key) => {
+  const { data } = await axios.get(`${BASE_URL}${key}`)
+  return data.lyts.map(({ liquidYieldTokenName }) => liquidYieldTokenName)
+}
+
+const getLytsForChain = async (chainId) => {
+  const lytsList = await getLyts('lyts')
+  const allowedBlockchainIds = getAllowedBlockchainIds(chainId)
+
+  const lytsWithChains = await Promise.all(
+    lytsList.map(async (lyt) => {
+      const { data } = await axios.get(`${BASE_URL}lyts/${lyt}/blockchains`)
+      const { chainMetadata = [] } = data
+
+      const isOnChain = chainMetadata.some(({ chainId }) => allowedBlockchainIds.includes(String(chainId)))
+
+      return isOnChain ? lyt : null
+    })
+  )
+
+  return lytsWithChains.filter(Boolean)
+}
+
+const getSankeyDataForLyt = async (lyt) => {
+  const { data } = await axios.get(`${BASE_URL}lyts/${lyt}/sankey-chart`)
+  return data.sankeyData || []
+}
+
+const getChainSankeyEntries = async (chainId) => {
+  const chainIdStr = String(chainId)
+  const allowedBlockchainIds = getAllowedBlockchainIds(chainId)
+  const lytsForThisChain = await getLytsForChain(chainId)
+
+  const allEntriesPerLyt = await Promise.all(
+    lytsForThisChain.map(async (lyt) => {
+      const sankeyData = await getSankeyDataForLyt(lyt)
+
+      return sankeyData
+        .filter((entry) => {
+          const { dimensions = {} } = entry
+
+          if (!allowedBlockchainIds.includes(String(dimensions.blockchain))) return false
+          if (isProtocolBlacklisted(dimensions.protocol, chainIdStr)) return false
+
+          return true
+        })
+        .map((entry) => {
+          const { value, dimensions } = entry
+          return {
+            lyt: dimensions.lyt,
+            value,
+            protocol: dimensions.protocol,
+            blockchain: dimensions.blockchain,
+          }
+        })
+    })
+  )
+
+  return allEntriesPerLyt.flat()
+}
+
+const tvl = async (api) => {
+  const chainId = api.chainId
+
+  const entries = await getChainSankeyEntries(chainId)
+  entries.forEach(({ value }) => { api.addUSDValue(value) })
+}
+
+module.exports = {
+  timetravel: false
+}
+
+const chains = ['ethereum', 'arbitrum', 'base', 'katana', 'monad', 'sonic', 'unichain', 'plume_mainnet', 'linea', 'hyperliquid', 'xrplevm', '0g', 'plasma', 'rsk', 'etlk', 'sapphire', 'bitcoin', 'polygon']
+chains.forEach((chain) => {
   module.exports[chain] = { tvl }
 })

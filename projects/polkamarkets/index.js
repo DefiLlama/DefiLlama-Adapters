@@ -57,7 +57,7 @@ const config = {
       "0x1f021be85d6b4d1867c43ef98d30ccc5a44791de", // predictionMarketV3Manager
       "0x0ec82449555efbe9a67cc51de3ef23a56dd79352", // predictionMarketV3Factory
     ],
-  },
+  }
 }
 
 module.exports = {
@@ -66,7 +66,7 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { v1, v2, polk = ADDRESSES.null, stakingContracts = [] } = config[chain]
+  const { v1, v2, v3, polk = ADDRESSES.null, stakingContracts = [] } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const ownerTokens = []
