@@ -28,7 +28,6 @@ const GM_CONTRACTS = {
   'manta': "0xd7D9964e433019e626cd7BB8803a89Ab50Fb08EF",
   'bsc': "0xB4d915FeB8b0757792435C8229D4d6AA6ab7e88d",
   'mantle': "0xA710521c78e9876fb651E273AbDb6cABBc9d4855",
-  'formnetwork': "0xBfd58326834C7a4D4B61Cb84ebfB1b2E7F2c8cB8",
   'vana': "0x7fbc940561892EB797B78Bf9AAd9511Ab4328fC0",
   'polygon': "0x193BD80c4Ab0E8261Db61fC3243f7D9643c05e36",
   'celo': "0xeAbc990398DdF9F7cC44c9167Ff95B7CeE2C88f4",
@@ -78,7 +77,8 @@ const GM_CONTRACTS = {
   'gatelayer': "0x415c8f95C18AE4d9ea56CC39A7923c1A4a224F8c",
 }
 
-const { getBalance } = require("@defillama/sdk/build/eth")
+const sdk = require("@defillama/sdk")
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const abi = {
   feeRecipient: "address:feeRecipient",
@@ -98,13 +98,14 @@ async function tvl(api) {
   })
 
   // Get native token balance of fee recipient
-  const balance = await getBalance({
+  const { output: balance } = await sdk.api.eth.getBalance({
     target: feeRecipient,
     chain: api.chain,
     block: api.block,
   })
 
-  api.addGasToken(balance.output)
+  // Add native token balance as TVL
+  api.addGasToken(balance)
 }
 
 // Create exports for each supported chain
