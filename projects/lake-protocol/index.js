@@ -14,7 +14,7 @@ const TOKEN = {
   }
 }
 
-export const tvl = async (api) => {
+async function tvl(api) {
   
   const [autoCompoundVaultObject, btcUSDCVaultObject] = await Promise.all([
     getObject(autoCompoundVaultObjectId), 
@@ -27,3 +27,10 @@ export const tvl = async (api) => {
   api.add(TOKEN.lakeUSDC.type, lakeUSDCTvl);
   api.add(TOKEN.btcUSDC.type, btcUSDCTvl);
 }
+
+module.exports = {
+  timetravel: false,
+  sui: {
+    tvl,
+  },
+};
