@@ -4,9 +4,13 @@ const { getObjects } = require("../helper/chain/sui");
 
 const evm_config = {
   ethereum: [
-    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 }
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
+    { kernelEventEmitter: '0xEFfC0fD0CaD5762c360Eb2158500a5537bb4637d', fromBlock: 22965694 }
   ],
-  bsc: [{ kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 }],
+  bsc: [
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 },
+    { kernelEventEmitter: '0xcE9ecebAFE2174FFC9b662FE6cc4610574AB602C', fromBlock: 54773913 }
+  ],
   base: [
     { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 29522359 },
     { kernelEventEmitter: '0x9b69c72B68B7A7E765335831d6234F593f818e6B', fromBlock: 33144489 }
