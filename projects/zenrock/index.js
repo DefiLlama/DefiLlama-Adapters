@@ -9,6 +9,10 @@ const ZRCHAIN_API = 'https://api.diamond.zenrocklabs.io';
 // Chain launch timestamp (genesis block): 2024-11-20T17:39:07Z
 const GENESIS_TIMESTAMP = 1732124347;
 
+// Timestamp cutoff: use address-based counting for queries >= 2025-11-09
+// Use supply API for historical queries before this date
+const ADDRESS_COUNTING_CUTOFF_TIMESTAMP = 1762646400; // 2025-11-09T00:00:00Z
+
 // Cache for block height lookups to avoid repeated RPC calls
 const blockHeightCache = new Map();
 
@@ -28,22 +32,23 @@ async function timestampToBlockHeight(timestamp) {
   const status = await get(`${ZRCHAIN_RPC}/status`);
   const latestHeight = parseInt(status.result.sync_info.latest_block_height);
 
-  // Get latest block timestamp
-  const latestBlock = await get(`${ZRCHAIN_RPC}/block?height=${latestHeight}`);
-  const latestBlockTime = new Date(latestBlock.result.block.header.time).getTime() / 1000;
-
-  // Estimate block height (5 seconds per block for zrchain)
-  const avgBlockTime = 5; // seconds
-  const genesisTime = latestBlockTime - (latestHeight * avgBlockTime);
+  // Estimate block height using actual average block time (calculated from chain data)
+  // Average block time is ~5.65 seconds, using 5.65 for better accuracy
+  const avgBlockTime = 5.65; // seconds (calculated from actual chain data)
   let estimatedHeight = Math.max(1, Math.min(
-    Math.floor((timestamp - genesisTime) / avgBlockTime),
+    Math.floor((timestamp - GENESIS_TIMESTAMP) / avgBlockTime),
     latestHeight
   ));
 
   // Refine estimate to ensure accuracy within 60 seconds
   const targetAccuracy = 60; // seconds
-  let low = Math.max(1, estimatedHeight - 1000); // Search range: ±1000 blocks
-  let high = Math.min(latestHeight, estimatedHeight + 1000);
+  // Use search range: ±5% of chain height or ±100000 blocks, whichever is larger
+  // This handles cases where initial estimate might be significantly off (e.g., 36 hours)
+  // Binary search is logarithmic, so larger range adds minimal overhead (13-14 iterations)
+  // 5% ≈ 277k blocks currently, providing good safety margin for edge cases
+  const searchRange = Math.max(100000, Math.floor(latestHeight * 0.05));
+  let low = Math.max(1, estimatedHeight - searchRange);
+  let high = Math.min(latestHeight, estimatedHeight + searchRange);
   let bestHeight = estimatedHeight;
   let bestDiff = Infinity;
 
@@ -97,44 +102,52 @@ async function apiRequest(url, blockHeight = null) {
       'x-cosmos-block-height': String(blockHeight)
     };
   }
-
-  try {
-    return await get(url, options);
-  } catch (error) {
-    // If historical query fails (code 13 - nil pointer), throw descriptive error
-    // This indicates either: (1) the module was not present on-chain at this block height,
-    // or (2) historical state has been pruned (varies by module - DCT was launched on 2025-10-31)
-    const errorStr = error.message || error.toString() || '';
-    if (errorStr.includes('code 13') || errorStr.includes('nil pointer')) {
-      throw new Error(`Historical data unavailable for block height ${blockHeight}. The module may not have been present on-chain at this block height, or historical state may have been pruned (varies by module).`);
-    }
-    throw error;
-  }
+  return await get(url, options);
 }
 
 async function tvl(api) {
+  const balances = {};
+
   // Extract timestamp from api parameter
   const timestamp = api?.timestamp;
   const now = Date.now() / 1000;
+  const queryTimestamp = timestamp || now;
 
+  // Use address-based counting for current/recent queries (>= 2025-11-09)
+  // Use supply API for historical queries (before 2025-11-09)
+  if (queryTimestamp >= ADDRESS_COUNTING_CUTOFF_TIMESTAMP) {
+    const allAddresses = await zenrock();
+    if (allAddresses.length === 0) {
+      return { bitcoin: '0' };
+    }
+    await sumBitcoinTokens({ balances, owners: allAddresses, timestamp });
+    return balances;
+  }
+
+  // Historical queries: use supply API
   // Determine block height for historical queries
   let blockHeight = null;
   if (timestamp && (now - timestamp) > 3600) {
     blockHeight = await timestampToBlockHeight(timestamp);
   }
 
-  // Fetch all protocol addresses (treasury + change) from the bitcoin-book fetcher
-  // Pass blockHeight for historical queries
-  const allAddresses = await zenrock(blockHeight);
-
-  if (allAddresses.length === 0) {
-    return { bitcoin: '0' };
+  // Fetch custodied amount from zenbtc supply endpoint with height header
+  let supplyData;
+  try {
+    supplyData = await apiRequest(`${ZRCHAIN_API}/zenbtc/supply`, blockHeight);
+  } catch (error) {
+    // If zenbtc supply API fails, return 0 supply instead of erroring
+    // This can happen for historical queries before the module was launched
+    return balances;
   }
+  if (!supplyData?.custodiedBTC) {
+    return balances;
+  }
+  // custodiedBTC is in satoshis (smallest unit)
+  const custodiedAmount = Number(supplyData.custodiedBTC);
+  const custodiedBTC = custodiedAmount / 1e8;
 
-  // Use Bitcoin helper to sum balances for all addresses
-  // Pass timestamp if available for historical queries
-  const balances = {};
-  await sumBitcoinTokens({ balances, owners: allAddresses, timestamp });
+  sdk.util.sumSingleBalance(balances, 'bitcoin', custodiedBTC);
 
   return balances;
 }
@@ -153,21 +166,25 @@ async function zcashTvl(api) {
   }
 
   // Fetch custodied amount from DCT supply endpoint with height header
-  const supplyData = await apiRequest(`${ZRCHAIN_API}/dct/supply`, blockHeight);
-
-  // Find ASSET_ZENZEC in supplies array
+  let supplyData;
+  try {
+    supplyData = await apiRequest(`${ZRCHAIN_API}/dct/supply`, blockHeight);
+  } catch (error) {
+    // If DCT supply API fails, return 0 supply instead of erroring
+    // This can happen for historical queries before the module was launched (2025-10-31)
+    return balances;
+  }
   const zenZecSupply = supplyData.supplies?.find(
     item => item.supply?.asset === 'ASSET_ZENZEC'
   );
-
-  if (zenZecSupply && zenZecSupply.supply?.custodied_amount) {
-    // custodied_amount is in Zatoshi (smallest unit, like satoshis for BTC)
-    // Convert to ZEC by dividing by 1e8
-    const custodiedAmount = Number(zenZecSupply.supply.custodied_amount);
-    const custodiedZEC = custodiedAmount / 1e8;
-
-    sdk.util.sumSingleBalance(balances, 'zcash', custodiedZEC);
+  if (!zenZecSupply?.supply?.custodied_amount) {
+    return balances;
   }
+  // custodied_amount is in Zatoshi (smallest unit, like satoshis for BTC)
+  const custodiedAmount = Number(zenZecSupply.supply.custodied_amount);
+  const custodiedZEC = custodiedAmount / 1e8;
+
+  sdk.util.sumSingleBalance(balances, 'zcash', custodiedZEC);
 
   return balances;
 }

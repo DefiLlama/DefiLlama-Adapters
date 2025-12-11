@@ -1,12 +1,26 @@
 const { getCache, setCache } = require('../helper/cache')
+const { get } = require('../helper/http')
 const { sliceIntoChunks, sleep } = require('../helper/utils')
 
 module.exports = {
   misrepresentedTokens: true,
   isHeavyProtocol: true,
+  timetravel: false,
   tron: {
-    tvl,
+    tvl: httpTvl,
   },
+}
+
+async function httpTvl(api) {
+  const {data} = await get('https://abc.endjgfsv.link/swap/scan/liquidityall')
+  const latest = data.pop()
+  const timestamp = Date.now()  - 24 * 60 * 60 * 1000
+
+  if (latest.time > timestamp) {
+    api.addUSDValue(+latest.liquidity)
+  } else {
+    throw new Error("No recent data found")
+  }
 }
 
 async function tvl(api) {

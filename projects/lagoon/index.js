@@ -138,6 +138,12 @@ const config = {
       fromBlock: 1817048,
     },
   },
+  monad: {
+    optinProxyFactory:{
+      address: "0xcCdC4d06cA12A29C47D5d105fED59a6D07E9cf70",
+      fromBlock: 36249718
+    },
+  },
   
   unichain: {
     vaults: [],
