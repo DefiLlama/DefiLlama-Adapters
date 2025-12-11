@@ -12,11 +12,11 @@ module.exports = {
   base: {
     tvl: sumTokensExport({
       owners: [MINER_ADDRESS, MULTICALL_ADDRESS, LP_ADDRESS],
-      tokens: [WETH_ADDRESS, DONUT_ADDRESS],
+      tokens: [WETH_ADDRESS],
     }),
     staking: sumTokensExport({
       owners: [MINER_ADDRESS, MULTICALL_ADDRESS],
-      tokens: [WETH_ADDRESS, DONUT_ADDRESS],
+      tokens: [DONUT_ADDRESS],
     }),
     pool2: sumTokensExport({
       owner: LP_ADDRESS,
