@@ -147,9 +147,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "TVL counts all tokens held inside Everclear Spoke contracts (WETH, USDC, USDT, xPufETH).",
-  hallmarks: [
-    [Math.floor(Date.now()/1000), "Initial deployment"]
-  ],
   ethereum: { tvl: chainTvl("ethereum") },
   polygon: { tvl: chainTvl("polygon") },
   bsc: { tvl: chainTvl("bsc") },
