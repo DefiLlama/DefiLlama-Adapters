@@ -95,6 +95,5 @@ async function bsc(api) {
 
 module.exports = {
   methodology: `TVL comes from the Staking Vaults and Launchpad Tiers`,
-    tvl: bsc,
-  },
-};
+  bsc: { tvl: bsc },
+}
