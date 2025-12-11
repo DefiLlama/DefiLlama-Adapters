@@ -1,3 +1,0 @@
-{
-  "abi": "function viewMetadata(address lendingContract, address[] tokens, address[] strategies) view returns (tuple(uint256 debtCeiling, uint256 totalDebt, uint256 stabilityFee, uint256 mintingFee, address strategy, address token, uint256 APF, uint256 totalCollateral, uint256 borrowablePer10k, uint256 valuePer1e18, bytes32 strategyName, uint256 tvl, uint256 harvestBalance2Tally, uint8 yieldType, address underlyingStrategy)[])"
-}

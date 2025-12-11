@@ -1,3 +1,0 @@
-module.exports = {
-    APE_STAKE_CONTRACT: "0x4Ba2396086d52cA68a37D9C0FA364286e9c7835a"
-}; 

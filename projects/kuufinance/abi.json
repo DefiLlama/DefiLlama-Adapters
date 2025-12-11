@@ -1,3 +1,0 @@
-{
-  "borrowableBalance": "function borrowableBalance(address _token) view returns (uint256)"
-}

@@ -1,7 +1,0 @@
-{
-  "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)",
-  "wMEMOToMEMO": "function wMEMOToMEMO(uint256 _amount) view returns (uint256)",
-  "xBTRFLYValue": "function xBTRFLYValue(uint256 _amount) view returns (uint256)",
-  "assetInfo": "function assetInfo() view returns (uint8 assetType, address assetAddress, uint8 assetDecimals)",
-  "exchangeRate": "uint256:exchangeRate"
-}

@@ -1,7 +1,0 @@
-{
-  "getAllMarkets": "address[]:getAllMarkets",
-  "underlying": "address:underlying",
-  "getCash": "uint256:getCash",
-  "valtToken": "address:token",
-  "totalBorrows": "uint256:totalBorrows"
-}

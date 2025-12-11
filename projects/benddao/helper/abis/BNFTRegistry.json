@@ -1,4 +1,0 @@
-{
-  "getBNFTAssetList": "function getBNFTAssetList() external view returns (address[] memory)",
-  "bNftProxys": "function bNftProxys(address) view returns (address)"
-}

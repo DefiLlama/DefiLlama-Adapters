@@ -1,4 +1,0 @@
-{
-  "balanceOf": "function balanceOf(uint256 pid) view returns (uint256)",
-  "userInfo": "function userInfo(uint256 pid, address owner) view returns (uint256 amount, uint256 rewardDebt)"
-}

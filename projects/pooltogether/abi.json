@@ -1,7 +1,0 @@
-{
-  "accountedBalance": "uint256:accountedBalance",
-  "totalVaults": "uint256:totalVaults",
-  "allVaults": "function allVaults(uint256) view returns (address)",
-  "asset": "address:asset",
-  "totalAssets": "uint256:totalAssets"
-}

@@ -1,9 +1,0 @@
-{
-  "getTokens": "function getTokens(uint256 _start, uint256 _count, uint256 _tokenType) view returns (tuple(address token, address asset, string name, string symbol, uint256 tokenType, uint256 index)[] tokenData)",
-  "totalAssetSupply": "uint256:totalAssetSupply",
-  "totalAssetBorrow": "uint256:totalAssetBorrow",
-  "totalSupplyByAsset": "function totalSupplyByAsset(address asset) view returns (uint256)",
-  "balanceOf": "function balanceOf(address asset) view returns (uint256)",
-  "totalVested": "uint256:totalVested",
-  "totalSupply": "uint256:totalSupply"
-}

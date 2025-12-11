@@ -1,6 +1,0 @@
-
-module.exports = {
-  stacks: {
-    tvl: () => ({}),
-  },
-};

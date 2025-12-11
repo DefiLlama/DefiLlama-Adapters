@@ -1,5 +1,0 @@
-{
-    "poolLength": "uint256:poolLength",
-    "registeredToken": "function registeredToken(uint256) view returns (address)",
-    "tokenToPoolInfo": "function tokenToPoolInfo(address) view returns (address stakingToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accMGPPerShare, address rewarder, address helper, bool helperNeedsHarvest)"
-}

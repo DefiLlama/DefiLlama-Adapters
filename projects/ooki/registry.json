@@ -1,3 +1,0 @@
-{
-  "getTokens": "function getTokens(uint256 _start, uint256 _count) view returns (tuple(address token, address asset)[] metadata)"
-}

@@ -1,3 +1,0 @@
-{
-  "getUserInfo": "function getUserInfo(address _user, address _rewardToken) view returns (uint256 amount, uint256 rewardDebt)"
-}

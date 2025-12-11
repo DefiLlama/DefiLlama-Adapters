@@ -1,5 +1,0 @@
-{
-  "pendingReward": "function pendingReward(address _user) view returns (uint256 pending)",
-  "rewardToken": "address:rewardToken",
-  "userInfo": "function userInfo(address) view returns (uint256 amount, int256 rewardDebt)"
-}

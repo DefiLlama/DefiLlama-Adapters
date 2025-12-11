@@ -1,3 +1,0 @@
-{
-  "getStakedPtp": "function getStakedPtp(address _addr) view returns (uint256)"
-}

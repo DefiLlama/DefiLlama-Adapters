@@ -1,6 +1,0 @@
-{
-  "avgBorrowInterestRate": "uint256:avgBorrowInterestRate",
-  "totalAssetBorrow": "uint256:totalAssetBorrow",
-  "supplyInterestRate": "uint256:supplyInterestRate",
-  "borrowInterestRate": "uint256:borrowInterestRate"
-}

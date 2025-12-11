@@ -1,4 +1,0 @@
-{
-  "apeCoin": "function apeCoin() external view returns (address)",
-  "stakedTotal": "function stakedTotal(address _address) external view returns (uint256)"
-}

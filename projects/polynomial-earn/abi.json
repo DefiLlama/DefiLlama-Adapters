@@ -1,8 +1,0 @@
-{
-  "name": "string:name",
-  "polynomial_COLLATERAL": "address:COLLATERAL",
-  "polynomial_UNDERLYING": "address:UNDERLYING",
-  "polynomial_pendingDeposits": "uint256:pendingDeposits",
-  "polynomial_totalFunds": "uint256:totalFunds",
-  "polynomial_premiumCollected": "uint256:premiumCollected"
-}

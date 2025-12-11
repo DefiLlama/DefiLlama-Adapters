@@ -1,5 +1,0 @@
-{
-  "getMaxCurrencyId": "function getMaxCurrencyId() view returns (uint16)",
-  "getCurrency": "function getCurrency(uint16) view returns ((address,bool,int256,uint8,uint256),(address,bool,int256,uint8,uint256))",
-  "getPrimeCashHoldingsOracle": "function getPrimeCashHoldingsOracle(uint16) view returns (address)"
-}

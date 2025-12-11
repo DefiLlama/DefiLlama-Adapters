@@ -1,5 +1,0 @@
-{
-  "anatomy": "function anatomy() view returns (address[] _assets, uint8[] _weights)",
-  "inactiveAnatomy": "address[]:inactiveAnatomy",
-  "vTokenFactory": "address:vTokenFactory"
-}

@@ -1,4 +1,0 @@
-{
-  "locked": "function locked(uint256) view returns (int128 amount, uint256 end)",
-  "tokensOfOwner": "function tokensOfOwner(address _usr) view returns (uint256[])"
-}

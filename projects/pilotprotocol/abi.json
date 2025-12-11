@@ -1,7 +1,0 @@
-{
-  "totalToken": "function totalToken(address token) view returns (uint256)",
-  "hecoPool": "address:hecoPool",
-  "hecoPoolId": "uint256:hecoPoolId",
-  "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt, uint256 multLpRewardDebt)",
-  "stakingToken": "address:stakingToken"
-}

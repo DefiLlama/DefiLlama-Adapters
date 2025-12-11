@@ -1,4 +1,0 @@
-{
-  "depositId": "uint256:depositId",
-  "getDepositDetails": "function getDepositDetails(uint256 _id) view returns (address _tokenAddress, address _withdrawalAddress, uint256 _tokenAmount, uint256 _unlockTime, bool _withdrawn, uint256 _tokenId, bool _isNFT)"
-}
