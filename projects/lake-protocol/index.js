@@ -4,26 +4,17 @@ const autoCompoundVaultObjectId =
 const btcUSDCVaultObjectId =
     "0xf704715e61216b4912b4ed01dd60802f3c8e287b069996a9f65985988e47de77";
 const TOKEN = {
-  lakeUSDC: {
-    type: "0xb75744fadcbfc174627567ca29645d0af8f6e6fd01b6f57c75a08cd3fb97c567::lake_usdc::LakeUSDC",
-    decimals: 6,
-  },
-  btcUSDC: {
-    type: "0x6d9fc33611f4881a3f5c0cd4899d95a862236ce52b3a38fef039077b0c5b5834::btc_usdc::BtcUSDC",
-    decimals: 6,
-  },
-  USDC:{
-    type: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
-    decimals: 6,
-  }
+  lakeUSDC: "0xb75744fadcbfc174627567ca29645d0af8f6e6fd01b6f57c75a08cd3fb97c567::lake_usdc::LakeUSDC",
+  btcUSDC: "0x6d9fc33611f4881a3f5c0cd4899d95a862236ce52b3a38fef039077b0c5b5834::btc_usdc::BtcUSDC",
+  USDC: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
 }
 
 async function mappingTokenAsset(type){
   switch (type) {
-    case TOKEN.lakeUSDC.type:
-      return TOKEN.USDC.type;
-    case TOKEN.btcUSDC.type:
-      return TOKEN.USDC.type;
+    case TOKEN.lakeUSDC:
+      return TOKEN.USDC;
+    case TOKEN.btcUSDC:
+      return TOKEN.USDC;
     default:
       return type;
   }
@@ -36,11 +27,11 @@ async function tvl(api) {
     getObject(btcUSDCVaultObjectId),
   ])
 
-  const lakeUSDCTvl = Number(autoCompoundVaultObject.fields.yield_usdb_balance) / TOKEN.lakeUSDC.decimals;
-  const btcUSDCTvl = Number(btcUSDCVaultObject.fields.stake) / TOKEN.btcUSDC.decimals;
+  const lakeUSDCTvl = Number(autoCompoundVaultObject.fields.yield_usdb_balance) 
+  const btcUSDCTvl = Number(btcUSDCVaultObject.fields.stake)
 
-  api.add(mappingTokenAsset(TOKEN.lakeUSDC.type), lakeUSDCTvl);
-  api.add(mappingTokenAsset(TOKEN.btcUSDC.type), btcUSDCTvl);
+  api.add(mappingTokenAsset(TOKEN.lakeUSDC), lakeUSDCTvl);
+  api.add(mappingTokenAsset(TOKEN.btcUSDC), btcUSDCTvl);
 }
 
 module.exports = {
