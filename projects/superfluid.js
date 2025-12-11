@@ -1,5 +1,5 @@
-const { getBlock } = require("./helper/http");
-const { blockQuery } = require("./helper/http");
+const ADDRESSES = require('./helper/coreAssets.json')
+const { getBlock, blockQuery } = require("./helper/http");
 
 const supertokensQuery = ({ first = 1000, id_gt = "" } = {}) => `
 query get_supertokens($block: Int) {
@@ -10,15 +10,15 @@ query get_supertokens($block: Int) {
     orderBy: id,
     orderDirection: asc
   ) {
-      id
-  underlyingAddress
-  name
-  underlyingToken { name decimals symbol id }
-  symbol
-  decimals
-  isSuperToken
-  isNativeAssetSuperToken
-  isListed
+    id
+    underlyingAddress
+    name
+    underlyingToken { name decimals symbol id }
+    symbol
+    decimals
+    isSuperToken
+    isNativeAssetSuperToken
+    isListed
   }
 }`;
 
@@ -26,20 +26,66 @@ const blacklistedSuperTokens = new Set(
   ["0x441bb79f2da0daf457bad3d401edb68535fb3faa"].map((i) => i.toLowerCase())
 );
 
+const blacklistedSymbolsByChain = {
+  base: new Set(['SUP']),
+};
+
+// Fetch and paginate all SuperTokens at a given block
+async function fetchAllSuperTokens(graphUrl, blockForQuery) {
+  const PAGE_SIZE = 1000;
+  let lastId = "";
+  const allTokens = [];
+  let hasMore = true
+  while (hasMore) {
+    const query = supertokensQuery({ first: PAGE_SIZE, id_gt: lastId });
+    const res = await blockQuery(graphUrl, query, {
+      api: { getBlock: () => blockForQuery, block: blockForQuery },
+    });
+    const tokens = res.tokens;
+    if (!tokens?.length) {
+      hasMore = false
+      break;
+    }
+    allTokens.push(...tokens);
+    if (tokens.length < PAGE_SIZE) {
+      hasMore = false
+      break;
+    }
+    lastId = tokens[tokens.length - 1].id;
+  }
+  return allTokens;
+}
+
 // ALEPH custom locker address used on Base and Avalanche
 const ALEPH_LOCKER = "0xb6e45ADfa0C7D70886bBFC990790d64620F1BAE8".toLowerCase();
 // ALEPH SuperToken address (same on Base and Avalanche)
 const ALEPH_SUPERTOKEN = "0xc0Fbc4967259786C743361a5885ef49380473dCF".toLowerCase();
 
+// MIVA token locker addresses (on xDai/Gnosis). Circulating = totalSupply - sum(locker balances)
+const MIVA_LOCKERS = [
+  "0x50e39b354c90146de80a577e13129bb0ba36ee45",
+  "0x791B3A48D2dca38871C9900783653b15aCae0Aea",
+  "0x6A0491132aF4d0925F857A5000bb21e5C5C195EA",
+  "0x8F00FC7756C9E901963B723AD1821E5EB8C69C02",
+  "0x10DAF0DF6Ec9bEF452F3073A56f6adB4B1809222",
+  "0xa2eac044fe1e004cAaC4E8C4164a39F4Cc522b6f",
+  "0x89Abea6823cfd903fB503A1DB17a7ce890A3232e",
+  "0xFd989d6E3244cFb5470597E7B93E4430CC29EfE9",
+  "0x867e84EB2789c95eEF6d6991cC4bC6B48e1519b8",
+  "0x16daae140FbC2F854Cf61af0512Bd8CD627d0B8e",
+  "0xA298D0b6B9216f7d9EB252DeA06280b748eFe8E5",
+  "0x1d9896F00fd51df839B2F5B7fFdD0bD60b471CeF",
+  "0xDfdec8DF5cfF5DaAb3ec635E477517AC92251dfD",
+  "0xeCD2D1bB2776f00AD15F976F349A1ab01F8ce398",
+  "0x5B339241312024382C9768b3598f60eCF34Ae779",
+];
+
 // Main function for all chains to get balances of superfluid tokens
 async function getChainBalances(allTokens, chain, block, isVesting, api) {
-  // Init empty balances
-  let balances = {};
-
   // Abi MultiCall to get supertokens supplies
   const supply = await api.multiCall({
-    abi: "erc20:totalSupply", // abi['totalSupply'],
-    calls: allTokens.map(token => token.id),
+    abi: "erc20:totalSupply",
+    calls: allTokens.map((token) => token.id),
   });
 
   for (let i = 0; i < supply.length; i++) {
@@ -54,13 +100,21 @@ async function getChainBalances(allTokens, chain, block, isVesting, api) {
       isNativeAssetSuperToken,
     } = allTokens[i];
 
-    // Accumulate to balances, the balance for tokens on mainnet or sidechain
+    const tokenSymbol = symbol?.toUpperCase();
+    const underlyingSymbol = underlyingToken?.symbol?.toUpperCase();
+
+    const chainBlacklist = blacklistedSymbolsByChain[chain];
+    const isBlacklistedSymbol =
+      (chainBlacklist && tokenSymbol && chainBlacklist.has(tokenSymbol)) ||
+      (chainBlacklist && underlyingSymbol && chainBlacklist.has(underlyingSymbol));
+
+    if (isBlacklistedSymbol) continue;
+
     let prefixedUnderlyingAddress = underlyingAddress;
     if (
       underlyingAddress &&
       blacklistedSuperTokens.has(underlyingAddress.toLowerCase())
-    )
-      continue;
+    ) continue;
 
     // ALEPH custom logic (Base and Avalanche): no underlying; circulating = totalSupply - locker balance
     if (
@@ -73,9 +127,21 @@ async function getChainBalances(allTokens, chain, block, isVesting, api) {
       continue;
     }
 
+    // MIVA token special logic (Gnosis/xDai): circulating = totalSupply - sum(locker balances)
+    if (symbol && symbol.toUpperCase() === 'MIVA') {
+      const lockerHoldings = await api.multiCall({
+        abi: 'erc20:balanceOf',
+        calls: MIVA_LOCKERS.map((locker) => ({ target: id, params: [locker] })),
+      });
+      const totalLocked = lockerHoldings.reduce((sum, v) => sum + (Number(v) || 0), 0);
+      const circulating = Math.max(0, totalSupply - totalLocked);
+      api.add(id, circulating);
+      continue;
+    }
+
     if (isNativeAssetSuperToken) {
       // For native asset SuperTokens (like ETHx), use the chain's native token
-      api.add('0x0000000000000000000000000000000000000000', totalSupply);
+      api.add(ADDRESSES.null, totalSupply);
       continue;
     }
 
@@ -127,26 +193,10 @@ async function retrieveSupertokensBalances(
   if (minStart && blockNum < minStart) return;
   const blockForQuery = (blockNum || 0);
 
-  const PAGE_SIZE = 1000;
-  let lastId = "";
-  let allTokens = [];
-  let tokens = [];
-  do {
-    const query = supertokensQuery({ first: PAGE_SIZE, id_gt: lastId });
-
-    const { queriedTokens } = await blockQuery(graphUrl, query, {
-      api: { getBlock: () => blockForQuery, block: blockForQuery },
-    });
-
-    tokens = queriedTokens
-
-    if (!tokens?.length) break;
-    allTokens.push(...tokens);
-    lastId = tokens[tokens.length - 1].id;
-  } while (tokens.length < PAGE_SIZE)
-
+  const allTokens = await fetchAllSuperTokens(graphUrl, blockForQuery);
   const filteredTokens = allTokens.filter((t) => t.isSuperToken);
-  return getChainBalances(filteredTokens, chain, block, isVesting, api);
+  await getChainBalances(filteredTokens, chain, block, isVesting, api);
+  return api.getBalances();
 }
 
 /**

@@ -1,7 +1,7 @@
 const { staking } = require('../helper/staking')
-const { sumChainTvls } = require('@defillama/sdk/build/generalUtil')
 const CHAIN_CONFIG = require('./chainConfig')
 const helpers = require('./utils')
+const sdk = require('@defillama/sdk')
 
 // Create module for each chain
 const createChainModule = (chain) => {
@@ -14,7 +14,7 @@ const createChainModule = (chain) => {
     module.pool2 = (api) => helpers.calculatePool2TVL(api, chain)
   }
 
-  module.staking = (api) => sumChainTvls([
+  module.staking = (api) => sdk.util.sumChainTvls([
     config.stakingPools ? helpers.calculateStakingTVL(api, chain) : {}, 
     config.staking ? staking(config.staking.contract, config.staking.token) : {}
   ])

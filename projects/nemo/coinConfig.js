@@ -301,7 +301,7 @@ const COIN_CONFIG = {
     "providerMarket": "0xa757975255146dc9686aa823b7838b507f315d704f428cbadad2f4ea061939d9",
     "syStateId": "0xccd3898005a269c1e9074fe28bca2ff46784e8ee7c13b576862d9758266c3a4d",
     "syCoinType": "0x8c82d435c8b7463581020484aee70ffee0e6b94a08d7c31cfaa3d10418d9c37b::sWAL::SWAL",
-    "underlyingCoinType": "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    "underlyingCoinType": ADDRESSES.sui.WAL,
     "nemoContractId": "0xbf4adf628ffb8ece142bf3d1cb43ee989bf8b42ea711d38ccd849f3a9dbf6840",
     "pyStateId": "0xc2d63e973782020265b6e203d409a2bf5d7c7feb2f93397c280941ee7f940191",
     "marketFactoryConfigId": "0x4a8d13937be10f97e450d1b8eb5846b749f9d3f470243b6cfa660e3d75b1fc49",
@@ -337,7 +337,7 @@ const COIN_CONFIG = {
     "providerMarket": "",
     "syStateId": "0xccd3898005a269c1e9074fe28bca2ff46784e8ee7c13b576862d9758266c3a4d",
     "syCoinType": "0xe186d94b6077c2ac68c131e57145649998daf06420de4ae19d1e0d27527f15fc::haWAL::HAWAL",
-    "underlyingCoinType": "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    "underlyingCoinType": ADDRESSES.sui.WAL,
     "nemoContractId": "0xbf4adf628ffb8ece142bf3d1cb43ee989bf8b42ea711d38ccd849f3a9dbf6840",
     "pyStateId": "0x0f3c5b2f206805dbcd85eb04b68ef1578bb39aaef1327abfc40f6fa030736650",
     "marketFactoryConfigId": "0x4a8d13937be10f97e450d1b8eb5846b749f9d3f470243b6cfa660e3d75b1fc49",
@@ -355,7 +355,7 @@ const COIN_CONFIG = {
     "providerMarket": "",
     "syStateId": "0xccd3898005a269c1e9074fe28bca2ff46784e8ee7c13b576862d9758266c3a4d",
     "syCoinType": "0x0c2e5a60b4c6e2eda7a5add1f9340160bfcc0559749af239622e8d107d51b431::wWAL::WWAL",
-    "underlyingCoinType": "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    "underlyingCoinType": ADDRESSES.sui.WAL,
     "nemoContractId": "0xbf4adf628ffb8ece142bf3d1cb43ee989bf8b42ea711d38ccd849f3a9dbf6840",
     "pyStateId": "0xcce767588e14be4cfae929f54db89b7599c18fb6410f1b11af6a3f0202b48b9d",
     "marketFactoryConfigId": "0x4a8d13937be10f97e450d1b8eb5846b749f9d3f470243b6cfa660e3d75b1fc49",
@@ -463,7 +463,7 @@ const COIN_CONFIG = {
     "providerMarket": "",
     "syStateId": "0xccd3898005a269c1e9074fe28bca2ff46784e8ee7c13b576862d9758266c3a4d",
     "syCoinType": "0x842a1580baf97b349d2ddfb0730cf5046ffff33168c9a4e8a6913db926afe6d9::nWAL::NWAL",
-    "underlyingCoinType": "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    "underlyingCoinType": ADDRESSES.sui.WAL,
     "nemoContractId": "0xbf4adf628ffb8ece142bf3d1cb43ee989bf8b42ea711d38ccd849f3a9dbf6840",
     "pyStateId": "0x5142c6988b3fefa8786a6197fb731468cd53c44000ddbf7178faef459b762c6d",
     "marketFactoryConfigId": "0x4a8d13937be10f97e450d1b8eb5846b749f9d3f470243b6cfa660e3d75b1fc49",
@@ -491,12 +491,12 @@ const COIN_CONFIG = {
     "pyStateId": "0x1274d5deded97aca90c9ad9fef04a68d4f915ce5e008e1be28307c693f6c25c4",
     "syStateId": "0xccd3898005a269c1e9074fe28bca2ff46784e8ee7c13b576862d9758266c3a4d",
     "syCoinType": "0x23f7d6b1de8c099fe15f638c4517acfd85d4d893ae669a24ea348e262e03b07e::nevLP_suiUSDT_USDC::NEVLP_SUIUSDT_USDC",
-    "underlyingCoinType": "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+    "underlyingCoinType": ADDRESSES.sui.USDC_CIRCLE,
     "nemoContractId": "0x0f286ad004ea93ea6ad3a953b5d4f3c7306378b0dcc354c3f4ebb1d506d3b47f",
     "marketFactoryConfigId": "0x4a8d13937be10f97e450d1b8eb5846b749f9d3f470243b6cfa660e3d75b1fc49",
     "marketStateId": "0xb13b492e36200638bb7380be9e4975f2b7c3b9af55f201c22e6cbad2dd942788",
     "priceOracleConfigId": "0xb9cc723bf7494325be2f3333a3fb72f46d53abe3603e3f326fc761287850db0e",
-    "yieldTokenType": "0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT",
+    "yieldTokenType": ADDRESSES.sui.suiUSDT,
     "oraclePackageId": "0x16c08984e498f616a1e7dd083a08e399e54e0656ce0e26bc1b3ffc4790dc09c4",
     "oracleTicket": "0x900f66b9a1d78481cf313b835e94a3bdcbe4cf58d4c004a302f7c184142f2b6d",
     "oracleVoucherPackageId": "0x8783841625738f73a6b0085f5dad270b4b0bd2e5cdb278dc95201e45bd1a332b",
@@ -518,44 +518,44 @@ const MMT_TYPE_CONFIG = {
   "0x811d7913fa37da1a16fd0cbdebfec15a89f20a8894922e07527c86823b6c27f8::suiusdt_usdc_nevlp::SUIUSDT_USDC_NEVLP": {
     VAULT_ID: "0x30a8285b76ba17f0202c60f5d5be769ca644db00ac944924b58408c5a1f971e8",
     POOL_ID: "0xb0a595cb58d35e07b711ac145b4846c8ed39772c6d6f6716d89d71c64384543b",
-    COIN_A_TYPE: "0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT",
-    COIN_B_TYPE: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+    COIN_A_TYPE: ADDRESSES.sui.suiUSDT,
+    COIN_B_TYPE: ADDRESSES.sui.USDC_CIRCLE,
     CONFIG_TYPE: "0xaa5c53240d338514907ce7254a14730716adc3c0d1d4f55485b0178d61881947::config::Uncorrelated",
   },
   "0x7f29e761222a44b2141596e920edcc9049f8610f9d33f5354454d088e1f53b62::x_sui_sui_nevlp::X_SUI_SUI_NEVLP": {
     VAULT_ID: "0x9356a36b0066561f66db7681d87537c8d9a992ca8e12095be91dcea500211015",
     POOL_ID: "0x9c92c5b8e9d83e485fb4c86804ac8b920bb0beaace5e61a5b0239218f627f8e9",
     COIN_A_TYPE: "0x2b6602099970374cf58a2a1b9d96f005fccceb81e92eb059873baf420eb6c717::x_sui::X_SUI",
-    COIN_B_TYPE: "0x2::sui::SUI",
+    COIN_B_TYPE: ADDRESSES.sui.SUI,
     CONFIG_TYPE: "0xaa5c53240d338514907ce7254a14730716adc3c0d1d4f55485b0178d61881947::config::Uncorrelated",
   },
   "0x295d7f569467934c934e6101284628ecbbb1e68d5c5baa8d4667ff09c42068ad::suiusdt_usdc_nevlp::SUIUSDT_USDC_NEVLP": {
     VAULT_ID: "0x18fe46d697a3ce2c87b62db5435678ff8df179efc913e250e888019d2f1c4105",
     POOL_ID: "0xb0a595cb58d35e07b711ac145b4846c8ed39772c6d6f6716d89d71c64384543b",
-    COIN_A_TYPE: "0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT",
-    COIN_B_TYPE: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+    COIN_A_TYPE: ADDRESSES.sui.suiUSDT,
+    COIN_B_TYPE: ADDRESSES.sui.USDC_CIRCLE,
     CONFIG_TYPE: "0xaa5c53240d338514907ce7254a14730716adc3c0d1d4f55485b0178d61881947::config::Uncorrelated",
   },
   "0xa9759f952198f985f5e05f6a37956e33b0c496bb02264ef92e4ee63c3eaaa06a::xbtc_wbtc_nevlp::XBTC_WBTC_NEVLP": {
     VAULT_ID: "0x5ca7c661f9e454bbcd780f4d376ccbf536ec34402d99a840bdfb595021e9d727",
     POOL_ID: "0x57a662791cea065610455797dfd2751a3c10d929455d3ea88154a2b40cf6614e",
     COIN_A_TYPE: "0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC",
-    COIN_B_TYPE: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    COIN_B_TYPE: ADDRESSES.sui.BTC,
     CONFIG_TYPE: "0xaa5c53240d338514907ce7254a14730716adc3c0d1d4f55485b0178d61881947::config::Uncorrelated",
   }
 }
 
 const PYTH_ORACLE_MAP = {
-  '0x2::sui::SUI': {
+  [ADDRESSES.sui.SUI]: {
     priceInfoObjectId: '0x801dbc2f0053d34734814b2d6df491ce7807a725fe9a01ad74a07e9c51396c37'
   },
   '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI': {
     priceInfoObjectId: '0x801dbc2f0053d34734814b2d6df491ce7807a725fe9a01ad74a07e9c51396c37'
   },
-  '0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT': {
+  [ADDRESSES.sui.suiUSDT]: {
     priceInfoObjectId: '0x985e3db9f93f76ee8bace7c3dd5cc676a096accd5d9e09e9ae0fb6e492b14572'
   },
-  '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC': {
+  [ADDRESSES.sui.USDC_CIRCLE]: {
     priceInfoObjectId: '0x5dec622733a204ca27f5a90d8c2fad453cc6665186fd5dff13a83d0b6c9027ab'
   }
 }

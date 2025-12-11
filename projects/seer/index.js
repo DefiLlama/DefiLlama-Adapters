@@ -115,7 +115,7 @@ async function processPoolTVL(api, wrappedTokens, collateralToken) {
     pools = await api.multiCall({ abi: XDAI_GET_POOL_ABI, calls: wrappedTokens.map(token => ({ target: config[api.chain].poolFactory, params: [collateralToken, token] })) })
   }
   // filter out zero addresses
-  const nonZeroPools = pools.filter(pool => pool !== '0x0000000000000000000000000000000000000000')
+  const nonZeroPools = pools.filter(pool => pool !== ADDRESSES.null)
   // read the collateral token balance of the non-zero pool
   // we don't count the outcome token since we already counted it in the total supply calculation in the TVL calculation
   const poolCollateralBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: nonZeroPools.map(pool => ({ target: collateralToken, params: [pool] })) })  // now add the supply of the collateral token to the pool TVL

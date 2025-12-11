@@ -27,7 +27,7 @@ const InputIndex = 1;
 const ResultIndex = 2;
 
 function parseSuiAddress(str) {
-  if (str === '0x2::sui::SUI') {
+  if (str === ADDRESSES.sui.SUI) {
     str = '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI'
   }
   const STRUCT_REGEX = /^([^:]+)::([^:]+)::([^<]+)(<(.+)>)?/;

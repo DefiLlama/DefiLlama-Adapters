@@ -22,6 +22,7 @@ const chainMapping = {
   BASE: 'base',
   BSC: 'bsc',
   XRP: 'ripple',
+  TRON: 'tron',
   THOR: 'thorchain',
 }
 
@@ -43,6 +44,8 @@ const tokenGeckoMapping = {
   'BNB.ETH-1C9': 'ethereum',
   'THOR.RUJI': 'rujira',
   'THOR.TCY': 'tcy',
+  'TRON.TRX': 'tron',
+  'TRON.USDT-TR7NHQJEKQXGTCI8Q8ZY4PL8OTSZGJLJ6T': 'tether'
 }
 
 

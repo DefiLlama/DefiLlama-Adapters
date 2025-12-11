@@ -21,17 +21,11 @@ async function getTokens(api) {
 async function tvl(api) {
   const { lendingPool } = config[api.chain]
   const tokens = await getTokens(api)
-  const bals = await api.multiCall({ abi: abi.getTotalLiquidity, calls: tokens, target: lendingPool })
-  const borrows = await api.multiCall({ abi: abi.getTotalDebt, calls: tokens, target: lendingPool })
-  api.addTokens(tokens, bals)
-  api.addTokens(tokens, borrows.map(i => i * -1))
+  return api.sumTokens({ tokens, owners: [lendingPool] })
 }
 
-async function borrowed(api) {
-  const { lendingPool } = config[api.chain]
-  const tokens = await getTokens(api)
-  const bals = await api.multiCall({ abi: abi.getTotalDebt, calls: tokens, target: lendingPool })
-  api.addTokens(tokens, bals)
+async function borrowed() {
+  return {}
 }
 
 module.exports = {
@@ -42,7 +36,8 @@ module.exports = {
   },
   hallmarks: [
     [1688670115, "Multichain Exploit"],
-],
+  ],
+  deadFrom: '2025-12-05',
 };
 
 
@@ -52,9 +47,3 @@ Object.keys(config).forEach(chain => {
     tvl, borrowed,
   }
 })
-
-const abi = {
-  "getSupportedAsset": "function getSupportedAsset(uint256 _index) view returns (address)",
-  "getTotalDebt": "function getTotalDebt(address _underlyingAsset) view returns (uint256)",
-  "getTotalLiquidity": "function getTotalLiquidity(address _underlyingAsset) view returns (uint256)",
-}

@@ -1,3 +1,4 @@
+const { getConfig } = require("../helper/cache");
 const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 
@@ -78,8 +79,8 @@ async function getPositionAddresses() {
     const items = result.data?.positions?.items || [];
     positions.push(...items.map((i) => i.id));
 
-    hasNextPage = result.data?.positions?.pageInfo?.hasNextPage;
-    afterCursor = result.data?.positions?.pageInfo?.endCursor;
+    hasNextPage = result.data.positions.pageInfo.hasNextPage;
+    afterCursor = result.data.positions.pageInfo.endCursor;
   }
 
   return positions;
@@ -106,10 +107,12 @@ async function tvl(api) {
   }
 
   // Collateral TVL
-  const positions = await getPositionAddresses();
+  const positions = await getConfig('sentiment/'+api.chain, null, {
+    fetcher: getPositionAddresses,
+  });
 
   // Batch positions into chunks of 30
-  const BATCH_SIZE = 30;
+  const BATCH_SIZE = 200;
   for (let i = 0; i < positions.length; i += BATCH_SIZE) {
     const positionBatch = positions.slice(i, i + BATCH_SIZE);
 

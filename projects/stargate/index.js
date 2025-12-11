@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const axios = require('axios');
 
 const STARGATE_CONTRACT = '0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7';
-const VET_ADDRESS = '0x0000000000000000000000000000000000000000';
+const VET_ADDRESS = ADDRESSES.null;
 const NODE_URL = 'https://mainnet.vechain.org';
 
 async function getTotalVetStaked() {

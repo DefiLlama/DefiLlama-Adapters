@@ -1,19 +1,15 @@
-const ADDRESSES = require("../helper/coreAssets.json");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const sdk = require('@defillama/sdk')
+const { sumTokens } = require("../helper/sumTokens");
 
 module.exports = {
   bitcoin: {
     tvl: async (api) => {
-      const rskApi = new sdk.ChainApi({ chain: "rsk", timestamp: api.timestamp });
-      const block = await rskApi.getBlock()
-      const unminted = (
-        await sdk.api.eth.getBalance({ target: "0x0000000000000000000000000000000001000006", chain: "rsk", block, })
-      ).output / 1e18;
-
-      const minted = 21e6 - unminted;
-
-      return { "coingecko:bitcoin": minted };
+      return sumTokens({ 
+        chain: 'bitcoin',
+        owners: bitcoinAddressBook.rskBridge, 
+        balances: api.getBalances(),
+      });
     },
   },
   ethereum: {
@@ -32,7 +28,6 @@ module.exports = {
         "0xFF9EA341d9ea91CB7c54342354377f5104Fd403f",
         "0x4991516DF6053121121274397A8C1DAD608bc95B",
         "0x1BDa44fda023F2af8280a16FD1b01D1A493BA6c4",
-        ADDRESSES.rsk.rUSDT,
         "0x75c6e15702ebAcd51177154ff383DF9695E1B1DA",
         "0x9C3a5F8d686fadE293c0Ce989A62a34408C4e307",
         "0xe506F698B31a66049bD4653Ed934e7A07Cbc5549",

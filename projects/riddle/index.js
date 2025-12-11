@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 
 module.exports = {
   xrplevm: {
     tvl: async (api) => {
-      // const xrp = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-      const wxrp = "0x7C21a90E3eCD3215d16c3BBe76a491f8f792d4Bf";
+      // const xrp = ADDRESSES.GAS_TOKEN_2;
+      const wxrp = ADDRESSES.xrplevm.WXRP;
       const factory = "0x4e127808535795C58045e546c4b1554ae4aeF3cD";
       const fromBlock = 1;
       const pairs = await getPairs(api, factory, fromBlock);
