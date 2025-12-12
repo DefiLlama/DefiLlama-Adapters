@@ -23,7 +23,6 @@ module.exports = {
   methodology: `Ape Church TVL is achieved by tracking the balance of The House smart contract. Volume is achieved by tracking the Transfer events from the UserInfoTracker smart contract.`,
   start: 1757586225,
   apechain: {
-    volume,
     tvl
   }
 }
