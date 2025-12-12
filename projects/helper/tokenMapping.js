@@ -54,6 +54,7 @@ const fixBalancesTokens = {
     'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
     'uusdc.figure.se': { coingeckoId: 'usd-coin', decimals: 6 },
     'uylds.fcc': { coingeckoId: 'usd-coin', decimals: 6 },
+    'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6},
     'nbtc.figure.se': { coingeckoId: 'bitcoin', decimals: 9 },
     'neth.figure.se': { coingeckoId: 'ethereum', decimals: 9 },
     'uusdt.figure.se': { coingeckoId: 'tether', decimals: 6 },
