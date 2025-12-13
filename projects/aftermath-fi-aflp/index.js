@@ -1,11 +1,11 @@
 const sui = require("../helper/chain/sui");
 
-// Example type: 0x1331a181525bf7852423ca2022a7cfc524370244b7f7ba04ebeee387d315545e::vault::Vault<
-//   0x365c418bca2846daf281b6d9a42182e1b4e266c6348166f5e935cfa97722918a::template::TEMPLATE,
-//   0xcdd397f2cffb7f5d439f56fc01afe5585c5f06e3bcd2ee3a21753c566de313d9::usdc::USDC
+// Example type: 0x384ab5f72d0ef84e3b7e0f63b595e1f6d6ff6fb991160ae803458534c0795457::vault::Vault<
+//  0x2609a5d99772af4df0775c6167f9d72b428ce621a289fe5e5de2cb887ded6f4c::af_lp::AF_LP,
+//  0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC
 // >
 const AFLP_VAULT_ID =
-    "0xb950819c5eba1bb5980f714f2a3b1d8738e3da58a4d9daf5fa21b6c2a7dd1e12";
+    "0xb0932e1b22b1e9b43ff6d8389b2c2a0b3f2db2a0d7b8a7981deacfda3fc59023";
 
 async function tvl(api) {
     const vault = await sui.getObject(AFLP_VAULT_ID);
