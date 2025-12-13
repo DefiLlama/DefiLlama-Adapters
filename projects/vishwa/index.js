@@ -1,18 +1,13 @@
 const { sumTokens } = require("../helper/chain/bitcoin");
 const { getObject } = require("../helper/chain/sui");
-const { getConfig } = require('../helper/cache')
-
-// Vault address
-const btcAddressBook = 'https://api.btcvc.vishwanetwork.xyz/btc/address';
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 // Ember Protocol
 const suiVaultIds = ['0xb3ccbc12cd633d3a8da0cf97a4d89f771a9bd8c0cd8ce321de13edc11cfb3e1c'];
 
-async function calcBtcVault() {
-  let addresses = (await getConfig('vishwa', btcAddressBook))?.data || [];
-  return await sumTokens({owners: addresses})
+async function tvl() {
+  return sumTokens({ owners: await bitcoinAddressBook.vishwa() })
 }
-
 async function calcSuiTvlByEmberProtocol(api) {
   await Promise.all(suiVaultIds.map(async id => {
     const treasury_cap = (await getObject(id)).fields['receipt_token_treasury_cap']
@@ -25,9 +20,9 @@ async function calcSuiTvlByEmberProtocol(api) {
 
 module.exports = {
   bitcoin: {
-    tvl: calcBtcVault,
+    tvl,
   },
   sui: {
-    tvl: calcSuiTvlByEmberProtocol,
+    // tvl: calcSuiTvlByEmberProtocol,
   }
 };

@@ -13,6 +13,7 @@ function isOwner(owner, owners) {
 
 async function getMorphoVaults(api, owners) {
   let allVaults = []
+  const safeBlock = (await api.getBlock()) - 200
   for (const factory of MorphoConfigs[api.chain].vaultFactories) {
     const vaultOfOwners = (
       await getLogs2({
@@ -20,6 +21,7 @@ async function getMorphoVaults(api, owners) {
         eventAbi: ABI.morpho.CreateMetaMorphoEvent,
         target: factory.address,
         fromBlock: factory.fromBlock,
+        toBlock: safeBlock
       })
     ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
     allVaults = allVaults.concat(vaultOfOwners)

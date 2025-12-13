@@ -5,7 +5,7 @@ const { aQuery } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
 const {post} = require("../helper/http");
 
-const RIPPLE_ENDPOINT = 'https://s1.ripple.com:51234';
+const RIPPLE_ENDPOINT = 'https://xrplcluster.com';
 
 async function getXrplTokenBalances(issuer_acct, currency_code) {
   const body =  {

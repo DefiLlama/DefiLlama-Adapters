@@ -72,8 +72,7 @@ const GM_CONTRACTS = {
   'xrplevm': "0x7fbc940561892EB797B78Bf9AAd9511Ab4328fC0",
 }
 
-const sdk = require("@defillama/sdk")
-const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const abi = {
   feeRecipient: "address:feeRecipient",
@@ -81,38 +80,22 @@ const abi = {
 
 async function tvl(api) {
   const contractAddress = GM_CONTRACTS[api.chain]
-  
+
   if (!contractAddress) {
     throw new Error(`No GM contract found for chain ${api.chain}`)
   }
 
   // Get fee recipient address
-  const feeRecipient = await api.call({
-    target: contractAddress,
-    abi: abi.feeRecipient,
-  })
-
-  // Get native token balance of fee recipient
-  const { output: balance } = await sdk.api.eth.getBalance({
-    target: feeRecipient,
-    chain: api.chain,
-    block: api.block,
-  })
-
-  // Add native token balance as TVL
-  api.addGasToken(balance)
+  const feeRecipient = await api.call({ target: contractAddress, abi: abi.feeRecipient, })
+  return sumTokens2({ api, owners: [feeRecipient], tokens: [nullAddress] })
 }
 
-// Create exports for each supported chain
-const chainExports = {}
+module.exports = {
+  methodology: 'TVL is calculated as the native token balance of the feeRecipient address, which accumulates fees from GM transactions.',
+}
 
 Object.keys(GM_CONTRACTS).forEach(chainName => {
-  chainExports[chainName] = {
+  module.exports[chainName] = {
     tvl,
   }
 })
-
-module.exports = {
-  ...chainExports,
-  methodology: 'TVL is calculated as the native token balance of the feeRecipient address, which accumulates fees from GM transactions.',
-}
