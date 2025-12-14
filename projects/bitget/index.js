@@ -84,7 +84,7 @@ const config = {
       "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D",
       "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
       "0x5bdf85216ec1e38d6458c870992a69e38e03f7ef",
-       "0xec96bbbe895301710a89a06546264ebb4f0cc546"
+      "0xec96bbbe895301710a89a06546264ebb4f0cc546"
     ],
     blacklistedTokens: [
       "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
@@ -279,6 +279,20 @@ const config = {
   },
   sonic: {
     owners: ['0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54',],
+  },
+  cardano: {
+    owners: [
+      "Ae2tdPwUPEZKnykUqXyYQxqJSnADNkm4ELUnyqZUBHcCrNJVDqozLYCt9Jv",
+    ]
+  },
+  sui: {
+    owners: [
+      "0xce7e1e38f996cdb2c4b78c1d187d23c1001d7b266f181498677672f9b1e24ea0",
+      "0xb7b7a848fdc47e22e5a04816bd8d37143a164617d3fd16944f586efd1edfc4bb",
+      "0x9529d8d9621874f60e342e3f0f049157eda68b2d5085f6526b9fced8913b97a8",
+      "0x3a1520d6be3a16f89655f542f6e5b050d3065ff67d7287ed8005259c4a0b36b7",
+      "0x98252cfb5f8481cc4e395deb88000ffff5ab8fdd870be91fc48abfa83ec21a10",
+    ]
   },
 };
 
