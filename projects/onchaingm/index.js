@@ -33,7 +33,6 @@ const GM_CONTRACTS = {
   'celo': "0xeAbc990398DdF9F7cC44c9167Ff95B7CeE2C88f4",
   'ethereum': "0xcD21a60fB9f981dc1274F15ECaa250941edabd4E",
   'scroll': "0xcE8c1FcDD440b4Fd6e6c236568C74e6022767c97",
-  // 'monad': "0x235e23954ACde3b6308A087Ee0C44a1a85F5D041", // Temporarily disabled - RPC issue
   'hyperliquid': "0x011DF91136609a4Dc0b1a329124D7DDB11816612",
   'avax': "0xBeDb1d315510Cba53d5E6822632783D7e6fBCf43",
   'era': "0x648F32bdda298335009732ba16705f887f108e49",
@@ -73,8 +72,7 @@ const GM_CONTRACTS = {
   'xrplevm': "0x7fbc940561892EB797B78Bf9AAd9511Ab4328fC0",
 }
 
-const sdk = require("@defillama/sdk")
-const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const abi = {
   feeRecipient: "address:feeRecipient",
@@ -82,38 +80,22 @@ const abi = {
 
 async function tvl(api) {
   const contractAddress = GM_CONTRACTS[api.chain]
-  
+
   if (!contractAddress) {
     throw new Error(`No GM contract found for chain ${api.chain}`)
   }
 
   // Get fee recipient address
-  const feeRecipient = await api.call({
-    target: contractAddress,
-    abi: abi.feeRecipient,
-  })
-
-  // Get native token balance of fee recipient
-  const { output: balance } = await sdk.api.eth.getBalance({
-    target: feeRecipient,
-    chain: api.chain,
-    block: api.block,
-  })
-
-  // Add native token balance as TVL
-  api.addGasToken(balance)
+  const feeRecipient = await api.call({ target: contractAddress, abi: abi.feeRecipient, })
+  return sumTokens2({ api, owners: [feeRecipient], tokens: [nullAddress] })
 }
 
-// Create exports for each supported chain
-const chainExports = {}
+module.exports = {
+  methodology: 'TVL is calculated as the native token balance of the feeRecipient address, which accumulates fees from GM transactions.',
+}
 
 Object.keys(GM_CONTRACTS).forEach(chainName => {
-  chainExports[chainName] = {
+  module.exports[chainName] = {
     tvl,
   }
 })
-
-module.exports = {
-  ...chainExports,
-  methodology: 'TVL is calculated as the native token balance of the feeRecipient address, which accumulates fees from GM transactions.',
-}
