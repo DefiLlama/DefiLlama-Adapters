@@ -4,7 +4,9 @@ const config = {
   ]
 };
 
-const abi = "function getDepositBalance(address user, address vault) view returns (uint256 balance)";
+const tvl = async (api) => {
+  return api.erc4626Sum({ calls: config[api.chain], tokenAbi: 'asset', balanceAbi: 'totalAssets' })
+}
 
 module.exports = {
   methodology: "TVL displays the total amount of assets stored in the Thesauros contracts.",
@@ -13,15 +15,5 @@ module.exports = {
 };
 
 Object.keys(config).forEach((chain) => {
-  module.exports[chain] = { tvl: (api) => tvl(api, config[chain]) };
+  module.exports[chain] = { tvl };
 });
-
-const tvl = async (api, vaults) => {
-  const [providers, assets] = await Promise.all([
-    api.multiCall({ calls: vaults, abi: "address:activeProvider" }),
-    api.multiCall({ calls: vaults, abi: "address:asset" }),
-  ]);
-
-  const balances = await api.multiCall({ calls: vaults.map((vault, i) => ({ target: providers[i], params: [vault, vault] })), abi })
-  api.add(assets, balances)
-};
