@@ -11,6 +11,7 @@
   "aleph_zero",
   "alephium",
   "algorand",
+  "allora",
   "alv",
   "ancient8",
   "ao",
@@ -112,6 +113,7 @@
   "dfk",
   "dfs",
   "doge",
+  "doma",
   "dogechain",
   "dsc",
   "duckchain",
@@ -159,6 +161,7 @@
   "flow",
   "fluence",
   "formnetwork",
+  "fogo",
   "fraxtal",
   "fsc",
   "ftn",
@@ -470,5 +473,7 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "gnosis",
+  "everclear"
 ]
