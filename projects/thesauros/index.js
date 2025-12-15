@@ -43,21 +43,12 @@ Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl: (api) => tvl(api, config[chain]) };
 });
 
-/**
- * Calculate TVL for Thesauros vaults
- * @param {Object} api - DefiLlama API helper
- * @param {Array<string>} vaults - Array of vault contract addresses
- */
 const tvl = async (api, vaults) => {
-  // Get active provider and asset address for each vault
   const [activeProviders, assets] = await Promise.all([
     api.multiCall({ calls: vaults, abi: "address:activeProvider" }),
     api.multiCall({ calls: vaults, abi: "address:asset" }),
   ]);
 
-  // Get deposit balance from each provider
-  // Parameters: [vault address as user, vault address as vault]
-  // The vault acts as both the user and the vault parameter
   const balances = await api.multiCall({ 
     calls: vaults.map((vault, i) => ({ 
       target: activeProviders[i], 
@@ -66,6 +57,5 @@ const tvl = async (api, vaults) => {
     abi 
   });
 
-  // Add assets with their balances to the TVL calculation
   api.add(assets, balances);
 };
