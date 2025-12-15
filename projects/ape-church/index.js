@@ -1,19 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { nullAddress } = require('../helper/tokenMapping');
 
-const USER_CONTRACT = '0x6EA76F01Aa615112AB7de1409EFBD80a13BfCC84';
 const HOUSE_CONTRACT = '0x2054709F89F18a4CCAC6132acE7b812E32608469';
-
-async function volume(api) {
-    const totalVolume = await api.call({
-      abi: 'erc20:totalSupply',
-      target: USER_CONTRACT,
-      params: [],
-    });
-  
-    api.add(USER_CONTRACT, totalVolume)
-    return totalVolume
-}
 
 async function tvl(api) {
     return sumTokens2({ owner: HOUSE_CONTRACT, tokens: [nullAddress], api, })
