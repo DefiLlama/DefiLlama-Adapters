@@ -44,14 +44,14 @@ Object.keys(config).forEach((chain) => {
 });
 
 const tvl = async (api, vaults) => {
-  const [activeProviders, assets] = await Promise.all([
+  const [providers, assets] = await Promise.all([
     api.multiCall({ calls: vaults, abi: "address:activeProvider" }),
     api.multiCall({ calls: vaults, abi: "address:asset" }),
   ]);
 
   const balances = await api.multiCall({ 
     calls: vaults.map((vault, i) => ({ 
-      target: activeProviders[i], 
+      target: providers[i], 
       params: [vault, vault] 
     })), 
     abi 
