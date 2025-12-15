@@ -119,14 +119,14 @@ const RECEIPT_TOKENS = {
       address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
       decimals: 18,
       underlying: 'security-token',
-      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
       fundName:'Libre SAF VCC - Laser Digital Carry Fund A'
     },
     LDCFB: {
       address: '0xbee4274F1c5EE0B30fC5AAa7842A434C35BF6f7b',
       decimals: 18,
       underlying: 'security-token',
-      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
       fundName:'Libre SAF VCC - Laser Digital Carry Fund B'
     },
   },
@@ -343,7 +343,7 @@ const RECEIPT_TOKENS = {
         address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
         decimals: 18,
         underlying: 'security-token',
-        instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+        instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
         fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
     },
   },
@@ -424,14 +424,14 @@ const RECEIPT_TOKENS = {
       address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
       decimals: 18,
       underlying: 'security-token',
-      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
       fundName:'Libre SAF VCC - Laser Digital Carry Fund A'
     },
     LDCFB: {
       address: '0xbee4274F1c5EE0B30fC5AAa7842A434C35BF6f7b',
       decimals: 18,
       underlying: 'security-token',
-      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
       fundName:'Libre SAF VCC - Laser Digital Carry Fund B'
     },
   },
