@@ -13,7 +13,8 @@ async function solanaTvl(api) {
 
 async function provenanceTvl(api) {
   const tokenSupplies = await getTokenSupplies([wYLDSAccount])
-  api.add('uylds.fcc', Object.values(tokenSupplies)[0])
+  // Provenance holds a 1:1 balance of YLDS to wYLDS
+  api.add('ylds', Object.values(tokenSupplies)[0] / 1e6)
   return sumTokens2({ api })
 }
 

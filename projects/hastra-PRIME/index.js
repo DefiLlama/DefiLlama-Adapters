@@ -1,4 +1,4 @@
-const { getTokenSupplies, getTokenAccountBalances } = require('../helper/solana')
+const { getTokenAccountBalances } = require('../helper/solana')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const wYLDSVaultAccount = "FvkbfMm98jefJWrqkvXvsSZ9RFaRBae8k6c1jaYA5vY3"
@@ -11,7 +11,8 @@ async function solanaTvl(api) {
 
 async function provenanceTvl(api) {
   const wYLDSVaultBalance = await getTokenAccountBalances([wYLDSVaultAccount])
-  Object.keys(wYLDSVaultBalance).map(token => api.add('uylds.fcc', wYLDSVaultBalance[token]))
+  // Provenance holds a 1:1 balance of YLDS to wYLDS
+  Object.keys(wYLDSVaultBalance).map(token => api.add('ylds', wYLDSVaultBalance[token] / 1e6))
   return sumTokens2({ api })
 }
 
