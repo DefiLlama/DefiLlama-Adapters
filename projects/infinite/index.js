@@ -24,6 +24,21 @@ const AUTO_COMPOUNDERS = [
 // === cbEGGS Contract (Base) - owned by Infinite Trading ===
 const CBEGGS_CONTRACT = "0xddbabe113c376f51e5817242871879353098c296"
 
+// === Treasury address (for managed dHEDGE vaults) ===
+const TREASURY_1 = "0xb5dB6e5a301E595B76F40319896a8dbDc277CEfB"  // Main DAO treasury
+
+// === dHEDGE Factory Contracts (for vault discovery) ===
+const DHEDGE_FACTORY = {
+  optimism: "0x5e61a079A178f0E5784107a4963baAe0c5a680c6",
+  arbitrum: "0xffFb5fB14606EB3a548C113026355020dDF27535",
+  polygon: "0xfdc7b8bFe0DD3513Cc669bB8d601Cb83e2F69cB0",
+  base: "0x49Afe3abCf66CF09Fab86cb1139D8811C8afe56F"
+}
+
+// dHEDGE ABIs
+const DHEDGE_V2_FACTORY_ABI = "function getManagedPools(address manager) view returns (address[] managedPools)"
+const DHEDGE_V2_VAULT_SUMMARY_ABI = "function getFundSummary() view returns (tuple(string name, uint256 totalSupply, uint256 totalFundValue))"
+
 const getStakedTVL = async (api) => {
   const { chain } = api
   let stakedTVL = 0;
@@ -71,6 +86,38 @@ const getAutoCompounderTVL = async (api) => {
   return sumTokens2({ api, resolveLP: true });
 }
 
+// dHEDGE managed vaults TVL: Infinite Trading manages dHEDGE vaults across chains (protocol TVL)
+const getDhedgeVaultsTVL = async (api) => {
+  const { chain } = api
+  const factory = DHEDGE_FACTORY[chain]
+  
+  if (!factory) return
+  
+  // Get all vaults managed by TREASURY_1 (the main DAO wallet acting as manager)
+  const managedVaults = await api.call({
+    abi: DHEDGE_V2_FACTORY_ABI,
+    target: factory,
+    params: [TREASURY_1],
+  })
+  
+  if (!managedVaults || managedVaults.length === 0) return
+  
+  // Get total fund value for each vault
+  const summaries = await api.multiCall({
+    abi: DHEDGE_V2_VAULT_SUMMARY_ABI,
+    calls: managedVaults,
+    permitFailure: true,
+  })
+  
+  // Sum up all vault TVLs (totalFundValue is in USD with 18 decimals)
+  const totalAUM = summaries.reduce((acc, vault) => {
+    return acc + (vault && vault.totalFundValue ? Number(vault.totalFundValue) : 0)
+  }, 0)
+  
+  // Add as USD value
+  api.addUSDValue(totalAUM / 1e18)
+}
+
 // cbEGGS TVL on Base: ETH backing in the contract
 const getCbEggsTVL = async (api) => {
   // Get ETH balance of the cbEGGS contract (the "backing")
@@ -86,12 +133,26 @@ const getCbEggsTVL = async (api) => {
 }
 
 module.exports = {
-  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens on Optimism), and cbEGGS.finance protocol TVL (ETH backing on Base). cbEGGS is owned by Infinite Trading.",
+  methodology: "Tracks ITP staking vault TVL, auto-compounder vault TVL (6 vaults unwrapping LP tokens on Optimism), dHEDGE vaults managed by the DAO across multiple chains (~$300k AUM), and cbEGGS.finance protocol TVL (ETH backing on Base). cbEGGS is owned by Infinite Trading.",
   optimism: {
-    tvl: getAutoCompounderTVL,
+    tvl: async (api) => {
+      await getAutoCompounderTVL(api)
+      await getDhedgeVaultsTVL(api)
+      return api.getBalances()
+    },
     staking: getStakedTVL
   },
+  arbitrum: {
+    tvl: getDhedgeVaultsTVL,
+  },
+  polygon: {
+    tvl: getDhedgeVaultsTVL,
+  },
   base: {
-    tvl: getCbEggsTVL
+    tvl: async (api) => {
+      await getCbEggsTVL(api)
+      await getDhedgeVaultsTVL(api)
+      return api.getBalances()
+    }
   },
 }
