@@ -16,7 +16,7 @@ const treasuryTokens = [
     crvAddress,
     cvxAddress
 ]
-async function treasury(api) {
+async function tvl(api) {
     return sumTokens2({
         api,
         owner: TREASURY_ADDRESS,
@@ -27,6 +27,6 @@ async function treasury(api) {
 module.exports = {
     methodology: 'Counts ION.AU held in the RAAC treasury address.',
     ethereum: {
-        treasury
+        tvl
     },
 }
