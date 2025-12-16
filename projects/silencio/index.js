@@ -8,14 +8,7 @@ const SLC_STAKING_ADDRESS = '0x0Ac817b19b38df47118041d06BA2728d1492F726'
 
 module.exports = {
     peaq: {
-        tvl: (api) => {
-            return api.sumTokens({ 
-                owners: [SLC_STAKING_ADDRESS],
-                tokens: [
-                    SLC_TOKEN_ADDRESS
-                ]
-            })
-        },
+        tvl: () => ({}),
         staking: staking(SLC_STAKING_ADDRESS,SLC_TOKEN_ADDRESS)
     }
 }
