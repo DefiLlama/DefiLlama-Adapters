@@ -19,8 +19,7 @@
     "biggest-files": "node utils/scripts/sortTopFilesByLines.js",
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
     "string-timestamp": "node utils/scripts/stringTimestamp.js",
-    "sort-chains": "node projects/helper/getChainList.js",
-    "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
+    "sort-chains": "node projects/helper/getChainList.js"
   },
   "author": "",
   "license": "ISC",

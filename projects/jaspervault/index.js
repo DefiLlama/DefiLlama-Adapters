@@ -5,7 +5,7 @@ const WSOL_arbitrum = '0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07'
 const UNI_arbitrum = '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0'
 const cbBTC_base = ADDRESSES.ethereum.cbBTC
 const USDC_btr = '0xf8c374ce88a3be3d374e8888349c7768b607c755'
-const USDT_btr = '0xfe9f969faf8ad72a83b761138bf25de87eff9dd2'
+const USDT_btr = ADDRESSES.btr.USDT
 module.exports = {
   arbitrum: {
     tvl: sumTokensExport({

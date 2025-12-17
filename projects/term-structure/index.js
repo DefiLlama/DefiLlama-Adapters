@@ -67,6 +67,14 @@ const ADDRESSES = {
       address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
       fromBlock: 50519690,
     },
+    FactroryV2: [
+      // Start of TermMax Alpha
+      {
+        address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
+        fromBlock: 67248948,
+      },
+      // End of TermMax Alpha
+    ],
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
@@ -82,6 +90,12 @@ const ADDRESSES = {
         address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
         fromBlock: 63100000,
       },
+      // Start of TermMax Alpha
+      {
+        address: "0xC63858D1eFa377f94392Ba5dEb521233Ec1548eb",
+        fromBlock: 67251242,
+      },
+      // End of TermMax Alpha
     ],
   },
   ethereum: {

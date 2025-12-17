@@ -8,6 +8,7 @@ const erc20Abi = require("../helper/abis/erc20.json");
 const contracts = require("./contracts.json");
 const { getLogs } = require('../helper/cache/getLogs')
 
+// https://docs.curve.finance/deployments/interactive-deployments/
 const chains = [
   "ethereum",
   "polygon",
@@ -35,6 +36,9 @@ const chains = [
   "tac",
   "etlk",
   "plasma",
+  "unichain",
+  "stable",
+  "monad"
 ];
 const registryIds = {
   stableswap: 0,

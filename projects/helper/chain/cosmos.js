@@ -54,6 +54,7 @@ const endPoints = {
   pryzm: "https://api.pryzm.zone",
   // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
   agoric: 'https://agoric-api.polkachu.com/',
+  allora: 'https://allora-api.polkachu.com', // TODO: Verify actual mainnet endpoint
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
@@ -71,7 +72,8 @@ const endPoints = {
   civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
   echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
   inertia: 'https://rest.inrt.fi',
-  union: 'https://rest.union.build'
+  union: 'https://rest.union.build',
+  zigchain: 'https://public-zigchain-lcd.numia.xyz'
 };
 
 const chainSubpaths = {

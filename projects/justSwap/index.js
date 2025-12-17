@@ -1,12 +1,26 @@
 const { getCache, setCache } = require('../helper/cache')
-const { sliceIntoChunks } = require('../helper/utils')
+const { get } = require('../helper/http')
+const { sliceIntoChunks, sleep } = require('../helper/utils')
 
 module.exports = {
   misrepresentedTokens: true,
   isHeavyProtocol: true,
+  timetravel: false,
   tron: {
-    tvl,
+    tvl: httpTvl,
   },
+}
+
+async function httpTvl(api) {
+  const {data} = await get('https://abc.endjgfsv.link/swap/scan/liquidityall')
+  const latest = data.pop()
+  const timestamp = Date.now()  - 24 * 60 * 60 * 1000
+
+  if (latest.time > timestamp) {
+    api.addUSDValue(+latest.liquidity)
+  } else {
+    throw new Error("No recent data found")
+  }
 }
 
 async function tvl(api) {
@@ -35,7 +49,7 @@ async function tvl(api) {
   }
 
   const multicallContract = 'TEazPvZwDjDtFeJupyo7QunvnrnUjPH8ED'
-  const chunks = sliceIntoChunks(allPairs, 1000)
+  const chunks = sliceIntoChunks(allPairs, 500)
 
   const chunkCount = chunks.length
   console.log(`Processing ${chunkCount} chunks of calls to get TRX balance`)
@@ -45,5 +59,6 @@ async function tvl(api) {
     api.addGasToken(trxBalance)
     api.addGasToken(trxBalance)  // adding twice to add token balance on the LP
     console.log(`Processed chunk ${chunks.indexOf(calls) + 1} of ${chunkCount}`)
+    await sleep(4500)
   }
 }

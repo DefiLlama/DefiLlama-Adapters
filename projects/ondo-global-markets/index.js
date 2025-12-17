@@ -106,7 +106,8 @@ const config = {
     UNHon: "0x3385cb29cca0ac66f5d2354d13ef977b49a2510f",
     Von: "0x1cde419fae0ef7f7931ae3e29e5f411c8c5e5fa1",
     WFCon: "0x629520dee1620def11596f84e85de9f1ff653012",
-    WMTon: "0xa7d1e886acf66ec0656df2decb4b7c893a3bab4c"
+    WMTon: "0xa7d1e886acf66ec0656df2decb4b7c893a3bab4c",
+    USDon: "0x1f8955E640Cbd9abc3C3Bb408c9E2E1f5F20DfE6",
   },
   ethereum: {
     AAPLon: "0x14c3abf95cb9c93a8b82c1cdcb76d72cb87b2d4c",
@@ -211,7 +212,8 @@ const config = {
     UNHon: "0x075756f3b6381a79633438faa8964946bf40163d",
     Von: "0xac37c20c1d0e5285035e056101a64e263ff94a41",
     WFCon: "0x4ad2118da8a65eaa81402a3d583fef6ee76bdf3f",
-    WMTon: "0x82106347ddbb23ce44cf4ce4053ef1adf8b9323b"
+    WMTon: "0x82106347ddbb23ce44cf4ce4053ef1adf8b9323b",
+    USDon: "0xAcE8E719899F6E91831B18AE746C9A965c2119F1",
   }
 }
 

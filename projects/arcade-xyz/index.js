@@ -14,7 +14,7 @@ const { LOAN_CORE, LOAN_CORE_V3, START_BLOCKS, VAULT_FACTORY_A, ARCD_WETH_LP, ST
 // are currently in escrow.
 
 async function tvl(api) {
-  const block = await api.getBlock();
+  const block = (await api.getBlock()) - 500
 
   // Get list of all vaults
   const vaults = await fetchVaults(block)
@@ -48,7 +48,7 @@ async function tvl(api) {
 
 // Fetches all active loans, their payable curency and amount borrowed then sums it up.
 async function borrowed(api) {
-  const loans = await fetchLoans(await api.getBlock());
+  const loans = await fetchLoans((await api.getBlock()) - 500);
 
   // Iterate over each loan to sum up principal by currency
   for (const loan of loans) {
