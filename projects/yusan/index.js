@@ -63,6 +63,15 @@ function createTvl(chain) {
         api.addCGToken(coingeckoId, amount / 10 ** decimals)
       }
     }
+
+    // Add liquidation pool balances to ICP chain (where the pool resides)
+    if (chain === 'icp' && yusan.liquidation_pool) {
+      for (const [symbol, balance] of Object.entries(yusan.liquidation_pool)) {
+        if (!tokens[symbol] || balance <= 0) continue
+        const { decimals, coingeckoId } = tokens[symbol]
+        api.addCGToken(coingeckoId, balance / 10 ** decimals)
+      }
+    }
   }
 }
 
