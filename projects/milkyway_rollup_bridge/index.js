@@ -2,7 +2,7 @@ const { queryV1Beta1 } = require('../helper/chain/cosmos.js');
 
 module.exports = {
     timetravel: false,
-    milkyway_rollup: {
+    initia: {
         tvl: async () => {
             const balances = {}
             const res = await queryV1Beta1({

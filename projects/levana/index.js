@@ -1,4 +1,10 @@
-const { queryContract, sumTokens } = require('../helper/chain/cosmos')
+const { queryContract } = require('../helper/chain/cosmos')
+const { sumTokens } = require('../helper/sumTokens')
+
+// Blacklist suspicious tokens
+const blacklistedTokens = [
+  'ibc:FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668' // yieldeth-wei - is returing the wrong price: price: 155633670
+]
 
 async function tvl(api) {
   const { chain } = api
@@ -7,13 +13,24 @@ async function tvl(api) {
   // Iterate over the markets and request the balance of each market's collateral token
   const marketIds = await getMarketIds(chain, factory)
   const _getMarketAddr = (marketId) => getMarketAddr(chain, factory, marketId)
-  return sumTokens({ chain, owners: await Promise.all(marketIds.map(_getMarketAddr)), })
+  
+  const result = await sumTokens({ 
+    chain, 
+    owners: await Promise.all(marketIds.map(_getMarketAddr)),
+    blacklistedTokens 
+  })
+  
+  // Filter out the blacklisted token from the results
+  if (result['ibc:FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668']) {
+    delete result['ibc:FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668']
+  }
+  
+  return result
 }
 
 async function getMarketIds(chain, factory) {
     const market_ids = [];
 
-    // eslint-disable-next-line no-constant-condition
     while(true) {
       const resp = await queryContract({
         contract: factory,

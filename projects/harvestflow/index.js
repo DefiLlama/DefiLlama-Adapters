@@ -6,7 +6,10 @@ const BigNumber = require('bignumber.js');
 const toToken = value => BigNumber(value).times(1e6).toFixed(0);
 
 const lendingNFTAddress = {
-  'plume_mainnet': '0xFa262942987D408f7fF12F7f3f0DcF09f07cb0e2',
+  'plume_mainnet': [
+    '0xFa262942987D408f7fF12F7f3f0DcF09f07cb0e2',
+    '0x12E4222d6C899Bb9b05C33293d77F9Be1AF24276'
+  ],
   'polygon': '0x9d6d53b5bc498200503bc7abcbdec2b8a009460a'
 }
 
@@ -22,7 +25,7 @@ async function plumeTvl(_, _1, _2, { api }) {
   const withdrawAmount = await withdraw(network);
   const sumTokensResult = await sumTokens2({
     api,
-    owners: [lendingNFTAddress[network]],
+    owners: [lendingNFTAddress[network]].flat(),
     tokens: [token],
   });
   const contractBalance = sumTokensResult[`${network}:${token.toLowerCase()}`] || 0;

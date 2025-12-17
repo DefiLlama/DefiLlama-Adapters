@@ -8,7 +8,7 @@ module.exports = {
       tokens: [
         nullAddress,
         ADDRESSES.btr.ETH,
-        '0xfe9f969faf8ad72a83b761138bf25de87eff9dd2',
+        ADDRESSES.btr.USDT,
         '0xf8c374ce88a3be3d374e8888349c7768b607c755',
         ADDRESSES.btr.WBTC,
         '0x07373d112edc4570b46996ad1187bc4ac9fb5ed0',

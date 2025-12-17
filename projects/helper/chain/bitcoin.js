@@ -63,7 +63,7 @@ async function _sumTokensBlockchain({ balances = {}, owners = [], forceCacheUse,
   for (let i = 0; i < owners.length; i += STEP) {
     const { addresses } = await get(url3(owners.slice(i, i + STEP)))
     for (const addr of addresses)
-      sdk.util.sumSingleBalance(balances, 'bitcoin', addr.final_balance / 1e8)
+        sdk.util.sumSingleBalance(balances, 'bitcoin', addr.final_balance / 1e8)
     await sleep(10000)
   }
 
@@ -118,17 +118,59 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
   return balances
 }
 
+// async function getBalance(addr, timestamp) {
+//   const now = Date.now() / 1e3
+//   let balance = await getBalanceNow(addr)
+
+//   if (!timestamp || (now - timestamp) < delay) return balance
+
+//   let endpoint = `https://btc.getblock.io/${getEnv('GETBLOCK_KEY')}/mainnet/blockbook/api/v2/balancehistory/${addr}?fiatcurrency=btc&groupBy=86400&from=${timestamp}`
+
+//   const response = await get(endpoint)
+//   response.forEach(({ sent, received }) => balance += sent / 1e8 - received / 1e8)
+//   sdk.log('bitcoin balance', addr, balance)
+//   return balance
+// }
+
+// get archive BTC balance
 async function getBalance(addr, timestamp) {
-  const now = Date.now() / 1e3
-  let balance = await getBalanceNow(addr)
+  let balance = 0
 
-  if (!timestamp || (now - timestamp) < delay) return balance
+  if (timestamp > (Date.now() / 1e3) - 30 * 60) { // 30 minutes ago
+    const endpoint = url(addr) + '/utxo'
+    const utxos = await get(endpoint)
 
-  let endpoint = `https://btc.getblock.io/${getEnv('GETBLOCK_KEY')}/mainnet/blockbook/api/v2/balancehistory/${addr}?fiatcurrency=btc&groupBy=86400&from=${timestamp}`
+    for (const utxo of utxos) {
+      if (utxo.status.block_time <= timestamp) {
+        balance += utxo.value / 1e8
+      }
+    }
+  } else {
+    const endpoint = url(addr) + '/txs'
+    let txs = await get(endpoint)
 
-  const response = await get(endpoint)
-  response.forEach(({ sent, received }) => balance += sent / 1e8 - received / 1e8)
-  sdk.log('bitcoin balance', addr, balance)
+    while (txs.length) {
+      for (const tx of txs) {
+        if (tx.status.block_time <= timestamp) {
+          for (const vin of tx.vin) {
+            if (vin.prevout.scriptpubkey_address === addr) {
+              balance -= vin.prevout.value / 1e8
+            }
+          }
+
+          for (const vout of tx.vout) {
+            if (vout.scriptpubkey_address === addr) {
+              balance += vout.value / 1e8
+            }
+          }
+        }
+      }
+
+      const next = `${endpoint}/chain/${txs[txs.length - 1].txid}`
+      txs = await get(next)
+    }
+  }
+
   return balance
 }
 

@@ -19,6 +19,16 @@ const config = {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 32253341,
             customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 32588280,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 33537305,
+            customOwnerFee: true
           }
         ],
     },
@@ -40,6 +50,16 @@ const config = {
               factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
               fromBlock: 353725498,
               customOwnerFee: true
+            },
+            {
+              factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+              fromBlock: 359319739,
+              customOwnerFee: true
+            },
+            {
+              factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+              fromBlock: 365137843,
+              customOwnerFee: true
             }
         ]
     },
@@ -56,6 +76,16 @@ const config = {
             {
               factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
               fromBlock: 73516877,
+              customOwnerFee: true
+            },
+            {
+              factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+              fromBlock: 74146941,
+              customOwnerFee: true
+            },
+            {
+              factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+              fromBlock: 74819808,
               customOwnerFee: true
             }
         ]
@@ -74,6 +104,16 @@ const config = {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 52701228,
             customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 54567569,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 56504339,
+            customOwnerFee: true
           }
       ]
     },
@@ -90,6 +130,16 @@ const config = {
           {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 22836895,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 22952824,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 23073168,
             customOwnerFee: true
           }
       ]
@@ -108,19 +158,31 @@ const config = {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 46556861,
             customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 46876463,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 47505286,
+            customOwnerFee: true
           }
       ]
     }
 }
 
+const excludedVaults = ["0xa9d939b440889946E6CEC3E1D4218E069605af6f", "0xC1592E4Ce1FB6B9E278E209483CC9B2107a1736f", '0x516Df58459771d20A57947203871B02af1f20B1B']
+
 const abis = {
-    getTotalValue: "function getTotalValue() external returns (uint256)",
-    getVaultConfig: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses)",
-    getVaultConfigWithCustomOwnerFee: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses,uint16 vaultOwnerFeeBasisPoint)",
-    eventVaultCreatedTopic: "0xbdbed56de8b743294aafeb7bc338aac69f80294b14d029f6b73168946225f817",
-    eventVaultCreatedAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)",
-    eventVaultCreatedWithCustomOwnerFeeTopic: "0x64ebc17e4f1cfa3b3dc33c6b6e50fd0cb0f9fe4fd739a3742ddfad53b50107c7",
-    eventVaultCreatedWithCustomOwnerFeeAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, uint16 vaultOwnerFeeBasisPoint, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)"
+  getTotalValue: "function getTotalValue() view returns (uint256 totalValue)",
+  getVaultConfig: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses)",
+  getVaultConfigWithCustomOwnerFee: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses,uint16 vaultOwnerFeeBasisPoint)",
+  eventVaultCreatedTopic: "0xbdbed56de8b743294aafeb7bc338aac69f80294b14d029f6b73168946225f817",
+  eventVaultCreatedAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)",
+  eventVaultCreatedWithCustomOwnerFeeTopic: "0x64ebc17e4f1cfa3b3dc33c6b6e50fd0cb0f9fe4fd739a3742ddfad53b50107c7",
+  eventVaultCreatedWithCustomOwnerFeeAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, uint16 vaultOwnerFeeBasisPoint, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)"
 }
 
 Object.keys(config).forEach(chain => {
@@ -139,7 +201,10 @@ Object.keys(config).forEach(chain => {
             onlyArgs: true,
             fromBlock: fromBlock,
           })
-          logs.forEach(i => vaultAddressesCustomOwnerFee.push(i.vault))
+          logs.forEach(i => {
+            if (excludedVaults.includes(i.vault)) return;
+            vaultAddressesCustomOwnerFee.push(i.vault)
+          })
         } else {
           const logs = await getLogs({
             api,
@@ -149,15 +214,18 @@ Object.keys(config).forEach(chain => {
             onlyArgs: true,
             fromBlock: fromBlock,
           })
-          logs.forEach(i => vaultAddresses.push(i.vault))
+          logs.forEach(i => {
+            if (excludedVaults.includes(i.vault)) return;
+            vaultAddresses.push(i.vault)
+          })
         }
       }
 
       const [vaultConfigs, vaultTotalValues, vaultCustomOwnerFeeConfigs, vaultCustomOwnerFeeTotalValues] = await Promise.all([
-        api.multiCall({  abi: abis.getVaultConfig, calls: vaultAddresses }),
-        api.multiCall({  abi: abis.getTotalValue, calls: vaultAddresses }),
-        api.multiCall({  abi: abis.getVaultConfigWithCustomOwnerFee, calls: vaultAddressesCustomOwnerFee }),
-        api.multiCall({  abi: abis.getTotalValue, calls: vaultAddressesCustomOwnerFee }),
+        api.multiCall({ abi: abis.getVaultConfig, calls: vaultAddresses }),
+        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddresses }),
+        api.multiCall({ abi: abis.getVaultConfigWithCustomOwnerFee, calls: vaultAddressesCustomOwnerFee }),
+        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddressesCustomOwnerFee }),
       ])
 
       const principleTokens = vaultConfigs.map(i => i.principalToken)

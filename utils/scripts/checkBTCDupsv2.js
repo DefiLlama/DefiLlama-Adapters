@@ -1,11 +1,10 @@
 const sdk = require('@defillama/sdk')
 const addressBook = require('../../projects/helper/bitcoin-book/index');
+const { getEnv } = require('../../projects/helper/env');
 const Bucket = "tvl-adapter-cache";
 
 console.log('project count: ', Object.keys(addressBook).length);
 const addressProjectMap = {}
-
-const storeInR2 = !!process.env.STORE_IN_R2
 
 const projectData = {}
 
@@ -20,7 +19,7 @@ async function run() {
       if (!Array.isArray(addresses)) addresses = await addresses()
 
 
-      if (storeInR2) {
+      if (getEnv('STORE_IN_R2')) {
         projectData[project] = addresses
         return;
       }
@@ -43,7 +42,7 @@ async function run() {
 
 
 
-  if (storeInR2) {
+  if (getEnv('STORE_IN_R2')) {
     try {
       await sdk.cache.writeCache(`${Bucket}/bitcoin-addresses.json`, projectData)
       console.log('data written to s3 bucket');

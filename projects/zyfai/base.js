@@ -4,50 +4,51 @@ const FLUID_POOL_ADDRESSES = {
 };
 const MORPHO_POOL_ADDRESSES = {
     'Universal - USDC': '0xB7890CEE6CF4792cdCC13489D36D9d42726ab863',
-    'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
+    // 'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
     'Seamless USDC Vault': '0x616a4E1db48e22028f6bbf20444Cd3b8e3273738',
+    'HighYield Clearstar USDC': '0xE74c499fA461AF1844fCa84204490877787cED56',
+    'Clearstar Reactor OpenEden Boosted USDC': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
+    'Gauntlet USDC Prime': '0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61',
+    'Gauntlet USDC Core': '0xc0c5689e6f4D256E861F65465b691aeEcC0dEb12',
+    'Gauntlet USDC Frontier': '0x236919F11ff9eA9550A4287696C2FC9e18E6e890',
+    'ExtrafiXLend USDC': '0x23479229e52Ab6aaD312D0B03DF9F33B46753B5e',
+    'Steakhouse USDC': '0xbeeF010f9cb27031ad51e3333f9aF9C6B1228183'
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
 };
+const COMPOUND_TOKEN_ADDRESS = '0xb125E6687d4313864e53df431d5425969c15Eb2F';
 
-async function aaveTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({ target: AAVE_TOKEN_ADDRESS, params: [owner] }));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    const total = balances.reduce((sum, bal) => sum + Number(bal) / 1e6, 0);
-    api.add(AAVE_TOKEN_ADDRESS, total);
-}
+const MOONWELL_POOL_ADDRESSES = {
+    'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
+    'USDC': '0xEdc817A28E8B93B03976FBd4a3dDBc9f7D176c22'
+};
 
-async function fluidTvl(api, owners) {
-    const fluidPools = Object.values(FLUID_POOL_ADDRESSES);
-    const balanceCalls = fluidPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
+const HARVEST_POOLS = {
+    'USDC': '0x90613e167D42CA420942082157B42AF6fc6a8087', 
+    'USDC - Autopilot': '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4',
+    'USDC - 40 Acres': '0xC777031D50F632083Be7080e51E390709062263E'
+};
+const WASABI_POOLS = { 'USDC': '0x1C4a802FD6B591BB71dAA01D8335e43719048B24' };
+const AURA_POOLS = { 'USDC - GHO': "0x28a002a98F4DA7A7B541b5e4d7a42E0F64E4aeF1"};
+const YIELDFI_BASE_POOLS = {
+    'yUSD': '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
+    'vyUSD': '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
+};
 
-async function morphoTvl(api, owners) {
-    const morphoPools = Object.values(MORPHO_POOL_ADDRESSES);
-    const balanceCalls = morphoPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function sparkTvl(api, owners) {
-    const sparkPools = Object.values(SPARK_POOL_ADDRESSES);
-    const balanceCalls = sparkPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
+const allPoolTokens = [
+    ...Object.values(HARVEST_POOLS),
+    ...Object.values(WASABI_POOLS),
+    ...Object.values(AURA_POOLS),
+    ...Object.values(YIELDFI_BASE_POOLS),
+    ...Object.values(MOONWELL_POOL_ADDRESSES),
+    ...Object.values(SPARK_POOL_ADDRESSES),
+    ...Object.values(MORPHO_POOL_ADDRESSES),
+    ...Object.values(FLUID_POOL_ADDRESSES),
+    COMPOUND_TOKEN_ADDRESS,
+    AAVE_TOKEN_ADDRESS,
+]
 
 module.exports = {
-    aaveTvl,
-    fluidTvl,
-    morphoTvl,
-    sparkTvl
+  allPoolTokens
 };

@@ -14,12 +14,14 @@ const tvl = async (api) => {
     config = await getConfig('sofa-org/vaults', 'https://raw.githubusercontent.com/sofa-org/sofa-gitbook/main/static/vaults.json')
   }
 
-  const { vaults = [], aVaults = [], crvtokens=[], crvUSDVaults = [] } = config[chains[api.chain]]
+  const { vaults = [], aVaults = [], crvtokens = [], crvUSDVaults = [], dualVaults = [] } = config[chains[api.chain]]
   const tokens = await api.multiCall({ abi: 'address:collateral', calls: vaults })
   const tokens2 = await api.multiCall({ abi: 'address:collateral', calls: aVaults })
   const atokens = await api.multiCall({ abi: 'address:aToken', calls: aVaults })
+  const tokensQuote = await api.multiCall({ abi: 'address:quoteAsset', calls: dualVaults })
 
-  return api.sumTokens({ tokensAndOwners2: [[tokens, tokens2, atokens, crvtokens].flat(), [vaults, aVaults, aVaults, crvUSDVaults].flat()] })
+  return api.sumTokens({ tokensAndOwners2: [[tokens, tokens2, atokens, crvtokens, tokensQuote].flat(), 
+                                            [vaults, aVaults, aVaults, crvUSDVaults, dualVaults].flat()] })
 }
 
 Object.keys(chains).forEach(chain => {

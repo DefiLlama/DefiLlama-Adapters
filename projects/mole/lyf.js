@@ -208,6 +208,7 @@ async function unwrapPancakeSwapLps({
     const lp = lps[i.lpType];
     const balance0 = new BigNumber(reserve0).times(lp.amount).div(lp.totalSupply).toFixed(0);
     const balance1 = new BigNumber(reserve1).times(lp.amount).div(lp.totalSupply).toFixed(0);
+    if (isNaN(balance0) && isNaN(balance1)) return
     if (isCoreAsset0 && isCoreAsset1) {
       api.add( token0, balance0)
       api.add( token1, balance1)
@@ -239,9 +240,15 @@ async function calLyfTvlSui(api) {
       const entity = workerEntities.find(({ workerInfo: w }) => w === workerId);
       if (!entity) return null;
 
-      return entity.isSF
+      if (entity.dex == 0) { // cetus
+        return entity.isSF
         ? workerInfo.fields.clmm_pool_id
         : workerInfo.fields.position_nft?.fields?.pool;
+      } else if (entity.dex == 1) { // bluefin 
+        return workerInfo.fields.pool_id;
+      } else {
+        console.error("dex type wrong")
+      }
     }).filter(Boolean)
   );
 
@@ -255,18 +262,38 @@ async function calLyfTvlSui(api) {
     if (!workerEntity) continue;
 
     const isSF = workerEntity.isSF;
-    const nftFields = isSF
-      ? workerInfo.fields.stable_farming_position_nft?.fields?.clmm_postion?.fields
-      : workerInfo.fields.position_nft?.fields;
+    const dex = workerEntity.dex;
+    let nftFields
 
+    if (dex == 0) {
+      nftFields = isSF
+        ? workerInfo.fields.stable_farming_position_nft?.fields?.clmm_postion?.fields
+        : workerInfo.fields.position_nft?.fields;
+    } else if (dex == 1) {
+      nftFields = workerInfo.fields.position_nft?.fields;
+    } else {
+      console.error("dex type wrong")
+    }
+    
     if (!nftFields) continue;
 
-    const liquidity = nftFields.liquidity;
-    const tickLower = i32BitsToNumber(nftFields.tick_lower_index?.fields?.bits);
-    const tickUpper = i32BitsToNumber(nftFields.tick_upper_index?.fields?.bits);
-    const poolId = isSF
-      ? workerInfo.fields.clmm_pool_id
-      : nftFields.pool;
+    let liquidity, tickLower, tickUpper, poolId
+
+    if (dex == 0) {
+      liquidity = nftFields.liquidity;
+      tickLower = i32BitsToNumber(nftFields.tick_lower_index?.fields?.bits);
+      tickUpper = i32BitsToNumber(nftFields.tick_upper_index?.fields?.bits);
+      poolId = isSF
+        ? workerInfo.fields.clmm_pool_id
+        : nftFields.pool;
+    } else if (dex == 1) {
+      liquidity = nftFields.liquidity;
+      tickLower = i32BitsToNumber(nftFields.lower_tick?.fields?.bits);
+      tickUpper = i32BitsToNumber(nftFields.upper_tick?.fields?.bits);
+      poolId = nftFields.pool_id;
+    } else {
+      console.error("dex type wrong")
+    }
 
     const poolInfo = poolMap.get(poolId);
     if (!poolInfo) continue;

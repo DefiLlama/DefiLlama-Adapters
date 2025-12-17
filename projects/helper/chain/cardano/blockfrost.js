@@ -84,6 +84,11 @@ async function getTokensMinted(tokenId){
   return Number(data.quantity)
 }
 
+async function getAccountAddresses(account) {
+  const { data } = await axiosObj.get(`/accounts/${account}/addresses`)
+  return data
+}
+
 module.exports = {
   getAssets,
   getAddressesUTXOs,
@@ -94,4 +99,5 @@ module.exports = {
   addressesUtxosAssetAll,
   getTokensMinted,
   getScriptsDatum,
+  getAccountAddresses
 }

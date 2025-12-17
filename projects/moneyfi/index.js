@@ -1,7 +1,20 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { function_view } = require("../helper/chain/aptos");
+const ADDRESSES = require("../helper/coreAssets.json");
+
+async function get_tvl_aptos() {
+  const tvl = await function_view({
+    functionStr:
+      "0x97c9ffc7143c5585090f9ade67d19ac95f3b3e7008ed86c73c947637e2862f56::vault::get_assets",
+    args: [],
+    type_arguments: [],
+  });
+
+  return tvl;
+}
 
 const config = {
+  
   ethereum: {
     fundVault: "0x5E672Af2d78dAaBbe8A8bF52D4D921A5c2DD41a4",
     dexBridgeVault: "0xf9139312E668EE8011F6c594ba24271eE5C913d5",
@@ -23,6 +36,7 @@ const config = {
     strategies: [
       "0xE2e326496dc7A7bC75a10E3Fb29E52AdAFCB342c",
       "0x4cb9289b27FAF51D1FC9E434D5384B376DbB48C0",
+      "0x21D5b4352878415846785B923622B504D65cd5DF"
     ],
   },
 
@@ -83,12 +97,13 @@ const stablecoins = {
     "0x102d758f688a4C1C5a80b116bD945d4455460282", // USDT
   ],
 };
+const chainExports = {};
 
 Object.keys(config).forEach((chain) => {
   const chainConfig = config[chain];
   const tokens = stablecoins[chain];
 
-  module.exports[chain] = {
+  chainExports[chain] = {
     tvl: async (api) => {
       await sumTokens2({
         api,
@@ -110,3 +125,19 @@ Object.keys(config).forEach((chain) => {
     },
   };
 });
+
+chainExports.aptos = {
+  tvl: async (api) => {
+    const [addresses, amounts] = await get_tvl_aptos();
+    for (let i = 0; i < addresses.length; ++i) {
+      api.add(addresses[i], amounts[i]);
+    }
+  },
+};
+
+module.exports = {
+  ...chainExports,
+  timetravel: true,
+  methodology:
+    "TVL counts stablecoins in fundVault, dexBridgeVault, and all strategies contracts.",
+};

@@ -42,8 +42,8 @@ async function tvl(api) {
     tokens.push(ADDRESSES.null)
     ownerTokens.push([tokens, vault])
   }
-  const hypeTokens = await api.multiCall({ abi: 'address[]:getAcceptableAssets', calls: hypeVaults })
-  ownerTokens.push(...hypeTokens.map((tokens, i) => [tokens, hypeVaults[i]]))
+  // const hypeTokens = await api.multiCall({ abi: 'address[]:getAcceptableAssets', calls: hypeVaults })
+  // ownerTokens.push(...hypeTokens.map((tokens, i) => [tokens, hypeVaults[i]]))
   return api.sumTokens({ ownerTokens })
 }
 

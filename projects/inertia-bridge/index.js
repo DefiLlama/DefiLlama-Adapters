@@ -18,7 +18,7 @@ const mappings = {
 
 module.exports = {
     timetravel: false,
-    inertia: {
+    initia: {
         tvl: async () => {
             const balances = {}
             const res = await queryV1Beta1({

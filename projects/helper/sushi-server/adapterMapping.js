@@ -3,13 +3,8 @@ module.exports = {
     [
       {
         'fxdao': '/fxdao/api.js',
-        // 'blend-pools': '/blend-pools/api.js',  // moved to rpc proxy
-        // 'blend-pools-v2': '/blend-pools-v2/api.js',  // moved to rpc proxy
-        // 'blend-backstop': '/blend-backstop/api.js',  // moved to rpc proxy
-        // 'blend-backstop-v2': '/blend-backstop-v2/api.js',  // moved to rpc proxy
         'harvest': '/harvest.js',
         'astar-dapps-staking': '/astar-dapps-staking/api',
-        'hydradex-v3': '/hydradex-v3/index.js',
         'injective-orderbook': '/injective-orderbook/api',
         'lisa': '/lisa/api',
       },
@@ -18,10 +13,21 @@ module.exports = {
         'bifrost-dex': '/bifrost-dex/api',
         'bifrost-liquid-crowdloan': '/bifrost-liquid-crowdloan/api',
       },
-      {
+      // {
+        // 'blend-pools': '/blend-pools/api.js',  // moved to rpc proxy
+        // 'blend-pools-v2': '/blend-pools-v2/api.js',  // moved to rpc proxy
+        // 'blend-backstop': '/blend-backstop/api.js',  // moved to rpc proxy
+        // 'blend-backstop-v2': '/blend-backstop-v2/api.js',  // moved to rpc proxy
         // 'genshiro': '/genshiro/api',
         // 'streamflow': '/streamflow/index',
-      },
+        // 'hydradex-v3': '/hydradex-v3/index.js',  // project is dead, there is a new chain hydragon
+        // 'parallel-staking': '/parallel-staking/api',
+        // 'parallel-crowdloan': '/parallel-crowdloan/api',
+        // 'parallelamm': '/parallelamm/api',
+        // 'parallel-lending': '/parallel-lending/api',
+        // 'parallel-stream': '/parallel-stream/api',
+        // 'polkadex': '/polkadex/api', // dead/paused ??
+      // },
       {
         'interlay-btc': '/interlay-btc/api',
         'interlay-staking': '/interlay-staking/api',
@@ -32,14 +38,7 @@ module.exports = {
       {
         'hydradx': '/hydradx/api.js',
       },
-    ],
-    [
       {
-        // 'parallel-staking': '/parallel-staking/api',
-        // 'parallel-crowdloan': '/parallel-crowdloan/api',
-        // 'parallelamm': '/parallelamm/api',
-        // 'parallel-lending': '/parallel-lending/api',
-        // 'parallel-stream': '/parallel-stream/api',
         'manta-atlantic-stake': '/manta-atlantic-stake/api',
         'mantadex': '/mantadex/api',
       },
@@ -49,9 +48,6 @@ module.exports = {
         'tapio': '/tapio/api',
         'acala-lending': '/acala-lending/api',
         'acala-dex': '/acala-dex/api',
-      },
-      {
-        'polkadex': '/polkadex/api',
       },
       {
         'karura-lending': '/karura-lending/api',
@@ -101,7 +97,7 @@ module.exports = {
 
       // breaks often
       // 'equilibrium': '/equilibrium/api',
-      'hydradex': '/hydradex.js',
+      // 'hydradex': '/hydradex.js',
 
       // chain down?
       // 'parallel-staking': '/parallel-staking/api',

@@ -8,6 +8,11 @@ const configs = {
         '0x0d8249DD621fB1c386A7A7A949504035Dd3436A3',
       ],
     },
+    base: {
+      eulerVaultOwners: [
+        '0xf3ED34523E35279a1deB2960c0aC46Be8E23a2f4'
+      ]
+    },
     starknet: {
       vesu: [
         '0x7bafdbd2939cc3f3526c587cb0092c0d9a93b07b9ced517873f7f6bf6c65563',

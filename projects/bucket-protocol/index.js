@@ -65,6 +65,7 @@ const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cc
 const SUI_HASUI_CETUS_VAULT_LP_ADDRESS = '0x828b452d2aa239d48e4120c24f4a59f451b8cd8ac76706129f4ac3bd78ac8809::lp_token::LP_TOKEN';
 const xBTC_ADDRESS = "0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC";
 const mUSD_ADDRESS = "0xe44df51c0b21a27ab915fa1fe2ca610cd3eaa6d9666fe5e62b988bf7f0bd8722::musd::MUSD";
+const TBTC_ADDRESS = "0x77045f1b9f811a7a8fb9ebd085b5b0c55c5cb0d1520ff55f7037f89b5da9f5f1::TBTC::TBTC";
 
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
@@ -195,6 +196,8 @@ function convertUnderlyingAssets(coin) {
   if(coin === xBTC_ADDRESS) return ADDRESSES.sui.xBTC
   // mUSD
   if(coin === mUSD_ADDRESS) return ADDRESSES.sui.mUSD
+  // tBTC
+  if(coin === TBTC_ADDRESS) return ADDRESSES.sui.TBTC
   return coin
 }
 

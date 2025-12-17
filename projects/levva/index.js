@@ -8,12 +8,13 @@ module.exports = {
 };
 
 Object.keys(config).forEach((chain) => {
-  const { factories, contractRegistries } = config[chain];
+  const { factories, contractRegistries, levvaV2Factories } = config[chain];
 
   module.exports[chain] = {
     tvl: async (api) => {
       await getPoolTvl(api, factories);
       await getVaultTvl(api, contractRegistries);
+      await getVaultV2Tvl(api, levvaV2Factories);
     },
   };
 });
@@ -82,4 +83,26 @@ async function getVaultTvl(api, contractRegistries) {
 
   // Add free amount in ERC4626 
   await api.erc4626Sum({ calls: vaults, tokenAbi: 'asset', balanceAbi: 'getFreeAmount' });
+}
+
+async function getVaultV2Tvl(api, levvaV2Factories){
+  const vaults = [];
+  // Retrieve logs from each levva v2 factory
+  for (const { factory, fromBlock } of levvaV2Factories) {
+    const logs = await getLogs2({
+      api,
+      target: factory,
+      topic: "ContractRegistered",
+      eventAbi: "event NewVaultDeployed(address asset, address indexed vault, address indexed withdrawalQueue, string lpName)",
+      onlyArgs: true,
+      fromBlock,
+    });
+
+    logs.forEach((l) => {
+      vaults.push(l.vault);
+    });
+  }
+
+  // totalAssets of every vault
+  await api.erc4626Sum({ calls: vaults, tokenAbi: 'asset', balanceAbi: 'totalAssets' });
 }

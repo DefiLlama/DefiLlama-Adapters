@@ -3,6 +3,10 @@ const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const helpers = {
   "eos": require("./chain/eos"),
   "ton": require("./chain/ton"),
@@ -79,7 +83,7 @@ async function sumTokens(options) {
   const evmAddressExceptions = new Set(['tron', 'xdc'])
   const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
-
+  
   if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
     if (nonEvmOwnerFound) throw new Error('chain handler missing: ' + chain)
     return sumTokensEVM(options)
@@ -108,7 +112,7 @@ async function sumTokens(options) {
   options.blacklistedTokens = blacklistedTokens
   let helper = helpers[chain] || altEVMHelper[chain]
 
-  if (ibcChains.includes(chain)) helper = helpers.cosmos
+  if (ibcChains.includes(chain) && nonEvmOwnerFound) helper = helpers.cosmos
 
   if (helper) {
     switch (chain) {
@@ -127,6 +131,7 @@ async function sumTokens(options) {
     return balances
 
   } else if (!specialChains.includes(chain)) {
+    if (ibcChains.includes(chain)) return sumTokensEVM(options) 
     throw new Error('chain handler missing!!!')
   }
 
@@ -143,6 +148,7 @@ async function sumTokens(options) {
 
 async function getRippleBalance(account) {
   const body = { "method": "account_info", "params": [{ account }] }
+  await sleep(500);
   const res = await post('https://s1.ripple.com:51234', body)
   if (res.result.error === 'actNotFound') return 0
   return res.result.account_data.Balance / 1e6
@@ -159,6 +165,7 @@ async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
       ledger_index: "validated"
     }]
   }
+  await sleep(500);
   const res = await post('https://s1.ripple.com:51234', body)
   if (res.result.error === 'actNotFound') return {}
 

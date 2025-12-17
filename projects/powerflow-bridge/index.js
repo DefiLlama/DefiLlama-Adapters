@@ -11,22 +11,21 @@ const config = {
       coinGeckoId: "tokenize-xchange",
       decimals: 18,
     },
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc":
-      {
+    [`${ADDRESSES.titan.factory}/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc`]: {
         coinGeckoId: "usdc",
         decimals: 6,
       },
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt":
+    [`${ADDRESSES.titan.factory}/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt`]:
       {
         coinGeckoId: "tether",
         decimals: 6,
       },
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth":
+    [`${ADDRESSES.titan.factory}/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth`]:
       {
         coinGeckoId: "ethereum",
         decimals: 18,
       },
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol":
+    [`${ADDRESSES.titan.factory}/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol`]:
       {
         coinGeckoId: "solana",
         decimals: 9,

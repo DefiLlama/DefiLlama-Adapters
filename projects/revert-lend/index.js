@@ -7,6 +7,10 @@ const config = {
   base: {
     owners: ['0x36aeae0e411a1e28372e0d66f02e57744ebe7599'],
 
+  },
+  ethereum: {
+    owners: ['0xa2754543f69dC036764bBfad16d2A74F5cD15667'],
+
   }
 }
 
