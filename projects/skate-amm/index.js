@@ -3,15 +3,36 @@ const { sumTokens2 } = require('../helper/solana')
 const { getObjects } = require("../helper/chain/sui");
 
 const evm_config = {
-  ethereum: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
-  bsc: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 },
-  base: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 29522359 },
-  arbitrum: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 },
-  hyperliquid: { kernelEventEmitter: '0x5a428F12a55d6E0ABa77Eb5B340f2ff95dE01BF5', fromBlock: 4470476 },
-  plume_mainnet: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
-  mantle: { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
-  "0g": { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 },
-  monad: { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 33372521 },
+  ethereum: [
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
+    { kernelEventEmitter: '0xEFfC0fD0CaD5762c360Eb2158500a5537bb4637d', fromBlock: 22965694 }
+  ],
+  bsc: [
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 },
+    { kernelEventEmitter: '0xcE9ecebAFE2174FFC9b662FE6cc4610574AB602C', fromBlock: 54773913 }
+  ],
+  base: [
+    { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 29522359 },
+    { kernelEventEmitter: '0x9b69c72B68B7A7E765335831d6234F593f818e6B', fromBlock: 33144489 }
+  ],
+  arbitrum: [
+    { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 },
+    { kernelEventEmitter: '0xf7b221F8a45a62539a53F20C8D3A5a1edDd1b510', fromBlock: 359940838 }
+  ],
+  hyperliquid: [
+    { kernelEventEmitter: '0x5a428F12a55d6E0ABa77Eb5B340f2ff95dE01BF5', fromBlock: 4470476 },
+    { kernelEventEmitter: '0x59964b3af53eb10C596B92B3d6aeAfC038B3Bd8d', fromBlock: 8976860 }
+  ],
+  plume_mainnet: [
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
+    { kernelEventEmitter: '0x1F5C460A8BF18B12fb7218019a1693391A8251a7', fromBlock: 13309471 }
+  ],
+  mantle: [
+    { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
+    { kernelEventEmitter: '0x802bE72795617ACec443321504150951f85De652', fromBlock: 82474030 }
+  ],
+  "0g": [{ kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 }],
+  monad: [{ kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 33372521 }],
 }
 
 const svm_config = {
@@ -63,14 +84,15 @@ module.exports = {
 }
 
 const evmTvl = async (api) => {
-  const { kernelEventEmitter, fromBlock } = evm_config[api.chain]
-  const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true })
-  const balances = await api.multiCall({ calls: logs.map(([_, pool]) => ({ target: pool })), abi: abis.balances_available })
-  logs.forEach(([_, __, token0, token1], i) => {
-    const { amount0, amount1 } = balances[i]
-    api.add(token0, amount0)
-    api.add(token1, amount1)
-  })
+  for (const { kernelEventEmitter, fromBlock } of evm_config[api.chain]) {
+    const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true })
+    const balances = await api.multiCall({ calls: logs.map(([_, pool]) => ({ target: pool })), abi: abis.balances_available })
+    logs.forEach(([_, __, token0, token1], i) => {
+      const { amount0, amount1 } = balances[i]
+      api.add(token0, amount0)
+      api.add(token1, amount1)
+    })
+  }
 }
 
 Object.keys(evm_config).forEach((chain) => {

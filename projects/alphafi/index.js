@@ -515,6 +515,24 @@ const ALPHAFI_BUCKET_TVL_IDS = [
   },
   
 ]
+const ALPHAFI_SLUSH_TVL_IDS = [
+  {
+    poolID: "0x15a537db45889267354a2576e1cf24e84ea7674a4e5691e71dd4c4592c9a8ce9",
+    tokenType: ADDRESSES.sui.USDC,
+  },
+  {
+    poolID: "0x18db5470cc2da4f74b1b957891f274d896764d08c56c3941788cef84d2a1362e",
+    tokenType: ADDRESSES.sui.SUI,
+  },
+  {
+    poolID: "0xcb8b3311b50c89edc2a0e51a0ffc591a651f8c8819ad000aa46f5974a619378d",
+    tokenType: ADDRESSES.sui.WAL,
+  },
+  {
+    poolID: "0xed4302b0db5a1eabc2f8404222572892c0bf7c81004935b23e4f22808b52a0af",
+    tokenType: ADDRESSES.sui.DEEP,
+  },
+]
 const ALPHAFI_POOL2_IDS = [{
   poolID: "0x594f13b8f287003fd48e4264e7056e274b84709ada31e3657f00eeedc1547e37",
   parentPoolID: "0xda7347c3192a27ddac32e659c9d9cbed6f8c9d1344e605c71c8886d7b787d720",
@@ -545,7 +563,7 @@ const ALPHAFI_POOL2_IDS = [{
 },
 ]
 
-const ALPHA_POOL_ID = "0x6ee8f60226edf48772f81e5986994745dae249c2605a5b12de6602ef1b05b0c1"
+const ALPHA_POOL_ID = "0x06a4922346ae433e9a2fff4db900d760e0cbfdef748f48385f430ef4d042a6f8"
 const ALPHA_COIN_TYPE = "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA"
 
 function asIntN(int, bits = 32) {
@@ -605,9 +623,9 @@ async function addPoolTVL3(api, alphafiNaviLoopPools){
   }
 }
 
-async function addPoolTVL4(api, alphafiBucketPools){
+async function addPoolTVL4(api, alphafiBucketPools, alphafiSlushPools){
  
-  for (const { poolID, tokenType } of alphafiBucketPools){
+  for (const { poolID, tokenType } of [...alphafiBucketPools, ...alphafiSlushPools]){
     let poolObject = await sui.getObject(poolID);
     let tokensInvested = poolObject.fields.tokensInvested;
     api.add(tokenType, tokensInvested);
@@ -616,7 +634,7 @@ async function addPoolTVL4(api, alphafiBucketPools){
 
 async function tvl(api) {
   
-  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS), addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS)]);
+  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS), addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS, ALPHAFI_SLUSH_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS)]);
 
 }
 async function pool2(api) {
@@ -628,7 +646,7 @@ async function pool2(api) {
 
 async function staking(api) {
   let alphaPoolObject = await sui.getObject(ALPHA_POOL_ID)
-  api.addToken(ALPHA_COIN_TYPE, BigInt(alphaPoolObject.fields.alpha_bal))
+  api.addToken(ALPHA_COIN_TYPE, BigInt(alphaPoolObject.fields.tokensInvested))
 }
 
 module.exports = {

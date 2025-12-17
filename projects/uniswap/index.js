@@ -106,11 +106,16 @@ const okuGraphMap = {
   nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
+  saga: 'https://omni.v2.icarus.tools/saga',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
 }
 
 Object.keys(okuGraphMap).forEach(chain => {
-  if (chain === 'saga') return { tvl: () => ({  }) }
+  let blacklistedTokens = []
+  if (chain === 'saga') {
+    blacklistedTokens = ['0xa19377761fed745723b90993988e04d641c2cffe']
+  }
+  // if (chain === 'saga') return { tvl: () => ({  }) }
   module.exports[chain] = {
     tvl: async (api) => {
       const ownerTokens = await getConfig('oku-trade/' + chain, undefined, {
@@ -135,7 +140,7 @@ Object.keys(okuGraphMap).forEach(chain => {
           return ownerTokens
         }
       })
-      return api.sumTokens({ ownerTokens })
+      return api.sumTokens({ ownerTokens, blacklistedTokens })
     }
   }
 })
