@@ -1,6 +1,3 @@
-const { PublicKey } = require("@solana/web3.js");
-const { getConnection } = require("../helper/solana");
-
 const ALLOCATOR_VAULT = '0xe4470DD3158F7A905cDeA07260551F72d4bB0e77';
 const ALLOCATOR_BUFFER = '0x065E5De3D3A08c9d14BF79Ce5A6d3D0E8794640c';
 const ALM_PROXY = '0xa5139956eC99aE2e51eA39d0b57C42B6D8db0758';
@@ -21,37 +18,12 @@ const ETHEREUM_TOKENS = [
     '0x18084fbA666a33d37592fA2633fD49a74DD93a88', // tBTC
 ];
 
-const KEEL_SVM_ALM_CONTROLLER = 'EeWDutgcKNTdQGJkGRrWYmTXXuKnPUZNvXepbLkQrxW4';
-
-async function ethereumTvl(api) {
+async function tvl(api) {
     const owners = [ALLOCATOR_VAULT, ALLOCATOR_BUFFER, ALM_PROXY];
     return api.sumTokens({ owners, tokens: ETHEREUM_TOKENS });
 }
 
-async function solanaTvl() {
-    try {
-        const connection = getConnection();
-        const account = await connection.getAccountInfo(new PublicKey(KEEL_SVM_ALM_CONTROLLER));
-        if (!account) return {};
-
-        // TODO: Parse account data when program structure is known
-        return {};
-    } catch (error) {
-        return {};
-    }
-}
-
 module.exports = {
-    timetravel: false,
-    methodology: "Keel Finance is an on-chain capital allocator from the Sky Protocol (formerly MakerDAO) ecosystem, designed to deploy up to $2.5B across Solana DeFi protocols and tokenized real-world assets. TVL is calculated by summing token balances in the AllocatorVault (0xe4470DD3158F7A905cDeA07260551F72d4bB0e77), AllocatorBuffer (0x065E5De3D3A08c9d14BF79Ce5A6d3D0E8794640c), and ALM Proxy (0xa5139956eC99aE2e51eA39d0b57C42B6D8db0758) contracts on Ethereum, plus bridged assets on Solana managed by the SVM ALM Controller.",
-    ethereum: {
-        tvl: ethereumTvl,
-    },
-    solana: {
-        tvl: solanaTvl,
-    },
-    start: 1727740800, // Oct 1, 2024
-    hallmarks: [
-        [1727740800, 'Keel Finance launches as Pioneer Star in Sky Ecosystem'],
-    ],
+    methodology: "TVL is calculated by summing token balances in Keel Finance's AllocatorVault, AllocatorBuffer, and ALM Proxy contracts on Ethereum.",
+    ethereum: { tvl },
 };
