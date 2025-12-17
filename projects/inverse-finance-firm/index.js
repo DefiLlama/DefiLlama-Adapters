@@ -2,9 +2,9 @@
 const abi = require("./abi.json");
 const { getLogs } = require('../helper/cache/getLogs')
 const { staking } = require('../helper/staking');
-const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const fromBlock = 16159015;
+
 const DOLAs = [
   '0x865377367054516e17014CcdED1e7d814EDC9ce4',
   '0xb45ad160634c528Cc3D2926d9807104FA3157305'
@@ -19,15 +19,10 @@ const lpsToBreak = [
   '0x342d24f2a3233f7ac8a7347fa239187bfd186066', // yvCurve-DOLA-sUSDS-f
 ].map(i => i.toLowerCase());
 
-async function removeDolaFromLps(api, owners) {
+async function removeDolaFromLps(api) {
   const [yvRates, underlyingLps] = await Promise.all([
     api.multiCall({ abi: 'uint256:pricePerShare', calls: lpsToBreak }),
     api.multiCall({ abi: 'address:token', calls: lpsToBreak }),
-    sumTokens2({
-      api,
-      owners,
-      tokens: lpsToBreak,
-    })
   ])
 
   const [token0s, token1s, lpSupplies] = await Promise.all([
@@ -40,7 +35,7 @@ async function removeDolaFromLps(api, owners) {
     api.multiCall({ abi: 'erc20:balanceOf', calls: token0s.map((target, i) => ({ target, params: underlyingLps[i] })) }),
     api.multiCall({ abi: 'erc20:balanceOf', calls: token1s.map((target, i) => ({ target, params: underlyingLps[i] })) }),
   ])
-  
+
   lpsToBreak.forEach((lp, i) => {
     const balance = api._balances._balances[`${api.chain}:${lp}`]
     delete api._balances._balances[`${api.chain}:${lp}`]
@@ -65,15 +60,15 @@ async function tvl(api) {
     eventAbi: abi.AddMarket,
     extraKey: "fix-firm"
   })
-  
+
   // unique markets
   const markets = [...new Set(logs.map(i => i.args.market))]
 
-  let owners = await Promise.all(
-    markets.map(async m => {
+  let calls = await Promise.all(
+    markets.map(async target => {
       const logs = await getLogs({
         api,
-        target: m,
+        target,
         topic: "CreateEscrow(address,address)",
         fromBlock,
         eventAbi: abi.CreateEscrow,
@@ -81,35 +76,30 @@ async function tvl(api) {
       return logs.map(i => i.args.escrow)
     })
   );
-  owners = owners.flat()
+  calls = calls.flat()
 
-  const allEscrowTokens = await api.multiCall({  abi: 'address:token', calls: owners})
-  const uniqueEscrowTokens = [...new Set(allEscrowTokens.flat())]
-  const symbols = await api.multiCall({  abi: 'erc20:symbol', calls: uniqueEscrowTokens })
-  const tokens = uniqueEscrowTokens.filter((t, i) => {
-     if (lpsToBreak.includes(t.toLowerCase())) return false
-     if (symbols[i].toLowerCase().includes('dola')) {
+  const tokens = await api.multiCall({ abi: 'address:token', calls })
+  const tokenBalances = await api.multiCall({ abi: 'uint256:balance', calls })
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens })
+
+  const unprocessedTokens = []
+  tokens.forEach((t, i) => {
+    if (lpsToBreak.includes(t.toLowerCase()) || !symbols[i].toLowerCase().includes('dola')) api.add(t.toLowerCase(), tokenBalances[i])
+    else if (!unprocessedTokens.includes(t)) {
       console.log(`${symbols[i]} at ${t} is not being counted as it contains DOLA and hasnt been broken down`)
-      return false
-     }
-     return true 
+      unprocessedTokens.push(t)
+      api.add(t.toLowerCase(), tokenBalances[i])
+    }
   })
 
-  await removeDolaFromLps(api, owners)
-
-  return await sumTokens2({
-    api,
-    owners,
-    tokens, 
-    unwrapAll: true
-  });
+  await removeDolaFromLps(api)
 }
 
 module.exports = {
   methodology: "Get collateral balances from users personal escrows",
   hallmarks: [
     [1707177600, "Launch of sDOLA"],
-    [1718236800, "CRV liquidation"]    
+    [1718236800, "CRV liquidation"]
   ],
   start: '2022-12-10', // Dec 10 2022
   ethereum: {
