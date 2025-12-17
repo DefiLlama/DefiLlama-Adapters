@@ -5,8 +5,8 @@ const ONESEC_API = 'https://1sec.to/api/balances'
 
 const tokens = {
   ICP: { decimals: 8, coingeckoId: 'internet-computer' },
-  USDC: { decimals: 6, coingeckoId: 'usd-coin' },
-  USDT: { decimals: 6, coingeckoId: 'tether' },
+  USDC: { decimals: 8, coingeckoId: 'usd-coin' },
+  USDT: { decimals: 8, coingeckoId: 'tether' },
   ckBTC: { decimals: 8, coingeckoId: 'bitcoin' },
   ckDOGE: { decimals: 8, coingeckoId: 'dogecoin' },
 }
