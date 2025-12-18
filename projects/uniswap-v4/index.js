@@ -5,7 +5,7 @@ const { getEnv } = require("../helper/env");
 
 // from https://docs.uniswap.org/contracts/v4/deployments
 const config = {
-  ethereum: { factory: "0x000000000004444c5dc75cB358380D2e3dE08A90", fromBlock: 21688329 },
+  ethereum: { factory: "0x000000000004444c5dc75cB358380D2e3dE08A90", fromBlock: 21688329, blacklistedTokens: ['0xb4357054c3da8d46ed642383f03139ac7f090343'] },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675 },
   base: { factory: "0x498581ff718922c3f8e6a244956af099b2652b2b", fromBlock: 25350988 },
   arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872, blacklistedTokens: ['0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1', '0x3e4ffeb394b371aaaa0998488046ca19d870d9ba'] },
@@ -16,8 +16,9 @@ const config = {
   ink: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 4580556 },
   soneium: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 2473300 },
   avax: { factory: "0x06380c0e0912312b5150364b9dc4542ba0dbbc85", fromBlock: 56195376 },
-  bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610 },
+  bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343'] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1 },
+  monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895 },
 }
 
 const eventAbi = "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)"
@@ -30,7 +31,7 @@ Object.keys(config).forEach(chain => {
 
       let compressType
       if (chain === 'base') compressType = 'v1'
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType, })
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType,})
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
@@ -41,7 +42,7 @@ Object.keys(config).forEach(chain => {
         }
       })
       ownerTokens.push([Array.from(tokenSet), factory])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, sumChunkSize: 30000, sumChunkSleep: 5000, blacklistedTokens: config[chain].blacklistedTokens ? config[chain].blacklistedTokens : [] })
+      return sumTokens2({ api, ownerTokens, permitFailure: true, sumChunkSize: 10000, sumChunkSleep: 5000, blacklistedTokens: config[chain].blacklistedTokens ? config[chain].blacklistedTokens : [] })
     }
   }
 })

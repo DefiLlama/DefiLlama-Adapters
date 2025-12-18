@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cachedGraphQuery } = require('../helper/cache');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,8 +41,8 @@ const config = {
 
 // susd1p to usd1
 const TOKEN_MAPPINGS = {
-  [SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_ETH]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
-  [SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
+  [SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_ETH]: ADDRESSES.bsc.USD1,
+  [SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC]: ADDRESSES.bsc.USD1,
 }
 
 ////////////////////////////////////////////////////////////////////////////////

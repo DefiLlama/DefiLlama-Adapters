@@ -37,6 +37,8 @@ const chains = [
   "etlk",
   "plasma",
   "unichain",
+  "stable",
+  "monad"
 ];
 const registryIds = {
   stableswap: 0,

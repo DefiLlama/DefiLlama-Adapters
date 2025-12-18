@@ -27,6 +27,10 @@ const ACRED_ADDRESSES = {
   solana: {
     token: 'FubtUcvhSCr3VPXEcxouoQjKQ7NWTCzXyECe76B7L3f8',
     priceFeed: null // Add price feed address when available
+  },
+  sei: {
+    token: '0xf7fa6725183e603059fc23d95735bf67f72b2d78',
+    priceFeed: null // Add price feed address when available
   }
 };
 
@@ -110,5 +114,6 @@ module.exports = {
   polygon: { tvl },
   aptos: { tvl },
   ink: { tvl },
-  solana: { tvl }
+  solana: { tvl },
+  sei: { tvl }
 };
