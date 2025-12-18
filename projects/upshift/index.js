@@ -13,7 +13,9 @@ const config = {
   hyperliquid: ["0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB", "0xc061d38903b99aC12713B550C2CB44B221674F94" ],
   bsc: ["0xD0b717ef23817b1a127139830Cf0FcD449ef74F0"],
   mezo: ["0x221B2D9aD7B994861Af3f4c8A80c86C4aa86Bf53"],
-  monad: ["0xD793c04B87386A6bb84ee61D98e0065FdE7fdA5E", "0x64996271ee085ef9e6E939Ab3eACd93F7d7080db", "0xB667D005695D7f530A5621549aE31d9409486E29"]
+  monad: ["0xD793c04B87386A6bb84ee61D98e0065FdE7fdA5E"]
+  
+
 }
 
 const v2Vaults = {
@@ -77,6 +79,6 @@ allChains.forEach(chain => {
 
    
 
-module.exports.sui = {
-  tvl: suiVaultsTvl,
-}
+// module.exports.sui = {
+//   tvl: suiVaultsTvl,
+// }
