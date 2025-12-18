@@ -10,16 +10,16 @@ const {
 } = require('./tokenMapping');
 const { svmChains } = require("./svmChainConfig");
 
-async function transformInjectiveAddress() {
-  return addr => {
+function transformInjectiveAddress() {
+  return (addr) => {
     if (addr.startsWith('ibc:')) return addr
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     if (addr.startsWith('injective:') || addr.startsWith('ethereum:')) return addr
-    return `injective:${addr}`;
-  };
+    return `injective:${addr}`
+  }
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
@@ -48,12 +48,10 @@ function fixBalances(balances, mapping, { chain, } = {}) {
   return balances;
 }
 
-async function getFixBalances(chain) {
-  return getFixBalancesSync(chain)
-}
 
-function getFixBalancesSync(chain) {
-  const dummyFn = i => i;
+const dummyFn = i => i
+
+function getFixBalances(chain) {
   return fixBalancesMapping[chain] || dummyFn;
 }
 
@@ -89,7 +87,15 @@ function transformChainAddress(
   };
 }
 
-async function getChainTransform(chain) {
+
+const chainTransformCache = {}
+
+function getChainTransform(chain) {
+  if (!chainTransformCache[chain]) chainTransformCache[chain] = _getChainTransform(chain)
+  return chainTransformCache[chain]
+}
+
+function _getChainTransform(chain) {
   if (chainTransforms[chain])
     return chainTransforms[chain]()
 
@@ -120,9 +126,9 @@ async function getChainTransform(chain) {
   };
 }
 
-async function transformBalances(chain, balances) {
-  const transform = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
+function transformBalances(chain, balances) {
+  const transform = getChainTransform(chain)
+  const fixBalances = getFixBalances(chain)
   Object.entries(balances).forEach(([token, value]) => {
     delete balances[token]
     sdk.util.sumSingleBalance(balances, transform(token), value)
@@ -131,7 +137,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
   if (api) {
     balances = api.getBalances()
@@ -161,7 +167,7 @@ async function transformDexBalances({ api, chain, data, balances, restrictTokenR
   return {
     prices,
     updateBalances,
-    balances: await transformBalances(chain, balances),
+    balances: transformBalances(chain, balances),
   }
 
   function addTokens({ token0, token0Bal, token1, token1Bal }) {
@@ -236,7 +242,6 @@ module.exports = {
   getChainTransform,
   getFixBalances,
   stripTokenHeader,
-  getFixBalancesSync,
   transformBalances,
   transformDexBalances,
 };

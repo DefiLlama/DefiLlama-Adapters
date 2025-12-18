@@ -76,7 +76,7 @@ const tvl = async (api) => {
 
 module.exports = {
   methodology:
-    "Counts TVL of Morpho Blue markets on Hyperliquid where Felix Vaults are whitelisted.",
+    'Counts the TVL of specific Morpho Blue markets on Hyperliquid that are curated by Felix. These markets are identified by finding pools where whitelisted Felix Vaults are supplying liquidity. We verify the "supplyingVaults" field from the Morpho API and sum the Supply Assets (total deposits) and Collateral Assets (total locked collateral) of these verified markets.',
   hyperliquid: {
     tvl,
   },

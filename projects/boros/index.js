@@ -10,6 +10,7 @@ const tvl = async (api) => {
   const commonTokens = [
     ADDRESSES.arbitrum.WETH,
     ADDRESSES.arbitrum.WBTC,
+    ADDRESSES.arbitrum.USDT,
   ];
 
   await sumTokens2({

@@ -3,15 +3,17 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const graphs = {
   ethereum:
-    "https://api.mainnet.termfinance.io/mainnet/subgraph/term",
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-mainnet/latest/gn",
   avax:
-    "https://api.mainnet.termfinance.io/avalanche/subgraph/term",
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-avalanche/latest/gn",
   base:
-    "https://api.mainnet.termfinance.io/base/subgraph/term",
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-base/latest/gn",
+  plasma:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-plasma/latest/gn",
   // bsc:
-  //   "https://api.mainnet.termfinance.io/bnb/subgraph/term",
+  //   "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-bnb/latest/gn",
   // arbitrum:
-  //   "https://api.mainnet.termfinance.io/arbitrum/subgraph/term",
+  //   "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-arbitrum/latest/gn",
 };
 
 const query = `
@@ -70,6 +72,7 @@ const graphStartBlock = {
   ethereum: 5240462,
   avax: 43162227,
   base: 30797402,
+  plasma: 1390659,
   bsc: 54505207,
   arbitrum: 359134348,
 }

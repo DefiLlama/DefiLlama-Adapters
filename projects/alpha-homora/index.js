@@ -30,5 +30,6 @@ module.exports = {
   hallmarks: [
     [1613178000, "37M exploit"], // Feb 13, 2021
     [1626220800, "Upgrade to V2 on ETH"], // July 14, 2021 00:00 UTC
-  ]
+  ],
+  deadFrom: '2025-10-11', // website is down
 };

@@ -8,14 +8,15 @@ const sui = require("../helper/chain/sui");
 // ==============================================
 const HYPERBEAT_MAPPINGS = [
   { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
-  { vault: '0x441794d6a8f9a3739f5d4e98a728937b33489d29', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
+  { vault: '0xd8fc8f0b03eba61f64d08b0bef69d80916e5dda9', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
   { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat lstHYPE -> WHYPE
   { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
   { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
   { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat WHYPE -> WHYPE
   { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
   { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
-  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
+  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
+    { vault: '0x057ced81348D57Aad579A672d521d7b4396E8a61', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
 ];
 
 // ==============================================
@@ -199,6 +200,11 @@ const configs = {
         '0x28d24d4380b26a1ef305ad8d8db258159e472f33', // USUAL Vault
         '0xd41830d88dfd08678b0b886e0122193d54b02acc', // MEV Capital PTs USDC
         '0x1265a81d42d513df40d0031f8f2e1346954d665a', // MEV Capital Elixir USDC
+        '0x5F7827FDeb7c20b443265Fc2F40845B715385Ff2', // MEV Capital EURCV
+        '0x5422374B27757da72d5265cC745ea906E0446634', // MEV Capital USDCV
+          '0xda4063ec62c3f3c1d2bdbf7dbfb2b2c906f8e8b2', // MORPHO USDT
+          '0xc0a14627d6a23f70c809777ced873238581c1032', // MORPHO USD0
+          '0x8e3c0a68f8065dc666065f16cf902596a60d540e', // MORPHO WBTC
       ],
       mellow: [
         '0x5fd13359ba15a84b76f7f87568309040176167cd', // Amphor Restaked ETH
@@ -334,7 +340,7 @@ const configs = {
     hyperliquid: {
       hyperbeat: [
         '0x5e105266db42f78fa814322bce7f388b4c2e61eb', // Hyperbeat USDT
-        '0x441794d6a8f9a3739f5d4e98a728937b33489d29', // Hyperbeat beHYPE (price not in the api yet)
+        '0xd8fc8f0b03eba61f64d08b0bef69d80916e5dda9', // Hyperbeat beHYPE (price not in the api yet)
         '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', // Hyperbeat lstHYPE (price not in the api yet)
         '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Hyperbeat USR (price not in the api yet)
         '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
@@ -342,7 +348,17 @@ const configs = {
         '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
         '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', // Hyperbeat dnHYPE (price not in the api yet)
         '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', // Hyperbeat wVLP (price not in the api yet)
-      ]
+          '0x057ced81348D57Aad579A672d521d7b4396E8a61', // Hyperbeat USDC (price not in the api yet)
+      ],
+        morpho: [
+            '0xdd1f54b1edc141f47ec5294ad5aa62243bfa6d59', // Morpho USR
+            '0xd2af7ca672453604c537ca9d6293b224b7744d7a', // Morpho USR2
+            '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Morpho WHYPE
+            '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Morpho USR3
+            '0x8e1650d3343023c527b6a6cc0c2551bb100fe22b', // Morpho UBTC
+            '0x4851d4891321035729713d43be1f4bb883dffd34', // Morpho USDC
+            '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8' // Morpho USDT0
+        ]
     },
     sonic: {
       euler: [
@@ -389,7 +405,18 @@ const configs = {
         "0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642", // ember ebtc
         "0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505" // ember basis
       ]
-    }
+    },
+      polygon: {
+            morpho: [
+                '0xf2532428472a4cbdf27f20ca39e81da6deb420b5', // Morpho USDC
+            ]
+      },
+      base: {
+            morpho: [
+                '0x8773447e6369472d9b72f064ea62e405216e9084', // Morpho USDC
+                '0x45f8cc9a58285b7e7000eb14738346569963179d' // Morpho LCAP
+            ]
+      }
   }
 }
 

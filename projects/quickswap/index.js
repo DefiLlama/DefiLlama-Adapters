@@ -23,6 +23,7 @@ const tvl = async (api) => {
   if (head < block) throw new Error(`Subgraph behind: head=${head}, need >= ${block}`)
 
   const usdTvl = Number(uniswapFactories?.[0]?.totalLiquidityUSD ?? 0)
+  if (usdTvl < 200_000_000) throw new Error(`Suspicious TVL: ${usdTvl} < 200,000,000 (likely bad indexer/stale data)`)
   return toUSDTBalances(usdTvl)
 }
 
@@ -32,7 +33,7 @@ module.exports = {
     staking: staking("0x958d208Cdf087843e9AD98d23823d32E17d723A1", ADDRESSES.polygon.QUICK),
     tvl
   },
-  base: { tvl: getUniTVL({factory: '0xEC6540261aaaE13F236A032d454dc9287E52e56A'}) },
+  base: { tvl: getUniTVL({factory: '0xEC6540261aaaE13F236A032d454dc9287E52e56A', useDefaultCoreAssets: true}) },
   // dogechain: {
   //   tvl: getUniTVL({factory: '0xC3550497E591Ac6ed7a7E03ffC711CfB7412E57F'})
   // },

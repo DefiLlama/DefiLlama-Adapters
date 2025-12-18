@@ -6,7 +6,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  hyperliquid: {
-    tvl
-  },
+  deadFrom: '2025-09-26',
+  hallmarks: [[1758844800, "Rug pull"]],
+  hyperliquid: { tvl: () => ({  }) },
 }

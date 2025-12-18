@@ -19,74 +19,10 @@ const DATA_PROVIDERS_CONTRACTS = [
   "0x40025ad3f5438aC971e61Ba97F9Ab1B8b818900d"
 ];
 
-const abi = {
-  getAllReservesTokens: "function getAllReservesTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-  getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
-};
+const { aaveV3Export } = require("../helper/aave");
 
-async function tvl(api) {
-  const allReservesTokens = await api.multiCall({ 
-    abi: abi.getAllReservesTokens, 
-    calls: DATA_PROVIDERS_CONTRACTS
-  });
+module.exports = aaveV3Export({
+  mantle: DATA_PROVIDERS_CONTRACTS
+})
 
-  const collateralAddresses = allReservesTokens.map(i => i[0].tokenAddress);
-  const debtAddresses = allReservesTokens.map(i => i[1].tokenAddress);
-
-  const debtReserveDatas = await api.multiCall({ 
-    abi: abi.getReserveData, 
-    calls: DATA_PROVIDERS_CONTRACTS.map((target, i) => ({ target, params: debtAddresses[i] })),
-  });
-
-  const collateralReserveDatas = await api.multiCall({ 
-    abi: abi.getReserveData, 
-    calls: DATA_PROVIDERS_CONTRACTS.map((target, i) => ({ target, params: collateralAddresses[i] })),
-  });
-  
-  api.add(collateralAddresses, collateralReserveDatas.map(i => i.totalAToken));
-  api.add(debtAddresses, debtReserveDatas.map(i => i.totalAToken));
-
-  debtReserveDatas.forEach((debtReserveData, i) => {
-    const totalStableDebt = +debtReserveData.totalStableDebt || 0;
-    const totalVariableDebt = +debtReserveData.totalVariableDebt || 0;
-    const totalBorrowed = totalStableDebt + totalVariableDebt;
-    
-    api.add(debtAddresses[i], -totalBorrowed);
-  });
-  
-  return api.getBalances();
-}
-
-async function borrowed(api) {
-  const allReservesTokens = await api.multiCall({ 
-    abi: abi.getAllReservesTokens, 
-    calls: DATA_PROVIDERS_CONTRACTS
-  });
-
-  const debtAddresses = allReservesTokens.map(i => i[1].tokenAddress);
-
-  // Get reserve data for this configurator (the configurator address is the reserve)
-  const debtReserveDatas = await api.multiCall({ 
-    abi: abi.getReserveData, 
-    calls: DATA_PROVIDERS_CONTRACTS.map((target, i) => ({ target, params: debtAddresses[i] })),
-  });
-
-  debtReserveDatas.forEach((debtReserveData, i) => {
-    const totalStableDebt = +debtReserveData.totalStableDebt || 0;
-    const totalVariableDebt = +debtReserveData.totalVariableDebt || 0;
-    const totalBorrowed = totalStableDebt + totalVariableDebt;
-    
-    api.add(debtAddresses[i], totalBorrowed);
-  });
-
-  return api.getBalances();
-}
-
-module.exports = {
-  methodology: 'TVL accounts for all assets deposited into the Vaults. Borrowed amounts are calculated as the total amount of tokens borrowed from the lending pools.',
-  mantle: { 
-    tvl,
-    borrowed,
-    staking: staking(StakingContract, TokenContract)
-  },
-};
+module.exports.mantle.staking = staking(StakingContract, TokenContract)

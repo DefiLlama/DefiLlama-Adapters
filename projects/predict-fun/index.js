@@ -8,5 +8,13 @@ module.exports = {
       '0x8F9C9f888A4268Ab0E2DDa03A291769479bAc285'
     ], tokens: [ADDRESSES.blast.USDB]})
   },
-  methodology: `TVL is the total quantity of USDB held in the conditional tokens contract as well as USDB collateral submitted to every predict.fun market ever opened - once the markets resolve, participants are able to withdraw their share given the redemption rate and their input stake.`
+  bsc: {
+    tvl: sumTokensExport({ owners: [
+      '0x66239b70133773A72A0D589E5564E88a50Cd39e7',
+      '0xCfb9beF5F7B748aC72311F057f3a888BC73334D9',
+      '0x9400F8Ad57e9e0F352345935d6D3175975eb1d9F',
+      '0x22DA1810B194ca018378464a58f6Ac2B10C9d244'
+    ], tokens: [ADDRESSES.bsc.USDT]})
+  },
+  methodology: `TVL is the total quantity of USDB (Blast) and USDT (BSC) held in the conditional tokens contracts as well as the wrapped collateral contracts. In the case of BSC, there are also additional YieldBearing contracts.`
 }

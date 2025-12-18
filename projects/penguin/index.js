@@ -1,5 +1,4 @@
-const sdk = require('@defillama/sdk');
-const { unwrapLPsAuto } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking');
 const abi = require('./abi.json')
 const abiGeneral = require('../helper/abis/masterchef.json');
@@ -13,48 +12,23 @@ const masterChef = "0x256040dc7b3CECF73a759634fc68aA60EA0D68CB"
 
 const ACC_PEFI_PRECISION = 1e18;
 
-async function getTokensInMasterChef(time, ethBlock, chainBlocks) {
-  const chain = "avax"
-  const block = chainBlocks[chain]
-  const transformAddress = addr => `avax:${addr}`
+async function getTokensInMasterChef(api) {
   const ignoreAddresses = [pefiToken].map(i => i.toLowerCase())
+  const poolInfo = await api.fetchList({ lengthAbi: abiGeneral.poolLength, itemAbi: abi.poolInfo, target: masterChef })
 
-  const balances = {}
-  const poolLength = (
-    await sdk.api.abi.call({
-      abi: abiGeneral.poolLength,
-      target: masterChef,
-      block, chain,
-    })
-  ).output;
-
-  const poolInfo = (
-    await sdk.api.abi.multiCall({
-      block,
-      calls: Array.from(Array(Number(poolLength)).keys()).map(i => ({
-        target: masterChef,
-        params: i,
-      })),
-      abi: abi.poolInfo,
-      chain,
-    })
-  ).output;
-
-  poolInfo.forEach(({ output: pool }) => {
+  poolInfo.forEach((pool) => {
     const token = pool[0].toLowerCase()
     if (ignoreAddresses.some(addr => addr === token))
       return;
     const balance = BigNumber(pool.totalShares).times(pool.lpPerShare).div(ACC_PEFI_PRECISION).toFixed(0)
-    sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
+    api.add(token, balance)
   })
-
-  await unwrapLPsAuto({ balances, block, chain, transformAddress, })
-  return balances
+  return sumTokens2({ api, resolveLP: true, })
 }
 
 module.exports = {
-  avax:{
-    staking: sdk.util.sumChainTvls([nest, nestv2].map(chef => staking(chef, pefiToken))),
+  avax: {
+    staking: staking([nest, nestv2], pefiToken),
     tvl: getTokensInMasterChef,
   }
 }

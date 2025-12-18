@@ -1,5 +1,5 @@
 const { getTokenSupplies } = require("../helper/solana");
-const fetch = require('node-fetch');
+const { get } = require("../helper/http");
 
 const ASSETS = {
   EVM: {
@@ -54,6 +54,10 @@ const ASSETS = {
       "VNXAU-GCKIYYQVIFBIFDRN7BNDNHL3UZSFHT5NHDAISG2N3MWCZY3WNXL3LXN3", // VNXAU
       "VEUR-GDXLSLCOPPHTWOQXLLKSVN4VN3G67WD2ENU7UMVAROEYVJLSPSEWXIZN",  // VEUR
       "VCHF-GDXLSLCOPPHTWOQXLLKSVN4VN3G67WD2ENU7UMVAROEYVJLSPSEWXIZN"   // VCHF
+    ],
+    icp: [
+      "wu6g4-6qaaa-aaaan-qmrza-cai", // VEUR
+      "ly36x-wiaaa-aaaai-aqj7q-cai"  // VCHF
     ]
   }
 };
@@ -68,6 +72,10 @@ const MAPPINGS = {
     '0xe4fadbbf24f118b1e63d65f1aac2a825a07f7619': '0x6d57b2e05f26c26b549231c866bdd39779e4a488',
     '0x513f99dee650f529d7c65bb5679f092b64003520': '0x6bA75D640bEbfe5dA1197bb5A2aff3327789b5d3',
     '0x65b9d36281e97418793f3430793f88440dab68d7': '0x79d4f0232A66c4c91b89c76362016A1707CFBF4f'
+  },
+  icp: {
+    'wu6g4-6qaaa-aaaan-qmrza-cai': '0x6bA75D640bEbfe5dA1197bb5A2aff3327789b5d3', //VEUR
+    'ly36x-wiaaa-aaaai-aqj7q-cai': '0x79d4f0232A66c4c91b89c76362016A1707CFBF4f' //VCHF
   }
 };
 
@@ -105,12 +113,40 @@ const evmTvl = (chain, assets) => {
   };
 };
 
+const fetchIcpSupply = async (asset) => {
+  const url = `https://${asset}.raw.icp0.io/metrics`;
+  let response = await get(url);
+  // Extract ledger_total_supply from the response
+  const lines = response.split('\n');
+  let totalSupply = 0;
+  for (const line of lines) {
+    if (line.startsWith('ledger_total_supply')) {
+      const parts = line.split(' ');
+      if (parts.length >= 2) {
+        totalSupply = parseInt(parts[1]);
+        break;
+      }
+    }
+  }
+  return totalSupply / 1e8 * 1e18; // Convert to 18 decimals for Ethereum compatibility
+};
+
+const icpTvl = async (api, assets) => {
+  const totalSupply = await Promise.all(assets.map(fetchIcpSupply));
+  totalSupply.forEach((supply, index) => {
+    const ethereumAsset = MAPPINGS.icp[assets[index]];
+    api.add(`ethereum:${ethereumAsset}`, supply, { skipChain: true });
+  });
+};
+
 const nonEvmTvl = (chain, assets) => {
   return async (api) => {
     if (chain === "solana") {
       await solanaTvl(api, assets);
     } else if (chain === "stellar") {
       await stellarTvl(api, assets);
+    } else if (chain === "icp") {
+      await icpTvl(api, assets);
     }
   };
 };
@@ -120,7 +156,7 @@ const getTvlFunction = (key, chain, assets) => {
     return evmTvl(chain, assets);
   } else if (key === 'nonEVM') {
     return nonEvmTvl(chain, assets);
-  }
+  } 
 };
 
 Object.entries(ASSETS).forEach(([key, chains]) => {

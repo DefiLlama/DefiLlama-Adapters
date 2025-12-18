@@ -70,5 +70,14 @@ module.exports = {
     pendleStaking: "0xDAe38aE946F95206d9b687d7d53b2856379A21c0",
     vlPNP: "",
     PNP: "",
+  },
+  plasma: {
+    masterPenpie: "0x2Cfedb9C62EFb57A8Bb8EC535F32731975d55243",
+    vePENDLE: "0x0d7432A9f5C51fdd2407332D90D9b814827982Bf",
+    mPENDLE: "",
+    PENDLE: "0x17bac5f906c9a0282ac06a59958d85796c831f24",
+    pendleStaking: "0xfFf28A2845aEB11394ed63dDFC62161af6310701",
+    vlPNP: "",
+    PNP: "",
   }
 };

@@ -25,6 +25,7 @@ const config = {
       "0x1084203d70950bd7a93aef75eb32a51df2422a07",
       "0xbcf6011192399df75a96b0a4ce47c4820853e9e5",
       "0x864a7fa57e0f8902a2de4892e925f1272edbe3fa",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
     ],
   },
   ethereum: {
@@ -80,7 +81,10 @@ const config = {
       "0x9c9c8f4f33679ce7f2c46cbf8ab4feb4cf45fe46",
       "0x8028270e06fca18e212306a7c93bfee52b440fc5",
       "0x0635ac6675e05c7f58383493bb7d1a513cd65688",
-      "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D"
+      "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+      "0x5bdf85216ec1e38d6458c870992a69e38e03f7ef",
+      "0xec96bbbe895301710a89a06546264ebb4f0cc546"
     ],
     blacklistedTokens: [
       "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
@@ -133,6 +137,7 @@ const config = {
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x0c4681e6c0235179ec3d4f4fc4df3d14fdd96017",
       "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
     ],
   },
   optimism: {
@@ -171,12 +176,14 @@ const config = {
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
       "0x9b0cb31f3e9232196aeaa7cac03ea95c5a4f0e35",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
     ],
   },
   ripple: {
     owners: [
       "r3AEihLNr81VYUf5PdfH5wLPqtJJyJs6yY",
       "rGDreBvnHrX1get7na3J4oowN19ny4GzFn",
+      "rwTTsHVUDF8Ub2nzV2oAeWxfJzUvobXLEf",
     ],
   },
   solana: {
@@ -190,7 +197,8 @@ const config = {
       "57WSBnNTC2MaqpY6NWLdNjhrELced4jSGV2hLSpjzct9",
       "DP1FqoBnE23QNNz4LpT9FCQvETdJN4nph5c11NiinrGg",
       "AyhsmFptkM251V1AoH2gf8d4QUnxUkkmaDqFfFwBwGni",
-      "4S8C1yrRZmJYPzCqzEVjZYf6qCYWFoF7hWLRzssTCotX"
+      "4S8C1yrRZmJYPzCqzEVjZYf6qCYWFoF7hWLRzssTCotX",
+      "7TWnq4WeYcwQWBCwKeEX2Q9xqVtthPGkB7adNvueuVuh"
     ],
   },
   metis: {
@@ -262,6 +270,29 @@ const config = {
   },
   klaytn: {
     owners: ['0x0639556f03714a74a5feeaf5736a4a64ff70d206',],
+  },
+  base: {
+    owners: ['0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54',],
+  },
+  hyperliquid: {
+    owners: ['0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54',],
+  },
+  sonic: {
+    owners: ['0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54',],
+  },
+  cardano: {
+    owners: [
+      "Ae2tdPwUPEZKnykUqXyYQxqJSnADNkm4ELUnyqZUBHcCrNJVDqozLYCt9Jv",
+    ]
+  },
+  sui: {
+    owners: [
+      "0xce7e1e38f996cdb2c4b78c1d187d23c1001d7b266f181498677672f9b1e24ea0",
+      "0xb7b7a848fdc47e22e5a04816bd8d37143a164617d3fd16944f586efd1edfc4bb",
+      "0x9529d8d9621874f60e342e3f0f049157eda68b2d5085f6526b9fced8913b97a8",
+      "0x3a1520d6be3a16f89655f542f6e5b050d3065ff67d7287ed8005259c4a0b36b7",
+      "0x98252cfb5f8481cc4e395deb88000ffff5ab8fdd870be91fc48abfa83ec21a10",
+    ]
   },
 };
 
