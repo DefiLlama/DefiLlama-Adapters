@@ -10,6 +10,7 @@ const query = gql`
         state {
           supplyAssets
           borrowAssets
+          collateralAssets
         }
         collateralAsset {
           address
@@ -63,6 +64,10 @@ const tvl = async (api) => {
     // Add Supply (Liquidity + Borrows)
     if (market.state.supplyAssets) {
       api.add(market.loanAsset.address, market.state.supplyAssets);
+    }
+    // Add Collateral
+    if (market.state.collateralAssets) {
+      api.add(market.collateralAsset.address, market.state.collateralAssets);
     }
   });
 
