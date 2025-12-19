@@ -49,6 +49,12 @@ const fixBalancesTokens = {
       decimals: 18
     },
   },
+  joc: {
+    '0x03527b82f384184097295fc60be0B59B8FE06E00': {
+      coingeckoId: "japan-open-chain",
+      decimals: 18
+    },
+  },
   provenance: {
     nhash: { coingeckoId: 'hash-2', decimals: 9 },
     'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
