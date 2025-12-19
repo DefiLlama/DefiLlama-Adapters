@@ -10,7 +10,6 @@ const { getHederaTokenSupply } = require("../helper/chain/hedera/hederaTokenSupp
 const NAV_CONTRACT = "0x0f29d042bb26a200b2a507b752e51dbbc05bf2f6";
 const NAV_ABI = "function getLatestNAV(bytes32 _instrumentId) view returns (uint256 navPerShare, string legalDocumentCID, uint256 timestamp)"
 
-
 const RECEIPT_TOKENS = {
   ethereum: {
     UMA: {
@@ -481,6 +480,39 @@ const RECEIPT_TOKENS = {
   },
 }
 
+const BRIDGED_TOKENS = {
+    sei: {
+        UMA: {
+            address: '0x9E0597F9583B129BD2393F747c396572453bDb51',
+            decimals: 18,
+            underlying: 'bridged-token',
+            instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+        },
+        BHMA: {
+            address: '0xaAf737Ccec9Ba1e7Bfc1d3426E9509A9c88D78EE',
+            decimals: 18,
+            underlying: 'bridged-token',
+            instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
+            fundName: 'BH Master Fund Access a sub-fund of Libre SAF VCC'
+        },
+        HLSPCA: {
+            address: '0xA82bF6c49d43A6D5C77F2e5cB6f2b698077D513B',
+            decimals: 18,
+            underlying: 'bridged-token',
+            instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
+            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+        },
+        LDCFA: {
+            address: '0x19411c11Aa345A11a36F73Fb047d3a6527e8a204',
+            decimals: 18,
+            underlying: 'bridged-token',
+            instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
+            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+        },
+    }
+}
+
 async function getFundPrices() {
   const priceMap = {};
   const uniqueInstrumentID= [...new Set(
@@ -769,6 +801,7 @@ async function aptosTvl() {
   balances['usd-coin'] = totalTvl;
   return balances;
 }
+
 async function hederaTvl() {
   const balances = {}
   let totalTvl = 0;
@@ -842,8 +875,32 @@ async function xdcTvl() {
   return balances;
 }
 
+async function seiTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+
+  // Query total supply for each token
+  for (const token of Object.values(BRIDGED_TOKENS.sei)) {
+    const balance = await sdk.api.erc20.totalSupply({
+      target: token.address,
+      chain: 'sei'
+    });
+
+    if (balance?.output) {
+      const price = fundPrices[token.instrumentId] || 1;
+      const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      totalTvl += valueUSD;
+    }
+  }
+
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, Cardano, XDC and Avalanche. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, Cardano, XDC, Sei and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   ethereum: { tvl: ethTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
@@ -856,5 +913,6 @@ module.exports = {
   aptos: { tvl: aptosTvl },
   hedera: { tvl: hederaTvl },
   cardano: { tvl: cardanoTvl },
-  xdc: { tvl: xdcTvl }
+  xdc: { tvl: xdcTvl },
+  sei: { tvl: seiTvl },
 }
