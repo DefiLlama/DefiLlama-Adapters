@@ -2,7 +2,13 @@ const sdk = require('@defillama/sdk')
 const { HubPools, HubPoolAbi, } = require("./constants");
 
 async function tvl(api) {
-  const tokensAndOwners = HubPools[api.chain].map(pool => [pool.tokenAddress, pool.chainPoolAddress ?? pool.poolAddress])
+  const tokensAndOwners = []
+  const HubPoolsChain = HubPools[api.chain] ?? []
+  HubPoolsChain.forEach(pool => {
+    if (pool.chainPoolAddress) tokensAndOwners.push([pool.tokenAddress, pool.chainPoolAddress])
+    if (pool.poolAddress) tokensAndOwners.push([pool.tokenAddress, pool.poolAddress])
+  })
+
   return api.sumTokens({ tokensAndOwners })
 }
 

@@ -33,7 +33,7 @@ async function tvl(api) {
   })
   
   // Fetch Exponent wrapped mints from Exponent API
-  const { data: mints } = await getConfig('exponent', 'https://xpon-json-api-prod-650968662509.europe-west3.run.app/api/lyt-growth/standard-yield-tokens');
+  const { data: mints } = await getConfig('exponent', 'https://web-api.exponent.finance/api/lyt-growth/standard-yield-tokens');
   
 
   for (let i = 0; i < mints.length; i++) {

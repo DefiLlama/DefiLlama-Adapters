@@ -2,7 +2,7 @@ const { uniV3Export } = require('../helper/uniswapV3')
 const { mergeExports } = require('../helper/utils');
 
 const export1 = uniV3Export({
-  arbitrum: { factory: '0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B', fromBlock: 75633510, isAlgebra: true, },
+  arbitrum: { factory: '0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B', fromBlock: 75633510, isAlgebra: true, blacklistedTokens: ['0xf3527ef8de265eaa3716fb312c12847bfba66cef', '0x7788a3538c5fc7f9c7c8a74eac4c898fc8d87d92', '0x8467f85a834159c26227b21f9898ca0fa606eaa8'] },
 })
 
 const export2 = uniV3Export({

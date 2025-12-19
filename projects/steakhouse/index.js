@@ -30,10 +30,30 @@ const configs = {
     },
     unichain: {
       morphoVaultOwners: [
+        '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+      ],
+    },
+    arbitrum: {
+      morphoVaultOwners: [
         '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
+        '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+      ],
+    },
+    katana: {
+      morphoVaultOwners: [
+        '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+      ],
+    },
+    monad: {
+      morphoVaultOwners: [
+        '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+      ],
+    },
+    polygon: {
+      morphoVaultOwners: [
+        '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
       ],
     },
   }
 }
-
 module.exports = getCuratorExport(configs)

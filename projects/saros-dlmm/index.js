@@ -64,6 +64,17 @@ const LiquidityBookIdl = {
 }
 
 const DEX_ID_V3 = '1qbkdrr3z4ryLA7pZykqxvxWPoeifcVKo6ZG9CfkvVE'
+const blacklistedTokens = new Set([
+  'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',  // there is more tokens in the pool than mcap on gecko
+  '73xsLcBnLnc9bh81cqVKqj8uEyiarXng5ZwJuTbnVebG', // not enough liquidity
+  'EGNjqB7LfRxpkbVMSroA6UaKtGPuy6wWPx7bmijmPuCD', // not enough liquidity
+  'memsZQiMFoXYwuZj6fFEaRFNgyLGiLDEDqHz5PwtvRa', // not enough liquidity
+  'CmV6utUF7odMbDkJpbtccTSfWdenDnDrcAvzXReihDpt', // not enough liquidity
+  'jokeSc37tSJ5V5MYTmLtKh3SZf11vWd2i8eZC9sd74m', // not enough liquidity
+  'SarosY6Vscao718M4A778z4CGtvcwcGef5M9MEH1LGL', // projects own token, no enough liqudity on the other side of the pool
+  'uniBKsEV37qLRFZD7v3Z9drX6voyiCM8WcaePqeSSLc', // uniBTC wash trading
+  'CtzPWv73Sn1dMGVU3ZtLv9yWSyUAanBni19YWDaznnkn', // XBTC was trading
+]);
 
 async function tvl() {
 
@@ -86,17 +97,22 @@ async function tvl() {
     const tokenMintY = pair.account.tokenMintY.toString();
     const ownerProgramIdX = tokenInfoMap[tokenMintX];
     const ownerProgramIdY = tokenInfoMap[tokenMintY];
-    return [
-      getAssociatedTokenAddress(tokenMintX, pair.publicKey, ownerProgramIdX),
-      getAssociatedTokenAddress(tokenMintY, pair.publicKey, ownerProgramIdY)
-    ];
+
+
+    const tokenAccounts = []
+    if (!blacklistedTokens.has(tokenMintX))
+      tokenAccounts.push(getAssociatedTokenAddress(tokenMintX, pair.publicKey, ownerProgramIdX));
+
+    if (!blacklistedTokens.has(tokenMintY))
+      tokenAccounts.push(getAssociatedTokenAddress(tokenMintY, pair.publicKey, ownerProgramIdY));
+
+    return tokenAccounts;
   }).flat();
-  return sumTokens2({ tokenAccounts})
+  return sumTokens2({ tokenAccounts, allowError: true, })
 }
 
 module.exports = {
   timetravel: false,
-  isHeavyProtocol: true,
   methodology:
     "TVL includes the total token value inside the protocol's liquidity pools.",
   solana: {

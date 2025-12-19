@@ -50,8 +50,8 @@ async function tvl(api) {
   const tokensAndOwners = [XCHFBridge, VCHFBridge];
 
   // @dev: query of positions from minting hubs via frankencoin graph (ponder)
-  const { positionV1s } = await cachedGraphQuery('frankencoinV1', 'https://ponder.frankencoin.com', '{ positionV1s { items { position collateral } } }');
-  const { positionV2s } = await cachedGraphQuery('frankencoinV2', 'https://ponder.frankencoin.com', '{ positionV2s { items { position collateral } } }');
+  const { mintingHubV1PositionV1s: positionV1s } = await cachedGraphQuery('frankencoinV1', 'https://ponder.frankencoin.com', '{ mintingHubV1PositionV1s { items { position collateral } } }');
+  const { mintingHubV2PositionV2s: positionV2s } = await cachedGraphQuery('frankencoinV2', 'https://ponder.frankencoin.com', '{ mintingHubV2PositionV2s { items { position collateral } } }');
   
   // @dev: mapping of positions from minting hubs
   positionV1s?.items?.forEach(i => tokensAndOwners.push([i.collateral, i.position]));

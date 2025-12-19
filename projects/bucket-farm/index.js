@@ -23,6 +23,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: 1757419496,
   sui: {
     tvl
   }
