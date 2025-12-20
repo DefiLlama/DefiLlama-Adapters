@@ -47,16 +47,18 @@ function createTvl(chain) {
     for (const symbol of chainTokens[chain]) {
       const { decimals, coingeckoId } = tokens[symbol]
       const supply = yusan.tokens[symbol]?.total_supply || 0
-      if (supply <= 0) continue
+      const borrow = yusan.tokens[symbol]?.total_borrow || 0
+      const available = supply - borrow
+      if (available <= 0) continue
 
       // Check if token is on multiple chains
       const chainsWithToken = Object.entries(chainTokens)
         .filter(([, syms]) => syms.includes(symbol))
         .map(([c]) => c)
 
-      let amount = supply
+      let amount = available
       if (chainsWithToken.length > 1) {
-        amount = calcChainShare(supply, bridge[symbol], chain, chainsWithToken)
+        amount = calcChainShare(available, bridge[symbol], chain, chainsWithToken)
       }
 
       if (amount > 0) {
