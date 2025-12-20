@@ -24,7 +24,8 @@ const tokens = [
 module.exports = treasuryExports({
     ethereum: {
         tokens,
-        owner: ["0x5aD30fcA5A031c850b817f6F4dE1EE2D713EF850"],
-        ownTokens: [xPMAddress, pmUSDAddress]
+        owners: ["0x5aD30fcA5A031c850b817f6F4dE1EE2D713EF850"],
+        ownTokens: [xPMAddress, pmUSDAddress],
+        fetchCoValentTokens: false
     }
 })
