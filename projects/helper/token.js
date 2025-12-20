@@ -96,7 +96,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
 
     try {
       const cachedTokens = cache?.tokens ?? {}
-      const problemChains = ['zksync_era', 'moonbeam']
+      const problemChains = ['zksync_era', 'moonbeam', 'linea']
       const problemChainSet = new Set(problemChains)
       const options = {
         method: 'POST',
