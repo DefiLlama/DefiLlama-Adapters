@@ -14,7 +14,7 @@ const tokens = {
 const chainTokens = {
   icp: ['ICP'],
   bitcoin: ['ckBTC'],
-  dogechain: ['ckDOGE'],
+  doge: ['ckDOGE'],
   ethereum: ['USDC', 'USDT'],
   arbitrum: ['USDC'],
   base: ['USDC'],
@@ -94,7 +94,7 @@ module.exports = {
     'Cross-chain lending protocol. Deposits attributed to origin chains.',
   icp: { tvl: createTvl('icp'), borrowed },
   bitcoin: { tvl: createTvl('bitcoin') },
-  dogechain: { tvl: createTvl('dogechain') },
+  doge: { tvl: createTvl('doge') },
   ethereum: { tvl: createTvl('ethereum') },
   arbitrum: { tvl: createTvl('arbitrum') },
   base: { tvl: createTvl('base') },
