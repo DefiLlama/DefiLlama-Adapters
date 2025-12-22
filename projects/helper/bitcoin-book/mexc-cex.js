@@ -20,4 +20,6 @@ module.exports = [
   "377LXrSqGXXSiajJwnPKPRA4pFUwqoqg66",
   '3Byv6jsis7uoRxeunwNAeTvoL8V5akjdK9',
   '3GvQX1J9VuAB9DyA8HZgZEoURwMZFQqDmK',
+  'bc1qnzf53fl4a0lh00p9207c456xkk9fmgdnm6tyky',
+  '1Euk9cnQm49axFr2sTMaytnYcmBz5oDhZ3'
 ];

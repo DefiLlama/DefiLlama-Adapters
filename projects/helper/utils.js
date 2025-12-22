@@ -36,6 +36,7 @@ const blacklisted_LPS = new Set([
   '0x93669cfce302c9971169f8106c850181a217b72b',
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
   '0x524cab2ec69124574082676e6f654a18df49a048',
+  '0x98b540fa89690969D111D045afCa575C91519B1A',
 ].map(i => i.toLowerCase()))
 
 function isICHIVaultToken(symbol, token, chain) {
