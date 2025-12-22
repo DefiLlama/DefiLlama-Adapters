@@ -53,6 +53,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: "TVL is calculated by multiplying the xCUP total supply by the share price. If an epoch is settled, the share price is derived from the Settlement Engine's NAV (netRevenue logic). Otherwise, the current Copper Price is used.",
   ethereum: {
     tvl,
