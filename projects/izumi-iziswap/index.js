@@ -41,6 +41,7 @@ const poolHelpers = {
   'kava': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'hemi': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'plume_mainnet': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'monad': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
@@ -51,8 +52,20 @@ const blacklistedTokens = [
   ADDRESSES.bsc.iUSD, // merlin iUSD
 ]
 
+const blacklistedPools = {
+  'hemi': [
+    '0x469a5066578e22a1222cc78b2ccaca602db6bb4a',  // bfBTC/hemiBTC
+    '0xFE1c507Be86F977B61d12D1DA3c95D0dEeB1B86A',  // bfBTC/hemiBTC
+    '0x98a3a18583138474aedd2ceec034cba1fa783613',  // brBTC/suBTC
+    '0xe9635693b7606f1914c0cd698065ec84267a62a1',  // mBTC/uniBTC
+  ],
+  'taiko': [
+    '0x5e1e8c9c77b0de88f1c4597a3c145b0c7abcf485',  // mBTC/uniBTC
+  ]
+}
+
 Object.keys(poolHelpers).forEach(chain => {
-  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens }), }
+  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens, blacklistedPools: blacklistedPools[chain], }), }
 })
 
 module.exports.hallmarks = [

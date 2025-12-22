@@ -49,9 +49,9 @@ async function avaxTvl(_, _block, cb) {
 async function tvl(chain, block, chainId) {
   const balances = {}
   if (chain === 'polygon') {
-    const globalData = (await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 100 })).globalDatas
+    const globalData = (await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 500 })).globalDatas
     await Promise.all(globalData.filter(v => v.type === "lending").map(async v => {
-      if (v.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
+      if (v.address.toLowerCase() === ADDRESSES.GAS_TOKEN_2.toLowerCase()) {
         v.address = ADDRESSES.polygon.WMATIC_2
       }
       const decimals = await sdk.api.erc20.decimals(v.address, chain)

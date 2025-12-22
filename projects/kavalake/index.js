@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 module.exports = {
@@ -7,7 +8,7 @@ module.exports = {
   kava: {
     tvl: sumTokensExport({
       owners: ['0x46ffa1b9a9f027fA958dF9276e3EdCf099A58882'], // KavaLake vault
-      tokens: ['0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b'], // WKAVA
+      tokens: [ADDRESSES.kava.WKAVA], // WKAVA
     }),
   },
 };

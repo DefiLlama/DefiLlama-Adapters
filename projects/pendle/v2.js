@@ -13,6 +13,7 @@ const {
 
 // const scaledFactory = 0x992ec6a490a4b7f256bd59e63746951d98b29be9;
 
+// can get deployments from https://github.com/pendle-finance/pendle-core-v2-public/blob/main/deployments
 const config = {
   ethereum: {
     factory: "0x27b1dacd74688af24a64bd3c9c1b143118740784",
@@ -29,6 +30,10 @@ const config = {
         factory: "0x6fcf753f2c67b83f7b09746bbc4fa0047b35d050",
         fromBlock: 20512280
       }, // v5
+      {
+        factory: "0x6d247b1c044fA1E22e6B04fA9F71Baf99EB29A9f", 
+        fromBlock: 23638439
+      }, // v6
     ],
   },
   arbitrum: {
@@ -46,6 +51,10 @@ const config = {
         factory: "0xd29e76c6f15ada0150d10a1d3f45accd2098283b",
         fromBlock: 242035998
       }, // v5
+      {
+        factory: "0x49F2f7002669E0e4425Fa0203975625Ab4af3143", 
+        fromBlock: 392471311
+      }, // v6
     ],
   },
   bsc: {
@@ -63,6 +72,10 @@ const config = {
         factory: "0x7c7f73f7a320364dbb3c9aaa9bccd402040ee0f9",
         fromBlock: 41294178
       }, // v5
+      {
+        factory: "0x80cE46449DF1c977f6ba60495125ce282F83DdFB", 
+        fromBlock: 65609031
+      } // v6
     ],
     pts: [
       "0x5ec2ae0afdec891e7702344dc2a31c636b3627eb",
@@ -87,6 +100,10 @@ const config = {
         factory: "0x02adf72d5d06a9c92136562eb237c07696833a84",
         fromBlock: 123998311
       }, // v5
+      {
+        factory: "0x95a937f7064C75C6Bc257160088C0a9D58cca333", 
+        fromBlock: 142803131
+      } // v6
     ],
   },
   mantle: {
@@ -102,6 +119,10 @@ const config = {
         factory: "0xcb02435716b0143d4ac1bdf370302d619e714126",
         fromBlock: 67661738
       }, // v5
+      {
+        factory: "0xa35AE21a593CB06959978E20b33Db34163166C79", 
+        fromBlock: 86536378
+      }, // v6
     ],
   },
   base: {
@@ -109,6 +130,10 @@ const config = {
         factory: "0x59968008a703dc13e6beaeced644bdce4ee45d13",
         fromBlock: 22350352
       }, // v3
+      {
+        factory: "0x81E80A50E56d10C501fF17B5Fe2F662bd9EA4590", 
+        fromBlock: 37206684
+      } // v6
     ],
   },
   sonic: {
@@ -116,6 +141,10 @@ const config = {
         factory: "0xfee31a6ec6ebefa0b5a594bf5b1139e3c6faa0fb",
         fromBlock: 7830430
       }, // v3
+      {
+        factory: "0x0AB3ae25c42a2f3748a018556989355D568Fa6d6", 
+        fromBlock: 51621889
+      } // v6
     ],
   },
   berachain: {
@@ -123,15 +152,41 @@ const config = {
         factory: "0x8A09574b0401A856d89d1b583eE22E8cb0C5530B",
         fromBlock: 806126
       }, // v3
+      {
+        factory: "0x6131CA76529250679cF9e2A3b07b135f20aAb01A", 
+        fromBlock: 12146490
+      } // v6
     ],
     pts: [
       '0x2719e657ec3b3cbe521a18e640ca55799836376f',
       '0xdc9b87e5efd6ca2beaa33dde9c544e1e98345de4'
     ]
+  },
+  hyperliquid: {
+    factories: [{
+        factory: "0x44A2DdF5339FfdE8c23AF4099a64Def59b11b128",
+        fromBlock: 9665302
+      }, // v5
+      {
+        factory: "0xB5CD902CbEF8461b8d6fa852f93784F090fd7BEb", 
+        fromBlock: 17235435
+      } // v6
+    ],
+  },
+  plasma: {
+    factories: [
+      {
+        factory: "0x28dE02Ac3c3F5ef427e55c321F73fDc7F192e8E4",
+        fromBlock: 1887344
+      }, // v5
+      {
+        factory: "0x84A240Fa784E7F03CB99BA3716065961c5d0D531", 
+        fromBlock: 4278863
+      } // v6
+    ], 
   }
 };
 
-module.exports = {};
 
 Object.keys(config).forEach((chain) => {
   const {

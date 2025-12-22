@@ -2,11 +2,17 @@ const { cachedGraphQuery } = require('../helper/cache')
 
 const vaultsGraphs = {
   ethereum:
-    "https://api.mainnet.termfinance.io/mainnet/subgraph/vaults",
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-vaults-mainnet/latest/gn",
   avax:
-    "https://api.mainnet.termfinance.io/avalanche/subgraph/vaults",
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-vaults-avalanche/latest/gn",
   base:
-    "https://api.mainnet.termfinance.io/base/subgraph/vaults",
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-vaults-base/latest/gn",
+  bsc:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-vaults-bnb/latest/gn",
+  arbitrum:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-vaults-arbitrum/latest/gn",
+  plasma:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-vaults-plasma/latest/gn",
 }
 
 const termVaultStrategiesQuery = `
@@ -46,6 +52,9 @@ const vaultsGraphStartBlock = {
   ethereum: 21433264,
   avax: 54438973,
   base: 30797402,
+  bsc: 54505207,
+  arbitrum: 359134348,
+  plasma: 1390659,
 }
 
 module.exports = {

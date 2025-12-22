@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { methodology, aaveExports } = require("../helper/aave");
@@ -16,7 +17,7 @@ module.exports = {
       "0x99E41A7F2Dd197187C8637D1D151Dc396261Bc14",
       undefined,
       undefined, {
-        blacklistedTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x14016e85a25aeb13065688cafb43044c2ef86784']
+        blacklistedTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.BTUSD]
       }
     ),
     staking: staking(stakingContract, VALAS),

@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
@@ -125,4 +126,12 @@ const config = {
   }
 }
 
-module.exports = cexExports(config)
+const withdrawalAddresses = [
+  '0xe733455faddf4999176e99a0ec084e978f5552ed',
+  '0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec',
+]
+
+module.exports = mergeExports([
+  cexExports(config),
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const config = {
   fraxtal: {
     dUSD: {
@@ -6,7 +7,7 @@ const config = {
       pools: [{
         // Curve frxUSD/dUSD
         lpAddress: '0x9CA648D2f51098941688Db9a0beb1DadC2D1B357',
-        collateralAddress: '0xfc00000000000000000000000000000000000001',
+        collateralAddress: ADDRESSES.fraxtal.FRAX,
         amoVault: '0x0B0BD5F8A6f4c72a09748fA915Af12Ca423B7240'
       }, {
         // Curve dUSD/sfrxUSD
@@ -16,7 +17,7 @@ const config = {
       }, {
         // Curve dUSD/sUSDe
         lpAddress: '0xF16f226Baa419d9DC9D92C040CCBC8c0E25F36D7',
-        collateralAddress: '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
+        collateralAddress: ADDRESSES.arbitrum.sUSDe,
         amoVault: '0x0B0BD5F8A6f4c72a09748fA915Af12Ca423B7240'
       }],
     },
@@ -32,6 +33,13 @@ const config = {
       collateralVault: "0xc1A09c3443d578a85DE35368a1a58E8989F4721b",
       pools: []
     }
+  },
+   katana: {
+    dUSD: {
+      address: '0xcA52d08737E6Af8763a2bF6034B3B03868f24DDA',
+      collateralVault: "0xA5f9F6238406B1301D0ED09555a2893dc1A26A49",
+      pools: []
+    },
   }
 }
 
@@ -60,11 +68,14 @@ async function getAMOTvl(api) {
 }
 
 module.exports = {
-  methodology: 'Includes TVL for dLEND and TVL for dSTABLEs (dUSD, dS, etc).',
+  methodology: 'Includes TVL for dLEND and TVL for dSTABLEs (dUSD, dS, dETH).',
   fraxtal: {
     tvl: getAMOTvl
   },
   sonic: {
     tvl: getAMOTvl,
-  }
+  },
+  katana: {
+    tvl: getAMOTvl,
+  },
 };

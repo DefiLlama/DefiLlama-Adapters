@@ -2,15 +2,20 @@ const { post } = require("../helper/http.js")
 const methodologies = require('../helper/methodologies');
 
 
-const endpoint = 'https://cu.ao-testnet.xyz'
+const endpoint = 'https://cu.ardrive.io'
 const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
 const geckoTickerTransformations = {
-    'qAR': 'arweave',
     'wAR': 'arweave',
     'wUSDC': 'usd-coin',
     'wUSDT': 'tether',
     'wETH': 'ethereum',
+    'USDA': 'usd-coin',
+    'vAR': 'arweave',
+    'vUSDC': 'usd-coin',
+    'vDAI': 'dai',
+    'vETH': 'ethereum',
 };
+
 
 
 // Access AO on chain data via the node endpoint

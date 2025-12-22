@@ -1,5 +1,6 @@
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   ethereum: {
@@ -46,6 +47,25 @@ const config = {
       "0x0f1836312d18524368d05d537c0fabaff6ca6ccc",
       "0x06679e7b7f91487cc9d59779501c414a1b3eb89d",
       "0x2933782b5a8d72f2754103d1489614f29bfa4625",
+      "0xdd276dc5223d0120f9bf1776f38957cc8da23cb0",
+      "0xE8C15AAD9D4CD3F59C9DFA18828B91A8B2C49596",
+      "0x37e4d1cd3fe31edf473ebcf3b6a75f419c8839d1",
+      "0xAA10DB8804D076601999C7CD769E02E44A99D5B2",
+      "0x3B6D76719A4EA8C53A7A26B50175B8DE23C8E956",
+      "0xB514C67824443868D3A70352398F524EF6AF6207",
+      "0x189b24f3EB15dc71b4Fc57C5914e7e9B3246E449",
+      "0x1B14376EE2D46AE5C27A43D902D96D4F3F264B83",
+      "0xa2d69adf0b62fa32825d73f086cd4689743543db",
+      "0x0669bcdc8ede4a973ed9b3480aff984de15d2d65",
+      "0x175ce6204bfda2a509c7e9c786b74407f569c9cc",
+      "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
+      "0x44f1b02d78ed39962600df6440cf8eed3e02a96b",
+      "0x5b234aaab0f61d346a3ef8faca474c1c19f80c1f",
+      "0x651f1d419c548125d7e5456fb61f3df47c29600d",
+      "0x69be413d648ae00f0fbd9856f1355e22b36ee5e0",
+      "0x6d6cc65e2060d0a280fcd47b6c22ec5636797fec",
+      "0x8dac80ce96f69f9762bc450faa4d7fbd5891ae18",
+      "0xbee64116bd2b1b6373273d01664fbc5532dad06d",
     ],
   },
   tron: {
@@ -69,6 +89,12 @@ const config = {
       "TBov1DfeF1r29p7P2LWQMrP6D9j5ej8wPs",
       "TJRu7dW92bmq8kDQyPZUDRTKmALTcJNXdD",
       "TGeCMTmmQKBrs8Vmx7YNGbPa2d3ZspDLNN",
+      "TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9",
+      "THyqxuWrRPLZDdvSLVEWLofJ3qYvBhyc4R",
+      "TGqfrS2feBuYhhAWKbE9wvhcfm39vy1e84",
+      "TK1U4Hym23Jz9fP3p8oker4A8VQdoq88Ms",
+      "TL17qUCWc9ZRjYvxyihC3uteUCYBn48S3S",
+      "TUFhdQLH8MLCN9fVpiJ5pHVPbED3x8ZF5V",
     ],
   },
   bitcoin: {
@@ -91,6 +117,7 @@ const config = {
       "0xe4507d13b059eaf66f7b509b6929f7295690d7cc",
       "0x2933782b5a8d72f2754103d1489614f29bfa4625",
       "0x3a152f8bbe26c1c64a38a02680005814857a63ae",
+      "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
     ],
   },
   algorand: {
@@ -101,6 +128,7 @@ const config = {
       "NDVDIGWEP77WQDDU5M6F7AAS77AOFXLML7DNNPUEVLQMKTIFHYTTMAG6OU",
       "WBI5LT2BQ7FFYBXW2PEDVB6KBX2F3C77WXBJ2FPVERBXXBUV6SC7XXPGWM",
       "YXDKDH5XHXL6OYMH2HYCJCXOZWPOBEUNK5ICFVJRFW3JVQXZ6HQ6QPVQVA",
+      "T6MXHXMGXURKJ7AD5NCB4IYPLWXYXKKFLLO5KAPJ56GKS7BFXHNHOODZCM",
     ],
   },
   kcc: {
@@ -109,6 +137,14 @@ const config = {
       "0x2a8c8b09bd77c13980495a959b26c1305166a57f",
       "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
+      "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
+    ],
+  },
+  near: {
+    owners: [
+      "kucoinc.near",
+      "e589457354361489a89039b8be6737cbc2db4d13919b6ccf23889a60f3b0d8f3",
+      "7b865db190b966fe6ea30d0e7cc44ce42c4ea4f159a4b0b937122f166fc3ae28",
     ],
   },
   eos: {
@@ -119,6 +155,7 @@ const config = {
       "0xa3f45e619cE3AAe2Fa5f8244439a66B203b78bCc",
       "0xebb8ea128bbdff9a1780a4902a9380022371d466",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
+      "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
     ],
   },
   solana: {
@@ -133,6 +170,23 @@ const config = {
       "DBmae92YTQKLsNzXcPscxiwPqMcz9stQr2prB5ZCAHPd",
       "FZ1t8TZtx7VSCQdBsxvFJiezj9paUBF6Ub7RKA2eTGyE",
       "GL8T72PKygWaYrLKtSteN9UUvYYnuC8azNDunk4eaqqQ",
+      "6BhBoBB47wSGjK5uzcGWNcTf2oNRPQNuv6GVdkNyj9PB",
+      "7gQ1CfjdysJkSEVSDXNjJHnzrqvP2zQYQDJHJP67o1bb",
+      "AGVhmrhDi3RKLu9nxnRqp3CUpaG3SVeYXWkWcygHAk8N",
+      "CAxKWUpSbsNsWu2gEFjed64jrNxiNYfRMVEMahshHotb",
+      "FPRFLszBJFHCThF2yWvkGkfvtwyFPRGX9MFHnDGP6UYp",
+    ],
+  },
+  ripple: {
+    owners: [
+      "rLpvuHZFE46NUyZH5XaMvmYRJZF7aory7t",
+      "rBxszqhQkhPALtkSpGuVeqR6hNtZ8xTH3T",
+      "rBXAyXMwp2WVPg13nKxUz8iCVn5RjihueQ",
+      "raxYwsodnM9NjTTc4mFsKMEb8eCn3UH9ZZ",
+      "rfZ1kn1AUwD8bVMnDsD6ifzw7y2zMRp1Ci",
+      "rPjmhP2WK4mfTZX9Ywoqz3eMPzfWj2vezU",
+      "rAnqRGVpsS6XaUbQjwpQmoE4y1MthZhT9",
+      "rp73u3gCNorHW3AmNtvDok8WWFA9BsFptW",
     ],
   },
   bsc: {
@@ -144,6 +198,12 @@ const config = {
       "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
       "0xf8ba3ec49212ca45325a2335a8ab1279770df6c0",
+      "0x2933782B5A8D72F2754103D1489614F29BFA4625",
+      "0x175ce6204bfda2a509c7e9c786b74407f569c9cc",
+      "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
+      "0x69be413d648ae00f0fbd9856f1355e22b36ee5e0",
+      "0x6d6cc65e2060d0a280fcd47b6c22ec5636797fec",
+      "0x8dac80ce96f69f9762bc450faa4d7fbd5891ae18",
     ],
   },
   kava: {
@@ -158,6 +218,13 @@ const config = {
       "0x0566ec9d06c79b1ca32970519715a27f066e76fac8971bbd21b96a50db826d90",
     ],
   },
+  aptos: {
+    owners: [
+      "0xaa0090c74e4976834ff1b9b9ef945e1c4b6cdb49cccf37c2554ef026081312f1",
+      "0x7cab5cb050630b957e54f0a9e757cd57fac5b64f64860559930f22e008560cfd",
+      "0xbb74f7a3f369c84e7d9bf60aeb778c91be8e63d08ad91583340cc8f46d313f72",
+    ],
+  },
   base: {
     owners: [
       "0x26c8e06590f73c2571d68a41ebccec38e12ddd9f",
@@ -168,6 +235,50 @@ const config = {
       "0x2933782b5a8d72f2754103d1489614f29bfa4625",
       "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
+      "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
+      "0x69be413d648ae00f0fbd9856f1355e22b36ee5e0",
+    ],
+  },
+  cardano: {
+    owners: [
+      // "addr1q87n2sy2n3k844h98wxt530rr70vhkrg05prkqls60qtpeqq38w20v22ed8lufl5llnz6h3yl0mgcm9h8jsx406t6qssu03",
+      // "addr1q9vespgxm3dk5kfgg9zgkfae8j5f8r3gnz405tm83tfwgj6enqzsdhzmdfvjss2y3vnmj09gjw8z3x92lghk0zkju39spn4",
+      // "addr1qywgh46dqu7lq6mp5c6tzldpmzj6uwx335ydrpq8k7rru4q6yhkfqn5pc9f3z76e4cr64e5mf98aaeht6zwf8xl2nc9qr66",
+      // "addr1q9h4f2vhh5vnqgnsejan3psw6mj3a504fxlqm2eh3262qufesdvfs83ulr22vprsv9mwnt0vgkfwxlflxkns32twqzdqjpq",
+      // "addr1x9qy3qeu59ngqfwe2uv4qz7n8y2wzzk0n5h3t0r2sdmflrzqfzpnegtxsqjaj4ce2q9axwg5uy9vl8f0zk7x4qmkn7xq27p",
+      // "addr1x99gcg9us9jfp6gtsrgsenjjreg9ytevv7ha8nvyzuz4ef623ssteqtyjr5shqx3pn89y8js2ghjcea060xcg9c9tjnspxv",
+      "addr1q87n2sy2n3k844h98wxt530rr70vhkrg05prkqls60qtpeqq38w20v22ed8lufl5llnz6h3yl0mgcm9h8jsx406t6qssu03ga8",
+      "addr1q9vespgxm3dk5kfgg9zgkfae8j5f8r3gnz405tm83tfwgj6enqzsdhzmdfvjss2y3vnmj09gjw8z3x92lghk0zkju39spn42mj",
+      "addr1x99gcg9us9jfp6gtsrgsenjjreg9ytevv7ha8nvyzuz4ef623ssteqtyjr5shqx3pn89y8js2ghjcea060xcg9c9tjnspxv0pn",
+      "addr1x9qy3qeu59ngqfwe2uv4qz7n8y2wzzk0n5h3t0r2sdmflrzqfzpnegtxsqjaj4ce2q9axwg5uy9vl8f0zk7x4qmkn7xq27ppet",
+      "addr1q9h4f2vhh5vnqgnsejan3psw6mj3a504fxlqm2eh3262qufesdvfs83ulr22vprsv9mwnt0vgkfwxlflxkns32twqzdqjpq2na",
+      "addr1x86wkztx2pqvvh9nlqclpfn3lc43gh8gjgqe258hp7fflr05avykv5zqcewt87p37zn8rl3tz3ww3yspj4g0wrujn7xsn3ekxy",
+      "addr1x8z7n429sfah3edwj5cgle7hjur5ge6z20shr644lrxe9l79a825tqnm0rj6a9fs3lna09c8g3n5y5lpw84tt7xdjtlslelrez",
+    ],
+  },
+  sui: {
+    owners: [
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0x13c075644dad21bf10cb12447b825b535c24ddae428e27abc5858d1511e24c6d",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0x13c075644dad21bf10cb12447b825b535c24ddae428e27abc5858d1511e24c6d",
+      "0x2de3bc906d1fa9c85e44cf9b0642447126879cb776f5ee3749bd2e32247ba52e",
+      "0xd5ccdf77cab59778ad6c6d599af3819b0281c3fe434f7df4b82290620331bb01",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0x2de3bc906d1fa9c85e44cf9b0642447126879cb776f5ee3749bd2e32247ba52e",
+      "0xd5ccdf77cab59778ad6c6d599af3819b0281c3fe434f7df4b82290620331bb01",
+      "0x2de3bc906d1fa9c85e44cf9b0642447126879cb776f5ee3749bd2e32247ba52e",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0xdc46d78750022e3b9b6c3a9e96c4ce046344eb876192f5c6bca2ca68bca261a9",
+      "0xe53c0bb62fd140bb87055c6c838089badaf217f812d989f9c105f16e177c7505",
+      "0xdc46d78750022e3b9b6c3a9e96c4ce046344eb8761929cd005e86415de46a5b4",
+      "0xe53c0bb62fd140bb87055c6c838089badaf217f812d9515b8d8e2f7efb77a932"
     ],
   },
   ton: {
@@ -207,8 +318,37 @@ const config = {
       // "EQC3TvP0xyKgkrU0ugz4k-MgymahgzsWlsEz_ohNPtL6MaCU",
       // "EQB4tenLXVbU58tFHcXEWY4UCldJBYx2hRa9aioMvLP74isO",
       // "EQCoXkxpimacDL-4KgoxVlc4cRzga3M1_oTapjTGO80S9MXC",
+      "EQDyoucGvxKV-mOI4wqZxDHOKUrvACcnlG0BOoXfwVVDF57R",
+    ],
+  },
+  polygon: {
+    owners: ["0x2933782B5A8D72F2754103D1489614F29BFA4625"],
+  },
+  polkadot: {
+    owners: ["165tzcxR1o2EUkpZVr17DxQsdJwtEkB6HAh69hQubmKGL93f"],
+  },
+  doge: {
+    owners: ["A4pFXcvnZdCm7Z3iZR1u12NozWTHk1avAg", "AEn5XzY4vpLfqGTouwsB33BHnhxURWzrg4"],
+  },
+  avax: {
+    owners: [
+      "0xD6216FC19DB775DF9774A6E33526131DA7D19A2C",
+      "0x2933782B5A8D72F2754103D1489614F29BFA4625",
+      "0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975",
     ],
   },
 };
 
-module.exports = cexExports(config);
+module.exports = mergeExports([
+  cexExports(config),
+  {
+    ethereum: {
+      tvl: getStakedEthTVL({
+        withdrawalAddress: "0x9f4cf329f4cf376b7aded854d6054859dd102a2a",
+        size: 200,
+        sleepTime: 20_000,
+        proxy: true,
+      }),
+    },
+  },
+]);

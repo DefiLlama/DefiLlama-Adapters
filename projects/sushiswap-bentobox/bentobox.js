@@ -1,44 +1,49 @@
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/http");
-const {
-  getFuroTokens,
-  getKashiTokens,
-  getTridentTokens,
-  getBentoboxTokensArray,
-} = require("./helper");
+const { CONFIG, getTokens } = require("./helper");
 
-function bentobox(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-    if (chain === 'moonriver') return {}
-    const transform = await getChainTransform(chain);
-    let block = await getBlock(timestamp, chain, chainBlocks)
-    block = block - 1000;
+const abi = "function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)";
 
-    const bentoTokens = await getBentoboxTokensArray(chain, block); //array with shares and amount
-    const tridentTokens = await getTridentTokens(chain, block); //mapping with amount
-    const kashiTokens = await getKashiTokens(chain, block); //mapping with amount
-    const furoTokens = await getFuroTokens(chain, block); //mapping with amount
-    bentoTokens.map((token) => {
-      if (token.symbol === 'MIM') return;
-      let amount = BigNumber(token.rebase.elastic);
-      if (tridentTokens[token.id]) {
-        amount = amount.minus(+tridentTokens[token.id]);
-      }
-      if (kashiTokens[token.id]) {
-        amount = amount.minus(+kashiTokens[token.id]);
-      }
-      if (furoTokens[token.id]) {
-        amount = amount.minus(+furoTokens[token.id]);
-      }
+const bentobox = async (api) => {
+  const chain = api.chain
+  const block = await api.getBlock()
+  if (chain === 'moonriver') return {}
 
-      sdk.util.sumSingleBalance(balances, transform(token.id), amount.toFixed(0));
-    });
+  const [bentoTokens = [], tridentTokens = [], kashiTokens = [], furoTokens = []] = await Promise.all([
+    getTokens(api, block, 'bento'),
+    CONFIG[api.chain]?.trident ? getTokens(api, block, 'trident') : Promise.resolve([]),
+    CONFIG[api.chain]?.kashi ? getTokens(api, block, 'kashi') : Promise.resolve([]),
+    CONFIG[api.chain]?.furo ? getTokens(api, block, 'furo') : Promise.resolve([]),
+]);
 
-    return balances;
-  };
+  const shareBalances = {};
+  kashiTokens.forEach((pair) => {
+    const assetId = pair.asset.id.toLowerCase();
+    const collateralId = pair.collateral.id.toLowerCase();
+    const assetShares = Number(pair.totalAsset.elastic);
+    const collateralShares = Number(pair.totalCollateralShare);
+    if (assetShares > 0) shareBalances[assetId] = (shareBalances[assetId] || 0) + assetShares;
+    if (collateralShares > 0) shareBalances[collateralId] = (shareBalances[collateralId] || 0) + collateralShares;
+  });
+
+  furoTokens.forEach((token) => {
+    const id = token.id.toLowerCase();
+    const shares = Number(token.liquidityShares);
+    if (shares > 0) shareBalances[id] = (shareBalances[id] || 0) + shares;
+  });
+
+  const shareBalancesMap = {};
+  const calls  = Object.entries(shareBalances).map(([token, shares]) => ({ token, call: { target: CONFIG[api.chain].bentobox, params: [token, BigInt(shares), false] } }))
+  const balances = await api.multiCall({ abi, calls: calls.map(c => c.call) });
+  calls.forEach(({ token }, i) => { shareBalancesMap[token] = balances[i] });
+  
+  bentoTokens.forEach(({ id, symbol, rebase}) => {
+    const tokenId = id.toLowerCase();
+    if (symbol === 'MIM') return;
+    api.add(id, rebase.elastic)
+    const tridentToken = tridentTokens.find(t => t.id.toLowerCase() === tokenId);
+    if (tridentToken) api.add(tokenId, -tridentToken.liquidity)
+    const shareBalance = shareBalancesMap[tokenId];
+    if (shareBalance) api.add(id, -shareBalance)
+  });
 }
 
 module.exports = {

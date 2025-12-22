@@ -1,6 +1,10 @@
 const inquirer = require('inquirer')
 const childProcess = require('child_process')
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'))
+
+// Load environment variables before changing directories
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') })
+
 console.log('Starting directory: ' + process.cwd());
 const args = process.argv.slice(2); // The first two elements are 'node' and the script filename
 
@@ -34,7 +38,7 @@ async function run() {
   ])
   adapterPath = response.adapterPath
 
-  while (true) {   // eslint-disable-line
+  while (true) {
     adapterPrompt.default = adapterPath
     await runAdapter(adapterPath, true)
     const answer = await inquirer.prompt([adapterPrompt])

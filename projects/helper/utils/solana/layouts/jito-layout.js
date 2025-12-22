@@ -53,6 +53,20 @@ const JITO_VAULT_LAYOUT = struct([
     seq(u8(), 251, "reserved"),
 ]);
 
+const VAULT_OPERATOR_DELEGATION_LAYOUT = struct([
+    seq(u8(), 8, "discriminator"),
+    publicKey("vault"),
+    publicKey("operator"),
+    struct([
+        u64("stakedAmount"),
+        u64("enqueuedForCooldownAmount"),
+        u64("coolingDownAmount"),
+        seq(u8(), 256, "reserved"),
+    ], "delegationState"),
+    seq(u8(), 256, "reserved"),
+]);
+
 module.exports = {
   JITO_VAULT_LAYOUT,
+  VAULT_OPERATOR_DELEGATION_LAYOUT,
 }

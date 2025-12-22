@@ -18,6 +18,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2025-06-01',
   misrepresentedTokens: true,
   ethereum: {
     tvl,

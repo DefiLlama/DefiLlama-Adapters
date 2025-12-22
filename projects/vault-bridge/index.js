@@ -10,6 +10,9 @@ const configs = {
         '0x31A5684983EeE865d943A696AAC155363bA024f9',
         '0x812B2C6Ab3f4471c0E43D4BB61098a9211017427',
       ],
+      erc4626: [
+        '0x3DD459dE96F9C28e3a343b831cbDC2B93c8C4855',
+      ],
     },
   }
 }

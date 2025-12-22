@@ -1,0 +1,4 @@
+{
+  "listCollateralPool": "function listCollateralPool() returns (address[] pools)",
+  "listCollateralTokens": "function listCollateralTokens() returns (address[] tokens)"
+}

@@ -3,7 +3,9 @@ const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
-const erc20 = require('./abis/erc20.json')
+const erc20 = require('./abis/erc20.json');
+const { fetchThroughProxy } = require('./proxyRequest');
+const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
   return axios.get(url)
@@ -34,6 +36,7 @@ const blacklisted_LPS = new Set([
   '0x93669cfce302c9971169f8106c850181a217b72b',
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
   '0x524cab2ec69124574082676e6f654a18df49a048',
+  '0x98b540fa89690969D111D045afCa575C91519B1A',
 ].map(i => i.toLowerCase()))
 
 function isICHIVaultToken(symbol, token, chain) {
@@ -320,21 +323,38 @@ function once(func) {
   return wrapped
 }
 
-function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000 }) {
-return async (api) => {
-    const addresses = withdrawalAddresses ?? [withdrawalAddress];
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
+  return async (api) => {
 
-    for (const addr of addresses) {
+    if (!withdrawalAddress && !withdrawalAddresses?.length)
+      throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
+
+    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    api.addGasToken(await beacon.balance(addresses))
+    return api.getBalances()
+
+/*     for (const addr of addresses) {
       let fetchedValidators = skipValidators;
-
       api.sumTokens({ owner: addr, tokens: [nullAddress] });
 
       do {
-        const validators = (
-          await http.get(
-            `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${addr}?limit=${size}&offset=${fetchedValidators}`
-          )
-        ).data.map((i) => i.publickey);
+        const url = `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${addr}?limit=${size}&offset=${fetchedValidators}`
+        let validatorList;
+
+        if (proxy) {
+          const res = await fetchThroughProxy(url);
+          validatorList = res.data;
+        } else {
+          const res = await http.get(url);
+          validatorList = res.data;
+        }
+
+        if (!Array.isArray(validatorList)) {
+          console.error(`Invalid validator list for ${addr} at offset ${fetchedValidators}`);
+          break;
+        }
+
+        const validators = validatorList.map(i => i.publickey);
 
         fetchedValidators += validators.length;
         api.log(`Fetching balances for validators (${addr})`, validators.length);
@@ -343,6 +363,11 @@ return async (api) => {
       } while (fetchedValidators % size === 0);
     }
 
+    const bals = api.getBalances()
+    Object.keys(bals).forEach((i) => {
+      bals[i] = bals[i] / 1e18
+    })
+    console.log(api.getBalances(), )
     return api.getBalances();
 
     async function addValidatorBalance(validators) {
@@ -357,7 +382,7 @@ return async (api) => {
       });
 
       data.forEach((i) => api.addGasToken(i.balance * 1e9));
-    }
+    } */
   };
 }
 

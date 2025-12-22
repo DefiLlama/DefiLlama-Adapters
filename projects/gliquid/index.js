@@ -1,4 +1,4 @@
-const { uniV3Export } = require("../helper/uniswapV3");
+/* const { uniV3Export } = require("../helper/uniswapV3");
 
 module.exports = uniV3Export({
   hyperliquid: {
@@ -7,3 +7,18 @@ module.exports = uniV3Export({
     isAlgebra: true,
   },
 });
+ */
+
+const { uniV3GraphExport } = require("../helper/uniswapV3")
+
+
+const config = {
+  hyperliquid: 'https://api.goldsky.com/api/public/project_cmb20ryy424yb01wy7zwd7xd1/subgraphs/analytics/v1.0.0/gn'
+}
+
+Object.keys(config).forEach(chain => {
+  const graphURL = config[chain]
+  module.exports[chain] = {
+    tvl: uniV3GraphExport({ graphURL, name: 'gliquid-'+chain})
+  }
+})

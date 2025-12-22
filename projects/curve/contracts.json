@@ -249,5 +249,47 @@
     "CurveStableswapFactoryNG": "0x5aEa9aaDd0974e8914229a23699bB6b343c97B09",
     "CurveTwocryptoFactoryNG": "0xa17b39BF1c2FE776Af38a999bE7Bb7bEa737a6EC",
     "CurveTricryptoFactoryNG": "0x729c764aE95e7a9DEA9F950B5AEdbF1A9F3D7c03"
+  },
+  "tac": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9",
+    "CurveStableswapFactoryNG": "0x5aEa9aaDd0974e8914229a23699bB6b343c97B09",
+    "CurveTwocryptoFactoryNG": "0xa17b39BF1c2FE776Af38a999bE7Bb7bEa737a6EC",
+    "CurveTricryptoFactoryNG": "0x729c764aE95e7a9DEA9F950B5AEdbF1A9F3D7c03"
+  },
+  "etlk": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
+    "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
+    "CurveTwocryptoFactoryNG": "0xe7FBd704B938cB8fe26313C3464D4b7B7348c88C",
+    "CurveTricryptoFactoryNG": "0x6E28493348446503db04A49621d8e6C9A40015FB"
+  },
+  "plasma": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x6100E367285b01F48D07953803A2d8dCA5D19873",
+    "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
+    "CurveTwocryptoFactoryNG": "0xe7FBd704B938cB8fe26313C3464D4b7B7348c88C",
+    "CurveTricryptoFactoryNG": "0x6E28493348446503db04A49621d8e6C9A40015FB"
+  },
+  "unichain": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x4200000000000000000000000000000000000006",
+    "CurveStableswapFactoryNG": "0x604388Bb1159AFd21eB5191cE22b4DeCdEE2Ae22",
+    "CurveTwocryptoFactoryNG": "0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F",
+    "CurveTricryptoFactoryNG": "0x5702BDB1Ec244704E3cBBaAE11a0275aE5b07499"
+  },
+    "monad": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
+    "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
+    "CurveTwocryptoFactoryNG": "0xe7FBd704B938cB8fe26313C3464D4b7B7348c88C",
+    "CurveTricryptoFactoryNG": "0x6E28493348446503db04A49621d8e6C9A40015FB"
+  },
+    "stable": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x89c3e9ba11414e1d2c6f3e751d6f687682928283",
+    "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
+    "CurveTwocryptoFactoryNG": "0xe7FBd704B938cB8fe26313C3464D4b7B7348c88C",
+    "CurveTricryptoFactoryNG": "0x6E28493348446503db04A49621d8e6C9A40015FB"
   }
 }

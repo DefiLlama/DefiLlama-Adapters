@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { function_view } = require("../helper/chain/aptos")
 
 const v2Config = {
   ethereum: {
@@ -36,11 +37,36 @@ const v3Config = {
     fbtcAddress: ADDRESSES.berachain.WFBTC,
     usdaAddress: '0xff12470a969dd362eb6595ffb44c82c959fe9acc',
     treasuryAddress: '0x0c3616027b7d7AC8BA6FA2a1540a5e6A728cebA5',
+  },
+  klaytn: {
+    poolAddress: '0x45f842F1F7e576cB9BF7E1d50Ccc4D2ea378dbeF',
+    fbtcAddress: '0x4353b76E03AD5FF74d40Bf5bb2Ee4d0FC6fE6D3b', // ADDRESSES.kaia.WFBTC
+    usdaAddress: '0xdc3cf1961b08da169b078f7df6f26676bf6a4ff6',
+    treasuryAddress: '0xBa8870Bae2dd170053c0C4b799821edbB19A5e4A',
   }
 }
 
+const v3MoveConfig = {
+  move: {
+    treasuryAddress: '0xb79ef25caca96b35a45d58d771f162bd4c2e87984a2776a1cb029d7941cc9af8',
+    fbtcAddress: '0x16e733c5c943d78dbbaf1fc5beebbcc8db4ed647d2bdfcab74c2a527184a16aa'
+  },
+}
+
+
+const getMovementTvl = async (api) => {
+  const primary_fungible_asset_balance = "0x1::primary_fungible_store::balance"
+  const tvl = await function_view({
+    functionStr: primary_fungible_asset_balance,
+    type_arguments: ["0x1::fungible_asset::Metadata"],
+    args: [v3MoveConfig.move.treasuryAddress, v3MoveConfig.move.fbtcAddress],
+    chain: "move"
+  })
+  return tvl
+}
+
 module.exports = {
-  methodology: `FBTC, LFBTC and WFBTC as collateral`,
+  methodology: `FBTC, LFBTC as collateral`,
 }
 
 // V2
@@ -58,5 +84,15 @@ Object.keys(v3Config).forEach(chain => {
   const { fbtcAddress, treasuryAddress } = v3Config[chain]
   module.exports[chain] = {
     tvl: sumTokensExport({ owners: [treasuryAddress], tokens: [ fbtcAddress] }),
+  }
+})
+
+// Movement
+Object.keys(v3MoveConfig).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const tvl = await getMovementTvl(api)
+      api.add(v3MoveConfig.move.fbtcAddress, tvl)
+    },
   }
 })

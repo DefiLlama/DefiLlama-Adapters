@@ -11,6 +11,7 @@ const tokens = [
     "0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8", // vUSDC
     "0xC4eF4229FEc74Ccfe17B2bdeF7715fAC740BA0ba", // vFDUSD
     "0xf508fCD89b8bd15579dc79A6827cB4686A3592c8", // vETH
+    "0x0C1DA220D301155b87318B90692Da8dc43B67340", // vUSD1
 ]
 
 async function borrowed(api) {
@@ -31,5 +32,5 @@ module.exports['bsc'] = {
   tvl: async (api) => {
     return sumTokens2({ api, tokensAndOwners: tokens.map((token) => ([token, evoq])) })
   },
-  borrowed
+  borrowed: () => ({}), // dont think people will repay
 }
