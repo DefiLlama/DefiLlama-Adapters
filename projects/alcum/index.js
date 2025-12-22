@@ -19,29 +19,25 @@ async function tvl(api) {
 
   let pricePerShare;
 
-  try {
-    const currentEpochId = await api.call({
-      target: EPOCH_MANAGER,
-      abi: ABI.currentEpochId
+  const currentEpochId = await api.call({
+    target: EPOCH_MANAGER,
+    abi: ABI.currentEpochId
+  });
+
+  if (currentEpochId > 0) {
+    const currentEpochData = await api.call({
+      target: SETTLEMENT_ENGINE,
+      abi: ABI.epochRevenues,
+      params: [currentEpochId]
     });
 
-    if (currentEpochId > 0) {
-      const currentEpochData = await api.call({
+    if (currentEpochData.isSettled) {
+      const navSummary = await api.call({
         target: SETTLEMENT_ENGINE,
-        abi: ABI.epochRevenues,
-        params: [currentEpochId]
+        abi: ABI.getNAVSummary
       });
-
-      if (currentEpochData.isSettled) {
-        const navSummary = await api.call({
-          target: SETTLEMENT_ENGINE,
-          abi: ABI.getNAVSummary
-        });
-        pricePerShare = navSummary.pricePerShare;
-      }
+      pricePerShare = navSummary.pricePerShare;
     }
-  } catch (e) {
-    console.log("Error fetching epoch data, falling back to copper price", e);
   }
 
   if (!pricePerShare) {
