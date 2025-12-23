@@ -68,14 +68,18 @@ module.exports = {
         for (const hash of hashes) {
           if (hashMap[hash]) continue;
           const addresses = []
-          const tx = await get(`https://mempool.space/api/tx/${reserveBytes(hash.slice(2))}`)
-          let vinAddress = tx.vin.map(el => el.prevout.scriptpubkey_address);
-          tx.vout.forEach(el => {
-            if (el.scriptpubkey_type !== "op_return" && !vinAddress.includes(el.scriptpubkey_address)) {
-              addresses.push(el.scriptpubkey_address)
-            }
-          })
-          hashMap[hash] = addresses
+          try{
+            const tx = await get(`https://mempool.space/api/tx/${reserveBytes(hash.slice(2))}`)
+            let vinAddress = tx.vin.map(el => el.prevout.scriptpubkey_address);
+            tx.vout.forEach(el => {
+              if (el.scriptpubkey_type !== "op_return" && !vinAddress.includes(el.scriptpubkey_address)) {
+                addresses.push(el.scriptpubkey_address)
+              }
+            })
+            hashMap[hash] = addresses
+          }catch (e) {
+            //ignore
+          }
         }
         await setCache('b14g/hash-map', 'core', hashMap)
         return [...new Set(Object.values(hashMap).flat())]
