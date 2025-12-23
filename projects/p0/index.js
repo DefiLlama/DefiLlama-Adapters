@@ -84,7 +84,6 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  timetravel: true,
   solana: { 
     tvl,
     borrowed 
