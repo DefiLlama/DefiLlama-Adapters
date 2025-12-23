@@ -12,26 +12,35 @@ async function tvl(api) {
   // Get all bank accounts from the MarginFi program
   const allBanks = await program.account.bank.all();
 
-  // Calculate TVL (total deposits) for each bank and aggregate by mint
+  // Calculate available liquidity for each bank and aggregate by mint
   // Use BigInt for all calculations to preserve precision
-  const depositsByMint = {};
+  const availableLiquidityByMint = {};
 
   for (const { account: bank } of allBanks) {
+    const mint = bank.mint.toString();
+    
+    // Calculate total deposits
     const assetShareValueRaw = BigInt(bank.assetShareValue.value.toString());
     const totalAssetSharesRaw = BigInt(bank.totalAssetShares.value.toString());
-    
     const totalDeposits = (assetShareValueRaw * totalAssetSharesRaw) / (2n ** 96n);
     
-    if (totalDeposits > 0n) {
-      const mint = bank.mint.toString();
-      if (!depositsByMint[mint]) {
-        depositsByMint[mint] = 0n;
+    // Calculate total borrows
+    const liabilityShareValueRaw = BigInt(bank.liabilityShareValue.value.toString());
+    const totalLiabilitySharesRaw = BigInt(bank.totalLiabilityShares.value.toString());
+    const totalBorrows = (liabilityShareValueRaw * totalLiabilitySharesRaw) / (2n ** 96n);
+    
+    // Available liquidity = deposits - borrows
+    const availableLiquidity = totalDeposits > totalBorrows ? totalDeposits - totalBorrows : 0n;
+    
+    if (availableLiquidity > 0n) {
+      if (!availableLiquidityByMint[mint]) {
+        availableLiquidityByMint[mint] = 0n;
       }
-      depositsByMint[mint] = depositsByMint[mint] + totalDeposits;
+      availableLiquidityByMint[mint] = availableLiquidityByMint[mint] + availableLiquidity;
     }
   }
 
-  for (const [mint, amountBigInt] of Object.entries(depositsByMint)) {
+  for (const [mint, amountBigInt] of Object.entries(availableLiquidityByMint)) {
     if (amountBigInt > 0n) {
       api.add(mint, amountBigInt.toString());
     }
@@ -80,5 +89,5 @@ module.exports = {
     tvl,
     borrowed 
   },
-  methodology: "TVL is calculated as total deposits across all banks from the MarginFi program. Borrows are tracked separately and do not reduce TVL."
+  methodology: "TVL is calculated as available liquidity across all banks in the P0 program."
 };
