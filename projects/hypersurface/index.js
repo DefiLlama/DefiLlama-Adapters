@@ -8,11 +8,16 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const HYPEREVM_CONTRACTS = {
   marginPool: "0x7D2e4b4d7ba55C423F5CCe194ae8194eFD1C6e35",
   hedgedPool: "0x0095aCDD705Cfcc11eAfFb6c19A28C0153ad196F",
+  hedger: "0xa8c9403BDf554C047Ad91a448DDb24208Ab5313c", // HyperliquidHedger - holds UniV3 LP positions
 };
+
+// Uniswap V3 / Hyperswap NonfungiblePositionManager on HyperEVM
+const HYPEREVM_UNI_V3_NFT = "0x6eDA206207c09e5428F281761DdC0D300851fBC8";
 
 const BASE_CONTRACTS = {
   marginPool: "0x9AbA7A212d479ed1678d903bA851778BC2Fb3103",
   hedgedPool: "0x68893915f202e5DA2Ef01493463c50B2f68Df56d",
+  hedger: "0x135feDc0159391ac8e3f0bf88D8fe319086679D2", // BaseHedger - holds Aerodrome CL positions
 };
 
 // Supported tokens on HyperEVM
@@ -46,8 +51,18 @@ async function hyperliquidTvl(api) {
   for (const token of HYPEREVM_TOKENS) {
     tokensAndOwners.push([token, HYPEREVM_CONTRACTS.marginPool]);
     tokensAndOwners.push([token, HYPEREVM_CONTRACTS.hedgedPool]);
+    tokensAndOwners.push([token, HYPEREVM_CONTRACTS.hedger]);
   }
-  return sumTokens2({ api, tokensAndOwners });
+  // Include resolveUniV3 to unwrap any Uniswap V3 NFT positions held by the pools
+  // Must specify nftAddress since Hyperliquid isn't a default chain in DefiLlama
+  // Hedger contract holds the active UniV3 LP positions
+  return sumTokens2({
+    api,
+    tokensAndOwners,
+    owners: [HYPEREVM_CONTRACTS.hedgedPool, HYPEREVM_CONTRACTS.marginPool, HYPEREVM_CONTRACTS.hedger],
+    resolveUniV3: true,
+    uniV3ExtraConfig: { nftAddress: HYPEREVM_UNI_V3_NFT },
+  });
 }
 
 async function baseTvl(api) {
@@ -55,8 +70,15 @@ async function baseTvl(api) {
   for (const token of BASE_TOKENS) {
     tokensAndOwners.push([token, BASE_CONTRACTS.marginPool]);
     tokensAndOwners.push([token, BASE_CONTRACTS.hedgedPool]);
+    tokensAndOwners.push([token, BASE_CONTRACTS.hedger]);
   }
-  return sumTokens2({ api, tokensAndOwners });
+  // Include resolveSlipstream to unwrap Aerodrome CL positions held by the hedger
+  return sumTokens2({
+    api,
+    tokensAndOwners,
+    owners: [BASE_CONTRACTS.hedgedPool, BASE_CONTRACTS.marginPool, BASE_CONTRACTS.hedger],
+    resolveSlipstream: true,
+  });
 }
 
 module.exports = {
