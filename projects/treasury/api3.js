@@ -21,5 +21,6 @@ module.exports = treasuryExports({
     ownTokens: [API],
     resolveLP: true,
     resolveUniV3: true,
+    fetchCoValentTokens: false,
   },
 })
