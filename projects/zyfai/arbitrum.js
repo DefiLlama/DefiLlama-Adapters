@@ -24,6 +24,9 @@ const ARBITRUM_EULER_POOLS = {
 const ARBITRUM_HARVEST_POOLS = {
     'USDC - Autopilot': '0x407D3d942d0911a2fEA7E22417f81E27c02D6c6F',
 };
+const ARBITRUM_DOLOMITE_POOLS = {
+    'USDC': '0x6Bd780E7fDf01D77e4d475c821f1e7AE05409072',
+};
 
 const allPoolTokens = [
     COMPOUND_CUSDC_POOL,
@@ -34,6 +37,7 @@ const allPoolTokens = [
     ...Object.values(ARBITRUM_SILO_POOLS),
     ...Object.values(ARBITRUM_EULER_POOLS),
     ...Object.values(ARBITRUM_HARVEST_POOLS),
+    ...Object.values(ARBITRUM_DOLOMITE_POOLS),
 ]
 
 module.exports = {
