@@ -67,13 +67,19 @@ const ADDRESSES = {
       address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
       fromBlock: 50519690,
     },
-    FactroryV2: [
+    FactoryV2: [
       // Start of TermMax Alpha
       {
         address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
         fromBlock: 67248948,
       },
       // End of TermMax Alpha
+    ],
+    MarketV2Factory: [
+      {
+        address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
+        fromBlock: 71136348,
+      },
     ],
     VaultFactory: [
       {
@@ -323,21 +329,27 @@ async function getTermMaxVaultOwnerTokens(api) {
 
 async function recordVaultV2Assets(api) {
   const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
-  const [assets, totalAssets] = await Promise.all([
-    api.multiCall({
-      abi: ABIS.Vault.asset,
-      calls: vaultV2Addresses,
-    }),
-    api.multiCall({
-      abi: "uint256:totalAssets",
-      calls: vaultV2Addresses,
-    }),
-  ]);
-  for (let i = 0; i < vaultV2Addresses.length; i += 1) {
-    const asset = assets[i];
-    const totalAsset = totalAssets[i];
-    api.add(asset, totalAsset);
+
+  const assets = await api.multiCall({ abi: ABIS.Vault.asset, calls: vaultV2Addresses, })
+  await api.sumTokens({ tokensAndOwners2: [assets, vaultV2Addresses], });
+}
+
+async function addTermMaxMarketV2Tvl(api) {
+  if (!ADDRESSES[api.chain].MarketV2Factory) return [];
+  const tokensAndOwners = [];
+  for (const factory of ADDRESSES[api.chain].MarketV2Factory) {
+    const factoryLogs = await getLogs({
+      api,
+      eventAbi: 'event MarketInitialized (address indexed collateral, address indexed underlying, uint64 maturity, address ft, address xt, address gt)',
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      onlyArgs: true,
+      extraKey: `termmax-market-v2-${api.chain}`,
+    });
+    factoryLogs.forEach(log => tokensAndOwners.push([log.collateral, log.gt]));
   }
+
+  await api.sumTokens({ tokensAndOwners });
 }
 
 async function getTermMaxOwnerTokens(api) {
@@ -346,6 +358,7 @@ async function getTermMaxOwnerTokens(api) {
     getTermMaxVaultOwnerTokens(api),
   ]);
   await recordVaultV2Assets(api);
+  await addTermMaxMarketV2Tvl(api)
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
@@ -416,7 +429,7 @@ async function getTermMaxMarketBorrowed(api) {
 module.exports = {
   hallmarks: [
     [
-      Math.floor(new Date("2025-04-15") / 1000),
+      "2025-04-15",
       "Sunset Term Structure and launch TermMax",
     ],
   ],
