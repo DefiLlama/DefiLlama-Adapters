@@ -83,7 +83,7 @@ async function baseTvl(api) {
 
 module.exports = {
   methodology:
-    "TVL is calculated as the sum of all tokens deposited in the MarginPool and HedgedPool contracts.",
+    "TVL is calculated as the sum of all tokens deposited in the MarginPool, HedgedPool, and Hedger contracts, including LP positions (Hyperswap on Hyperliquid, Aerodrome on Base).",
   hyperliquid: { tvl: hyperliquidTvl },
   base: { tvl: baseTvl },
 };
