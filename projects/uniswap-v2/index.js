@@ -31,7 +31,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const factory = config[chain]
   module.exports[chain] = {
-    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, })
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, permitFailure: true })
   }
 })
 
