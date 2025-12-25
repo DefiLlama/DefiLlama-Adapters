@@ -1,10 +1,15 @@
 const sui = require('../helper/chain/sui')
 
+// no trading activities
+const blacklistedPools = [
+  '0x478394dd654b698d295eec67a7ea95bcb8d560e2949cbbbcb162f3d524d4ca8e',
+]
+
 async function suiTVL(api) {
   const poolObjectID = '0xfa145b9de10fe858be81edd1c6cdffcf27be9d016de02a1345eb1009a68ba8b2'
   const { fields: { list: { fields: listObject } } } = await sui.getObject(poolObjectID)
   const items = (await sui.getDynamicFieldObjects({ parent: listObject.id.id })).map(i => i.fields.value.fields.value)
-  const poolInfo = await sui.getObjects(items.map(i => i.fields.pool_id))
+  const poolInfo = await sui.getObjects(items.map(i => i.fields.pool_id).filter(i => !blacklistedPools.includes(i)))
   poolInfo.forEach(({ type: typeStr, fields }) => {
     const [coinA, coinB] = typeStr.replace('>', '').split('<')[1].split(', ')
     api.add(coinA, fields.coin_a)

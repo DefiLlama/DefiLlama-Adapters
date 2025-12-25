@@ -29,11 +29,17 @@ async function tvl() {
   }
 }
 
+// no trading activities
+const blacklistedPools = [
+  '0x3a33be7244f166c5426872d66fbfcbacaae5be229444b5bcc707de6d7656233d',
+  '0x2d79ad383127b41352030895b5c5e5228b54b2e26c9caddb71d04b928c6a4b33',
+]
+
 async function suiTVL(api) {
   const poolObjectID = '0xf699e7f2276f5c9a75944b37a0c5b5d9ddfd2471bf6242483b03ab2887d198d0'
   const { fields: { list: { fields: listObject } } } = await sui.getObject(poolObjectID)
   const items = (await sui.getDynamicFieldObjects({ parent: listObject.id.id })).map(i => i.fields.value.fields.value)
-  const poolInfo = await sui.getObjects(items.map(i => i.fields.pool_id))
+  const poolInfo = await sui.getObjects(items.map(i => i.fields.pool_id).filter(i => !blacklistedPools.includes(i)))
   poolInfo.forEach(({ type: typeStr, fields }) => {
     const [coinA, coinB] = typeStr.replace('>', '').split('<')[1].split(', ')
     api.add(coinA, fields.coin_a)
