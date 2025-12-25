@@ -38,6 +38,7 @@ Object.keys(config).forEach(chain => {
 module.exports.isHeavyProtocol = true
 
 const graphChains = [
+  'unichain',
   'ethereum',
   'base',
 ]
@@ -51,9 +52,22 @@ async function tvlViaGraph(api) {
   const res = await get(endpoint, {
     headers: {
       'origin': 'https://app.uniswap.org',
-    } 
+    }
   })
   const v2 = res.dailyProtocolTvl.v2
-  const tvl = v2[v2.length - 1].value
+  const oneDayBefore = api.timestamp - 86400
+  const oneDayAfter = api.timestamp + 86400 / 3
+  const dayData = v2.find(d => d.timestamp >= oneDayBefore && d.timestamp <= oneDayAfter)
+
+  if (!dayData) {
+    throw new Error(`No TVL data found for ${api.chain} at timestamp ${api.timestamp}`)
+  }
+  const tvl = dayData.value
   api.addUSDValue(tvl)
+}
+
+module.exports = {
+  unichain: module.exports.unichain,
+  ethereum: module.exports.ethereum,
+  base: module.exports.base,
 }
