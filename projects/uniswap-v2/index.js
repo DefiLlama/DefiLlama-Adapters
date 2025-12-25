@@ -65,9 +65,3 @@ async function tvlViaGraph(api) {
   const tvl = dayData.value
   api.addUSDValue(tvl)
 }
-
-module.exports = {
-  unichain: module.exports.unichain,
-  ethereum: module.exports.ethereum,
-  base: module.exports.base,
-}
