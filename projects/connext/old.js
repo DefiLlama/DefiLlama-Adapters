@@ -9,7 +9,7 @@ const tokenDenominationAddress = ADDRESSES.ethereum.DAI;
 //V3
 const routers = ['0xe3cF69b86F274a14B87946bf641f11Ac837f4492', '0xe6887c0cc3c37cb2ee34Bc58AB258f36825CA910', '0xE540998865aFEB054021dc849Cc6191b8E09dC08', '0xC6C68811E75EfD86d012587849F1A1D30427361d']
 const ethereumTokens = [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.MATIC, '0x0f5d2fb29fb7d3cfee444a200298f468908cc942', ADDRESSES.ethereum.DAI]
-const bscTokens = ['0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3', ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC]
+const bscTokens = [ADDRESSES.bsc.DAI, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC]
 const polygonSettings = {
   nativeCoin: 'matic-network',
   tokens: [

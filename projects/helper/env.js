@@ -10,7 +10,9 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
-  STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
+  CRONOS_MULTICALL_CHUNK_SIZE: "10", // cronos reduced gas limit, this is a workaround to make multicall work
+  KATANA_MULTICALL_CHUNK_SIZE: "50",
+  STARKNET_RPC: 'https://rpc.starknet.lava.build/',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
@@ -26,28 +28,15 @@ const DEFAULTS = {
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  FOGO_RPC: 'https://mainnet.fogo.io',
   CAMP_RPC: 'https://rpc.camp.raas.gelato.cloud',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
-  FLAME_RPC: "https://rpc.flame.astria.org",
-  BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
-  BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
-  PLUME_RPC: "https://rpc.plume.org",
-  NIBIRU_RPC: "https://evm-rpc.archive.nibiru.fi/",
   IOTA_RPC: "https://api.mainnet.iota.cafe",
-  KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
-  HYDRAGON_RPC: "https://rpc-mainnet.hydrachain.org",
-  TAC_RPC: "https://rpc.tac.build",
-  FRAXTAL_RPC: "https://rpc.frax.com",
-  TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
-  PLASMA_RPC: "https://rpc.plasma.to",
-  PLASMA_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",  // plasma multicall3
 }
 
 const ENV_KEYS = [
@@ -70,6 +59,7 @@ const ENV_KEYS = [
   'SMARDEX_SUBGRAPH_API_KEY',
   'PROXY_AUTH',
   'ALLIUM_API_KEY',
+  'TON_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

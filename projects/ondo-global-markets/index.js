@@ -3,6 +3,113 @@ module.exports = {
 };
 
 const config = {
+  bsc: {
+    AAPLon: "0x390a684ef9cade28a7ad0dfa61ab1eb3842618c4",
+    ABNBon: "0xef80743f78d98fc2b47a2253b293152ce8b879ba",
+    ABTon: "0x5a20886b575058dd7299785f0ea9b1172942a3e0",
+    ACNon: "0x7af44d51d1fb88c5b74fc71d3cba649bb8099d14",
+    ADBEon: "0xcb22db0ecb6fe58b7b47db443dcfdfdfbf729cef",
+    AGGon: "0x08ce97f3d5cf11e577d091ab048bc5e2eae3fabb",
+    AMDon: "0x9f16e46c73b43bdb70861247d537bee4ea18f639",
+    AMZNon: "0x4553cfe1c09f37f38b12dc509f676964e392f8fc",
+    APOon: "0x5630b5741a33371d9d935283849a16dc808f7f3a",
+    APPon: "0xedb3124e96c64c177eb709cbc64f9977db40ea74",
+    ARMon: "0x527c6436e1eaa4f2065cde4090f798cb5d031dd6",
+    ASMLon: "0xb034f6cb52b7f2fd5a7eeeffca6b9adcd6b9a6f6",
+    AVGOon: "0x0ed2e3180edf393e6bf8db124bd15ddd54de150a",
+    AXPon: "0xd803f8777187d6dee1ea57854aeb957043fb1675",
+    BABAon: "0xd5964f3fcee8d649995ab88f04b8982539c282d2",
+    BAon: "0xf21132a811ad1a878e21af60f64d4e690c9daa42",
+    BIDUon: "0x467e59ce5d5fe01686d4a80dd1e1dae13549aa6c",
+    BLKon: "0x24f5471183ea549987f245d6ce236b6108869c92",
+    CMGon: "0xaed5985afc12aa09d87f55b4b1e6bc3b8f7b0208",
+    COINon: "0xf8589b526fdd65f7f301c605a6e04f0f1b4b3620",
+    COSTon: "0x34375f826fd3dd4e15f883d4f4786bb45eb705ac",
+    CRCLon: "0x992879cd8ce0c312d98648875b5a8d6d042cbf34",
+    CRMon: "0xd04a2bb053277721a8321d7441eed5b42fdf7250",
+    CSCOon: "0x34304f2f7cc487eb4186e6d69f5905a613474aa2",
+    CVXon: "0xd3113a0ad20a46f6a662c63fe8e637f7713e59c7",
+    DASHon: "0x7567c2a46bce46373b454682f3d95e6535bde144",
+    DISon: "0xeee9eee593cb8f7946260b4066cba7907f40acfa",
+    EEMon: "0x00c81d35eddf44c75d4db9e07bdcdc236eb0ebcf",
+    EFAon: "0x38b9a53bfdc5dba58a29bd6992341927c2fca637",
+    EQIXon: "0xe4e12c9cec3e8cae405202a97f66afa695075fa0",
+    FIGon: "0x93fac02b22b6743423381d163aec418178019b7a",
+    FUTUon: "0x5acf40056ed51c8bbcd1b125ef803581ac89a627",
+    GEon: "0x5151a22421ed4277f1e4ca4785a07b035d548a36",
+    GMEon: "0xdabb9aff4cf02f26d2014e4ca9f94ac6fe6572a3",
+    GOOGLon: "0x091fc7778e6932d4009b087b191d1ee3bac5729a",
+    GSon: "0x0d4f9b25f81163fb4840ba4f434672543823000c",
+    HIMSon: "0x4693f6f5ef257381a28afd0673e64d8b32d5c6ad",
+    HOODon: "0x19601179a60f55ff6636f5d1a8b6671053bd60a8",
+    HYGon: "0x0dae81a905b645a3d1e67129b89cd0acda224e9a",
+    IAUon: "0xcb2a0f46f67dc4c58a316f1c008edef5c2311795",
+    IBMon: "0xe8ff70859ce4cbd72e4352b4fb45f5bf39d07464",
+    IEFAon: "0x918008c3d29496c37b478b611967beaca365af36",
+    IEMGon: "0x22092c94a91d019ad15536725598b0a6be0a73c0",
+    IJHon: "0x167e93a849a0cc479769132552b99aa1cfa0948c",
+    INTCon: "0xa528caaa2f96090e379d43f90834c75df54d6e74",
+    INTUon: "0x6e3e077a6c0e3c27fd6d00b97387d9b7bd451bab",
+    ITOTon: "0xcf9caf83053213c44dd7027db3e1e4ac98e55f8f",
+    IVVon: "0x1104eb7e85e25eb45f88e638b0c27a06c1a91cb2",
+    IWFon: "0x40755f06ab7f8de1ab3a9413b1ef562d63de19b1",
+    IWMon: "0x500eafc69b68acd6f27064f9b75f1c7d91cc4d9f",
+    IWNon: "0xf54b94ea21e1da5d51ef00fd4502225e5394f874",
+    JDon: "0xe92be960ae64f6a914ca77014cac9e56de7f36c1",
+    JPMon: "0x317bf42b43a394860718266dec445dcc9fd9da49",
+    KOon: "0x405f38b90bebf1259062cf29da299f3398662bcb",
+    LINon: "0xe1743616f705954620aa351465c8885fbde5a8a9",
+    LLYon: "0x341d31b2be1fee9c00e395a62ba41837f4322eed",
+    LMTon: "0xd09f7b75b9659b864c6f82bb00ff096f9d277998",
+    MARAon: "0xd226d8170ee38793430c7dec6903df4b818bb74c",
+    MAon: "0x25ffda07f585c39848db6573e533d7585679c52d",
+    MCDon: "0x995add4ba29a628a57930a8a185c62ca044ec090",
+    MELIon: "0x60a8f8e05200ff73afde9e2cae819bf1605f0bdd",
+    METAon: "0xd7df5863a3e742f0c767768cdfcb63f09e0422f6",
+    MRVLon: "0x1501ec83ffef405b4331cc4f73277a40fb0c627d",
+    MSFTon: "0x6bfe75d1ad432050ea973c3a3dcd88f02e2444c3",
+    MSTRon: "0x7313ea16493b2f55054df0131a3a14b043ec8992",
+    MUon: "0x8b6acf6041a81567f012ff6a4c6d96d5818d74bf",
+    NFLXon: "0x7048f5227b032326cc8dbc53cf3fddd947a2c757",
+    NKEon: "0x04b5e199f2ec84f78b111035f57b16bee448db6f",
+    NOWon: "0xeb19c13c54b1cd48afc62f6503375e92d5f1e856",
+    NVDAon: "0xa9ee28c80f960b889dfbd1902055218cba016f75",
+    NVOon: "0x08a513779f46ffb7a34f16094a94016d010128a8",
+    ORCLon: "0x03e4bd1ea53f1da84513da0319d1f03dd1bbcf93",
+    PANWon: "0x0eaa1a75bd682a5669ab2371a559fbd039c6b9eb",
+    PBRon: "0x2b1d5cdecc356530a746c5754231efaeaca64022",
+    PEPon: "0xf99f8f3a95257d82006183bd524efa7aacc9ef7a",
+    PFEon: "0x8a83c31d6751833b4940b6e871c48d9a15a07b46",
+    PGon: "0x400f1e257f86d25578a0928c94dc95115f09d5c9",
+    PLTRon: "0x9351abd19f42101dd36025e495b98e910b255d78",
+    PYPLon: "0x374d03a6c0d5bd4be0a5117ebe1b49d52ac8a53f",
+    QBTSon: "0x8c7bf0ed6bc778bde1489de1592c1aad3e66371d",
+    QCOMon: "0xfbd4d681c92ead6af0e49950c8b2e47eeacbb2db",
+    QQQon: "0x0cde6936d305d5b34667fc46425e852efd73559a",
+    RDDTon: "0x4da12f47578ef89c76179b760c778e70b668f80b",
+    RIOTon: "0xc4a88a72b848255fd24da3c1ad6755d980535fb1",
+    SBETon: "0x99e01f02d66455bb106d91d469c9eaf6ab4904f6",
+    SBUXon: "0x94d7754541b829a87321d56121bc544167ac490d",
+    SHOPon: "0x43d0b380c33cd004a6a69abd61843881a2de4113",
+    SLVon: "0x8b872732b07be325a8803cdb480d9d20b6f8d11b",
+    SMCIon: "0xc142ba8ccd36d80c3a001342fb83e4c3d218a873",
+    SNOWon: "0x138ed6833ff4e8811e1fea0d005e13726c8886f9",
+    SPGIon: "0x55b370b704240a914f42b5bbb3195431c031f9f8",
+    SPOTon: "0x50356167a4dbc38bea6779c045e24e25facedfdc",
+    SPYon: "0x6a708ead771238919d85930b5a0f10454e1c331a",
+    TIPon: "0x2ac26ec236df5d1d2ad1a6dd4e448a90e45dc35d",
+    TLTon: "0xf69e40069ac227c11459e3f4e8a446b3401616b6",
+    TMon: "0xecc1299f183b6a720a6f4729bf24f82cd8d50828",
+    TSLAon: "0x2494b603319d4d9f9715c9f4496d9e0364b59d93",
+    TSMon: "0xc37042a7a4fa510d8884a433762ab87257b91965",
+    UBERon: "0xde9d6036fca870f7efc5a82722ae694c371ac909",
+    UNHon: "0x3385cb29cca0ac66f5d2354d13ef977b49a2510f",
+    Von: "0x1cde419fae0ef7f7931ae3e29e5f411c8c5e5fa1",
+    WFCon: "0x629520dee1620def11596f84e85de9f1ff653012",
+    WMTon: "0xa7d1e886acf66ec0656df2decb4b7c893a3bab4c",
+    USDon: "0x1f8955E640Cbd9abc3C3Bb408c9E2E1f5F20DfE6",
+  },
+  ethereum: {
     AAPLon: "0x14c3abf95cb9c93a8b82c1cdcb76d72cb87b2d4c",
     ABNBon: "0xb035c3d5083bdc80074f380aebc9fcb68aba0a28",
     ABTon: "0x3859385363f7bb4dfe42811ccf3f294fcd41dd1d",
@@ -106,8 +213,9 @@ const config = {
     Von: "0xac37c20c1d0e5285035e056101a64e263ff94a41",
     WFCon: "0x4ad2118da8a65eaa81402a3d583fef6ee76bdf3f",
     WMTon: "0x82106347ddbb23ce44cf4ce4053ef1adf8b9323b",
+    USDon: "0xAcE8E719899F6E91831B18AE746C9A965c2119F1",
   }
-
+}
 
 
 
@@ -115,7 +223,15 @@ const config = {
 module.exports = {
   ethereum: {
     tvl: async (api) => {
-        const gmAddresses = Object.values(config);
+        const gmAddresses = Object.values(config.ethereum);
+        let supplies;
+        supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: gmAddresses, })
+        api.addTokens(gmAddresses, supplies);
+    },
+  },
+  bsc:{
+    tvl: async (api) => {
+        const gmAddresses = Object.values(config.bsc);
         let supplies;
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: gmAddresses, })
         api.addTokens(gmAddresses, supplies);

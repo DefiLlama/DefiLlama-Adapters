@@ -26,6 +26,10 @@ const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 
 const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', ...ENV_KEYS])
 
+
+const deadChains = ['heco', 'astrzk', 'real', 'milkomeda', 'milkomeda_a1', 'eos_evm', 'eon', 'plume', 'bitrock', 'rpg', 'kadena', 'migaloo', 'kroma', 'qom', 'airdao']
+
+
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
@@ -120,8 +124,20 @@ function validateHallmarks(hallmark) {
 }
 
 (async () => {
+
+  const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
+
+  // throw error if module doesnt start with lowercase letters
+  if (!/^[a-z]/.test(moduleArg)) {
+    throw new Error("Module name should start with a lowercase letter: " + moduleArg);
+  }
+
   let module = {};
   module = require(passedFile)
+  deadChains.forEach(chain => {
+    delete module[chain]
+  })
+  
   if (module.hallmarks) {
     if (!Array.isArray(module.hallmarks)) {
       throw new Error("Hallmarks should be an array of arrays")
@@ -138,9 +154,26 @@ function validateHallmarks(hallmark) {
 
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
-  const passedTimestamp = process.argv[3] ? Math.floor(new Date(process.argv[3]) / 1000) : undefined
+
+  function parseTimestampArg(arg) {
+    if (!arg) return undefined;
+    // Accept pure numeric input as unix seconds or milliseconds
+    if (/^\d+$/.test(arg)) {
+      const num = Number(arg);
+      if (!Number.isFinite(num)) return undefined;
+      // 13+ digits -> milliseconds, else assume seconds
+      return num > 1e12 ? Math.floor(num / 1000) : num;
+    }
+    // Fallback to Date string parsing (e.g., YYYY-MM-DD)
+    const d = new Date(arg);
+    const ms = d.getTime();
+    if (!Number.isFinite(ms)) return undefined;
+    return Math.floor(ms / 1000);
+  }
+
+  const passedTimestamp = parseTimestampArg(process.argv[3]);
   if (passedTimestamp !== undefined) {
-    unixTimestamp = Number(passedTimestamp)
+    unixTimestamp = passedTimestamp
 
     // other chains than evm will fail to get block at timestamp
     try {

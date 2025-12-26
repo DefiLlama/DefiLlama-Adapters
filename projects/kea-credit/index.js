@@ -10,14 +10,25 @@ const TOKENS = {
   KUSD_V2: "0.0.9590855", // 0x0000000000000000000000000000000000925847 (6-decimal)
 };
 
-// Pool Status Constants (matching KEA smart contracts)
-const POOL_STATUS = {
-  ACTIVE: 0, // Seeking funding
-  FUNDED: 1, // Fully funded, loan disbursed
-  REPAID: 2, // Loan repaid, lenders can withdraw
-  DEFAULTED: 3, // Loan defaulted
-  CANCELLED: 4, // Pool cancelled
-  GRACE_PERIOD: 5, // In grace period (V2 only)
+// Pool Status Constants - V1/V2
+const POOL_STATUS_V1V2 = {
+  ACTIVE: 0,
+  FUNDED: 1,
+  REPAID: 2,
+  DEFAULTED: 3,
+  CANCELLED: 4,
+  GRACE_PERIOD: 5, // V2 only
+};
+
+// Pool Status Constants - V3 (upgraded contracts)
+const POOL_STATUS_V3 = {
+  ACTIVE: 0,
+  FUNDED: 1,
+  PARTIALLY_FUNDED: 2, // New in V3
+  REPAID: 3, // Changed from 2
+  DEFAULTED: 4, // Changed from 3
+  CANCELLED: 5, // Changed from 4
+  REFUNDED: 6, // New in V3
 };
 
 // Contract ABIs (essential functions only)
@@ -31,22 +42,22 @@ const NFT_ABI = [
   "function totalSupply() external view returns (uint256)",
 ];
 
-const POOL_ABI = [
-  // V2 Pool ABI (with grace period support)
-  "function getPoolInfo() external view returns (uint256 nftTokenId, uint256 targetAmount, uint256 minAcceptableAmount, uint256 currentAmount, uint256 disbursedAmount, uint256 interestRate, uint256 maturityDate, address borrower, uint8 status, uint256 gracePeriodDays, uint256 minAcceptabilityPercentage, uint256 platformFeePercentage, address treasuryWallet, bool isGracePeriodExpired)",
-];
-
 const POOL_V1_ABI = [
   // V1 Pool ABI (simpler structure)
   "function getPoolInfo() external view returns (uint256 nftTokenId, uint256 targetAmount, uint256 currentAmount, uint256 interestRate, uint256 maturityDate, address borrower, uint8 status, uint256 platformFeePercentage, address treasuryWallet)",
 ];
 
+const POOL_V3_ABI = [
+  // V3 Pool ABI (upgraded from V2)
+  "function getPoolInfo() external view returns (uint256 nftTokenId, uint256 targetAmount, uint256 minAcceptableAmount, uint256 currentAmount, uint256 disbursedAmount, uint256 interestRate, uint256 originationDate, uint256 gracePeriodEndTime, uint256 maturityDate, address borrower, uint8 status, bool gracePeriodProcessed, address bridgeWalletAddress, uint256 supportedTokenCount)",
+];
+
 /**
- * Determine if a token ID represents V1 or V2
- * Our first 12 NFTs are V1, rest are V2
+ * Determine if a token ID represents V1 or V3
+ * Our first 12 NFTs are V1, rest are V3 (V2 was upgraded to V3 in place)
  */
 function getVersionFromTokenId(tokenId) {
-  return Number(tokenId) <= 12 ? "v1" : "v2";
+  return Number(tokenId) <= 12 ? "v1" : "v3";
 }
 
 /**
@@ -64,70 +75,81 @@ function getTokenConfig(version) {
  * Calculate TVL for a single pool based on its status
  */
 function calculatePoolTVL(poolInfo, version) {
-  const status = Number(poolInfo.status || poolInfo[8]); // Handle both V1 and V2 formats
-
-  // Get amounts from pool info (different positions for V1 vs V2)
-  let currentAmount, targetAmount;
-
-  if (version === "v1") {
-    // V1: [nftTokenId, targetAmount, currentAmount, interestRate, maturityDate, borrower, status, platformFeePercentage, treasuryWallet]
-    // V1 stores amounts in 18-decimal format (contract internal format)
-    targetAmount = poolInfo[1] || poolInfo.targetAmount;
-    currentAmount = poolInfo[2] || poolInfo.currentAmount;
-  } else {
-    // V2: [nftTokenId, targetAmount, minAcceptableAmount, currentAmount, disbursedAmount, ...]
-    // V2 stores amounts in 6-decimal format (USDC-like format)
-    targetAmount = poolInfo[1] || poolInfo.targetAmount;
-    currentAmount = poolInfo[3] || poolInfo.currentAmount;
-  }
-
+  let status,
+    currentAmount,
+    targetAmount,
+    gracePeriodEndTime,
+    gracePeriodProcessed;
   let tvlAmount = 0;
 
-  switch (status) {
-    case POOL_STATUS.ACTIVE:
-      // Active pools: count current invested amount
-      if (version === "v1") {
-        // V1: Convert from 18-decimal internal format to USD
-        // 2400000000000000000000 → 2400 USD
-        tvlAmount = Number(currentAmount) / 1e18;
-      } else {
-        // V2: Convert from 6-decimal format to USD
-        // 2400000000 → 2400 USD
-        tvlAmount = Number(currentAmount) / 1e6;
-      }
-      break;
+  if (version === "v1") {
+    // V1: [0]nftTokenId, [1]targetAmount, [2]currentAmount, [3]interestRate, [4]maturityDate, [5]borrower, [6]status, [7]platformFeePercentage, [8]treasuryWallet
+    status = Number(poolInfo[6]);
+    targetAmount = poolInfo[1];
+    currentAmount = poolInfo[2];
 
-    case POOL_STATUS.FUNDED:
-      // Funded pools: count target amount (fully funded)
-      if (version === "v1") {
+    switch (status) {
+      case POOL_STATUS_V1V2.ACTIVE:
         // V1: Convert from 18-decimal internal format to USD
+        tvlAmount = Number(currentAmount) / 1e18;
+        break;
+      case POOL_STATUS_V1V2.FUNDED:
         tvlAmount = Number(targetAmount) / 1e18;
-      } else {
-        // V2: Convert from 6-decimal format to USD
-        tvlAmount = Number(targetAmount) / 1e6;
-      }
-      break;
+        break;
+      case POOL_STATUS_V1V2.REPAID:
+      case POOL_STATUS_V1V2.CANCELLED:
+      case POOL_STATUS_V1V2.DEFAULTED:
+        tvlAmount = 0;
+        break;
+      default:
+        tvlAmount = 0;
+    }
+  } else if (version === "v3") {
+    // V3: [0]nftTokenId, [1]targetAmount, [2]minAcceptableAmount, [3]currentAmount, [4]disbursedAmount,
+    //     [5]interestRate, [6]originationDate, [7]gracePeriodEndTime, [8]maturityDate, [9]borrower,
+    //     [10]status, [11]gracePeriodProcessed, [12]bridgeWalletAddress, [13]supportedTokenCount
+    status = Number(poolInfo[10]);
+    targetAmount = poolInfo[1];
+    currentAmount = poolInfo[3];
+    gracePeriodEndTime = Number(poolInfo[7]);
+    gracePeriodProcessed = poolInfo[11];
 
-    case POOL_STATUS.GRACE_PERIOD:
-      // Grace period pools: count current amount
-      if (version === "v1") {
-        // V1: Convert from 18-decimal internal format to USD
-        tvlAmount = Number(currentAmount) / 1e18;
-      } else {
-        // V2: Convert from 6-decimal format to USD
+    switch (status) {
+      case POOL_STATUS_V3.ACTIVE:
+        // Active pools: count current invested amount
         tvlAmount = Number(currentAmount) / 1e6;
-      }
-      break;
+        break;
 
-    case POOL_STATUS.REPAID:
-    case POOL_STATUS.CANCELLED:
-    case POOL_STATUS.DEFAULTED:
-      // No TVL for completed/cancelled pools
-      tvlAmount = 0;
-      break;
+      case POOL_STATUS_V3.FUNDED:
+        // Funded pools: count target amount (fully funded)
+        tvlAmount = Number(targetAmount) / 1e6;
 
-    default:
-      tvlAmount = 0;
+        // Check if in grace period (not yet processed and grace period active)
+        if (!gracePeriodProcessed && gracePeriodEndTime > 0) {
+          const now = Math.floor(Date.now() / 1000);
+          if (now < gracePeriodEndTime) {
+            // Still in grace period, count current amount instead
+            tvlAmount = Number(currentAmount) / 1e6;
+          }
+        }
+        break;
+
+      case POOL_STATUS_V3.PARTIALLY_FUNDED:
+        // Partially funded pools: count current amount
+        tvlAmount = Number(currentAmount) / 1e6;
+        break;
+
+      case POOL_STATUS_V3.REPAID:
+      case POOL_STATUS_V3.CANCELLED:
+      case POOL_STATUS_V3.DEFAULTED:
+      case POOL_STATUS_V3.REFUNDED:
+        // No TVL for completed/cancelled pools
+        tvlAmount = 0;
+        break;
+
+      default:
+        tvlAmount = 0;
+    }
   }
 
   return tvlAmount;
@@ -135,12 +157,12 @@ function calculatePoolTVL(poolInfo, version) {
 
 /**
  * Get pool info using the appropriate ABI based on pool index
- * First 12 pools (index 0-11) are V1, rest are V2
+ * First 12 pools (index 0-11) are V1, rest are V3 (V2 upgraded to V3)
  */
 async function getPoolInfoWithVersion(poolAddress, poolIndex) {
-  // Determine version based on pool index (first 12 are V1)
-  const version = poolIndex < 12 ? "v1" : "v2";
-  const abi = version === "v1" ? POOL_V1_ABI[0] : POOL_ABI[0];
+  // Determine version based on pool index (first 12 are V1, rest are V3)
+  const version = poolIndex < 12 ? "v1" : "v3";
+  const abi = version === "v1" ? POOL_V1_ABI[0] : POOL_V3_ABI[0];
 
   const result = await sdk.api.abi.call({
     target: poolAddress,
@@ -167,7 +189,7 @@ async function getPoolInfoWithVersion(poolAddress, poolIndex) {
 async function hederaTvl() {
   const balances = {};
   let totalV1TVL = 0;
-  let totalV2TVL = 0;
+  let totalV3TVL = 0;
   let processedPools = 0;
 
   // Get total NFTs to understand scale
@@ -218,14 +240,14 @@ async function hederaTvl() {
 
     if (version === "v1") {
       totalV1TVL += poolTVL;
-    } else {
-      totalV2TVL += poolTVL;
+    } else if (version === "v3") {
+      totalV3TVL += poolTVL;
     }
 
     processedPools++;
   }
 
-  const totalTVL = totalV1TVL + totalV2TVL;
+  const totalTVL = totalV1TVL + totalV3TVL;
 
   balances["usd-coin"] = totalTVL;
 
@@ -234,7 +256,7 @@ async function hederaTvl() {
 
 module.exports = {
   methodology:
-    "TVL represents the total value locked in KEA Credit's RWA (Real World Assets) invoice tokenization platform on Hedera. Businesses tokenize their invoices as NFTs and receive funding from lenders through investment pools. TVL calculation includes: (1) Active pools - current invested amounts, (2) Funded pools - fully funded target amounts, (3) Grace period pools - current amounts during grace period. Excludes repaid, cancelled, or defaulted pools. The platform operates with two versions: V1 pools (NFT IDs 1-12) using 0-decimal PIXD tokens, and V2 pools (NFT IDs 13+) using 6-decimal kUSD tokens. Both tokens maintain 1:1 USD parity representing underlying invoice values.",
+    "TVL represents the total value locked in KEA Credit's RWA (Real World Assets) invoice tokenization platform on Hedera. Businesses tokenize their invoices as NFTs and receive funding from lenders through investment pools. TVL calculation includes: (1) Active pools - current invested amounts, (2) Funded pools - fully funded target amounts, (3) Partially funded pools - current invested amounts, (4) Pools in grace period - current amounts during active grace period. Excludes repaid, cancelled, defaulted, or refunded pools. The platform operates with two versions: V1 pools (NFT IDs 1-12) using 0-decimal PIXD tokens, and V3 pools (NFT IDs 13+) using 6-decimal kUSD tokens. Both tokens maintain 1:1 USD parity representing underlying invoice values.",
   hedera: {
     tvl: hederaTvl,
   },
