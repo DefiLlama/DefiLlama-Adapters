@@ -49,6 +49,12 @@ const fixBalancesTokens = {
       decimals: 18
     },
   },
+  joc: {
+    '0x03527b82f384184097295fc60be0B59B8FE06E00': {
+      coingeckoId: "japan-open-chain",
+      decimals: 18
+    },
+  },
   provenance: {
     nhash: { coingeckoId: 'hash-2', decimals: 9 },
     'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
@@ -80,6 +86,9 @@ const fixBalancesTokens = {
   stable: {
     '0x779Ded0c9e1022225f8E0630b35a9b54bE713736': { coingeckoId: 'usdt0', decimals: 6 },
     '0x0000000000000000000000000000000000001003': { coingeckoId: 'usdt0', decimals: 18 },
+  },
+  gan: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'gpunet', decimals: 18 },
   },
   fogo: {
     'uSd2czE61Evaf76RNbq4KPpXnkiL3irdzgLFUMe3NoG': { coingeckoId: 'usd-coin', decimals: 6 },
