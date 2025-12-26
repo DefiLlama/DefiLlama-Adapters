@@ -52,6 +52,7 @@ const pool2 = async (api) => {
 }
 
 module.exports = {
+  deadFrom: '2025-06-01',
   methodology: "TVL corresponds to the collateral deposited in the markets",
 }
 
