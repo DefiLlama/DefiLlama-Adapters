@@ -13,7 +13,7 @@ async function suiTvl(api) {
   const vaults = (
     await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v1/vaults`)
   );
-  for (const vault of Object.values(vaults).filter(v => !blacklistedVaults.includes(v.ObjectId))) {
+  for (const vault of Object.values(vaults).filter(v => !blacklistedVaults.includes(v.id))) {
     const vaultTvl = await sui.query({
       target: `${PACKAGE_ID}::vault::get_vault_tvl`,
       contractId: vault.address,

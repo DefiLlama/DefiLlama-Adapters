@@ -9,11 +9,9 @@ module.exports = {
       factory,
       fromBlock,
       permitFailure: true,
-      blacklistedTokens: [
-        '0x541fd749419ca806a8bc7da8ac23d346f2df8b77',
-        '0x1b25ca174c158440621ff96e4b1262cb5cc8942f',
-        '0xc3827a4bc8224ee2d116637023b124ced6db6e90',
-        '0x93919784c523f39cacaa98ee0a9d96c3f32b593e',
+      blacklistedOwners: [
+        '0x24619368bad314d1635a54027c5231b9b83c4a7e',
+        '0xe9703de93406cc31441a57ce5d08272ed545d32b',
       ],
     }
   })
