@@ -8,11 +8,7 @@ const BLACKLISTED_LENDING_MARKET_IDS = [
   "0x02b4b27b3aa136405c2aaa8e2e08191670f3971d495bfcd2dda17184895c20ad", // Test 3
 ];
 
-const blacklistedCoins = [
-  "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI", // no borrow
-  "0x3e8e9423d80e1774a7ca128fccd8bf5f1f7753be658c5e645929037f7c819040::lbtc::LBTC", // no borrow
-]
-const isBlacklistedToken = coin => coin.includes('STEAMM_LP') || blacklistedCoins.includes(coin)
+const isBlacklistedToken = coin => coin.includes('STEAMM_LP')
 
 async function tvl(api) {
   const lendingMarketIds = await getLendingMarketIds()
