@@ -7,7 +7,7 @@ const AUCTION_ADDRESS = "0xC23E316705Feef0922F0651488264db90133ED38";
 // Original burn address - always track this even if paymentReceiver changes
 const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
 
-async function tvl(api) {
+async function pool2(api) {
   // Read current paymentReceiver from Auction contract
   const paymentReceiver = await api.call({
     abi: "address:paymentReceiver",
@@ -31,8 +31,9 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL is the value of permanently burned DONUT/WETH LP tokens. Tracks LP at the dead address plus the current Auction paymentReceiver.",
+    "Pool2 tracks the value of permanently burned DONUT/WETH LP tokens at the dead address plus the current Auction paymentReceiver.",
   base: {
-    tvl,
+    tvl: () => ({}),
+    pool2,
   },
 };
