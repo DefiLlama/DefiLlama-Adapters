@@ -11,17 +11,17 @@ const blacklistedVaults = [
 
 async function suiTvl(api) {
   const vaults = (
-    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v1/vaults/info`)
-  ).Vaults;
+    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v1/vaults`)
+  );
   for (const vault of Object.values(vaults).filter(v => !blacklistedVaults.includes(v.ObjectId))) {
     const vaultTvl = await sui.query({
       target: `${PACKAGE_ID}::vault::get_vault_tvl`,
-      contractId: vault.ObjectId,
-      typeArguments: [vault.DepositCoinType, vault.ReceiptCoinType],
+      contractId: vault.address,
+      typeArguments: [vault.depositCoin.address, vault.receiptCoin.address],
       sender:
         "0xbaef681eafe323b507b76bdaf397731c26f46a311e5f3520ebb1bde091fff295",
     });
-    api.add(vault.DepositCoinType, vaultTvl[0]);
+    api.add(vault.depositCoin.address, vaultTvl[0]);
   }
 }
 
