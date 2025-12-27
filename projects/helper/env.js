@@ -38,6 +38,7 @@ const DEFAULTS = {
   MANTRA_RPC: "https://evm.mantrachain.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
+  VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
 }
 
 const ENV_KEYS = [
