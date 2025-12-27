@@ -11,7 +11,7 @@ const staking = 'addr1w8r99sv75y9tqfdzkzyqdqhedgnef47w4x7y0qnyts8pznq87e4wh'
 const orders = [
   'addr_vkh1ahllvc7n0lzljafmcs3zurdzhlsg4fydkzph6tpjnt0tx0asedu',        // v1.0
   'addr_vkh14rtl7h85cytjwq5gxuhe4j8peedhtzhptfu9r3qkvxjgcz7xfs0',        // v1.1
-  'addr_shared_vkh12xfk70yc5p9kvzd2ndwgx2aprqk0gwjcu560eszakzwkj6ry36s'  // v2.0
+  'addr_shared_vkh1pgev05dyt75xrj9x3qffrxarhgv87tdxmp8ldppctvsxgnnucxs'  // v2.0
 ]
 
 module.exports = {
