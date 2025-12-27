@@ -1,24 +1,13 @@
 /**
  * DefiLlama Adapter for SSV Network
- * Tracks total ETH staked in SSV Network validators
+ * Tracks total ETH staked in SSV Network validators via official API
  */
 
-const { request, gql } = require('graphql-request')
+const { get } = require('../helper/http')
 
 // Configuration
-const SSV_SUBGRAPH_URL = 'https://api.studio.thegraph.com/query/88140/ssv-validators/version/latest'
+const SSV_API_URL = 'https://api.ssv.network/api/v4/mainnet/statistics/totalEffectiveBalance'
 const ETH_TOKEN = '0x0000000000000000000000000000000000000000'
-
-// GraphQL Query - Only fetch required fields
-const SSV_TVL_QUERY = gql`
-  query GetSSVTVL {
-    ssvstats(id: "ssv") {
-      totalSSVEffectiveBalance
-      totalSSVValidators
-      activeSSVValidators
-    }
-  }
-`
 
 /**
  * Fetches TVL for SSV Network
@@ -26,42 +15,31 @@ const SSV_TVL_QUERY = gql`
  */
 async function tvl(api) {
   try {
-    // Make request without hardcoded auth token
-    // Note: Remove auth header as it should not be hardcoded
-    const data = await request(SSV_SUBGRAPH_URL, SSV_TVL_QUERY)
-    
-    if (!data.ssvstats) {
-      throw new Error('No SSV stats found in subgraph response')
+    // Fetch total effective balance from official API
+    // Returns: {"total_effective_balance": "4769351000000000"} (in Gwei)
+    const data = await get(SSV_API_URL)
+
+    if (!data || !data.total_effective_balance) {
+      throw new Error('Invalid response format or missing total_effective_balance')
     }
-    
-    const stats = data.ssvstats
-    const totalEffectiveBalance = stats.totalSSVEffectiveBalance
-    
-    if (!totalEffectiveBalance || totalEffectiveBalance === '0') {
-      console.warn('SSV Network: No effective balance found')
-      return
-    }
-    
-    // Verify unit: totalSSVEffectiveBalance should be in Gwei
-    // Convert from Gwei to Wei (DefiLlama expects Wei)
-    const gweiValue = BigInt(totalEffectiveBalance)
-    const weiValue = gweiValue * BigInt(1e9)
-    
-    // Add to DefiLlama TVL
-    api.add(ETH_TOKEN, weiValue.toString())
-    
+
+    const totalEffectiveBalanceGwei = data.total_effective_balance
+
+    // api.add handles big number arithmetic safely
+    // Input is Gwei (1e9), output needed in Wei (1e18)
+    // We multiply by 1e9 to convert Gwei to Wei
+    api.add(ETH_TOKEN, totalEffectiveBalanceGwei + '000000000')
+
   } catch (error) {
     console.error('Error fetching SSV Network TVL:', error.message)
-    // Don't re-throw to prevent adapter failure
     return
   }
 }
 
-// DefiLlama Adapter Export
 module.exports = {
-  methodology: 'Tracks total ETH staked in SSV Network validators using totalSSVEffectiveBalance from the SSV subgraph. The effective balance represents the actual ETH amount backing each validator in the network.',
+  methodology: 'Tracks total ETH staked in SSV Network validators using the official SSV Network API (totalEffectiveBalance).',
   start: 18362616, // Block when SSV Network mainnet launched (October 2023)
   ethereum: {
     tvl,
   }
-} 
+}
