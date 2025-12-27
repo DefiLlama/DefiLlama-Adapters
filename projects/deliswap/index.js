@@ -1,5 +1,4 @@
 const {getLogs} = require('../helper/cache/getLogs')
-const {addUniV3LikePosition} = require('../helper/unwrapLPs')
 const fs = require('fs')
 const path = require('path')
 
@@ -16,9 +15,94 @@ const POSITION_MANAGER_ADDRESS = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'
 const DELI_HOOK_V2_ADDRESS = '0x95AFBC0FCcF974B41380f24e562f15b6DD90faC8' // DeliHookConstantProduct
 const DELI_HOOK_V4_ADDRESS = '0x570A48F96035C2874de1c0F13c5075A05683b0cc' // DeliHook
 const EARLIEST_BLOCK = 37885233
+const Q96 = 2n ** 96n
+const MAX_TICK = 887272
 
-// Helper to normalize address to lowercase for comparison
+const sqrtRatioCache = new Map()
 const normalizeAddr = (addr) => addr.toLowerCase()
+
+function getSqrtRatioAtTick(tick) {
+    const absTick = Math.abs(tick)
+    if (absTick > MAX_TICK) throw new Error(`Tick ${tick} out of bounds (max ±${MAX_TICK})`)
+
+    // Port of Uniswap V3 TickMath.getSqrtRatioAtTick
+    let ratio = (absTick & 0x1) !== 0 ? 0xfffcb933bd6fad37aa2d162d1a594001n : 0x100000000000000000000000000000000n
+
+    if (absTick & 0x2) ratio = (ratio * 0xfff97272373d413259a46990580e213an) >> 128n
+    if (absTick & 0x4) ratio = (ratio * 0xfff2e50f5f656932ef12357cf3c7fdccn) >> 128n
+    if (absTick & 0x8) ratio = (ratio * 0xffe5caca7e10e4e61c3624eaa0941cd0n) >> 128n
+    if (absTick & 0x10) ratio = (ratio * 0xffcb9843d60f6159c9db58835c926644n) >> 128n
+    if (absTick & 0x20) ratio = (ratio * 0xff973b41fa98c081472e6896dfb254c0n) >> 128n
+    if (absTick & 0x40) ratio = (ratio * 0xff2ea16466c96a3843ec78b326b52861n) >> 128n
+    if (absTick & 0x80) ratio = (ratio * 0xfe5dee046a99a2a811c461f1969c3053n) >> 128n
+    if (absTick & 0x100) ratio = (ratio * 0xfcbe86c7900a88aedcffc83b479aa3a4n) >> 128n
+    if (absTick & 0x200) ratio = (ratio * 0xf987a7253ac413176f2b074cf7815e54n) >> 128n
+    if (absTick & 0x400) ratio = (ratio * 0xf3392b0822b70005940c7a398e4b70f3n) >> 128n
+    if (absTick & 0x800) ratio = (ratio * 0xe7159475a2c29b7443b29c7fa6e889d9n) >> 128n
+    if (absTick & 0x1000) ratio = (ratio * 0xd097f3bdfd2022b8845ad8f792aa5825n) >> 128n
+    if (absTick & 0x2000) ratio = (ratio * 0xa9f746462d870fdf8a65dc1f90e061e5n) >> 128n
+    if (absTick & 0x4000) ratio = (ratio * 0x70d869a156d2a1b890bb3df62baf32f7n) >> 128n
+    if (absTick & 0x8000) ratio = (ratio * 0x31be135f97d08fd981231505542fcfa6n) >> 128n
+    if (absTick & 0x10000) ratio = (ratio * 0x09aa508b5b7a84e1c677de54f3e99bc9n) >> 128n
+    if (absTick & 0x20000) ratio = (ratio * 0x05d6af8dedb81196699c329225ee604n) >> 128n
+    if (absTick & 0x40000) ratio = (ratio * 0x02216e584f5fa1ea926041bedfe98n) >> 128n
+    if (absTick & 0x80000) ratio = (ratio * 0x0048a170391f7dc42444e8fa2n) >> 128n
+
+    if (tick > 0) ratio = ((1n << 256n) - 1n) / ratio
+
+    let sqrtPriceX96 = ratio >> 32n
+    if (ratio % (1n << 32n) > 0n) sqrtPriceX96 += 1n
+    return sqrtPriceX96
+}
+
+function getSqrtRatioAtTickCached(tick) {
+    if (sqrtRatioCache.has(tick)) return sqrtRatioCache.get(tick)
+    const v = getSqrtRatioAtTick(tick)
+    sqrtRatioCache.set(tick, v)
+    return v
+}
+
+function toBigInt(v) {
+    if (v === null || v === undefined) return null
+    if (typeof v === 'bigint') return v
+    if (typeof v === 'number') return BigInt(v)
+    if (typeof v === 'string') return BigInt(v)
+    if (typeof v.toString === 'function') return BigInt(v.toString())
+    return BigInt(v)
+}
+
+function getAmount0ForLiquidity(sqrtRatioAX96, sqrtRatioBX96, liquidity) {
+    let a = sqrtRatioAX96
+    let b = sqrtRatioBX96
+    if (a > b) [a, b] = [b, a]
+
+    const numerator = liquidity * Q96 * (b - a)
+    const denominator = b * a
+    if (denominator === 0n) return 0n
+    return numerator / denominator
+}
+
+function getAmount1ForLiquidity(sqrtRatioAX96, sqrtRatioBX96, liquidity) {
+    let a = sqrtRatioAX96
+    let b = sqrtRatioBX96
+    if (a > b) [a, b] = [b, a]
+    return (liquidity * (b - a)) / Q96
+}
+
+function addV4PositionActiveOnly({api, token0, token1, sqrtPriceX96, tick, tickLower, tickUpper, liquidity}) {
+    if (liquidity <= 0n) return
+    if (sqrtPriceX96 === 0n) return
+    if (tick < tickLower || tick >= tickUpper) return
+
+    const sqrtRatioAX96 = getSqrtRatioAtTickCached(tickLower)
+    const sqrtRatioBX96 = getSqrtRatioAtTickCached(tickUpper)
+
+    const amount0 = getAmount0ForLiquidity(sqrtPriceX96, sqrtRatioBX96, liquidity)
+    const amount1 = getAmount1ForLiquidity(sqrtRatioAX96, sqrtPriceX96, liquidity)
+
+    if (amount0 > 0n) api.add(token0, amount0)
+    if (amount1 > 0n) api.add(token1, amount1)
+}
 
 function truncatePoolId(poolId) {
     // Truncate bytes32 poolId to bytes25 (Uniswap uses truncated poolId as key)
@@ -68,7 +152,7 @@ async function tvl(api) {
         // Deduplicate poolIds (PoolFeeSet can be emitted multiple times per pool)
         const uniquePoolIds = [...new Set(v4FeeLogs.map(log => log.poolId))]
         debugLog(`V4 PoolFeeSet events: ${v4FeeLogs.length}, unique pools: ${uniquePoolIds.length}`)
-        
+
         const v4PoolIds = uniquePoolIds
         const truncatedPoolIds = v4PoolIds.map(truncatePoolId)
 
@@ -150,7 +234,8 @@ async function tvl(api) {
             if (slot0Data[i]) {
                 poolStateMap[pool.id.toLowerCase()] = {
                     ...pool,
-                    tick: Number(slot0Data[i].tick)
+                    tick: Number(slot0Data[i].tick),
+                    sqrtPriceX96: toBigInt(slot0Data[i].sqrtPriceX96) ?? 0n,
                 }
             }
         })
@@ -167,7 +252,8 @@ async function tvl(api) {
                 topics: [modifyLiquidityTopic, poolId], // Event signature + specific poolId filter
                 eventAbi,
                 onlyArgs: true,
-                extraKey: `v4-modify-${idx}` // Unique key per pool
+                // CRITICAL: getLogs cache key does NOT include topics; must include poolId to avoid cross-pool cache pollution
+                extraKey: `v4-modify-${poolId}` // Stable per-pool cache key
             })
         )
 
@@ -222,7 +308,7 @@ async function tvl(api) {
 
             Object.entries(poolPositions).forEach(([posKey, pos]) => {
                 totalPositions++
-                
+
                 if (pos.liquidity <= 0n) {
                     zeroLiqPositions++
                     return
@@ -236,21 +322,22 @@ async function tvl(api) {
 
                 activePositions++
 
-                // Calculate actual token amounts using Uniswap V3 math
-                addUniV3LikePosition({
+                // Calculate token amounts using exact (BigInt) Uniswap V3/V4 math (active-only)
+                addV4PositionActiveOnly({
                     api,
                     token0: poolState.currency0,
                     token1: poolState.currency1,
+                    sqrtPriceX96: poolState.sqrtPriceX96,
                     tick: currentTick,
-                    liquidity: Number(pos.liquidity),
+                    liquidity: pos.liquidity,
                     tickLower: pos.tickLower,
                     tickUpper: pos.tickUpper,
                 })
-                
-                debugLog(`V4 Pool ${poolId} Pos ${posKey} (${Number(pos.liquidity)} liq): Added to TVL`)
+
+                debugLog(`V4 Pool ${poolId} Pos ${posKey} (${pos.liquidity.toString()} liq): Added to TVL`)
             })
         })
-        
+
         debugLog(`V4 Positions: ${totalPositions} total, ${activePositions} active, ${outOfRangePositions} out-of-range, ${zeroLiqPositions} zero-liquidity`)
     }
 
