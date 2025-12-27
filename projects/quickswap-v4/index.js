@@ -21,7 +21,7 @@ module.exports = uniV3Export({
     isAlgebra: true,
     fromBlock: 40341077,
   },
-  mantrachain: {
+  mantra: {
     factory: '0x10253594A832f967994b44f33411940533302ACb',
     isAlgebra: true,
     fromBlock: 8937027

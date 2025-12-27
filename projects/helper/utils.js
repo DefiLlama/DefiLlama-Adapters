@@ -386,6 +386,23 @@ function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidator
   };
 }
 
+function permitChainFailures(exports, chains) {
+  Object.keys(exports).forEach(chain => {
+    if (!chains.includes(chain)) return;
+    const chainObj = exports[chain]
+    Object.keys(chainObj).forEach(key => {
+      const fn = chainObj[key]
+      chainObj[key] = async (api, ...params) => {
+        try {
+          return await fn(api, ...params)
+        } catch (e) {
+          sdk.log(`Permitting failure for ${chain} ${key}: ${e.message}`)
+          return {}
+        }
+      }
+    } )
+  })
+}
 
 module.exports = {
   log,
@@ -407,4 +424,5 @@ module.exports = {
   once,
   isICHIVaultToken,
   getStakedEthTVL,
+  permitChainFailures,
 }
