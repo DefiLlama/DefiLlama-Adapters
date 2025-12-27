@@ -9,11 +9,11 @@ const PSM = "0x17A8541B82BF67e10B0874284b4Ae66858cb1fd5";
 
 // Staking contracts holding PSM (Signal Vaults)
 const stakingContracts = [
-  "0x3cfc3CBA1B4aAF969057F590D23efe46848F4270",  // <<<-------------------------------- EDIT ADDRESS SIGNAL VAULT
+  "0xb800B8dbCF9A78b16F5C1135Cd1A39384ABf1fbc",
 ];
 
 const assetVaultList = {
-  WETHUSDC: "0x9167CFf02D6f55912011d6f498D98454227F4e16", // <<<-------------------------------- EDIT ADDRESS ASSET VAULT
+  WETHUSDC: "0xc7A22081662fAEedC27993Cb72cbA6141e15ba48",
 };
 
 // TVL in Asset Vaults of the new protocol
@@ -96,7 +96,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL includes old Portals V1/V2 balances and new Asset Vault balances of the No-Loss Prediction Market, plus staked PSM in Signal Vaults.",
+    "TVL includes Asset Vault balances of the No-Loss Prediction Market, plus staked PSM in Signal Vaults, and old Portals V1/V2 balances.",
   arbitrum: {
     staking: stakings(stakingContracts, PSM),
     tvl,
