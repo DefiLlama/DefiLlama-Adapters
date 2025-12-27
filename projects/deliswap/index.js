@@ -1,14 +1,4 @@
 const {getLogs} = require('../helper/cache/getLogs')
-const fs = require('fs')
-const path = require('path')
-
-// Debug logging to file
-const logFile = path.join(__dirname, 'debug.log')
-const debugLog = (msg) => {
-    const timestamp = new Date().toISOString()
-    fs.appendFileSync(logFile, `[${timestamp}] ${msg}\n`)
-    console.log(msg)
-}
 
 const POOL_MANAGER_ADDRESS = '0x498581fF718922c3f8e6A244956aF099B2652b2b'
 const POSITION_MANAGER_ADDRESS = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'
@@ -89,16 +79,28 @@ function getAmount1ForLiquidity(sqrtRatioAX96, sqrtRatioBX96, liquidity) {
     return (liquidity * (b - a)) / Q96
 }
 
-function addV4PositionActiveOnly({api, token0, token1, sqrtPriceX96, tick, tickLower, tickUpper, liquidity}) {
+function addV4Position({api, token0, token1, sqrtPriceX96, tick, tickLower, tickUpper, liquidity}) {
     if (liquidity <= 0n) return
     if (sqrtPriceX96 === 0n) return
-    if (tick < tickLower || tick >= tickUpper) return
 
     const sqrtRatioAX96 = getSqrtRatioAtTickCached(tickLower)
     const sqrtRatioBX96 = getSqrtRatioAtTickCached(tickUpper)
+    if (sqrtRatioAX96 === 0n || sqrtRatioBX96 === 0n) return
 
-    const amount0 = getAmount0ForLiquidity(sqrtPriceX96, sqrtRatioBX96, liquidity)
-    const amount1 = getAmount1ForLiquidity(sqrtRatioAX96, sqrtPriceX96, liquidity)
+    let amount0 = 0n
+    let amount1 = 0n
+
+    if (tick < tickLower) {
+        // Position is below range - all token0
+        amount0 = getAmount0ForLiquidity(sqrtRatioAX96, sqrtRatioBX96, liquidity)
+    } else if (tick < tickUpper) {
+        // Position is in range - split between both tokens
+        amount0 = getAmount0ForLiquidity(sqrtPriceX96, sqrtRatioBX96, liquidity)
+        amount1 = getAmount1ForLiquidity(sqrtRatioAX96, sqrtPriceX96, liquidity)
+    } else {
+        // Position is above range - all token1
+        amount1 = getAmount1ForLiquidity(sqrtRatioAX96, sqrtRatioBX96, liquidity)
+    }
 
     if (amount0 > 0n) api.add(token0, amount0)
     if (amount1 > 0n) api.add(token1, amount1)
@@ -110,10 +112,6 @@ function truncatePoolId(poolId) {
 }
 
 async function tvl(api) {
-    // Clear debug log
-    if (fs.existsSync(logFile)) fs.unlinkSync(logFile)
-    debugLog('=== DeliSwap TVL Calculation Started ===')
-
     // STEP 1: Fetch pool IDs from DeliSwap hooks
     const [v2PairLogs, v4FeeLogs] = await Promise.all([
         // V2: PairCreated event
@@ -151,8 +149,6 @@ async function tvl(api) {
     if (v4FeeLogs.length > 0) {
         // Deduplicate poolIds (PoolFeeSet can be emitted multiple times per pool)
         const uniquePoolIds = [...new Set(v4FeeLogs.map(log => log.poolId))]
-        debugLog(`V4 PoolFeeSet events: ${v4FeeLogs.length}, unique pools: ${uniquePoolIds.length}`)
-
         const v4PoolIds = uniquePoolIds
         const truncatedPoolIds = v4PoolIds.map(truncatePoolId)
 
@@ -174,15 +170,8 @@ async function tvl(api) {
         }).filter(p => p !== null)
     }
 
-    debugLog(`Raw events - V2 PairCreated: ${v2PairLogs.length}, V4 PoolFeeSet: ${v4FeeLogs.length}`)
-    debugLog(`Processed - V2 pools: ${v2Pools.length}, V4 pools: ${v4Pools.length}`)
-
     const deliPools = [...v2Pools, ...v4Pools]
-    debugLog(`Found ${deliPools.length} DeliSwap pools (V2: ${v2Pools.length}, V4: ${v4Pools.length})`)
-    if (deliPools.length === 0) {
-        debugLog('No DeliSwap pools found, exiting')
-        return {}
-    }
+    if (deliPools.length === 0) return {}
 
     // STEP 3A: Handle V2 pools
     if (v2Pools.length > 0) {
@@ -203,19 +192,12 @@ async function tvl(api) {
             const [reserve0, reserve1] = v2Reserves[i]
 
             // Only add if reserves are non-zero
-            if (BigInt(reserve0) > 0n) {
-                api.add(pool.currency0, reserve0)
-                debugLog(`V2 Pool ${pool.id} (${pool.currency0}): ${reserve0}`)
-            }
-            if (BigInt(reserve1) > 0n) {
-                api.add(pool.currency1, reserve1)
-                debugLog(`V2 Pool ${pool.id} (${pool.currency1}): ${reserve1}`)
-            }
+            if (BigInt(reserve0) > 0n) api.add(pool.currency0, reserve0)
+            if (BigInt(reserve1) > 0n) api.add(pool.currency1, reserve1)
         })
     }
 
     // STEP 3B: Handle V4 pools - track individual positions via ModifyLiquidity events
-    // Note: Cannot use balanceOf on PoolManager as it holds tokens for ALL V4 protocols
     if (v4Pools.length > 0) {
         const v4PoolIds = v4Pools.map(pool => pool.id)
         const STATE_VIEW_ADDRESS = '0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71'
@@ -249,19 +231,15 @@ async function tvl(api) {
                 api,
                 target: POOL_MANAGER_ADDRESS,
                 fromBlock: EARLIEST_BLOCK,
-                topics: [modifyLiquidityTopic, poolId], // Event signature + specific poolId filter
+                topics: [modifyLiquidityTopic, poolId],
                 eventAbi,
                 onlyArgs: true,
-                // CRITICAL: getLogs cache key does NOT include topics; must include poolId to avoid cross-pool cache pollution
-                extraKey: `v4-modify-${poolId}` // Stable per-pool cache key
+                extraKey: `v4-modify-${poolId}`
             })
         )
 
         const modifyLogsArrays = await Promise.all(modifyLogsPromises)
         const modifyLiquidityLogs = modifyLogsArrays.flat()
-
-        debugLog(`Found ${modifyLiquidityLogs.length} ModifyLiquidity events for ${v4Pools.length} V4 pools`)
-        debugLog(`ModifyLogs per pool: ${modifyLogsArrays.map((arr, i) => `Pool ${i}: ${arr.length}`).join(', ')}`)
 
         // Build position tracking: poolId -> positionKey -> {tickLower, tickUpper, liquidity}
         const positions = {}
@@ -271,7 +249,6 @@ async function tvl(api) {
 
             if (!positions[poolId]) positions[poolId] = {}
 
-            // Build position key matching exporter logic
             let posKey
             if (normalizeAddr(log.sender) === normalizeAddr(POSITION_MANAGER_ADDRESS)) {
                 // NFT position: salt IS the tokenId
@@ -294,12 +271,7 @@ async function tvl(api) {
             positions[poolId][posKey].liquidity += BigInt(log.liquidityDelta)
         })
 
-        // Calculate reserves from positions
-        let totalPositions = 0
-        let activePositions = 0
-        let zeroLiqPositions = 0
-        let outOfRangePositions = 0
-
+        // Calculate reserves from positions (including out-of-range)
         Object.entries(positions).forEach(([poolId, poolPositions]) => {
             const poolState = poolStateMap[poolId]
             if (!poolState) return
@@ -307,23 +279,11 @@ async function tvl(api) {
             const currentTick = poolState.tick
 
             Object.entries(poolPositions).forEach(([posKey, pos]) => {
-                totalPositions++
+                if (pos.liquidity <= 0n) return
 
-                if (pos.liquidity <= 0n) {
-                    zeroLiqPositions++
-                    return
-                }
-
-                // TODO: Currently only counting active positions for debug comparison vs backend, switch to all later
-                if (currentTick < pos.tickLower || currentTick >= pos.tickUpper) {
-                    outOfRangePositions++
-                    return // Skip out-of-range positions for now
-                }
-
-                activePositions++
-
-                // Calculate token amounts using exact (BigInt) Uniswap V3/V4 math (active-only)
-                addV4PositionActiveOnly({
+                // Calculate token amounts using exact (BigInt) Uniswap V3/V4 math
+                // Includes out-of-range positions with their full reserves
+                addV4Position({
                     api,
                     token0: poolState.currency0,
                     token1: poolState.currency1,
@@ -333,19 +293,18 @@ async function tvl(api) {
                     tickLower: pos.tickLower,
                     tickUpper: pos.tickUpper,
                 })
-
-                debugLog(`V4 Pool ${poolId} Pos ${posKey} (${pos.liquidity.toString()} liq): Added to TVL`)
             })
         })
-
-        debugLog(`V4 Positions: ${totalPositions} total, ${activePositions} active, ${outOfRangePositions} out-of-range, ${zeroLiqPositions} zero-liquidity`)
     }
-
-    debugLog('=== DeliSwap TVL Calculation Completed ===')
 }
 
 module.exports = {
-    methodology: "TVL is calculated from liquidity in DeliSwap pools, which are hooks on Uniswap V4 PoolManager. V2 pools use constant product AMM with direct reserve tracking. V4 pools use concentrated liquidity with virtual reserve calculation.",
+    methodology: `
+        TVL is calculated from liquidity in DeliSwap pools, which are hooks on Uniswap V4 PoolManager.
+        V2 pools use constant product AMM with reserves read directly from the DeliHookConstantProduct contract.
+        V4 pools use concentrated liquidity positions tracked via ModifyLiquidity events, with reserves calculated
+        from each position's tick range and liquidity using Uniswap V3/V4 math (including out-of-range positions).
+    `,
     base: {
         tvl,
         start: 1762559813, // Nov-07-2025 11:56:53 PM +UTC
