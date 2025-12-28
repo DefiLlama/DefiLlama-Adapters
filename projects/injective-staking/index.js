@@ -66,4 +66,8 @@ module.exports = {
   methodology:
     "Counts total INJ bonded in staking by reading the Cosmos staking pool bonded_tokens via Injective LCD endpoints with fallback.",
   injective: { tvl },
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> eed98d817 (Add Injective staking TVL)
