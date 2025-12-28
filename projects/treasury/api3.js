@@ -30,6 +30,7 @@ const base = treasuryExports({
 })
 
 const baseTvl = base.ethereum.tvl
+const baseOwnTokens = base.ethereum.ownTokens
 
 base.ethereum.tvl = async (api) => {
   // Run existing treasury logic (ERC20 + ownTokens + LP + UniV3)
@@ -42,6 +43,24 @@ base.ethereum.tvl = async (api) => {
     uniV4ExtraConfig: {
       positionIds: UNI_V4_POSITION_IDS,
     },
+    blacklistedTokens: [API]
+  })
+
+  return api.getBalances()
+}
+
+base.ethereum.ownTokens = async (api) => {
+  // Run existing treasury logic (ERC20 + ownTokens + LP + UniV3)
+  await baseOwnTokens(api)
+
+  // Add Uni v4 position explicitly
+  await sumTokens2({
+    api,
+    resolveUniV4: true,
+    uniV4ExtraConfig: {
+      positionIds: UNI_V4_POSITION_IDS,
+    },
+    blacklistedTokens: [nullAddress]
   })
 
   return api.getBalances()
