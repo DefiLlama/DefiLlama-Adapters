@@ -1,30 +1,39 @@
-const { ApiPromise, WsProvider } = require("@polkadot/api")
+const sdk = require("@defillama/sdk");
 
-const WS_ENDPOINT = "wss://mainnet-rpc.polymesh.network"
-const POLYX_DECIMALS = 1e6
+const RPC = "https://rpc.polymesh.network";
+const POLYX_DECIMALS = 1e6;
 
-async function tvl(api) {
-  const provider = new WsProvider(WS_ENDPOINT)
-  const chainApi = await ApiPromise.create({ provider })
-  await chainApi.isReady
+// TVL = total amount bonded in staking (POLYX)
+async function tvl() {
+  const body = {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "state_getStorage",
+    params: [
+      // staking::ErasTotalStake(currentEra)
+      "0x5f3e4907f716ac89b6347d15ececedca4d5d1d7c92bdbf3cbe9a30a0f7d5b6c5"
+    ],
+  };
 
-  // TVL = total amount bonded in staking (POLYX)
-  // Source: staking pallet → erasTotalStake for the active era
-  const activeEra = await chainApi.query.staking.activeEra()
-  const eraIndex =
-    activeEra.toJSON()?.index ?? activeEra.toHuman()?.index
+  const res = await sdk.fetch(RPC, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 
-  const total = await chainApi.query.staking.erasTotalStake(eraIndex)
-  const totalPolyx = Number(total.toString()) / POLYX_DECIMALS
+  const raw = res?.result;
+  if (!raw) return {};
 
-  await chainApi.disconnect()
+  const total = parseInt(raw, 16) / POLYX_DECIMALS;
 
-  api.addCGToken("polymesh", totalPolyx)
+  return {
+    polymesh: total,
+  };
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    "Counts total staked POLYX on Polymesh using the staking pallet erasTotalStake for the active era.",
+    "Counts total staked POLYX by querying the Polymesh staking storage for total bonded stake.",
   polymesh: { tvl },
-}
+};
