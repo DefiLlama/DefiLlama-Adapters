@@ -36,8 +36,10 @@ const DEFAULTS = {
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   MANTRA_RPC: "https://evm.mantrachain.io",
-  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
-  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
+  KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  MANTRA_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",
+  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
+  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
   VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
 }
 
