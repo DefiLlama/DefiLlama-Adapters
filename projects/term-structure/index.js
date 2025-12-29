@@ -327,7 +327,7 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
+  const [vaultV1Addresses, vaultV1PlusAddresses] =
     await Promise.all([
       getTermMaxVaultAddresses(api),
       getTermMaxVaultV1PlusAddresses(api),
@@ -370,31 +370,12 @@ async function recordVaultV2Assets(api) {
   await sumTokens2({ api, tokensAndOwners2: [assets, vaultV2Addresses] });
 }
 
-async function addTermMaxMarketV2Tvl(api) {
-  if (!ADDRESSES[api.chain].MarketV2Factory) return [];
-  const tokensAndOwners = [];
-  for (const factory of ADDRESSES[api.chain].MarketV2Factory) {
-    const factoryLogs = await getLogs({
-      api,
-      eventAbi: 'event MarketInitialized (address indexed collateral, address indexed underlying, uint64 maturity, address ft, address xt, address gt)',
-      fromBlock: factory.fromBlock,
-      target: factory.address,
-      onlyArgs: true,
-      extraKey: `termmax-market-v2-${api.chain}`,
-    });
-    factoryLogs.forEach(log => tokensAndOwners.push([log.collateral, log.gt]));
-  }
-
-  await sumTokens2({ api, tokensAndOwners });
-}
-
 async function getTermMaxOwnerTokens(api) {
   const [marketOwnerTokens, vaultOwnerTokens] = await Promise.all([
     getTermMaxMarketOwnerTokens(api),
     getTermMaxVaultOwnerTokens(api),
   ]);
   await recordVaultV2Assets(api);
-  await addTermMaxMarketV2Tvl(api)
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
@@ -469,7 +450,7 @@ async function getTermMaxMarketBorrowed(api) {
 
 async function erc4626VaultsTvl(api) {
   if (!ADDRESSES[api.chain].TermMax4626Factory) return;
-  const tokensAndOwners = [];
+
   const stableERC4626For4626Vaults = [];
   const aaveVaults = [];
 
@@ -502,22 +483,24 @@ async function erc4626VaultsTvl(api) {
     });
     aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
   }
-
-  const aTokens = await api.multiCall({ abi: 'address:aToken', calls: aaveVaults })
-  const aUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: aaveVaults })
-  aaveVaults.forEach((vault, i) => {
-    tokensAndOwners.push([aUnderlyings[i], vault])
-    tokensAndOwners.push([aTokens[i], vault])
-  })
-
-  const stableUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: stableERC4626For4626Vaults })
-  const thirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: stableERC4626For4626Vaults })  // morpho vaults?
-  stableERC4626For4626Vaults.forEach((vault, i) => {
-    tokensAndOwners.push([stableUnderlyings[i], vault])
-    tokensAndOwners.push([thirdPools[i], vault])
-  })
-
-  await sumTokens2({ api, tokensAndOwners });
+  {
+    const [aUnderlyings, totalAssets] = await Promise.all([
+      api.multiCall({ abi: 'address:underlying', calls: aaveVaults }),
+      api.multiCall({ abi: 'uint256:totalAssets', calls: aaveVaults }),
+    ]);
+    for (let i = 0; i < aaveVaults.length; i++) {
+      api.add(aUnderlyings[i], totalAssets[i]);
+    }
+  }
+  {
+    const [stableUnderlyings, totalAssets] = await Promise.all([
+      api.multiCall({ abi: 'address:underlying', calls: stableERC4626For4626Vaults }),
+      api.multiCall({ abi: 'uint256:totalAssets', calls: stableERC4626For4626Vaults }),
+    ]);
+    for (let i = 0; i < stableERC4626For4626Vaults.length; i++) {
+      api.add(stableUnderlyings[i], totalAssets[i]);
+    }
+  }
 }
 
 module.exports = {
