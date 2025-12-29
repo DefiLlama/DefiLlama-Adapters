@@ -17,43 +17,14 @@ async function tvl(api) {
     return api.getBalances();
   }
 
-  // Get the total supply of stac tokens
+  // Get the total supply of STAC tokens using erc20:totalSupply
   const totalSupply = await api.call({
-    abi: abi.totalSupply,
+    abi: 'erc20:totalSupply',
     target: chainAddresses.token,
   });
 
-  // Get token decimals
-  const tokenDecimals = await api.call({
-    abi: abi.decimals,
-    target: chainAddresses.token,
-  });
-
-  // Get price from the price feed on Ethereum
-  const priceData = await api.call({
-    abi: abi.latestRoundData,
-    target: stacAddresses.ethereum.priceFeed,
-    chain: 'ethereum',
-  });
-console.log(`Price Data: ${JSON.stringify(priceData)}`);
-  const priceDecimals = await api.call({
-    abi: abi.priceDecimals,
-    target: stacAddresses.ethereum.priceFeed,
-    chain: 'ethereum',
-  });
-
-  console.log(`stac Total Supply on ${chain}: ${totalSupply} (decimals: ${tokenDecimals})`);
-  console.log(`stac Price: ${priceData.answer} (decimals: ${priceDecimals})`);
-
-  // Calculate TVL in USD
-  // totalSupply has tokenDecimals, price has priceDecimals
-  // TVL = (totalSupply / 10^tokenDecimals) * (price / 10^priceDecimals)
-  const tvlUsd = (BigInt(totalSupply) * BigInt(priceData.answer)) / (10n ** BigInt(tokenDecimals));
-
-  console.log(`stac TVL in USD: ${tvlUsd / (10n ** BigInt(priceDecimals))}`);
-
-  // Add USD value directly
-  api.addUSDValue(Number(tvlUsd) / (10 ** Number(priceDecimals)));
+  // Add the STAC token balance
+  api.add(chainAddresses.token, totalSupply);
 
   return api.getBalances();
 }
