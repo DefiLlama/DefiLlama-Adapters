@@ -1,4 +1,6 @@
+const { getConfig } = require("../helper/cache");
 const { uniV3Export } = require("../helper/uniswapV3");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 module.exports = uniV3Export({
   base: {
@@ -21,9 +23,17 @@ module.exports = uniV3Export({
     isAlgebra: true,
     fromBlock: 40341077,
   },
-  mantra: {
+/*   mantra: {
     factory: '0x10253594A832f967994b44f33411940533302ACb',
     isAlgebra: true,
     fromBlock: 8937027
-  }
+  } */
 })
+
+module.exports.mantra = {
+  tvl: async api => {
+    const config = await getConfig('quickswap-v4/mantra', 'https://api.quickswap.exchange/utils/search-token-pair/v4?chainId=5888')
+    const ownerTokens = config.data.pairs.map(i => [[i.token0.id, i.token1.id], i.id])
+    return sumTokens2({ api, ownerTokens, permitFailure: true, })
+  }
+}
