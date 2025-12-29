@@ -344,29 +344,9 @@ async function getTermMaxVaultOwnerTokens(api) {
   return assets.map((asset, idx) => [[asset], vaultAddresses[idx]]);
 }
 
-async function recordVaultV2Assets(api) {
+async function recordVaultV2IdleFund(api) {
   const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
-
   const assets = await api.multiCall({ abi: ABIS.Vault.asset, calls: vaultV2Addresses, })
-  /*
-    const tokensAndOwners = assets.map((asset, idx) => ({ target: asset, params: vaultV2Addresses[idx] }));
-     const assets1 = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaultV2Addresses, })
-    const tokens = await api.multiCall({ abi: 'string:symbol', calls: assets })
-    const tokenBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners })
-    const table = []
-  
-    vaultV2Addresses.forEach((vault, i) => {
-      let bal = assets1[i] / 1e18
-      let tokenBal = tokenBals[i] / 1e18
-      if (tokens[i].includes('USD')) {
-        bal = assets1[i] / 1e6
-        tokenBal = tokenBals[i] / 1e6
-      }
-      table.push({ vault, asset: assets[i], symbol: tokens[i], totalAssets: bal, tokenBalance: tokenBal, chain: api.chain })
-    })
-    console.table(table) 
-    */
-  // console.log('TermMax V2 Vaults found:', vaultV2Addresses, assets, tokens, api.chain);
   await sumTokens2({ api, tokensAndOwners2: [assets, vaultV2Addresses] });
 }
 
@@ -375,13 +355,12 @@ async function getTermMaxOwnerTokens(api) {
     getTermMaxMarketOwnerTokens(api),
     getTermMaxVaultOwnerTokens(api),
   ]);
-  await recordVaultV2Assets(api);
+  await recordVaultV2IdleFund(api);
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
 
 async function getTermStructureTvl(api) {
-
   const zkTrueUpContractAddress = ADDRESSES[api.chain].zkTrueUpContractAddress;
   if (!zkTrueUpContractAddress) return;
 
@@ -472,7 +451,6 @@ async function erc4626VaultsTvl(api) {
       extraKey: `StableERC4626ForAaveCreated`,
     });
     aaveVaults.push(...logs.map(i => i.stableERC4626ForAave));
-
 
     logs = await getLogs2({
       api,
