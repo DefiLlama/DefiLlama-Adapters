@@ -91,7 +91,7 @@ module.exports = {
   },
 
 
-  botanix: {
+  btnx: {
     tvl: sumTokensExport({
       owners: COBI_EVM_ADDRESSES,
       tokens: [ADDRESSES.null],
