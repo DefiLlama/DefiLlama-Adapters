@@ -16,7 +16,7 @@ const demoPrimePools = [
     "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n", // Margin ETH
 ]
 
-const getBalances = async () => {
+const getBalances = async (type) => {
     const balances = {}
     await Promise.all(demoPrimePools.map(async pool => {
         const poolHash = (await queryV1Beta1({
@@ -32,8 +32,8 @@ const getBalances = async () => {
                 collateral = poolInfo.collateralValue
             }
             balances[asset] = { 
-                collateral,
-                borrowed
+                collateral: (balances[asset]?.collateral || 0) + collateral,
+                borrowed: (balances[asset]?.borrowed || 0) + borrowed
             }
         }
     }))
@@ -47,7 +47,7 @@ const tvl = async (api) => {
 }
 
 const borrowed = async (api) => {
-    const balances = (await getBalances())
+    const balances = await getBalances()
     Object.keys(balances).map(token => {api.add(token, balances[token].borrowed)})
     return sumTokens2({ api })
 }
