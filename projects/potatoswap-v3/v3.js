@@ -6,6 +6,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const v3Factory = "0xa1415fAe79c4B196d087F02b8aD5a622B8A827E5"
 const v3NFPM = "0xE6b5d25cc857c956bA20B73f4e21a1F1397947d8" // NonfungiblePositionManager
 
+const ZERO = "0x0000000000000000000000000000000000000000";
+
 // ABIs required for traversal
 const abi = {
   NFPM: {
@@ -70,17 +72,14 @@ async function getV3Tvl(api) {
   const ownerTokens = [];
   const pools = Array.from(uniquePools.values());
   poolAddresses.forEach((poolAddress, i) => {
-    ownerTokens.push([
-      [pools[i].token0, pools[i].token1], poolAddress,
-    ]);
+    if (!poolAddress) return;
+    if (typeof poolAddress === "string" && poolAddress.toLowerCase() === ZERO) return;
+    ownerTokens.push([[pools[i].token0, pools[i].token1], poolAddress]);
   });
 
-  // 7. Calculate TVL and convert values to float
+  // 7. Calculate TVL and return raw balances (do NOT convert to float)
   const balances = await sumTokens2({ api, ownerTokens, balances: {} });
-  const floatBalances = Object.fromEntries(
-    Object.entries(balances).map(([key, value]) => [key, parseFloat(value)])
-  );
-  return floatBalances;
+  return balances;
 }
 
 module.exports = {
