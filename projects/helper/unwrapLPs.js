@@ -886,7 +886,7 @@ async function sumTokens2({
   block,
   chain = 'ethereum',
   transformAddress,
-  resolveLP = false,
+  resolveLP = false,  // unwrap uni v2 LP tokens
   unwrapAll = false,
   blacklistedLPs = [],
   blacklistedTokens = [],
