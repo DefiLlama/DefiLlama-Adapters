@@ -58,7 +58,6 @@
   "bone",
   "borrowed",
   "bostrom",
-  "botanix",
   "bouncebit",
   "bsc",
   "bsquared",
@@ -251,7 +250,6 @@
   "manta_atlantic",
   "mantle",
   "mantra",
-  "mantrachain",
   "map",
   "massa",
   "matchain",
@@ -334,6 +332,7 @@
   "polkadot",
   "polygon",
   "polygon_zkevm",
+  "polymesh",
   "polynomial",
   "pool2",
   "posi",
@@ -444,6 +443,7 @@
   "venom",
   "verus",
   "vinu",
+  "virbicoin",
   "vision",
   "vite",
   "vive",
@@ -478,7 +478,5 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx",
-  "gnosis",
-  "everclear"
+  "zyx"
 ]

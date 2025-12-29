@@ -10,6 +10,8 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
+  CRONOS_MULTICALL_CHUNK_SIZE: "10", // cronos reduced gas limit, this is a workaround to make multicall work
+  KATANA_MULTICALL_CHUNK_SIZE: "50",
   STARKNET_RPC: 'https://rpc.starknet.lava.build/',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
@@ -33,8 +35,12 @@ const DEFAULTS = {
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
-  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
-  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
+  MANTRA_RPC: "https://evm.mantrachain.io",
+  KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  MANTRA_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",
+  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
+  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
+  VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
 }
 
 const ENV_KEYS = [
