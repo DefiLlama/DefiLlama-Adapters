@@ -64,12 +64,22 @@ async function getIssuanceTokensTVL(api, items) {
 //   vault -> hook() -> accountant()
 //   accountant: base(), getRateSafe(), decimals()  (rate scale)
 //   vault token supply: totalSupply(vault)
+
+const EXTERNAL_ACCOUNTANTS = {
+    // LHYPE (HyperEVM) -> Accountant from docs
+    "0x5748ae796ae46a4f1348a1693de4b50560485562": "0xce621a3ca6f72706678cff0572ae8d15e5f001c3",
+}
+
 async function getBoringTVL(api, vaults) {
     if (!vaults?.length) return
 
     for (const vault of vaults) {
-        const hook = await api.call({target: vault, abi: 'function hook() view returns (address)'})
-        const accountant = await api.call({target: hook, abi: 'function accountant() view returns (address)'})
+        const vaultLc = vault.toLowerCase()
+        let accountant = EXTERNAL_ACCOUNTANTS[vaultLc]
+        if (!accountant) {
+            const hook = await api.call({target: vault, abi: 'function hook() view returns (address)'})
+            accountant = await api.call({target: hook, abi: 'function accountant() view returns (address)'})
+        }
 
         const [asset, rate, supply, decimals] = await Promise.all([
             api.call({target: accountant, abi: 'function base() view returns (address)'}),

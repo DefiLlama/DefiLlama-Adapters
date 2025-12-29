@@ -37,6 +37,9 @@ const CONFIG = {
       '0xc061d38903b99ac12713b550c2cb44b221674f94', // Hyperbeat Ultra UBTC
       '0x96c6cbb6251ee1c257b2162ca0f39aa5fa44b1fb', // Hyperbeat Ultra HYPE
     ],
+    boring: [
+        '0x5748ae796ae46a4f1348a1693de4b50560485562', // LoopedHYPE
+    ],
   },
   plume_mainnet: {
     issuance: [
