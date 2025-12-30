@@ -22,6 +22,7 @@ const CONFIG = {
       '0xaa3cb36be406e6cf208d218fd214e0f1a71e957d', // LoopedBTC
       '0x965ec3552427b8258bd0a0c7baa234618fc98d01', // Edge UltraYield USDT (Morpho, Ethereum)
       '0xfacaa225fcfcd8644a77f2cce833907537198ae9', // Resolv USR Ecosystem Vault
+      '0x62efa7cacc11caa959a8f956ec4f683302397e5c', // YieldNest RWA
     ],
     issuance: [
       '0xbb51e2a15a9158ebe2b0ceb8678511e063ab7a55', // Midas - mEDGE
@@ -38,7 +39,7 @@ const CONFIG = {
       '0x96c6cbb6251ee1c257b2162ca0f39aa5fa44b1fb', // Hyperbeat Ultra HYPE
     ],
     boring: [
-        '0x5748ae796ae46a4f1348a1693de4b50560485562', // LoopedHYPE
+      '0x5748ae796ae46a4f1348a1693de4b50560485562', // LoopedHYPE
     ],
   },
   plume_mainnet: {
