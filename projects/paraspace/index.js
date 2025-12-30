@@ -23,7 +23,7 @@ module.exports = {
     borrowed,
   },
   moonbeam: {
-    tvl,
-    borrowed,
+    tvl: () => ({  }),
+    borrowed: () => ({  }),
   }
 };

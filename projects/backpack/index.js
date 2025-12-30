@@ -38,7 +38,7 @@ const CHAINS = [
 ]
 
 const CHAIN_BLACKLISTS = {
-  ethereum: ['0x57ab1e02fee23774580c119740129eac7081e9d3'],
+  ethereum: [ADDRESSES.ethereum.sUSD_OLD],
 }
 
 CHAINS.forEach((chain) => {

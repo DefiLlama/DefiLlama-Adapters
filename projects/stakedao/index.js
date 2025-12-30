@@ -20,15 +20,22 @@ async function handleLegacyProducts(api) {
 // ********                                                                ********
 // ********************************************************************************
 
-async function handleStrategies(api, holder, underlying, strats, onlyboost) {
+async function handleStrategies(api, holder, underlying, strats, onlyboost, blacklistTokens = []) {
   const calls = [];
   const tokens = [];
 
   const llamalend = [];
   const yearn = [];
 
+  const blacklist = new Set(blacklistTokens.map((t) => t.toLowerCase()));
+
   for (let i = 0; i < strats.length; ++i) {
     const strat = strats[i];
+    const lpTokenAddress = strat.lpToken.address;
+    const lpTokenAddressLC = lpTokenAddress.toLowerCase();
+
+    if (blacklist.has(lpTokenAddressLC))
+      continue;
 
     if (strat.isLending) {
       llamalend.push({
@@ -42,11 +49,11 @@ async function handleStrategies(api, holder, underlying, strats, onlyboost) {
         balance: { target: strat.gaugeAddress, params: holder },
       });
     } else if (strat.protocol === "curve" && strat.version !== 2) {
-      tokens.push(strat.lpToken.address)
-      calls.push({ target: strat.lpToken.address, params: strat.vault });
+      tokens.push(lpTokenAddress);
+      calls.push({ target: lpTokenAddress, params: strat.vault });
     } else {
-      const token = strat.lpToken.address;
-      const receipt = underlying === "pendle" ? strat.lpToken.address : strat.gaugeAddress;
+      const token = lpTokenAddress;
+      const receipt = underlying === "pendle" ? lpTokenAddress : strat.gaugeAddress;
 
       tokens.push(token);
       calls.push({ target: receipt, params: holder });
@@ -92,22 +99,22 @@ async function handleStrategies(api, holder, underlying, strats, onlyboost) {
   }
 }
 
-async function getV1Strategies(api, underlying, onlyboost) {
+async function getV1Strategies(api, underlying, onlyboost, blacklistTokens = []) {
   const res = await getConfig(
     `stakedao/${api.chainId}-${underlying}`,
     `${STRATEGIES_ENDPOINT}/${underlying}/${api.chainId}.json`
   );
 
-  await handleStrategies(api, LOCKERS[underlying][api.chainId], underlying, res.deployed, onlyboost);
+  await handleStrategies(api, LOCKERS[underlying][api.chainId], underlying, res.deployed, onlyboost, blacklistTokens);
 }
 
-async function getV2Strategies(api, underlying, onlyboost) {
+async function getV2Strategies(api, underlying, onlyboost, blacklistTokens = []) {
   const res = await getConfig(
     `stakedao/${api.chainId}-v2-${underlying}`,
     `${STRATEGIES_ENDPOINT}/v2/${underlying}/${api.chainId}.json`
   );
 
-  await handleStrategies(api, LOCKERS_GATEWAY[underlying][api.chainId], underlying, res, onlyboost);
+  await handleStrategies(api, LOCKERS_GATEWAY[underlying][api.chainId], underlying, res, onlyboost, blacklistTokens);
 }
 
 // ********************************************************************************
@@ -151,16 +158,17 @@ async function handleLockers(api) {
 // ********************************************************************************
 
 async function ethereum(api) {
+  const blacklist = ["0x98b540fa89690969D111D045afCa575C91519B1A"];
   await Promise.all([
     // Lockers
     handleLockers(api),
     // Strategies v1
-    getV1Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }),
+    getV1Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }, blacklist),
     getV1Strategies(api, "balancer"),
     getV1Strategies(api, "pendle"),
     getV1Strategies(api, "yearn"),
     // Strategies v2
-    getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }),
+    getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }, blacklist),
   ]);
 
   return sumTokens2({ api, resolveLP: true });

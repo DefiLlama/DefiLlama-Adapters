@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const WHLP_VAULT = '0x1359b05241cA5076c9F59605214f4F84114c0dE8'
 const WHLP_ACCOUNTANT = '0x470bd109A24f608590d85fc1f5a4B6e625E8bDfF'
-const USDT0 = '0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb'
+const USDT0 = ADDRESSES.corn.USDT0
 
 const totalSupplyAbi = 'function totalSupply() view returns (uint256)'
 const exchangeRateAbi = 'function getRate() view returns (uint256)'

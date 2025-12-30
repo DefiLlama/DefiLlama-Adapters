@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const VAULT = '0xafc43faE32302D725fC4d448525c44c522a9a1B9'
-const NATIVE_PLACEHOLDER = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+const NATIVE_PLACEHOLDER = ADDRESSES.GAS_TOKEN_2
 
 const pairsAbi = 'function pairs() external view returns (address[2][])'
 
@@ -32,7 +33,7 @@ module.exports = {
 function formatToken(token) {
   const normalized = token.toLowerCase()
   if (normalized === NATIVE_PLACEHOLDER) return nullAddress
-  if (normalized === '0x0000000000000000000000000000000000000000') return nullAddress
+  if (normalized === ADDRESSES.null) return nullAddress
   return normalized
 }
 
