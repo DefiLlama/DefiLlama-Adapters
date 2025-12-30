@@ -34,6 +34,7 @@ const DEFAULTS = {
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
