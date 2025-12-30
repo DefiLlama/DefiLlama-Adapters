@@ -2367,7 +2367,8 @@
     "WDIONE": "0xf21cbaf7bd040d686bd390957770d2ea652e4013"
   },
   "mantra": {
-    "uom": "uom"
+    "uom": "uom",
+    "wOM": "0xE3047710EF6cB36Bcf1E58145529778eA7Cb5598"
   },
   "verus": {
     "VERUS": "i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV",
@@ -2645,7 +2646,8 @@
     "WETH": "0x50498dc52bcd3daeb54b7225a7d2fa8d536f313e"
   },
   "btnx": {
-    "USDC_E": "0x29ee6138dd4c9815f46d34a4a1ed48f46758a402"
+    "USDC_E": "0x29ee6138dd4c9815f46d34a4a1ed48f46758a402",
+    "ETH": "0x3292c42e8E9Ab3C6a12CFdA556BbCB6f113B1E28"
   },
   "vechain": {
     "WVET": "0xd8ccdd85abdbf68dfec95f06c973e87b1b5a9997",
@@ -2704,9 +2706,6 @@
   },
   "gatelayer": {
     "WGT": "0x6803b8e93b13941f6b73b82e324b80251b3de338"
-  },
-  "botanix": {
-    "ETH": "0x3292c42e8E9Ab3C6a12CFdA556BbCB6f113B1E28"
   },
   "besc": {
     "BUSDC": "0xb54ad626e127f0f228dbeab6f2a61e8e6e029a4b"

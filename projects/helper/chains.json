@@ -58,7 +58,6 @@
   "bone",
   "borrowed",
   "bostrom",
-  "botanix",
   "bouncebit",
   "bsc",
   "bsquared",
@@ -251,12 +250,12 @@
   "manta_atlantic",
   "mantle",
   "mantra",
-  "mantrachain",
   "map",
   "massa",
   "matchain",
   "mayachain",
   "meer",
+  "megaeth",
   "merlin",
   "meta",
   "meter",
@@ -334,6 +333,7 @@
   "polkadot",
   "polygon",
   "polygon_zkevm",
+  "polymesh",
   "polynomial",
   "pool2",
   "posi",
@@ -479,7 +479,5 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx",
-  "gnosis",
-  "everclear"
+  "zyx"
 ]

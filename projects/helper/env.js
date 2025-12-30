@@ -27,16 +27,16 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  FLOW_RPC: 'https://rest-mainnet.onflow.org',
   FOGO_RPC: 'https://mainnet.fogo.io',
-  CAMP_RPC: 'https://rpc.camp.raas.gelato.cloud',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
-  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
-  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
+  KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
+  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
+  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
 }
 
 const ENV_KEYS = [

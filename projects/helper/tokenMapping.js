@@ -94,6 +94,13 @@ const fixBalancesTokens = {
     'uSd2czE61Evaf76RNbq4KPpXnkiL3irdzgLFUMe3NoG': { coingeckoId: 'usd-coin', decimals: 6 },
     'HLc5hqihQGFU68488j7HkdyF6rywyJfV46BN6Dn8W5ug': { coingeckoId: 'solana', decimals: 8 },
   },
+  btnx: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'botanix-pegged-bitcoin', decimals: 18 },
+  },
+  megaeth: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x28B7E77f82B25B95953825F1E3eA0E36c1c29861': { coingeckoId: 'megaeth', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
