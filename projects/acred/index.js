@@ -15,25 +15,6 @@ const ACRED_ADDRESSES = {
   sei: { token: '0xf7fa6725183e603059fc23d95735bf67f72b2d78' },
 };
 
-<<<<<<< HEAD
-// Always fetch price from Ethereum, regardless of current chain
-async function getEthPriceFeed() {
-  const priceData = await global.api.call({
-    abi: abi.latestRoundData,
-    target: ACRED_ADDRESSES.ethereum.priceFeed,
-    chain: 'ethereum',
-  });
-  const priceDecimals = await global.api.call({
-    abi: abi.priceDecimals,
-    target: ACRED_ADDRESSES.ethereum.priceFeed,
-    chain: 'ethereum',
-  });
-  console.log(`ACRED Latest Price: ${priceData.answer} (decimals: ${priceDecimals})`);
-  return { price: priceData.answer, priceDecimals };
-}
-
-=======
->>>>>>> 1ad4b180c (fix: clean up acred adapter output and remove pricing logic)
 async function tvl(api) {
   const { chain } = api;
   const chainAddresses = ACRED_ADDRESSES[chain];
@@ -75,12 +56,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-<<<<<<< HEAD
-  timetravel: false,
-  methodology: 'TVL is calculated as the total supply of ACRED tokens across all supported chains. Price data is retrieved from the Ethereum price feed contract and applied to all chains. ACRED is a multi-chain RWA token with a shared price/token across chains.',
-=======
   methodology: 'TVL is calculated as the total supply of ACRED tokens on each supported chain.',
->>>>>>> 1ad4b180c (fix: clean up acred adapter output and remove pricing logic)
   ethereum: { tvl },
   avax: { tvl },
   polygon: { tvl },
