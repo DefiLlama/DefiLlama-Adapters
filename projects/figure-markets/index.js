@@ -52,7 +52,7 @@ const demoPrimePools = [
 
 const getPoolsCollateralValue = async (api) => {
     let asset = collateralizedAssets[0]
-    const collateralTotal = (await Promise.all(demoPrimePools.map(async pool => {
+    await Promise.all(demoPrimePools.map(async pool => {
         const poolHash = (await queryV1Beta1({
             chain: 'provenance',
             url: `metadata/v1/scope/${pool}/record/pool-details`
@@ -61,11 +61,10 @@ const getPoolsCollateralValue = async (api) => {
             const poolInfo = JSON.parse(poolHash)
             if (poolInfo.leveragePool.collateralAssets.length > 0 && collateralizedAssets.includes(poolInfo.leveragePool.collateralAssets[0])) {
                 asset = poolInfo.leveragePool.collateralAssets[0]
-                return poolInfo.collateralValue
+                api.add(asset, poolInfo.collateralValue)
             }
         }
-    }))).reduce((acc, cur) => acc += cur || 0, 0)
-    api.add('ylds', collateralTotal)
+    }))
 }
 
 const tvl = async (api) => {
