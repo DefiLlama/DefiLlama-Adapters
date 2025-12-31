@@ -1,8 +1,8 @@
 const { Program } = require("@coral-xyz/anchor");
 const { PublicKey } = require('@solana/web3.js');
-const { getProvider, sumTokens2 } = require("../helper/solana");
+const { getProvider, } = require("../helper/solana");
 
-async function tvl() {
+async function tvl(api) {
   const provider = getProvider()
 
   const programId = new PublicKey('save8RQVPMWNTzU18t3GBvBkN9hT7jsGjiCQ28FpD9H')
@@ -16,20 +16,13 @@ async function tvl() {
       )
   );
 
-  const balances = {};
   for (let i = 0; i < usdStarVaults.length; i++) {
     const vault = usdStarVaults[i];
     const tvl = vault.account.accounting.yieldingTvl.toNumber() / 10 ** 6 * 10 ** vault.account.config.yieldingMintDecimals;
-    const key = "solana:" + vault.account.config.yieldingTokenMint.toString();
-
-    if (!(key in balances)) {
-      balances[key] = tvl;
-    } else {
-      balances[key] = balances[key] + tvl;
-    }
+    const token = vault.account.config.yieldingTokenMint.toString()
+    api.add(token, tvl);
   }
 
-  return sumTokens2({ balances });
 }
 
 module.exports = {
