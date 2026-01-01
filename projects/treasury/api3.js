@@ -4,10 +4,10 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const API3 = "0x0b38210ea11411557c13457d4da7dc6ea731b88a"
 
-// Uniswap v4 Position NFTs
+// Uni v4 NFT tokenId
 const UNI_V4_POSITION_IDS = ["112856"]
 
-// Unpriced Vaults (Morpho/ERC4626) that should be pegged to USDC
+// Vaults that need to be priced via convertToAssets (pegged to USDC)
 const USDC_VAULTS = [
   "0x68aea7b82df6ccdf76235d46445ed83f85f845a3", // oevUSDC
   "0xb3f4d94a209045ef35661e657db9adac584141f1", // Api3CoreUSDC v1 vault
@@ -44,10 +44,11 @@ const baseTvl = base.ethereum.tvl
 const baseOwnTokens = base.ethereum.ownTokens
 
 base.ethereum.tvl = async (api) => {
-  // 1. Standard Treasury (ERC20 + LPs + UniV3)
+  // 1. Run existing treasury logic (standard ERC20 + LPs + UniV3)
   await baseTvl(api)
 
-  // 2. Uniswap V4 Positions (Exclude Own Token from TVL)
+  // 2. Add Uni v4 position explicitly
+  // We blacklist API3 here so it doesn't get counted in TVL (it belongs in ownTokens)
   await sumTokens2({
     api,
     resolveUniV4: true,
@@ -57,34 +58,33 @@ base.ethereum.tvl = async (api) => {
     blacklistedTokens: [API3]
   })
 
-  // 3. Handle Unpriced Vaults (ERC4626 -> USDC)
-  // Step A: Fetch vault token balances across all owners
-  const balanceCalls = []
+  // 3. Handle unpriced vaults (Morpho/ERC4626)
+  // Step A: Get balances of vault tokens across all owners
+  const calls = []
   OWNERS.forEach(owner => {
     USDC_VAULTS.forEach(token => {
-      balanceCalls.push({ target: token, params: owner })
+      calls.push({ target: token, params: owner })
     })
   })
-  const vaultBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls })
+  const vaultBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls })
 
-  // Step B: Filter for active vaults and prepare convertToAssets calls
+  // Step B: Filter for non-zero balances to query convertToAssets
   const activeVaultCalls = []
   vaultBalances.forEach((bal, i) => {
     if (bal > 0) {
-      activeVaultCalls.push({
-        target: balanceCalls[i].target,
-        params: bal
+      activeVaultCalls.push({ 
+        target: calls[i].target, 
+        params: bal // convertToAssets takes the share amount as input
       })
     }
   })
 
-  // Step C: Convert shares to underlying assets (USDC) and add to API
+  // Step C: Convert shares to assets (USDC)
   if (activeVaultCalls.length > 0) {
     const underlyingAssets = await api.multiCall({
       abi: 'function convertToAssets(uint256) view returns (uint256)',
       calls: activeVaultCalls
     })
-
     underlyingAssets.forEach(amount => api.add(ADDRESSES.ethereum.USDC, amount))
   }
 
@@ -92,17 +92,17 @@ base.ethereum.tvl = async (api) => {
 }
 
 base.ethereum.ownTokens = async (api) => {
-  // 1. Standard Own Tokens
+  // Run existing treasury logic
   await baseOwnTokens(api)
 
-  // 2. Uniswap V4 Positions (Count ONLY Own Token)
-  // Blacklist other major assets in the V4 pool to avoid double counting them as "Own Tokens"
+  // Add Uni v4 position explicitly (for own tokens). We include API3 here.
   await sumTokens2({
     api,
     resolveUniV4: true,
     uniV4ExtraConfig: {
       positionIds: UNI_V4_POSITION_IDS,
     },
+    // We blacklist standard tokens here so we don't accidentally count USDC held in the V4 LP as "own tokens"
     blacklistedTokens: [nullAddress, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.STETH]
   })
 
