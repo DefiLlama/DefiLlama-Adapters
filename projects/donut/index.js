@@ -28,19 +28,15 @@ async function getStrategies(api) {
   const maxStrategies = 20;
 
   while (index < maxStrategies) {
-    try {
-      const strategy = await api.call({
-        abi: "function strategies(uint256) view returns (address)",
-        target: VOTER,
-        params: [index],
-      });
-      if (strategy && strategy !== "0x0000000000000000000000000000000000000000") {
-        strategies.push(strategy);
-        index++;
-      } else {
-        break;
-      }
-    } catch (e) {
+    const strategy = await api.call({
+      abi: "function strategies(uint256) view returns (address)",
+      target: VOTER,
+      params: [index],
+    });
+    if (strategy && strategy !== "0x0000000000000000000000000000000000000000") {
+      strategies.push(strategy);
+      index++;
+    } else {
       break;
     }
   }
@@ -55,27 +51,21 @@ async function discoverTokens(api, strategies) {
   const tokens = new Set(BASE_TOKENS.map(t => t.toLowerCase()));
 
   for (const strategy of strategies) {
-    // Try to get payment token
-    try {
-      const paymentToken = await api.call({
-        abi: "function paymentToken() view returns (address)",
-        target: strategy,
-      });
-      if (paymentToken && paymentToken !== "0x0000000000000000000000000000000000000000") {
-        tokens.add(paymentToken.toLowerCase());
-      }
-    } catch (e) {}
+    const paymentToken = await api.call({
+      abi: "function paymentToken() view returns (address)",
+      target: strategy,
+    });
+    if (paymentToken && paymentToken !== "0x0000000000000000000000000000000000000000") {
+      tokens.add(paymentToken.toLowerCase());
+    }
 
-    // Try to get buyback token
-    try {
-      const buybackToken = await api.call({
-        abi: "function buybackToken() view returns (address)",
-        target: strategy,
-      });
-      if (buybackToken && buybackToken !== "0x0000000000000000000000000000000000000000") {
-        tokens.add(buybackToken.toLowerCase());
-      }
-    } catch (e) {}
+    const buybackToken = await api.call({
+      abi: "function buybackToken() view returns (address)",
+      target: strategy,
+    });
+    if (buybackToken && buybackToken !== "0x0000000000000000000000000000000000000000") {
+      tokens.add(buybackToken.toLowerCase());
+    }
   }
 
   return Array.from(tokens);
