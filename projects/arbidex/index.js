@@ -5,8 +5,8 @@ const ARBITRUM = 'arbitrum';
 
 const FACTORIES = {
   [ARBITRUM]: [
-    '0x1C6E968f2E6c9DEC61DB874E28589fd5CE3E1f2c', // Factory
-    '0x855F2c70cf5cb1D56C15ed309a4DfEfb88ED909E', // Quantum Factory
+    { address: '0x1C6E968f2E6c9DEC61DB874E28589fd5CE3E1f2c', fromBlock: 80000000 }, // Factory
+    { address: '0x855F2c70cf5cb1D56C15ed309a4DfEfb88ED909E', fromBlock: 120000000 }, // Quantum Factory (likely deployed later)
   ]
 };
 
@@ -74,8 +74,8 @@ async function tvl(api) {
   for (const factory of factories) {
     const logs = await getLogs({
       api,
-      target: factory,
-      fromBlock,
+      target: factory.address,
+      fromBlock: factory.fromBlock,
       topics: uniswapConfig.topics,
       eventAbi: uniswapConfig.eventAbi,
       onlyArgs: true,
@@ -94,7 +94,7 @@ async function tvl(api) {
 
   // Add staking contracts TVL
   if (stakingContracts.length > 0) {
-    await sumTokens2({ api, owners: stakingContracts, fetchCoValentTokens: true });
+    await sumTokens2({ api, owners: stakingContracts });
   }
 }
 
