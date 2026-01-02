@@ -117,11 +117,6 @@ const okuGraphMap = {
 }
 
 Object.keys(okuGraphMap).forEach(chain => {
-  let blacklistedTokens = []
-  if (chain === 'saga') {
-    blacklistedTokens = ['0xa19377761fed745723b90993988e04d641c2cffe']
-  }
-  // if (chain === 'saga') return { tvl: () => ({  }) }
   module.exports[chain] = {
     tvl: async (api) => {
       const ownerTokens = await getConfig('oku-trade/' + chain, undefined, {
@@ -146,7 +141,7 @@ Object.keys(okuGraphMap).forEach(chain => {
           return ownerTokens
         }
       })
-      return api.sumTokens({ ownerTokens, blacklistedTokens })
+      return api.sumTokens({ ownerTokens, })
     }
   }
 })
