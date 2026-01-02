@@ -15,7 +15,7 @@ async function tvl(api) {
     abi: 'function numContractsDeployed() view returns (uint256)',
   })) - 1;
 
-  const batch_size = 50;
+  const batch_size = 32;
 
 
   const calls = [];
@@ -30,7 +30,7 @@ async function tvl(api) {
     });
   }
 
-  const chunks = sliceIntoChunks(calls, 100);
+  const chunks = sliceIntoChunks(calls, 42);
   let i = 0
   for (const chunk of chunks) {
     const res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk })
