@@ -20,7 +20,7 @@ async function getCollateralInCashBorrowMode(api, config) {
     abi: 'function numContractsDeployed() view returns (uint256)',
   })) - 1;
   
-  const batch_size = 300; 
+  const batch_size = 100;
   
   const calls = [];
   for (let i = 0; i < Number(lastCollateralModeVault); i += batch_size) {
