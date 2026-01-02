@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "glob": "^8.0.3",
-    "jsonfile": "^6.1.0",
+    "jsonfile": "^6.2.0",
     "solc": "^0.8.20"
   }
 }
