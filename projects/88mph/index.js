@@ -121,11 +121,47 @@ Object.keys(config).forEach(chain => {
 
       pools.push(...vPools)
       pools = getUniqueAddresses(pools)
-      const tokens = await api.multiCall({ abi: 'address:stablecoin', calls: pools })
-      const bals = await api.multiCall({ abi: 'uint256:totalDeposit', calls: pools })
-      const bals2 = await api.multiCall({ abi: 'uint256:totalInterestOwed', calls: pools })
-      bals.forEach((b, i) => sdk.util.sumSingleBalance(balances, tokens[i], b, api.chain))
-      bals2.forEach((b, i) => sdk.util.sumSingleBalance(balances, tokens[i], b, api.chain))
+
+      // Get total deposits first
+      const depositCalls = pools.map(pool => ({ target: pool }))
+      const bals = await api.multiCall({ abi: 'uint256:totalDeposit', calls: depositCalls, permitFailure: true })
+
+      // Filter pools that have deposits > 0
+      const activePools = []
+      const activeBalances = []
+      bals.forEach((balance, i) => {
+        if (balance && balance !== '0') {
+          activePools.push(pools[i])
+          activeBalances.push(balance)
+        }
+      })
+
+      if (activePools.length === 0) {
+        return balances
+      }
+
+      // Get interest owed for active pools
+      const interestCalls = activePools.map(pool => ({ target: pool }))
+      const bals2 = await api.multiCall({ abi: 'uint256:totalInterestOwed', calls: interestCalls, permitFailure: true })
+
+      // Get token addresses for active pools
+      const tokenCalls = activePools.map(pool => ({ target: pool }))
+      const tokens = await api.multiCall({ abi: 'address:stablecoin', calls: tokenCalls, permitFailure: true })
+
+      // Process deposits
+      activeBalances.forEach((balance, i) => {
+        if (tokens[i] && tokens[i] !== '0x0000000000000000000000000000000000000000') {
+          sdk.util.sumSingleBalance(balances, tokens[i], balance, api.chain)
+        }
+      })
+
+      // Process interest owed
+      bals2.forEach((balance, i) => {
+        if (balance && balance !== '0' && tokens[i] && tokens[i] !== '0x0000000000000000000000000000000000000000') {
+          sdk.util.sumSingleBalance(balances, tokens[i], balance, api.chain)
+        }
+      })
+
       return balances
     },
   }
