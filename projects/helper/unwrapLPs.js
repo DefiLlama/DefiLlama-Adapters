@@ -1291,4 +1291,5 @@ module.exports = {
   addUniV3LikePosition,
   unwrapSolidlyVeNft,
   unwrapHypervisorVaults,
+  unwrapUniswapV4NFTs,
 }
