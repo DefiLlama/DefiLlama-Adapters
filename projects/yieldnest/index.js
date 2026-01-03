@@ -34,8 +34,14 @@ module.exports = {
       const ynCoBTCk = '0x132376b153d3cFf94615fe25712DB12CaAADf547'
       const ynBfBTCk = '0x1B015705214bdcAAf43E8EDeCa13023143224Ab7'
 
-  
-      return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynCoBTCk, ynBfBTCk], isOG4626: true})
+      // Handle other vaults with erc4626Sum
+      await api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynBfBTCk], isOG4626: true})
+
+      // Handle ynCoBTCk separately - CoBTC is pegged to BTC so price as BTCB
+      const coBTCTvl = await api.call({ abi: 'uint256:totalAssets', target: ynCoBTCk })
+      api.add(ADDRESSES.bsc.BTCB, coBTCTvl)
+
+      return api.getBalances()
     }
   },
 }
