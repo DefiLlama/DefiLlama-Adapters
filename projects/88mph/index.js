@@ -134,7 +134,7 @@ Object.keys(config).forEach(chain => {
           activePools.push(pools[i])
           activeBalances.push(balance)
         }
-      })
+      }) 
 
       if (activePools.length === 0) {
         return balances
