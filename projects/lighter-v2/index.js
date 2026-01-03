@@ -7,8 +7,11 @@ const config = {
     tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
   },
   ethereum: {
-    owners: ["0x3b4d794a66304f130a4db8f2551b0070dfcf5ca7"],
-    tokens: [ADDRESSES.ethereum.USDC, ADDRESSES.null],
+    owners: [
+      "0x3b4d794a66304f130a4db8f2551b0070dfcf5ca7", // system wallet
+      "0x57e9e78a627baa30b71793885b952a9006298af6", // FastCCTP
+    ],
+    tokens: [ADDRESSES.ethereum.USDC],
   },
 };
 
@@ -19,4 +22,4 @@ Object.keys(config).forEach((chain) => {
 });
 
 module.exports.methodology =
-  "Counts tokens held in the Lighter system wallet on Ethereum and Arbitrum.";
+  "Counts USDC held in the Lighter system wallet and FastCCTP bridge custody for spot trade deposits on Ethereum and Arbitrum.";
