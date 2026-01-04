@@ -1,4 +1,3 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 // Lemonad - DEX, Vault, and Farming on Monad
@@ -9,10 +8,10 @@ const CONTRACTS = {
   yieldBoostVault: '0x749F5fB1Ea41D53B82604975fd82A22538DaB65a',
   lemonChef: '0x09C0B23c904ec03bFbf8B20686b4a42add71ad6a',
   lemonToken: '0xfB5D8892297Bf47F33C5dA9B320F9D74c61955F7',
-  lemonadWmon: '0x48b43c8f46509a27454a4992db656cd60c455e38', // Lemonad's WMON wrapper
+  lemonadWmon: '0x48b43c8f46509a27454a4992db656cd60c455e38',
 }
 
-// Map Lemonad's WMON to official WMON for pricing
+// Map Lemonad's custom WMON to official WMON for pricing
 function mapToken(token) {
   if (token.toLowerCase() === CONTRACTS.lemonadWmon.toLowerCase()) {
     return ADDRESSES.monad.WMON
@@ -60,6 +59,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: 'TVL includes liquidity in DEX pools and LEMON staked in YieldBoostVault.',
   monad: { tvl },
 }
