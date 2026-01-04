@@ -99,6 +99,9 @@ const fixBalancesTokens = {
   megaeth: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
     '0x28B7E77f82B25B95953825F1E3eA0E36c1c29861': { coingeckoId: 'megaeth', decimals: 18 },
+  },
+  valuechain: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'sosovalue', decimals: 18 },
   }
 }
 
