@@ -38,6 +38,7 @@ const DEFAULTS = {
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
+  VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
   TATUM_PUBLIC_API_KEY: "t-6956724efd74cfe6b231bee6-cd40df69ad2d423588e36fc6",
 }
 
