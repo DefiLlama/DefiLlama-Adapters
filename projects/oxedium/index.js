@@ -3,7 +3,7 @@ const { getConnection, sumTokens2 } = require('../helper/solana');
 
 
 async function tvl() {
-  const programId = new PublicKey('HHZuHvAboWrgmyxSPx77bHE1b699WBrVfZZBsaeqJcbC');
+  const programId = new PublicKey('oxe1hGoyJ41PATPA6ycEYMCyMXWZ33Xwo8rBK8vRCXQ');
   const connection = getConnection();
 
   const OXEDIUM_SEED = Buffer.from("oxedium-seed");
