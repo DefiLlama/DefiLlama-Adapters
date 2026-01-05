@@ -40,7 +40,7 @@ const mtokenConfig = {
     mXRP: '0x06e0B0F1A644Bb9881f675Ef266CeC15a63a3d47',
   },
   plasma: {
-    mHyper: '0xb31BeA5c2a43f942a3800558B1aa25978da75F8a',
+    mHYPER: '0xb31BeA5c2a43f942a3800558B1aa25978da75F8a',
   },
   bsc: {
     mXRP: '0xc8739fbBd54C587a2ad43b50CbcC30ae34FE9e34',
