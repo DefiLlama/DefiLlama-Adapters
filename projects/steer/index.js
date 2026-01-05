@@ -269,6 +269,12 @@ const supportedChains = [
     chainId: 6900,
     identifier: 'nibiru'
   },
+  {
+    name: 'HyperEVM',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-hyperevm/prod/gn',
+    chainId: 999,
+    identifier: 'hyperliquid'
+  }
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
@@ -309,7 +315,8 @@ module.exports.arbitrum.staking = stakings(
     "0x6519A921d0E6F06524eff5DF976abc9A3ABF36cF",
     "0x004a733aA20ea2CaDdba6af62Bb56Aa96dCE4922",
     "0x78FE84c305c8Cd7E23186F2740b73915BAeADd52",
-    "0x0635b76fc26c1d65bb2d761ee2fc4652e8bf5ca8"
+    "0x0635b76fc26c1d65bb2d761ee2fc4652e8bf5ca8",
+    "0x3dC57204f2230c8D972653db0205199eb2bD7F38"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"

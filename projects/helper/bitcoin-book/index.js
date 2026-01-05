@@ -115,6 +115,7 @@ const leadbtc = require('./leadbtc.js')
 const bitgetBtc = require('./bitget-bgBTC.js')
 const magicEden = require('./magic-eden.js')
 const gateBtc = require('./gate-btc.js')
+const weex = require('./weex.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -150,7 +151,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
-  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf'],
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf', 'bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj'],
   cygnus,
   magpie,
   stacksSBTC,
@@ -273,5 +274,6 @@ module.exports = {
   xbtc,
   leadbtc,
   magicEden,
-  gateBtc
+  gateBtc,
+  weex
 }
