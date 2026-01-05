@@ -21,9 +21,11 @@ const tvl = async (api) => {
   const vaults = Object.values(data[chainId]).map(v => v.address).filter(a => a && !excludeVaults.includes(String(a).toLowerCase()))
 
   const assets = await api.multiCall({ calls: vaults, abi: abis.asset })
-  const totalAssets = await api.multiCall({ calls: vaults, abi: abis.totalAssets })
+  // there is a weird bug when totalAssets return 0, we get an error, maybe because total shares is 0?
+  const totalAssets = await api.multiCall({ calls: vaults, abi: abis.totalAssets, permitFailure: true })
 
   for (let i = 0; i < vaults.length; i++) {
+    if (!totalAssets[i]) continue;
     api.add(assets[i], totalAssets[i])
   }
 }
