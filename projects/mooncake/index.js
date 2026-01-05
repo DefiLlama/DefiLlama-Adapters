@@ -1,6 +1,6 @@
 const { getConnection, readBigUInt64LE, ASSOCIATED_TOKEN_PROGRAM_ID } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
-const { sha256 } = require('@noble/hashes/sha256');
+const crypto = require('crypto');
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
 
 async function tvl(api) {
@@ -13,7 +13,7 @@ async function tvl(api) {
         {
           memcmp: {
             offset: 0,
-            bytes: bs58.encode(Buffer.from(sha256("account:MarketState")).slice(0, 8)),
+            bytes: bs58.encode(crypto.createHash('sha256').update("account:MarketState").digest().slice(0, 8)),
           },
         },
       ]
