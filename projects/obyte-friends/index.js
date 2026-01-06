@@ -61,7 +61,7 @@ module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     methodology:
-        "The TVL is the total USD-value of funds locked in the agent of the FRIENDS platform.",
+        "The TVL is the total USD-value of funds locked in the agent of the Obyte Friends platform.",
     obyte: {
         tvl: totalTvl,
         staking: totalStaking,
