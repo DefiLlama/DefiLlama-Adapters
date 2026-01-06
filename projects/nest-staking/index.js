@@ -56,10 +56,23 @@ async function tvl_bsc(api) {
     api.add(bscVaults, details)
 }
 
+async function tvl_solana(api) {
+    const vaults = await getConfig('nest-vaults', "https://api.nest.credit/v1/vaults");
+    const solanaVaults = (
+        vaults?.data
+            ?.filter(vault => vault.symbol !== "pUSD")
+            ?.filter(vault => vault.solana?.mintAddress)
+            ?.map(vault => vault.solana.mintAddress) ?? []
+    ).filter(Boolean);
+    const details = await api.multiCall({ abi: 'spl-token:getTokenSupply', calls: solanaVaults })
+    api.add(solanaVaults, supplies)
+}
+
 module.exports = {
     methodology: "TVL is calculated from the value of Nest tokens, which represent user shares in vaults backed by yield-generating assets.",
     ethereum: { tvl: tvl_ethereum },
     plume_mainnet: { tvl: tvl_plume },
     plasma: { tvl: tvl_plasma },
     bsc: { tvl: tvl_bsc },
+    solana: { tvl: tvl_solana },
 }
