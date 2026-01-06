@@ -14,6 +14,7 @@ const tokenAccounts = [
 
 module.exports = {
     start: '2025-03-14',
+    methodology: "StandX TVL is calculated by aggregating the balances of bridged vault addresses on the respective chain. These vaults hold the underlying collateral for all DUSD bridged to the StandX ecosystem, representing the total value secured by the protocol.",
     bsc: { tvl: sumTokensExport({ owners: evmContracts, tokens: [ADDRESSES.bsc.DUSD] }) },
     solana: { tvl: sumTokensExportSolana({ tokenAccounts }) }
 };
