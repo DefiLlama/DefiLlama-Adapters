@@ -7,13 +7,13 @@ const evmContracts = [
     '0x90bb5bdc6acd166237640c8707a694f1fc3aab84',
 ];
 
-const solanaContracts = [
-    '2pBsToyWZjp4Kpkb2LxbYNhHSvKcAwxXeJyHneNhnxmi',
-    '64TDz8bnvNb6RwKmJxZ24sQLTwJGLdw3T6Bmqs2F8JpK'
+const tokenAccounts = [
+    '5bGEXW6JkR3nHfFWdTYtr7AuVvgKEUF4MWcGW7wNza6M',
+    '3GzZn1Qyzc6xzCgDn83teJysBW2bMCsK6DcRNhksMNo4'
 ];
 
 module.exports = {
     start: '2025-03-14',
     bsc: { tvl: sumTokensExport({ owners: evmContracts, tokens: [ADDRESSES.bsc.DUSD] }) },
-    solana: { tvl: sumTokensExportSolana({ owners: solanaContracts, tokens: [ADDRESSES.solana.DUSD] }) }
+    solana: { tvl: sumTokensExportSolana({ tokenAccounts }) }
 };
