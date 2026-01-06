@@ -1,6 +1,5 @@
 /*
- * Obyte Friends — Make 1% a day by making friends every day
- * Make 1% a day by making friends every day and spreading the word 
+ * Obyte Friends — Make 1% a day by making friends every day and spreading the word 
  * about Obyte’s unstoppable, censorship-resistant tech
  * @see https://friends.obyte.org
  */
