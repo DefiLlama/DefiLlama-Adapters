@@ -75,7 +75,7 @@ const CHAIN_CONFIGS = {
       ADDRESSES.polygon.WETH,
       ADDRESSES.polygon.WBTC,
       ADDRESSES.polygon.WMATIC,
-        "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97"
+      ADDRESSES.polygon.aPolWMATIC
     ],
     contract: DEFX_CONTRACTS.polygon
   },
