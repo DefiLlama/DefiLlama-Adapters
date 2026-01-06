@@ -7,7 +7,8 @@ const {
     getBalances,
     fetchOswapExchangeRates,
     getAaStateVars,
-    getDecimalsByAsset
+    getDecimalsByAsset,
+    executeGetter
 } = require('../helper/chain/obyte')
 
 const FRIENDS_AA_ADDRESS = 'FRDOT24PXLEY4BRGC7WPMSKXUWUFMUMG'
@@ -36,6 +37,25 @@ async function totalTvl() {
     return { tether: totalTvl }
 }
 
+async function totalStaking() {
+    const [
+        depositedSupply,
+        rate,
+        constants
+    ] = await Promise.all([
+        executeGetter(FRIENDS_AA_ADDRESS, 'get_deposited_supply', []),
+        fetchOswapExchangeRates(),
+        getAaStateVars(FRIENDS_AA_ADDRESS, 'constants').then(vars => vars?.constants)
+    ]);
+
+    const decimals = await getDecimalsByAsset(constants.asset);
+
+    const price = rate[`${constants.asset}_USD`];
+
+    const staked = price * (depositedSupply / 10 ** decimals);
+
+    return { tether: staked }
+}
 
 module.exports = {
     timetravel: false,
@@ -43,6 +63,7 @@ module.exports = {
     methodology:
         "The TVL is the total USD-value of funds locked in the agent of the FRIENDS platform.",
     obyte: {
-        tvl: totalTvl
+        tvl: totalTvl,
+        staking: totalStaking,
     }
 }
