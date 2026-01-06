@@ -6,20 +6,24 @@
 const {
     getBalances,
     fetchOswapExchangeRates,
+    getAaStateVars,
     getDecimalsByAsset
 } = require('../helper/chain/obyte')
 
 const FRIENDS_AA_ADDRESS = 'FRDOT24PXLEY4BRGC7WPMSKXUWUFMUMG'
 
 async function totalTvl() {
-    const [rate, balances] = await Promise.all([
+    const [rate, balances, frdAsset] = await Promise.all([
         fetchOswapExchangeRates(),
-        getBalances([FRIENDS_AA_ADDRESS]).then(res => res[FRIENDS_AA_ADDRESS])
+        getBalances([FRIENDS_AA_ADDRESS]).then(res => res[FRIENDS_AA_ADDRESS]),
+        getAaStateVars(FRIENDS_AA_ADDRESS, 'constants').then(vars => vars?.constants?.asset)
     ]);
 
     let totalTvl = 0;
 
     for (const [asset, balance] of Object.entries(balances)) {
+        if (asset === frdAsset) continue;
+
         const decimals = await getDecimalsByAsset(asset);
         const tokenPrice = asset === 'base' ? rate['GBYTE_USD'] : rate[`${asset}_USD`];
 
