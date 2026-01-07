@@ -9,6 +9,8 @@ const config = {
     blackList: [
       "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
       ADDRESSES.base.USDC,
+      ADDRESSES.optimism.WSTETH,
+      '0x84b78bc998e4b1a63f2cf9ebfe76c55fc96a5a9b'
     ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
@@ -39,7 +41,7 @@ const config = {
   },
   polygon: {
     morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
-    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719", "0xc69e948a9a5c123704580c46332f90cff1cb215b", "0x316c0b5cd67aa7c2da7a576d3724e3763981d08f", "0xd59a2e7d5110dc379910925aa0472a13e09a093e", "0xc7a357293a35ce4c8d7f2000571043313987aab7", "0xf14c4fd60765e36d63f6c8b8161bd41ba995fb44"],
+    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719", "0xc69e948a9a5c123704580c46332f90cff1cb215b", "0x316c0b5cd67aa7c2da7a576d3724e3763981d08f", "0xd59a2e7d5110dc379910925aa0472a13e09a093e", "0xc7a357293a35ce4c8d7f2000571043313987aab7", "0xf14c4fd60765e36d63f6c8b8161bd41ba995fb44", "0x338a4ef6953b36e67ccf7cffe50ebc74b1d64387", "0x12fd05a9306affc946cb13301d88a102400544d2", "0x8a874eb137d99415bad95c5d4399bc691849d02f", "0x365ab7828ea541c1d6e30472a1a1e7d07600a6bd", "0xc7056597f3a816202486b5082b3291a2023c9633", "0x2faaa34f387e6485671faeda7c021ee6af961d35"],
     fromBlock: 66931042,
   },
   scroll: {
@@ -70,10 +72,10 @@ const config = {
     morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
     fromBlock: 9139027,
   },
-  flame: {
-    morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
-    fromBlock: 5991116,
-  },
+  // flame: {
+  //   morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04", // flame blockchain down from last time I check
+  //   fromBlock: 5991116,
+  // },
   // basecamp:{
   //   morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
   //   fromBlock: 4804080,
@@ -112,11 +114,11 @@ const config = {
     morphoBlue: "0xc85CE8ffdA27b646D269516B8d0Fa6ec2E958B55",
     fromBlock: 13947713,
   },
-  btr :{
+  btr: {
     morphoBlue: "0xaea7eff1bd3c875c18ef50f0387892df181431c6",
     fromBlock: 13516997,
   },
-  bsc :{
+  bsc: {
     morphoBlue: "0x01b0Bd309AA75547f7a37Ad7B1219A898E67a83a",
     fromBlock: 54344680,
   },
@@ -131,11 +133,24 @@ const config = {
   sei: {
     morphoBlue: "0xc9cDAc20FCeAAF616f7EB0bb6Cd2c69dcfa9094c",
     fromBlock: 166036723,
+    onlyUseExistingCache: true,
   },
   btnx: {
     morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
     fromBlock: 450759,
   },
+  monad: {
+    morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
+    fromBlock: 31907457,
+  },
+  stable: {
+    morphoBlue: "0xa40103088A899514E3fe474cD3cc5bf811b1102e",
+    fromBlock: 2348260,
+  },
+  linea: {
+    morphoBlue: "0x6B0D716aC0A45536172308e08fC2C40387262c9F",
+    fromBlock: 25072608,
+  }
 }
 
 const eventAbis = {
@@ -145,9 +160,10 @@ const eventAbis = {
 const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
-  const { morphoBlue, fromBlock, blacklistedMarketIds = [] } = config[api.chain]
+  const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
+  const useIndexer = api.chain === 'monad' ? true: false
   const extraKey = 'reset-v2'
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, })
+  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
@@ -159,7 +175,7 @@ const tvl = async (api) => {
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
   const filterMarkets = marketInfos.filter((_, i) => withdrawQueueLengths[i] == null || withdrawQueueLengths[i] > 30 || withdrawQueueLengths[i] < 0);
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
-  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList })
+  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 }
 
 const borrowed = async (api) => {

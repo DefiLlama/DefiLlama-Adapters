@@ -30,6 +30,7 @@ const config = {
       "0xafE7EB9d224bC3cd7d9F88099D71B1c1c3BC2f93",
       "0x055c1C6b09Fb4f5F229125aFcBBF98E734dFC725",
       "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+      "0x7515c526E7B3F67439a515F1ad73c650F313E34b",
     ],
   },
   solana: {
@@ -41,6 +42,7 @@ const config = {
       "3V11R3pEGSt5XeRaoLDcCdkAB8zVSaKRCm8y3uKBgnsr",
       "DTLR1QKfH3QWLDm3wkRZqxiH1NQSH4szWxTjGqHCQQSa",
       "G2dBDN1k6EJdSQNTSeSZ9smwYkFhEgsNNG3mtRE1PVXb",
+      "2ZC474Fx1NheoK37WbQoRCKZFLCeGk2an145j2qntuup",
     ],
   },
   optimism: {
@@ -69,6 +71,7 @@ const config = {
       "TVdNydXPaPFF4b2x7CKYiNjEWfi5C5AnV8",
       "TUGmVxfPYzZtctCqxx9CGLnB4jWUZGtFh2",
       "TC3XTY9ZM5hcdadRmtGegTFBmiF6rCLLnb",
+      "THcCxhETmLu2F5QEwyhKPe8UWHrjS4FGDN",
     ],
   },
   polygon: {
@@ -135,6 +138,7 @@ const config = {
       "rKBRWUTreGNU9d3pL2gYUo23jn4UdKiAoS",
       "rPkX96xtMY2cxQ4Az3N54MB2vTHrp1PTjK",
       "rBSojpgcRp9LvBguQXzrvNAyuzkP4Z8pZr",
+      "rJMH2SNxmr7e3wsp6jbsQoGRWzqiAzsFny",
     ],
   },
   hyperliquid: {
@@ -142,6 +146,9 @@ const config = {
   },
   mantle: {
     owners: ["0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5"],
+  },
+  doge: {
+    owners: ["DCH2NkFZ7k5ombczgUNeDrijHeaQUdNJbA"],
   },
 };
 

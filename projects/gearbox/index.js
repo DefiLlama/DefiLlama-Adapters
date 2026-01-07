@@ -3,7 +3,7 @@
  **
  **
  ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
- ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.6.5
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.6.6
  **
  **
  **
@@ -566,6 +566,8 @@
        "lisk",
        "etlk",
        "plasma",
+       "monad",
+       "somnia",
      ].map((n) => [n, { tvl, borrowed }])
    ),
    hallmarks: [[1666569600, "LM begins"]],

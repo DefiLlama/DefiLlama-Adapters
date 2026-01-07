@@ -1,12 +1,17 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const mainnetContracts = {
+const ADDRESSES = require('../helper/coreAssets.json');
+
+// AID.v0 token address (same on all chains: Ethereum, BNB Chain, Base, Arbitrum)
+const AID_TOKEN = '0x18F52B3fb465118731d9e0d276d4Eb3599D57596';
+
+// Legacy AIDa (Alpha) pool contracts
+const aidaContracts = {
     ethereum: [
         {
-            token: ADDRESSES.ethereum.USDC, // USDC
+            token: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42', // AIDaUSDC token
             poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
         },
         {
-            token: ADDRESSES.ethereum.USDT, // USDT
+            token: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340', // AIDaUSDT token
             poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
         },
         {
@@ -20,99 +25,92 @@ const mainnetContracts = {
     ],
     arbitrum: [
         {
-            token: ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
+            token: ADDRESSES.arbitrum.USDC_CIRCLE,
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
         },
         {
-            token: ADDRESSES.arbitrum.USDT, // USDT
-            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
+            token: ADDRESSES.arbitrum.USDT,
+            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340'
         }
     ],
     base: [
         {
-            token: ADDRESSES.base.USDC, // USDC
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
+            token: ADDRESSES.base.USDC,
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
         }
     ],
     sei: [
         {
             token: '0xe15fC38F6D8c56aF07bbCBe3BAf5708A2Bf42392', // USDC
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
         },
         {
             token: '0x9151434b16b9763660705744891fA906F660EcC5', // USDT
-            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
+            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340'
         }
     ],
     sty: [
         {
             token: '0xF1815bd50389c46847f0Bda824eC8da914045D14', // USDC
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
         }
     ],
     bsc: [
         {
             token: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d', // USD1
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSD1 Pool
+            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
         },
         {
             token: '0x55d398326f99059ff775485246999027b3197955', // USDT
-            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
+            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340'
         }
     ]
 };
 
+const totalSupplyABI = "function totalSupply() external view returns (uint256)";
 const totalAssetsABI = "function totalAssets() external view returns (uint256)";
+const balanceOfABI = "function balanceOf(address) external view returns (uint256)";
 
-async function tvl(api) {
+// Legacy AIDa (Alpha) pool TVL
+async function aidaTvl(api) {
     const chain = api.chain;
+    const pools = aidaContracts[chain];
 
-    const poolsForChain = mainnetContracts[chain];
+    if (pools && pools.length > 0) {
+        const totalAssetsAmounts = await api.multiCall({
+            abi: totalAssetsABI,
+            calls: pools.map(p => p.poolToken),
+        });
 
-    if (!poolsForChain || poolsForChain.length === 0) {
-        console.warn(`No configured contract data for chain: ${chain}. Skipping TVL calculation.`);
-        return {};
+        totalAssetsAmounts.forEach((amount, index) => {
+            api.add(pools[index].token, amount);
+        });
     }
-
-    const calls = poolsForChain.map(poolInfo => ({
-        target: poolInfo.poolToken,
-    }));
-
-    const totalAssetsAmounts = await api.multiCall({
-        abi: totalAssetsABI,
-        calls: calls,
-    });
-
-    totalAssetsAmounts.forEach((amount, index) => {
-        const underlyingToken = poolsForChain[index].token;
-        api.add(underlyingToken, amount);
-    });
 
     return api.getBalances();
 }
 
 module.exports = {
-    methodology: 'Counts the total underlying assets (e.g., USDC, USDT, USR, CUSDO, USD1) reported by GAIB protocol pool contracts using their `totalAssets()` function across supported mainnet chains.',
+    methodology: 'Tracks: 1) Legacy AIDa (Alpha) pool TVL using totalAssets(), 2) AID.v0 total supply across all chains.',
     start: 1715490671,
     timetravel: true,
-    misrepresentedTokens: false,
-
+    misrepresentedTokens: true,
     ethereum: {
-        tvl,
+        tvl: aidaTvl,
     },
     arbitrum: {
-        tvl,
+        tvl: aidaTvl,
     },
     base: {
-        tvl,
-    },
-    sei: {
-        tvl,
-    },
-    sty: {
-        tvl,
+        tvl: aidaTvl,
     },
     bsc: {
-        tvl,
+        tvl: aidaTvl,
+    },
+    sei: {
+        tvl: aidaTvl,
+    },
+    sty: {
+        tvl: aidaTvl,
     },
 };
