@@ -20,31 +20,8 @@ const bscTreasuryTokens = [
   // "0x...", // LP tokens, other assets
 ];
 
-// ============ Abstract ============
-const abstractProtocolWallet = "0x111111f26ab123764Da895e1627bf9Ba0b000a97";
-
-const abstractTokens = {
-  gBLUE: "0xC25714E79B694EEe7E8E8d21Dae332A797d28Ac0",
-};
-
-// Tokens/LPs to track on Abstract (add addresses here)
-const abstractTreasuryTokens = [
-  ADDRESSES.abstract.WETH,
-  ADDRESSES.abstract.USDC,
-  ADDRESSES.abstract.USDT,
-  "0xC25714E79B694EEe7E8E8d21Dae332A797d28Ac0",
-  "0x46401D8303D7355339A21479459260F4D93D9349", // BLUE-ETH LP
-  // "0x...", // other tokens
-];
-
-// ERC4626 vaults on Abstract (add vault addresses here)
-// These will automatically call totalAssets() and unwrap underlying LPs
-const abstractERC4626Vaults = [
-   "0x5a993c926b9c15ee1651282094f8e8314809b916", // gBLUE-ETH LP vault
-];
-
 module.exports = {
-  methodology: "Counts staked BLUE tokens and treasury holdings. gBLUE is excluded from Abstract TVL to avoid double counting staked BLUE.",
+  methodology: "Counts staked BLUE tokens and treasury holdings",
   bsc: {
     staking: async (api) => {
       return sumTokens2({
@@ -61,35 +38,6 @@ module.exports = {
         tokens: bscTreasuryTokens,
         resolveLP: true,
         blacklistedTokens: [bscTokens.BLUE], // Exclude BLUE to avoid double counting
-      });
-    },
-  },
-  abstract: {
-    tvl: async (api) => {
-      // Sum ERC4626 vaults (converts shares to underlying assets)
-      // Uses pool() instead of asset() for underlying token
-      if (abstractERC4626Vaults.length > 0) {
-        await api.erc4626Sum({
-          calls: abstractERC4626Vaults,
-          tokenAbi: 'address:pool',
-          balanceAbi: 'uint256:totalAssets',
-        });
-      }
-
-      // Sum regular tokens in protocol wallet
-      if (abstractTreasuryTokens.length > 0) {
-        await sumTokens2({
-          api,
-          owners: [abstractProtocolWallet],
-          tokens: abstractTreasuryTokens,
-        });
-      }
-
-      // Unwrap any LPs and exclude gBLUE
-      return sumTokens2({
-        api,
-        resolveLP: true,
-        blacklistedTokens: [abstractTokens.gBLUE], // Exclude gBLUE to avoid double counting
       });
     },
   },
