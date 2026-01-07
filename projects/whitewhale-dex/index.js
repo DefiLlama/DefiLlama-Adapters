@@ -23,7 +23,7 @@ module.exports = {
 
 Object.keys(factory).forEach(chain => {
   const contract = factory[chain]
-  if (chain === 'comdex') {
+  if (chain === 'comdex' || chain === 'injective') {
     module.exports[chain] = { tvl: () => ({}) }
   } else {
     module.exports[chain] = { tvl: getFactoryTvl(contract) }

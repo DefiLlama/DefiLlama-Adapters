@@ -12,7 +12,7 @@ const zeroEth = "0xF0939011a9bb95c3B791f0cb546377Ed2693a574";
 const dxpEth="0x88aa4a6C5050b9A1b2Aa7e34D0582025cA6AB745";
 
 const usdtBsc = ADDRESSES.bsc.USDT;
-const daiBsc = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
+const daiBsc = ADDRESSES.bsc.DAI;
 const usdcBsc = ADDRESSES.bsc.USDC;
 const busdBsc = ADDRESSES.bsc.BUSD;
 const ethBsc = ADDRESSES.bsc.ETH;
@@ -57,7 +57,7 @@ const usdtFantom = "0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9";
 const daiFantom = ADDRESSES.fantom.DAI;
 const usdcFantom = ADDRESSES.fantom.USDC;
 const wFantom = ADDRESSES.fantom.WFTM;
-const btcFantom = "0x321162Cd933E2Be498Cd2267a90534A804051b11";
+const btcFantom = ADDRESSES.fantom.WBTC;
 
 
 const usdtHarmony = "0x224e64ec1bdce3870a6a6c777edd450454068fec";

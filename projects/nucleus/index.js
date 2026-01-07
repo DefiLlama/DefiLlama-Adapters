@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require("../helper/cache");
 
 const sanitizeAndValidateEvmAddresses = (addresses) => {
@@ -32,7 +33,7 @@ const vaults = [
   '0xd3bfd6e6187444170a1674c494e55171587b5641', // inELIXIR
   '0x82c40e07277eBb92935f79cE92268F80dDc7caB4', // unifiUSD
   '0x170d847a8320f3b6a77ee15b0cae430e3ec933a0', // unifiBTC
-  '0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F', // pUSD
+  ADDRESSES.plume_mainnet.pUSD, // pUSD
 ]
 
 const tvl = async (api, chainId) => {

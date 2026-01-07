@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require('../helper/cex')
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
@@ -114,9 +115,15 @@ const config = {
     ]
   },
   aptos: {
-    fungibleAssets: ['0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b'],
+    fungibleAssets: [ADDRESSES.aptos.USDt],
     owners: [
       '0x0613f31af70ce983b9dca574e033a52351fd2e67b1959bf48574c6e9c956f95e'
+    ]
+  },
+  stable: {
+    tokens: [ADDRESSES.stable.USDT0],
+    owners: [
+      '0x987753779885D0cB90E368070F54f220AE93E698'
     ]
   }
 }

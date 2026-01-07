@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/solana");
-const L1_EZ_ETH_ADDRESS = "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110";
+const L1_EZ_ETH_ADDRESS = ADDRESSES.linea.rzETH;
 const L2_EZ_ETH_ADDRESS = ADDRESSES.blast.ezETH;
 const L1_LOCKBOX_ADDRESS = "0xC8140dA31E6bCa19b287cC35531c2212763C2059";
 const L1_PZ_ETH_ADDRESS = "0x8c9532a60E0E7C6BbD2B2c1303F63aCE1c3E9811";

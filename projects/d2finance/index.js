@@ -2,7 +2,10 @@ const { sumERC4626VaultsExport } = require("../helper/erc4626");
 
 const config = {
   ethereum: ['0x07Dff4087b43c4A759f4Fc69511c26d51929dAF4'],
-  base: ['0x6c05A7d2c24B48fC3C615D294fEc2eB068548897'],
+  base: [
+    '0x6c05A7d2c24B48fC3C615D294fEc2eB068548897',
+    '0x2406aacbdF8463176DeB285AdAa81768415B6c7E',
+  ],
   arbitrum: [
     "0x27D22Eb71f00495Eccc89Bb02c2B68E6988C6A42",
     "0x183424d5ae5ec9fd486634bc566d0f75ad9c9109",
@@ -42,7 +45,10 @@ const config = {
     '0xf44f49E6577B3934f981C6f0629d15154d2606E6',
     '0x7410E69958a8ECE2A51C231C8528513d4d668C7a',
     '0xade27c7dec9211973278876f3819aedc28cd50ca',
-    '0x6bf9345b5d6b27b5cbf2e463dc5e0b2afcedc21c'
+    '0x6bf9345b5d6b27b5cbf2e463dc5e0b2afcedc21c',
+    '0x3ebb11ba6a5b61c04d1a703ea10728d519945440',
+    '0x195eb4d088f222c982282b5dd495e76dba4bc7d1',
+    '0x8ef30c5ce9a460bfae82f1f039f7c5e5427d7018',
   ]
 }
 

@@ -10,6 +10,7 @@ const config = {
       "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
       "0xdBdf80D997cFAaAC6150cD0cEC2C127fDaD7A823",
       "0xe5e6c3ced4670697b7cB27a53649a3ED321c18ee",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
     ],
   },
   ethereum: {
@@ -23,6 +24,13 @@ const config = {
       "0x9FBED2f9b8407a5B48D2106586Bb9824e32F3507",
       "0x3B463Ee8099f7f65E852524dD316d80375172D54",
       "0xfE56f42E2aC6eccf76488F373771eff859F460d1",
+      "0x6339d50D4E5a8aaf1b5e0b57C85b0EC3569F3B93",
+      "0x687054E92093DaFf65221fb77420ec6555d7c5a9",
+      "0xec5618Db70aE9d88EC40Fdb844455167418f8193",
+      "0xafE7EB9d224bC3cd7d9F88099D71B1c1c3BC2f93",
+      "0x055c1C6b09Fb4f5F229125aFcBBF98E734dFC725",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+      "0x7515c526E7B3F67439a515F1ad73c650F313E34b",
     ],
   },
   solana: {
@@ -34,13 +42,20 @@ const config = {
       "3V11R3pEGSt5XeRaoLDcCdkAB8zVSaKRCm8y3uKBgnsr",
       "DTLR1QKfH3QWLDm3wkRZqxiH1NQSH4szWxTjGqHCQQSa",
       "G2dBDN1k6EJdSQNTSeSZ9smwYkFhEgsNNG3mtRE1PVXb",
+      "2ZC474Fx1NheoK37WbQoRCKZFLCeGk2an145j2qntuup",
     ],
   },
   optimism: {
-    owners: ["0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040"],
+    owners: [
+      "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+    ],
   },
   arbitrum: {
-    owners: ["0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040"],
+    owners: [
+      "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+    ],
   },
   tron: {
     owners: [
@@ -50,10 +65,20 @@ const config = {
       "TVNRJgNsVMjDPethVVToz9aSvZq9SVgDXv",
       "THTGgHWFXwgaZEDdaQmR6iuUEa7NKfCUtH",
       "TDFHcjw2PiDLjoqxXedaSSEtA1osqu8J6c",
+      "TGJUBfrpYsm2K61jEAqm35f7A9P5XpRNjC",
+      "TTRSjzeqYRghvxZXRdXsiUASt6iU91qtUu",
+      "TEVoZgTB3WsjTjDnxm4BY8CHsULmAjboSA",
+      "TVdNydXPaPFF4b2x7CKYiNjEWfi5C5AnV8",
+      "TUGmVxfPYzZtctCqxx9CGLnB4jWUZGtFh2",
+      "TC3XTY9ZM5hcdadRmtGegTFBmiF6rCLLnb",
+      "THcCxhETmLu2F5QEwyhKPe8UWHrjS4FGDN",
     ],
   },
   polygon: {
-    owners: ["0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040"],
+    owners: [
+      "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
+    ],
   },
   base: {
     owners: [
@@ -82,6 +107,7 @@ const config = {
     owners: [
       "0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040",
       "0xe5e6c3ced4670697b7cB27a53649a3ED321c18ee",
+      "0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5",
     ],
   },
   berachain: {
@@ -92,6 +118,7 @@ const config = {
       "Ldjngq3HdTzVLwGLj7TpryQUaFtqydo3HZ",
       "ltc1qywl4m70amwmrtecxsjz0m08hj64dekmv536asn",
       "LNUyAM2BssY6CqSN5BNoNTAY4W1q4uV7Eb",
+      "ltc1qsvqz9tw4v8kx7wpt2j3q7l8dgvucjwc6zlxm78",
     ],
   },
   sonic: {
@@ -111,7 +138,17 @@ const config = {
       "rKBRWUTreGNU9d3pL2gYUo23jn4UdKiAoS",
       "rPkX96xtMY2cxQ4Az3N54MB2vTHrp1PTjK",
       "rBSojpgcRp9LvBguQXzrvNAyuzkP4Z8pZr",
+      "rJMH2SNxmr7e3wsp6jbsQoGRWzqiAzsFny",
     ],
+  },
+  hyperliquid: {
+    owners: ["0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5"],
+  },
+  mantle: {
+    owners: ["0x7Ff8bbf9C8AB106db589e7863fb100525F61CCe5"],
+  },
+  doge: {
+    owners: ["DCH2NkFZ7k5ombczgUNeDrijHeaQUdNJbA"],
   },
 };
 

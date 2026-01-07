@@ -15,6 +15,10 @@ const CONFIG_DATA = {
     dhedgeFactory: "0x49Afe3abCf66CF09Fab86cb1139D8811C8afe56F",
     torosMultisigManager: "0x5619AD05b0253a7e647Bd2E4C01c7f40CEaB0879",
   },
+  ethereum: {
+    dhedgeFactory: "0x96d33bcf84dde326014248e2896f79bbb9c13d6d",
+    torosMultisigManager: "0xfbd2b4216f422dc1eee1cff4fb64b726f099def5",
+  },
 };
 
 module.exports = {

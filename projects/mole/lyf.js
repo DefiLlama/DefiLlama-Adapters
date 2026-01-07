@@ -208,6 +208,7 @@ async function unwrapPancakeSwapLps({
     const lp = lps[i.lpType];
     const balance0 = new BigNumber(reserve0).times(lp.amount).div(lp.totalSupply).toFixed(0);
     const balance1 = new BigNumber(reserve1).times(lp.amount).div(lp.totalSupply).toFixed(0);
+    if (isNaN(balance0) && isNaN(balance1)) return
     if (isCoreAsset0 && isCoreAsset1) {
       api.add( token0, balance0)
       api.add( token1, balance1)
@@ -225,71 +226,92 @@ async function unwrapPancakeSwapLps({
 
 // sui
 async function calLyfTvlSui(api) {
-
   // calculate the Farming TVL.
 
-  /// @dev Getting all resources
+  // @dev Getting all resources
   const addresses = await getProcolAddresses('sui');
   const workerInfoIds = addresses.Vaults.flatMap(valut => valut.workers).map(worker => worker.workerInfo)
   const workerInfos = await sui.getObjects(workerInfoIds)
   const workerEntities =  addresses.Vaults.flatMap(valut => valut.workers)
 
-  let poolIds = []
-  workerInfos.forEach(workerInfo => 
-    {
-      const workerInfoId = workerInfo.fields.id.id
-      const workerEntity = workerEntities.find(v => v.workerInfo == workerInfoId)
-      let poolId
+  const poolIdSet = new Set(
+    workerInfos.map((workerInfo) => {
+      const workerId = workerInfo?.fields?.id?.id;
+      const entity = workerEntities.find(({ workerInfo: w }) => w === workerId);
+      if (!entity) return null;
 
-      if (workerEntity.isSF) {
-        poolId = workerInfo.fields.clmm_pool_id
+      if (entity.dex == 0) { // cetus
+        return entity.isSF
+        ? workerInfo.fields.clmm_pool_id
+        : workerInfo.fields.position_nft?.fields?.pool;
+      } else if (entity.dex == 1) { // bluefin 
+        return workerInfo.fields.pool_id;
       } else {
-        poolId = workerInfo.fields.position_nft.fields.pool
+        console.error("dex type wrong")
       }
-      
-      // poolId = poolId.replace('0x0', '0x')
-      if (!poolIds.includes(poolId)) {
-        poolIds.push(poolId)
-      }
-    }
-  )
+    }).filter(Boolean)
+  );
 
-  const poolInfos =  await sui.getObjects(poolIds)
-  let poolMap = new Map()
-  poolInfos.forEach(poolInfo =>
-    {
-      // const poolId = poolInfo.fields.id.id.replace('0x0', '0x')
-      poolMap.set(poolInfo.fields.id.id, poolInfo)
-    }
-  )
+  const poolIds = Array.from(poolIdSet);
+  const poolInfos = await sui.getObjects(poolIds);
+  const poolMap = new Map(poolInfos.map((poolInfo) => [poolInfo.fields.id.id, poolInfo]));
 
   for (const workerInfo of workerInfos) {
-    const workerInfoId = workerInfo.fields.id.id
-    const workerEntity = workerEntities.find(v => v.workerInfo == workerInfoId)
-    let liquidity, poolId, tickLower, tickUpper
+    const workerId = workerInfo?.fields?.id?.id;
+    const workerEntity = workerEntities.find(({ workerInfo: w }) => w === workerId);
+    if (!workerEntity) continue;
 
-    if (workerEntity.isSF) {
-      liquidity = workerInfo.fields.stable_farming_position_nft.fields.clmm_postion.fields.liquidity
-      tickLower = i32BitsToNumber(workerInfo.fields.stable_farming_position_nft.fields.clmm_postion.fields.tick_lower_index.fields.bits)
-      tickUpper = i32BitsToNumber(workerInfo.fields.stable_farming_position_nft.fields.clmm_postion.fields.tick_upper_index.fields.bits)
-      poolId = workerInfo.fields.clmm_pool_id
+    const isSF = workerEntity.isSF;
+    const dex = workerEntity.dex;
+    let nftFields
+
+    if (dex == 0) {
+      nftFields = isSF
+        ? workerInfo.fields.stable_farming_position_nft?.fields?.clmm_postion?.fields
+        : workerInfo.fields.position_nft?.fields;
+    } else if (dex == 1) {
+      nftFields = workerInfo.fields.position_nft?.fields;
     } else {
-      liquidity = workerInfo.fields.position_nft.fields.liquidity
-      tickLower = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits)
-      tickUpper = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits)
-      poolId = workerInfo.fields.position_nft.fields.pool
+      console.error("dex type wrong")
+    }
+    
+    if (!nftFields) continue;
+
+    let liquidity, tickLower, tickUpper, poolId
+
+    if (dex == 0) {
+      liquidity = nftFields.liquidity;
+      tickLower = i32BitsToNumber(nftFields.tick_lower_index?.fields?.bits);
+      tickUpper = i32BitsToNumber(nftFields.tick_upper_index?.fields?.bits);
+      poolId = isSF
+        ? workerInfo.fields.clmm_pool_id
+        : nftFields.pool;
+    } else if (dex == 1) {
+      liquidity = nftFields.liquidity;
+      tickLower = i32BitsToNumber(nftFields.lower_tick?.fields?.bits);
+      tickUpper = i32BitsToNumber(nftFields.upper_tick?.fields?.bits);
+      poolId = nftFields.pool_id;
+    } else {
+      console.error("dex type wrong")
     }
 
+    const poolInfo = poolMap.get(poolId);
+    if (!poolInfo) continue;
 
-    const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
+    const currentSqrtPrice = poolInfo.fields.current_sqrt_price;
     // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
-    const tick =  Math.floor(Math.log((currentSqrtPrice / 2 ** 64) ** 2) / Math.log(1.0001))
-    const [token0, token1] = poolMap.get(poolId).type.replace('>', '').split('<')[1].split(', ')
-    addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick })
+    const tick = Math.floor(Math.log((currentSqrtPrice / 2 ** 64) ** 2) / Math.log(1.0001));
+
+    const poolType = poolInfo.type?.replace('>', '');
+    const tokens = poolType?.split('<')[1]?.split(', ');
+    if (!tokens || tokens.length !== 2) continue;
+
+    const [token0, token1] = tokens;
+
+    addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick });
   }
 
   // calculate the Vault TVL.
-
   const vaultInfoIds = addresses.Vaults.map(valut => valut.vaultInfo)
   const vaultInfos = await sui.getObjects(vaultInfoIds)
   
@@ -301,7 +323,6 @@ async function calLyfTvlSui(api) {
     api.add(baseToken, vaultAmount.toString())
   }
 }
-
 
 module.exports = {
   calLyfTvl,

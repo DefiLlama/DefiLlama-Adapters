@@ -1,5 +1,5 @@
 const { getUniTVL, } = require('../helper/unknownTokens')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const config = {
   era: {
@@ -11,16 +11,23 @@ const config = {
   },
   sonic: {
     factoryV2: '0xCe98a0E578b639AA90EE96eD5ba8E5a4022de529'
-  }
+  },
+  monad: {
+    factoryV2: '0x0ff16867BcaC3C5fdc2dc73558e3F8e2ed89EEA2'
+  },
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   era: {
-    tvl: getUniTVL({ factory: config.era.factoryV2, useDefaultCoreAssets: false, }),
-    staking: sumTokensExport({ owners: [config.era.masterchef, config.era.daoV1, config.era.daoV2], tokens: [config.era.zfToken], }),
+    tvl: getUniTVL({ factory: config.era.factoryV2, useDefaultCoreAssets: true, }),
+    staking: staking([config.era.masterchef, config.era.daoV1, config.era.daoV2], [config.era.zfToken]),
   },
   sonic: {
-    tvl: getUniTVL({ factory: config.sonic.factoryV2, useDefaultCoreAssets: false}),
+    tvl: getUniTVL({ factory: config.sonic.factoryV2, useDefaultCoreAssets: true}),
+  },
+  monad: {
+    tvl: getUniTVL({ factory: config.monad.factoryV2, useDefaultCoreAssets: true}),
   },
   methodology: "TVL is total liquidity of all liquidity pools."
 }
