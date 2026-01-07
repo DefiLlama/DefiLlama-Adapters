@@ -1,4 +1,5 @@
 const {getConfig} = require("../helper/cache");
+const { getTokenSupplies } = require("../helper/solana");
 
 async function tvl_ethereum(api) {
   const vaults = await getConfig('nest-vaults', "https://api.nest.credit/v1/vaults");
@@ -58,14 +59,15 @@ async function tvl_bsc(api) {
 
 async function tvl_solana(api) {
     const vaults = await getConfig('nest-vaults', "https://api.nest.credit/v1/vaults");
+
     const solanaVaults = (
-        vaults?.data
-            ?.filter(vault => vault.symbol !== "pUSD")
-            ?.filter(vault => vault.solana?.mintAddress)
-            ?.map(vault => vault.solana.mintAddress) ?? []
+      vaults?.data
+          ?.filter(vault => vault.symbol !== "pUSD")
+          ?.filter(vault => vault.solana?.mintAddress)
+          ?.map(vault => vault.solana.mintAddress) ?? []
     ).filter(Boolean);
-    const details = await api.multiCall({ abi: 'spl-token:getTokenSupply', calls: solanaVaults })
-    api.add(solanaVaults, supplies)
+
+    await getTokenSupplies(solanaVaults, { api });
 }
 
 module.exports = {
