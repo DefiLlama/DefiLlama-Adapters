@@ -1,22 +1,19 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs")
 
-const config = {
-  arbitrum: {
-    owners: ["0x3b4d794a66304f130a4db8f2551b0070dfcf5ca7"],
-    tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
-  },
+const ZK_LIGHTER_CUSTODY = "0x3B4D794a66304F130a4Db8F2551B0070dFCf5ca7"
+
+module.exports = {
   ethereum: {
-    owners: ["0x3b4d794a66304f130a4db8f2551b0070dfcf5ca7"],
-    tokens: [ADDRESSES.ethereum.USDC, ADDRESSES.null],
+    tvl: sumTokensExport({
+      owners: [ZK_LIGHTER_CUSTODY],
+      tokens: [
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.null, // native ETH
+      ],
+    }),
   },
-};
-
-Object.keys(config).forEach((chain) => {
-  module.exports[chain] = {
-    tvl: sumTokensExport({ ...config[chain] }),
-  };
-});
+}
 
 module.exports.methodology =
-  "Counts tokens held in the Lighter system wallet on Ethereum and Arbitrum.";
+  "Counts native ETH and ERC-20 tokens held in the canonical ZkLighter core custody contract, where user spot deposits are held on-chain."
