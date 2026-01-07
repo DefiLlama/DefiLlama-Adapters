@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":["turbopack:///[next]/entry/page-loader.ts"],"sourcesContent":["const PAGE_PATH = \"/_error\";\n\n/// <reference types=\"next/client\" />\r\n\r\n// inserted by rust code\r\ndeclare const PAGE_PATH: string\r\n\r\n  // Adapted from https://github.com/vercel/next.js/blob/b7f9f1f98fc8ab602e84825105b5727272b72e7d/packages/next/src/build/webpack/loaders/next-client-pages-loader.ts\r\n;(window.__NEXT_P = window.__NEXT_P || []).push([\r\n  PAGE_PATH,\r\n  () => {\r\n    return require('PAGE')\r\n  },\r\n])\r\n// @ts-expect-error module.hot exists\r\nif (module.hot) {\r\n  // @ts-expect-error module.hot exists\r\n  module.hot.dispose(function () {\r\n    window.__NEXT_P.push([PAGE_PATH])\r\n  })\r\n}\r\n"],"names":[],"mappings":"AAAA,MAAM,YAAY;AAQjB,CAAC,OAAO,QAAQ,GAAG,OAAO,QAAQ,IAAI,EAAE,EAAE,IAAI,CAAC;IAC9C;IACA;QACE;IACF;CACD;AACD,qCAAqC;AACrC,IAAI,OAAO,GAAG,EAAE;IACd,qCAAqC;IACrC,OAAO,GAAG,CAAC,OAAO,CAAC;QACjB,OAAO,QAAQ,CAAC,IAAI,CAAC;YAAC;SAAU;IAClC;AACF","ignoreList":[0]}}]
+}
