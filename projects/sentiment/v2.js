@@ -112,7 +112,7 @@ async function tvl(api) {
   });
 
   // Batch positions into chunks of 30
-  const BATCH_SIZE = 200;
+  const BATCH_SIZE = 50;
   for (let i = 0; i < positions.length; i += BATCH_SIZE) {
     const positionBatch = positions.slice(i, i + BATCH_SIZE);
 
