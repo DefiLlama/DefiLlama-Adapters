@@ -109,8 +109,8 @@ function validateHallmarks(hallmark) {
     throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
   }
   const [timestamp, text] = hallmark
-  if (typeof timestamp !== 'number' && isNaN(+new Date(timestamp))) {
-    throw new Error("Hallmark timestamp should be a number/dateString")
+  if (typeof timestamp !== 'string' || isNaN(+new Date(timestamp))) {
+    throw new Error("Hallmark timestamp should be a dateString (YYYY-MM-DD)")
   }
   const year = new Date(timestamp * 1000).getFullYear()
   const currentYear = new Date().getFullYear()
@@ -370,6 +370,11 @@ const axios = require("axios");
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 function fixBalances(balances) {
+
+  if (balances.usd) {
+    // usd is mapped to USD+ token on coingecko
+    throw new Error("Balance key 'usd' is not allowed, please use 'api.addUSDValue()' instead")
+  }
 
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
