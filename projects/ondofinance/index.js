@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getTokenSupplies } = require("../helper/solana");
 const sui = require("../helper/chain/sui");
-const { aQuery } = require("../helper/chain/aptos");
+const { function_view } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
 const {post} = require("../helper/http");
 
@@ -93,16 +93,17 @@ Object.keys(config).forEach((chain) => {
         let usdySupply = await getUSDYTotalSupplySUI();
         api.addTokens(fundAddresses, [usdySupply]);
       } else if (chain === "aptos") {
-        const {
-          data: { supply, decimals },
-        } = await aQuery(
-          `/v1/accounts/${config.aptos.USDY}/resource/0x1::coin::CoinInfo<${config.aptos.USDY}::usdy::USDY>`
-        );
+        // Use 0x1::coin::supply view function which returns combined Coin + Fungible Asset supply
+        const supplyResult = await function_view({
+          functionStr: "0x1::coin::supply",
+          type_arguments: [`${config.aptos.USDY}::usdy::USDY`],
+          args: [],
+        });
 
-        const aptosSupply =
-          supply.vec[0].integer.vec[0].value / Math.pow(10, decimals);
+        // supplyResult is { vec: [<supply_value>] } - Option<u128> serialized
+        const aptosSupply = supplyResult.vec[0];
 
-        api.addTokens(ADDRESSES.aptos.USDY, aptosSupply * 1e6);
+        api.addTokens(ADDRESSES.aptos.USDY, aptosSupply);
       } else if (chain === "noble") {
         const res = await get(`https://rest.cosmos.directory/noble/cosmos/bank/v1beta1/supply/by_denom?denom=ausdy`);
         api.addTokens(config.noble.USDY, parseInt(res.amount.amount));

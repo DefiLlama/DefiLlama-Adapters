@@ -14,7 +14,8 @@ const ADDRESSES = require('../coreAssets.json')
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://rest-osmosis.ecostake.com",
-  cosmos: "https://cosmoshub-lcd.stakely.io",
+  // cosmos: "https://cosmoshub-lcd.stakely.io",
+  cosmos: "https://cosmos-api.polkachu.com",
   kujira: "https://kujira-rest.publicnode.com",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
