@@ -1,12 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs")
+const { sumTokensExport: sumTokensExportGeneric } = require("../helper/sumTokens")
 const { sumTokens: sumTokensBTC } = require("../helper/chain/bitcoin")
 const { sumTokens: sumTokensLTC } = require("../helper/chain/litecoin")
 const { sumTokens2: sumTokensSOL } = require("../helper/solana")
 const { sumTokens: sumTokensDOGE } = require("../helper/chain/doge")
 const { sumTokens: sumTokensCardano } = require("../helper/chain/cardano")
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
-const { post } = require('../helper/http')
 
 // SoDex custody addresses on each chain
 const CUSTODY_ADDRESS_1 = "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
@@ -25,12 +25,12 @@ const MAG7_BASE = "0x9e6a46f294bb67c20f1d1e7afb0bbef614403b55"  // MAG7.ssi on B
 const SMAG7_BASE = "0x3d8f0ddb4bb9332Cb89dEC22d273d9be1a91530b"  // Staked MAG7.ssi on Base
 
 // Bitcoin TVL
-async function btcTvl(api) {
+async function btcTvl() {
   return sumTokensBTC({ owners: bitcoinAddressBook.sodex })
 }
 
 // Litecoin TVL
-async function ltcTvl(api) {
+async function ltcTvl() {
   return sumTokensLTC({ owners: [CUSTODY_ADDRESS_LTC] })
 }
 
@@ -41,21 +41,12 @@ async function solTvl(api) {
 
 // Dogecoin TVL
 async function dogeTvl(api) {
-  return sumTokensDOGE({ owners: [CUSTODY_ADDRESS_DOGE] })
+  return sumTokensDOGE({ api, owners: [CUSTODY_ADDRESS_DOGE] })
 }
 
 // Cardano TVL
-async function adaTvl(api) {
-  return sumTokensCardano({ api, owners: [CUSTODY_ADDRESS_ADA] })
-}
-
-// Ripple TVL
-async function xrpTvl(api) {
-  const body = { "method": "account_info", "params": [{ account: CUSTODY_ADDRESS_XRP }] }
-  const res = await post('https://s1.ripple.com:51234', body)
-  if (res.result.error === 'actNotFound') return {}
-  const balance = res.result.account_data.Balance / 1e6
-  return { ripple: balance }
+async function adaTvl() {
+  return sumTokensCardano({ owners: [CUSTODY_ADDRESS_ADA] })
 }
 
 module.exports = {
@@ -94,7 +85,7 @@ module.exports = {
     tvl: solTvl,
   },
   ripple: {
-    tvl: xrpTvl,
+    tvl: sumTokensExportGeneric({ chain: 'ripple', owners: [CUSTODY_ADDRESS_XRP] }),
   },
   doge: {
     tvl: dogeTvl,
