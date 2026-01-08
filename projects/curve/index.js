@@ -46,7 +46,6 @@ const registryIds = {
   crypto: 5,
   cryptoFactory: 6
 };
-const decimalsCache = {}
 const nameCache = {}
 
 const blacklistedPools = {
@@ -64,14 +63,6 @@ const globalBlacklistedTokens = {
     '0xdbfefd2e8460a6ee4955a68582f85708baea60a3', // superOETHb
   ]
 }
-
-async function getDecimals(chain, token) {
-  token = token.toLowerCase()
-  const key = chain + '-' + token
-  if (!decimalsCache[key]) decimalsCache[key] = sdk.api.erc20.decimals(token, chain)
-  return decimalsCache[key]
-}
-
 
 const gasTokens = [
   ADDRESSES.GAS_TOKEN_2,
