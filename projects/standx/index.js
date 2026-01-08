@@ -1,6 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 const { sumTokensExport: sumTokensExportSolana } = require('../helper/solana');
+
+const bscDUSDAddress = '0xaf44A1E76F56eE12ADBB7ba8acD3CbD474888122';
 
 const evmContracts = [
     '0x11b660397382AE3A83c4Ad80e2F791189b39e433',
@@ -15,6 +16,6 @@ const tokenAccounts = [
 module.exports = {
     start: '2025-03-14',
     methodology: "StandX TVL is calculated by aggregating the balances of bridged vault addresses on the respective chain. These vaults hold the underlying collateral for all DUSD bridged to the StandX ecosystem, representing the total value secured by the protocol.",
-    bsc: { tvl: sumTokensExport({ owners: evmContracts, tokens: [ADDRESSES.bsc.DUSD] }) },
+    bsc: { tvl: sumTokensExport({ owners: evmContracts, tokens: [bscDUSDAddress] }) },
     solana: { tvl: sumTokensExportSolana({ tokenAccounts }) }
 };
