@@ -1,4 +1,4 @@
-const { getConnection, readBigUInt64LE, ASSOCIATED_TOKEN_PROGRAM_ID } = require("../helper/solana");
+const { getConnection, ASSOCIATED_TOKEN_PROGRAM_ID, sumTokens2 } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const crypto = require('crypto');
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
@@ -20,10 +20,11 @@ async function tvl(api) {
     }
   );
 
+  const tokenAccounts = []
+
   for (const account of marketStateAccounts) {
     const owner = account.pubkey;
     const mint = new PublicKey(account.account.data.slice(48, 80));
-    const oracle = new PublicKey(account.account.data.slice(168, 200));
 
     const mintAccountInfo = await connection.getAccountInfo(mint);
     const tokenProgramId = mintAccountInfo.owner;
@@ -33,17 +34,13 @@ async function tvl(api) {
       ASSOCIATED_TOKEN_PROGRAM_ID
     );
 
-    const ataInfo = await connection.getParsedAccountInfo(associatedTokenAddress);
-    const uiAmount = ataInfo.value.data.parsed.info.tokenAmount.uiAmount;
-
-    const oracleAccountInfo = await connection.getAccountInfo(oracle);
-    const priceValue = readBigUInt64LE(oracleAccountInfo.data, 48);
-    const priceExponent = readBigUInt64LE(oracleAccountInfo.data, 56);
-
-    const usdValue = uiAmount * Number(priceValue) / Math.pow(10, Number(priceExponent));
-
-    api.addUSDValue(usdValue);
+    tokenAccounts.push(associatedTokenAddress.toBase58());
   }
+
+  return sumTokens2({
+    tokenAccounts,
+    balances: api.getBalances()
+  })
 }
 
 module.exports = {
