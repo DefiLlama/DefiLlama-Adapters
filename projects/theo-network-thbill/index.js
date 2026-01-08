@@ -4,14 +4,14 @@ const { getConnection } = require("../helper/solana")
 const { PublicKey } = require("@solana/web3.js")
 
 const ULTRA_TOKEN_ACCOUNT = '6fk5UwZXF1Zs327zV5Fbmay2xTYCqg7eM5QeNQyyu7ae'
-const ULTRA_ETH = '0x50293DD8889B931EB3441d2664dce8396640B419'
+const ULTRA_MINT = '9DRPPWYud8i6CaSsDsFESs1xyVr8dBCMtjPZji2xiZEa'
 
 async function solanaTvl(api) {
   const connection = getConnection()
   const accountInfo = await connection.getAccountInfo(new PublicKey(ULTRA_TOKEN_ACCOUNT))
   if (accountInfo) {
     const balance = Number(accountInfo.data.readBigUInt64LE(64))
-    api.add('ethereum:' + ULTRA_ETH, balance, { skipChain: true })
+    api.add(ULTRA_MINT, balance)
   }
 }
 
