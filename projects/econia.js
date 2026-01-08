@@ -30,8 +30,7 @@ async function getTvl(api) {
 }
 
 module.exports = {
+  deadFrom: "2025-09-08",
   misrepresentedTokens: true,
-  aptos: {
-    tvl: getTvl
-  },
+  aptos: { tvl: getTvl },
 }
