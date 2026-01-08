@@ -16,6 +16,5 @@ module.exports = {
   deadFrom: "2025-11-01",
   timetravel: false,
   solana: { tvl },
-  methodology:
-    'To obtain TVL of Synthetify we must add all colaterals which was deposited.'
+  methodology: 'To obtain TVL of Synthetify we must add all colaterals which was deposited.'
 }
