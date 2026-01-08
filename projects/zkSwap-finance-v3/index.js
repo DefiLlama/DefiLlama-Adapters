@@ -6,6 +6,9 @@ const config = {
   },
   sonic: {
     factoryV3: '0x6D977fCC945261B80D128A5a91cbF9a9148032A4'
+  },
+  monad: {
+    factoryV3: '0xf5Cf2b71B8B368c84C4C4903AF453E790d392285'
   }
 }
 
@@ -17,4 +20,5 @@ module.exports = uniV3Export({
       '0xfe140e1dCe99Be9F4F15d657CD9b7BF622270C50'
     ]
    },
+  monad: { factory: config.monad.factoryV3, fromBlock: 37612083},
 })

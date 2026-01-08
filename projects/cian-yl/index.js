@@ -50,6 +50,12 @@ const config = {
   },
   scroll: {
     rawVaults: ["0xEa5f10A0E612316A47123D818E2b597437D19a17"]
+  },
+  mantle: {
+    rawVaults: [
+      "0x6B2BA8F249cC1376f2A02A9FaF8BEcA5D7718DCf",
+      "0x74D2Bef5Afe200DaCC76FE2D3C4022435b54CdbB"
+    ]
   }
 };
 

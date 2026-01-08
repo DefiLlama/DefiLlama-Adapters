@@ -9,10 +9,10 @@ const abis = {
 }
 
 async function avax_tvl(api) {
-  const strategies = (await api.fetchList({ lengthAbi: 'nextStrategyId', itemAbi: abis.strategyIdToMetadata, target: APERTURE_MANAGER_ADDRESS, })).map(i => i.strategy)
+  const strategies = await api.fetchList({ lengthAbi: 'nextStrategyId', itemAbi: abis.strategyIdToMetadata, target: APERTURE_MANAGER_ADDRESS, field: 'strategy' })
   const equityETHValues = await api.multiCall({ abi: abis.getEquityETHValue, calls: strategies })
   const vaultLeverage = await api.multiCall({ abi: abis.getLeverage, calls: strategies })
-  vaultLeverage.map((v, i) => api.addCGToken(`avalanche-2`, equityETHValues[i] * v / 1e22))
+  vaultLeverage.map((v, i) => api.addGasToken(equityETHValues[i] * v / 1e4))
 }
 
 module.exports = {

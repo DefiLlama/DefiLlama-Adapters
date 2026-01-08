@@ -78,6 +78,7 @@ const pionexCex = require('./pionex-cex.js')
 const probit = require('./probit.js')
 const robinhood = require('./robinhood.js')
 const rosenBridge = require('./rosen-bridge.js')
+const rskBridge = require('./rsk-bridge.js')
 const silkroad = require('./silkroad.js')
 const swissborg = require('./swissborg.js')
 const toobit = require('./toobit.js')
@@ -108,8 +109,14 @@ const tzbtc = require('./tezos-btc.js')
 const tothemoon = require('./tothemoon.js')
 const indodax = require('./indodax.js')
 const river = require('./river.js')
+const echoMBTC = require('./echo-mBTC.js')
 const xbtc = require('./okx-xbtc.js')
 const leadbtc = require('./leadbtc.js')
+const bitgetBtc = require('./bitget-bgBTC.js')
+const magicEden = require('./magic-eden.js')
+const gateBtc = require('./gate-btc.js')
+const weex = require('./weex.js')
+const bydfi = require('./bydfi.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -145,7 +152,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
-  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf'],
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf', 'bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj'],
   cygnus,
   magpie,
   stacksSBTC,
@@ -188,6 +195,7 @@ module.exports = {
   bingCex,
   bitfinex,
   bitget,
+  bitgetBtc,
   bitmake,
   bitmark,
   bitmex,
@@ -233,6 +241,7 @@ module.exports = {
   probit,
   robinhood,
   rosenBridge,
+  rskBridge,
   silkroad,
   swissborg,
   toobit,
@@ -262,6 +271,11 @@ module.exports = {
   tothemoon,
   indodax,
   river,
+  echoMBTC,
   xbtc,
   leadbtc,
+  magicEden,
+  gateBtc,
+  weex,
+  bydfi
 }
