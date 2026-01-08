@@ -6,7 +6,7 @@ const { sumTokens2: sumTokensSOL } = require("../helper/solana")
 const { sumTokens: sumTokensDOGE } = require("../helper/chain/doge")
 const { sumTokens: sumTokensCardano } = require("../helper/chain/cardano")
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
-const sdk = require('@defillama/sdk')
+const { post } = require('../helper/http')
 
 // SoDex custody addresses on each chain
 const CUSTODY_ADDRESS_1 = "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
@@ -52,8 +52,9 @@ async function adaTvl(api) {
 // Ripple TVL
 async function xrpTvl(api) {
   const body = { "method": "account_info", "params": [{ account: CUSTODY_ADDRESS_XRP }] }
-  const { result } = await sdk.util.http.post('https://s1.ripple.com:51234', body)
-  const balance = result?.account_data?.Balance / 1e6 || 0
+  const res = await post('https://s1.ripple.com:51234', body)
+  if (res.result.error === 'actNotFound') return {}
+  const balance = res.result.account_data.Balance / 1e6
   return { ripple: balance }
 }
 
