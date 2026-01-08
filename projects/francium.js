@@ -11,7 +11,8 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  hallmarks:[[1667865600, "FTX collapse"]],
+  hallmarks:[["2022-11-08", "FTX collapse"]],
+  deadFrom: "2025-11-30",
   misrepresentedTokens: true,
   timetravel: false,
   methodology: 'Value of total LP tokens locked + deposits that are not borrowed.',
