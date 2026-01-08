@@ -64,7 +64,7 @@ const borrowed = async (api) => {
   const tranchedPoolAddresses = await getTranchedPoolAddresses(api);
 
   const poolStats = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: tranchedPoolAddresses.map((tranchedPoolAddress) => ({
         target: poolTokensAddress,
         params: tranchedPoolAddress,
@@ -72,32 +72,32 @@ const borrowed = async (api) => {
       abi: abi.pools,
       ethBlock,
     })
-  ).output;
+  );
 
   const totalInvested = await poolStats.reduce((sum, thisPoolStats) => {
     return sum
-      .plus(new BigNumber(thisPoolStats.output.totalMinted))
-      .minus(new BigNumber(thisPoolStats.output.totalPrincipalRedeemed));
+      .plus(new BigNumber(thisPoolStats.totalMinted))
+      .minus(new BigNumber(thisPoolStats.totalPrincipalRedeemed));
   }, new BigNumber(0));
 
   const seniorAssets = new BigNumber(
     (
-      await sdk.api.abi.call({
+      await api.call({
         abi: abi.assets,
         target: seniorPoolAddress,
         ethBlock,
       })
-    ).output
+    )
   );
 
   const seniorLoansOutstanding = new BigNumber(
     (
-      await sdk.api.abi.call({
+      await api.call({
         abi: abi.totalLoansOutstanding,
         target: seniorPoolAddress,
         ethBlock,
       })
-    ).output
+    )
   );
 
   // `totalInvested` reflects the senior pool's investments. So we subtract out

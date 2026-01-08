@@ -5,11 +5,11 @@ const BigNumber = require("bignumber.js");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const tokens = {
-    aUSDC: "0xbcca60bb61934080951369a648fb03df4f96263c",
-    DAI: ADDRESSES.ethereum.DAI,
-    cDAI: "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643",
-    Gfuse: "0x495d133B938596C9984d462F007B676bDc57eCEC", // GoodDollar on Fuse
-    FUSE: "0x970b9bb2c0444f5e81e9d0efb84c8ccdcdcaf84d", // Fuse on Mainnet
+  aUSDC: "0xbcca60bb61934080951369a648fb03df4f96263c",
+  DAI: ADDRESSES.ethereum.DAI,
+  cDAI: "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643",
+  Gfuse: "0x495d133B938596C9984d462F007B676bDc57eCEC", // GoodDollar on Fuse
+  FUSE: "0x970b9bb2c0444f5e81e9d0efb84c8ccdcdcaf84d", // Fuse on Mainnet
 };
 
 const FUSE_STAKING = '0xA199F0C353E25AdF022378B0c208D600f39a6505';
@@ -22,75 +22,50 @@ const COMPOUND_STAKING_V2 = '0x7b7246c78e2f900d17646ff0cb2ec47d6ba10754';
 const COMMUNITY_SAFE = '0x5Eb5f5fE13d1D5e6440DbD5913412299Bc5B5564';
 const GOODDOLLAR_DECIMALS = 2;
 
-async function eth(timestamp, ethBlock) {
-    const balances = {};
-    await sumTokens(balances, [
-        [tokens.aUSDC, AAVE_STAKING_V2],
-        [tokens.cDAI, COMPOUND_STAKING],
-        [tokens.cDAI, COMPOUND_STAKING_V2],
-        [tokens.cDAI, RESERVE_ADDRESS]
-    ], ethBlock)
-
-    return balances;
+async function eth(api) {
+  return api.sumTokens({
+    tokensAndOwners: [
+      [tokens.aUSDC, AAVE_STAKING_V2],
+      [tokens.cDAI, COMPOUND_STAKING],
+      [tokens.cDAI, COMPOUND_STAKING_V2],
+      [tokens.cDAI, RESERVE_ADDRESS]
+    ]
+  })
 }
 
-async function fuseStaking(timestamp, ethBlock, chainBlocks) {    
-    const gdStaked = (await sdk.api.erc20.balanceOf({
-        target: tokens.Gfuse,
-        chain: 'fuse',
-        owner: GOV_STAKING,
-        block: chainBlocks['fuse'],
-    })).output;
+async function fuseStaking(api, chainBlocks) {
+  const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: [
+    { target: tokens.Gfuse, params: [GOV_STAKING] },
+    { target: tokens.Gfuse, params: [GOV_STAKING_V2] }
+  ]})
+  const stakedBal = bals.reduce((a,b) => a + +b, 0)
+  const ethApi = new sdk.ChainApi({ chain: 'ethereum', timestamp: api.timestamp })
+  await api.getBlock()
 
-    const gdStakedV2 = (await sdk.api.erc20.balanceOf({
-        target: tokens.Gfuse,
-        chain: 'fuse',
-        owner: GOV_STAKING_V2,
-        block: chainBlocks['fuse'],
-    })).output;
 
-    const sumGdStaked = BigNumber(gdStaked).plus(gdStakedV2);
-    const gdInDAI = await convertGoodDollarsToDai(sumGdStaked, ethBlock);
-
-    const balances = {};
-    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
-
-    return balances;
+  const gdInDAI = await convertGoodDollarsToDai(stakedBal, ethApi);
+  ethApi.add(tokens.DAI, gdInDAI)
+  return ethApi.getBalances()
 }
 
 // Required until GoodDollar lists on CoinGecko
-async function convertGoodDollarsToDai(gdAmount, ethBlock) {
-    const gdPriceInDAI = (await sdk.api.abi.call({
-        target: RESERVE_ADDRESS,
-        abi: abi.currentPriceDAI,
-        block: ethBlock
-    })).output;
+async function convertGoodDollarsToDai(gdAmount, api) {
 
-    return await new BigNumber(gdPriceInDAI).times(gdAmount).div(10 ** GOODDOLLAR_DECIMALS);
-}
-
-async function fuse(timestamp, ethBlock, chainBlocks) {
-    const fuseAmount = (await sdk.api.abi.call({
-        abi: abi.totalDelegated,
-        chain: 'fuse',
-        target: FUSE_STAKING,
-        block: chainBlocks['fuse']
-    })).output;
-
-    const balances = {};
-    sdk.util.sumSingleBalance(balances, tokens.FUSE, Number(fuseAmount));
-
-    return balances;
+  const gdPriceInDAI = await api.call({
+    target: RESERVE_ADDRESS,
+    abi: abi.currentPriceDAI,
+  })
+  return gdPriceInDAI * gdAmount / 100
 }
 
 module.exports = {
-    methodology: `Aggregation of funds staked in our contracts on Ethereum and Fuse, funds locked in reserve backing G$ token and community treasury. G$ value was converted to USD based on current price at the reserve.`,
-    misrepresentedTokens: true,
-        ethereum: {
-        tvl: eth
-    },
-    fuse: {
-        staking: fuseStaking,
-        tvl: () => ({}),
-    },
+  methodology: `Aggregation of funds staked in our contracts on Ethereum and Fuse, funds locked in reserve backing G$ token and community treasury. G$ value was converted to USD based on current price at the reserve.`,
+  misrepresentedTokens: true,
+  ethereum: {
+    tvl: eth
+  },
+  fuse: {
+    staking: fuseStaking,
+    tvl: () => ({}),
+  },
 }
