@@ -277,7 +277,7 @@ module.exports = {
   leadbtc,
   magicEden,
   gateBtc,
-  sodex
+  sodex,
   weex,
   bydfi
 }
