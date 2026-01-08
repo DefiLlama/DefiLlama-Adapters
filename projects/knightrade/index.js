@@ -1,8 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider, getConnection } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, BN, utils } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
-const { get } = require('../helper/http');
 
 const TOKEN_INFO = {
   USDC: {
@@ -27,6 +26,7 @@ const TOKEN_INFO = {
   },
 }
 
+
 function getTokenInfo(isSpotMarket, marketIndex) {
   if (isSpotMarket) {
     switch (marketIndex) {
@@ -50,58 +50,58 @@ function getTokenInfo(isSpotMarket, marketIndex) {
   }
   return undefined
 }
+const provider = getProvider()
 
-async function tvlJupiter(api) {
-  const jupiterVaults = [
-    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
-  ]
-  const url = "https://lite-api.jup.ag/lend/v1/earn/tokens";
-  const lendTokensRes = await get(url);
-  const addresses = lendTokensRes.map((token) => token.address).join(",");
+async function tvlJupiter(api, jupiterVaults) {
 
-  for (const vault of jupiterVaults) {
-    // Jupiter Earn
-    const earnUrl = `https://lite-api.jup.ag/lend/v1/earn/earnings?user=${vault}&positions=${addresses}`;
-    const data = await get(earnUrl);
-    for (const token of data) {
-      if (!token.totalAssets || token.totalAssets === 0) continue;
-      const assetAddress = lendTokensRes.find((t) => t.address === token.address).assetAddress;
-      api.add(assetAddress, token.totalAssets);
-    }
+  // /**
+  //  * Jupiter perp Lend
+  // */
+  const JUP_PERP_PROGRAM_ID = "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu";
+  const idl = await Program.fetchIdl(JUP_PERP_PROGRAM_ID, provider);
+  const perpProgram = new Program(idl, JUP_PERP_PROGRAM_ID, provider);
 
-    // Jupiter Loan
-    const loanUrl = `https://perps-api.jup.ag/v1/lending/positions?walletAddress=${vault}`;
-    const loanResponse = await get(loanUrl);
+  for (const walletAddress of jupiterVaults) {
+    const walletPubkey = new PublicKey(walletAddress);
+    const accounts = await perpProgram.account.borrowPosition.all([
+      {
+        memcmp: {
+          offset: 8, // Adjust based on your account structure
+          bytes: walletPubkey.toBase58(),
+        },
+      },
+    ]);
 
-    if (!loanResponse || loanResponse.dataList.length === 0) continue;
-    const loanData = loanResponse.dataList[0];
-
-    api.add(TOKEN_INFO['JLP'].mint, loanData.collateralTokenAmount);
-    api.add(loanData.borrowTokenMint, -loanData.borrowSizeTokenAmount);
-
-
+    if (accounts.length === 0) continue;
+    const account = accounts[0].account;
+    api.add(TOKEN_INFO['JLP'].mint, account.lockedCollateral);
+    const BORROW_SIZE_PRECISION = 1000;
+    api.add(ADDRESSES.solana.USDC, -account.borrowSize / BORROW_SIZE_PRECISION);
   }
+
+  // /**
+  //  * Jupiter Earn
+  // */
+  /* 
+    added price support for jupiter earn tokens here: https://github.com/DefiLlama/defillama-server/commit/e496acfb4bec2f8da309da1d18b0f0f9e10cbc3f   
+    */
 }
 
-async function getDriftTvl(api) {
+async function getDriftTvl(api, vaults) {
   const vaultUserAddresses = [
     '3Wg1GaW4Szame9bzKScxM56DHgDAKTq4c9674LPEuNNP', // DeltaNeutral-JLP-USDC-SOL-KT1
     'FmrEVTqKUG9npwaQBbrHKt1VXL5LJPPhzQazjCh1fwwB', // DeltaNeutral-JLP-USDC-EVM-KT4
     'J5VbheCue9U4hW7u9DZzwgo5h7BhnBqL8rF9c71MDsfC', // DeltaNeutral-JLP-USDC-SVM-KT5
     'AcN9Mct9dLYQVDsyQinbbHKbsXYB4Tnaq5DgKwzrWaY4', // DeltaNeutral-JLP-SOL-SVM-KT6
     'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9
-    '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
   ];
-  const walletUserAddresses = [
-    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv', // DeltaNeutral-JLP-USDC-KT0
-  ]
 
   const idl = require("./drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
-  const provider = getProvider()
   const program = new Program(idl, programId, provider)
 
-  for (const account of walletUserAddresses) {
+
+  for (const account of vaults) {
     const authorityPk = new PublicKey(account);
     const userPda = PublicKey.findProgramAddressSync(
       [
@@ -147,8 +147,16 @@ async function getDriftTvl(api) {
 }
 
 async function tvlSolana(api) {
-  await getDriftTvl(api);
-  await tvlJupiter(api);
+  const vaults = [
+    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
+    "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
+  ]
+
+  await getDriftTvl(api, vaults);
+  await tvlJupiter(api, vaults);
+
+  // add wallet balance 
+  return sumTokens2({ api, owners: vaults, })
 }
 
 async function tvlArbitrum(api) {
@@ -220,20 +228,60 @@ async function tvlArbitrum(api) {
     if (!pos) continue;
     for (const p of pos) {
       if (!p.addresses || !p.numbers) continue;
+      const flag = p.flags.isLong ? 1 : -1;
       // collateral
       api.add(p.addresses.collateralToken, p.numbers.collateralAmount);
       // pnl = sizeInTokens * tokenPrice - sizeInUsd
-      api.add(marketToTokenMap[p.addresses.market], p.numbers.sizeInTokens);
-      api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -p.numbers.sizeInUsd * 1e-24);
+      api.add(marketToTokenMap[p.addresses.market], p.numbers.sizeInTokens * flag);
+      api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -p.numbers.sizeInUsd * 1e-24 * flag);
     }
   }
 
 }
 
+async function tvlEthereum(api) {
+  const vaults = [
+    "0x5C83942B7919db30634f9Bc9e0e72aD778852FC8",
+  ];
+  const addresses = {
+    weth: ADDRESSES.ethereum.WETH,
+    usdc: ADDRESSES.ethereum.USDC,
+    usdt: ADDRESSES.ethereum.USDT,
+    usde: ADDRESSES.ethereum.USDe,
+    aaveWethAToken: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8',
+    aaveUsdcAToken: '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c',
+    aaveUsdtAToken: '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a',
+    aaveUsdeAToken: '0x4F5923Fc5FD4a93352581b38B7cD26943012DECF',
+    aaveWethDebtToken: '0xeA51d7853EEFb32b6ee06b1C12E6dcCA88Be0fFE',
+    aaveUsdcDebtToken: '0x72E95b8931767C79bA4EeE721354d6E99a61D004',
+    aaveUsdtDebtToken: '0x6df1C1E379bC5a00a7b4C6e67A203333772f45A8',
+    aaveUsdeDebtToken: '0x015396E1F286289aE23a762088E863b3ec465145',
+  };
+
+  await api.sumTokens({
+    tokens: [
+      addresses.weth,
+      addresses.usdc,
+      addresses.usdt,
+      addresses.usde,
+      addresses.aaveWethAToken,
+      addresses.aaveUsdcAToken,
+      addresses.aaveUsdtAToken,
+      addresses.aaveUsdeAToken,
+      addresses.aaveWethDebtToken,
+      addresses.aaveUsdcDebtToken,
+      addresses.aaveUsdtDebtToken,
+      addresses.aaveUsdeDebtToken,
+    ],
+    owners: vaults
+  });
+}
+
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: "Solana: Drift | Arbitrum: Aave, GMX",
+  methodology: "Solana: Drift | Arbitrum: Aave, GMX | Ethereum: Aave",
   solana: { tvl: tvlSolana },
   arbitrum: { tvl: tvlArbitrum },
+  ethereum: { tvl: tvlEthereum },
 };

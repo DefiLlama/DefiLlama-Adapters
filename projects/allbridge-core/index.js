@@ -3,7 +3,6 @@ const solana = require("../helper/solana");
 const suiTx = require("./suiTx");
 
 const data = require("./contracts");
-const {default: BigNumber} = require("bignumber.js");
 
 const solanaTvl = async (api) => {
   const tokens = data['solana'].tokens;

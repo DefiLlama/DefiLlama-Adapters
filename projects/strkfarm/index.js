@@ -21,27 +21,24 @@ async function computeAutoCompoundingTVL(api) {
 
 async function computeXSTRKStratTVL(api) {
   const pool_id = "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161";
+
   const contracts = STRATEGIES.xSTRKStrats;
-  const price = await multiCall({
-    calls: contracts.map(c => ({
-      target: c.xSTRK,
-      params: ['0xDE0B6B3A7640000', '0x0']
-    })),
+  const xSTRKSensei = contracts[0];
+  const price = await call({
+    target: xSTRKSensei.xSTRK,
+    params: ['0x0de0b6b3a7640000', '0x0'],
     abi: { ...endurABIMap.preview_redeem, customInput: 'address' }
   });  
-  let xstrk_price = Number(price[0]) / 10**18 // Assuming `price` is returned as a BigInt array
+  let xstrk_price = Number(price) / 10**18 // Assuming `price` is returned as a BigInt array
 
-  const data = await multiCall({
-    calls: contracts.map(c => ({
-      target: c.vesu,
-      params: [pool_id, c.xSTRK, c.token, c.address] 
-    })),
+  const data = await call({
+    target: xSTRKSensei.vesu,
+    params: [pool_id, xSTRKSensei.xSTRK, xSTRKSensei.token, xSTRKSensei.address],
     abi: {...SINGLETONabiMap.position, customInput: 'address'},
   })
 
-
-  let collateral = Number(data[0]['2']);
-  let debt = Number(data[0]['3']);
+  let collateral = Number(data['2']);
+  let debt = Number(data['3']);
 
   let tvl = (collateral * xstrk_price) - debt;
   if (tvl < 0) throw new Error("Negative TVL detected, check the xSTRK strategy logic");
@@ -87,13 +84,33 @@ async function _computeEkuboTVL(
 } 
 
 async function computeEkuboTVL(api) {
-  const fusionContracts = STRATEGIES.EkuboVaults
+  const ekuboContracts = STRATEGIES.EkuboVaults
   
-  for (const c of fusionContracts) {
+  for (const c of ekuboContracts) {
     const assets = await _computeEkuboTVL(c.address)
 
     api.addTokens(c.token1, assets['2'])
     api.addTokens(c.token2, assets['1'])
+  }
+}
+
+async function computeEkuboBTCTvl(api) {
+  const ekuboContracts = STRATEGIES.EkuboVaultsEndurBTC
+
+  for (const c of ekuboContracts) {
+    const assets = await _computeEkuboTVL(c.address)
+
+    const hexValue = '0x' + BigInt(assets['1']).toString(16);
+    // convert lst variant to its btc form
+    const lstAssets = await call ({
+      target: c.token2,
+      params: [hexValue, '0x0'],
+      abi: {...endurABIMap.convert_to_assets, customInput: 'address'}
+    })
+    
+    // add these assets to native btc token
+    let totalAssets = Number(assets['2']) + Number(lstAssets)
+    api.addTokens(c.token1, totalAssets)
   }
 }
 
@@ -106,13 +123,34 @@ async function computeEvergreenTVL(api) {
   api.addTokens(evergreenContracts.map(c => c.token), totalAssets);
 }
 
+async function computeHyperVaultTVL(api) {
+  const hyperContracts = STRATEGIES.HyperVaults;
+  const totalAssets = await multiCall({
+    calls: hyperContracts.map(c => c.address),
+    abi: ERC4626AbiMap.total_assets
+  })
+
+  // convert to asset 
+  const lstAssets = await multiCall({
+    calls: hyperContracts.map((c, i) => ({
+      target: c.lst,
+      params: ['0x' + BigInt(totalAssets[i]).toString(16), '0x0']
+    })),
+    abi: {...endurABIMap.convert_to_assets, customInput: 'address'}
+  })
+
+  api.addTokens(hyperContracts.map(c => c.token), lstAssets)
+} 
+
 async function tvl(api) {
   await computeAutoCompoundingTVL(api);
-  await computeSenseiTVL(api);
+  await computeSenseiTVL(api); 
   await computeXSTRKStratTVL(api);
   await computeFusionTVL(api);
   await computeEkuboTVL(api);
+  await computeEkuboBTCTvl(api);
   await computeEvergreenTVL(api);
+  await computeHyperVaultTVL(api)
 }
 
 module.exports = {
