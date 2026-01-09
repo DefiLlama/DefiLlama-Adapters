@@ -52,6 +52,9 @@ const config = {
   mantle: {
     USDY: "0x5bE26527e817998A7206475496fDE1E68957c5A6",
   },
+  sei: {
+    USDY:"0x54cD901491AeF397084453F4372B93c33260e2A6",
+  },
   sui: {
     USDY: ADDRESSES.sui.USDY,
   },
