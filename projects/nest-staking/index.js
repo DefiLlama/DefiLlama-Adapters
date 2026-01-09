@@ -63,11 +63,25 @@ async function tvl_solana(api) {
     const solanaVaults = (
       vaults?.data
           ?.filter(vault => vault.symbol !== "pUSD")
-          ?.filter(vault => vault.solana?.mintAddress)
-          ?.map(vault => vault.solana.mintAddress) ?? []
-    ).filter(Boolean);
+          ?.filter(vault => vault.solana?.mintAddress && vault.vaultAddress)
+          ?.map(vault => ({
+            mintAddress: vault.solana.mintAddress,
+            ethVaultAddress: vault.vaultAddress,
+            decimals: vault.solana.decimals ?? vault.decimals ?? 6
+          })) ?? []
+    );
 
-    await getTokenSupplies(solanaVaults, { api });
+    if (solanaVaults.length === 0) return;
+
+    const mintAddresses = solanaVaults.map(v => v.mintAddress);
+    const supplies = await getTokenSupplies(mintAddresses);
+
+    for (const vault of solanaVaults) {
+        const supply = supplies[vault.mintAddress];
+        if (supply && BigInt(supply) > 0n) {
+            api.add(`ethereum:${vault.ethVaultAddress}`, supply, { skipChain: true });
+        }
+    }
 }
 
 module.exports = {
