@@ -69,6 +69,22 @@ const lvts = {
       vtHook: '0xed202a7050ee856ba9f0d3cd5eabcab6b8a23a88',
     }
   ],
+  base: [
+    {
+      // Reppo LvtVault
+      asset: '0xFf8104251E7761163faC3211eF5583FB3F8583d6',
+      vt: '0x24ef95c39dfaa8f9a5adf58edf76c5b22c34ef46',
+      vtHook: '0x2b72494fd4f092569b87e1a10f92268384f07a88',
+    }
+  ],
+  sei: [
+    {
+      // Sei LvtVault
+      asset: '0xE30feDd158A2e3b13e9badaeABaFc5516e95e8C7',
+      vt: '0x92838ccdb9dceabc8e77415d73ecb06f8050cc5f',
+      vtHook: '0x3362cb23043cb5e7c52711c5763c69fd513a3a88',
+    }
+  ]
 }
 
 async function tvlLVT(api) {
@@ -90,5 +106,7 @@ module.exports = {
   doublecounted: true,
   berachain: { tvl },
   arbitrum: { tvl: tvlLNT },
-  bsc: { tvl: tvlLVT }
+  bsc: { tvl: tvlLVT },
+  base: { tvl: tvlLVT },
+  sei: { tvl: tvlLVT },
 }

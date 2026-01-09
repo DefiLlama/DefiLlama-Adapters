@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const ABI = require('./abi.json')
 const { stakings } = require('../helper/staking');
 
@@ -14,76 +13,74 @@ const cvxLockerAddress = ADDRESSES.ethereum.vlCVX;
 
 const arbiPoolInfoABI = 'function poolInfo(uint256) view returns (address lptoken, address gauge, address rewards, bool shutdown, address factory)'
 
-async function tvl(chain, block) {
-  const balances = {}
+async function tvl(api) {
   let abiPoolInfo = ABI.poolInfo
 
-  if (chain === 'ethereum') {
+  if (api.chain === 'ethereum') {
     //cvxcrv supply
-    const { output: crvLocked } = await sdk.api.abi.call({
+    const crvLocked = await api.call({
       target: '0x5f3b5dfeb7b28cdbd7faba78963ee202a494e2a2', // veCRV
       params: staker,
-      abi: 'erc20:balanceOf', block,
+      abi: 'erc20:balanceOf',
     })
-    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.CRV, crvLocked)
+    api.add(ADDRESSES.ethereum.CRV, crvLocked)
 
     //cvxfxs supply
-    const { output: fxsLocked } = await sdk.api.abi.call({
+    const fxsLocked = await api.call({
       target: '0xc8418af6358ffdda74e09ca9cc3fe03ca6adc5b0', // veFXS
       params: '0x59cfcd384746ec3035299d90782be065e466800b', // Convex Frax vote proxy
-      abi: 'erc20:balanceOf', block,
+      abi: 'erc20:balanceOf',
     })
-    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXS, fxsLocked)
+    api.add(ADDRESSES.ethereum.FXS, fxsLocked)
 
     //cvxprisma supply
-    const { output: [prismaLocked] } = await sdk.api.abi.call({
+    const [prismaLocked] = await api.call({
       target: '0x3f78544364c3eCcDCe4d9C89a630AEa26122829d', // PRISMA locker
       params: '0x8ad7a9e2B3Cd9214f36Cb871336d8ab34DdFdD5b', // Convex Prisma vote proxy
-      abi: 'function getAccountBalances(address) view returns (uint256, uint256)', block,
+      abi: 'function getAccountBalances(address) view returns (uint256, uint256)',
     })
-    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.PRISMA, prismaLocked * 1e18)
+    api.add(ADDRESSES.ethereum.PRISMA, prismaLocked * 1e18)
 
     //cvxfxn supply
-    const { output: fxnLocked } = await sdk.api.abi.call({
+    const fxnLocked = await api.call({
       target: '0xEC6B8A3F3605B083F7044C0F31f2cac0caf1d469', // veFXN
       params: '0xd11a4Ee017cA0BECA8FA45fF2abFe9C6267b7881', // Convex F(x) vote proxy
-      abi: 'erc20:balanceOf', block,
+      abi: 'erc20:balanceOf',
     })
-    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXN, fxnLocked)
+    api.add(ADDRESSES.ethereum.FXN, fxnLocked)
   } else {
-    if (chain === 'fraxtal') {
+    if (api.chain === 'fraxtal') {
       //cvxfxs supply on fraxtal
-      const { output: fxsLockedFraxtal } = await sdk.api.abi.call({
+      const fxsLockedFraxtal = await api.call({
         target: '0x007FD070a7E1B0fA1364044a373Ac1339bAD89CF', // veFXS
         params: '0x59CFCD384746ec3035299D90782Be065e466800B', // Convex Frax Fraxtal vote proxy
-        abi: 'erc20:balanceOf', block, chain
+        abi: 'erc20:balanceOf',
       })
-      sdk.util.sumSingleBalance(balances, ADDRESSES.fraxtal.WFRAX, fxsLockedFraxtal, chain)
+      api.add(ADDRESSES.fraxtal.WFRAX, fxsLockedFraxtal)
     }
 
     abiPoolInfo = arbiPoolInfoABI
   }
 
-  const poolInfo = await sdk.api2.abi.fetchList({
-    chain,
-    block,
+  const poolInfo = await api.fetchList({
     lengthAbi: ABI.poolLength,
     itemAbi: abiPoolInfo,
-    target: boosterAddresses[chain] ?? boosterAddresses.default,
+    target: boosterAddresses[api.chain] ?? boosterAddresses.default,
   })
 
-  const { output: gaugeBalances } = await sdk.api.abi.multiCall({
+  const gaugeTokens = Array.from(new Set(poolInfo.map(p => p.gauge.toLowerCase())))
+  const gaugeLPMap = {}
+  poolInfo.forEach(p => {
+    gaugeLPMap[p.gauge.toLowerCase()] = p.lptoken
+  })
+  const gaugeLPs = gaugeTokens.map(g => gaugeLPMap[g])
+
+  const gaugeBalances = await api.multiCall({
     abi: 'erc20:balanceOf',
-    calls: Array.from(new Set(poolInfo.map(p => p.gauge))).map(i => ({ target: i, params: staker })),
-    chain,
-    block,
+    calls: gaugeTokens.map(i => ({ target: i, params: staker })),
   })
 
-  gaugeBalances.forEach(({ output, input }, i) => {
-    sdk.util.sumSingleBalance(balances, chain + ':' + poolInfo.find(p => p.gauge.toLowerCase() === input.target.toLowerCase()).lptoken, output)
-  })
-
-  return balances
+  api.add(gaugeLPs, gaugeBalances)
 }
 
 const chains = [
@@ -108,9 +105,7 @@ module.exports = {
 };
 
 chains.forEach(chain => {
-  module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => tvl(chain, block)
-  }
+  module.exports[chain] = { tvl }
 })
 
 module.exports.ethereum.staking = stakings([cvxLockerAddress, cvxRewardsAddress], ADDRESSES.ethereum.CVX)

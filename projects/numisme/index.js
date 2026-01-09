@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
 
 const { staking } = require("../helper/staking");
 
@@ -17,24 +15,17 @@ const funds = [
   "0x428F5B8b8fE7b9247c09aDE2cbd7573A3BfF649D", // FRAX3CRV
 ];
 
-async function tvl(timestamp, block) {
-  const balances = {};
-  const calls = funds.map(i => ({ target: i }))
+async function tvl(api) {
   const [
     tokens, vaultTokens, pricePerFullShares
-  ] = await Promise.all([abi.token, abi.vaultToken, abi.getPricePerFullShare].map(abi => sdk.api.abi.multiCall({ calls, abi, block })))
+  ] = await Promise.all([abi.token, abi.vaultToken, abi.getPricePerFullShare].map(abi => api.multiCall({ calls: funds, abi })))
 
-  const tokenCalls = vaultTokens.output.map(i => ({ target: i.output }))
-  const { output: supplies } = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: tokenCalls, block,
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaultTokens, })
+  tokens.forEach((token, i) => {
+    const pricePerFullShare = pricePerFullShares[i]
+    const supply = supplies[i]
+    api.add(token,supply * pricePerFullShare / 1e18 )
   })
-  tokens.output.forEach(({ output: token }, i) => {
-    const pricePerFullShare = pricePerFullShares.output[i].output
-    const supply = supplies[i].output
-    sdk.util.sumSingleBalance(balances, token, BigNumber(supply * pricePerFullShare / 1e18).toFixed(0))
-  })
-  return balances
 }
 
 module.exports = {

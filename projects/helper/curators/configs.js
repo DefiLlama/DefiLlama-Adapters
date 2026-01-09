@@ -77,6 +77,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  monad: {
+    vaultFactories: [
+      {
+        address: '0x33f20973275B2F574488b18929cd7DCBf1AbF275',
+        fromBlock: 32320327
+      },
+    ]
+  },
   wc: {
     vaultFactories: [
       {

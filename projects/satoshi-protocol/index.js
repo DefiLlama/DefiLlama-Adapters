@@ -352,11 +352,16 @@ module.exports = {
       '0xd19BC6B110896d136D9456E8fD45C71C8d8C5abB', // WBTC Collateral(V2)
     ],
     nymWithAssetList: [{
-      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
       assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
     }, {
       address: '0xB4d4793a1CD57b6EceBADf6FcbE5aEd03e8e93eC',
-      assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
+      assetList: [
+        ADDRESSES.xlayer.USDT,
+        ADDRESSES.xlayer.USDC,
+        '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USDT0
+        '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', // USDG
+      ],
     }],
   }),
   ethereum: createExports({
