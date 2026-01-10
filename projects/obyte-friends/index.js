@@ -12,6 +12,8 @@ const {
 } = require('../helper/chain/obyte')
 
 const FRIENDS_AA_ADDRESS = 'FRDOT24PXLEY4BRGC7WPMSKXUWUFMUMG'
+const GBYTE_DECIMALS = 9;
+const GBYTE_ASSET = 'base';
 
 async function totalTvl() {
     const [rate, balances, frdAsset] = await Promise.all([
@@ -24,17 +26,19 @@ async function totalTvl() {
 
     for (const [asset, balance] of Object.entries(balances)) {
         if (asset === frdAsset) continue;
+        if (asset === GBYTE_ASSET) continue;
 
         const decimals = await getDecimalsByAsset(asset);
-        const tokenPrice = asset === 'base' ? rate['GBYTE_USD'] : rate[`${asset}_USD`];
+        const tokenPrice = rate[`${asset}_USD`] || 0;
 
         if (rate) {
             totalTvl += (balance.total / 10 ** decimals) * tokenPrice
         }
     }
 
+    const gbyteBalance = balances[GBYTE_ASSET]?.total || 0; // base asset is GBYTE
 
-    return { tether: totalTvl }
+    return { tether: totalTvl, byteball: (gbyteBalance / 10 ** GBYTE_DECIMALS) };
 }
 
 async function totalStaking() {
@@ -50,7 +54,7 @@ async function totalStaking() {
 
     const decimals = await getDecimalsByAsset(constants.asset);
 
-    const price = rate[`${constants.asset}_USD`];
+    const price = rate[`${constants.asset}_USD`] ?? 0;
 
     const staked = price * (depositedSupply / 10 ** decimals);
 
