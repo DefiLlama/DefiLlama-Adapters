@@ -225,6 +225,11 @@ const EulerConfigs = {
       '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
     ],
   },
+  monad: {
+    vaultFactories: [
+      '0xba4dd672062de8feedb665dd4410658864483f1e',
+    ],
+  },
 }
 
 const SiloConfigs = {

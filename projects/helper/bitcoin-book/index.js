@@ -115,6 +115,7 @@ const leadbtc = require('./leadbtc.js')
 const bitgetBtc = require('./bitget-bgBTC.js')
 const magicEden = require('./magic-eden.js')
 const gateBtc = require('./gate-btc.js')
+const sodex = require('./sodex.js')
 const weex = require('./weex.js')
 const bydfi = require('./bydfi.js')
 
@@ -276,6 +277,7 @@ module.exports = {
   leadbtc,
   magicEden,
   gateBtc,
+  sodex,
   weex,
   bydfi
 }

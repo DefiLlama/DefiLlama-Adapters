@@ -463,6 +463,10 @@ async function computeTVL(balances, timestamp) {
       const balance = balances[address];
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
+      if (data.symbol === '') {
+        console.log('\nIgnored invalid coin data, please fix it!', address, data, '\n');
+        return;
+      }
       if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
       if (Math.abs(data.timestamp - (timestamp ?? Date.now() / 1e3)) > (24 * 3600)) {
         console.log(`Price for ${address} is stale, ignoring...`)

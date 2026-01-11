@@ -49,6 +49,7 @@ const configs = {
     monad: {
       erc4626: [
         "0x0da39b740834090C146dC48357f6A435a1Bb33b3", // Lagoon: MuDigital Tulipa USDC
+        "0x09ca6b76276ec0682adb896418b99cb7e44a58a0", // Gearbox: Tulipa MON v3
       ]
     }
   }
