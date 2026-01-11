@@ -125,10 +125,12 @@ module.exports = {
       '0xe7E23aD9c455c2Bcd3f7943437f4dFBe9149c0D2', // BEVM WBTC Collateral(V2)
       '0xD63e204F0aB688403205cFC144CAdfc0D8C68458', // BEVM wstBTC Collateral(V2)
     ],
-    nymWithAssetList: [{
-      address: '0xdd0bD4F817bDc108e31EE534931eefc855CAf7Df',
-      assetList: [ADDRESSES.bevm.USDT, ],
-    }],
+    nymWithAssetList: [
+      // {
+      //   address: '0xdd0bD4F817bDc108e31EE534931eefc855CAf7Df',
+      //   assetList: [ADDRESSES.bevm.USDT, ],
+      // }
+    ],
     vaultManagerList: [
       {
         address: '0xcCFD19e331fFcE8506718ec3DddDDf9f23029825'
