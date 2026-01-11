@@ -4,7 +4,7 @@ const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { getAmounts } = require("./iziswap");
-const { sumTokens2: sumTokens2Solana } = require('../helper/solana')
+const { sumTokens2: sumTokens2Solana, getTokenSupplies } = require('../helper/solana')
 
 // The Graph
 const graphUrlList = {
@@ -47,6 +47,7 @@ async function tvl(api) {
   await aaveSupplyBalance(api, address);
   await solanaTvl(api, address);
   await tokenSupply(api, address);
+  await solanaTokenSupply(api, address);
 
   (solvTokens[api.chain] ?? []).forEach(token => {
     api.removeTokenBalance(token)
@@ -417,8 +418,8 @@ async function aaveSupplyBalance(api, address) {
 }
 
 async function solanaTvl(api, address) {
-  if (api.chain !== 'solana' || !address[api.chain]) return;
-  const owners = address[api.chain];
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaOwners"]) return;
+  const owners = address[api.chain]["solanaOwners"];
   return sumTokens2Solana({ api, owners });
 }
 
@@ -439,6 +440,12 @@ async function tokenSupply(api, address) {
   for (let i = 0; i < tokenSupplyData.length; i++) {
     api.add(tokenSupplyData[i], totalSupplys[i]);
   }
+}
+
+async function solanaTokenSupply(api, address) {
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaTokens"]) return;
+  const tokens = address[api.chain]["solanaTokens"];
+  return getTokenSupplies(tokens, { api });
 }
 
 async function getGraphData(timestamp, chain, api) {

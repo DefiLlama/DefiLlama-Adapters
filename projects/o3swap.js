@@ -1,7 +1,3 @@
-async function fetch() {
-    return 0
-}
-
 const chains = {
     ethereum: 1,
     bsc: 56,
@@ -20,16 +16,10 @@ const chains = {
 }
 
 module.exports = {
-    ...Object.entries(chains).reduce((exp, [chain, id]) => {
-        return {
-            ...exp,
-            [chain]: {
-                fetch: async () => {
-                    return 0
-                }
-            }
-        }
-    }, {}),
-    fetch,
-    deadFrom: '2024-09-30',
+  deadFrom: '2024-09-30',
+  misrepresentedTokens: true
 }
+
+Object.keys(chains).forEach((chain) => {
+  module.exports[chain] = { tvl: () => ({ }) }
+})

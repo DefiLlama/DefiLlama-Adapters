@@ -10,8 +10,27 @@ jobs:
         with:
           output: 'json'
           fileOutput: 'json'
-      - name: Check out repository code
-        uses: actions/checkout@v2
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Run changes files through test script
         env:
           LLAMA_DEBUG_MODE: "true"
@@ -27,10 +46,7 @@ jobs:
             exit 0
           fi
 
-          npm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk @hover-labs/kolibri-js
-          # npm ci --omit=dev
-          npm ci
-          # npm update @defillama/sdk
+          # pnpm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk @hover-labs/kolibri-js
 
           # fail if package.json or package-lock.json is changed
           FILES_MODIFIED=${{ steps.file_changes.outputs.files_modified }}
@@ -56,5 +72,4 @@ jobs:
         
       - name: Run ESLint
         run: |
-          npm ci
           npm run lint

@@ -67,6 +67,7 @@ module.exports = {
     staking: stakings(stakingContracts, PCT),
     pool2: pool2,
     ...compoundExports2({ comptroller, cether: '0x45f157b3d3d7c415a0e40012d64465e3a0402c64' }),
+    doublecounted: true, // All Pools are owned by the Balancer
 
   },
   methodology:

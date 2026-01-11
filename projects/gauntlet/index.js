@@ -1,35 +1,12 @@
 const { getCuratorExport } = require("../helper/curators");
+const axios = require('axios');
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0x8eB67A509616cd6A7c1B3c8C21D48FF57df3d458',
-        '0x2371e134e3455e0593363cBF89d3b6cf53740618',
-        '0x132E6C9C33A62D7727cd359b1f51e5B566E485Eb',
-        '0x4881Ef0BF6d2365D3dd6499ccd7532bcdBCE0658',
-        '0xdC94785959B73F7A168452b3654E44fEc6A750e4',
-        '0xdd0f28e19C1780eb6396170735D45153D261490d',
-        '0x500331c9fF24D9d11aee6B07734Aa72343EA74a5',
-        '0x443df5eEE3196e9b2Dd77CaBd3eA76C3dee8f9b2',
-        '0x701907283a57FF77E255C3f1aAD790466B8CE4ef',
-        '0x4Ff4186188f8406917293A9e01A1ca16d3cf9E59',
-        '0xc080f56504e0278828A403269DB945F6c6D6E014',
-        '0x059Fc6723b9bF77DbF4283C8d7C90eA8Af44EF10',
-        '0x8CB3649114051cA5119141a34C200D65dc0Faa73',
-        '0xdBB316375B4dC992B2c8827D120c09dFB1d3455D',
-        '0xc582F04d8a82795aa2Ff9c8bb4c1c889fe7b754e',
-        '0x6859B34a9379122d25A9FA46f0882d434fee36c3',
-        '0x78B18E07dc43017fcEaabaD0751d6464c0F56b25',
-        '0x1B4cd53a1A8e5F50aB6320EF34E5fB4D3df7B6f6',
-        '0xA8875aaeBc4f830524e35d57F9772FfAcbdD6C45',
-        '0x1e6ffa4e9F63d10B8820A3ab52566Af881Dab53c',
-        '0x125D41A6e5dbf455cD9Df8F80BCC6fd172D52Cc6',
-        '0x0404fD1a77756EB029F06b5CDea88B2B2ddC2fEE',
-        '0xEbFA750279dEfa89b8D99bdd145a016F6292757b',
-        '0xF587f2e8AfF7D76618d3B6B4626621860FbD54e3',
-        '0x3365184e87d2Bd75961780454A5810BEc956F0dD',
+      morphoVaultOwners: [
+        '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
       ],
       aera: [
         '0x7c8406384f7a5c147a6add16407803be146147e4',
@@ -67,26 +44,27 @@ const configs = {
         '0x2e2e57bb1272acb11a5a0da677ddbcb8c9906255',
         '0x2c9f8043d4b6a37489eea91437c14d206acddeb9',
       ],
+      symbiotic: [
+        '0xc10A7f0AC6E3944F4860eE97a937C51572e3a1Da',
+        '0xB8Fd82169a574eB97251bF43e443310D33FF056C',
+        '0xaF07131C497E06361dc2F75de63dc1d3e113f7cb',
+        '0x81bb35c4152B605574BAbD320f8EABE2871CE8C6',
+        '0x65B560d887c010c4993C8F8B36E595C171d69D63',
+        '0x3ba6930bac1630873f5fd206e293ca543fcea7a2',
+        '0x9e405601B645d3484baeEcf17bBF7aD87680f6e8',
+        '0xbA60b6969fAA9b927A0acc750Ea8EEAdcEd644B7',
+      ],
+      mellow: [
+        '0x8327b8BD2561d28F914931aD57370d62C7968e40',
+      ],
+      erc4626: [
+        '0xeea3edc017877c603e2f332fc1828a46432cdf96',
+      ],
     },
     base: {
-      morpho: [
-        '0x616a4E1db48e22028f6bbf20444Cd3b8e3273738',
-        '0x27D8c7273fd3fcC6956a0B370cE5Fd4A7fc65c18',
-        '0x6b13c060F13Af1fdB319F52315BbbF3fb1D88844',
-        '0x5a47C803488FE2BB0A0EAaf346b420e4dF22F3C7',
-        '0x6770216aC60F634483Ec073cBABC4011c94307Cb',
-        '0xc0c5689e6f4D256E861F65465b691aeEcC0dEb12',
-        '0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61',
-        '0x0D05e6ec0A10f9fFE9229EAA785c11606a1d13Fb',
-        '0x5A32099837D89E3a794a44fb131CBbAD41f87a8C',
-        '0x23479229e52Ab6aaD312D0B03DF9F33B46753B5e',
-        '0x43Cd00De63485618A5CEEBE0de364cD6cBeB26E7',
-        '0x1c155be6bC51F2c37d472d4C2Eba7a637806e122',
-        '0x9aB2d181E4b87ba57D5eD564D3eF652C4E710707',
-        '0xCd347c1e7d600a9A3e403497562eDd0A7Bc3Ef21',
-        '0x0FE5b4aF0337Fd5b2E1675D5f5E8c9101E4D3c7e',
-        '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
-        "0x236919F11ff9eA9550A4287696C2FC9e18E6e890"
+      morphoVaultOwners: [
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+        '0xFd144f7A189DBf3c8009F18821028D1CF3EF2428',
       ],
       aera: [
         '0x9f3ef866e769624d9a7a687a669d226c1e327b4d',
@@ -106,18 +84,184 @@ const configs = {
         '0xdb223128a4524ce733c575421267dc56992c796d',
         '0x70f6fd99a43fce03648b20d44b9f0cd2b14eea68',
         '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
-        '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
       ]
     },
     polygon: {
-      morpho: [
-        '0xF5C81d25ee174d83f1FD202cA94AE6070d073cCF',
-        '0x781FB7F6d845E3bE129289833b04d43Aa8558c42',
-        '0xfD06859A671C21497a2EB8C5E3fEA48De924D6c8',
-        '0x3F33F9f7e2D7cfBCBDf8ea8b870a6E3d449664c2',
-      ]
+      morphoVaultOwners: [
+        '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
+      ],
+    },
+    unichain: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
+    },
+    hyperliquid: {
+      morphoVaultOwners: [
+        '0x09346F40e324458A8E211C5317981C78FAcDEc57',
+        '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+      ],
+    },
+    katana: {
+      morphoVaultOwners: [
+        '0x5D8C96b76A342c640d9605187daB780f8365F69f',
+      ],
+    },
+    arbitrum: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
     },
   }
 }
 
-module.exports = getCuratorExport(configs)
+// --- Drift Solana TVL logic ---
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getMultipleAccounts, getProvider } = require('../helper/solana')
+const { Program, BN } = require("@project-serum/anchor")
+const { PublicKey } = require("@solana/web3.js")
+
+const TOKEN_INFO = {
+  USDC: {
+    mint: ADDRESSES.solana.USDC,
+    decimals: 6,
+  },
+  SOL: {
+    mint: ADDRESSES.solana.SOL,
+    decimals: 9,
+  },
+  jitoSOL: {
+    mint: ADDRESSES.solana.JitoSOL,
+    decimals: 9,
+  },
+  JTO: {
+    mint: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL',
+    decimals: 9,
+  },
+  WIF: {
+    mint: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+    decimals: 6,
+  },
+  DRIFT: {
+    mint: 'DriFtupJYLTosbwoN8koMbEYSx54aFAVLddWsbksjwg7',
+    decimals: 6,
+  },
+  INF: {
+    mint: '5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm',
+    decimals: 9,
+  },
+  dSOL: {
+    mint: ADDRESSES.solana.dSOL,
+    decimals: 9,
+  },
+  JLP: {
+    mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6,
+  },
+  cbBTC: {
+    mint: 'cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij',
+    decimals: 8,
+  },
+  USDS: {
+    mint: 'USDSwr9ApdHk5bvJKMjzff41FfuX8bSxdKcR81vTwcA',
+    decimals: 6,
+  },
+  BONK: {
+    mint: ADDRESSES.solana.BONK,
+    decimals: 5,
+  },
+}
+
+function getTokenInfo(marketIndex) {
+  switch (marketIndex) {
+    case 0: return TOKEN_INFO.USDC
+    case 1: return TOKEN_INFO.SOL
+    case 6: return TOKEN_INFO.jitoSOL
+    case 9: return TOKEN_INFO.JTO
+    case 10: return TOKEN_INFO.WIF
+    case 15: return TOKEN_INFO.DRIFT
+    case 16: return TOKEN_INFO.INF
+    case 17: return TOKEN_INFO.dSOL
+    case 19: return TOKEN_INFO.JLP
+    case 27: return TOKEN_INFO.cbBTC
+    case 28: return TOKEN_INFO.USDS
+    case 32: return TOKEN_INFO.BONK
+    default: return undefined
+  }
+}
+
+const VAULT_USER_ACCOUNTS = [
+  'Fu8AWYqw7bPZJAxumXJHs62BQZTMcsUkgGdwoh4v3js2', // hJLP 1x (USDC)
+  '3fFkCDe3DU3qVK8FD5fBYumK1bjGKA7uTvVPP53j3ydA', // hJLP 2x (USDC)
+  'DMbboHpxpJjTic3CMVRCiJFYKaEEz6izMgE9vB6GBSxv', // Gauntlet Basis Alpha (USDC)
+  '7Lka2kKagwTvTWNas2UtPaFiwpgs7r9BJtUEzQBB4DxT', // hJLP 1x (JLP)
+  '4UF8DgbH8hGmtfFhV369bkwMyRJbJDGN3UtYCZoeKqN3', // SOL Plus
+  '3u3biLVaLsbeQaXKq3Dt7c4di5Un2rqza4QXnFRmVZ7t', // cbBTC Plus
+  'EC2w198qubUWA2Xf73hz2d7vFKNaQc1XN7SYYqXbfLKQ', // dSOL Plus
+  '4Kayz1HkWJiEcYQgyQkXDC8Y6CeCoV5MYFXg3KwaL9ii', // jitoSOL Plus
+  '68oTjvenFJfrr2iYPtBTRiFyXA8N2pXdHDP82YvuhLaC', // DRIFT Plus
+  'GYxrPXFhCQamBxUc4wMYHnB235Aei7GZsjFCfZgfYJ6b', // Carrot hJLP 
+  'FbbcWcg5FfiPdBhkxuBAeoFCyVN2zzSvNPyM7bRiSKAL', // JTO Plus
+]
+
+async function tvl(api) {
+  const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
+  const idl = require("../knightrade/drift_idl.json")
+  const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+  const provider = getProvider()
+  const program = new Program(idl, programId, provider)
+
+  for (let i = 0; i < accounts.length; i++) {
+    const account = accounts[i];
+    if (!account) continue;
+    const userData = program.coder.accounts.decode("User", account.data);
+    for (let j = 0; j < userData.spotPositions.length; j++) {
+      const spotPosition = userData.spotPositions[j];
+      if (!new BN(spotPosition.scaledBalance).isZero()) {
+        const marketIndex = spotPosition.marketIndex
+        const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
+        const scaledBalance = new BN(spotPosition.scaledBalance)
+        const token = getTokenInfo(marketIndex)
+        if (!token) continue;
+        const balance = scaledBalance
+          .mul(new BN(balanceType === 'deposit' ? 1 : -1))
+          .div(new BN(10).pow(new BN(token.decimals - 9)));
+        api.add(token.mint, balance.toString())
+      }
+    }
+  }
+}
+
+async function megavaultTvl(api) {
+  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
+  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
+  const pnlArr = data.megavaultPnl;
+  if (!pnlArr || !pnlArr.length) return;
+  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
+
+  // Report as USD Coin using coingecko identifier
+  api.add('coingecko:usd-coin', (currentTvl * 1e6).toFixed(0));
+}
+
+async function combinedEthereumTvl(api) {
+  // First, get the existing curator TVL
+  const curatorExport = getCuratorExport(configs);
+  if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
+    await curatorExport.ethereum.tvl(api);
+  }
+  
+  // Then add MegaVault TVL
+  console.log("Adding MegaVault TVL to ethereum...");
+  await megavaultTvl(api);
+  console.log("MegaVault TVL added to ethereum");
+}
+
+module.exports = {
+  ...getCuratorExport(configs),
+  solana: { tvl },
+  ethereum: { tvl: combinedEthereumTvl },
+  timetravel: false,
+  methodology: configs.methodology,
+}

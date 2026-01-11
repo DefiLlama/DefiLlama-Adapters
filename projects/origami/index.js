@@ -2,9 +2,9 @@ const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
-  ethereum: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-mainnet/api'), // ethereum
-  arbitrum: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-arbitrum/api'), // arbitrum
-  berachain: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-berachain/api'), // berachain
+  ethereum: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-mainnet/prod/gn'),
+  arbitrum: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-arbitrum/prod/gn'),
+  berachain: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-berachain/prod/gn'),
 }
 
 module.exports = {
@@ -68,30 +68,87 @@ async function processErc4626Vaults(api, vaults) {
   }))
 }
 
-async function tvl(api) {
-  const { investmentVaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ investmentVaults { id vaultKinds } }')
+async function processBalanceSheetVaults(api, vaults) {
+  const [tokens, balanceSheet] = await Promise.all([
+    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
+  ])
 
-  await processLeveragedVaults(api, vaultsOfKind(investmentVaults, 'LEVERAGE'))
-  await processRepricingVaults(api, vaultsOfKind(investmentVaults, 'REPRICING'))
-  await processErc4626Vaults(api, vaultsOfKind(investmentVaults, 'ERC4626'))
+  vaults.forEach((_vault, i) => {
+    const vaultTokens = tokens[i]
+    const vaultBalanceSheet = balanceSheet[i]
+
+    vaultTokens.assetTokens.forEach((token, j) => {
+      const assetAmount = vaultBalanceSheet.totalAssets[j];
+      if(!token || !assetAmount) return
+      api.addToken(token, assetAmount)
+    })
+    vaultTokens.liabilityTokens.forEach((token, j) => {
+      const liabilityAmount = vaultBalanceSheet.totalLiabilities[j];
+      if(!token || !liabilityAmount) return
+      api.addToken(token, -liabilityAmount)
+    })
+  })
 }
 
-async function borrowed(api) {
-  const { investmentVaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ investmentVaults { id vaultKinds } }')
-  const vaults = vaultsOfKind(investmentVaults, 'LEVERAGE')
+async function processAutoStakingVaults(api, vaults) {
+  const [stakingToken, totalSupply] = await Promise.all([
+    api.multiCall({ abi: 'function stakingToken() external view returns (address)', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'function totalSupply() external view returns (uint256)', calls: vaults, permitFailure: false })
+  ])
 
+  vaults.forEach((_vault, i) => {
+    api.addToken(stakingToken[i], totalSupply[i])
+  })
+}
+
+async function tvl(api) {
+  const { vaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ vaults { id vaultKinds } }')
+
+  await processLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
+  await processRepricingVaults(api, vaultsOfKind(vaults, 'REPRICING'))
+  await processErc4626Vaults(api, vaultsOfKind(vaults, 'ERC4626'))
+  await processBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
+  await processAutoStakingVaults(api, vaultsOfKind(vaults, 'AUTO_STAKING'))
+}
+
+async function borrowedLeveragedVaults(api, leveragedVaults) {
   // Retrieve the token balance of the underlying debt token
-  const managers = await api.multiCall({ calls: vaults, abi: 'address:manager', permitFailure: true })
+  const managers = await api.multiCall({ calls: leveragedVaults, abi: 'address:manager', permitFailure: true })
   const borrowLends = await api.multiCall({ calls: managers, abi: 'address:borrowLend', permitFailure: true })
   const [borrowTokens, borrowAmounts] = await Promise.all([
     await api.multiCall({ calls: borrowLends, abi: 'address:borrowToken', permitFailure: true }),
     await api.multiCall({ calls: borrowLends, abi: 'address:debtBalance', permitFailure: true })
   ])
 
-  vaults.forEach((_vault, i) => {
+  leveragedVaults.forEach((_vault, i) => {
     const debtToken = borrowTokens[i]
     const debtAmount = borrowAmounts[i]
     if(!debtToken || !debtAmount) return
     api.addToken(debtToken, debtAmount)
   })
+}
+
+async function borrowedBalanceSheetVaults(api, vaults) {
+  const [tokens, balanceSheet] = await Promise.all([
+    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
+  ])
+
+  vaults.forEach((_vault, i) => {
+    const vaultTokens = tokens[i]
+    const vaultBalanceSheet = balanceSheet[i]
+
+    vaultTokens.liabilityTokens.forEach((token, j) => {
+      const liabilityAmount = vaultBalanceSheet.totalLiabilities[j];
+      if(!token || !liabilityAmount) return
+      api.addToken(token, liabilityAmount)
+    })
+  })
+}
+
+async function borrowed(api) {
+  const { vaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ vaults { id vaultKinds } }')
+  await borrowedLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
+  await borrowedBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
 }

@@ -1,8 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-const contractAddress = '0x28824b535d1F4edaf89a36B558811CB1c0b9Aa47'; // UniHedge contract
-const accountingToken = ADDRESSES.polygon.DAI; // DAI token on Polygon
+const contractAddress = '0x3C486b7178Eb71d50D060Dd02602aBfAcB88EA21'; // UniHedge contract
+const accountingToken = ADDRESSES.polygon.USDC_CIRCLE; // USDC token on Polygon
 const chain = 'polygon';
 
 async function tvl(_, _1, _2, { api }) {

@@ -1,4 +1,4 @@
-const { getLogs } = require('../helper/cache/getLogs');
+const { getLogs2 } = require('../helper/cache/getLogs');
 const idl = require('./wasabi_solana.json');
 const { getProvider } = require('../helper/solana');
 const { Program } = require("@coral-xyz/anchor");
@@ -40,21 +40,30 @@ const solanaTvl = async (api) => {
   })
 }
 
-Object.keys(config).forEach(chain => {
-  let { pools, fromBlock, tokens = [], } = config[chain]
-  pools = Object.values(pools)
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const logs = (await Promise.all(pools.map(target => getLogs({
+const tvl = async (api) => {
+  const { pools, fromBlock, tokens = [], toBlock = await api.getBlock() - 100 } = config[api.chain]
+
+  const logs = await Promise.all(
+    Object.values(pools).map((pool) =>
+      getLogs2({
         api,
-        target,
+        chain: api.chain,
+        extraKey: '2',
+        target: pool,
         eventAbi: "event NewVault(address indexed pool, address indexed asset, address vault)",
         onlyArgs: true,
         fromBlock,
-      })))).flat();
-      return api.erc4626Sum({ calls: logs.map(log => log.vault), isOG4626: true, });
-    }
-  }
+        toBlock,
+      })
+    )
+  );
+
+  const vaults = [...new Set(logs.flat().map((log) => log[2]))];
+  return api.erc4626Sum({ calls: vaults, isOG4626: true });
+}
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl }
 })
 
 module.exports.solana = {

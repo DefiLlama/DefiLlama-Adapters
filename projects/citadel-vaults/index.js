@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const {
     invokeViewFunction,
 } = require("../helper/chain/supra");
 const { transformBalances } = require("../helper/portedTokens");
 
-const SUPRA_COIN_INFO_STRUCT_TYPE = "0x1::supra_coin::SupraCoin"
+const SUPRA_COIN_INFO_STRUCT_TYPE = ADDRESSES.supra.SUPRA
 const GET_SLOT_DEPOSITS_FUNCTION_TYPE =
     "0xda20f7d0ec813c751926f06004a10bc6ee1eefc96798f6a1aa31447ee146f932::citadel_vault::slot_deposits";
 

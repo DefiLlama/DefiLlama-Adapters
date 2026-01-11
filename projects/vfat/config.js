@@ -87,11 +87,46 @@ module.exports = {
     fromBlock: 4028276,
     voter: '0x3aF1dD7A2755201F8e2D6dCDA1a61d9f54838f4f',
   },
- hemi: {
+  hemi: {
     factory: '0xc6013E57a0811C7111A8fB07ACd2E248D9489C99',
     chainName: 'hemi',
     fromBlockSickle: 1741373,
     gaugeFactory: '0x1E97Cd6b8ce5052b3fAee512C04F93a967c4c0E4',
     fromBlock: 1741373,
+  },
+  avax: {
+    factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
+    chainName: 'avax',
+    fromBlockSickle: 52924795,
+  },
+  ink: {
+    factory: '0xc6013E57a0811C7111A8fB07ACd2E248D9489C99',
+    chainName: 'ink',
+    fromBlockSickle: 7174745,
+  },
+  unichain: {
+    factory: '0x233D9067677dCf1a161954D45B4C965B9d567168',
+    chainName: 'unichain',
+    fromBlockSickle: 10858337,
+  },
+  katana: {
+    factory: '0x233D9067677dCf1a161954D45B4C965B9d567168',
+    chainName: 'katana',
+    fromBlockSickle: 5297524,
+  },
+  fraxtal: {
+    factory: '0xAc371D6E651b6450ea8c4cE346Ddd44B62d851B5',
+    chainName: 'fraxtal',
+    fromBlockSickle: 13191747,
+  },
+  polygon: {
+    factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
+    chainName: 'polygon',
+    fromBlockSickle: 70860185,
+  },
+  lisk: {
+    factory: '0x233D9067677dCf1a161954D45B4C965B9d567168',
+    chainName: 'lisk',
+    fromBlockSickle: 17528958,
   },
 }

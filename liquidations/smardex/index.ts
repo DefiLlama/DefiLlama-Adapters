@@ -68,7 +68,7 @@ const calculateLiquidationPrice = (position: Position): number => {
 
 const formatPosition = (position: Position): Liq => {
   const owner =
-    position.mainPosition?.lastOwner?.address || '0x0000000000000000000000000000000000000000';
+    position.recipient || '0x0000000000000000000000000000000000000000';
     
   const searchParam = position.history && position.history.length > 0 ? 
     position.history[position.history.length - 1].transactionHash : position.index;

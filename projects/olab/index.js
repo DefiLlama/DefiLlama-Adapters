@@ -1,21 +1,27 @@
+const { getLogs2 } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const USDC_CONTRACT_BASE = ADDRESSES.base.USDC;
-const CONDITIONAL_TOKENS_CONTRACT_BASE = '0x34AA5631BdAD51583845e5e82e2CAf6cE63bA64D';
 
-async function tvl(api) {
-  const collateralBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: USDC_CONTRACT_BASE,
-    params: [CONDITIONAL_TOKENS_CONTRACT_BASE],
-  });
+const owner = '0x34AA5631BdAD51583845e5e82e2CAf6cE63bA64D'
 
-  api.add(USDC_CONTRACT_BASE, collateralBalance)
+const abis = {
+  conditionCollateral: "function conditionCollateral(bytes32) view returns (address)",
+}
+
+const eventAbis = {
+  conditionPreparation: "event ConditionPreparation(bytes32 indexed conditionId, address indexed oracle, bytes32 indexed questionId, uint256 outcomeSlotCount)",
+}
+
+const tvl = async (api) => {
+  const positionsLogs = await getLogs2({ api, target: owner, eventAbi: eventAbis.conditionPreparation, fromBlock: 23899060, toBlock: await api.getBlock() - 100, onlyArgs: true })
+  const conditionIds = positionsLogs.filter(log => log[1].toLowerCase() !== ADDRESSES.null).map(log => log[0]);
+  const collTokens = await api.multiCall({ calls: conditionIds.map((id) => ({ target: owner, params: [id] })), abi: abis.conditionCollateral })
+  const uniqueCollTokens = [...new Set(collTokens.map(addr => addr.toLowerCase()))];
+  return api.sumTokens({ owner, tokens: uniqueCollTokens })
 }
 
 module.exports = {
-  methodology: 'TVL (Total Value Locked) refers to the total amount of USDC held in the Conditional Token smart contract, along with the USDC collateral provided to all O.LAB Prediction markets ever created.',
+  methodology: 'TVL (Total Value Locked) refers to the total value of all collateral tokens held in the Conditional Token smart contract, including all collateral tokens provided to O.LAB Prediction markets across different chains.',
   start: 23899060,
-  base: {
-    tvl,
-  }
-};
+  deadFrom: 1752422400,
+  base: { tvl }
+}

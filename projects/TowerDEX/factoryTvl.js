@@ -49,7 +49,7 @@ async function getAllPairs(factory, chain, {blacklistedPairs = []} = {}) {
   return dtos
 }
 
-const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentrated'
+const isNotXYK = (pair) => pair.pair_type && pair.pair_type.concentrated
 
 function getFactoryTvl(factory, {blacklistedPairs = []} = {}) {
   return async (api) => {

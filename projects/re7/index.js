@@ -1,142 +1,128 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by Re7 Labs.',
+  methodology: 'Count all assets are deposited in all vaults curated by Re7 Labs.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0x341193ED21711472e71aECa4A942123452bd0ddA',
-        '0x78Fc2c2eD1A4cDb5402365934aE5648aDAd094d0',
-        '0xE0C98605f279e4D7946d25B75869c69802823763',
-        '0x95EeF579155cd2C5510F312c8fA39208c3Be01a8',
-        '0xA02F5E93f783baF150Aa1F8b341Ae90fe0a772f7',
-        '0x4F460bb11cf958606C69A963B4A17f9DaEEea8b6',
-        '0xBE40491F3261Fd42724F1AEb465796eb11c06ddF',
-        '0x89D80f5e9BC88d8021b352064ae73F0eAf79EBd8',
-        '0x60d715515d4411f7F43e4206dc5d4a3677f0eC78',
-        '0xE87ed29896B91421ff43f69257ABF78300e40c7a',
-        '0x43fD147d5319B8Cf39a6e57143684Efca9CF3613',
-        '0x64964E162Aa18d32f91eA5B24a09529f811AEB8e',
-        "0x4d52545235A3dF246a8928c583E47AE7eeC4aCfE",
+      morphoVaultOwners: [
+        '0x46BA7bCD764a692208781B0Fdc642E272ee597bC',
+        '0xE86399fE6d7007FdEcb08A2ee1434Ee677a04433',
       ],
-      euler: [
-        '0xa8CC68e15D50c1c586b5B0D6e1D4D0Ef620fdd10',
-        '0x6173b0709dEA144CC3662894870B57C53564cfA2',
-        '0xe3b66cA897B4B844d5a8ee7A30982FAc0d126760',
-        '0xBd9A8701B0F56b758bCd4aCe08DAF097e236E0CB',
-        '0x117576B8854a03aB7C3dF1Cf1cd8E04767BfA866',
-        '0x586719300c3966130B3Ce15F563b1080271193E8',
-        '0xc40A68b5E536632b6572283F996B830B34607d01',
-        '0x27052EA5E307B6e8566D9eE560231C6742a6c03c',
-        '0xeE8693c11acE62839bB96beaE86696c1e78Aba3F',
-        '0xAc73efA7696DC1c1617BbC20aeC64422c8b70EDa',
-        '0xe3eb096CD9A87c271567b0134f6dE061c112A9E7',
-        '0x940FCa4Be8e0d43Be75Acc8136342f936f2179E8',
-        '0xcf47fBe97aaE77B8ABEa5e1F59c9bcb808A8d47d',
-        '0x8dDE384022D4dE1D6C67891a8865f551c444dc4C',
-        '0xce45EF0414dE3516cAF1BCf937bF7F2Cf67873De',
-        '0xAb254591B63138247eCcDF82170Eb64890d36b1B',
-        '0xcAd0be6e135C3d2859EA0c872cCD510C962765b7',
-        '0xa992d3777282c44ee980E9B0ca9Bd0c0E4f737aF',
-        '0x631D8E808f2c4177a8147Eaa39a4F57C47634dE8',
-        '0x82c710B9B225B43C0c90f097DB31f5f10a7F86FA',
-        '0xea0C048c728578b1510EBDF9b692E8936D6Fbc90',
-        '0x67e4e4e73947257Ca62D118E0FBC56D06f11d96F',
-        '0xc41252D4F61D25658cD83Cc39942c49776E1B0C5',
-        '0xfaCaD9D934F17930d28b93F3C84a13BFAc73347C',
-        '0xb2A8bAba27B5D45Db0a4E58275cAf62DEBca7AA2',
-      ]
+      eulerVaultOwners: [
+        '0xa563FEEA4028FADa193f1c1F454d446eEaa6cfD7',
+        '0x46BA7bCD764a692208781B0Fdc642E272ee597bC',
+      ],
+      mellow: [
+        '0x84631c0d0081FDe56DeB72F6DE77abBbF6A9f93a',
+        '0x62F0BAf53959AF18Cab47082f5aB58A5B93e041C',
+        '0x8b0e80716c4be087C271E964E0bDc7780d32A2E8',
+        '0x2759E4741b370506BE2ccEf898960108e98f2faf',
+        '0x4C690C311d8A5aa16eC2a595D4ea3928a73C48d6',
+        '0x617895460004821C8DE800d4a644593cAb0aD40c',
+        '0x3a828C183b3F382d030136C824844Ea30145b4c7',
+        '0x7F43fDe12A40dE708d908Fb3b9BFB8540d9Ce444',
+        '0xc65433845ecD16688eda196497FA9130d6C47Bd8',
+        '0x7a4EffD87C2f3C55CA251080b1343b605f327E3a',
+        '0x82f5104b23FF2FA54C2345F821dAc9369e9E0B26',
+      ],
+      turtleclub: [
+        '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad',
+      ],
+      symbiotic: [
+        '0x35E44d92E8F738A272Bddbae53d1Dc9490e75Fe7',
+      ],
     },
     base: {
-      morpho: [
-        '0xbb819D845b573B5D7C538F5b85057160cfb5f313',
-        '0xA2Cac0023a4797b4729Db94783405189a4203AFc',
-        '0x12AFDeFb2237a5963e7BAb3e2D46ad0eee70406e',
-        '0x80D9964fEb4A507dD697b4437Fc5b25b618CE446',
-        '0xB7890CEE6CF4792cdCC13489D36D9d42726ab863',
-        '0x6e37C95b43566E538D8C278eb69B00FC717a001b',
-        '0x0FaBfEAcedf47e890c50C8120177fff69C6a1d9B',
-        '0x74B6EA9BFee07C3756969b0139CFacBBa5845969',
-        '0x30B8A2c8E7Fa41e77b54b8FaF45c610e7aD909E3',
-        '0x8c3A6B12332a6354805Eb4b72ef619aEdd22BcdD',
-        '0xdB90A4e973B7663ce0Ccc32B6FbD37ffb19BfA83',
-        '0x00dfDb8C7295a03DCf1ADfF4D21eB5D9D19FB330',
-      ]
+      morphoVaultOwners: [
+        '0xD8B0F4e54a8dac04E0A57392f5A630cEdb99C940',
+      ],
     },
     sonic: {
-      euler: [
-        '0x2ad7546A19eb5D5eDb37EC88A4775995078d1CAd',
-        '0x8537a336fC74EA742527E8300175A7b07a108c9E',
-        '0xeEb1DC1Ca7ffC5b54aD1cc4c1088Db4E5657Cb6c',
-        '0x3D9e5462A940684073EED7e4a13d19AE0Dcd13bc',
-        '0x4c0AF5d6Bcb10B3C05FB5F3a846999a3d87534C7',
-        '0xF3c631B979EB59d8333374baA7c58B5Aff5e24D2',
-        '0x2De851E60e428106fC98fE94017466F8D71793d1',
-        '0xEeb63D2d370C5318ef174D366A41507F9380f093',
-      ]
+      eulerVaultOwners: [
+        '0xF602d3816bC63fC5f5Dc87bB56c537D0d0078532',
+        '0x46BA7bCD764a692208781B0Fdc642E272ee597bC',
+      ],
+      siloVaultOwners: [
+        '0x3BA1566ED39F865bAf4c1Eb9acE53F3D2062bE65',
+      ],
     },
     bob: {
-      euler: [
-        '0x11DA346d3Fdb62641BDbfebfd54b81CAA871aEf6',
-        '0x33Cc3800574c4bEe6D7428e707Db82d1543d639D',
-        '0xB615D3123410EE89542b027DC71e87b4Fc05EA80',
-      ]
+      eulerVaultOwners: [
+        '0x46BA7bCD764a692208781B0Fdc642E272ee597bC',
+      ],
     },
     berachain: {
-      euler: [
-        '0x5ba8763891D6a4F934B197B9817757d887B78fec',
-        '0x89FD57175EcEEC45992e07c206e5A864Fa6aF433',
-        '0x66f233ac844C3948A516857CA769872E5941f91c',
-        '0xe318d262290ABab80FC6e217c514801e2c0EF999',
-      ]
+      eulerVaultOwners: [
+        '0x46BA7bCD764a692208781B0Fdc642E272ee597bC',
+      ],
     },
     avax: {
-      euler: [
-        '0x27807C61F6b376754b7ce208AA8b17D2DA56d582',
-        '0xB1Ec13C66fdb12205C6C82c392a5A3b393207388',
-        '0xA45189636c04388ADBb4D865100DD155e55682EC',
-        '0xA06e66646292b2C2042495B955fe07c4036f6635',
-        '0xFECebF56f150A68dDd197c3a6101da35C46693Ac',
-        '0x39dE0f00189306062D79eDEC6DcA5bb6bFd108f9',
-        '0x2137568666f12fc5A026f5430Ae7194F1C1362aB',
-        '0x72F92a966f1874f74e1b601BEe7CF57031B53A03',
-        '0x6c718a70239fA548c0bD268fE88F37EBE8b6E2ea',
-        '0xb52a9c3aea75939a78287F81b53A9e965e058eec',
-        '0x38a559c2b6eF3fF7Cdc40a800D6351a2B70b2243',
-        '0xABA9d2D4b6B93C3dc8976D8eb0690CCA56431FE4',
-        '0x4eC5B9a4d4FD9E35d4f881D35AAB9877bfdA5803',
-        '0x7485484Dab196C615AE21453C3ABd732977562f2',
-      ]
+      eulerVaultOwners: [
+        '0x7B41b9891887820A75A51a1025dB1A54f4798521',
+        '0x3BA1566ED39F865bAf4c1Eb9acE53F3D2062bE65',
+      ],
     },
     bsc: {
-      euler: [
-        '0xc4dB46B082B415c16C54c91c5750Df8e2f90EF36',
-        '0x69A93DbAB609266af96f05658b2e22d020de2E19',
-        '0x266D3F3219680624DE4D66c716444512A2B9a72F',
-        '0x7a455f66FD2D2d5C69ae403a971ED513C852F9D7',
-        '0xa0b6d76452B1f417a94Ae309b835D523a081FbB9',
-        '0xF72aB1726e6f379891dDAE8114C75074d972FdAc',
-        '0x3ac88AfbC38Bb41443457eeB027b60e85B815538',
-        '0xfEb1D6259De6C052A0d0f986b4Df4D8Fd8B371F4',
-        '0xCB9c9FE7d1509955d8b860E6831d91bf3F0B6240',
-        '0xcCD520c8cE2aC576429bE0aD8cc14cDc0e3E44fc',
-      ]
+      eulerVaultOwners: [
+        '0x187620a61f4f00Cb629b38e1b38BEe8Ea60d2B8D',
+      ],
     },
     wc: {
-      morpho: [
-        '0xb1E80387EbE53Ff75a89736097D34dC8D9E9045B',
-        '0x348831b46876d3dF2Db98BdEc5E3B4083329Ab9f',
-        '0x0Db7E405278c2674F462aC9D9eb8b8346D1c1571',
-        '0xbc8c37467c5df9d50b42294b8628c25888becf61',
-        '0xcab7047195019aaea07880487641ba26580ab9db',
-      ]
+      morphoVaultOwners: [
+        '0x46BA7bCD764a692208781B0Fdc642E272ee597bC',
+        '0x598A41fA4826e673829D4c5AfD982C0a43977ca6',
+      ],
     },
     polygon:{
-      morpho: [
-        "0xF91D80E43272DBC610551E8c872E0438d62C1c69"
+      morphoVaultOwners: [
+        '0x7B41b9891887820A75A51a1025dB1A54f4798521',
+      ],
+    },
+    unichain:{
+      morphoVaultOwners: [
+        '0x187620a61f4f00Cb629b38e1b38BEe8Ea60d2B8D',
+      ],
+    },
+    plume_mainnet:{
+      morphoVaultOwners: [
+        '0x7B41b9891887820A75A51a1025dB1A54f4798521',
+        '0x06590Fef209Ebc1f8eEF83dA05984cD4eFf0d0E3',
+      ],
+    },
+    starknet: {
+      vesu: [
+        '0x7f135b4df21183991e9ff88380c2686dd8634fd4b09bb2b5b14415ac006fe1d',
+        '0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161',
+        '0x2e06b705191dbe90a3fbaad18bb005587548048b725116bff3104ca501673c1',
+        '0x6febb313566c48e30614ddab092856a9ab35b80f359868ca69b2649ca5d148d',
+        '0x59ae5a41c9ae05eae8d136ad3d7dc48e5a0947c10942b00091aeb7f42efabb7',
+        '0x3de03fafe6120a3d21dc77e101de62e165b2cdfe84d12540853bd962b970f99',
       ]
-    }
+    },
+    tac:{
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
+    linea:{
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
+    plasma: {
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
   }
 }
 
-module.exports = getCuratorExport(configs)
+module.exports = {
+  ...getCuratorExport(configs),
+
+  // starknet doesn't support historical queries
+  timetravel: false,
+  hallmarks: [
+    ['2025-06-01', "Start tracking vaults on starknet"],
+  ]
+}

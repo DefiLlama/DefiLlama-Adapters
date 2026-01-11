@@ -15,4 +15,10 @@ module.exports = {
             useDefaultCoreAssets: true,
         }),
     },
+    base: {
+        tvl: getUniTVL({
+            factory: '0x4c1b8D4ae77A37b94e195CAB316391d3C687ebd1',
+            useDefaultCoreAssets: true,
+        }),
+    },
 }

@@ -25,3 +25,5 @@ module.exports = mergeExports([
   { blast: lend, },
   { blast: { staking: stakings([stake], token) }, }
 ])
+
+module.exports.deadFrom = '2025-06-09' 

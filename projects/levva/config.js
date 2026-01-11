@@ -22,7 +22,8 @@ module.exports = {
         fromBlock: 257563019,
         address: "0x7a923e412B934ceC16042AA28244eE4881f9B722",
       }
-    ]
+    ],
+    levvaV2Factories:[],
   },
   blast: {
     factories: [
@@ -33,6 +34,7 @@ module.exports = {
       },
     ],
     contractRegistries:[],
+    levvaV2Factories:[],
   },
   ethereum: {
     factories: [
@@ -52,7 +54,13 @@ module.exports = {
         fromBlock: 21027804,
         address: "0x8Dbc09C0BD6D99AF01B8254432A13E6FF1b214Bd",
       }
-    ]
+    ],
+    levvaV2Factories:[
+      {
+        factory: "0x3e104BB4c3777e1Ca3Ab25fF5e9c801Ff9f99559",
+        fromBlock: 23017890
+      }
+    ],
   },
   linea: {
     factories: [
@@ -63,5 +71,16 @@ module.exports = {
       }
     ],
     contractRegistries:[],
+    levvaV2Factories:[],
+  },
+  base: {
+      factories: [],
+      contractRegistries:[],
+      levvaV2Factories:[
+      {
+        factory: "0x391685807Cf005848A0711Deb9Db74209E59662f",
+        fromBlock: 35095203
+      }
+    ],
   }
 };

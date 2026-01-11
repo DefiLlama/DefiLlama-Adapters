@@ -29,7 +29,7 @@ const config = {
       ],
       // [
       //   // FTM Token
-      //   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      //   ADDRESSES.GAS_TOKEN_2,
       //   // EngineChip (owner)
       //   "0x614aA983f54409D475aeC5D18120FECFD6320eF4"
       // ],

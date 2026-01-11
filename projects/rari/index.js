@@ -4,11 +4,6 @@ const { compoundExports2 } = require('../helper/compound')
 const { pool2 } = require('../helper/pool2');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const earnETHPoolFundControllerAddressesIncludingLegacy = [
-  '0xD9F223A36C2e398B0886F945a7e556B41EF91A3C',
-  '0xa422890cbBE5EAa8f1c88590fBab7F319D7e24B6',
-  '0x3f4931a8e9d4cdf8f56e7e8a8cfe3bede0e43657',
-]
 const earnDAIPoolControllerAddressesIncludingLegacy = [
   '0x7C332FeA58056D1EF6aB2B2016ce4900773DC399',
 ]
@@ -31,21 +26,11 @@ const tokenMapWithKeysAsSymbol = {
 
 
 async function tvl(api) {
-
-  const getBalancesFromEarnPool = async (addresses) => {
-    const earnPoolData = (await api.multiCall({ calls: addresses, abi: abi['getRawFundBalancesAndPrices'], permitFailure: true, }))
-    earnPoolData.filter(i => i).forEach(([tokens, bals] = []) => {
-      tokens.forEach((token, i) => {
-        const mapped = tokenMapWithKeysAsSymbol[token.toUpperCase()]
-        if (mapped) api.add(mapped, bals[i])
-        else console.log('unmapped', token, bals[i])
-      })
-    })
-  }
-
   // Earn yield pool
-  const earnYieldProxyAddress = ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8'].concat(earnETHPoolFundControllerAddressesIncludingLegacy).concat(earnDAIPoolControllerAddressesIncludingLegacy).concat(earnStablePoolAddressesIncludingLegacy)
-  await getBalancesFromEarnPool(earnYieldProxyAddress)
+  const earnYieldProxyAddress = ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8'].concat(earnDAIPoolControllerAddressesIncludingLegacy).concat(earnStablePoolAddressesIncludingLegacy)
+  const fundManagers = await api.multiCall({  abi: 'address:rariFundManager', calls: earnYieldProxyAddress, permitFailure: true })
+  const controllers = await api.multiCall({  abi: 'address:rariFundController', calls: fundManagers})
+  await api.sumTokens({ owners: controllers, tokens: Object.values(tokenMapWithKeysAsSymbol) })
 
   await fuseTvl(api)
 }
@@ -67,9 +52,9 @@ module.exports = {
   },
   arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716' }),
   hallmarks: [
-    [1651276800, "FEI hack"],
+    // [1651276800, "FEI hack"],
     [1649548800, "ICHI sell-off"],
-    [1620432000, "First Rari hack"],
+    // [1620432000, "First Rari hack"],
     [1654905600, "Bhavnani's announcement"]
   ]
 }

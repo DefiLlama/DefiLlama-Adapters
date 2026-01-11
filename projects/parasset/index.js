@@ -8,7 +8,7 @@ const NEST = "0x04abeda201850ac0124161f037efd70c74ddc74c";
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    tvl: sumTokensExport({ tokensAndOwners: [[nullAddress, PUSDMorPool]] }),
+    tvl: () => ({}),
     staking: stakings([PUSDMorPool, PETHMorPool], NEST),
   },
   methodology:

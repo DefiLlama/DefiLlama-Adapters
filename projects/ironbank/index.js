@@ -19,3 +19,6 @@ module.exports = {
   avax: compoundExports2({ comptroller: '0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc' }),
   optimism: compoundExports2({ comptroller: '0xE0B57FEEd45e7D908f2d0DaCd26F113Cf26715BF' }),
 }
+
+module.exports.ethereum.borrowed = () => ({}) // bad debt, likely will never be repaid
+module.exports.fantom.borrowed = () => ({}) // bad debt, likely will never be repaid

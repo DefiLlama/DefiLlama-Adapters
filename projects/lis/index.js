@@ -1,4 +1,5 @@
-const MINT_TOKEN_CONTRACT = '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0';
+const ADDRESSES = require('../helper/coreAssets.json')
+const MINT_TOKEN_CONTRACT = ADDRESSES.ethereum.WSTETH;
 const addresses = [
     "0x19d531fb5369a25a8497e606ba131fa85e2026fc",
     "0xa3820605c53922c43d0293bbda8975aedfd2bef8",

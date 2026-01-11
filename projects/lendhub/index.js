@@ -1,8 +1,8 @@
 module.exports = {
   timetravel: false,
-  hallmarks: [
-    ['2023-01-12', 'Protocol was hacked'],
-  ],
+  // hallmarks: [
+  //   ['2023-01-12', 'Protocol was hacked'],
+  // ],
   heco: {
     tvl: () => ({}),
     // borrowed: tvl(true),

@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const CUSTOM_ADDRESSES = {
   arbitrum: {
-    WEETH: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
+    WEETH: ADDRESSES.arbitrum.weETH,
     sUSDe: ADDRESSES.arbitrum.sUSDe,
     tBTC: "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40"
   }

@@ -11,7 +11,7 @@ const abis = {
 const tvl = async (api) => {
   const users = await api.fetchList({ target: controller, itemAbi: abis.loans, lengthAbi: abis.nLoans })
   const userInfos = await api.multiCall({ calls: users.map((user) => ({ target: controller, params: [user] })), abi: abis.userState })
-  userInfos.forEach(([coll]) => { api.add(ADDRESSES.ethereum.WBTC, coll / 1e10, { skipChain: true })})
+  userInfos.forEach(([coll]) => { api.add(`ethereum:${ADDRESSES.ethereum.WBTC}`, coll / 1e10, { skipChain: true })})
 }
 
 module.exports = {

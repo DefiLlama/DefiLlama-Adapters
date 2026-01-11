@@ -45,10 +45,10 @@ const getPTs = async (api, factory, fromBlock) => {
 }
 
 const tvl = async (api) => {
-  const { factory, fromBlock } = config[api.chain]
+  const sources = config[api.chain]
   const [marketDatas, pts] = await Promise.all([
-    getMarkets(api, factory, fromBlock),
-    getPTs(api, factory, fromBlock)
+    Promise.all(sources.map(({ factory, fromBlock }) => getMarkets(api, factory, fromBlock))).then(data => data.flat()),
+    Promise.all(sources.map(({ factory, fromBlock }) => getPTs(api, factory, fromBlock))).then(data => data.flat())
   ])
 
   const marketsBalances = await api.multiCall({ calls: marketDatas.map(([market]) => ({ target: market, params: [0] })), abi: abi.markets.balances })

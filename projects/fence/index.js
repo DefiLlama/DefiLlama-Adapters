@@ -1,11 +1,11 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by Fence.',
+  methodology: 'Count all assets are deposited in all vaults curated by Fence.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0xC21DB71648B18C5B9E038d88393C9b254cf8eaC8',
+      morphoVaultOwners: [
+        '0xF92971B4D9e6257CF562400ed81d2986F28a8c26',
       ],
     },
   }

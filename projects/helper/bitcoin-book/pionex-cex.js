@@ -18,5 +18,17 @@ module.exports = [
   "bc1qs5lsnltqwdvledqvgrf82prja04ej4xk2z7ktu",
   "bc1qcc2h0dw6t79y4czk8newhazwgzlygyfawu7k30",
   "bc1q7d9lknwmc7tnwcemapkymggne2sv0hxkg84vg6",
-  "bc1q9a67xl67smtue0ajutxttsla25a45x6fdpwccp"
+  "bc1q9a67xl67smtue0ajutxttsla25a45x6fdpwccp",
+  "bc1qtww74le5349we4ncvf9m7lpu5lpe9f4j9y39ey",
+  "bc1qn47hrlrkjnm7fvlt250ah62y4vlx6vgtulx93k",
+  "bc1q6vw4d86dvqe3jcldg8yxzc3c74hzve2w757mcl",
+  "bc1q3fddfzf3kp4x2htd9ghhytz29vfnd6k066wl43",
+  "bc1qzrxjhl47atjfc63tme0nzurc4d9hqpugvv80rs",
+  "bc1q52rewzm8plc404uexqxp0kqtqzenmnz0u2ucf6",
+  "bc1qqrmpk72h9d4jrx63vqzz88uf8qsue6m7wm23jf",
+  "bc1qn8vnl94k2dsvgntqtrj4jttshqyxt95073s8x9",
+  "bc1qxx3ehup2yet758ve8ft483tq9u5anw2k0trqps",
+  "bc1qcwk60napcfcljv6phg69gfyfmp3emsgdj9cn5v",
+  "bc1q4rtnrtnu829eet3m27huh6ld7x0xczjxd5dg5r",
+  "bc1q7vfv3h99vxwu300qej6x2qdfsn58kq6nc9hec6"
 ]
