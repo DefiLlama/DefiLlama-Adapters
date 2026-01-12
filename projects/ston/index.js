@@ -9,9 +9,18 @@ module.exports = {
     tvl: async () => {
       const result = await get("https://api.ston.fi/v1/pools?dex_v2=true")
 
+      // Filter out pools with missing/invalid data to prevent adapter crashes
+      // when encountering spam tokens or pools without prices.
+      // Pools with zero reserves have no TVL contribution anyway.
+      const validPools = result.pool_list.filter(i => 
+        i.token0_address && i.token1_address && 
+        i.reserve0 && i.reserve1 && 
+        +i.reserve0 > 0 && +i.reserve1 > 0
+      )
+
       return transformDexBalances({
         chain: 'ton',
-        data: result.pool_list.map(i => ({
+        data: validPools.map(i => ({
           token0: i.token0_address,
           token1: i.token1_address,
           token0Bal: i.reserve0,
