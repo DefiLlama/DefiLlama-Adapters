@@ -141,6 +141,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  optimism: {
+    vaultFactories: [
+      {
+        address: '0x3Bb6A6A0Bc85b367EFE0A5bAc81c5E52C892839a',
+        fromBlock: 130770189,
+      },
+    ],
+  },
   hemi: {
     vaultFactories: [
       {
