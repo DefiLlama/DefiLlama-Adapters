@@ -46,12 +46,19 @@ const configs = {
         '0x30988479C2E6a03E7fB65138b94762D41a733458'
       ],
     },
-    flare: {
-      erc4626: [
-        '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28', // Upshift FXRP (getTotalAssets does not work yet)
-      ],
-    },
   }
 }
 
-module.exports = getCuratorExport(configs)
+const exportObj = getCuratorExport(configs)
+
+// Flare vault uses non-standard getTotalAssets() instead of totalAssets()
+const FLARE_VAULT = '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28' // Upshift FXRP
+exportObj.flare = {
+  tvl: async (api) => {
+    const asset = await api.call({ abi: 'address:asset', target: FLARE_VAULT })
+    const totalAssets = await api.call({ abi: 'uint256:getTotalAssets', target: FLARE_VAULT })
+    api.add(asset, totalAssets)
+  }
+}
+
+module.exports = exportObj
