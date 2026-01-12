@@ -1,7 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { post } = require("../http");
 const { getUniqueAddresses, nullAddress } = require("../tokenMapping");
-const { getAssets, getAddressesUTXOs } = require("./cardano/blockfrost");
+const {
+  getAssets,
+  getAddressesUTXOs,
+  addressesUtxosAssetAll,
+} = require("./cardano/blockfrost");
 const { PromisePool } = require("@supercharge/promise-pool");
 
 async function getAda(address) {
@@ -111,6 +115,26 @@ function sumTokensExport({
     sumTokens2({ owners, balances, owner, tokens, blacklistedTokens, scripts });
 }
 
+// Get the UTxO at the address that holds the NFT
+async function getNftUtxo({ address, asset }) {
+  const notFoundError = new Error(
+    `No output with asset ${asset} found at address ${address}`
+  );
+  const is404 = (e) =>
+    e?.raw?.response?.status === 404 ||
+    e?.response?.status === 404 ||
+    e?.status === 404;
+
+  try {
+    const utxos = await addressesUtxosAssetAll(address, asset);
+    if (utxos.length > 0) return utxos[0];
+    throw notFoundError;
+  } catch (err) {
+    if (is404(err)) throw notFoundError;
+    throw err;
+  }
+}
+
 // Best-effort variant: ignores 404s from getAssets/getAddressesUTXOs
 async function trySumTokens({
   owners = [],
@@ -200,4 +224,5 @@ module.exports = {
   sumTokens2,
   sumTokensExport,
   trySumTokens,
+  getNftUtxo
 };

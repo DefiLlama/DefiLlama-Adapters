@@ -1,20 +1,57 @@
 const axios = require('axios')
 
-const axiosObj = axios.create({
-  baseURL: 'https://cardano-mainnet.blockfrost.io/api/v0',
-  headers: {
-    'project_id': 'mai'+'nnetcxT8VaeCgVMzMTSe'+'zZijWlVkyh6XytpS',
-    'Content-Type': 'application/json'
-  },
-  timeout: 300000,
-})
+const defaultBaseUrls = {
+  mainnet: 'https://cardano-mainnet.blockfrost.io/api/v0',
+  preview: 'https://cardano-preview.blockfrost.io/api/v0',
+}
 
-async function getAddressesUTXOs(address) {
+const defaultProjectIds = {
+  mainnet: 'mai'+'nnetcxT8VaeCgVMzMTSe'+'zZijWlVkyh6XytpS',
+  preview: 'previ' + 'ewUJJvqX2v9T' + 'OOAis8dZWiuyTPfJxJIKgH',
+}
+
+const clientCache = new Map()
+
+function getClient(options = {}) {
+  const network = (options.network || 'mainnet').toLowerCase()
+  const projectId =
+    options.projectId ||
+    process.env[`BLOCKFROST_PROJECT_ID_${network.toUpperCase()}`] ||
+    process.env.BLOCKFROST_PROJECT_ID ||
+    defaultProjectIds[network]
+
+  if (!projectId) {
+    throw new Error(`Missing Blockfrost project_id for network ${network}`)
+  }
+
+  const baseURL =
+    options.baseUrl ||
+    process.env.BLOCKFROST_BASE_URL ||
+    defaultBaseUrls[network] ||
+    defaultBaseUrls.mainnet
+
+  const cacheKey = `${network}|${projectId}|${baseURL}`
+  if (clientCache.has(cacheKey)) return clientCache.get(cacheKey)
+
+  const instance = axios.create({
+    baseURL,
+    headers: {
+      'project_id': projectId,
+      'Content-Type': 'application/json'
+    },
+    timeout: 300000,
+  })
+
+  clientCache.set(cacheKey, instance)
+  return instance
+}
+
+async function getAddressesUTXOs(address, options) {
   const utxos = []
   let page = 1
   let response
   do {
-    response = await axiosObj.get(`addresses/${address}/utxos?page=${page}`)
+    response = await getClient(options).get(`addresses/${address}/utxos?page=${page}`)
     response = response.data
     utxos.push(...response)
     page++
@@ -22,18 +59,18 @@ async function getAddressesUTXOs(address) {
   return utxos
 }
 
-async function getAssets(address) {
-  return (await axiosObj.get(`addresses/${address}`)).data.amount
+async function getAssets(address, options) {
+  return (await getClient(options).get(`addresses/${address}`)).data.amount
 }
 
 
-async function assetsAddresses(address) {
+async function assetsAddresses(address, options) {
   const addresses = []
   let page = 1
   let response
   
   do {
-    response = await axiosObj.get(`assets/${address}/addresses`, {
+    response = await getClient(options).get(`assets/${address}/addresses`, {
       params: { count: 100, page, }
     })
     response = response.data
@@ -43,13 +80,13 @@ async function assetsAddresses(address) {
   return addresses
 }
 
-async function addressesUtxosAssetAll(address, asset) {
+async function addressesUtxosAssetAll(address, asset, options) {
 
   const addresses = []
   let page = 1
   let response
   do {
-    response = await axiosObj.get(`/addresses/${address}/utxos/${asset}`, {
+    response = await getClient(options).get(`/addresses/${address}/utxos/${asset}`, {
       params: { count: 100, page, }
     })
     response = response.data
@@ -59,33 +96,33 @@ async function addressesUtxosAssetAll(address, asset) {
   return addresses
 }
 
-async function getTxUtxos(tx_hash) {
-  const { data } = await axiosObj.get(`txs/${tx_hash}/utxos`)
+async function getTxUtxos(tx_hash, options) {
+  const { data } = await getClient(options).get(`txs/${tx_hash}/utxos`)
   return data
 }
 
-async function getTxsRedeemers(utxo) {
-  const { data } = await axiosObj.get(`txs/${utxo}/redeemers`)
+async function getTxsRedeemers(utxo, options) {
+  const { data } = await getClient(options).get(`txs/${utxo}/redeemers`)
   return data
 }
 
-async function getTxsMetadata(utxo) {
-  const { data } = await axiosObj.get(`txs/${utxo}/metadata`)
+async function getTxsMetadata(utxo, options) {
+  const { data } = await getClient(options).get(`txs/${utxo}/metadata`)
   return data
 }
 
-async function getScriptsDatum(datumHash) {
-  const { data } = await axiosObj.get(`scripts/datum/${datumHash}`)
+async function getScriptsDatum(datumHash, options) {
+  const { data } = await getClient(options).get(`scripts/datum/${datumHash}`)
   return data
 }
 
-async function getTokensMinted(tokenId){
-  const {data} = await axiosObj.get(`assets/${tokenId}`)
+async function getTokensMinted(tokenId, options){
+  const {data} = await getClient(options).get(`assets/${tokenId}`)
   return Number(data.quantity)
 }
 
-async function getAccountAddresses(account) {
-  const { data } = await axiosObj.get(`/accounts/${account}/addresses`)
+async function getAccountAddresses(account, options) {
+  const { data } = await getClient(options).get(`/accounts/${account}/addresses`)
   return data
 }
 
