@@ -30,6 +30,7 @@ const DEFAULTS = {
   FOGO_RPC: 'https://mainnet.fogo.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
+  INJECTIVE_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
