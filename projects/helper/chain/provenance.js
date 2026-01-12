@@ -8,7 +8,7 @@ const tokenMapping = {
     "eth.figure.se": "ethereum",
     "usd.trading": "usd-coin",
     "usdc.figure.se": "usd-coin",
-    // "ylds.fcc": "ylds",
+    "ylds.fcc": "ylds",
     "usdt.figure.se": "tether",
     "xrp.figure.se": "ripple",
     "sol.figure.se": "solana",

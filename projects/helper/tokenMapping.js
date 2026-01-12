@@ -76,7 +76,7 @@ const fixBalancesTokens = {
     USDC: { coingeckoId: 'usd-coin', decimals: 0 },
     USD: { coingeckoId: 'usd-coin', decimals: 0 },
     YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
-    'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
+    FIGR_HELOC: { coingeckoId: 'figure-heloc', decimals: 3 },
   },
   doma: {
     // USDC.e (Bridged USDC via Stargate) - Verified 2024-11-27 via explorer.doma.xyz/token/0x31EEf89D5215C305304a2fA5376a1f1b6C5dc477
