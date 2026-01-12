@@ -28,6 +28,7 @@
     "@defillama/sdk": "latest",
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.87.6",
+    "@stellar/stellar-sdk": "^14.4.3",
     "@supercharge/promise-pool": "^2.1.0",
     "axios": "^1.6.5",
     "base-x": "^5.0.1",
