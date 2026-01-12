@@ -1,6 +1,7 @@
 const { multiCall } = require("../helper/chain/starknet");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { rpc, xdr, scValToNative } = require("@stellar/stellar-sdk");
+const { post } = require("../helper/http");
+const base32 = require("hi-base32");
 
 const config = {
   polygon: [
@@ -90,26 +91,60 @@ const config = {
 };
 
 const STELLAR_RPC_URL = "https://soroban-rpc.creit.tech/";
-const stellarRpc = new rpc.Server(STELLAR_RPC_URL);
+const STELLAR_LEDGER_ENTRY_CONTRACT_DATA = 6;
+const STELLAR_SC_ADDRESS_TYPE_CONTRACT = 1;
+const STELLAR_SCVAL_LEDGER_KEY_CONTRACT_INSTANCE = 20;
+const STELLAR_CONTRACT_DATA_PERSISTENT = 1;
+
+function decodeContractId(contract) {
+  const raw = Buffer.from(base32.decode.asBytes(contract));
+  return raw.slice(1, -2);
+}
+
+function buildContractInstanceKey(contract) {
+  const payload = decodeContractId(contract);
+  const buf = Buffer.alloc(48);
+  let offset = 0;
+  buf.writeUInt32BE(STELLAR_LEDGER_ENTRY_CONTRACT_DATA, offset);
+  offset += 4;
+  buf.writeUInt32BE(STELLAR_SC_ADDRESS_TYPE_CONTRACT, offset);
+  offset += 4;
+  payload.copy(buf, offset);
+  offset += 32;
+  buf.writeUInt32BE(STELLAR_SCVAL_LEDGER_KEY_CONTRACT_INSTANCE, offset);
+  offset += 4;
+  buf.writeUInt32BE(STELLAR_CONTRACT_DATA_PERSISTENT, offset);
+  return buf.toString("base64");
+}
+
+function parseTotalSupplyFromEntry(xdr) {
+  const buf = Buffer.from(xdr, "base64");
+  const marker = Buffer.from("TotalSupply");
+  const idx = buf.indexOf(marker);
+  if (idx === -1) throw new Error("TotalSupply not found in contract storage");
+  const len = buf.readUInt32BE(idx - 4);
+  let offset = idx + len;
+  offset += (4 - (len % 4)) % 4;
+  const type = buf.readUInt32BE(offset);
+  if (type !== 10) throw new Error("Unexpected TotalSupply type");
+  const hi = buf.readBigInt64BE(offset + 4);
+  const lo = buf.readBigUInt64BE(offset + 12);
+  let value = (hi << 64n) + lo;
+  if (hi < 0n) value = -(((-hi) << 64n) - lo);
+  return value.toString();
+}
 
 async function fetchStellarSupply(contract) {
-  // SACs store TotalSupply in the contract instance storage.
-  const response = await stellarRpc.getContractData(
-    contract,
-    xdr.ScVal.scvLedgerKeyContractInstance(),
-    rpc.Durability.Persistent
-  );
-  const instance = scValToNative(response.val.value().val());
-  const storage = instance?._attributes?.storage || [];
-  for (const entry of storage) {
-    const key = scValToNative(entry._attributes.key);
-    if (key === "TotalSupply" || (Array.isArray(key) && key[0] === "TotalSupply")) {
-      const supply = scValToNative(entry._attributes.val);
-      if (typeof supply === "bigint") return supply.toString();
-      return supply;
-    }
-  }
-  throw new Error(`TotalSupply not found for ${contract}`);
+  const key = buildContractInstanceKey(contract);
+  const data = await post(STELLAR_RPC_URL, {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "getLedgerEntries",
+    params: { keys: [key] },
+  });
+  const entry = data?.result?.entries?.[0];
+  if (!entry?.xdr) throw new Error(`Missing contract data for ${contract}`);
+  return parseTotalSupplyFromEntry(entry.xdr);
 }
 
 const totalSupplyAbi = {
