@@ -48,7 +48,7 @@ const configs = {
     },
     flare: {
       erc4626: [
-        '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28', // Upshift FXRP
+        '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28', // Upshift FXRP (getTotalAssets does not work yet)
       ],
     },
   }
