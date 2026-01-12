@@ -1,6 +1,6 @@
 const { get } = require('../helper/http')
 const { transformDexBalances } = require('../helper/portedTokens')
-const sdk = require('@defillama/sdk')
+const { getCoreAssets } = require('../helper/tokenMapping')
 
 module.exports = {
   misrepresentedTokens: true,
@@ -8,15 +8,15 @@ module.exports = {
   ton: {
     tvl: async () => {
       const result = await get("https://api.ston.fi/v1/pools?dex_v2=true")
+      const coreTokens = new Set(getCoreAssets('ton'))
 
-      // Filter out pools with missing/invalid data to prevent adapter crashes
-      // when encountering spam tokens or pools without prices.
-      // Pools with zero reserves have no TVL contribution anyway.
-      const validPools = result.pool_list.filter(i => 
-        i.token0_address && i.token1_address && 
-        i.reserve0 && i.reserve1 && 
-        +i.reserve0 > 0 && +i.reserve1 > 0
-      )
+      // Only include pools where at least one token is a known core asset.
+      // This prevents issues with spam token pools (e.g. SCAM1/SCAM2) that:
+      // 1. Cannot be reliably priced (no core asset to derive price from)
+      // 2. May cause price lookup failures for unknown tokens
+      const validPools = result.pool_list.filter(i => {
+        return coreTokens.has(i.token0_address) || coreTokens.has(i.token1_address)
+      })
 
       return transformDexBalances({
         chain: 'ton',
@@ -26,11 +26,6 @@ module.exports = {
           token0Bal: i.reserve0,
           token1Bal: i.reserve1,
         })),
-        blacklistedTokens: [
-          'EQCKiXahTtXh01KzY6yfj9TAzxdunbv5o9dcHv--cbM2eoHf',
-          'EQAsHOPv6QeOuno7MxIhLQYjeSSO-vDb44WVoES4deEad__E',
-          'EQA-iWfOSb4tXt_5viDz91V5Kz49Ceyw-WDwiRGiQvrO8D3o'
-        ]
       })
     }
   }
