@@ -1,4 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const sdk = require("@defillama/sdk");
 
 // https://mezo.org/docs/users/resources/contracts-reference
 
@@ -25,27 +26,28 @@ const mezoPreMainnetBridge = "0xAB13B8eecf5AA2460841d75da5d5D861fD5B8A39";
 //https://github.com/mezo-org/mezod/blob/main/ethereum/bindings/portal/mainnet/gen/_address/MezoBridge
 const mezoMainnetBridge = "0xF6680EA3b480cA2b72D96ea13cCAF2cFd8e6908c";
 
-const getTvl = async (api, owners) => {
-	return api.sumTokens({
-		api,
-		owner: [owners],
+// Fetch bridge TVL from Ethereum and return balances
+async function getBridgeTvl() {
+	const ethApi = new sdk.ChainApi({ chain: "ethereum" });
+	await ethApi.sumTokens({
+		owners: [mezoPreMainnetBridge, mezoMainnetBridge],
 		tokens: mezoTokens,
 	});
-};
+	return ethApi.getBalances();
+}
 
-async function tvl(api) {
-	const [preMigrationTvl, currentTvl] = await Promise.all([
-		getTvl(api, mezoPreMainnetBridge),
-		getTvl(api, mezoMainnetBridge),
-	]);
-	return {
-		...preMigrationTvl,
-		...currentTvl,
-	};
+// TVL for mezo chain - reads from Ethereum bridge contracts
+async function mezoTvl(api) {
+	const bridgeBalances = await getBridgeTvl();
+	// Add balances with ethereum: prefix so they get priced correctly
+	Object.entries(bridgeBalances).forEach(([token, balance]) => {
+		api.add(token, balance, { skipChain: true });
+	});
+	return api.getBalances();
 }
 
 module.exports = {
-	hallmarks: [[1747987200, "Mezo Mainnet Migration"]],
-	ethereum: { tvl },
-  // mezo: { tvl },
+	hallmarks: [["2025-05-23", "Mezo Mainnet Migration"]],
+	methodology: "TVL is the sum of tokens locked in the Mezo bridge contracts on Ethereum",
+	mezo: { tvl: mezoTvl },
 };
