@@ -26,7 +26,7 @@ async function pods(api) {
 }
 
 async function tvl(api) {
-  await staking(api)
+  // Only include Pods TVL, not MACARON staking
   await pods(api)
 }
 
@@ -34,10 +34,11 @@ module.exports = {
   timetravel: false,
   solana: {
     tvl,
+    staking, // Export staking separately for MACARON tokens
   },
   methodology: 
-    'TVL includes: (1) MACARON tokens staked in the staking contract to earn SOL rewards from protocol fees, ' +
-    '(2) All tokens (TKN) locked in Volatility Farming Pods which are wrapped into synthetic pTKN tokens. ' +
-    'Pods capture value from market volatility through wrap/unwrap fees and trading activity.'
+    'TVL includes all tokens (TKN) locked in Volatility Farming Pods which are wrapped into synthetic pTKN tokens. ' +
+    'Pods capture value from market volatility through wrap/unwrap fees and trading activity. ' +
+    'MACARON tokens staked in the staking contract are tracked separately under "staking".'
 }
 
