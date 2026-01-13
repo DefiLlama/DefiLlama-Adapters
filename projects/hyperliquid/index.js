@@ -11,6 +11,10 @@ module.exports = {
       [
         ADDRESSES.arbitrum.USDC_CIRCLE,
         '0x2Df1c51E09aECF9cacB7bc98cB1742757f163dF7'
+      ],
+      [
+        ADDRESSES.hyperliquid.USDC,
+        '0xb88339cb7199b77e23db6e890353e22632ba630f'
       ]
     ]})
   }
