@@ -33,31 +33,11 @@ const config = {
     "0xA8De1f55Aa0E381cb456e1DcC9ff781eA0079068", //UKTBL
   ],
   starknet: [
-    {
-      contract:
-        "0x020ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6",
-      target: "0xe4880249745eAc5F1eD9d8F7DF844792D560e750",
-    }, // USTBL
-    {
-      contract:
-        "0x04f5e0de717daa6aa8de63b1bf2e8d7823ec5b21a88461b1519d9dbc956fb7f2",
-      target: "0xa0769f7A8fC65e47dE93797b4e21C073c117Fc80",
-    }, // EUTBL
-    {
-      contract:
-        "0x04bade88e79a6120f893d64e51006ac6853eceeefa1a50868d19601b1f0a567d",
-      target: "0x4f33acf823e6eeb697180d553ce0c710124c8d59",
-    }, // SPKCC
-    {
-      contract:
-        "0x06472cabc51a3805975b9c60c7dec63897c9a287f2db173a1d6c589d18dd1e07",
-      target: "0x3868D4e336d14D38031cf680329d31e4712e11cC",
-    }, // eurSPKCC
-    {
-      contract:
-        "0x0153d6e0462080bb2842109e9b64f589ef5aa06bb32b26bbdb894aca92674395",
-      target: "0xf695Df6c0f3bB45918A7A82e83348FC59517734E",
-    }, // UKTBL
+    "0x020ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", //USTBL
+    "0x04f5e0de717daa6aa8de63b1bf2e8d7823ec5b21a88461b1519d9dbc956fb7f2", //EUTBL
+    "0x04bade88e79a6120f893d64e51006ac6853eceeefa1a50868d19601b1f0a567d", //SPKCC
+    "0x06472cabc51a3805975b9c60c7dec63897c9a287f2db173a1d6c589d18dd1e07", //eurSPKCC
+    "0x0153d6e0462080bb2842109e9b64f589ef5aa06bb32b26bbdb894aca92674395", //UKTBL
   ],
   etlk: [
     "0xe4880249745eAc5F1eD9d8F7DF844792D560e750", //USTBL
@@ -174,22 +154,14 @@ Object.keys(config).forEach((chain) => {
         });
         return api.getBalances();
       }
-      if (chain === "starknet") {
-        const supplies = await multiCall({
-          abi: totalSupplyAbi,
-          calls: assets.map(({ contract }) => contract),
-        });
-        supplies.forEach((supply, i) => {
-          const { target } = assets[i];
-          api.add(`ethereum:${target}`, supply, { skipChain: true });
-        });
-        return api.getBalances();
-      }
       let supplies;
-      supplies = await api.multiCall({
-        abi: "erc20:totalSupply",
-        calls: assets,
-      });
+      if (chain === "starknet")
+        supplies = await multiCall({ abi: totalSupplyAbi, calls: assets });
+      else
+        supplies = await api.multiCall({
+          abi: "erc20:totalSupply",
+          calls: assets,
+        });
       api.add(assets, supplies);
       return sumTokens2({ api });
     },
