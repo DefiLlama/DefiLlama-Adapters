@@ -1,5 +1,5 @@
-const {getLogs} = require('../helper/cache/getLogs')
-const {addUniV3LikePosition} = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
+const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 
 const POOL_MANAGER_ADDRESS = '0x498581fF718922c3f8e6A244956aF099B2652b2b'
 const POSITION_MANAGER_ADDRESS = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'
@@ -16,89 +16,43 @@ function truncatePoolId(poolId) {
 
 async function tvl(api) {
     // STEP 1: Fetch pool IDs from DeliSwap hooks
-    const [v2PairLogs, v4FeeLogs] = await Promise.all([
-        // V2: PairCreated event
-        getLogs({
-            api,
-            target: DELI_HOOK_V2_ADDRESS,
-            fromBlock: EARLIEST_BLOCK,
-            eventAbi: 'event PairCreated(bytes32 indexed poolId, address indexed currency0, address indexed currency1, uint24 fee)',
-            onlyArgs: true,
-            extraKey: 'v2-pairs'
-        }),
-        // V4: PoolFeeSet event
-        getLogs({
-            api,
-            target: DELI_HOOK_V4_ADDRESS,
-            fromBlock: EARLIEST_BLOCK,
-            eventAbi: 'event PoolFeeSet(bytes32 indexed poolId, uint24 fee)',
-            onlyArgs: true,
-            extraKey: 'v4-fee-set',
-            skipCache: true // Force fresh fetch to avoid stale cache
-        })
-    ])
+    // V4: PoolFeeSet event
+    const v4FeeLogs = await getLogs({
+        api,
+        target: DELI_HOOK_V4_ADDRESS,
+        fromBlock: EARLIEST_BLOCK,
+        eventAbi: 'event PoolFeeSet(bytes32 indexed poolId, uint24 fee)',
+        onlyArgs: true,
+        extraKey: 'v4-fee-set',
+        skipCache: true // Force fresh fetch to avoid stale cache
+    })
 
-    // STEP 2: Build pool lists with currency info
-    // V2: Already has currencies in the event
-    const v2Pools = v2PairLogs.map(log => ({
-        id: log.poolId,
-        currency0: log.currency0,
-        currency1: log.currency1,
-        hooks: DELI_HOOK_V2_ADDRESS
-    }))
 
     // V4: Query PoolManager to get currencies
     let v4Pools = []
-    if (v4FeeLogs.length > 0) {
-        // Deduplicate poolIds (PoolFeeSet can be emitted multiple times per pool)
-        const uniquePoolIds = [...new Set(v4FeeLogs.map(log => log.poolId))]
-        const v4PoolIds = uniquePoolIds
-        const truncatedPoolIds = v4PoolIds.map(truncatePoolId)
+    // Deduplicate poolIds (PoolFeeSet can be emitted multiple times per pool)
+    const uniquePoolIds = [...new Set(v4FeeLogs.map(log => log.poolId))]
+    const v4PoolIds = uniquePoolIds
+    const truncatedPoolIds = v4PoolIds.map(truncatePoolId)
 
-        const poolKeys = await api.multiCall({
-            abi: 'function poolKeys(bytes25) view returns (address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks)',
-            calls: truncatedPoolIds.map(id => ({params: [id]})),
-            target: POSITION_MANAGER_ADDRESS,
-            permitFailure: true
-        })
+    const poolKeys = await api.multiCall({
+        abi: 'function poolKeys(bytes25) view returns (address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks)',
+        calls: truncatedPoolIds.map(id => ({ params: [id] })),
+        target: POSITION_MANAGER_ADDRESS,
+        permitFailure: true
+    })
 
-        v4Pools = v4PoolIds.map((id, i) => {
-            if (!poolKeys[i]) return null
-            return {
-                id,
-                currency0: poolKeys[i].currency0,
-                currency1: poolKeys[i].currency1,
-                hooks: poolKeys[i].hooks
-            }
-        }).filter(p => p !== null)
-    }
+    v4Pools = v4PoolIds.map((id, i) => {
+        if (!poolKeys[i]) return null
+        return {
+            id,
+            currency0: poolKeys[i].currency0,
+            currency1: poolKeys[i].currency1,
+            hooks: poolKeys[i].hooks
+        }
+    }).filter(p => p !== null)
 
-    const deliPools = [...v2Pools, ...v4Pools]
-    if (deliPools.length === 0) return {}
-
-    // STEP 3A: Handle V2 pools
-    if (v2Pools.length > 0) {
-        const v2PoolIds = v2Pools.map(pool => pool.id)
-
-        // Read reserves from DeliHookConstantProduct contract
-        const v2Reserves = await api.multiCall({
-            abi: 'function getReserves(bytes32 poolId) external view returns (uint128, uint128)',
-            calls: v2PoolIds.map(id => ({params: [id]})),
-            target: DELI_HOOK_V2_ADDRESS,
-            permitFailure: true
-        })
-
-        // Add reserves to TVL
-        v2Pools.forEach((pool, i) => {
-            if (!v2Reserves[i]) return
-
-            const [reserve0, reserve1] = v2Reserves[i]
-
-            // Only add if reserves are non-zero
-            if (BigInt(reserve0) > 0n) api.add(pool.currency0, reserve0)
-            if (BigInt(reserve1) > 0n) api.add(pool.currency1, reserve1)
-        })
-    }
+    throw new Error("We cant rely on modify liquidity events, it is not scalable. Need to find another way to get the liquidity.");
 
     // STEP 3B: Handle V4 pools - track individual positions via ModifyLiquidity events
     if (v4Pools.length > 0) {
@@ -108,7 +62,7 @@ async function tvl(api) {
         // Get current pool state (tick)
         const slot0Data = await api.multiCall({
             abi: 'function getSlot0(bytes32 poolId) external view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)',
-            calls: v4PoolIds.map(id => ({params: [id]})),
+            calls: v4PoolIds.map(id => ({ params: [id] })),
             target: STATE_VIEW_ADDRESS,
             permitFailure: true
         })
@@ -199,15 +153,12 @@ async function tvl(api) {
     }
 }
 
+// I have excluded v2 tvl as it overlaps with bmx amm tvl that we have already listed
 module.exports = {
-    methodology: `
-        TVL is calculated from liquidity in DeliSwap pools, which are hooks on Uniswap V4 PoolManager.
-        V2 pools use constant product AMM with reserves read directly from the DeliHookConstantProduct contract.
-        V4 pools use concentrated liquidity positions tracked via ModifyLiquidity events, with reserves calculated
-        from each position's tick range and liquidity using Uniswap V3/V4 math (including out-of-range positions).
-    `,
+    methodology: `TVL is calculated from liquidity in DeliSwap pools, which are hooks on Uniswap V4 PoolManager`,
+    start: 1762559813, // Nov-07-2025 11:56:53 PM +UTC
+    doublecounted: true,  // same is counted as uniswap v4 tvl
     base: {
         tvl,
-        start: 1762559813, // Nov-07-2025 11:56:53 PM +UTC
     }
 }
