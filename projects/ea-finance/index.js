@@ -9,8 +9,15 @@ async function tvl(_, _b, _cb, { api }) {
   
   const totalStaked = contractInfo[2];
   
+  const decimals = await api.call({
+    abi: 'erc20:decimals',
+    target: WCC_TOKEN,
+  });
+  
+  const totalStakedFormatted = totalStaked / (10 ** decimals);
+  
   return {
-    [WCC_TOKEN]: totalStaked
+    'coingecko:canton-network': totalStakedFormatted
   }
 }
 
