@@ -2,61 +2,90 @@ const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { request } = require("graphql-request");
 const sdk = require("@defillama/sdk");
 
-const config = {
-  ethereum: 'ECxBJhKceBGaVvK6vqmK3VQAncKwPeAQutEb8TeiUiod',
-  abstract: 'Gq3e1gihMoSynURwGXQnPoKGVZzdsyomdrMH934vQHuG',
-  arbitrum: 'C3kBBUVtW2rxqGpAgSgEuSaT49izkH6Q8UibRt7XFTyW',
-  avax: '6PAizjTALVqLLB7Ycq6XnpTeck8Z8QUpDFnVznMnisUh',
-  base: '4XSxXh8ZgkzaA35nrbQG9Ry3FYz3ZFD8QBdWwVg5pF9W',
-  berachain: 'J87eaBLfTe7kKWgUGqe5TxntNCzA4pyWmqJowMddehuh',
-  blast: '8joiC9LpUbSV6eGRr3RWXDArM8p9Q65FKiFekAakkyia',
-  bsc: '2vU8KF4yWh3vvFjtg7MrRXMnYF3hPX2T3cvVBdaiXhNb',
-  chz: '7QX7tJsANNFpxFLLjqzmXRzfY1wPGp3Lty5xGbhgADa6',
-  xdai: '4KiJ53cTNKdFWPBPmDNQ55tYj8hn1WQg8R4UcTY2STLL',
-  iotex: '6No3QmRiC8HXLEerDFoBpF47jUPRjhntmv28HHEMxcA2',
-  linea: 'DV9XgcCCPKzUn6pgetg4yPetpW2fNoRKBUQC43aNeLG6',
-  mode: '9TwfoUZoxYUyxzDgspCPyxW6uMUKetWQDaTGsZjY1qJZ',
-  optimism: 'AygPgsehNGSB4K7DYYtvBPhTpEiU4dCu3nt95bh9FhRf',
-  polygon: 'ykp38sLarwz3cpmjSSPqo7UuTjYtkZ1KiL4PM2qwmT8',
-  scroll: 'HFpTrPzJyrHKWZ9ebb4VFRQSxRwpepyfz5wd138daFkF',
-  sei: '41ZGYcFgL2N7L5ng78S4sD6NHDNYEYcNFxnz4T8Zh3iU',
-  sonic: 'HkQKZKuM6dZ7Vc4FGC1gZTVVTniYJWRhTRmDDMNzN8zk',
-  unichain: 'Cb5uDYfy4ukN9fjhQ3PQZgDzyo6G66ztn1e847rS7Xa8',
-  era: '9DRgWhDAMovpkej3eT8izum6jxEKHE62ciArffsTAScx',
-}
+const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/3b4ea6b/v1/graphql';
 
-const payload = `
+// Chains using Envio endpoint
+const CHAIN_IDS_ENVIO = {
+  abstract: 2741,
+  arbitrum: 42161,
+  avax: 43114,
+  base: 8453,
+  berachain: 80094, 
+  blast: 81457,
+  bsc: 56,
+  chz: 88888,
+  core: 1116,
+  ethereum: 1,
+  formnetwork: 478,
+  xdai: 100,
+  hyperliquid: 999,
+  lightlink_phoenix: 1890, 
+  linea: 59144,
+  mode: 34443,
+  morph: 2818,
+  optimism: 10,
+  polygon: 137,
+  scroll: 534352,
+  sonic: 146,
+  sophon: 50104,
+  sseed: 5330,
+  unichain: 130, 
+  xdc: 50,
+  era: 324,
+};
+
+// Chains using graph endpoints
+const SUBGRAPH_ENDPOINTS = {
+  sei: '41ZGYcFgL2N7L5ng78S4sD6NHDNYEYcNFxnz4T8Zh3iU',
+  // iotex: '6No3QmRiC8HXLEerDFoBpF47jUPRjhntmv28HHEMxcA2',
+};
+
+
+const config = {
+  ...Object.fromEntries(Object.keys(CHAIN_IDS_ENVIO).map(k => [k, ENVIO_ENDPOINT])),
+  ...SUBGRAPH_ENDPOINTS
+};
+
+const envioPayload = `
+query getChainData($chainId: numeric!) {
+  Contract(where: { chainId: { _eq: $chainId } }) { id address category }
+  Asset(where: { chainId: { _eq: $chainId } }) { id chainId symbol }
+}
+`
+const subgraphPayload = `
 {
-  contracts { id address category }
+  contracts { id address }
   assets { id chainId symbol }
 }
 `
 
 async function getTokensConfig(api, isVesting) {
-  const endpoint = config[api.chain]
-  if (!endpoint) return { ownerTokens: [] }
-  const url = sdk.graph.modifyEndpoint(endpoint)
-  const { contracts, assets } = await request(url, payload)
-  const owners = contracts.map(i => i.address)
+  const endpoint = config[api.chain];
+  if (!endpoint) return { ownerTokens: [] };
+
+  const isSubgraph = !!SUBGRAPH_ENDPOINTS[api.chain];
+  const result = isSubgraph
+    ? await request(sdk.graph.modifyEndpoint(endpoint), subgraphPayload)
+    : await request(ENVIO_ENDPOINT, envioPayload, { chainId: CHAIN_IDS_ENVIO[api.chain] });
+
+  if (!result || (!isSubgraph && !CHAIN_IDS_ENVIO[api.chain])) return { ownerTokens: [] };
+
+  const contracts = result.contracts || result.Contract || [];
+  const assets = result.assets || result.Asset || [];
+
+  const owners = contracts.map(i => i.address);
 
   const tokens = assets
-    .filter((asset) => isWhitelistedToken(asset.symbol, asset.id, isVesting))
-    .map(asset => {
-			return asset.id.split('-').slice(2)[0];
-		})
+    .filter(asset => isWhitelistedToken(asset.symbol, asset.id, isVesting))
+    .map(asset => asset.id.split('-').slice(2)[0])
   
   const ownerTokens = owners.map(owner => [tokens, owner])
   return { ownerTokens }
 }
 
-async function tvl(api) {
-  return api.sumTokens(await getTokensConfig(api, false))
-}
+const tvl = async (api) => api.sumTokens(await getTokensConfig(api, false));
+const vesting = async (api) => api.sumTokens(await getTokensConfig(api, true));
 
-async function vesting(api) {
-  return api.sumTokens(await getTokensConfig(api, true))
-}
-
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl, vesting }
-})
+module.exports = Object.fromEntries(
+  Object.keys(config).map(chain => [chain, { tvl, vesting }])
+);

@@ -14,7 +14,8 @@ const ADDRESSES = require('../coreAssets.json')
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://rest-osmosis.ecostake.com",
-  cosmos: "https://cosmoshub-lcd.stakely.io",
+  // cosmos: "https://cosmoshub-lcd.stakely.io",
+  cosmos: "https://cosmos-api.polkachu.com",
   kujira: "https://kujira-rest.publicnode.com",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
@@ -54,6 +55,7 @@ const endPoints = {
   pryzm: "https://api.pryzm.zone",
   // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
   agoric: 'https://agoric-api.polkachu.com/',
+  allora: 'https://allora-api.polkachu.com', // TODO: Verify actual mainnet endpoint
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
@@ -70,7 +72,9 @@ const endPoints = {
   embr: 'https://rest-embrmainnet-1.anvil.asia-southeast.initia.xyz', 
   civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
   echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
-  inertia: 'https://rest.inrt.fi'
+  inertia: 'https://rest.inrt.fi',
+  union: 'https://rest.union.build',
+  zigchain: 'https://public-zigchain-lcd.numia.xyz'
 };
 
 const chainSubpaths = {

@@ -3,7 +3,7 @@ const { function_view } = require("../helper/chain/aptos");
 const { get } = require('../helper/http')
 const { PromisePool } = require('@supercharge/promise-pool')
 
-const thalaswapLensAddress = "10e4cef9dd33e192738a33c8529e5c5feeb00d660b08f8d0891b4ceb3ed71dfd";
+const thalaswapLensAddress = "ee8c71b117851371fb180928cd73e4f111b04b0efbebb0054b9b29c8d5fec96c";
 
 async function getPool(lensAddress, lptAddress) {
   const args = [lptAddress];
