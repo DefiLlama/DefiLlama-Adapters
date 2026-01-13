@@ -2,6 +2,9 @@ const { getConfig } = require('../helper/cache')
 
 const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/refs/heads/main/mainnet/addresses.json";
 
+const DEBUG_LOGGING = false; // Set to true to enable debug logs
+const debugLog = (...args) => DEBUG_LOGGING && console.log(...args);
+
 let totalVaultsProcessed = 0;
 
 async function tvl(api) {
@@ -11,21 +14,21 @@ async function tvl(api) {
 
   const chainConfig = config[chain];
   if (!chainConfig || !chainConfig.vaults) {
-    console.log(`[IPOR Fusion] No vaults found for chain: ${chain}`);
+    debugLog(`[IPOR Fusion] No vaults found for chain: ${chain}`);
     return {};
   }
   
-  console.log(`[IPOR Fusion] Processing ${chainConfig.vaults.length} vaults on ${chain}:`);
+  debugLog(`[IPOR Fusion] Processing ${chainConfig.vaults.length} vaults on ${chain}:`);
   
   const calls = chainConfig.vaults.map((vault, index) => {
-    console.log(`  Vault ${index + 1}/${chainConfig.vaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
+    debugLog(`  Vault ${index + 1}/${chainConfig.vaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
     return vault.PlasmaVault;
   });
 
   totalVaultsProcessed += calls.length;
   
-  console.log(`[IPOR Fusion] Total vaults processed on ${chain}: ${calls.length}`);
-  console.log(`[IPOR Fusion] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
+  debugLog(`[IPOR Fusion] Total vaults processed on ${chain}: ${calls.length}`);
+  debugLog(`[IPOR Fusion] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
   
   return api.erc4626Sum2({ calls })
 }
