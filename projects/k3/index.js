@@ -79,7 +79,7 @@ async function addCustom4626Tvl(api, vaultAddress) {
   // 2) Read total assets using the first ABI that works
   const total = await api.call({
     target: vaultAddress,
-    abi: "uint256:getTotalAsset",
+    abi: "uint256:getTotalAssets",
     permitFailure: true,
   });
 
