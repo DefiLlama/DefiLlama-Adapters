@@ -14,7 +14,7 @@ module.exports = {
       '0xCfb9beF5F7B748aC72311F057f3a888BC73334D9',
       '0x9400F8Ad57e9e0F352345935d6D3175975eb1d9F',
       '0x22DA1810B194ca018378464a58f6Ac2B10C9d244'
-    ], tokens: [ADDRESSES.bsc.USDT]})
+    ], tokens: [ADDRESSES.bsc.USDT, '0xfD5840Cd36d94D7229439859C0112a4185BC0255']})
   },
   methodology: `TVL is the total quantity of USDB (Blast) and USDT (BSC) held in the conditional tokens contracts as well as the wrapped collateral contracts. In the case of BSC, there are also additional YieldBearing contracts.`
 }
