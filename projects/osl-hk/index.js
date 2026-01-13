@@ -1,6 +1,6 @@
 const { cexExports } = require('../helper/cex')
 
-const config = {
+const config = {m
   ethereum: {
     owners: [
       "0xd40b8684fc619f44fd9901a472d749818c981dbe", // house-cold
@@ -759,8 +759,8 @@ const config = {
   },
   polygon: {
     owners: [
-        "MDUM7BPVDDTssV3D6hnKS35uu45zcUJUG9", // house-cold
-        "MQ9mZJu3X7m4CpMkvHia2nMRvY2q25kBA6", // client-cold
+        "0xAE1863c69Ffbda4Ca2B4CDe0F7B48C8Ea363DC54", // house-cold
+        "0xd8559F0c83Abe87155A298DD17c7C21F26a27CA2", // client-cold
     ],
   },
   litecoin: {
