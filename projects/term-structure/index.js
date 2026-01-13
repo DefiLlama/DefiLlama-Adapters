@@ -1,5 +1,5 @@
 const CORE_ASSETS = require("../helper/coreAssets.json");
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs, getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ABIS = {
@@ -24,22 +24,30 @@ const EVENTS = {
     CreateVault:
       "event CreateVault(address indexed vault, address indexed creator, (address admin,address curator,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate) indexed initialParams)",
   },
+  V1Plus: {
+    VaultCreated:
+      "event VaultCreated(address indexed vault, address indexed creator, tuple(address admin,address curator,address guardian,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy,uint64 minIdleFundRate) initialParams)",
+  },
   V2: {
     MarketCreated:
       "event MarketCreated(address indexed market, address indexed collateral, address indexed debtToken, tuple(address collateral,address debtToken,address admin,address gtImplementation,tuple(address treasurer,uint64 maturity,tuple(uint32 lendTakerFeeRatio,uint32 lendMakerFeeRatio,uint32 borrowTakerFeeRatio,uint32 borrowMakerFeeRatio,uint32 mintGtFeeRatio,uint32 mintGtFeeRef) feeConfig) marketConfig,(address oracle,uint32 liquidationLtv,uint32 maxLtv,bool liquidatable) loanConfig,bytes gtInitalParams,string tokenName,string tokenSymbol) params)",
     VaultCreated:
       "event VaultCreated(address indexed vault, address indexed creator, (address admin,address curator,address guardian,uint256 timelock,address asset,address pool,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy) initialParams)",
   },
+  TermMax4626Factory: {
+    "StableERC4626For4626Created": "event StableERC4626For4626Created(address indexed caller, address indexed stableERC4626For4626)",
+    "StableERC4626ForAaveCreated": "event StableERC4626ForAaveCreated(address indexed caller, address indexed stableERC4626ForAave)",
+    "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)"
+  }
 };
 
 const ADDRESSES = {
   // Term Structure
-  zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
   // TermMax
   arbitrum: {
     Factory: {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
-      fromBlock: 322193553,
+      fromBlock: 322190000,
     },
     VaultFactory: [
       {
@@ -52,6 +60,13 @@ const ADDRESSES = {
         address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
         fromBlock: 385228046,
       },
+      {
+        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
+        fromBlock: 385228046,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xe306A0A5Ac675dab1CD77aA7873D241715aEB217", fromBlock: 385274993 },
     ],
   },
   bsc: {
@@ -59,24 +74,55 @@ const ADDRESSES = {
       address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
       fromBlock: 50519690,
     },
+    FactoryV2: [
+      // Start of TermMax Alpha
+      {
+        address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
+        fromBlock: 67248948,
+      },
+      // End of TermMax Alpha
+    ],
+    // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
+    //   {
+    //     address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
+    //     fromBlock: 71136348,
+    //   },
+    // ],
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
-        fromBlock: 50519690,
+        fromBlock: 50519589,
       },
     ],
     VaultFactoryV2: [
       {
         address: "0x1401049368eD6AD8194f8bb7E41732c4620F170b",
-        fromBlock: 63192842,
+        fromBlock: 63100000,
       },
+      {
+        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
+        fromBlock: 63100000,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0xC63858D1eFa377f94392Ba5dEb521233Ec1548eb",
+        fromBlock: 67251242,
+      },
+      // End of TermMax Alpha
+    ],
+    TermMax4626Factory: [
+      { address: "0x67dcDCc57208B574B05999AA3dFA57bfF2324129", fromBlock: 63208984 },
     ],
   },
   ethereum: {
+    zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
     Factory: {
       address: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
-      fromBlock: 22174761,
+      fromBlock: 22174000,
     },
+    TermMax4626Factory: [
+      { address: "0xD594eb03a43b4974Aa7B32b5740cdeCe961151Fa", fromBlock: 23489745 },
+    ],
     FactoryV2: [
       {
         address: "0x1c86801e8ad0726298383e30c2c1a844887a61bd",
@@ -97,14 +143,20 @@ const ADDRESSES = {
         fromBlock: 22283092,
       },
     ],
+    VaultFactoryV1Plus: [
+      {
+        address: "0x3a9ECfFDBDc595907f65640F810d3dDDDDe2FA61",
+        fromBlock: 23138659,
+      },
+    ],
     VaultFactoryV2: [
       {
         address: "0xF2BDa87CA467eB90A1b68f824cB136baA68a8177",
-        fromBlock: 23445703,
+        fromBlock: 23430000,
       },
       {
         address: "0x5b8B26a6734B5eABDBe6C5A19580Ab2D0424f027",
-        fromBlock: 23488637,
+        fromBlock: 23430000,
       },
     ],
   },
@@ -112,27 +164,30 @@ const ADDRESSES = {
     FactoryV2: [
       {
         address: "0x4BC4F8f9B212B5a3F9f7Eeb35Ae1A91902670F7f",
-        fromBlock: 11541942,
+        fromBlock: 11541952,
       },
     ],
     VaultFactoryV2: [
       {
         address: "0x65fC69DE62E11592E8Acf57a0c97535209090Ef1",
-        fromBlock: 11541942,
+        fromBlock: 11541953,
       },
+    ],
+    TermMax4626Factory: [
+      { address: "0x3d2C215DE72877c3611cD0A9D8d69f60f1a5dB93", fromBlock: 12150722 },
     ],
   },
   hyperliquid: {
     FactoryV2: [
       {
-        address: "0xDeC5E1D1E1bC3E3c6b8b7b5E3f0F1A2B3C4D5E6F",
-        fromBlock: 12345678,
+        address: "0xC1Ce945e55506B384daDDEf48FA5A78554560ad3",
+        fromBlock: 15997179,
       },
     ],
     VaultFactoryV2: [
       {
-        address: "0xF1E2D3C4B5A697887766554433221100FFEEDDCC",
-        fromBlock: 12345678,
+        address: "0xA0E0702b701cCaC329732Bb409681612f43E41AD",
+        fromBlock: 15997362,
       },
     ],
   },
@@ -227,6 +282,28 @@ async function getTermMaxVaultAddresses(api) {
   return addresses;
 }
 
+async function getTermMaxVaultV1PlusAddresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactoryV1Plus) return [];
+  const addresses = [];
+  const promises = [];
+  for (const vaultFactory of ADDRESSES[api.chain].VaultFactoryV1Plus) {
+    const promise = async () => {
+      const logs = await getLogs({
+        api,
+        eventAbi: EVENTS.V1Plus.VaultCreated,
+        fromBlock: vaultFactory.fromBlock,
+        target: vaultFactory.address,
+        onlyArgs: true,
+        extraKey: `termmax-vault-v1-plus-${api.chain}`,
+      });
+      for (const [vault] of logs) addresses.push(vault);
+    };
+    promises.push(promise());
+  }
+  await Promise.all(promises);
+  return addresses;
+}
+
 async function getTermMaxVaultV2Addresses(api) {
   if (!ADDRESSES[api.chain].VaultFactoryV2) return [];
   const addresses = [];
@@ -250,13 +327,14 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV2Addresses] = await Promise.all([
-    getTermMaxVaultAddresses(api),
-    getTermMaxVaultV2Addresses(api),
-  ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
+    await Promise.all([
+      getTermMaxVaultAddresses(api),
+      getTermMaxVaultV1PlusAddresses(api),
+    ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
-    .concat(vaultV2Addresses)
+    .concat(vaultV1PlusAddresses)
     .filter((address) => !VAULT_BLACKLIST[api.chain]?.includes(address));
   const assets = await api.multiCall({
     abi: ABIS.Vault.asset,
@@ -266,27 +344,78 @@ async function getTermMaxVaultOwnerTokens(api) {
   return assets.map((asset, idx) => [[asset], vaultAddresses[idx]]);
 }
 
+async function recordVaultV2Assets(api) {
+  const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
+
+  const assets = await api.multiCall({ abi: ABIS.Vault.asset, calls: vaultV2Addresses, })
+  /*
+    const tokensAndOwners = assets.map((asset, idx) => ({ target: asset, params: vaultV2Addresses[idx] }));
+     const assets1 = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaultV2Addresses, })
+    const tokens = await api.multiCall({ abi: 'string:symbol', calls: assets })
+    const tokenBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners })
+    const table = []
+  
+    vaultV2Addresses.forEach((vault, i) => {
+      let bal = assets1[i] / 1e18
+      let tokenBal = tokenBals[i] / 1e18
+      if (tokens[i].includes('USD')) {
+        bal = assets1[i] / 1e6
+        tokenBal = tokenBals[i] / 1e6
+      }
+      table.push({ vault, asset: assets[i], symbol: tokens[i], totalAssets: bal, tokenBalance: tokenBal, chain: api.chain })
+    })
+    console.table(table) 
+    */
+  // console.log('TermMax V2 Vaults found:', vaultV2Addresses, assets, tokens, api.chain);
+  await sumTokens2({ api, tokensAndOwners2: [assets, vaultV2Addresses] });
+}
+
+async function addTermMaxMarketV2Tvl(api) {
+  if (!ADDRESSES[api.chain].MarketV2Factory) return [];
+  const tokensAndOwners = [];
+  for (const factory of ADDRESSES[api.chain].MarketV2Factory) {
+    const factoryLogs = await getLogs({
+      api,
+      eventAbi: 'event MarketInitialized (address indexed collateral, address indexed underlying, uint64 maturity, address ft, address xt, address gt)',
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      onlyArgs: true,
+      extraKey: `termmax-market-v2-${api.chain}`,
+    });
+    factoryLogs.forEach(log => tokensAndOwners.push([log.collateral, log.gt]));
+  }
+
+  await sumTokens2({ api, tokensAndOwners });
+}
+
 async function getTermMaxOwnerTokens(api) {
   const [marketOwnerTokens, vaultOwnerTokens] = await Promise.all([
     getTermMaxMarketOwnerTokens(api),
     getTermMaxVaultOwnerTokens(api),
   ]);
+  await recordVaultV2Assets(api);
+  await addTermMaxMarketV2Tvl(api)
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
 
-async function getTermStructureOwnerTokens(api) {
+async function getTermStructureTvl(api) {
+
+  const zkTrueUpContractAddress = ADDRESSES[api.chain].zkTrueUpContractAddress;
+  if (!zkTrueUpContractAddress) return;
+
   const infoAbi =
     "function getAssetConfig(uint16 tokenId) external view returns (bool isStableCoin, bool isTsbToken, uint8 decimals, uint128 minDepositAmt, address token)";
   const tokenInfo = await api.fetchList({
     lengthAbi: "getTokenNum",
     itemAbi: infoAbi,
-    target: ADDRESSES.zkTrueUpContractAddress,
+    target: zkTrueUpContractAddress,
     startFrom: 1,
   });
   const tokens = tokenInfo.map((i) => i.token);
   tokens.push(CORE_ASSETS.ethereum.WETH);
-  return tokens.map((token) => [[token], ADDRESSES.zkTrueUpContractAddress]);
+
+  await sumTokens2({ api, tokens, owners: [zkTrueUpContractAddress] });
 }
 
 async function getTermMaxMarketBorrowed(api) {
@@ -338,54 +467,76 @@ async function getTermMaxMarketBorrowed(api) {
   }
 }
 
+async function erc4626VaultsTvl(api) {
+  if (!ADDRESSES[api.chain].TermMax4626Factory) return;
+  const tokensAndOwners = [];
+  const stableERC4626For4626Vaults = [];
+  const aaveVaults = [];
+
+  for (const factory of ADDRESSES[api.chain].TermMax4626Factory) {
+    let logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626For4626Created,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: `StableERC4626For4626Created`,
+    });
+    stableERC4626For4626Vaults.push(...logs.map(i => i.stableERC4626For4626));
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForAaveCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: `StableERC4626ForAaveCreated`,
+    });
+    aaveVaults.push(...logs.map(i => i.stableERC4626ForAave));
+
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.VariableERC4626ForAaveCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: `VariableERC4626ForAaveCreated`,
+    });
+    aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
+  }
+
+  const aTokens = await api.multiCall({ abi: 'address:aToken', calls: aaveVaults })
+  const aUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: aaveVaults })
+  aaveVaults.forEach((vault, i) => {
+    tokensAndOwners.push([aUnderlyings[i], vault])
+    tokensAndOwners.push([aTokens[i], vault])
+  })
+
+  const stableUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: stableERC4626For4626Vaults })
+  const thirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: stableERC4626For4626Vaults })  // morpho vaults?
+  stableERC4626For4626Vaults.forEach((vault, i) => {
+    tokensAndOwners.push([stableUnderlyings[i], vault])
+    tokensAndOwners.push([thirdPools[i], vault])
+  })
+
+  await sumTokens2({ api, tokensAndOwners });
+}
+
 module.exports = {
   hallmarks: [
     [
-      Math.floor(new Date("2025-04-15") / 1000),
+      "2025-04-15",
       "Sunset Term Structure and launch TermMax",
     ],
   ],
-  // 1st batch deployment
-  arbitrum: {
-    borrowed: getTermMaxMarketBorrowed,
+}
+
+Object.keys(ADDRESSES).forEach(chain => {
+  module.exports[chain] = {
     tvl: async (api) => {
+      await erc4626VaultsTvl(api)
+      await getTermStructureTvl(api)
       const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
+      return sumTokens2({ api, ownerTokens })
     },
-  },
-  bsc: {
     borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
-    },
-  },
-  ethereum: {
-    borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const [termStructureOwnerTokens, termMaxOwnerTokens] = await Promise.all([
-        getTermStructureOwnerTokens(api),
-        getTermMaxOwnerTokens(api),
-      ]);
-      const ownerTokens = []
-        .concat(termStructureOwnerTokens)
-        .concat(termMaxOwnerTokens);
-      return sumTokens2({ api, ownerTokens });
-    },
-  },
-  // 2nd batch deployment
-  berachain: {
-    borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
-    },
-  },
-  hyperliquid: {
-    borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
-    },
-  },
-};
+  }
+})

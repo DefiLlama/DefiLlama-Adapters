@@ -10,16 +10,16 @@ const {
 } = require('./tokenMapping');
 const { svmChains } = require("./svmChainConfig");
 
-async function transformInjectiveAddress() {
-  return addr => {
+function transformInjectiveAddress() {
+  return (addr) => {
     if (addr.startsWith('ibc:')) return addr
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     if (addr.startsWith('injective:') || addr.startsWith('ethereum:')) return addr
-    return `injective:${addr}`;
-  };
+    return `injective:${addr}`
+  }
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {

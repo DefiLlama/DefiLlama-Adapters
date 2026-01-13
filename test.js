@@ -24,7 +24,11 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
-const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', ...ENV_KEYS])
+const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', 'LLAMA_RUN_LOCAL', ...ENV_KEYS])
+
+
+const deadChains = ['heco', 'astrzk', 'real', 'milkomeda', 'milkomeda_a1', 'eos_evm', 'eon', 'plume', 'bitrock', 'rpg', 'kadena', 'migaloo', 'kroma', 'qom', 'airdao']
+
 
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
@@ -105,8 +109,8 @@ function validateHallmarks(hallmark) {
     throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
   }
   const [timestamp, text] = hallmark
-  if (typeof timestamp !== 'number' && isNaN(+new Date(timestamp))) {
-    throw new Error("Hallmark timestamp should be a number/dateString")
+  if (typeof timestamp !== 'string' || isNaN(+new Date(timestamp))) {
+    throw new Error("Hallmark timestamp should be a dateString (YYYY-MM-DD)")
   }
   const year = new Date(timestamp * 1000).getFullYear()
   const currentYear = new Date().getFullYear()
@@ -120,8 +124,20 @@ function validateHallmarks(hallmark) {
 }
 
 (async () => {
+
+  const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
+
+  // throw error if module doesnt start with lowercase letters
+  if (!/^[a-z]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
+    throw new Error("Module name should start with a lowercase letter: " + moduleArg);
+  }
+
   let module = {};
   module = require(passedFile)
+  deadChains.forEach(chain => {
+    delete module[chain]
+  })
+  
   if (module.hallmarks) {
     if (!Array.isArray(module.hallmarks)) {
       throw new Error("Hallmarks should be an array of arrays")
@@ -355,6 +371,11 @@ const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 function fixBalances(balances) {
 
+  if (balances.usd) {
+    // usd is mapped to USD+ token on coingecko
+    throw new Error("Balance key 'usd' is not allowed, please use 'api.addUSDValue()' instead")
+  }
+
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`
@@ -442,6 +463,10 @@ async function computeTVL(balances, timestamp) {
       const balance = balances[address];
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
+      if (data.symbol === '') {
+        console.log('\nIgnored invalid coin data, please fix it!', address, data, '\n');
+        return;
+      }
       if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
       if (Math.abs(data.timestamp - (timestamp ?? Date.now() / 1e3)) > (24 * 3600)) {
         console.log(`Price for ${address} is stale, ignoring...`)

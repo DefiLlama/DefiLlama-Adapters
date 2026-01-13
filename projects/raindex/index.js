@@ -7,6 +7,9 @@ const orderbooks = {
     ],
     v4: [
       { address: "0x550878091b2b1506069f61ae59e3a5484bca9166", start: 1727110056 },
+    ],
+    v5: [
+      { address: "0x8df8075e4077dabf1e95f49059e4c1eea33094ab", start: 1758139112 },
     ]
   },
   base: {
@@ -19,7 +22,11 @@ const orderbooks = {
       { address: "0x32aCbdF51abe567C91b7a5cd5E52024a5Ca56844", start: 1724451937 },
       { address: "0x80DE00e3cA96AE0569426A1bb1Ae22CD4181dE6F", start: 1724168357 },
       { address: "0x7A44459893F99b9d9a92d488eb5d16E4090f0545", start: 1723404441 },
+      { address: "0x881cf4c0764e733d9c387f3858ee87cca04affe0", start: 1755538211 },
     ],
+    v5: [
+      { address: "0x52ceb8ebef648744ffdde89f7bc9c3ac35944775", start: 1760123853 },
+    ]
   },
   bsc: {
     v3: [
@@ -77,13 +84,16 @@ const orderbooks = {
       { address: "0xb8CD71e3b4339c8B718D982358cB32Ed272e4174", start: 1723733415 },
       { address: "0x001B302095D66b777C04cd4d64b86CCe16de55A1", start: 1723728017 },
       { address: "0xAfD94467d2eC43D9aD39f835BA758b61b2f41A0E", start: 1721746069 },
+    ],
+    v5: [
+      { address: "0x8a3c8e610d827093f7437e0c45efa648563c0dda", start: 1758564632 },
     ]
   },
 }
 
 async function tvl(api) {
-  const { v3 = [], v4 = [] } = orderbooks[api.chain]
-  const owners = v3.concat(v4).map(orderbook => orderbook.address)
+  const { v3 = [], v4 = [], v5 = [] } = orderbooks[api.chain]
+  const owners = v3.concat(v4).concat(v5).map(orderbook => orderbook.address)
   return sumTokens2({ api, owners, fetchCoValentTokens: true, permitFailure: true })
 }
 
