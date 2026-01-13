@@ -36,6 +36,7 @@ const blacklisted_LPS = new Set([
   '0x93669cfce302c9971169f8106c850181a217b72b',
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
   '0x524cab2ec69124574082676e6f654a18df49a048',
+  '0x98b540fa89690969D111D045afCa575C91519B1A',
 ].map(i => i.toLowerCase()))
 
 function isICHIVaultToken(symbol, token, chain) {
@@ -61,6 +62,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
+  if (chain === 'fuse' && ['VLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP', 'GLP', 'WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['DLP'].includes(symbol)) return false
   if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
@@ -385,6 +387,23 @@ function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidator
   };
 }
 
+function permitChainFailures(exports, chains) {
+  Object.keys(exports).forEach(chain => {
+    if (!chains.includes(chain)) return;
+    const chainObj = exports[chain]
+    Object.keys(chainObj).forEach(key => {
+      const fn = chainObj[key]
+      chainObj[key] = async (api, ...params) => {
+        try {
+          return await fn(api, ...params)
+        } catch (e) {
+          sdk.log(`Permitting failure for ${chain} ${key}: ${e.message}`)
+          return {}
+        }
+      }
+    } )
+  })
+}
 
 module.exports = {
   log,
@@ -406,4 +425,5 @@ module.exports = {
   once,
   isICHIVaultToken,
   getStakedEthTVL,
+  permitChainFailures,
 }

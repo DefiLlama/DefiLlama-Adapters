@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports } = require("../helper/treasury");
 
-const treasuryList = [
+const solTreasuryList = [
     'AR2ZCCyB5nXb7TesCz2pcCWbQsH8TAwixetDRrm3Z9wr',
     '8Qo4oKTM5jiZEAKzhBLKwTKjCJrDHsUUux5K5DaQDxLR',
     '5ZbLoA6DSnXoDeU7jsdmmkua4X1ugHUFYzbByzrbJDST',
@@ -14,15 +14,27 @@ const treasuryList = [
     '6REMwMUhkh9PLNGxRUsue49otacp76pAWAU3C7itQ4AP'
 ]
 
-const tokens = [
+const solTokens = [
     '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4', //JLP
     ADDRESSES.solana.USDC, //USDC
     'So11111111111111111111111111111111111111111'   //SOL
 ]
 
+const bscTreasuryList = [
+    "0xB464C9890604926bd5Fa7b66Bf15d26BCD0eD3A9"
+]
+
+const bscTokens = [
+    ADDRESSES.bsc.USDT
+]
+
 module.exports = treasuryExports({
-  solana: {
-    owners: treasuryList,
-    tokens: tokens
-  },
+    solana: {
+        owners: solTreasuryList,
+        tokens: solTokens
+    },
+    bsc: {
+        owners: bscTreasuryList,
+        tokens: bscTokens
+    }
 })

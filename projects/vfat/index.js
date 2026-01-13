@@ -66,7 +66,6 @@ async function fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, 
     target: chainName === 'linea' ? voter : gaugeFactory,
     fromBlock,
     eventAbi,
-    skipCache: true,
   });
 
   const deployRamsesLogs2 = await getLogs({
@@ -74,7 +73,6 @@ async function fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, 
     target: gaugeFactory2,
     fromBlock,
     eventAbi: eventAbi2,
-    skipCache: true,
   });
 
   const lp = deployRamsesLogs.map(log => log.args.gauge);
@@ -158,7 +156,6 @@ async function fetchGauges3(api, voter, fromBlock) {
     target: voter,
     fromBlock,
     eventAbi,
-    skipCache: true,
   });
 
   return deployLogs.map(log => log.args[2]);
