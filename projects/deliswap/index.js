@@ -24,7 +24,6 @@ async function tvl(api) {
         eventAbi: 'event PoolFeeSet(bytes32 indexed poolId, uint24 fee)',
         onlyArgs: true,
         extraKey: 'v4-fee-set',
-        skipCache: true // Force fresh fetch to avoid stale cache
     })
 
 
