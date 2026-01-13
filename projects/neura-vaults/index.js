@@ -1,4 +1,4 @@
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { sumERC4626VaultsExport2 } = require('../helper/erc4626');
 
 // AI USDT Vault Configuration
 // Neura Vaults - AI-powered yield optimization on Hyper EVM
@@ -32,22 +32,9 @@ const VAULT_CONFIG = {
     ]
 };
 
-async function tvl(api) {
-    // Use the vault's totalAssets() function to get the complete TVL
-    // This includes funds in the vault + funds deployed to underlying protocols
-    // (HyperLend, HypurrFinance, Felix, etc.)
-    const totalAssets = await api.call({
-        target: VAULT_CONFIG.address,
-        abi: 'function totalAssets() view returns (uint256)',
-    });
-
-    // Add the total assets as USDT0
-    api.add(VAULT_CONFIG.underlying.address, totalAssets);
-}
-
 module.exports = {
     methodology: `Counts the total value of ${VAULT_CONFIG.underlying.symbol} deposited in Neura Vaults (${VAULT_CONFIG.symbol}). Neura Vaults is an AI-powered yield optimization protocol on Hyper EVM that automatically allocates user deposits to the highest-yielding lending protocols including ${VAULT_CONFIG.allocations.map(a => a.protocol).filter((v, i, a) => a.indexOf(v) === i).join(', ')} using intelligent AI agents. TVL is tracked across both the Safe (treasury) and Silo (deployed funds) addresses.`,
     hyperliquid: {
-        tvl,
+        tvl: sumERC4626VaultsExport2({ vaults: [VAULT_CONFIG.address] }),
     }
 };
