@@ -1,6 +1,6 @@
 const { cexExports } = require('../helper/cex')
 
-const config = {m
+const config = {
   ethereum: {
     owners: [
       "0xd40b8684fc619f44fd9901a472d749818c981dbe", // house-cold
