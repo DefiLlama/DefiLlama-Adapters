@@ -338,7 +338,7 @@ let _get
 
 async function tvl2(api) {
   if (!_get)
-    _get = get(`https://api.vfat.io/v1/sickle-stats`)
+    _get = get(`https://api.vfat.io/v4/sickle-stats`)
 
   const { chainStats } = await _get
   chainStats.filter(chain => chain.chainId === api.chainId).forEach(chain => {
