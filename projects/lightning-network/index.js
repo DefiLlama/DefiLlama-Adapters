@@ -33,7 +33,6 @@ async function getChannelCapacity(timestamp) {
 }
 
 async function tvl({ timestamp }) {
-  return { bitcoin: 5417.42 } // temporary fix to avoid breaking changes, to be removed later
   throw new Error("Lightning Network TVL is might be wrong");
   const getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
   let channelCapacity
