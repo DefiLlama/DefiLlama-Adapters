@@ -5,7 +5,6 @@
  */
 const {
     getBalances,
-    fetchOswapExchangeRates,
     getAaStateVars,
     getDecimalsByAsset,
     executeGetter
@@ -16,49 +15,41 @@ const GBYTE_DECIMALS = 9;
 const GBYTE_ASSET = 'base';
 
 async function totalTvl() {
-    const [rate, balances, frdAsset] = await Promise.all([
-        fetchOswapExchangeRates(),
+    const [balances, frdAsset] = await Promise.all([
         getBalances([FRIENDS_AA_ADDRESS]).then(res => res[FRIENDS_AA_ADDRESS]),
         getAaStateVars(FRIENDS_AA_ADDRESS, 'constants').then(vars => vars?.constants?.asset)
     ]);
 
-    let totalTvl = 0;
+    const gbyteBalance = balances[GBYTE_ASSET]?.total || 0; // base asset is GBYTE
+
+    const tvl = {
+        byteball: gbyteBalance / 10 ** GBYTE_DECIMALS // byteball is GBYTE in coingecko
+    };
 
     for (const [asset, balance] of Object.entries(balances)) {
         if (asset === frdAsset) continue;
         if (asset === GBYTE_ASSET) continue;
 
         const decimals = await getDecimalsByAsset(asset);
-        const tokenPrice = rate[`${asset}_USD`] || 0;
 
-        if (rate) {
-            totalTvl += (balance.total / 10 ** decimals) * tokenPrice
-        }
+        tvl[asset] = balance.total / 10 ** decimals;
     }
 
-    const gbyteBalance = balances[GBYTE_ASSET]?.total || 0; // base asset is GBYTE
-
-    return { tether: totalTvl, byteball: (gbyteBalance / 10 ** GBYTE_DECIMALS) };
+    return tvl;
 }
 
 async function totalStaking() {
     const [
         depositedSupply,
-        rate,
         constants
     ] = await Promise.all([
         executeGetter(FRIENDS_AA_ADDRESS, 'get_deposited_supply', []),
-        fetchOswapExchangeRates(),
         getAaStateVars(FRIENDS_AA_ADDRESS, 'constants').then(vars => vars?.constants)
     ]);
 
     const decimals = await getDecimalsByAsset(constants.asset);
 
-    const price = rate[`${constants.asset}_USD`] ?? 0;
-
-    const staked = price * (depositedSupply / 10 ** decimals);
-
-    return { tether: staked }
+    return { [constants.asset]: depositedSupply / 10 ** decimals }
 }
 
 module.exports = {
