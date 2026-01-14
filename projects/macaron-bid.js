@@ -5,12 +5,24 @@ const { PublicKey } = require('@solana/web3.js')
 const MACARON_TOKEN = '8UiPofjkbjqTqrymz4VY3wXxMcPjFuyq3Psofekymaca'
 const STAKING_ADDRESS = '7jirHCE99LM5LKDknU9d3zxpXcxGLEXrh7AkwX9AGqtY'
 const POD_PROGRAM_ID = 'podGbXLgkgB3ALGsfr7rn1Ct7YJ65QSRuC5w1Zn7qAG'
-const RAYDIUM_AMM_V4 = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8'
+
+// Raydium LP Pool Vaults - hardcoded because Raydium program is excluded from secondary indexes on DefiLlama RPC
+const POOL_VAULTS = [
+  'J9gBqx5sxjR4cdivEPJ8YumSNdBU3qACygtuJekHEjKJ', '2AR7dELspiHqczdntAFKHYmKzYbBJuw9tKjYxYbrXzcb',
+  '3GYesNsJDKP5tfQYdYHFGARY1WHHeYgZ1fVi5RLCau4Q', 'HzsN8ctWK91gw1oBzFXQiR9MMyMazX55GCg1ptTacXHE',
+  '8szkgjHEXXHpBFans1WYz4cNBVM5GndrEVHkgopRhMVK', 'DtvKv1JYmHbg6rFYAFtQWFzbmgCDVtii5XqPfbEi8qte',
+  '9G9dhMPbiXNpKbLyifGkYSJJBPbM82thEy8BwCo8f5Ct', '6YjDAJpsuxwpxNGuEKH6GCpWpLgKrkqGujYVYxqTB2Nf',
+  '264ZQN6ixkD6pcTLjSmyqjZghpsxTfLpJSvwB3GYHVKQ', 'ZwExxbDxTrz9A81pBj1DLvuihY8Pkp2XytoUQLqiV1b',
+  'Etq6HrUKRMRRv29mTR82uV33J2gYWeptmdjq6AmqiR4C', '7ni5apRMTBrhEhGk9K5aiRHWRSVt2Er6FoGdtGfWgih8',
+  'HFgAXyyKTh3tup3c2QNUQaGe6rrFhgmv8nvMhYs1KwuA', 'EKENmeoaeqqsmTyp6xrAEJ16UGpbQnnpZnpN5MYZX6K6',
+  '8ChJLAhS8zQLgf6RjsqeVPxHitxwTbARPwVFLTK1oRTN', '2vNmCcmA8WNskEJWi35vnV4pYKNVce4dHjWxHFrPNfP4',
+  'A9Qq72WJM6iEjHctt7N89c5DTZbntwiFomJUqE7GqZ2K', 'HHXptF9xbeRtwSX3WiaVGXMh8Bjm4iZFcBnR3puRnwrd',
+  '6341VTWY3sfX9pFQUmrkfKtCLthWeAExs2ctPsADMv3R', '2xd6W24TAh6y9jkiwGou8ZtiDoaYk8W11aZ9NdoeB9NP',
+  'DoWJ1WyEnamSZn8u2RxskMePaUscwhDRFwY7F81KMGea', 'qepkKWamjHfvFe4ZXXrzTvp7VYCBbWWKFX9CgedMVPZ',
+]
 
 // Pod Account Discriminator (first 8 bytes of account data from IDL)
 const POD_DISCRIMINATOR = Buffer.from([38, 158, 247, 154, 184, 100, 20, 121])
-// StakingPool Account Discriminator from IDL
-const STAKING_POOL_DISCRIMINATOR = Buffer.from([203, 19, 214, 220, 220, 154, 24, 102])
 
 async function staking(api) {
   // Track MACARON tokens staked
@@ -24,71 +36,35 @@ async function tvl(api) {
   const connection = getConnection()
   const programId = new PublicKey(POD_PROGRAM_ID)
   
-  // Get all accounts from Macaron program
+  // Get all Pod accounts
   const allAccounts = await connection.getProgramAccounts(programId)
   
-  const lpMints = new Set() // LP mints from StakingPools
-  
-  // Parse each account
-  for (const { pubkey, account } of allAccounts) {
+  // Parse Pod accounts to track underlying tokens
+  for (const { account } of allAccounts) {
     const data = account.data
     const discriminator = data.slice(0, 8)
     
-    // Check if this is a Pod account
-    if (discriminator.equals(POD_DISCRIMINATOR)) {
-      // Parse Pod: track total_underlying
-      let offset = 8 + 32 // Skip discriminator + authority
-      
-      // Read underlying_mint (32 bytes)
-      const underlyingMint = new PublicKey(data.slice(offset, offset + 32))
-      offset += 32 + 32 + 32 + 8 // Skip ptoken_mint + vault + cbr_numerator
-      
-      // Read total_underlying (u64 - 8 bytes)
-      const totalUnderlying = data.readBigUInt64LE(offset)
-      
-      api.add(underlyingMint.toString(), totalUnderlying.toString())
-    }
-    // Check if this is a StakingPool account
-    else if (discriminator.equals(STAKING_POOL_DISCRIMINATOR)) {
-      // Parse StakingPool: get lp_mint
-      // Structure: discriminator(8) + admin(32) + lp_mint(32) + ...
-      let offset = 8 + 32 // Skip to lp_mint
-      const lpMint = new PublicKey(data.slice(offset, offset + 32))
-      lpMints.add(lpMint.toString())
-    }
+    if (!discriminator.equals(POD_DISCRIMINATOR)) continue
+    
+    // Parse Pod: track total_underlying
+    let offset = 8 + 32 // Skip discriminator + authority
+    
+    // Read underlying_mint (32 bytes)
+    const underlyingMint = new PublicKey(data.slice(offset, offset + 32))
+    offset += 32 + 32 + 32 + 8 // Skip ptoken_mint + vault + cbr_numerator
+    
+    // Read total_underlying (u64 - 8 bytes)
+    const totalUnderlying = data.readBigUInt64LE(offset)
+    
+    api.add(underlyingMint.toString(), totalUnderlying.toString())
   }
   
-  // Track Raydium LP pools liquidity
-  if (lpMints.size > 0) {
-    const raydiumProgramId = new PublicKey(RAYDIUM_AMM_V4)
-    const raydiumAccounts = await connection.getProgramAccounts(raydiumProgramId, {
-      filters: [{ dataSize: 752 }],
-      dataSlice: { offset: 336, length: 160 } // Get baseVault(32) + quoteVault(32) + baseMint(32) + quoteMint(32) + lpMint(32)
-    })
-    
-    const tokenAccounts = []
-    
-    for (const { account } of raydiumAccounts) {
-      const data = account.data
-      // After slice from offset 336: baseVault(0-32), quoteVault(32-64), baseMint(64-96), quoteMint(96-128), lpMint(128-160)
-      const baseVault = new PublicKey(data.slice(0, 32))
-      const quoteVault = new PublicKey(data.slice(32, 64))
-      const lpMint = new PublicKey(data.slice(128, 160))
-      
-      if (lpMints.has(lpMint.toString())) {
-        tokenAccounts.push(baseVault.toString())
-        tokenAccounts.push(quoteVault.toString())
-      }
-    }
-    
-    // Track all vault tokens
-    if (tokenAccounts.length > 0) {
-      await sumTokens2({
-        api,
-        tokenAccounts,
-      })
-    }
-  }
+  // Track Raydium LP pool reserves
+  const tokenAccounts = POOL_VAULTS
+  await sumTokens2({
+    api,
+    tokenAccounts,
+  })
 }
 
 module.exports = {
@@ -98,10 +74,7 @@ module.exports = {
     staking,
   },
   methodology: 
-    'TVL includes all underlying tokens (TKN) locked in Volatility Farming Pods. ' +
-    'Each Pod wraps TKN into synthetic pTKN tokens. Users can wrap/unwrap with fees, ' +
-    'and LP stakers earn rewards from these fees. The Collateral Backing Ratio (CBR) ' +
-    'increases over time as fees are collected and pTKN supply is burned. ' +
-    'MACARON tokens staked for governance rewards are tracked separately under "staking".'
+    'TVL tracks underlying tokens locked in Volatility Farming Pods plus reserves in Raydium LP pools. ' +
+    'Pods wrap TKN into pTKN with Collateral Backing Ratio (CBR) mechanism. ' +
+    'MACARON tokens staked for governance are tracked separately under "staking".'
 }
-
