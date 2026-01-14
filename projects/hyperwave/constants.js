@@ -14,7 +14,25 @@ const MS_2 = "0x950e6bc9bba0edf4e093b761df05cf5abd0a32e7";
 const MS_3 = "0x4E961B977085B673c293a5C022FdcA2ab3A689a2";
 const MS_4 = "0xc8f969ef6b51a428859f3a606e6b103dc1fb92e9";
 const MS_5 = "0x2cd4aa47e778fe8fa27cdcd4ce2bc99b6bf90f61";
-const MS_ALL = [MS_1, MS_2, MS_3, MS_4, MS_5];
+
+// CoreWriter enabled EOAs
+const V_1 = "0x5678516ac4660483afa6a9416803f977d2c88b8e";
+const V_2 = "0x7962c678e644b858579c739b85dd94e6925aedb9";
+const V_3 = "0x5f5cfbf75c55b776a68b81448d29401ef15fabda";
+const V_4 = "0x1b5caf5177164395d082107a09427ee2eb33c28f";
+const V_5 = "0xb46aed4489eb56745e9dcdf575792f1dbed509a3";
+const TRADE_STAKE = "0x8a83f1f7ba4dede601b689f307cbe7f79f731628";
+
+const OLD_MS = [
+    MS_1, MS_2, MS_3, MS_4, MS_5
+];
+const NEW_EOAS = [
+    TRADE_STAKE, V_1, V_2, V_3, V_4, V_5
+];
+const MS_ALL = [
+    ...OLD_MS, 
+    ...NEW_EOAS
+];
 
 // HyperLiquid Vault
 const HLP_VAULT = "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303";
@@ -42,6 +60,7 @@ const HWHYPE_VAULT_TOKENS = [
     '0xfD739d4e423301CE9385c1fb8850539D657C296D', // kHYPE
     '0x5748ae796AE46A4F1348a1693de4b50560485562', // LHYPE
     '0x9BA2EDc44E0A4632EB4723E81d4142353e1bB160', // vkHYPE
+    '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', // hbHYPE
     // Lending
     '0x4DE03cA1F02591B717495cfA19913aD56a2f5858', // hyHYPE (hypurrfi)
     '0x0D745EAA9E70bb8B6e2a0317f85F1d536616bD34', // hHYPE (hyperlend)

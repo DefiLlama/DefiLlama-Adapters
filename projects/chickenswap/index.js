@@ -18,43 +18,18 @@ const kfcVaults = [
 
 
 /*** Vaults TVL Portion ***/
-const ethTvl = async (_ts, block, chainBlocks) => {
+const ethTvl = async (api) => {
     const balances = {};
 
     await addFundsInMasterChef(
         balances,
         chickenChefContract,
-        chainBlocks["ethereum"],
+        api.block,
         "ethereum",
         addr => addr,
         abi.poolInfo,
         [KFC, WETH_KFC_UNIV2, kfcVaults[0], kfcVaults[1]]
-    );
-
-    const kfcTokens = (
-        await sdk.api.abi.multiCall({
-            abi: abi.token,
-            calls: kfcVaults.map(vault => ({
-                target: vault,
-            })),
-            block 
-        })
-    ).output.map(tokens => tokens.output);
-
-    const tokensBalance = (
-        await sdk.api.abi.multiCall({
-            abi: abi.balance,
-            calls: kfcVaults.map(vault => ({
-                target: vault,
-            })),
-            block
-        })
-    ).output.map(bals => bals.output);
-
-    kfcTokens.forEach((token, idx) => {
-        sdk.util.sumSingleBalance(balances, token, tokensBalance[idx]);
-    });
-
+    )
     return balances;
 };
 
