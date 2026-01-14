@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = {
   "coreVault": "address:coreVault",
   "gVault": "address:gVault",
@@ -7,7 +8,7 @@ const abi = {
 
 // Contract addresses on Monad testnet
 const MAGMA_ADDRESS = '0x8498312A6B3CbD158bf0c93AbdCF29E6e4F55081';
-const STAKING_PRECOMPILE = '0x0000000000000000000000000000000000001000';
+const STAKING_PRECOMPILE = ADDRESSES.findora.FRA;
 
 async function tvl(api) {
   // Get CoreVault and GVault addresses from Magma

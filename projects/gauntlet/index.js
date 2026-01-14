@@ -114,6 +114,12 @@ const configs = {
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
       ],
     },
+    optimism: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
+    },
   }
 }
 
@@ -133,7 +139,7 @@ const TOKEN_INFO = {
     decimals: 9,
   },
   jitoSOL: {
-    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    mint: ADDRESSES.solana.JitoSOL,
     decimals: 9,
   },
   JTO: {
@@ -153,7 +159,7 @@ const TOKEN_INFO = {
     decimals: 9,
   },
   dSOL: {
-    mint: 'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ',
+    mint: ADDRESSES.solana.dSOL,
     decimals: 9,
   },
   JLP: {

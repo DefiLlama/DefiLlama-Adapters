@@ -13,7 +13,7 @@ const chainPools = {
     BTCB: { pool: '0x872b347cd764d46c127ffefbcaB605FFF3f3a48C', token: "0x5832f53d147b3d6Cd4578B9CBD62425C7ea9d0Bd" }
   },
   base: {
-    cbBTC: { pool: '0x4F7aB59b5AC112970F5dD66D8a7ac505c8E5e08B', token: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf" }
+    cbBTC: { pool: '0x4F7aB59b5AC112970F5dD66D8a7ac505c8E5e08B', token: ADDRESSES.ethereum.cbBTC }
   }
 }
 

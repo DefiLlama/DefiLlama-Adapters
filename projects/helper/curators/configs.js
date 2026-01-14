@@ -7,6 +7,14 @@ const ABI = {
   ERC4626: {
     asset: 'address:asset',
     totalAssets: 'uint256:totalAssets',
+    balanceOf: 'function balanceOf(address account) view returns (uint256)',
+    convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
+  },
+  morphoV2: {
+    liquidityAdapter: 'address:liquidityAdapter',
+  },
+  morphoAdapter: {
+    morphoVaultV1: 'address:morphoVaultV1',
   },
   aera: {
     assetRegistry: 'address:assetRegistry',
@@ -69,6 +77,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  monad: {
+    vaultFactories: [
+      {
+        address: '0x33f20973275B2F574488b18929cd7DCBf1AbF275',
+        fromBlock: 32320327
+      },
+    ]
+  },
   wc: {
     vaultFactories: [
       {
@@ -122,6 +138,14 @@ const MorphoConfigs = {
       {
         address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
         fromBlock: 296447195,
+      },
+    ],
+  },
+  optimism: {
+    vaultFactories: [
+      {
+        address: '0x3Bb6A6A0Bc85b367EFE0A5bAc81c5E52C892839a',
+        fromBlock: 130770189,
       },
     ],
   },
@@ -207,6 +231,11 @@ const EulerConfigs = {
   arbitrum: {
     vaultFactories: [
       '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
+    ],
+  },
+  monad: {
+    vaultFactories: [
+      '0xba4dd672062de8feedb665dd4410658864483f1e',
     ],
   },
 }

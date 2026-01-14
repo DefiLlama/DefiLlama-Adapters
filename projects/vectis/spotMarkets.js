@@ -19,7 +19,7 @@ const SPOT_MARKETS = {
   },
   6: {
     name: 'jitoSOL',
-    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    mint: ADDRESSES.solana.JitoSOL,
     decimals: 9
   },
   16:{
@@ -29,7 +29,7 @@ const SPOT_MARKETS = {
   },
   17:{
     name:'dSOL',
-    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
+    mint:ADDRESSES.solana.dSOL, 
     decimals: 9
   },
   19: {
@@ -39,7 +39,7 @@ const SPOT_MARKETS = {
   },
   22: {
     name: 'PYUSD',
-    mint: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo',
+    mint: ADDRESSES.solana.PYUSD,
     decimals: 6
   },
   28: {
