@@ -34,7 +34,7 @@ const config = {
       '0x446b3adcbebfec21fc2c295a60df9bd8ea270821',
       '0x8084dddd27949c84f3b5c3b67e5ff316f330c1ef',
       '0xe58a3ebde7063409c7286e3b462162e6e5bbfe0a',
-      '0x58beafb3728cec95f890e9cc17067d15415bc732',
+      '0xc456217f750eb72d5255d7f2a0e63cceccb6fba3',
       '0xf21fd9bc864008173538e6080a2a29fb8c03819a',
       '0xe8b8ae4e9ac5f46234d9033ab25b4cdb081b49c4',
       '0x7277f84ea279ad4bf01321f827e4159de695ffd0',
