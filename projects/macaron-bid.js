@@ -6,21 +6,6 @@ const MACARON_TOKEN = '8UiPofjkbjqTqrymz4VY3wXxMcPjFuyq3Psofekymaca'
 const STAKING_ADDRESS = '7jirHCE99LM5LKDknU9d3zxpXcxGLEXrh7AkwX9AGqtY'
 const POD_PROGRAM_ID = 'podGbXLgkgB3ALGsfr7rn1Ct7YJ65QSRuC5w1Zn7qAG'
 
-// Raydium LP Pool Vaults - hardcoded because Raydium program is excluded from secondary indexes on DefiLlama RPC
-const POOL_VAULTS = [
-  'J9gBqx5sxjR4cdivEPJ8YumSNdBU3qACygtuJekHEjKJ', '2AR7dELspiHqczdntAFKHYmKzYbBJuw9tKjYxYbrXzcb',
-  '3GYesNsJDKP5tfQYdYHFGARY1WHHeYgZ1fVi5RLCau4Q', 'HzsN8ctWK91gw1oBzFXQiR9MMyMazX55GCg1ptTacXHE',
-  '8szkgjHEXXHpBFans1WYz4cNBVM5GndrEVHkgopRhMVK', 'DtvKv1JYmHbg6rFYAFtQWFzbmgCDVtii5XqPfbEi8qte',
-  '9G9dhMPbiXNpKbLyifGkYSJJBPbM82thEy8BwCo8f5Ct', '6YjDAJpsuxwpxNGuEKH6GCpWpLgKrkqGujYVYxqTB2Nf',
-  '264ZQN6ixkD6pcTLjSmyqjZghpsxTfLpJSvwB3GYHVKQ', 'ZwExxbDxTrz9A81pBj1DLvuihY8Pkp2XytoUQLqiV1b',
-  'Etq6HrUKRMRRv29mTR82uV33J2gYWeptmdjq6AmqiR4C', '7ni5apRMTBrhEhGk9K5aiRHWRSVt2Er6FoGdtGfWgih8',
-  'HFgAXyyKTh3tup3c2QNUQaGe6rrFhgmv8nvMhYs1KwuA', 'EKENmeoaeqqsmTyp6xrAEJ16UGpbQnnpZnpN5MYZX6K6',
-  '8ChJLAhS8zQLgf6RjsqeVPxHitxwTbARPwVFLTK1oRTN', '2vNmCcmA8WNskEJWi35vnV4pYKNVce4dHjWxHFrPNfP4',
-  'A9Qq72WJM6iEjHctt7N89c5DTZbntwiFomJUqE7GqZ2K', 'HHXptF9xbeRtwSX3WiaVGXMh8Bjm4iZFcBnR3puRnwrd',
-  '6341VTWY3sfX9pFQUmrkfKtCLthWeAExs2ctPsADMv3R', '2xd6W24TAh6y9jkiwGou8ZtiDoaYk8W11aZ9NdoeB9NP',
-  'DoWJ1WyEnamSZn8u2RxskMePaUscwhDRFwY7F81KMGea', 'qepkKWamjHfvFe4ZXXrzTvp7VYCBbWWKFX9CgedMVPZ',
-]
-
 // Pod Account Discriminator (first 8 bytes of account data from IDL)
 const POD_DISCRIMINATOR = Buffer.from([38, 158, 247, 154, 184, 100, 20, 121])
 
@@ -58,13 +43,6 @@ async function tvl(api) {
     
     api.add(underlyingMint.toString(), totalUnderlying.toString())
   }
-  
-  // Track Raydium LP pool reserves
-  const tokenAccounts = POOL_VAULTS
-  await sumTokens2({
-    api,
-    tokenAccounts,
-  })
 }
 
 module.exports = {
@@ -74,7 +52,7 @@ module.exports = {
     staking,
   },
   methodology: 
-    'TVL tracks underlying tokens locked in Volatility Farming Pods plus reserves in Raydium LP pools. ' +
+    'TVL tracks underlying tokens locked in Volatility Farming Pods. ' +
     'Pods wrap TKN into pTKN with Collateral Backing Ratio (CBR) mechanism. ' +
     'MACARON tokens staked for governance are tracked separately under "staking".'
 }
