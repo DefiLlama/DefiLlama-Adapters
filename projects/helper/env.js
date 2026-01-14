@@ -30,13 +30,17 @@ const DEFAULTS = {
   FOGO_RPC: 'https://mainnet.fogo.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
+  INJECTIVE_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
+  VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
+  TATUM_PUBLIC_API_KEY: "t-6956724efd74cfe6b231bee6-cd40df69ad2d423588e36fc6",
 }
 
 const ENV_KEYS = [
@@ -60,6 +64,7 @@ const ENV_KEYS = [
   'PROXY_AUTH',
   'ALLIUM_API_KEY',
   'TON_API_KEY',
+  'FLOW_NON_EVM_RPC',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
