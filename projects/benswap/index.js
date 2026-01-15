@@ -5,26 +5,15 @@ const { stakingPricedLP } = require('../helper/staking')
 
 const WBCH = ADDRESSES.smartbch.WBCH;
 const EBEN = "0x77CB87b57F54667978Eb1B199b28a0db8C8E1c0B";
-const FLEXUSD = ADDRESSES.smartbch.flexUSD;
 const FACTORY = "0x8d973bAD782c1FFfd8FcC9d7579542BA7Dd0998D";
 const MASTERBREEDER = "0xDEa721EFe7cBC0fCAb7C8d65c598b21B6373A2b6";
 const EBEN_WBCH_LP = "0x0D4372aCc0503Fbcc7EB129e0De3283c348B82c3";
 const COREASSETNAME = "bitcoin-cash";
-const CHAIN = "smartbch";
 
-async function bchMasterChef(timestamp, ethBlock, {[CHAIN]: block}) {
-
-    const stakedBCH = (await sdk.api.erc20.balanceOf({
-        target: WBCH,
-        owner: MASTERBREEDER,
-        chain: CHAIN,
-        block: block,
-        decimals: 18
-    })).output;
-
-    return {
-        [COREASSETNAME]: Number(stakedBCH)
-    }
+async function bchMasterChef(api) {
+    const bal = await api.call({  abi: 'erc20:balanceOf', target: WBCH, params: MASTERBREEDER})
+    api.add(WBCH, bal)
+    return api.getBalances()
 }
 
 const bchDexTvl = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, })
@@ -34,7 +23,6 @@ module.exports = {
     methodology: "Factory address (0x8d973bAD782c1FFfd8FcC9d7579542BA7Dd0998D) is used to find the LP pairs on smartBCH and Factory address (0x4dC6048552e2DC6Eb1f82A783E859157d40FA193) is used to find the liquidity of the pairs on BSC. TVL is equal to the liquidity on both AMMs plus the extra staking balance and masterchef pools.",
     smartbch: {
         tvl: sdk.util.sumChainTvls([bchDexTvl, bchMasterChef]),
-        // masterchef: bchMasterChef,
         staking: stakingPricedLP(MASTERBREEDER, EBEN, "smartbch", EBEN_WBCH_LP, COREASSETNAME),
     },
     bsc: {

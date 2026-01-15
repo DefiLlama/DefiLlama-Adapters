@@ -141,6 +141,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  optimism: {
+    vaultFactories: [
+      {
+        address: '0x3Bb6A6A0Bc85b367EFE0A5bAc81c5E52C892839a',
+        fromBlock: 130770189,
+      },
+    ],
+  },
   hemi: {
     vaultFactories: [
       {
@@ -223,6 +231,11 @@ const EulerConfigs = {
   arbitrum: {
     vaultFactories: [
       '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
+    ],
+  },
+  monad: {
+    vaultFactories: [
+      '0xba4dd672062de8feedb665dd4410658864483f1e',
     ],
   },
 }

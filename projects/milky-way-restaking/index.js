@@ -19,6 +19,7 @@ async function restakingTVL(api) {
 }
 
 module.exports = {
+  deadFrom: '2026-01-15', // project decides to shut down - https://x.com/milky_way_zone/status/2011770175566332325
   doublecounted: true,
   methodology: 'TVL counts the liquid staked tokens that have been restaked on MilkyWay. This TVL is double counted as these assets are already included in the liquid staking TVL.',
   milkyway: {

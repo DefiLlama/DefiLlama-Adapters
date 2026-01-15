@@ -46,7 +46,7 @@ const configs = {
     },
     monad: {
       morphoVaultOwners: [
-        '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+        '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
       ],
     },
     polygon: {
