@@ -1,10 +1,11 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
+
 const RAIN_PROTOCOL_FACTORY = "0xccCB3C03D9355B01883779EF15C1Be09cf3623F1"
 
 async function rainProtocolTvl(api) {
-    // Get all pools
+
     const logs = await getLogs2({
         api,
         target: RAIN_PROTOCOL_FACTORY,
@@ -12,8 +13,8 @@ async function rainProtocolTvl(api) {
         fromBlock: 307025521,
     })
 
-    const poolAddresses = logs.map(l => l.poolAddress)
-    if (!poolAddresses.length) return {}
+    const poolAddresses = logs.map(log => log.poolAddress)
+    if (poolAddresses.length === 0) return {}
 
     // Get baseToken for each pool
     const tokensAndOwners = await Promise.all(
