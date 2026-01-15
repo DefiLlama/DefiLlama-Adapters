@@ -1,10 +1,8 @@
-const { uniV3Export } = require("../helper/uniswapV3");
+const { uniV3GraphExport } = require("../helper/uniswapV3");
 
 
-module.exports = uniV3Export({
-    tac: {
-        factory: '0x10253594A832f967994b44f33411940533302ACb',
-        fromBlock: 3820258,
-        isAlgebra: true
-    }
-});
+module.exports = {
+  tac: {
+    tvl: uniV3GraphExport({ graphURL: 'https://api.goldsky.com/api/public/project_cltyhthusbmxp01s95k9l8a1u/subgraphs/cl-analytics-tac/v1.0.1/gn', name: 'snap-tac' }),
+  }
+}
