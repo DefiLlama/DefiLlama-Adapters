@@ -32,7 +32,10 @@ const chainsWithoutCovalentSupport = {
       ADDRESSES.sonic.STS,
       ADDRESSES.sonic.wS
     ]) 
-  }
+  },
+  berachain: { tokens: [ADDRESSES.berachain.WBERA, ADDRESSES.berachain.WETH] },
+  fraxtal: { tokens: [ADDRESSES.fraxtal.FRAX, ADDRESSES.fraxtal.WFRAX, ADDRESSES.fraxtal.WETH] },
+  swellchain: { tokens: [ADDRESSES.swellchain.SWELL, ADDRESSES.swellchain.WETH] },
 }
 
 Object.keys(chainsWithoutCovalentSupport).forEach(chain => {
