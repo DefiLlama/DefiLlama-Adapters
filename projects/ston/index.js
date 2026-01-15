@@ -1,21 +1,24 @@
 const { get } = require('../helper/http')
 const { transformDexBalances } = require('../helper/portedTokens')
-const { getCoreAssets } = require('../helper/tokenMapping')
 
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   ton: {
     tvl: async () => {
-      const result = await get("https://api.ston.fi/v1/pools?dex_v2=true")
-      const coreTokens = new Set(getCoreAssets('ton'))
+      const [poolsResult, assetsResult] = await Promise.all([
+        get("https://api.ston.fi/v1/pools?dex_v2=true"),
+        get("https://api.ston.fi/v1/assets")
+      ])
 
-      // Only include pools where at least one token is a known core asset.
-      // This prevents issues with spam token pools (e.g. SCAM1/SCAM2) that:
-      // 1. Cannot be reliably priced (no core asset to derive price from)
-      // 2. May cause price lookup failures for unknown tokens
-      const validPools = result.pool_list.filter(i => {
-        return coreTokens.has(i.token0_address) || coreTokens.has(i.token1_address)
+      const pricedTokens = new Set(
+        assetsResult.asset_list
+          .filter(asset => asset.dex_usd_price != null)
+          .map(asset => asset.contract_address)
+      )
+
+      const validPools = poolsResult.pool_list.filter(i => {
+        return pricedTokens.has(i.token0_address) && pricedTokens.has(i.token1_address)
       })
 
       return transformDexBalances({
