@@ -57,7 +57,6 @@ const fixBalancesTokens = {
     },
   },
   provenance: {
-    'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6},
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0},
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0},
   },
