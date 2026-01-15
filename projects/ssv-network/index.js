@@ -9,17 +9,29 @@ module.exports = {
       const keys = []
       let lastId = 0
       const perPage = 1000
-      let thisPerPage = perPage
 
-      while (thisPerPage == perPage) {
-        const { validators } = await getConfig(`ssv-network/${lastId}`, `https://api.ssv.network/api/v4/mainnet/validators?perPage=${perPage}&lastId=${lastId}`)
-        thisPerPage = validators.length
-        lastId = validators[thisPerPage - 1].id
+      while (true) {
+        const { validators, pagination } = await getConfig(
+          `ssv-network/${lastId}`,
+          `https://api.ssv.network/api/v4/mainnet/validators?perPage=${perPage}&lastId=${lastId}`
+        )
 
-        validators.map(v => {
+        // Process current page validators
+        validators.forEach(v => {
           const normalizedKey = v.owner_address.toLowerCase()
           if (!keys.includes(normalizedKey)) keys.push(normalizedKey)
         })
+
+        const itemsInPage = validators.length > 0
+          ? pagination.current_last - pagination.current_first + 1
+          : 0
+
+        if (itemsInPage < perPage) {
+          break
+        }
+
+        // Use current_last from pagination for next iteration
+        lastId = pagination.current_last
       }
 
       const queries = []
