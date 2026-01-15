@@ -12,24 +12,48 @@ const CALL_TIMEOUT_MS = 30000
 const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
 
 function detectCrossChainToken(tokenId) {
+  // Stellar tokens via HOT omnichain bridge (chain ID 1100)
   if (tokenId.includes('v2_1.omni.hot.tg:1100_')) {
     const stellarMappings = {
       '111bzQBB5v7AhLyPMDwS8uJgQV24KaAPXtwyVWu2KXbbfQU6NXRCz': 'coingecko:stellar',
-      '111bzQBB65GxAPAVoxqmMcgYo5oS3txhqs1Uh1cgahKQUeTUq1TJu': 'stellar:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN',
+      '111bzQBB65GxAPAVoxqmMcgYo5oS3txhqs1Uh1cgahKQUeTUq1TJu': 'coingecko:usd-coin',
     }
     const match = tokenId.match(/1100_([a-zA-Z0-9]+)$/)
     if (match && stellarMappings[match[1]]) {
-      return stellarMappings[match[1]]
+      return { chain: 'stellar', token: stellarMappings[match[1]] }
     }
   }
   
-  if (tokenId === 'btc.omft.near') return 'coingecko:bitcoin'
-  if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
-    const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
-    return `ethereum:0x${match[1].toLowerCase()}`
+  // Bitcoin via omnichain bridge
+  if (tokenId === 'btc.omft.near') {
+    return { chain: 'bitcoin', token: 'coingecko:bitcoin' }
   }
   
-  return tokenId
+  // Zcash via omnichain bridge
+  if (tokenId === 'zec.omft.near') {
+    return { chain: 'zcash', token: 'coingecko:zcash' }
+  }
+  
+  // Ethereum tokens via omnichain bridge
+  if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
+    const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
+    return { chain: 'ethereum', token: `ethereum:0x${match[1].toLowerCase()}` }
+  }
+  
+  if (tokenId.match(/^sol-([a-fA-F0-9]+)\.omft\.near$/)) {
+    const solanaTokenMappings = {
+      '5ce3bf3a31af18be40ba30f721101b4341690186': 'coingecko:usd-coin',
+    }
+    const match = tokenId.match(/^sol-([a-fA-F0-9]+)\.omft\.near$/)
+    const tokenAddress = match[1].toLowerCase()
+    if (solanaTokenMappings[tokenAddress]) {
+      return { chain: 'solana', token: solanaTokenMappings[tokenAddress] }
+    }
+    return { chain: 'solana', token: `solana:${tokenAddress}` }
+  }
+  
+  // Native NEAR tokens
+  return { chain: 'near', token: tokenId }
 }
 
 async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_DELAY_MS) {
@@ -39,6 +63,9 @@ async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_D
       return await fn()
     } catch (error) {
       lastError = error
+      if (error.message && error.message.includes('does not exist')) {
+        throw error
+      }
       if (attempt === maxAttempts) throw lastError
       console.log(`Attempt ${attempt} failed, retrying in ${delayMs}ms: ${error.message}`)
       await sleep(delayMs)
@@ -79,7 +106,7 @@ function extractTokenAddress(assetConfig, assetType) {
     }
     
     const crossChainResult = detectCrossChainToken(tokenId)
-    if (crossChainResult !== tokenId) {
+    if (crossChainResult.chain !== 'near') {
       return crossChainResult
     }
     
@@ -91,7 +118,7 @@ function extractTokenAddress(assetConfig, assetType) {
       return detectCrossChainToken(parts[1])
     }
     
-    return tokenId
+    return { chain: 'near', token: tokenId }
   }
 
   throw new Error(`Unsupported ${assetType} asset format: missing both Nep141 and valid Nep245`)
@@ -103,13 +130,11 @@ function validateConfiguration(configuration) {
   if (!configuration.collateral_asset) throw new Error('Missing collateral_asset in configuration')
 }
 
-function scaleTokenAmount(amount, tokenAddress) {
-  if (tokenAddress === 'coingecko:bitcoin') {
-    return amount.div(1e8).toFixed()
+function scaleTokenAmount(amount, tokenInfo, decimals) {
+  if (tokenInfo.token.startsWith('coingecko')) {
+    return amount.div(Math.pow(10, decimals)).toFixed();
   }
-  if (tokenAddress === 'coingecko:stellar') {
-    return amount.div(1e7).toFixed()
-  }
+  
   return amount.toFixed()
 }
 
@@ -207,10 +232,11 @@ async function fetchDeploymentsFromContract(registryContract) {
 }
 
 async function processMarket(marketContract) {
-  const [snapshotRaw, configurationRaw] = await Promise.all([
-    safeCall(marketContract, 'get_current_snapshot', {}),
-    safeCall(marketContract, 'get_configuration', {}),
-  ])
+  try {
+    const [snapshotRaw, configurationRaw] = await Promise.all([
+      safeCall(marketContract, 'get_current_snapshot', {}),
+      safeCall(marketContract, 'get_configuration', {}),
+    ])
 
   const snapshot = coerceAndValidateSnapshot(snapshotRaw)
   const configuration = configurationRaw
@@ -224,6 +250,9 @@ async function processMarket(marketContract) {
   const borrowAssetToken = extractTokenAddress(configuration.borrow_asset, 'borrow')
   const collateralAssetToken = extractTokenAddress(configuration.collateral_asset, 'collateral')
 
+  const borrowDecimals = configuration.price_oracle_configuration.borrow_asset_decimals
+  const collateralDecimals = configuration.price_oracle_configuration.collateral_asset_decimals
+
   const borrow_asset_deposited_active = BigNumber(snapshot.borrow_asset_deposited_active)
   const borrow_asset_deposited_incoming = BigNumber(snapshot.borrow_asset_deposited_incoming)
   const collateral_asset_deposited = BigNumber(snapshot.collateral_asset_deposited)
@@ -233,64 +262,99 @@ async function processMarket(marketContract) {
     .plus(borrow_asset_deposited_incoming)
     .minus(borrow_asset_borrowed)
 
-  return {
-    borrowAssetToken,
-    collateralAssetToken,
-    availableLiquidity,
-    totalBorrowed: borrow_asset_borrowed,
-    totalCollateral: collateral_asset_deposited,
+    return {
+      borrowAssetToken,
+      collateralAssetToken,
+      availableLiquidity,
+      totalBorrowed: borrow_asset_borrowed,
+      totalCollateral: collateral_asset_deposited,
+      borrowDecimals,
+      collateralDecimals,
+    }
+  } catch (error) {
+    if (error.message && error.message.includes('does not exist')) {
+      console.log(`Market ${marketContract} has been deleted, skipping...`)
+      return null
+    }
+    throw error
   }
 }
 
-async function tvl() {
-  const balances = {}
-
+async function getMarketData() {
   const deployments = await fetchAllDeployments(TEMPLAR_REGISTRY_CONTRACTS)
   if (deployments.length === 0) {
-    console.log('No Templar deployments found for TVL calculation')
-    return balances
+    console.log('No Templar deployments found')
+    return []
   }
 
   const results = await Promise.allSettled(deployments.map(processMarket))
+  const marketData = []
 
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
-      const { borrowAssetToken, collateralAssetToken, availableLiquidity, totalCollateral } = result.value
-      sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(availableLiquidity, borrowAssetToken))
-      sumSingleBalance(balances, collateralAssetToken, scaleTokenAmount(totalCollateral, collateralAssetToken))
+      if (result.value !== null) {
+        marketData.push(result.value)
+      }
     } else {
       throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
     }
   })
 
-  return balances
+  return marketData
 }
 
-async function borrowed() {
-  const balances = {}
-
-  const deployments = await fetchAllDeployments(TEMPLAR_REGISTRY_CONTRACTS)
-  if (deployments.length === 0) {
-    console.log('No Templar deployments found for borrowed calculation')
-    return balances
-  }
-
-  const results = await Promise.allSettled(deployments.map(processMarket))
-
-  results.forEach((result, index) => {
-    if (result.status === 'fulfilled') {
-      const { borrowAssetToken, totalBorrowed } = result.value
-      sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(totalBorrowed, borrowAssetToken))
-    } else {
-      throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
+function aggregateByChain(marketData, type) {
+  const chainBalances = {}
+  
+  marketData.forEach(market => {
+    const { borrowAssetToken, collateralAssetToken, availableLiquidity, totalBorrowed, totalCollateral, borrowDecimals, collateralDecimals } = market
+    
+    if (type === 'tvl') {
+      // Add borrow asset liquidity
+      if (!chainBalances[borrowAssetToken.chain]) chainBalances[borrowAssetToken.chain] = {}
+      sumSingleBalance(chainBalances[borrowAssetToken.chain], borrowAssetToken.token, scaleTokenAmount(availableLiquidity, borrowAssetToken, borrowDecimals))
+      
+      // Add collateral
+      if (!chainBalances[collateralAssetToken.chain]) chainBalances[collateralAssetToken.chain] = {}
+      sumSingleBalance(chainBalances[collateralAssetToken.chain], collateralAssetToken.token, scaleTokenAmount(totalCollateral, collateralAssetToken, collateralDecimals))
+    } else if (type === 'borrowed') {
+      if (!chainBalances[borrowAssetToken.chain]) chainBalances[borrowAssetToken.chain] = {}
+      sumSingleBalance(chainBalances[borrowAssetToken.chain], borrowAssetToken.token, scaleTokenAmount(totalBorrowed, borrowAssetToken, borrowDecimals))
     }
   })
-
-  return balances
+  
+  return chainBalances
 }
+
+let cachedMarketData = null
+
+async function getChainTvl(chain) {
+  if (!cachedMarketData) {
+    cachedMarketData = await getMarketData()
+  }
+  const chainBalances = aggregateByChain(cachedMarketData, 'tvl')
+  return chainBalances[chain] || {}
+}
+
+async function getChainBorrowed(chain) {
+  if (!cachedMarketData) {
+    cachedMarketData = await getMarketData()
+  }
+  const chainBalances = aggregateByChain(cachedMarketData, 'borrowed')
+  return chainBalances[chain] || {}
+}
+
+// Supported chains for cross-chain assets
+const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana']
 
 module.exports = {
-  methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment.',
+  methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Bitcoin).',
   start: 1754902109,
-  near: { tvl, borrowed },
 }
+
+SUPPORTED_CHAINS.forEach(chain => {
+  module.exports[chain] = {
+    tvl: () => getChainTvl(chain),
+    borrowed: () => getChainBorrowed(chain),
+  }
+})

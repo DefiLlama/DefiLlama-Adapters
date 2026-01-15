@@ -21,6 +21,11 @@ const config = {
       { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, }, // Uniswap 
     ]
   },
+  btnx: {
+    vaultConfigs: [
+      { factory: '0x53511764DE94CdA43CbBadFFCca3F29D2EFAB0F8', fromBlock: 1785696, }, // Bitzy
+    ]
+  },
   celo: {
     vaultConfigs: [
       { factory: '0xB3bf88Cb919a222A6F9c90ca8a9ac261CBD3e5bF', fromBlock: 38293141, }, // Velodrome Legacy
@@ -29,6 +34,7 @@ const config = {
   },
   flow: {
     vaultConfigs: [
+      { factory: '0x6992bB9dDbf44166e3739c8A3147e7e70a082cEb', fromBlock: 43561997, }, // FlowSwap
       { factory: '0x3bE78614342C7763d87520b2502085761Aa4e5f8', fromBlock: 39081014, }, // KittyPunch
     ],
   },
@@ -47,6 +53,11 @@ const config = {
   hemi: {
     vaultConfigs:[
       { factory: '0x5541Bcd3d163326CF12267D1cF6207dbde788348', fromBlock: 2624151, }, // Sushi
+    ]
+  },
+  polygon: {
+    vaultConfigs: [
+      { factory: '0xF39A4c7C87310116Ad915833769d301c599b0298', fromBlock: 79497352, }, // Uniswap
     ]
   },
 }

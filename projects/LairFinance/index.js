@@ -17,6 +17,9 @@ const contracts = {
     infraredIBGTVault: '0x75F3Be06b02E235f6d0E7EF2D462b29739168301',
     infraredWBERALAIRVault: '0x6583e71778A3d275B8A27f1252A125f7a6F875D1',
     kodiakBERALAIRLp: '0x9f6cf7aCb2F16f7d906EeeCB0a6020a5Cf91A41d'
+  },
+  SOMNIA: {
+    nodeController: '0x0FdCe181fde9582E6CA9Acf95577E04DAC573a43'
   }
 }
 
@@ -105,7 +108,14 @@ async function bera_staking(api) {
   }
 }
 
+async function somnia_tvl(api) {
+  const toalStakingAmount = await api.call({ target: contracts.SOMNIA.nodeController, abi: "uint256:totalStakingAmount" })
+  const totalUnstakingAmount = await api.call({ target: contracts.SOMNIA.nodeController, abi: "uint256:totalUnStakingAmount" })
+  api.addGasToken(toalStakingAmount - totalUnstakingAmount)
+}
+
 module.exports = {
   klaytn:  { tvl: kaia_tvl, staking: kaia_staking },
   berachain:{ tvl: bera_tvl, staking: bera_staking },
+  somnia:{ tvl: somnia_tvl },
 }

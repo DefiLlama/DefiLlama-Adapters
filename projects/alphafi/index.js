@@ -269,7 +269,7 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     poolID: "0x4043b9e628d0cc6c2e3f322e6a7bddf603a3bcc084992355b55f4c23516bb6ba",
     parentPoolID: "0xf0e4772e80800550368973d1f8ab2c9a7241ace8df8770452ee2bf3e3e67b8a1",
     investorID: "0x6876c4b19075ee774ca368a4a782c9425cca97251093dafa7ff239a846b3ee30",
-    token0Type: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    token0Type: ADDRESSES.sui.BTC,
     token1Type: ADDRESSES.sui.USDC_CIRCLE
   },
   { //stsui sui
@@ -283,7 +283,7 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     poolID: "0x4043b9e628d0cc6c2e3f322e6a7bddf603a3bcc084992355b55f4c23516bb6ba",
     parentPoolID: "0xf0e4772e80800550368973d1f8ab2c9a7241ace8df8770452ee2bf3e3e67b8a1",
     investorID: "0x6876c4b19075ee774ca368a4a782c9425cca97251093dafa7ff239a846b3ee30",
-    token0Type: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    token0Type: ADDRESSES.sui.BTC,
     token1Type: ADDRESSES.sui.USDC_CIRCLE
   },
   { //lbtc suibtc
@@ -291,20 +291,20 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     parentPoolID: "0x7df346f8ef98ad20869ff6d2fc7c43c00403a524987509091b39ce61dde00957",
     investorID: "0x43523544dd4e7900ac6aeb8299e1aebd5d72bf7fae97f1a3b988c31e08b1bacc",
     token0Type: "0x3e8e9423d80e1774a7ca128fccd8bf5f1f7753be658c5e645929037f7c819040::lbtc::LBTC",
-    token1Type: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC"
+    token1Type: ADDRESSES.sui.BTC
   },
   { //wal usdc
     poolID: "0x2781cca45bd57e1205b46dd439baf5233a0f02c4016e0a6b0d1f84036f47d109",
     parentPoolID: "0xbcc6909d2e85c06cf9cbfe5b292da36f5bfa0f314806474bbf6a0bf9744d37ce",
     investorID: "0x386445d435618922939a998c59593558d576821b5adceb1279b72731fbefaa38",
-    token0Type: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    token0Type: ADDRESSES.sui.WAL,
     token1Type: ADDRESSES.sui.USDC_CIRCLE
   },
   { //wal stsui
     poolID: "0x20f27f4b4e8de8e11aef5c59a4facc8367a92b24bd8302448bd97efbbaf9fec5",
     parentPoolID: "0xee0d89310b7216a8ef86cd2af0dd22382f4be2049cd073603b7099d9846ab4ca",
     investorID: "0xe171b8b8270e0e311362d55a0e21d387be6d549af8559f0d6ce3c4dfbb95deb7",
-    token0Type: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    token0Type: ADDRESSES.sui.WAL,
     token1Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI"
   },
 ]
@@ -362,7 +362,7 @@ const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
     poolID: "0x82938703e493c5759c4fa1218d7b7f82fd0356714dfc32eae457479f1f71c225",
     parentPoolID: "0xbcc6909d2e85c06cf9cbfe5b292da36f5bfa0f314806474bbf6a0bf9744d37ce",
     investorID: "0xab8585241f83c4e9cfe4d3b36af4b640a0c309b2b60be2c07b2246c32e5d8b4e",
-    token0Type: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    token0Type: ADDRESSES.sui.WAL,
     token1Type: ADDRESSES.sui.USDC_CIRCLE
   },
   { //suiusdt usdc (0.001)
@@ -436,7 +436,7 @@ const ALPHAFI_NAVI_TVL_IDS = [
   },
   { //wBTC
     poolID: "0x17743a10e89b108fd7c048e7737ce09082e3ef91f416ee93c2566c5dd3f438db",
-    tokenType: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    tokenType: ADDRESSES.sui.BTC,
     expo: 8
   },
   {// suiUSDT
@@ -446,7 +446,7 @@ const ALPHAFI_NAVI_TVL_IDS = [
   },
   {// WAL
     poolID: "0x8ceca427f6fef09f7691eb2c9f1bf41e4854230f9e1bd21322b3ea7f76ee6975",
-    tokenType: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    tokenType: ADDRESSES.sui.WAL,
     expo: 9
   },
   {// DEEP
@@ -503,7 +503,7 @@ const ALPHAFI_NAVI_LOOP_TVL_IDS = [
     //wBTC SINGLE LOOP
     poolID: "0xc38279f945d14b4ec7f8c7b6956d0485ee8fa31a6cf710e462d17714bff028a2",
     investorID: "0x0f03b5c37f49c18d6e13ddc58939df17586a0b80cb83ceda2e4494addd571990",
-    tokenType: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    tokenType: ADDRESSES.sui.BTC,
     expo: 8,
     protocol: "ALPHALEND"
   }
@@ -514,6 +514,24 @@ const ALPHAFI_BUCKET_TVL_IDS = [
     tokenType: ADDRESSES.sui.BUCK,
   },
   
+]
+const ALPHAFI_SLUSH_TVL_IDS = [
+  {
+    poolID: "0x15a537db45889267354a2576e1cf24e84ea7674a4e5691e71dd4c4592c9a8ce9",
+    tokenType: ADDRESSES.sui.USDC,
+  },
+  {
+    poolID: "0x18db5470cc2da4f74b1b957891f274d896764d08c56c3941788cef84d2a1362e",
+    tokenType: ADDRESSES.sui.SUI,
+  },
+  {
+    poolID: "0xcb8b3311b50c89edc2a0e51a0ffc591a651f8c8819ad000aa46f5974a619378d",
+    tokenType: ADDRESSES.sui.WAL,
+  },
+  {
+    poolID: "0xed4302b0db5a1eabc2f8404222572892c0bf7c81004935b23e4f22808b52a0af",
+    tokenType: ADDRESSES.sui.DEEP,
+  },
 ]
 const ALPHAFI_POOL2_IDS = [{
   poolID: "0x594f13b8f287003fd48e4264e7056e274b84709ada31e3657f00eeedc1547e37",
@@ -545,7 +563,7 @@ const ALPHAFI_POOL2_IDS = [{
 },
 ]
 
-const ALPHA_POOL_ID = "0x6ee8f60226edf48772f81e5986994745dae249c2605a5b12de6602ef1b05b0c1"
+const ALPHA_POOL_ID = "0x06a4922346ae433e9a2fff4db900d760e0cbfdef748f48385f430ef4d042a6f8"
 const ALPHA_COIN_TYPE = "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA"
 
 function asIntN(int, bits = 32) {
@@ -605,9 +623,9 @@ async function addPoolTVL3(api, alphafiNaviLoopPools){
   }
 }
 
-async function addPoolTVL4(api, alphafiBucketPools){
+async function addPoolTVL4(api, alphafiBucketPools, alphafiSlushPools){
  
-  for (const { poolID, tokenType } of alphafiBucketPools){
+  for (const { poolID, tokenType } of [...alphafiBucketPools, ...alphafiSlushPools]){
     let poolObject = await sui.getObject(poolID);
     let tokensInvested = poolObject.fields.tokensInvested;
     api.add(tokenType, tokensInvested);
@@ -616,7 +634,7 @@ async function addPoolTVL4(api, alphafiBucketPools){
 
 async function tvl(api) {
   
-  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS), addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS)]);
+  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS), addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS, ALPHAFI_SLUSH_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS)]);
 
 }
 async function pool2(api) {
@@ -628,7 +646,7 @@ async function pool2(api) {
 
 async function staking(api) {
   let alphaPoolObject = await sui.getObject(ALPHA_POOL_ID)
-  api.addToken(ALPHA_COIN_TYPE, BigInt(alphaPoolObject.fields.alpha_bal))
+  api.addToken(ALPHA_COIN_TYPE, BigInt(alphaPoolObject.fields.tokensInvested))
 }
 
 module.exports = {

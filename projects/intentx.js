@@ -38,13 +38,14 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: config.base.start,
+  start: 1700006400,
+  deadFrom: '2026-01-08',
   hallmarks: [
-    [config.base.start, "Open Beta Start"],
-    [1704200400, "0.8.2 Migration"],
-    [config.blast.start, "Blast Deploy"],
-    [config.mantle.start, "Mantle Deploy"],
-    [1725753600, "0.8.3 Migration"]
+    ['2023-11-15', "Open Beta Start"],
+    ['2024-01-02', "0.8.2 Migration"],
+    ['2024-03-11', "Blast Deploy"],
+    ['2024-04-13', "Mantle Deploy"],
+    ['2024-09-08', "0.8.3 Migration"]
   ],
 }
 
