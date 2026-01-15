@@ -22,6 +22,7 @@ async function staking(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology: 'Hastra TVL consists of the amount of vaulted wYLDS, plus the amount of unredeemed tokens in the redemption vault.',
   solana: { 
     tvl: solanaTvl,
