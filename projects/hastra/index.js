@@ -12,20 +12,10 @@ async function solanaTvl(api) {
   return api.getBalances();
 }
 
-async function staking(api) {
-  const balances = await getTokenAccountBalances([wYLDSVaultAccount])
-  Object.entries(balances).forEach(([token, balance]) => {
-      api.add(token, balance);
-  });
-
-  return api.getBalances();
-}
-
 module.exports = {
   doublecounted: true,
   methodology: 'Hastra TVL consists of the amount of vaulted wYLDS, plus the amount of unredeemed tokens in the redemption vault.',
   solana: { 
     tvl: solanaTvl,
-    staking: staking 
   },
 };
