@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2,  } = require('../helper/unwrapLPs');
+const { hallmarks } = require('../hermes-v2');
 const abis = require("./abis.json");
 
 const HERMES = '0xb27bbeaaca2c00d6258c3118bab6b5b6975161c8';
@@ -26,5 +27,9 @@ async function tvl(api) {
 module.exports = {
   metis: {
     tvl: () => ({}),
-  }
+  },
+  hallmarks:[
+    [1724194800, "V2 Launch"],
+    [1727132400, "Whitehack by team"],
+  ]
 }

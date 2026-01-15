@@ -12,6 +12,9 @@ const ports = {
   polygon: undefined,
   avax: undefined,
   bsc: undefined,
+  berachain: undefined,
+  fraxtal: '0x6BeEF9B5a6E4Dd9D74122d62f5ef52eE48281819',
+  swellchain: undefined
 }
 
 Object.keys(ports).forEach(chain => module.exports[chain] = { tvl: sumTokensExport({ owner: ports[chain] ?? defaultPort, fetchCoValentTokens: true }) })
@@ -35,4 +38,8 @@ const chainsWithoutCovalentSupport = {
 Object.keys(chainsWithoutCovalentSupport).forEach(chain => {
   const { tokens, port = defaultPort } = chainsWithoutCovalentSupport[chain]
   module.exports[chain] = { tvl: sumTokensExport({ owner: port, tokens })
-} })
+} }) 
+
+module.exports.hallmarks = [
+    [1727132400, "Whitehack by team"],
+]

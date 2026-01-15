@@ -10,4 +10,7 @@ module.exports = {
     tvl: sumTokensExport({ owner: stakerAddress, resolveUniV3: true}),
     staking: staking('0x3A0000000000E1007cEb00351F65a1806eCd937C', '0x45940000009600102A1c002F0097C4A500fa00AB'),
   },
+  hallmarks: [
+    [1765756800, "Yield Nest ynRWAx Liquidity Campaign Starts"],
+  ],
 };
