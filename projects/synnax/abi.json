@@ -1,0 +1,3 @@
+{
+  "balanceOf": "function balanceOf(address, address) view returns (uint256)"
+}

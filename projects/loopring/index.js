@@ -27,5 +27,15 @@ module.exports = {
             ADDRESSES.taiko.TAIKO
         ]
       }),
+  },
+  base: {
+    tvl: (api) =>
+      sumTokens2({
+        api,
+        owners: [
+          "0x732771F202ed19Ca8e1844d334e1df5641DC99Fe",
+        ],
+        fetchCoValentTokens: true,
+      }),
   }
 };

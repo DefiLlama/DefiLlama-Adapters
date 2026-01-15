@@ -1,61 +1,69 @@
-const { call } = require("../helper/chain/ton");
-const { processTVMSliceReadAddress } = require("./utils");
+const { affluentMarketList, affluentTokenList } = require("./affluentMarketAssets");
+const { call, processTVMSliceReadAddress, getTokenRates } = require("../helper/chain/ton");
+const { get } = require('../helper/http')
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require("../helper/coreAssets.json");
-const { methodology } = require('../helper/aave')
 
 const factorial_ton = "EQDIKEz2BYLnTRWo5W5a6moZ9PXNtyOVOFF7noi8Ufv3axz_";
-const market_main = "EQCrEHHG4Ff8TD3PzuH5tFSwHBD3zxeXaosz48jGLebwiiNx"
 
-async function tvl(api) { 
-  const pool_data = await call({ target: market_main, abi: "get_pool_data" })
+async function tvl(api) {
+  const pools = Object.keys(affluentMarketList);
 
-  const _kv = 1;
-  const assetDicIdx = 13;
-  const supplyAmountIdx = 4;
-  const borrowAmountIdx = 5;
-  const addressIdx = 15;
+  for (const pool of pools) {
+    await sdk.util.sleepRandom(2000, 3000);
+    const pool_data = await call({ target: pool, abi: "get_pool_data" })
 
-  const assets = pool_data[assetDicIdx][_kv]["elements"];
+    const _kv = 1;
+    const assetDicIdx = 13;
+    const supplyAmountIdx = 4;
+    const borrowAmountIdx = 5;
+    const addressIdx = 15;
 
-  assets.forEach((asset) => {
-    const assetInfo = asset["tuple"]["elements"];
-    const supplied = assetInfo[supplyAmountIdx]["number"]["number"]; 
-    const borrowed = assetInfo[borrowAmountIdx]["number"]["number"]; 
-    const address = assetInfo[addressIdx]["slice"]["bytes"];
+    const assets = pool_data[assetDicIdx][_kv]["elements"];
 
-    const assetAddress = processTVMSliceReadAddress(address);
-    const addressToAdd = assetAddress === factorial_ton ? ADDRESSES.ton.TON : assetAddress;
-    
-    api.add(addressToAdd, supplied - borrowed);
-  });
+    for (const asset of assets) {
+      const assetInfo = asset["tuple"]["elements"];
+      const supplied = assetInfo[supplyAmountIdx]["number"]["number"];
+      const borrowed = assetInfo[borrowAmountIdx]["number"]["number"];
+      const address = assetInfo[addressIdx]["slice"]["bytes"];
+
+      const assetAddress = processTVMSliceReadAddress(address);
+      const addressToAdd = assetAddress === factorial_ton ? ADDRESSES.ton.TON : assetAddress;
+
+      api.add(addressToAdd, supplied - borrowed);
+    };
+  }
 }
 
 async function borrowed(api) {
-  const pool_data = await call({ target: market_main, abi: "get_pool_data" })
+  const pools = Object.keys(affluentMarketList);
 
-  const _kv = 1;
-  const assetDicIdx = 13;
-  const borrowAmountIdx = 5;
-  const addressIdx = 15;
+  for (const pool of pools) {
+    await sdk.util.sleepRandom(2000, 3000);
+    const pool_data = await call({ target: pool, abi: "get_pool_data" })
 
-  const assets = pool_data[assetDicIdx][_kv]["elements"];
+    const _kv = 1;
+    const assetDicIdx = 13;
+    const borrowAmountIdx = 5;
+    const addressIdx = 15;
 
-  assets.forEach((asset) => {
-    const assetInfo = asset["tuple"]["elements"];
-    const borrowed = assetInfo[borrowAmountIdx]["number"]["number"]; 
-    const address = assetInfo[addressIdx]["slice"]["bytes"];
+    const assets = pool_data[assetDicIdx][_kv]["elements"];
 
-    const assetAddress = processTVMSliceReadAddress(address);
-    const addressToAdd = assetAddress === factorial_ton ? ADDRESSES.ton.TON : assetAddress;
-    
-    api.add(addressToAdd, borrowed);
-  });
+    assets.forEach((asset) => {
+      const assetInfo = asset["tuple"]["elements"];
+      const borrowed = assetInfo[borrowAmountIdx]["number"]["number"];
+      const address = assetInfo[addressIdx]["slice"]["bytes"];
+
+      const assetAddress = processTVMSliceReadAddress(address);
+      const addressToAdd = assetAddress === factorial_ton ? ADDRESSES.ton.TON : assetAddress;
+
+      api.add(addressToAdd, borrowed);
+    });
+  }
 }
 
 module.exports = {
-  methodology,
-  timetravel: false,
-  ton: {
-    tvl, borrowed,
-  }
+  methodology: 'Total amount of assets locked in Affluent pool',
+  ton: { tvl, borrowed }
 }
+

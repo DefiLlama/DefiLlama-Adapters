@@ -8,3 +8,8 @@ historical-data.js
 yarn.lock
 .DS_Store
 .vscode
+projects/binance/data.csv
+
+*.log
+
+scripts/tvlModules.json

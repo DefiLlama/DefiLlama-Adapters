@@ -15,6 +15,15 @@ async function calculateGSUIunderlyingSui(gSuiAmount) {
   return percentage * Number(gSuiAmount)
 }
 
+async function calculateGUPUSDunderlyingUSD(gUpusdAmount) {
+  const fields = (await getObject("0x13766a4d5c180f004f9bfd19e65f622fbb2b9498736131b948599054c0129f42")).fields
+  const pool = Number(fields.pool)
+  const pipe = Number(fields.pipe_debt.fields.value)
+  const supply = Number(fields.supply.fields.value)
+  const percentage = (pool + pipe) / supply
+  return percentage * Number(gUpusdAmount)
+}
+
 async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
   const suiHasuiPool = await getObject(SUI_HASUI_POOL_ID)
   const vaultObject = await getObject(SUI_HASUI_VAULT_ID)
@@ -41,6 +50,7 @@ const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI";
 const GSUI = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x2::sui::SUI>";
+const GUPUSD = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x5de877a152233bdd59c7269e2b710376ca271671e9dd11076b1ff261b2fd113c::up_usd::UP_USD>";
 const USDC_CIRCLE = ADDRESSES.sui.USDC_CIRCLE;
 const FDUSD = "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD";
 const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC";
@@ -53,6 +63,10 @@ const SCALLOP_sDEEP = "0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0
 const SCALLOP_sbUSDT = "0xb1d7df34829d1513b73ba17cb7ad90c88d1e104bb65ab8f62f13e0cc103783d3::scallop_sb_usdt::SCALLOP_SB_USDT";
 const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA";
 const SUI_HASUI_CETUS_VAULT_LP_ADDRESS = '0x828b452d2aa239d48e4120c24f4a59f451b8cd8ac76706129f4ac3bd78ac8809::lp_token::LP_TOKEN';
+const xBTC_ADDRESS = "0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC";
+const mUSD_ADDRESS = "0xe44df51c0b21a27ab915fa1fe2ca610cd3eaa6d9666fe5e62b988bf7f0bd8722::musd::MUSD";
+const TBTC_ADDRESS = "0x77045f1b9f811a7a8fb9ebd085b5b0c55c5cb0d1520ff55f7037f89b5da9f5f1::TBTC::TBTC";
+
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
   "0x885e09419b395fcf5c8ee5e2b7c77e23b590e58ef3d61260b6b4eb44bbcc8c62",
@@ -95,6 +109,9 @@ const FDUSD_PSM = "0xb23092f74b7bbea45056d8564a7325be993cc2926b89f384367b9ad309d
 const BUCKETUS_PSM =
   "0xba86a0f37377844f38060a9f62b5c5cd3f8ba13901fa6c4ee5777c1cc535306b";
 
+const BLUEFIN_STABLE_LP_PSM =
+  "0x27c3ec824df70520cb3cf9592049506167e8094a779a680b83b987519e3895b6";
+
 const CETABLE_PSM =
   "0x6e94fe6910747a30e52addf446f2d7e844f69bf39eced6bed03441e01fa66acd";
 
@@ -116,6 +133,9 @@ const navi_sLP_ID =
 const navi_stSUI_sLP_ID =
   "0xd3f6b8f3c92d8f967f7e177e836770421e351b419ffe074ce57911365b4ede56";
 
+const navi_sbWBTC_LP_ID =
+  "0x208628e8800828b272dfc4cf40ef98e1ba137f65d26a28961176a1718c2bdb4c";
+
 const scallop_sUSDC_LP_ID =
   "0x7b16192d63e6fa111b0dac03f99c5ff965205455089f846804c10b10be55983c";
 
@@ -128,6 +148,15 @@ const scallop_sCircleUSDC_LP_ID =
 const scallop_sSuiBridgeUSDT_LP_ID =
   "0x8471787fc69ef06f4762cb60863e1c48475d79c804a000e613306adee7b7824a";
 
+const navi_sCircleUSDC_LP_ID =
+  "0xb5ed3f2e5c19f425baad3d9a0afffdc84d0550ace2372692cf93325da81e4392";
+
+const navi_sSuiBridgeUSDT_LP_ID =
+  "0x4ae310b93c65e358b6f8beb73f34d0ac7d507947d8aea404159d19883a3b1c6a";
+
+const navi_fdUSD_LP_ID =
+  "0xa2790bbd90275e35214bffd8da3c01742bb5883fde861bf566a9ecfa1b3f5090";
+
 const haSUI_Navi_Pond_ID = "0xef1ff1334c1757d8e841035090d34b17b7aa3d491a3cb611319209169617518e"
 
 const SUI_Navi_Pond_ID = "0xcf887d7201c259496a191348da86b4772a2e2ae3f798ca50d1247194e30b7656";
@@ -138,6 +167,11 @@ async function getStakingLPAmount(id) {
 }
 
 async function getScallopsLPAmount(id) {
+  const stakingLPObject = await sui.getObject(id);
+  return stakingLPObject.fields.coin_balance;
+}
+
+async function getNaviLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
   return stakingLPObject.fields.coin_balance;
 }
@@ -157,7 +191,13 @@ function convertUnderlyingAssets(coin) {
   // sDeep
   if (coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
   // sSBUSDT
-  if (coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
+  if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
+  // xBTC
+  if(coin === xBTC_ADDRESS) return ADDRESSES.sui.xBTC
+  // mUSD
+  if(coin === mUSD_ADDRESS) return ADDRESSES.sui.mUSD
+  // tBTC
+  if(coin === TBTC_ADDRESS) return ADDRESSES.sui.TBTC
   return coin
 }
 
@@ -177,8 +217,8 @@ async function tvl(api) {
   const kriyalpPoolData = await sui.getObjects(KRIYA_POOL_IDs);
 
 
-  const [afsuiSuiLpObj, afsuiSuiLpBucket, cetusLpObj, usdcCirclePSMObj, fdusdPSMObj, usdcPSMObj, usdtPSMObj, bucketusPSMObj, cetablePSMObj, stapearlPSMObj,] = await sui.getObjects([
-    AFSUI_SUI_LP_ID, AFSUI_SUI_LP_BUCKET_ID, CETUS_LP_ID, USDC_CIRCLE_PSM, FDUSD_PSM, USDC_PSM, USDT_PSM, BUCKETUS_PSM, CETABLE_PSM, STAPEARL_PSM,
+  const [afsuiSuiLpObj, afsuiSuiLpBucket, cetusLpObj, usdcCirclePSMObj, fdusdPSMObj, usdcPSMObj, usdtPSMObj, bucketusPSMObj, cetablePSMObj, stapearlPSMObj, bluefinStableLpObj] = await sui.getObjects([
+    AFSUI_SUI_LP_ID, AFSUI_SUI_LP_BUCKET_ID, CETUS_LP_ID, USDC_CIRCLE_PSM, FDUSD_PSM, USDC_PSM, USDT_PSM, BUCKETUS_PSM, CETABLE_PSM, STAPEARL_PSM, BLUEFIN_STABLE_LP_PSM,
   ])
 
   const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
@@ -189,6 +229,7 @@ async function tvl(api) {
   const usdcPSMAmount = usdcPSMObj.fields.pool;
   const usdtPSMAmount = usdtPSMObj.fields.pool;
   const bucketusPSMAmount = bucketusPSMObj.fields.pool;
+  const bluefinStableLpPSMAmount = bluefinStableLpObj.fields.pool;
   const cetablePSMAmount = cetablePSMObj.fields.pool;
   const stapearlPSMAmount = stapearlPSMObj.fields.pool;
 
@@ -206,13 +247,16 @@ async function tvl(api) {
     /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
     const coin = convertUnderlyingAssets(coin_address)
 
-    if (coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS) {
+    if(coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS) {
       await calculatehaSuiSuiVaultShares(api, HASUI, SUI, bucket.fields.collateral_vault)
-    } else if (coin == GSUI) {
+    } else if(coin == GSUI) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
+    }else if(coin == GUPUSD) {
+      const usdAmount = await calculateGUPUSDunderlyingUSD(bucket.fields.collateral_vault)
+      api.add(USDC, usdAmount);
     } else {
-      api.add(coin, bucket.fields.collateral_vault);
+      if (coin) api.add(coin, bucket.fields.collateral_vault);
     }
   }
 
@@ -280,8 +324,13 @@ async function tvl(api) {
   api.add(USDC, Math.floor(halfStapearlAmount));
   api.add(USDT, Math.floor(halfStapearlAmount));
 
+  // 1 BUCKETUS = 0.5 USDC + 0.5 BUCK
   const halfBucketusAmount = Math.floor(bucketusPSMAmount / 2);
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));
+
+  // 1 BLUEFIN_STABLE_LP = 0.5 USDC + 0.5 BUCK
+  const halfBluefinStableLPAmount = Math.floor(bluefinStableLpPSMAmount / 2);
+  api.add(USDC, Math.floor(halfBluefinStableLPAmount / 1000));
 
   //AFSUI-SUI LP
   const afsuiSuiLpSupply = afsuiSuiLpObj.fields.lp_supply.fields.value;
@@ -332,6 +381,9 @@ async function tvl(api) {
     snavistSUILPAmount
   );
 
+  const snavisbWBTCLPAmount = await getStakingLPAmount(navi_sbWBTC_LP_ID);
+  api.add(ADDRESSES.sui.WBTC, snavisbWBTCLPAmount);
+
   const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
   api.add(
     "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
@@ -355,6 +407,17 @@ async function tvl(api) {
 
   const scallopSuiBridgeUSDT_LPAmount = await getScallopsLPAmount(scallop_sSuiBridgeUSDT_LP_ID);
   api.add(ADDRESSES.sui.suiUSDT, scallopSuiBridgeUSDT_LPAmount);
+
+  const naviCircleUSDC_LPAmount = await getNaviLPAmount(navi_sCircleUSDC_LP_ID);
+  api.add(USDC_CIRCLE, naviCircleUSDC_LPAmount);
+
+  const naviSuiBridgeUSDT_LPAmount = await getNaviLPAmount(navi_sSuiBridgeUSDT_LP_ID);
+  api.add(ADDRESSES.sui.suiUSDT, naviSuiBridgeUSDT_LPAmount);
+
+  const naviFDUSD_LPAmount = await getNaviLPAmount(navi_fdUSD_LP_ID);
+  api.add(FDUSD, naviFDUSD_LPAmount);
+
+  api.removeTokenBalance('0x622345b3f80ea5947567760eec7b9639d0582adcfd6ab9fccb85437aeda7c0d0::scallop_wal::SCALLOP_WAL')  // incorrect price, temporarily remove
 }
 
 module.exports = {

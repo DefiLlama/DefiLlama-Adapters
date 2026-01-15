@@ -12,7 +12,7 @@ module.exports = {
     getAllATokens: abi.getAllOTokens,
   }}),
   hallmarks: [
-    [Math.floor(new Date('2022-07-10')/1e3), 'reentrancy hack'],
+    ['2022-07-10', 'reentrancy hack'],
   ],
   deadFrom: '2022-07-10',
 };

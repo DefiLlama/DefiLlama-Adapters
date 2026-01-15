@@ -1,9 +1,9 @@
 const { tvl: solanaTvl } = require("./solana.js");
+const evmTvl = require("./evm.js");
 
 module.exports = {
-  solana: {
-    tvl: solanaTvl,
-  },
+  solana: { tvl: solanaTvl },
+  ...evmTvl,
   isHeavyProtocol: true,
-  methodology: "TVL: Sum of all positions' value in every vaults",
+  methodology: "Sum of all positions' value and tokens in every vaults",
 };

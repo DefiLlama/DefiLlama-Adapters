@@ -1,43 +1,17 @@
-const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const config = {
-  polygon: { factory: '0xde3e9a39af548b5daa8365d30a5f6e7a7fa0203d', fromBlock: 38563568, },
-  arbitrum: { factory: '0x752735c1a93fe359e7bac65f9981e7796e1039ef', fromBlock: 94336607, },
-  xdai: {
-    factory: '0x8ea1a7241537f10fa73363fdc6380f3fc8619c03', fromBlock: 26026402, tokensAndOwners: [[ADDRESSES.xdai.WXDAI, '0xac004b512c33D029cf23ABf04513f1f380B3FD0a']],  // v1
-  },
-  chz: { factory: '0xC57DC3acf7834D0dc4B2F73a5fb81dD9609D347A', fromBlock: 12285532 }
-}
-
-async function tvl(api) {
-  return sumTokens2({ api, ...config[api.chain] })
+const tokensAndOwners = {
+  xdai: [[ADDRESSES.xdai.WXDAI, '0x14564e6BbbB8DE2f959af8c0e158D334F05393Bb']],
+  polygon: [[ADDRESSES.polygon.USDT, '0x1a0612FE7D0Def35559a1f71Ff155e344Ae69d2C']],
+  chz: [[ADDRESSES.chz.WCHZ_1, '0x32696E01c979E3F542EC49D95729f011eF8F3c28']],
+  base: [[ADDRESSES.base.WETH, '0xbA390F464395fC0940c0B9591847ad4E836C7A0c']],
 }
 
 module.exports = {
-  xdai: { tvl },
-  polygon: { tvl },
-  chz: { tvl },
-  methodology: `TVL is the total amount of WXDAI, USDC, USDT and CHZ held on Liquidity pools’ smart-contracts.`
+  xdai: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.xdai }) },
+  polygon: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.polygon }) },
+  chz: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.chz }) },
+  base: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.base }) },
+  methodology: `TVL is the total amount of WXDAI, WETH, USDT and CHZ held on Liquidity pools' smart-contracts.`
 }
-
-Object.keys(config).forEach(chain => {
-  const { factory, fromBlock, tokensAndOwners = [] } = config[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const logs = await getLogs({
-        api,
-        target: factory,
-        topics: ['0xbf48d8b8335478e764061b936181c0a7b273540bd6284da4d4791758e81fd51c'],
-        eventAbi: 'event NewPool(address indexed lp, address indexed core, string indexed coreType, address access)',
-        onlyArgs: true,
-        fromBlock,
-      })
-      const lps = logs.map(i => i[0])
-      const tokens = await api.multiCall({ abi: 'address:token', calls: lps })
-      lps.forEach((lp, i) => tokensAndOwners.push([tokens[i], lp]))
-      return sumTokens2({ api, tokensAndOwners, permitFailure: true })
-    }
-  }
-})

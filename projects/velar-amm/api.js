@@ -13,21 +13,30 @@ module.exports = {
 }
 
 async function tvl(api) {
-  await uniTvl(api, stableFactory, true)
+  await uniTvl(api, stableFactory, { isStable: true })
   await uniTvl(api, factory)
-  // await uniTvl(api, factory2)
+  await uniTvl(api, factory2, { isVersion2: true })
+
+  // add pool not part of any registry
+  await sumTokens({ owner: 'SP20X3DC5R091J8B6YPQT638J8NR1W83KN6TN5BJY.curve-pool-v1_0_0_ststx-0001', balances: api.getBalances() })
+
+  return api.getBalances()
 }
 
 
-async function uniTvl(api, factory, isStable = false) {
+async function uniTvl(api, factory, { isStable = false, isVersion2 = false } = {}) {
   const data = []
   const pairCount = +(await call({ target: factory, abi: 'get-nr-pools' })).toString()
   for (let i = 1; i <= pairCount; i++) {
-    const res = await call({ target: factory, abi: 'do-get-pool', inputArgs: [{ type: 'uint', value: i }] })
+    let res
+    if (isVersion2) {
+      const pairData = res = await call({ target: factory, abi: 'get-pool', inputArgs: [{ type: 'uint', value: i }] })
+      res = await call({ target: pairData.value.contract.value, abi: 'do-get-pool' })
+    } else {
+      res = await call({ target: factory, abi: 'do-get-pool', inputArgs: [{ type: 'uint', value: i }] })
+    }
+
     const { token0, token1, reserve0, reserve1, ...rest } = res
-    // console.log({ token0, token1, reserve0, reserve1, rest, pairCount })
-    // console.log(rest['lp-token']?.value)
-    // console.log(res)
     if (isStable) {
       await sumTokens({ owner: rest.contract.value, balances: api.getBalances() })
     }

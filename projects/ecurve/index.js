@@ -8,6 +8,7 @@ async function fetch() {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: `eCurve TVL is achieved by making a call to its eCurve API.`,
-  fetch
+  eos: { tvl: () => ({  }) }
 }

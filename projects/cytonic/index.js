@@ -55,7 +55,7 @@ module.exports = {
         ADDRESSES.null, // ETH
         ADDRESSES.ethereum.WBTC, // WBTC
         ADDRESSES.ethereum.WETH, // WETH
-        "0xd31a59c85ae9d8edefec411d448f90841571b89c", // WSOL
+        ADDRESSES.ethereum.WSOL, // WSOL
         ADDRESSES.ethereum.WSTETH, // Lido WSTETH
         ADDRESSES.ethereum.EETH, // EETH
         '0xd9a442856c234a39a81a089c06451ebaa4306a72', // pufETH
@@ -63,7 +63,7 @@ module.exports = {
         ADDRESSES.ethereum.USDT, // USDT
         ADDRESSES.ethereum.USDC, // USDC
         ADDRESSES.ethereum.DAI, // DAI
-        '0xbf5495Efe5DB9ce00f80364C8B423567e58d2110', // ezETH
+        ADDRESSES.linea.rzETH, // ezETH
         ADDRESSES.ethereum.USDe, // Ethena USD
       ],
     }),
@@ -75,7 +75,7 @@ module.exports = {
         ADDRESSES.null, // BNB
         ADDRESSES.bsc.USDC, // USDC
         ADDRESSES.bsc.USDT, // USDT
-        '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3', // DAI
+        ADDRESSES.bsc.DAI, // DAI
       ],
     }),
   },

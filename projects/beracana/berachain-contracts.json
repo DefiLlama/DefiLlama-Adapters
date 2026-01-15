@@ -1,0 +1,42 @@
+{
+  "banks": [
+    {
+      "token": "0x6969696969696969696969696969696969696969",
+      "bank": "0x768670beAD85b4383940F60AfD8492AC76b2Ba28"
+    },
+    {
+      "token": "0x1cE0a25D13CE4d52071aE7e02Cf1F6606F4C79d3",
+      "bank": "0x439c84851bb1edd8db3dd94809ebbea6670682f3"
+    }
+  ],
+  "vaults": [
+    {
+      "vaultAddress": "0x9A6125b077F1bAf6F7F4936DEDC5C2765393b867",
+      "priceToken": "0x6969696969696969696969696969696969696969"
+    },
+    {
+      "priceToken": "0x6969696969696969696969696969696969696969",
+      "vaultAddress": "0xE9B850fF6228a99C966Ca33369d0fE8e1B4a6B4F"
+    },
+    {
+      "priceToken": "0x6969696969696969696969696969696969696969",
+      "vaultAddress": "0x8F13E4304B300Dda6019b8c2391782b939367d75"
+    },
+    {
+      "priceToken": "0x6969696969696969696969696969696969696969",
+      "vaultAddress": "0xE57fD6aB3eC266b15fF8eB1692678341d97bF887"
+    },
+    {
+      "priceToken": "0x6969696969696969696969696969696969696969",
+      "vaultAddress": "0x1B0FbC8a12B51b0fEc6b965a32BE449EA3243051"
+    },
+    {
+      "priceToken": "0x1cE0a25D13CE4d52071aE7e02Cf1F6606F4C79d3",
+      "vaultAddress": "0x12dFac6c9a74761d8054f280D05fE96cbe71b452"
+    },
+    {
+      "priceToken": "0x1cE0a25D13CE4d52071aE7e02Cf1F6606F4C79d3",
+      "vaultAddress": "0x4e735E0a60174725Da8546B2a9B0B8C9EDD6c2A4"
+    }
+  ]
+}

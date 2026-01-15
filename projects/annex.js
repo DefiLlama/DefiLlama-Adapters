@@ -16,3 +16,9 @@ module.exports = {
   cronos: compoundExports("0xbC1f72e751DE303Ff545D2E348fef2E84D493645", cCRO,),
   kava: compoundExports("0xFb6FE7d66E55831b7e108B77D11b8e4d479c2986", cKAVA,),
 }; // node test.js projects/annex.js
+
+
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.cronos.borrowed = ()  => ({})
+module.exports.kava.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

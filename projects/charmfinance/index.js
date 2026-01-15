@@ -1,15 +1,13 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { getConfig } = require('../helper/cache')
 
-const { sumTokens } = require('../helper/unwrapLPs')
+const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 
 const vaultAbi = require("./vaultAbi.json");
 const cubePoolAbi = require("./cubePoolAbi.json");
 
 const USDC = ADDRESSES.ethereum.USDC;
 const WBTC = ADDRESSES.ethereum.WBTC;
-const ETH = ADDRESSES.null;
 
 const vaults = [
   // Old alpha vault - v0
@@ -22,9 +20,7 @@ const vaults = [
 
 const CUBE_POOL = "0x23F6A2D8d691294c3A1144EeD14F5632e8bc1B67";
 
-async function tvl(timestamp, block) {
-  let balances = {};
-
+async function tvl(api) {
   const optionsContracts = (
     await getConfig('charm-finance',
       "https://raw.githubusercontent.com/charmfinance/options-protocol/main/markets.yaml"
@@ -38,29 +34,21 @@ async function tvl(timestamp, block) {
     .join('')
 
   const OPTIONS_CONTRACTS = JSON.parse(optionsContractsWithoutComments);
-  const vaultCalls = vaults.map(v => ({ target: v }))
-  const { output: vaultAmts } = await sdk.api.abi.multiCall({ abi: vaultAbi.getTotalAmounts, calls: vaultCalls, block, })
-  const { output: token0 } = await sdk.api.abi.multiCall({ abi: vaultAbi.token0, calls: vaultCalls, block, })
-  const { output: token1 } = await sdk.api.abi.multiCall({ abi: vaultAbi.token1, calls: vaultCalls, block, })
+  const vaultAmts = await api.multiCall({ abi: vaultAbi.getTotalAmounts, calls: vaults, })
+  const token0 = await api.multiCall({ abi: vaultAbi.token0, calls: vaults, })
+  const token1 = await api.multiCall({ abi: vaultAbi.token1, calls: vaults, })
 
   vaultAmts.map((vaultAmt, i) => {
-    sdk.util.sumSingleBalance(balances, token0[i].output, vaultAmt.output.total0);
-    sdk.util.sumSingleBalance(balances, token1[i].output, vaultAmt.output.total1);
+    api.add(token0[i], vaultAmt.total0)
+    api.add(token1[i], vaultAmt.total1)
   })
 
-  const { output: poolBalance } = await sdk.api.abi.call({ abi: cubePoolAbi.poolBalance, target: CUBE_POOL, block, })
-  sdk.util.sumSingleBalance(balances, ETH, poolBalance);
+  const poolBalance = await api.call({ abi: cubePoolAbi.poolBalance, target: CUBE_POOL, })
+  api.addGasToken(poolBalance)
 
   // --- Run a check in all options contracts holdings (ETH, USDC, WBTC) ---
-  const erc20_holdings = [USDC, WBTC]
-  const tokensAndOwners = []
-  erc20_holdings.forEach(t => OPTIONS_CONTRACTS.forEach(o => tokensAndOwners.push([t, o])))
-  const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: OPTIONS_CONTRACTS, block })
-  Object.values(ethBalances).forEach(item => {
-    sdk.util.sumSingleBalance(balances, ETH, item.balance)
-  })
-
-  return sumTokens(balances, tokensAndOwners, block)
+  const erc20_holdings = [USDC, WBTC, nullAddress]
+  return sumTokens2({ api, tokens: erc20_holdings, owners: OPTIONS_CONTRACTS })
 }
 
 module.exports = {

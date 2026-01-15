@@ -1,6 +1,6 @@
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
-
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   "ethereum": {
@@ -27,7 +27,10 @@ const config = {
       "0x4bbe1961bd0a6cd1fe3cd8947be15bd8ae2ee562",
       "0xd793281182a0e3e023116004778f45c29fc14f19",
       "0x354e0184a6a6e634ccb07388e2617e05e427563c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
+      "0x9bbe47fe66b3580551aac3124cf9fc6560252b19",
+      "0xaaac1183d07c69f5befd22a06211690e953dca17"
     ]
   },
   "avax": {
@@ -46,7 +49,8 @@ const config = {
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0x85faa6c1f2450b9caea300838981c2e6e120c35c",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "polygon": {
@@ -63,7 +67,8 @@ const config = {
       "0x7750fe679d47a9e00575ad46043297a234e83fa2",
       "0x0fc73ffb9a0ded685234428e103d26b3762df460",
       "0xa2df23519a6059dbc6f027f6cf8e59bdaecaf56f",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "fantom": {
@@ -87,7 +92,8 @@ const config = {
       "0xa4992ccf2a74132936b87cbf28b5d52304ba3be7",
       "0x85faa6c1f2450b9caea300838981c2e6e120c35c",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "optimism": {
@@ -126,7 +132,9 @@ const config = {
       "TCr9697xxWMbZznvpJh8uVQzAQR9cLXZm9",
       "TDyR4wBeodpigiKmnwyBQC8UfsCH1T25XF",
       "THhVZfr2Q4J3spWK84Je4ALiFyrnnSq6nN",
-      "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2"
+      "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2",
+      "TYAavN2xCDro5Gdip8UU6W9oQmM43rNxzQ",
+      "TLsUUQZCkcrBRxEKqZbpekdq9LWfmnndPg"
     ]
   },
   "cardano": {
@@ -141,12 +149,13 @@ const config = {
     "owners": [
       "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w",
       "HiRpdAZifEsZGdzQ5Xo5wcnaH3D2Jj9SoNsUzcYNK78J",
-      "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
-      "CVMV7614DjSjY114GwHhG1HNFXofceziDpuGz7VjDD5K",
+      // "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
+      // "CVMV7614DjSjY114GwHhG1HNFXofceziDpuGz7VjDD5K",
       "G9XFfWz6adb9wFDKN2v7HfmJDgAc2hirrTwBmca4w26C",
-      "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
-      "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
-      "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
+      // "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
+      // "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
+      // "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
+      "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN"
     ]
   },
   "ripple": {
@@ -253,7 +262,8 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "acala": {
@@ -296,10 +306,10 @@ const config = {
   },
   "airdao": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      // "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      // "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+      // "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      // "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
   "alephium": {
@@ -336,14 +346,14 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "archway": {
-    "owners": [
-      "archway155svs6sgxe55rnvs6ghprtqu0mh69kehkcnf25",
-      "archway1jm068whkhkxk48gx80ppm2m0nwy677prr4m8ru",
-      "archway1xunyznpjmj9jv5e2zwngp2qrzmulr2ggdna6rp",
-      "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
-    ]
-  },
+  // "archway": {
+  //   "owners": [
+  //     "archway155svs6sgxe55rnvs6ghprtqu0mh69kehkcnf25",
+  //     "archway1jm068whkhkxk48gx80ppm2m0nwy677prr4m8ru",
+  //     "archway1xunyznpjmj9jv5e2zwngp2qrzmulr2ggdna6rp",
+  //     "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
+  //   ]
+  // },
   "astar": {
     "owners": [
       "WEo9Gi7T28niGb3pTwcHFDgGW4PjKDQvcS1stTxa68v73nQ",
@@ -427,6 +437,7 @@ const config = {
       "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv"
     ]
   },
+  /*
   "bitgert": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -435,6 +446,7 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  */
   "bitkub": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -489,14 +501,14 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "bouncebit": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  },
+  // "bouncebit": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "bsquared": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -520,6 +532,7 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  /*
   "canto": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -528,6 +541,7 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  */
   "celestia": {
     "owners": [
       "celestia155svs6sgxe55rnvs6ghprtqu0mh69kehje7a6w",
@@ -729,12 +743,12 @@ const config = {
     ]
   },
   "eos_evm": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
+    // "owners": [
+    //   "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+    //   "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+    //   "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+    //   "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+    // ]
   },
   "equilibrium": {
     "owners": [
@@ -765,18 +779,18 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "ethf": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0x54c82d26624e85000d1387ee7c9580c3c6d7b5b7",
-      "0x7750fe679d47a9e00575ad46043297a234e83fa2",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xd793281182a0e3e023116004778f45c29fc14f19",
-      "0x354e0184a6a6e634ccb07388e2617e05e427563c"
-    ]
-  },
+  // "ethf": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0x54c82d26624e85000d1387ee7c9580c3c6d7b5b7",
+  //     "0x7750fe679d47a9e00575ad46043297a234e83fa2",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xd793281182a0e3e023116004778f45c29fc14f19",
+  //     "0x354e0184a6a6e634ccb07388e2617e05e427563c"
+  //   ]
+  // },
   "etlk": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1233,14 +1247,14 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "orai": {
-    "owners": [
-      "orai155svs6sgxe55rnvs6ghprtqu0mh69kehsqewps",
-      "orai1jm068whkhkxk48gx80ppm2m0nwy677pr9d3qgc",
-      "orai1xunyznpjmj9jv5e2zwngp2qrzmulr2ggtthag9",
-      "orai1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9j08mk7"
-    ]
-  },
+  // "orai": {
+  //   "owners": [
+  //     "orai155svs6sgxe55rnvs6ghprtqu0mh69kehsqewps",
+  //     "orai1jm068whkhkxk48gx80ppm2m0nwy677pr9d3qgc",
+  //     "orai1xunyznpjmj9jv5e2zwngp2qrzmulr2ggtthag9",
+  //     "orai1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9j08mk7"
+  //   ]
+  // },
   "osmosis": {
     "owners": [
       "osmo155svs6sgxe55rnvs6ghprtqu0mh69kehtguak3",
@@ -1256,6 +1270,7 @@ const config = {
       "waPau5WwZ2fbKrhe0L6GEzoVv-OoD6AXy7gyFnYKgYE"
     ]
   },
+  /*
   "persistence": {
     "owners": [
       "persistence155svs6sgxe55rnvs6ghprtqu0mh69kehdlf7w8",
@@ -1264,6 +1279,7 @@ const config = {
       "persistence1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn90shtef"
     ]
   },
+  */
   "pokt": {
     "owners": [
       "ab04976668dd739f34df43e912d20dc487ac85d2",
@@ -1653,8 +1669,14 @@ const config = {
   },
 };
 
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3',  'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', ]
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'tara', 'zkfair',
+  'vinu', 'rollux', 'syscoin', 'aelf', 'ailayer', 'heco', 'archway',
+  'ton', // never had any tvl
+]
 
 unsupportedChains.forEach(chain => delete config[chain]);
 
-module.exports = cexExports(config);
+module.exports = mergeExports([
+  cexExports(config),
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9'], sleepTime: 20_000, size: 200, proxy: true }) } },
+]);

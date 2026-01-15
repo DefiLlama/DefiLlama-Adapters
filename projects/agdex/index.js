@@ -11,12 +11,15 @@ const USDT =
 const APT =
   ADDRESSES.aptos.APT;
 const BTC =
-  ADDRESSES.aptos.CELER_WBTC;
+  ADDRESSES.aptos.zWBTC;
 const ETH =
-  ADDRESSES.aptos.CELER_ETH;
+  ADDRESSES.aptos.zWETH;
 
-const usdc_resource_account = "0x19fb80bd79fa8f7538404af85196396973e3fbbda1503495598172c8813f7ca5";
-const usdc_metadata = "0x2b3be0a97a73c87ff62cbdd36837a9fb5bbd1d7f06a73b7ed62ec15c5326c1b8";
+const usdc_resource_account = "0xb27c95e40594d6f5765e0183ccca5ebcd0942f9c9a66578af1c743f5bd0d90e5";
+const usdc_metadata = ADDRESSES.aptos.USDC_3;
+
+const layerzero_usdc_resource_account = "0x19fb80bd79fa8f7538404af85196396973e3fbbda1503495598172c8813f7ca5";
+const layerzero_usdc_metadata = "0x2b3be0a97a73c87ff62cbdd36837a9fb5bbd1d7f06a73b7ed62ec15c5326c1b8";
 
 const usdt_resource_account = "0xbb3c1b88599c563062e2b08fe3a92ab048d700f9aa44617c680d59a4aa69b23f";
 const usdt_metadata = ADDRESSES.aptos.USDt;
@@ -31,6 +34,18 @@ const apt_resource_account = "0x8afc7aaa4616c0defbe655f3928a72ff849ef9a6889178f1
 const apt_metadata = "0xa";
 
 async function tvl(api) {
+  const layerzero_usdc_balance  = 
+    await function_view({
+        "functionStr": primary_fungible_asset_balance,
+        "type_arguments": ["0x1::fungible_asset::Metadata"],
+        "args": [layerzero_usdc_resource_account, layerzero_usdc_metadata]
+    });
+    const layerzero_usdc_r = await getResource(
+        AGDEX,
+        `${AGDEX}::pool::Vault<0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC>`
+    );
+    const layerzero_usdc_value = parseInt(layerzero_usdc_balance) + parseInt(layerzero_usdc_r.reserved_amount);  
+
   const usdc_balance  = 
     await function_view({
         "functionStr": primary_fungible_asset_balance,
@@ -39,7 +54,7 @@ async function tvl(api) {
     });
     const usdc_r = await getResource(
         AGDEX,
-        `${AGDEX}::pool::Vault<0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC>`
+        `${AGDEX}::pool::Vault<0xfa69897532f069bc0806868eaeec3328727d90c0cec710a17dde327e0bfab44f::token_map::USDC>`
     );
     const usdc_value = parseInt(usdc_balance) + parseInt(usdc_r.reserved_amount);  
 
@@ -91,6 +106,7 @@ async function tvl(api) {
   );
   const apt_value = parseInt(apt_balance) + parseInt(apt_r.reserved_amount);
   api.add(lzUSDC, usdc_value);
+  api.add(lzUSDC, layerzero_usdc_value);
   api.add(BTC, btc_value);
   api.add(ETH, eth_value);
   api.add(USDT, usdt_value);

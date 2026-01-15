@@ -6,7 +6,7 @@ module.exports = {
     tvl: () => 0,
   },
   hallmarks: [
-    [Math.floor(new Date('2023-02-16')/1e3), 'Product is winding down'],
+    ['2023-02-16', 'Product is winding down'],
   ],
   deadFrom: '2023-02-16',
 }

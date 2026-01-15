@@ -1,8 +1,7 @@
 const { staking, stakingPricedLP } = require("../helper/staking");
-const { graphQuery } = require("../helper/http");
-const { getCurrentBlock } = require("../helper/chain/hbar");
 const { getUniTVL } = require('../helper/unknownTokens')
-const { toUSDTBalances } = require('../helper/balances')
+const { cachedGraphQuery } = require("../helper/cache");
+const { transformDexBalances } = require("../helper/portedTokens");
 
 const contracts = {
   avax: {
@@ -45,16 +44,23 @@ module.exports = {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.flare.factory, }),
   },
   hedera: {
-    tvl: async () => {
-      // const block = await getCurrentBlock()
-      // pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
-      const data = await graphQuery('https://graph-hedera-pangolin.canary.exchange/subgraphs/name/pangolin', `{
-          pangolinFactory(id: "1") {
-          totalLiquidityUSD
-          }
-      }`)
-      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
-    }
+    tvl: async (api) => {
+      const { pairs } = await cachedGraphQuery('pangolin-v2/hedera', 'https://graph-hedera-pangolin.canary.exchange/subgraphs/name/pangolin', `{pairs(first: 1000) {
+    id
+    token0 { id}
+    token1 { id }
+  }}`)
+  const calls = pairs.map(({ id}) => id)
+  const reserves = await api.multiCall({ abi: 'function getReserves() view returns (uint112 token0Bal, uint112 token1Bal, uint32 blockTimestampLast)', calls })
+  
+    const data = reserves.map(({ token0Bal, token1Bal }, idx) => ({
+        token0: pairs[idx].token0.id,
+        token1: pairs[idx].token1.id,
+        token0Bal,
+        token1Bal,
+    }))
+    return transformDexBalances({ api, data })
+    },
   },
   start: '2021-02-07', // 7th-Feb-2021
 };

@@ -3,7 +3,7 @@ const unitroller = "0x537A09Fd99Fc7eF737d297cDEeAB3b7f9602308c";
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2023-06-11') / 1e3), 'Project rugged'],
+    ['2023-06-11', 'Project rugged'],
   ],
   deadFrom: '2023-06-11',
   methodology:

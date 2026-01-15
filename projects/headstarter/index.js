@@ -33,15 +33,11 @@ const ENTITIES = [
       "0x0000000000000000000000000000000000575c04",
     ],
   },
-];
-
-const HST_ENTITIES = [
   {
     token: HST,
     contracts: [
-      STAKING_CONTRACT,
       "0x00000000000000000000000000000000000f5ad1",
-      "0x00000000000000000000000000000000000fc16c",
+      "0x00000000000000000000000000000000000fc16c", 
       "0x0000000000000000000000000000000000101201",
       "0x0000000000000000000000000000000000575c04",
     ],
@@ -54,12 +50,32 @@ const getTokensAndOwners = (entities) => {
 
 const tvl = async (api) => {
   const tokensAndOwners = getTokensAndOwners(ENTITIES);
-  return sumTokens2({api,  tokensAndOwners });
+  return sumTokens2({api, tokensAndOwners });
 };
 
 const staking = async (api) => {
-  const  tokensAndOwners = getTokensAndOwners(HST_ENTITIES);
-  return sumTokens2({api,  tokensAndOwners });
+  const poolCounter = await api.call({
+    abi: 'uint256:poolCounter',
+    target: STAKING_CONTRACT
+  });
+  
+  let totalStaked = 0;
+  
+  // Query each pool to get totalDeposit
+  for (let i = 0; i < poolCounter; i++) {
+    const poolInfo = await api.call({
+      abi: 'function getPoolInfo(uint256) view returns (uint256 rate, uint256 totalDeposit, uint256 startDate, uint256 endDate, uint256 lockPeriodInDays, uint256 hardCap, uint256 lastUpdateTime, uint256 rewardBalance, uint256 penaltyRate)',
+      target: STAKING_CONTRACT,
+      params: [i]
+    });
+    
+    totalStaked += Number(poolInfo.totalDeposit);
+  }
+  
+  // Add the totalStaked HST tokens to the result
+  api.add(HST, totalStaked);
+  
+  return api.getBalances();
 };
 
 module.exports = {

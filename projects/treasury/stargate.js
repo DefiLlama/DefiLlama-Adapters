@@ -73,7 +73,7 @@ module.exports = treasuryExports({
       "0x1205f31718499dBf1fCa446663B532Ef87481fe1", // S*USDC
     ],
     ownTokens: [
-      "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590", // STG
+      ADDRESSES.fuse.WETH_3, // STG
       "0x330f77BdA60D8daB14d2bb4F6248251443722009", // STG-USDC JLP
     ],
     owners: [avax],
@@ -89,7 +89,7 @@ module.exports = treasuryExports({
       "0x1205f31718499dBf1fCa446663B532Ef87481fe1", // S*USDC
     ],
     ownTokens: [
-      "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590", // STG
+      ADDRESSES.fuse.WETH_3, // STG
       "0xA34Ec05DA1E4287FA351c74469189345990a3F0C", // STG-USDC SLP
     ],
     owners: [polygon],
@@ -139,7 +139,7 @@ module.exports = treasuryExports({
       "0x12edeA9cd262006cC3C4E77c90d2CD2DD4b1eb97", // S*USDC
     ],
     ownTokens: [
-      "0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590", // STG
+      ADDRESSES.fuse.WETH_3, // STG
       "0x0a80C53AfC6DE9dfB2017781436BfE5090F4aCB4", // STG-USDC spLP
     ],
   },

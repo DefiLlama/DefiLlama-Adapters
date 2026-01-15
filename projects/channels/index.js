@@ -17,3 +17,8 @@ module.exports = {
         return exp
     }, {})
 }
+
+module.exports.heco.borrowed = ()  => ({})
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

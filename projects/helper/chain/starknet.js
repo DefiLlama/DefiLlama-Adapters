@@ -34,7 +34,13 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   }
 }
 
-function parseOutput(result, abi, allAbi) {
+function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj = {} } = {}) {
+  if (!result) {
+    let errorMessage = responseObj.error?.data?.revert_error ?? responseObj.error?.message ?? 'Call failed'
+    if (permitFailure) return null
+    throw new Error(`Starknet call failed: ${errorMessage}`)
+  }
+
   let response = new CallData([abi, ...allAbi]).parse(abi.name, result)
   // convert BigInt to string
   for (const key in response) {
@@ -52,12 +58,12 @@ function parseOutput(result, abi, allAbi) {
   return response
 }
 
-async function call({ abi, target, params = [], allAbi = [] } = {}, ...rest) {
-  const { data: { result } } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
-  return parseOutput(result, abi, allAbi)
+async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}, ...rest) {
+  const { data } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
+  return parseOutput(data.result, abi, allAbi, { permitFailure, responseObj: data })
 }
 
-async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [] }) {
+async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [], permitFailure = false }) {
   if (!calls.length) return []
   calls = calls.map((callArgs) => {
     if (typeof callArgs !== 'object') {
@@ -80,7 +86,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   allData.forEach((i) => {
     const { result, id } = i
     const abi = calls[id].abi ?? rootAbi
-    response[id] = parseOutput(result, abi, allAbi)
+    response[id] = parseOutput(result, abi, allAbi, { permitFailure, responseObj: i })
   })
   return response
 }

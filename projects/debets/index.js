@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const getPoolInfo =
   "function getPoolInfo(address token) view returns (tuple(uint256 freeAmount, uint256 frozenAmount) poolInfo)";
 
@@ -24,38 +23,18 @@ const fantom_tokens = Object.values({
   FANTOM_XEN: "0xeF4B763385838FfFc708000f884026B8c0434275",
 });
 
-function chain_tvl(chain, factory, tokens) {
-  return async function (_, _b, { [chain]: block }) {
-    const balances = {};
-    const transform = (i) => `${chain}:${i}`;
-    const { output } = await sdk.api.abi.multiCall({
-      target: factory,
-      abi: getPoolInfo,
-      calls: tokens.map((i) => ({ params: [i] })),
-      chain,
-      block,
-    });
-    output.forEach(({ output }, i) => {
-      sdk.util.sumSingleBalance(
-        balances,
-        transform(tokens[i]),
-        output.freeAmount
-      );
-      sdk.util.sumSingleBalance(
-        balances,
-        transform(tokens[i]),
-        output.frozenAmount
-      );
-    });
-    return balances;
+function chain_tvl(factory, tokens) {
+  return async function (api) {
+    const bals  = await api.multiCall({  abi: getPoolInfo, calls: tokens, target: factory })
+    api.add(tokens, bals.map(i => i.freeAmount))
   };
 }
 
 module.exports = {
   polygon: {
-    tvl: chain_tvl("polygon", factory_address_polygon, polygon_tokens),
+    tvl: chain_tvl(factory_address_polygon, polygon_tokens),
   },
   fantom: {
-    tvl: chain_tvl("fantom", factory_address_fantom, fantom_tokens),
+    tvl: chain_tvl( factory_address_fantom, fantom_tokens),
   },
 };

@@ -10,4 +10,6 @@ module.exports = uniV3Export({
   xlayer: { factory: "0xc6f3966e5d08ced98ac30f8b65beab5882be54c7", fromBlock: 278971 },
   linea: { factory: "0xc6255ec7CDb11C890d02EBfE77825976457B2470", fromBlock: 8488016 },
   wc: { factory: "0xB9010964301326160173da694c0697a2FcE82F39", fromBlock: 4523073 },
+  unichain: { factory: "0x507940c2469e6E3B33032F1d4FF8d123BDDe2f5C", fromBlock: 21155043 },
+  ethereum: { factory: "0x1a4b306ba14d3fb8a49925675f8edb7ef607c422", fromBlock: 22866686 },
 });

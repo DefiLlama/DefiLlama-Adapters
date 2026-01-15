@@ -10,3 +10,5 @@ Object.keys(CONFIG).forEach((chain) => {
   const poolDatas = CONFIG[chain];
   module.exports[chain] = aaveExports(undefined, undefined, undefined, poolDatas, { v3: true, })
 })
+module.exports.sonic.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

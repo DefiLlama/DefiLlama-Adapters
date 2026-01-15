@@ -37,4 +37,6 @@ module.exports = [
   // added on the 27/08/2024
   '3PXBET2GrTwCamkeDzKCx8DeGDyrbuGKoc',
   '3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud',
+  '3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt',
+  '32BgTv3NSYbMsBTwDbNNN2GKZPCTJSkqDv',
 ]

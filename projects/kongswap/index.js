@@ -6,6 +6,6 @@ module.exports = {
 }
 
 async function tvl(api) {
-  let { tvlUSD } = await get('https://api.kongswap.io/api/defillama/tvl')
-  api.addCGToken('tether', Math.round(tvlUSD))
+  let { total_tvl } = await get('https://api.kongswap.io/api/pools/totals')
+  api.addCGToken('tether', Math.round(total_tvl))
 }

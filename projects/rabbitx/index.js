@@ -18,6 +18,6 @@ module.exports = {
     tvl: sumTokensExport({ owners: ['0x07607d79Bc28669bbF7ec6cfC7Ae68AA6964C762'], tokens: [ADDRESSES.base.USDC]}),
   },
   arbitrum: {
-    tvl: sumTokensExport({ owners: ['0x2E89ECF3945fcBdA70770f59F3833aC7D08b83c0'], tokens: ["0xaf88d065e77c8cC2239327C5EDb3A432268e5831"]}),
+    tvl: sumTokensExport({ owners: ['0x2E89ECF3945fcBdA70770f59F3833aC7D08b83c0'], tokens: [ADDRESSES.arbitrum.USDC_CIRCLE]}),
   },
 }
