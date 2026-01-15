@@ -41,5 +41,5 @@ Object.keys(chainsWithoutCovalentSupport).forEach(chain => {
 } }) 
 
 module.exports.hallmarks = [
-    [1727132400, "Whitehack by team"],
+    ['2024-09-24', "Whitehack by team"],
 ]

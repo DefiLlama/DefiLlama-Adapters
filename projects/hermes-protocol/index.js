@@ -9,8 +9,9 @@ module.exports = {
   staking: () => ({})
   },
   hallmarks: [
-    [1666220400, "Metis Grant"],
-    [1723676400, "V1 set to withdraw-only"],
-    [1724194800, "V2 Launch"],
+    ['2022-10-19', "Metis Grant"],
+    ['2024-08-14', "V1 set to withdraw-only"],
+    ['2024-08-20', "V2 Launch"],
+
   ]
 }

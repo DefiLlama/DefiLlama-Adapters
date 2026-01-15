@@ -29,7 +29,7 @@ module.exports = {
     tvl: () => ({}),
   },
   hallmarks:[
-    [1724194800, "V2 Launch"],
-    [1727132400, "Whitehack by team"],
+    ['2024-08-20', "V2 Launch"],
+    ['2024-09-24', "Whitehack by team"],
   ]
 }
