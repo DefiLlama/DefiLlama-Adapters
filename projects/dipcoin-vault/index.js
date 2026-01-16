@@ -7,11 +7,11 @@ const VAULT_CONFIG_ID =
 
 async function suiTvl(api) {
   const vaultConfig = await sui.getObject(VAULT_CONFIG_ID);
-  const vaultIds = vaultConfig?.fields?.registry?.fields?.ids?.fields?.contents;
+  const vaultIds = vaultConfig?.fields?.registry?.fields?.ids?.fields?.contents || [];
   for (const vaultId of vaultIds) {
     const vault = await sui.getObject(vaultId);
-    const lastSharePrice = BigNumber(vault?.fields?.last_share_price);
-    const totalShares = BigNumber(vault?.fields?.total_shares);
+    const lastSharePrice = BigNumber(vault?.fields?.last_share_price || 0);
+    const totalShares = BigNumber(vault?.fields?.total_shares || 0);
     const tvl = lastSharePrice.multipliedBy(totalShares).div(1e12);
 
     api.add(ADDRESSES.sui.USDC, tvl.toNumber());
