@@ -12,5 +12,6 @@
   "isHeavyProtocol",
   "deadFrom",
   "ownTokens",
-  "vesting"
+  "vesting",
+  "incentives"
 ]

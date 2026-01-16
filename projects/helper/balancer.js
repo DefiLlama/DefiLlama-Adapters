@@ -118,8 +118,12 @@ function v3Tvl(
 
       if (!tokenBalances.length) throw new Error("null value of tokens");
 
-      const blSet = new Set([...blacklistedTokens, ...pools].map((s) => s.toLowerCase()));
-      tokenBalances = tokenBalances.filter(([t]) => !blSet.has(String(t).toLowerCase()));
+      const blSet = new Set(
+        [...blacklistedTokens, ...pools].map((s) => s.toLowerCase())
+      );
+      tokenBalances = tokenBalances.filter(
+        ([t]) => !blSet.has(String(t).toLowerCase())
+      );
 
       await api.addTokens(tokenBalances);
 
@@ -138,31 +142,31 @@ function v3Tvl(
   };
 }
 
-  function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
-    return async (api) => {
-      let poolLogs = await getLogs({
-        target: bPoolFactory,
-        topic: "LOG_NEW_POOL(address,address)",
-        fromBlock,
-        api,
-        eventAbi:
-          "event LOG_NEW_POOL (address indexed caller, address indexed pool)",
-        onlyArgs: true,
-      });
+function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
+  return async (api) => {
+    let poolLogs = await getLogs({
+      target: bPoolFactory,
+      topic: "LOG_NEW_POOL(address,address)",
+      fromBlock,
+      api,
+      eventAbi:
+        "event LOG_NEW_POOL (address indexed caller, address indexed pool)",
+      onlyArgs: true,
+    });
 
-      const pools = poolLogs.map((i) => i.pool);
-      const tokens = await api.multiCall({
-        abi: "address[]:getCurrentTokens",
-        calls: pools,
-      });
-      const ownerTokens = tokens.map((v, i) => [v, pools[i]]);
-      return sumTokens2({
-        api,
-        ownerTokens,
-        blacklistedTokens: [...blacklistedTokens, ...pools],
-      });
-    };
-  }
+    const pools = poolLogs.map((i) => i.pool);
+    const tokens = await api.multiCall({
+      abi: "address[]:getCurrentTokens",
+      calls: pools,
+    });
+    const ownerTokens = tokens.map((v, i) => [v, pools[i]]);
+    return sumTokens2({
+      api,
+      ownerTokens,
+      blacklistedTokens: [...blacklistedTokens, ...pools],
+    });
+  };
+}
 
 function balV2GraphExport({
   vault,
@@ -192,9 +196,61 @@ function balV2GraphExport({
   };
 }
 
+function getCurrentWeeklyBALEmission(timestamp) {
+  const V1_START = 1590969600; // 2020-06-01 00:00:00 UTC
+  const FIRST_REDUCTION = Math.floor(
+    new Date("2023-03-28T00:00:00Z").getTime() / 1000
+  );
+  const WEEKLY_V1 = 145000; 
+  const FIRST_POST_WEEKLY = 121930; 
+  const RATE_REDUCTION_COEFFICIENT = 1.189;
+
+  if (timestamp < V1_START) {
+    return 0;
+  }
+
+  if (timestamp < FIRST_REDUCTION) {
+    return WEEKLY_V1;
+  }
+
+  const secondsSinceReduction = timestamp - FIRST_REDUCTION;
+  const yearsSinceReduction = secondsSinceReduction / (365.25 * 24 * 60 * 60);
+
+  const currentWeekly =
+    FIRST_POST_WEEKLY /
+    Math.pow(RATE_REDUCTION_COEFFICIENT, yearsSinceReduction);
+
+  return currentWeekly;
+}
+
+function calculateBALIncentives() {
+  return async (api) => {
+    const BAL_TOKEN = "0xba100000625a3754423978a60c9317c58a424e3D";
+
+    const timestamp = api.timestamp || Math.floor(Date.now() / 1000);
+
+    const weeklyEmission = getCurrentWeeklyBALEmission(timestamp);
+
+    if (weeklyEmission === 0) {
+      return api.getBalances();
+    }
+
+
+    const balAmountWei = BigInt(Math.floor(weeklyEmission * 1e18));
+
+    const tokenKey =
+      api.chain === "ethereum" ? BAL_TOKEN : `ethereum:${BAL_TOKEN}`;
+
+    api.add(tokenKey, balAmountWei);
+
+    return api.getBalances();
+  };
+}
+
 module.exports = {
   onChainTvl,
   v1Tvl,
   balV2GraphExport,
   v3Tvl,
+  calculateBALIncentives,
 };
