@@ -1,9 +1,5 @@
-const { sumTokens2 } = require('../helper/unwrapLPs');
 const { queryV1Beta1 } = require('../helper/chain/cosmos.js');
 
-// node test.js projects/figure-markets-democratized-prime/index.js
-
-// Contracts holding the pool collateral
 const demoPrimePools = [
     "scope1qp4lyqj9xkp570uj9l0sf6vhh46q599mcf", // Margin USD
     "scope1qpjqqp93nfn537acqgl6aauhj6ws8xk5ug", // YLDS HELOCS
@@ -16,40 +12,21 @@ const demoPrimePools = [
     "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n", // Margin ETH
 ]
 
-const getBalances = async (type) => {
-    const balances = {}
+const getBalances = async (api, isBorrowed) => {
     await Promise.all(demoPrimePools.map(async pool => {
         const poolHash = (await queryV1Beta1({
             chain: 'provenance',
             url: `metadata/v1/scope/${pool}/record/pool-details`
         })).records[0]?.record?.outputs[0]?.hash
+
         if (poolHash) {
             const poolInfo = JSON.parse(poolHash)
             let asset = poolInfo.leveragePool.asset
             let collateral = poolInfo.currentPeriod.totalOfferAmount - poolInfo.currentPeriod.totalLoanAmount
             let borrowed = poolInfo.currentPeriod.totalLoanAmount
-            if (asset === 'YLDS') {
-                collateral = poolInfo.collateralValue
-            }
-            balances[asset] = { 
-                collateral: (balances[asset]?.collateral || 0) + collateral,
-                borrowed: (balances[asset]?.borrowed || 0) + borrowed
-            }
+            api.add(asset, isBorrowed ? borrowed : collateral)
         }
     }))
-    return balances
-}
-
-const tvl = async (api) => {
-    const balances = await getBalances()
-    Object.keys(balances).map(token => api.add(token, balances[token].collateral))
-    return sumTokens2({ api })
-}
-
-const borrowed = async (api) => {
-    const balances = await getBalances()
-    Object.keys(balances).map(token => {api.add(token, balances[token].borrowed)})
-    return sumTokens2({ api })
 }
 
 module.exports = {
@@ -58,7 +35,7 @@ module.exports = {
     misrepresentedTokens: true,
     methodology: 'TVL is calculated based on the total amount of collateral pledged to all lending pools.',
     provenance: {
-        tvl,
-        borrowed,
+        tvl: (api) => getBalances(api, false),
+        borrowed: (api) => getBalances(api, true),
     }
 }

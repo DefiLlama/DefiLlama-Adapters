@@ -1,7 +1,7 @@
 const { multiCall } = require("../helper/chain/starknet");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { get } = require("../helper/http");
-const { stellar } = require("../helper/chain/rpcProxy");
+const { post } = require("../helper/http");
+const base32 = require("hi-base32");
 
 const config = {
   polygon: [
@@ -33,8 +33,8 @@ const config = {
     "0xA8De1f55Aa0E381cb456e1DcC9ff781eA0079068", //UKTBL
   ],
   starknet: [
-    "0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", //USTBL
-    "0x4f5e0de717daa6aa8de63b1bf2e8d7823ec5b21a88461b1519d9dbc956fb7f2", //EUTBL
+    "0x020ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", //USTBL
+    "0x04f5e0de717daa6aa8de63b1bf2e8d7823ec5b21a88461b1519d9dbc956fb7f2", //EUTBL
     "0x04bade88e79a6120f893d64e51006ac6853eceeefa1a50868d19601b1f0a567d", //SPKCC
     "0x06472cabc51a3805975b9c60c7dec63897c9a287f2db173a1d6c589d18dd1e07", //eurSPKCC
     "0x0153d6e0462080bb2842109e9b64f589ef5aa06bb32b26bbdb894aca92674395", //UKTBL
@@ -55,14 +55,14 @@ const config = {
       contract: "CBGV2QFQBBGEQRUKUMCPO3SZOHDDYO6SCP5CH6TW7EALKVHCXTMWDDOF",
       target: "0xa0769f7A8fC65e47dE93797b4e21C073c117Fc80",
     }, // EUTBL
-    // {
-    //   contract: "CDWOB6T7SVSMMQN5V3P2OPTBAXOP7DAZHGVW3PYTZIKHVFKN6TBSXR6A",
-    //   target: "0x3868D4e336d14D38031cf680329d31e4712e11cC",
-    // }, // eurSPKCC
-    // {
-    //   contract: "CDS2GCAQTNQINSCJUJIVBJXILKBWP5PU7LOBGHMP3X47QCQBFKPMTCNT",
-    //   target: "0x4f33acf823e6eeb697180d553ce0c710124c8d59",
-    // }, // SPKCC
+    {
+      contract: "CDWOB6T7SVSMMQN5V3P2OPTBAXOP7DAZHGVW3PYTZIKHVFKN6TBSXR6A",
+      target: "0x3868D4e336d14D38031cf680329d31e4712e11cC",
+    }, // eurSPKCC
+    {
+      contract: "CDS2GCAQTNQINSCJUJIVBJXILKBWP5PU7LOBGHMP3X47QCQBFKPMTCNT",
+      target: "0x4f33acf823e6eeb697180d553ce0c710124c8d59",
+    }, // SPKCC
     {
       contract: "CDT3KU6TQZNOHKNOHNAFFDQZDURVC3MSTL4ML7TUTZGNOPBZCLABP4FR",
       target: "0xf695Df6c0f3bB45918A7A82e83348FC59517734",
@@ -70,11 +70,61 @@ const config = {
   ],
 };
 
+const STELLAR_RPC_URL = "https://soroban-rpc.creit.tech/";
+const STELLAR_LEDGER_ENTRY_CONTRACT_DATA = 6;
+const STELLAR_SC_ADDRESS_TYPE_CONTRACT = 1;
+const STELLAR_SCVAL_LEDGER_KEY_CONTRACT_INSTANCE = 20;
+const STELLAR_CONTRACT_DATA_PERSISTENT = 1;
+
+function decodeContractId(contract) {
+  const raw = Buffer.from(base32.decode.asBytes(contract));
+  return raw.slice(1, -2);
+}
+
+function buildContractInstanceKey(contract) {
+  const payload = decodeContractId(contract);
+  const buf = Buffer.alloc(48);
+  let offset = 0;
+  buf.writeUInt32BE(STELLAR_LEDGER_ENTRY_CONTRACT_DATA, offset);
+  offset += 4;
+  buf.writeUInt32BE(STELLAR_SC_ADDRESS_TYPE_CONTRACT, offset);
+  offset += 4;
+  payload.copy(buf, offset);
+  offset += 32;
+  buf.writeUInt32BE(STELLAR_SCVAL_LEDGER_KEY_CONTRACT_INSTANCE, offset);
+  offset += 4;
+  buf.writeUInt32BE(STELLAR_CONTRACT_DATA_PERSISTENT, offset);
+  return buf.toString("base64");
+}
+
+function parseTotalSupplyFromEntry(xdr) {
+  const buf = Buffer.from(xdr, "base64");
+  const marker = Buffer.from("TotalSupply");
+  const idx = buf.indexOf(marker);
+  if (idx === -1) throw new Error("TotalSupply not found in contract storage");
+  const len = buf.readUInt32BE(idx - 4);
+  let offset = idx + len;
+  offset += (4 - (len % 4)) % 4;
+  const type = buf.readUInt32BE(offset);
+  if (type !== 10) throw new Error("Unexpected TotalSupply type");
+  const hi = buf.readBigInt64BE(offset + 4);
+  const lo = buf.readBigUInt64BE(offset + 12);
+  let value = (hi << 64n) + lo;
+  if (hi < 0n) value = -(((-hi) << 64n) - lo);
+  return value.toString();
+}
+
 async function fetchStellarSupply(contract) {
-  const { supply } = await get(
-    `https://api.stellar.expert/explorer/public/asset/${contract}`
-  );
-  return supply;
+  const key = buildContractInstanceKey(contract);
+  const data = await post(STELLAR_RPC_URL, {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "getLedgerEntries",
+    params: { keys: [key] },
+  });
+  const entry = data?.result?.entries?.[0];
+  if (!entry?.xdr) throw new Error(`Missing contract data for ${contract}`);
+  return parseTotalSupplyFromEntry(entry.xdr);
 }
 
 const totalSupplyAbi = {
