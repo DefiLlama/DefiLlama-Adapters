@@ -45,21 +45,18 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   capx: {
-    '0x3046AC3Fe11CcD349aBBa1dF224a48e63076f1f6': {
-      coingeckoId: "capx-ai",
-      decimals: 18
-    },
+    '0x3046AC3Fe11CcD349aBBa1dF224a48e63076f1f6': { coingeckoId: "capx-ai", decimals: 18 },
   },
   joc: {
-    '0x03527b82f384184097295fc60be0B59B8FE06E00': {
-      coingeckoId: "japan-open-chain",
-      decimals: 18
-    },
+    '0x03527b82f384184097295fc60be0B59B8FE06E00': { coingeckoId: "japan-open-chain", decimals: 18 },
+  },
+  solana: {
+    'BTRR3sj1Bn2ZjuemgbeQ6SCtf84iXS81CS7UDTSxUCaK': { coingeckoId: "superstate-uscc", decimals: 6 },
   },
   provenance: {
-    'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6},
-    'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0},
-    'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0},
+    'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
+    'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
+    'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
   doma: {
     // USDC.e (Bridged USDC via Stargate) - Verified 2024-11-27 via explorer.doma.xyz/token/0x31EEf89D5215C305304a2fA5376a1f1b6C5dc477
