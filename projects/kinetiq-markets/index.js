@@ -1,3 +1,5 @@
+const { staking } = require('../helper/staking')
+
 const router = '0x6AB31532382Ba5cD5E8b5D343Cf5995906bb8DD8'
 
 const HYPE = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -68,5 +70,5 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  hyperliquid: { tvl }
+  hyperliquid: { tvl, staking: staking('0x696238e0Ca31c94e24ca4CBe7921754E172E4d0F', '0x000000000000780555bD0BCA3791f89f9542c2d6') }
 }
