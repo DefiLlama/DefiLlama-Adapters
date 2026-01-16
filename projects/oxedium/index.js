@@ -3,7 +3,7 @@ const { getConnection, sumTokens2 } = require('../helper/solana');
 
 
 async function tvl() {
-  const programId = new PublicKey('oxe1hGoyJ41PATPA6ycEYMCyMXWZ33Xwo8rBK8vRCXQ');
+  const programId = new PublicKey('oxe1SKL52HMLBDT2JQvdxscA1LbVc4EEwwSdNZcnDVH');
   const connection = getConnection();
 
   const OXEDIUM_SEED = Buffer.from("oxedium-seed");
@@ -20,7 +20,7 @@ async function tvl() {
   );
 
   const tokenAccounts = tokenAccountsData.value.map(account => account.pubkey.toBase58());
-
+  
   return sumTokens2({ tokenAccounts, solOwners: [treasuryAccount.toBase58()], nativeToken: 'solana' });
 }
 
@@ -28,3 +28,5 @@ module.exports = {
   timetravel: false,
   solana: { tvl },
 };
+
+
