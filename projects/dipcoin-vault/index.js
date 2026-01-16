@@ -2,17 +2,20 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
 
-const http = require("../helper/http");
+const VAULT_CONFIG_ID =
+  "0x69bae0c198f83acf12656a247dfe85467819139560968669f14b4df0abe8efd7";
 
 async function suiTvl(api) {
-  const vaults = (
-    await http.get(
-      "https://gray-api.dipcoin.io/api/perp-vault-api/public/vaults"
-    )
-  )?.data;
-  vaults.forEach((i) => {
-    api.add(ADDRESSES.sui.USDC, BigNumber(i.tvl).div(1e12).toNumber());
-  });
+  const vaultConfig = await sui.getObject(VAULT_CONFIG_ID);
+  const vaultIds = vaultConfig?.fields?.registry?.fields?.ids?.fields?.contents;
+  for (const vaultId of vaultIds) {
+    const vault = await sui.getObject(vaultId);
+    const lastSharePrice = BigNumber(vault?.fields?.last_share_price);
+    const totalShares = BigNumber(vault?.fields?.total_shares);
+    const tvl = lastSharePrice.multipliedBy(totalShares).div(1e12);
+
+    api.add(ADDRESSES.sui.USDC, tvl.toNumber());
+  }
 }
 
 module.exports = {
