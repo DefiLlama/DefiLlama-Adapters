@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json');
+
 const chains = ['ethereum', 'avax', 'arbitrum', 'base'];
 
 // Token addresses per chain
@@ -47,7 +49,8 @@ async function tvl(api) {
       abi: 'function latestAnswer() view returns (int256)',
       target: ORACLE_ADDRESS,
     });
-    api.addUSDValue(Number(latestAnswer) / 1e8);
+    // Oracle has 8 decimals, USDC has 6, so divide by 100
+    api.add(ADDRESSES.avax.USDC, latestAnswer / 100);
   }
 }
 
