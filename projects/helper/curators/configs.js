@@ -23,6 +23,7 @@ const ABI = {
   },
   morpho: {
     CreateMetaMorphoEvent: 'event CreateMetaMorpho(address indexed metaMorpho, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)',
+    CreateVaultV2Event: 'event CreateVaultV2(address indexed owner, address indexed asset, bytes32 salt, address indexed newVaultV2)',
   },
   euler: {
     getProxyListLength: 'uint256:getProxyListLength',
