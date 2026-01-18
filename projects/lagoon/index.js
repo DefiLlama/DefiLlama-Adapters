@@ -128,15 +128,23 @@ const config = {
       fromBlock: 21645993,
     }
   },
+  
+  // tac rpc is having issue on getLogs. it has very little vaults
+  // so we config the vault lists instead of fetch logs for now
   tac: {
-    optinProxyFactory:{
-      address: "0x66Ab87A9282dF99E38C148114F815a9C073ECA8D",
-      fromBlock: 2334460
-    },
-    beaconFactory: {
-      address: "0x3e39E287B4c94aC18831A63E5a6183Aa42cd85c3",
-      fromBlock: 1817048,
-    },
+    // optinProxyFactory:{
+    //   address: "0x66Ab87A9282dF99E38C148114F815a9C073ECA8D",
+    //   fromBlock: 2334460
+    // },
+    // beaconFactory: {
+    //   address: "0x3e39E287B4c94aC18831A63E5a6183Aa42cd85c3",
+    //   fromBlock: 1817048,
+    // },
+    vaults: [
+      '0x279385c180f5d01c4a4bdff040f17b8957304762', // Noon USN
+      '0xc218333954e5f6add5f9460396c2181039cce67b', // Usual Invested USD0++
+      '0x85af3c2755f17ba26d7326e8069bf10719441068', // pufETH TAC
+    ]
   },
   monad: {
     optinProxyFactory:{
