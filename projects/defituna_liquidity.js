@@ -64,7 +64,7 @@ module.exports = {
   methodology: "TVL is calculated by summing up the liquidity of all open positions.",
   start: "2024-11-29",
   hallmarks: [
-    [1753833600, 'TUNA token launched'],
+    ['2025-07-30', 'TUNA token launched'],
   ],
 };
 
