@@ -45,7 +45,7 @@ async function tvl(api) {
       ? orcaPoolsMap[pool].tickCurrentIndex : undefined;
 
     // Add concentrated liquidity position to TVL
-    if(tickCurrentIndex)
+    if(tickCurrentIndex!==undefined)
       addUniV3LikePosition({
       api,
       tickLower: position.account.tickLowerIndex,
