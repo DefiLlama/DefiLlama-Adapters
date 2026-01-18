@@ -72,6 +72,10 @@ const fixBalancesTokens = {
   fogo: {
     'uSd2czE61Evaf76RNbq4KPpXnkiL3irdzgLFUMe3NoG': { coingeckoId: 'usd-coin', decimals: 6 },
     'HLc5hqihQGFU68488j7HkdyF6rywyJfV46BN6Dn8W5ug': { coingeckoId: 'solana', decimals: 8 },
+    // Native FOGO token (same format as Solana's native token)
+    'So11111111111111111111111111111111111111112': { coingeckoId: 'fogo', decimals: 9 },
+    // Note: iFOGO and stFOGO are LSTs with exchange rates > 1
+    // They are handled with exchange rate calculations in valiant-trade adapter
   },
   btnx: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'botanix-pegged-bitcoin', decimals: 18 },
