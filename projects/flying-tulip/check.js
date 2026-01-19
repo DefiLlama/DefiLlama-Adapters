@@ -1,0 +1,183 @@
+const { getLogs } = require('../helper/cache/getLogs');
+
+/**
+ * Flying Tulip PutManager contract address on Ethereum mainnet.
+ * Manages FT token offerings and PUT positions.
+ * @type {string}
+ */
+const PUT_MANAGER = '0xbA49d0AC42f4fBA4e24A8677a22218a4dF75ebaA';
+
+/**
+ * FT token contract address on Ethereum mainnet.
+ * @type {string}
+ */
+const FT_TOKEN = '0x5DD1A7A369e8273371d2DBf9d83356057088082c';
+
+/**
+ * FT Oracle contract address for price feeds.
+ * @type {string}
+ */
+const FT_ORACLE = '0xC8C895E2be9511006287Ce02E51B5B198AB36793';
+
+/**
+ * Initial FT token supply (10 billion tokens).
+ * @type {bigint}
+ */
+const INITIAL_FT_SUPPLY = BigInt('10000000000000000000000000000'); // 10B * 1e18
+
+/**
+ * Block number when PutManager was deployed.
+ * @type {number}
+ */
+const PUT_MANAGER_FROM_BLOCK = 21895793;
+
+/**
+ * Flying Tulip yield wrapper contract addresses on Ethereum mainnet.
+ * @type {string[]}
+ */
+const WRAPPERS = [
+  '0x095d8B8D4503D590F647343F7cD880Fa2abbbf59', // USDC Wrapper
+  '0x9d96bac8a4E9A5b51b5b262F316C4e648E44E305', // WETH Wrapper
+  '0x267dF6b637DdCaa7763d94b64eBe09F01b07cB36', // USDT Wrapper
+  '0xA143a9C486a1A4aaf54FAEFF7252CECe2d337573', // USDS Wrapper
+  '0xE5270E0458f58b83dB3d90Aa6A616173c98C97b6', // USDTb Wrapper
+  '0xe6880Fc961b1235c46552E391358A270281b5625', // USDe Wrapper
+];
+
+/**
+ * Fetches total FT withdrawn by summing all Withdraw events from PutManager.
+ * @param {Object} api - DefiLlama SDK API instance
+ * @returns {Promise<bigint>} Total FT withdrawn in wei
+ */
+async function getFTWithdrawn(api) {
+  const logs = await getLogs({
+    api,
+    target: PUT_MANAGER,
+    eventAbi: 'event Withdraw(address indexed user, uint256 amount)',
+    fromBlock: PUT_MANAGER_FROM_BLOCK,
+    onlyArgs: true,
+  });
+
+  let totalWithdrawn = BigInt(0);
+  for (const log of logs) {
+    totalWithdrawn += BigInt(log.amount);
+  }
+  return totalWithdrawn;
+}
+
+/**
+ * Fetches FT token price from the oracle.
+ * Oracle returns ftPerUSD scaled by 1e8.
+ * @param {Object} api - DefiLlama SDK API instance
+ * @returns {Promise<number>} FT price in USD
+ */
+async function getFTPrice(api) {
+  const ftPerUSD = await api.call({
+    target: FT_ORACLE,
+    abi: 'uint256:ftPerUSD',
+  });
+  // ftPerUSD is scaled by 1e8, so 1e9 means 10 FT per USD = $0.10
+  return 1 / (Number(ftPerUSD) / 1e8);
+}
+
+/**
+ * Fetches yield revenue from all wrapper contracts.
+ * @param {Object} api - DefiLlama SDK API instance
+ * @returns {Promise<Array<{wrapper: string, token: string, yield: string}>>} Yield data per wrapper
+ */
+async function getYieldRevenue(api) {
+  const tokens = await api.multiCall({
+    abi: 'address:token',
+    calls: WRAPPERS,
+  });
+
+  const yields = await api.multiCall({
+    abi: 'uint256:yield',
+    calls: WRAPPERS,
+  });
+
+  return WRAPPERS.map((wrapper, i) => ({
+    wrapper,
+    token: tokens[i],
+    yield: yields[i],
+  }));
+}
+
+/**
+ * Comprehensive FT token and protocol statistics check.
+ * Displays FT supply, circulation, oracle price, FDV, and yield revenue.
+ * @param {Object} api - DefiLlama SDK API instance
+ * @returns {Promise<void>}
+ */
+async function checkFT(api) {
+  // Get pFT address
+  const pFT = await api.call({
+    target: PUT_MANAGER,
+    abi: 'address:pFT',
+  });
+
+  // Get FT offering supply
+  const ftOfferingSupply = await api.call({
+    target: PUT_MANAGER,
+    abi: 'uint256:ftOfferingSupply',
+  });
+
+  // Get FT allocated
+  const ftAllocated = await api.call({
+    target: PUT_MANAGER,
+    abi: 'uint256:ftAllocated',
+  });
+
+  // Get FT total supply
+  const totalSupply = await api.call({
+    target: FT_TOKEN,
+    abi: 'erc20:totalSupply',
+  });
+
+  // Get FT withdrawn from events
+  const ftWithdrawn = await getFTWithdrawn(api);
+
+  // Calculate burned FT (initial supply - current total supply)
+  const ftBurned = INITIAL_FT_SUPPLY - BigInt(totalSupply);
+
+  // Get FT price from oracle
+  const ftPrice = await getFTPrice(api);
+
+  // Get yield revenue
+  const yieldData = await getYieldRevenue(api);
+
+  // Calculate circulating supply (withdrawn FT that's in user wallets)
+  const ftCirculating = ftWithdrawn;
+
+  // Calculate FDV (Fully Diluted Valuation)
+  const fdv = (Number(totalSupply) / 1e18) * ftPrice;
+
+  // Calculate circulating market cap
+  const circulatingMarketCap = (Number(ftCirculating) / 1e18) * ftPrice;
+
+  const format = (n) => (Number(n) / 1e18).toLocaleString();
+  const formatUSD = (n) => '$' + n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+
+  console.log('pFT NFT Contract:', pFT);
+
+  console.log('\n--- FT Token Stats ---');
+  console.log('Initial Supply: 10,000,000,000 FT');
+  console.log('Current Total Supply:', format(totalSupply), 'FT');
+  console.log('FT Burned:', format(ftBurned.toString()), 'FT');
+  console.log('FT Offering Supply:', format(ftOfferingSupply), 'FT');
+  console.log('FT Allocated in PUTs:', format(ftAllocated), 'FT');
+  console.log('FT Withdrawn:', format(ftWithdrawn.toString()), 'FT');
+
+  console.log('\n--- FT Pricing ---');
+  console.log('FT Price (Oracle):', formatUSD(ftPrice));
+  console.log('Circulating Supply:', format(ftCirculating.toString()), 'FT');
+  console.log('Circulating Market Cap:', formatUSD(circulatingMarketCap));
+  console.log('FDV:', formatUSD(fdv));
+
+  console.log('\n--- Yield Revenue ---');
+  for (const data of yieldData) {
+    console.log(`Wrapper ${data.wrapper}: ${data.yield} (token: ${data.token})`);
+  }
+}
+
+module.exports = { checkFT };
