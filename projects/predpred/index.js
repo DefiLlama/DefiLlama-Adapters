@@ -8,5 +8,5 @@ module.exports = {
       ], tokens: ['0xe15fC38F6D8c56aF07bbCBe3BAf5708A2Bf42392']
     })
   },
-  methodology: `TVL is the total quantity of USDC (Sei) held in the airdrop contracts as it hold the all sold out $PCT token's value.`
+  methodology: `TVL is the total USDC (Sei) held in the airdrop contract(s) backing the value of sold-out $PCT tokens.`
 }
