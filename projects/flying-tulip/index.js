@@ -1,4 +1,8 @@
-// Flying Tulip Yield Wrappers on Ethereum
+/**
+ * Flying Tulip yield wrapper contract addresses on Ethereum mainnet.
+ * Each wrapper holds user deposits and generates yield through various strategies.
+ * @type {string[]}
+ */
 const WRAPPERS = [
   '0x095d8B8D4503D590F647343F7cD880Fa2abbbf59', // USDC Wrapper
   '0x9d96bac8a4E9A5b51b5b262F316C4e648E44E305', // WETH Wrapper
@@ -8,6 +12,12 @@ const WRAPPERS = [
   '0xe6880Fc961b1235c46552E391358A270281b5625', // USDe Wrapper
 ]
 
+/**
+ * Calculates TVL for Flying Tulip yield wrappers by summing the capital
+ * deposited across all wrapper contracts.
+ * @param {Object} api - DefiLlama SDK API instance for blockchain calls
+ * @returns {Promise<void>} Adds token balances to the api object
+ */
 async function tvl(api) {
   const tokens = await api.multiCall({
     abi: 'address:token',
