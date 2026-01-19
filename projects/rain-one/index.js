@@ -65,16 +65,20 @@ async function rainProtocolTvl(api) {
             token = token.toLowerCase()
             tokens.add(token)
 
-            const [balance, decimals] = await Promise.all([
-                api.call({ abi: 'erc20:balanceOf', target: token, params: pool }),
-                api.call({ abi: 'erc20:decimals', target: token }),
-            ])
+            try {
+                const [balance, decimals] = await Promise.all([
+                    api.call({ abi: 'erc20:balanceOf', target: token, params: pool }),
+                    api.call({ abi: 'erc20:decimals', target: token }),
+                ])
 
-            poolData.push({
-                token,
-                balance,
-                decimals,
-            })
+                poolData.push({
+                    token,
+                    balance,
+                    decimals,
+                })
+            } catch {
+                // Skip pools with non-standard tokens
+            }
         })
     )
 
