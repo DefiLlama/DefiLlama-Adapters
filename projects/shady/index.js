@@ -2,7 +2,7 @@ const { sumTokens2 } = require('../helper/solana')
 
 const owner = '6WEsL1dvUQbTwjtMvKvZZKqv4GwG6b9qfCQSsa4Bpump' // Shady program ID
 
-async function tvl(api) {
+async function pool2(api) {
     return sumTokens2({
         api,
         solOwners: [owner],
@@ -15,5 +15,5 @@ async function tvl(api) {
 
 module.exports = {
     timetravel: false,
-    solana: { tvl },
+    solana: { pool2, tvl: () => ({}) },
 }
