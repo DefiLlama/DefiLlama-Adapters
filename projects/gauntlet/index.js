@@ -251,7 +251,7 @@ async function megavaultTvl(api) {
   const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
 
   // Report as USD Coin using coingecko identifier
-  api.add('coingecko:usd-coin', (currentTvl * 1e6).toFixed(0));
+  api.add(ADDRESSES.ethereum.USDC, (currentTvl * 1e6).toFixed(0));
 }
 
 async function combinedEthereumTvl(api) {
