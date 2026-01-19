@@ -37,8 +37,6 @@ async function tvl() {
     ...marketIndices.map(getInsuranceFundVaultPublicKey),
   ].filter(i => i !== '9EzLvGf4m7drJCoEdaLoC4D8uYux6tuM1EdtGV4YCEcS')  // drift staking account, handled in staking module
 
-  return;
-  
   return sumTokens2({ tokenAccounts: vaults })
 }
 
