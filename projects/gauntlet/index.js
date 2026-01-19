@@ -7,6 +7,8 @@ const configs = {
     ethereum: {
       morphoVaultOwners: [
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
+        '0xd79766D2FeC43886e995EA415a2Bf406280B2e2C',
+        
       ],
       aera: [
         '0x7c8406384f7a5c147a6add16407803be146147e4',
@@ -112,6 +114,7 @@ const configs = {
       morphoVaultOwners: [
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+        '0xF9D8B7e7981986746c4DE236CC72F1a26AFb5851',
       ],
     },
     optimism: {

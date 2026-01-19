@@ -61,10 +61,10 @@ const ENV_KEYS = [
   'BITCOIN_CACHE_API',
   'DEBANK_API_KEY',
   'SMARDEX_SUBGRAPH_API_KEY',
-  'PROXY_AUTH',
   'ALLIUM_API_KEY',
   'TON_API_KEY',
   'FLOW_NON_EVM_RPC',
+  'PROXY_AUTH',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
