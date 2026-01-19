@@ -69,15 +69,22 @@ async function getFTWithdrawn(api) {
  * Fetches FT token price from the oracle.
  * Oracle returns ftPerUSD scaled by 1e8.
  * @param {Object} api - DefiLlama SDK API instance
- * @returns {Promise<number>} FT price in USD
+ * @returns {Promise<number|null>} FT price in USD, or null if invalid
  */
 async function getFTPrice(api) {
   const ftPerUSD = await api.call({
     target: FT_ORACLE,
     abi: 'uint256:ftPerUSD',
   });
+
+  // Guard against zero or invalid values
+  const ftPerUSDNum = Number(ftPerUSD);
+  if (!ftPerUSDNum || !Number.isFinite(ftPerUSDNum) || ftPerUSDNum <= 0) {
+    return null;
+  }
+
   // ftPerUSD is scaled by 1e8, so 1e9 means 10 FT per USD = $0.10
-  return 1 / (Number(ftPerUSD) / 1e8);
+  return 1 / (ftPerUSDNum / 1e8);
 }
 
 /**
@@ -101,6 +108,48 @@ async function getYieldRevenue(api) {
     token: tokens[i],
     yield: yields[i],
   }));
+}
+
+/**
+ * Scales down a BigInt value by decimals for safe display.
+ * Uses string manipulation to preserve precision for large numbers.
+ * @param {bigint|string} value - The value to scale down
+ * @param {number} decimals - Number of decimals (default 18)
+ * @returns {string} Formatted number string
+ */
+function formatBigIntTokens(value, decimals = 18) {
+  const bigValue = BigInt(value);
+  const divisor = BigInt(10 ** decimals);
+  const integerPart = bigValue / divisor;
+  const remainder = bigValue % divisor;
+
+  // Format integer part with commas
+  const intStr = integerPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+  // Add decimal places if there's a remainder (limit to 2 decimal places for readability)
+  if (remainder > 0n) {
+    const decimalStr = remainder.toString().padStart(decimals, '0').slice(0, 2);
+    if (decimalStr !== '00') {
+      return `${intStr}.${decimalStr}`;
+    }
+  }
+
+  return intStr;
+}
+
+/**
+ * Calculates USD value from BigInt token amount and price.
+ * @param {bigint|string} tokenAmount - Token amount in wei (18 decimals)
+ * @param {number} priceUsd - Price per token in USD
+ * @returns {number} USD value
+ */
+function calculateUsdValue(tokenAmount, priceUsd) {
+  // Convert to number after scaling down to avoid precision loss on large values
+  // Use BigInt division for the integer part, then multiply by price
+  const bigValue = BigInt(tokenAmount);
+  const divisor = BigInt(10 ** 18);
+  const scaledValue = Number(bigValue / divisor) + Number(bigValue % divisor) / 1e18;
+  return scaledValue * priceUsd;
 }
 
 /**
@@ -149,28 +198,30 @@ async function checkFT(api) {
   // Calculate circulating supply (withdrawn FT that's in user wallets)
   const ftCirculating = ftWithdrawn;
 
-  // Calculate FDV (Fully Diluted Valuation)
-  const fdv = (Number(totalSupply) / 1e18) * ftPrice;
+  // Calculate FDV and market cap (only if price is valid)
+  const fdv = ftPrice ? calculateUsdValue(totalSupply, ftPrice) : null;
+  const circulatingMarketCap = ftPrice ? calculateUsdValue(ftCirculating, ftPrice) : null;
 
-  // Calculate circulating market cap
-  const circulatingMarketCap = (Number(ftCirculating) / 1e18) * ftPrice;
-
-  const format = (n) => (Number(n) / 1e18).toLocaleString();
-  const formatUSD = (n) => '$' + n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const formatUSD = (n) => {
+    if (n === null || n === undefined || !Number.isFinite(n)) {
+      return 'N/A';
+    }
+    return '$' + n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  };
 
   console.log('pFT NFT Contract:', pFT);
 
   console.log('\n--- FT Token Stats ---');
   console.log('Initial Supply: 10,000,000,000 FT');
-  console.log('Current Total Supply:', format(totalSupply), 'FT');
-  console.log('FT Burned:', format(ftBurned.toString()), 'FT');
-  console.log('FT Offering Supply:', format(ftOfferingSupply), 'FT');
-  console.log('FT Allocated in PUTs:', format(ftAllocated), 'FT');
-  console.log('FT Withdrawn:', format(ftWithdrawn.toString()), 'FT');
+  console.log('Current Total Supply:', formatBigIntTokens(totalSupply), 'FT');
+  console.log('FT Burned:', formatBigIntTokens(ftBurned), 'FT');
+  console.log('FT Offering Supply:', formatBigIntTokens(ftOfferingSupply), 'FT');
+  console.log('FT Allocated in PUTs:', formatBigIntTokens(ftAllocated), 'FT');
+  console.log('FT Withdrawn:', formatBigIntTokens(ftWithdrawn), 'FT');
 
   console.log('\n--- FT Pricing ---');
-  console.log('FT Price (Oracle):', formatUSD(ftPrice));
-  console.log('Circulating Supply:', format(ftCirculating.toString()), 'FT');
+  console.log('FT Price (Oracle):', ftPrice ? formatUSD(ftPrice) : 'N/A');
+  console.log('Circulating Supply:', formatBigIntTokens(ftCirculating), 'FT');
   console.log('Circulating Market Cap:', formatUSD(circulatingMarketCap));
   console.log('FDV:', formatUSD(fdv));
 
