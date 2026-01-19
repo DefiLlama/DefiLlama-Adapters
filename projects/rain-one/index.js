@@ -10,17 +10,27 @@ const RAIN_PROTOCOL_FACTORY = "0xccCB3C03D9355B01883779EF15C1Be09cf3623F1"
 async function fetchTokenPrices(tokenAddresses) {
     if (!tokenAddresses.length) return new Map()
 
-    const url =
-        `https://api.geckoterminal.com/api/v2/simple/networks/arbitrum/token_price/` +
-        tokenAddresses.map(t => t.toLowerCase()).join(',')
-
-    const { data } = await axios.get(url)
-    if (!data?.data?.attributes?.token_prices) return new Map()
-
     const prices = new Map()
-    for (const [token, priceStr] of Object.entries(data.data.attributes.token_prices)) {
-        const price = Number(priceStr)
-        if (!isNaN(price)) prices.set(token.toLowerCase(), price)
+    const addresses = tokenAddresses.map(t => t.toLowerCase())
+    const BATCH_SIZE = 100 // GeckoTerminal API limit
+
+    for (let i = 0; i < addresses.length; i += BATCH_SIZE) {
+        const batch = addresses.slice(i, i + BATCH_SIZE)
+        const url =
+            `https://api.geckoterminal.com/api/v2/simple/networks/arbitrum/token_price/` +
+            batch.join(',')
+
+        try {
+            const { data } = await axios.get(url)
+            if (data?.data?.attributes?.token_prices) {
+                for (const [token, priceStr] of Object.entries(data.data.attributes.token_prices)) {
+                    const price = Number(priceStr)
+                    if (!isNaN(price)) prices.set(token.toLowerCase(), price)
+                }
+            }
+        } catch {
+            // Continue with other batches on failure
+        }
     }
 
     return prices
