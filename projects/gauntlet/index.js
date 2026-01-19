@@ -181,6 +181,14 @@ const TOKEN_INFO = {
     mint: ADDRESSES.solana.BONK,
     decimals: 5,
   },
+  dfdvSOL: {
+    mint: 'sctmB7GPi5L2Q5G9tUSzXvhZ4YiDMEGcRov9KfArQpx',
+    decimals: 9,
+  },
+  wETH: {
+    mint: 'FeGn77dhg1KXRRFeSwwMiykZnZPw5JXW6naf2aQgZDQf',
+    decimals: 8,
+  },
 }
 
 function getTokenInfo(marketIndex) {
@@ -197,6 +205,8 @@ function getTokenInfo(marketIndex) {
     case 27: return TOKEN_INFO.cbBTC
     case 28: return TOKEN_INFO.USDS
     case 32: return TOKEN_INFO.BONK
+    case 52: return TOKEN_INFO.dfdvSOL
+    case 4: return TOKEN_INFO.wETH // double check if this is correct
     default: return undefined
   }
 }
@@ -213,6 +223,8 @@ const VAULT_USER_ACCOUNTS = [
   '68oTjvenFJfrr2iYPtBTRiFyXA8N2pXdHDP82YvuhLaC', // DRIFT Plus
   'GYxrPXFhCQamBxUc4wMYHnB235Aei7GZsjFCfZgfYJ6b', // Carrot hJLP 
   'FbbcWcg5FfiPdBhkxuBAeoFCyVN2zzSvNPyM7bRiSKAL', // JTO Plus
+  'BrXMRthT599b2mck5bXig6CaHR83kv3vA2dSMC17nv3H', // dfdvSOL Plus
+  '5pJRZ2pcRfKLpsR4fTigN87jBJ93F4KGp3kxb38GNWoN', // wETH Plus
 ]
 
 async function tvl(api) {
