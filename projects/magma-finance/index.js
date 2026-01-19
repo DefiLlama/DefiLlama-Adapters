@@ -1,9 +1,7 @@
 const sui = require('../helper/chain/sui')
 
 // no trading activities
-const blacklistedPools = [
-  '0x478394dd654b698d295eec67a7ea95bcb8d560e2949cbbbcb162f3d524d4ca8e',
-]
+const blacklistedPools = []
 
 async function suiTVL(api) {
   const poolObjectID = '0xfa145b9de10fe858be81edd1c6cdffcf27be9d016de02a1345eb1009a68ba8b2'

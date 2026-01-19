@@ -109,8 +109,8 @@ function validateHallmarks(hallmark) {
     throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
   }
   const [timestamp, text] = hallmark
-  if (typeof timestamp !== 'number' && isNaN(+new Date(timestamp))) {
-    throw new Error("Hallmark timestamp should be a number/dateString")
+  if (typeof timestamp !== 'string' || isNaN(+new Date(timestamp))) {
+    throw new Error("Hallmark timestamp should be a dateString (YYYY-MM-DD)")
   }
   const year = new Date(timestamp * 1000).getFullYear()
   const currentYear = new Date().getFullYear()
@@ -371,6 +371,11 @@ const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 function fixBalances(balances) {
 
+  if (balances.usd) {
+    // usd is mapped to USD+ token on coingecko
+    throw new Error("Balance key 'usd' is not allowed, please use 'api.addUSDValue()' instead")
+  }
+
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`
@@ -458,6 +463,10 @@ async function computeTVL(balances, timestamp) {
       const balance = balances[address];
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
+      if (data.symbol === '') {
+        console.log('\nIgnored invalid coin data, please fix it!', address, data, '\n');
+        return;
+      }
       if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
       if (Math.abs(data.timestamp - (timestamp ?? Date.now() / 1e3)) > (24 * 3600)) {
         console.log(`Price for ${address} is stale, ignoring...`)
