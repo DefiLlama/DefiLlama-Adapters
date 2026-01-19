@@ -1,32 +1,34 @@
-const marketsJSON = require('./markets.json');
-const abi = require('./abi.json');
-
-const boxAddresses = {
-  "sei": ["0xcfe1235b85F533A294efd3826cE15Da6bE21161f"],
-};
+const marketsJSON = {
+  "0x8F904a5fA8C8df2ffd17E6C32dC68EFE73c50490": "0xE30feDd158A2e3b13e9badaeABaFc5516e95e8C7",
+  "0xC25dc4026d5ad6Db5e0921Eb310D0E4642003508": "0x5Cf6826140C1C56Ff49C808A1A75407Cd1DF9423",
+  "0x25672b8ECc6F1290D07C4A87bFee5CFB85dCe101": "0x5Bff88cA1442c2496f7E475E9e7786383Bc070c0",
+  "0x1adCE3b28685eC38A3eDd6046eEA01CE25dFD9da": "0xdf77686D99667Ae56BC18f539B777DBc2BBE3E9F",
+  "0xfa685E6937b0b81d8da2321DcAb1567Ed556C99E": "0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1"
+}
+const abi = {
+  "balanceOf": "function balanceOf(address, address) view returns (uint256)"
+}
 
 async function tvl(api) {
-  const { chain } = api
+  const boxAddresses = ["0xcfe1235b85F533A294efd3826cE15Da6bE21161f"]
+
   const marketsArray = [];
 
-  for (const [marketContract, lockedToken] of Object.entries(marketsJSON[chain])) {
+  for (const [marketContract, lockedToken] of Object.entries(marketsJSON))
     marketsArray.push([lockedToken, marketContract]);
-  }
 
-  const calls = boxAddresses[chain].map(boxAddress => marketsArray.map((market) => ({
-    target: boxAddress,
-    params: market
-  }))).flat()
+  const calls = boxAddresses.map(boxAddress => marketsArray.map((market) => ({ target: boxAddress, params: market }))).flat()
 
-  const tokens = boxAddresses[chain].map(_ =>
-    marketsArray.map(([lockedToken]) => lockedToken)
-  ).flat()
-
+  const tokens = boxAddresses.map(_ => marketsArray.map(([lockedToken]) => lockedToken)).flat()
   const balances = await api.multiCall({ calls, abi: abi.balanceOf, })
   api.addTokens(tokens, balances)
 }
 
 module.exports = {
+  doublecounted: true, // tokens are deposited into other protocols for yield
+  hallmarks: [
+    ['2026-01-15', 'The Synnax.fi application was closed'],
+  ],
   sei: {
     tvl,
   }
