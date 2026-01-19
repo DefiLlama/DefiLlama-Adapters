@@ -64,6 +64,7 @@ const ENV_KEYS = [
   'ALLIUM_API_KEY',
   'TON_API_KEY',
   'FLOW_NON_EVM_RPC',
+  'PROXY_AUTH',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
