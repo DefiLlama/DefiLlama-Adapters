@@ -7,24 +7,11 @@ const config = {
 };
 
 Object.keys(config).forEach((chain) => {
-  const harborCommands = config[chain];
+  const factories = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
-      for (const harborCommand of harborCommands) {
-        const vaults = await api.call({
-          abi: "address[]:getActiveFleetCommanders",
-          target: harborCommand,
-        });
-        const assets = await api.multiCall({
-          abi: "address:asset",
-          calls: vaults,
-        });
-        const balances = await api.multiCall({
-          abi: "uint256:totalAssets",
-          calls: vaults,
-        });
-        api.add(assets, balances);
-      }
+      const vaults = (await api.multiCall({ abi: "address[]:getActiveFleetCommanders", calls: factories, })).flat();
+      return api.erc4626Sum2({ calls: vaults, });
     },
   };
 });
