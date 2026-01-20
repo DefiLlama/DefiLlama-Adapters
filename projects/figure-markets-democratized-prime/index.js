@@ -19,7 +19,6 @@ const collateralizedAssets = [
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy' // YLDS HELOC+
 ]
 
-// Helper to fetch and cache pool data
 let poolDataPromise;
 const fetchAllPoolData = () => {
     if (!poolDataPromise) {
