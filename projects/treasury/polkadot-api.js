@@ -18,7 +18,7 @@ const MYTHOS_DECIMALS = 1e18;
 
 const RELAY_CHAIN_RPC = "wss://rpc.polkadot.io";
 const ASSET_HUB_RPC = "wss://polkadot-asset-hub-rpc.polkadot.io";
-const HYDRATION_RPC = "wss://rpc.hydradx.cloud";
+const HYDRATION_RPC = "wss://hydradx-rpc.dwellir.com";
 
 async function getRelayChainBalance() {
   try {

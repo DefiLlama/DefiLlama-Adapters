@@ -44,15 +44,15 @@ const cgMapping = {
 };
 
 const RAW_STATIC_XYK_POOL_DATA = [
-  [["15L6BQ1sMd9pESapK13dHaXBPPtBYnDnKTVhb2gBeGrrJNBx"], [30, 5]], // DOT/MYTH
-  [["15BuQdFibo2wZmwksPWCJ3owmXCduSU56gaXzVKDc1pcCcsd"], [1000085, 5]], // WUD/DOT
-  [["15nzS2D2wJdh52tqZdUJVMeDQqQe7wJfo5NZKL7pUxhwYgwq"], [5, 252525]],  // DOT/EWT
-  [["15sjxrJkJRCXs64J7wvxNE3vjJ8CGjDPggqeNwEyijvydwri"], [5, 25]],      // DOT/UNQ
-  [["12NzWeY2eDLRbdmjUunmLVE3TBnkgFGy3SCFH2hmDbhLs8qB"], [1000082, 5]]  // WIFD/DOT
+  [[ "15L6BQ1sMd9pESapK13dHaXBPPtBYnDnKTVhb2gBeGrrJNBx" ], [ 30, 5 ]], // DOT/MYTH
+  [[ "15BuQdFibo2wZmwksPWCJ3owmXCduSU56gaXzVKDc1pcCcsd" ], [ 1000085, 5 ]], // WUD/DOT
+  [[ "15nzS2D2wJdh52tqZdUJVMeDQqQe7wJfo5NZKL7pUxhwYgwq" ], [ 5, 252525 ]],  // DOT/EWT
+  [[ "15sjxrJkJRCXs64J7wvxNE3vjJ8CGjDPggqeNwEyijvydwri" ], [ 5, 25 ]],      // DOT/UNQ
+  [[ "12NzWeY2eDLRbdmjUunmLVE3TBnkgFGy3SCFH2hmDbhLs8qB" ], [ 1000082, 5 ]]  // WIFD/DOT
 ];
 
 async function omnipoolTvl(api) {
-  const provider = new WsProvider("wss://rpc.hydradx.cloud");
+  const provider = new WsProvider("wss://hydradx-rpc.dwellir.com");
   const polkadotApi = await ApiPromise.create({ provider });
   await polkadotApi.isReady;
 
@@ -65,7 +65,7 @@ async function omnipoolTvl(api) {
       const meta = metaOpt.unwrap()
       // Extract assetId from the storage key
       // The exact method might vary slightly based on key structure, .args[0] is common
-      const assetIdFromKey = key.args[0].toNumber()
+      const assetIdFromKey = key.args[0].toNumber() 
 
       if (assetIdFromKey !== 0) { // Skip asset 0 (HDX) as it's handled separately
         processedAssetMetadata.push({
@@ -81,15 +81,15 @@ async function omnipoolTvl(api) {
   const hdxBalance = await polkadotApi.query.system.account(omnipoolAccountId)
   add('hydradx', hdxBalance.data.free / 1e12) // Assuming HDX decimals is 12
 
-  for (const { decimals, assetId, symbol } of processedAssetMetadata) {
+  for (const { decimals, assetId, symbol } of processedAssetMetadata) { 
     const cgId = cgMapping[symbol]
     if (cgId) {
       if (symbol === 'GDOT') {
-        const issuance = await polkadotApi.query.tokens.totalIssuance(assetId)
+        const issuance = await polkadotApi.query.tokens.totalIssuance(assetId) 
         add(cgId, Number(issuance) / (10 ** decimals))
       } else {
         const bals = await Promise.all([omnipoolAccountId, stablepoolAccountId, stablepoolAccountId2, stablepoolAccountId3].map(accId =>
-          polkadotApi.query.tokens.accounts(accId, assetId)
+          polkadotApi.query.tokens.accounts(accId, assetId) 
         ))
         const total = bals.reduce((acc, bal) => acc + Number(bal.free), 0) / (10 ** decimals)
         add(cgId, total)
@@ -137,7 +137,7 @@ async function omnipoolTvl(api) {
     for (const { poolAccountId, assetIdA, assetIdB } of staticXykPools) {
       for (const assetId of [assetIdA, assetIdB]) {
         if (typeof assetId !== 'number') {
-          continue;
+            continue;
         }
         const tokenInfo = await polkadotApi.query.assetRegistry.assets(assetId);
         if (!tokenInfo.isSome) {
@@ -178,5 +178,5 @@ async function omnipoolTvl(api) {
 }
 
 module.exports = {
-  hydradx: { tvl: omnipoolTvl },
+  hydradx: { tvl: omnipoolTvl},
 }
