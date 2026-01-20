@@ -29,8 +29,16 @@ const fetchAllPoolData = () => {
                 url: `metadata/v1/scope/${pool}/record/pool-details`
             });
             const poolHash = response.records[0]?.record?.outputs[0]?.hash;
-            return poolHash ? JSON.parse(poolHash) : null;
-        }));
+            if (!poolHash) return null;
+            try {
+                return JSON.parse(poolHash)
+            } catch {
+                return null
+            }
+        })).catch(err => {
+            poolDataPromise = null
+            throw err
+        });
     }
     return poolDataPromise;
 };
@@ -57,6 +65,7 @@ const borrowed = async (api) => {
             api.add(asset, loanAmount);
         }
     });
+    return api.getBalances();
 };
 
 module.exports = {
