@@ -25,8 +25,9 @@ const POOL_SLOT0_ABI =
     "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
 
 // ERC20 balanceOf
-const ERC20_BALANCEOF_ABI =
-    "function balanceOf(address) view returns (uint256)";
+const ERC20_BALANCEOF_ABI = "function balanceOf(address) view returns (uint256)";
+
+const ZERO = "0x0000000000000000000000000000000000000000";
 
 function chunk(arr, size) {
     const out = [];
@@ -46,12 +47,7 @@ async function getAllVaultIds(api) {
 
     const set = new Set();
     for (const l of logs) {
-        const raw =
-            l.vaultId ??
-            l.args?.vaultId ??
-            l.data?.vaultId ??
-            l?.[1];
-
+        const raw = l.vaultId ?? l.args?.vaultId ?? l.data?.vaultId ?? l?.[1];
         const id = Number(raw);
         if (Number.isFinite(id)) set.add(id);
     }
@@ -67,12 +63,10 @@ const Q96 = 1n << 96n;
 const MIN_TICK = -887272;
 const MAX_TICK = 887272;
 const MIN_SQRT_RATIO = 4295128739n;
-const MAX_SQRT_RATIO =
-    1461446703485210103287273052203988822378723970342n;
+const MAX_SQRT_RATIO = 1461446703485210103287273052203988822378723970342n;
 
 function getSqrtRatioAtTick(tick) {
-    if (tick < MIN_TICK || tick > MAX_TICK)
-        throw new Error("TICK_OUT_OF_RANGE");
+    if (tick < MIN_TICK || tick > MAX_TICK) throw new Error("TICK_OUT_OF_RANGE");
 
     let absTick = tick < 0 ? -tick : tick;
     let ratio =
@@ -80,54 +74,31 @@ function getSqrtRatioAtTick(tick) {
             ? 0xfffcb933bd6fad37aa2d162d1a594001n
             : 0x100000000000000000000000000000000n;
 
-    if (absTick & 0x2)
-        ratio = (ratio * 0xfff97272373d413259a46990580e213an) >> 128n;
-    if (absTick & 0x4)
-        ratio = (ratio * 0xfff2e50f5f656932ef12357cf3c7fdccn) >> 128n;
-    if (absTick & 0x8)
-        ratio = (ratio * 0xffe5caca7e10e4e61c3624eaa0941cd0n) >> 128n;
-    if (absTick & 0x10)
-        ratio = (ratio * 0xffcb9843d60f6159c9db58835c926644n) >> 128n;
-    if (absTick & 0x20)
-        ratio = (ratio * 0xff973b41fa98c081472e6896dfb254c0n) >> 128n;
-    if (absTick & 0x40)
-        ratio = (ratio * 0xff2ea16466c96a3843ec78b326b52861n) >> 128n;
-    if (absTick & 0x80)
-        ratio = (ratio * 0xfe5dee046a99a2a811c461f1969c3053n) >> 128n;
-    if (absTick & 0x100)
-        ratio = (ratio * 0xfcbe86c7900a88aedcffc83b479aa3a4n) >> 128n;
-    if (absTick & 0x200)
-        ratio = (ratio * 0xf987a7253ac413176f2b074cf7815e54n) >> 128n;
-    if (absTick & 0x400)
-        ratio = (ratio * 0xf3392b0822b70005940c7a398e4b70f3n) >> 128n;
-    if (absTick & 0x800)
-        ratio = (ratio * 0xe7159475a2c29b7443b29c7fa6e889d9n) >> 128n;
-    if (absTick & 0x1000)
-        ratio = (ratio * 0xd097f3bdfd2022b8845ad8f792aa5825n) >> 128n;
-    if (absTick & 0x2000)
-        ratio = (ratio * 0xa9f746462d870fdf8a65dc1f90e061e5n) >> 128n;
-    if (absTick & 0x4000)
-        ratio = (ratio * 0x70d869a156d2a1b890bb3df62baf32f7n) >> 128n;
-    if (absTick & 0x8000)
-        ratio = (ratio * 0x31be135f97d08fd981231505542fcfa6n) >> 128n;
-    if (absTick & 0x10000)
-        ratio = (ratio * 0x9aa508b5b7a84e1c677de54f3e99bc9n) >> 128n;
-    if (absTick & 0x20000)
-        ratio = (ratio * 0x5d6af8dedb81196699c329225ee604n) >> 128n;
-    if (absTick & 0x40000)
-        ratio = (ratio * 0x2216e584f5fa1ea926041bedfe98n) >> 128n;
-    if (absTick & 0x80000)
-        ratio = (ratio * 0x48a170391f7dc42444e8fa2n) >> 128n;
+    if (absTick & 0x2) ratio = (ratio * 0xfff97272373d413259a46990580e213an) >> 128n;
+    if (absTick & 0x4) ratio = (ratio * 0xfff2e50f5f656932ef12357cf3c7fdccn) >> 128n;
+    if (absTick & 0x8) ratio = (ratio * 0xffe5caca7e10e4e61c3624eaa0941cd0n) >> 128n;
+    if (absTick & 0x10) ratio = (ratio * 0xffcb9843d60f6159c9db58835c926644n) >> 128n;
+    if (absTick & 0x20) ratio = (ratio * 0xff973b41fa98c081472e6896dfb254c0n) >> 128n;
+    if (absTick & 0x40) ratio = (ratio * 0xff2ea16466c96a3843ec78b326b52861n) >> 128n;
+    if (absTick & 0x80) ratio = (ratio * 0xfe5dee046a99a2a811c461f1969c3053n) >> 128n;
+    if (absTick & 0x100) ratio = (ratio * 0xfcbe86c7900a88aedcffc83b479aa3a4n) >> 128n;
+    if (absTick & 0x200) ratio = (ratio * 0xf987a7253ac413176f2b074cf7815e54n) >> 128n;
+    if (absTick & 0x400) ratio = (ratio * 0xf3392b0822b70005940c7a398e4b70f3n) >> 128n;
+    if (absTick & 0x800) ratio = (ratio * 0xe7159475a2c29b7443b29c7fa6e889d9n) >> 128n;
+    if (absTick & 0x1000) ratio = (ratio * 0xd097f3bdfd2022b8845ad8f792aa5825n) >> 128n;
+    if (absTick & 0x2000) ratio = (ratio * 0xa9f746462d870fdf8a65dc1f90e061e5n) >> 128n;
+    if (absTick & 0x4000) ratio = (ratio * 0x70d869a156d2a1b890bb3df62baf32f7n) >> 128n;
+    if (absTick & 0x8000) ratio = (ratio * 0x31be135f97d08fd981231505542fcfa6n) >> 128n;
+    if (absTick & 0x10000) ratio = (ratio * 0x9aa508b5b7a84e1c677de54f3e99bc9n) >> 128n;
+    if (absTick & 0x20000) ratio = (ratio * 0x5d6af8dedb81196699c329225ee604n) >> 128n;
+    if (absTick & 0x40000) ratio = (ratio * 0x2216e584f5fa1ea926041bedfe98n) >> 128n;
+    if (absTick & 0x80000) ratio = (ratio * 0x48a170391f7dc42444e8fa2n) >> 128n;
 
     if (tick > 0) ratio = (2n ** 256n - 1n) / ratio;
 
-    const sqrtPriceX96 =
-        (ratio >> 32n) + (ratio % (1n << 32n) === 0n ? 0n : 1n);
+    const sqrtPriceX96 = (ratio >> 32n) + (ratio % (1n << 32n) === 0n ? 0n : 1n);
 
-    if (
-        sqrtPriceX96 < MIN_SQRT_RATIO ||
-        sqrtPriceX96 >= MAX_SQRT_RATIO
-    )
+    if (sqrtPriceX96 < MIN_SQRT_RATIO || sqrtPriceX96 >= MAX_SQRT_RATIO)
         throw new Error("SQRT_RATIO_OUT_OF_RANGE");
 
     return sqrtPriceX96;
@@ -149,12 +120,7 @@ function getAmount1ForLiquidity(sqrtA, sqrtB, liquidity) {
     return mulDiv(liquidity, sqrtB - sqrtA, Q96);
 }
 
-function getAmountsForPosition(
-    liquidity,
-    sqrtPriceX96,
-    tickLower,
-    tickUpper
-) {
+function getAmountsForPosition(liquidity, sqrtPriceX96, tickLower, tickUpper) {
     const sqrtLower = getSqrtRatioAtTick(tickLower);
     const sqrtUpper = getSqrtRatioAtTick(tickUpper);
 
@@ -165,25 +131,13 @@ function getAmountsForPosition(
         };
     } else if (sqrtPriceX96 < sqrtUpper) {
         return {
-            amount0: getAmount0ForLiquidity(
-                sqrtPriceX96,
-                sqrtUpper,
-                liquidity
-            ),
-            amount1: getAmount1ForLiquidity(
-                sqrtLower,
-                sqrtPriceX96,
-                liquidity
-            ),
+            amount0: getAmount0ForLiquidity(sqrtPriceX96, sqrtUpper, liquidity),
+            amount1: getAmount1ForLiquidity(sqrtLower, sqrtPriceX96, liquidity),
         };
     } else {
         return {
             amount0: 0n,
-            amount1: getAmount1ForLiquidity(
-                sqrtLower,
-                sqrtUpper,
-                liquidity
-            ),
+            amount1: getAmount1ForLiquidity(sqrtLower, sqrtUpper, liquidity),
         };
     }
 }
@@ -192,11 +146,9 @@ async function tvl(api) {
     const vaultIds = await getAllVaultIds(api);
     if (!vaultIds.length) return;
 
-    const vaultIdsClean = vaultIds
-        .map((x) => Number(x))
-        .filter((x) => Number.isFinite(x) && x >= 0);
+    const vaultIdsClean = vaultIds.map((x) => Number(x)).filter((x) => Number.isFinite(x) && x >= 0);
 
-    const tokenIds = [];
+    const tokenIdSet = new Set();
     const batches = chunk(vaultIdsClean, 200);
 
     for (const ids of batches) {
@@ -208,20 +160,35 @@ async function tvl(api) {
 
         for (const v of vaults) {
             const tokenId = BigInt(v?.position?.tokenId || 0);
-            if (tokenId > 0n) tokenIds.push(tokenId);
+            if (tokenId > 0n) tokenIdSet.add(tokenId.toString());
         }
     }
 
+    const tokenIds = Array.from(tokenIdSet).map((x) => BigInt(x));
     if (!tokenIds.length) return;
 
+    // Fetch positions in batches using multiCall, fallback to sequential calls if needed
     const positions = [];
-    for (const id of tokenIds) {
-        const p = await api.call({
-            target: PANCAKE_V3_NPM,
-            abi: NPM_POSITIONS_ABI,
-            params: [id.toString()],
-        });
-        positions.push(p);
+    const POSITION_BATCH = 200;
+
+    for (const batch of chunk(tokenIds, POSITION_BATCH)) {
+        try {
+            const res = await api.multiCall({
+                target: PANCAKE_V3_NPM,
+                abi: NPM_POSITIONS_ABI,
+                calls: batch.map((id) => ({ params: [id.toString()] })),
+            });
+            positions.push(...res);
+        } catch (e) {
+            for (const id of batch) {
+                const p = await api.call({
+                    target: PANCAKE_V3_NPM,
+                    abi: NPM_POSITIONS_ABI,
+                    params: [id.toString()],
+                });
+                positions.push(p);
+            }
+        }
     }
 
     const pools = await api.multiCall({
@@ -230,8 +197,7 @@ async function tvl(api) {
         calls: positions.map((p) => {
             const a = p.token0.toLowerCase();
             const b = p.token1.toLowerCase();
-            const [tokenA, tokenB] =
-                a < b ? [p.token0, p.token1] : [p.token1, p.token0];
+            const [tokenA, tokenB] = a < b ? [p.token0, p.token1] : [p.token1, p.token0];
             return { params: [tokenA, tokenB, p.fee] };
         }),
     });
@@ -244,6 +210,9 @@ async function tvl(api) {
     const tokenSet = new Set();
 
     for (let i = 0; i < positions.length; i++) {
+        const pool = pools[i];
+        if (!pool || pool.toLowerCase() === ZERO) continue;
+
         const p = positions[i];
         const slot0 = slot0s[i];
 
@@ -260,12 +229,7 @@ async function tvl(api) {
         const tickLower = Number(p.tickLower);
         const tickUpper = Number(p.tickUpper);
 
-        const { amount0, amount1 } = getAmountsForPosition(
-            liquidity,
-            sqrtPriceX96,
-            tickLower,
-            tickUpper
-        );
+        const { amount0, amount1 } = getAmountsForPosition(liquidity, sqrtPriceX96, tickLower, tickUpper);
 
         api.add(token0, amount0.toString());
         api.add(token1, amount1.toString());
