@@ -1,4 +1,5 @@
 const { queryV1Beta1 } = require('../helper/chain/cosmos.js');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const demoPrimePools = [
     "scope1qp4lyqj9xkp570uj9l0sf6vhh46q599mcf", // Margin USD
@@ -12,7 +13,35 @@ const demoPrimePools = [
     "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n", // Margin ETH
 ]
 
-const getBalances = async (api, isBorrowed) => {
+const collateralizedAssets = [
+    'pm.sale.pool.3dxq3fk9llvhrqqwhodiap', // YLDS HELOCs
+    'pm.pool.asset.1y3flutqcyuf8duew1vj2g', // YLDS CBLs
+    'pm.pool.asset.3hjz8rcr3pejdc3msntlvy' // YLDS HELOC+
+]
+
+const getPools = async (api) => {
+    let asset = collateralizedAssets[0]
+    await Promise.all(demoPrimePools.map(async pool => {
+        const poolHash = (await queryV1Beta1({
+            chain: 'provenance',
+            url: `metadata/v1/scope/${pool}/record/pool-details`
+        })).records[0]?.record?.outputs[0]?.hash
+        if (poolHash) {
+            const poolInfo = JSON.parse(poolHash)
+            if (poolInfo.leveragePool.collateralAssets.length > 0 && collateralizedAssets.includes(poolInfo.leveragePool.collateralAssets[0])) {
+                asset = poolInfo.leveragePool.collateralAssets[0]
+                api.add(asset, poolInfo.collateralValue)
+            }
+        }
+    }))
+}
+
+const tvl = async (api) => {
+    await getPools(api)
+    return sumTokens2({ api })
+}
+
+const borrowed = async (api) => {
     await Promise.all(demoPrimePools.map(async pool => {
         const poolHash = (await queryV1Beta1({
             chain: 'provenance',
@@ -22,9 +51,8 @@ const getBalances = async (api, isBorrowed) => {
         if (poolHash) {
             const poolInfo = JSON.parse(poolHash)
             let asset = poolInfo.leveragePool.asset
-            let collateral = poolInfo.currentPeriod.totalOfferAmount - poolInfo.currentPeriod.totalLoanAmount
             let borrowed = poolInfo.currentPeriod.totalLoanAmount
-            api.add(asset, isBorrowed ? borrowed : collateral)
+            api.add(asset, borrowed)
         }
     }))
 }
@@ -35,7 +63,7 @@ module.exports = {
     misrepresentedTokens: true,
     methodology: 'TVL is calculated based on the total amount of collateral pledged to all lending pools.',
     provenance: {
-        tvl: (api) => getBalances(api, false),
-        borrowed: (api) => getBalances(api, true),
+        tvl,
+        borrowed,
     }
 }
