@@ -10,19 +10,18 @@ const { getUniTVL } = require('./cache/uniswap')
 const { getUniqueAddresses, } = require('./utils')
 
 
-function staking(stakingContract, stakingToken) {
+function uniTvlExports(config, commonOptions = {}) {
+  function staking(stakingContract, stakingToken) {
     if (!Array.isArray(stakingContract)) stakingContract = [stakingContract]
     if (!Array.isArray(stakingToken)) stakingToken = [stakingToken]
     return (api) => api.sumTokens({ owners: stakingContract, tokens: stakingToken, })
-}
+  }
 
-
-function uniTvlExports(config, commonOptions = {}) {
   const exportsObj = {
     misrepresentedTokens: !commonOptions.useDefaultCoreAssets,
   }
   Object.keys(config).forEach(chain => {
-    exportsObj[chain] =  uniTvlExport(chain, config[chain],commonOptions )[chain]
+    exportsObj[chain] = uniTvlExport(chain, config[chain], commonOptions)[chain]
   })
   if (commonOptions.hallmarks) exportsObj.hallmarks = commonOptions.hallmarks
   if (commonOptions.deadFrom) exportsObj.deadFrom = commonOptions.deadFrom
@@ -266,7 +265,7 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }
 
 function uniTvlExport(chain, factory, options = {}) {
-  const exportsObj= {
+  const exportsObj = {
     misrepresentedTokens: !options.useDefaultCoreAssets,
     [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
   }
@@ -276,7 +275,7 @@ function uniTvlExport(chain, factory, options = {}) {
 // Default ABI for CLM vaults that expose wants() => (token0, token1) and balances() => (amount0, amount1)
 const pairApis = {
   balances: 'function balances() view returns (uint256 amount0, uint256 amount1)',
-  wants:    'function wants() view returns (address token0, address token1)',
+  wants: 'function wants() view returns (address token0, address token1)',
 }
 
 // Helper for CLM-style vaults (wants() + balances()) returning two tokens and two balances
@@ -284,7 +283,7 @@ async function yieldHelperPair({
   chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
   useDefaultCoreAssets = false,
   balanceAPI = pairApis.balances,
-  tokenAPI   = pairApis.wants,
+  tokenAPI = pairApis.wants,
   restrictTokenRatio,
 }) {
 
@@ -300,7 +299,7 @@ async function yieldHelperPair({
   const calls = vaults.map(i => ({ target: i }))
 
   const { output: balanceRes } = await sdk.api.abi.multiCall({ abi: balanceAPI, calls, chain, block })
-  const { output: tokenRes }    = await sdk.api.abi.multiCall({ abi: tokenAPI,  calls, chain, block })
+  const { output: tokenRes } = await sdk.api.abi.multiCall({ abi: tokenAPI, calls, chain, block })
 
   const allTokens = []
   const allBalances = []
