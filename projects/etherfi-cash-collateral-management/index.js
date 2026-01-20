@@ -30,14 +30,15 @@ async function tvl(api) {
     });
   }
 
-  const chunks = sliceIntoChunks(calls, 42);
+  const chunks = sliceIntoChunks(calls, 30);
   let i = 0
   for (const chunk of chunks) {
     const res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk })
     res.forEach(batchResult => {
       batchResult.forEach(({ token, amount }) => api.add(token, amount))
     })
-    api.log(`Processed chunk ${++i}/${chunks.length}`)
+    console.log(`Processed chunk ${++i}/${chunks.length}`)
+    // api.log(`Processed chunk ${++i}/${chunks.length}`)
   }
 }
 
