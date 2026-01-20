@@ -28,7 +28,7 @@ const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_
 
 
 const deadChains = ['heco', 'astrzk', 'real', 'milkomeda', 'milkomeda_a1', 'eos_evm', 'eon', 'plume', 'bitrock', 'rpg', 'kadena', 'migaloo', 'kroma', 'qom', 'airdao',
-  'kardia',
+  'kardia', 'boba_bnb',
 ]
 
 
