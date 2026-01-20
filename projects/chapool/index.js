@@ -66,21 +66,29 @@ ORDER BY level
 
 async function executeDuneSQL(sql, apiKey) {
   // Step 1: Execute SQL query
-  const executeResponse = await axios.post(
-    'https://api.dune.com/api/v1/sql/execute',
-    {
-      sql: sql.trim(),
-      performance: 'medium'
-    },
-    {
-      headers: { 'X-Dune-Api-Key': apiKey }
-    }
-  )
+  let executeResponse
+  try {
+    executeResponse = await axios.post(
+      'https://api.dune.com/api/v1/sql/execute',
+      {
+        sql: sql.trim(),
+        performance: 'medium'
+      },
+      {
+        headers: { 'X-Dune-Api-Key': apiKey },
+        timeout: 30000
+      }
+    )
+  } catch (e) {
+    sdk.log('Failed to execute Dune SQL:', e.message)
+    throw new Error(`Failed to execute Dune query: ${e.response?.data?.message || e.message}`)
+  }
+
+  if (!executeResponse?.data?.execution_id) {
+    throw new Error('Failed to get execution_id from Dune API response')
+  }
 
   const executionId = executeResponse.data.execution_id
-  if (!executionId) {
-    throw new Error('Failed to get execution_id from Dune API')
-  }
 
   // Step 2: Poll for execution status
   const maxAttempts = 30
@@ -92,26 +100,50 @@ async function executeDuneSQL(sql, apiKey) {
       await new Promise(r => setTimeout(r, pollInterval))
     }
 
-    const statusResponse = await axios.get(
-      `https://api.dune.com/api/v1/execution/${executionId}/status`,
-      {
-        headers: { 'X-Dune-Api-Key': apiKey }
-      }
-    )
+    let statusResponse
+    try {
+      statusResponse = await axios.get(
+        `https://api.dune.com/api/v1/execution/${executionId}/status`,
+        {
+          headers: { 'X-Dune-Api-Key': apiKey },
+          timeout: 10000
+        }
+      )
+    } catch (e) {
+      sdk.log('Failed to check Dune execution status:', e.message)
+      throw new Error(`Failed to check query status: ${e.response?.data?.message || e.message}`)
+    }
+
+    if (!statusResponse?.data) {
+      throw new Error('Invalid status response from Dune API')
+    }
 
     const state = statusResponse.data.state
 
     if (state === 'QUERY_STATE_COMPLETED') {
       // Step 3: Get results
-      const resultsResponse = await axios.get(
-        `https://api.dune.com/api/v1/execution/${executionId}/results`,
-        {
-          headers: { 'X-Dune-Api-Key': apiKey }
-        }
-      )
+      let resultsResponse
+      try {
+        resultsResponse = await axios.get(
+          `https://api.dune.com/api/v1/execution/${executionId}/results`,
+          {
+            headers: { 'X-Dune-Api-Key': apiKey },
+            timeout: 10000
+          }
+        )
+      } catch (e) {
+        sdk.log('Failed to get Dune query results:', e.message)
+        throw new Error(`Failed to get query results: ${e.response?.data?.message || e.message}`)
+      }
+
+      if (!resultsResponse?.data) {
+        throw new Error('Invalid results response from Dune API')
+      }
+
       return resultsResponse.data
     } else if (state === 'QUERY_STATE_FAILED') {
-      throw new Error(`Dune query execution failed: ${statusResponse.data.error || 'Unknown error'}`)
+      const errorMsg = statusResponse.data.error || 'Unknown error'
+      throw new Error(`Dune query execution failed: ${errorMsg}`)
     } else if (state === 'QUERY_STATE_PENDING' || state === 'QUERY_STATE_EXECUTING') {
       // Continue polling
       continue
@@ -135,7 +167,7 @@ async function tvl(api) {
     try {
       return await executeDuneSQL(TVL_SQL, apiKey)
     } catch (e) {
-      console.log('Dune API Error:', e.response?.data || e.message)
+      sdk.log('Dune API Error:', e.message)
       if (e.message.includes('timeout') || e.message.includes('failed')) {
         bail(e)
       }
@@ -143,15 +175,31 @@ async function tvl(api) {
     }
   }, { retries: 3, minTimeout: 2000 })
 
-  const rows = result.result?.rows
-  if (!rows || rows.length === 0) {
-    console.log('No data returned from Dune query')
+  if (!result?.result?.rows) {
+    sdk.log('No data returned from Dune query')
+    return
+  }
+
+  const rows = result.result.rows
+  if (rows.length === 0) {
+    sdk.log('Empty result set from Dune query')
     return
   }
 
   // Step 2: Get prices for each level from the contract
   // NFTLevel enum values: 1-6 (C, B, A, S, SS, SSS)
-  const levels = rows.map(row => parseInt(row.level))
+  const levels = rows
+    .map(row => {
+      const level = parseInt(row.level, 10)
+      return isNaN(level) ? null : level
+    })
+    .filter(level => level !== null && level > 0)
+  
+  if (levels.length === 0) {
+    sdk.log('No valid levels found in Dune query results')
+    return
+  }
+
   const uniqueLevels = [...new Set(levels)].sort((a, b) => a - b)
   
   const prices = await api.multiCall({
@@ -172,20 +220,26 @@ async function tvl(api) {
   // Step 4: Calculate total TVL
   let totalUsd = 0
   for (const row of rows) {
-    const level = parseInt(row.level)
-    const stakedCount = parseInt(row.staked_count)
+    const level = parseInt(row.level, 10)
+    const stakedCount = parseInt(row.staked_count, 10)
+    
+    if (isNaN(level) || isNaN(stakedCount) || stakedCount <= 0) {
+      sdk.log(`Invalid row data: level=${row.level}, staked_count=${row.staked_count}`)
+      continue
+    }
+    
     const price = priceMap[level]
     
-    if (!price || price <= 0) {
-      console.warn(`Invalid price for level ${level}: ${price}`)
+    if (!price || price <= 0 || isNaN(price)) {
+      sdk.log(`Invalid price for level ${level}: ${price}`)
       continue
     }
     
     totalUsd += stakedCount * price
   }
   
-  if (totalUsd <= 0) {
-    console.log('No valid TVL calculated')
+  if (totalUsd <= 0 || isNaN(totalUsd)) {
+    sdk.log('No valid TVL calculated')
     return
   }
   
