@@ -64,7 +64,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'counts the collateral tokens (TBTC, SOLVBTC) in the Active Pool, Collateral Surplus Pool, and Stability Pool contracts. For WBTC, uses the supply of WWBTC.',
+  methodology: 'counts the collateral tokens (TBTC, SOLVBTC) in the Active Pool, Collateral Surplus Pool, and Stability Pool contracts. For WBTC, uses the WBTC balance held by the WWBTC wrapper contract.',
   start: 2762980,
   starknet: {
     tvl,
