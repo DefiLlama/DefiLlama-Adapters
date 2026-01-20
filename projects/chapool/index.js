@@ -1,12 +1,27 @@
 const axios = require('axios')
 const sdk = require('@defillama/sdk')
 
+// BailError class to short-circuit retries
+class BailError extends Error {
+  constructor(originalError) {
+    super(originalError.message)
+    this.name = 'BailError'
+    this.originalError = originalError
+  }
+}
+
 // Simple retry function
 async function retry(fn, { retries = 3, minTimeout = 2000 } = {}) {
   for (let i = 0; i <= retries; i++) {
     try {
-      return await fn((err) => { throw err }) // bail function
+      return await fn((err) => {
+        throw new BailError(err)
+      })
     } catch (e) {
+      // If it's a BailError, immediately rethrow the original error
+      if (e instanceof BailError) {
+        throw e.originalError
+      }
       if (i === retries) throw e
       await new Promise(r => setTimeout(r, minTimeout))
     }
@@ -17,6 +32,7 @@ async function retry(fn, { retries = 3, minTimeout = 2000 } = {}) {
 const CPNFT_CONTRACT = '0x2d3A1b0fD28D8358643b4822B475bF435F2611cb'
 
 // SQL query for TVL calculation - returns staked counts by level
+// Fixed: Group by token_id only to correctly handle unstaked NFTs
 const TVL_SQL = `
 WITH staking_events AS (
     SELECT 
@@ -43,10 +59,10 @@ WITH staking_events AS (
 current_staked AS (
     SELECT 
         token_id,
-        level,
+        MAX(CASE WHEN action = 'STAKE' THEN level END) as level,
         SUM(CASE WHEN action = 'STAKE' THEN 1 ELSE -1 END) as net_staked
     FROM staking_events
-    GROUP BY token_id, level
+    GROUP BY token_id
     HAVING SUM(CASE WHEN action = 'STAKE' THEN 1 ELSE -1 END) > 0
 ),
 staked_by_level AS (
@@ -168,22 +184,31 @@ async function tvl(api) {
       return await executeDuneSQL(TVL_SQL, apiKey)
     } catch (e) {
       sdk.log('Dune API Error:', e.message)
-      if (e.message.includes('timeout') || e.message.includes('failed')) {
+      // Bail only for permanent, non-retryable errors
+      const errorMsg = e.message.toLowerCase()
+      if (
+        errorMsg.includes('invalid') ||
+        errorMsg.includes('unauthorized') ||
+        errorMsg.includes('malformed sql') ||
+        errorMsg.includes('api key') ||
+        errorMsg.includes('authentication')
+      ) {
         bail(e)
       }
+      // For transient errors (timeout, failed), retry by throwing
       throw e
     }
   }, { retries: 3, minTimeout: 2000 })
 
   if (!result?.result?.rows) {
     sdk.log('No data returned from Dune query')
-    return
+    return api.getBalances()
   }
 
   const rows = result.result.rows
   if (rows.length === 0) {
     sdk.log('Empty result set from Dune query')
-    return
+    return api.getBalances()
   }
 
   // Step 2: Get prices for each level from the contract
@@ -197,7 +222,7 @@ async function tvl(api) {
   
   if (levels.length === 0) {
     sdk.log('No valid levels found in Dune query results')
-    return
+    return api.getBalances()
   }
 
   const uniqueLevels = [...new Set(levels)].sort((a, b) => a - b)
@@ -240,15 +265,18 @@ async function tvl(api) {
   
   if (totalUsd <= 0 || isNaN(totalUsd)) {
     sdk.log('No valid TVL calculated')
-    return
+    return api.getBalances()
   }
   
   // Use USDT on Ethereum (6 decimals) to represent USD value
+  const balances = api.getBalances()
   sdk.util.sumSingleBalance(
-      api.getBalances(), 
+      balances, 
       'ethereum:0xdAC17F958D2ee523a2206206994597C13D831ec7', 
       Math.floor(totalUsd * 1e6)
   )
+  
+  return balances
 }
 
 module.exports = {
