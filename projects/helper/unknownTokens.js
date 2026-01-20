@@ -8,7 +8,14 @@ const { vestingHelper } = require('./cache/vestingHelper')
 const { getTokenPrices, sumUnknownTokens, getLPData, } = require('./cache/sumUnknownTokens')
 const { getUniTVL } = require('./cache/uniswap')
 const { getUniqueAddresses, } = require('./utils')
-const stakingHelper = require('./staking')
+
+
+function staking(stakingContract, stakingToken) {
+    if (!Array.isArray(stakingContract)) stakingContract = [stakingContract]
+    if (!Array.isArray(stakingToken)) stakingToken = [stakingToken]
+    return (api) => api.sumTokens({ owners: stakingContract, tokens: stakingToken, })
+}
+
 
 function uniTvlExports(config, commonOptions = {}) {
   const exportsObj = {
@@ -22,7 +29,7 @@ function uniTvlExports(config, commonOptions = {}) {
   if (typeof commonOptions.staking === 'object') {
     Object.entries(commonOptions.staking).forEach(([chain, stakingArgs]) => {
       if (!exportsObj[chain]) exportsObj[chain] = {}
-      exportsObj[chain].staking = stakingHelper.staking(...stakingArgs)
+      exportsObj[chain].staking = staking(...stakingArgs)
     })
   }
   return exportsObj
