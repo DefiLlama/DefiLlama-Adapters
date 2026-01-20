@@ -1,30 +1,24 @@
 const CALCULUS_CONTRACT = "0xb5e6AdA1466840096FcEDCC409528a9cB763f650";
 const START_BLOCK = 66651811;
 
-// PancakeSwap v3 (BSC) addresses
 const PANCAKE_V3_FACTORY = "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865";
 const PANCAKE_V3_NPM = "0x46A15B0b27311cedF172AB29E4f4766fbE7F4364";
 
-// VaultPositionOpened(uint64,uint32,uint128,address,int24,uint160,int24,uint256,uint256,address)
 const VAULT_POSITION_OPENED_EVENT =
     "event VaultPositionOpened(uint64 indexed operationNonce, uint32 vaultId, uint128 liquidity, address liquidityOwner, int24 tickLower, uint160 sqrtOpen, int24 tickUpper, uint256 reserve0, uint256 reserve1, address operator)";
 
 const LIST_VAULTS_ABI =
     "function listVaults(uint32[] _vaultIds) view returns (uint64, (uint16 tokenPairId, uint32 vaultId, address owner, (uint256 amount0, uint256 amount1) feeEarned, (uint256 amount0, uint256 amount1) reserves, (uint256 tokenId) position)[])";
 
-// Pancake v3 NonfungiblePositionManager.positions(tokenId)
 const NPM_POSITIONS_ABI =
     "function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)";
 
-// Pancake v3 Factory.getPool(token0, token1, fee)
 const FACTORY_GETPOOL_ABI =
     "function getPool(address tokenA, address tokenB, uint24 fee) view returns (address pool)";
 
-// Pancake v3 Pool.slot0()
 const POOL_SLOT0_ABI =
     "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
 
-// ERC20 balanceOf
 const ERC20_BALANCEOF_ABI = "function balanceOf(address) view returns (uint256)";
 
 const ZERO = "0x0000000000000000000000000000000000000000";
@@ -55,10 +49,6 @@ async function getAllVaultIds(api) {
     return Array.from(set);
 }
 
-/**
- * ===== Uniswap v3 math (BigInt) =====
- * Minimal TickMath + LiquidityAmounts implementation
- */
 const Q96 = 1n << 96n;
 const MIN_TICK = -887272;
 const MAX_TICK = 887272;
@@ -125,20 +115,14 @@ function getAmountsForPosition(liquidity, sqrtPriceX96, tickLower, tickUpper) {
     const sqrtUpper = getSqrtRatioAtTick(tickUpper);
 
     if (sqrtPriceX96 <= sqrtLower) {
-        return {
-            amount0: getAmount0ForLiquidity(sqrtLower, sqrtUpper, liquidity),
-            amount1: 0n,
-        };
+        return { amount0: getAmount0ForLiquidity(sqrtLower, sqrtUpper, liquidity), amount1: 0n };
     } else if (sqrtPriceX96 < sqrtUpper) {
         return {
             amount0: getAmount0ForLiquidity(sqrtPriceX96, sqrtUpper, liquidity),
             amount1: getAmount1ForLiquidity(sqrtLower, sqrtPriceX96, liquidity),
         };
     } else {
-        return {
-            amount0: 0n,
-            amount1: getAmount1ForLiquidity(sqrtLower, sqrtUpper, liquidity),
-        };
+        return { amount0: 0n, amount1: getAmount1ForLiquidity(sqrtLower, sqrtUpper, liquidity) };
     }
 }
 
@@ -146,12 +130,10 @@ async function tvl(api) {
     const vaultIds = await getAllVaultIds(api);
     if (!vaultIds.length) return;
 
-    const vaultIdsClean = vaultIds.map((x) => Number(x)).filter((x) => Number.isFinite(x) && x >= 0);
+    const vaultIdsClean = vaultIds.map(Number).filter((x) => Number.isFinite(x) && x >= 0);
 
     const tokenIdSet = new Set();
-    const batches = chunk(vaultIdsClean, 200);
-
-    for (const ids of batches) {
+    for (const ids of chunk(vaultIdsClean, 200)) {
         const [, vaults] = await api.call({
             target: CALCULUS_CONTRACT,
             abi: LIST_VAULTS_ABI,
@@ -167,11 +149,8 @@ async function tvl(api) {
     const tokenIds = Array.from(tokenIdSet).map((x) => BigInt(x));
     if (!tokenIds.length) return;
 
-    // Fetch positions in batches using multiCall, fallback to sequential calls if needed
     const positions = [];
-    const POSITION_BATCH = 200;
-
-    for (const batch of chunk(tokenIds, POSITION_BATCH)) {
+    for (const batch of chunk(tokenIds, 200)) {
         try {
             const res = await api.multiCall({
                 target: PANCAKE_V3_NPM,
@@ -202,19 +181,23 @@ async function tvl(api) {
         }),
     });
 
+    const valid = pools
+        .map((pool, i) => ({ pool, i }))
+        .filter(({ pool }) => pool && pool.toLowerCase() !== ZERO);
+
+    if (!valid.length) return;
+
     const slot0s = await api.multiCall({
         abi: POOL_SLOT0_ABI,
-        calls: pools.map((pool) => ({ target: pool })),
+        calls: valid.map(({ pool }) => ({ target: pool })),
     });
 
     const tokenSet = new Set();
 
-    for (let i = 0; i < positions.length; i++) {
-        const pool = pools[i];
-        if (!pool || pool.toLowerCase() === ZERO) continue;
-
+    for (let j = 0; j < valid.length; j++) {
+        const i = valid[j].i;
         const p = positions[i];
-        const slot0 = slot0s[i];
+        const slot0 = slot0s[j];
 
         const liquidity = BigInt(p.liquidity);
         if (liquidity === 0n) continue;
@@ -239,10 +222,7 @@ async function tvl(api) {
     if (tokens.length) {
         const bals = await api.multiCall({
             abi: ERC20_BALANCEOF_ABI,
-            calls: tokens.map((t) => ({
-                target: t,
-                params: [CALCULUS_CONTRACT],
-            })),
+            calls: tokens.map((t) => ({ target: t, params: [CALCULUS_CONTRACT] })),
         });
 
         for (let i = 0; i < tokens.length; i++) {
