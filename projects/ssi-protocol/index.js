@@ -36,11 +36,11 @@ function underlyingExports(chains) {
               let token_addr, token_amount
               
               if (!token.addr || token.addr === '') {
-                // Native token
+                // Native token - amount is in smallest unit, divide for human-readable
                 token_addr = native_token
                 token_amount = token.amount / 10 ** token.decimals
               } else {
-                // ERC20/Token with address
+                // ERC20/Token with address - amount is already in wei/smallest unit
                 token_addr = `${chain}:${token.addr}`
                 token_amount = token.amount
               }
