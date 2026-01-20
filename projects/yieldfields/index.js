@@ -6,5 +6,5 @@ module.exports = {
   bsc: {
     tvl: getUniTVL({ factory: '0x0A376eE063184B444ff66a9a22AD91525285FE1C', useDefaultCoreAssets: true }),
   },
-  start: 1621263282, // May-17-2021 03:54:42 PM
+  start: '2021-05-17', // May-17-2021 03:54:42 PM
 };

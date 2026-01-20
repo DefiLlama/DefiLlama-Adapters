@@ -25,6 +25,10 @@ async function tvl(api) {
 
 module.exports = {
   metis: {
-    tvl,
-  }
+    tvl: () => ({}),
+  },
+  hallmarks:[
+    ['2024-08-20', "V2 Launch"],
+    ['2024-09-24', "Whitehack by team"],
+  ]
 }

@@ -5,7 +5,7 @@ const WATT_TOKEN = "0xDfdc2836FD2E63Bba9f0eE07901aD465Bff4DE71";
 const WATT_PLS_LP = "0x956f097E055Fa16Aad35c339E17ACcbF42782DE6";
 
 module.exports = {
-    start: 1702377175,
+    start: '2023-12-12',
     methodology: "No external tokens/coins staked/locked. Only protocol token WATT and WATT-PLS-LP staked within protocol.",
     pulse: {
         tvl: async () => ({}),

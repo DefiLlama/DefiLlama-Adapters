@@ -26,5 +26,5 @@ module.exports = {
     staking: staking_,
     pool2: staking(constants.UNISWAP_LPS.map(i => i.staking), constants.UNISWAP_LPS.map(i => i.address))
   },
-  start: 1600185600, // 09/16/2020 @ 12:00am (UTC+8)
+  start: '2020-09-15', // 09/16/2020 @ 12:00am (UTC+8)
 };

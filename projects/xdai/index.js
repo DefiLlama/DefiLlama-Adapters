@@ -27,5 +27,5 @@ module.exports = {
   ethereum: {
     tvl: eth,
   },
-  start: 1539028166,
+  start: '2018-10-08',
 };

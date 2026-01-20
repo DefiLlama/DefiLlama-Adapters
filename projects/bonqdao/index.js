@@ -64,12 +64,11 @@ async function tvl(api) {
 }
 
 module.exports = {
-  hallmarks: [
-    [1675252800,"Oracle Hack"]
-  ],
+  // hallmarks: [
+  //   [1675252800,"Oracle Hack"]
+  // ],
   deadFrom: '2023-02-01',
   methodology: 'Summation of the collateral deposited in BonqDAO Troves (personal lending vaults)',
-  start: 36884903,
   polygon: {
     tvl,
     staking: stakings([BNQ_STAKING_CONTRACT], BNQ),

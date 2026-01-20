@@ -1,50 +1,77 @@
-const sdk = require('@defillama/sdk');
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
-
 const { addFraxVaultToTVL } = require("./fraxVault");
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-const getVaultsAbi = 'address[]:getRegisteredAddresses';
-const getAssetAbi = 'address:asset';
-const getTotalAssets = 'uint256:totalAssets';
+const blacklists = {
+  ethereum: ['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb', '0x77e88cA17A6D384DCBB13747F6767F30e3753e63', '0xdB06a9D79f5Ff660f611234c963c255E03Cb5554'],
+  base: ['0x023577b99e8A59ac18454161EecD840Bd648D782'],
+}
 
-// these vaults were not added to the registry.
-// So we add them manually to the list of frax lock vaults
+const chains = ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism', 'base', 'hemi']
+
+const veVCX = "0x0aB4bC35Ef33089B9082Ca7BB8657D7c4E819a1A";
+const WETH_VCX_BAL_LP_TOKEN = "0x577A7f7EE659Aa14Dc16FD384B3F8078E23F1920";
+const stVCX = "0xE5d383FC43F6c370DdD3975cf9e363Ad42367697";
+const VCX = "0xce246eea10988c495b4a90a905ee9237a0f91543";
+
 const fraxLockVaultsNotRegistered = [
   "0x44a7b29335cfc61C2bEA1c48710A1fE11f4aFBa9",
   "0x1F0a3bF1e4Ea8f27449AFa0a3A27eFc3817431fc",
   "0xDc5Ed7b972710594082479AF498B1dA02d03a273",
 ];
-async function tvl(api) {
-  let balances = {};
-  const data = await getConfig('popcorn/' + api.chain, `https://raw.githubusercontent.com/Popcorn-Limited/defi-db/main/archive/vaults/${api.getChainId()}.json`);
-  let vaultAddresses = Object.keys(data);
-  if (api.chain === "arbitrum") {
-    let fraxLockVaults = await api.call({ target: "0x25172C73958064f9ABc757ffc63EB859D7dc2219", abi: getVaultsAbi });
-    fraxLockVaults = fraxLockVaults.concat(fraxLockVaultsNotRegistered);
-    vaultAddresses = vaultAddresses.filter((address) => !fraxLockVaults.includes(address));
-    await addFraxVaultToTVL(balances, api);
-  }
-  const assets = await api.multiCall({ abi: getAssetAbi, calls: vaultAddresses, });
-  const totalAssets = await api.multiCall({ abi: getTotalAssets, calls: vaultAddresses, });
 
-  assets.forEach((v, i) => sdk.util.sumSingleBalance(balances, v, totalAssets[i], api.chain))
+const hemiBTCVaults = [
+  // "0x748973D83d499019840880f61B32F1f83B46f1A5",
+  // "0x0b8E088a35879f30a4d63F686B10adAD9cB3DBE1"
+]
 
-  return sumTokens2({ balances, api, resolveLP: true, })
+const abis = {
+  getRegisteredAddresses: 'address[]:getRegisteredAddresses',
+  asset: 'address:asset',
+  totalAssets: 'uint256:totalAssets'
 }
 
-const veVCX = "0x0aB4bC35Ef33089B9082Ca7BB8657D7c4E819a1A";
-const WETH_VCX_BAL_LP_TOKEN = "0x577A7f7EE659Aa14Dc16FD384B3F8078E23F1920";
+const getHemiTvl = async (api) => {
+  const assets = hemiBTCVaults.map(vault => ADDRESSES.hemi.WBTC) // NBTC/bgBTC Price alternative on hemi
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: hemiBTCVaults });
+  api.add(assets, totalAssets)  
+}
 
-module.exports = {
-  ethereum: {
-    start: 12237585,
-    staking: staking(veVCX, WETH_VCX_BAL_LP_TOKEN),
+const getArbTvl = async (balances, api, vaults) => {
+  const fraxLockVaults = await api.call({ target: "0x25172C73958064f9ABc757ffc63EB859D7dc2219", abi: abis.getRegisteredAddresses });
+  const allFraxs = fraxLockVaults.concat(fraxLockVaultsNotRegistered)
+  const filteredVaults = vaults.filter((address) => !allFraxs.includes(address))
+  const assets = await api.multiCall({ abi: abis.asset, calls: filteredVaults, permitFailure: true });
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: filteredVaults, permitFailure: true });
+  await addFraxVaultToTVL(balances, api);
+  api.add(assets.map(i => i || '0x0000000000000000000000000000000000000000'), totalAssets.map(i => i || 0))
+  return balances
+}
+
+const tvl = async (api) => {
+  const balances = {}
+  const chain = api.chain
+  const chainId = api.getChainId()
+  const blacklistTokens = blacklists[chain] ?? []
+  const data = await getConfig('popcorn/' + api.chain, `https://raw.githubusercontent.com/Popcorn-Limited/defi-db/main/vaults/${chainId}.json`);
+  const vaults = Object.keys(data).filter(i => !blacklistTokens.includes(i));
+  if (chain === 'hemi') return getHemiTvl(api)
+  if (chain === 'arbitrum') return getArbTvl(balances, api, vaults)
+
+  const assets = await api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults, permitFailure: true })
+  api.add(assets.map(i => i || '0x0000000000000000000000000000000000000000'), totalAssets.map(i => i || 0))
+  return sumTokens2({ api, resolveLP: true })
+}
+
+chains.forEach((chain) => {
+  module.exports[chain] = {
     tvl,
-  },
-  bsc: { tvl, },
-  polygon: { tvl, },
-  arbitrum: { tvl, },
-  optimism: { tvl, }
-};
+    ...(chain === 'ethereum' && {
+      staking: stakings([stVCX, veVCX], [VCX, WETH_VCX_BAL_LP_TOKEN]),
+    })
+  }
+})
+

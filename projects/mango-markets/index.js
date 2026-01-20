@@ -4,7 +4,7 @@ module.exports = {
         tvl: () => ({}),
     },
     deadFrom: '2022-10-19',
-    hallmarks:[
-        [1665521360, "Oracle Price Manipulation"],
-      ],
+    // hallmarks:[
+    //     [1665521360, "Oracle Price Manipulation"],
+    //   ],
 }

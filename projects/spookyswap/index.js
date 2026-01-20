@@ -9,5 +9,8 @@ module.exports={
 },
 bittorrent: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0xee4bc42157cf65291ba2fe839ae127e3cc76f741' }),
+  },
+sonic: {
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0xEE4bC42157cf65291Ba2FE839AE127e3Cc76f741' }),
   }
 }  

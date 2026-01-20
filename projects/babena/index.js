@@ -1,4 +1,3 @@
-const axios = require("axios");
 const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const chainId = "3";
@@ -104,9 +103,10 @@ async function stakingfetch() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
+  deadFrom: '2024-08-30',
   kadena: {
-    tvl: fetch,
-    staking: stakingfetch
+    tvl: () => ({}),
+    staking: () => ({})
   }
 
 }

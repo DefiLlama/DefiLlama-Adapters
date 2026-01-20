@@ -15,12 +15,12 @@ function getLink(project, chain) {
   return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
-async function getCache(project, chain, { _ } = {}) {
+async function getCache(project, chain, { skipCompression } = {}) {
   const Key = getKey(project, chain)
   const fileKey = getFileKey(project, chain)
 
   try {
-    const json = await sdk.cache.readCache(fileKey)
+    const json = await sdk.cache.readCache(fileKey, { skipCompression})
     if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
   } catch (e) {
@@ -36,11 +36,13 @@ async function getCache(project, chain, { _ } = {}) {
   }
 }
 
-async function setCache(project, chain, cache) {
+async function setCache(project, chain, cache, { skipCompression } = {}) {
   const Key = getKey(project, chain)
 
   try {
-    await sdk.cache.writeCache(getFileKey(project, chain), cache)
+    await sdk.cache.writeCache(getFileKey(project, chain), cache, {
+      skipCompression,
+    })
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
     sdk.log(e)
@@ -48,6 +50,15 @@ async function setCache(project, chain, cache) {
 }
 
 const configCache = {}
+let lastCacheReset = Date.now()
+const cacheResetInterval = 1000 * 30 // 30 seconds
+
+function resetCache() { 
+  if (Date.now() - lastCacheReset > cacheResetInterval) {
+    Object.keys(configCache).forEach(key => delete configCache[key])
+    lastCacheReset = Date.now()
+  }
+}
 
 async function _setCache(project, chain, json) {
   if (!json || json?.error?.message) return;
@@ -58,6 +69,7 @@ async function _setCache(project, chain, json) {
 }
 
 async function getConfig(project, endpoint, { fetcher } = {}) {
+  resetCache()
   if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
@@ -104,7 +116,7 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, headers, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   endpoint = sdk.graph.modifyEndpoint(endpoint)
   const key = 'config-cache'
@@ -120,22 +132,22 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
         variables.block = await api.getBlock()
       }
       if (!fetchById)
-        json = await graphql.request(endpoint, query, { variables })
+        json = await graphql.request(endpoint, query, { variables, headers })
       else 
-        json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit } })
+        json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit, headers } })
       if (!json) throw new Error('Empty JSON')
       await _setCache(key, project, json)
       return json
     } catch (e) {
       // sdk.log(e)
-      sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+      sdk.log(project, 'trying to fetch from cache, failed to fetch data from endpoint:', endpoint)
       return getCache(key, project)
     }
   }
 }
 
 
-async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500 } = {} }) {
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500, headers } = {} }) {
   if (useBlock && !params.block)
     params.block = await api.getBlock() - safeBlockLimit
   endpoint = sdk.graph.modifyEndpoint(endpoint)
@@ -144,7 +156,7 @@ async function graphFetchById({  endpoint, query, params = {}, api, options: { u
   let lastId = ""
   let response;
   do {
-    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }})
+    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }, headers })
     Object.keys(res).forEach(key => response = res[key])
     data.push(...response)
     lastId = response[response.length - 1]?.id

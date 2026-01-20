@@ -1,8 +1,35 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getTokenSupply } = require("../helper/solana");
+const { getTokenSupplies } = require("../helper/solana");
 const sui = require("../helper/chain/sui");
-const { aQuery } = require("../helper/chain/aptos");
+const { function_view } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
+const {post} = require("../helper/http");
+
+const RIPPLE_ENDPOINT = 'https://xrplcluster.com';
+
+async function getXrplTokenBalances(issuer_acct, currency_code) {
+  const body =  {
+      method: 'gateway_balances',
+      params: [{ account: issuer_acct, ledger_index: 'validated' }]
+  };
+  const res = await post(RIPPLE_ENDPOINT, body);
+
+  const obligations = res.result.obligations?.[currency_code] ?? "0";
+
+  let frozenAmount = 0;
+  if (res.result.frozen_balances) {
+    const frozenBalances = Object.values(res.result.frozen_balances)
+      .flat() // Flatten the balances for each user into a single array
+      .filter((balance) => balance.currency === currency_code) // Filter for OUSG currency
+    frozenBalances.forEach((balance) => {
+      frozenAmount = frozenAmount + parseFloat(balance.value)
+    });
+  }
+
+  const totalAmount = (parseFloat(obligations) + frozenAmount);
+
+  return totalAmount;
+}
 
 module.exports = {
   methodology: "Sums the total supplies of Ondo's issued tokens.",
@@ -17,6 +44,7 @@ const config = {
     OUSG: "0x1B19C19393e2d034D8Ff31ff34c81252FcBbee92",
     USDY: "0x96F6eF951840721AdBF46Ac996b59E0235CB985C",
     USDYc: "0xe86845788d6e3e5c2393ade1a051ae617d974c09",
+
   },
   polygon: {
     OUSG: "0xbA11C5effA33c4D6F8f593CFA394241CfE925811",
@@ -25,7 +53,7 @@ const config = {
     USDY: "0x5bE26527e817998A7206475496fDE1E68957c5A6",
   },
   sui: {
-    USDY: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY",
+    USDY: ADDRESSES.sui.USDY,
   },
   aptos: {
     USDY: "0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc",
@@ -35,6 +63,12 @@ const config = {
   },
   arbitrum: {
     USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
+  },
+  ripple: {
+     OUSG: "4F55534700000000000000000000000000000000.rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p",
+  },
+  stellar: {
+    USDY: "USDY-GAJMPX5NBOG6TQFPQGRABJEEB2YE7RFRLUKJDZAZGAD5GFX4J7TADAZ6",
   },
 };
 
@@ -53,31 +87,39 @@ Object.keys(config).forEach((chain) => {
     tvl: async (api) => {
       let supplies;
       if (chain === "solana") {
-        supplies = await Promise.all(fundAddresses.map(getTokenSupply)).catch(
-          (error) => {
-            throw error;
-          }
-        );
-
-        const scaledSupplies = supplies.map((supply) => supply * 1_000_000);
-        api.addTokens(fundAddresses, scaledSupplies);
+        supplies = await getTokenSupplies(fundAddresses)
+        api.addTokens(Object.keys(supplies), Object.values(supplies));
       } else if (chain === "sui") {
         let usdySupply = await getUSDYTotalSupplySUI();
         api.addTokens(fundAddresses, [usdySupply]);
       } else if (chain === "aptos") {
-        const {
-          data: { supply, decimals },
-        } = await aQuery(
-          `/v1/accounts/${config.aptos.USDY}/resource/0x1::coin::CoinInfo<${config.aptos.USDY}::usdy::USDY>`
-        );
+        // Use 0x1::coin::supply view function which returns combined Coin + Fungible Asset supply
+        const supplyResult = await function_view({
+          functionStr: "0x1::coin::supply",
+          type_arguments: [`${config.aptos.USDY}::usdy::USDY`],
+          args: [],
+        });
 
-        const aptosSupply =
-          supply.vec[0].integer.vec[0].value / Math.pow(10, decimals);
+        // supplyResult is { vec: [<supply_value>] } - Option<u128> serialized
+        const aptosSupply = supplyResult.vec[0];
 
-        api.addTokens(config.ethereum.USDY, aptosSupply * 1e18, { skipChain: true, });
+        api.addTokens(ADDRESSES.aptos.USDY, aptosSupply);
       } else if (chain === "noble") {
-        const res = await get(`https://noble-api.polkachu.com/cosmos/bank/v1beta1/supply/${config.noble.USDY}`);
-        api.addTokens(config.ethereum.USDY, parseInt(res.amount.amount), { skipChain: true, });
+        const res = await get(`https://rest.cosmos.directory/noble/cosmos/bank/v1beta1/supply/by_denom?denom=ausdy`);
+        api.addTokens(config.noble.USDY, parseInt(res.amount.amount));
+      } else if (chain === "ripple") {
+        const split = config.ripple.OUSG.split('.');
+        const XRPL_OUSG_CURRENCY = split[0];
+        const XRPL_OUSG_ISSUER = split[1];
+        // XRPL RPCs automatically adjust for the currency's decimal places, but DefiLlama expects the raw value
+        // so we convert to a raw balance by multiplying by 10^6
+        const ousgSupply = (await getXrplTokenBalances(XRPL_OUSG_ISSUER, XRPL_OUSG_CURRENCY)) * Math.pow(10, 6);
+        api.addTokens(config.ripple.OUSG, ousgSupply);
+      } else if (chain === "stellar") {
+        const [code, issuer] = config.stellar.USDY.split('-');
+        const res = await get(`https://api.stellar.expert/explorer/public/asset/${code}-${issuer}`);
+
+        api.addTokens(config.stellar.USDY, res.supply);
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);

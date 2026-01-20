@@ -29,7 +29,7 @@ async function tvl() {
     let listedTokensPerps = (await call(PERPS_CONTRACT, GET_ASSETS_METHOD, {}))
         .filter(asset => asset.id !== NATIVE_NEAR)
         .map(asset => asset.id);
-    balances = await addTokenBalances(listedTokensPerps, PERPS_CONTRACT, balances);
+    balances = await addTokenBalances(listedTokensPerps.filter(i => i !== 'aurora'), PERPS_CONTRACT, balances);
     const perps_contract_state = await view_account(PERPS_CONTRACT);
     sumSingleBalance(balances, FT_NEAR, perps_contract_state['amount']);
     return balances;

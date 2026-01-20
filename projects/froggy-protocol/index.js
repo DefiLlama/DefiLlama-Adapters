@@ -21,7 +21,7 @@ module.exports = {
     tvl: () => ({}),
   },
   hallmarks: [
-    [Math.floor(new Date('2023-06-15')/1e3), 'Rug Pull ?'],
+    ['2023-06-15', 'Rug Pull ?'],
   ],
-  deadFrom: Math.floor(new Date('2023-06-15')/1e3)
+  deadFrom: '2023-06-15'
 }

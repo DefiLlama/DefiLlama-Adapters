@@ -1,47 +1,13 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { pool2s } = require('../helper/pool2')
 const { stakings } = require('../helper/staking')
-const venusFinanceAbi = require("../cookfinance/venusFinanceAbi.json");
-const sdk = require('@defillama/sdk')
-const BigNumber = require('bignumber.js')
 
-async function tvl(timestamp, _, { bsc: block }) {
-  const balances = {}
-  const chain = 'bsc'
+async function tvl(api) {
   const owner = '0x563AF5Db2Ad4d22A9807D65F14aE88F71101A2bd'
   const tokens = [
     '0x95c78222b3d6e262426483d42cfa53685a67ab9d', // vBUSD
     '0xa07c5b74c9b40447a954e1466938b865b6bbea36', // vBNB
   ]
-  for (const vToken of tokens) {
-    let token
-    const [
-      { output: balance },
-      { output: exchangeRateStored },
-    ] = await Promise.all([
-      sdk.api.abi.call({
-        target: vToken,
-        params: [owner],
-        abi: 'erc20:balanceOf',
-        chain, block,
-      }),
-      sdk.api.abi.call({
-        target: vToken,
-        block, chain,
-        abi: venusFinanceAbi.exchangeRateStored,
-      }),
-    ])
-    if (vToken === '0xa07c5b74c9b40447a954e1466938b865b6bbea36')
-      token = ADDRESSES.bsc.WBNB
-    else
-      token = (await sdk.api.abi.call({
-        target: vToken,
-        block, chain,
-        abi: venusFinanceAbi.underlying,
-      })).output
-    sdk.util.sumSingleBalance(balances, 'bsc:' + token, BigNumber(balance * exchangeRateStored / 1e18).toFixed(0))
-  }
-  return balances
+  return api.sumTokens({ owner, tokens})
 }
 
 module.exports = {

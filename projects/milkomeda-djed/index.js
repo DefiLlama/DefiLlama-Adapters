@@ -9,7 +9,6 @@ async function tvl(api) {
 module.exports = {
   methodology: 'The TVL of each Djed deployment on Milkomeda C1.',
   milkomeda: {
-    start: 10440400,
     tvl,
   },
 };

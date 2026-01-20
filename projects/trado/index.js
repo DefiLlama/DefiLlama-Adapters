@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 // perp
-const USDCe = '0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52'
+const USDCe = ADDRESSES.milkomeda.BNB
 const USDX = '0xAeBE92ebc1a67F810Cb35fdcdA6398f6136DCD50'
 
 module.exports = {

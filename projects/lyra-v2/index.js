@@ -21,7 +21,6 @@ chains.forEach(chain => {
     tvl: async (api) => {
       const oldToA = await getOldToA(api)
       const toa = await getToA(api)
-      console.log(chain, oldToA.concat(toa))
       return sumTokens2({ tokensAndOwners: oldToA.concat(toa), api })
     }
   }

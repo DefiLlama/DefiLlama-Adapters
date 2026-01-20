@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 
 const m2m = {
   arbitrum: "0x672F0f9ECF78406E4E31cd531b0CefE32f0A84B5",
@@ -15,12 +14,9 @@ module.exports = {};
 
 Object.keys(m2m).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, cb) => {
-      const block = cb[chain]
-      const { output } = await sdk.api.abi.call({ chain, block, abi, target: m2m[chain]})
-      return {
-        [`${chain}:${assets[chain]}`]: output
-      }
+    tvl: async (api) => {
+      const bal = await api.call({  abi, target: m2m[chain]})
+      api.add(assets[chain], bal)
     }
   }
 })

@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { opsManagerAbi, opsHelperAbi } = require("../yiedl-vaults/abi");
-const { VAULTS, HELPER, SUSD } = require("../yiedl-vaults/constants");
+const { VAULTS, HELPER, SUSD } = require("./constants");
 const { get } = require("../helper/http");
 
 const CHAIN = "optimism";
@@ -73,7 +73,7 @@ async function _computeTvl(vault, eligibleBlock) {
 
   let sum = values.reduce((accumulator, currentValue) => {
     return (new BigNumber(accumulator)).plus(new BigNumber(currentValue));
-    }, new BigNumber(0));
+  }, new BigNumber(0));
   sum = sum.plus(new BigNumber(flatUsd));
   return sum;
 }
@@ -87,9 +87,10 @@ async function tvl(api) {
 }
 
 module.exports = {
-    optimism: {
+  optimism: {
     tvl,
   },
-  start: 1703073600, // 2023-12-20 12:00:00 UTC
+  start: '2023-12-20', // 2023-12-20 12:00:00 UTC
+  deadFrom: '2024-06-20', // vaults product abandoned ?
   methodology: 'Calculates the total value of positions held by the YIEDL Vaults in Synthetix Perpetuals.'
 };

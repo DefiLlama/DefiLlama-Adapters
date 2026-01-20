@@ -1,21 +1,20 @@
 const { getConfig } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
-const { sumTokensExport, } = require('../helper/sumTokens');
+const { sumTokens } = require("../helper/chain/bitcoin");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
+const { sumTokens2: solanaSumTokens2 } = require("../helper/solana.js");
 
-const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
+const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
 
-const bitcionOwners = [
-  'bc1pjrxeuc9f3zqtx92s3mnf6202894jzufswur957l6s04rjns6dumsyh6u89',
-  'bc1qdpwl80flfh3k6h6sumzwgws3ephkrmx307hk64',
-  'bc1q5pzsptd5whcljevzyztavuqru0hugd5ymgx5ezksdqug3ztrjvmqauys2q',
-  'bc1q437jw8wqph854vf9dwxy4c2u6daveupjm5dqptj469gxw6vcpp0qfpr0mh',
-  'bc1q47ur7u0xh943s44kktvhr602sm29exylzn43ru'
-]
+async function bitcoinTvl() {
+  return sumTokens({ owners: await bitcoinAddressBook.solvBTC() })
+}
 
 async function tvl(api) {
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
 
   await otherDeposit(api, solvbtc);
+  await solanaTvl(api, solvbtc)
 }
 
 async function otherDeposit(api, solvbtc) {
@@ -34,11 +33,21 @@ async function otherDeposit(api, solvbtc) {
   await sumTokens2({ api, tokensAndOwners, permitFailure: true });
 }
 
+async function solanaTvl(api, solvbtc) {
+  if (!solvbtc[api.chain] || !solvbtc[api.chain]["depositTokens"] || api.chain !== 'solana') {
+    return;
+  }
+  let depositTokens = solvbtc[api.chain]["depositTokens"];
+  const tokensAndOwners = depositTokens.tokensAndOwners;
+
+  return await solanaSumTokens2({ api, tokensAndOwners });
+}
+
 // node test.js projects/solvbtc
-['bitcoin', 'ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
+['bitcoin', 'ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'avax', 'bob', 'base', 'solana'].forEach(chain => {
   if (chain == 'bitcoin') {
     module.exports[chain] = {
-      tvl: sumTokensExport({ owners: bitcionOwners }),
+      tvl: bitcoinTvl,
     }
   } else {
     module.exports[chain] = {

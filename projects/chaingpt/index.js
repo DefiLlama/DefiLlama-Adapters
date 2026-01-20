@@ -1,6 +1,8 @@
 const { stakings } = require("../helper/staking");
 const { getLogs } = require('../helper/cache/getLogs')
-const { PromisePool } = require('@supercharge/promise-pool')
+const { PromisePool } = require('@supercharge/promise-pool');
+const { blake2b } = require("blakejs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const cgpt = "0x9840652DC04fb9db2C43853633f0F62BE6f00f98";
 const stakingpool1 = "0x765a6ee976137801F2661c3644E1fde369A8ED18";
@@ -32,7 +34,7 @@ const config = {
     { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98', fromBlock: 15191500, blacklistedTokens: ['0xcE87100A1dBAf576ebd063EB0890840346338689'] },
   ],
   base: [
-    { factory: '0xFB5cd8426FBC3b1f2ea4B113A5A37752B3098C79', fromBlock: 15137100 },
+    { factory: '0xFB5cd8426FBC3b1f2ea4B113A5A37752B3098C79', fromBlock: 15137100, },
   ],
   xlayer: [
     { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98', fromBlock: 2353300 },
@@ -52,7 +54,7 @@ async function tvl(api) {
   let blacklistedTokens = []
 
   for (const chainConfig of chainConfigs) {
-    const { factory, fromBlock, blacklistedTokens: configBlacklistedTokens  } = chainConfig
+    const { factory, fromBlock, blacklistedTokens: configBlacklistedTokens } = chainConfig
 
     if (configBlacklistedTokens) {
       blacklistedTokens = blacklistedTokens.concat(configBlacklistedTokens)
@@ -100,7 +102,7 @@ async function tvl(api) {
     })
   }
 
-  return api.sumTokens({ ownerTokens, blacklistedTokens })
+  return sumTokens2({ api, ownerTokens, blacklistedTokens, permitFailure: true, })
 
 }
 

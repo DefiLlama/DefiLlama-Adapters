@@ -49,14 +49,14 @@ async function getAllPairs(factory, chain, { blacklistedPairs = [] } = {}) {
   return dtos
 }
 
-const isNotXYK = (pair) => pair.pair_type && (pair.pair_type.xyk || pair.pair_type.custom === 'concentrated')
+const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentrated'
 
 function getFactoryTvl(factory, { blacklistedPairs = [] } = {}) {
   return async (api) => {
     const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs })).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
 
-    const xykPairs = pairs.filter(isNotXYK)
-    const otherPairs = pairs.filter(pair => !isNotXYK(pair))
+    const otherPairs = pairs.filter(isNotXYK)
+    const xykPairs = pairs.filter(pair => !isNotXYK(pair))
     otherPairs.forEach(({ assets }) => {
       api.add(assets[0].addr, assets[0].balance)
       api.add(assets[1].addr, assets[1].balance)

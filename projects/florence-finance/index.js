@@ -41,7 +41,7 @@ async function getBorrowedOnBase(api) {
 module.exports = {
   methodology:
     "The Florin token (FLR) is minted whenever a new loan is funded and burned when a loan matures and is repaid. Since the Florin token is 1:1 redeemable for EUR the borrowed amount is denominated in the protocols treasuries EUR stablecoin of the respective chain. Consequently the total supply of Florin equals the amount borrowed through the protocol. To avoid double counting, the amount of FLR held in the bridge contract is subtracted from the total supply. ",
-  ethereum: { start: 16077400, borrowed: getBorrowedOnEthereum, tvl: () => ({}) },
-  arbitrum: { start: 126183369, borrowed: getBorrowedOnArbitrum, tvl: () => ({}) },
-  base: { start: 18941407, borrowed: getBorrowedOnBase, tvl: () => ({}) },
+  ethereum: { borrowed: getBorrowedOnEthereum, tvl: () => ({}) },
+  arbitrum: {  borrowed: getBorrowedOnArbitrum, tvl: () => ({}) },
+  base: { borrowed: getBorrowedOnBase, tvl: () => ({}) },
 };

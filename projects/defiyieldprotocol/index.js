@@ -83,7 +83,7 @@ const lps = {
 }
 
 module.exports = {
-	start: 1619654324,        // Apr-28-2021 23:58:44 PM +UTC
+	start: '2021-04-29',        // Apr-28-2021 23:58:44 PM +UTC
 	ethereum: {
 		tvl: sumTokensExport({
 			tokens: [

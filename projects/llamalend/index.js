@@ -37,7 +37,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    start: 1666638251,
+    start: '2022-10-24',
   methodology: 'TVL is calculated by adding up all the ETH in the pools and the totalBorrowed of every pool',
   ethereum: {
     tvl: tvl,

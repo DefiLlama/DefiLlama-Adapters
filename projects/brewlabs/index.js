@@ -23,6 +23,7 @@ const blacklist = [
 ];
 
 module.exports = {
+  deadFrom: "2025-04-01",
   timetravel: false,
   misrepresentedTokens: true,
 };

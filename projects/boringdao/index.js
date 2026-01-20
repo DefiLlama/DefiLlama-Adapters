@@ -2,6 +2,8 @@ const { sumTokensExport } = require("../helper/sumTokens")
 const contracts = require("./contracts.json");
 const sdk = require("@defillama/sdk");
 const { staking } = require('../helper/staking')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+
 
 function chainTvl(chain) {
   const owners = Object.values(contracts[chain].contracts)
@@ -14,7 +16,7 @@ function chainTvl(chain) {
 module.exports = {
   timetravel: false,
   bitcoin: {
-    tvl: sumTokensExport({ owner: '33ZibwpiZe4bM5pwpAdQNqqs2RthLkpJer'})
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.boringdao })
   },
   litecoin: {
     tvl: async (_, block) => {

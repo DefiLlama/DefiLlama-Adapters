@@ -7,7 +7,7 @@ const STBT = '0x530824DA86689C9C17CdC2871Ff29B058345b44a'
 
 module.exports = {
   methodology: "counts value of assets in the Treasury",
-  start: 1677913260,
+  start: '2023-03-04',
   ethereum: {
     tvl: sumTokensExport({ owner: TREASURY_CONTRACT, tokens: [USDC_TOKEN_CONTRACT, STBT] }),
   },

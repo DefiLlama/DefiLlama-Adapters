@@ -17,3 +17,5 @@ const cExports = [unitroller1, unitroller2, unitroller3, ].map(i => ({
 module.exports = mergeExports([{
   methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
 }, ...cExports])
+module.exports.polygon.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

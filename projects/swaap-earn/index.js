@@ -3,7 +3,7 @@ const { cachedGraphQuery } = require('../helper/cache')
 const query = `query FundsTVL{ funds { id  } }`
 
 module.exports = {
-  start: 1713312000, //  Apr 17 2024 00:00:00 GMT+0000
+  start: '2024-04-17', //  Apr 17 2024 00:00:00 GMT+0000
 }
 
 const config = {

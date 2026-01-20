@@ -10,6 +10,7 @@ module.exports = uniV3Export({
   zklink: { factory: '0x6175b648473F1d4c1549aAC3c2d007e7720585e6', fromBlock: 1339353, },
   iotaevm: { factory: '0x01Bd510B2eA106917e711f9a05a42fC162bee2Ac', fromBlock: 143828, },
   base: { factory: '0x576A1301B42942537d38FB147895fE83fB418fD4', fromBlock: 14250787, },
+  sonic: { factory: '0x56CFC796bC88C9c7e1b38C2b0aF9B7120B079aef', fromBlock: 276406, }
 })
 
 module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'https://kava.graph.wagmi.com/subgraphs/name/v3' }) }
@@ -17,6 +18,7 @@ module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'h
 const stakingConfig = {
   metis: { swagmi: '0x5fb3983adc4dcc82a610a91d2e329f6401352558', wagmi: '0xaf20f5f19698f1d19351028cd7103b63d30de7d7', },
   kava: { swagmi: '0x3690d1a9fb569c21372f8091527ab44f1dc9630f', wagmi: '0xaf20f5f19698f1d19351028cd7103b63d30de7d7', },
+  sonic: { swagmi: '0x4b5d9db7910448e2F236509D9eE242673AFa28aA', wagmi: '0x0e0Ce4D450c705F8a0B6Dd9d5123e3df2787D16B', }
 }
 
 Object.keys(stakingConfig).forEach(chain => {

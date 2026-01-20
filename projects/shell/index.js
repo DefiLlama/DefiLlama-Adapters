@@ -21,7 +21,6 @@ const TOKEN_CONTRACTS = [
 
 module.exports = {
   methodology: 'Sums up the value of all tokens wrapped into Shell v2',
-  start: 24142587,
   arbitrum: {
     tvl: sumTokensExport({ owner: OCEAN_CONTRACT, tokens: TOKEN_CONTRACTS})
   },

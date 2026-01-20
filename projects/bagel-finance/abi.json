@@ -1,5 +1,0 @@
-{
-  "balanceOf": "function balanceOf(address account) view returns (uint256)",
-  "totalSupply": "uint256:totalSupply",
-  "banks": "function banks(address) view returns (address tokenAddr, address gTokenAddr, bool isOpen, bool canDeposit, bool canWithdraw, uint256 totalVal, uint256 totalDebt, uint256 totalDebtShare, uint256 totalReserve, uint256 lastInterestTime, uint256 tokenIdx)"
-}

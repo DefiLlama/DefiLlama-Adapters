@@ -1,0 +1,12 @@
+{
+  "abstract": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x3439153EB7AF838Ad19d56E1571FBD09333C2809",
+    "CurveStableswapFactoryNG": "0x288E195322088E615460ccAa0FE0a862C9E06412",
+    "CurveTwocryptoFactoryNG": "0x9f9F76660d17f76F63a32f6d4920B282d3856f3f",
+    "CurveTricryptoFactoryNG": "0xA44965EbBcb73163EB838Dc4DFa85F56B04804A6",
+    "addressProvider": "",
+    "metapoolBases": {},
+    "blacklist": []
+  }
+}

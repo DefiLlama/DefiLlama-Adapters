@@ -27,11 +27,11 @@ const tvl = async (api) => {
       tokens.push(res[i][j].want)
     }
   }
-  console.log(res, api.chain)
   const bals = await api.multiCall({  abi: archimedesAbi.balance, calls})
   api.add(tokens, bals)
 }
 
+module.exports.deadFrom = '2025-01-01'
 
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = { tvl }

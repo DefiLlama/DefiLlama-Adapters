@@ -38,7 +38,7 @@ const v2graph = getChainTvl({
 module.exports = {
   misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'AElfIndexer_Swap' subgraph`,
-  start: 1706745600,
+  start: '2024-02-01',
   aelf: {
     tvl: v2graph("aelf"),
   },

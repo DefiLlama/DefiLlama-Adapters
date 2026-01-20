@@ -14,9 +14,16 @@ const cvx_abi = {
   stkcvxFRAXBP_lockedStakesOf: "function lockedStakesOf(address account) view returns (tuple(bytes32 kek_id, uint256 start_timestamp, uint256 liquidity, uint256 ending_timestamp, uint256 lock_multiplier)[])",
 }
 
-const v2Gen3EthMainnet = {
-  systemRegistry: {
-    address: "0x2218F90A98b0C070676f249EF44834686dAa4285",
+const AUTOPILOT_SYSTEM_REGISTRIES_BY_CHAIN = {
+  1: '0x2218F90A98b0C070676f249EF44834686dAa4285',
+  8453: '0x18Dc926095A7A007C01Ef836683Fdef4c4371b4e',
+  146: '0x1a912EB51D3cF8364eBAEE5A982cA37f25aD8848',
+  42161: '0xBFd8E6C9bF2CD5466f5651746f8E946A6C7b4220',
+  9745: '0x9065C0E33Bc8FB31A21874f399985e39bC187D48',
+}
+
+const autopilotContracts = {
+  systemRegistry: {    
     abi: {
       autoPoolRegistry: "function autoPoolRegistry() view returns (address)"
     }
@@ -167,18 +174,37 @@ async function tvl(api) {
   const amountRes = await api.multiCall({ abi: abi.userInfo, calls })
   tokens.forEach((val, i) => api.add(val, amountRes[i].amount))
 
-
-  // ================================================
-  // Autopilot
-  // ================================================
-
-  // Get the instance of the Autopool Registry from the System Registry
-  const autopoolRegistry = await api.call({ abi: v2Gen3EthMainnet.systemRegistry.abi.autoPoolRegistry, target: v2Gen3EthMainnet.systemRegistry.address, });
-  // Use the Autopool Registry to get all the Autopools in the system
-  const autopools = await api.call({ abi: v2Gen3EthMainnet.autoPoolRegistry.abi.listVaults, target: autopoolRegistry, });
-  await api.erc4626Sum2({ calls: autopools})
+  await populateAutopilotDetails(1, api);
 
   return sumTokens2({ api, tokensAndOwners: toa, })
+}
+
+async function populateAutopilotDetails(chainId, api) {
+  // Get the instance of the Autopool Registry from the System Registry
+  const autopoolRegistry = await api.call({ abi: autopilotContracts.systemRegistry.abi.autoPoolRegistry, target: AUTOPILOT_SYSTEM_REGISTRIES_BY_CHAIN[chainId], });
+  // Use the Autopool Registry to get all the Autopools in the system
+  const autopools = await api.call({ abi: autopilotContracts.autoPoolRegistry.abi.listVaults, target: autopoolRegistry, });
+  await api.erc4626Sum2({ calls: autopools})
+}
+
+async function baseTvl(api) {
+  await populateAutopilotDetails(8453, api);
+  return sumTokens2({ api })
+}
+
+async function sonicTvl(api) {
+  await populateAutopilotDetails(146, api);
+  return sumTokens2({ api })
+}
+
+async function arbitrumTvl(api) {
+  await populateAutopilotDetails(42161, api);
+  return sumTokens2({ api })
+}
+
+async function plasmaTvl(api) {
+  await populateAutopilotDetails(9745, api);
+  return sumTokens2({ api })
 }
 
 function lpBalances(holdings, toa, tokens, calls) {
@@ -226,5 +252,17 @@ module.exports = {
     tvl,
     pool2,
     staking
+  },
+  base: {
+    tvl: baseTvl
+  },
+  sonic: {
+    tvl: sonicTvl
+  },
+  arbitrum: {
+    tvl: arbitrumTvl
+  },
+  plasma: {
+    tvl: plasmaTvl
   }
 }

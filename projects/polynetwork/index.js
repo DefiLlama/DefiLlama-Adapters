@@ -1,65 +1,59 @@
-// Import the required utility module
-const utils = require('../helper/utils');
+const axios = require('axios')
 
-// Define a base URL for the API
-const baseURL = 'https://explorer.poly.network/api/v1/';
-
-async function fetchTVL(path) {
-    const url = `${baseURL}${path}`; // Construct the full URL
-    const response = await utils.fetchURL(url); // Use the utility function to fetch data from the URL
-    return Number(response.data); // Convert the response data to a number and return it
+const CONFIG = {
+  ethereum: 'getTVLEthereum',
+  ontology: 'getTVLOntology',
+  neo: 'getTVLNeo',
+  carbon: 'getTVLCarbon',
+  bsc: 'getTVLBNBChain',
+  heco: 'getTVLHeco',
+  okexchain: 'getTVLOKC',
+  neo3: 'getTVLNeo3',
+  polygon: 'getTVLPolygon',
+  arbitrum: 'getTVLArbitrum',
+  xdai: 'getTVLGnosisChain',
+  zilliqa: 'getTVLZilliqa',
+  avax: 'getTVLAvalanche',
+  fantom: 'getTVLFantom',
+  optimism: 'getTVLOptimistic',
+  metis: 'getTVLAndromeda',
+  boba: 'getTVLBoba',
+  oasis: 'getTVLOasis',
+  harmony: 'getTVLHarmony',
+  hoo: async () => 0,
+  bytomsidechain: 'getTVLBytomSidechain',
+  kcc: 'getTVLKCC',
+  kava: 'getTVLKava',
+  starcoin: 'getTVLStarcoin',
+  celo: 'getTVLCelo',
+  clv: async () => 0,
+  conflux: 'GetTVLConflux',
+  astar: 'GetTVLAstar',
+  aptos: 'GetTVLAptos',
+  bitgert: 'GetTVLBitgert',
+  dexit: 'GetTVLDexit',
 }
 
-// Define a mapping of blockchain names to their API endpoints
-const blockchainEndpoints = {
-    ethereum: 'getTVLEthereum',
-    ontology: 'getTVLOntology',
-    neo: 'getTVLNeo',
-    carbon: 'getTVLCarbon',
-    bsc: 'getTVLBNBChain',
-    heco: 'getTVLHeco',
-    okexchain: 'getTVLOKC',
-    neo3: 'getTVLNeo3',
-    polygon: 'getTVLPolygon',
-    palette: 'getTVLPalette',
-    arbitrum: 'getTVLArbitrum',
-    xdai: 'getTVLGnosisChain',
-    zilliqa: 'getTVLZilliqa',
-    avax: 'getTVLAvalanche',
-    fantom: 'getTVLFantom',
-    optimism: 'getTVLOptimistic',
-    metis: 'getTVLAndromeda',
-    boba: 'getTVLBoba',
-    oasis: 'getTVLOasis',
-    harmony: 'getTVLHarmony',
-    hoo: async () => 0, // Made async to match other functions
-    bytomsidechain: 'getTVLBytomSidechain',
-    kcc: 'getTVLKCC',
-    kava: 'getTVLKava',
-    starcoin: 'getTVLStarcoin',
-    celo: 'getTVLCelo',
-    clv: async () => 0, // Made async to match other functions
-    conflux: 'GetTVLConflux',
-    astar: 'GetTVLAstar',
-    aptos: 'GetTVLAptos',
-    bitgert: 'GetTVLBitgert',
-    dexit: 'GetTVLDexit',
-};
+const baseURL = 'https://explorer.poly.network/api/v1/'
 
-// Programmatically generate the fetch functions for each blockchain, ensuring they are async
-const fetchFunctions = Object.entries(blockchainEndpoints).reduce((acc, [key, value]) => {
-    acc[key] = typeof value === 'function' ? value : async () => await fetchTVL(value);
-    return acc;
-}, {});
+async function getTVL(path) {
+  const url = `${baseURL}${path}`;
+  const { data } = await axios.get(url)
+  return Number(data)
+}
 
-// Export the functions as part of the module's public interface
+const tvl = async (api) => {
+  const endpoint = CONFIG[api.chain]
+  if (typeof endpoint === 'function') return () => 0;
+  return api.addUSDValue(await getTVL(endpoint))
+}
+
 module.exports = {
-    timetravel: false,
-    misrepresentedTokens: true,
-    ...Object.keys(fetchFunctions).reduce((acc, key) => {
-        acc[key] = { fetch: fetchFunctions[key] };
-        return acc;
-    }, {}),
-    // Special case for fetching total TVL
-    fetch: async () => await fetchTVL('getTVLTotal'),
-};
+  timetravel: false,
+  misrepresentedTokens: true,
+  deadFrom: '2024-09-30',
+}
+
+Object.keys(CONFIG).forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

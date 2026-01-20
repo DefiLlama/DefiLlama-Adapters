@@ -3,13 +3,13 @@ const FACTORY_ADDRESS = "0xa5136eAd459F0E61C99Cec70fe8F5C24cF3ecA26";
 
 module.exports = {
   methodology: `Sums on-chain tvl by getting pools using xfai factory`,
-  start: 1692347965 , // Aug-18-2023 08:39:25 AM +UTC
+  start: '2023-08-18' , // Aug-18-2023 08:39:25 AM +UTC
   linea: {
     tvl: async (api) => {
       const pools = await api.fetchList({  lengthAbi: "uint256:allPoolsLength", itemAbi: "function allPools(uint256) external view returns (address)", target: FACTORY_ADDRESS})
       const tokens = await api.multiCall({  abi: 'address:poolToken', calls: pools})
       const ownerTokens = pools.map((v, i) => [[tokens[i], ADDRESSES.linea.WETH], v])
-      return api.sumTokens({ ownerTokens})
+      return api.sumTokens({ ownerTokens, blacklistedTokens: ['0x1e1f509963a6d33e169d9497b11c7dbfe73b7f13', '0xb79dd08ea68a908a97220c76d19a6aa9cbde4376'] })
     },
   },
 };

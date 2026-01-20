@@ -45,6 +45,8 @@ query($lastId: String, $block: Int) {
 }
 `
 
+module.exports.deadFrom = '2025-01-01'
+
 Object.keys(config).forEach(chain => {
   const { postionManager, factory, limWETH, marginContract, graphEndpoint, } = config[chain]
 
@@ -108,7 +110,6 @@ Object.keys(config).forEach(chain => {
           }
         })
       
-        console.log(provided.length, withdrawn.length)
         const pools = getUniqueAddresses(provided.map(entry => entry.pool).concat(withdrawn.map(entry => entry.pool)))
         const token0s = await api.multiCall({  abi: 'address:token0', calls: pools})
         const token1s = await api.multiCall({  abi: 'address:token1', calls: pools})

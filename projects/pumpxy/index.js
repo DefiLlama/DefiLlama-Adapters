@@ -2,7 +2,7 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 module.exports = {
   methodology: "TVL is calculated by retrieving the ETH balance of all meme coin contracts deployed by the Zircuit factory contract. The factory contract dynamically manages meme coins, and their ETH holdings are summed up to calculate the total TVL.",
-  start: 1726030293,
+  start: '2024-09-11',
   zircuit: {
     tvl,
   },

@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { chainExports } = require('../helper/exports')
 
 const networks = {
   'ethereum': ['0xef4439f0fae7db0b5ce88c155fc6af50f1b38728', [
@@ -36,4 +35,6 @@ function chainTvl(chain) {
   }
 }
 
-module.exports = chainExports(chainTvl, Object.keys(networks))
+Object.keys(networks).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})

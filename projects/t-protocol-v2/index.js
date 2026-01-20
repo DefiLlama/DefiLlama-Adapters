@@ -8,7 +8,7 @@ const USTP = '0xed4d84225273c867d269f967cc696e0877068f8a'
 
 module.exports = {
   methodology: "counts value of assets in the Treasury",
-  start: 1677913260,
+  start: '2023-03-04',
   ethereum: {
     tvl,
   },

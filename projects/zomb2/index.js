@@ -23,6 +23,6 @@ const listedTokenGeneris = [
   '0xb3584d821109e49a068a8c3a05f367bc54061252',//szombi
 ]
 
-module.exports = {
-  ...zombiTvl(token, share, rewardPool, rewardPoolGeneris, masonry, pool2LPs, listedTokenGeneris, "fantom", undefined, false, "0x7333155e21E13Ce81e1206C80d3c7E3DA41C92a6")
-}
+module.exports = zombiTvl(token, share, rewardPool, rewardPoolGeneris, masonry, pool2LPs, listedTokenGeneris, "fantom", undefined, false, "0x7333155e21E13Ce81e1206C80d3c7E3DA41C92a6")
+
+module.exports.deadFrom = '2022-04-03' 

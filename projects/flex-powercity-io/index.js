@@ -18,7 +18,7 @@ const LP_FLEX_HEX_ADDRESS = "0x476d63aB94B4E86614Df0C3D5A27E9e22631D062";
 const lps = [LP_HEXDC_HEX_ADDRESS, LP_FLEX_HEX_ADDRESS]
 
 module.exports = {
-    start: 1714534195,
+    start: '2024-05-01',
     methodology: "Total Value Locked includes all Troves, Stability Pool, Staking Pool and LP Farming Pools",
     pulse: {
         tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS, { collateralToken: HEX_ADDRESS }),

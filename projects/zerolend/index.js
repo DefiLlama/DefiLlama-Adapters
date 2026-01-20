@@ -7,6 +7,7 @@ const config = {
   era: ["0xB73550bC1393207960A385fC8b34790e5133175E"],
   manta: ["0x67f93d36792c49a4493652B91ad4bD59f428AD15"],
   blast: ["0xc6DF4ddDBFaCb866e78Dcc01b813A41C15A08C10"],
+  hemi: ["0x9698FdF843cbe4531610aC231B0047d9FFc13bC6"],
   base: ["0xA754b2f1535287957933db6e2AEE2b2FE6f38588"],
   linea: [
     "0x67f93d36792c49a4493652B91ad4bD59f428AD15", // main linea market
@@ -20,6 +21,8 @@ const config = {
     '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611', // bitcoin lrt market
     '0x298ECDcb0369Aef75cBbdA3e46a224Cfe622E287' // stablecoin rwa market
   ],
+  corn:["0x2f7e54ff5d45f77bFfa11f2aee67bD7621Eb8a93"],
+  abstract:["0x8EEAE4dD40EBee7Bb6471c47d4d867539CF53ccF"]
 };
 
 const linea = {

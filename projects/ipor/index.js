@@ -1,8 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { abi } = require("./abi");
 const { getConfig } = require('../helper/cache')
 
-const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/main/mainnet/addresses.json";
+const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/refs/heads/main/mainnet/addresses.json";
 
 const V2DeploymentBlockNumber = 18333744
 async function tvlEthereum(api) {
@@ -14,57 +13,28 @@ async function tvlEthereum(api) {
     return await calculateTvlForV1(api);
   }
 }
-async function tvlArbitrum(api) {
-    const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
-
-    const assets = [
-      ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
-    ]
-
-    const res = await api.multiCall({ abi: abi.getBalancesForOpenSwap, calls: assets, target: addresses.arbitrum.IporProtocolRouter })
-    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: assets })
-
-    res.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
-      const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
-      const decimal = 18 - decimals[i]
-      api.add(assets[i], balance / (10 ** decimal))
-    });
-
-    for (const pool of addresses.arbitrum.pools) {
-        if (assets.includes(pool.asset)) {
-            continue;
-        }
-        await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
-    }
-    return api.getBalances();
-}
 
 async function calculateTvlForV2(api) {
-  const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL)
+  const chain = api.chain;
+  const {[chain]: { IporProtocolRouter, pools }} = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
 
-  const assets = [
-    ADDRESSES.ethereum.USDT, // USDT
-    ADDRESSES.ethereum.USDC, // USDC
-    ADDRESSES.ethereum.DAI, // DAI
-  ]
+  // pools with swaps
+  const poolsWithSwaps = pools.filter(pool => pool.swapsAvailable);
+  const assets = [...new Set(poolsWithSwaps.map(pool => pool.asset))];
 
-  const res = await api.multiCall({ abi: abi.getAmmBalance, calls: assets, target: addresses.ethereum.IporProtocolRouter })
-  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: assets })
+  const [balances, decimals] = await Promise.all([
+    api.multiCall({ abi: abi.getBalancesForOpenSwap, calls: assets, target: IporProtocolRouter }),
+    api.multiCall({ abi: 'erc20:decimals', calls: assets })
+  ]);
 
-  res.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
-    const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
-    const decimal = 18 - decimals[i]
-    api.add(assets[i], balance / (10 ** decimal))
+  balances.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool }, i) => {
+    const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool;
+    api.add(assets[i], balance / (10 ** (18 - decimals[i])));
   });
 
-  for (const pool of addresses.ethereum.pools) {
-    if (assets.includes(pool.asset)) {
-      continue;
-    }
-    await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
-  }
-
-  return api.getBalances();
+  // pools without swaps
+  const tokensAndOwners = pools.filter(pool => !pool.swapsAvailable).map(pool => [pool.asset, pool.AmmTreasury]);
+  return api.sumTokens({ tokensAndOwners });
 }
 
 async function calculateTvlForV1(api) {
@@ -92,9 +62,12 @@ module.exports = {
     tvl: tvlEthereum
   },
   arbitrum: {
-    tvl: tvlArbitrum
+    tvl: calculateTvlForV2
+  },
+  base: {
+    tvl: calculateTvlForV2
   },
   hallmarks:[
-    [1674648000, "Liquidity Mining Start"]
+    ["2023-01-25", "Liquidity Mining Start"]
   ],
 };

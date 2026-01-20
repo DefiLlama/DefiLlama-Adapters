@@ -1,54 +1,66 @@
-const ADDRESSES = require('../helper/coreAssets.json');
-const { sumTokensExport } = require('../helper/unwrapLPs.js');
+const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokensExport } = require("../helper/unwrapLPs.js");
+const { staking } = require("../helper/staking");
 
 const eth = {
   // tokens
   dai: ADDRESSES.ethereum.DAI,
   maha: "0x745407c86df8db893011912d3ab28e68b62e49b0",
   usdc: ADDRESSES.ethereum.USDC,
+  susde: ADDRESSES.ethereum.sUSDe,
   usdt: ADDRESSES.ethereum.USDT,
   weth: ADDRESSES.ethereum.WETH,
-  zai: "0x69000405f9dce69bd4cbf4f2865b79144a69bfe0",
+  zai: "0x69000dFD5025E82f48Eb28325A2B88a241182CEd",
+  szai: "0x69000195D5e3201Cf73C9Ae4a1559244DF38D47C",
 
   // peg stability modules
-  psmUSDC: '0x69000052a82e218ccb61fe6e9d7e3f87b9c5916f',
+  psmUSDC: "0x69000052a82e218ccb61fe6e9d7e3f87b9c5916f",
+  psmsUSDe: "0x7DCdE153e4cACe9Ca852590d9654c7694388Db54",
 
   // pools
-  zaiUsdcCurve: "0x6ee1955afb64146b126162b4ff018db1eb8f08c3",
-  zaiMahaCurve: "0x0086ef314a313018c70a2cd92504c7d1038a25aa",
+  zaiUsdcCurve: "0x4a0c954d0f19269f4fc5c217821c6150a8870ad4",
+  zaiMahaCurve: "0x7d2dffa9e903b8377c96196da424c7965b06bcc3",
+  zaiSzaiCurve: "0x53ad9268a66cef20a4c458d759eee5aa55be1140",
 
   // pool staking contracts
-  zaiMahaCurveStaking: "0x237efe587f2cb44597063dc8403a4892a60a5a4f",
-  zaiUsdcCurveStaking: "0x154F52B347D8E48b8DbD8D8325Fe5bb45AAdCCDa",
+  zaiMahaCurveStaking: "0xE2EbBf803d0199A5A26108bA36FBAc366b201Be1",
+  zaiUsdcCurveStaking: "0xdFB06C4c562Bcc810C112FBAC99c59C2856b86D1",
+  zaiSzaiCurveStaking: "0xfDAeB792FF19e7bd4f7ED5d6ce2ef7925d002A19",
 };
-
 
 const base = {
   usdc: ADDRESSES.base.USDC,
-  maha: '0x554bba833518793056CF105E66aBEA330672c0dE',
-  usdz: '0x0A27E060C0406f8Ab7B64e3BEE036a37e5a62853',
+  maha: "0x554bba833518793056CF105E66aBEA330672c0dE",
+  mahax: "0x7DF7505aa7cfAb3AC1A8D1EC225f2fafe5f04c74",
+  zai: "0x69000dFD5025E82f48Eb28325A2B88a241182CEd",
+  szai: "0x69000195D5e3201Cf73C9Ae4a1559244DF38D47C",
 
   // pools
-  zaiUsdcAerodrome: "0x72d509aff75753aaad6a10d3eb98f2dbc58c480d",
-  zaiMahaAerodrome: "0x6B22E989E1D74621ac4c8bcb62bcC7EE7c25b45A",
+  zaiUsdcAerodrome: "0x93EdC603D7A2eA03518Ac55219cAD320010a58e4",
+  zaiMahaAerodrome: "0x96A0EC12A9F3bEabFf9Bb59c3F33EE439dAF2a85",
+  zaiMahaV3Aerodrome: "0xebF0D2faC88448874947550FA9B2A75f22FF571F",
 
   // staking contracts
-  zaiUsdcStaking: "0x1097dFe9539350cb466dF9CA89A5e61195A520B0",
-  zaiMahaStaking: "0x7D5a39744608A809c850f63CB1A3d3f9b4cAc586",
-}
+  zaiUsdcStaking: "0xD87ECeF739161be77bbe9891dBA80F14275BBE34",
+  zaiMahaStaking: "0xe77b404e934c1d97f179061349F459847f70Cd8C",
+
+  gnosis: "0x7202136d70026DA33628dD3f3eFccb43F62a2469",
+};
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
-const collaterals = [eth.usdc, eth.usdt, eth.dai];
-const pegStabilityModules = [eth.psmUSDC]
+const collaterals = [eth.usdc, eth.susde];
+const pegStabilityModules = [eth.psmsUSDe];
 
 module.exports = {
   ethereum: {
     pool2: sumTokensExport({
       tokensAndOwners: [
         [eth.zaiMahaCurve, eth.zaiMahaCurveStaking],
-        [eth.zaiUsdcCurve, eth.zaiUsdcCurveStaking]
-      ]
+        [eth.zaiUsdcCurve, eth.zaiUsdcCurveStaking],
+        [eth.zaiSzaiCurve, eth.zaiSzaiCurveStaking],
+      ],
+      resolveLP: true,
     }),
     tvl: sumTokensExport({ owners: pegStabilityModules, tokens: collaterals }),
   },
@@ -60,5 +72,6 @@ module.exports = {
       ],
       resolveLP: true,
     }),
-  }
+    staking: staking(base.mahax, base.maha),
+  },
 };

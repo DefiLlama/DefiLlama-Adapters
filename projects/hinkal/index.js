@@ -45,13 +45,4 @@ module.exports = {
   polygon: {
     tvl,
   },
-  avax: {
-    tvl,
-  },
-  bsc: {
-    tvl,
-  },
-  blast: {
-    tvl,
-  },
 };
