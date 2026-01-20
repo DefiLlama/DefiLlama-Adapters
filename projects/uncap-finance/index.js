@@ -19,6 +19,12 @@ const SOLVBTC = {
   stabilityPool: '0x154d14c879ce7dfe559628ed1abff2df38974efd27abf10d9236d05c6aa4741',
 };
 
+/**
+ * Fetches the total balance of a collateral token across multiple pool contracts.
+ * @param {string} collateralToken - The contract address of the collateral token.
+ * @param {string[]} pools - Array of pool contract addresses to query.
+ * @returns {Promise<string>} The sum of balances across all pools as a string.
+ */
 async function getCollateralBalance(collateralToken, pools) {
   const balances = await Promise.all(
     pools.map(pool => call({
@@ -30,6 +36,10 @@ async function getCollateralBalance(collateralToken, pools) {
   return balances.reduce((sum, bal) => sum + BigInt(bal), 0n).toString();
 }
 
+/**
+ * Calculates the total value locked (TVL) by summing collateral balances across all supported tokens.
+ * @param {object} api - The DefiLlama API object for adding token balances.
+ */
 async function tvl(api) {
   const wrapperBalance = await call({
     abi: abi[0],
