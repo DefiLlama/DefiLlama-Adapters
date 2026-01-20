@@ -3,9 +3,8 @@ const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
 const { getConfig } = require('../helper/cache.js');
 
 async function tvl() {
-  return sumTokens({ owners: await bitcoinAddressBook.solvBTC() })
+  return sumTokens({ owners: await bitcoinAddressBook.solvBTCLST() })
 }
-
 
 const solvbtclstListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc-lst.json';
 

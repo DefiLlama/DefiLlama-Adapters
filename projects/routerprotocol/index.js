@@ -120,9 +120,9 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   let { contractAddress: owner, tokens, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
+    tvl: async (api) => {
       tokens = tokens.map(i => i.address === NATIVE_ADDRESS ? nullAddress: i.address)
-      return sumTokens2({ chain, block, owner, tokens, })
+      return sumTokens2({ api, owner, tokens, })
     }
   }
 })

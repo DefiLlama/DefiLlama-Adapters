@@ -7,7 +7,8 @@ const V5_VAULT_FACTORIES = {
   arbitrum: ['0x44Be003E55e7cE8a2e0ECC3266f8a9A9de2c07BC', '0x8020Fb37b21E0eF1707aDa7A914baf44F9045E52'],
   ethereum: ['0x29c102109D6cb2D866CFEc380E0E10E9a287A75f', '0xd499CcF3e93F4cfb335Ac388E3C896D59cdDe7c3'],
   scroll: ['0x3fdd8bFdF2F589c10C58457CDAE989C7943A30A5'],
-  xdai: ['0xc3aE3FE36A2645a93b2Fe350D81E80A14831e2A6']
+  xdai: ['0xc3aE3FE36A2645a93b2Fe350D81E80A14831e2A6'],
+  wc: ['0x08f8ebC3Afc32371d40EF59A951Cb7b2dA425159']
 }
 
 const V5_NON_FACTORY_VAULTS = {
@@ -16,7 +17,8 @@ const V5_NON_FACTORY_VAULTS = {
   arbitrum: [],
   ethereum: [],
   scroll: [],
-  xdai: []
+  xdai: [],
+  wc: ['0x8aD5959c9245b64173D4C0C3CD3ff66dAc3caB0E']
 }
 
 async function tvl(api) {

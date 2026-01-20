@@ -22,6 +22,17 @@ const vaults = {
   silicon_zk: '0x5aAAcf28ECDd691b4a657684135d8848d38236Bb'
 }
 
+const SILICON_RECOVERY = '0xac6b4b573df32f31e933c2c8a58d5e334690e0ee'
+
+// tokens on silicon bridged from ethereum
+const SILICON_TOKENS = [
+  ADDRESSES.null,// ETH
+  ADDRESSES.astarzk.DAI, // DAI
+  ADDRESSES.astarzk.USDC, // USDC
+  ADDRESSES.astarzk.USDT, // USDT
+  ADDRESSES.astarzk.WBTC // WBTC
+]
+
 const farms = {
   bsc: [
     ADDRESSES.null,// BNB
@@ -72,6 +83,13 @@ async function tvl(api) {
     const farmBalance = await api.multiCall({ abi: ABI.wantLockedTotal, calls: farmData, })
     api.add(farms[chain], farmBalance)
   }
+
+  if (chain === 'silicon_zk') {
+    await sumTokens2({
+      api,
+      owner: SILICON_RECOVERY, tokens: SILICON_TOKENS
+    })
+  }
 }
 
 module.exports = {
@@ -87,9 +105,9 @@ module.exports = {
   wemix: { tvl },
   silicon_zk: { tvl },
   ripple: {
-    tvl: sumTokensExport({ owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia' })
+    tvl: sumTokensExport({ owner: 'rJTEBWu7u1NcJAiMQ9iEa1dbsuPyhTiW23' })
   },
   ton: {
-    tvl: tonExport({ owner: "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy", tokens: [ADDRESSES.null], onlyWhitelistedTokens: true }),
+    tvl: tonExport({ owner: "EQDXbWI3jClPS510by25zTA8SUKMa4XSD2K7DbZb0jincPGw", tokens: [ADDRESSES.null], onlyWhitelistedTokens: true }),
   },
 }

@@ -17,18 +17,18 @@ const BPAD_WBCH_PAIR = "0x8221d04a71fcd0dd3d096cb3b49e22918095933f"
 module.exports = {
   methodology: "BCHPad uses LP pools created on other dexes and single asset pools of non-native tokens for their liquidity mining, these pools are used for TVL calculation.",
   smartbch: {
-    tvl: async (_, _b, { [chain]: block }) => {
-      return sumTokens2({ chain, block, tokensAndOwners: [
+    tvl: async (api) => {
+      return sumTokens2({ api, tokensAndOwners: [
         [CATS, CATS_POOL],
       ]})
     },
-    pool2: async (_, _b, { [chain]: block }) => {
-      return sumTokens2({ chain, block, tokensAndOwners: [
+    pool2: async (api) => {
+      return sumTokens2({ api, tokensAndOwners: [
         [BPAD_WBCH_PAIR, '0x87DfAE804cF62A1FcafA4395346f3c6331E1032b'],
       ], resolveLP: true, })
     },
-    staking: async (_, _b, { [chain]: block }) => {
-      return sumTokens2({ chain, block, tokensAndOwners: [
+    staking: async (api) => {
+      return sumTokens2({ api, tokensAndOwners: [
         [BPAD, BPAD_POOL],
       ], })
     }

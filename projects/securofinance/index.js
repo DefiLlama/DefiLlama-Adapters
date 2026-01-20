@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const abiLci = require("./abiLci.json");
 
 const config = {
@@ -33,16 +32,10 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, {[chain]: block}) => {
+    tvl: async (api) => {
       const vaults = Object.values(config[chain].vaults)
-      const { output: balances } = await sdk.api.abi.multiCall({
-        abi: abiLci.getAllPoolInUSD,
-        calls: vaults.map(i => ({ target: i})),
-        chain, block,
-      })
-      return {
-        tether: balances.reduce((a, { output }) => a + (output/1e18), 0)
-      }
+      const balances = await api.multiCall({ abi: "uint256:getAllPoolInUSD", calls: vaults, })
+      api.addUSDValue(balances.reduce((acc, i) => acc + +Math.round(i / 1e18), 0))
     }
   }
 })

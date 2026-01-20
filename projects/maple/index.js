@@ -1,139 +1,105 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { sumTokens2 } = require("../helper/unwrapLPs");
-const { sumTokens2: sumSolana } = require("../helper/solana");
-const { staking, } = require("../helper/staking")
-const { getConnection, } = require('../helper/solana')
-const { PublicKey } = require('@solana/web3.js')
-const { getLogs } = require('../helper/cache/getLogs')
+/**
+ * Maple Finance TVL & Borrowed Amounts Adapter
+ * 
+ * This adapter fetches data from Maple Finance's GraphQL API to calculate:
+ * - Total Value Locked (TVL): Sum of all pool cash, cash in DeFi strategies, and collateral
+ * - Total Borrowed: Sum of all principal out (active loans)
+ * - Total Staking: Sum of all staked assets in stSYRUP ERC-4626 vault
+ * 
+ * 
+ * References:
+ * - Maple Finance API Docs: https://studio.apollographql.com/public/maple-api/variant/mainnet/home
+ * 
+ */
 
-const USDC = ADDRESSES.ethereum.USDC;
+const ADDRESSES = require('../helper/coreAssets.json');
+const axios = require('axios');
 
-/*** Solana TVL Portions ***/
-const POOL_DISCRIMINATOR = "35K4P9PCU";
-const TVL_OFFSET = 257;
-const TVL_DATA_SIZE = 8;
-const PROGRAM_ID = "5D9yi4BKrxF8h65NkVE1raCCWFKUs5ngub2ECxhvfaZe";
+const stSYRUP = "0xc7E8b36E0766D9B04c93De68A9D47dD11f260B45";
 
-let _tvl
+const POOL_V2_START_BLOCK = 16186377;
+const STAKING_START_BLOCK = 20735662;
 
-function getTvl(borrowed = false) {
-  return async () => {
-    if (!_tvl) _tvl = getSolanaTVL()
-    const res = await _tvl
-    return borrowed ? res.borrowed : res.tvl
-  }
-}
-
-async function getSolanaTVL() {
-  const programId = new PublicKey(PROGRAM_ID);
-  const connection = getConnection();
-  const accounts = await connection.getProgramAccounts(programId, {
-    filters: [{
-      memcmp: {
-        offset: 0,
-        bytes: POOL_DISCRIMINATOR
+const ENDPOINT = "https://api.maple.finance/v2/graphql";
+const POOLS_QUERY = `
+  query example($block: Block_height) {
+    poolV2S(block: $block) {
+      id
+      name
+      collateralValue
+      principalOut
+      strategiesDeployed
+      tvl
+      assets
+      asset {
+        symbol
       }
-    }]
-  });
-
-  let borrowed = 0;
-  let tvlValue = 0;
-  for (const account of accounts) {
-    const data = account.account.data.slice(TVL_OFFSET, TVL_OFFSET + TVL_DATA_SIZE)
-    const poolTvl = Number(data.readBigUint64LE())
-    borrowed += poolTvl
-  }
-  const usdc = ADDRESSES.solana.USDC
-  const tempBalances = await sumSolana({ owners: accounts.map(a => a.pubkey.toString()), tokens: [ADDRESSES.solana.USDC] })
-  const usdValue = +(tempBalances['solana:'+usdc] ?? 0)
-  tvlValue += usdValue
-  borrowed -= usdValue
-  if (borrowed < 0) borrowed = 0
-
-  return {
-    tvl: {
-      [USDC]: tvlValue.toFixed(0),
-    },
-    borrowed: {
-      [USDC]: borrowed.toFixed(0)
+      poolMeta {
+        state
+        asset
+        poolCollaterals {
+          addresses
+          assetAmount
+        }
+      }
     }
-  };
-}
-
-const pInfos = {}
-
-async function getPoolInfo(block, api) {
-  if (!pInfos[block]) pInfos[block] = _getPoolInfo()
-  return pInfos[block]
-
-  async function _getPoolInfo() {
-    const loanFactory = '0x1551717ae4fdcb65ed028f7fb7aba39908f6a7a6'
-    const openTermLoanManagerFactory = '0x90b14505221a24039A2D11Ad5862339db97Cc160'
-
-    const logs = await getLogs({
-      api,
-      target: loanFactory,
-      topic: "InstanceDeployed(uint256,address,bytes)",
-      fromBlock: 16126995,
-    });
-    const logs2 = await getLogs({ // open term
-      api,
-      target: openTermLoanManagerFactory,
-      topic: "InstanceDeployed(uint256,address,bytes)",
-      fromBlock: 17372608,
-    });
-
-    let proxies = logs.map(s => "0x" + s.topics[2].slice(26, 66))
-    const proxiesOpenTerm = logs2.map(s => "0x" + s.topics[2].slice(26, 66))
-    proxies.push(...proxiesOpenTerm)
-    proxies = [...new Set(proxies.map(i => i.toLowerCase()))]
-    const managers = await api.multiCall({ abi: 'address:poolManager', calls: proxies })
-    const assets = await api.multiCall({ block, abi: abis.fundsAsset, calls: proxies, })
-    return { proxies, assets, managers }
   }
-}
+`;
 
-async function ethTvl2(api) {
-  const block = api.block
-  const { managers, assets, } = await getPoolInfo(block, api)
-  const pools = await api.multiCall({
-    abi: abis.pool,
-    calls: managers,
+/**
+ * Fetches pool data from Maple Finance's GraphQL API
+ * @param {number} block Ethereum block number
+ * @returns {Promise<Array<{id: string, name: string, collateralValue: string, principalOut: string, strategiesDeployed: string, tvl: string, assets: string[], asset: {symbol: string}, poolMeta: {state: string, asset: string, poolCollaterals: Array<{addresses: string[], assetAmount: string}>}}>>} Array of pool objects
+ */
+const getPools = async (block) => {
+  const payload = {
+    query: POOLS_QUERY,
+    variables: { block: { number: block - 10 } },
+    headers: { "Content-Type": "application/json" }
+  };
+
+  const { data } = await axios.post(ENDPOINT, payload);
+  return data.data.poolV2S;
+};
+
+/**
+ * Calculates total value based on specified property and returns API response format
+ * @param {Object} api DefiLlama SDK api object
+ * @param {string} key Property to sum
+ * @returns {Promise<{usd: number}>} Total value in USD
+ */
+const processPools = async (api, key) => {
+  const block = await api.getBlock();
+  
+  if (block < POOL_V2_START_BLOCK) return console.error('Error: Impossible to backfill - The queried block is earlier than the deployment block of poolsV2');
+  const pools = await getPools(block);
+
+  pools.forEach((pool) => {
+    const { id, name, asset: { symbol }, assets, collateralValue, principalOut, strategiesDeployed, poolMeta } = pool
+    const token = ADDRESSES.ethereum[symbol] ?? null
+    if (!token) return;
+    const balance = key === "collateralValue" ? Number(collateralValue) + Number(assets) + Number(strategiesDeployed) : Number(principalOut)
+    api.add(token, balance)
   })
+};
 
-  return sumTokens2({ block, tokensAndOwners: pools.map((o, i) => ([assets[i], o])) })
-}
-
-async function borrowed2(api) {
-  const balances = {}
-  const { proxies, assets, } = await getPoolInfo(api.block, api)
-  const principalOut = await api.multiCall({
-    abi: abis.principalOut,
-    calls: proxies,
-  })
-  principalOut.forEach((val, i) => sdk.util.sumSingleBalance(balances, assets[i], val))
-  return balances
+/**
+ * Calculates total staked value in Maple's stSYRUP ERC-4626 vault
+ * @param {Object} api DefiLlama SDK api object
+ * @returns {Promise<Object>} Total staked value in USD
+ */
+const staking = async (api) => {
+  const block = await api.getBlock()
+  if (block < STAKING_START_BLOCK) return;
+  return api.erc4626Sum({ calls: [stSYRUP], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  timetravel: false,
-  ethereum: {
-    tvl: sdk.util.sumChainTvls([ethTvl2]),
-    staking: staking('0x4937a209d4cdbd3ecd48857277cfd4da4d82914c', '0x33349b282065b0284d756f0577fb39c158f935e6'),
-    borrowed: sdk.util.sumChainTvls([borrowed2]),
-  },
-  solana: {
-    tvl: getTvl(),
-    borrowed: getTvl(true),
-  },
-  methodology:
-    "We count liquidity by USDC deposited on the pools through PoolFactory contract",
-}
-
-const abis = {
-  fundsAsset: "address:fundsAsset",
-  principalOut: "uint128:principalOut",
-  pool: "address:pool",
-}
+  hallmarks: [[1670976000, 'V2 Deployment']],
+  solana: { tvl: () => ({})},
+  ethereum: { 
+    tvl: async (api) => processPools(api, "collateralValue"),
+    borrowed: async (api) => processPools(api),
+    staking
+  }
+};

@@ -68,6 +68,6 @@ module.exports = {
     tvl: calculateTvlForV2
   },
   hallmarks:[
-    [1674648000, "Liquidity Mining Start"]
+    ["2023-01-25", "Liquidity Mining Start"]
   ],
 };

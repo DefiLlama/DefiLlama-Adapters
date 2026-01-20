@@ -2,6 +2,7 @@ const { call } = require('../helper/chain/stacks-api')
 const { getCache, setCache } = require('../helper/cache')
 const { sleep } = require('../helper/utils')
 const sdk = require('@defillama/sdk')
+const { sumTokens } = require('../helper/chain/stacks')
 
 const factory = 'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.amm-pool-v2-01'
 
@@ -94,14 +95,16 @@ async function tvl(api) {
     await setCache('alex/ammv2', 'stacks', cache)
 
 
+  await sumTokens({ owner: 'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.amm-vault-v2-01', balances: api.getBalances(), })
 
-  // add amm v2 tvl
-  for (const pair of cache.pairData) {
-    const { value: bals } = await call({ target: factory, abi: 'get-balances', inputArgs: [pair['token-x'], pair['token-y'], pair.factor] })
-    api.add(pair['token-x'].value, bals['balance-x'].value)
-    api.add(pair['token-y'].value, bals['balance-y'].value)
-    await sleep(600)
-  }
+
+  // // add amm v2 tvl
+  // for (const pair of cache.pairData) {
+  //   const { value: bals } = await call({ target: factory, abi: 'get-balances', inputArgs: [pair['token-x'], pair['token-y'], pair.factor] })
+  //   api.add(pair['token-x'].value, bals['balance-x'].value)
+  //   api.add(pair['token-y'].value, bals['balance-y'].value)
+  //   await sleep(600)
+  // }
   return api.getBalances()
 }
 

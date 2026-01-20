@@ -37,3 +37,7 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports.hallmarks = [
+  [1742470655, "Resupply Launch"]
+]

@@ -12,3 +12,6 @@ module.exports= mergeExports([
 ].map( ([comptroller, cether]) => ({
   oasis: compoundExports2({ comptroller, cether, }),
 })))
+
+module.exports.deadFrom = '2023-06-22'
+module.exports.oasis.borrowed=  () => ({})

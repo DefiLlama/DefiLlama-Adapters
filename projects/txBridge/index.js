@@ -1,7 +1,7 @@
-const getTvl = require("./util")
+const { txBridgeTvlV2 } = require("../txBridge/util")
 
 module.exports = {
   ethereum: {
-    tvl: async (api) => getTvl(api, { chainId: 324, }),
+    tvl: async (api) => txBridgeTvlV2(api, { chainId: 324, }),
   },
 }

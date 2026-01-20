@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { stakingUnknownPricedLP } = require("../helper/staking");
+const { stakingPriceLP } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const photon = "0x2F1305F0619ADa14688A4291953bd7d284f9C2a5";
@@ -10,6 +10,6 @@ const treasury = "0x0f90591b01DE6F832e8B8E4ec3525efD423BCaD1";
 module.exports = {
   bsc: {
     tvl: sumTokensExport({ tokens: [ADDRESSES.bsc.BUSD], owner: treasury }),
-    staking: stakingUnknownPricedLP(stakingContract, photon, "bsc", photonbusd, addr => `bsc:${addr}`)
+    staking: stakingPriceLP(stakingContract, photon, photonbusd)
   }
 }

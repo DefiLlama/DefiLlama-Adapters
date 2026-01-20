@@ -11,6 +11,6 @@ module.exports = {
   kava: compoundExports2({ comptroller: '0xD2CBE89a36df2546eebc71766264e0F306d38196',}),
   bittorrent: compoundExports2({ comptroller: '0xE52792E024697A6be770e5d6F1C455550265B2CD',}),
   hallmarks: [
-    [Math.floor(new Date('2023-04-24')/1e3), 'Protocol was hacked'],
+    ['2023-04-24', 'Protocol was hacked'],
   ],
 };

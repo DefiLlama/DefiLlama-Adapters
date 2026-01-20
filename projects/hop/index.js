@@ -7,6 +7,7 @@ const chainMapping = {
     arbitrum_nova: 'nova'
 }
 const getChainKey = chain => chainMapping[chain] ?? chain
+const isValidAddress = (addr) => /^0x[a-fA-F0-9]{40}$/.test(addr)
 
 // node test.js projects/hop/index.js
 function chainTvl(chain) {
@@ -28,20 +29,19 @@ function chainTvl(chain) {
                 let contractList = []
                 for (let i of Object.values(bonder[1])) {
                     for (let j of Object.values(i)) {
-                        if (contractList.includes(j.toLowerCase())) {
-                            continue;
-                        } else {
-                            contractList.push(j.toLowerCase())
+                        const address = j.toLowerCase().trim()
+                        if (!contractList.includes(address)) {
+                            contractList.push(address)
                         }
                     }
                 }
                 for (const contract of contractList) {
-                    const token = bridges[tokenName].ethereum.l1CanonicalToken
+                    const token = bridges[tokenName].ethereum.l1CanonicalToken?.trim()
                     toa.push([token, contract])
                 }
             }
         }
-        toa = toa.filter(([i, j]) => i && j && j !== ADDRESSES.null)
+        toa = toa.filter(([i, j]) => i && j && j !== ADDRESSES.null && isValidAddress(i) && isValidAddress(j))
         return sumTokens2({ api, tokensAndOwners: toa, })
     }
 }

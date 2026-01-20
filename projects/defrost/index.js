@@ -64,7 +64,7 @@ module.exports = {
     tvl,
     staking
   },
-  hallmarks: [
-    [Math.floor(new Date('2022-12-24') / 1e3), 'Both v1 & v2 exploited'],
-  ],
+  // hallmarks: [
+  //   ['2022-12-24', 'Both v1 & v2 exploited'],
+  // ],
 };

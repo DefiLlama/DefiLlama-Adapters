@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require('../helper/unknownTokens')
-const { stakingPricedLP } = require("../helper/staking");
+const { stakingPriceLP } = require("../helper/staking");
 
 const goblinStaking = "0x48B8aCe692ad8BD2E3139C65bFf7d28c048F8f00";
 const GOB = "0x56381cB87C8990971f3e9d948939e1a95eA113a3";
@@ -14,7 +14,7 @@ const chain = "smartbch"
 module.exports = {
   misrepresentedTokens: true,
   smartbch: {
-    staking: stakingPricedLP(goblinStaking, GOB, chain, GOB_flexUSD_MLP, "flex-usd", false, 18),
+    staking: stakingPriceLP(goblinStaking, GOB, GOB_flexUSD_MLP, "flex-usd", false, 18),
     tvl: async (_, _b, { [chain]: block }) => {
       return sumUnknownTokens({ chain, block, owner:treasuryAddress, tokens: [GOB_flexUSD_MLP, GOB_BCH_MLP, flexUSD], useDefaultCoreAssets: true })
     }

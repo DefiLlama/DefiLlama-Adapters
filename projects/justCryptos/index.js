@@ -14,15 +14,13 @@ function getItemByName (projectName, listArr) {
   }
 }
 
-async function fetch(){
-    const pools = await get(url);
-    let item = getItemByName('Just Cryptos', pools.projects);
-    return parseInt(item.locked);
+const tvl = async (api) => {
+  const pools = await get(url);
+  let item = getItemByName('Just Cryptos', pools.projects)
+  return api.addUSDValue(Math.round(item.locked))
 }
 
 module.exports = {
-  tron: {
-    fetch
-  },
-    fetch
+  misrepresentedTokens: true,
+  tron: { tvl }
 }

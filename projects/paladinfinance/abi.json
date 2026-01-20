@@ -1,6 +1,0 @@
-{
-  "underlying": "address:underlying",
-  "underlyingBalance": "uint256:underlyingBalance",
-  "totalBorrowed": "uint256:totalBorrowed",
-  "totalReserve": "uint256:totalReserve"
-}

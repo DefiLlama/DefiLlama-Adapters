@@ -10,7 +10,7 @@ module.exports = {
   btcfi_cdp: async () => {
     const target = "0x0000000000000000000000000000000000000100";
     const api = new sdk.ChainApi({ chain: 'bfc' })
-    const round = await api.call({  abi: 'uint32:current_round', target})
+    const round = await api.call({ abi: 'uint32:current_round', target })
 
     const utxoVault = await api.call({ abi: 'function registration_info(address target, uint32 pool_round) view returns (address, string, string, address[], bytes[])', target, params: [target, round] })
     const vault = await api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round });
@@ -19,7 +19,7 @@ module.exports = {
     return vault
   },
   bedrock: async () => {
-    const API_URL = 'https://raw.githubusercontent.com/Bedrock-Technology/uniBTC/refs/heads/main/data/tvl/reserve_address.json'
+    const API_URL = 'https://bedrock-datacenter.rockx.com/data/tvl/reserve_address.json'
     const { btc } = await getConfig('bedrock.btc_address', API_URL)
     return btc
   },
@@ -58,9 +58,12 @@ module.exports = {
 
     return getConfig('b14g/bit-addresses', undefined, {
       fetcher: async () => {
-        const btcTxHashLockApi = 'https://api.b14g.xyz/restake/marketplace/defillama/btc-tx-hash'
-        const { data: { result } } = await get(btcTxHashLockApi)
-        const hashes = result.map(r => r.txHash)
+        const btcInCorechainTxHashLockApi = 'https://api.b14g.xyz/restake/marketplace/defillama/btc-tx-hash'
+        const { data: { result } } = await get(btcInCorechainTxHashLockApi)
+        const btcInBabylonGenesisTxHashLockApi = 'https://api.b14g.xyz/babylon-costaking/order/defillama/btc-tx-hash'
+        const resultInBabylonGenesis = await get(btcInBabylonGenesisTxHashLockApi)
+
+        const hashes = result.map(r => r.txHash).concat(resultInBabylonGenesis.map(r => r.txHash))
         const hashMap = await getCache('b14g/hash-map', 'core',) ?? {}
         for (const hash of hashes) {
           if (hashMap[hash]) continue;
@@ -104,7 +107,13 @@ module.exports = {
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
     const BATCH_SIZE = 1000
-    const blacklisted = new Set(['bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'])
+    const blacklisted = new Set([ // blacklisted addresses , using the corresponding amount in LFBTC here 0x838f0c257ab27856ee9be57f776b186140834b58 , token : 0xfe4ecd930a1282325aef8e946f17c0e25744de45
+      'bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w',
+      'bc1pkzlqekjjylsrt9eh57pcd8ynz5w4jv6k3wlj39x8y59fhm4pjdxs9xvs46',
+      'bc1pntj998mddtc4ketfvh8jhvn4tgrvv5870hsfpwhttxwtgv4mrvmqmr6s3f',
+      'bc1pt3rf4ml95sfc8svqjtl8d6h5hjkej60ruvtfry44g35uchjt2seqxx7tfm',
+      'bc1pwffr0etqcg3awczl6lfs4dne987y64rgnnael577yj02jvuvnrssqyxdsj',
+    ])
 
     return getConfig('lombard', undefined, {
       fetcher: async () => {
@@ -129,7 +138,7 @@ module.exports = {
       }
     })
   },
-  solvBTC: async () => {
+  solvBTCLST: async () => {
     const API_URL = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/bitcoin.json'
     return Object.values(await getConfig('solv-protocol/solv-btc-lst', API_URL)).flat();
   },
@@ -143,7 +152,19 @@ module.exports = {
     })
   },
   tBTC: async () => {
-    const API_URL = 'https://api.threshold.network/tbtc/wallets/pof'
+    // return [
+    //   "bc1qr5laxd2pyptae847tt32qddujtws305s8ej278",
+    //   "bc1qwetfspn7fp4dgsh44y4dzwx5y8e3tlc7v0mhf5",
+    //   "bc1qprkyx79jxvpe69mewfmlat8ydavuth95ppec5m",
+    //   "bc1q63r464arzp9709tqc2z3hkmcna0lrmzv7sekl5",
+    //   "bc1q0w68p8gh5egxjjd9edlyqkncns7veexcurqut9",
+    //   "bc1qlgtalpnsfqsc6wxdm6uvjjdd9ujgq0a8x4yslh",
+    //   "bc1qpdx8zrkjsjd8mjhaznnz0atz6v9f2upda9xgyn",
+    //   "bc1qtd8mplu4n7evnmzqtrtt7ljs0rl00th42kcgj5",
+    //   "bc1qyghykrhmkk5ztn4l5pjaqywpsxkg6e9rdm22mt",
+    //   "bc1q04phgdeyx7nneh2ux4ynxhew4vwqfduk3wt6hc"
+    // ]
+    const API_URL = 'https://api.tbtcscan.com/tbtc/proof-of-funds'
     const { wallets } = await getConfig('tbtc/wallets', API_URL)
     return wallets.filter(i => +i.walletBitcoinBalance > 0).map(wallet => wallet.walletBitcoinAddress)
   },
@@ -183,5 +204,130 @@ module.exports = {
       }
     }
     return owners
-  }
+  },
+  dlcLink: async () => {
+    const config = await getConfig('dlc-link', 'https://api.dlc.link/v1/ibtc/proof-of-reserve')
+    const addresses = []
+    config.chains.forEach(c => {
+      addresses.push(...(c.vaultAddresses ?? []))
+    })
+    return addresses
+  },
+  solvBTC: async () => {
+    const API_URL = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json'
+    const res = await getConfig('solv-protocol/solv-btc-non-lst', API_URL)
+    return res.bitcoin
+  },
+
+  btnx: async () => {
+    const staticAddresses = await getConfig('btnx', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://sidecar.botanixlabs.com/api/addressList', {
+        })
+        return data.map(address => address)
+      }
+    })
+
+    return Array.from(new Set(staticAddresses))
+  },
+  zeusZBTC: async () => {
+    const API_URL = 'https://indexer.zeuslayer.io/api/v2/chainlink/proof-of-reserves'
+    const data = await getConfig('zeus/zbtc', API_URL)
+    const list = data.result.map(item => item.address)
+    return list
+  },
+  binanceFetcher: async () => {
+    const staticAddresses = await getConfig('binance-cex/btc', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://www.binance.com/bapi/apex/v1/public/apex/market/por/address')
+        return data.data.filter(i => i.network === 'BTC').map(item => item.address)
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
+  vishwa: async () => {
+    const staticAddresses = await getConfig('vishwa', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://api.btcvc.vishwanetwork.xyz/btc/address')
+        return data.data
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
+  yala: async () => {
+    const staticAddresses = await getConfig('yala/bitcoin', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://raw.githubusercontent.com/yalaorg/yala-defillama/refs/heads/main/config.json')
+        return data.bitcoin
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
+  zenrock: async () => {
+    const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
+    const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';
+    const ZRCHAIN_KEY_BY_ID_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/key_by_id';
+
+    // Always use latest addresses since wallets are only added, never removed.
+    // The balance checker will use the historical timestamp to get correct balances.
+    return getConfig('zenrock/addresses', undefined, {
+      fetcher: async () => {
+        async function getBitcoinAddresses() {
+          const btcAddresses = [];
+          let nextKey = null;
+
+          while (true) {
+            let url = ZRCHAIN_WALLETS_API;
+            if (nextKey) {
+              url += `?pagination.key=${encodeURIComponent(nextKey)}`;
+            }
+            const data = await get(url);
+            if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
+              for (const walletGroup of data.zenbtc_wallets) {
+                if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
+                  for (const wallet of walletGroup.wallets) {
+                    if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
+                      btcAddresses.push(wallet.address);
+                    }
+                  }
+                }
+              }
+            }
+            if (data.pagination && data.pagination.next_key) {
+              nextKey = data.pagination.next_key;
+            } else {
+              break;
+            }
+          }
+          return btcAddresses;
+        }
+
+        async function getChangeAddresses() {
+          const paramsData = await get(ZENBTC_PARAMS_API);
+          if (!paramsData?.params?.changeAddressKeyIDs) {
+            return [];
+          }
+          const changeAddresses = [];
+          for (const keyID of paramsData.params.changeAddressKeyIDs) {
+            const keyData = await get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+            if (keyData.wallets && Array.isArray(keyData.wallets)) {
+              for (const wallet of keyData.wallets) {
+                if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
+                  changeAddresses.push(wallet.address);
+                }
+              }
+            }
+          }
+          return changeAddresses;
+        }
+
+        const [btcAddresses, changeAddresses] = await Promise.all([
+          getBitcoinAddresses(),
+          getChangeAddresses(),
+        ]);
+        const allAddresses = [...btcAddresses, ...changeAddresses];
+        return allAddresses;
+      }
+    });
+  },
 }

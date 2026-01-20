@@ -9,3 +9,5 @@ module.exports = {
   methodology:
     "Same as compound, we just get all the collateral (not borrowed money) on the lending markets",
 };
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

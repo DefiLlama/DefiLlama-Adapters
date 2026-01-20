@@ -4,9 +4,7 @@ const methodologies = require('../helper/methodologies')
 module.exports = {
   timetravel: false,
   methodology: methodologies.lendingMarket,
-  waves: {
-    tvl, borrowed,
-  },
+  waves: { tvl, borrowed },
   hallmarks: [
     [1659092400, "Bad debt settlement in USDN"],
   ],
@@ -40,10 +38,15 @@ async function tvl(api) {
   })
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 async function borrowed(api) {
-  await Promise.all(aTokens.map(async (token) => {
+  for (const token of aTokens) {
     const assetId = (await call({ target: token, key: 'assetId'})).split('_')[0]
     const res = (await call({ target: token, key: 'reserveGlobalData'})).split('|')[2]
     api.add(assetId, res)
-  }))
+    await sleep(500)
+  }
 }

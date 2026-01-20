@@ -17,6 +17,7 @@ module.exports = {
   ],
   polygon: {
     tvl: sumTokensExport({ owners: [USDW_RESERVE, LP_RESERVE, LP_MANAGER], resolveUniV3: true, blacklistedTokens: [USDW], tokens: [ADDRESSES.polygon.USDT]}),
-    staking: sumTokensExport({ owners: [LOCK_WINK_CONTRACT], tokens: [WINK_TOKEN_CONTRACT]}),
+    // staking: sumTokensExport({ owners: [LOCK_WINK_CONTRACT], tokens: [WINK_TOKEN_CONTRACT]}),
+    staking: () => ({}), // wink token has very little liquidity
   }
 }; 

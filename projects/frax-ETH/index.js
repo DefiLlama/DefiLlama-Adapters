@@ -107,9 +107,9 @@ const fraxtalTvl = async (api) => {
       api.call({ target: ezwfrxETH, params: [treasury_2], abi: "erc20:balanceOf" }),
     ])
 
-    api.add(token0 === wfrxETH ? frxETH : token0, balanceOf * poolBalance[0] / supply, { skipChain: true })
-    api.add(token1 === wfrxETH ? frxETH : token1, balanceOf * poolBalance[1] / supply, { skipChain: true })
-    api.add(frxETH, (await sdk.api.eth.getBalance({ target: treasury })).output, { skipChain: true })
+    api.add(token0 === wfrxETH ? frxETH : token0, balanceOf * poolBalance[0] / supply)
+    api.add(token1 === wfrxETH ? frxETH : token1, balanceOf * poolBalance[1] / supply)
+    api.add(frxETH, (await sdk.api.eth.getBalance({ target: treasury })).output)
     api.removeTokenBalance(frxETH)
 }
 

@@ -1,8 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const Abis = require("./abi.json");
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const Contracts = {
   fantomV1: {
@@ -30,99 +28,26 @@ const Contracts = {
   },
 };
 
-async function calcTvl(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.fantom;
-  const chain = "fantom";
-
-  const bankBalance = await sdk.api.abi.call({
-    target: Contracts.fantom.bank,
-    abi: Abis.bank.usableFtmBalance,
-    chain: chain,
-    block,
-  });
-
-  const bankBalanceV1 = await sdk.api.abi.call({
-    target: Contracts.fantomV1.bank,
-    abi: Abis.bankV1.usableFtmBalance,
-    chain: chain,
-    block,
-  });
-
-  return {
-    [`fantom:${Contracts.fantom.wftm}`]:
-      +bankBalance.output + +bankBalanceV1.output,
-  };
+async function calcTvl(api) {
+  const bal = await api.call({  abi: Abis.bank.usableFtmBalance, target: Contracts.fantom.bank})
+  const balV1 = await api.call({  abi: Abis.bankV1.usableFtmBalance, target: Contracts.fantomV1.bank})
+  api.addGasToken([bal, balV1])
 }
 
-async function calcStakingTvl(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.fantom;
-  const chain = "fantom";
-
-  const stakingData = await sdk.api.abi.call({
-    target: Contracts.fantom.multiFeeDistribution,
-    abi: Abis.multiFeeDistribution.totalSupply,
-    chain: chain,
-    block,
-  });
-
-  const stakingDataV1 = await sdk.api.abi.call({
-    target: Contracts.fantomV1.multiFeeDistribution,
-    abi: Abis.multiFeeDistribution.totalSupply,
-    chain: chain,
-    block,
-  });
-
-  return {
-    [`fantom:${Contracts.fantom.fxm}`]: stakingData.output,
-    [`fantom:${Contracts.fantomV1.fsm}`]: stakingDataV1.output,
-  };
+async function calcStakingTvl(api) {
+  const bals  = await api.multiCall({  abi: Abis.multiFeeDistribution.totalSupply, calls: [
+    Contracts.fantom.multiFeeDistribution,
+    Contracts.fantomV1.multiFeeDistribution,
+  ] })
+  api.add(Contracts.fantom.fxm, bals[0])
+  api.add(Contracts.fantomV1.fsm, bals[1])
 }
 
-async function calcPool2(masterchef, lps, block, chain) {
-  let balances = {};
-  const lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: lps.map((p) => ({
-        target: p,
-        params: masterchef,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-      chain,
-    })
-  ).output;
-  let lpPositions = [];
-  lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
-    });
-  });
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-  return balances;
-}
-
-async function ftmPool2(timestamp, block, chainBlocks) {
-  const farm = await calcPool2(
-    Contracts.fantom.chef,
-    Contracts.fantom.lps,
-    chainBlocks.fantom,
-    "fantom"
-  );
-
-  const farmV1 = await calcPool2(
-    Contracts.fantomV1.chef,
-    Contracts.fantomV1.lps,
-    chainBlocks.fantom,
-    "fantom"
-  );
-  return { ...farm, ...farmV1 };
+async function ftmPool2(api) {
+  return sumTokens2({ api, resolveLP: true, ownerTokens: [
+    [Contracts.fantom.lps, Contracts.fantom.chef],
+    [Contracts.fantomV1.lps, Contracts.fantomV1.chef],
+  ]})
 }
 
 module.exports = {

@@ -15,7 +15,7 @@ module.exports = {
   methodology: "We count of smart contract balance in coins",
   deadFrom: "2024-09-11", 
   hallmarks: [
-    [Math.floor(new Date('2024-09-11')/1e3), 'Closed due to lack of interest'],
+    ['2024-09-11', 'Closed due to lack of interest'],
   ],
 }
 

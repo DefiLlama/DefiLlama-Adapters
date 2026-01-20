@@ -1,65 +1,34 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const gatewayAbi = require("./gateway.abi.json");
+const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs');
 
 const UNITRADE_ORDERBOOK = "0xC1bF1B4929DA9303773eCEa5E251fDEc22cC6828";
 const UNITRADE_BRIDGE = "0x64B17B166090B8F9BA19C13Bf8D5dA951b2d653D";
 
-async function tvl(_, block) {
-  //getting active orders length
-  const activeOrdersLength = (
-    await sdk.api.abi.call({
-      target: UNITRADE_ORDERBOOK,
-      block,
-      abi: abi["abiGetActiveOrdersLength"],
-    })
-  ).output;
-  //getting order ids based on active orders length
-  const activeOrderIds = (
-    await sdk.api.abi.multiCall({
-      target: UNITRADE_ORDERBOOK,
-      abi: abi["abiGetOrderId"],
-      block,
-      calls: [...Array(parseInt(activeOrdersLength))].map((_, index) => ({
-        params: index,
-      })),
-    })
-  ).output.map((call) => call.output);
+const tokensAndOwners = [
+  [nullAddress, UNITRADE_BRIDGE],
+  [nullAddress, UNITRADE_ORDERBOOK],
+]
+
+async function tvl(api) {
+  const activeOrderIds = await api.fetchList({ lengthAbi: abi["abiGetActiveOrdersLength"], itemAbi: abi["abiGetOrderId"], target: UNITRADE_ORDERBOOK })
+
   //getting active orders based on order ids
-  const activeOrders = (
-    await sdk.api.abi.multiCall({
-      target: UNITRADE_ORDERBOOK,
-      abi: abi["abiGetOrder"],
-      block,
-      calls: activeOrderIds.map((orderId) => ({
-        params: orderId,
-      })),
-    })
-  ).output.map((orderCall) => orderCall.output);
+  const activeOrders = await api.multiCall({
+    target: UNITRADE_ORDERBOOK,
+    abi: abi["abiGetOrder"],
+    calls: activeOrderIds,
+  })
+
   //filtering out duplicate tokens
   const uniqueLockedTokenAddresses = [
     ...new Set(activeOrders.map((order) => order.tokenIn)),
   ];
-  //getting Unitrade orderbook balance of specified tokens
-  let balances = (
-    await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
-      calls: uniqueLockedTokenAddresses.map((address) => ({
-        target: address,
-        params: UNITRADE_ORDERBOOK,
-      })),
-      block,
-    })
-  ).output;
-
-  //formatting fetched data
-  balances = balances.reduce((acc, item) => {
-    return Object.assign(acc, { [item.input.target]: item.output });
-  }, {});
+  uniqueLockedTokenAddresses.map((address) => tokensAndOwners.push([address, UNITRADE_ORDERBOOK]))
+  
   //fetching first 10 gateway tokens and formatting output (temp fix until we can fetch addedTokens.length )
   const gatewayTokens = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       abi: gatewayAbi.abi,
       calls: new Array(10).fill(null).map((_, index) => ({
         target: UNITRADE_BRIDGE,
@@ -67,36 +36,14 @@ async function tvl(_, block) {
       })),
       permitFailure: true,
     })
-  ).output
-    .filter((item) => item.output !== null)
-    .map((item) => item.output.tokenAddress);
+  )
+    .filter((item) => item !== null)
+    .map((item) => item.tokenAddress);
   //fetching gateway contract balance of the gateway tokens
-  const gatewayBalances = (
-    await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
-      calls: gatewayTokens.map((address) => ({
-        target: address,
-        params: UNITRADE_BRIDGE,
-      })),
-      block,
-    })
-  );
-  //combining balance from orderbook and gateway
-  sdk.util.sumMultiBalanceOf(balances, gatewayBalances, true)
-  let ethBalanceOrderbook = (
-    await sdk.api.eth.getBalance({ target: UNITRADE_ORDERBOOK, block })
-  ).output;
-  let ethBalanceGateway = (
-    await sdk.api.eth.getBalance({ target: UNITRADE_BRIDGE, block })
-  ).output;
-  const combinedETHBalances =
-    parseInt(ethBalanceGateway) + parseInt(ethBalanceOrderbook);
-
-  balances[ADDRESSES.null] = combinedETHBalances.toFixed(0);
-  
-  return balances;
+  gatewayTokens.forEach((token) => tokensAndOwners.push([token, UNITRADE_BRIDGE]))
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
-  ethereum:{tvl},
+  ethereum: { tvl },
 };

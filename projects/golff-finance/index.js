@@ -11,4 +11,8 @@ Object.keys(config).forEach(chain => {
   // delete module.exports[chain].borrowed // removed because it is higher than deposited, probably will never be repaid
 })
 
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.ethereum.borrowed = ()  => ({})
+module.exports.heco.borrowed = ()  => ({})
+
 module.exports.deadFrom = '2022-12-15'  // Heco chain is retired

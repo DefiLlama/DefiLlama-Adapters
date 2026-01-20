@@ -3,7 +3,7 @@ const comptroller = "0x0f390559f258eb8591c8e31cf0905e97cf36ace2"
 
 module.exports = {
     hallmarks: [
-        [1647302400, "Reentrancy attack"],
+        // [1647302400, "Reentrancy attack"],
         [1681541920, "Protocol hacked (oc Optimism)"],
 
     ],

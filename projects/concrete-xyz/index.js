@@ -1,19 +1,36 @@
-const { sumERC4626VaultsExport } = require("../helper/erc4626");
+const { getConfig } = require('../helper/cache')
 
-const config = {
-  berachain: [
-    '0x59E24F42caE1B82c8b2Dc79Ea898F2F8b4986dfC',
-    '0xDa785861aa6fd80D1388F65693Cd62D8a1E2956a',
-    '0xf0d94806e6E5cB54336ED0f8De459659718F149C',
-    '0xAEbeCae444ac70AbA0385feC4cb11eb26a12C92B',
-  ]
+const URL = 'https://apy.api.concrete.xyz/v1/vault:tvl/all'
+
+const abis = {
+  asset: "address:asset",
+  totalAssets: "uint256:totalAssets",
+  // getStrategies: "function getStrategies() view returns ((address strategy, (uint256 index, uint256 amount) allocation)[])"
 }
 
-Object.keys(config).forEach(chain => {
-  const vaults = config[chain]
-  module.exports[chain] = {
-    tvl: sumERC4626VaultsExport({ vaults, isOG4626: true, })
-  }
-})
+const excludeVaults = [
+  '0x4def5abcfba7babe04472ee4835f459daf4bd45f',
+  '0x5854c7693459c6e316a96565776b72d94ee0e5fd',
+  '0xb04e166fd5d7078bb7b3412406609fd92855a08f',
+  '0x38f20ad5a233c1b2c91ce987853ff3201540db53',
+]
 
-module.exports.doublecounted = true
+const tvl = async (api) => {
+  const chainId = api.chainId
+  const data = await getConfig('concrete-xyz/vaults', URL)
+  const vaults = Object.values(data[chainId]).map(v => v.address).filter(a => a && !excludeVaults.includes(String(a).toLowerCase()))
+
+  const assets = await api.multiCall({ calls: vaults, abi: abis.asset })
+  // there is a weird bug when totalAssets return 0, we get an error, maybe because total shares is 0?
+  const totalAssets = await api.multiCall({ calls: vaults, abi: abis.totalAssets, permitFailure: true })
+
+  for (let i = 0; i < vaults.length; i++) {
+    if (!totalAssets[i]) continue;
+    api.add(assets[i], totalAssets[i])
+  }
+}
+
+const chains = ['ethereum', 'berachain', 'arbitrum', 'katana', 'stable']
+chains.forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

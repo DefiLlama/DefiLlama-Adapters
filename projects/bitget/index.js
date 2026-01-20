@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 
@@ -24,6 +25,7 @@ const config = {
       "0x1084203d70950bd7a93aef75eb32a51df2422a07",
       "0xbcf6011192399df75a96b0a4ce47c4820853e9e5",
       "0x864a7fa57e0f8902a2de4892e925f1272edbe3fa",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
     ],
   },
   ethereum: {
@@ -60,7 +62,6 @@ const config = {
       "0x4d216d2682f3997f6c19420beee4530d08d0ea5f", // add on 27/05/2024
       "0xdbe46a02322e636b92296954637e1d7db9d5ed26", // add on 27/05/2024
       "0xbff5092f83bd810e0926068b89633bf66eaa037b",
-      ADDRESSES.ethereum.CVX,
       "0x80097a87a7dcde470e34c10b5cceb85abf83b531",
       "0xe4786cfe980ef5a6428a2fffafabf24f1fc79b64",
       "0x4c1d7de286d7c20df5f2ba44b3bc706c1e03bf13",
@@ -68,11 +69,8 @@ const config = {
       "0x14b5f559c27bc00c39f668a88471498d68d18768",
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x3c2a309d9005433c1bc2c92ef1be06489e5bf258",
-      "0xa7fc83c0cdf12cdccb8e7e5350994aa8ae881c9a",
       "0xe368759445438b8ec4e50bf4094e939341174e62",
       "0x2dd64ee5ea8706097a5674154288989e3dbe3a05",
-      "0x85cf18558263505e1152c0e478763aa68b4e8f31",
-      "0x72049af618eba3a50e9e4eb85bf4476bff0a76ca",
       "0xa700c091687afbfada6b84b5e02a5e672ee35597",
       "0xd509ff5d6e530401b53cc7d3b80607824d85ff60",
       "0x255e91ab794da40d39a5aceff20d98841df873af",
@@ -83,7 +81,15 @@ const config = {
       "0x9c9c8f4f33679ce7f2c46cbf8ab4feb4cf45fe46",
       "0x8028270e06fca18e212306a7c93bfee52b440fc5",
       "0x0635ac6675e05c7f58383493bb7d1a513cd65688",
+      "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+      "0x5bdf85216ec1e38d6458c870992a69e38e03f7ef",
+      "0xec96bbbe895301710a89a06546264ebb4f0cc546",
+      "0x95ccca6d1859ae5670c2213940c96dcb2e177fcb"
     ],
+    blacklistedTokens: [
+      "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
+    ]
   },
   tron: {
     owners: [
@@ -132,6 +138,7 @@ const config = {
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x0c4681e6c0235179ec3d4f4fc4df3d14fdd96017",
       "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
     ],
   },
   optimism: {
@@ -170,12 +177,14 @@ const config = {
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
       "0x9b0cb31f3e9232196aeaa7cac03ea95c5a4f0e35",
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
     ],
   },
   ripple: {
     owners: [
       "r3AEihLNr81VYUf5PdfH5wLPqtJJyJs6yY",
       "rGDreBvnHrX1get7na3J4oowN19ny4GzFn",
+      "rwTTsHVUDF8Ub2nzV2oAeWxfJzUvobXLEf",
     ],
   },
   solana: {
@@ -189,6 +198,8 @@ const config = {
       "57WSBnNTC2MaqpY6NWLdNjhrELced4jSGV2hLSpjzct9",
       "DP1FqoBnE23QNNz4LpT9FCQvETdJN4nph5c11NiinrGg",
       "AyhsmFptkM251V1AoH2gf8d4QUnxUkkmaDqFfFwBwGni",
+      "4S8C1yrRZmJYPzCqzEVjZYf6qCYWFoF7hWLRzssTCotX",
+      "7TWnq4WeYcwQWBCwKeEX2Q9xqVtthPGkB7adNvueuVuh"
     ],
   },
   metis: {
@@ -206,58 +217,92 @@ const config = {
     owners: [ //only wallets with more than 50k
       "UQDJlZqZfh1OQ4PY2ze4bSEBznjc8fGzkE2YiP5XLvDv1JNr",
       // "EQCnRoi95R9jLVrPONxTWEMMCuIlHBsYZjYZW5JwtoecbRl6",
-     // "EQC5Jj1PfKD8PmwxdBDi47mtbLahHV0Qkrs39lVl2A4nPlPC",
+      // "EQC5Jj1PfKD8PmwxdBDi47mtbLahHV0Qkrs39lVl2A4nPlPC",
       // "EQAkKBTk1NuRH9wuy5qJFesfCoZMvZXa2NV9mCet3t3ndwkH",
       // "EQDN9_DXwJA28GQnLjxCntVwvknvKes6c1tku8F5FQc3MkZo",
-    //  "EQAGQcXOz5QWPXW_faObcN7HfSx8ihstAzoQTV9ckqmrDfcQ",
-    //  "EQCUlDMK5NDVOmpbLAzGVkXfCXpmEJgKWHL4J7oHmuNkPxaH",
-    //  "EQAWLm0Xut7koqsFxI2j3YBvjI1M_tVHXFrgTysXvF4NQWu5",
+      //  "EQAGQcXOz5QWPXW_faObcN7HfSx8ihstAzoQTV9ckqmrDfcQ",
+      //  "EQCUlDMK5NDVOmpbLAzGVkXfCXpmEJgKWHL4J7oHmuNkPxaH",
+      //  "EQAWLm0Xut7koqsFxI2j3YBvjI1M_tVHXFrgTysXvF4NQWu5",
       // "EQAGR25YDiUNCr7Fw2WnEYM0g8WB1XuQi-N9Vr2w4zjDEhg5",
-    //  "EQDpwKJP-qaqTyKIkOca6VUL_FOmxX5kO8McJA4YcnrBzlwi",
-    //  "EQAzZQL6-D71tTLTFbpxRQtmHJDoP85k2Lwf0r9kLzVV2VRy",
-    //  "EQCzCMf5tPWW9iUBdYhZclSYcbBccO02Gf1ak5QB7qly5Gsl",
-    //  "EQDi0d8gazctsfO4kOYNGFtnqgyfG2tv9goFCRyMAbQKxMA3",
-    //  "EQB6DclNqfSLlo37h7441Pq3KGKI23oE0wgf7uF3N22QicZ7",
-    //  "EQCHhe9euw_STGkR0Q9DwAlh6XSPpUKXoaxRfjxf52uwvmGB",
-    //  "EQAhO2gEwgghNaSoA9qOOzDP7VGu6a8q0hADNLf0cR07zMQr",
-    //  "EQBXPf6ZSQoEFwPpd-RyQTXFuL6gvqZ4OWEiR0UcqdXEywxy",
-    //  "EQDeJRmlJ95-HUwQKL23TgIrKKbjcOT-w_wn2NlxMI-Zu6i2",
-    //  "EQAPGaGPsc-vwzQB04IyW63UkbS08btCmfD51vvHm3FQFYbg",
-    //  "EQA182-9Kw_8YCugScsCS03ln3WVvp5gZpLU7lbS3xst3GiN",
-    //  "EQDqltnjUhoZxMd022XDb8egHj2IQOlegwXD0rfJL1d8eyOZ",
-    //  "EQDY6SAYmiZ2dc3qWZkqSB1JxPgyluCBNJe5DCeUBXKVvpC8",
-    //  "EQB5AOHMT1UHXa4WBh_LL3HWqPeYMSoCNfDarrUOSSiI-2LE",
-    //  "EQBi8zmTQRJNfGhdpG2RoHqhSWhN05fH5f6YaCCom4dsAnrT",
-    //  "EQBcPW3DG9p9UG-FiOVbq6BiXAxTWRYSgwkeSHK9vAHJauTe",
-    //  "EQAMReXSXKXMgNJsiQbeUYqG_BoETp6V11p2AQ0hBalCPUvU",
-    //  "EQD7T5jBR_4NTYpyQTsbE6UTcSgM31GM-tUQsxzwWAW8XyuS",
-    //  "EQB8Nfcr7iJARqpnwHI_dowkRu9k43b8AMj-p4RJTXosLWWv",
+      //  "EQDpwKJP-qaqTyKIkOca6VUL_FOmxX5kO8McJA4YcnrBzlwi",
+      //  "EQAzZQL6-D71tTLTFbpxRQtmHJDoP85k2Lwf0r9kLzVV2VRy",
+      //  "EQCzCMf5tPWW9iUBdYhZclSYcbBccO02Gf1ak5QB7qly5Gsl",
+      //  "EQDi0d8gazctsfO4kOYNGFtnqgyfG2tv9goFCRyMAbQKxMA3",
+      //  "EQB6DclNqfSLlo37h7441Pq3KGKI23oE0wgf7uF3N22QicZ7",
+      //  "EQCHhe9euw_STGkR0Q9DwAlh6XSPpUKXoaxRfjxf52uwvmGB",
+      //  "EQAhO2gEwgghNaSoA9qOOzDP7VGu6a8q0hADNLf0cR07zMQr",
+      //  "EQBXPf6ZSQoEFwPpd-RyQTXFuL6gvqZ4OWEiR0UcqdXEywxy",
+      //  "EQDeJRmlJ95-HUwQKL23TgIrKKbjcOT-w_wn2NlxMI-Zu6i2",
+      //  "EQAPGaGPsc-vwzQB04IyW63UkbS08btCmfD51vvHm3FQFYbg",
+      //  "EQA182-9Kw_8YCugScsCS03ln3WVvp5gZpLU7lbS3xst3GiN",
+      //  "EQDqltnjUhoZxMd022XDb8egHj2IQOlegwXD0rfJL1d8eyOZ",
+      //  "EQDY6SAYmiZ2dc3qWZkqSB1JxPgyluCBNJe5DCeUBXKVvpC8",
+      //  "EQB5AOHMT1UHXa4WBh_LL3HWqPeYMSoCNfDarrUOSSiI-2LE",
+      //  "EQBi8zmTQRJNfGhdpG2RoHqhSWhN05fH5f6YaCCom4dsAnrT",
+      //  "EQBcPW3DG9p9UG-FiOVbq6BiXAxTWRYSgwkeSHK9vAHJauTe",
+      //  "EQAMReXSXKXMgNJsiQbeUYqG_BoETp6V11p2AQ0hBalCPUvU",
+      //  "EQD7T5jBR_4NTYpyQTsbE6UTcSgM31GM-tUQsxzwWAW8XyuS",
+      //  "EQB8Nfcr7iJARqpnwHI_dowkRu9k43b8AMj-p4RJTXosLWWv",
       "EQDAflHltpSTd1j0X0ADBxyE9MSmi9sWiiLD1si4nNYYb7Kq",
-    //  "EQBAdstQfrjD8XODZjA6OL3sE64rEjDFSPSjgXdllH4EYbL_",
-    //  "EQCJCWcpv6SSYKI9XpCOM8wazXTay7Y9eJa1DjvqLrBj0DA4",
-    //  "EQBczmMu9joi0XxD36P0UDZqCmCVZ6lXkQ8EnX73Dz8bFxtS",
-    //  "EQDrU5ouMx-D_RBtqKuqPGpGvS-O4B-kUnXW-q7RulrPmAfa",
-    //  "EQCkEpUgZvV1vD4n1Zs3SSdxInEQh1QkxubbrmHonEywvJ5a",
-    //  "EQDHy0OTba2_affHgdhHNtC8DW0CjAYdM6np6HX8yjqFo1hL",
-    //  "EQA5O1iYS2jpYbP2_z0WCbWRmyiaDQ-thu-x_Jkhzu-DsnEc",
-    //  "EQCYL0iLg5WpiX2G8IBeFIGNVCy7LQ_hyf5iZ9A3ezFg5Atl",
-    //  "EQClK4F-Kyfg7-h7CFMedd4NOMQN3Q_GUXd8b1i863SAdeR3",
-    //  "EQC9yQc4ukdiARwzowoBnlQSI_t_WrW4vM3PZAJtlzmxkRGj",
-    //  "EQBCDb94YxZuR4CsuOu4G9N0pm1U6ezgOhHEBiEX2LWD2YJi",
-    //  "EQDKubNbxKBrbng_VL6CiPWG43crC3zogxRi-kSzxxPjw35F",
-    //  "EQBtm4dCmA6ee0TdGB7OM_ugptfPSJQnZ9t8lEn3333sNE0u",
-    //  "EQB9FPf68No-lbXCKDRKdswuMr1tAFdXKb5wb04CAtkTgPu7",
-    //  "EQDRb6dbCI6kvhE5Mdnp60wc7fNEU7bpTyZkvGnmOLMqv5tr",
-    //  "EQBABRMAjj3FdNo6KkeSP3wLrSL1oBPgogH_vojzNnI0ZI9l",
-    //  "EQAhwpa_TxKq4vPppejylixsCucMNrOJUUHOsEk6TP2ExnOS",
-    //  "EQDQPzhpD1ygMNgnPiD6k6d2S0FWMdJasy3Z3eOQTujARKDD",
-    //  "EQA8Q5etDAwMseoEFLPfN8xUL9wQhi3hNzs4eFlXNIuB81Tj",
-    //  "EQA70IHk3sI76igys6-kLC0TLxXo54s0qAwdbSRUOpqgneV3",
+      //  "EQBAdstQfrjD8XODZjA6OL3sE64rEjDFSPSjgXdllH4EYbL_",
+      //  "EQCJCWcpv6SSYKI9XpCOM8wazXTay7Y9eJa1DjvqLrBj0DA4",
+      //  "EQBczmMu9joi0XxD36P0UDZqCmCVZ6lXkQ8EnX73Dz8bFxtS",
+      //  "EQDrU5ouMx-D_RBtqKuqPGpGvS-O4B-kUnXW-q7RulrPmAfa",
+      //  "EQCkEpUgZvV1vD4n1Zs3SSdxInEQh1QkxubbrmHonEywvJ5a",
+      //  "EQDHy0OTba2_affHgdhHNtC8DW0CjAYdM6np6HX8yjqFo1hL",
+      //  "EQA5O1iYS2jpYbP2_z0WCbWRmyiaDQ-thu-x_Jkhzu-DsnEc",
+      //  "EQCYL0iLg5WpiX2G8IBeFIGNVCy7LQ_hyf5iZ9A3ezFg5Atl",
+      //  "EQClK4F-Kyfg7-h7CFMedd4NOMQN3Q_GUXd8b1i863SAdeR3",
+      //  "EQC9yQc4ukdiARwzowoBnlQSI_t_WrW4vM3PZAJtlzmxkRGj",
+      //  "EQBCDb94YxZuR4CsuOu4G9N0pm1U6ezgOhHEBiEX2LWD2YJi",
+      //  "EQDKubNbxKBrbng_VL6CiPWG43crC3zogxRi-kSzxxPjw35F",
+      //  "EQBtm4dCmA6ee0TdGB7OM_ugptfPSJQnZ9t8lEn3333sNE0u",
+      //  "EQB9FPf68No-lbXCKDRKdswuMr1tAFdXKb5wb04CAtkTgPu7",
+      //  "EQDRb6dbCI6kvhE5Mdnp60wc7fNEU7bpTyZkvGnmOLMqv5tr",
+      //  "EQBABRMAjj3FdNo6KkeSP3wLrSL1oBPgogH_vojzNnI0ZI9l",
+      //  "EQAhwpa_TxKq4vPppejylixsCucMNrOJUUHOsEk6TP2ExnOS",
+      //  "EQDQPzhpD1ygMNgnPiD6k6d2S0FWMdJasy3Z3eOQTujARKDD",
+      //  "EQA8Q5etDAwMseoEFLPfN8xUL9wQhi3hNzs4eFlXNIuB81Tj",
+      //  "EQA70IHk3sI76igys6-kLC0TLxXo54s0qAwdbSRUOpqgneV3",
       "EQDJlZqZfh1OQ4PY2ze4bSEBznjc8fGzkE2YiP5XLvDv1M6u",
       "EQAXl6XExQorMSzpkn_28S79OwtY_zEURRGMLS5kMStdeQng",
       "EQBggwBbNUqxxHhaqM6Ck-5cnBgukkjyfpyQdPNcFjQggwrJ",
     ],
   },
+  klaytn: {
+    owners: ['0x0639556f03714a74a5feeaf5736a4a64ff70d206',],
+  },
+  base: {
+    owners: ['0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54',],
+  },
+  hyperliquid: {
+    owners: ['0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54',],
+  },
+  sonic: {
+    owners: ['0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54',],
+  },
+  cardano: {
+    owners: [
+      "Ae2tdPwUPEZKnykUqXyYQxqJSnADNkm4ELUnyqZUBHcCrNJVDqozLYCt9Jv",
+    ]
+  },
+  sui: {
+    owners: [
+      "0xce7e1e38f996cdb2c4b78c1d187d23c1001d7b266f181498677672f9b1e24ea0",
+      "0xb7b7a848fdc47e22e5a04816bd8d37143a164617d3fd16944f586efd1edfc4bb",
+      "0x9529d8d9621874f60e342e3f0f049157eda68b2d5085f6526b9fced8913b97a8",
+      "0x3a1520d6be3a16f89655f542f6e5b050d3065ff67d7287ed8005259c4a0b36b7",
+      "0x98252cfb5f8481cc4e395deb88000ffff5ab8fdd870be91fc48abfa83ec21a10",
+    ]
+  },
 };
 
-module.exports = cexExports(config);
+const withdrawalAddresses = [
+  '0x334cf9ceef9178c7a9bb5495ac8790e9bed316a3',
+  '0x1d5ba5414f2983212e03bf7725add9eb4cdb00dc',
+]
+
+module.exports = mergeExports([
+  cexExports(config),
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])

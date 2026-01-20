@@ -1,9 +1,10 @@
 const axios = require('axios')
+const { getEnv } = require('../../env')
 
 const axiosObj = axios.create({
   baseURL: 'https://cardano-mainnet.blockfrost.io/api/v0',
   headers: {
-    'project_id': 'mai'+'nnetcxT8VaeCgVMzMTSe'+'zZijWlVkyh6XytpS',
+    'project_id': getEnv('BLOCKFROST_PROJECT_ID'),
     'Content-Type': 'application/json'
   },
   timeout: 300000,
@@ -59,6 +60,10 @@ async function addressesUtxosAssetAll(address, asset) {
   return addresses
 }
 
+async function getTxUtxos(tx_hash) {
+  const { data } = await axiosObj.get(`txs/${tx_hash}/utxos`)
+  return data
+}
 
 async function getTxsRedeemers(utxo) {
   const { data } = await axiosObj.get(`txs/${utxo}/redeemers`)
@@ -80,13 +85,20 @@ async function getTokensMinted(tokenId){
   return Number(data.quantity)
 }
 
+async function getAccountAddresses(account) {
+  const { data } = await axiosObj.get(`/accounts/${account}/addresses`)
+  return data
+}
+
 module.exports = {
   getAssets,
   getAddressesUTXOs,
+  getTxUtxos,
   getTxsRedeemers,
   getTxsMetadata,
   assetsAddresses,
   addressesUtxosAssetAll,
   getTokensMinted,
   getScriptsDatum,
+  getAccountAddresses
 }

@@ -1,23 +1,10 @@
 const ADDRESSES = require('./coreAssets.json')
-const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
-const erc20 = require('./abis/erc20.json')
-
-async function returnBalance(token, address, block, chain) {
-  const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
-  let { output: balance } = await sdk.api.erc20.balanceOf({ target: token, owner: address, chain, block })
-  balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
-  return parseFloat(balance);
-}
-
-async function returnEthBalance(address) {
-  const output = await sdk.api.eth.getBalance({ target: address })
-  let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
-  return parseFloat(ethAmount);
-}
+const erc20 = require('./abis/erc20.json');
+const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
   return axios.get(url)
@@ -48,6 +35,7 @@ const blacklisted_LPS = new Set([
   '0x93669cfce302c9971169f8106c850181a217b72b',
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
   '0x524cab2ec69124574082676e6f654a18df49a048',
+  '0x98b540fa89690969D111D045afCa575C91519B1A',
 ].map(i => i.toLowerCase()))
 
 function isICHIVaultToken(symbol, token, chain) {
@@ -73,6 +61,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
+  if (chain === 'fuse' && ['VLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP', 'GLP', 'WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['DLP'].includes(symbol)) return false
   if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
@@ -259,7 +248,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel']
+    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel', 'move']
     if (!token.startsWith('0x') || blacklistedChains.includes(chain)) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
@@ -334,52 +323,41 @@ function once(func) {
   return wrapped
 }
 
-
-function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
   return async (api) => {
-    let fetchedValidators = skipValidators;
-    let size = 200;
-    api.sumTokens({ owner: withdrawalAddress, tokens: [nullAddress] })
-    do {
-      const validators = (
-        await http.get(
-          `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
-        )
-      ).data.map((i) => i.publickey);
-      fetchedValidators += validators.length;
-      api.log("Fetching balances for validators", validators.length);
-      await addValidatorBalance(validators);
-      await sleep(10000);
-    } while (fetchedValidators % size === 0);
 
+    if (!withdrawalAddress && !withdrawalAddresses?.length)
+      throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
+
+    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    api.addGasToken(await beacon.balance(addresses))
     return api.getBalances()
-
-
-    async function addValidatorBalance(validators) {
-      if (validators.length > 100) {
-        const chunks = sliceIntoChunks(validators, 100);
-        for (const chunk of chunks) await addValidatorBalance(chunk);
-        return;
-      }
-
-      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
-        indicesOrPubkey: validators.join(","),
-      });
-
-
-      data.forEach((i) => api.addGasToken(i.balance * 1e9));
-    }
-  }
+  };
 }
 
+function permitChainFailures(exports, chains) {
+  Object.keys(exports).forEach(chain => {
+    if (!chains.includes(chain)) return;
+    const chainObj = exports[chain]
+    Object.keys(chainObj).forEach(key => {
+      const fn = chainObj[key]
+      chainObj[key] = async (api, ...params) => {
+        try {
+          return await fn(api, ...params)
+        } catch (e) {
+          sdk.log(`Permitting failure for ${chain} ${key}: ${e.message}`)
+          return {}
+        }
+      }
+    } )
+  })
+}
 
 module.exports = {
   log,
   createIncrementArray,
   fetchURL,
   postURL,
-  returnBalance,
-  returnEthBalance,
   isLP,
   mergeExports,
   getBalance,
@@ -395,4 +373,5 @@ module.exports = {
   once,
   isICHIVaultToken,
   getStakedEthTVL,
+  permitChainFailures,
 }

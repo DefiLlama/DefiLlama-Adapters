@@ -4,7 +4,6 @@ module.exports = {
 
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
   ethereum: {

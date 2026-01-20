@@ -24,7 +24,7 @@ async function tvl() {
   return balances
 }
 
-async function staking() {
+async function staking(api) {
   var q1 =  `{
       tokenStakings {
         contractAddress
@@ -42,12 +42,8 @@ async function staking() {
   var endpoint = sdk.graph.modifyEndpoint('Pg2cbxfPGJtqRBwMutR69oapbodKmcXuQRsxPRaK57S');
   var graphQLClient = new GraphQLClient(endpoint)
   const results = await graphQLClient.request(q1)
-  const keepPoolStaked = await utils.returnBalance('0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC', '0xCf916681a6F08fa22e9EF3e665F2966Bf3089Ff1')
-  var keepStaked = parseFloat(results.tokenStakings[0].totalTokenStaking)+keepPoolStaked
-  return {
-    'keep-network': keepStaked
-  }
-  
+  api.addCGToken('keep-network', Math.round(results.tokenStakings[0].totalTokenStaking))
+  return api.sumTokens({ owner:'0xCf916681a6F08fa22e9EF3e665F2966Bf3089Ff1', token: '0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC'})
 }
 
 module.exports = {

@@ -33,8 +33,9 @@ async function tvl() {
   ]);
 
   const balances = {};
+  const tokenAddresses = Object.keys(tokens).filter(address => typeof address === 'string' && address.length > 0 && address.includes('.'));
   await Promise.all([
-    addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances),
+    addTokenBalances(tokenAddresses, PEMBROCK_CONTRACT, balances),
     addFarmBalances(farms, seeds, balances)
   ]);
   return balances;
@@ -47,10 +48,7 @@ async function staking() {
 }
 
 module.exports = {
-  near: {
-    tvl,
-    staking,
-  },
+  near: { tvl, staking },
   hallmarks: [
     [1666648800,"DCB withdrawn liquidity from Ref Finance's "]
   ],

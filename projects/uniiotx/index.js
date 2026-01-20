@@ -19,6 +19,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  start: '2023-09-14',
   methodology: 'Counts the total amount of IOTX under management by the IOTXStaking contract.',
   iotex: {
     tvl,

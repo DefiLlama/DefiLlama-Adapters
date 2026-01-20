@@ -4,6 +4,7 @@ const config = {
   ethereum: {},
   arbitrum: {},
   base: {},
+  linea: {},
 }
 
 Object.keys(config).forEach(chain => {

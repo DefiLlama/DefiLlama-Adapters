@@ -11,15 +11,13 @@ module.exports = {
   methodology: "TVL is a sum of the locked capital in each liquidity pool",
 };
 
+const tvl = async (api) => {
+  if (api.chain !== 'eclipse') return sumTokens2({ owner: config[api.chain], api })
+  const { tokensData } = await getConfig('invariant/eclipse', 'https://stats.invariant.app/svm/full_snap/eclipse-mainnet')
+  const tokens = tokensData.map(t => t.address)
+  return sumTokens2({ owner: config[api.chain], tokens, api })
+}
+
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = {
-    tvl: async (api) => {
-      if (chain === 'eclipse') {
-        const { tokensData } = await getConfig('invariant/eclipse', 'https://stats.invariant.app/svm/full_snap/eclipse-mainnet')
-        const tokens = tokensData.map(t => t.address)
-        return sumTokens2({ owner: config[chain], tokens, api })
-      }
-      return sumTokens2({ owner: config[chain], api })
-    }
-  }
+  module.exports[chain] = { tvl }
 })
