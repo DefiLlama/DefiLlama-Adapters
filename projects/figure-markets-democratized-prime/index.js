@@ -19,43 +19,45 @@ const collateralizedAssets = [
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy' // YLDS HELOC+
 ]
 
-const getPools = async (api) => {
-    let asset = collateralizedAssets[0]
-    await Promise.all(demoPrimePools.map(async pool => {
-        const poolHash = (await queryV1Beta1({
-            chain: 'provenance',
-            url: `metadata/v1/scope/${pool}/record/pool-details`
-        })).records[0]?.record?.outputs[0]?.hash
-        if (poolHash) {
-            const poolInfo = JSON.parse(poolHash)
-            if (poolInfo.leveragePool.collateralAssets.length > 0 && collateralizedAssets.includes(poolInfo.leveragePool.collateralAssets[0])) {
-                asset = poolInfo.leveragePool.collateralAssets[0]
-                api.add(asset, poolInfo.collateralValue)
-            }
-        }
-    }))
-}
+// Helper to fetch and cache pool data
+let poolDataPromise;
+const fetchAllPoolData = () => {
+    if (!poolDataPromise) {
+        poolDataPromise = Promise.all(demoPrimePools.map(async pool => {
+            const response = await queryV1Beta1({
+                chain: 'provenance',
+                url: `metadata/v1/scope/${pool}/record/pool-details`
+            });
+            const poolHash = response.records[0]?.record?.outputs[0]?.hash;
+            return poolHash ? JSON.parse(poolHash) : null;
+        }));
+    }
+    return poolDataPromise;
+};
 
 const tvl = async (api) => {
-    await getPools(api)
-    return sumTokens2({ api })
-}
+    const pools = await fetchAllPoolData();
+    pools.forEach(poolInfo => {
+        if (!poolInfo) return;
+        const collateralAssets = poolInfo.leveragePool?.collateralAssets ?? [];
+        if (collateralAssets.length > 0 && collateralizedAssets.includes(collateralAssets[0])) {
+            api.add(collateralAssets[0], poolInfo.collateralValue);
+        }
+    });
+    return sumTokens2({ api });
+};
 
 const borrowed = async (api) => {
-    await Promise.all(demoPrimePools.map(async pool => {
-        const poolHash = (await queryV1Beta1({
-            chain: 'provenance',
-            url: `metadata/v1/scope/${pool}/record/pool-details`
-        })).records[0]?.record?.outputs[0]?.hash
-
-        if (poolHash) {
-            const poolInfo = JSON.parse(poolHash)
-            let asset = poolInfo.leveragePool.asset
-            let borrowed = poolInfo.currentPeriod.totalLoanAmount
-            api.add(asset, borrowed)
+    const pools = await fetchAllPoolData();
+    pools.forEach(poolInfo => {
+        if (!poolInfo) return;
+        const asset = poolInfo.leveragePool?.asset;
+        const loanAmount = poolInfo.currentPeriod?.totalLoanAmount;
+        if (asset && loanAmount) {
+            api.add(asset, loanAmount);
         }
-    }))
-}
+    });
+};
 
 module.exports = {
     timetravel: false,
@@ -66,4 +68,4 @@ module.exports = {
         tvl,
         borrowed,
     }
-}
+};
