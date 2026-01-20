@@ -281,13 +281,14 @@ function checkExportKeys(module, filePath, chains) {
   filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
 
   if (filePath.length > 2
-    || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 &&
-      !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
-        || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
-        || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
-      )))
-    process.exit(0)    
+  || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0])))
+  || (filePath.length === 2 &&
+    !(['api.js', 'index.js', 'apiCache.js'].includes(filePath[1])
+      || ['treasury', 'entities'].includes(filePath[0])
+      || /v\d+\.js$/.test(filePath[1])
+    )))
+  process.exit(0)
+
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
