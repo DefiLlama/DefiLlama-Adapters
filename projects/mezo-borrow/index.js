@@ -1,6 +1,6 @@
 const { getLiquityTvl } = require("../helper/liquity.js");
 
-// TroveManager holds total system collateral (deposited ETH)
+// TroveManager holds total system collateral (deposited BTC)
 const TROVE_MANAGER_ADDRESS = "0x94AfB503dBca74aC3E4929BACEeDfCe19B93c193"
 
 module.exports = {
