@@ -213,12 +213,19 @@ async function tvl(api) {
 
   // Step 2: Get prices for each level from the contract
   // NFTLevel enum values: 1-6 (C, B, A, S, SS, SSS)
+  const MAX_NFT_LEVEL = 6
+  const MIN_NFT_LEVEL = 1
   const levels = rows
     .map(row => {
       const level = parseInt(row.level, 10)
       return isNaN(level) ? null : level
     })
-    .filter(level => level !== null && level > 0)
+    .filter(level => 
+      level !== null && 
+      Number.isInteger(level) && 
+      level >= MIN_NFT_LEVEL && 
+      level <= MAX_NFT_LEVEL
+    )
   
   if (levels.length === 0) {
     sdk.log('No valid levels found in Dune query results')
