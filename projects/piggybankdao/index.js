@@ -1,4 +1,4 @@
-const { stakingPricedLP } = require('../helper/staking')
+const { stakingPriceLP } = require('../helper/staking')
 
 
 const PB_TOKEN = "0x0E75CDb914DdCcA683357dD94d26Caa39BC14B16"
@@ -12,6 +12,6 @@ module.exports={
     misrepresentedTokens: true,
     avax:{
         tvl: () => ({}),
-        staking: stakingPricedLP(STAKING_ADDRESS, PB_TOKEN, CHAIN, LP_TOKEN, COREASSETNAME, true),
+        staking: stakingPriceLP(STAKING_ADDRESS, PB_TOKEN, LP_TOKEN, COREASSETNAME, true),
     }
 }

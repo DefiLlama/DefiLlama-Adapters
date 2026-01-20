@@ -32,6 +32,8 @@ const config = {
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
       '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
       '0x49841B9bb1dc499B36C4F618bf8feAC85fDFE889',
+      '0xaCA8FB892Ac27d2f84Fa78EDb32F3AD221538c3e',
+      '0xbA87587622a808547Ee16c79Be7f19ba356feD9d',
     ],
   },
   bitcoin: {
@@ -75,6 +77,8 @@ const config = {
       'C57RBagtGDYpTGxwG92gSKQ5ptQr4Wa9qz3yDBB6uu1B',
       'EbUkjPNjzcbjK3iELhZS6PpNCr62pUsE7VkUvNdQpEYB',
       'FQxGUUAX3BdFArA2XdvPcRHt4CmRMCw5wLt8F5uDXmwa',
+      'EKtwdf5gFPb58WJPENcS8qqPRoAkEwDLHfHk2S2nbTnB',
+      'HGqHR9Wm6ETAgQHj7q1qcmywXHfDx48VuVovQpGTgsHU',
     ],
   },
   polkadot: {
@@ -200,8 +204,8 @@ const config = {
   },
   sei: {
     owners: [
-      'sei1cuqk29f94hnp7zwtuhl0aw69kud5ngdaxqa3u2',
-      'sei105zqcfv3z9z79yhsfg8v6rql3huzhyfpg4mpfu',
+      '0x28cC933fecf280E720299b1258e8680355D8841F',
+      '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
     ]
   },
   tron: {

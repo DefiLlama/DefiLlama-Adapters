@@ -53,7 +53,7 @@ const xrplTvl = async (api) => {
         throw new Error('Invalid API response');
     }
     const { totalBalance } = partnerData;
-    api.add(XRPL_RLUSD_ADDRESS, totalBalance * 1e6);
+    api.add(ADDRESSES.ripple.XRP, totalBalance * 1e6);
 }
 
 const ethereumTvl = async (api) => {

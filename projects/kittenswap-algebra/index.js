@@ -7,6 +7,6 @@ const config = {
 Object.keys(config).forEach(chain => {
   const graphURL = config[chain]
   module.exports[chain] = {
-    tvl: uniV3GraphExport({ graphURL, name: 'kittenswap-algebra'+chain})
+    tvl: uniV3GraphExport({ graphURL, name: 'kittenswap-algebra'+chain, blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'] })
   }
 })

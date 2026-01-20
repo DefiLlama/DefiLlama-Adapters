@@ -12,7 +12,8 @@ module.exports = {
         '0xD9A442856C234a39a81a089C06451EBAa4306a72', // pufETH,
         '0x853d955aCEf822Db058eb8505911ED77F175b99e', // FRAX,
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G,
-        '0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1', // WTON
+        '0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1', // WTON,
+        '0x4d224452801ACEd8B2F0aebE155379bb5D594381', // APE
       ],
       holders: [
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal
@@ -110,7 +111,8 @@ module.exports = {
         '0x9E758B8a98a42d612b3D38B66a22074DC03D7370', // SIS,
         '0x3b60FF35D3f7F62d636b067dD0dC0dFdAd670E4E', // LADYS,
         '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F', // FRAX,
-        '0x1A6B3A62391ECcaaa992ade44cd4AFe6bEC8CfF1', // UXLINK
+        '0x1A6B3A62391ECcaaa992ade44cd4AFe6bEC8CfF1', // UXLINK,
+        '0x7f9FBf9bDd3F4105C478b996B648FE6e828a1e98', // APE
       ],
       holders: [
         '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9' // portal
@@ -305,8 +307,8 @@ module.exports = {
     {
       name: 'sei',
       tokens: [
-        '0xB75D0B03c06A926e488e2659DF1A861F860bD3d1', // USDT,
         '0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1', // USDC.n,
+        '0xB75D0B03c06A926e488e2659DF1A861F860bD3d1', // USDT,
         '0xcB0DdC112EF317271266c83D7179Bf9186b9C658', // GPTW
       ],
       holders: [
@@ -468,7 +470,9 @@ module.exports = {
     {
       name: 'hyperliquid',
       tokens: [
-        '0xBe6727B535545C67d5cAa73dEa54865B92CF7907', // UETH
+        '0xBe6727B535545C67d5cAa73dEa54865B92CF7907', // UETH,
+        '0xb88339CB7199b77E23DB6E890353E22632Ba630f', // USDC,
+        '0xab11329560Fa9C9c860Bb21A9342215a1265BBB0', // APE
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
@@ -480,6 +484,24 @@ module.exports = {
         '0x4200000000000000000000000000000000000006', // WETH,
         '0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62', // WETH,
         '0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36', // USDC
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'apechain',
+      tokens: [
+        '0x48b62137EdfA95a428D35C09E44256a739F6B557', // WAPE
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'plasma',
+      tokens: [
+        '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', // USDT0
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal

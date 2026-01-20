@@ -15,12 +15,16 @@ async function tvlBase(api) {
 async function merlinTvl(api) {
   const tokens = await api.call({ abi: abi.getLiquidityTokens, target: merlinConfigContract })
   const lpTokens = tokens.map(i => i.indexToken)
-  return api.sumTokens({owners:[merlinPoolContract,merlinPositionContract], tokens: lpTokens})
+  return api.sumTokens({ owners: [merlinPoolContract, merlinPositionContract], tokens: lpTokens })
 }
 
 module.exports = {
-  base: { tvl:tvlBase},
-  merlin: {tvl:merlinTvl},
+  deadFrom: '2026-01-23',
+  hallmarks: [
+    ['2026-01-23', 'Shutdown of v1']
+  ],
+  base: { tvl: tvlBase },
+  merlin: { tvl: merlinTvl },
   methodology: "Count the total balance across all pools for all trading pairs.",
 }
 
