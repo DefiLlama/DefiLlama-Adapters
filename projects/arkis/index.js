@@ -6,7 +6,14 @@ const native = ADDRESSES.GAS_TOKEN_2;
 
 const factories = {
   agreement: "0xEA623eebd9c5bFd56067e36C89Db0C13e6c70ba8",
+  agreementV2: "0xe70d11D23F36826C58f30C61B4DeAf0A89a6D837",
   marginAccount: "0xbbC9c04348E093473C5b176Cb4b103fF706528bf"
+}
+
+const fromBlocks = {
+  agreement: 21069508,
+  agreementV2: 23468237,
+  marginAccount: 21069508,
 }
 
 const topics = {
@@ -33,7 +40,7 @@ const arkis_wrapped_hype_vaults = [
 // ERC-20 tokens to track in Hyperliquid vaults
 const tokens_to_track = [
   ADDRESSES.hyperliquid.WHYPE,
-  ADDRESSES.hyperliquid.wstHYPE 
+  ADDRESSES.hyperliquid.wstHYPE
 ];
 
 const blacklist = [
@@ -41,11 +48,25 @@ const blacklist = [
   '0x4956b52ae2ff65d74ca2d61207523288e4528f96'
 ]
 
-const fetchFactoryLogs = async (api, type) => {
-  const fromBlock = 21069508;
-  const topic = type === "agreement" ? topics.agreementCreated : topics.accountDeployed;
-  const eventAbi = type === "agreement" ? eventAbis.agreementCreated : eventAbis.accountDeployed;
-  const logs = await getLogs({ api, extraKey: type, target: factories[type], topic, eventAbi, onlyArgs: true, fromBlock });
+const fetchFactoryLogs = async (api, type, keyOverride) => {
+  const isAgreement = type === "agreement";
+  const topic = isAgreement ? topics.agreementCreated : topics.accountDeployed;
+  const eventAbi = isAgreement ? eventAbis.agreementCreated : eventAbis.accountDeployed;
+
+  const key = keyOverride ?? type;
+  const target = factories[key];
+  const fromBlock = fromBlocks[key] ?? fromBlocks[type];
+
+  const logs = await getLogs({
+    api,
+    extraKey: key,
+    target,
+    topic,
+    eventAbi,
+    onlyArgs: true,
+    fromBlock
+  });
+
   return logs.map((log) => log[0]);
 }
 
@@ -54,7 +75,7 @@ const getTokens = async (api, agreementAddresses) => {
   const rawInfos = await api.multiCall({ calls: agreementAddresses, abi: abis.info });
   const infos = rawInfos.filter(({ metadata }) => metadata.leverage !== ADDRESSES.null);
 
-  infos.forEach(({ metadata, whitelist }, i) => {
+  infos.forEach(({ metadata, whitelist }) => {
     tokenSet.add(metadata.leverage);
     metadata.collaterals.forEach(token => tokenSet.add(token));
     whitelist.tokens.forEach(token => tokenSet.add(token));
@@ -69,27 +90,37 @@ const getTokens = async (api, agreementAddresses) => {
 }
 
 const tvl = async (api) => {
-  const [agreements, marginAccounts] = await Promise.all([
-    fetchFactoryLogs(api, "agreement"),
+  const [agreementsV1, agreementsV2, marginAccounts] = await Promise.all([
+    fetchFactoryLogs(api, "agreement", "agreement"),
+    fetchFactoryLogs(api, "agreement", "agreementV2"),
     fetchFactoryLogs(api, "marginAccount")
-  ])
+  ]);
 
-  const tokens = (await getTokens(api, agreements)).filter(t => !blacklist.includes(t.toLowerCase()))
-  const owners = [...agreements, ...marginAccounts]
+  const agreements = [...agreementsV1, ...agreementsV2];
+
+  const tokens = (await getTokens(api, agreements)).filter(t => !blacklist.includes(t.toLowerCase()));
+  const owners = [...agreements, ...marginAccounts];
+
   return sumTokens2({ api, owners, tokens, resolveLP: true, unwrapAll: true });
 }
 
 const borrowed = async (api) => {
-  const agreements = await fetchFactoryLogs(api, "agreement");
+  const [agreementsV1, agreementsV2] = await Promise.all([
+    fetchFactoryLogs(api, "agreement", "agreement"),
+    fetchFactoryLogs(api, "agreement", "agreementV2"),
+  ]);
+
+  const agreements = [...agreementsV1, ...agreementsV2];
+
   const [infos, totalBorrowed] = await Promise.all([
     api.multiCall({ calls: agreements, abi: abis.info }),
     api.multiCall({ calls: agreements, abi: abis.totalBorrowed })
-  ])
+  ]);
 
   infos.forEach(({ metadata }, i) => {
     if (metadata.leverage === ADDRESSES.null) return;
-    api.add(metadata.leverage, totalBorrowed[i]) 
-  })
+    api.add(metadata.leverage, totalBorrowed[i])
+  });
 }
 
 async function tvlHyperliquid(api) {
