@@ -12,14 +12,16 @@ const CHAIN_KEY = "ethereum-ownerIndex-v1";
 // Event ABIs for ValidatorAdded and ValidatorRemoved
 const VALIDATOR_ADDED_ABI =
   "event ValidatorAdded(address indexed owner, uint64[] operatorIds, bytes publicKey, bytes shares, tuple(uint32 validatorCount, uint64 networkFeeIndex, uint64 index, bool active, uint256 balance) cluster)";
-// Note: ValidatorRemoved does NOT have 'shares' parameter (different from ValidatorAdded)
 const VALIDATOR_REMOVED_ABI =
   "event ValidatorRemoved(address indexed owner, uint64[] operatorIds, bytes publicKey, tuple(uint32 validatorCount, uint64 networkFeeIndex, uint64 index, bool active, uint256 balance) cluster)";
 
 // Max blocks to process per run
 // Production: Each DefiLlama run processes one batch, state is persisted between runs
-// Reduced to 300k to avoid memory issues with large event batches
 const MAX_BLOCKS_PER_RUN = 300_000;
+
+// Reorg buffer: only sync to head - REORG_BUFFER to avoid reorg-induced data inconsistency
+// 64 blocks ≈ ~13 minutes of confirmation time
+const REORG_BUFFER = 64;
 
 async function loadState() {
   try {
@@ -46,21 +48,22 @@ async function syncOwnersFromLogs(api) {
   const startTime = Date.now();
   const state = await loadState();
   const head = await api.getBlock();
+  const safeHead = Math.max(DEPLOY_BLOCK, head - REORG_BUFFER);
 
   let fromBlock = state.lastBlock + 1;
   if (fromBlock < DEPLOY_BLOCK) fromBlock = DEPLOY_BLOCK;
 
-  // Already synced to head
-  if (fromBlock > head) {
-    console.log(`[SSV] Already synced to block ${state.lastBlock}, head is ${head}`);
+  // Already synced to safe head
+  if (fromBlock > safeHead) {
+    console.log(`[SSV] Already synced to block ${state.lastBlock}, safe head is ${safeHead} (actual head: ${head})`);
     const owners = Object.keys(state.ownerCounts);
     printStats(state, owners);
     return { owners, state };
   }
 
-  const toBlock = Math.min(head, fromBlock + MAX_BLOCKS_PER_RUN);
+  const toBlock = Math.min(safeHead, fromBlock + MAX_BLOCKS_PER_RUN - 1);
   const blocksToSync = toBlock - fromBlock + 1;
-  const progressPct = (((toBlock - DEPLOY_BLOCK) / (head - DEPLOY_BLOCK)) * 100).toFixed(1);
+  const progressPct = (((toBlock - DEPLOY_BLOCK) / (safeHead - DEPLOY_BLOCK)) * 100).toFixed(1);
 
   console.log(`[SSV] Syncing events from block ${fromBlock} to ${toBlock} (head: ${head})`);
   console.log(`[SSV] Progress: ${progressPct}% | Blocks to process: ${blocksToSync.toLocaleString()}`);
