@@ -57,9 +57,18 @@ async function addTapioSpaLiquidity(api, amount) {
     api.call({ target: TAPIO_POOL, abi: 'function balances(uint256) view returns (uint256)', params: [1] })
   ])
 
+  if (BigInt(spaTotalSupply) === 0n) return;
+
   const share = BigInt(spaAmount) * BigInt(1e18) / BigInt(spaTotalSupply)
-  api.add(tokens[0], BigInt(poolBalance0) * share / BigInt(1e18)) // tokens[0] = ADDRESSES.base.weETH
-  api.add(tokens[1], BigInt(poolBalance1) * share / BigInt(1e18)) // tokens[1] = ADDRESSES.base.wstETH
+
+  if (tokens.length >= 2) {
+    try {
+      api.add(tokens[0], BigInt(poolBalance0) * share / BigInt(1e18)) // tokens[0] = ADDRESSES.base.weETH
+      api.add(tokens[1], BigInt(poolBalance1) * share / BigInt(1e18)) // tokens[1] = ADDRESSES.base.wstETH
+    } catch {
+      return;
+    }
+  }
 }
 
 module.exports = {
