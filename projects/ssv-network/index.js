@@ -16,8 +16,8 @@ const VALIDATOR_REMOVED_ABI =
   "event ValidatorRemoved(address indexed owner, uint64[] operatorIds, bytes publicKey, tuple(uint32 validatorCount, uint64 networkFeeIndex, uint64 index, bool active, uint256 balance) cluster)";
 
 // Max blocks to process per batch in the sync loop
-// Reduced to 100k to minimize memory usage during full sync
-const MAX_BLOCKS_PER_RUN = 100_000;
+// Reduced to 50k to minimize memory usage during full sync
+const MAX_BLOCKS_PER_RUN = 50_000;
 
 // Reorg buffer: only sync to head - REORG_BUFFER to avoid reorg-induced data inconsistency
 // 64 blocks ≈ ~13 minutes of confirmation time
