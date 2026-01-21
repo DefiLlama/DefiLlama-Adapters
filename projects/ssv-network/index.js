@@ -15,9 +15,9 @@ const VALIDATOR_ADDED_ABI =
 const VALIDATOR_REMOVED_ABI =
   "event ValidatorRemoved(address indexed owner, uint64[] operatorIds, bytes publicKey, tuple(uint32 validatorCount, uint64 networkFeeIndex, uint64 index, bool active, uint256 balance) cluster)";
 
-// Max blocks to process per run
-// Production: Each DefiLlama run processes one batch, state is persisted between runs
-const MAX_BLOCKS_PER_RUN = 300_000;
+// Max blocks to process per batch in the sync loop
+// Reduced to 100k to minimize memory usage during full sync
+const MAX_BLOCKS_PER_RUN = 100_000;
 
 // Reorg buffer: only sync to head - REORG_BUFFER to avoid reorg-induced data inconsistency
 // 64 blocks ≈ ~13 minutes of confirmation time
@@ -44,38 +44,32 @@ function inc(map, owner, delta) {
   else map[k] = next;
 }
 
-async function syncOwnersFromLogs(api) {
+async function syncOwnersFromLogs(api, state, safeHead) {
   const startTime = Date.now();
-  const state = await loadState();
-  const head = await api.getBlock();
-  const safeHead = Math.max(DEPLOY_BLOCK, head - REORG_BUFFER);
 
   let fromBlock = state.lastBlock + 1;
   if (fromBlock < DEPLOY_BLOCK) fromBlock = DEPLOY_BLOCK;
 
   // Already synced to safe head
   if (fromBlock > safeHead) {
-    console.log(`[SSV] Already synced to block ${state.lastBlock}, safe head is ${safeHead} (actual head: ${head})`);
-    const owners = Object.keys(state.ownerCounts);
-    printStats(state, owners);
-    return { owners, state };
+    return { owners: Object.keys(state.ownerCounts), state, synced: true };
   }
 
   const toBlock = Math.min(safeHead, fromBlock + MAX_BLOCKS_PER_RUN - 1);
   const blocksToSync = toBlock - fromBlock + 1;
-  const progressPct = (((toBlock - DEPLOY_BLOCK) / (safeHead - DEPLOY_BLOCK)) * 100).toFixed(1);
+  const totalBlocks = safeHead - DEPLOY_BLOCK;
+  const progressPct = totalBlocks > 0
+    ? (((toBlock - DEPLOY_BLOCK) / totalBlocks) * 100).toFixed(1)
+    : '0.0';
 
-  console.log(`[SSV] Syncing events from block ${fromBlock} to ${toBlock} (head: ${head})`);
+  console.log(`[SSV] Syncing events from block ${fromBlock} to ${toBlock} (safe head: ${safeHead})`);
   console.log(`[SSV] Progress: ${progressPct}% | Blocks to process: ${blocksToSync.toLocaleString()}`);
 
   // Fetch incremental logs: Added / Removed
-  console.log(`[SSV] Fetching ValidatorAdded events...`);
   const addedLogs = await api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_ADDED_ABI, fromBlock, toBlock, onlyArgs: true });
-  console.log(`[SSV] ✓ Found ${addedLogs.length} ValidatorAdded events`);
-
-  console.log(`[SSV] Fetching ValidatorRemoved events...`);
   const removedLogs = await api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_REMOVED_ABI, fromBlock, toBlock, onlyArgs: true });
-  console.log(`[SSV] ✓ Found ${removedLogs.length} ValidatorRemoved events`);
+
+  console.log(`[SSV] ✓ Found ${addedLogs.length} ValidatorAdded, ${removedLogs.length} ValidatorRemoved events`);
 
   // Update ownerCounts: Added +1, Removed -1
   addedLogs.forEach((log) => inc(state.ownerCounts, log.owner, +1));
@@ -84,17 +78,10 @@ async function syncOwnersFromLogs(api) {
   state.lastBlock = toBlock;
   await saveState(state);
 
-  const owners = Object.keys(state.ownerCounts);
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
   console.log(`[SSV] Batch completed in ${elapsed}s (${addedLogs.length + removedLogs.length} events processed)`);
 
-  if (toBlock < head) {
-    console.log(`[SSV] Still catching up... ${head - toBlock} blocks remaining. Run again to continue.`);
-  } else {
-    printStats(state, owners);
-  }
-
-  return { owners, state };
+  return { owners: Object.keys(state.ownerCounts), state, synced: toBlock >= safeHead };
 }
 
 function printStats(state, owners) {
@@ -128,7 +115,33 @@ function printStats(state, owners) {
 module.exports = {
   ethereum: {
     tvl: async (api) => {
-      const { owners } = await syncOwnersFromLogs(api);
+      const fullSyncStart = Date.now();
+      let state = await loadState();
+      const head = await api.getBlock();
+      const safeHead = Math.max(DEPLOY_BLOCK, head - REORG_BUFFER);
+
+      let owners;
+      let iteration = 0;
+
+      console.log(`[SSV] Starting sync to safe head ${safeHead} (actual head: ${head})`);
+
+      // Loop until fully synced
+      while (state.lastBlock < safeHead) {
+        iteration++;
+        console.log(`\n[SSV] === Iteration ${iteration} ===`);
+
+        const result = await syncOwnersFromLogs(api, state, safeHead);
+        owners = result.owners;
+        state = result.state;
+
+        if (result.synced) {
+          break;
+        }
+      }
+
+      const fullSyncElapsed = ((Date.now() - fullSyncStart) / 1000).toFixed(2);
+      console.log(`\n[SSV] Full sync completed in ${fullSyncElapsed}s (${iteration} iterations)`);
+      printStats(state, owners);
 
       // Batch beacon.balance queries
       const queries = [];
