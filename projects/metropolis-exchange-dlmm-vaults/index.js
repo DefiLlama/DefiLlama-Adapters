@@ -64,5 +64,5 @@ module.exports = {
 };
 
 Object.keys(chains).forEach(chain =>
-    module.exports[chain] = {tvl: (api) => tvl(api, false)}
+    module.exports[chain] = {tvl: (api) => tvl(api)}
 )
