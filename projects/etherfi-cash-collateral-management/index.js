@@ -9,6 +9,7 @@ const abi = {
 }
 
 async function tvl(api) {
+  throw new Error("Find another solution, maybe a custom script that runs slow but pulls all the data, this is making like 200k calls which is running into rate limit")
   //get last collateral mode vault
   const lastCollateralModeVault = (await api.call({
     target: EtherFiCashFactory,
