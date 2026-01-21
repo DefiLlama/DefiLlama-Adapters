@@ -120,7 +120,7 @@ module.exports = {
       const head = await api.getBlock();
       const safeHead = Math.max(DEPLOY_BLOCK, head - REORG_BUFFER);
 
-      let owners;
+      let owners = Object.keys(state.ownerCounts);  // Initialize with current state
       let iteration = 0;
 
       console.log(`[SSV] Starting sync to safe head ${safeHead} (actual head: ${head})`);
