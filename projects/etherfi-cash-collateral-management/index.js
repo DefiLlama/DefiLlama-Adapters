@@ -9,6 +9,7 @@ const abi = {
 }
 
 async function tvl(api) {
+  throw new Error("Find another solution, maybe a custom script that runs slow but pulls all the data, this is making like 200k calls which is running into rate limit")
   //get last collateral mode vault
   const lastCollateralModeVault = (await api.call({
     target: EtherFiCashFactory,
@@ -30,14 +31,15 @@ async function tvl(api) {
     });
   }
 
-  const chunks = sliceIntoChunks(calls, 42);
+  const chunks = sliceIntoChunks(calls, 30);
   let i = 0
   for (const chunk of chunks) {
     const res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk })
     res.forEach(batchResult => {
       batchResult.forEach(({ token, amount }) => api.add(token, amount))
     })
-    api.log(`Processed chunk ${++i}/${chunks.length}`)
+    console.log(`Processed chunk ${++i}/${chunks.length}`)
+    // api.log(`Processed chunk ${++i}/${chunks.length}`)
   }
 }
 

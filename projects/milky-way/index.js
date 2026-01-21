@@ -51,6 +51,7 @@ async function milkINITTVL(api) {
 }
 
 module.exports = {
+  deadFrom: '2026-01-15', // project decides to shut down - https://x.com/milky_way_zone/status/2011770175566332325
   methodology: 'TVL counts the tokens that are locked in the Milky Way liquid staking protocol',
   osmosis: {
     tvl: milkTIATVL,

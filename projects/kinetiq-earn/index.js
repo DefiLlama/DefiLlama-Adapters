@@ -20,6 +20,5 @@ const tvl = async (api) => {
 
 module.exports = {
   doublecounted: true,
-  timetravel: false,
   hyperliquid: { tvl }
 }
