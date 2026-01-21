@@ -78,8 +78,8 @@ async function syncOwnersFromLogs(api) {
   console.log(`[SSV] ✓ Found ${removedLogs.length} ValidatorRemoved events`);
 
   // Update ownerCounts: Added +1, Removed -1
-  addedLogs.forEach((log) => inc(state.ownerCounts, log[0], +1));
-  removedLogs.forEach((log) => inc(state.ownerCounts, log[0], -1));
+  addedLogs.forEach((log) => inc(state.ownerCounts, log.owner, +1));
+  removedLogs.forEach((log) => inc(state.ownerCounts, log.owner, -1));
 
   state.lastBlock = toBlock;
   await saveState(state);
