@@ -60,7 +60,7 @@ async function tvl(api) {
 
 module.exports = {
     misrepresentedTokens: true,
-    methodology: 'Provides the current and live total value locked of each Metropolis vault, which is the sum of the current market capitalisation of all of the assets currently held by the relevant vault, denominated in $USD. Fetches vault addresses from Metropolis API, then queries actual onchain balances of underlying tokens in each vault contract.',
+    methodology: 'Provides the current and live total value locked of each Metropolis vault, which is the sum of the current market capitalisation of all of the assets currently held by the relevant vault, denominated in $USD. Fetches vault addresses from the chain directly, then queries actual onchain balances of underlying tokens in each vault contract.',
 };
 
 Object.keys(chains).forEach(chain =>
