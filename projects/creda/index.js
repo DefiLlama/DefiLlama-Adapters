@@ -79,7 +79,7 @@ async function tvl() {
   // 1) native / IBC balances
   const bankBalances = await getBankBalances(DEPOSIT);
   for (const { denom, amount } of bankBalances) {
-    // amplp는 현재 제외
+    // excluded amplp
     if (denom.includes("/amplp")) continue;
 
     const key = DENOM_TO_KEY[denom] ?? `terra2:${denom}`;
