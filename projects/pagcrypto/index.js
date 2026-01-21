@@ -141,7 +141,5 @@ module.exports = {
   optimism: { fetch: async () => ({ dailyVolume: "0" }), fees: async () => ({ dailyFees: "0", dailyRevenue: "0" }), start: async () => 0 },
 
   solana:   { fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
-  xrpl:     { fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
   tron:     { fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
-  toncoin:  { fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
 };
