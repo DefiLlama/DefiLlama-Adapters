@@ -1,66 +1,46 @@
 /**
- * PagCrypto
- * Payments infrastructure – no TVL, no escrow.
- * Metrics tracked: on-chain proxy for Volume (TTV) and Fees.
+ * PagCrypto - Volume (TTV proxy) config
+ * Volume definition: sum of stablecoin inflows (USDC/USDT) to PagCrypto receiver wallet (EVM) per day.
  */
 
 module.exports = {
     project: "pagcrypto",
 
-    chains: {
-        solana: {
-            status: "active",
-            wallet: "5XvzUs92L7G4picBJchfatM25RcR93oE3h8xGRZe7462",
-        },
-
-        tron: {
-            status: "active",
-            wallet: "TA9Xywe3xb6GPeBFYDdTkdT43DktDPnyDT",
-        },
-
-        ethereum: {
-            status: "soon",
-            wallet: "0xC8e3BC38C3e4D768f83a1a064BdE4045aFf3158C",
-        },
-
-        polygon: {
-            status: "active",
-            wallet: "0xC8e3BC38C3e4D768f83a1a064BdE4045aFf3158C",
-        },
-
-        arbitrum: {
-            status: "soon",
-            wallet: "0xC8e3BC38C3e4D768f83a1a064BdE4045aFf3158C",
-        },
-
-        optimism: {
-            status: "soon",
-            wallet: "0xC8e3BC38C3e4D768f83a1a064BdE4045aFf3158C",
-        },
-
-        base: {
-            status: "active",
-            wallet: "0xC8e3BC38C3e4D768f83a1a064BdE4045aFf3158C",
-        },
-
-        xrpl: {
-            status: "active",
-            wallet: "r421rbtEZxdniuMmKbq7qzFNnxxHssVYn6",
-            unsupported_here: true
-        },
-
-        toncoin: {
-            status: "active",
-            wallet: "UQBYm7IGk0XmqcwRDHm9vtJWu05im1P3zU7pJYCnG8rymMxf",
-            unsupported_here: true
-        },
+    receiver: {
+        evm: "0xC8e3BC38C3e4D768f83a1a064BdE4045aFf3158C",
     },
 
-    /**
-     * Definition used for volume:
-     * - Sum of on-chain transfers received by PagCrypto wallets
-     * - Measured per day, per chain
-     *
-     * This is NOT TVL.
-     */
+    chains: {
+        // active now
+        polygon: { status: "active" },
+        base: { status: "active" },
+
+        // soon
+        ethereum: { status: "soon" },
+        arbitrum: { status: "soon" },
+        optimism: { status: "soon" },
+    },
+
+    // Stablecoins used as USD proxy (no price oracle needed)
+    stablecoins: {
+        ethereum: [
+            "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+            "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
+        ],
+        polygon: [
+            "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // USDC
+            // add USDT polygon if you want, once confirmed
+        ],
+        base: [
+            "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC (Base)
+        ],
+        arbitrum: [
+            "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC (native)
+            "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9", // USDT
+        ],
+        optimism: [
+            "0x0b2c639c533813f4aa9d7837caf62653d097ff85", // USDC
+            "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", // USDT
+        ],
+    },
 };
