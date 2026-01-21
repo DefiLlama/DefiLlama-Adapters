@@ -1,101 +1,139 @@
 /**
- * PagCrypto - DefiLlama Volume + Fees Adapter
+ * PagCrypto – Volume & Fees Adapter (On-chain proxy)
  *
- * PagCrypto não tem TVL/escrow; o que listamos é:
- * - Volume (TTV) por chain
- * - Fees por chain
- *
- * Fonte: endpoints do seu BFF (Fastify):
- * - GET /defillama/volume?chain=<chain>&timestamp=<unix>
- * - GET /defillama/fees?chain=<chain>&timestamp=<unix>
+ * This adapter DOES NOT track TVL.
+ * It tracks an on-chain proxy for Total Transaction Volume (TTV),
+ * defined as the sum of transfers received by PagCrypto wallets.
  */
+
+const { getLogs } = require("../helper/cache/getLogs");
+const { getPrices } = require("../helper/prices");
 
 const config = require("./config");
 
-async function fetchJson(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
-  return res.json();
+// ERC20 Transfer event signature
+const TRANSFER_TOPIC =
+    "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+
+// Tokens considered for volume calculation (EVM only)
+const EVM_TOKENS = {
+  ethereum: [
+    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+    "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
+  ],
+  polygon: [
+    "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // USDC
+  ],
+  base: [
+    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC Base
+  ],
+};
+
+function getDayBounds(timestamp) {
+  const start = Math.floor(timestamp / 86400) * 86400;
+  return { from: start, to: start + 86400 - 1 };
 }
 
-function normalizeTimestamp(ts) {
-  const n = Number(ts);
-  if (!Number.isFinite(n) || n <= 0) return Math.floor(Date.now() / 1000);
-  return Math.floor(n);
+async function evmDailyVolume(chain, api, timestamp) {
+  const chainCfg = config.chains[chain];
+  if (!chainCfg || chainCfg.status === "soon") {
+    return { dailyVolume: "0" };
+  }
+
+  const wallet = chainCfg.wallet.toLowerCase();
+  const tokens = EVM_TOKENS[chain] || [];
+  if (!tokens.length) return { dailyVolume: "0" };
+
+  const { from, to } = getDayBounds(timestamp);
+
+  let totalUsd = 0;
+
+  for (const token of tokens) {
+    const toTopic = "0x" + wallet.replace("0x", "").padStart(64, "0");
+
+    const logs = await getLogs({
+      api,
+      target: token,
+      topics: [TRANSFER_TOPIC, null, toTopic],
+      fromBlock: await api.getBlockNumber(from),
+      toBlock: await api.getBlockNumber(to),
+      chain,
+    });
+
+    if (!logs.length) continue;
+
+    const rawSum = logs.reduce(
+        (acc, log) => acc + BigInt(log.data),
+        0n
+    );
+
+    if (rawSum === 0n) continue;
+
+    const decimals = await api.call({
+      abi: "erc20:decimals",
+      target: token,
+      chain,
+    });
+
+    const amount = Number(rawSum) / 10 ** Number(decimals);
+
+    const priceKey = `${chain}:${token}`.toLowerCase();
+    const prices = await getPrices([priceKey]);
+    const price = prices?.[priceKey]?.price || 0;
+
+    totalUsd += amount * price;
+  }
+
+  return { dailyVolume: totalUsd.toFixed(2) };
 }
 
-function getChain(chain) {
-  const c = config.chains?.[chain];
-  if (!c) return null;
-  return c;
-}
-
-function buildUrl(path, chain, timestamp) {
-  const base = config.api.baseUrl.replace(/\/$/, "");
-  return `${base}${path}?chain=${encodeURIComponent(chain)}&timestamp=${encodeURIComponent(
-      String(timestamp)
-  )}`;
-}
-
-/**
- * DefiLlama Volume adapter shape:
- * module.exports = {
- *   <chain>: { fetch: async (timestamp) => ({ dailyVolume: "..." }), start: async () => <unix> },
- *   ...
- * }
- *
- * Fees adapters podem usar "dailyFees"/"dailyRevenue" (ou variantes).
- * Aqui expomos:
- * - <chain>.fetch => dailyVolume
- * - <chain>.fees  => dailyFees + dailyRevenue
- */
-function makeVolumeFetcher(chain) {
-  return async (timestamp) => {
-    const chainCfg = getChain(chain);
-    const ts = normalizeTimestamp(timestamp);
-
-    // se chain está "soon", retorna 0
-    if (chainCfg?.status === "soon") return { dailyVolume: "0" };
-
-    const url = buildUrl(config.api.endpoints.volume, chain, ts);
-    const data = await fetchJson(url);
-
-    // compat: garantir string
-    const dailyVolume = data?.dailyVolume ?? "0";
-    return { dailyVolume: String(dailyVolume) };
+function feesFromVolume(volumeUsd) {
+  // Conservative placeholder fees (can be refined later)
+  const feeRate = 0.008;     // 0.8%
+  const revenueRate = 0.004; // 0.4%
+  return {
+    dailyFees: (volumeUsd * feeRate).toFixed(2),
+    dailyRevenue: (volumeUsd * revenueRate).toFixed(2),
   };
+}
+
+function makeVolumeFetcher(chain) {
+  return async (timestamp, api) => evmDailyVolume(chain, api, timestamp);
 }
 
 function makeFeesFetcher(chain) {
-  return async (timestamp) => {
-    const chainCfg = getChain(chain);
-    const ts = normalizeTimestamp(timestamp);
-
-    if (chainCfg?.status === "soon") return { dailyFees: "0", dailyRevenue: "0" };
-
-    const url = buildUrl(config.api.endpoints.fees, chain, ts);
-    const data = await fetchJson(url);
-
-    const dailyFees = data?.dailyFees ?? "0";
-    const dailyRevenue = data?.dailyRevenue ?? "0";
-    return { dailyFees: String(dailyFees), dailyRevenue: String(dailyRevenue) };
+  return async (timestamp, api) => {
+    const vol = await evmDailyVolume(chain, api, timestamp);
+    const v = Number(vol.dailyVolume || 0);
+    return feesFromVolume(v);
   };
 }
 
-const adapter = {};
-
-Object.keys(config.chains).forEach((chain) => {
-  adapter[chain] = {
-    // volume
-    fetch: makeVolumeFetcher(chain),
-
-    // fees (campo extra; dependendo do dashboard, pode ser um adapter separado)
-    fees: makeFeesFetcher(chain),
-
-    // start: ideal é colocar o primeiro dia que vocês têm dados reais
-    // (por enquanto 0, depois você ajusta para o timestamp do primeiro dia)
+module.exports = {
+  ethereum: {
+    fetch: makeVolumeFetcher("ethereum"),
+    fees: makeFeesFetcher("ethereum"),
     start: async () => 0,
-  };
-});
+  },
 
-module.exports = adapter;
+  polygon: {
+    fetch: makeVolumeFetcher("polygon"),
+    fees: makeFeesFetcher("polygon"),
+    start: async () => 0,
+  },
+
+  base: {
+    fetch: makeVolumeFetcher("base"),
+    fees: makeFeesFetcher("base"),
+    start: async () => 0,
+  },
+
+  // Not yet computed on-chain (return zero for now)
+  solana: { fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
+  xrpl:   { fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
+  tron:   { fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
+  toncoin:{ fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
+
+  arbitrum:{ fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
+  optimism:{ fetch: async () => ({ dailyVolume: "0" }), start: async () => 0 },
+};
