@@ -7,7 +7,7 @@ const { nullAddress } = require("../helper/tokenMapping");
 const SSV_NETWORK = "0xDD9BC35aE942eF0cFa76930954a156B3fF30a4E1";
 const DEPLOY_BLOCK = 17507487; // contract creation block
 const PROJECT_KEY = "ssv-network";
-const CHAIN_KEY = "ethereum-ownerIndex-v1";
+const CHAIN_KEY = "ethereum-pubkeyIndex-v1";  // Changed from ownerIndex to pubkeyIndex
 
 // Event ABIs for ValidatorAdded and ValidatorRemoved
 const VALIDATOR_ADDED_ABI =
@@ -26,25 +26,22 @@ const REORG_BUFFER = 64;
 async function loadState() {
   try {
     const s = await getCache(PROJECT_KEY, CHAIN_KEY);
-    if (s && typeof s === "object" && s.ownerCounts && s.lastBlock != null) return s;
+    // publicKeys stored as object with keys for O(1) lookup, like a Set
+    if (s && typeof s === "object" && s.publicKeys && s.lastBlock != null) return s;
   } catch (e) { }
-  return { lastBlock: DEPLOY_BLOCK - 1, ownerCounts: {} };
+  return { lastBlock: DEPLOY_BLOCK - 1, publicKeys: {} };
 }
 
 async function saveState(state) {
   await setCache(PROJECT_KEY, CHAIN_KEY, state);
 }
 
-// Increment/decrement validator count for an owner
-// When count reaches 0, owner is removed from the map (no active validators)
-function inc(map, owner, delta) {
-  const k = owner.toLowerCase();
-  const next = (map[k] || 0) + delta;
-  if (next <= 0) delete map[k];
-  else map[k] = next;
+// Normalize publicKey to lowercase for consistent comparison
+function normalizeKey(key) {
+  return key.toLowerCase();
 }
 
-async function syncOwnersFromLogs(api, state, safeHead) {
+async function syncValidatorsFromLogs(api, state, safeHead) {
   const startTime = Date.now();
 
   let fromBlock = state.lastBlock + 1;
@@ -52,7 +49,7 @@ async function syncOwnersFromLogs(api, state, safeHead) {
 
   // Already synced to safe head
   if (fromBlock > safeHead) {
-    return { owners: Object.keys(state.ownerCounts), state, synced: true };
+    return { publicKeys: Object.keys(state.publicKeys), state, synced: true };
   }
 
   const toBlock = Math.min(safeHead, fromBlock + MAX_BLOCKS_PER_RUN - 1);
@@ -65,50 +62,42 @@ async function syncOwnersFromLogs(api, state, safeHead) {
   console.log(`[SSV] Syncing events from block ${fromBlock} to ${toBlock} (safe head: ${safeHead})`);
   console.log(`[SSV] Progress: ${progressPct}% | Blocks to process: ${blocksToSync.toLocaleString()}`);
 
-  // Fetch incremental logs: Added / Removed
-  const addedLogs = await api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_ADDED_ABI, fromBlock, toBlock, onlyArgs: true });
-  const removedLogs = await api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_REMOVED_ABI, fromBlock, toBlock, onlyArgs: true });
+  // Fetch incremental logs: Added / Removed (in parallel for better performance)
+  const [addedLogs, removedLogs] = await Promise.all([
+    api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_ADDED_ABI, fromBlock, toBlock, onlyArgs: true }),
+    api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_REMOVED_ABI, fromBlock, toBlock, onlyArgs: true }),
+  ]);
 
   console.log(`[SSV] ✓ Found ${addedLogs.length} ValidatorAdded, ${removedLogs.length} ValidatorRemoved events`);
 
-  // Update ownerCounts: Added +1, Removed -1
-  addedLogs.forEach((log) => inc(state.ownerCounts, log.owner, +1));
-  removedLogs.forEach((log) => inc(state.ownerCounts, log.owner, -1));
+  // Update publicKeys set: Added -> add, Removed -> delete
+  // publicKey is log.publicKey (bytes, hex encoded)
+  addedLogs.forEach((log) => {
+    const key = normalizeKey(log.publicKey);
+    state.publicKeys[key] = true;  // Using object as Set
+  });
+
+  removedLogs.forEach((log) => {
+    const key = normalizeKey(log.publicKey);
+    delete state.publicKeys[key];  // Remove from Set
+  });
 
   state.lastBlock = toBlock;
   await saveState(state);
 
+  const publicKeyCount = Object.keys(state.publicKeys).length;
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-  console.log(`[SSV] Batch completed in ${elapsed}s (${addedLogs.length + removedLogs.length} events processed)`);
+  console.log(`[SSV] Batch completed in ${elapsed}s`);
+  console.log(`[SSV] Running totals: ${publicKeyCount} active validators, +${addedLogs.length} added, -${removedLogs.length} removed`);
 
-  return { owners: Object.keys(state.ownerCounts), state, synced: toBlock >= safeHead };
+  return { publicKeys: Object.keys(state.publicKeys), state, synced: toBlock >= safeHead };
 }
 
-function printStats(state, owners) {
+function printStats(state) {
+  const publicKeysList = Object.keys(state.publicKeys);
   console.log('\n========== SSV STATISTICS ==========');
-  console.log(`Total unique owners with active validators: ${owners.length}`);
-
-  const totalValidators = Object.values(state.ownerCounts).reduce((sum, count) => sum + count, 0);
-  console.log(`Total active validators: ${totalValidators}`);
-
-  if (owners.length > 0) {
-    const counts = Object.values(state.ownerCounts);
-    const maxValidators = Math.max(...counts);
-    const minValidators = Math.min(...counts);
-    const avgValidators = (totalValidators / owners.length).toFixed(2);
-    console.log(`Validators per owner: min=${minValidators}, max=${maxValidators}, avg=${avgValidators}`);
-  }
+  console.log(`Total active validators (publicKeys): ${publicKeysList.length}`);
   console.log(`Synced up to block: ${state.lastBlock}`);
-
-  // Top 10 owners by validator count
-  const topOwners = Object.entries(state.ownerCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
-
-  console.log('\nTop 10 owners by validator count:');
-  topOwners.forEach(([addr, count], i) => {
-    console.log(`  ${i + 1}. ${addr}: ${count} validators`);
-  });
   console.log('=====================================\n');
 }
 
@@ -120,7 +109,7 @@ module.exports = {
       const head = await api.getBlock();
       const safeHead = Math.max(DEPLOY_BLOCK, head - REORG_BUFFER);
 
-      let owners = Object.keys(state.ownerCounts);  // Initialize with current state
+      let publicKeysList = Object.keys(state.publicKeys);  // Initialize with current state
       let iteration = 0;
 
       console.log(`[SSV] Starting sync to safe head ${safeHead} (actual head: ${head})`);
@@ -130,8 +119,8 @@ module.exports = {
         iteration++;
         console.log(`\n[SSV] === Iteration ${iteration} ===`);
 
-        const result = await syncOwnersFromLogs(api, state, safeHead);
-        owners = result.owners;
+        const result = await syncValidatorsFromLogs(api, state, safeHead);
+        publicKeysList = result.publicKeys;
         state = result.state;
 
         if (result.synced) {
@@ -141,11 +130,15 @@ module.exports = {
 
       const fullSyncElapsed = ((Date.now() - fullSyncStart) / 1000).toFixed(2);
       console.log(`\n[SSV] Full sync completed in ${fullSyncElapsed}s (${iteration} iterations)`);
-      printStats(state, owners);
+      printStats(state);
 
-      // Batch beacon.balance queries
+      // Batch beacon.balance queries using publicKey
       const queries = [];
-      for (let i = 0; i < owners.length; i += 30) queries.push(owners.slice(i, i + 30));
+      for (let i = 0; i < publicKeysList.length; i += 30) {
+        queries.push(publicKeysList.slice(i, i + 30));
+      }
+
+      console.log(`[SSV] Querying beacon.balance for ${publicKeysList.length} validators in ${queries.length} batches`);
 
       await runInPromisePool({
         items: queries,
