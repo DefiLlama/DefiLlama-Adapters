@@ -74,7 +74,8 @@ const endPoints = {
   echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
   inertia: 'https://rest.inrt.fi',
   union: 'https://rest.union.build',
-  zigchain: 'https://public-zigchain-lcd.numia.xyz'
+  zigchain: 'https://public-zigchain-lcd.numia.xyz',
+  fuel_sequencer: 'https://rest-fuel-seq.simplystaking.xyz',
 };
 
 const chainSubpaths = {
@@ -118,8 +119,7 @@ async function queryV1Beta1({ chain, paginationKey, block, url, api } = {}) {
     endpoint += `?height=${block - (block % 100)}`;
   }
   if (paginationKey) {
-    const paginationQueryParam = `pagination.key=${paginationKey}`;
-    if (block === undefined) {
+    const paginationQueryParam = `pagination.key=${encodeURIComponent(paginationKey)}`;    if (block === undefined) {
       endpoint += "?";
     } else {
       endpoint += "&";

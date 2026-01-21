@@ -16,5 +16,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Fetches the total supply of stFuel and the redemption rate to calculate the total value of staked Fuel',
-  fuel: { tvl }
+  fuel: { tvl },
+  fuel_sequencer: { tvl },
 }
