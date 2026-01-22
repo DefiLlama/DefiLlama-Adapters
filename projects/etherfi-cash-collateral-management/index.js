@@ -10,8 +10,8 @@ const abi = {
 }
 
 async function tvl(api) {
-  const isUIToolMode = getEnv('UI_TOOL_MODE')
-  if (!isUIToolMode)
+  const isCustomJob = getEnv('IS_RUN_FROM_CUSTOM_JOB')
+  if (!isCustomJob)
     throw new Error("Find another solution, maybe a custom script that runs slow but pulls all the data, this is making like 200k calls which is running into rate limit")
 
   //get last collateral mode vault
@@ -20,7 +20,7 @@ async function tvl(api) {
     abi: 'function numContractsDeployed() view returns (uint256)',
   })) - 1;
 
-  const batch_size = 99;
+  const batch_size = 81;
 
 
   const calls = [];
