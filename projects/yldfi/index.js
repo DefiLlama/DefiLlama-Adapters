@@ -12,7 +12,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the sum of totalAssets() across all yldfi ERC-4626 vaults, which auto-compound CVX ecosystem tokens (cvxCRV, cvgCVX).',
+  methodology: 'TVL is the sum of totalAssets() across all yldfi ERC-4626 vaults, which provide auto-compounding yield strategies.',
   doublecounted: true,
   ethereum: { tvl },
 };
