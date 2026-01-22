@@ -1,3 +1,5 @@
+const { getLogs2 } = require("../helper/cache/getLogs")
+
 const config = {
   ethereum: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x000000000049c7bcbca294e63567b4d21eb765f1'], fromBlock: 21747552 },
   base: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x000000000049c7bcbca294e63567b4d21eb765f1'], fromBlock: 25786936 },
@@ -20,7 +22,7 @@ const tvl = async (api) => {
   const { factories, fromBlock } = config[chain]
 
   for (const factory of factories) {
-    const logs = await api.getLogs({ target: factory, eventAbi: eventAbis.newBunni, fromBlock, toBlock: safeBlock, onlyArgs: true })
+    const logs = await getLogs2({ api, target: factory, eventAbi: eventAbis.newBunni, fromBlock, toBlock: safeBlock })
     const bunnis = logs.map(({ bunniToken }) => bunniToken)
     const poolIds = logs.map(({ poolId }) => poolId)
 
