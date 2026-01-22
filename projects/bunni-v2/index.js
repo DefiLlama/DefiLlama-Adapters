@@ -22,7 +22,8 @@ const tvl = async (api) => {
   const { factories, fromBlock } = config[chain]
 
   for (const factory of factories) {
-    const logs = await getLogs2({ api, target: factory, eventAbi: eventAbis.newBunni, fromBlock, toBlock: safeBlock })
+    // the protocol is hacked
+    const logs = await getLogs2({ api, target: factory, eventAbi: eventAbis.newBunni, fromBlock, toBlock: safeBlock, onlyUseExistingCache: true })
     const bunnis = logs.map(({ bunniToken }) => bunniToken)
     const poolIds = logs.map(({ poolId }) => poolId)
 
