@@ -66,7 +66,11 @@ module.exports = {
   },
   beacon: {
     balance: async (addresses = []) => {
-      const { data } = await client.get('/beacon/total_staked', { params: { public_keys: addresses.join(',') } })
+      const { data } = await client.get('/beacon/total_staked', { params: { withdrawal_credentials: addresses.join(',') } })
+      return data.total_balance * 1e9
+    },
+    balanceByPublicKeys: async (publicKeys = []) => {
+      const { data } = await client.get('/beacon/total_staked', { params: { public_keys: publicKeys.join(',') } })
       return data.total_balance * 1e9
     },
   },
