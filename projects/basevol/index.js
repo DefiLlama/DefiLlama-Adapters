@@ -28,13 +28,14 @@ const under101Vault = [
 ];
 
 const sparkUSDC = '0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A'
+const steakhouseUSDCV2 = '0xbeef0e0834849aCC03f0089F01f4F1Eeb06873C9'
 
 module.exports = {
     methodology: `Counts the USDC amount held in the ClearingHouse and Vault contracts.`,
     base: {
         tvl: sumTokensExport({ 
           owners: [ clearingHouse, ...gVault, ...highVolVault, ...over99Vault, ...under101Vault],
-          tokens: [ ADDRESSES.base.USDC, sparkUSDC],
+          tokens: [ ADDRESSES.base.USDC, sparkUSDC, steakhouseUSDCV2 ],
         }),
     }
 };
