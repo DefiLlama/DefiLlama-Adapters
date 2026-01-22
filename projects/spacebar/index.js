@@ -30,7 +30,8 @@ async function tvl() {
 // }
 
 module.exports = {
+	deadFrom: '2026-01-07',
 	blast: {
-		tvl,
+		tvl: () => ({}),
 	},
 }

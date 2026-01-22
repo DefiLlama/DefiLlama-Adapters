@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { sumTokens } = require('../helper/sumTokens');
 const { post } = require('../helper/http')
@@ -49,8 +50,8 @@ async function flareTvl(api) {
   return sumTokens2({
     api,
     tokensAndOwners: [
-      ...agentVaults.map(v => ["0xe7cd86e13AC4309349F30B3435a9d337750fC82D", v]), // USDT0 in agent vaults
-      ...agentPools.map(p => ["0x1D80c49BbBCd1C0911346656B529DF9E5c2F783d", p]), // WFLR in agent pools
+      ...agentVaults.map(v => [ADDRESSES.monad.USDT, v]), // USDT0 in agent vaults
+      ...agentPools.map(p => [ADDRESSES.flare.WFLR, p]), // WFLR in agent pools
     ],
   })
 }

@@ -56,6 +56,7 @@ const swellchainVeloPoolsStaked = [{
 }]
 
 const swellchainTokens = [
+  ADDRESSES.swellchain.WETH,
   ADDRESSES.swellchain.rswETH, // rswETH
   ADDRESSES.swellchain.swETH, // swETH
   '0xC3d33a0Ea1582410075567c589af895fcaF1127c', // tempest weeth/eth

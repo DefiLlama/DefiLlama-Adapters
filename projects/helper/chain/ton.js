@@ -1,15 +1,17 @@
 const { get, post, } = require('../http')
 const ADDRESSES = require('../coreAssets.json')
 const plimit = require('p-limit')
-const _rateLimited = plimit(1)
+const _rateLimited = plimit(9)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 const { sumTokens2 } = require('../unwrapLPs')
 const tonUtils = require('../utils/ton')
-
 const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
+require('dotenv').config()
+
+const key = process.env.TONCENTER_API_KEY;
 
 async function getTonBalance(addr) {
-  const res = await get(`https://toncenter.com/api/v3/account?address=${addr}`)
+  const res = await get(`https://toncenter.com/api/v3/account?address=${addr}` + (key ? `?api_key=${key}` : ''))
   return res.balance
 }
 
@@ -104,7 +106,6 @@ async function call({ target, abi, params = [], rawStack = false, }) {
     "stack": params
   }
 
-  const key = process.env.TONCENTER_API_KEY; // TODO: add api key to env
   const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod' + (key ? `?api_key=${key}` : ''), requestBody)
   if (!ok) {
     throw new Error("Unknown");
@@ -125,13 +126,29 @@ async function call({ target, abi, params = [], rawStack = false, }) {
   return stack
 }
 
+async function addJettonBalances({ api, jettonAddress, addresses }) {
+  api.log('Fetching Jetton balances', { jettonAddress, addresses: addresses.length })
+  const chunks = sliceIntoChunks(addresses, 399)
+  let i = 0
+  for (const chunk of chunks) {
+    api.log('Fetching Jetton balances', { jettonAddress, chunk: i++, chunks: chunks.length })
+    const { jetton_wallets } = await get('https://toncenter.com/api/v3/jetton/wallets?owner_address=' + encodeURIComponent(chunk.join(',')) + '&jetton_address=' + encodeURIComponent(jettonAddress) + '&include_boc=false' + (key ? `&api_key=${key}` : ''))
+    jetton_wallets.forEach(({ balance }) => {
+      api.add(jettonAddress, balance)
+    })
+    if (addresses.length > 199) {
+      await sleep(3000)
+    }
+  }
+}
+
 async function addTonBalances({ api, addresses }) {
   api.log('Fetching TON balances', { addresses: addresses.length })
   const chunks = sliceIntoChunks(addresses, 399)
   let i = 0
   for (const chunk of chunks) {
     api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
-    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
+    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false' + (key ? `&api_key=${key}` : ''))
     accounts.forEach(({ balance }) => {
       api.add(ADDRESSES.null, balance)
     })
@@ -285,6 +302,7 @@ class BitReader {
 
 module.exports = {
   addTonBalances,
+  addJettonBalances,
   getTonBalance,
   getTokenRates,
   sumTokens,

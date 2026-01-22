@@ -1,5 +1,3 @@
-/* eslint-disable no-async-promise-executor */
-const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
 const static_contract = "0xA25F892cF2731ba89b88750423Fc618De0959C43";
 const fil_fig_stake_contract = "0xD44bfE4523f1B2703DDE9C7dBc010Ad39EF668f7";
@@ -35,4 +33,3 @@ module.exports = {
     staking:(api) => getFigStake(api, bsc_fig_stake_contract, BSC_FIG_TOKEN)
   }
 };
-/* eslint-enable no-async-promise-executor */

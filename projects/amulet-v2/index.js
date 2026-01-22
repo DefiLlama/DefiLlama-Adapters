@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const erc4626Abi = require("./erc4626.json");
 const { sumTokens2 } = require("../helper/solana");
 const { sumTokens2: sumTokensEVM } = require("../helper/unwrapLPs");
@@ -107,8 +108,8 @@ async function tvl(api) {
 async function SolanaTvl() {
   const tokensAndOwners = [
     ['mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', 'AkkGFKVJY8o5MRqBf2St4Q8NQnfTTi2bSssMMk9zXAMr'],
-    ['J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', '86vJYeZiXc9Uq1wmtLzERDfQzAnpoJgs2oF5Y4BirKkn'],
-    ['bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1', '8HpEPmkKb6T7xNDzhheWhK2P6BEdp2nGv7JbcEoDmDST'],
+    [ADDRESSES.solana.JitoSOL, '86vJYeZiXc9Uq1wmtLzERDfQzAnpoJgs2oF5Y4BirKkn'],
+    [ADDRESSES.solana.bSOL, '8HpEPmkKb6T7xNDzhheWhK2P6BEdp2nGv7JbcEoDmDST'],
     ['SoLW9muuNQmEAoBws7CWfYQnXRXMVEG12cQhy6LE2Zf', '6iK6zK2nDQswaCrpELNYnnbuo4vwzpFsEpZYyqwpRWbD']
   ]
 
