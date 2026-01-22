@@ -136,10 +136,10 @@ const HYPE_REGISTRY = {
     ["0xc27ddd78fc49875fe6f844b72bbf31dfbb099881", 57600], // Uniswap
     ["0x1E97925c365cd96D74Ec55A04569915c4D65e5e0", 606236], // Panko
   ],
-  // rsk: [
-  //   ["0x683292172E2175bd08e3927a5e72FC301b161300", 6414342], // Uniswap
-  //   ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 6414350], // Sushiswap
-  // ],
+  rsk: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 6414342], // Uniswap
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 6414350], // Sushiswap
+  ],
   iotaevm: [
     ["0xF44cECB1CF40ee12303E85Eb8651263c01812EaD", 223591], // Wagmi
   ],
