@@ -64,7 +64,7 @@ async function syncValidatorsFromLogs(api, state, safeHead) {
     events.push({
       time: log.blockNumber * 1e5 + log.logIndex,
       type: 'add',
-      publicKey: log.publicKey,
+      publicKey: log.args.publicKey,
     });
   });
 
@@ -72,7 +72,7 @@ async function syncValidatorsFromLogs(api, state, safeHead) {
     events.push({
       time: log.blockNumber * 1e5 + log.logIndex,
       type: 'remove',
-      publicKey: log.publicKey,
+      publicKey: log.args.publicKey,
     });
   });
 
