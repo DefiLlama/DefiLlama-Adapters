@@ -40,7 +40,7 @@ const arkis_wrapped_hype_vaults = [
 // ERC-20 tokens to track in Hyperliquid vaults
 const tokens_to_track = [
   ADDRESSES.hyperliquid.WHYPE,
-  ADDRESSES.hyperliquid.wstHYPE
+  ADDRESSES.hyperliquid.wstHYPE,
 ];
 
 const blacklist = [
