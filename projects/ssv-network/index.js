@@ -50,21 +50,43 @@ async function syncValidatorsFromLogs(api, state, safeHead) {
 
   const toBlock = Math.min(safeHead, fromBlock + MAX_BLOCKS_PER_RUN - 1);
 
-  // Fetch incremental logs: Added / Removed (in parallel for better performance)
+  // Fetch raw logs (without onlyArgs to preserve blockNumber and logIndex)
   const [addedLogs, removedLogs] = await Promise.all([
-    api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_ADDED_ABI, fromBlock, toBlock, onlyArgs: true }),
-    api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_REMOVED_ABI, fromBlock, toBlock, onlyArgs: true }),
+    api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_ADDED_ABI, fromBlock, toBlock }),
+    api.getLogs({ target: SSV_NETWORK, eventAbi: VALIDATOR_REMOVED_ABI, fromBlock, toBlock }),
   ]);
 
-  // Update publicKeys set: Added -> add, Removed -> delete
+  // Merge and sort events by blockchain order (blockNumber, then logIndex)
+  // This ensures correct state when a validator is added and removed in the same batch
+  const events = [];
+
   addedLogs.forEach((log) => {
-    const key = normalizeKey(log.publicKey);
-    state.publicKeys[key] = true;
+    events.push({
+      time: log.blockNumber * 1e5 + log.logIndex,
+      type: 'add',
+      publicKey: log.publicKey,
+    });
   });
 
   removedLogs.forEach((log) => {
-    const key = normalizeKey(log.publicKey);
-    delete state.publicKeys[key];
+    events.push({
+      time: log.blockNumber * 1e5 + log.logIndex,
+      type: 'remove',
+      publicKey: log.publicKey,
+    });
+  });
+
+  // Sort by blockchain chronological order
+  events.sort((a, b) => a.time - b.time);
+
+  // Process events in order
+  events.forEach((event) => {
+    const key = normalizeKey(event.publicKey);
+    if (event.type === 'add') {
+      state.publicKeys[key] = true;
+    } else {
+      delete state.publicKeys[key];
+    }
   });
 
   state.lastBlock = toBlock;
