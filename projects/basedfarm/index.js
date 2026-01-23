@@ -4,18 +4,7 @@ const GENESIS_REWARD_POOL = "0x4F4014EC1685699290A311E0A159E1E39914853F";
 const poolInfoAbi = "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 lastRewardTime, uint256 accBasedPerShare, bool isStarted)";
 
 async function tvl(api) {
-  const tokens = []
-  let gotError = false
-  let i = 0
-  do {
-    try {
-      const poolInfo = await api.call({ abi: poolInfoAbi, target: GENESIS_REWARD_POOL, params: i })
-      tokens.push(poolInfo.token)
-    } catch (e) {
-      gotError = true
-    }
-    i++
-  } while (!gotError)
+  const tokens = await api.fetchList({ itemAbi: poolInfoAbi, target: GENESIS_REWARD_POOL, itemCount: 10, permitFailure: true, excludeFailed: true, field: 'token'});
   return api.sumTokens({ owner: GENESIS_REWARD_POOL, tokens })
 }
 

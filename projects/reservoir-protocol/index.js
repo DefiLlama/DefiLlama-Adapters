@@ -15,6 +15,7 @@ const config = {
       '0xb82749F316CB9c06F38587aBecF3EB1bC842CC93', // bbqUSDCreservoir
       '0xC5deA68CCe26c014BEC516CDA70c107c534a73C4', // bbqUSDC - Steakhouse High Yield Instant
       // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
+      '0x86Ac8e29Be5ad83c611fE054Df20970d3b4f9BE0'
     ],
     // [token, owner] pairs for direct balance queries
     tokensAndOwners: [

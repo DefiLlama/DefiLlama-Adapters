@@ -91,5 +91,6 @@ module.exports = {
     tvl,
   },
   start: '2023-12-20', // 2023-12-20 12:00:00 UTC
+  deadFrom: '2024-06-20', // vaults product abandoned ?
   methodology: 'Calculates the total value of positions held by the YIEDL Vaults in Synthetix Perpetuals.'
 };

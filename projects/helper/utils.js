@@ -4,7 +4,6 @@ const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
 const erc20 = require('./abis/erc20.json');
-const { fetchThroughProxy } = require('./proxyRequest');
 const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
@@ -62,6 +61,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
+  if (chain === 'fuse' && ['VLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP', 'GLP', 'WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['DLP'].includes(symbol)) return false
   if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
@@ -332,60 +332,26 @@ function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidator
     const addresses = withdrawalAddresses ?? [withdrawalAddress]
     api.addGasToken(await beacon.balance(addresses))
     return api.getBalances()
-
-/*     for (const addr of addresses) {
-      let fetchedValidators = skipValidators;
-      api.sumTokens({ owner: addr, tokens: [nullAddress] });
-
-      do {
-        const url = `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${addr}?limit=${size}&offset=${fetchedValidators}`
-        let validatorList;
-
-        if (proxy) {
-          const res = await fetchThroughProxy(url);
-          validatorList = res.data;
-        } else {
-          const res = await http.get(url);
-          validatorList = res.data;
-        }
-
-        if (!Array.isArray(validatorList)) {
-          console.error(`Invalid validator list for ${addr} at offset ${fetchedValidators}`);
-          break;
-        }
-
-        const validators = validatorList.map(i => i.publickey);
-
-        fetchedValidators += validators.length;
-        api.log(`Fetching balances for validators (${addr})`, validators.length);
-        await addValidatorBalance(validators);
-        if (sleepTime > 0) await sleep(sleepTime);
-      } while (fetchedValidators % size === 0);
-    }
-
-    const bals = api.getBalances()
-    Object.keys(bals).forEach((i) => {
-      bals[i] = bals[i] / 1e18
-    })
-    console.log(api.getBalances(), )
-    return api.getBalances();
-
-    async function addValidatorBalance(validators) {
-      if (validators.length > 100) {
-        const chunks = sliceIntoChunks(validators, 100);
-        for (const chunk of chunks) await addValidatorBalance(chunk);
-        return;
-      }
-
-      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
-        indicesOrPubkey: validators.join(","),
-      });
-
-      data.forEach((i) => api.addGasToken(i.balance * 1e9));
-    } */
   };
 }
 
+function permitChainFailures(exports, chains) {
+  Object.keys(exports).forEach(chain => {
+    if (!chains.includes(chain)) return;
+    const chainObj = exports[chain]
+    Object.keys(chainObj).forEach(key => {
+      const fn = chainObj[key]
+      chainObj[key] = async (api, ...params) => {
+        try {
+          return await fn(api, ...params)
+        } catch (e) {
+          sdk.log(`Permitting failure for ${chain} ${key}: ${e.message}`)
+          return {}
+        }
+      }
+    } )
+  })
+}
 
 module.exports = {
   log,
@@ -407,4 +373,5 @@ module.exports = {
   once,
   isICHIVaultToken,
   getStakedEthTVL,
+  permitChainFailures,
 }

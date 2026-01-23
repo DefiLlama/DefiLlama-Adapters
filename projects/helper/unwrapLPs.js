@@ -812,7 +812,7 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
       const token = tokens[idx].output
       const balance = amounts[idx].output
       if (isLP(output, token, chain) && !blacklistedLPs.includes(token.toLowerCase()))
-        lpBalances.push({ token, balance })
+        lpBalances.push({ token, balance, symbol: output })
       else
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
     })
@@ -822,18 +822,18 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
     const lpTokenCalls = lpPositions.map(lpPosition => ({ target: lpPosition.token }))
-    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: abis.getReservesABI || lpReservesAbi, calls: lpTokenCalls, chain, })
-    const { output: lpSupplies } = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, })
-    const { output: tokens0 } = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, })
-    const { output: tokens1 } = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, })
+    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: abis.getReservesABI || lpReservesAbi, calls: lpTokenCalls, chain, permitFailure: true, })
+    const { output: lpSupplies } = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, permitFailure: true, })
+    const { output: tokens0 } = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, permitFailure: true, })
+    const { output: tokens1 } = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, permitFailure: true, })
 
-    lpPositions.map(lpPosition => {
+    lpPositions.map((lpPosition, i) => {
       try {
         let token0, token1, supply
         const lpToken = lpPosition.token
-        const token0_ = tokens0.find(call => call.input.target === lpToken)
-        const token1_ = tokens1.find(call => call.input.target === lpToken)
-        const supply_ = lpSupplies.find(call => call.input.target === lpToken)
+        const token0_ = tokens0[i]
+        const token1_ = tokens1[i]
+        const supply_ = lpSupplies[i]
         try {
           token0 = token0_.output.toLowerCase()
           token1 = token1_.output.toLowerCase()
@@ -863,8 +863,9 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
         sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance)
         sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance)
       } catch (e) {
-        sdk.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
-        throw e
+        sdk.log(`Failed to get data for LP token at ${lpPosition.token} (${lpPosition.symbol}) on chain ${chain}, keeping original balance`)
+        sdk.util.sumSingleBalance(balances, transformAddress(lpPosition.token), lpPosition.balance)
+        // throw e
       }
     })
   }
@@ -886,7 +887,7 @@ async function sumTokens2({
   block,
   chain = 'ethereum',
   transformAddress,
-  resolveLP = false,
+  resolveLP = false,  // unwrap uni v2 LP tokens
   unwrapAll = false,
   blacklistedLPs = [],
   blacklistedTokens = [],
@@ -1291,4 +1292,5 @@ module.exports = {
   addUniV3LikePosition,
   unwrapSolidlyVeNft,
   unwrapHypervisorVaults,
+  unwrapUniswapV4NFTs,
 }
