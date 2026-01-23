@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { compoundExports } = require('../helper/compound');
 
-const { stakingUnknownPricedLP } = require("../helper/staking");
+const { stakingPriceLP } = require("../helper/staking");
 const token = "0x10C9284E6094b71D3CE4E38B8bFfc668199da677";
 const stakingContract = "0x268E2E1e5a465034Ee5742DA578feb41B228ad7B";
 
@@ -23,12 +23,10 @@ module.exports = {
             mmCRO,
             wCRO
         ),
-        staking: stakingUnknownPricedLP(
+        staking: stakingPriceLP(
             stakingContract,
             token,
-            "cronos",
             "0xf56FDfeeF0Ba3de23DaB13a85602bd7BF135E80f",
-            addr => `cronos:${addr}`
         ),
     },
 };

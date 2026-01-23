@@ -30,6 +30,8 @@ const DEFAULTS = {
   FOGO_RPC: 'https://mainnet.fogo.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
+  INJECTIVE_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
+  OCC_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
@@ -38,6 +40,7 @@ const DEFAULTS = {
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
+  BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
   VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
   TATUM_PUBLIC_API_KEY: "t-6956724efd74cfe6b231bee6-cd40df69ad2d423588e36fc6",
 }
@@ -60,9 +63,11 @@ const ENV_KEYS = [
   'BITCOIN_CACHE_API',
   'DEBANK_API_KEY',
   'SMARDEX_SUBGRAPH_API_KEY',
-  'PROXY_AUTH',
   'ALLIUM_API_KEY',
   'TON_API_KEY',
+  'FLOW_NON_EVM_RPC',
+  'PROXY_AUTH',
+  'UI_TOOL_MODE',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

@@ -13,7 +13,7 @@ importers:
         version: 0.30.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@defillama/sdk':
         specifier: latest
-        version: 5.0.204(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        version: 5.0.206(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@project-serum/anchor':
         specifier: ^0.26.0
         version: 0.26.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -275,8 +275,8 @@ packages:
     peerDependencies:
       '@solana/web3.js': ^1.68.0
 
-  '@defillama/sdk@5.0.204':
-    resolution: {integrity: sha512-oR2nW6JWGrWKpVcMcgG/7+HRAZlmWu9nKATsRPLAJR8Si1GxqBHU3K5wu1x4SddULUoNJb1xjLJn5RvFUr39oQ==}
+  '@defillama/sdk@5.0.206':
+    resolution: {integrity: sha512-IJmWEBRguzRQPgg0LqRFBRWsSjGp2aRBicLP1Xx6djBYp2dEJ/Wt3KlLsEVt3CyYwFlJExJwuwgpIZn4f3PICw==}
 
   '@elastic/elasticsearch@8.19.1':
     resolution: {integrity: sha512-+1j9NnQVOX+lbWB8LhCM7IkUmjU05Y4+BmSLfusq0msCsQb1Va+OUKFCoOXjCJqQrcgdRdQCjYYyolQ/npQALQ==}
@@ -2097,7 +2097,7 @@ snapshots:
       bn.js: 5.2.2
       buffer-layout: 1.2.2
 
-  '@defillama/sdk@5.0.204(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@defillama/sdk@5.0.206(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@aws-sdk/client-s3': 3.913.0
       '@elastic/elasticsearch': 8.19.1

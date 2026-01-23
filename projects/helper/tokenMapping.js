@@ -1,3 +1,4 @@
+const { decimals } = require('@defillama/sdk/build/erc20')
 let coreAssets = require('./coreAssets.json')
 const { svmChains } = require('./svmChainConfig')
 const ADDRESSES = coreAssets
@@ -44,39 +45,18 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   capx: {
-    '0x3046AC3Fe11CcD349aBBa1dF224a48e63076f1f6': {
-      coingeckoId: "capx-ai",
-      decimals: 18
-    },
+    '0x3046AC3Fe11CcD349aBBa1dF224a48e63076f1f6': { coingeckoId: "capx-ai", decimals: 18 },
   },
   joc: {
-    '0x03527b82f384184097295fc60be0B59B8FE06E00': {
-      coingeckoId: "japan-open-chain",
-      decimals: 18
-    },
+    '0x03527b82f384184097295fc60be0B59B8FE06E00': { coingeckoId: "japan-open-chain", decimals: 18 },
+  },
+  solana: {
+    'BTRR3sj1Bn2ZjuemgbeQ6SCtf84iXS81CS7UDTSxUCaK': { coingeckoId: "superstate-uscc", decimals: 6 },
   },
   provenance: {
-    nhash: { coingeckoId: 'hash-2', decimals: 9 },
-    'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
-    'uusdc.figure.se': { coingeckoId: 'usd-coin', decimals: 6 },
-    'uylds.fcc': { coingeckoId: 'usd-coin', decimals: 6 },
-    'nbtc.figure.se': { coingeckoId: 'bitcoin', decimals: 9 },
-    'neth.figure.se': { coingeckoId: 'ethereum', decimals: 9 },
-    'uusdt.figure.se': { coingeckoId: 'tether', decimals: 6 },
-    'nlink.figure.se': { coingeckoId: 'chainlink', decimals: 9 },
-    'nsol.figure.se': { coingeckoId: 'solana', decimals: 9 },
-    'nuni.figure.se': { coingeckoId: 'uniswap', decimals: 9 },
-    'uxrp.figure.se': { coingeckoId: 'ripple', decimals: 6 },
-    'ulrwa.figure.markets': { coingeckoId: 'usd-coin', decimals: 6 },
-    'ureit.figure.markets': { coingeckoId: 'usd-coin', decimals: 6 },
-    SOL: { coingeckoId: 'solana', decimals: 0 },
-    ETH: { coingeckoId: 'ethereum', decimals: 0 },
-    USDT: { coingeckoId: 'tether', decimals: 0 },
-    BTC: { coingeckoId: 'bitcoin', decimals: 0 },
-    USDC: { coingeckoId: 'usd-coin', decimals: 0 },
-    USD: { coingeckoId: 'usd-coin', decimals: 0 },
-    YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
-    'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
+    'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
+    'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
+    'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
   doma: {
     // USDC.e (Bridged USDC via Stargate) - Verified 2024-11-27 via explorer.doma.xyz/token/0x31EEf89D5215C305304a2fA5376a1f1b6C5dc477
@@ -85,6 +65,9 @@ const fixBalancesTokens = {
   stable: {
     '0x779Ded0c9e1022225f8E0630b35a9b54bE713736': { coingeckoId: 'usdt0', decimals: 6 },
     '0x0000000000000000000000000000000000001003': { coingeckoId: 'stable-2', decimals: 18 },
+  },
+  supra: {
+    '0x7b6463ca7a54ee37e113c8333db9c0af49de39555ee1cb44837db4c085f8964': { coingeckoId: 'tether', decimals: 6 },
   },
   gan: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'gpunet', decimals: 18 },
@@ -102,7 +85,14 @@ const fixBalancesTokens = {
   megaeth: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
     '0x28B7E77f82B25B95953825F1E3eA0E36c1c29861': { coingeckoId: 'megaeth', decimals: 18 },
-  }
+  },
+  injective: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'injective-protocol', decimals: 18 },
+    '0x0000000088827d2d103ee2d9A6b781773AE03FfB': { coingeckoId: 'injective-protocol', decimals: 18 },
+    '0x88f7F2b685F9692caf8c478f5BADF09eE9B1Cc13': { coingeckoId: 'tether', decimals: 6 },
+    '0x2a25fbD67b3aE485e461fe55d9DbeF302B7D3989': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x83A15000b753AC0EeE06D2Cb41a69e76D0D5c7F7': { coingeckoId: 'ethereum', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
