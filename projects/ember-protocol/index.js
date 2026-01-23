@@ -46,7 +46,7 @@ async function ethereumTvl(api) {
       }
       ethereumVaultAddresses.push(ethereumVault.address);
   }
-  await sumERC4626Vaults({ api, calls: ethereumVaultAddresses, });
+  await sumERC4626Vaults({ api, calls: ethereumVaultAddresses, isOG4626: true});
 }
 
 module.exports = {
