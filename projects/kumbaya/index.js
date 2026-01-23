@@ -19,6 +19,7 @@ const PAGE_SIZE = 1000;
  * @param {string} queryFn - Function that returns query string with limit/offset
  * @param {string} dataKey - Key to extract data array from response
  * @returns {Promise<Array>} All fetched records
+ * @throws {Error} If GraphQL request fails
  */
 async function fetchAllPaginated(queryFn, dataKey) {
   const results = [];
@@ -26,7 +27,13 @@ async function fetchAllPaginated(queryFn, dataKey) {
 
   while (true) {
     const query = queryFn(PAGE_SIZE, offset);
-    const data = await graphQuery(ENVIO_GRAPHQL_URL, query);
+    let data;
+    try {
+      data = await graphQuery(ENVIO_GRAPHQL_URL, query);
+    } catch (e) {
+      throw new Error(`GraphQL request failed at offset ${offset}: ${e.message}`);
+    }
+
     const records = data[dataKey] || [];
     results.push(...records);
 
