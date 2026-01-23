@@ -642,7 +642,7 @@ module.exports = {
   solana: {
     tvl: async (api) => {
         const gmAddresses = Object.values(config.solana);
-        supplies = await getTokenSupplies(gmAddresses)
+        const supplies = await getTokenSupplies(gmAddresses)
         api.addTokens(Object.keys(supplies), Object.values(supplies));
     }
     
