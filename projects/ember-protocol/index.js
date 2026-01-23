@@ -23,7 +23,6 @@ async function suiTvl(api) {
     if (!suiVault || blacklistedVaults.includes(suiVault.address)) {
       continue;
     }
-    console.log(suiVault);
     const vaultTvl = await sui.query({
       target: `${SUI_PACKAGE_ID}::vault::get_vault_tvl`,
       contractId: suiVault.address,
