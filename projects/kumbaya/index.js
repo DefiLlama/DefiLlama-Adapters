@@ -1,6 +1,8 @@
 const { graphQuery } = require("../helper/http");
 
-const ENVIO_GRAPHQL_URL = "https://kby-hasura.up.railway.app/v1/graphql";
+const ENVIO_GRAPHQL_URL =
+  process.env.KUMBAYA_GRAPHQL_URL ??
+  "https://kby-hasura.up.railway.app/v1/graphql";
 
 const poolsQuery = `
   query {
