@@ -6,14 +6,44 @@
  * Data source: Envio indexer
  */
 const { graphQuery } = require("../helper/http");
+const { parseUnits } = require("ethers");
 
 const ENVIO_GRAPHQL_URL =
   process.env.KUMBAYA_GRAPHQL_URL ??
   "https://kby-hasura.up.railway.app/v1/graphql";
 
-const poolsQuery = `
+const PAGE_SIZE = 1000;
+
+/**
+ * Fetches all records from a paginated GraphQL query.
+ * @param {string} queryFn - Function that returns query string with limit/offset
+ * @param {string} dataKey - Key to extract data array from response
+ * @returns {Promise<Array>} All fetched records
+ */
+async function fetchAllPaginated(queryFn, dataKey) {
+  const results = [];
+  let offset = 0;
+
+  while (true) {
+    const query = queryFn(PAGE_SIZE, offset);
+    const data = await graphQuery(ENVIO_GRAPHQL_URL, query);
+    const records = data[dataKey] || [];
+    results.push(...records);
+
+    if (records.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+
+  return results;
+}
+
+const poolsQueryFn = (limit, offset) => `
   query {
-    Pool(where: { chainId: { _eq: 4326 } }) {
+    Pool(
+      where: { chainId: { _eq: 4326 } }
+      limit: ${limit}
+      offset: ${offset}
+    ) {
       token0_id
       token1_id
       totalValueLockedToken0
@@ -22,9 +52,13 @@ const poolsQuery = `
   }
 `;
 
-const tokensQuery = `
+const tokensQueryFn = (limit, offset) => `
   query {
-    Token(where: { chainId: { _eq: 4326 } }) {
+    Token(
+      where: { chainId: { _eq: 4326 } }
+      limit: ${limit}
+      offset: ${offset}
+    ) {
       id
       address
       decimals
@@ -39,31 +73,39 @@ const tokensQuery = `
  */
 async function tvl(api) {
   try {
-    const [poolsData, tokensData] = await Promise.all([
-      graphQuery(ENVIO_GRAPHQL_URL, poolsQuery),
-      graphQuery(ENVIO_GRAPHQL_URL, tokensQuery),
+    const [pools, tokens] = await Promise.all([
+      fetchAllPaginated(poolsQueryFn, "Pool"),
+      fetchAllPaginated(tokensQueryFn, "Token"),
     ]);
 
     const tokenMap = {};
-    for (const token of tokensData.Token || []) {
+    for (const token of tokens) {
       tokenMap[token.id] = { address: token.address, decimals: token.decimals };
     }
 
-    for (const pool of poolsData.Pool || []) {
+    for (const pool of pools) {
       const token0 = tokenMap[pool.token0_id];
       const token1 = tokenMap[pool.token1_id];
 
       if (token0 && pool.totalValueLockedToken0) {
-        const amount0 = parseFloat(pool.totalValueLockedToken0) * 10 ** token0.decimals;
-        if (Number.isFinite(amount0) && amount0 > 0) {
-          api.add(token0.address, BigInt(Math.floor(amount0)));
+        try {
+          const amount0 = parseUnits(pool.totalValueLockedToken0, token0.decimals);
+          if (amount0 > 0n) {
+            api.add(token0.address, amount0);
+          }
+        } catch {
+          // Skip invalid amounts
         }
       }
 
       if (token1 && pool.totalValueLockedToken1) {
-        const amount1 = parseFloat(pool.totalValueLockedToken1) * 10 ** token1.decimals;
-        if (Number.isFinite(amount1) && amount1 > 0) {
-          api.add(token1.address, BigInt(Math.floor(amount1)));
+        try {
+          const amount1 = parseUnits(pool.totalValueLockedToken1, token1.decimals);
+          if (amount1 > 0n) {
+            api.add(token1.address, amount1);
+          }
+        } catch {
+          // Skip invalid amounts
         }
       }
     }
