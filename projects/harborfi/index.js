@@ -65,16 +65,26 @@ async function tvl(api) {
   
   // Get collateral token address from each contract using WRAPPED_COLLATERAL_TOKEN() function
   // This makes it dynamic and supports any collateral token without hardcoding
+  // permitFailure: true guards against undeployed/pending contracts
   const collateralTokens = await api.multiCall({
     abi: 'function WRAPPED_COLLATERAL_TOKEN() view returns (address)',
     calls: allContracts,
+    permitFailure: true,
   });
   
   // Build tokensAndOwners array: [collateralToken, contractAddress]
-  const tokensAndOwners = allContracts.map((contract, i) => [
-    collateralTokens[i],
-    contract,
-  ]);
+  // Filter out failed/empty/null/zero address results to handle reverted calls gracefully
+  const tokensAndOwners = [];
+  for (let i = 0; i < allContracts.length; i++) {
+    const collateral = collateralTokens[i];
+    // Only include pairs where collateral token is a valid non-zero address
+    if (collateral && 
+        collateral !== '0x0000000000000000000000000000000000000000' && 
+        collateral !== null && 
+        collateral !== undefined) {
+      tokensAndOwners.push([collateral, allContracts[i]]);
+    }
+  }
 
   return api.sumTokens({ tokensAndOwners });
 }
