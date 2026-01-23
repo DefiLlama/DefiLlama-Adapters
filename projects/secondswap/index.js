@@ -5,7 +5,7 @@ const axios = require("axios");
  * SecondSwap API endpoint for fetching TVL data
  * @constant {string}
  */
-const API_ENDPOINT = "http://localhost:4000/tvl";
+const API_ENDPOINT = "https://secondswap-data-proxy.vercel.app/tvl";
 
 /**
  * Rate limit wait time in milliseconds when 429 error occurs
