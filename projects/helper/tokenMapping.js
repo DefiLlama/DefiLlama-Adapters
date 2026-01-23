@@ -66,6 +66,9 @@ const fixBalancesTokens = {
     '0x779Ded0c9e1022225f8E0630b35a9b54bE713736': { coingeckoId: 'usdt0', decimals: 6 },
     '0x0000000000000000000000000000000000001003': { coingeckoId: 'stable-2', decimals: 18 },
   },
+  supra: {
+    '0x7b6463ca7a54ee37e113c8333db9c0af49de39555ee1cb44837db4c085f8964': { coingeckoId: 'tether', decimals: 6 },
+  },
   gan: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'gpunet', decimals: 18 },
   },
