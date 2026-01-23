@@ -38,7 +38,7 @@ async function tvl(api) {
 
 module.exports = {
   ethereum: {
-    tvl,
+    tvl: new Error('skip for now'),
   },
   start: '2023-10-28',
 };
