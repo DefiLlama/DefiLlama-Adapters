@@ -2,6 +2,8 @@ const { ibcChains, getUniqueAddresses } = require('./tokenMapping')
 const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
+const { RateLimiter } = require("limiter");
+
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -83,7 +85,7 @@ async function sumTokens(options) {
   const evmAddressExceptions = new Set(['tron', 'xdc'])
   const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
-  
+
   if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
     if (nonEvmOwnerFound) throw new Error('chain handler missing: ' + chain)
     return sumTokensEVM(options)
@@ -131,7 +133,7 @@ async function sumTokens(options) {
     return balances
 
   } else if (!specialChains.includes(chain)) {
-    if (ibcChains.includes(chain)) return sumTokensEVM(options) 
+    if (ibcChains.includes(chain)) return sumTokensEVM(options)
     throw new Error('chain handler missing!!!')
   }
 
@@ -146,7 +148,16 @@ async function sumTokens(options) {
   }
 }
 
-async function getRippleBalance(account) {
+// limit it to 3 calls every 5 seconds
+const rippleApiLimiter = new RateLimiter({ tokensPerInterval: 3, interval: 5_000 });
+const rippleApiWithLimiter = (fn, tokensToRemove = 1) => async (...args) => {
+  await rippleApiLimiter.removeTokens(tokensToRemove);
+  return fn(...args);
+}
+
+const getRippleBalance = rippleApiWithLimiter(_getRippleBalance)
+
+async function _getRippleBalance(account) {
   const body = { "method": "account_info", "params": [{ account }] }
   await sleep(500);
   const res = await post('https://s1.ripple.com:51234', body)
