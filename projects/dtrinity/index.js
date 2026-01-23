@@ -118,7 +118,7 @@ async function getTvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the total value of collateral backing dSTABLEs, including vault deposits and Curve LP positions.',
+  methodology: 'Includes TVL of reserve backing of dUSD, consisting of USD-denominated stablecoins and yieldcoins.',
   fraxtal: { tvl: getTvl },
   ethereum: { tvl: getTvl },
   sonic: { tvl: getTvl },
