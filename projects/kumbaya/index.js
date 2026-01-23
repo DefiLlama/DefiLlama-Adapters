@@ -15,9 +15,13 @@ const query = `
 `;
 
 async function tvl() {
-  const data = await graphQuery(ENVIO_GRAPHQL_URL, query);
-  const tvlUSD = data?.UniswapDayData?.[0]?.tvlUSD || 0;
-  return { tether: parseFloat(tvlUSD) };
+  try {
+    const data = await graphQuery(ENVIO_GRAPHQL_URL, query);
+    const tvlUSD = data?.UniswapDayData?.[0]?.tvlUSD || 0;
+    return { tether: parseFloat(tvlUSD) };
+  } catch (e) {
+    throw new Error(`Kumbaya indexer error: ${e.message}`);
+  }
 }
 
 module.exports = {
