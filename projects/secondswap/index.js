@@ -75,7 +75,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "Counts the total value of vesting tokens locked in SecondSwap vault contracts. SecondSwap enables trading and management of locked/vesting cryptocurrencies across multiple chains.",
+  methodology: "SecondSwap facilitates trading and management of locked/vesting tokens. TVL is calculated from on-chain vault balances aggregated via Dune Analytics, then served through SecondSwap's API for programmatic access.",
   ethereum: { tvl },
   avax: { tvl },
   solana: { tvl },
