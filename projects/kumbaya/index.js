@@ -1,3 +1,10 @@
+/**
+ * Kumbaya DEX - Uniswap V3 fork on MegaETH
+ * https://kumbaya.xyz
+ *
+ * TVL is computed by summing token balances across all V3 pools.
+ * Data source: Envio indexer
+ */
 const { graphQuery } = require("../helper/http");
 
 const ENVIO_GRAPHQL_URL =
@@ -25,6 +32,11 @@ const tokensQuery = `
   }
 `;
 
+/**
+ * Calculates TVL by fetching all pools and their token balances.
+ * Adds each token's locked amount to the api balance tracker.
+ * @param {object} api - DefiLlama SDK api object for adding token balances
+ */
 async function tvl(api) {
   try {
     const [poolsData, tokensData] = await Promise.all([
