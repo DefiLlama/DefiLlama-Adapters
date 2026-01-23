@@ -66,7 +66,6 @@ async function tvl(api) {
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 429) {
-          console.error(`Rate limit exceeded for ${secondswapNetwork}`);
           await new Promise((resolve) => setTimeout(resolve, RATE_LIMIT_MS));
         }
       }
