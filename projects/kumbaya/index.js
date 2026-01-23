@@ -41,12 +41,16 @@ async function tvl(api) {
 
       if (token0 && pool.totalValueLockedToken0) {
         const amount0 = parseFloat(pool.totalValueLockedToken0) * 10 ** token0.decimals;
-        api.add(token0.address, BigInt(Math.floor(amount0)));
+        if (Number.isFinite(amount0) && amount0 > 0) {
+          api.add(token0.address, BigInt(Math.floor(amount0)));
+        }
       }
 
       if (token1 && pool.totalValueLockedToken1) {
         const amount1 = parseFloat(pool.totalValueLockedToken1) * 10 ** token1.decimals;
-        api.add(token1.address, BigInt(Math.floor(amount1)));
+        if (Number.isFinite(amount1) && amount1 > 0) {
+          api.add(token1.address, BigInt(Math.floor(amount1)));
+        }
       }
     }
   } catch (e) {
