@@ -1,4 +1,4 @@
-const { sumTokens2, } = require('./helper/solana')
+const { sumTokens2, } = require('../helper/solana')
 
 module.exports = {
   methodology: "Sums the total supplies of Ondo's issued global markets tokens.",
