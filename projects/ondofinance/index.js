@@ -70,6 +70,12 @@ const config = {
   stellar: {
     USDY: "USDY-GAJMPX5NBOG6TQFPQGRABJEEB2YE7RFRLUKJDZAZGAD5GFX4J7TADAZ6",
   },
+  plume_mainnet: {
+    USDY: "0xD2B65e851Be3d80D3c2ce795eB2E78f16cB088b2",
+  },
+  sei : {
+    USDY: "0x54cD901491AeF397084453F4372B93c33260e2A6"
+  }
 };
 
 async function getUSDYTotalSupplySUI() {
