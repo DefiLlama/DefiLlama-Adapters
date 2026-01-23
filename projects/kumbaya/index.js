@@ -48,6 +48,7 @@ const poolsQueryFn = (limit, offset) => `
   query {
     Pool(
       where: { chainId: { _eq: 4326 } }
+      order_by: { id: asc }
       limit: ${limit}
       offset: ${offset}
     ) {
@@ -63,6 +64,7 @@ const tokensQueryFn = (limit, offset) => `
   query {
     Token(
       where: { chainId: { _eq: 4326 } }
+      order_by: { id: asc }
       limit: ${limit}
       offset: ${offset}
     ) {
