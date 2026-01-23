@@ -5,6 +5,6 @@ const USDT = "0x55d398326f99059fF775485246999027B3197955";
 
 module.exports = {
   bsc: {
-    tvl: sumTokensExport({ tokens: [[USDT, TREASURY]] }),
+    tvl: sumTokensExport({ tokens: [USDT], owner: TREASURY }),
   },
 };
