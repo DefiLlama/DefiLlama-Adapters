@@ -2,23 +2,53 @@ const { graphQuery } = require("../helper/http");
 
 const ENVIO_GRAPHQL_URL = "https://kby-hasura.up.railway.app/v1/graphql";
 
-const query = `
+const poolsQuery = `
   query {
-    UniswapDayData(
-      where: { chainId: { _eq: 4326 } }
-      order_by: { date: desc }
-      limit: 1
-    ) {
-      tvlUSD
+    Pool(where: { chainId: { _eq: 4326 } }) {
+      token0_id
+      token1_id
+      totalValueLockedToken0
+      totalValueLockedToken1
     }
   }
 `;
 
-async function tvl() {
+const tokensQuery = `
+  query {
+    Token(where: { chainId: { _eq: 4326 } }) {
+      id
+      address
+      decimals
+    }
+  }
+`;
+
+async function tvl(api) {
   try {
-    const data = await graphQuery(ENVIO_GRAPHQL_URL, query);
-    const tvlUSD = data?.UniswapDayData?.[0]?.tvlUSD || 0;
-    return { tether: parseFloat(tvlUSD) };
+    const [poolsData, tokensData] = await Promise.all([
+      graphQuery(ENVIO_GRAPHQL_URL, poolsQuery),
+      graphQuery(ENVIO_GRAPHQL_URL, tokensQuery),
+    ]);
+
+    const tokenMap = {};
+    for (const token of tokensData.Token || []) {
+      tokenMap[token.id] = { address: token.address, decimals: token.decimals };
+    }
+
+    for (const pool of poolsData.Pool || []) {
+      const token0 = tokenMap[pool.token0_id];
+      const token1 = tokenMap[pool.token1_id];
+
+      if (token0 && pool.totalValueLockedToken0) {
+        const amount0 = parseFloat(pool.totalValueLockedToken0) * 10 ** token0.decimals;
+        api.add(token0.address, BigInt(Math.floor(amount0)));
+      }
+
+      if (token1 && pool.totalValueLockedToken1) {
+        const amount1 = parseFloat(pool.totalValueLockedToken1) * 10 ** token1.decimals;
+        api.add(token1.address, BigInt(Math.floor(amount1)));
+      }
+    }
   } catch (e) {
     throw new Error(`Kumbaya indexer error: ${e.message}`);
   }
