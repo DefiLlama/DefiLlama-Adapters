@@ -1,4 +1,4 @@
-const { sumTokens2, } = require('../helper/solana')
+const { getTokenSupplies } = require("../helper/solana");
 
 module.exports = {
   methodology: "Sums the total supplies of Ondo's issued global markets tokens.",
@@ -640,7 +640,11 @@ module.exports = {
     },
   },
   solana: {
-    tvl: sumTokens2({tokens: Object.values(config.solana)})
+    tvl: async (api) => {
+        const gmAddresses = Object.values(config.solana);
+        supplies = await getTokenSupplies(gmAddresses)
+        api.addTokens(Object.keys(supplies), Object.values(supplies));
+    }
     
   }
 };
