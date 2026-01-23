@@ -23,6 +23,7 @@ const ABI = {
   },
   morpho: {
     CreateMetaMorphoEvent: 'event CreateMetaMorpho(address indexed metaMorpho, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)',
+    CreateVaultV2Event: 'event CreateVaultV2(address indexed owner, address indexed asset, bytes32 salt, address indexed newVaultV2)',
   },
   euler: {
     getProxyListLength: 'uint256:getProxyListLength',
@@ -138,6 +139,14 @@ const MorphoConfigs = {
       {
         address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
         fromBlock: 296447195,
+      },
+    ],
+  },
+  optimism: {
+    vaultFactories: [
+      {
+        address: '0x3Bb6A6A0Bc85b367EFE0A5bAc81c5E52C892839a',
+        fromBlock: 130770189,
       },
     ],
   },

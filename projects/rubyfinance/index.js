@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unknownTokens")
-const { stakingUnknownPricedLP, staking } = require("../helper/staking")
+const { stakingPriceLP, staking } = require("../helper/staking")
 
 const wkavaAddress = ADDRESSES.kava.WKAVA;
 const rshareTokenAddress = "0x5547F680Ad0104273d0c007073B87f98dEF199c6";
@@ -22,6 +22,6 @@ module.exports = {
   kava: {
     tvl: staking(rshareRewardPoolAddress, wkavaAddress),
     pool2: sumTokensExport({ owner: rshareRewardPoolAddress, tokens: Kavalps, lps: Kavalps, resolveLP: true, useDefaultCoreAssets: true }),
-    staking: stakingUnknownPricedLP(boardroomAddress, rshareTokenAddress, "kava", rshareKavaLp),
+    staking: stakingPriceLP(boardroomAddress, rshareTokenAddress, rshareKavaLp),
   },
 };

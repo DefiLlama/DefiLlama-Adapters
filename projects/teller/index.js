@@ -153,10 +153,8 @@ async function addPoolsLenderTVL(api) {
     let netPrincipalTvl = totalCommitted - totalBorrowedNet;
     if (!(netPrincipalTvl > 0) || !p.principal_token_address) continue;
 
-    if (chain === "base") {
-      const decimals = await api.call({ target: p.principal_token_address, abi: "erc20:decimals" });
-      netPrincipalTvl = (netPrincipalTvl / 1e18) * (10 ** Number(decimals));
-    }
+    const decimals = await api.call({ target: p.principal_token_address, abi: "erc20:decimals" });
+    netPrincipalTvl = (netPrincipalTvl / 1e18) * (10 ** Number(decimals));
 
     api.add(p.principal_token_address, Math.floor(netPrincipalTvl).toString());
   }

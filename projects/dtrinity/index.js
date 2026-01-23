@@ -40,6 +40,13 @@ const config = {
       collateralVault: "0xA5f9F6238406B1301D0ED09555a2893dc1A26A49",
       pools: []
     },
+  },
+  ethereum: {
+    dUSD: {
+      address: '0x07fFf99e1664d9B116fbC158c0E99785F81cA236',
+      collateralVault: '0x84c58066a4408454b7380f168c95F571419253f4',
+      pools: []
+    },
   }
 }
 
@@ -76,6 +83,9 @@ module.exports = {
     tvl: getAMOTvl,
   },
   katana: {
+    tvl: getAMOTvl,
+  },
+  ethereum: {
     tvl: getAMOTvl,
   },
 };
