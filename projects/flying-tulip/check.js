@@ -88,9 +88,32 @@ async function getFTPrice(api) {
 }
 
 /**
- * Fetches yield revenue from all wrapper contracts.
+ * Fetches claimed yield from YieldClaimed events for a wrapper.
  * @param {Object} api - DefiLlama SDK API instance
- * @returns {Promise<Array<{wrapper: string, token: string, yield: string}>>} Yield data per wrapper
+ * @param {string} wrapper - Wrapper contract address
+ * @returns {Promise<bigint>} Total claimed yield in wei
+ */
+async function getClaimedYield(api, wrapper) {
+  const logs = await getLogs({
+    api,
+    target: wrapper,
+    eventAbi: 'event YieldClaimed(address yieldClaimer, address token, uint256 amount)',
+    fromBlock: PUT_MANAGER_FROM_BLOCK,
+    onlyArgs: true,
+  });
+
+  let totalClaimed = BigInt(0);
+  for (const log of logs) {
+    totalClaimed += BigInt(log.amount);
+  }
+  return totalClaimed;
+}
+
+/**
+ * Fetches yield revenue from all wrapper contracts.
+ * Includes both current unclaimed yield and historically claimed yield.
+ * @param {Object} api - DefiLlama SDK API instance
+ * @returns {Promise<Array<{wrapper: string, token: string, unclaimedYield: bigint, claimedYield: bigint, totalYield: bigint}>>} Yield data per wrapper
  */
 async function getYieldRevenue(api) {
   const tokens = await api.multiCall({
@@ -98,16 +121,27 @@ async function getYieldRevenue(api) {
     calls: WRAPPERS,
   });
 
-  const yields = await api.multiCall({
+  const unclaimedYields = await api.multiCall({
     abi: 'uint256:yield',
     calls: WRAPPERS,
   });
 
-  return WRAPPERS.map((wrapper, i) => ({
-    wrapper,
-    token: tokens[i],
-    yield: yields[i],
-  }));
+  const results = [];
+  for (let i = 0; i < WRAPPERS.length; i++) {
+    const claimedYield = await getClaimedYield(api, WRAPPERS[i]);
+    const unclaimedYield = BigInt(unclaimedYields[i]);
+    const totalYield = unclaimedYield + claimedYield;
+
+    results.push({
+      wrapper: WRAPPERS[i],
+      token: tokens[i],
+      unclaimedYield,
+      claimedYield,
+      totalYield,
+    });
+  }
+
+  return results;
 }
 
 /**
@@ -159,11 +193,16 @@ function calculateUsdValue(tokenAmount, priceUsd) {
  * @returns {Promise<void>}
  */
 async function checkFT(api) {
-  // Get pFT address
-  const pFT = await api.call({
-    target: PUT_MANAGER,
-    abi: 'address:pFT',
-  });
+  // Get pFT address (may fail if contract doesn't expose this)
+  let pFT = null;
+  try {
+    pFT = await api.call({
+      target: PUT_MANAGER,
+      abi: 'address:pFT',
+    });
+  } catch (e) {
+    // pFT call not supported
+  }
 
   // Get FT offering supply
   const ftOfferingSupply = await api.call({
@@ -209,7 +248,9 @@ async function checkFT(api) {
     return '$' + n.toLocaleString(undefined, { maximumFractionDigits: 2 });
   };
 
-  console.log('pFT NFT Contract:', pFT);
+  if (pFT) {
+    console.log('pFT NFT Contract:', pFT);
+  }
 
   console.log('\n--- FT Token Stats ---');
   console.log('Initial Supply: 10,000,000,000 FT');
@@ -227,7 +268,11 @@ async function checkFT(api) {
 
   console.log('\n--- Yield Revenue ---');
   for (const data of yieldData) {
-    console.log(`Wrapper ${data.wrapper}: ${data.yield} (token: ${data.token})`);
+    console.log(`Wrapper ${data.wrapper}:`);
+    console.log(`  Token: ${data.token}`);
+    console.log(`  Unclaimed Yield: ${data.unclaimedYield.toString()}`);
+    console.log(`  Claimed Yield:   ${data.claimedYield.toString()}`);
+    console.log(`  Total Yield:     ${data.totalYield.toString()}`);
   }
 }
 
