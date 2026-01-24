@@ -187,7 +187,7 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
     chain
   )}/${subpath}/bank/v1beta1/balances/${owner}?pagination.limit=1000`;
   if (block) {
-    endpoint += `?height=${block - (block % 100)}`;
+    endpoint += `&height=${block - (block % 100)}`;
   }
   const {
     balances: data,
