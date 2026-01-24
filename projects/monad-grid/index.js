@@ -21,19 +21,14 @@ async function staking(api) {
             target: CONTRACTS.farmFactory,
         })
 
-        if (farms && farms.length > 0) {
-            // Get farm info for each farm (returns stakeToken, rewardToken, totalStaked, ...)
-            const farmInfos = await api.multiCall({
-                abi: 'function getFarmInfo() view returns (address stakeToken, address rewardToken, uint256 totalStaked, uint256 rewardPerSecond, uint256 startTime, uint256 endTime, uint256 depositFee, uint256 withdrawFee)',
-                calls: farms,
-                permitFailure: true,
-            })
+        // Get farm info for each farm (returns stakeToken, rewardToken, totalStaked, ...)
+        const farmInfos = await api.multiCall({
+            abi: 'function getFarmInfo() view returns (address stakeToken, address rewardToken, uint256 totalStaked, uint256 rewardPerSecond, uint256 startTime, uint256 endTime, uint256 depositFee, uint256 withdrawFee)',
+            calls: farms,
+        })
 
-            for (const info of farmInfos) {
-                if (info && info.stakeToken && info.totalStaked) {
-                    api.add(info.stakeToken, info.totalStaked)
-                }
-            }
+        for (const info of farmInfos) {
+            api.add(info.stakeToken, info.totalStaked)
         }
     }
 
