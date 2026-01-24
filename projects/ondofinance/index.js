@@ -70,6 +70,12 @@ const config = {
   stellar: {
     USDY: "USDY-GAJMPX5NBOG6TQFPQGRABJEEB2YE7RFRLUKJDZAZGAD5GFX4J7TADAZ6",
   },
+  plume_mainnet: {
+    USDY: "0xD2B65e851Be3d80D3c2ce795eB2E78f16cB088b2",
+  },
+  sei : {
+    USDY: "0x54cD901491AeF397084453F4372B93c33260e2A6"
+  }
 };
 
 async function getUSDYTotalSupplySUI() {
@@ -120,6 +126,12 @@ Object.keys(config).forEach((chain) => {
         const res = await get(`https://api.stellar.expert/explorer/public/asset/${code}-${issuer}`);
 
         api.addTokens(config.stellar.USDY, res.supply);
+      } else if (chain === "plume_mainnet") {
+        // Plume's Multicall3 implementation has known issues, use individual calls
+        for (const token of fundAddresses) {
+          const supply = await api.call({ abi: "erc20:totalSupply", target: token });
+          api.addTokens([token], [supply]);
+        }
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);
