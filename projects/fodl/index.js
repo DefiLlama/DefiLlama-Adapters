@@ -1,5 +1,7 @@
-const abi = require('./abi.json')
-const { sumTokensExport } = require('../helper/unwrapLPs');
+const abi = {
+    "getPositionsMetadata": "function getPositionsMetadata(address[] positions) returns (tuple(uint256 supplyAmount, uint256 borrowAmount, uint256 collateralUsageFactor, uint256 principalValue, uint256 positionValue, address positionAddress, address platformAddress, address supplyTokenAddress, address borrowTokenAddress)[] assetsData)",
+    "tokenByIndex": "function tokenByIndex(uint256) view returns (address)"
+  };const { sumTokensExport } = require('../helper/unwrapLPs');
 const { sliceIntoChunks } = require('../helper/utils');
 
 module.exports = {

@@ -1,5 +1,9 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "token": "address:token",
+    "balance": "uint256:balance",
+    "want": "address:want"
+  };
 
 const lpVaults = [
   "0xE595C99b35f17408178097aFcF08DaE31DF0AD78", //PGL Vault PNG

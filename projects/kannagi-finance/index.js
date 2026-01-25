@@ -1,5 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "poolTvlInfo": "function totalTvl() view returns (tuple(uint256 pid, address want, uint256 tvl)[])",
+    "reserves": "function getReserves() external view returns (uint _reserve0, uint _reserve1)"
+  };
 const {yieldHelper} = require('../helper/yieldHelper');
 const KANA_ADDRESS = "0x26aC1D9945f65392B8E4E6b895969b5c01A7B414";
 const YIELD_ADDRESS= "0x6E415ba5a37761256D13E84B45f4822c179DEF47";

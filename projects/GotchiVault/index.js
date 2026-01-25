@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "totalGHST": "function totalGHST(address _user) view returns (uint256 _totalGHST)",
+    "tokenIdsOfOwner": "function tokenIdsOfOwner(address _owner) view returns (uint32[] tokenIds_)"
+  };
 const { request, gql } = require("graphql-request");
 
 const VGHST_CONTRACT = "0x51195e21BDaE8722B29919db56d95Ef51FaecA6C";

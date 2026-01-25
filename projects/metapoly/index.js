@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "totalSupply": "uint256:totalSupply",
+    "UNDERLYING_ASSET_ADDRESS": "address:UNDERLYING_ASSET_ADDRESS"
+  };
 
 const config = {
   kava: {

@@ -1,8 +1,10 @@
 const { getUniqueAddresses } = require('../helper/utils')
 const { getConfig } = require('../helper/cache')
-const archimedesAbi = require('./archimedes.json')
-
-const baseUrl = 'https://api.2pi.network/v1'
+const archimedesAbi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address want, uint256 weighing, uint256 lastRewardBlock, uint256 accPiTokenPerShare, address controller)",
+    "poolLength": "uint256:poolLength",
+    "balance": "function balance(uint256 _pid) view returns (uint256)"
+  };const baseUrl = 'https://api.2pi.network/v1'
 const chains = {
   avax: 'avalanche',
   bsc: 'bsc',

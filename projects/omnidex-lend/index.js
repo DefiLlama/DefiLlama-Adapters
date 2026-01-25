@@ -1,4 +1,6 @@
-const abi = require('./abi.json');
+const abi = {
+    "getAllOTokens": "function getAllOTokens() view returns (tuple(string symbol, address tokenAddress)[])"
+  };
 const { aaveExports } = require('../helper/aave');
 
 module.exports = {

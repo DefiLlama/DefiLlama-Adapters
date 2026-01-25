@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "tokenList": "address[]:tokenList",
+    "tokenParameters": "function tokenParameters(address) view returns (address rewarder, address strategy, uint256 lastRewardTime, uint256 lastCumulativeReward, uint256 storedPrice, uint256 accSKANVASPerShare, uint256 totalShares, uint256 totalTokens, uint128 multiplier, uint16 withdrawFeeBP)"
+  };
 const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 

@@ -1,5 +1,12 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const abis = require("./abis.json");
+const abis = {
+    "locked": "function locked(uint256) view returns (int128 amount, uint256 end)",
+    "totalBalances": "function totalBalances(address) view returns (uint256)",
+    "allPairsLength": "uint256:allPairsLength",
+    "allPairs": "function allPairs(uint256) view returns (address)",
+    "token0": "address:token0",
+    "token1": "address:token1"
+  };
 
 const DDDX = '0x4B6ee8188d6Df169E1071a7c96929640D61f144f';
 

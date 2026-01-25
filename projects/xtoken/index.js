@@ -1,5 +1,17 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const abi = require("./abi.json");
+const abi = {
+    "getFundHoldings": "uint256:getFundHoldings",
+    "getNav": "uint256:getNav",
+    "totalAllocatedNav": "uint256:totalAllocatedNav",
+    "getBufferBalance": "uint256:getBufferBalance",
+    "getRewardsContributionToNav": "uint256:getRewardsContributionToNav",
+    "getFundKncBalanceTwei": "uint256:getFundKncBalanceTwei",
+    "debtBalanceOf": "function debtBalanceOf(address account, bytes32 currencyKey) view returns (uint256)",
+    "getEthBalance": "uint256:getEthBalance",
+    "getSnxBalance": "uint256:getSnxBalance",
+    "getFundBalances": "function getFundBalances() view returns (uint256 marketBalance, uint256 bufferBalance)",
+    "quoteExactInputSingle": "function quoteExactInputSingle(address tokenIn, address tokenOut, uint24 fee, uint256 amountIn, uint160 sqrtPriceLimitX96) returns (uint256 amountOut)"
+  };
 const {
   kncAddr,
   xaaveaAddr,

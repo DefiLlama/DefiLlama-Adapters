@@ -1,4 +1,9 @@
-const abi = require("./abi.json");
+const abi = {
+    "allPools": "function allPools(uint256) view returns (address)",
+    "allPoolsLength": "uint256:allPoolsLength",
+    "token": "address:token",
+    "reserve": "uint256:reserve"
+  };
 
 const factoryContract = "0xa22F8cf50D9827Daef24dCb5BAC92C147a9D342e";
 

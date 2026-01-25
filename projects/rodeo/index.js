@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "peekPools": "function peekPools(address[] pools) view returns (uint256[], uint256[], uint256[], uint256[], uint256[], uint256[])"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const investorHelper = "0x6f456005A7CfBF0228Ca98358f60E6AE1d347E18";
