@@ -7,4 +7,4 @@ module.exports.hallmarks = [
   ['2023-10-30', 'Protocol is sunset'],
 ]
 
-console.log(module.exports)
+module.exports.deadFrom = '2023-10-30';
