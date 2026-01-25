@@ -8,12 +8,10 @@ const {
     scValToNative,
   } = require("@stellar/stellar-sdk");
   
-  // ====== CONFIG (TESTNET for now) ======
+  // ====== CONFIG  ======
   const LOGGER_CONTRACT_ADDRESS =
     "CBEWJH5HJJZ6LB77MOKAB7B4MQTYAHVSFG437HWBXC6K2YEL2CYVLW3D";
   
-  // Use a Soroban RPC that matches the network you’re testing
-  // (If your team is using a different testnet RPC, replace this URL)
   const SOROBAN_RPC_URL = "https://soroban-rpc.mainnet.stellar.gateway.fm";
   const NETWORK_PASSPHRASE = Networks.PUBLIC;
   
@@ -24,7 +22,6 @@ const {
   
   async function getActiveTvl() {
     // Dummy source account is fine for simulateTransaction.
-    // It doesn't need to exist or have a real sequence.
     const sourceAddress = Address.fromString(
       "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF"
     );
@@ -54,7 +51,6 @@ const {
     const retval = sim.result?.retval;
     if (!retval) throw new Error("No return value from contract call");
   
-    // This will likely be BigInt (or number) depending on the contract type
     return scValToNative(retval);
   }
   
