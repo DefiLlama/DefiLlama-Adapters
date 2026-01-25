@@ -1,5 +1,3 @@
-const { deadFrom } = require("../mosquitos-finance");
-
 module.exports = {
     dogechain: {
         tvl: () => ({}),
