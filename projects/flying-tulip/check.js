@@ -32,19 +32,6 @@ const INITIAL_FT_SUPPLY = BigInt('10000000000000000000000000000'); // 10B * 1e18
 const PUT_MANAGER_FROM_BLOCK = 21895793;
 
 /**
- * Flying Tulip yield wrapper contract addresses on Ethereum mainnet.
- * @type {string[]}
- */
-const WRAPPERS = [
-  '0x095d8B8D4503D590F647343F7cD880Fa2abbbf59', // USDC Wrapper
-  '0x9d96bac8a4E9A5b51b5b262F316C4e648E44E305', // WETH Wrapper
-  '0x267dF6b637DdCaa7763d94b64eBe09F01b07cB36', // USDT Wrapper
-  '0xA143a9C486a1A4aaf54FAEFF7252CECe2d337573', // USDS Wrapper
-  '0xE5270E0458f58b83dB3d90Aa6A616173c98C97b6', // USDTb Wrapper
-  '0xe6880Fc961b1235c46552E391358A270281b5625', // USDe Wrapper
-];
-
-/**
  * Fetches total FT withdrawn by summing all Withdraw events from PutManager.
  * @param {Object} api - DefiLlama SDK API instance
  * @returns {Promise<bigint>} Total FT withdrawn in wei
@@ -85,63 +72,6 @@ async function getFTPrice(api) {
 
   // ftPerUSD is scaled by 1e8, so 1e9 means 10 FT per USD = $0.10
   return 1 / (ftPerUSDNum / 1e8);
-}
-
-/**
- * Fetches claimed yield from YieldClaimed events for a wrapper.
- * @param {Object} api - DefiLlama SDK API instance
- * @param {string} wrapper - Wrapper contract address
- * @returns {Promise<bigint>} Total claimed yield in wei
- */
-async function getClaimedYield(api, wrapper) {
-  const logs = await getLogs({
-    api,
-    target: wrapper,
-    eventAbi: 'event YieldClaimed(address yieldClaimer, address token, uint256 amount)',
-    fromBlock: PUT_MANAGER_FROM_BLOCK,
-    onlyArgs: true,
-  });
-
-  let totalClaimed = BigInt(0);
-  for (const log of logs) {
-    totalClaimed += BigInt(log.amount);
-  }
-  return totalClaimed;
-}
-
-/**
- * Fetches yield revenue from all wrapper contracts.
- * Includes both current unclaimed yield and historically claimed yield.
- * @param {Object} api - DefiLlama SDK API instance
- * @returns {Promise<Array<{wrapper: string, token: string, unclaimedYield: bigint, claimedYield: bigint, totalYield: bigint}>>} Yield data per wrapper
- */
-async function getYieldRevenue(api) {
-  const tokens = await api.multiCall({
-    abi: 'address:token',
-    calls: WRAPPERS,
-  });
-
-  const unclaimedYields = await api.multiCall({
-    abi: 'uint256:yield',
-    calls: WRAPPERS,
-  });
-
-  const results = [];
-  for (let i = 0; i < WRAPPERS.length; i++) {
-    const claimedYield = await getClaimedYield(api, WRAPPERS[i]);
-    const unclaimedYield = BigInt(unclaimedYields[i]);
-    const totalYield = unclaimedYield + claimedYield;
-
-    results.push({
-      wrapper: WRAPPERS[i],
-      token: tokens[i],
-      unclaimedYield,
-      claimedYield,
-      totalYield,
-    });
-  }
-
-  return results;
 }
 
 /**
@@ -188,7 +118,7 @@ function calculateUsdValue(tokenAmount, priceUsd) {
 
 /**
  * Comprehensive FT token and protocol statistics check.
- * Displays FT supply, circulation, oracle price, FDV, and yield revenue.
+ * Displays FT supply, circulation, oracle price, and FDV.
  * @param {Object} api - DefiLlama SDK API instance
  * @returns {Promise<void>}
  */
@@ -231,9 +161,6 @@ async function checkFT(api) {
   // Get FT price from oracle
   const ftPrice = await getFTPrice(api);
 
-  // Get yield revenue
-  const yieldData = await getYieldRevenue(api);
-
   // Calculate circulating supply (withdrawn FT that's in user wallets)
   const ftCirculating = ftWithdrawn;
 
@@ -265,15 +192,6 @@ async function checkFT(api) {
   console.log('Circulating Supply:', formatBigIntTokens(ftCirculating), 'FT');
   console.log('Circulating Market Cap:', formatUSD(circulatingMarketCap));
   console.log('FDV:', formatUSD(fdv));
-
-  console.log('\n--- Yield Revenue ---');
-  for (const data of yieldData) {
-    console.log(`Wrapper ${data.wrapper}:`);
-    console.log(`  Token: ${data.token}`);
-    console.log(`  Unclaimed Yield: ${data.unclaimedYield.toString()}`);
-    console.log(`  Claimed Yield:   ${data.claimedYield.toString()}`);
-    console.log(`  Total Yield:     ${data.totalYield.toString()}`);
-  }
 }
 
 module.exports = { checkFT };
