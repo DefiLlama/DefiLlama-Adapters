@@ -153,7 +153,7 @@ async function getYieldRevenue(api) {
  */
 function formatBigIntTokens(value, decimals = 18) {
   const bigValue = BigInt(value);
-  const divisor = BigInt(10 ** decimals);
+  const divisor = 10n ** BigInt(decimals);
   const integerPart = bigValue / divisor;
   const remainder = bigValue % divisor;
 
@@ -181,7 +181,7 @@ function calculateUsdValue(tokenAmount, priceUsd) {
   // Convert to number after scaling down to avoid precision loss on large values
   // Use BigInt division for the integer part, then multiply by price
   const bigValue = BigInt(tokenAmount);
-  const divisor = BigInt(10 ** 18);
+  const divisor = 10n ** 18n;
   const scaledValue = Number(bigValue / divisor) + Number(bigValue % divisor) / 1e18;
   return scaledValue * priceUsd;
 }
