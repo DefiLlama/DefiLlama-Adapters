@@ -2,6 +2,7 @@ const fs = require("fs")
 const path = require("path")
 
 const projectsDir = path.join(__dirname, '../projects')
+const deadDir = path.join(projectsDir, 'dead')
 const outputPath = path.join(projectsDir, 'helper/registries/deadAdapters.json')
 const deadChains = require('../projects/helper/deadChains')
 const whitelistedExportKeys = require('../projects/helper/whitelistedExportKeys.json')
@@ -28,7 +29,7 @@ function mockFunctions(obj) {
   return obj
 }
 
-function processEntry(deadAdapters, modulePath, moduleName, pathToDelete) {
+function processEntry(deadAdapters, modulePath, moduleName, pathToMove) {
   try {
     const importedModule = require(modulePath)
     const exportKeys = Object.keys(importedModule)
@@ -50,9 +51,12 @@ function processEntry(deadAdapters, modulePath, moduleName, pathToDelete) {
       deadAdapters[moduleName] = mockedModule
       console.log(`Found dead project: ${moduleName} (deadFrom: ${importedModule.deadFrom})`)
 
-      // Delete the folder or file
-      fs.rmSync(pathToDelete, { recursive: true, force: true })
-      // console.log(`  Deleted: ${pathToDelete}`)
+      // Move to dead folder
+      if (!fs.existsSync(deadDir)) {
+        fs.mkdirSync(deadDir, { recursive: true })
+      }
+      const destPath = path.join(deadDir, path.basename(pathToMove))
+      fs.renameSync(pathToMove, destPath)
       return true
     }
   } catch (e) {
@@ -65,21 +69,44 @@ async function run() {
 
   // First, process treasury folder
   const treasuryDir = path.join(projectsDir, 'treasury')
+  const deadTreasuryDir = path.join(deadDir, 'treasury')
   if (fs.existsSync(treasuryDir)) {
     const treasuryEntries = fs.readdirSync(treasuryDir)
     for (const entry of treasuryEntries) {
       if (!entry.endsWith('.js')) continue
       const entryPath = path.join(treasuryDir, entry)
       const moduleName = `treasury/${entry.replace('.js', '')}`
-      processEntry(deadAdapters, entryPath, moduleName, entryPath)
+      processEntryTreasury(deadAdapters, entryPath, moduleName, entry)
     }
+  }
+
+  function processEntryTreasury(deadAdapters, modulePath, moduleName, fileName) {
+    try {
+      const importedModule = require(modulePath)
+      if (importedModule.deadFrom !== undefined) {
+        const mockedModule = mockFunctions({ ...importedModule })
+        deadAdapters[moduleName] = mockedModule
+        console.log(`Found dead project: ${moduleName} (deadFrom: ${importedModule.deadFrom})`)
+
+        // Move to dead/treasury folder
+        if (!fs.existsSync(deadTreasuryDir)) {
+          fs.mkdirSync(deadTreasuryDir, { recursive: true })
+        }
+        const destPath = path.join(deadTreasuryDir, fileName)
+        fs.renameSync(modulePath, destPath)
+        return true
+      }
+    } catch (e) {
+      // Skip modules that fail to import
+    }
+    return false
   }
 
   // Then process the rest of projects
   const entries = fs.readdirSync(projectsDir)
 
   for (const entry of entries) {
-    if (entry === 'helper' || entry === 'treasury') continue
+    if (entry === 'helper' || entry === 'treasury' || entry === 'dead') continue
 
     const entryPath = path.join(projectsDir, entry)
     const stat = fs.statSync(entryPath)
