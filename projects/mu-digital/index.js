@@ -5,9 +5,6 @@ const tokens = [
 
 module.exports = {
   monad: {
-    tvl: async (api) => {
-      throw new Error("Disabled for now till MU tokens is priced correctly");
-      api.add(tokens, await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' }))
-    },
+    tvl: async (api) => api.add(tokens, await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' })),
   }
 }

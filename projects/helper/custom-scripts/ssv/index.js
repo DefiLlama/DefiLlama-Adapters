@@ -3,48 +3,9 @@ const { pipeline } = require("stream");
 const { parser } = require("stream-json");
 const { pick } = require("stream-json/filters/Pick");
 const { streamArray } = require("stream-json/streamers/StreamArray");
-const { getConfig } = require("../../cache");
 const sdk = require('@defillama/sdk');
-const { get } = require("../../http");
 
 const BEACON_API_URL = "https://ethereum-beacon-api.publicnode.com/eth/v1/beacon/states/head/validators";
-
-async function fetcher() {
-  let hasMore = false
-  let page = 0
-  let lastId = 0
-  const perPage = 1000
-  let skippedValidatorCount = 0
-
-  const keySet = new Set()
-  do {
-    const { validators, pagination } = await get(`https://api.ssv.network/api/v4/mainnet/validators?perPage=${perPage}&lastId=${lastId}`)
-    // Process current page validators
-    validators.forEach(v => {
-
-      skippedValidatorCount++
-      // if (v.validator_info?.status === 'withdrawal_done') return;
-      // if (v.validator_info?.effective_balance === 0) return;
-      skippedValidatorCount--
-
-      const normalizedKey = v.owner_address.toLowerCase()
-      if (!keySet.has(normalizedKey)) keySet.add(normalizedKey)
-    })
-    const itemsInPage = validators.length > 0
-      ? pagination.current_last - pagination.current_first + 1
-      : 0
-    if (itemsInPage < perPage) {
-      hasMore = false
-    } else {
-      hasMore = true
-      lastId = pagination.current_last
-    }
-
-    console.log(`SSV Network: fetched page ${page + 1}, got ${validators.length} validators owners: total keys so far: ${keySet.size}, skipped validators: ${skippedValidatorCount}`)
-    page++
-  } while (hasMore)
-  return Array.from(keySet)
-}
 
 /**
  * Streams all validators from beacon chain and computes total balance
