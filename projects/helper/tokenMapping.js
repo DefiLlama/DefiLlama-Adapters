@@ -41,6 +41,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  katana: {
+    '0x5bff88ca1442c2496f7e475e9e7786383bc070c0': { coingeckoId: 'staked-frax-usd', decimals: 18 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
