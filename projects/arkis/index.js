@@ -13,7 +13,7 @@ const factories = {
 const fromBlocks = {
   agreement: 21069508,
   agreementV2: 23468237,
-  marginAccount: 21069508,
+  marginAccount: 21069559,
 }
 
 const topics = {
