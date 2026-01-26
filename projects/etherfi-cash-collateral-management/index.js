@@ -20,7 +20,7 @@ async function tvl(api) {
     abi: 'function numContractsDeployed() view returns (uint256)',
   })) - 1;
 
-  const batch_size = 81;
+  const batch_size = 51;
 
 
   const calls = [];
