@@ -1,10 +1,15 @@
 const { getActiveTvl } = require("./api");
 
 async function tvl(api) {
-  const activeTvl = await getActiveTvl();
+  let activeTvl = await getActiveTvl();
 
-  // USDC TVL
-  api.addCGToken("usd-coin", activeTvl);
+  // Soroban returns BigInt → convert safely
+  if (typeof activeTvl === "bigint") {
+    activeTvl = Number(activeTvl);
+  }
+
+  // USDC has 6 decimals
+  api.addCGToken("usd-coin", activeTvl / 1e6);
 
   return api.getBalances();
 }
