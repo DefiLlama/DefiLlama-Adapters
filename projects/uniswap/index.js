@@ -77,6 +77,7 @@ const uniV3Config = {
   rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
   plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
   monad: { factory: "0x204faca1764b154221e35c0d20abb3c525710498", fromBlock: 29255827, blacklistedTokens: ['0x760afe86e5de5fa0ee542fc7b7b713e1c5425701'] },
+  xlayer: { factory: "0x4b2ab38dbf28d31d467aa8993f6c2585981d6804", fromBlock: 46106351 },
 }
 
 Object.keys(uniV3Config).forEach(chain => {
@@ -87,13 +88,13 @@ module.exports = {
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   timetravel: false,
   hallmarks: [
-    [1588610042, "UNI V2 Launch"],
-    [1598412107, "SushiSwap launch"],
-    [1599535307, "SushiSwap migration"],
-    [1600226507, "LM starts"],
-    [1605583307, "LM ends"],
-    [1617333707, "FEI launch"],
-    [1620156420, "UNI V3 Launch"]
+    ['2020-05-04', "UNI V2 Launch"],
+    ['2020-08-26', "SushiSwap launch"],
+    ['2020-09-08', "SushiSwap migration"],
+    ['2020-09-16', "LM starts"],
+    ['2020-11-17', "LM ends"],
+    ['2021-04-02', "FEI launch"],
+    ['2021-05-04', "UNI V3 Launch"]
   ],
   ...uniV3Export(uniV3Config),
 }
