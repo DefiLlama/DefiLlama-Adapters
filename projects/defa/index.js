@@ -53,8 +53,8 @@ async function getActiveTvl() {
 async function tvl(api) {
   let activeTvl = await getActiveTvl();
 
-  // USDC has 6 decimals
-  api.addCGToken("usd-coin", activeTvl / 1e6);
+// USDC has 7 decimals on Stellar (1 USDC = 10,000,000 base units)
+api.addCGToken("usd-coin", activeTvl / 1e7);
 
   return api.getBalances();
 }
