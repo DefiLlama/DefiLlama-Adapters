@@ -1,6 +1,25 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { call } = require('../helper/chain/starknet');
-const abi = require('./abi.json');
+const abi = [
+    {
+      "name": "balanceOf",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "account",
+          "type": "felt"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "balance",
+          "type": "Uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "customInput": "address"
+    }
+  ];
 
 const WBTC_CONTRACT = ADDRESSES.starknet.WBTC;
 const WRAPPED_WBTC_CONTRACT = '0x75d9e518f46a9ca0404fb0a7d386ce056dadf57fd9a0e8659772cb517be4a18'; // The collateral is a wrapped WBTC, for decimals reasons

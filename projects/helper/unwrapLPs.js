@@ -8,7 +8,7 @@ const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
 const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray, sleep } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
-const wildCreditABI = require('../wildcredit/abi.json');
+const uniV3ABI = require('./abis/uniV3.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
@@ -359,7 +359,7 @@ async function unwrapUniswapV3NFT({
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const factoryKey = getFactoryKey(chain, nftAddress)
-  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory })
+  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: uniV3ABI.factory })
   let factory = await factories[factoryKey]
 
   if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
@@ -370,7 +370,7 @@ async function unwrapUniswapV3NFT({
     owners = getUniqueAddresses(owners, chain)
 
     const lengths = await api.multiCall({
-      abi: wildCreditABI.balanceOf,
+      abi: uniV3ABI.balanceOf,
       calls: owners.map((params) => ({ target: nftIdFetcher, params })),
     })
 
@@ -381,14 +381,14 @@ async function unwrapUniswapV3NFT({
     }
 
     positionIds = await api.multiCall({
-      abi: wildCreditABI.tokenOfOwnerByIndex,
+      abi: uniV3ABI.tokenOfOwnerByIndex,
       target: nftIdFetcher,
       calls: positionIDCalls,
     })
   }
 
   const positions = await api.multiCall({
-    abi: wildCreditABI.positions,
+    abi: uniV3ABI.positions,
     target: nftAddress,
     calls: positionIds
   })
@@ -398,13 +398,13 @@ async function unwrapUniswapV3NFT({
   const lpInfoArray = Object.values(lpInfo)
 
   const poolInfos = await api.multiCall({
-    abi: wildCreditABI.getPool,
+    abi: uniV3ABI.getPool,
     target: factory,
     calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1, info.fee] })),
   })
 
   const slot0 = await api.multiCall({
-    abi: wildCreditABI.slot0,
+    abi: uniV3ABI.slot0,
     calls: poolInfos
   })
 
@@ -529,7 +529,7 @@ async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
       }
     })
     positionIdsByNftAddress[nftAddress] = await api.multiCall({
-      abi: wildCreditABI.tokenOfOwnerByIndex, target: nftAddress,
+      abi: uniV3ABI.tokenOfOwnerByIndex, target: nftAddress,
       calls: positionIdCalls,
     })
 
@@ -549,13 +549,13 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const factoryKey = getFactoryKey(chain, nftAddress)
-  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory, })
+  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: uniV3ABI.factory, })
   let factory = (await factories[factoryKey])
 
   if ((!positionIds || positionIds.length === 0) && owner) {  // if positionIds are not provided and owner address is passed
     const nftPositions = await api.call({ target: nftIdFetcher, params: owner, abi: 'erc20:balanceOf' })
     positionIds = (await api.multiCall({
-      abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+      abi: uniV3ABI.tokenOfOwnerByIndex, target: nftIdFetcher,
       calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
     }))
   }
