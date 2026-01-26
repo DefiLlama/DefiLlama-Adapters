@@ -85,6 +85,14 @@
       "tvl": "_f"
     }
   },
+  "Astra": {
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x2b6852CeDEF193ece9814Ee99BE4A4Df7F463557) address to find and price Liquidity Pool pairs.",
+    "airdao": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "AvoLend": {
     "blast": {
       "tvl": "_f",
@@ -122,6 +130,14 @@
       "tvl": "_f"
     },
     "deadFrom": "2025-07-01"
+  },
+  "FirepotSwap": {
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0xe63Cf585Dae8273A5e37AfF6da2f823FBf3Eb5BE) address to find and price Liquidity Pool pairs.",
+    "airdao": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "Fountain-Protocol": {
     "oasis": {
@@ -207,6 +223,14 @@
     },
     "deadFrom": "2024-05-09"
   },
+  "RavelinFinance": {
+    "milkomeda": {
+      "tvl": "_f",
+      "staking": "_f",
+      "pool2": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "Solily": {
     "hallmarks": [
       [
@@ -283,6 +307,14 @@
     "deadFrom": "2022-12-12",
     "methodology": "Product is deprecated. More information: https://acumenofficial.medium.com/acumen-stable-dapp-update-7e96333e9318"
   },
+  "adaswap": {
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xe07C22C184ca252A525511B798BB8Ce96abDCc5b) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "milkomeda": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "adaxPro": {
     "methodology": "Data is retrieved from the api at https://amm-api.adax.pro/",
     "timetravel": false,
@@ -311,6 +343,20 @@
       "tvl": "_f",
       "borrowed": "_f"
     }
+  },
+  "airdao-harbor": {
+    "methodology": "TVL counts deposits made to Harbor liquid staking on AirDAO.",
+    "airdao": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "airdao-hera-pool": {
+    "methodology": "TVL counts deposits made to Hera pool on AirDAO.",
+    "airdao": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "allinx": {
     "methodology": "Project is abandoned",
@@ -484,6 +530,26 @@
       "pool2": "_f"
     }
   },
+  "arcana": {
+    "misrepresentedTokens": true,
+    "real": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "ascentexchange": {
+    "misrepresentedTokens": false,
+    "eon": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "ascentexchange-v3": {
+    "eon": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "asgardfinance": {
     "hallmarks": [
       [
@@ -653,6 +719,15 @@
       "staking": "_f"
     },
     "deadFrom": 1648765747
+  },
+  "becoswap": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://becoswap.com/info as the source. Staking accounts for the BECO locked in MasterChef (0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e)",
+    "kardia": {
+      "staking": "_f",
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "beefstake": {
     "deadFrom": "2024-06-01",
@@ -911,6 +986,14 @@
     },
     "deadFrom": "2025-03-31"
   },
+  "cabinet": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "kadena": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "cakedao": {
     "avax": {
       "tvl": "_f",
@@ -1038,6 +1121,15 @@
       "borrowed": "_f"
     },
     "deadFrom": "2023-12-12"
+  },
+  "chips": {
+    "timetravel": false,
+    "misrepresentedTokens": false,
+    "methodology": "TVL tracks the KDA-equivalent value of all locked cTokens and kWATT tokens using on-chain DEX pricing. The contract returns a single 'coin' value in KDA, excluding USD-only fields.",
+    "kadena": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "claystack": {
     "deadFrom": "2025-05-20",
@@ -1591,6 +1683,13 @@
     "methodology": "Counts USDC and TLP (EMPYR-USDC) on the treasury",
     "deadFrom": "2022-05-09"
   },
+  "eoswap": {
+    "misrepresentedTokens": true,
+    "eos_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "equilibrium": {
     "hallmarks": [
       [
@@ -1838,6 +1937,13 @@
     "solana": {
       "tvl": "_f"
     }
+  },
+  "frogge-fi": {
+    "misrepresentedTokens": true,
+    "eos_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "froggy-protocol": {
     "era": {
@@ -2258,6 +2364,13 @@
       "staking": "_f"
     }
   },
+  "jlswap": {
+    "misrepresentedTokens": true,
+    "eos_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "joystickclub": {
     "deadFrom": "2024-01-01",
     "methodology": "Total value of NFTs sent to staking contract is counted towards staking metric",
@@ -2274,6 +2387,15 @@
     },
     "deadFrom": "2023-02-03"
   },
+  "kaddex": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "kadena": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "kafefinance": {
     "misrepresentedTokens": true,
     "timetravel": false,
@@ -2284,6 +2406,14 @@
       "tvl": "_f"
     },
     "deadFrom": "2022-10-01"
+  },
+  "kaidex": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://becoswap.com/info as the source. Staking accounts for the BECO locked in MasterChef (0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e)",
+    "kardia": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "kandyland-finance": {
     "deadFrom": 1648765747,
@@ -2327,6 +2457,24 @@
     "kava": {
       "tvl": "_f"
     }
+  },
+  "kdlaunch": {
+    "misrepresentedTokens": true,
+    "timetravel": false,
+    "kadena": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "kdswap": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all KDSWAP AMM pools, with all values calculated in terms of KDA price.",
+    "kadena": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "kefirswap": {
     "hallmarks": [
@@ -2485,6 +2633,13 @@
     },
     "deadFrom": "2023-12-31"
   },
+  "kosmos": {
+    "airdao": {
+      "tvl": "_f"
+    },
+    "methodology": "The TVL of Kosmos is equal to the total value of underlying assets locked in the BondTellers contracts.",
+    "deadFrom": "2026-01-25"
+  },
   "kperp-exchange": {
     "kava": {
       "tvl": "_f"
@@ -2589,6 +2744,14 @@
       ]
     ],
     "deadFrom": "2025-05-01"
+  },
+  "lemuriafinance": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL data is pulled from the Lemuria Financial API \"https://api.lemuria.finance/tvl\".",
+    "milkomeda": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "lendhub": {
     "timetravel": false,
@@ -2809,6 +2972,13 @@
       "borrowed": "_f"
     }
   },
+  "metaswap": {
+    "misrepresentedTokens": true,
+    "eos_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "metropolis": {
     "hallmarks": [
       [
@@ -2830,6 +3000,29 @@
     "deadFrom": "2022-08-01",
     "methodology": "Counts tokens on the treasury for tvl and staked CROWN for staking"
   },
+  "milko-farm": {
+    "methodology": "TVL includes all farms in MasterChef contract",
+    "milkomeda": {
+      "staking": "_f",
+      "pool2": "_f",
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "milkomeda-djed": {
+    "methodology": "The TVL of each Djed deployment on Milkomeda C1.",
+    "milkomeda": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "milkomeda-macc": {
+    "methodology": "Counts the total balance of Fragmented tokens held in the Token Merger contract on Milkomeda C1 MACC.",
+    "milkomeda": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "milky-way": {
     "deadFrom": "2026-01-15",
     "methodology": "TVL counts the tokens that are locked in the Milky Way liquid staking protocol",
@@ -2850,6 +3043,31 @@
     "milkyway": {
       "tvl": "_f"
     }
+  },
+  "milkycow": {
+    "methodology": "TVL includes all farms in MasterChef contract",
+    "milkomeda": {
+      "staking": "_f",
+      "pool2": "_f",
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "milkydex": {
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x194Db21D9108f9da7a4E21f367d0eb8f8979144e) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "milkomeda": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "milkyswap": {
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xD6Ab33Ad975b39A8cc981bBc4Aaf61F957A5aD29) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "milkomeda": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "milkyway": {
     "deadFrom": "2023-12-15",
@@ -2957,6 +3175,13 @@
       "tvl": "_f"
     }
   },
+  "neutroswap": {
+    "misrepresentedTokens": true,
+    "eos_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "nexus-protocol": {
     "timetravel": false,
     "terra": {
@@ -3011,6 +3236,13 @@
       "staking": "_f"
     },
     "deadFrom": 1669009600
+  },
+  "noahark": {
+    "misrepresentedTokens": true,
+    "eos_evm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "notional": {
     "deadFrom": "2024-08-22",
@@ -3069,6 +3301,12 @@
     "bitgert": {
       "tvl": "_f"
     }
+  },
+  "occam": {
+    "milkomeda": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "ogx": {
     "methodology": "Organix TVL is achieved by querying token balances from OGX's Synth smart contract.",
@@ -3371,6 +3609,20 @@
       "staking": "_f"
     }
   },
+  "pearl-v1-5": {
+    "misrepresentedTokens": true,
+    "real": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
+  "pearl-v2": {
+    "real": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "peeldefi": {
     "bsc": {
       "tvl": "_f",
@@ -3648,12 +3900,26 @@
     },
     "deadFrom": "2023-07-09"
   },
+  "ponytaswap": {
+    "misrepresentedTokens": true,
+    "rpg": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "poopsicle": {
     "deadFrom": "2022-08-22",
     "fantom": {
       "tvl": "_f",
       "pool2": "_f"
     }
+  },
+  "prixmswap-v3": {
+    "kroma": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "projectx": {
     "avax": {
@@ -3711,6 +3977,13 @@
     },
     "deadFrom": "2023-04-09"
   },
+  "qomswap": {
+    "misrepresentedTokens": true,
+    "qom": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "quasar-swap": {
     "deadFrom": "2024-01-01",
     "nova": {
@@ -3753,6 +4026,14 @@
     },
     "deadFrom": "2023-03-05"
   },
+  "rangers": {
+    "misrepresentedTokens": true,
+    "methodology": "Count the sum of the five tokens (RPG, USDT, MIX, AMG, COIN) of the dapp platform (bridge, nodeManager) on the rangers blockchain.",
+    "rpg": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "ratio-finance": {
     "timetravel": false,
     "hallmarks": [
@@ -3766,6 +4047,14 @@
     },
     "deadFrom": 1675728000,
     "methodology": "To obtain the Ratio Finance TVL we make on-chain calls"
+  },
+  "real-veRWA": {
+    "misrepresentedTokens": true,
+    "real": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "reax-one-dex": {
     "mantle": {
@@ -3986,6 +4275,13 @@
     },
     "deadFrom": "2025-02-01"
   },
+  "sleepearn": {
+    "misrepresentedTokens": true,
+    "kardia": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "smartpad": {
     "methodology": "All tokens locked in Smartpad.",
     "ethereum": {
@@ -4164,6 +4460,13 @@
       "tvl": "_f"
     }
   },
+  "stack": {
+    "methodology": "TVL counts the collateral tokens that are deposited within the respective Stack vault",
+    "real": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "stakedotlink-index": {
     "ethereum": {
       "tvl": "_f"
@@ -4262,6 +4565,12 @@
     "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
     "doublecounted": true,
     "deadFrom": "2024-04-29"
+  },
+  "sturgeon": {
+    "real": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
   },
   "suidollar": {
     "timetravel": false,
@@ -4824,6 +5133,13 @@
     "methodology": "Same as compound, we just get all the collateral (not borrowed money) on the lending markets",
     "deadFrom": "2025-05-01"
   },
+  "wemix-on-kroma": {
+    "methodology": "The balance of WEMIX.e tokens staked in Staking Wemix Contract on kroma chain",
+    "kroma": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "westater": {
     "heco": {
       "tvl": "_f"
@@ -4982,6 +5298,13 @@
     },
     "deadFrom": "2023-04-22"
   },
+  "yuzu-market": {
+    "eon": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "deadFrom": "2026-01-25"
+  },
   "zai": {
     "ethereum": {
       "tvl": "_f",
@@ -5092,328 +5415,5 @@
     "zyx": {
       "tvl": "_f"
     }
-  },
-  "Astra": {
-    "misrepresentedTokens": true,
-    "methodology": "Uses factory(0x2b6852CeDEF193ece9814Ee99BE4A4Df7F463557) address to find and price Liquidity Pool pairs.",
-    "airdao": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "FirepotSwap": {
-    "misrepresentedTokens": true,
-    "methodology": "Uses factory(0xe63Cf585Dae8273A5e37AfF6da2f823FBf3Eb5BE) address to find and price Liquidity Pool pairs.",
-    "airdao": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "RavelinFinance": {
-    "milkomeda": {
-      "tvl": "_f",
-      "staking": "_f",
-      "pool2": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "adaswap": {
-    "misrepresentedTokens": true,
-    "methodology": "Factory address (0xe07C22C184ca252A525511B798BB8Ce96abDCc5b) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-    "milkomeda": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "airdao-harbor": {
-    "methodology": "TVL counts deposits made to Harbor liquid staking on AirDAO.",
-    "airdao": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "airdao-hera-pool": {
-    "methodology": "TVL counts deposits made to Hera pool on AirDAO.",
-    "airdao": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "arcana": {
-    "misrepresentedTokens": true,
-    "real": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "ascentexchange": {
-    "misrepresentedTokens": false,
-    "eon": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "ascentexchange-v3": {
-    "eon": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "becoswap": {
-    "misrepresentedTokens": true,
-    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://becoswap.com/info as the source. Staking accounts for the BECO locked in MasterChef (0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e)",
-    "kardia": {
-      "staking": "_f",
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "cabinet": {
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "kadena": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "chips": {
-    "timetravel": false,
-    "misrepresentedTokens": false,
-    "methodology": "TVL tracks the KDA-equivalent value of all locked cTokens and kWATT tokens using on-chain DEX pricing. The contract returns a single 'coin' value in KDA, excluding USD-only fields.",
-    "kadena": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "eoswap": {
-    "misrepresentedTokens": true,
-    "eos_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "frogge-fi": {
-    "misrepresentedTokens": true,
-    "eos_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "jlswap": {
-    "misrepresentedTokens": true,
-    "eos_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "kaddex": {
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "kadena": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "kaidex": {
-    "misrepresentedTokens": true,
-    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://becoswap.com/info as the source. Staking accounts for the BECO locked in MasterChef (0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e)",
-    "kardia": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "kdlaunch": {
-    "misrepresentedTokens": true,
-    "timetravel": false,
-    "kadena": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "kdswap": {
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "methodology": "TVL accounts for the liquidity on all KDSWAP AMM pools, with all values calculated in terms of KDA price.",
-    "kadena": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "kosmos": {
-    "airdao": {
-      "tvl": "_f"
-    },
-    "methodology": "The TVL of Kosmos is equal to the total value of underlying assets locked in the BondTellers contracts.",
-    "deadFrom": "2026-01-25"
-  },
-  "lemuriafinance": {
-    "misrepresentedTokens": true,
-    "methodology": "TVL data is pulled from the Lemuria Financial API \"https://api.lemuria.finance/tvl\".",
-    "milkomeda": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "metaswap": {
-    "misrepresentedTokens": true,
-    "eos_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "milko-farm": {
-    "methodology": "TVL includes all farms in MasterChef contract",
-    "milkomeda": {
-      "staking": "_f",
-      "pool2": "_f",
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "milkomeda-djed": {
-    "methodology": "The TVL of each Djed deployment on Milkomeda C1.",
-    "milkomeda": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "milkomeda-macc": {
-    "methodology": "Counts the total balance of Fragmented tokens held in the Token Merger contract on Milkomeda C1 MACC.",
-    "milkomeda": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "milkycow": {
-    "methodology": "TVL includes all farms in MasterChef contract",
-    "milkomeda": {
-      "staking": "_f",
-      "pool2": "_f",
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "milkydex": {
-    "misrepresentedTokens": true,
-    "methodology": "Factory address (0x194Db21D9108f9da7a4E21f367d0eb8f8979144e) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-    "milkomeda": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "milkyswap": {
-    "misrepresentedTokens": true,
-    "methodology": "Factory address (0xD6Ab33Ad975b39A8cc981bBc4Aaf61F957A5aD29) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-    "milkomeda": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "neutroswap": {
-    "misrepresentedTokens": true,
-    "eos_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "noahark": {
-    "misrepresentedTokens": true,
-    "eos_evm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "occam": {
-    "milkomeda": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "pearl-v1-5": {
-    "misrepresentedTokens": true,
-    "real": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "pearl-v2": {
-    "real": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "ponytaswap": {
-    "misrepresentedTokens": true,
-    "rpg": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "prixmswap-v3": {
-    "kroma": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "qomswap": {
-    "misrepresentedTokens": true,
-    "qom": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "rangers": {
-    "misrepresentedTokens": true,
-    "methodology": "Count the sum of the five tokens (RPG, USDT, MIX, AMG, COIN) of the dapp platform (bridge, nodeManager) on the rangers blockchain.",
-    "rpg": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "real-veRWA": {
-    "misrepresentedTokens": true,
-    "real": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "sleepearn": {
-    "misrepresentedTokens": true,
-    "kardia": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "stack": {
-    "methodology": "TVL counts the collateral tokens that are deposited within the respective Stack vault",
-    "real": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "sturgeon": {
-    "real": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "wemix-on-kroma": {
-    "methodology": "The balance of WEMIX.e tokens staked in Staking Wemix Contract on kroma chain",
-    "kroma": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-01-25"
-  },
-  "yuzu-market": {
-    "eon": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "deadFrom": "2026-01-25"
   }
 }
