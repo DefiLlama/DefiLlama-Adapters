@@ -1,4 +1,0 @@
-{
-  "underlying": "address:underlying",
-  "calcTotalValue": "uint256:calcTotalValue"
-}

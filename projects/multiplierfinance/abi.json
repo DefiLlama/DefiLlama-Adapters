@@ -1,7 +1,0 @@
-{
-  "getReserves": "address[]:getReserves",
-  "getReserveData": "function getReserveData(address _reserve) view returns (uint256 totalLiquidity, uint256 availableLiquidity, uint256 totalBorrowsStable, uint256 totalBorrowsVariable, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 utilizationRate, uint256 liquidityIndex, uint256 variableBorrowIndex, address mTokenAddress, uint40 lastUpdateTimestamp)",
-  "totalSupply": "uint256:totalSupply",
-  "getNoOfErc20s": "uint256:getNoOfErc20s",
-  "erc20List": "function erc20List(uint256) view returns (address)"
-}

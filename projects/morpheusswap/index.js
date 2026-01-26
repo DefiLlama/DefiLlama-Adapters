@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accMorphPerShare, uint16 depositFeeBP, uint256 lpSupply)",
+    "poolLength": "uint256:poolLength"
+  };
 const { getUniTVL } = require('../helper/unknownTokens')
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { stakings } = require("../helper/staking");

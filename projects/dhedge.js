@@ -6,6 +6,7 @@ const DHEDGE_FACTORY_PROXIES = {
   optimism: "0x5e61a079A178f0E5784107a4963baAe0c5a680c6",
   arbitrum: "0xffFb5fB14606EB3a548C113026355020dDF27535",
   base: "0x49Afe3abCf66CF09Fab86cb1139D8811C8afe56F",
+  plasma: "0xAec4975Fc8ad911464D2948D771488b30F6eEE87",
 };
 
 const CONFIG_DATA_MSTABLE = {
@@ -87,12 +88,15 @@ const tvl = async (api) => {
 
 const getTorosVaultsAddresses = async (api) =>{
   const { chain } = api
-  const { dhedgeFactory, torosMultisigManager } = CONFIG_DATA_TOROS[chain];
-  return await api.call({
-    abi: DHEDGE_V2_FACTORY_ABI,
-    target: dhedgeFactory,
-    params: [torosMultisigManager],
-  });
+  if (chain !== 'plasma' ){
+    const { dhedgeFactory, torosMultisigManager } = CONFIG_DATA_TOROS[chain];
+    return await api.call({
+      abi: DHEDGE_V2_FACTORY_ABI,
+      target: dhedgeFactory,
+      params: [torosMultisigManager],
+    })
+  }
+  return [];
 }
 
 const getMstableVaultsAddresses = async (api) =>{
@@ -152,6 +156,9 @@ module.exports = {
     tvl,
   },
   base: {
+    tvl,
+  },
+  plasma: {
     tvl,
   },
   misrepresentedTokens: true,

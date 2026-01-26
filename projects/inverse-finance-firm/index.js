@@ -1,5 +1,10 @@
 
-const abi = require("./abi.json");
+const abi = {
+    "balance": "uint:balance",
+    "collateral": "address:collateral",
+    "CreateEscrow": "event CreateEscrow(address indexed user, address escrow)",
+    "AddMarket": "event AddMarket(address indexed market)"
+  };
 const { getLogs } = require('../helper/cache/getLogs')
 const sdk = require("@defillama/sdk")
 const { staking } = require('../helper/staking')

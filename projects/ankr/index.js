@@ -1,5 +1,7 @@
 const { get } = require("../helper/http")
-const abi = require("./abi.json");
+const abi = {
+    "getProviderBalance": "function getProviderBalance(address provider) view returns (uint128 balance, uint128 totalCap)"
+  };
 const ADDRESSES = require('../helper/coreAssets.json')
 
 let _response
