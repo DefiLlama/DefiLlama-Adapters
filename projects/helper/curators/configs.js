@@ -84,6 +84,12 @@ const MorphoConfigs = {
         address: '0x33f20973275B2F574488b18929cd7DCBf1AbF275',
         fromBlock: 32320327
       },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x8B2F922162FBb60A6a072cC784A2E4168fB0bb0c',
+        fromBlock: 32321811
+      }
     ]
   },
   wc: {
