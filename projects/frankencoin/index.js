@@ -16,7 +16,6 @@ async function tvl(api) {
 
   const vaults = positionV1s?.items.concat(positionV2s?.items).map(i => i.position);
   const tokens = await api.multiCall({ abi: 'address:collateral', calls: vaults })
-  console.log({})
   vaults.forEach((v, i) => {
     tokensAndOwners.push([tokens[i], v]);
   });
@@ -38,7 +37,7 @@ async function tvl(api) {
 
 module.exports = {
   ethereum: {
-    tvl: new Error('skip for now'),
+    tvl: () => new Error('skip for now, unable to pull BOSS token price'),
   },
   start: '2023-10-28',
 };
