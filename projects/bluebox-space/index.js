@@ -11,9 +11,6 @@ module.exports = {
 
   bitkub: {
     tvl: async (api) => {
-      if (!STAKING_CONTRACTS.length)
-        throw new Error("No staking contracts configured");
-
       return api.sumTokens({
         owners: STAKING_CONTRACTS,
         tokens: [ADDRESSES.null],
@@ -21,4 +18,3 @@ module.exports = {
     },
   },
 };
-  
