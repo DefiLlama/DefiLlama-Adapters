@@ -37,6 +37,8 @@ const DEFAULTS = {
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
+  PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
+  PEPU_RPC_MULTICALL: '0xBB6bf9447031408804af92aE6fBeDc002Dcb20aB',  // need to change it to one that works
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
