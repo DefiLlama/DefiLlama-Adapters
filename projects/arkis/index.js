@@ -28,7 +28,7 @@ const eventAbis = {
 
 const abis = {
   info: "function info() view returns (tuple(address leverage, uint32 apy, uint256 totalDepositThreshold, address[] collaterals, address[] lenders, address[] borrowers) metadata, tuple(address[] tokens, address[] operators) whitelist)",
-  totalBorrowed: "function totalBorrowed() returns (uint256)",
+  totalBorrowed: "function totalBorrowed() view returns (uint256)",
 }
 
 // Arkis Wrapped HYPE Vault addresses
