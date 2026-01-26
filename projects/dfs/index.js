@@ -61,6 +61,7 @@ async function dfs() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology: `DFS TVL is achieved by querying token balances from DFS's AMM swap liquidity smart contract.`,
   eos: {
     tvl: eos,

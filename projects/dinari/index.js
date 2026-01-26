@@ -13,31 +13,31 @@ const config = {
   kinto: {
     factory: "0xE4Daa69e99F48AD0C4D4843deF4447253248A906",
     usdplus: "0x6F086dB0f6A621a915bC90295175065c9e5d9b8c"
+  },
+  base: {
+    factory: "0xBCE6410A175a1C9B1a25D38d7e1A900F8393BC4D",
+    usdplus: "0x98C6616F1CC0D3E938A16200830DD55663dd7DD3"
+  },
+  plume: {
+    // factory: "0x84ad0De589B0075E057123c800959f10C29869D8"
+  },
+  plume_mainnet: {
+    factory: "0x7a861Ae8C708DC6171006C57c9163BD2BB57a8Aa",
+    usdplus: "0x1fA3671dF7300DF728858B88c7216708f22dA3Fb"
   }
 }
 
-async function getTokens(api) {
-  const abi = config[api.chain].getTokensAbi ?? "function getDShares() external view returns (address[] memory, address[] memory)"
-  return (await api.call({
-    target: config[api.chain].factory,
-    abi
-  }))[0];
+const abi = "function getDShares() external view returns (address[] memory, address[] memory)"
+
+const tvl = async (api) => {
+  const { factory, usdplus } = config[api.chain]
+  if (usdplus) api.add(usdplus, await api.call({ target: usdplus, abi: 'erc20:totalSupply'}))
+  if (!factory) return
+  const [tokens] = await api.call({ target: factory, abi })
+  const balances = await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' })
+  api.add(tokens, balances)
 }
 
-Object.keys(config).forEach( chain => {
-  module.exports[chain] = {
-    tvl: async (api) => {
-      // get dShare tokens
-      const tokens = await getTokens(api, chain)
-      const bals = await api.multiCall({ chain: chain, abi: 'erc20:totalSupply', calls: tokens})
-      // add USD+
-      const usdplus = config[chain].usdplus
-      if (usdplus) {
-        const usdplusBal = await api.call({chain: chain, target: usdplus, abi: 'erc20:totalSupply'})
-        tokens.push(usdplus)
-        bals.push(usdplusBal)
-      }
-      api.add(tokens, bals)
-    }
-  }
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl }
 })

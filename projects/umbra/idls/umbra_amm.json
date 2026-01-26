@@ -1,0 +1,56 @@
+{
+  "address": "CPMMQoayoCZGUq4wQRxrPBNrrExU6PLg1eEAXC83KDzv",
+  "metadata": {"name": "umbra_amm", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [{"name": "poolState", "discriminator": [247, 237, 227, 245, 215, 195, 222, 70]}],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "poolState",
+      "serialization": "bytemuckunsafe",
+      "repr": {"kind": "rust", "packed": true},
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "amm_config", "docs": ["Which config the pool belongs"], "type": "pubkey"},
+          {"name": "pool_creator", "docs": ["pool creator"], "type": "pubkey"},
+          {"name": "token_0_vault", "docs": ["Token A"], "type": "pubkey"},
+          {"name": "token_1_vault", "docs": ["Token B"], "type": "pubkey"},
+          {
+            "name": "lp_mint",
+            "docs": ["Pool tokens are issued when A or B tokens are deposited.", "Pool tokens can be withdrawn back to the original A or B token."],
+            "type": "pubkey"
+          },
+          {"name": "token_0_mint", "docs": ["Mint information for token A"], "type": "pubkey"},
+          {"name": "token_1_mint", "docs": ["Mint information for token B"], "type": "pubkey"},
+          {"name": "token_0_program", "docs": ["token_0 program"], "type": "pubkey"},
+          {"name": "token_1_program", "docs": ["token_1 program"], "type": "pubkey"},
+          {"name": "observation_key", "docs": ["observation account to store oracle data"], "type": "pubkey"},
+          {"name": "auth_bump", "type": "u8"},
+          {
+            "name": "status",
+            "docs": [
+              "Bitwise representation of the state of the pool",
+              "bit0, 1: disable deposit(vaule is 1), 0: normal",
+              "bit1, 1: disable withdraw(vaule is 2), 0: normal",
+              "bit2, 1: disable swap(vaule is 4), 0: normal"
+            ],
+            "type": "u8"
+          },
+          {"name": "lp_mint_decimals", "type": "u8"},
+          {"name": "mint_0_decimals", "docs": ["mint0 and mint1 decimals"], "type": "u8"},
+          {"name": "mint_1_decimals", "type": "u8"},
+          {"name": "lp_supply", "docs": ["True circulating supply without burns and lock ups"], "type": "u64"},
+          {"name": "protocol_fees_token_0", "docs": ["The amounts of token_0 and token_1 that are owed to the liquidity provider."], "type": "u64"},
+          {"name": "protocol_fees_token_1", "type": "u64"},
+          {"name": "fund_fees_token_0", "type": "u64"},
+          {"name": "fund_fees_token_1", "type": "u64"},
+          {"name": "open_time", "docs": ["The timestamp allowed for swap in the pool."], "type": "u64"},
+          {"name": "recent_epoch", "docs": ["recent epoch"], "type": "u64"},
+          {"name": "padding", "docs": ["padding for future updates"], "type": {"array": ["u64", 31]}}
+        ]
+      }
+    }
+  ]
+}

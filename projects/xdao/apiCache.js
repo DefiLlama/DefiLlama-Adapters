@@ -10,7 +10,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
+    tvl: async () => {
       return {}
     }
   }

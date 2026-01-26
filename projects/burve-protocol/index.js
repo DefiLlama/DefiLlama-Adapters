@@ -6,7 +6,7 @@ const config = {
 }
 
 module.exports = {
-  start: 1707300000,
+  start: '2024-02-07',
   methodology: "The TVL including total values of assets locked in the tokens which are deployed by BurveProtocol",
 }
 
@@ -15,8 +15,9 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const tokens = await getLogs2({ api, factory, eventAbi: 'event LogTokenDeployed (string tokenType, string bondingCurveType, uint256 tokenId, address deployedAddr)', fromBlock, transform: i => i.deployedAddr })
-      const uTokens = await api.multiCall({ abi: 'address:getRaisingToken', calls: tokens })
-      return api.sumTokens({ tokensAndOwners2: [uTokens, tokens], blacklistedTokens: tokens })
+      const uTokens = await api.multiCall({ abi: 'address:getRaisingToken', calls: tokens, permitFailure: true })
+      const tokensAndOwners = uTokens.map((u, i) => [u, tokens[i]]).filter(t => t[0])
+      return api.sumTokens({ tokensAndOwners, blacklistedTokens: tokens })
     }
   }
 })

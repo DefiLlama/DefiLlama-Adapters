@@ -13,21 +13,44 @@ async function _getResources() {
 const brokersFilter = (i) =>
   i.type.includes(`${spRootAddress}::broker::Broker`);
 
-function processBrokerData(brokerDataArray, isBorrowed = false) {
+const coinToFungibleAssetFilter = (i) =>
+  i.type.includes(`${spRootAddress}::map::Map`);
+
+function processBrokerData(brokerDataArray, coinToFungibleAssetArray, isBorrowed = false) {
+  const coinToFungibleAssetMap = coinToFungibleAssetArray.reduce(function(map, item) {
+      map[item.type] = item.data.fa_metadata;
+      return map;
+  }, {});
+
   const result = {};
 
   brokerDataArray.map((item) => {
     const { type, data } = item;
-    result[type] = !isBorrowed ? parseInt(data.available) : parseInt(data.borrowed)
+
+    const brokerType = type;
+
+    const coinType = brokerType.match(/<([^>]+)>/)[1];
+
+    let tokenMint = coinType;
+    {
+      // Superposition uses custom coin types to represent fungible assets
+      // Find the fungible asset address so DefiLama can find
+      // the correct token price
+      const mapType = `${spRootAddress}::map::Map<${coinType}>`;
+      if (mapType in coinToFungibleAssetMap) {
+        tokenMint = coinToFungibleAssetMap[mapType];
+      }
+    }
+
+    result[tokenMint] = !isBorrowed ? parseInt(data.available) : parseInt(data.borrowed)
   });
 
   return result;
 }
 
-function simplifyKeys(balanceData, api) {
+function addBalanceData(balanceData, api) {
   Object.entries(balanceData).forEach(([key, value]) => {
-    const newKey = key.match(/<([^>]+)>/)[1];
-    api.add(newKey, value);
+    api.add(key, value);
   });
 }
 
@@ -38,14 +61,20 @@ module.exports = {
     tvl: async (api) => {
       const resources = await _getResources();
       const brokers = resources.filter(brokersFilter);
-      const balanceData = processBrokerData(brokers);
-      simplifyKeys(balanceData, api);
+      const coinToFungibleAssetArray = resources.filter(
+        coinToFungibleAssetFilter
+      );
+      const balanceData = processBrokerData(brokers, coinToFungibleAssetArray);
+      addBalanceData(balanceData, api);
     },
     borrowed: async (api) => {
       const resources = await _getResources();
       const brokers = resources.filter(brokersFilter);
-      const balanceData = processBrokerData(brokers, true);
-      simplifyKeys(balanceData, api);
+      const coinToFungibleAssetArray = resources.filter(
+        coinToFungibleAssetFilter
+      );
+      const balanceData = processBrokerData(brokers, coinToFungibleAssetArray, true);
+      addBalanceData(balanceData, api);
     },
   },
 };

@@ -20,8 +20,13 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
 
-const geniusAbi = require("./genius-abi.json");
-const stabilityAbi = require("./genius-stability-abi.json");
+const geniusAbi = {
+    "basicLockedSupply": "function basicLockedSupply() view returns (uint256)",
+    "advLockedSupply": "function advLockedSupply() view returns (uint256)"
+  };
+const stabilityAbi = {
+    "totalSettledGenitos": "function totalSettledGenitos() view returns (uint256)"
+  };
 
 /* Genius staking contract*/
 const GENIUS_CONTRACT = "0x444444444444C1a66F394025Ac839A535246FCc8";
@@ -74,9 +79,9 @@ async function staking(api) {
     target: STABILITY_POOL,
     abi: stabilityAbi.totalSettledGenitos
   });
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, basicLockedMinersSupply);
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, advLockedMinersSupply);
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, totalSettledGenitos);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, basicLockedMinersSupply, api.chain);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, advLockedMinersSupply, api.chain);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, totalSettledGenitos, api.chain);
   return balances;
 }
 

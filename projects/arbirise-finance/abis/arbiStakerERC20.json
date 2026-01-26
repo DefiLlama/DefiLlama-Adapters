@@ -1,5 +1,0 @@
-{
-  "stakedTokenTotal": "function stakedTokenTotal(address) view returns (uint256)",
-  "getNumTokensStaked": "uint256:getNumTokensStaked",
-  "getTokenStakedAt": "function getTokenStakedAt(uint256 index) view returns (address token)"
-}

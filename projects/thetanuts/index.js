@@ -62,7 +62,6 @@ const ftmCallVault = '0x302ABD505757FD355C8ef3cF8b4918D6404f4996'
 const ftmPutVault = '0x7EDa4C29726355D0d8E85001B9152158b35Eae4f'
 
 //BSC Vaults
-//BSC Vaults
 const adaCallVault = '0xF98297A842f52Cd1f6c6f5f003Cd701813b1C461'
 const adaPutVault = '0x8BE731cB3b301b4a209C1A38ea14D6438e6913F6'
 const bchCallVault = '0xc879ecC0d2cdA26072e9049178a99B26C51eDF8a'
@@ -168,7 +167,7 @@ let boba = ADDRESSES.boba.BOBA
 const bobaUSDC = ADDRESSES.boba.USDC
 
 // cronos assets
-const wcro = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23'
+const wcro = ADDRESSES.cronos.WCRO_1
 
 // Arbitrum assets
 const arb = ADDRESSES.arbitrum.ARB

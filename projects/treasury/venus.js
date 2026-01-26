@@ -14,7 +14,7 @@ module.exports = treasuryExports({
       ADDRESSES.bsc.USDT, //bsc-usdc
       ADDRESSES.bsc.USDC, //usdc
       ADDRESSES.bsc.BTCB, //BTCB
-      "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", //DAI
+      ADDRESSES.bsc.DAI, //DAI
       ADDRESSES.bsc.BETH, //BETH
       ADDRESSES.bsc.WBNB,
       venusBTC,
@@ -60,4 +60,13 @@ module.exports = treasuryExports({
     owners: [venusTreasury],
     ownTokens: [XVS, VAI],
   },
+  era: {
+    tokens: [
+      ADDRESSES.era.WBTC, 
+      ADDRESSES.era.ZK, 
+      ADDRESSES.era.USDC, 
+      ADDRESSES.era.WETH  
+    ],
+    owners: ['0xB2e9174e23382f7744CebF7e0Be54cA001D95599']
+  }
 });

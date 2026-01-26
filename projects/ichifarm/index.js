@@ -1,7 +1,25 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
-const abi = require("./abi.json");
+const abi = {
+    "oneTokenCount": "uint256:oneTokenCount",
+    "oneTokenAtIndex": "function oneTokenAtIndex(uint256 index) view returns (address)",
+    "assetCount": "uint256:assetCount",
+    "assetAtIndex": "function assetAtIndex(uint256 index) view returns (address)",
+    "token0": "address:token0",
+    "token1": "address:token1",
+    "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+    "allVaults": "function allVaults(uint256) view returns (address)",
+    "collateralTokenAtIndex": "function collateralTokenAtIndex(uint256 index) view returns (address module)",
+    "collateralTokenCount": "uint256:collateralTokenCount",
+    "pool": "address:pool",
+    "foreignTokenAtIndex": "function foreignTokenAtIndex(uint256 index) view returns (address)",
+    "foreignTokenCount": "uint256:foreignTokenCount",
+    "moduleCount": "uint256:moduleCount",
+    "moduleAtIndex": "function moduleAtIndex(uint256 index) view returns (address module)",
+    "modules": "function modules(address) view returns (string name, string url, uint8 moduleType)",
+    "owner": "address:owner"
+  };
 const { sumTokens2, } = require('../helper/unwrapLPs');
 
 const ichiLegacy = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
@@ -42,6 +60,7 @@ const config = {
   arbitrum: {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 102858581, isAlgebra: false, },
+      { factory: '0x0aC9e4a0423eec93357e2B0F83ef8c6469FD47F7', fromBlock: 254452080, isAlgebra: false, }, // Pancakeswap
       { factory: '0xedAc86bc526557c422AB1F6BF848bF0da9fB44A6', fromBlock: 140300509, isAlgebra: false, }, // Ramses
       { factory: '0x1Cc05B01f2e52ae3bb29F7A0059Fe112C60aA3f4', fromBlock: 147199960, isAlgebra: false, }, // Horiza
     ],
@@ -49,6 +68,12 @@ const config = {
   base: {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
+      { factory: '0x51a0D74e1791399cE02aafD9a21dc4637Fe57959', fromBlock: 24832870, isAlgebra: true, }, // Henjin
+      { factory: '0x2b52c416F723F16e883E53f3f16435B51300280a', fromBlock: 24832870, isAlgebra: true, }, // Hydrex
+      { factory: '0x28cF3b462a1ADdE87fe7144d110BcF0D464C97b7', fromBlock: 22972345, isAlgebra: true, }, // Kim
+      { factory: '0x24430E837efB64EF87bb32be03437fc6005EEF74', fromBlock: 22095330, isAlgebra: false, }, // PancakeSwap
+      { factory: '0xbA096706A850caF1cADAEfE7529Db1343a0c187E', fromBlock: 25174764, isAlgebra: true, }, // Trebleswap 
+      // { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, isAlgebra: false, }, // Uniswap 
     ]
   },
   blast: {
@@ -61,12 +86,14 @@ const config = {
     vaultConfigs: [
       { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, isAlgebra: false, },
       { factory: '0xAc93148e93d1C49D89b1166BFd74942E80F5D501', fromBlock: 32489803, isAlgebra: true, }, // Thena
+      { factory: '0x076e46A317DfAE50eEF30dca94Ff41A63118948D', fromBlock: 48359303, isAlgebra: true, }, // Thena V3
       { factory: '0x065356d9f628cDd1bb9F2384E2972CdAC50f51b7', fromBlock: 34595133, isAlgebra: false, }, // Uni v3
     ],
   },
   celo: {
     vaultConfigs: [
       { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 24256269, isAlgebra: false, }, // Uniswap v3
+      { factory: '0x8D05f6870106707BaeCFCf5C0570DB7a583eb92A', fromBlock: 27821113, isAlgebra: false, }, // Ubeswap 
     ]
   },
   eon: {
@@ -79,6 +106,11 @@ const config = {
       { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
+  /* europa: {
+    vaultConfigs: [
+      { factory: '0x1B0ef045830466171D617dD0F1142aD699A4Cd63', fromBlock: 5607229, isAlgebra: false, }, // Sushi
+    ]
+  }, */
   evmos: {
     vaultConfigs: [
       { factory: '0x7c6389714719c68caac8ae06bae6e878b3605f6d', fromBlock: 19029984, isAlgebra: false, }, // Forge
@@ -90,16 +122,26 @@ const config = {
       { factory: '0x89FFdaa18b296d9F0CF02fBD88e5c633FEFA5f34', fromBlock: 79156621, isAlgebra: true, }, // Spiritswap 
     ]
   },
-  // hedera: {
-  //   vaultConfigs: [
-  //     { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
-  //   ]
-  // },
-  // kava: {
-  //   vaultConfigs: [
-  //     { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
-  //   ]
-  // },
+  flare: {
+    vaultConfigs: [
+      { factory: '0x85a4dd4ed356A7976a8302b1b690202d58583c55', fromBlock: 30879155, isAlgebra: false, }, // SparkDex
+    ]
+  },
+  fuse: {
+    vaultConfigs: [
+      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 30026180, isAlgebra: false, }, // Voltage
+    ]
+  },
+  hedera: {
+    vaultConfigs: [
+      { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
+    ]
+  }, 
+  kava: {
+    vaultConfigs: [
+      { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
+    ]
+  },
   linea: {
     vaultConfigs: [
       { factory: '0xb0e7871d53BE1b1d746bBfD9511e2eF3cD70a6E7', fromBlock: 4722347, isAlgebra: false, }, // Linehub
@@ -112,6 +154,12 @@ const config = {
   mantle: {
     vaultConfigs: [
       { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
+      { factory: '0x797ebB6A84367B0409094FEA0D10aC7516432433', fromBlock: 65385973, isAlgebra: false, }, // Crust
+    ]
+  },
+  mode: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 12395812, isAlgebra: true, }, // Kim
     ]
   },
   op_bnb: {
@@ -132,6 +180,48 @@ const config = {
       { factory: '0xe8532Db60408f2d47693dA5b9093D71580B8C23F', fromBlock: 10890417, isAlgebra: false, }, // PancakeSwap
       { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
     ]
+  },
+  nibiru: {
+    vaultConfigs: [
+      { factory: '0x63703A4DdFA51B6CffC1Bb40cc73912dF62535FA', fromBlock: 24151937, isAlgebra: false, }, // Uniswap
+    ]
+  },
+  // real: {
+  //   vaultConfigs: [
+  //     { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
+  //   ]
+  // },
+  rsk: {
+    vaultConfigs: [
+      { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 6753128, isAlgebra: false, }, // Uniswap
+    ]
+  },
+  scroll: {
+    vaultConfigs: [
+      { factory: '0xb42D5956cDe4386B65C087CfCD16910aB6114F15', fromBlock: 5264782, isAlgebra: false, }, // Metavault
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4728729, isAlgebra: false, }, // Uniswap
+    ]
+  },
+  sonic: {
+    vaultConfigs: [
+      { factory: '0x7D18F2D60E4fd6F485419727515807d09A542eb9', fromBlock: 1971740, isAlgebra: false, }, // Equalizer
+      { factory: '0x34513e8A327987Bb44acF5A925a7f3b4092d8b5F', fromBlock: 1476044, isAlgebra: true, }, // SwapX
+    ]
+  },
+  taiko: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 11578, isAlgebra: true, }, // Henjin
+    ]
+  },
+  zircuit: {
+    vaultConfigs: [
+      { factory: '0x1A58D4CFF22C7E2e0c4cCf4a0010b87822d024A1', fromBlock: 5104000, isAlgebra: true, }, // Ocelex
+    ]
+  },
+  hemi: {
+    vaultConfigs: [
+      { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 1684964, isAlgebra: false, }, // OKU
+    ],
   },
 }
 
@@ -164,23 +254,24 @@ Object.keys(config).forEach(chain => {
         await sumTokens2({ api, owners: uniV3NFTHolders, resolveUniV3: true, blacklistedTokens, })
       }
 
-      for (const { 
-        factory, 
-        fromBlock, 
-        isAlgebra, 
-      } of vaultConfigs) {
-        const topic = isAlgebra ? algebraTopic : defaultTopic 
-        const eventAbi = isAlgebra ? algebraEvent : defaultEvent 
-        const logs = await getLogs({
-          api,
-          target: factory,
-          topics: [topic],
-          eventAbi: eventAbi,
-          onlyArgs: true,
-          fromBlock,
-        })
-        const vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls: logs.map(l => l.ichiVault) })
+      for (const { factory, fromBlock, isAlgebra } of vaultConfigs) {
+        const topic = isAlgebra ? algebraTopic : defaultTopic
+        const eventAbi = isAlgebra ? algebraEvent : defaultEvent
+        const logs = await getLogs({ api, target: factory, topics: [topic], eventAbi, onlyArgs: true, fromBlock })
+
+        let vaultBalances = []
+        const calls = logs.map(l => l.ichiVault)
+
+        if (api.chain === 'hedera') {
+          for (let i = 0; i < calls.length; i += 10) {
+            const batch = calls.slice(i, i + 10)
+            const res = await api.multiCall({ abi: abi.getTotalAmounts, calls: batch, permitFailure: true })
+            vaultBalances.push(...res)
+          }
+        } else vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls, permitFailure: true })
+
         vaultBalances.forEach((b, i) => {
+          if (!b) return
           const { tokenA, tokenB } = logs[i]
           if (!blacklistedTokens.includes(tokenA.toLowerCase())) api.add(tokenA, b.total0)
           if (!blacklistedTokens.includes(tokenB.toLowerCase())) api.add(tokenB, b.total1)

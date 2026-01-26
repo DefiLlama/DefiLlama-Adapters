@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
+const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs');
 
 /*** Ethereum Addresses ***/
     // Static Power Part
@@ -24,25 +24,11 @@ const stakingContract = "0x0Ec74989E6f0014D269132267cd7c5B901303306";
 const POWER_polygon = "0x00D5149cDF7CEC8725bf50073c51c4fa58eCCa12";
 const POWER_USDC_UNIV2 = "0x9af0c1eeb61dE5630899C224DB3D6f3F064da047";
 
-async function ethTvl() {
-    const balances = {};
-
-    const balance_ETHPrime = (
-        await sdk.api.eth.getBalance({
-            target: ethPrimeContract,
-        })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, WETH, balance_ETHPrime);
-
-    return balances;
-}
-
 module.exports = {
     ethereum: {
         staking: staking(staticPowerContract, POWER_eth),
         pool2: staking(liquidityVaultContracts, [WETH_POWER_UNIV2]),
-        tvl: ethTvl,
+        tvl: sumTokensExport({ owner:ethPrimeContract, token: nullAddress }),
     },
     polygon: {
         tvl: async () => ({}),

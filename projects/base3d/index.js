@@ -10,5 +10,4 @@ module.exports = {
     tvl,
   },
   methodology: 'Calculates TVL by checking the ETH balance of the main contract via the totalEthereumBalance function.',
-  start: 3331748,
 };

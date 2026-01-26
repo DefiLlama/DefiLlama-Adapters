@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, decodeAccount, getMultipleAccounts, } = require("../helper/solana");
 const { getConfig } = require('../helper/cache')
 
@@ -21,7 +22,32 @@ async function borrowed(api) {
 
 async function tvl() {
   const markets = (await getConfig('solend', solendConfigEndpoint))
-  return sumTokens2({ owners: markets.map(i => i.authorityAddress)});
+  return sumTokens2({ owners: markets.map(i => i.authorityAddress) });
+}
+
+// TODO: Find a dynamic way to obtain this mapping
+const TOKEN_MINT_TO_TOKEN2022_MINT = {
+  [ADDRESSES.solana.SOL]: ADDRESSES.solana.SOL,
+  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': ADDRESSES.eclipse.ETH_2,
+  '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': ADDRESSES.eclipse.WIF,
+  '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': ADDRESSES.eclipse.SOL,
+  'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': ADDRESSES.eclipse.USDC,
+};
+
+async function eclipseTvl(api) {
+  const balances = await sumTokens2({ api, owners: ['5Gk1kTdDqqacmA2UF3UbNhM7eEhVFvF3p8nd9p3HbXxk'] });
+
+  const token2022MappedBalances = {};
+  for (const [key, value] of Object.entries(balances)) {
+    const token = key.split(':')[1];
+    if (TOKEN_MINT_TO_TOKEN2022_MINT[token]) {
+      token2022MappedBalances[`eclipse:${TOKEN_MINT_TO_TOKEN2022_MINT[token]}`] = value;
+    } else {
+      token2022MappedBalances[key] = value;
+    }
+  }
+
+  return token2022MappedBalances;
 }
 
 module.exports = {
@@ -30,6 +56,7 @@ module.exports = {
     tvl,
     borrowed,
   },
+  eclipse: { tvl: eclipseTvl },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
   hallmarks: [

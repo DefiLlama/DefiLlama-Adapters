@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const owners = [
   '0x0d83f81bc9f1e8252f87a4109bbf0d90171c81df',
@@ -8,12 +9,7 @@ const owners = [
 ]
 
 const config = {
-  bitcoin: {
-    owners: [
-      'bc1qh78w4qq9v2dqntjtxne97kp9u2485jdqrfsghh',
-      'bc1qm4hycszv0v0qel3swxqyp57nkpnnrda4rc55lm'
-    ],
-  },
+  bitcoin: { owners: bitcoinAddressBook.wooCEX },
   ethereum: { owners },
   fantom: { owners },
   avax: { owners },

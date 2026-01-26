@@ -26,7 +26,7 @@ const uniTVL = getUniTVL({ factory: '0x19f21b0AB98EC10d734E314356Ad562ae349177d'
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 1674864000,
+  start: '2023-01-28',
   bfc: {
     tvl: sdk.util.sumChainTvls([tvl, uniTVL])
   },

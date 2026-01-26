@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { Program, } = require("@project-serum/anchor");
+const { Program } = require('@coral-xyz/anchor');
 const { getConfig } = require('../helper/cache')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
 const { getProvider } = require('../helper/solana')
@@ -11,28 +11,26 @@ async function getData() {
   return data
 
   async function getAllData() {
-    const programId = '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt'
     const provider = getProvider()
     const idl = await getConfig('banx-idl', 'https://api.banx.gg/idl')
-    const program = new Program(idl, programId, provider)
+    const program = new Program(idl, provider)
 
-    const bondOfferOffset = 32 + 8;
     const bondTradeTxnOffset = 8;
+    const userVaultOffset = 8;
     const [
-      bondOffers,
       bondTradeTxn,
+      userVaults,
     ] = await Promise.all([
-      getFilteredAccounts(program, 'bondOfferV3', bondOfferOffset, [5, 7,]),
-      getFilteredAccounts(program, 'bondTradeTransactionV3', bondTradeTxnOffset, [2, 6, 9]),
-    ])
+      getFilteredAccounts(program, 'bondTradeTransactionV3', bondTradeTxnOffset, [2, 6, 9, 13]),
+      getFilteredAccounts(program, 'userVault', userVaultOffset, [1]),
+    ]);
 
-    // OffersSum is sum of sol in pools not yet lent out. The borrowedSum is the sum of SOL which has been borrowed and overcollaterized by the value of locked NFTs
-    const { offersSum, offersSumUsdc } = bondOffers.reduce(({ offersSum, offersSumUsdc }, offer) => {
-      if (offer.account.bondingCurve.bondingType.linearUsdc || offer.account.bondingCurve.bondingType.exponentialUsdc) {
-        return { offersSumUsdc: offersSumUsdc + (+offer.account.fundsSolOrTokenBalance) + Math.max(0, +offer.account.bidSettlement), offersSum };
+    const { escrowSum, escrowSumUsdc } = userVaults.reduce(({ escrowSum, escrowSumUsdc }, userVault) => {
+      if (userVault.account.lendingTokenType.usdc) {
+        return { escrowSum, escrowSumUsdc: escrowSumUsdc + (+userVault.account.offerLiquidityAmount) }
       }
-      return { offersSum: offersSum + (+offer.account.fundsSolOrTokenBalance) + Math.max(0, +offer.account.bidSettlement), offersSumUsdc };
-    }, { offersSum: 0, offersSumUsdc: 0 });
+      return { escrowSum: escrowSum + (+userVault.account.offerLiquidityAmount), escrowSumUsdc }
+    }, { escrowSum: 0, escrowSumUsdc: 0 })
 
     const { borrowedSum, borrowedSumUsdc } = bondTradeTxn.reduce(({ borrowedSum, borrowedSumUsdc }, bondTxn) => {
       if (bondTxn.account.lendingToken.usdc) {
@@ -42,7 +40,7 @@ async function getData() {
     }, { borrowedSum: 0, borrowedSumUsdc: 0 });
 
 
-    return { tvl: offersSum, tvlUsdc: offersSumUsdc, borrowed: borrowedSum, borrowedUsdc: borrowedSumUsdc }
+    return { tvl: escrowSum, tvlUsdc: escrowSumUsdc, borrowed: borrowedSum, borrowedUsdc: borrowedSumUsdc }
   }
 }
 

@@ -1,6 +1,12 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+    "getPoolId": "function getPoolId() view returns (bytes32)",
+    "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)",
+    "getTokenInfo": "function getTokenInfo() view returns (address[] tokens, (uint8 tokenType, address rateProvider, bool paysYieldFees)[] tokenInfo, uint256[] balancesRaw, uint256[] lastBalancesLiveScaled18)"
+  };
 const { staking } = require("../helper/staking");
 const { unwrapBalancerToken } = require('../helper/unwrapLPs')
 
@@ -16,48 +22,111 @@ const addresses = {
   bal80eth20: "0x5c6Ee304399DBdB9C8Ef030aB642B10820DB8F56",
 };
 
-async function tvl(api) {
+async function addEthV2PoolsTvl(api) {
   let pools = await Promise.all([AURA_BOOSTER, AURA_BOOSTER_2].map(i => api.fetchList({ target: i, itemAbi: abi.poolInfo, lengthAbi: abi.poolLength, })))
   pools = pools.flat()
   const poolInputs = pools.map(pool => pool.lptoken)
+  const v2PoolInfos = []
+  const v2PoolIds = []
+
+  const failedCallIndices = []
+  const failedCallInputs = []
+
   const poolIds = await api.multiCall({ calls: poolInputs, abi: abi.getPoolId, permitFailure: true, })
+  poolIds.forEach((v, i) => {
+    if (v) {
+      v2PoolIds.push(v)
+      v2PoolInfos.push(pools[i])
+    } else {
+      failedCallInputs.push(poolInputs[i])
+      failedCallIndices.push(i)
+    }
+  })
+  let newPoolIds = await api.multiCall({ calls: failedCallInputs, abi: 'function POOL_ID() view returns (bytes32)', permitFailure: true, })
+
+  const failedCallIndices2 = []
+  const failedCallInputs2 = []
+
+  newPoolIds.forEach((v, i) => {
+    if (v) {
+      v2PoolIds.push(v)
+      v2PoolInfos.push(pools[failedCallIndices[i]])
+    } else {
+      failedCallInputs2.push(failedCallInputs[i])
+      failedCallIndices2.push(failedCallIndices[i])
+    }
+  })
+  
+  
+  const isVersion3 = await api.multiCall({ calls: failedCallInputs2, abi: 'address:lp_token', permitFailure: true, })
+
+  const failedCallIndices3 = []
+  const failedCallInputs3 = []
+  const v3PoolInfos = []
+  const v3Pools = []
+
+  isVersion3.forEach((v, i) => {
+    if (!v) {
+      v3PoolInfos.push(pools[failedCallIndices2[i]])
+      v3Pools.push(failedCallInputs2[i])
+    } else {
+      failedCallInputs3.push(failedCallInputs2[i])
+      failedCallIndices3.push(failedCallIndices2[i])
+    }
+  })
+
+  const newLpTokens = await api.multiCall({ calls: failedCallInputs3, abi: 'address:lp_token', permitFailure: true, })
+  newPoolIds = await api.multiCall({ calls: newLpTokens, abi: abi.getPoolId, permitFailure: true, })
 
 
-  let failedCallIndices = poolIds.map((v, i) => [i, v]).filter(i => !i[1]).map(i => i[0])
-  let newPoolIds = await api.multiCall({ calls: failedCallIndices.map(i => poolInputs[i]), abi: 'function POOL_ID() view returns (bytes32)', permitFailure: true, })
-  newPoolIds.forEach((v, i) => { if (v) poolIds[failedCallIndices[i]] = v })
+  newPoolIds.forEach((v, i) => {
+    if (v) {
+      v2PoolIds.push(v)
+      v2PoolInfos.push(pools[failedCallIndices2[i]])
+    } else {
+      throw new Error('Failed to get pool id for ' + failedCallInputs3[i])
+    }
+  })
 
-  failedCallIndices = poolIds.map((v, i) => [i, v]).filter(i => !i[1]).map(i => i[0])
-  const newLpTokens = await api.multiCall({ calls: failedCallIndices.map(i => poolInputs[i]), abi: 'address:lp_token', permitFailure: true, })
-  newPoolIds = await api.multiCall({ calls: newLpTokens.map(i => ({ target: i })), abi: abi.getPoolId, permitFailure: true, })
-  newPoolIds.forEach((v, i) => { if (v) poolIds[failedCallIndices[i]] = v })
-
-
-  const poolTokensInfo = await api.multiCall({ calls: poolIds.map(poolId => ({ target: BALANCER_VAULT, params: poolId })), abi: abi.getPoolTokens, })
-  const balancesinStaking = await api.multiCall({ calls: pools.map(pool => ({ target: pool.token, params: pool.crvRewards })), abi: 'erc20:balanceOf', })
-  const totalSupplies = await api.multiCall({ calls: pools.map(pool => pool.lptoken), abi: 'erc20:totalSupply', })
-  const { output: veBalTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veBal, block: api.block })
-  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block: api.block })
-  const ratio = veBalance / veBalTotalSupply
+  const poolTokensInfo = await api.multiCall({ target: BALANCER_VAULT, calls: v2PoolIds, abi: abi.getPoolTokens, })
+  const balancesinStaking = await api.multiCall({ calls: v2PoolInfos.map(pool => ({ target: pool.token, params: pool.crvRewards })), abi: 'erc20:balanceOf', })
+  const totalSupplies = await api.multiCall({ calls: v2PoolInfos.map(pool => pool.lptoken), abi: 'erc20:totalSupply', })
   const ratios = balancesinStaking.map((v, i) => +totalSupplies[i] > 0 ? v / totalSupplies[i] : 0)
+
+  for (let [i, info] of poolTokensInfo.entries()) {
+    info.tokens.forEach((token, j) => {
+      api.add(token, info.balances[j] * ratios[i])
+    })
+  }
+
+  await addEthV3PoolsTvl({ poolInfos: v3PoolInfos, pools: v3Pools, api })
+}
+
+async function addEthV3PoolsTvl({ poolInfos, pools, api }) {
+  const poolTokensInfo = await api.multiCall({ calls: pools, abi: abi.getTokenInfo, })
+  const balancesinStaking = await api.multiCall({ calls: poolInfos.map(pool => ({ target: pool.token, params: pool.crvRewards })), abi: 'erc20:balanceOf', })
+  const totalSupplies = await api.multiCall({ calls: poolInfos.map(pool => pool.lptoken), abi: 'erc20:totalSupply', })
+  const ratios = balancesinStaking.map((v, i) => +totalSupplies[i] > 0 ? v / totalSupplies[i] : 0)
+
+  for (let [i, info] of poolTokensInfo.entries()) {
+    info.tokens.forEach((token, j) => {
+      api.add(token, info.balancesRaw[j] * ratios[i])
+    })
+  }
+}
+
+async function tvl(api) {
+
+  await addEthV2PoolsTvl(api) 
+
+  // add veBal tvl
+  const veBalTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: addresses.veBal, })
+  const veBalance = await api.call({ abi: 'erc20:balanceOf', target: addresses.veBal, params: addresses.auraDelegate, })
+  const ratio = veBalance / veBalTotalSupply
   const bal = await unwrapBalancerToken({ api, balancerToken: addresses.bal80eth20, owner: addresses.veBal, })
   Object.entries(bal).forEach(([token, value]) => {
     api.add(token, +value * ratio, { skipChain: true, })
   })
-  for (let [i, info] of poolTokensInfo.entries()) {
-    // // unwrapBalancerToken would be better here, but since crvRewards address holds aura-wrapped tokens, it won't work
-    // if (poolIds[i] == "0x3dd0843a028c86e0b760b1a76929d1c5ef93a2dd000200000000000000000249") {
-    //   // Pool is 80BAL-20ETH/auraBAL, need to unwrap 80BAL-20ETH
-    //   const unwrapped = await unwrapBalancerToken({ block: api.block, balancerPool: addresses.bal80eth20, owner: BALANCER_VAULT })
-    //   Object.entries(unwrapped).forEach(([token, balance]) => {
-    //     api.add(token, balance * ratio)
-    //   })
-    // } else {
-    info.tokens.forEach((token, j) => {
-      api.add(token, info.balances[j] * ratios[i])
-    })
-    // }
-  }
 }
 
 const config = {

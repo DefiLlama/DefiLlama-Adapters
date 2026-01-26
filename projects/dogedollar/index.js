@@ -4,7 +4,6 @@ const DJED_ADDR = '0xA99ef299CdA10AC4Ec974370778fbd27Cfb5CF61'
 
 module.exports = {
   methodology: 'finds the DOGE balance of the DJED instance backing the stablecoin, aswell as the fallback stablecoin balance',
-  start: 14576300,
   dogechain: {
     tvl: sumTokensExport({
       tokensAndOwners: [

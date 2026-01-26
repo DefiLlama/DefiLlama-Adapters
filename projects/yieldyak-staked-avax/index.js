@@ -22,7 +22,7 @@ async function avax(api) {
 }
 
 module.exports = {
-    start: 1658869201,
+    start: '2022-07-26',
     methodology: "Total Supply and Underlying Price of the derivative is multiplied, resulting in number of staked Avax tokens.",
     doublecounted: true,
     avax: {

@@ -1,124 +1,46 @@
-const sdk = require("@defillama/sdk");
-const { sumTokens, } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
-const abi = require("./abi");
-const { Chain, lsps, uniswapFactory, ZERO_ADDRESS, usdc } = require("./registry");
+const lsps = {
+  ethereum: [
+    // BTCDOM
+    "0x3e75DCadDf32571d082da914c471180636f9567d",
+    // ETHDOM
+    "0x94E653AF059550657e839a5DFCCA5a17fD17EFdf",
+    // USDTDOM
+    "0xD3a0e00f11A91DA9797eEf5B74dF8fc325FC50e0",],
 
-const makeUniswapReserves = (chain, makeAddressTransform) => {
-  return async (timestamp, _, {[chain]: block}) => {
-    const balances = {};
-    const transform = await getChainTransform(chain);
+  polygon: [
+    // BTCDOM
+    "0x12CcE472430f7F5071375Cc0A1Aab717310bE116",
+    // ETHDOM
+    "0x2771322091C9f86F1f770E2A633C66c068644100",
+    // USDTDOM
+    "0x514b3C2761Edc2487F320392EDF094d65E20C9Ee",],
 
-    const getLongToken = abi["LongShortPair.longToken"];
-    const getShortToken = abi["LongShortPair.shortToken"];
+  boba: [
+    // BTCDOM-JUN20
+    "0x3C77d0130Eb6AfF1DED8C72fb7a5F383B7961c03",
+    // ETHDOM-JUN20
+    "0xCAB14a130cDB3143aD81657D552a7Cee1917a18e",
+    // USDTDOM-JUN20
+    "0x5B9f3B4648b1C7573d9c2A068020Bb34AEC67589",
 
-    const [longTokens, shortTokens] = await Promise.all([
-      sdk.api.abi.multiCall({
-        calls: lsps[chain].map(x => ({ target: x.address })),
-        block,
-        chain,
-        abi: getLongToken,
-        requery: true,
-      }),
-
-      sdk.api.abi.multiCall({
-        calls: lsps[chain].map(x => ({ target: x.address })),
-        block,
-        chain,
-        abi: getShortToken,
-        requery: true,
-      }),
-    ]);
-
-    const syntheticTokens = [
-      ...longTokens.output.map(x => x.output),
-      ...shortTokens.output.map(x => x.output),
-    ];
-
-    const getPair = abi["UniswapFactory.getPair"];
-    const pairAddresses = await sdk.api.abi.multiCall({
-      calls: syntheticTokens.map(syntheticAddress => ({ 
-        target: uniswapFactory[chain],
-        params: [
-          usdc[chain], // NOTE: This is referenced below when summing tokens
-          syntheticAddress,
-        ]
-      })),
-      block,
-      chain,
-      abi: getPair,
-      requery: true,
-    });
-
-    for (const result of pairAddresses.output) {
-      if (result.output === ZERO_ADDRESS) {
-        throw new Error(`Failed to get Uniswap-like pair address on chain '${chain}' for pair [${result.input.params.join(", ")}]`);
-      }
-    }
-
-    await sumTokens(
-      balances,
-      pairAddresses.output
-        .filter((x) => x.output !== null)
-        .map((x) => [
-          /* target: */ x.input.params[0],
-          /* owner:  */ x.output
-        ]),
-      block,
-      chain,
-      transform,
-    );
-
-    return balances;
-  }
+    // BTCDOM-JUN40
+    "0x156a4595b87cc204dc96d05f366ac3fcdff30bec",
+    // ETHDOM-JUN40
+    "0xF123b661d80e755ec26BC0C0CCaAFDD258a102d6",
+    // USDTDOM-JUN40
+    "0x6cafFBf5697c8744713956fdAf84d6a0613Ce20f",
+  ]
 }
 
-const makeLspTvl = (chain, makeAddressTransform) => {
-  return async (timestamp, _, {[chain]: block}) => {
-    const balances = {};
-    const transform = await getChainTransform(chain);
+async function tvl(api) {
+  const lsp = lsps[api.chain]
+  const tokens = await api.multiCall({ abi: "address:collateralToken", calls: lsp })
+  await api.sumTokens({ tokensAndOwners2: [tokens, lsp], })
 
-    const getCollateralToken = abi["LongShortPair.collateralToken"];
-    const collaterals = await sdk.api.abi.multiCall({
-      calls: lsps[chain].map(x => ({ target: x.address })),
-      block,
-      chain,
-      abi: getCollateralToken,
-      requery: true,
-    });
-    
-    await sumTokens(
-      balances,
-      collaterals.output
-        .filter((x) => x.output !== null)
-        .map((x) => [x.output, x.input.target]),
-      block,
-      chain,
-      transform,
-    );
-
-    return balances;
-  }
 }
-
-const run = (chain, f) => {
-  return f(chain);
-}
-
-const runAll = (chain, fs) => {
-  return fs.map(f => run(chain, f));
-};
-
-const tvlSources = [makeLspTvl, makeUniswapReserves];
 
 module.exports = {
-  ethereum: {
-    tvl: sdk.util.sumChainTvls(runAll(Chain.ETHEREUM, tvlSources)),
-  },
-  polygon: {
-    tvl: sdk.util.sumChainTvls(runAll(Chain.POLYGON, tvlSources)),
-  },
-  boba: {
-    tvl: sdk.util.sumChainTvls(runAll(Chain.BOBA, tvlSources)),
-  },
+  ethereum: { tvl, },
+  polygon: { tvl, },
+  boba: { tvl, },
 };

@@ -1,4 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const { karpatKeyTvl } = require("../helper/karpatkey");
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury addresses per chain
@@ -104,46 +105,48 @@ const avaxOwnTokens = [
   "0xA39d8651689c8b6e5a9e0AA4362629aeF2c58F55" // 80BAL-20WAVAX BPT
 ];
 
-
+// Keeping old code because karpatkey's api tends to break
 module.exports = treasuryExports({
   ethereum: {
     owners: [eth, eth2],
-    tokens: ethTokens,
+    //tokens: ethTokens,
     ownTokens: ethOwnTokens
   },
   arbitrum: {
     owners: [arb],
-    tokens: arbTokens,
+    //tokens: arbTokens,
     ownTokens: arbOwnTokens
   },
   polygon: {
     owners: [pol],
-    tokens: polTokens,
+    //tokens: polTokens,
     ownTokens: polOwnTokens
   },
   polygon_zkevm: {
     owners: [zkevm],
-    tokens: zkevmTokens,
+    //tokens: zkevmTokens,
     ownTokens: zkevmOwnTokens
   },
   optimism: {
     owners: [op],
-    tokens: opTokens,
+    //tokens: opTokens,
     ownTokens: opOwnTokens
   },
   base: {
     owners: [base],
-    tokens: baseTokens,
+    //tokens: baseTokens,
     ownTokens: baseOwnTokens
   },
   xdai: {
     owners: [xdai],
-    tokens: xdaiTokens,
+    //tokens: xdaiTokens,
     ownTokens: xdaiOwnTokens
   },
   avax: {
     owners: [avax],
-    tokens: avaxTokens,
+    //tokens: avaxTokens,
     ownTokens: avaxOwnTokens
   }
 });
+
+module.exports.ethereum.tvl = async (api)=>karpatKeyTvl(api, "Balancer DAO", "BAL")

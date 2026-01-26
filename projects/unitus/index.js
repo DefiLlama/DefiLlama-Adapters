@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const { compoundExports2 } = require('../helper/compound')
-const { generalizedChainExports } = require('../helper/exports')
 
 let allControllers = {
   ethereum: ["0x8B53Ab2c0Df3230EA327017C91Eb909f815Ad113"],
@@ -63,6 +62,10 @@ function chainTvl(chain) {
 
 
 module.exports = {
-  ...generalizedChainExports(chainTvl, Object.keys(allControllers)),
-  start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
+  start: '2019-07-26', // Jul-27-2019 02:17:24 AM +UTC
 }
+
+
+Object.keys(allControllers).forEach(chain => {
+  module.exports[chain] =  chainTvl(chain)
+})

@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -69,9 +70,7 @@ const config = {
     ]
   },
   bitcoin: {
-    owners: [
-        '39DUz1NCkLu25GczWiAjjgZBu4mUjKbdNA', // this wallet was collected from https://blog.maskex.com/news/announcements/embracing-transparency-maskex-reveals-wallet-addresses
-    ]
+    owners: bitcoinAddressBook.maskex
   }
 }
 

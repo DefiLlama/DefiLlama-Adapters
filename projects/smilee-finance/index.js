@@ -1,6 +1,5 @@
 module.exports = {
   methodology: 'Sum of balances from vault contracts associated with each DVP retrieved by the registry.',
-  start: 190367425,
 }
 
 const config = {

@@ -1,6 +1,10 @@
 const { staking } = require('../helper/staking')
 const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
+const abi = {
+    "poolCount": "function poolCount() external view returns (uint256)",
+    "poolInfo": "function poolInfo(uint256 poolId) external view returns (tuple(address target, address adapter, uint256 targetPoolId, uint256 rewardableDeposits) memory)",
+    "lockableToken": "function lockableToken(uint256) external view returns (address)"
+  };
 
 const MASTERMIND = "0xFACE8DED582816E2f2cD4C6cc1cbD1aCCc9df65E"
 const STAKING = "0x6701e792b7cd344bae763f27099eeb314a4b4943"
@@ -19,7 +23,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Information is retrieved from both the blockchain and the SpiralDAO API. "https://api.spiral.farm".',
-  start: 16991020,
   ethereum: {
     tvl,
     staking: staking(STAKING, COIL),
