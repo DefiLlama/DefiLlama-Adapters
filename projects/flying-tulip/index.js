@@ -12,26 +12,10 @@ const WRAPPERS = [
   '0xe6880Fc961b1235c46552E391358A270281b5625', // USDe Wrapper
 ]
 
-/**
- * Calculates TVL for Flying Tulip yield wrappers by summing the capital
- * deposited across all wrapper contracts.
- * @param {Object} api - DefiLlama SDK API instance for blockchain calls
- * @returns {Promise<void>} Adds token balances to the api object
- */
 async function tvl(api) {
-  const tokens = await api.multiCall({
-    abi: 'address:token',
-    calls: WRAPPERS,
-  })
-
-  const capitals = await api.multiCall({
-    abi: 'uint256:capital',
-    calls: WRAPPERS,
-  })
-
-  tokens.forEach((token, i) => {
-    api.add(token, capitals[i])
-  })
+  const tokens = await api.multiCall({ abi: 'address:token', calls: WRAPPERS, })
+  const capitals = await api.multiCall({ abi: 'uint256:capital', calls: WRAPPERS, })
+  api.add(tokens, capitals)
 }
 
 module.exports = {
