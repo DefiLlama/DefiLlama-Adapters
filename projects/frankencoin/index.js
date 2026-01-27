@@ -9,35 +9,22 @@ async function tvl(api) {
   const tokensAndOwners = [XCHFBridge, VCHFBridge];
 
   // @dev: query of positions from minting hubs via frankencoin graph (ponder)
-  const { mintingHubV1PositionV1s: positionV1s, mintingHubV2PositionV2s: positionV2s } = await cachedGraphQuery('frankencoinV1', 'https://ponder.frankencoin.com', `{ 
-    mintingHubV1PositionV1s { items { position } }  
-  mintingHubV2PositionV2s { items { position } }  
+  const { mintingHubV1PositionV1s: positionV1s, mintingHubV2PositionV2s: positionV2s } = await cachedGraphQuery('frankencoinPos', 'https://ponder.frankencoin.com', `{ 
+    mintingHubV1PositionV1s(where: {collateralBalance_gt: "0", closed: false, denied: false}, limit: 1000) { items { position collateral } }
+    mintingHubV2PositionV2s(where: {collateralBalance_gt: "0", closed: false, denied: false}, limit: 1000) { items { position collateral } }
   }`);
 
-  const vaults = positionV1s?.items.concat(positionV2s?.items).map(i => i.position);
-  const tokens = await api.multiCall({ abi: 'address:collateral', calls: vaults })
-  vaults.forEach((v, i) => {
-    tokensAndOwners.push([tokens[i], v]);
+  const vaults = positionV1s?.items.concat(positionV2s?.items).map(i => [i.collateral, i.position]);
+  vaults.forEach((i) => {
+    tokensAndOwners.push(i);
   });
-
-  /*   const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens })
-    const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
-    const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map((t, i) => ({ target: t, params: vaults[i] })) })
-    const table = []
-    tokens.forEach((t, i) => {
-      let bal = bals[i] / (10 ** decimals[i])
-      if (bal > 0)
-        table.push({ symbol: symbols[i], decimals: decimals[i], balance: bals[i] / (10 ** decimals[i]), vault: vaults[i], token: t })
-    })
-  
-    console.table(table) */
 
   return api.sumTokens({ tokensAndOwners });
 }
 
 module.exports = {
   ethereum: {
-    tvl: () => new Error('skip for now, unable to pull BOSS token price'),
+    tvl,
   },
   start: '2023-10-28',
 };
