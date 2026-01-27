@@ -9,12 +9,12 @@ def customScriptsPath = 'projects/helper/custom-scripts'
 
 // Create a folder for custom scripts jobs
 folder('tvl-custom-scripts') {
-    displayName('Custom Scripts')
+    displayName('TVL Scripts')
     description('Jobs for running custom DeFiLlama tvl scripts')
 }
 
 // MetaDAO Job
-pipelineJob('metadao') {
+pipelineJob('tvl-custom-scripts/metadao') {
     displayName('MetaDAO TVL')
     description('Calculates Futarchy DAO Treasuries TVL on Solana')
 
