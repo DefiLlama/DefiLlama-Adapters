@@ -9,7 +9,7 @@ pipeline {
 
     options {
         timeout(time: 90, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '10'))
+        buildDiscarder(logRotator(numToKeepStr: '30'))
         timestamps()
     }
 

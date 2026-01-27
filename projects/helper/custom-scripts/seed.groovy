@@ -23,14 +23,9 @@ pipelineJob('tvl-custom-scripts/metadao') {
         numToKeep(21)
     }
 
-    // Build triggers - run every 6 hours
+    // Build triggers - run every 8 hours
     triggers {
         cron('0 */8 * * *')
-    }
-
-    // Parameters
-    parameters {
-        stringParam('BRANCH', defaultBranch, 'Git branch to build')
     }
 
     definition {
@@ -40,7 +35,7 @@ pipelineJob('tvl-custom-scripts/metadao') {
                     remote {
                         url(repoUrl)
                     }
-                    branches('${BRANCH}')
+                    branches('main')
                 }
             }
             scriptPath("${customScriptsPath}/metadao/jfile")
