@@ -13,10 +13,10 @@ pipeline {
         timestamps()
     }
 
-    stages {
+    stages nodejs(nodeJSInstallationName: 'node'){
         stage('Setup') {
             steps {
-                script {
+                 nodejs(nodeJSInstallationName: 'node') {
                     // Check Node.js and pnpm versions
                     sh '''
                         echo "=== Environment Check ==="
@@ -24,15 +24,7 @@ pipeline {
                         npm --version
                         which pnpm || npm install -g pnpm
                         pnpm --version
-                    '''
-                }
-            }
-        }
-
-        stage('Install Root Dependencies') {
-            steps {
-                dir("${env.WORKSPACE}") {
-                    sh '''
+                        
                         echo "=== Installing root dependencies ==="
                         pnpm install --frozen-lockfile || pnpm install
                     '''
@@ -42,30 +34,34 @@ pipeline {
 
         stage('Install MetaDAO Dependencies') {
             steps {
-                dir("${env.WORKSPACE}/projects/helper/custom-scripts/metadao") {
-                    sh '''
-                        echo "=== Installing metadao dependencies ==="
-                        pnpm install --frozen-lockfile || pnpm install
-                    '''
+                nodejs(nodeJSInstallationName: 'node') {
+                    dir("${env.WORKSPACE}/projects/helper/custom-scripts/metadao") {
+                        sh '''
+                            echo "=== Installing metadao dependencies ==="
+                            pnpm install --frozen-lockfile || pnpm install
+                        '''
+                    }
                 }
             }
         }
 
         stage('Run MetaDAO TVL Script') {
             steps {
-                dir("${env.WORKSPACE}/projects/helper/custom-scripts/metadao") {
-                    script {
-                        def timestamp = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone('UTC'))
+                nodejs(nodeJSInstallationName: 'node') {
+                    dir("${env.WORKSPACE}/projects/helper/custom-scripts/metadao") {
+                        script {
+                            def timestamp = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone('UTC'))
 
-                        sh """
-                            echo "=== Running MetaDAO TVL Script ==="
-                            echo "Start time: ${timestamp}"
+                            sh """
+                                echo "=== Running MetaDAO TVL Script ==="
+                                echo "Start time: ${timestamp}"
 
-                            # Run the script and capture output
-                            node index.js 2>&1 | tee output_${timestamp}.log
+                                # Run the script and capture output
+                                node index.js 2>&1 | tee output_${timestamp}.log
 
-                            echo "=== Script completed ==="
-                        """
+                                echo "=== Script completed ==="
+                            """
+                        }
                     }
                 }
             }
