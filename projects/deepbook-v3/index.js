@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require("../helper/http");
 
 const assetsUrl = "https://deepbook-indexer.mainnet.mystenlabs.com/assets";
@@ -16,14 +15,9 @@ const tvl = async (api) => {
   })
 
   // Add margin supply
-  const symbolToCoin = {}
-  Object.entries(assets).forEach(([symbol, info]) => {
-    symbolToCoin[symbol] = info.asset_type
-  })
   const marginSupply = await get(`${endpointUrl}/${marginSupplyEndpoint}`)
   Object.entries(marginSupply).forEach(([symbol, amount]) => {
-    const coin = symbolToCoin[symbol]
-    if (coin) api.add(coin, amount)
+    if (assets[symbol]) api.add(assets[symbol].asset_type, amount)
   })
 
   const { usdTvl } = await api.getUSDJSONs();
