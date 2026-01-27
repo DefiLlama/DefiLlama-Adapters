@@ -21,9 +21,7 @@ async function iotaMoveTvl(api) {
 }
 
 module.exports = {
-  methodology: {
-    tvl: "IOTA EVM TVL is tracked using GMX-style vault addresses. IOTA Move TVL is calculated by querying the specific balances of the Liquidity Pool and Collateral vault objects.",
-  },
+  methodology: "IOTA EVM TVL is tracked using GMX-style vault addresses. IOTA Move TVL is calculated by querying the specific balances of the Liquidity Pool and Collateral vault objects.",
   iotaevm: {
     tvl: gmxExports({ vault}),
   },
