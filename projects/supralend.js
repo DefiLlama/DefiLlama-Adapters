@@ -1,4 +1,4 @@
-const { getResource } = require("../helper/chain/supra");
+const { getResourceData } = require("../helper/chain/supra");
 
 const SUPRA_CONTRACT_ADDRESS = "0x34a7ba846d2fbcdb35e36e5c4f6bd3860cb44e615172180ba888fa76584c9439"
 const SUPRA_RESOURCE_ADDRESS = "0x468fd657f987f3b18a58eaad25b71dc3077b1199298c92a5242c93e54e129f8c"
