@@ -15,7 +15,7 @@ module.exports = {
     methodology: "Fira TVL is bonded USD0 (bUSD0) collateral deposited into the UZR vault",
     ethereum: {
         tvl: sumTokensExport({
-            tokens: [bUSD0Token],
+            tokens: [USD0Token],
             owners: [UZRLendingMarket],
             resolveUniV3: false,
         }),
