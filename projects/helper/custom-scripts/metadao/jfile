@@ -13,7 +13,7 @@ pipeline {
         timestamps()
     }
 
-    stages nodejs(nodeJSInstallationName: 'node'){
+    stages {
         stage('Setup') {
             steps {
                  nodejs(nodeJSInstallationName: 'node') {

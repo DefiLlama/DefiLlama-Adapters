@@ -25,7 +25,7 @@ pipelineJob('tvl-custom-scripts/metadao') {
 
     // Build triggers - run every 6 hours
     triggers {
-        cron('0 */6 * * *')
+        cron('0 */8 * * *')
     }
 
     // Parameters
