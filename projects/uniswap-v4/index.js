@@ -19,6 +19,7 @@ const config = {
   bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343'] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1 },
   monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895 },
+  xlayer: {factory: "0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32", fromBlock: 49776795}
 }
 
 const eventAbi = "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)"
