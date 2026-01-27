@@ -10,6 +10,7 @@ const blacklistedTokens = [ADDRESSES.ethereum.sUSD_OLD, ADDRESSES.xdai.DAI_1]
 const CONFIG = {
   ethereum: { owners: EVM },
   arbitrum: { owners: EVM },
+  aurora: { owners: EVM },
   base: { owners: EVM },
   optimism: { owners: EVM },
   polygon: { owners: EVM },
@@ -18,6 +19,7 @@ const CONFIG = {
   berachain: { owners: EVM, tokens: [native, '0x779ded0c9e1022225f8e0630b35a9b54be713736'] },
   xdai: { owners: EVM, tokens: [native, '0x2a22f9c3b484c3629090feed35f17ff8f88f76f0', '0x8e34bfec4f6eb781f9743d9b4af99cd23f9b7053', '0x177127622c4a00f3d409b75571e12cb3c8973d3c'] },
   bsc: { owners: EVM, tokens: ['0x000ae314e2a2172a039b26378814c252734f556a', '0x4c067de26475e1cefee8b8d1f6e2266b33a2372e'] },
+  xlayer: { owners: ['0x233c5370ccfb3cd7409d9a3fb98ab94de94cb4cd'], tokens: [native] },
 
   solana: { owners: ['HWjmoUNYckccg9Qrwi43JTzBcGcM1nbdAtATf9GXmz16', '8sXzdKW2jFj7V5heRwPMcygzNH3JZnmie5ZRuNoTuKQC', '9WL2A89YBr6X47ABKYNzPentWiBA3H8tpaiuf5CaYHx6'] },
   ton: { owners: ['EQDgTfO4pJ8LxznVfC0mHsGl94bQBU4KFcJfliAIHebQU2G4', 'EQANEViM3AKQzi6Aj3sEeyqFu8pXqhy9Q9xGoId_0qp3CNVJ', 'UQAfoBd_f0pIvNpUPAkOguUrFWpGWV9TWBeZs_5TXE95_trZ'] },
@@ -27,12 +29,15 @@ const CONFIG = {
   ripple: { owners: ['r9R8jciZBYGq32DxxQrBPi5ysZm67iQitH'] },
 
   litecoin: { owners: ['LQjEMkuiA2pCwFeUPwsu6ktzUubBVLsahX'] },
-  
+
   tron: { owners: ['TX5XiRXdyz7sdFwF5mnhT1QoGCpbkncpke', 'TNzQzT8wDF1GVevMqehVDY51ucxxrNfCap'] },
   near: { owners: ['intents.near'], tokens: ['zec.omft.near', 'wrap.near', 'token.rhealab.near'] },
-  
+
   sui: { owners: ['0x00ea18889868519abd2f238966cab9875750bb2859ed3a34debec37781520138', '0x1f6cd55584e6d0c19ae34bfc48b1bd9b1b8a166987e34052cfea7f3c795c6d76'] },
-  aptos: { owners: ['0xd1a1c1804e91ba85a569c7f018bb7502d2f13d4742d2611953c9c14681af6446', '0x107b277f8ac97230f1e53cf3661b3f05a40c5a02d1d2b74fe77826b62b4d1c43'] }
+  aptos: { owners: ['0xd1a1c1804e91ba85a569c7f018bb7502d2f13d4742d2611953c9c14681af6446', '0x107b277f8ac97230f1e53cf3661b3f05a40c5a02d1d2b74fe77826b62b4d1c43'] },
+
+  stellar: { owners: ['GDJ4JZXZELZD737NVFORH4PSSQDWFDZTKW3AIDKHYQG23ZXBPDGGQBJK'] },
+  cardano: { owners: ['addr1v8wfpcg4qfhmnzprzysj6j9c53u5j56j8rvhyjp08s53s6g07rfjm'], tokens: [native] },
 }
 
 const tvl = async (api) => {
