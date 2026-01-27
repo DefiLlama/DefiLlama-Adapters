@@ -1,0 +1,94 @@
+pipeline {
+    agent any
+
+    environment {
+        // Add your RPC URL as a Jenkins credential (secret text)
+        // SOLANA_RPC = credentials('solana-rpc-url')
+        NODE_OPTIONS = '--max-old-space-size=4096'
+    }
+
+    options {
+        timeout(time: 90, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '10'))
+        timestamps()
+        ansiColor('xterm')
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    // Check Node.js and pnpm versions
+                    sh '''
+                        echo "=== Environment Check ==="
+                        node --version
+                        npm --version
+                        which pnpm || npm install -g pnpm
+                        pnpm --version
+                    '''
+                }
+            }
+        }
+
+        stage('Install Root Dependencies') {
+            steps {
+                dir("${env.WORKSPACE}") {
+                    sh '''
+                        echo "=== Installing root dependencies ==="
+                        pnpm install --frozen-lockfile || pnpm install
+                    '''
+                }
+            }
+        }
+
+        stage('Install MetaDAO Dependencies') {
+            steps {
+                dir("${env.WORKSPACE}/projects/helper/custom-scripts/metadao") {
+                    sh '''
+                        echo "=== Installing metadao dependencies ==="
+                        pnpm install --frozen-lockfile || pnpm install
+                    '''
+                }
+            }
+        }
+
+        stage('Run MetaDAO TVL Script') {
+            steps {
+                dir("${env.WORKSPACE}/projects/helper/custom-scripts/metadao") {
+                    script {
+                        def timestamp = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone('UTC'))
+
+                        sh """
+                            echo "=== Running MetaDAO TVL Script ==="
+                            echo "Start time: ${timestamp}"
+
+                            # Run the script and capture output
+                            node index.js 2>&1 | tee output_${timestamp}.log
+
+                            echo "=== Script completed ==="
+                        """
+                    }
+                }
+            }
+        }
+
+    }
+
+    post {
+        always {
+            echo "Pipeline completed with status: ${currentBuild.currentResult}"
+        }
+
+        success {
+            echo "MetaDAO TVL calculation completed successfully"
+        }
+
+        failure {
+            echo "MetaDAO TVL calculation failed"
+            // Uncomment to enable email notifications
+            // mail to: 'your-email@example.com',
+            //      subject: "Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            //      body: "Check console output at ${env.BUILD_URL}"
+        }
+    }
+}
