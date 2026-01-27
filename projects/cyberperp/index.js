@@ -16,8 +16,8 @@ async function iotaMoveTvl(api) {
   const lpVaultBalance = BigInt(lpData?.fields?.coin_store || 0);
   const collateralVaultDataBalance = BigInt(collateralData?.fields?.coin_store || 0);
 
-  const balance = lpVaultBalance + collateralVaultDataBalance
-  api.addCGToken('virtue-usd', balance / DECIMALS); 
+  const balance = lpVaultBalance + collateralVaultDataBalance;
+  api.addCGToken('virtue-usd', Number(balance) / Number(DECIMALS));
 }
 
 module.exports = {
