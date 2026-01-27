@@ -76,6 +76,22 @@ const lvts = {
       vt: '0x24ef95c39dfaa8f9a5adf58edf76c5b22c34ef46',
       vtHook: '0x2b72494fd4f092569b87e1a10f92268384f07a88',
     }
+  ],
+  sei: [
+    {
+      // Sei LvtVault
+      asset: '0xE30feDd158A2e3b13e9badaeABaFc5516e95e8C7',
+      vt: '0x92838ccdb9dceabc8e77415d73ecb06f8050cc5f',
+      vtHook: '0x3362cb23043cb5e7c52711c5763c69fd513a3a88',
+    }
+  ],
+  sty: [
+    {
+      // Verio LvtVault
+      asset: '0x1514000000000000000000000000000000000000',
+      vt: '0x92838ccdb9dceabc8e77415d73ecb06f8050cc5f',
+      vtHook: '0xee5aeecd6c9409424f88163aff415efcb9027a88',
+    }
   ]
 }
 
@@ -99,5 +115,7 @@ module.exports = {
   berachain: { tvl },
   arbitrum: { tvl: tvlLNT },
   bsc: { tvl: tvlLVT },
-  base: { tvl: tvlLVT }
+  base: { tvl: tvlLVT },
+  sei: { tvl: tvlLVT },
+  sty: { tvl: tvlLVT },
 }

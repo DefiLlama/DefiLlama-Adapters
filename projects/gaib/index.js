@@ -90,37 +90,22 @@ async function aidaTvl(api) {
     return api.getBalances();
 }
 
-// AID total supply on chain
-async function aidSupply(api) {
-    const supply = await api.call({
-        abi: totalSupplyABI,
-        target: AID_TOKEN,
-    });
-    api.add(`ethereum:${AID_TOKEN}`, supply, { skipChain: true });
-    return api.getBalances();
-}
-
 module.exports = {
     methodology: 'Tracks: 1) Legacy AIDa (Alpha) pool TVL using totalAssets(), 2) AID.v0 total supply across all chains.',
     start: 1715490671,
     timetravel: true,
     misrepresentedTokens: true,
-
     ethereum: {
         tvl: aidaTvl,
-        ownTokens: aidSupply,
     },
     arbitrum: {
         tvl: aidaTvl,
-        ownTokens: aidSupply,
     },
     base: {
         tvl: aidaTvl,
-        ownTokens: aidSupply,
     },
     bsc: {
         tvl: aidaTvl,
-        ownTokens: aidSupply,
     },
     sei: {
         tvl: aidaTvl,

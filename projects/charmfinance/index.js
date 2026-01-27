@@ -3,8 +3,14 @@ const { getConfig } = require('../helper/cache')
 
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 
-const vaultAbi = require("./vaultAbi.json");
-const cubePoolAbi = require("./cubePoolAbi.json");
+const vaultAbi = {
+    "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+    "token0": "address:token0",
+    "token1": "address:token1"
+  };
+const cubePoolAbi = {
+    "poolBalance": "uint256:poolBalance"
+  };
 
 const USDC = ADDRESSES.ethereum.USDC;
 const WBTC = ADDRESSES.ethereum.WBTC;
