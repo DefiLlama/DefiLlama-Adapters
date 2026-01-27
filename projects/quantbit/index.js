@@ -61,10 +61,15 @@ async function tvl(api) {
   try {
     const hyperliquidData = await getHyperliquidBalance();
     if (hyperliquidData?.marginSummary?.accountValue) {
-      const accountValue = parseFloat(hyperliquidData.marginSummary.accountValue);
-      if (accountValue > 0) {
-        const usdtAmount = BigInt(Math.floor(accountValue * 1000000));
-        api.add(USDT, usdtAmount);
+      // Parse accountValue string directly to BigInt to avoid precision loss
+      const accountValueStr = String(hyperliquidData.marginSummary.accountValue);
+      const [whole, frac = ""] = accountValueStr.split(".");
+      if (/^\d+$/.test(whole)) {
+        const fracPadded = (frac + "000000").slice(0, 6); // Pad to 6 decimals
+        const usdtAmount = BigInt(whole) * 1_000_000n + BigInt(fracPadded);
+        if (usdtAmount > 0n) {
+          api.add(USDT, usdtAmount);
+        }
       }
     }
   } catch (error) {
