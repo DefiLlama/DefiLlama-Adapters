@@ -274,9 +274,7 @@ async function combinedEthereumTvl(api) {
   }
   
   // Then add MegaVault TVL
-  console.log("Adding MegaVault TVL to ethereum...");
   await megavaultTvl(api);
-  console.log("MegaVault TVL added to ethereum");
 }
 
 module.exports = {

@@ -53,15 +53,14 @@ async function stellarTVL(api) {
     try {
       const res = await get(`https://api.stellar.expert/explorer/public/asset/${code}-${issuer}`);
       if (!res || !res.supply) {
-        console.log(`Stellar API returned invalid data for ${asset}:`, res);
-        continue;
+        throw new Error(`Stellar API returned invalid data for ${asset}: ${JSON.stringify(res)}`);
       }
 
       // Correct scaling: divide by 10^7 to get actual supply in millions
       const supply = Number(res.supply) / 1e7;
       api.addTokens(asset, supply);
     } catch (err) {
-      console.log(`Error fetching Stellar asset ${asset}:`, err);
+      throw err;
     }
   }
 }
