@@ -417,6 +417,8 @@ async function getCuratorTvl(api, vaults) {
   if (vaults.nestedVaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
   }
+
+  return api.getBalances()
 }
 
 function getCuratorExport(configs) {

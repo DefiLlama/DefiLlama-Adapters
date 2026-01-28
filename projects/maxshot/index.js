@@ -1,6 +1,6 @@
 const { getCuratorExport } = require("../helper/curators");
-const ADDRESSES = require('../helper/coreAssets.json');
 const sdk = require('@defillama/sdk');
+const { mergeExports } = require("../helper/utils");
 
 const configs = {
   methodology: 'Count all assets are deposited in all vaults curated by MaxShot.',
@@ -29,13 +29,6 @@ const VAULTS = {
   USDT: '0xd507d9D4F356B84e3EEEc33eeDef85BB57f59CfB',
 }
 
-// Where to read currentEpoch/latestEpoch (ledger contracts)
-// NOTE: Ledgers live on base, but are used for all chains.
-const LEDGERS = {
-  USDC: '0xA7654FcbDe81999fB215Ec4b007b3746257D513c',
-  USDT: '0x3663f023FE98DA4dF2f6A4925A050d7edDF49722',
-}
-
 // ABI for epoch functions
 const epochAbi = {
   currentEpoch: "function currentEpoch() external view returns (tuple(tuple(uint256 epochId, uint256 snapshotTimestamp, uint256 startTimestamp, uint256 endTimestamp, uint256 totalAssets, uint256 totalShares, uint256 totalFeeShares, uint8 status, tuple(uint256 chainId, uint256 blockNumber, int256 totalShares, int256 totalAssets)[] vaultData) epoch, uint256 feeChainId, bytes[] signatures))",
@@ -48,126 +41,57 @@ const epochAbi = {
  * @param {string} rateSourceAddress - The contract to read currentEpoch/latestEpoch from
  * @returns {Promise<bigint>} The exchange rate (multiplied by 1e18)
  */
-async function getExchangeRate(api, rateSourceAddress) {
-  try {
-    const ONE = 10n ** 18n;
-    const calcRateFromEpochView = (epochView) => {
-      const totalShares = BigInt(epochView?.epoch?.totalShares || 0);
-      if (totalShares === 0n) return ONE;
-      const totalAssets = BigInt(epochView?.epoch?.totalAssets || 0);
-      return (totalAssets * ONE) / totalShares;
-    };
+async function getExchangeRate(baseApi, rateSourceAddress) {
+  const ONE = 10n ** 18n;
+  const calcRateFromEpochView = (epochView) => {
+    const totalShares = BigInt(epochView?.epoch?.totalShares || 0);
+    if (totalShares === 0n) return ONE;
+    const totalAssets = BigInt(epochView?.epoch?.totalAssets || 0);
+    return (totalAssets * ONE) / totalShares;
+  };
 
-    // Ledger contracts are on base network, so we need to use sdk.api2.abi.call with chain: 'base'
-    const currentEpochView = await sdk.api2.abi.call({ 
-      chain: 'base',
-      target: rateSourceAddress, 
-      abi: epochAbi.currentEpoch 
-    });
-    if ((currentEpochView?.signatures?.length ?? 0) === 0) {
-      const latestEpochView = await sdk.api2.abi.call({ 
-        chain: 'base',
-        target: rateSourceAddress, 
-        abi: epochAbi.latestEpoch 
-      });
-      return calcRateFromEpochView(latestEpochView);
-    }
-
-    return calcRateFromEpochView(currentEpochView);
-  } catch (error) {
-    // If error occurs, default to 1e18
-    console.error(`Error getting exchange rate for ${rateSourceAddress}:`, error);
-    return BigInt(1e18);
+  // Ledger contracts are on base network, so we need to use sdk.api2.abi.call with chain: 'base'
+  const currentEpochView = await baseApi.call({ target: rateSourceAddress, abi: epochAbi.currentEpoch });
+  if ((currentEpochView?.signatures?.length ?? 0) === 0) {
+    const latestEpochView = await baseApi.call({ target: rateSourceAddress, abi: epochAbi.latestEpoch });
+    return calcRateFromEpochView(latestEpochView);
   }
+
+  return calcRateFromEpochView(currentEpochView);
 }
 
-/**
- * Get TVL for a specific vault
- * @param {Object} api - The API object
- * @param {string} vaultAddress - The vault address
- * @param {string} rateSourceAddress - The contract to read currentEpoch/latestEpoch from
- * @returns {Promise<bigint>} The TVL in underlying token units
- */
-async function getVaultTvl(api, vaultAddress, rateSourceAddress) {
-  const totalSupply = await api.call({
-    target: vaultAddress,
-    abi: 'erc20:totalSupply',
-  });
-
-  const rate = await getExchangeRate(api, rateSourceAddress);
+async function getVaultTvl(rateSourceAddress, totalSupply, baseApi) {
+  const rate = await getExchangeRate(baseApi, rateSourceAddress);
   const tvl = (BigInt(totalSupply) * rate) / BigInt(1e18);
   return tvl;
 }
 
 const curatorExport = getCuratorExport(configs);
 
-/**
- * Create TVL function for a chain with vaults
- * @param {Array<string>} vaultTypes - Array of vault types (e.g., ['USDC', 'USDT'])
- * @returns {Function} TVL function
- */
-function createTvlFunction(vaultTypes) {
-  return async (api) => {
-    const curatorTvl = curatorExport[api.chain]?.tvl
-      ? await curatorExport[api.chain].tvl(api)
-      : {};
-
-    const result = { ...curatorTvl };
-
-    for (const vaultType of vaultTypes) {
-      const vaultAddress = VAULTS[vaultType];
-      const rateSourceAddress = LEDGERS[vaultType];
-      let tokenAddress;
-
-      // Get token address based on chain and vault type
-      if (vaultType === 'USDC') {
-        if (api.chain === 'ethereum') {
-          tokenAddress = ADDRESSES.ethereum.USDC;
-        } else if (api.chain === 'arbitrum') {
-          tokenAddress = ADDRESSES.arbitrum.USDC_CIRCLE;
-        } else if (api.chain === 'optimism') {
-          tokenAddress = ADDRESSES.optimism.USDC_CIRCLE;
-        } else if (api.chain === 'base') {
-          tokenAddress = ADDRESSES.base.USDC;
-        }
-      } else if (vaultType === 'USDT') {
-        if (api.chain === 'ethereum') {
-          tokenAddress = ADDRESSES.ethereum.USDT;
-        } else if (api.chain === 'arbitrum') {
-          tokenAddress = ADDRESSES.arbitrum.USDT;
-        } else if (api.chain === 'plasma') {
-          tokenAddress = ADDRESSES.plasma.USDT0
-        }
-      }
-
-      if (tokenAddress) {
-        const tvl = await getVaultTvl(api, vaultAddress, rateSourceAddress);
-        sdk.util.sumSingleBalance(result, tokenAddress, tvl, api.chain);
-      }
-    }
-
-    return result;
-  };
+const vaultConfigs = {
+  ethereum: ['USDC', 'USDT'],
+  arbitrum: ['USDC', 'USDT'],
+  optimism: ['USDC'],
+  base: ['USDC'],
+  plasma: ['USDT'],
 }
 
-module.exports = {
-  ...curatorExport,
-  ethereum: {
-    ...curatorExport.ethereum,
-    tvl: createTvlFunction(['USDC', 'USDT']),
-  },
-  arbitrum: {
-    ...curatorExport.arbitrum,
-    tvl: createTvlFunction(['USDC', 'USDT']),
-  },
-  optimism: {
-    tvl: createTvlFunction(['USDC']),
-  },
-  base: {
-    ...curatorExport.base,
-    tvl: createTvlFunction(['USDC']),
-  },
-  plasma: {
-    tvl: createTvlFunction(['USDT']),
-  },
-};
+const customVaultTvlExports = {}
+
+Object.keys(vaultConfigs).forEach(chain => {
+  const vaultTypes = vaultConfigs[chain]
+  const vaults = vaultTypes.map(vaultType => VAULTS[vaultType])
+  customVaultTvlExports[chain] = {
+    tvl: async (api) => {
+      const baseApi = api.chain === 'base' ? api : new sdk.ChainApi({ chain: 'base', timestamp: api.timestamp })
+      const tokens = await api.multiCall({ calls: vaults, abi: 'address:asset' })
+      const ledgers = await api.multiCall({ calls: vaults, abi: 'address:ledger' })
+      const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaults })
+      const tvls = await Promise.all(vaults.map((_, i) => getVaultTvl(ledgers[i], supplies[i], baseApi,)))
+      api.add(tokens, tvls)
+      return api.getBalances()
+    }
+  }
+})
+
+module.exports = mergeExports([curatorExport, customVaultTvlExports])
