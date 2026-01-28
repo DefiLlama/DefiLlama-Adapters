@@ -86,6 +86,7 @@ const fixBalancesTokens = {
     '0x8D82c4E3c936C7B5724A382a9c5a4E6Eb7aB6d5D': { coingeckoId: 'citrea-usd', decimals: 6 },
     '0x9f3096Bac87e7F03DC09b0B416eB0DF837304dc4': { coingeckoId: 'tether', decimals: 6 },
     '0xDF240DC08B0FdaD1d93b74d5048871232f6BEA3d': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+    '0xAC8c1AEB584765DB16ac3e08D4736CFcE198589B': { coingeckoId: 'generic-usd', decimals: 18 },
   },
   btnx: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'botanix-pegged-bitcoin', decimals: 18 },
