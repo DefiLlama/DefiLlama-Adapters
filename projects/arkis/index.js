@@ -45,7 +45,9 @@ const tokens_to_track = [
 
 const blacklist = [
   '0x8fccfd6404da2026eee7e4f529b45f3caaf0594e',
-  '0x4956b52ae2ff65d74ca2d61207523288e4528f96'
+  '0x4956b52ae2ff65d74ca2d61207523288e4528f96',
+  '0x7056ec39063c8eb094f5006c7e81f1fe2e7552ae',
+  '0x009848a093cb7991c1214e4655a6e8fc2f2da6cd',
 ]
 
 const fetchFactoryLogs = async (api, type, keyOverride) => {
@@ -98,10 +100,10 @@ const tvl = async (api) => {
 
   const agreements = [...agreementsV1, ...agreementsV2];
 
-  const tokens = (await getTokens(api, agreements)).filter(t => !blacklist.includes(t.toLowerCase()));
+  const tokens = await getTokens(api, agreements)
   const owners = [...agreements, ...marginAccounts];
 
-  return sumTokens2({ api, owners, tokens, resolveLP: true, unwrapAll: true });
+  return sumTokens2({ api, owners, tokens, permitFailure: true, blacklistedTokens: blacklist });
 }
 
 const borrowed = async (api) => {
@@ -125,7 +127,7 @@ const borrowed = async (api) => {
 
 async function tvlHyperliquid(api) {
   const tokens = [ADDRESSES.null, ...tokens_to_track];
-  return sumTokens2({ api, owners: arkis_wrapped_hype_vaults, tokens: tokens });
+  return sumTokens2({ api, owners: arkis_wrapped_hype_vaults, tokens });
 }
 
 module.exports = {
