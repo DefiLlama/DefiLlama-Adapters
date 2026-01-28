@@ -129,6 +129,6 @@ supportedChains.forEach(chain => {
   }
 });
 
-// module.exports.sui = {
-//   tvl: suiVaultsTvl,
-// }
+module.exports.sui = {
+  tvl: suiVaultsTvl,
+}
