@@ -14,7 +14,8 @@ const ADDRESSES = require('../coreAssets.json')
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://rest-osmosis.ecostake.com",
-  cosmos: "https://cosmoshub-lcd.stakely.io",
+  // cosmos: "https://cosmoshub-lcd.stakely.io",
+  cosmos: "https://cosmos-api.polkachu.com",
   kujira: "https://kujira-rest.publicnode.com",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
@@ -54,6 +55,7 @@ const endPoints = {
   pryzm: "https://api.pryzm.zone",
   // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
   agoric: 'https://agoric-api.polkachu.com/',
+  allora: 'https://allora-api.polkachu.com', // TODO: Verify actual mainnet endpoint
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
@@ -185,7 +187,7 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
     chain
   )}/${subpath}/bank/v1beta1/balances/${owner}?pagination.limit=1000`;
   if (block) {
-    endpoint += `?height=${block - (block % 100)}`;
+    endpoint += `&height=${block - (block % 100)}`;
   }
   const {
     balances: data,

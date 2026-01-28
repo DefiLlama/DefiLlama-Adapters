@@ -1,15 +1,11 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getUniTVL } = require("../helper/unknownTokens");
 
 module.exports = {
+  misrepresentedTokens: true,
   eteria: {
-    tvl: (api) =>
-      sumTokens2({
-        api,
-        owners: [
-          "0x79d0FF4D5b05f05D97227F3601C0Ee85937B0513"
-        ],
-        fetchCoValentTokens: true,
-        permitFailure: true
-      }),
+    tvl: getUniTVL({
+      factory: '0x3aE1EDcf59479ee99D2A7478E77AF1A442D85714',
+      useDefaultCoreAssets: true,
+    }),
   }
-};
+}

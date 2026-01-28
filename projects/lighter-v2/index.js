@@ -8,7 +8,7 @@ const config = {
   },
   ethereum: {
     owners: ["0x3b4d794a66304f130a4db8f2551b0070dfcf5ca7"],
-    tokens: [ADDRESSES.ethereum.USDC],
+    tokens: [ADDRESSES.ethereum.USDC, ADDRESSES.null],
   },
 };
 
@@ -19,4 +19,4 @@ Object.keys(config).forEach((chain) => {
 });
 
 module.exports.methodology =
-  "Counts USDC tokens held in the Lighter system wallet on Ethereum and Arbitrum.";
+  "Counts tokens held in the Lighter system wallet on Ethereum and Arbitrum.";

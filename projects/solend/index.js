@@ -28,7 +28,7 @@ async function tvl() {
 // TODO: Find a dynamic way to obtain this mapping
 const TOKEN_MINT_TO_TOKEN2022_MINT = {
   [ADDRESSES.solana.SOL]: ADDRESSES.solana.SOL,
-  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': 'GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn',
+  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': ADDRESSES.eclipse.ETH_2,
   '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': ADDRESSES.eclipse.WIF,
   '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': ADDRESSES.eclipse.SOL,
   'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': ADDRESSES.eclipse.USDC,

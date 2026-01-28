@@ -22,6 +22,9 @@ module.exports = {
   timetravel: false,
   solana: { tvl, },
   eclipse: { tvl, },
+  hallmarks: [
+    ['2025-12-18','Proposal to shut down has passed'],
+  ],
 }
 
 const v2Idl = {

@@ -60,8 +60,62 @@ async function tvlLNT(api) {
   }
 }
 
+const lvts = {
+  bsc: [
+    {
+      // Filecoin LvtVault
+      asset: '0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153',
+      vt: '0x24ef95c39dfaa8f9a5adf58edf76c5b22c34ef46',
+      vtHook: '0xed202a7050ee856ba9f0d3cd5eabcab6b8a23a88',
+    }
+  ],
+  base: [
+    {
+      // Reppo LvtVault
+      asset: '0xFf8104251E7761163faC3211eF5583FB3F8583d6',
+      vt: '0x24ef95c39dfaa8f9a5adf58edf76c5b22c34ef46',
+      vtHook: '0x2b72494fd4f092569b87e1a10f92268384f07a88',
+    }
+  ],
+  sei: [
+    {
+      // Sei LvtVault
+      asset: '0xE30feDd158A2e3b13e9badaeABaFc5516e95e8C7',
+      vt: '0x92838ccdb9dceabc8e77415d73ecb06f8050cc5f',
+      vtHook: '0x3362cb23043cb5e7c52711c5763c69fd513a3a88',
+    }
+  ],
+  sty: [
+    {
+      // Verio LvtVault
+      asset: '0x1514000000000000000000000000000000000000',
+      vt: '0x92838ccdb9dceabc8e77415d73ecb06f8050cc5f',
+      vtHook: '0xee5aeecd6c9409424f88163aff415efcb9027a88',
+    }
+  ]
+}
+
+async function tvlLVT(api) {
+  const lvtConfigs = lvts[api.chain] || []
+  for (const lvt of lvtConfigs) {
+    const decimals = await api.call({ abi: 'erc20:decimals', target: lvt.vt })
+    const oneVT = BigNumber(10).pow(decimals).toString()
+
+    const [totalSupply, unitPrice] = await api.batchCall([
+      { abi: 'erc20:totalSupply', target: lvt.vt },
+      { abi: 'function getAmountOutVTforT(uint256) view returns (uint256)', target: lvt.vtHook, params: [oneVT] }
+    ])
+
+    api.add(lvt.asset, BigNumber(totalSupply).times(unitPrice).div(oneVT).toFixed(0))
+  }
+}
+
 module.exports = {
   doublecounted: true,
   berachain: { tvl },
-  arbitrum: { tvl: tvlLNT }
+  arbitrum: { tvl: tvlLNT },
+  bsc: { tvl: tvlLVT },
+  base: { tvl: tvlLVT },
+  sei: { tvl: tvlLVT },
+  sty: { tvl: tvlLVT },
 }
