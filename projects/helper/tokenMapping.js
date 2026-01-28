@@ -97,6 +97,9 @@ const fixBalancesTokens = {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
     '0x28B7E77f82B25B95953825F1E3eA0E36c1c29861': { coingeckoId: 'megaeth', decimals: 18 },
   },
+  hyperliquid: {
+    '0xbe068Bb3c7ef5B56360655638f75bf5A6C5f8C10': { coingeckoId: 'zcash', decimals: 18 },
+  },
   injective: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'injective-protocol', decimals: 18 },
     '0x0000000088827d2d103ee2d9A6b781773AE03FfB': { coingeckoId: 'injective-protocol', decimals: 18 },
