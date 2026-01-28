@@ -18,7 +18,8 @@ const chainIdToName = {
   143: 'monad',
   9745: 'plasma',
   14: 'flare',
-  31612: "mezo"
+  31612: "mezo",
+  57073: "ink",
 };
 
 const suiVaultsToInclude = [
@@ -43,7 +44,7 @@ async function getVaultsConfig() {
   
   for (const vault of vaults) {
     // Filter out vaults where is_visible is false
-    if (vault.is_visible === false) continue;
+    if (vault.status !== "active") continue;
     
     const chainName = chainIdToName[vault.chain];
     if (!chainName) continue; // Skip unsupported chains
@@ -128,6 +129,6 @@ supportedChains.forEach(chain => {
   }
 });
 
-module.exports.sui = {
-  tvl: suiVaultsTvl,
-}
+// module.exports.sui = {
+//   tvl: suiVaultsTvl,
+// }
