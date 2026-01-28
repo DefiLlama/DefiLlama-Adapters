@@ -9,16 +9,17 @@ async function tvl(api) {
   const tokensAndOwners = [XCHFBridge, VCHFBridge];
 
   // @dev: query of positions from minting hubs via frankencoin graph (ponder)
-  const { mintingHubV1PositionV1s: positionV1s, mintingHubV2PositionV2s: positionV2s } = await cachedGraphQuery('frankencoinV1', 'https://ponder.frankencoin.com', `{ 
-    mintingHubV1PositionV1s { items { position } }  
-  mintingHubV2PositionV2s { items { position } }  
+  const { mintingHubV1PositionV1s: positionV1s, mintingHubV2PositionV2s: positionV2s } = await cachedGraphQuery('frankencoinPos', 'https://ponder.frankencoin.com', `{ 
+    mintingHubV1PositionV1s(where: {collateralBalance_gt: "0", closed: false, denied: false}, limit: 1000) { items { position collateral } }
+    mintingHubV2PositionV2s(where: {collateralBalance_gt: "0", closed: false, denied: false}, limit: 1000) { items { position collateral } }
   }`);
 
-  const vaults = positionV1s?.items.concat(positionV2s?.items).map(i => i.position);
-  const tokens = await api.multiCall({ abi: 'address:collateral', calls: vaults })
-  vaults.forEach((v, i) => {
-    tokensAndOwners.push([tokens[i], v]);
+  const vaults = positionV1s?.items.concat(positionV2s?.items).map(i => [i.collateral, i.position]);
+  vaults.forEach((i) => {
+    tokensAndOwners.push(i);
   });
+
+  return api.sumTokens({ tokensAndOwners });
 
   /*   const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens })
     const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
@@ -40,4 +41,4 @@ module.exports = {
     tvl: () => { throw new Error('skip for now, unable to pull BOSS token price') },
   },
   start: '2023-10-28',
-};
+}
