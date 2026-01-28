@@ -32,7 +32,7 @@ async function tvl() {
         const extraDecimalScale = await call(vault.contract_id, "get_extra_decimal_scale", {})
         const exchangeRate = await call(vault.contract_id, sharePriceMethod, { asset: vault.asset })
 
-        const supplied = BigNumber(totalShares) * BigNumber(exchangeRate) / BigNumber(exchangeRateScale) / BigNumber(extraDecimalScale);
+        const supplied = BigNumber(totalShares).times(BigNumber(exchangeRate)).div(BigNumber(exchangeRateScale)).div(BigNumber(extraDecimalScale));
         sumSingleBalance(balances, vault.asset.FungibleToken.contract_id, supplied)
     }))
 
