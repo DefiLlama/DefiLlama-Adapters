@@ -19,8 +19,6 @@ async function tvl(api) {
     tokensAndOwners.push(i);
   });
 
-  return api.sumTokens({ tokensAndOwners });
-
   /*   const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens })
     const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
     const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map((t, i) => ({ target: t, params: vaults[i] })) })
