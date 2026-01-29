@@ -18,7 +18,7 @@ async function tvlAvalanche(api) {
 
 module.exports = {
   timetravel: false,
-  avalanche: {
+  avax: {
     tvl: tvlAvalanche,
   },
 };
