@@ -1,0 +1,638 @@
+{
+    "version": "1.7.0",
+    "name": "cp_amm",
+    "constants": [],
+    "instructions": [],
+    "accounts": [
+        {
+            "name": "BaseFeeInfo",
+            "serialization": "bytemuck",
+            "repr": {
+                "kind": "c"
+            },
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "data",
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "BaseFeeStruct",
+            "serialization": "bytemuck",
+            "repr": {
+                "kind": "c"
+            },
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "base_fee_info",
+                        "type": {
+                            "defined": {
+                                "name": "BaseFeeInfo"
+                            }
+                        }
+                    },
+                    {
+                        "name": "padding_1",
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "PoolFeesStruct",
+            "docs": [
+                "Information regarding fee charges",
+                "trading_fee = amount * trade_fee_numerator / denominator",
+                "protocol_fee = trading_fee * protocol_fee_percentage / 100",
+                "referral_fee = protocol_fee * referral_percentage / 100",
+                "partner_fee = (protocol_fee - referral_fee) * partner_fee_percentage / denominator"
+            ],
+            "serialization": "bytemuck",
+            "repr": {
+                "kind": "c"
+            },
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "base_fee",
+                        "docs": [
+                            "Trade fees are extra token amounts that are held inside the token",
+                            "accounts during a trade, making the value of liquidity tokens rise.",
+                            "Trade fee numerator"
+                        ],
+                        "type": {
+                            "defined": {
+                                "name": "BaseFeeStruct"
+                            }
+                        }
+                    },
+                    {
+                        "name": "protocol_fee_percent",
+                        "docs": [
+                            "Protocol trading fees are extra token amounts that are held inside the token",
+                            "accounts during a trade, with the equivalent in pool tokens minted to",
+                            "the protocol of the program.",
+                            "Protocol trade fee numerator"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "partner_fee_percent",
+                        "docs": [
+                            "partner fee"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "referral_fee_percent",
+                        "docs": [
+                            "referral fee"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "padding_0",
+                        "docs": [
+                            "padding"
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                5
+                            ]
+                        }
+                    },
+                    {
+                        "name": "dynamic_fee",
+                        "docs": [
+                            "dynamic fee"
+                        ],
+                        "type": {
+                            "defined": {
+                                "name": "DynamicFeeStruct"
+                            }
+                        }
+                    },
+                    {
+                        "name": "init_sqrt_price",
+                        "type": "u128"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Pool",
+            "serialization": "bytemuck",
+            "repr": {
+                "kind": "c"
+            },
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "pool_fees",
+                        "docs": [
+                            "Pool fee"
+                        ],
+                        "type": {
+                            "defined": {
+                                "name": "PoolFeesStruct"
+                            }
+                        }
+                    },
+                    {
+                        "name": "token_a_mint",
+                        "docs": [
+                            "token a mint"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "token_b_mint",
+                        "docs": [
+                            "token b mint"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "token_a_vault",
+                        "docs": [
+                            "token a vault"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "token_b_vault",
+                        "docs": [
+                            "token b vault"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "whitelisted_vault",
+                        "docs": [
+                            "Whitelisted vault to be able to buy pool before activation_point"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "partner",
+                        "docs": [
+                            "partner"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "liquidity",
+                        "docs": [
+                            "liquidity share"
+                        ],
+                        "type": "u128"
+                    },
+                    {
+                        "name": "_padding",
+                        "docs": [
+                            "padding, previous reserve amount, be careful to use that field"
+                        ],
+                        "type": "u128"
+                    },
+                    {
+                        "name": "protocol_a_fee",
+                        "docs": [
+                            "protocol a fee"
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "protocol_b_fee",
+                        "docs": [
+                            "protocol b fee"
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "partner_a_fee",
+                        "docs": [
+                            "partner a fee"
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "partner_b_fee",
+                        "docs": [
+                            "partner b fee"
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "sqrt_min_price",
+                        "docs": [
+                            "min price"
+                        ],
+                        "type": "u128"
+                    },
+                    {
+                        "name": "sqrt_max_price",
+                        "docs": [
+                            "max price"
+                        ],
+                        "type": "u128"
+                    },
+                    {
+                        "name": "sqrt_price",
+                        "docs": [
+                            "current price"
+                        ],
+                        "type": "u128"
+                    },
+                    {
+                        "name": "activation_point",
+                        "docs": [
+                            "Activation point, can be slot or timestamp"
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "activation_type",
+                        "docs": [
+                            "Activation type, 0 means by slot, 1 means by timestamp"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "pool_status",
+                        "docs": [
+                            "pool status, 0: enable, 1 disable"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "token_a_flag",
+                        "docs": [
+                            "token a flag"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "token_b_flag",
+                        "docs": [
+                            "token b flag"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "collect_fee_mode",
+                        "docs": [
+                            "0 is collect fee in both token, 1 only collect fee only in token b"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "pool_type",
+                        "docs": [
+                            "pool type"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "version",
+                        "docs": [
+                            "pool version, 0: max_fee is still capped at 50%, 1: max_fee is capped at 99%"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "_padding_0",
+                        "docs": [
+                            "padding"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "fee_a_per_liquidity",
+                        "docs": [
+                            "cumulative"
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "fee_b_per_liquidity",
+                        "docs": [
+                            "cumulative"
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "permanent_lock_liquidity",
+                        "type": "u128"
+                    },
+                    {
+                        "name": "metrics",
+                        "docs": [
+                            "metrics"
+                        ],
+                        "type": {
+                            "defined": {
+                                "name": "PoolMetrics"
+                            }
+                        }
+                    },
+                    {
+                        "name": "creator",
+                        "docs": [
+                            "pool creator"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "_padding_1",
+                        "docs": [
+                            "Padding for further use"
+                        ],
+                        "type": {
+                            "array": [
+                                "u64",
+                                6
+                            ]
+                        }
+                    },
+                    {
+                        "name": "reward_infos",
+                        "docs": [
+                            "Farming reward information"
+                        ],
+                        "type": {
+                            "array": [
+                                {
+                                    "defined": {
+                                        "name": "RewardInfo"
+                                    }
+                                },
+                                2
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "PoolMetrics",
+            "serialization": "bytemuck",
+            "repr": {
+                "kind": "c"
+            },
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "total_lp_a_fee",
+                        "type": "u128"
+                    },
+                    {
+                        "name": "total_lp_b_fee",
+                        "type": "u128"
+                    },
+                    {
+                        "name": "total_protocol_a_fee",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "total_protocol_b_fee",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "total_partner_a_fee",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "total_partner_b_fee",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "total_position",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "padding",
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "RewardInfo",
+            "docs": [
+                "Stores the state relevant for tracking liquidity mining rewards"
+            ],
+            "serialization": "bytemuck",
+            "repr": {
+                "kind": "c"
+            },
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "initialized",
+                        "docs": [
+                            "Indicates if the reward has been initialized"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "reward_token_flag",
+                        "docs": [
+                            "reward token flag"
+                        ],
+                        "type": "u8"
+                    },
+                    {
+                        "name": "_padding_0",
+                        "docs": [
+                            "padding"
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                6
+                            ]
+                        }
+                    },
+                    {
+                        "name": "_padding_1",
+                        "docs": [
+                            "Padding to ensure `reward_rate: u128` is 16-byte aligned"
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                8
+                            ]
+                        }
+                    },
+                    {
+                        "name": "mint",
+                        "docs": [
+                            "Reward token mint."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "vault",
+                        "docs": [
+                            "Reward vault token account."
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "funder",
+                        "docs": [
+                            "Authority account that allows to fund rewards"
+                        ],
+                        "type": "pubkey"
+                    },
+                    {
+                        "name": "reward_duration",
+                        "docs": [
+                            "reward duration"
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "reward_duration_end",
+                        "docs": [
+                            "reward duration end"
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "reward_rate",
+                        "docs": [
+                            "reward rate"
+                        ],
+                        "type": "u128"
+                    },
+                    {
+                        "name": "reward_per_token_stored",
+                        "docs": [
+                            "Reward per token stored"
+                        ],
+                        "type": {
+                            "array": [
+                                "u8",
+                                32
+                            ]
+                        }
+                    },
+                    {
+                        "name": "last_update_time",
+                        "docs": [
+                            "The last time reward states were updated."
+                        ],
+                        "type": "u64"
+                    },
+                    {
+                        "name": "cumulative_seconds_with_empty_liquidity_reward",
+                        "docs": [
+                            "Accumulated seconds when the farm distributed rewards but the bin was empty.",
+                            "These rewards will be carried over to the next reward time window."
+                        ],
+                        "type": "u64"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "DynamicFeeStruct",
+            "serialization": "bytemuck",
+            "repr": {
+                "kind": "c"
+            },
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "initialized",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "padding",
+                        "type": {
+                            "array": [
+                                "u8",
+                                7
+                            ]
+                        }
+                    },
+                    {
+                        "name": "max_volatility_accumulator",
+                        "type": "u32"
+                    },
+                    {
+                        "name": "variable_fee_control",
+                        "type": "u32"
+                    },
+                    {
+                        "name": "bin_step",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "filter_period",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "decay_period",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "reduction_factor",
+                        "type": "u16"
+                    },
+                    {
+                        "name": "last_update_timestamp",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "bin_step_u128",
+                        "type": "u128"
+                    },
+                    {
+                        "name": "sqrt_price_reference",
+                        "type": "u128"
+                    },
+                    {
+                        "name": "volatility_accumulator",
+                        "type": "u128"
+                    },
+                    {
+                        "name": "volatility_reference",
+                        "type": "u128"
+                    }
+                ]
+            }
+        }
+    ],
+    "events": [],
+    "errors": []
+}
