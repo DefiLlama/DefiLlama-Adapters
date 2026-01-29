@@ -127,24 +127,20 @@ async function tvl(api) {
     // skip if Revert vault fails
   }
 
-  // Hyperliquid account value for all wallets
-  try {
-    for (const user of WALLETS) {
+  // Hyperliquid account value for all wallets (try/catch per wallet so one bad value doesn't skip others)
+  for (const user of WALLETS) {
+    try {
       const hyperliquidData = await getHyperliquidBalance(user);
-      if (hyperliquidData?.marginSummary?.accountValue) {
-        const accountValueStr = String(hyperliquidData.marginSummary.accountValue);
-        const [whole, frac = ""] = accountValueStr.split(".");
-        if (/^\d+$/.test(whole)) {
-          const fracPadded = (frac + "000000").slice(0, 6);
-          const usdtAmount = BigInt(whole) * 1_000_000n + BigInt(fracPadded);
-          if (usdtAmount > 0n) {
-            api.add(USDT, usdtAmount);
-          }
-        }
-      }
+      if (!hyperliquidData?.marginSummary?.accountValue) continue;
+      const accountValueStr = String(hyperliquidData.marginSummary.accountValue).trim();
+      const [whole, frac = ""] = accountValueStr.split(".");
+      if (!/^\d+$/.test(whole) || !/^\d*$/.test(frac)) continue;
+      const fracPadded = (frac + "000000").slice(0, 6);
+      const usdtAmount = BigInt(whole) * 1_000_000n + BigInt(fracPadded || "0");
+      if (usdtAmount > 0n) api.add(USDT, usdtAmount);
+    } catch (error) {
+      // skip this wallet on error, continue with others
     }
-  } catch (error) {
-    // Continue without Hyperliquid balance if there's an error
   }
 }
 
