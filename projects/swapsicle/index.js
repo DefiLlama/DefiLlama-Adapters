@@ -2,8 +2,12 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPriceLP } = require("../helper/staking")
 const sdk = require("@defillama/sdk")
-const iceBoxABI = require("./iceBoxABI.json");
-const iceVaultABI = require("./icevaultABI.json");
+const iceBoxABI = {
+    "totalPrimaryStaked": "uint256:totalPrimaryStaked"
+  };
+const iceVaultABI = {
+    "totalStaked": "uint256:totalStaked"
+  };
 
 const WAVAX = ADDRESSES.avax.WAVAX
 //const WTLOS = ADDRESSES.telos.WTLOS

@@ -1,7 +1,17 @@
 const sdk = require("@defillama/sdk");
-const ABI = require("./abis.json")
-
-const vesolidAddress = "0x77730ed992D286c53F3A0838232c3957dAeaaF73";
+const ABI = {
+    "lens": {
+      "poolsInfo": "function poolsInfo() view returns (tuple(address id, string symbol, bool stable, address token0Address, address token1Address, address gaugeAddress, address bribeAddress, address[] bribeTokensAddresses, address fees, uint256 totalSupply, address feeDistAddress)[])",
+      "poolsReservesInfo": "function poolsReservesInfo(address[] pools) view returns (tuple(address id, address token0Address, address token1Address, uint256 token0Reserve, uint256 token1Reserve, uint8 token0Decimals, uint8 token1Decimals)[])",
+      "veTokensIdsOf": "function veTokensIdsOf(address owner) view returns (uint256[] tokens)"
+    },
+    "gauge": {
+      "balanceOf": "function balanceOf(address owner) view returns (uint256 balance)"
+    },
+    "vesolid": {
+      "locked": "function locked(uint256) view returns (int128 amount, uint256 end)"
+    }
+  };const vesolidAddress = "0x77730ed992D286c53F3A0838232c3957dAeaaF73";
 const solidAddress = "0x777172D858dC1599914a1C4c6c9fC48c99a60990";
 const solidlyLensAddress = "0x7778D2091E3c97a259367c2cfc621cF839Bbbe2c";
 const lpDepositor = "0x822ef744c568466d40ba28b0f9e4a4961837a46a";

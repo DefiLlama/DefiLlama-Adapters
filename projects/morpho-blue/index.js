@@ -180,7 +180,6 @@ const getMarket = async (api) => {
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
-  console.log(markets)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
