@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens } = require("../helper/chain/bitcoin");
 
 module.exports = {
     ethereum: {
@@ -20,4 +21,9 @@ module.exports = {
             ]
         })
     },
+    bitcoin: {
+        tvl: () => sumTokens({
+            owners: ['bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh']
+        })
+    }
 }
