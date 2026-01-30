@@ -1,60 +1,86 @@
-const { sumTokens2, getConnection } = require('../helper/solana')
-const { PublicKey } = require('@solana/web3.js');
-const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
+const { sumTokens2 } = require('../helper/solana')
+const { getCache, setCache } = require('../helper/cache')
+const { get } = require('../helper/http')
+const { sleep } = require('../helper/utils')
 
-// DAMM v2 Program ID
-const DAMM_PROGRAM_ID = new PublicKey('cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG')
+const CACHE_NAME = 'meteora-damm-v2'
+const MIN_TVL = 10_000
 
-// Pool account discriminator (first 8 bytes of sha256("account:Pool"))
-const POOL_DISCRIMINATOR = Buffer.from([241, 154, 109, 4, 17, 177, 109, 188])
-const POOL_ACCOUNT_SIZE = 1112; // Size of Pool account in bytes
+async function fetchPoolsFromApi() {
+    const baseUrl = 'https://damm-v2.datapi.meteora.ag/pools/groups';
+    const allPoolsUrl = 'https://dammv2-api.meteora.ag/pools';
 
-async function tvl() {
-    const connection = getConnection()
+    const validPoolGroups = new Set();
 
-    // Pool layout:
-    // - discriminator: 8 bytes
-    // - pool_fees (PoolFeesStruct): 160 bytes
-    //   - base_fee (BaseFeeStruct): 40 bytes (32 + 8)
-    //   - protocol_fee_percent: 1 byte
-    //   - partner_fee_percent: 1 byte
-    //   - referral_fee_percent: 1 byte
-    //   - padding_0: 5 bytes
-    //   - dynamic_fee (DynamicFeeStruct): 96 bytes
-    //   - init_sqrt_price: 16 bytes
-    // - token_a_mint: 32 bytes
-    // - token_b_mint: 32 bytes
-    // - token_a_vault: 32 bytes (starts at offset 232)
-    // - token_b_vault: 32 bytes (starts at offset 264)
-    const VAULT_OFFSET = 232
-    const VAULT_LENGTH = 64  // tokenAVault + tokenBVault (32 + 32)
+    let page = 1;
+    const pageSize = 99;
+    // get pool groups with TVL > 10k
+    while (true) {
+        const response = await get(`${baseUrl}?page=${page}&page_size=${pageSize}&sort_by=tvl%3Adesc&filter_by=is_blacklisted%3A%3Dfalse&fee_tvl_ratio_tw=fee_tvl_ratio_24h&volume_tw=volume_24h`);
+        const pools = response.data || [];
+        if (pools.length === 0) break;
 
-    const accounts = await connection.getProgramAccounts(DAMM_PROGRAM_ID, {
-        filters: [
-            { dataSize: POOL_ACCOUNT_SIZE },
-            { memcmp: { offset: 0, bytes: bs58.encode(POOL_DISCRIMINATOR) } }
-        ],
-        dataSlice: { offset: VAULT_OFFSET, length: VAULT_LENGTH }
-    })
+        const lastPool = pools[pools.length - 1];
+        if (lastPool.total_tvl < MIN_TVL) break;
 
-    console.log(`Found ${accounts.length} DAMM v2 pools`)
+        for (const pool of pools) {
+            const tvl = pool.total_tvl || 0;
+            if (tvl < MIN_TVL) continue;
 
-    // Extract token vault addresses
-    const tokenAccounts = []
-    accounts.forEach(({ account }) => {
-        const data = account.data
-        const tokenAVault = new PublicKey(data.slice(0, 32))
-        const tokenBVault = new PublicKey(data.slice(32, 64))
-        tokenAccounts.push(tokenAVault.toString())
-        tokenAccounts.push(tokenBVault.toString())
-    })
+            validPoolGroups.add(pool.group_name);
+        }
 
-    return sumTokens2({ tokenAccounts })
+        await sleep(100);
+        page++;
+    }
+
+    // Fetch all pools sorted by TVL descending, stop when TVL drops below MIN_TVL
+    const tokenAccounts = [];
+    let offset = 0;
+
+    while (true) {
+        const response = await get(`${allPoolsUrl}?offset=${offset}&order_by=tvl&order=desc`);
+        const poolsArray = response.data || response || [];
+        if (poolsArray.length === 0) break;
+
+        let belowThreshold = false;
+        for (const pool of poolsArray) {
+            // If pool TVL is below threshold, we can break (sorted desc)
+            const poolTvl = pool.tvl || 0;
+            if (poolTvl < MIN_TVL) {
+                belowThreshold = true;
+                break;
+            }
+
+            if (validPoolGroups.has(pool.pool_name)) {
+                if (pool.token_a_vault) tokenAccounts.push(pool.token_a_vault);
+                if (pool.token_b_vault) tokenAccounts.push(pool.token_b_vault);
+            }
+        }
+        if (belowThreshold) break;
+
+        await sleep(100);
+        offset += 50;
+    }
+
+    return tokenAccounts;
+}
+
+async function tvl(api) {
+    // try to get cache first
+    let tokenAccounts = await getCache(CACHE_NAME, api.chain);
+
+    if (!tokenAccounts || !Array.isArray(tokenAccounts) || tokenAccounts.length === 0) {
+        tokenAccounts = await fetchPoolsFromApi();
+        await setCache(CACHE_NAME, api.chain, tokenAccounts);
+    }
+
+    return sumTokens2({ tokenAccounts });
 }
 
 module.exports = {
     timetravel: false,
     isHeavyProtocol: true,
     solana: { tvl },
-    methodology: 'TVL is calculated by summing token balances in Meteora DAMM v2 liquidity pools.'
+    methodology: 'TVL is calculated by summing token balances in Meteora DAMM v2 liquidity pools with TVL > $10k.'
 }
