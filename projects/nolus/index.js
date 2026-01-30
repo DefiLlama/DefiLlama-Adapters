@@ -107,7 +107,8 @@ async function getLeaseCodeId(leaserAddress) {
     chain: 'nolus',
     data: { config: {} }
   })
-  return leaserContract?.config?.lease_code || 0
+  const leaseCodeId = leaserContract?.config?.lease_code
+  return leaseCodeId ?? null
 }
 
 async function getLeaseContracts(leaseCodeId) {
@@ -216,6 +217,10 @@ async function fetchLeaseTvl(api, protocols) {
       data: { currencies: {} }
     })
     const leaseCodeId = await getLeaseCodeId(p.leaser)
+    if (!leaseCodeId) {
+      console.warn(`[leaser] missing lease_code for ${p.name}`)
+      continue
+    }
     const leaseContracts = await getLeaseContracts(leaseCodeId)
     const leases = await getLeasesThrottled(leaseContracts)
     sumAssets(api, leases, oracleData)
