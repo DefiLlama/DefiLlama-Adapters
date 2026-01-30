@@ -12,7 +12,6 @@ const GetSmartVaultTotalDepositedUnderlyingABI = 'uint256:getTotalDepositedUnder
 const AssetConfigSettingEventV2ABI = "event AssetConfigSetting(address asset, tuple(uint256 feeIn, uint256 feeOut, uint256 debtTokenMintCap, uint256 dailyDebtTokenMintCap, uint256 debtTokenMinted, uint256 swapWaitingPeriod, uint256 maxPrice, uint256 minPrice, bool isUsingOracle) config)";
 const GetDebtTokenMintedABI = 'function debtTokenMinted(address asset) view returns (uint256)';
 const ConvertDebtTokenToAssetAmountABI = 'function convertDebtTokenToAssetAmount(address asset, uint256 amount) view returns (uint256)';
-const GetDecimalsABI = 'function decimals() view returns (uint8)';
 
 function createExports({
   troveList,
