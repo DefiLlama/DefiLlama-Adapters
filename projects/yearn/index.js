@@ -79,7 +79,7 @@ module.exports = {
   doublecounted: true,
   timetravel: false,
   hallmarks: [
-    [1594944000, "YFI token Launch"],
+    ['2020-07-17', "YFI token Launch"],
   ]
 }
 
