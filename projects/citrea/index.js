@@ -23,7 +23,7 @@ module.exports = {
     },
     bitcoin: {
         tvl: () => sumTokens({
-            owners: ['bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh']
+            owners: ['bc1pl7grnght2uhp75wm03djde5a56syp06ssdjf7ucm4wkq0tetpqas5e20e9']
         })
     }
 }
