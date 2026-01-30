@@ -172,7 +172,10 @@ async function getProtocolLppTvl(protocol) {
 
   // Get currency info for decimals
   const currencyInfo = await getCurrencyInfo(protocol.oracle, ticker)
-  const decimals = currencyInfo?.decimal_digits || 6
+  if (!currencyInfo || currencyInfo.decimal_digits == null) {
+    throw new Error(`[oracle] missing currency info for ${ticker} (${protocol.name})`)
+  }
+  const decimals = currencyInfo.decimal_digits
 
   // Get LPP balance (available assets in the pool)
   const lppBalance = await queryContract({
