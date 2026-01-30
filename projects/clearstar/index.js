@@ -47,6 +47,11 @@ const configs = {
         '0x30988479C2E6a03E7fB65138b94762D41a733458'
       ],
     },
+    hyperliquid: {
+      eulerVaultOwners: [
+        '0x65A067b5955F11F6202F14C3b9Cd64830C4170fB' // HypurrFi / Euler HyperEVM vaults
+      ],
+    },
   }
 }
 
