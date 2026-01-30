@@ -21,13 +21,13 @@ const computePoolValue = (index, { totalInterests, diffLiquidations, totalWithdr
 }
 
 const getData = async (api) => {
-  const [lendData, borrowData] = await Promise.all([
+  const [lendData, earnData] = await Promise.all([
     getConfig('teller/lend-' + api.chain, `${LEND_API}${api.chainId}`),
     getConfig('teller/earn', EARN_API)
   ])
 
   const lendPools = Object.values(lendData).flatMap(p => p.map(x => x.id))
-  const earnPools = Object.values(borrowData[api.chainId] || {}).flatMap(p => p.map(x => x.pool_address))
+  const earnPools = Object.values(earnData[api.chainId] || {}).flatMap(p => p.map(x => x.pool_address))
 
   const pools = [...new Set([...lendPools, ...earnPools])]
 
