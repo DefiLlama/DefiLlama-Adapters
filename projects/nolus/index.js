@@ -1,3 +1,5 @@
+const axios = require('axios')
+axios.defaults.headers.common['User-Agent'] = 'DefiLlama-Nolus-Adapter/1.0 (https://defillama.com)'
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
 const { sleep } = require('../helper/utils')
 
@@ -19,7 +21,7 @@ const COINGECKO_IDS = {
   'OSMO': 'osmosis',
 }
 
-// Protocols to skip for lease TVL queries (e.g., malfunctioning leases)
+// Protocols to skip for lease TVL queries (e.g., broken smart query)
 // LPP TVL is still counted for these protocols
 const SKIP_LEASE_QUERIES = ['OSMOSIS-OSMOSIS-USDC_AXELAR']
 
