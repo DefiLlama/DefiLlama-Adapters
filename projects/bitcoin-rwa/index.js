@@ -9,16 +9,8 @@ async function tvl(api) {
     params: [CLEARPOOL_VAULT],
   });
 
-  console.log('Raw pBTC balance:', balance);
-  
-  // pBTC has 18 decimals, WBTC has 8 decimals
-  // Divide by 1e10 to convert
-  const wbtcEquivalent = Math.floor(Number(balance) / 1e10);
-  console.log('WBTC equivalent (8 decimals):', wbtcEquivalent);
-
-  if (wbtcEquivalent > 0) {
-    api.add(WBTC, wbtcEquivalent);
-  }
+  const wbtcEquivalent = BigInt(balance) / BigInt(1e10);
+  api.add(WBTC, wbtcEquivalent.toString());
 }
 
 module.exports = {
