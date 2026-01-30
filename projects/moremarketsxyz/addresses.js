@@ -27,7 +27,7 @@ module.exports = {
   NEAR_ACCOUNT: '68f6c0d154a1ca97937c24e0351bd7811e869ecc0d45f795ed1102a24cb2008b',
   
   // RPC Endpoints
-  RIPPLE_ENDPOINT: 'https://s1.ripple.com:51234',
+  RIPPLE_ENDPOINT: 'https://xrplcluster.com',
   NEAR_ENDPOINT: 'https://rpc.mainnet.near.org',
   MORE_MARKETS_API: 'https://api.moremarkets.xyz/api',
 }

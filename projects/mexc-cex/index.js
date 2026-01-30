@@ -36,7 +36,7 @@ const config = {
       "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64",
       "0x7354abb551e41bbd9fb32e2e79f44631349119b8",
       "0x9bb6a22da110c6c9bab745bcaf0ee142ee83af37",
-      "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64"
+      "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64",
     ],
   },
   polygon: {

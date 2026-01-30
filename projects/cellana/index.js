@@ -15,35 +15,27 @@ async function _getTokenOfPool(poolAddress) {
 }
 
 
-async function _getTvl() {
+async function tvl(api) {
   const pools = (await _getPools())
-  const tokenTvlMap = new Map();
 
   for (const pool of pools) {
     const poolAddress = pool.inner
-    try {
-      const reserves = await _getPoolReserves(poolAddress);
-      const tokens = await _getTokenOfPool(poolAddress); 
+    const reserves = await _getPoolReserves(poolAddress);
+    const tokens = await _getTokenOfPool(poolAddress);
 
-      if (!reserves || !tokens || tokens.length < 2) {
-        console.warn(`Invalid data for pool ${poolAddress}`);
-        continue;
-      }
-
-      const reserveX = Number(reserves[0] || 0);
-      const reserveY = Number(reserves[1] || 0);
-
-      const tokenX = tokens[0];
-      const tokenY = tokens[1];
-
-      tokenTvlMap.set(tokenX, (tokenTvlMap.get(tokenX) || 0) + reserveX);
-      tokenTvlMap.set(tokenY, (tokenTvlMap.get(tokenY) || 0) + reserveY);
-
-    } catch (error) {
-      console.error(`Error processing pool ${poolAddress}:`, error);
+    if (!reserves || !tokens || tokens.length < 2) {
+      console.warn(`Invalid data for pool ${poolAddress}`);
+      continue;
     }
+
+    const reserveX = Number(reserves[0] || 0);
+    const reserveY = Number(reserves[1] || 0);
+
+    const tokenX = tokens[0];
+    const tokenY = tokens[1];
+    api.add(tokenX, reserveX);
+    api.add(tokenY, reserveY);
   }
-  return tokenTvlMap
 }
 
 module.exports = {
@@ -51,13 +43,6 @@ module.exports = {
   methodology:
     "Counts the lamports in each coin container in the Cellena contract account.",
   aptos: {
-
-    tvl: async (api) => {
-      const tokenTvlMap = await _getTvl()
-      console.log(tokenTvlMap)
-      for (const [key, value] of tokenTvlMap) {
-        api.add(key, value)
-      }
-    }
+    tvl,
   }
 }

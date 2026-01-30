@@ -27,8 +27,8 @@ module.exports = {
   solana: {
     tvl: async (api) => {
       const lendingSol = "DMhoXyVNpCFeCEfEjEQfS6gzAEcPUUSXM8Xnd2UXJfiS";
-      const jupSol = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v";
-      const jitoSol = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
+      const jupSol = ADDRESSES.solana.JupSOL;
+      const jitoSol = ADDRESSES.solana.JitoSOL;
       const jupSolProgram = "6j6Fwxf7UzfaXqQA2QraWGEAYUYzjjZP3t6ChzjzkmL9";
       const jitoSolProgram = "6MAnq2z4ww8nnvfd8sec4sRMhTEdsdZXB1FLgqaYsg4d";
       const jlpUsdtStrategy = "9vuDo8ZQsmMMe3qsiFCYoxsjhHieQVMNXLsfcfpC4SrX"

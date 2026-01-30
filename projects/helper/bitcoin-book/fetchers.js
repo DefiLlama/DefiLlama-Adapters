@@ -58,9 +58,12 @@ module.exports = {
 
     return getConfig('b14g/bit-addresses', undefined, {
       fetcher: async () => {
-        const btcTxHashLockApi = 'https://api.b14g.xyz/restake/marketplace/defillama/btc-tx-hash'
-        const { data: { result } } = await get(btcTxHashLockApi)
-        const hashes = result.map(r => r.txHash)
+        const btcInCorechainTxHashLockApi = 'https://api.b14g.xyz/restake/marketplace/defillama/btc-tx-hash'
+        const { data: { result } } = await get(btcInCorechainTxHashLockApi)
+        const btcInBabylonGenesisTxHashLockApi = 'https://api.b14g.xyz/babylon-costaking/order/defillama/btc-tx-hash'
+        const resultInBabylonGenesis = await get(btcInBabylonGenesisTxHashLockApi)
+
+        const hashes = result.map(r => r.txHash).concat(resultInBabylonGenesis.map(r => r.txHash))
         const hashMap = await getCache('b14g/hash-map', 'core',) ?? {}
         for (const hash of hashes) {
           if (hashMap[hash]) continue;
@@ -238,6 +241,24 @@ module.exports = {
       fetcher: async () => {
         const { data } = await axios.get('https://www.binance.com/bapi/apex/v1/public/apex/market/por/address')
         return data.data.filter(i => i.network === 'BTC').map(item => item.address)
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
+  vishwa: async () => {
+    const staticAddresses = await getConfig('vishwa', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://api.btcvc.vishwanetwork.xyz/btc/address')
+        return data.data
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
+  yala: async () => {
+    const staticAddresses = await getConfig('yala/bitcoin', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://raw.githubusercontent.com/yalaorg/yala-defillama/refs/heads/main/config.json')
+        return data.bitcoin
       }
     })
     return Array.from(new Set(staticAddresses))

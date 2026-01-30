@@ -1,4 +1,12 @@
-const abi = require('./abi.json');
+const abi = {
+    "getSupportedAsset": "function getSupportedAsset(uint256 assetId) view returns (address)",
+    "getSupportedAssets": "address[]:getSupportedAssets",
+    "getSupportedAssetsLength": "uint256:getSupportedAssetsLength",
+    "getTotalDeposited": "uint256[]:getTotalDeposited",
+    "getTotalFees": "uint256[]:getTotalFees",
+    "getTotalPendingDeposit": "uint256[]:getTotalPendingDeposit",
+    "getTotalWithdrawn": "uint256[]:getTotalWithdrawn"
+  };
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { eulerTokens } = require('../helper/tokenMapping')
 

@@ -9,7 +9,7 @@ const ethContracts = [
 const starknetContract = '0x062da0780fae50d68cecaa5a051606dc21217ba290969b302db4dd99d2e9b470';
 
 async function starknetTvl(api) {
-  return sumTokens({ api, owner: starknetContract, tokens: [ADDRESSES.starknet.USDC] })
+  return sumTokens({ api, owner: starknetContract, tokens: [ADDRESSES.starknet.USDC, ADDRESSES.starknet.USDC_CIRCLE] })
 }
 
 module.exports = {
