@@ -20,15 +20,15 @@ async function fetchPoolsFromApi() {
         const pools = response.data || [];
         if (pools.length === 0) break;
 
-        const lastPool = pools[pools.length - 1];
-        if (lastPool.total_tvl < MIN_TVL) break;
-
         for (const pool of pools) {
             const tvl = pool.total_tvl || 0;
             if (tvl < MIN_TVL) continue;
 
             validPoolGroups.add(pool.group_name);
         }
+
+        const lastPool = pools[pools.length - 1];
+        if (lastPool.total_tvl < MIN_TVL) break;
 
         await sleep(100);
         page++;
@@ -40,24 +40,20 @@ async function fetchPoolsFromApi() {
 
     while (true) {
         const response = await get(`${allPoolsUrl}?offset=${offset}&order_by=tvl&order=desc`);
-        const poolsArray = response.data || response || [];
-        if (poolsArray.length === 0) break;
+        const pools = response.data || response || [];
+        if (pools.length === 0) break;
 
-        let belowThreshold = false;
-        for (const pool of poolsArray) {
-            // If pool TVL is below threshold, we can break (sorted desc)
-            const poolTvl = pool.tvl || 0;
-            if (poolTvl < MIN_TVL) {
-                belowThreshold = true;
-                break;
-            }
+        for (const pool of pools) {
+            const tvl = pool.tvl || 0;
+            if (tvl < MIN_TVL) continue;
 
             if (validPoolGroups.has(pool.pool_name)) {
                 if (pool.token_a_vault) tokenAccounts.push(pool.token_a_vault);
                 if (pool.token_b_vault) tokenAccounts.push(pool.token_b_vault);
             }
         }
-        if (belowThreshold) break;
+        const lastPool = pools[pools.length - 1];
+        if (lastPool.tvl < MIN_TVL) break;
 
         await sleep(100);
         offset += 50;
