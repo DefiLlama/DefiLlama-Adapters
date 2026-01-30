@@ -173,6 +173,7 @@ async function addBorrowed(api) {
 }
 
 async function tvl(api) {
+  throw new Error('Verify if it is subgraph issue')
   await addBidCollateralTVL(api);
   await addPoolsLenderTVL(api);
 }
