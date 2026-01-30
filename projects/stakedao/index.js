@@ -158,7 +158,7 @@ async function handleLockers(api) {
 // ********************************************************************************
 
 async function ethereum(api) {
-  const blacklist = ["0x98b540fa89690969D111D045afCa575C91519B1A"];
+  const blacklist = ["0x98b540fa89690969D111D045afCa575C91519B1A", "0x58900d761Ae3765B75DDFc235c1536B527F25d8F"];
   await Promise.all([
     // Lockers
     handleLockers(api),
@@ -166,7 +166,7 @@ async function ethereum(api) {
     getV1Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }, blacklist),
     getV1Strategies(api, "balancer"),
     getV1Strategies(api, "pendle"),
-    getV1Strategies(api, "yearn"),
+    getV1Strategies(api, "yearn", undefined, blacklist),
     // Strategies v2
     getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }, blacklist),
   ]);
