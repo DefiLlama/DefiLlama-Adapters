@@ -5,19 +5,8 @@ const LEND_API = 'https://subgraph-to-frontend-middleware-production.up.railway.
 
 const abis = {
   principalToken: 'address:principalToken',
-  totalInterestCollected: "function totalInterestCollected() view returns (uint256)",
-  getTokenDifferenceFromLiquidations: "function getTokenDifferenceFromLiquidations() view returns (int256)",
-  totalPrincipalTokensWithdrawn: "function totalPrincipalTokensWithdrawn() view returns (uint256)",
-  totalPrincipalTokensCommitted: "function totalPrincipalTokensCommitted() view returns (uint256)",
   totalPrincipalTokensLended: "function totalPrincipalTokensLended() view returns (uint256)",
   totalPrincipalTokensRepaid: "function totalPrincipalTokensRepaid() view returns (uint256)"
-}
-
-const computePoolValue = (index, { totalInterests, diffLiquidations, totalWithdrawns, totalCommitteds, totalLendeds, totalRepaids }, isBorrow = false) => {
-  const borrowed = Number(totalLendeds[index]) - Number(totalRepaids[index])
-  if (isBorrow) return borrowed
-  const totalCommitted = Number(totalCommitteds[index]) + Number(totalInterests[index]) + Number(diffLiquidations[index]) - Number(totalWithdrawns[index])
-  return totalCommitted - borrowed
 }
 
 const getData = async (api) => {
@@ -31,34 +20,28 @@ const getData = async (api) => {
 
   const pools = [...new Set([...lendPools, ...earnPools])]
 
-  const [principalToken, totalInterests, diffLiquidations, totalWithdrawns, totalCommitteds, totalLendeds, totalRepaids] = await Promise.all([
+  const [principalTokens, totalLendeds, totalRepaids] = await Promise.all([
     api.multiCall({ calls: pools, abi: abis.principalToken }),
-    api.multiCall({ calls: pools, abi: abis.totalInterestCollected }),
-    api.multiCall({ calls: pools, abi: abis.getTokenDifferenceFromLiquidations }),
-    api.multiCall({ calls: pools, abi: abis.totalPrincipalTokensWithdrawn }),
-    api.multiCall({ calls: pools, abi: abis.totalPrincipalTokensCommitted }),
     api.multiCall({ calls: pools, abi: abis.totalPrincipalTokensLended }),
     api.multiCall({ calls: pools, abi: abis.totalPrincipalTokensRepaid })
   ])
 
-  return { pools, principalToken, totalInterests, diffLiquidations, totalWithdrawns, totalCommitteds, totalLendeds, totalRepaids }
+  return { pools, principalTokens, totalLendeds, totalRepaids }
 }
 
 const tvl = async (api) => {
   const data = await getData(api)
-  data.pools.forEach((_, i) => {
-    const token = data.principalToken[i]
-    const value = computePoolValue(i, data, false)
-    if (value > 0) api.add(token, value)
-  })
+  const { pools, principalTokens } = data
+  const calls = pools.map((p, i) => ({ target: principalTokens[i], params: p }))
+  const balances = await api.multiCall({ calls, abi: 'erc20:balanceOf' })
+  api.add(principalTokens, balances)
 }
 
 const borrowed = async (api) => {
   const data = await getData(api)
-  data.pools.forEach((_, i) => {
-    const token = data.principalToken[i]
-    const value = computePoolValue(i, data, true)
-    if (value > 0) api.add(token, value)
+  const  { pools, principalTokens, totalLendeds, totalRepaids } = data
+  pools.forEach((_, i) => {
+    api.add(principalTokens[i], Number(totalLendeds[i]) - Number(totalRepaids[i]))
   })
 }
 
