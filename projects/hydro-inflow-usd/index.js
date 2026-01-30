@@ -17,7 +17,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "Query Hydro Inflow USDC Vault total pool value to get the TVL.",
+  methodology: "Query Hydro Inflow USD Vault total pool value to get the TVL.",
   neutron: {tvl},
   hallmarks: [],
 };
