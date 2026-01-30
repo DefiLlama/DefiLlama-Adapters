@@ -16,7 +16,7 @@ async function fetchPoolsFromApi() {
     const pageSize = 99;
     // get pool groups with TVL > 10k
     while (true) {
-        const response = await get(`${baseUrl}?page=${page}&page_size=${pageSize}&sort_by=tvl%3Adesc&filter_by=is_blacklisted%3A%3Dfalse&fee_tvl_ratio_tw=fee_tvl_ratio_24h&volume_tw=volume_24h`);
+        const response = await get(`${baseUrl}?page=${page}&page_size=${pageSize}&sort_by=tvl%3Adesc&filter_by=is_blacklisted%3A%3Dfalse`);
         const pools = response.data || [];
         if (pools.length === 0) break;
 
