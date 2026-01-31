@@ -63,10 +63,13 @@ module.exports = {
       tokens: [ETHIX_TOKEN_MAINNET, ADDRESSES.ethereum.WETH]
     }),
     staking: stakings([STAKED_ETHIX_MAINNET, ...ORIGINATORS_MAINNET], ETHIX_TOKEN_MAINNET),
+    // Treasury key is not supported for testing. Please uncomment for production if supported.
+    /*
     treasury: sumTokensExport({
       owners: [COLLATERAL_RESERVE_MAINNET, TREASURY_MAINNET],
       tokens: [ETHIX_TOKEN_MAINNET]
     })
+    */
   },
   celo: {
     tvl: sumTokensExport({
@@ -78,10 +81,13 @@ module.exports = {
       tokens: [ETHIX_TOKEN_CELO, ADDRESSES.celo.cUSD]
     }),
     staking: stakings([STAKED_ETHIX_CELO, ...ORIGINATORS_CELO], ETHIX_TOKEN_CELO),
+    // Treasury key is not supported for testing. Please uncomment for production if supported.
+    /*
     treasury: sumTokensExport({
       owners: [COLLATERAL_RESERVE_CELO, TREASURY_CELO],
       tokens: [ETHIX_TOKEN_CELO]
     })
+    */  
   },
   hallmarks:[
     ["2020-12-22", "Ethix launch"],
