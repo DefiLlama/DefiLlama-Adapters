@@ -52,11 +52,9 @@ async function processNymWithAssetList(api, nymWithAssetList, tokensAndOwners) {
   for (let i = 0; i < nymWithAssetList.length; i++) {
     const { address: nymContractAddress, assetList } = nymWithAssetList[i];
     
-    // Add the actual token balances held by NYM contract
-    assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
-    
-    // For each asset, get the debtTokenMinted amount and convert it back to asset amount
-    // This represents the tokens that were moved out for strategies but should still count as TVL
+    // Get the debtTokenMinted amount for each asset and convert it back to asset amount
+    // debtTokenMinted tracks the total asset amount that was swapped in (both held in contract and transferred to strategies)
+    // This represents the complete TVL for this NYM contract
     const debtTokenMintedCalls = assetList.map(asset => ({
       target: nymContractAddress,
       params: [asset]
@@ -78,17 +76,17 @@ async function processNymWithAssetList(api, nymWithAssetList, tokensAndOwners) {
       calls: assetAmountCalls,
       permitFailure: true
     });
-    
-    // Add the converted asset amounts to balances
+
     assetList.forEach((asset, idx) => {
-      if (!assetAmountsFromDebt[idx]) return;
-      if (assetAmountsFromDebt[idx] === '0' || assetAmountsFromDebt[idx] === 0) return;
+      const assetAmountFromDebt = assetAmountsFromDebt[idx] || 0;      
+      if (!assetAmountFromDebt) return;
+      if (assetAmountFromDebt === '0' || assetAmountFromDebt === 0) return;
       
       const key = `${chains}:${asset}`;
       if (!balances[key]) {
         balances[key] = new BigNumber(0);
       }
-      balances[key] = balances[key].plus(assetAmountsFromDebt[idx]);
+      balances[key] = balances[key].plus(assetAmountFromDebt);
     });
   }
   
@@ -407,18 +405,21 @@ module.exports = {
       '0xd19BC6B110896d136D9456E8fD45C71C8d8C5abB', // WBTC Collateral(V2)
       '0xE92d7002E3172dD1Ee4ABeAfcfD4fDB0D8F042D5', // XBTC Collateral(V2)
     ],
-    nymWithAssetList: [{
-      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
-      assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
-    }, {
-      address: '0xB4d4793a1CD57b6EceBADf6FcbE5aEd03e8e93eC',
-      assetList: [
-        ADDRESSES.xlayer.USDT,
-        ADDRESSES.xlayer.USDC,
-        '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USDT0
-        '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', // USDG
-      ],
-    }],
+    nymWithAssetList: [
+      {
+        address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
+        assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
+      }, 
+      {
+        address: '0xB4d4793a1CD57b6EceBADf6FcbE5aEd03e8e93eC',
+        assetList: [
+          ADDRESSES.xlayer.USDT,
+          ADDRESSES.xlayer.USDC,
+          '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USDT0
+          '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', // USDG
+        ],
+      },
+    ],
   }),
   ethereum: createExports({
     troveList: [
@@ -437,7 +438,11 @@ module.exports = {
       assetList: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
     }, {
       address: '0xb8374e4DfF99202292da2FE34425e1dE665b67E6',
-      assetList: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
+      assetList: [
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.CRVUSD
+      ],
     }],
     smartVaultList: [
       {
