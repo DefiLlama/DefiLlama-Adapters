@@ -78,6 +78,7 @@ const getTokens = async (api, block, factories) => {
 }
 
 const tvl = async (api) => {
+  throw new Error("Centrifuge TVL is currently disabled while we investigate the drop");
   const chain = api.chain
   const block = await api.getBlock() - 100
   const { factories, assets: { USDC } } = CONFIG[chain]
