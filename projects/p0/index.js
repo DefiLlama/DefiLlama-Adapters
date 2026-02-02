@@ -99,6 +99,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   solana: {
     tvl,
     borrowed
