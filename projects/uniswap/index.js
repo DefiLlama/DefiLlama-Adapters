@@ -12,6 +12,7 @@ const graphs = {
   bsc: "F85MNzUGYqgSHSHRGgeVMNsdnW1KtZSVgFULumXRZTw2",
   // avax: "3Pwd3cqFKbqKAyaJfGUVmJJ7oYbFQLDa19iB27iMxebD",
   base: "43Hwfi3dJSoGpyas9VwNoDAv55yjgGrPpNSmbQZArzMG",
+  xlayer: "2LM2nhSfVsKVNW1EF6AgJHMGBKU2zR9rZcE3zzkFkwW1"
 }
 
 const blacklists = {
@@ -77,7 +78,6 @@ const uniV3Config = {
   rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
   plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
   monad: { factory: "0x204faca1764b154221e35c0d20abb3c525710498", fromBlock: 29255827, blacklistedTokens: ['0x760afe86e5de5fa0ee542fc7b7b713e1c5425701'] },
-  xlayer: { factory: "0x4b2ab38dbf28d31d467aa8993f6c2585981d6804", fromBlock: 46106351 },
 }
 
 Object.keys(uniV3Config).forEach(chain => {
@@ -99,7 +99,7 @@ module.exports = {
   ...uniV3Export(uniV3Config),
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'base']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'base', 'xlayer']
 
 chains.forEach(chain => {
   module.exports[chain] = {
