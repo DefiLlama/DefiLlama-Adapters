@@ -5,6 +5,22 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 
 const distressedAssets = ['aleth'];
+/**
+ * This vaults were affected by Stream's xUSD incident on 2025 and the underlying platform is returning 
+ * an innacurate (higher) balance that isn't recoverable by users. To avoid overstating the TVL, we hardcode the balances
+ * at the moment the vaults were paused at Beefy:
+ * avax block: 73541735, arbitrum block: 409563489
+ */
+const balanceOverrides = {
+  avax: {
+    '0x79a8d2cbdcb651013dae6be25a3813ca70f35732': '492153165795',      // silov2-avalanche-ausd-valamore
+    '0x7e74446ee441a8da46f61f9ada7f8368d26e0eea': '2251698412379',     // silov2-avalanche-usdt-valamore
+    '0xd1fec8530a8e824f051d80ce17d238e96a75bcb2': '3049903089584',     // silov2-avalanche-usdc-mev
+  },
+  arbitrum: {
+    '0x0c0846c5d8194bc327669763ac6af9b788edb409': '11591864596129',    // silov2-arbitrum-usdc-valamore
+  },
+};
 
 // ABI for Beefy vaults
 const vaultABI = {
@@ -217,6 +233,7 @@ async function tvl(api, isStaking = false) {
   const wantBalances = await api.multiCall({ abi: 'function balances() view returns  (uint256 balance0, uint256 balance1)', calls: wants, permitFailure: true, });
 
   const balances = await api.multiCall({ abi: vaultABI.balance, calls: filteredVaults, permitFailure: true, });
+  applyBalanceOverrides(chain, filteredVaults, balances);
 
   wants.forEach((token, i) => {
     const balance = balances[i]
@@ -235,6 +252,16 @@ async function tvl(api, isStaking = false) {
   });
 
   return sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
+}
+
+function applyBalanceOverrides(chain, vaultAddresses, balances) {
+  const chainOverrides = balanceOverrides[chain] || {};
+  balances.forEach((_, i) => {
+    const vaultAddress = vaultAddresses[i].toLowerCase();
+    if (chainOverrides[vaultAddress] !== undefined) {
+      balances[i] = chainOverrides[vaultAddress];
+    }
+  });
 }
 
 
