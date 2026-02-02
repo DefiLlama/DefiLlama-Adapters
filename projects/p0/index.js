@@ -1,13 +1,14 @@
 const axios = require('axios');
+const { getEnv } = require('../helper/env');
 
 const BASE_URL = 'https://base-api-public.mrgn.app';
 const API_ENDPOINT = `${BASE_URL}/v1/bank/metrics`;
 const startTime = new Date().toISOString();
 const END_TIME = '9999-12-31T23:59:59.999Z';
 const GROUP_ADDRESS = '4qp6Fx6tnZkY5Wropq9wUYgtFxXKwE6viZxFHg3rdAG8';
-const apiKey = getEnv('P0_API_KEY'); //add key to env
 
 async function fetchAllBankMetrics() {
+  const apiKey = getEnv('P0_API_KEY')
   const allData = [];
   let page = 1;
   let hasNextPage = true;

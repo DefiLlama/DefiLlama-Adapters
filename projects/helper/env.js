@@ -70,6 +70,7 @@ const ENV_KEYS = [
   'FLOW_NON_EVM_RPC',
   'PROXY_AUTH',
   'UI_TOOL_MODE',
+  'P0_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
