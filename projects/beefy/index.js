@@ -13,12 +13,12 @@ const distressedAssets = ['aleth'];
  */
 const balanceOverrides = {
   avax: {
-    '0x79a8d2cbdcb651013dae6be25a3813ca70f35732': '492153165795',      // silov2-avalanche-ausd-valamore
-    '0x7e74446ee441a8da46f61f9ada7f8368d26e0eea': '2251698412379',     // silov2-avalanche-usdt-valamore
-    '0xd1fec8530a8e824f051d80ce17d238e96a75bcb2': '3049903089584',     // silov2-avalanche-usdc-mev
+    '0x79a8d2cbdcb651013dae6be25a3813ca70f35732': '492153165795',      // silov2-avalanche-ausd-valamore (~492k, 6 decimals)
+    '0x7e74446ee441a8da46f61f9ada7f8368d26e0eea': '2251698412379',     // silov2-avalanche-usdt-valamore (~2.25M, 6 decimals)
+    '0xd1fec8530a8e824f051d80ce17d238e96a75bcb2': '3049903089584',     // silov2-avalanche-usdc-mev (~3M, 6 decimals)
   },
   arbitrum: {
-    '0x0c0846c5d8194bc327669763ac6af9b788edb409': '11591864596129',    // silov2-arbitrum-usdc-valamore
+    '0x0c0846c5d8194bc327669763ac6af9b788edb409': '11591864596129',    // silov2-arbitrum-usdc-valamore (~11.6M, 6 decimals)
   },
 };
 
@@ -254,11 +254,13 @@ async function tvl(api, isStaking = false) {
   return sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
 }
 
+/** Mutates the balances array in place, applying hardcoded overrides for affected vaults */
 function applyBalanceOverrides(chain, vaultAddresses, balances) {
   const chainOverrides = balanceOverrides[chain] || {};
   balances.forEach((_, i) => {
     const vaultAddress = vaultAddresses[i].toLowerCase();
     if (chainOverrides[vaultAddress] !== undefined) {
+      // sdk.log(`Balance override applied for ${vaultAddress}: ${balances[i]} -> ${chainOverrides[vaultAddress]}`);
       balances[i] = chainOverrides[vaultAddress];
     }
   });
