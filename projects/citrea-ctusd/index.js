@@ -4,11 +4,11 @@ const mToken = "0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b";
 async function tvl(api) {
     const bal = await api.call({
         target: mToken,
-        abi: "function balanceOf(address account) view returns (uint256)",
+        abi: "erc20:balanceOf",
         params: [ctUsd],
     })
 
-    api.addCGToken('wrappedm-by-m0', bal / 1e6);
+    api.add(bal);
 }
 
 module.exports = {
