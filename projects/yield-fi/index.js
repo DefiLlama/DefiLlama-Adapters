@@ -2,7 +2,7 @@ const { api2 } = require("@defillama/sdk");
 
 module.exports = {
     hallmarks: [
-      ['2025-01-23', 'v3 Launch'],
+      ['2026-01-23', 'v3 Launch'],
     ],
 }
 
