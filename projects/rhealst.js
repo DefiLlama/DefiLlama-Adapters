@@ -1,4 +1,4 @@
-const { call, sumSingleBalance, } = require('./helper/chain/near')
+const { call, sumSingleBalance, sumTokens, } = require('./helper/chain/near')
 
 const PROJECT_LST_CONTRACT = "lst.rhealab.near";
 
@@ -9,10 +9,14 @@ async function tvl() {
   return balances
 }
 
+async function staking() {
+  return sumTokens({ owners: ['xtoken.rhealab.near'], tokens: ['token.rhealab.near'], })
+}
+
 
 module.exports = {
   near: {
-    tvl,
+    tvl, staking,
   },
   hallmarks: [
     [1666648800,"DCB withdrawn liquidity"]
