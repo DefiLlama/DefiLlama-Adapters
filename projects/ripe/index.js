@@ -1,5 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getConfig } = require('../helper/cache');
+const { staking } = require('../helper/staking')
+const { pool2 } = require('../helper/pool2')
 
 const SGREEN_CONTRACT = '0xaa0f13488ce069a7b5a099457c753a7cfbe04d36'
 const GREEN_CONTRACT = '0xd1Eac76497D06Cf15475A5e3984D5bC03de7C707'
@@ -11,57 +13,37 @@ const ENDAOMENT_CONTRACT = '0x14F4f1CD5F4197DB7cB536B282fe6c59eACfE40d'
 const RIPE_GOV_CONTRACT = '0xe42b3dC546527EB70D741B185Dc57226cA01839D'
 
 async function getPairs() {
-    const response = await getConfig('ripe', 'https://api.ripe.finance/api/ripe/assets');
-    const stabilityPoolAddress = response.result.find(a => a.vaultId === 1).vaultAddress
-    const nonSpAssets = response.result.filter(a => a.vaultId > 2)
+  const response = await getConfig('ripe', 'https://api.ripe.finance/api/ripe/assets');
+  const stabilityPoolAddress = response.result.find(a => a.vaultId === 1).vaultAddress
+  const nonSpAssets = response.result.filter(a => a.vaultId > 2)
 
-    // Build token-owner pairs for sumTokens2
-    const tokensAndOwners = [];
+  // Build token-owner pairs for sumTokens2
+  const tokensAndOwners = [];
 
-    for (const { tokenAddress, vaultAddress } of nonSpAssets) {
-        tokensAndOwners.push([tokenAddress, vaultAddress]);
-        tokensAndOwners.push([tokenAddress, stabilityPoolAddress]);
-    }
+  for (const { tokenAddress, vaultAddress } of nonSpAssets) {
+    tokensAndOwners.push([tokenAddress, vaultAddress]);
+    tokensAndOwners.push([tokenAddress, stabilityPoolAddress]);
+  }
 
-    return tokensAndOwners;
+  return tokensAndOwners;
 }
 
 async function tvl(api) {
-    const tokensAndOwners = await getPairs();
+  const tokensAndOwners = await getPairs();
 
-    return sumTokens2({
-        api,
-        tokensAndOwners,
-        blackListedTokens: [SGREEN_CONTRACT, GREEN_CONTRACT, GREEN_LP_CONTRACT],
-    });
-}
-
-async function staking(api) {
-    const ripeStaked = await api.call({
-        abi: 'erc20:balanceOf',
-        target: RIPE_CONTRACT,
-        params: [RIPE_GOV_CONTRACT]
-    })
-    api.add(RIPE_CONTRACT, ripeStaked)
-}
-
-async function pool2(api) {
-    return sumTokens2({
-        api,
-        tokensAndOwners: [
-            [RIPE_WETH_LP_CONTRACT, RIPE_GOV_CONTRACT],
-            [RIPE_GREEN_LP_CONTRACT, ENDAOMENT_CONTRACT],
-        ],
-        resolveLP: true,
-    });
+  return sumTokens2({
+    api,
+    tokensAndOwners,
+    blackListedTokens: [SGREEN_CONTRACT, GREEN_CONTRACT, GREEN_LP_CONTRACT],
+  });
 }
 
 module.exports = {
-    methodology: 'Counts underlying collateral in Ripe vaults, unwrapping yield-bearing tokens to avoid double counting',
-    start: 1754006400,
-    base: {
-        tvl,
-        pool2,
-        staking
-    }
+  methodology: 'Counts underlying collateral in Ripe vaults, unwrapping yield-bearing tokens to avoid double counting',
+  start: 1754006400,
+  base: {
+    tvl,
+    pool2: pool2([RIPE_GOV_CONTRACT, ENDAOMENT_CONTRACT], [RIPE_WETH_LP_CONTRACT, RIPE_GREEN_LP_CONTRACT]),
+    staking: staking(RIPE_GOV_CONTRACT, RIPE_CONTRACT),
+  }
 };
