@@ -44,9 +44,10 @@ Object.keys(subgraphs).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       if (!getEnv('IS_RUN_FROM_CUSTOM_JOB')) throw new Error('This job is not meant to be run directly, please use the custom job feature')
-      const query = `{
+      const query = `
         query poolQuery($lastId: String, $block: Int) {
           pools(block: { number: $block} first: 1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}   subgraphError: allow) {
+            id
             token0 {
               id
             }
@@ -55,8 +56,7 @@ Object.keys(subgraphs).forEach(chain => {
             }
             hooks
           }
-        }
-      }`
+        }`
       const result = await cachedGraphQuery(`uniswap-v4/${chain}`, endpoint, query, { api, fetchById: true })
       const mappedResults = result.pools.map(pool => { return { token0: pool.token0.id, token1: pool.token1.id, hooks: pool.hooks}})
       return processResult(api, mappedResults, factory, subgraphs[chain].blacklistedTokens)
