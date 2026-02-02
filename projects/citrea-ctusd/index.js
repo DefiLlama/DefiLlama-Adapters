@@ -8,7 +8,7 @@ async function tvl(api) {
         params: [ctUsd],
     })
 
-    api.add(bal);
+    api.add(mToken, bal);
 }
 
 module.exports = {
