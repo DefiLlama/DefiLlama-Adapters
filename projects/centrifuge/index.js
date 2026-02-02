@@ -107,21 +107,40 @@ const getTokens = async (api, block, factories) => {
 }
 
 const tvl = async (api) => {
-  throw new Error("Centrifuge TVL is currently disabled while we investigate the drop");
   const chain = api.chain
   const block = await api.getBlock() - 100
   const { factories, assets } = CONFIG[chain]
   const tokens = await getTokens(api, block, factories)
-  if (!tokens) return;
+  if (!tokens || tokens.length === 0) return;
 
   const assetList = Array.isArray(assets) ? assets : [assets.USDC]
-  const allVaults = []
+
+  // For each token (share class), find the first valid vault to avoid double counting
+  // All vaults for the same token report the same totalAssets (the share class NAV)
+  const tokenVaults = new Map()
+
   for (const asset of assetList) {
-    const vaults = (await api.multiCall({ calls: tokens.map((t) => ({ target: t, params: [asset] })), abi: abis.getVault })).filter(addr => addr.toLowerCase() !== nullAddress)
-    allVaults.push(...vaults)
+    const tokensNeedingVault = tokens.filter(t => !tokenVaults.has(t))
+    if (tokensNeedingVault.length === 0) break
+
+    const vaults = await api.multiCall({
+      calls: tokensNeedingVault.map((t) => ({ target: t, params: [asset] })),
+      abi: abis.getVault,
+      permitFailure: true
+    })
+
+    tokensNeedingVault.forEach((token, i) => {
+      const vault = vaults[i]
+      if (vault && vault.toLowerCase() !== nullAddress) {
+        tokenVaults.set(token, vault)
+      }
+    })
   }
 
-  await api.erc4626Sum({ calls: [...new Set(allVaults)], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
+  const uniqueVaults = [...new Set(tokenVaults.values())]
+  if (uniqueVaults.length === 0) return
+
+  await api.erc4626Sum({ calls: uniqueVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
 }
 
 module.exports.methodology = `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`
