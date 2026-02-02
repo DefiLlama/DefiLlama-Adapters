@@ -70,12 +70,19 @@ async function tvl(api) {
 
   await api.sumTokens({ ownerTokens })
 
-  const chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  const block = api.block ?? 0
+  const chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks@${block}`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
   chunks.forEach(chunk => {
     const { token0, token1, tick, } = poolData[chunk.pool.id.toLowerCase()] ?? {}
     if (!tick) return;
-    addUniV3LikePosition({ api, token0, token1, tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
+    addUniV3LikePosition({ api, token0, token1, tick: Number(tick), liquidity: Number(chunk.netLiquidity), tickUpper: Number(chunk.tickUpper), tickLower: Number(chunk.tickLower), })
   })
+
+  const usdValue = await api.getUSDValue()
+  if (usdValue < 0) {
+    api.log(`Panoptic: skipping negative USD value: $${usdValue}`)
+    return {}
+  }
 }
 
 module.exports = {
@@ -94,4 +101,7 @@ module.exports = {
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
     start: 1739411364,
   },
+  hallmarks: [
+    ["2025-08-27", "Whitehack by team"]
+  ]
 }

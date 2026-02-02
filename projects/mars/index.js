@@ -1,6 +1,6 @@
 const { queryContract } = require('../helper/chain/cosmos');
-const axios = require('axios');
 const BigNumber = require('bignumber.js');
+const { getConfig } = require('../helper/cache');
 
 const contractAddresses = {
   osmosis: {
@@ -54,7 +54,7 @@ async function tvl(api) {
     const assetDenoms = assetParams.map((asset) => asset.denom);
 
     // fetch pool infos from the poolsApi based on chain
-    const poolInfos = await axios.get(poolsApis[chain]);
+    const poolInfos = await getConfig(`mars-protocol/${chain}-pools`, poolsApis[chain]);
 
     // query the deposited amount for each asset and add it to the depositCoins array
     await Promise.all(
@@ -66,7 +66,7 @@ async function tvl(api) {
         });
         // check if the token is a liquidity pool share (deposited via farm)
         // and find it in the api data
-        const poolInfo = poolInfos.data.tokens.find((pool) => pool.lpAddress === denom);
+        const poolInfo = poolInfos.tokens.find((pool) => pool.lpAddress === denom);
 
         if (poolInfo) {
           // check for the underlying asset and calculate how much underlying assets a pool share holds

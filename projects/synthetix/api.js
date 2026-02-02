@@ -33,6 +33,7 @@ const weth = ADDRESSES.ethereum.WETH
 
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
+    throw new Error('This module is deprecated, this protocol is dead')
     const block = await getBlock(timestamp, chain, chainBlocks)
     const synthetixState = synthetixStates[chain]
     const synthetix = synthetixs[chain]

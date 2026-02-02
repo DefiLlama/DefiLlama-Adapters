@@ -6,7 +6,7 @@ const { dexes, farms } = require('./data')
 const { PromisePool } = require('@supercharge/promise-pool');
 let graphQLClient
 
-const indexer = "https://youves-mainnet-indexer.prod.gke.papers.tech/v1/graphql"
+const indexer = "https://indexer.youves.com/v1/graphql"
 const engines = {
   uUSDTezosV1: 'KT1FFE2LC5JpVakVjHm5mM36QVp2p3ZzH4hH',
   uUSDTezosV3: 'KT1DHndgk8ah1MLfciDnCV2zPJrVbnnAH9fd',
@@ -106,8 +106,5 @@ async function pool2() {
 
 module.exports = {
   timetravel: false,
-  tezos: {
-    tvl,
-    pool2,
-  }
+  tezos: { tvl, pool2 }
 }

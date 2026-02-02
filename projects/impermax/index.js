@@ -73,12 +73,6 @@ const config = {
       '0x48168439ca4ef9e95975e3e2488bfcbd8fb1a80c'
     ]
   },
-  real: {
-    factories: [
-      '0x3b1f3a48a70e372144307a4b126a5cda46e169ad',
-      '0x2944e1544cE201ae19e6385490bBA13DaA5f44e4'
-    ]
-  },
   blast: {
     factories: [
       '0x7b816c1ccafa7d3e71e279ed9dc3226484f6ef87',
@@ -183,7 +177,6 @@ const blacklistedPools = {
   base: [],
   mantle: [],
   optimism: [],
-  real: [],
   blast: [],
   sonic: [
     "0xd9de9f15994182518a688933d09787a9a9fb5bc9" // s/shadow stakedlp
