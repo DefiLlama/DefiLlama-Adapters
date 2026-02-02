@@ -8,6 +8,7 @@ const CONFIG = {
     factories: [
       { START_BLOCK: 20432393, TOKEN_FACTORY_V2: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29' }, // v2
       { START_BLOCK: 22924277, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+      { START_BLOCK: 24369775, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
     assets: { USDC: ADDRESSES.ethereum.USDC }
   },
@@ -15,6 +16,7 @@ const CONFIG = {
     factories: [
       { START_BLOCK: 17854404, TOKEN_FACTORY_V2: '0x7f192F34499DdB2bE06c4754CFf2a21c4B056994' }, // v2
       { START_BLOCK: 32901390, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+      { START_BLOCK: 41626601, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
     assets: { USDC: ADDRESSES.base.USDC }
   },
@@ -22,26 +24,48 @@ const CONFIG = {
     factories: [
       { START_BLOCK: 238245701, TOKEN_FACTORY_V2: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29' }, // v2
       { START_BLOCK: 357984300, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+      { START_BLOCK: 427871358, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
     assets: { USDC: ADDRESSES.arbitrum.USDC_CIRCLE }
   },
   avax: {
     factories: [
       { START_BLOCK: 65493376, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+      { START_BLOCK: 77109103, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
     assets: { USDC: ADDRESSES.avax.USDC }
   },
   bsc: {
     factories: [
       { START_BLOCK: 54801665, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+      { START_BLOCK: 78882747, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
-    assets: { USDC: ADDRESSES.bsc.USDC }
+    assets: [ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT]
   },
   plume_mainnet: {
     factories: [
       { START_BLOCK: 15715268, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+      { START_BLOCK: 49254120, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
     assets: { USDC: ADDRESSES.plume_mainnet.USDC }
+  },
+  optimism: {
+    factories: [
+      { START_BLOCK: 147221955, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
+    ],
+    assets: { USDC: ADDRESSES.optimism.USDC_CIRCLE }
+  },
+  monad: {
+    factories: [
+      { START_BLOCK: 52763152, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
+    ],
+    assets: { USDC: ADDRESSES.monad.USDC }
+  },
+  hyperliquid: {
+    factories: [
+      { START_BLOCK: 0, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
+    ],
+    assets: [ADDRESSES.hyperliquid.USDT0]
   },
 }
 
@@ -70,6 +94,11 @@ const getTokens = async (api, block, factories) => {
         allTranches.push(...shareClasses.map(({ token }) => token))
       }
 
+      if (factory.TOKEN_FACTORY_V3_1) {
+        const shareClasses = await getLogs2({ api, target: factory.TOKEN_FACTORY_V3_1, fromBlock: factory.START_BLOCK, toBlock: block, eventAbi: eventAbis.addShareClass })
+        allTranches.push(...shareClasses.map(({ token }) => token))
+      }
+
       return allTranches
     })
   )
@@ -81,11 +110,18 @@ const tvl = async (api) => {
   throw new Error("Centrifuge TVL is currently disabled while we investigate the drop");
   const chain = api.chain
   const block = await api.getBlock() - 100
-  const { factories, assets: { USDC } } = CONFIG[chain]
+  const { factories, assets } = CONFIG[chain]
   const tokens = await getTokens(api, block, factories)
   if (!tokens) return;
-  const vaults = (await api.multiCall({ calls: tokens.map((t) => ({ target: t, params: [USDC] })), abi: abis.getVault })).filter(addr => addr.toLowerCase() !== nullAddress)
-  await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
+
+  const assetList = Array.isArray(assets) ? assets : [assets.USDC]
+  const allVaults = []
+  for (const asset of assetList) {
+    const vaults = (await api.multiCall({ calls: tokens.map((t) => ({ target: t, params: [asset] })), abi: abis.getVault })).filter(addr => addr.toLowerCase() !== nullAddress)
+    allVaults.push(...vaults)
+  }
+
+  await api.erc4626Sum({ calls: [...new Set(allVaults)], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
 }
 
 module.exports.methodology = `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`
