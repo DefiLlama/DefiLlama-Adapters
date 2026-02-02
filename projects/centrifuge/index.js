@@ -65,7 +65,7 @@ const CONFIG = {
     factories: [
       { START_BLOCK: 0, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
-    assets: [ADDRESSES.hyperliquid.USDT0]
+    assets: ['0xb88339CB7199b77E23DB6E890353E22632Ba630f', ADDRESSES.hyperliquid.USDT0, '0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463'] // USDC, USDT0, UBTC
   },
 }
 
