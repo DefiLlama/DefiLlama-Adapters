@@ -9,7 +9,7 @@ const abi = {
 const crossChain = {
     ethereum: { executor: '0xb2f865041e3F7De4576FB5B30ac8e9fbDA82e29d', fromBlock: 24090329 },
     arbitrum: { executor: '0xb2f865041e3F7De4576FB5B30ac8e9fbDA82e29d', fromBlock: 414382638 },
-    bsc: { executor:'0x6b5a6B402F984FCd4175C43b642800920873cbC5', fromBlock: 74944045 },
+    bsc: { executor: '0x6b5a6B402F984FCd4175C43b642800920873cbC5', fromBlock: 74944045 },
     core: { executor: '0xb2f865041e3F7De4576FB5B30ac8e9fbDA82e29d', fromBlock: 31251416 }
 }
 
@@ -32,9 +32,9 @@ async function coreTvl(api) {
     contracts.forEach((c, index) => {
         const shares = supplies[index]
         const decimal = decimals[index]
-        const accountant = accountants[index]
+        const exchangeRate = accountants[index].exchangeRate
 
-        const assetSupply = (shares * accountant.exchangeRate) / 10 ** decimal
+        const assetSupply = (shares * exchangeRate) / (10 ** decimal)
 
         api.add(c.StakingToken, assetSupply)
     })
@@ -57,7 +57,6 @@ module.exports = {
     berachain: {
         tvl: coreTvl
     },
-
 }
 
 Object.keys(crossChain).forEach(chain => {
