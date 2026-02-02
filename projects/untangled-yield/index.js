@@ -6,5 +6,8 @@ module.exports = {
   },
   polygon: {
     tvl: sumERC4626VaultsExport({ vaults: ['0x3f48e00CFEba3e713dB8Bc3E28d634578c553e32'], isOG4626: true, })
+  },
+  arbitrum: {
+    tvl: sumERC4626VaultsExport({ vaults: ['0x4a3F7Dd63077cDe8D7eFf3C958EB69A3dD7d31a9'], isOG4626: true, })
   }
 }

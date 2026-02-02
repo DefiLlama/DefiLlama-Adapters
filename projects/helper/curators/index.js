@@ -14,18 +14,39 @@ function isOwner(owner, owners) {
 async function getMorphoVaults(api, owners) {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
-  for (const factory of MorphoConfigs[api.chain].vaultFactories) {
-    const vaultOfOwners = (
-      await getLogs2({
-        api,
-        eventAbi: ABI.morpho.CreateMetaMorphoEvent,
-        target: factory.address,
-        fromBlock: factory.fromBlock,
-        toBlock: safeBlock
-      })
-    ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
-    allVaults = allVaults.concat(vaultOfOwners)
+  
+  // Query v1 vaults
+  if (MorphoConfigs[api.chain]?.vaultFactories) {
+    for (const factory of MorphoConfigs[api.chain].vaultFactories) {
+      const vaultOfOwners = (
+        await getLogs2({
+          api,
+          eventAbi: ABI.morpho.CreateMetaMorphoEvent,
+          target: factory.address,
+          fromBlock: factory.fromBlock,
+          toBlock: safeBlock
+        })
+      ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
+      allVaults = allVaults.concat(vaultOfOwners)
+    }
   }
+
+  // Query v2 vaults
+  if (MorphoConfigs[api.chain]?.vaultFactoriesV2) {
+    for (const factory of MorphoConfigs[api.chain].vaultFactoriesV2) {
+      const vaultOfOwners = (
+        await getLogs2({
+          api,
+          eventAbi: ABI.morpho.CreateVaultV2Event,
+          target: factory.address,
+          fromBlock: factory.fromBlock,
+          toBlock: safeBlock
+        })
+      ).filter(log => isOwner(log.owner, owners)).map((log) => log.newVaultV2)
+      allVaults = allVaults.concat(vaultOfOwners)
+    }
+  }
+
   return allVaults
 }
 
@@ -396,6 +417,8 @@ async function getCuratorTvl(api, vaults) {
   if (vaults.nestedVaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
   }
+
+  return api.getBalances()
 }
 
 function getCuratorExport(configs) {

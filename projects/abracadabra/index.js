@@ -1,5 +1,7 @@
 const marketsJSON = require('./market.json');
-const abi = require('./abi.json');
+const abi = {
+    "balanceOf": "function balanceOf(address, address) view returns (uint256)"
+  };
 
 // --------------------------
 // cvx3pool & yvcrvIB tokens

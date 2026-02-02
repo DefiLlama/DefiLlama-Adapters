@@ -11,6 +11,5 @@ module.exports = {
     methodology: `DAI reserves in the bonding curve `,
     arbitrum: {
         tvl: sumTokensExport({ owners: [treasury], tokens: [ADDRESSES.optimism.DAI], }),
-        //staking: stakingPricedLP("0xE5Df6583eE8DAe9F532e65D7D2C30A961c442f8a", "0x5fE5E1d5D86BDD4a7D84B4cAfac1E599c180488f", "ethereum", "0xe4f157c7ca54f435fcc3bb0b4452f98d3a48f303", "dai", true )
     }
 }

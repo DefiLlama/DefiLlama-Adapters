@@ -25,8 +25,8 @@ async function tvl(api) {
 
   const ownerTokens = gateLogs.map(i => ([[i.quote], i.instrument]))
   const tokens = gateLogs.map(i => i.quote)
-  ownerTokens.push([allTokens, gateAddress])
-  return sumTokens2({ api, tokens, owner: gateAddress, })
+  ownerTokens.push([tokens, gateAddress])
+  return sumTokens2({ api, ownerTokens, })
 }
 
 Object.keys(config).forEach(chain => {
