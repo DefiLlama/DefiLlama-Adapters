@@ -1,4 +1,7 @@
-const abi = require('./abi.json');
+const abi = {
+    "getPoolBalance": "function getPoolBalance(address _token) view returns (uint256)",
+    "getPoolAmount": "function getPoolAmount(address _token) view returns (uint256)"
+  };
 const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 

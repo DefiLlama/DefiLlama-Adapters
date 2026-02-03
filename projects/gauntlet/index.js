@@ -7,6 +7,8 @@ const configs = {
     ethereum: {
       morphoVaultOwners: [
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
+        '0xd79766D2FeC43886e995EA415a2Bf406280B2e2C',
+
       ],
       aera: [
         '0x7c8406384f7a5c147a6add16407803be146147e4',
@@ -112,6 +114,13 @@ const configs = {
       morphoVaultOwners: [
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+        '0xF9D8B7e7981986746c4DE236CC72F1a26AFb5851',
+      ],
+    },
+    optimism: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
       ],
     },
   }
@@ -119,9 +128,10 @@ const configs = {
 
 // --- Drift Solana TVL logic ---
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, getConnection, getTokenAccountBalances } = require('../helper/solana')
 const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
+const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
 
 const TOKEN_INFO = {
   USDC: {
@@ -172,6 +182,14 @@ const TOKEN_INFO = {
     mint: ADDRESSES.solana.BONK,
     decimals: 5,
   },
+  dfdvSOL: {
+    mint: 'sctmB7GPi5L2Q5G9tUSzXvhZ4YiDMEGcRov9KfArQpx',
+    decimals: 9,
+  },
+  wETH: {
+    mint: 'FeGn77dhg1KXRRFeSwwMiykZnZPw5JXW6naf2aQgZDQf',
+    decimals: 8,
+  },
 }
 
 function getTokenInfo(marketIndex) {
@@ -188,6 +206,8 @@ function getTokenInfo(marketIndex) {
     case 27: return TOKEN_INFO.cbBTC
     case 28: return TOKEN_INFO.USDS
     case 32: return TOKEN_INFO.BONK
+    case 52: return TOKEN_INFO.dfdvSOL
+    case 4: return TOKEN_INFO.wETH // double check if this is correct
     default: return undefined
   }
 }
@@ -204,7 +224,60 @@ const VAULT_USER_ACCOUNTS = [
   '68oTjvenFJfrr2iYPtBTRiFyXA8N2pXdHDP82YvuhLaC', // DRIFT Plus
   'GYxrPXFhCQamBxUc4wMYHnB235Aei7GZsjFCfZgfYJ6b', // Carrot hJLP 
   'FbbcWcg5FfiPdBhkxuBAeoFCyVN2zzSvNPyM7bRiSKAL', // JTO Plus
+  'BrXMRthT599b2mck5bXig6CaHR83kv3vA2dSMC17nv3H', // dfdvSOL Plus
+  '5pJRZ2pcRfKLpsR4fTigN87jBJ93F4KGp3kxb38GNWoN', // wETH Plus
 ]
+
+// --- Kamino Lend Vault Layer ---
+const KAMINO_LEND_VAULT_LAYER_PROGRAM_ID = new PublicKey('KvauGMspG5k6rtzrqqn7WNn3oZdyKqLKwK2XWQ8FLjd')
+const GAUNTLET_ADMIN = new PublicKey('JC8sPweHaHr1kWzAvykaAmLsWtSWhi3M4NnyYGRdxgkt')
+
+async function kaminoLendVaultTvl(api) {
+  const connection = getConnection()
+  const provider = getProvider()
+
+  // Load the kvault IDL
+  const kvaultIdl = require('./kvault-idl.json')
+  const kvaultProgram = new Program(kvaultIdl, KAMINO_LEND_VAULT_LAYER_PROGRAM_ID, provider)
+
+  // Query vault accounts directly using getProgramAccounts with base58 encoded filter
+  const adminBytes = GAUNTLET_ADMIN.toBuffer()
+  const rawAccounts = await connection.getProgramAccounts(
+    KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
+    {
+      filters: [
+        {
+          memcmp: {
+            offset: 8, // After 8-byte Anchor discriminator
+            bytes: bs58.encode(adminBytes)
+          }
+        }
+      ]
+    }
+  )
+
+  // Extract vault data and calculate total AUM from prevAumSf
+  for (const { account } of rawAccounts) {
+    // Decode the account using Anchor's coder
+    const vaultState = kvaultProgram.coder.accounts.decode('VaultState', account.data)
+    const tokenMint = vaultState.tokenMint.toString()
+
+    // prevAumSf is in scaled fixed point format (60-bit fractional part)
+    // It represents the AUM in token's native units (already includes decimals)
+    // Total AUM = prevAumSf / (2^60)
+    const prevAumSf = vaultState.prevAumSf
+    const SCALING_FACTOR = BigInt(2) ** BigInt(60) // 2^60 for 60-bit fractional part
+
+    // Convert prevAumSf to BigInt (it's a u128, which Anchor returns as BN or string)
+    const aumSfBigInt = typeof prevAumSf === 'string' ? BigInt(prevAumSf) : BigInt(prevAumSf.toString())
+
+    // Calculate total tokens: prevAumSf / 2^60
+    // prevAumSf is already in token's smallest unit (with decimals), so we just divide by the scaling factor
+    const totalTokens = aumSfBigInt / SCALING_FACTOR
+
+    api.add(tokenMint, totalTokens.toString())
+  }
+}
 
 async function tvl(api) {
   const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
@@ -232,6 +305,9 @@ async function tvl(api) {
       }
     }
   }
+
+  // Kamino Lend vaults
+  await kaminoLendVaultTvl(api)
 }
 
 async function megavaultTvl(api) {
@@ -242,7 +318,7 @@ async function megavaultTvl(api) {
   const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
 
   // Report as USD Coin using coingecko identifier
-  api.add('coingecko:usd-coin', (currentTvl * 1e6).toFixed(0));
+  api.add(ADDRESSES.ethereum.USDC, (currentTvl * 1e6).toFixed(0));
 }
 
 async function combinedEthereumTvl(api) {
@@ -251,11 +327,9 @@ async function combinedEthereumTvl(api) {
   if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
     await curatorExport.ethereum.tvl(api);
   }
-  
+
   // Then add MegaVault TVL
-  console.log("Adding MegaVault TVL to ethereum...");
   await megavaultTvl(api);
-  console.log("MegaVault TVL added to ethereum");
 }
 
 module.exports = {

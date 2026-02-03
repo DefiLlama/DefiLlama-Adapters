@@ -1,5 +1,10 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "want": "address:want",
+    "balanceOf": "uint256:balanceOf",
+    "vaults": "function vaults(address) view returns (address)",
+    "balance": "uint256:balance"
+  };
 
 const controllerV1 = "0x71908d6faA4c4Ae8717bCe5839b805cC807Ba302";
 const controllerV2 = "0xF3CbD482Dd5Ac5aB9A0FF9baa68DdaD2f08B1c2f";

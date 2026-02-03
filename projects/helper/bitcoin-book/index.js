@@ -115,8 +115,10 @@ const leadbtc = require('./leadbtc.js')
 const bitgetBtc = require('./bitget-bgBTC.js')
 const magicEden = require('./magic-eden.js')
 const gateBtc = require('./gate-btc.js')
+const sodex = require('./sodex.js')
 const weex = require('./weex.js')
 const bydfi = require('./bydfi.js')
+const bytedex = require('./bytedex.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -276,6 +278,8 @@ module.exports = {
   leadbtc,
   magicEden,
   gateBtc,
+  sodex,
   weex,
-  bydfi
+  bydfi,
+  bytedex
 }
