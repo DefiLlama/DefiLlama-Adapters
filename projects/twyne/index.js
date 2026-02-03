@@ -28,7 +28,7 @@ async function getCollateralVaults(api) {
 }
 
 // Convert receipt token amounts to underlying assets and add to balances
-async function addUnderlyingBalances(api, vaults, amounts, { subtract = false } = {}) {
+async function addUnderlyingBalances(api, vaults, amounts) {
     if (vaults.length === 0) return;
 
     // Get issuer vaults (which issued the receipt tokens)
@@ -58,11 +58,11 @@ async function addUnderlyingBalances(api, vaults, amounts, { subtract = false } 
         abi: 'function convertToAssets(uint256) view returns (uint256)',
     });
 
-    // Add or subtract from balances
+    // Add to balances
     underlyingAmounts.forEach((amount, idx) => {
         const i = validIndices[idx];
         if (underlyingAssets[i] && amount) {
-            api.add(underlyingAssets[i], subtract ? -amount : amount);
+            api.add(underlyingAssets[i], amount);
         }
     });
 }
@@ -75,19 +75,19 @@ async function tvl(api) {
         calls: twyneVaults,
         abi: 'uint256:totalAssets',
     });
-    await addUnderlyingBalances(api, twyneVaults, eVaultAmounts);
+    const totalBorrows = await api.multiCall({
+        calls: twyneVaults,
+        abi: 'uint256:totalBorrows',
+    });
+
+    let adjustedAmounts = eVaultAmounts.map((amount, i) => BigInt(amount) - BigInt(totalBorrows[i]));
+    await addUnderlyingBalances(api, twyneVaults, adjustedAmounts);
 
     const collateralAmounts = await api.multiCall({
         calls: collateralVaults,
         abi: 'function totalAssetsDepositedOrReserved() view returns (uint256)',
     });
     await addUnderlyingBalances(api, collateralVaults, collateralAmounts);
-
-    const totalBorrows = await api.multiCall({
-        calls: twyneVaults,
-        abi: 'uint256:totalBorrows',
-    });
-    await addUnderlyingBalances(api, twyneVaults, totalBorrows, { subtract: true });
 }
 
 async function borrowed(api) {
