@@ -8,7 +8,7 @@ const configs = {
       morphoVaultOwners: [
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
         '0xd79766D2FeC43886e995EA415a2Bf406280B2e2C',
-        
+
       ],
       aera: [
         '0x7c8406384f7a5c147a6add16407803be146147e4',
@@ -235,11 +235,11 @@ const GAUNTLET_ADMIN = new PublicKey('JC8sPweHaHr1kWzAvykaAmLsWtSWhi3M4NnyYGRdxg
 async function kaminoLendVaultTvl(api) {
   const connection = getConnection()
   const provider = getProvider()
-  
+
   // Load the kvault IDL
   const kvaultIdl = require('./kvault-idl.json')
   const kvaultProgram = new Program(kvaultIdl, KAMINO_LEND_VAULT_LAYER_PROGRAM_ID, provider)
-  
+
   // Query vault accounts directly using getProgramAccounts with base58 encoded filter
   const adminBytes = GAUNTLET_ADMIN.toBuffer()
   const rawAccounts = await connection.getProgramAccounts(
@@ -255,35 +255,27 @@ async function kaminoLendVaultTvl(api) {
       ]
     }
   )
-  
+
   // Extract vault data and calculate total AUM from prevAumSf
   for (const { account } of rawAccounts) {
-    try {
-      // Decode the account using Anchor's coder
-      const vaultState = kvaultProgram.coder.accounts.decode('VaultState', account.data)
-      const tokenMint = vaultState.tokenMint.toString()
-      const tokenMintDecimals = Number(vaultState.tokenMintDecimals)
-      
-      // prevAumSf is in scaled fixed point format (60-bit fractional part)
-      // It represents the AUM in token's native units (already includes decimals)
-      // Total AUM = prevAumSf / (2^60)
-      const prevAumSf = vaultState.prevAumSf
-      const SCALING_FACTOR = BigInt(2) ** BigInt(60) // 2^60 for 60-bit fractional part
-      
-      // Convert prevAumSf to BigInt (it's a u128, which Anchor returns as BN or string)
-      const aumSfBigInt = typeof prevAumSf === 'string' ? BigInt(prevAumSf) : BigInt(prevAumSf.toString())
-      
-      // Calculate total tokens: prevAumSf / 2^60
-      // prevAumSf is already in token's smallest unit (with decimals), so we just divide by the scaling factor
-      const totalTokens = aumSfBigInt / SCALING_FACTOR
-      
-      if (totalTokens > 0n) {
-        api.add(tokenMint, totalTokens.toString())
-      }
-    } catch (e) {
-      // Skip invalid accounts
-      continue
-    }
+    // Decode the account using Anchor's coder
+    const vaultState = kvaultProgram.coder.accounts.decode('VaultState', account.data)
+    const tokenMint = vaultState.tokenMint.toString()
+
+    // prevAumSf is in scaled fixed point format (60-bit fractional part)
+    // It represents the AUM in token's native units (already includes decimals)
+    // Total AUM = prevAumSf / (2^60)
+    const prevAumSf = vaultState.prevAumSf
+    const SCALING_FACTOR = BigInt(2) ** BigInt(60) // 2^60 for 60-bit fractional part
+
+    // Convert prevAumSf to BigInt (it's a u128, which Anchor returns as BN or string)
+    const aumSfBigInt = typeof prevAumSf === 'string' ? BigInt(prevAumSf) : BigInt(prevAumSf.toString())
+
+    // Calculate total tokens: prevAumSf / 2^60
+    // prevAumSf is already in token's smallest unit (with decimals), so we just divide by the scaling factor
+    const totalTokens = aumSfBigInt / SCALING_FACTOR
+
+    api.add(tokenMint, totalTokens.toString())
   }
 }
 
@@ -335,7 +327,7 @@ async function combinedEthereumTvl(api) {
   if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
     await curatorExport.ethereum.tvl(api);
   }
-  
+
   // Then add MegaVault TVL
   await megavaultTvl(api);
 }
