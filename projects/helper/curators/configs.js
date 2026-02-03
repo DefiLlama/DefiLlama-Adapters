@@ -245,6 +245,11 @@ const EulerConfigs = {
       '0xba4dd672062de8feedb665dd4410658864483f1e',
     ],
   },
+  hyperliquid: {
+    vaultFactories: [
+      '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A',
+    ],
+  },
 }
 
 const SiloConfigs = {
