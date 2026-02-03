@@ -1,4 +1,4 @@
-const { getLogs } = require('../helper/cache/getLogs');
+const { getLogs2 } = require('../helper/cache/getLogs');
 
 // Factory addresses on Ethereum mainnet
 const TWYNE_FACTORY = '0xB5Eb1d005e389Bef38161691E2083b4d86FF647a';
@@ -7,7 +7,7 @@ const START_BLOCK = 23088584; // Twyne deployment block
 
 /** Discover Twyne EVaults (credit/intermediate vaults) from TwyneGenericFactory */
 async function getTwyneEVaults(api) {
-    const logs = await getLogs({
+    const logs = await getLogs2({
         api,
         target: TWYNE_FACTORY,
         eventAbi: 'event ProxyCreated(address indexed proxy, bool upgradeable, address implementation, bytes trailingData)',
@@ -19,7 +19,7 @@ async function getTwyneEVaults(api) {
 
 /** Discover Collateral Vaults from CollateralVaultFactory */
 async function getCollateralVaults(api) {
-    const logs = await getLogs({
+    const logs = await getLogs2({
         api,
         target: COLLATERAL_FACTORY,
         eventAbi: 'event T_CollateralVaultCreated(address indexed vault)',
@@ -30,24 +30,21 @@ async function getCollateralVaults(api) {
 }
 
 // Convert receipt token amounts to underlying assets and add to balances
-async function addUnderlyingBalances(api, vaults, amounts) {
+async function addUnderlyingBalances(api, vaults, amounts, { subtract = false } = {}) {
     if (vaults.length === 0) return;
 
     // Get issuer vaults (which issued the receipt tokens)
     const issuerVaults = await api.multiCall({
         calls: vaults,
         abi: 'address:asset',
-        permitFailure: true,
     });
 
     // Get underlying asset addresses from issuer vaults  
     const underlyingAssets = await api.multiCall({
         calls: issuerVaults,
         abi: 'address:asset',
-        permitFailure: true,
     });
 
-    // Build valid conversion calls (filter out failed lookups)
     const validIndices = [];
     const convertCalls = [];
     vaults.forEach((_, i) => {
@@ -61,42 +58,46 @@ async function addUnderlyingBalances(api, vaults, amounts) {
     const underlyingAmounts = await api.multiCall({
         calls: convertCalls,
         abi: 'function convertToAssets(uint256) view returns (uint256)',
-        permitFailure: true,
     });
 
-    // Add to balances
+    // Add or subtract from balances
     underlyingAmounts.forEach((amount, idx) => {
         const i = validIndices[idx];
         if (underlyingAssets[i] && amount) {
-            api.add(underlyingAssets[i], amount);
+            api.add(underlyingAssets[i], subtract ? -amount : amount);
         }
     });
 }
 
 async function tvl(api) {
-    const [twyneVaults, collateralVaults] = await Promise.all([
-        getTwyneEVaults(api),
-        getCollateralVaults(api),
-    ]);
+    const twyneVaults = await getTwyneEVaults(api);
+    const collateralVaults = await getCollateralVaults(api);
 
-    // Get receipt token amounts from both vault types
-    const [eVaultAmounts, collateralAmounts] = await Promise.all([
-        api.multiCall({ calls: twyneVaults, abi: 'uint256:totalAssets', permitFailure: true }),
-        api.multiCall({ calls: collateralVaults, abi: 'function totalAssetsDepositedOrReserved() view returns (uint256)', permitFailure: true }),
-    ]);
+    const eVaultAmounts = await api.multiCall({
+        calls: twyneVaults,
+        abi: 'uint256:totalAssets',
+    });
+    await addUnderlyingBalances(api, twyneVaults, eVaultAmounts);
 
-    await Promise.all([
-        addUnderlyingBalances(api, twyneVaults, eVaultAmounts),
-        addUnderlyingBalances(api, collateralVaults, collateralAmounts),
-    ]);
+    const collateralAmounts = await api.multiCall({
+        calls: collateralVaults,
+        abi: 'function totalAssetsDepositedOrReserved() view returns (uint256)',
+    });
+    await addUnderlyingBalances(api, collateralVaults, collateralAmounts);
+
+    const totalBorrows = await api.multiCall({
+        calls: twyneVaults,
+        abi: 'uint256:totalBorrows',
+    });
+    await addUnderlyingBalances(api, twyneVaults, totalBorrows, { subtract: true });
 }
 
 async function borrowed(api) {
     const twyneVaults = await getTwyneEVaults(api);
+
     const totalBorrows = await api.multiCall({
         calls: twyneVaults,
         abi: 'uint256:totalBorrows',
-        permitFailure: true,
     });
     await addUnderlyingBalances(api, twyneVaults, totalBorrows);
 }
