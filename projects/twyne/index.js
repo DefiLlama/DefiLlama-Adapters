@@ -7,26 +7,24 @@ const START_BLOCK = 23088584; // Twyne deployment block
 
 /** Discover Twyne EVaults (credit/intermediate vaults) from TwyneGenericFactory */
 async function getTwyneEVaults(api) {
-    const logs = await getLogs2({
+    return await getLogs2({
         api,
         target: TWYNE_FACTORY,
         eventAbi: 'event ProxyCreated(address indexed proxy, bool upgradeable, address implementation, bytes trailingData)',
-        onlyArgs: true,
         fromBlock: START_BLOCK,
+        transform: log => (log.proxy),
     });
-    return logs.map(log => log.proxy);
 }
 
 /** Discover Collateral Vaults from CollateralVaultFactory */
 async function getCollateralVaults(api) {
-    const logs = await getLogs2({
+    return await getLogs2({
         api,
         target: COLLATERAL_FACTORY,
         eventAbi: 'event T_CollateralVaultCreated(address indexed vault)',
-        onlyArgs: true,
         fromBlock: START_BLOCK,
+        transform: log => (log.vault),
     });
-    return logs.map(log => log.vault);
 }
 
 // Convert receipt token amounts to underlying assets and add to balances
