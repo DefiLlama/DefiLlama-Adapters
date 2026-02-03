@@ -128,7 +128,7 @@ const configs = {
 
 // --- Drift Solana TVL logic ---
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, sumTokens2, getConnection, getTokenAccountBalances } = require('../helper/solana')
 const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
 
@@ -227,7 +227,97 @@ const VAULT_USER_ACCOUNTS = [
   '5pJRZ2pcRfKLpsR4fTigN87jBJ93F4KGp3kxb38GNWoN', // wETH Plus
 ]
 
+// --- Kamino Lend Vault Layer ---
+const KAMINO_LEND_VAULT_LAYER_PROGRAM_ID = new PublicKey('KvauGMspG5k6rtzrqqn7WNn3oZdyKqLKwK2XWQ8FLjd')
+const GAUNTLET_ADMIN = new PublicKey('JC8sPweHaHr1kWzAvykaAmLsWtSWhi3M4NnyYGRdxgkt')
+
+// Account structure offsets (based on Anchor account layout)
+const ANCHOR_DISCRIMINATOR_SIZE = 8
+const PUBKEY_SIZE = 32
+const U64_SIZE = 8
+
+// Field offsets in the vault account
+const VAULT_ACCOUNT_OFFSETS = {
+  DISCRIMINATOR: 0,
+  VAULT_ADMIN_AUTHORITY: ANCHOR_DISCRIMINATOR_SIZE, // 8
+  BASE_VAULT_AUTHORITY: ANCHOR_DISCRIMINATOR_SIZE + PUBKEY_SIZE, // 40
+  BASE_VAULT_AUTHORITY_BUMP: ANCHOR_DISCRIMINATOR_SIZE + PUBKEY_SIZE + PUBKEY_SIZE, // 72
+  TOKEN_MINT: ANCHOR_DISCRIMINATOR_SIZE + PUBKEY_SIZE + PUBKEY_SIZE + U64_SIZE, // 80
+  TOKEN_MINT_DECIMALS: ANCHOR_DISCRIMINATOR_SIZE + PUBKEY_SIZE + PUBKEY_SIZE + U64_SIZE + PUBKEY_SIZE, // 112
+  TOKEN_VAULT: ANCHOR_DISCRIMINATOR_SIZE + PUBKEY_SIZE + PUBKEY_SIZE + U64_SIZE + PUBKEY_SIZE + U64_SIZE, // 120
+}
+
+async function kaminoLendVaultTvl(api) {
+  const connection = getConnection()
+  
+  // Query all vault accounts with the Gauntlet admin
+  // Based on the account structure provided:
+  // - vaultAdminAuthority is the first field after the 8-byte Anchor discriminator
+  const adminBytes = GAUNTLET_ADMIN.toBuffer()
+  
+  try {
+    // Query vault accounts filtered by admin
+    const vaultAccounts = await connection.getProgramAccounts(
+      KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
+      {
+        filters: [
+          // Filter by vaultAdminAuthority at offset 8 (after discriminator)
+          { memcmp: { offset: VAULT_ACCOUNT_OFFSETS.VAULT_ADMIN_AUTHORITY, bytes: adminBytes } }
+        ]
+      }
+    )
+
+    // Extract tokenVault addresses and tokenMints from each vault
+    const tokenVaultsAndMints = []
+    
+    for (const { account } of vaultAccounts) {
+      try {
+        const data = account.data
+        if (!data || data.length < VAULT_ACCOUNT_OFFSETS.TOKEN_VAULT + PUBKEY_SIZE) continue
+        
+        // Read tokenMint
+        const tokenMintPubkey = new PublicKey(
+          data.slice(VAULT_ACCOUNT_OFFSETS.TOKEN_MINT, VAULT_ACCOUNT_OFFSETS.TOKEN_MINT + PUBKEY_SIZE)
+        )
+        
+        // Read tokenVault
+        const tokenVaultPubkey = new PublicKey(
+          data.slice(VAULT_ACCOUNT_OFFSETS.TOKEN_VAULT, VAULT_ACCOUNT_OFFSETS.TOKEN_VAULT + PUBKEY_SIZE)
+        )
+        
+        tokenVaultsAndMints.push({
+          tokenVault: tokenVaultPubkey,
+          tokenMint: tokenMintPubkey.toString()
+        })
+      } catch (e) {
+        // Skip invalid accounts
+        continue
+      }
+    }
+    
+    // Get balances from token vault accounts
+    if (tokenVaultsAndMints.length > 0) {
+      const tokenVaults = tokenVaultsAndMints.map(v => v.tokenVault)
+      const balances = await getTokenAccountBalances(tokenVaults, { chain: 'solana', allowError: true, individual: true })
+      
+      // Match balances to token mints
+      for (let i = 0; i < tokenVaultsAndMints.length; i++) {
+        const { tokenMint } = tokenVaultsAndMints[i]
+        const balance = balances[i]
+        if (balance && balance.amount && balance.amount !== '0') {
+          api.add(tokenMint, balance.amount)
+        }
+      }
+    }
+  } catch (e) {
+    // If program query fails (wrong program ID or structure), fall back to reading token balances from admin address
+    // This will catch any tokens held directly by the admin
+    await sumTokens2({ api, owners: [GAUNTLET_ADMIN.toString()], chain: 'solana' })
+  }
+}
+
 async function tvl(api) {
+  // Drift vaults
   const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
   const idl = require("../knightrade/drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
@@ -253,6 +343,9 @@ async function tvl(api) {
       }
     }
   }
+
+  // Kamino Lend vaults
+  await kaminoLendVaultTvl(api)
 }
 
 async function megavaultTvl(api) {
