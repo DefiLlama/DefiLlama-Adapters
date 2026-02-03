@@ -7,18 +7,16 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const distressedAssets = ['aleth'];
 /**
  * This vaults were affected by Stream's xUSD incident on 2025 and the underlying platform is returning 
- * an innacurate (higher) balance that isn't recoverable by users. To avoid overstating the TVL, we hardcode the balances
- * at the moment the vaults were paused at Beefy:
- * avax block: 73541735, arbitrum block: 409563489
+ * an innacurate (higher) balance that isn't recoverable by users. To avoid overstating the TVL, we are excluding these vaults from the TVL calculation.
  */
-const balanceOverrides = {
+const blacklistedVaults = {
   avax: {
-    '0x79a8d2cbdcb651013dae6be25a3813ca70f35732': '492153165795',      // silov2-avalanche-ausd-valamore (~492k, 6 decimals)
-    '0x7e74446ee441a8da46f61f9ada7f8368d26e0eea': '2251698412379',     // silov2-avalanche-usdt-valamore (~2.25M, 6 decimals)
-    '0xd1fec8530a8e824f051d80ce17d238e96a75bcb2': '3049903089584',     // silov2-avalanche-usdc-mev (~3M, 6 decimals)
+    '0x79a8d2cbdcb651013dae6be25a3813ca70f35732': new Date('2025-12-01'),      // silov2-avalanche-ausd-valamore (~492k, 6 decimals)
+    '0x7e74446ee441a8da46f61f9ada7f8368d26e0eea': new Date('2025-12-01'),     // silov2-avalanche-usdt-valamore (~2.25M, 6 decimals)
+    '0xd1fec8530a8e824f051d80ce17d238e96a75bcb2': new Date('2025-12-01'),     // silov2-avalanche-usdc-mev (~3M, 6 decimals)
   },
   arbitrum: {
-    '0x0c0846c5d8194bc327669763ac6af9b788edb409': '11591864596129',    // silov2-arbitrum-usdc-valamore (~11.6M, 6 decimals)
+    '0x0c0846c5d8194bc327669763ac6af9b788edb409': new Date('2025-12-01'),    // silov2-arbitrum-usdc-valamore (~11.6M, 6 decimals)
   },
 };
 
@@ -204,14 +202,17 @@ async function tvl(api, isStaking = false) {
   })
   const vaults = vaultsByChain[chain] || [];
 
+  const _blacklistedVaults = blacklistedVaults[chain] || {};
+  const _filteredBlacklistedVaults = Object.entries(_blacklistedVaults).filter(([_, date]) => !api.timestamp || (api.timestamp * 1000 > date)).map(([i]) => i.toLowerCase())
+  const blaclistedVaultSet = new Set(_filteredBlacklistedVaults);
+
   // Filter out BIFI staking vaults and inactive vaults
   let activeVaults = vaults.filter(v => v.isBIFI);
 
   if (!isStaking)
-    activeVaults = vaults.filter(v => !v.isBIFI);
+    activeVaults = vaults.filter(v => !v.isBIFI && !blaclistedVaultSet.has(v.address.toLowerCase()));
 
   // sdk.log(`Active non-BIFI vaults: ${activeVaults.length}`);
-
   const vaultAddresses = activeVaults.map(v => v.address);
 
   let tokens = await api.multiCall({ abi: vaultABI.want, calls: vaultAddresses, permitFailure: true, });
@@ -233,7 +234,6 @@ async function tvl(api, isStaking = false) {
   const wantBalances = await api.multiCall({ abi: 'function balances() view returns  (uint256 balance0, uint256 balance1)', calls: wants, permitFailure: true, });
 
   const balances = await api.multiCall({ abi: vaultABI.balance, calls: filteredVaults, permitFailure: true, });
-  applyBalanceOverrides(chain, filteredVaults, balances);
 
   wants.forEach((token, i) => {
     const balance = balances[i]
@@ -253,19 +253,6 @@ async function tvl(api, isStaking = false) {
 
   return sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
 }
-
-/** Mutates the balances array in place, applying hardcoded overrides for affected vaults */
-function applyBalanceOverrides(chain, vaultAddresses, balances) {
-  const chainOverrides = balanceOverrides[chain] || {};
-  balances.forEach((_, i) => {
-    const vaultAddress = vaultAddresses[i].toLowerCase();
-    if (chainOverrides[vaultAddress] !== undefined) {
-      // sdk.log(`Balance override applied for ${vaultAddress}: ${balances[i]} -> ${chainOverrides[vaultAddress]}`);
-      balances[i] = chainOverrides[vaultAddress];
-    }
-  });
-}
-
 
 module.exports = {
   misrepresentedTokens: true,
