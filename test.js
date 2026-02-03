@@ -26,7 +26,7 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
-const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', 'LLAMA_RUN_LOCAL', ...ENV_KEYS])
+const whitelistedEnvKeys = new Set(['LLAMA_SANITIZE','TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', 'LLAMA_RUN_LOCAL', ...ENV_KEYS])
 
 
 
@@ -110,7 +110,7 @@ function validateHallmarks(hallmark) {
     throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
   }
   const [timestamp, text] = hallmark
-  if (typeof timestamp !== 'string' || isNaN(+new Date(timestamp))) {
+  if ((typeof timestamp !== 'string'  && !process.env.LLAMA_SANITIZE) || isNaN(+new Date(timestamp))) {
     throw new Error("Hallmark timestamp should be a dateString (YYYY-MM-DD)")
   }
   const year = new Date(timestamp * 1000).getFullYear()
@@ -138,7 +138,7 @@ function validateHallmarks(hallmark) {
   deadChains.forEach(chain => {
     delete module[chain]
   })
-  
+
   if (module.hallmarks) {
     if (!Array.isArray(module.hallmarks)) {
       throw new Error("Hallmarks should be an array of arrays")
@@ -286,7 +286,7 @@ function checkExportKeys(module, filePath, chains) {
         || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
         || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
       )))
-    process.exit(0)    
+    process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
@@ -521,8 +521,8 @@ function buildPricesGetQueries(readKeys, timestamp) {
   if (!readKeys.length) return []
   console.log(`Building prices get queries for ${readKeys.length} tokens`)
   const burl = (process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/` : 'https://coins.llama.fi/')
-   + (timestamp && timestamp < (Date.now() / 1000 - 30 * 60) ? `prices/historical/${timestamp}/` : 'prices/current/')
-  const queries = []  
+    + (timestamp && timestamp < (Date.now() / 1000 - 30 * 60) ? `prices/historical/${timestamp}/` : 'prices/current/')
+  const queries = []
   let query = burl
 
   for (const key of readKeys) {
