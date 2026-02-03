@@ -1,4 +1,4 @@
-const { getCuratorTvl } = require("../helper/curators")
+const { getCuratorExport } = require("../helper/curators")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
@@ -16,18 +16,48 @@ const GearboxCompressorABI = {
 // ---- Config (extend as needed) ----
 const configs = {
   methodology:
-    "Counts (1) assets deposited in curated ERC-4626 vaults and (2) collateral held in Gearbox v3.1 Credit Accounts from the specified Market Configurator.",
+    "Counts (1) assets deposited in curated ERC-4626 vaults and (2) collateral held in Gearbox v3.1 Credit Accounts from the specified Market Configurator. Morpho v1/v2 vaults are deduplicated to avoid double-counting.",
   blockchains: {
     ethereum: {
-      // your existing ERC-4626 vaults
+      // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
+      // (vaults are discovered from event logs, and de-duplication is automatically applied)
+      morphoVaultOwners: [
+        // Add owner addresses here to discover all their Morpho vaults
+        // Example: '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
+      ],
+
+      // Option 2: Use morpho: to specify static Morpho vault addresses
+      // (de-duplication is automatically applied)
+      // You can use BOTH morphoVaultOwners and morpho together - they will be combined
+      morpho: [
+        "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", //Morpho v1 USDC Prime 
+        "0x0c6aec603d48eBf1cECc7b247a2c3DA08b398DC1", //Morpho v1 EURC Yield 
+        "0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8", //Morpho v1 ETH Prime
+        "0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6", //Morpho v2 USDC Prime
+        "0xa877D5bb0274dcCbA8556154A30E1Ca4021a275f", //Morpho v2 EURC Yield
+        "0xbb50a5341368751024ddf33385ba8cf61fe65ff9", //Morpho v2 ETH Prime
+        "0x5dbf760b4fd0cDdDe0366b33aEb338b2A6d77725", //Morpho v2 ETH Yield
+        "0xc88eFFD6e74D55c78290892809955463468E982A", //Morpho v1 ETH Yield
+        "0xD5cCe260E7a755DDf0Fb9cdF06443d593AaeaA13", //Morpho v2 USDC Yield
+        "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
+      ],
+
+      // Other ERC-4626 vaults (non-Morpho)
       erc4626: [
-        "0x9396dcbf78fc526bb003665337c5e73b699571ef",
-        "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64",
+        "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
+        "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
       ],
 
       // NEW: Gearbox v3.1 Market Configurator (legacy configurator) to crawl
       gearboxMarketConfigurator: "0x1b265b97eb169fb6668e3258007c3b0242c7bdbe",
     },
+    arbitrum: {
+        // You can use either morphoVaultOwners or morpho here too
+        morpho: [
+          "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
+          "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
+        ],
+      },
   },
 }
 
@@ -47,7 +77,6 @@ async function getGearboxV31Collateral(api, marketConfigurator, pageSize = 1e3) 
   // page through credit accounts for each CM
   for (const cm of creditManagers) {
     let offset = 0
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const accounts = await api.call({
         abi: GearboxCompressorABI.getCreditAccounts,
@@ -85,26 +114,17 @@ async function getGearboxV31Collateral(api, marketConfigurator, pageSize = 1e3) 
 
 // ---- Combined TVL export per chain ----
 
-function buildChainExport(chainKey, chainCfg) {
-  return {
-    tvl: async (api) => {
-      // 1) Curated vault TVL (ERC-4626 etc.)
-      await getCuratorTvl(api, chainCfg)
+const exportObjects = getCuratorExport(configs)
 
-      // 2) Gearbox v3.1 Credit Account collateral TVL for the given configurator
-      if (chainCfg.gearboxMarketConfigurator)
-        await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
-    },
-  }
-}
-
-const exportObjects = {
-  doublecounted: true,
-  methodology: configs.methodology,
-}
-
+// Add Gearbox v3.1 collateral TVL to each chain
 for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
-  exportObjects[chain] = buildChainExport(chain, chainCfg)
+  if (exportObjects[chain] && chainCfg.gearboxMarketConfigurator) {
+    const originalTvl = exportObjects[chain].tvl
+    exportObjects[chain].tvl = async (api) => {
+      await originalTvl(api)
+      await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
+    }
+  }
 }
 
 module.exports = exportObjects

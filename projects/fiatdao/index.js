@@ -1,7 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json')
-
-const { sumTokens2, } = require("../helper/unwrapLPs")
+const abi = {
+    "underlierToken": "address:underlierToken",
+    "underlierScale": "uint256:underlierScale",
+    "token": "address:token",
+    "tokenScale": "uint256:tokenScale",
+    "fairPrice": "function fairPrice(uint256, bool net, bool face) view returns (uint256)",
+    "balanceOf": "function balanceOf(address account, uint256 id) view returns (uint256)"
+  };const { sumTokens2, } = require("../helper/unwrapLPs")
 const { getConfig } = require('../helper/cache')
 
 

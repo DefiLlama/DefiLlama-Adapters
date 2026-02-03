@@ -6,6 +6,7 @@ const COIN_TYPES= {
   stIOTA:
     "0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c::cert::CERT",
   VUSD: "0xd3b63e603a78786facf65ff22e79701f3e824881a12fa3268d62a75530fe904f::vusd::VUSD",
+  iBTC: "0x387c459c5c947aac7404e53ba69541c5d64f3cf96f3bc515e7f8a067fb725b54::ibtc::IBTC"
 };
 
 async function getStIOTARatio() {
@@ -32,7 +33,9 @@ async function tvl(api) {
         if(symbol === 'stIOTA'){
             api.add(COIN_TYPES['IOTA'], balanceAmount/stIOTARatio)
         }
-        
+        if(symbol === 'iBTC'){
+            api.add(COIN_TYPES['iBTC'], balanceAmount)
+        }
     })
 }
 

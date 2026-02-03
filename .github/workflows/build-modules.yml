@@ -13,13 +13,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+          run_install: false
+
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 20
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
+
 
       - name: Run buildImports script
         run: node scripts/buildImports.js

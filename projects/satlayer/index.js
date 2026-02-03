@@ -34,7 +34,7 @@ const consts = {
       vault: "0x4c550885133adbca1ef0c3d1fddac0a8496a9d8fa7bb52556e6cf60fe70bb1e8" // satXBTC
     },
     {
-      token: "0x9e998601660bba48e7fabefa97de5b6c80c970f2a18ee31a028c7fc02a4e97f5::ybtc::YBTC",
+      token: "0xa03ab7eee2c8e97111977b77374eaf6324ba617e7027382228350db08469189e::ybtc::YBTC",
       vault: "0x828dcef43c2c0ecf3720d26136aab40e819688b96bad0e262fbaa3672110d2d9" // satYBTC.B
     }
   ]

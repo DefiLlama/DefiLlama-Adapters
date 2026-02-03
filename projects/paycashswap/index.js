@@ -1,26 +1,20 @@
-const utils = require("../helper/utils");
+const { get_account_tvl } = require("../helper/chain/eos");
 
-// https://paycashswap.com
-// https://api.paycashswap.com
-async function eos(api) {
-  // Get total pool liquidity which represents the actual AMM pool TVL
-  const liquidityQuery = {
-    operationName: "TotalLiquidity",
-    variables: {},
-    query: "query TotalLiquidity { totalLiquidityChart { value24h } }"
-  }
-  
-  const { data: { data: { totalLiquidityChart: { value24h } } } } = await utils.postURL("https://api.paycashswap.com/", liquidityQuery);
-  
-  // Use the pool liquidity value directly
-  const poolTvl = Number(value24h);
-  api.addUSDValue(poolTvl);
+const tokens = [
+  ["eosio.token", "EOS", "eos"],
+  ["tethertether", "USDT", "tether"],
+]
+
+// PayCash Swap
+// https://paycash.app/
+async function eos() {
+  return await get_account_tvl("swap.pcash", tokens);
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  methodology: `PayCash Swap TVL is achieved by making a call to its PayCash Swap API and using the totalLiquidityChart.value24h which represents the actual AMM pool liquidity.`,
+  timetravel: false,
+  methodology: `PayCash Swap TVL is computed by querying token balances from the 'swap.pcash' contract. Only external tokens (EOS, USDT) are counted, excluding project-owned tokens like MLNK and RUBCASH.`,
   eos: {
     tvl: eos
-  },
+  }
 }
