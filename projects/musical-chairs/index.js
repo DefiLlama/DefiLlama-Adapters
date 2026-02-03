@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 const contracts = {
@@ -9,12 +10,12 @@ const contracts = {
 module.exports = {
   methodology: "TVL is calculated as the total ETH balance held in the MusicalChairsGame smart contract on each supported chain. This includes player stakes for active and pending games, as well as any accumulated but not yet withdrawn platform commissions.",
   arbitrum: {
-    tvl: sumTokensExport({ owner: contracts.arbitrum }),
+    tvl: sumTokensExport({ owner: contracts.arbitrum, tokens: [ADDRESSES.null] }),
   },
   ethereum: {
-    tvl: sumTokensExport({ owner: contracts.ethereum }),
+    tvl: sumTokensExport({ owner: contracts.ethereum, tokens: [ADDRESSES.null] }),
   },
   base: {
-    tvl: sumTokensExport({ owner: contracts.base }),
+    tvl: sumTokensExport({ owner: contracts.base, tokens: [ADDRESSES.null] }),
   },
 };
