@@ -57,8 +57,8 @@ Object.keys(subgraphs).forEach(chain => {
             hooks
           }
         }`
-      const result = await cachedGraphQuery(`uniswap-v4/${chain}`, endpoint, query, { api, fetchById: true })
-      const mappedResults = result.pools.map(pool => { return { token0: pool.token0.id, token1: pool.token1.id, hooks: pool.hooks}})
+      const result = await cachedGraphQuery(`uniswap-v4/${chain}`, endpoint, query, { api, fetchById: true, useBlock: true })
+      const mappedResults = result.map(pool => { return { token0: pool.token0.id, token1: pool.token1.id, hooks: pool.hooks}})
       return processResult(api, mappedResults, factory, subgraphs[chain].blacklistedTokens)
     }
   }
