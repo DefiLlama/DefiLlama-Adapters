@@ -8,7 +8,7 @@ const contracts = {
 };
 
 module.exports = {
-  methodology: "TVL is calculated as the total ETH balance held in the MusicalChairsGame smart contract on each supported chain. This includes player stakes for active and pending games, as well as any accumulated but not yet withdrawn platform commissions.",
+  methodology: "TVL is calculated as the total ETH balance held in the MusicalChairsGame smart contract, representing active player stakes in current and pending games. Protocol-owned commissions are intended to be excluded.",
   arbitrum: {
     tvl: sumTokensExport({ owner: contracts.arbitrum, tokens: [ADDRESSES.null] }),
   },
