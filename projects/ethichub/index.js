@@ -43,8 +43,8 @@ const LP_ETHIX_WETH_UNIV2_GNOSIS = '0x2b8d7a0ed5e642f6441862d353c60c8f8ff2acd1';
 const ETHIX_TOKEN_GNOSIS = '0xec3f3e6d7907acDa3A7431abD230196CDA3FbB19';
 
 async function borrowed(api) {
-  const borrowedAmount = await api.call({ target: api.chain == "ethereum" ? MINIMICE_BOND_MAINNET : LIQUIDITY_RESERVE_CELO, abi: 'uint256:totalBorrowed' });
-  api.add(api.chain == "ethereum" ? ADDRESSES.ethereum.DAI : ADDRESSES.celo.cUSD, borrowedAmount);
+  const borrowedAmount = await api.call({ target: MINIMICE_BOND_MAINNET, abi: 'uint256:totalBorrowed' });
+  api.add(ADDRESSES.ethereum.DAI, borrowedAmount);
 }
 
 module.exports = {
@@ -54,6 +54,7 @@ module.exports = {
   1. TVL: Consists of stablecoins (DAI, cUSD, cEUR, USDC) deposited in the bonding contracts (Mainnet) and reserves (Celo) to lend to farmers.
   2. Pool2: Total liquidity in the ETHIX Uniswap V2/V3 and Sushiswap pairs.
   3. Staking: ETHIX tokens locked by users in the main staking contracts and Originator nodes.
+  4. Borrowed: Active loans taken by users from the minimice bond contract
   `,
   start: '2020-12-22',
   ethereum: {
@@ -78,7 +79,6 @@ module.exports = {
       tokens: [ETHIX_TOKEN_CELO, ADDRESSES.celo.cUSD]
     }),
     staking: stakings([STAKED_ETHIX_CELO, ...ORIGINATORS_CELO], ETHIX_TOKEN_CELO),
-    // borrowed,
   },
   xdai: {
     pool2: sumTokensExport({
