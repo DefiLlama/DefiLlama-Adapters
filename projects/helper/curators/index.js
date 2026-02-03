@@ -1,6 +1,63 @@
 const { getLogs2 } = require("../../helper/cache/getLogs")
 const { ABI, MorphoConfigs, EulerConfigs, SiloConfigs, VesuConfigs } = require('./configs')
 const { multiCall } = require('../chain/starknet')
+const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
+const { getProvider, getConnection, } = require('../solana')
+const kvaultIdl = require('../../gauntlet/kvault-idl.json')
+const { Program, BN } = require("@project-serum/anchor")
+const { PublicKey } = require("@solana/web3.js")
+
+
+async function kaminoLendVaultTvl(api, adminAddress) {
+  const KAMINO_LEND_VAULT_LAYER_PROGRAM_ID = new PublicKey('KvauGMspG5k6rtzrqqn7WNn3oZdyKqLKwK2XWQ8FLjd')
+
+  if (typeof adminAddress === 'string')
+    adminAddress = new PublicKey(adminAddress)
+
+  const connection = getConnection()
+  const provider = getProvider()
+
+  // Load the kvault IDL
+  const kvaultProgram = new Program(kvaultIdl, KAMINO_LEND_VAULT_LAYER_PROGRAM_ID, provider)
+
+  // Query vault accounts directly using getProgramAccounts with base58 encoded filter
+  const adminBytes = adminAddress.toBuffer()
+  const rawAccounts = await connection.getProgramAccounts(
+    KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
+    {
+      filters: [
+        {
+          memcmp: {
+            offset: 8, // After 8-byte Anchor discriminator
+            bytes: bs58.encode(adminBytes)
+          }
+        }
+      ]
+    }
+  )
+
+  // Extract vault data and calculate total AUM from prevAumSf
+  for (const { account } of rawAccounts) {
+    // Decode the account using Anchor's coder
+    const vaultState = kvaultProgram.coder.accounts.decode('VaultState', account.data)
+    const tokenMint = vaultState.tokenMint.toString()
+
+    // prevAumSf is in scaled fixed point format (60-bit fractional part)
+    // It represents the AUM in token's native units (already includes decimals)
+    // Total AUM = prevAumSf / (2^60)
+    const prevAumSf = vaultState.prevAumSf
+    const SCALING_FACTOR = BigInt(2) ** BigInt(60) // 2^60 for 60-bit fractional part
+
+    // Convert prevAumSf to BigInt (it's a u128, which Anchor returns as BN or string)
+    const aumSfBigInt = typeof prevAumSf === 'string' ? BigInt(prevAumSf) : BigInt(prevAumSf.toString())
+
+    // Calculate total tokens: prevAumSf / 2^60
+    // prevAumSf is already in token's smallest unit (with decimals), so we just divide by the scaling factor
+    const totalTokens = aumSfBigInt / SCALING_FACTOR
+
+    api.add(tokenMint, totalTokens.toString())
+  }
+}
 
 function isOwner(owner, owners) {
   for (const item of owners) {
@@ -14,7 +71,7 @@ function isOwner(owner, owners) {
 async function getMorphoVaults(api, owners) {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
-  
+
   // Query v1 vaults
   if (MorphoConfigs[api.chain]?.vaultFactories) {
     for (const factory of MorphoConfigs[api.chain].vaultFactories) {
@@ -273,7 +330,7 @@ async function getCuratorTvlErc4626(api, vaults) {
 }
 
 async function getCuratorTvlAeraVault(api, vaults) {
-  const assetRegistries =  await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
+  const assetRegistries = await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
   const existedVaults = []
   const existedRegistries = []
   for (let i = 0; i < vaults.length; i++) {
@@ -282,7 +339,7 @@ async function getCuratorTvlAeraVault(api, vaults) {
       existedRegistries.push(assetRegistries[i])
     }
   }
-  const assets =  await api.multiCall({ abi: ABI.aera.numeraireToken, calls: existedRegistries })
+  const assets = await api.multiCall({ abi: ABI.aera.numeraireToken, calls: existedRegistries })
   const values = await api.multiCall({ abi: ABI.aera.value, calls: existedVaults, permitFailure: true })
   api.add(assets, values.map(v => v || 0))
 }
@@ -299,7 +356,7 @@ async function getCuratorTvlVesuVault(api, vaults) {
 
 async function getCuratorTvlBoringVault(api, vaults) {
   let filterHookVaults = []
-  const hooks =  await api.multiCall({ abi: ABI.boringVault.hook, calls: vaults, permitFailure: true })
+  const hooks = await api.multiCall({ abi: ABI.boringVault.hook, calls: vaults, permitFailure: true })
   for (let i = 0; i < vaults.length; i++) {
     if (hooks[i]) {
       filterHookVaults.push({
@@ -326,13 +383,13 @@ async function getCuratorTvlBoringVault(api, vaults) {
   const decimals = await api.multiCall({ abi: ABI.decimals, calls: filterAccountantVaults.map(filterVault => filterVault.accountant) })
   for (let i = 0; i < assets.length; i++) {
     if (assets[i]) {
-      api.add(assets[i], rates[i] * supplies[i] / 10**(Number(decimals[i])))
+      api.add(assets[i], rates[i] * supplies[i] / 10 ** (Number(decimals[i])))
     }
   }
 }
 
 async function getCuratorTvlSymbioticVault(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.symbiotic.collateral, calls: vaults, permitFailure: true })
+  const assets = await api.multiCall({ abi: ABI.symbiotic.collateral, calls: vaults, permitFailure: true })
   const existedVaults = []
   for (let i = 0; i < vaults.length; i++) {
     if (assets[i]) {
@@ -358,6 +415,15 @@ async function getNested4626Vaults(api, vaults) {
 }
 
 async function getCuratorTvl(api, vaults) {
+
+  if (api.chain === 'solana') {
+    const adminAddress = vaults.kaminoLendVaultAdmins ?? []
+    for (const admin of adminAddress)
+      await kaminoLendVaultTvl(api, admin)
+
+    return api.getBalances()
+  }
+
   const allVaults = {
     morpho: vaults.morpho ? vaults.morpho : [],
     euler: vaults.euler ? vaults.euler : [],
@@ -444,4 +510,5 @@ function getCuratorExport(configs) {
 module.exports = {
   getCuratorTvl,
   getCuratorExport,
+  kaminoLendVaultTvl,
 }

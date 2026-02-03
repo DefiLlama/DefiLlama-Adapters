@@ -9,6 +9,9 @@ const configs = {
         '0xe78C246ea973389F55BAEADF71e04750D50417d1'
       ],
     },
+    solana: {
+      kaminoLendVaultAdmins: ['7fLxEftpppneavpueYgP2s7HhSGbWpj2jTCmAEwwqonY'],
+    },
   }
 }
 
