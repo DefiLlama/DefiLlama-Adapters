@@ -45,6 +45,7 @@ const DEFAULTS = {
   BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
   VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
+  KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
 }
 
 const ENV_KEYS = [
