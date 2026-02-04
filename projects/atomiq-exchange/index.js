@@ -19,16 +19,16 @@ const config = {
 }
 
 async function tvl(api) {
-    return await sumTokens({ owners: config[api.chain].vaults, api, tokens: config[api.chain].tokens ?? [ADDRESSES.null] });
+    return await sumTokens({ api, owners: config[api.chain].vaults, tokens: config[api.chain].tokens ?? [ADDRESSES.null] });
 }
 
-async function tvlSolana() {
+async function tvlSolana(api) {
     // get the authority PDA from program ID using seed "authority"
     const [authorityPda] = PublicKey.findProgramAddressSync(
         [Buffer.from("authority")],
         new PublicKey(ATOMIQ_PROGRAM_ID)
     );
-    return sumTokens2({ owners: [authorityPda.toString()] });
+    return sumTokens2({ api, owners: [authorityPda.toString()] });
 }
 
 module.exports = {
