@@ -4,7 +4,6 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "dev-defindex": "node projects/defindex/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "weeklyChanges": "git pull && git diff $(git log -1 --before=@{7.days.ago} --format=%H) --stat | grep -E \"projects/\" | cut -d / -f 2 | cut -d \" \" -f 1 | uniq | wc -l",
     "dev": "babel-watch curve.js",
