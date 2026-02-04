@@ -52,9 +52,19 @@ async function borrowedEth(api) {
 async function borrowedCelo(api) {
   const creditLines = await api.fetchList({ target: CREDIT_LINE_CELO, lengthAbi: 'uint256:totalSupply', itemAbi: creditLinesAbi });
 
+  // get principal token decimals
+  const tokens = [...new Set(creditLines.map(l => l.principalToken.toLowerCase()))]
+  const decimalsArr = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+  const decimalsByToken = Object.fromEntries(tokens.map((t, i) => [t, decimalsArr[i]]))
+
   for (const line of creditLines) {
-    // despite usdc having 6 decimals, the contract stores balances with 18
-    api.add(line.principalToken, (Number(line.totalBorrowed) - Number(line.totalRepaid)) / 1e12);
+    // contract stores balances with 18 decimals; scale down to token decimals
+    const borrowed = BigInt(line.totalBorrowed) - BigInt(line.totalRepaid)
+    if (borrowed <= 0n) continue
+    const tokenKey = line.principalToken.toLowerCase()
+    const tokenDecimals = BigInt(decimalsByToken[tokenKey] ?? 18)
+    const scale = tokenDecimals < 18n ? 10n ** (18n - tokenDecimals) : 1n
+    api.add(line.principalToken, borrowed / scale)
   }
 }
 
