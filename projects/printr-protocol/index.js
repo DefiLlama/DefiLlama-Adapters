@@ -19,35 +19,41 @@ const chainIds = {
   monad: 143,
 }
 
+/**
+ * Fetches the token list for a specific chain from Printr API
+ * @param {number} chainId - The numeric chain ID
+ * @returns {Promise<Array>} Array of token objects
+ */
 async function fetchTokenList(chainId) {
   const endpoint = `${PRINTR_API}/chains/${chainId}/tokenlist.json`
   const data = await getConfig(`printr-protocol/${chainId}`, endpoint)
-  return data.tokens || []
+  return data?.tokens ?? []
 }
 
+/**
+ * Calculates TVL for Printr protocol on a specific chain
+ * TVL = sum of reserves locked in active bonding curves
+ * @param {object} api - DefiLlama SDK API object
+ */
 async function tvl(api) {
   const chain = api.chain
   const chainId = chainIds[chain]
 
-  if (!chainId) {
-    return {}
-  }
+  if (!chainId) return
 
   const tokens = await fetchTokenList(chainId)
+  if (!tokens.length) return
 
-  if (!tokens.length) {
-    return {}
-  }
-
-  // Get curve info for all tokens
+  // Get curve info for all tokens in a single multicall
   const curves = await api.multiCall({
     abi: GET_CURVE_ABI,
     calls: tokens.map(t => ({ target: PRINTR_CONTRACT, params: [t.address] })),
   })
 
   // Sum reserves by base pair token
+  // Each curve.reserve is the amount of basePair token locked
   curves.forEach((curve) => {
-    if (curve && curve.reserve > 0) {
+    if (curve && curve.reserve > 0n) {
       api.add(curve.basePair, curve.reserve)
     }
   })
@@ -55,11 +61,11 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the sum of reserves locked in active Printr bonding curves. Each curve holds a base pair token (e.g., USDC, WETH) that users deposit to buy Telecoins. Graduated tokens (curves with reserve=0) have their liquidity in DEX pools, tracked separately.',
-  ethereum: { tvl },
-  bsc: { tvl },
-  arbitrum: { tvl },
-  base: { tvl },
-  avax: { tvl },
-  mantle: { tvl },
-  monad: { tvl },
+  timetravel: false,
+  isHeavyProtocol: true,
 }
+
+// Register TVL function for each supported chain
+Object.keys(chainIds).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
