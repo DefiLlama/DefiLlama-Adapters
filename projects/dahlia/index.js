@@ -12,7 +12,6 @@ module.exports = {
 const getDeployedMarketIds = async (api, dahlia, fromBlock) => {
   const eventAbi = "event DeployMarket(uint32 indexed id, address indexed vault, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv, uint256 liquidationBonusRate, string name, address owner) marketConfig)"
   const logs = await getLogs2({ api, eventAbi, target: dahlia, fromBlock, topics: ['0xbe9a2432e4c18ee1eb6ab3ce194836a0257e410c7cc435b4c31ac111a0b90e22'], extraKey: 'deployed' });
-  console.log(logs)
   return logs.map(log => log.id);
 }
 

@@ -1,5 +1,18 @@
 const sdk = require('@defillama/sdk');
-const abiPolygon = require('./abi-polygon.json');
+const abiPolygon = {
+    "IronSwap": {
+      "getTokenBalances": "uint256[]:getTokenBalances",
+      "getTokens": "address[]:getTokens"
+    },
+    "IronController": {
+      "getAllMarkets": "address[]:getAllMarkets"
+    },
+    "rToken": {
+      "getCash": "uint256:getCash",
+      "underlying": "address:underlying",
+      "symbol": "string:symbol"
+    }
+  };
 const { compoundExports2 } = require('../helper/compound');
 
 const Contracts = {

@@ -76,6 +76,22 @@ const STRATEGIES = {
     address: "0x1248e385c23a929a015ec298a26560fa7745bbd6e41a886550e337b02714b1b",
     token1: ADDRESSES.starknet.STRK,
     token2: ADDRESSES.starknet.WBTC,
+  }, {
+    address: "0x5203a08b471e46bf33990ac83aff577bbe5a5d789e61de2c6531e3c4773d1c9",
+    token1: ADDRESSES.starknet.USDT,
+    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
+  }, {
+    address: "0x4d00c7423b3c0fae3640f6099ac97acbfd8708f099e09bfe3a7a6a680399228",
+    token1: ADDRESSES.starknet.ETH,
+    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
+  }, {
+    address: "0x4de22bd0a8eb4d0a18736e66dd36d20ba50bc106346bbfac3dbeaac1ab37ce1",
+    token1: ADDRESSES.starknet.STRK,
+    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
+  }, {
+    address: "0x76101c3b80af1103c9c6d541ca627f61b5ae7ae79d7fce96ccdf7bdb648450d",
+    token1: ADDRESSES.starknet.WBTC,
+    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
   }],
   "EkuboVaultsEndurBTC": [{
     address: "0x0785dc3dfc4e80ef2690a99512481e3ed3a5266180adda5a47e856245d68a4af",
