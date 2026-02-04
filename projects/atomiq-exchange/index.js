@@ -37,5 +37,5 @@ module.exports = {
     citrea: { tvl },
     starknet: { tvl },
     solana: { tvl: tvlSolana },
-    methodology: `TVL counts the total assets held in the Atomiq Exchange spv vaults on each chain.`,
+    methodology: `TVL counts the total assets held in the Atomiq Exchange spv vaults and escrow managers on each chain.`,
 }
