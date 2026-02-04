@@ -1,6 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { sumTokens, sumTokensExport } = require("../helper/sumTokens");
+const { sumTokens } = require("../helper/sumTokens");
+const { sumTokens2 } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js");
 
+const ATOMIQ_PROGRAM_ID = "4hfUykhqmD7ZRvNh1HuzVKEY7ToENixtdUKZspNDCrEM";
 
 const config = {
     btnx: {
@@ -13,13 +16,19 @@ const config = {
     citrea: {
         vaults: ["0x5bb0C725939cB825d1322A99a3FeB570097628c3", "0xc98Ef084d3911C8447DBbE4dDa18bC2c9bB0584e"],
     },
-    solana: {
-        vaults: ["4hfUykhqmD7ZRvNh1HuzVKEY7ToENixtdUKZspNDCrEM"],
-    }
 }
 
 async function tvl(api) {
     return await sumTokens({ owners: config[api.chain].vaults, api, tokens: config[api.chain].tokens ?? [ADDRESSES.null] });
+}
+
+async function tvlSolana() {
+    // get the authority PDA from program ID using seed "authority"
+    const [authorityPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("authority")],
+        new PublicKey(ATOMIQ_PROGRAM_ID)
+    );
+    return sumTokens2({ owners: [authorityPda.toString()] });
 }
 
 module.exports = {
@@ -27,6 +36,6 @@ module.exports = {
     btnx: { tvl },
     citrea: { tvl },
     starknet: { tvl },
-    solana: { tvl },
+    solana: { tvl: tvlSolana },
     methodology: `TVL counts the total assets held in the Atomiq Exchange spv vaults on each chain.`,
 }
