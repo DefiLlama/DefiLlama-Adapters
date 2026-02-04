@@ -16,6 +16,7 @@ const chainIds = {
   base: 8453,
   avax: 43114,
   mantle: 5000,
+  monad: 143,
 }
 
 async function fetchTokenList(chainId) {
@@ -60,4 +61,5 @@ module.exports = {
   base: { tvl },
   avax: { tvl },
   mantle: { tvl },
+  monad: { tvl },
 }
