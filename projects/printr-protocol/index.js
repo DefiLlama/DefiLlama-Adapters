@@ -1,6 +1,6 @@
 const { getConfig } = require('../helper/cache')
 
-const PRINTR_API = 'https://api-preview.printr.money'
+const PRINTR_API = 'https://api.printr.money'
 
 // Printr contract is deployed at the same address on all chains (CREATE2)
 const PRINTR_CONTRACT = '0x4d9C01EBFDa5b5C14890F545abeA0a10924Bca5f'
