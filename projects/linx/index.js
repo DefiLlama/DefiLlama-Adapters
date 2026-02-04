@@ -51,24 +51,6 @@ async function getTokenBalance(marketContractId, tokenId) {
     }
 }
 
-async function getMarketState(marketId) {
-    const contractCalls = [{
-        group: 0,
-        address: config.linx,
-        methodIndex: MARKET_METHOD_INDEX,
-        args: [{ type: "ByteVec", value: marketId }]
-    }]
-    const results = await alephium.contractMultiCall(contractCalls);
-    return {
-        totalSupplyAssets: BigInt(results[0].returns[0].value),
-        totalSupplyShares: BigInt(results[0].returns[1].value),
-        totalBorrowAssets: BigInt(results[0].returns[2].value),
-        totalBorrowShares: BigInt(results[0].returns[3].value),
-        lastUpdate: BigInt(results[0].returns[4].value),
-        fee: BigInt(results[0].returns[5].value)
-    };
-}
-
 async function tvl(api) {
     const markets = await getMarkets();
     const tokenAmounts = new Map();
@@ -88,8 +70,13 @@ async function borrowed(api) {
     const markets = await getMarkets();
     const tokenAmounts = new Map();
     for (const market of markets) {
-        const state = await getMarketState(market.marketId);
-        const borrowAssets = state.totalBorrowAssets;
+        const state = await alephium.contractMultiCall([{
+            group: 0,
+            address: config.linx,
+            methodIndex: MARKET_METHOD_INDEX,
+            args: [{ type: "ByteVec", value: market.marketId }]
+        }]);
+        const borrowAssets = BigInt(state[0].returns[2].value);
         tokenAmounts.set(market.loanTokenId, (tokenAmounts.get(market.loanTokenId) ?? BigInt(0)) + borrowAssets);
     }
 
