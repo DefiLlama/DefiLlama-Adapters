@@ -107,6 +107,11 @@ const fixBalancesTokens = {
     '0x2a25fbD67b3aE485e461fe55d9DbeF302B7D3989': { coingeckoId: 'usd-coin', decimals: 6 },
     '0x83A15000b753AC0EeE06D2Cb41a69e76D0D5c7F7': { coingeckoId: 'ethereum', decimals: 18 },
   },
+  keeta: {
+    [ADDRESSES.keeta.KTA]: { coingeckoId: 'keeta', decimals: 18 },
+    [ADDRESSES.keeta.USDC]: { coingeckoId: 'usd-coin', decimals: 6 },
+    [ADDRESSES.keeta.EURC]: { coingeckoId: 'euro-coin', decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
