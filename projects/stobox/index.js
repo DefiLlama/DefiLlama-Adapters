@@ -1,34 +1,63 @@
-const tokenDetails = {
-    bsc: {
-        GFST: '0xbA2e788D83eA786d11ED87353763616157A35082',
-        STBX: '0x65DaD60a28626309F7504d853AFF0099FeD1aAaF',
-        SLX: '0x2C4A911B16435f96e6bD18E4d720a32480554a22',
-        LSRWA: '0x475eD67Bfc62B41c048b81310337c1D75D45aADd',
-    },
-    polygon: {
-        CSB23: '0x76381bFCCB35736a854675570c07a73508622AFd',
-        MFRET: '0xAa6d73C22A953a6A83B9963052bA73f0C53FC764',
-        MRDTS: '0xF71272DBC0Da11aDd09cd44A0b7F7D384C0D5Fe1',
-        CTREAL: '0x06c3aa74645f424d24f6C835e8D606D35225Ab96',
-    },
+const LATEST_PRICE_ABI = 'function getCoinPrice(uint256, address, address) external view returns (bool, uint256)';
+
+async function tvl(api) {
+  const { factory, oracle } = config[api.chain];
+
+  // Get token list from factory
+  const tokens = await api.call({
+    abi: 'function generalTokenList() external view returns (address[])',
+    target: factory,
+  });
+
+  // Get total supplies for all tokens
+  const supplies = await api.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: tokens,
+  });
+
+  // Get decimals for all tokens
+  const decimals = await api.multiCall({
+    abi: 'erc20:decimals',
+    calls: tokens,
+  });
+
+  // Get prices from oracle for each token (price has 18 decimals)
+  const prices = await api.multiCall({
+    abi: LATEST_PRICE_ABI,
+    target: oracle,
+    calls: tokens.map((token) => ({
+      params: [840, token, '0x0000000000000000000000000000000000000000'],
+    })),
+  });
+
+  tokens.forEach((token, idx) => {
+    const [, price] = prices[idx];
+    const priceBN = BigInt(price || 0);
+    
+    // Skip tokens with zero price (no TVL contribution)
+    if (priceBN > 0n) {
+      const supplyBN = BigInt(supplies[idx]);
+      const tokenDecimals = Number(decimals[idx]);
+      // TVL in USD = (supply / 10^tokenDecimals) * (price / 10^18)
+      const divisor = 10n ** BigInt(tokenDecimals + 18);
+      const usdValue = Number(supplyBN * priceBN / divisor);
+      api.addUSDValue(usdValue);
+    }
+  });
+}
+
+module.exports = {
+  misrepresentedTokens: true,
+  methodology: `Total Supply of all security tokens issued by Stobox multiplied by the current price of all assets.`,
 };
 
-Object.keys(tokenDetails).forEach((chain) => {
-    const tokenAddress = Object.values(tokenDetails[chain]);
+const config = {
+  arbitrum: {
+    oracle: '0x7C48bb52E63fe34C78F0D14Ee6E59BDe95D93645',
+    factory: '0x096D75d0501c3B1479FFe15569192CeC998223b4',
+  },
+};
 
-    module.exports[chain] = {
-        methodology:
-            'Total Supply of all security tokens issued by Stobox multiplied by the current price of all assets.',
-        tvl: async (api) => {
-            let supplies;
-
-            supplies = await api.multiCall({
-                abi: 'erc20:totalSupply',
-                calls: tokenAddress,
-            });
-            api.addTokens(tokenAddress, supplies);
-
-            return api.getBalances();
-        },
-    };
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl };
 });
