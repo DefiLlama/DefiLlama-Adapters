@@ -1,31 +1,32 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { sumTokens } = require("../helper/sumTokens");
+const { sumTokens, sumTokensExport } = require("../helper/sumTokens");
+
 
 const config = {
-    bitcoin: {
-        vault: "bc1pk3dr5ug0nndxen60u7dlvknt5y5kjc7axz8hqlpczw7cep6nm55q0vjtz6",
-    },
     btnx: {
-        vault: "0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B",
+        vaults: ["0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B", "0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9"],
     },
     starknet: {
-        vault: "0x01932042992647771f3d0aa6ee526e65359c891fe05a285faaf4d3ffa373e132",
+        vaults: ["0x01932042992647771f3d0aa6ee526e65359c891fe05a285faaf4d3ffa373e132", "0x04f278e1f19e495c3b1dd35ef307c4f7510768ed95481958fbae588bd173f79a"],
         tokens: [ADDRESSES.starknet.WBTC, ADDRESSES.starknet.STRK, ADDRESSES.starknet.ETH]
     },
     citrea: {
-        vault: "0x5bb0C725939cB825d1322A99a3FeB570097628c3",
+        vaults: ["0x5bb0C725939cB825d1322A99a3FeB570097628c3", "0xc98Ef084d3911C8447DBbE4dDa18bC2c9bB0584e"],
     },
+    solana: {
+        vaults: ["4hfUykhqmD7ZRvNh1HuzVKEY7ToENixtdUKZspNDCrEM"],
+    }
 }
 
 async function tvl(api) {
-    return await sumTokens({ owners: [config[api.chain].vault], api, tokens: config[api.chain].tokens ?? [ADDRESSES.null] });
+    return await sumTokens({ owners: config[api.chain].vaults, api, tokens: config[api.chain].tokens ?? [ADDRESSES.null] });
 }
 
 module.exports = {
     timetravel: false,
-    bitcoin: { tvl },
     btnx: { tvl },
     citrea: { tvl },
     starknet: { tvl },
+    solana: { tvl },
     methodology: `TVL counts the total assets held in the Atomiq Exchange spv vaults on each chain.`,
 }
