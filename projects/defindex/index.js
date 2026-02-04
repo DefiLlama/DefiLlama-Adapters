@@ -1,6 +1,6 @@
 const { getConfig } = require('../helper/cache')
 
-const DEFINDEX_API_BASE_URL = 'https://api.defindex.com'
+const DEFINDEX_API_BASE_URL = 'https://api.defindex.io'
 const DEFINDEX_VAIULTS_INFO_URL = `${DEFINDEX_API_BASE_URL}/vault/discover?network=mainnet`
 
 async function tvl(api) {
