@@ -40,13 +40,13 @@ async function getMarkets() {
     return markets;
 }
 
-async function getLockedCollateral(marketContractId, collateralTokenId) {
+async function getTokenBalance(marketContractId, tokenId) {
     const contractAddress = alephium.addressFromContractId(marketContractId);
-    if (collateralTokenId === ALPH_TOKEN_ID) {
+    if (tokenId === ALPH_TOKEN_ID) {
         return BigInt((await alephium.getAlphBalance(contractAddress)).balance);
     } else {
         const tokensBalance = await alephium.getTokensBalance(contractAddress);
-        const tokenBalance = tokensBalance.find(b => b.tokenId === collateralTokenId);
+        const tokenBalance = tokensBalance.find(b => b.tokenId === tokenId);
         return BigInt(tokenBalance?.balance ?? 0);
     }
 }
@@ -73,11 +73,10 @@ async function tvl(api) {
     const markets = await getMarkets();
     const tokenAmounts = new Map();
     for (const market of markets) {
-        const state = await getMarketState(market.marketId);
-        const idleSupply = state.totalSupplyAssets - state.totalBorrowAssets;
-        const collateral = await getLockedCollateral(market.contractId, market.collateralTokenId);
+        const collateral = await getTokenBalance(market.contractId, market.collateralTokenId);
+        const loanBalance = await getTokenBalance(market.contractId, market.loanTokenId);
         tokenAmounts.set(market.collateralTokenId, (tokenAmounts.get(market.collateralTokenId) ?? BigInt(0)) + collateral);
-        tokenAmounts.set(market.loanTokenId, (tokenAmounts.get(market.loanTokenId) ?? BigInt(0)) + idleSupply);
+        tokenAmounts.set(market.loanTokenId, (tokenAmounts.get(market.loanTokenId) ?? BigInt(0)) + loanBalance);
     }
 
     for (const [tokenId, amount] of tokenAmounts.entries()) {
