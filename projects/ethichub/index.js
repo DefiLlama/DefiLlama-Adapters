@@ -19,6 +19,7 @@ const ETHIX_TOKEN_CELO = ADDRESSES.celo.ETHIX;
 const CEUR_TOKEN_CELO = '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73';
 const STAKED_ETHIX_CELO = '0xCb16E29d0B667BaD7266E5d0Cd59b711b6273C6B';
 const LP_ETHIX_CUSD_UNIV3 = '0x3420720E561F3082f1e514a4545f0F2e0c955a5d';
+const CREDIT_LINE_CELO = '0xDb5D3aBF19014308A67420344021CEEE6003ACdd';
 const LIQUIDITY_RESERVE_CELO = '0x8510294a4d1e27CCe09259C448233207a83C5B62'; // Contains users' deposits from Minimice bonds to be borrowed by the farmers
 const ORIGINATORS_CELO = [
   '0xCc0d68B5E9C0E92E8d7426fB585052442EA9EEF7', // CAFE_FUNDADORES Mexico
@@ -36,15 +37,25 @@ const ORIGINATORS_CELO = [
   '0x2FFA2c9678C75a7e1324C3fB67Ac28676306389A', // SAN_MARCOS Honduras
   '0x11E23E85b032C1854e9994c59cF6Bf546E6e80e5' // SIERRA_AZUL_2 Mexico
 ];
+const creditLinesAbi = 'function creditLines(uint256 creditLineID) external view returns (tuple(address auditor, tuple(uint256 percentage, address reserve, uint256 _unclaimed_deprecated) collateralFees, tuple(uint256 percentage, address reserve, uint256 _unclaimed_deprecated) platformFees, tuple(uint256 percentage, address reserve, uint256 _unclaimed_deprecated) auditorFees, uint256 totalRepaid, uint256 totalBorrowed, uint256 totalFees, uint256[] credits, address principalToken) creditLine)';
 
 // Gnosis 
 const LP_ETHIX_WXDAI_SUSHI = '0xe5bc36119ffe40541eb61949e13607bce23577eb';
 const LP_ETHIX_WETH_UNIV2_GNOSIS = '0x2b8d7a0ed5e642f6441862d353c60c8f8ff2acd1';
 const ETHIX_TOKEN_GNOSIS = '0xec3f3e6d7907acDa3A7431abD230196CDA3FbB19';
 
-async function borrowed(api) {
+async function borrowedEth(api) {
   const borrowedAmount = await api.call({ target: MINIMICE_BOND_MAINNET, abi: 'uint256:totalBorrowed' });
   api.add(ADDRESSES.ethereum.DAI, borrowedAmount);
+}
+
+async function borrowedCelo(api) {
+  const creditLines = await api.fetchList({ target: CREDIT_LINE_CELO, lengthAbi: 'uint256:totalSupply', itemAbi: creditLinesAbi });
+
+  for (const line of creditLines) {
+    // despite usdc having 6 decimals, the contract stores balances with 18
+    api.add(line.principalToken, (Number(line.totalBorrowed) - Number(line.totalRepaid)) / 1e12);
+  }
 }
 
 module.exports = {
@@ -67,7 +78,7 @@ module.exports = {
       tokens: [ETHIX_TOKEN_MAINNET, ADDRESSES.ethereum.WETH]
     }),
     staking: stakings([STAKED_ETHIX_MAINNET, ...ORIGINATORS_MAINNET], ETHIX_TOKEN_MAINNET),
-    borrowed,
+    borrowed: borrowedEth,
   },
   celo: {
     tvl: sumTokensExport({
@@ -79,6 +90,7 @@ module.exports = {
       tokens: [ETHIX_TOKEN_CELO, ADDRESSES.celo.cUSD]
     }),
     staking: stakings([STAKED_ETHIX_CELO, ...ORIGINATORS_CELO], ETHIX_TOKEN_CELO),
+    borrowed: borrowedCelo,
   },
   xdai: {
     pool2: sumTokensExport({
