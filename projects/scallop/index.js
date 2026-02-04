@@ -30,7 +30,9 @@ async function suiTvl(api) {
 
   balanceSheets.forEach((e) => {
     const coinType = '0x' + e.fields.name.fields.name
-    const amount = new BigNumber(e.fields.value.fields.cash).toString()
+    const amount = new BigNumber(e.fields.value.fields.cash)
+      .minus(e.fields.value.fields.revenue)
+      .toString()
     api.add(coinType, amount)
   })
 

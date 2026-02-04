@@ -1,21 +1,41 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const controller = '0xC537e898CD774e2dCBa3B14Ea6f34C93d5eA45e1'
+const config = {
+  ethereum: {
+    fromBlock: 17087375,
+    controller: "0xC537e898CD774e2dCBa3B14Ea6f34C93d5eA45e1",
+  },
+  sei: {
+    fromBlock: 79146720,
+    controller: "0xe4816658ad10bF215053C533cceAe3f59e1f1087",
+  },
+  celo: {
+    fromBlock: 26828280,
+    controller: "0x6619871118D144c1c28eC3b23036FC1f0829ed3a",
+    gasToken: ADDRESSES.celo.CELO,
+  },
+  coti: {
+    fromBlock: 47878,
+    controller: "0x59f21012B2E9BA67ce6a7605E74F945D0D4C84EA",
+  },
+  tac: {
+    fromBlock: 975648,
+    controller: "0xA4682A2A5Fe02feFF8Bd200240A41AD0E6EaF8d5",
+  },
+};
 
-async function tvl(api) {
-	const logs = await getLogs({
-		api,
-		target: controller,
-		topic: 'PairCreated(uint128,address,address)',
-		eventAbi: 'event PairCreated(uint128 indexed pairId, address indexed token0, address indexed token1)',
-		onlyArgs: true,
-		fromBlock: 17087375,
-	})
-	const tokens = logs.map(i => [i.token0, i.token1]).flat()
+Object.keys(config).forEach((chain) => {
+  const { controller, fromBlock, gasToken } = config[chain];
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const pairs = await api.call({
+        target:controller,
+        abi: 'function pairs() view returns (address[2][])',
+      })
+      const tokens = pairs.filter(pair => !gasToken || (pair[0] !== gasToken && pair[1] !== gasToken)).flat()
 
-	return sumTokens2({ api, owner: controller, tokens, })
-}
-
-
-module.exports = { ethereum: { tvl } }
+      return sumTokens2({ api, owner: controller, tokens });
+    },
+  };
+});

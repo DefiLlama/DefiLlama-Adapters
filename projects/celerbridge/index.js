@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
@@ -111,7 +110,7 @@ const liquidityBridgeTokens = [
   {
     // DAI
     avax: ADDRESSES.avax.DAI,
-    bsc: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    bsc: ADDRESSES.bsc.DAI,
     ethereum: ADDRESSES.ethereum.DAI,
     optimism: ADDRESSES.optimism.DAI,
     polygon: ADDRESSES.polygon.DAI,
@@ -135,7 +134,7 @@ const liquidityBridgeTokens = [
     arbitrum: ADDRESSES.arbitrum.WBTC,
     avax: ADDRESSES.avax.WBTC_e,
     ethereum: ADDRESSES.ethereum.WBTC,
-    fantom: "0x321162Cd933E2Be498Cd2267a90534A804051b11",
+    fantom: ADDRESSES.fantom.WBTC,
     polygon: ADDRESSES.polygon.WBTC,
   },
   {
@@ -334,9 +333,9 @@ const liquidityBridgeTokens = [
   },
   {
     // GOVI
-    arbitrum: "0x07E49d5dE43DDA6162Fa28D24d5935C151875283",
+    arbitrum: ADDRESSES.arbitrum.GOVI,
     ethereum: "0xeEAA40B28A2d1b0B08f6f97bB1DD4B75316c6107",
-    polygon: "0x43Df9c0a1156c96cEa98737b511ac89D0e2A1F46",
+    polygon: ADDRESSES.polygon.GOVI,
   },
   {
     // PEOPLE
@@ -376,7 +375,7 @@ const liquidityBridgeTokens = [
   },
   {
     // FXS
-    ethereum: "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+    ethereum: ADDRESSES.ethereum.FXS,
   },
   {
     // MAI
@@ -530,7 +529,10 @@ let chains = liquidityBridgeTokens.reduce((allChains, token) => {
 }, new Set());
 
 Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
-module.exports = chainExports(chainTvl, Array.from(chains));
+
+Array.from(chains).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [

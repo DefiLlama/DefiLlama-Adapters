@@ -1,9 +1,8 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/http');
-const { requery } = require('../helper/requery');
 const { sliceIntoChunks, } = require('../helper/utils');
 const { request, gql } = require("graphql-request");
 
@@ -26,14 +25,15 @@ const synthetixs = {
   optimism: '0x8700daec35af8ff88c16bdf0418774cb3d7599b4'
 }
 const snxGraphEndpoints = {
-  ethereum: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-ethereum',
-  optimism: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-optimism-regenesis'
+  ethereum: sdk.graph.modifyEndpoint('2chLKUMdvBJEbrceCdvCF8VGB1xQ3Ytbyujj9Rw3WyKY'),
+  optimism: sdk.graph.modifyEndpoint('5NQi9n4ztd8M6EEDFKA6gwcCnbLdmzZRymiDbPkbjEWN')
 }
 const ethStaking = "0xc1aae9d18bbe386b102435a8632c8063d31e747c"
 const weth = ADDRESSES.ethereum.WETH
 
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
+    throw new Error('This module is deprecated, this protocol is dead')
     const block = await getBlock(timestamp, chain, chainBlocks)
     const synthetixState = synthetixStates[chain]
     const synthetix = synthetixs[chain]
@@ -72,8 +72,6 @@ function chainTvl(chain) {
         })
       ])
       
-      await requery(ratio, chain, block, abi['collateralisationRatio'])
-      await requery(collateral, chain, block, abi['collateral'])
       const ratios = {}
       ratio.output.forEach(r => ratios[r.input.params[0]] = r.output)
       const collaterals = {}
@@ -136,7 +134,7 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
 }
 
 module.exports = {
-  start: 1565287200,  // Fri Aug 09 2019 00:00:00
+  start: '2019-08-08',  // Fri Aug 09 2019 00:00:00
   optimism: {
     tvl: chainTvl("optimism")
   },

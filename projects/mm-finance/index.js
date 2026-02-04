@@ -10,7 +10,7 @@ module.exports = {
     misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://mm.finance as the source. Staking accounts for the MMF locked in MasterChef (0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc)',
   cronos: {
-    staking: staking(masterChef, mmfToken, 'cronos'),
+    staking: staking(masterChef, mmfToken),
     tvl: getUniTVL({
       factory,
       useDefaultCoreAssets: true,

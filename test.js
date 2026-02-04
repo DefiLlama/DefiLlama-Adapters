@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
+
 const handleError = require('./utils/handleError')
+const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
+
+const deadChains = require('./projects/helper/deadChains')
 process.on('unhandledRejection', handleError)
 process.on('uncaughtException', handleError)
 
@@ -8,26 +12,32 @@ const path = require("path");
 require("dotenv").config();
 const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
-  blocks: { getCurrentBlocks },
+  blocks: { getBlocks },
   humanizeNumber: { humanizeNumber },
 } } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
-const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { log, diplayUnknownTable, sliceIntoChunks, sleep } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
+const whitelistedEnvKeys = new Set(['LLAMA_SANITIZE','TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', 'LLAMA_RUN_LOCAL', ...ENV_KEYS])
+
+
+
+
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (whitelistedEnvKeys.has(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
+process.env.SKIP_RPC_CHECK = 'true'
 
 
 async function getTvl(
@@ -38,26 +48,21 @@ async function getTvl(
   tokensBalances,
   usdTokenBalances,
   tvlFunction,
-  isFetchFunction,
   storedKey,
 ) {
   const chain = storedKey.split('-')[0]
   const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, storedKey, })
   api.api = api
   api.storedKey = storedKey
-  if (!isFetchFunction) {
-    let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
-    if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
-    const tvlResults = await computeTVL(tvlBalances, "now");
-    await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
-    usdTvls[storedKey] = tvlResults.usdTvl;
-    tokensBalances[storedKey] = tvlResults.tokenBalances;
-    usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
-  } else {
-    usdTvls[storedKey] = Number(
-      await tvlFunction(api, ethBlock, chainBlocks, api)
-    );
-  }
+
+  let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
+  if (tvlBalances === undefined) tvlBalances = api.getBalances()
+  const tvlResults = await computeTVL(tvlBalances, unixTimestamp);
+  await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
+  usdTvls[storedKey] = tvlResults.usdTvl;
+  tokensBalances[storedKey] = tvlResults.tokenBalances;
+  usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
+
   if (
     typeof usdTvls[storedKey] !== "number" ||
     Number.isNaN(usdTvls[storedKey])
@@ -100,23 +105,88 @@ sdk.api.abi.call = async (...args) => {
   }
 }
 
-(async () => {
-  let module = {};
-  try {
-    module = require(passedFile)
-  } catch (e) {
-    console.log(e)
+function validateHallmarks(hallmark) {
+  if (!Array.isArray(hallmark)) {
+    throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
   }
+  const [timestamp, text] = hallmark
+  if ((typeof timestamp !== 'string'  && !process.env.LLAMA_SANITIZE) || isNaN(+new Date(timestamp))) {
+    throw new Error("Hallmark timestamp should be a dateString (YYYY-MM-DD)")
+  }
+  const year = new Date(timestamp * 1000).getFullYear()
+  const currentYear = new Date().getFullYear()
+  if (year < 2010 || year > currentYear) {
+    throw new Error("Hallmark timestamp should be between 2010 and " + currentYear + " but got " + year)
+  }
+
+  if (typeof text !== 'string') {
+    throw new Error("Hallmark text should be a string")
+  }
+}
+
+(async () => {
+
+  const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
+
+  // throw error if module doesnt start with lowercase letters
+  if (!/^[a-z]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
+    throw new Error("Module name should start with a lowercase letter: " + moduleArg);
+  }
+
+  let module = {};
+  module = require(passedFile)
+  deadChains.forEach(chain => {
+    delete module[chain]
+  })
+
+  if (module.hallmarks) {
+    if (!Array.isArray(module.hallmarks)) {
+      throw new Error("Hallmarks should be an array of arrays")
+    }
+    if (module.hallmarks.length > 6) {
+      console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+    }
+
+    module.hallmarks.forEach(validateHallmarks)
+  }
+  // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
-  const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+
+  let unixTimestamp = Math.round(Date.now() / 1000) - 60;
+  let chainBlocks = {}
+
+  function parseTimestampArg(arg) {
+    if (!arg) return undefined;
+    // Accept pure numeric input as unix seconds or milliseconds
+    if (/^\d+$/.test(arg)) {
+      const num = Number(arg);
+      if (!Number.isFinite(num)) return undefined;
+      // 13+ digits -> milliseconds, else assume seconds
+      return num > 1e12 ? Math.floor(num / 1000) : num;
+    }
+    // Fallback to Date string parsing (e.g., YYYY-MM-DD)
+    const d = new Date(arg);
+    const ms = d.getTime();
+    if (!Number.isFinite(ms)) return undefined;
+    return Math.floor(ms / 1000);
+  }
+
+  const passedTimestamp = parseTimestampArg(process.argv[3]);
+  if (passedTimestamp !== undefined) {
+    unixTimestamp = passedTimestamp
+
+    // other chains than evm will fail to get block at timestamp
+    try {
+      const res = await getBlocks(unixTimestamp, chains)
+      chainBlocks = res.chainBlocks
+    } catch (e) { /* ignore empty block statement */ }
+  }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
-  const knownTokenPrices = {};
 
   let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
     if (typeof value !== "object" || value === null) {
@@ -128,26 +198,27 @@ sdk.api.abi.call = async (...args) => {
           return;
         }
         let storedKey = `${chain}-${tvlType}`;
-        let tvlFunctionIsFetch = false;
         if (tvlType === "tvl") {
           storedKey = chain;
-        } else if (tvlType === "fetch") {
-          storedKey = chain;
-          tvlFunctionIsFetch = true;
         }
-        await getTvl(
-          unixTimestamp,
-          ethBlock,
-          chainBlocks,
-          usdTvls,
-          tokensBalances,
-          usdTokenBalances,
-          tvlFunction,
-          tvlFunctionIsFetch,
-          storedKey,
-        );
+        try {
+
+          await getTvl(
+            unixTimestamp,
+            ethBlock,
+            chainBlocks,
+            usdTvls,
+            tokensBalances,
+            usdTokenBalances,
+            tvlFunction,
+            storedKey,
+          );
+        } catch (e) {
+          console.error(`Error in ${storedKey}:`, e)
+          process.exit(1)
+        }
         let keyToAddChainBalances = tvlType;
-        if (tvlType === "tvl" || tvlType === "fetch") {
+        if (tvlType === "tvl") {
           keyToAddChainBalances = "tvl";
         }
         if (chainTvlsToAdd[keyToAddChainBalances] === undefined) {
@@ -158,26 +229,6 @@ sdk.api.abi.call = async (...args) => {
       })
     );
   });
-  if (module.tvl || module.fetch) {
-    let mainTvlIsFetch;
-    if (module.tvl) {
-      mainTvlIsFetch = false;
-    } else {
-      mainTvlIsFetch = true;
-    }
-    const mainTvlPromise = getTvl(
-      unixTimestamp,
-      ethBlock,
-      chainBlocks,
-      usdTvls,
-      tokensBalances,
-      usdTokenBalances,
-      mainTvlIsFetch ? module.fetch : module.tvl,
-      mainTvlIsFetch,
-      "tvl",
-    );
-    tvlPromises.push(mainTvlPromise);
-  }
   await Promise.all(tvlPromises);
   Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
     if (usdTvls[tvlType] === undefined) {
@@ -197,21 +248,29 @@ sdk.api.abi.call = async (...args) => {
 
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
     console.log(`--- ${chain} ---`);
-    Object.entries(balances)
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([symbol, balance]) => {
-        console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
-      });
+    let entries = Object.entries(balances)
+    entries.sort((a, b) => b[1] - a[1])
+
+    if (entries.length > 30) {
+      console.log("Showing top 30 tokens, total tokens:", entries.length)
+      entries = entries.slice(0, 30)
+    }
+    entries.forEach(([symbol, balance]) => {
+      console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
+    });
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
   });
   console.log(`------ TVL ------`);
-  Object.entries(usdTvls).forEach(([chain, usdTvl]) => {
+  const usdVals = Object.entries(usdTvls)
+  usdVals.sort((a, b) => b[1] - a[1])
+  usdVals.forEach(([chain, usdTvl]) => {
     if (chain !== "tvl") {
-      console.log(chain.padEnd(25, " "), humanizeNumber(usdTvl));
+      console.log(chain.padEnd(25, " "), humanizeNumber(Math.round(usdTvl)));
     }
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
 
+  await preExit()
   process.exit(0);
 })();
 
@@ -225,11 +284,21 @@ function checkExportKeys(module, filePath, chains) {
     || (filePath.length === 2 &&
       !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
         || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
+        || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
       )))
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
+
+  const badChainNames = chains.filter(chain => !/^[a-z0-9_]+$/.test(chain));
+  if (badChainNames.length) {
+    throw new Error(`
+    Invalid chain names: ${badChainNames.join(', ')}
+    Chain names should only contain lowercase letters, numbers and underscores
+    `)
+  }
+
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
   let exportKeys = chains.map(chain => Object.keys(module[chain])).flat()
@@ -242,11 +311,16 @@ function checkExportKeys(module, filePath, chains) {
   if (hallmarks.length) {
     const TIMESTAMP_LENGTH = 10;
     hallmarks.forEach(([timestamp, text]) => {
-      const strTimestamp = String(timestamp)
-      if (strTimestamp.length !== TIMESTAMP_LENGTH) {
-        throw new Error(`
+      if (Array.isArray(timestamp)) timestamp.map(validateDateString)  // it is a range timestamp [start, end]
+      else validateDateString(timestamp);
+
+      function validateDateString(timestamp) {
+        const strTimestamp = String(timestamp)
+        if (strTimestamp.length !== TIMESTAMP_LENGTH) {
+          throw new Error(`
         Incorrect time format for the hallmark: [${strTimestamp}, ${text}] ,please use unix timestamp
         `)
+        }
       }
     })
   }
@@ -298,13 +372,18 @@ const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 function fixBalances(balances) {
 
+  if (balances.usd) {
+    // usd is mapped to USD+ token on coingecko
+    throw new Error("Balance key 'usd' is not allowed, please use 'api.addUSDValue()' instead")
+  }
+
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`
     else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
-      sdk.util.sumSingleBalance(balances, newKey, BigNumber(value).toFixed(0))
+      sdk.util.sumSingleBalance(balances, newKey, value)
     }
   })
 }
@@ -346,10 +425,29 @@ async function computeTVL(balances, timestamp) {
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
 
-  const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 100))
-    .process(async (keys) => {
-      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
+  const queries = buildPricesGetQueries(readKeys, timestamp)
+  let queryCount = queries.length;
+  if (queryCount > 7)
+    sdk.log('price query count:', queryCount, 'readKeys:', readKeys.length)
+  let i = 0
+  let foundError = false
+  const { errors } = await PromisePool.withConcurrency(3)
+    .for(queries).process(async (query) => {
+      if (foundError) return;
+      try {
+
+        tokenData.push((await axios.get(query)).data.coins)
+        i++;
+        if (queries.length > 6) {
+          sdk.log(`Processed ${i}/${queryCount} queries, ${tokenData.length} responses received`)
+          if (i < queryCount - 2) {
+            await sleep(5000) // avoid rate limiting
+          }
+        }
+      } catch (e) {
+        foundError = true;
+        throw e
+      }
     })
 
   if (errors && errors.length)
@@ -366,15 +464,19 @@ async function computeTVL(balances, timestamp) {
       const balance = balances[address];
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
+      if (data.symbol === '') {
+        console.log('\nIgnored invalid coin data, please fix it!', address, data, '\n');
+        return;
+      }
       if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
-      if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
+      if (Math.abs(data.timestamp - (timestamp ?? Date.now() / 1e3)) > (24 * 3600)) {
         console.log(`Price for ${address} is stale, ignoring...`)
         return
       }
 
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {
-        amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
+        amount = Number(balance) / 10 ** data.decimals
         usdAmount = amount * data.price;
       } else {
         amount = Number(balance);
@@ -414,3 +516,50 @@ setTimeout(() => {
   if (!process.env.NO_EXIT_ON_LONG_RUN_RPC)
     process.exit(1);
 }, 10 * 60 * 1000) // 10 minutes
+
+function buildPricesGetQueries(readKeys, timestamp) {
+  if (!readKeys.length) return []
+  console.log(`Building prices get queries for ${readKeys.length} tokens`)
+  const burl = (process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/` : 'https://coins.llama.fi/')
+    + (timestamp && timestamp < (Date.now() / 1000 - 30 * 60) ? `prices/historical/${timestamp}/` : 'prices/current/')
+  const queries = []
+  let query = burl
+
+  for (const key of readKeys) {
+    if (query.length + key.length > 2500) {
+      queries.push(query.slice(0, -1))
+      query = burl
+    }
+    query += `${key},`
+  }
+
+  queries.push(query.slice(0, -1))
+  return queries
+}
+
+async function initCache() {
+  let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
+  // if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+  //   sdk.log('cache size:', JSON.stringify(currentCache).length, 'chains:', Object.keys(currentCache).length)
+  const ONE_WEEK = 60 * 60 * 24 * 31
+  if (!currentCache || !currentCache.startTime || (Date.now() / 1000 - currentCache.startTime > ONE_WEEK)) {
+    currentCache = {
+      startTime: Math.round(Date.now() / 1000),
+    }
+    await sdk.cache.writeCache(INTERNAL_CACHE_FILE, currentCache)
+  }
+  sdk.sdkCache.startCache(currentCache)
+}
+
+async function saveSdkInternalCache() {
+  await sdk.cache.writeCache(INTERNAL_CACHE_FILE, sdk.sdkCache.retriveCache(), { skipR2CacheWrite: true })
+}
+
+async function preExit() {
+  // try {
+  //     await saveSdkInternalCache() // save sdk cache to r2
+  // } catch (e) {
+  //   if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+  //     sdk.error(e)
+  // }
+}

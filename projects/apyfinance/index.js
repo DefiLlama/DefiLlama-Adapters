@@ -1,6 +1,6 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const BigNumber = require('bignumber.js')
+const abi = {
+  "underlyer": "address:underlyer",
+}
 
 const liquidityContracts = [
   // DAI Liquidity
@@ -11,34 +11,9 @@ const liquidityContracts = [
   "0xeA9c5a2717D5Ab75afaAC340151e73a7e37d99A7",
 ];
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const underlyers = (
-    await sdk.api.abi.multiCall({
-      abi: abi.underlyer,
-      calls: liquidityContracts.map((lc) => ({
-        target: lc,
-      })),
-      block: ethBlock,
-    })
-  ).output.map((underlyer) => underlyer.output);
-
-  const balance = (
-    await sdk.api.abi.multiCall({
-      abi: abi.getPoolTotalValue,
-      calls: underlyers.map((nd, idx) => ({
-        target: liquidityContracts[idx],
-      })),
-      block: ethBlock,
-    })
-  ).output.map((bal) => bal.output);
-
-  for (let index = 0; index < underlyers.length; index++) {
-    sdk.util.sumSingleBalance(balances, `${underlyers[1]}`, BigNumber(balance[index]).div(10**2).toFixed(0));
-  }
-
-  return balances;
+const ethTvl = async (api) => {
+  const underlyers = await api.multiCall({ abi: abi.underlyer, calls: liquidityContracts })
+  return api.sumTokens({ tokensAndOwners2: [underlyers, liquidityContracts]})
 };
 
 module.exports = {

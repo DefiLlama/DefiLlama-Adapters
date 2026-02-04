@@ -1,40 +1,14 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
-const { staking } = require("../helper/staking.js");
+const { staking } = require("../helper/staking.js")
+const { joeV2Export } = require('../helper/traderJoeV2')
 
-const factories = {
+module.exports = joeV2Export({
   avax: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
-  arbitrum: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
+  arbitrum: {
+    factory: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
+    blacklistedTokens: ['0xef261714f7e5ba6b86f4780eb6e3bf26b10729cf'],
+  },
   bsc: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
-  ethereum: '0xDC8d77b69155c7E68A95a4fb0f06a71FF90B943a'
-}
-async function tvl(api) {
-  const pools = await api.fetchList({
-    target: factories[api.chain],
-    itemAbi: 'function getLBPairAtIndex(uint256) view returns (address)',
-    lengthAbi: 'uint256:getNumberOfLBPairs',
-  })
-  const tokenA = await api.multiCall({
-    abi: 'address:getTokenX',
-    calls: pools,
-  })
-  const tokenB = await api.multiCall({
-    abi: 'address:getTokenY',
-    calls: pools,
-  })
-  const toa = []
-  tokenA.map((_, i) => {
-    toa.push([tokenA[i], pools[i]])
-    toa.push([tokenB[i], pools[i]])
-  })
-  return sumTokens2({ api, tokensAndOwners: toa, })
-}
-
-module.exports = {
-  methodology: 'We count the token balances in in different liquidity book contracts',
-}
-
-Object.keys(factories).forEach(chain => {
-  module.exports[chain] = { tvl }
+  ethereum: '0xDC8d77b69155c7E68A95a4fb0f06a71FF90B943a',
 })
 
-module.exports.arbitrum.staking = staking("0x43646A8e839B2f2766392C1BF8f60F6e587B6960", "0x371c7ec6D8039ff7933a2AA28EB827Ffe1F52f07", "arbitrum")
+module.exports.arbitrum.staking = staking("0x43646A8e839B2f2766392C1BF8f60F6e587B6960", "0x371c7ec6D8039ff7933a2AA28EB827Ffe1F52f07")

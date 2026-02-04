@@ -74,26 +74,9 @@ const ownerTokens = pools.map(({ pool, stablecoins }) => {
 const stakingContract = "TXbA1feyCqWAfAQgXvN1ChTg82HpBT8QPb"
 const sun = ADDRESSES.tron.SUN
 
-const lpToken = 'TDQaYrhQynYV9aXTYj63nwLAafRffWSEj6'
-const oldLpStaking = "TGsymdggp98tLKZWGHcGX58TjTcaQr9s4x"
-const lpStaking = "TAkrcKsS5FW9f3ZfzvWy6Zvsz9uEjUxPoV"
-
-/* async function pool2(api) {
-  const [lpTokenAmount, sunInLp, trxInLp, totalSupply] = await Promise.all([
-    getTokenBalance(lpToken, lpStaking),
-    getTokenBalance(sun, lpToken),
-    getTrxBalance(lpToken),
-    call({ target: lpToken, abi: 'totalSupply()', resTypes: ['number'] }),
-  ])
-  api.add(sun, sunInLp * lpTokenAmount / totalSupply)
-  api.add(nullAddress, trxInLp * lpTokenAmount / totalSupply)
-}
- */
-
 module.exports = {
   tron: {
     tvl: sumTokensExport({ ownerTokens }),
     staking: sumTokensExport({ owner: stakingContract, tokens: [sun] }),
-    // pool2
   },
 }

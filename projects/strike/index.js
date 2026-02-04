@@ -1,6 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const {fullCoumpoundExports} = require('../helper/compound')
+const { compoundExports2 } = require('../helper/compound');
 
-const comptroller = "0xe2e17b2CBbf48211FA7eB8A875360e5e39bA2602"
+module.exports.ethereum = compoundExports2({ comptroller: '0xe2e17b2CBbf48211FA7eB8A875360e5e39bA2602', cether: '0xbee9cf658702527b0acb2719c1faa29edc006a92' })
 
-module.exports=fullCoumpoundExports(comptroller, "ethereum", "0xbEe9Cf658702527b0AcB2719c1FAA29EdC006a92", ADDRESSES.ethereum.WETH)
+// NOTE: borrowed function zeroed out due to bad debt
+// The compoundExports2 helper would normally calculate borrowed amounts, but we override it to return empty object
+module.exports.ethereum.borrowed = () => ({})

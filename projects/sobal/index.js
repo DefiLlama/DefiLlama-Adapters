@@ -10,6 +10,6 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: onChainTvl(V2_ADDRESS, fromBlock)
+    tvl: onChainTvl(V2_ADDRESS, fromBlock, { blacklistedTokens: ['0x4440000000000000000000000000000000000002'] })
   }
 })

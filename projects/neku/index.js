@@ -1,9 +1,8 @@
-const { usdCompoundExports } = require('../helper/compound')
+const { compoundExports2 } = require('../helper/compound')
 
-const unitroller = "0xD5B649c7d27C13a2b80425daEe8Cb6023015Dc6B"
-// node test.js projects/neku/index.js
+const comptroller = "0xD5B649c7d27C13a2b80425daEe8Cb6023015Dc6B"
 module.exports = {
-            arbitrum:usdCompoundExports(unitroller, "arbitrum", "0xBC4a19345c598D73939b62371cF9891128ecCB8B"),
-    moonriver:usdCompoundExports(unitroller, "moonriver", "0xBC4a19345c598D73939b62371cF9891128ecCB8B"),
-    bsc: usdCompoundExports(unitroller, "bsc", "0xBC4a19345c598D73939b62371cF9891128ecCB8B"),
+  arbitrum: compoundExports2({ comptroller, cether: '0xbc4a19345c598d73939b62371cf9891128eccb8b' }),
+  moonriver: compoundExports2({ comptroller, cether: '0xbc4a19345c598d73939b62371cf9891128eccb8b' }),
+  bsc: compoundExports2({ comptroller, cether: '0xbc4a19345c598d73939b62371cf9891128eccb8b' }),
 }

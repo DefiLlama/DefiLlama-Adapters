@@ -6,6 +6,7 @@ const config = {
   optimism: { fromBlock: 113464669, },
   base: { fromBlock: 7869252, },
   arbitrum: { fromBlock: 159919891, },
+  linea: { factory: '0x00000000333288eBA83426245D144B966Fd7e82E', fromBlock: 3982456 },
 };
 
 async function getVaults(api) {
@@ -23,15 +24,27 @@ async function getVaults(api) {
 
 async function tvl(api) {
   const vaults = await getVaults(api);
-  return api.erc4626Sum({ calls: vaults, isOG4626: true });
+  return api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:lastBalance' });
 }
 
+// NOTE: borrowed function zeroed out due to bad debt
+// Original implementation commented out below:
+// async function borrowed(api) {
+//   const vaults = await getVaults(api);
+//   const tokens = await api.multiCall({ calls: vaults, abi: "address:asset" });
+//   const stats = await api.multiCall({
+//     calls: vaults,
+//     abi: "function stats() view returns (uint72 borrowIndex, uint256 totalAssets, uint256 totalBorrows, uint256 totalSupply)",
+//   });
+//   api.addTokens(tokens, stats.map(x => x.totalBorrows));
+// }
+
 module.exports = {
-  doublecounted: true,
+  doublecounted: false,
   methodology:
-    "Sums up deposits and borrows across Aloe's ERC4626 lending vaults to get TVL. Does not include collateral value.",
+    "Sums up deposits and borrows across Aloe's ERC4626 lending vaults to get TVL and Borrowed amounts, respectively. Does not include collateral value.",
 };
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl, borrowed: () => ({}) }
 })

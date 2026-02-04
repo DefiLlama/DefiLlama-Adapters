@@ -6,6 +6,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: `TVL accounts for the liquidity found in each liquidity pair.`,
   harmony:{
-    tvl: getUniTVL({ chain: 'harmony', useDefaultCoreAssets: true, factory, })
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory, })
   },
 }

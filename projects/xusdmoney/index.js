@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const collateralPoolContracts = [
   // WETH Pool
@@ -43,20 +42,8 @@ const lpPairAddresses = [
   "0x88d9bE8D3DFe82eF3b09641284467f1Ee5E98343",
 ];
 
-async function ethTvl(chainBlocks) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [WETH, false],
-      [DAI, false],
-      [USDC, false],
-    ],
-    collateralPoolContracts
-  );
-
-  return balances;
+async function ethTvl(api) {
+  return api.sumTokens({ owners: collateralPoolContracts, tokens: [WETH, DAI, USDC] });
 }
 
 module.exports = {

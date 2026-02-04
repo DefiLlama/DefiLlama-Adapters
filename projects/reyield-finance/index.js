@@ -1,6 +1,11 @@
-const ABI = require('./abi.json')
-
-const positionManagerFactory = "0x3332Ae0fC25eF24352ca75c01A1fCfd9fc33EAca"
+const ABI = {
+    "getPositionManagers": "function getPositionManagers(uint256 cursor, uint256 howMany) view returns (address[] managers, uint256 newCursor)",
+    "getOwner": "function getOwner() view returns (address)",
+    "positionIdCounter": "function positionIdCounter() view returns (uint256)",
+    "isPositionRunning": "function isPositionRunning(uint256 positionId) view returns (bool)",
+    "getAmounts": "function getAmounts(address userAddress, uint256 positionId) view returns (tuple(address token0, address token1, uint256 amount0, uint256 amount1, uint256 amount0UsdValue, uint256 amount1UsdValue))",
+    "getUncollectedFees": "function getUncollectedFees(address userAddress, uint256 positionId) view returns (tuple(address token0, address token1, uint128 amount0, uint128 amount1, uint256 amount0UsdValue, uint256 amount1UsdValue))"
+  };const positionManagerFactory = "0x3332Ae0fC25eF24352ca75c01A1fCfd9fc33EAca"
 const positionHelper = "0x76136A56963740b4992C5E9dA5bB58ECffC92ce3"
 
 async function tvl(api) {
@@ -41,7 +46,7 @@ const chains = [
 ]
 
 module.exports = {
-  start: 1695873578, // Sep-28-2023 03:59:38 AM +UTC
+  start: '2023-09-28', // Sep-28-2023 03:59:38 AM +UTC
   doublecounted: true,
   methodology: "TVL is equal to users' running positions' liquidity value plus uncollected fees.",
 };

@@ -9,10 +9,11 @@ module.exports = {
   methodology: "Calculate sum across all program token accounts",
   solana: {
     tvl,
+    staking: () => sumTokens2({ tokenAccounts: ['9EzLvGf4m7drJCoEdaLoC4D8uYux6tuM1EdtGV4YCEcS']})
   },
 };
 
-async function tvl(api) {
+async function tvl() {
 
   const legacyVaults = [
     '6W9yiHDCW9EpropkFV8R3rPiL8LVWUHSiys3YeW6AT6S', // legacy usdc vault
@@ -34,8 +35,8 @@ async function tvl(api) {
     ...legacyVaults,
     ...marketIndices.map(getSpotMarketVaultPublicKey),
     ...marketIndices.map(getInsuranceFundVaultPublicKey),
-  ]
-  
+  ].filter(i => i !== '9EzLvGf4m7drJCoEdaLoC4D8uYux6tuM1EdtGV4YCEcS')  // drift staking account, handled in staking module
+
   return sumTokens2({ tokenAccounts: vaults })
 }
 
@@ -46,3 +47,4 @@ function getVaultPublicKey(seed, marketIndex) {
       new anchor.BN(marketIndex).toArrayLike(Buffer, 'le', 2),
     ], DRIFT_PROGRAM_ID)[0].toBase58()
 }
+

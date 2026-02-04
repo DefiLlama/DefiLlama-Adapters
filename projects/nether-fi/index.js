@@ -7,7 +7,7 @@ const NFI = "0x60359A0DD148B18d5cF1Ddf8Aa1916221ED0cbCd";
 
 module.exports = {
   base: {
-    staking: staking(stakingBase, NFI, "base"),
+    staking: staking(stakingBase, NFI),
     tvl: gmxExports({ vault: vaultBase }),
   }
 };

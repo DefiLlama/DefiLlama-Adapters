@@ -1,4 +1,4 @@
-const { getConnection, sumTokens2, decodeAccount, } = require("./helper/solana");
+const { getConnection, decodeAccount, } = require("./helper/solana");
 const { PublicKey, } = require("@solana/web3.js");
 const sdk = require('@defillama/sdk');
 let programs = {
@@ -34,11 +34,13 @@ async function getAllData() {
     }
     
     const tokenAccounts = []
-    data.forEach(({ liquidity: { mintPubkey, borrowedAmountWads, supplyPubkey } }) => {
+    data.forEach(({ liquidity: { mintPubkey, borrowedAmountWads, supplyPubkey, availableAmount, } }) => {
       tokenAccounts.push(supplyPubkey)
-      sdk.util.sumSingleBalance(balances.borrowed, mintPubkey.toString(), borrowedAmountWads / 1e18, 'solana')
+      sdk.util.sumSingleBalance(balances.tvl, mintPubkey.toString(), availableAmount, 'solana')
+      // NOTE: borrowed calculation zeroed out due to bad debt
+      // Original line commented out:
+      // sdk.util.sumSingleBalance(balances.borrowed, mintPubkey.toString(), borrowedAmountWads / 1e18, 'solana')
     })
-    balances.tvl = await sumTokens2({ tokenAccounts })
     return balances
   }
 }
@@ -47,6 +49,8 @@ module.exports = {
   timetravel: false,
   solana: {
     tvl: async () => (await getAllData()).tvl,
-    borrowed: async () => (await getAllData()).borrowed,
+    // NOTE: borrowed function zeroed out due to bad debt
+    // Original implementation would have been: borrowed: async () => (await getAllData()).borrowed,
+    borrowed: () => ({}),
   },
 };

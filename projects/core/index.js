@@ -82,7 +82,7 @@ async function staking(_, block){
 module.exports = {
   ethereum: 
   {
-      start: 1601142406, // 2020-09-26 17:46:46 (UTC),
+      start: '2020-09-26', // 2020-09-26 17:46:46 (UTC),
       tvl, 
       treasury, 
       staking,

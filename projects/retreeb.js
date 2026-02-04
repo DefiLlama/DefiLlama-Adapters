@@ -15,7 +15,7 @@ const contracts = [
 
 module.exports = {
     fantom: {
-        staking: stakings(contracts, TREEB, 'fantom'),
+        staking: stakings(contracts, TREEB),
         tvl: async() => ({}),
     }
 };

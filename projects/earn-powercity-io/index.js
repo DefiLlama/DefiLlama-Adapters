@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLiquityTvl } = require("../helper/liquity.js");
 const { sumTokensExport } = require("../helper/unknownTokens.js");
 
 // TroveManager holds total system collateral (deposited PLSX)
 const TROVE_MANAGER_ADDRESS = "0x118b7CF595F6476a18538EAF4Fbecbf594338B39";
-const PLSX_ADDRESS = "0x95B303987A60C71504D99Aa1b13B4DA07b0790ab";
+const PLSX_ADDRESS = ADDRESSES.pulse.PLSX;
 
 // Staking holds LQTY tokens and receive share of protocol revenue
 const STAKING_ADDRESS = "0xd92DF13b6cd9eA8fc116b1865D2d72Be41d74B1a";
@@ -17,7 +18,7 @@ const LP_EARN_PLSX_ADDRESS = "0xed77CbbB80e5a5C3A1FE664419d6F690766b5913";
 const lps = [LP_PXDC_PLSX_ADDRESS, LP_EARN_PLSX_ADDRESS]
 
 module.exports = {
-    start: 1708418955,
+    start: '2024-02-20',
     methodology: "Total Value Locked includes all Troves, Stability Pool, Staking Pool and LP Farming Pools",
     pulse: {
         tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS, { collateralToken: PLSX_ADDRESS }),

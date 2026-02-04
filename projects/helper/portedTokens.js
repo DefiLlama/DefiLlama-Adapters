@@ -7,17 +7,19 @@ const {
   transformTokens,
   fixBalancesTokens,
   ibcChains,
-} = require('./tokenMapping')
+} = require('./tokenMapping');
+const { svmChains } = require("./svmChainConfig");
 
-async function transformInjectiveAddress() {
-  return addr => {
+function transformInjectiveAddress() {
+  return (addr) => {
     if (addr.startsWith('ibc:')) return addr
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
-    return `injective:${addr}`;
-  };
+    if (addr.startsWith('injective:') || addr.startsWith('ethereum:')) return addr
+    return `injective:${addr}`
+  }
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
@@ -46,12 +48,10 @@ function fixBalances(balances, mapping, { chain, } = {}) {
   return balances;
 }
 
-async function getFixBalances(chain) {
-  return getFixBalancesSync(chain)
-}
 
-function getFixBalancesSync(chain) {
-  const dummyFn = i => i;
+const dummyFn = i => i
+
+function getFixBalances(chain) {
   return fixBalancesMapping[chain] || dummyFn;
 }
 
@@ -87,7 +87,15 @@ function transformChainAddress(
   };
 }
 
-async function getChainTransform(chain) {
+
+const chainTransformCache = {}
+
+function getChainTransform(chain) {
+  if (!chainTransformCache[chain]) chainTransformCache[chain] = _getChainTransform(chain)
+  return chainTransformCache[chain]
+}
+
+function _getChainTransform(chain) {
   if (chainTransforms[chain])
     return chainTransforms[chain]()
 
@@ -104,20 +112,23 @@ async function getChainTransform(chain) {
     if ([...ibcChains, 'ton', 'mvc', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
+    if (chain === 'aeternity' && addr.startsWith('ct_')) return chainStr
     if (chain === 'tron' && addr.startsWith('T')) return chainStr
     if (chain === 'stacks' && addr.startsWith('SP')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'aura' && addr.startsWith('aura')) return chainStr
+    if (chain === 'massa' && addr.startsWith('AS1')) return chainStr
+    if (chain === 'verus' && addr.startsWith('i')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    if (addr.startsWith('0x') || ['solana', 'kava', 'renec'].includes(chain)) return chainStr
+    if (addr.startsWith('0x') || ['kava', ...svmChains].includes(chain)) return chainStr
     return addr
   };
 }
 
-async function transformBalances(chain, balances) {
-  const transform = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
+function transformBalances(chain, balances) {
+  const transform = getChainTransform(chain)
+  const fixBalances = getFixBalances(chain)
   Object.entries(balances).forEach(([token, value]) => {
     delete balances[token]
     sdk.util.sumSingleBalance(balances, transform(token), value)
@@ -126,7 +137,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
   if (api) {
     balances = api.getBalances()
@@ -156,7 +167,7 @@ async function transformDexBalances({ api, chain, data, balances, restrictTokenR
   return {
     prices,
     updateBalances,
-    balances: await transformBalances(chain, balances),
+    balances: transformBalances(chain, balances),
   }
 
   function addTokens({ token0, token0Bal, token1, token1Bal }) {
@@ -231,7 +242,6 @@ module.exports = {
   getChainTransform,
   getFixBalances,
   stripTokenHeader,
-  getFixBalancesSync,
   transformBalances,
   transformDexBalances,
 };

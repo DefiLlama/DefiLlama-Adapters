@@ -20,7 +20,6 @@ const config = {
 
 module.exports = {
     methodology: 'counts the number of BEPRO tokens on Moonbeam Network contracts',
-    start: 1000235,
 };
 
 Object.keys(config).forEach(chain => {

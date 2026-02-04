@@ -1,39 +1,19 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "getAllAssets": "address[]:getAllAssets",
+    "checkBalance": "function checkBalance(address _asset) view returns (uint256 balance)",
+    "isSupportedAsset": "function supportsAsset(address _asset) view returns (bool)"
+  };
 
 const vault = "0x2D62f6D8288994c7900e9C359F8a72e84D17bfba";
 
-const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const stablecoins = (
-    await sdk.api.abi.call({
-      abi: abi.getAllAssets,
-      target: vault,
-      block: chainBlocks['polygon'],
-      chain: 'polygon'
-    })
-  ).output;
-
-  for (let i = 0; i < stablecoins.length; i++) {
-    const balance_stablecoin = (
-      await sdk.api.abi.call({
-        abi: abi.checkBalance,
-        target: vault,
-        params: stablecoins[i],
-        block: chainBlocks['polygon'],
-        chain: 'polygon'
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, stablecoins[i], balance_stablecoin,'polygon');
-  }
-
-  return balances;
-};
+async function tvl(api) {
+  const tokens = await api.call({ abi: abi.getAllAssets, target: vault })
+  const bals = await api.multiCall({ abi: abi.checkBalance, target: vault, calls: tokens })
+  api.add(tokens, bals)
+}
 
 module.exports = {
   polygon: {
-    tvl: polygonTvl,
+    tvl,
   },
 };

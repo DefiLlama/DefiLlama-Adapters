@@ -1,5 +1,10 @@
+const { nullAddress } = require("../helper/tokenMapping")
+
 module.exports = {
   methodology: "USDC.e in the vault",
+  hallmarks: [
+    ['2024-09-10', 'v1 is deprecated'],
+  ],
 }
 
 const config = {
@@ -9,7 +14,8 @@ const config = {
   manta: '0x53c6decad02cB6C535a7078B686650c951aD6Af5',
   telos: '0x082321F9939373b02Ad54ea214BF6e822531e679',
   fuse: '0x082321F9939373b02Ad54ea214BF6e822531e679',
-  mode: ['0x34b83A3759ba4c9F99c339604181bf6bBdED4C79', '0x082321F9939373b02Ad54ea214BF6e822531e679']
+  mode: ['0x34b83A3759ba4c9F99c339604181bf6bBdED4C79', '0x082321F9939373b02Ad54ea214BF6e822531e679'],
+  zklink: ['0x75940cDa18F14D1F97562fc2A6dBCe31CBe03870']
 }
 
 Object.keys(config).forEach(chain => {
@@ -20,7 +26,12 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = []
       for (const v of vault) {
         const tokens = await api.fetchList({ lengthAbi: 'allWhitelistedTokensLength', itemAbi: 'allWhitelistedTokens', target: v })
-        ownerTokens.push([tokens, v])
+        ownerTokens.push([tokens.map(i => {
+          switch (i.toLowerCase()) {
+            case '0x000000000000000000000000000000000000800a': return nullAddress
+            default: return i
+          }
+        }), v])
       }
       return api.sumTokens({ ownerTokens })
     }

@@ -12,7 +12,7 @@ module.exports = {
   methodology,
   arbitrum: {
     ...aaveExports('arbitrum', '0x7BB843f889e3a0B307299c3B65e089bFfe9c0bE0'),
-    staking: staking(stakingContract, RADIANT, "arbitrum"),
-    pool2: pool2(stakingContractPool2, RADIANT_WETH_sushiLP, "arbitrum"),
+    staking: staking(stakingContract, RADIANT),
+    pool2: pool2(stakingContractPool2, RADIANT_WETH_sushiLP),
   },
 };

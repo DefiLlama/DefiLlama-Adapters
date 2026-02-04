@@ -1,9 +1,10 @@
+import * as sdk from "@defillama/sdk";
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
 import { Liq } from "../utils/types";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
+const subgraphUrl = sdk.graph.modifyEndpoint('EQBXhrF4ppZy9cBYnhPdrMCRaVas6seNpqviih5VRGmU');
 
 const accountsQuery = gql`
   query accounts($lastId: ID, $pageSize: Int) {

@@ -1,0 +1,9 @@
+const { uniTvlExports } = require('../helper/unknownTokens')
+module.exports = uniTvlExports({
+  'chz': '0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0',
+  'avax': '0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0',
+  'arbitrum': '0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0',
+  'sonic': '0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0',
+  'base': '0x5636A64B835F4E3821C798fdA16E0bA106357646',
+  'bsc': '0x5636A64B835F4E3821C798fdA16E0bA106357646',
+})

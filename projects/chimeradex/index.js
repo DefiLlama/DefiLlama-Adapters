@@ -1,6 +1,5 @@
 const { getUniTVL } = require('../helper/unknownTokens');
 const tvl = getUniTVL({
-  fetchBalances: true,
   useDefaultCoreAssets: true,
   factory: '0x661B92cc18a8d73209dBa1394aE56fca2F9DDb4D',
 })

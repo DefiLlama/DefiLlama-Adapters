@@ -4,7 +4,15 @@ const { pool2 } = require("../helper/pool2");
 const { sumTokens, sumTokens2, } = require("../helper/unwrapLPs")
 const { createIncrementArray } = require("../helper/utils")
 const sdk = require('@defillama/sdk');
-const abi = require("./abi.json");
+const abi = {
+    "stakingToken": "address:stakingToken",
+    "operator": "address:operator",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+    "totalBalanceOf": "function totalBalanceOf(address _account) view returns (uint256)",
+    "curveToken": "address:curveToken",
+    "balances": "function balances(address) view returns (uint112 locked, uint32 nextUnlockIndex)"
+  };
 const poolInfos = {}
 
 const templeStakingContract = "0xEc3C1aBDAb15EbC069ec5e320EaACf716eDfC011";
@@ -16,7 +24,7 @@ const auraLocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC';
 
 const templeTreasuryContract = "0x5c8898f8e0f9468d4a677887bc03ee2659321012";
 const FRAX = ADDRESSES.ethereum.FRAX;
-const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
+const FXS = ADDRESSES.ethereum.FXS;
 const CVX_FXS = ADDRESSES.ethereum.cvxFXS;
 const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'
 const TEMPLE_DENDEND1 = '0x8A5058100E60e8F7C42305eb505B12785bbA3BcA';
@@ -85,7 +93,7 @@ module.exports = {
   },
   methodology:
     "Counts TVL through TempleTreasury contract, locked LP in Convex and Aura",
-  hallmarks:[
-      [1665457200, "Exploit $2M"],
-    ], 
+  // hallmarks:[
+  //     [1665457200, "Exploit $2M"],
+  //   ], 
 };

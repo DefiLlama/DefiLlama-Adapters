@@ -1,7 +1,10 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-const { POOL_ADDRESS } = require("./constants");
-const { sumTokensExport } = require("../helper/chain/ton");
+const ADDRESSES = require('../helper/coreAssets.json');
+const { POOL_ADDRESS } = require('./constants');
+const { sumTokensExport } = require('../helper/chain/ton');
 
 module.exports = {
-  tvl: sumTokensExport({ owner: POOL_ADDRESS, tokens: [ADDRESSES.null]}),
+  tvl: sumTokensExport({
+    owners: [POOL_ADDRESS],
+    tokens: [ADDRESSES.ton.TON, ADDRESSES.ton.USDT]
+  }),
 }

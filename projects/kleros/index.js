@@ -1,12 +1,12 @@
-const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/http')
+const sdk = require('@defillama/sdk')
 
 const graphUrls = {
-  ethereum: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard',
-  xdai: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard-xdai',
+  ethereum: 'ECENsJRfqi6Mwj6kF9diShPzFKkgyyo79aSCkSwAShHL',
+  xdai: 'Ck26N16xgimEuuuNSJqYVWBKcWSwPmkk36BWZGtfx1ox',
 }
 
-const totalStakedQuery = gql`
+const totalStakedQuery = `
 query($block: Int) {
   klerosCounters(block: { number: $block }) {
     tokenStaked
@@ -21,10 +21,10 @@ function getStakedTvl(chain) {
     const graphUrl = graphUrls[chain]
     const block = await getBlock(timestamp, chain, chainBlocks)
 
-    const { klerosCounters } = await request(
+    const { klerosCounters } = await sdk.graph.request(
       graphUrl,
       totalStakedQuery,
-      { block: block - 500 }
+      { variables: { block: block - 500 }}
     )
 
     balances.kleros = klerosCounters[0].tokenStaked / (10 ** 18);

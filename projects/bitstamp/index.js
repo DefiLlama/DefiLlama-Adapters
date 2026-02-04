@@ -1,163 +1,100 @@
-const { cexExports } = require('../helper/cex')
+const sdk = require('@defillama/sdk')
+const { cexExports } = require("../helper/cex")
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
+const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
+
+const cexExportsObject = {}
 
 const config = {
-  ethereum: {
+  ripple: {
     owners: [
-        '0x896dfee1afeb6336e86911bd5a341c1264e5611a',
-        '0x48ec5560bfd59b95859965cce48cc244cfdf6b0c',
-        '0x16a798dbd8fa626143bb4f06fa4724d4145d4e6e',
-        '0x379825f8da776b573a63404a5c499c8a379a131f',
-        '0x6130611f7a65deb930bd0c0825af88078fcced43',
-        '0xcddf488f1c826160ee832d4f1492f00cf8557ff6',
-        '0x593aebee9117eea447279e5973f64c68d8e977a0',
-        '0x6778c14331251bbbee71414eda389dcef4bd81b8',
-        '0x772396dd44ce3d347838bfec437cb32f534963f2',
-        '0xab09b0c5c112999bee4f45e323c4ad2b59638603',
-        '0xd4fcc07a8da7d55599167991d4ab47f976d0a306',
-        '0xd46914c273443505563d346f98d41f6a40dff36c',
-        '0x182e1259ef6ee45dc811132ef4ba5871f1536822',
-        '0x6dca94b6173c28a4900ea257121e6002c0b96968',
-        '0xfbb23038fe6cfa16aa898d7dbca7c3269bdaf258',
-        '0x518b82370bc31ebb96922ec257d92517d7387615',
-        '0x4c0907f7ad337635a7fd414a0c7a938e0d64bf4d',
-        '0xab7bb7959332888e44d795c6f28ee876a8469eaa',
-        '0x858c83a0c97a3a710fd3b9167a0248d76d3b036f',
-        '0xee7c0bf91f9ac8117b490c8e028714acbcb41364',
-        '0x31c84a968736fcfe02a9ba274e0fa515a4a6659c',
-        '0xee9fb7a615cb76b46d26be6ebc9114a627a81c5b',
-        '0x1522900b6dafac587d499a862861c0869be6e428',
-        '0xb8e73ba7c6c0b50a0cd94fe9f6622762b0401c02',
-        '0x4c766def136f59f6494f0969b1355882080cf8e0',
-        '0xb66410ae75317faf13dba869b6df7b30892d1e46',
-        '0xde0f7df88678e2aee576a2f3d9b18d4dfad0155c',
-        '0x964771f6df31eea2d927fa71d7bd78e81bcdce05',
-        '0xa3fb85c3a2c50d8c0e1dd7fa7746f97c9e1d9591',
-        '0x333c100ae1a2743a1e55d73913cac6d95deb7f62',
-        '0xc0ac2f4a3cf22fd504d8835b07f5acccfa9b27f9',
-        '0x3f3e23249f38d35a4cdaf44edfd99eeb4325b401',
-        '0x88a4df73aac310484c60c4c0ac4904cab938c20b',
-        '0xc5b611f502a0dcf6c3188fd494061ae29b2baa4f',
-        '0x9fec89e34efaa4fc9f19c02f474c71373e6effe7',
-        '0x7e677cacaae0d465cfd336869f1f575a48bf012a',
-        '0xe1576685451986e3f93c2fb87cca3aec5b5d45d0',
-        '0xc20b79cff9d2c89ba8aeb9abf4bfef0314ca7bd2',
-        '0x059799f2261d37b829c2850cee67b5b975432271',
-        '0x8366dcab4cc14c826fc9d51bd4c16567bd07b02a',
-        '0x9a9bed3eb03e386d66f8a29dc67dc29bbb1ccb72',
-        '0xbcddeba6a9672c1f76a8b8edd3190bdfe6d4ef11',
+      "rnuDDzvYWTPqXTDVvwE9oLGLgxzV7Rpnpe",
+      "rafKN5p8iQsRP13LZXXoV8SCw2b9ugvjy1",
+      "rGNCoeUNqBzQnEiK2X7EYDzSpJ7PtKQSBb",
+      "rEXmdJZRfjXN3XGVdz99dGSZpQyJqUeirE",
+      "r3rVXDv8HDUBcrckfda9YsnBkX2E62WLyK",
+      "rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv",
+      "rp8Ygdyi2u7DZuMbchpFKBpsgSeg4LXDFQ",
+      "r3KfqsuMjp85ddhNN2xNAAbmrNKUgFbcpk",
+      "rG2bzZ2Q9JcpPeCyqXTQts6jHSYsX21G6a",
+      "rnTdkgZXF9AsEV8crG8KtngiD4nDC8Dkc2",
+      "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+      "rHHrmqpzuDSkpcRK2PFm7P5Mo5zf927ina",
     ],
   },
-  bitcoin: {
-    owners: [
-        "3312eBSkTsjjmKs5sYXdt7mE8H7dHxPEVH",
-        "3GUWpWqvaovudjG635LUzNXk3Ss1mjcm9M",
-        "38gEk7LkqdM8xm66i6Wz5TU6cbrhoboQFK",
-        "3HM4BJM3WGVbG59xp2v276LjEAAkms7EPG",
-        "3En4rmQMjEaCeCUXWAFNPJh9vFAYDdLTQc",
-        "3CqawYdjUh59Qj7WGvna5rAGn7ApuSKUgG",
-        "3HVHcuRXWhrn2dG8r6gPjxTKcjMmaCrNRg",
-        "3EwyjNGDXeK9tQ2mTS5Xz9Wh7ajyGmunMV",
-        "39PxrQEhMgDcsvsPhCJ5CBfrXeW9BECxg1",
-        "3QVD5HvPJLbQhDsDdoDZtW9cwZG3mEFzRN",
-        "3MF4BwuPuasoK6v4a3iarDgSFVjmXxLG6j",
-        "39emsnF1cY5djp3kmrdR5H9ghdjDwVwjiP",
-        "3Ee3Cft7X4DbRzMoBdaKWrCZ4AqriA5sbF",
-        "338A5vHMB2CMCQfMqYgY8awH5Ho5YbNShs",
-        "35MynuEPTZJd8Y7QhEsUiKKt18TrF9UgJQ",
-        "33t9PxtMC3yUpT5gvjVaA4PDwaMT8xCbpu",
-        "bc1q532e9kept2a8sgdkj3p2xy9l5pdlrv76skpphadq3xr2lk9wrllqgxqygw",
-        "bc1qajtynuexync79hveple9s7r83rsk49gq858ktdchjaze4853dtksy38uux",
-        "bc1q2wx2hpjn036mu6qg2zwsqrm0g8h9gtm4egj4cymjtvyaapsz09usep66v9",
-        "bc1qgc446er7nn9t92hnk5untxg2ad4hvxaanpvwmrexy8caykjzj7ws9hqjmr",
-        "3JuPfeK7N4hTgXp3ULx6a4zr5fFwoBmdFU",
-        "32jWyMp8CfoFfQ6QRfXGi7hQJ6d1YfPykB",
-        "bc1qhex599hljc4zx67zuh0yqk9r7npkqhwld0af6urx7mv58ykx2vgq0z5sta",
-        "bc1qyfcls8kletachlsg54zvqujvnvvr76lkezqe43kf63p5yc0hnx5sq42q6k",
-        "3Hi5VHVgmYZYfAPc9aNvQoNXyEv5rYvJQN",
-        "bc1q3lgd3ggp2fvr27aat6kat00yawhqley5wpl4fytc3f6cyfyz98nsave8sw",
-        "bc1qkg6x25h8w0060k2dkzq57ltyfm4yahm9uwz6rda8efep9fe38h2qekh58h",
-        "bc1qwj7zwn3p4y8grutk9zxxn09vm0cs9g0mledte5kqxsm43w08u6pqp8p82q",
-        "bc1q3anumarec8zlzs7nt4waljuhg2ueel6m0z5s3v7vg6cnfu66m83spupgm6",
-        "bc1qckj933afq7ultlp4nrqhqk3shkaxt6j8y39htyn0umglr233m6wqfv7ay8",
-        "bc1qhusm86yqagqczep0dfmge53q3rehn0rzw5qeqwr0gtyw5p2sdkyspgu2me",
-        "bc1qzdyl7pr0nuqka4lzgkj58ukk0crp8qflgjseumj55nm8c0027v7q99jmhv",
-        "bc1qrl2cxsmm4aqgtkyxs25thvcc0p0wvujp8gkjuw228g43w7ccz26q7a37ys",
-        "bc1qaj2ew0aerhf9ggd3rw3xjn79f49w0dadxk4vg083adzzvpmuhp4scadxsu",
-        "bc1qqrgs3laxzxrkpzvqgmca6njpmxsjjta3vlvlngz8kdz78g8d9e4sa8l3l8",
-        "bc1qejhwz50y9fnrqfu8dmy9jtv4k3k4yphpnegv06utvqek6u4jfv3qhr9ts5",
-        "3Jowo3hYr1oqv7J7osUu4eW88owPZScgFk",
-        "bc1qjzwquwh3psueazgs43u4m2s56gernmuxl95964vl20nee2fn27cq5r4fhg",
-        "bc1qa9v2dxhxsj75mcczwlssparhhnzcmkudg3tswtdcfrr0eussva9qxwzpdl",
-        "bc1qdvzxxwmcc2th8f9x0vj6jw8xz7sqkjp994z6vd6mapy48uce0xfsu2qdxz",
-        "3Jc5hrY64F1C9rfrXJrrKR73bhGj3Um3Eq",
-        "3KDH9yEKVksjSTj13PpnrhrfSpqwFWzNVB",
-        "367TJA4M2DE37ZLuv48ujTxVa7ESqa2pUF",
-        "3CC4qT3fTW9deeTQqXBQH273YMcRWrHBje",
-        "36NSBe6tr6rAYnKrj5tHnTGNLUdJ7wFd7q",
-        "3L5TXDJvpn8ZuVMxRNqsxXod68eLgnQcJv",
-        "3MiAhu93R5PNLbsSDDa8Mx9bzJ1p5h8mJV",
-        "3Q4Boc44ZzUVeDSv7Kst4iADM6jETrk7RV",
-        "33fyemB54JUv9DGXzFCdGM37vDJ3eXnrce",
-        "bc1q926pgy6v9l9fqck759js2k557fxn8xxpj8rz070m70c0q5g8nqcqx70wjp",
-        "3F4ceyGSFiN2pep4pjqXEHnZNHcvzh3W9y",
-        "bc1qrxtqv6ym455etlvx86c98qk7ujherxgcycpwxjqyxacalztalslqhtd8hw",
-        "bc1qlyvp6l3t47qqszngk8kyele2up4rf8t9g4jsmy8g9y48xhhuxvrs0eflt6",
-        "bc1qgrzeldvkp9n6yrq9ess9rxv7kcczdh9ta93llnh7tgxr5542seus2q36jy",
-        "bc1q3lyjsr6e0krj6dp3cf9agehge5nak77d70r4seuyea2hjzwkkm4svht4gs",
-        "bc1quhatrr4tjpzr0wtsem6fwwwrxztmdlv60ldja6arz6hlr97fpuzs3lawcs",
-        "bc1qujz8nfqnencmfdm3nkj0ctu20tvh8lgwr8lxpayy0zh4gf4lzkjsd60kdv",
-        "bc1qmzv8qjzyyvvhcunpt7kwg79la3h3pkukn9xynvpk89ju7rjl2vvs5jsz0a",
-        "3E9wB5NTXtuYWxk8gXmoa9Jvb6XF8CGnkf",
-        "3LkVkaoLQGnnhNofgcNd6c7ufZ8FHheGx6"
-    ]
-  },
-    ripple: {
-      owners: [
-      'rnuDDzvYWTPqXTDVvwE9oLGLgxzV7Rpnpe',
-      'rafKN5p8iQsRP13LZXXoV8SCw2b9ugvjy1',
-      'rGNCoeUNqBzQnEiK2X7EYDzSpJ7PtKQSBb',
-      'rEXmdJZRfjXN3XGVdz99dGSZpQyJqUeirE',
-      'r3rVXDv8HDUBcrckfda9YsnBkX2E62WLyK',
-      'rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv',
-      'rp8Ygdyi2u7DZuMbchpFKBpsgSeg4LXDFQ',
-      'r3KfqsuMjp85ddhNN2xNAAbmrNKUgFbcpk',
-      'rG2bzZ2Q9JcpPeCyqXTQts6jHSYsX21G6a',
-      'rnTdkgZXF9AsEV8crG8KtngiD4nDC8Dkc2',
-      'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B',
-      'rHHrmqpzuDSkpcRK2PFm7P5Mo5zf927ina'
-    ]
-  },
-  solana: {
-    owners: [
-      'E1EfU3iKUS16mB2vdgj6mi3ssV32dm2Pxh7W74XxKuYu',
-      'i57ExrKB2i4mSgjSuq2xz617mQXmu33WG2WEYypmdvX',
-      'HBxZShcE86UMmF93KUM8eWJKqeEXi5cqWCLYLMMhqMYm',
-      'ETZY5TjMKdV2KdHVmUNTN56pWhMc8TyjrXtQ7YexDCmG'
-  ]
-},
-avax: {
-  owners: [
-    '0xa3fb85c3a2c50d8c0e1dd7fa7746f97c9e1d9591',
-    '0xc0ac2f4a3cf22fd504d8835b07f5acccfa9b27f9',
-    '0x3f3e23249f38d35a4cdaf44edfd99eeb4325b401',
-  ]
-},
-cardano: {
-  owners: [
-    'addr1q9w7x0secwr3uz397nl3zw4wc7w9su22rlc7v54p5q425xjauvlpnsu8rc9zta8lzya2a3uutpc558l3uef2rgp24gdqhcgfgs',
-    'addr1q9frvl4a0wgmk4e28gu4asyqrd6ezd3wn3e2wdq4h3hn73zjxelt67u3hdtj5w3etmqgqxm4jymza8rj5u6pt0r08azq3pf2u9',
-    'addr1qysvm626pgxcwgy2w7fk2ulmw0mc6v3twzes3arns64hk5eqeh545zsdsusg5aunv4elkulh35ezku9npr688p4t0dfsw7ur3u'
-  ]
-},
-near: {
-  owners: [
-    '992e069ce45717059abba021058759968fb0f61f048c09ac95b7a68a70b65ab1',
-    '7206287337fd1c74c3df9a04cecd8471a0ba8de3eb63bba3a1e49778f8538899',
-    '0df4207b35f21783f743f10b82dac228c9f11339aa1bc359f568b52efb6c46df',
-    '5362a3510eaf41f139d760ec375a425b95d4f86fe596f8d5e29351481a0a4941',
-    '452b94b0072819f60c0d757f6927155f12d6376409b0e6eac42d04946cd4c6eb',
-  ]
-}
+};
+
+const chains = [
+  'bitcoin', 'litecoin', 'ripple',
+  'ethereum', 'avax', 'solana', 'sui',  'xdc', 'near', 'cardano',
+  // 'algorand',
+]
+
+chains.forEach(chain => {
+  cexExportsObject[chain] = {
+    tvl: async (...args) => {
+      const data = await getAllData()
+      const tvlFunc = cexExports({ [chain]: data[chain] })[chain].tvl
+      return tvlFunc(...args)
+    }
+  }
+})
+
+let _allData
+
+function getAllData() {
+  if (!_allData)
+    _allData = _getAllData()
+
+  return _allData
+
+  function _getAllData() {
+    return getConfig('bitstamp', undefined, {
+      fetcher: async () => {
+        let page = 1
+        let hasMorePages = true
+        let lastItem
+        const walletChainMapping = {}
+        do {
+          sdk.log('fetching page', page)
+          const data = await get('https://www.bitstamp.net/api/v2/wallet_transparency/?perPage=1000&page=' + page)
+          const allWallets = Object.values(data.wallets).flat()
+          const currentLastItem = allWallets[allWallets.length - 1]
+
+          allWallets.forEach(({ address, network }) => {
+            if (!walletChainMapping[network])
+              walletChainMapping[network] = {}
+            walletChainMapping[network][address] = true
+          })
+
+          page++
+          hasMorePages = !lastItem || currentLastItem.address !== lastItem.address
+          lastItem = currentLastItem
+        } while (hasMorePages)
+
+        Object.entries(walletChainMapping).forEach(([chain, wallets]) => {
+          walletChainMapping[chain] = { owners: Object.keys(wallets) }
+        })
+
+        walletChainMapping.avax = walletChainMapping['avalanche-c-chain']
+        walletChainMapping.xdc = walletChainMapping['xdc-network']
+        walletChainMapping.ripple = config.ripple
+        return walletChainMapping
+      }
+    })
+  }
 }
 
-module.exports = cexExports(config)
+const withdrawalAddresses = [
+  '0x3262f13a39efaca789ae58390441c9ed76bc658a',
+  '0xf666814c2ae92ca0e06667f80dac1eb8a97e48ae',
+  '0x5c95a672e34b3252482ed9a215f2926d2887845d',
+  '0x88a4df73aac310484c60c4c0ac4904cab938c20b',
+]
+
+module.exports = mergeExports([
+  cexExportsObject,
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])
+

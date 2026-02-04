@@ -2,6 +2,21 @@ const {
   struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, option,
 } = require('./layout-base')
 
+
+const TOKEN_LAYOUT = struct([
+  publicKey('mint'),
+  publicKey('owner'),
+  uint64('amount'),
+  u32('delegateOption'),
+  publicKey('delegate'),
+  u8('state'),
+  u32('isNativeOption'),
+  uint64('isNative'),
+  uint64('delegatedAmount'),
+  u32('closeAuthorityOption'),
+  publicKey('closeAuthority')
+])
+
 const Fee = [
   u64("denominator"),
   u64("numerator"),
@@ -43,5 +58,6 @@ const SCN_STAKE_POOL = struct([
 ]);
 
 module.exports = {
+  TOKEN_LAYOUT,
   SCN_STAKE_POOL,
 };

@@ -1,9 +1,13 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
-const { stakingPricedLP } = require("../helper/staking")
+const { stakingPriceLP } = require("../helper/staking")
 const sdk = require("@defillama/sdk")
-const iceBoxABI = require("./iceBoxABI.json");
-const iceVaultABI = require("./icevaultABI.json");
+const iceBoxABI = {
+    "totalPrimaryStaked": "uint256:totalPrimaryStaked"
+  };
+const iceVaultABI = {
+    "totalStaked": "uint256:totalStaked"
+  };
 
 const WAVAX = ADDRESSES.avax.WAVAX
 //const WTLOS = ADDRESSES.telos.WTLOS
@@ -119,13 +123,13 @@ module.exports = {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory }),
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
-      stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
+      stakingPriceLP(contracts.telos.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
       // Ice Box
       stakedAVAXIceBox,
       stakedAVAXIceBox2,
       // IceVault
       stakedUSDC,
-      stakingPricedLP(contracts.avax.stakingContract_IV, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true)
+      stakingPriceLP(contracts.avax.stakingContract_IV, contracts.avax.pops,'0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true)
     ])
   },
   polygon: {
@@ -150,12 +154,11 @@ module.exports = {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.telos.factory }),
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
-      stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.telos.pops,'telos','0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
+      stakingPriceLP(contracts.telos.stakingContract_sPOPS, contracts.telos.pops,'0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
       // NFT's
-      stakingPricedLP(contracts.telos.stakingContract_NFT, contracts.telos.pops,'telos','0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
+      stakingPriceLP(contracts.telos.stakingContract_NFT, contracts.telos.pops,'0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
       // Ice Box
       stakedTLOSIceBox
    ])
   },
-  //start: 15434772,
 }

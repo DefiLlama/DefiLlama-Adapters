@@ -11,10 +11,10 @@ const PROTOCOL_ADDRESSES = [
 ];
 
 async function getDaoAddresses() {
-  return await getConfig(
+  return (await getConfig(
     "peerme",
     API_BASE_URL + "/integrations/defi-llama/dao-addresses"
-  );
+  )).filter(address => address !== null);
 }
 
 async function tvl() {

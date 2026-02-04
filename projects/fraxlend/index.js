@@ -1,23 +1,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { fraxlendExports } = require('../helper/fraxlend');
 
-const REGISTRY_ADDR = "0xD6E9D27C75Afd88ad24Cd5EdccdC76fd2fc3A751"
-
-async function tvl(api) {
-  const pairs = await api.call({ target: REGISTRY_ADDR, abi: abi['getAllPairAddresses'], })
-  const tokens = await api.multiCall({ abi: abi.collateralContract, calls: pairs })
-  return sumTokens2({ api, tokensAndOwners: tokens.map((v, i) => [v, pairs[i]]) })
-}
-async function borrowed(api) {
-  const pairs = await api.call({ target: REGISTRY_ADDR, abi: abi['getAllPairAddresses'], })
-  const bals = await api.multiCall({ abi: 'function totalBorrow() view returns (uint128 amount, uint128 shares)', calls: pairs })
-  bals.forEach(bal => api.add(ADDRESSES.ethereum.FRAX, bal.amount))
+const registry_config = {
+  fraxtal: { blacklistedTokens: [ADDRESSES.fraxtal.FRAX], registry: '0x8c22EBc8f9B96cEac97EA21c53F3B27ef2F45e57', },
+  ethereum: { blacklistedTokens: [ADDRESSES.ethereum.FRAX], registry: '0xD6E9D27C75Afd88ad24Cd5EdccdC76fd2fc3A751', },
+  arbitrum: { blacklistedTokens: [ADDRESSES.arbitrum.FRAX], registry: '0x0bD2fFBcB0A17De2d5a543ec2D47C772eeaD316d' },
 }
 
-module.exports = {
-  methodology: 'Gets the pairs from the REGISTRY_ADDRESS and adds the collateral amounts from each pair',
-  ethereum: {
-    tvl, borrowed,
-  },
-}
+module.exports = fraxlendExports(registry_config)

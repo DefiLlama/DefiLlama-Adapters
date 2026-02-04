@@ -1,10 +1,19 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const abi = require('./abi.json');
+const abi = {
+    "BlueshiftRegistry": {
+      "getPortfolios": "function getPortfolios() view returns (tuple(string[] name, address[] contractAddress, address[] baseTokenAddress, address[] lpTokenAddress, uint256[] lpTokenPrice, uint256[] totalValue, uint256[] tokenCount, uint256[] baseTokenPriceCoefficient, tuple(address[] tokenAddress, uint256[] amount, uint256[] price, uint256[] depositLimit, uint256[] withdrawLimit, uint256[] depositEMAPrice, uint256[] withdrawEMAPrice, uint256[] portfolioShare, uint256[] targetWeight)[] tokens))"
+    },
+    "BlueshiftEarning": {
+      "getAccDeposit": "uint256:getAccDeposit",
+      "getToken": "address:getToken"
+    }
+  };
 const { registry, manualPool, blueschain, } = require("./config.json");
 
 async function staking(api) {
   const chain = api.chain
+  if (chain === 'milkomeda_a1') return {}
   if (!manualPool[chain]) return {}
   const value = await api.call({ abi: abi.BlueshiftEarning.getAccDeposit, target: manualPool[chain], })
   const tokenAddress = await api.call({ abi: abi.BlueshiftEarning.getToken, target: manualPool[chain], })
@@ -14,6 +23,7 @@ async function staking(api) {
 
 async function tvl(api) {
   const chain = api.chain
+  if (chain === 'milkomeda_a1') return {}
   const { reserve, tokens } = blueschain[chain] ?? {}
 
   // Blueschain reserves

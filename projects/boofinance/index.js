@@ -1,6 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "tokenList": "address[]:tokenList",
+    "tokenParameters": "function tokenParameters(address) view returns (address rewarder, address strategy, uint256 lastRewardTime, uint256 lastCumulativeReward, uint256 storedPrice, uint256 accZBOOFIPerShare, uint256 totalShares, uint256 totalTokens, uint128 multiplier, uint16 withdrawFeeBP)"
+  };
 const token0Abi = 'address:token0'
 const token1Abi = 'address:token1'
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -86,6 +89,6 @@ module.exports = {
   avax: {
     tvl,
     pool2,
-    staking: staking(stakingAddress, boofi, "avax")
+    staking: staking(stakingAddress, boofi)
   }
 }

@@ -24,7 +24,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 17142918,
   ethereum: {
     tvl,
     pool2: staking('0xBE13DC5235a64d090E9c62952654DBF3c65199d9', SLSD_LP)

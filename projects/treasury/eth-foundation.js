@@ -15,6 +15,6 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.BNB, //BNB
         WETH
      ],
-    owners: [treasury],
+    owners: [treasury, '0x9fC3dc011b461664c835F2527fffb1169b3C213e'],
   },
 })

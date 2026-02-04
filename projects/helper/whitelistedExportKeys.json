@@ -4,17 +4,13 @@
   "methodology",
   "pool2",
   "misrepresentedTokens",
-  "fetch",
   "timetravel",
   "borrowed",
   "start",
   "doublecounted",
-  "treasury",
   "hallmarks",
-  "incentivized",
-  "offers",
+  "isHeavyProtocol",
   "deadFrom",
-  "broken",
   "ownTokens",
   "vesting"
 ]

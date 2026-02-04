@@ -1,5 +1,6 @@
 const { queryContract, } = require('../helper/chain/secret')
-const { PromisePool } = require('@supercharge/promise-pool')
+const { PromisePool } = require('@supercharge/promise-pool');
+const { sleep } = require('../helper/utils');
 
 const LEND_OVERSEER_CONTRACT = "secret1pf88n9hm64mn58aw48jxfs2fsvzr07svnrrdlv";
 
@@ -30,7 +31,7 @@ async function getLendMarkets() {
 
     const data = []
 
-    const { errors } = await PromisePool.withConcurrency(5)
+    const { errors } = await PromisePool.withConcurrency(3)
       .for(markets)
       .process(async (addr) => {
 
@@ -40,6 +41,7 @@ async function getLendMarkets() {
         // const { token_info: { decimals }} = await queryContract({ contract: address, data: { token_info: {} } })
         const scale = exchange_rate
         data.push({ address, total_borrows: total_borrows * scale, total_supply: total_supply * scale })
+        await sleep(1000)
       })
 
     if (errors && errors.length)

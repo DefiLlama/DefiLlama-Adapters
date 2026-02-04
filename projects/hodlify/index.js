@@ -51,7 +51,7 @@ const tvl = async (api) => {
 
 module.exports = {
   doublecounted: true,
-  start: 1693929600, // Tue Sep 05 2023 16:00:00 GMT+0000
+  start: '2023-09-05', // Tue Sep 05 2023 16:00:00 GMT+0000
   methodology: 'Hodlify TVL including total values of assets deposited in other protocols, and the petty cash in our earning vaults.',
   arbitrum: { tvl },
   optimism: { tvl },

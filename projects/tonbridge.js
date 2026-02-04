@@ -13,13 +13,13 @@ const tokenMap = {
     //'f48054939064d686a9ad68d96d9ab79e409b095557c06ab7f073097dade7057f': 'dartflex',
     //'00ca16398f314a9b3bed582dc69582515d866ededb6c4e18190f63b305cedf91': NA
     'a49cd4e158a9a15555e624759e2e4e766d22600b7800d891e46f9291f044a93d': 'everscale',
-    'b2e341c01da068d43cfa0eae6dae36b12b476e55cf2c3eeb002689f44b9ddef9': 'aave',
-    'bc77ba7f3cbbebcca393e85ed479ef44df63cdee4fb572c3e0f904fb9fc63e25': 'compound-governance-token',
-    '7dd7ae82835848dc6b490515ec4034968a8ceff893a6d5f31ab3cdfcfb79bbb6': 'curve-dao-token',
-    '6b2baa777b89da66dddaf9f1602142987b13ca565bbb170da929ea945f5ce9fb': 'stasis-eurs',
+    // 'b2e341c01da068d43cfa0eae6dae36b12b476e55cf2c3eeb002689f44b9ddef9': 'aave',
+    // 'bc77ba7f3cbbebcca393e85ed479ef44df63cdee4fb572c3e0f904fb9fc63e25': 'compound-governance-token',
+    // '7dd7ae82835848dc6b490515ec4034968a8ceff893a6d5f31ab3cdfcfb79bbb6': 'curve-dao-token',
+    // '6b2baa777b89da66dddaf9f1602142987b13ca565bbb170da929ea945f5ce9fb': 'stasis-eurs',
     //'387609364f765017fa3fa5815e08d420e054c88a86426cd6d5aaf2a1ee46ff5a': 'torn',
-    'e114f1f7d21ac6566d988c983315e0cdd5bee7b43c08918537d1117dea7e4534': 'yearn-finance',
-    '3c66e3e0ce0a909ce8779b31509db773e544132d8fa6f6641c00bce257c79d9c': '1inch',
+    // 'e114f1f7d21ac6566d988c983315e0cdd5bee7b43c08918537d1117dea7e4534': 'yearn-finance',
+    // '3c66e3e0ce0a909ce8779b31509db773e544132d8fa6f6641c00bce257c79d9c': '1inch',
     //'bf1c7c0e8a187d9d5ba6069bf768b69a982df8b22ef8430b31dcc4f97263507e': 'dartflex'
 };
 

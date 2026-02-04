@@ -36,8 +36,12 @@ async function tvl() {
     await setCache(cacheKey, "starknet", cache);
   }
 
+  const badPoolIndex = calls.findIndex(p=>p==="0x07daadaa043b22429020efb9ac16bcc5f6a9b6ed3305de48e65a0ad5dcb76759");
   const data = [];
   reserves.forEach((reserve, i) => {
+    if(i===badPoolIndex){
+      return
+    }
     data.push({
       token0: cache.token0s[i],
       token1: cache.token1s[i],

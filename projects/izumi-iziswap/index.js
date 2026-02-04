@@ -31,6 +31,17 @@ const poolHelpers = {
   'blast': ['0x5e7902aDf0Ea0ff827683Cc1d431F740CAD0731b'],
   'zklink': ['0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F'],
   'mode': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'xlayer': ['0xF42C48f971bDaA130573039B6c940212EeAb8496'],
+  'bob': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'taiko': ['0x33531bDBFE34fa6Fd5963D0423f7699775AacaaF'],
+  'core': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'gravity': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'iotex': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'morph': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'kava': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'hemi': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'plume_mainnet': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'monad': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
@@ -38,9 +49,27 @@ const blacklistedTokens = [
   '0x1382628e018010035999A1FF330447a0751aa84f',
   ADDRESSES.bsc.iUSD, // mantle iUSD
   '0x078f712f038A95BeEA94F036cADB49188a90604b', // manta iUSD
-  '0x0A3BB08b3a15A19b4De82F8AcFc862606FB69A2D', // merlin iUSD
+  ADDRESSES.bsc.iUSD, // merlin iUSD
 ]
 
+const blacklistedPools = {
+  'hemi': [
+    '0x469a5066578e22a1222cc78b2ccaca602db6bb4a',  // bfBTC/hemiBTC
+    '0xFE1c507Be86F977B61d12D1DA3c95D0dEeB1B86A',  // bfBTC/hemiBTC
+    '0x98a3a18583138474aedd2ceec034cba1fa783613',  // brBTC/suBTC
+    '0xe9635693b7606f1914c0cd698065ec84267a62a1',  // mBTC/uniBTC
+  ],
+  'taiko': [
+    '0x5e1e8c9c77b0de88f1c4597a3c145b0c7abcf485',  // mBTC/uniBTC
+  ]
+}
+
 Object.keys(poolHelpers).forEach(chain => {
-  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens }), }
+  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens, blacklistedPools: blacklistedPools[chain], }), }
 })
+
+module.exports.hallmarks = [
+  [1715648400,"End Mode TVL Campaign S1"]
+]
+
+// module.exports.ultron.tvl =  () => ({}) // their RPC is rugging us

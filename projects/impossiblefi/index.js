@@ -37,4 +37,4 @@ Object.keys(config).forEach(chain => {
   }
 })
 
-module.exports.bsc.staking = stakings(stakingAddresses, idia, 'bsc')
+module.exports.bsc.staking = stakings(stakingAddresses, idia)

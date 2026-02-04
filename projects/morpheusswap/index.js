@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accMorphPerShare, uint16 depositFeeBP, uint256 lpSupply)",
+    "poolLength": "uint256:poolLength"
+  };
 const { getUniTVL } = require('../helper/unknownTokens')
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { stakings } = require("../helper/staking");
@@ -12,7 +15,7 @@ async function tvl(timestamp, block, chainBlocks, api) {
   if (chainBlocks.fantom && chainBlocks.fantom < 21182441) { // Factory deployment block
     await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [morph])
   } else {
-    const dexTvl = getUniTVL({ factory: '0x9C454510848906FDDc846607E4baa27Ca999FBB6', chain: 'fantom', useDefaultCoreAssets: true })
+    const dexTvl = getUniTVL({ factory: '0x9C454510848906FDDc846607E4baa27Ca999FBB6', useDefaultCoreAssets: true })
     return dexTvl(timestamp, block, chainBlocks, api);
   }
   return balances;

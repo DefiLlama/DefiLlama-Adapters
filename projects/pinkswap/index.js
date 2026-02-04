@@ -10,6 +10,6 @@ module.exports = {
       factory: FACTORY,
       useDefaultCoreAssets: true,
     }),
-    staking: staking(masterChef, pinksToken, 'bsc'),
+    staking: staking(masterChef, pinksToken),
   }
 }

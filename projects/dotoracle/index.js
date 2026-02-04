@@ -14,7 +14,7 @@ const config = {
       usdt: ADDRESSES.ethereum.USDT,
       DAI: ADDRESSES.ethereum.DAI,
       frax: ADDRESSES.ethereum.FRAX,
-      fxs: '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0',
+      fxs: ADDRESSES.ethereum.FXS,
       maker: ADDRESSES.ethereum.MKR,
       aave: ADDRESSES.ethereum.AAVE,
     }

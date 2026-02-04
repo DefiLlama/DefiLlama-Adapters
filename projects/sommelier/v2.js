@@ -1,6 +1,5 @@
-const sdk = require("@defillama/sdk");
+async function sumTvl({ cellars, api, ownersToDedupe }) {
 
-async function sumTvl({ balances, cellars, api, ownersToDedupe }) {
   const assets = await api.multiCall({
     abi: "address:asset",
     calls: cellars,
@@ -49,15 +48,7 @@ async function sumTvl({ balances, cellars, api, ownersToDedupe }) {
     return ratio;
   });
 
-  assets.forEach((a, i) =>
-    sdk.util.sumSingleBalance(
-      balances,
-      a,
-      bals[i] * ratios[i],
-      api.chain
-    )
-  );
-  return balances
+  assets.forEach((a, i) => api.add(a, bals[i] * ratios[i]));
 }
 
 module.exports = {

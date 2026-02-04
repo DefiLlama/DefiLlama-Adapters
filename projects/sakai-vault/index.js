@@ -1,14 +1,15 @@
-const { staking } = require("../helper/staking");
+const { staking } = require("../helper/staking")
 
+const SAKAI = "0x43b35e89d15b91162dea1c51133c4c93bdd1c4af"
 const contracts = {
-  SAKAI: "0x43b35e89d15b91162dea1c51133c4c93bdd1c4af",
   "Sakai-SP": "0xc20A079c7962D9fc92173cda349e80D484dFA42A", //Sakai Staking Protocol Contract
-  SakaiDAO: "0x8F2e2baD6020d8bB5BF947199CaE8eb86D24cfD7", //Sakai-DAO Contract
-};
+  "Sakai-SP-V2": "0xba94E7c2306aC3BE22C123041Fd7823d7fA15933", //Sakai Staking Protocol Contract V2
+  "Sakai-DAO": "0xeEC3514a5A66432ff2887e44664b5a82db229e5F", //Sakai DAO Contract
+}
 
 module.exports = {
   bsc: {
     tvl: () => ({}),
-    staking: staking([contracts["Sakai-SP"], contracts["SakaiDAO"]], contracts.SAKAI),
+    staking: staking(Object.values(contracts), SAKAI),
   },
 }

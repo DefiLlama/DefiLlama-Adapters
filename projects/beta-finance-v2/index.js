@@ -4,6 +4,8 @@ const { getUniqueAddresses } = require('../helper/tokenMapping');
 
 const config = {
   ethereum: { bank: '0x1150d370C61cdd5d6F81c68783678382b447B07D', fromBlock: 18569809, },
+  bsc: { bank: '0x5F579336b1959a4a51782B61ce8E877fF6171A6C', fromBlock: 34515370, },
+  arbitrum: { bank: '0xAcF4dC6043043324b84aFE77e00678607F9e70fF', fromBlock: 223761172, },
 }
 
 const abis = {

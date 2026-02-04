@@ -12,6 +12,7 @@ module.exports = {
           "0xA10c7CE4b876998858b1a9E12b10092229539400",
         ],
         fetchCoValentTokens: true,
+        permitFailure: true
       }),
   },
 };

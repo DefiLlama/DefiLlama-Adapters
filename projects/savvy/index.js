@@ -1,11 +1,17 @@
-const contracts = require("./contracts.json");
+const contracts = {
+    "infoAggregator": "0x68D54ff41BA47355b95Bd477Bcf4d5ff4b2c2A59",
+    "savvyTokens": {
+      "SVY": "0x43aB8f7d2A8Dd4102cCEA6b438F6d747b1B9F034",
+      "svUSD": "0xF202Ab403Cd7E90197ec0f010ee897E283037706",
+      "svBTC": "0xeEE18334c414A47FB886a7317E1885b2Bfb8c2A6",
+      "svETH": "0xf7728582002ef82908c8242CF552E969BA863Ffa"
+    }
+  };
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 
 async function tvl(api) {
   const savvyPositionManagers = await api.call({ abi: 'address[]:getSavvyPositionManagers', target: contracts.infoAggregator, })
-  console.log(savvyPositionManagers)
   const yieldStrategyManagers = await api.multiCall({ abi: 'address:yieldStrategyManager', calls: savvyPositionManagers, })
-  console.log(yieldStrategyManagers)
   const savvySages = await api.multiCall({ abi: 'address:savvySage', calls: savvyPositionManagers, })
 
   const registeredBaseTokensCalls = (await api.multiCall({ abi: 'address[]:getRegisteredBaseTokens', calls: savvySages, })).flatMap((r, i) => {
@@ -16,7 +22,6 @@ async function tvl(api) {
   const savvySwaps = (await api.multiCall({ abi: 'function savvySwap(address baseToken) returns (address)', calls: registeredBaseTokensCalls }))
   const amos = (await api.multiCall({ abi: 'function amos(address baseToken) returns (address)', calls: registeredBaseTokensCalls, }))
   const passThroughAMOs = (await api.multiCall({ abi: 'address:recipient', calls: amos, permitFailure: true })).filter(y => y)
-  console.log(passThroughAMOs)
   const baseTokens = (await api.multiCall({ abi: 'address[]:getSupportedBaseTokens', calls: yieldStrategyManagers, })).map(y => y)
   const yieldTokens = (await api.multiCall({ abi: 'address[]:getSupportedYieldTokens', calls: yieldStrategyManagers, })).map(y => y)
 
@@ -24,7 +29,6 @@ async function tvl(api) {
   const rTokens = (await api.multiCall({ abi: 'address:rToken', calls: yieldTokens, permitFailure: true })).filter(y => y)
   const underlyingTokens = (await api.multiCall({ abi: 'address:token', calls: yieldTokens, permitFailure: true })).filter(y => y)
 
-  console.log(aTokens)
   const tokens = [baseTokens, underlyingTokens, yieldTokens].flat(3)
   const tokenHolders = [savvyPositionManagers, savvySages, passThroughAMOs ].flat(3).filter(i => i !== nullAddress)
   const tokensAndOwners = tokenHolders.map((owner) => tokens.map((token) => [ token, owner ])).flat()

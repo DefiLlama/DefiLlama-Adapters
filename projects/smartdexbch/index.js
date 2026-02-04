@@ -1,5 +1,5 @@
 const { getUniTVL } = require('../helper/unknownTokens')
-const { stakingPricedLP } = require('../helper/staking')
+const { stakingPriceLP } = require('../helper/staking')
 
 const DSMART = "0x47c259DFe165Cef3e429C9B66bf9ce9dc3e68aC2";
 const xDSMART = "0x46269c22848738573761eC50a736916272857f83";
@@ -10,7 +10,7 @@ module.exports = {
     methodology: "Count TVL as liquidity on the dex",
     misrepresentedTokens: true,
     smartbch: {
-        tvl: getUniTVL({ factory: FACTORY, chain: 'smartbch', useDefaultCoreAssets: true }),
-        staking: stakingPricedLP(xDSMART, DSMART, 'smartbch', DSMART_WBCH_PAIR, 'bitcoin-cash', false, 18)
+        tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true }),
+        staking: stakingPriceLP(xDSMART, DSMART, DSMART_WBCH_PAIR, 'bitcoin-cash', false, 18)
     }
 }

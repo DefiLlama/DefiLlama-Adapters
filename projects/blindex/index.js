@@ -1,5 +1,12 @@
 const sdk = require("@defillama/sdk");
-const abi = require("../helper/abis/blindex.json");
+const abi = {
+  "bdstable_pools_array": "function bdstable_pools_array(uint256) view returns (address)",
+  "getBdStablesPoolsLength": "uint256:getBdStablesPoolsLength",
+  "getBDStablePoolCollateral": "address:collateral_token",
+  "getBDStable": "function bdstables(uint256) view returns (address)",
+  "getBdStablesLength": "uint256:getBdStablesLength",
+  "getBDXPriceUsdD12": "uint256:BDX_price_d12"
+}
 const { getUniTVL, } = require("../helper/unknownTokens");
 
 const chains = {
@@ -10,7 +17,6 @@ const chains = {
 
 async function tvl(api) {
   const bdstables = await api.fetchList({ lengthAbi: abi.getBdStablesLength, itemAbi: abi.getBDStable, target: chains.rsk.bdxTokenAddress })
-  console.log(bdstables)
   await Promise.all(bdstables.map(async bdstable => {
     const pools = await api.fetchList({  lengthAbi: abi.getBdStablesPoolsLength, itemAbi: abi.bdstable_pools_array, target: bdstable})
     const tokens = await api.multiCall({  abi: abi.getBDStablePoolCollateral, calls: pools})

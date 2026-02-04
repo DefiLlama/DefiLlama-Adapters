@@ -1,5 +1,9 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "depositId": "uint256:depositId",
+    "lockedToken": "function lockedToken(uint256) view returns (address tokenAddress, address withdrawalAddress, uint256 tokenAmount, uint256 unlockTime, bool withdrawn)",
+    "symbol": "string:symbol"
+  };
 const { pool2s } = require("../helper/pool2");
 const { vestingHelper } = require("../helper/unknownTokens");
 
@@ -97,7 +101,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    pool2: pool2s(stakingPool2Contracts, lpAddresses, "bsc"),
+    pool2: pool2s(stakingPool2Contracts, lpAddresses),
     tvl: bscTvl,
   },
   methodology:

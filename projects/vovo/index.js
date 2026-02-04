@@ -1,9 +1,5 @@
-const sdk = require("@defillama/sdk");
-const chain = "arbitrum";
-
+const ADDRESSES = require('../helper/coreAssets.json')
 const balanceABI = 'function balance(bool isMax) view returns (uint256)';
-
-const getGlpPriceABI = "uint256:getGlpPrice";
 
 const usdcVaults = [
   "0x9ba57a1D3f6C61Ff500f598F16b97007EB02E346",
@@ -19,45 +15,14 @@ const glpVaults = [
   "0x46d6dEE922f1d2C6421895Ba182120C784d986d3",
 ];
 
-async function usdcVaultsTVL(block) {
-  const { output: tvls } = await sdk.api.abi.multiCall({
+async function tvl(api) {
+  const vaults = usdcVaults.concat(glpVaults);
+  const tvls = await api.multiCall({
     abi: balanceABI,
-    calls: usdcVaults.map((i) => ({ target: i, params: true })),
-    chain,
-    block,
+    calls: vaults.map((i) => ({ target: i, params: true })),
   });
-
-  let tvl = 0;
-  tvls.forEach((i) => (tvl += i.output / 1e6));
-  return tvl;
-}
-
-async function glpVaultsTVL(block) {
-  const { output: glpPrice } = await sdk.api.abi.call({
-    abi: getGlpPriceABI,
-    target: glpVaults[0],
-    chain,
-    block,
-  });
-
-  const { output: tvls } = await sdk.api.abi.multiCall({
-    abi: balanceABI,
-    calls: glpVaults.map((i) => ({ target: i, params: true })),
-    chain,
-    block,
-  });
-
-  let tvl = 0;
-  tvls.forEach((i) => (tvl += i.output / 1e18));
-  return (tvl * glpPrice) / 1e18;
-}
-
-async function tvl(ts, _, { [chain]: block }) {
-  const totalTvl = (await usdcVaultsTVL(block)) + (await glpVaultsTVL(block));
-
-  return {
-    "usd-coin": totalTvl,
-  };
+  const tokens  = (await api.multiCall({  abi: 'address:vaultToken', calls: vaults, permitFailure: true, })).map(i => i ?? ADDRESSES.arbitrum.fsGLP)
+  api.add(tokens, tvls)
 }
 
 module.exports = {

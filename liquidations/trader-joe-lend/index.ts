@@ -1,9 +1,10 @@
+import * as sdk from "@defillama/sdk";
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
 import { Liq } from "../utils/types";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/lending";
+const subgraphUrl = sdk.graph.modifyEndpoint('JB5EdQqbddMjawMLYe3C5ifmhN9WKYvLdgAKoUy1CyYy');
 
 const accountsQuery = gql`
   query accounts($lastId: ID, $pageSize: Int) {

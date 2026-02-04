@@ -1,13 +1,15 @@
-
-const sdk = require('@defillama/sdk')
-
-async function tvl(ts, block) {
-  return {
-    'bitcoin': (await sdk.api.erc20.totalSupply({ target: '0x3212b29E33587A00FB1C83346f5dBFA69A458923', block })).output / 1e8
-  }
-}
+const { sumTokens } = require('./helper/chain/bitcoin')
+const { imbtc } = require('./helper/bitcoin-book/index.js')
 
 module.exports = {
-  ethereum: { tvl },
-  methodology: `TVL for imBTC consists of the BTC deposits in custody that were used to mint imBTC`
+  ethereum: { tvl: () => ({}) },
+  bitcoin: {
+    tvl: () => sumTokens({
+      owners: imbtc,
+    })
+  },
+  methodology: `TVL for imBTC consists of the BTC deposits in custody that were used to mint imBTC`,
+  hallmarks: [
+    ['2024-01-31', 'Project ceases operation'],
+  ],
 }

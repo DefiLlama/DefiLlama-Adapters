@@ -20,7 +20,7 @@ const BRAINIAC_CKB_LP = '0xaa0f41e50dbfd8247fb397b1fffea1fea9f4e6d4'
 
 // params =  comptroller , chain , brCKB , CKB
 module.exports = {
-  [chain]: compoundExports("0x5c68BDBba7151c486faCB66dc39b891030e46725", chain, "0x352d09567dE5A02415670723D09E006F623fE62e", ADDRESSES.godwoken_v1.pCKB)
+  [chain]: compoundExports("0x5c68BDBba7151c486faCB66dc39b891030e46725", "0x352d09567dE5A02415670723D09E006F623fE62e", ADDRESSES.godwoken_v1.pCKB)
 }
 
 module.exports[chain].staking = staking({ chain, useDefaultCoreAssets: true, owners: farms, tokens: [BRAINIAC], lps: [BRAINIAC_CKB_LP], })

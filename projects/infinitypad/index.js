@@ -1,7 +1,14 @@
-const sdk = require("@defillama/sdk");
 const { stakings, staking, } = require("../helper/staking");
-const { getChainTransform } = require("../helper/portedTokens");
-const contracts = require("./contracts.json");
+const contracts = {
+    "chains": [
+      "bsc",
+      "celo",
+      "fuse"
+    ],
+    "stakingContractBsc": "0xcf5180580c3c300cd9714d28813d4907123b0490",
+    "stakingTokenBsc": "0xf07dfc2ad28ab5b09e8602418d2873fcb95e1744",
+    "stakingTokenLp": "0x1998be7f13608e62eac2da735d88a576db3d9eea"
+  };
 const { getConfig } = require('../helper/cache');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -12,7 +19,7 @@ async function fetchBalances(api, contracts) {
 }
 
 // node test.js projects/infinitypad/index.js
-function tvl(chain) {
+function tvl() {
     return async (api) => {
         const vestingContracts = (await getConfig('infinitypad', "https://api.infinitypad.com/get-all-vesting-contracts"));
         const clientVesting = {};

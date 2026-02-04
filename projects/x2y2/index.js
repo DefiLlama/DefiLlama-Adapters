@@ -19,6 +19,6 @@ module.exports = {
   methodology: `TVL for X2Y2 consists of deposited NFTs`,
   ethereum:{
     tvl,
-    staking: staking(X2Y2_staking, X2Y2, "ethereum"), 
+    staking: staking(X2Y2_staking, X2Y2), 
   }
 }

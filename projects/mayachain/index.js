@@ -9,29 +9,70 @@ const chainMapping = {
   BTC: "bitcoin",
   THOR: "thorchain",
   DASH: "dash",
+  ARB: "arbitrum",
+  XRD: "radixdlt",
+  ZEC: "zcash"
 };
 
 const tokenGeckoMapping = {
   "ETH.USDT": "tether",
   "ETH.WSTETH": "wrapped-steth",
+  "ETH.PEPE": "pepe",
   "ETH.ETH": "ethereum",
   "ETH.USDC": "usd-coin",
+  "ETH.MOG":"mog-coin",
   "KUJI.USK": "usk",
   "KUJI.KUJI": "kujira",
   "THOR.RUNE": "thorchain",
   "DASH.DASH": "dash",
   "BTC.BTC": "bitcoin",
+  "ARB.ETH": "ethereum",
+  "ARB.ARB": "arbitrum",
+  "ARB.UNI": "uniswap",
+  "ARB.DAI": "dai",
+  "ARB.GMX": "gmx",
+  "ARB.GNS": "gains-network",
+  "ARB.LINK": "chainlink",
+  "ARB.PEPE": "pepe",
+  "ARB.SUSHI": "sushi",
+  "ARB.TGT": "thorwallet-dex",
+  "ARB.USDC": "usd-coin",
+  "ARB.USDT": "tether",
+  "ARB.WBTC": "wrapped-bitcoin",
+  "ARB.WSTETH": "wrapped-steth",
+  "XRD.XRD": "radix",
+  "ZEC.ZEC": "zcash"
 };
 
 const tokenToDecimalMapping = {
   "ETH.USDT": 6,
   "ETH.WSTETH": 18,
+  "ETH.PEPE": 18,
   "ETH.ETH": 18,
   "ETH.USDC": 6,
+  "ETH.MOG":18,
   "KUJI.USK": 8,
   "KUJI.KUJI": 8,
   "THOR.RUNE": 8,
   "DASH.DASH": 8,
+  "ARB.ETH": 18,
+  "ARB.ARB": 18,
+  "ARB.DAI": 18,
+  "ARB.GLD": 18,
+  "ARB.GMX": 18,
+  "ARB.GNS": 18,
+  "ARB.UNI": 18,
+  "ARB.LEO": 3,
+  "ARB.LINK": 18,
+  "ARB.PEPE": 18,
+  "ARB.SUSHI": 18,
+  "ARB.TGT": 18,
+  "ARB.USDC": 6,
+  "ARB.USDT": 6,
+  "ARB.WBTC": 8,
+  "ARB.WSTETH": 18,
+  "XRD.XRD": 8,
+  "ZEC.ZEC": 8,
 };
 
 async function tvl(api) {
@@ -55,10 +96,10 @@ async function tvl(api) {
     if (chain !== aChain) return;
 
     let [baseToken, address] = token.split("-");
-    if (chain === "ethereum") {
-      assetDepth =
-        assetDepth *
-        10 ** (+tokenToDecimalMapping[chainStr + "." + baseToken] - 8);
+    if (chain === "ethereum" || chain === "arbitrum") {
+      let decimal = tokenToDecimalMapping[chainStr + "." + baseToken];
+      if (decimal === undefined || isNaN(decimal)) return
+      assetDepth = assetDepth * 10 ** (+decimal - 8);
 
       // e.g. ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48
       address = address && address.includes('-') ? address.split("-")[1] : address
@@ -70,6 +111,7 @@ async function tvl(api) {
       } else if (chainStr === baseToken) {
         sdk.util.sumSingleBalance(balances, nullAddress, assetDepth, chain);
       } else if (tokenGeckoMapping[pool]) {
+        if (tokenGeckoMapping[pool] === "ethereum") assetDepth = assetDepth / 1e10;
         sdk.util.sumSingleBalance(
           balances,
           tokenGeckoMapping[pool],
@@ -80,7 +122,7 @@ async function tvl(api) {
       }
     } else {
       // e.g KUJI.KUJI
-      if (chainStr === baseToken) {
+      if (['KUJI'].includes(baseToken)) {
         sdk.util.sumSingleBalance(balances, chain, assetDepth / 1e8);
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(

@@ -22,8 +22,8 @@ const treasuryTokens = [
   wftmAddress,
 ];
 
-async function treasury(_, _b, { fantom: block }) {
-  return sumTokens2({ owner: treasuryAddress, tokens: treasuryTokens, block, chain, })
+async function treasury(api) {
+  return sumTokens2({ owner: treasuryAddress, tokens: treasuryTokens, api })
 }
 
 module.exports = {
@@ -33,11 +33,11 @@ module.exports = {
              factory: '0x407C47E3FDB7952Ee53aa232B5f28566A024A759',
              useDefaultCoreAssets: true,
            }),
-    staking: staking(acropolisAddress, bshareTokenAddress, "fantom"),
+    staking: staking(acropolisAddress, bshareTokenAddress),
     treasury
   },
 };
 
 module.exports.hallmarks = [
-  [Math.floor(new Date('2022-09-30')/1e3), 'Added Based V2'],
+  ['2022-09-30', 'Added Based V2'],
 ]

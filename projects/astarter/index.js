@@ -8,7 +8,7 @@ async function tvl() {
 }
 
 async function getPoolStake(poolIds) {
-  const response = await axios.post('https://api.koios.rest/api/v0/pool_info', {
+  const response = await axios.post('https://api.koios.rest/api/v1/pool_info', {
     "_pool_bech32_ids": poolIds
   });
   return response.data.reduce((a, b) => a + b.live_stake / 1e6, 0);

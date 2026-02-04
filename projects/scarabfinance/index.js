@@ -14,6 +14,6 @@ module.exports = {
   fantom: {
     tvl: async () => ({}),
     pool2: sumTokensExport({ owner: gscarabRewardPoolAddress, tokens: ftmLPs, }),
-    staking: staking(templeAddress, gscarabTokenAddress, "fantom"),
+    staking: staking(templeAddress, gscarabTokenAddress),
   },
 };

@@ -5,7 +5,7 @@ const { staking } = require('../helper/staking')
 module.exports = {
   bsc: {
     tvl: () => ({}),
-    staking: staking(owner, target, 'bsc'),
+    staking: staking(owner, target),
   },
   methodology: "We count all LIBERO deposited into LIBERO BANK, which has been locked by users in exchange for xLIBERO",
 };

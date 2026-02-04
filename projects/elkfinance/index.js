@@ -1,4 +1,3 @@
-const { chainExports: getChainExports } = require('../helper/exports');
 const { getUniTVL } = require('../helper/unknownTokens')
 
 const factories = {
@@ -31,17 +30,18 @@ const factories = {
   base: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
   linea: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
   velas: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
-  q: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4"
+  q: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  rsk: "0x69D10bc18cd588a4B70F836A471D4e9c2Fd86092"
 }
 
 function chainTvl(chain) {
   return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, blacklistedTokens: ['0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978'] })
 }
 
-const chainExports = getChainExports(chainTvl, Object.keys(factories))
-chainExports.misrepresentedTokens = true;
-chainExports.timetravel = true
-
-module.exports = chainExports
+Object.keys(factories).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})
+module.exports.misrepresentedTokens = true;
+module.exports.timetravel = true
 
 module.exports.hoo.tvl = () => ({})

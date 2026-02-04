@@ -1,4 +1,4 @@
-const { sumTokens } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = require('./config')
 
 module.exports = {}
@@ -6,24 +6,13 @@ module.exports = {}
 function setChainTVL(chain) {
   const { lp, uwp_address, tokens, solace, } = config[chain]
   module.exports[chain] = {
-    tvl: async (ts, _block, chainBlocks) => {
-      const block = chainBlocks[chain]
-      const toa = tokens.map(i => [i.PoolToken, uwp_address])
-      return sumTokens({}, toa, block, chain)
-    }
+    tvl: async (api) => api.sumTokens({ tokens, owner: uwp_address})
   }
-
   if (lp)
-    module.exports[chain].pool2 = async (ts, _block, chainBlocks) => {
-      const block = chainBlocks[chain]
-      return sumTokens({},[ [lp, uwp_address]], block, chain, undefined, { resolveLP: true })
-    }
+    module.exports[chain].pool2 = (api) => sumTokens2({ api,  tokens: [lp], owner: uwp_address, resolveLP: true})
 
   if (solace)
-    module.exports[chain].staking = async (ts, _block, chainBlocks) => {
-      const block = chainBlocks[chain]
-      return sumTokens({}, [[solace, uwp_address]], block, chain, undefined, { resolveLP: true })
-    }
+    module.exports[chain].staking = (api) => sumTokens2({ api,  tokens: [solace], owner: uwp_address})
 }
 
 Object.keys(config).forEach(setChainTVL)

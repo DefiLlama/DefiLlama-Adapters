@@ -24,6 +24,7 @@ const blacklistedTokens = new Set([
   'FTT9GrHBVHvDeUTgLU8FxVJouGqg9uiWGmmjETdm32Sx',
   'SL819j8K9FuFPL84UepVcFkEZqDUUvVzwDmJjCHySYj',
   'BtX7AfzEJLnU8KQR1AgHrhGH5s2AHUTbfjhUQP8BhPvi',
+  'BdUJucPJyjkHxLMv6ipKNUhSeY3DWrVtgxAES1iSBAov',
 ])
 
 async function tvl() {
@@ -51,6 +52,4 @@ module.exports = {
   ],
   timetravel: false,
   solana: { tvl },
-  methodology:
-    'To obtain the TVL of Saber we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are found. TVL is calculated using the list of pool addresses found under the "Pools" button of the Saber App. These pools addresses are hard-coded. Making these calls returns the amount of tokens held in each contract. We then use Coingecko to get the price of each token in USD and export the sum of all tokens. "USDP" is used to price the stablecoin "PAI" since it has not been listed on Coingecko.',
 };

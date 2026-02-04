@@ -1,8 +1,27 @@
 const { uniV3Export } = require("../helper/uniswapV3");
-const { cachedGraphQuery } = require('../helper/cache')
+const { cachedGraphQuery, getConfig, } = require('../helper/cache');
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const factory = "0xc35dadb65012ec5796536bd9864ed8773abc74c4"
 
-module.exports = uniV3Export({
+/* 
+Arbitrum: https://thegraph.com/explorer/subgraphs/96EYD64NqmnFxMELu2QLWB95gqCmA9N96ssYsZfFiYHg
+Avalanche: https://thegraph.com/explorer/subgraphs/4BxsTB5ADnYdgJgdmzyddmnDGCauctDia28uxB1hgTBE
+Base: https://thegraph.com/explorer/subgraphs/Cz4Snpih41NNNPZcbj1gd3fYXPwFr5q92iWMoZjCarEb
+Boba: https://thegraph.com/explorer/subgraphs/71VWMKCvsWRqrJouxmEQwSEMqqnqiiVYSxTZvzR8PHRx
+BSC: https://thegraph.com/explorer/subgraphs/FiJDXMFCBv88GP17g2TtPh8BcA8jZozn5WRW7hCN7cUT
+Ethereum: https://thegraph.com/explorer/subgraphs/5nnoU1nUFeWqtXgbpC54L9PWdpgo7Y9HYinR3uTMsfzs
+Fantom: https://thegraph.com/explorer/subgraphs/4BzEvR229mwKjneCbJTDM8dsS3rjgoKcXt5C7J1DaUxK
+Fuse: https://thegraph.com/explorer/subgraphs/8P62wYTJvhd6Aas656hVYhsccsGo2ihrJShaEnCoLJRK
+Gnosis: https://thegraph.com/explorer/subgraphs/GFvGfWBX47RNnvgwL6SjAAf2mrqrPxF91eA53F4eNegW
+Linea: https://thegraph.com/explorer/subgraphs/E2vqqvSzDdUiPP1r7PFnPKZQ34pAhNZjc6rEcdj3uE5t
+Moonriver: https://thegraph.com/explorer/subgraphs/F46W9YVQXGism5iN9NZNhKm2DQCvjhr4u847rL1tRebS
+Optimism: https://thegraph.com/explorer/subgraphs/Dr3FkshPgTMMDwxckz3oZdwLxaPcbzZuAbE92i6arYtJ
+Polygon: https://thegraph.com/explorer/subgraphs/CqLnQY1d6DLcBYu7aZvGmt17LoNdTe4fDYnGbE2EgotR
+PolygonZkEVM: https://thegraph.com/explorer/subgraphs/E2x2gmtYdm2HX3QXorUBY4KegfGu79Za6TEQYjVrx15c
+Scroll: https://thegraph.com/explorer/subgraphs/5gyhoHx768oHn3GxsHsEc7oKFMPFg9AH8ud1dY8EirRc 
+*/
+
+const uniV3Config = {
   ethereum: {
     factory: "0xbACEB8eC6b9355Dfc0269C18bac9d6E2Bdc29C4F",
     fromBlock: 16955547,
@@ -10,6 +29,7 @@ module.exports = uniV3Export({
   arbitrum: {
     factory: "0x1af415a1EbA07a4986a52B6f2e7dE7003D82231e",
     fromBlock: 75998697,
+    blacklistedTokens: ['0x920675303c7460c86a5b24053db1176a52b85ba6'],
   },
   optimism: {
     factory: "0x9c6522117e2ed1fE5bdb72bb0eD5E3f2bdE7DBe0",
@@ -71,15 +91,31 @@ module.exports = uniV3Export({
   kava: { factory: '0x1e9B24073183d5c6B7aE5FB4b8f0b1dd83FDC77a', fromBlock: 7251753, },
   metis: { factory: '0x145d82bCa93cCa2AE057D1c6f26245d1b9522E6F', fromBlock: 9077930, },
   bittorrent: { factory: '0xBBDe1d67297329148Fe1ED5e6B00114842728e65', fromBlock: 29265724, },
-  zeta: { factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', fromBlock: 1551069, },
-});
+  //zeta: { factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', fromBlock: 1551069, },
+  islm: { factory, fromBlock: 6541826, },
+  blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
+  //europa: { factory: '0x51d15889b66A2c919dBbD624d53B47a9E8feC4bB', fromBlock: 5124251, },
+  //rsk: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 6365060, }, //this one
+  sonic: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 1, }, //this one
+  hemi: { factory: '0xCdBCd51a5E8728E0AF4895ce5771b7d17fF71959', fromBlock: 507517, },
+  katana: { factory: "0x203e8740894c8955cB8950759876d7E7E45E04c1", fromBlock: 1858973, },
+}
+
+Object.values(uniV3Config).forEach(i => i.permitFailure = true) // allow failure for all chains
+
+delete uniV3Config.islm
+module.exports.islm = { tvl: () => ({  }) }
+module.exports = uniV3Export(uniV3Config);
 
 const config = {
   filecoin: { endpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin' },
+  europa: { endpoint: 'https://elated-tan-skat-graph.skalenodes.com:8000/subgraphs/name/sushi/v3-skale-europa' },
+  zeta: { endpoint: 'https://api.goldsky.com/api/public/project_cls39ugcfyhbq01xl9tsf6g38/subgraphs/v3-zetachain/1.0.0/gn' },
+  rsk: { endpoint: 'https://api.goldsky.com/api/public/project_clslspm3c0knv01wvgfb2fqyq/subgraphs/sushiswap/v3-rootstock-2/gn' },
 }
 
 const query = `{
-  pools {
+  pools(first:1000) {
     id
     token0 { id }
     token1 { id }
@@ -92,7 +128,22 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       const { pools } = await cachedGraphQuery('sushiswap-v3/' + chain, endpoint, query, { api, })
       const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
-      return api.sumTokens({ ownerTokens })
+      return api.sumTokens({ ownerTokens, permitFailure: true, })
     }
   }
 })
+
+// const config1 = {
+//   islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
+// }
+
+// Object.keys(config1).forEach(chain => {
+//   const { endpoint } = config1[chain]
+//   module.exports[chain] = {
+//     tvl: async (api) => {
+//       const pools = await getConfig('sushiswap-v3/' + chain, endpoint)
+//       const ownerTokens = pools.map(i => [[i.token0.id.split(':')[1], i.token1.id.split(':')[1]], i.id.split(':')[1]])
+//       return sumTokens2({ api, ownerTokens, permitFailure: true, })
+//     }
+//   }
+// })

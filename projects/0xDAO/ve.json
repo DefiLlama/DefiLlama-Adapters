@@ -1,3 +1,0 @@
-{
-  "locked": "function locked(uint256) view returns (int128 amount, uint256 end)"
-}

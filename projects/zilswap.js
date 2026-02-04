@@ -14,5 +14,4 @@ module.exports = {
   methodology: `ZilSwap TVL is achieved by making a call to its API: https://stats.zilswap.org/liquidity`,
   misrepresentedTokens: true,
   timetravel: false,
-  incentivized: true,
 }

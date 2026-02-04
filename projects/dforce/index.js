@@ -2,10 +2,21 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const BigNumber = require('bignumber.js');
-const abi = require('./abi.json');
+const abi = {
+    "getBaseData": "function getBaseData() returns (uint256, uint256, uint256, uint256, uint256)",
+    "balanceOfUnderlying": "function balanceOfUnderlying(address _account) view returns (uint256)",
+    "balanceOf": "function balanceOf(address account) view returns (uint256)",
+    "totalSupply": "uint256:totalSupply",
+    "exchangeRateCurrent": "uint256:exchangeRateCurrent",
+    "underlying": "address:underlying",
+    "getUnderlyingPrice": "function getUnderlyingPrice(address _asset) view returns (uint256)",
+    "getAlliTokens": "address[]:getAlliTokens",
+    "isiToken": "bool:isiToken",
+    "getCurrentExchangeRate": "uint256:getCurrentExchangeRate",
+    "oracle": "address:priceOracle"
+  };
 const BASE = BigNumber(10 ** 18)
 const { compoundExports2 } = require('../helper/compound')
-const { generalizedChainExports } = require('../helper/exports')
 
 
 const PAX = "0x8E870D67F660D95d5be530380D0eC0bd388289E1";
@@ -35,8 +46,10 @@ let allControllers = {
   ],
   arbitrum: [
     "0x50210A88217d1dD9e7FBc3E4a927Cc55829a38eB", // dForce vault pool: USX/2CRV
+    "0xcfe6d1b2BE777f20AD6F98f1c12C6436652F2031", // dForce vault pool: iwstETH
+    "0xB5b3da79789dE012Fd75108138b2315E5645715A", // dForce vault pool: saETH
   ],
-  optimism: [],
+  optimism: ["0xdF0e115aA822443df9200Cc5d0260FA8E1aF06F5"], // dForce vault pool: iwstETH
   polygon: [],
   avax: ["0x078ad8d6faeD9DAeE55f5d446C80E0C81230DE6b"],
   kava: ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"],
@@ -192,12 +205,16 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return getDFStakingValue(ethBlock);
 }
 
+const chains = ['ethereum', "bsc", "arbitrum", "optimism", "polygon", "avax", "kava", "conflux"]
+
 module.exports = {
-  ...generalizedChainExports(chainTvl, ['ethereum', "bsc", "arbitrum", "optimism", "polygon", "avax", "kava", "conflux"]),
-  start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
+  start: '2019-07-26', // Jul-27-2019 02:17:24 AM +UTC
   hallmarks: [
-    [Math.floor(new Date('2023-12-19')/1e3), 'Unitus spin-off'],
+    ['2023-12-19', 'Unitus spin-off'],
   ],
 }
+chains.forEach(chain => {
+  module.exports[chain] = chainTvl(chain) 
+})
 
 module.exports.ethereum.staking = staking

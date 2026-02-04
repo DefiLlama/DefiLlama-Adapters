@@ -24,8 +24,13 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   }
 }
 
-async function get(endpoint, options) {
+async function get(endpoint, options = {}) {
+  const tonApiKey = getEnv('TON_API_KEY')
   try {
+    if (tonApiKey && endpoint.includes('tonapi.io')) {
+      if (!options.headers) options.headers = {}
+      options.headers['Authorization'] = tonApiKey
+    }
     const data = (await axios.get(endpoint, options)).data
     return data
   } catch (e) {
@@ -49,6 +54,8 @@ async function post(endpoint, body, options) {
 }
 
 async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, chain, chainBlocks, useBlock = false } = {}) {
+
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
   if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   if (api) {
     if (!timestamp) timestamp = api.timestamp
@@ -62,7 +69,22 @@ async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, c
   return request(endpoint, graphQuery, params)
 }
 
+function extractIndexedBlockNumberFromError(errorString) {
+  const patterns = [
+    /Failed to decode.*block\.number.*has only indexed up to block number (\d+)/,
+    /missing block: \d+, latest: (\d+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = errorString.match(pattern);
+    if (match) return +match[1];
+  }
+  
+  return null;
+}
+
 async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
   const graphQLClient = new GraphQLClient(endpoint)
   await api.getBlock()
   const block = api.block
@@ -70,18 +92,41 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
     const results = await graphQLClient.request(query, { block })
     return results
   } catch (e) {
+    e.chain = api.chain
     if (!block) throw e
     const errorString = e.toString()
-    const isBlockCatchupIssue = /Failed to decode.*block.number.*has only indexed up to block number \d+/.test(errorString)
-    if (!isBlockCatchupIssue) throw e
-    const indexedBlockNumber = +errorString.match(/indexed up to block number (\d+) /)[1]
-    sdk.log('We have indexed only upto ', indexedBlockNumber, 'requested block: ', block)
+    const indexedBlockNumber = extractIndexedBlockNumberFromError(errorString);
+    if (!indexedBlockNumber) throw e;
+    sdk.log('Block catchup detected: subgraph indexed up to', indexedBlockNumber, 'but requested block was', block, 'falling back to indexed block')
     if (block - blockCatchupLimit > indexedBlockNumber)
       throw e
     return graphQLClient.request(query, { block: indexedBlockNumber })
   }
 }
 
+
+async function proxiedFetch(url) {
+  const authInfo = getEnv('PROXY_AUTH')
+  if (!authInfo) return get(url)
+
+  const [host, username, password] = authInfo.split(':')
+
+  const client = axios.create({
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false,
+    }),
+  });
+  const { data } = await client
+    .get(url.toString(), {
+      proxy: {
+        protocol: "https",
+        host,
+        port: 8000,
+        auth: { username, password },
+      },
+    })
+  return data
+}
 
 module.exports = {
   get,
@@ -91,4 +136,5 @@ module.exports = {
   graphQuery,
   getBlock,
   getWithMetadata,
+  proxiedFetch,
 }

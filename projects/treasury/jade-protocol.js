@@ -19,7 +19,7 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.WBTC,
         ADDRESSES.ethereum.sfrxETH,
-        '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0', // FXS
+        ADDRESSES.ethereum.FXS, // FXS
      ],
     owners: [treasury, treasury1],
   },

@@ -13,7 +13,7 @@ module.exports = {
   polygon: tvl,
   bsc: {
     tvl,
-    staking: staking(UnilendContract,"0x2645d5f59D952ef2317C8e0AaA5A61c392cCd44d","bsc")
+    staking: staking(UnilendContract,"0x2645d5f59D952ef2317C8e0AaA5A61c392cCd44d")
   },
   methodology:
     "We count liquidity on the Pools through UnilendFlashLoansCore Contract",
