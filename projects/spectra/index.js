@@ -1,5 +1,17 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const abi = require("./abi.json");
+const abi = {
+    "markets": {
+      "balances": "function balances(uint256 index) view returns (uint256)"
+    },
+    "pt": {
+      "getIBT": "function getIBT() view returns (address)",
+      "balanceOf": "function balanceOf(address account) view returns (uint256)"
+    },
+    "vault": {
+      "convertToAsset": "function convertToAssets(uint256 shares) view returns (uint256 assets)",
+      "asset": "function asset() view returns (address assetTokenAddress)"
+    }
+  };
 const config = require("./config.json");
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking.js")

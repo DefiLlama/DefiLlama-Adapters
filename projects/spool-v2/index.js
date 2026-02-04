@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "strategyUnderlyingAmountAbi": "function getUnderlyingAssetAmounts() external view returns (uint256[] memory amounts)"
+  };
 const { staking } = require("../helper/staking.js");
 const { cachedGraphQuery } = require('../helper/cache')
 

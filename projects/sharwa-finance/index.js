@@ -21,6 +21,7 @@ async function tvl(api) {
     [ADDRESSES.arbitrum.WETH, legacy_pools.WETH],
     [ADDRESSES.arbitrum.WBTC, legacy_pools.WBTC],
     [ADDRESSES.arbitrum.USDC_CIRCLE, legacy_pools.USDC],
+    [ADDRESSES.arbitrum.USDC, legacy_margin_account],
     [ADDRESSES.arbitrum.USDC_CIRCLE, legacy_margin_account],
     [ADDRESSES.arbitrum.WETH, legacy_margin_account],
     [ADDRESSES.arbitrum.WBTC, legacy_margin_account],
@@ -28,6 +29,7 @@ async function tvl(api) {
     [ADDRESSES.arbitrum.WETH, pools.WETH],
     [ADDRESSES.arbitrum.WBTC, pools.WBTC],
     [ADDRESSES.arbitrum.USDC_CIRCLE, margin_account],
+    [ADDRESSES.arbitrum.USDC, margin_account],
     [ADDRESSES.arbitrum.WETH, margin_account],
     [ADDRESSES.arbitrum.WBTC, margin_account],
   ]

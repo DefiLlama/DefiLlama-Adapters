@@ -11,7 +11,9 @@ const configs = {
                 '0xe48cdd5ecec5aa53e630a7b4df12f79067b68dac',
                 '0x63103375659d0aa94e9f35df15be01a3dd1ae9c0', 
                 '0xc50b2d51fd1e2ac67a9c09eaf63c24ea2465c64b',
-                '0xc2a119ea6de75e4b1451330321cb2474eb8d82d4', 
+                '0xc2a119ea6de75e4b1451330321cb2474eb8d82d4',
+                '0x60e36a79c3d21120350e39b5ea59ae26b75ae74c',
+                '0xd36f53497507e948df9f277cf8c3ececb09a1c1d',
             ],
         },
         flow: {

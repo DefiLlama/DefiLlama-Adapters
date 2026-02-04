@@ -20,3 +20,5 @@ module.exports = mergeExports([
       cether: ['0x530a8d3fdf61112f8a879d753fe02e9e37ec36aa']
     }),
   ].map(t=>({blast:t})))
+
+  module.exports.blast.borrowed = () => ({})
