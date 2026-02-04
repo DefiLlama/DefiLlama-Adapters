@@ -38,7 +38,7 @@ const CONFIG = {
   bsc: {
     factories: [
       { START_BLOCK: 54801665, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
-      { START_BLOCK: 78882747, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
+      { START_BLOCK: 75504469, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
     assets: [ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT]
   },
@@ -63,7 +63,7 @@ const CONFIG = {
   },
   hyperliquid: {
     factories: [
-      { START_BLOCK: 0, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
+      { START_BLOCK: 26241275, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
     ],
     assets: ['0xb88339CB7199b77E23DB6E890353E22632Ba630f', ADDRESSES.hyperliquid.USDT0, '0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463'] // USDC, USDT0, UBTC
   },
@@ -115,27 +115,31 @@ const tvl = async (api) => {
 
   const assetList = Array.isArray(assets) ? assets : [assets.USDC]
 
-  // For each token (share class), find the first valid vault to avoid double counting
+  // Build all (token, asset) pairs for a single multiCall
+  const calls = []
+  const callMeta = [] // track which token and asset index each call corresponds to
+  for (const token of tokens) {
+    for (let i = 0; i < assetList.length; i++) {
+      calls.push({ target: token, params: [assetList[i]] })
+      callMeta.push({ token, assetIndex: i })
+    }
+  }
+
+  const vaults = await api.multiCall({
+    calls,
+    abi: abis.getVault,
+    permitFailure: true
+  })
+
+  // For each token, find the first valid vault (by asset order) to avoid double counting
   // All vaults for the same token report the same totalAssets (the share class NAV)
   const tokenVaults = new Map()
-
-  for (const asset of assetList) {
-    const tokensNeedingVault = tokens.filter(t => !tokenVaults.has(t))
-    if (tokensNeedingVault.length === 0) break
-
-    const vaults = await api.multiCall({
-      calls: tokensNeedingVault.map((t) => ({ target: t, params: [asset] })),
-      abi: abis.getVault,
-      permitFailure: true
-    })
-
-    tokensNeedingVault.forEach((token, i) => {
-      const vault = vaults[i]
-      if (vault && vault.toLowerCase() !== nullAddress) {
-        tokenVaults.set(token, vault)
-      }
-    })
-  }
+  vaults.forEach((vault, i) => {
+    const { token, assetIndex } = callMeta[i]
+    if (!tokenVaults.has(token) && vault && vault.toLowerCase() !== nullAddress) {
+      tokenVaults.set(token, vault)
+    }
+  })
 
   const uniqueVaults = [...new Set(tokenVaults.values())]
   if (uniqueVaults.length === 0) return
