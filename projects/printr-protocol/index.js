@@ -2,14 +2,15 @@ const { getConfig } = require('../helper/cache')
 
 const PRINTR_API = 'https://api.printr.money'
 
-// Printr contract is deployed at the same address on all chains (CREATE2)
-const PRINTR_CONTRACT = '0x4d9C01EBFDa5b5C14890F545abeA0a10924Bca5f'
+// Printr contract is deployed at the same address on all EVM chains (CREATE2)
+const PRINTR_CONTRACT = '0xb77726291b125515d0a7affeea2b04f2ff243172'
 
 // getCurve(address token) returns CurveInfo struct
 const GET_CURVE_ABI = 'function getCurve(address token) view returns (tuple(address basePair, uint16 totalCurves, uint256 maxTokenSupply, uint256 virtualReserve, uint256 reserve, uint256 completionThreshold))'
 
 // Chain ID mapping for API calls
 const chainIds = {
+  ethereum: 1,
   bsc: 56,
   arbitrum: 42161,
   base: 8453,
@@ -53,6 +54,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the sum of reserves locked in active Printr bonding curves. Each curve holds a base pair token (e.g., USDC, WETH) that users deposit to buy Telecoins. Graduated tokens (curves with reserve=0) have their liquidity in DEX pools, tracked separately.',
+  ethereum: { tvl },
   bsc: { tvl },
   arbitrum: { tvl },
   base: { tvl },
