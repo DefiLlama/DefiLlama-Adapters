@@ -42,7 +42,6 @@ const EVENTS = {
 };
 
 const ADDRESSES = {
-  // Term Structure
   // TermMax
   arbitrum: {
     Factory: {
@@ -109,14 +108,9 @@ const ADDRESSES = {
     TermMax4626Factory: [
       { address: "0x67dcDCc57208B574B05999AA3dFA57bfF2324129", fromBlock: 63208984 },
     ],
-    // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
-    //   {
-    //     address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
-    //     fromBlock: 71136348,
-    //   },
-    // ],
   },
   ethereum: {
+    // Term Structure
     zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
     Factory: {
       address: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
@@ -350,27 +344,7 @@ async function getTermMaxVaultOwnerTokens(api) {
 
 async function recordVaultV2Assets(api) {
   const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
-
   const assets = await api.multiCall({ abi: ABIS.Vault.asset, calls: vaultV2Addresses, })
-  /*
-    const tokensAndOwners = assets.map((asset, idx) => ({ target: asset, params: vaultV2Addresses[idx] }));
-     const assets1 = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaultV2Addresses, })
-    const tokens = await api.multiCall({ abi: 'string:symbol', calls: assets })
-    const tokenBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners })
-    const table = []
-  
-    vaultV2Addresses.forEach((vault, i) => {
-      let bal = assets1[i] / 1e18
-      let tokenBal = tokenBals[i] / 1e18
-      if (tokens[i].includes('USD')) {
-        bal = assets1[i] / 1e6
-        tokenBal = tokenBals[i] / 1e6
-      }
-      table.push({ vault, asset: assets[i], symbol: tokens[i], totalAssets: bal, tokenBalance: tokenBal, chain: api.chain })
-    })
-    console.table(table) 
-    */
-  // console.log('TermMax V2 Vaults found:', vaultV2Addresses, assets, tokens, api.chain);
   await sumTokens2({ api, tokensAndOwners2: [assets, vaultV2Addresses] });
 }
 
@@ -388,7 +362,6 @@ async function addTermMaxMarketV2Tvl(api) {
     });
     factoryLogs.forEach(log => tokensAndOwners.push([log.collateral, log.gt]));
   }
-
   await sumTokens2({ api, tokensAndOwners });
 }
 
@@ -404,7 +377,6 @@ async function getTermMaxOwnerTokens(api) {
 }
 
 async function getTermStructureTvl(api) {
-
   const zkTrueUpContractAddress = ADDRESSES[api.chain].zkTrueUpContractAddress;
   if (!zkTrueUpContractAddress) return;
 
@@ -495,7 +467,6 @@ async function erc4626VaultsTvl(api) {
       extraKey: `StableERC4626ForAaveCreated`,
     });
     aaveVaults.push(...logs.map(i => i.stableERC4626ForAave));
-
 
     logs = await getLogs2({
       api,
