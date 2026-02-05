@@ -149,7 +149,10 @@ async function getEulerVaults(api, owners) {
       }
     }
   }
-  if (api.chain === 'hyperliquid' && owners?.length && allVaults.length === 0) return allProxyAddresses
+  if (api.chain === 'hyperliquid' && owners?.length && allVaults.length === 0) {
+    console.log(`[getEulerVaults] Warning: No vaults matched for hyperliquid curator, returning all ${allProxyAddresses.length} proxy addresses as fallback`)
+    return allProxyAddresses
+  }
   return allVaults
 }
 
