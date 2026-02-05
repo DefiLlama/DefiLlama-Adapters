@@ -41,43 +41,53 @@ const RIFT_CONTRACTS = {
 
 const RIFT_TOKEN = "HjBMk5rABYdAvukYRvrScBnP9KnN9nLdKSbN2QPppump";
 
-async function tvl(api) {
+async function getRiftsData() {
   const provider = getProvider();
   const program = new Program(riftIdl, provider);
+  const rifts = await program.account.rift.all();
   
-  const tokenAccounts = [
+  const allTokenAccounts = [
     RIFT_CONTRACTS.rRiftsWithheldVault,
     RIFT_CONTRACTS.rRiftsFeesVault,
     RIFT_CONTRACTS.rSolWithheldVault,
   ];
   
-  const rifts = await program.account.rift.all();
+  const stakingTokenAccounts = [
+    RIFT_CONTRACTS.rRiftsWithheldVault,
+    RIFT_CONTRACTS.rRiftsFeesVault,
+  ];
+  
   rifts.forEach(({ account }) => {
-    tokenAccounts.push(
+    allTokenAccounts.push(
+      account.vault.toString(),
+      account.feesVault.toString(),
+      account.withheldVault.toString()
+    );
+    stakingTokenAccounts.push(
       account.vault.toString(),
       account.feesVault.toString(),
       account.withheldVault.toString()
     );
   });
   
-  return sumTokens2({ tokenAccounts, api, allowError: true });
+  return { allTokenAccounts, stakingTokenAccounts };
+}
+
+async function tvl(api) {
+  const { allTokenAccounts } = await getRiftsData();
+  
+  await sumTokens2({ tokenAccounts: allTokenAccounts, api, allowError: true });
+  
+  const riftKey = `solana:${RIFT_TOKEN}`;
+  api.removeTokenBalance(riftKey);
+  
+  return api.getBalances();
 }
 
 async function staking(api) {
-  const provider = getProvider();
-  const program = new Program(riftIdl, provider);
+  const { stakingTokenAccounts } = await getRiftsData();
   
-  const tokenAccounts = [
-    RIFT_CONTRACTS.rRiftsWithheldVault,
-    RIFT_CONTRACTS.rRiftsFeesVault,
-  ];
-  
-  const rifts = await program.account.rift.all();
-  rifts.forEach(({ account }) => {
-    tokenAccounts.push(account.withheldVault.toString());
-  });
-  
-  await sumTokens2({ tokenAccounts, api, allowError: true });
+  await sumTokens2({ tokenAccounts: stakingTokenAccounts, api, allowError: true });
   
   const balances = api.getBalances();
   const riftKey = `solana:${RIFT_TOKEN}`;
