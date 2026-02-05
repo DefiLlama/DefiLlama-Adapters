@@ -23,6 +23,7 @@ const ABI = {
   },
   morpho: {
     CreateMetaMorphoEvent: 'event CreateMetaMorpho(address indexed metaMorpho, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)',
+    CreateVaultV2Event: 'event CreateVaultV2(address indexed owner, address indexed asset, bytes32 salt, address indexed newVaultV2)',
   },
   euler: {
     getProxyListLength: 'uint256:getProxyListLength',
@@ -83,6 +84,12 @@ const MorphoConfigs = {
         address: '0x33f20973275B2F574488b18929cd7DCBf1AbF275',
         fromBlock: 32320327
       },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x8B2F922162FBb60A6a072cC784A2E4168fB0bb0c',
+        fromBlock: 32321811
+      }
     ]
   },
   wc: {
@@ -236,6 +243,11 @@ const EulerConfigs = {
   monad: {
     vaultFactories: [
       '0xba4dd672062de8feedb665dd4410658864483f1e',
+    ],
+  },
+  hyperliquid: {
+    vaultFactories: [
+      '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A',
     ],
   },
 }

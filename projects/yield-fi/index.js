@@ -1,5 +1,11 @@
 const { api2 } = require("@defillama/sdk");
 
+module.exports = {
+    hallmarks: [
+      ['2026-01-23', 'v3 Launch'],
+    ],
+}
+
 const yusd_config = {
     ethereum: "0x19Ebd191f7A24ECE672ba13A302212b5eF7F35cb", 
     optimism: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
@@ -53,6 +59,11 @@ const vybtc_config = {
     ethereum: "0x1e2a5622178f93EFd4349E2eB3DbDF2761749e1B",
 }
 
+const yprism = {
+    ethereum: "0xdd5eff0756db08bad0ff16b66f88f506e7318894",
+    bsc: "0xdd5eff0756db08bad0ff16b66f88f506e7318894",
+}
+
 const lockbox = "0x659b5bc7F2F888dB3D5901b78Cdb34DF270E2231";
 
 const l2Chains = Object.keys(yusd_config).filter(chain => chain !== 'ethereum')
@@ -67,6 +78,7 @@ l2Chains.forEach(chain => {
                 vyeth_config[chain],
                 ybtc_config[chain],
                 vybtc_config[chain],
+                yprism[chain],
             ].filter(Boolean)
             const supply = await api.multiCall({ calls, abi: 'erc20:totalSupply' })
             api.add(calls, supply);
@@ -100,13 +112,14 @@ module.exports['ethereum'] = {
             target: vybtc_config['ethereum'],
             owner: lockbox
         })
-        const ethSupply = await api.multiCall({ calls: [yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum']], abi: 'erc20:totalSupply' })
+        const ethSupply = await api.multiCall({ calls: [ yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum']], abi: 'erc20:totalSupply' })
         const supply = (ethSupply[0] - lockboxSupply.output);
         const supplyVyusd = (ethSupply[1] - lockboxSupplyVyusd.output);
         const supplyYeth = (ethSupply[2] - lockboxSupplyYeth.output);
         const supplyVyeth = (ethSupply[3] - lockboxSupplyVyeth.output);
         const supplyYbtc = (ethSupply[4] - lockboxSupplyYbtc.output);
         const supplyVybtc = (ethSupply[5] - lockboxSupplyVybtc.output);
-        api.add([yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum']], [supply, supplyVyusd, supplyYeth, supplyVyeth, supplyYbtc, supplyVybtc]);
+        const supplyYprism = ethSupply[6]; 
+        api.add([yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum']], [supply, supplyVyusd, supplyYeth, supplyVyeth, supplyYbtc, supplyVybtc, supplyYprism]);
     }
 }

@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accSwiftPerShare, uint16 depositFeeBP)"
+  };
 const {masterChefExports} = require("../helper/masterchef")
 
 const token = "0x0Aa4ef05B43700BF4b6E6Dc83eA4e9C2CF6Af0fA";

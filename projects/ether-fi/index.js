@@ -67,8 +67,6 @@ async function ebtc_staking(timestamp) {
   lbtc_held = await collectBalances(LBTC, lbtc_held);
   cbbtc_held = await collectBalances(CBBTC, cbbtc_held);
 
-  console.log(wbtc_held, lbtc_held, cbbtc_held);
-
   const getEthBalance = async (token, owner) => {
     const result = await sdk.api.erc20.balanceOf({
       target: token,

@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const ABI = require('./abi.json')
-const { stakings } = require('../helper/staking');
+const ABI = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+    "poolLength": "uint256:poolLength"
+  };const { stakings } = require('../helper/staking');
 
 const boosterAddresses = {
   fraxtal: '0xd3327cb05a8E0095A543D582b5B3Ce3e19270389',
