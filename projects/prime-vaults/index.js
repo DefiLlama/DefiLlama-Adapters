@@ -8,7 +8,7 @@ const abi = {
 
 const crossChain = {
     ethereum: { executor: '0xb2f865041e3F7De4576FB5B30ac8e9fbDA82e29d', fromBlock: 24090329 },
-    arbitrum: { executor: '0xb2f865041e3F7De4576FB5B30ac8e9fbDA82e29d', fromBlock: 414382638 },
+    arbitrum: { executor: '0x6b5a6B402F984FCd4175C43b642800920873cbC5', fromBlock: 428462141 },
     bsc: { executor: '0x6b5a6B402F984FCd4175C43b642800920873cbC5', fromBlock: 74944045 },
     core: { executor: '0xb2f865041e3F7De4576FB5B30ac8e9fbDA82e29d', fromBlock: 31251416 }
 }
