@@ -18,14 +18,14 @@ module.exports = treasuryExports({
       ADDRESSES.arbitrum.WETH,
      ],
     owners: [treasury_arb],
-    ownTokens: [lyra_arb],
+    ownTokens: [lyra_arb, '0x77b7787a09818502305C95d68A2571F090abb135'],
   },
   ethereum: {
     tokens: [ 
       ADDRESSES.ethereum.USDC,
      ],
     owners: [treasury_eth, treasury_eth_2, treasury_eth_3],
-    ownTokens: [lyra_eth],
+    ownTokens: [lyra_eth, '0xB1D1eae60EEA9525032a6DCb4c1CE336a1dE71BE'],
   },
   optimism: {
     tokens: [ 
@@ -34,6 +34,6 @@ module.exports = treasuryExports({
       ADDRESSES.optimism.WETH,
      ],
     owners: [treasury_op],
-    ownTokens: [lyra_op],
+    ownTokens: [lyra_op, '0x33800De7E817A70A694F31476313A7c572BBa100'],
   },
 })
