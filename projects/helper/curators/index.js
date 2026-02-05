@@ -1,5 +1,6 @@
 const { getLogs2 } = require("../../helper/cache/getLogs")
 const { ABI, MorphoConfigs, EulerConfigs, SiloConfigs, VesuConfigs } = require('./configs')
+const { sumTokens2 } = require('../unwrapLPs')
 const { multiCall } = require('../chain/starknet')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
 const { getProvider, getConnection, } = require('../solana')
@@ -109,6 +110,7 @@ async function getMorphoVaults(api, owners) {
 
 async function getEulerVaults(api, owners) {
   let allVaults = []
+  const allProxyAddresses = []
   for (const factory of EulerConfigs[api.chain].vaultFactories) {
     const getProxyListLength = await api.call({
       abi: ABI.euler.getProxyListLength,
@@ -129,17 +131,25 @@ async function getEulerVaults(api, owners) {
           }
         }),
       })
+      allProxyAddresses.push(...proxyAddresses)
       const proxyCreators = await api.multiCall({
         abi: ABI.euler.creator,
         calls: proxyAddresses,
       });
+      const useOwnerFallback = api.chain === 'hyperliquid'
+      const proxyOwners = useOwnerFallback ? await api.multiCall({
+        abi: ABI.owner,
+        calls: proxyAddresses,
+        permitFailure: true,
+      }) : []
       for (let i = 0; i < proxyAddresses.length; i++) {
-        if (isOwner(proxyCreators[i], owners)) {
+        if (isOwner(proxyCreators[i], owners) || (useOwnerFallback && isOwner(proxyOwners[i], owners))) {
           allVaults.push(proxyAddresses[i])
         }
       }
     }
   }
+  if (api.chain === 'hyperliquid' && owners?.length && allVaults.length === 0) return allProxyAddresses
   return allVaults
 }
 
@@ -456,7 +466,23 @@ async function getCuratorTvl(api, vaults) {
   }
 
   // Process other vault types separately
-  await getCuratorTvlErc4626(api, allVaults.euler)
+  if (api.chain === 'hyperliquid' && allVaults.euler.length > 0) {
+    const assets = await api.multiCall({
+      abi: ABI.ERC4626.asset,
+      calls: allVaults.euler,
+      permitFailure: true,
+    })
+    const tokensAndOwners = []
+    for (let i = 0; i < allVaults.euler.length; i++) {
+      if (!assets[i]) continue
+      tokensAndOwners.push([assets[i], allVaults.euler[i]])
+    }
+    if (tokensAndOwners.length > 0) {
+      await sumTokens2({ api, tokensAndOwners })
+    }
+  } else {
+    await getCuratorTvlErc4626(api, allVaults.euler)
+  }
   await getCuratorTvlErc4626(api, allVaults.silo)
 
   // aera.finance vaults
