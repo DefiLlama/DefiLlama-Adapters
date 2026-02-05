@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/sumTokens');
-const { sumTokens } = require('../helper/chain/bitcoin.js');
 const { getConfig } = require('../helper/cache');
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
@@ -26,10 +25,10 @@ const DOGE_ADDRESSES = [
 
 async function btcTvl(api) {
   const config = await getConfig('coinbase-cbbtc-proof-of-reserves', 'https://www.coinbase.com/cbbtc/proof-of-reserves.json')
-    
-  const bitcoinWallets = config.reserveAddresses.map(item => item.address)
-
-  return sumTokens({ timestamp: api.timestamp, owners: bitcoinWallets })
+  const balances = {}
+  const totalBtc = config.reserveAddresses.reduce((sum, item) => sum + parseFloat(item.balance.amount), 0)
+  sdk.util.sumSingleBalance(balances, 'bitcoin', totalBtc)
+  return balances
 }
 
 

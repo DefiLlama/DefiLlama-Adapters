@@ -7,7 +7,9 @@ const tvlV2 = uniTvlExports({
 })
 
 const tvlV3 = uniV3Export({
-  btnx: { factory: "0xa8C00286d8d37131c1d033dEeE2F754148932800", fromBlock: 186643, },
+  btnx: { factory: "0xa8C00286d8d37131c1d033dEeE2F754148932800", fromBlock: 186643, blacklistedOwners: [
+    '0xADC57668ccDaebFb356A49c461A18dB59C122d9B', // USDa/sUSDa pool - unproductive assets
+  ] },
 })
 
 module.exports = {

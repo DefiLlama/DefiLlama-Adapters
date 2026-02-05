@@ -2,10 +2,10 @@ const { compoundExports2 } = require('../helper/compound')
 
 module.exports = {
   hallmarks: [
-    [1677133355, "MINTY distribution begins on Ethereum"],
-    [1704369540, "MINTY distribution begins on Mantle"],
-    [1717164347, "MINTY distribution begins on Taiko"],
-    [1739973266, "MINTY distribution begins on Morph"],
+    ['2023-02-23', "MINTY distribution begins on Ethereum"],
+    ['2024-01-04', "MINTY distribution begins on Mantle"],
+    ['2024-05-31', "MINTY distribution begins on Taiko"],
+    ['2025-02-19', "MINTY distribution begins on Morph"],
   ],
 }
 

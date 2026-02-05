@@ -21,3 +21,8 @@ module.exports = {
     })
   }
 };
+
+// NOTE: borrowed functions zeroed out due to bad debt
+// The aaveExports helper would normally calculate borrowed amounts, but we override them to return empty objects
+module.exports.astar.borrowed = () => ({})
+module.exports.acala.borrowed = () => ({})

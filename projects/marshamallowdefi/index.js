@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accEggPerShare, uint16 depositFeeBP)"
+  };
 const MASH = "0x787732f27d18495494cea3792ed7946bbcff8db2";
 const TOFY = "0xe1f2d89a6c79b4242f300f880e490a70083e9a1c";
 
