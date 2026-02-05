@@ -32,5 +32,6 @@ module.exports = {
   methodology: "AUP (Assets Under Protection): sum of Aave V3 collateral in USD for all wallets registered in CitadelRegistry on Arbitrum. These are user-held positions monitored by Citadel, not assets held by the protocol.",
   misrepresentedTokens: true,
   timetravel: false,
+  doublecounted: true,
   arbitrum: { tvl },
 };
