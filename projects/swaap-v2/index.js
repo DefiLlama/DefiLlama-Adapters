@@ -15,6 +15,7 @@ const config = {
   mantle: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 65689171,},
   scroll: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 6934854,},
   linea: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 6052579,},
+  monad: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 32389136,},
 }
 
 /**
