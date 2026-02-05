@@ -16,6 +16,4 @@ const { aaveV3Export } = require("../helper/aave");
 module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
-  [1659630089, "Start OP Rewards"],
-  [1650471689, "Start AVAX Rewards"]
 ]
