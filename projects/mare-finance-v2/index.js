@@ -9,3 +9,7 @@ module.exports = {
     ...compoundExports(unitroller),
   },
 }
+
+// NOTE: borrowed function zeroed out due to bad debt
+// The compoundExports helper would normally calculate borrowed amounts, but we override it to return empty object
+module.exports.kava.borrowed = () => ({})

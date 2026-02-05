@@ -1,4 +1,9 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address stakeToken, address strategy)",
+    "poolLength": "uint256:poolLength",
+    "totalStakeTokens": "uint256:totalStakeTokens",
+    "symbol": "string:symbol"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const blacklistedTokens = ["0x0B048D6e01a6b9002C291060bF2179938fd8264c"];

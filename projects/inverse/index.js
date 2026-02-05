@@ -1,7 +1,13 @@
 const { compoundExports2 } = require('../helper/compound')
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const abi = require("./abi.json");
+const abi = {
+    "getAllMarkets": "address[]:getAllMarkets",
+    "underlying": "address:underlying",
+    "getCash": "uint256:getCash",
+    "totalSupply": "uint256:totalSupply",
+    "supply": "uint256:supply"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // Anchor

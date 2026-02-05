@@ -1,24 +1,21 @@
 const { getConfig } = require('../helper/cache');
 
-const config = {
-  ethereum: {},
-  lisk: {},
-  bsc: {},
-  fraxtal: {}
-}
-
 let _vaultsApiResponse
+const EXCLUDED_TYPES = new Set(['core-vault', 'dvv-vault'])
 
-async function tvl(api) {
+const tvl = async (api) => {
+  const chainId = Number(api.chainId)
   if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://points.mellow.finance/v1/vaults')
   const vaultsApiResponse = await _vaultsApiResponse;
 
-  const vaults = vaultsApiResponse.filter(vault => vault.chain_id === api.chainId).map(vault => vault.address)
-  await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
+  const erc4626Vaults = vaultsApiResponse.filter(v => v && !EXCLUDED_TYPES.has(v.type) && Number(v.chain_id) === chainId)
+  await api.erc4626Sum({ calls: erc4626Vaults.map(vault => vault.address), tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
 }
 
-module.exports = {
-  doublecounted: true,
-};
+const chains = ['ethereum', 'bsc', 'fraxtal', 'lisk', 'monad']
 
-Object.keys(config).forEach(chain => module.exports[chain] = { tvl })
+module.exports.doublecounted = true
+
+chains.forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

@@ -8,7 +8,7 @@ const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
 const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray, sleep } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
-const wildCreditABI = require('../wildcredit/abi.json');
+const uniV3ABI = require('./abis/uniV3.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
@@ -321,6 +321,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], api, own
         case 'blast': nftAddress = '0x434575eaea081b735c985fa9bf63cd7b87e227f9'; break;
         case 'sonic': nftAddress = '0x743e03cceb4af2efa3cc76838f6e8b50b63f184c'; break;
         case 'flare': nftAddress = '0xD9770b1C7A6ccd33C75b5bcB1c0078f46bE46657'; break;
+        case 'hyperliquid': nftAddress = '0x6eDA206207c09e5428F281761DdC0D300851fBC8'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
@@ -338,27 +339,42 @@ const factories = {}
 
 const getFactoryKey = (chain, nftAddress) => `${chain}:${nftAddress}`.toLowerCase()
 
-async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, api, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
+async function unwrapUniswapV3NFT({
+  balances,
+  owner,
+  owners,
+  nftAddress,
+  api,
+  blacklistedTokens = [],
+  whitelistedTokens = [],
+  uniV3ExtraConfig = {}
+}) {
   const chain = api.chain
+
+  const blacklistedPools = (uniV3ExtraConfig.blacklistedPools ?? []).map(i => i.toLowerCase())
+  const blacklistedPositionIds = new Set((uniV3ExtraConfig.blacklistedPositionIds ?? []).map(String))
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
+
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const factoryKey = getFactoryKey(chain, nftAddress)
-  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory, })
+  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: uniV3ABI.factory })
   let factory = await factories[factoryKey]
-  if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') // thruster finance has a bug where they set the pool deployer instead of the factory
-    factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
+
+  if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
 
   let positionIds = uniV3ExtraConfig.positionIds
   if (!positionIds) {
     if (!owners?.length && owner) owners = [owner]
     owners = getUniqueAddresses(owners, chain)
+
     const lengths = await api.multiCall({
-      abi: wildCreditABI.balanceOf,
-      calls: owners.map((params) => ({ target: nftIdFetcher, params, })),
+      abi: uniV3ABI.balanceOf,
+      calls: owners.map((params) => ({ target: nftIdFetcher, params })),
     })
+
     const positionIDCalls = []
     for (let i = 0; i < owners.length; i++) {
       const length = lengths[i]
@@ -366,25 +382,32 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, api, bl
     }
 
     positionIds = await api.multiCall({
-       abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+      abi: uniV3ABI.tokenOfOwnerByIndex,
+      target: nftIdFetcher,
       calls: positionIDCalls,
     })
   }
 
   const positions = await api.multiCall({
-    abi: wildCreditABI.positions, target: nftAddress,
-    calls: positionIds,
+    abi: uniV3ABI.positions,
+    target: nftAddress,
+    calls: positionIds
   })
+
   const lpInfo = {}
   positions.forEach(position => lpInfo[getKey(position)] = position)
   const lpInfoArray = Object.values(lpInfo)
 
   const poolInfos = await api.multiCall({
-    abi: wildCreditABI.getPool, target: factory,
+    abi: uniV3ABI.getPool,
+    target: factory,
     calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1, info.fee] })),
   })
 
-  const slot0 = await api.multiCall({ abi: wildCreditABI.slot0, calls: poolInfos })
+  const slot0 = await api.multiCall({
+    abi: uniV3ABI.slot0,
+    calls: poolInfos
+  })
 
   slot0.forEach((slot, i) => lpInfoArray[i].tick = slot.tick)
 
@@ -407,6 +430,12 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, api, bl
     const tick = +lpInfo[getKey(position)].tick
     const sa = tickToPrice(bottomTick / 2)
     const sb = tickToPrice(topTick / 2)
+
+    const positionId = position.tokenId ?? position.tokenID ?? position.id
+    if (positionId && blacklistedPositionIds.has(String(positionId))) return
+
+    const poolKey = `${token0.toLowerCase()}-${token1.toLowerCase()}-${position.fee}`.toLowerCase()
+    if (blacklistedPools.includes(poolKey)) return
 
     let amount0 = 0
     let amount1 = 0
@@ -456,6 +485,31 @@ async function unwrapSlipstreamNFTs({ balances, nftsAndOwners = [], api, owner, 
   return balances
 }
 
+async function unwrapSlipstreamV2NFTs({ balances, nftsAndOwners = [], api, owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
+  // https://github.com/aerodrome-finance/slipstream/blob/main/script/constants/output/DeployCL-Base-Gauge-Caps.json
+  const chain = api.chain
+  if (!nftsAndOwners.length) {
+    if (!nftAddress)
+      switch (chain) {
+        case 'base': nftAddress = '0xa990C6a764b73BF43cee5Bb40339c3322FB9D55F'; break;
+        default: throw new Error('missing default uniswap nft address chain: ' + chain)
+      }
+
+    if ((!owners || !owners.length) && owner)
+      owners = [owner]
+    owners = getUniqueAddresses(owners, chain)
+    if (Array.isArray(nftAddress))
+      nftsAndOwners = nftAddress.map(nft => owners.map(o => [nft, o])).flat()
+    else
+      nftsAndOwners = owners.map(o => [nftAddress, o])
+  }
+  const positionIdsByNftAddress = await getPositionIdsByNftAddress({ api, nftsAndOwners, })
+  for (const [nftAddress, positionIds] of Object.entries(positionIdsByNftAddress)) {
+    await unwrapSlipstreamNFT({ balances, positionIds, nftAddress, api, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })
+  }
+  return balances
+}
+
 async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
   const ownersByNFT = {}
   nftsAndOwners.forEach(([nftAddress, owner]) => {
@@ -476,7 +530,7 @@ async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
       }
     })
     positionIdsByNftAddress[nftAddress] = await api.multiCall({
-      abi: wildCreditABI.tokenOfOwnerByIndex, target: nftAddress,
+      abi: uniV3ABI.tokenOfOwnerByIndex, target: nftAddress,
       calls: positionIdCalls,
     })
 
@@ -496,13 +550,13 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const factoryKey = getFactoryKey(chain, nftAddress)
-  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory, })
+  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: uniV3ABI.factory, })
   let factory = (await factories[factoryKey])
 
   if ((!positionIds || positionIds.length === 0) && owner) {  // if positionIds are not provided and owner address is passed
     const nftPositions = await api.call({ target: nftIdFetcher, params: owner, abi: 'erc20:balanceOf' })
     positionIds = (await api.multiCall({
-      abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+      abi: uniV3ABI.tokenOfOwnerByIndex, target: nftIdFetcher,
       calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
     }))
   }
@@ -759,7 +813,7 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
       const token = tokens[idx].output
       const balance = amounts[idx].output
       if (isLP(output, token, chain) && !blacklistedLPs.includes(token.toLowerCase()))
-        lpBalances.push({ token, balance })
+        lpBalances.push({ token, balance, symbol: output })
       else
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
     })
@@ -769,18 +823,18 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
     const lpTokenCalls = lpPositions.map(lpPosition => ({ target: lpPosition.token }))
-    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: abis.getReservesABI || lpReservesAbi, calls: lpTokenCalls, chain, })
-    const { output: lpSupplies } = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, })
-    const { output: tokens0 } = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, })
-    const { output: tokens1 } = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, })
+    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: abis.getReservesABI || lpReservesAbi, calls: lpTokenCalls, chain, permitFailure: true, })
+    const { output: lpSupplies } = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, permitFailure: true, })
+    const { output: tokens0 } = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, permitFailure: true, })
+    const { output: tokens1 } = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, permitFailure: true, })
 
-    lpPositions.map(lpPosition => {
+    lpPositions.map((lpPosition, i) => {
       try {
         let token0, token1, supply
         const lpToken = lpPosition.token
-        const token0_ = tokens0.find(call => call.input.target === lpToken)
-        const token1_ = tokens1.find(call => call.input.target === lpToken)
-        const supply_ = lpSupplies.find(call => call.input.target === lpToken)
+        const token0_ = tokens0[i]
+        const token1_ = tokens1[i]
+        const supply_ = lpSupplies[i]
         try {
           token0 = token0_.output.toLowerCase()
           token1 = token1_.output.toLowerCase()
@@ -810,8 +864,9 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
         sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance)
         sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance)
       } catch (e) {
-        sdk.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
-        throw e
+        sdk.log(`Failed to get data for LP token at ${lpPosition.token} (${lpPosition.symbol}) on chain ${chain}, keeping original balance`)
+        sdk.util.sumSingleBalance(balances, transformAddress(lpPosition.token), lpPosition.balance)
+        // throw e
       }
     })
   }
@@ -833,7 +888,7 @@ async function sumTokens2({
   block,
   chain = 'ethereum',
   transformAddress,
-  resolveLP = false,
+  resolveLP = false,  // unwrap uni v2 LP tokens
   unwrapAll = false,
   blacklistedLPs = [],
   blacklistedTokens = [],
@@ -844,6 +899,7 @@ async function sumTokens2({
   resolveUniV3 = false,
   resolveUniV4 = false,
   resolveSlipstream = false,
+  resolveSlipstreamV2 = false,
   uniV3WhitelistedTokens = [],
   uniV3nftsAndOwners = [],
   resolveArtBlocks = false,
@@ -851,7 +907,9 @@ async function sumTokens2({
   resolveVlCVX = false,
   permitFailure = false,
   fetchCoValentTokens = false,
-  tokenConfig = {},
+  tokenConfig = {
+    // onlyWhitelisted
+  },
   sumChunkSize = undefined,
   uniV3ExtraConfig = {
     // positionIds
@@ -900,7 +958,7 @@ where
 group by
   token_address`
     const alltokens = await queryAllium(sql)
-    tokens = tokens.concat(alltokens.map(t => t.token_address)).concat(["0x0000000000000000000000000000000000000000"])
+    tokens = tokens.concat(alltokens.map(t => t.token_address)).concat([ADDRESSES.null])
   }
 
   if (owner) owners.push(owner)
@@ -985,6 +1043,9 @@ group by
   if (resolveSlipstream)
     await unwrapSlipstreamNFTs({ balances, api, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
 
+  if (resolveSlipstreamV2)
+    await unwrapSlipstreamV2NFTs({ balances, api, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
+
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
   tokensAndOwners = getUniqueToA(tokensAndOwners)
@@ -1014,7 +1075,7 @@ group by
     Object.entries(balances).forEach(([token, value]) => {
       if (token.includes(nullAddress)) return;
       if (!token.startsWith('tron:0x')) return;
-      api.removeTokenBalance(token)
+      delete balances[token]
       const tronToken = sdk.util.evmToTronAddress(token.split(':')[1])
       sdk.util.sumSingleBalance(balances, tronToken, value, chain)
     })
@@ -1064,8 +1125,8 @@ async function unwrapHypervisorVaults({ api, lps }) {
   return api.getBalances()
 }
 
-function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, logCalls, ...args }) {
-  return async (api) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
+function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveSlipstreamV2, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, logCalls, ...args }) {
+  return async (api) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveSlipstreamV2, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
 }
 
 async function unwrapAuraPool({ api, chain, block, auraPool, owner, balances, isBPool = false, isV2 = true }) {
@@ -1232,4 +1293,5 @@ module.exports = {
   addUniV3LikePosition,
   unwrapSolidlyVeNft,
   unwrapHypervisorVaults,
+  unwrapUniswapV4NFTs,
 }

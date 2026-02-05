@@ -1,4 +1,12 @@
-const contracts = require("./contracts.json");
+const contracts = {
+    "infoAggregator": "0x68D54ff41BA47355b95Bd477Bcf4d5ff4b2c2A59",
+    "savvyTokens": {
+      "SVY": "0x43aB8f7d2A8Dd4102cCEA6b438F6d747b1B9F034",
+      "svUSD": "0xF202Ab403Cd7E90197ec0f010ee897E283037706",
+      "svBTC": "0xeEE18334c414A47FB886a7317E1885b2Bfb8c2A6",
+      "svETH": "0xf7728582002ef82908c8242CF552E969BA863Ffa"
+    }
+  };
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 
 async function tvl(api) {

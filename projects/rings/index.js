@@ -1,8 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { stakings } = require("../helper/staking");
-const { balanceOf } = require('@defillama/sdk/build/erc20');
-const { ethereum } = require('../helper/whitelistedNfts');
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
@@ -71,7 +68,7 @@ const CONFIG = {
     ],
     supportedAssets: [
       '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B',
-      '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb'
+      ADDRESSES.corn.USDT0
     ],
   }
 }

@@ -5,6 +5,7 @@ const graphs = {
     ethereum: sdk.graph.modifyEndpoint('BguCyHCbhwRK4MB4DCFmHLR7KNeDKHE64iDXAY6dp4cR'), 
     base: sdk.graph.modifyEndpoint('5b3mwB9M2TFkD259vzED9sUe8A8j3V2HDobuCgoe8pVh'), 
     optimism: sdk.graph.modifyEndpoint('2tkJQ566D58MzdKzwShZESwgEdTkdWCxCmBKgPyf44bb'), 
+    plasma: 'https://api.goldsky.com/api/public/project_cmhc2ll2b3q1q01xw0u0pf76c/subgraphs/odyssey-subgraph-plasma/1.0.4/gn',
 }
 
 const queries = {
