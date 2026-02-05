@@ -143,7 +143,7 @@ async function getEulerVaults(api, owners) {
         permitFailure: true,
       }) : []
       for (let i = 0; i < proxyAddresses.length; i++) {
-        if (isOwner(proxyCreators[i], owners) || (useOwnerFallback && isOwner(proxyOwners[i], owners))) {
+        if (isOwner(proxyCreators[i], owners) || (useOwnerFallback && proxyOwners[i] && isOwner(proxyOwners[i], owners))) {
           allVaults.push(proxyAddresses[i])
         }
       }
