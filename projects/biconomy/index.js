@@ -7,7 +7,6 @@ const config = {
     bridges: [
       '0xebaB24F13de55789eC1F3fFe99A285754e15F7b9',
       '0x2A5c2568b10A0E826BfA892Cf21BA7218310180b',
-      '0x3d79007ba1a68de986eb641a3c24d58a0c69587e',
     ],
     tokens: [
       ADDRESSES.GAS_TOKEN_2,
@@ -74,8 +73,9 @@ const config = {
 }
 
 module.exports = {
-    hallmarks:[
-    [1651881600, "UST depeg"],
+  hallmarks: [
+    ["2022-05-07", "UST depeg"],
+    ["2024-12-31", "Biconomy decomissions Hyphen"],
   ],
   methodology:
     "Biconomy TVL is the USD value of token balances in the Hyphen 2.0 contracts.",
