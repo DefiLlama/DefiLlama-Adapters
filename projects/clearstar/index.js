@@ -19,6 +19,7 @@ const configs = {
       erc4626: [
         '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
         '0xb2FdA773822E5a04c8A70348d66257DD5Cf442DB', // Upshift LiquityV2
+        '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
       ],
     },
     polygon: {
@@ -44,6 +45,11 @@ const configs = {
     hemi: {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458'
+      ],
+    },
+    hyperliquid: {
+      eulerVaultOwners: [
+        '0x65A067b5955F11F6202F14C3b9Cd64830C4170fB' // HypurrFi / Euler HyperEVM vaults
       ],
     },
   }

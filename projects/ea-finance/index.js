@@ -26,7 +26,7 @@ module.exports = {
   start: 1767126150,
   methodology: "TVL is calculated as the total amount of WCC tokens staked in the staking contract. WCC is a wrapped version of CC token (from Canton network) with a 1:1 peg. WCC price should track CC token price.",
   bsc: {
-    tvl: () => ({}),
-    staking: staking
+    tvl: staking,
+    // staking: staking
   }
 }

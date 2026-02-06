@@ -1,5 +1,8 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "getCurrentTokens": "address[]:getCurrentTokens",
+    "totalSupply": "uint256:totalSupply"
+  };
 const { stakings } = require("../helper/staking");
 const { compoundExports2 } = require("../helper/compound");
 

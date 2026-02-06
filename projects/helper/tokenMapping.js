@@ -41,6 +41,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  katana: {
+    '0x5bff88ca1442c2496f7e475e9e7786383bc070c0': { coingeckoId: 'staked-frax-usd', decimals: 18 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
@@ -66,12 +69,23 @@ const fixBalancesTokens = {
     '0x779Ded0c9e1022225f8E0630b35a9b54bE713736': { coingeckoId: 'usdt0', decimals: 6 },
     '0x0000000000000000000000000000000000001003': { coingeckoId: 'stable-2', decimals: 18 },
   },
+  supra: {
+    '0x7b6463ca7a54ee37e113c8333db9c0af49de39555ee1cb44837db4c085f8964': { coingeckoId: 'tether', decimals: 6 },
+  },
   gan: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'gpunet', decimals: 18 },
   },
   fogo: {
     'uSd2czE61Evaf76RNbq4KPpXnkiL3irdzgLFUMe3NoG': { coingeckoId: 'usd-coin', decimals: 6 },
     'HLc5hqihQGFU68488j7HkdyF6rywyJfV46BN6Dn8W5ug': { coingeckoId: 'solana', decimals: 8 },
+  },
+  citrea: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
+    '0x3100000000000000000000000000000000000006': { coingeckoId: 'bitcoin', decimals: 18 },
+    '0xE045e6c36cF77FAA2CfB54466D71A3aEF7bbE839': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x8D82c4E3c936C7B5724A382a9c5a4E6Eb7aB6d5D': { coingeckoId: 'citrea-usd', decimals: 6 },
+    '0x9f3096Bac87e7F03DC09b0B416eB0DF837304dc4': { coingeckoId: 'tether', decimals: 6 },
+    '0xDF240DC08B0FdaD1d93b74d5048871232f6BEA3d': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
   btnx: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'botanix-pegged-bitcoin', decimals: 18 },
@@ -83,13 +97,16 @@ const fixBalancesTokens = {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
     '0x28B7E77f82B25B95953825F1E3eA0E36c1c29861': { coingeckoId: 'megaeth', decimals: 18 },
   },
+  hyperliquid: {
+    '0xbe068Bb3c7ef5B56360655638f75bf5A6C5f8C10': { coingeckoId: 'zcash', decimals: 18 },
+  },
   injective: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'injective-protocol', decimals: 18 },
     '0x0000000088827d2d103ee2d9A6b781773AE03FfB': { coingeckoId: 'injective-protocol', decimals: 18 },
     '0x88f7F2b685F9692caf8c478f5BADF09eE9B1Cc13': { coingeckoId: 'tether', decimals: 6 },
     '0x2a25fbD67b3aE485e461fe55d9DbeF302B7D3989': { coingeckoId: 'usd-coin', decimals: 6 },
     '0x83A15000b753AC0EeE06D2Cb41a69e76D0D5c7F7': { coingeckoId: 'ethereum', decimals: 18 },
-  }
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { sliceIntoChunks } = require('../helper/utils');
+const { getEnv } = require('../helper/env');
+const { sliceIntoChunks, sleep } = require('../helper/utils');
 
 const EtherFiCashFactory = '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF';
 const CashBorrowerHelperContract = '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B';
@@ -9,13 +10,17 @@ const abi = {
 }
 
 async function tvl(api) {
+  const isCustomJob = getEnv('IS_RUN_FROM_CUSTOM_JOB')
+  if (!isCustomJob)
+    throw new Error("Find another solution, maybe a custom script that runs slow but pulls all the data, this is making like 200k calls which is running into rate limit")
+
   //get last collateral mode vault
   const lastCollateralModeVault = (await api.call({
     target: EtherFiCashFactory,
     abi: 'function numContractsDeployed() view returns (uint256)',
   })) - 1;
 
-  const batch_size = 25;
+  const batch_size = 1;
 
 
   const calls = [];
@@ -30,15 +35,22 @@ async function tvl(api) {
     });
   }
 
-  const chunks = sliceIntoChunks(calls, 30);
+  const chunks = sliceIntoChunks(calls, 101);
   let i = 0
+  let failures = 0
   for (const chunk of chunks) {
-    const res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk })
+    const res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk, permitFailure: true })
     res.forEach(batchResult => {
+      if (!batchResult) {
+        failures++
+        if (failures > 51) throw new Error("Too many failures, aborting")
+        return;
+      }
+
       batchResult.forEach(({ token, amount }) => api.add(token, amount))
     })
-    console.log(`Processed chunk ${++i}/${chunks.length}`)
-    // api.log(`Processed chunk ${++i}/${chunks.length}`)
+    api.log(`Processed chunk ${++i}/${chunks.length}`)
+    await sleep(3000)
   }
 }
 
