@@ -1,4 +1,4 @@
-const { getCuratorExport } = require("../helper/curators");
+const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
 const axios = require('axios');
 
 const configs = {
@@ -7,6 +7,8 @@ const configs = {
     ethereum: {
       morphoVaultOwners: [
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
+        '0xd79766D2FeC43886e995EA415a2Bf406280B2e2C',
+
       ],
       aera: [
         '0x7c8406384f7a5c147a6add16407803be146147e4',
@@ -108,26 +110,39 @@ const configs = {
         '0x5D8C96b76A342c640d9605187daB780f8365F69f',
       ],
     },
+    arbitrum: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+        '0xF9D8B7e7981986746c4DE236CC72F1a26AFb5851',
+      ],
+    },
+    optimism: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
+    },
   }
 }
 
 // --- Drift Solana TVL logic ---
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, } = require('../helper/solana')
 const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
 
 const TOKEN_INFO = {
   USDC: {
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6,
   },
   SOL: {
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     decimals: 9,
   },
   jitoSOL: {
-    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    mint: ADDRESSES.solana.JitoSOL,
     decimals: 9,
   },
   JTO: {
@@ -147,7 +162,7 @@ const TOKEN_INFO = {
     decimals: 9,
   },
   dSOL: {
-    mint: 'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ',
+    mint: ADDRESSES.solana.dSOL,
     decimals: 9,
   },
   JLP: {
@@ -163,8 +178,16 @@ const TOKEN_INFO = {
     decimals: 6,
   },
   BONK: {
-    mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+    mint: ADDRESSES.solana.BONK,
     decimals: 5,
+  },
+  dfdvSOL: {
+    mint: 'sctmB7GPi5L2Q5G9tUSzXvhZ4YiDMEGcRov9KfArQpx',
+    decimals: 9,
+  },
+  wETH: {
+    mint: 'FeGn77dhg1KXRRFeSwwMiykZnZPw5JXW6naf2aQgZDQf',
+    decimals: 8,
   },
 }
 
@@ -182,6 +205,8 @@ function getTokenInfo(marketIndex) {
     case 27: return TOKEN_INFO.cbBTC
     case 28: return TOKEN_INFO.USDS
     case 32: return TOKEN_INFO.BONK
+    case 52: return TOKEN_INFO.dfdvSOL
+    case 4: return TOKEN_INFO.wETH // double check if this is correct
     default: return undefined
   }
 }
@@ -198,7 +223,13 @@ const VAULT_USER_ACCOUNTS = [
   '68oTjvenFJfrr2iYPtBTRiFyXA8N2pXdHDP82YvuhLaC', // DRIFT Plus
   'GYxrPXFhCQamBxUc4wMYHnB235Aei7GZsjFCfZgfYJ6b', // Carrot hJLP 
   'FbbcWcg5FfiPdBhkxuBAeoFCyVN2zzSvNPyM7bRiSKAL', // JTO Plus
+  'BrXMRthT599b2mck5bXig6CaHR83kv3vA2dSMC17nv3H', // dfdvSOL Plus
+  '5pJRZ2pcRfKLpsR4fTigN87jBJ93F4KGp3kxb38GNWoN', // wETH Plus
 ]
+
+// --- Kamino Lend Vault Layer ---
+const GAUNTLET_ADMIN = new PublicKey('JC8sPweHaHr1kWzAvykaAmLsWtSWhi3M4NnyYGRdxgkt')
+
 
 async function tvl(api) {
   const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
@@ -226,6 +257,9 @@ async function tvl(api) {
       }
     }
   }
+
+  // Kamino Lend vaults
+  await kaminoLendVaultTvl(api, GAUNTLET_ADMIN)
 }
 
 async function megavaultTvl(api) {
@@ -236,7 +270,7 @@ async function megavaultTvl(api) {
   const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
 
   // Report as USD Coin using coingecko identifier
-  api.add('coingecko:usd-coin', (currentTvl * 1e6).toFixed(0));
+  api.add(ADDRESSES.ethereum.USDC, (currentTvl * 1e6).toFixed(0));
 }
 
 async function combinedEthereumTvl(api) {
@@ -245,11 +279,9 @@ async function combinedEthereumTvl(api) {
   if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
     await curatorExport.ethereum.tvl(api);
   }
-  
+
   // Then add MegaVault TVL
-  console.log("Adding MegaVault TVL to ethereum...");
   await megavaultTvl(api);
-  console.log("MegaVault TVL added to ethereum");
 }
 
 module.exports = {

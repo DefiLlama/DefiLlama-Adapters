@@ -173,11 +173,30 @@ async function queryEventsByType({ eventType, transform = i => i }) {
   const items = []
   let after = null
   do {
-    const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
+    const { events: { pageInfo: { endCursor, hasNextPage }, nodes } } = await sdk.graph.request(graphEndpoint(), query, { variables: { after, eventType } })
     after = hasNextPage ? endCursor : null
     items.push(...nodes.map(i => i.contents.json).map(transform))
   } while (after)
   return items
+}
+
+
+async function getTokenSupply(token) {
+  const { result } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getTotalSupply',
+    params: [token],
+  })
+  const supply = result.value
+  const { result: metadata } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getCoinMetadata',
+    params: [token],
+  })
+  const decimals = metadata?.decimals ?? 0
+  return { supply, decimals, normalized: supply / 10 ** decimals }
 }
 
 module.exports = {
@@ -193,4 +212,5 @@ module.exports = {
   sumTokens,
   sumTokensExport,
   queryEventsByType,
+  getTokenSupply,
 };

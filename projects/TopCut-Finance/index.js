@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const TOPCUT_VAULT = "0x3cfc3CBA1B4aAF969057F590D23efe46848F4270";
-const ETH = "0x0000000000000000000000000000000000000000"
+const ETH = ADDRESSES.null
 
 
 async function tvl(api) {

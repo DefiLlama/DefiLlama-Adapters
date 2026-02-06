@@ -1,4 +1,4 @@
-const { stakingPricedLP } = require("../helper/staking");
+const { stakingPriceLP } = require("../helper/staking");
 
 const VAL = "0xe1af4d744e2a66cd07c474bed167960be872fcd9"
 const stakingContract = "0x99a2278ab93Ee6F590a87D8F37a16EE8f53F97Cc"
@@ -9,6 +9,6 @@ module.exports = {
     methodology: "TVL is calculated by getting value of staked VAL using Arthswap DEX value of VAL.",
     astar: {
         tvl: () => ({}),
-        staking: stakingPricedLP(stakingContract, VAL, "astar", arthswapValUsdcPool, "usd-coin", true, 6)
+        staking: stakingPriceLP(stakingContract, VAL, arthswapValUsdcPool, "usd-coin", true, 6)
     },
 } 

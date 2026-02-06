@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports, nullAddress } = require('../helper/treasury');
 
 const COOK_TOKEN_ADDRESS = '0x9F0C013016E8656bC256f948CD4B79ab25c7b94D';
-const CMETH_TOKEN_ADDRESS = '0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA';
+const CMETH_TOKEN_ADDRESS = ADDRESSES.mantle.cmETH;
 const MANTLE_TOKEN_ADDRESS = '0x3c3a81e81dc49A522A592e7622A7E711c06bf354';
 
 module.exports = treasuryExports({

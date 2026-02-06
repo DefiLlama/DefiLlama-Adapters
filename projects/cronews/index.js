@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * cronews TVL adapter
  * 
@@ -13,7 +14,7 @@ async function tvl(api) {
   })
   
   // Add the native CRO token to the balance
-  api.addToken('0x0000000000000000000000000000000000000000', balance)
+  api.addToken(ADDRESSES.null, balance)
 }
 
 module.exports = {

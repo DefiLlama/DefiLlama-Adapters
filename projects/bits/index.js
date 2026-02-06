@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const BITS_VAULTS_ETHEREUM = [
-  '0x02ad570A8f361c1F8ba630D015fcA02862F2478f', // WBTC vault on Ethereum
+  '0xC516FF2349A5C869B851Ce78De740ac209180b56', // WBTC vault on Ethereum
 ]
 
 const BITS_VAULTS_COREDAO = [

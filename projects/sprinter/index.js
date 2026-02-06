@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const LP_TOKEN_ADDRESS = "0xfa89929b30bC3132f9907CBCe3F2f6f4AC0903b6";
 const MINING_CONTRACT_ADDRESS = "0x479d158959b59328e89f0fbf7dfebb198c313c21";
 const HUB_CONTRACT_ADDRESS = "0xa593A9bBBc65be342FF610a01e96da2EB8539FF2";
 
-const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+const USDC_ADDRESS = ADDRESSES.base.USDC;
 
 const abi = {
     hub: {

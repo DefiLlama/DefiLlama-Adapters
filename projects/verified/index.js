@@ -1,6 +1,10 @@
 const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
+<<<<<<< HEAD
 const { ZeroAddress } = require("ethers");
+=======
+
+>>>>>>> 2a4f43188a6cf52d2ab336d5ef4b3928382da581
 
 //Supported chain subgraphs configuration for Verified Network
 //TODO: add more chains
@@ -10,6 +14,7 @@ const chainsConfig = {
       "https://api.studio.thegraph.com/query/77016/vault-base/version/latest",
   },
   ethereum: {
+<<<<<<< HEAD
     address: "0x9347CEb82BC0c554Ed21411d8c5390B7f4aeECdd",
     subgraphUrl:
       "https://api.studio.thegraph.com/query/77016/vault-mainnet/version/latest",
@@ -24,6 +29,16 @@ const chainsConfig = {
 
 //Fetch pools with at least 1 primarySubscriptions or orders or marginOrders
 const fetchAllPools = async (url) => {
+=======
+    subgraphUrl:
+      "https://api.studio.thegraph.com/query/77016/vault-mainnet/version/latest",
+  },
+};
+
+
+//Fetch pools with at least 1 primarySubscriptions or orders or marginOrders
+const getChainSecurities = async (url) => {
+>>>>>>> 2a4f43188a6cf52d2ab336d5ef4b3928382da581
   let allPools = [];
   let skip = 0;
   const pageSize = 1000;
@@ -71,7 +86,10 @@ const fetchAllPools = async (url) => {
     }
   `;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2a4f43188a6cf52d2ab336d5ef4b3928382da581
   while (hasMore) {
     try {
       const data = await request(url, QUERY(skip));
@@ -95,7 +113,11 @@ const getChainTvls = (chain) => {
 
   return async (_, __, ___) => {
     const balances = {};
+<<<<<<< HEAD
     const pools = await fetchAllPools(subgraphUrl);
+=======
+    const pools = await getChainSecurities(subgraphUrl);
+>>>>>>> 2a4f43188a6cf52d2ab336d5ef4b3928382da581
 
     for (const pool of pools) {
       const currency = pool?.currency?.toLowerCase();
@@ -135,6 +157,7 @@ const getChainTvls = (chain) => {
       });
     }
 
+<<<<<<< HEAD
 
     if(chainsConfig[chain].address) {
       //if address exist on chain fetch it balance and compute new TVL
@@ -251,6 +274,12 @@ const getAddressTvl = (chain, address) => {
       throw new Error(`chain: "${chain}" is not supported. List of supported chains are: ${Object.keys(chainsConfig)?.join(", ")}`);
   }
 }
+=======
+    return balances;
+
+  };
+};
+>>>>>>> 2a4f43188a6cf52d2ab336d5ef4b3928382da581
 
 module.exports = {
   methodology:
@@ -259,6 +288,7 @@ module.exports = {
   misrepresentedTokens: false,
 };
 
+<<<<<<< HEAD
 
 Object.keys(chainsConfig).forEach((chain) => {
   if(chainsConfig[chain]?.subgraphUrl) {
@@ -271,4 +301,10 @@ Object.keys(chainsConfig).forEach((chain) => {
   };
   }
   
+=======
+Object.keys(chainsConfig).forEach((chain) => {
+  module.exports[chain] = {
+    tvl: getChainTvls(chain),
+  };
+>>>>>>> 2a4f43188a6cf52d2ab336d5ef4b3928382da581
 });

@@ -1,6 +1,8 @@
 const { config } = require('./config')
-const abi = require('./abi.json')
-const { sumUnknownTokens, } = require('../helper/unknownTokens')
+const abi = {
+    "depositId": "uint256:depositId",
+    "lockedToken": "function lockedToken(uint256) view returns (address tokenAddress, address withdrawalAddress, uint256 tokenAmount, uint256 unlockTime, string memory lockName, string memory lockDescription, bool withdrawn)"
+  };const { sumUnknownTokens, } = require('../helper/unknownTokens')
 
 module.exports = {
   methodology: 'Counts TVL of all the tokens locked on the Kimberlite Safe locker smart contracts'

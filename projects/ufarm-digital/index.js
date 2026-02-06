@@ -11,6 +11,13 @@ const config = {
     endpoint: 'https://api.ufarm.digital/api/v1/pool?limit=500',
     blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88'], // uni v3 NFT
   },
+  ethereum: {
+    fromBlock: 23732341,
+    ufarmCore: '0xe92B70d6C805B7a487C387a8e8bec177d991f305',
+    valueToken: ADDRESSES.ethereum.USDT,
+    endpoint: 'https://api.ufarm.digital/api/v2/pool?limit=500',
+    blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88'], // uni v3 NFT
+  },
 }
 
 module.exports = {
@@ -22,8 +29,11 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { data } = await getConfig('ufarm-digital/' + api.chain, endpoint)
-      const ownerTokens = data.map(i => [i.assetAllocation.map(i => i.asset), i.poolAddress])
-      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, owners: ownerTokens.map(i => i[1]) })
+      const ownerTokens = data
+        .map(i => [i.assetAllocation?.map(a => a.asset) || [], i.poolAddress])
+        .filter(([assets, poolAddress]) => assets.length > 0 && !!poolAddress);
+
+      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, owners: ownerTokens.map(i => i[1]), permitFailure: true })
 
       /* const logs = await getLogs2({
         api,

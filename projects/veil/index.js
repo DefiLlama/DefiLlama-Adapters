@@ -10,6 +10,7 @@ const DEPOSIT_POOL_VERIFIED_001_ETH = '0x844bB2917dD363Be5567f9587151c2aAa2E345D
 const DEPOSIT_POOL_VERIFIED_01_ETH = '0xD3560eF60Dd06E27b699372c3da1b741c80B7D90'
 const DEPOSIT_POOL_VERIFIED_1_ETH = '0x9cCdFf5f69d93F4Fcd6bE81FeB7f79649cb6319b'
 const DEPOSIT_POOL_VERIFIED_200_USDC = '0xA4dB5eC5d0a2ee01CcD8D6e2e53224CF4E81A9b3'
+const DEPOSIT_POOL_VERIFIED_ANY_AMOUNT_WETH = '0x293dcda114533ff8f477271c5ca517209ffdeee7'
 
 // VEIL staking contract
 const VEIL_TOKEN = '0x767A739D1A152639e9Ea1D8c1BD55FDC5B217D7f'
@@ -21,15 +22,21 @@ async function tvl(api) {
     DEPOSIT_POOL_PUBLIC_05_ETH,
     DEPOSIT_POOL_VERIFIED_001_ETH,
     DEPOSIT_POOL_VERIFIED_01_ETH,
-    DEPOSIT_POOL_VERIFIED_1_ETH,
+    DEPOSIT_POOL_VERIFIED_1_ETH
+    
   ]
   const usdcPools = [DEPOSIT_POOL_VERIFIED_200_USDC]
+
+  const wethPools = [DEPOSIT_POOL_VERIFIED_ANY_AMOUNT_WETH]
 
   // ETH deposits
   await api.sumTokens({ owners: ethPools, tokens: [ADDRESSES.null] })
 
   // USDC deposits
   await api.sumTokens({ owners: usdcPools, tokens: [ADDRESSES.base.USDC] })
+
+    // WETH deposits
+  await api.sumTokens({ owners: wethPools, tokens: [ADDRESSES.base.WETH] })
 }
 
 module.exports = {
