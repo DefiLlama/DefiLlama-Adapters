@@ -77,6 +77,7 @@ module.exports = {
     ["2022-05-07", "UST depeg"],
     ["2024-12-31", "Biconomy decomissions Hyphen"],
   ],
+  deadFrom: "2024-12-31",
   methodology:
     "Biconomy TVL is the USD value of token balances in the Hyphen 2.0 contracts.",
 }
