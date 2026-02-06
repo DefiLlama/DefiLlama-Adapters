@@ -52,6 +52,7 @@ const fetchAllPools = async (url) => {
           address
         }
         orders {
+
           tokenIn { address }
           amountOffered
           timestamp
@@ -86,6 +87,7 @@ const fetchAllPools = async (url) => {
 
   return allPools;
 };
+
 
 // Format TVL using DefiLlama SDK
 const getChainTvls = (chain) => {
@@ -132,6 +134,7 @@ const getChainTvls = (chain) => {
         }
       });
     }
+
 
     if(chainsConfig[chain].address) {
       //if address exist on chain fetch it balance and compute new TVL
