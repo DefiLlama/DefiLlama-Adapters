@@ -153,7 +153,7 @@ const config = {
   },
   flare: {
     morphoBlue: "0xF4346F5132e810f80a28487a79c7559d9797E8B0",
-    fromBlock: 52946050,
+    fromBlock: 52378788,
   }
 }
 
