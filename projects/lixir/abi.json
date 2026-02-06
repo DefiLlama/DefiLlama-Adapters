@@ -1,8 +1,0 @@
-{
-  "getRoleMemberCount": "function getRoleMemberCount(bytes32 role) view returns (uint256)",
-  "getRoleMember": "function getRoleMember(bytes32 role, uint256 index) view returns (address)",
-  "calculateTotals": "function calculateTotals() view returns (uint256 total0, uint256 total1, uint128 mL, uint128 rL)",
-  "token0": "address:token0",
-  "token1": "address:token1",
-  "balanceOf": "function balanceOf(address account) view returns (uint256)"
-}

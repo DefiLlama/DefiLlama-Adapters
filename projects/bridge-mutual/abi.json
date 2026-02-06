@@ -1,6 +1,0 @@
-{
-  "count": "uint256:count",
-  "list": "function list(uint256 offset, uint256 limit) view returns (address[] _policyBooksArr)",
-  "getShieldTokenAddress": "function getShieldTokenAddress(address _policyBook) view returns (address)",
-  "virtualUsdtAccumulatedBalance": "uint256:virtualUsdtAccumulatedBalance"
-}
