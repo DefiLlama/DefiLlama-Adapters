@@ -18,7 +18,7 @@ async function tvl(api) {
     delete balances[stFuelKey]
     const redemptionRate = await query({ contractId: rigContract, abi: rigAbi, method: 'get_sanitized_price' })
     const fuelKey = 'fuel:' + fuelAssetId
-    balances[fuelKey] = (Number(balances[fuelKey]) || 0) + stFuelBalance * redemptionRate / 1e9
+    balances[fuelKey] = (Number(balances[fuelKey]) || 0) + stFuelBalance * (redemptionRate / 1e9)
   }
 
   return balances
