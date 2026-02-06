@@ -256,6 +256,7 @@ module.exports = {
   misrepresentedTokens: false,
 };
 
+
 Object.keys(chainsConfig).forEach((chain) => {
   if(chainsConfig[chain]?.subgraphUrl) {
     module.exports[chain] = {
