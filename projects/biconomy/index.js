@@ -75,7 +75,7 @@ const config = {
 module.exports = {
   hallmarks: [
     ["2022-05-07", "UST depeg"],
-    ["2024-12-31", "Biconomy decomissions Hyphen"],
+    ["2024-12-31", "Biconomy decommissions Hyphen"],
   ],
   deadFrom: "2024-12-31",
   methodology:
