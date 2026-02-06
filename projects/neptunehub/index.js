@@ -1,21 +1,26 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// NeptuneHub Contracts on Cronos
-const CONTRACTS = {
-  DCA: '0x71584790A04838D569f138B639e9B63a4753DAFf',
-  SWAP_AGGREGATOR: '0xb3f2B217B024700b6B85bB0941d4958EF17214C1',
-};
+const AGGREGATOR_CONTRACT = '0xb3f2B217B024700b6B85bB0941d4958EF17214C1';
+
+// Major Cronos tokens routed through the aggregator
+const TOKENS = [
+  '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23', // WCRO
+  '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59', // USDC
+  '0x66e428c3f67a68878562e79A0234c1F83c208770', // USDT
+  '0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03', // VVS
+  '0xd677944Df705924AF369d2FCcf4A989f343DbCDf', // FFTB
+];
 
 async function tvl(api) {
   return sumTokens2({
     api,
-    owners: Object.values(CONTRACTS),
-    fetchCoValentTokens: true,
+    owner: AGGREGATOR_CONTRACT,
+    tokens: TOKENS,
   });
 }
 
 module.exports = {
-  methodology: 'TVL is calculated by summing all tokens held in NeptuneHub contracts including DCA deposits and swap aggregator balances.',
+  methodology: 'TVL is calculated by summing all tokens held by the Neptune Swap Aggregator contract. DCA support will be added in a future update.',
   cronos: {
     tvl,
   },
