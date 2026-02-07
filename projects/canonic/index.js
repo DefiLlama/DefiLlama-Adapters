@@ -16,6 +16,12 @@ const CLP_BTC_USDM  = '0x26F35fcbA3C1387dBaC477d82Bb8a66fA2eDfb4E'
 const CLP_WETH_USDM = '0x11469caf743C2bFBD663C42A2E339A75E053075C'
 const CLP_USDT0_USDM = '0xC397f8ffd517EDA78da4dE59c53516B65846a82A'
 
+/**
+ * Calculates Canonic protocol TVL by summing balanceOf for base and quote
+ * tokens across all MAOB orderbook and CLP vault contracts on MegaETH.
+ * @param {object} api - DefiLlama SDK ChainApi instance.
+ * @returns {Promise<object>} Token balances keyed by address.
+ */
 async function tvl(api) {
   return sumTokens2({
     api,
