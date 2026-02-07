@@ -68,8 +68,8 @@ module.exports = {
   methodology: "Calculates the TVL of all Stream vaults",
   start: 1739697390,
   hallmarks: [
-    [1740283200, "Stream V2 Launch"],
-    [1762214400, "Reported loss $93 million users fund"],
+    ['2025-02-23', "Stream V2 Launch"],
+    ['2025-11-04', "Reported loss $93 million users fund"],
   ],
   ethereum: {
     tvl,

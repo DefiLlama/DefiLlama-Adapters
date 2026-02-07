@@ -11,6 +11,6 @@ module.exports = {
     })
   },
   hallmarks:[
-    [1655991120, "Horizon bridge Hack $100m"],
+    ['2022-06-23', "Horizon bridge Hack $100m"],
   ],
 }

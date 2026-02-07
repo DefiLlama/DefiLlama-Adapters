@@ -11,6 +11,6 @@ module.exports = {
     tvl: gmxExports({ vault: fuseVault })
   },
   hallmarks: [
-    [1691036559, "Mirakle Launch"]
+    ['2023-08-03', "Mirakle Launch"]
   ],
 };

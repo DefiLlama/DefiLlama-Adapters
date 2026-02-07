@@ -13,7 +13,7 @@ module.exports = {
     tvl: gmxExports({ vault: cantoVault })
   },
   hallmarks:[
-    [1709142570, "Cadence Perpetuals Launch"]
+    ['2024-02-28', "Cadence Perpetuals Launch"]
   ],
   
 };

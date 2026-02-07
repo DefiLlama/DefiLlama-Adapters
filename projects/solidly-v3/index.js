@@ -10,5 +10,5 @@ module.exports = uniV3Export({
   sonic: { factory: "0x777fAca731b17E8847eBF175c94DbE9d81A8f630", fromBlock: 514659, permitFailure: true, },
 });
 module.exports.hallmarks = [
-  [1693699200, "Solidly V3 launch"],
+  ['2023-09-03', "Solidly V3 launch"],
 ]
