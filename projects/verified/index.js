@@ -2,6 +2,7 @@ const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
 const { ethers } = require("ethers");
 const { nullAddress } = require("../helper/tokenMapping");
+const { view_account } = require("../helper/chain/near");
 
 //Supported chain subgraphs configuration for Verified Network
 //TODO: add more chains
@@ -152,23 +153,13 @@ const getEthBalance = (address) => {
   return async (_, __, ___) => { 
      let balances = {};
  try {
-   const res = await fetch("https://eth-mainnet.public.blastapi.io", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "eth_getBalance",
-      params: [address, "latest"],
-    }),
-  });
-
-  const data = await res.json();
-
- 
+  const ethBalanceRes = await sdk.api.eth.getBalance({
+      target: address,
+      chain: "ethereum",
+    })
 
    const token = `ethereum:${nullAddress?.toLowerCase()}`;
-  sdk.util.sumSingleBalance(balances, token, data.result);
+  sdk.util.sumSingleBalance(balances, token, ethBalanceRes?.output);
 
 
  } catch (err) {
@@ -202,26 +193,11 @@ const getNearBalance = (address) => {
       let balances = {};
 
       try {
-          const res = await fetch("https://rpc.mainnet.near.org", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "query",
-      params: {
-        request_type: "view_account",
-        finality: "final",
-        account_id: address,
-      },
-    }),
-  });
-
-  const data = await res.json();
-
+ 
+  const nearBalanceRes = await view_account(address)
 
    const token = `near:${nullAddress?.toLowerCase()}`;
-   const formattedBalance = ethers.parseEther(Number(yoctoToNear(data.result.amount))?.toFixed(18)); //using yocto(^24) gives wrong unit as wei(^18) seems to be the highest unit
+   const formattedBalance = ethers.parseEther(Number(yoctoToNear(nearBalanceRes?.amount))?.toFixed(18)); //using yocto(^24) gives wrong unit as wei(^18) seems to be the highest unit
    sdk.util.sumSingleBalance(balances, token, formattedBalance);
 
  
