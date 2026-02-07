@@ -18,7 +18,7 @@ module.exports = {
     tvl: addV3Balance,
   },
   hallmarks:[
-    [1650322800, "V3 Beta"], // 19/04/2022 @ 12:00am (UTC)
-    [1652223600, "V3 Full Launch"]  // 11/05/2022 @ 12:00am (UTC)
+    ['2022-04-18', "V3 Beta"], // 19/04/2022 @ 12:00am (UTC)
+    ['2022-05-10', "V3 Full Launch"]  // 11/05/2022 @ 12:00am (UTC)
   ],
 };

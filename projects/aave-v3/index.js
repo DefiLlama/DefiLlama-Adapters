@@ -25,6 +25,6 @@ const CONFIG = {
 module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
-  [1659630089, "Start OP Rewards"],
-  [1650471689, "Start AVAX Rewards"]
+  ['2022-08-04', "Start OP Rewards"],
+  ['2022-04-20', "Start AVAX Rewards"]
 ]

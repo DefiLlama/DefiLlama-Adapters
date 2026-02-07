@@ -7,5 +7,5 @@ module.exports = {
 
 
 // module.exports.hallmarks = [
-//   [1721347200, "Protocol Exploit"],
+//   ['2024-07-19', "Protocol Exploit"],
 // ]

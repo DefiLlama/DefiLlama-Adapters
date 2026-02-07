@@ -77,6 +77,6 @@ module.exports = {
     borrowed: fantomBorrowed
   },
   hallmarks: [
-    [1652270400, "Re-entrancy Exploit"]
+    ['2022-05-11', "Re-entrancy Exploit"]
   ],
 };
