@@ -32,6 +32,7 @@ const CHAIN_IDS_ENVIO = {
   unichain: 130, 
   xdc: 50,
   era: 324,
+  monad: 143,
 };
 
 // Chains that are not using the Envio indexer but using the Graph.

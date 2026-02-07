@@ -25,7 +25,9 @@ const config = {
       "0x1084203d70950bd7a93aef75eb32a51df2422a07",
       "0xbcf6011192399df75a96b0a4ce47c4820853e9e5",
       "0x864a7fa57e0f8902a2de4892e925f1272edbe3fa",
-      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+      "0x092fe28430bade62c7c044b9c77d0aaa06241319",
+      "0x934186fd8352fa734eb0df82e8863e6449193294"
     ],
   },
   ethereum: {
