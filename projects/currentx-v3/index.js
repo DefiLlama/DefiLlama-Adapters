@@ -57,3 +57,4 @@ async function tvl(api) {
 module.exports = {
   megaeth: { tvl },
 };
+
