@@ -46,10 +46,18 @@ async function tvl(api) {
 
     try {
       const decimals = Number(t.decimals);
-      const amt = parseUnits(t.totalValueLocked, decimals);
+
+      // ethers v6 parseUnits throws if fractional digits > decimals
+      let tvlStr = t.totalValueLocked;
+      const dotIdx = tvlStr.indexOf(".");
+      if (dotIdx !== -1 && tvlStr.length - dotIdx - 1 > decimals) {
+        tvlStr = tvlStr.slice(0, dotIdx + decimals + 1);
+      }
+
+      const amt = parseUnits(tvlStr, decimals);
       if (amt > 0n) api.add(t.id, amt);
     } catch {
-      // ignore bad decimals / scientific notation strings
+      // ignore invalid values
     }
   }
 }
@@ -57,4 +65,5 @@ async function tvl(api) {
 module.exports = {
   megaeth: { tvl },
 };
+
 
