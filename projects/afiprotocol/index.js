@@ -4,6 +4,7 @@ const afiUSD = {
 
 const afi_rwaUSDi = {
   ethereum: "0xFEE3FBe137cDDcBc479D946EC09596e65e2F29D3",
+  base: "0xed5aa9b6eb62298492c7246fe724ee088a760155"
 };
 
 const TOKENS = { afiUSD, afi_rwaUSDi };
