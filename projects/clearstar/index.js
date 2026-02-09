@@ -1,4 +1,3 @@
-const starknet = require("../helper/chain/starknet");
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
