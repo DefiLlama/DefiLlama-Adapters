@@ -1,7 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
+const { getStaticTokensAndOwners, STATIC_TVL_CHAINS, URL_TVL_CHAINS } = require('./addresses')
 
-const chains = ['ethereum', 'base', 'arbitrum', 'optimism', 'mode', 'blast']
+// Static addresses (from addresses.ts port) + URL-fetched contracts for mode/blast
+const chains = [...STATIC_TVL_CHAINS, ...URL_TVL_CHAINS]
 
 async function getOldToA(api) {
   const data = await getConfig('lyra-v2/old-contracts', 'https://raw.githubusercontent.com/0xdomrom/socket-plugs/main/deployments/superbridge/prod_lyra-old_addresses.json')
@@ -17,11 +19,18 @@ async function getToA(api) {
 }
 
 chains.forEach(chain => {
+  const useStatic = STATIC_TVL_CHAINS.includes(chain)
   module.exports[chain] = {
     tvl: async (api) => {
-      const oldToA = await getOldToA(api)
-      const toa = await getToA(api)
-      return sumTokens2({ tokensAndOwners: oldToA.concat(toa), api })
+      let tokensAndOwners
+      if (useStatic) {
+        tokensAndOwners = getStaticTokensAndOwners(chain)
+      } else {
+        const oldToA = await getOldToA(api)
+        const toa = await getToA(api)
+        tokensAndOwners = oldToA.concat(toa)
+      }
+      return sumTokens2({ tokensAndOwners, api })
     }
   }
 })
