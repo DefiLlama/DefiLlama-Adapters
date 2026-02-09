@@ -1,3 +1,4 @@
+const starknet = require("../helper/chain/starknet");
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
@@ -50,6 +51,11 @@ const configs = {
     hyperliquid: {
       eulerVaultOwners: [
         '0x65A067b5955F11F6202F14C3b9Cd64830C4170fB' // HypurrFi / Euler HyperEVM vaults
+      ],
+    },
+    starknet: {
+      vesu: [
+        '0x1bc5de51365ed7fbb11ebc81cef9fd66b70050ec10fd898f0c4698765bf5803' // Vesu vaults on Starknet,
       ],
     },
   }
