@@ -13,8 +13,8 @@ module.exports = {
     tvl: async (api) => getTvl(api, contracts.ethereum),
   },
   hallmarks: [
-    [1718733600, "Season 1: Launch of the farm on Ethereum"],
-    [1735334250, "Season 2: Migration of the farm to Sophon"]
+    ['2024-06-18', "Season 1: Launch of the farm on Ethereum"],
+    ['2024-12-27', "Season 2: Migration of the farm to Sophon"]
   ]
 }
 

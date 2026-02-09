@@ -5,7 +5,7 @@ const zks = "";
 
 module.exports = {
   hallmarks: [
-    [1704844800,"Whale Withdraw"]
+    ['2024-01-10',"Whale Withdraw"]
   ],
   misrepresentedTokens: true,
   era: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, }) },
