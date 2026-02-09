@@ -14,7 +14,8 @@ const ADDRESSES = require('../coreAssets.json')
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://rest-osmosis.ecostake.com",
-  cosmos: "https://cosmoshub-lcd.stakely.io",
+  // cosmos: "https://cosmoshub-lcd.stakely.io",
+  cosmos: "https://cosmos-api.polkachu.com",
   kujira: "https://kujira-rest.publicnode.com",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
@@ -27,17 +28,19 @@ const endPoints = {
   stargaze: "https://rest.stargaze-apis.com",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
   persistence: "https://rest.cosmos.directory/persistence",
-  secret: "https://rpc.ankr.com/http/scrt_cosmos",
+  // secret: "https://rpc.ankr.com/http/scrt_cosmos",
+  secret: "https://lcd-secret.keplr.app",
   // chihuahua: "https://api.chihuahua.wtf",
   injective: "https://injective-rest.publicnode.com",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
-  neutron: "https://rest-kralum.neutron-1.neutron.org",
+  neutron: "https://rest-solara.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://gravity-api.polkachu.com",
-  sei: "https://sei-api.polkachu.com",
+  // sei: "https://sei-api.polkachu.com",
+  sei: "https://rest.sei-apis.com",
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
@@ -53,6 +56,7 @@ const endPoints = {
   pryzm: "https://api.pryzm.zone",
   // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
   agoric: 'https://agoric-api.polkachu.com/',
+  allora: 'https://allora-api.polkachu.com', // TODO: Verify actual mainnet endpoint
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
@@ -69,7 +73,9 @@ const endPoints = {
   embr: 'https://rest-embrmainnet-1.anvil.asia-southeast.initia.xyz', 
   civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
   echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
-  inertia: 'https://rest.inrt.fi'
+  inertia: 'https://rest.inrt.fi',
+  union: 'https://rest.union.build',
+  zigchain: 'https://public-zigchain-lcd.numia.xyz'
 };
 
 const chainSubpaths = {
@@ -182,7 +188,7 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
     chain
   )}/${subpath}/bank/v1beta1/balances/${owner}?pagination.limit=1000`;
   if (block) {
-    endpoint += `?height=${block - (block % 100)}`;
+    endpoint += `&height=${block - (block % 100)}`;
   }
   const {
     balances: data,

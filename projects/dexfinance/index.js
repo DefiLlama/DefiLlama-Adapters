@@ -67,7 +67,7 @@ module.exports = {
     }),
   },
   hallmarks: [
-    [1671483600, "DexEtf Launch"],
-    [1671656400, "DexVaults Launch"],
+    ['2022-12-19', "DexEtf Launch"],
+    ['2022-12-21', "DexVaults Launch"],
   ],
 };

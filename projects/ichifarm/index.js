@@ -1,7 +1,25 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
-const abi = require("./abi.json");
+const abi = {
+    "oneTokenCount": "uint256:oneTokenCount",
+    "oneTokenAtIndex": "function oneTokenAtIndex(uint256 index) view returns (address)",
+    "assetCount": "uint256:assetCount",
+    "assetAtIndex": "function assetAtIndex(uint256 index) view returns (address)",
+    "token0": "address:token0",
+    "token1": "address:token1",
+    "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+    "allVaults": "function allVaults(uint256) view returns (address)",
+    "collateralTokenAtIndex": "function collateralTokenAtIndex(uint256 index) view returns (address module)",
+    "collateralTokenCount": "uint256:collateralTokenCount",
+    "pool": "address:pool",
+    "foreignTokenAtIndex": "function foreignTokenAtIndex(uint256 index) view returns (address)",
+    "foreignTokenCount": "uint256:foreignTokenCount",
+    "moduleCount": "uint256:moduleCount",
+    "moduleAtIndex": "function moduleAtIndex(uint256 index) view returns (address module)",
+    "modules": "function modules(address) view returns (string name, string url, uint8 moduleType)",
+    "owner": "address:owner"
+  };
 const { sumTokens2, } = require('../helper/unwrapLPs');
 
 const ichiLegacy = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
@@ -168,11 +186,11 @@ const config = {
       { factory: '0x63703A4DdFA51B6CffC1Bb40cc73912dF62535FA', fromBlock: 24151937, isAlgebra: false, }, // Uniswap
     ]
   },
-  real: {
-    vaultConfigs: [
-      { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
-    ]
-  },
+  // real: {
+  //   vaultConfigs: [
+  //     { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
+  //   ]
+  // },
   rsk: {
     vaultConfigs: [
       { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 6753128, isAlgebra: false, }, // Uniswap
@@ -236,22 +254,22 @@ Object.keys(config).forEach(chain => {
         await sumTokens2({ api, owners: uniV3NFTHolders, resolveUniV3: true, blacklistedTokens, })
       }
 
-      for (const {
-        factory,
-        fromBlock,
-        isAlgebra,
-      } of vaultConfigs) {
+      for (const { factory, fromBlock, isAlgebra } of vaultConfigs) {
         const topic = isAlgebra ? algebraTopic : defaultTopic
         const eventAbi = isAlgebra ? algebraEvent : defaultEvent
-        const logs = await getLogs({
-          api,
-          target: factory,
-          topics: [topic],
-          eventAbi: eventAbi,
-          onlyArgs: true,
-          fromBlock,
-        })
-        const vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls: logs.map(l => l.ichiVault), permitFailure: true })
+        const logs = await getLogs({ api, target: factory, topics: [topic], eventAbi, onlyArgs: true, fromBlock })
+
+        let vaultBalances = []
+        const calls = logs.map(l => l.ichiVault)
+
+        if (api.chain === 'hedera') {
+          for (let i = 0; i < calls.length; i += 10) {
+            const batch = calls.slice(i, i + 10)
+            const res = await api.multiCall({ abi: abi.getTotalAmounts, calls: batch, permitFailure: true })
+            vaultBalances.push(...res)
+          }
+        } else vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls, permitFailure: true })
+
         vaultBalances.forEach((b, i) => {
           if (!b) return
           const { tokenA, tokenB } = logs[i]

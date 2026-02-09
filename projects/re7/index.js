@@ -104,6 +104,16 @@ const configs = {
         '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
       ],
     },
+    linea:{
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
+    plasma: {
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
   }
 }
 
