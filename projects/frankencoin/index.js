@@ -36,7 +36,7 @@ async function tvl(api) {
 
 module.exports = {
   ethereum: {
-    tvl: () => { throw new Error('skip for now, unable to pull BOSS token price') },
+    tvl,
   },
   start: '2023-10-28',
 }

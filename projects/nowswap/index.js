@@ -3,7 +3,7 @@ const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   hallmarks: [
-    [1631664000, "Hacked"]
+    ['2021-09-15', "Hacked"]
   ],
   ethereum: {
     tvl: getUniTVL({

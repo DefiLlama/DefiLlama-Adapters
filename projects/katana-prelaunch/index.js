@@ -36,6 +36,6 @@ module.exports = {
     tvl: tvl,
   },
   hallmarks: [
-    [1751324400, "vbAssets migration to Katana mainnet"]
+    ['2025-06-30', "vbAssets migration to Katana mainnet"]
   ]
 }

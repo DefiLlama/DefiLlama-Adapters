@@ -44,7 +44,7 @@ async function tvlViaGraph(api) {
   const endpoint = `https://interface.gateway.uniswap.org/v2/uniswap.explore.v1.ExploreStatsService/ProtocolStats?connect=v1&encoding=json&message=%7B%22chainId%22%3A%22${api.chainId}%22%7D`
   const res = await get(endpoint, { headers: { 'origin': 'https://app.uniswap.org' } })
   const v2 = res.dailyProtocolTvl.v2
-  const oneDayBefore = api.timestamp - 86400
+  const oneDayBefore = api.timestamp - 86400 * 5
   const oneDayAfter = api.timestamp + 86400 / 3
   const dayData = v2.find(d => d.timestamp >= oneDayBefore && d.timestamp <= oneDayAfter)
 

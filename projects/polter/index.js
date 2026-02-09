@@ -25,7 +25,7 @@ const base = {
 
 module.exports = {
   // hallmarks: [
-  //   [1731715200,"Price Oracle Exploit"]
+  //   ['2024-11-16',"Price Oracle Exploit"]
   // ],
   sonic: aaveV2Export(sonic.POLTER_LENDINGPOOL_CONTRACT),
   fantom: aaveV2Export(fantom.POLTER_LENDINGPOOL_CONTRACT),
