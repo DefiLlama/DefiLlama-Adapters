@@ -62,11 +62,12 @@ async function dfs() {
 
 module.exports = {
   timetravel: false,
+  deadFrom: '2024-11-17',
   methodology: `DFS TVL is achieved by querying token balances from DFS's AMM swap liquidity smart contract.`,
   eos: {
     tvl: eos,
   },
-  dfs: {
-    tvl: dfs,
-  },
+  // dfs: { // dead https://www.dfsmoon.com/home
+  //   tvl: dfs,
+  // },
 };
