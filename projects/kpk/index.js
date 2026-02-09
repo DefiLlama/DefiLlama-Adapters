@@ -16,7 +16,7 @@ const GearboxCompressorABI = {
 // ---- Curator config ----
 const configs = {
   methodology:
-    "Tracks curated ERC-4626 vault assets and Gearbox v3.1 credit-account collateral, with Morpho v1/v2 TVL deduplicated."
+    "Tracks assets in curated ERC-4626 vault assets and Gearbox v3.1 credit-account collateral, with Morpho v1/v2 vaults deduplicated.",
   blockchains: {
     ethereum: {
       // Option 1: discover Morpho vaults owned by these addresses (dynamic, event-based).
