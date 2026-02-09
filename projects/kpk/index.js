@@ -16,7 +16,7 @@ const GearboxCompressorABI = {
 // ---- Curator config ----
 const configs = {
   methodology:
-    "Tracks assets in curated ERC-4626 vault assets and Gearbox v3.1 credit-account collateral, with Morpho v1/v2 vaults deduplicated.",
+    "Tracks assets in curated ERC-4626 vaults, and Gearbox v3.1 credit-account collateral for the kpk market configurator, with Morpho v1/v2 vaults deduplicated.",
   blockchains: {
     ethereum: {
       // Option 1: discover Morpho vaults owned by these addresses (dynamic, event-based).
@@ -95,9 +95,20 @@ function toLowerSet(arr = []) {
   return new Set(arr.map((a) => String(a).toLowerCase()))
 }
 
+// Reads token/vault decimals defensively (supports uint8 and uint256 return types).
+// Returns undefined if missing or out of a sane range.
+async function getDecimalsSafe(api, target) {
+  const raw =
+    (await safeCall(api, { target, abi: "uint8:decimals" })) ??
+    (await safeCall(api, { target, abi: "uint256:decimals" }))
+  const n = Number(raw)
+  if (!Number.isInteger(n) || n < 0 || n > 36) return undefined
+  return n
+}
+
+// Note: with local test.js, failed permitFailure calls can still be printed by its
+// debug wrapper; this does not mean the adapter failed.
 async function safeCall(api, params) {
-  // permitFailure avoids throwing at adapter level;
-  // local test.js may still print failed calls due to its debug wrapper.
   try {
     return await api.call({ ...params, permitFailure: true })
   } catch {
@@ -201,30 +212,51 @@ async function tryUnwrap4626(api, tokenLc, bal) {
 
 /**
  * Try Beefy-style unwrap:
- * shares -> underlying via want/token + pricePerShare/getPricePerFullShare.
+ * shares -> underlying via want/token plus:
+ * - getPricePerFullShare (assumed 1e18 scale), or
+ * - pricePerShare (scaled by token/vault decimals when PPFS is unavailable).
  * Returns { token, amount } on success, otherwise null.
  */
-async function tryUnwrapBeefy(api, tokenLc, bal) {
-  const want =
-    (await safeCall(api, { target: tokenLc, abi: "address:want" })) ||
-    (await safeCall(api, { target: tokenLc, abi: "address:token" }))
+ async function tryUnwrapBeefy(api, tokenLc, bal) {
+   const want =
+     (await safeCall(api, { target: tokenLc, abi: "address:want" })) ||
+     (await safeCall(api, { target: tokenLc, abi: "address:token" }))
 
-  if (!want || typeof want !== "string") return null
-  const wantLc = want.toLowerCase()
-  if (wantLc === tokenLc) return null
+   if (!want || typeof want !== "string") return null
+   const wantLc = want.toLowerCase()
+   if (wantLc === tokenLc) return null
 
-  const ppfsRaw =
-    (await safeCall(api, { target: tokenLc, abi: "uint256:getPricePerFullShare" })) ||
-    (await safeCall(api, { target: tokenLc, abi: "uint256:pricePerShare" }))
+   // Path A: Beefy-standard scaling (1e18)
+   const gppfsRaw = await safeCall(api, {
+     target: tokenLc,
+     abi: "uint256:getPricePerFullShare",
+   })
+   const gppfs = toBigIntSafe(gppfsRaw)
+   if (gppfs && gppfs > 0n) {
+     const underlyingAmount = (bal * gppfs) / ONE_18
+     if (underlyingAmount > 0n) return { token: wantLc, amount: underlyingAmount }
+   }
 
-  const ppfs = toBigIntSafe(ppfsRaw)
-  if (!ppfs || ppfs <= 0n) return null
+   // Path B: Generic pricePerShare scaling (token/vault decimals)
+   const ppsRaw = await safeCall(api, {
+     target: tokenLc,
+     abi: "uint256:pricePerShare",
+   })
+   const pps = toBigIntSafe(ppsRaw)
+   if (!pps || pps <= 0n) return null
 
-  const underlyingAmount = (bal * ppfs) / ONE_18
-  if (underlyingAmount <= 0n) return null
+   const dec =
+     (await getDecimalsSafe(api, wantLc)) ??
+     (await getDecimalsSafe(api, tokenLc))
+   if (dec == null) return null
 
-  return { token: wantLc, amount: underlyingAmount }
-}
+   const scale = 10n ** BigInt(dec)
+   const underlyingAmount = (bal * pps) / scale
+   if (underlyingAmount <= 0n) return null
+
+   return { token: wantLc, amount: underlyingAmount }
+ }
+
 
 /**
  * Recursive unwrap with capped depth (MAX_UNWRAP_DEPTH):
@@ -288,7 +320,8 @@ async function addResolvedTokenBalance(
     return
   }
 
-  // Probe only likely wrappers or explicitly forced Beefy wrappers.
+  // Probe wrappers only when explicitly forced, symbol looks Beefy-like,
+  // or symbol lookup failed (unknown token metadata).
   const shouldProbe = forceBeefy || beefyLike || !symbol
   if (!shouldProbe) {
     if (stats) stats.fallbackAsIs++
