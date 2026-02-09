@@ -46,6 +46,6 @@ async function tvl(api) {
 module.exports = {
   base: {
     tvl,
-    staking: staking([GOVERNANCE_TOKEN, TREASURY], DONUT_TOKEN),
+    ownTokens: staking([GOVERNANCE_TOKEN, TREASURY], DONUT_TOKEN),
   },
 };
