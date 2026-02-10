@@ -41,6 +41,13 @@ const RIFT_CONTRACTS = {
 
 const RIFT_TOKEN = "HjBMk5rABYdAvukYRvrScBnP9KnN9nLdKSbN2QPppump";
 
+/**
+ * Fetches all Rift accounts from the on-chain program and aggregates their
+ * associated token accounts (vault, feesVault, withheldVault) together with
+ * the protocol-level vaults into two lists: one for overall TVL and one
+ * specifically for staking calculations.
+ * @returns {{ allTokenAccounts: string[], stakingTokenAccounts: string[] }}
+ */
 async function getRiftsData() {
   const provider = getProvider();
   const program = new Program(riftIdl, provider);
@@ -73,6 +80,12 @@ async function getRiftsData() {
   return { allTokenAccounts, stakingTokenAccounts };
 }
 
+/**
+ * Calculates Total Value Locked (TVL) by summing all token balances held in
+ * Rift Protocol vaults, excluding RIFT token balances (counted under staking).
+ * @param {object} api - DefiLlama SDK API object used to track and return balances.
+ * @returns {object} Token balances representing the protocol TVL.
+ */
 async function tvl(api) {
   const { allTokenAccounts } = await getRiftsData();
   
@@ -84,6 +97,12 @@ async function tvl(api) {
   return api.getBalances();
 }
 
+/**
+ * Calculates the staking metric by summing token balances across staking-related
+ * vaults and returning only the RIFT token balance.
+ * @param {object} api - DefiLlama SDK API object used to track and return balances.
+ * @returns {object} Token balances representing staked RIFT tokens.
+ */
 async function staking(api) {
   const { stakingTokenAccounts } = await getRiftsData();
   
