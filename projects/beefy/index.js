@@ -39,6 +39,7 @@ const chains = {
   moonriver: 1285,
   sei: 1329,
   kava: 2222,
+  megaeth: 4326,
   mantle: 5000,
   saga: 5464,
   canto: 7700,
@@ -108,6 +109,7 @@ const beefyChainNameMapping = {
   'aurora': 'aurora',
   'one': 'harmony',
   'harmony': 'harmony',
+  'megaeth': 'megaeth',
 };
 
 async function fetchVaultData() {
