@@ -81,7 +81,7 @@ async function starknetUsers(api) {
     // Get current cycle for each vault
     const currentCycles = await multiCall({
         calls: STARKNET_VAULTS.map(c => c.address),
-        abi: tBTCVaultABIMap['internal_get_current_cycle'],
+        abi: tBTCVaultABIMap['get_current_cycle'],
         chain: 'starknet',
     });
 
@@ -106,7 +106,7 @@ module.exports = {
     methodology: "TVL is the total tBTC collateral locked in Vesu protocol by Caddy Finance vaults (via get_vesu_collateral). Revenue tracks protocol fees calculated from cycle yields (treasury + management fees). Users metric counts active participants in current yield cycles. The protocol focuses on Bitcoin-native yields through wrapped BTC assets (WBTC, tBTC, wcBTC) using automated, institutional-grade strategies.",
     starknet: {
         tvl: starknetTvl,
-        revenue: starknetRevenue,  // Protocol fees from cycle yields
+        // revenue: starknetRevenue,  // Protocol fees from cycle yields
         // users: starknetUsers,       // Active participants in current cycle
     },
 };
