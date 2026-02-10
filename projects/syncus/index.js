@@ -10,3 +10,7 @@ module.exports = {
   },
   era: aaveV2Export('0xaa71728Aa548658FAbBd37C72C0e2a6234c193F1', { blacklistedTokens: ['0x2d20b8891f2f9ed0ebf1b179b2279f936dec9282']})
 };
+
+// NOTE: borrowed function zeroed out due to bad debt
+// The aaveV2Export helper would normally calculate borrowed amounts, but we override it to return empty object
+module.exports.era.borrowed = () => ({})

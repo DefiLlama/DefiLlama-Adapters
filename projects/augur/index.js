@@ -13,6 +13,6 @@ module.exports = {
     ]}),
   },
   hallmarks:[
-    [1613091600, "Election market resolves"]
+    ['2021-02-12', "Election market resolves"]
   ]
 }

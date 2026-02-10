@@ -22,8 +22,8 @@ const config = {
 Object.keys(config).forEach(chain => {
     module.exports[chain] = {
         hallmarks: [
-            [1729675523, "Beta Launch"],
-            [1745312000, "V1 Launch"],
+            ['2024-10-23', "Beta Launch"],
+            ['2025-04-22', "V1 Launch"],
         ],
         tvl: sumERC4626VaultsExport({ vaults: config[chain], isOG4626: true, })
     }
