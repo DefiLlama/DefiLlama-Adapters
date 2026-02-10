@@ -57,10 +57,10 @@ async function apeTvl(api) {
 // node test.js projects/gainsNetwork.js
 module.exports = {
   hallmarks: [
-    [1672531200,"Launch on Arbitrum"],
-    [1705553229,"Launched gETH and gUSDC"],
-    [1727650801,"Launch on Base"],
-    [1732233600,"Launch on ApeChain"],
+    ['2023-01-01',"Launch on Arbitrum"],
+    ['2024-01-18',"Launched gETH and gUSDC"],
+    ['2024-09-29',"Launch on Base"],
+    ['2024-11-22',"Launch on ApeChain"],
   ],
   polygon: {
     tvl: polyTvl,

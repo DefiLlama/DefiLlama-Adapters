@@ -1,6 +1,6 @@
 const { getConfig } = require('./helper/cache')
 
-// module.exports.hallmarks = [[1638403200, "Front-end attack"]]
+// module.exports.hallmarks = [['2021-12-02', "Front-end attack"]]
 
 const chains = ["ethereum", "bsc", "arbitrum", "polygon", "fantom"]
 

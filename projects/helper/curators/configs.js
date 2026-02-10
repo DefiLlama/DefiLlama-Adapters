@@ -1,4 +1,4 @@
-const { allAbi, abi, assets } = require("./vesu")
+const { allAbi, abi, assets, allAbiV2, abiV2, assetsV2 } = require("./vesu")
 
 const ABI = {
   owner: 'address:owner',
@@ -84,6 +84,12 @@ const MorphoConfigs = {
         address: '0x33f20973275B2F574488b18929cd7DCBf1AbF275',
         fromBlock: 32320327
       },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x8B2F922162FBb60A6a072cC784A2E4168fB0bb0c',
+        fromBlock: 32321811
+      }
     ]
   },
   wc: {
@@ -239,6 +245,11 @@ const EulerConfigs = {
       '0xba4dd672062de8feedb665dd4410658864483f1e',
     ],
   },
+  hyperliquid: {
+    vaultFactories: [
+      '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A',
+    ],
+  },
 }
 
 const SiloConfigs = {
@@ -284,7 +295,11 @@ const VesuConfigs = {
   allAbi,
   abi,
   assets,
+  allAbiV2,
+  abiV2,
+  assetsV2,
   singleton: '0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160',
+  poolFactory: '0x03760f903a37948f97302736f89ce30290e45f441559325026842b7a6fb388c0',
 }
 
 module.exports = { 

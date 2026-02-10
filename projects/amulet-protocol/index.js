@@ -20,6 +20,6 @@ module.exports = {
     },
     methodology: `Amulet provides solution which allows user to to earn rewards from underwriting covers with SOL derivatives token (amtSOL). Hence, the amount of SOL derivatives staked are counted as our TVL which the value are calculated based on the price get from Coingecko.`,
     hallmarks: [
-        [1667692800, "FTX collapse"]
+        ['2022-11-06', "FTX collapse"]
     ],
 }

@@ -3,7 +3,7 @@ const { ohmTvl } = require('../helper/ohm')
 
 const treasury = "0xeC2aE8A3E2692E4b0836AB5cf88104d101DEBEf4"
 module.exports.hallmarks=[
-    [1639180800,"Rug Pull"]
+    ['2021-12-11',"Rug Pull"]
 ],
 module.exports = ohmTvl(treasury, [
     //DAI

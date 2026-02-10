@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json')
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const abi = {
+    "underlying": "address:underlying",
+    "calcTotalValue": "uint256:calcTotalValue"
+  };const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
 const { getConfig } = require('../helper/cache')

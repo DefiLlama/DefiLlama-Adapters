@@ -51,14 +51,10 @@ async function tvl(api) {
   const multicallContract = 'TEazPvZwDjDtFeJupyo7QunvnrnUjPH8ED'
   const chunks = sliceIntoChunks(allPairs, 500)
 
-  const chunkCount = chunks.length
-  console.log(`Processing ${chunkCount} chunks of calls to get TRX balance`)
-
   for (const calls of chunks) {
     const trxBalance = await api.multiCall({ abi: 'function getEthBalance(address) view returns (uint256)', calls, target: multicallContract, })
     api.addGasToken(trxBalance)
     api.addGasToken(trxBalance)  // adding twice to add token balance on the LP
-    console.log(`Processed chunk ${chunks.indexOf(calls) + 1} of ${chunkCount}`)
     await sleep(4500)
   }
 }

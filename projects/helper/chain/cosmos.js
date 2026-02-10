@@ -39,7 +39,8 @@ const endPoints = {
   neutron: "https://rest-solara.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://gravity-api.polkachu.com",
-  sei: "https://sei-api.polkachu.com",
+  // sei: "https://sei-api.polkachu.com",
+  sei: "https://rest.sei-apis.com",
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
@@ -187,7 +188,7 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
     chain
   )}/${subpath}/bank/v1beta1/balances/${owner}?pagination.limit=1000`;
   if (block) {
-    endpoint += `?height=${block - (block % 100)}`;
+    endpoint += `&height=${block - (block % 100)}`;
   }
   const {
     balances: data,
