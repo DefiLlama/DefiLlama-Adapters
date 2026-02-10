@@ -1,4 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+ const ADDRESSES = require('../helper/coreAssets.json')
 
   const sprUSD = '0xc59f7870d47af6d0e3de87b8681775b5476d3e8d'
 
@@ -7,8 +7,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
     ethereum: {
       tvl: async (api) => {
         const supply = await api.call({ abi: 'erc20:totalSupply', target: sprUSD })
-        // sprUSD has 18 decimals, USDC has 6 decimals — divide to convert
-        api.add(ADDRESSES.ethereum.USDC, supply / 1e12)
+        // sprUSD (18 decimals) -> USDC (6 decimals) using BigInt to avoid precision loss
+        api.add(ADDRESSES.ethereum.USDC, (BigInt(supply) / BigInt(1e12)).toString())
       },
     }
   }
