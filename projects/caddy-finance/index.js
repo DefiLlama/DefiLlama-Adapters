@@ -18,11 +18,7 @@ const { tBTCVaultABIMap } = require('./tBTCVaultABIMap');
 // Starknet vaults
 const STARKNET_VAULTS = [
     {
-        address: "0x015630e959b03b07442e4bf6d078d3915fac58866e003c8153f2c2caa2c1cfc2", // Primary tBTC vault
-        token: ADDRESSES.starknet.WBTC
-    },
-    {
-        address: "", // Primary tBTC vault
+        address: "0x306dcfa0a08166fd52292afa8e30f10df36dda1b2e338eb8f579936aeefd082", // Primary tBTC vault
         token: ADDRESSES.starknet.TBTC
     }
 ]
@@ -36,7 +32,9 @@ async function starknetTvl(api) {
         chain: 'starknet',
     });
 
-    api.addTokens(STARKNET_VAULTS.map(c => c.token), vesuCollateral);
+    for (let i = 0; i < STARKNET_VAULTS.length; i++) {
+        api.addCGToken('bitcoin', vesuCollateral[i] / 1e18);
+    }
 }
 
 // Starknet Revenue (Protocol Fees)
@@ -109,6 +107,6 @@ module.exports = {
     starknet: {
         tvl: starknetTvl,
         revenue: starknetRevenue,  // Protocol fees from cycle yields
-        users: starknetUsers,       // Active participants in current cycle
+        // users: starknetUsers,       // Active participants in current cycle
     },
 };
