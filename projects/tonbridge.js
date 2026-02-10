@@ -51,7 +51,6 @@ const config = {
 
 module.exports = {
     hallmarks: [["2023-05-07", "UST depeg"]],
-    deadFrom: "2024-08-29",
     ...Object.entries(config).reduce((acc, [chain, { tokens }]) => {
         acc[chain] = { tvl: sumTokensExport({ owner: "0x54c55369a6900731d22eacb0df7c0253cf19dfff", tokens }) }
         return acc
