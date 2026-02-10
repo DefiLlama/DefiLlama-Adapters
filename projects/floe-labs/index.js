@@ -47,6 +47,10 @@ async function fetchAllActiveLoans() {
         { headers }
       );
 
+      if (response?.errors) {
+        throw new Error(response.errors.map(e => e.message).join('; '));
+      }
+
       const loans = response?.data?.Loan || [];
       allLoans.push(...loans);
 
@@ -56,8 +60,7 @@ async function fetchAllActiveLoans() {
         offset += pageSize;
       }
     } catch (e) {
-      console.error('Error fetching Floe loans:', e.message);
-      hasMore = false;
+      throw new Error(`Error fetching Floe loans: ${e.message}`);
     }
   }
 
