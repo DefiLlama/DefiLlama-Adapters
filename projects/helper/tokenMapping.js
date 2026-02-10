@@ -78,6 +78,7 @@ const fixBalancesTokens = {
   fogo: {
     'uSd2czE61Evaf76RNbq4KPpXnkiL3irdzgLFUMe3NoG': { coingeckoId: 'usd-coin', decimals: 6 },
     'HLc5hqihQGFU68488j7HkdyF6rywyJfV46BN6Dn8W5ug': { coingeckoId: 'solana', decimals: 8 },
+    'So11111111111111111111111111111111111111112': { coingeckoId: 'fogo', decimals: 9 },
   },
   citrea: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
