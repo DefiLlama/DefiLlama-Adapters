@@ -1,6 +1,6 @@
 const { sumTokens2, getConnection } = require('../helper/solana')
 const { getCache, setCache } = require('../helper/cache')
-const { sliceIntoChunks, sleep, log } = require('../helper/utils')
+const { sliceIntoChunks, log } = require('../helper/utils')
 const { get } = require('../helper/http')
 const { PublicKey } = require('@solana/web3.js')
 
@@ -16,21 +16,21 @@ async function resolveAmounts(accounts, connection) {
   const chunks = sliceIntoChunks(accounts, 100)
   log(`  ${chunks.length} batches to resolve...`)
 
-  // Process in groups of 20 concurrent RPC calls
-  const CONCURRENCY = 20
+  // Process in groups of 100
+  const CHUNK_SIZE = 100
   const allResults = new Array(accounts.length).fill(0n)
-  const groups = sliceIntoChunks(chunks.map((chunk, idx) => ({ chunk, idx })), CONCURRENCY)
+  const groups = sliceIntoChunks(chunks.map((chunk, idx) => ({ chunk, idx })), CHUNK_SIZE)
 
   for (let g = 0; g < groups.length; g++) {
     const group = groups[g]
-    if (g % 50 === 0) log(`  Progress: ${g * CONCURRENCY}/${chunks.length} batches`)
+    if (g % 50 === 0) log(`  Progress: ${g * CHUNK_SIZE}/${chunks.length} batches`)
     const promises = group.map(async ({ chunk, idx }) => {
       const keys = chunk.map(addr => new PublicKey(addr))
       const infos = await connection.getMultipleAccountsInfo(keys)
       for (let i = 0; i < infos.length; i++) {
         const info = infos[i]
         if (!info || !info.data || info.data.length < 72) continue
-        allResults[idx * 100 + i] = info.data.readBigUInt64LE(64)
+        allResults[idx * CHUNK_SIZE + i] = info.data.readBigUInt64LE(64)
       }
     })
     await Promise.all(promises)
