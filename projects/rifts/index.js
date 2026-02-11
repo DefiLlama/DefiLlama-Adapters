@@ -89,10 +89,7 @@ async function getRiftsData() {
 async function tvl(api) {
   const { allTokenAccounts } = await getRiftsData();
   
-  await sumTokens2({ tokenAccounts: allTokenAccounts, api, allowError: true });
-  
-  const riftKey = `solana:${RIFT_TOKEN}`;
-  api.removeTokenBalance(riftKey);
+  await sumTokens2({ tokenAccounts: allTokenAccounts, api, allowError: true, blacklistedTokens: [RIFT_TOKEN] });
   
   return api.getBalances();
 }
