@@ -52,6 +52,11 @@ const configs = {
         '0x65A067b5955F11F6202F14C3b9Cd64830C4170fB' // HypurrFi / Euler HyperEVM vaults
       ],
     },
+    starknet: {
+      vesuV2: [
+        '0x1bc5de51365ed7fbb11ebc81cef9fd66b70050ec10fd898f0c4698765bf5803' // Clearstar USDC Reactor
+      ],
+    },
   }
 }
 
@@ -67,4 +72,11 @@ exportObj.flare = {
   }
 }
 
-module.exports = exportObj
+module.exports = {
+  ...exportObj,
+  
+  timetravel: false, // starknet doesn't support historical queries
+  hallmarks: [
+    ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
+  ],
+}

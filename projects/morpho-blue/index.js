@@ -150,6 +150,10 @@ const config = {
   linea: {
     morphoBlue: "0x6B0D716aC0A45536172308e08fC2C40387262c9F",
     fromBlock: 25072608,
+  },
+  flare: {
+    morphoBlue: "0xF4346F5132e810f80a28487a79c7559d9797E8B0",
+    fromBlock: 52378788,
   }
 }
 

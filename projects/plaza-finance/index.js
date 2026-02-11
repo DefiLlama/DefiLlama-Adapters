@@ -44,7 +44,7 @@ module.exports = {
   start: 1742839200,
   base: { tvl },
   hallmarks: [
-    [1742839200,"PreDeposit Launch"],
-    [1745852400,"ETH Pool Launch"]
+    ['2025-03-24',"PreDeposit Launch"],
+    ['2025-04-28',"ETH Pool Launch"]
   ],
 }
