@@ -1,54 +1,32 @@
-const { sumTokens2, getConnection } = require('../helper/solana')
-const { getCache, setCache } = require('../helper/cache')
-const { sliceIntoChunks, log } = require('../helper/utils')
+const { sumTokens2, } = require('../helper/solana')
+const { setCache } = require('../helper/cache')
+const { log } = require('../helper/utils')
 const { get } = require('../helper/http')
-const { PublicKey } = require('@solana/web3.js')
+const sdk = require("@defillama/sdk");
+const { getEnv } = require('../helper/env');
 
 const CACHE_NAME = 'fluxbeam-xyz'
-const SOL_MINT = 'So11111111111111111111111111111111111111112'
-const MIN_SOL_LAMPORTS = 1e9 // 1 SOL — filter out dust pools
 const API_URL = 'https://api.fluxbeam.xyz/v1/pools'
 const API_PAGE_SIZE = 10000
 
-async function resolveAmounts(accounts, connection) {
-  // Resolve token account amounts using getMultipleAccountsInfo
-  // Token account layout: offset 64 = amount (u64, 8 bytes LE)
-  const chunks = sliceIntoChunks(accounts, 100)
-  log(`  ${chunks.length} batches to resolve...`)
+async function tvl(api) {
+  const isCustomJob = getEnv('IS_RUN_FROM_CUSTOM_JOB')
+  if (!isCustomJob)
+    throw new Error("Find another solution, maybe a custom script that runs slow but pulls all the data, this is making like 200k calls which is running into rate limit")
 
-  // Process in groups of 100
-  const CHUNK_SIZE = 100
-  const allResults = new Array(accounts.length).fill(0n)
-  const groups = sliceIntoChunks(chunks.map((chunk, idx) => ({ chunk, idx })), CHUNK_SIZE)
-
-  for (let g = 0; g < groups.length; g++) {
-    const group = groups[g]
-    if (g % 50 === 0) log(`  Progress: ${g * CHUNK_SIZE}/${chunks.length} batches`)
-    const promises = group.map(async ({ chunk, idx }) => {
-      const keys = chunk.map(addr => new PublicKey(addr))
-      const infos = await connection.getMultipleAccountsInfo(keys)
-      for (let i = 0; i < infos.length; i++) {
-        const info = infos[i]
-        if (!info || !info.data || info.data.length < 72) continue
-        allResults[idx * CHUNK_SIZE + i] = info.data.readBigUInt64LE(64)
-      }
-    })
-    await Promise.all(promises)
-  }
-  return allResults
-}
-
-async function fetchAndFilterPools() {
-  const connection = getConnection()
-  const filteredTokenAccounts = []
   let page = 1
   let totalScanned = 0
+  const allTokenAccounts = []
 
   while (true) {
     log(`Page ${page}: fetching...`)
     let pools
     try {
       pools = await get(`${API_URL}?limit=${API_PAGE_SIZE}&page=${page}`)
+      const tokenAccounts = pools.flatMap(pool => [pool.tokenAccountA, pool.tokenAccountB])
+      await sumTokens2({ api, tokenAccounts, allowError: true, })
+      allTokenAccounts.push(...tokenAccounts)
+      sdk.log(`Fetched ${pools.length} pools from API`)
     } catch (e) {
       log(`API fetch failed on page ${page}: ${e.message}`)
       break
@@ -56,48 +34,14 @@ async function fetchAndFilterPools() {
     if (!pools || !pools.length) break
     totalScanned += pools.length
 
-    // Identify SOL-paired pools in this page
-    const solPaired = []
-    for (const pool of pools) {
-      if (pool.mintA === SOL_MINT) {
-        solPaired.push({ solAccount: pool.tokenAccountA, otherAccount: pool.tokenAccountB })
-      } else if (pool.mintB === SOL_MINT) {
-        solPaired.push({ solAccount: pool.tokenAccountB, otherAccount: pool.tokenAccountA })
-      }
-    }
-
-    // Resolve SOL-side balances for this page
-    const solAccounts = solPaired.map(item => item.solAccount)
-    const balances = await resolveAmounts(solAccounts, connection)
-
-    // Filter pools with meaningful SOL balance
-    for (let i = 0; i < solPaired.length; i++) {
-      if (balances[i] >= BigInt(MIN_SOL_LAMPORTS)) {
-        filteredTokenAccounts.push(solPaired[i].solAccount)
-        filteredTokenAccounts.push(solPaired[i].otherAccount)
-      }
-    }
-
-    log(`Page ${page}: ${pools.length} pools, ${filteredTokenAccounts.length / 2} pass filter (${totalScanned} total scanned)`)
     if (pools.length < API_PAGE_SIZE) break
     page++
   }
 
-  log(`Done: scanned ${totalScanned} pools, ${filteredTokenAccounts.length / 2} with >${MIN_SOL_LAMPORTS / 1e9} SOL`)
-  return filteredTokenAccounts
+  log(`Done: scanned ${totalScanned} pools`)
+  await setCache(CACHE_NAME, 'solana', allTokenAccounts)
 }
 
-async function tvl(api) {
-  let tokenAccounts = await getCache(CACHE_NAME, api.chain)
-
-  if (!tokenAccounts || !Array.isArray(tokenAccounts) || tokenAccounts.length === 0) {
-    tokenAccounts = await fetchAndFilterPools()
-    await setCache(CACHE_NAME, api.chain, tokenAccounts)
-  }
-
-  log(`Resolving ${tokenAccounts.length} cached token accounts (${tokenAccounts.length / 2} pools)...`)
-  return sumTokens2({ tokenAccounts })
-}
 
 module.exports = {
   timetravel: false,
