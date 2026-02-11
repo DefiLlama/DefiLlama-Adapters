@@ -109,6 +109,13 @@ const fixBalancesTokens = {
   },
   astar: {
     '0x37795fdd8c165cab4d6c05771d564d80439cd093': { coingeckoId: 'astar', decimals: 18 },
+  },
+  eni: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'wrapped-egas', decimals: 18 },
+    '0x6d1e851446f4d004ae2a72f9afed85e8829a205e': { coingeckoId: 'wrapped-egas', decimals: 18 }, // Wrapped EGAS
+    '0xdc1a8a35b0baa3229b13f348ed708a2fd50b5e3a': { coingeckoId: 'eni-bridged-usdt-eni', decimals: 18 }, // ENI Bridged USDT
+    '0x47c98f74dBC1acc4cf2e04C4a729E22379EF4373': { coingeckoId: 'tether', decimals: 6 }, // Bridged USDT (USDT)
+    '0x545e289b88c6d97b74ec0b96e308cae46bf5f832': { coingeckoId: 'tether', decimals: 6 }, // Tether USD (USDT)
   }
 }
 
