@@ -1,6 +1,6 @@
 const { arrayZip } = require('./lib/utils');
 const { capABI, capConfig, eigenlayerABI } = require('./lib/configs')
-const { fetchAssetAddresses, fetchAgentConfigs } = require('./lib/helpers')
+const { fetchAssetAddresses, fetchAgentConfigs, mapWrappedAssetBalance } = require('./lib/helpers')
 
 const chain = 'ethereum';
 
@@ -33,7 +33,8 @@ const tvl = async (api) => {
         }))
     })
 
-    for (const [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
+    for (let [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
+        [asset, availableBalance] = mapWrappedAssetBalance(chain, asset, availableBalance)
         api.add(asset, availableBalance)
     }
     for (const [agent, coverage] of arrayZip(symbioticAgentConfigs, symbioticCoverage)) {

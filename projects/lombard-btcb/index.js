@@ -33,5 +33,5 @@ module.exports = {
 }
 
 module.exports.hallmarks = [
-  [1761782400, 'Lombard has acquired BTC.b'],  //2025-10-30
+  ['2025-10-30', 'Lombard has acquired BTC.b'],  //2025-10-30
 ]

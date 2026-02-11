@@ -2,9 +2,13 @@ const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking.js');
 
-const abi = require('./abi.json')
-
-const API_URL = `https://api.snowapi.net/graphql`
+const abi = {
+    "getToken": "function getToken(uint8 index) view returns (address)",
+    "want": "address:want",
+    "balanceOf": "uint256:balanceOf",
+    "token": "address:token",
+    "balance": "uint256:balance"
+  };const API_URL = `https://api.snowapi.net/graphql`
 
 const query = `
 query {

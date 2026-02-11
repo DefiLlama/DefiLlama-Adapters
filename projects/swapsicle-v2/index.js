@@ -1,8 +1,12 @@
 const { uniV3Export } = require("../helper/uniswapV3");
 const { cachedGraphQuery } = require("../helper/cache");
 const sdk = require("@defillama/sdk");
-const iceCreamVanABI = require("./iceCreamVanABI.json");
-const zombieVanABI = require("./zombieVanABI.json");
+const iceCreamVanABI = {
+    "totalShares": "uint256:totalShares"
+  };
+const zombieVanABI = {
+    "totalStaked": "uint256:totalStaked"
+  };
 const ADDRESSES = require("../helper/coreAssets.json");
 
 module.exports = uniV3Export({

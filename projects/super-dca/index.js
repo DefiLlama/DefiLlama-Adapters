@@ -46,6 +46,23 @@ const CONFIG = {
       '0xca8fb98187ca61e9c2360a93d41cffa5ecd5b5911b3e705f6fbcdc08b42fe0db', // WBTC-DCA
       '0xc0ea512d5a20a822fcce987c10428d5b81d349bce55404456cbc6729eb0c3c6c' // AAVE-DCA
     ]
+  },
+  unichain: {
+    STATE_VIEW: '0x86e8631A016F9068C3f085fAF484Ee3F5fDee8f2',
+    POSM: '0x4529A01c7A0410167c5740C487A8DE60232617bf',
+    FROM_BLOCK: 32476763,
+    SUBGRAPH_ID: 'aa3YpPCxatg4LaBbLFuv2iBC8Jvs9u3hwt5GTpS4Kit',
+    WHITELISTED_TOKENS: [
+      ADDRESSES.unichain.USDC, // USDC
+      ADDRESSES.null, // WETH
+      '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', // Layer Zero Wrapped Bitcoin (WBTC)
+    ],
+    POOL_IDS: [
+      // List of pools with the Super DCA Hook: 0x8E89b081498095669007DA306dCd7Ce7cab43A80
+      '0xb48839b7f65765f3c482c5a44b5280786f03b39cf09696929dfb086184279618', // WBTC-DCA
+      '0x341b812b1e570a3143c3d10d09aa9fa87b9b2482a647f0e0f406dc22e3c74d25', // ETH-DCA
+      '0xfb28d77950a83643efdcae4e0d952d7d1f8f66c92253cc63d914531038ddbb3f' // USDC-DCA
+    ]
   }
 }
 
@@ -122,5 +139,8 @@ module.exports = {
   },
   base: {
     tvl: createTvlFunction('base'),
+  },
+  unichain: {
+    tvl: createTvlFunction('unichain'),
   }
 }; 

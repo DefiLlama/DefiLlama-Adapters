@@ -3,8 +3,8 @@ const comptroller = "0x0f390559f258eb8591c8e31cf0905e97cf36ace2"
 
 module.exports = {
     hallmarks: [
-        // [1647302400, "Reentrancy attack"],
-        [1681541920, "Protocol hacked (oc Optimism)"],
+        // ['2022-03-15', "Reentrancy attack"],
+        ['2023-04-15', "Protocol hacked (oc Optimism)"],
 
     ],
     ethereum: compoundExports2({ comptroller, cether: '0xfcd8570ad81e6c77b8d252bebeba62ed980bd64d' }),

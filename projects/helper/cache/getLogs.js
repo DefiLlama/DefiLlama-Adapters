@@ -197,7 +197,7 @@ async function getLogs({ target,
   }
 }
 
-const indexerChains = new Set(['monad', 'base'])
+const indexerChains = new Set(['monad', 'base', 'unichain', 'bsc'])
 
 async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, useIndexer, ...rest }) {
 
