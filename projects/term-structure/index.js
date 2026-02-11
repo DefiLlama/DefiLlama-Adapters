@@ -49,6 +49,12 @@ const ADDRESSES = {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
       fromBlock: 322190000,
     },
+    FactoryV2: [
+      {
+        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
+        fromBlock: 385228046,
+      },
+    ],
     VaultFactory: [
       {
         address: "0x929CBcb8150aD59DB63c92A7dAEc07b30d38bA79",
@@ -58,10 +64,6 @@ const ADDRESSES = {
     VaultFactoryV2: [
       {
         address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
-        fromBlock: 385228046,
-      },
-      {
-        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
         fromBlock: 385228046,
       },
     ],
@@ -75,6 +77,10 @@ const ADDRESSES = {
       fromBlock: 50519690,
     },
     FactoryV2: [
+      {
+        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
+        fromBlock: 63100000,
+      },
       // Start of TermMax Alpha
       {
         address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
@@ -82,12 +88,6 @@ const ADDRESSES = {
       },
       // End of TermMax Alpha
     ],
-    // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
-    //   {
-    //     address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
-    //     fromBlock: 71136348,
-    //   },
-    // ],
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
@@ -97,10 +97,6 @@ const ADDRESSES = {
     VaultFactoryV2: [
       {
         address: "0x1401049368eD6AD8194f8bb7E41732c4620F170b",
-        fromBlock: 63100000,
-      },
-      {
-        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
         fromBlock: 63100000,
       },
       // Start of TermMax Alpha
@@ -113,6 +109,12 @@ const ADDRESSES = {
     TermMax4626Factory: [
       { address: "0x67dcDCc57208B574B05999AA3dFA57bfF2324129", fromBlock: 63208984 },
     ],
+    // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
+    //   {
+    //     address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
+    //     fromBlock: 71136348,
+    //   },
+    // ],
   },
   ethereum: {
     zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
@@ -197,7 +199,9 @@ const VAULT_BLACKLIST = {
   arbitrum: [
     "0x8531dC1606818A3bc3D26207a63641ac2F1f6Dc8", // misconfigured asset
   ],
-  ethereum: [],
+  ethereum: [
+    "0x5c16d84e998c661d9f6c7cc23e1144e4b7f39759",
+  ],
   bsc: [
     "0xe5E01B82904a49Ce5a670c1B7488C3f29433088a", // misconfigured asset
   ],

@@ -32,6 +32,20 @@ const capConfig = {
                 address: '0x88887bE419578051FF9F4eb6C858A951921D8888',
                 fromBlock: 22874056,
             },
+            WTGXX: {
+                id: 'WTGXX',
+                coingeckoId: 'wisdomtree-treasury-money-market-digital-fund',
+                decimals: 18,
+                address: '0x1feCF3d9d4Fee7f2c02917A66028a48C6706c179',
+                creationBlock: 20750716n,
+            },
+            wWTGXX: {
+                id: 'wWTGXX',
+                coingeckoId: null,
+                decimals: 18,
+                address: '0x434558CB1EBe9950e8A66f1ef8A15A473Dce7D8c',
+                creationBlock: 23635674n,
+            },
         },
         coverageNetworkConfigs: {
             '0x8c9140fe6650e56a0a07e86455d745f8f7843b6d': {

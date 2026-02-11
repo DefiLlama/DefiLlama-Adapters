@@ -1,4 +1,4 @@
-const { stakingUnknownPricedLP } = require("../helper/staking");
+const { stakingPriceLP } = require("../helper/staking");
 
 const transform = addr=>`avax:${addr}`
 const chain = "avax"
@@ -10,6 +10,6 @@ const stakingToken = "0xAA2439DBAd718c9329a5893A51a708C015F76346"
 module.exports={
     avax:{
         tvl: () => 0,
-        staking: stakingUnknownPricedLP("0x50971d6B5a3CCd79C516f914208C67C8104977dF", stakingToken, chain, joeLP, transform)
+        staking: stakingPriceLP("0x50971d6B5a3CCd79C516f914208C67C8104977dF", stakingToken, joeLP, transform)
     }
 }

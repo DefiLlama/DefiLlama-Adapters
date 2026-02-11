@@ -1,17 +1,42 @@
 const {
-  DRIFT_VAULTS,
   KAMINO_VAULTS,
   HYPERLIQUID_VAULTS,
-  NT_VAULTS,
   START_TIMESTAMP,
+  TOKENS,
+  VAULTS_REGISTRY_URL,
+  DRIFT_VAULT_PROGRAM_ID,
+  NT_VAULT_PROGRAM_ID,
 } = require("./constants");
+const { getConfig } = require("../helper/cache");
 const { getTvl: getDriftVaultTvl } = require("./utils/drift");
 const { getTvl: getKaminoVaultTvl } = require("./utils/kamino");
 const { getTvl: getHyperliquidVaultTvl } = require("./utils/hyperliquid");
 const { getTvl: getNtVaultTvl } = require("./utils/ntVaults");
 
+async function getDriftAndBundleVaults() {
+  const vaults = await getConfig("neutral-trade/vaults", VAULTS_REGISTRY_URL);
+  if (!Array.isArray(vaults)) return { driftAddresses: [], bundleVaults: [] };
+  const driftAddresses = vaults
+    .filter((v) => v.type === "Drift")
+    .map((v) => v.vaultAddress);
+  const bundleVaults = vaults
+    .filter((v) => v.type === "Bundle")
+    .map((v) => {
+      const token = TOKENS[v.depositToken];
+      if (!token) return null;
+      return {
+        address: v.vaultAddress,
+        token,
+        programId: v.bundleProgramId ?? NT_VAULT_PROGRAM_ID,
+      };
+    })
+    .filter(Boolean);
+  return { driftAddresses, bundleVaults };
+}
+
 async function drift_vaults_tvl(api) {
-  await getDriftVaultTvl(api, DRIFT_VAULTS.map(vault => vault.address));
+  const { driftAddresses } = await getDriftAndBundleVaults();
+  if (driftAddresses.length) await getDriftVaultTvl(api, driftAddresses);
 }
 
 async function kamino_vaults_tvl(api) {
@@ -29,9 +54,14 @@ async function hyperliquid_vaults_tvl(api) {
 }
 
 async function nt_vaults_tvl(api) {
-  for (const vault of NT_VAULTS) {
-    const token_tvl = await getNtVaultTvl(vault.address);
-    api.add(vault.token.mint, token_tvl);
+  const { bundleVaults } = await getDriftAndBundleVaults();
+  for (const vault of bundleVaults) {
+    try {
+      const token_tvl = await getNtVaultTvl(vault.address, vault.programId);
+      api.add(vault.token.mint, token_tvl);
+    } catch (e) {
+      console.log(`Failed to fetch bundle vault ${vault.address}: ${e.message}`);
+    }
   }
 }
 

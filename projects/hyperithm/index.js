@@ -26,6 +26,11 @@ const vaultConfigs = {
       erc4626: [
         '0xb74760fd26400030620027dd29d19d74d514700e' // Gearbox Hyperithm USDT0
       ]
+    },
+    monad: {
+      morphoVaultOwners: [
+        '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
+      ],
     }
   }
 };
