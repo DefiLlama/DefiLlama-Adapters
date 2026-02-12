@@ -92,6 +92,17 @@ const ethereumBorrowed = async (api) => {
     }
 }
 
+const ethereumStaking = async (api) => {
+    const tokens = capConfig[chain].tokens;
+    const infra = capConfig[chain].infra;
+
+    const [totalSupply, lockboxBalance] = await Promise.all([
+        api.call({ abi: 'erc20:totalSupply', target: tokens.stcUSD.address }),
+        api.call({ abi: 'erc20:balanceOf', target: tokens.stcUSD.address, params: [infra.lz.stcUSDLockbox.address] }),
+    ])
+    api.add(tokens.stcUSD.address, totalSupply - lockboxBalance)
+}
+
 const megaethTvl = async (api) => {
     const block = api.block;
     const megaethTokens = capConfig.megaeth.tokens;
@@ -116,6 +127,6 @@ module.exports = {
     doublecounted: true, // we count both cUSD, stcUSD and underlying assets, that's 2.x times the underlying tvl
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
     start: "2025-08-01",
-    ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed },
+    ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed, staking: ethereumStaking },
     megaeth: { tvl: megaethTvl }
 };
