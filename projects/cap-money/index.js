@@ -8,26 +8,20 @@ const chain = 'ethereum';
 const ethereumTvl = async (api) => {
     const tokens = capConfig[chain].tokens;
     const infra = capConfig[chain].infra;
-
     const assetAddresses = await fetchAssetAddresses(api, chain)
     const { symbioticAgentConfigs, eigenlayerAgentConfigs } = await fetchAgentConfigs(api, chain)
 
-    const [cUSDTotalSupply, stcUSDTotalSupply] = await api.multiCall({
+    const [cUSDTotalSupply] = await api.multiCall({
         abi: 'erc20:totalSupply',
-        calls: [tokens.cUSD.address, tokens.stcUSD.address],
+        calls: [tokens.cUSD.address],
     })
     api.add(tokens.cUSD.address, cUSDTotalSupply)
-    api.add(tokens.stcUSD.address, stcUSDTotalSupply)
 
-    const [cUSDLockboxBalance, stcUSDLockboxBalance] = await api.multiCall({
+    const [cUSDLockboxBalance] = await api.multiCall({
         abi: 'erc20:balanceOf',
-        calls: [
-            { target: tokens.cUSD.address, params: [infra.lz.cUSDLockbox.address] },
-            { target: tokens.stcUSD.address, params: [infra.lz.stcUSDLockbox.address] },
-        ],
+        calls: [{ target: tokens.cUSD.address, params: [infra.lz.cUSDLockbox.address] }],
     })
     api.add(tokens.cUSD.address, -cUSDLockboxBalance)
-    api.add(tokens.stcUSD.address, -stcUSDLockboxBalance)
 
     const assetAvailableBalancesResults = await api.multiCall({
         abi: capABI.Vault.totalSupplies,
@@ -36,6 +30,10 @@ const ethereumTvl = async (api) => {
             params: [asset]
         }))
     })
+    for (let [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
+        [asset, availableBalance] = mapWrappedAssetBalance(chain, asset, availableBalance)
+        api.add(asset, availableBalance)
+    }
 
     const symbioticCoverage = await api.multiCall({
         abi: capABI.SymbioticNetworkMiddleware.coverageByVault,
@@ -44,6 +42,10 @@ const ethereumTvl = async (api) => {
             params: [network.network, agent, network.vault, infra.oracle.address, api.timestamp]
         }))
     })
+    for (const [agent, coverage] of arrayZip(symbioticAgentConfigs, symbioticCoverage)) {
+        api.add(agent.collateralToken, coverage[1])
+    }
+
     const eigenlayerCoverage = await api.multiCall({
         abi: eigenlayerABI.AllocationManager.getAllocatedStake,
         calls: eigenlayerAgentConfigs.map(({ network }) => ({
@@ -51,16 +53,6 @@ const ethereumTvl = async (api) => {
             params: [{ avs: network.avs, id: network.operatorSet }, [network.operator], [network.strategy]],
         }))
     })
-
-    for (let [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
-        [asset, availableBalance] = mapWrappedAssetBalance(chain, asset, availableBalance)
-        api.add(asset, availableBalance)
-    }
-
-    for (const [agent, coverage] of arrayZip(symbioticAgentConfigs, symbioticCoverage)) {
-        api.add(agent.collateralToken, coverage[1])
-    }
-
     for (const [agent, coverage] of arrayZip(eigenlayerAgentConfigs, eigenlayerCoverage)) {
         api.add(agent.collateralToken, coverage[0][0])
     }
@@ -104,28 +96,30 @@ const ethereumStaking = async (api) => {
 }
 
 const megaethTvl = async (api) => {
-    const megaethTokens = capConfig.megaeth.tokens;
+    const { cUSD } = capConfig.megaeth.tokens;
 
-    // Get token balances from megaeth
-    const tokens = Object.values(megaethTokens).filter(token => !api.block || token.fromBlock < api.block);
-    const balances = await api.multiCall({
+    const [balance] = await api.multiCall({
         abi: 'erc20:totalSupply',
-        calls: tokens.map(token => ({
-            target: token.address,
-            params: [],
-            permitFailure: true
-        }))
+        calls: [{ target: cUSD.address, permitFailure: true }],
+        permitFailure: true
     });
+    if (balance) {
+        api.add(cUSD.address, balance);
+    }
+}
 
-    for (let i = 0; i < tokens.length; i++) {
-        api.add(tokens[i].address, balances[i]);
+const megaethStaking = async (api) => {
+    const { stcUSD } = capConfig.megaeth.tokens;
+
+    const totalSupply = await api.call({ abi: 'erc20:totalSupply', target: stcUSD.address, permitFailure: true });
+    if (totalSupply) {
+        api.add(stcUSD.address, totalSupply);
     }
 }
 
 module.exports = {
-    doublecounted: true, // we count both cUSD, stcUSD and underlying assets, that's 2.x times the underlying tvl
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
     start: "2025-08-01",
     ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed, staking: ethereumStaking },
-    megaeth: { tvl: megaethTvl }
+    megaeth: { tvl: megaethTvl, staking: megaethStaking }
 };
