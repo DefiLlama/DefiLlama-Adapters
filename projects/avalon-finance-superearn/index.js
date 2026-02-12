@@ -11,10 +11,11 @@ const evmConfig = {
 }
 
 const moveConfig = {
-  // Avalon Superearn Vault on Movement
-    vaultAddress: '0x38a958445901773dab8977471366701b4f53ae5f72967d47da3a98a3e09e5ab8',
-  // USDC
-    vaultStableTokenAddress: '0x83121c9f9b0527d1f056e21a950d6bf3b9e9e2e8353d0e95ccea726713cbea39',
+    move: {
+        vaultAddress: '0x38a958445901773dab8977471366701b4f53ae5f72967d47da3a98a3e09e5ab8',
+        // USDC
+        vaultStableTokenAddress: '0x83121c9f9b0527d1f056e21a950d6bf3b9e9e2e8353d0e95ccea726713cbea39',
+    },
 }
 
 const getMovementTvl = async (api) => {
