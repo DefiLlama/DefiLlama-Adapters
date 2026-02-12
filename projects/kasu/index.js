@@ -8,7 +8,7 @@ const GRAPH_URLS = {
 };
 
 const POOL_QUERY = `{
-  lendingPools(where: { isStopped: false }) {
+  lendingPools(first: 1000, where: { isStopped: false }) {
     id
   }
 }`;
@@ -28,7 +28,7 @@ const CHAIN_ASSET = {
     decimals: 6,
   },
   xdc: {
-    asset: '0xfa2958cb79b0491cc627c1557f441ef849ca8eb1', // USDC on XDC
+    asset: ADDRESSES.xdc['USDC.e'],
     decimals: 6,
   },
 };
