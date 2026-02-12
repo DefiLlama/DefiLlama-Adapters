@@ -3,7 +3,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 const { function_view } = require("../helper/chain/aptos")
 
 const evmConfig = {
-    mainnet: {
+    ethereum: {
         vaultAddress: '0xf297230fA5614545B427616148a74C888620d659',
         // USDC
         vaultStableTokenAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
