@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require("../helper/unknownTokens.js");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // Nexion protocol addresses
 const contracts = {
@@ -19,9 +19,42 @@ const COLLATERALS = {
 const CONTRACTS_REGISTER = "0x07763c4e51b458d2eA5f5506a22Ae11F9cF985dd";
 
 /**
+ * Fetches total supplied (expectedLiquidity) across all lending pools
+ * plus farm deposits. This is the supply-side TVL.
+ */
+async function tvl(api) {
+  // 1. Lending pool supply TVL
+  const pools = await api.call({
+    abi: 'address[]:getPools',
+    target: CONTRACTS_REGISTER,
+  });
+
+  const [liquidity, underlyings] = await Promise.all([
+    api.multiCall({ abi: 'uint256:expectedLiquidity', calls: pools }),
+    api.multiCall({ abi: 'address:underlyingToken', calls: pools }),
+  ]);
+
+  liquidity.forEach((liq, i) => {
+    if (liq && liq !== '0') {
+      api.add(underlyings[i], liq);
+    }
+  });
+
+  // 2. Farm deposits (LP tokens in NEONFarm contracts)
+  const farmOwners = [contracts.NEONFarm, contracts.OLDNEONFarm];
+  const farmTokens = [COLLATERALS.DAI, COLLATERALS.WPLS, ADDRESSES.null];
+  const tokensAndOwners = [];
+  farmOwners.forEach(owner => {
+    farmTokens.forEach(token => {
+      tokensAndOwners.push([token, owner]);
+    });
+  });
+
+  return sumTokens2({ api, tokensAndOwners, resolveLP: true });
+}
+
+/**
  * Fetches borrowed TVL dynamically from on-chain pool contracts.
- * Reads all pools from ContractsRegister, then queries totalBorrowed
- * and underlyingToken for each pool via multiCall.
  */
 async function borrowed(api) {
   const pools = await api.call({
@@ -42,20 +75,17 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: "Nexion lending: borrowed is the total debt across all Gearbox-style lending pools read on-chain. TVL includes farm deposits. Staking is NEON locked in the staking contract.",
+  methodology: "TVL is total supplied to lending pools (expectedLiquidity) plus farm deposits. Borrowed is total debt across all pools. Staking is NEON locked in the staking contract.",
   pulse: {
+    tvl,
     borrowed,
-    tvl: sumTokensExport({
-      owners: [contracts.NEONFarm, contracts.OLDNEONFarm],
-      tokens: [COLLATERALS.DAI, COLLATERALS.WPLS, ADDRESSES.null],
-      useDefaultCoreAssets: true,
-      lps: [COLLATERALS.DAIPLS_LP]
-    }),
-    staking: sumTokensExport({
-      owners: [contracts.NEONStaking],
-      tokens: [contracts.NEON],
-      useDefaultCoreAssets: true,
-      lps: ['0xEd15552508E5200f0A2A693B05dDd3edEF59e624']
-    }),
+    staking: async (api) => {
+      return sumTokens2({
+        api,
+        tokensAndOwners: [
+          [contracts.NEON, contracts.NEONStaking],
+        ],
+      });
+    },
   },
 };
