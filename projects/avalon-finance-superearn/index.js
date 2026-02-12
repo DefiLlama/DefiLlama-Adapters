@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { function_view } = require("../helper/chain/aptos")
+const sdk = require('@defillama/sdk')
 
 const evmConfig = {
     ethereum: {
@@ -57,6 +58,47 @@ const getMovementTvl = async (api, { vaultAddress, vaultStableTokenAddress }) =>
   return tvl
 }
 
+// EVM ABI for Avalon vault contract
+const evmAbi = {
+  mintedAvalonVault: {
+    "inputs": [],
+    "name": "mintedAvalonVault",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  convertToStable: {
+    "inputs": [{"internalType": "uint256", "name": "avalonVaultAmount", "type": "uint256"}],
+    "name": "convertToStable",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
+
+const getEvmTvl = async (api, { vaultAddress, vaultStableTokenAddress }) => {
+  // 1. Call mintedAvalonVault() to get the total amount of vault tokens minted.
+  const mintedAvalonVaultResult = await sdk.api.abi.call({
+    target: vaultAddress,
+    abi: evmAbi.mintedAvalonVault,
+    chain: api.chain,
+    block: api.block,
+  })
+
+  const vaultTokenAmount = mintedAvalonVaultResult.output
+
+  // 2. Call convertToStable(avalonVaultAmount) to convert vault token amount to stable token value.
+  const tvlResult = await sdk.api.abi.call({
+    target: vaultAddress,
+    abi: evmAbi.convertToStable,
+    params: [vaultTokenAmount],
+    chain: api.chain,
+    block: api.block,
+  })
+
+  return tvlResult.output
+}
+
 // Methodology
 module.exports = {
   methodology: `Summary all the token balance in the vault contracts`,
@@ -68,7 +110,6 @@ module.exports = {
   const { vaultAddress, vaultStableTokenAddress } = moveConfig[chain]
    module.exports[chain] = {
      tvl: async (api) => {
-
       const tvl = await getMovementTvl(api, { vaultAddress, vaultStableTokenAddress })
       api.add(vaultStableTokenAddress, tvl)
      },
@@ -79,6 +120,9 @@ module.exports = {
 Object.keys(evmConfig).forEach(chain => {
   const { vaultAddress, vaultStableTokenAddress } = evmConfig[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ owners: [vaultAddress], tokens: [ vaultStableTokenAddress] }),
+    tvl: async (api) => {
+      const tvl = await getEvmTvl(api, { vaultAddress, vaultStableTokenAddress })
+      api.add(vaultStableTokenAddress, tvl)
+    },
   }
 })
