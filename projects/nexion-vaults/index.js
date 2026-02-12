@@ -34,18 +34,26 @@ async function tvl(api) {
   const uniqueLPs = Object.keys(lpBalances);
 
   // Get token0, token1, reserves, totalSupply for each LP to manually unwrap
+  // permitFailure handles non-LP tokens (single-asset vaults) gracefully
   const [token0s, token1s, reserves, supplies] = await Promise.all([
-    api.multiCall({ abi: "address:token0", calls: uniqueLPs }),
-    api.multiCall({ abi: "address:token1", calls: uniqueLPs }),
+    api.multiCall({ abi: "address:token0", calls: uniqueLPs, permitFailure: true }),
+    api.multiCall({ abi: "address:token1", calls: uniqueLPs, permitFailure: true }),
     api.multiCall({
       abi: "function getReserves() view returns (uint112, uint112, uint32)",
       calls: uniqueLPs,
+      permitFailure: true,
     }),
-    api.multiCall({ abi: "uint256:totalSupply", calls: uniqueLPs }),
+    api.multiCall({ abi: "uint256:totalSupply", calls: uniqueLPs, permitFailure: true }),
   ]);
 
   // Calculate proportional token amounts for each LP position
   uniqueLPs.forEach((lp, i) => {
+    if (!token0s[i] || !reserves[i] || !supplies[i]) {
+      // Non-LP token (single-asset vault) — add directly
+      api.add(lp, lpBalances[lp]);
+      return;
+    }
+
     const balance = BigInt(lpBalances[lp]);
     const supply = BigInt(supplies[i]);
     if (supply === 0n) return;
