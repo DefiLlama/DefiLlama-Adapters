@@ -118,6 +118,7 @@ const megaethStaking = async (api) => {
 }
 
 module.exports = {
+    doublecounted: true, // counting both cUSD and underlying assets.
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
     start: "2025-08-01",
     ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed, staking: ethereumStaking },
