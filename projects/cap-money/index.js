@@ -80,7 +80,8 @@ const ethereumBorrowed = async (api) => {
 
     for (const [{ asset }, debt] of arrayZip(agentAndAsset, results)) {
         if (!debt) continue;
-        api.add(asset, debt)
+        const [token, amount] = mapWrappedAssetBalance(chain, asset, debt);
+        api.add(token, amount);
     }
 }
 
