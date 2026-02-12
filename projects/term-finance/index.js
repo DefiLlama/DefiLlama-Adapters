@@ -79,7 +79,7 @@ const graphStartBlock = {
 
 module.exports = {
   methodology: `Counts the collateral tokens locked in Term Finance's term repos and purchase tokens locked in Term Finance's vaults.`,
-  // hallmarks: [[1588610042, "TermFinance Launch"]],
+  // hallmarks: [['2020-05-04', "TermFinance Launch"]],
 };
 
 Object.keys(graphs).forEach(chain => {

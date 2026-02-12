@@ -1,8 +1,8 @@
 module.exports = {
   doublecounted: true,
   hallmarks: [
-    // [1689937200,"ETH Omnipool Hacked"],
-    [1741393291, 'Team decides to wind down the project'], 
+    // ['2023-07-21',"ETH Omnipool Hacked"],
+    ['2025-03-08', 'Team decides to wind down the project'], 
   ],
   ethereum: {
     tvl: async (api) => {

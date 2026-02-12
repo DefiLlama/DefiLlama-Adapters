@@ -1,12 +1,12 @@
 const { uniV3Export } = require("../helper/uniswapV3");
 
 module.exports = {
-  methodology: "Counts TVL from all Uniswap V3 pools deployed via the factory contract at 0xef349aa6cc5e87559e716ac293845a48cadf30d5",
-  start: 3520571,
+  methodology: "Counts TVL from all Uniswap V3 pools deployed via the factory contract at 0x1adb8f973373505bb206e0e5d87af8fb1f5514ef",
+  start: 7845865,
   ...uniV3Export({
     megaeth: {
-      factory: "0xef349aa6cc5e87559e716ac293845a48cadf30d5",
-      fromBlock: 3520571,
+      factory: "0x1adb8f973373505bb206e0e5d87af8fb1f5514ef",
+      fromBlock: 7845865,
     },
   })
 };

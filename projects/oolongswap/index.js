@@ -8,6 +8,6 @@ module.exports = {
     })
   },
   hallmarks: [
-    [1658312537, "Alameda Research exits"],
+    ['2022-07-20', "Alameda Research exits"],
   ],
 };

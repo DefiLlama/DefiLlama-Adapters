@@ -94,6 +94,6 @@ module.exports = {
   methodology:
     "Counts TVL through TempleTreasury contract, locked LP in Convex and Aura",
   // hallmarks:[
-  //     [1665457200, "Exploit $2M"],
+  //     ['2022-10-11', "Exploit $2M"],
   //   ], 
 };

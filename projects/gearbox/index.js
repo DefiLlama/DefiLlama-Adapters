@@ -570,7 +570,7 @@
        "somnia",
      ].map((n) => [n, { tvl, borrowed }])
    ),
-   hallmarks: [[1666569600, "LM begins"]],
+   hallmarks: [['2022-10-24', "LM begins"]],
    methodology: `Retrieves the tokens in each Gearbox pool & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
    misrepresentedTokens: true,
  };

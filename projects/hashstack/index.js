@@ -38,6 +38,6 @@ module.exports = {
     borrowed,
   },
   hallmarks: [
-    [1701066795, "Hashstack Mainnet launch"],
+    ['2023-11-27', "Hashstack Mainnet launch"],
   ]
 };

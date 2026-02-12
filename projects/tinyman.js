@@ -12,6 +12,6 @@ module.exports={
         tvl
     },
     hallmarks: [
-        [1641038400,"Contract Exploit"]
+        ['2022-01-01',"Contract Exploit"]
       ],
 }
