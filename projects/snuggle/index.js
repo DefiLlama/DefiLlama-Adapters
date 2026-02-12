@@ -8,7 +8,6 @@ async function tvl(api) {
     api,
     owners: [SNUGGLE_VAULT],
     resolveUniV3: true,
-    permitFailure: true,
   })
 }
 
