@@ -9,9 +9,9 @@ module.exports = {
     tvl: getUniTVL({
       factory: FACTORY, 
       useDefaultCoreAssets: true,
-      fetchBalances: true,
       coreAssets: [WETH],
     })
   }
 }
+
 
