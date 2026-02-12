@@ -76,20 +76,22 @@ const capConfig = {
         },
     },
     megaeth: {
-        cUSD: {
-            id: 'cUSD',
-            coingeckoId: 'cap-money-c-usd',
-            decimals: 18,
-            address: '0xcCcc62962d17b8914c62D74FfB843d73B2a3cccC',
-            fromBlock: 3267988,
-        },
-        stcUSD: {
-            id: 'stcUSD',
-            coingeckoId: 'cap-money-st-c-usd',
-            decimals: 18,
-            address: '0x88887bE419578051FF9F4eb6C858A951921D8888',
-            fromBlock: 4237023,
-        },
+        tokens: {
+            cUSD: {
+                id: 'cUSD',
+                coingeckoId: 'cap-money-c-usd',
+                decimals: 18,
+                address: '0xcCcc62962d17b8914c62D74FfB843d73B2a3cccC',
+                fromBlock: 3267988,
+            },
+            stcUSD: {
+                id: 'stcUSD',
+                coingeckoId: 'cap-money-st-c-usd',
+                decimals: 18,
+                address: '0x88887bE419578051FF9F4eb6C858A951921D8888',
+                fromBlock: 4237023,
+            },
+        }
     }
 };
 
