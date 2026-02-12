@@ -19,27 +19,37 @@ const moveConfig = {
 }
 
 const getMovementTvl = async (api, { vaultAddress, vaultStableTokenAddress }) => {
-  // Move view function that returns the full pool_data struct for a given vault.
-  const GET_POOL_DATA_FN = "0x1::primary_fungible_store::get_pool_data"
+  // Avalon vault_minter module address (same as vaultAddress)
+  const AVALON_MODULE_ADDRESS = vaultAddress
+  const AVALON_MODULE_NAME = "vault_minter"
 
-  // Move view function signature: convert_to_stable(u128)
-  // It converts the vault token amount into its stable-value amount (TVL).
-  const CONVERT_TO_STABLE_FN = "0x1::primary_fungible_store::convert_to_stable"
+  // Move view function: get_pool_data() -> PoolInfoView
+  // Returns pool information including minted_avalon_vault amount.
+  // Note: According to ABI, this function takes NO arguments.
+  const GET_POOL_DATA_FN = `${AVALON_MODULE_ADDRESS}::${AVALON_MODULE_NAME}::get_pool_data`
+
+  // Move view function: convert_to_stable(u128) -> u128
+  // Converts vault token amount (u128) to stable token value (u128).
+  const CONVERT_TO_STABLE_FN = `${AVALON_MODULE_ADDRESS}::${AVALON_MODULE_NAME}::convert_to_stable`
 
   // 1. Fetch the pool_data for this vault.
+  //    get_pool_data() takes no arguments according to the ABI.
   const poolData = await function_view({
     functionStr: GET_POOL_DATA_FN,
-    args: [vaultAddress],
+    args: [],
     chain: "move",
   })
 
-  // 2. Use the minted_avalon_vault amount as the vaultTokenAmount input
-  //    to convert_to_stable and obtain the TVL in the stable token.
+
+  // 2. Extract the vaultTokenAmount from poolData.
+  //    This is the amount of vault tokens minted, which we'll convert to stable token value.
   const vaultTokenAmount = poolData.minted_avalon_vault
 
+  // 3. Call convert_to_stable to convert vaultTokenAmount to TVL in stable tokens.
+  //    Function signature: convert_to_stable(u128) -> u128
+  //    Note: u128 values are passed as strings to avoid precision loss.
   const tvl = await function_view({
     functionStr: CONVERT_TO_STABLE_FN,
-    // convert_to_stable takes a single u128 argument (the vault token amount).
     args: [vaultTokenAmount],
     chain: "move",
   })
