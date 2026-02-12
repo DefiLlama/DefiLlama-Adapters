@@ -104,11 +104,10 @@ const ethereumStaking = async (api) => {
 }
 
 const megaethTvl = async (api) => {
-    const block = api.block;
     const megaethTokens = capConfig.megaeth.tokens;
 
     // Get token balances from megaeth
-    const tokens = Object.values(megaethTokens).filter(token => token.fromBlock < block);
+    const tokens = Object.values(megaethTokens).filter(token => !api.block || token.fromBlock < api.block);
     const balances = await api.multiCall({
         abi: 'erc20:totalSupply',
         calls: tokens.map(token => ({
