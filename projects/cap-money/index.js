@@ -4,7 +4,8 @@ const { fetchAssetAddresses, fetchAgentConfigs, mapWrappedAssetBalance } = requi
 
 const chain = 'ethereum';
 
-const tvl = async (api) => {
+
+const ethereumTvl = async (api) => {
     const tokens = capConfig[chain].tokens;
     const infra = capConfig[chain].infra;
 
@@ -12,12 +13,13 @@ const tvl = async (api) => {
     const { symbioticAgentConfigs, eigenlayerAgentConfigs } = await fetchAgentConfigs(api, chain)
 
     const assetAvailableBalancesResults = await api.multiCall({
-        abi: capABI.Vault.availableBalance,
+        abi: capABI.Vault.totalSupplies,
         calls: assetAddresses.map(asset => ({
             target: tokens.cUSD.address,
             params: [asset]
         }))
     })
+
     const symbioticCoverage = await api.multiCall({
         abi: capABI.SymbioticNetworkMiddleware.coverageByVault,
         calls: symbioticAgentConfigs.map(({ agent, network }) => ({
@@ -37,15 +39,17 @@ const tvl = async (api) => {
         [asset, availableBalance] = mapWrappedAssetBalance(chain, asset, availableBalance)
         api.add(asset, availableBalance)
     }
+
     for (const [agent, coverage] of arrayZip(symbioticAgentConfigs, symbioticCoverage)) {
         api.add(agent.collateralToken, coverage[1])
     }
+
     for (const [agent, coverage] of arrayZip(eigenlayerAgentConfigs, eigenlayerCoverage)) {
         api.add(agent.collateralToken, coverage[0][0])
     }
 }
 
-const borrowed = async (api) => {
+const ethereumBorrowed = async (api) => {
     const infra = capConfig[chain].infra;
 
     const assetAddresses = await fetchAssetAddresses(api, chain)
@@ -71,8 +75,29 @@ const borrowed = async (api) => {
     }
 }
 
+const megaethTvl = async (api) => {
+    const block = api.block;
+    const megaethTokens = capConfig.megaeth;
+
+    // Get token balances from megaeth
+    const tokens = Object.values(megaethTokens).filter(token => token.fromBlock < block);
+    const balances = await api.multiCall({
+        abi: 'erc20:totalSupply',
+        calls: tokens.map(token => ({
+            target: token.address,
+            params: [],
+            permitFailure: true
+        }))
+    });
+
+    for (let i = 0; i < tokens.length; i++) {
+        api.add(tokens[i].address, balances[i]);
+    }
+}
+
 module.exports = {
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
-    start: 1000235,
-    ethereum: { tvl, borrowed }
+    start: "2025-08-01",
+    ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed },
+    megaeth: { tvl: megaethTvl }
 };
