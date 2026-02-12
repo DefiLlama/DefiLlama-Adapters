@@ -98,7 +98,6 @@ function buildConfig(chain, owners) {
   if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
   if (chain === 'solana') {
     options.solOwners = owners
-    delete options.owners
     if (!options.blacklistedTokens) options.blacklistedTokens = []
     options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
   }
