@@ -49,7 +49,7 @@ async function tvl(api) {
 module.exports = {
     timetravel: false,
     methodology: "SecondSwap is a decentralized marketplace for trading and managing locked/vesting tokens. TVL represents the total value of tokens currently locked in vesting contracts across all chains",
-    ethereum: { tvl },
-    avax: { tvl },
-    solana: { tvl },
+    ethereum: { tvl: () => ({}), vesting: tvl },
+    avax: { tvl: () => ({}), vesting: tvl },
+    solana: { tvl: () => ({}), vesting: tvl },
 };
