@@ -21,6 +21,24 @@ const LLAMA_TO_SECONDSWAP_CHAINS = {
 };
 
 /**
+ * Normalizes addresses for stable lookups.
+ * - EVM addresses are case-insensitive
+ * - Solana addresses are base58 and case-sensitive;
+ *
+ * @param {string} chain - DefiLlama chain identifier (e.g., 'ethereum', 'avax', 'solana')
+ * @param {string} address - Address to normalize
+ * @returns {string}
+ */
+function normalizeAddress(chain, address) {
+  if (!address) return address;
+  if (chain === 'solana') {
+    const { PublicKey } = require('@solana/web3.js');
+    return new PublicKey(address).toBase58();
+  }
+  return address.toLowerCase();
+}
+
+/**
  * Fetches list of vesting vault contracts for a specific blockchain
  * 
  * Each vesting plan on SecondSwap deploys a dedicated vault that holds the locked tokens.
@@ -143,8 +161,8 @@ async function tvl(api) {
   
   const priceMap = {};
   for (const token of tokensInfo) {
-    const address = token.contract_address.toLowerCase();
-    priceMap[address] = {
+    const key = normalizeAddress(api.chain, token.contract_address);
+    priceMap[key] = {
       price: Number(token.price) || 0,
       decimals: Number(token.decimals) || 18,
     };
@@ -152,13 +170,14 @@ async function tvl(api) {
 
   let totalTvlUsd = 0;
   tokenMints.forEach((tokenMint, i) => {
-    const address = tokenMint.toLowerCase();
+    const address = normalizeAddress(api.chain, tokenMint);
     const balance = balances[i];
     const tokenInfo = priceMap[address];
 
     if (tokenInfo && tokenInfo.price > 0 && balance) {
       const balanceRaw = BigInt(balance);
-      const divisor = BigInt(10 ** tokenInfo.decimals);
+      const decimals = Number(tokenInfo.decimals) || 18;
+      const divisor = BigInt(10) ** BigInt(decimals);
       const balanceNormalized = Number(balanceRaw) / Number(divisor);
       const valueUsd = balanceNormalized * tokenInfo.price;
       totalTvlUsd += valueUsd;
