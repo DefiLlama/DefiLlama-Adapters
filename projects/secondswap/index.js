@@ -144,8 +144,7 @@ async function tvl(api) {
       chain: api.chain 
     });
     
-    balances = tokenAccountBalances.map(item => item.balance);
-    
+    balances = tokenAccountBalances.map(item => item.amount ?? item.balance ?? '0');
   } else {
     tokenMints = vaults.map((vault) => vault.token_address);
     balances = await api.multiCall({
