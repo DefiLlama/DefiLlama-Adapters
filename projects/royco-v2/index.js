@@ -1,0 +1,80 @@
+const { sumUnknownTokens } = require("../helper/unknownTokens");
+const { getLogs } = require("../helper/cache/getLogs");
+
+const slug = {
+  1: "ethereum",
+  43114: "avax",
+};
+
+const tokenMapping = {
+  "0x08efcc2f3e61185d0ea7f8830b3fec9bfa2ee313": { token: "0xe556aba6fe6036275ec1f87eda296be72c811bce", decimalsOffset: 0 }, // sNUSD -> NUSD
+  "0xa7569a44f348d3d70d8ad5889e50f78e33d80d35": { token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", decimalsOffset: 12 }, // autoUSD (18 dec) -> USDC (6 dec)
+};
+
+const config = {
+  [slug[1]]: {
+    chainId: 1,
+    factoryAddress: "0xD567cCbb336Eb71eC2537057E2bCF6DB840bB71d",
+    factoryFromBlock: 24385420,
+  },
+  [slug[43114]]: {
+    chainId: 43114,
+    factoryAddress: "0xD567cCbb336Eb71eC2537057E2bCF6DB840bB71d",
+    factoryFromBlock: 77273727,
+  },
+};
+
+const calculateTvl = async ({ api, chain }) => {
+  // Market Vaults
+  const { factoryFromBlock, factoryAddress } = config[chain];
+
+  const marketDeployedLogs = await getLogs({
+    api,
+    target: factoryAddress,
+    eventAbi: "event MarketDeployed((address seniorTranche, address juniorTranche, address kernel, address accountant) roycoMarket, (string seniorTrancheName, string seniorTrancheSymbol, string juniorTrancheName, string juniorTrancheSymbol, bytes32 marketId, address seniorTrancheImplementation, address juniorTrancheImplementation, address kernelImplementation, address accountantImplementation, bytes seniorTrancheInitializationData, bytes juniorTrancheInitializationData, bytes kernelInitializationData, bytes accountantInitializationData, bytes32 seniorTrancheProxyDeploymentSalt, bytes32 juniorTrancheProxyDeploymentSalt, bytes32 kernelProxyDeploymentSalt, bytes32 accountantProxyDeploymentSalt, (address target, bytes4[] selectors, uint64[] roles)[] roles) params)",
+    onlyArgs: true,
+    fromBlock: factoryFromBlock,
+  });
+
+  const seniorTranches = marketDeployedLogs.map(log => log.roycoMarket.seniorTranche);
+  const juniorTranches = marketDeployedLogs.map(log => log.roycoMarket.juniorTranche);
+
+  const totalAssetsAbi = "function totalAssets() view returns ((uint256 stAssets, uint256 jtAssets, uint256 nav))";
+
+  const [seniorAssets, juniorAssets, stTotalAssets, jtTotalAssets] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: seniorTranches }),
+    api.multiCall({ abi: 'address:asset', calls: juniorTranches }),
+    api.multiCall({ abi: totalAssetsAbi, calls: seniorTranches }),
+    api.multiCall({ abi: totalAssetsAbi, calls: juniorTranches }),
+  ]);
+
+  stTotalAssets.forEach((result, i) => {
+    const stMapping = tokenMapping[seniorAssets[i].toLowerCase()];
+    const stToken = stMapping ? stMapping.token : seniorAssets[i];
+    const stDivisor = 10n ** BigInt(stMapping ? stMapping.decimalsOffset : 0);
+    api.add(stToken, BigInt(result.stAssets) / stDivisor);
+  });
+
+  jtTotalAssets.forEach((result, i) => {
+    const jtMapping = tokenMapping[juniorAssets[i].toLowerCase()];
+    const jtToken = jtMapping ? jtMapping.token : juniorAssets[i];
+    const jtDivisor = 10n ** BigInt(jtMapping ? jtMapping.decimalsOffset : 0);
+    api.add(jtToken, BigInt(result.jtAssets) / jtDivisor);
+  });
+};
+
+module.exports.methodology = "TVL is computed by reading MarketDeployed events from the Royco V2 factory and summing totalAssets() across senior and junior tranches.";
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      await calculateTvl({ api, chain });
+
+      return sumUnknownTokens({
+        api,
+        resolveLP: true,
+        useDefaultCoreAssets: true,
+      });
+    },
+  };
+});
