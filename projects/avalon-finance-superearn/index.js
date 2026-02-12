@@ -19,13 +19,31 @@ const moveConfig = {
 }
 
 const getMovementTvl = async (api, { vaultAddress, vaultStableTokenAddress }) => {
-  const primary_fungible_asset_balance = "0x1::primary_fungible_store::balance"
-  const tvl = await function_view({
-    functionStr: primary_fungible_asset_balance,
-    type_arguments: ["0x1::fungible_asset::Metadata"],
-    args: [vaultAddress, vaultStableTokenAddress],
-    chain: "move"
+  // Move view function that returns the full pool_data struct for a given vault.
+  const GET_POOL_DATA_FN = "0x1::primary_fungible_store::get_pool_data"
+
+  // Move view function signature: convert_to_stable(u128)
+  // It converts the vault token amount into its stable-value amount (TVL).
+  const CONVERT_TO_STABLE_FN = "0x1::primary_fungible_store::convert_to_stable"
+
+  // 1. Fetch the pool_data for this vault.
+  const poolData = await function_view({
+    functionStr: GET_POOL_DATA_FN,
+    args: [vaultAddress],
+    chain: "move",
   })
+
+  // 2. Use the minted_avalon_vault amount as the vaultTokenAmount input
+  //    to convert_to_stable and obtain the TVL in the stable token.
+  const vaultTokenAmount = poolData.minted_avalon_vault
+
+  const tvl = await function_view({
+    functionStr: CONVERT_TO_STABLE_FN,
+    // convert_to_stable takes a single u128 argument (the vault token amount).
+    args: [vaultTokenAmount],
+    chain: "move",
+  })
+
   return tvl
 }
 
