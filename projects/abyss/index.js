@@ -61,6 +61,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   methodology: "TVL is calculated by summing the underlying assets held in each Abyss vault. Vault shares in DeepBook margin pools are converted to underlying asset amounts using the pool's exchange rate (total_supply / supply_shares), which accounts for accrued interest over time.",
   sui: {
     tvl,
