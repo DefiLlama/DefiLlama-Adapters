@@ -4,7 +4,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const VE_NEON = "0x15Fc4C8df3ED16049E11134054C40c1E6D9107e3";
 const NEON = "0xF2Da3942616880E52e841E5C504B5A9Fba23FFF0";
 
-// Voter contract exposes poolFactory() to discover all AURA DEX pools
+// Voter contract exposes poolFactory() to discover all Nexion ve(3,3) DEX pools
 const VOTER = "0x3002b50BA6cE1c39A4b7447A4451adfF773e54dE";
 
 /**
@@ -47,7 +47,7 @@ async function staking(api) {
 
 module.exports = {
   methodology:
-    "TVL is the total liquidity across all AURA DEX pools discovered dynamically from the on-chain PoolFactory. Staking is the total NEON locked in the VotingEscrow (veNEON).",
+    "TVL is the total liquidity across all Nexion ve(3,3) DEX pools discovered dynamically from the on-chain PoolFactory. Staking is the total NEON locked in the VotingEscrow (veNEON).",
   pulse: {
     tvl,
     staking,
