@@ -1,6 +1,6 @@
 const { getConfig } = require('../helper/cache')
 
-const PRINTR_API = 'https://api.printr.money'
+const PRINTR_API = 'https://api-preview.printr.money'
 
 // Printr contract is deployed at the same address on all EVM chains (CREATE2)
 const PRINTR_CONTRACT = '0xb77726291b125515d0a7affeea2b04f2ff243172'
