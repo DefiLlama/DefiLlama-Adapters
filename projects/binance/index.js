@@ -99,6 +99,8 @@ function buildConfig(chain, owners) {
   if (chain === 'solana') {
     options.solOwners = owners
     if (!options.blacklistedTokens) options.blacklistedTokens = []
+    
+    options.onlyTrustedTokens = true
     options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
   }
 

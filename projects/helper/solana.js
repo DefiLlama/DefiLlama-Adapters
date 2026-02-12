@@ -32,6 +32,38 @@ const blacklistedTokens_default = [
   '7SaitRVfcP3b3KVSGHfamhznJornMXAefXByXstYhTys', // SASHA CAT
 ]
 
+const whitelistedTokens = {
+  solana: [
+    ...(Object.values(ADDRESSES.solana)),
+  ]
+}
+
+const trustedTokensCache = {}
+
+async function getTrustedTokenSet(chain) {
+  if (!trustedTokensCache[chain]) trustedTokensCache[chain] = _getTrustedTokenSet(chain)
+  return trustedTokensCache[chain]
+
+  async function _getTrustedTokenSet(chain) {
+    const data = await sdk.cache.readExpiringJsonCache(`trustedTokens-${chain}`)
+    if (data) return new Set(data)
+    const urls = {
+      solana: 'https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json',
+    }
+    if (!urls[chain]) throw new Error(`No trusted token list for chain ${chain}`)
+    const trustedTokens = await http.get(urls[chain]).then(async res => {
+      const cgTokens = await http.get('https://api.coingecko.com/api/v3/coins/list?include_platform=true')
+      const cgChainTokens = cgTokens.filter(i => i.platforms?.[chain]).map(i => i.platforms[chain]).filter(i => i)
+      await sdk.cache.writeCache(`trustedTokens/res-${chain}`, { tokenList: res.tokens, cgChainTokens }, { skipCompression: true, })
+
+      const tokens = res.tokens.map(i => i.address).concat(cgChainTokens)
+      await sdk.cache.writeExpiringJsonCache(`trustedTokens-${chain}`, tokens, {}) // 1 day by default
+      return tokens
+    })
+    return new Set(trustedTokens.concat(whitelistedTokens[chain] || []))
+  }
+}
+
 let connection = {}
 let provider = {}
 
@@ -183,8 +215,8 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { core
   }
 }
 
-function sumTokensExport({ tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest }) {
-  return (api) => sumTokens2({ api, chain: api.chain, tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest })
+function sumTokensExport({ tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, onlyTrustedTokens, ...rest }) {
+  return (api) => sumTokens2({ api, chain: api.chain, tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, onlyTrustedTokens, ...rest })
 }
 
 function getEndpoint(chain) {
@@ -205,6 +237,7 @@ async function sumTokens2({
   computeTokenAccount = false,
   includeStakedSol = false,
   chain = 'solana',
+  onlyTrustedTokens = false,
 }) {
 
   if (api) chain = api.chain
@@ -233,10 +266,17 @@ async function sumTokens2({
     const _owners = getUniqueAddresses([...owners, owner].filter(i => i), chain)
 
     if (_owners.length) {
+
+      let filter = () => true
+      if (onlyTrustedTokens) {
+        const trustedTokenSet = await getTrustedTokenSet(chain)
+        filter = ({ mint }) => trustedTokenSet.has(mint)
+      }
+
       const data = await getOwnerAllAccounts(_owners)
       const tokenBalances = {}
       for (const item of data) {
-        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6 || !filter(item)) continue;
         sdk.util.sumSingleBalance(tokenBalances, item.mint, item.amount)
       }
       transformBalances({ tokenBalances, balances, chain, })
