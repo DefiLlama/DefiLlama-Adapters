@@ -119,8 +119,8 @@ module.exports = {
   ...chainTvls,
   // fetch: fetchChain(null),
   hallmarks: [
-    [1651881600, "UST depeg"],
-    // [1689202800,"Access to Wallets Lost"]
+    ['2022-05-07', "UST depeg"],
+    // ['2023-07-12',"Access to Wallets Lost"]
   ],
 }
 

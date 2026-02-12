@@ -19,7 +19,7 @@ async function tvl(api) {
 
 module.exports = {
   hallmarks: [
-    [1698969600,"Rug Pull"]
+    ['2023-11-03',"Rug Pull"]
   ],
   base: {
     tvl,
