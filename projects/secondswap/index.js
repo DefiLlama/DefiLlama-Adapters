@@ -1,4 +1,4 @@
-const { get } = require('../helper/http');
+const { getConfig } = require('../helper/cache');
 const { getAssociatedTokenAddress, getTokenAccountBalances } = require('../helper/solana');
 
 /**
@@ -41,8 +41,12 @@ const LLAMA_TO_SECONDSWAP_CHAINS = {
  *          Array of vault objects with addresses structured according to the chain type
  */
 async function fetchVestingVaults(secondswapChain) {
-  const data = await get(`${VAULTS_API}?chain=${secondswapChain}`);
-  return data.vaults || [];
+  const data = await getConfig(
+    `secondswap/vaults/${secondswapChain}`,
+    `${VAULTS_API}?chain=${secondswapChain}`,
+  );
+  const vaults = data?.vaults ?? data;
+  return Array.isArray(vaults) ? vaults : [];
 }
 
 /**
@@ -62,8 +66,12 @@ async function fetchVestingVaults(secondswapChain) {
  *          Array of token metadata objects with contract address, decimal places, and USD price
  */
 async function fetchTokensInfo(secondswapChain) {
-  const data = await get(`${TOKENS_API}?chain=${secondswapChain}`);
-  return data.tokens || [];
+  const data = await getConfig(
+    `secondswap/tokens/${secondswapChain}`,
+    `${TOKENS_API}?chain=${secondswapChain}`,
+  );
+  const tokens = data?.tokens ?? data;
+  return Array.isArray(tokens) ? tokens : [];
 }
 
 /**
