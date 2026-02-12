@@ -483,7 +483,7 @@ async function erc4626VaultsTvl(api) {
       eventAbi: EVENTS.TermMax4626Factory.StableERC4626For4626Created,
       fromBlock: factory.fromBlock,
       target: factory.address,
-      extraKey: `StableERC4626For4626Created`,
+      extraKey: 'StableERC4626For4626Created-20260206',
     });
     stableERC4626For4626Vaults.push(...logs.map(i => i.stableERC4626For4626));
 
@@ -492,7 +492,7 @@ async function erc4626VaultsTvl(api) {
       eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForAaveCreated,
       fromBlock: factory.fromBlock,
       target: factory.address,
-      extraKey: `StableERC4626ForAaveCreated`,
+      extraKey: 'StableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.stableERC4626ForAave));
 
@@ -502,7 +502,7 @@ async function erc4626VaultsTvl(api) {
       eventAbi: EVENTS.TermMax4626Factory.VariableERC4626ForAaveCreated,
       fromBlock: factory.fromBlock,
       target: factory.address,
-      extraKey: `VariableERC4626ForAaveCreated`,
+      extraKey: 'VariableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
   }
