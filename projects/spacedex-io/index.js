@@ -21,8 +21,8 @@ module.exports = {
     tvl: gmxExports({ vault: bscVault, })
   },
   hallmarks:[
-      [1678365000, "BSC SpaceDex Launch"],
-      [1680521400, "Arbitrum SpaceDex Launch"]
+      ['2023-03-09', "BSC SpaceDex Launch"],
+      ['2023-04-03', "Arbitrum SpaceDex Launch"]
   ],
   
 };

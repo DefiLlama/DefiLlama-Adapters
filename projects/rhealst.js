@@ -19,6 +19,6 @@ module.exports = {
     tvl, staking,
   },
   hallmarks: [
-    [1666648800,"DCB withdrawn liquidity"]
+    ['2022-10-24',"DCB withdrawn liquidity"]
   ],
 };

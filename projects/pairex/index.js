@@ -21,6 +21,6 @@ module.exports = {
         tvl: sumTokensExport({ tokens, owners: contracts }),
     },
     hallmarks: [
-        [1678852800, "Arbitrum Pairex Launch"]
+        ['2023-03-15', "Arbitrum Pairex Launch"]
     ]
 }

@@ -1,3 +1,4 @@
+const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // Core contract addresses
@@ -18,74 +19,20 @@ const CBBTC = "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf";
 const BASE_TOKENS = [WETH, USDC, CBBTC, DONUT_TOKEN, LP_TOKEN];
 
 /**
- * Dynamically fetch all strategy addresses from Voter contract
- */
-async function getStrategies(api) {
-  const strategies = [];
-  let index = 0;
-  const maxStrategies = 20;
-
-  while (index < maxStrategies) {
-    const strategy = await api.call({
-      abi: "function strategies(uint256) view returns (address)",
-      target: VOTER,
-      params: [index],
-      permitFailure: true,
-    });
-    if (strategy && strategy !== "0x0000000000000000000000000000000000000000") {
-      strategies.push(strategy);
-      index++;
-    } else {
-      break;
-    }
-  }
-
-  return strategies;
-}
-
-/**
- * Dynamically discover tokens from strategies
- */
-async function discoverTokens(api, strategies) {
-  const tokens = new Set(BASE_TOKENS.map(t => t.toLowerCase()));
-
-  for (const strategy of strategies) {
-    const paymentToken = await api.call({
-      abi: "function paymentToken() view returns (address)",
-      target: strategy,
-      permitFailure: true
-    });
-    if (paymentToken && paymentToken !== "0x0000000000000000000000000000000000000000") {
-      tokens.add(paymentToken.toLowerCase());
-    }
-
-    const buybackToken = await api.call({
-      abi: "function buybackToken() view returns (address)",
-      target: strategy,
-    permitFailure: true
-    });
-    if (buybackToken && buybackToken !== "0x0000000000000000000000000000000000000000") {
-      tokens.add(buybackToken.toLowerCase());
-    }
-  }
-
-  return Array.from(tokens);
-}
-
-/**
  * TVL: Track ALL assets in Treasury + WETH in operational contracts
  */
 async function tvl(api) {
-  const strategies = await getStrategies(api);
-  const allTokens = await discoverTokens(api, strategies);
+  const strategies = await api.fetchList({ lengthAbi: 'length', itemAbi: 'strategies', target: VOTER })
+  const paymentTokens = await api.multiCall({ abi: 'address:paymentToken', calls: strategies })
+  const tokens = BASE_TOKENS.concat(paymentTokens)
 
   // Track all tokens in Treasury (including DONUT and LP acquired via governance)
   await sumTokens2({
     api,
     owners: [TREASURY],
-    tokens: allTokens,
+    tokens,
     resolveLP: true,
-    blacklistedTokens: [LP_TOKEN, DONUT_TOKEN],
+    blacklistedTokens: [DONUT_TOKEN],
   });
 
   // Track WETH in operational contracts
@@ -96,30 +43,9 @@ async function tvl(api) {
   });
 }
 
-/**
- * Staking: Track DONUT staked in GovernanceToken contract
- */
-async function staking(api) {
-  await sumTokens2({
-    api,
-    owners: [GOVERNANCE_TOKEN, TREASURY],
-    tokens: [DONUT_TOKEN],
-  });
-}
-
-async function pool2(api) {
-  await sumTokens2({
-    api,
-    owners: [TREASURY],
-    tokens: [LP_TOKEN],
-    resolveLP: true,
-  });
-}
-
 module.exports = {
   base: {
     tvl,
-    pool2,
-    staking,
+    ownTokens: staking([GOVERNANCE_TOKEN, TREASURY], DONUT_TOKEN),
   },
 };

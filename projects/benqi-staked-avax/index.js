@@ -12,6 +12,6 @@ module.exports = {
     },
     methodology: "Counts staked AVAX tokens.",
     hallmarks: [
-        [1643199567, "Benqi SAVAX Launched"]
+        ['2022-01-26', "Benqi SAVAX Launched"]
     ],
 }

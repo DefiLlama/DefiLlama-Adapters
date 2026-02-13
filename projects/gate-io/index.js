@@ -907,14 +907,14 @@ const config = {
       "hJKa3eyGAfGw94YePmgC7kMpETyCUtGQ1xChnV85By388Z6px"
     ]
   },
-  "hpb": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  },
+  // "hpb": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "hydra": {
     "owners": [
       "HMaF9nmaCNua4vExqCTDb5iTfHYxdL6K8q",

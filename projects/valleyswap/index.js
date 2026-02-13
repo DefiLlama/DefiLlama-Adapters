@@ -10,7 +10,7 @@ module.exports = {
   },
   misrepresentedTokens: true,
   hallmarks: [
-    [1681743600,"Remove Fake USDT"],
-    [1654214400, "EvoDefi bridge depeg"]
+    ['2023-04-17',"Remove Fake USDT"],
+    ['2022-06-03', "EvoDefi bridge depeg"]
   ],
 };
