@@ -204,13 +204,11 @@ const calculateTvl = async ({ api, chain }) => {
   if (boringVaults[chain]) {
     const { vaults } = boringVaults[chain];
 
-    for (const vault of vaults) {
-      await sumBoringTvl({
-        api,
-        vaults: [vault],
-        ownersToDedupe: [],
-      });
-    }
+    await sumBoringTvl({
+      api,
+      vaults,
+      ownersToDedupe: [],
+    });
   }
 };
 
