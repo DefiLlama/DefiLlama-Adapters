@@ -9,7 +9,7 @@ const sfiToken = {
 const vaultRegistry = {
   // 1: "",
   // 56: "",
-  8453: "0x414F0e07cd833cE73c9d59280699f910b48E1ECb",
+  8453: "0xe260c97949bB01E49c0af64a3525458197851657",
 };
 
 const CHAIN_IDS = {
