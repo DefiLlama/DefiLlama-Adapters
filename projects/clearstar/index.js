@@ -49,7 +49,7 @@ const configs = {
     },
     hyperliquid: {
       eulerVaultOwners: [
-        '0x65A067b5955F11F6202F14C3b9Cd64830C4170fB' // HypurrFi / Euler HyperEVM vaults
+        '0x6539519E69343535a2aF6583D9BAE3AD74c6A293' // HypurrFi / Euler HyperEVM vaults
       ],
     },
     starknet: {
@@ -74,7 +74,7 @@ exportObj.flare = {
 
 module.exports = {
   ...exportObj,
-  
+
   timetravel: false, // starknet doesn't support historical queries
   hallmarks: [
     ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
