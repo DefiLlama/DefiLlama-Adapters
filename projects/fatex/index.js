@@ -1,4 +1,4 @@
-const { stakingUnknownPricedLP } = require('../helper/staking')
+const { stakingPriceLP } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens')
 
 
@@ -13,6 +13,6 @@ module.exports = {
       factory: FACTORY_CONTRACT,
       useDefaultCoreAssets: true,
     }),
-    staking: stakingUnknownPricedLP(X_FATE_TOKEN, FATE_TOKEN, 'polygon', FATE_USDC_PAIR_TOKEN)
+    staking: stakingPriceLP(X_FATE_TOKEN, FATE_TOKEN, FATE_USDC_PAIR_TOKEN)
   },
 }

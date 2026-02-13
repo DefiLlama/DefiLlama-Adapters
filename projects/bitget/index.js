@@ -25,7 +25,9 @@ const config = {
       "0x1084203d70950bd7a93aef75eb32a51df2422a07",
       "0xbcf6011192399df75a96b0a4ce47c4820853e9e5",
       "0x864a7fa57e0f8902a2de4892e925f1272edbe3fa",
-      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54"
+      "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+      "0x092fe28430bade62c7c044b9c77d0aaa06241319",
+      "0x934186fd8352fa734eb0df82e8863e6449193294"
     ],
   },
   ethereum: {
@@ -84,7 +86,8 @@ const config = {
       "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D",
       "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
       "0x5bdf85216ec1e38d6458c870992a69e38e03f7ef",
-      "0xec96bbbe895301710a89a06546264ebb4f0cc546"
+      "0xec96bbbe895301710a89a06546264ebb4f0cc546",
+      "0x95ccca6d1859ae5670c2213940c96dcb2e177fcb"
     ],
     blacklistedTokens: [
       "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token

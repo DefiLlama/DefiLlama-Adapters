@@ -14,10 +14,10 @@ const base = 'base'
 module.exports = {
   methodology: "Counts the tokens on the market (orders in the orderbook) and in bath pools",
   hallmarks: [
-    [1657915200, "OP Rewards Start"],
-    [1685073974, "V2 Upgrade"],
-    [1688184374, "OP Rewards for Makers"],
-    [1688616374, "Arbitrum Launch"]
+    ['2022-07-15', "OP Rewards Start"],
+    ['2023-05-26', "V2 Upgrade"],
+    ['2023-07-01', "OP Rewards for Makers"],
+    ['2023-07-06', "Arbitrum Launch"]
   ]
 }
 

@@ -143,6 +143,18 @@ const config = {
     morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
     fromBlock: 31907457,
   },
+  stable: {
+    morphoBlue: "0xa40103088A899514E3fe474cD3cc5bf811b1102e",
+    fromBlock: 2348260,
+  },
+  linea: {
+    morphoBlue: "0x6B0D716aC0A45536172308e08fC2C40387262c9F",
+    fromBlock: 25072608,
+  },
+  flare: {
+    morphoBlue: "0xF4346F5132e810f80a28487a79c7559d9797E8B0",
+    fromBlock: 52378788,
+  }
 }
 
 const eventAbis = {
@@ -155,7 +167,17 @@ const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
   const useIndexer = api.chain === 'monad' ? true: false
   const extraKey = 'reset-v2'
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
+
+  let logs = [];
+  if (api.chain === 'tac') {
+    try {
+      logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
+    } catch (e) {
+      logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache: true, useIndexer })
+    }
+  } else {
+    logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
+  }
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 

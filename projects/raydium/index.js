@@ -158,7 +158,7 @@ module.exports = {
   timetravel: false,
   isHeavyProtocol: true,
   misrepresentedTokens: true,
-  hallmarks: [[1667865600, "FTX collapse"]],
+  hallmarks: [['2022-11-08', "FTX collapse"]],
 
   solana: {
     // tvl: combinedTvl,

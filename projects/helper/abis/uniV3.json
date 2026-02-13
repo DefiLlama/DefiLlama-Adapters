@@ -1,0 +1,13 @@
+{
+    "factory": "address:factory",
+    "tokenA": "address:tokenA",
+    "tokenB": "address:tokenB",
+    "totalDebt": "function totalDebt(address) view returns (uint256)",
+    "totalSupplyAmount": "function totalSupplyAmount(address) view returns (uint256)",
+    "totalDebtAmount": "function totalDebtAmount(address) view returns (uint256)",
+    "balanceOf": "function balanceOf(address owner) view returns (uint256)",
+    "tokenOfOwnerByIndex": "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
+    "getPool": "function getPool(address, address, uint24) view returns (address)",
+    "slot0": "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
+    "positions": "function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)"
+  }

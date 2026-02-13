@@ -7,7 +7,7 @@ module.exports = {
   timetravel: false,
   ...getExports("team-finance", chainKeys),
   // hallmarks: [
-  //   [1666857600,"$14.5m Exploit"]
+  //   ['2022-10-27',"$14.5m Exploit"]
   // ],
   //https://etherscan.io/tx/0xb2e3ea72d353da43a2ac9a8f1670fd16463ab370e563b9b5b26119b2601277ce 
   //https://twitter.com/TeamFinance_/status/1585562380591063043
