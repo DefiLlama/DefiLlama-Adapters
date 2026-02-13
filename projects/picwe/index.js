@@ -56,7 +56,7 @@ async function getProtocolReserves(retries = CONSTANTS.MAX_RETRIES) {
  */
 module.exports = {
   timetravel: false,
-  methodology: "TVL consists of total reserves locked in the WEUSD protocol on Movement blockchain.",
+  methodology: "TVL consists of: (1) total reserves locked in the WEUSD protocol on Movement blockchain; (2) USDC locked in mint/redeem contracts on Base, Arbitrum, and BSC chains; (3) RWA tokens (IHP and UCAR) value calculated using on-chain bonding curve prices from market contracts on BSC chain.",
   move: {
     tvl: async (api) => {
       const reserves = await getProtocolReserves();
