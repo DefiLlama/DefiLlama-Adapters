@@ -121,9 +121,39 @@ function filterActiveLegacyVaults(vaults, blockHeight) {
         .filter(Boolean);
 }
 
+async function chainTvl(api, boringVaults, legacyVaults = []) {
+    const block = await api.getBlock()
+
+    const activeBoringVaults = filterActiveBoringVaults(boringVaults, block);
+    const activeLegacyVaultAddresses = legacyVaults.length > 0
+        ? filterActiveLegacyVaults(legacyVaults, block)
+        : [];
+
+    const allVaults = [...(legacyVaults || []), ...activeBoringVaults].filter(v => v.id);
+
+    if (activeLegacyVaultAddresses.length > 0) {
+        await sumLegacyTvl({
+            api,
+            vaults: activeLegacyVaultAddresses,
+            ownersToDedupe: allVaults,
+        });
+    }
+
+    if (activeBoringVaults.length > 0) {
+        await sumBoringTvl({
+            api,
+            vaults: activeBoringVaults,
+            ownersToDedupe: allVaults,
+        });
+    }
+
+    return api.getBalances();
+}
+
 module.exports = {
     sumBoringTvl,
     sumLegacyTvl,
     filterActiveBoringVaults,
     filterActiveLegacyVaults,
+    chainTvl,
 }

@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { sumLegacyTvl, sumBoringTvl, filterActiveBoringVaults, filterActiveLegacyVaults } = require("../helper/boringVault");
+const { chainTvl } = require("../helper/boringVault");
 
 const { boringVaultsV0Ethereum } = require("./ethereumConstants");
 const { boringVaultsV0Arbitrum } = require("./arbitrumConstants");
@@ -20,35 +20,6 @@ async function legacyTvl(api) {
         numericBalances[token] = Number(amount);
     }
     return numericBalances;
-}
-
-async function chainTvl(api, boringVaults, legacyVaults = []) {
-    const block = await api.getBlock()
-
-    const activeBoringVaults = filterActiveBoringVaults(boringVaults, block);
-    const activeLegacyVaultAddresses = legacyVaults.length > 0
-        ? filterActiveLegacyVaults(legacyVaults, block)
-        : [];
-
-    const allVaults = [...(legacyVaults || []), ...activeBoringVaults].filter(v => v.id);
-
-    if (activeLegacyVaultAddresses.length > 0) {
-        await sumLegacyTvl({
-            api,
-            vaults: activeLegacyVaultAddresses,
-            ownersToDedupe: allVaults,
-        });
-    }
-
-    if (activeBoringVaults.length > 0) {
-        await sumBoringTvl({
-            api,
-            vaults: activeBoringVaults,
-            ownersToDedupe: allVaults,
-        });
-    }
-
-    return api.getBalances();
 }
 
 module.exports = {

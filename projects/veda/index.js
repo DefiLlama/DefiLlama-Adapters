@@ -1,4 +1,4 @@
-const { sumLegacyTvl, sumBoringTvl, filterActiveBoringVaults, filterActiveLegacyVaults } = require("../helper/boringVault");
+const { chainTvl } = require("../helper/boringVault");
 
 const { legacyVaultsEthereum, boringVaultsV0Ethereum } = require("./ethereum_constants");
 const { boringVaultsV0Berachain } = require("./berachain_constants");
@@ -10,35 +10,6 @@ const { boringVaultsV0Sonic } = require("./sonic_constants");
 const { boringVaultsV0Scroll } = require("./scroll_constants");
 const { boringVaultsV0Hyperevm } = require("./hyperevm_constants");
 const { boringVaultsV0Plasma } = require("./plasma_constants");
-
-async function chainTvl(api, boringVaults, legacyVaults = []) {
-  const block = await api.getBlock()
-
-  const activeBoringVaults = filterActiveBoringVaults(boringVaults, block);
-  const activeLegacyVaultAddresses = legacyVaults.length > 0
-    ? filterActiveLegacyVaults(legacyVaults, block)
-    : [];
-
-  const allVaults = [...(legacyVaults || []), ...activeBoringVaults].filter(v => v.id);
-
-  if (activeLegacyVaultAddresses.length > 0) {
-    await sumLegacyTvl({
-      api,
-      vaults: activeLegacyVaultAddresses,
-      ownersToDedupe: allVaults,
-    });
-  }
-
-  if (activeBoringVaults.length > 0) {
-    await sumBoringTvl({
-      api,
-      vaults: activeBoringVaults,
-      ownersToDedupe: allVaults,
-    });
-  }
-
-  return api.getBalances();
-}
 
 module.exports = {
   timetravel: true,
