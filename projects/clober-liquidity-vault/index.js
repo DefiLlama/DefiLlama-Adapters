@@ -8,10 +8,10 @@ const abi = {
 
 const config = {
   base: {
-    rebalancer: '0xeA0E19fbca0D9D707f3dA10Ef846cC255B0aAdf3',
-    bookManager: '0x382CCccbD3b142D7DA063bF68cd0c89634767F76',
+    rebalancer: '0x5b351C9eED322616F76b8669176412e1808c06B5',
+    bookManager: '0x8ca3a6f4a6260661fcb9a25584c796a1fa380112',
     blacklistedTokens: ['0x000000000000bb1b11e5ac8099e92e366b64c133'],
-    fromBlock: 21715410,
+    fromBlock: 41148235,
   },
   monad: {
     rebalancer: '0xB09684f5486d1af80699BbC27f14dd5A905da873',
