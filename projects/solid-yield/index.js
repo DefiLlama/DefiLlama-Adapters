@@ -1,20 +1,6 @@
-const sdk = require("@defillama/sdk");
-
+const { sumBoringTvl, filterActiveBoringVaults } = require("../helper/boringVault");
 const { boringVaultsEthereum } = require("./ethereum_constants");
 const { boringVaultsV0Fuse } = require("./fuse_constants");
-const { sumBoringTvl } = require("./helper_methods");
-
-// Returns a list of active boring vault objects
-function filterActiveBoringVaults(vaults, blockHeight) {
-  return vaults
-    .filter((vault) => vault.startBlock <= blockHeight && vault.vault)
-    .map((vault) => ({
-      id: vault.vault,
-      lens: vault.lens,
-      accountant: vault.accountant,
-      teller: vault.teller
-    }));
-}
 
 async function chainTvl(api, boringVaults) {
   const block = await api.getBlock()
