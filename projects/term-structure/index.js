@@ -471,6 +471,55 @@ async function getTermMaxMarketBorrowed(api) {
   }
 }
 
+async function getTermMaxV2MarketBorrowed(api) {
+  const marketAddresses = await getTermMaxMarketV2Addresses(api);
+  const [tokens, configs] = await Promise.all([
+    api.multiCall({
+      abi: ABIS.Market.tokens,
+      calls: marketAddresses,
+    }),
+    api.multiCall({
+      abi: ABIS.Market.config,
+      calls: marketAddresses,
+    }),
+  ]);
+
+  const activeMarkets = [];
+  for (let i = 0; i < marketAddresses.length; i += 1) {
+    const marketAddress = marketAddresses[i];
+    const { maturity } = configs[i];
+    if (maturity <= api.timestamp) continue;
+
+    const { fixedToken, xToken, debt } = tokens[i];
+    activeMarkets.push({ marketAddress, fixedToken, xToken, debt });
+  }
+
+  const mintableERC20Array = Array.from(
+    new Set(
+      activeMarkets.flatMap(({ fixedToken, xToken }) => [fixedToken, xToken])
+    )
+  );
+  const totalSupplies = await api.multiCall({
+    abi: ABIS.MintableERC20.totalSupply,
+    calls: mintableERC20Array,
+  });
+  const tokenSupplyMap = new Map(
+    totalSupplies.map((supply, index) => [mintableERC20Array[index], supply])
+  );
+
+  for (const activeMarket of activeMarkets) {
+    const { fixedToken, xToken, debt } = activeMarket;
+
+    const ftSupply = tokenSupplyMap.get(fixedToken);
+    if (!ftSupply) continue;
+
+    const xtSupply = tokenSupplyMap.get(xToken);
+    if (!xtSupply) continue;
+
+    api.add(debt, ftSupply - xtSupply);
+  }
+}
+
 async function erc4626VaultsTvl(api) {
   if (!ADDRESSES[api.chain].TermMax4626Factory) return;
   const tokensAndOwners = [];
@@ -541,6 +590,11 @@ Object.keys(ADDRESSES).forEach(chain => {
       const ownerTokens = await getTermMaxOwnerTokens(api);
       return sumTokens2({ api, ownerTokens })
     },
-    borrowed: getTermMaxMarketBorrowed,
+    borrowed: async (api) => {
+      await Promise.all([
+        getTermMaxMarketBorrowed(api),
+        getTermMaxV2MarketBorrowed(api),
+      ]);
+    },
   }
 })
