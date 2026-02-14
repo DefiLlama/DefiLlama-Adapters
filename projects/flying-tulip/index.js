@@ -12,10 +12,6 @@ const WRAPPERS = [
   '0xe6880Fc961b1235c46552E391358A270281b5625', // USDe Wrapper
 ]
 
-// Treasury wallet holding stETH
-const TREASURY = '0x1118e1c057211306a40A4d7006C040dbfE1370Cb'
-const STETH = '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84'
-
 // ftAaveYieldWrapper contract addresses on Ethereum mainnet
 const AAVE_WRAPPERS = [
   '0x038F5e5c4aD747036025ffBae1525926BB0bad68', // SCB
@@ -38,14 +34,10 @@ async function tvl(api) {
   const aaveTokens = await api.multiCall({ abi: 'address:underlying', calls: AAVE_WRAPPERS, })
   const aavePrincipals = await api.multiCall({ abi: 'uint256:principal', calls: AAVE_WRAPPERS, })
   api.add(aaveTokens, aavePrincipals)
-
-  // stETH held in treasury
-  const stethBalance = await api.call({ abi: 'erc20:balanceOf', target: STETH, params: [TREASURY], })
-  api.add(STETH, stethBalance)
 }
 
 module.exports = {
-  methodology: 'TVL is calculated as the sum of capital deposited across all Flying Tulip yield wrappers and ftAaveYieldWrapper contracts, plus stETH held in the Flying Tulip treasury.',
+  methodology: 'TVL is calculated as the sum of capital deposited across all Flying Tulip yield wrappers and ftAaveYieldWrapper contracts.',
   ethereum: {
     tvl,
   },
