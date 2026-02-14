@@ -5,10 +5,10 @@ const { getLogs2 } = require("../helper/cache/getLogs");
  * Zenland V2 - Decentralized Escrow Protocol
  * TVL Adapter for DefiLlama
  * 
- * TVL Components:
- * 1. Active Escrows - Funds locked in escrow contracts (USDC, USDT)
- * 2. Agent Stakes - Stablecoins staked in AgentRegistry
- * 3. Treasury - DAO treasury holdings (included in main TVL)
+ * TVL: Funds locked in active escrow contracts (USDC, USDT)
+ * Staking: Agent stakes in AgentRegistry (reported separately)
+ * 
+ * Note: Treasury holdings are protocol-owned and excluded from TVL per DefiLlama conventions.
  * 
  * Contracts (Ethereum Mainnet):
  * - EscrowFactory: 0x11c6bb595824014e1c11c6b4a6ad2095cf7d22ab
@@ -38,12 +38,15 @@ const ESCROW_CREATED_EVENT = "event EscrowCreated(address indexed escrow, addres
 
 /**
  * Main TVL calculation
- * Includes: Active escrows + Agent stakes + Treasury
+ * Includes only: Funds locked in active escrow contracts
+ * 
+ * Note: Agent stakes are reported separately via staking().
+ * Treasury is excluded per DefiLlama conventions (protocol-owned liquidity).
  */
 async function tvl(api) {
   const tokens = Object.values(TOKENS);
 
-  // 1. Get all escrow addresses from EscrowCreated events
+  // Get all escrow addresses from EscrowCreated events
   const logs = await getLogs2({
     api,
     target: ESCROW_FACTORY,
@@ -53,27 +56,16 @@ async function tvl(api) {
   
   const escrowAddresses = logs.map((log) => log.escrow);
 
-  // 2. Build token-owner pairs for all components
+  // Build token-owner pairs for escrow balances only
   const tokensAndOwners = [];
   
-  // Add escrow balances
   for (const escrow of escrowAddresses) {
     for (const token of tokens) {
       tokensAndOwners.push([token, escrow]);
     }
   }
 
-  // Add AgentRegistry balances (agent stakes)
-  for (const token of tokens) {
-    tokensAndOwners.push([token, AGENT_REGISTRY]);
-  }
-
-  // Add Treasury balances
-  for (const token of tokens) {
-    tokensAndOwners.push([token, TREASURY]);
-  }
-
-  // Sum all token balances
+  // Sum escrow token balances
   return sumTokens2({ api, tokensAndOwners });
 }
 
@@ -93,7 +85,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: "TVL includes: (1) Funds locked in active escrow contracts, (2) Agent stakes in the AgentRegistry, (3) DAO Treasury holdings.",
+  methodology: "TVL counts funds locked in active escrow contracts. Staking represents agent stakes in the AgentRegistry (reported separately). Treasury holdings are protocol-owned and excluded from TVL.",
   start: "2026-02-10",
   ethereum: {
     tvl,
