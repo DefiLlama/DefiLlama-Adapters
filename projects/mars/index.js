@@ -1,6 +1,7 @@
 const { queryContract } = require('../helper/chain/cosmos');
 const BigNumber = require('bignumber.js');
 const { getConfig } = require('../helper/cache');
+const { getEnv } = require('../helper/env');
 
 const contractAddresses = {
   osmosis: {
@@ -14,8 +15,8 @@ const contractAddresses = {
 };
 
 const poolsApis = {
-  osmosis: 'https://cache.marsprotocol.io/api/osmosis-1/tokens?x-apikey=7e3642de',
-  neutron: 'https://cache.marsprotocol.io/api/neutron-1/tokens?x-apikey=7e3642de',
+  osmosis: 'https://cache.marsprotocol.io/api/osmosis-1/tokens',
+  neutron: 'https://cache.marsprotocol.io/api/neutron-1/tokens',
 };
 
 async function tvl(api) {
@@ -54,7 +55,7 @@ async function tvl(api) {
     const assetDenoms = assetParams.map((asset) => asset.denom);
 
     // fetch pool infos from the poolsApi based on chain
-    const poolInfos = await getConfig(`mars-protocol/${chain}-pools`, poolsApis[chain]);
+    const poolInfos = await getConfig(`mars-protocol/${chain}-pools`, poolsApis[chain] + '?x-apikey=' + getEnv('MARS_API_KEY'));
 
     // query the deposited amount for each asset and add it to the depositCoins array
     await Promise.all(
