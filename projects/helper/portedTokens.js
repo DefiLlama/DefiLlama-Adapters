@@ -73,7 +73,7 @@ function transformChainAddress(
 ) {
 
   return addr => {
-    if (['solana'].includes(chain)) {
+    if (svmChains.includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
     if (!addr.startsWith('0x')) return addr

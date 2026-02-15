@@ -28,6 +28,12 @@ const caseSensitiveChains = [...ibcChains, ...svmChains, 'tezos', 'ton', 'algora
 ]
 
 const transformTokens = {
+  eclipse: {
+    '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': 'eclipse:' + ADDRESSES.eclipse.ETH_2,
+    '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': 'eclipse:' + ADDRESSES.eclipse.WIF,
+    '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': 'eclipse:' + ADDRESSES.eclipse.SOL,
+    'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': 'eclipse:' + ADDRESSES.eclipse.USDC,
+  },
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
