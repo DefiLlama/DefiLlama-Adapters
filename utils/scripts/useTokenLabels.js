@@ -6,11 +6,6 @@ const fs = require('fs')
 const path = require('path')
 const { ibcChains } = require('../../projects/helper/tokenMapping')
 
-// const rootFolder = '../../projects'
-// const projectsDir = '../../projects/zharta'
-// const rootFolder = projectsDir + '/zharta'
-const rootFolder = projectsDir
-
 const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', 'ripple', 'noble', ...ibcChains]
 
 function run() {
@@ -19,7 +14,7 @@ function run() {
 
   // return;
 
-  glob(rootFolder + '/**/*.js', {}, async (e, files) => {
+  glob(projectsDir + '/**/*.js', {}, async (e, files) => {
     console.log('JSON file count', files.length)
     // console.log(files)
     files.forEach(updateFile)
