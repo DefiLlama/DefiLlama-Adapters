@@ -6,6 +6,10 @@ const multisigs = [
   '0x1f906603A027E686b43Fab7f395C11228EbE8ff4',
 ]
 
+const lineaVaultOwners = [
+  '0x0F6e98A756A40dD050dC78959f45559F98d3289d'
+]
+
 const configs = {
   methodology: 'Count all assets deposited into vaults curated by ZeroLend',
   ethereum: {
@@ -17,12 +21,8 @@ const configs = {
     ],
   },
   linea: {
-    // eulerVaultOwners: multisigs, // todo: add this back in once it is supported by the API
-    euler: [
-      '0x14efcc1ae56e2ff75204ef2fb0de43378d0beada',
-      '0x085f80df643307e04f23281f6fdbfaa13865e852',
-      '0x9ac2f0a564b7396a8692e1558d23a12d5a2abb1f',
-    ],
+    eulerVaultOwners: lineaVaultOwners,
+    euler: [],
   },
   berachain: {
     eulerVaultOwners: multisigs,
