@@ -3,6 +3,10 @@ const utils = require('../utils')
 const OBYTE_HUB_ENDPOINT = "https://obyte.org/api";
 const TOKEN_REGISTRY_AA_ADDRESS = "O6H6ZIFI57X3PLTYHOCVYPP5A553CYFQ";
 
+const OSWAP_V1_AA = "GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA"
+const OSWAP_V2_AA = "2JYYNOSRFGLI3TBI4FVSE6GFBUAZTTI3"
+const OSWAP_V21_AA = "DYZOJKX4MJOQRAUPX7K6WCEV5STMKOHI"
+
 /**
  * @param {number} timestamp - unix timestamp in seconds from epoch of the moment in time for which the balances are requested
  * @param {string} address - the Obyte address of the base AA for which the balances are fetched
@@ -85,7 +89,47 @@ function summingBaseAABalancesToTvl(assetMetadata, exchangeRates) {
 /**
  * @return {Promise<object>} fetches all exchange rates traded on Oswap v1 and v2 plus a few externally defined tokens such as GBYTE-USD or BTC-USD
  */
-async function fetchOswapExchangeRates() {
+async function fetchOswapExchangeRates(api) {
+  const timestamp = api?.timestamp
+  if (timestamp && timestamp < Math.floor(Date.now() / 1000) - 14400) {
+    const [gbytePriceData, assets] = await Promise.all([
+      utils.fetchURL(`https://coins.llama.fi/prices/historical/${timestamp}/coingecko:byteball`),
+      fetchOswapAssets()
+    ])
+    const gbyteUsd = gbytePriceData.data.coins['coingecko:byteball']?.price
+
+    if (!gbyteUsd) throw new Error("Failed to fetch GBYTE price")
+
+    const [v1, v2, v21] = await Promise.all([
+      fetchBaseAABalances(timestamp, OSWAP_V1_AA),
+      fetchBaseAABalances(timestamp, OSWAP_V2_AA),
+      fetchBaseAABalances(timestamp, OSWAP_V21_AA),
+    ])
+
+    const rates = {
+      "GBYTE_USD": gbyteUsd,
+    }
+
+    const processPool = (pool) => {
+      const poolAssets = pool.assets
+      if (poolAssets.base) {
+        const baseBalance = poolAssets.base.balance
+        Object.entries(poolAssets).forEach(([asset, details]) => {
+          if (asset === 'base' || details.selfIssued) return;
+          const assetDecimals = assets[asset]?.decimals ?? 0
+          // price = (base / 1e9) / (asset / 10^dec) * gbyteUsd
+          const price = (baseBalance / 1e9) / (details.balance / Math.pow(10, assetDecimals)) * gbyteUsd
+          rates[`${asset}_USD`] = price
+        })
+      }
+    }
+
+    [v1, v2, v21].forEach(balances => {
+      Object.values(balances.addresses).forEach(processPool)
+    })
+
+    return rates
+  }
   /*
    * {
    *   "BTC_USD": 29832,

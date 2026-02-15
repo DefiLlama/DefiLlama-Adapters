@@ -13,7 +13,7 @@ const { fetchBaseAABalances, fetchOswapExchangeRates, fetchOswapAssets, summingB
 async function tvl(api) {
     const timestamp = api.timestamp
     const [exchangeRates, assetMetadata] = await Promise.all([
-        fetchOswapExchangeRates(),
+        fetchOswapExchangeRates(api),
         fetchOswapAssets()
     ])
 
@@ -28,7 +28,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    timetravel: false,
+    timetravel: true,
     misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the all non-self issued assets locked into the autonomous agents extending the Oswap protocol.",
