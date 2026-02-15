@@ -28,6 +28,7 @@ const DEFAULTS = {
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FOGO_RPC: 'https://mainnet.fogo.io',
+  PYRA_RPC: 'https://rpc.pyrachain.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   INJECTIVE_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
