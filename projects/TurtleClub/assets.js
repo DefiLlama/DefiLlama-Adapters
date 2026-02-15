@@ -35,6 +35,7 @@ const tokens = {
         USD0: ADDRESSES.ethereum.USD0,
         ynETH: '0x09db87A538BD693E9d08544577d5cCfAA6373A48',
         aEthUSDT: '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a',
+        swETH: '0xf951E335afb289353dc249e82926178EaC7DEd78',
         rsWETH: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
         SWELL: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
         TERM: '0xC3d21f79C3120A4fFda7A535f8005a7c297799bF',
@@ -99,6 +100,9 @@ const tokens = {
         CROAK: '0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF',
         REX33: '0xe4eeb461ad1e4ef8b8ef71a33694ccd84af051c4',
         xREX: '0xc93b315971a4f260875103f5da84cb1e30f366cc',
+        weETH: '0x1Bf74C010E6320bab11e2e5A532b5AC15e0b8AA6',
+        ezETH: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+        rsETH: '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
         z0weETH: '0x77E305B4D4D3b9DA4e82Cefd564F5b948366A44b', // TODO all ZeroLend not priced properly
         z0WETH: '0xB4FFEf15daf4C02787bC5332580b838cE39805f5',
         z0ezETH: '0x0684FC172a0B8e6A65cF4684eDb2082272fe9050',
@@ -152,22 +156,26 @@ const tokenMapping = {
 const tokenMappingERC20 = {
     ethereum: [
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
-        { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
-        // { token: tokens.ethereum.tsSwellRswETH, use: ADDRESSES.null },
+        { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ },
+        { token: tokens.ethereum.tsSwellRswETH, use: tokens.ethereum.rsWETH },
+        { token: tokens.ethereum.aEthUSDC, use: tokens.ethereum.USDC },
         { token: tokens.ethereum.eUSDC_2, use: tokens.ethereum.USDC },
     ],
     linea: [
         { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
         { token: tokens.linea.xREX, coingeckoId: "etherex", decimals: 18 },
-        // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
+        { token: tokens.linea.z0WETH, use: tokens.linea.WETH },
+        { token: tokens.linea.z0ezETH, use: tokens.linea.ezETH },
+        { token: tokens.linea.z0rsETH, use: tokens.linea.rsETH },
+        { token: tokens.linea.z0weETH, use: tokens.linea.weETH },
+        { token: tokens.linea.z0USDT, use: ADDRESSES.linea.USDT },
     ],
     swellchain: [
-        // { token: tokens.swellchain.tsSwellETH, use: ADDRESSES.null }, // TODO not priced properly
+        { token: tokens.swellchain.tsSwellETH, use: `ethereum:${tokens.ethereum.swETH}` },
     ],
+    berachain: [
+        { token: tokens.berachain.rEUL, use: `ethereum:${tokens.ethereum.EUL}` },
+    ]
 };
 
 const treasuryNFTs = {

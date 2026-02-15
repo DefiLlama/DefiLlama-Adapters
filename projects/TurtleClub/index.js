@@ -1,4 +1,4 @@
-const { getVaultsERC20Tvl, getERC4626VaultsTvl } = require("./helpers");
+const { getERC4626VaultsTvl, applyTokenMapping } = require("./helpers");
 const { turtleVaults, defaultTokens, tokens } = require("./assets");
 const { sumTokensExport } = require("../helper/unwrapLPs");
     
@@ -21,6 +21,7 @@ module.exports = {
             });
 
             const balances = await m(api);
+            applyTokenMapping(balances, 'ethereum');
 
             return balances;
         },
@@ -32,7 +33,10 @@ module.exports = {
             // Handle ERC4626 Vaults
             await getERC4626VaultsTvl(api, erc4626Vaults);
 
-            return api.getBalances();
+            const balances = api.getBalances();
+            applyTokenMapping(balances, 'linea');
+
+            return balances;
         },
     },
     avax: {
@@ -45,4 +49,3 @@ module.exports = {
         },
     },
 };
-            
