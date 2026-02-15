@@ -5,6 +5,7 @@ const { getStakedEthTVL, mergeExports } = require('../helper/utils')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+const { getCEXTokensOnBinanceOnChain } = require('../helper/utils/cex.js')
 
 const ENDPOINT = "https://www.binance.com/bapi/apex/v1/public/apex/market/por/address"
 
@@ -83,7 +84,7 @@ const perChainConfig = {
   solana: { blacklistedTokens: ['7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY', 'CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt'] },
 }
 
-function buildConfig(chain, owners) {
+function buildConfig(chain, owners, binanceTokensOnChain) {
   const base = perChainConfig[chain] || {}
   let { tokensAndOwners, tokens, blacklistedTokens, fungibleAssets } = base
 
@@ -94,12 +95,17 @@ function buildConfig(chain, owners) {
 
   const options = { ...base, owners, tokens, chain, blacklistedTokens }
 
+  if (binanceTokensOnChain && binanceTokensOnChain.length) {
+    if (!options.tokens) options.tokens = []
+    options.tokens.push(...binanceTokensOnChain)
+  }
+
   if (chain === 'ton') options.onlyWhitelistedTokens = true
   if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
   if (chain === 'solana') {
     options.solOwners = owners
     if (!options.blacklistedTokens) options.blacklistedTokens = []
-    
+
     options.onlyTrustedTokens = true
     options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
   }
@@ -111,7 +117,7 @@ const tvl = async (api) => {
   const chain = api.chain.toLowerCase()
   const networks = chainToNetworks[chain]
 
-  const data  = await getConfig('binance-cex/all-assets', ENDPOINT)
+  const data = await getConfig('binance-cex/all-assets', ENDPOINT)
 
   const contracts = data.data
     .filter(({ network }) => networks.includes(network.toUpperCase()))
@@ -119,7 +125,9 @@ const tvl = async (api) => {
     .filter(Boolean)
 
   const owners = [...new Set(contracts)]
-  const options = buildConfig(chain, owners)
+
+  const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
+  const options = buildConfig(chain, owners, binanceTokensOnChain)
 
   return await sumTokensExport(options)(api)
 }
