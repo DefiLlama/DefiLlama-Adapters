@@ -17,6 +17,24 @@ async function getMultiDepositorVaults(api) {
     return vaults;
 }
 
+async function getSingleDepositorVaults(api) {
+    const factory = contracts[api.chain].singleDepositorVaultFactory;
+    const logs = await getLogs({
+        api,
+        target: factory.address,
+        topic: factory.topic,
+        topics: factory.topics,
+        eventAbi: factory.eventAbi,
+        fromBlock: factory.fromBlock,
+        onlyArgs: true,
+    });
+    return logs.map(x => ({
+        vault: x.vault,
+        feeCalculator: x.feeCalculator
+    }));
+}
+
 module.exports = {
     getMultiDepositorVaults,
+    getSingleDepositorVaults,
 };

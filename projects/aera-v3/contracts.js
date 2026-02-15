@@ -2,7 +2,7 @@ const { ethers } = require("ethers");
 
 const topics = {
     MultiDepositorVault_VaultCreated: ethers.id("VaultCreated(address,address,address,(string,string),(address,address,address),address,string)"),
-    SingleDepositorVault_VaultCreated: ethers.id("VaultCreated(address,address,address,(string,string),(address,address,address),address,string)"),
+    SingleDepositorVault_VaultCreated: ethers.id("VaultCreated(address,address,address,address,address,address,string)"),
 }
 const eventAbis = {
     MultiDepositorVault_VaultCreated: 'event VaultCreated(address indexed vault, address indexed owner, address hooks, (string name, string symbol) erc20Params, (address feeCalculator, address feeToken, address feeRecipient) feeVaultParams, address beforeTransferHook, string description)',
