@@ -111,11 +111,7 @@ async function proxiedFetch(url) {
 
   const [host, username, password] = authInfo.split(':')
 
-  const client = axios.create({
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: false,
-    }),
-  });
+  const client = axios.create();
   const { data } = await client
     .get(url.toString(), {
       proxy: {
