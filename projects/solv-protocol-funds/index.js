@@ -28,7 +28,7 @@ const graphUrlList = {
   bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
   arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
   mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mentle-0xgraph/-/gn',
-  merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin',
+  // merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin', // TODO: The previous endpoint was insecure and broken. A new secure endpoint is needed.
 }
 
 const slotListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-rwa-slot.json';
