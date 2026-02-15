@@ -71,6 +71,7 @@ const ENV_KEYS = [
   'PROXY_AUTH',
   'UI_TOOL_MODE',
   'P0_API_KEY',
+  'MARS_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
