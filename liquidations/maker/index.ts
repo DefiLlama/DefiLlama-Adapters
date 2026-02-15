@@ -242,11 +242,7 @@ const positions = async (): Promise<Liq[]> => {
       const collateralAmount = new BigNumber(_collateralAmount).div(1e18); // in wei
       const normalizedDebt = new BigNumber(urn.art).div(1e18); // in wei
       const ilk = ilks[i - 1];
-      // const normalizedIlkDebt = ilk.Art; // in wei
       const debtScalingFactor = new BigNumber(ilk.rate).div(1e27); // in ray (27 decimal places)
-      // const maxDebtPerUnitCollateral = ilk.spot; // in ray (27 decimal places)
-      // const debtCeiling = ilk.line; // in rad (45 decimal places)
-      // const debtFloor = ilk.dust; // in rad (45 decimal places)
       const spot = spots[i - 1];
       const liquidationRatio = new BigNumber(spot.mat).div(1e27); // in ray (27 decimal places)
       const debt = normalizedDebt.times(debtScalingFactor);
