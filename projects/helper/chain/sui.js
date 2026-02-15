@@ -39,8 +39,12 @@ async function queryEvents({ eventType, transform = i => i }) {
 async function getObjects(objectIds) {
   if (objectIds.length > 9) {
     const chunks = sliceIntoChunks(objectIds, 9)
+    const chunkBatches = sliceIntoChunks(chunks, 15)
     const res = []
-    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
+    for (const batch of chunkBatches) {
+      const results = await Promise.all(batch.map(chunk => getObjects(chunk)))
+      res.push(...results.flat())
+    }
     return res
   }
   const {
