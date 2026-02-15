@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk')
 const { aaveExports } = require("../helper/aave");
 const { staking } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
   era: ["0xB73550bC1393207960A385fC8b34790e5133175E"],
@@ -45,6 +45,17 @@ Object.keys(config).forEach((chain) => {
 });
 
 data.linea.staking = staking(linea.zeroLocker, linea.zero, "linea");
-data.linea.pool2 = pool2s([linea.zlpLocker], [linea.zeroEthNileLP], "linea"); // todo add the lynex and nile LPs from the treasury
+data.linea.pool2 = async (api) => {
+  const balances = {}
+  await sumTokens2({ api, balances, tokens: [linea.zeroEthNileLP], owners: [linea.zlpLocker, linea.treasury], resolveLP: true })
+  return sumTokens2({
+    api, balances, owners: [linea.treasury], resolveUniV3: true, uniV3ExtraConfig: {
+      nftAddress: [
+        "0x5d3d9e20ad27dd61182505230d1bd075bd249e4b", // Lynex Manager
+        "0xAAA78E8C4241990B4ce159E105dA08129345946A"  // Nile Manager
+      ]
+    }
+  })
+}
 
 module.exports = data;
