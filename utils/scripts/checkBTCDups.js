@@ -1,10 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// Regular expression to match Bitcoin addresses
-// const btcAddressRegex = /\b(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}\b/g;
-
-
 // Regular expression to match alphanumeric strings between single or double quotes
 const addressRegex = /['"]([a-zA-Z0-9]{25,99})['"]/g;
 
