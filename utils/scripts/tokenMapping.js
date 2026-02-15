@@ -22,12 +22,6 @@ const ibcMappings = {}
 
 const fixBalancesTokens = {}
 
-// run()
-
-// function writeToCache() {
-//   fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2))
-//   fs.writeFileSync(coreAssetsFile, JSON.stringify(coreAssets, null, 2))
-// }
 
 function transformTo(address) {
   if (address.startsWith('0x')) return 'ethereum:' + address
@@ -128,5 +122,4 @@ async function run() {
   })
 
   await Promise.all(promises)
-  // writeToCache()
 }
