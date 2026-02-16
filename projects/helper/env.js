@@ -44,6 +44,7 @@ const DEFAULTS = {
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
   BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
   VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
+  FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
 }
 

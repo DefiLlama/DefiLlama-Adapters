@@ -42,3 +42,33 @@ pipelineJob('tvl-custom-scripts/metadao') {
         }
     }
 }
+
+// fuel Job
+pipelineJob('tvl-custom-scripts/fuel') {
+    displayName('Fuel TVL')
+    description('Calculates Fuel TVL')
+
+    // Keep last 21 builds
+    logRotator {
+        numToKeep(21)
+    }
+
+    // Build triggers - run every 8 hours
+    triggers {
+        cron('0 */8 * * *')
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url(repoUrl)
+                    }
+                    branches('main')
+                }
+            }
+            scriptPath("${customScriptsPath}/fuel/jfile")
+        }
+    }
+}
