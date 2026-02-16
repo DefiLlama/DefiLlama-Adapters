@@ -265,14 +265,12 @@ async function sumTokens2({
   if (api) chain = api.chain
 
   // Route to Allium-based historical path when api.timestamp is before today (UTC)
-  if (api.timestamp < getUniqStartOfTodayTimestamp()) {
-    const date = new Date(api.timestamp * 1000).toISOString().slice(0, 10);
+  if (api && api.timestamp && (chain === 'solana' || !chain) && api.timestamp < getUniqStartOfTodayTimestamp()) {
     sdk.log('sumTokens2: using historical Allium path for date', date);
-    return await sumTokens2_historical({
+    return sumTokens2_historical({
       api, balances, tokensAndOwners, tokens, owners, owner,
       tokenAccounts, solOwners, blacklistedTokens, allowError,
       computeTokenAccount, includeStakedSol, chain, onlyTrustedTokens,
-      date,
     });
   }
 
@@ -468,9 +466,9 @@ async function sumTokens2_historical({
   includeStakedSol = false,
   chain = 'solana',
   onlyTrustedTokens = false,
-  date,
 }) {
-  if (!date) throw new Error('sumTokens2_hist requires a date (YYYY-MM-DD)');
+  const date = new Date(api.timestamp * 1000).toISOString().slice(0, 10);
+  if (!date) throw new Error('sumTokens2_historical requires a date (YYYY-MM-DD)');
   if (includeStakedSol) throw new Error('includeStakedSol is not supported for historical backfilling (RPC-only)');
 
   if (api) chain = api.chain;
@@ -565,10 +563,12 @@ async function sumTokens2_historical({
   }
 
   if (sql) {
-    sdk.log('sumTokens2_hist: running Allium query for date', date);
+    sdk.log('sumTokens2_historical: running Allium query for date', date);
     const rows = await queryAllium(sql);
 
-    if (Array.isArray(rows)) {
+    if (!Array.isArray(rows)) {
+      sdk.log('sumTokens2_historical: Allium query returned non-array result', { date, rowsType: typeof rows, rows });
+    } else {
       // Prepare filters
       let trustedTokenSet = null;
       if (onlyTrustedTokens) {
@@ -578,19 +578,18 @@ async function sumTokens2_historical({
       const tokensAndOwnersMap = new Map();
       if (tokensAndOwners.length) {
         tokensAndOwners.forEach(([token, ownerAddr]) => {
-          const key = `${token.toLowerCase()}|${ownerAddr.toLowerCase()}`;
+          const key = `${token}|${ownerAddr}`;
           tokensAndOwnersMap.set(key, true);
         });
       }
 
-      const tokenAccountsSet = new Set(tokenAccountList.map(a => a.toLowerCase()));
-      const solOwnersSet = new Set(getUniqueAddresses(solOwners, chain).map(a => a.toLowerCase()));
+      const ownersSet = new Set(_owners);
+      const tokenAccountsSet = new Set(tokenAccountList);
+      const solOwnersSet = new Set(getUniqueAddresses(solOwners, chain));
 
-      // Helper to check if mint is native SOL (handle both So1111... and Sol111... variants)
+      // Helper to check if mint is native SOL (canonical: So11111..., Allium variant: Sol11111...)
       const isNativeSOL = (mint) => {
-        const normalized = mint.toLowerCase();
-        return normalized === ADDRESSES.solana.SOL.toLowerCase() || 
-               normalized === 'sol11111111111111111111111111111111111111112';
+        return mint === ADDRESSES.solana.SOL || mint === 'Sol11111111111111111111111111111111111111112';
       };
 
       const tokenBalances = {};
@@ -613,25 +612,25 @@ async function sumTokens2_historical({
         let matched = false;
 
         // Path 1: owners without tokensAndOwners (all tokens for those owners)
-        if (!tokensAndOwners.length && _owners.length && _owners.includes(address)) {
+        if (!tokensAndOwners.length && _owners.length && ownersSet.has(address)) {
           matched = true;
         }
 
         // Path 2: tokensAndOwners (specific mint + owner pairs)
         if (tokensAndOwners.length) {
-          const key = `${mint.toLowerCase()}|${address.toLowerCase()}`;
+          const key = `${mint}|${address}`;
           if (tokensAndOwnersMap.has(key)) {
             matched = true;
           }
         }
 
         // Path 3: tokenAccounts (SPL only; native SOL has token_account = null)
-        if (tokenAccount && tokenAccountsSet.has(tokenAccount.toLowerCase())) {
+        if (tokenAccount && tokenAccountsSet.has(tokenAccount)) {
           matched = true;
         }
 
         // Path 4: solOwners (native SOL only)
-        if (solOwnersSet.has(address.toLowerCase()) && isSol) {
+        if (solOwnersSet.has(address) && isSol) {
           matched = true;
         }
 
