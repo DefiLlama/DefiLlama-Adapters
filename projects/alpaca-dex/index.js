@@ -1,15 +1,14 @@
-const plimit = require("p-limit");
+const { getConfig } = require('../helper/cache')
 const http = require('../helper/http');
 const { getTokenBalances } = require('../helper/chain/keeta');
 const ADDRESSES = require('../helper/coreAssets.json');
+const sdk = require('@defillama/sdk')
 
 const SUPPORTED_TOKENS = [
   ADDRESSES.keeta.KTA,
   ADDRESSES.keeta.USDC,
   ADDRESSES.keeta.EURC,
 ]
-
-const limit = plimit(10);
 
 async function fetchAllPools() {
   const pools = [];
@@ -38,35 +37,25 @@ async function fetchAllPools() {
 }
 
 async function tvl(api) {
-  const pools = await fetchAllPools();
+  const pools = await getConfig('alpaca-dex/pools', undefined, { fetcher: fetchAllPools });
 
-  const results = await Promise.all(
-    pools.map(pool => limit(() => getTokenBalances(pool, api.timestamp, SUPPORTED_TOKENS))),
-  );
-
-  const aggregatedBalances = new Map();
-  for (const result of results) {
-    for (const [token, balance] of result) {
-      if (!aggregatedBalances.has(token)) {
-        aggregatedBalances.set(token, 0n);
+  await sdk.util.runInPromisePool({
+    concurrency: 10,
+    items: pools,
+    processor: async (pool) => {
+      const balances = await getTokenBalances(pool, api.timestamp, SUPPORTED_TOKENS);
+      for (const [token, balance] of balances) {
+        api.add(token, balance);
       }
-
-      aggregatedBalances.set(
-        token,
-        aggregatedBalances.get(token) + balance,
-      );
     }
-  }
-
-  for (const [token, balance] of aggregatedBalances) {
-    api.add(token, balance);
-  }
+  })
 }
 
 module.exports = {
   methodology: 'TVL is calculated as the sum of all KTA, USDC, EURC tokens held in liquidity pool accounts.',
   // Date of Alpaca DEX release
   start: '2025-11-12',
+  timetravel: false,
   keeta: {
     tvl,
   }
