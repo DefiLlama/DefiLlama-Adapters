@@ -1,5 +1,81 @@
 const sdk = require("@defillama/sdk");
+const { getCache, setCache } = require("../helper/cache");
+const ethers = require("ethers");
 const config = require("./config.json");
+
+const LOG_CACHE_FOLDER = "logs";
+
+/**
+ * Cached wrapper for sdk.getEventLogs with noTarget (no contract address filter).
+ * Modeled after the existing getLogs helper – generates a stable cache key from
+ * chain + eventAbi, persists fetched logs, and only fetches the delta on
+ * subsequent runs.
+ */
+async function getCachedEventLogs({ chain, fromBlock, toBlock, eventAbi }) {
+  const iface = new ethers.Interface([eventAbi]);
+  const fragment = iface.fragments[0];
+  const topic = `${fragment.name}(${fragment.inputs.map((i) => i.type).join(",")})`;
+  const key = `${chain}/noTarget-${topic}`;
+
+  let cache = await getCache(LOG_CACHE_FOLDER, key);
+  if (!cache || !cache.logs || fromBlock < cache.fromBlock) {
+    cache = { logs: [], fromBlock, toBlock: undefined };
+  }
+
+  const parseLogs = (rawLogs) =>
+    rawLogs.map((l) => {
+      try {
+        const parsed = iface.parseLog(l);
+        // Spread named args (owner, infraVault, wrapper) to top-level
+        // so consuming code can access log.owner / log.args[0] etc.
+        const named = {};
+        parsed.fragment.inputs.forEach((input, idx) => {
+          named[input.name] = parsed.args[idx];
+        });
+        return { ...named, args: Array.from(parsed.args), blockNumber: l.blockNumber };
+      } catch {
+        return l; // already parsed or different format
+      }
+    });
+
+  // If we already have logs up to (or near) the requested toBlock, just filter
+  if (cache.toBlock && cache.toBlock + 2 >= toBlock) {
+    const filtered = cache.logs.filter(
+      (l) => l.blockNumber >= fromBlock && l.blockNumber < toBlock
+    );
+    return parseLogs(filtered);
+  }
+
+  // Fetch only the new range (delta)
+  const fetchFrom = cache.toBlock ?? fromBlock;
+  const newLogs = await sdk.getEventLogs({
+    chain,
+    fromBlock: fetchFrom,
+    toBlock,
+    noTarget: true,
+    eventAbi,
+    entireLog: true,
+  });
+
+  cache.logs = cache.logs.concat(newLogs);
+  cache.toBlock = toBlock;
+
+  // Deduplicate by transactionHash + logIndex
+  const seen = new Set();
+  cache.logs = cache.logs.filter((l) => {
+    const id = (l.transactionHash ?? l.hash) + (l.logIndex ?? l.index);
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+
+  await setCache(LOG_CACHE_FOLDER, key, cache);
+
+  const filtered = cache.logs.filter(
+    (l) => l.blockNumber >= fromBlock && l.blockNumber < toBlock
+  );
+  return parseLogs(filtered);
+}
 
 const abi = {
   metavaultRegistry: {
@@ -38,15 +114,15 @@ const getMetavaultTVL = async (api, metavaultSources) => {
     try {
       toBlock = await api.getBlock();
     } catch (e) {
-      return;
+      sdk.log(`spectra-metavaults: failed to get block for ${api.chain}:`, e.message);
+      throw e;
     }
   }
 
-  const logs = await sdk.getEventLogs({
+  const logs = await getCachedEventLogs({
     chain: api.chain,
     fromBlock: metavaultFromBlock,
     toBlock,
-    noTarget: true,
     eventAbi: metavaultWrapperInitializedEventAbi,
   });
 
