@@ -266,7 +266,6 @@ async function sumTokens2({
 
   // Route to Allium-based historical path when api.timestamp is before today (UTC)
   if (api && api.timestamp && (chain === 'solana' || !chain) && api.timestamp < getUniqStartOfTodayTimestamp()) {
-    sdk.log('sumTokens2: using historical Allium path for date', date);
     return sumTokens2_historical({
       api, balances, tokensAndOwners, tokens, owners, owner,
       tokenAccounts, solOwners, blacklistedTokens, allowError,
@@ -469,6 +468,7 @@ async function sumTokens2_historical({
 }) {
   const date = new Date(api.timestamp * 1000).toISOString().slice(0, 10);
   if (!date) throw new Error('sumTokens2_historical requires a date (YYYY-MM-DD)');
+  sdk.log('sumTokens2: using historical Allium path for date', date);
   if (includeStakedSol) throw new Error('includeStakedSol is not supported for historical backfilling (RPC-only)');
 
   if (api) chain = api.chain;
@@ -589,7 +589,7 @@ async function sumTokens2_historical({
 
       // Helper to check if mint is native SOL (canonical: So11111..., Allium variant: Sol11111...)
       const isNativeSOL = (mint) => {
-        return mint === ADDRESSES.solana.SOL || mint === 'Sol11111111111111111111111111111111111111112';
+        return mint === ADDRESSES.solana.SOL || mint === 'So11111111111111111111111111111111111111112';
       };
 
       const tokenBalances = {};
