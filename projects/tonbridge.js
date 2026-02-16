@@ -49,10 +49,14 @@ const config = {
     },
 }
 
+
 module.exports = {
-    hallmarks: [["2022-05-07", "UST depeg"]],
-    ...Object.entries(config).reduce((acc, [chain, { tokens }]) => {
-        acc[chain] = { tvl: sumTokensExport({ owner: "0x54c55369a6900731d22eacb0df7c0253cf19dfff", tokens }) }
-        return acc
-    }, {}),
+  hallmarks: [["2022-05-07", "UST depeg"]],
+  everscale: { tvl: () => ({}), },
 }
+Object.keys(config).forEach(chain => {
+  const { tokens, } = config[chain]
+  module.exports[chain] = {
+    tvl: sumTokensExport({ owner: "0x54c55369a6900731d22eacb0df7c0253cf19dfff", tokens })
+  }
+})
