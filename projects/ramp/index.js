@@ -33,7 +33,7 @@ function getChainTVL(chain) {
 const chains = ['ethereum', 'bsc', 'polygon', 'avax',]
 module.exports = {
   hallmarks: [
-    [1661439572, "Remove native assets from tvl"]
+    ['2022-08-25', "Remove native assets from tvl"]
   ],
 }
 

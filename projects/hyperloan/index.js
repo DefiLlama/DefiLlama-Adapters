@@ -8,5 +8,5 @@ const CONFIG = {
 module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
-  [1761994532, "Start BESC Rewards on HyperLoan Protocol"],
+  ['2025-11-01', "Start BESC Rewards on HyperLoan Protocol"],
 ]

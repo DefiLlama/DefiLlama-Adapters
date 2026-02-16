@@ -36,7 +36,7 @@ const compoundData = compoundExports(addresses.Comptroller, addresses.CCANTO, ad
 
 module.exports = {
   hallmarks: [
-    [1661417246, "Remove canto dex LPs from tvl computation"]
+    ['2022-08-25', "Remove canto dex LPs from tvl computation"]
   ],
   canto: compoundData
 }

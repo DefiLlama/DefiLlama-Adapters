@@ -25,7 +25,7 @@ module.exports = {
   moonbeam: compoundExports2({ comptroller: moonbeamConfig.comptroller, cether: '0x091608f4e4a15335145be0a279483c0f8e4c7955' }),
   base: compoundExports2({ comptroller: baseConfig.comptroller, }),
   optimism: compoundExports2({ comptroller: optimismConfig.comptroller, }),
-  hallmarks: [[1659312000, 'Nomad Bridge Exploit']]
+  hallmarks: [['2022-08-01', 'Nomad Bridge Exploit']]
 }
 
 module.exports.moonbeam.staking = moonbeamStaking

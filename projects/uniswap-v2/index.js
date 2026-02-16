@@ -34,7 +34,8 @@ Object.keys(config).forEach(chain => {
 
 module.exports.isHeavyProtocol = true
 
-const graphChains = ['unichain', 'ethereum', 'base']
+// const graphChains = ['unichain', 'ethereum', 'base']
+const graphChains = ['ethereum', 'base']
 
 graphChains.forEach(chain => {
   module.exports[chain] = { tvl: tvlViaGraph }

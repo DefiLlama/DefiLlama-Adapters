@@ -13,6 +13,6 @@ module.exports = {
     staking: staking("0xaa8548665bcc12c202d5d0c700093123f2463ea6", "0x30c103f8f5a3a732dfe2dce1cc9446f545527b43"),
   },
   hallmarks:[
-    [1655991120, "Horizon bridge Hack $100m"],
+    ['2022-06-23', "Horizon bridge Hack $100m"],
   ],
 };

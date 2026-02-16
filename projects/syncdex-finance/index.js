@@ -1,7 +1,7 @@
 module.exports = {
   era: {
     hallmarks: [
-      [1681340401,"Rug Pull"]
+      ['2023-04-12',"Rug Pull"]
     ],
     tvl: () => 0,
   },

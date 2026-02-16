@@ -354,6 +354,19 @@ async function getCuratorTvlVesuVault(api, vaults) {
   });
 }
 
+async function getCuratorTvlVesuVaultV2(api, vaults) {
+  const poolAssets = vaults.map((pool_id) => VesuConfigs.assetsV2.map((asset) => ({ pool_id, asset }))).flat();
+  const calls = poolAssets.map(({ pool_id, asset }) => ({ target: VesuConfigs.poolFactory, params: [pool_id, asset] }));
+  const vTokensBigInts = await multiCall({ calls, abi: VesuConfigs.abiV2.v_token_for_asset, allAbi: VesuConfigs.allAbiV2 });
+  const vTokens = vTokensBigInts.filter(v => v > 0n).map(v => `0x${v.toString(16)}`);
+  const assetsBigInts = await multiCall({ calls: vTokens, abi: VesuConfigs.abiV2.asset, allAbi: VesuConfigs.allAbiV2 });
+  const assets = assetsBigInts.map(a => `0x${a.toString(16)}`);
+  const balances = await multiCall({ calls: vTokens, abi: VesuConfigs.abiV2.total_assets, allAbi: VesuConfigs.allAbiV2 });
+  assets.forEach((asset, index) => {
+    api.add(asset, balances[index] ? balances[index] : 0);
+  });
+}
+
 async function getCuratorTvlBoringVault(api, vaults) {
   let filterHookVaults = []
   const hooks = await api.multiCall({ abi: ABI.boringVault.hook, calls: vaults, permitFailure: true })
@@ -467,6 +480,11 @@ async function getCuratorTvl(api, vaults) {
   // vesu.xyz vaults
   if (vaults.vesu) {
     await getCuratorTvlVesuVault(api, vaults.vesu)
+  }
+
+  // vesu.xyz vaults V2
+  if (vaults.vesuV2) {
+    await getCuratorTvlVesuVaultV2(api, vaults.vesuV2)
   }
 
   // turtle.club vaults - boring vaults

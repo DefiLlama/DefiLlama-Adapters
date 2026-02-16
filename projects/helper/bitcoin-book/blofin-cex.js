@@ -12,5 +12,7 @@ module.exports = [
   "bc1qtssyj8zfs6hzfvr67r86ptl7wykf352md0637r",
   "19Q7qteD5pKEGVA5ajoQ2bBRNn1MxiyEYb",
   "bc1q6pku29sx4fv5d4e6pt4yvfsc2ummmamud75mvn",
-  "1L153qzyQdrnYuPDeGyyBEHmXyUqWXHzTn"
+  "1L153qzyQdrnYuPDeGyyBEHmXyUqWXHzTn",
+  "bc1qwyc5km9j23enhtfke96wt9ejqe9hwdpg222f7f",
+  "1BKWQjCcRGjs9TozqbUEiPnehtzGVmHPXT",
 ];

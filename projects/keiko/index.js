@@ -47,6 +47,6 @@ module.exports = {
   start: 1739958540,
   timetravel: true,
   hallmarks: [
-    [1739958540, "Protocol Launch"]
+    ['2025-02-19', "Protocol Launch"]
   ]
 };

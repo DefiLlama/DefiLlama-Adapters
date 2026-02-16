@@ -2737,13 +2737,18 @@
     "WMON": "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
     "WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
     "WSOL": "0xea17E5a9efEBf1477dB45082d67010E2245217f1"
-  }, 
+  },
   "stable": {
-    "USDT0": "0x779Ded0c9e1022225f8E0630b35a9b54bE713736", 
+    "USDT0": "0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
     "wgUSDT": "0x89c3e9ba11414e1d2c6f3e751d6f687682928283"
   },
   "grx": {
     "WGRX": "0x45C7287F897B3A79Cd3f6e4F14B4CE568f023bD5",
     "USDT": "0x173462F5eb7CA0D1ab6aaea846fEFe85A28029E2"
+  },
+  "keeta": {
+    "KTA": "keeta_anqdilpazdekdu4acw65fj7smltcp26wbrildkqtszqvverljpwpezmd44ssg",
+    "USDC": "keeta_amnkge74xitii5dsobstldatv3irmyimujfjotftx7plaaaseam4bntb7wnna",
+    "EURC": "keeta_apblhar4ncp3ln62wrygsn73pt3houuvj7ic47aarnolpcu67oqn4xqcji3au"
   }
 }

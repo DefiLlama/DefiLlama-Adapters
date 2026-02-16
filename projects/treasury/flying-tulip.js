@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
@@ -14,6 +15,20 @@ const WRAPPERS = [
   '0xe6880Fc961b1235c46552E391358A270281b5625', // USDe Wrapper
 ]
 
+// ftAaveYieldWrapper contract addresses (Ethereum)
+const AAVE_WRAPPERS = [
+  '0x038F5e5c4aD747036025ffBae1525926BB0bad68', // SCB
+  '0xEEe452E8f7bf72f2f42c3Ed54aCCa04B56dcC2a2', // Lemniscap
+  '0xC775262245118c7870A3948a7E5dde89BB25AD2D', // Lemniscap 2
+  '0x918E1bb8030Dc51e34814Bcc6A582b8530F1a57D', // Tioga Capital
+  '0xA8b2D8De0ef4502Ca5E4A2F85abD27fcef28c631', // Hypersphere
+  '0x54b56383d79F80e0466EB1e8cCdaa9C189e79032', // Sigil Fund
+  '0x7c576Cb3ff9f28dCE25F181734D1e867304524C1', // Amber Group
+  '0xDf6C06f9c7E3807905B387dF22BA0397b24381e4', // Paper Ventures
+  '0xFB3342C91e8B74975AaA6BD2b740f797FEF9D81c', // Fasanara
+  '0xa20E72317402f37940Aa8456453c2D1c4095e89c', // Atlas
+]
+
 // Underlying tokens for the wrappers (Ethereum)
 const USDS = '0xdC035D45d973E3EC169d2276DDab16f1e407384F'
 const USDTb = '0xC139190F447e929f090Edeb554D95AbB8b18aC1C'
@@ -21,7 +36,18 @@ const USDTb = '0xC139190F447e929f090Edeb554D95AbB8b18aC1C'
 // FT token address
 const FT_TOKEN = '0x5DD1A7A369e8273371d2DBf9d83356057088082c'
 
-module.exports = treasuryExports({
+async function wrapperCapital(api) {
+  const tokens = await api.multiCall({ abi: 'address:token', calls: WRAPPERS })
+  const capitals = await api.multiCall({ abi: 'uint256:capital', calls: WRAPPERS })
+  api.add(tokens, capitals)
+
+  const aaveTokens = await api.multiCall({ abi: 'address:underlying', calls: AAVE_WRAPPERS })
+  const aavePrincipals = await api.multiCall({ abi: 'uint256:principal', calls: AAVE_WRAPPERS })
+  api.add(aaveTokens, aavePrincipals)
+  return api.getBalances()
+}
+
+const base = treasuryExports({
   ethereum: {
     owners: [TREASURY],
     tokens: [
@@ -31,7 +57,6 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.USDe,
       USDS,
       USDTb,
-      ...WRAPPERS,
     ],
     ownTokens: [FT_TOKEN],
   },
@@ -73,3 +98,8 @@ module.exports = treasuryExports({
     ],
   },
 })
+
+// Combine treasury address balances with wrapper capital on Ethereum
+base.ethereum.tvl = sdk.util.sumChainTvls([base.ethereum.tvl, wrapperCapital])
+
+module.exports = base
