@@ -1,33 +1,23 @@
-const { get } = require('./http')
-const endpoint = "https://sushi-analytics.llama.fi"
+const { readFromElastic } = require('./custom-scripts/sushi-analytics-v2/cache')
 
-let data 
-async function getData() {
-  if (!data) data = get(endpoint)
-  return data
-}
-
-function getTvl(protocol, chain) {
+function getTvl(project, tvlKey) {
   return async (timestamp) => {
     if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
-    if (Math.abs(Date.now() / 1000 - timestamp) > 3600) {
-      throw new Error("Can't refill adapters moved to heroku")
-    }
-    const data = await getData()
-    if (data[protocol]?.[chain] === undefined) {
-      throw new Error(`Data for protocol ${protocol} on chain ${chain} is undefined on heroku`)
-    }
-    return data[protocol][chain]
+    const response = await readFromElastic({
+      tvlKey, 
+      timestamp: timestamp*1000,
+      project
+    })
+    return response.balances
   }
 }
 
 function getExports(protocol, chains, exportKeys = []) {
+  if (!exportKeys.includes('tvl')) exportKeys.push('tvl')
   const chainTvls = chains.reduce((obj, chain) => {
-    obj[chain] = {
-      tvl: getTvl(protocol, chain)
-    }
+    obj[chain] = {}
     exportKeys.forEach(key => {
-      obj[chain][key] = getTvl(`${protocol}-${key}`, chain)
+      obj[chain][key] = getTvl(protocol, `${chain}-${key}`)
     })
     return obj
   }, {})
