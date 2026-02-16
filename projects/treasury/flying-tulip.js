@@ -36,7 +36,7 @@ const USDTb = '0xC139190F447e929f090Edeb554D95AbB8b18aC1C'
 // FT token address
 const FT_TOKEN = '0x5DD1A7A369e8273371d2DBf9d83356057088082c'
 
-async function wrapperCapital(_, _b, _cb, { api }) {
+async function wrapperCapital(api) {
   const tokens = await api.multiCall({ abi: 'address:token', calls: WRAPPERS })
   const capitals = await api.multiCall({ abi: 'uint256:capital', calls: WRAPPERS })
   api.add(tokens, capitals)
