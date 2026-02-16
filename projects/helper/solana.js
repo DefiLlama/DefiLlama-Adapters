@@ -41,12 +41,17 @@ const whitelistedTokens = {
 const trustedTokensCache = {}
 
 async function getTrustedTokenSet(chain) {
-  if (!trustedTokensCache[chain]) trustedTokensCache[chain] = _getTrustedTokenSet(chain)
+  if (!trustedTokensCache[chain]) {
+    trustedTokensCache[chain] = _getTrustedTokenSet(chain).catch(e => {
+      delete trustedTokensCache[chain]
+      throw e
+    })
+  }
   return trustedTokensCache[chain]
 
   async function _getTrustedTokenSet(chain) {
     const data = await sdk.cache.readExpiringJsonCache(`trustedTokens-${chain}`)
-    if (data) return new Set(data)
+    if (data) return new Set((data || []).concat(whitelistedTokens[chain] || []))
     const urls = {
       solana: 'https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json',
     }
