@@ -12,7 +12,9 @@ const vaultPositionAbi = 'function positions(uint256) view returns (uint256 toke
 // ABI for vault's PoolConfig struct (8 fields)
 const poolConfigAbi = 'function approvedPools(bytes32) view returns (address pool, address token0, address token1, uint24 fee, int24 tickSpacing, bool active, address positionAdapter, address rewardAdapter)'
 
-// Works for Uni V3, Aerodrome CL, and PancakeSwap V3 — tickLower/tickUpper/liquidity at same indices
+// Indices 5/6/7 (tickLower/tickUpper/liquidity) are identical across all three DEXes.
+// Index 4 differs: Uni V3/PancakeSwap have fee (uint24), Aerodrome has tickSpacing (int24).
+// We only destructure { tickLower, tickUpper, liquidity } so the ABI is cross-DEX compatible.
 const nftPositionAbi = 'function positions(uint256) view returns (uint96, address, address, address, uint24, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256, uint256, uint128, uint128)'
 
 // Minimal slot0 ABI — first two returns (sqrtPriceX96, tick) are identical across all V3 DEXes
