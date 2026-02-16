@@ -67,7 +67,7 @@ module.exports = {
   eos: {
     tvl: eos,
   },
-  // dfs: { // dead https://www.dfsmoon.com/home
-  //   tvl: dfs,
-  // },
+  dfs: { // dead https://www.dfsmoon.com/home
+     tvl: dfs,
+  },
 };
