@@ -51,9 +51,9 @@ module.exports = {
   start: '2022-06-09',
   bitcoincash: { tvl },
   hallmarks: [
-    [1681725240, "BCH Bull public release (AnyHedge v0.11 contract)"],
-    [1703054100, "BCH Bull enables early settlement feture"],
-    [1720612800, "BCH Bull enables leveraged shorting feature (AnyHedge v0.12 contract)"]
+    ['2023-04-17', "BCH Bull public release (AnyHedge v0.11 contract)"],
+    ['2023-12-20', "BCH Bull enables early settlement feture"],
+    ['2024-07-10', "BCH Bull enables leveraged shorting feature (AnyHedge v0.12 contract)"]
   ]
 };
 

@@ -23,7 +23,7 @@
   "0x_nodes": {
     "hallmarks": [
       [
-        1659527340,
+        "2022-08-03",
         "Protocol declared insolvent"
       ]
     ],
@@ -53,7 +53,7 @@
       "tvl": "_f",
       "staking": "_f"
     },
-    "deadFrom": 1659527340
+    "deadFrom": "2022-08-03"
   },
   "2doge": {
     "methodology": "Pool2 deposits consist of 2DOGE/FTM and 2SDOGE/FTM LP tokens deposits while the staking TVL consists of the 2SDOGES tokens locked within the Masonry contract(0xe8EA0828FF7BF03c868a2370b83Bc06F50d4eEd9).",
@@ -64,11 +64,11 @@
     },
     "hallmarks": [
       [
-        1646179200,
+        "2022-03-02",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1646179200
+    "deadFrom": "2022-03-02"
   },
   "2pi": {
     "deadFrom": "2025-01-01",
@@ -101,7 +101,7 @@
     "deadFrom": "2024-04-03"
   },
   "Caketomb": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "bsc": {
       "tvl": "_f",
       "staking": "_f",
@@ -111,11 +111,11 @@
   "CthulhuFinance": {
     "hallmarks": [
       [
-        1679788800,
+        "2023-03-26",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1679788800,
+    "deadFrom": "2023-03-26",
     "optimism": {
       "tvl": "_f",
       "pool2": "_f",
@@ -156,14 +156,14 @@
   "Infernoswap": {
     "hallmarks": [
       [
-        1703808000,
+        "2023-12-29",
         "Rug Pull"
       ]
     ],
     "beam": {
       "tvl": "_f"
     },
-    "deadFrom": 1703808000
+    "deadFrom": "2023-12-29"
   },
   "Inufair": {
     "misrepresentedTokens": true,
@@ -175,7 +175,7 @@
   "KyborgExchange": {
     "hallmarks": [
       [
-        1684108800,
+        "2023-05-15",
         "Rug Pull"
       ]
     ],
@@ -234,12 +234,12 @@
   "Solily": {
     "hallmarks": [
       [
-        1655251200,
+        "2022-06-15",
         "Rug Pull"
       ]
     ],
     "timetravel": false,
-    "deadFrom": 1655251200,
+    "deadFrom": "2022-06-15",
     "solana": {
       "tvl": "_f"
     },
@@ -270,7 +270,7 @@
     "misrepresentedTokens": true,
     "hallmarks": [
       [
-        1684713600,
+        "2023-05-22",
         "Rug Pull"
       ]
     ],
@@ -283,7 +283,7 @@
   "ZukeSwap": {
     "hallmarks": [
       [
-        1680307200,
+        "2023-04-01",
         "Rug Pull"
       ]
     ],
@@ -363,7 +363,7 @@
     "bsc": {
       "tvl": "_f"
     },
-    "deadFrom": 1680328420
+    "deadFrom": "2023-04-01"
   },
   "almond": {
     "timetravel": false,
@@ -394,11 +394,11 @@
     "start": "2020-10-07",
     "hallmarks": [
       [
-        1613178000,
+        "2021-02-13",
         "37M exploit"
       ],
       [
-        1626220800,
+        "2021-07-14",
         "Upgrade to V2 on ETH"
       ]
     ],
@@ -442,7 +442,7 @@
     "deadFrom": "2022-05-26",
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ]
@@ -464,7 +464,7 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
@@ -499,7 +499,7 @@
     "misrepresentedTokens": true,
     "hallmarks": [
       [
-        1665532800,
+        "2022-10-12",
         "Rug Pull"
       ]
     ],
@@ -553,7 +553,7 @@
   "asgardfinance": {
     "hallmarks": [
       [
-        1643155200,
+        "2022-01-26",
         "Token mint exploit"
       ]
     ],
@@ -579,17 +579,17 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
     "deadFrom": "2024-10-02"
   },
   "astrowar-finance": {
-    "deadFrom": 1650564340,
+    "deadFrom": "2022-04-21",
     "hallmarks": [
       [
-        1650412800,
+        "2022-04-20",
         "Rug Pull"
       ]
     ],
@@ -601,7 +601,7 @@
     "methodology": "Sums the total value locked of all strategies in Atlas",
     "hallmarks": [
       [
-        1681776000,
+        "2023-04-18",
         "Rug Pull"
       ]
     ],
@@ -610,18 +610,18 @@
       "pool2": "_f",
       "staking": "_f"
     },
-    "deadFrom": 1681776000
+    "deadFrom": "2023-04-18"
   },
   "atlendis-v2": {
     "start": "2023-06-13",
     "deadFrom": "2025-01-01",
     "hallmarks": [
       [
-        1702367571,
+        "2023-12-12",
         "Launch of Fluna V2 Pool on Polygon"
       ],
       [
-        1713855195,
+        "2024-04-23",
         "Launch of Arjan pool on Mode Network"
       ]
     ],
@@ -665,7 +665,7 @@
   "avatr": {
     "hallmarks": [
       [
-        1682726400,
+        "2023-04-29",
         "Rug Pull"
       ]
     ],
@@ -677,11 +677,11 @@
   "axe": {
     "hallmarks": [
       [
-        1648765747,
+        "2022-03-31",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "start": "2021-11-16",
     "ethereum": {
       "tvl": "_f",
@@ -718,7 +718,7 @@
       "pool2": "_f",
       "staking": "_f"
     },
-    "deadFrom": 1648765747
+    "deadFrom": "2022-03-31"
   },
   "becoswap": {
     "misrepresentedTokens": true,
@@ -746,7 +746,7 @@
     "methodology": "TVL consists of staked tokens"
   },
   "bepswap": {
-    "deadFrom": 1630043620,
+    "deadFrom": "2021-08-27",
     "misrepresentedTokens": true,
     "bsc": {
       "tvl": "_f"
@@ -784,7 +784,7 @@
   },
   "bitlend": {
     "methodology": "Total staked tokens in Bitlend protocol.",
-    "deadFrom": 1675036800,
+    "deadFrom": "2023-01-30",
     "bittorrent": {
       "tvl": "_f"
     }
@@ -810,7 +810,7 @@
     "deadFrom": "2023-12-01"
   },
   "blizzard": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "avax": {
       "tvl": "_f"
     },
@@ -822,7 +822,7 @@
       "tvl": "_f",
       "borrowed": "_f"
     },
-    "deadFrom": 1652356800
+    "deadFrom": "2022-05-12"
   },
   "blockswap": {
     "deadFrom": "2025-01-01",
@@ -936,7 +936,7 @@
     }
   },
   "bubbleswap": {
-    "deadFrom": 1683813600,
+    "deadFrom": "2023-05-11",
     "timetravel": false,
     "misrepresentedTokens": true,
     "hedera": {
@@ -945,11 +945,11 @@
     "methodology": "Data is retrieved from the api at https://api.bubbleswap.io",
     "hallmarks": [
       [
-        1666569600,
+        "2022-10-24",
         "Start V1 Rewards"
       ],
       [
-        1683813600,
+        "2023-05-11",
         "V1 Deprecation"
       ]
     ]
@@ -963,7 +963,7 @@
     "methodology": "Data is retrieved from the api at https://api.bubbleswap.io/",
     "hallmarks": [
       [
-        1683288000,
+        "2023-05-05",
         "V2 Launch"
       ],
       [
@@ -973,7 +973,7 @@
     ]
   },
   "bucket-farm": {
-    "deadFrom": 1757419496,
+    "deadFrom": "2025-09-09",
     "sui": {
       "tvl": "_f"
     }
@@ -1013,7 +1013,7 @@
   },
   "cashio": {
     "timetravel": false,
-    "deadFrom": 1667993600,
+    "deadFrom": "2022-11-09",
     "methodology": "TVL counts LP token deposits made to Cashio and accrued reward tokens to its bank. CoinGecko is used to find the price of tokens in USD.",
     "solana": {
       "tvl": "_f"
@@ -1051,14 +1051,14 @@
     },
     "hallmarks": [
       [
-        1646524800,
+        "2022-03-06",
         "Rug Pull"
       ]
     ],
     "deadFrom": "2022-03-06"
   },
   "cerberusdao": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "ethereum": {
       "tvl": "_f"
     }
@@ -1136,7 +1136,7 @@
     "doublecounted": true,
     "hallmarks": [
       [
-        1707315338,
+        "2024-02-07",
         "Split Adapter"
       ]
     ],
@@ -1153,7 +1153,7 @@
     "methodology": "We get the total MATIC deposited in clay contracts and convert it to USD."
   },
   "cleopatradao": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "avax": {
       "tvl": "_f",
@@ -1164,7 +1164,7 @@
     "deadFrom": "2024-09-30",
     "hallmarks": [
       [
-        1727654400,
+        "2024-09-30",
         "Clone Sunset"
       ]
     ],
@@ -1194,11 +1194,11 @@
     },
     "hallmarks": [
       [
-        1662859935,
+        "2022-09-11",
         "Rug pull"
       ]
     ],
-    "deadFrom": 1662859935
+    "deadFrom": "2022-09-11"
   },
   "crescent-dex": {
     "timetravel": false,
@@ -1209,7 +1209,7 @@
     "deadFrom": "2024-05-01",
     "hallmarks": [
       [
-        1713052800,
+        "2024-04-14",
         "Sunset of Crescent Network"
       ]
     ]
@@ -1217,11 +1217,11 @@
   "crolend": {
     "hallmarks": [
       [
-        1670004805,
+        "2022-12-02",
         "Project rugged"
       ]
     ],
-    "deadFrom": 1670004805,
+    "deadFrom": "2022-12-02",
     "cronos": {
       "tvl": "_f",
       "borrowed": "_f"
@@ -1230,11 +1230,11 @@
   "crown-finance": {
     "hallmarks": [
       [
-        1655582945,
+        "2022-06-18",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1655582945,
+    "deadFrom": "2022-06-18",
     "cronos": {
       "tvl": "_f"
     }
@@ -1271,7 +1271,7 @@
     "deadFrom": "2024-09-17",
     "hallmarks": [
       [
-        1726531200,
+        "2024-09-17",
         "Sunset of cSwap"
       ]
     ],
@@ -1304,7 +1304,7 @@
     }
   },
   "deepseadao": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "avax": {
       "tvl": "_f",
@@ -1312,7 +1312,7 @@
     }
   },
   "deerfi": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "ethereum": {
       "tvl": "_f"
@@ -1338,7 +1338,7 @@
   "defiedge": {
     "hallmarks": [
       [
-        1730332800,
+        "2024-10-31",
         "Definitive Sunset of DefiEdge"
       ]
     ],
@@ -1434,7 +1434,7 @@
   "dinosaur-finance": {
     "hallmarks": [
       [
-        1675814400,
+        "2023-02-08",
         "Rug Pull"
       ]
     ],
@@ -1583,7 +1583,7 @@
   "drachma-exchange": {
     "hallmarks": [
       [
-        1660392000,
+        "2022-08-13",
         "Rug Pull"
       ]
     ],
@@ -1591,7 +1591,7 @@
     "solana": {
       "tvl": "_f"
     },
-    "deadFrom": 1660392000
+    "deadFrom": "2022-08-13"
   },
   "dvol": {
     "timetravel": false,
@@ -1618,11 +1618,11 @@
     "misrepresentedTokens": true,
     "hallmarks": [
       [
-        1671062400,
+        "2022-12-15",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1671062400,
+    "deadFrom": "2022-12-15",
     "echelon": {
       "tvl": "_f"
     }
@@ -1666,7 +1666,7 @@
     "deadFrom": "2023-08-09"
   },
   "emeraldswap": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "methodology": "TVL includes all farms in MasterChef contract",
     "bsc": {
       "staking": "_f",
@@ -1693,7 +1693,7 @@
   "equilibrium": {
     "hallmarks": [
       [
-        1714550400,
+        "2024-05-01",
         "Sunset of Equilibrium Network"
       ]
     ],
@@ -1704,7 +1704,7 @@
     }
   },
   "everestdao": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "avax": {
       "tvl": "_f"
     },
@@ -1779,10 +1779,10 @@
     }
   },
   "fdoge": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "hallmarks": [
       [
-        1645488000,
+        "2022-02-22",
         "Rug Pull"
       ]
     ],
@@ -1807,7 +1807,7 @@
     },
     "hallmarks": [
       [
-        1688169600,
+        "2023-07-01",
         "Launch on ISLM"
       ]
     ],
@@ -1826,10 +1826,10 @@
       "tvl": "_f",
       "borrowed": "_f"
     },
-    "deadFrom": 1735862400,
+    "deadFrom": "2025-01-03",
     "hallmarks": [
       [
-        1735862400,
+        "2025-01-03",
         "Rug Pull"
       ]
     ]
@@ -1927,12 +1927,12 @@
   "friktion": {
     "hallmarks": [
       [
-        1674838800,
+        "2023-01-27",
         "Sunset Protocol"
       ]
     ],
     "timetravel": false,
-    "deadFrom": 1674838800,
+    "deadFrom": "2023-01-27",
     "methodology": "TVL is scraped from the window.friktionSnapshot variable in app.friktion.fi and saved to the GitHub repo at Friktion-Labs/mainnet-tvl-snapshots. The data is the same as what is displayed on the app",
     "solana": {
       "tvl": "_f"
@@ -1966,7 +1966,7 @@
   "fundex": {
     "hallmarks": [
       [
-        1680134400,
+        "2023-03-30",
         "Rugpull"
       ]
     ],
@@ -1989,7 +1989,7 @@
   },
   "galatea": {
     "misrepresentedTokens": true,
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "cronos": {
       "tvl": "_f"
     }
@@ -2017,13 +2017,13 @@
     },
     "hallmarks": [
       [
-        1665090175,
+        "2022-10-06",
         "BSC Bridge hacker deposits coins"
       ]
     ]
   },
   "genesis": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "methodology": "TVL includes all farms in MasterChef contract",
     "cronos": {
@@ -2083,7 +2083,7 @@
     },
     "hallmarks": [
       [
-        1671415334,
+        "2022-12-19",
         "Goledo Creation timestamp"
       ]
     ],
@@ -2201,17 +2201,17 @@
     },
     "hallmarks": [
       [
-        1732734407,
+        "2024-11-27",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1732734407
+    "deadFrom": "2024-11-27"
   },
   "hypervault": {
     "deadFrom": "2025-09-26",
     "hallmarks": [
       [
-        1758844800,
+        "2025-09-26",
         "Rug pull"
       ]
     ],
@@ -2243,7 +2243,7 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
@@ -2290,7 +2290,7 @@
   "inuswap": {
     "hallmarks": [
       [
-        1663200000,
+        "2022-09-15",
         "Rug Pull"
       ]
     ],
@@ -2307,7 +2307,7 @@
     "deadFrom": "2023-11-12"
   },
   "invictus": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "timetravel": false,
     "misrepresentedTokens": true,
     "doublecounted": true,
@@ -2353,7 +2353,7 @@
   "jbc": {
     "hallmarks": [
       [
-        1681516800,
+        "2023-04-15",
         "Rug Pull"
       ]
     ],
@@ -2416,7 +2416,7 @@
     "deadFrom": "2026-01-25"
   },
   "kandyland-finance": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "avax": {
       "tvl": "_f",
       "staking": "_f"
@@ -2431,7 +2431,7 @@
     },
     "hallmarks": [
       [
-        1690589340,
+        "2023-07-29",
         "Rug"
       ]
     ],
@@ -2449,7 +2449,7 @@
     "deadFrom": "2022-10-01",
     "hallmarks": [
       [
-        1660521600,
+        "2022-08-15",
         "incentives not given"
       ]
     ],
@@ -2479,7 +2479,7 @@
   "kefirswap": {
     "hallmarks": [
       [
-        1656806400,
+        "2022-07-03",
         "Rug Pull"
       ]
     ],
@@ -2519,11 +2519,11 @@
     },
     "hallmarks": [
       [
-        1662336000,
+        "2022-09-05",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1662336000
+    "deadFrom": "2022-09-05"
   },
   "klend": {
     "bsc": {
@@ -2542,7 +2542,7 @@
     "deadFrom": "2025-01-01",
     "hallmarks": [
       [
-        1711929600,
+        "2024-04-01",
         "Sunset of Kleva-Farm"
       ]
     ],
@@ -2612,7 +2612,7 @@
   "kokomo": {
     "hallmarks": [
       [
-        1680264000,
+        "2023-03-31",
         "Rug Pull"
       ]
     ],
@@ -2624,7 +2624,7 @@
       "tvl": "_f",
       "borrowed": "_f"
     },
-    "deadFrom": 1680264000
+    "deadFrom": "2023-03-31"
   },
   "konverter": {
     "methodology": "Sum of each liquidity pool's value",
@@ -2663,7 +2663,7 @@
   "kumu-finance": {
     "hallmarks": [
       [
-        1662336000,
+        "2022-09-05",
         "Rug Pull"
       ]
     ],
@@ -2674,10 +2674,10 @@
     }
   },
   "kuufinance": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "hallmarks": [
       [
-        1633737600,
+        "2021-10-09",
         "pausing liquidations program indefinitely"
       ]
     ],
@@ -2701,7 +2701,7 @@
     },
     "hallmarks": [
       [
-        1697068800,
+        "2023-10-12",
         "Rug Pull"
       ]
     ],
@@ -2816,7 +2816,7 @@
     "timetravel": false,
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ]
@@ -2866,11 +2866,11 @@
   "manifesto": {
     "hallmarks": [
       [
-        1676332800,
+        "2023-02-14",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1676332800,
+    "deadFrom": "2023-02-14",
     "misrepresentedTokens": true,
     "canto": {
       "tvl": "_f",
@@ -2922,7 +2922,7 @@
     "methodology": "Counts MAXI, MAXI LP (MAXI-DAI.e JLP, MAXI-WAVAX PGL), DAI.e, USDC, WAVAX, liquidity tokens (PGL, JLP), single partner tokens on the treasury and allocators"
   },
   "mensa": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "methodology": "Using the same methodology applied to other lending platforms, TVL for Mensa consists deposits made to the protocol and borrowed tokens are not counted.",
     "fantom": {
@@ -2932,7 +2932,7 @@
   "merchant": {
     "hallmarks": [
       [
-        1720051200,
+        "2024-07-04",
         "Rug Pull"
       ]
     ],
@@ -2982,7 +2982,7 @@
   "metropolis": {
     "hallmarks": [
       [
-        1680097334,
+        "2023-03-29",
         "Acquired by Swapline"
       ]
     ],
@@ -2990,7 +2990,7 @@
     "fantom": {
       "tvl": "_f"
     },
-    "deadFrom": 1680097334
+    "deadFrom": "2023-03-29"
   },
   "midasdao": {
     "avax": {
@@ -3110,11 +3110,11 @@
   "mirror": {
     "hallmarks": [
       [
-        1653696000,
+        "2022-05-28",
         "LUNC mispricing exploit"
       ],
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
@@ -3137,12 +3137,12 @@
   "mosquitos-finance": {
     "hallmarks": [
       [
-        1678320000,
+        "2023-03-09",
         "Rug Pull"
       ]
     ],
     "timetravel": false,
-    "deadFrom": 1678320000,
+    "deadFrom": "2023-03-09",
     "aptos": {
       "tvl": "_f",
       "staking": "_f"
@@ -3165,7 +3165,7 @@
   "myswap": {
     "hallmarks": [
       [
-        1747094400,
+        "2025-05-13",
         "Sunset of MySwap"
       ]
     ],
@@ -3189,11 +3189,11 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
-    "deadFrom": 1651881600
+    "deadFrom": "2022-05-07"
   },
   "nft360": {
     "kava": {
@@ -3204,11 +3204,11 @@
   "nidhi-dao": {
     "hallmarks": [
       [
-        1651320000,
+        "2022-04-30",
         "NidhiDAO/TangibleDAO Merge"
       ]
     ],
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "polygon": {
       "tvl": "_f"
     }
@@ -3222,7 +3222,7 @@
     },
     "hallmarks": [
       [
-        1646179200,
+        "2022-03-02",
         "Rug Pull"
       ]
     ],
@@ -3235,7 +3235,7 @@
       "tvl": "_f",
       "staking": "_f"
     },
-    "deadFrom": 1669009600
+    "deadFrom": "2022-11-21"
   },
   "noahark": {
     "misrepresentedTokens": true,
@@ -3248,7 +3248,7 @@
     "deadFrom": "2024-08-22",
     "hallmarks": [
       [
-        1724284800,
+        "2024-08-22",
         "End of Deprecation process for migrating from Notional V2 to Notional V3"
       ]
     ],
@@ -3318,11 +3318,11 @@
   "ohmw": {
     "hallmarks": [
       [
-        1670457600,
+        "2022-12-08",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1670457600,
+    "deadFrom": "2022-12-08",
     "ethpow": {
       "tvl": "_f"
     }
@@ -3330,7 +3330,7 @@
   "oin-finance": {
     "hallmarks": [
       [
-        1675036800,
+        "2023-01-30",
         "Winding down announced"
       ]
     ],
@@ -3345,13 +3345,13 @@
     "near": {
       "tvl": "_f"
     },
-    "deadFrom": 1675036800,
+    "deadFrom": "2023-01-30",
     "methodology": "Counts TVL on multi-chain of OIN-Finance"
   },
   "olab": {
     "methodology": "TVL (Total Value Locked) refers to the total value of all collateral tokens held in the Conditional Token smart contract, including all collateral tokens provided to O.LAB Prediction markets across different chains.",
     "start": 23899060,
-    "deadFrom": 1752422400,
+    "deadFrom": "2025-07-13",
     "base": {
       "tvl": "_f"
     }
@@ -3388,11 +3388,11 @@
   "one-ring": {
     "hallmarks": [
       [
-        1647907200,
+        "2022-03-22",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1647907200,
+    "deadFrom": "2022-03-22",
     "fantom": {
       "tvl": "_f"
     },
@@ -3401,7 +3401,7 @@
     }
   },
   "onedaofinance": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "harmony": {
       "tvl": "_f",
       "staking": "_f"
@@ -3487,11 +3487,11 @@
     },
     "hallmarks": [
       [
-        1641686400,
+        "2022-01-09",
         "Pearl Chest launch"
       ],
       [
-        1657929600,
+        "2022-07-16",
         "Staking v2 launch"
       ]
     ]
@@ -3527,7 +3527,7 @@
     "misrepresentedTokens": true,
     "hallmarks": [
       [
-        1679356800,
+        "2023-03-21",
         "Rug Pull"
       ]
     ],
@@ -3635,7 +3635,7 @@
     "misrepresentedTokens": true,
     "hallmarks": [
       [
-        1699578000,
+        "2023-11-10",
         "Rug Pull"
       ]
     ],
@@ -3654,11 +3654,11 @@
     },
     "hallmarks": [
       [
-        1646179200,
+        "2022-03-02",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1648765747
+    "deadFrom": "2022-03-31"
   },
   "phezzan": {
     "timetravel": false,
@@ -3697,7 +3697,7 @@
     }
   },
   "piggy": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "start": "2021-06-08",
     "bsc": {
       "tvl": "_f"
@@ -3713,7 +3713,7 @@
     "deadFrom": "2023-04-09"
   },
   "piggybankdao": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "avax": {
       "tvl": "_f",
@@ -3735,7 +3735,7 @@
     },
     "hallmarks": [
       [
-        1688670115,
+        "2023-07-06",
         "Multichain Exploit"
       ]
     ],
@@ -3879,11 +3879,11 @@
     },
     "hallmarks": [
       [
-        1662842254,
+        "2022-09-10",
         "Rug pull"
       ]
     ],
-    "deadFrom": 1662842254
+    "deadFrom": "2022-09-10"
   },
   "polywhale": {
     "misrepresentedTokens": true,
@@ -3892,7 +3892,7 @@
       "pool2": "_f",
       "staking": "_f"
     },
-    "deadFrom": 1648765747
+    "deadFrom": "2022-03-31"
   },
   "pony": {
     "ethereum": {
@@ -3944,11 +3944,11 @@
   "pulsedao": {
     "hallmarks": [
       [
-        1647216000,
+        "2022-03-14",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "fantom": {
       "tvl": "_f",
@@ -3965,7 +3965,7 @@
     "deadFrom": "2022-05-26",
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ]
@@ -4011,10 +4011,10 @@
     "base": {
       "tvl": "_f"
     },
-    "deadFrom": 1693180800,
+    "deadFrom": "2023-08-28",
     "hallmarks": [
       [
-        1693180800,
+        "2023-08-28",
         "Rug Pull"
       ]
     ]
@@ -4038,14 +4038,14 @@
     "timetravel": false,
     "hallmarks": [
       [
-        1675728000,
+        "2023-02-07",
         "Announcement to move from Ratio to PHNX"
       ]
     ],
     "solana": {
       "tvl": "_f"
     },
-    "deadFrom": 1675728000,
+    "deadFrom": "2023-02-07",
     "methodology": "To obtain the Ratio Finance TVL we make on-chain calls"
   },
   "real-veRWA": {
@@ -4149,7 +4149,7 @@
     "deadFrom": "2023-07-11"
   },
   "ruler": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "ethereum": {
       "tvl": "_f"
     }
@@ -4177,11 +4177,11 @@
   "sashimidao": {
     "hallmarks": [
       [
-        1642464000,
+        "2022-01-18",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1642464000,
+    "deadFrom": "2022-01-18",
     "misrepresentedTokens": true,
     "avax": {
       "staking": "_f",
@@ -4192,7 +4192,7 @@
   "scream": {
     "hallmarks": [
       [
-        1652572800,
+        "2022-05-15",
         "DEI depeg"
       ]
     ],
@@ -4239,7 +4239,7 @@
     },
     "hallmarks": [
       [
-        1677200400,
+        "2023-02-24",
         "Vaults deprecated"
       ]
     ],
@@ -4255,11 +4255,11 @@
   "sierra": {
     "hallmarks": [
       [
-        1648765747,
+        "2022-03-31",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "avax": {
       "tvl": "_f",
@@ -4309,11 +4309,11 @@
   "snowflake": {
     "hallmarks": [
       [
-        1672448400,
+        "2022-12-31",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1672448400,
+    "deadFrom": "2022-12-31",
     "polygon": {
       "tvl": "_f",
       "staking": "_f"
@@ -4326,7 +4326,7 @@
   "sohei": {
     "hallmarks": [
       [
-        1680480000,
+        "2023-04-03",
         "Team out of funds announced"
       ]
     ],
@@ -4339,11 +4339,11 @@
   "solana_miner": {
     "hallmarks": [
       [
-        1704834000,
+        "2024-01-09",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1704834000,
+    "deadFrom": "2024-01-09",
     "timetravel": false,
     "methodology": "Solana Miner is designed to provide a user-friendly mining experience, minimizing technical barriers and facilitating newcomers. Our product focuses not only on building a community but also on delivering passive income for investors. See more: https://solanaminer.xyz",
     "solana": {
@@ -4359,7 +4359,7 @@
     "deadFrom": "2023-02-09"
   },
   "solfire-protocol": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "solana": {
       "tvl": "_f"
     },
@@ -4397,7 +4397,7 @@
     },
     "hallmarks": [
       [
-        1647734400,
+        "2022-03-20",
         "Rug Pull"
       ]
     ],
@@ -4411,7 +4411,7 @@
     }
   },
   "specter-finance": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "fantom": {
       "tvl": "_f",
@@ -4430,7 +4430,7 @@
   "spiritswap-lending": {
     "hallmarks": [
       [
-        1693526400,
+        "2023-09-01",
         "Lending Network deprecated"
       ]
     ],
@@ -4451,11 +4451,11 @@
     "misrepresentedTokens": true,
     "hallmarks": [
       [
-        1666656000,
+        "2022-10-25",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1666656000,
+    "deadFrom": "2022-10-25",
     "dogechain": {
       "tvl": "_f"
     }
@@ -4501,11 +4501,11 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
-    "deadFrom": 1651881600
+    "deadFrom": "2022-05-07"
   },
   "steak": {
     "timetravel": false,
@@ -4515,7 +4515,7 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
@@ -4527,16 +4527,16 @@
     },
     "hallmarks": [
       [
-        1658370720,
+        "2022-07-21",
         "Rug pull"
       ]
     ],
-    "deadFrom": 1658370720
+    "deadFrom": "2022-07-21"
   },
   "strips": {
     "hallmarks": [
       [
-        1658102400,
+        "2022-07-18",
         "Winding down of v1 announced"
       ]
     ],
@@ -4544,7 +4544,7 @@
       "tvl": "_f",
       "pool2": "_f"
     },
-    "deadFrom": 1658102400,
+    "deadFrom": "2022-07-18",
     "methodology": "Balance of USDC (fees) held by each market as core TVL as well as STRP/USDC SLP held by each market as pool2"
   },
   "strudel": {
@@ -4633,7 +4633,7 @@
     }
   },
   "swing-dao": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "avax": {
       "tvl": "_f",
@@ -4683,7 +4683,7 @@
     "methodology": "we only count tokens deposited in the yolo contract"
   },
   "synlev": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "ethereum": {
       "tvl": "_f"
     }
@@ -4699,11 +4699,11 @@
   "taichi": {
     "hallmarks": [
       [
-        1648765747,
+        "2022-03-31",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "bsc": {
       "tvl": "_f",
       "staking": "_f"
@@ -4719,11 +4719,11 @@
   "talentprotocol": {
     "hallmarks": [
       [
-        1656547200,
+        "2022-06-30",
         "Token Purchase & Rewards claiming halt"
       ]
     ],
-    "deadFrom": 1656547200,
+    "deadFrom": "2022-06-30",
     "methodology": "Get all cUSD that the staking contract for Talent Protocol holds",
     "celo": {
       "tvl": "_f"
@@ -4754,7 +4754,7 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
@@ -4820,11 +4820,11 @@
   "trapeza-protocol": {
     "hallmarks": [
       [
-        1648684800,
+        "2022-03-31",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1648684800,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "bsc": {
       "tvl": "_f",
@@ -4832,7 +4832,7 @@
     }
   },
   "traverse": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
     "avax": {
       "tvl": "_f",
@@ -4840,7 +4840,7 @@
     }
   },
   "treasury/cerberusdao": {
-    "deadFrom": 1648765747,
+    "deadFrom": "2022-03-31",
     "ethereum": {
       "tvl": "_f"
     }
@@ -4898,7 +4898,7 @@
     },
     "hallmarks": [
       [
-        1647043200,
+        "2022-03-12",
         "Rug Pull"
       ]
     ],
@@ -4907,7 +4907,7 @@
   "twtstake": {
     "hallmarks": [
       [
-        1681948800,
+        "2023-04-20",
         "TWTStake Flagged on Twitter"
       ]
     ],
@@ -4976,11 +4976,11 @@
   "vacusfinance": {
     "hallmarks": [
       [
-        1665187200,
+        "2022-10-08",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1665187200,
+    "deadFrom": "2022-10-08",
     "misrepresentedTokens": true,
     "avax": {
       "tvl": "_f",
@@ -4994,7 +4994,7 @@
     },
     "hallmarks": [
       [
-        1651881600,
+        "2022-05-07",
         "UST depeg"
       ]
     ],
@@ -5031,7 +5031,7 @@
   "velaro": {
     "hallmarks": [
       [
-        1668556800,
+        "2022-11-16",
         "USDV hack"
       ]
     ],
@@ -5221,11 +5221,11 @@
   "y2b-finance": {
     "hallmarks": [
       [
-        1673913600,
+        "2023-01-17",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1673913600,
+    "deadFrom": "2023-01-17",
     "ethereum": {
       "tvl": "_f"
     }
@@ -5329,7 +5329,7 @@
       "pool2": "_f",
       "staking": "_f"
     },
-    "deadFrom": 1648765747
+    "deadFrom": "2022-03-31"
   },
   "zilch": {
     "deadFrom": "2023-08-30",
@@ -5364,7 +5364,7 @@
   "zks-miner": {
     "hallmarks": [
       [
-        1682726400,
+        "2023-04-29",
         "Rug Pull"
       ]
     ],
@@ -5372,7 +5372,7 @@
     "era": {
       "tvl": "_f"
     },
-    "deadFrom": 1682726400
+    "deadFrom": "2023-04-29"
   },
   "zomb2": {
     "fantom": {
@@ -5385,11 +5385,11 @@
   "zombi": {
     "hallmarks": [
       [
-        1646870400,
+        "2022-03-10",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1646870400,
+    "deadFrom": "2022-03-10",
     "fantom": {
       "tvl": "_f",
       "pool2": "_f",
@@ -5399,11 +5399,11 @@
   "zootopia-finance": {
     "hallmarks": [
       [
-        1667174400,
+        "2022-10-31",
         "Rug Pull"
       ]
     ],
-    "deadFrom": 1667174400,
+    "deadFrom": "2022-10-31",
     "bsc": {
       "tvl": "_f"
     }

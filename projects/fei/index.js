@@ -62,5 +62,5 @@ module.exports = {
   ethereum: { tvl },
 };
 module.exports.hallmarks = [
-  [1651325520, "Exploit $80M FEI"],
+  ['2022-04-30', "Exploit $80M FEI"],
 ]
