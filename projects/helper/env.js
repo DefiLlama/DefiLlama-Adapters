@@ -51,6 +51,7 @@ const DEFAULTS = {
 const ENV_KEYS = [
   ...BOOL_KEYS,
   ...Object.keys(DEFAULTS),
+  'ELASTICSEARCH_CONFIG',
   'GETBLOCK_KEY',
   'LOFTY_API',
   'SOLANA_RPC_CLIENT',

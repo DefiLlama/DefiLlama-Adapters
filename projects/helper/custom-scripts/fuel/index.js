@@ -20,8 +20,6 @@ async function main() {
   const api = new sdk.ChainApi({ chain: 'fuel' })
   const balances = await require('../../../o2/api').fuel.tvl(api, query1)
 
-  console.log("o2 TVL:", balances);
-
   await sdk.elastic.writeLog('custom-scripts', {
     metadata: {
       type: 'tvl',
