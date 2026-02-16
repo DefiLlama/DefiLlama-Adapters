@@ -14,10 +14,10 @@ async function tvl(api) {
     const summary = await callSoroban(pairAddress, 'get_summary');
 
     if (!summary) {
-      throw new Error(`Stellar API returned invalid data for ${summary.asset}}`);
+      throw new Error(`Stellar API returned invalid data for ${pairAddress}}`);
     }
 
-    // Correct scaling: divide by 10^7 to get actual supply in millions
+    // Stellar uses 7 decimal places; divide by 10^7 to get the actual USDC value
     const collateral = Number(summary.collateral.total_collateral) / 1e7;
     api.addUSDValue(collateral);
   }
