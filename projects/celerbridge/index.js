@@ -110,7 +110,7 @@ const liquidityBridgeTokens = [
   {
     // DAI
     avax: ADDRESSES.avax.DAI,
-    bsc: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    bsc: ADDRESSES.bsc.DAI,
     ethereum: ADDRESSES.ethereum.DAI,
     optimism: ADDRESSES.optimism.DAI,
     polygon: ADDRESSES.polygon.DAI,
@@ -536,5 +536,5 @@ Array.from(chains).forEach(chain => {
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [
-  [1651881600, "UST depeg"],
+  ['2022-05-07', "UST depeg"],
 ];

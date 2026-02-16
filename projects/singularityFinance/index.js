@@ -3,13 +3,13 @@ const poolconfig = require('./staking.json');
 const sfiToken = {
   1: "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF",
   56: "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF",
-  8453: "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF"
+  8453: "0x863B7364a29daA23C9FCBD02e27D129A8B185891"
 };
 
 const vaultRegistry = {
   // 1: "",
   // 56: "",
-  8453: "0x414F0e07cd833cE73c9d59280699f910b48E1ECb",
+  8453: "0xe260c97949bB01E49c0af64a3525458197851657",
 };
 
 const CHAIN_IDS = {

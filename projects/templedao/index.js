@@ -4,7 +4,15 @@ const { pool2 } = require("../helper/pool2");
 const { sumTokens, sumTokens2, } = require("../helper/unwrapLPs")
 const { createIncrementArray } = require("../helper/utils")
 const sdk = require('@defillama/sdk');
-const abi = require("./abi.json");
+const abi = {
+    "stakingToken": "address:stakingToken",
+    "operator": "address:operator",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+    "totalBalanceOf": "function totalBalanceOf(address _account) view returns (uint256)",
+    "curveToken": "address:curveToken",
+    "balances": "function balances(address) view returns (uint112 locked, uint32 nextUnlockIndex)"
+  };
 const poolInfos = {}
 
 const templeStakingContract = "0xEc3C1aBDAb15EbC069ec5e320EaACf716eDfC011";
@@ -86,6 +94,6 @@ module.exports = {
   methodology:
     "Counts TVL through TempleTreasury contract, locked LP in Convex and Aura",
   // hallmarks:[
-  //     [1665457200, "Exploit $2M"],
+  //     ['2022-10-11', "Exploit $2M"],
   //   ], 
 };

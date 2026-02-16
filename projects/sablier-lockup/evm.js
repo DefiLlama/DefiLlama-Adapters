@@ -32,12 +32,13 @@ const CHAIN_IDS_ENVIO = {
   unichain: 130, 
   xdc: 50,
   era: 324,
+  monad: 143,
 };
 
 // Chains that are not using the Envio indexer but using the Graph.
 const SUBGRAPH_ENDPOINTS = {
   sei: 'AJU5rBfbuApuJpeZeaz6NYuYnnhAhEy4gFkqsSdAT6xb',
-  iotex: '2P3sxwmcWBjMUv1C79Jh4h6VopBaBZeTocYWDUQqwWFV',
+  // iotex: '2P3sxwmcWBjMUv1C79Jh4h6VopBaBZeTocYWDUQqwWFV',
 };
 
 const config = {

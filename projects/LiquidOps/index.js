@@ -2,7 +2,7 @@ const { post } = require("../helper/http.js")
 const methodologies = require('../helper/methodologies');
 
 
-const endpoint = 'https://cu.ao-testnet.xyz'
+const endpoint = 'https://cu.ardrive.io'
 const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
 const geckoTickerTransformations = {
     'wAR': 'arweave',

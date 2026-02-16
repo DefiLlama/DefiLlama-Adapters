@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
-const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
 const sdk = require("@defillama/sdk");
@@ -9,6 +8,7 @@ const erc20Abi = require("../helper/abis/erc20.json");
 const contracts = require("./contracts.json");
 const { getLogs } = require('../helper/cache/getLogs')
 
+// https://docs.curve.finance/deployments/interactive-deployments/
 const chains = [
   "ethereum",
   "polygon",
@@ -36,6 +36,9 @@ const chains = [
   "tac",
   "etlk",
   "plasma",
+  "unichain",
+  "stable",
+  "monad"
 ];
 const registryIds = {
   stableswap: 0,
@@ -43,7 +46,6 @@ const registryIds = {
   crypto: 5,
   cryptoFactory: 6
 };
-const decimalsCache = {}
 const nameCache = {}
 
 const blacklistedPools = {
@@ -61,14 +63,6 @@ const globalBlacklistedTokens = {
     '0xdbfefd2e8460a6ee4955a68582f85708baea60a3', // superOETHb
   ]
 }
-
-async function getDecimals(chain, token) {
-  token = token.toLowerCase()
-  const key = chain + '-' + token
-  if (!decimalsCache[key]) decimalsCache[key] = sdk.api.erc20.decimals(token, chain)
-  return decimalsCache[key]
-}
-
 
 const gasTokens = [
   ADDRESSES.GAS_TOKEN_2,
@@ -163,29 +157,6 @@ function aggregateBalanceCalls({ coins, nCoins, wrapped }) {
   return toa;
 }
 
-async function handleUnlistedFxTokens(balances, chain) {
-  if ("fxTokens" in contracts[chain]) {
-    const tokens = Object.values(contracts[chain].fxTokens);
-    for (let token of tokens) {
-      if (token.address in balances) {
-        const [rate, { output: decimals }] = await Promise.all([
-          getCache(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
-          getDecimals(chain, token.address)
-        ]);
-
-        sdk.util.sumSingleBalance(
-          balances,
-          "usd-coin",
-          balances[token.address] * rate.result / 10 ** decimals
-        );
-        delete balances[token.address];
-        delete balances[`${chain}:${token.address}`];
-      }
-    }
-  }
-  return;
-}
-
 async function unwrapPools({ poolList, registry, chain, block }) {
   if (!poolList.length) return;
   const registryAddress = poolList[0].input.target
@@ -204,7 +175,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases)), ...(globalBlacklistedTokens[chain] ?? [])]
   Object.entries(tokenNames).forEach(([token, name]) => {
     if ((name ?? '').startsWith('Curve.fi ')) {
-      sdk.log(chain, 'blacklisting', name)
+      // sdk.log(chain, 'blacklisting', name)
       blacklistedTokens.push(token)
     }
   })
@@ -335,8 +306,7 @@ async function tvl(api) {
   }
   tokensAndOwners = filteredTOA
 
-  await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens })
-  await handleUnlistedFxTokens(balances, chain);
+  await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens, permitFailure: true, })
   return balances;
 }
 
@@ -371,11 +341,11 @@ module.exports.harmony = {
 };
 
 module.exports.hallmarks = [
-  [1597446675, "CRV Launch"],
-  [1621213201, "Convex Launch"],
-  [1642374675, "MIM depeg"],
-  [1651881600, "UST depeg"],
-  [1654822801, "stETH depeg"],
-  [1667692800, "FTX collapse"],
-  // [1690715622, "Reentrancy hack"]
+  ['2020-08-14', "CRV Launch"],
+  ['2021-05-17', "Convex Launch"],
+  ['2022-01-16', "MIM depeg"],
+  ['2022-05-07', "UST depeg"],
+  ['2022-06-10', "stETH depeg"],
+  ['2022-11-06', "FTX collapse"],
+  // ['2023-07-30', "Reentrancy hack"]
 ];
