@@ -65,7 +65,7 @@ async function tvl(api) {
   tokenIds.forEach((tokenId, i) => {
     const config = poolMap[positionsData[i].poolId]
     const nft = adapterToNft[config.positionAdapter.toLowerCase()]
-    if (!nft) return
+    if (!nft) return // skip if adapter doesn't expose nftPositionManager (shouldn't happen in practice)
     if (!groups[nft]) groups[nft] = []
     groups[nft].push({ tokenId, pool: config.pool, token0: config.token0, token1: config.token1 })
   })
