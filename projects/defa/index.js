@@ -19,11 +19,10 @@ async function getActiveTvl() {
     headers: { "Content-Type": "application/json" },
   });
 
-  // Use XDR from simulation results, just like it was working
   const xdr = json?.result?.results?.[0]?.xdr;
   if (!xdr) throw new Error("TVL value not returned from Soroban simulation");
 
-  // Decode u128 from last 16 bytes (works in practice with your SIM_TX)
+  // Decode u128 from last 16 bytes (matches your SIM_TX output)
   const buffer = Buffer.from(xdr, "base64");
   const value = BigInt("0x" + buffer.slice(-16).toString("hex"));
 
@@ -31,25 +30,23 @@ async function getActiveTvl() {
 }
 
 async function tvl(api) {
-  const activeTvl = await getActiveTvl();
-
-  if (activeTvl === 0n) throw new Error("TVL is zero");
-
-  // Soroban contract returns value with 7 decimals
-  const normalized = Number(activeTvl) / 1e7;
-
-  // Round to nearest 1k for display
-  const displayValue = Math.round(normalized / 1000) * 1000;
-
-  api.addCGToken("usd-coin", displayValue);
-
-  return api.getBalances();
-}
+    const activeTvl = await getActiveTvl();
+  
+    console.log("Raw TVL from contract (u128):", activeTvl.toString()); //exact value
+  
+    if (activeTvl === 0n) throw new Error("TVL is zero");
+  
+    const normalized = Number(activeTvl) / 1e7;
+    api.addCGToken("usd-coin", normalized);
+  
+    return api.getBalances();
+  }
+  
 
 module.exports = {
   timetravel: false,
   methodology:
-    "TVL represents the total active liquidity across invoice-backed pools as reported directly by the on-chain Logger contract via Soroban simulation (get_active_tvl). Displayed values are rounded to the nearest thousand for readability.",
+    "TVL represents the total active liquidity across invoice-backed pools as reported directly by the on-chain Logger contract via Soroban simulation (get_active_tvl).",
   stellar: {
     tvl,
   },
