@@ -1,4 +1,3 @@
-const fetch = require("node-fetch");
 
 const RPC_URL = "https://soroban-rpc.mainnet.stellar.gateway.fm";
 
