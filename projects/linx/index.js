@@ -7,6 +7,9 @@ const config = {
 }
 
 const ALPH_TOKEN_ID = '0000000000000000000000000000000000000000000000000000000000000000';
+const WBTC_TOKEN_ID = '383bc735a4de6722af80546ec9eeb3cff508f2f68e97da19489ce69f3e703200';
+const WBTC_COINGECKO_ID = 'wrapped-bitcoin';
+const WBTC_DECIMALS = 8;
 
 const MARKET_CREATED_EVENT_INDEX = 4;
 const MARKET_METHOD_INDEX = 4;
@@ -56,7 +59,11 @@ async function tvl(api) {
     for (const market of markets) {
         const collateral = await getTokenBalance(market.contractId, market.collateralTokenId);
         const loanBalance = await getTokenBalance(market.contractId, market.loanTokenId);
-        api.add(market.collateralTokenId, collateral);
+        if (market.collateralTokenId === WBTC_TOKEN_ID) {
+            api.addCGToken(WBTC_COINGECKO_ID, Number(collateral) / 10 ** WBTC_DECIMALS);
+        } else {
+            api.add(market.collateralTokenId, collateral);
+        }
         api.add(market.loanTokenId, loanBalance);
     }
 }
