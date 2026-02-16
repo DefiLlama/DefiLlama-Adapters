@@ -9,7 +9,7 @@ async function writeToElastic({ project, tvlKey, chain, balances }) {
     chain,
     project,
     tvlKey,
-    balances,
+    balances: typeof balances === 'object' ? JSON.stringify(balances) : balances,
     timestamp: Math.floor(Date.now()),  // think this get overwritten by sdk.elastic
   });
 }
@@ -63,6 +63,9 @@ async function readFromElastic({ tvlKey, timestamp, range, project, throwIfMissi
       return null;
     }
   }
+
+  if (typeof documents[0].balances === 'string')
+    documents[0].balances = JSON.parse(documents[0].balances);
 
   return documents[0]
 }
