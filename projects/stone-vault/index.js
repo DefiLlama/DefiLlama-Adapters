@@ -14,6 +14,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology:
     'TVL is calculated as the sum of yield-bearing tokens (sparkDAI, aaveLUSD, scrvUSD) held by the StoneVaultCore contract.',
   start: 1739577600, // 2025-02-15 as baseline deployment era
