@@ -55,17 +55,19 @@ async function getTrustedTokenSet(chain) {
     const urls = {
       solana: 'https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json',
     }
-    if (!urls[chain]) throw new Error(`No trusted token list for chain ${chain}`)
+    if (!urls[chain]) {
+      return new Set(whitelistedTokens[chain] || [])
+    }
     const trustedTokens = await http.get(urls[chain]).then(async res => {
       const cgTokens = await http.get('https://api.coingecko.com/api/v3/coins/list?include_platform=true')
       const cgChainTokens = cgTokens.filter(i => i.platforms?.[chain]).map(i => i.platforms[chain]).filter(i => i)
       await sdk.cache.writeCache(`trustedTokens/res-${chain}`, { tokenList: res.tokens, cgChainTokens }, { skipCompression: true, })
 
-      const tokens = res.tokens.map(i => i.address).concat(cgChainTokens)
+      const tokens = res.tokens.map(i => i.address).concat(cgChainTokens).concat(whitelistedTokens[chain] || [])
       await sdk.cache.writeExpiringJsonCache(`trustedTokens-${chain}`, tokens, {}) // 1 day by default
       return tokens
     })
-    return new Set(trustedTokens.concat(whitelistedTokens[chain] || []))
+    return new Set(trustedTokens)
   }
 }
 
