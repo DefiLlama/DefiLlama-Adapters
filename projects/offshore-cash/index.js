@@ -38,10 +38,8 @@ async function staking(api) {
   api.add(OFF_TOKEN, relayerStaked)
 }
 
-// Vesting = OFF locked in TokenVesting contract
-// - Treasury: 65M OFF, 5-year linear vesting, 3-month cliff
-// - Team: 25M OFF, 3-year linear vesting, 1-year cliff
-// Both schedules managed by governance (revocable)
+// Vesting = OFF in TokenVesting + Timelock (governance treasury)
+// TokenVesting: 65M Treasury (5yr, 3mo cliff) + 25M Team (3yr, 1yr cliff)
 async function vesting(api) {
   const vestingBalance = await api.call({
     abi: 'erc20:balanceOf',
@@ -49,10 +47,7 @@ async function vesting(api) {
     params: [TOKEN_VESTING],
   })
   api.add(OFF_TOKEN, vestingBalance)
-}
 
-// Treasury = OFF held by Timelock (governance-controlled)
-async function treasury(api) {
   const timelockBalance = await api.call({
     abi: 'erc20:balanceOf',
     target: OFF_TOKEN,
@@ -62,11 +57,10 @@ async function treasury(api) {
 }
 
 module.exports = {
-  methodology: 'TVL counts ETH deposited in the MainPool privacy contract. Staking includes OFF tokens in Governance Staking (revenue share with 7d-4yr lock, 1x-2.5x multiplier) and RelayerRegistry collateral (20K OFF per relayer). Vesting tracks OFF in TokenVesting contract: 65M Treasury (5yr linear, 3mo cliff) and 25M Team (3yr linear, 1yr cliff). Treasury shows OFF held by the governance Timelock.',
+  methodology: 'TVL counts ETH deposited in the MainPool privacy contract. Staking includes OFF tokens in Governance Staking (revenue share with 7d-4yr lock, 1x-2.5x multiplier) and RelayerRegistry collateral (20K OFF per relayer). Vesting tracks OFF in TokenVesting (65M Treasury: 5yr linear, 3mo cliff; 25M Team: 3yr linear, 1yr cliff) and Timelock (governance treasury).',
   ethereum: {
     tvl,
     staking,
     vesting,
-    treasury,
   },
 }
