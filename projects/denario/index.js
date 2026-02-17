@@ -52,17 +52,14 @@ async function tvl(api) {
     }).then(res => res[0])
   ])
   
-	// Oracle price is in 8 decimals (standard for USD prices)
-	const silverPriceInUSD = silverPriceRaw / 1e8
-	const goldPriceInUSD = goldPriceRaw / 1e8
-	
-	// Calculate total value in USD and add to balances
-	const silverValueUSD = (totalSilverSupply * silverPriceInUSD) / 1e18 // token has 18 decimals
-	const goldValueUSD = (totalGoldSupply * goldPriceInUSD) / 1e18 // token has 18 decimals
-	const totalValueInUSD = silverValueUSD + goldValueUSD
+// Oracle price has 8 decimals; tokens have 18 decimals; USDC has 6 decimals.
+// Scale factor: price(8d) * supply(18d) / 1e18 * 1e6 / 1e8 = supply * price / 1e20
+const SCALE = BigInt('100000000000000000000') // 1e20
+const silverValueUSDC = BigInt(totalSilverSupply) * BigInt(silverPriceRaw) / SCALE
+const goldValueUSDC = BigInt(totalGoldSupply) * BigInt(goldPriceRaw) / SCALE
+const totalValueUSDC = silverValueUSDC + goldValueUSDC
 
-	api.add(ADDRESSES.polygon.USDC, totalValueInUSD * 1e6) // USDC has 6 decimals
-
+api.add(ADDRESSES.polygon.USDC, totalValueUSDC.toString()) // USDC has 6 decimals
 	return {
 		[silverAddress]: totalSilverSupply,
 		[goldAddress]: totalGoldSupply,
