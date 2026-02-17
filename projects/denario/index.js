@@ -27,31 +27,45 @@ const firstBlock = 62270459
 
 async function tvl(api) {
 
-	const totalSilverSupply = await api.call({
+	const [totalSilverSupply, totalGoldSupply] = await Promise.all([
+	api.call({
 		abi: 'erc20:totalSupply',
 		target: silverAddress,
+	}),
+	api.call({
+	  abi: 'erc20:totalSupply',
+	  target: goldAddress,
 	})
-	// const totalGoldSupply = await api.call({
-	// 	abi: 'erc20:totalSupply',
-	// 	target: goldAddress,
-	// })
+  ])
 
-	const silverPrice = await api.call({
+	const [silverPriceRaw, goldPriceRaw] = await Promise.all([
+    api.call({
 		target: priceOracle,
 		params: 'silvercoin/latest/USD',
 		abi: priceOracleABI[0]
-	}).then(res => res[0])
-	
+	}).then(res => res[0]),
+
+	 api.call({
+      target: priceOracle,
+      params: 'goldcoin/latest/USD',
+      abi: priceOracleABI[0]
+    }).then(res => res[0])
+  ])
+  
 	// Oracle price is in 8 decimals (standard for USD prices)
-	const silverPriceInUSD = silverPrice / 1e8
+	const silverPriceInUSD = silverPriceRaw / 1e8
+	const goldPriceInUSD = goldPriceRaw / 1e8
 	
 	// Calculate total value in USD and add to balances
-	const totalValueInUSD = (totalSilverSupply * silverPriceInUSD) / 1e18 // token has 18 decimals
+	const silverValueUSD = (totalSilverSupply * silverPriceInUSD) / 1e18 // token has 18 decimals
+	const goldValueUSD = (totalGoldSupply * goldPriceInUSD) / 1e18 // token has 18 decimals
+	const totalValueInUSD = silverValueUSD + goldValueUSD
+
 	api.add(ADDRESSES.polygon.USDC, totalValueInUSD * 1e6) // USDC has 6 decimals
 
 	return {
 		[silverAddress]: totalSilverSupply,
-		// [goldAddress]: totalGoldSupply,
+		[goldAddress]: totalGoldSupply,
 	}
 }
 
