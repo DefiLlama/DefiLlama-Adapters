@@ -1,6 +1,8 @@
 const { getConfig } = require('../helper/cache');
 const { getAssociatedTokenAddress, getTokenAccountBalances } = require('../helper/solana');
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { getCoreAssets } = require('../helper/tokenMapping');
+const { getUniqueAddresses } = require('../helper/utils');
 
 const BASE_API_URL = "https://secondswap-data-proxy.vercel.app";
 const VAULTS_API = `${BASE_API_URL}/vesting-vaults`;
@@ -20,11 +22,19 @@ async function fetchVestingVaults(secondswapChain) {
     return Array.isArray(vaults) ? vaults : [];
 }
 
-async function tvl(api) {
-    const secondswapChain = LLAMA_TO_SECONDSWAP_CHAINS[api.chain];
-    if (!secondswapChain) throw new Error(`Unsupported network: ${api.chain}`);
+function filterVaults(vaults, coreAssets, chain) {
+    const coreSet = new Set(getUniqueAddresses(coreAssets, chain));
+    const tvlVaults = [];
+    const vestingVaults = [];
+    for (const vault of vaults) {
+        const addr = vault.token_address.toLowerCase();
+        if (coreSet.has(addr)) tvlVaults.push(vault);
+        else vestingVaults.push(vault);
+    }
+    return { tvlVaults, vestingVaults };
+}
 
-    const vaults = await fetchVestingVaults(secondswapChain);
+async function sumVaults(api, vaults) {
     if (vaults.length === 0) return;
 
     if (api.chain === 'solana') {
@@ -46,10 +56,26 @@ async function tvl(api) {
     }
 }
 
+async function tvl(api) {
+    const secondswapChain = LLAMA_TO_SECONDSWAP_CHAINS[api.chain];
+    if (!secondswapChain) return;
+    const vaults = await fetchVestingVaults(secondswapChain);
+    const { tvlVaults } = filterVaults(vaults, getCoreAssets(api.chain), api.chain);
+    return sumVaults(api, tvlVaults);
+}
+
+async function vesting(api) {
+    const secondswapChain = LLAMA_TO_SECONDSWAP_CHAINS[api.chain];
+    if (!secondswapChain) return;
+    const vaults = await fetchVestingVaults(secondswapChain);
+    const { vestingVaults } = filterVaults(vaults, getCoreAssets(api.chain), api.chain);
+    return sumVaults(api, vestingVaults);
+}
+
 module.exports = {
     timetravel: false,
-    methodology: "SecondSwap is a decentralized marketplace for trading and managing locked/vesting tokens. TVL represents the total value of tokens currently locked in vesting contracts across all chains",
-    ethereum: { tvl: () => ({}), vesting: tvl },
-    avax: { tvl: () => ({}), vesting: tvl },
-    solana: { tvl: () => ({}), vesting: tvl },
+    methodology: "TVL counts whitelisted tokens (stablecoins, native gas tokens) locked in vesting contracts. Vesting counts all other non-circulating tokens.",
+    ethereum: { tvl, vesting },
+    avax: { tvl, vesting },
+    solana: { tvl, vesting },
 };
