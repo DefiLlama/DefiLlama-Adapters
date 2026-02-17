@@ -2,11 +2,12 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Snuggle Vault on Base - holds Uniswap V3 NFT positions
 const SNUGGLE_VAULT = '0x43Ca8D329d91ADF0aa471aC7587Aac1B2743F043'
+const SNUGGLE_VAULT_V2 = '0xd3923beccb6e1ddb048ed00a0a9bd602d16b7470'
 
 async function tvl(api) {
-  return sumTokens2({
+  await sumTokens2({
     api,
-    owners: [SNUGGLE_VAULT],
+    owners: [SNUGGLE_VAULT, SNUGGLE_VAULT_V2],
     resolveUniV3: true,
   })
 }
