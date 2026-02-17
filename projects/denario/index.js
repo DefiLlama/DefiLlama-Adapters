@@ -8,7 +8,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const silverAddress = ADDRESSES.polygon.DSC
 const goldAddress = ADDRESSES.polygon.DGC
 const priceOracle = '0x9be09fa9205e8f6b200d3c71a958ac146913662e'
-// const goldPricequery = 'goldcoin/latest/usd'
+
 
 const priceOracleABI = [
   {
