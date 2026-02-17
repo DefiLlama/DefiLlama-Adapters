@@ -302,8 +302,7 @@ module.exports = {
           return btcAddresses;
         }
 
-        async function getChangeAddresses() {
-          const paramsData = await get(ZENBTC_PARAMS_API);
+        async function getChangeAddresses(paramsData) {
           if (!paramsData?.params?.changeAddressKeyIDs) {
             return [];
           }
@@ -321,11 +320,25 @@ module.exports = {
           return changeAddresses;
         }
 
-        const [btcAddresses, changeAddresses] = await Promise.all([
+        async function getRewardsDepositAddress(paramsData) {
+          const keyID = paramsData?.params?.rewardsDepositKeyID;
+          if (!keyID) return [];
+          const keyData = await get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+          if (keyData.wallets && Array.isArray(keyData.wallets)) {
+            return keyData.wallets
+              .filter(w => w.type === 'WALLET_TYPE_BTC_MAINNET' && w.address)
+              .map(w => w.address);
+          }
+          return [];
+        }
+
+        const paramsData = await get(ZENBTC_PARAMS_API);
+        const [btcAddresses, changeAddresses, rewardsAddresses] = await Promise.all([
           getBitcoinAddresses(),
-          getChangeAddresses(),
+          getChangeAddresses(paramsData),
+          getRewardsDepositAddress(paramsData),
         ]);
-        const allAddresses = [...btcAddresses, ...changeAddresses];
+        const allAddresses = [...btcAddresses, ...changeAddresses, ...rewardsAddresses];
         return allAddresses;
       }
     });
