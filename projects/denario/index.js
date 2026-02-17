@@ -70,6 +70,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+	misrepresentedTokens: true,
 	methodology: 'TVL corresponds to the total amount of token minted, which is 100% backed by physical metal.',
 	start: firstBlock,
 	polygon: {
