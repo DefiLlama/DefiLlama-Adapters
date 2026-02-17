@@ -55,7 +55,6 @@ module.exports = {
   methodology: 'TVL is calculated as the sum of all KTA, USDC, EURC tokens held in liquidity pool accounts.',
   // Date of Alpaca DEX release
   start: '2025-11-12',
-  timetravel: false,
   keeta: {
     tvl,
   }

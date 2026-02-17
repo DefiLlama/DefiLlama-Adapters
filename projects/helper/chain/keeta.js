@@ -254,7 +254,8 @@ async function getTokenBalances(address, timestamp, tokens) {
     }
   }
 
-/* skip history based balance changes for now
+  if (timestamp < (Date.now() / 1000) - 4 * 60 * 60) {  // If the timestamp is more than 4 hours in the past
+
   const balanceChanges = await tokenBalanceChangesAfter(address, new Date(timestamp * 1000), tokens, currentHeadBlock);
 
   for (const [token, balanceChange] of balanceChanges) {
@@ -262,8 +263,9 @@ async function getTokenBalances(address, timestamp, tokens) {
       token,
       tokenBalances.get(token) - balanceChange,
     );
-  } */
+  }
 
+  }
   return tokenBalances;
 }
 
