@@ -21,7 +21,7 @@ module.exports = {
     "The LP Fund holds SOL earmarked for SOUL/SOL liquidity pool seeding.",
   solana: {
     tvl: sumTokensExport({
-      solOwners: [TREASURY_PDA, LP_FUND_PDA],
+      solOwners: [TREASURY_PDA,],
     }),
   },
 };
