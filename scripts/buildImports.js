@@ -31,9 +31,6 @@ async function run() {
   }
 
   fs.writeFileSync('scripts/tvlModules.json', JSON.stringify(moduleMap))
-  // await setCache('defi-configs', 'tvlModules', moduleMap, {
-  //   skipCompression: true,
-  // })
 
   process.exit(0)
 }
