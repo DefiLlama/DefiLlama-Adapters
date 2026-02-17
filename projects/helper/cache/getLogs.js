@@ -22,7 +22,7 @@ async function getLogs({ target,
   const block = api.block
   const chain = api.chain ?? 'ethereum'
 
-  if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
+  // if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
 
 
   if (!toBlock) toBlock = block
@@ -197,7 +197,7 @@ async function getLogs({ target,
   }
 }
 
-const indexerChains = new Set(['monad', 'base', 'unichain', 'bsc'])
+const indexerChains = new Set(['monad', 'base', 'unichain', 'bsc', 'xlayer'])
 
 async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, useIndexer, ...rest }) {
 
