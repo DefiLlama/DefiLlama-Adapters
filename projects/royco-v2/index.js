@@ -11,10 +11,16 @@ const config = {
     },
 };
 
-// Reserve addresses -- balances held by earn vaults
+// Reserve addresses -- balances held by multisigs and earn vaults
 // that are not deposited into Royco Market Vaults
 const reserves = {
     "ethereum": [
+        {
+            owner: "0x170ff06326ebb64bf609a848fc143143994af6c8", // Multisig
+            tokens: [
+                "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aaveUSDC (Aave v3)
+            ],
+        },
         {
             owner: "0xcd9f5907f92818bc06c9ad70217f089e190d2a32", // Earn vault
             tokens: [
@@ -54,7 +60,7 @@ const tvl = async ({ api, chain }) => {
         api.add(juniorAssets[i], BigInt(result.jtAssets));
     });
 
-    // Reserves — earn vaults
+    // Reserves — multisig and earn vaults
     const chainReserves = reserves[chain];
     if (chainReserves) {
         await api.sumTokens({
