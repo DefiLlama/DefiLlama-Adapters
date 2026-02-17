@@ -11,18 +11,6 @@ const ethereumTvl = async (api) => {
     const assetAddresses = await fetchAssetAddresses(api, chain)
     const { symbioticAgentConfigs, eigenlayerAgentConfigs } = await fetchAgentConfigs(api, chain)
 
-    const [cUSDTotalSupply] = await api.multiCall({
-        abi: 'erc20:totalSupply',
-        calls: [tokens.cUSD.address],
-    })
-    api.add(tokens.cUSD.address, cUSDTotalSupply)
-
-    const [cUSDLockboxBalance] = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: [{ target: tokens.cUSD.address, params: [infra.lz.cUSDLockbox.address] }],
-    })
-    api.add(tokens.cUSD.address, -cUSDLockboxBalance)
-
     const assetAvailableBalancesResults = await api.multiCall({
         abi: capABI.Vault.totalSupplies,
         calls: assetAddresses.map(asset => ({
@@ -119,7 +107,6 @@ const megaethStaking = async (api) => {
 }
 
 module.exports = {
-    doublecounted: true, // counting both cUSD and underlying assets.
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
     start: "2025-08-01",
     ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed, staking: ethereumStaking },
