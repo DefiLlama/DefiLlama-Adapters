@@ -59,7 +59,6 @@ module.exports = {
   hallmarks: [
     ["2025-12-19", "Nucleus protocol deprecated"]
   ],
-  deadFrom: "2025-12-19",
   ethereum: { tvl: (api) => tvl(api, 1) },
   plume_mainnet: { tvl: (api) => tvl(api, 98866) },
   arbitrum: { tvl: (api) => tvl(api, 42161) },
