@@ -41,7 +41,7 @@ async function getCachedEventLogs({ chain, fromBlock, toBlock, eventAbi }) {
   // If we already have logs up to (or near) the requested toBlock, just filter
   if (cache.toBlock && cache.toBlock + 2 >= toBlock) {
     const filtered = cache.logs.filter(
-      (l) => l.blockNumber >= fromBlock && l.blockNumber < toBlock
+      (l) => l.blockNumber >= fromBlock && l.blockNumber <= toBlock
     );
     return parseLogs(filtered);
   }
@@ -72,7 +72,7 @@ async function getCachedEventLogs({ chain, fromBlock, toBlock, eventAbi }) {
   await setCache(LOG_CACHE_FOLDER, key, cache);
 
   const filtered = cache.logs.filter(
-    (l) => l.blockNumber >= fromBlock && l.blockNumber < toBlock
+    (l) => l.blockNumber >= fromBlock && l.blockNumber <= toBlock
   );
   return parseLogs(filtered);
 }
