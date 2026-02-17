@@ -30,9 +30,9 @@ const reserves = {
     ],
 };
 
-const tvl = async ({ api, chain }) => {
+const tvl = async (api) => {
     // Market Vaults
-    const { factoryFromBlock, factoryAddress } = config[chain];
+    const { factoryFromBlock, factoryAddress } = config[api.chain];
 
     const marketDeployedLogs = await getLogs({
         api,
@@ -61,7 +61,7 @@ const tvl = async ({ api, chain }) => {
     });
 
     // Reserves — multisig and earn vaults
-    const chainReserves = reserves[chain];
+    const chainReserves = reserves[api.chain];
     if (chainReserves) {
         await api.sumTokens({
             tokensAndOwners: chainReserves.flatMap(({ owner, tokens }) =>
