@@ -929,6 +929,10 @@ async function sumTokens2({
   auraPools = [],
   sumChunkSleep,
 }) {
+
+  if (fetchCoValentTokens && owners.length > 10) 
+    throw new Error('fetchCoValentTokens option is not recommended for more than 10 owners due to rate limits')
+
   if (api) {
     chain = api.chain ?? chain
     block = api.block ?? block
