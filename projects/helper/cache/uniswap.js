@@ -59,12 +59,14 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     let symbols
     if (hasStablePools) {
       symbols = await api.multiCall({ abi: 'erc20:symbol', calls, })
-      cache.symbols.push(...symbols)
+      for (const s of symbols) cache.symbols.push(s)
     }
 
-    cache.pairs.push(...calls)
-    cache.token0s.push(...token0s)
-    cache.token1s.push(...token1s)
+    for (let i = 0; i < calls.length; i++) {
+      cache.pairs.push(calls[i])
+      cache.token0s.push(token0s[i])
+      cache.token1s.push(token1s[i])
+    }
 
     updateCache = updateCache || cache.pairs.length > _oldPairInfoLength
 
