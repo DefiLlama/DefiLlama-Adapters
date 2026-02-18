@@ -60,9 +60,16 @@ const combinedQuery = `{
   }
 }`;
 
+// Cache subgraph response — tvl() and borrowed() use the same query
+let _cachedData;
+async function fetchData() {
+  if (!_cachedData) _cachedData = graphQuery(COOLER_SUBGRAPH, combinedQuery);
+  return _cachedData;
+}
+
 async function tvl(api) {
   // TVL = gOHM collateral locked in the protocol
-  const data = await graphQuery(COOLER_SUBGRAPH, combinedQuery);
+  const data = await fetchData();
 
   // V2: gOHM collateral (BigInt, already in wei)
   const v2 = data?.monoCoolerGlobalSnapshots?.[0];
@@ -85,7 +92,7 @@ async function tvl(api) {
 
 async function borrowed(api) {
   // Borrowed = outstanding stablecoin debt
-  const data = await graphQuery(COOLER_SUBGRAPH, combinedQuery);
+  const data = await fetchData();
 
   // V2: USDS debt (BigInt, already in wei)
   const v2 = data?.monoCoolerGlobalSnapshots?.[0];
