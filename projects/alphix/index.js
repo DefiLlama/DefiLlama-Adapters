@@ -8,7 +8,7 @@ const HOOKS = [
 ]
 
 const poolQuery = `{
-  pools(first: 10) {
+  pools(first: 1000) {
     hooks
     token0 { id decimals }
     token1 { id decimals }
@@ -39,9 +39,11 @@ async function tvl(api) {
     api.addTokens(currencies, amounts)
   }
 
-  // 2. Vanilla pool liquidity — from subgraph
+  // 2. Vanilla pool liquidity — from subgraph (filtered to Alphix-managed pools)
+  const hookSet = new Set(HOOKS)
   const { pools } = await cachedGraphQuery('alphix/base', SUBGRAPH, poolQuery)
   for (const pool of pools) {
+    if (!hookSet.has(pool.hooks.toLowerCase())) continue
     const decimals0 = Number(pool.token0.decimals)
     const decimals1 = Number(pool.token1.decimals)
     api.add(pool.token0.id, toRaw(pool.totalValueLockedToken0, decimals0))
