@@ -83,6 +83,7 @@ const nodeBalances = async (api) => {
 }
 
 const tvl = async (api) => {
+  throw new Error('The adapter is broken')
   await nodeBalances(api)
   const depositPoolBalance = await api.call({ target: rocketVault, abi: abi.balanceOf, params: ['rocketDepositPool'] })
   api.add(ETH, depositPoolBalance)
