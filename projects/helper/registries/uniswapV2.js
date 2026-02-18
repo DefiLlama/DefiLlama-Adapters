@@ -788,7 +788,7 @@ const uniV2Configs = {
       hasStablePools: true,
       permitFailure: true,
     },
-    chain: '0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a',
+    optimism: '0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a',
   },
   'venuSwap': {
     zkfair: '0x4C72BF37eb72df730c22Df16ca594f6985130dD6',
