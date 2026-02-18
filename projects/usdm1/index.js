@@ -10,7 +10,7 @@ const XLM_USDM1_ISSUER = "GDM5QWWXCMDTQMZAKMYTCI52LA7FWBHAZMU5NJLMIFHDJISJRP2ZWP
 const HORIZON = "https://horizon.stellar.org";
 
 // Horizon returns a decimal string with 7 decimals; keep human-readable units.
-function stellarAmountToBaseUnits(amountStr) {
+function parseStellarAmount(amountStr) {
     return String(amountStr).trim();
 }
 
@@ -38,9 +38,10 @@ async function stellarTvl(api) {
     const amountStr = rec?.amount; // decimal string with 7 dp
     if (!amountStr) return;
 
-    const amount = stellarAmountToBaseUnits(amountStr);
+    const amount = parseStellarAmount(amountStr);
+    const amountNum = Number(amount);
 
-    api.add(`${XLM_USDM1_CODE}:${XLM_USDM1_ISSUER}`, amount);
+    api.add(`${XLM_USDM1_CODE}:${XLM_USDM1_ISSUER}`, amountNum);
 }
 
 module.exports = {
