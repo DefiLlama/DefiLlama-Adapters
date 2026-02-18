@@ -1,29 +1,27 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
-async function tvl(api) {
-  //Get all the vaults in the protocol
-  const assetsUrl = "https://free-api.vestige.fi/assets/locked";
-  const assets = await get(assetsUrl);
+// Fixed existing method (matches frontend TVL): https://vestige.fi/explore
+// async function tvl(api) {
+//   const data = await getConfig('vestige/algorand-assets', 'https://api.vestigelabs.org/assets/list?limit=250&order_by=tvl&order_dir=desc')
+//
+//   for (const asset of data.results) {
+//     if (!asset.total_lockup || asset.total_lockup <= 0) continue
+//     const tokenId = asset.id === 0 ? '1' : String(asset.id)
+//     const amount = Math.round((asset.total_lockup * 2) * (10 ** asset.decimals))
+//     api.add(tokenId, amount)
+//   }
+// }
 
-  let tvl = 0;
-
-  await Promise.all(
-    assets.map(async (asset) => {
-      const assetId = asset.asset_id;
-      const supplyInTvlLocked = asset.supply_in_tvl_locked;
-      const priceUrl = `https://free-api.vestige.fi/asset/${assetId}/price`;
-      const priceResponse = await get(priceUrl);
-      const price = priceResponse.USD;
-      tvl += supplyInTvlLocked * price * 2;
-    })
-  );
-
-  api.addUSDValue(Math.round(tvl))
+// New method using protocol-level tvl from Vestige API (zero tvl + non-active)
+const tvl = async (api) => {
+  const data = await getConfig('vestige/protocols', 'https://api.vestigelabs.org/protocols/10')
+  if (!data || !data.total_tvl) return
+  return api.addUSDValue(data.total_tvl) 
 }
 
 module.exports = {
-  timetravel:false,
-  misrepresentedTokens:true,
-  methodology:`Counts tokens in LPs only, transforms the price to USD and * them by 2 to account for the other side.`,
+  timetravel: false,
+  deadFrom: "2025-06-01", // Last reported data before endpoint went down, endpoint shows vestige protocol as non-active: https://api.vestigelabs.org/protocols/10
+  methodology: 'Counts all tokens locked in DEX liquidity pools on Algorand, as tracked by Vestige.',
   algorand: { tvl },
-};
+}
