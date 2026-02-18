@@ -1,5 +1,6 @@
 const fs = require("fs")
 const { get } = require("../projects/helper/http")
+const { allProtocols } = require("../projects/helper/registries/index.js")
 // const { setCache, getCache } = require("../projects/helper/cache")
 
 async function run() {
@@ -14,10 +15,11 @@ async function run() {
   for (const protocol of protocols) {
     try {
 
+      let pModule = protocol.module.replace(/\.js$/, '').replace(/\/index$/, '').replace(/\/api$/, '')
       if (moduleMap[protocol.module]) continue;  // already imported
 
       const modulePath = `../projects/${protocol.module}`
-      const importedModule = mockFunctions(require(modulePath))
+      let importedModule = mockFunctions(allProtocols[pModule] ?? require(modulePath))
 
       if (importedModule.hallmarks)
         importedModule.hallmarks = convertHallmarkStrings(importedModule.hallmarks)
@@ -29,9 +31,6 @@ async function run() {
   }
 
   fs.writeFileSync('scripts/tvlModules.json', JSON.stringify(moduleMap))
-  // await setCache('defi-configs', 'tvlModules', moduleMap, {
-  //   skipCompression: true,
-  // })
 
   process.exit(0)
 }

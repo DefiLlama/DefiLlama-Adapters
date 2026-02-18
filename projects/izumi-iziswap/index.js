@@ -55,6 +55,7 @@ const blacklistedTokens = [
 const blacklistedPools = {
   'hemi': [
     '0x469a5066578e22a1222cc78b2ccaca602db6bb4a',  // bfBTC/hemiBTC
+    '0xFE1c507Be86F977B61d12D1DA3c95D0dEeB1B86A',  // bfBTC/hemiBTC
     '0x98a3a18583138474aedd2ceec034cba1fa783613',  // brBTC/suBTC
     '0xe9635693b7606f1914c0cd698065ec84267a62a1',  // mBTC/uniBTC
   ],
@@ -68,7 +69,7 @@ Object.keys(poolHelpers).forEach(chain => {
 })
 
 module.exports.hallmarks = [
-  [1715648400,"End Mode TVL Campaign S1"]
+  ['2024-05-14',"End Mode TVL Campaign S1"]
 ]
 
 // module.exports.ultron.tvl =  () => ({}) // their RPC is rugging us

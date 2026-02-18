@@ -1,7 +1,25 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
-const abi = require("./abi.json");
+const abi = {
+    "oneTokenCount": "uint256:oneTokenCount",
+    "oneTokenAtIndex": "function oneTokenAtIndex(uint256 index) view returns (address)",
+    "assetCount": "uint256:assetCount",
+    "assetAtIndex": "function assetAtIndex(uint256 index) view returns (address)",
+    "token0": "address:token0",
+    "token1": "address:token1",
+    "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+    "allVaults": "function allVaults(uint256) view returns (address)",
+    "collateralTokenAtIndex": "function collateralTokenAtIndex(uint256 index) view returns (address module)",
+    "collateralTokenCount": "uint256:collateralTokenCount",
+    "pool": "address:pool",
+    "foreignTokenAtIndex": "function foreignTokenAtIndex(uint256 index) view returns (address)",
+    "foreignTokenCount": "uint256:foreignTokenCount",
+    "moduleCount": "uint256:moduleCount",
+    "moduleAtIndex": "function moduleAtIndex(uint256 index) view returns (address module)",
+    "modules": "function modules(address) view returns (string name, string url, uint8 moduleType)",
+    "owner": "address:owner"
+  };
 const { sumTokens2, } = require('../helper/unwrapLPs');
 
 const ichiLegacy = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";

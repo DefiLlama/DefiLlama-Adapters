@@ -13,6 +13,7 @@ async function current() {
   const parsed = await fetchTvlData()
   
   const latest = parsed.reduce((a, b) => (a.day > b.day ? a : b));
+  if (latest.total_tvl_usd > 1e8) throw new Error('Value too high: '+ latest.total_tvl_usd)
   return latest.total_tvl_usd;
 }
 

@@ -3,6 +3,8 @@ name: Build tvlModules and upload artifact
 on:
   push:
     branches: [ "main" ]
+  schedule:
+    - cron: '3 * * * *'
 
 jobs:
   build-and-upload:

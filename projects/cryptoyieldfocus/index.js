@@ -8,5 +8,5 @@ module.exports = masterchefExports({
 })
 
 module.exports.hallmarks =  [
-    [1631318400, "Rug Pull"]
+    ['2021-09-11', "Rug Pull"]
   ]

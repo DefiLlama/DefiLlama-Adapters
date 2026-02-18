@@ -1,6 +1,10 @@
 const { masterchefExports, } = require('../helper/unknownTokens');
 const { mergeExports } = require("../helper/utils");
-const abi = require("./abi.json");
+const abi = {
+    "poolInfoStaking": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accESTPerShare)",
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accESTPerShare, address strat)",
+    "wantLockedTotal": "uint256:wantLockedTotal"
+  };
 
 module.exports = mergeExports([
   masterchefExports({

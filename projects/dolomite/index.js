@@ -1,9 +1,7 @@
-const {
-  getNumMarkets,
-  getMarketTokenAddress,
-  getMarketTotalPar,
-  getMarketCurrentIndex,
-} = require("./dolomite-margin.json");
+const getNumMarkets = "uint256:getNumMarkets";
+const getMarketTokenAddress = "function getMarketTokenAddress(uint256 marketId) view returns (address)";
+const getMarketTotalPar = "function getMarketTotalPar(uint256 marketId) view returns (tuple(uint128 borrow, uint128 supply))";
+const getMarketCurrentIndex = "function getMarketCurrentIndex(uint256 marketId) view returns (tuple(uint96 borrow, uint96 supply, uint32 lastUpdate))";
 const BigNumber = require("bignumber.js");
 
 const basePar = '1000000000000000000'
