@@ -1,0 +1,36 @@
+{
+    "vaults": {
+        "primeUSD": {
+            "StakingToken": "0x549943e04f40284185054145c6e4e9568c1d3241",
+            "BoringVaultAddress": "0xF4e20B420482F8bEd60DDc4836890b3c4eCFD3E5",
+            "AccountantAddress": "0xd0E9563E2e77a3655Fa765c9aFA51d7898DCce1B",
+            "TellerAddress": "0x04004e0F6Ca848D65E38ceF738843E8b78F02a2a",
+            "DistributorAddress": "0xde760341e4db7a25785313ca90eeb4c65bdb4672",
+            "WithdrawerAddress": "0xaEd96044999e6Ffad529F2Ffb1780d3c696cF76a"
+        },
+        "primeETH": {
+            "StakingToken": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590",
+            "BoringVaultAddress": "0xccee5D9125Dcb41156e67C92a92BC0608D720660",
+            "AccountantAddress": "0x71A8166096F86EACa45AD97b9B4F34Bc97FfC47c",
+            "TellerAddress": "0x1936A74692D3d71653dE7D03299310B203654e96",
+            "DistributorAddress": "0x96a9c45af704e1a64129ebf624a40074655d38f6",
+            "WithdrawerAddress": "0xFb714e4A32d617c502b1A79c835B7a1396B14c09"
+        },
+        "primeBTC": {
+            "StakingToken": "0x0555e30da8f98308edb960aa94c0db47230d2b9c",
+            "BoringVaultAddress": "0xd57C84F393B01ec01E1F42a9977795b2bca95837",
+            "AccountantAddress": "0x7c6c4554eC10b4BdA09d7a6fa9Be423896942A31",
+            "TellerAddress": "0x8176e31cd227Ffa6d78907521FFe0C077095D94b",
+            "DistributorAddress": "0x01867f25a7a285de5a19c2a3655ded09609b82a8",
+            "WithdrawerAddress": "0xF52405364695e068467c66dfc4e042536756F8Cb"
+        },
+        "primeBERA": {
+            "StakingToken": "0x6969696969696969696969696969696969696969",
+            "BoringVaultAddress": "0x3AF6CBd76FDb0C6315B7748Ba11243830565e783",
+            "AccountantAddress": "0x1d7e0B3070d80899bCd61A9c484780F54B1543D6",
+            "TellerAddress": "0x8198239B55c79a5E4E5460241C89EB11B53Eb2Ed",
+            "DistributorAddress": "0xac1ff4889255e581463fb9854c4e85122653f655",
+            "WithdrawerAddress": "0xdb1f0F4bc8DA11fb71FB18D432d4A3d1F2a53D56"
+        }
+    }
+}
