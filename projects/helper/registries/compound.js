@@ -164,6 +164,18 @@ const configs = {
       pool2: ['0x8082F587Ff2B24dadB2220026F4FCa9323Ed8080', '0xB70005C4980d78e8bE47D4C9ccCd7300D6a02501'],
     },
   },
+  'teralend': {
+    flare: { comptroller: '0xEBf6ed25aB1F79B5C10C7145C5167367bE31651f', cether: '0x02350987093a804556d65be52063E85eaF80C806', isInsolvent: true },
+  },
+  'strike': {
+    ethereum: { comptroller: '0xe2e17b2CBbf48211FA7eB8A875360e5e39bA2602', cether: '0xbee9cf658702527b0acb2719c1faa29edc006a92', isInsolvent: true },
+  },
+  'fenrirfinance': {
+    bsc: { comptroller: '0x56b4B49f31517be8DacC2ED471BCc20508A0e29D', isInsolvent: true },
+  },
+  'paribus': {
+    arbitrum: { comptroller: '0x712E2B12D75fe092838A3D2ad14B6fF73d3fdbc9', cether: '0xaffd437801434643b734d0b2853654876f66f7d7', isInsolvent: true },
+  },
   'mendi-finance': {
     methodology: 'Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets',
     linea: {

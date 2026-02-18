@@ -65,6 +65,10 @@ const aaveV2Configs = {
       staking: ['0x32FE0F8d0BC59836028E80bc2ed94AE8E169344B', '0x946bc715501413b9454bb6a31412a21998763f2d'],
     },
   },
+  'unleash': {
+    methodology,
+    sty: { registry: '0xC62Af8aa9E2358884B6e522900F91d3c924e1b38', isAaveV3Fork: true, isInsolvent: true },
+  },
   'lendle': {
     mantle: {
       registry: '0x30D990834539E1CE8Be816631b73a534e5044856',
@@ -142,6 +146,14 @@ const aaveConfigs = {
       blacklistedTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.BTUSD],
       staking: ['0x685D3b02b9b0F044A3C01Dbb95408FC2eB15a3b3', '0xB1EbdD56729940089Ecc3aD0BBEEB12b6842ea6F'],
       pool2: ['0x3eB63cff72f8687f8DE64b2f0e40a5B95302D028', '0x829F540957DFC652c4466a7F34de611E172e64E8'],
+    },
+  },
+  'betterbank': {
+    pulse: {
+      addressesProviderRegistry: '0x21597Ae2f941b5022c6E72fd02955B7f3C87f4Cb',
+      dataHelpers: ['0x2369cf50ee0e5727bd971c0d2d172ea6f376edaa'],
+      v3: true,
+      isInsolvent: true,
     },
   },
   'spark-fi': {

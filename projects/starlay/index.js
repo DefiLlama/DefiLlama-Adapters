@@ -7,6 +7,7 @@ module.exports = {
   methodology,
   astar: {
     ...aaveExports("astar", '0xF6206297b6857779443eF7Eca4a3cFFb1660F952', undefined, undefined, {
+      isInsolvent: true,
       abis: {
         getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])"
       }
@@ -15,14 +16,10 @@ module.exports = {
   },
   acala: {
     ...aaveExports("acala", '0xA666dD28059deF0B45505c1f1a5f49fAd2e03c11', undefined, undefined, {
+      isInsolvent: true,
       abis: {
         getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])"
       },
     })
   }
 };
-
-// NOTE: borrowed functions zeroed out due to bad debt
-// The aaveExports helper would normally calculate borrowed amounts, but we override them to return empty objects
-module.exports.astar.borrowed = () => ({})
-module.exports.acala.borrowed = () => ({})
