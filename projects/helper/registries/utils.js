@@ -16,15 +16,19 @@ function buildProtocolExports(configs, exportFn) {
     const topLevel = {}
     const chainConfigs = {}
 
+    let options = {}
+
     Object.entries(entry).forEach(([key, value]) => {
       if (topLevelKeys.has(key)) {
         topLevel[key] = value
+      } else if (key === '_options') {
+        options = value
       } else {
         chainConfigs[key] = value
       }
     })
 
-    const result = exportFn(chainConfigs)
+    const result = exportFn(chainConfigs, options)
 
     // extract chain-level extras (staking, pool2, etc.) from chain configs
     Object.entries(chainConfigs).forEach(([chain, chainConfig]) => {
