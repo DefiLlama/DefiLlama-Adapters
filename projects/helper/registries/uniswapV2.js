@@ -401,6 +401,8 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     polygon: '0xa2d23C7Ca6D360D5B0b30CaFF79dbBfa242B4811',
+    bsc: '0xcEDa3234D7D5b36114d886682A399c6d126A03e0',
+    arbitrum: '0xBd7A8c05D0eB214e3C5cc63D4B77C2Ea38bDe440',
   },
   'ManaSwap': {
     hyperliquid: '0x46BC787Bf21D9178f2dEbAD939e76c7E9Dd0A392',
