@@ -22,7 +22,6 @@ async function tvl() {
 module.exports = {
     methodology: "Counts the total IOTA staked in TokenLabs vIOTA liquid staking contracts, including pending deposits and uncollected staking rewards.",
     timetravel: false,
-    doublecounted: true,
     iota: {
         tvl,
     },
