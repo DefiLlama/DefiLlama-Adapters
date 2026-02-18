@@ -57,6 +57,12 @@ const MorphoConfigs = {
         fromBlock: 21439510,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xA1D94F746dEfa1928926b84fB2596c06926C0405',
+        fromBlock: 23375073,
+      },
+    ],
   },
   base: {
     vaultFactories: [
@@ -67,6 +73,12 @@ const MorphoConfigs = {
       {
         address: '0xFf62A7c278C62eD665133147129245053Bbf5918',
         fromBlock: 23928808,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x4501125508079A99ebBebCE205DeC9593C2b5857',
+        fromBlock: 35615206,
       },
     ],
   },
@@ -145,6 +157,12 @@ const MorphoConfigs = {
       {
         address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
         fromBlock: 296447195,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6b46fa3cc9EBF8aB230aBAc664E37F2966Bf7971',
+        fromBlock: 387016724,
       },
     ],
   },
