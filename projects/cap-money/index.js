@@ -84,31 +84,8 @@ const ethereumStaking = async (api) => {
     api.add(tokens.stcUSD.address, totalSupply - lockboxBalance)
 }
 
-const megaethTvl = async (api) => {
-    const { cUSD } = capConfig.megaeth.tokens;
-
-    const [balance] = await api.multiCall({
-        abi: 'erc20:totalSupply',
-        calls: [{ target: cUSD.address, permitFailure: true }],
-        permitFailure: true
-    });
-    if (balance) {
-        api.add(cUSD.address, balance);
-    }
-}
-
-const megaethStaking = async (api) => {
-    const { stcUSD } = capConfig.megaeth.tokens;
-
-    const totalSupply = await api.call({ abi: 'erc20:totalSupply', target: stcUSD.address, permitFailure: true });
-    if (totalSupply) {
-        api.add(stcUSD.address, totalSupply);
-    }
-}
-
 module.exports = {
-    methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
+    methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.). Bridged tokens on MegaETH are tracked via source chain (Ethereum) collateral only.',
     start: "2025-08-01",
     ethereum: { tvl: ethereumTvl, borrowed: ethereumBorrowed, staking: ethereumStaking },
-    megaeth: { tvl: megaethTvl, staking: megaethStaking }
 };
