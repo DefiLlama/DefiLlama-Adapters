@@ -1,5 +1,7 @@
 const ETH_VAULT_ADDRESS  = '0x7Dad75dD36dE234C937C105e652B6E50d68b0309';
-const HYPER_VAULT_ADDRESS = '0x4a35e7448Dad9cAc6B3e529050B5a6Ee56A0eDF0'
+const HYPER_VAULT_ADDRESS = '0x4a35e7448Dad9cAc6B3e529050B5a6Ee56A0eDF0';
+const MEGA_VAULT_ADDRESS = '0x8d694D1b369BdE5B274Ad643fEdD74f836E88543';
+
 const abi = {
   "paramsById": "function paramsById(uint48 vaultId) view returns ((address debtToken, address collateralToken, int8 leverageTier))"
 }
@@ -18,8 +20,13 @@ async function tvlHyperEVM(api) {
   return tvl(HYPER_VAULT_ADDRESS, api)
 }
 
+async function tvlMegaETH(api) {
+  return tvl(MEGA_VAULT_ADDRESS, api)
+}
+
 module.exports = {
   methodology: "Token balance in the vault contract",
   ethereum: { tvl: tvlEthereum },
-  hyperliquid: { tvl: tvlHyperEVM }
+  hyperliquid: { tvl: tvlHyperEVM },
+  megaeth: { tvl: tvlMegaETH },
 };
