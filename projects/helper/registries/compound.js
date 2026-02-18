@@ -176,6 +176,10 @@ const configs = {
   'paribus': {
     arbitrum: { comptroller: '0x712E2B12D75fe092838A3D2ad14B6fF73d3fdbc9', cether: '0xaffd437801434643b734d0b2853654876f66f7d7', isInsolvent: true },
   },
+  'fusefi-lending': {
+    hallmarks: [['2022-03-31', 'Ola Finance exploit']],
+    fuse: { comptroller: '0x26a562B713648d7F3D1E1031DCc0860A4F3Fa340', isInsolvent: true },
+  },
   'mendi-finance': {
     methodology: 'Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets',
     linea: {
