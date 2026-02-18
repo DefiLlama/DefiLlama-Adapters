@@ -681,12 +681,6 @@ const uniV3Configs = {
       fromBlock: 6523521,
     },
   },
-  'hydradex': {
-    hydra: {
-      factory: '0xd555277891c118109b8bd066249D541FF4f993A4',
-      fromBlock: 363060,
-    },
-  },
   'hydrex': {
     base: {
       factory: '0x36077D39cdC65E1e3FB65810430E5b2c4D5fA29E',
@@ -1025,56 +1019,6 @@ const uniV3Configs = {
       fromBlock: 247429,
     },
   },
-  'pancakeswap-v3': {
-    bsc: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 26956207,
-      blacklistedTokens: [
-        '0x860368babf32129c18306a70ce7db10c5b437072',
-        '0xc476d3961f77645464acccce404eb17815a80878',
-        '0xf8c7f403829cc0f9a37f126a3da41358c232acdf',
-        '0x95e7c70b58790a1cbd377bc403cd7e9be7e0afb1',
-        '0x454f4597582df557c2757403f47d3f3bbb890d43',
-        '0xf1917602fff55a5ebccc7d03aead225dd9bf3776',
-        '0x121a3fba8456ebce13964363ba35fea00c2aa3d2',
-        '0xd24616870ca41bc01074446988faeb0085a71190',
-        '0xb4357054c3dA8D46eD642383F03139aC7f090343',
-      ],
-    },
-    ethereum: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 16950685,
-    },
-    polygon_zkevm: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 750148,
-    },
-    linea: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 1445,
-    },
-    era: {
-      factory: '0x1BB72E0CbbEA93c08f535fc7856E0338D7F7a8aB',
-      fromBlock: 9413438,
-    },
-    arbitrum: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 101028949,
-      blacklistedTokens: ['0x12d773bb0c679d4dfbaf700086dc5e399656f892', '0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1'],
-    },
-    base: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 2912007,
-    },
-    op_bnb: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 1721753,
-    },
-    monad: {
-      factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
-      fromBlock: 23058782,
-    },
-  },
   'pangolin-v3': {
     avax: {
       factory: '0x1128F23D0bc0A8396E9FBC3c0c68f5EA228B8256',
@@ -1200,12 +1144,6 @@ const uniV3Configs = {
       factory: '0x0ccff3D02A3a200263eC4e0Fdb5E60a56721B8Ae',
       isAlgebra: true,
       fromBlock: 40341077,
-    },
-  },
-  'ra': {
-    fraxtal: {
-      factory: '0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42',
-      fromBlock: 1352717,
     },
   },
   'rabbitswap-v3': {
@@ -1641,24 +1579,11 @@ const uniV3Configs = {
       fromBlock: 34623300,
     },
   },
-  'synstation': {
-    soneium: {
-      factory: '0x81B4029bfCb5302317fe5d35D54544EA3328e30f',
-      fromBlock: 1812231,
-    },
-  },
   'synthswap-v3': {
     base: {
       factory: '0xa37359e63d1aa44c0acb2a4605d3b45785c97ee3',
       fromBlock: 2095251,
       isAlgebra: true,
-    },
-  },
-  'tangleswap': {
-    milkomeda: {
-      factory: '0xda2f048C128506e720b0b0b32F20432157dde1c7',
-      fromBlock: 19701714,
-      staking: ['0xbDD88a555cB49b6b482850aA50c1c2C74fa3367a', '0x6085C822B7A4c688D114468B1380a0Ed1873a0B3'],
     },
   },
   'taraswap': {

@@ -191,11 +191,6 @@ const uniV2Configs = {
   'degenswap': {
     degen: '0xA5E57CaB76caa09F66280F9Eb1529ed1059E87ba',
   },
-  'diamondswap': {
-    odyssey: '0x7d57C45dC107497C5c5c0F544a84691D2b06BC83',
-    base: '0xdc93aca9bf72ceb35d1f2cd305bd8335b5b88757',
-    avax: '0x7ab5ac142799b0a3b6f95c27a1f2149ebcf5287d',
-  },
   'dinosaureggs': {
     bsc: '0x73d9f93d53505cb8c4c7f952ae42450d9e859d10',
   },
@@ -588,9 +583,6 @@ const uniV2Configs = {
   'rexdex': {
     wan: '0xCc2F30462ED1C47Dd7Fb75C81c7F4Cd721eB2A66',
   },
-  'rubicon': {
-    base: '0xA5cA8Ba2e3017E9aF3Bd9EDa69e9E8C263Abf6cD',
-  },
   'sanctuary': {
     scroll: '0xAD71e466d6E9c5CbAC804dBF60dE2543d58B4b5B',
   },
@@ -602,6 +594,7 @@ const uniV2Configs = {
   },
   'savmswap': {
     svm: '0x1842c9bD09bCba88b58776c7995A9A9bD220A925',
+    prom: '0x3B73a7eDc9dfE4847a20BcCfEf6Eb1c90439f5C9',
   },
   'sboomfi': {
     sonic: '0x3638Ca700D67D560Be2A2d0DD471640957564829',
@@ -777,20 +770,6 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     optimism: '0x25CbdDb98b35ab1FF77413456B31EC81A6B6B746',
-  },
-  'velodrome-v2': {
-    hallmarks: [
-      ['2023-06-22', 'v2 Migration on OP Mainnet'],
-    ],
-    _options: {
-      abis: {
-        allPairsLength: 'uint256:allPoolsLength',
-        allPairs: 'function allPools(uint256) view returns (address)',
-      },
-      hasStablePools: true,
-      permitFailure: true,
-    },
-    optimism: '0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a',
   },
   'venuSwap': {
     zkfair: '0x4C72BF37eb72df730c22Df16ca594f6985130dD6',
