@@ -41,7 +41,7 @@ async function stellarTvl(api) {
     const amount = parseStellarAmount(amountStr);
     const amountNum = Number(amount);
 
-    api.add(`${XLM_USDM1_CODE}:${XLM_USDM1_ISSUER}`, amountNum);
+    api.add(ETH_USDM1, amountNum, { skipChain: true });
 }
 
 module.exports = {
