@@ -1,5 +1,5 @@
 const ADDRESSES = require('../coreAssets.json')
-const { aaveV2Export, aaveExports } = require('../aave')
+const { aaveV2Export, aaveExports, methodology } = require('../aave')
 const { buildProtocolExports } = require('./utils')
 
 const chainExportKeys = new Set(['staking', 'pool2', 'borrowed', 'vesting'])
@@ -35,12 +35,15 @@ function aaveExportFn(chainConfigs) {
 // --- aaveV2Export based protocols ---
 const aaveV2Configs = {
   'tokos-fi': {
+    methodology,
     somnia: { registry: '0xEC6758e6324c167DB39B6908036240460a2b0168', isAaveV3Fork: true },
   },
   'pholend': {
+    methodology,
     crossfi: '0x09e7b6BF92ba8566939d59fE3e3844385d492E77',
   },
   'hydration-lending': {
+    methodology,
     hydradx: {
       registry: '0x1b02E051683b5cfaC5929C25E84adb26ECf87B38',
       abis: {
@@ -49,6 +52,7 @@ const aaveV2Configs = {
     },
   },
   'dorian': {
+    methodology,
     core: {
       registry: '0x29604bF5D09bcb714D13549f98CC4Bb49c2Ff672',
       fromBlock: 15251455,
@@ -73,6 +77,7 @@ const aaveV2Configs = {
 // --- aaveExports based protocols ---
 const aaveConfigs = {
   'the-granary': {
+    methodology,
     fantom: '0x773E0277667F0c38d3Ca2Cf771b416bfd065da83',
     avax: '0xC043BA54F34C9fb3a0B45d22e2Ef1f171272Bc9D',
     optimism: '0x872B9e8aea5D65Fbf29b8B05bfA4AA3fE94cC11f',
@@ -93,6 +98,7 @@ const aaveConfigs = {
     hyperliquid: { dataHelpers: ['0x473f5e779b36DdC54f63107B255580Db049EFc5b'] },
   },
   'seamless': {
+    methodology,
     base: {
       addressesProviderRegistry: '0x90C5055530C0465AbB077FA016a3699A3F53Ef99',
       dataHelpers: ['0x2A0979257105834789bC6b9E1B00446DFbA8dFBa'],
@@ -107,6 +113,7 @@ const aaveConfigs = {
     },
   },
   'radiant': {
+    methodology,
     arbitrum: {
       addressesProviderRegistry: '0x7BB843f889e3a0B307299c3B65e089bFfe9c0bE0',
       staking: ['0xc2054A8C33bfce28De8aF4aF548C48915c455c13', '0x0C4681e6C0235179ec3D4F4fc4DF3d14FDD96017'],
@@ -114,12 +121,14 @@ const aaveConfigs = {
     },
   },
   'phiat': {
+    methodology,
     pulse: {
       addressesProviderRegistry: '0x9B979a359410544236343Dfa11b8e1401e4DdCd6',
       staking: ['0xeAa92F835757a8B3fA4cbCA3Db9D2Ea342651D44', '0x96e035ae0905efac8f733f133462f971cfa45db1'],
     },
   },
   'sculptor-finance': {
+    methodology,
     bsc: {
       addressesProviderRegistry: '0xa1eBB37b5A19050A192c38C82f25f4aBf0158F39',
       staking: ['0xd4F7F739488f5C9930A60e85afbE26a8B71BA795', '0xAd3E02e83b886543D1171FF446C130D52068C106'],
@@ -127,6 +136,7 @@ const aaveConfigs = {
     },
   },
   'valas': {
+    methodology,
     bsc: {
       addressesProviderRegistry: '0x99E41A7F2Dd197187C8637D1D151Dc396261Bc14',
       blacklistedTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.BTUSD],

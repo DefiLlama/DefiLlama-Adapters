@@ -1,5 +1,5 @@
 const ADDRESSES = require('../coreAssets.json')
-const { compoundExports2 } = require('../compound')
+const { compoundExports2, methodology } = require('../compound')
 const { buildProtocolExports } = require('./utils')
 
 const chainExportKeys = new Set(['staking', 'pool2', 'borrowed', 'vesting'])
@@ -23,6 +23,7 @@ const configs = {
     metis: { comptroller: '0xC5986Df018D1ff8ecA79fd3f266428616617cDF3' },
   },
   'rho-markets': {
+    methodology,
     scroll: { comptroller: '0x8a67AB98A291d1AEA2E1eB0a79ae4ab7f2D76041', cether: '0x639355f34Ca9935E0004e30bD77b9cE2ADA0E692' },
   },
   'quantus': {
@@ -31,6 +32,7 @@ const configs = {
     megaeth: { comptroller: '0x1F1416EbbeAb7a13fC5B6111A1E77696Be600413' },
   },
   'takara': {
+    methodology,
     sei: {
       comptroller: '0x71034bf5eC0FAd7aEE81a213403c8892F3d8CAeE',
       blacklistedTokens: [
@@ -60,6 +62,7 @@ const configs = {
     wc: { comptroller: '0x589d63300976759a0fc74ea6fA7D951f581252D7', cether: '0xaAd91abe333c4536FFbF02b83daBaB49C9Aa23ed' },
   },
   'elara': {
+    methodology,
     zircuit: { comptroller: '0x695aCEf58D1a10Cf13CBb4bbB2dfB7eDDd89B296' },
   },
   'basic': {
@@ -95,6 +98,7 @@ const configs = {
     bsc: { comptroller: '0xD5B649c7d27C13a2b80425daEe8Cb6023015Dc6B', cether: '0xbc4a19345c598d73939b62371cf9891128eccb8b' },
   },
   'nyke': {
+    methodology,
     ethereumclassic: { comptroller: '0x0040DCf62C380833dE60a502649567e939635fdB', cether: '0x2896c67c0cea9D4954d6d8f695b6680fCfa7C0e0' },
   },
   'metalend': {
@@ -119,9 +123,11 @@ const configs = {
     moonriver: { comptroller: '0xcffef313b69d83cb9ba35d9c0f882b027b846ddc', cether: '0x455d0c83623215095849abcf7cc046f78e3edae0' },
   },
   'knightswap-lending': {
+    methodology,
     bsc: { comptroller: '0x4f92913b86d5e79593fa2e475a8232b22ef17ed1' },
   },
   'apeswap-lending': {
+    methodology,
     bsc: { comptroller: '0xad48b2c9dc6709a560018c678e918253a65df86e' },
   },
   'netweave-lending': {
@@ -142,10 +148,12 @@ const configs = {
     era: { comptroller: '0x23848c28Af1C3AA7B999fA57e6b6E8599C17F3f2', cether: '0xC5db68F30D21cBe0C9Eac7BE5eA83468d69297e6' },
   },
   'deepr-finance': {
+    methodology,
     shimmer_evm: { comptroller: '0xF7E452A8685D57083Edf4e4CC8064EcDcF71D7B7' },
     iotaevm: { comptroller: '0xee07121d97FDEA35675e02017837a7a43aeDa48F' },
   },
   'tonpound': {
+    methodology,
     ethereum: { comptroller: '0x1775286Cbe9db126a95AbF52c58a3214FCA26803' },
   },
   'solidlizard-lending': {
