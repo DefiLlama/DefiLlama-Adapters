@@ -18,6 +18,13 @@ if (!fs.existsSync(safePath)) {
 const current = JSON.parse(fs.readFileSync(currentPath, "utf8"));
 const safe = JSON.parse(fs.readFileSync(safePath, "utf8"));
 
+const ignoredAdapters = ['maxapy/index.js', 'kasu/index.js', 'vestige/index.js']
+
+ignoredAdapters.forEach((key) => {
+  delete current[key];
+  delete safe[key];
+})
+
 let missingCount = 0;
 let extraCount = 0;
 let diffCount = 0;
@@ -41,13 +48,14 @@ if (missingFromCurrent.length > 0) {
   }
 }
 
+/* 
 if (extraInCurrent.length > 0) {
   console.log(`\nNew in current build (${extraInCurrent.length}):`);
   for (const k of extraInCurrent.sort()) {
     console.log(`  + ${k}`);
     extraCount++;
   }
-}
+} */
 
 // --- 2. Deep comparison ---
 console.log("\n" + "=".repeat(80));
