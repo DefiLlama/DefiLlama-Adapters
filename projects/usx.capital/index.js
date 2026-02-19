@@ -1,11 +1,10 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const treasury = '0x9F3d4b0C9E930Ca3957eCD3DEdb7417f8e0e4c35'
+const USX = '0x3b005fefC63Ca7c8d25eE21FbA3787229ba4CF03'
 
 async function tvl(api) {
-  const assetManagerUSDC = await api.call({ abi: 'uint256:assetManagerUSDC', target: treasury })
-  api.add(ADDRESSES.scroll.USDC, assetManagerUSDC)
+  const totalSupply = await api.call({ abi: 'erc20:totalSupply', target: USX })
+  api.add(USX, totalSupply)
 }
 
 module.exports = {
-  scroll: { tvl }
+  scroll: { tvl },
 }
