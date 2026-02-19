@@ -27,7 +27,7 @@ function filterVaults(vaults, coreAssets, chain) {
     const tvlVaults = [];
     const vestingVaults = [];
     for (const vault of vaults) {
-        const addr = vault.token_address.toLowerCase();
+        const addr = chain === 'solana' ? vault.token_address : vault.token_address.toLowerCase();
         if (coreSet.has(addr)) tvlVaults.push(vault);
         else vestingVaults.push(vault);
     }
