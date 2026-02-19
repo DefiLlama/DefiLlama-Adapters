@@ -1,3 +1,10 @@
+const USDC = '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4'
+
+async function tvl(api) {
+  const assetManagerUSDC = await api.call({ abi: 'uint256:assetManagerUSDC', target: treasury })
+  api.add(USDC, assetManagerUSDC)
+}
+
 module.exports = {
-  scroll: { tvl: async (api) =>  await api.erc4626Sum({ calls: ['0xcB14BcdF6cD483665D10dfD6f87d908996C7F922'], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' }) }  
+  scroll: { tvl }
 }
