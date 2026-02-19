@@ -1656,7 +1656,7 @@ const uniV3Configs = {
     },
   },
   'kumbaya': {
-    megaeth: { factory: '0x68b34591f662508076927803c567Cc8006988a09', fromBlock: 3520272 },
+    megaeth: { factory: '0x68b34591f662508076927803c567Cc8006988a09', fromBlock: 3520272, sumChunkSize: 100, },
   }
 }
 
