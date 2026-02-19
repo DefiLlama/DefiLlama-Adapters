@@ -4,8 +4,8 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const VE_NEON = "0x15Fc4C8df3ED16049E11134054C40c1E6D9107e3";
 const NEON = "0xF2Da3942616880E52e841E5C504B5A9Fba23FFF0";
 
-// Voter contract exposes poolFactory() to discover all AURA DEX pools
-const VOTER = "0x3002b50BA6cE1c39A4b7447A4451adfF773e54dE";
+// Voter V3 contract exposes poolFactory() to discover all AURA DEX pools
+const VOTER = "0x0888103450FFF33f46b8B4B1a4a65D7A88492D94";
 
 /**
  * Calculates DEX TVL by dynamically fetching all pools from the
