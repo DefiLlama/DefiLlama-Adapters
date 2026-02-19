@@ -39,8 +39,9 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology:
-    "TVL is the total collateral locked across all Nexion prediction markets, including amounts earning yield in lending pools. Markets are discovered dynamically from the on-chain factory.",
+    "TVL is the total collateral locked across all Nexion prediction markets. Marked as doublecounted because market collateral earns yield in GLOW lending pools (tracked by nexion-lending). Markets are discovered dynamically from the on-chain factory.",
   pulse: {
     tvl,
   },
