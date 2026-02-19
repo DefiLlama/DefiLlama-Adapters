@@ -1,4 +1,4 @@
-const { sumERC4626VaultsExport2 } = require('../erc4626')
+const { sumERC4626VaultsExport2 } = require('../projects/helper/erc4626')
 const { buildProtocolExports } = require('./utils')
 
 function erc4626ExportFn(chainConfigs) {

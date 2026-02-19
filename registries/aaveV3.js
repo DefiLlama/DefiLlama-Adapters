@@ -1,4 +1,4 @@
-const { aaveV3Export } = require('../aave')
+const { aaveV3Export } = require('../projects/helper/aave')
 const { buildProtocolExports } = require('./utils')
 
 function aaveV3ExportFn(chainConfigs) {

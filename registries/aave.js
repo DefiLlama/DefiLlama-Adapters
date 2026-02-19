@@ -1,5 +1,5 @@
-const ADDRESSES = require('../coreAssets.json')
-const { aaveV2Export, aaveExports, methodology } = require('../aave')
+const ADDRESSES = require('../projects/helper/coreAssets.json')
+const { aaveV2Export, aaveExports, methodology } = require('../projects/helper/aave')
 const { buildProtocolExports } = require('./utils')
 
 const chainExportKeys = new Set(['staking', 'pool2', 'borrowed', 'vesting'])

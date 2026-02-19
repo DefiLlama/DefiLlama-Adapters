@@ -1,4 +1,4 @@
-const { uniV3Export } = require('../uniswapV3')
+const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {

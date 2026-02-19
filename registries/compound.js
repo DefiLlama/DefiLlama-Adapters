@@ -1,5 +1,5 @@
-const ADDRESSES = require('../coreAssets.json')
-const { compoundExports2, methodology } = require('../compound')
+const ADDRESSES = require('../projects/helper/coreAssets.json')
+const { compoundExports2, methodology } = require('../projects/helper/compound')
 const { buildProtocolExports } = require('./utils')
 
 const chainExportKeys = new Set(['staking', 'pool2', 'borrowed', 'vesting'])

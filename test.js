@@ -22,7 +22,7 @@ const chainList = require('./projects/helper/chains.json')
 const { log, diplayUnknownTable, sliceIntoChunks, sleep } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
-const { allProtocols } = require('./projects/helper/registries')
+const { allProtocols } = require('./registries')
 
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)

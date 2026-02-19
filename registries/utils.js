@@ -1,6 +1,6 @@
-const whitelistedExportKeys = require('../whitelistedExportKeys.json')
-const { staking: stakingFn } = require('../staking')
-const { pool2: pool2Fn } = require('../pool2')
+const whitelistedExportKeys = require('../projects/helper/whitelistedExportKeys.json')
+const { staking: stakingFn } = require('../projects/helper/staking')
+const { pool2: pool2Fn } = require('../projects/helper/pool2')
 
 const topLevelKeys = new Set(whitelistedExportKeys)
 const chainExportKeys = new Set(['tvl', 'staking', 'pool2', 'borrowed', 'vesting'])

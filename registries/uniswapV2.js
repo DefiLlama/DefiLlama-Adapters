@@ -1,4 +1,4 @@
-const { uniTvlExports } = require('../unknownTokens')
+const { uniTvlExports } = require('../projects/helper/unknownTokens')
 const { buildProtocolExports } = require('./utils')
 
 // V2 wrapper: normalizes chain configs (string factory or { factory, ...extras }) for uniTvlExports
