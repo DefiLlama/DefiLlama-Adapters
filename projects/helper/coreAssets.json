@@ -689,7 +689,8 @@
     "JPYC": "0x431d5dff03120afa4bdf332c61a6e1766ef37bdb",
     "aUSD": "0xffffffff00000000000000010000000000000001",
     "vDOT": "0xFfFfFfff00000000000000010000000000000008",
-    "ASTR": "0xffffffff00000000000000010000000000000010"
+    "ASTR": "0xffffffff00000000000000010000000000000010",
+    "WASTR_2": "0x37795fdd8c165cab4d6c05771d564d80439cd093"
   },
   "astarzk": {
     "WETH": "0xe9cc37904875b459fa5d0fe37680d36f1ed55e38",
@@ -786,7 +787,11 @@
   },
   "injective": {
     "INJ": "inj",
-    "USDT": "factory/inj14ejqjyq8um4p3xfqj74yld5waqljf88f9eneuk/inj1q6zlut7gtkzknkk773jecujwsdkgq882akqksk"
+    "USDT": "factory/inj14ejqjyq8um4p3xfqj74yld5waqljf88f9eneuk/inj1q6zlut7gtkzknkk773jecujwsdkgq882akqksk",
+    "WINJ": "0x0000000088827d2d103ee2d9A6b781773AE03FfB",
+    "USDT_1": "0x88f7F2b685F9692caf8c478f5BADF09eE9B1Cc13",
+    "USDC": "0x2a25fbD67b3aE485e461fe55d9DbeF302B7D3989",
+    "wETH": "0x83A15000b753AC0EeE06D2Cb41a69e76D0D5c7F7"
   },
   "comdex": {
     "CMDX": "ucmdx",
@@ -2490,7 +2495,8 @@
     "WHYPE": "0x5555555555555555555555555555555555555555",
     "wstHYPE": "0x94e8396e0869c9f2200760af0621afd240e1cf38",
     "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
-    "USDT0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb"
+    "USDT0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+    "bZEC": "0xbe068Bb3c7ef5B56360655638f75bf5A6C5f8C10"
   },
   "hsk": {
     "WHSK": "0xb210d2120d57b758ee163cffb43e73728c471cf1",
@@ -2631,7 +2637,8 @@
     "uADA": "0xa3A34A0D9A08CCDDB6Ed422Ac0A28a06731335aA",
     "uSOL": "0x9B8Df6E244526ab5F6e6400d331DB28C8fdDdb55",
     "uSUI": "0xb0505e5a99abd03d94a1169e638B78EDfEd26ea4",
-    "uXRP": "0x2615a94df961278DcbC41Fb0a54fEc5f10a693aE"
+    "uXRP": "0x2615a94df961278DcbC41Fb0a54fEc5f10a693aE",
+    "sfrxUSD": "0x5bff88ca1442c2496f7e475e9e7786383bc070c0"
   },
   "titan": {
     "atkx": "atkx",
@@ -2656,7 +2663,10 @@
     "USDC_E": "0xE045e6c36cF77FAA2CfB54466D71A3aEF7bbE839",
     "USDT_E": "0x9f3096Bac87e7F03DC09b0B416eB0DF837304dc4",
     "CTUSD": "0x8D82c4E3c936C7B5724A382a9c5a4E6Eb7aB6d5D",
-    "WBTC_E": "0xDF240DC08B0FdaD1d93b74d5048871232f6BEA3d"
+    "WBTC_E": "0xDF240DC08B0FdaD1d93b74d5048871232f6BEA3d",
+    "USDC_e": "0xE045e6c36cF77FAA2CfB54466D71A3aEF7bbE839",
+    "USDT_e": "0x9f3096Bac87e7F03DC09b0B416eB0DF837304dc4",
+    "WBTC_e": "0xDF240DC08B0FdaD1d93b74d5048871232f6BEA3d"
   },
   "vechain": {
     "WVET": "0xd8ccdd85abdbf68dfec95f06c973e87b1b5a9997",
@@ -2665,7 +2675,9 @@
   },
   "eni": {
     "USDT": "0xdc1a8a35b0baa3229b13f348ed708a2fd50b5e3a",
-    "WEGAS": "0x6d1e851446f4d004ae2a72f9afed85e8829a205e"
+    "WEGAS": "0x6d1e851446f4d004ae2a72f9afed85e8829a205e",
+    "USDT_1": "0x47c98f74dBC1acc4cf2e04C4a729E22379EF4373",
+    "USDT_2": "0x545e289b88c6d97b74ec0b96e308cae46bf5f832"
   },
   "peaq": {
     "WPEAQ": "0x3cD66d2e1fac1751B0A20BeBF6cA4c9699Bb12d7"
@@ -2751,5 +2763,25 @@
     "KTA": "keeta_anqdilpazdekdu4acw65fj7smltcp26wbrildkqtszqvverljpwpezmd44ssg",
     "USDC": "keeta_amnkge74xitii5dsobstldatv3irmyimujfjotftx7plaaaseam4bntb7wnna",
     "EURC": "keeta_apblhar4ncp3ln62wrygsn73pt3houuvj7ic47aarnolpcu67oqn4xqcji3au"
+  },
+  "capx": {
+    "WCAPX": "0x3046AC3Fe11CcD349aBBa1dF224a48e63076f1f6"
+  },
+  "joc": {
+    "WJOC": "0x03527b82f384184097295fc60be0B59B8FE06E00"
+  },
+  "doma": {
+    "USDC_e": "0x31eef89d5215c305304a2fa5376a1f1b6c5dc477"
+  },
+  "fogo": {
+    "USDC": "uSd2czE61Evaf76RNbq4KPpXnkiL3irdzgLFUMe3NoG",
+    "SOL": "HLc5hqihQGFU68488j7HkdyF6rywyJfV46BN6Dn8W5ug"
+  },
+  "megaeth": {
+    "wstETH": "0x601aC63637933D88285A025C685AC4e9a92a98dA",
+    "ETH": "0x4200000000000000000000000000000000000006",
+    "MEGA": "0x28B7E77f82B25B95953825F1E3eA0E36c1c29861",
+    "USDm": "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7",
+    "USDT": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb"
   }
 }
