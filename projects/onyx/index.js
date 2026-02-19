@@ -10,12 +10,7 @@ const tokensAddress = {
 
 module.exports = {
   ethereum: {
-    ...compoundExports2({ comptroller: tokensAddress.unitroller, cether: tokensAddress.oEth}),
+    ...compoundExports2({ comptroller: tokensAddress.unitroller, cether: tokensAddress.oEth, isInsolvent: true}),
     staking: staking(tokensAddress.stakingPool, tokensAddress.onyx),
   },
-  // hallmarks: [
-  //   ['2023-11-01', 'Protocol was hacked'],
-  // ],
 };
-
-module.exports.ethereum.borrowed = () => ({})

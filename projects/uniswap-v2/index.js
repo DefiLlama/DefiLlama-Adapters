@@ -2,16 +2,12 @@ const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const { get } = require('../helper/http');
 const { getUniTVL } = require('../helper/unknownTokens');
 
-const v2graph = getChainTvl({
-  ethereum: 'A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum'
-})
+const v2graph = getChainTvl({ ethereum: 'A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum' })
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
-  ethereum: {
-    tvl: v2graph('ethereum'),
-  },
+  ethereum: { tvl: v2graph('ethereum') },
 }
 
 const config = {
@@ -26,30 +22,36 @@ const config = {
   zora: '0x0F797dC7efaEA995bB916f268D919d0a1950eE3C',
   unichain: '0x1F98400000000000000000000000000000000002',
   monad: '0x182a927119d56008d921126764bf884221b10f59',
+  xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95'
 }
 
 Object.keys(config).forEach(chain => {
   const factory = config[chain]
   module.exports[chain] = {
-    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, })
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, permitFailure: true })
   }
 })
 
 module.exports.isHeavyProtocol = true
 
-const graphChains = ['base']
+// const graphChains = ['unichain', 'ethereum', 'base']
+const graphChains = ['ethereum', 'base']
+
 graphChains.forEach(chain => {
   module.exports[chain] = { tvl: tvlViaGraph }
 })
 
 async function tvlViaGraph(api) {
   const endpoint = `https://interface.gateway.uniswap.org/v2/uniswap.explore.v1.ExploreStatsService/ProtocolStats?connect=v1&encoding=json&message=%7B%22chainId%22%3A%22${api.chainId}%22%7D`
-  const res = await get(endpoint, {
-    headers: {
-      'origin': 'https://app.uniswap.org',
-    } 
-  })
+  const res = await get(endpoint, { headers: { 'origin': 'https://app.uniswap.org' } })
   const v2 = res.dailyProtocolTvl.v2
-  const tvl = v2[v2.length - 1].value
+  const oneDayBefore = api.timestamp - 86400 * 5
+  const oneDayAfter = api.timestamp + 86400 / 3
+  const dayData = v2.find(d => d.timestamp >= oneDayBefore && d.timestamp <= oneDayAfter)
+
+  if (!dayData) {
+    throw new Error(`No TVL data found for ${api.chain} at timestamp ${api.timestamp}`)
+  }
+  const tvl = dayData.value
   api.addUSDValue(tvl)
 }

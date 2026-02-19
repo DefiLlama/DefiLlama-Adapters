@@ -2,7 +2,7 @@ const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   hallmarks: [
-    [1681430400,"Rug Pull"]
+    ['2023-04-14',"Rug Pull"]
   ],
   misrepresentedTokens: true,
   era: {

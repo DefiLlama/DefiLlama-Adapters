@@ -1,5 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "numPools": "uint256:numPools",
+    "pools": "function pools(uint256) view returns (address)"
+  };
 
 const USDC = ADDRESSES.arbitrum.USDC;
 
