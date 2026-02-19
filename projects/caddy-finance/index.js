@@ -16,10 +16,8 @@ async function tvl(api) {
   const { pool, user, collToken, debtToken } = CONFIG
 
   const position = await call({ target: pool, abi: positionABI, params: [collToken, debtToken, user], allAbi: [positionStruct, u256Struct] })
-  const { collateral_shares, nominal_debt } = position[0]
-
+  const { collateral_shares } = position[0]
   api.add(tBTC, Number(collateral_shares), { skipChain: true })
-  api.add(USDC, Number(-nominal_debt) / 1e18 * 1e6, { skipChain: true })
 }
 
 module.exports = {
