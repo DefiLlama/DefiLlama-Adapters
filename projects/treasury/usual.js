@@ -40,8 +40,16 @@ const owners = [
 ]
 const lendingMarketGetUserPositionAbi = "function getUserPosition(tuple(address, address,address, address,uint256,uint256,address), address) view returns (uint256 supplyAssets, uint256 supplyShares, uint256 borrowAssets, uint256 borrowShares, uint256 collateralAssets)";
 const firaLendingMarket= "0xa428723ee8ffd87088c36121d72100b43f11fb6a";
-const UZRMarketParams = ["0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5", "0x35D8949372D46B7a3D5A56006AE77B215fc69bC0" ,"0x30Da78355FcEA04D1fa34AF3c318BE203C6F2145","0xdfCF197B0B65066183b04B88d50ACDC0C4b01385","880000000000000000","999900000000000000" ,"0xFE7C47895eDb12a990b311Df33B90Cfea1D44c24"];
-
+const UZRMarketParams = [
+    "0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5", // loanToken
+    "0x35D8949372D46B7a3D5A56006AE77B215fc69bC0", // collateralToken (bUSD0)
+    "0x30Da78355FcEA04D1fa34AF3c318BE203C6F2145", // oracle
+    "0xdfCF197B0B65066183b04B88d50ACDC0C4b01385", // irm
+    "880000000000000000",                           // lltv
+    "999900000000000000",                           // param6
+    "0xFE7C47895eDb12a990b311Df33B90Cfea1D44c24",  // Fira UZR vault
+  ];
+  
 // Vaults that need to be priced via convertToAssets 
 const VAULTS = [
   "0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4", // Steakhouse ETH
@@ -62,6 +70,11 @@ const base =  treasuryExports({
     tokens,
     owners,
     ownTokens: ["0x06B964d96f5dCF7Eae9d7C559B09EDCe244d4B8E", "0xC4441c2BE5d8fA8126822B9929CA0b81Ea0DE38E" ], // USUALX and USUAL 
+    blacklistedTokens: [
+      "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
+      "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
+      "0x23878914efe38d27c4d67ab83ed1b93a74d4086a"  // aEthUSDT
+    ],
     resolveUniV3: true,
     resolveLP: true, 
     fetchCoValentTokens: true,
@@ -95,8 +108,8 @@ base.ethereum.tvl = async (api) => {
       calls.push({ target: vault, params: owner })
     })
   })
-  const vaultBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls })
-  const vaultAssets = await api.multiCall({ abi: 'function asset() view returns (address)', calls: VAULTS.map(vault => ({ target: vault })) })
+  const vaultBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true })
+  const vaultAssets = await api.multiCall({ abi: 'function asset() view returns (address)', calls: VAULTS.map(vault => ({ target: vault })), permitFailure: true })
   // it needs to be an object with the vault as the key and the asset as the value
   const vaultToAsset= Object.fromEntries(vaultAssets.map((asset, i) => [VAULTS[i], asset])) 
   // add vaultAssets to calls 
@@ -119,7 +132,8 @@ base.ethereum.tvl = async (api) => {
   if (activeVaultCalls.length > 0) {
     const underlyingAssets = await api.multiCall({
       abi: 'function convertToAssets(uint256) view returns (uint256)',
-      calls: activeVaultCalls
+      calls: activeVaultCalls,
+      permitFailure: true
     })
     underlyingAssets.forEach((amount, i) => api.add(activeVaultCalls[i].asset, amount))
   }
@@ -131,7 +145,7 @@ base.ethereum.tvl = async (api) => {
   })
 
   // Get all Aave positions
-  const aavePositions = await api.multiCall({ abi: aaveUserReserveDataAbi, calls: calls })
+  const aavePositions = await api.multiCall({ abi: aaveUserReserveDataAbi, calls: calls, permitFailure: true })
  
   // Process positions: add supplied assets, subtract borrowed assets
   // NOTE: Aave returns values in USD base currency with 8 decimals
