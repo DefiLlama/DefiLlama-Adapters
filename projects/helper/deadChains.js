@@ -3,4 +3,5 @@ module.exports = ['heco', 'astrzk', 'real', 'milkomeda', 'milkomeda_a1', 'eos_ev
   'kardia', 'boba_bnb', 'dfs', 'nos',
    'saga', // chain paused after the hack
    'curio', 'cube',
+   'vision',
 ]

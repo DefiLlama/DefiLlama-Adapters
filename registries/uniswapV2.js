@@ -1,13 +1,24 @@
-const { uniTvlExports } = require('../projects/helper/unknownTokens')
+const { getUniTVL } = require('../projects/helper/unknownTokens')
 const { buildProtocolExports } = require('./utils')
 
-// V2 wrapper: normalizes chain configs (string factory or { factory, ...extras }) for uniTvlExports
+const _chainExtraKeys = new Set(['factory', 'tvl', 'staking', 'pool2', 'borrowed', 'vesting', 'hallmarks'])
+
+// V2 wrapper: normalizes chain configs (string factory or { factory, ...extras }) for getUniTVL
 function uniV2ExportFn(chainConfigs, options = {}) {
-  const factoryMap = {}
+  const result = {
+  }
   Object.entries(chainConfigs).forEach(([chain, config]) => {
-    factoryMap[chain] = typeof config === 'string' ? config : config.factory
+    if (typeof config === 'string') {
+      result[chain] = { tvl: getUniTVL({ factory: config, useDefaultCoreAssets: true, ...options }) }
+    } else {
+      const chainOpts = {}
+      for (const [k, v] of Object.entries(config)) {
+        if (!_chainExtraKeys.has(k)) chainOpts[k] = v
+      }
+      result[chain] = { tvl: getUniTVL({ factory: config.factory, useDefaultCoreAssets: true, ...options, ...chainOpts }) }
+    }
   })
-  return uniTvlExports(factoryMap, options)
+  return result
 }
 
 const uniV2Configs = {
@@ -2280,6 +2291,535 @@ const uniV2Configs = {
   },
   'zswap-plus': {
     avax: '0xcDE3F9e6D452be6d955B1C7AaAEE3cA397EAc469',
+  },
+
+  // --- Migrated simple getUniTVL adapters ---
+  'GlyphExchange': {
+    core: { factory: '0x3e723c7b6188e8ef638db9685af45c7cb66f77b9', staking: ["0x6bf16B2645b13db386ecE6038e1dEF76d95696fc", "0xb3A8F0f0da9ffC65318aA39E55079796093029AD"] },
+  },
+  'KibbleSwap': {
+    dogechain: { factory: '0xF4bc79D32A7dEfd87c8A9C100FD83206bbF19Af5', staking: { owner: '0x8ffBD442F246964A0d2E87C9b2551095bdA6EEb3', tokens: ['0x1e1026ba0810e6391b0F86AFa8A9305c12713B66'], lps: ['0xC1C10b8BeeC82E840990A2c60A54ccdB39b2153F'], useDefaultCoreAssets: true } },
+  },
+  'Kwikswap': {
+    ethereum: { factory: '0xdD9EFCbDf9f422e2fc159eFe77aDD3730d48056d', staking: ["0x57Caec63E87e1496E946181e3Fc59086e589D4c0", "0x286c0936c7eaf6651099ab5dab9ee5a6cb5d229d"] },
+    polygon: { factory: '0x0B29D7a989D6647E4A56eE9899DaF7535FF9620c', staking: ["0x7965e5F759caB3d5a1b737b9Bb24e94ef6747FA7", "0x8df74088b3aecfd0cb97bcfd053b173782f01e3a", "polygon"] },
+    shiden: { factory: '0xf5fC2D145381A2eBAFb93Cc2B60fB2b97FB405aa', staking: ["0x212CB413c48221cA6fE2100578a9ABED26840380", "0xd67de0e0a0fd7b15dc8348bb9be742f3c5850454", "shiden", "0x286c0936c7eaf6651099ab5dab9ee5a6cb5d229d"] },
+    bsc: '0x64eBD6CaCece790e9C4DDeA1a24952Ddb2715279',
+  },
+  'Velocimeter': {
+    _options: { hasStablePools: true },
+    canto: { factory: '0xb12aF64E128A1D4489D13314eB4Df81cBCE126aC', staking: ["0x990efF367C6c4aece43c1E98099061c897730F27", "0x2Baec546a92cA3469f71b7A091f7dF61e5569889", "canto"] },
+  },
+  'Viridian': {
+    methodology: 'TVL shows the sum of tokens deposited in our pools and Staking shows the number of $VIRI locked in the Voting Escrow contract.',
+    _options: { hasStablePools: true },
+    core: { factory: '0xb54a83cfEc6052E05BB2925097FAff0EC22893F3', staking: ["0x49360Bc1727113F56f5A256678AC27F93ee6D368", "0x189d2849AF2031e20c670E755Fa3F0121f2be409"] },
+  },
+  'afraswap': {
+    methodology: 'Factory address (0xa098751D407796d773032f5Cc219c3e6889fB893) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    bsc: { factory: '0xa098751D407796d773032f5Cc219c3e6889fB893', staking: ["0x259C852834375864b65202375558AB11B2d330fd", "0x5badD826AeFa700446Fa6d784e6ff97eD6eeDca9", "0x1Da189c1BA3d718Cc431a2ed240a3753f89CD47A", "wbnb"] },
+  },
+  'alienbase': {
+    methodology: 'Uses Uniswap-style factory address to find and price liquidity pairs.',
+    base: { factory: '0x3E84D913803b02A4a7f027165E8cA42C14C0FdE7', staking: [["0x52eaecac2402633d98b95213d0b473e069d86590","0x365c6d588e8611125De3bEA5B9280C304FA54113"], "0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4"] },
+  },
+  'alienfi': {
+    methodology: 'TVL consists of pools created by the factory contract',
+    arbitrum: { factory: '0xac9d019B7c8B7a4bbAC64b2Dbf6791ED672ba98B', staking: { tokensAndOwners: [['0x6740Acb82ac5C63A7ad2397ee1faed7c788F5f8c', '0xCf8D01c1a20dabcC025368607020473cCb119F5C']], lps: ['0xE145A5710Be68C3C9C50c5288909E813c5e92F4e'] } },
+  },
+  'alita-finance': {
+    bsc: { factory: '0xC7a506ab3ac668EAb6bF9eCf971433D6CFeF05D9', staking: ["0x4f7b2Be2bc3C61009e9aE520CCfc830612A10694", "0x557233E794d1a5FbCc6D26dca49147379ea5073c"] },
+  },
+  'aliumswap': {
+    bsc: { factory: '0xbEAC7e750728e865A3cb39D5ED6E3A3044ae4B98', staking: [["0x95CDf618b6aF0ec1812290A777955D3609B0508d","0x4f388167F8B52F89C87A4E46706b9C1408F2c137"], "0x7C38870e93A1f959cB6c533eB10bBc3e438AaC11"] },
+  },
+  'ampleswap': {
+    methodology: 'Uses factory(0x381fefadab5466bff0e8e96842e8e76a143e8f73) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    bsc: { factory: '0x381fefadab5466bff0e8e96842e8e76a143e8f73', staking: ["0xF5987603323AA99DDe0777a55E83C82D59cCA272", "0x19857937848c02afbde8b526610f0f2f89e9960d"] },
+    alv: '0x01dC97C89DF7d3C616a696dD53F600aB3FF12983',
+    dsc: { tvl: () => ({}) },
+  },
+  'apeswap-amm': {
+    methodology: 'TVL comes from the DEX liquidity pools, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9 and 0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B',
+    bsc: { factory: '0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6', staking: [["0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9","0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B"], ["0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95","0x34294AfABCbaFfc616ac6614F6d2e17260b78BEd"], "bsc"] },
+    polygon: '0xcf083be4164828f00cae704ec15a36d711491284',
+    ethereum: '0xBAe5dc9B19004883d0377419FeF3c2C8832d7d7B',
+    telos: '0x411172Dfcd5f68307656A1ff35520841C2F7fAec',
+    arbitrum: '0xCf083Be4164828f00cAE704EC15a36D711491284',
+  },
+  'arthswap': {
+    astar: { factory: '0xA9473608514457b4bF083f9045fA63ae5810A03E', staking: ["0x42d175a498Cb517Ad29d055ea7DcFD3D99045404", "0xde2578edec4669ba7f41c5d5d2386300bcea4678"] },
+  },
+  'babydogeswap': {
+    methodology: 'Total TVL in all farms and BabyDoge staking pool',
+    _options: {
+      blacklistedTokens: ['0xe320df552e78d57e95cf1182b6960746d5016561'],
+    },
+    bsc: { factory: '0x4693B62E5fc9c0a45F89D62e6300a03C85f43137', staking: ["0xcecd3e7eadae1ad0c94f53bf6a2af188df1a90d0", "0xc748673057861a797275CD8A068AbB95A902e8de"] },
+  },
+  'babyswap': {
+    methodology: 'Uses factory(0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    bsc: { factory: '0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da', staking: ["0xdfAa0e08e357dB0153927C7EaBB492d1F60aC730", "0x53E562b9B7E5E94b81f10e96Ee70Ad06df3D2657"] },
+  },
+  'biswap': {
+    hallmarks: [
+      ['2022-05-07', 'UST depeg'],
+    ],
+    bsc: { factory: '0x858e3312ed3a876947ea49d572a7c42de08af7ee', staking: [["0xDbc1A13490deeF9c3C12b44FE77b503c1B061739","0x13e9031133E901d5214fb4D593DF8ECc034c8237","0xD4855892a3188DA76da0066b9e4918939511E67a","0x9b9F3F1112E74765518cE93B1489c70F6db52bFf","0x683963df7331c65Df8ACE6818651a7611bdc39E5","0xBD09D5E5dcC904bbf8649af78d323eEfdf7b0D1D","0x8b10E6959F2915f532fE142b9C53B167eEC42fF4","0x7D621C9F70B3743CbAb15c22d781754FcD7c9589","0x1F337dea1679730906F46A06fd6034054BD32970","0x131010022654B57b0C39c918ef8313ce79Fa04B8","0x6653c3c4CD2083fEbFf49A52F9a5ce4c30978A25","0x44EeCE1e9ccbaa5Ad0b8C14192467Ab83BE0BA51","0xA394dD5ADC4AAF41aa1f9CFf28158A6AF2823459","0x6cBbA2f3BD677Da630aEd2311253713e8Ba1394D","0xa3A911033af250f7013597A6AF6a719906Ac4444","0xE42D17b1a734e04d2e0cB33234Ab074E21c175A7","0xAa2b37d023Ffa244022A9aa60EeB351cc79FD4e5","0x69C4c9cf979431DA6C4B4a2F3874E6378DFC8157","0xE056FB8Ce6A3437530B1AfF799185A009b25990b","0xf31F62A6Afb0546771a821e0F98FD187Ee7f7d4C","0x2792Ccd3F02a22beBa49F28F3ab0B52dF18BD280","0x109eAA8b5Ea469fb5aCe0647A93695D8DCD5e836"], "0x965f527d9159dce6288a2219db51fc6eef120dd1"] },
+  },
+  'bscswap': {
+    methodology: 'Factory address on BSC (0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    bsc: { factory: '0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0', staking: ["0x7B2dAC429DF0b39390cD3D4E6a8b8bcCeB331E2D", "0xacc234978a5eb941665fd051ca48765610d82584"] },
+  },
+  'burgerswap': {
+    methodology: 'TVL is equal to AMMs liquidity plus the Assets deposited on Burger Shack',
+    bsc: { factory: '0x8a1E9d3aEbBBd5bA2A64d3355A48dD5E9b511256', staking: ["0x9154c2684aeF8d106babcB19Aa81d4FabF7581ec", "0xae9269f27437f0fcbc232d39ec814844a51d6b8f"] },
+  },
+  'cafeswap': {
+    bsc: { factory: '0x3e708fdbe3ada63fc94f8f61811196f1302137ad', staking: ["0xc772955c33088a97d56d0bbf473d05267bc4febb", "0x790be81c3ca0e53974be2688cdb954732c9862e1"] },
+    polygon: { factory: '0x5ede3f4e7203bf1f12d57af1810448e5db20f46c', staking: ["0xca2DeAc853225f5a4dfC809Ae0B7c6e39104fCe5", "0xb5106A3277718eCaD2F20aB6b86Ce0Fee7A21F09", "polygon", "bsc:0x790be81c3ca0e53974be2688cdb954732c9862e1"] },
+  },
+  'canary': {
+    avax: { factory: '0xCFBA329d49C24b70F3a8b9CC0853493d4645436b', staking: ["0x39124Af473501Ccd83a5791eA1eFBc2e6dd78f10", "0x8D88e48465F30Acfb8daC0b3E35c9D6D7d36abaf"] },
+    scroll: '0x8D88e48465F30Acfb8daC0b3E35c9D6D7d36abaf',
+  },
+  'candycity': {
+    methodology: 'Factory address (0x84343b84EEd78228CCFB65EAdEe7659F246023bf) is used to find the LP pairs. TVL is equal to the liquidity on the AMM and the candy tokens in the staking pools / vault / vesting contract / lock contract.',
+    cronos: { factory: '0x84343b84EEd78228CCFB65EAdEe7659F246023bf', staking: [["0xDAf7c0e2882818b46c36AdBCe95399821Eca08F8","0x8FEf43b1f3046F8f58A76c64aD01Bc8d82ff0ad1","0xA46C4a3428a5E9B5C84A4457215D98BC8DC17AbB","0xCa207941946218126BD7BBe44C5d457753490b4A","0x7CeA583ea310b3A8a72Ed42B3364aff16d24B3A2","0xE56C1A8D4E90d82BA06F3f49efEc69f736a32070","0xc568Ce4C714c5Ec819eA8F52596a6Fd9523A2B81"], "0x06C04B0AD236e7Ca3B3189b1d049FE80109C7977"], vesting: ["0x427f1230A547566a51F5Ffd5698BB65c06acA2D2", "0x06C04B0AD236e7Ca3B3189b1d049FE80109C7977"] },
+  },
+  'casinocronos': {
+    methodology: 'Factory address (0x570aA1E0aa3d679Bc9DaAA47564ed3Daba1208FE) is used to find the LP pairs. TVL is equal to the liquidity on the AMM, while staking is the amount of CASINO tokens found in the Masterchef(0x81b5118bF8A720B19FEC6F3078d2b555790cb0AB).',
+    cronos: { factory: '0x570aA1E0aa3d679Bc9DaAA47564ed3Daba1208FE', staking: ["0x81b5118bF8A720B19FEC6F3078d2b555790cb0AB", "0x95ac4a86c0677971c4125ACe494e3C17a87a4C61"] },
+  },
+  'champagne-swap': {
+    methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://champagne.finance/ as the source. Staking accounts for the CHAM locked in MasterChef (0x15C17442eb2Cd3a56139e877ec7784b2dbD97270)',
+    bsc: { factory: '0xb31A337f1C3ee7fA2b2B83c6F8ee0CA643D807a0', staking: ["0x15C17442eb2Cd3a56139e877ec7784b2dbD97270", "0x4957c1c073557BFf33C01A7cA1436D0d2409d439"] },
+  },
+  'claimswap': {
+    methodology: 'Tvl counts the tokens locked on AMM pools and staking counts the CLA that has been staked',
+    klaytn: { factory: '0x3679c3766E70133Ee4A7eb76031E49d3d1f2B50c', staking: ["0x5f5dec0d6402408ee81f52ab985a9c665b6e6010", "0xcf87f94fd8f6b6f0b479771f10df672f99eada63"] },
+  },
+  'cleopatra-exchange-v1': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
+    mantle: { factory: '0xAAA16c016BF556fcD620328f0759252E29b1AB57', staking: ["0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F", "0xC1E0C8C30F251A07a894609616580ad2CEb547F2"] },
+  },
+  'cowswap-cash': {
+    methodology: 'The CryptoSwap subgraph and the CryptoSwap factory contract address are used to obtain the balance held in every LP pair.',
+    smartbch: '0x72cd8c0B5169Ff1f337E2b8F5b121f8510b52117',
+  },
+  'cronaswap': {
+    methodology: 'Factory address (0x73A48f8f521EB31c55c0e1274dB0898dE599Cb11) is used to find the LP pairs. TVL is equal to the liquidity on the AMM, while staking is the amount of CRONA tokens found in the Masterchef(0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254).',
+    _options: {
+      blacklistedTokens: ['0x5b5fe1238aca91c65683acd7f9d9bf922e271eaa'],
+    },
+    cronos: { factory: '0x73A48f8f521EB31c55c0e1274dB0898dE599Cb11', staking: ["0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254", "0xadbd1231fb360047525BEdF962581F3eee7b49fe"] },
+  },
+  'cryptoswap': {
+    methodology: 'The CryptoSwap subgraph and the CryptoSwap factory contract address are used to obtain the balance held in every LP pair.',
+    start: '2022-05-02',
+    bsc: '0x4136A450861f5CFE7E860Ce93e678Ad12158695C',
+  },
+  'crystalvale': {
+    methodology: 'Factory address (0x794C07912474351b3134E6D6B3B7b3b4A07cbAAa) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    dfk: { factory: '0x794C07912474351b3134E6D6B3B7b3b4A07cbAAa', staking: ["0x6E7185872BCDf3F7a6cBbE81356e50DAFFB002d2", "0x04b9dA42306B023f3572e106B11D82aAd9D32EBb", "dfk", "defi-kingdoms-crystal", 18] },
+  },
+  'currentx': {
+    _options: { coreAssets: ['0x4200000000000000000000000000000000000006'] },
+    megaeth: '0xC60940F182F7699522970517f6d753A560546937',
+  },
+  'dddx': {
+    bsc: { factory: '0xb5737A06c330c22056C77a4205D16fFD1436c81b', staking: [["0x488f0252B4bEa5A851FE9C827894d08868D552C0","0xAd8Ab2C2270Ab0603CFC674d28fd545495369f31","0x37056DbB4352877C94Ef6bDbB8C314f749258fCA"], "0x4B6ee8188d6Df169E1071a7c96929640D61f144f"] },
+  },
+  'dogmoney': {
+    dogechain: { factory: '0xaF85e6eD0Da6f7F5F86F2f5A7d595B1b0F35706C', staking: { owner: '0xC5c70fA7A518bE9229eB0Dc84e70a91683694562', tokens: ['0x93C8a00416dD8AB9701fa15CA120160172039851'], lps: ['0x9ab710cd0bfbee60e14115d19c76213c4d4b1687'], useDefaultCoreAssets: true } },
+  },
+  'equilibre': {
+    _options: { hasStablePools: true },
+    kava: { factory: '0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95', staking: ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"] },
+  },
+  'etcmc': {
+    methodology: 'Factory address (0x164999e9174686b39987dfB7E0FAb28465b867A5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    ethereumclassic: { factory: '0x164999e9174686b39987dfB7E0FAb28465b867A5', staking: { tokensAndOwners: [['0x6c3B413C461c42a88160Ed1B1B31d6f7b02a1C83', '0xca1F5a20E07610d82e28683519c72f6817A3505a']], lps: ['0x730F59a8690b50724914D7b9b2f49a8dD18F5572'], useDefaultCoreAssets: true } },
+  },
+  'etherex-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    linea: '0xC0b920f6f1d6122B8187c031554dc8194F644592',
+  },
+  'ezkalibur': {
+    start: '2023-06-09',
+    era: { factory: '0x15C664A62086c06D43E75BB3fddED93008B8cE63', staking: ["0x11ef47783740B3F0c9736D54BE8eF8953C3Ead99", "0x240f765Af2273B0CAb6cAff2880D6d8F8B285fa4", "0xc8b6b3a4d2d8428ef3a940eac1e32a7ddadcb0f1", "weth"] },
+  },
+  'fatex': {
+    polygon: { factory: '0x937e0c67d21Df99eaEa0e6a1055A5b783291DC8f', staking: ["0x56BE76031A4614370fA1f188e01e18a1CF16E642", "0x4853365bC81f8270D902076892e13F27c27e7266", "0x69c894Dce6FA2E3b89D3111d29167F0484AC0b2A"] },
+  },
+  'galoswap': {
+    methodology: 'Counts liquidity in pools',
+    _options: { hasStablePools: true },
+    era: '0x48E571C645bbeD451b7C58650E643F534fCaB693',
+  },
+  'gemkeeper': {
+    oasis: { factory: '0xa7200334f652425A12BF2f7e4F0F5409CCA4d963', staking: ["0x25070fA2244b41EA39B964DBFA9E0ab70A886e72", "0x72Ad551af3c884d02e864B182aD9A34EE414C36C", "0xb29553faf847ba5b79b6ae13fa82d0b216faf626"] },
+  },
+  'gibxswap': {
+    methodology: 'Factory address on BSC (0x97bCD9BB482144291D77ee53bFa99317A82066E8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    bsc: { factory: '0x97bCD9BB482144291D77ee53bFa99317A82066E8', staking: ["0xC31A355277228C1bf9A88599647faEaaE664Ea1f", "0xAe28714390e95B8dF1Ef847C58AEaC23ED457702"] },
+  },
+  'glacier-finance': {
+    _options: { hasStablePools: true },
+    avax: { factory: '0xaC7B7EaC8310170109301034b8FdB75eCa4CC491', staking: ["0xed1eE3f892fe8a13A9BE02F92E8FB7410AA84739", "0x3712871408a829C5cd4e86DA1f4CE727eFCD28F6"] },
+  },
+  'glide-finance': {
+    methodology: 'Factory address (0xaAbe38153b25f0d4b2bDa620f67059B3a45334e5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    elastos: { factory: '0xaAbe38153b25f0d4b2bDa620f67059B3a45334e5', staking: ["0x7F5489f77Bb8515DE4e0582B60Eb63A7D9959821", "0xd39eC832FF1CaaFAb2729c76dDeac967ABcA8F27", "0xbeeAAb15628329C2C89Bc9F403d34b31fbCb3085", "elastos"] },
+  },
+  'groveswap': {
+    bsc: { factory: '0x0ed713989f421ff6f702b2e4e1c93b1bb9002119', staking: ["0x9db65123aa185811e50f8b626a7d4799c39ea4d5", "0xf33893de6eb6ae9a67442e066ae9abd228f5290c", "0xe27f915a8a9ca6c31b193311ae76b8738b926d17"] },
+    ethereum: '0x6c565c5bbdc7f023cae8a2495105a531caac6e54',
+    grove: '0x401e7e28e0C679E1a3242ac6CD93C9c56208A260',
+  },
+  'hermes': {
+    methodology: 'We calculate liquidity on all pairs with data retreived from the "hermes-defi/hermes-graph" subgraph plus the total amount in dollars of our staking pools xHermes and sHermes.',
+    harmony: { factory: '0xfe5e54a8e28534fffe89b9cfddfd18d3a90b42ca', staking: { owners: ['0x28a4e128f823b1b3168f82f64ea768569a25a37f', '0x8812420fb6e5d971c969ccef2275210ab8d014f0'], tokens: ['0xba4476a302f5bc1dc4053cf79106dc43455904a3'], useDefaultCoreAssets: true, lps: ['0x8604197eb7123888b551fe78a8828b895608d093'] } },
+  },
+  'honkswap': {
+    methodology: 'Factory address (0x34D7ffF45108De08Ca9744aCdf2e8C50AAC1C73C) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    smartbch: '0x34D7ffF45108De08Ca9744aCdf2e8C50AAC1C73C',
+  },
+  'huckleberry': {
+    methodology: 'Liquidity on DEX and supplied and borrowed amounts found using the comptroller address(0xcffef313b69d83cb9ba35d9c0f882b027b846ddc)',
+    moonriver: { factory: '0x017603C8f29F7f6394737628a93c57ffBA1b7256', staking: { owner: '0x37619cC85325aFea778830e184CB60a3ABc9210B', tokens: ['0x9A92B5EBf1F6F6f7d93696FCD44e5Cf75035A756'], lps: ['0xbBe2f34367972Cb37ae8dea849aE168834440685'], useDefaultCoreAssets: true } },
+    clv: { tvl: () => ({}) },
+  },
+  'ifswap': {
+    methodology: 'We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through MasterChef Contract.',
+    csc: '0x44b7864D360BFf7879402E3B860aF47e6e371208',
+  },
+  'illuminex': {
+    methodology: 'Counts liquidity on illumineX Exchange, as well as IX token single staking together with liquidity mining locked LP',
+    start: '2024-01-28',
+    sapphire: { factory: '0x045551B6A4066db850A1160B8bB7bD9Ce3A2B5A5', staking: ["0x494847e173D6CE28b6eF7a5596df6Bc7830175e1", "0x08Fe02Da45720f754e6FCA338eC1286e860d2d2f", "0xf0f7c4e8edb9edcbe200a4eaec384e8a48fc7815", "oasis-network", true] },
+  },
+  'kaoyaswap': {
+    bsc: { factory: '0xbFB0A989e12D49A0a3874770B1C1CdDF0d9162aA', staking: ["0x21F17c2eC5741c1bEb76d50F08171138A6BA97bf", "0xa8a33e365D5a03c94C3258A10Dd5d6dfE686941B"] },
+  },
+  'keller': {
+    methodology: 'TVL shows the sum of tokens deposited in our pools and Staking shows the number of $KELL locked in the Voting Escrow contract.',
+    _options: { hasStablePools: true },
+    scroll: { factory: '0xbc83f7dF70aE8A3e4192e1916d9D0F5C2ee86367', staking: ["0x3aC0Bd8433bFC451BB1E1E90CcEF697750512CA2", "0xCF4706120623c527e32493057A4DC0cae5FC8201"] },
+  },
+  'kryptodex': {
+    methodology: 'Factory address (0x33c04bD4Ae93336BbD1024D709f4A313cC858EBe) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    cronos: { factory: '0x33c04bD4Ae93336BbD1024D709f4A313cC858EBe', staking: ["0x53cE820Ed109D67746a86b55713E30252275c127", "0xF0681BB7088Ac68A62909929554Aa22ad89a21fB", "0xD2219106310E46D7FD308c0eC9d9FCc2d2c8a9B5", "crypto-com-chain"] },
+  },
+  'kyotoswap': {
+    methodology: 'Uses factory(0x1c3E50DBBCd05831c3A695d45D2b5bCD691AD8D8) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    bsc: { factory: '0x1c3E50DBBCd05831c3A695d45D2b5bCD691AD8D8', staking: [["0xd8e86cfD71A19AcF79B60fB75F0470185C95B06b"], "0x29ABc4D03D133D8Fd1F1C54318428353CE08727E"] },
+  },
+  'leetswap': {
+    polygon_zkevm: '0xcE87E0960f4e2702f4bFFE277655E993Ae720e84',
+    canto: '0x116e8a41E8B0A5A87058AF110C0Ddd55a0ed82B7',
+    linea: '0x4DDf0fa98B5f9Bd7Cb0645c25bA89A574fe9Be8c',
+    shibarium: '0xd3Ea3BC1F5A3F881bD6cE9761cbA5A0833a5d737',
+    op_bnb: '0xa2899c776baaf9925d432f83c950d5054a6cf59c',
+    base: { factory: '0x169C06b4cfB09bFD73A81e6f2Bb1eB514D75bB19', hasStablePools: true, stablePoolSymbol: 'sLS2' },
+    manta: '0xa2899c776baaf9925d432f83c950d5054a6cf59c',
+    scroll: '0xa2899c776baaf9925d432f83c950d5054a6cf59c',
+  },
+  'leonicornswap': {
+    bsc: { factory: '0xEB10f4Fe2A57383215646b4aC0Da70F8EDc69D4F', staking: ["0x72F8fE2489A4d480957d5dF9924166e7a8DDaBBf", ["0x2c8368f8F474Ed9aF49b87eAc77061BEb986c2f1","0x27E873bee690C8E161813DE3566E9E18a64b0381"]] },
+  },
+  'lfgswap-core': {
+    core: '0xA1ADD165AED06D26fC1110b153ae17a5A5ae389e',
+  },
+  'merchant-moe': {
+    mantle: '0x5bef015ca9424a7c07b68490616a4c1f094bedec',
+  },
+  'mindgames': {
+    methodology: 'Factory address (0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    arbitrum: { factory: '0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0', staking: { owner: '0x35AfE95662fdf442762a11E4eD5172C81fBceF7e', tokens: ['0xb21Be1Caf592A5DC1e75e418704d1B6d50B0d083'], coreAssets: ['0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'], lps: ['0xf7305D209BFeCF40Bd53ccBdbe5303B3153d0660'] } },
+  },
+  'mistswap': {
+    methodology: 'Factory address (0x6008247F53395E7be698249770aa1D2bfE265Ca0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    smartbch: { factory: '0x6008247F53395E7be698249770aa1D2bfE265Ca0', staking: ["0xC41C680c60309d4646379eD62020c534eB67b6f4", "0x5fA664f69c2A4A3ec94FaC3cBf7049BD9CA73129", "smartbch", "mistswap", 18] },
+  },
+  'mm-finance': {
+    methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://mm.finance as the source. Staking accounts for the MMF locked in MasterChef (0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc)',
+    _options: {
+      blacklistedTokens: [
+        '0xd8d40dcee0c2b486eebd1fedb3f507b011de7ff0',
+        '0xa60943a1B19395C999ce6c21527b6B278F3f2046',
+        '0x388c07066aa6cea2be4db58e702333df92c3a074',
+      ],
+    },
+    cronos: { factory: '0xd590cC180601AEcD6eeADD9B7f2B7611519544f4', staking: ["0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc", "0x97749c9B61F878a880DfE312d2594AE07AEd7656"] },
+  },
+  'mm-finance-arbitrum': {
+    methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://arbimm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa73Ae666CEB460D5E884a20fb30DE2909604557A)',
+    arbitrum: { factory: '0xfe3699303D3Eb460638e8aDA2bf1cFd092C33F22', staking: ["0xa73Ae666CEB460D5E884a20fb30DE2909604557A", "0x56b251d4b493ee3956e3f899d36b7290902d2326"] },
+  },
+  'mm-finance-polygon': {
+    methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://polymm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa2B417088D63400d211A4D5EB3C4C5363f834764)',
+    polygon: { factory: '0x7cFB780010e9C861e03bCbC7AC12E013137D47A5', staking: ["0xa2B417088D63400d211A4D5EB3C4C5363f834764", "0x22a31bD4cB694433B6de19e0aCC2899E553e9481"] },
+  },
+  'mochiswap': {
+    bsc: { factory: '0xCBac17919f7aad11E623Af4FeA98B10B84802eAc', staking: ["0x464F1A30e5A5b5b2D3c5f4F0e823e01EeFE304df", "0x2d0e75b683e8b56243b429b24f2b08bcc1ffd8da"] },
+    harmony: { factory: '0x3bEF610a4A6736Fd00EBf9A73DA5535B413d82F6', staking: ["0xd0cb3e55449646c9735d53e83eea5eb7e97a52dc", "0x691f37653f2fbed9063febb1a7f54bc5c40bed8c"], hallmarks: [['2022-06-23', 'Horizon bridge Hack $100m']] },
+  },
+  'moonbase': {
+    methodology: 'Uses factory(0x44B678F32a2f6aBB72eeFA2df58f12D17c3eD403) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    arbitrum: '0x44B678F32a2f6aBB72eeFA2df58f12D17c3eD403',
+    base: { factory: '0xe396465A85deDB00FA8774162B106833dE51Ea41', useDefaultCoreAssets: false },
+  },
+  'moonchainswap': {
+    mxczkevm: '0x8bC7cf83f5F83781Ec85B78d866222987Ae24657',
+  },
+  'moraswap': {
+    _options: { queryBatched: 10, waitBetweenCalls: 1000 },
+    neon_evm: { factory: '0xd43F135f6667174f695ecB7DD2B5f953d161e4d1', staking: ["0xa3da566fdE97c90c08052f612BdBed8F3B8004B7", "0x2043191e10a2A4b4601F5123D6C94E000b5d915F", "0xe6faaf048b2A9b9Bf906aBdD8623811458d81Cf3"] },
+  },
+  'mute': {
+    methodology: 'Counts liquidity in pools and KOI token in the veKOI contract',
+    _options: { hasStablePools: true, stablePoolSymbol: 'sMLP' },
+    era: { factory: '0x40be1cba6c5b47cdf9da7f963b6f761f4c60627d', staking: [["0x98dB4e3Df6502369dAD7AC99f3aEE5D064721C4C"], ["0xa995ad25ce5eb76972ab356168f5e1d9257e4d05"]] },
+  },
+  'neuronswap': {
+    timetravel: false,
+    methodology: "Tvl counts the tokens locked on AMM pools and staking counts the NR that has been staked. Data is pulled from the 'https://core.neuronswap.com/api/dashboard'",
+    klaytn: { factory: '0xe334e8c7073e9aaae3cab998eecca33f56df6621', staking: { tokens: ['0x340073962a8561cb9e0c271aab7e182d5f5af5c8'], owner: '0x92a47a5c6b742b2056f0f4afb7724112c83715e1', lps: ['0x908a4E95b447bD2e0fd7c020618Ab84b5d6FFc87'], useDefaultCoreAssets: true } },
+  },
+  'newswap': {
+    new: '0x723913136a42684B5e3657e3cD2f67ee3e83A82D',
+  },
+  'nile-exchange-v1': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    linea: { factory: '0xAAA16c016BF556fcD620328f0759252E29b1AB57', staking: ["0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F", "0xAAAac83751090C6ea42379626435f805DDF54DC8"] },
+  },
+  'nuri-exchange-v1': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
+    scroll: { factory: '0xAAA16c016BF556fcD620328f0759252E29b1AB57', staking: ["0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F", "0xAAAE8378809bb8815c08D3C59Eb0c7D1529aD769"] },
+  },
+  'omniswap': {
+    methodology: 'TVL consists of liquidity pools created through the factory contract',
+    nibiru: '0x2043d6f72CcD82c4Eae36fF331ADAE8C77bA5897',
+  },
+  'oni': {
+    methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://info.oni.exchange/ as the source. Staking accounts for ONI locked in MasterChef (0xE93fC7e6103EF86F3329635B8197D462B74F0cb8)',
+    bsc: { factory: '0xED13950fD0a2E10788E830e60CFA0D018125310e', staking: ["0xE93fC7e6103EF86F3329635B8197D462B74F0cb8", "0x6c77BB19C69d66bEA9E3CDAea108A76eA8D2Fd2A", "0x7A070189A28875aC936F517A9d452248619F0CA6"] },
+  },
+  'openxswap': {
+    optimism: { factory: '0xf3C7978Ddd70B4158b53e897f980093183cA5c52', staking: ["0x2513486f18eeE1498D7b6281f668B955181Dd0D9", "0xc3864f98f2a61A7cAeb95b039D031b4E2f55e0e9"] },
+  },
+  'oracleswap': {
+    methodology: 'Factory address (0xDcA8EfcDe7F6Cb36904ea204bb7FCC724889b55d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    songbird: { factory: '0xDcA8EfcDe7F6Cb36904ea204bb7FCC724889b55d', staking: ["0x5795377c85e0fdF6370fae1B74Fe03b930C4a892", "0xd7565b16b65376e2ddb6c71e7971c7185a7ff3ff", "0x1987E504E70b9ACbAa4E042FDDE4ecB6CEaf5b77", "songbird"] },
+  },
+  'orbitalswap': {
+    methodology: 'Uses factory(0x1A04Afe9778f95829017741bF46C9524B91433fB) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    bsc: { factory: '0x1A04Afe9778f95829017741bF46C9524B91433fB', staking: ["0xd67a0CE4B1484DBa8dB53349F9b26a3272dB04F5", "0x42b98A2f73a282D731b0B8F4ACfB6cAF3565496B"] },
+  },
+  'paintswap': {
+    fantom: { factory: '0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5', staking: [["0xCb80F529724B9620145230A0C866AC2FACBE4e3D","0x9076C96e01F6F13e1eC4832354dF970d245e124F"], "0x85dec8c4b2680793661bca91a8f129607571863d"] },
+  },
+  'partyswap': {
+    avax: { factory: '0x58a08bc28f3e8dab8fb2773d8f243bc740398b09', staking: ["0xA07d1932775f22DaeDA671812c16F859b4257363", "0x25afd99fcb474d7c336a2971f26966da652a92bc", "0x379842a6cd96a70ebce66004275ce0c68069df62", "avalanche-2"] },
+  },
+  'pharaoh-exchange-v1': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
+    avax: { factory: '0xAAA16c016BF556fcD620328f0759252E29b1AB57', staking: ["0xAAA3249511DE3E7A5c61FbA8313170c1Bef9A65e", "0xAAAB9D12A30504559b0C5a9A5977fEE4A6081c6b"] },
+  },
+  'pharaoh-exchange-v3-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'Stable' },
+    avax: '0x85448bF2F589ab1F56225DF5167c63f57758f8c1',
+  },
+  'pinkswap': {
+    bsc: { factory: '0x7D2Ce25C28334E40f37b2A068ec8d5a59F11Ea54', staking: ["0xe981676633dCf0256Aa512f4923A7e8DA180C595", "0x702b3f41772e321aacCdea91e1FCEF682D21125D"] },
+  },
+  'polycat-dex': {
+    methodology: 'TVL are from the pools created by the factory and TVL in vaults',
+    polygon: { factory: '0x477Ce834Ae6b7aB003cCe4BC4d8697763FF456FA', staking: ["0xfaBC099AD582072d26375F65d659A3792D1740fB", "0xbc5b59ea1b6f8da8258615ee38d40e999ec5d74f"] },
+  },
+  'ponder': {
+    methodology: 'TVL includes the liquidity in all Ponder trading pairs on Bitkub Chain. Staking counts PONDER tokens locked in the staking contract.',
+    start: 1704067200,
+    _options: { fetchBalances: true },
+    bitkub: { factory: '0x20b17e92dd1866ec647acaa38fe1f7075e4b359e', staking: ["0x6c8119d33fd43f6b254d041cd5d2675586731dd5", "0xe0432224871917fb5a137f4a153a51ecf9f74f57", "bitkub", "ethereum:0xe0432224871917fb5a137f4a153a51ecf9f74f57"] },
+  },
+  'quantoswap': {
+    ethereum: { factory: '0xe185e5335d68c2a18564b4b43bdf4ed86337ee70', staking: [["0xc7e40abf6a1f6a6f79b64d86ca1960816271caca"], "0x37A2f8701856a78DE92DBe35dF2200c355EAe090"] },
+  },
+  'ramses': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
+    arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"] },
+    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+  },
+  'ramses-hl-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+  },
+  'sharkyswap': {
+    arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
+  },
+  'shibance': {
+    methodology: 'We count liquidity on the dexes, pulling data from subgraphs',
+    kcc: '0x1aDb92364888C9A65e65C287DaE48032681327c8',
+    bsc: '0x092EE062Baa0440B6df6BBb7Db7e66D8902bFdF7',
+  },
+  'smartdexbch': {
+    methodology: 'Count TVL as liquidity on the dex',
+    smartbch: { factory: '0xDd749813a4561100bDD3F50079a07110d148EaF5', staking: ["0x46269c22848738573761eC50a736916272857f83", "0x47c259DFe165Cef3e429C9B66bf9ce9dc3e68aC2", "0xce6c8D26d370C18618DEE42a18190624105B212F", "bitcoin-cash", false, 18] },
+  },
+  'smbswap': {
+    methodology: 'The SMBswap subgraph and the SMBswap factory contract address are used to obtain the balance held in every LP pair.',
+    start: '2022-02-19',
+    bsc: '0x2Af5c23798FEc8E433E11cce4A8822d95cD90565',
+  },
+  'smolswap': {
+    methodology: 'Factory address (0x7Aa2149fF9EF4A09D4ace72C49C26AaE8C89Fb48) is used to find the LP pairs. TVL is equal to the liquidity on the AMM, while staking is the amount of SMOL tokens found in the Masterchef(0x66a5f06d9c8bdc27bb0768eeff71d22b468fb464).',
+    cronos: { factory: '0x7Aa2149fF9EF4A09D4ace72C49C26AaE8C89Fb48', staking: ["0x66a5f06d9c8bdc27bb0768eeff71d22b468fb464", "0x2Ad63Da83d6ff5dA9E716DcaE844D4f157405BDd", "0x408b982fDC78eA8fdF8f8652C7893181A645d782", "crypto-com-chain", true] },
+  },
+  'solisnek': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'ssAMM' },
+    avax: '0xeeee1F1c93836B2CAf8B9E929cb978c35d46657E',
+  },
+  'soyfinance': {
+    methodology: 'Factory address (0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    callisto: { factory: '0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5', blacklistedTokens: ['0x9fae2529863bd691b4a7171bdfcf33c7ebb10a65'] },
+    ethereumclassic: '0x23675f1Ac7cce101Aff647B96d7201EfCf66E4b0',
+    bittorrent: '0xbf6c50889d3a620eb42c0f188b65ade90de958c4',
+    bsc: '0x23675f1Ac7cce101Aff647B96d7201EfCf66E4b0',
+  },
+  'starswap': {
+    methodology: 'StarSwap TVL Calculation',
+    astar: { factory: '0x0b657e81a0C3E903cbe1228579fBd49AC5D81Ac1', staking: ["0x0262592d5f489e19afe070abc88a0808afc75250", "0x8489f4554790F5A103F2B0398537eAEe68B73884"] },
+  },
+  'swapfish': {
+    methodology: 'Uses factory(0x71539D09D3890195dDa87A6198B98B75211b72F3) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    arbitrum: { factory: '0x71539D09D3890195dDa87A6198B98B75211b72F3', staking: ["0x33141e87ad2DFae5FBd12Ed6e61Fa2374aAeD029", "0xb348B87b23D5977E2948E6f36ca07E1EC94d7328"] },
+    bsc: { factory: '0x71539D09D3890195dDa87A6198B98B75211b72F3', staking: ["0x671eFBa3F6874485cC39535fa7b525fe764985e9", "0xb348B87b23D5977E2948E6f36ca07E1EC94d7328"] },
+  },
+  'swaprum': {
+    arbitrum: { factory: '0xD757C986a28F82761Fe874Bc40073718dC1e980C', staking: [["0x2B6deC18E8e4DEf679b2E52e628B14751F2f66bc"], "0x2aE25460c44d578E6f41aB900a7A5425b6492C16"] },
+  },
+  'tangoswap': {
+    methodology: 'Count TVL as liquidity on the dex',
+    smartbch: { factory: '0x2F3f70d13223EDDCA9593fAC9fc010e912DF917a', staking: ["0x98Ff640323C059d8C4CB846976973FEEB0E068aA", "0x73BE9c8Edf5e951c9a0762EA2b1DE8c8F38B5e91", "smartbch", "tangoswap", 18] },
+  },
+  'tendieswap': {
+    methodology: 'TVL counts the liquidity in each of the Tendieswap pairs. Pairs are found using the factory address. Staking TVL accounts for TENDIE on its masterchef contract.',
+    bsc: { factory: '0xb5b4aE9413dFD4d1489350dCA09B1aE6B76BD3a8', staking: ["0x6dDb25ca46656767f8f2385D653992dC1cdb4470", "0x9853A30C69474BeD37595F9B149ad634b5c323d9"] },
+  },
+  'tendieswap-app': {
+    tenet: '0x2D2ee1a4aec9f3c8c14dFcE837e1C89b639dd1E4',
+  },
+  'tethys': {
+    methodology: 'Metis tokens, USDC, USDT, WETH, TETHYS allocated in LP',
+    metis: { factory: '0x2CdFB20205701FF01689461610C9F321D1d00F80', staking: ["0x54A8fB8c634dED694D270b78Cb931cA6bF241E21", "0x69fdb77064ec5c84FA2F21072973eB28441F43F3"] },
+  },
+  'tulip': {
+    oasis: { factory: '0x90a5e676EFBdeFeeeb015cd87484B712fd54C96A', staking: ["0xceF2f95f185D49bcd1c10DE7f23BEaCBaae6eD0f", "0x2736643C7fFFe186984f60a2d34b91b1b7398bF1"] },
+  },
+  'ultronSwap': {
+    ultron: { factory: '0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7', staking: { owner: '0xf26E50c26Ed51AbeC4078380Ed1F13440011F2A1', tokens: ['0x3a4f06431457de873b588846d139ec0d86275d54'] } },
+  },
+  'unifi-protocol': {
+    timetravel: false,
+    avax: '0x839547067bc885db205F5fA42dcFeEcDFf5A8530',
+    bsc: '0xA5Ba037Ec16c45f8ae09e013C1849554C01385f5',
+    iotex: '0x839547067bc885db205F5fA42dcFeEcDFf5A8530',
+    ontology_evm: '0x839547067bc885db205F5fA42dcFeEcDFf5A8530',
+    ethereum: { factory: '0x08e7974CacF66C5a92a37c221A15D3c30C7d97e0', staking: ['0x2e2fb3db9ecdb9b7d9eb05e00964c8941f7171a7', '0x441761326490cACF7aF299725B6292597EE822c2'] },
+    fantom: '0x839547067bc885db205F5fA42dcFeEcDFf5A8530',
+    harmony: '0x7aB6ef0cE51a2aDc5B673Bad7218C01AE9B04695',
+    polygon: '0x4FEE52912f81B78C3CdcB723728926ED6a893D27',
+    bittorrent: '0xCAaB36C77841647dC9955B3b1D03710E9B9F127f',
+    tron: 'TUtmsH4DZewoihrybFU2RG1pdW9sBhuSRZ',
+  },
+  'vanswap': {
+    vision: { factory: '0xF6D67482DEDE4D208F74CCD0E6592764014F546F', staking: ["0x1b7BCea38FA123236CfF7D0F944e01F501842123", "0xa3cFA732c835233db3d6bf5f4A3c2D45b02Eb6B9", "0x1e0583bc7D49b693277Cc7E0F6af1A0bdB56e9D8", "tether"] },
+  },
+  'venera': {
+    bsc: '0x95F9c44fA1585811e1D1a0F59e74174B657B37A5',
+  },
+  'versedex': {
+    methodology: 'Factory address (0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    ethereum: '0xee3E9E46E34a27dC755a63e2849C9913Ee1A06E2',
+    smartbch: '0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8',
+  },
+  'w3swap': {
+    methodology: "Counts the tokens locked on AMM pools. Data is getting from the 'satoshirock/w3infov2' subgraph.",
+    bsc: '0xD04A80baeeF12fD7b1D1ee6b1f8ad354f81bc4d7',
+    pg: { tvl: () => ({}) },
+  },
+  'wannaswap': {
+    aurora: { factory: '0x7928D4FeA7b2c90C732c10aFF59cf403f0C38246', staking: ["0x5205c30bf2E37494F8cF77D2c19C6BA4d2778B9B", "0x7faA64Faf54750a2E3eE621166635fEAF406Ab22"] },
+  },
+  'wardenswap': {
+    methodology: "TVL is calculated from total liquidity of WardenSwap's active pools listed on our farm page https://farm.wardenswap.finance/?t=1&s=1/#/farm, excluding pools at PancakeSwap and inactive pools are not included, plus total warden staked in Warden pool",
+    hallmarks: [
+      ['2021-08-25', "Announcement 2 week left before pool's rewards end"],
+      ['2021-08-27', "Start pool's reward 100x warden pool"],
+      ['2021-09-10', "Pool's rewards end"],
+    ],
+    bsc: { factory: '0x3657952d7bA5A0A4799809b5B6fdfF9ec5B46293', staking: ["0xde866dD77b6DF6772e320dC92BFF0eDDC626C674", "0x0fEAdcC3824E7F3c12f40E324a60c23cA51627fc"] },
+  },
+  'warpx': {
+    _options: { fetchBalances: true, coreAssets: ['0x4200000000000000000000000000000000000006'] },
+    megaeth: '0xB3Ae00A68F09E8b8a003B7669e2E84544cC4a385',
+  },
+  'whaleswap': {
+    bsc: { factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121', staking: { owners: ['0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D', '0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7'], tokens: ['0xdded222297b3d08dafdac8f65eeb799b2674c78f'], useDefaultCoreAssets: true, lps: ['0x85aa60b3e25a7df37ea1ec1f38ef403d536f0489'] } },
+    fantom: { factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121', staking: { owners: ['0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D', '0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7'], tokens: ['0xdded222297b3d08dafdac8f65eeb799b2674c78f'], useDefaultCoreAssets: true, lps: ['0x48eD248c981d6a97Ba84e21Dd02685951423f59B'] } },
+    arbitrum: { factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121', staking: { owners: ['0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D', '0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7'], tokens: ['0xdded222297b3d08dafdac8f65eeb799b2674c78f'], useDefaultCoreAssets: true, lps: ['0x70348dAEB1cC0DD873481690823552590b71873A'] } },
+    optimism: { factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121', staking: { owners: ['0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D', '0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7'], tokens: ['0xdded222297b3d08dafdac8f65eeb799b2674c78f'], useDefaultCoreAssets: true, lps: ['0xD6E83C3b484F9bd4755e1AD7Bc1a401f6e63e176'] } },
+    avax: { factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121', staking: { owners: ['0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D', '0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7'], tokens: ['0xdded222297b3d08dafdac8f65eeb799b2674c78f'], useDefaultCoreAssets: true, lps: ['0xA81c921479baD1980e6e47267EeE949a987AB29e'] } },
+    polygon: { factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121', staking: { owners: ['0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D', '0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7'], tokens: ['0xdded222297b3d08dafdac8f65eeb799b2674c78f'], useDefaultCoreAssets: true, lps: ['0x12B880dBDB3e7f49f30644D78e4119fDA510BDfF'] } },
+    kava: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
+  },
+  'wind-swap-cl': {
+    methodology: 'TVL includes liquidity in Slipstream CL pools, staking includes WIND locked in veWIND (VotingEscrow) for voting rewards.',
+    sei: {
+      factory: '0xA0E081764Ed601074C1B370eb117413145F5e8Cc',
+      fetchBalances: true,
+      useDefaultCoreAssets: false,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint) view returns (address)',
+      },
+      staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
+    },
+  },
+  'wingswap': {
+    methodology: 'Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    fantom: { factory: '0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8', staking: ["0x546dA2105c52dc2dBA3a4320b43bc2cfDA9cB311", "0xF24be6c063Bee7c7844dD90a21fdf7d783d41a94", "0x194C3973Eb43Ba98941C5e9D8e3D06EF9e6aa399"] },
+  },
+  'wojakfinance': {
+    methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://wojak.fi/info as the source. Staking accounts for the WOJK locked in MasterChef (0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a)',
+    dogechain: { factory: '0xc7c86B4f940Ff1C13c736b697e3FbA5a6Bc979F9', staking: { owners: ['0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a', '0xDF21058099e69D3635005339721C4826c4c47F8A'], tokens: ['0x570C41a71b5e2cb8FF4445184d7ff6f78A4DbcBD'], useDefaultCoreAssets: true, lps: ['0xC1FaBe61B9cFC005a51e1Ea899C3D65fb6392497'] } },
+  },
+  'wtfdex': {
+    methodology: 'Uses factory(0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    arbitrum: { factory: '0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50', staking: ["0x8F4Ed4Cf0300E22c739d2E5A22220497B123b66e", "0x4e6482b05D13085f1C4A7e2Ef612ba43104f71b9"] },
+  },
+  'yieldfields': {
+    methodology: 'The YieldFields subgraph and the YieldFields factory contract address are used to obtain the balance held in every LP pair.',
+    start: '2021-05-17',
+    bsc: '0x0A376eE063184B444ff66a9a22AD91525285FE1C',
+  },
+  'zenithswap': {
+    methodology: 'Factory address (0x8F086a081621bbc13B6d02A9e1123212CF07fdf8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
+    arbitrum: { factory: '0x8F086a081621bbc13B6d02A9e1123212CF07fdf8', staking: ["0xa3b19C3aFD545900B778Cc7B3e2dC35848672aC2", "0xb2dcbd5258a22385240e4ac13fc6726b66f0de96"] },
+  },
+  'zk-swap': {
+    era: { factory: '0x5da48a338647e2DD79329b557b5729D8496aD83D', staking: ["0x7bA76d4e4cBD4A9B7E3fd9a3B7Db067a51ca9682", "0xAbdb137D013b8B328FA43Fc04a6fA340D1CeA733", "0x8489727b22Dd7eF8BbC91E0E88ee781cb2B27274"] },
+  },
+  'zkSwap-finance': {
+    methodology: 'TVL is total liquidity of all liquidity pools.',
+    era: { factory: '0x3a76e377ed58c8731f9df3a36155942438744ce3', staking: [["0x9F9D043fB77A194b4216784Eb5985c471b979D67","0x4Ca2aC3513739ceBF053B66a1d59C88d925f1987","0x056f1960b5CF53676AD9C0A7113363A812DC0c8e"], ["0x31C2c031fDc9d33e974f327Ab0d9883Eae06cA4A"]] },
+    sonic: '0xCe98a0E578b639AA90EE96eD5ba8E5a4022de529',
+    monad: '0x0ff16867BcaC3C5fdc2dc73558e3F8e2ed89EEA2',
+  },
+  'zkevmswap': {
+    polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
   },
 }
 

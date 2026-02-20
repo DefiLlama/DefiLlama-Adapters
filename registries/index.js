@@ -8,6 +8,7 @@ const adapterRoutes = [
   './aave',
   './compound',
   './erc4626',
+  './masterchef',
 ]
 const allProtocols = {}
 
