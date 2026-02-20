@@ -119,6 +119,7 @@ const sodex = require('./sodex.js')
 const weex = require('./weex.js')
 const bydfi = require('./bydfi.js')
 const bytedex = require('./bytedex.js')
+const { sumTokensExport } = require('../sumTokens.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -152,8 +153,27 @@ const magpie = [
   'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
 ]
 
+function getBTCExport(key) {
+  if (!module.exports[key])
+    throw new Error(`No export found for ${key}`)
+  const value = module.exports[key]
+
+  if (Array.isArray(value))
+    return sumTokensExport({ owners: value })
+  
+  if (typeof value === 'function')
+    return async (api) => {
+      let owners = await value()
+      return sumTokensExport({ owners })(api)
+    }
+
+  throw new Error(`Unsupported BTC export type for ${key}`)
+}
+
 module.exports = {
   ...fetchers,
+  getBTCExport,
+  symbiosis: ['bc1qtnv5uqa5qt2jwftsj6667kpp8uvgt63p5k5hsn25wm6kjxzmxqnsyu79vc'],
   hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf', 'bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj'],
   cygnus,
   magpie,

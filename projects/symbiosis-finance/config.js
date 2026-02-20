@@ -31,10 +31,10 @@ module.exports = {
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G,
         '0x76A797A59Ba2C17726896976B7B3747BfD1d220f', // WTON,
         '0xB3F4D70C6a18cC0F2D1205dbF3B21cB73e1B0592', // GPTW,
-        '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,
+        // '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,  - counted at source - bitcoin
         '0x4b3a2187648902082db0a44e8235d57F3f23DD10', // PINEYE,
         '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB,
-        '0xaa036928c9c0Df07d525B55ea8EE690Bb5a628C1', // EVAA
+        // '0xaa036928c9c0Df07d525B55ea8EE690Bb5a628C1', // EVAA - excluded not user deposits
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -98,7 +98,7 @@ module.exports = {
         '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91', // WETH,
         '0xBBeB516fb02a01611cBBE0453Fe3c580D7281011', // WBTC,
         '0xdd9f72afED3631a6C85b5369D84875e6c42f1827', // SIS,
-        '0xED0c95EBe5a3E687cB2224687024FeC6518E683e', // syBTC
+        // '0xED0c95EBe5a3E687cB2224687024FeC6518E683e', // syBTC  - counted at source - bitcoin
       ],
       holders: [
         '0x4f5456d4d0764473DfCA1ffBB8524C151c4F19b9' // portal
@@ -255,7 +255,7 @@ module.exports = {
         '0xef213441A85dF4d7ACbDaE0Cf78004e1E486bB96', // rUSDT,
         '0x74c9f2b00581F1B11AA7ff05aa9F608B7389De67', // USDC.e,
         '0x542fDA317318eBF1d3DEAf76E0b632741A7e677d', // WRBTC,
-        '0xB52E582263c1d0189b3cc1402c1B7205b7F2E9Ba', // syBTC
+        // '0xB52E582263c1d0189b3cc1402c1B7205b7F2E9Ba', // syBTC - counted at source - bitcoin
       ],
       holders: [
         '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4' // portal
@@ -373,7 +373,7 @@ module.exports = {
         'EQBh9XACT0B60U8Q48VnjyqCxzxpM4oA0c8rqKt4h70yk1V5', // UXLINK,
         'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI,
         'EQDY2MzMJY_9OWm9UyQNLTU2Qs_8BRomlMUbbADnh-tFkLaU', // PINEYE,
-        'EQBKMfjX_a_dsOLm-juxyVZytFP7_KKnzGv6J01kGc72gVBp', // EVAA
+        // 'EQBKMfjX_a_dsOLm-juxyVZytFP7_KKnzGv6J01kGc72gVBp', // EVAA - excluded not user deposits
       ],
       holders: [
         'EQBZh9CpLZyNlwI7am0PHpVy8T8zdJxAhlG3m3xMi0BoVaUh' // portal
@@ -523,7 +523,7 @@ module.exports = {
     {
       name: 'citrea',
       tokens: [
-        '0x384157027B1CDEAc4e26e3709667BB28735379Bb', // syBTC
+        // '0x384157027B1CDEAc4e26e3709667BB28735379Bb', // syBTC - counted at source - bitcoin
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
