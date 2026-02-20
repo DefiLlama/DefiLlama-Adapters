@@ -135,6 +135,7 @@ async function getEulerVaults(api, owners) {
       });
       for (let i = 0; i < proxyAddresses.length; i++) {
         if (isOwner(proxyCreators[i], owners)) {
+          if(EulerConfigs[api.chain]?.blacklistedVaults?.includes(proxyAddresses[i].toLowerCase())) continue // skip blacklisted vaults
           allVaults.push(proxyAddresses[i])
         }
       }
@@ -160,6 +161,7 @@ async function getSiloVaults(api, owners) {
     })
     for (let i = 0; i < siloVaultsOwners.length; i++) {
       if (isOwner(siloVaultsOwners[i], owners)) {
+        if(SiloConfigs[api.chain]?.blacklistedVaults?.includes(siloVaults[i].toLowerCase())) continue // skip blacklisted vaults
         allVaults.push(siloVaults[i])
       }
     }
