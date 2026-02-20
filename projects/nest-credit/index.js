@@ -15,7 +15,6 @@ const config = {
 
 module.exports = {
     methodology: 'TVL is the total value of assets deposited in Nest Credit vaults across all chains',
-    doublecounted: true,
 }
 
 Object.keys(config).forEach(chain => {
