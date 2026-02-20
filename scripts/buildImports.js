@@ -1,6 +1,6 @@
 const fs = require("fs")
 const { get } = require("../projects/helper/http")
-const { allProtocols } = require("../projects/helper/registries/index.js")
+const { allProtocols } = require("../registries/index.js")
 // const { setCache, getCache } = require("../projects/helper/cache")
 
 async function run() {
@@ -31,9 +31,6 @@ async function run() {
   }
 
   fs.writeFileSync('scripts/tvlModules.json', JSON.stringify(moduleMap))
-  // await setCache('defi-configs', 'tvlModules', moduleMap, {
-  //   skipCompression: true,
-  // })
 
   process.exit(0)
 }
