@@ -34,7 +34,8 @@ async function borrowed(api) {
             inputArgs: [{ type: 'principal', value: asset }],
         })
         const tokenId = asset === 'SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.wstx' ? nullAddress : asset
-        api.add(tokenId, data['total-borrows-variable'].value)
+        const borrows = data?.['total-borrows-variable']?.value ?? '0'
+        api.add(tokenId, borrows)
     }))
 }
 
