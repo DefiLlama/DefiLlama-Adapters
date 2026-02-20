@@ -157,7 +157,7 @@ const config = {
   },
   citrea: {
     morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
-    fromBlock: 3705069,
+    fromBlock: 2528230,
   },
 }
 
@@ -169,7 +169,7 @@ const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
-  const useIndexer = api.chain === 'monad' ? true: false
+  const useIndexer = api.chain === 'monad' ? true : false
   const extraKey = 'reset-v2'
 
   let logs = [];
