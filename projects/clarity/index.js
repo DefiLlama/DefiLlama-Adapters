@@ -1,9 +1,11 @@
 const { sumTokens2 } = require("../helper/chain/cardano");
+const { getConfig } = require("../helper/cache");
 const { get } = require("../helper/http");
-const { clarityDaoTreasuryAddresses } = require("./dao-treasury-addresses");
 
 const ADDRESSES_API_URL =
   "https://api.clarity.vote/metrics/getDefiLlamaAddresses";
+const CACHE_KEY = "clarity/defillama-addresses";
+const REQUEST_TIMEOUT_MS = 15_000;
 
 function extractAddresses(response) {
   if (Array.isArray(response)) return response;
@@ -14,7 +16,9 @@ function extractAddresses(response) {
 }
 
 async function getTreasuryAddresses() {
-  const response = await get(ADDRESSES_API_URL);
+  const response = await getConfig(CACHE_KEY, undefined, {
+    fetcher: () => get(ADDRESSES_API_URL, { timeout: REQUEST_TIMEOUT_MS }),
+  });
   const addresses = extractAddresses(response).filter(Boolean);
   if (!addresses.length)
     throw new Error(
@@ -24,16 +28,7 @@ async function getTreasuryAddresses() {
 }
 
 async function tvl() {
-  let owners = clarityDaoTreasuryAddresses;
-  try {
-    owners = await getTreasuryAddresses();
-  } catch (e) {
-    console.error(
-      "Failed to fetch Clarity treasury addresses from API, using fallback list:",
-      e?.message || e
-    );
-  }
-
+  const owners = await getTreasuryAddresses();
   return await sumTokens2({
     owners,
   });
