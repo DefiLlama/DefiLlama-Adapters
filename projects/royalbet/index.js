@@ -5,7 +5,7 @@ module.exports = {
   solana: {
     tvl: async () => {
       return sumTokens2({
-        owners: [
+        solOwners: [
           "6LdMpwdL9i5wSM3ujMDdThtVpBeWgMcMtaKWUvpcNeno",
         ],
       });
