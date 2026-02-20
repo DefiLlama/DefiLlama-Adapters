@@ -53,16 +53,23 @@ async function resolveVaultPositions(api, vault, viewHelper) {
 
   const poolDex = {}
   uniquePoolIds.forEach((id, i) => {
-    const adapter = poolConfigs[i][6] || poolConfigs[i].positionAdapter
+    const adapter = poolConfigs[i][6]
     poolDex[id] = ADAPTER_DEX[(adapter + '').toLowerCase()]
   })
 
   const groups = { uniswap: [], aerodrome: [], pancakeswap: [] }
+  let skipped = 0
   tokenIds.forEach((id, i) => {
-    const poolId = poolIds[i][1] || poolIds[i].poolId
+    const poolId = poolIds[i][1]
     const dex = poolDex[poolId]
-    if (groups[dex]) groups[dex].push(id)
+    if (dex && groups[dex]) {
+      groups[dex].push(id)
+    } else {
+      skipped++
+    }
   })
+  if (skipped > 0)
+    console.warn(`[snuggle] ${skipped} position(s) skipped for vault ${vault}: adapter not in ADAPTER_DEX`)
 
   if (groups.uniswap.length)
     await sumTokens2({ api, uniV3ExtraConfig: { positionIds: groups.uniswap } })
@@ -76,14 +83,12 @@ async function tvl(api) {
   // V1 vault: Uniswap V3 only, vault owns NFTs directly
   await sumTokens2({ api, owners: [VAULT_V1], resolveUniV3: true })
 
-  // V2 vaults: enumerate positions from each vault
-  for (const { vault, viewHelper } of VAULTS) {
-    await resolveVaultPositions(api, vault, viewHelper)
-  }
+  // V2 vaults: enumerate positions from each vault in parallel
+  await Promise.all(VAULTS.map(({ vault, viewHelper }) => resolveVaultPositions(api, vault, viewHelper)))
 }
 
 module.exports = {
-  methodology: 'TVL is the value of all concentrated liquidity positions (Uniswap V3, Aerodrome, PancakeSwap) managed by Snuggle vaults.',
+  methodology: 'TVL is the value of all concentrated liquidity positions (Uniswap V3, Aerodrome, PancakeSwap) managed by Snuggle and MaxFi (Snuggle whitelabel) vaults.',
   start: 1704067200,
   doublecounted: true,
   base: { tvl },
