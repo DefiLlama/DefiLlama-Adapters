@@ -1,7 +1,7 @@
 const { getConfig } = require('../helper/cache')
 
 const config = {
-  megaeth: 'https://exchange.kumbaya.xyz/api/v1/pools/metrics?chainId=4326&limit=500&sortBy=tvl&sortOrder=desc&aprTrend=up&minTvlETH=0.1'
+  megaeth: 'https://exchange.kumbaya.xyz/api/v1/pools/metrics?chainId=4326&limit=500&sortBy=tvl&sortOrder=desc&minTvlETH=0.1'
 }
 
 Object.keys(config).forEach(chain => {
