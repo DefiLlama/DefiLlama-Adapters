@@ -1,6 +1,14 @@
+const { sumTokens2 } = require("../helper/solana");
+
 module.exports = {
-  methodology: "RoyalBet is a Telegram betting bot on Solana. Fees are tracked via dimension-adapters.",
+  methodology: "TVL is the SOL held in the manager (escrow) wallet for active bets.",
   solana: {
-    tvl: () => ({}),
+    tvl: async () => {
+      return sumTokens2({
+        owners: [
+          "6LdMpwdL9i5wSM3ujMDdThtVpBeWgMcMtaKWUvpcNeno",
+        ],
+      });
+    },
   },
 };
