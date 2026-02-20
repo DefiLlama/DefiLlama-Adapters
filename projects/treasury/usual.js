@@ -6,11 +6,9 @@ const tokens = [
   '0x259338656198ec7a76c729514d3cb45dfbf768a1', // Resolv
   '0xd001f0a15d272542687b2677ba627f48a4333b5d', // e-USD0
   '0xf8094570485b124b4f2abe98909a87511489c162', // PENDLE-LPT
-  '0x67ec31a47a4126a66c7bb2fe017308cf5832a4db', // usUSDS++
   '0xb4cd5c5440eb69edb6db878ca2acd7c6b97b2ba5', // YT-USD0++-27NOV2025
   '0xd2245ee5c3099d65a3d0fdceca0f71cc4aa8f0ff', // fSL23
   '0x8092ca384d44260ea4feaf7457b629b8dc6f88f0', // ustUSR++
-  '0x8245fd9ae99a482dfe76576dd4298f799c041d61', // uUSCC++
   '0x28d24d4380b26a1ef305ad8d8db258159e472f33', // Usual_MV
   bUSD0, // formerlyUSD0++
   '0x2e7fc02be94bc7f0cd69dcab572f64bcc173cd81', // USD0a
@@ -54,7 +52,7 @@ const VAULTS = [
 
  
 // Aave HORIZON V3 addresses (Ethereum mainnet)
-const AAVE_HORIZON_POOL = "0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8"; // Aave V3 Pool
+const AAVE_HORIZON_POOL = "0xAe05Cd22df81871bc7cC2a04BeCfb516bFe332C8"; // Aave Horizon Pool
 const aaveUserReserveDataAbi = "function getUserAccountData(address user) view returns (uint256 totalCollateralBase, uint256 totalDebtBase, uint256 availableBorrowsBase, uint256 currentLiquidationThreshold, uint256 ltv, uint256 healthFactor)";
 
  
@@ -85,7 +83,7 @@ base.ethereum.tvl = async (api) => {
   const positions = await api.multiCall({ abi: lendingMarketGetUserPositionAbi, calls: calls }) 
   positions.forEach(position => {
     api.add(bUSD0, position.collateralAssets)
-    api.add(ADDRESSES.ethereum.USD0, position.borrowAssets * -1)
+    api.add(ADDRESSES.ethereum.USD0,-BigInt(position.borrowAssets) )
   })
 
 

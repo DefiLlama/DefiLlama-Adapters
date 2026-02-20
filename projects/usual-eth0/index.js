@@ -10,7 +10,7 @@ const tokens = [
 ];
 
 module.exports = { 
-  methodology: "ETH0 is a synthetic Ethereum-based assetfully collateralized by Lido’s wrapped staked ETH (wstETH).",
+  methodology: "ETH0 is a synthetic Ethereum-based asset fully collateralized by Lido’s wrapped staked ETH (wstETH).",
   ethereum: {
     tvl: sumTokensExport({ owners , tokens, resolveUniV3: true }),
   }

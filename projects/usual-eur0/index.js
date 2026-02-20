@@ -2,7 +2,6 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const owners = [ 
   "0x11D75bC93aE69350231D8fF0F5832A697678183E", // Treasury EUR0
-  "0x81ad394C0Fa87e99Ca46E1aca093BEe020f203f4", // Yield Treasury EUR0
 ];
 const tokens = [ 
   "0xa0769f7A8fC65e47dE93797b4e21C073c117Fc80", // euTBL
