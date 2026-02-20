@@ -22,45 +22,29 @@ const GHST_pools2 = [
   "0x096C5CCb33cFc5732Bcd1f3195C13dBeFC4c82f4"  // GHST_USDC_UNIV2
 ]
 
-const ethTvl = async (api) => {
-  return api.sumTokens({ owner: vaultContractETH, tokens: tokensETH })
-}
+const ethTvl = async (api) =>  api.sumTokens({ owner: vaultContractETH, tokens: tokensETH })
 
-
-const graphUrl = 'https://subgraph.satsuma-prod.com/tWYl5n5y04oz/aavegotchi/aavegotchi-core-matic/api'
+const graphUrl = 'https://api.goldsky.com/api/public/project_cmh3flagm0001r4p25foufjtt/subgraphs/aavegotchi-core-matic/prod/gn'
 const graphQuery = gql`
 query GET_SUMMONED_GOTCHIS ($minGotchiId: Int, $block: Int) {
   aavegotchis(
     first: 1000
     skip: 0
     block: { number: $block }
-    where: {
-      status: "3" # summoned gotchis
-      gotchiId_gt: $minGotchiId
-    }
+    where: { status: "3" gotchiId_gt: $minGotchiId }
     orderBy: gotchiId
     orderDirection: asc
-  ) {
-    gotchiId
-    collateral
-    stakedAmount
-  }
+  ) { gotchiId collateral stakedAmount }
 }`
 async function getGotchisCollateral(timestamp, block, api) {
   const allGotchis = [];
   let minGotchiId = 0;
   while (minGotchiId !== -1) {
-    const { aavegotchis } = await request(
-      graphUrl,
-      graphQuery,
-      { minGotchiId, block }
-    );
+    const { aavegotchis } = await request( graphUrl, graphQuery, { minGotchiId, block });
     if (aavegotchis && aavegotchis.length > 0) {
       minGotchiId = parseInt(aavegotchis[aavegotchis.length - 1].gotchiId);
       allGotchis.push(...aavegotchis);
-    } else {
-      minGotchiId = -1;
-    }
+    } else minGotchiId = -1;
   }
   allGotchis.map(i => api.add(i.collateral, i.stakedAmount));
 }
@@ -77,16 +61,16 @@ module.exports = {
     tvl: ethTvl,
   },
   polygon: {
-    staking: staking(stkGHST_QUICKContract, GHST_Polygon),
     tvl: polygonTvl,
+    staking: staking(stkGHST_QUICKContract, GHST_Polygon),
     pool2: staking([stkGHST_QUICKContract], GHST_pools2)
   },
   methodology:
     `We count liquidity on Vaults from ETHEREUM and Polygon chains through Vault Contracts;
     On Rarity Farming, Staking and Pool2s parts on Polygon chain through their Contrats`,
   hallmarks: [
-    [1623769208, "Rarity Farming S1 Final Round"],
-    [1638885512, "Rarity Farming S2 Final Round"],
-    [1650549722, "Rarity Farming S3 Final Round"],
+    ['2021-06-15', "Rarity Farming S1 Final Round"],
+    ['2021-12-07', "Rarity Farming S2 Final Round"],
+    ['2022-04-21', "Rarity Farming S3 Final Round"],
   ],
 };

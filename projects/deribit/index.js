@@ -30,6 +30,8 @@ const config = {
         "0xb61a16BDa6D61D9b8AD493BF05962c5b98D1712F",
         "0x8F5F8ada4D19BF4ffBE580e4ce92af424e60C720",
         "0x369F8406A13729c168526018697F0da667656cde",
+        "0x3d09D2354530466D32Ed37C6Ad19eA58504A0C37",
+        "0x4e67722883AD992182e83b79Bf06A93972963caC",
     ]
   },
   solana: {
@@ -42,7 +44,8 @@ const config = {
         "7wx23rZmR4tikqW9avcby5Pf8QEuBTo7HKUtpCt9r9nz",
         "FbchixvxTEW24Mnzh8AxW31YEZ3J8bq5G5YthxttRgST",
         "BeTzsKSyvUhYiSrRDrDkZDN69LU4T7Ho3qKmrK8DvxYN",
-        "6xASgNpWJzP92LSwWkPZryHt8VMK1XhiU284gkLcVaX1"
+        "6xASgNpWJzP92LSwWkPZryHt8VMK1XhiU284gkLcVaX1",
+        "BNqPhvyoyRz4zj4Mmrc3cdqZaqXjro3RZ82dkvGec38n",
     ]
   },
   ethpow: {
@@ -60,11 +63,13 @@ const config = {
         "rMsmvyJxCRs9csii8yPdd4ti8cLVS4pkAu",
         "r349nPzpVGRFqQKkyvPsbvQdzLRQNfobbk",
         "rHZqS1bfwztYixefmvrbEqn7ZZgjebSphB",
+        "rJryAyxLNirDQduAzcQXUHxnBWeKkRKYCU",
     ]
   },
   bsc: {
     owners:[
         "0xc7125DA07a7110049eCC68F43BF10DE4d45CA84e",
+        "0x4e67722883AD992182e83b79Bf06A93972963caC",
     ]
   },
 }

@@ -1,4 +1,4 @@
-const { allAbi, abi, assets } = require("./vesu")
+const { allAbi, abi, assets, allAbiV2, abiV2, assetsV2 } = require("./vesu")
 
 const ABI = {
   owner: 'address:owner',
@@ -7,6 +7,14 @@ const ABI = {
   ERC4626: {
     asset: 'address:asset',
     totalAssets: 'uint256:totalAssets',
+    balanceOf: 'function balanceOf(address account) view returns (uint256)',
+    convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
+  },
+  morphoV2: {
+    liquidityAdapter: 'address:liquidityAdapter',
+  },
+  morphoAdapter: {
+    morphoVaultV1: 'address:morphoVaultV1',
   },
   aera: {
     assetRegistry: 'address:assetRegistry',
@@ -15,6 +23,7 @@ const ABI = {
   },
   morpho: {
     CreateMetaMorphoEvent: 'event CreateMetaMorpho(address indexed metaMorpho, address indexed caller, address initialOwner, uint256 initialTimelock, address indexed asset, string name, string symbol, bytes32 salt)',
+    CreateVaultV2Event: 'event CreateVaultV2(address indexed owner, address indexed asset, bytes32 salt, address indexed newVaultV2)',
   },
   euler: {
     getProxyListLength: 'uint256:getProxyListLength',
@@ -69,6 +78,20 @@ const MorphoConfigs = {
       },
     ],
   },
+  monad: {
+    vaultFactories: [
+      {
+        address: '0x33f20973275B2F574488b18929cd7DCBf1AbF275',
+        fromBlock: 32320327
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x8B2F922162FBb60A6a072cC784A2E4168fB0bb0c',
+        fromBlock: 32321811
+      }
+    ]
+  },
   wc: {
     vaultFactories: [
       {
@@ -122,6 +145,14 @@ const MorphoConfigs = {
       {
         address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
         fromBlock: 296447195,
+      },
+    ],
+  },
+  optimism: {
+    vaultFactories: [
+      {
+        address: '0x3Bb6A6A0Bc85b367EFE0A5bAc81c5E52C892839a',
+        fromBlock: 130770189,
       },
     ],
   },
@@ -209,6 +240,16 @@ const EulerConfigs = {
       '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
     ],
   },
+  monad: {
+    vaultFactories: [
+      '0xba4dd672062de8feedb665dd4410658864483f1e',
+    ],
+  },
+  hyperliquid: {
+    vaultFactories: [
+      '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A',
+    ],
+  },
 }
 
 const SiloConfigs = {
@@ -254,7 +295,11 @@ const VesuConfigs = {
   allAbi,
   abi,
   assets,
+  allAbiV2,
+  abiV2,
+  assetsV2,
   singleton: '0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160',
+  poolFactory: '0x03760f903a37948f97302736f89ce30290e45f441559325026842b7a6fb388c0',
 }
 
 module.exports = { 

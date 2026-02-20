@@ -8,6 +8,9 @@ const CONFIG = {
   katana: ['0x4DC446e349bDA9516033E11D63f1851d6B5Fd492'],
   plasma: ['0x9C48A6D3e859ab124A8873D73b2678354D0B4c0A'],
   hemi: ['0x0F65a7fBCb69074cF8BE8De1E01Ef573da34bD59'],
+  ethereum: ['0x1A875c28610F0155D377bBD725cc59d055e2D192'],
+  avax: ['0xA5217D7cceAa7DCdcc613E88DcFc98A0f145b384'],
+  hyperliquid: ['0x429e14fCa77b0eC3FAf32a65d09Da97e67E82826'],
 }
 
 const { aaveV3Export } = require("../helper/aave");
@@ -15,6 +18,4 @@ const { aaveV3Export } = require("../helper/aave");
 module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
-  [1659630089, "Start OP Rewards"],
-  [1650471689, "Start AVAX Rewards"]
 ]

@@ -48,7 +48,7 @@ const archonBridge = {
 
 module.exports = {
   hallmarks: [
-    [1698796801, "Archon Bridge Launch"],
+    ['2023-11-01', "Archon Bridge Launch"],
   ],
   avax: {
     tvl: sumTokensExport({

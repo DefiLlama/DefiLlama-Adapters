@@ -1,8 +1,11 @@
-const { sumERC4626VaultsExport } = require("../helper/erc4626");
+const { sumERC4626VaultsExport2 } = require("../helper/erc4626");
 
 const config = {
   ethereum: ['0x07Dff4087b43c4A759f4Fc69511c26d51929dAF4'],
-  base: ['0x6c05A7d2c24B48fC3C615D294fEc2eB068548897'],
+  base: [
+    '0x6c05A7d2c24B48fC3C615D294fEc2eB068548897',
+    '0x2406aacbdF8463176DeB285AdAa81768415B6c7E',
+  ],
   arbitrum: [
     "0x27D22Eb71f00495Eccc89Bb02c2B68E6988C6A42",
     "0x183424d5ae5ec9fd486634bc566d0f75ad9c9109",
@@ -59,9 +62,9 @@ const stakings = {
 Object.keys(config).forEach(chain => {
   const vaults = config[chain]
   module.exports[chain] = {
-    tvl: sumERC4626VaultsExport({ vaults, isOG4626: true, })
+    tvl: sumERC4626VaultsExport2({ vaults })
   }
 
   if (stakings[chain])
-    module.exports[chain].staking = sumERC4626VaultsExport({ vaults: stakings[chain], isOG4626: true, })
+    module.exports[chain].staking = sumERC4626VaultsExport2({ vaults: stakings[chain] })
 })

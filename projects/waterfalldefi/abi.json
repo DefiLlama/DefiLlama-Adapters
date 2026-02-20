@@ -1,5 +1,0 @@
-{
-  "tranchesAuto": "function tranches(uint256) view returns (uint256 target, uint256 principal, uint256 autoPrincipal, uint256 validPercent, uint256 apy, uint256 fee, uint256 autoValid)",
-  "tranchesNonAuto": "function tranches(uint256) view returns (uint256 target, uint256 principal, uint256 apy, uint256 fee)",
-  "cycleActive": "bool:active"
-}

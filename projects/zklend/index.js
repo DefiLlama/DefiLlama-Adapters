@@ -35,7 +35,7 @@ async function staking(api) {
 module.exports = {
   methodology: 'Value of user supplied asset on zkLend is considered as TVL',
   // hallmarks: [
-  //   [1739232000, "Empty Market Exploit"]
+  //   ['2025-02-11', "Empty Market Exploit"]
   // ],
   starknet: {
     tvl,

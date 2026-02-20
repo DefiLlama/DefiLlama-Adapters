@@ -6,6 +6,7 @@ const { Connection, PublicKey, Keypair, StakeProgram, } = require("@solana/web3.
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
+const { queryAllium } = require('./allium');
 
 const sdk = require('@defillama/sdk');
 const { endpointMap, endpoint } = require('./svmChainConfig.js')
@@ -28,7 +29,48 @@ const blacklistedTokens_default = [
   'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
   'C5xtJBKm24WTt3JiXrvguv7vHCe7CknDB7PNabp4eYX6', //TINY
   '5fTwKZP2AK39LtFN9Ayppu6hdCVKfMGVm79F2EgHCtsi', //WHEY
+  'EtQE3GREPyFBCU3yUXc5nWs3wRtLYuMmtKAFAvXD1yuR', // BITCOIN CAT
+  '7SaitRVfcP3b3KVSGHfamhznJornMXAefXByXstYhTys', // SASHA CAT
 ]
+
+const whitelistedTokens = {
+  solana: [
+    ...(Object.values(ADDRESSES.solana)),
+  ]
+}
+
+const trustedTokensCache = {}
+
+async function getTrustedTokenSet(chain) {
+  if (!trustedTokensCache[chain]) {
+    trustedTokensCache[chain] = _getTrustedTokenSet(chain).catch(e => {
+      delete trustedTokensCache[chain]
+      throw e
+    })
+  }
+  return trustedTokensCache[chain]
+
+  async function _getTrustedTokenSet(chain) {
+    const data = await sdk.cache.readExpiringJsonCache(`trustedTokens-${chain}`)
+    if (data) return new Set((data || []).concat(whitelistedTokens[chain] || []))
+    const urls = {
+      solana: 'https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json',
+    }
+    if (!urls[chain]) {
+      return new Set(whitelistedTokens[chain] || [])
+    }
+    const trustedTokens = await http.get(urls[chain]).then(async res => {
+      const cgTokens = await http.get('https://api.coingecko.com/api/v3/coins/list?include_platform=true')
+      const cgChainTokens = cgTokens.filter(i => i.platforms?.[chain]).map(i => i.platforms[chain]).filter(i => i)
+      await sdk.cache.writeCache(`trustedTokens/res-${chain}`, { tokenList: res.tokens, cgChainTokens }, { skipCompression: true, })
+
+      const tokens = res.tokens.map(i => i.address).concat(cgChainTokens).concat(whitelistedTokens[chain] || [])
+      await sdk.cache.writeExpiringJsonCache(`trustedTokens-${chain}`, tokens, {}) // 1 day by default
+      return tokens
+    })
+    return new Set(trustedTokens)
+  }
+}
 
 let connection = {}
 let provider = {}
@@ -181,13 +223,27 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { core
   }
 }
 
-function sumTokensExport({ tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest }) {
-  return (api) => sumTokens2({ api, chain: api.chain, tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest })
+function sumTokensExport({ tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, onlyTrustedTokens, ...rest }) {
+  return (api) => sumTokens2({ api, chain: api.chain, tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, onlyTrustedTokens, ...rest })
 }
 
 function getEndpoint(chain) {
   return endpointMap[chain]()
 }
+
+const getUniqStartOfTodayTimestamp = (date = new Date()) => {
+  var date_utc = Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds()
+  );
+  var startOfDay = new Date(date_utc);
+  var timestamp = startOfDay.getTime() / 1000;
+  return Math.floor(timestamp / 86400) * 86400;
+};
 
 async function sumTokens2({
   api,
@@ -201,13 +257,35 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
   computeTokenAccount = false,
+  includeStakedSol = false,
   chain = 'solana',
+  onlyTrustedTokens = false,
 }) {
 
   if (api) chain = api.chain
+
+  // Route to Allium-based historical path when api.timestamp is before today (UTC)
+  if (api && api.timestamp && (chain === 'solana' || !chain) && api.timestamp < getUniqStartOfTodayTimestamp()) {
+    return sumTokens2_historical({
+      api, balances, tokensAndOwners, tokens, owners, owner,
+      tokenAccounts, solOwners, blacklistedTokens, allowError,
+      computeTokenAccount, includeStakedSol, chain, onlyTrustedTokens,
+    });
+  }
+
   if (!balances) {
     if (api) balances = api.getBalances()
     else balances = {}
+  }
+
+  if (includeStakedSol) {
+    let stakeOwners = solOwners.length ? solOwners : owners.length ? owners : owner ? [owner] : []
+    stakeOwners = getUniqueAddresses(stakeOwners, chain)
+    for (const so of stakeOwners) {
+      const staked = await getStakedSol(so)
+      await sleep(2000)
+      sdk.util.sumSingleBalance(balances, `solana:${ADDRESSES.solana.SOL}`, staked)
+    }
   }
 
   const endpoint = getEndpoint(chain)
@@ -220,10 +298,17 @@ async function sumTokens2({
     const _owners = getUniqueAddresses([...owners, owner].filter(i => i), chain)
 
     if (_owners.length) {
+
+      let filter = () => true
+      if (onlyTrustedTokens) {
+        const trustedTokenSet = await getTrustedTokenSet(chain)
+        filter = ({ mint }) => trustedTokenSet.has(mint)
+      }
+
       const data = await getOwnerAllAccounts(_owners)
       const tokenBalances = {}
       for (const item of data) {
-        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6 || !filter(item)) continue;
         sdk.util.sumSingleBalance(tokenBalances, item.mint, item.amount)
       }
       transformBalances({ tokenBalances, balances, chain, })
@@ -349,6 +434,220 @@ async function sumTokens2({
       }
     }
   }
+}
+
+function escapeSqlString(s) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/'/g, "''");
+}
+
+function sqlInList(arr) {
+  return arr.map(a => `'${escapeSqlString(a)}'`).join(', ');
+}
+
+/**
+ * Historical version of sumTokens2 using Allium solana.assets.balances_daily.
+ * Same params as sumTokens2 plus a required `date` (YYYY-MM-DD).
+ * Uses Allium for balance lookups; RPC only for includeStakedSol.
+ */
+async function sumTokens2_historical({
+  api,
+  balances,
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  tokenAccounts = [],
+  solOwners = [],
+  blacklistedTokens = [],
+  allowError = false,
+  computeTokenAccount = false,
+  includeStakedSol = false,
+  chain = 'solana',
+  onlyTrustedTokens = false,
+}) {
+  const date = new Date(api.timestamp * 1000).toISOString().slice(0, 10);
+  if (!date) throw new Error('sumTokens2_historical requires a date (YYYY-MM-DD)');
+  sdk.log('sumTokens2: using historical Allium path for date', date);
+  if (includeStakedSol) throw new Error('includeStakedSol is not supported for historical backfilling (RPC-only)');
+
+  if (api) chain = api.chain;
+  if (!balances) {
+    if (api) balances = api.getBalances();
+    else balances = {};
+  }
+
+  blacklistedTokens = [...blacklistedTokens, ...blacklistedTokens_default];
+  const blacklistSet = new Set(blacklistedTokens);
+
+  // Build tokensAndOwners from tokens × owner(s) if not provided
+  if (!tokensAndOwners.length) {
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner]);
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat();
+  }
+
+  // Resolve computeTokenAccount → derive token accounts
+  if (computeTokenAccount && tokensAndOwners.length) {
+    tokensAndOwners.forEach(([token, account], i) => {
+      if (typeof token === 'string') tokensAndOwners[i][0] = new PublicKey(token);
+      if (typeof account === 'string') tokensAndOwners[i][1] = new PublicKey(account);
+    });
+    const programBuffer = TOKEN_PROGRAM_ID.toBuffer();
+    const computedAccounts = tokensAndOwners.map(([mint, ownerKey]) => {
+      return PublicKey.findProgramAddressSync(
+        [ownerKey.toBuffer(), programBuffer, mint.toBuffer()],
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+      )[0].toString();
+    });
+    tokenAccounts.push(...computedAccounts);
+    tokensAndOwners = [];
+  }
+
+  tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistSet.has(token));
+
+  // Collect all addresses/token_accounts to query, then filter locally
+  const allAddresses = new Set();
+  const allTokenAccounts = new Set();
+
+  // Gather addresses from owners, tokensAndOwners, solOwners
+  const _owners = getUniqueAddresses([...owners, owner].filter(i => i), chain);
+  _owners.forEach(a => allAddresses.add(a));
+
+  if (tokensAndOwners.length) {
+    tokensAndOwners.forEach(([, ownerAddr]) => allAddresses.add(ownerAddr));
+  }
+
+  if (solOwners.length) {
+    getUniqueAddresses(solOwners, chain).forEach(a => allAddresses.add(a));
+  }
+
+  // Gather token_accounts
+  if (tokenAccounts.length) {
+    getUniqueAddresses(tokenAccounts, chain).forEach(a => allTokenAccounts.add(a));
+  }
+
+  const addressList = [...allAddresses];
+  const tokenAccountList = [...allTokenAccounts];
+
+  // Build a simple Allium query: fetch all rows for date + addresses/token_accounts
+  // Note: Native SOL has token_account = NULL, so we filter by address for SOL
+  let sql = '';
+  if (addressList.length || tokenAccountList.length) {
+    const dateCondition = `date = '${escapeSqlString(date)}'`;
+    
+    if (addressList.length && tokenAccountList.length) {
+      // Both address (for SOL + SPL) and token_account (for SPL only)
+      sql = `
+        SELECT address, token_account, mint, raw_amount
+        FROM solana.assets.balances_daily
+        WHERE ${dateCondition}
+          AND (address IN (${sqlInList(addressList)}) OR token_account IN (${sqlInList(tokenAccountList)}))
+          AND raw_amount > 0`.trim();
+    } else if (addressList.length) {
+      // address only (covers both SOL and SPL)
+      sql = `
+        SELECT address, token_account, mint, raw_amount
+        FROM solana.assets.balances_daily
+        WHERE ${dateCondition}
+          AND address IN (${sqlInList(addressList)})
+          AND raw_amount > 0`.trim();
+    } else if (tokenAccountList.length) {
+      // token_account only (SPL tokens only; won't include SOL since SOL has NULL token_account)
+      sql = `
+        SELECT address, token_account, mint, raw_amount
+        FROM solana.assets.balances_daily
+        WHERE ${dateCondition}
+          AND token_account IN (${sqlInList(tokenAccountList)})
+          AND raw_amount > 0`.trim();
+    }
+  }
+
+  if (sql) {
+    sdk.log('sumTokens2_historical: running Allium query for date', date);
+    const rows = await queryAllium(sql);
+
+    if (!Array.isArray(rows)) {
+      sdk.log('sumTokens2_historical: Allium query returned non-array result', { date, rowsType: typeof rows, rows });
+    } else {
+      // Prepare filters
+      let trustedTokenSet = null;
+      if (onlyTrustedTokens) {
+        trustedTokenSet = await getTrustedTokenSet(chain);
+      }
+
+      const tokensAndOwnersMap = new Map();
+      if (tokensAndOwners.length) {
+        tokensAndOwners.forEach(([token, ownerAddr]) => {
+          const key = `${token}|${ownerAddr}`;
+          tokensAndOwnersMap.set(key, true);
+        });
+      }
+
+      const ownersSet = new Set(_owners);
+      const tokenAccountsSet = new Set(tokenAccountList);
+      const solOwnersSet = new Set(getUniqueAddresses(solOwners, chain));
+
+      // Helper to check if mint is native SOL (canonical: So11111..., Allium variant: Sol11111...)
+      const isNativeSOL = (mint) => {
+        return mint === ADDRESSES.solana.SOL || mint === 'So11111111111111111111111111111111111111112';
+      };
+
+      const tokenBalances = {};
+
+      for (const row of rows) {
+        const mint = row.mint;
+        const address = row.address;
+        const tokenAccount = row.token_account;
+        const amount = row.raw_amount;
+
+        const isSol = isNativeSOL(mint);
+
+        // Blacklist
+        if (blacklistSet.has(mint)) continue;
+
+        // onlyTrustedTokens (SOL is always trusted)
+        if (trustedTokenSet && !isSol && !trustedTokenSet.has(mint)) continue;
+
+        // Determine if this row matches our criteria
+        let matched = false;
+
+        // Path 1: owners without tokensAndOwners (all tokens for those owners)
+        if (!tokensAndOwners.length && _owners.length && ownersSet.has(address)) {
+          matched = true;
+        }
+
+        // Path 2: tokensAndOwners (specific mint + owner pairs)
+        if (tokensAndOwners.length) {
+          const key = `${mint}|${address}`;
+          if (tokensAndOwnersMap.has(key)) {
+            matched = true;
+          }
+        }
+
+        // Path 3: tokenAccounts (SPL only; native SOL has token_account = null)
+        if (tokenAccount && tokenAccountsSet.has(tokenAccount)) {
+          matched = true;
+        }
+
+        // Path 4: solOwners (native SOL only)
+        if (solOwnersSet.has(address) && isSol) {
+          matched = true;
+        }
+
+        if (matched) {
+          // Normalize SOL mint to the canonical address
+          const normalizedMint = isSol ? ADDRESSES.solana.SOL : mint;
+          sdk.util.sumSingleBalance(tokenBalances, normalizedMint, String(amount));
+        }
+      }
+
+      transformBalances({ tokenBalances, balances, chain });
+    }
+  }
+
+  blacklistedTokens.forEach(i => delete balances[`${chain}:` + i]);
+
+  return balances;
 }
 
 function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {

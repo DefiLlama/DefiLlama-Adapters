@@ -2,6 +2,7 @@ const CONFIG = {
   ethereum: {
     susdc: '0xBc65ad17c5C0a2A4D159fa5a503f4992c7B545FE',
     sparkVaultUsdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d',
+    sparkVaultPyusd: '0x80128DbB9f07b93DDE62A6daeadb69ED14a7D354',
     sparkVaultUsdt: '0xe2e7a17dFf93280dec073C995595155283e3C372',
     sparkVaultEth: '0xfE6eb3b609a7C8352A241f7F3A21CEA4e9209B8f',
   },

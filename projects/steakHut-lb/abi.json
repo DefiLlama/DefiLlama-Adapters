@@ -1,7 +1,0 @@
-
-{
-  "totalSupply": "uint256:totalSupply", 
-  "getUnderlyingAssets": "function getUnderlyingAssets(uint256) view returns (uint256, uint256)",
-  "want": "function want() view returns (address, address)"
-}
-
