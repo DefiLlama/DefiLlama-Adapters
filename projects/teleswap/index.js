@@ -14,6 +14,8 @@ module.exports = {
     },
   },
   ethereum: { staking: sumTokensExport({ owners: [TST_DELEGATION], tokens: [TST] }) },
+  bsquared: { tvl: () => ({}) },
+  bob: { tvl: () => ({}) },
 }
 
 const config = {
