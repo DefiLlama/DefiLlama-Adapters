@@ -12,6 +12,7 @@ async function tvl(api) {
       [ADDRESSES.klaytn.WETH, L1_ERC20_GATEWAY],                    // WETH
       [ADDRESSES.klaytn.BORA, L1_ERC20_GATEWAY],                    // BORA
       ['0x18bc5bcc660cf2b9ce3cd51a404afe1a0cbd3c22', L1_ERC20_GATEWAY], // IDRX
+      ['0x15d9f3ab1982b0e5a415451259994ff40369f584', L1_ERC20_GATEWAY], // BTCB
     ],
   })
 }
