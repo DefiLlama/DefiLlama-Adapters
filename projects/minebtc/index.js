@@ -54,11 +54,10 @@ async function getStakedLpUnderlyingValue(api) {
 }
 
 async function tvl(api) {
-  // 1. SOL in protocol vaults + staked DogeBTC + faction/sweep DogeBTC vaults
+  // SOL in protocol vaults + faction/sweep DogeBTC vaults
   await sumTokens2({
     api,
     tokenAccounts: [
-      STAKED_DOGEBTC_CUSTODIAN,
       FACTION_TREASURY_VAULT,
       NFT_FLOOR_SWEEP_VAULT,
     ],
@@ -68,20 +67,21 @@ async function tvl(api) {
     ],
   });
 
-  // 2. Staked LP tokens -> calculate underlying SOL + DogeBTC value
-  await getStakedLpUnderlyingValue(api);
-
   return api.getBalances();
 }
 
 async function staking(api) {
-  // Staked DogeBTC
+  // Staked DogeBTC (protocol's own token)
   await sumTokens2({
     api,
     tokenAccounts: [STAKED_DOGEBTC_CUSTODIAN],
   });
 
-  // Staked LP -> underlying value
+  return api.getBalances();
+}
+
+async function pool2(api) {
+  // Staked LP (DogeBTC/SOL) -> pro-rata underlying value
   await getStakedLpUnderlyingValue(api);
 
   return api.getBalances();
@@ -90,9 +90,10 @@ async function staking(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "TVL includes SOL in betting prize pot and staker reward vault, staked DogeBTC in custodian vault, DogeBTC in faction treasury and NFT floor sweep vaults. Staked LP tokens are valued by their pro-rata share of underlying SOL and DogeBTC in the Raydium pool (using total LP supply from pool state, which includes burned LP).",
+    "TVL includes SOL in betting prize pot and staker reward vault, DogeBTC in faction treasury and NFT floor sweep vaults. Staking tracks staked DogeBTC. Pool2 tracks staked DogeBTC/SOL LP tokens valued by their pro-rata share of underlying assets in the Raydium pool.",
   solana: {
     tvl,
     staking,
+    pool2,
   },
 };
