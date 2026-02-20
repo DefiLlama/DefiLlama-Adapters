@@ -83,8 +83,11 @@ async function tvl(api) {
   // V1 vault: Uniswap V3 only, vault owns NFTs directly
   await sumTokens2({ api, owners: [VAULT_V1], resolveUniV3: true })
 
-  // V2 vaults: enumerate positions from each vault in parallel
-  await Promise.all(VAULTS.map(({ vault, viewHelper }) => resolveVaultPositions(api, vault, viewHelper)))
+  // V2 vaults: enumerate positions from each vault (isolated so one failure doesn't discard the other)
+  const results = await Promise.allSettled(VAULTS.map(({ vault, viewHelper }) => resolveVaultPositions(api, vault, viewHelper)))
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') console.warn(`[snuggle] vault ${VAULTS[i].vault} failed:`, r.reason?.message ?? r.reason)
+  })
 }
 
 module.exports = {
