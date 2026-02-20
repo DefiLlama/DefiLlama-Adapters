@@ -45,7 +45,10 @@ const tvl = async (api) => {
         }
       }
       res.forEach(batchResult => {
-        if (!batchResult) { failures++; return }
+        if (!batchResult) {
+          if (++failures >= 20) throw new Error(`Too many sub-call failures (${failures}), aborting to avoid serving incomplete data`)
+          return
+        }
         batchResult.forEach(({ token, amount }) => api.add(token, amount))
       })
       processed += chunk.length * SAFES_PER_CALL
