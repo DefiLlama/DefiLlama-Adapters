@@ -12,7 +12,10 @@ const ethereumTvl = async (api) => {
     const { symbioticAgentConfigs, eigenlayerAgentConfigs } = await fetchAgentConfigs(api, chain)
 
     const assetAvailableBalancesResults = await api.multiCall({
-        abi: capABI.Vault.totalSupplies,
+        // do NOT use `totalSupplies` here:
+        // If the borrowed metric is exported then the tvl should only account for the tokens that 
+        // aren't actively being borrowed: tvl = totalSupplies - total borrowed.
+        abi: capABI.Vault.availableBalance,
         calls: assetAddresses.map(asset => ({
             target: tokens.cUSD.address,
             params: [asset]
