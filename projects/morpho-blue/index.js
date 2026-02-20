@@ -154,7 +154,11 @@ const config = {
   flare: {
     morphoBlue: "0xF4346F5132e810f80a28487a79c7559d9797E8B0",
     fromBlock: 52378788,
-  }
+  },
+  citrea: {
+    morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
+    fromBlock: 3705069,
+  },
 }
 
 const eventAbis = {
