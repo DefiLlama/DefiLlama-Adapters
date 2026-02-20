@@ -1,6 +1,7 @@
 const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { masterchefExports } = require('../projects/helper/unknownTokens')
 const { masterChefExports } = require('../projects/helper/masterchef')
+const { mergeExports } = require('../projects/helper/utils')
 const { buildProtocolExports } = require('./utils')
 
 const chainExportKeys = new Set(['staking', 'pool2', 'borrowed', 'vesting'])
@@ -18,6 +19,21 @@ function masterchefExportFn(chainConfigs, options = {}) {
       // Simple string = masterchef address (new-style, no native token)
       const exports = masterchefExports({ chain, masterchef: config })
       result[chain] = exports[chain]
+      return
+    }
+
+    // Handle array of configs (multiple masterchefs on same chain)
+    if (Array.isArray(config)) {
+      const exports = config.map(c => {
+        const helperConfig = { ...c }
+        for (const key of chainExportKeys) delete helperConfig[key]
+        if (helperType === 'old') {
+          const { masterchef, stakingToken, tokenIsOnCoingecko = true, poolInfoAbi, includeYVTokens } = helperConfig
+          return masterChefExports(masterchef, chain, stakingToken, tokenIsOnCoingecko, poolInfoAbi, includeYVTokens)
+        }
+        return masterchefExports({ chain, ...helperConfig })
+      })
+      result[chain] = mergeExports(exports)[chain]
       return
     }
 
@@ -704,6 +720,103 @@ const configs = {
   'YogurtFinance': {
     misrepresentedTokens: true,
     pulse: { masterchef: '0xca3E704Bd09B979170D76d34880c7A72fda51B63', nativeTokens: ['0xece11C704F38FF38520667AeCDd7f53eA82F60F5'], useDefaultCoreAssets: true, poolInfoABI: 'function poolInfo(uint256) view returns (address)', getToken: (i) => i },
+  },
+
+  // ============================================================
+  // Multi-masterchef adapters (previously using mergeExports)
+  // ============================================================
+  'magicland': {
+    misrepresentedTokens: true,
+    arbitrum: { masterchef: '0x6b614684742717114200dc9f30cBFdCC00fc73Ec', nativeToken: '0x2c852d3334188be136bfc540ef2bb8c37b590bad' },
+    iotex: { masterchef: '0x9B4CF5d754455fD3Bc4212DCFF1b085DBCd5b0c0' },
+  },
+  'ester': {
+    misrepresentedTokens: true,
+    fantom: { masterchef: '0xA6151b608f49Feb960e951F1C87F4C766850de31', nativeToken: '0x181f3f22c9a751e2ce673498a03e1fdfc0ebbfb6', poolInfoABI: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accESTPerShare, address strat)' },
+  },
+  'tenet': {
+    misrepresentedTokens: true,
+    ethereum: { masterchef: '0xdA842fad0BDb105c88399e845aD4D00dE3AEb911', nativeToken: '0x74159651a992952e2bf340d7628459aa4593fc05', poolInfoABI: 'function poolSettingInfo(uint256) view returns (address lpToken, address tokenAddr, address projectAddr, uint256 tokenAmount, uint256 startBlock, uint256 endBlock, uint256 tokenPerBlock, uint256 tokenBonusEndBlock, uint256 tokenBonusMultipler)' },
+    bsc: { masterchef: '0x3F4c79EB1220BeBBf5eF4B3e7c59E5cf38200b62', nativeToken: '0xdFF8cb622790b7F92686c722b02CaB55592f152C', poolInfoABI: 'function poolSettingInfo(uint256) view returns (address lpToken, address tokenAddr, address projectAddr, uint256 tokenAmount, uint256 startBlock, uint256 endBlock, uint256 tokenPerBlock, uint256 tokenBonusEndBlock, uint256 tokenBonusMultipler)' },
+  },
+  'salem': {
+    misrepresentedTokens: true,
+    cronos: { masterchef: '0xBD124D3B18a382d807a9E491c7f1848403856B08', nativeToken: '0x637CB66526244029407046867E1E0DFD28b2294E' },
+    fantom: { masterchef: '0xdA2A9024D8D01F4EA0aa35EEdf771432095219ef', nativeToken: '0xa26e2D89D4481500eA509Df58035073730cff6D9' },
+    polygon: { masterchef: '0x53D392646faB3caE0a08Ead31f8B5cBFFf55b818', nativeToken: '0xf5291e193aad73cac6fd8371c98804a46c6c6577' },
+  },
+  'rbx': {
+    misrepresentedTokens: true,
+    bsc: { masterchef: '0x864d434308997e9648838d23f3eedf5d0fd17bea', blacklistedTokens: ['0xa9639160481b625ba43677be753e0a70bf58c647'], nativeToken: '0xace3574b8b054e074473a9bd002e5dc6dd3dff1b' },
+    ethereum: { masterchef: '0x50b641caab809c1853be334246ac951faccc49b0', nativeToken: '0x8254e26e453EB5aBd29B3c37AC9E8Da32E5d3299' },
+  },
+  'parrotegg': {
+    misrepresentedTokens: true,
+    iotex: { masterchef: '0x83E7e97C4e92D56c0653f92d9b0c0B70288119b8', nativeToken: '0x176cb5113b4885b3a194bd69056ac3fe37a4b95c' },
+    harmony: { masterchef: '0xFb15945E38a11450AF5E3FF20355D71Da72FfE8a', nativeToken: '0xC36769DFcDF05B2949F206FC34C8870707D33C89' },
+    arbitrum: { masterchef: '0x1cCf20F4eE3EFD291267c07268BEcbFDFd192311', nativeToken: '0x78055dAA07035Aa5EBC3e5139C281Ce6312E1b22' },
+    polygon: { masterchef: '0x34E4cd20F3a4FdC5e42FdB295e5A118D4eEB0b79', nativeToken: '0xB63E54F16600b356f6d62dDd43Fca5b43d7c66fd' },
+  },
+  'koala-defi': {
+    misrepresentedTokens: true,
+    polygon: { masterchef: '0xf6948f00FC2BA4cDa934C931628B063ed9091019', nativeToken: '0x04f2e3ec0642e501220f32fcd9e26e77924929a9' },
+    bsc: { masterchef: '0x7b3cA828e189739660310B47fC89B3a3e8A0E564', nativeToken: '0xb2ebaa0ad65e9c888008bf10646016f7fcdd73c3' },
+  },
+  'HoneyFarm': {
+    misrepresentedTokens: true,
+    avax: { masterchef: '0x757490104fd4C80195D3C56bee4dc7B1279cCC51', nativeToken: '0xB669c71431bc4372140bC35Aa1962C4B980bA507', blacklistedTokens: ['0x1ce0c2827e2ef14d5c4f29a091d735a204794041'] },
+    bsc: { masterchef: '0x88E21dedEf04cf24AFe1847B0F6927a719AA8F35', nativeToken: '0x1A8d7AC01d21991BF5249A3657C97b2B6d919222' },
+  },
+  'marshamallowdefi': {
+    misrepresentedTokens: true,
+    bsc: [
+      { masterchef: '0x8932a6265b01D1D4e1650fEB8Ac38f9D79D3957b', nativeTokens: ['0x787732f27d18495494cea3792ed7946bbcff8db2', '0xe1f2d89a6c79b4242f300f880e490a70083e9a1c'], poolInfoABI: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accEggPerShare, uint16 depositFeeBP)', blacklistedTokens: ['0x00000000548997391c670a5179af731a30e7c3ad'] },
+      { masterchef: '0xEE49Aa34833Ca3b7d873ED63CDBc031A09226a5d', nativeTokens: ['0x787732f27d18495494cea3792ed7946bbcff8db2', '0xe1f2d89a6c79b4242f300f880e490a70083e9a1c'], poolInfoABI: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accEggPerShare, uint16 depositFeeBP)', blacklistedTokens: ['0x00000000548997391c670a5179af731a30e7c3ad'] },
+    ],
+  },
+  'lume': {
+    misrepresentedTokens: true,
+    cronos: [
+      { masterchef: '0xF3cCE1bCe378B56BA24Cf661E2bA128303DD8b88', nativeToken: '0xB3551aCf805D5F90A1Fd7444B6571BdC069F40b2', poolInfoABI: 'function getPoolInfo(uint256 _pid) external view returns (address lpToken, uint256 _allocPoint)' },
+      { masterchef: '0x21dFe774C313AA92392725ac51693E26072c8099', nativeToken: '0x6d810420Fcee6478cE73d4f466A094BBAdE11dA6', poolInfoABI: 'function poolInfo(uint256 _pid) external view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accNovaPerShare, bool isStarted)' },
+    ],
+  },
+  'smurfmoney': {
+    misrepresentedTokens: true,
+    fantom: [
+      { masterchef: '0xdD4Ddef5be424a6b5645dF4f5169e3cbA6a975Db', nativeTokens: ['0x53a5f9d5adc34288b2bff77d27f55cbc297df2b9', '0x465bc6d1ab26efa74ee75b1e565e896615b39e79'] },
+      { masterchef: '0x772dEC3e4A9B18e3B2636a70e11e4e0a90F19575', nativeTokens: ['0x53a5f9d5adc34288b2bff77d27f55cbc297df2b9', '0x465bc6d1ab26efa74ee75b1e565e896615b39e79'] },
+    ],
+  },
+  'sapphire': {
+    misrepresentedTokens: true,
+    fantom: [
+      { masterchef: '0x5A3b5A572789B87755Fa7720A4Fae36e2e2D3b35', nativeToken: '0xfa7d8c3CccC90c07c53feE45A7a333CEC40B441B' },
+      { masterchef: '0xD1b96929AceDFa7a2920b5409D0c5636b89dcD85', nativeToken: '0xB063862a72d234730654c0577C188452424CF53c' },
+    ],
+  },
+  'polyquail': {
+    misrepresentedTokens: true,
+    polygon: [
+      { masterchef: '0xeA038416Ed234593960704ddeD73B78f7D578AA0', nativeTokens: ['0x252656AdC9E22C697Ce6c08cA9065FBEe5E394e7', '0x4f219CfC1681c745D9558fd64d98373A21a246CA', '0x6116A2A8Ea71890Cf749823Ee9DEC991930a9eEa'] },
+      { masterchef: '0xE1de7a777C1f0C85ca583c143b75e691a693e04B', nativeTokens: ['0x252656AdC9E22C697Ce6c08cA9065FBEe5E394e7', '0x4f219CfC1681c745D9558fd64d98373A21a246CA', '0x6116A2A8Ea71890Cf749823Ee9DEC991930a9eEa'] },
+      { masterchef: '0x439E9BE4618bfC5Ebe9B7357d848F65D24a50dDE', nativeTokens: ['0x252656AdC9E22C697Ce6c08cA9065FBEe5E394e7', '0x4f219CfC1681c745D9558fd64d98373A21a246CA', '0x6116A2A8Ea71890Cf749823Ee9DEC991930a9eEa'] },
+    ],
+  },
+  'frostfinance': {
+    misrepresentedTokens: true,
+    avax: [
+      { masterchef: '0xCEA209Fafc46E5C889A8ad809e7C8e444B2420C0', nativeTokens: ['0x21c5402C3B7d40C89Cc472C9dF5dD7E51BbAb1b1', '0xf57b80a574297892b64e9a6c997662889b04a73a', '0x314f3bee25e49ea4bcea9a3d1321c74c95f10eab'] },
+      { masterchef: '0x02941a0Ffa0Bb0E41D9d96314488d2E7652EDEa6', nativeTokens: ['0x21c5402C3B7d40C89Cc472C9dF5dD7E51BbAb1b1', '0xf57b80a574297892b64e9a6c997662889b04a73a', '0x314f3bee25e49ea4bcea9a3d1321c74c95f10eab'] },
+      { masterchef: '0x87f1b38D0C158abe2F390E5E3482FDb97bC8D0C5', nativeTokens: ['0x21c5402C3B7d40C89Cc472C9dF5dD7E51BbAb1b1', '0xf57b80a574297892b64e9a6c997662889b04a73a', '0x314f3bee25e49ea4bcea9a3d1321c74c95f10eab'] },
+    ],
+  },
+  'arenaswap': {
+    misrepresentedTokens: true,
+    bsc: [
+      { masterchef: '0xbEa60d145747a66CF27456ef136B3976322b7e77', nativeTokens: ['0x2A17Dc11a1828725cdB318E0036ACF12727d27a2', '0xedeCfB4801C04F3EB394b89397c6Aafa4ADDa15B'] },
+      { masterchef: '0x3e91B21ddE13008Aa73f07BdE26970322Fe5D533', nativeTokens: ['0x2A17Dc11a1828725cdB318E0036ACF12727d27a2', '0xedeCfB4801C04F3EB394b89397c6Aafa4ADDa15B'] },
+    ],
   },
 }
 

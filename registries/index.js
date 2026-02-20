@@ -9,6 +9,7 @@ const adapterRoutes = [
   './compound',
   './erc4626',
   './masterchef',
+  './solanaStakePool',
 ]
 const allProtocols = {}
 
