@@ -32,7 +32,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1770354988, // YieldCore deployment: 2026-02-06 05:16:28 UTC
+  start: "2026-02-06", // YieldCore deployment: 2026-02-06 05:16:28 UTC
   methodology:
     "TVL is calculated as the total USDT deposited by users into YieldCore bonds. " +
     "Funds may sit in the main YieldCore contract or be temporarily deployed in a Krystal vault " +
