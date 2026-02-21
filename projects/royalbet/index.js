@@ -6,7 +6,7 @@ module.exports = {
     tvl: async () => {
       return sumTokens2({
         owners: [
-          "FKb3qBvS84unKRxiCQr2Jm1J3JSnUZbik9ddAXqagAfF",
+          "6LdMpwdL9i5wSM3ujMDdThtVpBeWgMcMtaKWUvpcNeno",
         ],
       });
     },
