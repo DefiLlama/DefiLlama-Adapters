@@ -11,3 +11,15 @@ module.exports = {
   methodology: "All pools from https://polkaswap.io launched on SORA network are included in TVL. Data comes from https://polkaview.io",
   sora: { tvl },
 };
+
+
+// on-chain
+/* 
+const { getExports } = require('./helper/heroku-api')
+
+module.exports = {
+  timetravel: false,
+  misrepresentedTokens: true,
+  ...getExports("stackswap", ['stacks']),
+}
+ */
