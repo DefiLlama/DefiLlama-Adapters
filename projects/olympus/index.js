@@ -1,5 +1,4 @@
 // projects/olympus/index.js
-
 const ADDRESSES = require('../helper/coreAssets.json')
 const { blockQuery } = require("../helper/http");
 const { staking } = require('../helper/staking');
@@ -50,16 +49,17 @@ query {
 }`;
 
 const protocolQuery = (block) => `
-  query {
-    tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
-      block
-      timestamp
-      category
-      tokenAddress
-      token
-      balance
-    }
+query {
+  tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
+    block
+    timestamp
+    category
+    tokenAddress
+    token
+    balance
+    valueExcludingOhm
   }
+}
 `;
 
 function sumBalancesByTokenAddress(arr) {
@@ -106,9 +106,22 @@ function buildTvl(mode = 'tvl') {
     const trResp = await blockQuery(subgraphUrls[api.chain], protocolQuery(blockNum), { api });
     const tokenRecords = trResp?.tokenRecords || [];
 
-    // Filter out problematic pools
+    // Protocol-Owned Liquidity: the subgraph stores balance=1 for Uniswap V3 NFT positions
+    // (not a token amount), but provides valueExcludingOhm — the oracle-priced USD value
+    // of the non-OHM side of each LP. Use this directly via USDC (1:1 USD).
+    if (mode === 'tvl') {
+      tokenRecords
+        .filter(t => t.category === 'Protocol-Owned Liquidity')
+        .forEach(t => {
+          const usdValue = parseFloat(t.valueExcludingOhm || 0);
+          if (usdValue > 0) api.add(ADDRESSES.ethereum.USDC, usdValue * 1e6);
+        });
+    }
+
+    // Filter out POL records (handled above) and the existing poolsWithoutDecimals exclusion.
     const filteredTokenRecords = tokenRecords.filter(
-      (t) => !poolsWithoutDecimals.includes(t.tokenAddress)
+      (t) => t.category !== 'Protocol-Owned Liquidity' &&
+             !poolsWithoutDecimals.includes(t.tokenAddress)
     );
 
     // Normalize addresses for pricing
@@ -177,19 +190,4 @@ module.exports = {
     ["2025-12-01", "Convertible Deposits Launch"],
     ["2026-01-08", "CD Lending and Limit Orders"],
   ],
-  methodology: "Treasury value from subgraph excluding protocol-owned OHM. Borrowed shows DAI/USDS lent through Cooler Loans.",
-  ethereum: {
-    staking: staking(OlympusStakings, [OHM, OHM_V1]),
-    tvl: buildTvl('tvl'),
-    ownTokens: buildTvl('ownTokens'),
-    borrowed: buildTvl('borrowed'),
-  },
-  arbitrum: {
-    tvl: buildTvl('tvl'),
-    ownTokens: buildTvl('ownTokens'),
-  },
-  base: {
-    tvl: buildTvl('tvl'),
-    ownTokens: buildTvl('ownTokens'),
-  },
-};
+  methodology: "Treasury value from subgraph excluding protocol-owned OHM. Protocol-Owned Liquidity TVL uses subgraph-computed valueExcludingOhm (oracle-priced non-OHM side of each LP). Cooler Loans debt
