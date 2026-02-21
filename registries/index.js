@@ -12,6 +12,8 @@ const adapterRoutes = [
   './solanaStakePool',
   './stakingOnly',
   './uniswapV3Graph',
+  './balancer',
+  './gmx',
 ]
 const allProtocols = {}
 
