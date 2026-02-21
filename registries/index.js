@@ -10,6 +10,7 @@ const adapterRoutes = [
   './erc4626',
   './masterchef',
   './solanaStakePool',
+  './stakingOnly',
 ]
 const allProtocols = {}
 
