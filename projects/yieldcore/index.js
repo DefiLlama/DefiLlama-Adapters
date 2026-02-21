@@ -11,6 +11,7 @@
 // Both locations must be summed to avoid undercounting when funds are deployed.
 
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
 
 // The main YieldCore bond contract on BSC
 const YIELDCORE_CONTRACT = "0x2375Fcc2a256425228aA94d7100093230761639e";
@@ -20,15 +21,12 @@ const YIELDCORE_CONTRACT = "0x2375Fcc2a256425228aA94d7100093230761639e";
 // Funds are periodically moved here from the main contract and returned at bond maturity.
 const KRYSTAL_VAULT_ADDRESS = "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7";
 
-// USDT on BSC (Binance-Peg USDT)
-const USDT_BSC = "0x55d398326f99059fF775485246999027B3197955";
-
 async function tvl(api) {
   // Sum USDT balances across both the main contract and the Krystal vault
   // This ensures TVL is accurate regardless of where funds are deployed at any given time
   return sumTokens2({
     api,
-    tokens: [USDT_BSC],
+    tokens: [ADDRESSES.bsc.USDT],
     owners: [YIELDCORE_CONTRACT, KRYSTAL_VAULT_ADDRESS],
   });
 }
