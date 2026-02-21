@@ -4,7 +4,7 @@ const config = {
     "0x4cE3ec1b7B4FFb33A0B70c64a0560A3F341AA2E1",
   ],
   arbitrum: [
-    "0xaf69Bf9ea9E0166498c0502aF5B5945980Ed1E0E"
+    "0x956bdd9C18B786b082fd50C52722d254f0CB6964"
   ],
 };
 
