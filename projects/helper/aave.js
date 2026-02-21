@@ -358,7 +358,7 @@ function aaveV3Export(config) {
       // Subtract blacklisted lenders from supply TVL
       if (!isBorrowed && blacklistLenders.length > 0) {
         // Expand blacklist entries: if token is omitted, apply to all reserve tokens
-        const allTokens = reserveTokens.flat().map(({ tokenAddress }) => tokenAddress)
+        const allTokens = [...new Set(reserveTokens.flat().map(({ tokenAddress }) => tokenAddress))]
         const expandedBlacklist = blacklistLenders.flatMap(({ token, user }) =>
           token ? [{ token, user }] : allTokens.map(t => ({ token: t, user }))
         )
