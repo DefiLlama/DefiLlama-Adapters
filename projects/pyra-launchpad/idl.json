@@ -1,0 +1,71 @@
+{
+  "version": "0.1.0",
+  "name": "dynamic_bonding_curve",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "virtualPool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "volatilityTracker", "type": { "defined": "VolatilityTracker" } },
+          { "name": "config", "type": "publicKey" },
+          { "name": "creator", "type": "publicKey" },
+          { "name": "baseMint", "type": "publicKey" },
+          { "name": "baseVault", "type": "publicKey" },
+          { "name": "quoteVault", "type": "publicKey" },
+          { "name": "baseReserve", "type": "u64" },
+          { "name": "quoteReserve", "type": "u64" },
+          { "name": "protocolBaseFee", "type": "u64" },
+          { "name": "protocolQuoteFee", "type": "u64" },
+          { "name": "partnerBaseFee", "type": "u64" },
+          { "name": "partnerQuoteFee", "type": "u64" },
+          { "name": "sqrtPrice", "type": "u128" },
+          { "name": "activationPoint", "type": "u64" },
+          { "name": "poolType", "type": "u8" },
+          { "name": "isMigrated", "type": "u8" },
+          { "name": "isPartnerWithdrawSurplus", "type": "u8" },
+          { "name": "isProtocolWithdrawSurplus", "type": "u8" },
+          { "name": "migrationProgress", "type": "u8" },
+          { "name": "isWithdrawLeftover", "type": "u8" },
+          { "name": "isCreatorWithdrawSurplus", "type": "u8" },
+          { "name": "migrationFeeWithdrawStatus", "type": "u8" },
+          { "name": "metrics", "type": { "defined": "PoolMetrics" } },
+          { "name": "finishCurveTimestamp", "type": "u64" },
+          { "name": "creatorBaseFee", "type": "u64" },
+          { "name": "creatorQuoteFee", "type": "u64" },
+          { "name": "padding1", "type": { "array": ["u64", 7] } }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "VolatilityTracker",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "lastUpdateTimestamp", "type": "u64" },
+          { "name": "padding", "type": { "array": ["u8", 8] } },
+          { "name": "sqrtPriceReference", "type": "u128" },
+          { "name": "volatilityAccumulator", "type": "u128" },
+          { "name": "volatilityReference", "type": "u128" }
+        ]
+      }
+    },
+    {
+      "name": "PoolMetrics",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "totalProtocolBaseFee", "type": "u64" },
+          { "name": "totalProtocolQuoteFee", "type": "u64" },
+          { "name": "totalTradingBaseFee", "type": "u64" },
+          { "name": "totalTradingQuoteFee", "type": "u64" }
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}
