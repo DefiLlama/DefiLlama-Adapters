@@ -306,6 +306,7 @@ function aaveV3Export(config) {
     getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
     getAllReservesTokens: "function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])",
     getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+    getUserReserveData: "function getUserReserveData(address asset, address user) view returns (uint256 currentATokenBalance, uint256 currentStableDebt, uint256 currentVariableDebt, uint256 principalStableDebt, uint256 scaledVariableDebt, uint256 stableBorrowRate, uint256 liquidityRate, uint40 stableRateLastUpdated, bool usageAsCollateralEnabled)",
   };
 
   const exports = {
@@ -317,10 +318,12 @@ function aaveV3Export(config) {
 
     let poolDatas
     let abis
+    let blacklistLenders = []
 
     if (typeof chainConfig === 'object') {
-      poolDatas = chainConfig.poolDatas
+      poolDatas = chainConfig.poolDatas || chainConfig.contracts
       abis = chainConfig.abis || {}
+      blacklistLenders = chainConfig.blacklist_lenders || []
       Object.entries(abis).forEach(([k, v]) => abi[k] = v)
     }
 
@@ -350,7 +353,34 @@ function aaveV3Export(config) {
       })
 
       if (isBorrowed) tokensAndOwners = []  // we still do sumTokens to transform the response
-      return sumTokens2({ api, tokensAndOwners })
+      await sumTokens2({ api, tokensAndOwners })
+
+      // Subtract blacklisted lenders from supply TVL
+      if (!isBorrowed && blacklistLenders.length > 0) {
+        // Expand blacklist entries: if token is omitted, apply to all reserve tokens
+        const allTokens = [...new Set(reserveTokens.flat().map(({ tokenAddress }) => tokenAddress))]
+        const expandedBlacklist = blacklistLenders.flatMap(({ token, user }) =>
+          token ? [{ token, user }] : allTokens.map(t => ({ token: t, user }))
+        )
+        const blacklistCalls = expandedBlacklist.flatMap(({ token, user }) =>
+          poolDatas.map(pool => ({ target: pool, params: [token, user] }))
+        )
+        const blacklistResults = await api.multiCall({
+          abi: abi.getUserReserveData,
+          calls: blacklistCalls,
+          permitFailure: true,
+        })
+        let idx = 0
+        for (const { token } of expandedBlacklist) {
+          for (const _ of poolDatas) {
+            if (blacklistResults[idx])
+              api.add(token, -blacklistResults[idx].currentATokenBalance)
+            idx++
+          }
+        }
+      }
+
+      return api.getBalances()
     }
 
     exports[chain] = {
