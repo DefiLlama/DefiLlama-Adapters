@@ -2,18 +2,18 @@ const deadAdapters = require('./deadAdapters.json');
 
 const adapterRoutes = [
   './deadAdapters.json',
-  './uniswapV3',
-  './uniswapV2',
-  './aaveV3',
-  './aave',
-  './compound',
-  './erc4626',
-  './masterchef',
-  './solanaStakePool',
-  './stakingOnly',
-  './uniswapV3Graph',
-  './balancer',
-  './gmx',
+  './uniswapV3.js',
+  './uniswapV2.js',
+  './aaveV3.js',
+  './aave.js',
+  './compound.js',
+  './erc4626.js',
+  './masterchef.js',
+  './solanaStakePool.js',
+  './stakingOnly.js',
+  './uniswapV3Graph.js',
+  './balancer.js',
+  './gmx.js',
 ]
 const allProtocols = {}
 
