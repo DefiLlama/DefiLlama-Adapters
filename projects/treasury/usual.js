@@ -135,7 +135,10 @@ base.ethereum.tvl = async (api) => {
       calls: activeVaultCalls,
       permitFailure: true
     })
-    underlyingAssets.forEach((amount, i) => api.add(activeVaultCalls[i].asset, amount))
+    underlyingAssets.forEach((amount, i) => {  
+          const asset = activeVaultCalls[i].asset  
+          if (amount != null && asset != null && amount > 0) api.add(asset, amount)  
+      })  
   }
 
   // 4. Add Aave position 
@@ -150,19 +153,17 @@ base.ethereum.tvl = async (api) => {
   // Process positions: add supplied assets, subtract borrowed assets
   // NOTE: Aave returns values in USD base currency with 8 decimals
   // Convert from 8 decimals to actual USD value and add directly
-  const DECIMALS_8 = 10n ** 8n
-  aavePositions.forEach((position, i) => {
+  aavePositions.forEach((position) => {
+    if (!position) return
     const supplied = BigInt(position.totalCollateralBase)
     const borrowed = BigInt(position.totalDebtBase)
     
     if (supplied > 0) {
-      // Convert from 8 decimals to USD value
-      const suppliedUSD = supplied / DECIMALS_8
-      api.addUSDValue(Number(suppliedUSD ))
+      // Convert from 8 decimals to USD value 
+      api.addUSDValue(Number(supplied )/ 1e8)
     }
-    if (borrowed > 0) {
-      const borrowedUSD = borrowed / DECIMALS_8
-      api.addUSDValue(-1 * Number(borrowedUSD ))
+    if (borrowed > 0) { 
+      api.addUSDValue(-Number(borrowed )/ 1e8)
     }
   })
 }
