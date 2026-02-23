@@ -72,10 +72,12 @@ async function getMorphoVaults(api, owners) {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
 
+  const discoveredVaults = []
+  
   // Query v1 vaults
   if (MorphoConfigs[api.chain]?.vaultFactories) {
     for (const factory of MorphoConfigs[api.chain].vaultFactories) {
-      const vaultOfOwners = (
+      const logs = 
         await getLogs2({
           api,
           eventAbi: ABI.morpho.CreateMetaMorphoEvent,
@@ -83,15 +85,14 @@ async function getMorphoVaults(api, owners) {
           fromBlock: factory.fromBlock,
           toBlock: safeBlock
         })
-      ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
-      allVaults = allVaults.concat(vaultOfOwners)
+      discoveredVaults.push(...logs.map(log => log.metaMorpho))
     }
   }
 
   // Query v2 vaults
   if (MorphoConfigs[api.chain]?.vaultFactoriesV2) {
     for (const factory of MorphoConfigs[api.chain].vaultFactoriesV2) {
-      const vaultOfOwners = (
+      const logs = 
         await getLogs2({
           api,
           eventAbi: ABI.morpho.CreateVaultV2Event,
@@ -99,11 +100,25 @@ async function getMorphoVaults(api, owners) {
           fromBlock: factory.fromBlock,
           toBlock: safeBlock
         })
-      ).filter(log => isOwner(log.owner, owners)).map((log) => log.newVaultV2)
-      allVaults = allVaults.concat(vaultOfOwners)
+      discoveredVaults.push(...logs.map(log => log.newVaultV2))  
     }
   }
+  if (!discoveredVaults.length) return []
 
+  //  Check CURRENT owner on-chain
+  const currentOwners = await api.multiCall({
+    abi: ABI.owner,
+    calls: discoveredVaults,
+    permitFailure: true,
+  })
+
+  for (let i = 0; i < discoveredVaults.length; i++) {
+    if (!currentOwners[i]) continue
+    if (isOwner(currentOwners[i], owners)) {
+      allVaults.push(discoveredVaults[i])
+    }
+  }
+  
   return allVaults
 }
 
