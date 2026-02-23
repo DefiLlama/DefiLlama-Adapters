@@ -35,7 +35,7 @@ async function stellarTvl(api) {
     const { data } = await axios.get(url, { timeout: 20_000 });
 
     const rec = data?._embedded?.records?.[0];
-    const amountStr = rec?.amount; // decimal string with 7 dp
+    const amountStr = rec?.contracts_amount; // decimal string with 7 dp
     if (!amountStr) return;
 
     const amount = parseStellarAmount(amountStr);
