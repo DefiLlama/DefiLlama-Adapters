@@ -12,5 +12,6 @@
   "isHeavyProtocol",
   "deadFrom",
   "ownTokens",
+  "meta",
   "vesting"
 ]

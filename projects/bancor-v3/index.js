@@ -1,5 +1,11 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const abi = require('./abi.json');
+const abi = {
+  "abiContractRegistryAddressOf": "function addressOf(bytes32 _contractName) view returns (address)",
+  "abiConverterRegistryGetPools": "address[]:getLiquidityPools",
+  "abiRegistryGetConvertersBySmartTokens": "function getConvertersBySmartTokens(address[] _smartTokens) view returns (address[])",
+  "abiConverterConnectorTokens": "function connectorTokens(uint256) view returns (address)",
+  "liquidityPools": "address[]:liquidityPools"
+}
 
 const bancor = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c'
 
