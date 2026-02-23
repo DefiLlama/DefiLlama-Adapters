@@ -12,7 +12,7 @@ const lendingMarket2 = compoundExports2({ comptroller: '0xc955d5fa053d88e7338317
 
 module.exports = {
   // hallmarks: [
-  //   [1690243200, "read-only Reentrancy Attack"]
+  //   ['2023-07-25', "read-only Reentrancy Attack"]
   // ],
   era: {
     tvl: sdk.util.sumChainTvls([lendingMarket.tvl, lendingMarket2.tvl]),

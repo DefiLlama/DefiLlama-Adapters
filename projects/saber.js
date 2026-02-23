@@ -48,7 +48,7 @@ async function tvl() {
 
 module.exports = {
   hallmarks: [
-    [1667865600, "FTX collapse"]
+    ['2022-11-08', "FTX collapse"]
   ],
   timetravel: false,
   solana: { tvl },

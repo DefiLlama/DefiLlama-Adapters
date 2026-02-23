@@ -32,7 +32,8 @@ module.exports = {
     staking: stakingPools,
     ...compoundExports(comptroller,
       cBNB,
-      WBNBEquivalent)
+      WBNBEquivalent,
+      { isInsolvent: true })
   },
   methodology:
     "We count liquidity on the lending markets same as compound; and the Pools (LP Piars) through Chef Contract",
