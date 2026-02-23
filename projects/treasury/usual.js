@@ -32,10 +32,10 @@ const tokens = [
  
 const owners = [
   '0xF3D913De4B23ddB9CfdFAF955BAC5634CbAE95F4', // longterm Treasury 
-  '0x81ad394C0Fa87e99Ca46E1aca093BEe020f203f4', // Yield Treasury  
   '0xc32e2a2F03d41768095e67b62C9c739f2C2Bc4aA', // Treasury 1
+  '0x81ad394C0Fa87e99Ca46E1aca093BEe020f203f4', // Yield Treasury  
   '0xe3FD5A2cA538904A9e967CBd9e64518369e5a03f', // Treasury 2
-  '0xcbf85D44178c01765Ab32Af72D5E291dcd39A06B', // Treasury 3     
+  '0xcbf85D44178c01765Ab32Af72D5E291dcd39A06B', // Treasury 3      
  // '0x28E52d338Aa22Ab3e2331b65291C871B6fd6e517', // LP Holdings
 ]
 const lendingMarketGetUserPositionAbi = "function getUserPosition(tuple(address, address,address, address,uint256,uint256,address), address) view returns (uint256 supplyAssets, uint256 supplyShares, uint256 borrowAssets, uint256 borrowShares, uint256 collateralAssets)";
@@ -56,6 +56,7 @@ const VAULTS = [
   "0x67ec31a47a4126A66C7bb2fE017308cf5832A4Db", // usUSDS++ 
   "0x8245FD9Ae99A482dFe76576dd4298f799c041D61", // uUSCC++ 
   "0xFE7C47895eDb12a990b311Df33B90Cfea1D44c24", // Fira UZR  
+  "0xd001f0a15d272542687b2677ba627f48a4333b5d", // e-USD0
 ]
 
  
