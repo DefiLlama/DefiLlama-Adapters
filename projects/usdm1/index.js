@@ -1,4 +1,4 @@
-const axios = require("axios");
+const { getConfig } = require("../helper/cache");
 const { getTokenSupplies } = require("../helper/solana");
 
 const ETH_USDM1 = "0x90a1717E0dABE37693f79aFe43AE236dc3b65957";
@@ -32,7 +32,7 @@ async function stellarTvl(api) {
         `${HORIZON}/assets?asset_code=${encodeURIComponent(XLM_USDM1_CODE)}` +
         `&asset_issuer=${encodeURIComponent(XLM_USDM1_ISSUER)}`;
 
-    const { data } = await axios.get(url, { timeout: 20_000 });
+    const data = await getConfig("usdm1", url);
 
     const rec = data?._embedded?.records?.[0];
     const amountStr = rec?.contracts_amount; // decimal string with 7 dp
