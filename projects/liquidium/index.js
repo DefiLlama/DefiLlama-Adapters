@@ -512,10 +512,18 @@ async function queryCanister({ canisterId, methodName }) {
 
 const getVariantKey = (variant) => Object.keys(variant)[0]
 
-function toNumber(value) {
-  if (value === null || value === undefined) return 0
-  if (typeof value === 'bigint') return Number(value)
-  return Number(value)
+function toBigInt(value) {
+  if (value === null || value === undefined) return 0n
+  if (typeof value === 'bigint') return value
+  return BigInt(value)
+}
+
+function toTokenAmount(rawAmount, decimals) {
+  if (typeof rawAmount !== 'bigint') return Number(rawAmount) / 10 ** decimals
+  const divisor = 10n ** BigInt(decimals)
+  const whole = rawAmount / divisor
+  const remainder = rawAmount % divisor
+  return Number(whole) + Number(remainder) / 10 ** decimals
 }
 
 let poolsPromise
@@ -543,9 +551,9 @@ function addNetSupply(api, pool) {
   const meta = ASSET_META[asset]
   if (!meta) return
 
-  const supplyRaw = toNumber(pool.total_supply_at_last_sync)
-  const debtRaw = toNumber(pool.total_debt_at_last_sync)
-  const available = (supplyRaw - debtRaw) / 10 ** meta.decimals
+  const availableRaw =
+    toBigInt(pool.total_supply_at_last_sync) - toBigInt(pool.total_debt_at_last_sync)
+  const available = toTokenAmount(availableRaw, meta.decimals)
   if (available > 0) api.addCGToken(meta.coingeckoId, available)
 }
 
@@ -554,7 +562,7 @@ function addBorrowed(api, pool) {
   const meta = ASSET_META[asset]
   if (!meta) return
 
-  const borrowed = toNumber(pool.total_debt_at_last_sync) / 10 ** meta.decimals
+  const borrowed = toTokenAmount(toBigInt(pool.total_debt_at_last_sync), meta.decimals)
   if (borrowed > 0) api.addCGToken(meta.coingeckoId, borrowed)
 }
 
