@@ -690,6 +690,7 @@ const uniV3Configs = {
         '0x8d9a525463e6891bca541828ddd5c9551d8d6697',
         '0x995bb7f2fc1c628f029baf04204b7b6ab6667271',
         '0x893ade07ce949d9686267898a31fb9660c264276',
+        '0xd02f50e1017f493ffffa70c8fcf09e349e11d6c9',
       ],
     },
   },
@@ -1655,6 +1656,9 @@ const uniV3Configs = {
       isAlgebra: true,
     },
   },
+  // 'kumbaya': {
+  //   megaeth: { factory: '0x68b34591f662508076927803c567Cc8006988a09', fromBlock: 3520272, sumChunkSize: 100, permitFailure: false, sumChunkSleep: 50, onlyUseExistingCache: true,  },
+  // }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const SKIP_FIELDS = new Set(["moduleFilePath", "codePath", "_randomUID"]);
+const SKIP_FIELDS = new Set(["moduleFilePath", "codePath", "_randomUID", 'methodology', ]);
 
 const currentPath = path.join(__dirname, "tvlModules.json");
 const safePath = path.join(__dirname, "..", "tvlModules_safe.json.log");
@@ -18,7 +18,7 @@ if (!fs.existsSync(safePath)) {
 const current = JSON.parse(fs.readFileSync(currentPath, "utf8"));
 const safe = JSON.parse(fs.readFileSync(safePath, "utf8"));
 
-const ignoredAdapters = ['maxapy/index.js', 'kasu/index.js', 'vestige/index.js']
+const ignoredAdapters = ['maxapy/index.js', 'kasu/index.js', 'vestige/index.js', 'mochiswap']
 
 ignoredAdapters.forEach((key) => {
   delete current[key];

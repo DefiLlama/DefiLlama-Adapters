@@ -3,7 +3,7 @@ const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 
 const config = {
   ethereum: {
-    owners: ["0x76B0aB5067B3be922ef4698390Ca8bd5812A5080"],
+    owners: ["0x76B0aB5067B3be922ef4698390Ca8bd5812A5080", "0x76b0ab5067b3be922ef4698390ca8bd5812a5080"],
   },
   ripple: {
     owners: ["rpQATJWPPdNMxVCTQDYcnRNwtFDnanT3nk"],
