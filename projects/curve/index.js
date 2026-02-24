@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
-const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
 const sdk = require("@defillama/sdk");
@@ -9,6 +8,7 @@ const erc20Abi = require("../helper/abis/erc20.json");
 const contracts = require("./contracts.json");
 const { getLogs } = require('../helper/cache/getLogs')
 
+// https://docs.curve.finance/deployments/interactive-deployments/
 const chains = [
   "ethereum",
   "polygon",
@@ -36,6 +36,9 @@ const chains = [
   "tac",
   "etlk",
   "plasma",
+  "unichain",
+  "stable",
+  "monad"
 ];
 const registryIds = {
   stableswap: 0,
@@ -43,7 +46,6 @@ const registryIds = {
   crypto: 5,
   cryptoFactory: 6
 };
-const decimalsCache = {}
 const nameCache = {}
 
 const blacklistedPools = {
@@ -53,18 +55,14 @@ const blacklistedPools = {
     '0xc528b0571D0BE4153AEb8DdB8cCeEE63C3Dd7760',
     '0x8272E1A3dBef607C04AA6e5BD3a1A134c8ac063B'
   ],
+  base: [  ]
+}
+
+const globalBlacklistedTokens = {
   base: [
-    '0x302A94E3C28c290EAF2a4605FC52e11Eb915f378', // superOETH
+    '0xdbfefd2e8460a6ee4955a68582f85708baea60a3', // superOETHb
   ]
 }
-
-async function getDecimals(chain, token) {
-  token = token.toLowerCase()
-  const key = chain + '-' + token
-  if (!decimalsCache[key]) decimalsCache[key] = sdk.api.erc20.decimals(token, chain)
-  return decimalsCache[key]
-}
-
 
 const gasTokens = [
   ADDRESSES.GAS_TOKEN_2,
@@ -159,29 +157,6 @@ function aggregateBalanceCalls({ coins, nCoins, wrapped }) {
   return toa;
 }
 
-async function handleUnlistedFxTokens(balances, chain) {
-  if ("fxTokens" in contracts[chain]) {
-    const tokens = Object.values(contracts[chain].fxTokens);
-    for (let token of tokens) {
-      if (token.address in balances) {
-        const [rate, { output: decimals }] = await Promise.all([
-          getCache(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
-          getDecimals(chain, token.address)
-        ]);
-
-        sdk.util.sumSingleBalance(
-          balances,
-          "usd-coin",
-          balances[token.address] * rate.result / 10 ** decimals
-        );
-        delete balances[token.address];
-        delete balances[`${chain}:${token.address}`];
-      }
-    }
-  }
-  return;
-}
-
 async function unwrapPools({ poolList, registry, chain, block }) {
   if (!poolList.length) return;
   const registryAddress = poolList[0].input.target
@@ -197,10 +172,10 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   let calls = aggregateBalanceCalls({ coins, nCoins, wrapped });
   const allTokens = getUniqueAddresses(calls.map(i => i[0]))
   const tokenNames = await getNames(chain, allTokens)
-  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases))]
+  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases)), ...(globalBlacklistedTokens[chain] ?? [])]
   Object.entries(tokenNames).forEach(([token, name]) => {
     if ((name ?? '').startsWith('Curve.fi ')) {
-      sdk.log(chain, 'blacklisting', name)
+      // sdk.log(chain, 'blacklisting', name)
       blacklistedTokens.push(token)
     }
   })
@@ -219,7 +194,7 @@ const excludePoolsIfTheyHoldToken = {
     // "0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3", // oETH
   ],
   base: [
-  //   "0xdbfefd2e8460a6ee4955a68582f85708baea60a3", // superOETHb
+    //   "0xdbfefd2e8460a6ee4955a68582f85708baea60a3", // superOETHb
   ]
 }
 
@@ -290,56 +265,54 @@ function excludePoolsThatHoldCertainTokens({ tokensAndOwners, tokensToAvoid }) {
   return { tokensAndOwners: filtered, excludedPools: Array.from(poolsToExclude), poolReasons, tokenToPools }
 }
 
-function tvl(chain) {
+async function tvl(api) {
+  const chain = api.chain
   const { plainFactoryConfig = [] } = config[chain] ?? {}
-  return async (api) => {
-    const { block } = api
-    let balances = {};
-    let poolLists = await getPools(block, chain);
-    const bl = new Set((blacklistedPools[chain] || []).map(a => a.toLowerCase()));
+  const { block } = api
+  let balances = {};
+  let poolLists = await getPools(block, chain);
+  const bl = new Set((blacklistedPools[chain] || []).map(a => a.toLowerCase()));
 
-    for (const [registry, pools] of Object.entries(poolLists)) {
-      poolLists[registry] = pools.filter(p => !bl.has(p.output.toLowerCase()))
-    }
+  for (const [registry, pools] of Object.entries(poolLists)) {
+    poolLists[registry] = pools.filter(p => !bl.has(p.output.toLowerCase()))
+  }
 
-    const promises = []
-    for (const [registry, poolList] of Object.entries(poolLists))
-      promises.push(unwrapPools({ poolList, registry, chain, block }))
+  const promises = []
+  for (const [registry, poolList] of Object.entries(poolLists))
+    promises.push(unwrapPools({ poolList, registry, chain, block }))
 
-    const res = (await Promise.all(promises)).filter(i => i)
-    let tokensAndOwners = res.map(i => i.tokensAndOwners).flat()
-    const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
-    if (blacklists[chain])
-      blacklistedTokens.push(...blacklists[chain])
-    await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
+  const res = (await Promise.all(promises)).filter(i => i)
+  let tokensAndOwners = res.map(i => i.tokensAndOwners).flat()
+  const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
+  if (blacklists[chain])
+    blacklistedTokens.push(...blacklists[chain])
+  await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
 
-    const tokensToAvoid = (excludePoolsIfTheyHoldToken[chain] || []).map(s => s.toLowerCase())
-    const { tokensAndOwners: filteredTOA, excludedPools, poolReasons, tokenToPools } =
-      excludePoolsThatHoldCertainTokens({ tokensAndOwners, tokensToAvoid })
+  const tokensToAvoid = (excludePoolsIfTheyHoldToken[chain] || []).map(s => s.toLowerCase())
+  const { tokensAndOwners: filteredTOA, excludedPools, poolReasons, tokenToPools } =
+    excludePoolsThatHoldCertainTokens({ tokensAndOwners, tokensToAvoid })
 
-    if (tokensToAvoid.length) {
-      Object.entries(tokenToPools).forEach(([t, pools]) => {
-        if (pools.length) sdk.log(chain, 'token triggers exclusion:', t, 'in pools:', pools)
-        else sdk.log(chain, 'token triggers exclusion:', t, 'but no pools found')
-      })
-    }
-    if (excludedPools?.length) {
-      sdk.log(chain, 'excluded pools (by token content):', excludedPools)
-      Object.entries(poolReasons).forEach(([pool, tokens]) => {
-        sdk.log(chain, 'excluded pool reason:', pool, 'contains tokens:', tokens)
-      })
-    }
-    tokensAndOwners = filteredTOA
+  if (tokensToAvoid.length) {
+    Object.entries(tokenToPools).forEach(([t, pools]) => {
+      if (pools.length) sdk.log(chain, 'token triggers exclusion:', t, 'in pools:', pools)
+      else sdk.log(chain, 'token triggers exclusion:', t, 'but no pools found')
+    })
+  }
+  if (excludedPools?.length) {
+    sdk.log(chain, 'excluded pools (by token content):', excludedPools)
+    Object.entries(poolReasons).forEach(([pool, tokens]) => {
+      sdk.log(chain, 'excluded pool reason:', pool, 'contains tokens:', tokens)
+    })
+  }
+  tokensAndOwners = filteredTOA
 
-    await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens })
-    await handleUnlistedFxTokens(balances, chain);
-    return balances;
-  };
+  await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens, permitFailure: true, })
+  return balances;
 }
 
 const chainTypeExports = chains => {
   let exports = chains.reduce(
-    (obj, chain) => ({ ...obj, [chain]: { tvl: tvl(chain) } }),
+    (obj, chain) => ({ ...obj, [chain]: { tvl } }),
     {}
   );
   return exports;
@@ -354,7 +327,7 @@ module.exports.ethereum["staking"] = staking(
 
 module.exports.harmony = {
   tvl: async (api) => {
-    if (api.timestamp > 1655989200) {
+    if (api?.timestamp && api.timestamp > 1655989200) {
       // harmony hack
       return {};
     }
@@ -368,11 +341,11 @@ module.exports.harmony = {
 };
 
 module.exports.hallmarks = [
-  [1597446675, "CRV Launch"],
-  [1621213201, "Convex Launch"],
-  [1642374675, "MIM depeg"],
-  [1651881600, "UST depeg"],
-  [1654822801, "stETH depeg"],
-  [1667692800, "FTX collapse"],
-  // [1690715622, "Reentrancy hack"]
+  ['2020-08-14', "CRV Launch"],
+  ['2021-05-17', "Convex Launch"],
+  ['2022-01-16', "MIM depeg"],
+  ['2022-05-07', "UST depeg"],
+  ['2022-06-10', "stETH depeg"],
+  ['2022-11-06', "FTX collapse"],
+  // ['2023-07-30', "Reentrancy hack"]
 ];

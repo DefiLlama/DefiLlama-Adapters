@@ -2,7 +2,21 @@ const sdk = require("@defillama/sdk");
 const indexAbi = require("./abis/Index.abi.json");
 const vTokenAbi = require("./abis/vToken.abi.json");
 const vTokenFactoryAbi = require("./abis/vTokenFactory.abi.json");
-const networks = require("./networks.json");
+const networks = {
+    "ethereum": {
+      "indexes": [
+        "0x632806bf5c8f062932dd121244c9fbe7becb8b48"
+      ],
+      "savingsVaults": [
+        "0x6bad6a9bcfda3fd60da6834ace5f93b8cfed9598"
+      ]
+    },
+    "avax": {
+      "indexes": [
+        "0x48f88a3fe843ccb0b5003e70b4192c1d7448bef0"
+      ]
+    }
+  };
 const { sumERC4626Vaults } = require("../helper/erc4626");
 const { getUniqueAddresses } = require("../helper/utils");
 

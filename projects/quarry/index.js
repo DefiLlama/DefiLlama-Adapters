@@ -27,6 +27,6 @@ module.exports = {
     "TVL counts deposits made to Quarry Protocol. CoinGecko is used to find the price of tokens in USD.",
   solana: { tvl },
   hallmarks: [
-    [1665521360, "Mango Markets Hack"],
+    ['2022-10-11', "Mango Markets Hack"],
   ],
 };

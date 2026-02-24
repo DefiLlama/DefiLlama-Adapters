@@ -139,7 +139,7 @@ const borrowed = async (api) => {
 }
 
 module.exports = {
-  hallmarks: [[1729036800, "Affected by the Radiant hack"]],
+  hallmarks: [['2024-10-16', "Affected by the Radiant hack"]],
   doublecounted: true,
   methodology: `Counts the tokens locked in the positions to be used as margin + user's tokens locked in the protocol's vault. Borrowed coins are discounted from the TVL, so only the position margins are counted. The reason behind this is that the protocol only added the user's margin to the underlying money market. Adding the borrowed coins to the TVL can be used as a proxy for the protocol's open interest.`,
 };

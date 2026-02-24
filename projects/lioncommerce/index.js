@@ -1,6 +1,4 @@
-const { stakingPricedLP } = require("../helper/staking");
-const { unknownTombs, sumTokensExport } = require("../helper/unknownTokens");
-const { mergeExports } = require("../helper/utils");
+const { sumTokensExport } = require("../helper/unknownTokens");
 
 const stakingValue = sumTokensExport({
   chain: "kava",

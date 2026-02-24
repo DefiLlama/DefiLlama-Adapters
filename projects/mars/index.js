@@ -1,6 +1,6 @@
 const { queryContract } = require('../helper/chain/cosmos');
-const axios = require('axios');
 const BigNumber = require('bignumber.js');
+const { getConfig } = require('../helper/cache');
 
 const contractAddresses = {
   osmosis: {
@@ -54,7 +54,7 @@ async function tvl(api) {
     const assetDenoms = assetParams.map((asset) => asset.denom);
 
     // fetch pool infos from the poolsApi based on chain
-    const poolInfos = await axios.get(poolsApis[chain]);
+    const poolInfos = await getConfig(`mars-protocol/${chain}-pools`, poolsApis[chain]);
 
     // query the deposited amount for each asset and add it to the depositCoins array
     await Promise.all(
@@ -66,7 +66,7 @@ async function tvl(api) {
         });
         // check if the token is a liquidity pool share (deposited via farm)
         // and find it in the api data
-        const poolInfo = poolInfos.data.tokens.find((pool) => pool.lpAddress === denom);
+        const poolInfo = poolInfos.tokens.find((pool) => pool.lpAddress === denom);
 
         if (poolInfo) {
           // check for the underlying asset and calculate how much underlying assets a pool share holds
@@ -114,11 +114,11 @@ module.exports = {
   neutron: { tvl },
   terra: { tvl: () => 0 },
   hallmarks: [
-    [1651881600, 'UST depeg'],
-    [1675774800, 'Relaunch on Osmosis'],
-    [1690945200, 'Launch on Neutron'],
-    [1696906800, 'Mars v2 launch on Osmosis'],
-    [1724166000, 'Mars v2 launch on Neutron'],
-    [1734098400, 'Perps launch on Neutron']
+    ['2022-05-07', 'UST depeg'],
+    ['2023-02-07', 'Relaunch on Osmosis'],
+    ['2023-08-02', 'Launch on Neutron'],
+    ['2023-10-10', 'Mars v2 launch on Osmosis'],
+    ['2024-08-20', 'Mars v2 launch on Neutron'],
+    ['2024-12-13', 'Perps launch on Neutron']
   ],
 };

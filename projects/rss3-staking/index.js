@@ -6,7 +6,7 @@ const { staking } = require("../helper/staking")
 
 
 module.exports = {
-  hallmarks: [[1710047755, "Mainnet Alpha Staking Launch"]],
+  hallmarks: [['2024-03-10', "Mainnet Alpha Staking Launch"]],
   rss3_vsl: {
     tvl: () => ({}),
     staking: staking(STAKING_CONTRACT, RSS3_TOKEN_VSL, undefined, RSS3_TOKEN_ETH),

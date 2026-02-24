@@ -8,5 +8,5 @@ module.exports = {
     tvl: () => ({}),
     staking: staking(stakingAddress, syncAddress),
   },
-  era: aaveV2Export('0xaa71728Aa548658FAbBd37C72C0e2a6234c193F1', { blacklistedTokens: ['0x2d20b8891f2f9ed0ebf1b179b2279f936dec9282']})
+  era: aaveV2Export('0xaa71728Aa548658FAbBd37C72C0e2a6234c193F1', { blacklistedTokens: ['0x2d20b8891f2f9ed0ebf1b179b2279f936dec9282'], isInsolvent: true})
 };

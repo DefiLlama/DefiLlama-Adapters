@@ -24,8 +24,13 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   }
 }
 
-async function get(endpoint, options) {
+async function get(endpoint, options = {}) {
+  const tonApiKey = getEnv('TON_API_KEY')
   try {
+    if (tonApiKey && endpoint.includes('tonapi.io')) {
+      if (!options.headers) options.headers = {}
+      options.headers['Authorization'] = tonApiKey
+    }
     const data = (await axios.get(endpoint, options)).data
     return data
   } catch (e) {
@@ -100,6 +105,29 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
 }
 
 
+async function proxiedFetch(url) {
+  const authInfo = getEnv('PROXY_AUTH')
+  if (!authInfo) return get(url)
+
+  const [host, username, password] = authInfo.split(':')
+
+  const client = axios.create({
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false,
+    }),
+  });
+  const { data } = await client
+    .get(url.toString(), {
+      proxy: {
+        protocol: "https",
+        host,
+        port: 8000,
+        auth: { username, password },
+      },
+    })
+  return data
+}
+
 module.exports = {
   get,
   getCache,
@@ -108,4 +136,5 @@ module.exports = {
   graphQuery,
   getBlock,
   getWithMetadata,
+  proxiedFetch,
 }
