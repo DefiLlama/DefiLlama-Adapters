@@ -225,29 +225,43 @@ async function getCuratorTvlErc4626(api, vaults) {
     permitFailure: true,
   })
 
-  // For vaults where LA didn't resolve to a V1, try adapters(0)
-  const adapters0 = await api.multiCall({
-    abi: ABI.morphoV2.adapters,
-    calls: v2Vaults.map((v, i) => isValid(v1ViaLA[i]) ? { target: nullAddress, params: [0] } : { target: v.vault, params: [0] }),
-    permitFailure: true,
-  })
-  const v1ViaA0 = await api.multiCall({
-    abi: ABI.morphoAdapter.morphoVaultV1,
-    calls: adapters0.map(a => isValid(a) ? a : nullAddress),
-    permitFailure: true,
-  })
+  // For vaults where LA didn't resolve to a V1, try adapters(0) as fallback
+  const fallbackVaults = v2Vaults.filter((_, i) => !isValid(v1ViaLA[i]))
+  const fallbackResults = new Map() // vault address -> { v1, depositor }
+
+  if (fallbackVaults.length > 0) {
+    const adapters0 = await api.multiCall({
+      abi: ABI.morphoV2.adapters,
+      calls: fallbackVaults.map(v => ({ target: v.vault, params: [0] })),
+      permitFailure: true,
+    })
+    const v1ViaA0 = await api.multiCall({
+      abi: ABI.morphoAdapter.morphoVaultV1,
+      calls: adapters0.map(a => isValid(a) ? a : nullAddress),
+      permitFailure: true,
+    })
+    for (let i = 0; i < fallbackVaults.length; i++) {
+      if (isValid(v1ViaA0[i])) {
+        fallbackResults.set(fallbackVaults[i].vault, { v1: v1ViaA0[i], depositor: adapters0[i] })
+      }
+    }
+  }
 
   // Build v1 vault addresses and the depositor (adapter that holds v1 shares)
   const v1VaultAddresses = []
   const v1Depositors = []
   for (let i = 0; i < v2Vaults.length; i++) {
+    const fallback = fallbackResults.get(v2Vaults[i].vault)
     if (isValid(v1ViaLA[i])) {
+      // v1 from liquidityAdapter()
       v1VaultAddresses.push(v1ViaLA[i])
       v1Depositors.push(v2Vaults[i].liquidityAdapter)
-    } else if (isValid(v1ViaA0[i])) {
-      v1VaultAddresses.push(v1ViaA0[i])
-      v1Depositors.push(adapters0[i])
+    } else if (fallback) {
+      // v1 from adapters(0)
+      v1VaultAddresses.push(fallback.v1)
+      v1Depositors.push(fallback.depositor)
     } else {
+      // no v1 found
       v1VaultAddresses.push(null)
       v1Depositors.push(null)
     }
