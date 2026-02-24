@@ -36,7 +36,9 @@ async function tvl(api) {
 module.exports = {
   methodology: `Counts the tokens deposited into IPOR Fusion Vaults.`,
   hallmarks: [
-    ["2024-09-30", "Fusion Vaults Rollout"]
+    ["2024-09-30", "IPOR Fusion Vaults Rollout"],
+    ["2025-10-24", "IPOR Fusion Points Program Launch"],
+    ["2025-11-04", "xUSD Depeg DeFi Contagion"]
   ],
   ethereum: { tvl },
   arbitrum: { tvl },

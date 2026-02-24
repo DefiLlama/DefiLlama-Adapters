@@ -111,7 +111,7 @@ const borrowed = async (api) => {
 
 module.exports = {
   methodology: "Aggregates TVL in all Peapods Finance indexes created",
-  hallmarks: [[1710444951, "Arbitrum launch"],[1715151225, "Base launch"],[1715214483, "Mode launch"],[1738958400, "LVF launch"],[1742269792, "Sonic launch"],[1744292339, "Berachain launch"]],
+  hallmarks: [['2024-03-14', "Arbitrum launch"],['2024-05-08', "Base launch"],['2024-05-09', "Mode launch"],['2025-02-07', "LVF launch"],['2025-03-18', "Sonic launch"],['2025-04-10', "Berachain launch"]],
 };
 
 Object.keys(config).forEach(chain => {

@@ -2,7 +2,7 @@ const { sumTokens2 } = require("./helper/solana");
 
 module.exports = {
   hallmarks: [
-    [1706490000,"launch jup exchange"]
+    ['2024-01-29',"launch jup exchange"]
   ],
   timetravel: false,
   methodology: "Calculate sum across all program token accounts",

@@ -1,4 +1,6 @@
-const abiLci = require("./abiLci.json");
+const abiLci = {
+    "getAllPoolInUSD": "uint256:getAllPoolInUSD"
+  };
 
 const config = {
   bsc: {

@@ -64,11 +64,11 @@ async function solana() {
 
 module.exports = {
   hallmarks: [
-    [1610496000, "Start of incentives for curve pool"],
-    [1651881600,"UST depeg"],
-    [1654822801, "stETH depeg"],
-    [1667865600, "FTX collapse"],
-    [1684108800, "ETH Withdrawal Activation"]
+    ['2021-01-13', "Start of incentives for curve pool"],
+    ['2022-05-07',"UST depeg"],
+    ['2022-06-10', "stETH depeg"],
+    ['2022-11-08', "FTX collapse"],
+    ['2023-05-15', "ETH Withdrawal Activation"]
   ],
   methodology: 'Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued, stMATIC is counted as Ethereum TVL since MATIC is staked in Ethereum and the liquidity token is also issued on Ethereum',
   timetravel: false, // solana

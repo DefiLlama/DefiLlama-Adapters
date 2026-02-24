@@ -11,6 +11,7 @@ module.exports = {
           ADDRESSES.ethereum.USDT,
           ADDRESSES.ethereum.USDC,
           '0x4274cD7277C7bb0806Bd5FE84b9aDAE466a8DA0a',
+          ADDRESSES.ethereum.WETH,
         ]
       })
     }

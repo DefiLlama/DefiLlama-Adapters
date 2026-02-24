@@ -1,6 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require('../gooddollar/abi.json');
+const abi = {
+    "currentPriceDAI": "uint256:currentPriceDAI",
+    "totalDelegated": "uint256:totalDelegated"
+};
 const BigNumber = require("bignumber.js");
 
 const tokens = {
@@ -32,13 +35,13 @@ async function fuseTreasury(timestamp, ethBlock, chainBlocks) {
     })).output;
 
     const gdTotal = BigNumber(gdInCommunitySafe).plus(gdInFuseStaking);
-    
-     let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
 
-     const balances = {};
-     sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+    let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
 
-     return balances;
+    const balances = {};
+    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+
+    return balances;
 }
 
 // Required until GoodDollar lists on CoinGecko

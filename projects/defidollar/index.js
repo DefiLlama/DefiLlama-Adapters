@@ -24,7 +24,7 @@ async function tvl(api) {
 
 module.exports = {
   hallmarks: [
-    [1641600000, "Possible exploit, contracts paused"]
+    ['2022-01-08', "Possible exploit, contracts paused"]
   ],
   ethereum:{
     tvl

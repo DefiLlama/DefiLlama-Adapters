@@ -40,6 +40,6 @@ module.exports = mergeExports([
 ])
 
 module.exports.hallmarks = [
-  [1651702080, "Drops DAO launch"],
-  [1653086700, "DOP staking"],
+  ['2022-05-04', "Drops DAO launch"],
+  ['2022-05-20', "DOP staking"],
 ]

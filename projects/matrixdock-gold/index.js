@@ -1,4 +1,5 @@
 const { getTokenSupply } = require("../helper/chain/sui")
+const { getTokenSupplies } = require("../helper/solana")
 const { getTvlOfSupplyAssets } = require("../matrixdock/getTvlOfSupplyAssets")
 
 const config = {
@@ -14,5 +15,13 @@ module.exports.sui = {
     const token = '0x9d297676e7a4b771ab023291377b2adfaa4938fb9080b8d12430e4b108b836a9::xaum::XAUM'
     const res = await getTokenSupply(token)
     api.add(token, res.supply)
+  }
+}
+
+module.exports.solana = {
+  tvl: async (api) => {
+    const token = '5aLhp9VnUEKcsdtkfsf2DUgpJfomx7GmYVny24dHUZoB'
+    const res = await getTokenSupplies([token], api)
+    api.add(token, res[token])
   }
 }

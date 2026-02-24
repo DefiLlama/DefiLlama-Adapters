@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumERC4626VaultsExport } = require('../helper/erc4626');
+const { sumERC4626VaultsExport2 } = require('../helper/erc4626');
 
 const liquidHypeStrategist = "0x83a80e5b64086197c01cbb123df2aea79a149c1d"
 const oracle = "0x1ceab703956e24b18a0af6b272e0bf3f499aca0f"
@@ -75,7 +75,7 @@ const tvl = async (api) => {
     api.add(underlying, scaled)
   }
 
-  return sumERC4626VaultsExport({ vaults: ['0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', '0xc061d38903b99aC12713B550C2CB44B221674F94'], isOG4626: true })(api) 
+  return sumERC4626VaultsExport2({ vaults: ['0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', '0xc061d38903b99aC12713B550C2CB44B221674F94'] })(api) 
 }
 
 module.exports = {

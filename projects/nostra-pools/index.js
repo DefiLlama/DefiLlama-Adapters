@@ -58,6 +58,6 @@ module.exports = {
     tvl,
   },
   hallmarks: [
-    [1706106000, "Nostra Pools launch"],
+    ['2024-01-24', "Nostra Pools launch"],
   ]
 };

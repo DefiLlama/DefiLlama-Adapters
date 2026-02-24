@@ -3,7 +3,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   // hallmarks: [
-  //   [1711487351,"Protocol Exploited"]
+  //   ['2024-03-26',"Protocol Exploited"]
   // ],
   blast: {
     tvl: sumTokensExport({

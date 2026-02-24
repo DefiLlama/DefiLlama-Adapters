@@ -1,6 +1,14 @@
 const { nullAddress } = require('../helper/tokenMapping');
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json');
+const abi = {
+    "getPagedAgents": "function getPagedAgents(uint offset, uint count) view returns ((address agent, address owner, uint64 originOwnerID, uint64 curOwnerID, uint64 curBeneficiary, uint64 actorID, uint64 agentID, uint256 targetPledge, uint256 safePledge, uint256 lastSafePledgeUpdateTime, uint256 recoveredPledge, uint256 agentContractBalance, uint256 minerBalance, uint8 status, (bytes val, bool neg) availableBalance, uint256 reservedBalance, uint256 passiveMinting, bool isValid)[])",
+    "getTVLComponents": "function getTVLComponents() view returns ((uint256))",
+    "slot0": "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
+    "totalSupply": "uint256:totalSupply",
+    "PFILPerToken": "uint256:PFILPerToken",
+    "getAllAgentsCount": "function getAllAgentsCount() view returns ((uint256))",
+    "getTvlTokenAmount": "function getTvlTokenAmount() view returns ((uint256))"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const REPL_HELPER_CONTRACT = '0x65846aECBF23385F76B73ef1EDD1ebdFf7Ac258D';

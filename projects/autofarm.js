@@ -1,8 +1,8 @@
 const { sumUnknownTokens } = require('./helper/unknownTokens');
 
 module.exports.hallmarks=[
-  [1618966800, "Venus incident"],
-  [1634778000, "Emissions end"],
+  ['2021-04-21', "Venus incident"],
+  ['2021-10-21', "Emissions end"],
 ]
 
 const config = {

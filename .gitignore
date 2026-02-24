@@ -13,3 +13,4 @@ projects/binance/data.csv
 *.log
 
 scripts/tvlModules.json
+.claude

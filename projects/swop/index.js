@@ -16,7 +16,7 @@ module.exports = {
   methodology: "Counts the tokens locked on AMM pools",
   misrepresentedTokens: true,
   hallmarks: [
-      [1730299107, "Unit0 Protocol Lunch"]
+      ['2024-10-30', "Unit0 Protocol Lunch"]
   ],
   waves: {
     tvl: getSwopFiTVL,

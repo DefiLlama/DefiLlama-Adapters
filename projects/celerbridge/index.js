@@ -536,5 +536,5 @@ Array.from(chains).forEach(chain => {
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [
-  [1651881600, "UST depeg"],
+  ['2022-05-07', "UST depeg"],
 ];

@@ -87,10 +87,10 @@ const tvl = async (api) => {
 module.exports = {
   methodology: "counts the TVL of each superform across all the supported networks",
   hallmarks: [
-    [1707350400, "Early Access"],
-    [1715212800, "Open Launch"],
-    [1734012000, "SuperVaults Launch"],
-    [1764802000, "SuperVaults v2 Launch"],
+    ['2024-02-08', "Early Access"],
+    ['2024-05-09', "Open Launch"],
+    ['2024-12-12', "SuperVaults Launch"],
+    ['2025-12-03', "SuperVaults v2 Launch"],
   ]
 };
 

@@ -1,5 +1,12 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "token": "address:token",
+    "getCurrentLockedTokens": "uint256:getCurrentLockedTokens",
+    "lockers": "function lockers(uint256) view returns (address)",
+    "totalAssets": "uint256:totalAssets",
+    "totalSupply": "erc20:totalSupply",
+    "queuedForWithdrawal": "function queuedForWithdrawal(address) view returns (uint256)"
+  };
 
 const WAR_CONTROLLER = "0xFDeac9F9e4a5A7340Ac57B47C67d383fb4f13DBb";
 const WAR_REDEEMER = "0x4787Ef084c1d57ED87D58a716d991F8A9CD3828C";

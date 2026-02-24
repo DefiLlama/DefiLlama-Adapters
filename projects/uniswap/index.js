@@ -12,6 +12,7 @@ const graphs = {
   bsc: "F85MNzUGYqgSHSHRGgeVMNsdnW1KtZSVgFULumXRZTw2",
   // avax: "3Pwd3cqFKbqKAyaJfGUVmJJ7oYbFQLDa19iB27iMxebD",
   base: "43Hwfi3dJSoGpyas9VwNoDAv55yjgGrPpNSmbQZArzMG",
+  xlayer: "2LM2nhSfVsKVNW1EF6AgJHMGBKU2zR9rZcE3zzkFkwW1"
 }
 
 const blacklists = {
@@ -87,18 +88,18 @@ module.exports = {
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   timetravel: false,
   hallmarks: [
-    [1588610042, "UNI V2 Launch"],
-    [1598412107, "SushiSwap launch"],
-    [1599535307, "SushiSwap migration"],
-    [1600226507, "LM starts"],
-    [1605583307, "LM ends"],
-    [1617333707, "FEI launch"],
-    [1620156420, "UNI V3 Launch"]
+    ['2020-05-04', "UNI V2 Launch"],
+    ['2020-08-26', "SushiSwap launch"],
+    ['2020-09-08', "SushiSwap migration"],
+    ['2020-09-16', "LM starts"],
+    ['2020-11-17', "LM ends"],
+    ['2021-04-02', "FEI launch"],
+    ['2021-05-04', "UNI V3 Launch"]
   ],
   ...uniV3Export(uniV3Config),
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'base']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'base', 'xlayer']
 
 chains.forEach(chain => {
   module.exports[chain] = {
@@ -112,7 +113,6 @@ const okuGraphMap = {
   nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
-  saga: 'https://omni.v2.icarus.tools/saga',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
 }
 
@@ -141,7 +141,15 @@ Object.keys(okuGraphMap).forEach(chain => {
           return ownerTokens
         }
       })
-      return api.sumTokens({ ownerTokens, })
+      try {
+        await api.sumTokens({ ownerTokens, })
+      } catch (e) {
+        if (['saga'].includes(chain)) {
+          console.error(`oku-trade ${chain} failed, returning empty TVL`, e)
+          return {}
+        }
+        throw e
+      }
     }
   }
 })

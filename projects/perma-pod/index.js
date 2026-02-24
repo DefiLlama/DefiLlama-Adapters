@@ -50,7 +50,7 @@ module.exports = {
     borrowed
   },
   hallmarks: [
-    [1763285165, 'Launch on ZigChain'],
+    ['2025-11-16', 'Launch on ZigChain'],
   ],
 };
 

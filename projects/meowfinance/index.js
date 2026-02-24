@@ -1,4 +1,14 @@
-const abi = require("./abi.json");
+const abi = {
+    "token": "address:token",
+    "totalToken": "uint256:totalToken",
+    "vaultDebtVal": "uint256:vaultDebtVal",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address stakeToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accMeowPerShare)",
+    "lpToken": "address:lpToken",
+    "masterchef": "address:masterChef",
+    "pid": "uint256:pid",
+    "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)"
+  };
 const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 

@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "openMarkets": "function openMarkets() view returns ((address,address,uint256)[])",
+    "offerList": "function offerList((address,address,uint256),uint256,uint256) view returns (uint256,uint256[],(uint256,uint256,int256,uint256)[])"
+  };
 const { BigNumber } = require("bignumber.js");
 
 const mgvReaders = {

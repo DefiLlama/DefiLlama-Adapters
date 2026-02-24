@@ -5,8 +5,8 @@ const treasury = "0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53"
 
 module.exports = {
     hallmarks: [
-        [1639440000, "Brinc hack due to private key compromise"],
-        [1644019200, "Relaunch on Arbitrum"]
+        ['2021-12-14', "Brinc hack due to private key compromise"],
+        ['2022-02-05', "Relaunch on Arbitrum"]
     ],
     methodology: `DAI reserves in the bonding curve `,
     arbitrum: {

@@ -53,9 +53,9 @@ module.exports = {
   timetravel: false,
   solana: { tvl: sdk.util.sumChainTvls([weightedSwapTvl, stableSwapTvl]) },
   hallmarks: [
-    [1719540000, "Mainnet launch"],
-    // [1727791200, "JupiterExchange integration"],
-    [1747922400, "Token launch"],
+    ['2024-06-28', "Mainnet launch"],
+    // ['2024-10-01', "JupiterExchange integration"],
+    ['2025-05-22', "Token launch"],
   ],
 };
 

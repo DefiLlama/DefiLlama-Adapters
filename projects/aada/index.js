@@ -26,5 +26,5 @@ module.exports = {
     }),
     tvl: sumTokensExport({ scripts: scriptAdresses }),
   },
-  hallmarks: [[1708560053, "V2 Launch"]],
+  hallmarks: [['2024-02-22', "V2 Launch"]],
 };

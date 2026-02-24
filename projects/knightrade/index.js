@@ -180,7 +180,10 @@ async function tvlArbitrum(api) {
     aaveUsdcAToken: "0x724dc807b04555b71ed48a6896b6F41593b8C637",
     aaveUsdcDebtToken: "0xf611aEb5013fD2c0511c9CD55c7dc5C1140741A6",
   };
-  const v2ReaderAbi = require('./v2_reader_abi.json');
+  const v2ReaderAbi = {
+    "getAccountPositions": "function getAccountPositions(address dataStore, address account, uint256 start, uint256 end) view returns (((address account, address market, address collateralToken) addresses, (uint256 sizeInUsd, uint256 sizeInTokens, uint256 collateralAmount, uint256 borrowingFactor, uint256 fundingFeeAmountPerSize, uint256 longTokenClaimableFundingAmountPerSize, uint256 shortTokenClaimableFundingAmountPerSize, uint256 increasedAtBlock, uint256 decreasedAtBlock) numbers, (bool isLong) flags)[])",
+    "getMarkets": "function getMarkets(address dataStore, uint256 start, uint256 end) view returns ((address marketToken, address indexToken, address longToken, address shortToken)[])"
+  };
   const v2ReaderAddress = '0xf60becbba223EEA9495Da3f606753867eC10d139';
   const dataStoreAddress = '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8';
 

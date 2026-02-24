@@ -26,7 +26,7 @@ module.exports = {
   start: '2023-07-01',
   bitcoincash: { tvl },
   hallmarks: [
-    [1688198180, "First cauldron contract deployed (SOCK)"],
-    [1693230446, "Cauldron opens trading for any token"],
+    ['2023-07-01', "First cauldron contract deployed (SOCK)"],
+    ['2023-08-28', "Cauldron opens trading for any token"],
   ]
 };

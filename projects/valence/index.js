@@ -191,10 +191,10 @@ module.exports = {
     tvl: (api) => getValenceAccountTvl(api, "CosmosCosmwasm", "terra2"), 
   },
   hallmarks: [
-    [1717545600, "Nolus<>Neutron liquidity lending"],
-    [1718064000, "Stargaze<>Neutron liquidity lending"],
-    [1719360000, "Shade<>Neutron liquidity lending"],
-    [1723507200, "Mars<>Neutron liquidity lending"],
-    [1743379200, "Neutron dICS deployment"]
+    ['2024-06-05', "Nolus<>Neutron liquidity lending"],
+    ['2024-06-11', "Stargaze<>Neutron liquidity lending"],
+    ['2024-06-26', "Shade<>Neutron liquidity lending"],
+    ['2024-08-13', "Mars<>Neutron liquidity lending"],
+    ['2025-03-31', "Neutron dICS deployment"]
   ]
 };

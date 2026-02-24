@@ -1,4 +1,9 @@
-const abi = require("./abi.json");
+const abi = {
+    "getAllFarms": "function getAllFarms() view returns (tuple(address stakeToken, uint256 allocationPoint, uint256 lastUpdateBlock, uint256 rewardPerStakeWithBuffer)[])",
+    "symbol": "string:symbol",
+    "getIBPrice": "function getIBPrice(address originToken) view returns (uint256 ibPriceWithPrecision, uint256 precision)",
+    "getNativeIBPrice": "function getNativeIBPrice() view returns (uint256 ibPriceWithPrecision, uint256 precision)"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const farmContract = "0x1aF28E7b1A03fA107961897a28449F4F9768ac75";

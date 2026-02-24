@@ -1,4 +1,7 @@
-const abi = require("./abi-poolInfo.json");
+const abi = {
+    "getPoolStaticInfo": "function getPoolStaticInfo(uint8 _poolFromIdx, uint8 _poolToIdx) external view returns (uint24[][] memory, address[] memory, address[] memory, address _oracleFactoryAddress)",
+    "getSupportedTokens": "function getSupportedTokens() view returns (address[] memory)"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {

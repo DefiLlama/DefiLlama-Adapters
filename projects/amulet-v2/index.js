@@ -1,5 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const erc4626Abi = require("./erc4626.json");
+const erc4626Abi = {
+    "totalAssets": "uint256:totalAssets",
+    "asset": "address:asset"
+  };
 const { sumTokens2 } = require("../helper/solana");
 const { sumTokens2: sumTokensEVM } = require("../helper/unwrapLPs");
 

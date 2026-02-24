@@ -149,10 +149,10 @@ function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, da
     return balances
   }
 }
-function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, isInsolvent = false, } = {}) {
   return {
     tvl: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
-    borrowed: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
+    borrowed: isInsolvent ? async () => ({}) : aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
   }
 }
 
@@ -208,7 +208,7 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [], isAaveV3Fork } = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [], isAaveV3Fork, isInsolvent = false } = {}) {
   if (isAaveV3Fork && !abis.getReserveData)
     abis.getReserveData = "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))"
 
@@ -297,7 +297,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
     getReserveData: "function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
   }
 
-  return { tvl, borrowed, }
+  return { tvl, borrowed: isInsolvent ? async () => ({}) : borrowed, }
 }
 
 

@@ -182,14 +182,20 @@ async function queryEventsByType({ eventType, transform = i => i }) {
 
 
 async function getTokenSupply(token) {
-  const query = `{
-  coinMetadata(coinType:"${token}") {
-    decimals
-    symbol
-    supply
-  }
-}`
-  const { coinMetadata: { supply, decimals } } = await sdk.graph.request(graphEndpoint(), query)
+  const { result } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getTotalSupply',
+    params: [token],
+  })
+  const supply = result.value
+  const { result: metadata } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getCoinMetadata',
+    params: [token],
+  })
+  const decimals = metadata?.decimals ?? 0
   return { supply, decimals, normalized: supply / 10 ** decimals }
 }
 

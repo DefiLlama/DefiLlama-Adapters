@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "getAllAssets": "address[]:getAllAssets",
+    "checkBalance": "function checkBalance(address _asset) view returns (uint256 balance)",
+    "supportsAsset": "function supportsAsset(address _asset) view returns (bool)"
+  };
 const { staking } = require("../helper/staking");
 
 const vault = "0xE75D77B1865Ae93c7eaa3040B038D7aA7BC02F70";

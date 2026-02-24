@@ -3,7 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs")
 module.exports = {
   methodology: `TVL is supply balance minus borrows the euler contract.`,
   hallmarks: [
-    [1762214400, "Stream finance rug"],
+    ['2025-11-04', "Stream finance rug"],
   ],
 }
 
@@ -23,6 +23,7 @@ const config = {
   plasma: { factory: '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3', },
   mantle: { factory: '0x47Aaf2f062aa1D55AFa602f5C9597588f71E2d76', },
   monad: { factory: '0xba4Dd672062dE8FeeDb665DD4410658864483f1E', },
+  hyperliquid: { factory: '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A', },
 }
 
 Object.keys(config).forEach(chain => {

@@ -60,8 +60,8 @@ const config = {
 
 module.exports = {
   hallmarks: [
-    [1662076800, "Launch on ETH"],
-    [1740355200, "TVL Migration to Denaria"]
+    ['2022-09-02', "Launch on ETH"],
+    ['2025-02-24', "TVL Migration to Denaria"]
   ],
 
   polygon: {
