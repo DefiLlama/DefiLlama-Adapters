@@ -30,6 +30,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the sum of all tokenized real estate property valuations stored on-chain in the Blocksquare PropertyRegistry.',
+  misrepresentedTokens: true,
   ethereum: {
     tvl,
   },
