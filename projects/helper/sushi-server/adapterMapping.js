@@ -8,6 +8,7 @@ module.exports = {
         'injective-orderbook': '/injective-orderbook/api',
         'lisa': '/lisa/api',
         'chutes': '/chutes/api',
+        'zest': '/zest/api',
       },
       {
         'bifrost-staking': '/bifrost-staking/api',
