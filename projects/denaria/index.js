@@ -18,7 +18,7 @@ const config = {
     toa: [
       // [tokenAddress, ownerAddress]
       [ADDRESSES.linea.USDC, '0x168fca57a05354b8d889ecee78d978040690ee5a'],       // Old Vault
-      [ADDRESSES.linea.USDC, '0x9707d20a198bfe283b7235dfaccd2ab65eb54e27'],       // New Vault
+      [ADDRESSES.linea.USDC, '0x75cdf7199fe3404d98d3690c59ee989537fee7a8'],       // New Vault
     ],
   },
 }
