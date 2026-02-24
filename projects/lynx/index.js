@@ -46,7 +46,7 @@ const config = {
   ],
   arbitrum: [
     [ADDRESSES.arbitrum.ARB, '0x094DE4d315198Df981D3a20ceFc3381B2182a572'],                  // ARB
-    [ADDRESSES.celo.STEUR, '0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90'],                   // stEUR
+    ['0x004626A008B1aCdC4c74ab51644093b155e59A23', '0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90'], // stEUR
     ['0xf5a27e55c748bcddbfea5477cb9ae924f0f7fd2e', '0xd22c72ab0f4967edb876d84773bff0b60a92e51a'], // TST
     ['0x643b34980e635719c15a2d4ce69571a258f940e9', '0x3552fE61af3F6d3235Dd1CB75402d4281d1FbaC6'], // EUROs
     ['0x894134a25a5faC1c2C26F1d8fBf05111a3CB9487', '0xBe1fa4177fBf43683434CecD5563DA6Ea00FD474'], // GRAI
