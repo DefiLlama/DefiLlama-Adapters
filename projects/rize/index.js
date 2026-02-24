@@ -104,7 +104,7 @@ async function naviSui(coinSymbol) {
 }
 
 module.exports = {
-  start: 1716599207,
+  start: '2024-05-25',
   timetravel: false,
   ethereum: {
     tvl

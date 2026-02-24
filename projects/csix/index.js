@@ -14,14 +14,13 @@ async function staking(api) {
 
 module.exports = {
   hallmarks: [
-    [1676338485, "Staking V1"],
-    [1700652398, "Staking V2"],
-    [1708909450, "Staking V3"],
+    ['2023-02-14', "Staking V1"],
+    ['2023-11-22', "Staking V2"],
+    ['2024-02-26', "Staking V3"],
   ],
   bsc: {
     tvl: () => ({}),
     staking,
   },
-  start: 25647232,
   methodology: "Counts as TVL the CSIX deposited through Staking Contract",
 };

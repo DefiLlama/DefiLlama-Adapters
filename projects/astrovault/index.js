@@ -2,17 +2,45 @@ const { queryContract, } = require("../helper/chain/cosmos");
 const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 
-const STABLE_FACTORY_ARCHWAY = "archway19yzx44k7w7gsjjhumkd4sh9r0z6lscq583hgpu9s4yyl00z9lahq0ptra0";
-const STANDARD_FACTORY_ARCHWAY = "archway1cq6tgc32az7zpq5w7t2d89taekkn9q95g2g79ka6j46ednw7xkkq7n55a2";
-const HYBRID_FACTORY_ARCHWAY = "archway1zlc00gjw4ecan3tkk5g0lfd78gyfldh4hvkv2g8z5qnwlkz9vqmsdfvs7q";
+const data = {
+  archway: {
+    stableFactory:
+      "archway19yzx44k7w7gsjjhumkd4sh9r0z6lscq583hgpu9s4yyl00z9lahq0ptra0",
+    standardFactory:
+      "archway1cq6tgc32az7zpq5w7t2d89taekkn9q95g2g79ka6j46ednw7xkkq7n55a2",
+    hybridFactory:
+      "archway1zlc00gjw4ecan3tkk5g0lfd78gyfldh4hvkv2g8z5qnwlkz9vqmsdfvs7q",
+  },
+  neutron: {
+    stableFactory:
+      "neutron10rtkhawvvqxp5zmdqn0ehcsygxjgtj64vrg58v6wnf9tn00uu97s7qfcdq",
+    standardFactory:
+      "neutron1r27at895fhu6sdj3v8jjra0n2pvu7jxrr3m90py058dkmm83wh8s9qkxw7",
+    hybridFactory:
+      "neutron16yn2gcz24s9qwpuxvrhl3xed0pmhrgwx2mz40zrazfc0pt5kq0psucs6xl",
+  },
+
+  nibiru: {
+    stableFactory:
+      "nibi143hmeallpaasdyull3gjcmasrcg63yl8f4cumah7xmcmjnqewa9s5jkan2",
+    standardFactory:
+      "nibi1gmw5eqnergfdx5qp4w53vwaywg63dwnvqeus3g6a2926pz2axyqshrlh2m",
+    hybridFactory:
+      "nibi1gwsrmpkkcl82aqs3vk4vy2lt0dm3kr3sshmruzhxhsqh8xglxrtsglzpqj",
+  },
+};
 
 async function tvl(api) {
   const { chain } = api
-  for (const factory of [STABLE_FACTORY_ARCHWAY, STANDARD_FACTORY_ARCHWAY, HYBRID_FACTORY_ARCHWAY]) {
+  for (const factory of [
+    data[chain].stableFactory,
+    data[chain].standardFactory,
+    data[chain].hybridFactory,
+  ]) {
     let allPools = [];
     let pagesRemaining = true;
     let start_after = null;
-    const key = factory === STANDARD_FACTORY_ARCHWAY ? 'pairs' : 'pools'
+    const key = factory === data[chain].standardFactory ? 'pairs' : 'pools'
 
     while (pagesRemaining) {
       const poolsList = await queryContract({
@@ -44,11 +72,11 @@ async function tvl(api) {
     })
 
     await PromisePool
-      .withConcurrency(20)
+      .withConcurrency(3)
       .for(allPools)
       .process(getPoolAssetsState)
 
-    if (factory === STANDARD_FACTORY_ARCHWAY) await transformDexBalances({ chain, data: poolAssets, balances: api.getBalances() })
+    if (factory === data[chain].standardFactory) transformDexBalances({ chain, data: poolAssets, balances: api.getBalances() })
     else {
       poolAssets.forEach(({ token0, token0Bal, token1, token1Bal }) => {
         api.add(token0, token0Bal)
@@ -63,5 +91,11 @@ module.exports = {
   misrepresentedTokens: true,
   archway: {
     tvl,
-  }
+  },
+  neutron: {
+    tvl,
+  },
+  nibiru: {
+    tvl,
+  },
 }

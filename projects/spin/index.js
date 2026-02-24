@@ -9,7 +9,8 @@ const FT_AURORA = 'd9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near'
 async function tvl() {
     let spotFtCurrencies = (await call(SPOT_PROJECT_CONTRACT, GET_CURRENCIES_METHOD, {}))
         .filter(token => token['address'] !== NATIVE_NEAR)
-        .map(token => token['address']);
+        .map(token => token['address'])
+        .filter(address => typeof address === 'string' && address.includes('.'));
 
     // NOTE: replace correct aurora token address for Near Protocol with incorrect but working
     spotFtCurrencies['aurora'] = spotFtCurrencies[FT_AURORA];
@@ -24,11 +25,8 @@ async function tvl() {
     return balances;
 }
 
-
 module.exports = {
   timetravel: false,
-  near: {
-    tvl,
-  },
+  near: { tvl },
   methodology: 'Summed up all the tokens deposited into Spin DEX'
 }

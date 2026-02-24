@@ -27,7 +27,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Gets the total balance in the Alpha #1 contract from IOU total supply and price per share and in the Smart Farmooor (Alpha #2) from the total balance.',
-  start: 21220270,
   avax: {
     tvl,
   }

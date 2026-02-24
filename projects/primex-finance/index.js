@@ -5,6 +5,8 @@ const { abi } = require('./abi')
 const config = {
   polygon: {
     bucketsFactory: '0x7E6915D307F434E4171cCee90e180f5021c60089',
+    bucketsFactoryv2: '0x9649CfDCfAa9c80907e63dD9Cb161cBA2033F3A0',
+    bucketsFactoryv3: '0x84318E4573B5c109d1b57A1fDC2607A0C7d5296F',
     positionManager: '0x02bcaA4633E466d151b34112608f60A82a4F6035',
     traderBalanceVault: '0x0801896C67CF024606BcC92bd788d6Eb077CC74F',
     defaultTokens: {
@@ -30,8 +32,15 @@ const config = {
       GHST: "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
       AVAX: "0x2c89bbc92bd86f8075d1decc58c7f4e0107f286b",
       CRV: "0x172370d5cd63279efa6d502dab29171933a610af",
-      SUSHI: "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a"
+      SUSHI: "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a",
+      SOL: "0x7dff46370e9ea5f0bad3c4e29711ad50062ea7a4",
+      PAXG: "0x553d3d295e0f695b9228246232edf400ed3560b5",
+      WSTETH: ADDRESSES.polygon.WSTETH,
+      LDO: "0xC3C7d422809852031b44ab29EEC9F1EfF2A58756",
+      FRAX: ADDRESSES.polygon.FRAX,
+      FXS: "0x1a3acf6d19267e2d3e7f898f42803e90c9219062",
     },
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
     aaveTokens: {
       [ADDRESSES.polygon.WETH_1]: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
       [ADDRESSES.polygon.WBTC]: "0x078f358208685046a11C85e8ad32895DED33A249",
@@ -42,6 +51,8 @@ const config = {
   },
   arbitrum: {
     bucketsFactory: '0x4e6f7372bCE4083c779c17B240A94dc2EA57AE67',
+    bucketsFactoryv2: '0xB4d3A9f10D3D687FaF3b05b9aa3054856A1d7be8',
+    bucketsFactoryv3: '0x10dDc924A0687a8bbEe6051A8CdAEc9ecA83F2E1',
     positionManager: '0x86890E30cE9E1e13Db5560BbEb435c55567Af1cd',
     traderBalanceVault: '0xc08FFBBA8c5f42beb7e6dd29142cC61855a3076B',
     defaultTokens: {
@@ -49,7 +60,7 @@ const config = {
       USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
       USDT: ADDRESSES.arbitrum.USDT,
       WETH: ADDRESSES.arbitrum.WETH,
-      ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      ETH: ADDRESSES.GAS_TOKEN_2,
       WBTC: ADDRESSES.arbitrum.WBTC,
       ARB: ADDRESSES.arbitrum.ARB,
       DAI: ADDRESSES.arbitrum.DAI,
@@ -72,7 +83,22 @@ const config = {
       FXS: "0x9d2F299715D94d8A7E6F5eaa8E654E8c74a988A7",
       TIA: "0xD56734d7f9979dD94FAE3d67C7e928234e71cD4C",
       RPL: "0xB766039cc6DB368759C1E56B79AFfE831d0Cc507",
+      AAVE: "0xba5DdD1f9d7F570dc94a51479a000E3BCE967196",
+      WSTETH: ADDRESSES.arbitrum.WSTETH,
+      RETH: "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
+      WEETH: ADDRESSES.arbitrum.weETH,
+      ETHFI: ADDRESSES.arbitrum.ETHFI,
+      EZETH: ADDRESSES.optimism.ezETH,
+      RSETH: ADDRESSES.berachain.rsETH,
+      USDE: ADDRESSES.arbitrum.USDe,
+      CBETH: "0x1debd73e752beaf79865fd6446b0c970eae7732f",
+      USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
+      TBTC: "0x6c84a8f1c29108f47a79964b5fe888d4f4d0de40",
+      FRAX: ADDRESSES.arbitrum.FRAX,
+      FRXETH: "0x178412e79c25968a32e89b11f63b33f733770c2a",
+      SFRXETH: "0x95ab45875cffdba1e5f451b950bc2e42c0053f39",
     },
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
     aaveTokens: {
       [ADDRESSES.arbitrum.DAI]: "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
       [ADDRESSES.arbitrum.USDC]: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
@@ -84,11 +110,13 @@ const config = {
   },
   ethereum: {
     bucketsFactory: '0x7dE8607157124c894Ba9F18dd6138B5E8AAd5890',
+    bucketsFactoryv2: '0x55120da310A0c5fd81Fd3bb8C177F6649bE30ACc',
+    bucketsFactoryv3: '0xe0b3daA28E5c32B4AB7eE9700B57CE38eEf9872b',
     positionManager: '0x99d63fEA4b3Ef6ca77941df3C5740dAd1586f0B8',
     traderBalanceVault: '0x156e2fC8e1906507412BEeEB6640Bf999a1Ea76b',
     defaultTokens: {
       WETH: ADDRESSES.ethereum.WETH,
-      ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      ETH: ADDRESSES.GAS_TOKEN_2,
       WBTC: ADDRESSES.ethereum.WBTC,
       USDC: ADDRESSES.ethereum.USDC,
       USDT: ADDRESSES.ethereum.USDT,
@@ -96,15 +124,39 @@ const config = {
       MATIC: ADDRESSES.ethereum.MATIC,
       LINK: ADDRESSES.ethereum.LINK,
       UNI: ADDRESSES.ethereum.UNI,
-      SOL: '0xD31a59c85aE9D8edEFeC411D448f90841571b89c',
+      SOL: ADDRESSES.ethereum.WSOL,
       MKR: ADDRESSES.ethereum.MKR,
       SNX: ADDRESSES.ethereum.SNX,
       AAVE: ADDRESSES.ethereum.AAVE,
       COMP: "0xc00e94cb662c3520282e6f5717214004a7f26888",
       CRV: ADDRESSES.ethereum.CRV,
       ['1INCH']: '0x111111111117dC0aa78b770fA6A738034120C302',
-      EPMX: "0xA533f744B179F2431f5395978e391107DC76e103"
+      EPMX: "0xA533f744B179F2431f5395978e391107DC76e103",
+      POL: ADDRESSES.ethereum.POL,
+      PAXG: "0x45804880de22913dafe09f4980848ece6ecbaf78",
+      WSTETH: ADDRESSES.ethereum.WSTETH,
+      RETH: ADDRESSES.ethereum.RETH,
+      SDAI: ADDRESSES.ethereum.SDAI,
+      WEETH: ADDRESSES.ethereum.WEETH,
+      ETHFI: ADDRESSES.ethereum.ETHFI,
+      LDO: ADDRESSES.ethereum.LIDO,
+      EZETH: ADDRESSES.linea.rzETH,
+      RSETH: "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
+      RSWETH: "0xfae103dc9cf190ed75350761e95403b7b8afa6c0",
+      USDE: ADDRESSES.ethereum.USDe,
+      SUSDE: ADDRESSES.ethereum.sUSDe,
+      PUFETH: "0xd9a442856c234a39a81a089c06451ebaa4306a72",
+      CDETH: ADDRESSES.ethereum.cbETH,
+      USDP: "0x8e870d67f660d95d5be530380d0ec0bd388289e1",
+      PYUSD: "0x6c3ea9036406852006290770bedfcaba0e23a0e8",
+      ONDO: "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3",
+      TBTC: ADDRESSES.ethereum.tBTC,
+      FRAX: ADDRESSES.ethereum.FRAX,
+      FXS: ADDRESSES.ethereum.FXS,
+      FRXETH: "0x5e8422345238f34275888049021821e8e08caa1f",
+      SFRXETH: ADDRESSES.ethereum.sfrxETH,
     },
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
     aaveTokens: {
       [ADDRESSES.ethereum.WETH]: "0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8",
       [ADDRESSES.ethereum.WSTETH]: "0x0B925eD163218f6662a35e0f0371Ac234f9E9371",
@@ -115,26 +167,49 @@ const config = {
       [ADDRESSES.ethereum.AAVE]: "0xA700b4eB416Be35b2911fd5Dee80678ff64fF6C9",
     },
   },
+  base: {
+    bucketsFactory: '0xCf552C38A0Ecb51982Af28d4e475beF27aC2dD25',
+    bucketsFactoryv2: '0x8e8792881227e8fee8a9e05a567A44D3FA04a7f0',
+    bucketsFactoryv3: '0x15e975dA0080e7A3731Ac329245241b83AcFcAfC',
+    positionManager: '0x01ED183275956dBd0064B789B778cA0921e695E9',
+    traderBalanceVault: '0xDf7B923a7bF62331092B49fd36EE26A21755DFa1',
+    vpmx: "0x4C7876977ECe31fDb8e932e17977D4C93DB1938F",
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
+    defaultTokens: {},
+    aaveTokens: {},
+  }
 }
 
-module.exports = {}
-
 Object.keys(config).forEach(chain => {
-  const { bucketsFactory, positionManager, traderBalanceVault, defaultTokens, aaveTokens } = config[chain]
-
+  const { bucketsFactory, bucketsFactoryv2, bucketsFactoryv3, positionManager, traderBalanceVault, vpmx, defaultTokens, aaveTokens, PMX, } = config[chain]
+  
   module.exports[chain] = {
     tvl: async (api) => {
       const buckets = await api.call({ target: bucketsFactory, abi: abi.allBuckets })
       const borrowedTokensAddresses = await api.multiCall({ abi: abi.borrowedAsset, calls: buckets })
 
+      const bucketsv2 = await api.call({ target: bucketsFactoryv2, abi: abi.allBuckets })
+      const borrowedTokensAddressesv2 = await api.multiCall({ abi: abi.borrowedAsset, calls: bucketsv2 })
+      const tokensAndOwnersBucketsv2 = bucketsv2.map((b, i) => [borrowedTokensAddressesv2[i], b])
+      const aTokensAndOwnersBucketsv2 = bucketsv2.map((b, i) => [aaveTokens[borrowedTokensAddressesv2[i].toLowerCase()], b]).filter((p) => p[0])
+
+      const bucketsv3 = await api.call({ target: bucketsFactoryv3, abi: abi.allBuckets })
+      const borrowedTokensAddressesv3 = await api.multiCall({ abi: abi.borrowedAsset, calls: bucketsv3 })
+      const tokensAndOwnersBucketsv3 = bucketsv3.map((b, i) => [borrowedTokensAddressesv3[i], b])
+      const aTokensAndOwnersBucketsv3 = bucketsv3.map((b, i) => [aaveTokens[borrowedTokensAddressesv3[i].toLowerCase()], b]).filter((p) => p[0])
+
       const tokensAndOwnersBuckets = buckets.map((b, i) => [borrowedTokensAddresses[i], b])
       const aTokensAndOwnersBuckets = buckets.map((b, i) => [aaveTokens[borrowedTokensAddresses[i].toLowerCase()], b]).filter((p) => p[0])
+
       const tokensAndOwnersPM = Object.values(defaultTokens).map(t => [t, positionManager])
       const tokensAndOwnersTBV = Object.values(defaultTokens).map(t => [t, traderBalanceVault])
 
-      const tokensAndOwners = tokensAndOwnersBuckets.concat(aTokensAndOwnersBuckets, tokensAndOwnersPM, tokensAndOwnersTBV)
-
+      const tokensAndOwners = tokensAndOwnersBuckets.concat(tokensAndOwnersBucketsv2, tokensAndOwnersBucketsv3, aTokensAndOwnersBuckets, aTokensAndOwnersBucketsv2, aTokensAndOwnersBucketsv3, tokensAndOwnersPM, tokensAndOwnersTBV,)
+    
       return sumTokens2({ api, tokensAndOwners })
     }
   }
+
+  if (vpmx)
+    module.exports[chain].staking = api => api.sumTokens({ owner: vpmx, tokens: [PMX] })
 })

@@ -8,6 +8,9 @@ async function tvl(){
 }
 
 module.exports={
+    hallmarks: [
+        ['2024-11-19',"dYdX Unlimited launch"]
+    ],
     dydx:{
         tvl
     }

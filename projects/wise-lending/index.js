@@ -4,11 +4,11 @@ async function tvl(api) {
   return api.sumTokens({ owner: lendingContract, tokens })
 }
 
-module.exports = {
-  hallmarks: [
-    [1705017600, "Project Exploited"]
-  ],
-}
+// module.exports = {
+//   hallmarks: [
+//     ['2024-01-12', "Project Exploited"]
+//   ],
+// }
 
 const config = {
   ethereum: { lending: '0x37e49bf3749513A02FA535F0CbC383796E8107E4', feeManager: '0x0bc24e61daad6293a1b3b53a7d01086bff0ea6e5' },

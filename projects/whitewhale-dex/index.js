@@ -16,13 +16,16 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "Liquidity on the DEX",
   hallmarks: [
-    [1651881600, "UST depeg"],
-    [1676300400,"Migaloo Chain Launch"]
+    ['2022-05-07', "UST depeg"],
+    ['2023-02-13',"Migaloo Chain Launch"]
   ]
 }
 
-
 Object.keys(factory).forEach(chain => {
   const contract = factory[chain]
-  module.exports[chain] = { tvl: getFactoryTvl(contract) }
+  if (chain === 'comdex' || chain === 'injective') {
+    module.exports[chain] = { tvl: () => ({}) }
+  } else {
+    module.exports[chain] = { tvl: getFactoryTvl(contract) }
+  }
 })

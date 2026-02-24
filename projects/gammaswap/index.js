@@ -1,5 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const config = {
   arbitrum: {
@@ -29,3 +30,5 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports.arbitrum.staking = staking("0x9b4D784E1cCaf038AEa4BFa837262704caF78B66", "0xb08d8becab1bf76a9ce3d2d5fa946f65ec1d3e83")

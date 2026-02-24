@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -18,7 +19,7 @@ const config = {
     ]
   },
   bitcoin: {
-    owners: ['3GcSHxkKY8ADMWRam51T1WYxYSb2vH62VL']
+    owners: bitcoinAddressBook.cakeDefi
   },
   litecoin: {
     owners: ['MLYQxJfnUfVqRwfYXjDJfmLbyA77hqzSXE']
@@ -28,6 +29,6 @@ const config = {
 module.exports = cexExports(config)
 module.exports.methodology = 'As Bake.io (formerly Cake DeFi) is a CeDeFi platform, its assets associated to the staking nodes are not included for the purposes of the TVL calculation. In this case, there are approximately $121.4M in DFI chain (nodes), and around $24.7M in ETH chain (nodes) as of 31 March 2023. The calculation methodology are as follows: DFI: 10846 (nodes) * 20K (collateral per node) *$0.56 = $121.4M. ETH: 430 * 32 *$1800 = $24.7M, we also do not track Bitcoin Cash and Dogecoin. Bake.io publishes information on all its nodes on its Transparency page here: https://bake.io/transparency.',
 module.exports.hallmarks = [
-  [1680516000, "Change Of Wallets"],
-  [1700784000, "Change Of Wallets"]
+  ['2023-04-03', "Change Of Wallets"],
+  ['2023-11-24', "Change Of Wallets"]
 ]

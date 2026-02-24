@@ -1,5 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCowPerShare)"
+  };
 const { compoundExports } = require("../helper/compound");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 
@@ -29,9 +31,9 @@ module.exports = {
   bsc: {
     staking: stakingPools,
     ...compoundExports(comptroller,
-      "bsc",
       cBNB,
-      WBNBEquivalent)
+      WBNBEquivalent,
+      { isInsolvent: true })
   },
   methodology:
     "We count liquidity on the lending markets same as compound; and the Pools (LP Piars) through Chef Contract",

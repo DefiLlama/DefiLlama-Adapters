@@ -31,9 +31,9 @@ async function tvl(api) {
 
 module.exports = {
     misrepresentedTokens: true,
-  start: 1627776000, // Sunday, August 1, 2021 12:00:00 AM
+  start: '2021-08-01', // Sunday, August 1, 2021 12:00:00 AM
   methodology:
-    "Aggregates total value of each Toros vault both on Polygon and Optimism",
+    "Aggregates total value of each Toros vault on Polygon, Optimism, Arbitrum, Base and Ethereum",
   polygon: {
     tvl,
   },
@@ -46,10 +46,19 @@ module.exports = {
   base: {
     tvl,
   },
+  ethereum: {
+    tvl,
+  },
   hallmarks: [
-    [1674003600, "Optimism Incentives Start"],
-    [1699050203, "Leverage Tokens on Optimism Release"],
-    [1701468842, "First Arbitrum Vault Release"],
-    [1706569200, "First Base Vault Release"],
+    ['2023-01-18', "Optimism Incentives Start"],
+    ['2023-11-03', "Leverage Tokens on Optimism Release"],
+    ['2023-12-01', "First Arbitrum Vault Release"],
+    ['2024-01-29', "First Base Vault Release"],
+    ['2025-05-07', "First GMX Leveraged Tokens Release"],
+    ['2025-05-19', "Limit Orders Release"],
+    ['2025-06-24', "First 1X Leveraged Tokens Release"],
+    ['2025-07-22', "Protected Leveraged Tokens Using Options Release"],
+    ['2025-07-24', "Removal of Yield Products to Focus on Derivatives"],
+    ['2025-08-05', "First Ethereum Mainnet Leveraged Tokens Released"],
   ],
 };

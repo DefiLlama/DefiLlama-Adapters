@@ -1,7 +1,13 @@
-const ABI = require("./abi.json");
-const { toUSDTBalances } = require("../helper/balances");
+const ABI = {
+    "poolInfos": "function poolInfos() view returns (tuple(address pool, address token0, address token1, string name, string symbol, uint8 decimals, uint256 totalSupply, uint112 token0Reserve, uint112 token1Reserve, uint256 token0Balance, uint256 token1Balance)[] poolInfoList)",
+    "tokenInfoDetail": "function tokenInfoDetail(address token) view returns (tuple(address token, string name, string symbol, uint8 decimals, uint256 totalSupply) info, uint256 price)",
+    "balanceOf": "function balanceOf(address) view returns (uint256)",
+    "totalSupply": "uint256:totalSupply",
+    "farmInfos": "function farmInfos(address farm) view returns (tuple(address pool, uint256 totalLP, uint256 allocPoint, uint256 lastRewardBlock, uint256 accRewardPerShare)[] farmInfoList, tuple(uint256 attenTotalAllocPoint, uint256 attenFarmStartBlock, uint256 attenFarmEndBlock, uint256 attenPerBlock, uint256 attenBonusMultiplier, uint256 palaTotalAllocPoint, uint256 palaFarmStartBlock, uint256 palaPerBlock, uint256 palaBonusMultiplier) config)"
+  };
 const sdk = require('@defillama/sdk')
 const { PromisePool } = require('@supercharge/promise-pool')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const VIEWER_ADDR = "0x2B16648ddD1559fc86e0c0617213Ab5dd2Ea01B9";
 const chain = 'klaytn'
@@ -50,7 +56,9 @@ const fetchLiquidity = async (ts, _block, chainBlocks) => {
 	const tvl = poolInfos.reduce((acc, pool) => {
 		return acc + calcPoolLiquidityVolume(pool, tokenMapping)
 	}, 0)
-	return toUSDTBalances(tvl);
+	return {
+		[`klaytn:${ADDRESSES.klaytn.USDT}`]: Number(tvl).toFixed(0) * 1e6
+	};
 }
 
 

@@ -1,8 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCakePerShare)",
-  "poolLength": "uint256:poolLength",
-  "symbol": "string:symbol",
-  "reserveToken": "address:reserveToken",
-  "totalReserve": "uint256:totalReserve",
-  "state": "function state() view returns (address _masterChef, uint256 _pid, address _rewardToken, address _routingToken, address _reserveToken, address _treasury, address _collector, address _exchange, uint256 _minimalGulpFactor, uint256 _forceGulpRatio, uint256 _performanceFee, bool _emergencyMode)"
-}

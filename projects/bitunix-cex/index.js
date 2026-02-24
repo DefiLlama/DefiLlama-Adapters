@@ -1,34 +1,28 @@
-const { cexExports } = require('../helper/cex')
+const { cexExports } = require("../helper/cex");
+const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 
 const config = {
   ethereum: {
-    owners: [
-        "0x76B0aB5067B3be922ef4698390Ca8bd5812A5080"
-    ],
+    owners: ["0x76B0aB5067B3be922ef4698390Ca8bd5812A5080", "0x76b0ab5067b3be922ef4698390ca8bd5812a5080"],
+  },
+  ripple: {
+    owners: ["rpQATJWPPdNMxVCTQDYcnRNwtFDnanT3nk"],
   },
   bitcoin: {
-    owners: [
-        "bc1qxh9ruwejxz7ztzxejafd74tyxg4sgfeqxun42f",
-        "bc1qhjfnumgcsqsx6grxa7mfl7rr5g3u8xl4gtt7tr",
-        "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37"
-    ],
+    owners: bitcoinAddressBook.bitunixCex,
   },
   tron: {
     owners: [
-        "TJwMqVoy8kAtrC1GLqRuoDqPYCsbaxZzw4",
-        "TA2EWrSzZHsDBn3d8j4m9f2nbHds2cSNYb",
-        "TNuHnKVFW3kahz3Xe6EyHJiTm9GBtg2aGD",
-        "TMiru9N4RffN3e7oT1HGk8cN6WizmL4ijP",
-        "TDpDGvfxtEdq7EHyHThYtSuL9tAEZSnjv7",
-        "TPssYpQm3tFzQNvCSVkeTrx4cFft43Ln2J",
-        "TDzTcjvucTPgZqaVjTct65AyFxP7DnLEjY",
-        "TE9oPgFeo3qz3152e2GNfKEdEs3UF42jTF",
-        "TYVAHVXixkL2dnaPfyjZz6J7hF6J4WW3Qx",
-        "TCxBM3QPZCebzCuXtzzBA7Vet5mCcruHdN",
-        "TLnMjGrgWTZLadqNRzbQPTzDPWbH6Dc1HA",
-        "TRcvGsNpzkm8LdhLYmqBWESRrTUv7BPQ8t"
+'THoW5StbzYdfhh9XUopYYhPJbJWJehoCjo',
+'TDcgiw8HxnhHEhwPf7PYu5RUMpP7EygAXr',
+'THgxDnzzGJYhZXnKKXm6cg1594vhLzmTGx',
+'TRLEKU5ySBEoCSAFUuzYyZN5wxbx2Ho2jt',
+'TG3NXULKi8WVUFtw7Lg7RM6ahGyvY5mhC2',
+'TAS4yce3Jh5Rrk94SrViMq9mER3NXkqUXi',
+'TVUuCWs6mUVvMrB527mVspe6nfh4nUdDWR',
+'TFmCzjvmDN3Juk5VbLPctbZ3gx2ziK8ui4',
     ],
   },
-}
+};
 
-module.exports = cexExports(config)
+module.exports = cexExports(config);

@@ -1,0 +1,26 @@
+module.exports = [
+  '12hGEyxk4zMLquxiMiFrkvYSohsXz2D3uZ',
+  'bc1qz22hegkllltcydg3pz3an6h352mjmyp7n2vhd9',
+  '1MzSJodjNmACPKyj9VUv9X55Pby87osLhc',
+  'bc1qucl4n347qc6e48w85xdxcv86sm3an8fr250hhm',
+  '1F6CrpEnHEZh6gQtJ7cf1MtK7Y8GYKoP4i',
+  'bc1qn2xm6agnanuyuwfcfw92el7nvt2lpsqr5s5c0w',
+  '17mxRZ9WeXigSwg3Cm62HxeATnuUphMxGL',
+  'bc1qffg4ya27430vv5ymg2lhf4mj7tvtc3ur5qyyq3',
+  '1JV3umtGC6H6tFUVoFyV5KwbJDscUwrtX7',
+  'bc1qhlyrdhfqry06nj902p9dxdftm4pxkhdqeum8y8',
+  '1KXxS6QnzpB8mSLm5kmXJXqvZF7wVvQDCw',
+  'bc1qedxsgzuj8ga644gwlqw4nw7f3xncq4g2rskmzu',
+  '12T8i8tpeczk5JGf8ppZf1w6SFBRwEa9y4',
+  'bc1qpl5kqjkugyncr72a4fhxvm0360ehfdl27e00ja',
+  '1PRwacjHVksLNTkSYNkiWkRgTm1yDSgLMG',
+  'bc1q7c9ylgjsyc0yaxwm84jjh6avfajzfe7dhk6e0e',
+  '1477uXZ1NfUaaZZdnztQ7h8ftGRpuWQPfA',
+  'bc1qygg2x02cfy0e6r7798v4qrcjjkzm8tl5t0xkwf',
+  'bc1qljm7vwdgdy6ca97stsyjyl3zdjtkdsdm8vnh8f',
+  'bc1qqhwh3tcg5duwq7hdlnlr5n2tg2uq755cwmkjqn',
+  'bc1qqe4g7sjxzk90nsgj0mwufwcdtd7kufg7k32xch',
+  '1avi3SkWKGLis8dGCP9JUnFfVeheP8wkt',  
+  'bc1qmulc2ju4kykj24xuw0fu73h9h3usa897xhaucz', //
+  '3Dm2TL1pt1VzeBCq9jgvQG81QPv19PyReh'
+]

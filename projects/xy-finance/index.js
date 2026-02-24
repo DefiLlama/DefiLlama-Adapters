@@ -79,7 +79,7 @@ const config = {
   }
 }
 
-const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+const ethAddress = ADDRESSES.GAS_TOKEN_2
 const yPoolDepositContract = {
   "1": {
     "ETH": {

@@ -1,4 +1,16 @@
-const abi = require("./abi.json");
+const abi = {
+    "vaultsLength": "uint256:vaultsLength",
+    "vaults": "function _vaults(uint256) view returns (address)",
+    "vaultTvlUsdc": "function vaultTvlUsdc(address _vault) view returns (uint256)",
+    "totalTvlUsdc": "function totalTvlUsdc(address[] _vault) view returns (uint256)",
+    "strategy": "address:strategy",
+    "platform": "uint8:platform",
+    "vaultsList": "address[]:vaultsList",
+    "vaultERC4626TvlUsdc": "function vaultERC2626TvlUsdc(address _vault) view returns (uint256)",
+    "veTokens": "function tokens(uint256) view returns (address)",
+    "getPrice": "function getPrice(address _token) view returns (uint256)",
+    "balanceOf": "function balanceOf(address _owner) view returns (uint256)"
+  };
 
 // exclude V1 platforms for avoid double counting
 const EXCLUDED_PLATFORMS = {
@@ -17,7 +29,7 @@ const EXCLUDED_VAULTS = {
 }
 
 module.exports = {
-  start: 1628024400,  //Tue Aug 03 2021 21:00:00 GMT+0000
+  start: '2021-08-03',  //Tue Aug 03 2021 21:00:00 GMT+0000
   misrepresentedTokens: true,
 };
 

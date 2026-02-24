@@ -19,9 +19,8 @@ const config = {
 }
 module.exports = {
   methodology: 'We calculate the TVL as the sum of (deposits + loans + locked profits - losses) for each vault available',
-  start: 171730567,
   hallmarks: [
-    [1691649008, "private mainnet launch"]
+    ['2023-08-10', "private mainnet launch"]
   ],
 }
 

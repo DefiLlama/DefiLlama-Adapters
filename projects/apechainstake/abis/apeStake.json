@@ -1,0 +1,3 @@
+{
+    "getPoolsUI": "function getPoolsUI() view returns ((uint256,uint256,(uint48,uint48,uint96,uint96))[3])"
+} 

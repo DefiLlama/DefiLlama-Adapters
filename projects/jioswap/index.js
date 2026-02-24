@@ -28,6 +28,6 @@ Object.keys(config).forEach((chain) => {
     },
   };
   module.exports.hallmarks = [
-    [1661472000, "JioSwap live, all pools opened for deposits"],
+    ['2022-08-26', "JioSwap live, all pools opened for deposits"],
   ];
 });

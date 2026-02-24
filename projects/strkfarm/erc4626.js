@@ -37,7 +37,23 @@ const ERC4626Abi = [
       }
     ],
     "state_mutability": "view"
-  }
+  },
+  {
+    "name": "preview_redeem",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "shares",
+        "type": "core::integer::u256"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "core::integer::u256"
+      }
+    ],
+    "state_mutability": "view"
+  },
 ]
 
 const ERC4626AbiMap = {}

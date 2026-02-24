@@ -49,6 +49,11 @@ const config = {
     locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
     startBlock: 4533304
   },
+  kimberliteSafeApe: {
+    chain: "apechain",
+    locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
+    startBlock: 7797536
+  },
 }
 
 module.exports = {

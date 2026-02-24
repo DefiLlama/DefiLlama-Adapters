@@ -4,7 +4,7 @@ module.exports = {
         tvl: async (api) => {
             const supply = await api.call({ abi: "erc20:totalSupply", target: "TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3" })
             return {
-                [ADDRESSES.ethereum.USDT]: supply/1e12
+                [`tron:${ADDRESSES.tron.USDT}`]: supply/1e12
             }
         }
     },

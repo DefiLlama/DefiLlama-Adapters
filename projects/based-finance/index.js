@@ -39,5 +39,5 @@ module.exports = {
 };
 
 module.exports.hallmarks = [
-  [Math.floor(new Date('2022-09-30')/1e3), 'Added Based V2'],
+  ['2022-09-30', 'Added Based V2'],
 ]

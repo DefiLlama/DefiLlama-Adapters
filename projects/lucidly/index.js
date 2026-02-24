@@ -1,15 +1,38 @@
-async function tvl(api) {
-  const pools = [
-    '0x8dBE744F6558F36d34574a0a6eCA5A8dAa827235',
-  ]
-  const tokens = await api.fetchList({  lengthAbi: 'numTokens', itemAbi: 'tokens', calls:pools, groupedByInput: true, })
-  console.log(tokens)
-  const ownerTokens = pools.map((v, i) => [tokens[i], v])
-  return api.sumTokens({ ownerTokens })
+const sdk = require("@defillama/sdk");
+const { chainTvl } = require("../helper/boringVault");
+
+const { boringVaultsV0Ethereum } = require("./ethereumConstants");
+const { boringVaultsV0Arbitrum } = require("./arbitrumConstants");
+const { boringVaultsV0Base } = require("./baseConstants");
+
+async function legacyTvl(api) {
+    const registryAddress = '0x3C2A24c9296eC8B1fdb8039C937DaC7CBca3976c';
+    const pools = await api.call({
+        abi: 'function getPoolAddresses() view returns (address[])',
+        target: registryAddress,
+    });
+
+    const tokens = await api.fetchList({ lengthAbi: 'numTokens', itemAbi: 'tokens', calls: pools, groupedByInput: true, })
+    const ownerTokens = pools.map((v, i) => [tokens[i], v]);
+    const balances = await api.sumTokens({ ownerTokens });
+    const numericBalances = {};
+    for (const [token, amount] of Object.entries(balances)) {
+        numericBalances[token] = Number(amount);
+    }
+    return numericBalances;
 }
 
-
 module.exports = {
-  start: 1693971707,
-  ethereum: { tvl }
+    timetravel: true,
+    misrepresentedTokens: false,
+    start: 1710745200,
+    doublecounted: true,
+    ["ethereum"]: {
+        tvl: sdk.util.sumChainTvls([
+            (api) => chainTvl(api, boringVaultsV0Ethereum),
+            (api) => legacyTvl(api)
+        ])
+    },
+    ["arbitrum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Arbitrum) },
+    ["base"]: { tvl: (api) => chainTvl(api, boringVaultsV0Base) },
 };

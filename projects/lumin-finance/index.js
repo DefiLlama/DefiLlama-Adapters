@@ -21,14 +21,17 @@ async function tvl(api) {
   return api.sumTokens({ tokens, owner: LUMIN_V1_CONTRACT_ASSET_MANAGER })
 }
 
-async function borrowed(api) {
-  const assetIds = await api.call({ abi: abi.v1.assetIds, target: LUMIN_V1_CONTRACT_ASSET_MANAGER });
-  const assetData = await api.multiCall({ abi: abi.v1.asset, calls: assetIds, target: LUMIN_V1_CONTRACT_ASSET_MANAGER })
-  const tokens = assetData.map(asset => asset[0])
-  const deposit = await api.multiCall({ abi: abi.v1.depositOf, target: LUMIN_V1_CONTRACT_ASSET_MANAGER, calls: assetIds.map(i => ({ params: [i, nullAddress] })) });
-  tokens.forEach((token, i) => api.add(token, deposit[i][1]))
-}
+// NOTE: borrowed function zeroed out due to bad debt
+// Original implementation commented out below:
+// async function borrowed(api) {
+//   const assetIds = await api.call({ abi: abi.v1.assetIds, target: LUMIN_V1_CONTRACT_ASSET_MANAGER });
+//   const assetData = await api.multiCall({ abi: abi.v1.asset, calls: assetIds, target: LUMIN_V1_CONTRACT_ASSET_MANAGER })
+//   const tokens = assetData.map(asset => asset[0])
+//   const deposit = await api.multiCall({ abi: abi.v1.depositOf, target: LUMIN_V1_CONTRACT_ASSET_MANAGER, calls: assetIds.map(i => ({ params: [i, nullAddress] })) });
+//   tokens.forEach((token, i) => api.add(token, deposit[i][1]))
+// }
 async function staking(api) {
+  return; // this is broken
   const stakingBalance = await api.call({
     abi: abi.v2.stakeStats,
     target: LUMIN_V2_CONTRACT,
@@ -41,9 +44,8 @@ async function staking(api) {
 
 module.exports = {
   methodology: 'Gets v1 total deposits, and v2 staking statistics on-chain.',
-  start: 194344665,
   arbitrum: {
     staking,
-    tvl, borrowed,
+    tvl, borrowed: () => ({}),
   }
 }

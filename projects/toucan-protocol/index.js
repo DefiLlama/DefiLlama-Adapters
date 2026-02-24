@@ -54,7 +54,7 @@ const getRegenCredits = () => {
 };
 
 module.exports = {
-  start: 1634842800,
+  start: '2021-10-21',
   base: {
     tvl: getCalculationMethod("base")
   },
@@ -68,6 +68,6 @@ module.exports = {
     tvl: getRegenCredits()
   },
   hallmarks: [
-    [1653429600, "Verra prohibits tokenization"], [1709828986, "BCT administrative control transferred to KlimaDAO"],
+    ['2022-05-24', "Verra prohibits tokenization"], ['2024-03-07', "BCT administrative control transferred to KlimaDAO"],
   ]
 };

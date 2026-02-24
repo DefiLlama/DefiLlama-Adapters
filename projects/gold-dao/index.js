@@ -9,6 +9,7 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   methodology: "TVL counts gold bar owned by gold dao and convert gram to usd price using Forex Public Data",
   icp: {
     tvl,

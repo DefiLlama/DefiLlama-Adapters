@@ -1,14 +1,22 @@
 const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
-const abi = require("./abi.json");
+const abi = {
+    "concrete": "address:concrete",
+    "slotTotalValue": "function slotTotalValue(uint256 slot_) view returns (uint256)",
+    "slotBaseInfo": "function slotBaseInfo(uint256 slot_) view returns (tuple(address issuer, address currency, uint64 valueDate, uint64 maturity, uint64 createTime, bool transferable, bool isValid))",
+    "decimals": "uint8:decimals",
+    "balanceOf": "function balanceOf(address _owner) view returns (uint256 balance)",
+    "getSubscribeNav": "function getSubscribeNav(bytes32 poolId_, uint256 time_) view returns (uint256 nav_, uint256 navTime_)"
+  };
 const { cachedGraphQuery } = require("../helper/cache");
 
 // The Graph
 const graphUrlList = {
-  mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mantle/-/gn',
+  mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mentle-0xgraph/-/gn',
+  bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
 }
 
-const slotListUrl = 'https://cdn.jsdelivr.net/gh/solv-finance-dev/solv-protocol-rwa-slot/slot.json';
+const slotListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-rwa-slot.json';
 
 
 async function tvl(api) {
@@ -92,6 +100,6 @@ async function getGraphData(timestamp, chain, api) {
   return data.poolOrderInfos;
 }
 // node test.js projects/solv-protocol-rwa
-['mantle'].forEach(chain => {
+['mantle', 'bsc'].forEach(chain => {
   module.exports[chain] = { tvl }
 })

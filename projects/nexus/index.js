@@ -9,6 +9,6 @@ async function tvl(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 1558569600, // 05/23/2019 @ 12:00am (UTC)
+  start: '2019-05-23', // 05/23/2019 @ 12:00am (UTC)
   ethereum: { tvl }
 }

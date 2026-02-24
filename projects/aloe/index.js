@@ -27,15 +27,17 @@ async function tvl(api) {
   return api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:lastBalance' });
 }
 
-async function borrowed(api) {
-  const vaults = await getVaults(api);
-  const tokens = await api.multiCall({ calls: vaults, abi: "address:asset" });
-  const stats = await api.multiCall({
-    calls: vaults,
-    abi: "function stats() view returns (uint72 borrowIndex, uint256 totalAssets, uint256 totalBorrows, uint256 totalSupply)",
-  });
-  api.addTokens(tokens, stats.map(x => x.totalBorrows));
-}
+// NOTE: borrowed function zeroed out due to bad debt
+// Original implementation commented out below:
+// async function borrowed(api) {
+//   const vaults = await getVaults(api);
+//   const tokens = await api.multiCall({ calls: vaults, abi: "address:asset" });
+//   const stats = await api.multiCall({
+//     calls: vaults,
+//     abi: "function stats() view returns (uint72 borrowIndex, uint256 totalAssets, uint256 totalBorrows, uint256 totalSupply)",
+//   });
+//   api.addTokens(tokens, stats.map(x => x.totalBorrows));
+// }
 
 module.exports = {
   doublecounted: false,
@@ -44,5 +46,5 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl, borrowed }
+  module.exports[chain] = { tvl, borrowed: () => ({}) }
 })

@@ -45,7 +45,8 @@ const tvl = sdk.util.sumChainTvls([
 module.exports['ethereum'] = { tvl };
 
 module.exports.hallmarks = [
-  [1710115200, 'Beta test closing'],
-  [1712361600, 'ETH Boosted Vault Release'],
-  [1718927999, 'Symbiotic LRT Vault Release'],
+  ['2024-03-11', 'Beta test closing'],
+  ['2024-04-06', 'ETH Boosted Vault Release'],
+  ['2024-06-20', 'Symbiotic LRT Vault Release'],
+  ['2024-12-17', 'Migration to InceptionLRT'],
 ];

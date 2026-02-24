@@ -11,6 +11,7 @@ const chainMapping = {
   DASH: "dash",
   ARB: "arbitrum",
   XRD: "radixdlt",
+  ZEC: "zcash"
 };
 
 const tokenGeckoMapping = {
@@ -19,6 +20,7 @@ const tokenGeckoMapping = {
   "ETH.PEPE": "pepe",
   "ETH.ETH": "ethereum",
   "ETH.USDC": "usd-coin",
+  "ETH.MOG":"mog-coin",
   "KUJI.USK": "usk",
   "KUJI.KUJI": "kujira",
   "THOR.RUNE": "thorchain",
@@ -39,6 +41,7 @@ const tokenGeckoMapping = {
   "ARB.WBTC": "wrapped-bitcoin",
   "ARB.WSTETH": "wrapped-steth",
   "XRD.XRD": "radix",
+  "ZEC.ZEC": "zcash"
 };
 
 const tokenToDecimalMapping = {
@@ -47,6 +50,7 @@ const tokenToDecimalMapping = {
   "ETH.PEPE": 18,
   "ETH.ETH": 18,
   "ETH.USDC": 6,
+  "ETH.MOG":18,
   "KUJI.USK": 8,
   "KUJI.KUJI": 8,
   "THOR.RUNE": 8,
@@ -68,6 +72,7 @@ const tokenToDecimalMapping = {
   "ARB.WBTC": 8,
   "ARB.WSTETH": 18,
   "XRD.XRD": 8,
+  "ZEC.ZEC": 8,
 };
 
 async function tvl(api) {
@@ -92,9 +97,9 @@ async function tvl(api) {
 
     let [baseToken, address] = token.split("-");
     if (chain === "ethereum" || chain === "arbitrum") {
-      assetDepth =
-        assetDepth *
-        10 ** (+tokenToDecimalMapping[chainStr + "." + baseToken] - 8);
+      let decimal = tokenToDecimalMapping[chainStr + "." + baseToken];
+      if (decimal === undefined || isNaN(decimal)) return
+      assetDepth = assetDepth * 10 ** (+decimal - 8);
 
       // e.g. ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48
       address = address && address.includes('-') ? address.split("-")[1] : address
@@ -117,7 +122,7 @@ async function tvl(api) {
       }
     } else {
       // e.g KUJI.KUJI
-      if (chainStr === baseToken) {
+      if (['KUJI'].includes(baseToken)) {
         sdk.util.sumSingleBalance(balances, chain, assetDepth / 1e8);
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(

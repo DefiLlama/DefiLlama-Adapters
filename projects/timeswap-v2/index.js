@@ -166,12 +166,16 @@ const config = {
         factory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
         fromBlock: 682246,
     },
+    hyperliquid: {
+        factory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
+        fromBlock: 200467,
+    }
 };
 
 Object.keys(config).forEach((chain) => {
     module.exports[chain] = { tvl };
     module.exports.hallmarks = [
-        [1676851200, "Timeswap V2 launch"],
-        [1697760000, "Premine of $TIME"],
+        ['2023-02-20', "Timeswap V2 launch"],
+        ['2023-10-20', "Premine of $TIME"],
     ];
 });

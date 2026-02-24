@@ -1,4 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('../helper/coreAssets.json');
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 module.exports = treasuryExports({
@@ -19,6 +19,7 @@ module.exports = treasuryExports({
     ],
     owners: ['0xa715c8b17268f140D76494c12ec07B48218549C4'],
     ownTokens: ['0xF4435cC8b478d54313F04c956882BE3D9aCf9F6F'],
+    blacklistedTokens: ['0x3a94201a0b6c3593ad3b3e17e3dfce33da183514'],
     resolveLP: true,
   }
 })

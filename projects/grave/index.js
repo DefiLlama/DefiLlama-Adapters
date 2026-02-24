@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { stakingPricedLP } = require("../helper/staking");
-const { pool2Exports } = require("../helper/pool2");
+const { stakingPriceLP } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 
 const GRAVE = "0x3700a92dd231F0CaC37D31dBcF4c0f5cCb1db6Ca"
 const GSHARE = "0xffe04bf98c7111360bf7a6c56b343915543cd941"
@@ -29,7 +29,7 @@ const pool2LPs = [
 module.exports = {
     avax:{
         tvl: atvl,
-        pool2: pool2Exports(GShareRewardPool,pool2LPs,"avax"),
-        staking: stakingPricedLP(ASYLUM, GSHARE, "avax", gShareAvaxLp, "wrapped-avax")
+        pool2: pool2(GShareRewardPool,pool2LPs,"avax"),
+        staking: stakingPriceLP(ASYLUM, GSHARE, gShareAvaxLp, "wrapped-avax")
     }   
 };

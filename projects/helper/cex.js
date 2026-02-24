@@ -2,6 +2,7 @@ const ADDRESSES = require('./coreAssets.json')
 const { nullAddress } = require('./unwrapLPs')
 const { sumTokensExport } = require('../helper/sumTokens')
 const sdk = require('@defillama/sdk')
+const { getCEXTokensOnBinanceOnChain } = require('./utils/cex')
 
 const defaultTokens = {
   ethereum: [
@@ -10,6 +11,7 @@ const defaultTokens = {
     ADDRESSES.ethereum.USDC,
     ADDRESSES.ethereum.LINK,
     ADDRESSES.ethereum.DAI,
+    ADDRESSES.ethereum.WEETH,
     ADDRESSES.ethereum.WBTC,
     ADDRESSES.ethereum.TUSD, // TUSD
     ADDRESSES.ethereum.BUSD, // BUSD
@@ -77,7 +79,7 @@ const defaultTokens = {
     '0x356A5160F2B34BC8d88FB084745465eBBbed0174', //invi
     '0x9813037ee2218799597d83D4a5B6F3b6778218d9', //bone
     '0xf3b9569F82B18aEf890De263B84189bd33EBe452',//caw
-    '0x04abeda201850ac0124161f037efd70c74ddc74c',//nest
+    // '0x04abeda201850ac0124161f037efd70c74ddc74c',//nest -- old token, hacked
     '0x9d71CE49ab8A0E6D2a1e7BFB89374C9392FD6804',//nvir
     '0x5b649C07E7Ba0a1C529DEAabEd0b47699919B4a2',//sgt
     '0x4385328cc4d643ca98dfea734360c0f596c83449',
@@ -95,21 +97,30 @@ const defaultTokens = {
     '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
     '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
     '0x925206b8a707096Ed26ae47C84747fE0bb734F59', //WBT
-     ADDRESSES.ethereum.FDUSD, // FDUSD,
-     ADDRESSES.ethereum.SDAI, //sdai
-     '0x12970e6868f88f6557b76120662c1b3e50a646bf', //LADYS 
-     '0x1e2f15302b90edde696593607b6bd444b64e8f02', //SHIRYO-INU
-     '0x14fee680690900ba0cccfc76ad70fd1b95d10e16', //$PALL
-     '0x9ce84f6a69986a83d92c324df10bc8e64771030f', //chex
-     '0x68a47fe1cf42eba4a030a10cd4d6a1031ca3ca0a', //tet
-     '0x329c6e459ffa7475718838145e5e85802db2a303', //emaid
-     '0x3a856d4effa670c54585a5d523e96513e148e95d', //trias
-     '0x1495bc9e44af1f8bcb62278d2bec4540cf0c05ea', //deia
-     '0x4cff49d0a19ed6ff845a9122fa912abcfb1f68a6', //wtk
-     "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
-     "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
-     "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
-     "0x6982508145454ce325ddbe47a25d4ec3d2311933"  // PEPE
+    ADDRESSES.ethereum.FDUSD, // FDUSD,
+    ADDRESSES.ethereum.SDAI, //sdai
+    '0x12970e6868f88f6557b76120662c1b3e50a646bf', //LADYS 
+    '0x1e2f15302b90edde696593607b6bd444b64e8f02', //SHIRYO-INU
+    '0x14fee680690900ba0cccfc76ad70fd1b95d10e16', //$PALL
+    '0x9ce84f6a69986a83d92c324df10bc8e64771030f', //chex
+    '0x68a47fe1cf42eba4a030a10cd4d6a1031ca3ca0a', //tet
+    '0x329c6e459ffa7475718838145e5e85802db2a303', //emaid
+    '0x3a856d4effa670c54585a5d523e96513e148e95d', //trias
+    '0x1495bc9e44af1f8bcb62278d2bec4540cf0c05ea', //deia
+    '0x4cff49d0a19ed6ff845a9122fa912abcfb1f68a6', //wtk
+    "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
+    "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
+    "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
+    "0x6982508145454ce325ddbe47a25d4ec3d2311933", // PEPE
+    ADDRESSES.ethereum.METH, //METH
+    ADDRESSES.mantle.cmETH, // CMETH
+    "0x54d2252757e1672eead234d27b1270728ff90581", // BITGET TOKEN, NEW
+    ADDRESSES.ethereum.USDe, // USDE
+    "0x136471a34f6ef19fe571effc1ca711fdb8e49f2b", //USYC
+    "0x7712c34205737192402172409a8f7ccef8aa2aec", // BUIDL
+    '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
+    ADDRESSES.bsc.USD1, //USD1
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
   ],
   tron: [
     nullAddress,
@@ -137,6 +148,7 @@ const defaultTokens = {
   solana: [
     ADDRESSES.solana.USDC, // USDC
     ADDRESSES.solana.USDT, // USDT
+    'gtBTCGWvSRYYoZpU9UZj6i3eUGUpgksXzzsbHk2K9So'
   ],
   bsc: [
     nullAddress,
@@ -161,24 +173,29 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-     ADDRESSES.bsc.TUSD, //TUSD
-     '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
-     '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
-     '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
-     ADDRESSES.ethereum.FDUSD, //FDUSD
-     '0xeac9873291ddaca754ea5642114151f3035c67a2', //dcb
-     '0xaaa9214f675316182eaa21c85f0ca99160cc3aaa', //qanx
-     '0x2d060ef4d6bf7f9e5edde373ab735513c0e4f944', //aitech
-     '0x47c454ca6be2f6def6f32b638c80f91c9c3c5949', //gfall
-     '0xfe1d7f7a8f0bda6e415593a2e4f82c64b446d404', //blp
-     '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
-     '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
-     '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
-     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+    ADDRESSES.bsc.TUSD, //TUSD
+    '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
+    '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
+    '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
+    ADDRESSES.ethereum.FDUSD, //FDUSD
+    '0xeac9873291ddaca754ea5642114151f3035c67a2', //dcb
+    '0xaaa9214f675316182eaa21c85f0ca99160cc3aaa', //qanx
+    '0x2d060ef4d6bf7f9e5edde373ab735513c0e4f944', //aitech
+    '0x47c454ca6be2f6def6f32b638c80f91c9c3c5949', //gfall
+    '0xfe1d7f7a8f0bda6e415593a2e4f82c64b446d404', //blp
+    '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
+    '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
+    '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
+    '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+    '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
+    ADDRESSES.bsc.USD1, // USD1
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
+    '0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16',  //MYX
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
     ["tethertether", "USDT", "tether"],
+    ["core.vaulta", "A", "vaulta"],
   ],
   arbitrum: [
     nullAddress,
@@ -191,6 +208,10 @@ const defaultTokens = {
     ADDRESSES.arbitrum.LPT, //lpt
     '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+  ],
+  base: [
+    nullAddress,
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',
   ],
   avax: [
     nullAddress,
@@ -213,9 +234,9 @@ const defaultTokens = {
   ],
   linea: [
     nullAddress,
-   ADDRESSES.linea.USDT, //bridge usdt
-   ADDRESSES.linea.USDC, //usdc bridge
-   ADDRESSES.linea.DAI //dai bridge
+    ADDRESSES.linea.USDT, //bridge usdt
+    ADDRESSES.linea.USDC, //usdc bridge
+    ADDRESSES.linea.DAI //dai bridge
   ],
   flare: [
     nullAddress,
@@ -255,6 +276,27 @@ const defaultTokens = {
     ADDRESSES.ton.TON_2,
     ADDRESSES.ton.TON_3,
   ],
+  sui: [],
+  aptos: [
+    ADDRESSES.aptos.APT,
+    ADDRESSES.aptos.USDC,
+    ADDRESSES.aptos.USDT,
+    ADDRESSES.aptos.USDt
+  ],
+  mantle: [
+    nullAddress,
+    ADDRESSES.mantle.USDC,
+    ADDRESSES.mantle.USDT,
+    ADDRESSES.mantle.cmETH,
+    ADDRESSES.mantle.mETH,
+    ADDRESSES.mantle.WETH,
+    ADDRESSES.mantle.WMNT,
+    ADDRESSES.mantle.USDe,
+    ADDRESSES.mantle.sUSDe,
+    ADDRESSES.mantle.AUSD,
+    ADDRESSES.mantle.FBTC
+  ],
+  klaytn: [nullAddress, ADDRESSES.klaytn.USDT_1,]
 }
 
 function cexExports(config) {
@@ -263,7 +305,7 @@ function cexExports(config) {
     timetravel: false,
   }
   chains.forEach(chain => {
-    let { tokensAndOwners, owners, tokens, blacklistedTokens, } = config[chain]
+    let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = config[chain]
 
     if (!tokensAndOwners && !tokens && chain !== 'solana') {
       tokens = defaultTokens[chain]
@@ -273,9 +315,24 @@ function cexExports(config) {
       }
     }
 
-    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens, }
-    if (chain === 'solana')  options.solOwners = owners
-    exportObj[chain] = { tvl: sumTokensExport(options) }
+    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens }
+    if (chain === 'solana') {
+      options.solOwners = owners
+      if (!options.blacklistedTokens) options.blacklistedTokens = []
+      options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
+      options.onlyTrustedTokens = true
+    }
+    if (chain === 'ton') options.onlyWhitelistedTokens = true
+    if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
+    exportObj[chain] = { tvl: async (api) => {
+      const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
+      if (binanceTokensOnChain.length) {
+        console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
+        if (!options.tokens) options.tokens = []
+        options.tokens.push(...binanceTokensOnChain)
+      }
+      return sumTokensExport(options)(api)
+    } }
   })
   if (config.bep2) {
     exportObj.bsc = exportObj.bsc ?? { tvl: () => ({}) }

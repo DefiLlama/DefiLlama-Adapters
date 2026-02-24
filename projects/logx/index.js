@@ -2,6 +2,9 @@ const { nullAddress } = require("../helper/tokenMapping")
 
 module.exports = {
   methodology: "USDC.e in the vault",
+  hallmarks: [
+    ['2024-09-10', 'v1 is deprecated'],
+  ],
 }
 
 const config = {

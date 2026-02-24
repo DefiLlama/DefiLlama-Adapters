@@ -2,11 +2,11 @@ const ethereumTvl = require('./grappa-ethereum');
 
 module.exports = {
   ethereum: {
-    start: 1675468800,
+    start: '2023-02-04',
     tvl: ethereumTvl,
   },
   hallmarks: [
-    [1677196800, "Hashnote vault launch"],
+    ['2023-02-24', "Hashnote vault launch"],
   ]
 }
  

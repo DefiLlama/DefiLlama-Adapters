@@ -1,43 +1,35 @@
-const { getConfig } = require('../helper/cache')
 const { sumTokens } = require('../helper/chain/bitcoin')
-const { get } = require('../helper/http')
-const sdk = require('@defillama/sdk')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+const { sumTokensExport } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
-const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
-const BATCH_SIZE = 1000
+// Lombard protocol design requires mixed wallets for LBTC(/lombard adapter) and BTC.b (/avalanche-btc adapter)
 
-async function getAllAddresses() {
-  let allAddresses = []
-  let offset = 0
-  let hasMore = true
-  let batchNumber = 1
-
-  while (hasMore) {
-    const response = await get(`${API_URL}?limit=${BATCH_SIZE}&offset=${offset}`)
-    const data = response.addresses
-
-    const newAddresses = data.map(a => a.btc_address)
-    allAddresses = allAddresses.concat(newAddresses)
-    
-    sdk.log(`Batch ${batchNumber} completed: ${newAddresses.length} addresses`)
-    
-    hasMore = response.has_more
-    offset += BATCH_SIZE
-    batchNumber++
+async function tvl(api) {
+  const lombardOwners = await bitcoinAddressBook.lombard()
+  const avalancheOwners = bitcoinAddressBook.avalanche
+  const allOwners = [...lombardOwners, ...avalancheOwners]
+  
+  const balances = await sumTokens({ owners: allOwners, forceCacheUse: true })
+  
+  const data = await getConfig(
+    'lombard-staking-vault', 
+    'https://ledger-mainnet.lombard-fi.com:1317/lombard-finance/ledger/btcstaking/staking_vault_base_balance'
+  )
+  
+  const lbtcBackingInBTC = Number(data.balance) / 1e8
+  
+  if (balances.bitcoin) {
+    balances.bitcoin = Math.min(balances.bitcoin, lbtcBackingInBTC)
   }
 
-  return allAddresses
-}
-
-async function tvl() {
-  const addresses = await getConfig('lombard', undefined, { fetcher: getAllAddresses})
-  return sumTokens({ owners: addresses })
+  return balances
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
   isHeavyProtocol: true,
-  bitcoin: {
-    tvl
-  }
+  bitcoin: { tvl },
+  ethereum: { tvl: sumTokensExport({ owners: ['0x838f0c257ab27856ee9be57f776b186140834b58'], tokens: ['0xfe4ecd930a1282325aef8e946f17c0e25744de45'] })}
 }

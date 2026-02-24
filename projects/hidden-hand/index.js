@@ -1,5 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { cachedGraphQuery } = require('../helper/cache')
+const marionette = require('./marionette');
 
 const protocol_contracts = {
   ethereum: {
@@ -77,8 +78,9 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: `Sums bribe tokens deposited on Hidden Hand Reward Distributors, Bribe Vaults and Harvester contracts.`,
+  methodology: `Sums bribe tokens deposited on Hidden Hand Reward Distributors, Bribe Vaults and Harvester contracts and veTHE deposited in Marionette.`,
   ethereum: { tvl },
   optimism: { tvl },
   arbitrum: { tvl },
+  bsc: marionette.bsc,
 };

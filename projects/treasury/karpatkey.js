@@ -2,6 +2,6 @@ const { karpatKeyTvl } = require('../helper/karpatkey');
 
 module.exports={
     ethereum:{
-      tvl: async (timestamp)=>karpatKeyTvl(timestamp, "karpatkey DAO", ""),
+      tvl: async (api)=>karpatKeyTvl(api, "karpatkey DAO", ""),
     }
   }

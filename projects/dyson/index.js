@@ -12,6 +12,7 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
+    // get reserves call fails
     tvl: getUniTVL({ factory: config[chain], fetchBalances: true, useDefaultCoreAssets: true })
   }
 })

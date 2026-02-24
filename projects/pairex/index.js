@@ -16,11 +16,11 @@ const tokens = [
 ]
 
 module.exports = {
-    start: 1678852800,  //  15/03/2023 @ 04:00am (UTC)
+    start: '2023-03-15',  //  15/03/2023 @ 04:00am (UTC)
     arbitrum: {
         tvl: sumTokensExport({ tokens, owners: contracts }),
     },
     hallmarks: [
-        [1678852800, "Arbitrum Pairex Launch"]
+        ['2023-03-15', "Arbitrum Pairex Launch"]
     ]
 }

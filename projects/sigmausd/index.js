@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require('../helper/tokenMapping')
 const { sumTokensExport } = require('../helper/chain/ergo')
 

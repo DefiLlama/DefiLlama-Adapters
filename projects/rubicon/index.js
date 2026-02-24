@@ -1,20 +1,27 @@
 const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { uniTvlExport } = require('../helper/unknownTokens')
 
 const RUBICON_MARKET_OPTIMISM = '0x7a512d3609211e719737E82c7bb7271eC05Da70d'
 const RUBICON_MARKET_ARBITRUM = '0xC715a30FDe987637A082Cf5F19C74648b67f2db8'
+
+const baseFactory = '0xA5cA8Ba2e3017E9aF3Bd9EDa69e9E8C263Abf6cD'
+
+const base = 'base'
 
 
 module.exports = {
   methodology: "Counts the tokens on the market (orders in the orderbook) and in bath pools",
   hallmarks: [
-    [1657915200, "OP Rewards Start"],
-    [1685073974, "V2 Upgrade"],
-    [1688184374, "OP Rewards for Makers"],
-    [1688616374, "Arbitrum Launch"]
+    ['2022-07-15', "OP Rewards Start"],
+    ['2023-05-26', "V2 Upgrade"],
+    ['2023-07-01', "OP Rewards for Makers"],
+    ['2023-07-06', "Arbitrum Launch"]
   ]
 }
+
+module.exports = uniTvlExport(base, baseFactory)
 
 const config = {
   optimism: {

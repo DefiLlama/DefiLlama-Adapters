@@ -20,7 +20,7 @@ const basketTvl = async (api) => {
 }
 
 module.exports = {
-  start: 1640995200, // Jan 1 2022 00:00:00 GMT+0000
+  start: '2022-01-01', // Jan 1 2022 00:00:00 GMT+0000
   ethereum: {
     tvl: basketTvl,
     pool2: sumTokensExport({
@@ -33,7 +33,7 @@ module.exports = {
     staking: staking(veBaoAddress, baoAddress)
   },
   hallmarks: [
-    [1668898307, "baoV2 deployment"],
-    [1672272000, "baoV2 emission start"]
+    ['2022-11-19', "baoV2 deployment"],
+    ['2022-12-29', "baoV2 emission start"]
   ]
 };
