@@ -690,7 +690,7 @@ const uniV3Configs = {
         '0x8d9a525463e6891bca541828ddd5c9551d8d6697',
         '0x995bb7f2fc1c628f029baf04204b7b6ab6667271',
         '0x893ade07ce949d9686267898a31fb9660c264276',
-        '0xd02f50e1017f493ffffa70c8fcf09e349e11d6c9',
+        '0xd02f50e1017f493ffffa70c8fcf09e349e11d6c9', // DGLD token hacked on 2026-02-23 (caused tvl to spike): https://basescan.org/address/0x9bC08c9afa50475AB7B68E734fbf6fFb9bdEd6F9
       ],
     },
   },
