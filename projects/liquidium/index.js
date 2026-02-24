@@ -518,12 +518,20 @@ function toBigInt(value) {
   return BigInt(value)
 }
 
+function bigintToSafeNumber(value, label) {
+  const absolute = value < 0n ? -value : value
+  if (absolute > MAX_SAFE_BIGINT) {
+    throw new Error(`${label} exceeds JS safe integer range`)
+  }
+  return Number(value)
+}
+
 function toTokenAmount(rawAmount, decimals) {
   if (typeof rawAmount !== 'bigint') return Number(rawAmount) / 10 ** decimals
   const divisor = 10n ** BigInt(decimals)
   const whole = rawAmount / divisor
   const remainder = rawAmount % divisor
-  return Number(whole) + Number(remainder) / 10 ** decimals
+  return bigintToSafeNumber(whole, 'Token whole amount') + Number(remainder) / 10 ** decimals
 }
 
 let poolsPromise
@@ -570,14 +578,18 @@ async function chainTvl(api, chain) {
   const pools = await getPools()
   pools
     .filter((pool) => CHAIN_MAP[getVariantKey(pool.chain)] === chain)
-    .forEach((pool) => addNetSupply(api, pool))
+    .forEach((pool) => {
+      addNetSupply(api, pool)
+    })
 }
 
 async function chainBorrowed(api, chain) {
   const pools = await getPools()
   pools
     .filter((pool) => CHAIN_MAP[getVariantKey(pool.chain)] === chain)
-    .forEach((pool) => addBorrowed(api, pool))
+    .forEach((pool) => {
+      addBorrowed(api, pool)
+    })
 }
 
 module.exports = {
