@@ -20,18 +20,16 @@ async function tvl(api) {
     })),
   })
 
-  for (let i = 0; i < reserves.length; i++) {
-    const underlying = reserves[i]
-    const aToken = reserveData[i][8] // aTokenAddress
+  const aTokens = reserveData.map(i => i[8])
 
-    const balance = await api.call({
-      abi: 'erc20:balanceOf',
-      target: underlying,
-      params: [aToken],
-    })
+  const supplies = await api.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: aTokens,
+  })
 
-    api.add(underlying, balance)
-  }
+  supplies.forEach((supply, i) => {
+    api.add(reserves[i], supply)
+  })
 }
 
 module.exports = {
