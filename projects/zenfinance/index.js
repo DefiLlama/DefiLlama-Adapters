@@ -1,1 +1,3 @@
-"delistRequest" 
+module.exports = {
+  delistRequest: true,
+}
