@@ -6,6 +6,7 @@ const factory = '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865'
 const programId = 'HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq'
 
 const solTvl = async () => {
+  throw new Error('pcs v3 returns incorrect tvl')
   const connection = getConnection()
   const accounts = await connection.getProgramAccounts(new PublicKey(programId), { filters: [ { dataSize: 1544 } ] })
   
