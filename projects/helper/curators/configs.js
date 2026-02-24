@@ -57,6 +57,12 @@ const MorphoConfigs = {
         fromBlock: 21439510,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xA1D94F746dEfa1928926b84fB2596c06926C0405',
+        fromBlock: 23375073,
+      },
+    ],
   },
   base: {
     vaultFactories: [
@@ -67,6 +73,12 @@ const MorphoConfigs = {
       {
         address: '0xFf62A7c278C62eD665133147129245053Bbf5918',
         fromBlock: 23928808,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x4501125508079A99ebBebCE205DeC9593C2b5857',
+        fromBlock: 35615206,
       },
     ],
   },
@@ -145,6 +157,12 @@ const MorphoConfigs = {
       {
         address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
         fromBlock: 296447195,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6b46fa3cc9EBF8aB230aBAc664E37F2966Bf7971',
+        fromBlock: 387016724,
       },
     ],
   },
@@ -264,6 +282,17 @@ const SiloConfigs = {
         fromBlock: 32865457,
       }
     ],
+    blacklistedVaults: [
+      '0xcca902f2d3d265151f123d8ce8fdac38ba9745ed',
+      '0x2bc6f1406d736cc09631676c992abbf2ced789e7',
+      '0xf75ae954d30217b4ee70dbfb33f04162aa3cf260',
+      '0xb47cb414aab743c977dfd1fdb758f971907e810e',
+      '0xf6f87073cf8929c206a77b0694619dc776f89885',
+      '0x391b3f70e254d582588b27e97e48d1cfcdf0be7e',
+      '0x9a1bf5365edbb99c2c61ca6d9ffad0b705acfc6f',
+      '0xb6a23cb29e512df41876b28d7a848bd831f9c5ba',
+      '0xf6bc16b79c469b94cdd25f3e2334dd4fee47a581',
+    ]
   },
   ethereum: {
     vaultFactories: [
@@ -271,6 +300,9 @@ const SiloConfigs = {
         address: '0xe7Ed54e4e432Cf85024f8D4434cB3756338469B0',
         fromBlock: 22666249,
       }
+    ],
+    blacklistedVaults: [
+      '0x8399c8fc273bd165c346af74a02e65f10e4fd78f',
     ]
   },
   arbitrum: {
@@ -279,6 +311,11 @@ const SiloConfigs = {
         address: '0x451b35b2dF223a7Ef71c4ecb451C1C15019e28A5',
         fromBlock: 345527587,
       }
+    ],
+    blacklistedVaults: [
+      '0x7c1c43df1b08a7de4e25e7a8f5867efdcc812b95',
+      '0x2ba39e5388ac6c702cb29aea78d52aa66832f1ee',
+      '0xac69cfe6bb269cebf8ab4764d7e678c3658b99f2',
     ]
   },
   avax: {
@@ -287,6 +324,13 @@ const SiloConfigs = {
         address: '0x77cbCB96fFFe44d344c54A5868C49ad1C5AaAC6A',
         fromBlock: 64052773,
       }
+    ],
+    blacklistedVaults: [
+      '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8',
+      '0x1f8e769b5b6010b2c2bbcd68629ea1a0a0eda7e3',
+      '0x6c09bfdc1df45d6c4ff78dc9f1c13af29eb335d4',
+      '0x3d7b0c3997e48fa3fc96cd057d1fb4e5f891835b',
+      '0x36e2aa296e798ca6262dc5fad5f5660e638d5402',
     ]
   }
 }

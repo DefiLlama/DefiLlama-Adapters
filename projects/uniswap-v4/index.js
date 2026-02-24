@@ -6,7 +6,7 @@ const { cachedGraphQuery } = require("../helper/cache");
 
 // from https://docs.uniswap.org/contracts/v4/deployments
 const config = {
-  ethereum: { factory: "0x000000000004444c5dc75cB358380D2e3dE08A90", fromBlock: 21688329, blacklistedTokens: ['0xb4357054c3da8d46ed642383f03139ac7f090343'] },
+  ethereum: { factory: "0x000000000004444c5dc75cB358380D2e3dE08A90", fromBlock: 21688329, blacklistedTokens: ['0xb4357054c3da8d46ed642383f03139ac7f090343', '0x2f42b7d686ca3effc69778b6ed8493a7787b4d6e'] },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675 },
   base: { factory: "0x498581ff718922c3f8e6a244956af099b2652b2b", fromBlock: 25350988 },
   arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872, blacklistedTokens: ['0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1', '0x3e4ffeb394b371aaaa0998488046ca19d870d9ba'] },

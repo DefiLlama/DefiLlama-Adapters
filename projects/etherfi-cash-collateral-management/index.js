@@ -1,74 +1,68 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { getEnv } = require('../helper/env');
 const { sliceIntoChunks, sleep } = require('../helper/utils');
+const { PromisePool } = require('@supercharge/promise-pool');
 
-const EtherFiCashFactory = '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF';
-const CashBorrowerHelperContract = '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B';
+const CONFIG = {
+  etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
+  cashBorrowerHelperContract: '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B',
+  cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+}
 
 const abi = {
+  numContractsDeployed: 'function numContractsDeployed() view returns (uint256)',
   getTotalCollateralForSafesWithIndex: 'function getTotalCollateralForSafesWithIndex(uint256 startIndex, uint256 n) view returns (tuple(address token, uint256 amount)[])',
+  totalBorrowingAmount: 'function totalBorrowingAmount(address borrowToken) view returns (uint256)',
 }
 
-async function tvl(api) {
-  const isCustomJob = getEnv('IS_RUN_FROM_CUSTOM_JOB')
-  if (!isCustomJob)
-    throw new Error("Find another solution, maybe a custom script that runs slow but pulls all the data, this is making like 200k calls which is running into rate limit")
+const SAFES_PER_CALL = 50
+const MULTICALL_SIZE = 3
+const CONCURRENCY = 80
 
-  //get last collateral mode vault
-  const lastCollateralModeVault = (await api.call({
-    target: EtherFiCashFactory,
-    abi: 'function numContractsDeployed() view returns (uint256)',
-  })) - 1;
+const tvl = async (api) => {
+  const { etherFiCashFactory, cashBorrowerHelperContract } = CONFIG
+  const numSafes = (await api.call({ abi: abi.numContractsDeployed, target: etherFiCashFactory })) - 1
 
-  const batch_size = 1;
-
-
-  const calls = [];
-  for (let i = 0; i < Number(lastCollateralModeVault); i += batch_size) {
-    const startIndex = i;
-    const endIndex = Math.min(i + batch_size, lastCollateralModeVault);
-    const n = endIndex - startIndex;
-
-    calls.push({
-      target: CashBorrowerHelperContract,
-      params: [startIndex, n],
-    });
+  const calls = []
+  for (let i = 0; i < numSafes; i += SAFES_PER_CALL) {
+    calls.push({ target: cashBorrowerHelperContract, params: [i, Math.min(SAFES_PER_CALL, numSafes - i)] })
   }
 
-  const chunks = sliceIntoChunks(calls, 101);
-  let i = 0
+  const chunks = sliceIntoChunks(calls, MULTICALL_SIZE)
+  let processed = 0
   let failures = 0
-  for (const chunk of chunks) {
-    const res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk, permitFailure: true })
-    res.forEach(batchResult => {
-      if (!batchResult) {
-        failures++
-        if (failures > 51) throw new Error("Too many failures, aborting")
-        return;
-      }
 
-      batchResult.forEach(({ token, amount }) => api.add(token, amount))
+  await PromisePool.withConcurrency(CONCURRENCY)
+    .for(chunks)
+    .process(async (chunk) => {
+      let res
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          res = await api.multiCall({ abi: abi.getTotalCollateralForSafesWithIndex, calls: chunk, permitFailure: true })
+          break
+        } catch (e) {
+          if (attempt === 2) throw e
+          await sleep(1000 * (attempt + 1))
+        }
+      }
+      res.forEach(batchResult => {
+        if (!batchResult) {
+          if (++failures >= 20) throw new Error(`Too many sub-call failures (${failures}), aborting to avoid serving incomplete data`)
+          return
+        }
+        batchResult.forEach(({ token, amount }) => api.add(token, amount))
+      })
+      processed += chunk.length * SAFES_PER_CALL
+      // api.log(`Processed ${Math.min(processed, numSafes)}/${numSafes} safes (${failures} sub-call failures, ~${failures * SAFES_PER_CALL} safes skipped)`)
     })
-    api.log(`Processed chunk ${++i}/${chunks.length}`)
-    await sleep(3000)
-  }
 }
 
-async function borrow(api) {
-  const cashDebitCore = '0x0078C5a459132e279056B2371fE8A8eC973A9553'
+async function borrowed(api) {
   const usdcScroll = ADDRESSES.scroll.USDC
-  const borrowingAmount = await api.call({
-    target: cashDebitCore,
-    abi: 'function totalBorrowingAmount(address borrowToken) view returns (uint256)',
-    params: [usdcScroll],
-  });
-  api.add(usdcScroll, borrowingAmount);
+  const borrowingAmount = await api.call({ target: CONFIG.cashDebitCore, abi: abi.totalBorrowingAmount, params: [usdcScroll] })
+  api.add(usdcScroll, borrowingAmount)
 }
 
 module.exports = {
   isHeavyProtocol: true,
-  scroll: {
-    tvl,
-    borrowed: borrow,
-  },
-};
+  scroll: { tvl, borrowed },
+}
