@@ -2562,17 +2562,22 @@ const uniV2Configs = {
     polygon: { factory: '0x7cFB780010e9C861e03bCbC7AC12E013137D47A5', staking: ["0xa2B417088D63400d211A4D5EB3C4C5363f834764", "0x22a31bD4cB694433B6de19e0aCC2899E553e9481"] },
   },
   'mochiswap': {
+    hallmarks: [
+      [["2022-06-23","Horizon bridge Hack $100m"]],
+    ],
     bsc: { factory: '0xCBac17919f7aad11E623Af4FeA98B10B84802eAc', staking: ["0x464F1A30e5A5b5b2D3c5f4F0e823e01EeFE304df", "0x2d0e75b683e8b56243b429b24f2b08bcc1ffd8da"] },
-    harmony: { factory: '0x3bEF610a4A6736Fd00EBf9A73DA5535B413d82F6', staking: ["0xd0cb3e55449646c9735d53e83eea5eb7e97a52dc", "0x691f37653f2fbed9063febb1a7f54bc5c40bed8c"], hallmarks: [['2022-06-23', 'Horizon bridge Hack $100m']] },
+    harmony: { factory: '0x3bEF610a4A6736Fd00EBf9A73DA5535B413d82F6', staking: ["0xd0cb3e55449646c9735d53e83eea5eb7e97a52dc", "0x691f37653f2fbed9063febb1a7f54bc5c40bed8c"],},
   },
   'moonbase': {
-    methodology: 'Uses factory(0x44B678F32a2f6aBB72eeFA2df58f12D17c3eD403) address and whitelisted tokens address to find and price Liquidity Pool pairs',
+    base: '0xe396465A85deDB00FA8774162B106833dE51Ea41',
+  },
+  'moonbase-app': {
     arbitrum: '0x44B678F32a2f6aBB72eeFA2df58f12D17c3eD403',
-    base: { factory: '0xe396465A85deDB00FA8774162B106833dE51Ea41', useDefaultCoreAssets: false },
   },
   'moonchainswap': {
     mxczkevm: '0x8bC7cf83f5F83781Ec85B78d866222987Ae24657',
   },
+  'yuzuswap': { oasis: '0x5F50fDC22697591c1D7BfBE8021163Fc73513653' },
   'moraswap': {
     _options: { queryBatched: 10, waitBetweenCalls: 1000 },
     neon_evm: { factory: '0xd43F135f6667174f695ecB7DD2B5f953d161e4d1', staking: ["0xa3da566fdE97c90c08052f612BdBed8F3B8004B7", "0x2043191e10a2A4b4601F5123D6C94E000b5d915F", "0xe6faaf048b2A9b9Bf906aBdD8623811458d81Cf3"] },

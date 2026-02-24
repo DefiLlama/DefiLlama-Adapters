@@ -3,5 +3,5 @@ module.exports = [
   "bc1qhjfnumgcsqsx6grxa7mfl7rr5g3u8xl4gtt7tr",
   "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37",
   "3D7pZri6kLqXDQMbf5G8De39K36eBaNKBG",
-  "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5
+  "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5",
 ]

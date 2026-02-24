@@ -4,7 +4,7 @@ const { pool2: pool2Fn } = require('../projects/helper/pool2')
 const { staking: stakingUnknownFn } = require('../projects/helper/unknownTokens')
 
 const topLevelKeys = new Set(whitelistedExportKeys)
-const chainExportKeys = new Set(['tvl', 'staking', 'pool2', 'borrowed', 'vesting', 'hallmarks'])
+const chainExportKeys = new Set(['tvl', 'staking', 'pool2', 'borrowed', 'vesting', ])
 
 // Array params: staking: [owner, token] → stakingFn(owner, token)
 const convertors = {

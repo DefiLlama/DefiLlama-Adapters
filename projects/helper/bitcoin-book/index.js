@@ -1,125 +1,127 @@
-const ainn = require('./ainn-layer2.js')
-const allo = require('./allo.js')
-const avalanche = require('./avalanche-btc.js')
-const fetchers = require('./fetchers.js')
-const bevm = require('./bevm.js')
-const binance = require('./binance.js')
-const binance2 = require('./binance-btc.js')
-const bitstable = require('./bitstable-finance.js')
-const boringdao = require('./boringdao.js')
-const bsquaredBTC = require('./bsquaredBTC.js')
-const bsquaredBRC20 = require('./bsquaredBRC20.js')
-const elSalvador = require('./elSalvador.js')
-const garden = require('./garden.js')
-const hopeMoney = require('./hope-money.js')
-const krakenBTC = require('./kraken-btc.js')
-const lorenzo = require('./lorenzo.js')
-const lorenzo2 = require('./lorenzo-enzoBTC.js')
-const merlin = require('./merlin.js')
-const multibit = require('./multibit.js')
-const obelisk = require('./obelisk.js')
-const roup = require('./roup.js')
-const tronBTC = require('./tron-btc.js')
-const wbtc = require('./wbtc.js')
-const xlink = require('./xlink.js')
-const xlinkLST = require('./xlinkLST.js')
-const xrgb = require('./xrgb.js')
-const imbtc = require('./imbtc.js')
-const twentyOneCo = require('./21Co.js')
-const avalonCedefi = require('./avalon-cedefi.js')
-const pstakeBTC = require('./pstake-btc.js')
-const biconomy = require('./biconomy-cex.js')
-const bigone = require('./bigone.js')
-const bingCex = require('./bing-cex.js')
-const bitfinex = require('./bitfinex.js')
-const bitget = require('./bitget.js')
-const bitmake = require('./bitmake.js')
-const bitmark = require('./bitmark.js')
-const bitmex = require('./bitmex.js')
-const bitunixCex = require('./bitunix-cex.js')
-const bitvenus = require('./bitvenus.js')
-const blofinCex = require('./blofin-cex.js')
-const btse = require('./btse.js')
-const bybit = require('./bybit.js')
-const cakeDefi = require('./cake-defi.js')
-const coindcx = require('./coindcx.js')
-const coinex = require('./coinex.js')
-const coinsquare = require('./coinsquare.js')
-const coinw = require('./coinw.js')
-const cryptoCom = require('./crypto-com.js')
-const deribit = require('./deribit.js')
-const fbiDprk = require('./fbi-dprk.js')
-const mtGoxEntities = require('./mt-gox-entities.js')
-const silkroadFBIEntities = require('./silkroad-fbifunds-entities.js')
-const fastex = require('./fastex.js')
-const fire = require('./fire.js')
-const flipster = require('./flipster.js')
-const gateIo = require('./gate-io.js')
-const hashkey = require('./hashkey.js')
-const hashkeyExchange = require('./hashkey-exchange.js')
-const hibt = require('./hibt.js')
-const hotbit = require('./hotbit.js')
-const huobi = require('./huobi.js')
-const kleverExchange = require('./klever-exchange.js')
-const korbit = require('./korbit.js')
-const kraken = require('./kraken.js')
-const kucoin = require('./kucoin.js')
-const latoken = require('./latoken.js')
-const maskex = require('./maskex.js')
-const mento = require('./mento.js')
-const mexcCex = require('./mexc-cex.js')
-const mtGox = require('./mt-gox.js')
-const nbx = require('./nbx.js')
-const nonkyc = require('./nonkyc.js')
-const okcoin = require('./okcoin.js')
-const okex = require('./okex.js')
-const phemex = require('./phemex.js')
-const pionexCex = require('./pionex-cex.js')
-const probit = require('./probit.js')
-const robinhood = require('./robinhood.js')
-const rosenBridge = require('./rosen-bridge.js')
-const rskBridge = require('./rsk-bridge.js')
-const silkroad = require('./silkroad.js')
-const swissborg = require('./swissborg.js')
-const toobit = require('./toobit.js')
-const indiaCovid = require('./india-covid.js')
-const wooCEX = require('./woo-cex.js')
-const bitlayerBridge = require('./bitlayer-bridge.js')
-const arkhamExchange = require('./arkham-exchange.js')
-const chakra = require('./chakra.js')
-const nerveNetworkBridge = require('./nervenetworkbridge.js')
-const nexusbtc = require('./nexusbtc')
-const tapbit = require('./tapbit-cex.js')
-const jbtc = require('./jbtc')
-const bitkub = require('./bitkub-cex.js')
-const coin8 = require('./coin8.js')
-const bitrue = require('./bitrue-cex.js')
-const cygnus = require('./cygnus.js')
-const unitbtc = require('./unit-btc.js')
-const backpack = require('./backpack.js')
-const coinbasebtc = require('./coinbase-btc.js')
-const coinbaseltc = require('./coinbase-ltc.js')
-const prosper = require('./prosper.js')
-const hotcoin = require('./hotcoin.js')
-const orangex = require('./orangex.js')
-const exmo = require('./exmo.js')
-const esbtc = require('./esbtc.js')
-const bimaCdp = require('./bima-cdp.js')
-const tzbtc = require('./tezos-btc.js')
-const tothemoon = require('./tothemoon.js')
-const indodax = require('./indodax.js')
-const river = require('./river.js')
-const echoMBTC = require('./echo-mBTC.js')
-const xbtc = require('./okx-xbtc.js')
-const leadbtc = require('./leadbtc.js')
-const bitgetBtc = require('./bitget-bgBTC.js')
-const magicEden = require('./magic-eden.js')
-const gateBtc = require('./gate-btc.js')
-const sodex = require('./sodex.js')
-const weex = require('./weex.js')
-const bydfi = require('./bydfi.js')
-const bytedex = require('./bytedex.js')
+const imports = [
+  ["ainn", './ainn-layer2.js'],
+  ["allo", './allo.js'],
+  ["avalanche", './avalanche-btc.js'],
+  ["bevm", './bevm.js'],
+  ["binance", './binance.js'],
+  ["binance2", './binance-btc.js'],
+  ["bitstable", './bitstable-finance.js'],
+  ["boringdao", './boringdao.js'],
+  ["bsquaredBTC", './bsquaredBTC.js'],
+  ["bsquaredBRC20", './bsquaredBRC20.js'],
+  ["elSalvador", './elSalvador.js'],
+  ["garden", './garden.js'],
+  ["hopeMoney", './hope-money.js'],
+  ["krakenBTC", './kraken-btc.js'],
+  ["lorenzo", './lorenzo.js'],
+  ["lorenzo2", './lorenzo-enzoBTC.js'],
+  ["merlin", './merlin.js'],
+  ["multibit", './multibit.js'],
+  ["obelisk", './obelisk.js'],
+  ["roup", './roup.js'],
+  ["tronBTC", './tron-btc.js'],
+  ["wbtc", './wbtc.js'],
+  ["xlink", './xlink.js'],
+  ["xlinkLST", './xlinkLST.js'],
+  ["xrgb", './xrgb.js'],
+  ["imbtc", './imbtc.js'],
+  ["twentyOneCo", './21Co.js'],
+  ["avalonCedefi", './avalon-cedefi.js'],
+  ["pstakeBTC", './pstake-btc.js'],
+  ["biconomy", './biconomy-cex.js'],
+  ["bigone", './bigone.js'],
+  ["bingCex", './bing-cex.js'],
+  ["bitfinex", './bitfinex.js'],
+  ["bitget", './bitget.js'],
+  ["bitmake", './bitmake.js'],
+  ["bitmark", './bitmark.js'],
+  ["bitmex", './bitmex.js'],
+  ["bitunixCex", './bitunix-cex.js'],
+  ["bitvenus", './bitvenus.js'],
+  ["blofinCex", './blofin-cex.js'],
+  ["btse", './btse.js'],
+  ["bybit", './bybit.js'],
+  ["cakeDefi", './cake-defi.js'],
+  ["coindcx", './coindcx.js'],
+  ["coinex", './coinex.js'],
+  ["coinsquare", './coinsquare.js'],
+  ["coinw", './coinw.js'],
+  ["cryptoCom", './crypto-com.js'],
+  ["deribit", './deribit.js'],
+  ["fbiDprk", './fbi-dprk.js'],
+  ["mtGoxEntities", './mt-gox-entities.js'],
+  ["silkroadFBIEntities", './silkroad-fbifunds-entities.js'],
+  ["fastex", './fastex.js'],
+  ["fire", './fire.js'],
+  ["flipster", './flipster.js'],
+  ["gateIo", './gate-io.js'],
+  ["hashkey", './hashkey.js'],
+  ["hashkeyExchange", './hashkey-exchange.js'],
+  ["hibt", './hibt.js'],
+  ["hotbit", './hotbit.js'],
+  ["huobi", './huobi.js'],
+  ["kleverExchange", './klever-exchange.js'],
+  ["korbit", './korbit.js'],
+  ["kraken", './kraken.js'],
+  ["kucoin", './kucoin.js'],
+  ["latoken", './latoken.js'],
+  ["maskex", './maskex.js'],
+  ["mento", './mento.js'],
+  ["mexcCex", './mexc-cex.js'],
+  ["mtGox", './mt-gox.js'],
+  ["nbx", './nbx.js'],
+  ["nonkyc", './nonkyc.js'],
+  ["okcoin", './okcoin.js'],
+  ["okex", './okex.js'],
+  ["phemex", './phemex.js'],
+  ["pionexCex", './pionex-cex.js'],
+  ["probit", './probit.js'],
+  ["robinhood", './robinhood.js'],
+  ["rosenBridge", './rosen-bridge.js'],
+  ["rskBridge", './rsk-bridge.js'],
+  ["silkroad", './silkroad.js'],
+  ["swissborg", './swissborg.js'],
+  ["toobit", './toobit.js'],
+  ["indiaCovid", './india-covid.js'],
+  ["wooCEX", './woo-cex.js'],
+  ["bitlayerBridge", './bitlayer-bridge.js'],
+  ["arkhamExchange", './arkham-exchange.js'],
+  ["chakra", './chakra.js'],
+  ["nerveNetworkBridge", './nervenetworkbridge.js'],
+  ["nexusbtc", './nexusbtc'],
+  ["tapbit", './tapbit-cex.js'],
+  ["jbtc", './jbtc'],
+  ["bitkub", './bitkub-cex.js'],
+  ["coin8", './coin8.js'],
+  ["bitrue", './bitrue-cex.js'],
+  ["cygnus", './cygnus.js'],
+  ["unitbtc", './unit-btc.js'],
+  ["backpack", './backpack.js'],
+  ["coinbasebtc", './coinbase-btc.js'],
+  ["coinbaseltc", './coinbase-ltc.js'],
+  ["prosper", './prosper.js'],
+  ["hotcoin", './hotcoin.js'],
+  ["orangex", './orangex.js'],
+  ["exmo", './exmo.js'],
+  ["esbtc", './esbtc.js'],
+  ["bimaCdp", './bima-cdp.js'],
+  ["tzbtc", './tezos-btc.js'],
+  ["tothemoon", './tothemoon.js'],
+  ["indodax", './indodax.js'],
+  ["river", './river.js'],
+  ["echoMBTC", './echo-mBTC.js'],
+  ["xbtc", './okx-xbtc.js'],
+  ["leadbtc", './leadbtc.js'],
+  ["bitgetBtc", './bitget-bgBTC.js'],
+  ["magicEden", './magic-eden.js'],
+  ["gateBtc", './gate-btc.js'],
+  ["sodex", './sodex.js'],
+  ["weex", './weex.js'],
+  ["bydfi", './bydfi.js'],
+  ["bytedex", './bytedex.js'],
+]
 const { sumTokensExport } = require('../sumTokens.js')
+const fetchers = require('./fetchers.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 
@@ -153,7 +155,7 @@ function getBTCExport(key) {
 
   if (Array.isArray(value))
     return sumTokensExport({ owners: value })
-  
+
   if (typeof value === 'function')
     return async (api) => {
       let owners = await value()
@@ -168,130 +170,18 @@ module.exports = {
   getBTCExport,
   symbiosis: ['bc1qtnv5uqa5qt2jwftsj6667kpp8uvgt63p5k5hsn25wm6kjxzmxqnsyu79vc'],
   hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf', 'bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj'],
-  cygnus,
-  magpie,
-  stacksSBTC,
-  bitomato,
-  bitlayerBridge,
-  ssiProtocol,
-  ainn,
-  allo,
-  avalanche,
-  bevm,
-  bimaCdp,
-  binance,
-  binance2,
-  bitstable,
-  boringdao,
-  bsquaredBTC,
-  bsquaredBRC20,
-  elSalvador,
-  garden,
-  hopeMoney,
-  krakenBTC,
-  lorenzo,
-  lorenzo2,
-  merlin,
-  multibit,
-  obelisk,
-  roup,
-  tronBTC,
-  wbtc,
-  xlink,
-  xlinkLST,
-  xrgb,
-  imbtc,
-  twentyOneCo,
-  avalonCedefi,
-  pstakeBTC,
-  biconomy,
-  bigone,
-  bingCex,
-  bitfinex,
-  bitget,
-  bitgetBtc,
-  bitmake,
-  bitmark,
-  bitmex,
-  bitunixCex,
-  bitvenus,
-  blofinCex,
-  btse,
-  bybit,
-  cakeDefi,
-  coindcx,
-  coinex,
-  coinsquare,
-  coinw,
-  cryptoCom,
-  deribit,
-  fbiDprk,
-  mtGoxEntities,
-  silkroadFBIEntities,
-  fastex,
-  fire,
-  flipster,
-  gateIo,
-  hashkey,
-  hashkeyExchange,
-  hibt,
-  hotbit,
-  huobi,
-  kleverExchange,
-  korbit,
-  kraken,
-  kucoin,
-  latoken,
-  maskex,
-  mento,
-  mexcCex,
-  mtGox,
-  nbx,
-  nonkyc,
-  okcoin,
-  okex,
-  phemex,
-  pionexCex,
-  probit,
-  robinhood,
-  rosenBridge,
-  rskBridge,
-  silkroad,
-  swissborg,
-  toobit,
-  indiaCovid,
-  wooCEX,
   p2pb2b,
-  arkhamExchange,
-  chakra,
-  nerveNetworkBridge,
-  nexusbtc,
-  tapbit,
-  jbtc,
-  bitkub,
-  coin8,
-  bitrue,
-  unitbtc,
-  backpack,
-  coinbasebtc,
-  coinbaseltc,
-  prosper,
+  bitomato,
   lbank,
-  hotcoin,
-  orangex,
-  exmo,
-  esbtc,
-  tzbtc,
-  tothemoon,
-  indodax,
-  river,
-  echoMBTC,
-  xbtc,
-  leadbtc,
-  magicEden,
-  gateBtc,
-  sodex,
-  weex,
-  bydfi,
-  bytedex
+  stacksSBTC,
+  magpie,
+  ssiProtocol,
 }
+
+imports.forEach(([key, file]) => {
+  try {
+    module.exports[key] = require(file)
+  } catch (e) {
+    console.error(`Error importing ${key} from ${file}:`, e)
+  }
+})
