@@ -160,6 +160,7 @@ async function getSiloVaults(api, owners) {
     })
     for (let i = 0; i < siloVaultsOwners.length; i++) {
       if (isOwner(siloVaultsOwners[i], owners)) {
+        if(SiloConfigs[api.chain]?.blacklistedVaults?.includes(siloVaults[i].toLowerCase())) continue // skip blacklisted vaults
         allVaults.push(siloVaults[i])
       }
     }
@@ -296,35 +297,51 @@ async function getCuratorTvlErc4626(api, vaults) {
     }
   }
 
-  // Process Morpho pairs with de-duplication
+  // Group morpho pairs by their V1 vault to avoid counting V1 totalAssets multiple times
+  const v1Groups = new Map() // v1 address -> { v1, v2Vaults: [] }
   for (const { v1, v2 } of morphoPairs) {
-    let v2DepositsInV1 = 0n
+    const key = v1.vault.toLowerCase()
+    if (!v1Groups.has(key)) {
+      v1Groups.set(key, { v1, v2Vaults: [] })
+    }
+    v1Groups.get(key).v2Vaults.push(v2)
+  }
 
-    if (v2.liquidityAdapter) {
-      // Get v2's deposits in v1 using the adapter address
-      const v2AdapterSharesInV1 = await api.call({
-        abi: ABI.ERC4626.balanceOf,
-        target: v1.vault,
-        params: [v2.liquidityAdapter],
-        permitFailure: true,
-      })
+  // Process each unique V1 vault once, summing all V2 contributions
+  for (const { v1, v2Vaults: v2List } of v1Groups.values()) {
+    let totalV2Assets = 0n
+    let totalV2DepositsInV1 = 0n
 
-      if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
-        // Convert v1 shares held by v2 adapter to underlying assets
-        const v2AssetsInV1 = await api.call({
-          abi: ABI.ERC4626.convertToAssets,
+    for (const v2 of v2List) {
+      totalV2Assets += v2.totalAssets
+
+      if (v2.liquidityAdapter) {
+        // Get v2's deposits in v1 using the adapter address
+        const v2AdapterSharesInV1 = await api.call({
+          abi: ABI.ERC4626.balanceOf,
           target: v1.vault,
-          params: [v2AdapterSharesInV1],
+          params: [v2.liquidityAdapter],
           permitFailure: true,
         })
-        if (v2AssetsInV1) {
-          v2DepositsInV1 = BigInt(v2AssetsInV1)
+
+        if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
+          // Convert v1 shares held by v2 adapter to underlying assets
+          const v2AssetsInV1 = await api.call({
+            abi: ABI.ERC4626.convertToAssets,
+            target: v1.vault,
+            params: [v2AdapterSharesInV1],
+            permitFailure: true,
+          })
+          if (v2AssetsInV1) {
+            totalV2DepositsInV1 += BigInt(v2AssetsInV1)
+          }
         }
       }
     }
 
-    // Unique TVL = V1 + V2 - v2_deposits_in_v1
-    const uniqueTvl = v1.totalAssets + v2.totalAssets - v2DepositsInV1
+    // Unique TVL = V1 + sum(V2) - sum(v2_deposits_in_v1)
+    // Count V1 totalAssets only ONCE regardless of how many V2 vaults wrap it
+    const uniqueTvl = v1.totalAssets + totalV2Assets - totalV2DepositsInV1
     api.add(v1.asset, uniqueTvl)
   }
 }
@@ -351,6 +368,19 @@ async function getCuratorTvlVesuVault(api, vaults) {
   assetStates.forEach((res, index) => {
     const { reserve } = res['0']
     api.add(poolAssets[index].asset, reserve);
+  });
+}
+
+async function getCuratorTvlVesuVaultV2(api, vaults) {
+  const poolAssets = vaults.map((pool_id) => VesuConfigs.assetsV2.map((asset) => ({ pool_id, asset }))).flat();
+  const calls = poolAssets.map(({ pool_id, asset }) => ({ target: VesuConfigs.poolFactory, params: [pool_id, asset] }));
+  const vTokensBigInts = await multiCall({ calls, abi: VesuConfigs.abiV2.v_token_for_asset, allAbi: VesuConfigs.allAbiV2 });
+  const vTokens = vTokensBigInts.filter(v => v > 0n).map(v => `0x${v.toString(16)}`);
+  const assetsBigInts = await multiCall({ calls: vTokens, abi: VesuConfigs.abiV2.asset, allAbi: VesuConfigs.allAbiV2 });
+  const assets = assetsBigInts.map(a => `0x${a.toString(16)}`);
+  const balances = await multiCall({ calls: vTokens, abi: VesuConfigs.abiV2.total_assets, allAbi: VesuConfigs.allAbiV2 });
+  assets.forEach((asset, index) => {
+    api.add(asset, balances[index] ? balances[index] : 0);
   });
 }
 
@@ -467,6 +497,11 @@ async function getCuratorTvl(api, vaults) {
   // vesu.xyz vaults
   if (vaults.vesu) {
     await getCuratorTvlVesuVault(api, vaults.vesu)
+  }
+
+  // vesu.xyz vaults V2
+  if (vaults.vesuV2) {
+    await getCuratorTvlVesuVaultV2(api, vaults.vesuV2)
   }
 
   // turtle.club vaults - boring vaults

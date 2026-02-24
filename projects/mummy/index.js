@@ -49,6 +49,6 @@ let tvlExports = mergeExports([
   },
 }]);
 tvlExports.hallmarks = [
-  [1675242000, "sifu 2M deposit"]
+  ['2023-02-01', "sifu 2M deposit"]
 ];
 module.exports = tvlExports;

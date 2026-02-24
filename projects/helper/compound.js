@@ -25,8 +25,11 @@ async function getMarkets(comptroller, api, cether, cetheEquivalent = nullAddres
   return markets;
 }
 
-function _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, borrowed = false, { blacklistedTokens = [], abis = {}, blacklistedMarkets = [], } = {}) {
+function _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, borrowed = false, { blacklistedTokens = [], abis = {}, blacklistedMarkets = [], isInsolvent = false } = {}) {
   abis = { ...abi, ...abis }
+
+  if (borrowed && isInsolvent) return async () => ({})
+
   return async (api) => {
     let markets = await getMarkets(comptroller, api, cether, cetheEquivalent, blacklistedTokens, abis, { blacklistedMarkets })
     const cTokens = markets.map(market => market.cToken)
@@ -43,15 +46,15 @@ function _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, borrowed = fals
   }
 }
 
-function compoundExports(comptroller, cether, cetheEquivalent = nullAddress, { blacklistedTokens = [], abis = {}, blacklistedMarkets = [], } = {}) {
+function compoundExports(comptroller, cether, cetheEquivalent = nullAddress, { blacklistedTokens = [], abis = {}, blacklistedMarkets = [], isInsolvent = false } = {}) {
   return {
-    tvl: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, false, { blacklistedTokens, abis, blacklistedMarkets }),
-    borrowed: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, true, { blacklistedTokens, abis, blacklistedMarkets })
+    tvl: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, false, { blacklistedTokens, abis, blacklistedMarkets, }),
+    borrowed: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, true, { blacklistedTokens, abis, blacklistedMarkets, isInsolvent })
   }
 }
 
-function compoundExports2({ comptroller, cether, cetheEquivalent = nullAddress, blacklistedTokens = [], abis = {}, blacklistedMarkets = [], }) {
-  return compoundExports(comptroller, cether, cetheEquivalent, { blacklistedTokens, abis, blacklistedMarkets })
+function compoundExports2({ comptroller, cether, cetheEquivalent = nullAddress, blacklistedTokens = [], abis = {}, blacklistedMarkets = [], isInsolvent = false }) {
+  return compoundExports(comptroller, cether, cetheEquivalent, { blacklistedTokens, abis, blacklistedMarkets, isInsolvent })
 }
 
 module.exports = {
