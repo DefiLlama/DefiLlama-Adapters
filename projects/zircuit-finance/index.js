@@ -45,3 +45,4 @@ Object.keys(config).forEach(chain => {
 })
 
 module.exports.doublecounted = true
+module.exports.misrepresentedTokens = true // zUSDC/zUSDT mapped to USDC/USDT
