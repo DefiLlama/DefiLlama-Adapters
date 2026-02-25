@@ -40,6 +40,7 @@ module.exports = {
       },
       {
         'hydradx': '/hydradx/api.js',
+        'zest-v2': '/zest-v2/api.js',
       },
       {
         'manta-atlantic-stake': '/manta-atlantic-stake/api',
