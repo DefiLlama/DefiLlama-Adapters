@@ -15,6 +15,7 @@ const endpointMap = {
   soon_base: () => getEnv('SOON_BASE_RPC'),
   soon_bsc: () => getEnv('SOON_BSC_RPC'),
   fogo: () => getEnv('FOGO_RPC'),
+  pyra: () => getEnv('PYRA_RPC'),
 }
 const svmChains = Object.keys(endpointMap)
 
