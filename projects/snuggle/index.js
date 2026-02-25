@@ -102,19 +102,19 @@ async function resolveVaultPositions(api, vault, viewHelper, adapterDex, chainCo
   if (uniIds.length)
     await sumTokens2({ api, uniV3ExtraConfig: { positionIds: uniIds } })
   if (groups.aerodrome.length)
-    await unwrapSlipstreamNFT({ api, positionIds: groups.aerodrome.map(p => p.tokenId), nftAddress: AERO_NFT })
+    await unwrapSlipstreamNFT({ api, positionIds: groups.aerodrome.map(p => p.tokenId), nftAddress: chainConfig.aeroNft })
   const pcsIds = groups.pancakeswap.map(p => p.tokenId)
   if (pcsIds.length)
     await sumTokens2({ api, uniV3ExtraConfig: { positionIds: pcsIds, nftAddress: chainConfig.pcsNft } })
   const sushiIds = groups.sushiswap.map(p => p.tokenId)
   if (sushiIds.length)
-    await sumTokens2({ api, uniV3ExtraConfig: { positionIds: sushiIds, nftAddress: SUSHI_NFT_ARB } })
+    await sumTokens2({ api, uniV3ExtraConfig: { positionIds: sushiIds, nftAddress: chainConfig.sushiNft } })
 
   // Camelot V3 (Algebra V1.9): manual resolution — different ABI (11 fields, no fee) and globalState() instead of slot0()
   if (groups.camelot.length) {
     const camelotTokenIds = groups.camelot.map(p => p.tokenId)
     const nftData = await api.multiCall({
-      target: CAMELOT_NFT_ARB,
+      target: chainConfig.camelotNft,
       abi: algebraPositionAbi,
       calls: camelotTokenIds,
     })
@@ -150,7 +150,7 @@ async function baseTvl(api) {
   await sumTokens2({ api, owners: [VAULT_V1], resolveUniV3: true })
 
   // V2 vaults: enumerate positions from each vault (isolated so one failure doesn't discard the other)
-  const chainConfig = { pcsNft: PCS_NFT_BASE }
+  const chainConfig = { pcsNft: PCS_NFT_BASE, aeroNft: AERO_NFT }
   const results = await Promise.allSettled(BASE_VAULTS.map(({ vault, viewHelper }) => resolveVaultPositions(api, vault, viewHelper, BASE_ADAPTER_DEX, chainConfig)))
   results.forEach((r, i) => {
     if (r.status === 'rejected') console.warn(`[snuggle] vault ${BASE_VAULTS[i].vault} failed:`, r.reason?.message ?? r.reason)
@@ -158,7 +158,7 @@ async function baseTvl(api) {
 }
 
 async function arbitrumTvl(api) {
-  const chainConfig = { pcsNft: PCS_NFT_ARB }
+  const chainConfig = { pcsNft: PCS_NFT_ARB, sushiNft: SUSHI_NFT_ARB, camelotNft: CAMELOT_NFT_ARB }
   const results = await Promise.allSettled(ARB_VAULTS.map(({ vault, viewHelper }) => resolveVaultPositions(api, vault, viewHelper, ARB_ADAPTER_DEX, chainConfig)))
   results.forEach((r, i) => {
     if (r.status === 'rejected') console.warn(`[snuggle] vault ${ARB_VAULTS[i].vault} failed:`, r.reason?.message ?? r.reason)
