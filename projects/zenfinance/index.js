@@ -6,6 +6,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   methodology: "TVL counts external tokens held in contracts.",
+  hallmarks: [['2026-02-03', 'ZenFinance announces closure']],
   cronos: {
     tvl: sumTokensExport({ 
       owners: [
