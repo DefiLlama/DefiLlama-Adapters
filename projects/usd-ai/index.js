@@ -1,0 +1,23 @@
+// USDai token addresses per chain
+const USDai = {
+  arbitrum: "0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
+  plasma: "0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF",
+};
+
+module.exports = {
+  misrepresentedTokens: true,
+  methodology:
+    "TVL is the total supply of USDai across all chains. USDai is a yield-bearing stablecoin backed by real-world GPU compute infrastructure financing. sUSDai (the staked version) is backed 1:1 by USDai locked in the staking contract, so it is included in the USDai total supply.",
+};
+
+const tvl = async (api) => {
+  const supply = await api.call({
+    target: USDai[api.chain],
+    abi: "erc20:totalSupply",
+  });
+  api.add(USDai[api.chain], supply);
+};
+
+Object.keys(USDai).forEach((chain) => {
+  module.exports[chain] = { tvl };
+});
