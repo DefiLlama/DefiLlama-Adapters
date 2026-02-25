@@ -11,11 +11,14 @@ module.exports = {
 };
 
 const tvl = async (api) => {
+  const token = USDai[api.chain];
+  if (!token) throw new Error(`Unsupported chain in projects/usd-ai: ${api.chain}`);
+
   const supply = await api.call({
-    target: USDai[api.chain],
+    target: token,
     abi: "erc20:totalSupply",
   });
-  api.add(USDai[api.chain], supply);
+  api.add(token, supply);
 };
 
 Object.keys(USDai).forEach((chain) => {
