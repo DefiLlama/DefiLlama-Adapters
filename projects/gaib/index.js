@@ -35,6 +35,6 @@ module.exports = {
   base: { tvl },
   bsc: { tvl },
   hallmarks: [
-    [1730419200, "AID & sAID mainnet launch"],
+    ["2024-11-01", "AID & sAID mainnet launch"],
   ],
 };
