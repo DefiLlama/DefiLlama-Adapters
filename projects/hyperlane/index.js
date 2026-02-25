@@ -1,4 +1,3 @@
-const yaml = require('js-yaml')
 const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
@@ -22,11 +21,37 @@ const CHAIN_MAP = {
   swell: 'swellchain',
 }
 
+function parseRegistry(yamlStr) {
+  const registry = {}
+  let currentRoute = null
+  let currentToken = null
+
+  for (const line of yamlStr.split('\n')) {
+    if (!line.trim() || line.startsWith('#')) continue
+    const indent = line.search(/\S/)
+
+    if (indent === 0 && line.endsWith(':')) {
+      currentRoute = { tokens: [] }
+      registry[line.slice(0, -1)] = currentRoute
+      currentToken = null
+    } else if (indent === 4 && line.trimStart().startsWith('- ')) {
+      currentToken = {}
+      if (currentRoute) currentRoute.tokens.push(currentToken)
+      const m = line.match(/- (\w+):\s*(.+)/)
+      if (m) currentToken[m[1]] = m[2].trim().replace(/^"|"$/g, '')
+    } else if (indent === 6 && currentToken) {
+      const m = line.match(/(\w+):\s*(\S.*)/)
+      if (m) currentToken[m[1]] = m[2].trim().replace(/^"|"$/g, '')
+    }
+  }
+  return registry
+}
+
 let _registry
 async function fetchRegistry() {
   if (!_registry) {
     const data = await getConfig('hyperlane/warp-routes', REGISTRY_URL)
-    _registry = yaml.load(data)
+    _registry = parseRegistry(data)
   }
   return _registry
 }
