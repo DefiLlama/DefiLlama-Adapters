@@ -41,7 +41,7 @@ async function getAllPools() {
 }
 
 function getTokenKey(contract, symbol) {
-  return \`\${symbol}:\${contract}\`;
+  return `${symbol}:${contract}`;
 }
 
 async function tvl() {
