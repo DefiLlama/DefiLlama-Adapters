@@ -41,7 +41,7 @@ async function getAllPools() {
 }
 
 function getTokenKey(contract, symbol) {
-  return `${symbol}:${contract}`;
+  return \`\${symbol}:\${contract}\`;
 }
 
 async function tvl() {
@@ -49,6 +49,10 @@ async function tvl() {
     getAllPools(),
     getTokenPriceUsd("XPR", "eosio.token"),
   ]);
+
+  if (!xprPrice) {
+    return toUSDTBalances(0);
+  }
 
   let totalTvl = 0;
 
