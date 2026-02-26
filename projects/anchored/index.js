@@ -12,6 +12,7 @@ const deployments = {
 
 const STOCK_DECIMALS = 18
 const PRICE_DECIMALS = 8
+const PRICE_SCALE = 10n ** BigInt(PRICE_DECIMALS)
 const API_BASE_URL = 'https://rwa-api.anchored.finance/rwa/api/v1'
 const STOCK_LIST_ENDPOINT = '/market/stocks'
 const STOCK_MARKET_ENDPOINT = '/market/stock/info'
@@ -99,7 +100,9 @@ async function addStocksTvl(api) {
 
     const usdScaled = (rawSupply * stock.scaledPrice) / (10n ** BigInt(STOCK_DECIMALS))
     if (usdScaled <= 0n) return
-    api.addUSDValue(Number(usdScaled) / 10 ** PRICE_DECIMALS)
+    const usdIntegerPart = usdScaled / PRICE_SCALE
+    const usdFractionPart = usdScaled % PRICE_SCALE
+    api.addUSDValue(Number(usdIntegerPart) + Number(usdFractionPart) / 10 ** PRICE_DECIMALS)
   })
 }
 
@@ -115,7 +118,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'Counts USDC held in Anchored AncCashier on Monad, then adds stock TVL by summing on-chain stock token totalSupply multiplied by live stock prices from Anchored backend API. Excludes Monad and broker-side transient balances such as gateway and broker wallet.',
+    'Counts USDC held in Anchored AncCashier on Monad, then adds stock TVL by summing on-chain stock token totalSupply multiplied by live stock prices from Anchored backend API. Excludes broker-side transient balances such as gateway and broker wallet.',
   start: 1770704924,
   monad: { tvl },
 }
