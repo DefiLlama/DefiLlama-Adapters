@@ -1,6 +1,7 @@
 const { sumTokens2 } = require("../helper/chain/cardano");
 const { getConfig } = require("../helper/cache");
 const { get } = require("../helper/http");
+const { defaultClarityAddresses } = require("./dao-treasury-addresses");
 
 const ADDRESSES_API_URL =
   "https://api.clarity.vote/metrics/getDefiLlamaAddresses";
@@ -19,11 +20,10 @@ async function getTreasuryAddresses() {
   const response = await getConfig(CACHE_KEY, undefined, {
     fetcher: () => get(ADDRESSES_API_URL, { timeout: REQUEST_TIMEOUT_MS }),
   });
-  const addresses = extractAddresses(response).filter(Boolean);
-  if (!addresses.length)
-    throw new Error(
-      "Clarity address API returned no addresses in expected response shape"
-    );
+  let addresses = extractAddresses(response).filter(Boolean);
+  if (!addresses.length) {
+    addresses = defaultClarityAddresses;
+  }
   return addresses;
 }
 
