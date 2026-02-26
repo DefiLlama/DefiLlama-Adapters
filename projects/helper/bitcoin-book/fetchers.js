@@ -58,9 +58,12 @@ module.exports = {
 
     return getConfig('b14g/bit-addresses', undefined, {
       fetcher: async () => {
-        const btcTxHashLockApi = 'https://api.b14g.xyz/restake/marketplace/defillama/btc-tx-hash'
-        const { data: { result } } = await get(btcTxHashLockApi)
-        const hashes = result.map(r => r.txHash)
+        const btcInCorechainTxHashLockApi = 'https://api.b14g.xyz/restake/marketplace/defillama/btc-tx-hash'
+        const { data: { result } } = await get(btcInCorechainTxHashLockApi)
+        const btcInBabylonGenesisTxHashLockApi = 'https://api.b14g.xyz/babylon-costaking/order/defillama/btc-tx-hash'
+        const resultInBabylonGenesis = await get(btcInBabylonGenesisTxHashLockApi)
+
+        const hashes = result.map(r => r.txHash).concat(resultInBabylonGenesis.map(r => r.txHash))
         const hashMap = await getCache('b14g/hash-map', 'core',) ?? {}
         for (const hash of hashes) {
           if (hashMap[hash]) continue;
@@ -242,11 +245,35 @@ module.exports = {
     })
     return Array.from(new Set(staticAddresses))
   },
+  vishwa: async () => {
+    const staticAddresses = await getConfig('vishwa', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://api.btcvc.vishwanetwork.xyz/btc/address')
+        return data.data
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
+  yala: async () => {
+    const staticAddresses = await getConfig('yala/bitcoin', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://raw.githubusercontent.com/yalaorg/yala-defillama/refs/heads/main/config.json')
+        return data.bitcoin
+      }
+    })
+    return Array.from(new Set(staticAddresses))
+  },
+  teleswap: async () => {
+    const  { data: { lockers } } = await getConfig('yala/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
+    return lockers.filter(l => l.type === 'BTC').map(l => l.sourceAddress)
+  },
   zenrock: async () => {
     const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
     const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';
     const ZRCHAIN_KEY_BY_ID_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/key_by_id';
 
+    // Always use latest addresses since wallets are only added, never removed.
+    // The balance checker will use the historical timestamp to get correct balances.
     return getConfig('zenrock/addresses', undefined, {
       fetcher: async () => {
         async function getBitcoinAddresses() {
@@ -258,7 +285,7 @@ module.exports = {
             if (nextKey) {
               url += `?pagination.key=${encodeURIComponent(nextKey)}`;
             }
-            const { data } = await axios.get(url);
+            const data = await get(url);
             if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
               for (const walletGroup of data.zenbtc_wallets) {
                 if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
@@ -279,13 +306,13 @@ module.exports = {
           return btcAddresses;
         }
 
-        async function getChangeAddresses() {
+        async function getChangeAddresses(paramsData) {
+          if (!paramsData?.params?.changeAddressKeyIDs) {
+            return [];
+          }
           const changeAddresses = [];
-
-          const { data: paramsData } = await axios.get(ZENBTC_PARAMS_API);
-          const changeAddressKeyIDs = paramsData.params?.changeAddressKeyIDs || [];
-          for (const keyID of changeAddressKeyIDs) {
-            const { data: keyData } = await axios.get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+          for (const keyID of paramsData.params.changeAddressKeyIDs) {
+            const keyData = await get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
             if (keyData.wallets && Array.isArray(keyData.wallets)) {
               for (const wallet of keyData.wallets) {
                 if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
@@ -297,11 +324,25 @@ module.exports = {
           return changeAddresses;
         }
 
-        const [btcAddresses, changeAddresses] = await Promise.all([
+        async function getRewardsDepositAddress(paramsData) {
+          const keyID = paramsData?.params?.rewardsDepositKeyID;
+          if (!keyID) return [];
+          const keyData = await get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+          if (keyData.wallets && Array.isArray(keyData.wallets)) {
+            return keyData.wallets
+              .filter(w => w.type === 'WALLET_TYPE_BTC_MAINNET' && w.address)
+              .map(w => w.address);
+          }
+          return [];
+        }
+
+        const paramsData = await get(ZENBTC_PARAMS_API);
+        const [btcAddresses, changeAddresses, rewardsAddresses] = await Promise.all([
           getBitcoinAddresses(),
-          getChangeAddresses(),
+          getChangeAddresses(paramsData),
+          getRewardsDepositAddress(paramsData),
         ]);
-        const allAddresses = [...btcAddresses, ...changeAddresses];
+        const allAddresses = [...btcAddresses, ...changeAddresses, ...rewardsAddresses];
         return allAddresses;
       }
     });

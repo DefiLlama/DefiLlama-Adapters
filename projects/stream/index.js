@@ -35,27 +35,31 @@ const UnStakeTopics = [
 ];
 
 async function tvl(api) {
-  const bals = await api.multiCall({  abi: abi.totalSupply, calls: vaults})
-  const assets = await api.multiCall({  abi: abi.asset, calls: vaults})
-  
-  for (let i = 0; i < vaults.length; i++) {
-    const totalBalance = Number(bals[i]);
+  // https://x.com/StreamDefi/status/1985556360507822093
+  // bad debts
+  if (api.timestamp < 1762214400) {
+    const bals = await api.multiCall({  abi: abi.totalSupply, calls: vaults})
+    const assets = await api.multiCall({  abi: abi.asset, calls: vaults})
     
-    // remove deposit from team wallets
-    let teamDeposit = 0;
-    const symbol = Object.keys(xTokens)[i];
-    const stakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: StakeEvent, topics: StakeTopics, extraKey: `stream-stake-${api.chain}${symbol}` });
-    const unstakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: UnStakeEvent, topics: UnStakeTopics, extraKey: `stream-unstake-${api.chain}${symbol}` });
-    for (const log of stakeEvents) {
-      teamDeposit += Number(log.amount);
-    }
-    for (const log of unstakeEvents) {
-      teamDeposit -= Number(log.amount);
-    }
-    
-    const balance = teamDeposit > 0 ? totalBalance - teamDeposit : totalBalance;
-    
-    api.addToken(assets[i], balance)
+    for (let i = 0; i < vaults.length; i++) {
+      const totalBalance = Number(bals[i]);
+      
+      // remove deposit from team wallets
+      let teamDeposit = 0;
+      const symbol = Object.keys(xTokens)[i];
+      const stakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: StakeEvent, topics: StakeTopics, extraKey: `stream-stake-${api.chain}${symbol}` });
+      const unstakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: UnStakeEvent, topics: UnStakeTopics, extraKey: `stream-unstake-${api.chain}${symbol}` });
+      for (const log of stakeEvents) {
+        teamDeposit += Number(log.amount);
+      }
+      for (const log of unstakeEvents) {
+        teamDeposit -= Number(log.amount);
+      }
+      
+      const balance = teamDeposit > 0 ? totalBalance - teamDeposit : totalBalance;
+      
+      api.addToken(assets[i], balance)
+    }  
   }
 }
 
@@ -63,7 +67,10 @@ async function tvl(api) {
 module.exports = {
   methodology: "Calculates the TVL of all Stream vaults",
   start: 1739697390,
-  hallmarks: [[1740283200, "Stream V2 Launch"]],
+  hallmarks: [
+    ['2025-02-23', "Stream V2 Launch"],
+    ['2025-11-04', "Reported loss $93 million users fund"],
+  ],
   ethereum: {
     tvl,
   },

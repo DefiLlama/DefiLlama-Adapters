@@ -138,6 +138,12 @@ const CONFIG = {
       '0xCc0587aeBDa397146cc828b445dB130a94486e74', // eth pool
     ],
   },
+  stable: {
+    pools: [
+      '0x31eef89d5215c305304a2fa5376a1f1b6c5dc477', // usdc pool
+      '0x0829f361a05d993d5ceb035ca6df3446b060970b' // weth pool
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {

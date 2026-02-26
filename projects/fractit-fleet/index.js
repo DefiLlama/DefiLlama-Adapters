@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const CONTRACTS = {
   plume: {
     FVH_contract: "0x4b87dF81A498ed204590f9aF25b8889cd0cBC5f7",
-    pUsd: "0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F",
+    pUsd: ADDRESSES.plume_mainnet.pUSD,
   },
   botanix: {
     FVH_contract: "0x81f1C1521DdCA5efA45d96c51384098E8AB1C916",
