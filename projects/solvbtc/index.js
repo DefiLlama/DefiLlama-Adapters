@@ -44,7 +44,7 @@ async function solanaTvl(api, solvbtc) {
 }
 
 // node test.js projects/solvbtc
-['bitcoin', 'ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'avax', 'bob', 'base', 'solana'].forEach(chain => {
+['bitcoin', 'ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'avax', 'bob', 'base', 'solana', 'xlayer'].forEach(chain => {
   if (chain == 'bitcoin') {
     module.exports[chain] = {
       tvl: bitcoinTvl,
