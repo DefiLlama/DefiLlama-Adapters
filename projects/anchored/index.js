@@ -10,7 +10,7 @@ const deployments = {
   },
 }
 
-const STOCK_DECIMALS = 18
+const DEFAULT_STOCK_DECIMALS = 18
 const PRICE_DECIMALS = 8
 const PRICE_SCALE = 10n ** BigInt(PRICE_DECIMALS)
 const API_BASE_URL = 'https://rwa-api.anchored.finance/rwa/api/v1'
@@ -32,6 +32,13 @@ function parsePriceToScaledInt(price) {
   const normalizedWhole = wholePart || '0'
   const normalizedDecimal = (decimalPart + '0'.repeat(PRICE_DECIMALS)).slice(0, PRICE_DECIMALS)
   return BigInt(normalizedWhole + normalizedDecimal)
+}
+
+function parseTokenDecimals(decimals) {
+  if (decimals === null || decimals === undefined) return DEFAULT_STOCK_DECIMALS
+  const parsed = Number(decimals.toString())
+  if (!Number.isInteger(parsed) || parsed < 0 || parsed > 255) return DEFAULT_STOCK_DECIMALS
+  return parsed
 }
 
 async function fetchApiData(path) {
@@ -78,13 +85,26 @@ async function addStocksTvl(api) {
   const stockConfigs = buildStockConfigs(stockList, marketInfo)
   if (!stockConfigs.length) return
 
-  const supplies = await Promise.all(
-    stockConfigs.map(stock => api.call({
-      abi: 'erc20:totalSupply',
-      target: stock.contract,
-      permitFailure: true,
-    }))
-  )
+  const [supplies, decimals] = await Promise.all([
+    Promise.all(
+      stockConfigs.map(stock => api.call({
+        abi: 'erc20:totalSupply',
+        target: stock.contract,
+        permitFailure: true,
+      }))
+    ),
+    Promise.all(
+      stockConfigs.map(stock => api.call({
+        abi: 'erc20:decimals',
+        target: stock.contract,
+        permitFailure: true,
+      }))
+    ),
+  ])
+
+  stockConfigs.forEach((stock, i) => {
+    stock.decimals = parseTokenDecimals(decimals[i])
+  })
 
   stockConfigs.forEach((stock, i) => {
     const supply = supplies[i]
@@ -98,7 +118,7 @@ async function addStocksTvl(api) {
     }
     if (rawSupply <= 0n) return
 
-    const usdScaled = (rawSupply * stock.scaledPrice) / (10n ** BigInt(STOCK_DECIMALS))
+    const usdScaled = (rawSupply * stock.scaledPrice) / (10n ** BigInt(stock.decimals))
     if (usdScaled <= 0n) return
     const usdIntegerPart = usdScaled / PRICE_SCALE
     const usdFractionPart = usdScaled % PRICE_SCALE
