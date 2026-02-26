@@ -1,39 +1,102 @@
 const fs = require("fs")
+const { execSync } = require("child_process")
 const { get } = require("../projects/helper/http")
-const { allProtocols } = require("../projects/helper/registries/index.js")
+const { allProtocols } = require("../registries/index.js")
 // const { setCache, getCache } = require("../projects/helper/cache")
 
 async function run() {
   // await getCache('defi-configs', 'tvlModules')
   const configs = await get('https://api.llama.fi/_fe/static/configs')
 
+
   const moduleMap = {}
   const protocols = configs.protocols.concat(configs.treasuries).concat(configs.entities)
+  const addedModules = new Set()
 
   console.log('# of protocols/treasuries/entities:', protocols.length)
-
-  for (const protocol of protocols) {
+  function addModule({ moduleObject, modulePath, moduleKey, warnOnMissing = false }) {
     try {
 
-      let pModule = protocol.module.replace(/\.js$/, '').replace(/\/index$/, '').replace(/\/api$/, '')
-      if (moduleMap[protocol.module]) continue;  // already imported
+      if (addedModules.has(moduleKey)) return;  // already imported
 
-      const modulePath = `../projects/${protocol.module}`
-      let importedModule = mockFunctions(allProtocols[pModule] ?? require(modulePath))
+      if (!modulePath) modulePath = `${moduleKey}/index.js`
+      if (!moduleObject) {
+        if (warnOnMissing) {
+          console.warn(`Warning: ${moduleKey} not found in projects folder or registry. skipping.`)
+        }
+        return;
+      }
 
-      if (importedModule.hallmarks)
-        importedModule.hallmarks = convertHallmarkStrings(importedModule.hallmarks)
+      let mockedModule = mockFunctions(moduleObject)
 
-      moduleMap[protocol.module] = importedModule
+      if (mockedModule.hallmarks)
+        mockedModule.hallmarks = convertHallmarkStrings(mockedModule.hallmarks)
+
+      moduleMap[modulePath] = mockedModule
+      addedModules.add(moduleKey)
     } catch (e) {
-      console.error(`Error importing ${protocol.module}:`, e)
+      console.error(`Error processing module ${moduleKey} at path ${modulePath}:`, e)
     }
   }
 
+  for (const protocol of protocols) {
+    let pModule = protocol.module.replace(/\.js$/, '').replace(/\/index$/, '').replace(/\/api$/, '')
+
+    const modulePath = `../projects/${protocol.module}`
+    let moduleObject = undefined
+    try {
+      moduleObject = require(modulePath)
+    } catch (e) { }
+
+    if (moduleObject && allProtocols[pModule])
+      console.warn(`Warning: ${protocol.module} exists in both projects folder and registry. Using projects version.`)
+    moduleObject = moduleObject ?? allProtocols[pModule]   // first preference is if the file is in projects folder
+
+    addModule({ moduleObject, modulePath: protocol.module, moduleKey: pModule, warnOnMissing: true })
+  }
+
+  // Iterate through all files/folders in ../projects and add missing ones
+  const projectsPath = __dirname + '/../projects'
+  const projectFiles = fs.readdirSync(projectsPath)
+
+  for (const file of projectFiles) {
+    const filePath = `${projectsPath}/${file}`
+    const stat = fs.statSync(filePath)
+    let modulePath, importPath, pModule
+
+    if (stat.isDirectory()) {
+      importPath = `${projectsPath}/${file}/index.js`
+      modulePath = `${file}/index.js`
+      pModule = file
+    } else if (stat.isFile() && file.endsWith('.js')) {
+      importPath = `${projectsPath}/${file}`
+      modulePath = file
+      pModule = file.replace(/\.js$/, '')
+    }
+
+    if (addedModules.has(pModule)) continue
+
+    let moduleObject = undefined
+    try {
+      moduleObject = require(importPath)
+    } catch (e) { }
+
+    addModule({ moduleObject, modulePath, moduleKey: pModule, warnOnMissing: false })
+  }
+
+
+  // iterate through all modules in registry and add missing ones
+  for (const [pModule, moduleObject] of Object.entries(allProtocols)) {
+    if (addedModules.has(pModule)) continue
+
+    addModule({ moduleObject, modulePath: `${pModule}/index.js`, moduleKey: pModule, warnOnMissing: false })
+  }
+
+
+  const commitHash = execSync('git rev-parse HEAD').toString().trim()
+  moduleMap._meta = { commit: commitHash }
+
   fs.writeFileSync('scripts/tvlModules.json', JSON.stringify(moduleMap))
-  // await setCache('defi-configs', 'tvlModules', moduleMap, {
-  //   skipCompression: true,
-  // })
 
   process.exit(0)
 }

@@ -114,6 +114,7 @@ async function stakedCbl(api) {
 
 module.exports = {
   methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
+  hallmarks: [['2025-10-07', 'Project ceases operation']],
   arbitrum: { tvl, borrowed: borrowedVaults, staking: stakedCbl },
   btr: { tvl, borrowed: borrowedVaults, },
   plume_mainnet: { tvl, borrowed: borrowedVaults},

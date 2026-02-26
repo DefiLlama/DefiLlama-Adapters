@@ -1,10 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http');
 const { sumTokensExport } = require('../helper/unwrapLPs')
-// api
 const BASE_URL = "https://perps-v2-mainnet.polynomial.fi/snx-perps/tvl";
-
-const BASE_URL_POLYNOMIAL_CHAIN = "https://perps-api-mainnet.polynomial.finance/core/portfolio/tvl";
 
 async function tvl_optimism_chain (timestamp, ethBlock) {
   const perpApi = await get(BASE_URL);
@@ -24,6 +21,7 @@ module.exports = {
     ['2023-03-27', "Trade Launch"],
     ['2024-08-21', "Polynomial Trade Launch"],
     ['2025-05-13', "Multicollateral Launch"]
+    ["2026-02-13", "winddown announced"],
     
   ]
 }
