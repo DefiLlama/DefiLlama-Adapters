@@ -22,7 +22,9 @@ const digitRegex = /^\d+$/
 function parsePriceToScaledInt(price) {
   const raw = String(price || '').trim()
   if (!raw || raw.startsWith('-')) return null
-  const [wholePart, decimalPart = ''] = raw.split('.')
+  const parts = raw.split('.')
+  if (parts.length > 2) return null
+  const [wholePart, decimalPart = ''] = parts
   if (!digitRegex.test(wholePart || '0')) return null
   if (decimalPart && !digitRegex.test(decimalPart)) return null
 
@@ -42,7 +44,7 @@ function buildStockConfigs(stockList, marketInfo) {
   const priceMap = new Map()
 
   for (const stock of marketInfo) {
-    const symbol = stock?.symbol
+    const symbol = String(stock?.symbol || '').trim().toUpperCase()
     if (!symbol) continue
     const scaledPrice = parsePriceToScaledInt(stock?.price)
     if (!scaledPrice || scaledPrice <= 0n) continue
@@ -52,7 +54,7 @@ function buildStockConfigs(stockList, marketInfo) {
   const tokenMap = new Map()
   for (const stock of stockList) {
     const contract = (stock?.contract || '').toLowerCase()
-    const symbol = stock?.symbol
+    const symbol = String(stock?.symbol || '').trim().toUpperCase()
     if (!addressRegex.test(contract) || !symbol) continue
     const scaledPrice = priceMap.get(symbol)
     if (!scaledPrice) continue
@@ -111,8 +113,9 @@ async function tvl(api) {
 }
 
 module.exports = {
+  timetravel: false,
   methodology:
-    'Counts USDC held in Anchored AncCashier on Monad, then adds stock TVL by summing on-chain stock token totalSupply multiplied by live stock prices from Anchored backend API. Excludes Monday and broker-side transient balances such as gateway and broker wallet.',
+    'Counts USDC held in Anchored AncCashier on Monad, then adds stock TVL by summing on-chain stock token totalSupply multiplied by live stock prices from Anchored backend API. Excludes Monad and broker-side transient balances such as gateway and broker wallet.',
   start: 1770704924,
   monad: { tvl },
 }
