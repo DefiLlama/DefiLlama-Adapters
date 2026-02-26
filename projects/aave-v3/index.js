@@ -1,8 +1,11 @@
 const { aaveV3Export } = require("../helper/aave");
 
 // https://aave.com/docs/resources/addresses
+// ethena backing supply
+const ETHENA_BLACKLIST = [{ user: '0xb8734a14fbd4aa2d44e6aa830405ffc861ba313c' }, { user: '0x6Cd57B9a87C96421cfd7bc2B2f940C7e89cac4b5'}]
+
 const CONFIG = {
-  ethereum: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758'],
+  ethereum: { poolDatas: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758'], blacklist_lenders: ETHENA_BLACKLIST },
   polygon: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   avax: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   arbitrum: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
@@ -19,9 +22,9 @@ const CONFIG = {
   sonic: ['0x306c124fFba5f2Bc0BcAf40D249cf19D492440b9'],
   celo: ['0x33b7d355613110b4E842f5f7057Ccd36fb4cee28'],
   soneium: ['0xa0208CE8356ad6C5EC6dFb8996c9A6B828212022'],
-  plasma: ['0xf2D6E38B407e31E7E7e4a16E6769728b76c7419F'],
+  plasma: { poolDatas: ['0xf2D6E38B407e31E7E7e4a16E6769728b76c7419F'], blacklist_lenders: ETHENA_BLACKLIST },
   megaeth: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
-  mantle: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
+  mantle: { poolDatas: ['0x487c5c669D9eee6057C44973207101276cf73b68'], blacklist_lenders: ETHENA_BLACKLIST },
 };
 
 module.exports = aaveV3Export(CONFIG)
