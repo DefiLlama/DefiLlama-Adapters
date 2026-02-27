@@ -24,6 +24,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  misrepresentedTokens: true, // uses oracle-valued NFTs for NAV
   methodology:
     "TVL is calculated from each vault's totalAssets(), which returns the NAV-based total value including liquid HYPE and NFT holdings valued via oracle-signed NAV reports.",
   hyperliquid: {
