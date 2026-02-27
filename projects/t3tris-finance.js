@@ -6,9 +6,15 @@
  * routing into underlying yield sources (e.g., AAVE stataTokens).
  *
  * TVL is calculated by enumerating all vaults deployed via the T3tris
- * factory contract and summing their grossTVL from getGrossTVL().
- * grossTVL = totalManagedAssets + pendingDeposits + claimableRedeems,
- * providing the most complete picture of assets under management.
+ * factory contract and summing their getGrossTVL() components per vault:
+ *
+ *   - totalManagedAssets: assets actively deployed in strategies (oracle NAV)
+ *   - pendingDeposits:    async deposit requests sitting in depositSilo
+ *   - claimableRedeems:   settled redemptions waiting to be claimed from redeemSilo
+ *
+ * All three components represent user assets under the protocol's custody.
+ * They are reported separately per token via api.add() for transparency,
+ * though DefiLlama sums them into a single TVL figure per token.
  *
  * The factory address is deterministic (CREATE3) and identical on all chains.
  */
@@ -51,22 +57,29 @@ async function tvl(api) {
     permitFailure: true,
   });
 
-  // Get grossTVL for each vault (totalManagedAssets + pendingDeposits + claimableRedeems)
+  // Get grossTVL breakdown for each vault
   const grossTvls = await api.multiCall({
     abi: ABI.getGrossTVL,
     calls: vaults,
     permitFailure: true,
   });
 
-  // Sum balances per underlying token
+  // Add each TVL component separately per underlying token
+  // DefiLlama sums all api.add() calls per token into one TVL figure,
+  // but breaking them out makes the adapter logic transparent.
   for (let i = 0; i < vaults.length; i++) {
     if (!assets[i] || !grossTvls[i]) continue;
-    // getGrossTVL returns (totalManagedAssets, pendingDeposits, claimableRedeems, grossTVL)
-    // grossTVL is the 4th element (index 3)
-    const grossTvl = grossTvls[i].grossTVL || grossTvls[i][3];
-    if (grossTvl) {
-      api.add(assets[i], grossTvl);
-    }
+    const token = assets[i];
+    const totalManagedAssets = grossTvls[i].totalManagedAssets || grossTvls[i][0];
+    const pendingDeposits = grossTvls[i].pendingDeposits || grossTvls[i][1];
+    const claimableRedeems = grossTvls[i].claimableRedeems || grossTvls[i][2];
+
+    // Assets actively deployed in strategies (oracle NAV)
+    if (totalManagedAssets) api.add(token, totalManagedAssets);
+    // Async deposit requests sitting in depositSilo (yield-bearing)
+    if (pendingDeposits) api.add(token, pendingDeposits);
+    // Settled redemptions awaiting claim from redeemSilo (yield-bearing)
+    if (claimableRedeems) api.add(token, claimableRedeems);
   }
 
   return api.getBalances();
@@ -93,7 +106,7 @@ const chains = [
 
 module.exports = {
   methodology:
-    "TVL is calculated by summing the grossTVL (totalManagedAssets + pendingDeposits + claimableRedeems) of all T3tris vaults deployed through the protocol factory, providing the complete picture of assets under management.",
+    "TVL = totalManagedAssets (assets deployed in strategies, per oracle NAV) + pendingDeposits (async deposit requests in yield-bearing depositSilo) + claimableRedeems (settled redemptions in yield-bearing redeemSilo). Each component is tracked per vault via getGrossTVL() and summed per underlying token.",
 };
 
 chains.forEach((chain) => {
