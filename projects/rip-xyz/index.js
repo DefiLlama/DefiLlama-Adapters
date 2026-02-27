@@ -16,6 +16,11 @@ const VAULTS = {
   // Future vaults added here
 };
 
+/**
+ * Calculates TVL by summing each vault's totalAssets(), which returns NAV-based
+ * total value including liquid HYPE and NFT holdings valued via oracle-signed reports.
+ * @param {object} api - DefiLlama chain API instance
+ */
 async function tvl(api) {
   for (const vault of Object.values(VAULTS)) {
     const totalAssets = await api.call({
@@ -26,6 +31,11 @@ async function tvl(api) {
   }
 }
 
+/**
+ * Tracks Pool2 liquidity by summing token balances held in LP positions
+ * (e.g. rHYPURR/WHYPE on Project X) for each vault.
+ * @param {object} api - DefiLlama chain API instance
+ */
 async function pool2(api) {
   for (const vault of Object.values(VAULTS)) {
     for (const lp of vault.lps ?? []) {
