@@ -37,6 +37,7 @@ async function borrowed(api) {
         const borrows = data?.['total-borrows-variable']?.value ?? '0'
         api.add(tokenId, borrows)
     }))
+    return api.getBalances()
 }
 
 module.exports = {

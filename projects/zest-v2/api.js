@@ -39,6 +39,8 @@ async function borrowed(api) {
         if (borrowedAmt > 0n)
             api.add(tokenId, borrowedAmt.toString())
     }))
+    console.log('Finished fetching borrowed amounts for V2 vaults, now fetching for V1 assets...', api.getBalances())
+    return api.getBalances()
 }
 
 module.exports = {
