@@ -18,6 +18,9 @@ const configs = {
   'unilend-protocol': {
     unit0: ['0x99118c1Ca7D0DC824719E740d4b4721009a267d6'],
   },
+  'purrlend': {
+    hyperliquid: ['0xa8Ca6a4A485485910aA4023b9963Dfd2f3A5aeb0'],
+  },
   // --- newly migrated aaveV3Export protocols ---
   'zentra': {
     citrea: '0x0FC811fE6bD0Be53717f9ca722E30a7bc4B90C31',
