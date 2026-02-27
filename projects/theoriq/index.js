@@ -20,7 +20,7 @@ async function tvl(api) {
   const rawAssets = await api.fetchList({ lengthAbi: 'getAssetCount', itemAbi: 'assetAt', target: VAULT })
   // The vault uses 0xEeee...EeE for native ETH; the SDK expects the null address
   const tokens = rawAssets
-  tokens.push(SPARK_SP_WSTETH, SPARK_DEBT_WETH, AAVE_A_WSTETH, AAVE_A_SUSDE, AAVE_DEBT_USDE)
+  tokens.push(SPARK_SP_WSTETH, AAVE_A_WSTETH, AAVE_A_SUSDE,)
 
   // --- 2. Discover subvaults dynamically ---
   const subvaultAddrs = await api.fetchList({ lengthAbi: 'subvaults', itemAbi: 'subvaultAt', target: VAULT })
@@ -37,7 +37,13 @@ async function tvl(api) {
     params: [requestIds],
   });
   for (const s of statuses)
-    if (!s.isClaimed) api.add(ADDRESSES.null, s.amountOfStETH);
+    if (!s.isClaimed) api.add(ADDRESSES.null, s.amountOfStETH)
+
+  // compute debt
+  const sparkWETHDebt = await api.multiCall({ abi: "erc20:balanceOf", target: SPARK_DEBT_WETH, calls: owners })
+  const aaveUSDEDebt = await api.multiCall({ abi: "erc20:balanceOf", target: AAVE_DEBT_USDE, calls: owners })
+  api.add(ADDRESSES.null, -1 * sparkWETHDebt.reduce((a, b) => +a + +b, 0))
+  api.add(ADDRESSES.ethereum.USDe, -1 * aaveUSDEDebt.reduce((a, b) => +a + +b, 0))
 
 }
 
