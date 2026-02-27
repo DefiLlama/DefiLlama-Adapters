@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const axios = require('axios');
 
-const STARGATE_CONTRACT = '0x1856c533ac2d94340aaa8544d35a5c1d4a21dee7';
+const STARGATE_CONTRACT = '0x03C557bE98123fdb6faD325328AC6eB77de7248C';
 const VET_ADDRESS = ADDRESSES.null;
 const NODE_URL = 'https://mainnet.vechain.org';
 
@@ -20,6 +20,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false, 
   misrepresentedTokens: false,
-  methodology: 'Reads the total VET staked in the Stargate contract',
+  methodology: 'Reads the total VET staked in the active Stargate staking contract on VeChain',
   vechain: { tvl },
 };

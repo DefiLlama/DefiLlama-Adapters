@@ -7,9 +7,12 @@ module.exports = {
         'astar-dapps-staking': '/astar-dapps-staking/api',
         'injective-orderbook': '/injective-orderbook/api',
         'lisa': '/lisa/api',
+        'chutes': '/chutes/api',
+        'zest': '/zest/api',
       },
       {
         'bifrost-staking': '/bifrost-staking/api',
+        'sora': '/sora/api',
         'bifrost-dex': '/bifrost-dex/api',
         'bifrost-liquid-crowdloan': '/bifrost-liquid-crowdloan/api',
       },
@@ -37,6 +40,7 @@ module.exports = {
       },
       {
         'hydradx': '/hydradx/api.js',
+        'zest-v2': '/zest-v2/api.js',
       },
       {
         'manta-atlantic-stake': '/manta-atlantic-stake/api',
@@ -78,7 +82,7 @@ module.exports = {
       'alexlab': '/alexlab/api',
       'satoshi-dex': '/satoshi-dex/api',
       'raydium': '/raydium/index',
-      'vitcswap': '/vitcswap/api',
+      // 'vitcswap': '/vitcswap/api',
       'defichain-loans': '/defichain-loans',
       // 'kamino': '/kamino/api',
       // '1inch': '/1inch/apiCache',
@@ -89,7 +93,7 @@ module.exports = {
       deeplock: '/deeplock/apiCache',
       pinksale: '/pinksale/apiCache',
       'team-finance': '/team-finance/apiCache',
-      synthetix: '/synthetix/apiCache',
+      // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
       blum: '/blum/api',
       'yodeswap': '/yodeswap/api',

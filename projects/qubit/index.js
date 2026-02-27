@@ -21,7 +21,7 @@ async function tvlKlaytn(api) {
 
 module.exports = {
   // hallmarks: [
-  //   [1643241600, "tokenAddress hack"]
+  //   ['2022-01-27', "tokenAddress hack"]
   // ],
   methodology: methodologies.lendingMarket,
   bsc: {

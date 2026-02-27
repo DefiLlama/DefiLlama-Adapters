@@ -70,9 +70,9 @@ module.exports.solana = {
   tvl: solanaTvl
 }
 module.exports.hallmarks=[
-  [1709181259, "Deployed on Blast"],
-  // [1733011200, "Deployed on Solana"], // has no impact on the TVL
-  // [1737365147, "Deployed on Base"],
-  // [1741758248, "Deployed on Berachain"]
+  ['2024-02-29', "Deployed on Blast"],
+  // ['2024-12-01', "Deployed on Solana"], // has no impact on the TVL
+  // ['2025-01-20', "Deployed on Base"],
+  // ['2025-03-12', "Deployed on Berachain"]
 ]
 module.exports.methodology="Counts the total value deposited in the vaults of the Wasabi protocol, including assets that have been loaned out to open long and short positions."

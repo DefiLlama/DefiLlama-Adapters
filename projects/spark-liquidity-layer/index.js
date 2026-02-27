@@ -7,6 +7,7 @@ const almProxy = {
   arbitrum: '0x92afd6F2385a90e44da3a8B60fe36f6cBe1D8709',
   optimism: '0x876664f0c9Ff24D1aa355Ce9f1680AE1A5bf36fB',
   unichain: '0x345E368fcCd62266B3f5F37C9a131FD1c39f5869',
+  avax: '0xecE6B0E8a54c2f44e066fBb9234e7157B15b7FeC',
 }
 
 const mainnetAllocatorToTokens = {
@@ -17,19 +18,24 @@ const mainnetAllocatorToTokens = {
     '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
   ],
   [almProxy.ethereum]: [
-    '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
     ADDRESSES.ethereum.sUSDe,
+    ADDRESSES.ethereum.USDe,
+    ADDRESSES.ethereum.USDT,
+    ADDRESSES.ethereum.USDC,
+    '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
     '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // aEthUSDS
-    ADDRESSES.ethereum.USDe,
     '0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041', // BUIDL-I
     '0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e', // USTB
     '0x8c213ee79581Ff4984583C6a801e5263418C4b86', // JTSRY
     '0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b', // syrupUSDC
+    '0x356B8d89c1e1239Cbbb9dE4815c39A1474d5BA7D', // syrupUSDT
     '0x779224df1c756b4EDD899854F32a53E8c2B2ce5d', // spPYUSD
     '0xe7dF13b8e3d6740fe17CBE928C7334243d86c92f', // spUSDT
     '0x377C3bd93f2a2984E1E7bE6A5C22c525eD4A4815', // spUSDC
     '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho blue chip sparkUSDC
+    '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
+    '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
   ]
 }
 
@@ -47,7 +53,7 @@ const baseAllocatorToTokens = {
 
 const arbitrumAllocatorToTokens = {
   [almProxy.arbitrum]: [
-    ADDRESSES.arbitrum.USDC
+    ADDRESSES.arbitrum.USDC_CIRCLE
   ],
   '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [
     ADDRESSES.arbitrum.USDC_CIRCLE
@@ -72,12 +78,20 @@ const unichainAllocatorToTokens = {
   ]
 }
 
+const avaxAllocatorToTokens = {
+  [almProxy.avax]: [
+    ADDRESSES.avax.USDC,
+    '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aave aUSDC
+  ]
+}
+
 const CONFIG = {
   ethereum: mainnetAllocatorToTokens,
   base: baseAllocatorToTokens,
   arbitrum: arbitrumAllocatorToTokens,
   optimism: optimismAllocatorToTokens,
   unichain: unichainAllocatorToTokens,
+  avax: avaxAllocatorToTokens,
 }
 
 async function tvl(api) {
@@ -90,6 +104,7 @@ async function tvl(api) {
   await addMorphoBalances(api)
   await addEthenaUnstakeBalance(api)
   await addCurveBalances(api)
+  await addVaultBalances(api)
 
   const allTokens = Object.values(tokenRecords).flat()
   api.add(allTokens, balances)
@@ -116,6 +131,7 @@ const vaultConfigs = {
   arbitrum: [],
   optimism: [],
   unichain: [],
+  avax: [],
 }
 
 // discards idle supply on aave like markets for USDS and DAI
@@ -257,15 +273,12 @@ const curveConfigs = {
       address: '0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f',
       coinIndex: 0,
     },
-    {
-      address: '0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f',
-      coinIndex: 1,
-    },
   ],
   base: [],
   arbitrum: [],
   optimism: [],
   unichain: [],
+  avax: [],
 }
 
 async function addCurveBalances(api) {
@@ -310,4 +323,25 @@ async function addCurveBalances(api) {
   )
 
   api.add(tokens, balances)
+}
+
+const erc4626Configs = {
+  ethereum: [
+    '0x38464507E02c983F20428a6E8566693fE9e422a9', // Arkis sparkPrimeUSDC1
+  ],
+  base: [],
+  arbitrum: [],
+  optimism: [],
+  unichain: [],
+  avax: [],
+}
+
+async function addVaultBalances(api) {
+  const vaults = erc4626Configs[api.chain]
+  if (vaults.length === 0) {
+    return
+  }
+
+  const balances = await api.erc4626Sum2({ calls: vaults })
+  api.addBalances(balances)
 }

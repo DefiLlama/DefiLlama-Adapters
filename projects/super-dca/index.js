@@ -13,13 +13,19 @@ const CONFIG = {
     WHITELISTED_TOKENS: [
       ADDRESSES.optimism.USDC_CIRCLE, // USDC
       ADDRESSES.null, // WETH
-      ADDRESSES.optimism.WBTC  // WBTC
+      ADDRESSES.optimism.WBTC,  // WBTC
+      ADDRESSES.optimism.OP // OP
     ],
     POOL_IDS: [
       // List of pools with the Super DCA Hook: 0xb4f4Ad63BCc0102B10e6227236e569Dce0d97A80
       '0x13b95815697f696c74bd1e7959d692d74476ec851b32be72e027cda8e9d05e35', // USDC-DCA
       '0x7e9d1e1966665cfdaadcdef03caaf3099e18447bd45b3af8b04a9844e3882863', // ETH-DCA
-      '0x46224636f9ee95d76f57ec559b0099db863747ca5ac11e4db5b178b6ae269404' // WBTC-DCA
+      '0x46224636f9ee95d76f57ec559b0099db863747ca5ac11e4db5b178b6ae269404', // WBTC-DCA
+      // List of pools with the Super DCA Hook: 0x7098Bf7DFF80532aa6bbDB52DF4Ac4992Bec3A80
+      '0xfaf4de6b4f92e8c44735d8224ceb89f54b7e6d9137ad7fac238057f09db75964', // USDC-DCA
+      '0x8b3156a785bcf477d92f2f2a9d7827585d9d551525abb512b0769fbec34e9d22', // ETH-DCA
+      '0x4dca8e9159ff294dd7a384ce446721719b491d5075b3bee9c57f6899043562c9', // WBTC-DCA
+      '0xd6821af358d804a37fd82b956d80b2fcf74e6463069e7d8b2ffe86138087da36' // OP-DCA
     ]
   },
   base: {
@@ -39,6 +45,23 @@ const CONFIG = {
       '0x870198ffb454503d5ce1b698c94bc98198c874d61e8a2994dd6e01ee04535f89', // USDC-DCA
       '0xca8fb98187ca61e9c2360a93d41cffa5ecd5b5911b3e705f6fbcdc08b42fe0db', // WBTC-DCA
       '0xc0ea512d5a20a822fcce987c10428d5b81d349bce55404456cbc6729eb0c3c6c' // AAVE-DCA
+    ]
+  },
+  unichain: {
+    STATE_VIEW: '0x86e8631A016F9068C3f085fAF484Ee3F5fDee8f2',
+    POSM: '0x4529A01c7A0410167c5740C487A8DE60232617bf',
+    FROM_BLOCK: 32476763,
+    SUBGRAPH_ID: 'aa3YpPCxatg4LaBbLFuv2iBC8Jvs9u3hwt5GTpS4Kit',
+    WHITELISTED_TOKENS: [
+      ADDRESSES.unichain.USDC, // USDC
+      ADDRESSES.null, // WETH
+      '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', // Layer Zero Wrapped Bitcoin (WBTC)
+    ],
+    POOL_IDS: [
+      // List of pools with the Super DCA Hook: 0x8E89b081498095669007DA306dCd7Ce7cab43A80
+      '0xb48839b7f65765f3c482c5a44b5280786f03b39cf09696929dfb086184279618', // WBTC-DCA
+      '0x341b812b1e570a3143c3d10d09aa9fa87b9b2482a647f0e0f406dc22e3c74d25', // ETH-DCA
+      '0xfb28d77950a83643efdcae4e0d952d7d1f8f66c92253cc63d914531038ddbb3f' // USDC-DCA
     ]
   }
 }
@@ -84,17 +107,17 @@ function createTvlFunction(chain) {
     const config = CONFIG[chain]
     if (!config) throw new Error(`Config not found for chain: ${chain}`)
 
-    api.log(`Using ${config.POOL_IDS.length} hardcoded pool IDs for ${chain}`)
+    // api.log(`Using ${config.POOL_IDS.length} hardcoded pool IDs for ${chain}`)
 
     // Get all position IDs for all our pools
     const allPositionIds = []
     for (const poolId of config.POOL_IDS) {
       const positionIds = await getAllPositionIdsForPool(api, poolId, config)
-      api.log(`Pool ${poolId}: ${positionIds.length} positions`)
+      // api.log(`Pool ${poolId}: ${positionIds.length} positions`)
       allPositionIds.push(...positionIds)
     }
 
-    api.log(`Total positions found: ${allPositionIds.length}`)
+    // api.log(`Total positions found: ${allPositionIds.length}`)
 
     // Use the correct Uniswap v4 position resolver
     return sumTokens2({
@@ -116,5 +139,8 @@ module.exports = {
   },
   base: {
     tvl: createTvlFunction('base'),
+  },
+  unichain: {
+    tvl: createTvlFunction('unichain'),
   }
 }; 

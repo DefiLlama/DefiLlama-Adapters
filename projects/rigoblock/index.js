@@ -53,33 +53,21 @@ const config = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { fromBlock, GRG_TOKEN_ADDRESSES, GRG_VAULT_ADDRESSES, UNISWAP_V4_POSM, } = config[chain]
+  const { fromBlock, GRG_TOKEN_ADDRESSES, GRG_VAULT_ADDRESSES, UNISWAP_V4_POSM } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const { pools, tokens, uniV4Ids } = await getPoolInfo(api)
-      return sumTokens2({
-        owners: pools,
-        tokens,
-        api,
-        blacklistedTokens: [GRG_TOKEN_ADDRESSES],
-        resolveUniV4: true,
-        uniV4ExtraConfig: { positionIds: uniV4Ids,}
-      })
+      await sumTokens2({ owner: UNISWAP_V4_POSM, tokens, api, blacklistedTokens: [GRG_TOKEN_ADDRESSES], resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids } })
+      return sumTokens2({ owners: pools, tokens, api, blacklistedTokens: [GRG_TOKEN_ADDRESSES] })
     },
     staking: async (api) => {
-      const { pools, uniV4Ids } = await getPoolInfo(api)
+      const { pools, uniV4Ids, UNISWAP_V4_POSM } = await getPoolInfo(api)
       // Add GRG balances from vaults
       const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools, target: GRG_VAULT_ADDRESSES })
       bals.forEach(i => api.add(GRG_TOKEN_ADDRESSES, i))
       // Aggregate GRG from vaults, ERC20 pool balances, and Uniswap V4 positions in a single call
-      return sumTokens2({
-        owners: pools,
-        tokens: [GRG_TOKEN_ADDRESSES], // Includes GRG ERC20 balances held by pools
-        api,
-        uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES], // Includes GRG from Uniswap V4 positions
-        resolveUniV4: true,
-        uniV4ExtraConfig: { positionIds: uniV4Ids,  }
-      })
+      await sumTokens2({ owner: UNISWAP_V4_POSM, tokens: [GRG_TOKEN_ADDRESSES], api, uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES], resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids } })
+      return sumTokens2({ owners: pools, tokens: [GRG_TOKEN_ADDRESSES], api, uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES] })
     },
   }
 

@@ -10,6 +10,8 @@ const GetEntireSystemCollABI = 'uint256:getEntireSystemColl';
 const GetCollateralTokenABI = 'address:collateralToken';
 const GetSmartVaultTotalDepositedUnderlyingABI = 'uint256:getTotalDepositedUnderlying';
 const AssetConfigSettingEventV2ABI = "event AssetConfigSetting(address asset, tuple(uint256 feeIn, uint256 feeOut, uint256 debtTokenMintCap, uint256 dailyDebtTokenMintCap, uint256 debtTokenMinted, uint256 swapWaitingPeriod, uint256 maxPrice, uint256 minPrice, bool isUsingOracle) config)";
+const GetDebtTokenMintedABI = 'function debtTokenMinted(address asset) view returns (uint256)';
+const ConvertDebtTokenToAssetAmountABI = 'function convertDebtTokenToAssetAmount(address asset, uint256 amount) view returns (uint256)';
 
 function createExports({
   troveList,
@@ -25,7 +27,7 @@ function createExports({
       }
 
       if (nymWithAssetList) {
-        processNymWithAssetList(nymWithAssetList, tokensAndOwners);
+        await processNymWithAssetList(api, nymWithAssetList, tokensAndOwners);
       }
 
       if (farmList) {
@@ -43,11 +45,60 @@ function createExports({
   }
 }
 
-function processNymWithAssetList(nymWithAssetList, tokensAndOwners) {
+async function processNymWithAssetList(api, nymWithAssetList, tokensAndOwners) {
+  const chains = api.chain;
+  const balances = {};
+  
   for (let i = 0; i < nymWithAssetList.length; i++) {
     const { address: nymContractAddress, assetList } = nymWithAssetList[i];
-    assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
+    
+    // Get the debtTokenMinted amount for each asset and convert it back to asset amount
+    // debtTokenMinted tracks the total asset amount that was swapped in (both held in contract and transferred to strategies)
+    // This represents the complete TVL for this NYM contract
+    const debtTokenMintedCalls = assetList.map(asset => ({
+      target: nymContractAddress,
+      params: [asset]
+    }));
+    
+    const debtTokenMintedAmounts = await api.multiCall({ 
+      abi: GetDebtTokenMintedABI, 
+      calls: debtTokenMintedCalls,
+      permitFailure: true 
+    });
+    
+    const assetAmountCalls = assetList.map((asset, idx) => ({ 
+      target: nymContractAddress, 
+      params: [asset, debtTokenMintedAmounts[idx] || 0] 
+    }));
+    
+    const assetAmountsFromDebt = await api.multiCall({
+      abi: ConvertDebtTokenToAssetAmountABI,
+      calls: assetAmountCalls,
+      permitFailure: true
+    });
+
+    assetList.forEach((asset, idx) => {
+      const assetAmountFromDebt = assetAmountsFromDebt[idx] || 0;      
+      if (!assetAmountFromDebt) return;
+      if (assetAmountFromDebt === '0' || assetAmountFromDebt === 0) return;
+      
+      const key = `${chains}:${asset}`;
+      if (!balances[key]) {
+        balances[key] = new BigNumber(0);
+      }
+      balances[key] = balances[key].plus(assetAmountFromDebt);
+    });
   }
+  
+  // Add the debtTokenMinted equivalent amounts to api
+  Object.keys(balances).forEach((key) => {
+    if (balances[key].isZero()) {
+      delete balances[key];
+    } else {
+      balances[key] = balances[key].toFixed(0);
+    }
+  });
+  api.addBalances(balances);
 }
 
 function processFarmList(farmList, tokensAndOwners) {
@@ -125,10 +176,12 @@ module.exports = {
       '0xe7E23aD9c455c2Bcd3f7943437f4dFBe9149c0D2', // BEVM WBTC Collateral(V2)
       '0xD63e204F0aB688403205cFC144CAdfc0D8C68458', // BEVM wstBTC Collateral(V2)
     ],
-    nymWithAssetList: [{
-      address: '0xdd0bD4F817bDc108e31EE534931eefc855CAf7Df',
-      assetList: [ADDRESSES.bevm.USDT, ],
-    }],
+    nymWithAssetList: [
+      // {
+      //   address: '0xdd0bD4F817bDc108e31EE534931eefc855CAf7Df',
+      //   assetList: [ADDRESSES.bevm.USDT, ],
+      // }
+    ],
     vaultManagerList: [
       {
         address: '0xcCFD19e331fFcE8506718ec3DddDDf9f23029825'
@@ -203,6 +256,14 @@ module.exports = {
         smartVaultAddress: '0xd62E2F6b6616271001DCd0988AD2D73DEeE1b491',
         asset: ADDRESSES.bob.uniBTC, // uniBTC
       },
+      {
+        smartVaultAddress: '0xEdE84f536448cC822a9318548Aa8618183743c4f',
+        asset: ADDRESSES.bob.uniBTC, // uniBTC
+      },
+      {
+        smartVaultAddress: '0x4f4EbFAeEa78d7ebc13c4aAb481fd8E36D9DC1Be',
+        asset: '0x09606e6A94E7a8e94fC1f43728475B82BF12E50b', // uBTC
+      },
     ]
   }),
   bsquared: createExports({
@@ -271,6 +332,12 @@ module.exports = {
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
       assetList: [ADDRESSES.hemi.USDT, ADDRESSES.hemi.USDC_e, ADDRESSES.hemi.DAI],
     }],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0xC7ab85e1afB80EC40eC3745D4Be6e7DE618735f2',
+        asset: '0x99e3dE3817F6081B2568208337ef83295b7f591D', // HEMI
+      },
+    ],
   }),
   base: createExports({
     troveList: [
@@ -303,6 +370,10 @@ module.exports = {
         smartVaultAddress: '0xCe07D2B5CC6Ff466BF497ceEa8eD168fB0Eb8F97',
         asset: '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e', // uniBTC
       },
+      {
+        smartVaultAddress: '0xd72dCb68fF80aB8666f7A800BE438212581914c6',
+        asset: '0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a', // brBTC
+      },
     ],
   }),
   arbitrum: createExports({
@@ -332,14 +403,23 @@ module.exports = {
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2) deprecated
       '0xbe223F331f05a8cf18F98675033FEFD6b23c7176', // WETH Collateral(V2)
       '0xd19BC6B110896d136D9456E8fD45C71C8d8C5abB', // WBTC Collateral(V2)
+      '0xE92d7002E3172dD1Ee4ABeAfcfD4fDB0D8F042D5', // XBTC Collateral(V2)
     ],
-    nymWithAssetList: [{
-      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
-      assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
-    }, {
-      address: '0xB4d4793a1CD57b6EceBADf6FcbE5aEd03e8e93eC',
-      assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
-    }],
+    nymWithAssetList: [
+      {
+        address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
+        assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
+      }, 
+      {
+        address: '0xB4d4793a1CD57b6EceBADf6FcbE5aEd03e8e93eC',
+        assetList: [
+          ADDRESSES.xlayer.USDT,
+          ADDRESSES.xlayer.USDC,
+          '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USDT0
+          '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', // USDG
+        ],
+      },
+    ],
   }),
   ethereum: createExports({
     troveList: [
@@ -358,7 +438,11 @@ module.exports = {
       assetList: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
     }, {
       address: '0xb8374e4DfF99202292da2FE34425e1dE665b67E6',
-      assetList: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
+      assetList: [
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.CRVUSD
+      ],
     }],
     smartVaultList: [
       {
@@ -367,7 +451,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0x05EA42F72F2e627497423663Faf7b00eA7DdA2C1',
-        asset: '0x8236a87084f8B84306f72007F36F2618A5634494', // LBTC
+        asset: ADDRESSES.ethereum.LBTC, // LBTC
       },
       {
         smartVaultAddress: '0x11054D3584F94B542379Ff4Cf9e7897D50AE8317',
@@ -375,7 +459,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0xaC586e941d5846B79cEF71c8aef3ecC50BE12DCb',
-        asset: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+        asset: ADDRESSES.ethereum.USDT, // USDT
       },
     ],
   }),
