@@ -1,116 +1,40 @@
-const ADDRESSES = require('../helper/coreAssets.json');
+// AID token address — same on all chains (LayerZero OFT + CREATE2)
+const AID = "0x18F52B3fb465118731d9e0d276d4Eb3599D57596";
 
-// AID.v0 token address (same on all chains: Ethereum, BNB Chain, Base, Arbitrum)
-const AID_TOKEN = '0x18F52B3fb465118731d9e0d276d4Eb3599D57596';
+// sAID ERC-4626 vault (Ethereum only)
+const SAID_VAULT = "0xB3B3c527BA57cd61648e2EC2F5e006A0B390A9F8";
 
-// Legacy AIDa (Alpha) pool contracts
-const aidaContracts = {
-    ethereum: [
-        {
-            token: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42', // AIDaUSDC token
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
-        },
-        {
-            token: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340', // AIDaUSDT token
-            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
-        },
-        {
-            token: '0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110', // USR
-            poolToken: '0x5D976F56343e33A6a4d6e26AF7d59358d1359dd4' // AIDollarAlphaUSR Pool
-        },
-        {
-            token: '0xaD55aebc9b8c03FC43cd9f62260391c13c23e7c0', // CUSDO
-            poolToken: '0x17D02bCA29BD9E8cF4A39B25C9C902e6bF00AA54' // AIDollarAlphaCUSDO Pool
-        }
-    ],
-    arbitrum: [
-        {
-            token: ADDRESSES.arbitrum.USDC_CIRCLE,
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
-        },
-        {
-            token: ADDRESSES.arbitrum.USDT,
-            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340'
-        }
-    ],
-    base: [
-        {
-            token: ADDRESSES.base.USDC,
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
-        }
-    ],
-    sei: [
-        {
-            token: '0xe15fC38F6D8c56aF07bbCBe3BAf5708A2Bf42392', // USDC
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
-        },
-        {
-            token: '0x9151434b16b9763660705744891fA906F660EcC5', // USDT
-            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340'
-        }
-    ],
-    sty: [
-        {
-            token: '0xF1815bd50389c46847f0Bda824eC8da914045D14', // USDC
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
-        }
-    ],
-    bsc: [
-        {
-            token: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d', // USD1
-            poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
-        },
-        {
-            token: '0x55d398326f99059ff775485246999027b3197955', // USDT
-            poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340'
-        }
-    ]
+// USDC addresses per chain — used as pricing proxy since AID = $1
+const USDC = {
+  ethereum: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  arbitrum: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+  base: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  bsc: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
 };
 
-const totalSupplyABI = "function totalSupply() external view returns (uint256)";
-const totalAssetsABI = "function totalAssets() external view returns (uint256)";
-const balanceOfABI = "function balanceOf(address) external view returns (uint256)";
+async function tvl(api) {
+  const supply = await api.call({ abi: "erc20:totalSupply", target: AID });
+  // AID has 18 decimals; USDC has 6 on Ethereum/Arbitrum/Base, 18 on BSC
+  api.add(USDC[api.chain], api.chain === "bsc" ? supply : supply / 1e12);
+}
 
-// Legacy AIDa (Alpha) pool TVL
-async function aidaTvl(api) {
-    const chain = api.chain;
-    const pools = aidaContracts[chain];
-
-    if (pools && pools.length > 0) {
-        const totalAssetsAmounts = await api.multiCall({
-            abi: totalAssetsABI,
-            calls: pools.map(p => p.poolToken),
-        });
-
-        totalAssetsAmounts.forEach((amount, index) => {
-            api.add(pools[index].token, amount);
-        });
-    }
-
-    return api.getBalances();
+// sAID staking — AID locked in the vault. Shown as sub-category, not double-counted.
+async function staking(api) {
+  const totalAssets = await api.call({ abi: "uint256:totalAssets", target: SAID_VAULT });
+  api.add(USDC.ethereum, totalAssets / 1e12);
 }
 
 module.exports = {
-    methodology: 'Tracks: 1) Legacy AIDa (Alpha) pool TVL using totalAssets(), 2) AID.v0 total supply across all chains.',
-    start: 1715490671,
-    timetravel: true,
-    misrepresentedTokens: true,
-    ethereum: {
-        tvl: aidaTvl,
-    },
-    arbitrum: {
-        tvl: aidaTvl,
-    },
-    base: {
-        tvl: aidaTvl,
-    },
-    bsc: {
-        tvl: aidaTvl,
-    },
-    sei: {
-        tvl: aidaTvl,
-    },
-    sty: {
-        tvl: aidaTvl,
-    },
+  methodology:
+    "TVL is the total supply of AID (AI Dollar) across all deployed chains. AID is a synthetic dollar backed 1:1 by US Treasuries and stablecoins. sAID staking shows AID deposited in the ERC-4626 yield vault.",
+  misrepresentedTokens: true,
+  timetravel: true,
+  start: 1730419200,
+  ethereum: { tvl, staking },
+  arbitrum: { tvl },
+  base: { tvl },
+  bsc: { tvl },
+  hallmarks: [
+    ["2024-11-01", "AID & sAID mainnet launch"],
+  ],
 };
