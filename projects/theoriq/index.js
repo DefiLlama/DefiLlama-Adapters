@@ -1,7 +1,7 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const VAULT = "0xDbC81B33A23375A90c8Ba4039d5738CB6f56fE8d";
-const ETH_SENTINEL = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 // Spark Protocol supply/debt tokens (leveraged wstETH/WETH strategy)
 const SPARK_SP_WSTETH = "0x12b54025c112aa61face2cdb7118740875a566e9";
@@ -17,96 +17,28 @@ const LIDO_WITHDRAWAL_QUEUE = "0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1";
 
 async function tvl(api) {
   // --- 1. Discover vault assets dynamically ---
-  const assetCount = await api.call({
-    abi: "uint256:getAssetCount",
-    target: VAULT,
-  });
-  const indices = Array.from({ length: assetCount }, (_, i) => i);
-  const rawAssets = await api.multiCall({
-    abi: "function assetAt(uint256) view returns (address)",
-    target: VAULT,
-    calls: indices,
-  });
+  const rawAssets = await api.fetchList({ lengthAbi: 'getAssetCount', itemAbi: 'assetAt', target: VAULT })
   // The vault uses 0xEeee...EeE for native ETH; the SDK expects the null address
-  const tokens = rawAssets.map((a) =>
-    a.toLowerCase() === ETH_SENTINEL ? ADDRESSES.null : a
-  );
+  const tokens = rawAssets
+  tokens.push(SPARK_SP_WSTETH, SPARK_DEBT_WETH, AAVE_A_WSTETH, AAVE_A_SUSDE, AAVE_DEBT_USDE)
 
   // --- 2. Discover subvaults dynamically ---
-  const subvaultCount = await api.call({
-    abi: "uint256:subvaults",
-    target: VAULT,
-  });
-  const svIndices = Array.from({ length: subvaultCount }, (_, i) => i);
-  const subvaultAddrs = await api.multiCall({
-    abi: "function subvaultAt(uint256) view returns (address)",
-    target: VAULT,
-    calls: svIndices,
-  });
+  const subvaultAddrs = await api.fetchList({ lengthAbi: 'subvaults', itemAbi: 'subvaultAt', target: VAULT })
 
   // --- 3. Sum idle asset balances (ETH, WETH, wstETH) across vault + subvaults ---
   const owners = [VAULT, ...subvaultAddrs];
-  await api.sumTokens({ owners, tokens });
-
-  // --- 4. Spark Protocol positions on subvaults ---
-  // Supply: spWstETH → count as wstETH
-  const spWstBals = await api.multiCall({
-    abi: "erc20:balanceOf",
-    target: SPARK_SP_WSTETH,
-    calls: subvaultAddrs,
-  });
-  spWstBals.forEach((bal) => api.add(ADDRESSES.ethereum.WSTETH, bal));
-
-  // Debt: variableDebtWETH → subtract
-  const spDebtBals = await api.multiCall({
-    abi: "erc20:balanceOf",
-    target: SPARK_DEBT_WETH,
-    calls: subvaultAddrs,
-  });
-  spDebtBals.forEach((bal) => api.add(ADDRESSES.ethereum.WETH, "-" + bal));
-
-  // --- 5. Aave V3 positions on subvaults ---
-  // Supply: aEthwstETH → count as wstETH
-  const aaveWstBals = await api.multiCall({
-    abi: "erc20:balanceOf",
-    target: AAVE_A_WSTETH,
-    calls: subvaultAddrs,
-  });
-  aaveWstBals.forEach((bal) => api.add(ADDRESSES.ethereum.WSTETH, bal));
-
-  // Supply: aEthsUSDe → count as sUSDe
-  const aaveSusdeBals = await api.multiCall({
-    abi: "erc20:balanceOf",
-    target: AAVE_A_SUSDE,
-    calls: subvaultAddrs,
-  });
-  aaveSusdeBals.forEach((bal) => api.add(ADDRESSES.ethereum.sUSDe, bal));
-
-  // Debt: variableDebtEthUSDe → subtract
-  const aaveUsdeBals = await api.multiCall({
-    abi: "erc20:balanceOf",
-    target: AAVE_DEBT_USDE,
-    calls: subvaultAddrs,
-  });
-  aaveUsdeBals.forEach((bal) => api.add(ADDRESSES.ethereum.USDe, "-" + bal));
+  await sumTokens2({ api, owners, tokens })
 
   // --- 6. Lido withdrawal NFTs on subvaults → count pending stETH as ETH ---
-  for (const sv of subvaultAddrs) {
-    const requestIds = await api.call({
-      abi: "function getWithdrawalRequests(address) view returns (uint256[])",
-      target: LIDO_WITHDRAWAL_QUEUE,
-      params: [sv],
-    });
-    if (requestIds.length === 0) continue;
-    const statuses = await api.call({
-      abi: "function getWithdrawalStatus(uint256[]) view returns ((uint256 amountOfStETH, uint256 amountOfShares, address owner, uint256 timestamp, bool isFinalized, bool isClaimed)[])",
-      target: LIDO_WITHDRAWAL_QUEUE,
-      params: [requestIds],
-    });
-    for (const s of statuses) {
-      if (!s.isClaimed) api.add(ADDRESSES.null, s.amountOfStETH);
-    }
-  }
+  const requestIds = (await api.multiCall({ abi: "function getWithdrawalRequests(address) view returns (uint256[])", target: LIDO_WITHDRAWAL_QUEUE, calls: subvaultAddrs })).flat()
+  const statuses = await api.call({
+    abi: "function getWithdrawalStatus(uint256[]) view returns ((uint256 amountOfStETH, uint256 amountOfShares, address owner, uint256 timestamp, bool isFinalized, bool isClaimed)[])",
+    target: LIDO_WITHDRAWAL_QUEUE,
+    params: [requestIds],
+  });
+  for (const s of statuses)
+    if (!s.isClaimed) api.add(ADDRESSES.null, s.amountOfStETH);
+
 }
 
 module.exports = {
