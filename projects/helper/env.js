@@ -35,16 +35,21 @@ const DEFAULTS = {
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
+  PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
+  BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
   VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
-  TATUM_PUBLIC_API_KEY: "t-6956724efd74cfe6b231bee6-cd40df69ad2d423588e36fc6",
+  FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
+  TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
+  KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
 }
 
 const ENV_KEYS = [
   ...BOOL_KEYS,
   ...Object.keys(DEFAULTS),
+  'ELASTICSEARCH_CONFIG',
   'GETBLOCK_KEY',
   'LOFTY_API',
   'SOLANA_RPC_CLIENT',
@@ -60,9 +65,12 @@ const ENV_KEYS = [
   'BITCOIN_CACHE_API',
   'DEBANK_API_KEY',
   'SMARDEX_SUBGRAPH_API_KEY',
-  'PROXY_AUTH',
   'ALLIUM_API_KEY',
   'TON_API_KEY',
+  'FLOW_NON_EVM_RPC',
+  'PROXY_AUTH',
+  'UI_TOOL_MODE',
+  'P0_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

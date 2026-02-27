@@ -49,6 +49,12 @@ const ADDRESSES = {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
       fromBlock: 322190000,
     },
+    FactoryV2: [
+      {
+        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
+        fromBlock: 385228046,
+      },
+    ],
     VaultFactory: [
       {
         address: "0x929CBcb8150aD59DB63c92A7dAEc07b30d38bA79",
@@ -58,10 +64,6 @@ const ADDRESSES = {
     VaultFactoryV2: [
       {
         address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
-        fromBlock: 385228046,
-      },
-      {
-        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
         fromBlock: 385228046,
       },
     ],
@@ -75,6 +77,10 @@ const ADDRESSES = {
       fromBlock: 50519690,
     },
     FactoryV2: [
+      {
+        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
+        fromBlock: 63100000,
+      },
       // Start of TermMax Alpha
       {
         address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
@@ -82,12 +88,6 @@ const ADDRESSES = {
       },
       // End of TermMax Alpha
     ],
-    // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
-    //   {
-    //     address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
-    //     fromBlock: 71136348,
-    //   },
-    // ],
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
@@ -97,10 +97,6 @@ const ADDRESSES = {
     VaultFactoryV2: [
       {
         address: "0x1401049368eD6AD8194f8bb7E41732c4620F170b",
-        fromBlock: 63100000,
-      },
-      {
-        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
         fromBlock: 63100000,
       },
       // Start of TermMax Alpha
@@ -113,6 +109,12 @@ const ADDRESSES = {
     TermMax4626Factory: [
       { address: "0x67dcDCc57208B574B05999AA3dFA57bfF2324129", fromBlock: 63208984 },
     ],
+    // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
+    //   {
+    //     address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
+    //     fromBlock: 71136348,
+    //   },
+    // ],
   },
   ethereum: {
     zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
@@ -191,13 +193,32 @@ const ADDRESSES = {
       },
     ],
   },
+  bsquared: {
+    FactoryV2: [
+      {
+        address: "0x33931f3898EfB9A42B0D7CFfa9bb50A566A6b421",
+        fromBlock: 28981154,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
+        fromBlock: 28981154,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
   arbitrum: [
     "0x8531dC1606818A3bc3D26207a63641ac2F1f6Dc8", // misconfigured asset
   ],
-  ethereum: [],
+  ethereum: [
+    "0x5c16d84e998c661d9f6c7cc23e1144e4b7f39759",
+  ],
   bsc: [
     "0xe5E01B82904a49Ce5a670c1B7488C3f29433088a", // misconfigured asset
   ],
@@ -467,6 +488,55 @@ async function getTermMaxMarketBorrowed(api) {
   }
 }
 
+async function getTermMaxV2MarketBorrowed(api) {
+  const marketAddresses = await getTermMaxMarketV2Addresses(api);
+  const [tokens, configs] = await Promise.all([
+    api.multiCall({
+      abi: ABIS.Market.tokens,
+      calls: marketAddresses,
+    }),
+    api.multiCall({
+      abi: ABIS.Market.config,
+      calls: marketAddresses,
+    }),
+  ]);
+
+  const activeMarkets = [];
+  for (let i = 0; i < marketAddresses.length; i += 1) {
+    const marketAddress = marketAddresses[i];
+    const { maturity } = configs[i];
+    if (maturity <= api.timestamp) continue;
+
+    const { fixedToken, xToken, debt } = tokens[i];
+    activeMarkets.push({ marketAddress, fixedToken, xToken, debt });
+  }
+
+  const mintableERC20Array = Array.from(
+    new Set(
+      activeMarkets.flatMap(({ fixedToken, xToken }) => [fixedToken, xToken])
+    )
+  );
+  const totalSupplies = await api.multiCall({
+    abi: ABIS.MintableERC20.totalSupply,
+    calls: mintableERC20Array,
+  });
+  const tokenSupplyMap = new Map(
+    totalSupplies.map((supply, index) => [mintableERC20Array[index], supply])
+  );
+
+  for (const activeMarket of activeMarkets) {
+    const { fixedToken, xToken, debt } = activeMarket;
+
+    const ftSupply = tokenSupplyMap.get(fixedToken);
+    if (!ftSupply) continue;
+
+    const xtSupply = tokenSupplyMap.get(xToken);
+    if (!xtSupply) continue;
+
+    api.add(debt, ftSupply - xtSupply);
+  }
+}
+
 async function erc4626VaultsTvl(api) {
   if (!ADDRESSES[api.chain].TermMax4626Factory) return;
   const tokensAndOwners = [];
@@ -479,7 +549,7 @@ async function erc4626VaultsTvl(api) {
       eventAbi: EVENTS.TermMax4626Factory.StableERC4626For4626Created,
       fromBlock: factory.fromBlock,
       target: factory.address,
-      extraKey: `StableERC4626For4626Created`,
+      extraKey: 'StableERC4626For4626Created-20260206',
     });
     stableERC4626For4626Vaults.push(...logs.map(i => i.stableERC4626For4626));
 
@@ -488,7 +558,7 @@ async function erc4626VaultsTvl(api) {
       eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForAaveCreated,
       fromBlock: factory.fromBlock,
       target: factory.address,
-      extraKey: `StableERC4626ForAaveCreated`,
+      extraKey: 'StableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.stableERC4626ForAave));
 
@@ -498,7 +568,7 @@ async function erc4626VaultsTvl(api) {
       eventAbi: EVENTS.TermMax4626Factory.VariableERC4626ForAaveCreated,
       fromBlock: factory.fromBlock,
       target: factory.address,
-      extraKey: `VariableERC4626ForAaveCreated`,
+      extraKey: 'VariableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
   }
@@ -537,6 +607,11 @@ Object.keys(ADDRESSES).forEach(chain => {
       const ownerTokens = await getTermMaxOwnerTokens(api);
       return sumTokens2({ api, ownerTokens })
     },
-    borrowed: getTermMaxMarketBorrowed,
+    borrowed: async (api) => {
+      await Promise.all([
+        getTermMaxMarketBorrowed(api),
+        getTermMaxV2MarketBorrowed(api),
+      ]);
+    },
   }
 })

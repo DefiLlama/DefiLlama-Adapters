@@ -20,11 +20,13 @@ const CONFIG = {
   celo: ['0x33b7d355613110b4E842f5f7057Ccd36fb4cee28'],
   soneium: ['0xa0208CE8356ad6C5EC6dFb8996c9A6B828212022'],
   plasma: ['0xf2D6E38B407e31E7E7e4a16E6769728b76c7419F'],
+  megaeth: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
+  mantle: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
 };
 
 module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
-  [1659630089, "Start OP Rewards"],
-  [1650471689, "Start AVAX Rewards"]
+  ['2022-08-04', "Start OP Rewards"],
+  ['2022-04-20', "Start AVAX Rewards"]
 ]

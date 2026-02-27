@@ -1,6 +1,63 @@
 const { getLogs2 } = require("../../helper/cache/getLogs")
 const { ABI, MorphoConfigs, EulerConfigs, SiloConfigs, VesuConfigs } = require('./configs')
 const { multiCall } = require('../chain/starknet')
+const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
+const { getProvider, getConnection, } = require('../solana')
+const kvaultIdl = require('../../gauntlet/kvault-idl.json')
+const { Program, BN } = require("@project-serum/anchor")
+const { PublicKey } = require("@solana/web3.js")
+
+
+async function kaminoLendVaultTvl(api, adminAddress) {
+  const KAMINO_LEND_VAULT_LAYER_PROGRAM_ID = new PublicKey('KvauGMspG5k6rtzrqqn7WNn3oZdyKqLKwK2XWQ8FLjd')
+
+  if (typeof adminAddress === 'string')
+    adminAddress = new PublicKey(adminAddress)
+
+  const connection = getConnection()
+  const provider = getProvider()
+
+  // Load the kvault IDL
+  const kvaultProgram = new Program(kvaultIdl, KAMINO_LEND_VAULT_LAYER_PROGRAM_ID, provider)
+
+  // Query vault accounts directly using getProgramAccounts with base58 encoded filter
+  const adminBytes = adminAddress.toBuffer()
+  const rawAccounts = await connection.getProgramAccounts(
+    KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
+    {
+      filters: [
+        {
+          memcmp: {
+            offset: 8, // After 8-byte Anchor discriminator
+            bytes: bs58.encode(adminBytes)
+          }
+        }
+      ]
+    }
+  )
+
+  // Extract vault data and calculate total AUM from prevAumSf
+  for (const { account } of rawAccounts) {
+    // Decode the account using Anchor's coder
+    const vaultState = kvaultProgram.coder.accounts.decode('VaultState', account.data)
+    const tokenMint = vaultState.tokenMint.toString()
+
+    // prevAumSf is in scaled fixed point format (60-bit fractional part)
+    // It represents the AUM in token's native units (already includes decimals)
+    // Total AUM = prevAumSf / (2^60)
+    const prevAumSf = vaultState.prevAumSf
+    const SCALING_FACTOR = BigInt(2) ** BigInt(60) // 2^60 for 60-bit fractional part
+
+    // Convert prevAumSf to BigInt (it's a u128, which Anchor returns as BN or string)
+    const aumSfBigInt = typeof prevAumSf === 'string' ? BigInt(prevAumSf) : BigInt(prevAumSf.toString())
+
+    // Calculate total tokens: prevAumSf / 2^60
+    // prevAumSf is already in token's smallest unit (with decimals), so we just divide by the scaling factor
+    const totalTokens = aumSfBigInt / SCALING_FACTOR
+
+    api.add(tokenMint, totalTokens.toString())
+  }
+}
 
 function isOwner(owner, owners) {
   for (const item of owners) {
@@ -14,18 +71,39 @@ function isOwner(owner, owners) {
 async function getMorphoVaults(api, owners) {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
-  for (const factory of MorphoConfigs[api.chain].vaultFactories) {
-    const vaultOfOwners = (
-      await getLogs2({
-        api,
-        eventAbi: ABI.morpho.CreateMetaMorphoEvent,
-        target: factory.address,
-        fromBlock: factory.fromBlock,
-        toBlock: safeBlock
-      })
-    ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
-    allVaults = allVaults.concat(vaultOfOwners)
+
+  // Query v1 vaults
+  if (MorphoConfigs[api.chain]?.vaultFactories) {
+    for (const factory of MorphoConfigs[api.chain].vaultFactories) {
+      const vaultOfOwners = (
+        await getLogs2({
+          api,
+          eventAbi: ABI.morpho.CreateMetaMorphoEvent,
+          target: factory.address,
+          fromBlock: factory.fromBlock,
+          toBlock: safeBlock
+        })
+      ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
+      allVaults = allVaults.concat(vaultOfOwners)
+    }
   }
+
+  // Query v2 vaults
+  if (MorphoConfigs[api.chain]?.vaultFactoriesV2) {
+    for (const factory of MorphoConfigs[api.chain].vaultFactoriesV2) {
+      const vaultOfOwners = (
+        await getLogs2({
+          api,
+          eventAbi: ABI.morpho.CreateVaultV2Event,
+          target: factory.address,
+          fromBlock: factory.fromBlock,
+          toBlock: safeBlock
+        })
+      ).filter(log => isOwner(log.owner, owners)).map((log) => log.newVaultV2)
+      allVaults = allVaults.concat(vaultOfOwners)
+    }
+  }
+
   return allVaults
 }
 
@@ -82,6 +160,7 @@ async function getSiloVaults(api, owners) {
     })
     for (let i = 0; i < siloVaultsOwners.length; i++) {
       if (isOwner(siloVaultsOwners[i], owners)) {
+        if(SiloConfigs[api.chain]?.blacklistedVaults?.includes(siloVaults[i].toLowerCase())) continue // skip blacklisted vaults
         allVaults.push(siloVaults[i])
       }
     }
@@ -218,41 +297,57 @@ async function getCuratorTvlErc4626(api, vaults) {
     }
   }
 
-  // Process Morpho pairs with de-duplication
+  // Group morpho pairs by their V1 vault to avoid counting V1 totalAssets multiple times
+  const v1Groups = new Map() // v1 address -> { v1, v2Vaults: [] }
   for (const { v1, v2 } of morphoPairs) {
-    let v2DepositsInV1 = 0n
+    const key = v1.vault.toLowerCase()
+    if (!v1Groups.has(key)) {
+      v1Groups.set(key, { v1, v2Vaults: [] })
+    }
+    v1Groups.get(key).v2Vaults.push(v2)
+  }
 
-    if (v2.liquidityAdapter) {
-      // Get v2's deposits in v1 using the adapter address
-      const v2AdapterSharesInV1 = await api.call({
-        abi: ABI.ERC4626.balanceOf,
-        target: v1.vault,
-        params: [v2.liquidityAdapter],
-        permitFailure: true,
-      })
+  // Process each unique V1 vault once, summing all V2 contributions
+  for (const { v1, v2Vaults: v2List } of v1Groups.values()) {
+    let totalV2Assets = 0n
+    let totalV2DepositsInV1 = 0n
 
-      if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
-        // Convert v1 shares held by v2 adapter to underlying assets
-        const v2AssetsInV1 = await api.call({
-          abi: ABI.ERC4626.convertToAssets,
+    for (const v2 of v2List) {
+      totalV2Assets += v2.totalAssets
+
+      if (v2.liquidityAdapter) {
+        // Get v2's deposits in v1 using the adapter address
+        const v2AdapterSharesInV1 = await api.call({
+          abi: ABI.ERC4626.balanceOf,
           target: v1.vault,
-          params: [v2AdapterSharesInV1],
+          params: [v2.liquidityAdapter],
           permitFailure: true,
         })
-        if (v2AssetsInV1) {
-          v2DepositsInV1 = BigInt(v2AssetsInV1)
+
+        if (v2AdapterSharesInV1 && BigInt(v2AdapterSharesInV1) > 0n) {
+          // Convert v1 shares held by v2 adapter to underlying assets
+          const v2AssetsInV1 = await api.call({
+            abi: ABI.ERC4626.convertToAssets,
+            target: v1.vault,
+            params: [v2AdapterSharesInV1],
+            permitFailure: true,
+          })
+          if (v2AssetsInV1) {
+            totalV2DepositsInV1 += BigInt(v2AssetsInV1)
+          }
         }
       }
     }
 
-    // Unique TVL = V1 + V2 - v2_deposits_in_v1
-    const uniqueTvl = v1.totalAssets + v2.totalAssets - v2DepositsInV1
+    // Unique TVL = V1 + sum(V2) - sum(v2_deposits_in_v1)
+    // Count V1 totalAssets only ONCE regardless of how many V2 vaults wrap it
+    const uniqueTvl = v1.totalAssets + totalV2Assets - totalV2DepositsInV1
     api.add(v1.asset, uniqueTvl)
   }
 }
 
 async function getCuratorTvlAeraVault(api, vaults) {
-  const assetRegistries =  await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
+  const assetRegistries = await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
   const existedVaults = []
   const existedRegistries = []
   for (let i = 0; i < vaults.length; i++) {
@@ -261,7 +356,7 @@ async function getCuratorTvlAeraVault(api, vaults) {
       existedRegistries.push(assetRegistries[i])
     }
   }
-  const assets =  await api.multiCall({ abi: ABI.aera.numeraireToken, calls: existedRegistries })
+  const assets = await api.multiCall({ abi: ABI.aera.numeraireToken, calls: existedRegistries })
   const values = await api.multiCall({ abi: ABI.aera.value, calls: existedVaults, permitFailure: true })
   api.add(assets, values.map(v => v || 0))
 }
@@ -276,9 +371,22 @@ async function getCuratorTvlVesuVault(api, vaults) {
   });
 }
 
+async function getCuratorTvlVesuVaultV2(api, vaults) {
+  const poolAssets = vaults.map((pool_id) => VesuConfigs.assetsV2.map((asset) => ({ pool_id, asset }))).flat();
+  const calls = poolAssets.map(({ pool_id, asset }) => ({ target: VesuConfigs.poolFactory, params: [pool_id, asset] }));
+  const vTokensBigInts = await multiCall({ calls, abi: VesuConfigs.abiV2.v_token_for_asset, allAbi: VesuConfigs.allAbiV2 });
+  const vTokens = vTokensBigInts.filter(v => v > 0n).map(v => `0x${v.toString(16)}`);
+  const assetsBigInts = await multiCall({ calls: vTokens, abi: VesuConfigs.abiV2.asset, allAbi: VesuConfigs.allAbiV2 });
+  const assets = assetsBigInts.map(a => `0x${a.toString(16)}`);
+  const balances = await multiCall({ calls: vTokens, abi: VesuConfigs.abiV2.total_assets, allAbi: VesuConfigs.allAbiV2 });
+  assets.forEach((asset, index) => {
+    api.add(asset, balances[index] ? balances[index] : 0);
+  });
+}
+
 async function getCuratorTvlBoringVault(api, vaults) {
   let filterHookVaults = []
-  const hooks =  await api.multiCall({ abi: ABI.boringVault.hook, calls: vaults, permitFailure: true })
+  const hooks = await api.multiCall({ abi: ABI.boringVault.hook, calls: vaults, permitFailure: true })
   for (let i = 0; i < vaults.length; i++) {
     if (hooks[i]) {
       filterHookVaults.push({
@@ -305,13 +413,13 @@ async function getCuratorTvlBoringVault(api, vaults) {
   const decimals = await api.multiCall({ abi: ABI.decimals, calls: filterAccountantVaults.map(filterVault => filterVault.accountant) })
   for (let i = 0; i < assets.length; i++) {
     if (assets[i]) {
-      api.add(assets[i], rates[i] * supplies[i] / 10**(Number(decimals[i])))
+      api.add(assets[i], rates[i] * supplies[i] / 10 ** (Number(decimals[i])))
     }
   }
 }
 
 async function getCuratorTvlSymbioticVault(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.symbiotic.collateral, calls: vaults, permitFailure: true })
+  const assets = await api.multiCall({ abi: ABI.symbiotic.collateral, calls: vaults, permitFailure: true })
   const existedVaults = []
   for (let i = 0; i < vaults.length; i++) {
     if (assets[i]) {
@@ -337,6 +445,15 @@ async function getNested4626Vaults(api, vaults) {
 }
 
 async function getCuratorTvl(api, vaults) {
+
+  if (api.chain === 'solana') {
+    const adminAddress = vaults.kaminoLendVaultAdmins ?? []
+    for (const admin of adminAddress)
+      await kaminoLendVaultTvl(api, admin)
+
+    return api.getBalances()
+  }
+
   const allVaults = {
     morpho: vaults.morpho ? vaults.morpho : [],
     euler: vaults.euler ? vaults.euler : [],
@@ -382,6 +499,11 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlVesuVault(api, vaults.vesu)
   }
 
+  // vesu.xyz vaults V2
+  if (vaults.vesuV2) {
+    await getCuratorTvlVesuVaultV2(api, vaults.vesuV2)
+  }
+
   // turtle.club vaults - boring vaults
   if (vaults.turtleclub) {
     await getCuratorTvlBoringVault(api, vaults.turtleclub)
@@ -396,6 +518,8 @@ async function getCuratorTvl(api, vaults) {
   if (vaults.nestedVaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
   }
+
+  return api.getBalances()
 }
 
 function getCuratorExport(configs) {
@@ -421,4 +545,5 @@ function getCuratorExport(configs) {
 module.exports = {
   getCuratorTvl,
   getCuratorExport,
+  kaminoLendVaultTvl,
 }

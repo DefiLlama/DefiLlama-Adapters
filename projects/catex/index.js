@@ -35,6 +35,6 @@ module.exports = {
   polygon: { tvl: (api) => tvlForChain(api, '137') },
   unichain: { tvl: (api) => tvlForChain(api, '130') },
   hallmarks: [
-    [1748451600, "Catex migrated from Polygon to Unichain"],
+    ['2025-05-28', "Catex migrated from Polygon to Unichain"],
   ],
 } 

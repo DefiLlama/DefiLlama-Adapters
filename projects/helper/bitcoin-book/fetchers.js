@@ -263,6 +263,10 @@ module.exports = {
     })
     return Array.from(new Set(staticAddresses))
   },
+  teleswap: async () => {
+    const  { data: { lockers } } = await getConfig('yala/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
+    return lockers.filter(l => l.type === 'BTC').map(l => l.sourceAddress)
+  },
   zenrock: async () => {
     const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
     const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';
@@ -302,8 +306,7 @@ module.exports = {
           return btcAddresses;
         }
 
-        async function getChangeAddresses() {
-          const paramsData = await get(ZENBTC_PARAMS_API);
+        async function getChangeAddresses(paramsData) {
           if (!paramsData?.params?.changeAddressKeyIDs) {
             return [];
           }
@@ -321,11 +324,25 @@ module.exports = {
           return changeAddresses;
         }
 
-        const [btcAddresses, changeAddresses] = await Promise.all([
+        async function getRewardsDepositAddress(paramsData) {
+          const keyID = paramsData?.params?.rewardsDepositKeyID;
+          if (!keyID) return [];
+          const keyData = await get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+          if (keyData.wallets && Array.isArray(keyData.wallets)) {
+            return keyData.wallets
+              .filter(w => w.type === 'WALLET_TYPE_BTC_MAINNET' && w.address)
+              .map(w => w.address);
+          }
+          return [];
+        }
+
+        const paramsData = await get(ZENBTC_PARAMS_API);
+        const [btcAddresses, changeAddresses, rewardsAddresses] = await Promise.all([
           getBitcoinAddresses(),
-          getChangeAddresses(),
+          getChangeAddresses(paramsData),
+          getRewardsDepositAddress(paramsData),
         ]);
-        const allAddresses = [...btcAddresses, ...changeAddresses];
+        const allAddresses = [...btcAddresses, ...changeAddresses, ...rewardsAddresses];
         return allAddresses;
       }
     });

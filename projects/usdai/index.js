@@ -1,4 +1,13 @@
-const abi = require("./abi.json");
+const abi = {
+  "claimableBaseYield": "uint256:claimableBaseYield",
+  "pools": "address[]:pools",
+  "currencyToken": "address:currencyToken",
+  "liquidityNodes": "function liquidityNodes(uint128 startTick, uint128 endTick) view returns (tuple(uint128 tick, uint128 value, uint128 shares, uint128 available, uint128 pending, uint128 redemptions, uint128 prev, uint128 next)[])",
+  "whitelistedTokens": "function whitelistedTokens() external view returns (address[] memory)",
+  "loanRouterBalances": "function loanRouterBalances() external view returns (uint256, uint256, uint256)",
+  "loanState": "function loanState(bytes32 loanTermsHash) external view returns (uint8, uint64, uint64, uint256)",
+  "baseYieldAccrued": "function baseYieldAccrued() external view returns (uint256)"
+};
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { gql, request } = require("graphql-request");
 
@@ -10,9 +19,11 @@ const STAKED_USDAI_CONTRACT = "0x0B2b2B2076d95dda7817e785989fE353fe955ef9";
 const QUEUED_DEPOSITOR_CONTRACT = "0x81cc0DEE5e599784CBB4862c605c7003B0aC5A53";
 const LOAN_ROUTER_CONTRACT = "0x0C2ED170F2bB1DF1a44292Ad621B577b3C9597D1";
 const WRAPPED_M_CONTRACT = "0x437cc33344a0B27A429f795ff6B469C72698B291";
+const PYUSD = "0x46850aD61C2B7d64d08c9C754F45254596696984";
 const USDC = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 const USDT = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9";
-const LOAN_TOKENS = [USDC, USDT];
+const WHITELISTED_TOKENS = [USDC, USDT, PYUSD];
+const LOAN_TOKENS = [USDC, USDT, PYUSD];
 const LEGACY_POOL_1 = "0x0f62b8C58E1039F246d69bA2215ad5bF0D2Bb867";
 const LEGACY_POOL_2 = "0xcd9d510c4e2fe45e6ed4fe8a3a30eeef3830cc14";
 const LEGACY_POOLS = [LEGACY_POOL_1, LEGACY_POOL_2];
@@ -50,99 +61,124 @@ async function tvl(api) {
   // Add wrapped M balance in USDai
   api.add(WRAPPED_M_CONTRACT, wrappedMBalanceInUsdai);
 
+  // Get PYUSD balance in USDai
+  const pyusdBalanceInUsdai = await api.call({
+    target: PYUSD,
+    abi: 'erc20:balanceOf',
+    params: [USDAI_CONTRACT],
+  })
+
+  // Add PYUSD balance in USDai
+  api.add(PYUSD, pyusdBalanceInUsdai);
+
   // Get wrapped M tokens in Staked USDai
   const wrappedMBalanceInStakedUsdai = await api.call({
-      target: WRAPPED_M_CONTRACT,
-      abi: 'erc20:balanceOf',
-      params: [STAKED_USDAI_CONTRACT],
+    target: WRAPPED_M_CONTRACT,
+    abi: 'erc20:balanceOf',
+    params: [STAKED_USDAI_CONTRACT],
   })
-  
+
   // Add wrapped M balance in Staked USDai
   api.add(WRAPPED_M_CONTRACT, wrappedMBalanceInStakedUsdai);
 
-  // Immediately claimable wrapped M tokens
-  const claimableWrappedM = await api.call({
-    target: STAKED_USDAI_CONTRACT,
-    abi: abi.claimableBaseYield // return value is scaled up by 10^12
-  }) / 10 ** 12; // scale down by 10^12 to match the decimals of the wrapped M token
+  // Claimable wrapped M tokens (to be phased out)
+  try {
+    const claimableWrappedM = await api.call({
+      target: STAKED_USDAI_CONTRACT,
+      abi: abi.claimableBaseYield // return value is scaled up by 10^12
+    });
+    const scaledClaimableWrappedM = BigInt(claimableWrappedM) / (10n ** 12n); // scale down by 10^12 to match wrapped M decimals
 
-  // Add claimable wrapped M tokens
-  api.add(WRAPPED_M_CONTRACT, claimableWrappedM)
+    // Add claimable wrapped M tokens
+    api.add(WRAPPED_M_CONTRACT, scaledClaimableWrappedM)
+  } catch (error) {
+    console.error(error);
+  }
+
+  // Claimable PYUSD (scaled down by 10^12 to match the decimals of the PYUSD token)
+  const claimablePyusd = await api.call({
+    target: USDAI_CONTRACT,
+    abi: abi.baseYieldAccrued,
+  });
+  const scaledClaimablePyusd = BigInt(claimablePyusd) / BigInt(10 ** 12);
+
+  // Add claimable PYUSD 
+  api.add(PYUSD, scaledClaimablePyusd);
 
   // Get loan repayment balances in Staked USDai
   await sumTokens2({
     api,
-    owner: STAKED_USDAI_CONTRACT, 
+    owner: STAKED_USDAI_CONTRACT,
     tokens: LOAN_TOKENS,
     permitFailure: true,
   })
 
   // Add tokens held by the queued depositor  
-  const whitelistedTokens = await api.call({
-    target: QUEUED_DEPOSITOR_CONTRACT,
-    abi: abi.whitelistedTokens,
-  });
   await sumTokens2({
     api,
-    owner: QUEUED_DEPOSITOR_CONTRACT, 
-    tokens: whitelistedTokens,
+    owner: QUEUED_DEPOSITOR_CONTRACT,
+    tokens: WHITELISTED_TOKENS,
     permitFailure: true,
   })
 }
 
 async function borrowed(api) {
-    // Legacy pools
-    const tokens = await api.multiCall({ abi: abi.currencyToken, calls: LEGACY_POOLS, permitFailure: true });
-    const tokenDecimals = await api.multiCall({
-      abi: "erc20:decimals",
-      calls: tokens.map((token) => ({ target: token })),
+  // Legacy pools
+  const tokens = await api.multiCall({ abi: abi.currencyToken, calls: LEGACY_POOLS, permitFailure: true });
+  const tokenDecimals = await api.multiCall({
+    abi: "erc20:decimals",
+    calls: tokens.map((token) => ({ target: token })),
+    permitFailure: true,
+  });
+  const decimalsMap = {};
+  tokens.forEach((token, index) => {
+    decimalsMap[token] = tokenDecimals[index];
+  });
+  const poolsBorrowedValue = (
+    await api.multiCall({
+      abi: abi.liquidityNodes,
+      calls: LEGACY_POOLS.map((pool) => ({
+        target: pool,
+        params: [0, MAX_UINT_128],
+      })),
       permitFailure: true,
-    });
-    const decimalsMap = {};
-    tokens.forEach((token, index) => {
-      decimalsMap[token] = tokenDecimals[index];
-    });
-    const poolsBorrowedValue = (
-      await api.multiCall({
-        abi: abi.liquidityNodes,
-        calls: LEGACY_POOLS.map((pool) => ({
-          target: pool,
-          params: [0, MAX_UINT_128],
-        })),
-        permitFailure: true,
-      })
-    ).map((liquidityNodes, poolIndex) => {
-      const token = tokens[poolIndex];
-      const decimals = decimalsMap[token];
-      const scalingFactor = 10 ** (18 - decimals);
+    })
+  ).map((liquidityNodes, poolIndex) => {
+    const token = tokens[poolIndex];
+    const decimals = decimalsMap[token];
+    if (decimals == null || !liquidityNodes) return 0;
+    const scalingFactor = 10 ** (18 - decimals);
 
-      return liquidityNodes.reduce((partialSum, node) => {
-        const scaledValue = (+node.value - +node.available) / scalingFactor;
-        return partialSum + scaledValue;
-      }, 0);
-    });
-    api.addTokens(tokens, poolsBorrowedValue);
+    return liquidityNodes.reduce((partialSum, node) => {
+      const scaledValue = (+node.value - +node.available) / scalingFactor;
+      return partialSum + scaledValue;
+    }, 0);
+  });
+  api.addTokens(tokens, poolsBorrowedValue);
 
-    // Loan router borrowed
-    const { loanRouterEvents } = await request(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, {
-      timestampLte: String(api.timestamp),
-    });
-    for (const event of loanRouterEvents) {
-      // Get the currency token
-      const { currencyToken } = event.loanOriginated;
-    
-      // Get scaled balance
-      const [status, , , scaledBalance] = await api.call({ abi: abi.loanState, target: LOAN_ROUTER_CONTRACT, params: [event.loanTermsHash] });
+  // Loan router borrowed
+  const { loanRouterEvents } = await request(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, {
+    timestampLte: String(api.timestamp),
+  });
+  for (const event of loanRouterEvents) {
+    // Get the currency token
+    const { currencyToken } = event.loanOriginated;
 
-      // If the loan is inactive, continue
-      if (status !== "1") continue;
+    // Get scaled balance
+    const [status, , , scaledBalance] = await api.call({ abi: abi.loanState, target: LOAN_ROUTER_CONTRACT, params: [event.loanTermsHash] });
 
-      // Scale down by the decimals of the currency token
-      const unscaledBalance = scaledBalance / 10 ** (18 - currencyToken.decimals);
+    // If the loan is inactive, continue
+    if (+status !== 1) continue;
 
-      // Add the balance to the TVL
-      api.add(currencyToken.id, unscaledBalance);
-    }
+    // If the currency token has more than 18 decimals, continue
+    if (currencyToken.decimals > 18) continue;
+
+    // Scale down by the decimals of the currency token
+    const unscaledBalance = BigInt(scaledBalance) / BigInt(10 ** (18 - currencyToken.decimals));
+
+    // Add the balance to the TVL
+    api.add(currencyToken.id, unscaledBalance);
+  }
 }
 
 module.exports = {
@@ -151,9 +187,9 @@ module.exports = {
     borrowed,
   },
   methodology:
-    "TVL is calculated by summing the value of tokens held by the protocol and outstanding immediately claimable yield.",
+    "TVL is calculated by summing the value of tokens held by the protocol and outstanding claimable yield.",
   hallmarks: [
-    [1757548800, "Deposit Caps raised to $250M"],
-    [1758758400, "Deposit Caps raised to $500M"]
+    ["2025-09-12", "Deposit Caps raised to $250M"],
+    ["2025-09-26", "Deposit Caps raised to $500M"]
   ],
 };
