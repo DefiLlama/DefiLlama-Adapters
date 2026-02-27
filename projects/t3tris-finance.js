@@ -6,7 +6,9 @@
  * routing into underlying yield sources (e.g., AAVE stataTokens).
  *
  * TVL is calculated by enumerating all vaults deployed via the T3tris
- * factory contract and summing their totalAssets().
+ * factory contract and summing their grossTVL from getGrossTVL().
+ * grossTVL = totalManagedAssets + pendingDeposits + claimableRedeems,
+ * providing the most complete picture of assets under management.
  *
  * The factory address is deterministic (CREATE3) and identical on all chains.
  */
@@ -19,6 +21,9 @@ const ABI = {
     "function getDeployedVaultsCount() external view returns (uint256)",
   getDeployedVaults:
     "function getDeployedVaults(uint256 fromIndex, uint256 toIndex) external view returns (address[])",
+  asset: "function asset() external view returns (address)",
+  getGrossTVL:
+    "function getGrossTVL() external view returns (uint256 totalManagedAssets, uint256 pendingDeposits, uint256 claimableRedeems, uint256 grossTVL)",
 };
 
 async function tvl(api) {
@@ -39,14 +44,30 @@ async function tvl(api) {
 
   if (!vaults || vaults.length === 0) return {};
 
-  // Each vault is ERC4626 — use the native helper to sum
-  // asset() returns the underlying token, totalAssets() the balance
-  await api.erc4626Sum({
+  // Get underlying asset for each vault
+  const assets = await api.multiCall({
+    abi: ABI.asset,
     calls: vaults,
-    tokenAbi: "address:asset",
-    balanceAbi: "uint256:totalAssets",
     permitFailure: true,
   });
+
+  // Get grossTVL for each vault (totalManagedAssets + pendingDeposits + claimableRedeems)
+  const grossTvls = await api.multiCall({
+    abi: ABI.getGrossTVL,
+    calls: vaults,
+    permitFailure: true,
+  });
+
+  // Sum balances per underlying token
+  for (let i = 0; i < vaults.length; i++) {
+    if (!assets[i] || !grossTvls[i]) continue;
+    // getGrossTVL returns (totalManagedAssets, pendingDeposits, claimableRedeems, grossTVL)
+    // grossTVL is the 4th element (index 3)
+    const grossTvl = grossTvls[i].grossTVL || grossTvls[i][3];
+    if (grossTvl) {
+      api.add(assets[i], grossTvl);
+    }
+  }
 
   return api.getBalances();
 }
@@ -65,15 +86,14 @@ const chains = [
   "blast",
   "mantle",
   "mode",
-  "gnosis",
+  "xdai",
   "fantom",
   "sonic",
 ];
 
 module.exports = {
   methodology:
-    "TVL is calculated by summing the totalAssets() of all T3tris vaults deployed through the protocol factory. Underlying vault assets are routed through silos into yield strategies (e.g., AAVE stataTokens), so TVL is double-counted with the underlying protocol.",
-  doublecounted: true,
+    "TVL is calculated by summing the grossTVL (totalManagedAssets + pendingDeposits + claimableRedeems) of all T3tris vaults deployed through the protocol factory, providing the complete picture of assets under management.",
 };
 
 chains.forEach((chain) => {
