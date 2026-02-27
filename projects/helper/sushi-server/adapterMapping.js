@@ -8,6 +8,7 @@ module.exports = {
         'injective-orderbook': '/injective-orderbook/api',
         'lisa': '/lisa/api',
         'chutes': '/chutes/api',
+        'zest': '/zest/api',
       },
       {
         'bifrost-staking': '/bifrost-staking/api',
@@ -39,6 +40,7 @@ module.exports = {
       },
       {
         'hydradx': '/hydradx/api.js',
+        'zest-v2': '/zest-v2/api.js',
       },
       {
         'manta-atlantic-stake': '/manta-atlantic-stake/api',
