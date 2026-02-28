@@ -49,41 +49,62 @@ query {
   }
 }`;
 
+/**
+ * Builds a GraphQL query to fetch tokenRecords at a specific block.
+ * @param {number} block - The block number to query at.
+ * @returns {string} GraphQL query string.
+ */
 const protocolQuery = (block) => `
-  query {
-    tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
-      block
-      timestamp
-      category
-      tokenAddress
-      token
-      balance
-    }
+query {
+  tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
+    block
+    timestamp
+    category
+    tokenAddress
+    token
+    balance
   }
+}
 `;
 
+/**
+ * Aggregates token records by tokenAddress, summing balances for duplicate entries.
+ * Used to collapse multiple subgraph rows for the same token into a single balance.
+ * @param {Array<{tokenAddress: string, balance: string|number, category: string, token: string}>} arr
+ * @returns {Array<{tokenAddress: string, balance: number, category: string, token: string}>}
+ */
 function sumBalancesByTokenAddress(arr) {
-  return arr.reduce((acc, curr) => {
-    const found = acc.find((item) => item.tokenAddress === curr.tokenAddress);
-    if (found) {
-      found.balance = +found.balance + +curr.balance;
+  const map = new Map();
+  for (const curr of arr) {
+    const existing = map.get(curr.tokenAddress);
+    if (existing) {
+      existing.balance += +curr.balance;
     } else {
-      acc.push({
+      map.set(curr.tokenAddress, {
         tokenAddress: curr.tokenAddress,
-        balance: curr.balance,
+        balance: +curr.balance,
         category: curr.category,
         token: curr.token,
       });
     }
-    return acc;
-  }, []);
+  }
+  return Array.from(map.values());
 }
 
 /**
- * Build TVL function for different modes:
- * - 'tvl': Treasury assets excluding OHM/gOHM and borrowed assets
- * - 'ownTokens': Protocol-owned OHM/gOHM
- * - 'borrowed': DAI lent out through Cooler Loans
+ * Factory that returns an async TVL function for the given mode.
+ *
+ * Modes:
+ * - 'tvl'       : Treasury assets excluding OHM/gOHM and Protocol-Owned Liquidity.
+ *                 POL is tracked in Olympus treasury dashboards and excluded here
+ *                 to avoid double-counting with the Uniswap V3 adapter.
+ * - 'ownTokens' : Protocol-owned OHM and gOHM only.
+ *
+ * Note: 'borrowed' (Cooler Loans) is intentionally omitted — tracked separately
+ * by the projects/cooler-loans adapter to avoid double-counting.
+ *
+ * @param {'tvl'|'ownTokens'} mode - Which subset of treasury records to return.
+ * @returns {function(api: object): Promise<object>} Async TVL function for DeFiLlama.
  */
 function buildTvl(mode = 'tvl') {
   return async function(api) {
@@ -106,9 +127,12 @@ function buildTvl(mode = 'tvl') {
     const trResp = await blockQuery(subgraphUrls[api.chain], protocolQuery(blockNum), { api });
     const tokenRecords = trResp?.tokenRecords || [];
 
-    // Filter out problematic pools
+    // Exclude Protocol-Owned Liquidity and problematic pools from TVL.
+    // POL (Uniswap V3 LP positions) is tracked separately in Olympus treasury dashboards
+    // and is intentionally excluded here to avoid double-counting with the Uniswap V3 adapter.
     const filteredTokenRecords = tokenRecords.filter(
-      (t) => !poolsWithoutDecimals.includes(t.tokenAddress)
+      (t) => t.category !== 'Protocol-Owned Liquidity' &&
+             !poolsWithoutDecimals.includes(t.tokenAddress)
     );
 
     // Normalize addresses for pricing
@@ -119,44 +143,43 @@ function buildTvl(mode = 'tvl') {
 
     const ownTokens = new Set(olympusTokens.map(i => i.toLowerCase()));
 
-    // Filter based on mode
-    let recordsToProcess;
-    if (mode === 'borrowed') {
-      // Cooler Loans: filter for "Borrowed Through Cooler Loans" tokens
-      recordsToProcess = normalizedRecords.filter(t =>
-        t.token?.includes('Borrowed Through Cooler Loans')
-      );
-    } else {
-      // Exclude borrowed records from TVL/ownTokens
-      recordsToProcess = normalizedRecords.filter(t =>
-        !t.token?.includes('Borrowed Through Cooler Loans')
-      );
-    }
+    // Exclude borrowed records (Cooler Loans) from TVL/ownTokens — tracked separately.
+    const recordsToProcess = normalizedRecords.filter(t =>
+      !t.token?.includes('Borrowed Through Cooler Loans')
+    );
 
     // Exclude specific arbitrum pool IDs that break pricing/decimals
+    let finalRecords = recordsToProcess;
     if (api.chain === 'arbitrum') {
-      recordsToProcess = recordsToProcess.filter(i => ![
+      finalRecords = recordsToProcess.filter(i => ![
         '0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0000200000000000000000423',
         '0xce6195089b302633ed60f3f427d1380f6a2bfbc7000200000000000000000424',
       ].includes(i.tokenAddress));
     }
 
-    const tokensToBalances = sumBalancesByTokenAddress(recordsToProcess);
+    const tokensToBalances = sumBalancesByTokenAddress(finalRecords);
     const tokens = tokensToBalances.map(i => i.tokenAddress);
     const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true });
 
     tokensToBalances.forEach((token, i) => {
-      if (!decimals[i]) return;
+      if (decimals[i] == null) return; // skip failed multiCall lookups; null-check avoids dropping 0-decimal tokens
       const isOwn = ownTokens.has(token.tokenAddress.toLowerCase());
 
       if (mode === 'ownTokens' && !isOwn) return;
       if (mode === 'tvl' && isOwn) return;
-      // borrowed mode: include all borrowed tokens
 
-      api.add(token.tokenAddress, Math.abs(token.balance) * 10 ** decimals[i]);
+      if (token.balance < 0) {
+        // Cooler Loans debt records are filtered upstream; a negative here signals unexpected subgraph data.
+        console.warn(`[olympus] unexpected negative balance for ${token.tokenAddress}: ${token.balance} (mode=${mode}, chain=${api.chain})`);
+        return;
+      }
+
+      // Math.round avoids float precision loss for large 18-decimal balances
+      // (e.g. 10,000 WETH → 10²² exceeds Number.MAX_SAFE_INTEGER without rounding)
+      api.add(token.tokenAddress, Math.round(token.balance * 10 ** decimals[i]));
     });
 
-    return mode === 'borrowed' ? api.getBalances() : await sumTokens2({ api, resolveLP: true });
+    return await sumTokens2({ api, resolveLP: true });
   };
 }
 
@@ -177,19 +200,16 @@ module.exports = {
     ["2025-12-01", "Convertible Deposits Launch"],
     ["2026-01-08", "CD Lending and Limit Orders"],
   ],
-  methodology: "Treasury value from subgraph excluding protocol-owned OHM. Borrowed shows DAI/USDS lent through Cooler Loans.",
+  methodology: "Treasury value from subgraph excluding protocol-owned OHM and Protocol-Owned Liquidity. POL (Uniswap V3 LP positions) is tracked in Olympus treasury dashboards and excluded here to avoid double-counting with the Uniswap V3 adapter. Cooler Loans debt is tracked by the dedicated cooler-loans adapter.",
   ethereum: {
-    staking: staking(OlympusStakings, [OHM, OHM_V1]),
     tvl: buildTvl('tvl'),
+    staking: staking(OlympusStakings, [OHM, OHM_V1]),
     ownTokens: buildTvl('ownTokens'),
-    borrowed: buildTvl('borrowed'),
   },
   arbitrum: {
     tvl: buildTvl('tvl'),
-    ownTokens: buildTvl('ownTokens'),
   },
   base: {
     tvl: buildTvl('tvl'),
-    ownTokens: buildTvl('ownTokens'),
   },
 };
