@@ -12,6 +12,7 @@ const ABI = {
   },
   morphoV2: {
     liquidityAdapter: 'address:liquidityAdapter',
+    adapters: 'function adapters(uint256) view returns (address)',
   },
   morphoAdapter: {
     morphoVaultV1: 'address:morphoVaultV1',

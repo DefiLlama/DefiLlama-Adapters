@@ -15,6 +15,7 @@ const configs = {
     ethereum: {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
+        '0x829A13850b684A575C0580a83322890e19c5eFaa',
       ],
       erc4626: [
         '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
