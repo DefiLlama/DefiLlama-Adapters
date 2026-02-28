@@ -174,9 +174,7 @@ function buildTvl(mode = 'tvl') {
         return;
       }
 
-      // Math.round avoids float precision loss for large 18-decimal balances
-      // (e.g. 10,000 WETH → 10²² exceeds Number.MAX_SAFE_INTEGER without rounding)
-      api.add(token.tokenAddress, Math.round(token.balance * 10 ** decimals[i]));
+      api.add(token.tokenAddress, token.balance * 10 ** decimals[i]);
     });
 
     return await sumTokens2({ api, resolveLP: true });
