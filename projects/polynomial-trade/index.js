@@ -17,7 +17,7 @@ module.exports = {
   hallmarks:[
     ['2023-03-27', "Trade Launch"],
     ['2024-08-21', "Polynomial Trade Launch"],
-    ['2025-05-13', "Multicollateral Launch"]
+    ['2025-05-13', "Multicollateral Launch"],
     ["2026-02-13", "winddown announced"],
   ]
 }
