@@ -30,6 +30,15 @@ const HANDLERS = {
   }
 };
 
+/**
+ * Compute BitChill TVL on Rootstock.
+ *
+ * TVL is the sum of underlying stablecoin value held by BitChill handlers
+ * (converted from lending tokens where applicable). Accumulated rBTC is excluded.
+ *
+ * @param {object} api DefiLlama adapter API instance
+ * @returns {Promise<void>}
+ */
 async function tvl(api) {
   for (const [name, config] of Object.entries(HANDLERS)) {
     let underlyingBalance;
