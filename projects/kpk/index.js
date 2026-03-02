@@ -41,14 +41,10 @@ const configs = {
         "0xD5cCe260E7a755DDf0Fb9cdF06443d593AaeaA13", //Morpho v2 USDC Yield
         "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
       ],
-
-      eulerVaultOwners: [
-        "0x1572063377a9a4f8065BD7bA0D7fa135cd13051F", //Euler kpk Curation Safe
-        "0x354C92aF243d53A24feb3dFF20372Af7b7c47478" // kpk Security Council Safe
-      ],
       
       // Other ERC-4626 vaults (non-Morpho)
       erc4626: [
+        "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245", //kpk RWA Euler USDC Earn
         "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
         "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
       ],
