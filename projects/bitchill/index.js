@@ -47,7 +47,7 @@ async function tvl(api) {
           abi: 'function exchangeRateStored() view returns (uint256)'
         })
       ]);
-      underlyingBalance = (BigInt(balance) * BigInt(exchangeRate)) / BigInt(1e18);
+      underlyingBalance = (BigInt(balance) * BigInt(exchangeRate)) / (10n ** 18n);
     } else if (config.protocol === 'sovryn') {
       // Sovryn: assetBalanceOf returns underlying balance directly
       underlyingBalance = await api.call({
@@ -55,6 +55,8 @@ async function tvl(api) {
         abi: 'function assetBalanceOf(address _owner) view returns (uint256)',
         params: [config.handler]
       });
+    } else {
+      throw new Error(`Unknown protocol "${config.protocol}" for handler ${name} (lendingToken: ${config.lendingToken})`);
     }
 
     api.add(config.stablecoin, underlyingBalance);
@@ -62,7 +64,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is calculated by summing the underlying stablecoin value (DOC, USDRIF) held in DCA schedule handlers. For Tropykus handlers, this is kToken balance multiplied by the exchange rate. For Sovryn handlers, this is the assetBalanceOf value. Accumulated rBTC from completed purchases is not included as it represents idle capital awaiting withdrawal.',
+  doublecounted: true,
+  methodology: 'TVL is calculated by summing the underlying stablecoin value (DOC, USDRIF) held in DCA schedule handlers. User deposits are routed to lending protocols (Tropykus, Sovryn) to earn yield, so this TVL overlaps with those protocols. For Tropykus handlers, TVL is kToken balance multiplied by the exchange rate. For Sovryn handlers, TVL is the assetBalanceOf value. Accumulated rBTC from completed purchases is not included as it represents idle capital awaiting withdrawal.',
   rsk: {
     tvl
   }
