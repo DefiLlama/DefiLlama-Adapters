@@ -41,15 +41,84 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  ozone: {
-    // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
+
+  wchain: {
+
+    // ==============================
+    // Native / Core Assets
+    // ==============================
+
+    // WCO (Wrapped WCO)
+    "0xedb8008031141024d50ca2839a607b2f82c1c045": {
+      coingeckoId: 'wadzcoin',
+      decimals: 18
+    },
+
+    // Native USDC (bridged earlier)
+    "0x643ec74ed2b79098a37dc45dcc7f1abfe2ade6d8": {
+      coingeckoId: 'usd-coin',
+      decimals: 6
+    },
+
+    // Native USDT (bridged earlier)
+    "0x40cb2cccf80ed2192b53fb09720405f6fe349743": {
+      coingeckoId: 'tether',
+      decimals: 6
+    },
+
+    // ==============================
+    // WBridgedERC20 Tokens
+    // ==============================
+
+    // Binance-Peg XRP
+    "0x4560d5eb0c32a05fa59acd2e8d639f84a15a2414": {
+      coingeckoId: 'ripple',
+      decimals: 18
+    },
+
+    // Binance-Peg DOGE
+    "0x6cdfda79787caa4ad1a95456095bedc95abd2d75": {
+      coingeckoId: 'dogecoin',
+      decimals: 8
+    },
+
+    // Binance-Peg SOL
+    "0xd4f93cacd6d607789c8ecf1dddeba8b0c4d915a8": {
+      coingeckoId: 'solana',
+      decimals: 18
+    },
+
+    // Binance-Peg USDC (bUSDC)
+    "0x9b4805dc867c279a96f3ed0745c8bc15153a22e6": {
+      coingeckoId: 'usd-coin',
+      decimals: 18
+    },
+
+    // Binance-Peg USDT (bUSDT)
+    "0x0ab978880d3bf13e448f4f773acd817e83bddb0e": {
+      coingeckoId: 'tether',
+      decimals: 18
+    }
+
   },
+
+
+  // ==============================
+  // Other Chains (keep original)
+  // ==============================
+
+  ozone: {
+    // intentionally empty
+  },
+
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
-}
+};
+
+
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
