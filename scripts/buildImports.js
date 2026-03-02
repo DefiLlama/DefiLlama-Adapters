@@ -1,4 +1,5 @@
 const fs = require("fs")
+const { execSync } = require("child_process")
 const { get } = require("../projects/helper/http")
 const { allProtocols } = require("../registries/index.js")
 // const { setCache, getCache } = require("../projects/helper/cache")
@@ -91,6 +92,9 @@ async function run() {
     addModule({ moduleObject, modulePath: `${pModule}/index.js`, moduleKey: pModule, warnOnMissing: false })
   }
 
+
+  const commitHash = execSync('git rev-parse HEAD').toString().trim()
+  moduleMap._meta = { commit: commitHash }
 
   fs.writeFileSync('scripts/tvlModules.json', JSON.stringify(moduleMap))
 

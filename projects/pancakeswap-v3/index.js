@@ -6,20 +6,21 @@ const factory = '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865'
 const programId = 'HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq'
 
 const solTvl = async () => {
+  // throw new Error('pcs v3 returns incorrect tvl')
   const connection = getConnection()
-  const accounts = await connection.getProgramAccounts(new PublicKey(programId), { filters: [ { dataSize: 1544 } ] })
-  
+  const accounts = await connection.getProgramAccounts(new PublicKey(programId), { filters: [{ dataSize: 1544 }] })
+
   const tokenAccounts = []
   for (const account of accounts) {
     const poolData = decodeAccount('pancakeswapV3Pool', account.account)
-    
+
     if (poolData.vaultA && poolData.vaultB) {
       tokenAccounts.push(poolData.vaultA.toString())
       tokenAccounts.push(poolData.vaultB.toString())
     }
   }
 
-  return await sumTokens2({ tokenAccounts })
+  return await sumTokens2({ tokenAccounts, })
 }
 
 module.exports = {
@@ -36,13 +37,18 @@ module.exports = {
         '0x121a3fba8456ebce13964363ba35fea00c2aa3d2',
         '0xd24616870ca41bc01074446988faeb0085a71190',
         '0xb4357054c3dA8D46eD642383F03139aC7f090343', // PORT3 - hack
+        '0x5f980533b994c93631a639deda7892fc49995839', // COSA - value higher than the token mcap
       ]
     },
-    ethereum: { factory, fromBlock: 16950685, },
+    ethereum: {
+      factory, fromBlock: 16950685, blacklistedTokens: [
+        '0xb4357054c3da8d46ed642383f03139ac7f090343', // PORT3 - hack, value higher than the token mcap
+      ]
+    },
     polygon_zkevm: { factory, fromBlock: 750148, },
     linea: { factory, fromBlock: 1445, },
     era: { factory: '0x1BB72E0CbbEA93c08f535fc7856E0338D7F7a8aB', fromBlock: 9413438, },
-    arbitrum: { factory, fromBlock: 101028949, blacklistedTokens: ['0x12d773bb0c679d4dfbaf700086dc5e399656f892', '0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1']},
+    arbitrum: { factory, fromBlock: 101028949, blacklistedTokens: ['0x12d773bb0c679d4dfbaf700086dc5e399656f892', '0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1'] },
     base: { factory, fromBlock: 2912007, },
     op_bnb: { factory, fromBlock: 1721753, },
     monad: { factory, fromBlock: 23058782, },
