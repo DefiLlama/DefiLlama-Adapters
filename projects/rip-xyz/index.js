@@ -12,6 +12,6 @@ async function tvl(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "TVL includes HYPE in the vault and vault manager NFT holdings.",
+  methodology: "TVL includes the vault and vault manager's WHYPE and the vault manager's NFT holdings.",
   hyperliquid: { tvl },
 };
