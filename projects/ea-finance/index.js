@@ -9,15 +9,8 @@ async function staking(_, _b, _cb, { api }) {
   
   const totalStaked = contractInfo[2];
   
-  const decimals = await api.call({
-    abi: 'erc20:decimals',
-    target: WCC_TOKEN,
-  });
-  
-  const totalStakedFormatted = totalStaked / (10 ** decimals);
-  
   return {
-    'coingecko:canton-network': totalStakedFormatted
+    [`bsc:${WCC_TOKEN}`]: totalStaked
   }
 }
 

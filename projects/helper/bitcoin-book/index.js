@@ -176,6 +176,22 @@ module.exports = {
   stacksSBTC,
   magpie,
   ssiProtocol,
+  'poloniex-cex': [
+      "1LgW4RA5iE98khRJ58Bhx5RLABP3QGjn9y",
+      "33Mz8zrWx6yei6itk2mjfCytdKJZEwKeM6",
+      "1McbLy27nLVzJ4ubMnFm3jxnQ3nbq2mpr2",
+      "1PrHfPbcLyHTUHxjizAgauCNXvjnh5LEex",
+      "1NBX1UZE3EFPTnYNkDfVhRADvVc8v6pRYu",
+      "17vH7EX655n5L4iPAfVXPn3rVzZbrgKYBC",
+      "14XKsv8tT6tt8P8mfDQZgNF8wtN5erNu5D",
+      "13hxUsGWnJgH2vzscAUrYm7pxgWzTvez7x",
+      "1M3Y4dgeg8zVdQ41BXTaWyFUUmc2e6fF2b",
+      "1QJt83Cb6S6Tm5chFwyn46XSBGYbS8unXB",
+      "13r8PhQ9Gk1KavpJzjc8ELjEw3kBQKLRHq",
+      "1NVuvqYpZPnWSd5Fvx15dq6u39ongzxLL2",
+      "1KVpuCfhftkzJ67ZUegaMuaYey7qni7pPj",
+      "1DMpkJ5QHu6rnWehZjVkZxsRTW7VRHk7yk",
+    ],
 }
 
 imports.forEach(([key, file]) => {

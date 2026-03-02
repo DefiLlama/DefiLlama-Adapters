@@ -1,4 +1,4 @@
-name: Build tvlModules and upload artifact
+name: Build tvlModules and alert unlisted projects
 
 on:
   push:
@@ -41,3 +41,11 @@ jobs:
           name: Latest tvlModules
           artifacts: scripts/tvlModules.json
           allowUpdates: true
+  alert-unlisted:
+    needs: build-and-upload  # waits for build-and-upload to succeed first
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Update unlisted
+      run: curl https://born-to-llama.herokuapp.com/refresh
+  
