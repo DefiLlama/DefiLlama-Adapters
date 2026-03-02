@@ -1484,11 +1484,11 @@ const uniV2Configs = {
     sty: '0x6D3e2f58954bf4E1d0C4bA26a85a1b49b2e244C6',
   },
   'pixelswap': {
-    arbitrum: '0x8435bd22e705DCeFCf6EF8b921E6dB534a4E9902',
-    base: '0x8435bd22e705DCeFCf6EF8b921E6dB534a4E9902',
+    arbitrum: '0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9',
+    base: '0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9',
     era: '0x8435bd22e705DCeFCf6EF8b921E6dB534a4E9902',
-    linea: '0x8435bd22e705DCeFCf6EF8b921E6dB534a4E9902',
-    op_bnb: '0x8435bd22e705DCeFCf6EF8b921E6dB534a4E9902',
+    linea: '0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9',
+    op_bnb: '0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9',
     scroll: '0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9',
   },
   'planar-finance': {
