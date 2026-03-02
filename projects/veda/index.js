@@ -11,6 +11,7 @@ const { boringVaultsV0Scroll } = require("./scroll_constants");
 const { sumLegacyTvl, sumBoringTvl } = require("./helper_methods");
 const { boringVaultsV0Hyperevm } = require("./hyperevm_constants");
 const { boringVaultsV0Plasma } = require("./plasma_constants");
+const { boringVaultsV0Ink } = require("./ink_constants");
 
 // Returns list of vault addresses that are deployed based on their start block
 function filterActiveLegacyVaults(vaults, blockHeight) {
@@ -75,5 +76,6 @@ module.exports = {
   ["sonic"]: { tvl: (api) => chainTvl(api, boringVaultsV0Sonic) },
   ["scroll"]: { tvl: (api) => chainTvl(api, boringVaultsV0Scroll) },
   ["hyperliquid"]: { tvl: (api) => chainTvl(api, boringVaultsV0Hyperevm) },
-  ["plasma"]: { tvl: (api) => chainTvl(api, boringVaultsV0Plasma) }
+  ["plasma"]: { tvl: (api) => chainTvl(api, boringVaultsV0Plasma) },
+  ["ink"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ink) },
 };
