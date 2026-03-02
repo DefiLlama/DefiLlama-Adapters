@@ -64,7 +64,9 @@ const chains = {
 
 let chainData
 async function getChainData() {
-  if (!chainData) chainData = getConfig('anyswap-config', 'https://netapi.anyswap.net/bridge/v2/info').then(i => i.bridgeList.filter(j => j.amount > 0))
+  if (!chainData) chainData = getConfig('anyswap-config', 'https://netapi.anyswap.net/bridge/v2/info').then(i => {
+    return i.bridgeList.filter(j => j.amount > 0)
+  })
   return chainData
 }
 
@@ -122,6 +124,7 @@ module.exports = {
     ['2022-05-07', "UST depeg"],
     // ['2023-07-12',"Access to Wallets Lost"]
   ],
+  deadFrom: '2023-07-12',  // project was abandoned
 }
 
 module.exports.clv.tvl = () => ({})
