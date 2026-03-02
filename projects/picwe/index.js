@@ -18,7 +18,7 @@ const CONSTANTS = {
 const picwe = {
   abi: {
     totalSupply: "uint256:totalSupply",
-    c: "uint256:c",
+    f: "uint256:f",
   },
   marketAddress: {
     ihp: "0x90bd884ca808173de0b605aa4fabfeb105933d08",
@@ -82,7 +82,7 @@ module.exports = {
       await sumTokens2({owner: mintRedeem, tokens: [bscUsdc], api: api});
       const tokens = [picwe.rwaToken.ihp, picwe.rwaToken.ucar];
       const totalSupplies = await api.multiCall({abi: picwe.abi.totalSupply, calls: tokens});
-      const cs = await api.multiCall({abi: picwe.abi.c, calls: [picwe.marketAddress.ihp, picwe.marketAddress.ucar]});
+      const cs = await api.multiCall({abi: picwe.abi.f, calls: [picwe.marketAddress.ihp, picwe.marketAddress.ucar]});
       api.add(bscUsdc, (totalSupplies[0] * cs[0] + totalSupplies[1] * cs[1]) / 1e18);
     }
   }
