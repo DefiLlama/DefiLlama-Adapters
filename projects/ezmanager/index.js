@@ -40,22 +40,30 @@ async function tvl(api) {
     }),
   ])
 
-  const activeKeys = new Set()
+  const keyCounts = new Map()
 
   registerLogs.forEach(({ key }) => {
-    if (key) activeKeys.add(String(key).toLowerCase())
+    if (!key) return
+    const normalizedKey = String(key).toLowerCase()
+    keyCounts.set(normalizedKey, (keyCounts.get(normalizedKey) ?? 0) + 1)
   })
 
   removeLogs.forEach(({ key }) => {
-    if (key) activeKeys.delete(String(key).toLowerCase())
+    if (!key) return
+    const normalizedKey = String(key).toLowerCase()
+    keyCounts.set(normalizedKey, (keyCounts.get(normalizedKey) ?? 0) - 1)
   })
 
-  if (!activeKeys.size) return
+  const activeKeys = [...keyCounts.entries()]
+    .filter(([, count]) => count > 0)
+    .map(([key]) => key)
+
+  if (!activeKeys.length) return
 
   const usdc = await api.call({ target: CL_CORE, abi: abi.usdc })
   let totalValueUSDC = 0n
 
-  for (const keys of chunkArray([...activeKeys], VALUE_CHUNK_SIZE)) {
+  for (const keys of chunkArray(activeKeys, VALUE_CHUNK_SIZE)) {
     const values = await api.call({
       target: CL_CORE,
       abi: abi.positionValueUSDC,
