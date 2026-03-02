@@ -92,13 +92,13 @@ const configs = {
       pool2: ['0x14b9189c9a7f31Fda0eed6B8D8afe91E098B303b', ['0xa7207b4de8ba1f01adb7c59558ebebf8c4e48c53', '0xf4b787e9319ec4a83ac4fabc88ae1705c2c64031']],
     },
   },
-  'athena-money': {
-    misrepresentedTokens: true,
-    moonriver: {
-      staking: { owners: ['0x1Dc0A29e51521E2e9262b91E6E78F4c15A4B7A1a'], tokens: ['0xBEcc61601c59d5aFFFCe750D201eC98CdC70DB796'], lps: ['0xc89c09a04440b7952790969ef470f8215bce4804'], useDefaultCoreAssets: true },
-      pool2: ['0x8E57FbcA4191Baf208AfdAe4E7b5591423427f38', ['0xc881c93ebb075b3c80f16bc9e513a7784f794ef9', '0xc89c09a04440b7952790969ef470f8215bce4804']],
-    },
-  },
+  // 'athena-money': {
+  //   misrepresentedTokens: true,
+  //   moonriver: {
+  //     staking: { owners: ['0x1Dc0A29e51521E2e9262b91E6E78F4c15A4B7A1a'], tokens: ['0xBEcc61601c59d5aFFFCe750D201eC98CdC70DB796'], lps: ['0xc89c09a04440b7952790969ef470f8215bce4804'], useDefaultCoreAssets: true },
+  //     pool2: ['0x8E57FbcA4191Baf208AfdAe4E7b5591423427f38', ['0xc881c93ebb075b3c80f16bc9e513a7784f794ef9', '0xc89c09a04440b7952790969ef470f8215bce4804']],
+  //   },
+  // },
   'snowtomb': {
     misrepresentedTokens: true,
     avax: {
@@ -272,5 +272,4 @@ const configs = {
   },
 }
 
-module.exports.deadFrom = "2026-01-19"
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)
