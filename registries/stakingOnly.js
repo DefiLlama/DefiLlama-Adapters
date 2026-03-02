@@ -272,4 +272,5 @@ const configs = {
   },
 }
 
+module.exports.deadFrom = "2026-01-19"
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)
