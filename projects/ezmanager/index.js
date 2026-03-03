@@ -6,44 +6,7 @@ const DETAILS_CHUNK_SIZE = 50
 const DETAILS_CHUNK_CONCURRENCY = 5
 
 const abi = {
-  getPositionDetails: {
-    type: 'function',
-    name: 'getPositionDetails',
-    stateMutability: 'view',
-    inputs: [{ name: 'key', type: 'bytes32', internalType: 'bytes32' }],
-    outputs: [{
-      name: 'd',
-      type: 'tuple',
-      internalType: 'struct PositionDetails',
-      components: [
-        { name: 'key', type: 'bytes32', internalType: 'bytes32' },
-        { name: 'owner', type: 'address', internalType: 'address' },
-        { name: 'tokenId', type: 'uint256', internalType: 'uint256' },
-        { name: 'pool', type: 'address', internalType: 'address' },
-        { name: 'token0', type: 'address', internalType: 'address' },
-        { name: 'token1', type: 'address', internalType: 'address' },
-        { name: 'fee', type: 'uint24', internalType: 'uint24' },
-        { name: 'tickSpacing', type: 'int24', internalType: 'int24' },
-        { name: 'tickLower', type: 'int24', internalType: 'int24' },
-        { name: 'tickUpper', type: 'int24', internalType: 'int24' },
-        { name: 'currentTick', type: 'int24', internalType: 'int24' },
-        { name: 'liquidity', type: 'uint128', internalType: 'uint128' },
-        { name: 'tokensOwed0', type: 'uint128', internalType: 'uint128' },
-        { name: 'tokensOwed1', type: 'uint128', internalType: 'uint128' },
-        { name: 'pendingFees0', type: 'uint256', internalType: 'uint256' },
-        { name: 'pendingFees1', type: 'uint256', internalType: 'uint256' },
-        { name: 'pendingFeesUSDC', type: 'uint256', internalType: 'uint256' },
-        { name: 'amount0Now', type: 'uint256', internalType: 'uint256' },
-        { name: 'amount1Now', type: 'uint256', internalType: 'uint256' },
-        { name: 'valueUSDCNow', type: 'uint256', internalType: 'uint256' },
-        { name: 'dustUSDC', type: 'uint256', internalType: 'uint256' },
-        { name: 'totalDepositedUSDC', type: 'uint256', internalType: 'uint256' },
-        { name: 'openedAt', type: 'uint256', internalType: 'uint256' },
-        { name: 'dex', type: 'address', internalType: 'address' },
-        { name: 'botAllowed', type: 'bool', internalType: 'bool' },
-      ],
-    }],
-  },
+  getPositionDetails: 'function getPositionDetails(bytes32 key) view returns ((bytes32 key, address owner, uint256 tokenId, address pool, address token0, address token1, uint24 fee, int24 tickSpacing, int24 tickLower, int24 tickUpper, int24 currentTick, uint128 liquidity, uint128 tokensOwed0, uint128 tokensOwed1, uint256 pendingFees0, uint256 pendingFees1, uint256 pendingFeesUSDC, uint256 amount0Now, uint256 amount1Now, uint256 valueUSDCNow, uint256 dustUSDC, uint256 totalDepositedUSDC, uint256 openedAt, address dex, bool botAllowed) d)',
 }
 
 const events = {
