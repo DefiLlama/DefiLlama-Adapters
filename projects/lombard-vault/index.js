@@ -90,19 +90,29 @@ async function unwrapCurveLPsFromBalance(api, holder) {
 // Vault → Hook → Accountant → (base, rate) architecture.
 async function unwrapBoringVault(api, vaultToken, holder) {
   const shareBalance = await api.call({
-    target: vaultToken, abi: 'erc20:balanceOf', params: [holder],
+    target: vaultToken, abi: 'erc20:balanceOf', params: [holder], permitFailure: true,
   })
   if (!shareBalance || shareBalance === '0') return
 
-  const hook = await api.call({ target: vaultToken, abi: 'address:hook' })
-  const accountant = await api.call({ target: hook, abi: 'address:accountant' })
-  const [baseAsset, rate, decimals] = await Promise.all([
-    api.call({ target: accountant, abi: 'address:base' }),
-    api.call({ target: accountant, abi: 'uint256:getRate' }),
-    api.call({ target: accountant, abi: 'uint8:decimals' }),
-  ])
+  const hook = await api.call({ target: vaultToken, abi: 'address:hook', permitFailure: true })
+  if (!hook) return
 
-  const amount = BigInt(shareBalance) * BigInt(rate) / BigInt(10 ** Number(decimals))
+  const accountant = await api.call({ target: hook, abi: 'address:accountant', permitFailure: true })
+  if (!accountant) return
+
+  const [baseAsset, rate, decimals] = await Promise.all([
+    api.call({ target: accountant, abi: 'address:base', permitFailure: true }),
+    api.call({ target: accountant, abi: 'uint256:getRate', permitFailure: true }),
+    api.call({ target: accountant, abi: 'uint8:decimals', permitFailure: true }),
+  ])
+  if (!baseAsset || !rate || decimals === undefined || decimals === null) return
+
+  const decimalsBI = BigInt(decimals)
+  const scale = 10n ** decimalsBI
+  if (scale === 0n) return
+
+  const amount = BigInt(shareBalance) * BigInt(rate) / scale
+  if (amount <= 0n) return
   api.add(baseAsset, amount)
 }
 
