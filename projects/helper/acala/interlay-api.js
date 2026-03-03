@@ -50,6 +50,9 @@ const ccyMapping = {
         foreignAsset: {
             2: { ticker: "USDT", geckoId: "tether", decimals: 6 },
             3: { ticker: "VDOT", geckoId: "voucher-dot", decimals: 10 },
+            11: { ticker: "BNC", geckoId: "voucher-bnc", decimals: 12 },
+            12: { ticker: "USDC", geckoId: "usd-coin", decimals: 6 },
+            13: { ticker: "HDX", geckoId: "hydradx", decimals: 12 },
         },
     },
 };

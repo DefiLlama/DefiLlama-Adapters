@@ -35,6 +35,8 @@ async function getBorrowed(poolFactory, api) {
     return balances;
 }
 
+module.exports.methodology = "We are not tracking this tokens: bfBTC and msBTC"
+
 module.exports = Object.keys(poolFactories).reduce((acc, chain) => {
     acc[chain] = {
         tvl: (api) => getTvl(poolFactories[chain], api),

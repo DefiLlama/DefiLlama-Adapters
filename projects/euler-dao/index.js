@@ -25,6 +25,21 @@ const configs = {
         '0xC798cA555e4C7e6Fa04A23e1a727c12884F40B69',
       ],
     },
+    linea: {
+      eulerVaultOwners: [
+        '0x624DC899774EEf1cD9c17ED10d19c9483Fa9eb0A',
+      ],
+    },
+    arbitrum: {
+      eulerVaultOwners: [
+        '0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C',
+      ],
+    },
+    monad: {
+      eulerVaultOwners: [
+        '0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1',
+      ],
+    }
   }
 }
 

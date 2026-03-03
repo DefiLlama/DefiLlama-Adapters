@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // AmanaDefi TVL Adapter - Working Version using sumTokensExport
 
 const { sumTokensExport } = require("../helper/unwrapLPs");
@@ -12,13 +13,34 @@ const vaultTokenPairs = [
   ["0x622E956626Cc6aBa655E3d92a3629b04cB038E80", "0xdbfF6471a79E5374d771922F2194eccc42210B9F"], // Compound USDT
   
   // BSC vault - holds USDT.BSC ZRC20
-  ["0xe5fa0E4BA13D516908c5313b3375b7Ede24BFe7a", "0x91d4F0D54090Df2D81e834c3c8CE71C6c865e79F"], // Aave USDT
+  ["0xe5fa0E4BA13D516908c5313b3375b7Ede24BFe7a", ADDRESSES.zeta.USDT_1], // Aave USDT
   
   // Ethereum vault - holds ETH.ETH ZRC20
-  ["0xF4FA4D8115e78ACf52308FDBad10A5f9042991DE", "0xd97B1de3619ed2c6BEb3860147E30cA8A7dC9891"], // Curve-Convex msETH/WETH
+  ["0xF4FA4D8115e78ACf52308FDBad10A5f9042991DE", ADDRESSES.zeta.ETH], // Curve-Convex msETH/WETH
   
-  // Arbitrum vault - holds USDC.ARB ZRC20
+  // Curve Convex USDC Vault -> Arbitrum -> USDC.ARB
   ["0x32fECdEf376E2aD74C53663BDE933116C09408f3", "0x0327f0660525b15Cdb8f1f5FBF0dD7Cd5Ba182aD"], // Curve-Convex eUSD/USDC
+  
+  // Curve Convex USDT Vault -> Ethereum -> USDT.ETH
+  ["0x0552d4c51491d9bfed97eb795e101e90a5f16d44", ADDRESSES.zeta.USDT], 
+
+  // Balancer USDC Vault -> Base -> USDC.BASE
+  ["0x8b934de59fde50a91daa7e788389f8fcad35a14f", "0x96152E6180E085FA57c7708e18AF8F05e37B479D"],
+
+  // YieldFi USDC Vault -> Ethereum -> USDC.ETH
+  ["0xcf18fc631e05ba7dcbcadcd212176c381256faa8", ADDRESSES.zeta.USDC_1], 
+
+  // Aegis USDT Vault -> BNB -> USDT.BSC
+  ["0x0552d4c51491d9bfed97eb795e101e90a5f16d44", ADDRESSES.zeta.USDT_1], 
+
+  // Curve Convex cbBTC Vault -> Ethereum -> CBBTC.ETH
+  ["0x5e3adc840b55fe0b99c0418ac69113e1f0296992", "0x3e128c169564DD527C8e9bd85124BF6A890E5a5f"], 
+
+  // Curve Convex USDf Vault -> Ethereum -> USDC.ETH
+  ["0xe501cbd03fa739273f49a8b54dd49de1248101f6", ADDRESSES.zeta.USDC_1], 
+
+  // Noon Capital sUSN Vault -> Ethereum -> USDC.ETH
+  ["0x8426929d568b1cbc281f5787556f84c5b101399d", ADDRESSES.zeta.USDC_1], 
 ];
 
 // Custom TVL function that handles the special case

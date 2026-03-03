@@ -17,6 +17,9 @@ const tokens = {
   base: {
     USDC: ADDRESSES.base.USDC,
   },
+  megaeth: {
+    USDM: "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7" // USDm
+  }
 };
 
 async function polyTvl(api) {
@@ -54,13 +57,22 @@ async function apeTvl(api) {
   // All trading and depositing happens in native tokens and held in custom non-rebasing wAPE
   return sumTokens2({ owner: '0x00000000000f7e000644657dC9417b185962645a', tokens: [nullAddress], api});
 }
+
+async function megaEthTvl(api) {
+  const tokensAndOwners = [
+    [tokens.megaeth.USDM, "0x46344456f130e9dcdeA7F98cDb0E02fB9F4ab72D"], // gUSDM
+    [tokens.megaeth.USDM, "0x2D5B1ba6E2093a5b927Fe5bF8C049B107de31eaF"], // Diamond
+  ];
+  return sumTokens2({ api, tokensAndOwners });
+}
 // node test.js projects/gainsNetwork.js
 module.exports = {
   hallmarks: [
-    [1672531200,"Launch on Arbitrum"],
-    [1705553229,"Launched gETH and gUSDC"],
-    [1727650801,"Launch on Base"],
-    [1732233600,"Launch on ApeChain"],
+    ['2023-01-01',"Launch on Arbitrum"],
+    ['2024-01-18',"Launched gETH and gUSDC"],
+    ['2024-09-29',"Launch on Base"],
+    ['2024-11-22',"Launch on ApeChain"],
+    ['2026-02-09',"Launch on MegaETH"],
   ],
   polygon: {
     tvl: polyTvl,
@@ -82,5 +94,8 @@ module.exports = {
   apechain: {
     tvl: apeTvl,
     staking: staking(['0x6dCD75474F9BDE2793cb3Da00b8959fb27BFa9d5'], '0xe31C676d8235437597581b44c1c4f8A30e90b38a'),
+  },
+  megaeth: {
+    tvl: megaEthTvl,
   },
 };

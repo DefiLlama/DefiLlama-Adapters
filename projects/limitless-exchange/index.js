@@ -5,6 +5,7 @@ const eventAbi = "event FixedProductMarketMakerCreation(address indexed creator,
 const config = [
   { factory: "0x8E50578ACa3C5E2Ef5ed2aA4bd66429B5e44C16E", resolver: "0x15A61459d65D89A25a9e91e0dc9FC69598791505", fromBlock: 13547870 },
   { factory: "0xc397D5d70cb3B56B26dd5C2824d49a96c4dabF50", resolver: "0xc9c98965297bc527861c898329ee280632b76e18", fromBlock: 13547845 },
+  { factory: "0xc397D5d70cb3B56B26dd5C2824d49a96c4dabF50", resolver: "0x5d6C6a4fEA600E0b1A3Ab3eF711060310E27886A", fromBlock: 13547845 },
 ];
 
 const blacklistedTokens = ['0xd7788ffc73c9ae39ce24dfc1098b375792dd42ac']

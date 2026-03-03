@@ -11,24 +11,24 @@ const { Program } = require("@project-serum/anchor");
 module.exports = {
   misrepresentedTokens: true,
   hallmarks: [
-    [1688342964, "VLP Leverage Vault"],
-    [1692164391, "GLP Leverage Vault"],
-    [1695274791, "GMXV2 Leverage Vault"],
-    [1682314791, "GLP Delta Neutral Vault"],
-    [1683178791, "GDAI Leverage Vault"],
-    [1696389409, "HLP Leverage Vault"],
-    [1697716800, "VKA TGE"],
-    [1699750000, "GLP Compound Vault"],
-    [1701187200, "GMXV2 Leverage (Neutral) Vault"],
-    [1702915200, "ALP Leverage Vault"],
-    [1707385004, "GLM(basket of GMs)"],
+    ['2023-07-03', "VLP Leverage Vault"],
+    ['2023-08-16', "GLP Leverage Vault"],
+    ['2023-09-21', "GMXV2 Leverage Vault"],
+    ['2023-04-24', "GLP Delta Neutral Vault"],
+    ['2023-05-04', "GDAI Leverage Vault"],
+    ['2023-10-04', "HLP Leverage Vault"],
+    ['2023-10-19', "VKA TGE"],
+    ['2023-11-12', "GLP Compound Vault"],
+    ['2023-11-28', "GMXV2 Leverage (Neutral) Vault"],
+    ['2023-12-18', "ALP Leverage Vault"],
+    ['2024-02-08', "GLM(basket of GMs)"],
   ],
 
   solana: {
     tvl: async (api) => {
       const lendingSol = "DMhoXyVNpCFeCEfEjEQfS6gzAEcPUUSXM8Xnd2UXJfiS";
-      const jupSol = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v";
-      const jitoSol = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
+      const jupSol = ADDRESSES.solana.JupSOL;
+      const jitoSol = ADDRESSES.solana.JitoSOL;
       const jupSolProgram = "6j6Fwxf7UzfaXqQA2QraWGEAYUYzjjZP3t6ChzjzkmL9";
       const jitoSolProgram = "6MAnq2z4ww8nnvfd8sec4sRMhTEdsdZXB1FLgqaYsg4d";
       const jlpUsdtStrategy = "9vuDo8ZQsmMMe3qsiFCYoxsjhHieQVMNXLsfcfpC4SrX"

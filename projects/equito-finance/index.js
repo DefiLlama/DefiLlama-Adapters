@@ -17,8 +17,8 @@ const ETH_PSYOP = "0xaa07810aE08575921c476Ff088bc949da43e4964";
 
 module.exports = {
   hallmarks: [
-    [1671724719, "Start of bridge"],
-    [1683547217, "Ethereum, Binance vaults deployed"],
+    ['2022-12-22', "Start of bridge"],
+    ['2023-05-08', "Ethereum, Binance vaults deployed"],
   ],
   methodology:
     "TVL counts native tokens locked in EquitoFinance bridge vaults.",

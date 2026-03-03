@@ -70,9 +70,9 @@ module.exports = {
   ["arbitrum"]: { tvl: arbitrum_tvl },
   ["optimism"]: { tvl: optimism_tvl },
   hallmarks: [
-    [1658419200, "aave2 Cellar Launch"],
-    [1674671068, "Real Yield USD Cellar Launch"],
-    [1681233049, "Real Yield ETH Cellar Launch"],
-    [1689271200, "Real Yield BTC Cellar Launch"],
+    ['2022-07-21', "aave2 Cellar Launch"],
+    ['2023-01-25', "Real Yield USD Cellar Launch"],
+    ['2023-04-11', "Real Yield ETH Cellar Launch"],
+    ['2023-07-13', "Real Yield BTC Cellar Launch"],
   ],
 };

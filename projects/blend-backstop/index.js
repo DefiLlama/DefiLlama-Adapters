@@ -10,8 +10,8 @@ module.exports = {
   misrepresentedTokens: false,
   methodology: `Counts the total amount of BLND-USDC LP shares held by the Blend backstop contract.`,
   hallmarks: [
-    [1745478927, "Calculate TVL using BLND Coin Gecko price instead of approximation via pool weights"],
-    [1745858101, "Only account for lp tokens held by the backstop contract"],
+    ['2025-04-24', "Calculate TVL using BLND Coin Gecko price instead of approximation via pool weights"],
+    ['2025-04-28', "Only account for lp tokens held by the backstop contract"],
   ],
   stellar: {
     tvl: () => ({}),

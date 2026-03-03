@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { stakings } = require("../helper/staking");
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
@@ -38,6 +37,7 @@ const CONFIG = {
       '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB', // STEAK_USDC
       '0x6A29A46E21C730DcA1d8b23d637c101cec605C5B', // FGHO
       '0x5C20B550819128074FD538Edf79791733ccEdd18', // FUSDT
+      '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // FUSDC
       '0x2371e134e3455e0593363cBF89d3b6cf53740618', // GAUNTLET WETH
       '0xFF94993fA7EA27Efc943645F95Adb36C1b81244b', // GEARBOX STETH
       ADDRESSES.ethereum.WBTC,
@@ -62,6 +62,15 @@ const CONFIG = {
       '0x5Bff88cA1442c2496f7E475E9e7786383Bc070c0' // sfrxUSD
     ],
   },
+  plasma: {
+    vaults: [
+      '0xd1E70089Bd036896B7454ED5dc5E74C656CC0F7a',
+    ],
+    supportedAssets: [
+      '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B',
+      ADDRESSES.corn.USDT0
+    ],
+  }
 }
 
 Object.keys(CONFIG).forEach((chain) => {

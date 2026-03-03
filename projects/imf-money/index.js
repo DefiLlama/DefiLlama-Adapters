@@ -1,20 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { getCuratorTvl } = require("../helper/curators");
 
-const configs = {
-  methodology: 'Count all assets are deposited in all vaults curated by the IMF.',
-  blockchains: {
-    ethereum: {
-      morphoVaultOwners: [
-        '0x6b22171a3eB9CF39C0f3e56C4713F2E30e1Ba262',
-      ],
-    },
-  }
-}
 
 module.exports = {
   doublecounted: true,
-  methodology: configs.methodology,
+  methodology: 'Sums the value of deposited memes',
   ethereum: {
     tvl: async (api) => {
       // v1
@@ -25,9 +14,6 @@ module.exports = {
         '0x699ec925118567b6475fe495327ba0a778234aaa',
         '0x960fCE8724aA127184B6d13Af41a711755236c77',
       ]});
-
-      // v2 - vault on Morpho Blue
-      await getCuratorTvl(api, configs.blockchains.ethereum)
     }
   }
 }

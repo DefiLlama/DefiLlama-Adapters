@@ -34,5 +34,8 @@ module.exports = {
   ethereum: {
     doublecounted: true,
     tvl: tvl,
-  }
+  },
+  hallmarks: [
+    ['2025-06-30', "vbAssets migration to Katana mainnet"]
+  ]
 }

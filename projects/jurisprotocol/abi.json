@@ -1,0 +1,63 @@
+{
+  "protocol": {
+    "name": "Juris Protocol",
+    "description": "Decentralized staking and lending protocol on Terra Classic ecosystem",
+    "category": "Lending"
+  },
+  "source_repo": "https://github.com/JurisProtocol/documents",
+  "tokens": {
+    "JURIS": {
+      "name": "Juris Protocol",
+      "symbol": "JURIS",
+      "decimals": 6,
+      "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
+      "coingeckoId": "juris-protocol",
+      "type": "cw20",
+      "owner": "true"
+    },
+    "LUNC": {
+      "name": "Terra Luna Classic",
+      "symbol": "LUNC",
+      "decimals": 6,
+      "address": "uluna",
+      "coingeckoId": "terra-luna-classic",
+ "type": "native"
+    },
+    "USTC": {
+      "name": "TerraClassicUSD",
+      "symbol": "USTC",
+      "decimals": 6,
+      "address": "uusd",
+      "coingeckoId": "terraclassicusd",
+      "type": "native"
+    }
+  },
+  "contracts": {
+    "staking": [
+      "terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y"
+    ],
+    "lending": [],
+    "vesting": [
+      "terra1w89kclh6qd4ftyll4k0x4cyd23lzd9krsntds4y0z2x67kymtf3qj9fgrl",
+      "terra14783nqrx4mjqfnymyqp88dsjf5c6axlt2m75wwt2supwkc0jxr0qyrhqtl",
+      "terra1lejvcrgmhcuedemdetv6qrru7yu8qgwn6e070fq6q4kpda838kpsghwl2u",
+      "terra1hdm8l39h4vmmy8yl48hev8r7qa8pl7uygcraawfljslpepcn7mjqtp83fg",
+      "terra1cjjy4yzzp6sdv6uq27u6l82gslpdkw4l3zk785674mh8gk9dn5qqvr4nr0",
+      "terra1pfefmmls2w67njucd2qgvv4qefcutyl95g986pd69caxdyzp7acsfp0fv8",
+      "terra1ux3em04y0ruwfhljlhl2p8743yyj84xh6s0nyqutyte9397yrq3qe77fm9",
+      "terra15fyg7elhndd7990eshsjz07p3rsssqsm4jjg48zgxpadhahmxd7stpfur5",
+      "terra18wdt4vcejy06mrpp6naju4vv2j7s7hlksew5dq247fxhxvrtxj7qx3x97u",
+      "terra1xgxxjzw9ej5ha2tgsd498w3w4nnu58m59xzwyysmvgnj0y2yrq6q4lm0ru",
+      "terra1w8ysh7fg5f8mfu5cjeumfhjwja6crf20k447a9gftv4lcn2jgpqsf3ztv2",
+      "terra1pljarz83hu9rfdvg88ft8dr76rwmkr5r0avv30ra3p6pgdepfutqrw90dr",
+      "terra1jw5e3hk3k2qz9985r2c3fd0ac5uuz6j98xp9ealnu9qt3dx2wtuqc202fn",
+      "terra1jt70skckl3a3zl98l7na4zqhuyyaerx97rdt9gy2u6eadxc2ke8s2lffsl",
+      "terra13jhdcxd3v7n6fnc4gjj692jsa4jfnh83aly87vj4kyn5c8gp02esgelln5",
+      "terra12xq35pp48mwp7qep2tdlnt2jg8pxmsll0vtnygay7tgh0djdk34sw6qhdl"
+    ],
+    "reserve": [],
+    "pool2": [], 
+    "ownTokens": [],
+    "treasury": []
+  }
+}

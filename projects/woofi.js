@@ -76,6 +76,7 @@ const wooPPConfig = {
 		ADDRESSES.ethereum.cbBTC, // cbBTC
 		ADDRESSES.base.USDbC, // USDbC
 		ADDRESSES.base.USDC, // native USDC
+		ADDRESSES.base.USDT,
 	],
 	mantle: [
 		ADDRESSES.mantle.WMNT, // WMNT
@@ -95,6 +96,17 @@ const wooPPConfig = {
 		ADDRESSES.berachain.WBTC, // WBTC
 		ADDRESSES.berachain.WETH, // WETH
 		ADDRESSES.berachain.USDC, // USDC.e
+	],
+	hyperliquid: [
+		ADDRESSES.hyperliquid.WHYPE,
+		'0xBe6727B535545C67d5cAa73dEa54865B92CF7907', // UETH
+		'0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463', // UBTC
+		ADDRESSES.hyperliquid.USDT0,
+	],
+	monad: [
+		ADDRESSES.monad.WMON,
+		ADDRESSES.monad.WETH,
+		ADDRESSES.monad.USDC,
 	],
 }
 
@@ -178,6 +190,18 @@ const chainConfig = {
 		stakingContractV2: null,
 	},
 	berachain: {
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	hyperliquid: {
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	monad: {
 		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: null,
 		stakingContract: null,

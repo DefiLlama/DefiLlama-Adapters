@@ -1,7 +1,8 @@
 const { post } = require('../http')
 
+// https://eos.antelope.tools/endpoints
 const RPC_ENDPOINTS = {
-    'eos': 'https://eos.greymass.com',
+    'eos': 'https://mainnet.genereos.io',
     'wax': 'https://wax.greymass.com',
     'telos': 'https://telos.greymass.com',
 }

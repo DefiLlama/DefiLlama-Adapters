@@ -39,6 +39,10 @@ function strToBytes(str) {
   return new Uint8Array(Buffer.from(str, 'utf-8'));
 }
 
+function bytesToStr(bytes) {
+  return u8ArrayToString(bytes).replace(/\0/g, '');
+}
+
 
 /**
  * Converts a Uint8Array into an unsigned 64-bit integer (u64) BigInt.
@@ -99,8 +103,27 @@ async function getTokenBalances(tokenAddresses, ownerAddresses) {
   return res.map((entry) => bytesToBigInt(entry.candidate_value).toString());
 }
 
+function convertUnit8ArrayToNumberArray(unit8Array) {
+  return Array.from(unit8Array, (byte) => byte)
+}
+
+
+async function getAddresssDataStoreKeys(address, prefix, is_final) {
+  const res = await request('get_addresses_datastore_keys', [{
+    address: address,
+    prefix: convertUnit8ArrayToNumberArray(prefix),
+    is_final: is_final,
+  }]);
+
+  return res[0].keys;
+
+}
+
 module.exports = {
   queryKey,
   u8ArrayToString,
   getTokenBalances,
+  getAddresssDataStoreKeys,
+  bytesToStr,
+  bytesToBigInt,
 };
