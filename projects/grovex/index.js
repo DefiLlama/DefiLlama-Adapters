@@ -33,6 +33,16 @@ const config = {
       "0x79b5a2d395db1711a6e6c42a95eb48710276f666"
     ],
   },
+    arbitrum: {
+    owners: [
+      "0x79b5a2d395db1711a6e6c42a95eb48710276f666"
+    ],
+  },
+  sonic: {
+    owners: [
+      "0x79b5a2d395db1711a6e6c42a95eb48710276f666"
+    ],
+  },
 };
 
 module.exports = cexExports(config);
