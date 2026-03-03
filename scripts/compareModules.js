@@ -18,7 +18,7 @@ if (!fs.existsSync(safePath)) {
 const current = JSON.parse(fs.readFileSync(currentPath, "utf8"));
 const safe = JSON.parse(fs.readFileSync(safePath, "utf8"));
 
-const ignoredAdapters = ['maxapy/index.js', 'kasu/index.js', 'vestige/index.js']
+const ignoredAdapters = ['maxapy/index.js', 'kasu/index.js', 'vestige/index.js', 'mochiswap']
 
 ignoredAdapters.forEach((key) => {
   delete current[key];

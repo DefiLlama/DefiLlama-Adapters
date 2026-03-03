@@ -2,7 +2,6 @@ const { sumTokensExport } = require("./helper/unknownTokens");
 const { staking } = require("./helper/staking");
 
 module.exports = {
-  misrepresentedTokens: true,
     bsc: {
     tvl: () => ({}),
     pool2: sumTokensExport({ owner: '0x5d350F07c1D9245c1Ecb7c622c67EDD49c6a0A35', tokens: ['0xB31Ecb43645EB273210838e710f2692CC6b30a11']}),

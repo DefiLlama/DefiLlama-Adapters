@@ -357,9 +357,13 @@ async function sumTokens2({
   async function getOwnerAllAccounts(owners) {
     sdk.log('fetching sol token balances for', owners.length, 'owners', chain,)
     return runInChunks(owners, async (chunk) => {
-      const body = chunk.map(i => formOwnerBalanceQuery(i))
+      // Query both Token Program and Token-2022 (Token Extensions) - USDTb and other newer tokens use Token-2022
+      const body = chunk.flatMap(owner => [
+        formOwnerBalanceQuery(owner, TOKEN_PROGRAM_ID),
+        formOwnerBalanceQuery(owner, TOKEN_2022_PROGRAM_ID),
+      ])
       const tokenBalances = await http.post(endpoint, body)
-      return tokenBalances.map(i => i.result.value).flat().map(i => ({
+      return tokenBalances.map(i => i.result?.value ?? []).flat().map(i => ({
         account: i.pubkey,
         mint: i.account.data.parsed.info.mint,
         amount: i.account.data.parsed.info.tokenAmount.amount,

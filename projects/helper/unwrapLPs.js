@@ -930,8 +930,9 @@ async function sumTokens2({
   sumChunkSleep,
 }) {
 
-  if (fetchCoValentTokens && owners.length > 10) 
+  if (fetchCoValentTokens && owners.length > 10) {
     throw new Error('fetchCoValentTokens option is not recommended for more than 10 owners due to rate limits')
+  }
 
   if (api) {
     chain = api.chain ?? chain

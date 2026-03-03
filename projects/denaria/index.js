@@ -5,7 +5,8 @@ const config = {
     toa: [
       // [tokenAddress, ownerAddress]
       [ADDRESSES.linea.USDC, '0x168fca57a05354b8d889ecee78d978040690ee5a'], // Vault (BTC pair v032, deploy block 26715568)
-    ],
+      [ADDRESSES.linea.USDC, '0x64be11aeb57c6098d50528e0cd85599e84425f49'], // New Vault    
+],
   },
 }
 
@@ -19,4 +20,3 @@ Object.keys(config).forEach(chain => {
     tvl:  sumTokensExport({ tokensAndOwners: toa })
   }
 })
-
