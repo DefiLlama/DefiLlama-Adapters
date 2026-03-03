@@ -66,19 +66,19 @@ module.exports = {
   },
   base: {
     tvl: async (api) => {
-      const baseUsdc = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+      const baseUsdc = ADDRESSES.base.USDC;
       return sumTokens2({owner: mintRedeem, tokens: [baseUsdc], api: api})
     }
   },
   arbitrum: {
     tvl: async (api) => {
-      const arbitrumUsdc = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
+      const arbitrumUsdc = ADDRESSES.arbitrum.USDC_CIRCLE;
       return sumTokens2({owner: mintRedeem, tokens: [arbitrumUsdc], api: api})
     }
   },
   bsc: {
     tvl: async (api) => {
-      const bscUsdc = '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d';
+      const bscUsdc = ADDRESSES.bsc.USDC;
       await sumTokens2({owner: mintRedeem, tokens: [bscUsdc], api: api});
       const tokens = [picwe.rwaToken.ihp, picwe.rwaToken.ucar];
       const totalSupplies = await api.multiCall({abi: picwe.abi.totalSupply, calls: tokens});
