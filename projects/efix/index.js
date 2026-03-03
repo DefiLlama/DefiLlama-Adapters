@@ -7,8 +7,8 @@
  * TVL = totalSupply of efixDI on each chain.
  * Each token is backed 1:1 by Brazilian DI fund shares.
  *
- * Cross-chain: LayerZero V2 OFT bridge (lock on Polygon, mint on Base).
- * Some tokens are also minted directly on Base via MinterBurner.
+ * Cross-chain: LayerZero V2 OFT bridge (burn on source, mint on destination).
+ * OFTAdapter on Polygon, MinterBurner on Base — OFT burn-and-mint semantics.
  * Counting both chains is the most accurate approach.
  *
  * Chainlink BRL/USD oracle: 0xB90DA3ff54C3ED09115abf6FbA0Ff4645586af2c (Polygon)
@@ -35,8 +35,8 @@ async function polygonTvl(api) {
 
 /**
  * Base TVL = totalSupply of efixDI on Base.
- * Tokens arrive via LayerZero V2 OFT bridge or direct minting.
- * Used as collateral in Morpho Blue lending market.
+ * Tokens arrive via LayerZero V2 OFT bridge (after source-chain burn)
+ * or directly for DeFi use. Used as Morpho Blue collateral.
  */
 async function baseTvl(api) {
   const totalSupply = await api.call({
@@ -54,10 +54,10 @@ module.exports = {
     "TVL is the total supply of efixDI tokens on each chain. " +
     "Each efixDI token is backed 1:1 by Brazilian DI fund shares (CDI rate). " +
     "On Polygon, tokens are minted when users deposit BRL via PIX. " +
-    "On Base, tokens are minted via LayerZero V2 OFT bridge or directly for DeFi use.",
+    "On Base, tokens are minted via LayerZero V2 OFT bridge (after burn) or directly for DeFi use.",
   misrepresentedTokens: true,
   doublecounted: false,
-  start: 1769990400, // Feb 2, 2026 00:00:00 UTC — VaultV2 deployment
+  start: 1769990400, // Feb 2, 2026 — VaultV2 deployment
   polygon: {
     tvl: polygonTvl,
   },
