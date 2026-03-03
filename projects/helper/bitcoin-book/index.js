@@ -1141,6 +1141,9 @@ module.exports = {
     'bc1p2ecnyf8pgmq6u29h6csgvckj5mg6l36054p2vst0m0edxmg8dusquek4y9',
     'bc1pc5regkaavr8nwk3tt72snnnyj56shc4ss4xn7y60u6mh88vcp03qmg2p2q'
   ],
+  echoMonadEBTC: [
+    'bc1prx589such7z0qch5hgvvs6gvtzxuneyuuarp8hfhc9mcs9u26lqqk374tm',
+  ],
   xbtc: [
     'bc1q7mvqd5apnrngm36rwqlgk7nwkt5kwc37thzgd79puh55wscr42mqct7lss'
   ],
