@@ -2720,6 +2720,9 @@ const uniV2Configs = {
     methodology: 'Metis tokens, USDC, USDT, WETH, TETHYS allocated in LP',
     metis: { factory: '0x2CdFB20205701FF01689461610C9F321D1d00F80', staking: ["0x54A8fB8c634dED694D270b78Cb931cA6bF241E21", "0x69fdb77064ec5c84FA2F21072973eB28441F43F3"] },
   },
+  'tideswap': {
+    ink: {factory: '0x2ebE0528aDED9fA8d745B7C7082fb90d7C7B6Ec8'}
+  },
   'tulip': {
     oasis: { factory: '0x90a5e676EFBdeFeeeb015cd87484B712fd54C96A', staking: ["0xceF2f95f185D49bcd1c10DE7f23BEaCBaae6eD0f", "0x2736643C7fFFe186984f60a2d34b91b1b7398bF1"] },
   },
