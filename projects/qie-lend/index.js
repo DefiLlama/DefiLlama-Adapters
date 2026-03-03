@@ -58,7 +58,7 @@ async function tvl(timestamp, block, chainBlocks) {
     const cash = new BigNumber(cashRes.output[i].output).toFixed(0)
     const borrows = new BigNumber(borrowRes.output[i].output).toFixed(0)
 
-    // Compound V2 TVL formula:
+    // TVL formula:
     // TVL = cash + totalBorrows
     const total = new BigNumber(cash)
       .plus(borrows)
@@ -81,5 +81,5 @@ module.exports = {
     tvl,
   },
   methodology:
-    "TVL = total supplied assets in QIE Lend (Compound V2 fork), calculated as getCash() + totalBorrows() across all markets."
+    "TVL = total supplied assets in QIE Lend, calculated as getCash() + totalBorrows() across all markets."
 }
