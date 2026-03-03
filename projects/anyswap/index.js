@@ -102,7 +102,7 @@ function fetchChain(chain) {
       }
     })
 
-    return sumTokens({ api, tokensAndOwners, blacklistedTokens })
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens })
   }
 }
 
@@ -124,7 +124,8 @@ module.exports = {
     ['2022-05-07', "UST depeg"],
     // ['2023-07-12',"Access to Wallets Lost"]
   ],
-  deadFrom: '2023-07-12',  // project was abandoned
+  // deadFrom: '2023-07-12',  // project was abandoned
 }
 
 module.exports.clv.tvl = () => ({})
+module.exports.fusion.tvl = () => ({})
