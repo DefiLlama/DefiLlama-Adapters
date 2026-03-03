@@ -169,6 +169,7 @@ async function ethereum(api) {
     getV1Strategies(api, "yearn", undefined, blacklistedTokens),
     // Strategies v2
     getV2Strategies(api, "curve", { key: "convex", poolKey: "sidecarPool" }, blacklistedTokens),
+    getV2Strategies(api, "balancer", { key: "aura", poolKey: "sidecarPool" }, blacklistedTokens),
   ]);
 
   return sumTokens2({ api, resolveLP: true, blacklistedTokens });
@@ -180,6 +181,7 @@ async function arbitrum(api) {
     getV1Strategies(api, "curve"),
     // Strategies v2
     getV2Strategies(api, "curve", { key: "convex", poolKey: "sidecarPool" }),
+    getV2Strategies(api, "balancer", { key: "aura", poolKey: "sidecarPool" }),
   ]);
 
   return sumTokens2({ api, resolveLP: true });
