@@ -473,7 +473,7 @@ const configs = {
   },
   'kinetic': {
     flare: [
-      { comptroller: '0x8041680Fb73E1Fe5F851e76233DCDfA0f2D2D7c8' },
+      { comptroller: '0x8041680Fb73E1Fe5F851e76233DCDfA0f2D2D7c8', cether: '0xb84f771305d10607dd086b2f89712c0ced379407' },
       { comptroller: '0xDcce91d46Ecb209645A26B5885500127819BeAdd', cether: '0xd7291D5001693d15b6e4d56d73B5d2cD7eCfE5c6' },
       { comptroller: '0x15F69897E6aEBE0463401345543C26d1Fd994abB' },
     ],

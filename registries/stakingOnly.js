@@ -93,6 +93,7 @@ const configs = {
     },
   },
   'athena-money': {
+    deadFrom: '2026-01-19',
     misrepresentedTokens: true,
     moonriver: {
       staking: { owners: ['0x1Dc0A29e51521E2e9262b91E6E78F4c15A4B7A1a'], tokens: ['0xBEcc61601c59d5aFFFCe750D201eC98CdC70DB796'], lps: ['0xc89c09a04440b7952790969ef470f8215bce4804'], useDefaultCoreAssets: true },
