@@ -2555,7 +2555,7 @@ const uniV2Configs = {
   },
   'mm-finance-arbitrum': {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://arbimm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa73Ae666CEB460D5E884a20fb30DE2909604557A)',
-    arbitrum: { factory: '0xfe3699303D3Eb460638e8aDA2bf1cFd092C33F22', staking: ["0xa73Ae666CEB460D5E884a20fb30DE2909604557A", "0x56b251d4b493ee3956e3f899d36b7290902d2326"] },
+    arbitrum: { factory: '0xfe3699303D3Eb460638e8aDA2bf1cFf092C33F22', staking: ["0xa73Ae666CEB460D5E884a20fb30DE2909604557A", "0x56b251d4b493ee3956e3f899d36b7290902d2326"] },
   },
   'mm-finance-polygon': {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://polymm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa2B417088D63400d211A4D5EB3C4C5363f834764)',
