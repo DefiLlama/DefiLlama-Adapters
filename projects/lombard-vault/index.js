@@ -112,24 +112,32 @@ function addressToTopic(address) {
 
 async function getOwnedUniV4PositionIds({ api, owner, nftAddress, fromBlock }) {
   const ownerTopic = addressToTopic(owner)
+  // Full log objects (no onlyArgs) are needed to get blockNumber/logIndex for
+  // correct chronological ordering. add-then-delete without ordering loses
+  // round-trips: token sent out and returned would be excluded.
   const [received, sent] = await Promise.all([
     getLogs({
       api, target: nftAddress, eventAbi: TRANSFER_EVENT_ABI,
       topics: [TRANSFER_EVENT_TOPIC, null, ownerTopic],
-      fromBlock, onlyArgs: true,
-      extraKey: `univ4-received-${owner.toLowerCase()}`,
+      fromBlock, extraKey: `univ4-received-${owner.toLowerCase()}`,
     }),
     getLogs({
       api, target: nftAddress, eventAbi: TRANSFER_EVENT_ABI,
       topics: [TRANSFER_EVENT_TOPIC, ownerTopic],
-      fromBlock, onlyArgs: true,
-      extraKey: `univ4-sent-${owner.toLowerCase()}`,
+      fromBlock, extraKey: `univ4-sent-${owner.toLowerCase()}`,
     }),
   ])
 
+  const allEvents = [
+    ...received.map(log => ({ blockNumber: log.blockNumber, logIndex: log.logIndex ?? 0, tokenId: log.args.tokenId.toString(), type: 'in' })),
+    ...sent.map(log => ({ blockNumber: log.blockNumber, logIndex: log.logIndex ?? 0, tokenId: log.args.tokenId.toString(), type: 'out' })),
+  ].sort((a, b) => a.blockNumber - b.blockNumber || a.logIndex - b.logIndex)
+
   const active = new Set()
-  received.forEach(log => active.add(log.tokenId.toString()))
-  sent.forEach(log => active.delete(log.tokenId.toString()))
+  for (const { tokenId, type } of allEvents) {
+    if (type === 'in') active.add(tokenId)
+    else active.delete(tokenId)
+  }
   return [...active]
 }
 
@@ -196,7 +204,7 @@ module.exports = {
     tvl: sumTokensExport({
       owners: [LBTCV],
       fetchCoValentTokens: true,
-      tokenConfig: { onlyWhitelisted: false },
+      tokenConfig: { onlyWhitelisted: true },
       resolveUniV3: true,
       resolveSlipstream: true,
     }),
@@ -206,7 +214,7 @@ module.exports = {
     tvl: sumTokensExport({
       owners: [LBTCV],
       fetchCoValentTokens: true,
-      tokenConfig: { onlyWhitelisted: false },
+      tokenConfig: { onlyWhitelisted: true },
       resolveUniV3: true,
     }),
   },
