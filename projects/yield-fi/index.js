@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { api2 } = require("@defillama/sdk");
 
 module.exports = {
@@ -19,7 +20,7 @@ const yusd_config = {
     tac: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     linea: "0x4e559dBCCbe87De66c6a9F3f25231096F24c2e28",
     plasma: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
-    saga: "0x839e7e610108Cf3DCc9b40329db33b6E6bc9baCE",
+    saga: ADDRESSES.saga.yUSD,
 }
 
 const vyusd_config = {
@@ -42,7 +43,7 @@ const yeth_config = {
     ethereum: "0x8464F6eCAe1EA58EC816C13f964030eAb8Ec123A",
     arbitrum: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
     base: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
-    saga: "0xA6F89de43315B444114258f6E6700765D08bcd56",
+    saga: ADDRESSES.saga.yETH,
 }
 
 const vyeth_config = {

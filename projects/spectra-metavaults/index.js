@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { getCache, setCache } = require("../helper/cache");
 const ethers = require("ethers");
@@ -90,7 +91,7 @@ const abi = {
   },
 };
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ZERO_ADDRESS = ADDRESSES.null;
 const metavaultWrapperInitializedEventAbi =
   "event MetaVaultWrapperInitialized(address indexed owner, address indexed infraVault, address indexed wrapper)";
 

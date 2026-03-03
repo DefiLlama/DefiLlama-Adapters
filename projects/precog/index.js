@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getLogs } = require('../helper/cache/getLogs');
 
@@ -6,8 +7,8 @@ const FUNDER_EOA_1 = '0x5D45B7d8e517eF6b7085175ed395D9c8562b952f';
 
 // Standard tokens to always check in Funders (e.g., USDC, WETH)
 const STATIC_TOKENS = [
-    '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
-    '0x4200000000000000000000000000000000000006', // WETH
+    ADDRESSES.base.USDC, // USDC
+    ADDRESSES.optimism.WETH_1, // WETH
     '0xC139C86de76DF41c041A30853C3958427fA7CEbD', // MATE (base)
 ];
 
