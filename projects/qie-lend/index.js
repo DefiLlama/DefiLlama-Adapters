@@ -46,13 +46,16 @@ async function tvl(timestamp, block, chainBlocks) {
 
     for (let i = 0; i < ctokens.length; i++) {
 
-        // Handle underlying (native market safe fallback)
-        let underlying
-        if (underlyingRes.output[i]?.success) {
-            underlying = underlyingRes.output[i].output
-        } else {
-            underlying = ZERO_ADDRESS
+
+
+        if (!underlyingRes.output[i]?.success) {
+            // Only treat as native if this market truly has no underlying()
+            // Otherwise skip this market entirely
+            // console.warn(`Skipping market ${ctokens[i]} due to failed underlying()`)
+            continue
         }
+
+        const underlying = underlyingRes.output[i].output
         // Handle getCash safely
         const cashRaw = cashRes.output[i]?.success
             ? cashRes.output[i].output
