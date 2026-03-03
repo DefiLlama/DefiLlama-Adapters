@@ -1092,11 +1092,7 @@ const uniV3Configs = {
       isAlgebra: true,
       permitFailure: true,
     },
-    dogechain: {
-      factory: '0xd2480162aa7f02ead7bf4c127465446150d58452',
-      fromBlock: 837574,
-      isAlgebra: true,
-    },
+    dogechain: { tvl: () => ({ }) },
     polygon_zkevm: {
       factory: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
       fromBlock: 300,
