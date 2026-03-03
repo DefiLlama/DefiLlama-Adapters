@@ -109,8 +109,10 @@ async function tvl(api) {
 
     batchResults.flat().forEach(d => {
       const p = d?.d ?? d
-      api.add(p.token0, p.amount0Now)
-      api.add(p.token1, p.amount1Now)
+      if (!p || typeof p !== 'object') return
+
+      if (p.token0 && p.amount0Now != null) api.add(p.token0, p.amount0Now)
+      if (p.token1 && p.amount1Now != null) api.add(p.token1, p.amount1Now)
     })
   }
 }
