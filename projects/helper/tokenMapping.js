@@ -47,7 +47,7 @@ const ibcMappings = {
 const fixBalancesTokens = {
   qie: {
     "0x3F43DA82eC9A4f5285F10FaF1F26EcA7319E5DA5": { coingeckoId: "usd-coin", decimals: 6 },
-    "0x0087904D95BEe9E5F24dc8852804b547981A9139": { coingeckoId: "qie", decimals: 18 },
+    "0x0087904D95BEe9E5F24dc8852804b547981A9139": { coingeckoId: "qi-blockchain", decimals: 18 },
   },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
