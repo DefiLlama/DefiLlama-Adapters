@@ -1,45 +1,45 @@
-const BigNumber = require("bignumber.js");
-const { fixBalancesTokens } = require("../helper/tokenMapping");
+const sdk = require("@defillama/sdk");
 
-const WCHAIN_BRIDGED_ADDRESSES = [
-  "0x4560d5eb0c32a05fa59acd2e8d639f84a15a2414",
-  "0x6cdfda79787caa4ad1a95456095bedc95abd2d75",
-  "0xd4f93cacd6d607789c8ecf1dddeba8b0c4d915a8",
-  "0x9b4805dc867c279a96f3ed0745c8bc15153a22e6",
-  "0x0ab978880d3bf13e448f4f773acd817e83bddb0e",
-  "0x40cb2cccf80ed2192b53fb09720405f6fe349743",
-  "0x643ec74ed2b79098a37dc45dcc7f1abfe2ade6d8",
+const SOURCE_CHAIN = "bsc";
+const SOURCE_CHAIN_COLLATERAL_LOCKER = "0x68376917dc94A78790b95dFb7dF8Ae1aB8D0CF2d";
+const SOURCE_CHAIN_COLLATERAL_TOKENS = [
+  // Binance-Peg XRP
+  "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
+  // Binance-Peg DOGE
+  "0xba2ae424d960c26247dd6c32edc70b295c744c43",
+  // Binance-Peg SOL
+  "0x570a5d26f7765ecb712c0924e4de545b89fd43df",
+  // USDC
+  "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+  // USDT
+  "0x55d398326f99059ff775485246999027b3197955",
 ];
-
-const WCHAIN_BRIDGED_TOKENS = WCHAIN_BRIDGED_ADDRESSES.map((address) => ({
-  address,
-  ...(fixBalancesTokens.wchain[address] || {}),
-})).filter(({ coingeckoId, decimals }) => coingeckoId && decimals !== undefined);
-
-async function wchainTvl(_, _b, _cb, { api }) {
-  const supplies = await api.multiCall({
-    abi: "erc20:totalSupply",
-    calls: WCHAIN_BRIDGED_TOKENS.map(({ address }) => ({ target: address })),
-  });
-
-  const balances = {};
-  WCHAIN_BRIDGED_TOKENS.forEach(({ coingeckoId, decimals }, index) => {
-    const supply = supplies[index];
-    if (!supply || supply === "0") return;
-
-    const key = `coingecko:${coingeckoId}`;
-    const amount = new BigNumber(supply).div(new BigNumber(10).pow(decimals)).toNumber();
-    balances[key] = (balances[key] || 0) + amount;
-  });
-
-  return balances;
-}
 
 module.exports = {
   methodology:
-    "Bridge TVL counts totalSupply of WChain bridged tokens, mapped to coingecko IDs for pricing",
+    "Bridge TVL counts collateral locked on source chain bridge contracts (BSC), not bridged token totalSupply on WChain",
   misrepresentedTokens: true,
   wchain: {
-    tvl: wchainTvl,
+    tvl: async (_timestamp, _ethBlock, chainBlocks) => {
+      const balances = {};
+
+      const { output } = await sdk.api.abi.multiCall({
+        chain: SOURCE_CHAIN,
+        block: chainBlocks?.[SOURCE_CHAIN],
+        abi: "erc20:balanceOf",
+        calls: SOURCE_CHAIN_COLLATERAL_TOKENS.map((token) => ({
+          target: token,
+          params: SOURCE_CHAIN_COLLATERAL_LOCKER,
+        })),
+        permitFailure: true,
+      });
+
+      output.forEach((res, i) => {
+        if (!res?.success || !res?.output || res.output === "0") return;
+        sdk.util.sumSingleBalance(balances, `${SOURCE_CHAIN}:${SOURCE_CHAIN_COLLATERAL_TOKENS[i]}`, res.output);
+      });
+
+      return balances;
+    },
   },
 };
