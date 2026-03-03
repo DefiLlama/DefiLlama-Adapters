@@ -2807,6 +2807,11 @@ const uniV2Configs = {
     arbitrum: { factory: '0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50', staking: ["0x8F4Ed4Cf0300E22c739d2E5A22220497B123b66e", "0x4e6482b05D13085f1C4A7e2Ef612ba43104f71b9"] },
   },
   'wswap': {
+    _options: {
+      abis: {
+        allPairs: 'function allPairs(uint256) view returns (address)',
+      },
+    },
     methodology: 'TVL includes liquidity from WSwap V2 factories on W Chain, Ethereum, and BNB Chain.',
     wchain: '0x2A44f013aD7D6a1083d8F499605Cf1148fbaCE31',
     ethereum: '0x46B0B17Bb1f637CcfFA9fCc34bD591E3A0fF58F9',
