@@ -149,6 +149,7 @@ const configs = {
     avax: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 59955604 },
     hyperliquid: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 6132445 },
     plasma: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 782595 },
+    monad: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 22091249 }
   },
   'beethovenx-v3': {
     _options: { helperType: 'v3' },
