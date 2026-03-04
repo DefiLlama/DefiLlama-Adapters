@@ -22,5 +22,5 @@ module.exports = {
   start: '2025-10-14',
   timetravel: false,
   doublecounted: true,
-  plume_mainnet: { tvl, borrowed: tvl },
+  plume_mainnet: { tvl },
 };
