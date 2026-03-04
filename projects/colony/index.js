@@ -53,9 +53,9 @@ module.exports = {
     vesting: staking(vestingContract, colonyGovernanceToken),
   },
   hallmarks: [
-      [1651241728, "Staking V2 Launch"],
-      [1711370069, "Staking V3 Launch"],
-      [1715688000, "EarlyStage Launch"],
-      [1719792000, "Liquid Vesting DEX Launch"]
+      ['2022-04-29', "Staking V2 Launch"],
+      ['2024-03-25', "Staking V3 Launch"],
+      ['2024-05-14', "EarlyStage Launch"],
+      ['2024-07-01', "Liquid Vesting DEX Launch"]
   ],
 };

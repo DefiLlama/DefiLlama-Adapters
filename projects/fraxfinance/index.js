@@ -154,6 +154,10 @@ const ethereumTvl = async (api) => {
     addInvestorAMO(api, balances),
     addCvxFXSFRAX_BP(api, balances),
   ])
+  await sumTokens2({ balances, api, tokensAndOwners: [
+    ['0x1feCF3d9d4Fee7f2c02917A66028a48C6706c179', '0x860cc723935fc9a15ff8b1a94237a711dfef7857'],  // WTGXX
+    ['0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e', '0x5fbAa3A3B489199338fbD85F7E3D444dc0504F33'], // USTB
+  ], })
   return balances
 };
 
@@ -165,7 +169,7 @@ module.exports = {
     tvl: ethereumTvl,
   },
   hallmarks: [
-    [1651881600, "UST depeg"],
+    ['2022-05-07', "UST depeg"],
   ],
   methodology:
     "Counts liquidty as the Collateral USDC on all AMOs, USDC POOLs, FRAX3CRV and FEI3CRVs through their Contracts",

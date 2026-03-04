@@ -40,7 +40,7 @@ async function lif3GenesisTVL(api) {
   const tokens = [
     ADDRESSES.fantom.WFTM, // WFTM
     ADDRESSES.fantom.USDC, // USDC
-    '0x321162Cd933E2Be498Cd2267a90534A804051b11', // BTC
+    ADDRESSES.fantom.WBTC, // BTC
     '0x74b23882a30290451A17c44f4F05243b6b58C76d', // ETH
     ADDRESSES.fantom.DAI, // DAI
     ADDRESSES.fantom.MIM, // MIM

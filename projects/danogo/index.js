@@ -66,7 +66,7 @@ const bech32AddressToHexString = (address) => {
   // Convert from 5-bit to 8-bit
   const decoded = convert(words, 5, 8, false);
   if (!Array.isArray(decoded)) throw new Error(decoded);
-  
+
   return Buffer.from(decoded).toString('hex').substring(DECODED_PREFIX_LENGTH);
 };
 
@@ -85,8 +85,20 @@ const fetchAssetValue = async (assetsInfo) => {
   let totalAssetsValue = 0;
   const gatewayResponse = await postURL(`${DANOGO_GATEWAY_ENDPOINT}/cardano-asset-value`, { assetIds: assetIds});
   gatewayResponse.data.data.assetValues.forEach((asset) => {
-    const assetValue = Number(BigInt(asset.adaValue) * BigInt(100) / BigInt(ADA_TO_LOVELACE)) / 100;
-    totalAssetsValue += assetValue * assetsInfo[asset.assetId];
+    let priceInLovelace = BigInt(0);
+    if (asset.adaValue && BigInt(asset.adaValue) !== BigInt(0)) {
+      priceInLovelace = BigInt(asset.adaValue) * BigInt(assetsInfo[asset.assetId]);
+    } else if (
+      asset.exchangeRateNum &&
+      asset.exchangeRateDenom &&
+      BigInt(asset.exchangeRateDenom) !== BigInt(0)
+    ) {
+      const price = Math.floor((Number(asset.exchangeRateNum) / Number(asset.exchangeRateDenom)) * Number(assetsInfo[asset.assetId]));
+      priceInLovelace = BigInt(price);
+    }
+
+    const assetValue = Number(priceInLovelace * BigInt(100) / BigInt(ADA_TO_LOVELACE)) / 100;
+    totalAssetsValue += assetValue;
   });
   return totalAssetsValue;
 }

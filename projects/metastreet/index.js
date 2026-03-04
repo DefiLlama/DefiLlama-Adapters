@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "getVaultList": "address[]:getVaultList",
+    "balanceState": "function balanceState() view returns (uint256 totalCashBalance, uint256 totalLoanBalance, uint256 totalAdminFeeBalance, uint256 totalWithdrawalBalance)",
+    "currencyToken": "address:currencyToken"
+  };
 
 // Constants
 const METASTREET_VAULT_REGISTRY = '0x07AB40311B992c8C75c4813388eDf95420e8f80A';

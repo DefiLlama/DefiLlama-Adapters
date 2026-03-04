@@ -1,6 +1,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "pmmAddr": "address:pmmAddr",
+    "ammWrapperAddr": "address:ammWrapperAddr",
+    "stakingToken": "address:stakingToken"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 

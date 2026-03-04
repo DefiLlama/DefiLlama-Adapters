@@ -19,7 +19,7 @@ module.exports = {
       ]
     }),
   },
-  hallmarks: [
-    [Math.floor(new Date('2022-03-13')/1e3), 'Masterchef was hacked'],
-  ],
+  // hallmarks: [
+  //   ['2022-03-13', 'Masterchef was hacked'],
+  // ],
 };

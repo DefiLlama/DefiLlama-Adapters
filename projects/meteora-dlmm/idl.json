@@ -1,0 +1,161 @@
+{
+  "version": "0.9.0",
+  "name": "lb_clmm",
+  "constants": [  ],
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "lbPair",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "parameters", "type": {"defined": "StaticParameters"}},
+          {"name": "vParameters", "type": {"defined": "VariableParameters"}},
+          {"name": "bumpSeed", "type": {"array": ["u8", 1]}},
+          {"name": "binStepSeed", "docs": ["Bin step signer seed"], "type": {"array": ["u8", 2]}},
+          {"name": "pairType", "docs": ["Type of the pair"], "type": "u8"},
+          {"name": "activeId", "docs": ["Active bin id"], "type": "i32"},
+          {"name": "binStep", "docs": ["Bin step. Represent the price increment / decrement."], "type": "u16"},
+          {"name": "status", "docs": ["Status of the pair. Check PairStatus enum."], "type": "u8"},
+          {"name": "requireBaseFactorSeed", "docs": ["Require base factor seed"], "type": "u8"},
+          {"name": "baseFactorSeed", "docs": ["Base factor seed"], "type": {"array": ["u8", 2]}},
+          {"name": "activationType", "docs": ["Activation type"], "type": "u8"},
+          {
+            "name": "creatorPoolOnOffControl",
+            "docs": ["Allow pool creator to enable/disable pool with restricted validation. Only applicable for customizable permissionless pair type."],
+            "type": "u8"
+          },
+          {"name": "tokenXMint", "docs": ["Token X mint"], "type": "publicKey"},
+          {"name": "tokenYMint", "docs": ["Token Y mint"], "type": "publicKey"},
+          {"name": "reserveX", "docs": ["LB token X vault"], "type": "publicKey"},
+          {"name": "reserveY", "docs": ["LB token Y vault"], "type": "publicKey"},
+          {"name": "protocolFee", "docs": ["Uncollected protocol fee"], "type": {"defined": "ProtocolFee"}},
+          {"name": "padding1", "docs": ["_padding_1, previous Fee owner, BE CAREFUL FOR TOMBSTONE WHEN REUSE !!"], "type": {"array": ["u8", 32]}},
+          {"name": "rewardInfos", "docs": ["Farming reward information"], "type": {"array": [{"defined": "RewardInfo"}, 2]}},
+          {"name": "oracle", "docs": ["Oracle pubkey"], "type": "publicKey"},
+          {"name": "binArrayBitmap", "docs": ["Packed initialized bin array state"], "type": {"array": ["u64", 16]}},
+          {"name": "lastUpdatedAt", "docs": ["Last time the pool fee parameter was updated"], "type": "i64"},
+          {
+            "name": "padding2",
+            "docs": ["_padding_2, previous whitelisted_wallet, BE CAREFUL FOR TOMBSTONE WHEN REUSE !!"],
+            "type": {"array": ["u8", 32]}
+          },
+          {
+            "name": "preActivationSwapAddress",
+            "docs": [
+              "Address allowed to swap when the current point is greater than or equal to the pre-activation point. The pre-activation point is calculated as `activation_point - pre_activation_duration`."
+            ],
+            "type": "publicKey"
+          },
+          {"name": "baseKey", "docs": ["Base keypair. Only required for permission pair"], "type": "publicKey"},
+          {"name": "activationPoint", "docs": ["Time point to enable the pair. Only applicable for permission pair."], "type": "u64"},
+          {
+            "name": "preActivationDuration",
+            "docs": ["Duration before activation activation_point. Used to calculate pre-activation time point for pre_activation_swap_address"],
+            "type": "u64"
+          },
+          {
+            "name": "padding3",
+            "docs": [
+              "_padding 3 is reclaimed free space from swap_cap_deactivate_point and swap_cap_amount before, BE CAREFUL FOR TOMBSTONE WHEN REUSE !!"
+            ],
+            "type": {"array": ["u8", 8]}
+          },
+          {"name": "padding4", "docs": ["_padding_4, previous lock_duration, BE CAREFUL FOR TOMBSTONE WHEN REUSE !!"], "type": "u64"},
+          {"name": "creator", "docs": ["Pool creator"], "type": "publicKey"},
+          {"name": "tokenMintXProgramFlag", "docs": ["token_mint_x_program_flag"], "type": "u8"},
+          {"name": "tokenMintYProgramFlag", "docs": ["token_mint_y_program_flag"], "type": "u8"},
+          {"name": "reserved", "docs": ["Reserved space for future use"], "type": {"array": ["u8", 22]}}
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "StaticParameters",
+      "docs": ["Parameter that set by the protocol"],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "baseFactor",
+            "docs": ["Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"],
+            "type": "u16"
+          },
+          {"name": "filterPeriod", "docs": ["Filter period determine high frequency trading time window."], "type": "u16"},
+          {"name": "decayPeriod", "docs": ["Decay period determine when the volatile fee start decay / decrease."], "type": "u16"},
+          {"name": "reductionFactor", "docs": ["Reduction factor controls the volatile fee rate decrement rate."], "type": "u16"},
+          {"name": "variableFeeControl", "docs": ["Used to scale the variable fee component depending on the dynamic of the market"], "type": "u32"},
+          {
+            "name": "maxVolatilityAccumulator",
+            "docs": ["Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."],
+            "type": "u32"
+          },
+          {"name": "minBinId", "docs": ["Min bin id supported by the pool based on the configured bin step."], "type": "i32"},
+          {"name": "maxBinId", "docs": ["Max bin id supported by the pool based on the configured bin step."], "type": "i32"},
+          {
+            "name": "protocolShare",
+            "docs": [
+              "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
+            ],
+            "type": "u16"
+          },
+          {"name": "baseFeePowerFactor", "docs": ["Base fee power factor"], "type": "u8"},
+          {"name": "padding", "docs": ["Padding for bytemuck safe alignment"], "type": {"array": ["u8", 5]}}
+        ]
+      }
+    },
+    {
+      "name": "VariableParameters",
+      "docs": ["Parameters that changes based on dynamic of the market"],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "volatilityAccumulator",
+            "docs": [
+              "Volatility accumulator measure the number of bin crossed since reference bin ID. Normally (without filter period taken into consideration), reference bin ID is the active bin of last swap.",
+              "It affects the variable fee rate"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "volatilityReference",
+            "docs": ["Volatility reference is decayed volatility accumulator. It is always <= volatility_accumulator"],
+            "type": "u32"
+          },
+          {"name": "indexReference", "docs": ["Active bin id of last swap."], "type": "i32"},
+          {"name": "padding", "docs": ["Padding for bytemuck safe alignment"], "type": {"array": ["u8", 4]}},
+          {"name": "lastUpdateTimestamp", "docs": ["Last timestamp the variable parameters was updated"], "type": "i64"},
+          {"name": "padding1", "docs": ["Padding for bytemuck safe alignment"], "type": {"array": ["u8", 8]}}
+        ]
+      }
+    },
+    {"name": "ProtocolFee", "type": {"kind": "struct", "fields": [{"name": "amountX", "type": "u64"}, {"name": "amountY", "type": "u64"}]}},
+    {
+      "name": "RewardInfo",
+      "docs": ["Stores the state relevant for tracking liquidity mining rewards"],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "mint", "docs": ["Reward token mint."], "type": "publicKey"},
+          {"name": "vault", "docs": ["Reward vault token account."], "type": "publicKey"},
+          {"name": "funder", "docs": ["Authority account that allows to fund rewards"], "type": "publicKey"},
+          {"name": "rewardDuration", "docs": ["TODO check whether we need to store it in pool"], "type": "u64"},
+          {"name": "rewardDurationEnd", "docs": ["TODO check whether we need to store it in pool"], "type": "u64"},
+          {"name": "rewardRate", "docs": ["TODO check whether we need to store it in pool"], "type": "u128"},
+          {"name": "lastUpdateTime", "docs": ["The last time reward states were updated."], "type": "u64"},
+          {
+            "name": "cumulativeSecondsWithEmptyLiquidityReward",
+            "docs": [
+              "Accumulated seconds where when farm distribute rewards, but the bin is empty. The reward will be accumulated for next reward time window."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}

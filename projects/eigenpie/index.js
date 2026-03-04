@@ -1,50 +1,37 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const config = require("./config");
-const sdk = require('@defillama/sdk')
 
-async function getZircuitSupplies(api) {
-  const { msteth, egeth } = config[api.chain];
-  const mlrttokens = [msteth, egeth];
-  const tokenSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: mlrttokens, });
-  return {
-    zircuitMstethSupply: tokenSupplies[0],
-    zircuitEgethSupply: tokenSupplies[1],
-  };
+const CONFIG = {
+  ethereum: {
+    eigenConfig: "0x20b70E4A1883b81429533FeD944d7957121c7CAB",
+    eigenStaking: "0x24db6717dB1C75B9Db6eA47164D8730B63875dB7",
+    eigenBuffer: "0x98083e22d12497c1516d3c49e7cc6cd2cd9dcba4",
+    egETH: "0x18f313fc6afc9b5fd6f0908c1b3d476e3fea1dd9",
+    ethereum: ADDRESSES.null
+  },
 }
 
-async function tvl(api) {
-  const { eigenConfig } = config[api.chain];
-
-  const zircuitApi = new sdk.ChainApi({ chain: 'zircuit', timestamp: api.timestamp });
-  await zircuitApi.getBlock()
-  const zircuitSupplies = await getZircuitSupplies(zircuitApi);
-  api.add(ADDRESSES.ethereum.STETH, zircuitSupplies.zircuitMstethSupply * -1); // Adjust for msteth
-  api.add('0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf', zircuitSupplies.zircuitEgethSupply * -1); // Adjust for egeth
-
-  // Fetch token list and their supplies
-  let tokens = await api.call({ abi: 'address[]:getSupportedAssetList', target: eigenConfig });
-  const mlrttokens = await api.multiCall({ abi: 'function mLRTReceiptByAsset(address) view returns (address)', calls: tokens, target: eigenConfig });
-  const tokenSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: mlrttokens });
-  api.add(tokens, tokenSupplies);
+const abis = {
+  getSupportedAssetList: 'address[]:getSupportedAssetList',
+  mLRTReceiptByAsset: "function mLRTReceiptByAsset(address token) view returns (address)",
+  getAssetDistributionData: "function getAssetDistributionData(address asset) view returns (uint256 assetLyingInDepositPool, uint256 assetLyingInNDCs, uint256 assetStakedInEigenLayer, uint256 assetLyingInEWD)",
 }
 
-async function tvl_zircuit(api) {
-  const { msteth, egeth, wsteth, weth } = config[api.chain];
-  const mlrttokens = [msteth, egeth];
-  const tokens = [wsteth, weth];
-
-  // Now add zircuit-specific supplies
-  const tokenSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: mlrttokens });
-  api.add(tokens, tokenSupplies);
+const tvl = async (api) => {
+  const { eigenConfig, eigenStaking, eigenBuffer, ethereum } = CONFIG[api.chain]
+  const getSupportedAssetLists = await api.call({ abi: abis.getSupportedAssetList, target: eigenConfig })
+  const assetsDistributions = await api.multiCall({ target: eigenStaking, calls: getSupportedAssetLists, abi: abis.getAssetDistributionData })
+  await api.sumTokens({ owner: eigenBuffer, tokens: getSupportedAssetLists.map(t => t.toLowerCase() === '0xefefefefefefefefefefefefefefefefefefefef' ? ethereum : t) })
+  assetsDistributions.forEach(({ assetLyingInDepositPool, assetStakedInEigenLayer, assetLyingInNDCs, assetLyingInEWD }, i) => {
+    const token = getSupportedAssetLists[i]
+    api.add(token, assetLyingInDepositPool)
+    api.add(token, assetStakedInEigenLayer)
+    api.add(token, assetLyingInNDCs)
+    api.add(token, assetLyingInEWD)
+  })
 }
 
 module.exports = {
-  ethereum: {
-    tvl: tvl,
-  },
-  zircuit: {
-    tvl: tvl_zircuit,
-  },
-};
-
-module.exports.doublecounted = true;
+  doublecounted: true,
+  ethereum: { tvl },
+  zircuit: { tvl: () => ({  }) }
+}

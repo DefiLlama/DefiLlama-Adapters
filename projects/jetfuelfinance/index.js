@@ -1,15 +1,25 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { compoundExports } = require("../helper/compound");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+// const { compoundExports } = require("../helper/compound");
 
 // Jetswap section
 //const factory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
 
 /*Vaults found via Jetfuel 1 deployer, some it could not be tracked
 * so there is missing a small % of tvl compare to their official site stated amount ~60m
+
 */
+
+
+const abi = {
+  "token": "address:token",
+  "balance": "uint256:balance",
+  "underlying": "address:underlying",
+  "getCash": "uint256:getCash"
+}
+
+
 const vaults = [
   "0x4149531aeD145a15ccc361C469B0c79FE26B4F1c",
   "0x1Ae8F478571E7BC7caC067a8FCD298749BE722AE",
@@ -34,6 +44,8 @@ const vaults = [
   "0xA6d55074b038a082748c88D9C3E56821C44474ff",
 ];
 
+
+// assets lent to fortress lending protocol cannot be retrieved, fortress has bad debt which wont be repaid
 const single_side_vault = [
   //wbnb vault
   "0x15e84D6eD8997590E02b25d3D3CeEe9686753306",
@@ -42,78 +54,23 @@ const single_side_vault = [
   // btcb vault
   "0xeaa8234D9bf8Dfc6C8c24D3d24BE3cAd256450EF",
 ];
-
-const single_side_assets = [
-  ADDRESSES.bsc.WBNB,
-  ADDRESSES.bsc.BETH,
-  ADDRESSES.bsc.BTCB,
-];
-
 //const factoryTvl = uniTvlExport(factory, 'bsc')
 
-const bscTvl = async (timestamp, block, chainBlocks) => {
-  // Jetswap section
-  const balances =  {}
-
-  // Vault section in their repo
-  const vault_balances = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balance,
-      calls: vaults.map((address) => ({ target: address })),
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-  ).output.map((el) => el.output);
-
-  const vault_tokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.token,
-      calls: vaults.map((address) => ({ target: address })),
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-  ).output.map((el) => el.output);
-
-  const lpPositions = [];
-
-  vault_balances.forEach((vault, idx) => {
-    lpPositions.push({
-      token: vault_tokens[idx],
-      balance: vault,
-    });
-  });
-
-  const transformAddress = i => `bsc:${i}`;
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["bsc"],
-    "bsc",
-    transformAddress
-  );
-
-  const vault_single_side_balances = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balance,
-      calls: single_side_vault.map((address) => ({ target: address })),
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-  ).output.map((el) => el.output);
-
-  vault_single_side_balances.forEach((bal, idx) => {
-    sdk.util.sumSingleBalance(balances, `bsc:${single_side_assets[idx]}`, bal);
-  });
-
-  return balances;
+const bscTvl = async (api) => {
+  const vaultBals = await api.multiCall({ abi: abi.balance, calls: vaults })
+  const vaultTokens = await api.multiCall({ abi: abi.token, calls: vaults })
+  // const ssBals = await api.multiCall({ abi: abi.balance, calls: single_side_vault })
+  // api.add(single_side_assets, ssBals)
+  const sUnderlyingTokens = (await api.multiCall({  abi: 'address:token', calls: single_side_vault, permitFailure: true })).map(i => i || ADDRESSES.null)
+  const sStrategies = await api.multiCall({  abi: 'address:strategy', calls: single_side_vault})
+  api.add(vaultTokens, vaultBals)
+  return sumTokens2({ api, resolveLP: true, tokensAndOwners2: [sUnderlyingTokens, sStrategies] })
 };
 
-const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3393eb5ad17c195", "0xE24146585E882B6b59ca9bFaaaFfED201E4E5491", ADDRESSES.bsc.WBNB)
 
 module.exports = {
   bsc: {
-    tvl: sdk.util.sumChainTvls([ bscTvl, lendingTvl]),
-    borrowed
+    tvl: bscTvl,
+    borrowed: () => ({})
   },
 };

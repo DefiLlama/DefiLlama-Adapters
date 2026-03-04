@@ -1,32 +1,31 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require("../helper/http");
 
-const coins = {
-  deepType: ADDRESSES.sui.DEEP,
-  suiType: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
-  usdcType: ADDRESSES.sui.USDC_CIRCLE,
-  bethType: ADDRESSES.sui.ETH,
-  wusdtType: ADDRESSES.sui.USDT,
-  wusdcType: ADDRESSES.sui.USDC,
-  nsType: "0x5145494a5f5100e645e4b0aa950fa6b68f614e8c59e17bc5ded3495123a79178::ns::NS",
-  typusType: "0xf82dc05634970553615eef6112a1ac4fb7bf10272bf6cbe0f80ef44a6c489385::typus::TYPUS",
-}
-
-const endpointUrl = "https://deepbook-indexer.mainnet.mystenlabs.com"
-const endpointName = "get_net_deposits"
+const assetsUrl = "https://deepbook-indexer.mainnet.mystenlabs.com/assets";
+const endpointUrl = "https://deepbook-indexer.mainnet.mystenlabs.com";
+const endpointName = "get_net_deposits";
+const marginSupplyEndpoint = "margin_supply";
 
 const tvl = async (api) => {
-  const url = `${endpointUrl}/${endpointName}/${Object.values(coins).join(',')}/${api.timestamp}`
+  const assets = await get(assetsUrl);
+  const coins = Object.values(assets).map(a => a.asset_type);
+  const url = `${endpointUrl}/${endpointName}/${coins.join(',')}/${api.timestamp}`
   const data = await get(url)
-  Object.keys(data).forEach(coin => {
+  coins.forEach(coin => {
     api.add(coin, data[coin])
   })
+
+  // Add margin supply
+  const marginSupply = await get(`${endpointUrl}/${marginSupplyEndpoint}`)
+  Object.entries(marginSupply).forEach(([symbol, amount]) => {
+    if (assets[symbol]) api.add(assets[symbol].asset_type, amount)
+  })
+
+  const { usdTvl } = await api.getUSDJSONs();
+  if (usdTvl < 0) throw new Error("Something might be wrong: TVL returned a negative value");
 }
 
 module.exports = {
   methodology: "All deposits into all BalanceManagers minutes all withdrawals from all BalanceManagers",
   start: '2024-10-14',
-  sui: {
-    tvl,
-  }
+  sui: { tvl }
 }

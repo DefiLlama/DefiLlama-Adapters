@@ -69,10 +69,10 @@ module.exports = {
   rsk: getV2TvlObject('rsk'),
   base: getV2TvlObject('base'),
    hallmarks: [
-    [1650082958, "Protocol is paused due to non-critical vulnerability"],
-    [1654057358, "Deployment on Optimism"],
-    [1668006000, "Deployment on Arbitrum"],
-    [1672099200, "Deployment on Ethereum"],
-    [1685577600, "Deployment on BNB"],
+    ['2022-04-16', "Protocol is paused due to non-critical vulnerability"],
+    ['2022-06-01', "Deployment on Optimism"],
+    ['2022-11-09', "Deployment on Arbitrum"],
+    ['2022-12-27', "Deployment on Ethereum"],
+    ['2023-06-01', "Deployment on BNB"],
   ]
 };

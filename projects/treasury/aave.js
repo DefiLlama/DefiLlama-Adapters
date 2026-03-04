@@ -151,7 +151,7 @@ module.exports = treasuryExports({
       '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8', // aPolWETH
       ADDRESSES.polygon.WMATIC_2, // WMATIC
       '0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4', // amWMATIC
-      '0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97', // aPolWMATIC
+      ADDRESSES.polygon.aPolWMATIC, // aPolWMATIC
       '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3', // BAL
       '0xc4195D4060DaEac44058Ed668AA5EfEc50D77ff6', // amBAL
       '0x8ffDf2DE812095b1D19CB146E4c004587C0A0692', // aPolBAL
@@ -201,7 +201,7 @@ module.exports = treasuryExports({
       '0xf329e36C7bF6E5E86ce2150875a84Ce77f477375', // aAvaAAVE
       ADDRESSES.avax.WAVAX,
       '0xDFE521292EcE2A4f44242efBcD66Bc594CA9714B', // avWAVAX
-      '0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97', // aAvaWAVAX
+      ADDRESSES.polygon.aPolWMATIC, // aAvaWAVAX
       ADDRESSES.avax.WBTC_e, // WBTC
       '0x686bEF2417b6Dc32C50a3cBfbCC3bb60E1e9a15D', // aWBTC
       '0x078f358208685046a11C85e8ad32895DED33A249', // aAvaWBTC
@@ -227,7 +227,7 @@ module.exports = treasuryExports({
       ADDRESSES.optimism.DAI, // DAI
       '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE', // aArbDAI
       '0xd22a58f79e9481d1a88e00c343885a588b34b68b', // EURS
-      '0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97', // aArbEURS
+      ADDRESSES.polygon.aPolWMATIC, // aArbEURS
       ADDRESSES.arbitrum.USDC, // USDC
       '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aArbUSDC
       ADDRESSES.arbitrum.USDT, // USDT
@@ -254,7 +254,7 @@ module.exports = treasuryExports({
       ADDRESSES.optimism.DAI, // DAI
       '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE', // aOptDAI
       ADDRESSES.optimism.sUSD, // sUSD
-      '0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97', // aOptSUSD
+      ADDRESSES.polygon.aPolWMATIC, // aOptSUSD
       ADDRESSES.optimism.USDC, // USDC
       '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aOptUSDC
       ADDRESSES.optimism.USDT, // USDT
@@ -276,7 +276,7 @@ module.exports = treasuryExports({
       "0x6ab707Aca953eDAeFBc4fD23bA73294241490620", // aFanUSDT
       "0x078f358208685046a11C85e8ad32895DED33A249", // aFanWBTC
       "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8", // aFanWETH
-      "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97", // aFanWFTM
+      ADDRESSES.polygon.aPolWMATIC, // aFanWFTM
     ],
     owners: treasuryContractsFantom,
     ownTokens: [AAVEFANTOM]

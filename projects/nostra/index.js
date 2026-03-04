@@ -148,6 +148,6 @@ module.exports = {
     borrowed,
   },
   hallmarks: [
-    [1697634000, "Nostra Money Market launch"]
+    ['2023-10-18', "Nostra Money Market launch"]
   ]
 };

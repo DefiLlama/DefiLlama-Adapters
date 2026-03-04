@@ -4,6 +4,10 @@ const config = {
   // sepolia: { archController: '0xC003f20F2642c76B81e5e1620c6D8cdEE826408f', },
 }
 
+const marketBlacklist = [
+  '0x262dd546703760adda0c06279508e04bd1f60dee' // Kinto
+].map(i => i.toLowerCase())
+
 Object.keys(config).forEach(chain => {
   const { archController } = config[chain]
   module.exports[chain] = {
@@ -25,7 +29,9 @@ Object.keys(config).forEach(chain => {
   }
 
   async function getMarkets(api) {
-    const markets = await api.call({ abi: 'address[]:getRegisteredMarkets', target: archController })
+    const markets = (
+      await api.call({ abi: 'address[]:getRegisteredMarkets', target: archController })
+    ).filter(i => !marketBlacklist.includes(i.toLowerCase()))
     const tokens = await api.multiCall({ abi: 'address:asset', calls: markets })
     return { markets, tokens }
   }

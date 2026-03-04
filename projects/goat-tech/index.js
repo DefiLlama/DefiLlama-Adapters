@@ -6,7 +6,7 @@ const configs = {
   wstETH_LOCKER: "0x90075915714235a3816cf6ee4fe703c2e36a566a",
   weETH_LOCKER: "0x76e38de3d19b90afffc4253d1556b83c063e2ae8",
   ezETH_LOCKER: "0x05cca71e1f44e721fc16bbbcda6c62091d240deb",
-  weETH: "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
+  weETH: ADDRESSES.arbitrum.weETH,
 };
 
 module.exports = {

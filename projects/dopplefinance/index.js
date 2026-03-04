@@ -12,7 +12,7 @@ const assetsOnExchange = {
     // * USDC
     ADDRESSES.bsc.USDC,
     // * DAI
-    "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+    ADDRESSES.bsc.DAI,
     // * UST
     "0x23396cF899Ca06c4472205fC903bDB4de249D6fC",
     // * BTCB

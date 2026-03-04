@@ -1,9 +1,7 @@
 const { sumTokens2 } = require('../helper/solana');
 
 async function tvl() {
-  var test = await sumTokens2({ solOwners: ['FiPhWKk6o16WP9Doe5mPBTxaBFXxdxRAW9BmodPyo9UK'] });
-  console.log(await test);
-  return test;
+  return sumTokens2({ solOwners: ['FiPhWKk6o16WP9Doe5mPBTxaBFXxdxRAW9BmodPyo9UK'] });
 }
 
 module.exports = {

@@ -26,7 +26,6 @@ async function tvl(api) {
 
     const AMO_atETH_amount = vault_atETH_amount * vault_AMO_owned / vault_total_supply
     const AMO_scETH_amount = vault_scETH_amount * vault_AMO_owned / vault_total_supply
-    console.log(AMO_atETH_amount, AMO_scETH_amount)
     api.addTokens([atETH, scETH], [AMO_atETH_amount, AMO_scETH_amount])
 
 }

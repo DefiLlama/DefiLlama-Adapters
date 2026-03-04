@@ -9,10 +9,18 @@ const vaultsV2 = ["0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78"]
 
 async function tvl(api) {
     const calls = vaults.map(v => ({ target: v.vault }))
-    const prices = await api.multiCall({
-        calls,
-        abi: "function getCurrentExchangePrice() public view returns (uint256 exchangePrice_, uint256 newTokenRevenue_)"
-    })
+    let prices
+    try {
+        prices = await api.multiCall({
+            calls,
+            abi: "function getCurrentExchangePrice() public view returns (uint256 exchangePrice_, uint256 newTokenRevenue_)"
+        })
+    } catch {
+        prices = await api.multiCall({
+            calls,
+            abi: 'uint256:lastRevenueExchangePrice'
+        })
+    }
     const supply = await api.multiCall({
         calls,
         abi: "erc20:totalSupply"
