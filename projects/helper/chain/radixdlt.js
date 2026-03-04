@@ -1,6 +1,6 @@
 
 const { getUniqueAddresses, } = require('../tokenMapping')
-const { getFixBalancesSync } = require('../portedTokens')
+const { getFixBalances } = require('../portedTokens')
 const { sliceIntoChunks } = require('../utils')
 const BigNumber = require('bignumber.js')
 const { post } = require('../http')
@@ -14,7 +14,7 @@ const ENTITY_DETAILS_URL = `https://mainnet.radixdlt.com/state/entity/details`
 
 async function sumTokens({ owner, owners = [], api, transformLSU = false,  blacklistedTokens = [] }) {
   const blacklistSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
-  const fixBalances = getFixBalancesSync(chain)
+  const fixBalances = getFixBalances(chain)
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners)

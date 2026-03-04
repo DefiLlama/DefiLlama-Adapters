@@ -1,30 +1,40 @@
-const { getResources, function_view } = require("../helper/chain/aptos");
-let resourcesCache;
-let poolsCache;
-async function _getResources() {
-  if (!resourcesCache) resourcesCache = getResources("0x3b38735644d0be8ac37ebd84a1e42fa5c2487495ef8782f6c694b1a147f82426")
-  return resourcesCache
-}
+const { functionViewWithApiKey } = require("../helper/chain/aptos");
+const cellanaAddress = "0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1"
+const apiKey = "AG-D6FATNFSEBBKFTMMXVFRXKIDZWJJFFDPC"
+
 async function _getPools() {
-  if (!poolsCache) poolsCache = function_view({ functionStr: "0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1::liquidity_pool::all_pool_addresses", type_arguments: [], args: [] })
-  return poolsCache
+  return functionViewWithApiKey({ functionStr: `${cellanaAddress}::liquidity_pool::all_pool_addresses`, type_arguments: [], args: [], apiKey: apiKey })
 }
-const extractCoinAddress = (str) => str.slice(str.indexOf("<") + 1, str.lastIndexOf(">"));
-const reserveContrainerFilter = (i) => i.type.includes("0x1::coin::CoinStore")
 
-async function getfungibleAssetBalances(api) {
-  const poolsAddresses = await _getPools('0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1')
-  for (const pool of poolsAddresses) {
-    const fungibleAssetPoolStore = (await getResources(pool.inner)).find(i => i.type.includes('liquidity_pool::LiquidityPool'))?.data
-    const fungibleAssetAddressToken1 = fungibleAssetPoolStore?.token_store_1?.inner
-    const fungibleAssetAddressToken2 = fungibleAssetPoolStore?.token_store_2?.inner
+async function _getPoolReserves(poolAddress) {
+  return functionViewWithApiKey({ functionStr: `${cellanaAddress}::liquidity_pool::pool_reserves`, type_arguments: ['0x1::object::ObjectCore'], args: [poolAddress], apiKey: apiKey })
+}
 
-    const fungibleAssetTokenStore_1 = (await getResources(fungibleAssetAddressToken1)).find(i => i.type.includes('fungible_asset::FungibleStore'))?.data
-    const fungibleAssetTokenStore_2 = (await getResources(fungibleAssetAddressToken2)).find(i => i.type.includes('fungible_asset::FungibleStore'))?.data
-    const token_1_address = fungibleAssetTokenStore_1?.metadata?.inner
-    const token_2_address = fungibleAssetTokenStore_2?.metadata?.inner
-    api.add(token_2_address, fungibleAssetTokenStore_2?.balance || 0);
-    api.add(token_1_address, fungibleAssetTokenStore_1?.balance || 0);
+async function _getTokenOfPool(poolAddress) {
+  return functionViewWithApiKey({ functionStr: `${cellanaAddress}::liquidity_pool::supported_token_strings`, type_arguments: [], args: [poolAddress], apiKey: apiKey })
+}
+
+
+async function tvl(api) {
+  const pools = (await _getPools())
+
+  for (const pool of pools) {
+    const poolAddress = pool.inner
+    const reserves = await _getPoolReserves(poolAddress);
+    const tokens = await _getTokenOfPool(poolAddress);
+
+    if (!reserves || !tokens || tokens.length < 2) {
+      console.warn(`Invalid data for pool ${poolAddress}`);
+      continue;
+    }
+
+    const reserveX = Number(reserves[0] || 0);
+    const reserveY = Number(reserves[1] || 0);
+
+    const tokenX = tokens[0];
+    const tokenY = tokens[1];
+    api.add(tokenX, reserveX);
+    api.add(tokenY, reserveY);
   }
 }
 
@@ -33,21 +43,6 @@ module.exports = {
   methodology:
     "Counts the lamports in each coin container in the Cellena contract account.",
   aptos: {
-
-    tvl: async (api) => {
-
-      const data = await _getResources()
-      const coinContainers = data.filter(reserveContrainerFilter)
-        .map((i) => ({
-          lamports: i.data.coin.value,
-          tokenAddress: extractCoinAddress(i.type),
-        }));
-
-      coinContainers.forEach(({ lamports, tokenAddress }) => {
-        api.add(tokenAddress, lamports);
-      });
-      //get funible asset balance
-      await getfungibleAssetBalances(api)
-    }
+    tvl,
   }
 }

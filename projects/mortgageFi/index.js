@@ -1,6 +1,6 @@
 const config = {
   arbitrum: { pools: ['0x9Be2Cf73E62DD3b5dF4334D9A36888394822A33F'] },
-  base: { pools: ['0x1bE87D273d47C3832Ab7853812E9A995A4DE9EEA'] },
+  base: { pools: ['0x1bE87D273d47C3832Ab7853812E9A995A4DE9EEA','0xE93131620945A1273b48F57f453983d270b62DC7'] },
 }
 
 Object.keys(config).forEach(chain => {

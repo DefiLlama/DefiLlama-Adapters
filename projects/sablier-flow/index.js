@@ -1,60 +1,91 @@
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { request } = require("graphql-request");
+const sdk = require("@defillama/sdk");
+
+const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/3b4ea6b/v1/graphql';
+
+// Chains using Envio endpoint
+const CHAIN_IDS_ENVIO = {
+  abstract: 2741,
+  arbitrum: 42161,
+  avax: 43114,
+  base: 8453,
+  berachain: 80094, 
+  blast: 81457,
+  bsc: 56,
+  chz: 88888,
+  core: 1116,
+  ethereum: 1,
+  formnetwork: 478,
+  xdai: 100,
+  hyperliquid: 999,
+  lightlink_phoenix: 1890, 
+  linea: 59144,
+  mode: 34443,
+  morph: 2818,
+  optimism: 10,
+  polygon: 137,
+  scroll: 534352,
+  sonic: 146,
+  sophon: 50104,
+  sseed: 5330,
+  unichain: 130, 
+  xdc: 50,
+  era: 324,
+};
+
+// Chains using graph endpoints
+const SUBGRAPH_ENDPOINTS = {
+  sei: '41ZGYcFgL2N7L5ng78S4sD6NHDNYEYcNFxnz4T8Zh3iU',
+  // iotex: '6No3QmRiC8HXLEerDFoBpF47jUPRjhntmv28HHEMxcA2',
+};
+
 
 const config = {
-  ethereum: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-ethereum/version/latest'] },
-  abstract: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-abstract/version/latest'] },
-  arbitrum: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-arbitrum/version/latest'] },
-  avax: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-avalanche/version/latest'] },
-  base: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-base/version/latest'] },
-  berachain: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-berachain/version/latest'] },
-  blast: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-blast/version/latest'] },
-  bsc: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-bsc/version/latest'] },
-  chz: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-chiliz/version/latest'] },
-  xdai: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-gnosis/version/latest'] },
-  iotex: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-iotex/version/latest'] },
-  linea: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-linea/version/latest'] },
-  mode: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-mode/version/latest'] },
-  optimism: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-optimism/version/latest'] },
-  polygon: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-polygon/version/latest'] },
-  scroll: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-scroll/version/latest'] },
-  sei: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-sei/version/latest'] },
-  xdc: { endpoints: [ 'https://graphql.xinfin.network/subgraphs/name/xdc/sablier-flow-xdc' ] },
-  unichain: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-unichain/version/latest'] },
-  era: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-flow-zksync/version/latest'] },
-}
+  ...Object.fromEntries(Object.keys(CHAIN_IDS_ENVIO).map(k => [k, ENVIO_ENDPOINT])),
+  ...SUBGRAPH_ENDPOINTS
+};
 
+const envioPayload = `
+query getChainData($chainId: numeric!) {
+  Contract(where: { chainId: { _eq: $chainId } }) { id address category }
+  Asset(where: { chainId: { _eq: $chainId } }) { id chainId symbol }
+}
+`
+const subgraphPayload = `
+{
+  contracts { id address }
+  assets { id chainId symbol }
+}
+`
 
 async function getTokensConfig(api, isVesting) {
-  const ownerTokens = []
-  const { endpoints } = config[api.chain]
-  for (const endpoint of endpoints) {
-    const { contracts, assets } = await request(
-      endpoint, 
-      `{
-        contracts { id address }
-        assets { id chainId symbol }
-      }`
-    );
-    const owners = contracts.map(i => i.address)
-    let tokens = assets.map(i => i.id)
-    const symbols = assets.map(i => i.symbol)
-    // Filter vesting tokens
-    tokens = tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
-    owners.forEach(owner => ownerTokens.push([tokens, owner]))
-  }
+  const endpoint = config[api.chain];
+  if (!endpoint) return { ownerTokens: [] };
 
+  const isSubgraph = !!SUBGRAPH_ENDPOINTS[api.chain];
+  const result = isSubgraph
+    ? await request(sdk.graph.modifyEndpoint(endpoint), subgraphPayload)
+    : await request(ENVIO_ENDPOINT, envioPayload, { chainId: CHAIN_IDS_ENVIO[api.chain] });
+
+  if (!result || (!isSubgraph && !CHAIN_IDS_ENVIO[api.chain])) return { ownerTokens: [] };
+
+  const contracts = result.contracts || result.Contract || [];
+  const assets = result.assets || result.Asset || [];
+
+  const owners = contracts.map(i => i.address);
+
+  const tokens = assets
+    .filter(asset => isWhitelistedToken(asset.symbol, asset.id, isVesting))
+    .map(asset => asset.id.split('-').slice(2)[0])
+  
+  const ownerTokens = owners.map(owner => [tokens, owner])
   return { ownerTokens }
 }
 
-async function tvl(api) {
-  return api.sumTokens(await getTokensConfig(api, false))
-}
+const tvl = async (api) => api.sumTokens(await getTokensConfig(api, false));
+const vesting = async (api) => api.sumTokens(await getTokensConfig(api, true));
 
-async function vesting(api) {
-  return api.sumTokens(await getTokensConfig(api, true))
-}
-
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl, vesting }
-})
+module.exports = Object.fromEntries(
+  Object.keys(config).map(chain => [chain, { tvl, vesting }])
+);

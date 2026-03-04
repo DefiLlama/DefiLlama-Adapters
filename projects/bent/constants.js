@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const addressZero = ADDRESSES.null;
-const ethAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+const ethAddress = ADDRESSES.GAS_TOKEN_2;
 const wethAddress = ADDRESSES.ethereum.WETH;
 const bentCVXAddress = "0x9E0441E084F5dB0606565737158aa6Ab6B970fE0";
 const CVXAddress = ADDRESSES.ethereum.CVX;

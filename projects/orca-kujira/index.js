@@ -39,7 +39,7 @@ async function tvl(api) {
 
 module.exports = {
   hallmarks: [
-    [1673740800, "TVL separated into products"]
+    ['2023-01-15', "TVL separated into products"]
   ],
   kujira: {
     tvl,

@@ -39,7 +39,7 @@ function buildGetPoolBalanceTxBytes(tokenAddress, packageId, bridgeId) {
                 "Object": {
                     "SharedObject": {
                         "objectId": bridgeId,
-                        "initialSharedVersion": 0,
+                        "initialSharedVersion": 472519562,
                         "mutable": false
                     }
                 }

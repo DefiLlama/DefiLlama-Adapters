@@ -6,8 +6,13 @@ async function tvl(api) {
   
 }
 
+async function staking() {
+  return sumTokens2({ tokenAccounts: ['BZgWzdxHqytYrn3EuvkozE1Hg38CD5ajjxBppRHuV1nQ'] })
+}
+
 module.exports = {
   solana: {
     tvl,
+    staking
   },
 }

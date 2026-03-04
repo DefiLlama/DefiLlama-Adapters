@@ -8,6 +8,7 @@ const ASSET_HUB_MYTHOS_TREASURY = "13gYFscwJFJFqFMNnttzuTtMrApUEmcUARtgFubbChU9g
 const HDX_FELLOWSHIP_SALARY_SWAP = "7KQx4f7yU3hqZHfvDVnSfe6mpgAT8Pxyr67LXHV6nsbZo3Tm";
 const HDX_TREASURY_STABLES_SWAP_ONE = "7LcF8b5GSvajXkSChhoMFcGDxF9Yn9unRDceZj1Q6NYox8HY";
 const HDX_TREASURY_STABLES_SWAP_TWO = "7KCp4eenFS4CowF9SpQE5BBCj5MtoBA3K811tNyRmhLfH1aV";
+const HDX_TREASURY_STABLES_SWAP_THREE = "7KATdGaecnKi4zDAMWQxpB2s59N2RE1JgLuugCjTsRZHgP24";
 
 const ASSET_HUB_ASSETS = { USDC: 1337, USDT: 1984 };
 const HYDRATION_ASSETS = { USDC: 10, USDT: 22, DOT: 5 };
@@ -17,7 +18,7 @@ const MYTHOS_DECIMALS = 1e18;
 
 const RELAY_CHAIN_RPC = "wss://rpc.polkadot.io";
 const ASSET_HUB_RPC = "wss://polkadot-asset-hub-rpc.polkadot.io";
-const HYDRATION_RPC = "wss://hydradx-rpc.dwellir.com";
+const HYDRATION_RPC = "wss://rpc.hydradx.cloud";
 
 async function getRelayChainBalance() {
   try {
@@ -125,6 +126,7 @@ async function getHydrationBalances() {
       HDX_FELLOWSHIP_SALARY_SWAP,
       HDX_TREASURY_STABLES_SWAP_ONE,
       HDX_TREASURY_STABLES_SWAP_TWO,
+      HDX_TREASURY_STABLES_SWAP_THREE
     ];
 
     let dotTotal = 0;

@@ -12,6 +12,10 @@ const config = {
   {
     coinGeckoId: "celestia",
     dropContract: "neutron1vqtnu54addf87qp73fnjvqafruzkr2zjgswkhsmsg45t08wla2nqqan0hc"
+  },
+  {
+    coinGeckoId: "initia",
+    dropContract: "neutron1wk9aamp2hy2hd90jhsu6qj7grd6tde43nzuvcchmfvj2880ya5ss9qxdp7"
   }],  
 };
 

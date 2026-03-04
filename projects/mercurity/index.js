@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "getCurrentTokens": "address[]:getCurrentTokens"
+  };
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
