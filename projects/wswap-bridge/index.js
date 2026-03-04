@@ -47,10 +47,30 @@ module.exports = {
           permitFailure: true,
         });
 
-        output.forEach((res, i) => {
-          if (!res?.success || !res?.output || res.output === "0") return;
-          sdk.util.sumSingleBalance(balances, `${sourceChain}:${tokens[i]}`, res.output);
-        });
+        for (const [i, token] of tokens.entries()) {
+          let amount = output?.[i]?.output;
+          const success = output?.[i]?.success;
+
+          if (!success || amount == null) {
+            try {
+              const retry = await sdk.api.abi.call({
+                chain: sourceChain,
+                block: chainBlocks?.[sourceChain],
+                target: token,
+                abi: "erc20:balanceOf",
+                params: owner,
+              });
+              amount = retry?.output;
+            } catch (e) {
+              throw new Error(
+                `Failed balanceOf for ${sourceChain}:${token} (owner: ${owner}): ${e.message || e}`
+              );
+            }
+          }
+
+          if (!amount || amount === "0") continue;
+          sdk.util.sumSingleBalance(balances, `${sourceChain}:${token}`, amount);
+        }
       }
 
       return balances;
