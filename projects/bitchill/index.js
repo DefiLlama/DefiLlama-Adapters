@@ -40,11 +40,9 @@ const HANDLERS = {
  * @returns {Promise<void>}
  */
 async function tvl(api) {
-  for (const [name, config] of Object.entries(HANDLERS)) {
+  await Promise.all(Object.entries(HANDLERS).map(async ([name, config]) => {
     let underlyingBalance;
-
     if (config.protocol === 'tropykus') {
-      // Tropykus (Compound fork): underlying = kTokenBalance * exchangeRate / 1e18
       const [balance, exchangeRate] = await Promise.all([
         api.call({
           target: config.lendingToken,
@@ -58,7 +56,6 @@ async function tvl(api) {
       ]);
       underlyingBalance = (BigInt(balance) * BigInt(exchangeRate)) / (10n ** 18n);
     } else if (config.protocol === 'sovryn') {
-      // Sovryn: assetBalanceOf returns underlying balance directly
       underlyingBalance = await api.call({
         target: config.lendingToken,
         abi: 'function assetBalanceOf(address _owner) view returns (uint256)',
@@ -67,9 +64,8 @@ async function tvl(api) {
     } else {
       throw new Error(`Unknown protocol "${config.protocol}" for handler ${name} (lendingToken: ${config.lendingToken})`);
     }
-
     api.add(config.stablecoin, underlyingBalance);
-  }
+  }));
 }
 
 module.exports = {
