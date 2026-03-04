@@ -14,12 +14,9 @@ const LP_SUPPLY_OFFSET = 333; // u64 LE offset for lp_supply in Raydium CP-Swap 
 // --- Token Vaults ---
 const STAKED_DOGEBTC_CUSTODIAN = "523EuRZDDyvCaVJGsqgcAuifcLiVvgAYynmjVWd1RXDR";
 const STAKED_LP_CUSTODIAN = "Eyzfok5go6ddaKHEddVza5QTKzo4tcYF282cM1nU8GqV";
-const FACTION_TREASURY_VAULT = "GUrrK4c1RmTDqYbEbWSjq6mfUcujpgTtasU4JXVzEKMA";
-const NFT_FLOOR_SWEEP_VAULT = "DRvR4WpLj85Lfvwk3im7Ucrz1s9FPLPUtrTihUiqaPve";
 
 // --- SOL Vaults ---
 const SOL_PRIZE_POT = "GqMyratKThjEKzqZQStUy2LNB3dogZ3ETDBMQ33fmUw5";
-const STAKER_SOL_REWARD_VAULT = "HiGNRiXWrqtFbwEH1YKQVHommFU15auksXbe7Qv7Nrrb";
 
 async function getStakedLpUnderlyingValue(api) {
   const connection = getConnection();
@@ -54,20 +51,11 @@ async function getStakedLpUnderlyingValue(api) {
 }
 
 async function tvl(api) {
-  // SOL in protocol vaults + faction/sweep DogeBTC vaults
+  // SOL in betting prize pot (funded by user bets, paid out to winners)
   await sumTokens2({
     api,
-    tokenAccounts: [
-      FACTION_TREASURY_VAULT,
-      NFT_FLOOR_SWEEP_VAULT,
-    ],
-    solOwners: [
-      SOL_PRIZE_POT,
-      STAKER_SOL_REWARD_VAULT,
-    ],
+    solOwners: [SOL_PRIZE_POT],
   });
-
-  return api.getBalances();
 }
 
 async function staking(api) {
@@ -76,21 +64,17 @@ async function staking(api) {
     api,
     tokenAccounts: [STAKED_DOGEBTC_CUSTODIAN],
   });
-
-  return api.getBalances();
 }
 
 async function pool2(api) {
   // Staked LP (DogeBTC/SOL) -> pro-rata underlying value
   await getStakedLpUnderlyingValue(api);
-
-  return api.getBalances();
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    "TVL includes SOL in betting prize pot and staker reward vault, DogeBTC in faction treasury and NFT floor sweep vaults. Staking tracks staked DogeBTC. Pool2 tracks staked DogeBTC/SOL LP tokens valued by their pro-rata share of underlying assets in the Raydium pool.",
+    "TVL includes SOL in the betting prize pot. Staking tracks user-staked DogeBTC. Pool2 tracks staked DogeBTC/SOL LP tokens valued by their pro-rata share of underlying assets in the Raydium pool.",
   solana: {
     tvl,
     staking,
