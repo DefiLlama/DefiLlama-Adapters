@@ -1,18 +1,13 @@
 const { getConfig } = require('../helper/cache');
 
-// Wrapper vaults that deposit into underlying strategies (excluded to avoid double counting)
-const WRAPPER_VAULTS = [
-  '0x95f19B19aff698169a1A0BBC28a2e47B14CB9a86', // ycvxCRV -> deposits into yscvxCRV
-];
-
 async function tvl(api) {
   const data = await getConfig('yld', 'https://yldfi.co/api/vaults');
 
-  // Extract vault addresses, excluding wrapper vaults to avoid double counting
-  const vaults = Object.values(data)
-    .filter(v => v && typeof v === 'object' && v.address)
-    .map(v => v.address)
-    .filter(addr => !WRAPPER_VAULTS.includes(addr));
+  // Only include strategy vaults (keys starting with "ys"), excluding wrapper
+  // vaults (keys starting with "y" but not "ys") to avoid double counting
+  const vaults = Object.entries(data)
+    .filter(([key, v]) => key.startsWith('ys') && v && typeof v === 'object' && v.address)
+    .map(([, v]) => v.address);
 
   const assets = await api.multiCall({ abi: 'address:asset', calls: vaults });
   const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults });
