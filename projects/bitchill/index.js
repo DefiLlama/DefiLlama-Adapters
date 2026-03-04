@@ -19,7 +19,7 @@ const HANDLERS = {
   sovrynDoc: {
     handler: '0xA1A752784d4d43778ED23771777B18AE9cb66461',
     lendingToken: '0xd8D25f03EBbA94E15Df2eD4d6D38276B595593c1', // iSUSD
-    stablecoin: '0xe700691dA7b9851F2F35f8b8182c69c53CcaD9Db',  // DOC
+    stablecoin: null, // resolved on-chain via loanTokenAddress()
     protocol: 'sovryn'
   },
   tropykusUsdrif: {
@@ -42,6 +42,7 @@ const HANDLERS = {
 async function tvl(api) {
   await Promise.all(Object.entries(HANDLERS).map(async ([name, config]) => {
     let underlyingBalance;
+    let stablecoin = config.stablecoin;
     if (config.protocol === 'tropykus') {
       const [balance, exchangeRate] = await Promise.all([
         api.call({
@@ -56,15 +57,21 @@ async function tvl(api) {
       ]);
       underlyingBalance = (BigInt(balance) * BigInt(exchangeRate)) / (10n ** 18n);
     } else if (config.protocol === 'sovryn') {
-      underlyingBalance = await api.call({
-        target: config.lendingToken,
-        abi: 'function assetBalanceOf(address _owner) view returns (uint256)',
-        params: [config.handler]
-      });
+      [stablecoin, underlyingBalance] = await Promise.all([
+        api.call({
+          target: config.lendingToken,
+          abi: 'address:loanTokenAddress'
+        }),
+        api.call({
+          target: config.lendingToken,
+          abi: 'function assetBalanceOf(address _owner) view returns (uint256)',
+          params: [config.handler]
+        })
+      ]);
     } else {
       throw new Error(`Unknown protocol "${config.protocol}" for handler ${name} (lendingToken: ${config.lendingToken})`);
     }
-    api.add(config.stablecoin, underlyingBalance);
+    api.add(stablecoin, underlyingBalance);
   }));
 }
 
