@@ -67,6 +67,7 @@ async function tvl(api) {
     const batchResults = await Promise.all(batch.map(keys =>
       api.multiCall({
         abi: abi.getPositionDetails,
+        permitFailure: true,
         calls: keys.map(key => ({ target: CL_CORE, params: [key] })),
       })))
 
