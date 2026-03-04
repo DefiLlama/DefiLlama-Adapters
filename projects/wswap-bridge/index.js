@@ -32,13 +32,31 @@ module.exports = {
     "Bridge TVL counts collateral locked on source chain bridge contracts (Ethereum and BSC), not bridged token totalSupply on WChain",
   misrepresentedTokens: true,
   wchain: {
-    tvl: async (_timestamp, _ethBlock, chainBlocks) => {
+    tvl: async (timestamp, _ethBlock, chainBlocks) => {
       const balances = {};
+      const resolvedBlocks = {};
 
       for (const [sourceChain, { owner, tokens }] of Object.entries(COLLATERAL_LOCKERS)) {
+        let sourceBlock = chainBlocks?.[sourceChain];
+        if (sourceBlock == null) {
+          if (!resolvedBlocks[sourceChain]) {
+            resolvedBlocks[sourceChain] = await sdk.api.util.lookupBlock(timestamp, {
+              chain: sourceChain,
+            });
+          }
+          const lookedUpBlock = resolvedBlocks[sourceChain];
+          sourceBlock =
+            typeof lookedUpBlock === "number"
+              ? lookedUpBlock
+              : lookedUpBlock?.number ?? lookedUpBlock?.block;
+        }
+        if (sourceBlock == null) {
+          throw new Error(`Unable to resolve block for source chain: ${sourceChain}`);
+        }
+
         const { output } = await sdk.api.abi.multiCall({
           chain: sourceChain,
-          block: chainBlocks?.[sourceChain],
+          block: sourceBlock,
           abi: "erc20:balanceOf",
           calls: tokens.map((token) => ({
             target: token,
@@ -55,12 +73,15 @@ module.exports = {
             try {
               const retry = await sdk.api.abi.call({
                 chain: sourceChain,
-                block: chainBlocks?.[sourceChain],
+                block: sourceBlock,
                 target: token,
                 abi: "erc20:balanceOf",
                 params: owner,
               });
               amount = retry?.output;
+              if (amount == null) {
+                throw new Error("empty output");
+              }
             } catch (e) {
               throw new Error(
                 `Failed balanceOf for ${sourceChain}:${token} (owner: ${owner}): ${e.message || e}`
