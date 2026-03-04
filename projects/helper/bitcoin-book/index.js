@@ -57,7 +57,6 @@ module.exports = {
   ...fetchers,
   getBTCExport,
 
-  symbiosis: ['bc1qtnv5uqa5qt2jwftsj6667kpp8uvgt63p5k5hsn25wm6kjxzmxqnsyu79vc'],
   hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf', 'bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj'],
   p2pb2b,
   bitomato,
