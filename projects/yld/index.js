@@ -6,7 +6,7 @@ const WRAPPER_VAULTS = [
 ];
 
 async function tvl(api) {
-  const data = await getConfig('yldfi', 'https://yldfi.co/api/vaults');
+  const data = await getConfig('yld', 'https://yldfi.co/api/vaults');
 
   // Extract vault addresses, excluding wrapper vaults to avoid double counting
   const vaults = Object.values(data)
@@ -20,7 +20,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the sum of totalAssets() across all yldfi ERC-4626 strategy vaults, which provide auto-compounding yield strategies.',
+  methodology: 'TVL is the sum of totalAssets() across all yld ERC-4626 strategy vaults.',
   doublecounted: true,
   ethereum: { tvl },
 };
