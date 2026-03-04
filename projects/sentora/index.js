@@ -13,7 +13,7 @@ const configs = {
       ],
     },
     solana: {
-      kaminoLendVaultAdmins: ['7fLxEftpppneavpueYgP2s7HhSGbWpj2jTCmAEwwqonY'],
+      kaminoLendVaultAdmins: ['G3yeQTXybqy6TcPb4r2Hsvh3Apd8FocZN2iXRL8MTz9f'],
     },
   }
 }
