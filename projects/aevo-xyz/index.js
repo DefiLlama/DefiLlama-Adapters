@@ -18,10 +18,12 @@ module.exports = {
         ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.STETH,
         ADDRESSES.ethereum.SDAI,
+        ADDRESSES.ethereum.WEETH,
       ]
     }),
     staking: staking("0x38913051E01D4F6910cB66bB9aC3cb77D746Ad81",
-      ["0x6123b0049f904d730db3c36a31167d9d4121fa6b", //RBN
+      [
+        // "0x6123b0049f904d730db3c36a31167d9d4121fa6b", //RBN
         ADDRESSES.ethereum.AEVO //AEVO
       ]
     )

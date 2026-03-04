@@ -12,6 +12,7 @@ const config = {
   sonic: '0xd8863d794520285185197F97215c8B8AD04E8815',
   soneium: '0x4f0c1b4c6FdF983f2d385Cf24DcbC8c68f345E40',
   unichain: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
+  plasma: '0xA9F2c3E18E22F19E6c2ceF49A88c79bcE5b482Ac',
 }
 
 module.exports = {

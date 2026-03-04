@@ -1,18 +1,27 @@
 const { getLogs2 } = require("../helper/cache/getLogs");
 
-const SEAMLESS_LEVERAGE_MANAGER_BASE = "0x38Ba21C6Bf31dF1b1798FCEd07B4e9b07C5ec3a8";
+const config = {
+  ethereum: {
+    LEVERAGE_MANAGER: "0x5C37EB148D4a261ACD101e2B997A0F163Fb3E351",
+    fromBlock: 23471226
+  },
+  base: {
+    LEVERAGE_MANAGER: "0x38Ba21C6Bf31dF1b1798FCEd07B4e9b07C5ec3a8",
+    fromBlock: 31051780
+  },
+};
 
 const getLeverageTokens = async (api) => {
   return (
     await getLogs2({
       api,
-      target: SEAMLESS_LEVERAGE_MANAGER_BASE,
+      target: config[api.chain].LEVERAGE_MANAGER,
       topics: ["0xc3f4681fb2a57a13e121c6f24fe319c8572bb001497f2b74712695625ee9028e"],
       eventAbi: "event LeverageTokenCreated(address indexed token, address collateralAsset, address debtAsset, (address lendingAdapter, address rebalanceAdapter, uint256 mintTokenFee, uint256 redeemTokenFee) config)",
-      fromBlock: 31051780
+      fromBlock: config[api.chain].fromBlock
     })
   )
-}
+};
 
 const SeamlessLeverageTokensTVL = () => {
   return {
@@ -49,4 +58,5 @@ const SeamlessLeverageTokensTVL = () => {
 
 module.exports = {
   base: SeamlessLeverageTokensTVL(),
+  ethereum: SeamlessLeverageTokensTVL(),
 };

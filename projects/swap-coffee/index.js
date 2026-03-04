@@ -51,7 +51,7 @@ module.exports = {
                 decimals[address(data.metadata.address).toString()] = parseInt(data.metadata.decimals)
             }
 
-            return await transformDexBalances({
+            return transformDexBalances({
                 chain: 'ton',
                 data: pools.map(i => ({
                     token0: normalizeAddress(i.tokens[0]),

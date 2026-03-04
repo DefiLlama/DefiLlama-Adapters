@@ -13,7 +13,7 @@ const getPositionCompositionAbi = "function getPositionCompositionSimplified(uin
 
 const assetToAddressMappingBase = {
   "cbBTC": ADDRESSES.base.cbBTC,
-  "LBTC": "0xecac9c5f704e954931349da37f60e39f515c11c1",
+  "LBTC": ADDRESSES.etlk.LBTC,
   "cbLTC": "0xcb17c9db87b595717c857a08468793f5bab6445f",
   "cbDOGE": "0xcbD06E5A2B0C65597161de254AA074E489dEb510",
   "cbXRP": "0xcb585250f852C6c6bf90434AB21A00f02833a4af",
@@ -34,7 +34,7 @@ const assetToAddressMappingBase = {
   "MOG": "0x2Da56AcB9Ea78330f947bD57C54119Debda7AF71",
   "AIXBT": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
   "KAITO": "0x98d0baa52b2D063E780DE12F615f963Fe8537553",
-  "ezETH": "0x2416092f143378750bb29b79eD961ab195CcEea5",
+  "ezETH": ADDRESSES.optimism.ezETH,
   "weETH": ADDRESSES.base.weETH,
   "EUROC": "0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
   "VVV": "0xacfe6019ed1a7dc6f7b508c02d1b04ec88cc21bf",

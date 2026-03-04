@@ -1,6 +1,6 @@
 const { trySumTokens } = require("../helper/chain/cardano");
 const { get } = require("../helper/http");
-const poolAddressesURL = "https://beta.flowcardano.org/api/getPoolAddresses";
+const poolAddressesURL = "https://surflending.org/api/getPoolAddresses";
 
 async function tvl() {
   let poolAddresses = await get(poolAddressesURL);

@@ -1,4 +1,5 @@
-const yoVaultsBase = [
+const vaults = {
+  base: [
     '0x3a43aec53490cb9fa922847385d82fe25d0e9de7',
     '0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC',
     '0x0000000f2eB9f69274678c76222B35eEc7588a65',

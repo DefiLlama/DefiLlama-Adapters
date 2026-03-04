@@ -1,5 +1,5 @@
 const { getProvider, getAssociatedTokenAddress, sumTokens2 } = require("./helper/solana");
-const { Program } = require("@project-serum/anchor");
+const { Program } = require("@coral-xyz/anchor");
 
 async function getAccountsInBatches(connection, pubkeys, batchSize = 100) {
   const result = [];
@@ -11,29 +11,41 @@ async function getAccountsInBatches(connection, pubkeys, batchSize = 100) {
   return result;
 }
 
+// DefiTuna Lending is used to provide leveraged liquidity in DefiTuna Liquidity.
+// TVL is calculated as the sum of the non-borrowed assets in the vaults.
+// Borrowed amounts are derived from the values recorded in the vaults data.
 async function tvl(api) {
   const provider = getProvider(api.chain);
-  const program = new Program(tunaIDL, tunaIDL.address, provider);
-  const vaults = await program.account.vault.all();
+  const program = new Program(tunaIDL, provider);
+  const vaults = await program.account["vault"].all();
 
   // Available funds are held in token accounts whose ATA addresses are derived from the mint,
   // the vault’s public key, and the mint program’s public key
   const mints = vaults.map((vault) => vault.account.mint);
   const mintAccounts = await getAccountsInBatches(provider.connection, mints);
+  // mintPrograms is an array of either TOKEN_PROGRAM_ID or TOKEN_2022_PROGRAM_ID
   const mintPrograms = mintAccounts.map((account) => account.owner);
-  const tokenAccounts = vaults.map(
-    (vault, i) =>
-    getAssociatedTokenAddress(vault.account.mint, vault.publicKey, mintPrograms[i])
+
+  // Compute ATA addresses for all vaults
+  const tokenAccounts = vaults.map((vault, i) =>
+    getAssociatedTokenAddress(
+      vault.account.mint,
+      vault.publicKey,
+      mintPrograms[i]
+    )
   );
 
   return sumTokens2({ tokenAccounts, api });
 }
 
+// Borrowed amount is taken from the borrowedFunds values stored in the vaults account data.
 async function borrowed(api) {
   const provider = getProvider(api.chain);
-  const program = new Program(tunaIDL, tunaIDL.address, provider);
-  const vaults = await program.account.vault.all();
-  vaults.forEach(vault => api.add(vault.account.mint.toBase58(), vault.account.borrowedFunds));
+  const program = new Program(tunaIDL, provider);
+  const vaults = await program.account["vault"].all();
+  vaults.forEach((vault) =>
+    api.add(vault.account.mint.toBase58(), vault.account.borrowedFunds)
+  );
 }
 
 module.exports = {
@@ -41,42 +53,37 @@ module.exports = {
   solana: { tvl, borrowed },
   methodology: "TVL is calculated based on the amount of deposited tokens.",
   start: "2024-11-29",
-  hallmarks: [
-    [1753297176, 'TUNA token launched']
-  ],
 };
 
 const tunaIDL = {
-    address: "tuna4uSQZncNeeiAMKbstuxA9CUkHH6HmC64wgmnogD",
-    metadata: {
-        name: "tuna",
-        version: "2.0.11",
-        spec: "0.1.0",
-        description: "DefiTuna"
-    },
+  address: "tuna4uSQZncNeeiAMKbstuxA9CUkHH6HmC64wgmnogD",
+  metadata: {
+    name: "tuna",
+    version: "3.1.3",
+    spec: "0.1.0",
+    description: "DefiTuna",
+  },
   instructions: [],
   accounts: [
+    { name: "Vault", discriminator: [211, 8, 232, 43, 2, 152, 117, 119] },
+  ],
+  errors: [],
+  types: [
     {
       name: "Vault",
       type: {
         kind: "struct",
         fields: [
-          {
-            name: "version",
-            docs: ["Struct version"],
-            type: "u16",
-          },
+          { name: "version", docs: ["Struct version"], type: "u16" },
           {
             name: "bump",
             docs: ["Bump seed for the vault account"],
-            type: {
-              array: ["u8", 1],
-            },
+            type: { array: ["u8", 1] },
           },
           {
             name: "mint",
             docs: ["The mint of the token that this vault holds"],
-            type: "publicKey",
+            type: "pubkey",
           },
           {
             name: "deposited_funds",
@@ -123,32 +130,26 @@ const tunaIDL = {
           },
           {
             name: "supply_limit",
-            docs: [
-              "The maximum allowed supply for this pool. The default value 0 is unlimited supply.",
-            ],
+            docs: ["The maximum allowed supply for this vault."],
             type: "u64",
           },
           {
             name: "pyth_oracle_price_update",
             docs: ["Pyth oracle price update account."],
-            type: "publicKey",
+            type: "pubkey",
           },
           {
             name: "pyth_oracle_feed_id",
             docs: ["Pyth oracle price feed id."],
-            type: "publicKey",
+            type: "pubkey",
           },
           {
             name: "reserved",
             docs: ["Reserved"],
-            type: {
-              array: ["u8", 184],
-            },
+            type: { array: ["u8", 184] },
           },
         ],
       },
     },
   ],
-  errors: [],
-  types: [],
 };

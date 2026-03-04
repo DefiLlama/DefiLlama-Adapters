@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accOmenPerShare, uint16 depositFeeBP)",
+    "poolLength": "uint256:poolLength"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const MasterAugur = "0x6ad70613d14c34aa69E1604af91c39e0591a132e";

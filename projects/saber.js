@@ -24,6 +24,7 @@ const blacklistedTokens = new Set([
   'FTT9GrHBVHvDeUTgLU8FxVJouGqg9uiWGmmjETdm32Sx',
   'SL819j8K9FuFPL84UepVcFkEZqDUUvVzwDmJjCHySYj',
   'BtX7AfzEJLnU8KQR1AgHrhGH5s2AHUTbfjhUQP8BhPvi',
+  'BdUJucPJyjkHxLMv6ipKNUhSeY3DWrVtgxAES1iSBAov',
 ])
 
 async function tvl() {
@@ -47,7 +48,7 @@ async function tvl() {
 
 module.exports = {
   hallmarks: [
-    [1667865600, "FTX collapse"]
+    ['2022-11-08', "FTX collapse"]
   ],
   timetravel: false,
   solana: { tvl },

@@ -3,7 +3,7 @@
  **
  **
  ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
- ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.6.3
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.6.6
  **
  **
  **
@@ -565,9 +565,12 @@
        "hemi",
        "lisk",
        "etlk",
+       "plasma",
+       "monad",
+       "somnia",
      ].map((n) => [n, { tvl, borrowed }])
    ),
-   hallmarks: [[1666569600, "LM begins"]],
+   hallmarks: [['2022-10-24', "LM begins"]],
    methodology: `Retrieves the tokens in each Gearbox pool & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
    misrepresentedTokens: true,
  };

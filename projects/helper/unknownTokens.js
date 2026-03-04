@@ -8,21 +8,27 @@ const { vestingHelper } = require('./cache/vestingHelper')
 const { getTokenPrices, sumUnknownTokens, getLPData, } = require('./cache/sumUnknownTokens')
 const { getUniTVL } = require('./cache/uniswap')
 const { getUniqueAddresses, } = require('./utils')
-const stakingHelper = require('./staking')
+
 
 function uniTvlExports(config, commonOptions = {}) {
+  function staking(stakingContract, stakingToken) {
+    if (!Array.isArray(stakingContract)) stakingContract = [stakingContract]
+    if (!Array.isArray(stakingToken)) stakingToken = [stakingToken]
+    return (api) => api.sumTokens({ owners: stakingContract, tokens: stakingToken, })
+  }
+
   const exportsObj = {
     misrepresentedTokens: !commonOptions.useDefaultCoreAssets,
   }
   Object.keys(config).forEach(chain => {
-    exportsObj[chain] =  uniTvlExport(chain, config[chain],commonOptions )[chain]
+    exportsObj[chain] = uniTvlExport(chain, config[chain], commonOptions)[chain]
   })
   if (commonOptions.hallmarks) exportsObj.hallmarks = commonOptions.hallmarks
   if (commonOptions.deadFrom) exportsObj.deadFrom = commonOptions.deadFrom
   if (typeof commonOptions.staking === 'object') {
     Object.entries(commonOptions.staking).forEach(([chain, stakingArgs]) => {
       if (!exportsObj[chain]) exportsObj[chain] = {}
-      exportsObj[chain].staking = stakingHelper.staking(...stakingArgs)
+      exportsObj[chain].staking = staking(...stakingArgs)
     })
   }
   return exportsObj
@@ -55,7 +61,7 @@ function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], 
     lps.forEach(token => rewardPool.forEach(owner => tao.push([token, owner])))
 
     await sumTokens(balances, tao, block, chain, undefined, { resolveLP: true, skipFixBalances: true })
-    const fixBalances = await getFixBalances(chain)
+    const fixBalances = getFixBalances(chain)
     await updateBalances(balances)
     fixBalances(balances)
     return balances
@@ -74,7 +80,7 @@ function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], 
     // token.forEach(t => masonry.forEach(owner => tao.push([t, owner])))
 
     await sumTokens(balances, tao, block, chain, undefined, { skipFixBalances: true })
-    const fixBalances = await getFixBalances(chain)
+    const fixBalances = getFixBalances(chain)
     await updateBalances(balances)
     fixBalances(balances)
     return balances
@@ -98,13 +104,13 @@ function pool2({ stakingContract, lpToken, chain, transformAddress, coreAssets =
     const chain = api.chain
     const block = api.block
     if (!transformAddress)
-      transformAddress = await getChainTransform(chain)
+      transformAddress = getChainTransform(chain)
 
     const balances = await sumTokens({}, [[lpToken, stakingContract]], block, chain, transformAddress, { resolveLP: true })
     const { updateBalances } = await getTokenPrices({ block, chain, transformAddress, coreAssets, lps: [lpToken], allLps: true, })
 
     await updateBalances(balances, { resolveLP: false, })
-    const fixBalances = await getFixBalances(chain)
+    const fixBalances = getFixBalances(chain)
     fixBalances(balances)
     return balances
   }
@@ -131,7 +137,7 @@ function staking({ tokensAndOwners = [],
     const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
     // sdk.log(prices, pairBalances, balances)
     await updateBalances(balances, { skipConversion, onlyLPs })
-    const fixBalances = await getFixBalances(chain)
+    const fixBalances = getFixBalances(chain)
     fixBalances(balances)
     return balances
   }
@@ -149,8 +155,8 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
     return allTvl[block]
 
     async function getTVL() {
-      const transform = await getChainTransform(chain)
-      const fixBalances = await getFixBalances(chain)
+      const transform = getChainTransform(chain)
+      const fixBalances = getFixBalances(chain)
       const balances = {
         tvl: {},
         staking: {},
@@ -237,7 +243,7 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
     coreAssets = getCoreAssets(chain)
 
   if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+    transformAddress = getChainTransform(chain)
 
   const calls = vaults.map(i => ({ target: i }))
   const { output: balanceRes } = await sdk.api.abi.multiCall({
@@ -259,7 +265,7 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }
 
 function uniTvlExport(chain, factory, options = {}) {
-  const exportsObj= {
+  const exportsObj = {
     misrepresentedTokens: !options.useDefaultCoreAssets,
     [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
   }
@@ -269,7 +275,7 @@ function uniTvlExport(chain, factory, options = {}) {
 // Default ABI for CLM vaults that expose wants() => (token0, token1) and balances() => (amount0, amount1)
 const pairApis = {
   balances: 'function balances() view returns (uint256 amount0, uint256 amount1)',
-  wants:    'function wants() view returns (address token0, address token1)',
+  wants: 'function wants() view returns (address token0, address token1)',
 }
 
 // Helper for CLM-style vaults (wants() + balances()) returning two tokens and two balances
@@ -277,7 +283,7 @@ async function yieldHelperPair({
   chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
   useDefaultCoreAssets = false,
   balanceAPI = pairApis.balances,
-  tokenAPI   = pairApis.wants,
+  tokenAPI = pairApis.wants,
   restrictTokenRatio,
 }) {
 
@@ -288,12 +294,12 @@ async function yieldHelperPair({
     coreAssets.push(...getCoreAssets(chain))
 
   if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+    transformAddress = getChainTransform(chain)
 
   const calls = vaults.map(i => ({ target: i }))
 
   const { output: balanceRes } = await sdk.api.abi.multiCall({ abi: balanceAPI, calls, chain, block })
-  const { output: tokenRes }    = await sdk.api.abi.multiCall({ abi: tokenAPI,  calls, chain, block })
+  const { output: tokenRes } = await sdk.api.abi.multiCall({ abi: tokenAPI, calls, chain, block })
 
   const allTokens = []
   const allBalances = []

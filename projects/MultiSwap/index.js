@@ -38,4 +38,3 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
-

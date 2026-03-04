@@ -3,6 +3,7 @@ const axios = require('axios');
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs');
 const { nullAddress } = require('../helper/tokenMapping');
 
+
 const config = {
   arbitrum: {
     factories: [
@@ -24,12 +25,18 @@ const config = {
     factories: ['0x50E7116c4a9624a2d562Ee0Ab5209F3834C15E14'],
     positionsApi: ['https://unichain-nftlp-uniswapv3.up.railway.app/positions']
   },
+  hyperliquid: {
+    factories: ['0x171d48161223a3ddb4659e093291f8f32f4e95ef'],
+    positionsApi: ['https://hyperevm-nftlp-hyperswapv3.up.railway.app/positions'] // Hyperswap
+
+  }
 };
 
 const blacklistedPools = {
   arbitrum: [],
   base: [],
-  unichain: []
+  unichain: [],
+  hyperliquid: []
 };
 
 const abi = {

@@ -1,5 +1,4 @@
-const { sliceIntoChunks } = require("@defillama/sdk/build/util/index.js");
-
+const sdk = require('@defillama/sdk')
 const { abi, contracts, logsTopic, creationBlocks } = require("./constants");
 const { cachedCalls } = require("./cache");
 
@@ -8,7 +7,7 @@ const { getDecimalsData } = require("./helpers");
 
 const getCdpData = async (cdpIds, api) => {
   const res = [];
-  const chunks = sliceIntoChunks(cdpIds, 100);
+  const chunks = sdk.util.sliceIntoChunks(cdpIds, 100);
   for (const chunk of chunks)
     res.push(
       ...(await api.multiCall({

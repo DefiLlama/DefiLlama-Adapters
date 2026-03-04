@@ -1,6 +1,0 @@
-{
-  "pool_getNormalizedWeight": "function getNormalizedWeight(address token) view returns (uint256)",
-  "pool_isInitialized": "bool:isInitialized",
-  "pool_isFinalized": "bool:isFinalized",
-  "pool_isPublicSwap": "bool:isPublicSwap"
-}

@@ -66,7 +66,7 @@ const getMovementTvl = async (api) => {
 }
 
 module.exports = {
-  methodology: `FBTC, LFBTC and WFBTC as collateral`,
+  methodology: `FBTC, LFBTC as collateral`,
 }
 
 // V2

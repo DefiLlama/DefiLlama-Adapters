@@ -10,21 +10,25 @@ query get_supertokens($block: Int) {
     orderBy: id,
     orderDirection: asc
   ) {
-      id
-  underlyingAddress
-  name
-  underlyingToken { name decimals symbol id }
-  symbol
-  decimals
-  isSuperToken
-  isNativeAssetSuperToken
-  isListed
+    id
+    underlyingAddress
+    name
+    underlyingToken { name decimals symbol id }
+    symbol
+    decimals
+    isSuperToken
+    isNativeAssetSuperToken
+    isListed
   }
 }`;
 
 const blacklistedSuperTokens = new Set(
   ["0x441bb79f2da0daf457bad3d401edb68535fb3faa"].map((i) => i.toLowerCase())
 );
+
+const blacklistedSymbolsByChain = {
+  base: new Set(['SUP']),
+};
 
 // Fetch and paginate all SuperTokens at a given block
 async function fetchAllSuperTokens(graphUrl, blockForQuery) {
@@ -78,13 +82,10 @@ const MIVA_LOCKERS = [
 
 // Main function for all chains to get balances of superfluid tokens
 async function getChainBalances(allTokens, chain, block, isVesting, api) {
-  // Init empty balances
-  let balances = {};
-
   // Abi MultiCall to get supertokens supplies
   const supply = await api.multiCall({
-    abi: "erc20:totalSupply", // abi['totalSupply'],
-    calls: allTokens.map(token => token.id),
+    abi: "erc20:totalSupply",
+    calls: allTokens.map((token) => token.id),
   });
 
   for (let i = 0; i < supply.length; i++) {
@@ -99,13 +100,21 @@ async function getChainBalances(allTokens, chain, block, isVesting, api) {
       isNativeAssetSuperToken,
     } = allTokens[i];
 
-    // Accumulate to balances, the balance for tokens on mainnet or sidechain
+    const tokenSymbol = symbol?.toUpperCase();
+    const underlyingSymbol = underlyingToken?.symbol?.toUpperCase();
+
+    const chainBlacklist = blacklistedSymbolsByChain[chain];
+    const isBlacklistedSymbol =
+      (chainBlacklist && tokenSymbol && chainBlacklist.has(tokenSymbol)) ||
+      (chainBlacklist && underlyingSymbol && chainBlacklist.has(underlyingSymbol));
+
+    if (isBlacklistedSymbol) continue;
+
     let prefixedUnderlyingAddress = underlyingAddress;
     if (
       underlyingAddress &&
       blacklistedSuperTokens.has(underlyingAddress.toLowerCase())
-    )
-      continue;
+    ) continue;
 
     // ALEPH custom logic (Base and Avalanche): no underlying; circulating = totalSupply - locker balance
     if (
@@ -231,7 +240,7 @@ const subgraphEndpoints = {
 
 module.exports = {
   methodology: `TVL is the value of SuperTokens in circulation. SuperTokens are Superfluid protocol's extension of the ERC20 token standard with additional functionalities like Money Streaming or Distributions. More on SuperTokens here: https://docs.superfluid.finance/docs/concepts/overview/super-tokens`,
-  // hallmarks: [[1644278400, "Fake ctx hack"]],
+  // hallmarks: [['2022-02-08', "Fake ctx hack"]],
 };
 
 Object.keys(subgraphEndpoints).forEach((chain) => {

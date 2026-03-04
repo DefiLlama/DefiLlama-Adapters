@@ -4,6 +4,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const YN_ETH = '0x09db87a538bd693e9d08544577d5ccfaa6373a48'
 const yn_ETHx = '0x657d9ABA1DBb59e53f9F3eCAA878447dCfC96dCb'
 const yn_USDx = '0x3DB228FE836D99Ccb25Ec4dfdC80ED6d2CDdCB4b'
+const yn_RWAx = '0x01Ba69727E2860b37bc1a2bd56999c1aFb4C15D8'
 
 module.exports = {
   doublecounted: true,
@@ -17,9 +18,12 @@ module.exports = {
       api.add(lsds, bals)
       const maxethBalance = await api.call({ abi: 'uint256:totalAssets', target: yn_ETHx })
       api.add(ADDRESSES.null, maxethBalance)
-      const maxusdBalance = await api.call({ abi: 'uint256:totalAssets', target: yn_USDx })
-      api.add(ADDRESSES.null, maxusdBalance)
       
+      const ynUSDxBalance = await api.call({ abi: 'uint256:totalAssets', target: yn_USDx })
+      api.add(ADDRESSES.ethereum.USDC, ynUSDxBalance)
+
+      const ynRWAxBalance = await api.call({ abi: 'uint256:totalAssets', target: yn_RWAx })
+      api.add(ADDRESSES.ethereum.USDC, ynRWAxBalance)
     }
   },
   bsc: {
@@ -29,6 +33,7 @@ module.exports = {
       const ynBNBx = '0x32C830f5c34122C6afB8aE87ABA541B7900a2C5F'
       const ynCoBTCk = '0x132376b153d3cFf94615fe25712DB12CaAADf547'
       const ynBfBTCk = '0x1B015705214bdcAAf43E8EDeCa13023143224Ab7'
+
   
       return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynCoBTCk, ynBfBTCk], isOG4626: true})
     }

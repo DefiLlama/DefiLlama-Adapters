@@ -51,7 +51,7 @@ const config = {
   },
   cardano: {
     owners: [
-      'addr1qxd9jjmxd4gl2kf4jh99nnhqjsk5gn597ryq25045ttaschx70mgasdwgef63zgwl0fac38mdwaszwsg7uu0d2j5ckqsgsva7r'
+      'addr1qy77lfdhpnxyl90t58amp2x3dz0lhgzttmw53g2nxe360x7aht5vw4djzh7jluu6jrl384l6u628ymh4yghgnfgk3kqsjymy5j'
     ]
   },
   /*
@@ -100,7 +100,7 @@ const config = {
   */
   litecoin: {
     owners: [
-      'ltc1qemulmneuu7lv3z9a00v243u23dt0vygcq6cwp7'
+      'ltc1qmjzuyy3yljdqt8x4da3kwngzzek5j3gcqttmum'
     ],
   },
   optimism: {
@@ -117,7 +117,7 @@ const config = {
   },
   ripple: {
     owners: [
-      'rHmku65GJrrsp6Sb7KRzCgM2tAA3JBACQZ'
+      'rB4kDPaivX4YqWHHj2VERfAzZJTys27g5G'
     ]
   },
   sonic: {
@@ -128,7 +128,7 @@ const config = {
   },
   tron: {
     owners: [
-        'TAEbfGoPFxpW8QSBMnce1snm9om3QwH6rU'
+        'TRQ2XkdQEkhd6epVA7qPod6QXxea25Js53'
     ]
   },  
 }

@@ -11,6 +11,13 @@ const config = {
     endpoint: 'https://api.ufarm.digital/api/v1/pool?limit=500',
     blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88'], // uni v3 NFT
   },
+  ethereum: {
+    fromBlock: 23732341,
+    ufarmCore: '0xe92B70d6C805B7a487C387a8e8bec177d991f305',
+    valueToken: ADDRESSES.ethereum.USDT,
+    endpoint: 'https://api.ufarm.digital/api/v2/pool?limit=500',
+    blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88'], // uni v3 NFT
+  },
 }
 
 module.exports = {

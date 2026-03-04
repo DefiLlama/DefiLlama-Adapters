@@ -20,6 +20,7 @@ module.exports = {
         for (const coin of balances) {
           api.add(coin.key, Number(coin.value));
         }
+        api.removeTokenBalance('0x534e4c3dc0f038dab1a8259e89301c4da58779a5d482fb354a41c08147e6b9ec')  // USDA, projects own token
       },
     },
   };

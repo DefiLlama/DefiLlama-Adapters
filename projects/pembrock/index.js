@@ -50,6 +50,6 @@ async function staking() {
 module.exports = {
   near: { tvl, staking },
   hallmarks: [
-    [1666648800,"DCB withdrawn liquidity from Ref Finance's "]
+    ['2022-10-24',"DCB withdrawn liquidity from Ref Finance's "]
   ],
 }

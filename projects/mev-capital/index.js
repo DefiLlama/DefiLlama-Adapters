@@ -1,20 +1,30 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport, getCuratorTvl } = require("../helper/curators");
 const { ABI } = require("../helper/curators/configs");
+const sui = require("../helper/chain/sui");
 
 // ==============================================
 // HYPERBEAT MAPPINGS CONFIGURATION
 // ==============================================
 const HYPERBEAT_MAPPINGS = [
   { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
-  { vault: '0x441794d6a8f9a3739f5d4e98a728937b33489d29', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
+  { vault: '0xd8fc8f0b03eba61f64d08b0bef69d80916e5dda9', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
   { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat lstHYPE -> WHYPE
   { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
   { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
   { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat WHYPE -> WHYPE
   { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
   { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
-  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
+  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
+    { vault: '0x057ced81348D57Aad579A672d521d7b4396E8a61', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
+];
+
+// ==============================================
+// EMBER MAPPINGS CONFIGURATION
+// ==============================================
+const EMBER_MAPPINGS = [
+  { vault: '0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642', type: 'btc', symbol: 'EBTC', coingeckoId: 'bitcoin' }, // Ember eBTC -> BTC (uses rate)
+  { vault: '0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505', type: 'basis', symbol: 'EBASIS', coingeckoId: 'usd-coin' } // Ember eBASIS -> USDC (direct)
 ];
 
 // ==============================================
@@ -116,6 +126,60 @@ const TVL_HANDLERS = {
         api.add(vaults[i], totalSupplies[i]);
       }
     }
+  },
+
+  ember: async (api, vaults) => {
+    for (const vault of vaults) {
+      try {
+        const obj = await sui.getObject(vault);
+
+        if (obj && obj.fields && obj.fields.receipt_token_treasury_cap) {
+          const totalSupply = obj.fields.receipt_token_treasury_cap.fields.total_supply.fields.value;
+          const rate = obj.fields.rate?.fields?.value; // Rate field for BTC calculation
+
+          if (totalSupply) {
+            const mapping = EMBER_MAPPINGS.find(m =>
+              m.vault.toLowerCase() === vault.toLowerCase()
+            );
+
+            if (mapping) {
+              let amount;
+
+              if (mapping.type === 'basis') {
+                // eBASIS: shares_supply_raw / 1e6
+                amount = Number(totalSupply) / 1e6;
+              } else if (mapping.type === 'btc' && rate) {
+                // eBTC: (shares_supply_raw / 1e8) * (rate / 1e9)
+                amount = (Number(totalSupply) / 1e8) * (Number(rate) / 1e9);
+              } else {
+                // Fallback
+                amount = Number(totalSupply);
+              }
+
+              // Add using standard Sui token addresses
+              if (mapping.coingeckoId === 'bitcoin') {
+                // For BTC, use Sui WBTC address and convert to proper decimals
+                const amountInSatoshi = Math.floor(amount * 1e8).toString();
+                api.add(ADDRESSES.sui.WBTC, amountInSatoshi);
+              } else if (mapping.coingeckoId === 'usd-coin') {
+                // For USDC, use Sui USDC address and convert to proper decimals
+                const amountInUsdc = Math.floor(amount * 1e6).toString();
+                api.add(ADDRESSES.sui.USDC, amountInUsdc);
+              } else {
+                // Fallback: add as vault token
+                api.add(vault, totalSupply);
+              }
+            } else {
+              // Fallback to vault token
+              api.add(vault, totalSupply);
+            }
+          }
+        }
+      } catch (error) {
+        // If RPC call fails, add vault as token (fallback)
+        api.add(vault, 0);
+      }
+    }
   }
 };
 
@@ -136,6 +200,11 @@ const configs = {
         '0x28d24d4380b26a1ef305ad8d8db258159e472f33', // USUAL Vault
         '0xd41830d88dfd08678b0b886e0122193d54b02acc', // MEV Capital PTs USDC
         '0x1265a81d42d513df40d0031f8f2e1346954d665a', // MEV Capital Elixir USDC
+        '0x5F7827FDeb7c20b443265Fc2F40845B715385Ff2', // MEV Capital EURCV
+        '0x5422374B27757da72d5265cC745ea906E0446634', // MEV Capital USDCV
+          '0xda4063ec62c3f3c1d2bdbf7dbfb2b2c906f8e8b2', // MORPHO USDT
+          '0xc0a14627d6a23f70c809777ced873238581c1032', // MORPHO USD0
+          '0x8e3c0a68f8065dc666065f16cf902596a60d540e', // MORPHO WBTC
       ],
       mellow: [
         '0x5fd13359ba15a84b76f7f87568309040176167cd', // Amphor Restaked ETH
@@ -271,7 +340,7 @@ const configs = {
     hyperliquid: {
       hyperbeat: [
         '0x5e105266db42f78fa814322bce7f388b4c2e61eb', // Hyperbeat USDT
-        '0x441794d6a8f9a3739f5d4e98a728937b33489d29', // Hyperbeat beHYPE (price not in the api yet)
+        '0xd8fc8f0b03eba61f64d08b0bef69d80916e5dda9', // Hyperbeat beHYPE (price not in the api yet)
         '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', // Hyperbeat lstHYPE (price not in the api yet)
         '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Hyperbeat USR (price not in the api yet)
         '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
@@ -279,36 +348,24 @@ const configs = {
         '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
         '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', // Hyperbeat dnHYPE (price not in the api yet)
         '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', // Hyperbeat wVLP (price not in the api yet)
-      ]
+          '0x057ced81348D57Aad579A672d521d7b4396E8a61', // Hyperbeat USDC (price not in the api yet)
+      ],
+        morpho: [
+            '0xdd1f54b1edc141f47ec5294ad5aa62243bfa6d59', // Morpho USR
+            '0xd2af7ca672453604c537ca9d6293b224b7744d7a', // Morpho USR2
+            '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Morpho WHYPE
+            '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Morpho USR3
+            '0x8e1650d3343023c527b6a6cc0c2551bb100fe22b', // Morpho UBTC
+            '0x4851d4891321035729713d43be1f4bb883dffd34', // Morpho USDC
+            '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8' // Morpho USDT0
+        ]
     },
     sonic: {
       euler: [
-        '0x0806af1762bdd85b167825ab1a64e31cf9497038', // scETH
-        '0xb38d431e932fea77d1df0ae0dfe4400c97e597b8', // scUSD
-        '0x196f3c7443e940911ee2bb88e019fd71400349d9', // USDC.e
         '0x90a804d316a06e00755444d56b9ef52e5c4f4d73', // wS
         '0x6832f3090867449c058e1e3088e552e12ab18f9e', // stS
-        '0xa5cd24d9792f4f131f5976af935a505d19c8db2b', // wETH
-        '0x9144c0f0614dd0ace859c61cc37e5386d2ada43a', // wS
-        '0x05d57366b862022f76fe93316e81e9f24218bbfc', // wstkscETH
-        '0x1cda7e7b2023c3f3c94aa1999937358fa9d01aab', // wstkscUSD
-        '0xfffc9d22304cf49784e9b31ddbeb066344b2b856', // PT-wstkscETH-29MAY2025
-        '0xeeaab5c863f4b1c5356af138f384adc25cb70da6', // stS
-        '0xf6e2ddf7a149c171e591c8d58449e371e6dc7570', // PT-wstkscUSD-29MAY2025
-        '0xdbc46ff39cae7f37c39363b0ca474497dad1d3cf', // PT-stS-29MAY2025
-        '0x08f04a3db30b0cd7e42e61b4e412b1123c52e8a1', // PT-aSonUSDC-14AUG2025
-        '0x6f2ab32a6487a2996c74ed2b173dfdf3d5eedb58', // wOS
-        '0xd506f1e4adfcf1196b7c5d2ebf4e858e33d7a93e', // PT-wOS-29MAY2025
         '0xb936137169d777fcb8b7cf02329620b78fccec0a', // PT-stS-29MAY2025 (bis)
-        '0xdEBdAB749330bb976fD10dc52f9A452aaF029028', // xUSD
-        '0x12ac805F4596C3E55bb100B4593A1B8025CD2056', // yUSD
-        '0x8D024593d781B1C86EcD5d0f899d10C5E9de7069', // HLP0
-        '0xC37fa1c70D77bdEd373C551a92bAbcee44a9d04E', // wmetaS
-        '0x7aD07B280A17Ac7af489E487eaAf004b69786a0A', // x33
-        '0xDE604f03E44247b31f71C4Fa055F9F3ea08D1271', // PT-wstkscETH-18DEC2025
         '0xF71B17cCF362B6dcC1b6917A05820477cF7802A0', // PT-stS-18DEC2025
-        '0x6e14A20334724a194D2f8B38162522CAD202b986', // PT-wstkscUSD-18DEC2025
-        '0x6F11663766bB213003cD74EB09ff4c67145023c5', // wmetaUSD
       ],
       napier: [
         '0x0532d4f06ba9b159d0b456662cc488eefe2fe34f', // scETH
@@ -320,7 +377,24 @@ const configs = {
         '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8', // USDC
         '0x4c9edf85b8b33198f0c29a799965b6df1ae67435' // AVAX
       ]
-    }
+    },
+    sui: {
+      ember: [
+        "0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642", // ember ebtc
+        "0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505" // ember basis
+      ]
+    },
+      polygon: {
+            morpho: [
+                '0xf2532428472a4cbdf27f20ca39e81da6deb420b5', // Morpho USDC
+            ]
+      },
+      base: {
+            morpho: [
+                '0x8773447e6369472d9b72f064ea62e405216e9084', // Morpho USDC
+                '0x45f8cc9a58285b7e7000eb14738346569963179d' // Morpho LCAP
+            ]
+      }
   }
 }
 
@@ -335,7 +409,8 @@ const PROTOCOL_HANDLERS = {
   totalSupply: ['terminal', 'midas'],
   mizuType: ['mizu'],
   napierType: ['napier'],
-  hyperbeat: ['hyperbeat']
+  hyperbeat: ['hyperbeat'],
+  ember: ['ember']
 };
 
 function createChainTvlFunction(chainConfig) {
@@ -378,5 +453,6 @@ adapterExport.plume.tvl = createChainTvlFunction(configs.blockchains.plume);
 adapterExport.berachain.tvl = createChainTvlFunction(configs.blockchains.berachain);
 adapterExport.sonic.tvl = createChainTvlFunction(configs.blockchains.sonic);
 adapterExport.avax.tvl = createChainTvlFunction(configs.blockchains.avax);
+adapterExport.sui.tvl = createChainTvlFunction(configs.blockchains.sui);
 
 module.exports = adapterExport;
