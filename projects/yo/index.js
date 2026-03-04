@@ -16,6 +16,11 @@ const yoVaultsEthereum = [
 const yoVaultsArbitrum = [
     '0x0000000f2eB9f69274678c76222B35eEc7588a65'
 ]
+/**
+ * Fetches TVL for YO Protocol vaults on Base by summing vault token balances
+ * @param {object} api - DefiLlama helper API
+ * @returns {Promise<object>} token balances held in YO vaults
+ */
 
 async function tvlBase(api) {
     return api.erc4626Sum2({
@@ -23,12 +28,23 @@ async function tvlBase(api) {
     });
 }
 
+/**
+ * Fetches TVL for YO Protocol vaults on Ethereum by summing vault token balances
+ * @param {object} api - DefiLlama helper API
+ * @returns {Promise<object>} token balances held in YO vaults
+ */
+
 async function tvlEthereum(api) {
     return api.erc4626Sum2({
         calls: yoVaultsEthereum
     });
 }
 
+/**
+ * Fetches TVL for YO Protocol vaults on Arbitrum by summing vault token balances
+ * @param {object} api - DefiLlama helper API
+ * @returns {Promise<object>} token balances held in YO vaults
+ */
 async function tvlArbitrum(api) {
     return api.erc4626Sum2({
         calls: yoVaultsArbitrum
@@ -36,7 +52,7 @@ async function tvlArbitrum(api) {
 }
 
 module.exports = {
-    methodology: "We calculate TVL based on the Total Assets of each vault contract on each chain where users deposit into YO vaults",
+    methodology: "We calculate TVL based on the Total Assets of each vault contract on each chain where users can deposit into YO vaults",
     base: {
         tvl: tvlBase
     },
