@@ -9,6 +9,15 @@ const boringVaultsV0Fuse = [
     lens: "0x8478Cc70B7e389212D301Fef4f9aDfd4F869f28D",
     startBlock: 36144442, 
     baseAsset: ADDRESSES.fuse.USDC_3, 
+  },
+  {
+    name: "Solid Fuse",
+    vault: "0xb33c8F0b0816fd147FCF896C594a3ef408845e2C",
+    accountant: "0xb29B5F760d38587f7F4C896C458B9EEB5CAd9C0C",
+    teller: "0x4Aa13c96d45FDF14731acEF8F6a2DBf17D6BD53c",
+    lens: "0x8478Cc70B7e389212D301Fef4f9aDfd4F869f28D",
+    startBlock: 40381360, 
+    baseAsset: ADDRESSES.fuse.WFUSE, 
   }
 ];
 

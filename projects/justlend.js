@@ -9,7 +9,7 @@ module.exports = {
     tvl, borrowed,
   },
   hallmarks: [
-    [1733270400, "TRX token price was increasing over 90%"],
+    ['2024-12-04', "TRX token price was increasing over 90%"],
   ],
 };
 

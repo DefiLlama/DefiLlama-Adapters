@@ -107,7 +107,7 @@ module.exports = {
     },
   },
   hallmarks: [
-    [1662417125, "Liquidity Mining Start"],
-    [1680674400, "Arbitrum Launching"],
+    ['2022-09-05', "Liquidity Mining Start"],
+    ['2023-04-05', "Arbitrum Launching"],
   ],
 };

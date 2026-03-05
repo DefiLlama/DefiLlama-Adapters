@@ -35,7 +35,7 @@ async function getPDNTvl(api) {
   const totalInvestments = investments.reduce((acc, cur) => acc + BigInt(cur[3]), BigInt(0));
   const totalPayments = payments.reduce((acc, cur) => acc + BigInt(cur[3]), BigInt(0));
   const totalTvl = Number(totalInvestments - totalPayments)/100;
-  api.addCGToken('usd', totalTvl);
+  api.addUSDValue(totalTvl);
 }
 
 async function institutionalTvl(api) {

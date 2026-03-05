@@ -156,7 +156,7 @@ const supportedChains = [
   },
   {
     name: 'Flare',
-    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-flare/1.1.1/gn',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_cm2k9xbkz4qg901vs51bm5uau/subgraphs/steer-protocol-flare/prod/gn',
     chainId: 14,
     identifier: 'flare'
   },

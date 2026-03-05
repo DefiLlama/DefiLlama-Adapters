@@ -161,7 +161,7 @@ async function _getRippleBalance(account) {
   const body = { "method": "account_info", "params": [{ account }] }
   await sleep(500);
   const res = await post('https://s1.ripple.com:51234', body)
-  if (res.result.error === 'actNotFound') return 0
+  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return 0
   return res.result.account_data.Balance / 1e6
 }
 

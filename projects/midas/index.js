@@ -1,5 +1,7 @@
 const axios = require('axios')
+const plimit = require('p-limit')
 
+const limit = plimit(5)
 const BASE_URL = 'https://upcdq5xkbt.eu-west-2.awsapprunner.com/midas/'
 
 const PROTOCOL_BLACKLIST = {
@@ -32,14 +34,14 @@ const getLytsForChain = async (chainId) => {
   const allowedBlockchainIds = getAllowedBlockchainIds(chainId)
 
   const lytsWithChains = await Promise.all(
-    lytsList.map(async (lyt) => {
+    lytsList.map((lyt) => limit(async () => {
       const { data } = await axios.get(`${BASE_URL}lyts/${lyt}/blockchains`)
       const { chainMetadata = [] } = data
 
       const isOnChain = chainMetadata.some(({ chainId }) => allowedBlockchainIds.includes(String(chainId)))
 
       return isOnChain ? lyt : null
-    })
+    }))
   )
 
   return lytsWithChains.filter(Boolean)
@@ -56,7 +58,7 @@ const getChainSankeyEntries = async (chainId) => {
   const lytsForThisChain = await getLytsForChain(chainId)
 
   const allEntriesPerLyt = await Promise.all(
-    lytsForThisChain.map(async (lyt) => {
+    lytsForThisChain.map((lyt) => limit(async () => {
       const sankeyData = await getSankeyDataForLyt(lyt)
 
       return sankeyData
@@ -77,7 +79,7 @@ const getChainSankeyEntries = async (chainId) => {
             blockchain: dimensions.blockchain,
           }
         })
-    })
+    }))
   )
 
   return allEntriesPerLyt.flat()
@@ -94,7 +96,7 @@ module.exports = {
   timetravel: false
 }
 
-const chains = ['ethereum', 'arbitrum', 'base', 'katana', 'monad', 'sonic', 'unichain', 'plume_mainnet', 'linea', 'hyperliquid', 'xrplevm', '0g', 'plasma', 'rsk', 'etlk', 'sapphire', 'bitcoin', 'polygon']
+const chains = ['ethereum', 'arbitrum', 'base', 'katana', 'monad', 'sonic', 'unichain', 'plume_mainnet', 'linea', 'hyperliquid', 'xrplevm', '0g', 'plasma', 'rsk', 'etlk', 'sapphire', 'bitcoin', 'polygon', 'bsc', 'scroll', 'tac']
 chains.forEach((chain) => {
   module.exports[chain] = { tvl }
 })

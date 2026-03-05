@@ -45,6 +45,6 @@ module.exports = {
   },
   methodology: `Use the registry to retrieve futureVaults, and get for each vault the IBT which is the token that this vault holds - the user locked collateral`,
   hallmarks: [
-    [1677798000, "Announcement of V1 Retirement"]
+    ['2023-03-02', "Announcement of V1 Retirement"]
   ],
 }

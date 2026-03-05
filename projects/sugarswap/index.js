@@ -8,7 +8,7 @@ const weth = ADDRESSES.arbitrum.WETH
 
 module.exports = {
   hallmarks: [
-    [1673827200, "Rug Pull"]
+    ['2023-01-16', "Rug Pull"]
   ],
   misrepresentedTokens: true,
   arbitrum: {
