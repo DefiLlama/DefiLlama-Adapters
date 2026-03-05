@@ -54,6 +54,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: 'TVL is the available (not yet borrowed) lending supply plus collateral deposited by borrowers. Borrowed is the total outstanding loan principal. Supplied (TVL + Borrowed) equals the total assets deposited by lenders plus collateral.',
+  timetravel: false,
   chainflip: {
     tvl,
     borrowed,
