@@ -1,8 +1,5 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getLogs2 } = require('../helper/cache/getLogs');
-const { nullAddress } = require("../helper/tokenMapping");
-
-const SKIP_CACHE = true
 
 // from https://docs.cork.tech/smart-contracts/v1/live-deployments
 const config = {
@@ -34,10 +31,10 @@ const eventAbi3 = "event Initialized(address indexed ra, address indexed ct, add
 
 module.exports = {
   methodology: 'TVL accounts for all assets deposited into the Cork smart contracts.',
-  hallmarks: [
-    [1741100400, "Cork V1 Launch"],
+  // hallmarks: [
+    // ['2025-03-04', "Cork V1 Launch"],
     // ['2025-05-28', "Protocol's wstETH:weETH market was exploited"],
-  ],
+  // ],
 }
 
 Object.keys(config).forEach(chain => {
@@ -54,7 +51,7 @@ Object.keys(config).forEach(chain => {
      */
     tvl: async (api) => {
       // Redemption Assets (RA) in Cork AMM pools
-      const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock, skipCache: SKIP_CACHE, })
+      const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock, })
       const tokens = logs3.map(({ ra }) => ra) // RA
       const calls = logs3.map(({ ra, ct }) => ({
         target: ammHook,
@@ -67,7 +64,7 @@ Object.keys(config).forEach(chain => {
       api.addTokens(tokens, bals.map(({ reserve0 }) => reserve0))
 
       // Redemption Assets (RA) and Pegged Assets (PA) in Cork PSM pools
-      const logs1 = await getLogs2({ api, factory: poolManager, eventAbi: eventAbi1, fromBlock, skipCache: SKIP_CACHE, })
+      const logs1 = await getLogs2({ api, factory: poolManager, eventAbi: eventAbi1, fromBlock })
       const tokenSet = new Set()
       const ownerTokens = []
       logs1.forEach(log => {
@@ -93,7 +90,7 @@ Object.keys(config).forEach(chain => {
     */
     // pool2: async (api) => {
     //   // Only LP tokens in Cork Vault pools
-    //   const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock, skipCache: SKIP_CACHE, })
+    //   const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock, })
     //   const lpTokens = []
     //   logs3.forEach(log => lpTokens.push(log.liquidityToken)) // LPT
     //   const stakingContracts = [poolManager]
@@ -112,8 +109,8 @@ Object.keys(config).forEach(chain => {
      */
     // staking: async (api) => {
     //   // Depeg Swap (DS), Cover Token (CT) and Custom LP tokens in Cork Vault & Router pools
-    //   const logs2 = await getLogs2({ api, factory: poolManager, eventAbi: eventAbi2, fromBlock, skipCache: SKIP_CACHE, })
-    //   const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock, skipCache: SKIP_CACHE, })
+    //   const logs2 = await getLogs2({ api, factory: poolManager, eventAbi: eventAbi2, fromBlock,, })
+    //   const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock,  })
     //   const stakingTokens = []
     //   logs2.forEach(log => stakingTokens.push(log.ds, log.ct)) // DS & CT
     //   logs3.forEach(log => stakingTokens.push(log.liquidityToken)) // LPT

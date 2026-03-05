@@ -44,12 +44,10 @@ function nativeBalance(balances, denom) {
 async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag = '' } = {}) {
   const owners = (contracts[moduleName] || []).filter(Boolean);
   if (!owners.length) {
-    console.log(`[${logTag || moduleName}] no owners configured`);
     return;
   }
 
   await Promise.all(owners.map(async owner => {
-    console.log(`[${logTag || moduleName}] owner=${owner} — scanning balances`);
 
     const bank = await bankBalances(owner);
 
@@ -57,7 +55,6 @@ async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag
     for (const denom of NATIVE_DENOMS) {
       const bal = nativeBalance(bank, denom);
       if (+bal > 0) {
-        console.log(`[${logTag || moduleName}] owner=${owner} native ${denom}=${bal}`);
         api.add(denom, bal);
       }
     }
@@ -73,14 +70,10 @@ async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag
       const isOwned = OWNED_CW20_SET.has(t.address);
       const excluded = excludeOwnedCw20 && isOwned;
 
-      console.log(
-        `[${logTag || moduleName}] owner=${owner} cw20 ${sym}(${t.address})=${bal}${excluded ? ' [EXCLUDED]' : ''}`
-      );
 
       if (!excluded) api.add(t.address, bal);
     }
 
-    console.log(`[${logTag || moduleName}] owner=${owner} — done`);
   }));
 }
 

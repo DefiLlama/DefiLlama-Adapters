@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk')
 const { get } = require('../http')
 const plimit = require('p-limit')
 const { sleep } = require('../utils')
+const { getEnv } = require('../env')
 
 // const url = addr => 'https://doge1.trezor.io/api/v2/address/' + addr
 const url = addr => 'https://api.tatum.io/v3/dogecoin/address/balance/' + addr
@@ -13,7 +14,7 @@ async function _getBalance(addr) {
   const { incoming, outgoing } = await get(url(addr), {
     headers: {
       'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-      'x-api-key': 't-66b1f48bf3aa4a001c3a0947-0008bca09b074413b6a39143', // free public key
+      'x-api-key': getEnv('TATUM_PUBLIC_API_KEY'),
     }
   })
   await sleep(2000)

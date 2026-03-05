@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
-const { stakingUnknownPricedLP } = require("../helper/staking.js");
+const { stakingPriceLP } = require("../helper/staking.js");
 
 const factory = "0xAffdbEAE1ec595cba4C262Bdb52A6083aEc2e2a6";
 const masterchef = "0x53e986884c55c9AEDB7f003583f350EE789505D0";
@@ -19,12 +19,10 @@ module.exports = {
   },
   fantom: {
     tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
-    staking: stakingUnknownPricedLP(
+    staking: stakingPriceLP(
       masterchef,
       dfy,
-      "fantom",
       "0x46c1dccC44c3255A22B8041856cff0dE8f5958D6",
-      (addr) => `fantom:${addr}`
     ),
   },
 };

@@ -6,6 +6,10 @@ module.exports = {
   sei: { tvl },
 }
 
+const blacklistedPools = [
+  '0x877704326c9b8fe08eb5c92f6b0a75fcc3287ff6', // SolvBTC-xSolvBTC - no trading activities
+]
+
 async function tvl(api) {
   const pools = await getConfig('sailor', undefined, {
     fetcher: async () => {
@@ -17,5 +21,5 @@ async function tvl(api) {
   const token0s = await api.multiCall({ abi: 'address:token0', calls: pools, permitFailure: true })
   const token1s = await api.multiCall({ abi: 'address:token1', calls: pools, permitFailure: true })
   const ownerTokens = pools.map((v, i) => [[token0s[i], token1s[i]].filter(Boolean), v])
-  return sumTokens2({ api, ownerTokens })
+  return sumTokens2({ api, ownerTokens, blacklistedOwners: blacklistedPools })
 }
