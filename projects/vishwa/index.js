@@ -20,7 +20,7 @@ async function calcSuiTvlByEmberProtocol(api) {
 
 module.exports = {
   bitcoin: {
-    tvl,
+    tvl: () => { throw new Error("Bitcoin api is returning empty array, please check back later."); },
   },
   sui: {
     // tvl: calcSuiTvlByEmberProtocol, // this is ember's tvl
