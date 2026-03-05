@@ -32,24 +32,9 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = data
         .map(i => [i.assetAllocation?.map(a => a.asset) || [], i.poolAddress])
         .filter(([assets, poolAddress]) => assets.length > 0 && !!poolAddress);
+      const convexRewardPools = data.flatMap(p => p.assetAllocation.filter(a => a.extraInfo.project_id === 'convex').map(a => a.asset));
 
-      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, owners: ownerTokens.map(i => i[1]), permitFailure: true })
-
-      /* const logs = await getLogs2({
-        api,
-        factory: ufarmCore,
-        eventAbi: 'event FundCreated(bytes32 indexed,uint256,address fund)',
-        fromBlock,
-      })
-      const funds = logs.map(log => log.fund)
-      const pools = (await Promise.all(funds.map(fund => getLogs2({
-        api,
-        factory: fund,
-        eventAbi: 'event PoolCreated(string,string,uint256,uint256,uint256,uint256,uint256,uint256,address pool,address)',
-        fromBlock,
-      })))).flat().map(i => i.pool)
-      const values = await api.multiCall({  abi: 'uint256:getTotalCost', calls: pools})
-      api.addTokens(valueToken, values) */
+      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, owners: ownerTokens.map(i => i[1]), permitFailure: true })
     }
   }
 })
