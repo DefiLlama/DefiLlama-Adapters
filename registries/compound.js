@@ -79,7 +79,7 @@ const configs = {
     iotex: { cether: '0x83C51de03f03C5E23f02F674dbD2032e164112Fc', comptroller: '0x47D7B83947Aa12fEb95f5f55527Dc9B32E4ec009', cetheEquivalent: ADDRESSES.iotex.WIOTX },
   },
   'whitehole-finance': {
-    arbitrum: { comptroller: '0x1d019f2d14bdb81bab7ba4ec7e02017837a7a43aeDa48F', abis: { getAllMarkets: 'address[]:allMarkets', totalBorrows: 'uint256:totalBorrow' } },
+    arbitrum: { comptroller: '0x1d019f2d14bdb81bab7ba4ec7e20868e669c32b1', abis: { getAllMarkets: 'address[]:allMarkets', totalBorrows: 'uint256:totalBorrow' } },
   },
   'loanshark': {
     scroll: { comptroller: '0xEFB0697700E5c489073a9BDF7EF94a2B2bc884a5', cether: '0xF017f9CF11558d143E603d56Ec81E4E3B6d39D7F' },

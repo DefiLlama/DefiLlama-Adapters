@@ -310,7 +310,7 @@ const uniV2Configs = {
     occ: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     rari: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     reya: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
-    sanko: '0x18E621B64d7808c3C47bccbbD7485d23F257D26f',
+    sanko: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     spn: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     xai: '0x18E621B64d7808c3C47bccbbD7485d23F257D26f',
   },
@@ -603,7 +603,7 @@ const uniV2Configs = {
     avax: '0x06530550A48F990360DFD642d2132354A144F31d',
     bsc: '0x06530550A48F990360DFD642d2132354A144F31d',
     cronos: '0x06530550A48F990360DFD642d2132354A144F31d',
-    empire: '0x06530550A48F990360DFD642d2132354A144F31d',
+    empire: { tvl: () => ({}) },
     ethereum: '0xd674b01E778CF43D3E6544985F893355F46A74A5',
     fantom: '0x06530550A48F990360DFD642d2132354A144F31d',
     kava: '0x06530550A48F990360DFD642d2132354A144F31d',
@@ -2555,7 +2555,7 @@ const uniV2Configs = {
   },
   'mm-finance-arbitrum': {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://arbimm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa73Ae666CEB460D5E884a20fb30DE2909604557A)',
-    arbitrum: { factory: '0xfe3699303D3Eb460638e8aDA2bf1cFd092C33F22', staking: ["0xa73Ae666CEB460D5E884a20fb30DE2909604557A", "0x56b251d4b493ee3956e3f899d36b7290902d2326"] },
+    arbitrum: { factory: '0xfe3699303D3Eb460638e8aDA2bf1cFf092C33F22', staking: ["0xa73Ae666CEB460D5E884a20fb30DE2909604557A", "0x56b251d4b493ee3956e3f899d36b7290902d2326"] },
   },
   'mm-finance-polygon': {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://polymm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa2B417088D63400d211A4D5EB3C4C5363f834764)',
@@ -2719,6 +2719,9 @@ const uniV2Configs = {
   'tethys': {
     methodology: 'Metis tokens, USDC, USDT, WETH, TETHYS allocated in LP',
     metis: { factory: '0x2CdFB20205701FF01689461610C9F321D1d00F80', staking: ["0x54A8fB8c634dED694D270b78Cb931cA6bF241E21", "0x69fdb77064ec5c84FA2F21072973eB28441F43F3"] },
+  },
+  'tideswap': {
+    ink: {factory: '0x2ebE0528aDED9fA8d745B7C7082fb90d7C7B6Ec8'}
   },
   'tulip': {
     oasis: { factory: '0x90a5e676EFBdeFeeeb015cd87484B712fd54C96A', staking: ["0xceF2f95f185D49bcd1c10DE7f23BEaCBaae6eD0f", "0x2736643C7fFFe186984f60a2d34b91b1b7398bF1"] },

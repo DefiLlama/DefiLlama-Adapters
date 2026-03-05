@@ -5,7 +5,7 @@ const WBTC_CONTRACT = ADDRESSES.starknet.WBTC;
 const WRAPPED_WBTC_CONTRACT = '0x75d9e518f46a9ca0404fb0a7d386ce056dadf57fd9a0e8659772cb517be4a18'; // The collateral is a wrapped WBTC, for decimals reasons
 
 const TBTC = {
-  collateral: '0x04daa17763b286d1e59b97c283C0b8C949994C361e426A28F743c67bDfE9a32f',
+  collateral: ADDRESSES.starknet.tBTC,
   activePool: '0x309c8d0aca584a5e671e46fab0cb966c3abd1d7fe73162af81b2a6c774db615',
   collSurplusPool: '0x3f0abfe56ea84373c9e3e2c283e7f8ba194b3fb4500b1beacff87e2bafa6ab6',
   stabilityPool: '0xa36230f3d17cba0acb9635810209fe430c26ae585cbfd61e39cac0a9af6fc',
