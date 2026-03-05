@@ -42,7 +42,6 @@ async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults
       }
     )
     rawAccounts = rawAccounts.filter(({ pubkey }) => !blacklistedVaults.has(pubkey.toString()))
-    console.log(rawAccounts)
   } else if (vaults) {
     // If specific vaults are provided, fetch those accounts directly
     const vaultPubkeys = vaults.map(v => new PublicKey(v))
@@ -54,7 +53,6 @@ async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults
   for (const { account } of rawAccounts) {
     // Decode the account using Anchor's coder
     const vaultState = kvaultProgram.coder.accounts.decode('VaultState', account.data)
-    console.log('Decoded vault state:', vaultState)
     const tokenMint = vaultState.tokenMint.toString()
 
     // prevAumSf is in scaled fixed point format (60-bit fractional part)

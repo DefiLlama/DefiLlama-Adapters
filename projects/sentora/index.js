@@ -10,6 +10,7 @@ const configs = {
       ],
       morphoVaultOwners: [
         '0x13DE0cEE0B83562CBfD46682e10FfA4E3c5090e1',
+        '0xe479bCbc98579bA3E1a1261f7bE85C4C10303d88',
       ],
     },
     solana: {
