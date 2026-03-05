@@ -2805,6 +2805,11 @@ const uniV2Configs = {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://wojak.fi/info as the source. Staking accounts for the WOJK locked in MasterChef (0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a)',
     dogechain: { factory: '0xc7c86B4f940Ff1C13c736b697e3FbA5a6Bc979F9', staking: { owners: ['0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a', '0xDF21058099e69D3635005339721C4826c4c47F8A'], tokens: ['0x570C41a71b5e2cb8FF4445184d7ff6f78A4DbcBD'], useDefaultCoreAssets: true, lps: ['0xC1FaBe61B9cFC005a51e1Ea899C3D65fb6392497'] } },
   },
+  'wswap': {
+    wchain: '0x2A44f013aD7D6a1083d8F499605Cf1148fbaCE31',
+    ethereum: '0x46B0B17Bb1f637CcfFA9fCc34bD591E3A0fF58F9',
+    bsc: '0x5105989c863e801fC610396529BE9f2A6B95bF0A',
+  },
   'wtfdex': {
     methodology: 'Uses factory(0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50) address and whitelisted tokens address to find and price Liquidity Pool pairs',
     arbitrum: { factory: '0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50', staking: ["0x8F4Ed4Cf0300E22c739d2E5A22220497B123b66e", "0x4e6482b05D13085f1C4A7e2Ef612ba43104f71b9"] },
