@@ -50,7 +50,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "Tracks TVL in Napier Principal Token vaults and AMM pools (Curve TwoCrypto and Uniswap V4 TokiHook) via napier-api.",
+    "Total value of assets held in Napier smart contracts, including Curve AMM (TwoCrypto) pools, Napier AMM (TokiHook) pools, and PT/YT contracts.",
 };
 
 Object.keys(CHAIN_IDS).forEach((chain) => {
