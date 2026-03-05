@@ -129,3 +129,4 @@ module.exports = {
 
 module.exports.clv.tvl = () => ({})
 module.exports.fusion.tvl = () => ({})
+module.exports.kardia.tvl = () => ({})
