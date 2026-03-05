@@ -173,6 +173,9 @@ const configs = {
     start: "2025-11-12",
     ethereum: ['0xa260b049ddD6567E739139404C7554435c456d9E'],
   },
+  'steth-exchange': {
+    ethereum: ['0xee15D71D8322eA88138c323AddbD0dd123A2dFB2'],
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

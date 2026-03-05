@@ -39,6 +39,7 @@ async function fetchData(api, key, isVesting) {
     if (key === "amount_locked_core" && !whitelistedTokens.has(tokenHolding.mint)) {
       continue;
     }
+    if (tokenHolding.mint == 'GT9SetU8UWKJeCQsmMcNHH4pGPVSKrxgQsgu2wtYmZHW') continue;
     api.add(tokenHolding.mint, tokenHolding[key]);
   }
 }
@@ -63,3 +64,4 @@ chains.forEach((chain) => {
     tvl, vesting
   };
 });
+// 900K 
