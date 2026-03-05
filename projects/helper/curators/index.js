@@ -9,38 +9,52 @@ const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
 
 
-async function kaminoLendVaultTvl(api, adminAddress) {
+async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults = [] }) {
   const KAMINO_LEND_VAULT_LAYER_PROGRAM_ID = new PublicKey('KvauGMspG5k6rtzrqqn7WNn3oZdyKqLKwK2XWQ8FLjd')
 
-  if (typeof adminAddress === 'string')
-    adminAddress = new PublicKey(adminAddress)
 
   const connection = getConnection()
   const provider = getProvider()
 
   // Load the kvault IDL
   const kvaultProgram = new Program(kvaultIdl, KAMINO_LEND_VAULT_LAYER_PROGRAM_ID, provider)
+  blacklistedVaults = blacklistedVaults ? blacklistedVaults.map(addr => addr.toString()) : []
+  blacklistedVaults = new Set(blacklistedVaults)
 
-  // Query vault accounts directly using getProgramAccounts with base58 encoded filter
-  const adminBytes = adminAddress.toBuffer()
-  const rawAccounts = await connection.getProgramAccounts(
-    KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
-    {
-      filters: [
-        {
-          memcmp: {
-            offset: 8, // After 8-byte Anchor discriminator
-            bytes: bs58.encode(adminBytes)
+  let rawAccounts = []
+  if (adminAddress) {
+
+    if (typeof adminAddress === 'string')
+      adminAddress = new PublicKey(adminAddress)
+    // Query vault accounts directly using getProgramAccounts with base58 encoded filter
+    const adminBytes = adminAddress.toBuffer()
+    let rawAccounts = await connection.getProgramAccounts(
+      KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
+      {
+        filters: [
+          {
+            memcmp: {
+              offset: 8, // After 8-byte Anchor discriminator
+              bytes: bs58.encode(adminBytes)
+            }
           }
-        }
-      ]
-    }
-  )
+        ]
+      }
+    )
+    rawAccounts = rawAccounts.filter(({ pubkey }) => !blacklistedVaults.has(pubkey.toString()))
+    console.log(rawAccounts)
+  } else if (vaults) {
+    // If specific vaults are provided, fetch those accounts directly
+    const vaultPubkeys = vaults.map(v => new PublicKey(v))
+    const accountInfos = await connection.getMultipleAccountsInfo(vaultPubkeys)
+    rawAccounts = vaultPubkeys.map((pubkey, idx) => ({ pubkey, data: accountInfos[idx]?.data })).filter(({ data }) => data).map(i => ({ account: i }))
+  }
 
   // Extract vault data and calculate total AUM from prevAumSf
   for (const { account } of rawAccounts) {
     // Decode the account using Anchor's coder
     const vaultState = kvaultProgram.coder.accounts.decode('VaultState', account.data)
+    console.log('Decoded vault state:', vaultState)
     const tokenMint = vaultState.tokenMint.toString()
 
     // prevAumSf is in scaled fixed point format (60-bit fractional part)
@@ -161,7 +175,7 @@ async function getSiloVaults(api, owners) {
     })
     for (let i = 0; i < siloVaultsOwners.length; i++) {
       if (isOwner(siloVaultsOwners[i], owners)) {
-        if(SiloConfigs[api.chain]?.blacklistedVaults?.includes(siloVaults[i].toLowerCase())) continue // skip blacklisted vaults
+        if (SiloConfigs[api.chain]?.blacklistedVaults?.includes(siloVaults[i].toLowerCase())) continue // skip blacklisted vaults
         allVaults.push(siloVaults[i])
       }
     }
@@ -461,8 +475,12 @@ async function getCuratorTvl(api, vaults) {
 
   if (api.chain === 'solana') {
     const adminAddress = vaults.kaminoLendVaultAdmins ?? []
+    const kaminoLendVaults = vaults.kaminoLendVaults ?? []
     for (const admin of adminAddress)
-      await kaminoLendVaultTvl(api, admin)
+      await kaminoLendVaultTvl(api, { adminAddress: admin, blacklistedVaults: kaminoLendVaults })
+
+    if (kaminoLendVaults.length > 0)
+      await kaminoLendVaultTvl(api, { vaults: kaminoLendVaults })
 
     return api.getBalances()
   }
