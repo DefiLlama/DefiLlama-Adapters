@@ -32,9 +32,14 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = data
         .map(i => [i.assetAllocation?.map(a => a.asset) || [], i.poolAddress])
         .filter(([assets, poolAddress]) => assets.length > 0 && !!poolAddress);
-      const convexRewardPools = data.flatMap(p => p.assetAllocation.filter(a => a.extraInfo.project_id === 'convex').map(a => a.asset));
+      const owners = [...new Set(ownerTokens.map(([, owner]) => owner))];
+      const convexRewardPools = [...new Set(data.flatMap(({ assetAllocation = [] }) =>
+        assetAllocation
+          .filter(a => a?.extraInfo?.project_id === 'convex' && a?.asset)
+          .map(a => a.asset)
+      ))];
 
-      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, owners: ownerTokens.map(i => i[1]), permitFailure: true })
+      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, owners, permitFailure: true })
     }
   }
 })
