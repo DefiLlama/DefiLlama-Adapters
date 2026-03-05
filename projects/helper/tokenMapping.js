@@ -44,6 +44,10 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  omega: {
+    '0xb8149d86fb75c9a7e3797d6923c12e5076b6aed9': { coingeckoId: 'omega-network', decimals: 18 },
+    '0x24a4704de79819e4dcb379cc548426f03f663b09': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
