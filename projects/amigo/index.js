@@ -18,5 +18,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "WETH locked in Amigo bonding curve pools",
+  start: '2026-02-18',
   abstract: { tvl },
 }
