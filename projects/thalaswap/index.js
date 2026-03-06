@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { getResources, } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
 
 const thalaswapAddress = "0x48271d39d0b05bd6efca2278f22277d6fcc375504f9839fd73f74ace240861af";
 const nullCoinType = "base_pool::Null";
@@ -18,8 +16,7 @@ module.exports = {
   methodology:
     "Aggregates TVL in all pools in Thalaswap, Thala Labs' AMM.",
   aptos: {
-    tvl: async () => {
-      const balances = {};
+    tvl: async (api) => {
       const resources = await _getResources()
       const pools = resources.filter(poolsFilter).map(pool => ({
           assets: [pool.data.asset_0, pool.data.asset_1, pool.data.asset_2, pool.data.asset_3],
@@ -31,11 +28,9 @@ module.exports = {
           // We ignore the null coin because it signifies that we don't have either a third or fourth asset in the pool
           // We  ignore the THL coin because native tokens are exempt from TVL calculations
           if (!asset_types[index].includes(nullCoinType))
-            sdk.util.sumSingleBalance(balances, asset_types[index], asset.value);
+            api.add(asset_types[index], asset.value);
         });
       });
-
-      return transformBalances("aptos", balances);
     },
   },
 };

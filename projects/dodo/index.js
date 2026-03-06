@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const config = {
-  ethereum: { dvmFactory: '0x72d220cE168C4f361dD4deE5D826a01AD8598f6C', dodoBirthFactory: '0x3a97247df274a17c59a3bd12735ea3fcdfb49950', fromBlock: 10613640, dspFactory: '0x6fddb76c93299d985f4d3fc7ac468f9a168577a4', dppFactory: ['0x5336ede8f971339f6c0e304c66ba16f1296a2fbe', '0xb5dc5e183c2acf02ab879a8569ab4edaf147d537', '0x6b4fa0bc61eddc928e0df9c7f01e407bfcd3e5ef'], gspFactory: '0x710409D2121B7C8EA4aCAdd6803FDE2D85DF6473' },
+  ethereum: { dvmFactory: '0x72d220cE168C4f361dD4deE5D826a01AD8598f6C', dodoBirthFactory: '0x3a97247df274a17c59a3bd12735ea3fcdfb49950', fromBlock: 10613640, dspFactory: '0x6fddb76c93299d985f4d3fc7ac468f9a168577a4', dppFactory: ['0x5336ede8f971339f6c0e304c66ba16f1296a2fbe', '0xb5dc5e183c2acf02ab879a8569ab4edaf147d537', '0x6b4fa0bc61eddc928e0df9c7f01e407bfcd3e5ef'], gspFactory: '0x710409D2121B7C8EA4aCAdd6803FDE2D85DF6473', blacklistedTokens: ['0x306227d964511a260d14563fbfa82aa75db404b2'] },
   arbitrum: { dvmFactory: '0xDa4c4411c55B0785e501332354A036c04833B72b', fromBlock: 226578, dspFactory: '0xC8fE2440744dcd733246a4dB14093664DEFD5A53', dodoBirthFactory: '0xbcc3401e16c25eaf4d3fed632ce3288503883b1f', dppFactory: ['0xDdB13e6dd168E1a68DC2285Cb212078ae10394A9', '0xa6cf3d163358af376ec5e8b7cc5e102a05fde63d'], gspFactory: '0x46E55A974c5995675b025f7F607C3278B36f0c29' },
   bsc: {
     dvmFactory: ['0x790B4A80Fb1094589A3c0eFC8740aA9b0C1733fB', '0xf50bdc9e90b7a1c138cb7935071b85c417c4cb8e'], fromBlock: 726278, dspFactory: '0x0fb9815938Ad069Bf90E14FE6C596c514BEDe767', dppFactory: ['0xd9CAc3D964327e47399aebd8e1e6dCC4c251DaAE', '0x7737fd30535c69545deeea54ab8dd590ccaebd3c', '0x9b64c81ba54ea51e1f6b7fefb3cff8aa6f1e2a09', '0xafe0a75dffb395eaabd0a7e1bbbd0b11f8609eef'], dodoBirthFactory: '0xca459456a45e300aa7ef447dbb60f87cccb42828', blacklistedTokens: [
@@ -26,6 +26,8 @@ const config = {
   manta: { dvmFactory: '0x97bBF5BB1dcfC93A8c67e97E50Bea19DB3416A83', fromBlock: 384137, dspFactory: '0x29C7718e8B606cEF1c44Fe6e43e07aF9D0875DE1', dppFactory: '0xa71415675F68f29259ddD63215E5518d2735bf0a' },
   mantle: { dvmFactory: '0x29C7718e8B606cEF1c44Fe6e43e07aF9D0875DE1', fromBlock: 21054048, dspFactory: '0x7dB214f2D46d94846936a0f8Bd9044c5C5Bd2b93', dppFactory: '0x46AF6b152F2cb02a3cFcc74014C2617BC4F6cD5C', gspFactory: '0xE6cecb7460c9E52aA483cb1f0E87d78D7085686F' },
   zircuit: { dvmFactory: '0xA909314363840f7c28b8EC314028e21722dd8Cb6', fromBlock: 1455081, dspFactory: '0xA312D73C1b537168f1C8588bDcaB9278df98Cd32', dppFactory: '0xb770C37F3A9eC6f25b791D9c791aDE09B0fb1AB8' },
+  hemi: { dvmFactory: '0x6694eebf40924e04c952EA8F1626d19E7a656Bb7', fromBlock: 865590, dspFactory: '0xd0de7cA3298fff085E2cb82F8a861a0254256BA0', dppFactory: '0x297A4885a7da4AaeF340FABEd119e7a6E3f2BCe8', gspFactory: '0x2235bB894b7600F1a370fc595Ee5477999A30441' },
+  hsk: { dvmFactory: '0x2235bB894b7600F1a370fc595Ee5477999A30441', fromBlock: 83265, dspFactory: '0x297A4885a7da4AaeF340FABEd119e7a6E3f2BCe8', dppFactory: '0x8Ebbfe204E7EdA4be46b9d09c5dfa8b3e1500462', gspFactory: '0xc6F5e5Ff8AbBe6A94A879A1E378c101E2A6bb9e6' },
   // okexchain: { dvmFactory: '0x9aE501385Bc7996A2A4a1FBb00c8d3820611BCB5', fromBlock: 4701083, dspFactory: '0x44D5dF24d5Ef52A791D6436Fa45A8D426f6de34e' },
 }
 
@@ -55,7 +57,7 @@ Object.keys(config).forEach(chain => {
       if (chain === 'base')
         ownerTokens.push(...[
           [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDbC], '0x1172035a744ea18161497e94f0bbce244d51de9f'],
-          [[ADDRESSES.optimism.WETH_1, '0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22'], '0xce670438dadb080d7aae65fdaff51355aa30535e'],
+          [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.cbETH], '0xce670438dadb080d7aae65fdaff51355aa30535e'],
           [[ADDRESSES.optimism.WETH_1, '0x78a087d713be963bf307b18f2ff8122ef9a63ae9'], '0x3c388c812dada10e597f802a766e7ce898bc7751'],
           [[ADDRESSES.base.USDbC, ADDRESSES.optimism.WETH_1], '0xd804cf0ac2a4b6dd6d375504a27874f5db073625'],
           [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDbC], '0x72e663c4e8fd50184c8b8135315c20326cc4ad75'],

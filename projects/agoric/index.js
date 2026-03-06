@@ -30,6 +30,7 @@ const coingeckoMapping = {
   'ATOM': 'cosmos',
   'stOSMO': 'stride-staked-osmo',
   'stTIA': 'stride-staked-tia',
+  'dATOM': 'drop-staked-atom',
 }
 const decimals = {}
 

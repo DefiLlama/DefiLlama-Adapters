@@ -16,10 +16,10 @@ function uniV3Export(config) {
   const exports = {}
 
   Object.keys(config).forEach(chain => {
-    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, blacklistedTokens = [], permitFailure, sumChunkSize, filterFn, } = config[chain]
+    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, blacklistedTokens = [], blacklistedOwners = [], permitFailure, sumChunkSize, filterFn, sumChunkSleep, onlyUseExistingCache, } = config[chain]
     if (!topics) topics = isAlgebra ? algebraConfig.topics : uniswapConfig.topics
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
-
+    
     exports[chain] = {
       tvl: async (api) => {
         const logs = await getLogs({
@@ -28,6 +28,7 @@ function uniV3Export(config) {
           topics,
           fromBlock,
           eventAbi,
+          onlyUseExistingCache,
           onlyArgs: true,
         })
 
@@ -35,7 +36,7 @@ function uniV3Export(config) {
           blacklistedTokens.push(... await filterFn(api, logs))
         
 
-        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, permitFailure: permitFailure || logs.length > 2000, sumChunkSize, })
+        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, blacklistedOwners, permitFailure: permitFailure ?? logs.length > 2000, sumChunkSize, sumChunkSleep, })
       }
     }
   })
@@ -44,8 +45,9 @@ function uniV3Export(config) {
   return exports
 }
 
-function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0,}) {
+function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0, poolName = 'pools'}) {
   return async (api) => {
+    if (!name) throw new Error('name is required for uniV3GraphExport')
     const size = 1000
     // let lastId = ''
     // let pools
@@ -63,7 +65,7 @@ function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 
   `
     const graphQueryPagedWithoutBlock = `
     query poolQuery($lastId: String) {
-      pools(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
+      ${poolName}(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
         id
         token0 { id }
         token1 { id }

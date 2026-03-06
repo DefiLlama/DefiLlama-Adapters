@@ -1,16 +1,69 @@
+/**
+ * Maple Finance TVL & Borrowed Amounts Adapter
+ * 
+ * This adapter fetches data from Maple Finance's GraphQL API to calculate:
+ * - Total Value Locked (TVL): Sum of all collateral values
+ * - Total Borrowed: Sum of all loan values
+ * 
+ * References:
+ * - Maple Finance API Docs: https://studio.apollographql.com/public/maple-api/variant/mainnet/home
+ * 
+ */
 
-const rwaPools = [
-  '0xfe119e9C24ab79F1bDd5dd884B86Ceea2eE75D92', //   Cash Management
-  '0xe9d33286f0E37f517B1204aA6dA085564414996d', // AQRU
-]
+const axios = require('axios');
 
-async function tvl(api) {
-  const tokens = await api.multiCall({ abi: 'address:asset', calls: rwaPools })
-  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: rwaPools })
-  api.addTokens(tokens, bals)
+const ENDPOINT = 'https://api.maple.finance/v2/graphql';
+const LOANS_QUERY = `
+    query getNativeLoansSnapshot($timestamp: Float!) {
+      nativeLoansSnapshot(timestamp: $timestamp) {
+        loanId
+        loanAsset
+        loanAmount
+        collateralAsset
+        collateralAmount
+        collateralPrice
+        collateralValueUsd
+        loanAssetPrice
+        loanValueUsd
+      }
+    }
+  `;
+
+/**
+ * Fetches raw loan data from Maple Finance's GraphQL API
+ * @param {number} timestamp Unix timestamp in seconds
+ * @returns {Promise<Array<{loanId: string, loanAsset: string, loanAmount: string, collateralAsset: string, collateralAmount: string, collateralPrice: string, collateralValueUsd: string, loanAssetPrice: string, loanValueUsd: string}>>} Array of loan objects
+ */
+const fetchLoans = async (timestamp) => {
+  const timestampMs = timestamp * 1000;
+
+  const payload = {
+    query: LOANS_QUERY,
+    variables: { timestamp: timestampMs },
+    headers: { "Content-Type": "application/json" }
+  };
+
+  const response = await axios.post(ENDPOINT, payload);
+
+  return response.data.data.nativeLoansSnapshot;
+}
+
+/**
+ * Calculates total value based on specified property and returns API response format
+ * @param {number} timestamp Unix timestamp in seconds
+ * @param {string} propertyName Property to sum ('loanValueUsd' or 'collateralValueUsd')
+ * @returns {Promise<number>} Total value in USD
+ */
+const getTotal = async (api, propertyName) => {
+  const timestamp = api.timestamp
+  const loans = await fetchLoans(timestamp);
+  const total = loans.reduce((sum, loan) => sum + Number(loan[propertyName]), 0);
+  api.addUSDValue(total)
 }
 
 module.exports = {
-  doublecounted: true,
-  ethereum: { tvl, }
-}
+  ethereum: {
+    tvl: async (api) => await getTotal(api, 'collateralValueUsd'),
+    borrowed: async (api) => await getTotal(api, 'loanValueUsd'),
+  },
+};

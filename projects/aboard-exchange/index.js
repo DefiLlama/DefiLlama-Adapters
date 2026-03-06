@@ -42,7 +42,7 @@ const config = {
   manta: { owner: '0xaA830eA4Ca3C7b13be85a8D3ab8441db5cA0Cc5F', tokens: [
     ADDRESSES.manta.USDC, // USDC
     "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5", // MANTA
-    "0xEc901DA9c68E90798BbBb74c11406A32A70652C3", // STONE
+    ADDRESSES.berachain.STONE, // STONE
   ] },
   polygon_zkevm: { owner: '0xaA830eA4Ca3C7b13be85a8D3ab8441db5cA0Cc5F', tokens: [
     ADDRESSES.polygon_zkevm.USDC, // USDC

@@ -45,4 +45,6 @@ Object.keys(config).forEach((chain) => {
       return sumTokens2({ api, ownerTokens });
     },
   };
+
+  module.exports[chain].tvl = () => ({})
 });

@@ -4,7 +4,6 @@
   "methodology",
   "pool2",
   "misrepresentedTokens",
-  "fetch",
   "timetravel",
   "borrowed",
   "start",
@@ -13,5 +12,7 @@
   "isHeavyProtocol",
   "deadFrom",
   "ownTokens",
+  "meta",
+  "moduleFilePath",
   "vesting"
 ]

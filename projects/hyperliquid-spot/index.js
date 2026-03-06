@@ -27,6 +27,9 @@ const tvl = async (api) => {
   const totalBalance = tokens.reduce((sum, token) => {
     const total = parseFloat(token.hold || 0);
     const markPx = parseFloat(token.markPx || 0);
+    if(total * markPx > 10e9){
+      return sum
+    }
     return sum + (total * markPx);
   }, 0);
 

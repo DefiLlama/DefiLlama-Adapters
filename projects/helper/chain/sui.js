@@ -19,6 +19,10 @@ async function getObject(objectId) {
   }])).content
 }
 
+async function fnSleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function queryEvents({ eventType, transform = i => i }) {
   let filter = {}
   if (eventType) filter.MoveEventType = eventType
@@ -32,11 +36,14 @@ async function queryEvents({ eventType, transform = i => i }) {
   return items.map(i => i.parsedJson).map(transform)
 }
 
-async function getObjects(objectIds) {
+async function getObjects(objectIds, { sleep } = {}) {
   if (objectIds.length > 9) {
     const chunks = sliceIntoChunks(objectIds, 9)
     const res = []
-    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
+    for (const chunk of chunks) {
+      if (sleep && res.length) await fnSleep(sleep)
+      res.push(...(await getObjects(chunk)))
+    }
     return res
   }
   const {
@@ -58,17 +65,18 @@ async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } 
   }])).content
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set() }) {
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep }) {
+  if (sleep) await fnSleep(sleep)
   const {
     result: { data, hasNextPage, nextCursor }
   } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
   sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
   const fetchIds = data.filter(idFilter).map(i => i.objectId).filter(i => !addedIds.has(i))
   fetchIds.forEach(i => addedIds.add(i))
-  const objects = await getObjects(fetchIds)
+  const objects = await getObjects(fetchIds, { sleep })
   items.push(...objects)
   if (!hasNextPage) return items
-  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds })
+  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds, sleep })
 }
 
 async function call(method, params, { withMetadata = false } = {}) {
@@ -159,18 +167,39 @@ async function queryEventsByType({ eventType, transform = i => i }) {
       hasNextPage
     }
     nodes {
-      json
+      contents {
+        json
+      }
     }
   }
 }`
   const items = []
   let after = null
   do {
-    const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
+    const { events: { pageInfo: { endCursor, hasNextPage }, nodes } } = await sdk.graph.request(graphEndpoint(), query, { variables: { after, eventType } })
     after = hasNextPage ? endCursor : null
-    items.push(...nodes.map(i => i.json).map(transform))
+    items.push(...nodes.map(i => i.contents.json).map(transform))
   } while (after)
   return items
+}
+
+
+async function getTokenSupply(token) {
+  const { result } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getTotalSupply',
+    params: [token],
+  })
+  const supply = result.value
+  const { result: metadata } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getCoinMetadata',
+    params: [token],
+  })
+  const decimals = metadata?.decimals ?? 0
+  return { supply, decimals, normalized: supply / 10 ** decimals }
 }
 
 module.exports = {
@@ -186,4 +215,5 @@ module.exports = {
   sumTokens,
   sumTokensExport,
   queryEventsByType,
+  getTokenSupply,
 };

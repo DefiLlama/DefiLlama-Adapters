@@ -1,5 +1,5 @@
 const config = {
-  base: '0x95Fa1ddc9a78273f795e67AbE8f1Cd2Cd39831fF'
+  base: '0x95Fa1ddc9a78273f795e67AbE8f1Cd2Cd39831fF',
 }
 
 Object.keys(config).forEach(chain => {

@@ -5,7 +5,7 @@ const { staking } = require("../helper/staking");
 module.exports.avax = {
   start: '2023-05-07',
   hallmarks: [
-    [1702501200, "Salvor Lending Launch"]
+    ['2023-12-13', "Salvor Lending Launch"]
   ],
   methodology: 'TVL counts AVAX coins in the Salvor Pool address:0xab4fe2d136efd7f8dfce3259a5e3c5e4c0130c80 and ERC20 assets in the Salvor Lending Pool address: 0x22e229d14dc80a1ea7ca7637173e8c6c36d60fe8',
   staking: staking("0x72b73fa1569dF9fF1aE9b29CD5b164Af6c02EbaA", "0xF99516BC189AF00FF8EfFD5A1f2295B67d70a90e"),
@@ -41,6 +41,12 @@ module.exports.avax = {
       "0x56b9f5e181550b40472fd8c10a34e4ee6009c304",
       "0xc8e7fb72b53d08c4f95b93b390ed3f132d03f2d5",
       "0x7a842a6f4580edd3df41c1f31e0395044de6bc75",
+      ADDRESSES.avax.BTC_b,
+      "0xb44b645b5058f7e393f3ae6af58a4cef67006196",
+      "0xc654721fbf1f374fd9ffa3385bba2f4932a6af55",
+      "0xffff003a6bad9b743d658048742935fffe2b6ed7",
+      "0x69260b9483f9871ca57f81a90d91e2f96c2cd11d",
+      "0x1c7c53aa86b49a28c627b6450091998e447a42f9",
       nullAddress
     ]
   }),

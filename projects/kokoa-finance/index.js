@@ -1,9 +1,16 @@
-const ABI = require("./Helper.json");
-const sdk = require("@defillama/sdk");
-const chain = 'klaytn'
+const ABI = {
+  "address": "0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0",
+  "abi":{
+    "getCollateralTVL": "uint256[]:getCollateralTVL",
+    "getSkokoaTVL": "uint256:getSkokoaTVL",
+    "getKlayswapLpFarmTVL": "function getKlayswapLpFarmTVL(address pool) view returns (uint256 tvl)",
+    "getKokonutLpFarmTVL": "function getKokonutLpFarmTVL(address pool) view returns (uint256 tvl)"
+  }
+}
 
 const { toUSDTBalances } = require("../helper/balances");
 const BigNumber = require("bignumber.js");
+const { getConfig } = require("../helper/cache");
 
 const HELPER_ADDR = "0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0";
 
@@ -38,14 +45,13 @@ const KOKONUT_POOLS = [
   }
 ]
 
-const fetchCollateral = async (ts, _block, chainBlocks) => {
-  const block = chainBlocks[chain]
+const fetchCollateral = async (api) => {
+  const _data = await getConfig('kokoa-finance', 'https://prod.kokoa-api.com/vaults/borrow')
   //calculate TVL sum of all collaterals locked in the protocol vaults
   const decimal = 18;
 
   var sum = new BigNumber(0);
-  const { output: assetTvlLists } = await sdk.api.abi.call({
-    chain, block,
+  const  assetTvlLists = await api.call({
     target: HELPER_ADDR,
     abi: ABI.abi.getCollateralTVL
   })
@@ -56,20 +62,12 @@ const fetchCollateral = async (ts, _block, chainBlocks) => {
   return toUSDTBalances(sum.toFixed(2));
 }
 
-const fetchPool2 = async (ts, _block, chainBlocks) => {
-  const block = chainBlocks[chain]
-  // const toa = [
-  //   ['0x4bFCc93fb85c969a590A2e7D7a4Ad72F0668AFF2', '0x53fe8c456c470a7214ed5caad88c486449f3b196'], // KLAY-KOKOA
-  //   ['0xd52aCC40924C906D3EeAB239D6F6C36B612011af', '0xc8D2b302266f90a713af573dFd4F305CC4C30C92'], // KLAY-KSD
-  // ]
-
-  // return sumTokens2({ chain, block, tokensAndOwners: toa, resolveLP: true })
+const fetchPool2 = async (api) => {
   const decimal = 18;
 
   let klayswapPool2Tvl = BigNumber(0);
   for (let pool of KLAYSWAP_POOLS) {
-    const { output: value } = await sdk.api.abi.call({
-      chain, block,
+    const  value = await api.call({
       target: HELPER_ADDR,
       params: [pool[`address`]],
       abi: ABI.abi.getKlayswapLpFarmTVL
@@ -78,8 +76,7 @@ const fetchPool2 = async (ts, _block, chainBlocks) => {
   }
   let kokonutPool2Tvl = BigNumber(0);
   for (let pool of KOKONUT_POOLS) {
-    const { output: value } = await sdk.api.abi.call({
-      chain, block,
+    const  value = await api.call({
       target: HELPER_ADDR,
       params: [pool[`address`]],
       abi: ABI.abi.getKokonutLpFarmTVL
@@ -90,12 +87,10 @@ const fetchPool2 = async (ts, _block, chainBlocks) => {
   return toUSDTBalances(totalPool2.toFixed(2));
 }
 
-const fetchStakedToken = async (ts, _block, chainBlocks) => {
-  const block = chainBlocks[chain]
+const fetchStakedToken = async (api) => {
   //staked token prices are calculated using real-time KOKOA price from KLAY-KOKOA LP
 
-  let { output: skokoaTvl } = await sdk.api.abi.call({
-    chain, block,
+  let  skokoaTvl = await api.call({
     target: HELPER_ADDR,
     abi: ABI.abi.getSkokoaTVL
   })
@@ -104,7 +99,7 @@ const fetchStakedToken = async (ts, _block, chainBlocks) => {
   return toUSDTBalances(BigNumber(skokoaTvl).toFixed(2));
 }
 
-
+// https://github.com/kokoa-finance/kokonutswap-contract
 module.exports = {
   misrepresentedTokens: true,
   klaytn: {

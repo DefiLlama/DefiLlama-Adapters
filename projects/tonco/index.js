@@ -6,7 +6,5 @@ const wtTOn = "EQCHHakhWxSQIWbw6ioW21YnjVKBCDd_gVjF9Mz9_dIuFy23"
 
 module.exports = {
   timetravel: true,
-  ton: {
-    tvl: sumTokensExport({ owners: [router, wtTOn], tokens: [ADDRESSES.null], }),
-  }
+  ton: { tvl: sumTokensExport({ owners: [/*router, */wtTOn], tokens: [ADDRESSES.null], }) }
 }

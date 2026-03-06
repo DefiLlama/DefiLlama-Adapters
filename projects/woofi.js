@@ -5,7 +5,7 @@ const wooPPConfig = {
 	fantom: [
 		ADDRESSES.fantom.WFTM, // WFTM
 		'0x74b23882a30290451A17c44f4F05243b6b58C76d', // WETH
-		'0x321162Cd933E2Be498Cd2267a90534A804051b11', // WBTC
+		ADDRESSES.fantom.WBTC, // WBTC
 		'0x6626c47c00F1D87902fc13EECfaC3ed06D5E8D8a', // WOO
 		ADDRESSES.fantom.USDC, // USDC
 		ADDRESSES.fantom.fUSDT, // fUSDT
@@ -73,9 +73,10 @@ const wooPPConfig = {
 	],
 	base: [
 		ADDRESSES.base.WETH, // WETH
-		'0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC
+		ADDRESSES.ethereum.cbBTC, // cbBTC
 		ADDRESSES.base.USDbC, // USDbC
 		ADDRESSES.base.USDC, // native USDC
+		ADDRESSES.base.USDT,
 	],
 	mantle: [
 		ADDRESSES.mantle.WMNT, // WMNT
@@ -90,6 +91,23 @@ const wooPPConfig = {
 		'0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
 		ADDRESSES.sonic.USDC_e, // USDC.e
 	],
+	berachain: [
+		ADDRESSES.berachain.WBERA, // WBERA
+		ADDRESSES.berachain.WBTC, // WBTC
+		ADDRESSES.berachain.WETH, // WETH
+		ADDRESSES.berachain.USDC, // USDC.e
+	],
+	hyperliquid: [
+		ADDRESSES.hyperliquid.WHYPE,
+		'0xBe6727B535545C67d5cAa73dEa54865B92CF7907', // UETH
+		'0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463', // UBTC
+		ADDRESSES.hyperliquid.USDT0,
+	],
+	monad: [
+		ADDRESSES.monad.WMON,
+		ADDRESSES.monad.WETH,
+		ADDRESSES.monad.USDC,
+	],
 }
 
 const chainConfig = {
@@ -100,31 +118,31 @@ const chainConfig = {
 		stakingContractV2: '0x1416E1378682b5Ca53F76656549f7570ad0703d9',
 	},
 	bsc: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: '0x4691937a7508860f876c9c0a2a617e7d9e945d4b',
 		stakingContract: '0x2AEab1a338bCB1758f71BD5aF40637cEE2085076',
 		stakingContractV2: '0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13',
 	},
 	avax: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: '0xabc9547b534519ff73921b1fba6e672b5f58d083',
 		stakingContract: '0xcd1B9810872aeC66d450c761E93638FB9FE09DB0',
 		stakingContractV2: '0x3Bd96847C40De8b0F20dA32568BD15462C1386E3',
 	},
 	polygon: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: '0x1b815d120b3ef02039ee11dc2d33de7aa4a8c603',
 		stakingContract: '0x9BCf8b0B62F220f3900e2dc42dEB85C3f79b405B',
 		stakingContractV2: '0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13',
 	},
 	arbitrum: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: '0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b',
 		stakingContract: '0x9321785D257b3f0eF7Ff75436a87141C683DC99d',
 		stakingContractV2: '0x2CFa72E7f58dc82B990529450Ffa83791db7d8e2',
 	},
 	optimism: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: '0x871f2f2ff935fd1ed867842ff2a7bfd051a5e527',
 		stakingContract: null,
 		stakingContractV2: '0xba91ffD8a2B9F68231eCA6aF51623B3433A89b13',
@@ -148,29 +166,47 @@ const chainConfig = {
 		stakingContractV2: null,
 	},
 	linea: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: null,
 		stakingContract: null,
 		stakingContractV2: null,
 	},
 	base: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: null,
 		stakingContract: null,
 		stakingContractV2: null,
 	},
 	mantle: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: null,
 		stakingContract: null,
 		stakingContractV2: null,
 	},
 	sonic: {
-		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
 		woo: null,
 		stakingContract: null,
 		stakingContractV2: null,
-	}
+	},
+	berachain: {
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	hyperliquid: {
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	monad: {
+		wooPPContract: '0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
 }
 
 Object.keys(chainConfig).forEach(chain => {

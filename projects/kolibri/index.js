@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+const BigNumber = require("bignumber.js");
 const { toUSDTBalances } = require('../helper/balances');
 const { get } = require("../helper/http");
 const { getConfig } = require('../helper/cache')
@@ -15,7 +17,10 @@ async function tvl() {
 }
 
 async function pool2() {
-  return toUSDTBalances((await get(tvlUrl)).quipuswapFarmBalanceUSD);
+  const usd_amount = (await get(tvlUrl)).quipuswapFarmBalanceUSD
+  return {
+    [ADDRESSES.tezos.USDT_cg]: BigNumber(usd_amount).toFixed(0)
+  };
 }
 module.exports = {
   methodology: 'TVL counts the XTZ tokens that are deposited to mint kUSD, and kUSD in the liquidity pool. Borrowed tokens are not counted.',

@@ -1,0 +1,4 @@
+{
+  "getOracle": "function getOracle(address token) external view returns (address)",
+  "latestAnswer": "function latestAnswer() external view override returns (int256)"
+}

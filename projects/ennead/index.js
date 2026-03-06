@@ -1,7 +1,13 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { sumTokensExport } = require('../helper/unknownTokens')
 const { staking, } = require("../helper/staking");
-const lensAbi = require("./ramsesLens.json");
+const lensAbi = {
+    "allPools": "function allPools() view returns (address[])",
+    "gaugeForPool": "function gaugeForPool(address) view returns (address)",
+    "allActivePools": "function allActivePools() view returns (address[])",
+    "allGauges": "function allGauges() view returns (address[])",
+    "allStakingPositionsOf": "function allStakingPositionsOf(address) view returns (tuple(address gauge, uint256 balance, uint256 derivedBalance, tuple(address token, uint256 earned)[] userRewards)[] rewardsData)"
+  };
 
 // Ramses contracts
 const ramsesLens = '0xAAA68f40515bCcd8e407EBB4dBdF5046D105621e';

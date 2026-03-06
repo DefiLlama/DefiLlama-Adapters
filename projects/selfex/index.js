@@ -11,5 +11,5 @@ module.exports = {
 };
 
 chains.forEach(chain => {
-  module.exports[chain] = { tvl: getUniTVL({ factory: '0x98a3567692Eb055fA1F05D616cad494DE9B05512', useDefaultCoreAssets: false, blacklistedTokens: [KFT, USDk, kBRISE] }) }
+  module.exports[chain] = { tvl: getUniTVL({ factory: '0x98a3567692Eb055fA1F05D616cad494DE9B05512', useDefaultCoreAssets: true, blacklistedTokens: [KFT, USDk, kBRISE] }) }
 })

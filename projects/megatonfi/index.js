@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
-const { transformDexBalances, transformBalances } = require('../helper/portedTokens')
+const { transformDexBalances, } = require('../helper/portedTokens')
 const nullAddress = ADDRESSES.null
 const megaAddress = '0:5febe62847dc7296897f3708c7acb92b4c50192425fe6ec77e5f1ffdd3639a3d'
 
@@ -28,7 +28,7 @@ module.exports = {
       const res = await get(`https://tonapi.io/v2/accounts/${mega_vault}/jettons?currencies=mega`);
       const vaultMegaWallet = res.balances.find((data)=> data.jetton.address==megaAddress)
 
-      return await transformBalances('ton', {[ADDRESSES.ton.MEGA]: vaultMegaWallet.balance})
+      return {['ton:'+ADDRESSES.ton.MEGA]: vaultMegaWallet.balance}
     }
   }
 }

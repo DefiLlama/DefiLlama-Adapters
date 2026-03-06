@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
+const { sumTokensExport } = require('../helper/unwrapLPs');
 
 const tokenAndContract = [
     [ADDRESSES.avax.WAVAX, "0x6d9336ce867606Dcb1aeC02C8Ef0EDF0FF22d247"], // nWAVAX
@@ -10,30 +10,8 @@ const tokenAndContract = [
     [ADDRESSES.avax.USDC_e, "0x723191E7F8D87eC22E682c13Df504E5E3432e53E"] // nUSDC
 ]
 
-async function tvl(timestamp, block, chainBlocks) {
-    let balances = {};
-    block = chainBlocks.avax;
-    const chain = "avax";
-
-    const collateralBalances = (await sdk.api.abi.multiCall({
-        calls: tokenAndContract.map(p => ({
-            target: p[0],
-            params: p[1]
-        })),
-        abi: "erc20:balanceOf",
-        block,
-        chain
-    })).output;
-
-    collateralBalances.forEach(p => {
-        sdk.util.sumSingleBalance(balances, `avax:${p.input.target}`, p.output);
-    })
-
-    return balances;
-}
-
 module.exports = {
     avax:{
-        tvl
+        tvl: sumTokensExport({ tokensAndOwners: tokenAndContract})
     }
 }

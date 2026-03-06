@@ -6,7 +6,7 @@ const abi = {
   "zar": "function zar(address) view returns (uint256)",
 }
 const vatAddress = "0x975Eb113D580c44aa5676370E2CdF8f56bf3F99F" // Scs vat contract
-const vowAddress = "0x10e6593cdda8c58a1d0f14c5164b376352a55f2f" // Scs vow contract
+const vowAddress = "0xC56bbE915bCc665e6b3A293700caFf8296526061" // Scs vow contract
 const ZAR = "0xd946188A614A0d9d0685a60F541bba1e8CC421ae" // ZAR token address
 
 const tvlConfig = {
@@ -25,17 +25,15 @@ const tvlConfig = {
   owners: ["0xed42d47538f6bf191533a9943ceedc13b261809d"], // liquidity market's collector,
 }
 
-async function treasuryTvl(timestamp, block, chainBlocks, { api }) {
+async function treasuryTvl(api) {
 
   // liquidity market treasury
-  const balances = await sumTokens({ ...api, api, ...tvlConfig }) || {}
+  await sumTokens({  api, ...tvlConfig })
 
   // stablecoin system treasury
   const zarBalance = await api.call({ abi: abi.zar, params: [vowAddress], target: vatAddress })
   const sinBalance = await api.call({ abi: abi.sin, params: [vowAddress], target: vatAddress })
-  balances[ZAR] = Number(balances[ZAR]||0) + ((zarBalance - sinBalance) / 1e27)
-
-  return balances
+  api.add(ZAR, (zarBalance - sinBalance) / 1e27)
 }
 
 module.exports = {

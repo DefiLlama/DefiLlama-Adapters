@@ -6,16 +6,20 @@ module.exports = {
   sei: { tvl },
 }
 
+const blacklistedPools = [
+  '0x877704326c9b8fe08eb5c92f6b0a75fcc3287ff6', // SolvBTC-xSolvBTC - no trading activities
+]
+
 async function tvl(api) {
   const pools = await getConfig('sailor', undefined, {
     fetcher: async () => {
-      let { pools } = await get(`https://asia-southeast1-ktx-finance-2.cloudfunctions.net/poolapi/pools`)
+      let { pools } = await get(`https://asia-southeast1-ktx-finance-2.cloudfunctions.net/sailor_poolapi/pools`)
       pools = pools.map(i => i.pool_address)
       return pools
     }
   })
-  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
-  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
-  const ownerTokens = pools.map((v, i) => [[token0s[i], token1s[i]], v])
-  return sumTokens2({ api, ownerTokens })
+  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools, permitFailure: true })
+  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools, permitFailure: true })
+  const ownerTokens = pools.map((v, i) => [[token0s[i], token1s[i]].filter(Boolean), v])
+  return sumTokens2({ api, ownerTokens, blacklistedOwners: blacklistedPools })
 }

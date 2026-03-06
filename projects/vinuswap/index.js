@@ -23,7 +23,7 @@ async function tvl(api) {
 
   ownerTokens.push(...V1_POOLS.map((pool, idx) => [[token0s[idx], token1s[idx]], pool]))
   
-  const logs = await getLogs2({ api, target: factories[1], eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address feeManager, address pool)', fromBlock: 1, skipCacheRead: true, })
+  const logs = await getLogs2({ api, target: factories[1], eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address feeManager, address pool)', fromBlock: 1, })
 
   ownerTokens.push(...logs.map(l => [[l.token0, l.token1], l.pool]))
   return sumTokens2({ api, ownerTokens })
