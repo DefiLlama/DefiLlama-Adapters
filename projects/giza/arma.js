@@ -56,11 +56,20 @@ const abi = {
 };
 
 async function getMergedOwners(api, chainId) {
-    const [ownersOld, ownersNew] = await Promise.all([
+    const [ownersOldRaw, ownersNewRaw] = await Promise.all([
         getConfig(`giza/arma/${api.chain}`, `https://api.arma.xyz/api/v1/${chainId}/smart-accounts`),
         getConfig(`giza/arma/gizatech/${api.chain}`, `https://api.gizatech.xyz/api/v1/${chainId}/smart-accounts`),
     ]);
-    return [...new Set([...ownersOld, ...ownersNew])];
+
+    const ownersOld = Array.isArray(ownersOldRaw) ? ownersOldRaw : [];
+    const ownersNew = Array.isArray(ownersNewRaw) ? ownersNewRaw : [];
+
+    const owners = [...ownersOld, ...ownersNew]
+        .filter(owner => typeof owner === 'string')
+        .map(owner => owner.trim().toLowerCase())
+        .filter(Boolean);
+
+    return [...new Set(owners)];
 }
 
 async function baseTvl(api) {
