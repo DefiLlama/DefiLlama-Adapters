@@ -175,6 +175,10 @@ const configs = {
   },
   'steth-exchange': {
     ethereum: ['0xee15D71D8322eA88138c323AddbD0dd123A2dFB2'],
+  },
+  'twoxswapy': {
+    methodology: 'TVL is the total USDC deposited in the X2Pool ERC-4626 vault, measured via totalAssets().',
+    ethereum: ['0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3']
   }
 }
 
