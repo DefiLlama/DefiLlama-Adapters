@@ -178,6 +178,7 @@ const configs = {
   },
   'twoxswap': {
     methodology: 'TVL is the total USDC deposited in the X2Pool ERC-4626 vault, measured via totalAssets().',
+    start: '2026-03-01',
     ethereum: ['0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3']
   }
 }

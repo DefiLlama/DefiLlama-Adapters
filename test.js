@@ -89,6 +89,19 @@ function mergeBalances(key, storedKeys, balancesObject) {
   }
 }
 
+function parseTimestampArg(arg) {
+  if (!arg) return undefined;
+  if (/^\d+$/.test(arg)) {
+    const num = Number(arg);
+    if (!Number.isFinite(num)) return undefined;
+    return num > 1e12 ? Math.floor(num / 1000) : num;
+  }
+  const d = new Date(arg);
+  const ms = d.getTime();
+  if (!Number.isFinite(ms)) return undefined;
+  return Math.floor(ms / 1000);
+}
+
 if (process.argv.length < 3) {
   console.error(`Missing argument, you need to provide the filename of the adapter to test.
     Eg: node test.js projects/myadapter.js`);
@@ -168,22 +181,6 @@ function validateHallmarks(hallmark) {
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
 
-  function parseTimestampArg(arg) {
-    if (!arg) return undefined;
-    // Accept pure numeric input as unix seconds or milliseconds
-    if (/^\d+$/.test(arg)) {
-      const num = Number(arg);
-      if (!Number.isFinite(num)) return undefined;
-      // 13+ digits -> milliseconds, else assume seconds
-      return num > 1e12 ? Math.floor(num / 1000) : num;
-    }
-    // Fallback to Date string parsing (e.g., YYYY-MM-DD)
-    const d = new Date(arg);
-    const ms = d.getTime();
-    if (!Number.isFinite(ms)) return undefined;
-    return Math.floor(ms / 1000);
-  }
-
   const passedTimestamp = parseTimestampArg(process.argv[3]);
   if (passedTimestamp !== undefined) {
     unixTimestamp = passedTimestamp
@@ -194,6 +191,13 @@ function validateHallmarks(hallmark) {
       chainBlocks = res.chainBlocks
     } catch (e) { /* ignore empty block statement */ }
   }
+
+  const adapterStart = parseTimestampArg(module.start);
+  if (adapterStart !== undefined && unixTimestamp < adapterStart) {
+    console.log(`Adapter start (${module.start}) is after requested timestamp; skipping`);
+    process.exit(0);
+  }
+
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
