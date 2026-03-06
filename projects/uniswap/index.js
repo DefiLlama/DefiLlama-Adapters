@@ -113,7 +113,6 @@ const okuGraphMap = {
   nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
-  saga: 'https://omni.v2.icarus.tools/saga',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
 }
 
@@ -142,7 +141,15 @@ Object.keys(okuGraphMap).forEach(chain => {
           return ownerTokens
         }
       })
-      return api.sumTokens({ ownerTokens, })
+      try {
+        await api.sumTokens({ ownerTokens, })
+      } catch (e) {
+        if (['saga'].includes(chain)) {
+          console.error(`oku-trade ${chain} failed, returning empty TVL`, e)
+          return {}
+        }
+        throw e
+      }
     }
   }
 })

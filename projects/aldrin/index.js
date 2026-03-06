@@ -28,6 +28,6 @@ module.exports = {
   timetravel: false,
   solana: { tvl, staking },
   hallmarks: [
-    [1665521360, "Mango Markets Hack"],
+    ['2022-10-11', "Mango Markets Hack"],
   ],
 }

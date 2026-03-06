@@ -30,6 +30,6 @@ module.exports = {
   start: '2024-02-08',  // Feb-08-2024 07:33:35 AM UTC in Unix timestamp
   ethereum: { tvl },
   hallmarks: [
-    [1712400000, "MOR token launch"],  // May-08-2024 12:00:00 AM UTC in Unix timestamp
+    ['2024-04-06', "MOR token launch"],  // May-08-2024 12:00:00 AM UTC in Unix timestamp
   ],
 };

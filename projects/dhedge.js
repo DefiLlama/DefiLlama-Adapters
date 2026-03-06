@@ -164,11 +164,11 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "Aggregates total value of each dHEDGE vault ever created",
   hallmarks: [
-    [1627693200, "dHEDGE V2 Launch"],
-    [1639616400, "Optimism Launch"],
-    [1674003600, "Optimism Incentives Start"],
-    [1679965200, "DHT Staking V2 Release"],
-    [1701468842, "Arbitrum Launch"],
-    [1706569200, "Base Launch"],
+    ['2021-07-31', "dHEDGE V2 Launch"],
+    ['2021-12-16', "Optimism Launch"],
+    ['2023-01-18', "Optimism Incentives Start"],
+    ['2023-03-28', "DHT Staking V2 Release"],
+    ['2023-12-01', "Arbitrum Launch"],
+    ['2024-01-29', "Base Launch"],
   ],
 };

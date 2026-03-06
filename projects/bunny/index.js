@@ -153,6 +153,6 @@ module.exports = {
     tvl: polygon
   },
   // hallmarks: [
-  //   [1621395248, 'Flash Loan Attack'],
+  //   ['2021-05-19', 'Flash Loan Attack'],
   // ],
 }

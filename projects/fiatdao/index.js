@@ -85,8 +85,8 @@ module.exports = {
   methodology: 'TVL includes fair value of collateral backing outstanding $FIAT and the initial FDT Jubilee event',
   ethereum: { tvl },
   hallmarks: [
-    [1635959960, "FDT Jubilee starts"],
-    [1639380013, "FDT Jubilee ends"],
-    [1649604096, "Protocol Launch"]
+    ['2021-11-03', "FDT Jubilee starts"],
+    ['2021-12-13', "FDT Jubilee ends"],
+    ['2022-04-10', "Protocol Launch"]
   ]
 }

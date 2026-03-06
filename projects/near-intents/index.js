@@ -16,7 +16,7 @@ const CONFIG = {
   polygon: { owners: EVM },
   avax: { owners: EVM },
   monad: { owners: EVM, tokens: [native] },
-  berachain: { owners: EVM, tokens: [native, '0x779ded0c9e1022225f8e0630b35a9b54be713736'] },
+  berachain: { owners: EVM, tokens: [native, ADDRESSES.stable.USDT0] },
   xdai: { owners: EVM, tokens: [native, '0x2a22f9c3b484c3629090feed35f17ff8f88f76f0', '0x8e34bfec4f6eb781f9743d9b4af99cd23f9b7053', '0x177127622c4a00f3d409b75571e12cb3c8973d3c'] },
   bsc: { owners: EVM, tokens: ['0x000ae314e2a2172a039b26378814c252734f556a', '0x4c067de26475e1cefee8b8d1f6e2266b33a2372e'] },
   xlayer: { owners: EVM, tokens: [native] },

@@ -362,32 +362,10 @@ const configs = {
     },
     sonic: {
       euler: [
-        '0x0806af1762bdd85b167825ab1a64e31cf9497038', // scETH
-        '0xb38d431e932fea77d1df0ae0dfe4400c97e597b8', // scUSD
-        '0x196f3c7443e940911ee2bb88e019fd71400349d9', // USDC.e
         '0x90a804d316a06e00755444d56b9ef52e5c4f4d73', // wS
         '0x6832f3090867449c058e1e3088e552e12ab18f9e', // stS
-        '0xa5cd24d9792f4f131f5976af935a505d19c8db2b', // wETH
-        '0x9144c0f0614dd0ace859c61cc37e5386d2ada43a', // wS
-        '0x05d57366b862022f76fe93316e81e9f24218bbfc', // wstkscETH
-        '0x1cda7e7b2023c3f3c94aa1999937358fa9d01aab', // wstkscUSD
-        '0xfffc9d22304cf49784e9b31ddbeb066344b2b856', // PT-wstkscETH-29MAY2025
-        '0xeeaab5c863f4b1c5356af138f384adc25cb70da6', // stS
-        '0xf6e2ddf7a149c171e591c8d58449e371e6dc7570', // PT-wstkscUSD-29MAY2025
-        '0xdbc46ff39cae7f37c39363b0ca474497dad1d3cf', // PT-stS-29MAY2025
-        '0x08f04a3db30b0cd7e42e61b4e412b1123c52e8a1', // PT-aSonUSDC-14AUG2025
-        '0x6f2ab32a6487a2996c74ed2b173dfdf3d5eedb58', // wOS
-        '0xd506f1e4adfcf1196b7c5d2ebf4e858e33d7a93e', // PT-wOS-29MAY2025
         '0xb936137169d777fcb8b7cf02329620b78fccec0a', // PT-stS-29MAY2025 (bis)
-        '0xdEBdAB749330bb976fD10dc52f9A452aaF029028', // xUSD
-        '0x12ac805F4596C3E55bb100B4593A1B8025CD2056', // yUSD
-        '0x8D024593d781B1C86EcD5d0f899d10C5E9de7069', // HLP0
-        '0xC37fa1c70D77bdEd373C551a92bAbcee44a9d04E', // wmetaS
-        '0x7aD07B280A17Ac7af489E487eaAf004b69786a0A', // x33
-        '0xDE604f03E44247b31f71C4Fa055F9F3ea08D1271', // PT-wstkscETH-18DEC2025
         '0xF71B17cCF362B6dcC1b6917A05820477cF7802A0', // PT-stS-18DEC2025
-        '0x6e14A20334724a194D2f8B38162522CAD202b986', // PT-wstkscUSD-18DEC2025
-        '0x6F11663766bB213003cD74EB09ff4c67145023c5', // wmetaUSD
       ],
       napier: [
         '0x0532d4f06ba9b159d0b456662cc488eefe2fe34f', // scETH
