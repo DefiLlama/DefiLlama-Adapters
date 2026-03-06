@@ -22,6 +22,7 @@ const config = {
 
 module.exports = {
   methodology: 'Counts the AUM of all pools registered in the UFarm Protocol',
+  doublecounted: true,
 }
 
 Object.keys(config).forEach(chain => {
