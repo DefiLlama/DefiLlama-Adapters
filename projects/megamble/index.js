@@ -6,15 +6,13 @@
  * Revenue split: 85% pot / 10% treasury / 5% referrer.
  * @see https://megamble.xyz
  */
-
 const ADDRESSES = require("../helper/coreAssets.json");
-
 /** @constant {string} GAME_CONTRACT - Main game contract holding the active pot and player credits */
 const GAME_CONTRACT = "0x051B5a8B20F3e49E073Cf7A37F4fE2e5117Af3b6";
-
 /** @constant {string} PROFILES_CONTRACT - Profiles contract holding referral balances */
 const PROFILES_CONTRACT = "0x9F0708145BCCD1F5B16F610cB8a75A63fA4A9a24";
-
+/** @constant {string} TREASURY - Protocol treasury wallet receiving 10% of each pot */
+const TREASURY = "0x21CbC99a2E8c68F1C2955991E07c0C22ea895Da1";
 /**
  * Calculates TVL by summing native ETH held in Megamble contracts.
  * Includes the active pot, player credits, and unclaimed referral earnings.
@@ -28,11 +26,22 @@ async function tvl(api) {
     tokens: [ADDRESSES.null],
   });
 }
-
+/**
+ * Calculates treasury holdings by summing native ETH held in the protocol treasury wallet.
+ * Reflects accumulated protocol revenue (10% cut from each completed pot).
+ * @param {object} api - DefiLlama SDK ChainApi instance
+ * @returns {Promise<object>} Token balances object
+ */
+async function treasury(api) {
+  return api.sumTokens({
+    owners: [TREASURY],
+    tokens: [ADDRESSES.null],
+  });
+}
 module.exports = {
-  methodology: "TVL is the native ETH held in Megamble smart contracts (game pot, player credits, and referral balances). Treasury funds distributed externally are excluded.",
+  methodology: "TVL is the native ETH held in Megamble smart contracts (game pot and player credits). Treasury tracks ETH held in the protocol treasury wallet.",
   megaeth: {
     tvl,
+    treasury,
   },
 };
-
