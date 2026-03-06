@@ -40,13 +40,11 @@ async function getAllPairs(factory, chain) {
     if (queryStr === previousQueryStr) break
     previousQueryStr = queryStr
 
-    try {
-      const res = await queryContract({ contract: factory, chain, data: queryStr })
-      currentPairs = res.pairs
-      allPairs.push(...currentPairs)
-    } catch (error) {
-      break
-    }
+    const res = await queryContractWithRetries({ contract: factory, chain, data: queryStr })
+    if (!Array.isArray(res?.pairs))
+      throw new Error(`Invalid pair list returned by factory ${factory}`)
+    currentPairs = res.pairs
+    allPairs.push(...currentPairs)
 
   } while (currentPairs && currentPairs.length > 0)
 
@@ -129,7 +127,7 @@ async function getPairPoolSafe(pair, chain, retryCount = 0) {
 }
 
 function getFactoryTvl(factory) {
-  return async () => {
+  return async (api) => {
     const allPairs = await getAllPairs(factory, "terra")
     if (allPairs.length === 0) return {}
 
