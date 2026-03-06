@@ -1,5 +1,4 @@
 const { queryContract, queryContractWithRetries } = require('../helper/chain/cosmos')
-const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 
 const CONFIG = {
@@ -7,6 +6,19 @@ const CONFIG = {
   MAX_ERROR_RATE: 0.15,
   MAX_RETRIES: 3,
   RETRY_DELAY: 100
+}
+
+async function runWithConcurrency(items, concurrency, fn) {
+  const results = []
+  const errors = []
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency)
+    const batchResults = await Promise.all(
+      batch.map(item => fn(item).catch(e => { errors.push(e); return null }))
+    )
+    results.push(...batchResults.filter(r => r !== null))
+  }
+  return { results, errors }
 }
 
 async function getAllPairs(factory, chain) {
@@ -21,7 +33,6 @@ async function getAllPairs(factory, chain) {
       queryStr = JSON.stringify({ pairs: { limit } })
     } else {
       const lastPair = allPairs[allPairs.length - 1]
-      // Terraport uses asset_infos array as start_after key
       const startAfter = lastPair.asset_infos
       queryStr = JSON.stringify({ pairs: { start_after: startAfter, limit } })
     }
@@ -56,11 +67,9 @@ function safeBalanceToString(balance) {
 }
 
 function extractTokenAddress(assetInfo) {
-  // Terraport / Astroport-style asset_info: { token: { contract_addr } } or { native_token: { denom } }
   if (!assetInfo) return null
   if (assetInfo.token) return assetInfo.token.contract_addr
   if (assetInfo.native_token) return assetInfo.native_token.denom
-  // Fallback: older format
   if (assetInfo.cw20) return assetInfo.cw20
   if (assetInfo.native) return assetInfo.native
   return null
@@ -76,17 +85,14 @@ async function getPairPoolSafe(pair, chain, retryCount = 0) {
       data: { pool: {} }
     })
 
-    // Support both Astroport-style (assets[]) and Garuda-style (reserve1/reserve2) responses
     let addr1, addr2, bal1, bal2
 
     if (pairRes.assets && Array.isArray(pairRes.assets)) {
-      // Astroport / Terraport standard format
       addr1 = extractTokenAddress(pairRes.assets[0]?.info)
       addr2 = extractTokenAddress(pairRes.assets[1]?.info)
       bal1 = pairRes.assets[0]?.amount ?? '0'
       bal2 = pairRes.assets[1]?.amount ?? '0'
     } else {
-      // Garuda-style fallback
       addr1 = extractTokenAddress(pairRes.asset1)
       addr2 = extractTokenAddress(pairRes.asset2)
       bal1 = pairRes.reserve1 ?? '0'
@@ -127,10 +133,11 @@ function getFactoryTvl(factory) {
     const allPairs = await getAllPairs(factory, "terra")
     if (allPairs.length === 0) return {}
 
-    const { results, errors } = await PromisePool
-      .withConcurrency(CONFIG.CONCURRENCY)
-      .for(allPairs)
-      .process(async (pair) => getPairPoolSafe(pair, "terra"))
+    const { results, errors } = await runWithConcurrency(
+      allPairs,
+      CONFIG.CONCURRENCY,
+      (pair) => getPairPoolSafe(pair, "terra")
+    )
 
     const successful = results.filter(r => r.type === 'success')
     const failed = results.filter(r => r.type === 'error')
@@ -168,7 +175,7 @@ function getFactoryTvl(factory) {
     data.forEach(({ token0, token1 }) => {
       ;[token0, token1].forEach(token => {
         if (token.startsWith('ibc/')) ibcTokens.add(token)
-        else if (token.length < 20) nativeTokens.add(token) // uluna, uusd, etc.
+        else if (token.length < 20) nativeTokens.add(token)
       })
     })
 
