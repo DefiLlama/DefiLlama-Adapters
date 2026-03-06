@@ -75,6 +75,7 @@ function extractTokenAddress(assetInfo) {
 
 async function getPairPoolSafe(pair, chain, retryCount = 0) {
   const contractAddr = pair.contract_addr || pair.contract
+  if (!contractAddr) return { type: 'error', pair: 'unknown', error: 'missing contract address', errorType: 'missing_contract' }
 
   try {
     const pairRes = await queryContractWithRetries({
@@ -117,7 +118,11 @@ async function getPairPoolSafe(pair, chain, retryCount = 0) {
       return getPairPoolSafe(pair, chain, retryCount + 1)
     }
 
-    const errorType = 'unknown'
+    let errorType = 'unknown'
+    const msg = error.message?.toLowerCase() || ''
+    if (msg.includes('timeout') || msg.includes('timed out')) errorType = 'timeout'
+    else if (msg.includes('rate') || msg.includes('429')) errorType = 'rate_limit'
+    else if (msg.includes('not found') || msg.includes('404')) errorType = 'not_found'
 
     return { type: 'error', pair: contractAddr, error: error.message, errorType }
   }
@@ -137,13 +142,13 @@ function getFactoryTvl(factory) {
     const successful = results.filter(r => r.type === 'success')
     const failed = results.filter(r => r.type === 'error')
 
-    const errorRate = (failed.length + errors.length) / allPairs.length
+    const errorRate = failed.length / allPairs.length
     if (errorRate > CONFIG.MAX_ERROR_RATE) {
       const errorsByType = {}
-      failed.forEach(f => { errorsByType[f.errorType] = (errorsByType[f.errorType] || 0) + 1 })
+      failed.forEach(f => { const t = f.errorType || 'unknown'; errorsByType[t] = (errorsByType[t] || 0) + 1 })
       const summary = Object.entries(errorsByType).map(([t, c]) => `${t}: ${c}`).join(', ')
       throw new Error(
-        `High error rate: ${(errorRate * 100).toFixed(1)}% (${failed.length + errors.length}/${allPairs.length}) on terra. ${summary}`
+        `High error rate: ${(errorRate * 100).toFixed(1)}% (${failed.length}/${allPairs.length}) on terra. ${summary}`
       )
     }
 
