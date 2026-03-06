@@ -184,18 +184,20 @@ function validateHallmarks(hallmark) {
   const passedTimestamp = parseTimestampArg(process.argv[3]);
   if (passedTimestamp !== undefined) {
     unixTimestamp = passedTimestamp
-
-    // other chains than evm will fail to get block at timestamp
-    try {
-      const res = await getBlocks(unixTimestamp, chains)
-      chainBlocks = res.chainBlocks
-    } catch (e) { /* ignore empty block statement */ }
   }
 
   const adapterStart = parseTimestampArg(module.start);
   if (adapterStart !== undefined && unixTimestamp < adapterStart) {
     console.log(`Adapter start (${module.start}) is after requested timestamp; skipping`);
     process.exit(0);
+  }
+
+  if (passedTimestamp !== undefined) {
+    // other chains than evm will fail to get block at timestamp
+    try {
+      const res = await getBlocks(unixTimestamp, chains)
+      chainBlocks = res.chainBlocks
+    } catch (e) { /* ignore empty block statement */ }
   }
 
   const ethBlock = chainBlocks.ethereum;
