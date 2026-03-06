@@ -29,8 +29,10 @@ const ethTvl = async (api) => {
   const convexLpBalance = await api.call({  abi: abi.checkBalance, target: convexStrategy, params: ADDRESSES.ethereum.WETH})
   const convexLpSupply = await api.call({  abi: 'erc20:totalSupply', target: convexLp})
   const convexEthInPool = await api.call({  abi: 'function balances(uint256) view returns (uint256)', target: convexLp, params: convexEthIndex})
-  const convexEthLPBalance = (convexLpBalance / convexLpSupply) * convexEthInPool
-  api.add(ADDRESSES.ethereum.WETH, convexEthLPBalance)
+  if (convexLpSupply > 0) {
+    const convexEthLPBalance = (convexLpBalance / convexLpSupply) * convexEthInPool
+    api.add(ADDRESSES.ethereum.WETH, convexEthLPBalance)
+  }
 
   // add ETH part of curve OETH/WETH LP
   const curveStrategy = '0xba0e352AB5c13861C26e4E773e7a833C3A223FE6'
@@ -39,8 +41,10 @@ const ethTvl = async (api) => {
   const curveLpBalance = await api.call({  abi: abi.checkBalance, target: curveStrategy, params: ADDRESSES.ethereum.WETH})
   const curveLpSupply = await api.call({  abi: 'erc20:totalSupply', target: curveLp})
   const curveEthInPool = await api.call({  abi: 'function balances(uint256) view returns (uint256)', target: curveLp, params: curveEthIndex})
-  const curveEthLPBalance = (curveLpBalance / curveLpSupply) * curveEthInPool
-  api.add(ADDRESSES.ethereum.WETH, curveEthLPBalance)
+  if (curveLpSupply > 0) {
+    const curveEthLPBalance = (curveLpBalance / curveLpSupply) * curveEthInPool
+    api.add(ADDRESSES.ethereum.WETH, curveEthLPBalance)
+  }
 
   return api.sumTokens({ owner: vault, tokens: [ADDRESSES.ethereum.WETH] })
 }
@@ -66,8 +70,10 @@ async function baseTvl(api) {
       const ourGaugeBal = await api.call({ abi: 'erc20:balanceOf', target: curveGauge, params: curveAMO })
       const gaugeTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: curveGauge })
       const poolWeth = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.base.WETH, params: curveLp })
-      const wethShare = BigInt(ourGaugeBal) * BigInt(poolWeth) / BigInt(gaugeTotalSupply)
-      api.add(ADDRESSES.base.WETH, wethShare.toString())
+      if (BigInt(gaugeTotalSupply) > 0n) {
+        const wethShare = BigInt(ourGaugeBal) * BigInt(poolWeth) / BigInt(gaugeTotalSupply)
+        api.add(ADDRESSES.base.WETH, wethShare.toString())
+      }
     } else if (strategy.toLowerCase() === aeroAMO.toLowerCase()) {
       // only count WETH side (checkBalance includes superOETHb value)
       const [amountWeth] = await api.call({ abi: 'function getPositionPrincipal() view returns (uint256, uint256)', target: aeroAMO })
