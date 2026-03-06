@@ -66,12 +66,14 @@ async function baseTvl(api) {
   for (const strategy of strategies) {
     if (strategy.toLowerCase() === woethStrategy.toLowerCase()) continue
     if (strategy.toLowerCase() === curveAMO.toLowerCase()) {
-      // only count WETH side: our share of gauge * gauge share of pool * pool WETH balance
+      // only count WETH side: our share of gauge, gauge's share of pool, pool WETH balance
       const ourGaugeBal = await api.call({ abi: 'erc20:balanceOf', target: curveGauge, params: curveAMO })
       const gaugeTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: curveGauge })
+      const gaugeLpBal = await api.call({ abi: 'erc20:balanceOf', target: curveLp, params: curveGauge })
+      const lpTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: curveLp })
       const poolWeth = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.base.WETH, params: curveLp })
-      if (BigInt(gaugeTotalSupply) > 0n) {
-        const wethShare = BigInt(ourGaugeBal) * BigInt(poolWeth) / BigInt(gaugeTotalSupply)
+      if (BigInt(gaugeTotalSupply) > 0n && BigInt(lpTotalSupply) > 0n) {
+        const wethShare = BigInt(ourGaugeBal) * BigInt(gaugeLpBal) * BigInt(poolWeth) / (BigInt(gaugeTotalSupply) * BigInt(lpTotalSupply))
         api.add(ADDRESSES.base.WETH, wethShare.toString())
       }
     } else if (strategy.toLowerCase() === aeroAMO.toLowerCase()) {
