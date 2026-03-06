@@ -60,32 +60,6 @@ async function tvl(api) {
       }
     }
   }
-
-  const stakingState = await queryContract({
-    contract: STAKING_CONTRACT,
-    chain: 'terra',
-    data: { state: {} },
-  }).catch((err) => {
-    throw new Error(`Failed to query staking contract: ${err.message || err}`);
-  });
-
-  if (stakingState?.total_bond_amount) {
-    api.add('uluna', stakingState.total_bond_amount);
-  }
-
-  const vestingState = await queryContract({
-    contract: VESTING_CONTRACT,
-    chain: 'terra',
-    data: { state: {} },
-  }).catch((err) => {
-    throw new Error(`Failed to query vesting contract: ${err.message || err}`);
-  });
-
-  if (vestingState?.total_granted) {
-    api.add('uluna', vestingState.total_granted);
-  } else if (vestingState?.total_amount) {
-    api.add('uluna', vestingState.total_amount);
-  }
 }
 
 async function staking(api) {
@@ -120,7 +94,7 @@ async function vesting(api) {
 
 module.exports = {
   methodology:
-    'TVL is calculated by summing the value of assets in all Terraport liquidity pools (fetched from the factory contract) plus tokens locked in the staking and vesting contracts.',
+    'TVL is calculated by summing the value of assets in all Terraport liquidity pools. Staking and vesting are tracked separately.',
   timetravel: false,
   terra: {
     tvl,
