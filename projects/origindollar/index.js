@@ -3,7 +3,6 @@ const abi = {
     "checkBalance": "function checkBalance(address _asset) view returns (uint256 balance)",
     "supportsAsset": "function supportsAsset(address _asset) view returns (bool)"
   };
-const { staking } = require("../helper/staking");
 
 const vault = "0xE75D77B1865Ae93c7eaa3040B038D7aA7BC02F70";
 
@@ -16,8 +15,5 @@ const ethTvl = async (api) => {
 module.exports = {
   ethereum: {
     tvl: ethTvl,
-    staking: staking(
-      "0x63898b3b6Ef3d39332082178656E9862bee45C57", "0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26",
-    ),
   },
 };
