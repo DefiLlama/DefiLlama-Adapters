@@ -1,5 +1,4 @@
-const { queryContract } = require('../helper/terra');
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { queryContract } = require('../helper/chain/cosmos');
 
 // Terraport contract addresses on Terra Classic
 const FACTORY_CONTRACT = 'terra1n75fgfc8clsssrm2k0fswgtzsvstdaah7la6sfu96szdu22xta0q57rqqr';
@@ -79,7 +78,7 @@ async function tvl(api) {
     });
 
     if (stakingState?.total_bond_amount) {
-      api.add('terra-classic:ulunc', stakingState.total_bond_amount);
+      api.add('uluna', stakingState.total_bond_amount);
     }
   } catch {
     // Staking query failed silently
@@ -94,9 +93,9 @@ async function tvl(api) {
     });
 
     if (vestingState?.total_granted) {
-      api.add('terra-classic:ulunc', vestingState.total_granted);
+      api.add('uluna', vestingState.total_granted);
     } else if (vestingState?.total_amount) {
-      api.add('terra-classic:ulunc', vestingState.total_amount);
+      api.add('uluna', vestingState.total_amount);
     }
   } catch {
     // Vesting query failed silently
@@ -113,7 +112,7 @@ async function staking(api) {
     });
 
     if (stakingState?.total_bond_amount) {
-      api.add('terra-classic:ulunc', stakingState.total_bond_amount);
+      api.add('uluna', stakingState.total_bond_amount);
     }
   } catch {
     // Staking query failed silently
@@ -130,9 +129,9 @@ async function vesting(api) {
     });
 
     if (vestingState?.total_granted) {
-      api.add('terra-classic:ulunc', vestingState.total_granted);
+      api.add('uluna', vestingState.total_granted);
     } else if (vestingState?.total_amount) {
-      api.add('terra-classic:ulunc', vestingState.total_amount);
+      api.add('uluna', vestingState.total_amount);
     }
   } catch {
     // Vesting query failed silently
