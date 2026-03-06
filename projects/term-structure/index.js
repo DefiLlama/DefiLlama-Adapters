@@ -108,6 +108,7 @@ const ADDRESSES = {
     ],
     TermMax4626Factory: [
       { address: "0x67dcDCc57208B574B05999AA3dFA57bfF2324129", fromBlock: 63208984 },
+      { address: "0xbe6f455123f6cdea1352d4510cCDe3D71D139ae7", fromBlock: 80402323 },
     ],
     // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
     //   {
