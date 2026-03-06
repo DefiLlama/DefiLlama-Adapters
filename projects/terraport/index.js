@@ -1,4 +1,5 @@
-const { queryContract } = require('../helper/chain/cosmos');
+const { queryContract, queryContractWithRetries } = require('../helper/chain/cosmos');
+const { PromisePool } = require('@supercharge/promise-pool');
 
 const TERRA_TOKEN = 'terra1ex0hjv3wurhj4wgup4jzlzaqj4av6xqd8le4etml7rg9rs207y4s8cdvrp';
 const FACTORY_CONTRACT = 'terra1n75fgfc8clsssrm2k0fswgtzsvstdaah7la6sfu96szdu22xta0q57rqqr';
@@ -27,27 +28,21 @@ async function tvl(api) {
   const pairs = await getAllPairs()
   const poolContracts = pairs.map(p => p.contract_addr).filter(Boolean)
 
-  const poolBalances = await Promise.all(
-    poolContracts.map(async (pool) => {
-      try {
-        const result = await queryContract({ contract: pool, chain: 'terra', data: { pool: {} } })
-        return result?.assets ?? []
-      } catch {
-        return []
+  const { errors } = await PromisePool
+    .withConcurrency(10)
+    .for(poolContracts)
+    .process(async (pool) => {
+      const result = await queryContractWithRetries({ contract: pool, chain: 'terra', data: { pool: {} } })
+      for (const asset of result?.assets ?? []) {
+        const { info, amount } = asset
+        if (info.native_token) {
+          api.add(info.native_token.denom, amount)
+        } else if (info.token) {
+          api.add(info.token.contract_addr, amount)
+        }
       }
     })
-  )
-
-  for (const assets of poolBalances) {
-    for (const asset of assets) {
-      const { info, amount } = asset
-      if (info.native_token) {
-        api.add(info.native_token.denom, amount)
-      } else if (info.token) {
-        api.add(info.token.contract_addr, amount)
-      }
-    }
-  }
+  if (errors.length > poolContracts.length / 2) throw new Error(`Too many pool query failures: ${errors.length}/${poolContracts.length}`)
 }
 
 async function staking(api) {
