@@ -47,17 +47,36 @@ const ethTvl = async (api) => {
 
 async function baseTvl(api) {
   const vault = '0x98a0CbeF61bD2D21435f433bE4CD42B56B38CC93'
+  const woethStrategy = '0x80c864704dd06c3693ed5179190786ee38acf835'
+  const curveAMO = '0x9cfcAF81600155e01c63e4D2993A8A81A8205829'
   const aeroAMO = '0xF611cC500eEE7E4e4763A05FE623E2363c86d2Af'
+  const curveGauge = '0x9da8420dbeebdfc4902b356017610259ef7eedd8'
+  const curveLp = '0x302a94e3c28c290eaf2a4605fc52e11eb915f378'
 
-  // vault balance
+  const strategies = await api.call({ abi: 'function getAllStrategies() view returns (address[])', target: vault })
+
+  // vault buffer
   const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.base.WETH, params: vault })
   api.add(ADDRESSES.base.WETH, vaultBalance)
 
-  // add aero AMO
-  const [amountWeth, _amountOETH] = await api.call({ abi: 'function getPositionPrincipal() view returns (uint256, uint256)', target: aeroAMO })
-  api.add(ADDRESSES.base.WETH, amountWeth)
-
-  return api.sumTokens({ owners: [vault], tokens: [ADDRESSES.base.WETH] })
+  for (const strategy of strategies) {
+    if (strategy.toLowerCase() === woethStrategy.toLowerCase()) continue
+    if (strategy.toLowerCase() === curveAMO.toLowerCase()) {
+      // only count WETH side: our share of gauge * gauge share of pool * pool WETH balance
+      const ourGaugeBal = await api.call({ abi: 'erc20:balanceOf', target: curveGauge, params: curveAMO })
+      const gaugeTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: curveGauge })
+      const poolWeth = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.base.WETH, params: curveLp })
+      const wethShare = BigInt(ourGaugeBal) * BigInt(poolWeth) / BigInt(gaugeTotalSupply)
+      api.add(ADDRESSES.base.WETH, wethShare.toString())
+    } else if (strategy.toLowerCase() === aeroAMO.toLowerCase()) {
+      // only count WETH side (checkBalance includes superOETHb value)
+      const [amountWeth] = await api.call({ abi: 'function getPositionPrincipal() view returns (uint256, uint256)', target: aeroAMO })
+      api.add(ADDRESSES.base.WETH, amountWeth)
+    } else {
+      const balance = await api.call({ abi: abi.checkBalance, target: strategy, params: ADDRESSES.base.WETH })
+      api.add(ADDRESSES.base.WETH, balance)
+    }
+  }
 }
 
 async function plumeTvl(api) {
