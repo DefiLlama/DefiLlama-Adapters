@@ -2,8 +2,14 @@ const { queryContract } = require('../helper/chain/cosmos');
 
 const TERRA_TOKEN = 'terra1ex0hjv3wurhj4wgup4jzlzaqj4av6xqd8le4etml7rg9rs207y4s8cdvrp';
 const FACTORY_CONTRACT = 'terra1n75fgfc8clsssrm2k0fswgtzsvstdaah7la6sfu96szdu22xta0q57rqqr';
-const STAKING_CONTRACT = 'terra134ummlrj2rnv8h8rjhs6a54fng0xlg8wk7a2gwu6vj42pznkf6xs95966d';
+const CLASSIC_STAKING = 'terra134ummlrj2rnv8h8rjhs6a54fng0xlg8wk7a2gwu6vj42pznkf6xs95966d';
+const DYNAMIC_STAKING = 'terra1x44ptyv7zp9e289jxqu6x5asxazhjc8gvuj9ltfs6mzvjfuzn8lqluk4u7';
 const VESTING_CONTRACT = 'terra19v3vkpxsxeach4tpdklxaxc9wuwx65jqfs6jzm5cu5yz457hhgmsp4a48n';
+
+async function terraBalance(contract, address) {
+  const { balance } = await queryContract({ contract, chain: 'terra', data: { balance: { address } } })
+  return balance
+}
 
 async function getAllPairs() {
   let allPairs = []
@@ -45,12 +51,14 @@ async function tvl(api) {
 }
 
 async function staking(api) {
-  const { balance } = await queryContract({ contract: TERRA_TOKEN, chain: 'terra', data: { balance: { address: STAKING_CONTRACT } } })
-  api.add(TERRA_TOKEN, balance)
+  const classicBal = await terraBalance(TERRA_TOKEN, CLASSIC_STAKING)
+  const dynamicBal = await terraBalance(TERRA_TOKEN, DYNAMIC_STAKING)
+  api.add(TERRA_TOKEN, classicBal)
+  api.add(TERRA_TOKEN, dynamicBal)
 }
 
 async function vesting(api) {
-  const { balance } = await queryContract({ contract: TERRA_TOKEN, chain: 'terra', data: { balance: { address: VESTING_CONTRACT } } })
+  const balance = await terraBalance(TERRA_TOKEN, VESTING_CONTRACT)
   api.add(TERRA_TOKEN, balance)
 }
 
