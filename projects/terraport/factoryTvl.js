@@ -1,4 +1,4 @@
-const { queryContract, queryContractWithRetries } = require('../helper/chain/cosmos')
+const { queryContractWithRetries } = require('../helper/chain/cosmos')
 const { transformDexBalances } = require('../helper/portedTokens')
 
 const CONFIG = {
@@ -59,7 +59,7 @@ function safeBalanceToString(balance) {
     if (balance.value !== undefined) return balance.value.toString()
     if (balance.amount !== undefined) return balance.amount.toString()
     if (balance.balance !== undefined) return balance.balance.toString()
-    try { return JSON.stringify(balance) } catch { return '0' }
+    return '0'
   }
   return '0'
 }
@@ -117,10 +117,7 @@ async function getPairPoolSafe(pair, chain, retryCount = 0) {
       return getPairPoolSafe(pair, chain, retryCount + 1)
     }
 
-    const errorType = error.message.includes('timeout') ? 'timeout'
-      : error.message.includes('rate limit') ? 'rate_limit'
-      : error.message.includes('not found') ? 'not_found'
-      : 'unknown'
+    const errorType = 'unknown'
 
     return { type: 'error', pair: contractAddr, error: error.message, errorType }
   }
