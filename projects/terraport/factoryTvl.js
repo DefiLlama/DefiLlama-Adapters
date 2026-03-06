@@ -14,9 +14,18 @@ async function runWithConcurrency(items, concurrency, fn) {
   for (let i = 0; i < items.length; i += concurrency) {
     const batch = items.slice(i, i + concurrency)
     const batchResults = await Promise.all(
-      batch.map(item => fn(item).catch(e => { errors.push(e); return null }))
+      batch.map(item => fn(item).catch(e => {
+        const failure = {
+          type: 'error',
+          pair: item.contract_addr || item.contract || 'unknown',
+          error: e.message || String(e),
+          errorType: 'unexpected',
+        }
+        errors.push(failure)
+        return failure
+      }))
     )
-    results.push(...batchResults.filter(r => r !== null))
+    results.push(...batchResults)
   }
   return { results, errors }
 }
@@ -37,7 +46,9 @@ async function getAllPairs(factory, chain) {
       queryStr = JSON.stringify({ pairs: { start_after: startAfter, limit } })
     }
 
-    if (queryStr === previousQueryStr) break
+    if (queryStr === previousQueryStr) {
+      throw new Error(`Factory pagination for ${factory} stopped advancing after ${allPairs.length} pairs`)
+    }
     previousQueryStr = queryStr
 
     const res = await queryContractWithRetries({ contract: factory, chain, data: queryStr })
@@ -191,26 +202,7 @@ function getFactoryTvl(factory) {
     try {
       return transformDexBalances({ data: safeData, withMetadata: false, chain: "terra", coreTokens, restrictTokenRatio: 0 })
     } catch (error) {
-      const balances = {}
-      safeData.forEach(({ token0, token0Bal, token1, token1Bal }) => {
-        const c0 = coreTokens.has(token0)
-        const c1 = coreTokens.has(token1)
-        const b0 = parseFloat(token0Bal || '0')
-        const b1 = parseFloat(token1Bal || '0')
-
-        if (c0 && !c1 && b0 > 0) balances[token0] = (balances[token0] || 0) + b0 * 2
-        else if (c1 && !c0 && b1 > 0) balances[token1] = (balances[token1] || 0) + b1 * 2
-        else {
-          if (b0 > 0) balances[token0] = (balances[token0] || 0) + b0
-          if (b1 > 0) balances[token1] = (balances[token1] || 0) + b1
-        }
-      })
-
-      const final = {}
-      Object.entries(balances).forEach(([token, bal]) => {
-        if (bal > 0) final[`terra:${token}`] = bal.toString()
-      })
-      return final
+      throw new Error(`Failed to transform Terraport pool balances: ${error.message}`)
     }
   }
 }
