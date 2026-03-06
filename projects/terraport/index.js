@@ -144,7 +144,7 @@ module.exports = {
   
   timetravel: false,
   
-  classic: {
+  terra: {
     tvl,
     staking,
     vesting,
