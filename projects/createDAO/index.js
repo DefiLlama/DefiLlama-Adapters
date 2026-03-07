@@ -1,48 +1,42 @@
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getLogs } = require('../helper/cache/getLogs');
+const ADDRESSES = require('../helper/coreAssets.json');
 const config = require('./config');
 
-// Event signatures
-const DAO_CREATED_TOPIC = 'DAOCreated(address,address,address,address,string,string)';
+const DAO_CREATED_EVENT = 'event DAOCreated(address indexed creator, address indexed token, address indexed governor, address timelock, string daoName, string tokenName, string tokenSymbol, uint256 totalSupply)';
 
-async function getDAOAddresses(api) {
-  const factoryAddress = config[api.chain].factoryAddress;
+async function tvl(api) {
+  const { factoryAddress, fromBlock } = config[api.chain];
 
-
-  // Get all DAOs created through the factory
   const daoLogs = await getLogs({
     api,
     target: factoryAddress,
-    topic: DAO_CREATED_TOPIC,
-    eventAbi: 'event DAOCreated(address indexed daoAddress, address indexed tokenAddress, address indexed treasuryAddress, address stakingAddress, string name, string versionId)',
-    fromBlock: config[api.chain].fromBlock,
+    eventAbi: DAO_CREATED_EVENT,
+    fromBlock,
     onlyArgs: true,
   });
 
-  const daoAddresses = daoLogs.map(log => log.daoAddress);
-  const treasuryAddresses = daoLogs.map(log => log.treasuryAddress);
+  // V2 removed presale contracts — only timelock treasuries hold DAO funds
+  const timelockAddresses = [...new Set(daoLogs.map(log => log.timelock))];
 
-  return { daoAddresses, treasuryAddresses };
+  if (timelockAddresses.length === 0) return {};
+
+  const balances = {};
+  const CHUNK_SIZE = 10;
+  for (let i = 0; i < timelockAddresses.length; i += CHUNK_SIZE) {
+    const chunk = timelockAddresses.slice(i, i + CHUNK_SIZE);
+    await sumTokens2({
+      balances,
+      api,
+      owners: chunk,
+      tokens: [ADDRESSES.null],
+      fetchCoValentTokens: true,
+    });
+  }
+  return balances;
 }
 
-async function getPresaleAddresses(api, daoAddresses) {
-  return (await api.fetchList({ lengthAbi: 'proposalCount', itemAbi: 'getPresaleContract', targets: daoAddresses })).filter(i => i !== nullAddress)
-}
-
-async function tvl(api) {
-  // Get DAO addresses
-  const { daoAddresses } = await getDAOAddresses(api);
-  // Get presale addresses dynamically (these are circulating - AMM liquidity)
-  const presaleAddresses = await getPresaleAddresses(api, daoAddresses);
-  // Only count native tokens (ETH, MATIC, etc.) in presale contracts
-  return sumTokens2({ api, owners: presaleAddresses, tokens: [nullAddress], });
-}
-
-// Export TVL and vesting functions for each supported chain
 module.exports = {
-  methodology: "TVL consists of native tokens in presale AMM contracts (circulating)",
+  methodology: 'TVL counts all assets (ETH and ERC20 tokens) held in DAO treasury (TimelockController) contracts created through the CreateDAO v2 factory. V2 has no presale custody contracts; all DAO funds are held in timelocks.',
+  ethereum: { tvl },
 };
-
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
-})
