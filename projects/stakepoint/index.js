@@ -9,30 +9,25 @@ const SPT_MINT = "6uUU2z5GBasaxnkcqiQVHa2SXL68mAXDsq1zYN5Qxrm7";
 const TOKEN_MINT_OFFSET = 40;
 const STAKING_VAULT_OFFSET = 80;
 
+const { getConfig } = require("../helper/cache");
+
 async function unwrapRaydiumLP(lpMint, lpBalance) {
-  try {
-    const res = await fetch(
-      `https://api-v3.raydium.io/pools/info/mint?mint1=${lpMint}&poolType=all&poolSortField=default&sortType=desc&pageSize=1&page=1`
-    );
-    const json = await res.json();
-    const pool = json?.data?.data?.[0];
+  const json = await getConfig("raydium/lp/" + lpMint, `https://api-v3.raydium.io/pools/info/lps?lps=${lpMint}`);
+  const pool = json?.data?.[0];
 
-    if (!pool || pool.lpMint?.address !== lpMint) return null;
+  if (!pool || pool.lpMint?.address !== lpMint) return null;
 
-    const lpSupplyRaw = pool.lpAmount * Math.pow(10, pool.lpMint.decimals || 9);
-    if (lpSupplyRaw === 0) return null;
+  const lpSupplyRaw = pool.lpAmount * Math.pow(10, pool.lpMint.decimals || 9);
+  if (lpSupplyRaw === 0) return null;
 
-    const share = lpBalance / lpSupplyRaw;
+  const share = lpBalance / lpSupplyRaw;
 
-    return {
-      mintA: pool.mintA.address,
-      mintB: pool.mintB.address,
-      amountA: Math.floor(pool.mintAmountA * Math.pow(10, pool.mintA.decimals) * share),
-      amountB: Math.floor(pool.mintAmountB * Math.pow(10, pool.mintB.decimals) * share),
-    };
-  } catch {
-    return null;
-  }
+  return {
+    mintA: pool.mintA.address,
+    mintB: pool.mintB.address,
+    amountA: Math.floor(pool.mintAmountA * Math.pow(10, pool.mintA.decimals) * share),
+    amountB: Math.floor(pool.mintAmountB * Math.pow(10, pool.mintB.decimals) * share),
+  };
 }
 
 async function getVaultData() {
