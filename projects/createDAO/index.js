@@ -16,7 +16,8 @@ async function tvl(api) {
     onlyArgs: true,
   });
 
-  const timelockAddresses = daoLogs.map(log => log.timelock);
+  // V2 removed presale contracts — only timelock treasuries hold DAO funds
+  const timelockAddresses = [...new Set(daoLogs.map(log => log.timelock))];
 
   if (timelockAddresses.length === 0) return {};
 
@@ -36,6 +37,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL counts all assets (ETH and ERC20 tokens) held in DAO treasury (TimelockController) contracts created through the CreateDAO v2 factory.',
+  methodology: 'TVL counts all assets (ETH and ERC20 tokens) held in DAO treasury (TimelockController) contracts created through the CreateDAO v2 factory. V2 has no presale custody contracts; all DAO funds are held in timelocks.',
   ethereum: { tvl },
 };
