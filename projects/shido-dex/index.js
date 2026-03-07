@@ -14,12 +14,12 @@ async function tvl(api) {
   `;
   
   const response = await post(SUBGRAPH_URL, { query });
-  const pools = response.data.pools;
+  const pools = response?.data?.pools ?? [];
 
   const tokensAndOwners = [];
   pools.forEach(pool => {
-    tokensAndOwners.push([pool.token0.id, pool.id]);
-    tokensAndOwners.push([pool.token1.id, pool.id]);
+    if (pool.token0?.id) tokensAndOwners.push([pool.token0.id, pool.id]);
+    if (pool.token1?.id) tokensAndOwners.push([pool.token1.id, pool.id]);
   });
 
   return api.sumTokens({ tokensAndOwners });
