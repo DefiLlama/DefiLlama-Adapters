@@ -296,7 +296,12 @@ const defaultTokens = {
     ADDRESSES.mantle.AUSD,
     ADDRESSES.mantle.FBTC
   ],
-  klaytn: [nullAddress, ADDRESSES.klaytn.USDT_1,]
+  klaytn: [nullAddress, ADDRESSES.klaytn.USDT_1,],
+  hyperliquid: [
+    nullAddress,
+    ADDRESSES.hyperliquid.USDT0,
+    ADDRESSES.hyperliquid.USDC,
+  ]
 }
 
 function cexExports(config) {

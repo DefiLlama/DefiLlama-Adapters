@@ -173,6 +173,13 @@ const configs = {
     start: "2025-11-12",
     ethereum: ['0xa260b049ddD6567E739139404C7554435c456d9E'],
   },
+  'steth-exchange': {
+    ethereum: ['0xee15D71D8322eA88138c323AddbD0dd123A2dFB2'],
+  },
+  'twoxswap': {
+    methodology: 'TVL is the total USDC deposited in the X2Pool ERC-4626 vault, measured via totalAssets().',
+    ethereum: ['0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3']
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
