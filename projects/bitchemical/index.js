@@ -52,11 +52,13 @@ async function stakingTvl(api) {
   api.add(BCHEM, rewardVault)
 }
 
-module.exports = {
-  methodology:
-   USDT=${UNISWAP_V4_POOL_KEYS.USDT}. 
-  bsc: {
-    tvl: liquidityPoolTvl,
-    staking: stakingTvl,
-  },
+ module.exports = {
+-  methodology:
+-    ,
++  methodology: 'Staking TVL includes BCHEM tokens locked in the Bitchemical staking contract.',
+   bsc: {
+-    tvl: liquidityPoolTvl,
+     staking: stakingTvl,
+   },
+ }
 }
