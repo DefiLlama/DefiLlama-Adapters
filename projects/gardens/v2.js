@@ -54,9 +54,6 @@ async function tvl(api) {
   // Strategy balances should use getPoolAmount() to include wrapped token accounting.
   const strategyCalls = strategies.map(s => ({ target: s.id }));
   const strategyBalances = await api.multiCall({ abi: CV_STRATEGY_ABI.getPoolAmount, calls: strategyCalls, permitFailure: true });
-  if (strategyBalances.length !== strategyCalls.length) {
-    throw new Error(`Mismatched strategy balances and calls length on ${api.chain}`);
-  }
 
   strategyBalances.forEach((balance, i) => {
     if (BigInt(balance || 0) > 0n) {
@@ -65,14 +62,10 @@ async function tvl(api) {
     }
   });
 
-
   const communityCalls = communities
     .filter(c => c.garden?.id)
     .map(c => ({ target: c.garden.id, params: [c.id] }));
   const communityBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: communityCalls, permitFailure: true });
-  if (communityBalances.length !== communityCalls.length) {
-    throw new Error(`Mismatched community balances and calls length on ${api.chain}`);
-  }
 
   communityBalances.forEach((balance, i) => {
     if (BigInt(balance || 0) > 0n) {
