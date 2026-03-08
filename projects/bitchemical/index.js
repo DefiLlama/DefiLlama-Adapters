@@ -10,4 +10,4 @@ module.exports = {
   bsc: {
     staking: staking(STAKING_CONTRACT, BCHEM),
   },
-};
+};  
