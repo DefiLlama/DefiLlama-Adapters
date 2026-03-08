@@ -27,7 +27,10 @@ const chainIds = {
 async function fetchTokenList(chainId) {
   const endpoint = `${PRINTR_API}/chains/${chainId}/tokenlist.json`
   const data = await getConfig(`printr-protocol/${chainId}`, endpoint)
-  return data?.tokens ?? []
+  if (!data || !Array.isArray(data.tokens)) {
+    throw new Error(`Invalid token list response from ${endpoint}`)
+  }
+  return data.tokens
 }
 
 /**
