@@ -9,7 +9,7 @@ const COMMON_POOL_STRATEGY = '0x96dee4849a6ab9e51ae36712794318001515dc91';
 const subgraphs = {
   polygon: 'https://api.studio.thegraph.com/query/102093/gardens-v2---polygon/version/latest/',
   xdai: 'https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/version/latest/',
-  arbitrum: 'https://api.studio.thegraph.com/query/102093/gardens-v2---arbitrum/latest/',
+  arbitrum: 'https://api.studio.thegraph.com/query/102093/gardens-v2---arbitrum/version/latest/',
   base: 'https://api.studio.thegraph.com/query/102093/gardens-v2---base/version/latest/',
   celo: 'https://api.studio.thegraph.com/query/102093/gardens-v2---celo/version/latest/',
   optimism: 'https://api.studio.thegraph.com/query/102093/gardens-v2---optimism/version/latest/',
@@ -76,7 +76,6 @@ async function tvl(api) {
       calls: [{ target: token, params: [id] }],
       permitFailure: true,
     });
-    console.log(`[Gardens-v2][xdai] Common pool ${id} token=${token} balanceOf=${tokenBalance || 0} getPoolAmount=${strategyBalances[commonPoolIndex] || 0}`);
   }
 
   const communityCalls = communities
