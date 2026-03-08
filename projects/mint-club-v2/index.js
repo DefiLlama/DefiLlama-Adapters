@@ -56,11 +56,15 @@ const ownTokens = {
 }
 
 async function getStakingTvl(api, stakingContracts) {
-  for (const stakingContract of stakingContracts) {
-    const poolCount = await api.call({
-      target: stakingContract,
-      abi: 'function poolCount() view returns (uint256)'
-    })
+  const poolCounts = await api.multiCall({
+    calls: stakingContracts,
+    abi: 'function poolCount() view returns (uint256)',
+    permitFailure: true
+  })
+
+  await Promise.all(stakingContracts.map(async (stakingContract, i) => {
+    const poolCount = poolCounts[i]
+    if (!poolCount) return;
 
     const stakingTokensSet = new Set()
 
@@ -73,13 +77,13 @@ async function getStakingTvl(api, stakingContracts) {
     })
 
     for (const pool of pools) {
-      if (pool.isStakingTokenERC20 && pool.cancelledAt == 0) stakingTokensSet.add(pool.stakingToken)
+      if (pool && pool.isStakingTokenERC20 && pool.cancelledAt == 0) stakingTokensSet.add(pool.stakingToken)
     }
 
     const tokens = Array.from(stakingTokensSet)
-    if (tokens.length === 0) continue
+    if (tokens.length === 0) return;
     await sumTokens2({ api, owner: stakingContract, tokens, permitFailure: true })
-  }
+  }))
   return api.getBalances()
 }
 
