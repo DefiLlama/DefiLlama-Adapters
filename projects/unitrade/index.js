@@ -12,12 +12,12 @@ const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs');
 const UNITRADE_ORDERBOOK = "0xC1bF1B4929DA9303773eCEa5E251fDEc22cC6828";
 const UNITRADE_BRIDGE = "0x64B17B166090B8F9BA19C13Bf8D5dA951b2d653D";
 
-const tokensAndOwners = [
-  [nullAddress, UNITRADE_BRIDGE],
-  [nullAddress, UNITRADE_ORDERBOOK],
-]
-
 async function tvl(api) {
+  const tokensAndOwners = [
+    [nullAddress, UNITRADE_BRIDGE],
+    [nullAddress, UNITRADE_ORDERBOOK],
+  ]
+
   const activeOrderIds = await api.fetchList({ lengthAbi: abi["abiGetActiveOrdersLength"], itemAbi: abi["abiGetOrderId"], target: UNITRADE_ORDERBOOK })
 
   //getting active orders based on order ids
@@ -33,19 +33,33 @@ async function tvl(api) {
   ];
   uniqueLockedTokenAddresses.map((address) => tokensAndOwners.push([address, UNITRADE_ORDERBOOK]))
   
-  //fetching first 10 gateway tokens and formatting output (temp fix until we can fetch addedTokens.length )
-  const gatewayTokens = (
-    await api.multiCall({
+  //fetching gateway tokens dynamically
+  const gatewayTokens = [];
+  let i = 0;
+  const batchSize = 20;
+
+  while (true) {
+    const batch = await api.multiCall({
       abi: gatewayAbi.abi,
-      calls: new Array(10).fill(null).map((_, index) => ({
+      calls: Array.from({ length: batchSize }, (_, k) => ({
         target: UNITRADE_BRIDGE,
-        params: index,
+        params: i + k,
       })),
       permitFailure: true,
-    })
-  )
-    .filter((item) => item !== null)
-    .map((item) => item.tokenAddress);
+    });
+
+    const validBatch = batch.filter((item) => item !== null);
+
+    validBatch.forEach((item) => gatewayTokens.push(item.tokenAddress));
+
+    // Stop if we encounter a failed call (end of array)
+    if (validBatch.length < batchSize) break;
+
+    i += batchSize;
+    // Safety break to prevent infinite loops
+    if (i > 2000) break;
+  }
+
   //fetching gateway contract balance of the gateway tokens
   gatewayTokens.forEach((token) => tokensAndOwners.push([token, UNITRADE_BRIDGE]))
   return sumTokens2({ api, tokensAndOwners })
