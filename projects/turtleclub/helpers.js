@@ -33,26 +33,25 @@ const applyTokenMapping = (balances, chain) => {
         const tokenAddress = token.toLowerCase();
         const balanceKey = `${chain}:${tokenAddress}`;
 
-        let amount = balances[balanceKey];
+        // Check both prefixed and raw keys — both can exist simultaneously
+        const hasPrefixed = balanceKey in balances;
+        const hasRaw = tokenAddress in balances;
+        if (!hasPrefixed && !hasRaw) continue;
 
-        // Also check un-prefixed key
-        if (!amount && balances[tokenAddress]) {
-            amount = balances[tokenAddress];
-            delete balances[tokenAddress];
-        } else if (amount) {
-            delete balances[balanceKey];
+        let targetToken = use;
+        // If target token doesn't have chain prefix, add the current chain prefix
+        if (!targetToken.includes(':')) {
+            targetToken = `${chain}:${targetToken}`;
         }
 
-        if (amount) {
-            let targetToken = use;
-            // If target token doesn't have chain prefix, add the current chain prefix
-            if (targetToken && !targetToken.includes(':')) {
-                targetToken = `${chain}:${targetToken}`;
-            }
-            if (targetToken) {
-                sdk.util.sumSingleBalance(balances, targetToken, amount);
-            }
-        }
+        // Delete source keys and remap amounts to the target token
+        const prefixedAmount = balances[balanceKey];
+        const rawAmount = balances[tokenAddress];
+        delete balances[balanceKey];
+        delete balances[tokenAddress];
+
+        if (hasPrefixed) sdk.util.sumSingleBalance(balances, targetToken, prefixedAmount);
+        if (hasRaw) sdk.util.sumSingleBalance(balances, targetToken, rawAmount);
     }
 }
 
