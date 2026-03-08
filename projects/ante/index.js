@@ -103,12 +103,14 @@ Object.keys(CONFIG).forEach((chain) => {
       let i = 0;
       const length = 10
 
+      const v6Factories = factories.filter(f => f.version >= '0.6').map(f => f.factory);
+      if (v6Factories.length > 0) {
+        const controllers = await api.multiCall({ calls: v6Factories, abi: abis.getController });
+        const allowedTokensList = await api.multiCall({ calls: controllers, abi: abis.getAllowedTokens });
+        tokens.push(...allowedTokensList.flat());
+      }
+
       for (const factory of factories) {
-        if (factory.version >= '0.6') {
-          const controller = await api.call({ target: factory.factory, abi: abis.getController, });
-          const allowedTokens = await api.call({ target: controller, abi: abis.getAllowedTokens, });
-          tokens.push(...allowedTokens);
-        }
         do {
           const calls = createIncrementArray(length).map((j) => ({ params: j + i * length, }));
           const res = await api.multiCall({
