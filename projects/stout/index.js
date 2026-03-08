@@ -95,20 +95,21 @@ async function borrowed(api) {
             contracts.LenderWETH
         ];
         
-        // Get borrowed amounts from all lenders
-        for (const lender of lenders) {
-            try {
-                const borrowedAmount = await api.call({
-                    abi,
-                    target: contracts.MarketLens,
-                    params: [lender],
-                });
-                api.add(DUSX, borrowedAmount);
-            } catch (lenderError) {
-                console.log(`Error getting borrowed amount for lender ${lender}: ${lenderError.message}`);
-                // Continue with other lenders if one fails
+        // Get borrowed amounts from all lenders concurrently
+        const borrowedAmounts = await api.multiCall({
+            abi,
+            target: contracts.MarketLens,
+            calls: lenders,
+            permitFailure: true,
+        });
+
+        borrowedAmounts.forEach((amount, i) => {
+            if (amount !== undefined && amount !== null) {
+                api.add(DUSX, amount);
+            } else {
+                console.log(`Error getting borrowed amount for lender ${lenders[i]}`);
             }
-        }
+        });
         
         return api.getBalances();
     } catch (error) {
