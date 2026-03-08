@@ -19,9 +19,8 @@ async function getObject(objectId) {
 async function getObjects(objectIds) {
   if (objectIds.length > 9) {
     const chunks = sliceIntoChunks(objectIds, 9)
-    const res = []
-    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
-    return res
+    const results = await Promise.all(chunks.map(chunk => getObjects(chunk)))
+    return results.flat()
   }
   const {
     result
