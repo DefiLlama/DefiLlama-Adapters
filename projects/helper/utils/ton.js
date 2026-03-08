@@ -58,12 +58,7 @@ function parseFriendlyAddress(src) {
 
   isBounceable = tag === bounceable_tag;
 
-  let workchain = null;
-  if (addr[1] === 0xff) { // TODO we should read signed integer here
-      workchain = -1;
-  } else {
-      workchain = addr[1];
-  }
+  let workchain = addr.readInt8(1);
 
   const hashPart = addr.subarray(2, 34);
 
