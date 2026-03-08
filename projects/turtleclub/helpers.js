@@ -29,7 +29,7 @@ const applyTokenMapping = (balances, chain) => {
     if (!mapping) return;
 
     for (const { token, use } of mapping) {
-        if (!token) continue;
+        if (!token || !use) continue;
         const tokenAddress = token.toLowerCase();
         const balanceKey = `${chain}:${tokenAddress}`;
 
