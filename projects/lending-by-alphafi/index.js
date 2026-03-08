@@ -13,6 +13,7 @@ async function fetchMarkets() {
     idFilter: (i) => i.objectType === marketType,
   });
 }
+
 async function tvl(api) {
   const marketsList = await fetchMarkets();
   
@@ -24,6 +25,7 @@ async function tvl(api) {
     }
   }
 }
+
 async function borrowed(api) {
   const marketsList = await fetchMarkets();
   for (const market of marketsList) {
