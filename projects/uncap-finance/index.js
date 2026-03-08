@@ -31,7 +31,9 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Count the value of collaterals in the active, collateral surplus, and stability pools.',
-  start: 2762980,
+  hallmarks: [
+    ['2026-03-04', 'Project winddown'], // https://x.com/uncapfinance/status/2029175291218718824
+  ],
   starknet: {
     tvl,
   }
