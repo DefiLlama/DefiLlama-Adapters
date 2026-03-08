@@ -67,27 +67,30 @@ Object.keys(config).forEach((chain) => {
 
       const tokensAndOwners = [];
 
-      for (const log of logs) {
-        const underlyingCollateral = await api.call({
-          abi: "function wrappedCollToColl(address wrapped) view returns (address)",
-          target: config[chain].wrapperFactory,
-          params: [log.collateral],
-        });
+      const underlyingCollaterals = await api.multiCall({
+        abi: "function wrappedCollToColl(address wrapped) view returns (address)",
+        target: config[chain].wrapperFactory,
+        calls: logs.map(log => log.collateral),
+      });
 
+      logs.forEach((log, i) => {
+        const underlyingCollateral = underlyingCollaterals[i];
         if (underlyingCollateral === addressZero) {
           tokensAndOwners.push([log.collateral, log.troveManager]);
         } else {
           tokensAndOwners.push([underlyingCollateral, log.collateral]);
         }
-      }
+      });
 
-      for (const psm of config[chain].psmList) {
-        const underlyingToken = await api.call({
+      if (config[chain].psmList.length > 0) {
+        const underlyingTokens = await api.multiCall({
           abi: "function underlying() view returns (address)",
-          target: psm,
+          calls: config[chain].psmList,
         });
 
-        tokensAndOwners.push([underlyingToken, psm]);
+        config[chain].psmList.forEach((psm, i) => {
+          tokensAndOwners.push([underlyingTokens[i], psm]);
+        });
       }
 
       return api.sumTokens({ tokensAndOwners });
