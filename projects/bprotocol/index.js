@@ -71,15 +71,37 @@ async function makerTvl(api) {
 }
 
 async function liquityTvl(api) {
+  let bamms = [];
+  let i = 0;
 
-  for (let i = 0; ; i++) {
-    try {
-      const bamm = await api.call({ target: bKeeperAddress, params: [i], abi: abi["bamms"] });
-      const balance = await api.call({ target: stabilityPoolAddress, params: [bamm], abi: abi["getCompoundedLUSDDeposit"] }); api.add(ADDRESSES.ethereum.LUSD, balance);
+  while (true) {
+    const batch = Array.from({length: 5}, (_, j) => i + j);
+    const res = await api.multiCall({
+      target: bKeeperAddress,
+      calls: batch,
+      abi: abi["bamms"],
+      permitFailure: true
+    });
+
+    const valid = res.filter(a => a);
+    bamms.push(...valid);
+
+    if (valid.length < batch.length || !res[res.length - 1]) {
+       break;
     }
-    catch {
-      break;
-    }
+    i += batch.length;
+  }
+
+  if (bamms.length > 0) {
+    const balances = await api.multiCall({
+      target: stabilityPoolAddress,
+      calls: bamms.map(bamm => ({ params: [bamm] })),
+      abi: abi["getCompoundedLUSDDeposit"]
+    });
+
+    balances.forEach(balance => {
+      api.add(ADDRESSES.ethereum.LUSD, balance);
+    });
   }
 }
 
