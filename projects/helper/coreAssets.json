@@ -1662,6 +1662,8 @@
     "USDTbs": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/871jbn9unTavWsAe83f2Ma9GJWSv6BKsyWYLiQ6z3Pva",
     "WBTC": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/7omXa4gryZ5NiBmLep7JsTtTtANCVKXwT9vbN91aS1br",
     "USDC": "0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1",
+    "USDC_Circle": "0xe15fC38F6D8c56aF07bbCBe3BAf5708A2Bf42392",
+    "USDT0": "0x9151434b16b9763660705744891fA906F660EcC5",
     "USDT": "0xB75D0B03c06A926e488e2659DF1A861F860bD3d1"
   },
   "op_bnb": {
