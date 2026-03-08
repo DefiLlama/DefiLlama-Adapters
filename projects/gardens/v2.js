@@ -4,7 +4,6 @@ const { gql } = require('graphql-request');
 const CV_STRATEGY_ABI = {
   getPoolAmount: 'function getPoolAmount() view returns (uint256)',
 };
-const COMMON_POOL_STRATEGY = '0x96dee4849a6ab9e51ae36712794318001515dc91';
 
 const subgraphs = {
   polygon: 'https://api.studio.thegraph.com/query/102093/gardens-v2---polygon/version/latest/',
@@ -66,17 +65,6 @@ async function tvl(api) {
     }
   });
 
-  const commonPoolIndex = api.chain === 'xdai'
-    ? strategies.findIndex(s => s.id?.toLowerCase() === COMMON_POOL_STRATEGY)
-    : -1;
-  if (commonPoolIndex !== -1) {
-    const { id, token } = strategies[commonPoolIndex];
-    const [tokenBalance] = await api.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: [{ target: token, params: [id] }],
-      permitFailure: true,
-    });
-  }
 
   const communityCalls = communities
     .filter(c => c.garden?.id)
