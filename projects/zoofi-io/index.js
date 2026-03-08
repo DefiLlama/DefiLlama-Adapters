@@ -98,9 +98,11 @@ const lvts = {
 
 async function tvlLVT(api) {
   const lvtConfigs = lvts[api.chain] || []
-  for (const lvt of lvtConfigs) {
-    const decimals = await api.call({ abi: 'erc20:decimals', target: lvt.vt })
-    const oneVT = BigNumber(10).pow(decimals).toString()
+  if (!lvtConfigs.length) return;
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: lvtConfigs.map(i => i.vt) })
+
+  await Promise.all(lvtConfigs.map(async (lvt, i) => {
+    const oneVT = BigNumber(10).pow(decimals[i]).toString()
 
     const [totalSupply, unitPrice] = await api.batchCall([
       { abi: 'erc20:totalSupply', target: lvt.vt },
@@ -108,7 +110,7 @@ async function tvlLVT(api) {
     ])
 
     api.add(lvt.asset, BigNumber(totalSupply).times(unitPrice).div(oneVT).toFixed(0))
-  }
+  }))
 }
 
 module.exports = {
