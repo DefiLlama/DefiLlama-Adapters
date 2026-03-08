@@ -6,7 +6,7 @@ const STAKING = '0x01F82039810f18F703F4c8b943940ce04Fa00C78'
 
 const UNISWAP_V4_POOL_KEYS = {
   USDT: '0xa41edf5a64964f2dea4b59b3d5a19cbf2198ef0e20b5309fdbb265d3a234c390',
-  USDC: '0x1cd5e60cdf2c29fe8afca39b047720d562575a6f398b5cb822e533d8fdc2ff61',
+
 }
 
 // Uniswap v4'te havuz bazlı bakiyeler pool address yerine manager altında tutulur.
@@ -14,7 +14,7 @@ const UNISWAP_V4_POOL_KEYS = {
 // TODO: Bu adresleri canlıdaki doğru custody/holder kontratlarıyla güncelleyin.
 const TVL_HOLDER_ADDRESSES = [
   '0x28e2Ea090877bF75740558f6BFB36A5ffeE9e9dF',
-  '0x28e2Ea090877bF75740558f6BFB36A5ffeE9e9dF',
+
 ]
 
 const erc20BalanceOfAbi = 'function balanceOf(address) view returns (uint256)'
@@ -30,7 +30,6 @@ async function liquidityPoolTvl(api) {
   for (const holder of TVL_HOLDER_ADDRESSES) {
     calls.push({ target: BCHEM, params: [holder] })
     calls.push({ target: USDT, params: [holder] })
-    calls.push({ target: USDC, params: [holder] })
   }
 
   const balances = await api.multiCall({
@@ -41,7 +40,6 @@ async function liquidityPoolTvl(api) {
   for (let i = 0; i < balances.length; i += 3) {
     api.add(BCHEM, balances[i])
     api.add(USDT, balances[i + 1])
-    api.add(USDC, balances[i + 2])
   }
 }
 
@@ -61,7 +59,7 @@ async function stakingTvl(api) {
 
 module.exports = {
   methodology:
-    `TVL, BSC üzerinde on-chain olarak hesaplanır. Uniswap v4 pool key'leri: USDT=${UNISWAP_V4_POOL_KEYS.USDT}, USDC=${UNISWAP_V4_POOL_KEYS.USDC}. Swap/Liquidity TVL: ilgili pool'lara ait holder adreslerindeki BCHEM/USDT/USDC bakiyeleri toplamı. Staking TVL: staking kontratındaki totalStaked + rewardVault BCHEM.`,
+    `TVL, BSC üzerinde on-chain olarak hesaplanır. Uniswap v4 pool key'leri: USDT=${UNISWAP_V4_POOL_KEYS.USDT} . Swap/Liquidity TVL: ilgili pool'lara ait holder adreslerindeki BCHEM/USDT/USDC bakiyeleri toplamı. Staking TVL: staking kontratındaki totalStaked + rewardVault BCHEM.`,
   bsc: {
     tvl: liquidityPoolTvl,
     staking: stakingTvl,
