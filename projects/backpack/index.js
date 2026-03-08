@@ -54,7 +54,6 @@ CHAINS.forEach((chain) => {
     tvl: async (api) => {
       const config = await _getConfig()
       const entry = config[chain]
-      console.log(entry)
       if (!entry) return {}
 
       const tokens = [

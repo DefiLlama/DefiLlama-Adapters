@@ -32,8 +32,6 @@ async function getActiveTvl() {
 async function tvl(api) {
     const activeTvl = await getActiveTvl();
   
-    console.log("Raw TVL from contract (u128):", activeTvl.toString()); //exact value
-  
     if (activeTvl === 0n) throw new Error("TVL is zero");
   
     const normalized = Number(activeTvl) / 1e7;
