@@ -31,7 +31,7 @@
     "@supercharge/promise-pool": "^2.1.0",
     "axios": "^1.6.5",
     "base-x": "^5.0.1",
-    "bignumber.js": "^9.3.1",
+    "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
     "bn.js": "^5.2.1",
     "borsh": "^0.7.0",
