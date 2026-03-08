@@ -128,7 +128,7 @@ async function sumTokens(options) {
     }
 
     switch (chain) {
-      case 'cardano':
+      case 'cardano': break
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;
     }
