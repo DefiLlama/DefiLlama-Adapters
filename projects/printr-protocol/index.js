@@ -50,10 +50,11 @@ async function tvl(api) {
     calls: tokens.map(t => ({ target: PRINTR_CONTRACT, params: [t.address] })),
   })
 
-  // Sum reserves by base pair token
-  // Each curve.reserve is the amount of basePair token locked
+  // Sum reserves by base pair token, excluding graduated tokens
+  // completionThreshold === 0 means the token has graduated and its liquidity
+  // has been moved to a DEX — we must not count it to avoid double-counting
   curves.forEach((curve) => {
-    if (curve && curve.reserve > 0n) {
+    if (curve && curve.reserve > 0n && curve.completionThreshold > 0n) {
       api.add(curve.basePair, curve.reserve)
     }
   })
