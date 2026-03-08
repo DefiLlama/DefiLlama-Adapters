@@ -55,13 +55,14 @@ async function borrowed(api) {
   });
   const loanIds = Array.isArray(loanIdsRaw) ? loanIdsRaw : [];
 
+  const loans = await api.multiCall({
+    abi: abi.loans,
+    target: contract,
+    calls: loanIds,
+  });
+
   let sumLoans = BigInt(0);
-  for (const id of loanIds) {
-    const { loanAmount, status } = await api.call({
-      abi:    abi.loans,
-      target: contract,
-      params: [id],
-    });
+  for (const { loanAmount, status } of loans) {
     // 3) Only sum loans that are active (status 1)
     if (status == 1) {
       // Add to the total sum of loans
