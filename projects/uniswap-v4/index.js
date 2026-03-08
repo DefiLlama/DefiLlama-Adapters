@@ -70,6 +70,7 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+      throw new Error('Fix the bad token')
       if (!getEnv('IS_RUN_FROM_CUSTOM_JOB')) throw new Error('This job is not meant to be run directly, please use the custom job feature')
 
       let compressType
