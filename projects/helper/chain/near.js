@@ -2,6 +2,7 @@ const ADDRESSES = require('../coreAssets.json')
 const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
+const { sliceIntoChunks } = require('../utils')
 
 function transformAddress(addr) {
   const bridgedAssetIdentifier = ".factory.bridge.near";
@@ -151,10 +152,38 @@ function sumSingleBalance(balances, token, balance) {
 
 async function sumTokens({ balances = {}, owners = [], tokens = []}) {
   tokens = tokens.filter(i => i !== 'aurora')
-  await Promise.all(owners.map(i => addTokenBalances(tokens, i, balances)))
-  const bals = await Promise.all(owners.map(view_account))
-  const nearBalance = bals.reduce((a,i) => a + (i.amount/1e24), 0)
-  sdk.util.sumSingleBalance(balances,'coingecko:near',nearBalance)
+
+  const tasks = []
+
+  // Add ft_balance_of tasks
+  for (const owner of owners) {
+    for (const token of tokens) {
+      tasks.push(async () => {
+        const balance = await getTokenBalance(token, owner)
+        sumSingleBalance(balances, token, balance)
+      })
+    }
+  }
+
+  // Add view_account tasks
+  for (const owner of owners) {
+    tasks.push(async () => {
+      const account = await view_account(owner)
+      const nearBalance = account.amount / 1e24
+      sdk.util.sumSingleBalance(balances, 'coingecko:near', nearBalance)
+    })
+  }
+
+  // Limit concurrency to avoid rate limiting
+  // Note: JSON-RPC batching is not supported by public Near RPCs (returns 400),
+  // so we use concurrency control to optimize throughput while maintaining stability.
+  const concurrency = 50
+  const chunks = sliceIntoChunks(tasks, concurrency)
+
+  for (const chunk of chunks) {
+    await Promise.all(chunk.map(task => task()))
+  }
+
   return balances
 }
 
