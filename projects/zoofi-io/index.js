@@ -10,27 +10,42 @@ async function tvl(api) {
 
   const tokensAndOwners = []
 
-  for (const zooProtocol of protocols) {
-    const assets = await api.call({ abi: 'address[]:assetTokens', target: zooProtocol })
+  const assetsArray = await api.multiCall({ abi: 'address[]:assetTokens', calls: protocols })
+  const vaultCalls = []
+  const assetsToAlign = []
 
-    const vaults = (await api.multiCall({ abi: 'function getVaultAddresses(address) view returns (address[])', calls: assets, target: zooProtocol })).flat()
-    const assetBals = await api.multiCall({ abi: 'uint256:assetBalance', calls: vaults, permitFailure: true })
-    api.add(assets, assetBals.map(i => i ?? 0))
-
-    // Add vault balances
-    vaults.forEach((vault, i) => tokensAndOwners.push([assets[i], vault]))
-
-    // Add redeem pool balances
-    const epochInfoAbi = 'function epochInfoById(uint256 epochId) public view returns (uint256 epochId, uint256 startTime, uint256 duration, address redeemPool, address stakingBribesPool, address adhocBribesPool)'
-    const epochInfos = await api.fetchList({ lengthAbi: 'epochIdCount', itemAbi: epochInfoAbi, targets: vaults, startFromOne: true, groupedByInput: true })
-
-    epochInfos.forEach((infos, i) => {
-      const asset = assets[i]
-      infos.forEach(({ redeemPool }) => {
-        tokensAndOwners.push([asset, redeemPool])
-      })
+  assetsArray.forEach((assets, i) => {
+    assets.forEach(asset => {
+      vaultCalls.push({ target: protocols[i], params: asset })
+      assetsToAlign.push(asset)
     })
-  }
+  })
+
+  const vaultsArray = await api.multiCall({ abi: 'function getVaultAddresses(address) view returns (address[])', calls: vaultCalls })
+  const vaults = vaultsArray.flat()
+  const flattenedAssetsToAlign = []
+  vaultsArray.forEach((vaultList, i) => {
+    vaultList.forEach(() => {
+      flattenedAssetsToAlign.push(assetsToAlign[i])
+    })
+  })
+
+  const assetBals = await api.multiCall({ abi: 'uint256:assetBalance', calls: vaults, permitFailure: true })
+  api.add(flattenedAssetsToAlign, assetBals.map(i => i ?? 0))
+
+  // Add vault balances
+  vaults.forEach((vault, i) => tokensAndOwners.push([flattenedAssetsToAlign[i], vault]))
+
+  // Add redeem pool balances
+  const epochInfoAbi = 'function epochInfoById(uint256 epochId) public view returns (uint256 epochId, uint256 startTime, uint256 duration, address redeemPool, address stakingBribesPool, address adhocBribesPool)'
+  const epochInfos = await api.fetchList({ lengthAbi: 'epochIdCount', itemAbi: epochInfoAbi, targets: vaults, startFromOne: true, groupedByInput: true })
+
+  epochInfos.forEach((infos, i) => {
+    const asset = flattenedAssetsToAlign[i]
+    infos.forEach(({ redeemPool }) => {
+      tokensAndOwners.push([asset, redeemPool])
+    })
+  })
 
   return api.sumTokens({ tokensAndOwners })
 }
