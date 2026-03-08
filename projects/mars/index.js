@@ -55,7 +55,9 @@ async function tvl(api) {
     const assetDenoms = assetParams.map((asset) => asset.denom);
 
     // fetch pool infos from the poolsApi based on chain
-    const poolInfos = await getConfig(`mars-protocol/${chain}-pools`, poolsApis[chain] + '?x-apikey=' + getEnv('MARS_API_KEY'));
+    const apiKey = getEnv('MARS_API_KEY');
+    if (!apiKey) throw new Error('MARS_API_KEY environment variable is required');
+    const poolInfos = await getConfig(`mars-protocol/${chain}-pools`, poolsApis[chain] + '?x-apikey=' + apiKey);
 
     // query the deposited amount for each asset and add it to the depositCoins array
     await Promise.all(
