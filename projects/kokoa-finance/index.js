@@ -65,22 +65,26 @@ const fetchCollateral = async (api) => {
 const fetchPool2 = async (api) => {
   const decimal = 18;
 
-  let klayswapPool2Tvl = BigNumber(0);
-  for (let pool of KLAYSWAP_POOLS) {
-    const  value = await api.call({
+  const [klayswapValues, kokonutValues] = await Promise.all([
+    api.multiCall({
       target: HELPER_ADDR,
-      params: [pool[`address`]],
+      calls: KLAYSWAP_POOLS.map(pool => pool[`address`]),
       abi: ABI.abi.getKlayswapLpFarmTVL
-    })
-    klayswapPool2Tvl = klayswapPool2Tvl.plus(value);
-  }
-  let kokonutPool2Tvl = BigNumber(0);
-  for (let pool of KOKONUT_POOLS) {
-    const  value = await api.call({
+    }),
+    api.multiCall({
       target: HELPER_ADDR,
-      params: [pool[`address`]],
+      calls: KOKONUT_POOLS.map(pool => pool[`address`]),
       abi: ABI.abi.getKokonutLpFarmTVL
     })
+  ])
+
+  let klayswapPool2Tvl = BigNumber(0);
+  for (const value of klayswapValues) {
+    klayswapPool2Tvl = klayswapPool2Tvl.plus(value);
+  }
+
+  let kokonutPool2Tvl = BigNumber(0);
+  for (const value of kokonutValues) {
     kokonutPool2Tvl = kokonutPool2Tvl.plus(value);
   }
   const totalPool2 = klayswapPool2Tvl.plus(kokonutPool2Tvl).dividedBy(BigNumber(10 ** (decimal * 2)));
