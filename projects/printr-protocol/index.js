@@ -61,7 +61,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the sum of reserves locked in active Printr bonding curves. Each curve holds a base pair token (e.g., USDC, WETH) that users deposit to buy Telecoins. Graduated tokens (curves with reserve=0) have their liquidity in DEX pools, tracked separately.',
+  methodology: 'TVL is the sum of reserves locked in active Printr bonding curves. Each curve holds a base pair token (e.g., USDC, WETH) that users deposit to buy Telecoins. Graduated tokens (curves with completionThreshold=0) are excluded because their liquidity has moved to DEX pools and would otherwise be double-counted.',
   timetravel: false,
   isHeavyProtocol: true,
 }
