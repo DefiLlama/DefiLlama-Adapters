@@ -9,9 +9,7 @@ const UNISWAP_V4_POOL_KEYS = {
 
 }
 
-// Uniswap v4'te havuz bazlı bakiyeler pool address yerine manager altında tutulur.
-// Bu nedenle adapter, protokolün gerçek varlıklarını tutan holder adreslerini okur.
-// TODO: Bu adresleri canlıdaki doğru custody/holder kontratlarıyla güncelleyin.
+
 const TVL_HOLDER_ADDRESSES = [
   '0x28e2Ea090877bF75740558f6BFB36A5ffeE9e9dF',
 
@@ -21,10 +19,7 @@ const erc20BalanceOfAbi = 'function balanceOf(address) view returns (uint256)'
 const totalStakedAbi = 'function totalStaked() view returns (uint256)'
 const rewardVaultAbi = 'function rewardVault() view returns (uint256)'
 
-/**
- * Swap/Liquidity TVL:
- * Uniswap v4 havuzlarına ait holder adreslerindeki BCHEM/USDT/USDC bakiyeleri toplanır.
- */
+
 async function liquidityPoolTvl(api) {
   const calls = []
   for (const holder of TVL_HOLDER_ADDRESSES) {
@@ -37,7 +32,7 @@ async function liquidityPoolTvl(api) {
     calls,
   })
 
-  for (let i = 0; i < balances.length; i += 3) {
+  for (let i = 0; i < balances.length; i += 2) {
     api.add(BCHEM, balances[i])
     api.add(USDT, balances[i + 1])
   }
