@@ -13,11 +13,8 @@ async function tvl({ timestamp }) {
     return acc + BigInt(token_pair.satoshis)
   }, BigInt(0));
 
-  // TODO: Map tokens to CoinGecko identifiers.
-  // Currently, no tokens on the Bitcoin Cash are on CoinGecko.
-
   return {
-    'bitcoin-cash': Number(total_sats / 100000000n),
+    'bitcoin-cash': Number(total_sats) * 2 / 1e8,
   }
 }
 
