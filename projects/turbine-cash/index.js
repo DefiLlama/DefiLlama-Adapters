@@ -1,4 +1,4 @@
-const { sumTokensExport } = require('../helper/solana')
+const { getTokenSupplies } = require('../helper/solana')
 
 // Turbine — Solana privacy protocol using zSOL (wrapped SOL)
 // zSOL mint: zso1EF4k8HNteye34aD8w2Fm6pYVWMDgkgWCUrMLip1
@@ -7,9 +7,6 @@ const { sumTokensExport } = require('../helper/solana')
 module.exports = {
   methodology: 'Circulating supply of zSOL tokens, each backed 1:1 by SOL deposited into Turbine privacy pools',
   solana: {
-    tvl: sumTokensExport({
-      tokens: ['zso1EF4k8HNteye34aD8w2Fm6pYVWMDgkgWCUrMLip1'],
-      useDefaultCoreAssets: false,
-    }),
+    tvl: getTokenSupplies(['zso1EF4k8HNteye34aD8w2Fm6pYVWMDgkgWCUrMLip1']),
   },
 }
