@@ -11,7 +11,6 @@ const TOKENS = {
   bsc: [ADDRESSES.bsc.USDC, ADDRESSES.bsc.ETH],
   polygon: [ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDC_CIRCLE],
   optimism: [ADDRESSES.optimism.USDC_CIRCLE, ADDRESSES.optimism.WETH_1],
-  monad: [ADDRESSES.monad.USDC],
   hyperliquid: [ADDRESSES.hyperliquid.USDC],
   unichain: [ADDRESSES.unichain.USDC, ADDRESSES.unichain.WETH],
 };
