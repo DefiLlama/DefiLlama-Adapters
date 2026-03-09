@@ -56,9 +56,10 @@ async function tvl(api) {
   const strategyBalances = await api.multiCall({ abi: CV_STRATEGY_ABI.getPoolAmount, calls: strategyCalls, permitFailure: true });
 
   strategyBalances.forEach((balance, i) => {
-    if (BigInt(balance || 0) > 0n) {
-      const token = getAddress(strategies[i].token);
-      api.add(token, balance);
+    const token = strategies[i].token;
+    if(token && BigInt(balance || 0) > 0n) {
+      const tokenAddress = getAddress(token);
+      api.add(tokenAddress, balance);
     }
   });
 
