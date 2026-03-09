@@ -2835,6 +2835,9 @@ const uniV2Configs = {
   'zkevmswap': {
     polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
   },
+  'velox': {
+    base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
