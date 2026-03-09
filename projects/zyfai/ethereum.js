@@ -32,12 +32,14 @@ const AAVE_POOLS = {
     'f(x) Protocol Re7 USDC': '0x4F460bb11cf958606C69A963B4A17f9DaEEea8b6',
     'Avantgarde USDC Conservative': '0xeBBaE8CfAbB0092d5B32f00EBeE0c8139d24dDcd',
     'Coinshift USDC': '0x7204B7Dbf9412567835633B6F00C3Edc3a8D6330',
+    'kpk ETH Yield': '0xc88eFFD6e74D55c78290892809955463468E982A'
   };
   
   // Fluid (Ethereum mainnet)
   const FLUID_POOLS = {
     USDC: '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // fUSDC
     WETH: '0x90551c1795392094FE6D29B758EcCD233cFAa260', // fWETH
+    'WETH - Leveraged': '0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78',
   };
   
   // Dolomite (Ethereum mainnet)
