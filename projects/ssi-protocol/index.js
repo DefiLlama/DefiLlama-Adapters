@@ -47,7 +47,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL is calculated by multiplying each SSI token's getTokenset() per-unit composition by its totalSupply. Assets are held in centralized custody (Fireblocks, Coinbase etc.), tracked via on-chain accounting.",
+    "TVL is calculated from each SSI token's getTokenset() composition multiplied by totalSupply. Because custody is off-contract, the adapter tracks only the ERC-20/SPL legs exposed by on-chain accounting; native-only BTC/DOGE positions are currently excluded because no token address is available to price them.",
   ethereum: { tvl },
   bsc: { tvl },
   solana: { tvl },
