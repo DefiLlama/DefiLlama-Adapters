@@ -39,7 +39,7 @@ async function tvl(api) {
       if (!chainLabel || chainLabel !== api.chain) return;
       if (!token.addr || token.addr === "") return;
 
-      const totalAmount = (BigInt(token.amount) * supply) / BigInt(10 ** dec);
+      const totalAmount = (BigInt(token.amount) * supply) / (BigInt(10) ** BigInt(dec));
       if (totalAmount > 0n) api.add(token.addr, totalAmount.toString());
     });
   });
