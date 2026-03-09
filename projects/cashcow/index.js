@@ -32,12 +32,9 @@ module.exports = {
     staking: stakingPools,
     ...compoundExports(comptroller,
       cBNB,
-      WBNBEquivalent)
+      WBNBEquivalent,
+      { isInsolvent: true })
   },
   methodology:
     "We count liquidity on the lending markets same as compound; and the Pools (LP Piars) through Chef Contract",
 };
-
-// NOTE: borrowed function zeroed out due to bad debt
-// The compoundExports helper would normally calculate borrowed amounts, but we override it to return empty object
-module.exports.bsc.borrowed = () => ({})

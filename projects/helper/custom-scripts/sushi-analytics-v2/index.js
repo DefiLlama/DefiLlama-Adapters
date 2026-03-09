@@ -7,7 +7,7 @@ process.on('uncaughtException', function (err) {
 })
 
 const adaptersDir = '../../../'
-const { bulky, hourlyRun } = require('../../sushi-server/adapterMapping')
+const { bulky, hourlyRun } = require('./adapterMapping')
 const { readFromElastic, writeToElastic } = require('./cache')
 const sdk = require("@defillama/sdk");
 const { PromisePool } = require('@supercharge/promise-pool')
@@ -21,7 +21,7 @@ const error = console.error
 
 async function updateProject({ tvlFunction, project, chain, tvlKey }) {
   const existingData = await readFromElastic({ tvlKey, timestamp: time(), range: 8 * 3600, project, throwIfMissing: false })
-  if (existingData) {
+  if (existingData && !process.env.RUN_ONLY) {
     log('[skipped]', project, chain, 'data already exists in elastic')
     return;
   }

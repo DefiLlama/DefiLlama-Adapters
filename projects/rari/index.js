@@ -50,7 +50,7 @@ module.exports = {
     tvl,
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
   },
-  arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716' }),
+  arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', isInsolvent: true }),
   hallmarks: [
     // ['2022-04-30', "FEI hack"],
     ['2022-04-10', "ICHI sell-off"],
@@ -59,5 +59,4 @@ module.exports = {
   ]
 }
 
-module.exports.arbitrum.borrowed = () => ({})
 module.exports.ethereum.borrowed = () => ({})

@@ -1,6 +1,7 @@
 const { ibcChains, getUniqueAddresses } = require('./tokenMapping')
 const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
+const { svmChains, svmChainsSet, } = require('./svmChainConfig')
 const sdk = require('@defillama/sdk')
 const { RateLimiter } = require("limiter");
 
@@ -41,6 +42,10 @@ const helpers = {
   "radixdlt": require("./chain/radixdlt"),
   "stellar": require("./chain/stellar"),
 }
+
+svmChains.forEach(chain => {
+  helpers[chain] = helpers.solana
+})
 
 
 // some chains support both evm & non-evm, this is to handle if address provided is not evm
@@ -117,9 +122,13 @@ async function sumTokens(options) {
   if (ibcChains.includes(chain) && nonEvmOwnerFound) helper = helpers.cosmos
 
   if (helper) {
+
+    if (svmChainsSet.has(chain)) {
+      return helper.sumTokens2(options)
+    }
+
     switch (chain) {
-      case 'cardano':
-      case 'solana': return helper.sumTokens2(options)
+      case 'cardano': return helper.sumTokens2(options);
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;
     }
@@ -161,7 +170,7 @@ async function _getRippleBalance(account) {
   const body = { "method": "account_info", "params": [{ account }] }
   await sleep(500);
   const res = await post('https://s1.ripple.com:51234', body)
-  if (res.result.error === 'actNotFound') return 0
+  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return 0
   return res.result.account_data.Balance / 1e6
 }
 

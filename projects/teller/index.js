@@ -19,6 +19,8 @@ const getData = async (api) => {
   const earnPools = Object.values(earnData[api.chainId] || {}).flatMap(p => p.map(x => x.pool_address))
 
   const pools = [...new Set([...lendPools, ...earnPools])]
+  .filter(id => /^0x[0-9a-fA-F]{40}$/.test(id))  // filter bad addresses from API
+
 
   const [principalTokens, totalLendeds, totalRepaids] = await Promise.all([
     api.multiCall({ calls: pools, abi: abis.principalToken }),

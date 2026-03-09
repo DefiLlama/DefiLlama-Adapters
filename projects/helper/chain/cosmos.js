@@ -41,7 +41,7 @@ const endPoints = {
   gravitybridge: "https://gravity-api.polkachu.com",
   // sei: "https://sei-api.polkachu.com",
   sei: "https://rest.sei-apis.com",
-  aura: "https://lcd.aura.network",
+  aura: "https://aura-api.polkachu.com/",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
   nolus: "https://lcd.nolus.network",
