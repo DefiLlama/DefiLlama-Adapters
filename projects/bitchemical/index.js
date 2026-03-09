@@ -9,6 +9,7 @@ const UNISWAP_V4_POOL_KEYS = {
  
 }
 
+
 const TVL_HOLDER_ADDRESSES = [
   '0x28e2Ea090877bF75740558f6BFB36A5ffeE9e9dF',
 
@@ -17,6 +18,7 @@ const TVL_HOLDER_ADDRESSES = [
 const erc20BalanceOfAbi = 'function balanceOf(address) view returns (uint256)'
 const totalStakedAbi = 'function totalStaked() view returns (uint256)'
 const rewardVaultAbi = 'function rewardVault() view returns (uint256)'
+
 
 async function liquidityPoolTvl(api) {
   const calls = []
@@ -52,13 +54,11 @@ async function stakingTvl(api) {
   api.add(BCHEM, rewardVault)
 }
 
- module.exports = {
--  methodology:
--    ,
-+  methodology: 'Staking TVL includes BCHEM tokens locked in the Bitchemical staking contract.',
-   bsc: {
--    tvl: liquidityPoolTvl,
-     staking: stakingTvl,
-   },
- }
+module.exports = {
+  methodology:
+    `TVL, BSC üzerinde on-chain olarak hesaplanır. Uniswap v4 pool key'leri: USDT=${UNISWAP_V4_POOL_KEYS.USDT}. Swap/Liquidity TVL: ilgili pool'lara ait holder adreslerindeki BCHEM/USDT/USDC bakiyeleri toplamı. Staking TVL: staking kontratındaki totalStaked + rewardVault BCHEM.`,
+  bsc: {
+    tvl: liquidityPoolTvl,
+    staking: stakingTvl,
+  },
 }
