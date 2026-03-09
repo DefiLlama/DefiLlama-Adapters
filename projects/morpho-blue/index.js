@@ -139,14 +139,14 @@ const config = {
     morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
     fromBlock: 450759,
   },
-  monad: {
-    morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
-    fromBlock: 31907457,
-  },
-  stable: {
-    morphoBlue: "0xa40103088A899514E3fe474cD3cc5bf811b1102e",
-    fromBlock: 2348260,
-  },
+  // monad: {
+  //   morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
+  //   fromBlock: 31907457,
+  // },
+  // stable: {
+  //   morphoBlue: "0xa40103088A899514E3fe474cD3cc5bf811b1102e",
+  //   fromBlock: 2348260,
+  // },
   linea: {
     morphoBlue: "0x6B0D716aC0A45536172308e08fC2C40387262c9F",
     fromBlock: 25072608,
@@ -155,10 +155,10 @@ const config = {
     morphoBlue: "0xF4346F5132e810f80a28487a79c7559d9797E8B0",
     fromBlock: 52378788,
   },
-  citrea: {
-    morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
-    fromBlock: 2528230,
-  },
+  // citrea: {
+  //   morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
+  //   fromBlock: 2528230,
+  // },
 }
 
 const eventAbis = {
@@ -196,10 +196,14 @@ const tvl = async (api) => {
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
   await sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 
-  // Subtract idle market supply (totalBorrow == 0)
+  // Subtract idle market supply (totalBorrow == 0) only for tokens included in sumTokens2
+  const blackListLower = new Set(blackList.map(b => b.toLowerCase()))
+  const includedTokens = new Set(tokens.map(t => t.toLowerCase()).filter(t => !blackListLower.has(t)))
   marketDatas.forEach((data, i) => {
     if (+data.totalBorrowAssets === 0 && +data.totalSupplyAssets > 0) {
-      api.add(marketInfos[i].loanToken, -data.totalSupplyAssets)
+      if (includedTokens.has(marketInfos[i].loanToken.toLowerCase())) {
+        api.add(marketInfos[i].loanToken, -data.totalSupplyAssets)
+      }
     }
   })
 }
