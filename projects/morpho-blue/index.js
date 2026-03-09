@@ -198,16 +198,17 @@ const tvl = async (api) => {
 }
 
 const borrowed = async (api) => {
-  const { morphoBlue } = config[api.chain]
+  const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
+  const blackListLower = blackList.map(b => b.toLowerCase())
 
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
-    if (collateralToken.toLowerCase() !== '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') {
-      api.add(loanToken, data.totalBorrowAssets);
-    }
+    if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
+    if (blackListLower.includes(loanToken.toLowerCase())) return;
+    api.add(loanToken, data.totalBorrowAssets);
   });
 }
 
