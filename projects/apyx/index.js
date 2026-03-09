@@ -6,7 +6,7 @@ module.exports = {
     tvl: async (api) => {
       const apxUSD = '0x98A878b1Cd98131B271883B390f68D2c90674665'
       const supply = await api.call({ abi: 'erc20:totalSupply', target: apxUSD })
-      api.addCGToken('usd-coin', Number(BigInt(supply) / BigInt(1e18)))
+      api.addCGToken('usd-coin', supply / 1e18)
     },
   },
 }
