@@ -1,32 +1,12 @@
 const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
-const { graphQuery, } = require('../helper/http')
-const { sleep, log } = require('../helper/utils')
 const v1Data = require('./v1Data.json')
 
-let allV1Data
 const chainIds = { ethereum: 1, bsc: 56, polygon: 137, }
 const chains = Object.keys(chainIds)
-const waitTime = 301
 
 async function getAllV1Data() {
   return v1Data
-  // if (!allV1Data) allV1Data = _getAllV1Data()
-  // return allV1Data
-
-  async function _getAllV1Data() {
-    const data = {}
-    for (const chain of chains) {
-      const chainId = chainIds[chain]
-      const { allPools } = await graphQuery(GRAPH_ENDPOINT, QUERY, { where: { chainId } })
-      data[chain] = allPools
-      if (chains.indexOf(chain) !== chains.length - 1) {
-        log('fetched data for', chain, allPools.total_pools, '(waiting', waitTime, 'seconds before next call)')
-        await sleep(waitTime * 1e3)
-      }
-    }
-    return data
-  }
 }
 
 const liquidityContract = {
@@ -46,22 +26,6 @@ const ORO = {
   ethereum: "0xc3eb2622190c57429aac3901808994443b64b466", // ethereum
   bsc: "0x9f998d62B81AF019E3346AF141f90ccCD679825E", //BSC
 };
-
-const GRAPH_ENDPOINT = "https://graph.unifarm.co/graphql";
-
-const QUERY = `
-query($where: PoolsGroupWhereClause!) {
-  allPools(where: $where) {
-    pools {
-      cohort {
-        cohortAddress
-        proxies
-        tokens
-      }
-    }
-  }
-}
-`;
 
 const v2Query = `
 query MyQuery {

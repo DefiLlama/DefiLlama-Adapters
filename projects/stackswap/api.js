@@ -1,8 +1,8 @@
 const { call } = require('../helper/chain/stacks-api')
 const { transformDexBalances } = require('../helper/portedTokens')
 const { getCache, setCache, } = require('../helper/cache')
-const { sleep } = require('../helper/utils')
-const sdk = require('@defillama/sdk')
+// const { sleep } = require('../helper/utils')
+// const sdk = require('@defillama/sdk')
 
 const factory = 'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.stackswap-swap-v5k'
 
@@ -17,6 +17,7 @@ async function tvl(api) {
   if (!cache.pairData) cache.pairData = []
   for (let i = cache.pairData.length +1; i <= pairCount; i++) {
     const pair = await call({ target: factory, abi: 'get-pair-contracts', inputArgs: [{ type: 'number', value: i }] })
+    api.log(`stackswap: ${i}/${pairCount}`)
     cache.pairData.push(pair)
   }
 
@@ -31,8 +32,8 @@ async function tvl(api) {
       token0Bal: +pairData.value['balance-x'].value + +pairData.value['fee-balance-x'].value,
       token1Bal: +pairData.value['balance-y'].value + +pairData.value['fee-balance-y'].value,
     })
-    sdk.log(`stackswap: ${++i}/${pairCount}`) 
-    await sleep(2100)
+    api.log(`stackswap: ${++i}/${pairCount}`) 
+    // await sleep(2100)
   }
   return transformDexBalances({ chain: 'stacks', data})
 }

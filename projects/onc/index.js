@@ -33,7 +33,7 @@ module.exports = {
         ADDRESSES.bsc.BUSD, // BUSD
         ADDRESSES.bsc.USDC, // USDC
         ADDRESSES.bsc.USDT, // USDT
-        "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", // DAI
+        ADDRESSES.bsc.DAI, // DAI
       ]
     }),
   },

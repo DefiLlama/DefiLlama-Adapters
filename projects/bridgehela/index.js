@@ -10,5 +10,12 @@ module.exports = {
   },
   polygon: {
     tvl: sumTokensExport({ owner:'0x700d0c48926af78c2c51f08c667f27ce6548386b', tokens: [ADDRESSES.polygon.USDT,ADDRESSES.polygon.USDC] })
+  },
+  hela: {
+    tvl: async (api) => {
+      const totalSupply = await api.multiCall({ abi: 'erc20:totalSupply', calls: [ADDRESSES.hela.hUSDC,ADDRESSES.hela.hUSDT] })
+      api.add(ADDRESSES.hela.hUSDC ,totalSupply[0])
+      api.add(ADDRESSES.hela.hUSDT ,totalSupply[1])
+    }
   }
 }

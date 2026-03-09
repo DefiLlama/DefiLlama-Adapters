@@ -1,7 +1,14 @@
 const { ibcChains, getUniqueAddresses } = require('./tokenMapping')
 const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
+const { svmChains, svmChainsSet, } = require('./svmChainConfig')
 const sdk = require('@defillama/sdk')
+const { RateLimiter } = require("limiter");
+
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const helpers = {
   "eos": require("./chain/eos"),
@@ -33,7 +40,12 @@ const helpers = {
   "bittensor": require("./chain/bittensor"),
   "fuel": require("./chain/fuel"),
   "radixdlt": require("./chain/radixdlt"),
+  "stellar": require("./chain/stellar"),
 }
+
+svmChains.forEach(chain => {
+  helpers[chain] = helpers.solana
+})
 
 
 // some chains support both evm & non-evm, this is to handle if address provided is not evm
@@ -76,7 +88,7 @@ async function sumTokens(options) {
   if (token) tokens = [token]
   if (owner) owners = [owner]
   const evmAddressExceptions = new Set(['tron', 'xdc'])
-  const nonEvmOwnerFound = !evmAddressExceptions.has(chain) &&  owners.some(o => !o.startsWith('0x'))
+  const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
 
   if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
@@ -87,7 +99,7 @@ async function sumTokens(options) {
 
   if (!isAltEvm)
     owners = getUniqueAddresses(owners, chain)
-  else 
+  else
     owners = [...new Set(owners)] // retain case sensitivity
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
@@ -107,12 +119,16 @@ async function sumTokens(options) {
   options.blacklistedTokens = blacklistedTokens
   let helper = helpers[chain] || altEVMHelper[chain]
 
-  if (ibcChains.includes(chain)) helper = helpers.cosmos
+  if (ibcChains.includes(chain) && nonEvmOwnerFound) helper = helpers.cosmos
 
   if (helper) {
+
+    if (svmChainsSet.has(chain)) {
+      return helper.sumTokens2(options)
+    }
+
     switch (chain) {
-      case 'cardano':
-      case 'solana': return helper.sumTokens2(options)
+      case 'cardano': return helper.sumTokens2(options);
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;
     }
@@ -126,6 +142,7 @@ async function sumTokens(options) {
     return balances
 
   } else if (!specialChains.includes(chain)) {
+    if (ibcChains.includes(chain)) return sumTokensEVM(options)
     throw new Error('chain handler missing!!!')
   }
 
@@ -140,15 +157,54 @@ async function sumTokens(options) {
   }
 }
 
-async function getRippleBalance(account) {
+// limit it to 3 calls every 5 seconds
+const rippleApiLimiter = new RateLimiter({ tokensPerInterval: 3, interval: 5_000 });
+const rippleApiWithLimiter = (fn, tokensToRemove = 1) => async (...args) => {
+  await rippleApiLimiter.removeTokens(tokensToRemove);
+  return fn(...args);
+}
+
+const getRippleBalance = rippleApiWithLimiter(_getRippleBalance)
+
+async function _getRippleBalance(account) {
   const body = { "method": "account_info", "params": [{ account }] }
+  await sleep(500);
   const res = await post('https://s1.ripple.com:51234', body)
-  if (res.result.error === 'actNotFound') return 0
+  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return 0
   return res.result.account_data.Balance / 1e6
+}
+
+async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
+
+  if (Array.isArray(whitelistedTokens) && whitelistedTokens.length)
+    whitelistedTokens = new Set(whitelistedTokens.map(i => i.toLowerCase()))
+  const body = {
+    "method": "account_lines",
+    "params": [{
+      account,
+      ledger_index: "validated"
+    }]
+  }
+  await sleep(500);
+  const res = await post('https://s1.ripple.com:51234', body)
+  if (res.result.error === 'actNotFound') return {}
+
+
+  // Add token balances
+  if (res.result.lines) {
+    res.result.lines.forEach(line => {
+      const tokenKey = `${line.currency}.${line.account}`
+      if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
+      api.add(tokenKey, parseFloat(line.balance))
+    })
+  }
+
+  return api.getBalances()
 }
 
 module.exports = {
   nullAddress,
   sumTokensExport,
   sumTokens,
+  addRippleTokenBalance,
 }

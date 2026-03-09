@@ -1,6 +1,3 @@
-const sdk = require("@defillama/sdk")
-const abi = require("./abi.json")
-
 // arbitrum
 const arbCrvAtricryptoBtcAddr = "0x5bA0139444AD6f28cC28d88c719Ae85c81C307a5"
 const arbCrvAtricryptoEthAddr = "0xb88C7a8e678B243a6851b9Fa82a1aA0986574631"
@@ -34,19 +31,8 @@ const opVeloWethUsdcBtcAddr = "0xa0Ea9A553cB47658e62Dee4D7b49F7c8Da234B69"
 const opVeloWethUsdcEthAddr = "0xd0f9990a611018b5b30BFE1C5433bf5bba2a9868"
 const opVeloWethUsdcUsdcAddr = "0x0F0fFF5EA56b0eA2246A926F13181e33Be9FbAEA"
 const opVeloWethSethUsdcAddr = "0xcba7864134e1A5326b817676ad5302A009c84d68"
-// const opUniUsdcDaiAddr = "0xAb736E1D68f3A51933E0De23CbC6c1147d0C2934"
 const opCrvPengAddr = "0x68ca3a3BBD306293e693871E45Fe908C04387614"
 const opCrvSethPengAddr = "0x98f82ADA10C55BC7D67b92d51b4e1dae69eD0250"
-
-// harmony
-// const oneCrv3poolBtcAddr = "0x12CEf50b6a6dDBeC998353724180184157a685a7"
-// const oneCrv3poolEthAddr = "0xb6f8747Ab388087692f21FE8524DE5c07f6C7185"
-
-// avalanche
-// const avaxCrv3poolBtcAddr = "0x2510E5054eeEbED40C3C580ae3241F5457b630D9"
-// const avaxCrv3poolEthAddr = "0xFAcB839BF8f09f2e7B4b6C83349B5bbFD62fd659"
-// const avaxCrv3poolGohmAddr = "0x4d3e58DAa8233Cc6a46b9c6e23df5A202B178550"
-// const avaxCrv3poolWmemoAddr = "0x9adA6069D6C02c839111e8F406270ED03D1a9506"
 
 const vaults = {
   arbitrum: [
@@ -82,20 +68,9 @@ const vaults = {
     opVeloWethUsdcEthAddr,
     opVeloWethUsdcUsdcAddr,
     opVeloWethSethUsdcAddr,
-    // opUniUsdcDaiAddr,
     opCrvPengAddr,
     opCrvSethPengAddr,
   ],
-  // harmony: [
-  //   oneCrv3poolBtcAddr,
-  //   oneCrv3poolEthAddr,
-  // ],
-  // avax: [
-  //   avaxCrv3poolBtcAddr,
-  //   avaxCrv3poolEthAddr,
-  //   avaxCrv3poolGohmAddr,
-  //   avaxCrv3poolWmemoAddr,
-  // ]
 }
 
 module.exports = {
@@ -106,15 +81,9 @@ module.exports = {
 Object.keys(vaults).forEach(chain => {
   const vault = vaults[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, {[chain]: block}) => {
-      const { output } = await sdk.api.abi.multiCall({
-        abi: abi["getAllPoolInUSD"],
-        calls: vault.map(i => ({ target: i })),
-        chain, block,
-      })
-      return {
-        tether: output.reduce((acc, i) => acc + +i.output, 0) / 1e6,
-      }
+    tvl: async (api) => {
+      const balances = await api.multiCall({ abi: "uint256:getAllPoolInUSD", calls: vault, })
+      api.addUSDValue(balances.reduce((acc, i) => acc + +Math.round(i / 1e18), 0))
     }
   }
 })

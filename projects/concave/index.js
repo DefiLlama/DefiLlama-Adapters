@@ -1,8 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { ohmTvl } = require('../helper/ohm')
-const { uniTvlExport } = require('../helper/calculateUniTvl');
-const { genericUnwrapCvx } = require('../helper/unwrapLPs');
+const { uniTvlExport } = require('../helper/unknownTokens');
+const { nullAddress } = require('../helper/unwrapLPs');
 
 
 // Treasury backing the CNV price, similar to OHM so using the ohm wrapper
@@ -20,21 +20,13 @@ const gemSwap_factory = '0x066a5cb7ddc6d55384e2f6ca13d5dd2cd2685cbd'
 // CVX treasury position parameters
 const cvxDOLA_3CRV_BaseRewardPool = '0x835f69e58087e5b6bffef182fe2bf959fe253c3c'
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  // Count TVL of amm
-  const balances = {}
-
-  // Get ether balance
-  balances[etherAddress] = (await sdk.api.eth.getBalance({ target: treasury, ethBlock })).output
-
-  // Compute the balance of the treasury of the CVX position and unwrap
-  await genericUnwrapCvx(balances, treasury, cvxDOLA_3CRV_BaseRewardPool, ethBlock, 'ethereum')
-
-  return balances
+async function tvl(api) {
+  return api.sumTokens({ owner: treasury, tokens: [nullAddress, cvxDOLA_3CRV_BaseRewardPool]})
 }
 
+const uniTvl = uniTvlExport('chain', gemSwap_factory).chain.tvl
 
 module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, cnv_token, undefined, undefined, true)
-module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl, uniTvlExport(gemSwap_factory, undefined, true)])
+module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl, uniTvl])
 delete module.exports.ethereum.staking
 module.exports.methodology = 'Count the treasury assets backing the CNV price + LP assets in the AMM Gemswap'

@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { token } = require("@project-serum/anchor/dist/cjs/utils");
-const { sumTokens } = require("../helper/unwrapLPs");
+const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 
 const poolsV8888 = {
   ETH_CALL: "0xb9ed94c6d594b2517c4296e24A8c517FF133fb6d",
@@ -28,55 +26,31 @@ const arbitrum = {
   hardcoreOperationalTreasury: "0xB0F9F032158510cd4a926F9263Abc86bAF7b4Ab3",
 };
 
-async function ethTvl(_timestamp, ethBlock) {
-  const ethV1 = (
-    await sdk.api.eth.getBalance({
-      target: "0x878f15ffc8b894a1ba7647c7176e4c01f74e140b",
-      block: ethBlock,
-    })
-  ).output;
-  const btcV1 = (
-    await sdk.api.erc20.balanceOf({
-      target: tokens.WBTC,
-      owner: "0x20DD9e22d22dd0a6ef74a520cb08303B5faD5dE7",
-      block: ethBlock,
-    })
-  ).output;
-
-  const balances = {
-    [tokens.WBTC]: btcV1,
-    [tokens.ETH]: ethV1,
-  };
-
-  // V2
-  await sumTokens(
-    balances,
-    [
+async function ethTvl(api) {
+  return sumTokens2({
+    api, tokensAndOwners: [
+      [nullAddress, '0x878f15ffc8b894a1ba7647c7176e4c01f74e140b'],
+      [ADDRESSES.ethereum.WBTC, '0x20DD9e22d22dd0a6ef74a520cb08303B5faD5dE7'],
       [tokens.WBTC, poolsV8888.WBTC_CALL],
       [tokens.USDC, poolsV8888.WBTC_PUT],
       [tokens.USDC, poolsV8888.ETH_PUT],
       [tokens.WETH, poolsV8888.ETH_CALL],
     ],
-    ethBlock
-  );
-
-  return balances;
+  });
 }
 
-async function arbiTvl(timestamp, block, chainBlocks) {
-  return await sumTokens({}, [
-    [arbitrum.USDC, arbitrum.hardcoreOperationalTreasury],
-    [arbitrum.USDC, arbitrum.hardcoreStakeAndCover],
-    [arbitrum.USDC, arbitrum.hergeOperationalTreasury],
-    [arbitrum.USDC, arbitrum.hergePayoff],
-    [arbitrum.HEGIC, arbitrum.hergeCoverPool],
-  ], chainBlocks.arbitrum, "arbitrum", token => ({
-    [arbitrum.USDC] : tokens.USDC,
-    [arbitrum.HEGIC]: tokens.HEGIC,
-  })[token]);
+async function arbiTvl(api) {
+  return sumTokens2({
+    api, tokensAndOwners: [
+      [arbitrum.USDC, arbitrum.hardcoreOperationalTreasury],
+      [arbitrum.USDC, arbitrum.hardcoreStakeAndCover],
+      [arbitrum.USDC, arbitrum.hergeOperationalTreasury],
+      [arbitrum.USDC, arbitrum.hergePayoff],
+      [arbitrum.HEGIC, arbitrum.hergeCoverPool],
+    ],
+  });
 }
 
-// node test.js projects/hegic/index.js
 module.exports = {
   ethereum: {
     tvl: ethTvl,

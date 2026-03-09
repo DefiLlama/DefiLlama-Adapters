@@ -4,6 +4,18 @@ const mapping = {
   },
   bsc: {
     bfBTC: '0x623F2774d9f27B59bc6b954544487532CE79d9DF',
+  },
+  hemi: {
+    bfBTC: '0x623F2774d9f27B59bc6b954544487532CE79d9DF',
+  },
+  ethereum: {
+    bfBTC: '0xCdFb58c8C859Cb3F62ebe9Cf2767F9e036C7fb15',
+  },
+  base: {
+    bfBTC: '0x623F2774d9f27B59bc6b954544487532CE79d9DF',
+  },
+  core: {
+    bfBTC: '0xCdFb58c8C859Cb3F62ebe9Cf2767F9e036C7fb15',
   }
 }
 const exportObject = {}
@@ -27,9 +39,12 @@ Ceffu(BTC)：
 
 Ceffu(BTCB):
 0x062900dcd4729af3bdbf3150b98eb9bcfdb822ac
+
 Binance(BTC)：
 1J8hRVttPiZya2GnfZbBaQj2zxonbTn2cH
 1Mx5gBkvGqy8LPYcJfJ7yjhA5oVzLrNGFg
+15EBS4TJs7BfjDn9EeMzBhaDv4bddfWuNT
+1PqY7uSCCAMYfTvnJX6TpeZZxKWQjMjjgZ
 OKX(BTC)：
 bc1qksyye79f03pr4uezx5ddtr5ap65ug3j3vfmds5arkfwtr4fjtt5qnnxnyk
 3LEt6F46QjBCrMMMp8getCrpjBmN6brXoG

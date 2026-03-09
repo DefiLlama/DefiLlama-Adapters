@@ -24,6 +24,6 @@ module.exports = {
     pool2: pool2(Contracts.DIP_ETH_LBP, Contracts.DIP_ETH_LP),
   },
   hallmarks: [
-    [Math.floor(new Date('2023-08-14') / 1e3), 'Referral contract exploited'],
+    ['2023-08-14', 'Referral contract exploited'],
   ],
 };

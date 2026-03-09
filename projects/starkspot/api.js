@@ -24,8 +24,7 @@ async function tvl() {
 
   const _token0s = await multiCall({ abi: abi.pair.token0, calls: newCalls });
   const _token1s = await multiCall({ abi: abi.pair.token1, calls: newCalls });
-  const reserves = await multiCall({ abi: abi.pair.get_reserves, calls });
-
+  const reserves = await multiCall({ abi: abi.pair.get_reserves, calls, permitFailure: true, });
   cache.token0s.push(..._token0s);
   cache.token1s.push(..._token1s);
   if (cache.token0s.length > oldCacheLength)
@@ -33,6 +32,7 @@ async function tvl() {
 
   const data = [];
   reserves.forEach((reserve, i) => {
+    if (!reserve) return;
     data.push({
       token0: cache.token0s[i],
       token1: cache.token1s[i],
@@ -45,6 +45,7 @@ async function tvl() {
 }
 
 module.exports = {
+  // deadFrom: '2025-01-04',
   timetravel: false,
   starknet: {
     tvl,

@@ -1,13 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { nullAddress, treasuryExports } = require("../helper/treasury");
-const { staking } = require("../helper/staking");
+const { treasuryExports } = require("../helper/treasury");
 const { mergeExports } = require('../helper/utils');
-const {
-  genericUnwrapCvxRewardPool,
-  genericUnwrapCvxFraxFarm,
-  genericUnwrapCvxPrismaPool,
-  genericUnwrapCvxCurveLendRewardPool,
-} = require('../helper/unwrapLPs');
 
 const convexTreasuryVault = "0x1389388d01708118b497f59521f6943Be2541bb7";
 
@@ -41,16 +34,17 @@ const treasuryManagerPositions = [{
 }]
 
 async function tvl(api) {
+  const tokensAndOwners = []
   for (const treasuryManagerPosition of treasuryManagerPositions) {
     if (treasuryManagerPosition.type === 'convex-curve-lp') {
       const { manager, curveLpStakingContract } = treasuryManagerPosition;
-      await genericUnwrapCvxRewardPool({ api, owner: manager, pool: curveLpStakingContract });
+      tokensAndOwners.push([curveLpStakingContract, manager]);
     } else if (treasuryManagerPosition.type === 'convex-frax-curve-lp') {
       const { vaultAddress, fraxCurveLpStakingContract } = treasuryManagerPosition;
       await genericUnwrapCvxFraxFarm({ api, owner: vaultAddress, farm: fraxCurveLpStakingContract });
     } else if (treasuryManagerPosition.type === 'convex-fx-curve-lp') {
       const { vaultAddress, fxGauge } = treasuryManagerPosition;
-      await genericUnwrapCvxRewardPool({ api, owner: vaultAddress, pool: fxGauge });
+      tokensAndOwners.push([fxGauge, vaultAddress]);
     } else if (treasuryManagerPosition.type === 'convex-prisma-curve-lp') {
       const { manager, prismaLpStakingContract } = treasuryManagerPosition;
       await genericUnwrapCvxPrismaPool({ api, owner: manager, pool: prismaLpStakingContract });
@@ -59,6 +53,36 @@ async function tvl(api) {
       await genericUnwrapCvxCurveLendRewardPool({ api, owner: manager, rewardsContract: curveLpStakingContract, lendVault });
     }
   }
+  return genericUnwrapCvxRewardPool({ api, tokensAndOwners });
+}
+
+async function genericUnwrapCvxCurveLendRewardPool({ api, owner, rewardsContract, lendVault }) {
+  const bal = await api.call({ target: rewardsContract, params: owner, abi: 'erc20:balanceOf' })
+  const asset = await api.call({target: lendVault, abi: 'address:asset'})
+  const pricePerShare = await api.call({ target: lendVault, abi: 'uint256:pricePerShare'})
+  api.add(asset, bal * pricePerShare / 1e18)
+}
+
+async function genericUnwrapCvxPrismaPool({ api, owner, pool, balances }) {
+  const bal = await api.call({  abi: 'erc20:balanceOf', target: pool, params: owner })
+  const lpToken = await api.call({  abi: 'address:lpToken', target: pool })
+  api.add(lpToken, bal)
+}
+
+
+async function genericUnwrapCvxFraxFarm({ api, owner, farm, balances }) {
+  if (!balances) balances = await api.getBalances()
+  const bal = await api.call({ abi: "function lockedLiquidityOf(address) view returns (uint256)", target: farm, params: owner })
+  const fraxToken = await api.call({ abi: 'function stakingToken() view returns (address)', target: farm })
+  const curveToken = await api.call({ abi: 'function curveToken() view returns (address)', target: fraxToken })
+  api.add(curveToken, bal)
+}
+
+
+async function genericUnwrapCvxRewardPool({ api, tokensAndOwners }) {
+  const tokens = await api.multiCall({ abi: 'address:stakingToken', calls: tokensAndOwners.map(i => i[0]) })
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
+  api.add(tokens, bals)
   return api.getBalances()
 }
 

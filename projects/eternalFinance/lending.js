@@ -1,25 +1,21 @@
-const sdk = require("@defillama/sdk");
-const { getResource, coreTokens } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
+const { getResource, coreTokensAptos } = require("../helper/chain/aptos");
 const { moduleAddress, resourceAddress } = require("./helper");
 
 const vaultInfoStruct = `${moduleAddress}::vault::Vaults`;
 
-async function lendingTvl() {
+async function lendingTvl(api) {
     /// @dev get vault info resources
     const { vaults } = await getResource(resourceAddress, vaultInfoStruct);
-    const balances = {};
     vaults.data.forEach((vault) => {
         const token = vault.key;
         const balance = vault.value.balance;
 
-        const isCoreAsset = coreTokens.includes(token);
+        const isCoreAsset = coreTokensAptos.includes(token);
         if (isCoreAsset) {
-            sdk.util.sumSingleBalance(balances, token, balance);
+            api.add(token, balance);
         }
     });
 
-    return transformBalances('aptos', balances);
 }
 
 module.exports = {

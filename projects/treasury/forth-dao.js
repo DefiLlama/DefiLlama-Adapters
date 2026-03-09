@@ -15,9 +15,12 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.USDC,//usdc
         ADDRESSES.ethereum.WETH,//weth
         '0xBcca60bB61934080951369a648Fb03DF4F96263C',//ausdc
-        '0xc944E90C64B2c07662A292be6244BDf05Cda44a7'
+        '0xc944E90C64B2c07662A292be6244BDf05Cda44a7',
+        '0xd46ba6d942050d489dbd938a2c909a5d5039a161'
+        
      ],
     owners: [treasury, treasury2],
     ownTokens: [FORTH, AMPL, LP],
+    blacklistedTokens: ['0xf211b655431c10e72c1caeae37688ae9f7f7a549']
   },
 })

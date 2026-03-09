@@ -20,7 +20,7 @@ const config = {
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2021-5-17')/1e3), 'FinNexus erc20 contract is hacked'],
+    ['2021-5-17', 'FinNexus erc20 contract is hacked'],
   ],
 }
 

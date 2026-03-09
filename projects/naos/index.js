@@ -1,9 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { staking, stakings } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const BigNumber = require("bignumber.js");
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens2, sumTokensExport } = require("../helper/unwrapLPs");
 
 const alpacaAdapterAbi = "uint256:totalValue";
 
@@ -61,88 +59,36 @@ const YEARN_ADAPTER = {
   v2: "0x8394BB87481046C1ec84C39689D402c00189df43",
 };
 
-async function tvl(timestamp, block) {
+async function tvl(api) {
   let YEARN_VAULT_ADDRESS = "";
   let YEARN_ADAPTER_ADDRESS = "";
-  if (block < 12983023) {
-    YEARN_VAULT_ADDRESS = YEARN_VAULT.v1;
-    YEARN_ADAPTER_ADDRESS = YEARN_ADAPTER.v1;
-  } else {
-    YEARN_VAULT_ADDRESS = YEARN_VAULT.v2;
-    YEARN_ADAPTER_ADDRESS = YEARN_ADAPTER.v2;
-  }
+  YEARN_VAULT_ADDRESS = YEARN_VAULT.v2;
+  YEARN_ADAPTER_ADDRESS = YEARN_ADAPTER.v2;
 
-  // ---- Start DAI and yvDai
-  const balances = await sumTokens2({ block, tokens: [DAI_CONTRACT_ADDRESS], owners: DAI_CONTRACT_HOLDER })
-  const [
-    { output: yVDaiTotalAmount },
-    { output: yVDaiPricePerShare },
-    { output: yVDaiDecimal },
-  ] = await Promise.all([
-    sdk.api.erc20.balanceOf({
-      target: YEARN_VAULT_ADDRESS,
-      owner: YEARN_ADAPTER_ADDRESS,
-      block,
-    }),
-    sdk.api.abi.call({
-      target: YEARN_VAULT_ADDRESS,
-      abi: "uint256:pricePerShare", // pricePerShare
-      block,
-    }),
-    sdk.api.erc20.decimals(YEARN_VAULT_ADDRESS),
-  ])
-
-  sdk.util.sumSingleBalance(balances, DAI_CONTRACT_ADDRESS, BigNumber(yVDaiTotalAmount * yVDaiPricePerShare / (10 ** yVDaiDecimal)).toFixed(0))
-
-  return balances;
+  return sumTokens2({ api, tokens: [DAI_CONTRACT_ADDRESS, YEARN_VAULT_ADDRESS], owners: DAI_CONTRACT_HOLDER.concat([YEARN_ADAPTER_ADDRESS]) })
 }
 
-async function bscTvl(timestamp, ethBlock, chainBlocks) {
-  let block = chainBlocks["bsc"];
-  const chain = 'bsc'
-
+async function bscTvl(api) {
   let busdOwners = [...BUSD_CONTRACT_HOLDER]
-  // ---- Start BUSD
   // RWA
   for (let borrwer of Galaxy)
     busdOwners.push(borrwer.Reserve, borrwer.Tranche)
 
-  let balances = await sumTokens2({ chain, block, owners: busdOwners, tokens: [BUSD_CONTRACT_ADDRESS] })
-  // ---- End BUSD
+  await sumTokens2({ api, owners: busdOwners, tokens: [BUSD_CONTRACT_ADDRESS] })
 
-  // ---- Start ibBUSD (map ibBUSD value to BUSD)
-  // formation
-  const { output: isBUSDs } = await sdk.api.abi.multiCall({
+  const isBUSDs = await api.multiCall({
     abi: alpacaAdapterAbi,
-    calls: BSC_ALPACA_ADAPTERS.map(i => ({ target: i })),
-    chain, block,
+    calls: BSC_ALPACA_ADAPTERS,
   })
-  isBUSDs.forEach(({ output}) => sdk.util.sumSingleBalance(balances, `bsc:${BUSD_CONTRACT_ADDRESS}`, output ))
-  // ---- End ibBUSD
-
-  return balances;
+  api.add(BUSD_CONTRACT_ADDRESS, isBUSDs)
 }
 
 
-async function bscBorrowed(timestamp, ethBlock, chainBlocks) {
-  let block = chainBlocks["bsc"];
-  const chain = 'bsc'
-  let balances = {}
-
-  // ---- Start BUSD
-  // RWA
+async function bscBorrowed(api) {
   for (let borrwer of Galaxy) {
-    const seniorDebt = (
-      await sdk.api.abi.call({
-        target: borrwer.Assessor,
-        abi: AssessorAbi,
-        chain, block,
-      })
-    ).output;
-    sdk.util.sumSingleBalance(balances, `bsc:${BUSD_CONTRACT_ADDRESS}`, seniorDebt);
+    const seniorDebt = await api.call({ target: borrwer.Assessor, abi: AssessorAbi, })
+    api.add(BUSD_CONTRACT_ADDRESS, seniorDebt)
   }
-  // ---- End BUSD
-  return balances;
 }
 
 
@@ -150,25 +96,7 @@ module.exports = {
   ethereum: {
     tvl: tvl,
     staking: staking(STAKING_POOL_ADDRESS, NAOS_ADDRESS),
-    pool2: async (_, block) => {
-      const balances = await sumTokens2({ block, owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS,], })
-      const [crvBalance, decimals, price,] = (await Promise.all([
-        sdk.api.erc20.balanceOf({
-          target: NUSD_3CRV_LP_ADDRESS,
-          owner: STAKING_POOL_ADDRESS,
-          block,
-        }),
-        sdk.api.erc20.decimals(NUSD_3CRV_LP_ADDRESS),
-        sdk.api.abi.call({
-          target: NUSD_3CRV_LP_ADDRESS,
-          abi: "uint256:get_virtual_price",
-          block,
-        })
-      ])).map(i => i.output)
-
-      balances.tether = crvBalance * price / (1e18 * (10 ** decimals))
-      return balances
-    },
+    pool2: sumTokensExport({ owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS, NUSD_3CRV_LP_ADDRESS] }),
   },
   bsc: {
     tvl: bscTvl,

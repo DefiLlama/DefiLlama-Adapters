@@ -1,5 +1,6 @@
 const { getConfig } = require('./helper/cache')
 const { sumTokens2 } = require('./helper/unwrapLPs')
+const { staking } = require('./helper/staking')
 
 // historical tvl on https://ethparser-api.herokuapp.com/api/transactions/history/alltvl?network=eth
 const endpoint = "https://api.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
@@ -31,9 +32,25 @@ const tvl = async (api) => {
     if (token) api.add(token, bals2[i])
   })
 
+  const apVaults = Object.values(response[chains[api.chain]]).filter(i => i.isIPORVault).map(i => i.vaultAddress)
+  const apTokens = await api.multiCall({ abi: 'address:asset', calls: apVaults, permitFailure: true })
+  const apBals = await api.multiCall({ abi: 'uint256:totalAssets', calls: apVaults, permitFailure: true })
+  
+  apTokens.forEach((token, i) => {
+    if (token) api.add(token, apBals[i])
+  })
+
   return sumTokens2({ api, resolveLP: true, owners: vaults.map(({ vault }) => vault), resolveUniV3: api.chain !== 'base' && api.chain !== 'era', permitFailure: true })
 }
 
 Object.keys(chains).forEach((chain) => {
-  module.exports[chain] = { tvl }
-})
+  module.exports[chain] = {
+    tvl,
+    ...(chain === 'ethereum' && {
+      staking: staking(
+        '0x8f5adC58b32D4e5Ca02EAC0E293D35855999436C',
+        '0xa0246c9032bc3a600820415ae600c6388619a14d'
+      ),
+    }),
+  };
+});

@@ -57,6 +57,14 @@ const abstractConfig = {
   "perpEngine": "0x6950DD3d2da0cdc217ad56714c6BA0011171bcC4"
 }
 
+const avaxConfig = {
+  "querier": "0xc523008CE1D7a5f4cc9f0a9a9c973aA19bE054BC",
+  "clearinghouse": "0x7069798A5714c5833E36e70df8AeFAac7CEC9302",
+  "endpoint": "0x36dc76c0C8FC6B4fFe73178C351BA5a3F2178eb3",
+  "spotEngine": "0xCf0934104391eD43685Ae6aBf24F7CdE93F3Dfa8",
+  "perpEngine": "0x207c0ef981b4F1FBDfccA88F025C917cFdF1e7C5"
+}
+
 module.exports = {
   arbitrum: {
     tvl: sumTokensExport({
@@ -92,6 +100,12 @@ module.exports = {
     tvl: sumTokensExport({
       owners: [abstractConfig.clearinghouse, abstractConfig.endpoint],
       tokens: [ADDRESSES.abstract.USDC],
+    })
+  },
+  avax: {
+    tvl: sumTokensExport({
+      owners: [avaxConfig.clearinghouse, avaxConfig.endpoint],
+      tokens: [ADDRESSES.avax.USDC, ADDRESSES.avax.WAVAX],
     })
   }
 }
