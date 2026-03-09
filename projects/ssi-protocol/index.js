@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require("../helper/solana");
 
 const abi = {
   getTokenset: "function getTokenset() view returns ((string chain, string symbol, string addr, uint8 decimals, uint256 amount, address custody)[])",
@@ -15,14 +16,20 @@ const ssi_tokens = [
 const CHAIN_MAP = {
   ETH: "ethereum",
   BSC_BNB: "bsc",
+  SOL: "solana",
 };
 
-async function tvl(api) {
+async function getTokensets() {
   const [tokensets, supplies, decimalsRes] = await Promise.all([
     sdk.api.abi.multiCall({ abi: abi.getTokenset, calls: ssi_tokens.map((t) => ({ target: t })), chain: "base" }),
     sdk.api.abi.multiCall({ abi: abi.totalSupply, calls: ssi_tokens.map((t) => ({ target: t })), chain: "base" }),
     sdk.api.abi.multiCall({ abi: abi.decimals, calls: ssi_tokens.map((t) => ({ target: t })), chain: "base" }),
   ]);
+  return { tokensets, supplies, decimalsRes };
+}
+
+async function evmTvl(api) {
+  const { tokensets, supplies, decimalsRes } = await getTokensets();
 
   tokensets.output.forEach(({ output: tokenset }, i) => {
     const supply = BigInt(supplies.output[i].output);
@@ -34,16 +41,35 @@ async function tvl(api) {
       if (!token.addr || token.addr === "") return;
 
       const totalAmount = (BigInt(token.amount) * supply) / BigInt(10 ** dec);
-      if (totalAmount > 0n) {
-        api.add(token.addr, totalAmount.toString());
-      }
+      if (totalAmount > 0n) api.add(token.addr, totalAmount.toString());
     });
   });
+}
+
+async function solanaTvl(api) {
+  const { tokensets, supplies, decimalsRes } = await getTokensets();
+  const tokensAndOwners = [];
+
+  tokensets.output.forEach(({ output: tokenset }, i) => {
+    const supply = BigInt(supplies.output[i].output);
+    const dec = parseInt(decimalsRes.output[i].output);
+
+    tokenset.forEach((token) => {
+      if (token.chain !== "SOL") return;
+      if (!token.addr || token.addr === "") return;
+      const totalAmount = (BigInt(token.amount) * supply) / BigInt(10 ** dec);
+      if (totalAmount > 0n) tokensAndOwners.push([token.addr, ssi_tokens[i]]);
+    });
+  });
+
+  if (!tokensAndOwners.length) return {};
+  return sumTokens2({ api, tokensAndOwners });
 }
 
 module.exports = {
   methodology:
     "TVL is calculated by multiplying each SSI token's getTokenset() per-unit composition by its totalSupply. Assets are held in centralized custody (Fireblocks, Coinbase etc.), tracked via on-chain accounting.",
-  ethereum: { tvl },
-  bsc: { tvl },
+  ethereum: { tvl: evmTvl },
+  bsc: { tvl: evmTvl },
+  solana: { tvl: solanaTvl },
 };
