@@ -1,7 +1,8 @@
+const { getConfig } = require("../helper/cache");
 const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 
-const PONDER_URL = "https://artistic-perfection-production.up.railway.app";
+const PONDER_URL = "https://prism-points.marble.live";
 const PORTFOLIO_LENS_ADDRESS = "0x9700750001dDD7C4542684baC66C64D74fA833c0";
 
 const SUPERPOOLS = [
@@ -78,8 +79,8 @@ async function getPositionAddresses() {
     const items = result.data?.positions?.items || [];
     positions.push(...items.map((i) => i.id));
 
-    hasNextPage = result.data?.positions?.pageInfo?.hasNextPage;
-    afterCursor = result.data?.positions?.pageInfo?.endCursor;
+    hasNextPage = result.data.positions.pageInfo.hasNextPage;
+    afterCursor = result.data.positions.pageInfo.endCursor;
   }
 
   return positions;
@@ -106,10 +107,12 @@ async function tvl(api) {
   }
 
   // Collateral TVL
-  const positions = await getPositionAddresses();
+  const positions = await getConfig('sentiment/'+api.chain, null, {
+    fetcher: getPositionAddresses,
+  });
 
   // Batch positions into chunks of 30
-  const BATCH_SIZE = 30;
+  const BATCH_SIZE = 50;
   for (let i = 0; i < positions.length; i += BATCH_SIZE) {
     const positionBatch = positions.slice(i, i + BATCH_SIZE);
 
@@ -144,8 +147,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology:
-    "Sums assets held by SuperPool contracts (lending TVL) and collateral held by all Position contracts.",
+  methodology: "Sums assets held by SuperPool contracts (lending TVL) and collateral held by all Position contracts.",
   start: 1014900,
   hyperliquid: { tvl, borrowed },
 };

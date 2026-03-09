@@ -12,8 +12,10 @@ function transformAddress(addr) {
   return addr
 }
 
-const endpoint = "https://rpc.mainnet.near.org"
-// const endpoint = "https://near.lava.build"
+const endpoints = [
+  "https://rpc.mainnet.near.org",
+  "https://near.lava.build"
+]
 
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
@@ -28,6 +30,8 @@ const tokenMapping = {
   'meta-token.near': { name: 'meta-near', decimals: 24 },
   'v3.oin_finance.near': { name: 'oin-finance', decimals: 8, },
   'usdt.tether-token.near': { name: 'tether', decimals: 6, },
+  'eth-0xdac17f958d2ee523a2206206994597c13d831ec7.omft.near': { name: 'tether', decimals: 6 },
+  'eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near': { name: 'usd-coin', decimals: 6 },
   // 'gems.l2e.near': { name: '', }, // https://www.landtoempire.com/
   // 'nd.tkn.near': { name: '', },   // nearDog
   // 'gold.l2e.near': { name: '', }, // https://www.landtoempire.com/
@@ -54,42 +58,64 @@ const tokenMapping = {
   'purge-558.meme-cooking.near': { name: 'forgive-me-father', decimals: 18 },
   'mpdao-token.near': { name: 'meta-pool-dao', decimals: 6 },
   'kat.token0.near': { name: 'nearkat', decimals: 18 },
+  'btc.omft.near': { name: 'bitcoin', decimals: 8 },
+  'eth-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.omft.near': { name: 'wrapped-btc', decimals: 8 },
+}
+
+function shouldRetry(error) {
+  if (!error.response) return true;
+  const retriable = [400, 429, 500, 504];
+  return retriable.includes(error.response.status);
+}
+
+async function rpcRequest(payload) {
+  let lastError;
+
+  for (const url of endpoints) {
+    try {
+      return await axios.post(url, payload, { validateStatus: status => status < 400 });
+    } catch (err) {
+      if (!shouldRetry(err)) throw err;
+      lastError = err;
+    }
+  }
+  throw lastError;
 }
 
 async function view_account(account_id) {
-  const result = await axios.post(endpoint, {
-    "jsonrpc": "2.0",
-    "id": "1",
-    "method": "query",
-    "params": {
-      "request_type": "view_account",
-      "finality": "final",
-      "account_id": account_id
+  const payload = {
+    jsonrpc: "2.0",
+    id: "1",
+    method: "query",
+    params: {
+      request_type: "view_account",
+      finality: "final",
+      account_id
     }
-  });
-  if (result.data.error) {
-    throw new Error(`${result.data.error.message}: ${result.data.error.data}`)
-  }
+  };
+
+  const result = await rpcRequest(payload);
+  if (result.data.error) throw new Error(`${result.data.error.message}: ${result.data.error.data}`);
   return result.data.result;
 }
 
 async function call(contract, method, args = {}) {
-  const result = await axios.post(endpoint, {
-    "jsonrpc": "2.0",
-    "id": "1",
-    "method": "query",
-    "params": {
-      "request_type": "call_function",
-      "finality": "final",
-      "account_id": contract,
-      "method_name": method,
-      "args_base64": Buffer.from(JSON.stringify(args)).toString("base64")
+  const payload = {
+    jsonrpc: "2.0",
+    id: "1",
+    method: "query",
+    params: {
+      request_type: "call_function",
+      finality: "final",
+      account_id: contract,
+      method_name: method,
+      args_base64: Buffer.from(JSON.stringify(args)).toString("base64")
     }
-  });
-  if (result.data.error) {
-    throw new Error(`${result.data.error.message}: ${result.data.error.data}`)
-  }
-  return JSON.parse(Buffer.from(result.data.result.result).toString())
+  };
+
+  const result = await rpcRequest(payload);
+  if (result.data.error) throw new Error(`${result.data.error.message}: ${result.data.error.data}`);
+  return JSON.parse(Buffer.from(result.data.result.result).toString());
 }
 
 async function getTokenBalance(token, account) {

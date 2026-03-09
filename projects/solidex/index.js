@@ -1,4 +1,10 @@
-const abis = require("./abis.json");
+const abis = {
+    "tokens": "function tokens() view returns (address, address)",
+    "locked": "function locked(uint256) view returns (int128 amount, uint256 end)",
+    "totalBalances": "function totalBalances(address) view returns (uint256)",
+    "allPairsLength": "uint256:allPairsLength",
+    "allPairs": "function allPairs(uint256) view returns (address)"
+  };
 
 const SOLID = '0x888EF71766ca594DED1F0FA3AE64eD2941740A20';
 

@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { nullAddress } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
 const { getLogs } = require("../helper/cache/getLogs");
 
 const DIVIDER = "0x86bA3E96Be68563E41c2f5769F1AF9fAf758e6E0";
@@ -15,7 +14,6 @@ const toAddress = (data) => `0x${data.slice(64 - 40 + 2, 64 + 2)}`;
 
 async function tvl(api) {
   const block = api.block
-  const transform = await getChainTransform("ethereum");
   const seriesLogs = await getLogs({
     target: DIVIDER,
     topic: "SeriesInitialized(address,uint256,address,address,address,address)",
@@ -36,123 +34,66 @@ async function tvl(api) {
   }, {});
   const adapters = Object.keys(series).filter(i => i.toLowerCase() !== '0x0ed600eecf445b71ae3f8170cd368439e2739289');
 
-  const { output: targets } = await sdk.api.abi.multiCall({
-    abi: abi.target,
-    calls: adapters.map((i) => ({ target: i })),
-    block,
-  });
-  const { output: underlyings } = await sdk.api.abi.multiCall({
-    abi: abi.underlying,
-    calls: adapters.map((i) => ({ target: i })),
-    block,
-  });
-  const { output: scales } = await sdk.api.abi.multiCall({
-    abi: abi.scale,
-    calls: adapters.map((i) => ({ target: i })),
-    block,
-  });
+  const targets = await api.multiCall({ abi: abi.target, calls: adapters, });
+  const underlyings = await api.multiCall({ abi: abi.underlying, calls: adapters, });
+  const scales = await api.multiCall({ abi: abi.scale, calls: adapters, });
 
-  const { output: targetDecimals } = await sdk.api.abi.multiCall({
-    abi: "erc20:decimals",
-    calls: targets.map((i) => ({ target: i.output })),
-    block,
-  });
-  const { output: underlyingDecimals } = await sdk.api.abi.multiCall({
-    abi: "erc20:decimals",
-    calls: underlyings.map((i) => ({ target: i.output })),
-    block,
-  });
+  const targetDecimals = await api.multiCall({ abi: "erc20:decimals", calls: targets, });
+  const underlyingDecimals = await api.multiCall({ abi: "erc20:decimals", calls: underlyings, });
 
-  const balances = {};
   const adapterTargetCache = {};
   const adapterUnderlyingCache = {};
   const adapterScaleCache = {};
   const adapterDecimalDeltaCache = {};
 
-  targets.forEach((i) => (adapterTargetCache[i.input.target] = i.output));
-  underlyings.forEach(
-    (i) => (adapterUnderlyingCache[i.input.target] = i.output)
-  );
-  scales.forEach((i) => (adapterScaleCache[i.input.target] = i.output));
+  targets.forEach((i, idx) => (adapterTargetCache[adapters[idx]] = i));
+  underlyings.forEach((i, idx) => (adapterUnderlyingCache[adapters[idx]] = i));
+  scales.forEach((i, idx) => (adapterScaleCache[adapters[idx]] = i));
 
-  const { output: adapterTargetBalances } = await sdk.api.abi.multiCall({
+  const adapterTargetBalances = await api.multiCall({
     abi: "erc20:balanceOf",
-    calls: adapters.map((i) => ({ target: adapterTargetCache[i], params: i })),
-    block,
+    calls: adapters.map((i, idx) => ({ target: targets[idx], params: i })),
   });
 
-  adapterTargetBalances.forEach((i) => {
-    const adapterAddress = i.input.params[0];
+  adapterTargetBalances.forEach((i, idx) => {
+    const adapterAddress = adapters[idx]
     const targetAddress = adapterTargetCache[adapterAddress];
     const underlyingAddress = adapterUnderlyingCache[adapterAddress];
 
     const scale = adapterScaleCache[adapterAddress];
 
-    const targetDec = targetDecimals.find(
-      (j) => j.input.target === targetAddress
-    ).output;
-
-    const underlyingDec = underlyingDecimals.find(
-      (j) => j.input.target === underlyingAddress
-    ).output;
-
+    const targetDec = targetDecimals.find((j, idx) => targets[idx] === targetAddress)
+    const underlyingDec = underlyingDecimals.find((j, idx) => underlyings[idx] === underlyingAddress)
     const adapterDecimalDelta = parseInt(targetDec) - parseInt(underlyingDec);
     adapterDecimalDeltaCache[adapterAddress] = adapterDecimalDelta;
 
-    const underlyingBalance = new BigNumber(i.output)
+    const underlyingBalance = new BigNumber(i)
       .times(scale) // always 18 decimals
       .div(`1e${18 + adapterDecimalDelta}`) // convert to underlying decimals (take out 18 from scale multiplication, then add or subtract based tDecimals - uDecimals)
       .toFixed(0);
 
-    sdk.util.sumSingleBalance(
-      balances,
-      transform(underlyingAddress),
-      underlyingBalance
-    );
+    api.add(underlyingAddress, underlyingBalance);
   });
 
   const poolCalls = Object.entries(series).filter(([i]) => i.toLowerCase() !== '0x0ed600eecf445b71ae3f8170cd368439e2739289')
     .map(([addr, maturities]) => maturities.map((m) => ({ params: [addr, m] })))
     .flat();
 
-  let { output: poolAddresses } = await sdk.api.abi.multiCall({
-    target: SPACE_FACTORY,
-    abi: abi.pools,
-    calls: poolCalls,
-    block,
-  });
-  poolAddresses = poolAddresses.filter((i) => i.output !== nullAddress);
+  let poolAddresses = await api.multiCall({ target: SPACE_FACTORY, abi: abi.pools, calls: poolCalls, });
+  poolAddresses = poolAddresses.filter((i) => i !== nullAddress);
 
   const poolToAdapterMapping = {};
 
-  poolAddresses.forEach(
-    (i) => (poolToAdapterMapping[i.output] = i.input.params[0])
-  );
+  poolAddresses.forEach((i, idx) => (poolToAdapterMapping[i] = poolCalls[idx]));
 
-  poolAddresses = poolAddresses.map((i) => i.output);
+  let ptis = await api.multiCall({ abi: abi.pti, calls: poolAddresses, });
+  let poolIds = await api.multiCall({ abi: abi.getPoolId, calls: poolAddresses, });
 
-  let { output: ptis } = await sdk.api.abi.multiCall({
-    abi: abi.pti,
-    calls: poolAddresses.map((i) => ({ target: i })),
-    block,
-  });
+  ptis = ptis.map((i) => parseInt(i));
+  const poolBalances = await api.multiCall({ target: BALANCER_VAULT, abi: abi.getPoolTokens, calls: poolIds, });
 
-  let { output: poolIds } = await sdk.api.abi.multiCall({
-    abi: abi.getPoolId,
-    calls: poolAddresses.map((i) => ({ target: i })),
-    block,
-  });
-
-  ptis = ptis.map((i) => parseInt(i.output));
-  const { output: poolBalances } = await sdk.api.abi.multiCall({
-    target: BALANCER_VAULT,
-    abi: abi.getPoolTokens,
-    calls: poolIds.map((i) => ({ params: i.output })),
-    block,
-  });
-
-  poolBalances.forEach(({ output: { balances: poolBalance } }, i) => {
-    const adapterAddress = poolToAdapterMapping[poolAddresses[i]];
+  poolBalances.forEach(({ balances: poolBalance }, i) => {
+    const adapterAddress = poolToAdapterMapping[poolAddresses[i]].params[0]
     const underlyingAddress = adapterUnderlyingCache[adapterAddress];
     const adapterDecimalDelta = adapterDecimalDeltaCache[adapterAddress];
     const scale = adapterScaleCache[adapterAddress];
@@ -162,18 +103,13 @@ async function tvl(api) {
       .div(`1e${18 + adapterDecimalDelta}`) // convert to underlying decimals
       .toFixed(0);
 
-    sdk.util.sumSingleBalance(
-      balances,
-      transform(underlyingAddress),
-      underlyingBalance
-    );
+    api.add(underlyingAddress, underlyingBalance);
   });
 
-  return balances;
 }
 
 module.exports = {
-    doublecounted: true,
+  doublecounted: true,
   misrepresentedTokens: true,
   methodology:
     "TVL is comprised of the sum of yield-bearing assets in Sense, which includes those assets being used both 1) to issue fixed term Sense tokens (PTs/YTs) and 2) as reserves in our Space AMM Pools. Data is collected via the DeFi Llama SDK.",

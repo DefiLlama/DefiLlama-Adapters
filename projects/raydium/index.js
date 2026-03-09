@@ -71,13 +71,13 @@ async function ammV4Tvl(api) {
     })
     j++
     if (i > 5000) {
-      await transformDexBalances({ api, data })
+      transformDexBalances({ api, data })
       data = []
       i = 0
     }
     i++
   }
-  await transformDexBalances({ api, data })
+  transformDexBalances({ api, data })
   return api.getBalances()
 }
 
@@ -158,7 +158,7 @@ module.exports = {
   timetravel: false,
   isHeavyProtocol: true,
   misrepresentedTokens: true,
-  hallmarks: [[1667865600, "FTX collapse"]],
+  hallmarks: [['2022-11-08', "FTX collapse"]],
 
   solana: {
     // tvl: combinedTvl,

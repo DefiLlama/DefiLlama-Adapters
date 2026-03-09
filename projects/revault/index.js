@@ -1,5 +1,7 @@
 const REVA_CHEF = "0xd7550285532f1642511b16Df858546F2593d638B";
-const REVA_CHEF_ABI = require("./RevaChef.json");
+const REVA_CHEF_ABI = {
+    "tokens": "function tokens(address) view returns (uint256 totalPrincipal, uint256 tvlBusd, uint256 lastRewardBlock, uint256 accRevaPerToken, bool rewardsEnabled)"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 async function tvl(api) {

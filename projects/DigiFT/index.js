@@ -51,7 +51,16 @@ module.exports = {
       return api.getBalances()
     }
   },
-  plume: {
+  plume_mainnet: {
+    tvl: async (api) => {
+      const tokenAPI = new sdk.ChainApi({ chain: 'polygon', timestamp: api.timestamp, });
+      const tokens = await getTokenList(tokenAPI, api.chainId)
+      const tokenSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: tokens })
+      await api.addTokens(tokens, tokenSupplies)
+      return api.getBalances()
+    }
+  },
+  bsc: {
     tvl: async (api) => {
       const tokenAPI = new sdk.ChainApi({ chain: 'polygon', timestamp: api.timestamp, });
       const tokens = await getTokenList(tokenAPI, api.chainId)

@@ -1,4 +1,5 @@
 const { sumTokens2, getResources } = require('../helper/chain/aptos')
+const { getTokenSupplies } = require('../helper/solana');
 
 const CONFIG = {
   ethereum: [
@@ -9,6 +10,7 @@ const CONFIG = {
   avax: ['0x53fc82f14f009009b440a706e31c9021e1196a2f'],     // BUIDL
   optimism: ['0xa1cdab15bba75a80df4089cafba013e376957cf5'], // BUIDL
   arbitrum: ['0xa6525ae43edcd03dc08e775774dcabd3bb925872'], // BUIDL
+  bsc: ['0x2d5bdc96d9c8aabbdb38c9a27398513e7e5ef84f'], // BNB
 }
 
 const tvl = async (api) => {
@@ -26,5 +28,15 @@ module.exports.aptos = {
     const res = await getResources('0x50038be55be5b964cfa32cf128b5cf05f123959f286b4cc02b86cafd48945f89', api.chain)
     const supply = res.find(i => i.type === '0x4de5876d8a8e2be7af6af9f3ca94d9e4fafb24b5f4a5848078d8eb08f08e808a::ds_token::TokenData').data.total_issued
     api.add('ethereum:0x7712c34205737192402172409a8f7ccef8aa2aec', supply, { skipChain: true }) 
+  }
+}
+
+
+module.exports.solana = {
+  tvl: async (api) => {
+    const mints = ['GyWgeqpy5GueU2YbkE8xqUeVEokCMMCEeUrfbtMw6phr']
+    const res = await getTokenSupplies(mints, api.chain) // align with aptos style of passing api.chain
+    const supply = res[mints[0]]
+    api.add(mints[0], supply)
   }
 }

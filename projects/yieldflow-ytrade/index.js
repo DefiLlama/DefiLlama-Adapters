@@ -17,8 +17,8 @@ const configAbi = {
 }
 
 const readerAbi = {
-  "getAccountPositions": "function getAccountPositions(address dataStore, address account, uint256 start, uint256 end) view returns (tuple(tuple(address account, address market, address collateralToken) addresses, tuple(uint256 sizeInUsd, uint256 sizeInTokens, uint256 collateralAmount, uint256 borrowingFactor, uint256 fundingFeeAmountPerSize, uint256 longTokenClaimableFundingAmountPerSize, uint256 shortTokenClaimableFundingAmountPerSize, uint256 increasedAtTime, uint256 decreasedAtTime) numbers, tuple(bool isLong) flags)[])",
-  "getAccountOrders": "function getAccountOrders(address dataStore, address account, uint256 start, uint256 end) view returns (tuple(tuple(address account, address receiver, address cancellationReceiver, address callbackContract, address uiFeeReceiver, address market, address initialCollateralToken, address[] swapPath) addresses, tuple(uint8 orderType, uint8 decreasePositionSwapType, uint256 sizeDeltaUsd, uint256 initialCollateralDeltaAmount, uint256 triggerPrice, uint256 acceptablePrice, uint256 executionFee, uint256 callbackGasLimit, uint256 minOutputAmount, uint256 updatedAtTime, uint256 validFromTime) numbers, tuple(bool isLong, bool shouldUnwrapNativeToken, bool isFrozen, bool autoCancel) flags)[])"
+  "getAccountPositions": "function getAccountPositions(address dataStore, address account, uint256 start, uint256 end) view returns (tuple(tuple(address account, address market, address collateralToken) addresses, tuple(uint256 sizeInUsd, uint256 sizeInTokens, uint256 collateralAmount, int256 pendingImpactAmount, uint256 borrowingFactor, uint256 fundingFeeAmountPerSize, uint256 longTokenClaimableFundingAmountPerSize, uint256 shortTokenClaimableFundingAmountPerSize, uint256 increasedAtTime, uint256 decreasedAtTime) numbers, tuple(bool isLong) flags)[])",
+  "getAccountOrders": "function getAccountOrders(address dataStore, address account, uint256 start, uint256 end) view returns (tuple(bytes32 orderKey, tuple(tuple(address account, address receiver, address cancellationReceiver, address callbackContract, address uiFeeReceiver, address market, address initialCollateralToken, address[] swapPath) addresses, tuple(uint8 orderType, uint8 decreasePositionSwapType, uint256 sizeDeltaUsd, uint256 initialCollateralDeltaAmount, uint256 triggerPrice, uint256 acceptablePrice, uint256 executionFee, uint256 callbackGasLimit, uint256 minOutputAmount, uint256 updatedAtTime, uint256 validFromTime) numbers, tuple(bool isLong, bool shouldUnwrapNativeToken, bool isFrozen, bool autoCancel) flags) order)[])"
 }
 
 const erc20Abi = {
@@ -51,10 +51,8 @@ async function tvl(api) {
   })
 
   // Since config calls use different ABI methods, make individual calls
-  const readerAddress = await api.call({
-    target: configAddress,
-    abi: configAbi.reader
-  })
+  const readerAddress = '0xe739e72E0e434A2626d6bE07590AcA74C00c764C';
+  
   const datastoreAddress = await api.call({
     target: configAddress,
     abi: configAbi.datastore
@@ -132,7 +130,8 @@ async function tvl(api) {
     // Calculate margin used by open orders
     let marginUsedByOpenOrders = 0
     if (orders.length > 0) {
-      const totalOrderCollateral = orders.reduce((sum, order) => {
+      const totalOrderCollateral = orders.reduce((sum, orderInfo) => {
+        const order = orderInfo.order
         if (order.numbers && order.numbers.orderType === '3') {
           const collateralAmount = new BigNumber(order.numbers.initialCollateralDeltaAmount || 0)
           return sum.plus(collateralAmount)

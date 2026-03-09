@@ -1,31 +1,26 @@
-const { getConfig } = require("../helper/cache");
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const ADDRESSES = require('../helper/coreAssets.json')
+const LHYPE_VAULT = '0x5748ae796AE46A4F1348a1693de4b50560485562'
 
-const sanitizeAndValidateEvmAddresses = (addresses) => {
-  return addresses
-    .map((address) => address.replace(/_$/, ""))
-    .filter((address) => /^0x[a-fA-F0-9]{40}$/.test(address));
-};
+const LHYPE_ACCOUNTANT = '0xcE621a3CA6F72706678cFF0572ae8d15e5F001c3'
 
-const LHYPE_VAULT_ADDRESS = ['0x5748ae796AE46A4F1348a1693de4b50560485562'];
+const WHYPE = ADDRESSES.hyperliquid.WHYPE
+
+const totalSupplyAbi = 'function totalSupply() view returns (uint256)'
+const exchangeRateAbi = 'function getRate() view returns (uint256)'
 
 const tvl = async (api) => {
-  const strategies = await getConfig(
-    'lhype-tokens',
-    `https://backend.nucleusearn.io/v1/vaults/underlying_strategies?vault_address=${LHYPE_VAULT_ADDRESS}&chain_id=999`
-  );
-  const hyperevmStrategies = strategies["999"]
-  const tokens = Object.values(hyperevmStrategies).map((strategy) => strategy.tokenAddress);
-  const sanitizedTokens = sanitizeAndValidateEvmAddresses([...tokens, ...LHYPE_VAULT_ADDRESS]);
+  const [lhypeTotalSupply, lhypeExchangeRate,] = await Promise.all([
+    api.call({ target: LHYPE_VAULT, abi: totalSupplyAbi }),
+    api.call({ target: LHYPE_ACCOUNTANT, abi: exchangeRateAbi, }),
+  ])
 
-  return sumTokens2({
-    owners: LHYPE_VAULT_ADDRESS,
-    tokens: sanitizedTokens,
-    api,
-    resolveLP: true
-  });
-};
+  const lhypeTotalValueInHype = lhypeTotalSupply * lhypeExchangeRate / 1e18
+
+  api.add(WHYPE, lhypeTotalValueInHype)
+}
 
 module.exports = {
-  hyperliquid: { tvl }
-};
+  hyperliquid: { tvl },
+  methodology: 'The total value of assets deployed across all LHYPE and WHLP strategies.',
+  misrepresentedTokens: true,
+}

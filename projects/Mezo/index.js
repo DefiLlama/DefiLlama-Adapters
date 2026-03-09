@@ -45,6 +45,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-	hallmarks: [[1747987200, "Mezo Mainnet Migration"]],
+	hallmarks: [['2025-05-23', "Mezo Mainnet Migration"]],
 	ethereum: { tvl },
+  // mezo: { tvl },
 };
