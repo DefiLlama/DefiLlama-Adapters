@@ -1,21 +1,21 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { ADDRESSES } = require("../helper/utils");
 
-// Same Swift contract address across all EVM chains
 const SWIFT = "0xC38e4e6A15593f908255214653d3D947CA1c2338";
 
 const TOKENS = {
   ethereum: [
-    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
+    ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.WETH,
   ],
   arbitrum: [
-    "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC native
+    ADDRESSES.arbitrum.USDC,
     "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", // USDC.e
-    "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", // WETH
+    ADDRESSES.arbitrum.WETH,
   ],
   base: [
-    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC
-    "0x4200000000000000000000000000000000000006", // WETH
+    ADDRESSES.base.USDC,
+    ADDRESSES.base.WETH,
   ],
   avax: [
     "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", // USDC
@@ -27,11 +27,20 @@ const TOKENS = {
   ],
   polygon: [
     "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // USDC.e
-    "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", // USDC native
+    "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", // USDC
   ],
   optimism: [
     "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", // USDC
-    "0x4200000000000000000000000000000000000006", // WETH
+    ADDRESSES.optimism.WETH,
+  ],
+  monad: [
+    "0x62534E4bBD6D9ebAC0ac99aeaa0aa48E56372df0", // USDC
+  ],
+  hyperliquid: [
+    "0x6d1e7cde53ba9467b783cb7c530ce054",  // USDC on HyperEVM
+  ],
+  unichain: [
+    "0x078D782b760474a361dDA0AF3839290b0EF57AD6", // USDC
   ],
 };
 
@@ -43,11 +52,8 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Tracks tokens locked in Mayan Finance Swift escrow contract (0xC38e4e6A...) across all supported EVM chains while cross-chain swaps are in-flight.",
-  ethereum: { tvl },
-  arbitrum: { tvl },
-  base: { tvl },
-  avax: { tvl },
-  bsc: { tvl },
-  polygon: { tvl },
-  optimism: { tvl },
 };
+
+Object.keys(TOKENS).forEach(chain => {
+  module.exports[chain] = { tvl };
+});
