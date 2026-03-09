@@ -538,6 +538,7 @@ const uniV3Configs = {
     flow: {
       factory: '0xca6d7Bb03334bBf135902e1d919a5feccb461632',
       fromBlock: 42141486,
+      blacklistedTokens: ['0x2c23fa3f22273194f7a046281861551996183e8d']
     },
   },
   'fluxion-network': {

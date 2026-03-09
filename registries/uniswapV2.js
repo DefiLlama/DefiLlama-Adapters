@@ -310,7 +310,7 @@ const uniV2Configs = {
     occ: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     rari: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     reya: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
-    sanko: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
+    // sanko: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4', // chain was down from 2026-03-07
     spn: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     xai: '0x18E621B64d7808c3C47bccbbD7485d23F257D26f',
   },
@@ -2804,6 +2804,11 @@ const uniV2Configs = {
   'wojakfinance': {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://wojak.fi/info as the source. Staking accounts for the WOJK locked in MasterChef (0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a)',
     dogechain: { factory: '0xc7c86B4f940Ff1C13c736b697e3FbA5a6Bc979F9', staking: { owners: ['0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a', '0xDF21058099e69D3635005339721C4826c4c47F8A'], tokens: ['0x570C41a71b5e2cb8FF4445184d7ff6f78A4DbcBD'], useDefaultCoreAssets: true, lps: ['0xC1FaBe61B9cFC005a51e1Ea899C3D65fb6392497'] } },
+  },
+  'wswap': {
+    wchain: '0x2A44f013aD7D6a1083d8F499605Cf1148fbaCE31',
+    ethereum: '0x46B0B17Bb1f637CcfFA9fCc34bD591E3A0fF58F9',
+    bsc: '0x5105989c863e801fC610396529BE9f2A6B95bF0A',
   },
   'wtfdex': {
     methodology: 'Uses factory(0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50) address and whitelisted tokens address to find and price Liquidity Pool pairs',

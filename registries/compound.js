@@ -197,6 +197,9 @@ const configs = {
       staking: [['0x150b1e51738cdf0ccfe472594c62d7d6074921ca', '0xcf8dedcdc62317beaedfbee3c77c08425f284486'], '0x43e8809ea748eff3204ee01f08872f063e44065f'],
     },
   },
+  'qie-lend': {
+    qiev3: { comptroller: '0x69a31E3D361C69B37463aa67Ef93067dC760fBD4'},
+  },
   // === Newly migrated adapters below ===
   'tropykus': {
     misrepresentedTokens: true,

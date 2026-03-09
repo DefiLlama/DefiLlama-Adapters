@@ -64,9 +64,10 @@ const chains = {
 
 let chainData
 async function getChainData() {
-  if (!chainData) chainData = getConfig('anyswap-config', 'https://netapi.anyswap.net/bridge/v2/info').then(i => {
+  if (!chainData) chainData = getConfig('anyswap-config-v1', 'broken').then(i => {
     return i.bridgeList.filter(j => j.amount > 0)
   })
+
   return chainData
 }
 
