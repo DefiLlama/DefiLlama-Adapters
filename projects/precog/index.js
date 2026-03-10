@@ -1,63 +1,78 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getLogs } = require('../helper/cache/getLogs');
 
-const MASTER_CONTRACT = '0x1eb90323ae74e5fbc3241c1d074cfd0b117d7e8e';
 const FUNDER_EOA_1 = '0x5D45B7d8e517eF6b7085175ed395D9c8562b952f';
 
-// Standard tokens to always check in Funders (e.g., USDC, WETH)
-const STATIC_TOKENS = [
-    '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
-    '0x4200000000000000000000000000000000000006', // WETH
-    '0xC139C86de76DF41c041A30853C3958427fA7CEbD', // MATE (base)
-];
+const config = {
+    base: {
+        contracts: [
+            { address: '0x1eb90323ae74e5fbc3241c1d074cfd0b117d7e8e', fromBlock: 25593661 },
+            { address: '0x00000000000c109080dfa976923384b97165a57a', fromBlock: 42999625 },
+        ],
+        staticTokens: [
+            '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
+            '0x4200000000000000000000000000000000000006', // WETH
+            '0xC139C86de76DF41c041A30853C3958427fA7CEbD', // MATE
+        ],
+    },
+    arbitrum: {
+        contracts: [
+            { address: '0x00000000000c109080dfa976923384b97165a57a', fromBlock: 440198385 },
+        ],
+        staticTokens: [
+            '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC
+            '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', // WETH
+        ],
+    },
+    ethereum: {
+        contracts: [
+            { address: '0x00000000000c109080dfa976923384b97165a57a', fromBlock: 24624452 },
+        ],
+        staticTokens: [
+            '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+            '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+        ],
+    },
+};
 
 async function tvl(api) {
-    // 1. Fetch logs for "MarketCreated"
-    // Corresponds to ABI: event MarketCreated(address indexed creator, uint256 id, address market)
-    const logs = await getLogs({
-        api,
-        target: MASTER_CONTRACT,
-        eventAbi: 'event MarketCreated(address indexed creator, uint256 id, address market)',
-        onlyArgs: true,
-        fromBlock: 25593661, // https://basescan.org/tx/0x8bc3bc9ab2ba684cd2307beeb68e2509d6e447290b04f891784a9b74a56ca29e
-    });
-
-    // 2. Extract Market IDs to query the Master contract for their tokens
-    const marketIds = logs.map(log => log.id);
-
-    // 3. MultiCall to 'marketCollateralInfo' to get the token for each market
-    // Corresponds to ABI: function marketCollateralInfo(uint256 marketId) view returns (address collateral, ...)
-    const collateralInfo = await api.multiCall({
-        abi: 'function marketCollateralInfo(uint256 marketId) view returns (address collateral, string name, string symbol, uint8 decimals)',
-        calls: marketIds.map(id => ({
-            target: MASTER_CONTRACT,
-            params: [id]
-        }))
-    });
-
-    // 4. Map the results to create pairs: [TokenAddress, MarketAddress]
-    const marketTokenPairs = [];
+    const { contracts, staticTokens } = config[api.chain];
     const allDiscoveredTokens = new Set();
+    const marketTokenPairs = [];
 
-    logs.forEach((log, index) => {
-        const marketAddress = log.market;
-        const tokenAddress = collateralInfo[index].collateral;
+    for (const { address: masterContract, fromBlock } of contracts) {
+        const logs = await getLogs({
+            api,
+            target: masterContract,
+            eventAbi: 'event MarketCreated(address indexed creator, uint256 id, address market)',
+            onlyArgs: true,
+            fromBlock,
+        });
 
-        if (tokenAddress && marketAddress) {
-            marketTokenPairs.push([tokenAddress, marketAddress]);
-            allDiscoveredTokens.add(tokenAddress);
-        }
-    });
+        const marketIds = logs.map(log => log.id);
+        if (marketIds.length === 0) continue;
 
-    // 5. Add Market TVL (Dynamic tokens in Dynamic Markets)
-    await sumTokens2({
-        api,
-        tokensAndOwners: marketTokenPairs,
-    });
+        const collateralInfo = await api.multiCall({
+            abi: 'function marketCollateralInfo(uint256 marketId) view returns (address collateral, string name, string symbol, uint8 decimals)',
+            calls: marketIds.map(id => ({
+                target: masterContract,
+                params: [id]
+            }))
+        });
 
-    // 6. Add Funder EOA TVL
-    // We check the static list PLUS any new tokens we discovered in the markets
-    const funderTokens = [...new Set([...STATIC_TOKENS, ...Array.from(allDiscoveredTokens)])];
+        logs.forEach((log, index) => {
+            const marketAddress = log.market;
+            const tokenAddress = collateralInfo[index].collateral;
+            if (tokenAddress && marketAddress) {
+                marketTokenPairs.push([tokenAddress, marketAddress]);
+                allDiscoveredTokens.add(tokenAddress);
+            }
+        });
+    }
+
+    await sumTokens2({ api, tokensAndOwners: marketTokenPairs });
+
+    const funderTokens = [...new Set([...staticTokens, ...Array.from(allDiscoveredTokens)])];
 
     return sumTokens2({
         api,
@@ -68,7 +83,7 @@ async function tvl(api) {
 
 module.exports = {
     methodology: "Counts TVL by fetching all created markets from the Master contract logs, querying the collateral token for each market, and summing the balances. It also tracks these discovered tokens within the Precog Funder EOAs.",
-    base: {
-        tvl
-    }
+    base: { tvl },
+    arbitrum: { tvl },
+    ethereum: { tvl },
 };
