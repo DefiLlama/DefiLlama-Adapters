@@ -59,14 +59,15 @@ async function callSorobanWithContractArg(contractId, fnName, argContractId) {
   return 0n
 }
 
-// Staking: AQUA locked by stakers + BLUB staked in the contract
-async function staking(api) {
+// TVL: everything — staking (AQUA locked + BLUB staked) + LP positions (POL + vault)
+async function tvl(api) {
+  // Staking: AQUA locked by stakers
   const state = await callSoroban(STAKING_CONTRACT, 'get_global_state')
   if (state && state.total_locked != null) {
     api.add(AQUA_TOKEN, state.total_locked)
   }
 
-  // BLUB has no DefiLlama price feed — priced as AQUA (1:1 proxy)
+  // Staking: BLUB staked in the contract — priced as AQUA (1:1 proxy, no separate price feed)
   const blubBalance = await callSorobanWithContractArg(
     'CBMFDIRY5OKI4JJURXC4SMEQPWB4UUADIADJK4NA6CYBNOYK4W4TMLLF',
     'balance',
@@ -75,10 +76,8 @@ async function staking(api) {
   if (blubBalance > 0n) {
     api.add(AQUA_TOKEN, blubBalance)
   }
-}
 
-// Pool2: LP positions (protocol-owned liquidity + vault deposits) in Aquarius BLUB-AQUA pool
-async function pool2(api) {
+  // LP positions (POL + vault deposits) in Aquarius BLUB-AQUA pool
   const lpBalance = await callSorobanWithContractArg(POOL_0_SHARE_TOKEN, 'balance', STAKING_CONTRACT)
   const reserves = await callSoroban(AQUARIUS_POOL_0, 'get_reserves')
   const totalShares = await callSoroban(AQUARIUS_POOL_0, 'get_total_shares')
@@ -89,12 +88,12 @@ async function pool2(api) {
     const aquaInLp = BigInt(Math.round(Number(reserves[0]) * ratio))
     const blubInLp = BigInt(Math.round(Number(reserves[1]) * ratio))
     api.add(AQUA_TOKEN, aquaInLp)
-    // BLUB has no DefiLlama price feed — priced as AQUA (1:1 proxy)
+    // BLUB priced as AQUA (1:1 proxy)
     api.add(AQUA_TOKEN, blubInLp)
   }
 }
 
 module.exports = {
-  methodology: 'Staking TVL counts AQUA locked by stakers plus BLUB staked in the contract. Pool2 TVL counts the underlying tokens in LP positions (protocol-owned liquidity and vault deposits) in the Aquarius BLUB-AQUA pool. BLUB is priced 1:1 with AQUA as a proxy since it lacks a separate price feed.',
-  stellar: { tvl: () => ({}), staking, pool2 },
+  methodology: 'TVL includes AQUA locked in staking, BLUB staked by users, and underlying tokens in LP positions (protocol-owned liquidity and vault deposits) in the Aquarius BLUB-AQUA pool. BLUB is priced 1:1 with AQUA as a proxy since it lacks a separate price feed.',
+  stellar: { tvl },
 }
