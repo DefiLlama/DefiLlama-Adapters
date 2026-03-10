@@ -52,3 +52,7 @@ module.exports = {
   sonic: tvl('sonic'),
   berachain: tvl('berachain')
 }
+
+module.exports.hallmarks = [
+  ["2026-03-09", "Exclude vaults with bad debt on sonic"],
+]
