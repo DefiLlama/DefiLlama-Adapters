@@ -13,6 +13,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "Counts TVL by querying all created markets from the Master contract, summing collateral balances held in each market contract, and tracking collateral tokens in the Precog Funder EOA.",
+  methodology: "Counts TVL by querying all created markets from the Master contract, summing collateral balances held in each market contract",
   base: { tvl },
 };
