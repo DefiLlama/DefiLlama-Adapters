@@ -44,6 +44,16 @@ const configs = {
     },
     fantom: {},
   },
+  'solvr': {
+    base: { 
+      staking: ["0xde2dc52d8ac7b793a9558b7b13b7b24f5c3b983a", "0x6DfB7BFA06e7c2B6c20C22c0afb44852C201eB07"]
+    }
+  },
+  'nickel': {
+    base: { 
+      staking: { owners: ["0xEF35314a4F3a1F8CE89095202dABAeEe1CaAd760", "0x93CF815EC397C526576078A74197c3fa2d769b80"], tokens: ['0xe11b4DD87675B52980b3427029a2d792A4A05aa2']}
+    }
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
