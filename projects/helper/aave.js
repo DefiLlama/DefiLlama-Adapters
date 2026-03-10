@@ -386,11 +386,11 @@ function aaveV3Export(config) {
           userData.forEach((data, i) => {
             const token = blCalls[i].params[0]
             if (isBorrowed) {
-              const debt = BigNumber(data.currentStableDebt).plus(data.currentVariableDebt)
-              if (debt.gt(0)) api.add(token, debt.negated().toFixed(0))
+              const debt = +data.currentStableDebt + +data.currentVariableDebt
+              if (debt > 0) api.add(token, -debt)
             } else {
-              if (BigNumber(data.currentATokenBalance).gt(0))
-                api.add(token, BigNumber(data.currentATokenBalance).negated().toFixed(0))
+              if (+data.currentATokenBalance > 0)
+                api.add(token, -data.currentATokenBalance)
             }
           })
         }
