@@ -8,6 +8,7 @@ async function tvl(api) {
 
 
 module.exports = {  
+  misrepresentedTokens: true,
   voi: { tvl },
   algorand: { tvl: () => {} }, // merged with pact-fi
 }
