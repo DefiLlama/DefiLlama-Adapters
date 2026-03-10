@@ -9,16 +9,21 @@ const UNIV4_ETH_NFT = '0xbd216513d74c8cf14cf4747e6aaa6420ff64ee9e'
 const UNIV4_ETH_DEPLOY_BLOCK = 21689089
 const TRANSFER_EVENT_ABI = 'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
 const TRANSFER_EVENT_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+const LBTC = '0xecAc9C5F704e954931349Da37F60E39f515c11c1'
 
 // ── Add new BoringVault tokens here ──────────────────────────────────────────
-// They are excluded from the base CoValent scanner and unwrapped to underlying.
+// Unwrapped to underlying base asset in tvlEthExtras.
 const BORING_VAULTS_ETH = [
   '0x75231079973c23e9eb6180fa3d2fc21334565ab5',  // Turtle Club (katanaLBTCv)
 ]
 
-// ── Add new Corn Curve pools here ─────────────────────────────────────────────
+// ── Add new Curve pools here ──────────────────────────────────────────────────
+const CURVE_POOLS_ETH = [
+  { pool: '0x2f3bc4c27a4437aeca13de0e37cdf1028f3706f0', coinCount: 2 },
+  { pool: '0xa7741d3d29a4391a7ca671d00e444342b6a8ad5a', coinCount: 2 },
+]
 const CURVE_POOLS_CORN = [
-  '0xAB3291b73a1087265E126E330cEDe0cFd4B8A693',
+  { pool: '0xAB3291b73a1087265E126E330cEDe0cFd4B8A693', coinCount: 2 },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -27,7 +32,7 @@ const CURVE_POOLS_CORN = [
 // Works for both eth (where base scanner already discovered the LP token) and
 // chains without auto-discovery (Corn): removeTokenBalance is a no-op when the
 // token isn't in balances yet.
-async function unwrapCurvePoolShare({ api, pool, holder }) {
+async function unwrapCurvePoolShare({ api, pool, holder, coinCount }) {
   const lpBalance = await api.call({
     target: pool, abi: 'erc20:balanceOf', params: [holder], permitFailure: true,
   })
@@ -43,7 +48,7 @@ async function unwrapCurvePoolShare({ api, pool, holder }) {
   const lpBI = BigInt(lpBalance)
   const supplyBI = BigInt(totalSupply)
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < coinCount; i++) {
     const token = await api.call({
       target: pool, abi: 'function coins(uint256) view returns (address)',
       params: [i], permitFailure: true,
@@ -58,31 +63,6 @@ async function unwrapCurvePoolShare({ api, pool, holder }) {
 
     const amount = BigInt(poolBal) * lpBI / supplyBI
     if (amount > 0n) api.add(token, amount)
-  }
-}
-
-// Auto-detects Curve LP tokens already in the api balance (via fetchCoValentTokens)
-// by probing coins(0) on each token. No manual pool list needed on Ethereum.
-async function unwrapCurveLPsFromBalance(api, holder) {
-  const chain = api.chain
-  const tokenAddresses = Object.keys(api.getBalances())
-    .map(k => (k.includes(':') ? k.split(':')[1] : k))
-    .filter(a => /^0x[0-9a-fA-F]{40}$/.test(a))
-
-  if (!tokenAddresses.length) return
-
-  const coins0 = await api.multiCall({
-    abi: 'function coins(uint256) view returns (address)',
-    calls: tokenAddresses.map(t => ({ target: t, params: [0] })),
-    permitFailure: true,
-  })
-
-  const curvePools = tokenAddresses.filter(
-    (_, i) => coins0[i] && coins0[i] !== ADDRESSES.null && /^0x[0-9a-fA-F]{40}$/.test(coins0[i])
-  )
-
-  for (const pool of curvePools) {
-    await unwrapCurvePoolShare({ api, pool, holder })
   }
 }
 
@@ -154,8 +134,10 @@ async function getOwnedUniV4PositionIds({ api, owner, nftAddress, fromBlock }) {
 // ─── Per-chain extra TVL hooks ────────────────────────────────────────────────
 
 async function tvlEthExtras(api) {
-  // 1. Auto-detect and unwrap any Curve LP in balance (new pools → no code change)
-  await unwrapCurveLPsFromBalance(api, LBTCV)
+  // 1. Unwrap Curve LP pools (add new pools to CURVE_POOLS_ETH above)
+  for (const { pool, coinCount } of CURVE_POOLS_ETH) {
+    await unwrapCurvePoolShare({ api, pool, holder: LBTCV, coinCount })
+  }
 
   // 2. Unwrap BoringVault shares (add new vaults to BORING_VAULTS_ETH above)
   for (const vault of BORING_VAULTS_ETH) {
@@ -176,8 +158,8 @@ async function tvlEthExtras(api) {
 
 async function tvlCornExtras(api) {
   // Curve pools on Corn (add new pools to CURVE_POOLS_CORN above)
-  for (const pool of CURVE_POOLS_CORN) {
-    await unwrapCurvePoolShare({ api, pool, holder: LBTCV })
+  for (const { pool, coinCount } of CURVE_POOLS_CORN) {
+    await unwrapCurvePoolShare({ api, pool, holder: LBTCV, coinCount })
   }
 }
 
@@ -200,9 +182,7 @@ module.exports = {
     tvl: composeChainTVL(
       sumTokensExport({
         owners: [LBTCV],
-        fetchCoValentTokens: true,
-        tokenConfig: { onlyWhitelisted: false },
-        blacklistedTokens: BORING_VAULTS_ETH,  // unwrapped separately in tvlEthExtras
+        tokens: [ADDRESSES.ethereum.WBTC, ADDRESSES.ethereum.LBTC, ADDRESSES.ethereum.cbBTC],
         resolveUniV3: true,
       }),
       [tvlEthExtras]
@@ -210,11 +190,9 @@ module.exports = {
   },
 
   base: {
-    // resolveSlipstream auto-discovers Aerodrome positions (default NFT addr for Base is built-in)
     tvl: sumTokensExport({
       owners: [LBTCV],
-      fetchCoValentTokens: true,
-      tokenConfig: { onlyWhitelisted: true },
+      tokens: [ADDRESSES.base.cbBTC, LBTC],
       resolveUniV3: true,
       resolveSlipstream: true,
     }),
@@ -223,8 +201,7 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       owners: [LBTCV],
-      fetchCoValentTokens: true,
-      tokenConfig: { onlyWhitelisted: true },
+      tokens: [ADDRESSES.bsc.BTCB, LBTC],
       resolveUniV3: true,
     }),
   },
