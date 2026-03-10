@@ -29,6 +29,7 @@ async function tvl(_, __, ___, { api }) {
 module.exports = {
   methodology: "Counts total supply of Flying Tulip vault tokens representing deposited USDC across strategies.",
   start: 1764868523,
+  doublecounted: true,
   ethereum: {
     tvl,
   }
