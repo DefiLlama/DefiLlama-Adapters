@@ -1,84 +1,176 @@
-const { toUSDTBalances } = require("../helper/balances");
-const { lookupApplications, lookupAccountByID } = require("../helper/chain/algorand");
 const { getApplicationAddress } = require("../helper/chain/algorandUtils/address");
-const sdk = require("@defillama/sdk");
-
-// ─── DorkFi Contract IDs ───────────────────────────────────────────────────
-// Algorand Mainnet
-const ALGO_POOL_APP_ID    = 3207735602;  // Main lending pool
-const ALGO_MARKET_APP_ID  = 3207744109;  // ALGO wrapper/market contract
-const ALGO_POOL_ADDRESS   = "F4JIZCKWQFAYYCO2LCSP3GJ6WYXZSMYQJI4BOR5KWHRWIOGBEX56DG7HGY";
-
-// Voi Network (AVM-compatible, separate RPC)
-const VOI_POOL_1_APP_ID   = 41760711;
-const VOI_POOL_2_APP_ID   = 44866061;
-const VOI_POOL_1_ADDRESS  = "WJL4HAFE5OJ55VJU5OY4CMY2VH5RURLKHEP3HNRQ2Z7TI6GB5BWTKGYIXY";
-const VOI_POOL_2_ADDRESS  = "USFLG43ES6NG473BFYJJRAHAE3BA42YXXA3SE73YVUHFAKTWJYMVKRUZHA";
-
-const VOI_RPC = "https://mainnet-api.voi.nodely.dev";
-
-// ─── Helpers ───────────────────────────────────────────────────────────────
 const axios = require("axios");
 
-const voiAxios = axios.create({
-  baseURL: VOI_RPC,
-  timeout: 30000,
-});
+const SCALE = BigInt("1000000000000000000"); // 1e18
 
-async function getVoiAccountBalance(address) {
-  const resp = await voiAxios.get(`/v2/accounts/${address}`);
-  const acct = resp.data;
-  // Deposited = balance - min_balance (min_balance covers box/app storage)
-  const deposited = Math.max(0, acct.amount - acct["min-balance"]);
-  return deposited; // in microVOI
+// ARC-4 MarketData tuple byte offsets (329 bytes total):
+// Field 10 – totalScaledBorrows (uint256) starts at byte 145
+// Field 12 – borrowIndex        (uint256) starts at byte 209
+const BORROWS_OFFSET = 145;
+const BORROW_IDX_OFFSET = 209;
+
+// Chain indexer URLs (same response format for both chains)
+const INDEXER_URL = {
+  algorand: "https://mainnet-idx.algonode.cloud",
+  voi: "https://mainnet-idx.voi.nodely.dev",
+};
+
+// Pool app IDs per chain
+const POOL_IDS = {
+  algorand: [3207735602, 3212536201],
+  voi: [41760711, 44866061],
+};
+
+function readUint256(buf, offset) {
+  let v = 0n;
+  for (let i = 0; i < 32; i++) v = (v << 8n) | BigInt(buf[offset + i]);
+  return v;
 }
 
-async function getAlgoAccountBalance(address) {
-  const acct = await lookupAccountByID(address);
-  const deposited = Math.max(0, acct.account.amount - acct.account["min-balance"]);
-  return deposited; // in microALGO
+/** Generic indexer helper */
+async function indexerGet(chain, path, params) {
+  const { data } = await axios.get(`${INDEXER_URL[chain]}${path}`, { params });
+  return data;
 }
 
-// ─── TVL Functions ─────────────────────────────────────────────────────────
+async function lookupAccount(chain, address) {
+  const data = await indexerGet(chain, `/v2/accounts/${address}`);
+  return data.account;
+}
+
+async function getAppGlobalState(chain, appId) {
+  const data = await indexerGet(chain, `/v2/applications/${appId}`);
+  const results = {};
+  for (const x of data.application.params["global-state"]) {
+    const key = Buffer.from(x.key, "base64").toString("binary");
+    results[key] = x.value.uint;
+    if (x.value.type === 1)
+      results[key] = Buffer.from(x.value.bytes, "base64").toString("binary");
+  }
+  return results;
+}
+
+/** Read a market's ABI-encoded box from the pool contract via indexer. */
+async function readMarketBox(chain, poolAppId, marketAppId) {
+  const prefix = Buffer.from("markets");
+  const idBuf = Buffer.alloc(8);
+  idBuf.writeBigUInt64BE(BigInt(marketAppId));
+  const boxKey = Buffer.concat([prefix, idBuf]).toString("base64");
+  const data = await indexerGet(chain, `/v2/applications/${poolAppId}/box`, {
+    name: `b64:${boxKey}`,
+  });
+  return Buffer.from(data.value, "base64");
+}
 
 /**
- * Algorand TVL: ALGO deposited in the lending pool
+ * Discover all market apps for a single pool via its created sToken apps.
+ * Each sToken has a `token_id` pointing to the underlying market contract.
  */
-async function algorandTvl(_, _1, _2, { api }) {
-  const deposited = await getAlgoAccountBalance(ALGO_POOL_ADDRESS);
-  // ALGO = asset ID 0 in Algorand coreAssets
-  api.add("coingecko:algorand", deposited / 1e6);
+async function discoverPoolMarkets(chain, poolId) {
+  const poolAddress = getApplicationAddress(poolId);
+  const account = await lookupAccount(chain, poolAddress);
+  const createdApps = account["created-apps"] || [];
+  const tokenAppIds = new Set();
+
+  const states = await Promise.all(
+    createdApps.map((a) => getAppGlobalState(chain, a.id))
+  );
+  for (const state of states) {
+    if (state.token_id) tokenAppIds.add(state.token_id);
+  }
+  return tokenAppIds;
+}
+
+/** Discover all markets across all pools for a chain.  Returns Map<marketAppId, poolAppId>. */
+async function discoverAllMarkets(chain) {
+  const markets = new Map();
+  for (const poolId of POOL_IDS[chain]) {
+    const marketIds = await discoverPoolMarkets(chain, poolId);
+    for (const mid of marketIds) markets.set(mid, poolId);
+  }
+  return markets;
+}
+
+/** Factory: create chain-specific TVL function */
+function makeTvl(chain) {
+  return async function tvl(api) {
+    const markets = await discoverAllMarkets(chain);
+    const addresses = [...markets.keys()].map((id) => getApplicationAddress(id));
+    const accounts = await Promise.all(
+      addresses.map((addr) => lookupAccount(chain, addr))
+    );
+    for (const account of accounts) {
+      const netNative = Math.max(
+        0,
+        account.amount - (account["min-balance"] || 0)
+      );
+      if (netNative > 0) api.add("1", netNative);
+      for (const asset of account.assets || []) {
+        if (asset.amount > 0)
+          api.add(String(asset["asset-id"]), asset.amount);
+      }
+    }
+  };
 }
 
 /**
- * Voi Network TVL: VOI deposited across both lending pools
- * Voi is not yet on DefiLlama chain list — track as "other" for now
- * Will be updated when Voi is added to supported chains
+ * Factory: create chain-specific borrowed function.
+ *
+ * Each market has a 329-byte ABI-encoded box in its pool contract keyed by
+ * "markets" + uint64BE(marketAppId).  The MarketData tuple stores:
+ *   totalScaledBorrows (uint256) at byte 145
+ *   borrowIndex        (uint256) at byte 209
+ *
+ * Actual borrows = totalScaledBorrows × borrowIndex / 1e18
  */
-async function voiTvl() {
-  const [pool1, pool2] = await Promise.all([
-    getVoiAccountBalance(VOI_POOL_1_ADDRESS),
-    getVoiAccountBalance(VOI_POOL_2_ADDRESS),
-  ]);
-  const totalVoi = (pool1 + pool2) / 1e6;
-  // Use VOI CoinGecko ID when available
-  return toUSDTBalances(totalVoi * 0); // placeholder until Voi has CoinGecko listing
+function makeBorrowed(chain) {
+  return async function borrowed(api) {
+    const markets = await discoverAllMarkets(chain);
+
+    for (const [marketAppId, poolAppId] of markets) {
+      try {
+        const boxData = await readMarketBox(chain, poolAppId, marketAppId);
+        const scaledBorrows = readUint256(boxData, BORROWS_OFFSET);
+        if (scaledBorrows === 0n) continue;
+
+        const borrowIndex = readUint256(boxData, BORROW_IDX_OFFSET);
+        const actualBorrows = (scaledBorrows * borrowIndex) / SCALE;
+        if (actualBorrows === 0n) continue;
+
+        // Identify underlying token from the market contract's account
+        const addr = getApplicationAddress(marketAppId);
+        const account = await lookupAccount(chain, addr);
+        const positiveAsset = (account.assets || []).find(
+          (a) => a.amount > 0
+        );
+        if (positiveAsset) {
+          api.add(
+            String(positiveAsset["asset-id"]),
+            actualBorrows.toString()
+          );
+        } else {
+          // Native token market (ALGO / VOI)
+          api.add("1", actualBorrows.toString());
+        }
+      } catch (e) {
+        // Box not found for this market – skip
+      }
+    }
+  };
 }
 
-// ─── Borrowed (outstanding loans) ─────────────────────────────────────────
-// DorkFi tracks borrowed amounts in the market contracts via global state.
-// For now we report TVL only (deposits); borrowed tracking added in v2.
-
-// ─── Exports ──────────────────────────────────────────────────────────────
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
   methodology:
-    "TVL is the total ALGO (Algorand) and VOI (Voi Network) deposited into DorkFi's " +
-    "lending pools as collateral. Borrowed amounts are not subtracted from TVL.",
+    "TVL counts all native tokens and ASAs deposited into DorkFi lending pools " +
+    "on Algorand and Voi. Borrowed amounts are read from pool contract market " +
+    "boxes (ABI-encoded MarketData).",
   algorand: {
-    tvl: algorandTvl,
+    tvl: makeTvl("algorand"),
+    borrowed: makeBorrowed("algorand"),
   },
-  // Voi Network support added once DefiLlama adds Voi chain
-  // voi: { tvl: voiTvl },
+  voi: {
+    tvl: makeTvl("voi"),
+    borrowed: makeBorrowed("voi"),
+  },
 };
