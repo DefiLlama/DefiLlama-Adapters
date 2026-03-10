@@ -190,6 +190,14 @@ const MorphoConfigs = {
         fromBlock: 168896078,
       }
     ]
+  },
+  celo: {
+    vaultFactories: [
+      {
+        address: '0x6870aa9f66c1e5efe8dbe8730e86e9e91f688275',
+        fromBlock: 40259931,
+      }
+    ]
   }
 }
 
