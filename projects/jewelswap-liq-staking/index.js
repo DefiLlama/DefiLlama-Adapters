@@ -1,4 +1,4 @@
-const { getTokenData, } = require('../helper/chain/elrond')
+const { getTokenData, sumTokens, } = require('../helper/chain/elrond')
 const { nullAddress } = require('../helper/tokenMapping')
 const sui = require('../helper/chain/sui')
 const radixdlt = require('../helper/chain/radixdlt')
@@ -14,6 +14,9 @@ const SCA = '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6:
 const SUI_TOKEN = '0x2::sui::SUI'
 const JWLCETUS = '0x0e25582daef54ee41052390c4db5e70a82ec1baed97942db0eb6094267624b5d::jwlcetus::JWLCETUS'
 const JWLSCA = '0x0e25582daef54ee41052390c4db5e70a82ec1baed97942db0eb6094267624b5d::jwlsca::JWLSCA'
+
+// MultiversX contracts
+const JWLASH_STAKING = 'erd1qqqqqqqqqqqqqpgqhw2s04kx5crn2yvx5p253aa8fmganjjqdfysjvnluz'
 
 // Radix component address
 const RADIX_COMPONENT = 'component_rdx1cpfd7h09g5v5rsydg4796a3vthsalqae7cdlzytesh429mx4fkk26d'
@@ -47,10 +50,15 @@ async function suiTvl(api) {
 }
 
 async function elrondTvl(api) {
-  const data = await getTokenData('JWLEGLD-023462')
-  const data2 = await getTokenData('JWLASH-f362b9')
+  const [data, data2, data3] = await Promise.all([
+    getTokenData('JWLEGLD-023462'),
+    getTokenData('JWLASH-f362b9'),
+    getTokenData('JWLUSD-62939e'),
+  ])
   api.add(nullAddress, data.minted - data.burnt)
   api.add('JWLASH-f362b9', data2.minted - data2.burnt)
+  api.add('JWLUSD-62939e', data3.minted - data3.burnt)
+  return sumTokens({ owners: [JWLASH_STAKING], balances: api.getBalances() })
 }
 
 async function radixTvl(api) {

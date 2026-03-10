@@ -10,6 +10,7 @@ const LENDING_POOL_FARMS = "erd1qqqqqqqqqqqqqpgq96n4gxvmw8nxgxud8nv8qmms5namspc5
 
 const FARMS = "erd1qqqqqqqqqqqqqpgqlnxy2hmvs8qxr6ezq2wmggn7ev62cjp6vmusvdral4";
 const FARMS2 = "erd1qqqqqqqqqqqqqpgqx6833qjac6uqztgsa8jhlztexucke0hrdfys6wd7qt";
+const XEXCHANGE_FARMS = "erd1qqqqqqqqqqqqqpgq9slqavjm7pglxgzuskwlvnq53gnk02vndfysq95mpq";
 
 const jewelOnedexFarmAbiRegistry = AbiRegistry.create(JEWEL_ONEDEX_FARM_SC_ABI);
 const jewelOnedexFarmSmartContract = new SmartContract({
@@ -204,7 +205,7 @@ async function elrondTvl(api) {
   addNfts(await getNFTs(FARMS))
   addNfts(await getNFTs(FARMS2))
   await oneDexFarm(api)
-  return sumTokens({ owners: [LENDING_POOL_FARMS, ], balances: api.getBalances() })
+  return sumTokens({ owners: [LENDING_POOL_FARMS, XEXCHANGE_FARMS], balances: api.getBalances() })
 
   function addNfts(nfts) {
     nfts.forEach(nft => {
