@@ -21,19 +21,22 @@ async function tvl(api) {
 
   if (timelockAddresses.length === 0) return {};
 
-  const balances = {};
-  const CHUNK_SIZE = 10;
-  for (let i = 0; i < timelockAddresses.length; i += CHUNK_SIZE) {
-    const chunk = timelockAddresses.slice(i, i + CHUNK_SIZE);
-    await sumTokens2({
-      balances,
-      api,
-      owners: chunk,
-      tokens: [ADDRESSES.null],
-      fetchCoValentTokens: true,
-    });
-  }
-  return balances;
+  // Core assets that DAO treasuries commonly hold + governance tokens from events
+  const tokens = [
+    ADDRESSES.null,
+    ADDRESSES.ethereum.WETH,
+    ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDT,
+    ADDRESSES.ethereum.DAI,
+    ADDRESSES.ethereum.WBTC,
+    ...new Set(daoLogs.map(log => log.token)),
+  ];
+
+  return sumTokens2({
+    api,
+    owners: timelockAddresses,
+    tokens,
+  });
 }
 
 module.exports = {
