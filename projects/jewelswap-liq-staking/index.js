@@ -69,6 +69,7 @@ async function radixTvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   elrond: { tvl: elrondTvl },
   sui: { tvl: suiTvl },
   radixdlt: { tvl: radixTvl },
