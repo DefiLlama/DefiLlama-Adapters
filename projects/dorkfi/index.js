@@ -153,7 +153,11 @@ function makeBorrowed(chain) {
           api.add("1", actualBorrows.toString());
         }
       } catch (e) {
-        // Box not found for this market – skip
+        // Only suppress 404 (box not yet initialised for this market).
+        // Re-throw all other errors so decode bugs and transient indexer
+        // failures surface instead of silently under-reporting borrows.
+        const status = e?.response?.status ?? e?.status;
+        if (status !== 404) throw e;
       }
     }
   };
