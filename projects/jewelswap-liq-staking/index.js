@@ -22,28 +22,34 @@ async function suiTvl(api) {
   const [nativePool, cetusInfo, scaInfo] = await sui.getObjects([NATIVE_POOL_ID, TOKEN_INFO_CETUS_ID, TOKEN_INFO_SCA_ID])
 
   // jwlSUI: vault + pending stake + pending liquidity + delegated to validators
-  api.add(SUI_TOKEN, nativePool.fields.sui_vault || 0)
-  api.add(SUI_TOKEN, nativePool.fields.total_sui_to_stake || 0)
-  api.add(SUI_TOKEN, nativePool.fields.total_sui_to_add_liquidity || 0)
-  const vaultsTableId = nativePool?.fields?.validator_set?.fields?.vaults?.fields?.id?.id
-  if (vaultsTableId) {
-    const vaultEntries = await sui.getDynamicFieldObjects({ parent: vaultsTableId })
-    for (const entry of vaultEntries) {
-      api.add(SUI_TOKEN, entry.fields.value?.fields?.total_staked || 0)
+  if (nativePool) {
+    api.add(SUI_TOKEN, nativePool.fields?.sui_vault || 0)
+    api.add(SUI_TOKEN, nativePool.fields?.total_sui_to_stake || 0)
+    api.add(SUI_TOKEN, nativePool.fields?.total_sui_to_add_liquidity || 0)
+    const vaultsTableId = nativePool.fields?.validator_set?.fields?.vaults?.fields?.id?.id
+    if (vaultsTableId) {
+      const vaultEntries = await sui.getDynamicFieldObjects({ parent: vaultsTableId })
+      for (const entry of vaultEntries) {
+        api.add(SUI_TOKEN, entry.fields?.value?.fields?.total_staked || 0)
+      }
     }
   }
 
   // jwlCETUS: vault + xCETUS (locked in Cetus governance) + pending
-  api.add(CETUS, cetusInfo.fields.cetus_vault || 0)
-  api.add(CETUS, cetusInfo.fields.total_cetus_staked || 0)
-  api.add(CETUS, cetusInfo.fields.total_cetus_to_stake || 0)
-  api.add(CETUS, cetusInfo.fields.total_cetus_to_add_liquidity || 0)
+  if (cetusInfo) {
+    api.add(CETUS, cetusInfo.fields?.cetus_vault || 0)
+    api.add(CETUS, cetusInfo.fields?.total_cetus_staked || 0)
+    api.add(CETUS, cetusInfo.fields?.total_cetus_to_stake || 0)
+    api.add(CETUS, cetusInfo.fields?.total_cetus_to_add_liquidity || 0)
+  }
 
   // jwlSCA: vault + veSCA (locked in Scallop governance) + pending
-  api.add(SCA, scaInfo.fields.sca_vault || 0)
-  api.add(SCA, scaInfo.fields.total_sca_staked || 0)
-  api.add(SCA, scaInfo.fields.total_sca_to_stake || 0)
-  api.add(SCA, scaInfo.fields.total_sca_to_add_liquidity || 0)
+  if (scaInfo) {
+    api.add(SCA, scaInfo.fields?.sca_vault || 0)
+    api.add(SCA, scaInfo.fields?.total_sca_staked || 0)
+    api.add(SCA, scaInfo.fields?.total_sca_to_stake || 0)
+    api.add(SCA, scaInfo.fields?.total_sca_to_add_liquidity || 0)
+  }
 }
 
 async function elrondTvl(api) {

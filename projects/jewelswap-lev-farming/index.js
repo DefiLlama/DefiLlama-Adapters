@@ -50,7 +50,6 @@ const HIPPO = '0x8993129d72e733985f7f1a00396cbd055bad6f817fee36576ce483c8bbb8b87
 const CETUS = '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS'
 const SCA = '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA'
 const WETH = '0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN'
-const SUIUSDT = '0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT'
 
 // Cetus farm pools: [farmPoolId, cetusPoolId, coinTypeA, coinTypeB]
 const CETUS_FARMS = [
@@ -65,13 +64,12 @@ const CETUS_FARMS = [
 ]
 
 // Turbos farm pools: [farmId, turbosPoolId, coinTypeA, coinTypeB]
+// Currently empty — valid pool IDs will be added when Turbos farms are deployed
 const TURBOS_FARMS = [
 ]
 
 // Scallop farm obligation
 const SCALLOP_OBLIGATION_ID = '0x5d1c3c7cb70264e8d92fe2d21022d2160dfbcb66298c2b423df47c8e3727dcb6'
-const SCALLOP_DEPOSIT_COIN = SUIUSDT
-const SCALLOP_DEBT_COIN = USDC
 
 
 // ─── CLMM Math ───
@@ -170,23 +168,25 @@ async function suiTvl(api) {
     }
   }
 
-  // Scallop leveraged farm (suiUSDT-USDC)
+  // Scallop leveraged farm (single-pair: suiUSDT collateral, USDC debt)
   const [obligation] = await sui.getObjects([SCALLOP_OBLIGATION_ID])
   if (obligation) {
     const collateralTableId = obligation.fields.collaterals?.fields?.table?.fields?.id?.id
     if (collateralTableId) {
       const collateralEntries = await sui.getDynamicFieldObjects({ parent: collateralTableId })
       for (const entry of collateralEntries) {
+        const coinType = '0x' + (entry.fields?.name?.fields?.name || '')
         const amount = entry.fields?.value?.fields?.amount || 0
-        if (Number(amount) > 0) api.add(SCALLOP_DEPOSIT_COIN, amount)
+        if (Number(amount) > 0) api.add(coinType, amount)
       }
     }
     const debtTableId = obligation.fields.debts?.fields?.table?.fields?.id?.id
     if (debtTableId) {
       const debtEntries = await sui.getDynamicFieldObjects({ parent: debtTableId })
       for (const entry of debtEntries) {
+        const coinType = '0x' + (entry.fields?.name?.fields?.name || '')
         const amount = entry.fields?.value?.fields?.amount || 0
-        if (Number(amount) > 0) api.add(SCALLOP_DEBT_COIN, -amount)
+        if (Number(amount) > 0) api.add(coinType, -amount)
       }
     }
   }
