@@ -101,6 +101,7 @@ const config = {
   katana: {
     morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
     fromBlock: 2741069,
+    blackList: ['0x2dca96907fde857dd3d816880a0df407eeb2d2f2', '0x203a662b0bd271a6ed5a60edfbd04bfce608fd36', '0x0913da6da4b42f538b445599b46bb4622342cf52', '0xee7d8bcfb72bc1880d0cf19822eb0a2e6577ab62']
   },
   tac: {
     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
@@ -197,16 +198,17 @@ const tvl = async (api) => {
 }
 
 const borrowed = async (api) => {
-  const { morphoBlue } = config[api.chain]
+  const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
+  const blackListLower = blackList.map(b => b.toLowerCase())
 
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
-    if (collateralToken.toLowerCase() !== '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') {
-      api.add(loanToken, data.totalBorrowAssets);
-    }
+    if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
+    if (blackListLower.includes(loanToken.toLowerCase())) return;
+    api.add(loanToken, data.totalBorrowAssets);
   });
 }
 

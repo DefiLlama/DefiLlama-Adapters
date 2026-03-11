@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { getTvl: getDriftVaultTvl } = require("../neutral-trade/utils/drift")
 
@@ -21,7 +22,7 @@ const ENZYME_VAULTS = [
   {
     name: "BTC Quant Trend Following",
     address: "0xfb48ae6a8e7bd05f9ef542708dd632bc8517539e",
-    valueAsset: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf", // cbBTC
+    valueAsset: ADDRESSES.ethereum.cbBTC, // cbBTC
   },
 ];
 

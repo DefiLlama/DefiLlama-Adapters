@@ -79,7 +79,7 @@ const configs = {
     iotex: { cether: '0x83C51de03f03C5E23f02F674dbD2032e164112Fc', comptroller: '0x47D7B83947Aa12fEb95f5f55527Dc9B32E4ec009', cetheEquivalent: ADDRESSES.iotex.WIOTX },
   },
   'whitehole-finance': {
-    arbitrum: { comptroller: '0x1d019f2d14bdb81bab7ba4ec7e02017837a7a43aeDa48F', abis: { getAllMarkets: 'address[]:allMarkets', totalBorrows: 'uint256:totalBorrow' } },
+    arbitrum: { comptroller: '0x1d019f2d14bdb81bab7ba4ec7e20868e669c32b1', abis: { getAllMarkets: 'address[]:allMarkets', totalBorrows: 'uint256:totalBorrow' } },
   },
   'loanshark': {
     scroll: { comptroller: '0xEFB0697700E5c489073a9BDF7EF94a2B2bc884a5', cether: '0xF017f9CF11558d143E603d56Ec81E4E3B6d39D7F' },
@@ -196,6 +196,9 @@ const configs = {
       comptroller: '0x1b4d3b0421dDc1eB216D230Bc01527422Fb93103',
       staking: [['0x150b1e51738cdf0ccfe472594c62d7d6074921ca', '0xcf8dedcdc62317beaedfbee3c77c08425f284486'], '0x43e8809ea748eff3204ee01f08872f063e44065f'],
     },
+  },
+  'qie-lend': {
+    qiev3: { comptroller: '0x69a31E3D361C69B37463aa67Ef93067dC760fBD4'},
   },
   // === Newly migrated adapters below ===
   'tropykus': {
@@ -473,7 +476,7 @@ const configs = {
   },
   'kinetic': {
     flare: [
-      { comptroller: '0x8041680Fb73E1Fe5F851e76233DCDfA0f2D2D7c8' },
+      { comptroller: '0x8041680Fb73E1Fe5F851e76233DCDfA0f2D2D7c8', cether: '0xb84f771305d10607dd086b2f89712c0ced379407' },
       { comptroller: '0xDcce91d46Ecb209645A26B5885500127819BeAdd', cether: '0xd7291D5001693d15b6e4d56d73B5d2cD7eCfE5c6' },
       { comptroller: '0x15F69897E6aEBE0463401345543C26d1Fd994abB' },
     ],

@@ -44,6 +44,18 @@ const configs = {
     },
     fantom: {},
   },
+  'solvr': {
+    methodology: 'TVL is calculated as the total SOLVR tokens staked in the SolvrStaking contract on Base.',
+    base: { 
+      staking: ["0xde2dc52d8ac7b793a9558b7b13b7b24f5c3b983a", "0x6DfB7BFA06e7c2B6c20C22c0afb44852C201eB07"]
+    }
+  },
+  'nickel': {
+    methodology: 'TVL is NICKEL tokens held in GridMining (mined rewards) and Staking (user-staked NICKEL).',
+    base: { 
+      staking: { owners: ["0xEF35314a4F3a1F8CE89095202dABAeEe1CaAd760", "0x93CF815EC397C526576078A74197c3fa2d769b80"], tokens: ['0xe11b4DD87675B52980b3427029a2d792A4A05aa2']}
+    }
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
@@ -93,6 +105,7 @@ const configs = {
     },
   },
   'athena-money': {
+    deadFrom: '2026-01-19',
     misrepresentedTokens: true,
     moonriver: {
       staking: { owners: ['0x1Dc0A29e51521E2e9262b91E6E78F4c15A4B7A1a'], tokens: ['0xBEcc61601c59d5aFFFCe750D201eC98CdC70DB796'], lps: ['0xc89c09a04440b7952790969ef470f8215bce4804'], useDefaultCoreAssets: true },

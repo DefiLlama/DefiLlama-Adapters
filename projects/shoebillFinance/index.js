@@ -41,6 +41,8 @@ const config = {
   kava: { dataProvider: '0xb2631276eE6524C6A7f205600F44E1408F21235F', },
 }
 
+module.exports.deadFrom = '2026-01-01'
+
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {    tvl, borrowed,  }
 })
