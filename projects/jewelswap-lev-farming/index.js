@@ -175,7 +175,9 @@ async function suiTvl(api) {
     if (collateralTableId) {
       const collateralEntries = await sui.getDynamicFieldObjects({ parent: collateralTableId })
       for (const entry of collateralEntries) {
-        const coinType = '0x' + (entry.fields?.name?.fields?.name || '')
+        const nameField = entry.fields?.name?.fields?.name
+        if (!nameField) continue
+        const coinType = '0x' + nameField
         const amount = entry.fields?.value?.fields?.amount || 0
         if (Number(amount) > 0) api.add(coinType, amount)
       }
@@ -184,7 +186,9 @@ async function suiTvl(api) {
     if (debtTableId) {
       const debtEntries = await sui.getDynamicFieldObjects({ parent: debtTableId })
       for (const entry of debtEntries) {
-        const coinType = '0x' + (entry.fields?.name?.fields?.name || '')
+        const nameField = entry.fields?.name?.fields?.name
+        if (!nameField) continue
+        const coinType = '0x' + nameField
         const amount = entry.fields?.value?.fields?.amount || 0
         if (Number(amount) > 0) api.add(coinType, -amount)
       }
