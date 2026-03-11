@@ -12,9 +12,6 @@ const TOKEN_INFO_SCA_ID = '0x89f42e78ccc517f6641d10163ed39dd6a464d9a01a8d67ea5eb
 const CETUS = '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS'
 const SCA = '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA'
 const SUI_TOKEN = '0x2::sui::SUI'
-const JWLCETUS = '0x0e25582daef54ee41052390c4db5e70a82ec1baed97942db0eb6094267624b5d::jwlcetus::JWLCETUS'
-const JWLSCA = '0x0e25582daef54ee41052390c4db5e70a82ec1baed97942db0eb6094267624b5d::jwlsca::JWLSCA'
-
 // MultiversX contracts
 const JWLASH_STAKING = 'erd1qqqqqqqqqqqqqpgqhw2s04kx5crn2yvx5p253aa8fmganjjqdfysjvnluz'
 
@@ -41,14 +38,12 @@ async function suiTvl(api) {
   api.add(CETUS, cetusInfo.fields.total_cetus_staked || 0)
   api.add(CETUS, cetusInfo.fields.total_cetus_to_stake || 0)
   api.add(CETUS, cetusInfo.fields.total_cetus_to_add_liquidity || 0)
-  api.add(JWLCETUS, cetusInfo.fields.total_jwlcetus_staked || 0)
 
   // jwlSCA: vault + veSCA (locked in Scallop governance) + pending
   api.add(SCA, scaInfo.fields.sca_vault || 0)
   api.add(SCA, scaInfo.fields.total_sca_staked || 0)
   api.add(SCA, scaInfo.fields.total_sca_to_stake || 0)
   api.add(SCA, scaInfo.fields.total_sca_to_add_liquidity || 0)
-  api.add(JWLSCA, scaInfo.fields.total_jwlsca_staked || 0)
 }
 
 async function elrondTvl(api) {

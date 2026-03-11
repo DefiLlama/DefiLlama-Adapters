@@ -254,6 +254,7 @@ async function oneDexFarm(api) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   elrond: {
     tvl: elrondTvl
   },
