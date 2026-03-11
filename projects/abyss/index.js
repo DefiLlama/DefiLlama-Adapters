@@ -1,10 +1,12 @@
 const sui = require("../helper/chain/sui");
-const { get } = require("../helper/http");
+const { getConfig } = require("../helper/cache");
 
 const VAULTS_SUMMARY_URL = "https://beta.abyssprotocol.xyz/api/vaults/vaults/summary";
 
 async function tvl(api) {
-  const vaults = await get(VAULTS_SUMMARY_URL);
+  const vaults = await getConfig("abyss", VAULTS_SUMMARY_URL);
+
+  if (!Array.isArray(vaults) || vaults.length === 0) throw new Error("Invalid or empty vault list from Abyss API");
 
   const vaultIds = vaults.map((v) => v.vault_id);
   const poolIds = vaults.map((v) => v.margin_pool_id);
