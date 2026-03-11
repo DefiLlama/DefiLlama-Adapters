@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 
@@ -34,6 +35,19 @@ async function tvl(api) {
   const poolIds = VAULTS.map((v) => v.marginPoolId);
 
   // Fetch vault and margin pool objects in parallel
+=======
+const sui = require("../helper/chain/sui");
+const { get } = require("../helper/http");
+
+const VAULTS_SUMMARY_URL = "https://beta.abyssprotocol.xyz/api/vaults/vaults/summary";
+
+async function tvl(api) {
+  const vaults = await get(VAULTS_SUMMARY_URL);
+
+  const vaultIds = vaults.map((v) => v.vault_id);
+  const poolIds = vaults.map((v) => v.margin_pool_id);
+
+>>>>>>> 9b177934e (Update Abyss adapter to dynamically fetch all vaults)
   const [vaultObjects, poolObjects] = await Promise.all([
     sui.getObjects(vaultIds),
     sui.getObjects(poolIds),
@@ -48,21 +62,31 @@ async function tvl(api) {
     const marginPoolShares = vault.fields.abyss_vault_state?.fields?.margin_pool_shares;
     if (!marginPoolShares) return;
 
+<<<<<<< HEAD
     // Convert shares to underlying assets using the margin pool exchange rate
     // underlying_amount = margin_pool_shares * total_supply / supply_shares
+=======
+>>>>>>> 9b177934e (Update Abyss adapter to dynamically fetch all vaults)
     const totalSupply = pool.fields.state?.fields?.total_supply;
     const supplyShares = pool.fields.state?.fields?.supply_shares;
 
     if (totalSupply && supplyShares && supplyShares !== "0") {
       const underlying = BigInt(marginPoolShares) * BigInt(totalSupply) / BigInt(supplyShares);
+<<<<<<< HEAD
       api.add(VAULTS[index].assetType, underlying.toString());
+=======
+      api.add("0x" + vaults[index].asset_type, underlying.toString());
+>>>>>>> 9b177934e (Update Abyss adapter to dynamically fetch all vaults)
     }
   });
 }
 
 module.exports = {
   timetravel: false,
+<<<<<<< HEAD
   doublecounted: true,
+=======
+>>>>>>> 9b177934e (Update Abyss adapter to dynamically fetch all vaults)
   methodology: "TVL is calculated by summing the underlying assets held in each Abyss vault. Vault shares in DeepBook margin pools are converted to underlying asset amounts using the pool's exchange rate (total_supply / supply_shares), which accounts for accrued interest over time.",
   sui: {
     tvl,
