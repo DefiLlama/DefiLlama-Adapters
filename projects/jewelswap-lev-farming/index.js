@@ -50,7 +50,6 @@ const HIPPO = '0x8993129d72e733985f7f1a00396cbd055bad6f817fee36576ce483c8bbb8b87
 const CETUS = '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS'
 const SCA = '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA'
 const WETH = '0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN'
-const NS = '0x5145494a5f5100e645e4b0aa950fa6b68f614e8c59e17bc5ded3495123a79178::ns::NS'
 const SUIUSDT = '0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT'
 
 // Cetus farm pools: [farmPoolId, cetusPoolId, coinTypeA, coinTypeB]
@@ -63,14 +62,10 @@ const CETUS_FARMS = [
   ['0x714fd4e1053a8cce8a18cfe1b81b0e53c0b4d0e64d8fecbecc0c7a8e6e04739e', '0x9e593f5bcc31019bca461be55e353b59b3008e41140ad1860804287ad3584353', USDC, WETH],
   ['0x28638f99627e87f59c80cab7876a6eb7e36e10bb89eb2b5d6a1c28dfba1f0881', '0x3b13ac26e251e02eaf25fd0bf30c7decd97420f6c33bdae8bab07155b37caf1c', USDC, CETUS],
   ['0xdbc21b9cba37bcaa5e1392e74ff34ee33f18886c2a76e37167e32d59781b082b', '0xaa72ec9be01dba54bab66c9768e57e03bda0dd3c3030c6e9c4e512e6c5e58559', SCA, SUI_TOKEN],
-  ['0x02ce77ff8336c005e05c1e0de43e00470e3e27e22ece0c0585e77c9914d8e2f2', '0x5f75b7c18e7d7b1d0e1d5a3e6e7d9f9d7e5a3b1c7d9f1e3a5b7d9e1f3a5b7c', USDC, SCA],
-  ['0xd520fa2bb08e18dd7f5c86cd3b1c4b48f71a6137b0d3c8c3baf01f3be5a3a8b1', '0x763fc79db5a23b48e5fce9da5b440e87e3edc8e7f6de0c6d4e3b2a1f0e5d9c8b', NS, SUI_TOKEN],
 ]
 
 // Turbos farm pools: [farmId, turbosPoolId, coinTypeA, coinTypeB]
 const TURBOS_FARMS = [
-  ['0x43ba33b3fef07c1afe488e1f06f04cec12ae1c62b1efb12fdbce3b2a4822a4c6', '0xbb3ced02c8430a0e907d68e5f09fad633fdee9e7', NS, SUI_TOKEN],
-  ['0x8c267c09f37dff38c0a73a3c82c2a8a6e1a4ef5cb2bc41f43abafd1e11e25e9d', '0x2c6fc12e5a4a6887767453e29e4bd1d436e85ff8', SUI_TOKEN, USDC],
 ]
 
 // Scallop farm obligation
@@ -152,7 +147,7 @@ async function suiTvl(api) {
     const [farm, pool] = await sui.getObjects([farmId, turbosPoolId])
     if (!farm || !pool) continue
     const totalShare = Number(farm.fields.total_share || 0)
-    const poolLiquidity = Number(pool.fields.liquidity || 1)
+    const poolLiquidity = Number(pool.fields.liquidity || 0)
     if (totalShare <= 0 || poolLiquidity <= 0) continue
     const ratio = totalShare / poolLiquidity
     api.add(coinA, Math.floor(Number(pool.fields.coin_a || 0) * ratio))

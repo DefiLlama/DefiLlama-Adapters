@@ -28,10 +28,12 @@ async function suiTvl(api) {
   api.add(SUI_TOKEN, nativePool.fields.sui_vault || 0)
   api.add(SUI_TOKEN, nativePool.fields.total_sui_to_stake || 0)
   api.add(SUI_TOKEN, nativePool.fields.total_sui_to_add_liquidity || 0)
-  const vaultsTableId = nativePool.fields.validator_set.fields.vaults.fields.id.id
-  const vaultEntries = await sui.getDynamicFieldObjects({ parent: vaultsTableId })
-  for (const entry of vaultEntries) {
-    api.add(SUI_TOKEN, entry.fields.value?.fields?.total_staked || 0)
+  const vaultsTableId = nativePool?.fields?.validator_set?.fields?.vaults?.fields?.id?.id
+  if (vaultsTableId) {
+    const vaultEntries = await sui.getDynamicFieldObjects({ parent: vaultsTableId })
+    for (const entry of vaultEntries) {
+      api.add(SUI_TOKEN, entry.fields.value?.fields?.total_staked || 0)
+    }
   }
 
   // jwlCETUS: vault + xCETUS (locked in Cetus governance) + pending
