@@ -13,16 +13,7 @@ const V2_FACTORY = "0xE4296d6161c8a1554a18dba79C0f825cE23bAE42";
 
 /** Uniswap-V3-style concentrated-liquidity factory */
 const V3_FACTORY = "0xC4C8310080F209629EC4c349cb2A3c6720e1176D";
-
-/**
- * Conservative fromBlock for V3 factory PoolCreated event discovery.
- * Kaia ~1 block/s; Capybara launched May 2024 (~block 153 M).
- * Set 13 M blocks earlier as a buffer so no early pool is missed.
- */
-const V3_START_BLOCK = 140_000_000;
-
-/** Unix timestamp for 2024-05-01 – earliest Capybara contract deployment */
-const START_TIMESTAMP = 1714521600;
+const V3_START_BLOCK = 172328824;
 
 // ─── TVL sources ──────────────────────────────────────────────────────────────
 
@@ -52,7 +43,7 @@ const v3Exports = uniV3Export({
 });
 
 module.exports = mergeExports(
-  { start: START_TIMESTAMP },
+  { start: '2024-05-15' },
   {
     klaytn: { tvl: wombatTvl },
   },
