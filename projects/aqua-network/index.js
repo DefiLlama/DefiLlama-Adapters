@@ -32,7 +32,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1719792000,
+  start: '2024-07-01',
   misrepresentedTokens: true,
   methodology:
     'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API.',

@@ -4,7 +4,7 @@ const PsyAmericanIdl = require("./idl.json");
 const PsyFiV2Idl = require("./psyfiV2Idl.json");
 const PsyFiMmIdl = require("./psyFiMmIdl.json");
 const PsyLendIdl = require("./psyLendIdl.json");
-const { getProvider, sumTokens2 } = require("../helper/solana");
+const { getProvider, sumTokens2, getAssociatedTokenAddress } = require("../helper/solana");
 
 const textEncoder = new TextEncoder();
 
@@ -102,13 +102,13 @@ async function getPsyLendTokenAccounts(anchorProvider) {
 async function tvl() {
   const anchorProvider = getProvider();
   const [
-    tokensAndOwners,
+    // tokensAndOwners,
     tokenAccounts,
     psyFiV2TokenAccounts,
     psyFiMmTokenAccounts,
     psyLendTokenAccounts,
   ] = await Promise.all([
-    getPsyAmericanTokenAccounts(anchorProvider),
+    // getPsyAmericanTokenAccounts(anchorProvider),
     getTokenizedEurosControlledAccounts(anchorProvider),
     getPsyFiEurosTokenAccounts(anchorProvider),
     getPsyFiMmTokenAccounts(anchorProvider),
@@ -121,14 +121,14 @@ async function tvl() {
       ...psyFiMmTokenAccounts,
       ...psyLendTokenAccounts,
     ],
-    tokensAndOwners,
+    // tokensAndOwners,
   });
 }
 
 module.exports = {
   misrepresentedTokens: true,
   hallmarks: [
-    [1717977600,"Withdrawal Only Mode Announced"]
+    ['2024-06-10',"Withdrawal Only Mode Announced"]
   ],
   timetravel: false,
   solana: {

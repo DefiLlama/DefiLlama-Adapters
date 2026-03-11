@@ -1,48 +1,14 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { getChainTransform, } = require("../helper/portedTokens");
-const { getConfig } = require('../helper/cache')
+const { getConfig } = require('../helper/cache');
+const { sumUnknownTokens } = require('../helper/unknownTokens');
 
-const { vaultsBase } = require("./avault-vault-utils");
 const url = "https://www.avault.network/media/get-vaults.json";
-async function tvl(_, _b, chainBlocks) {
-  const balances = {};
+async function tvl(api) {
   const vaultsInfo = (await getConfig('avault', url))
-  const chainArr = Object.keys(vaultsInfo);
-  const chain = "astar";
-  const chainLocal = chain;
-  const vaultAddressArr = Object.values(vaultsInfo[chainLocal]);
-  const transformAddress = await getChainTransform(chainLocal);
-  const { wantedLocked, wantedAddresses, vaultName } = await vaultsBase(
-    chainLocal,
-    vaultAddressArr,
-    chainBlocks[chain]
-  );
-
-  const lpPositions = [];
-  for (let k = 0; k < wantedLocked.length; k++) {
-    if (vaultName[k].toLowerCase().endsWith(" lp")) {
-      lpPositions.push({
-        token: wantedAddresses[k],
-        balance: wantedLocked[k],
-      });
-    } else {
-      sdk.util.sumSingleBalance(
-        balances,
-        `${chainLocal}:${wantedAddresses[k]}`,
-        wantedLocked[k]
-      );
-    }
-  }
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks[chainLocal],
-    chainLocal,
-    transformAddress
-  );
-
-  return balances;
+  const vaults = Object.values(vaultsInfo.astar)
+  const bals  = await api.multiCall({  abi: 'uint256:wantLockedTotal', calls: vaults})
+  const tokens  = await api.multiCall({  abi: 'address:wantAddress', calls: vaults})
+  api.add(tokens, bals)
+  return sumUnknownTokens({ api, resolveLP: true, useDefaultCoreAssets: true, })
 }
 
 module.exports = {

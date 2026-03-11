@@ -42,7 +42,6 @@ module.exports = {
     tvl,
     staking: staking(apeAPE, APE),
   },
-  start: 15688276,
   methodology:
     "Counts liquidity as the Collateral APE and USDC & FRAX on all AMOs through their contracts",
 };

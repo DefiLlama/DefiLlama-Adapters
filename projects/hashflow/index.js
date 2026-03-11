@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http') 
-const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
 let dataCache = require('./dataCache.json')
 
@@ -51,6 +50,10 @@ function chainTvl(chain) {
   }
 }
 
-module.exports = chainExports(chainTvl, Object.keys(chainIds)),
   module.exports.methodology = 'Hashflow TVL is made of all pools token balances. Pools and their tokens are retrieved by Hashflow HTTP REST API.'
 module.exports.broken = 'Server IP is blocked, so api call fails'
+
+
+Object.keys(chainIds).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})

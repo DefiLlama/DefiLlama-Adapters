@@ -14,7 +14,7 @@ const config = {
 
 module.exports = {
   methodology: 'sum all tvls from all pools',
-  start: 1716248276, //2023-05-01
+  start: '2024-05-21', //2023-05-01
 }
 
 Object.keys(config).forEach(chain => {

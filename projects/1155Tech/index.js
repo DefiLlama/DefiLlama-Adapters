@@ -4,7 +4,6 @@ const MARKET_1155TECH_CONTRACT = '0x33b77fAf955Ed3eDAf939ae66C4D7a2D78bc30C6';
 
 module.exports = {
   methodology: 'Value of all Keys across all art markets is TVL in the protocol',
-  start: 7280880,
   canto: {
     tvl: sumTokensExport({ owner: MARKET_1155TECH_CONTRACT, tokens: [ADDRESSES.canto.NOTE] })
   }

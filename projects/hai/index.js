@@ -4,7 +4,7 @@ const config = {
 }
 
 module.exports = {
-  start: 1709780769, // globalDebtCeiling raised > 0
+  start: '2024-03-07', // globalDebtCeiling raised > 0
 };
 
 Object.keys(config).forEach(chain => {

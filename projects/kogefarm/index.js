@@ -1,5 +1,4 @@
 const { sumUnknownTokens } = require('../helper/unknownTokens')
-const abi = require('./abi.json')
 const { getConfig } = require('../helper/cache')
 
 const kogeMasterChefAddr = '0x6275518a63e891b1bC54FEEBBb5333776E32fAbD'
@@ -27,32 +26,56 @@ const _kogePool2 = [
 ]
 
 const config = {
-  kava: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/kava_vault_addresses.json', },
-  moonriver: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/movr_vault_addresses.json', },
-  fantom: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/ftm_vault_addresses.json', },
-  polygon: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/vaultaddresses', },
+  kava: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/kava_vault_addresses.json' },
+  moonriver: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/movr_vault_addresses.json' },
+  fantom: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/ftm_vault_addresses.json' },
+  polygon: { endpoint: 'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/vaultaddresses' },
+}
+
+const abi = {
+  strategy: "function strategy() view returns (address)",
+  balance: "uint256:balance",
+  token: "address:token",
+  balanceOfPool: "function balanceOf() view returns (uint256)"
 }
 
 Object.keys(config).forEach(chain => {
-  const { endpoint } = config[chain]
+  const { endpoint } = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
-      let info = (await getConfig('kogefarm/' + chain, endpoint))
-      if (typeof info === 'string') info = JSON.parse(vaults.replace(/,(\s*[}\]])/g, '$1'))
-      let vaults = chain === 'polygon' ? info : info.map(v => v.vault)
-      if (chain === 'polygon')
-        vaults = vaults.filter(v => !_kogePool2.includes(v))
-      const tokens = await api.multiCall({ abi: abi.token, calls: vaults })
-      const bals = await api.multiCall({ abi: abi.balance, calls: vaults })
-      api.addTokens(tokens, bals)
-      return sumUnknownTokens({ api, resolveLP: true, })
+      let info = await getConfig('kogefarm/' + chain, endpoint);
+      if (typeof info === 'string') info = JSON.parse(info.replace(/,(\s*[}\]])/g, '$1'));
+      
+      let vaults = chain === 'polygon' ? info : info.map(v => v.vault);
+      if (chain === 'polygon') {
+        vaults = vaults.filter(v => !_kogePool2.includes(v));
+        const [tokens, bals] = await Promise.all([
+          api.multiCall({ abi: abi.token, calls: vaults }),
+          api.multiCall({ abi: abi.balance, calls: vaults })
+        ]);
+        api.addTokens(tokens, bals);
+
+      } else {
+        const [tokens, strategies] = await Promise.all([
+          api.multiCall({ abi: abi.token, calls: vaults }),
+          api.multiCall({ abi: abi.strategy, calls: vaults })
+        ]);
+
+        const balanceOfPools = await api.multiCall({ calls: strategies, abi: abi.balanceOfPool });
+        api.addTokens(tokens, balanceOfPools);
+      }
+      return sumUnknownTokens({ api, resolveLP: true });
     }
-  }
-})
+  };
+});
+
+
 
 module.exports.polygon.pool2 = async (api) => {
-  const tokens = await api.multiCall({ abi: abi.token, calls: _kogePool2 })
-  const bals = await api.multiCall({ abi: abi.balance, calls: _kogePool2 })
+  const [tokens, bals] = await Promise.all([
+    api.multiCall({ abi: abi.token, calls: _kogePool2 }),
+    api.multiCall({ abi: abi.balance, calls: _kogePool2 })
+  ])
   api.addTokens(tokens, bals)
   return sumUnknownTokens({ api, resolveLP: true, tokens: ['0x3885503aef5e929fcb7035fbdca87239651c8154'], owner: kogeMasterChefAddr, })
 }

@@ -6,7 +6,6 @@ const BLUEBERRY_GLP_COMPOUNDER_CONTRACT =
 
 module.exports = {
   methodology: "Total assets in Seashell's Blueberry GLP Compounder contract",
-  start: 66190371,
   arbitrum: {
     tvl: sumTokensExport({ owner: BLUEBERRY_GLP_COMPOUNDER_CONTRACT, tokens: [SGLP_TOKEN]}),
   },

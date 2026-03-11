@@ -1,11 +1,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const {  nullAddress,treasuryExports } = require("../helper/treasury");
+const { nullAddress, treasuryExports } = require("../helper/treasury")
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const Treasury = "0x68A99f89E475a078645f4BAC491360aFe255Dff1";
 const Treasury_bsc = "0x5C9E5571B17D91e6ACcD4F0c29bBe199Af1f7B09";
-const Treasury_btc = "bc1q220k2449fau0pxu9hfn28q3w4k99ep9hwsa5fa";
 const Treasury_trx = "TSZMcrQzMLdKrgiMPoe2uQMHLeEpkf2j8E"
-
 
 module.exports = treasuryExports({
   ethereum: {
@@ -40,7 +39,7 @@ module.exports = treasuryExports({
     tokens: [
         nullAddress,
     ],
-    owners: [Treasury_btc]
+    owners: bitcoinAddressBook.indiaCovid
   }
   //https://cryptorelief.in/transparency
 })

@@ -6,7 +6,6 @@ const TOKENS = ["0x6d306C2C9CD931160763D99376a68C14D33DC954"]
 module.exports = {
   methodology:
     "MinerPepe  the first mining PEPE Meme Coin on Binance Smart Chain. Miners enjoy 12% daily returns in BNB and MPEPE tokens",
-  start: 35011373,
   bsc: {
     tvl: sumTokensExport({
       tokensAndOwners: [

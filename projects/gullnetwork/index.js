@@ -25,7 +25,7 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  start: 1710844331, // May-17-2024 12:45:31 PM +UTC
+  start: '2024-03-19', // May-17-2024 12:45:31 PM +UTC
   methodology: 'GullNetwork TVL including total values of assets staked in our staking vaults, and assets in the liquidity pool.',
 }
 

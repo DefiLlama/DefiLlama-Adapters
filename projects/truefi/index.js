@@ -1,5 +1,18 @@
-const abi = require('./abi.json')
-const { staking } = require('../helper/staking')
+const abi = {
+    "token": "address:token",
+    "asset": "address:asset",
+    "getPortfolios": "address[]:getPortfolios",
+    "loansValue": "uint256:loansValue",
+    "currencyBalance": "uint256:currencyBalance",
+    "underlyingToken": "address:underlyingToken",
+    "illiquidValue": "uint256:illiquidValue",
+    "liquidValue": "uint256:liquidValue",
+    "getAssetVaults": "address[]:getAssetVaults",
+    "liquidAssets": "uint256:liquidAssets",
+    "outstandingAssets": "uint256:outstandingAssets",
+    "getAlocVaults": "address[]:getPortfolios",
+    "borrowedAssets": "uint256:borrowedAmount"
+  };const { staking } = require('../helper/staking')
 
 const stkTRU = '0x23696914Ca9737466D8553a2d619948f548Ee424'
 const TRU = '0x4C19596f5aAfF459fA38B0f7eD92F11AE6543784'
@@ -81,7 +94,7 @@ async function tvlArbitrum(api) {
 }
 
 module.exports = {
-  start: 1605830400,            // 11/20/2020 @ 12:00am (UTC)
+  start: '2020-11-20',            // 11/20/2020 @ 12:00am (UTC)
   ethereum: {
     tvl,
     staking: staking(stkTRU, TRU),

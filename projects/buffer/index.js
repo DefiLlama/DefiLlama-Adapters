@@ -43,20 +43,20 @@ module.exports = {
     }),
   },
   hallmarks: [
-    [Math.floor(new Date("2022-10-26") / 1e3), "Shifted to USDC POL pool"],
+    ["2022-10-26", "Shifted to USDC POL pool"],
     [
-      Math.floor(new Date("2023-01-30") / 1e3),
+      "2023-01-30",
       "Opened USDC BLP pool to the public",
     ],
-    [Math.floor(new Date("2023-02-22") / 1e3), "Added a USDC Pool on polygon"],
-    [Math.floor(new Date("2023-03-22") / 1e3), "Added ARB Pool"],
+    ["2023-02-22", "Added a USDC Pool on polygon"],
+    ["2023-03-22", "Added ARB Pool"],
     [
-      Math.floor(new Date("2023-04-14") / 1e3),
+      "2023-04-14",
       "Added USDC Protocol owned liquidity Pool",
     ],
-    [Math.floor(new Date("2023-09-01") / 1e3), "Debuted Version 2.5"],
-    [Math.floor(new Date("2024-01-03") / 1e3), "Launched above/below options"],
-    [Math.floor(new Date("2024-05-30") / 1e3), "Debuted Version 2.6"],
+    ["2023-09-01", "Debuted Version 2.5"],
+    ["2024-01-03", "Launched above/below options"],
+    ["2024-05-30", "Debuted Version 2.6"],
 
   ],
 };

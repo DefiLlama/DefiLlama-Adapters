@@ -1,5 +1,15 @@
 const { config } = require("./config");
-const abi = require("./abi.json");
+const abi = {
+    "getTotalAmounts": "function getTotalAmounts() external view returns (uint256 total0, uint256 total1)",
+    "getBatchCategory": "function getBatchCategory(uint256 batchId) external view returns (uint256 categoryId)",
+    "getBatch": "function getBatch(uint256 batchId) external view returns (uint256 id, uint256 projectId, uint256 collateralizedCredits, address supplier, uint32 certificationDate, uint16 vintage, uint8 status, uint24 batchTA, bool isAccumulating)",
+    "getCategory": "function getCategory(uint256 categoryId) external view returns (uint256 volumeCoefficient, uint40 decayPerSecond, uint16 maxDepreciation, uint24 averageTA, uint32 lastCollateralizationTimestamp, uint256 totalCollateralized, uint256 lastCollateralizationMomentum)",
+    "getCategoryToken": "function getCategoryToken(uint256 categoryId) external view returns (address token)",
+    "totalSupply": "uint256:totalSupply",
+    "balanceOf": "erc20:balanceOf",
+    "token0": "address:token0",
+    "token1": "address:token1"
+  };
 const { fetchForwardContractBatchSupplies } = require("./forward-contract-batch-supply");
 const { fetchCategoriesAndBatches } = require("./categories-and-batches");
 const { valuateBatches } = require("./batch-valuation");
@@ -47,7 +57,7 @@ async function pool2(api) {
 }
 
 module.exports = {
-  start: 1684477800, // Fri May 19 2023 06:30:00 GMT+0000
+  start: '2023-05-19', // Fri May 19 2023 06:30:00 GMT+0000
   methodology: `TVL is a measure of the health of the Solid World ecosystem. The TVL can be looked at from 2 perspectives. The 1st perspective, "RWA" valuation, represents the total value of the tokenized forward carbon credits, and is computed as the present value of the on-chain forward credits (ERC1155), based on their exchange rate to CRISP tokens (ERC20) and subsequent USDC value, summed-up.The 2nd perspective, "pool2", represents the total value locked up in our staking contract, and it's calculated by adding up the value of all the LP tokens that are staked. The LP tokens represent the amount of liquidity that has been provided to the Solid World platform.`,
   polygon: {
     tvl,

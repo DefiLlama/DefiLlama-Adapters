@@ -1,5 +1,19 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "SynthereumPoolRegistry_getCollaterals": "address[]:getCollaterals",
+    "SynthereumPoolRegistry_getSyntheticTokens": "string[]:getSyntheticTokens",
+    "SynthereumPoolRegistry_getElements": "function getElements(string syntheticTokenSymbol, address collateralToken, uint8 version) view returns (address[])",
+    "collateralToken": "address:collateralToken",
+    "totalCollateralAmount": "function totalCollateralAmount() view returns (uint256 usersCollateral, uint256 lpsCollateral, uint256 totalCollateral)",
+    "SynthereumFixedRateRegistry_getCollaterals": "address[]:getCollaterals",
+    "SynthereumFixedRateRegistry_getSyntheticTokens": "string[]:getSyntheticTokens",
+    "SynthereumFixedRateRegistry_getElements": "function getElements(string syntheticTokenSymbol, address collateralToken, uint8 version) view returns (address[])",
+    "totalPegCollateral": "uint256:totalPegCollateral",
+    "SynthereumSelfMintingRegistry_getCollaterals": "address[]:getCollaterals",
+    "SynthereumSelfMintingRegistry_getSyntheticTokens": "string[]:getSyntheticTokens",
+    "SynthereumSelfMintingRegistry_getElements": "function getElements(string syntheticTokenSymbol, address collateralToken, uint8 version) view returns (address[])",
+    "getGlobalPositionData": "function getGlobalPositionData() view returns (uint256 totCollateral, uint256 totTokensOutstanding)"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // The synthpoolRegistry addresses can be found in this repo
@@ -75,9 +89,11 @@ async function tvl(api) {
     ].map(i => i.toLowerCase())
     const calls = liquidityPools.filter(i => !blacklistedPools.includes(i.toLowerCase()))
     const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls })
-    const totalCollateralAmounts = await api.multiCall({ abi: abi.totalCollateralAmount, calls })
+    const totalCollateralAmounts = await api.multiCall({ abi: abi.totalCollateralAmount, calls, permitFailure: true })
     collateralTokens.forEach((data, i) => {
-      api.add(data, totalCollateralAmounts[i].totalCollateral)
+      const totalCollateralAmount = totalCollateralAmounts[i]
+      if (!totalCollateralAmount) return
+      api.add(data, totalCollateralAmount.totalCollateral)
     })
   } else if (version === 5) {
     // Get balances of every LiquidityPool and SynthToken Contracts

@@ -1,13 +1,13 @@
-const utils = require('./helper/utils')
+const axios = require('axios')
 
-async function fetch(){
-    const tvl = await utils.fetchURL("https://public.nerve.network/nerve/tvl")
-    return Number(tvl.data.totalUsdTvl)
+const url = "https://public.nerve.network/nerve/tvl"
+
+const tvl = async (api) => {
+  const { data } = await axios(url)
+  api.addUSDValue(Math.round(data.totalUsdTvl))
 }
 
 module.exports = {
-    nuls: {
-        fetch
-    },
-    fetch
+  misrepresentedTokens: true,
+  nuls: { tvl }
 }

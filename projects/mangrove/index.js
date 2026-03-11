@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "openMarkets": "function openMarkets() view returns ((address,address,uint256)[])",
+    "offerList": "function offerList((address,address,uint256),uint256,uint256) view returns (uint256,uint256[],(uint256,uint256,int256,uint256)[])"
+  };
 const { BigNumber } = require("bignumber.js");
 
 const mgvReaders = {
@@ -55,7 +58,7 @@ module.exports = {
   misrepresentedTokens: false,
   methodology:
     "TVL is calculated by getting the total promised liquidity on the orderbook on a specific block.",
-  start: 1708992000,
+  start: '2024-02-27',
 };
 
 for (const chain in mgvReaders) {

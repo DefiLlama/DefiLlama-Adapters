@@ -77,7 +77,7 @@ module.exports = treasuryExports({
 			'0x940181a94a35a4569e4529a3cdfb74e38fd98631', //aero
 			'0x7f62ac1e974d65fab4a81821ca6af659a5f46298', //wels
 			'0x78b3c724a2f663d11373c4a1978689271895256f', //tkn
-			'0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452', //wsteth
+			ADDRESSES.base.wstETH, //wsteth
 			'0x373504da48418c67e6fcd071f33cb0b3b47613c7', //wbasedoge
 		]
 	},

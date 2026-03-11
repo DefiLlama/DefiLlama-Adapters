@@ -53,26 +53,14 @@ async function tvl(api) {
   api.add(v2Tokens, v2Bals);
 
   const tokens = await api.multiCall({
-    abi: {
-      inputs: [],
-      name: "getTotalSupply",
-      outputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: "uint256:getTotalSupply",
     calls: [LENDING_POOL_USDB, PRO.lendingPool.usdb, LENDING_POOL_WETH, PRO.lendingPool.weth],
   });
 
-  api.add(ADDRESSES.blast.USDB, tokens[0]);
-  api.add(ADDRESSES.blast.USDB, tokens[1]);
-  api.add(ADDRESSES.blast.WETH, tokens[2]);
-  api.add(ADDRESSES.blast.WETH, tokens[3]);
+  // api.add(ADDRESSES.blast.USDB, tokens[0]);
+  // api.add(ADDRESSES.blast.USDB, tokens[1]);
+  // api.add(ADDRESSES.blast.WETH, tokens[2]);
+  // api.add(ADDRESSES.blast.WETH, tokens[3]);
 
   await sumTokens2({
     api,

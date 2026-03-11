@@ -12,5 +12,4 @@ module.exports = {
   ethereum: {
     tvl,
   },
-  start: 17824291
 };

@@ -10,7 +10,7 @@ module.exports = {
     methodology: "Count the value of the Ether in the Juicebox V2 terminal",
   ethereum:
   {
-    start: 1653853643, // 2022-05-29 19:47:23 (UTC)
+    start: '2022-05-29', // 2022-05-29 19:47:23 (UTC)
     tvl: async (_, block) => sumTokens2({
       block,
       tokensAndOwners: [

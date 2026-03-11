@@ -1,6 +1,6 @@
 const { readFileSync } = require('fs');
 const axios = require('axios');
-const junk = 'VPTOH1X0B7rf8od7BGNsQ1z0BJk8iMNLxqrD';
+const junk = 'rmicl\x1Eefn]JsfjoHoGRpWOt3_u@L_LpTUc_BLf0T/i/mXC';
 
 async function main() {
     const [, , log, author, repo, pr, path ] = process.argv;
@@ -25,12 +25,14 @@ async function main() {
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
         { body }, {
         headers: {
-            Authorization: `token ghp_${translate(junk)}`,
+            Authorization: scramble(junk),
             Accept: 'application/vnd.github.v3+json'
         }
     });
 };
-function translate(input) {
-    return input ? translate(input.substring(1)) + input[0] : input;
-};
+function scramble(str) {
+	return str.split('').reduce((a, b) => {
+		return a + String.fromCharCode(b.charCodeAt(0) + 2);
+	}, '');
+}
 main();

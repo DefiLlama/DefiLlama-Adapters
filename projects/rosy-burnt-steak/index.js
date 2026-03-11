@@ -5,7 +5,7 @@ const STEAK_CONTRACT = '0x3e7ab819878bEcaC57Bd655Ab547C8e128e5b208';
 
 module.exports = {
   methodology: 'counts the number of ROSY tokens in the Steak contract.',
-  start: 1711020000,
+  start: '2024-03-21',
   sapphire: {
     tvl: () => ({}),
     staking: staking(STEAK_CONTRACT, ROSY_TOKEN_CONTRACT)

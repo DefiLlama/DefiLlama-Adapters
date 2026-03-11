@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -11,29 +12,14 @@ const config = {
       "0x5e483d7803a8b39f0d6792a0431176a91fde6e31",
       "0x7175a01564ac4a83dd396e288a2707dee86caf63",
       "0x4998cb57364531560f4048213ba9b529ec27f14f",
-      "0x02104cae462af17739cc4315ef9ac710a9ed22a7"
+      "0x02104cae462af17739cc4315ef9ac710a9ed22a7",
+      "0x3c22c17501047d862b3a98e296079966aefd8df7",
+      "0xbbb72ba600d8493fea284d5fe44919f7b60d53f5",
+      "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9",
     ],
   },
   bitcoin: {
-    owners: [
-      "1D2Pds2XyiDe7CknDumKkdSECuepGsBCSR",
-      "bc1qs0jdyydyd4kv7fwqre4suhz33mcuy3838xdsla",
-      "1JkmFSbqijbrv6JdyVx2hNwyE8nzEy3Cs5",
-      "bc1qctq0v0vecjxp4de66znkh0dcczkvuqjwwt0za4",
-      "1KH7cEFwFvKfnx7KjMaQUescVSigz3FMaJ",
-      "bc1qeplx7cy5xx37m9mtrh9qefeuswansr0c9mvewa",
-      "1BgvqcFm2cYRg8HCrd4qWnC7iA6tQqoeme",
-      "bc1qw5lxcrk7l2xsy2wx5mapdz58g29xde4x56le3s",
-      "1A4Ag6y473avEbjVm5N4HAqiVCE6NxLRCS",
-      "bc1qvdf8f85dn69csyka5tzjezsl66hdhmmfgwgfzz",
-      "1PDgKsiQo8hkA5pxYBwS1ooXv9jFNJCFh5",
-      "bc1q7wufvquhtmmd7eepjdu76lumj6efmfl2p6sgch",
-      "1CNEXYtt6WYZuMwJF7AjNYr39nxbrUTRoh",
-      "bc1q0jkkjr2qr4wl3v399algvsjuk8g7vlm3yaqufu",
-      "17UcdCaVWpmgpuZsKfKdWRUUViAzoQFY3H",
-      "bc1qguymjgurnywqac3rrplr2nmkl26cf5jyyq3vkv",
-      "1D9YPYQevtEsk26exBjCY2pKfhDsXTxJEE"
-    ],
+    owners: bitcoinAddressBook.pionexCex,
   },
   tron: {
     owners: [
@@ -45,8 +31,37 @@ const config = {
       "TJZj4RS6v6U3HCpTSJ7CwNycRcoi7BREGx",
       "TLK8GVBqJNmcyaN5mpSPSzQfTjsSxb7sC9",
       "TGgMNPxdyUgdYwMSbMkpTPvaSkrRakKqcK",
-      "TAA7sxJ259JgstGPjanb5sB6ZJuCPtCobs"
+      "TAA7sxJ259JgstGPjanb5sB6ZJuCPtCobs",
+      "TKRksVBKDBATKcifm4FXFHcD1FmJQ2bp3x"
     ],
+  },
+  solana: {
+    owners:[
+      "DGFW1Effv88XzXkgfgyoFfmefzEU5Pp9zWJACBmCSh8K",
+      "FXv8hUveo3Di254W5vycvouxrmTJG4oQ5QMm1tLhY3NF"
+    ]
+  },
+  bsc: {
+    owners:[
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554",
+      "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9"
+    ]
+  },
+  optimism:{
+    owners: [
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554"
+    ]
+  },
+  arbitrum: {
+    owners: [
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554",
+      "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9"
+    ]
+  },
+  avax: {
+    owners: [
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554",
+    ]
   },
 }
 

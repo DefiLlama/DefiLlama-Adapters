@@ -1,37 +1,76 @@
 const abi = require("./abi.js");
-const ADDRESSES = require("../helper/coreAssets.json");
-
-const USDW4_TOKEN_CONTRACT = "0xadf789e61bf38c463e4ba5b2b6e9c1af6659e11b";
+const { getLogs2 } = require('../helper/cache/getLogs');
 
 const vaults = Object.values({
-  LEVUSDC_VAULT_CONTRACT: "0xf3b466F09ef476E311Ce275407Cfb09a8D8De3a7",
-  HODLWBTC_VAULT_CONTRACT: "0x6efa12b38038A6249B7aBdd5a047D211fB0aD48E",
-  HODLWETH_VAULT_CONTRACT: "0x2a2f84e9AfE7b39146CDaF068b06b84EE23892c2",
+  STREAMUSD_WRAPPER_CONTRACT: "0x6eAf19b2FC24552925dB245F9Ff613157a7dbb4C",
+  STREAMBTC_WRAPPER_CONTRACT: "0x05F47d7CbB0F3d7f988E442E8C1401685D2CAbE0",
+  STREAMETH_WRAPPER_CONTRACT: "0xF70f54cEFdCd3C8f011865685FF49FB80A386a34",
+  STREAMEUR_WRAPPER_CONTRACT: "0xDCFd98A5681722DF0d93fc11b9205f757576a427",
 })
 
-const TBILL_VAULT_CLUB_BOND_CONTRACT =
-  "0xd86FFB404147163e19E010a0e9d4995E0e36F335";
+const xTokens = Object.values({
+  xUSD: "0xE2Fc85BfB48C4cF147921fBE110cf92Ef9f26F94",
+  xBTC: "0x12fd502e2052CaFB41eccC5B596023d9978057d6",
+  xETH: "0x7E586fBaF3084C0be7aB5C82C04FfD7592723153",
+  xEUR: "0xc15697f61170Fc3Bb4e99Eb7913b4C7893F64F13",
+})
+
+const StakeEvent = 'event Stake(address indexed account, uint256 amount, uint256 round)';
+const UnStakeEvent = 'event Unstake(address indexed account, uint256 amount, uint256 round)';
+
+// this address from team did loop to manipulate tvl, we will remove all deposit from this address
+// these wallets deposit some initial USDC, WBTC, ETH on ethereum to mint xUSD, xBTC, xETH
+// they bridge xUSD, xBTC, xETH to other chains
+// they used xUSD, xBTC, xETH as collateral to borrow USDT, USDC, deUSD
+// they use swap all borrowed tokens to USDC, WBTC, ETH, deposit back to xUSD, xBTC, xETH
+const FromBlock = 21870476;
+
+const StakeTopics = [
+  '0x5af417134f72a9d41143ace85b0a26dce6f550f894f2cbc1eeee8810603d91b6',
+  '0x0000000000000000000000001597e4b7cf6d2877a1d690b6088668afdb045763',
+];
+const UnStakeTopics = [
+  '0xf960dbf9e5d0682f7a298ed974e33a28b4464914b7a2bfac12ae419a9afeb280',
+  '0x0000000000000000000000001597e4b7cf6d2877a1d690b6088668afdb045763',
+];
 
 async function tvl(api) {
-  const bals = await api.multiCall({  abi: abi.totalBalance, calls: vaults})
-  const vaultParams = await api.multiCall({  abi: abi.vaultParams, calls: vaults})
-  const tokens = vaultParams.map(i => i.asset)
-  api.addTokens(tokens, bals)
-
-  const usdw4_totalSupply = await api.call({ abi: "erc20:totalSupply", target: USDW4_TOKEN_CONTRACT, });
-  const usdw4_decimals = await api.call({ abi: "erc20:decimals", target: USDW4_TOKEN_CONTRACT, });
-  const usdw4_vaultBalance = await api.call({ abi: "erc20:balanceOf", target: USDW4_TOKEN_CONTRACT, params: [TBILL_VAULT_CLUB_BOND_CONTRACT], });
-
-  const { vaultToken, baseToken } = await api.call({ abi: abi.currentExchangeRate, target: TBILL_VAULT_CLUB_BOND_CONTRACT, });
-
-  const usdw4_total = (usdw4_totalSupply - usdw4_vaultBalance) / (vaultToken / baseToken) / 10 ** (usdw4_decimals - 6);
-  api.add(ADDRESSES.ethereum.USDC, usdw4_total)
+  // https://x.com/StreamDefi/status/1985556360507822093
+  // bad debts
+  if (api.timestamp < 1762214400) {
+    const bals = await api.multiCall({  abi: abi.totalSupply, calls: vaults})
+    const assets = await api.multiCall({  abi: abi.asset, calls: vaults})
+    
+    for (let i = 0; i < vaults.length; i++) {
+      const totalBalance = Number(bals[i]);
+      
+      // remove deposit from team wallets
+      let teamDeposit = 0;
+      const symbol = Object.keys(xTokens)[i];
+      const stakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: StakeEvent, topics: StakeTopics, extraKey: `stream-stake-${api.chain}${symbol}` });
+      const unstakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: UnStakeEvent, topics: UnStakeTopics, extraKey: `stream-unstake-${api.chain}${symbol}` });
+      for (const log of stakeEvents) {
+        teamDeposit += Number(log.amount);
+      }
+      for (const log of unstakeEvents) {
+        teamDeposit -= Number(log.amount);
+      }
+      
+      const balance = teamDeposit > 0 ? totalBalance - teamDeposit : totalBalance;
+      
+      api.addToken(assets[i], balance)
+    }  
+  }
 }
 
+
 module.exports = {
-  misrepresentedTokens: true,
   methodology: "Calculates the TVL of all Stream vaults",
-  start: 16685700,
+  start: 1739697390,
+  hallmarks: [
+    ['2025-02-23', "Stream V2 Launch"],
+    ['2025-11-04', "Reported loss $93 million users fund"],
+  ],
   ethereum: {
     tvl,
   },

@@ -1,6 +1,7 @@
-const sdk = require('@defillama/sdk');
 
-const MASSET_ABI_V2 = require('./abi-massetv2.json');
+const MASSET_ABI_V2 = {
+  "getBassets": "function getBassets() view returns (tuple(address addr, address integrator, bool hasTxFee, uint8 status)[] personal, tuple(uint128 ratio, uint128 vaultBalance)[] data)"
+}
 
 const ASSETS = {
   ethereum: [
@@ -46,7 +47,7 @@ const ASSETS = {
       address: '0x4eaa01974b6594c0ee62ffd7fee56cf11e6af936',
       startBlock: 12806795,
     },
-        {
+    {
       // fPmUSD/RAI
       address: '0x36F944B7312EAc89381BD78326Df9C84691D8A5B',
       startBlock: 13643595,
@@ -76,62 +77,27 @@ const OWN_ASSETS = new Set([
   '0xe2f2a5c287993345a840db3b0845fbc70f5935a5', // Ethereum mUSD
   '0x945facb997494cc2570096c74b5f66a3507330a1', // Ethereum mBTC
   '0xe840b73e5287865eec17d250bfb1536704b43b21', // Polygon mUSD
-]);
+].map((a) => a.toLowerCase()));
 
-async function getLockedForAsset(chain, asset, block) {
-  const { output: { personal, data } } = await sdk.api.abi.call({
-    chain,
-    target: asset.address,
-    block,
-    abi: MASSET_ABI_V2.getBassets,
-  });
-
-  return personal.reduce(
-    (lockedTokens, [address], i) => ({ ...lockedTokens, [address]: data[i][1] }),
-    {},
-  )
+async function tvl(api) {
+  const assets = ASSETS[api.chain]
+  const info = await api.multiCall({ abi: MASSET_ABI_V2.getBassets, calls: assets.map(asset => asset.address) })
+  info.forEach((res) => {
+    res.personal.forEach((basset, j) => {
+      const token = basset.addr.toLowerCase()
+      if (OWN_ASSETS.has(token)) return;
+      const balance = res.data[j][1]
+      api.add(token, balance)
+    })
+  })
 }
-
-function tvlForChain(chain) {
-  const assets = ASSETS[chain]
-  const isEthereum = chain === 'ethereum'
-
-  return async function tvl(timestamp, ethBlock, chainBlocks) {
-    const block = isEthereum ? ethBlock : chainBlocks[chain];
-
-    const assetBalances = await Promise.all(
-      assets
-        .filter(({ startBlock }) => block > startBlock)
-        .map((asset) => getLockedForAsset(chain, asset, block))
-    );
-
-    const lockedBalances = {};
-
-    assetBalances
-      .forEach((locked) => Object.entries(locked)
-        // No double-dipping; avoid double-counting mAssets
-        .filter(([underlying]) => !OWN_ASSETS.has(underlying.toLowerCase()))
-        .map(([underlying, balance]) => (
-          [isEthereum ? underlying : `${chain}:${underlying}`, balance]
-        ))
-        .forEach(([address, balance]) =>
-          sdk.util.sumSingleBalance(lockedBalances, address, balance)
-        )
-      );
-
-    return lockedBalances;
-  }
-}
-
-const ethereumTvl = tvlForChain('ethereum')
-const polygonTvl = tvlForChain('polygon')
 
 module.exports = {
-  start: 1590624000, // May-28-2020 00:00:00
+  start: '2020-05-28', // May-28-2020 00:00:00
   polygon: {
-    tvl: polygonTvl,
+    tvl,
   },
   ethereum: {
-    tvl: ethereumTvl,
+    tvl,
   },
 };

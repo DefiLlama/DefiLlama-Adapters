@@ -21,10 +21,10 @@ async function tvl(api) {
 
 
 module.exports = {
-  start: 1688162400,
+  start: '2023-07-01',
   hallmarks: [
-    [1695396647, "Fees distribution #1"],
-    [1705582439, "Fees distribution #2"],
+    ['2023-09-22', "Fees distribution #1"],
+    ['2024-01-18', "Fees distribution #2"],
   ],
   methodology: `TVL is the total value of erc20s managed by SHPRD vaults`
 };

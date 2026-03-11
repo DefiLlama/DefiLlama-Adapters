@@ -1,7 +1,7 @@
 
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const token = '0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa'
+const token = ADDRESSES.ethereum.METH
 
 module.exports = {
   ethereum: {

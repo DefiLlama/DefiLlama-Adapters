@@ -1,5 +1,7 @@
 const sdk = require('@defillama/sdk')
-const abi = require("./abi.json");
+const abi = {
+    "totalBorrowed": "uint256:totalBorrowed"
+  };
 const BigNumber = require("bignumber.js");
 const { getLogs } = require('../helper/cache/getLogs')
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
@@ -37,7 +39,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    start: 1666638251,
+    start: '2022-10-24',
   methodology: 'TVL is calculated by adding up all the ETH in the pools and the totalBorrowed of every pool',
   ethereum: {
     tvl: tvl,

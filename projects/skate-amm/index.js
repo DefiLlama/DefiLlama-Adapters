@@ -1,0 +1,129 @@
+const { getLogs2 } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/solana')
+const { getObjects } = require("../helper/chain/sui");
+
+const evm_config = {
+  ethereum: [
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
+    { kernelEventEmitter: '0xEFfC0fD0CaD5762c360Eb2158500a5537bb4637d', fromBlock: 22965694 }
+  ],
+  bsc: [
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 },
+    { kernelEventEmitter: '0xcE9ecebAFE2174FFC9b662FE6cc4610574AB602C', fromBlock: 54773913 }
+  ],
+  base: [
+    { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 29522359 },
+    { kernelEventEmitter: '0x9b69c72B68B7A7E765335831d6234F593f818e6B', fromBlock: 33144489 }
+  ],
+  arbitrum: [
+    { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 },
+    { kernelEventEmitter: '0xf7b221F8a45a62539a53F20C8D3A5a1edDd1b510', fromBlock: 359940838 }
+  ],
+  hyperliquid: [
+    { kernelEventEmitter: '0x5a428F12a55d6E0ABa77Eb5B340f2ff95dE01BF5', fromBlock: 4470476 },
+    { kernelEventEmitter: '0x59964b3af53eb10C596B92B3d6aeAfC038B3Bd8d', fromBlock: 8976860 }
+  ],
+  plume_mainnet: [
+    { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
+    { kernelEventEmitter: '0x1F5C460A8BF18B12fb7218019a1693391A8251a7', fromBlock: 13309471 }
+  ],
+  mantle: [
+    { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
+    { kernelEventEmitter: '0x802bE72795617ACec443321504150951f85De652', fromBlock: 82474030 }
+  ],
+  "0g": [{ kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 }],
+  monad: [{ kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 33372521 }],
+  megaeth: [{ kernelEventEmitter: '0x613d5b5f248Ff95557A8855B7b69Cbde09955C43', fromBlock: 7999879 }],
+}
+
+const svm_config = {
+  eclipse: [
+    'BvNLQCQKxq5A7AQUsMdUqRhwXwmnYy7bkpVU67QrakJ8', // tETH/WETH (WETH)
+    '8VSpqv9eAtxew8hbGjN3bWoyHCog9gFEcW42URVNpTH', // tETH/WETH (tETH)
+
+    'ECSRM9wkFyABH55vYGoR2kjSNm3tGEFp1cT3htBWmngd', // tUSD/USDC (USDC)
+    '6uoWjgNs8h7VYNmdrdHmXjty8Y8GrMjTxGcmb3EuDoM8', // tUSD/USDC (tUSD)
+
+  ],
+  solana: [
+    'Eicqj6he3DfacaYugVtxSC6AsddFubigqfYFR945X59w', // USDT/USDC (USDT)
+    '4fjfqdJsDCR2Kenfpc3nGZvQMds3D4MgpVydwmTnU7Sv', // USDT/USDC (USDC)
+
+    '6Fv84LR6nWFYeWRJAehHF3KXRi1RWQRQkGn3eLK3QMxb', // SOL/USDC (SOL)
+    '8NGoaasGcpa8h1JjLY598UCrmxpqgpuWVJtm9F5k3sid', // SOL/USDC (USDC)
+
+    'JBfR8XHYRF52WzTqyB14gkNVWtpPr9DUqzfuxASGLmby', // SKATE/USDC (SKATE)
+    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb', // SKATE/USDC (USDC)
+
+    'Ah4xbiSfQvsutS8fQiHwGm3HKgphTjq1jAJx1qvmSMw7', // MONAD/USDC (MONAD)
+    '4Bq1iWyKDajv1cuRqd9ExYvk9gCbnR1ejUb29jGMCUrf', // MONAD/USDC (USDC)
+
+    'CXJFEq5QPEkCxFCaiVEFEQpAHCUBDV3nQUTKTzw3mq6F', // PLUME/USDC (PLUME)
+    'ENJRMTjGZs1ChGSZxtD8n4KDu9pimDfbmtb5peh8cxCg', // PLUME/USDC (USDC)
+  ]
+}
+
+const sui_config = {
+  sui: [
+    '0xde93f10233e575043ae56f71e6a60605c85b9bfee5bb1c67bac37577c8cbc8be',//SUI/USDC
+    '0x9cc884871f937a3ebde84ea0af052b886af392b8d4e77bf94b447a93721e00d9' // USDT/USDC
+  ]
+}
+
+const eventAbis = {
+  pool_created: "event PoolCreated(address kernelPool, address pool, address token0, address token1, uint24 fee)",
+}
+
+const abis = {
+  balances_available: "function balancesAvailable() view returns (uint256 amount0, uint256 amount1)"
+}
+
+module.exports = {
+  methodology: "Assets deployed on periphery chains. For EVM chains, we track the token balances in the pools. For SVM chains, we track the token balances owned by the pool addresses.",
+  start: 1742169600, // '2025-03-17 GMT+0'
+  timetravel: false,
+}
+
+const evmTvl = async (api) => {
+  for (const { kernelEventEmitter, fromBlock } of evm_config[api.chain]) {
+    const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true })
+    const balances = await api.multiCall({ calls: logs.map(([_, pool]) => ({ target: pool })), abi: abis.balances_available })
+    logs.forEach(([_, __, token0, token1], i) => {
+      const { amount0, amount1 } = balances[i]
+      api.add(token0, amount0)
+      api.add(token1, amount1)
+    })
+  }
+}
+
+Object.keys(evm_config).forEach((chain) => {
+  module.exports[chain] = { tvl: evmTvl }
+})
+
+const svmTvl = async (api) => {
+  const pools = svm_config[api.chain]
+  const res = await sumTokens2({ api, tokenAccounts: pools, computeTokenAccount: true })
+  return res;
+}
+
+Object.keys(svm_config).forEach((chain) => {
+  module.exports[chain] = { tvl: svmTvl }
+})
+
+const suiTvl = async (api) => {
+  const pools = sui_config[api.chain]
+  const objs = await getObjects(pools)
+  objs.forEach((obj) => {
+    const { fields: { pool_coin0_liquidity, pool_coin1_liquidity } } = obj
+    const coin0Type = pool_coin0_liquidity.type.split('<')[1].replace('>', '')
+    const coin1Type = pool_coin1_liquidity.type.split('<')[1].replace('>', '')
+    const coin0Amount = pool_coin0_liquidity.fields.balance
+    const coin1Amount = pool_coin1_liquidity.fields.balance
+    api.add(coin0Type, coin0Amount)
+    api.add(coin1Type, coin1Amount)
+  })
+}
+
+Object.keys(sui_config).forEach((chain) => {
+  module.exports[chain] = { tvl: suiTvl }
+})

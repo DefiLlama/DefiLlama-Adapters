@@ -5,38 +5,22 @@ const vlPenAddress = "0x55CA76E0341ccD35c2E3F34CbF767C6102aea70f";
 const penAddress = "0x9008D70A5282a936552593f410AbcBcE2F891A97";
 const penDystAddress = "0x5b0522391d0A5a37FD117fE4C43e8876FB4e91E6";
 const dyst = '0x39aB6574c289c3Ae4d88500eEc792AB5B947A5Eb'
-const { getChainTransform } = require('../helper/portedTokens')
 const { getUniqueAddresses } = require('../helper/utils')
-const { sumTokens } = require('../helper/unwrapLPs')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
-const { default: BigNumber } = require('bignumber.js')
-const chain = 'polygon'
 
-async function tvl(time, ethBlock, { [chain]: block }) {
+async function tvl(api) {
   // 0xDAO Master Chef
-  const balances = {}
-  const transformAddress = await getChainTransform(chain)
   // 0xDAO Core
   const penLensAddress = "0x1432c3553FDf7FBD593a84B3A4d380c643cbf7a2";
   const dystopiaLensAddress = "0xDd688a48A511f1341CC57D89e3DcA486e073eaCe";
 
   const reserveDataMap = {}
 
-  const { output: poolsData } = await sdk.api.abi.call({
-    block,
-    chain: 'polygon',
-    target: penLensAddress,
-    abi: abi.penPoolsData,
-  })
+  const poolsData = await api.call({ target: penLensAddress, abi: abi.penPoolsData, })
 
   const dystopiaPoolsAddresses = getUniqueAddresses(poolsData.map(i => i.poolData.id))
-  const { output: reservesData } = await sdk.api.abi.call({
-    block,
-    chain: 'polygon',
-    target: dystopiaLensAddress,
-    params: [dystopiaPoolsAddresses],
-    abi: abi.poolsReservesInfo
-  })
+  const reservesData = await api.call({ target: dystopiaLensAddress, params: [dystopiaPoolsAddresses], abi: abi.poolsReservesInfo })
   reservesData.forEach(i => reserveDataMap[i.id.toLowerCase()] = i)
 
   poolsData.forEach(pool => {
@@ -44,33 +28,30 @@ async function tvl(time, ethBlock, { [chain]: block }) {
     const reserves = reserveDataMap[pool.poolData.id.toLowerCase()]
     if (!reserves) throw new Error('Missing data', pool.poolData.id)
     const { token0Address, token0Reserve, token1Address, token1Reserve } = reserves
-    sdk.util.sumSingleBalance(balances, transformAddress(token0Address), BigNumber(+token0Reserve * ratio).toFixed(0))
-    sdk.util.sumSingleBalance(balances, transformAddress(token1Address), BigNumber(+token1Reserve * ratio).toFixed(0))
+    api.add(token0Address, +token0Reserve * ratio)
+    api.add(token1Address, +token1Reserve * ratio)
   })
 
   // Add DYST in penDYST
-  const { output: pDystSupply} = await sdk.api.erc20.totalSupply({ target: penDystAddress, chain, block })
-  sdk.util.sumSingleBalance(balances, transformAddress(dyst), pDystSupply)
+  const supply = await api.call({ abi: 'erc20:totalSupply', target: penDystAddress })
+  api.add(dyst, supply)
 
-  return sumTokens(balances, [
+  return api.sumTokens([
     [dyst, penDystRewardPoolAddress],
     [dyst, partnerRewardsPoolAddress],
-  ], block, chain)
+  ])
 }
 
-async function staking(time, ethBlock, { [chain]: block }) {
-  const toa = [
-    [penAddress, vlPenAddress],
-    [penAddress, partnerRewardsPoolAddress],
-    [penAddress, penDystRewardPoolAddress],
-  ]
-
-  return sumTokens({}, toa, block, chain)
-}
 
 module.exports = {
   polygon: {
     tvl,
-    staking,
+    staking: sumTokensExport({
+      tokensAndOwners: [
+        [penAddress, vlPenAddress],
+        [penAddress, partnerRewardsPoolAddress],
+        [penAddress, penDystRewardPoolAddress],
+      ]
+    }),
   }
 }

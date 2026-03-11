@@ -19,11 +19,20 @@ const data = {
     hybridFactory:
       "neutron16yn2gcz24s9qwpuxvrhl3xed0pmhrgwx2mz40zrazfc0pt5kq0psucs6xl",
   },
+
+  nibiru: {
+    stableFactory:
+      "nibi143hmeallpaasdyull3gjcmasrcg63yl8f4cumah7xmcmjnqewa9s5jkan2",
+    standardFactory:
+      "nibi1gmw5eqnergfdx5qp4w53vwaywg63dwnvqeus3g6a2926pz2axyqshrlh2m",
+    hybridFactory:
+      "nibi1gwsrmpkkcl82aqs3vk4vy2lt0dm3kr3sshmruzhxhsqh8xglxrtsglzpqj",
+  },
 };
 
 async function tvl(api) {
   const { chain } = api
-  for (const factory of [ 
+  for (const factory of [
     data[chain].stableFactory,
     data[chain].standardFactory,
     data[chain].hybridFactory,
@@ -63,11 +72,11 @@ async function tvl(api) {
     })
 
     await PromisePool
-      .withConcurrency(20)
+      .withConcurrency(3)
       .for(allPools)
       .process(getPoolAssetsState)
 
-    if (factory === data[chain].standardFactory) await transformDexBalances({ chain, data: poolAssets, balances: api.getBalances() })
+    if (factory === data[chain].standardFactory) transformDexBalances({ chain, data: poolAssets, balances: api.getBalances() })
     else {
       poolAssets.forEach(({ token0, token0Bal, token1, token1Bal }) => {
         api.add(token0, token0Bal)
@@ -84,6 +93,9 @@ module.exports = {
     tvl,
   },
   neutron: {
+    tvl,
+  },
+  nibiru: {
     tvl,
   },
 }

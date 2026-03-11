@@ -1,0 +1,279 @@
+{
+  "version": "2.106.0",
+  "name": "drift",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "User",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "authority", "docs": ["The owner/authority of the account"], "type": "publicKey"},
+          {
+            "name": "delegate",
+            "docs": ["An addresses that can control the account on the authority's behalf. Has limited power, cant withdraw"],
+            "type": "publicKey"
+          },
+          {"name": "name", "docs": ["Encoded display name e.g. \"toly\""], "type": {"array": ["u8", 32]}},
+          {"name": "spotPositions", "docs": ["The user's spot positions"], "type": {"array": [{"defined": "SpotPosition"}, 8]}},
+          {"name": "perpPositions", "docs": ["The user's perp positions"], "type": {"array": [{"defined": "PerpPosition"}, 8]}},
+          {"name": "orders", "docs": ["The user's orders"], "type": {"array": [{"defined": "Order"}, 32]}},
+          {"name": "lastAddPerpLpSharesTs", "docs": ["The last time the user added perp lp positions"], "type": "i64"},
+          {"name": "totalDeposits", "docs": ["The total values of deposits the user has made", "precision: QUOTE_PRECISION"], "type": "u64"},
+          {"name": "totalWithdraws", "docs": ["The total values of withdrawals the user has made", "precision: QUOTE_PRECISION"], "type": "u64"},
+          {
+            "name": "totalSocialLoss",
+            "docs": ["The total socialized loss the users has incurred upon the protocol", "precision: QUOTE_PRECISION"],
+            "type": "u64"
+          },
+          {
+            "name": "settledPerpPnl",
+            "docs": ["Fees (taker fees, maker rebate, referrer reward, filler reward) and pnl for perps", "precision: QUOTE_PRECISION"],
+            "type": "i64"
+          },
+          {
+            "name": "cumulativeSpotFees",
+            "docs": ["Fees (taker fees, maker rebate, filler reward) for spot", "precision: QUOTE_PRECISION"],
+            "type": "i64"
+          },
+          {"name": "cumulativePerpFunding", "docs": ["Cumulative funding paid/received for perps", "precision: QUOTE_PRECISION"], "type": "i64"},
+          {
+            "name": "liquidationMarginFreed",
+            "docs": [
+              "The amount of margin freed during liquidation. Used to force the liquidation to occur over a period of time",
+              "Defaults to zero when not being liquidated",
+              "precision: QUOTE_PRECISION"
+            ],
+            "type": "u64"
+          },
+          {"name": "lastActiveSlot", "docs": ["The last slot a user was active. Used to determine if a user is idle"], "type": "u64"},
+          {"name": "nextOrderId", "docs": ["Every user order has an order id. This is the next order id to be used"], "type": "u32"},
+          {"name": "maxMarginRatio", "docs": ["Custom max initial margin ratio for the user"], "type": "u32"},
+          {"name": "nextLiquidationId", "docs": ["The next liquidation id to be used for user"], "type": "u16"},
+          {"name": "subAccountId", "docs": ["The sub account id for this user"], "type": "u16"},
+          {"name": "status", "docs": ["Whether the user is active, being liquidated or bankrupt"], "type": "u8"},
+          {"name": "isMarginTradingEnabled", "docs": ["Whether the user has enabled margin trading"], "type": "bool"},
+          {
+            "name": "idle",
+            "docs": [
+              "User is idle if they haven't interacted with the protocol in 1 week and they have no orders, perp positions or borrows",
+              "Off-chain keeper bots can ignore users that are idle"
+            ],
+            "type": "bool"
+          },
+          {"name": "openOrders", "docs": ["number of open orders"], "type": "u8"},
+          {"name": "hasOpenOrder", "docs": ["Whether or not user has open order"], "type": "bool"},
+          {"name": "openAuctions", "docs": ["number of open orders with auction"], "type": "u8"},
+          {"name": "hasOpenAuction", "docs": ["Whether or not user has open order with auction"], "type": "bool"},
+          {"name": "marginMode", "type": {"defined": "MarginMode"}},
+          {"name": "poolId", "type": "u8"},
+          {"name": "padding1", "type": {"array": ["u8", 3]}},
+          {"name": "lastFuelBonusUpdateTs", "type": "u32"},
+          {"name": "padding", "type": {"array": ["u8", 12]}}
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "SpotPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "scaledBalance",
+            "docs": [
+              "The scaled balance of the position. To get the token amount, multiply by the cumulative deposit/borrow",
+              "interest of corresponding market.",
+              "precision: SPOT_BALANCE_PRECISION"
+            ],
+            "type": "u64"
+          },
+          {"name": "openBids", "docs": ["How many spot bids the user has open", "precision: token mint precision"], "type": "i64"},
+          {"name": "openAsks", "docs": ["How many spot asks the user has open", "precision: token mint precision"], "type": "i64"},
+          {
+            "name": "cumulativeDeposits",
+            "docs": ["The cumulative deposits/borrows a user has made into a market", "precision: token mint precision"],
+            "type": "i64"
+          },
+          {"name": "marketIndex", "docs": ["The market index of the corresponding spot market"], "type": "u16"},
+          {"name": "balanceType", "docs": ["Whether the position is deposit or borrow"], "type": {"defined": "SpotBalanceType"}},
+          {"name": "openOrders", "docs": ["Number of open orders"], "type": "u8"},
+          {"name": "padding", "type": {"array": ["u8", 4]}}
+        ]
+      }
+    },
+    {"name": "SpotBalanceType", "type": {"kind": "enum", "variants": [{"name": "Deposit"}, {"name": "Borrow"}]}},
+    {
+      "name": "PerpPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lastCumulativeFundingRate",
+            "docs": [
+              "The perp market's last cumulative funding rate. Used to calculate the funding payment owed to user",
+              "precision: FUNDING_RATE_PRECISION"
+            ],
+            "type": "i64"
+          },
+          {"name": "baseAssetAmount", "docs": ["the size of the users perp position", "precision: BASE_PRECISION"], "type": "i64"},
+          {
+            "name": "quoteAssetAmount",
+            "docs": [
+              "Used to calculate the users pnl. Upon entry, is equal to base_asset_amount * avg entry price - fees",
+              "Updated when the user open/closes position or settles pnl. Includes fees/funding",
+              "precision: QUOTE_PRECISION"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "quoteBreakEvenAmount",
+            "docs": [
+              "The amount of quote the user would need to exit their position at to break even",
+              "Updated when the user open/closes position or settles pnl. Includes fees/funding",
+              "precision: QUOTE_PRECISION"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "quoteEntryAmount",
+            "docs": [
+              "The amount quote the user entered the position with. Equal to base asset amount * avg entry price",
+              "Updated when the user open/closes position. Excludes fees/funding",
+              "precision: QUOTE_PRECISION"
+            ],
+            "type": "i64"
+          },
+          {"name": "openBids", "docs": ["The amount of open bids the user has in this perp market", "precision: BASE_PRECISION"], "type": "i64"},
+          {"name": "openAsks", "docs": ["The amount of open asks the user has in this perp market", "precision: BASE_PRECISION"], "type": "i64"},
+          {
+            "name": "settledPnl",
+            "docs": ["The amount of pnl settled in this market since opening the position", "precision: QUOTE_PRECISION"],
+            "type": "i64"
+          },
+          {
+            "name": "lpShares",
+            "docs": [
+              "The number of lp (liquidity provider) shares the user has in this perp market",
+              "LP shares allow users to provide liquidity via the AMM",
+              "precision: BASE_PRECISION"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lastBaseAssetAmountPerLp",
+            "docs": ["The last base asset amount per lp the amm had", "Used to settle the users lp position", "precision: BASE_PRECISION"],
+            "type": "i64"
+          },
+          {
+            "name": "lastQuoteAssetAmountPerLp",
+            "docs": ["The last quote asset amount per lp the amm had", "Used to settle the users lp position", "precision: QUOTE_PRECISION"],
+            "type": "i64"
+          },
+          {
+            "name": "remainderBaseAssetAmount",
+            "docs": [
+              "Settling LP position can lead to a small amount of base asset being left over smaller than step size",
+              "This records that remainder so it can be settled later on",
+              "precision: BASE_PRECISION"
+            ],
+            "type": "i32"
+          },
+          {"name": "marketIndex", "docs": ["The market index for the perp market"], "type": "u16"},
+          {"name": "openOrders", "docs": ["The number of open orders"], "type": "u8"},
+          {"name": "perLpBase", "type": "i8"}
+        ]
+      }
+    },
+    {
+      "name": "Order",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "slot", "docs": ["The slot the order was placed"], "type": "u64"},
+          {
+            "name": "price",
+            "docs": [
+              "The limit price for the order (can be 0 for market orders)",
+              "For orders with an auction, this price isn't used until the auction is complete",
+              "precision: PRICE_PRECISION"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "baseAssetAmount",
+            "docs": ["The size of the order", "precision for perps: BASE_PRECISION", "precision for spot: token mint precision"],
+            "type": "u64"
+          },
+          {
+            "name": "baseAssetAmountFilled",
+            "docs": ["The amount of the order filled", "precision for perps: BASE_PRECISION", "precision for spot: token mint precision"],
+            "type": "u64"
+          },
+          {"name": "quoteAssetAmountFilled", "docs": ["The amount of quote filled for the order", "precision: QUOTE_PRECISION"], "type": "u64"},
+          {
+            "name": "triggerPrice",
+            "docs": ["At what price the order will be triggered. Only relevant for trigger orders", "precision: PRICE_PRECISION"],
+            "type": "u64"
+          },
+          {
+            "name": "auctionStartPrice",
+            "docs": ["The start price for the auction. Only relevant for market/oracle orders", "precision: PRICE_PRECISION"],
+            "type": "i64"
+          },
+          {
+            "name": "auctionEndPrice",
+            "docs": ["The end price for the auction. Only relevant for market/oracle orders", "precision: PRICE_PRECISION"],
+            "type": "i64"
+          },
+          {"name": "maxTs", "docs": ["The time when the order will expire"], "type": "i64"},
+          {
+            "name": "oraclePriceOffset",
+            "docs": ["If set, the order limit price is the oracle price + this offset", "precision: PRICE_PRECISION"],
+            "type": "i32"
+          },
+          {"name": "orderId", "docs": ["The id for the order. Each users has their own order id space"], "type": "u32"},
+          {"name": "marketIndex", "docs": ["The perp/spot market index"], "type": "u16"},
+          {"name": "status", "docs": ["Whether the order is open or unused"], "type": {"defined": "OrderStatus"}},
+          {"name": "orderType", "docs": ["The type of order"], "type": {"defined": "OrderType"}},
+          {"name": "marketType", "docs": ["Whether market is spot or perp"], "type": {"defined": "MarketType"}},
+          {"name": "userOrderId", "docs": ["User generated order id. Can make it easier to place/cancel orders"], "type": "u8"},
+          {
+            "name": "existingPositionDirection",
+            "docs": ["What the users position was when the order was placed"],
+            "type": {"defined": "PositionDirection"}
+          },
+          {"name": "direction", "docs": ["Whether the user is going long or short. LONG = bid, SHORT = ask"], "type": {"defined": "PositionDirection"}},
+          {"name": "reduceOnly", "docs": ["Whether the order is allowed to only reduce position size"], "type": "bool"},
+          {"name": "postOnly", "docs": ["Whether the order must be a maker"], "type": "bool"},
+          {"name": "immediateOrCancel", "docs": ["Whether the order must be canceled the same slot it is placed"], "type": "bool"},
+          {
+            "name": "triggerCondition",
+            "docs": ["Whether the order is triggered above or below the trigger price. Only relevant for trigger orders"],
+            "type": {"defined": "OrderTriggerCondition"}
+          },
+          {"name": "auctionDuration", "docs": ["How many slots the auction lasts"], "type": "u8"},
+          {"name": "padding", "type": {"array": ["u8", 3]}}
+        ]
+      }
+    },
+    {"name": "OrderStatus", "type": {"kind": "enum", "variants": [{"name": "Init"}, {"name": "Open"}, {"name": "Filled"}, {"name": "Canceled"}]}},
+    {
+      "name": "OrderType",
+      "type": {
+        "kind": "enum",
+        "variants": [{"name": "Market"}, {"name": "Limit"}, {"name": "TriggerMarket"}, {"name": "TriggerLimit"}, {"name": "Oracle"}]
+      }
+    },
+    {"name": "MarketType", "type": {"kind": "enum", "variants": [{"name": "Spot"}, {"name": "Perp"}]}},
+    {"name": "PositionDirection", "type": {"kind": "enum", "variants": [{"name": "Long"}, {"name": "Short"}]}},
+    {
+      "name": "OrderTriggerCondition",
+      "type": {"kind": "enum", "variants": [{"name": "Above"}, {"name": "Below"}, {"name": "TriggeredAbove"}, {"name": "TriggeredBelow"}]}
+    },
+    {"name": "MarginMode", "type": {"kind": "enum", "variants": [{"name": "Default"}, {"name": "HighLeverage"}]}}
+  ],
+  "events": [],
+  "errors": []
+}

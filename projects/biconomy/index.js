@@ -1,8 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { returnEthBalance } = require("../helper/utils")
-const { getChainTransform } = require("../helper/portedTokens");
 
 // taken from https://docs.biconomy.io/products/hyphen-instant-cross-chain-transfers/contract-addresses
 const config = {
@@ -12,7 +9,7 @@ const config = {
       '0x2A5c2568b10A0E826BfA892Cf21BA7218310180b',
     ],
     tokens: [
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.GAS_TOKEN_2,
       ADDRESSES.ethereum.DAI,
       ADDRESSES.ethereum.USDC,
       ADDRESSES.ethereum.USDT,
@@ -59,7 +56,7 @@ const config = {
       '0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8',
     ],
     tokens: [
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.GAS_TOKEN_2,
       ADDRESSES.optimism.USDC,
     ]
   },
@@ -69,23 +66,25 @@ const config = {
       '0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8',
     ],
     tokens: [
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.GAS_TOKEN_2,
       ADDRESSES.arbitrum.USDC,
     ]
   },
 }
 
 module.exports = {
-    hallmarks:[
-    [1651881600, "UST depeg"],
+  hallmarks: [
+    ["2022-05-07", "UST depeg"],
+    ["2024-12-31", "Biconomy decommissions Hyphen"],
   ],
+  deadFrom: "2024-12-31",
   methodology:
     "Biconomy TVL is the USD value of token balances in the Hyphen 2.0 contracts.",
 }
 
 Object.keys(config).forEach(chain => module.exports[chain] = {
-  tvl: async (time, _, { [chain]: block }) => {
+  tvl: async (api) => {
     const { bridges, tokens, } = config[chain]
-    return sumTokens2({ chain, block, owners: bridges, tokens });
+    return sumTokens2({ api, owners: bridges, tokens });
   }
 })

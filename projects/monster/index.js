@@ -10,7 +10,6 @@ const LP_STAKING_2 = "0xc13926C5CB2636a29381Da874b1e2686163DC226";
 module.exports = {
       methodology:
     "counts the number of MST tokens in the ve contract and the pairs in the staking pool",
-  start: 22569995,
   fantom: {
     tvl: async () => ({}),
     pool2: pool2([LP_STAKING_1, LP_STAKING_2], [LP_POOL_1, LP_POOL_2]),

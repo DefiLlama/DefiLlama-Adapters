@@ -90,7 +90,7 @@ async function tvl(_, block, _c) {
 }
 
 module.exports = {
-    start: 1590824836, // Sat May 30 13:17:16 2020
+    start: '2020-05-30', // Sat May 30 13:17:16 2020
     polygon: {
         tvl
     }

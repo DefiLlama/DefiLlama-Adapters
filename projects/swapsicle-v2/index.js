@@ -1,8 +1,12 @@
 const { uniV3Export } = require("../helper/uniswapV3");
 const { cachedGraphQuery } = require("../helper/cache");
 const sdk = require("@defillama/sdk");
-const iceCreamVanABI = require("./iceCreamVanABI.json");
-const zombieVanABI = require("./zombieVanABI.json");
+const iceCreamVanABI = {
+    "totalShares": "uint256:totalShares"
+  };
+const zombieVanABI = {
+    "totalStaked": "uint256:totalStaked"
+  };
 const ADDRESSES = require("../helper/coreAssets.json");
 
 module.exports = uniV3Export({
@@ -45,11 +49,11 @@ const contracts = {
 const config = {
   mantle: {
     endpoint:
-      "https://subgraph-api.mantle.xyz/subgraphs/name/cryptoalgebra/analytics",
+      "https://subgraph-api.mantle.xyz/api/public/f077c8d4-0d6c-42d4-9bbd-050948dc5c86/subgraphs/swapsicle/analytics/prod/gn",
   },
   telos: {
     endpoint:
-      "https://test.telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics",
+      "https://api.telos.0xgraph.xyz/api/public/f59149ee-c99a-41d0-afe4-1c86170a98b0/subgraphs/swapsicle/analytics/prod/gn",
   },
   taiko: {
     endpoint:

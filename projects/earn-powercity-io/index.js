@@ -18,7 +18,7 @@ const LP_EARN_PLSX_ADDRESS = "0xed77CbbB80e5a5C3A1FE664419d6F690766b5913";
 const lps = [LP_PXDC_PLSX_ADDRESS, LP_EARN_PLSX_ADDRESS]
 
 module.exports = {
-    start: 1708418955,
+    start: '2024-02-20',
     methodology: "Total Value Locked includes all Troves, Stability Pool, Staking Pool and LP Farming Pools",
     pulse: {
         tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS, { collateralToken: PLSX_ADDRESS }),

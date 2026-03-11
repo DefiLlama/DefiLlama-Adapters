@@ -6,7 +6,6 @@ const BLX = "0x220251092F8B63efD0341F69f6ca907Bd6f271Bf"; // BLX
 const assets = [nullAddress, ADDRESSES.arbitrum.USDC_CIRCLE] // ETH, USDC
 
 module.exports = {
-	start: 194784191,
 	arbitrum: {
 		tvl: sumTokensExport({ owners: [treasury], tokens: assets }),
 		staking: sumTokensExport({ owners: [treasury], tokens: [BLX] }),

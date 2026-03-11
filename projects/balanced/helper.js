@@ -42,7 +42,10 @@ const networkIdentifiers = {
   "injective-1/inj": "injective",
   "0xa4b1.arbitrum": "arbitrum",
   "0x2105.base": "base",
-  "sui/0000000000000000000000000000000000000000000000000000000000000002::sui::SUI": "sui",
+  "sui": "sui",
+  "solana" : "solana",
+  "stellar" : "stellar",
+  "optimism" : "optimism"
 }
 
 // Get decimals of cross-chain Balanced assets in balancedAssetManagerContract

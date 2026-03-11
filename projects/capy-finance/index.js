@@ -10,7 +10,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'The TVL of the Capy Finance project in USD.',
-  start: 1000235,
   bsquared: {
     tvl,
   },

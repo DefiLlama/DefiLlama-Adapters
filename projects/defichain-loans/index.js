@@ -1,10 +1,7 @@
 const { get } = require('../helper/http')
 const { log } = require('../helper/utils')
-const { transformBalances } = require('../helper/portedTokens')
-const sdk = require('@defillama/sdk')
 
-async function tvl() {
-  const balances = {}
+async function tvl(api) {
   let next
   const baseURI = 'https://ocean.defichain.com/v0/mainnet/loans/vaults?size=100'
   let page = 0
@@ -18,17 +15,16 @@ async function tvl() {
 
     res.data.forEach(({ collateralAmounts = [], loanAmounts = [], }) => {
       collateralAmounts.forEach(({ amount, symbol }) => {
-        sdk.util.sumSingleBalance(balances, symbol, +amount)
+        if (symbol === 'DUSD')
+          amount *= 0.7 // value is reduced by 30% to compensate for DEX stability fees
+        api.add(symbol, +amount)
       })
       loanAmounts.forEach(({ amount, symbol }) => {
         if (symbol === 'DUSD')
-          sdk.util.sumSingleBalance(balances, symbol, +amount * -1)
+          api.add(symbol, +amount * 0.7 * -1)
       })
     })
   } while (next)
-
-  balances.DUSD *= 0.7 // value is reduced by 30% to compensate for DEX stability fees 
-  return transformBalances('defichain', balances)
 }
 
 module.exports = {

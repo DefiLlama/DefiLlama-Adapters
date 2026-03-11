@@ -7,7 +7,7 @@ module.exports = {
 }
 
 async function tvl(api) {
-  let tokens = await cachedGraphQuery('jellyverse', 'https://graph.mainnet.jellyverse.org/subgraphs/name/jelly/verse', `query q($lastId: ID){
+  let tokens = await cachedGraphQuery('jellyverse', 'https://graph.jellyverse.org', `query q($lastId: ID){
   tokens (where: {id_gt: $lastId} first: 1000) {
   id
     address

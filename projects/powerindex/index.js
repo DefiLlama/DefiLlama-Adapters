@@ -45,7 +45,7 @@ async function eth(api) {
 }
 
 module.exports = {
-  start: 1606768668, // 11/30/2021 @ 08:37am (UTC)
+  start: '2020-11-30', // 11/30/2021 @ 08:37am (UTC)
   bsc:{
     tvl: getBscTvl,
   },

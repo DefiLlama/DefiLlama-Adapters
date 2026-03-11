@@ -1,4 +1,9 @@
-const abi = require('./abi.json');
+const abi = {
+    "collateral": "address:collateral",
+    "totalCollateral": "uint256:totalCollateral",
+    "balance": "uint256:balance",
+    "token": "address:token"
+  };
 const { getLogs } = require('../helper/cache/getLogs')
 
 const START_BLOCK = 10104891;
@@ -94,6 +99,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1590014400,   // 05/20/2020 @ 08:10:40pm (UTC)
+  start: '2020-05-21',   // 05/20/2020 @ 08:10:40pm (UTC)
   ethereum: { tvl }
 }
