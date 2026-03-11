@@ -149,14 +149,5 @@ module.exports = {
   hallmarks: [
     ['2022-09-05', "Liquidity Mining Start"],
     ['2023-04-05', "Arbitrum Launch"],
-    ['2023-06-22', "Ethereum Launch"],
-    ['2023-08-17', "Optimism Launch"],
-    ['2023-10-12', "Avalanche Launch"],
-    ['2023-11-30', "Base Launch"],
-    ['2024-01-18', "Scroll Launch"],
-    ['2024-03-14', "Polygon Launch"],
-    ['2024-06-06', "Cross-Chain Pools (Wormhole)"],
-    ['2026-02-10', "Monad Launch"],
-    ['2026-02-24', "HyperEVM Launch"],
   ],
 };
