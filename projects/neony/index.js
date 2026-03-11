@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/solana');
 
 const TREASURY_WALLETS = [
@@ -7,23 +6,17 @@ const TREASURY_WALLETS = [
 ];
 
 async function tvl(api) {
-  const solanaApi = new sdk.ChainApi({
-    chain: 'solana',
-    timestamp: api.timestamp,
-  });
 
-  await sumTokens2({
-    api: solanaApi,
+  return sumTokens2({
+    api,
     owners: TREASURY_WALLETS,
     solOwners: TREASURY_WALLETS,
   });
-
-  return solanaApi.getBalances();
 }
 
 module.exports = {
   methodology: 'TVL counts all SPL tokens and native SOL held in Neony treasury wallets on Solana.',
   timetravel: true,
   start: '2026-03-05',
-  neony: { tvl },
+  solana: { tvl },
 };
