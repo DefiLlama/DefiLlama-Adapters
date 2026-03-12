@@ -98,13 +98,8 @@ async function tvl(api) {
     }
   }
 
-  // Active loans: add borrowed principal + collateral
+  // Collateral locked in active loans
   for (const bid of bids) {
-    // Borrowed principal counts as supply-side TVL (capital deployed by lenders)
-    if (bid.principal && bid.lendingToken?.address) {
-      api.add(bid.lendingToken.address, bid.principal);
-    }
-    // Collateral locked in active loans
     if (bid.collateral) {
       for (const c of bid.collateral) {
         if (c.amount && c.collateralAddress) {
@@ -125,7 +120,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: "TVL is computed from Teller pool subgraphs (supply-side deposits) plus borrowed principal and collateral locked in active loans from borrower subgraphs.",
+  methodology: "TVL is computed from Teller pool subgraphs (available liquidity in pools) plus collateral locked in active loans. Borrowed principal is tracked separately.",
   timetravel: false,
 };
 
