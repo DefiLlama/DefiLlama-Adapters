@@ -57,13 +57,13 @@ async function arbitrumTvl(api) {
   const contractAddresses = Object.values(ARBITRUM_CONTRACTS);
   const tokens = [
     ADDRESSES.null, // Native ETH
-    '0x912CE59144191C1204E64559FE8253a0e49E6548', // ARB
-    '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', // USDC.e
-    '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC
-    '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
-    '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', // USDT
-    '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', // WETH
-    '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f', // WBTC
+    ADDRESSES.arbitrum.ARB, // ARB
+    ADDRESSES.arbitrum.USDC, // USDC.e
+    ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
+    ADDRESSES.optimism.DAI, // DAI
+    ADDRESSES.arbitrum.USDT, // USDT
+    ADDRESSES.arbitrum.WETH, // WETH
+    ADDRESSES.arbitrum.WBTC, // WBTC
   ];
   
   return sumTokens2({ api, owners: contractAddresses, tokens });
@@ -74,13 +74,13 @@ async function polygonTvl(api) {
   const contractAddresses = Object.values(POLYGON_CONTRACTS);
   const tokens = [
     ADDRESSES.null, // Native MATIC
-    '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
-    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC.e
-    '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', // USDC
-    '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063', // DAI
-    '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // USDT
-    '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', // WETH
-    '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', // WBTC
+    ADDRESSES.polygon.WMATIC_2, // WMATIC
+    ADDRESSES.polygon.USDC, // USDC.e
+    ADDRESSES.polygon.USDC_CIRCLE, // USDC
+    ADDRESSES.polygon.DAI, // DAI
+    ADDRESSES.polygon.USDT, // USDT
+    ADDRESSES.polygon.WETH_1, // WETH
+    ADDRESSES.polygon.WBTC, // WBTC
   ];
   
   return sumTokens2({ api, owners: contractAddresses, tokens });
@@ -91,13 +91,13 @@ async function optimismTvl(api) {
   const contractAddresses = Object.values(OPTIMISM_CONTRACTS);
   const tokens = [
     ADDRESSES.null, // Native ETH
-    '0x4200000000000000000000000000000000000042', // OP
-    '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85', // USDC
-    '0x7F5c764cBc14f9669B88837ca1490cCa17c31607', // USDC.e
-    '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
-    '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58', // USDT
-    '0x4200000000000000000000000000000000000006', // WETH
-    '0x68f180fcCe6836688e9084f035309E29Bf0A2095', // WBTC
+    ADDRESSES.optimism.OP, // OP
+    ADDRESSES.optimism.USDC_CIRCLE, // USDC
+    ADDRESSES.optimism.USDC, // USDC.e
+    ADDRESSES.optimism.DAI, // DAI
+    ADDRESSES.optimism.USDT, // USDT
+    ADDRESSES.optimism.WETH_1, // WETH
+    ADDRESSES.optimism.WBTC, // WBTC
   ];
   
   return sumTokens2({ api, owners: contractAddresses, tokens });
@@ -108,12 +108,12 @@ async function fantomTvl(api) {
   const contractAddresses = Object.values(FANTOM_CONTRACTS);
   const tokens = [
     ADDRESSES.null, // Native FTM
-    '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83', // WFTM
-    '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75', // USDC
-    '0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E', // DAI
-    '0x049d68029688eAbF473097a2fC38ef61633A3C7A', // fUSDT
+    ADDRESSES.fantom.WFTM, // WFTM
+    ADDRESSES.fantom.USDC, // USDC
+    ADDRESSES.fantom.DAI, // DAI
+    ADDRESSES.fantom.fUSDT, // fUSDT
     '0x74b23882a30290451A17c44f4F05243b6b58C76d', // WETH
-    '0x321162Cd933E2Be498Cd2267a90534A804051b11', // WBTC
+    ADDRESSES.fantom.WBTC, // WBTC
   ];
   
   return sumTokens2({ api, owners: contractAddresses, tokens });

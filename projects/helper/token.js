@@ -115,7 +115,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
           },
           id: 42
         },
-        timeout: 30000, // 30 seconds timeout
+        timeout: 45000, // 45 seconds timeout
       };
       const tokens = cache.tokens ?? {}
       // console.log('Fetching tokens from Ankr for address:', address, options.data.params.blockchain, (await axios.request(options)).data.result.assets)

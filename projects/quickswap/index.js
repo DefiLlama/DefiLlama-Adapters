@@ -38,11 +38,11 @@ module.exports = {
   //   tvl: getUniTVL({factory: '0xC3550497E591Ac6ed7a7E03ffC711CfB7412E57F'})
   // },
   hallmarks:[
-    [1611917218, "Aavegotchi LM"],
-    [1619095618, "QUICK staking - Dragon's Liar launch"],
-    [1619611200, "DeFi season on Polygon PoS begun"],
-    [1623851400, "Iron Finance V1 collapse"],
-    [1651668418, "QUICK split by 1:1000"],
-    [1652481840, "QuickSwap GoDaddy Domain Hijack"]
+    ['2021-01-29', "Aavegotchi LM"],
+    ['2021-04-22', "QUICK staking - Dragon's Liar launch"],
+    ['2021-04-28', "DeFi season on Polygon PoS begun"],
+    ['2021-06-16', "Iron Finance V1 collapse"],
+    ['2022-05-04', "QUICK split by 1:1000"],
+    ['2022-05-13', "QuickSwap GoDaddy Domain Hijack"]
    ]
 }

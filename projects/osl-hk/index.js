@@ -769,6 +769,7 @@ const config = {
         "MQ9mZJu3X7m4CpMkvHia2nMRvY2q25kBA6", // client-cold
     ],
   },
+  // defillama does not support bitcoincash at the moment
   // bitcoincash: {
   //   owners: [
   //       "bitcoincash:qqfys07mea9d3zq4ht6yvr4td2thr2w3cgq9nsews5", // house-cold

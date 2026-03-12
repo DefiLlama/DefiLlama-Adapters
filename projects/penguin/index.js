@@ -1,7 +1,8 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking');
-const abi = require('./abi.json')
-const abiGeneral = require('../helper/abis/masterchef.json');
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address poolToken, address rewarder, address strategy, uint256 allocPoint, uint256 lastRewardTime, uint256 accPEFIPerShare, uint16 withdrawFeeBP, uint256 totalShares, uint256 lpPerShare)"
+  };const abiGeneral = require('../helper/abis/masterchef.json');
 const { default: BigNumber } = require('bignumber.js');
 
 const nest = '0xD79A36056c271B988C5F1953e664E61416A9820F'

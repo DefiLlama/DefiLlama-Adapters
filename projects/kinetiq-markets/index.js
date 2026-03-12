@@ -1,8 +1,7 @@
-const { staking } = require('../helper/staking')
-
+const ADDRESSES = require('../helper/coreAssets.json')
 const router = '0x6AB31532382Ba5cD5E8b5D343Cf5995906bb8DD8'
 
-const HYPE = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+const HYPE = ADDRESSES.GAS_TOKEN_2
 const kHypeManager = '0x393D0B87Ed38fc779FD9611144aE649BA6082109'
 
 const abis = {
@@ -70,5 +69,5 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  hyperliquid: { tvl, staking: staking('0x696238e0Ca31c94e24ca4CBe7921754E172E4d0F', '0x000000000000780555bD0BCA3791f89f9542c2d6') }
+  hyperliquid: { tvl }
 }

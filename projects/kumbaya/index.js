@@ -1,4 +1,18 @@
-const { uniV3Export } = require('../helper/uniswapV3')
-module.exports = uniV3Export({
-  megaeth: { factory: '0x68b34591f662508076927803c567Cc8006988a09', fromBlock: 3520272 },
+const { getConfig } = require('../helper/cache')
+
+const config = {
+  megaeth: 'https://exchange.kumbaya.xyz/api/v1/pools/metrics?chainId=4326&limit=500&sortBy=tvl&sortOrder=desc&minTvlETH=0.1'
+}
+
+Object.keys(config).forEach(chain => {
+  const poolsEndpoint = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const { pools } = await getConfig('kumbaya/'+chain, poolsEndpoint)
+      return api.sumTokens({ 
+        ownerTokens: pools.map(i => [[i.token0.address, i.token1.address], i.address])
+       }) 
+      
+    }
+  }
 })
