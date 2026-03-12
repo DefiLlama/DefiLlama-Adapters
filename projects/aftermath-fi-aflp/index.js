@@ -16,7 +16,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-    methodology: "Returns the TVL of the afLP vault",
+    methodology: "Tracks USDC collateral deposited into the Aftermath afLP vault on Sui",
+    timetravel: false,
     sui: {
         tvl,
     }
