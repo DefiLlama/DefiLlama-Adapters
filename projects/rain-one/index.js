@@ -59,7 +59,10 @@ async function rainProtocolTvl(api) {
                     target: pool,
                     abi: 'function baseToken() view returns (address)',
                 })
-            } catch {
+            } catch (e) {
+                // Only fallback for pools that don't have baseToken (e.g., older contracts)
+                // Log for visibility in case this masks real issues
+                console.log(`Pool ${pool} baseToken() failed, using USDT fallback: ${e.message}`)
                 token = ADDRESSES.arbitrum.USDT
             }
 
