@@ -1,6 +1,6 @@
 const { getConfig } = require('../helper/cache')
 
-const chains = ["arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared", "hemi", "bsc", "xsat", "goat", "plume_mainnet", "hsk", "abstract"];
+const chains = ["arbitrum", "btr", "zklink", "merlin", "abstract"];
 
 const blacklistChains = ["ethereum", "mode", "core", "ailayer", "bsquared", "hemi", "bsc", "goat", "plume_mainnet",];
 
