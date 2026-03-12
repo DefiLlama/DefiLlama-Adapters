@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs")
 const { sumTokensExport: sumTokensExportGeneric } = require("../helper/sumTokens")
@@ -24,34 +25,27 @@ const SOSO_BASE = "0x624e2e7fdc8903165f64891672267ab0fcb98831"  // SOSO on Base
 const MAG7_BASE = "0x9e6a46f294bb67c20f1d1e7afb0bbef614403b55"  // MAG7.ssi on Base
 const SMAG7_BASE = "0x3d8f0ddb4bb9332Cb89dEC22d273d9be1a91530b"  // Staked MAG7.ssi on Base
 
-// Bitcoin TVL
 async function btcTvl() {
   return sumTokensBTC({ owners: bitcoinAddressBook.sodex })
 }
 
-// Litecoin TVL
 async function ltcTvl() {
   return sumTokensLTC({ owners: [CUSTODY_ADDRESS_LTC] })
 }
 
-// Solana TVL
 async function solTvl(api) {
   return sumTokensSOL({ api, solOwners: [CUSTODY_ADDRESS_SOL] })
 }
 
-// Dogecoin TVL
 async function dogeTvl(api) {
   return sumTokensDOGE({ api, owners: [CUSTODY_ADDRESS_DOGE] })
 }
 
-// Cardano TVL
 async function adaTvl() {
   return sumTokensCardano({ owners: [CUSTODY_ADDRESS_ADA] })
 }
 
-module.exports = {
-  methodology: "TVL is calculated as the sum of all assets held in SoDex custody addresses across multiple chains. SOSO token holdings are tracked separately as staking.",
-  timetravel: false,
+const chainSections = {
   bitcoin: {
     tvl: btcTvl,
   },
@@ -127,5 +121,39 @@ module.exports = {
         ADDRESSES.hyperliquid.WHYPE,  // HYPE token
       ]
     }),
+  },
+}
+
+function mergeBalances(targetApi, balances = {}) {
+  Object.entries(balances).forEach(([token, balance]) => {
+    targetApi.add(token, balance, { skipChain: true })
+  })
+}
+
+async function sumSectionAcrossChains(api, section) {
+  for (const [chain, sections] of Object.entries(chainSections)) {
+    if (!sections[section]) continue
+    const chainApi = new sdk.ChainApi({ chain, timestamp: api.timestamp })
+    const balances = await sections[section](chainApi)
+    mergeBalances(api, balances)
+  }
+
+  return api.getBalances()
+}
+
+async function tvl(api) {
+  return sumSectionAcrossChains(api, 'tvl')
+}
+
+async function staking(api) {
+  return sumSectionAcrossChains(api, 'staking')
+}
+
+module.exports = {
+  methodology: "ValueChain TVL follows the same custody-based methodology as SoDEX Bridge: it is calculated as the sum of assets held in SoDex custody addresses across supported chains, not only the spot and perp vault balances. SOSO token holdings are tracked separately as staking.",
+  timetravel: false,
+  valuechain: {
+    tvl,
+    staking,
   },
 }
