@@ -121,4 +121,5 @@ module.exports = {
     arbitrum: {
         tvl: tvl,
     },
+    timetravel: false,
 }
