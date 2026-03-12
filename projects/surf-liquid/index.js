@@ -52,9 +52,7 @@ async function tvl(api) {
   }
 
   await api.sumTokens({ tokensAndOwners });
-}
 
-async function staking(api) {
   // SURF staking contract
   const totalStaked = await api.call({ abi: "uint256:totalStaked", target: SURF_STAKING });
   api.add(SURF_TOKEN, totalStaked);
@@ -69,9 +67,8 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: "TVL counts Morpho vault deposits across V2 and V3 Surf Liquid vaults. Staking includes SURF staked and SURF subscriptions.",
+  methodology: "TVL counts Morpho vault deposits across V2 and V3 Surf Liquid vaults, SURF staked, and CreatorBid SURF subscriptions.",
   base: {
     tvl,
-    staking,
   },
 };
