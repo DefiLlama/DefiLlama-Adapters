@@ -729,6 +729,12 @@ module.exports = {
     'bc1qtlen0nuvln3aqcn2r3nljshdmzakq7z5z4rexpk23mj8u8lmc8ysc29jct',
     'bc1qzdt5z4f46jak59jku5jmvv3f2ru20htqs7jhy0whazgd5v4626eq4vkxqz',
     'bc1qzu4lnzfpskwsvnyvzud9a7ru4d2ft7whqvl5d3kskxxhgeupnjjquzvt97',
+    '161AnGzEDJvwfZ6kW5maWigyMvN4vYWyq7',
+'1izotKDuwjVdKSdMmatLaUx7iZf39WF3u',
+'1Q7Xi7BdSwqEozSc8zneH7F6MTsYxv2MhV',
+'1893nTioDembAdRTbx1V4EqYgsfs4nVo6i',
+'15VHjDwgzYoGTQdxUH7rJw5zvzb3y143Ap',
+'1D5a76Rn9VV8iGS5AV7jmMfJTQcPPYuaey'
   ],
   kraken: [
     'bc1qnhmemsqfhycvp6g50v732h7wfwdt68el4ux5ttu8xwsrzngmxv0qr55aga',
