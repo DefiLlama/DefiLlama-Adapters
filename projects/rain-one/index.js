@@ -3,6 +3,7 @@ const axios = require('axios')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const RAIN_PROTOCOL_FACTORY = "0xccCB3C03D9355B01883779EF15C1Be09cf3623F1"
+const RAIN_RISK_MARKET_RESERVOIR = "0x3783c98C39c48750D92A7086D3EacBD231EF26b5"
 
 /**
  * Fetch token prices from GeckoTerminal
@@ -97,10 +98,27 @@ async function rainProtocolTvl(api) {
     return api.addUSDValue(tvlUsd)
 }
 
+async function rainRiskMarketTvl(api) {
+    const token = ADDRESSES.arbitrum.USDT
+    const [balance, decimals] = await Promise.all([
+        api.call({ abi: 'erc20:balanceOf', target: token, params: RAIN_RISK_MARKET_RESERVOIR }),
+        api.call({ abi: 'erc20:decimals', target: token }),
+    ])
+    const tvlUsd = Number(balance) / 10 ** decimals
+    return api.addUSDValue(tvlUsd)
+}
+
+async function tvl(api) {
+    await Promise.all([
+        rainProtocolTvl(api),
+        rainRiskMarketTvl(api),
+    ])
+}
+
 module.exports = {
     methodology:
         "TVL includes All Markets Created On https://rain.one",
     arbitrum: {
-        tvl: rainProtocolTvl,
+        tvl: tvl,
     },
 }
