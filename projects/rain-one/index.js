@@ -22,15 +22,15 @@ async function fetchTokenPrices(tokenAddresses) {
             batch.join(',')
 
         try {
-            const { data } = await axios.get(url)
+            const { data } = await axios.get(url, { timeout: 10_000 })
             if (data?.data?.attributes?.token_prices) {
                 for (const [token, priceStr] of Object.entries(data.data.attributes.token_prices)) {
                     const price = Number(priceStr)
                     if (!isNaN(price)) prices.set(token.toLowerCase(), price)
                 }
             }
-        } catch {
-            // Continue with other batches on failure
+        } catch (e) {
+            throw new Error(`Failed to fetch GeckoTerminal prices: ${e.message}`)
         }
     }
 
