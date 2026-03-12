@@ -2837,7 +2837,10 @@ const uniV2Configs = {
   },
   'velox': {
     base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',
-  }
+  },
+  'capybara-v2': {
+    klaytn: '0xE4296d6161c8a1554a18dba79C0f825cE23bAE42',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
