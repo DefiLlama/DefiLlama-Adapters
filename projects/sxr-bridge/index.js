@@ -12,10 +12,5 @@ module.exports = {
         blacklistedTokens: SX,
         fetchCoValentTokens: true,
       }),
-    staking: (api) => sumTokens2({
-      api,
-      owners,
-      tokens: SX
-    })
   },
 };
