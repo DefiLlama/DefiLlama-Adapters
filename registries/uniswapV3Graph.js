@@ -33,7 +33,7 @@ const configs = {
     xlayer: { graphURL: 'https://subgraph.okiedokie.fun/subgraphs/name/okieswap-v3', name: 'okieswap-v3-xlayer' },
   },
   'kittenswap-algebra': {
-    hyperliquid: { graphURL: 'https://api.goldsky.com/api/public/project_cmcxkn8h7pwwc01x30a5e6t39/subgraphs/cl-analytics-prod/v1.0.0/gn', name: 'kittenswap-algebrahyperliquid', blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'] },
+    hyperliquid: { graphURL: 'https://api.goldsky.com/api/public/project_cmcxkn8h7pwwc01x30a5e6t39/subgraphs/cl-analytics-prod/gn', name: 'kittenswap-algebrahyperliquid', blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'] },
   },
   'hydradex-v3': {
     misrepresentedTokens: true,
@@ -45,7 +45,8 @@ const configs = {
     hyperliquid: { graphURL: 'https://api.goldsky.com/api/public/project_cmb20ryy424yb01wy7zwd7xd1/subgraphs/analytics/v1.0.0/gn', name: 'gliquid-hyperliquid' },
   },
   'shido-dex': {
-    shido: { graphURL: 'https://ljd1t705przomdjt11587.cleavr.xyz/subgraphs/name/shido/mainnet', name: 'shido-dex' },
+    misrepresentedTokens: true,
+    shido: { graphURL: 'https://prod-v2-graph-node.shidoscan.com/subgraphs/name/shido/mainnet', name: 'shido-dex' },
   },
   'physica-finance': {
     planq: { graphURL: 'https://subgraph.planq.finance/subgraphs/name/ianlapham/uniswap-v3', name: 'physica-v3' },
@@ -67,6 +68,7 @@ const configs = {
     hela: { graphURL: 'https://subgraph.snapresearch.xyz/subgraphs/name/cytoswap-mainnet', name: 'cytoswap-hela' },
   },
   'shido-dex-v3': {
+    misrepresentedTokens: true,
     shido: { graphURL: 'https://prod-v2-graph-node.shidoscan.com/subgraphs/name/shido/mainnet', name: 'shido-dex-v3-shido' },
   },
 }
