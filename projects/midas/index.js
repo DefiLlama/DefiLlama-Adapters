@@ -29,7 +29,7 @@ const isProtocolBlacklisted = (protocol, chainIdStr) => {
   return [...global, ...perChain].includes(protocol)
 }
 
-const getLyts = async (key) => {
+const getLyts = async () => {
   const { data } = await axios.get(`${BASE_URL}?scope=endorsed`)
   return data.vaults.map(({ vaultMetadata }) => vaultMetadata.name)
 }
@@ -42,9 +42,8 @@ const getSankeyDataForLyt = async (lyt) => {
 const getChainSankeyEntries = async (chainId, chainName) => {
   const chainIdStr = String(chainId || chainName)
   const allowedBlockchainIds = getAllowedBlockchainIds(chainId, chainName)
-  const lytsForThisChain = await getLyts('lyts')
+  const lytsForThisChain = await getLyts()
 
-  const types = []
   const allEntriesPerLyt = await Promise.all(
     lytsForThisChain.map((lyt) => limit(async () => {
       const sankeyData = await getSankeyDataForLyt(lyt)
@@ -60,9 +59,6 @@ const getChainSankeyEntries = async (chainId, chainName) => {
         })
         .map((entry) => {
           const { navUsd, dimensions } = entry
-          if (!types.includes(dimensions.locationName)) {
-            types.push(dimensions.locationName)
-          }
           return {
             lyt: dimensions.vaultName,
             navUsd,
