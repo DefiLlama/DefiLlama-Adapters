@@ -116,7 +116,6 @@ async function getTvl(api) {
     await getCurveLPValue(api, tokenConfig)
   }
 
-  return api.getBalances()
 }
 
 module.exports = {
