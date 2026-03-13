@@ -6,7 +6,7 @@ module.exports = {
     tvl: ethereumTvl,
   },
   hallmarks: [
-    [1677196800, "Hashnote vault launch"],
+    ['2023-02-24', "Hashnote vault launch"],
   ]
 }
  

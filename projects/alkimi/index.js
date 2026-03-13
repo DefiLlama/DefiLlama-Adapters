@@ -25,15 +25,6 @@ module.exports = {
       const total = BigInt(fields.balance || "0");
       const humanTotal = Number(total / 10n ** ALKIMI_DECIMALS);
 
-      // Optional: log user/admin breakdown for PR review
-      const userLocked = BigInt(fields.user_locked || "0");
-      const adminLocked = BigInt(fields.admin_locked || "0");
-      console.log("=== ALKIMI Staking TVL ===");
-      console.log("Total Tokens:", humanTotal);
-      console.log("User Locked:", Number(userLocked / 10n ** ALKIMI_DECIMALS));
-      console.log("Admin Locked:", Number(adminLocked / 10n ** ALKIMI_DECIMALS));
-      console.log("========================");
-
       return {
         [ALKIMI_COINGECKO_ID]: humanTotal,
       };

@@ -50,7 +50,7 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
       pool2: pool2s(farmContractsBSC, pool2LpsBSC),
-      ...compoundExports2({ comptroller })
+      ...compoundExports2({ comptroller, isInsolvent: true })
   },
   bsc: {
       tvl: bscTvl,
@@ -58,5 +58,3 @@ module.exports = {
   methodology:
       "We count liquidity on the Markets same as compound, and we export Borrowing part too",
 }
-
-delete module.exports.ethereum.borrowed

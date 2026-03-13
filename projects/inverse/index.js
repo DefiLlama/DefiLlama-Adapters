@@ -54,8 +54,8 @@ async function tvl(api) {
 module.exports = {
   methodology: "DOLA curve metapool replaced by DOLA",
   hallmarks: [
-    // [1648771200, "INV price hack"],
-    [1655380800, "Inverse Frontier Deprecated"]
+    // ['2022-04-01', "INV price hack"],
+    ['2022-06-16', "Inverse Frontier Deprecated"]
   ],
   start: '2020-12-12', // Dec 12 2020 00:00:00 GMT+0000
   ethereum: { tvl }

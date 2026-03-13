@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const axios = require("axios");
 const sdk = require("@defillama/sdk");
 
@@ -28,7 +29,7 @@ async function tvl() {
   const tvlInWei = Math.floor(totalTvlInEth * 1e18);
 
   return {
-    "ethereum:0x0000000000000000000000000000000000000000": tvlInWei.toString(),
+    ["ethereum:" + ADDRESSES.null]: tvlInWei.toString(),
   };
 }
 

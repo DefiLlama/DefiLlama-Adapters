@@ -18,6 +18,6 @@ module.exports = {
   start: '2018-09-29',  // 09/29/2018 @ 12:00am (UTC)
   ethereum: { tvl: sumTokensExport({ owners: contracts, tokens }) },
   hallmarks: [
-    [1627960574, "dydx token"],
+    ['2021-08-03', "dydx token"],
   ]
 };

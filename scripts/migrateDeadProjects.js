@@ -3,10 +3,10 @@ const path = require("path")
 
 const projectsDir = path.join(__dirname, '../projects')
 const deadDir = path.join(projectsDir, 'dead')
-const outputPath = path.join(projectsDir, 'helper/registries/deadAdapters.json')
+const outputPath = path.join(__dirname, '../registries/deadAdapters.json')
 const deadChains = require('../projects/helper/deadChains')
 const whitelistedExportKeys = require('../projects/helper/whitelistedExportKeys.json')
-let deadAdapters = require('../projects/helper/registries/deadAdapters.json')
+let deadAdapters = require('../registries/deadAdapters.json')
 
 function sortObjectByKey(obj) {
   return Object.keys(obj).sort().reduce((sorted, key) => {
