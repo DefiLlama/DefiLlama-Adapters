@@ -8,6 +8,11 @@ const configs = {
         '0xe55C09E30076a580722Aeb265632ebF936D02F57',
       ],
     },
+    celo: {
+      morphoVaultOwners: [
+        '0x81c76F62f7E05DEC75800150bA5A23f62e2f091F',
+      ],
+    },
   }
 }
 

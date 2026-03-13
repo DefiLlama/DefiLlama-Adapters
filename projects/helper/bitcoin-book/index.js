@@ -729,6 +729,12 @@ module.exports = {
     'bc1qtlen0nuvln3aqcn2r3nljshdmzakq7z5z4rexpk23mj8u8lmc8ysc29jct',
     'bc1qzdt5z4f46jak59jku5jmvv3f2ru20htqs7jhy0whazgd5v4626eq4vkxqz',
     'bc1qzu4lnzfpskwsvnyvzud9a7ru4d2ft7whqvl5d3kskxxhgeupnjjquzvt97',
+    '161AnGzEDJvwfZ6kW5maWigyMvN4vYWyq7',
+'1izotKDuwjVdKSdMmatLaUx7iZf39WF3u',
+'1Q7Xi7BdSwqEozSc8zneH7F6MTsYxv2MhV',
+'1893nTioDembAdRTbx1V4EqYgsfs4nVo6i',
+'15VHjDwgzYoGTQdxUH7rJw5zvzb3y143Ap',
+'1D5a76Rn9VV8iGS5AV7jmMfJTQcPPYuaey'
   ],
   kraken: [
     'bc1qnhmemsqfhycvp6g50v732h7wfwdt68el4ux5ttu8xwsrzngmxv0qr55aga',
@@ -1140,6 +1146,9 @@ module.exports = {
   echoMBTC: [
     'bc1p2ecnyf8pgmq6u29h6csgvckj5mg6l36054p2vst0m0edxmg8dusquek4y9',
     'bc1pc5regkaavr8nwk3tt72snnnyj56shc4ss4xn7y60u6mh88vcp03qmg2p2q'
+  ],
+  echoMonadEBTC: [
+    'bc1prx589such7z0qch5hgvvs6gvtzxuneyuuarp8hfhc9mcs9u26lqqk374tm',
   ],
   xbtc: [
     'bc1q7mvqd5apnrngm36rwqlgk7nwkt5kwc37thzgd79puh55wscr42mqct7lss'
