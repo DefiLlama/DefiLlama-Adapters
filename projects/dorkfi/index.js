@@ -128,32 +128,39 @@ function makeBorrowed(chain) {
     const markets = await discoverAllMarkets(chain);
 
     for (const [marketAppId, poolAppId] of markets) {
+      // Only the box fetch may legitimately 404 (market not yet initialised).
+      // Keep all other logic outside the catch so errors from decoding or
+      // lookupAccount propagate instead of being silently swallowed.
+      let boxData;
       try {
-        const boxData = await readMarketBox(chain, poolAppId, marketAppId);
-        const scaledBorrows = readUint256(boxData, BORROWS_OFFSET);
-        if (scaledBorrows === 0n) continue;
-
-        const borrowIndex = readUint256(boxData, BORROW_IDX_OFFSET);
-        const actualBorrows = (scaledBorrows * borrowIndex) / SCALE;
-        if (actualBorrows === 0n) continue;
-
-        // Identify underlying token from the market contract's account
-        const addr = getApplicationAddress(marketAppId);
-        const account = await lookupAccount(chain, addr);
-        const positiveAsset = (account.assets || []).find(
-          (a) => a.amount > 0
-        );
-        if (positiveAsset) {
-          api.add(
-            String(positiveAsset["asset-id"]),
-            actualBorrows.toString()
-          );
-        } else {
-          // Native token market (ALGO / VOI)
-          api.add("1", actualBorrows.toString());
-        }
+        boxData = await readMarketBox(chain, poolAppId, marketAppId);
       } catch (e) {
-        // Box not found for this market – skip
+        const status = e?.response?.status ?? e?.status;
+        if (status === 404) continue;
+        throw e;
+      }
+
+      const scaledBorrows = readUint256(boxData, BORROWS_OFFSET);
+      if (scaledBorrows === 0n) continue;
+
+      const borrowIndex = readUint256(boxData, BORROW_IDX_OFFSET);
+      const actualBorrows = (scaledBorrows * borrowIndex) / SCALE;
+      if (actualBorrows === 0n) continue;
+
+      // Identify underlying token from the market contract's account
+      const addr = getApplicationAddress(marketAppId);
+      const account = await lookupAccount(chain, addr);
+      const positiveAsset = (account.assets || []).find(
+        (a) => a.amount > 0
+      );
+      if (positiveAsset) {
+        api.add(
+          String(positiveAsset["asset-id"]),
+          actualBorrows.toString()
+        );
+      } else {
+        // Native token market (ALGO / VOI)
+        api.add("1", actualBorrows.toString());
       }
     }
   };
