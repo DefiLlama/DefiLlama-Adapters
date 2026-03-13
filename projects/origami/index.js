@@ -1,25 +1,44 @@
 const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 
-const GRAPH_URLS = {
-  ethereum: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-mainnet/prod/gn'),
-  arbitrum: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-arbitrum/prod/gn'),
-  berachain: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-berachain/prod/gn'),
-}
+const SUBGRAPH_URL = 'https://origami-vaults-indexer.automation-templedao.link'
+const SUPPORTED_CHAINS = ['ethereum', 'berachain', 'plasma'];
 
 module.exports = {
   doublecounted: true,
+  ...Object.fromEntries(SUPPORTED_CHAINS.map((c) => [c, {tvl, borrowed}])),
 }
 
-Object.keys(GRAPH_URLS).forEach(chain => {
-  module.exports[chain] = { 
-    tvl,
-    borrowed
-  }
-})
+async function getVaults(api) {
+  const chainId = api.chainId;
+  if (!chainId) return [];
+
+  const vaultTypes = [
+    'investmentVaults',
+    'autoStakingVaults',
+    'balanceSheetVaults',
+  ]
+  let query = `{\n`
+  vaultTypes.forEach((vaultT) => {
+    query += `${vaultT}(where: { chainId: ${chainId} }) { items { address vaultKinds } }\n`
+  })
+  query += '}'
+
+  const { investmentVaults, autoStakingVaults, balanceSheetVaults } = await cachedGraphQuery(
+    'origami/' + chainId,
+    SUBGRAPH_URL,
+    query,
+  );
+  const vaults = [
+    ...investmentVaults.items,
+    ...autoStakingVaults.items,
+    ...balanceSheetVaults.items,
+  ]
+  return vaults;
+}
 
 function vaultsOfKind(investmentVaults, vaultKind) {
-  return investmentVaults.filter(vault => !!vault.vaultKinds.find(v => v === vaultKind)).map(v => v.id)
+  return investmentVaults.filter(vault => !!vault.vaultKinds.find(v => v === vaultKind)).map(v => v.address)
 }
 
 async function processLeveragedVaults(api, vaults) {
@@ -103,8 +122,7 @@ async function processAutoStakingVaults(api, vaults) {
 }
 
 async function tvl(api) {
-  const { vaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ vaults { id vaultKinds } }')
-
+  const vaults = await getVaults(api);
   await processLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
   await processRepricingVaults(api, vaultsOfKind(vaults, 'REPRICING'))
   await processErc4626Vaults(api, vaultsOfKind(vaults, 'ERC4626'))
@@ -148,7 +166,7 @@ async function borrowedBalanceSheetVaults(api, vaults) {
 }
 
 async function borrowed(api) {
-  const { vaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ vaults { id vaultKinds } }')
+  const vaults = await getVaults(api);
   await borrowedLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
   await borrowedBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
 }
