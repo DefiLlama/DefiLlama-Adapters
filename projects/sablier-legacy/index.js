@@ -4,12 +4,11 @@ const { covalentGetTokens } = require('../helper/token')
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { getUniqueAddresses } = require('../helper/utils')
 
-const blacklistedTokens = [
+const blacklistedTokens = getUniqueAddresses([
   ADDRESSES.ethereum.sUSD_OLD,
-  // TODO: We shouldn't need to lowercase here
-  ADDRESSES.ethereum.SAI.toLowerCase(),
+  ADDRESSES.ethereum.SAI,
   ADDRESSES.ethereum.MKR,
-]
+])
 
 const config = {
   ethereum: {
