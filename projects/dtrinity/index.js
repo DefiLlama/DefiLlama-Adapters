@@ -115,6 +115,7 @@ async function getTvl(api) {
     await sumTokens2({ api, owner: tokenConfig.collateralVault, tokens: collaterals })
     await getCurveLPValue(api, tokenConfig)
   }
+
 }
 
 module.exports = {
