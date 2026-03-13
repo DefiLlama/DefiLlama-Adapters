@@ -56,6 +56,12 @@ const configs = {
       staking: { owners: ["0xEF35314a4F3a1F8CE89095202dABAeEe1CaAd760", "0x93CF815EC397C526576078A74197c3fa2d769b80"], tokens: ['0xe11b4DD87675B52980b3427029a2d792A4A05aa2']}
     }
   },
+  'bitchemical': {
+    methodology: 'Counts BCHEM held by the Bitchemical staking contract on BNB Chain.',
+    bsc: {
+      staking: ['0x01F82039810f18F703F4c8b943940ce04Fa00C78', '0x9102E0A76a5e2823073Ed763a32Ba8ca8521b1F3']
+    }
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
