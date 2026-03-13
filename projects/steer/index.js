@@ -277,17 +277,27 @@ const supportedChains = [
   }
 ]
 
-// Fetch active vaults and associated data @todo limited to 1000 per chain
-const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {id}}`
-const z_query = `{  vaults(first: 1000, where: {lastSnapshot_gte: "0", totalLPTokensIssued_gt: "0"}) {    id  }}`
+// Fetch active vaults and associated data
+const query = `
+query vaults($lastId: ID) {
+  vaults(first: 1000, where: {id_gt: $lastId, totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {
+    id
+  }
+}`
+const z_query = `
+query vaults($lastId: ID) {
+  vaults(first: 1000, where: {id_gt: $lastId, lastSnapshot_gte: "0", totalLPTokensIssued_gt: "0"}) {
+    id
+  }
+}`
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
     tvl: async (api) => {
       let _query = api.chain === 'zircuit' ? z_query : query
-      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, _query, { headers: chain.headers })
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, _query, { headers: chain.headers, fetchById: true })
 
-      const vaults = data.vaults.map((vault) => vault.id)
+      const vaults = (Array.isArray(data) ? data : data.vaults).map((vault) => vault.id)
       const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
       const token0s = await api.multiCall({ abi: "address:token0", calls: vaults, permitFailure: true, })
       const token1s = await api.multiCall({ abi: "address:token1", calls: vaults, permitFailure: true, })

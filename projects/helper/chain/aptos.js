@@ -127,13 +127,18 @@ async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], t
   const uniqueOwners = getUniqueAddresses(owners, true)
   const validTokens = tokens.filter(token => !blacklistedTokens.includes(token));
 
-  for (const owner of uniqueOwners) {
-    const balancesPerToken = await Promise.all(
-        validTokens.map(token => getBalance(owner, token))
-    );
+  if (validTokens.length === 0) return transformBalances(chain, balances);
 
-    validTokens.forEach((token, index) => {
-      sdk.util.sumSingleBalance(balances, token, balancesPerToken[index]);
+  for (const owner of uniqueOwners) {
+    const resources = await getResources(owner, chain);
+    resources.forEach(resource => {
+      if (resource.type.startsWith('0x1::coin::CoinStore<')) {
+        const token = resource.type.substring(21, resource.type.length - 1);
+        if (validTokens.includes(token)) {
+          const balance = resource.data.coin.value;
+          sdk.util.sumSingleBalance(balances, token, balance);
+        }
+      }
     });
   }
 
