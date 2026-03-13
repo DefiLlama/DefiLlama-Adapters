@@ -1,0 +1,8 @@
+{
+  "market": {
+    "collateralToken": "address:collateralToken",
+    "borrowToken": "address:borrowToken",
+    "totalBorrowed": "function totalBorrowed() view returns (uint128 assets, uint128 shares)",
+    "totalSupply": "function totalSupply() view returns (uint128 assets, uint128 shares)"
+  }
+}
