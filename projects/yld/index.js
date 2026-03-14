@@ -9,13 +9,17 @@ async function tvl(api) {
     .filter(([key, v]) => key.startsWith('ys') && v && typeof v === 'object' && v.address)
     .map(([, v]) => v.address);
 
-  const assets = await api.multiCall({ abi: 'address:asset', calls: vaults });
-  const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults });
-  api.addTokens(assets, totalAssets);
+  const assets = await api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: true });
+  const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: true });
+
+  assets.forEach((asset, i) => {
+    if (asset && totalAssets[i]) api.add(asset, totalAssets[i]);
+  });
 }
 
 module.exports = {
   methodology: 'TVL is the sum of totalAssets() across all yld ERC-4626 strategy vaults.',
+  timetravel: false,
   doublecounted: true,
   ethereum: { tvl },
 };
