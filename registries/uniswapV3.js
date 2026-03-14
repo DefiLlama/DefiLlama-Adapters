@@ -1585,6 +1585,12 @@ const uniV3Configs = {
       fromBlock: 33104424,
     },
   },
+  'capybara-v3': {
+    klaytn: {
+      factory: '0xC4C8310080F209629EC4c349cb2A3c6720e1176D',
+      fromBlock: 172328824,
+    },
+  },
   'winnieswap': {
     berachain: {
       factory: '0x76fD9D07d5e4D889CAbED96884F15f7ebdcd6B63',

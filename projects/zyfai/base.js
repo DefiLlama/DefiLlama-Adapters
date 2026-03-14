@@ -7,7 +7,6 @@ const MORPHO_POOL_ADDRESSES = {
     // 'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
     'Seamless USDC Vault': '0x616a4E1db48e22028f6bbf20444Cd3b8e3273738',
     'HighYield Clearstar USDC': '0xE74c499fA461AF1844fCa84204490877787cED56',
-    'Clearstar Reactor OpenEden Boosted USDC': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
     'Gauntlet USDC Prime': '0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61',
     'Gauntlet USDC Core': '0xc0c5689e6f4D256E861F65465b691aeEcC0dEb12',
     'Gauntlet USDC Frontier': '0x236919F11ff9eA9550A4287696C2FC9e18E6e890',

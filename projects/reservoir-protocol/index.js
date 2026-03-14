@@ -1,5 +1,6 @@
 const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { getConfig } = require('../helper/cache')
 
 const config = {
   ethereum: {
@@ -16,6 +17,9 @@ const config = {
       '0xC5deA68CCe26c014BEC516CDA70c107c534a73C4', // bbqUSDC - Steakhouse High Yield Instant
       // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
       '0x86Ac8e29Be5ad83c611fE054Df20970d3b4f9BE0'
+    ],
+    blacklistedTokens: [
+      '0x003ca23fd5f0ca87d01f6ec6cd14a8ae60c2b97d',
     ],
     // [token, owner] pairs for direct balance queries
     tokensAndOwners: [
@@ -56,7 +60,7 @@ const config = {
   plasma: {
     tokensAndOwners: [
       ['0x7519403E12111ff6b710877Fcd821D0c12CAF43A', '0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'], // aPlaUSDe
-      ['0xa9C251F8304b1B3Fc2b9e8fcae78D94Eff82Ac66', '0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'], 
+      ['0xa9C251F8304b1B3Fc2b9e8fcae78D94Eff82Ac66', '0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'],
       ['0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B', '0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'], // fUSDT0
       ['0x5D72a9d9A9510Cd8cBdBA12aC62593A58930a948', '0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'], // aPlaUSDT0
       [ADDRESSES.corn.USDT0, '0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'], // USDT0
@@ -107,34 +111,35 @@ const config = {
     tokensAndOwners: [
       ['0xc0Df5784f28046D11813356919B869dDA5815B16', '0x98Cb8fD0D8b6bf104Fa2B5BAB91fd4B0fcC43A47'], // Re7pUSD
     ]
+  },
+  mantle: {
+    tokensAndOwners: []
   }
 }
 
-module.exports.ethereum = {
-  tvl: async (api) => {
-    const { funds, tokensAndOwners, } = config.ethereum
+const tvl = async (api) => {
+  const { funds = [], tokensAndOwners, blacklistedTokens, } = config[api.chain]
+  const { assets } = await getConfig('reservoir/reserves', 'https://app.reservoir.xyz/api/reserves/raw')
+  const chainReserves = assets.filter(i => i.chainId === api.chainId)
+  console.log(`Found ${chainReserves.length} reserves for chain ${api.chain} (${api.chainId})`)
+  chainReserves.forEach(i => {
+    let token = i.address
+    const owners = Object.values(i.adapters || {})
+    owners.forEach(adapter => tokensAndOwners.push([token, adapter]))
+  })
 
-    // Get underlying tokens and balances from funds
-    const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
-    const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
-    const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
+  // Get underlying tokens and balances from funds
+  const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
+  const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
+  const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
 
-    // Adjust balances and add
-    api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
+  // Adjust balances and add
+  api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
 
-    // Add regular token balances
-    await api.sumTokens({ tokensAndOwners })
-  }
+  // Add regular token balances
+  await api.sumTokens({ tokensAndOwners, blacklistedTokens, })
 }
 
-module.exports.plasma = { tvl: sumTokensExport(config.plasma) }
-module.exports.arbitrum = { tvl: sumTokensExport(config.arbitrum) }
-module.exports.base = {
-  tvl: async (api) => {
-    await api.sumTokens({ tokensAndOwners: config.base.tokensAndOwners })
-  }
-}
-module.exports.berachain = { tvl: sumTokensExport(config.berachain) }
-module.exports.wc = { tvl: sumTokensExport(config.wc) }
-module.exports.optimism = { tvl: sumTokensExport(config.optimism) }
-module.exports.plume = { tvl: sumTokensExport(config.plume) }
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

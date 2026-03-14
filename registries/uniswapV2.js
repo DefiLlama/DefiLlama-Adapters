@@ -310,7 +310,7 @@ const uniV2Configs = {
     occ: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     rari: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     reya: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
-    sanko: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
+    // sanko: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4', // chain was down from 2026-03-07
     spn: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     xai: '0x18E621B64d7808c3C47bccbbD7485d23F257D26f',
   },
@@ -2834,6 +2834,12 @@ const uniV2Configs = {
   },
   'zkevmswap': {
     polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
+  },
+  'velox': {
+    base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',
+  },
+  'capybara-v2': {
+    klaytn: '0xE4296d6161c8a1554a18dba79C0f825cE23bAE42',
   },
 }
 
