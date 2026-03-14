@@ -8,16 +8,6 @@ const UNISWAP_V4_WRAPPER_FACTORY = {
   ethereum: '0x77774aBb84EEAbaE05CE00D8a1b83dfc6E93f777',
 };
 
-const POSITION_MANAGER = {
-  unichain: '0x4529a01c7a0410167c5740c487a8de60232617bf',
-  ethereum: '0xbd216513d74c8cf14cf4747e6aaa6420ff64ee9e',
-};
-
-const STAT_VIEW = {
-  unichain: '0x86e8631a016f9068c3f085faf484ee3f5fdee8f2',
-  ethereum: '0x7ffe42c4a5deea5b0fec41c94c136cf115597227',
-};
-
 const UNISWAP_V4_WRAPPER_FACTORY_START_BLOCKS = {
   unichain: 42132957 ,       
   ethereum: 24589014,   
@@ -31,10 +21,10 @@ const UNI_V4_SUBGRAPH_URLS = {
 const WRAPPER_CREATED_ABI = 'event UniswapV4WrapperCreated(address indexed uniswapV4Wrapper, address indexed fixedRateOracle, bytes32 indexed poolId, address oracle, address unitOfAccount, tuple(address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) poolKey)';
 
 
-function buildPositionsQuery(owner) {
+function buildPositionsQuery(owner, first = 1000, skip = 0) {
   return `
     {
-      positions(where: { owner: "${owner.toLowerCase()}" }) {
+      positions(first: ${first}, skip: ${skip}, where: { owner: "${owner.toLowerCase()}" }) {
         tokenId
       }
     }
@@ -63,11 +53,18 @@ async function getUniswapV4CollateralTvl(api, chain) {
   // This logic can be moved into sumTokens2.unwrapUniswapV4NFTs and removed from here
   const positionIds = [];
 
+  // Pagination is added to handle the cases where subgraph returns more than 1000 tokenIds
   await Promise.all(wrapperAddresses.map(async (wrapper) => {
-    const cacheKey = `vii-finance/${chain}/positions/${wrapper}`;
-    const data = await cachedGraphQuery(cacheKey, subgraphUrl, buildPositionsQuery(wrapper));
-    if (data?.positions?.length) {
-      data.positions.forEach(p => positionIds.push(p.tokenId));
+    let skip = 0;
+    const pageSize = 1000;
+    while (true) {
+      const cacheKey = `vii-finance/${chain}/positions/${wrapper}/${skip}`;
+      const data = await cachedGraphQuery(cacheKey, subgraphUrl, buildPositionsQuery(wrapper, pageSize, skip));
+      const page = data?.positions ?? [];
+      if (!page.length) break;
+      page.forEach(({ tokenId }) => positionIds.push(tokenId));
+      if (page.length < pageSize) break;
+      skip += pageSize;
     }
   }));
 
@@ -79,9 +76,7 @@ async function getUniswapV4CollateralTvl(api, chain) {
     api,
     resolveUniV4: true,
     uniV4ExtraConfig: {
-      positionIds,
-      nftAddress: POSITION_MANAGER[chain],
-      stateViewer: STAT_VIEW[chain],
+      positionIds
     },
   });
 }
