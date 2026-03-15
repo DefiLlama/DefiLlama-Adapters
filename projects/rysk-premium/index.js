@@ -1,13 +1,10 @@
 const marginPools = [
 '0x2f74fb346336b11e3b61A96F2581CE9Bd7431d42', // margin pool hyperliquid
 ]
-const vaultRegistries = [
-  '0x425ffAB71CEFc7aB96CBFbb75282e731234C1885', // vault registry hyperliquid
-]
+const vaultRegistryHyperliquid = '0x425ffAB71CEFc7aB96CBFbb75282e731234C1885'
 
-async function tvl(api) {
-  const vaultResults = await api.multiCall({ abi: 'function getAllVaults() view returns (address[])', calls: vaultRegistries.map(r => ({ target: r })) })
-  const vaults = vaultResults.flat()
+async function tvlHyperliquid(api) {
+  const vaults = await api.call({ abi: 'function getAllVaults() view returns (address[])', target: vaultRegistryHyperliquid })
   const collaterals = await api.multiCall({ abi: 'function collateralAsset() view returns (address)', calls: vaults })
   const uniqueCollaterals = [...new Set(collaterals.map(c => c.toLowerCase()))]
 
@@ -25,6 +22,6 @@ async function tvl(api) {
 module.exports = {
   methodology: 'balance of all liquidity pools and margin pools deployed',
   hyperliquid: {
-    tvl,
+    tvl: tvlHyperliquid,
   }
 };
