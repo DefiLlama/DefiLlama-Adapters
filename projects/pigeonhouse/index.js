@@ -10,6 +10,7 @@
 const { getConnection, sumTokens2 } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const { createHash } = require("crypto");
+const bs58 = require("bs58");
 
 const PROGRAM_ID = "BV1RxkAaD5DjXMsnofkVikFUUYdrDg1v8YgsQ3iyDNoL";
 const PIGEON_MINT = "4fSWEw2wbYEUCcMtitzmeGUfqinoafXxkhqZrA9Gpump";
@@ -29,7 +30,7 @@ async function tvl() {
   // Fetch all bonding curve accounts from the program
   const accounts = await connection.getProgramAccounts(programId, {
     filters: [
-      { memcmp: { offset: 0, bytes: require("bs58").encode(discriminator) } },
+      { memcmp: { offset: 0, bytes: bs58.encode(discriminator) } },
     ],
   });
 
