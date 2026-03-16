@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { get, post } = require('../helper/http')
 
-const USDhContract = 'SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.usdh-token-v1';
+const USDhContract = ADDRESSES.stacks.USDh;
 
 function parseClarityInt(hexString) {
   // Remove "0x" prefix

@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCTFPerShare)"
+  };
 const { pool2s } = require("../helper/pool2");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");

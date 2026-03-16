@@ -55,6 +55,8 @@ function onChainTvl(
     tokens.push(...preLogTokens);
     const pools = logs.map((i) => i.poolAddress);
     blacklistedTokens = [...blacklistedTokens, ...pools];
+    if (permitFailure === undefined && tokens.length > 10) 
+      permitFailure = true 
 
     return sumTokens2({
       api,

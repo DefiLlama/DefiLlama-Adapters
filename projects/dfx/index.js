@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // module.exports = {
-//   hallmarks: [[1667955600, "Hack"]],
+//   hallmarks: [['2022-11-09', "Hack"]],
 // };
 
 const config = {

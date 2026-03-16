@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, get } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
@@ -98,8 +99,8 @@ async function tvl(api) {
 
 module.exports = {
   hallmarks: [
-    // [1626656400, "Protocol paused"],
-    [1631754000, "Protocol resumed"],
+    // ['2021-07-19', "Protocol paused"],
+    ['2021-09-16', "Protocol resumed"],
   ],
   timetravel: false,
   thorchain: {

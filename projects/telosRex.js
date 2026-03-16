@@ -2,7 +2,7 @@ const { get } = require('./helper/http')
 
 async function tvl() {
   const tvlTlos = (await get(
-    "https://telos.caleos.io/v2/history/get_deltas?code=eosio.token&scope=eosio.rex&table=accounts",
+    "https://mainnet.telos.net/v2/history/get_deltas?code=eosio.token&scope=eosio.rex&table=accounts",
   )).deltas.map(d => d.data.amount);
 
   return {

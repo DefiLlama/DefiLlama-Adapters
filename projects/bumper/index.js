@@ -20,10 +20,10 @@ module.exports = {
     staking: sumTokensExport({ owner: '0x967583939a2E660567345CFEe6BE66870075B3d1', tokens: ['0x785c34312dfA6B74F6f1829f79ADe39042222168'], }),
   },
   hallmarks: [
-    [1626264000, "LP Program Starts"],
-    [1634212800, "LP Program Ended"],
-    [1639656000, "Uniswap V3 Listing and Staking v1 Program starts"],
-    [1658318400, "Alpha Testing"],
-    [1677672000, "Uniswap V2 Listing and Liquidity Mining Program"],
+    ['2021-07-14', "LP Program Starts"],
+    ['2021-10-14', "LP Program Ended"],
+    ['2021-12-16', "Uniswap V3 Listing and Staking v1 Program starts"],
+    ['2022-07-20', "Alpha Testing"],
+    ['2023-03-01', "Uniswap V2 Listing and Liquidity Mining Program"],
   ]
 }

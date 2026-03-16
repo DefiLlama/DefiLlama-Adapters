@@ -1,7 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
-const abi = require("./abi.json");
+const abi = {
+    "totalLoansOutstanding": "uint256:totalLoansOutstanding",
+    "pools": "function pools(address) view returns (uint256 totalMinted, uint256 totalPrincipalRedeemed, bool created)",
+    "assets": "uint256:assets"
+  };
 const BigNumber = require("bignumber.js");
 const { getLogs } = require('../helper/cache/getLogs')
 

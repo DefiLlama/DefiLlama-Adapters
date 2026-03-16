@@ -101,6 +101,7 @@ const config = {
   katana: {
     morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
     fromBlock: 2741069,
+    blackList: ['0x2dca96907fde857dd3d816880a0df407eeb2d2f2', '0x203a662b0bd271a6ed5a60edfbd04bfce608fd36', '0x0913da6da4b42f538b445599b46bb4622342cf52', '0xee7d8bcfb72bc1880d0cf19822eb0a2e6577ab62']
   },
   tac: {
     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
@@ -150,7 +151,15 @@ const config = {
   linea: {
     morphoBlue: "0x6B0D716aC0A45536172308e08fC2C40387262c9F",
     fromBlock: 25072608,
-  }
+  },
+  flare: {
+    morphoBlue: "0xF4346F5132e810f80a28487a79c7559d9797E8B0",
+    fromBlock: 52378788,
+  },
+  citrea: {
+    morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
+    fromBlock: 2528230,
+  },
 }
 
 const eventAbis = {
@@ -161,7 +170,7 @@ const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
-  const useIndexer = api.chain === 'monad' ? true: false
+  const useIndexer = api.chain === 'monad' ? true : false
   const extraKey = 'reset-v2'
 
   let logs = [];
@@ -180,7 +189,6 @@ const getMarket = async (api) => {
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
-  console.log(markets)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
@@ -190,16 +198,17 @@ const tvl = async (api) => {
 }
 
 const borrowed = async (api) => {
-  const { morphoBlue } = config[api.chain]
+  const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
+  const blackListLower = blackList.map(b => b.toLowerCase())
 
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
-    if (collateralToken.toLowerCase() !== '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') {
-      api.add(loanToken, data.totalBorrowAssets);
-    }
+    if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
+    if (blackListLower.includes(loanToken.toLowerCase())) return;
+    api.add(loanToken, data.totalBorrowAssets);
   });
 }
 
