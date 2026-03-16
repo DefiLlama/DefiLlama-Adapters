@@ -41,28 +41,33 @@ const configs = {
         "0xD5cCe260E7a755DDf0Fb9cdF06443d593AaeaA13", //Morpho v2 USDC Yield
         "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
       ],
-      
+
       // Other ERC-4626 vaults (non-Morpho)
       erc4626: [
         "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245", //kpk RWA Euler USDC Earn
         "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
         "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
+      ],
+
+      // Aleph vaults use underlyingToken() instead of asset(), so they
+      // can't go through the standard ERC-4626 curator helper.
+      alephVaults: [
         "0x9477df934574d47f240e18cd232e013118666690", //kpk Aleph rETH
         "0xf857caa91ea4007ec26aee2d039e870eb0fa91bf", //kpk Aleph stETH
         "0x6cbcc646d7422b734c6fc0954a1c3ca87b1b4ceb", //kpk Aleph osETH
       ],
-      
+
 
       // NEW: Gearbox v3.1 Market Configurator (legacy configurator) to crawl
       gearboxMarketConfigurator: "0x1b265b97eb169fb6668e3258007c3b0242c7bdbe",
     },
     arbitrum: {
-        // You can use either morphoVaultOwners or morpho here too
-        morpho: [
-          "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
-          "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
-        ],
-      },
+      // You can use either morphoVaultOwners or morpho here too
+      morpho: [
+        "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
+        "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
+      ],
+    },
   },
 }
 
@@ -117,17 +122,29 @@ async function getGearboxV31Collateral(api, marketConfigurator, pageSize = 1e3) 
   }
 }
 
+// ---- Aleph vault TVL (uses underlyingToken() instead of asset()) ----
+
+async function getAlephVaultTvl(api, vaults) {
+  if (!vaults?.length) return
+  const underlyingTokens = await api.multiCall({ abi: "address:underlyingToken", calls: vaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (underlyingTokens[i] && totalAssets[i]) api.add(underlyingTokens[i], totalAssets[i])
+  }
+}
+
 // ---- Combined TVL export per chain ----
 
 const exportObjects = getCuratorExport(configs)
 
-// Add Gearbox v3.1 collateral TVL to each chain
+// Add Gearbox v3.1 collateral + Aleph vault TVL to each chain
 for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
-  if (exportObjects[chain] && chainCfg.gearboxMarketConfigurator) {
+  if (exportObjects[chain] && (chainCfg.gearboxMarketConfigurator || chainCfg.alephVaults)) {
     const originalTvl = exportObjects[chain].tvl
     exportObjects[chain].tvl = async (api) => {
       await originalTvl(api)
       await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
+      await getAlephVaultTvl(api, chainCfg.alephVaults)
     }
   }
 }
