@@ -222,8 +222,16 @@ function computeSpectraAllocation(metavault) {
   return Math.floor(totalSpectraUnderlying * 10 ** underlyingDecimals);
 }
 
-const getMetavaultTVL = async (api, metavaultSources) => {
-  if (!metavaultSources.length) return;
+/**
+ * Fetch all metavault data needed for TVL computation.
+ *
+ * Returns { assets, totalAssets, infraVaults, infraVaultToOwner, apiOwnerMap }
+ * or null if no valid data is found.
+ *
+ * Consuming adapters decide how to interpret the balances (total vs. adjusted).
+ */
+async function getMetavaultData(api, metavaultSources) {
+  if (!metavaultSources.length) return null;
 
   const metavaultFromBlock = Math.min(
     ...metavaultSources.map(({ fromBlock }) => fromBlock)
@@ -262,7 +270,7 @@ const getMetavaultTVL = async (api, metavaultSources) => {
   });
 
   const wrappers = Object.values(wrappersMap);
-  if (!wrappers.length) return;
+  if (!wrappers.length) return null;
 
   const registryCounts = await Promise.all(
     metavaultSources.map(({ metavaultRegistry }) =>
@@ -278,7 +286,7 @@ const getMetavaultTVL = async (api, metavaultSources) => {
   const validWrappers = wrappers.filter((_, i) =>
     registryCounts.some((counts) => isMetavaultCountValid(counts[i]))
   );
-  if (!validWrappers.length) return;
+  if (!validWrappers.length) return null;
 
   const wrapperInfraVaults = await api.multiCall({
     calls: validWrappers.map(({ wrapper }) => ({ target: wrapper })),
@@ -301,7 +309,7 @@ const getMetavaultTVL = async (api, metavaultSources) => {
   });
 
   const infraVaults = Object.values(uniqueInfraVaults);
-  if (!infraVaults.length) return;
+  if (!infraVaults.length) return null;
 
   const [assets, totalAssets] = await Promise.all([
     api.multiCall({
@@ -316,39 +324,12 @@ const getMetavaultTVL = async (api, metavaultSources) => {
     }),
   ]);
 
-  assets.forEach((asset, i) => {
-    const balance = totalAssets[i];
-    if (!asset || asset.toLowerCase() === ZERO_ADDRESS || !balance) return;
-
-    // Deduct the portion already deposited into Spectra (PT/YT/LP/wrapper IBT)
-    // Skip entirely if we can't find this metavault in the API response
-    const infraKey = infraVaults[i].toLowerCase();
-    const ownerAddr = infraVaultToOwner[infraKey];
-    const apiMetavault = ownerAddr ? apiOwnerMap[ownerAddr] : undefined;
-    if (!apiMetavault) return;
-
-    const spectraAmount = BigInt(computeSpectraAllocation(apiMetavault));
-    const adjustedBalance = BigInt(balance) - spectraAmount;
-
-    if (adjustedBalance > 0n) {
-      api.add(asset, adjustedBalance.toString());
-    }
-  });
-};
-
-const tvl = async (api) => {
-  const sources = config[api.chain];
-  const metavaultSources = sources.filter(
-    ({ metavaultRegistry }) => metavaultRegistry
-  );
-  await getMetavaultTVL(api, metavaultSources);
-};
+  return { assets, totalAssets, infraVaults, infraVaultToOwner, apiOwnerMap };
+}
 
 module.exports = {
-  methodology: `TVL is the total value of assets deposited in Spectra MetaVaults.`,
-  hallmarks: [["2026-02-12", "MetaVaults Launch"]],
+  config,
+  ZERO_ADDRESS,
+  getMetavaultData,
+  computeSpectraAllocation,
 };
-
-Object.keys(config).forEach((chain) => {
-  module.exports[chain] = { tvl };
-});
