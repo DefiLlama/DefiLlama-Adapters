@@ -27,6 +27,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  methodology: 'Count all assets deposited in all vaults curated by VII Finance, plus Uniswap V4 Liquidity Positions used as collateral.',
   doublecounted: true,
   unichain: { tvl },
   ethereum: { tvl },
