@@ -1,6 +1,10 @@
 const {  getAddress } = require('ethers');
 const { gql } = require('graphql-request');
 
+const CV_STRATEGY_ABI = {
+  getPoolAmount: 'function getPoolAmount() view returns (uint256)',
+};
+
 const subgraphs = {
   polygon: 'https://api.studio.thegraph.com/query/102093/gardens-v2---polygon/version/latest/',
   xdai: 'https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/version/latest/',
@@ -47,28 +51,29 @@ async function fetchStrategiesAndCommunities(api) {
 async function tvl(api) {
   const { strategies, communities } = await fetchStrategiesAndCommunities(api);
 
-  // Multi calls 
-  const calls = strategies.map(s => ({ target: s.token, params: [s.id] }));
-  communities.forEach(c => {
-    if (c.garden?.id) {
-      calls.push({ target: c.garden.id, params: [c.id] });
+  // Strategy balances should use getPoolAmount() to include wrapped token accounting.
+  const strategyCalls = strategies.map(s => ({ target: s.id }));
+  const strategyBalances = await api.multiCall({ abi: CV_STRATEGY_ABI.getPoolAmount, calls: strategyCalls, permitFailure: true });
+
+  strategyBalances.forEach((balance, i) => {
+    const token = strategies[i].token;
+    if(token && BigInt(balance || 0) > 0n) {
+      const tokenAddress = getAddress(token);
+      api.add(tokenAddress, balance);
     }
   });
 
-  // Multicall
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true });
+  const communityCalls = communities
+    .filter(c => c.garden?.id)
+    .map(c => ({ target: c.garden.id, params: [c.id] }));
+  const communityBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: communityCalls, permitFailure: true });
 
-  // If not same length, something went wrong
-  if (balances.length !== calls.length) {
-    throw new Error(`Mismatched balances and calls length on ${api.chain}`);
-  }
-
-  balances.forEach((balance, i) => {
+  communityBalances.forEach((balance, i) => {
     if (BigInt(balance || 0) > 0n) {
-      const token = getAddress(calls[i].target);
+      const token = getAddress(communityCalls[i].target);
       api.add(token, balance);
     }
-  });  
+  });
 }
 
 module.exports = {
