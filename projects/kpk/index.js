@@ -142,11 +142,14 @@ const ETH_ALPHA_FUND = {
 }
 
 async function getKpkFundTvl(api) {
+  // NAV Calculator is chain-local: each chain's instance reads only that chain's balance oracles
   const nav = await api.call({
     abi: "function read(address) view returns (tuple(uint256 blockNumber, uint256 timestamp, int256 usd, uint16 issues))",
     target: ETH_ALPHA_FUND.navCalculator,
     params: [ETH_ALPHA_FUND.portfolioSafe],
+    permitFailure: true,
   })
+  if (!nav || nav.usd == null) return
   const usdValue = Number(nav.usd) / 1e8
   if (usdValue > 0) api.addUSDValue(usdValue)
 }
