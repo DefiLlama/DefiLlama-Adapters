@@ -35,11 +35,11 @@ module.exports = {
     tvl: async (api) => {
       const stableTotal = await api.call({ target: staticPool, abi: "uint256:totalStableToken" })
       api.add(staticPoolStableToken, stableTotal)
-      const stableTotal = await api.call({ target: stabilityPool1, abi: "uint256:totalStableToken" })
+      stableTotal = await api.call({ target: stabilityPool1, abi: "uint256:totalStableToken" })
       api.add(staticPoolStableToken, stableTotal)
-      const stableTotal = await api.call({ target: stabilityPool2, abi: "uint256:totalStableToken" })
+      stableTotal = await api.call({ target: stabilityPool2, abi: "uint256:totalStableToken" })
       api.add(staticPoolStableToken, stableTotal)
-      const stableTotal = await api.call({ target: stabilityPool3, abi: "uint256:totalStableToken" })
+      stableTotal = await api.call({ target: stabilityPool3, abi: "uint256:totalStableToken" })
       api.add(staticPoolStableToken, stableTotal)
 
       const sigmaBnbUsdGaugeBalance = await api.call({ target: sigma_gauge_SIGMA_BNBUSD, abi: "uint256:totalSupply" })
