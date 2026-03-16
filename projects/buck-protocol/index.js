@@ -1,5 +1,5 @@
-// BUCK Protocol — Bitcoin-backed yield-bearing savings coin
-// TVL = total BUCK supply (each BUCK backed by STRC collateral + USDC reserves)
+// BUCK Protocol — yield-bearing savings coin
+// TVL = total BUCK supply (backed by on-chain USDC reserves + attested STRC portfolio value)
 
 const BUCK = "0xdb13997f4D83EF343845d0bAEb27d1173dF8c224";
 
@@ -14,6 +14,6 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   methodology:
-    "TVL is the total supply of BUCK, a yield-bearing savings coin backed by STRC (Strategy preferred stock) collateral and USDC reserves. Each BUCK is redeemable at the Liquidity Window.",
+    "TVL is represented as total BUCK supply. BUCK is backed by a combination of on-chain USDC reserve liquidity and attested off-chain STRC portfolio value.",
   ethereum: { tvl },
 };
