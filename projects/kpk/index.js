@@ -16,7 +16,7 @@ const GearboxCompressorABI = {
 // ---- Config (extend as needed) ----
 const configs = {
   methodology:
-    "Counts (1) assets deposited in curated ERC-4626 vaults and (2) collateral held in Gearbox v3.1 Credit Accounts from the specified Market Configurator. Morpho v1/v2 vaults are deduplicated to avoid double-counting.",
+    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, and kpk Fund AUM via onchain NAV Calculators.",
   blockchains: {
     ethereum: {
       // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
@@ -40,6 +40,8 @@ const configs = {
         "0xc88eFFD6e74D55c78290892809955463468E982A", //Morpho v1 ETH Yield
         "0xD5cCe260E7a755DDf0Fb9cdF06443d593AaeaA13", //Morpho v2 USDC Yield
         "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
+        "0x870F0BF29A25A40E7CC087cD5C53e70C11F2C8A8", //Morpho v2 USDT Yield
+        "0xdaD4e51d64c3B65A9d27aD9F3185B09449712065", //Morpho v2 USDT Prime
       ],
 
       // Other ERC-4626 vaults (non-Morpho)
