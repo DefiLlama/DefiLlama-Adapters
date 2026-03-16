@@ -1184,7 +1184,8 @@ module.exports = {
   ],
   weex: [
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
-    "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb"
+    "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",
+    "bc1qeg5xn5plttr7w045apm92yx08c2swc6yw2vtj7"
   ],
   bydfi: [
     'bc1qan8q94rc3hl2jfc0vn8vtfsen0r6e58q80dqf0',
