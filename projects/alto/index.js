@@ -1,43 +1,36 @@
-const { getLogs } = require("../helper/cache/getLogs");
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("../helper/abis/alto.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-
-const PERMISSIONLESS_PSM = "0x4026db9152cEb2e6D376de72Efb70eb8F407A0e4";
-const USDC_ETHEREUM = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 
 const config = {
   ethereum: {
     marketRegistry: "0xBd45d50611c38E35dD1D1119077De1E988eD2257",
-    fromBlock: 23982015,
+    usmRegistry: "0xAD5620e10C33918E2C6A2E8E53325bf98c548E5e",
     blackList: [],
   },
 };
 
-const eventAbis = {
-  mintMarketAdded: "event MintMarketAdded(address indexed market)",
-  borrowMarketAdded: "event BorrowMarketAdded(address indexed market)",
-};
-
 async function getMarkets(api) {
-  const { marketRegistry, fromBlock } = config[api.chain];
-  const extraKey = "alto-markets";
-
-  const [mintAdded, borrowAdded] = await Promise.all([
-    getLogs({ api, target: marketRegistry, eventAbi: eventAbis.mintMarketAdded, fromBlock, onlyArgs: true, extraKey: `${extraKey}-mint-added` }),
-    getLogs({ api, target: marketRegistry, eventAbi: eventAbis.borrowMarketAdded, fromBlock, onlyArgs: true, extraKey: `${extraKey}-borrow-added` }),
+  const { marketRegistry } = config[api.chain];
+  const [mintMarkets, borrowMarkets] = await Promise.all([
+    api.call({ target: marketRegistry, abi: abi.marketRegistry.getMintMarkets }),
+    api.call({ target: marketRegistry, abi: abi.marketRegistry.getBorrowMarkets }),
   ]);
+  return [...new Set([...mintMarkets, ...borrowMarkets].map(m => m.toLowerCase()))];
+}
 
-  const markets = new Set([
-    ...mintAdded.map((l) => l.market.toLowerCase()),
-    ...borrowAdded.map((l) => l.market.toLowerCase()),
-  ]);
-  return [...markets];
+async function getPermissionlessPsms(api) {
+  const { usmRegistry } = config[api.chain];
+  const usmList = await api.call({ target: usmRegistry, abi: abi.usmRegistry.getUsmList });
+  if (!usmList.length) return [];
+
+  const accessModes = await api.multiCall({ calls: usmList, abi: abi.usm.getAccessMode });
+  return usmList.filter((_, i) => Number(accessModes[i]) === 0);
 }
 
 async function tvl(api) {
   const { blackList = [] } = config[api.chain];
-  const markets = await getMarkets(api);
-  if (markets.length === 0) return api.getBalances();
+  const [markets, psms] = await Promise.all([getMarkets(api), getPermissionlessPsms(api)]);
 
   const [collateralTokens, borrowTokens] = await Promise.all([
     api.multiCall({ calls: markets, abi: abi.market.collateralToken, permitFailure: true }),
@@ -45,26 +38,30 @@ async function tvl(api) {
   ]);
 
   const tokensAndOwners = [];
-  const nullAddress = "0x0000000000000000000000000000000000000000";
   for (let i = 0; i < markets.length; i++) {
     const collateralToken = collateralTokens[i];
     const borrowToken = borrowTokens[i];
-    if (collateralToken && collateralToken !== nullAddress) {
+    if (collateralToken && collateralToken !== ADDRESSES.null) {
       tokensAndOwners.push([collateralToken, markets[i]]);
     }
-    if (borrowToken && borrowToken !== nullAddress) {
+    if (borrowToken && borrowToken !== ADDRESSES.null) {
       tokensAndOwners.push([borrowToken, markets[i]]);
     }
   }
 
-  tokensAndOwners.push([USDC_ETHEREUM, PERMISSIONLESS_PSM]);
+  if (psms.length) {
+    const underlyingAssets = await api.multiCall({ calls: psms, abi: abi.usm.underlyingAsset });
+    for (let i = 0; i < psms.length; i++) {
+      tokensAndOwners.push([underlyingAssets[i], psms[i]]);
+    }
+  }
 
   return sumTokens2({ api, tokensAndOwners, blacklistedTokens: blackList });
 }
 
 async function borrowed(api) {
   const markets = await getMarkets(api);
-  if (markets.length === 0) return api.getBalances();
+  if (!markets.length) return;
 
   const [borrowTokens, totalBorroweds] = await Promise.all([
     api.multiCall({ calls: markets, abi: abi.market.borrowToken, permitFailure: true }),
@@ -81,7 +78,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: "TVL = collateral and borrow token (DUSD) balances held by each Alto market, plus USDC in the Permissionless PSM. Borrowed = DUSD borrowed by users (reported separately; total protocol exposure = TVL + borrowed). Mint and borrow markets from MarketRegistry.",
+  methodology: "TVL = collateral and borrow token balances held by each Alto market, plus underlying assets in permissionless PSMs. Borrowed = total DUSD borrowed across all markets.",
   ethereum: {
     tvl,
     borrowed,

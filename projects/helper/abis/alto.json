@@ -4,5 +4,16 @@
     "borrowToken": "address:borrowToken",
     "totalBorrowed": "function totalBorrowed() view returns (uint128 assets, uint128 shares)",
     "totalSupply": "function totalSupply() view returns (uint128 assets, uint128 shares)"
+  },
+  "marketRegistry": {
+    "getMintMarkets": "function getMintMarkets() view returns (address[])",
+    "getBorrowMarkets": "function getBorrowMarkets() view returns (address[])"
+  },
+  "usmRegistry": {
+    "getUsmList": "function getUsmList() view returns (address[])"
+  },
+  "usm": {
+    "underlyingAsset": "address:UNDERLYING_ASSET",
+    "getAccessMode": "function getAccessMode() view returns (uint8)"
   }
 }
