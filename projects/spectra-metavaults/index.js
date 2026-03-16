@@ -237,6 +237,9 @@ const getMetavaultTVL = async (api, metavaultSources) => {
       throw e;
     }
   }
+  // Use a small buffer to avoid race conditions where the RPC node
+  // hasn't synced the very latest block yet (observed on katana)
+  toBlock = toBlock - 10;
 
   // Fetch API metavault data (for Spectra allocation deduction)
   const apiOwnerMap = await fetchMetavaultOwnerMap();
