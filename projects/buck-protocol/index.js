@@ -12,6 +12,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  start: 1741190400, // March 5, 2026 — BUCK mainnet launch
   misrepresentedTokens: true,
   methodology:
     "TVL is represented as total BUCK supply. BUCK is backed by a combination of on-chain USDC reserve liquidity and attested off-chain STRC portfolio value.",
