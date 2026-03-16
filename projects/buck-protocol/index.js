@@ -23,11 +23,11 @@ async function tvl(api) {
   });
   // V is already USD-denominated with 18 decimals — add as USDC equivalent
   // Divide by 1e12 to convert from 18 decimals to 6 decimals (USDC)
-  api.add(ADDRESSES.ethereum.USDC, v / 1e12);
+  api.add(ADDRESSES.ethereum.USDC, BigInt(v) / BigInt(1e12));
 }
 
 module.exports = {
-  start: 1741190400, // March 5, 2026 — BUCK mainnet launch
+  start: 1772668800, // March 5, 2026 00:00:00 UTC — BUCK mainnet launch
   methodology:
     "TVL is the total collateral backing BUCK: on-chain USDC in the LiquidityReserve plus the attested off-chain STRC (Strategy preferred stock) portfolio value from the CollateralAttestation contract.",
   ethereum: { tvl },
