@@ -40,8 +40,8 @@ const configs = {
         "0xc88eFFD6e74D55c78290892809955463468E982A", //Morpho v1 ETH Yield
         "0xD5cCe260E7a755DDf0Fb9cdF06443d593AaeaA13", //Morpho v2 USDC Yield
         "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
-        "0x870F0BF29A25A40E7CC087cD5C53e70C11F2C8A8", //Morpho v2 USDT Yield
-        "0xdaD4e51d64c3B65A9d27aD9F3185B09449712065", //Morpho v2 USDT Prime
+        "0xdaD4e51d64c3B65A9d27aD9F3185B09449712065", //Morpho v1 USDT Prime
+        "0x870F0BF29A25A40E7CC087cD5C53e70C11F2C8A8", //Morpho v2 USDT Prime
       ],
 
       // Other ERC-4626 vaults (non-Morpho)
