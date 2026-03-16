@@ -133,6 +133,24 @@ async function getAlephVaultTvl(api, vaults) {
   }
 }
 
+// ---- kpk Fund (OIV) TVL via NAV Calculator ----
+
+const ETH_ALPHA_FUND = {
+  navCalculator: "0xa57A641417fe2703C5364C2f57f35297b16189a5",
+  portfolioSafe: "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b",
+  chains: ["ethereum", "arbitrum", "base", "xdai", "optimism"],
+}
+
+async function getKpkFundTvl(api) {
+  const nav = await api.call({
+    abi: "function read(address) view returns (tuple(uint256 blockNumber, uint256 timestamp, int256 usd, uint16 issues))",
+    target: ETH_ALPHA_FUND.navCalculator,
+    params: [ETH_ALPHA_FUND.portfolioSafe],
+  })
+  const usdValue = Number(nav.usd) / 1e8
+  if (usdValue > 0) api.addUSDValue(usdValue)
+}
+
 // ---- Combined TVL export per chain ----
 
 const exportObjects = getCuratorExport(configs)
@@ -146,6 +164,19 @@ for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
       await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
       await getAlephVaultTvl(api, chainCfg.alephVaults)
     }
+  }
+}
+
+// Add kpk Fund (OIV) TVL to each chain the fund is deployed on
+for (const chain of ETH_ALPHA_FUND.chains) {
+  if (exportObjects[chain]) {
+    const originalTvl = exportObjects[chain].tvl
+    exportObjects[chain].tvl = async (api) => {
+      await originalTvl(api)
+      await getKpkFundTvl(api)
+    }
+  } else {
+    exportObjects[chain] = { tvl: getKpkFundTvl }
   }
 }
 
