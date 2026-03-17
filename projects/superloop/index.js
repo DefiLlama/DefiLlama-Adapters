@@ -1,78 +1,43 @@
-const sdk = require("@defillama/sdk");
-const config = require("./config");
+const CONFIGS = require("./config");
 
 const userReserveDataAbi = "function getUserReserveData(address asset, address user) external view override returns (uint256 currentATokenBalance, uint256 currentStableDebt, uint256 currentVariableDebt, uint256 principalStableDebt, uint256 scaledVariableDebt, uint256 stableBorrowRate, uint256 liquidityRate, uint40 stableRateLastUpdated, bool usageAsCollateralEnabled)";
 
 async function tvl(api) {
-    const balances = {};
-        
-    for(let i = 0; i < config.VAULTS.length; i++) {
-        const vault = config.VAULTS[i];
-        const v1Vault = config.V1_VAULTS[i];
-        const migrationBlock = config.MIGRATION_BLOCKS[i];
+    const config = CONFIGS[api.chain];
 
-        if(!api.block || api.block > migrationBlock) {
-            await processVault(api, vault, balances);
-        } else {
-            await processVault(api, v1Vault, balances);
-        }
-    }
-    
-    return balances;
-}
+    for (let i = 0; i < config.VAULTS.length; i++) {
+        const vault = (!api.block || api.block > config.MIGRATION_BLOCKS[i]) ? config.VAULTS[i] : config.V1_VAULTS[i];
+        const { lend } = config.VAULT_TOKENS[vault];
 
-async function processVault(api, vault, balances) {
-    const { lend, borrow } = config.VAULT_TOKENS[vault];
-
-    const [userReserveDataLend, cashReserve] = await Promise.all([
-        api.call({
-            abi: userReserveDataAbi, 
+        const reserveData = await api.multiCall({
+            abi: userReserveDataAbi,
             target: config.SUPERLEND_PROTOCOL_DATA_PROVIDER,
-            params: [lend, vault],
-        }), 
-        api.call({
-            abi: "function balanceOf(address user) external view returns (uint256)",
-            target: borrow,
-            params : [vault]
-        })
-    ]);
+            calls: lend.map(token => ({ params: [token, vault] })),
+        });
 
-
-    sdk.util.sumSingleBalance(balances, lend, userReserveDataLend?.currentATokenBalance ?? '0', api.chain);
-    sdk.util.sumSingleBalance(balances, borrow, cashReserve, api.chain);
+        reserveData.forEach((data, j) => api.add(lend[j], data.currentATokenBalance ?? 0));
+        await api.sumTokens({ tokens: config.UNDERLYING_TOKENS, owners: [vault] });
+    }
 }
 
 async function borrowed(api) {
-    const balances = {}
+    const config = CONFIGS[api.chain];
 
-    for(let i = 0; i < config.VAULTS.length; i++) {
-        const vault = config.VAULTS[i];
-        const v1Vault = config.V1_VAULTS[i];
-        const migrationBlock = config.MIGRATION_BLOCKS[i];
+    for (let i = 0; i < config.VAULTS.length; i++) {
+        const vault = (!api.block || api.block > config.MIGRATION_BLOCKS[i]) ? config.VAULTS[i] : config.V1_VAULTS[i];
+        const { borrow } = config.VAULT_TOKENS[vault];
 
-        if(!api.block || api.block > migrationBlock) {
-            await processVaultBorrow(api, vault, balances);
-        } else {
-            await processVaultBorrow(api, v1Vault, balances);
-        }
+        const reserveData = await api.multiCall({
+            abi: userReserveDataAbi,
+            target: config.SUPERLEND_PROTOCOL_DATA_PROVIDER,
+            calls: borrow.map(token => ({ params: [token, vault] })),
+        });
+
+        reserveData.forEach((data, j) => api.add(borrow[j], data.currentVariableDebt ?? 0));
     }
-
-    return balances;
-    
-}
-
-async function processVaultBorrow(api, vault, balances) {
-    const { borrow } = config.VAULT_TOKENS[vault];
-
-    const userReserveDataBorrow = await api.call({
-        abi: userReserveDataAbi,
-        target: config.SUPERLEND_PROTOCOL_DATA_PROVIDER,
-        params: [borrow, vault],
-    });
-    
-    sdk.util.sumSingleBalance(balances, borrow, userReserveDataBorrow?.currentVariableDebt, api.chain);
 }
 
 module.exports = {
-    etlk: { tvl, borrowed }
+    etlk: { tvl, borrowed },
+    ethereum: { tvl, borrowed },
 }
