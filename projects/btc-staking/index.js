@@ -1,19 +1,35 @@
-const { sumTokens } = require('../helper/chain/starknet')
+const { call, multiCall, parseAddress } = require('../helper/chain/starknet')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const STAKING_CONTRACT = '0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7'
 
-const BTC_TOKENS = [
-  ADDRESSES.starknet.WBTC,
-  ADDRESSES.starknet.tBTC,
-  '0x0593e034dda23eea82d2ba9a30960ed42cf4a01502cc2351dc9b9881f9931a68', // SolvBTC
-  '0x036834A40984312F7f7de8D31e3f6305B325389eAEeA5B1c0664b2fB936461a4', // Lombard LBTC
-]
+const abis = {
+  get_active_tokens: {
+    name: "get_active_tokens",
+    type: "function",
+    inputs: [],
+    outputs: [{ type: "core::array::Span::<core::starknet::contract_address::ContractAddress>" }],
+    state_mutability: "view"
+  },
+  get_total_stake_for_token: {
+    name: "get_total_stake_for_token",
+    type: "function",
+    inputs: [{ name: "token_address", type: "core::starknet::contract_address::ContractAddress" }],
+    outputs: [{ type: "core::integer::u128" }],
+    state_mutability: "view"
+  },
+}
 
-async function tvl() {
-  return sumTokens({
-    tokensAndOwners: BTC_TOKENS.map(token => [token, STAKING_CONTRACT])
+async function tvl(api) {
+  const tokens = (await call({ target: STAKING_CONTRACT, abi: abis.get_active_tokens }))
+    .map(parseAddress)
+    .filter(t => t !== ADDRESSES.starknet.STRK)
+  const amounts = await multiCall({
+    target: STAKING_CONTRACT,
+    abi: abis.get_total_stake_for_token,
+    calls: tokens.map(token => ({ params: token })),
   })
+  tokens.forEach((token, i) => api.add(token, amounts[i]))
 }
 
 module.exports = {
