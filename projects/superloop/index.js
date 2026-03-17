@@ -1,22 +1,26 @@
 const CONFIGS = require("./config");
 
-const userReserveDataAbi = "function getUserReserveData(address asset, address user) external view override returns (uint256 currentATokenBalance, uint256 currentStableDebt, uint256 currentVariableDebt, uint256 principalStableDebt, uint256 scaledVariableDebt, uint256 stableBorrowRate, uint256 liquidityRate, uint40 stableRateLastUpdated, bool usageAsCollateralEnabled)";
+const reserveTokensAbi = "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)";
+
+async function getVaultTokens(api, config, vault, tokenType) {
+    const tokens = config.VAULT_TOKENS[vault][tokenType];
+    const reserveAddresses = await api.multiCall({
+        abi: reserveTokensAbi,
+        target: config.SUPERLEND_PROTOCOL_DATA_PROVIDER,
+        calls: tokens.map(token => ({ params: [token] })),
+    });
+    return tokenType === 'lend'
+        ? reserveAddresses.map(r => r.aTokenAddress)
+        : reserveAddresses.map(r => r.variableDebtTokenAddress);
+}
 
 async function tvl(api) {
     const config = CONFIGS[api.chain];
 
     for (let i = 0; i < config.VAULTS.length; i++) {
         const vault = (!api.block || api.block > config.MIGRATION_BLOCKS[i]) ? config.VAULTS[i] : config.V1_VAULTS[i];
-        const { lend } = config.VAULT_TOKENS[vault];
-
-        const reserveData = await api.multiCall({
-            abi: userReserveDataAbi,
-            target: config.SUPERLEND_PROTOCOL_DATA_PROVIDER,
-            calls: lend.map(token => ({ params: [token, vault] })),
-        });
-
-        reserveData.forEach((data, j) => api.add(lend[j], data.currentATokenBalance ?? 0));
-        await api.sumTokens({ tokens: config.UNDERLYING_TOKENS, owners: [vault] });
+        const aTokens = await getVaultTokens(api, config, vault, 'lend');
+        await api.sumTokens({ tokens: [...aTokens, ...config.UNDERLYING_TOKENS], owners: [vault] });
     }
 }
 
@@ -26,18 +30,14 @@ async function borrowed(api) {
     for (let i = 0; i < config.VAULTS.length; i++) {
         const vault = (!api.block || api.block > config.MIGRATION_BLOCKS[i]) ? config.VAULTS[i] : config.V1_VAULTS[i];
         const { borrow } = config.VAULT_TOKENS[vault];
-
-        const reserveData = await api.multiCall({
-            abi: userReserveDataAbi,
-            target: config.SUPERLEND_PROTOCOL_DATA_PROVIDER,
-            calls: borrow.map(token => ({ params: [token, vault] })),
-        });
-
-        reserveData.forEach((data, j) => api.add(borrow[j], data.currentVariableDebt ?? 0));
+        const debtTokens = await getVaultTokens(api, config, vault, 'borrow');
+        const debts = await api.multiCall({ abi: 'erc20:balanceOf', calls: debtTokens.map(t => ({ target: t, params: [vault] })) });
+        api.add(borrow, debts);
     }
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     etlk: { tvl, borrowed },
     ethereum: { tvl, borrowed },
 }
