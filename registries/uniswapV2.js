@@ -2841,6 +2841,10 @@ const uniV2Configs = {
   'capybara-v2': {
     klaytn: '0xE4296d6161c8a1554a18dba79C0f825cE23bAE42',
   },
+  'qie-dex': {
+    start: '2025-08-05',
+    qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
