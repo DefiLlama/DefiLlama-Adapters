@@ -59,7 +59,8 @@ const ERC4626_VAULTS = new Set([
 ].map(a => a.toLowerCase()));
 
 function normalizeToken(token) {
-  return token.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase() ? NULL_ADDRESS : token;
+  if (token.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()) return NULL_ADDRESS;
+  return token.toLowerCase();
 }
 
 async function getYieldAgentData(chain) {
@@ -70,6 +71,7 @@ async function getYieldAgentData(chain) {
 function getOwnerTokens(agentAnalytics) {
   const ownerTokens = [];
   for (const agent of agentAnalytics) {
+    if (!agent?.snapshot?.tokenBalances || typeof agent.snapshot.tokenBalances !== 'object') continue;
     const tokens = Object.keys(agent.snapshot.tokenBalances).map(normalizeToken);
     if (tokens.length > 0) {
       ownerTokens.push([tokens, agent.agentWalletAddress]);
