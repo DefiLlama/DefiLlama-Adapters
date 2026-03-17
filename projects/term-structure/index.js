@@ -211,6 +211,23 @@ const ADDRESSES = {
       { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
     ],
   },
+  xlayer: {
+    FactoryV2: [
+      {
+        address: "0xFaD175CAf9B0Ac0EBca3B1816ec799884EB04B9c",
+        fromBlock: 50664655,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x2e1c769A9BA8248C7c8128c2BEBa11331ebF98Aa",
+        fromBlock: 50664655,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF", fromBlock: 50664655 },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
