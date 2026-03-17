@@ -33,6 +33,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  methodology: 'TVL is the sum of all BTC tokens staked in the Starknet BTC staking contract, calculated by calling get_total_stake_for_token for each active token.',
   timetravel: false,
   starknet: { tvl },
 }
