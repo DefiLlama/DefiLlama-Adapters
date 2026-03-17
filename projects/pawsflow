@@ -1,0 +1,11 @@
+const { sumTokensExport } = require('../helper/sumTokens');
+
+module.exports = {
+  methodology: "TVL is calculated by totaling the balances of all tokens held in the PAWSFLOW operational hot wallet on Cronos.",
+  cronos: {
+    tvl: sumTokensExport({ 
+      owner: '0xF1889004ab0125CE304d5c680860cFA6B3564690', 
+      fetchBalances: true 
+    }),
+  }
+};
