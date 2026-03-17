@@ -10,7 +10,7 @@ const {
   optimismCellarsV2p5,
 } = require("./cellar-constants");
 
-const blacklistCellars = ['0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e', '0x5195222f69c5821f8095ec565e71e18ab6a2298f']
+const blacklistCellars = ['0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e', '0x5195222f69c5821f8095ec565e71e18ab6a2298f', '0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A']
 
 async function ethereum_tvl(api) {
   const block = await api.getBlock();

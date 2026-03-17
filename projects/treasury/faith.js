@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 
 const GLOBAL = "0x64df88bb0241f03a2ab91ed61f6b9c0c596e28d6273b16fd01d9bf9f8a9641a0";
-const SUI_COIN_TYPE = "0x2::sui::SUI";
+const SUI_COIN_TYPE = ADDRESSES.sui.SUI;
 
 const asBigInt = (v) => BigInt(v ?? 0);
 
