@@ -15,7 +15,7 @@ const abi = {
   allPairs: 'function allPairs(uint256) view returns (address)',
 }
 
-async function coinFactoryForestTokens(api) {
+async function forestCoinPools(api) {
   const pairs = []
   for (const factory of COIN_FACTORIES) {
     const pairsLength = Number(await api.call({ abi: abi.allPairsLength, target: factory }))
@@ -36,7 +36,7 @@ module.exports = {
     tvl: () => 0,
     staking: sumTokensExport({ owner: STAKING_CONTRACT, tokens: [FOREST_TOKEN] }),
     pool2: async (api) => {
-      const factoryPairs = await coinFactoryForestTokens(api)
+      const factoryPairs = await forestCoinPools(api)
       const owners = [...new Set([...EXTERNAL_FOREST_POOLS, ...factoryPairs])]
       return api.sumTokens({ owners, tokens: [FOREST_TOKEN] })
     },
