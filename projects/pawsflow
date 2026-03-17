@@ -1,11 +1,14 @@
 const { sumTokensExport } = require('../helper/sumTokens');
 
 module.exports = {
-  methodology: "TVL is calculated by totaling the balances of all tokens held in the PAWSFLOW operational hot wallet on Cronos.",
+  methodology: "Data represents the protocol-owned balances held in the PAWSFLOW operational hot wallet on Cronos. This is categorized as 'Own Tokens' rather than user-deposited TVL.",
   cronos: {
-    tvl: sumTokensExport({ 
+    tvl: () => ({}), // This tells them we have 0 user-deposited TVL for now
+    ownTokens: sumTokensExport({ 
       owner: '0xF1889004ab0125CE304d5c680860cFA6B3564690', 
       fetchBalances: true 
     }),
   }
 };
+
+Update: Move hot wallet to ownTokens
