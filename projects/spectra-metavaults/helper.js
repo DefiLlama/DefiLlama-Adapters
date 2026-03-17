@@ -117,41 +117,37 @@ const isMetavaultCountValid = (count) => {
 };
 
 /**
- * Fetch all metavaults from the Spectra API across all configured chains.
+ * Fetch metavaults from the Spectra API for the given chain.
  */
-async function fetchMetavaultOwnerMap() {
+async function fetchMetavaultOwnerMap(chain) {
   const ownerMap = {};
+  const network = CHAIN_TO_API_NETWORK[chain];
+  if (!network) return ownerMap;
 
-  await Promise.all(
-    Object.keys(config).map(async (chain) => {
-      const network = CHAIN_TO_API_NETWORK[chain];
-      if (!network) return;
-      try {
-        const metavaults = await getConfig(
-          `spectra-metavaults-api/${network}`,
-          `${SPECTRA_API_BASE}/${network}/metavaults`
-        );
-        if (!Array.isArray(metavaults)) return;
-        for (const mv of metavaults) {
-          // mv.address is the metavault owner (matches on-chain event owner)
-          if (mv.address) {
-            ownerMap[mv.address.toLowerCase()] = mv;
-          }
-          // Remote wrappers on other chains share the same owner identity
-          if (mv.remote) {
-            for (const remoteChainId of Object.keys(mv.remote)) {
-              const remote = mv.remote[remoteChainId];
-              if (remote?.address) {
-                ownerMap[remote.address.toLowerCase()] = mv;
-              }
-            }
+  try {
+    const metavaults = await getConfig(
+      `spectra-metavaults-api/${network}`,
+      `${SPECTRA_API_BASE}/${network}/metavaults`
+    );
+    if (!Array.isArray(metavaults)) return ownerMap;
+    for (const mv of metavaults) {
+      // mv.address is the metavault owner (matches on-chain event owner)
+      if (mv.address) {
+        ownerMap[mv.address.toLowerCase()] = mv;
+      }
+      // Remote wrappers on other chains share the same owner identity
+      if (mv.remote) {
+        for (const remoteChainId of Object.keys(mv.remote)) {
+          const remote = mv.remote[remoteChainId];
+          if (remote?.address) {
+            ownerMap[remote.address.toLowerCase()] = mv;
           }
         }
-      } catch (e) {
-        sdk.log(`spectra-metavaults: failed to fetch API for ${network}:`, e.message);
       }
-    })
-  );
+    }
+  } catch (e) {
+    sdk.log(`spectra-metavaults: failed to fetch API for ${network}:`, e.message);
+  }
 
   return ownerMap;
 }
@@ -161,6 +157,10 @@ async function fetchMetavaultOwnerMap() {
  * denominated in raw underlying token units (matching totalAssets units).
  *
  * "Spectra" = PT + YT + LP positions + wrapper IBT balances.
+ *
+ * A metavault has a single entry point on one chain, but can deploy capital
+ * across multiple chains. totalAssets on the home chain covers all deployed
+ * capital, so we sum Spectra positions across all chains.
  */
 function computeSpectraAllocation(metavault) {
   if (!metavault?.positions?.length) return 0;
@@ -249,8 +249,8 @@ async function getMetavaultData(api, metavaultSources) {
   // hasn't synced the very latest block yet (observed on katana)
   toBlock = toBlock - 10;
 
-  // Fetch API metavault data (for Spectra allocation deduction)
-  const apiOwnerMap = await fetchMetavaultOwnerMap();
+  // Fetch API metavault data for this chain (for Spectra allocation deduction)
+  const apiOwnerMap = await fetchMetavaultOwnerMap(api.chain);
 
   const logs = await getCachedEventLogs({
     chain: api.chain,
