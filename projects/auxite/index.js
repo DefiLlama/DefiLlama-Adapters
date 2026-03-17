@@ -1,86 +1,47 @@
-/**
- * Auxite - Tokenized Precious Metals (RWA)
- */
+const { toUSDTBalances } = require("../helper/balances");
 
-const ADDRESSES = require('../helper/coreAssets.json');
+const AUXG = "0x390164702040B509A3D752243F92C2Ac0318989D";
+const AUXS = "0x82F6EB8Ba5C84c8Fd395b25a7A40ade08F0868aa";
+const AUXPT = "0x119de594170b68561b1761ae1246C5154F94705d";
+const AUXPD = "0xe051B2603617277Ab50C509F5A38C16056C1C908";
 
-const AUXITE_TOKENS = {
-  AUXG: "0x390164702040B509A3D752243F92C2Ac0318989D",
-  AUXS: "0x82F6EB8Ba5C84c8Fd395b25a7A40ade08F0868aa",
-  AUXPT: "0x119de594170b68561b1761ae1246C5154F94705d",
-  AUXPD: "0xe051B2603617277Ab50C509F5A38C16056C1C908",
-};
+const ORACLE = "0xDB36fFD8a762226928d62a2Fe6F19bB329b5EbbE";
 
-const ORACLE_ADDRESS = "0x585314943599C810698E3263aE9F9ec4C1C25Ff2";
-const STAKING_CONTRACT = "0x1656DcCC8277bC7D6aF93F71464D64ebBC15574d";
+// keccak256("GOLD"), keccak256("SILVER"), etc.
+const METAL_IDS = [
+  "0xdbd17891fc491ac6717dd01ab1f90f82509f1f2e91cd5066f68805860fbdeb72",
+  "0x75e02a3ee626f5d4b8bc98cc8de5b102ee067608b6066832ffdc71f78445ac2b",
+  "0xecbba860b0e9fdd311c554f0b28ccf3d616b99de2f208aa830a91bd846d16657",
+  "0x06be24fb53be069d32979b5b3d41617a459d2f6b1b018dd945ebb5b9dc321d15",
+];
 
-const ORACLE_ABI = {
-  getAllPrices: "function getAllPrices() view returns (uint256 gold, uint256 silver, uint256 platinum, uint256 palladium, uint256 eth)",
-};
+async function tvl(api) {
+  const tokens = [AUXG, AUXS, AUXPT, AUXPD];
 
-async function getPrices(api) {
-  const allPrices = await api.call({
-    target: ORACLE_ADDRESS,
-    abi: ORACLE_ABI.getAllPrices
+  const supplies = await api.multiCall({
+    abi: "erc20:totalSupply",
+    calls: tokens,
   });
-  
-  return {
-    AUXG: allPrices.gold || allPrices[0],
-    AUXS: allPrices.silver || allPrices[1],
-    AUXPT: allPrices.platinum || allPrices[2],
-    AUXPD: allPrices.palladium || allPrices[3],
-  };
-}
 
-async function calculateTvl(api, balances, prices) {
-  const USDC_BASE = ADDRESSES.base?.USDC || "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-  
-  let totalUsdcUnits = 0n;
-  
-  Object.keys(AUXITE_TOKENS).forEach((symbol, i) => {
-    const balance = BigInt(balances[i] || 0);
-    const pricePerKgE6 = BigInt(prices[symbol] || 0);
-    const valueUsdc = (balance * pricePerKgE6) / 1000000n;
-    totalUsdcUnits += valueUsdc;
+  const pricesE6 = await api.multiCall({
+    abi: "function getBasePerKgE6(bytes32) external view returns (uint256)",
+    calls: METAL_IDS.map((id) => ({ target: ORACLE, params: [id] })),
   });
-  
-  api.add(USDC_BASE, totalUsdcUnits.toString());
+
+  // supply: grams with 3 decimals, price: USD/kg with 6 decimals
+  // USD = (supply / 1e3) * (priceE6 / 1e6 / 1000)
+  let totalUsd = 0;
+  for (let i = 0; i < tokens.length; i++) {
+    const grams = Number(supplies[i]) / 1e3;
+    const usdPerGram = Number(pricesE6[i]) / 1e9;
+    totalUsd += grams * usdPerGram;
+  }
+
+  return toUSDTBalances(totalUsd);
 }
 
 module.exports = {
-  methodology: "TVL is calculated from total supply of AUXG, AUXS, AUXPT, AUXPD tokens multiplied by metal prices from Auxite Oracle. Each token = 1 gram of physically-backed precious metal.",
-  
-  base: {
-    tvl: async (api) => {
-      const [supplies, prices] = await Promise.all([
-        api.multiCall({
-          abi: 'erc20:totalSupply',
-          calls: Object.values(AUXITE_TOKENS),
-        }),
-        getPrices(api)
-      ]);
-      await calculateTvl(api, supplies, prices);
-    },
-    
-    staking: async (api) => {
-      const [stakedBalances, prices] = await Promise.all([
-        api.multiCall({
-          abi: 'erc20:balanceOf',
-          calls: Object.values(AUXITE_TOKENS).map(token => ({
-            target: token,
-            params: [STAKING_CONTRACT]
-          })),
-        }),
-        getPrices(api)
-      ]);
-      await calculateTvl(api, stakedBalances, prices);
-    },
-  },
-  
-  doublecounted: true,
-  misrepresentedTokens: true,
+  methodology:
+    "TVL is calculated from the total supply of Auxite metal tokens (AUXG, AUXS, AUXPT, AUXPD) on Base, priced via the on-chain Auxite oracle. Each token represents 1 gram of physically allocated precious metal.",
+  base: { tvl },
 };
-
-module.exports.hallmarks = [
-  ['2026-02-02', "V8 tokens deployed on Base Mainnet"],
-];
