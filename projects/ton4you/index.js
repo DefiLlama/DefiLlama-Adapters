@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/chain/ton");
 
 module.exports = {
@@ -20,7 +21,7 @@ module.exports = {
         // BRIN master
         "EQAQfNrwhA5sEywrLTtsxpyQFeKRfEpLdZREZILP9z9iUjAH",
         // USDT master
-        "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+        ADDRESSES.ton.USDT,
       ],
     }),
   },

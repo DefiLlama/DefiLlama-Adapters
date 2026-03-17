@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { getLogs } = require('./helper/cache/getLogs')
 
 const SMART_CREDIT = '0x72e9D9038cE484EE986FEa183f8d8Df93f9aDA13'.toLowerCase()
@@ -16,20 +17,20 @@ const fixedIncomeAbi = {
 
 // Supported tokens (hardcoded for efficiency - verified from protocol docs)
 const collateralTokens = [
-  "0x0000000000000000000000000000000000000000", // ETH (null address)
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
-  "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
-  "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",  // stETH
-  "0x6b175474e89094c44da98b954eedeac495271d0f",  // DAI 
+  ADDRESSES.null, // ETH (null address)
+  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.USDT, // USDT
+  ADDRESSES.ethereum.STETH,  // stETH
+  ADDRESSES.ethereum.DAI,  // DAI 
   "0x221657776846890989a759ba2973e427dff5c9bb",  // REP
-  "0x514910771af9ca656af840dff83e8264ecf986ca",  // LINK
-  "0x0d8775f648430679a709e98d2b0cb6250d2887ef"   // BAT
+  ADDRESSES.ethereum.LINK,  // LINK
+  ADDRESSES.ethereum.BAT   // BAT
 ]
 const underlyingTokens = [
-  "0x0000000000000000000000000000000000000000", // ETH
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
-  "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
-  "0x6b175474e89094c44da98b954eedeac495271d0f"  // DAI 
+  ADDRESSES.null, // ETH
+  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.USDT, // USDT
+  ADDRESSES.ethereum.DAI  // DAI 
 ]
 
 
@@ -104,7 +105,7 @@ async function borrowed(api) {
   
   poolInfos.forEach((i, idx) => {
     if (i.currency.toLowerCase() === SMART_CREDIT) return
-    const token = i.currency === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' ? '0x0000000000000000000000000000000000000000' : i.currency;
+    const token = i.currency === ADDRESSES.GAS_TOKEN_2 ? [ADDRESSES.null]: i.currency;
     api.add(token, i.invested)
   })
   return api.getBalances()

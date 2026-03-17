@@ -41,7 +41,7 @@ const owners = [
 const lendingMarketGetUserPositionAbi = "function getUserPosition(tuple(address, address,address, address,uint256,uint256,address), address) view returns (uint256 supplyAssets, uint256 supplyShares, uint256 borrowAssets, uint256 borrowShares, uint256 collateralAssets)";
 const firaLendingMarket= "0xa428723ee8ffd87088c36121d72100b43f11fb6a";
 const UZRMarketParams = [
-    "0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5", // loanToken
+    ADDRESSES.ethereum.USD0, // loanToken
     "0x35D8949372D46B7a3D5A56006AE77B215fc69bC0", // collateralToken (bUSD0)
     "0x30Da78355FcEA04D1fa34AF3c318BE203C6F2145", // oracle
     "0xdfCF197B0B65066183b04B88d50ACDC0C4b01385", // irm

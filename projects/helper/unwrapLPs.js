@@ -153,7 +153,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
               owner_in: ["${owner.toLowerCase()}"]
             }) {    id      }}`
     const data = await cachedGraphQuery(`uni-v4-positions/${chain}-${owner}`, endpoint, query, { fetchById: true, })
-    const positionIds = data.map(i => i.id)
+    const positionIds = Array.isArray(data) ? data.map(i => i.id) : []
     const verifiedPositionIds = []
 
 
