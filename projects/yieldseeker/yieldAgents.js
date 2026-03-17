@@ -63,7 +63,7 @@ function normalizeToken(token) {
 }
 
 async function getYieldAgentData(chain) {
-  const { agentAnalytics } = await getConfig('yieldseeker/yield-agents/' + chain, API_URL);
+  const { agentAnalytics = [] } = await getConfig('yieldseeker/yield-agents/' + chain, API_URL)
   return agentAnalytics;
 }
 
@@ -87,7 +87,7 @@ async function yieldAgentsTvl(api) {
 
   // Step 2: Convert ERC4626 vault share balances to underlying asset amounts
   const vaultsWithBalances = [...ERC4626_VAULTS].filter(vault => {
-    const key = `base:${vault}`;
+    const key = `${api.chain}:${vault}`;
     const bal = api.getBalances()[key];
     return bal && bal !== '0';
   });
@@ -106,7 +106,7 @@ async function yieldAgentsTvl(api) {
       const totalSupply = totalSupplies[i];
       if (!asset || !totalAssets || !totalSupply || totalSupply === '0') continue;
 
-      const vaultKey = `base:${vault}`;
+      const vaultKey = `${api.chain}:${vault}`;
       const shareBalance = api.getBalances()[vaultKey];
       if (!shareBalance || shareBalance === '0') continue;
 
