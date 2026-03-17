@@ -14,9 +14,10 @@ const abis = {
   get_total_stake_for_token: {
     name: "get_total_stake_for_token",
     type: "function",
-    inputs: [{ name: "token_address", type: "core::starknet::contract_address::ContractAddress" }],
+    inputs: [{ name: "token_address", type: "felt" }],
     outputs: [{ type: "core::integer::u128" }],
-    state_mutability: "view"
+    state_mutability: "view",
+    customInput: "address",
   },
 }
 
