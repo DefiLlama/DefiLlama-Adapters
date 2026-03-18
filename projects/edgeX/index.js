@@ -28,6 +28,8 @@ const EDGEX_USDC = '0x98d2919b9A214E6Fa5384AC81E6864bA686Ad74c'
 
 module.exports.edgex = {
   tvl: async (api) => {
+    // edgex_usdc is Native USDC natively minted via Circle CCTP on the EdgeX chain.
+    // There is no locked collateral backing it on a source chain to track.
     const supply = await api.call({ target: EDGEX_USDC, abi: 'erc20:totalSupply' })
     api.add(ADDRESSES.ethereum.USDC, supply, { skipChain: true })
   }
