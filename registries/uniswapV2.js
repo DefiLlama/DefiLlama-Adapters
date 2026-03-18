@@ -2803,7 +2803,7 @@ const uniV2Configs = {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: 'function allPools(uint) view returns (address)',
       },
-      staking: ['0x88889e34e5Eb7a8F0f986DDce5f2711220A0c02F'],
+      staking: ['0x88889e34e5Eb7a8F0f986DDce5f2711220A0c02F', '0x888859FEaAb4922DFBB9Add836172ec6f38caBb2'],
     },
   },
   'wingswap': {
