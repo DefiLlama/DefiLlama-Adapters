@@ -4,7 +4,6 @@ const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
 const erc20 = require('./abis/erc20.json');
-const { fetchThroughProxy } = require('./proxyRequest');
 const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
@@ -333,57 +332,6 @@ function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidator
     const addresses = withdrawalAddresses ?? [withdrawalAddress]
     api.addGasToken(await beacon.balance(addresses))
     return api.getBalances()
-
-/*     for (const addr of addresses) {
-      let fetchedValidators = skipValidators;
-      api.sumTokens({ owner: addr, tokens: [nullAddress] });
-
-      do {
-        const url = `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${addr}?limit=${size}&offset=${fetchedValidators}`
-        let validatorList;
-
-        if (proxy) {
-          const res = await fetchThroughProxy(url);
-          validatorList = res.data;
-        } else {
-          const res = await http.get(url);
-          validatorList = res.data;
-        }
-
-        if (!Array.isArray(validatorList)) {
-          console.error(`Invalid validator list for ${addr} at offset ${fetchedValidators}`);
-          break;
-        }
-
-        const validators = validatorList.map(i => i.publickey);
-
-        fetchedValidators += validators.length;
-        api.log(`Fetching balances for validators (${addr})`, validators.length);
-        await addValidatorBalance(validators);
-        if (sleepTime > 0) await sleep(sleepTime);
-      } while (fetchedValidators % size === 0);
-    }
-
-    const bals = api.getBalances()
-    Object.keys(bals).forEach((i) => {
-      bals[i] = bals[i] / 1e18
-    })
-    console.log(api.getBalances(), )
-    return api.getBalances();
-
-    async function addValidatorBalance(validators) {
-      if (validators.length > 100) {
-        const chunks = sliceIntoChunks(validators, 100);
-        for (const chunk of chunks) await addValidatorBalance(chunk);
-        return;
-      }
-
-      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
-        indicesOrPubkey: validators.join(","),
-      });
-
-      data.forEach((i) => api.addGasToken(i.balance * 1e9));
-    } */
   };
 }
 
@@ -401,8 +349,54 @@ function permitChainFailures(exports, chains) {
           return {}
         }
       }
-    } )
+    })
   })
+}
+
+function getCustomScriptTvl(chain, project) {
+  return async () => {
+    const cachedLog = await sdk.elastic.search({
+      index: 'custom-scripts*',
+      body: {
+        query: {
+          bool: {
+            must: [
+              { match: { project } },
+              { match: { chain} },
+              { match: { 'metadata.type': 'tvl', } },
+              {
+                range: {
+                  timestamp: {
+                    gte: Math.floor(Date.now() / 1000) - 24 * 60 * 60, // last 24 hours
+                  },
+                },
+              },
+            ],
+          },
+        },
+        sort: [{ timestamp: { order: 'desc' } }],
+        size: 1,
+      },
+    })
+
+    if (cachedLog?.hits?.hits?.length > 0) {
+      const balances = cachedLog.hits.hits[0]._source.balances
+      return balances
+    }
+    throw new Error("No recent cached TVL found, run the custom script to populate the cache")
+  }
+}
+
+function customScriptTvlExports(config) {
+  const exports = {
+    timetravel: false,
+  }
+  Object.entries(config).forEach(([chain, projectName]) => {
+    exports[chain] = {
+      tvl: getCustomScriptTvl(chain, projectName)
+    }
+  })
+  return exports
 }
 
 module.exports = {
@@ -426,4 +420,6 @@ module.exports = {
   isICHIVaultToken,
   getStakedEthTVL,
   permitChainFailures,
+  getCustomScriptTvl,
+  customScriptTvlExports,
 }

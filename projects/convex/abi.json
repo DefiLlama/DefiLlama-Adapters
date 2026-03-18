@@ -1,4 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
-  "poolLength": "uint256:poolLength"
-}

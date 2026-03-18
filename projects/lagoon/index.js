@@ -128,6 +128,7 @@ const config = {
       fromBlock: 21645993,
     }
   },
+  
   tac: {
     optinProxyFactory:{
       address: "0x66Ab87A9282dF99E38C148114F815a9C073ECA8D",
@@ -137,6 +138,12 @@ const config = {
       address: "0x3e39E287B4c94aC18831A63E5a6183Aa42cd85c3",
       fromBlock: 1817048,
     },
+    // use this vualt list if failed to get vault list from factory logs
+    fallbackVaults: [
+      '0x279385c180f5d01c4a4bdff040f17b8957304762', // Noon USN
+      '0xc218333954e5f6add5f9460396c2181039cce67b', // Usual Invested USD0++
+      '0x85af3c2755f17ba26d7326e8069bf10719441068', // pufETH TAC
+    ]
   },
   monad: {
     optinProxyFactory:{
@@ -179,20 +186,32 @@ function keepVault(vault, vaultBlacklist) {
 }
 
 Object.keys(config).forEach((chain) => {
-  let {vaults, beaconFactory, optinProxyFactory} = config[chain];
-  if (!vaults) vaults = [];
-  module.exports[chain] = { 
-    tvl: async (api) =>  {
-      let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock});
-      let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock});
-      beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
-      optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
-
-      return await api.erc4626Sum2({
-        calls: [...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
-      })
+  let { vaults, beaconFactory, optinProxyFactory } = config[chain];
+  
+  module.exports[chain] = {
+    tvl: async (api) => {
+      if (config[chain].fallbackVaults) {
+        try {
+          const beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock});
+          const optinProxyFactoryVaults = await getOptinProxyFactoryVaults({ api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock });
+          vaults = [...beaconFactoryVaults, ...optinProxyFactoryVaults]
+        } catch (e) {
+          vaults = config[chain].fallbackVaults;
+        }
+        return await api.erc4626Sum2({ calls: vaults })
+      } else {
+        if (!vaults) vaults = [];
+        let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock});
+        let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock});
+        beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
+        optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
+  
+        return await api.erc4626Sum2({
+          calls: [...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
+        })
+      }
     }
-}}
+  }}
 )
 
 

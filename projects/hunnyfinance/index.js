@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "stakingToken": "address:stakingToken",
+    "balance": "uint256:balance"
+  };
 const { sumUnknownTokens } = require("../helper/unknownTokens");
 
 // HUNNY FINANCE

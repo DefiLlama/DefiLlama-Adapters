@@ -1,5 +1,0 @@
-{
-  "LPtoken": "address:LPtoken",
-  "balanceLPinSystem": "uint256:balanceLPinSystem",
-  "stakingToken": "address:stakingToken"
-}

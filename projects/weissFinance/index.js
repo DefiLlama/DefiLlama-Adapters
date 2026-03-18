@@ -12,7 +12,7 @@ const PSM_V2_ID = "0x3fe88fd7ba9a81a79a711ad4193c016febf7adae58f07e7a1c867dba6ea
 
 // Coin types
 const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI";
-const WAL = "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL";
+const WAL = ADDRESSES.sui.WAL;
 const IKA = "0x7262fb2f7a3a14c888c438a3cd9b912469a58cf60f367352c46584262e8299aa::ika::IKA";
 
 async function tvl(api) {

@@ -1,4 +1,4 @@
-const { staking, stakingUnknownPricedLP } = require("./staking");
+const { staking, stakingPriceLP } = require("./staking");
 const { pool2 } = require("./pool2");
 const sdk = require("@defillama/sdk");
 const token0Abi = 'address:token0'
@@ -81,7 +81,7 @@ function tombTvl(token, share, rewardPool, masonry, pool2LPs, chain = "ethereum"
         return {
             [chain]: {
                 tvl: async () => ({}),
-                staking: stakingUnknownPricedLP(masonry, share, chain, lpWithShare),
+                staking: stakingPriceLP(masonry, share, lpWithShare),
                 pool2
             }
         }
