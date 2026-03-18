@@ -115,7 +115,7 @@ async function yieldAgentsTvl(api) {
       // Remove vault share balance and add equivalent underlying amount
       api.removeTokenBalance(vaultKey);
       const underlyingAmount = BigInt(shareBalance) * BigInt(totalAssets) / BigInt(totalSupply);
-      api.add(asset, underlyingAmount.toString());
+      api.add(asset.toLowerCase(), underlyingAmount.toString());
     }
   }
 
