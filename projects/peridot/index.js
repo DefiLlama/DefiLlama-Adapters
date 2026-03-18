@@ -1,67 +1,78 @@
-const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
+const { nullAddress } = require("../helper/unwrapLPs");
 
 // Peridot Finance — Compound V2 fork (pTokens + Peridottroller)
-// Hub chains: BSC Mainnet (56) + Monad Mainnet (143)
+// Chains: BSC (56) + Monad (143)
 //
-// Note: totalBorrows() reverts in this pToken implementation.
-// Borrowed amounts are derived via the Compound V2 accounting identity:
-//   exchangeRateStored = (cash + totalBorrows - totalReserves) / totalSupply
-//   => totalBorrows = (exchangeRateStored * totalSupply / 1e18) + totalReserves - cash
+// totalBorrows() reverts in Peridot's pToken implementation.
+// We derive it via the Compound V2 accounting identity:
+//   exchangeRateStored = (cash + borrows - reserves) / totalSupply
+//   => borrows = (exchangeRateStored * totalSupply / 1e18) + reserves - cash
+//
+// TVL uses getCash() directly (avoids sumTokens2 native-token query issues).
 
 const config = {
   bsc: {
-    comptroller:  "0x6fC0c15531CB5901ac72aB3CFCd9dF6E99552e14",
-    nativeMarket: "0xD9fDF5E2c7a2e7916E7f10Da276D95d4daC5a3c3", // pWBNB
+    comptroller: "0x6fC0c15531CB5901ac72aB3CFCd9dF6E99552e14",
+    nativeMarket: "0xD9fDF5E2c7a2e7916E7f10Da276D95d4daC5a3c3", // pBNB
+    blacklistedMarkets: [],
   },
   monad: {
-    comptroller:  "0x6D208789f0a978aF789A3C8Ba515749598940716",
+    comptroller: "0x6D208789f0a978aF789A3C8Ba515749598940716",
     nativeMarket: "0x2FB2861402A22244464435773dd1C6951735CdF7", // pMON
+    blacklistedMarkets: ["0xf8255935e62aa000c89de46a97d2f00bfff147e7"],
   },
 };
 
 const ABIS = {
-  getAllMarkets:       "function getAllMarkets() external view returns (address[])",
-  underlying:         "function underlying() external view returns (address)",
-  getCash:            "function getCash() external view returns (uint256)",
-  totalSupply:        "function totalSupply() external view returns (uint256)",
-  exchangeRateStored: "function exchangeRateStored() external view returns (uint256)",
-  totalReserves:      "function totalReserves() external view returns (uint256)",
+  getAllMarkets:      "function getAllMarkets() external view returns (address[])",
+  underlying:        "function underlying() external view returns (address)",
+  getCash:           "function getCash() external view returns (uint256)",
+  totalSupply:       "function totalSupply() external view returns (uint256)",
+  exchangeRateStored:"function exchangeRateStored() external view returns (uint256)",
+  totalReserves:     "function totalReserves() external view returns (uint256)",
 };
 
-// Returns [{market, underlying}] for all markets in the comptroller.
-// Native market gets nullAddress as underlying.
-async function getMarketsData(api, comptroller, nativeMarket) {
+async function getMarketsData(api, { comptroller, nativeMarket, blacklistedMarkets }) {
   const markets = await api.call({ abi: ABIS.getAllMarkets, target: comptroller });
+  const blacklistSet = new Set(blacklistedMarkets.map((m) => m.toLowerCase()));
+
+  const filtered = markets.filter((m) => !blacklistSet.has(m.toLowerCase()));
 
   const underlyings = await Promise.all(
-    markets.map(async (market) => {
+    filtered.map(async (market) => {
       if (market.toLowerCase() === nativeMarket.toLowerCase()) return nullAddress;
       try {
         return await api.call({ abi: ABIS.underlying, target: market });
-      } catch (_) {
-        return null; // skip broken/unlisted markets
+      } catch {
+        return null; // skip markets with no underlying (broken/unlisted)
       }
     })
   );
 
-  return markets
+  return filtered
     .map((market, i) => ({ market, underlying: underlyings[i] }))
     .filter(({ underlying }) => underlying !== null);
 }
 
-// TVL = balanceOf(underlying, pToken) for each market.
-// For native markets this is eth_getBalance(pToken) — equivalent to getCash().
+// TVL = getCash() per market (available liquidity, not borrowed out)
 async function tvl(api) {
-  const { comptroller, nativeMarket } = config[api.chain];
-  const marketsData = await getMarketsData(api, comptroller, nativeMarket);
-  const tokensAndOwners = marketsData.map(({ market, underlying }) => [underlying, market]);
-  return sumTokens2({ api, tokensAndOwners });
+  const marketsData = await getMarketsData(api, config[api.chain]);
+
+  await Promise.all(
+    marketsData.map(async ({ market, underlying }) => {
+      try {
+        const cash = await api.call({ abi: ABIS.getCash, target: market });
+        api.add(underlying, cash);
+      } catch {
+        // skip markets with no liquidity or reverted calls
+      }
+    })
+  );
 }
 
-// Borrowed = totalBorrows per market, computed from exchange rate identity.
+// Borrowed = totalBorrows per market, derived from exchange rate identity.
 async function borrowed(api) {
-  const { comptroller, nativeMarket } = config[api.chain];
-  const marketsData = await getMarketsData(api, comptroller, nativeMarket);
+  const marketsData = await getMarketsData(api, config[api.chain]);
 
   await Promise.all(
     marketsData.map(async ({ market, underlying }) => {
@@ -73,19 +84,16 @@ async function borrowed(api) {
           api.call({ abi: ABIS.totalReserves,      target: market }),
         ]);
 
-        // All values come as strings from the SDK; use BigInt throughout.
-        const cashB     = BigInt(cash);
-        const supplyB   = BigInt(supply);
-        const rateB     = BigInt(rate);
-        const reservesB = BigInt(reserves);
-
-        // exchangeRate mantissa is scaled by 1e18
-        const totalBorrows = (rateB * supplyB) / (10n ** 18n) + reservesB - cashB;
+        // exchangeRate mantissa is 1e18; use BigInt to avoid float precision issues
+        const totalBorrows =
+          (BigInt(rate) * BigInt(supply)) / (10n ** 18n) +
+          BigInt(reserves) -
+          BigInt(cash);
 
         if (totalBorrows > 0n) {
           api.add(underlying, totalBorrows.toString());
         }
-      } catch (_) {
+      } catch {
         // skip markets with no activity or reverted calls
       }
     })
@@ -94,9 +102,9 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    "TVL is the sum of tokens held in each Peridot lending market (getCash equivalent). " +
+    "TVL is the sum of getCash() across all Peridot lending markets (available liquidity). " +
     "Borrowed is derived via the Compound V2 exchange rate identity since totalBorrows() " +
-    "is not directly callable in this pToken implementation.",
+    "reverts in this pToken implementation.",
   bsc:   { tvl, borrowed },
   monad: { tvl, borrowed },
 };
