@@ -73,7 +73,7 @@ const yvalos = {
     ethereum: "0xd04ae722b3fe56812e13bb212a79cea7c1b08ff0",
 }
 
-const ypythagoras = {
+const ypymn = {
     ethereum: "0x06c2c73f30135c831d010ec7b82d0f32321c4f27",
 }
 
@@ -94,7 +94,7 @@ l2Chains.forEach(chain => {
                 yprism[chain],
                 yhlp[chain],
                 yvalos[chain],
-                ypythagoras[chain],
+                ypymn[chain],
             ].filter(Boolean)
             const supply = await api.multiCall({ calls, abi: 'erc20:totalSupply' })
             api.add(calls, supply);
@@ -128,7 +128,7 @@ module.exports['ethereum'] = {
             target: vybtc_config['ethereum'],
             owner: lockbox
         })
-        const ethSupply = await api.multiCall({ calls: [ yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum'], yhlp['ethereum'], yvalos['ethereum'], ypythagoras['ethereum']], abi: 'erc20:totalSupply' })
+        const ethSupply = await api.multiCall({ calls: [ yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum'], yhlp['ethereum'], yvalos['ethereum'], ypymn['ethereum']], abi: 'erc20:totalSupply' })
         const supply = (ethSupply[0] - lockboxSupply.output);
         const supplyVyusd = (ethSupply[1] - lockboxSupplyVyusd.output);
         const supplyYeth = (ethSupply[2] - lockboxSupplyYeth.output);
@@ -138,7 +138,7 @@ module.exports['ethereum'] = {
         const supplyYprism = ethSupply[6];
         const supplyYhlp = ethSupply[7];
         const supplyYvalos = ethSupply[8];
-        const supplyYpythagoras = ethSupply[9];
-        api.add([yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum'], yhlp['ethereum'], yvalos['ethereum'], ypythagoras['ethereum']], [supply, supplyVyusd, supplyYeth, supplyVyeth, supplyYbtc, supplyVybtc, supplyYprism, supplyYhlp, supplyYvalos, supplyYpythagoras]);
+        const supplyypymn = ethSupply[9];
+        api.add([yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum'], yhlp['ethereum'], yvalos['ethereum'], ypymn['ethereum']], [supply, supplyVyusd, supplyYeth, supplyVyeth, supplyYbtc, supplyVybtc, supplyYprism, supplyYhlp, supplyYvalos, supplyypymn]);
     }
 }
