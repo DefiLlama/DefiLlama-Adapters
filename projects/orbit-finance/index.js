@@ -19,13 +19,16 @@ async function tvl() {
   const data = await getConfig("orbit-finance", `${ADAPTER_BASE}/api/v1/pools`);
   if (!Array.isArray(data?.pools)) throw new Error("Unexpected API response: missing pools array");
 
-  const tokenAccounts = [];
+  const tokenAccounts = new Set();
   for (const pool of data.pools) {
-    if (pool.baseVault) tokenAccounts.push(pool.baseVault);
-    if (pool.quoteVault) tokenAccounts.push(pool.quoteVault);
+    if (typeof pool?.baseVault === "string" && pool.baseVault) tokenAccounts.add(pool.baseVault);
+    if (typeof pool?.quoteVault === "string" && pool.quoteVault) tokenAccounts.add(pool.quoteVault);
+  }
+  if (data.pools.length > 0 && tokenAccounts.size === 0) {
+    throw new Error("Unexpected API response: pools found but no valid vault addresses");
   }
 
-  return sumTokens2({ tokenAccounts, blacklistedTokens: [CIPHER_MINT] });
+  return sumTokens2({ tokenAccounts: [...tokenAccounts], blacklistedTokens: [CIPHER_MINT] });
 }
 
 async function staking() {
