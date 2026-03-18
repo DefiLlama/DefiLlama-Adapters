@@ -14,10 +14,33 @@ const staking = async (api) => {
   return api.getBalances();
 };
 
+const tvl = () => ({})
+
 module.exports = {
   methodology: "TVL is the total amount of THOR tokens staked in VTHOR, UTHOR, and YTHOR staking contracts",
-  ethereum: {
-    tvl: () => ({}),
-    staking,
-  },
+  ethereum: { tvl, staking },
+  binance: { tvl },
+  polygon: { tvl },
+  arbitrum: { tvl },
+  avax: { tvl },
+  base: { tvl },
+  thorchain: { tvl },
+  bitcoin: { tvl },
+  bitcoincash: { tvl },
+  mayachain: { tvl },
+  doge: { tvl },
+  litecoin: { tvl },
+  cosmos: { tvl },
+  dash: { tvl },
+  kujira: { tvl },
+  radixdlt: { tvl },
+  solana: { tvl },
+  ripple: { tvl },
+  tron: { tvl },
+  zcash: { tvl },
+  near: { tvl },
+  optimism: { tvl },
+  monad: { tvl },
+  berachain: { tvl },
+  sui: { tvl },
 };
