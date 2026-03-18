@@ -88,7 +88,7 @@ module.exports = {
       // '1inch': '/1inch/apiCache',
       'izumi': '/izumi/api',
       // 'summer-fi': '/summer-fi/index',
-      // 'sunswap-v2': '/sunswap-v2/index',
+      'sunswap-v2': '/sunswap-v2/api',
       unicrypt: '/unicrypt/apiCache',
       deeplock: '/deeplock/apiCache',
       pinksale: '/pinksale/apiCache',

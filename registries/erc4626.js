@@ -179,7 +179,14 @@ const configs = {
   'twoxswap': {
     methodology: 'TVL is the total USDC deposited in the X2Pool ERC-4626 vault, measured via totalAssets().',
     ethereum: ['0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3']
-  }
+  },
+  'yld': {
+    doublecounted: true,
+    ethereum: [
+      '0xCa960E6DF1150100586c51382f619efCCcF72706',
+      '0x8ED5AB1BA2b2E434361858cBD3CA9f374e8b0359',
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
