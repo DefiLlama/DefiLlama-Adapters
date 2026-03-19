@@ -5,7 +5,7 @@ const hBTCContract = ADDRESSES.stacks.hBTC;
 const hBTCStateContract = 'SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.state-hbtc-v1';
 
 module.exports = {
-  methodology: 'Counts the number of hBTC tokens on Stacks.',
+  methodology: 'TVL is calculated as total hBTC minted on Stacks multiplied by the current share price, expressed in BTC.',
   timetravel: false,
   stacks: {
     tvl: async () => {
