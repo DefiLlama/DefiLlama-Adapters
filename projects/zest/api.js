@@ -67,6 +67,7 @@ async function borrowed(api) {
             const borrows = data?.['total-borrows-variable']?.value ?? '0'
             api.add(tokenId, borrows)
         } catch (e) {
+            if (e.message?.includes('429')) throw e
             // Asset may not have existed at this block height
         }
     }))

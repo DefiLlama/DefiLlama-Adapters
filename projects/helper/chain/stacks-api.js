@@ -105,26 +105,25 @@ async function getBlockAtTimestamp(targetTimestamp) {
   let guess = Math.floor(lo.height + fraction * (hi.height - lo.height))
   guess = Math.max(lo.height, Math.min(hi.height, guess))
 
-  // Fetch and correct (1-2 calls)
-  const block = await fetchBlock(guess)
-  if (Math.abs(block.block_time - targetTimestamp) < 30) {
-    blockAtTimestampCache[targetTimestamp] = block.height
-    return block.height
+  // Fetch and correct (1-2 calls). Always return highest block at or before target.
+  let best = await fetchBlock(guess)
+
+  if (best.block_time > targetTimestamp || Math.abs(best.block_time - targetTimestamp) > 30) {
+    const localRate = (hi.time - lo.time) / (hi.height - lo.height)
+    const correction = Math.round((targetTimestamp - best.block_time) / localRate)
+    const corrected = Math.max(lo.height, Math.min(hi.height, guess + correction))
+    if (corrected !== guess) {
+      best = await fetchBlock(corrected)
+    }
   }
 
-  // One correction: use local block rate from anchors, clamped to bracket
-  const localRate = (hi.time - lo.time) / (hi.height - lo.height)
-  const correction = Math.round((targetTimestamp - block.block_time) / localRate)
-  const corrected = Math.max(lo.height, Math.min(hi.height, guess + correction))
-
-  if (corrected !== guess) {
-    const block2 = await fetchBlock(corrected)
-    blockAtTimestampCache[targetTimestamp] = block2.height
-    return block2.height
+  // Walk back if we landed after the target timestamp
+  if (best.block_time > targetTimestamp && best.height > 1) {
+    best = await fetchBlock(best.height - 1)
   }
 
-  blockAtTimestampCache[targetTimestamp] = block.height
-  return block.height
+  blockAtTimestampCache[targetTimestamp] = best.height
+  return best.height
 }
 
 function isBlockHash(value) {
@@ -135,7 +134,10 @@ function isBlockHash(value) {
 
 async function resolveTip(block) {
   if (!block) return undefined
-  if (isBlockHash(block)) return block
+  if (isBlockHash(block)) {
+    const hex = typeof block === 'string' && block.startsWith('0x') ? block.slice(2) : block
+    return hex
+  }
   return getBlockHash(block)
 }
 
