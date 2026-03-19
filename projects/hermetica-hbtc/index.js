@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { get } = require('../helper/http')
 const { makeReadOnlyContractCall } = require('../hermetica/stacks-call')
 
 const hBTCContract = ADDRESSES.stacks.hBTC;
