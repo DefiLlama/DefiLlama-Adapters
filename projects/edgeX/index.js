@@ -13,6 +13,10 @@ const CONFIG = {
     owners: ['0x3EedB0d9C95263778a62081F2A62FC77a392116d'],
     tokens: [ADDRESSES.bsc.USDT]
   },
+  edgex: {
+    owners: ['0xc8B4cF96bBC915f11C4f8B6F7654eF46C7af3783'],
+    tokens: ['0x98d2919b9A214E6Fa5384AC81E6864bA686Ad74c'],
+  },
 }
 
 const tvl = async (api) => {
@@ -23,14 +27,3 @@ const tvl = async (api) => {
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }
 })
-
-const EDGEX_USDC = '0x98d2919b9A214E6Fa5384AC81E6864bA686Ad74c'
-
-module.exports.edgex = {
-  tvl: async (api) => {
-    // edgex_usdc is Native USDC natively minted via Circle CCTP on the EdgeX chain.
-    // There is no locked collateral backing it on a source chain to track.
-    const supply = await api.call({ target: EDGEX_USDC, abi: 'erc20:totalSupply' })
-    api.add(ADDRESSES.ethereum.USDC, supply, { skipChain: true })
-  }
-}
