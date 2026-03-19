@@ -3,21 +3,20 @@ const ADDRESSES = require("../helper/coreAssets.json");
 // ─── Contract addresses ────────────────────────────────────────────────────────
 //
 //  opBNB Mainnet (chainId 204)
-//  Update these once EARN contracts are deployed to mainnet.
-//  Testnet reference: deployments/opbnbTestnet/earn.json
+//  Source: account-abstraction/deployments/opbnb/earn.json
 //
 const OPBNB = {
   // ChapoolVaultReader — aggregates all Earn data in a single call
-  VAULT_READER: "",   // TODO: deploy on opBNB mainnet
+  VAULT_READER: "0xd0B6693498489477346e20325BFB6d689945191D",
 
   // ChapoolEarnVault — USDT custody + CPP accumulator
-  EARN_VAULT: "",     // TODO: deploy on opBNB mainnet
+  EARN_VAULT: "0xA8C48A4443292a903BbAD19270dD268B9d42a546",
 
   // VeCPOTLocker — CPOT is locked here for veCPOT boost
-  VECPOT_LOCKER: "",  // TODO: deploy on opBNB mainnet
+  VECPOT_LOCKER: "0xFACd2BB6332efDC116c48F4E952DF1a9515c8102",
 
   // CPOT governance token locked in VeCPOTLocker
-  CPOT: "",           // TODO: set CPOT mainnet token address
+  CPOT: "0x549d576069099F524A42ABa0b7CcB1b9b148B505",
 
   // USDT — sourced from DefiLlama coreAssets (0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3)
   USDT: ADDRESSES.op_bnb.USDT,
@@ -72,14 +71,9 @@ function buildTvl(addrs) {
 // ─── Module export ─────────────────────────────────────────────────────────────
 module.exports = {
   methodology:
-    "TVL consists of two components: " +
-    "(1) USDT deposited in ChapoolEarnVault — users earn CPP rewards proportional " +
-    "to their weighted USDT share; balance is read via ChapoolVaultReader.getTVL(). " +
-    "(2) CPOT locked in VeCPOTLocker — users lock CPOT to receive a veCPOT " +
-    "boost (up to +5%) on their CPP emission rate; balance is read from the locker " +
-    "contract directly. No USDT yield is generated — deposits are returned 1:1.",
-
+    "TVL: (1) USDT in ChapoolEarnVault — 1:1 custody, no USDT yield; users earn CPP by weighted share (veCPOT + NFT boost). (2) CPOT locked in VeCPOTLocker — veCPOT boosts CPP rate (cap +5%).",
   op_bnb: {
     tvl: buildTvl(OPBNB),
   },
 };
+
