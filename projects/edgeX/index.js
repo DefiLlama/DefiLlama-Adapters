@@ -15,7 +15,7 @@ const CONFIG = {
   },
   edgex: {
     owners: ['0xc8B4cF96bBC915f11C4f8B6F7654eF46C7af3783'],
-    tokens: ['0x98d2919b9A214E6Fa5384AC81E6864bA686Ad74c'],
+    tokens: [ADDRESSES.edgex.USDC],
   },
 }
 
