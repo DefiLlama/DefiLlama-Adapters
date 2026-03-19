@@ -3,6 +3,6 @@ const { sumTokensExport } = require('./helper/unwrapLPs');
 
 module.exports = {
   bsc: {
-    tvl: sumTokensExport({ owners: ['0x7e1f4Ed04910Ed9C19e71e36D757F718A07ea9cA'], tokens: [ADDRESSES.bsc.USDT]})
+    tvl: sumTokensExport({ owners: ['0x6Dabbc1Fe8d1AF341B3DC328Ee77db20e05411DD'], tokens: [ADDRESSES.bsc.USDT]})
   },
 }
