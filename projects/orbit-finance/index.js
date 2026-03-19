@@ -5,8 +5,6 @@ const ADAPTER_BASE = "https://orbit-dex.api.cipherlabsx.com";
 
 // CIPHER native token mint
 const CIPHER_MINT = "Ciphern9cCXtms66s8Mm6wCFC27b2JProRQLYmiLMH3N";
-// Streamflow staking vault — SPL token account holding all staked CIPHER
-const CIPHER_STAKING_VAULT = "Fh7u35PsxFWBWNE5Pme2yffixJ5H7YocAymJHs6L73N";
 
 /**
  * Computes TVL by summing token balances in all CipherDLMM pool vaults
@@ -31,8 +29,16 @@ async function tvl() {
   return sumTokens2({ tokenAccounts: [...tokenAccounts], blacklistedTokens: [CIPHER_MINT] });
 }
 
+/**
+ * Staking TVL: total CIPHER locked in Streamflow staking streams.
+ * Staked CIPHER is distributed across per-user escrow accounts so we
+ * read the aggregate total from the adapter's Streamflow indexer.
+ */
 async function staking() {
-  return sumTokens2({ tokenAccounts: [CIPHER_STAKING_VAULT] });
+  const data = await getConfig("orbit-finance-staking", `${ADAPTER_BASE}/api/v1/streamflow/vaults`);
+  const cipherVault = (data.vaults ?? []).find((v) => v.tokenMint === CIPHER_MINT);
+  if (!cipherVault?.total_staked_raw) return {};
+  return { ["solana:" + CIPHER_MINT]: cipherVault.total_staked_raw };
 }
 
 module.exports = {
