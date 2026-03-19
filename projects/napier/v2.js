@@ -13,6 +13,7 @@ const CHAIN_IDS = {
   avax: 43114,
   fraxtal: 252,
   hyperliquid: 999,
+  plume: 98866,
 };
 
 const NAPIER_API_BASE = "https://api-v2.napier.finance";
