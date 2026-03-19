@@ -10,8 +10,8 @@ const CIPHER_MINT = "Ciphern9cCXtms66s8Mm6wCFC27b2JProRQLYmiLMH3N";
  * Computes TVL by summing token balances in all CipherDLMM pool vaults
  * (base + quote) on Solana. Vault addresses are fetched from the adapter
  * API (cached via getConfig) and verified on-chain via sumTokens2.
- * The protocol's native CIPHER token is excluded from TVL and tracked
- * separately under staking.
+ * All tokens (including CIPHER) are counted here; staking tracks
+ * CIPHER locked in Streamflow separately (different tokens, no double-count).
  */
 async function tvl() {
   const data = await getConfig("orbit-finance", `${ADAPTER_BASE}/api/v1/pools`);
@@ -26,7 +26,7 @@ async function tvl() {
     throw new Error("Unexpected API response: pools found but no valid vault addresses");
   }
 
-  return sumTokens2({ tokenAccounts: [...tokenAccounts], blacklistedTokens: [CIPHER_MINT] });
+  return sumTokens2({ tokenAccounts: [...tokenAccounts] });
 }
 
 /**
@@ -45,5 +45,5 @@ module.exports = {
   timetravel: false,
   solana: { tvl, staking },
   methodology:
-    "TVL is the sum of non-CIPHER token balances in all CipherDLMM pool vaults (base + quote) on Solana. Staking TVL counts CIPHER locked in the Streamflow staking pool.",
+    "TVL is the sum of all token balances in CipherDLMM pool vaults (base + quote) on Solana. Staking TVL separately counts CIPHER locked in the Streamflow staking pool.",
 };
