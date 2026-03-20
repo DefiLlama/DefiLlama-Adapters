@@ -5,6 +5,10 @@ const TOKENS = [
   'uSDtYeMVYuQwhziLKMpdMz74WPFNytoWLGGiU9SDnZx',  // USDT+
 ]
 
+/**
+ * Calculates TVL as the total circulating supply of USDC+ and USDT+ tokens on Solana.
+ * @param {object} api - DefiLlama API helper object
+ */
 async function tvl(api) {
   await getTokenSupplies(TOKENS, { api })
 }
