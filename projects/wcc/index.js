@@ -11,6 +11,7 @@ async function tvl(api){
 }
 
 module.exports = {
+  timetravel: false,
   canton: { tvl },
   methodology: `TVL is the total CC balance held by custody parties on Canton Network.`,
 };
