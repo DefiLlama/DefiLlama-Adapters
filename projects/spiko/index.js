@@ -1,10 +1,8 @@
-const base32 = require('hi-base32')
 const { multiCall } = require('../helper/chain/starknet')
+const { decodeStrKey, SOROBAN_RPC_URL } = require('../helper/chain/stellar')
 const { post } = require('../helper/http')
 const { getUniqueAddresses } = require('../helper/utils')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-
-const SOROBAN_RPC_URL = 'https://soroban-rpc.creit.tech/'
 
 /**
  * Share-register addresses from Spiko prospectus / Spiko_DLT_Addresses.docx (3 March 2026).
@@ -117,11 +115,6 @@ const totalSupplyAbi = {
   inputs: [],
   outputs: [{ name: 'totalSupply', type: 'uint256' }],
   stateMutability: 'view',
-}
-
-function decodeStrKey(strKey) {
-  const raw = Buffer.from(base32.decode.asBytes(strKey))
-  return raw.slice(1, -2)
 }
 
 const STELLAR_LEDGER_ENTRY_CONTRACT_DATA = 6
