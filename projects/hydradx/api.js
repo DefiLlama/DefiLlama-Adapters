@@ -64,14 +64,14 @@ const INDEXER_URL = 'https://orca-main-aggr-indx.indexer.hydration.cloud/graphql
 
 // Fetch all stableswap pool account IDs from the indexer.
 async function fetchStablepoolAccounts() {
-  const query = `{ stableswaps { nodes { accountId } } }`;
+  const query = `{ stableswaps(first: 1000) { nodes { accountId } } }`;
   const res = await postURL(INDEXER_URL, { query });
   return res.data.data.stableswaps.nodes.map(n => n.accountId);
 }
 
 // Fetch all XYK pool account IDs and their asset pairs from the indexer.
 async function fetchXykPools() {
-  const query = `{ xykpools { nodes { accountId assetAId assetBId } } }`;
+  const query = `{ xykpools(first: 1000) { nodes { accountId assetAId assetBId } } }`;
   const res = await postURL(INDEXER_URL, { query });
   return res.data.data.xykpools.nodes.map(n => ({
     poolAccountId: n.accountId,
@@ -82,18 +82,25 @@ async function fetchXykPools() {
 
 // Fetch aToken asset IDs and map them to the underlying asset's CoinGecko ID.
 // Each node with a symbol like 'aUSDT' maps assetRegistryId -> cgMapping['USDT'].
+// Uses cursor-based pagination to exhaust all pages.
 async function fetchATokenMapping() {
-  const query = `{ assets { nodes { assetRegistryId symbol } } }`;
-  const res = await postURL(INDEXER_URL, { query });
-  const nodes = res.data.data.assets.nodes;
   const mapping = new Map();
-  for (const { assetRegistryId, symbol } of nodes) {
-    if (!symbol || !/^a[A-Za-z]/.test(symbol)) continue;
-    const underlyingSymbol = symbol.slice(1); // strip leading 'a'
-    const cgId = cgMapping[underlyingSymbol];
-    if (cgId) {
-      mapping.set(parseInt(assetRegistryId), cgId);
+  let after = null;
+  while (true) {
+    const cursor = after ? `, after: "${after}"` : '';
+    const query = `{ assets(first: 500${cursor}) { nodes { assetRegistryId symbol } pageInfo { hasNextPage endCursor } } }`;
+    const res = await postURL(INDEXER_URL, { query });
+    const { nodes, pageInfo } = res.data.data.assets;
+    for (const { assetRegistryId, symbol } of nodes) {
+      if (!symbol || !/^a[A-Za-z]/.test(symbol)) continue;
+      const underlyingSymbol = symbol.slice(1); // strip leading 'a'
+      const cgId = cgMapping[underlyingSymbol];
+      if (cgId) {
+        mapping.set(parseInt(assetRegistryId), cgId);
+      }
     }
+    if (!pageInfo.hasNextPage) break;
+    after = pageInfo.endCursor;
   }
   return mapping;
 }
@@ -114,17 +121,16 @@ async function omnipoolTvl(api) {
   for (const [key, metaOpt] of allAssets) {
     if (metaOpt.isSome) {
       const meta = metaOpt.unwrap()
-      // Extract assetId from the storage key
-      // The exact method might vary slightly based on key structure, .args[0] is common
-      const assetIdFromKey = key.args[0].toNumber()
+      // Use toBigInt() to avoid silent truncation of IDs > Number.MAX_SAFE_INTEGER
+      const assetIdBigInt = key.args[0].toBigInt()
+      if (assetIdBigInt === 0n || assetIdBigInt > BigInt(Number.MAX_SAFE_INTEGER)) continue;
+      const assetIdFromKey = Number(assetIdBigInt)
 
-      if (assetIdFromKey !== 0) { // Skip asset 0 (HDX) as it's handled separately
-        processedAssetMetadata.push({
+      processedAssetMetadata.push({
           assetId: assetIdFromKey,
           symbol: meta.symbol.toHuman(),
           decimals: +meta.decimals,
         })
-      }
     }
   }
 
@@ -169,8 +175,8 @@ async function omnipoolTvl(api) {
   // Add XYK Pool TVL fetched dynamically from the indexer
   const xykPools = await fetchXykPools();
 
-  try {
-    for (const { poolAccountId, assetIdA, assetIdB } of xykPools) {
+  for (const { poolAccountId, assetIdA, assetIdB } of xykPools) {
+    try {
       for (const assetId of [assetIdA, assetIdB]) {
         if (typeof assetId !== 'number' || isNaN(assetId) || assetId > Number.MAX_SAFE_INTEGER) {
           continue;
@@ -198,9 +204,9 @@ async function omnipoolTvl(api) {
           add(coingeckoId, readableBalance);
         }
       }
+    } catch (error) {
+      console.error(`HydraDX: Error processing XYK pool ${poolAccountId}:`, error);
     }
-  } catch (error) {
-    console.error("Error fetching or processing XYK pool TVL from static list:", error);
   }
 
   return api.getBalances();
