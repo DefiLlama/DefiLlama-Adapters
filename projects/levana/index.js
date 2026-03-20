@@ -67,6 +67,9 @@ async function getMarketAddr(chain, factory, marketId) {
 module.exports = {
   timetravel: false,
   methodology: "TVL is the sum of deposits into the Liquidity pools combined with the sum of trader collateral for open and pending positions",
+  hallmarks: [
+    ['2026-01-26', 'Protocol shutdown'],
+  ],
 }
 
 const config = {

@@ -14,7 +14,7 @@ const tokensAndOwners = [
   // LORDS
   ["0x0124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49", "0x020c0fbc1f2a724a94ebe3575e54c4111fa3eaaf3dac938cfcbd96cc83317bbf"],
   // tBTC
-  ["0x04daa17763b286d1e59b97c283c0b8c949994c361e426a28f743c67bdfe9a32f", "0x07b0b47cb98d8282b6c86d267cb575c81a50f603cd07bb8c1e692e77eacc4c26"],
+  [ADDRESSES.starknet.tBTC, "0x07b0b47cb98d8282b6c86d267cb575c81a50f603cd07bb8c1e692e77eacc4c26"],
   // SolvBTC
   ["0x0593e034dda23eea82d2ba9a30960ed42cf4a01502cc2351dc9b9881f9931a68", "0x01f556ed83aa7b204301d1aeb290f9755b79fdb5b7d7a56854c81d3dd736c695"],
   // LBTC
@@ -33,10 +33,14 @@ const tokensAndOwners = [
   ["0x07dd3c80de9fcc5545f0cb83678826819c79619ed7992cc06ff81fc67cd2efe0", "0x0616551ebe73c1ea97ad2d7c7c9575039cc456fea5c8529701a39cc9c0ad4805"],
   // xsBTC
   ["0x0580f3dc564a7b82f21d40d404b3842d490ae7205e6ac07b1b7af2b4a5183dc9", "0x06a5bac0cdaa7126e32dd478c86f84906f4a7ff597cbaa9b0d537312887f5a19"],
-  // Transmuters
+  // SURVIVOR
+  ["0x042dd777885ad2c116be96d4d634abc90a26a790ffb5871e037dd5ae7d2ec86b", "0x02176a430561acdbc9e9612c7e8e92461a2223f31b37a3c15c2011590eba8324"],
+  // Transmuter for bridged USDC with Spiko MMF
   [ADDRESSES.starknet.USDC, "0x0560149706f72ce4560a170c5aa72d20d188c314ddca5763f9189adfc45e2557"],
-  // Spiko US MMF
   ["0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", "0x0560149706f72ce4560a170c5aa72d20d188c314ddca5763f9189adfc45e2557"],
+  // Transmuter for native USDC
+  [ADDRESSES.starknet.USDC_CIRCLE, "0x079eaeb2891acc0d884d22f2626adb734a0ab4038a56c5029c7127e4e9f59bd8"],
+  ["0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", "0x079eaeb2891acc0d884d22f2626adb734a0ab4038a56c5029c7127e4e9f59bd8"],
 ]
 
 async function tvl(api) {

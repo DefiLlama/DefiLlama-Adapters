@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { queryAddresses } = require('../helper/chain/radixdlt');
 
 const LIQUIFY_COMPONENT = "component_rdx1czvsx3kq5j4yfz8d0keq5328txwctmsq2fllqr6rqpn000sl5deuk8";
-const XRD_ADDRESS = "resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd";
+const XRD_ADDRESS = ADDRESSES.radixdlt.XRD;
 
 module.exports = {
   methodology: 'Calculates TVL using the amount of XRD locked in the Liquify protocol liquidity vault.',

@@ -6,36 +6,83 @@ const { getConfig } = require('../helper/cache.js')
 const API_URL = 'https://api.backpack.exchange/api/v1/wallets'
 
 const _getConfig = async () => {
-  const data  = await getConfig('backpack/wallets', API_URL)
-  const config   = {}
+  const data = await getConfig('backpack/wallets', API_URL)
+  const config = {}
   data.forEach(({ address, blockchain }) => {
     let chain = blockchain.toLowerCase()
     if (chain === 'avalanche') chain = 'avax'
+    if (chain === 'hyperevm') chain = 'hyperliquid'
+    if (chain === 'dogecoin') chain = 'doge'
+    if (chain === 'xrp') chain = 'ripple'
     if (!config[chain]) config[chain] = { owners: [] }
     config[chain].owners.push(address)
   })
   return config
 }
 
-const exportObj = {  timetravel: false }
-const chains = ['ethereum', 'solana', 'bitcoin', 'litecoin', 'arbitrum', 'optimism', 'polygon', 'base', 'bsc', 'avax', 'tron'];
+const exportObj = { timetravel: false }
+const CHAINS = [
+  'solana',
+  'ethereum',
+  'bitcoin',
+  'doge',
+  'litecoin',
+  'arbitrum',
+  'base',
+  'bsc',
+  'optimism',
+  'avax',
+  'polygon',
+  'tron',
+  'aptos',
+  'ripple',
+  'plasma',
+  'fogo',
+  'stable',
+  'monad',
+  'hyperliquid',
+  'sei',
+  'sui',
+]
 
-chains.forEach((chain) => {
+const CHAIN_BLACKLISTS = {
+  ethereum: [ADDRESSES.ethereum.sUSD_OLD],
+}
+
+CHAINS.forEach((chain) => {
   exportObj[chain] = {
-    tvl: async () => {
+    tvl: async (api) => {
       const config = await _getConfig()
       const entry = config[chain]
       if (!entry) return {}
 
-      let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = entry
-      if (!tokensAndOwners && !tokens && chain !== 'solana') tokens = defaultTokens[chain] || [ADDRESSES.null]
+      const tokens = [
+        ...(Object.values(ADDRESSES[chain] || {})),
+        ...(defaultTokens[chain] || []),
+      ]
 
-      const options = { ...entry, owners, tokens, chain, blacklistedTokens }
-      if (chain === 'solana' || chain === 'eclipse') options.solOwners = owners
-      if (chain === 'ton') options.onlyWhitelistedTokens = true
-      if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
+      let { owners, fungibleAssets } = entry
 
-      return sumTokensExport(options)()
+
+      const options = { owners, tokens, chain, blacklistedTokens: CHAIN_BLACKLISTS[chain] }
+
+      switch (chain) {
+        case 'solana':
+          options.includeStakedSol = true;
+          options.onlyTrustedTokens = true;
+        case 'fogo':
+        case 'eclipse':
+          options.solOwners = options.owners;
+          options.tokens = undefined
+          break;
+        case 'ton': options.onlyWhitelistedTokens = true; break
+        case 'aptos':
+          if (Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
+          break;
+        case 'sei':
+          options.tokens = options.tokens.filter(t => t.startsWith('0x'))
+      }
+      return sumTokensExport(options)(api)
     }
   }
 })

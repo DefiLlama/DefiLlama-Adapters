@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 // ZenFinance - Multi-Asset DeFi Protocol on Cronos
@@ -5,6 +6,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   methodology: "TVL counts external tokens held in contracts.",
+  hallmarks: [['2026-02-03', 'ZenFinance announces closure']],
   cronos: {
     tvl: sumTokensExport({ 
       owners: [
@@ -14,12 +16,12 @@ module.exports = {
       ],
       tokens: [
         // Native & Wrapped
-        "0x0000000000000000000000000000000000000000", // CRO (native)
-        "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23", // WCRO
+        ADDRESSES.null, // CRO (native)
+        ADDRESSES.cronos.WCRO_1, // WCRO
         
         // Stablecoins
-        "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59", // USDC
-        "0x66e428c3f67a68878562e79A0234c1F83c208770", // USDT
+        ADDRESSES.cronos.USDC, // USDC
+        ADDRESSES.cronos.USDT, // USDT
         
         // Ecosystem Tokens
         "0xaF02D78F39C0002D14b95A3bE272DA02379AfF21", // FRTN

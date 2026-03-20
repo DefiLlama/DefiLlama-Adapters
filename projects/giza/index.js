@@ -12,5 +12,6 @@ module.exports = {
     methodology: 'TVL is calculated by querying onchain balances of Giza smart wallet accounts across DeFi lending protocols for the Arma product, and Pendle PT token holdings for the Pulse product.',
     base: arma.base,
     plasma: arma.plasma,
+    hyperliquid: arma.hyperliquid,
     arbitrum: { tvl: combinedArbitrumTvl },
 }

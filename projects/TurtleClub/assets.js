@@ -72,7 +72,7 @@ const tokens = {
         HEFE: '0x18E3605B13F10016901eAC609b9E188CF7c18973',
         GoGoPool: '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3',
         Benqi: ADDRESSES.avax.SAVAX,
-        sUSDe: "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2"
+        sUSDe: ADDRESSES.arbitrum.sUSDe
     },
     mantle: {
         USDC: ADDRESSES.mantle.USDC,

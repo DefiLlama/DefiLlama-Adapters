@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view } = require('../helper/chain/aptos');
 const { getConfig } = require("../helper/cache");
 
 const PROPS_FA = "0x6dba1728c73363be1bdd4d504844c40fbb893e368ccbeff1d1bd83497dbc756d";
-const USDC_FA = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
+const USDC_FA = ADDRESSES.aptos.USDC_3;
 
 module.exports = {
   timetravel: false,

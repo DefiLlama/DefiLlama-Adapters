@@ -37,7 +37,7 @@ const CHAIN_IDS_ENVIO = {
 // Chains using graph endpoints
 const SUBGRAPH_ENDPOINTS = {
   sei: '41ZGYcFgL2N7L5ng78S4sD6NHDNYEYcNFxnz4T8Zh3iU',
-  iotex: '6No3QmRiC8HXLEerDFoBpF47jUPRjhntmv28HHEMxcA2',
+  // iotex: '6No3QmRiC8HXLEerDFoBpF47jUPRjhntmv28HHEMxcA2',
 };
 
 

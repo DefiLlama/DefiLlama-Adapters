@@ -201,7 +201,7 @@ module.exports = treasuryExports({
     sonic: {
         tokens: [
             nullAddress,
-            "0x29219dd400f2bf60e5a23d13be72b486d4038894",// usde
+            ADDRESSES.sonic.USDC_e,// usde
             "0x80eede496655fb9047dd39d9f418d5483ed600df",// frxUSD
             "0x0732606cb924d617e2130582704e2d8e2db520a1",// BPT-Gami_scUSD-USDp
             "0x5e0de78aa8f62cba470039ff545423f726c606c4",// USDpfrxUSD

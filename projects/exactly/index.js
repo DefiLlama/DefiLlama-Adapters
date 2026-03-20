@@ -90,6 +90,3 @@ const abis = {
   totalFloatingBorrowAssets: "function totalFloatingBorrowAssets() view returns (uint256)",
 };
 
-/** @typedef {import("@defillama/sdk").ChainApi} ChainApi */
-/** @typedef {import("@defillama/sdk/build/types").Balances} Balances */
-/** @typedef {{ borrowed: string, supplied: string }} FixedPool */

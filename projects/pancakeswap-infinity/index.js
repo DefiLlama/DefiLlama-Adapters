@@ -8,6 +8,7 @@ const config = {
 
 const blacklistTokens = [
   '0x5E0a1d876557CF43c66C08c8A247bC4954eCa8bd',
+  '0xb4357054c3dA8D46eD642383F03139aC7f090343', // PORT3 - hack
 ];
 
 Object.keys(config).forEach(chain => {

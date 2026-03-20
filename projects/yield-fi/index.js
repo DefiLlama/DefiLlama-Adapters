@@ -1,4 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { api2 } = require("@defillama/sdk");
+
+module.exports = {
+    hallmarks: [
+      ['2026-01-23', 'v3 Launch'],
+    ],
+}
 
 const yusd_config = {
     ethereum: "0x19Ebd191f7A24ECE672ba13A302212b5eF7F35cb", 
@@ -13,6 +20,7 @@ const yusd_config = {
     tac: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     linea: "0x4e559dBCCbe87De66c6a9F3f25231096F24c2e28",
     plasma: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
+    saga: ADDRESSES.saga.yUSD,
 }
 
 const vyusd_config = {
@@ -28,12 +36,14 @@ const vyusd_config = {
     tac: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     linea: "0x168BC4DB5dcbecA279983324d3082c47e47569E7",
     plasma: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    saga: "0x704a58f888f18506C9Fc199e53AE220B5fdCaEd8",
 }
 
 const yeth_config = {
     ethereum: "0x8464F6eCAe1EA58EC816C13f964030eAb8Ec123A",
     arbitrum: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
-    base: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8"
+    base: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
+    saga: ADDRESSES.saga.yETH,
 }
 
 const vyeth_config = {
@@ -50,6 +60,23 @@ const vybtc_config = {
     ethereum: "0x1e2a5622178f93EFd4349E2eB3DbDF2761749e1B",
 }
 
+const yprism = {
+    ethereum: "0xdd5eff0756db08bad0ff16b66f88f506e7318894",
+    bsc: "0xdd5eff0756db08bad0ff16b66f88f506e7318894",
+}
+
+const yhlp = {
+    ethereum: "0x386e0983d0e05f5239fd029793ef3ba37b468e9c",
+}
+
+const yvalos = {
+    ethereum: "0xd04ae722b3fe56812e13bb212a79cea7c1b08ff0",
+}
+
+const ypythagoras = {
+    ethereum: "0x06c2c73f30135c831d010ec7b82d0f32321c4f27",
+}
+
 const lockbox = "0x659b5bc7F2F888dB3D5901b78Cdb34DF270E2231";
 
 const l2Chains = Object.keys(yusd_config).filter(chain => chain !== 'ethereum')
@@ -57,8 +84,20 @@ const l2Chains = Object.keys(yusd_config).filter(chain => chain !== 'ethereum')
 l2Chains.forEach(chain => {
     module.exports[chain] = {
         tvl: async (api) => {
-            const supply = await api.multiCall({ calls: [yusd_config[chain], vyusd_config[chain]], abi: 'erc20:totalSupply' })
-            api.add([yusd_config[chain], vyusd_config[chain]], [supply[0], supply[1]]);
+            const calls = [
+                yusd_config[chain],
+                vyusd_config[chain],
+                yeth_config[chain],
+                vyeth_config[chain],
+                ybtc_config[chain],
+                vybtc_config[chain],
+                yprism[chain],
+                yhlp[chain],
+                yvalos[chain],
+                ypythagoras[chain],
+            ].filter(Boolean)
+            const supply = await api.multiCall({ calls, abi: 'erc20:totalSupply' })
+            api.add(calls, supply);
         }
     }
 });
@@ -89,13 +128,17 @@ module.exports['ethereum'] = {
             target: vybtc_config['ethereum'],
             owner: lockbox
         })
-        const ethSupply = await api.multiCall({ calls: [yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum']], abi: 'erc20:totalSupply' })
+        const ethSupply = await api.multiCall({ calls: [ yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum'], yhlp['ethereum'], yvalos['ethereum'], ypythagoras['ethereum']], abi: 'erc20:totalSupply' })
         const supply = (ethSupply[0] - lockboxSupply.output);
         const supplyVyusd = (ethSupply[1] - lockboxSupplyVyusd.output);
         const supplyYeth = (ethSupply[2] - lockboxSupplyYeth.output);
         const supplyVyeth = (ethSupply[3] - lockboxSupplyVyeth.output);
         const supplyYbtc = (ethSupply[4] - lockboxSupplyYbtc.output);
         const supplyVybtc = (ethSupply[5] - lockboxSupplyVybtc.output);
-        api.add([yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum']], [supply, supplyVyusd, supplyYeth, supplyVyeth, supplyYbtc, supplyVybtc]);
+        const supplyYprism = ethSupply[6];
+        const supplyYhlp = ethSupply[7];
+        const supplyYvalos = ethSupply[8];
+        const supplyYpythagoras = ethSupply[9];
+        api.add([yusd_config['ethereum'], vyusd_config['ethereum'], yeth_config['ethereum'], vyeth_config['ethereum'], ybtc_config['ethereum'], vybtc_config['ethereum'], yprism['ethereum'], yhlp['ethereum'], yvalos['ethereum'], ypythagoras['ethereum']], [supply, supplyVyusd, supplyYeth, supplyVyeth, supplyYbtc, supplyVybtc, supplyYprism, supplyYhlp, supplyYvalos, supplyYpythagoras]);
     }
 }

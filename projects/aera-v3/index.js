@@ -35,7 +35,6 @@ async function tvl(api) {
 
         const unitPrice = vaultState[8];
         const numeraireBalance = totalSupply * unitPrice / 10 ** decimals;
-        console.log(numeraireBalance.toString());
 
         api.add(numeraireToken, numeraireBalance);
     }));

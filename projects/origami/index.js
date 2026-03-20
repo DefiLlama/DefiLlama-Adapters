@@ -2,9 +2,9 @@ const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
-  ethereum: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-mainnet/api'), // ethereum
-  arbitrum: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-arbitrum/api'), // arbitrum
-  berachain: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-berachain/api'), // berachain
+  ethereum: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-mainnet/prod/gn'),
+  arbitrum: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-arbitrum/prod/gn'),
+  berachain: sdk.graph.modifyEndpoint('https://api.goldsky.com/api/public/project_cmgzm4q1q009c5np2angrczxw/subgraphs/origami-berachain/prod/gn'),
 }
 
 module.exports = {

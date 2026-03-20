@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/sumTokens')
 
 const config = {
@@ -9,12 +10,12 @@ const config = {
   ] },
   bob: {
     ownerTokens: [
-      [['0x05D032ac25d322df992303dCa074EE7392C117b9', '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3'], '0xaDF42f686bDF89B2B252c1A0681fE12BE13dB133']
+      [[ADDRESSES.bob.USDT, ADDRESSES.bob.WBTC], '0xaDF42f686bDF89B2B252c1A0681fE12BE13dB133']
     ]
   },
   mezo: {
     ownerTokens: [
-      [['0x7b7C000000000000000000000000000000000000', '0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186'], '0xCCf7D09B9BC8Ce832E6CD71256FAd4208AAe2CcE']
+      [[ADDRESSES.mezo.BTC, ADDRESSES.mezo.MUSD], '0xCCf7D09B9BC8Ce832E6CD71256FAd4208AAe2CcE']
     ]
   },
 }

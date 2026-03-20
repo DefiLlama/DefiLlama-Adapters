@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require("@solana/web3.js");
 const { getConnection, decodeAccount } = require("../helper/solana");
 
@@ -41,7 +42,7 @@ async function tvl(api) {
       if (BigInt(stakedAmount) > 0) {
         if (vault.name === 'nSOL') {
           // Convert nSOL to SOL for price feed
-          api.add('So11111111111111111111111111111111111111112', stakedAmount);
+          api.add(ADDRESSES.solana.SOL, stakedAmount);
         } else {
           api.add(vault.token, stakedAmount);
         }

@@ -5,8 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "weeklyChanges": "git pull && git diff $(git log -1 --before=@{7.days.ago} --format=%H) --stat | grep -E \"projects/\" | cut -d / -f 2 | cut -d \" \" -f 1 | uniq | wc -l",
-    "dev": "babel-watch curve.js",
     "build": "node scripts/buildImports.js",
     "lint": "eslint -c eslint.config.js .",
     "eslint:github-action": "eslint -c eslint.config.js .",
@@ -15,12 +13,10 @@
     "treasury": "cd utils;npm i; cd ..; node utils/testInteractive treasury",
     "entities": "cd utils;npm i; cd ..; node utils/testInteractive entities",
     "useTokenLabels": "node utils/scripts/useTokenLabels.js",
-    "_biggest-files-old": "find ./projects -name '*.js' -not -path './projects/helper/*' -not -path './projects/curve/*' -not -path './projects/sigmao/*' -exec du -sh {} \\; | sort -rh | head -n 100",
     "biggest-files": "node utils/scripts/sortTopFilesByLines.js",
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
     "string-timestamp": "node utils/scripts/stringTimestamp.js",
-    "sort-chains": "node projects/helper/getChainList.js",
-    "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
+    "sort-chains": "node projects/helper/getChainList.js"
   },
   "author": "",
   "license": "ISC",
@@ -51,15 +47,7 @@
     "starknet": "^5.24.3",
     "ws": "^8.18.3"
   },
-  "overrides": {
-    "ansi-regex": "5.0.1",
-    "mocha": {
-      "nanoid": "3.3.1"
-    },
-    "@project-serum/anchor": {
-      "nth-check": "2.0.1"
-    }
-  },
+  "overrides": {  },
   "description": "",
   "devDependencies": {
     "eslint": "^9.38.0"

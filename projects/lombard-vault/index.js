@@ -166,9 +166,9 @@ module.exports = {
       sumTokensExport({
         owners: [LBTCV],
         tokens: [
-          '0x386E7A3a0c0919c9d53c3b04FF67E73Ff9e45Fb6', // BTCN on Corn
-          '0xda5dDd7270381A7C2717aD10D1c0ecB19e3CDFb2', // wBTCN (Wrapped BTCN)
-          '0xecAc9C5F704e954931349Da37F60E39f515c11c1', // LBTC on Corn
+          ADDRESSES.ethereum.BTCN, // BTCN on Corn
+          ADDRESSES.corn.wBTCN, // wBTCN (Wrapped BTCN)
+          ADDRESSES.etlk.LBTC, // LBTC on Corn
         ],
       }),
       [tvlCurveCorn]
