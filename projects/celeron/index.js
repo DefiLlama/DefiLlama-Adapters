@@ -39,3 +39,7 @@ const staking = async (api) => {
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl, staking }
 })
+
+module.exports.hallmarks = [
+  ['2025-06-07', "Rug Pull"],
+]

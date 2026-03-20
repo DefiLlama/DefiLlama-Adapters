@@ -56,7 +56,7 @@ const calculateSupraTVL = async (api) => {
   }
 
   const balances = {
-    '0x8f7d16ade319b0fce368ca6cdb98589c4527ce7f5b51e544a9e68e719934458b::hyper_coin::DexlynUSDC':
+    [ADDRESSES.supra.dexUSDC]:
       stTotalAmount / 10 ** 12,
   };
 

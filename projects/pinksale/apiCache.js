@@ -3,7 +3,7 @@ const abi = require('./abi')
 const config = require('./config')
 const { getUniqueAddresses } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache")
-const { vestingHelper,  } = require("../helper/unknownTokens")
+const { vestingHelper, } = require("../helper/unknownTokens")
 
 const project = 'bulky/pinksale'
 
@@ -19,7 +19,7 @@ const tvl = async (api) => {
   const balances = {}
   const cache = await getCache(project, api.chain || { vaults: {} })
   const { vaults, blacklist, log_coreAssetPrices, log_minTokenValue, } = config[api.chain]
-  
+
   await Promise.all(
     vaults.map(async (vault, idx) => {
       if (!cache.vaults) cache.vaults = {}
@@ -34,8 +34,8 @@ const tvl = async (api) => {
       cCache.lastTotalId = +size
 
       const tokens = await api.multiCall({ abi: lockAbi, calls, permitFailure: true })
-      tokens.forEach(({ token }) => cCache.tokens.push(token))
-      cCache.tokens = getUniqueAddresses(cCache.tokens)
+      tokens.forEach(({ token } = {}) => token && cCache.tokens.push(token))
+      cCache.tokens = getUniqueAddresses(cCache.tokens.filter(i => i))
     })
   )
 

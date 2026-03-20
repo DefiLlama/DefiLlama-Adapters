@@ -1,3 +1,0 @@
-{
-  "poolInfo": "function poolInfo(address) view returns (address l1TokenAddress, address l2TokenAddress, uint256 userDepositAmount, uint256 lastAccUserReward, uint256 accUserReward, uint256 accUserRewardPerShare, uint256 accOwnerReward, uint256 startTime)"
-}

@@ -1,5 +1,7 @@
 const { addressZero } = require("../bent/constants");
 const { getLogs } = require("../helper/cache/getLogs");
+const bitcoinBook = require('../helper/bitcoin-book');
+const { sumTokens } = require("../helper/chain/bitcoin");
 
 const config = {
   ethereum: {
@@ -92,3 +94,5 @@ Object.keys(config).forEach((chain) => {
     },
   };
 });
+
+module.exports.bitcoin = { tvl: async (api) => sumTokens({ owners: bitcoinBook.bimaCdp }) }

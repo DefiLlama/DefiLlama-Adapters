@@ -33,8 +33,8 @@ function tvl(contracts) {
         cCache.lastTotalDepositId = +size
 
         const tokens = await api.multiCall({ abi: entry.getLockedTokenAtIndexABI, calls, permitFailure: true })
-        tokens.forEach(({ token }) =>  cCache.tokens.push(token))
-        cCache.tokens = getUniqueAddresses(cCache.tokens)
+        tokens.forEach(({ token } = {}) =>  token  && cCache.tokens.push(token))
+        cCache.tokens = getUniqueAddresses(cCache.tokens.filter(i => i))
       })
     )
 

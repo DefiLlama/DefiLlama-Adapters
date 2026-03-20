@@ -13,8 +13,8 @@ const config = {
 module.exports = {
   start: '2023-11-17',
   hallmarks: [
-    [1700179200, "vEPOCH Launch"],
-    [1704240000, "ITO Launch"]
+    ['2023-11-17', "vEPOCH Launch"],
+    ['2024-01-03', "ITO Launch"]
   ],
 };
 

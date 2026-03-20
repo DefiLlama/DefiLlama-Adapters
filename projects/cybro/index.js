@@ -38,6 +38,7 @@ const vaultsArbitrum = [
   '0x320cd9d00961fb45857a043efea77dc6b9db5d95',
   '0x4e433ae90f0d1be9d88bed9f7707fcff20a455ac',
   '0x1310b9de457675d65f3838c1e9d19a5ca6619440',
+  '0xbDe5296eA786a12c4BFd60408063816E36A2F4b1',
 ]
 
 const vaultsBase = [
@@ -46,6 +47,7 @@ const vaultsBase = [
   '0x0655e391e0c6e0b8cbe8c2747ae15c67c37583b9',
   '0x578e7261b9d3c143700a735526bfd63713f639c5',
   '0xdd996648b02bf22d9c348e11d470938f8ae50f2b',
+  '0x84FbCde24b75F3d45863e82282683DfF16C398B7',
 ]
 
 const vaultsBSC = [

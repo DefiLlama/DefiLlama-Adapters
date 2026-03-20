@@ -13,6 +13,7 @@ async function current() {
   const parsed = await fetchTvlData()
   
   const latest = parsed.reduce((a, b) => (a.day > b.day ? a : b));
+  if (latest.total_tvl_usd > 1e8) throw new Error('Value too high: '+ latest.total_tvl_usd)
   return latest.total_tvl_usd;
 }
 
@@ -31,5 +32,6 @@ module.exports = {
   methodology: 'Total value of all sell offers in the built-in Stellar Decentralized exchange. This includes XLM and assets issued on the network, converting to USD.',
   stellar: { tvl },
   timetravel: true,
+  misrepresentedTokens: true,
   start: 1659916800, // 2022-08-08 UTC
 };

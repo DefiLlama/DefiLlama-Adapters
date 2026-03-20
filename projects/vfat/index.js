@@ -66,7 +66,6 @@ async function fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, 
     target: chainName === 'linea' ? voter : gaugeFactory,
     fromBlock,
     eventAbi,
-    skipCache: true,
   });
 
   const deployRamsesLogs2 = await getLogs({
@@ -74,7 +73,6 @@ async function fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, 
     target: gaugeFactory2,
     fromBlock,
     eventAbi: eventAbi2,
-    skipCache: true,
   });
 
   const lp = deployRamsesLogs.map(log => log.args.gauge);
@@ -158,7 +156,6 @@ async function fetchGauges3(api, voter, fromBlock) {
     target: voter,
     fromBlock,
     eventAbi,
-    skipCache: true,
   });
 
   return deployLogs.map(log => log.args[2]);
@@ -319,7 +316,12 @@ Object.keys(config).forEach(chain => {
     case 'arbitrum':
     case 'sonic':
     case 'hemi':
-    case 'linea': tvl = tvlArbitrumLinea; break;
+    case 'linea':
+    case 'ink':
+    case 'unichain':
+    case 'katana':
+    case 'polygon':
+    case 'lisk': tvl = tvlArbitrumLinea; break;
     case 'fantom': tvl = tvlFantom; break;
     case 'mode': tvl = modeTvl; break;
     case 'mantle': tvl = tvlMantle; break;
@@ -336,7 +338,7 @@ let _get
 
 async function tvl2(api) {
   if (!_get)
-    _get = get(`https://api.vfat.io/v1/sickle-stats`)
+    _get = get(`https://api.vfat.io/v4/sickle-stats`)
 
   const { chainStats } = await _get
   chainStats.filter(chain => chain.chainId === api.chainId).forEach(chain => {

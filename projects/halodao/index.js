@@ -1,22 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { staking } = require("../helper/staking.js");
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const { pool2 } = require('../helper/pool2')
-
-const rnbwEthToken = "0xe94b97b6b43639e238c851a7e693f50033efd75c";
-const rnbwEthPool = "0x47BE779De87de6580d0548cde80710a93c502405";
-
-// Nothing in RNBW staking pool on polygon yet
-const wrnbwPolyToken = "0x18e7bDB379928A651f093ef1bC328889b33A560c";
-const wrnbwPolyPool = "0xc104e54803abA12f7a171a49DDC333Da39f47193";
-
-// ETH Pool 2 pool RNBW-ETH
-const rnbwUniPool = {
-  lpToken: "0x3E8E036Ddfd310B0838d3CC881A9fa827778845D",
-  token0: ADDRESSES.ethereum.WETH,
-  token1: "0xe94b97b6b43639e238c851a7e693f50033efd75c",
-};
 
 const ethPools = [
   {
@@ -87,44 +70,28 @@ const arbiPools = [
   },
 ];
 
-//Converts Polygon tokens to ETH tokens cause CoinGecko
-const tokenConvert = {
-  [ADDRESSES.polygon.USDC]:
-    ADDRESSES.ethereum.USDC, // USDC
-};
-
-async function calcTvl(pools, block, chain) {
-  const toa = []
-
-  for (let i = 0; i < pools.length; i++) {
-    toa.push([pools[i].token0, pools[i].lpToken])
-    toa.push([pools[i].token1, pools[i].lpToken])
+async function tvl(api) {
+  let pools = []
+  switch (api.chain) {
+    case 'ethereum': pools = ethPools; break;
+    case 'polygon': pools = polyPools; break;
+    case 'arbitrum': pools = arbiPools; break;
   }
-  return sumTokens2({ chain, block, tokensAndOwners: toa, })
-}
-
-async function ethTvl(timestamp, block) {
-  return calcTvl(ethPools, block, "ethereum");
-}
-
-async function polygonTvl(timestamp, block, chainBlocks) {
-  return calcTvl(polyPools, chainBlocks.polygon, "polygon");
-}
-async function arbitrumTvl(timestamp, block, chainBlocks) {
-  return calcTvl(arbiPools, chainBlocks.arbitrum, "arbitrum");
+  const ownerTokens = pools.map(pool => [[pool.token0, pool.token1], pool.lpToken])
+  return api.sumTokens({ ownerTokens })
 }
 
 module.exports = {
   ethereum: {
-    tvl: ethTvl,
+    tvl,
     //staking: staking(rnbwEthPool, rnbwEthToken),
     pool2: pool2('0x9cFf4A10b6Fb163a4DF369AaFed9d95838222ca6', '0x3E8E036Ddfd310B0838d3CC881A9fa827778845D'),
   },
   polygon: {
-    tvl: polygonTvl,
+    tvl,
     //staking: staking(wrnbwPolyPool, wrnbwPolyToken),
   },
   arbitrum: {
-    tvl: arbitrumTvl,
+    tvl,
   },
 };

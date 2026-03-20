@@ -23,12 +23,21 @@ const abi = {
 const TRUSTAKE_CONTRACT_ADDR = "0xa43a7c62d56df036c187e1966c03e2799d8987ed"
 const MATIC_TOKEN_ADDR = ADDRESSES.ethereum.MATIC
 
+const TRUSTAKE_POL_CONTRACT_ADDRESS = "0xc10214cdE5d6754Ec1e2220362f2120142c8E5e8"
+const POL_TOKEN_ADDR = ADDRESSES.ethereum.POL
+
 async function tvl(api) {
   const totalSupply = (await api.call({ abi: 'erc20:totalSupply', target: TRUSTAKE_CONTRACT_ADDR, }))
   const sharePriceArray = (await api.call({ abi: abi.sharePrice, target: TRUSTAKE_CONTRACT_ADDR, }))
   const dust = (await api.call({ abi: abi.getDust, target: TRUSTAKE_CONTRACT_ADDR, }))
   const sharePrice = sharePriceArray[0] / sharePriceArray[1] / 1e18
   api.add(MATIC_TOKEN_ADDR, (totalSupply * sharePrice) + +dust)
+
+  const totalSupplyPol = (await api.call({ abi: 'erc20:totalSupply', target: TRUSTAKE_POL_CONTRACT_ADDRESS, }))
+  const sharePriceArrayPol = (await api.call({ abi: abi.sharePrice, target: TRUSTAKE_POL_CONTRACT_ADDRESS, }))
+  const dustPol = (await api.call({ abi: abi.getDust, target: TRUSTAKE_POL_CONTRACT_ADDRESS, }))
+  const sharePricePol = sharePriceArrayPol[0] / sharePriceArrayPol[1] / 1e18
+  api.add(POL_TOKEN_ADDR, (totalSupplyPol * sharePricePol) + +dustPol)
 }
 
 const TRUSTAKE_NEAR_CONTRACT_ADDR = "staker1.msig1.trufin.near"

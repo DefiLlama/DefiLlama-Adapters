@@ -23,17 +23,29 @@ async function aQuery(api, chain = 'aptos') {
 
 async function getResources(account, chain = 'aptos') {
   const data = []
-  let lastData
   let cursor
+  let pageLen = 0
+
   do {
     let url = `${endpointMap[chain]()}/v1/accounts/${account}/resources?limit=9999`
     if (cursor) url += '&start=' + cursor
     const res = await http.getWithMetadata(url)
-    lastData = res.data
-    data.push(...lastData)
-    sdk.log('fetched resource length', lastData.length)
+
+    const page = Array.isArray(res?.data)
+      ? res.data
+      : Array.isArray(res?.data?.resources)
+        ? res.data.resources
+        : Array.isArray(res?.data?.data)
+          ? res.data.data
+          : Array.isArray(res?.data?.items)
+            ? res.data.items
+            : []
+
+    data.push(...page)
+    pageLen = page.length
+    sdk.log('fetched resource length', pageLen)
     cursor = res.headers['x-aptos-cursor']
-  } while (lastData.length === 9999)
+  } while (pageLen === 9999 && cursor)
   return data
 }
 
@@ -105,18 +117,26 @@ function dexExport({
   }
 }
 
-async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos', fungibleAssets = [] }) {
+async function getBalance(account, token, chain = 'aptos') {
+  let url = `${endpointMap[chain]()}/v1/accounts/${account}/balance/${token}`
+  return await http.get(url)
+}
+
+async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos' }) {
   if (api) chain = api.chain
-  owners = getUniqueAddresses(owners, true)
-  if (fungibleAssets.length > 0) await Promise.all(fungibleAssets.map(i => getFungibles(i, owners, balances)))
-  const resources = await Promise.all(owners.map(i => getResources(i, chain)))
-  resources.flat().filter(i => i.type.includes('::CoinStore')).forEach(i => {
-    const token = i.type.split('<')[1].replace('>', '')
-    if (fungibleAssets.includes(token)) return false // Prevents double counting if, for any reason, the token is present in both CoinStore and fungibleAsset
-    if (tokens.length && !tokens.includes(token)) return;
-    if (blacklistedTokens.includes(token)) return;
-    sdk.util.sumSingleBalance(balances, token, i.data.coin.value)
-  })
+  const uniqueOwners = getUniqueAddresses(owners, true)
+  const validTokens = tokens.filter(token => !blacklistedTokens.includes(token));
+
+  for (const owner of uniqueOwners) {
+    const balancesPerToken = await Promise.all(
+        validTokens.map(token => getBalance(owner, token))
+    );
+
+    validTokens.forEach((token, index) => {
+      sdk.util.sumSingleBalance(balances, token, balancesPerToken[index]);
+    });
+  }
+
   return transformBalances(chain, balances)
 }
 
@@ -208,6 +228,16 @@ const timestampToVersion = async (timestamp, minBlock = 0, chain = 'aptos') => {
   return mappedBlocks[0].version;
 }
 
+async function functionViewWithApiKey({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined, apiKey = undefined, chain = 'aptos' }) {
+  let path = `${endpointMap[chain]()}/v1/view`
+  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
+  const headers = {
+    "Authorization": "Bearer " + apiKey
+  }
+  const response = await http.post(path, { "function": functionStr, "type_arguments": type_arguments, arguments: args }, {headers: headers})
+  return response.length === 1 ? response[0] : response
+}
+
 module.exports = {
   endpoint: endpoint(),
   endpointMap,
@@ -221,5 +251,6 @@ module.exports = {
   getTableData,
   function_view,
   hexToString,
-  timestampToVersion
+  timestampToVersion,
+  functionViewWithApiKey
 };

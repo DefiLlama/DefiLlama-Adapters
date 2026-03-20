@@ -19,7 +19,7 @@ module.exports = {
       ]
     }),
   },
-  hallmarks: [
-    ['2022-03-13', 'Masterchef was hacked'],
-  ],
+  // hallmarks: [
+  //   ['2022-03-13', 'Masterchef was hacked'],
+  // ],
 };

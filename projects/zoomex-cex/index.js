@@ -56,6 +56,21 @@ const config = {
       'raq8uz1PCiSfgN94ZqUbbJWFoVtF75BEuD',
     ],
   },
+  eos: {
+    owners: [
+      'outforzoomex',
+    ],
+  },
+  doge: {
+    owners: [
+      'DDQDi8u18s4xqsUzLMrhT57rEDrrnoMiJG',
+    ],
+  },
+  sonic: {
+    owners: [
+      '0x7eb87a95948348d6ec7231b52f61281e01d53941',
+    ],
+  },
 }
 
 module.exports = cexExports(config)

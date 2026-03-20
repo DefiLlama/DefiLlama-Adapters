@@ -20,5 +20,6 @@ const tvl = async ({ timestamp }) => {
 };
 
 module.exports = {
+   misrepresentedTokens: true,
    icp: { tvl }
 }

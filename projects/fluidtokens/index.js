@@ -57,10 +57,18 @@ async function tvl() {
   const boosted_tvl= await get("https://api.fluidtokens.com/get-ft-stats");
 
   const boosted=parseInt(boosted_tvl.bs_available_volume)+parseInt(boosted_tvl.bs_active_volume);
+
+const lending_v3 = await get("https://api.fluidtokens.com/get-tvl");
+
+const principal = lending_v3.collectionOfferPools.principal;
+const collateral = lending_v3.loans.collateral;
+
+// Sum and convert to integer
+const total_v3 = Math.floor(principal + collateral);
   
   return {
     // cardano: (SC_offers_tvl+repay_tvl+pools_tvl+boosted) / 1e6,
-    cardano: (SC_offers_tvl+pools_tvl+boosted) / 1e6,
+    cardano: Math.round((SC_offers_tvl+pools_tvl+boosted,total_v3) / 10 ** 6),
   };
 }
 
@@ -80,13 +88,18 @@ async function borrowed() {
  
   const dataOffers = await get("https://api.fluidtokens.com/get-available-collection-offers");
   let SC_offers_tvl = 0;
+
+
+  const lending_v3 = await get("https://api.fluidtokens.com/get-tvl");
+const lent = lending_v3.loans.principal;
+
   
   dataOffers.forEach((i) => {
       SC_offers_tvl += parseInt(i.offerData.loanAmnt);
     });
   
   return {
-    cardano: (SC_tvl) / 1e6,
+    cardano: (SC_tvl+lent) / 1e6,
   };
 }
 

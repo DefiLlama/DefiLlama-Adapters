@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view } = require("../helper/chain/aptos");
 
 const MIRAGE_MOVEMENT =
@@ -11,7 +12,7 @@ const MOVEMENT_MOVE_MUSD_POOL = "0x81821b61b14a7899e6417c9f9b6a2a8871d6d27a2fc66
 const APTOS_APT_MUSD_POOL = "0xe1e13aa968df88dff6ac5227eaa6220c90a0e40e60ce274695a134f43966e2c0";
 const APTOS_USDC_MUSD_POOL = "0x3fb56c8c18ad3f20acf1ac971edfca4dd2bef1144e363aec83a04587675752f5";
 
-const APTOS_USDC_FA = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b"
+const APTOS_USDC_FA = ADDRESSES.aptos.USDC_3
 
 async function tvl(api) {
   const chain = api.chain;

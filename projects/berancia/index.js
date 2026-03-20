@@ -1,20 +1,21 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BERA_KODIAK_VAULTS = [
   {
     address: "0x40540b9CE95EBdbBcbfd88ceB40a183B20a57fd7",
     kodiakIsland: "0x564f011D557aAd1cA09BFC956Eb8a17C35d490e0",
-    token0: "0x6969696969696969696969696969696969696969",
+    token0: ADDRESSES.berachain.WBERA,
     token1: "0xac03CABA51e17c86c921E1f6CBFBdC91F8BB2E6b"
   },
   {
     address: "0xB5D5c690802a24Be3EE08A5d6e243B9E9926d679",
     kodiakIsland: "0x98bDEEde9A45C28d229285d9d6e9139e9F505391",
     token0: "0x18878Df23e2a36f81e820e4b47b4A40576D3159C",
-    token1: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce"
+    token1: ADDRESSES.berachain.HONEY
   },
   {
     address: "0xd4A98C1e2E3907621867C21b16a465233B31f8b8",
     kodiakIsland: "0x337eF1eB6c8BBeD571170Fc2b468608ab9e2Aac8",
-    token0: "0x6969696969696969696969696969696969696969",
+    token0: ADDRESSES.berachain.WBERA,
     token1: "0xBaadCC2962417C01Af99fb2B7C75706B9bd6Babe"
   },
   {
@@ -32,7 +33,7 @@ const BERA_KODIAK_VAULTS = [
   {
     address: "0x585ad5BcD7cC28dAdb3BDd79782D14513171f760",
     kodiakIsland: "0x9f6cf7aCb2F16f7d906EeeCB0a6020a5Cf91A41d",
-    token0: "0x6969696969696969696969696969696969696969",
+    token0: ADDRESSES.berachain.WBERA,
     token1: "0xf3530788DEB3d21E8fA2c3CBBF93317FB38a0D3C"
   },
 ]
@@ -41,14 +42,14 @@ const BULLA_VAULTS = [
   {
     address: "0xE5A5Cbc42aE849a3780Ec847184Fd9a7ae3F56A5",
     asset: "0xcfFBFD665BEdB19B47837461A5aBf4388C560D35",
-    token0: "0x6969696969696969696969696969696969696969",
+    token0: ADDRESSES.berachain.WBERA,
     token1: "0xac03CABA51e17c86c921E1f6CBFBdC91F8BB2E6b"
   },
   // AquaBera vault uses same TVL calculation as bulla vaults
   {
     address: "0x978A2FfFB70F40Cf9d64755c80a49f177Ff95e18",
     asset: "0x04fD6a7B02E2e48caedaD7135420604de5f834f8",
-    token0: "0x6969696969696969696969696969696969696969",
+    token0: ADDRESSES.berachain.WBERA,
     token1: "0xb2F776e9c1C926C4b2e54182Fac058dA9Af0B6A5"
   }
 ]

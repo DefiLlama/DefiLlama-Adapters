@@ -36,7 +36,7 @@ async function staking(api) {
 
 module.exports = {
   methodology: "Total value of digital assets that are locked in Zunami Omnipools",
-  hallmarks: [['2023-08-13', 'Project was hacked for $2M']],
+  // hallmarks: [['2023-08-13', 'Project was hacked for $2M']],
   misrepresentedTokens: true,
   ethereum: { tvl, staking },
 };

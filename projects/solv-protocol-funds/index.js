@@ -1,10 +1,26 @@
-const abi = require("./abi.json");
+const abi = {
+    "concrete": "address:concrete",
+    "slotTotalValue": "function slotTotalValue(uint256 slot_) view returns (uint256)",
+    "slotBaseInfo": "function slotBaseInfo(uint256 slot_) view returns (tuple(address issuer, address currency, uint64 valueDate, uint64 maturity, uint64 createTime, bool transferable, bool isValid))",
+    "decimals": "uint8:decimals",
+    "balanceOf": "function balanceOf(address _owner) view returns (uint256 balance)",
+    "getSubscribeNav": "function getSubscribeNav(bytes32 poolId_, uint256 time_) view returns (uint256 nav_, uint256 navTime_)",
+    "tokenOfOwnerByIndex": "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
+    "liquidities": "function liquidities(uint256) view returns (int24, int24, uint128, uint256, uint256, uint256, uint256, uint128)",
+    "poolMetas": "function poolMetas(uint128) view returns (address, address, uint24)",
+    "pool": "function pool(address tokenX, address tokenY, uint24 fee) view returns (address)",
+    "state": "function state() view returns (uint160 sqrtPriceX96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint256 liquidity, uint256 liquidityX)",
+    "stakedAmountsAbi": "function stakedAmounts(address) external view returns (uint256)",
+    "stakedMlpAmount": "function stakedMlpAmount(address account) view returns (uint256)",
+    "symbol": "string:symbol",
+    "totalSupply": "function totalSupply() view returns (uint256)"
+  };
 const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { getAmounts } = require("./iziswap");
-const { sumTokens2: sumTokens2Solana } = require('../helper/solana')
+const { sumTokens2: sumTokens2Solana, getTokenSupplies } = require('../helper/solana')
 
 // The Graph
 const graphUrlList = {
@@ -47,6 +63,7 @@ async function tvl(api) {
   await aaveSupplyBalance(api, address);
   await solanaTvl(api, address);
   await tokenSupply(api, address);
+  await solanaTokenSupply(api, address);
 
   (solvTokens[api.chain] ?? []).forEach(token => {
     api.removeTokenBalance(token)
@@ -417,8 +434,8 @@ async function aaveSupplyBalance(api, address) {
 }
 
 async function solanaTvl(api, address) {
-  if (api.chain !== 'solana' || !address[api.chain]) return;
-  const owners = address[api.chain];
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaOwners"]) return;
+  const owners = address[api.chain]["solanaOwners"];
   return sumTokens2Solana({ api, owners });
 }
 
@@ -439,6 +456,12 @@ async function tokenSupply(api, address) {
   for (let i = 0; i < tokenSupplyData.length; i++) {
     api.add(tokenSupplyData[i], totalSupplys[i]);
   }
+}
+
+async function solanaTokenSupply(api, address) {
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaTokens"]) return;
+  const tokens = address[api.chain]["solanaTokens"];
+  return getTokenSupplies(tokens, { api });
 }
 
 async function getGraphData(timestamp, chain, api) {

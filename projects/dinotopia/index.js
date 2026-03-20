@@ -1,5 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const Abis = require("./abi.json");
+const Abis = {
+    "bank": {
+      "usableBnbBalance": "uint256:usableCollateralBalance"
+    },
+    "multiFeeDistribution": {
+      "totalSupply": "uint256:totalSupply"
+    }
+  };
 const { sumTokensExport, sumUnknownTokens, } = require('../helper/unknownTokens')
 
 const Contracts = {
@@ -17,7 +24,7 @@ const Contracts = {
   },
 };
 
-async function calcBscStakingTvl(timestamp, ethBlock, chainBlocks,  {api}) {
+async function calcBscStakingTvl(api) {
   const bscStakingData = await api.call({    target: Contracts.bsc.multiFeeDistribution,    abi: Abis.multiFeeDistribution.totalSupply,  });
   api.add(Contracts.bsc.fossil, bscStakingData)
   return sumUnknownTokens({ api, useDefaultCoreAssets: true, lps: Contracts.bsc.lps, })
