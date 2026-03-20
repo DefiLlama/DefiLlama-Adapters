@@ -88,7 +88,7 @@ async function fetchATokenMapping() {
   const nodes = res.data.data.assets.nodes;
   const mapping = new Map();
   for (const { assetRegistryId, symbol } of nodes) {
-    if (!symbol || !/^a[A-Z]/.test(symbol)) continue;
+    if (!symbol || !/^a[A-Za-z]/.test(symbol)) continue;
     const underlyingSymbol = symbol.slice(1); // strip leading 'a'
     const cgId = cgMapping[underlyingSymbol];
     if (cgId) {
@@ -104,6 +104,7 @@ async function omnipoolTvl(api) {
   const polkadotApi = await ApiPromise.create({ provider });
   await polkadotApi.isReady;
 
+  try {
   const stablepoolAccounts = await fetchStablepoolAccounts();
 
   const processedAssetMetadata = [];
@@ -176,7 +177,10 @@ async function omnipoolTvl(api) {
         }
         // Use already-fetched metadata instead of a separate on-chain call to avoid
         // overflow issues with large asset IDs encoded as storage keys.
-        const meta = processedAssetMetadata.find(m => m.assetId === assetId);
+        // assetId 0 is HDX, which is omitted from processedAssetMetadata — handle it explicitly.
+        const meta = assetId === 0
+          ? { symbol: 'HDX', decimals: 12 }
+          : processedAssetMetadata.find(m => m.assetId === assetId);
         if (!meta || !meta.symbol) {
           continue;
         }
@@ -199,8 +203,11 @@ async function omnipoolTvl(api) {
     console.error("Error fetching or processing XYK pool TVL from static list:", error);
   }
 
-  await polkadotApi.disconnect();
   return api.getBalances();
+
+  } finally {
+    await polkadotApi.disconnect();
+  }
 
   function add(token, bal) {
     api.add(token, bal, { skipChain: true });
