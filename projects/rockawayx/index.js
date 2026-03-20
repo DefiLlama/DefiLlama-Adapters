@@ -41,6 +41,7 @@ const configs = {
 async function midasDataFeedTvl(api, { token, dataFeed, underlying, underlyingDecimals }) {
   const totalSupply = await api.call({ abi: 'uint256:totalSupply', target: token });
   const lastAnswer = await api.call({ abi: 'int256:lastAnswer', target: dataFeed });
+  if (lastAnswer <= 0) return;
   const feedDecimals = await api.call({ abi: 'uint8:decimals', target: dataFeed });
 
   const totalValue = (BigInt(lastAnswer) * BigInt(totalSupply) * BigInt(10 ** underlyingDecimals)) /
