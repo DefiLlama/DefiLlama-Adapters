@@ -38,6 +38,7 @@ const CONFIG = {
 
   stellar: { owners: ['GDJ4JZXZELZD737NVFORH4PSSQDWFDZTKW3AIDKHYQG23ZXBPDGGQBJK'] },
   cardano: { owners: ['addr1v8wfpcg4qfhmnzprzysj6j9c53u5j56j8rvhyjp08s53s6g07rfjm'], tokens: [native] },
+  dash: { owners: ['XxA9DbXaFpF4GFY8KUNX7eAxhZPsWtcKhc'] },
 }
 
 const tvl = async (api) => {
