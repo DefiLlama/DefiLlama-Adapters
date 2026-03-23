@@ -8,14 +8,14 @@ async function getV2Pairs(api) {
 
 async function tvl(api) {
   const pairs = await getV2Pairs(api)
+  const [token0s, token1s] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: pairs }),
+    api.multiCall({ abi: 'address:token1', calls: pairs }),
+  ])
   const tokensAndOwners = []
-  for (const pair of pairs) {
-    const [t0, t1] = await Promise.all([
-      api.call({ target: pair, abi: 'address:token0' }),
-      api.call({ target: pair, abi: 'address:token1' }),
-    ])
-    if (t0.toLowerCase() !== FOREST_TOKEN) tokensAndOwners.push([t0, pair])
-    if (t1.toLowerCase() !== FOREST_TOKEN) tokensAndOwners.push([t1, pair])
+  for (let i = 0; i < pairs.length; i++) {
+    if (token0s[i].toLowerCase() !== FOREST_TOKEN) tokensAndOwners.push([token0s[i], pairs[i]])
+    if (token1s[i].toLowerCase() !== FOREST_TOKEN) tokensAndOwners.push([token1s[i], pairs[i]])
   }
   await api.sumTokens({ tokensAndOwners })
 }
