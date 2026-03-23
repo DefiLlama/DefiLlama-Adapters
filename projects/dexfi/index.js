@@ -10,10 +10,6 @@ const CONFIG = {
     factory: "0x5764dad2fd4b6918949c6ae86081819ca8c19749",
     nativeToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", // WAVAX
   },
-  manta: {
-    factory: "0x6752a5d88bcbf1af7c95dda0659df81bc26314a8",
-    nativeToken: "0x0Dc808adcE2099A9F62AA87D9670745AbA741746", // WETH on Manta
-  },
   bsc: {
     factory: "0xc9dc65aed28bdb016726d32d0f8c2cd5c9461961",
     nativeToken: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // WBNB
@@ -43,7 +39,6 @@ const getVaults = async (api, factory) => {
 };
 
 const getVaultsConnectors = async (api, vaultFarms) => {
-  console.log('🚀 ~ vaultFarms:', vaultFarms);
   const connectorsCalls = vaultFarms.map(({ farm, vault }) => ({ params: farm.beacon, target: vault }));
   const connectors = await api.multiCall({ abi: abi.vault.farmConnector, calls: connectorsCalls, permitFailure: true });
 
@@ -57,7 +52,6 @@ const getVaultsConnectors = async (api, vaultFarms) => {
 };
 
 const tvl = async (api) => {
-    console.log('🚀 ~ api:', api);
   const { factory, nativeToken } = CONFIG[api.chain];
   const vaultFarms = await getVaults(api, factory);
   const vaultFarmsWithConnectors = await getVaultsConnectors(api, vaultFarms);
@@ -66,7 +60,6 @@ const tvl = async (api) => {
     target: connector, params: [connector],
   }));
   const liquidities = await api.multiCall({ calls: liquidityCalls, abi: abi.vault.liquidity, permitFailure: true });
-  console.log('🚀 ~ liquidities:', liquidities);
 
   const nativeAmountCalls = vaultFarmsWithConnectors.map(({ connector }, i) => ({
     target: connector, params: [targetAmountTo(liquidities[i]) || '0'],
