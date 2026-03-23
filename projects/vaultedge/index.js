@@ -46,17 +46,6 @@ async function tvl(api) {
       target: psm,
     });
     await sumTokens2({ api, tokens: [pegToken], owner: psm });
-    const strategyAddr = await api.call({
-      abi: "address:strategy",
-      target: psm,
-    });
-    if (strategyAddr !== "0x0000000000000000000000000000000000000000") {
-      const invested = await api.call({
-        abi: "uint256:totalHoldings",
-        target: strategyAddr,
-      });
-      api.add(pegToken, invested);
-    }
   }
 }
 
