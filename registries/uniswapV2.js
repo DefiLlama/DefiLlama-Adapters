@@ -2796,6 +2796,15 @@ const uniV2Configs = {
       },
       staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
     },
+    base: {
+      factory: '0x88888493d3e3a133cB80da23610f23a6D563D083',
+      fetchBalances: true,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint) view returns (address)',
+      },
+      staking: ['0x88889e34e5Eb7a8F0f986DDce5f2711220A0c02F', '0x888859FEaAb4922DFBB9Add836172ec6f38caBb2'],
+    },
   },
   'wingswap': {
     methodology: 'Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
