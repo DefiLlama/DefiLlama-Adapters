@@ -15,12 +15,22 @@ const config = {
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
+      
+      // bad debt due to resolv hack
+      "0xd9e34b1eed46d123ac1b69b224de1881dbc88798bc7b70f504920f62f58f28cc",
+      "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33",
+      "0x8e7cc042d739a365c43d0a52d5f24160fa7ae9b7e7c9a479bd02a56041d4cf77",
+      "0xcc39b6c92fd03ac608b9239618db8b80a4a2034b0450bdf47b404229571312da",
+      "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
     ],
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd', '0x46415998764c29ab2a25cbea6254146d50d22687', '0x5e331e9ae6e1a5d375f699811736527222a9db15', '0x2dc205f24bcb6b311e5cdf0745b0741648aebd3d', '0xadcdd085ad2887758255090589f72237bdd33d8a', '0xcb327b99ff831bf8223cced12b1338ff3aa322fa', '0xadcdd085ad2887758255090589f72237bdd33d8e'],
     fromBlock: 13977148,
+    blacklistedMarketIds: [
+      '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
+    ]
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
