@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "allAllowedTokens": "address[]:allAllowedTokens"
+  };
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { sumTokens2 } = require("../helper/unwrapLPs");

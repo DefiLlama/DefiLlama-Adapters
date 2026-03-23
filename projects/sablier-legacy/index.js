@@ -54,9 +54,6 @@ async function vesting(api) {
 }
 
 module.exports = {
-  hallmarks: [
-    ['2022-10-03', 'Vesting tokens are not included in tvl'],
-  ],
   start: '2019-11-12',
   timetravel: false,
   ronin: {

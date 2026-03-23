@@ -39,8 +39,12 @@ function formatToken(token, type) {
       return "vFIL";
     case `{"VToken2":"8"}`:
       return "vMANTA";
+    case `{"VToken2":"15"}`:
+      return "vETH";
     case `{"Token2":"4"}`:
       return "FIL";
+    case `{"Token2":"15"}`:
+      return "ETH";
     case `{"VToken2":"3"}`:
       return "vASTR";
     case `{"Token2":"3"}`:
@@ -100,6 +104,7 @@ const tokenToCoingecko = {
   DOT: "polkadot",
   BNC: "bifrost-native-coin",
   KSM: "kusama",
+  ETH: "ethereum",
   MOVR: "moonriver",
   GLMR: "moonbeam",
   KUSD: "acala-dollar",

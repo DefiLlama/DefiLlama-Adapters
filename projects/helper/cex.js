@@ -2,6 +2,7 @@ const ADDRESSES = require('./coreAssets.json')
 const { nullAddress } = require('./unwrapLPs')
 const { sumTokensExport } = require('../helper/sumTokens')
 const sdk = require('@defillama/sdk')
+const { getCEXTokensOnBinanceOnChain } = require('./utils/cex')
 
 const defaultTokens = {
   ethereum: [
@@ -120,6 +121,8 @@ const defaultTokens = {
     '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
     ADDRESSES.bsc.USD1, //USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
+    '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
+    '0x1b66474c8eca3827f16202907f41f63785579716' // exchange token for weex, 
   ],
   tron: [
     nullAddress,
@@ -188,7 +191,8 @@ const defaultTokens = {
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
     ADDRESSES.bsc.USD1, // USD1
-    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3'  //GTBTC
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
+    '0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16',  //MYX
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -209,7 +213,7 @@ const defaultTokens = {
   ],
   base: [
     nullAddress,
-    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3'
+    '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',
   ],
   avax: [
     nullAddress,
@@ -294,7 +298,29 @@ const defaultTokens = {
     ADDRESSES.mantle.AUSD,
     ADDRESSES.mantle.FBTC
   ],
-  klaytn: [nullAddress, ADDRESSES.klaytn.USDT_1,]
+  klaytn: [nullAddress, ADDRESSES.klaytn.USDT_1,],
+  hyperliquid: [
+    nullAddress,
+    ADDRESSES.hyperliquid.USDT0,
+    ADDRESSES.hyperliquid.USDC,
+  ],
+  sei: [
+    nullAddress,
+    ADDRESSES.sei.USDC,
+    ADDRESSES.sei.USDT,
+    ADDRESSES.sei.USDC_Circle,
+    ADDRESSES.sei.USDT0,
+  ],
+  monad: [
+    nullAddress,
+    ADDRESSES.monad.USDT,
+    ADDRESSES.monad.USDC,
+  ],
+  plasma: [
+    nullAddress,
+    ADDRESSES.plasma.USDT0,
+    ADDRESSES.plasma.WXPL,
+  ],
 }
 
 function cexExports(config) {
@@ -318,10 +344,19 @@ function cexExports(config) {
       options.solOwners = owners
       if (!options.blacklistedTokens) options.blacklistedTokens = []
       options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
+      options.onlyTrustedTokens = true
     }
     if (chain === 'ton') options.onlyWhitelistedTokens = true
     if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
-    exportObj[chain] = { tvl: sumTokensExport(options) }
+    exportObj[chain] = { tvl: async (api) => {
+      const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
+      if (binanceTokensOnChain.length) {
+        console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
+        if (!options.tokens) options.tokens = []
+        options.tokens.push(...binanceTokensOnChain)
+      }
+      return sumTokensExport(options)(api)
+    } }
   })
   if (config.bep2) {
     exportObj.bsc = exportObj.bsc ?? { tvl: () => ({}) }

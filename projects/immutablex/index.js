@@ -16,5 +16,5 @@ module.exports = {
     tvl: sumTokensExport({ owners, tokens }),
     staking: stakings(owners, "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF"),
   },
-  hallmarks: [[1643241600, "OMI migration"]],
+  hallmarks: [['2022-01-27', "OMI migration"]],
 };

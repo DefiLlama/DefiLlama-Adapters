@@ -1,9 +1,10 @@
 const axios = require('axios')
+const { getEnv } = require('../../env')
 
 const axiosObj = axios.create({
   baseURL: 'https://cardano-mainnet.blockfrost.io/api/v0',
   headers: {
-    'project_id': 'mai'+'nnetcxT8Vae'+'CgVMzMTSezZijWlVkyh6XytpS',
+    'project_id': getEnv('BLOCKFROST_PROJECT_ID'),
     'Content-Type': 'application/json'
   },
   timeout: 300000,

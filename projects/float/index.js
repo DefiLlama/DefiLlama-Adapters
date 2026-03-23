@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "stakeToken": "address:stakeToken"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const multiplier_pool_single = [

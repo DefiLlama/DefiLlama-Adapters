@@ -39,7 +39,7 @@ module.exports = {
   doublecounted: true,
   timetravel: false,
   hallmarks: [
-    [1659975842, "Code refactor, fix tvl computation"],
+    ['2022-08-08', "Code refactor, fix tvl computation"],
   ],
   methodology:
     'TVL counts LP token deposits made to Sunny Aggregator. CoinGecko is used to find the price of tokens in USD, only the original "SOL" token price is used for all existing variations of the token.',
