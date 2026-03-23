@@ -84,11 +84,9 @@ async function tvl(api) {
     getMarketsAndTokens(api, FIXED_LENDING_MARKET),
     getMarketsAndTokens(api, VARIABLE_LENDING_MARKET),
     getMarketsAndTokens(api, LEGACY_UZR_LENDING_MARKET),
-  ]);
-  console.log(fixed, variable, uzr);
+  ]); 
 
-  const tokens = Array.from(new Set([...fixed.tokens, ...variable.tokens,...uzr.tokens ]));
-  console.log(tokens);
+  const tokens = Array.from(new Set([...fixed.tokens, ...variable.tokens,...uzr.tokens ])); 
   // TVL must not include borrowed amounts: we only sum the coins actually held by the fixed/variable
   // lending-market contracts (cash reserves + posted collateral).
   return sumTokens2({
