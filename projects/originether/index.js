@@ -1,5 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("../origindollar/abi.json");
+const abi = {
+    "getAllAssets": "address[]:getAllAssets",
+    "checkBalance": "function checkBalance(address _asset) view returns (uint256 balance)",
+    "supportsAsset": "function supportsAsset(address _asset) view returns (bool)"
+  };
 
 
 const ethTvl = async (api) => {
@@ -25,8 +29,10 @@ const ethTvl = async (api) => {
   const convexLpBalance = await api.call({  abi: abi.checkBalance, target: convexStrategy, params: ADDRESSES.ethereum.WETH})
   const convexLpSupply = await api.call({  abi: 'erc20:totalSupply', target: convexLp})
   const convexEthInPool = await api.call({  abi: 'function balances(uint256) view returns (uint256)', target: convexLp, params: convexEthIndex})
-  const convexEthLPBalance = (convexLpBalance / convexLpSupply) * convexEthInPool
-  api.add(ADDRESSES.ethereum.WETH, convexEthLPBalance)
+  if (convexLpSupply > 0) {
+    const convexEthLPBalance = (convexLpBalance / convexLpSupply) * convexEthInPool
+    api.add(ADDRESSES.ethereum.WETH, convexEthLPBalance)
+  }
 
   // add ETH part of curve OETH/WETH LP
   const curveStrategy = '0xba0e352AB5c13861C26e4E773e7a833C3A223FE6'
@@ -35,25 +41,50 @@ const ethTvl = async (api) => {
   const curveLpBalance = await api.call({  abi: abi.checkBalance, target: curveStrategy, params: ADDRESSES.ethereum.WETH})
   const curveLpSupply = await api.call({  abi: 'erc20:totalSupply', target: curveLp})
   const curveEthInPool = await api.call({  abi: 'function balances(uint256) view returns (uint256)', target: curveLp, params: curveEthIndex})
-  const curveEthLPBalance = (curveLpBalance / curveLpSupply) * curveEthInPool
-  api.add(ADDRESSES.ethereum.WETH, curveEthLPBalance)
+  if (curveLpSupply > 0) {
+    const curveEthLPBalance = (curveLpBalance / curveLpSupply) * curveEthInPool
+    api.add(ADDRESSES.ethereum.WETH, curveEthLPBalance)
+  }
 
   return api.sumTokens({ owner: vault, tokens: [ADDRESSES.ethereum.WETH] })
 }
 
 async function baseTvl(api) {
   const vault = '0x98a0CbeF61bD2D21435f433bE4CD42B56B38CC93'
+  const woethStrategy = '0x80c864704dd06c3693ed5179190786ee38acf835'
+  const curveAMO = '0x9cfcAF81600155e01c63e4D2993A8A81A8205829'
   const aeroAMO = '0xF611cC500eEE7E4e4763A05FE623E2363c86d2Af'
+  const curveGauge = '0x9da8420dbeebdfc4902b356017610259ef7eedd8'
+  const curveLp = '0x302a94e3c28c290eaf2a4605fc52e11eb915f378'
 
-  // vault balance
+  const strategies = await api.call({ abi: 'function getAllStrategies() view returns (address[])', target: vault })
+
+  // vault buffer
   const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.base.WETH, params: vault })
   api.add(ADDRESSES.base.WETH, vaultBalance)
 
-  // add aero AMO
-  const [amountWeth, _amountOETH] = await api.call({ abi: 'function getPositionPrincipal() view returns (uint256, uint256)', target: aeroAMO })
-  api.add(ADDRESSES.base.WETH, amountWeth)
-
-  return api.sumTokens({ owners: [vault], tokens: [ADDRESSES.base.WETH] })
+  for (const strategy of strategies) {
+    if (strategy.toLowerCase() === woethStrategy.toLowerCase()) continue
+    if (strategy.toLowerCase() === curveAMO.toLowerCase()) {
+      // only count WETH side: our share of gauge, gauge's share of pool, pool WETH balance
+      const ourGaugeBal = await api.call({ abi: 'erc20:balanceOf', target: curveGauge, params: curveAMO })
+      const gaugeTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: curveGauge })
+      const gaugeLpBal = await api.call({ abi: 'erc20:balanceOf', target: curveLp, params: curveGauge })
+      const lpTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: curveLp })
+      const poolWeth = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.base.WETH, params: curveLp })
+      if (BigInt(gaugeTotalSupply) > 0n && BigInt(lpTotalSupply) > 0n) {
+        const wethShare = BigInt(ourGaugeBal) * BigInt(gaugeLpBal) * BigInt(poolWeth) / (BigInt(gaugeTotalSupply) * BigInt(lpTotalSupply))
+        api.add(ADDRESSES.base.WETH, wethShare.toString())
+      }
+    } else if (strategy.toLowerCase() === aeroAMO.toLowerCase()) {
+      // only count WETH side (checkBalance includes superOETHb value)
+      const [amountWeth] = await api.call({ abi: 'function getPositionPrincipal() view returns (uint256, uint256)', target: aeroAMO })
+      api.add(ADDRESSES.base.WETH, amountWeth)
+    } else {
+      const balance = await api.call({ abi: abi.checkBalance, target: strategy, params: ADDRESSES.base.WETH })
+      api.add(ADDRESSES.base.WETH, balance)
+    }
+  }
 }
 
 async function plumeTvl(api) {

@@ -1,5 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "totalAsset": "uint256:totalAsset",
+    "totalAssets": "uint256:totalAssets",
+    "getCash": "uint256:getCash",
+    "balanceOf": "function balanceOf(address account) view returns (uint256)",
+    "getPositionInfo": "function getPositionInfo(uint256 _positionId) view returns (tuple(uint256 positionId, uint256 borrowId, uint256 amount0, uint256 amount1, uint256 fee, uint256 positionValue, uint256 debtValue, int24 upperTick, int24 lowerTick, uint256 wantAmount, uint256 reserveAmount, uint256 stopLossUpperPrice, uint256 stopLossLowerPrice, uint256 positionCreateTimestamp) info)"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 

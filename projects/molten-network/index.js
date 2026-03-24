@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
     arbitrum: {
       tvl: async (api) => {
@@ -7,8 +8,8 @@ module.exports = {
             "0xE1d32C985825562edAa906fAC39295370Db72195",
           ],
           tokens: [
-            "0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // WETH
-            "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC
+            ADDRESSES.arbitrum.WETH, // WETH
+            ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
           ],
         });
       },

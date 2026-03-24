@@ -45,13 +45,10 @@ const contracts = {
       "0xF87ec7e1Ee467d7d78862089B92dd40497cBa5B8", // MATIC
       "0xDcE26B2c78609b983cF91cCcD43E238353653b0E", // IdleCDO_clearpool_DAI
       "0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC",
-      "0x1f5A97fB665e295303D2F7215bA2160cc5313c8E", // 
+      "0x1f5A97fB665e295303D2F7215bA2160cc5313c8E", //
       "0x8E0A8A5c1e5B3ac0670Ea5a613bB15724D51Fc37", // Instadapp stETH
-      "0xf6223C567F21E33e859ED7A045773526E9E3c2D5", // Fasanara Yield vault
     ],
-    credits: [
-      "0xf6223C567F21E33e859ED7A045773526E9E3c2D5", // Fasanara Yield vault
-    ]
+    credits: []
   },
   polygon: {
     v1: [
@@ -59,12 +56,8 @@ const contracts = {
       "0x1ee6470CD75D5686d0b2b90C0305Fa46fb0C89A1", // idleUSDCYield
       "0xfdA25D931258Df948ffecb66b5518299Df6527C4" // idleWETHYield
     ],
-    cdos: [
-      '0xF9E2AE779a7d25cDe46FccC41a27B8A4381d4e52' // Bastion CV
-    ],
-    credits: [
-      '0xF9E2AE779a7d25cDe46FccC41a27B8A4381d4e52' // Bastion CV
-    ]
+    cdos: [],
+    credits: []
   },
   polygon_zkevm: {
     cdos: [
@@ -72,20 +65,12 @@ const contracts = {
     ]
   },
   optimism: {
-    cdos: [
-      "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B", // FalconX
-    ],
-    credits: [
-      "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B", // FalconX
-    ]
+    cdos: [],
+    credits: []
   },
   arbitrum: {
-    cdos: [
-      "0x3919396Cd445b03E6Bb62995A7a4CB2AC544245D" // Bastion Credit Vault
-    ],
-    credits: [
-      "0x3919396Cd445b03E6Bb62995A7a4CB2AC544245D" // Bastion Credit Vault
-    ]
+    cdos: [],
+    credits: []
   }
 }
 

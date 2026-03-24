@@ -1,4 +1,9 @@
-const abi = require('./abi.json');
+const abi = {
+    "collateral": "address:collateral",
+    "totalCollateral": "uint256:totalCollateral",
+    "balance": "uint256:balance",
+    "token": "address:token"
+  };
 const { getLogs } = require('../helper/cache/getLogs')
 
 const START_BLOCK = 10104891;

@@ -1,4 +1,7 @@
-const abi = require('./abi.json');
+const abi = {
+    "latestRoundData": "function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
+    "priceDecimals": "function decimals() view returns (uint8)"
+  };
 
 const MI4_ADDRESSES = {
   mantle: {
@@ -16,54 +19,13 @@ async function tvl(api) {
     return {};
   }
 
-  try {
-    // Get total supply of MI4 tokens
-    const totalSupply = await api.call({
-      abi: 'erc20:totalSupply',
-      target: chainAddresses.token,
-    });
+  // Get total supply of MI4 tokens
+  const totalSupply = await api.call({
+    abi: 'erc20:totalSupply',
+    target: chainAddresses.token,
+  });
 
-    // Get price from price feed using your custom ABI
-    const priceData = await api.call({
-      abi: abi.latestRoundData,
-      target: chainAddresses.priceFeed,
-    });
-
-    // Get price decimals from the feed
-    const priceDecimals = await api.call({
-      abi: abi.priceDecimals,
-      target: chainAddresses.priceFeed,
-    });
-
-    // Get token decimals
-    const tokenDecimals = await api.call({
-      abi: 'erc20:decimals',
-      target: chainAddresses.token,
-    });
-
-    console.log(`MI4 Total Supply on ${chain}: ${totalSupply}`);
-    console.log(`MI4 Latest Price: ${priceData.answer} (decimals: ${priceDecimals})`);
-    console.log(`Token decimals: ${tokenDecimals}, Price decimals: ${priceDecimals}`);
-
-    // Calculate the price per token in USD
-    const pricePerTokenUsd = Number(priceData.answer) / (10 ** Number(priceDecimals));
-    
-    // Calculate actual token supply
-    const tokenSupplyFloat = Number(totalSupply) / (10 ** Number(tokenDecimals));
-    
-    // Calculate TVL in USD
-    const tvlUsd = tokenSupplyFloat * pricePerTokenUsd;
-    
-    console.log(`Price per MI4 token: $${pricePerTokenUsd}`);
-    console.log(`Token supply: ${tokenSupplyFloat.toLocaleString()} MI4`);
-    console.log(`Calculated TVL: $${tvlUsd.toLocaleString()}`);
-
-    // Return TVL as USD value
-    api.addUSDValue(tvlUsd);
-
-  } catch (error) {
-    console.error(`Error calculating TVL for ${chain}:`, error.message);
-  }
+  api.add(chainAddresses.token, totalSupply);
 
   return api.getBalances();
 }

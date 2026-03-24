@@ -7,7 +7,8 @@ const tokens = [
 
 module.exports = {
   ethereum: {
-    tvl: async (api) => api.add(tokens, await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' })),
+    tvl: async () => {
+      throw new Error(`Resolve adapter needs fixing`) }, // api.add(tokens, await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' })),
     staking: staking('0xFE4BCE4b3949c35fB17691D8b03c3caDBE2E5E23', '0x259338656198eC7A76c729514D3CB45Dfbf768A1'),
   }
 }

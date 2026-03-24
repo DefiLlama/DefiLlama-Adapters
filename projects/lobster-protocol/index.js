@@ -25,6 +25,6 @@ module.exports = {
     tvl,
   },
   hallmarks: [
-    [1710971510, "First Arbitrum Vault Release"],
+    ['2024-03-20', "First Arbitrum Vault Release"],
   ],
 }

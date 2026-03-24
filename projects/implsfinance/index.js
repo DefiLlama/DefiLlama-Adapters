@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "LPtoken": "address:LPtoken",
+    "balanceLPinSystem": "uint256:balanceLPinSystem",
+    "stakingToken": "address:stakingToken"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { sumTokensExport } = require('../helper/unknownTokens')
 

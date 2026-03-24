@@ -59,7 +59,7 @@ const CONFIG = {
       '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6',  // AUSDC
       '0xe18Ab82c81E7Eecff32B8A82B1b7d2d23F1EcE96',   // AWETH
       '0x80Eede496655FB9047dd39d9f418d5483ED600df', // frxUSD 
-      '0x5Bff88cA1442c2496f7E475E9e7786383Bc070c0' // sfrxUSD
+      ADDRESSES.katana.sfrxUSD // sfrxUSD
     ],
   },
   plasma: {

@@ -1,9 +1,9 @@
 const axios = require('axios');
+const { staking } = require('../helper/staking')
 const sdk = require('@defillama/sdk')
 
 const HYPERLIQUID_MAINNET_RPC_URL = 'https://api.hyperliquid.xyz';
 
-const kHype = '0xfD739d4e423301CE9385c1fb8850539D657C296D'
 const accountant = '0x9209648Ec9D448EF57116B73A2f081835643dc7A'
 
 const abis = {
@@ -46,5 +46,7 @@ const tvl = async (api) => {
 
 module.exports = {
   timetravel: false,
-  hyperliquid: { tvl }
+  hyperliquid: {
+    tvl, staking: staking('0x696238e0Ca31c94e24ca4CBe7921754E172E4d0F', '0x000000000000780555bD0BCA3791f89f9542c2d6')
+  },
 }

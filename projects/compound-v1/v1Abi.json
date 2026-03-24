@@ -1,5 +1,0 @@
-{
-  "getCollateralMarketsLength": "uint256:getCollateralMarketsLength",
-  "markets": "function markets(address) view returns (bool isSupported, uint256 blockNumber, address interestRateModel, uint256 totalSupply, uint256 supplyRateMantissa, uint256 supplyIndex, uint256 totalBorrows, uint256 borrowRateMantissa, uint256 borrowIndex)",
-  "collateralMarkets": "function collateralMarkets(uint256) view returns (address)"
-}

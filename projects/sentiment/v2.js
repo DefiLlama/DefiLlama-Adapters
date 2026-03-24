@@ -2,7 +2,7 @@ const { getConfig } = require("../helper/cache");
 const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 
-const PONDER_URL = "https://artistic-perfection-production.up.railway.app";
+const PONDER_URL = "https://prism-points.marble.live";
 const PORTFOLIO_LENS_ADDRESS = "0x9700750001dDD7C4542684baC66C64D74fA833c0";
 
 const SUPERPOOLS = [
@@ -112,7 +112,7 @@ async function tvl(api) {
   });
 
   // Batch positions into chunks of 30
-  const BATCH_SIZE = 200;
+  const BATCH_SIZE = 50;
   for (let i = 0; i < positions.length; i += BATCH_SIZE) {
     const positionBatch = positions.slice(i, i + BATCH_SIZE);
 
@@ -147,8 +147,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology:
-    "Sums assets held by SuperPool contracts (lending TVL) and collateral held by all Position contracts.",
+  methodology: "Sums assets held by SuperPool contracts (lending TVL) and collateral held by all Position contracts.",
   start: 1014900,
   hyperliquid: { tvl, borrowed },
 };
