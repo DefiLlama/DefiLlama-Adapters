@@ -2853,7 +2853,13 @@ const uniV2Configs = {
   'qie-dex': {
     start: '2025-08-05',
     qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
-  }
+  },
+  'forest-v1': {
+    bsc: {
+      factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
+      staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
