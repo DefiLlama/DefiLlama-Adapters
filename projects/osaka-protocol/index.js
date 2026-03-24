@@ -21,7 +21,7 @@ const lpTokens = {
 };
 
 const factories = {
-  ethereum:  '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', // Uniswap V2 (nie używany w LP, ale zostawiamy na wszelki)
+  ethereum:  '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', // Uniswap V2 (not_used at this moment)
   base:      '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6', // Uniswap V2 Base
   arbitrum:  '0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9', // Uniswap V2 Arbitrum
   optimism:  '0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf', // Uniswap V2 Optimism
