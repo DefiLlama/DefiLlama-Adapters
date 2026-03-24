@@ -23,10 +23,7 @@ module.exports = {
   },
   stacks: {
     tvl: async () => {
-      const supplyOnStacksuUsdh = await makeReadOnlyContractCall({
-        contract: USDhContract,
-        function_name: 'get-total-supply'
-      });
+      const supplyOnStacksuUsdh = await call({ target: USDhContract, abi: 'get-total-supply' });
 
       return { 'hermetica-usdh': supplyOnStacksuUsdh / (10 ** 8) }
     }
