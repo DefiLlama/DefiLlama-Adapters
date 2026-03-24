@@ -228,6 +228,23 @@ const ADDRESSES = {
       { address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF", fromBlock: 50664655 },
     ],
   },
+  base: {
+    FactoryV2: [
+      {
+        address: "0xa6875Af7a45BEf941e484b59C149E5C1772DE643",
+        fromBlock: 43289754,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF",
+        fromBlock: 43289755,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 43289755 },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
