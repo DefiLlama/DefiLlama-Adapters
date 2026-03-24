@@ -14,7 +14,11 @@ const KOIOS_API = "https://api.koios.rest/api/v1";
 
 async function staking() {
   // Step 1: Get the current epoch number from chain tip
-  const [tip] = await get(`${KOIOS_API}/tip`);
+  const tipResponse = await get(`${KOIOS_API}/tip`);
+  if (!tipResponse || !tipResponse.length) {
+    throw new Error("Failed to fetch current epoch from Koios /tip");
+  }
+  const [tip] = tipResponse;
   const currentEpoch = tip.epoch_no;
 
   // Step 2: Get epoch info which includes active_stake
@@ -27,11 +31,16 @@ async function staking() {
   );
 
   // active_stake is returned in lovelace (1 ADA = 1,000,000 lovelace)
-  const activeStakeLovelace = Number(epochInfo[0].active_stake);
+  // Use BigInt to avoid precision loss for values exceeding Number.MAX_SAFE_INTEGER
+  if (!epochInfo || !epochInfo.length || !epochInfo[0].active_stake) {
+    throw new Error(`No active_stake data for epoch ${epochToQuery}`);
+  }
+  const activeStakeLovelace = BigInt(epochInfo[0].active_stake);
+  const activeStakeAda = Number(activeStakeLovelace / BigInt(1e6));
 
   // Return as ADA using coingecko ID; DeFi Llama SDK handles USD conversion
   return {
-    cardano: activeStakeLovelace / 1e6,
+    cardano: activeStakeAda,
   };
 }
 
