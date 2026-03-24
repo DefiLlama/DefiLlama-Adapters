@@ -12,6 +12,9 @@ module.exports = {
     tvl: async (api) => { 
       if (api.timestamp > 1774137600) {
         api.add(ADDRESSES.ethereum.USDC, (await api.call({ target: tokens[0], abi: 'erc20:totalSupply' })) / 10 **12)
+        // Subtract 80M after hack 
+        // https://etherscan.io/tx/0x41b6b9376d174165cbd54ba576c8f6675ff966f17609a7b80d27d8652db1f18f
+        // https://etherscan.io/tx/0xfe37f25efd67d0a4da4afe48509b258df48757b97810b28ce4c649658dc33743
         api.add(ADDRESSES.ethereum.USDC, -8e13)
         api.add(tokens[1], await api.call({ target: tokens[1], abi: 'erc20:totalSupply' }))
       } else {
