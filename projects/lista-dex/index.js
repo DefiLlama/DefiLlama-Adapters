@@ -1,5 +1,5 @@
 const { getConfig } = require('../helper/cache')
-const sdk = require('@defillama/sdk')
+const { nullAddress } = require('../helper/tokenMapping')
 
 const NATIVE_PLACEHOLDER = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 
@@ -66,50 +66,13 @@ async function tvl(api) {
   const token0s = unique.map((c) => c.token0)
   const token1s = unique.map((c) => c.token1)
 
-  const bal0s = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: swapPools.map((pool, i) => ({ target: token0s[i], params: [pool] })),
-  })
-
-  const nativeIndices = token1s
-    .map((t, i) => (t === NATIVE_PLACEHOLDER ? i : -1))
-    .filter((i) => i >= 0)
-  const erc20Indices = token1s
-    .map((t, i) => (t !== NATIVE_PLACEHOLDER ? i : -1))
-    .filter((i) => i >= 0)
-
-  const bal1s = new Array(unique.length).fill(null)
-  if (nativeIndices.length > 0) {
-    const nativePools = nativeIndices.map((i) => swapPools[i])
-    const { output: nativeOutputs } = await sdk.api.eth.getBalances({
-      targets: nativePools,
-      chain: api.chain,
-      block: api.block,
-    })
-    nativeIndices.forEach((idx, j) => {
-      bal1s[idx] = nativeOutputs[j]?.balance ?? 0n
-    })
-  }
-  if (erc20Indices.length > 0) {
-    const erc20Balances = await api.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: erc20Indices.map((i) => ({ target: token1s[i], params: [swapPools[i]] })),
-    })
-    erc20Indices.forEach((idx, j) => {
-      bal1s[idx] = erc20Balances[j] ?? 0n
-    })
-  }
-
+  const tokensAndOwners = []
   for (let i = 0; i < unique.length; i++) {
-    api.add(token0s[i], bal0s[i] ?? 0n)
-    if (token1s[i] === NATIVE_PLACEHOLDER) {
-      api.addGasToken(bal1s[i] ?? 0n)
-    } else {
-      api.add(token1s[i], bal1s[i] ?? 0n)
-    }
+    tokensAndOwners.push([token0s[i], swapPools[i]])
+    const t1 = token1s[i] === NATIVE_PLACEHOLDER ? nullAddress : token1s[i]
+    tokensAndOwners.push([t1, swapPools[i]])
   }
-
-  return api.getBalances()
+  return api.sumTokens({ tokensAndOwners })
 }
 
 module.exports = {
