@@ -16,7 +16,7 @@ module.exports = {
 
       const cleanUsdhSupply = supply.result.replace(/[^\d.]/g, '');
       const totaluUSDhSupply = Number(cleanUsdhSupply) * (10 ** 8);
-      const sUSDhSupplyRunes = totaluUSDhSupply - uUSDhSupplyStacks;
+      const sUSDhSupplyRunes = totaluUSDhSupply - Number(uUSDhSupplyStacks.value);
 
       return { 'hermetica-usdh': sUSDhSupplyRunes / (10 ** 8) }
     }
@@ -25,7 +25,7 @@ module.exports = {
     tvl: async () => {
       const supplyOnStacksuUsdh = await call({ target: USDhContract, abi: 'get-total-supply' });
 
-      return { 'hermetica-usdh': supplyOnStacksuUsdh / (10 ** 8) }
+      return { 'hermetica-usdh': Number(supplyOnStacksuUsdh.value) / (10 ** 8) }
     }
   },
   misrepresentedTokens: true

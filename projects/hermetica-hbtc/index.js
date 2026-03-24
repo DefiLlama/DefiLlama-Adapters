@@ -14,8 +14,8 @@ module.exports = {
         call({ target: hBTCStateContract, abi: 'get-share-price' })
       ]);
 
-      const sharePrice = microSharePrice / (10 ** 8);
-      const hBTCSupplyStacks = microhBTCSupplyStacks / (10 ** 8);
+      const sharePrice = Number(microSharePrice.value) / (10 ** 8);
+      const hBTCSupplyStacks = Number(microhBTCSupplyStacks.value) / (10 ** 8);
 
       return { bitcoin: hBTCSupplyStacks * sharePrice };
     }
