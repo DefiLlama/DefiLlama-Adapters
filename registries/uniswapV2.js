@@ -2854,6 +2854,15 @@ const uniV2Configs = {
     start: '2025-08-05',
     qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
   },
+  'virtus-protocol': {
+    base: '0x7F03ae4452192b0E280fB0d4f9c225DDa88C7623',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      }
+    }
+  },
   'forest-v1': {
     bsc: {
       factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
