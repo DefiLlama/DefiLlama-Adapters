@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
-const { makeReadOnlyContractCall } = require('./stacks-call')
+const { call } = require('../helper/chain/stacks-api')
 
 const USDhContract = ADDRESSES.stacks.USDh;
 
@@ -11,7 +11,7 @@ module.exports = {
     tvl: async () => {
       const [supply, uUSDhSupplyStacks] = await Promise.all([
         get('https://app.hermetica.fi/api/v1/usdh/supply'),
-        makeReadOnlyContractCall({ contract: USDhContract, function_name: 'get-total-supply' })
+        call({ target: USDhContract, abi: 'get-total-supply' })
       ]);
 
       const cleanUsdhSupply = supply.result.replace(/[^\d.]/g, '');
