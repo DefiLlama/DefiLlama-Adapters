@@ -18,7 +18,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  doublecounted: true,
   methodology:
     "TVL is the sum of asset balances held by the Theoriq vault and its sub-accounts.",
   ethereum: { tvl },
