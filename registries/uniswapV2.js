@@ -2860,7 +2860,13 @@ const uniV2Configs = {
       abis: {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: 'function allPools(uint256) view returns (address)',
-      },
+      }
+    }
+  },
+  'forest-v1': {
+    bsc: {
+      factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
+      staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
     },
   },
 }
