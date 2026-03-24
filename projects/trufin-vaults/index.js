@@ -53,8 +53,6 @@ function readTokenAccountAmount(accountInfo) {
   return Number(accountInfo.data.readBigUInt64LE(64));
 }
 
-// Concentrated liquidity math reusing tickToPrice from helper/utils/tick.js
-// (same formula used by addUniV3LikePosition in helper/unwrapLPs.js)
 function getPositionAmounts(tickLower, tickUpper, tickCurrent, liquidity) {
   const sa = tickToPrice(tickLower / 2);
   const sb = tickToPrice(tickUpper / 2);
