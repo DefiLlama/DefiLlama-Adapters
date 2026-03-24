@@ -23,7 +23,7 @@ async function tvl(api) {
     calls: v2Owners.map((target) => ({ target })),
   });
   for (let i = 0; i < v2Owners.length; i++) {
-    if (v2MorphoVaults[i] !== ZERO_ADDR) {
+    if (v2Owners[i] && v2Owners[i] !== ZERO_ADDR && v2MorphoVaults[i] && v2MorphoVaults[i] !== ZERO_ADDR) {
       tokensAndOwners.push([v2MorphoVaults[i], v2Owners[i]]);
     }
   }
@@ -70,6 +70,8 @@ async function staking(api) {
 
 module.exports = {
   methodology: "TVL counts Morpho vault deposits across V2 and V3 Surf Liquid vaults. Staking includes SURF staked and SURF subscriptions.",
+  doublecounted: true,
+  misrepresentedTokens: true,
   hallmarks: [["2025-11-30", "V3 factory launched"]],
   base: {
     tvl,
