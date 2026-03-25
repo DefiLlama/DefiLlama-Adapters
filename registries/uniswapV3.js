@@ -1675,6 +1675,7 @@ const uniV3Configs = {
       fromBlock: 42960000,
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+      extraKey: 'v1'
     },
   },
 }
