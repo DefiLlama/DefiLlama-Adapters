@@ -6,6 +6,9 @@ const USDC = ADDRESSES.polygon.USDC;
 
 module.exports = {
   methodology: "TVL represents liquid USDC currently available in the PredMart lending pool (total deposits minus outstanding borrows). Borrowed reflects total USDC actively lent out to borrowers who posted Polymarket prediction market shares as collateral. Total lender deposits = TVL + Borrowed.",
+  base: {
+    tvl: () => ({}),
+  },
   polygon: {
     tvl: async (api) => {
       // Liquid USDC sitting in the lending pool contract
