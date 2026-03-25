@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs2 } = require("../helper/cache/getLogs");
 
 const FIXED_LENDING_MARKET = "0x280ddD897F39C33fEf1CbF863B386Cb9a8e53a0e";
 const VARIABLE_LENDING_MARKET = "0xc8Db629192a96D6840e88a8451F17655880A2e4D";
@@ -33,28 +33,18 @@ function normalizeMarketLogArg(logArg) {
   return [loanToken, collateralToken, oracle, irm, ltv, lltv, whitelist];
 }
 
-async function getMarketParams(api, lendingMarket) {
-  const logs = await (async () => {
-    try {
-      return await getLogs({
-        api,
-        target: lendingMarket,
-        fromBlock: FROM_BLOCK,
-        eventAbi: createMarketEventAbi,
-        onlyArgs: true,
-        useIndexer: true,
-      });
-    } catch (e) {
-      return await getLogs({
-        api,
-        target: lendingMarket,
-        fromBlock: FROM_BLOCK,
-        eventAbi: createMarketEventAbi,
-        onlyArgs: true,
-      });
-    }
-  })();
+async function getMarketCreationLogs(api, lendingMarket) {
+  return getLogs2({
+    api,
+    target: lendingMarket,
+    fromBlock: FROM_BLOCK,
+    eventAbi: createMarketEventAbi,
+    useIndexer: true,
+  })
+}
 
+async function getMarketParams(api, lendingMarket) {
+  const logs = await getMarketCreationLogs(api, lendingMarket);
   const uniqueByKey = new Map();
   logs.forEach((logArg) => {
     const params = normalizeMarketLogArg(logArg);
@@ -95,4 +85,8 @@ async function addFiraTreasuryPositions(api, owners) {
 
 module.exports = {
   addFiraTreasuryPositions,
+  getMarketParams,
+  FIXED_LENDING_MARKET,
+  VARIABLE_LENDING_MARKET,
+  getMarketCreationLogs,
 };
