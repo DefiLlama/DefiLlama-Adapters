@@ -7,8 +7,6 @@ const almProxy = {
   plume_mainnet: '0x1DB91ad50446a671e2231f77e00948E68876F812',
 }
 
-const RLUSD = '0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD'
-
 const tokenConfigs = {
   ethereum: [
     '0x8c213ee79581Ff4984583C6a801e5263418C4b86', // JTRSY (Janus Henderson via Centrifuge)
