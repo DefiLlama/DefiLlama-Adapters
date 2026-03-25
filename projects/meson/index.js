@@ -89,7 +89,7 @@ const config = {
   bevm: { id: 'bevm2'},
   bsc: { id: 'bnb'},
   conflux: { id: 'cfx'},
-  eos_evm: { id: 'eos'},
+  eos_evm: { },
   ethereum: { id: 'eth'},
   fantom: { id: 'ftm'},
   xdai: { id: 'gnosis'},
@@ -120,7 +120,7 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = []
       if (tokens) ownerTokens.push([tokens, owner])
       await addCoinfg(id, ownerTokens)
-      return sumTokens2({ api, ownerTokens })
+      return sumTokens2({ api, ownerTokens, permitFailure: true })
     }
   }
 })

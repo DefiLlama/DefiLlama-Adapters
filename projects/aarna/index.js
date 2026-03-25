@@ -1,15 +1,18 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { generateAtvExport } = require('../helper/atv-helper');
 
 // Configuration for all Aarna ATV vaults across chains
 const AARNA_CONFIG = {
-  methodology: 'TVL is calculated using direct on-chain storage contract queries via calculatePoolInUsd function for each âtv vault. This includes âtv802 (quant AI), âtv808 (asymmetric alpha), and âtv111 (multi layer yield) vaults deployed across Ethereum, Arbitrum, and Sonic chains.',
+  methodology: `TVL: Total value of all coins held in the smart contracts of the protocol
+  Fees: 1% deposit and 10% profit sharing (whereever applicable) fees from the vaults`,
   
   // Vault addresses by chain and type
   vaults: {
     ethereum: {
       'ATV-802': "0xb68e430c56ed9e548e864a68a60f9d41f993b32c",
       'ATV-808': "0x60697825812ecC1Fff07f41E2d3f5cf314674Fa6", 
-      'ATV-111': "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba"
+      'ATV-111': "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba",
+      'ATVPTMAX': "0xb9C1344105FaA4681bc7FFd68c5c526DA61F2AE8"
     },
     arbitrum: {
       'ATV-111': "0xe1a6bda42fbafae38607598386a1050613c1a64b"
@@ -44,11 +47,11 @@ const AARNA_CONFIG = {
     arbitrum: [
       "0x625E7708f30cA75bfd92586e17077590C60eb4cD", // aave arb usdc
       "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf", // compound v3 arb usdc
-      "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC on Arbitrum
-      "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", // USDC.e on Arbitrum
+      ADDRESSES.arbitrum.USDC_CIRCLE, // USDC on Arbitrum
+      ADDRESSES.arbitrum.USDC, // USDC.e on Arbitrum
     ],
     sonic: [
-      "0x29219dd400f2Bf60E5a23d13Be72B486D4038894", // usdc address on sonic
+      ADDRESSES.sonic.USDC_e, // usdc address on sonic
       "0x3F5EA53d1160177445B1898afbB16da111182418", // pendle lp token on sonic
     ]
   },

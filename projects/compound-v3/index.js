@@ -49,7 +49,8 @@ module.exports = compoundV3Exports({
   },
   ronin:{
     markets: [
-      '0x4006ed4097ee51c09a04c3b0951d28ccf19e6dfe' // WETH Market
+      '0x4006ed4097ee51c09a04c3b0951d28ccf19e6dfe', // WETH Market
+      '0xc0Afdbd1cEB621Ef576BA969ce9D4ceF78Dbc0c0' // RON Market
     ]
   },
   unichain:{

@@ -16,16 +16,17 @@ const BANK_SAFE = '0xd89dEa2daC8Fb73F4107C2cbeA5Eb36dab511F64'
 
 let balanceResolve;
 
-async function getTVL(chainBlocks) {
+async function getTVL(api) {
   const balances = {}
   const pool2Balances = {}
   const stakeBalances = {}
-  const block = chainBlocks[chain]
 
   // resolve masterchef
-  const poolLength = (await sdk.api.abi.call({ abi: masterChefABI.poolLength, target: MASTER_CHEF, block, chain, })).output
-  let pools = (await sdk.api.abi.multiCall({ target: MASTER_CHEF, abi: abi.lpToken, block, chain, calls: createIncrementArray(poolLength).map(i => ({ params: [i] })) })).output.map(p => p.output.toLowerCase())
+  const poolLength = (await api.call({ abi: masterChefABI.poolLength, target: MASTER_CHEF, }))
+  let pools = (await api.multiCall({ target: MASTER_CHEF, abi: abi.lpToken, calls: createIncrementArray(poolLength).map(i => ({ params: [i] })) })).map(p => p.toLowerCase())
   const tokensAndOwners = pools.map(p => [p, MASTER_CHEF])
+  const block = api.block
+  const chain = api.chain
   await sumTokens(pool2Balances, tokensAndOwners, block, chain)
   const {
     updateBalances
@@ -51,18 +52,18 @@ async function getTVL(chainBlocks) {
 }
 
 
-async function tvl(ts, _block, chainBlocks) {
-  if (!balanceResolve)  balanceResolve = getTVL(chainBlocks)
+async function tvl(api) {
+  if (!balanceResolve)  balanceResolve = getTVL(api)
   return (await balanceResolve).tvl
 }
 
-async function pool2(ts, _block, chainBlocks) {
-  if (!balanceResolve)  balanceResolve = getTVL(chainBlocks)
+async function pool2(api) {
+  if (!balanceResolve)  balanceResolve = getTVL(api)
   return (await balanceResolve).pool2
 }
 
-async function staking(ts, _block, chainBlocks) {
-  if (!balanceResolve)  balanceResolve = getTVL(chainBlocks)
+async function staking(api) {
+  if (!balanceResolve)  balanceResolve = getTVL(api)
   return (await balanceResolve).staking
 }
 

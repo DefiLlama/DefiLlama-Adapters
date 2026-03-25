@@ -36,11 +36,14 @@ async function queryEvents({ eventType, transform = i => i }) {
   return items.map(i => i.parsedJson).map(transform)
 }
 
-async function getObjects(objectIds) {
+async function getObjects(objectIds, { sleep } = {}) {
   if (objectIds.length > 9) {
     const chunks = sliceIntoChunks(objectIds, 9)
     const res = []
-    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
+    for (const chunk of chunks) {
+      if (sleep && res.length) await fnSleep(sleep)
+      res.push(...(await getObjects(chunk)))
+    }
     return res
   }
   const {
@@ -70,7 +73,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
   sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
   const fetchIds = data.filter(idFilter).map(i => i.objectId).filter(i => !addedIds.has(i))
   fetchIds.forEach(i => addedIds.add(i))
-  const objects = await getObjects(fetchIds)
+  const objects = await getObjects(fetchIds, { sleep })
   items.push(...objects)
   if (!hasNextPage) return items
   return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds, sleep })
@@ -173,11 +176,30 @@ async function queryEventsByType({ eventType, transform = i => i }) {
   const items = []
   let after = null
   do {
-    const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
+    const { events: { pageInfo: { endCursor, hasNextPage }, nodes } } = await sdk.graph.request(graphEndpoint(), query, { variables: { after, eventType } })
     after = hasNextPage ? endCursor : null
     items.push(...nodes.map(i => i.contents.json).map(transform))
   } while (after)
   return items
+}
+
+
+async function getTokenSupply(token) {
+  const { result } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getTotalSupply',
+    params: [token],
+  })
+  const supply = result.value
+  const { result: metadata } = await http.post(endpoint(), {
+    jsonrpc: "2.0",
+    id: 1,
+    method: 'suix_getCoinMetadata',
+    params: [token],
+  })
+  const decimals = metadata?.decimals ?? 0
+  return { supply, decimals, normalized: supply / 10 ** decimals }
 }
 
 module.exports = {
@@ -193,4 +215,5 @@ module.exports = {
   sumTokens,
   sumTokensExport,
   queryEventsByType,
+  getTokenSupply,
 };

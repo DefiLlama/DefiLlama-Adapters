@@ -62,7 +62,7 @@ const tokensConf = {
     BUSD: ADDRESSES.bsc.BUSD,
     USDC: ADDRESSES.bsc.USDC,
     USDT: ADDRESSES.bsc.USDT,
-    DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    DAI: ADDRESSES.bsc.DAI,
     WBNB: ADDRESSES.bsc.WBNB,
     BTCB: ADDRESSES.bsc.BTCB,
     ETH: ADDRESSES.bsc.ETH,

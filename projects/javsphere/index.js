@@ -17,8 +17,8 @@ async function tvl(api) {
 module.exports = {
   methodology: `TVL of LeverageX Trading platform leveragex.trade (LPs and Traders). TVL from staking and freezer of javsphers native token JAV.`,
   hallmarks: [
-    [1733837635, "Migration to BASE"],
-    [1734547635, "Launch of LeverageX.trade"],
+    ['2024-12-10', "Migration to BASE"],
+    ['2024-12-18', "Launch of LeverageX.trade"],
   ],
   base: {
     tvl,

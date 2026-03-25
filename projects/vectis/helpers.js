@@ -1,6 +1,7 @@
 const { PublicKey } = require("@solana/web3.js");
 const { getMultipleAccounts } = require('../helper/solana')
 const axios = require("axios");
+const { BASE_URL } = require("./constant");
 
 function deserializeUserPositions(accountInfo) {
   if (!accountInfo) {
@@ -110,7 +111,7 @@ async function fetchVaultUserAddressesWithOffset(data, offset) {
 
 async function fetchVaultAddresses() {
   try {
-    const response = await axios.get('https://api.vectis.finance/strategy/fetchAllVaultAddresses');
+    const response = await axios.get(`${BASE_URL}/strategy/fetchAllVaultAddresses`);
  
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -123,6 +124,28 @@ async function fetchVaultAddresses() {
   }
 }
 
+async function fetchPositionAddresses() {
+  try {
+    const response = await axios.get(`${BASE_URL}/voltr/position-addresses`);
+ 
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-module.exports = { readPublicKeyFromBuffer, deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses};
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching position addresses:', error);
+    throw error;
+  }
+}
+
+
+
+module.exports = { 
+  readPublicKeyFromBuffer, 
+  deserializeUserPositions, 
+  fetchVaultUserAddressesWithOffset, 
+  fetchPositionAddresses, 
+  fetchVaultAddresses
+};
 

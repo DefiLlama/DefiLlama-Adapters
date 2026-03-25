@@ -72,6 +72,7 @@ const tokens = {
         HEFE: '0x18E3605B13F10016901eAC609b9E188CF7c18973',
         GoGoPool: '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3',
         Benqi: ADDRESSES.avax.SAVAX,
+        sUSDe: ADDRESSES.arbitrum.sUSDe
     },
     mantle: {
         USDC: ADDRESSES.mantle.USDC,
@@ -96,6 +97,8 @@ const tokens = {
         WBTC: '0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4',
         FOXY: '0x5FBDF89403270a1846F5ae7D113A989F850d1566',
         CROAK: '0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF',
+        REX33: '0xe4eeb461ad1e4ef8b8ef71a33694ccd84af051c4',
+        xREX: '0xc93b315971a4f260875103f5da84cb1e30f366cc',
         z0weETH: '0x77E305B4D4D3b9DA4e82Cefd564F5b948366A44b', // TODO all ZeroLend not priced properly
         z0WETH: '0xB4FFEf15daf4C02787bC5332580b838cE39805f5',
         z0ezETH: '0x0684FC172a0B8e6A65cF4684eDb2082272fe9050',
@@ -137,7 +140,16 @@ const tokens = {
     }
 };
 
-const exceptions = {
+const tokenMapping = {
+    linea: {
+        [tokens.linea.xREX]: {
+            coingeckoId: 'etherex',
+            decimals: 18,
+        },
+    },
+}
+
+const tokenMappingERC20 = {
     ethereum: [
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
@@ -146,6 +158,7 @@ const exceptions = {
     ],
     linea: [
         { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
+        { token: tokens.linea.xREX, coingeckoId: "etherex", decimals: 18 },
         // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
         // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
         // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
@@ -184,19 +197,44 @@ const treasuryNFTs = {
     mode: [
         // { name: 'MODE', veNft: '0x06ab1Dc3c330E9CeA4fDF0C7C6F6Fb6442A4273C', baseToken: tokens.mode.MODE, owner: '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', useLocked: false },
     ]
-};
+};  
 
-const vaultContracts = [
-    '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', // tacETH
-    '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', // tacBTC
-    '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', // tacUSD
-];
+const turtleVaults = {
+    linea: [
+        {address: '0x1b316fA2D6C44b65C1ed6D29b37743Cd362F0f71' }, // Turtle Linea ETH
+        {address: '0x7df7e45ab573ace8f872b5d5a1689af7ff1a07f7' }, // Turtle Linea USDC
+    ],
+    ethereum: [
+        {address: '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', strategy: "erc20" }, // tacBTC
+        {address: '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', strategy: "erc20" }, // tacETH
+        {address: '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', strategy: "erc20" }, // tacUSD
+        {address: '0xe0dfbe4748ed96350754f1328679bd9647bf9621', strategy: "erc4626" }, // Lagoon USDT
+        {address: '0xbca723C30d55F0915e32019a95AA29ea21fd555C', strategy: "erc4626" }, // Lagoon WETH
+        {address: '0x423b469268b15821107C38d1E1f702877219bc52', strategy: "erc4626" }, // Lagoon WBTC
+        {address: '0xd56031b6E6860Bd41dCe2729D1beD21c387B26ce', strategy: "erc4626" }, // Lagoon USDC
+        {address: '0x1E2aAaDcF528b9cC08F43d4fd7db488cE89F5741', strategy: "erc4626" }, // Morpho USDC
+        {address: '0xb5e4576C2FAA16b0cC59D1A2f3366164844Ef9E0', strategy: "erc4626" }, // Morpho cbBTC
+        {address: '0x0bB2751a90fFF62e844b1521637DeD28F3f5046A', strategy: "erc4626" }, // Morpho WETH
+        {address: "0x18C17621d2a692EDb64276e208cf41B48443ba78"},  // Turtle Katana USDT
+        {address: "0xc767488dE987834f6b29490224b6a8a2F759a97d"}, // Turtle Katana USDC
+        {address: "0xa2B59fD45Ca23F35A0e10Da338814D662D928241"}, // Turtle Katana WETH
+        {address: "0x82B3491b7B9F3Df1981A55954137cD99aCDCee0a"}, // Turtle Katana WBTC
+    ],
+    avax: [
+        {address: '0x3048925B3EA5A8C12eeCCcb8810F5F7544dB54af' }, // Turtle Avalanche USDC
+        {address: '0xB893C8D7000e0408Eb7d168152Ec7feFdD0d25E3' }, // Turtle Avalanche BTC
+        {address: '0x662e5EFB6b31C5e0A130926DD3C2b78b1678bD08' }, // Turtle Avalanche AVAX
+    ],
+}
+
+
 
 module.exports = {
     defaultTokens,
     tokens,
     treasuryMultisigs,
-    exceptions,
+    tokenMapping,
+    tokenMappingERC20,
     treasuryNFTs,
-    vaultContracts,
+    turtleVaults,
 };

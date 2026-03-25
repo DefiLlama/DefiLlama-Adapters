@@ -1,11 +1,12 @@
-const axios = require('axios');
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require("@solana/web3.js");
 const { sumTokens2, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } = require('../helper/solana');
 const BN = require("bn.js");
+const { getConfig } = require('../helper/cache');
 
 const programId = new PublicKey('ProPh6ruVL41JR3XXPuy6hN6TPH1ERqpWkZ9dp9YSEe')
 const globalState = new PublicKey('6PZKJowZMUAgxLxAJmHsrvzEL8PdXNymqYSJDwPRgh6V')
-const token = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v')
+const token = new PublicKey(ADDRESSES.solana.USDC)
 
 const getAta = (owner) => {
   const [ata] = PublicKey.findProgramAddressSync(
@@ -32,10 +33,11 @@ function getPredictionMarketAddress(marketId) {
 }
 
 async function tvl(api) {
-  const lastRoundId = await axios.get("https://backend.prophet.fun/business-metrics/last-round-id")
+  const { data } = await getConfig('prophet-fun/markets', 'https://backend.prophet.fun/business-metrics/get-markets?page=1&perPage=1000&sortDirection=desc&sortField=volume24h&statusFromFront=active')
+  const ids = data.map(market => market.marketBase.id)
   const tokenAccounts = []
 
-  Array.from({ length: lastRoundId.data.roundId }, (_, i) => i + 1).forEach((roundId) => {
+  ids.forEach((roundId) => {
     const marketAddress = getPredictionMarketAddress(roundId)
     const marketAta = getAta(marketAddress)
     tokenAccounts.push(marketAta)

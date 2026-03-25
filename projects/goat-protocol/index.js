@@ -12,7 +12,7 @@ const config = {
 module.exports = {
   doublecounted: true,
   hallmarks: [
-    [1732186800, "Multistrategies Launch"]
+    ['2024-11-21', "Multistrategies Launch"]
   ],
 }
 

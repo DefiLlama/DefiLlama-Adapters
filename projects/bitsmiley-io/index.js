@@ -5,7 +5,7 @@ async function tvl(api) {
   
   return sumTokens2({ owners: [
     '0x37fc73b4dda9f7263926590838e32e05e4e051e9',
-  ], tokens: [ADDRESSES.btr.WBTC, '0xfe9f969faf8ad72a83b761138bf25de87eff9dd2'], api, }) //wbtc and usdt
+  ], tokens: [ADDRESSES.btr.WBTC, ADDRESSES.btr.USDT], api, }) //wbtc and usdt
 }
 
 module.exports = {

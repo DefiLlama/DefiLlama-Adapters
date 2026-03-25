@@ -1,5 +1,10 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
+const abi = {
+    "wantLockedTotal": "uint256:wantLockedTotal",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCubPerShare, uint16 depositFeeBP)",
+    "balanceOf": "function balanceOf(address) view returns (uint256)"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { yieldHelper } = require('../helper/yieldHelper')
 

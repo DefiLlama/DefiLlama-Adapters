@@ -17,7 +17,7 @@ const exportsV2 = aaveExports('', addressesProviderRegistryXDAI_old, undefined, 
 
 module.exports = {
   // hallmarks: [
-  //   [1647302400, "Reentrancy attack"]
+  //   ['2022-03-15', "Reentrancy attack"]
   // ],
   methodology: methodologies.lendingMarket,
   xdai: {
