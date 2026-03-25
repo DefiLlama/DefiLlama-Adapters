@@ -9,10 +9,13 @@ const MOJOS_PER_XCH = 1e12;
  */
 async function tvl(api) {
   const data = await get(STATS_API);
+  if (!Array.isArray(data?.stats) || data.stats.length === 0)
+    throw new Error("CircuitDAO stats API returned empty or invalid `stats`");
   // stats array is oldest-first; take the most recent entry
   const latest = data.stats[data.stats.length - 1];
-  const xchAmount = latest.collateral / MOJOS_PER_XCH;
-  api.addCGToken("chia", xchAmount);
+  if (latest?.collateral == null)
+    throw new Error("CircuitDAO stats API missing `collateral` in latest entry");
+  api.addCGToken("chia", latest.collateral / MOJOS_PER_XCH);
 }
 
 module.exports = {
