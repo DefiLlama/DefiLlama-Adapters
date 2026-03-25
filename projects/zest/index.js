@@ -1,6 +1,3 @@
-const { getExports } = require('../helper/heroku-api')
+const api = require('./api')
 
-module.exports = {
-  timetravel: false,
-  ...getExports("zest", ['stacks'], ['borrowed']),
-}
+module.exports = api
