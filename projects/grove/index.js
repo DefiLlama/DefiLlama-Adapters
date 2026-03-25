@@ -16,6 +16,7 @@ const tokenConfigs = {
     '0x5a0f93d040de44e78f251b03c43be9cf317dcf64', // JAAA (Janus Henderson via Centrifuge)
     '0x51C2d74017390CbBd30550179A16A1c28F7210fc', // STAC (BNY Mellon via Securitize)
     '0xFa82580c16A31D0c1bC632A36F82e83EfEF3Eec0', // aEthRLUSD (Aave Core)
+    '0xE3190143Eb552456F88464662f0c0C4aC67A77eB', // aHorRwaRLUSD (Aave Horizon)
     '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a', // AUSD (Agora)
     ADDRESSES.ethereum.USDC,
   ],
@@ -24,6 +25,7 @@ const tokenConfigs = {
   ],
   avax: [
     '0x58f93d6b1ef2f44ec379cb975657c132cbed3b6b', // JAAA (Janus Henderson via Centrifuge on Avalanche)
+    '0x2C0aDFF8e114f3cA106051144353aC703D24B901', // GACLO-1 (Galaxy Arch CLO)
     ADDRESSES.avax.USDC,
   ],
   plume_mainnet: [
@@ -52,19 +54,6 @@ const curveConfigs = {
   ],
 }
 
-const AAVE_HORIZON_RLUSD = '0xE3190143Eb552456F88464662f0c0C4aC67A77eB'
-const GACLO1 = '0x2C0aDFF8e114f3cA106051144353aC703D24B901'
-
-// Tokens where DefiLlama lacks pricing - map to underlying stablecoin
-const receiptToUnderlying = {
-  ethereum: [
-    { receipt: AAVE_HORIZON_RLUSD, underlying: RLUSD },
-  ],
-  avax: [
-    { receipt: GACLO1, underlying: ADDRESSES.avax.USDC }, // Galaxy Arch CLOs (~$1/token)
-  ],
-}
-
 async function tvl(api) {
   const tokens = tokenConfigs[api.chain] || []
   const proxy = almProxy[api.chain]
@@ -75,24 +64,19 @@ async function tvl(api) {
     api.add(tokens, balances)
   }
 
-  await addReceiptTokenBalances(api)
+  // Remove up to $50M GALCO seeded by Grove from TVL
+  if (api.chain === 'avax') {
+    const GALCO = 'avax:0x2C0aDFF8e114f3cA106051144353aC703D24B901'
+    const SEED_AMOUNT = 50_000_000e6
+    const balances = api.getBalances()
+    const galcoBal = Number(balances[GALCO] || 0)
+    if (galcoBal > 0) {
+      balances[GALCO] = String(Math.max(0, galcoBal - SEED_AMOUNT))
+    }
+  }
+  
   await addMorphoVaultBalances(api)
   await addCurveBalances(api)
-}
-
-async function addReceiptTokenBalances(api) {
-  const mappings = receiptToUnderlying[api.chain]
-  if (!mappings || mappings.length === 0) return
-
-  const proxy = almProxy[api.chain]
-  const balances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: mappings.map((m) => ({ target: m.receipt, params: proxy })),
-  })
-
-  mappings.forEach((m, i) => {
-    api.add(m.underlying, balances[i])
-  })
 }
 
 async function addMorphoVaultBalances(api) {
@@ -140,7 +124,7 @@ async function addCurveBalances(api) {
 }
 
 module.exports = {
-  methodology: 'Counts the value of assets held by the Grove ALM Proxy across all chains, including RWA tokens, Aave aTokens, Morpho vault shares, Curve LP positions, and stablecoins.',
+  methodology: 'Counts the value of assets held by the Grove ALM Proxy across all chains, including RWA tokens, Aave aTokens, Morpho vault shares, Curve LP positions, and stablecoins. Excludes up to $50M of GALCO tokens from grove anchor allocation: https://investor.galaxy.com/news-releases/news-release-details/galaxy-announces-initial-closing-debut-tokenized-clo-75-million',
   start: '2025-06-25',
 }
 
