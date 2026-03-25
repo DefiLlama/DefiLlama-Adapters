@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/chain/stacks')
-const { call } = require('../helper/chain/stacks-api')
+const { call, getBlockAtTimestamp } = require('../helper/chain/stacks-api')
 const { nullAddress } = require('../helper/tokenMapping')
 
 const V2_VAULTS = [
@@ -31,16 +31,21 @@ async function tvl() {
 }
 
 async function borrowed(api) {
+    const block = api.block ?? (api.timestamp ? await getBlockAtTimestamp(api.timestamp) : undefined)
     await Promise.all(V2_VAULTS.map(async ({ vault, tokenId }) => {
-        const [assets, available] = await Promise.all([
-            call({ target: vault, abi: 'get-assets' }),
-            call({ target: vault, abi: 'get-available-assets' }),
-        ])
-        const borrowedAmt = toBI(assets) - toBI(available)
-        if (borrowedAmt > 0n)
-            api.add(tokenId, borrowedAmt.toString())
+        try {
+            const [assets, available] = await Promise.all([
+                call({ target: vault, abi: 'get-assets', block }),
+                call({ target: vault, abi: 'get-available-assets', block }),
+            ])
+            const borrowedAmt = toBI(assets) - toBI(available)
+            if (borrowedAmt > 0n)
+                api.add(tokenId, borrowedAmt.toString())
+        } catch (e) {
+            if (e.message?.includes('429')) throw e
+            // Vault may not have existed at this block height
+        }
     }))
-    console.log('Finished fetching borrowed amounts for V2 vaults, now fetching for V1 assets...', api.getBalances())
     return api.getBalances()
 }
 
