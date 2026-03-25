@@ -1669,6 +1669,14 @@ const uniV3Configs = {
       fromBlock: 1440863,
     },
   },
+  'virtus-protocol-cl': {
+    base: {
+      factory: '0x0e5Ab24beBdA7e5Bb3961f7E9b3532a83aE86B48',
+      fromBlock: 42960000,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
