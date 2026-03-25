@@ -1,5 +1,7 @@
 const { abi } = require("./abi");
 const { default: BigNumber } = require('bignumber.js')
+const { staking } = require('../helper/staking');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const CONFIG = {
   sonic: {
@@ -34,20 +36,23 @@ const CONFIG = {
   },
 };
 
-const TARGET_AMOUNT_MULTIPLIER = 50
+const GDEX_TOKEN = "0x53Cb59D32a8d08fC6D3f81454f150946A028A44d";
+const STAKING_CONTRACT = "0xd7D11E2d4E8E7b65E905aa9d16E488C37195Ca62";
+const POOL2_ADDRESS = "0x65B6ee9CaC744D4eed9886406EAD6bc4E5681068";
+
+const TARGET_AMOUNT_MULTIPLIER = 50;
+
 function estimatedAmountTo(tokensInAmount) {
-  const adjustedBalance = BigNumber(tokensInAmount).div(TARGET_AMOUNT_MULTIPLIER).toFixed(0);
-  return adjustedBalance;
-};
+  return BigNumber(tokensInAmount).div(TARGET_AMOUNT_MULTIPLIER).toFixed(0);
+}
 
 function estimatedAmountFrom(tokensOutAmount) {
-  const adjustedBalance = BigNumber(tokensOutAmount).times(TARGET_AMOUNT_MULTIPLIER).toFixed(0);
-  return adjustedBalance;
-};
+  return BigNumber(tokensOutAmount).times(TARGET_AMOUNT_MULTIPLIER).toFixed(0);
+}
 
 const getVaults = async (api, factory) => {
-  const vaults = await api.fetchList({ lengthAbi: abi.factory.vaultsLength, itemAbi: abi.factory.vaults, target: factory, permitFailure:true });
-  const farmsAll = await api.fetchList({ lengthAbi: abi.vault.farmsLength, itemAbi: abi.vault.farms, targets: vaults, groupedByInput: true, permitFailure:true })
+  const vaults = await api.fetchList({ lengthAbi: abi.factory.vaultsLength, itemAbi: abi.factory.vaults, target: factory, permitFailure: true });
+  const farmsAll = await api.fetchList({ lengthAbi: abi.vault.farmsLength, itemAbi: abi.vault.farms, targets: vaults, groupedByInput: true, permitFailure: true });
 
   return vaults.map((vault, i) => {
     const farms = farmsAll[i] || [];
@@ -61,7 +66,7 @@ const getVaultsConnectors = async (api, vaultFarms) => {
 
   return vaultFarms
     .map((item, i) => {
-      const connector = connectors[i]
+      const connector = connectors[i];
       if (!connector) return null;
       delete item.farm.data;
       return { ...item, connector };
@@ -95,6 +100,28 @@ const tvl = async (api) => {
   api.add(nativeToken, totalNativeAmount);
 };
 
-Object.keys(CONFIG).forEach((chain) => {
-  module.exports[chain] = { tvl, start: CONFIG[chain].start };
-})
+async function pool2(api) {
+  const [token0, token1] = await Promise.all([
+    api.call({ abi: 'address:token0', target: POOL2_ADDRESS }),
+    api.call({ abi: 'address:token1', target: POOL2_ADDRESS }),
+  ]);
+  return sumTokens2({ api, ownerTokens: [[[token0, token1], POOL2_ADDRESS]] });
+}
+
+module.exports = {
+  methodology: "TVL is calculated by converting locked staking token liquidity to native token equivalent via on-chain swap estimation across all vaults",
+  hallmarks: [
+    ['2025-04-12', "Launch on Base"],
+    ['2025-05-03', "Launch on Sonic"],
+    ['2025-08-12', "Launch on Avalanche"],
+    ['2025-10-03', "Launch on BNB Chain"],
+    ['2026-01-29', "Launch on Ethereum"],
+    ['2026-02-17', "Launch on Arbitrum"],
+  ],
+  sonic:    { tvl, start: CONFIG.sonic.start },
+  avax:     { tvl, start: CONFIG.avax.start },
+  bsc:      { tvl, start: CONFIG.bsc.start },
+  ethereum: { tvl, start: CONFIG.ethereum.start },
+  base:     { tvl, start: CONFIG.base.start, staking: staking(STAKING_CONTRACT, GDEX_TOKEN), pool2, },
+  arbitrum: { tvl, start: CONFIG.arbitrum.start },
+};
