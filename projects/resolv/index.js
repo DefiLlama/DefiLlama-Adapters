@@ -7,9 +7,11 @@ const tokens = [
 ]
 
 module.exports = {
+  methodology: 'Counts total supply of USR and RLP tokens, subtracting 80M minted in hack.',
   ethereum: {
     misrepresentedTokens: true,
     tvl: async (api) => { 
+      if (api.timestamp > 1777106021) throw new Error('Resolv error - has the hack been resolved?')
       if (api.timestamp > 1774137600) {
         api.add(ADDRESSES.ethereum.USDC, (await api.call({ target: tokens[0], abi: 'erc20:totalSupply' })) / 10 **12)
         // Subtract 80M after hack 
