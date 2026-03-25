@@ -10,22 +10,11 @@ const OSAK = {
   avalanche: '0x96E1056a8814De39c8c3Cd0176042d6ceCD807d7',
 };
 
-// LP tokens farms
-const lpTokens = {
-  base:      '0x086903c53057c96582b3075e3c0b1b570574a8fe',
-  arbitrum:  '0xE67c34d25D9CA2Fc41824184309C6Fce9B0558c5',
-  bsc:       '0x61F7620a747111678c5Fe83d822a0afd060Ba0F7',
-  avalanche: '0xE67c34d25D9CA2Fc41824184309C6Fce9B0558c5',
-  polygon:   '0xE67c34d25D9CA2Fc41824184309C6Fce9B0558c5',
-  optimism:  '0x61F7620a747111678c5Fe83d822a0afd060Ba0F7',
-};
-
 const factories = {
-  ethereum:  '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', // Uniswap V2 (not_used at this moment)
-  base:      '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6', // Uniswap V2 Base
-  arbitrum:  '0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9', // Uniswap V2 Arbitrum
-  optimism:  '0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf', // Uniswap V2 Optimism
-  polygon:   '0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C', // Uniswap V2 Polygon
+  base:      '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6', // Uniswap V2
+  arbitrum:  '0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9', // Uniswap V2
+  optimism:  '0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf', // Uniswap V2
+  polygon:   '0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C', // Uniswap V2
   bsc:       '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73', // PancakeSwap V2
   avalanche: '0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10', // Trader Joe V1
 };
@@ -34,7 +23,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: `TVL counts $OSAK tokens locked across chains + value of OSAK LP tokens staked in farms at farms.osaka.win`,
 
-  // Locked $OSAK (single token)
+  // Locked $OSAK
   ethereum:  { tvl: sumTokensExport({ owners: [OSAK.ethereum], tokens: [OSAK.ethereum] }) },
   base:      { tvl: sumTokensExport({ owners: [OSAK.base],      tokens: [OSAK.base] }) },
   arbitrum:  { tvl: sumTokensExport({ owners: [OSAK.arbitrum],  tokens: [OSAK.arbitrum] }) },
@@ -43,11 +32,11 @@ module.exports = {
   polygon:   { tvl: sumTokensExport({ owners: [OSAK.polygon],   tokens: [OSAK.polygon] }) },
   avalanche: { tvl: sumTokensExport({ owners: [OSAK.avalanche], tokens: [OSAK.avalanche] }) },
 
-  // LP Farms value
-  base:      { tvl: getUniTVL({ factory: factories.base,      chain: 'base',      useDefaultCoreAssets: true }) },
-  arbitrum:  { tvl: getUniTVL({ factory: factories.arbitrum,  chain: 'arbitrum',  useDefaultCoreAssets: true }) },
-  optimism:  { tvl: getUniTVL({ factory: factories.optimism,  chain: 'optimism',  useDefaultCoreAssets: true }) },
-  polygon:   { tvl: getUniTVL({ factory: factories.polygon,   chain: 'polygon',   useDefaultCoreAssets: true }) },
-  bsc:       { tvl: getUniTVL({ factory: factories.bsc,       chain: 'bsc',       useDefaultCoreAssets: true }) },
-  avalanche: { tvl: getUniTVL({ factory: factories.avalanche, chain: 'avalanche', useDefaultCoreAssets: true }) },
+  // Staked LP Farms (pool2)
+  base:      { pool2: getUniTVL({ factory: factories.base,      chain: 'base',      useDefaultCoreAssets: true }) },
+  arbitrum:  { pool2: getUniTVL({ factory: factories.arbitrum,  chain: 'arbitrum',  useDefaultCoreAssets: true }) },
+  optimism:  { pool2: getUniTVL({ factory: factories.optimism,  chain: 'optimism',  useDefaultCoreAssets: true }) },
+  polygon:   { pool2: getUniTVL({ factory: factories.polygon,   chain: 'polygon',   useDefaultCoreAssets: true }) },
+  bsc:       { pool2: getUniTVL({ factory: factories.bsc,       chain: 'bsc',       useDefaultCoreAssets: true }) },
+  avalanche: { pool2: getUniTVL({ factory: factories.avalanche, chain: 'avalanche', useDefaultCoreAssets: true }) },
 };
