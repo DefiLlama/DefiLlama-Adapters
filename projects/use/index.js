@@ -15,8 +15,6 @@ module.exports = {
         // Count ERG in both BANK and LP
         [ADDRESSES.null, BANK],
         [ADDRESSES.null, LP],
-        // Count USE only in LP
-        [USE, LP],
       ],
     }),
   },
