@@ -1,14 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
 
 const LBTCV = '0x5401b8620E5FB570064CA9114fd1e135fd77D57c'       // vault (ETH/Base/BSC)
 const SONIC_VAULT = '0x309f25d839a2fe225e80210e110C99150Db98AAF'  // vault (Sonic)
 
-const UNIV4_ETH_NFT = '0xbd216513d74c8cf14cf4747e6aaa6420ff64ee9e'
-const UNIV4_ETH_DEPLOY_BLOCK = 21689089
-const TRANSFER_EVENT_ABI = 'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
-const TRANSFER_EVENT_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 const LBTC = '0xecAc9C5F704e954931349Da37F60E39f515c11c1'
 
 // ── Add new BoringVault tokens here ──────────────────────────────────────────
@@ -96,41 +91,6 @@ async function unwrapBoringVault(api, vaultToken, holder) {
   api.add(baseAsset, amount)
 }
 
-function addressToTopic(address) {
-  return '0x' + address.toLowerCase().replace(/^0x/, '').padStart(64, '0')
-}
-
-async function getOwnedUniV4PositionIds({ api, owner, nftAddress, fromBlock }) {
-  const ownerTopic = addressToTopic(owner)
-  // Full log objects (no onlyArgs) are needed to get blockNumber/logIndex for
-  // correct chronological ordering. add-then-delete without ordering loses
-  // round-trips: token sent out and returned would be excluded.
-  const [received, sent] = await Promise.all([
-    getLogs({
-      api, target: nftAddress, eventAbi: TRANSFER_EVENT_ABI,
-      topics: [TRANSFER_EVENT_TOPIC, null, ownerTopic],
-      fromBlock, extraKey: `univ4-received-${owner.toLowerCase()}`,
-    }),
-    getLogs({
-      api, target: nftAddress, eventAbi: TRANSFER_EVENT_ABI,
-      topics: [TRANSFER_EVENT_TOPIC, ownerTopic],
-      fromBlock, extraKey: `univ4-sent-${owner.toLowerCase()}`,
-    }),
-  ])
-
-  const allEvents = [
-    ...received.map(log => ({ blockNumber: log.blockNumber, logIndex: log.logIndex ?? 0, tokenId: log.args.tokenId.toString(), type: 'in' })),
-    ...sent.map(log => ({ blockNumber: log.blockNumber, logIndex: log.logIndex ?? 0, tokenId: log.args.tokenId.toString(), type: 'out' })),
-  ].sort((a, b) => a.blockNumber - b.blockNumber || a.logIndex - b.logIndex)
-
-  const active = new Set()
-  for (const { tokenId, type } of allEvents) {
-    if (type === 'in') active.add(tokenId)
-    else active.delete(tokenId)
-  }
-  return [...active]
-}
-
 // ─── Per-chain extra TVL hooks ────────────────────────────────────────────────
 
 async function tvlEthExtras(api) {
@@ -144,16 +104,7 @@ async function tvlEthExtras(api) {
     await unwrapBoringVault(api, vault, LBTCV)
   }
 
-  // 3. Uniswap V4 concentrated liquidity positions
-  const positionIds = await getOwnedUniV4PositionIds({
-    api, owner: LBTCV, nftAddress: UNIV4_ETH_NFT, fromBlock: UNIV4_ETH_DEPLOY_BLOCK,
-  })
-  if (positionIds.length) {
-    await sumTokens2({
-      api, owner: LBTCV, resolveUniV4: true,
-      uniV4ExtraConfig: { nftAddress: UNIV4_ETH_NFT, positionIds },
-    })
-  }
+  await sumTokens2({ api, owner: LBTCV, resolveUniV4: true, })
 }
 
 async function tvlCornExtras(api) {
