@@ -13,6 +13,6 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  methodology: 'Tvl counts all assets held in DAO treasury (TimelockController) contracts created through the CreateDAO v2 factory. Governance tokens created by each DAO are exported separately as ownTokens.',
+  methodology: 'Tvl counts all assets held in DAO treasury (TimelockController) contracts created through the CreateDAO v2 factory.',
   ethereum: { tvl }
 }
