@@ -13,9 +13,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-    methodology:
-        "TVL includes pools created on rain.one platform.",
-    arbitrum: {
-        tvl: rainProtocolTvl,
-    },
+    methodology: "TVL includes all markets created on rain.one platform.",
+    arbitrum: { tvl },
 }
