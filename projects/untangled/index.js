@@ -16,21 +16,11 @@ async function tvl(api) {
   let totalUSD = 0;
 
   for (const vault of VAULTS) {
-    try {
-      const totalAssets = await callSoroban(vault.contract, "total_assets");
-      const normalized = Number(totalAssets) / 10 ** USDC_DECIMALS;
-      totalUSD += normalized;
-    } catch (e) {
-      // Skip vault if it fails (e.g. not yet deployed)
-      console.log(`Skipping ${vault.name}: ${e.message}`);
-    }
+    const totalAssets = await callSoroban(vault.contract, "total_assets");
+    const normalized = Number(totalAssets) / 10 ** USDC_DECIMALS;
+    totalUSD += normalized;
   }
-
-  if (totalUSD > 0) {
-    api.addCGToken("usd-coin", totalUSD);
-  }
-
-  return api.getBalances();
+  api.addCGToken("usd-coin", totalUSD);
 }
 
 module.exports = {
