@@ -19,7 +19,7 @@ const configs = {
 const staking = async (api) => {
   const balances = await api.call({ target: api3CirculatingSupply, abi: "uint256:getLockedVestings" })
   api.add(api3_token, -balances)
-  return sumTokens2({ owner: api3_dao_pool, tokens: [api3_token] })
+  return sumTokens2({ owner: api3_dao_pool, tokens: [api3_token], api })
 }
 
 module.exports = {
