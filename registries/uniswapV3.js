@@ -1084,6 +1084,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0xff7b3e8c00e57ea31477c32a5b52a58eea47b072',
       fromBlock: 7876741,
+      permitFailure: true,
     },
   },
   'quickswap-v3': {
@@ -1666,6 +1667,15 @@ const uniV3Configs = {
     doma: {
       factory: '0x2e50b586d5bcD04cb6125E028A6a669f7f3cF1C2',
       fromBlock: 1440863,
+    },
+  },
+  'virtus-protocol-cl': {
+    base: {
+      factory: '0x0e5Ab24beBdA7e5Bb3961f7E9b3532a83aE86B48',
+      fromBlock: 42960000,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+      extraKey: 'v1'
     },
   },
 }

@@ -2796,6 +2796,15 @@ const uniV2Configs = {
       },
       staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
     },
+    base: {
+      factory: '0x88888493d3e3a133cB80da23610f23a6D563D083',
+      fetchBalances: true,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint) view returns (address)',
+      },
+      staking: ['0x88889e34e5Eb7a8F0f986DDce5f2711220A0c02F', '0x888859FEaAb4922DFBB9Add836172ec6f38caBb2'],
+    },
   },
   'wingswap': {
     methodology: 'Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2844,7 +2853,22 @@ const uniV2Configs = {
   'qie-dex': {
     start: '2025-08-05',
     qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
-  }
+  },
+  'virtus-protocol': {
+    base: '0x7F03ae4452192b0E280fB0d4f9c225DDa88C7623',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      }
+    }
+  },
+  'forest-v1': {
+    bsc: {
+      factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
+      staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

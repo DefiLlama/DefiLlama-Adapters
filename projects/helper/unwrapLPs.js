@@ -135,7 +135,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
     if (uniV4PositionCallCount > 51) throw new Error('too many uniswap v4 position calls, find some other solution or remove caching, or batch owners')
 
     const defaultGraphEndpoints = {
-      ethereum: 'AdA6Ax3jtct69NnXfxNjWtPTe9gMtSEZx2tTQcT4VHu',
+      ethereum: 'DiYPVdygkfjDWhbxGSqAQxwBKmfKnkWQojqeM2rkLb3G',
       base: '6UjxSFHTUa98Y4Uh4Tb6suPVyYxgPHpPEPfmFNihzTHp',
       unichain: 'Bd8UnJU8jCRJKVjcW16GHM3FNdfwTojmWb3QwSAmv8Uc',
       bsc: '7JTFXJdejseGj6cnTo3V3SNu2AkWyXpGieZm5NL2eYAA',
@@ -153,7 +153,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
               owner_in: ["${owner.toLowerCase()}"]
             }) {    id      }}`
     const data = await cachedGraphQuery(`uni-v4-positions/${chain}-${owner}`, endpoint, query, { fetchById: true, })
-    const positionIds = data.map(i => i.id)
+    const positionIds = Array.isArray(data) ? data.map(i => i.id) : []
     const verifiedPositionIds = []
 
 
