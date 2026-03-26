@@ -262,7 +262,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Total value of assets in the Stellar DEX (liquidity pools and open offers), priced via DefiLlama.',
+  methodology: 'Total value of assets in the Stellar DEX (open offers), priced via DefiLlama.',
   stellar: { tvl },
   timetravel: true,
   misrepresentedTokens: false,
