@@ -175,7 +175,7 @@ for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
 }
 
 // Add kpk Fund (OIV) TVL to each chain the fund is deployed on
-for (const chain of ETH_ALPHA_FUND.chains) {
+for (const chain of Object.keys(ETH_ALPHA_FUND_CONFIG).filter(k => k !== 'portfolioSafe')) {
   if (exportObjects[chain]) {
     const originalTvl = exportObjects[chain].tvl
     exportObjects[chain].tvl = async (api) => {
