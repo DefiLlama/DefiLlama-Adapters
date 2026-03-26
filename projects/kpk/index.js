@@ -1,4 +1,5 @@
 const { getCuratorExport } = require("../helper/curators")
+const { sumTokens2, unwrapConvexRewardPools } = require("../helper/unwrapLPs")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
@@ -16,7 +17,7 @@ const GearboxCompressorABI = {
 // ---- Config (extend as needed) ----
 const configs = {
   methodology:
-    "Counts (1) assets deposited in curated ERC-4626 vaults and (2) collateral held in Gearbox v3.1 Credit Accounts from the specified Market Configurator. Morpho v1/v2 vaults are deduplicated to avoid double-counting.",
+    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, and kpk Fund AUM via onchain NAV Calculators.",
   blockchains: {
     ethereum: {
       // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
@@ -40,26 +41,36 @@ const configs = {
         "0xc88eFFD6e74D55c78290892809955463468E982A", //Morpho v1 ETH Yield
         "0xD5cCe260E7a755DDf0Fb9cdF06443d593AaeaA13", //Morpho v2 USDC Yield
         "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
+        "0xdaD4e51d64c3B65A9d27aD9F3185B09449712065", //Morpho v1 USDT Prime
+        "0x870F0BF29A25A40E7CC087cD5C53e70C11F2C8A8", //Morpho v2 USDT Prime
       ],
-      
+
       // Other ERC-4626 vaults (non-Morpho)
       erc4626: [
         "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245", //kpk RWA Euler USDC Earn
         "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
         "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
       ],
-      
+
+      // Aleph vaults use underlyingToken() instead of asset(), so they
+      // can't go through the standard ERC-4626 curator helper.
+      alephVaults: [
+        "0x9477df934574d47f240e18cd232e013118666690", //kpk Aleph rETH
+        "0xf857caa91ea4007ec26aee2d039e870eb0fa91bf", //kpk Aleph stETH
+        "0x6cbcc646d7422b734c6fc0954a1c3ca87b1b4ceb", //kpk Aleph osETH
+      ],
+
 
       // NEW: Gearbox v3.1 Market Configurator (legacy configurator) to crawl
       gearboxMarketConfigurator: "0x1b265b97eb169fb6668e3258007c3b0242c7bdbe",
     },
     arbitrum: {
-        // You can use either morphoVaultOwners or morpho here too
-        morpho: [
-          "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
-          "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
-        ],
-      },
+      // You can use either morphoVaultOwners or morpho here too
+      morpho: [
+        "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
+        "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
+      ],
+    },
   },
 }
 
@@ -114,18 +125,110 @@ async function getGearboxV31Collateral(api, marketConfigurator, pageSize = 1e3) 
   }
 }
 
+// ---- Aleph vault TVL (uses underlyingToken() instead of asset()) ----
+
+async function getAlephVaultTvl(api, vaults) {
+  if (!vaults?.length) return
+  const underlyingTokens = await api.multiCall({ abi: "address:underlyingToken", calls: vaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (underlyingTokens[i] && totalAssets[i]) api.add(underlyingTokens[i], totalAssets[i])
+  }
+}
+
+// ---- kpk Fund (OIV) TVL via NAV Calculator ----
+
+const ETH_ALPHA_FUND = {
+  navCalculator: "0xa57A641417fe2703C5364C2f57f35297b16189a5",
+  portfolioSafe: "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b",
+  chains: ["ethereum", "arbitrum", "base", "xdai", "optimism"],
+}
+
+const ETH_ALPHA_FUND_CONFIG = {
+  portfolioSafe: "0x408ea1bC71ec2562ABCB27520cf7077718403496",
+  ethereum: {
+    tokens: [
+      '0x0000000000000000000000000000000000000000', // ETH
+      '0xae78736Cd615f374D3085123A210448E74Fc6393', // rETH
+      '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', // weETH
+      '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', // wstETH
+      '0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7', // rsETH
+      '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // aEthWETH
+      '0xC035a7cf15375cE2706766804551791aD035E0C2', // aEthLidowstETH
+      '0xfA1fDbBD71B0aA16162D76914d69cD8CB3Ef92da', // aEthLidoWETH
+    ],
+    convexRewardPools: [
+      '0x5411CC583f0b51104fA523eEF9FC77A29DF80F58', // cvxweeth-ng
+    ],
+    balancerV3Gauges: [
+      {
+        gauge: '0x62A66eB9aBf7a788F48D0ce7C0C065df9e09dA19', // rETH-waEthWETH gauge
+        bpt: '0x1ea5870f7C037930CE1d5d8d9317c670e89e13E3',
+        vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9',
+      },
+    ],
+  }
+}
+
+async function getKpkFundTvl(api) {
+  const chainCfg = ETH_ALPHA_FUND_CONFIG[api.chain]
+  if (!chainCfg) return
+  const safe = ETH_ALPHA_FUND_CONFIG.portfolioSafe
+
+  await sumTokens2({ api, owner: safe, tokens: chainCfg.tokens })
+
+  // Convex staked positions
+  if (chainCfg.convexRewardPools?.length) {
+    await unwrapConvexRewardPools({
+      api,
+      tokensAndOwners: chainCfg.convexRewardPools.map(rp => [rp, safe]),
+    })
+  }
+
+  // Balancer V3 gauge positions
+  for (const { gauge, bpt, vault } of (chainCfg.balancerV3Gauges || [])) {
+    const gaugeBal = await api.call({ abi: 'erc20:balanceOf', target: gauge, params: [safe] })
+    if (Number(gaugeBal) === 0) continue
+    const bptSupply = await api.call({ abi: 'erc20:totalSupply', target: bpt })
+    const info = await api.call({
+      abi: 'function getPoolTokenInfo(address pool) view returns (address[] tokens, uint8[] tokenTypes, uint256[] rawBalances, uint256[] lastLiveBalances)',
+      target: vault,
+      params: [bpt],
+    })
+    for (let i = 0; i < info.tokens.length; i++) {
+      const amount = BigInt(info.rawBalances[i]) * BigInt(gaugeBal) / BigInt(bptSupply)
+      api.add(info.tokens[i], amount.toString())
+    }
+  }
+}
+
 // ---- Combined TVL export per chain ----
 
-const exportObjects = getCuratorExport(configs)
+// const exportObjects = getCuratorExport(configs)
+const exportObjects = {}
 
-// Add Gearbox v3.1 collateral TVL to each chain
-for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
-  if (exportObjects[chain] && chainCfg.gearboxMarketConfigurator) {
+// Add Gearbox v3.1 collateral + Aleph vault TVL to each chain
+// for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
+//   if (exportObjects[chain] && (chainCfg.gearboxMarketConfigurator || chainCfg.alephVaults)) {
+//     const originalTvl = exportObjects[chain].tvl
+//     exportObjects[chain].tvl = async (api) => {
+//       await originalTvl(api)
+//       await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
+//       await getAlephVaultTvl(api, chainCfg.alephVaults)
+//     }
+//   }
+// }
+
+// Add kpk Fund (OIV) TVL to each chain the fund is deployed on
+for (const chain of ETH_ALPHA_FUND.chains) {
+  if (exportObjects[chain]) {
     const originalTvl = exportObjects[chain].tvl
     exportObjects[chain].tvl = async (api) => {
-      await originalTvl(api)
-      await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
+      // await originalTvl(api)
+      await getKpkFundTvl(api)
     }
+  } else {
+    exportObjects[chain] = { tvl: getKpkFundTvl }
   }
 }
 
