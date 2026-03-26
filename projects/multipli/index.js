@@ -4,6 +4,7 @@ const axios = require("axios")
 async function getTvlByChain(chain) {
     const tvl_response = (await axios.get("https://api.multipli.fi/multipli/v1/external-aggregator/defillama/tvl/"))
     const tvl = tvl_response.data['payload'][chain]
+    console.log(chain, tvl)
     return tvl
 }
 
@@ -24,6 +25,10 @@ module.exports = {
     },
     monad:{
         tvl: () => getTvlByChain('monad')
-    }
+    },
+    arbitrum:{
+        tvl: () => getTvlByChain('arbitrum')
+    },
+
 }
 
