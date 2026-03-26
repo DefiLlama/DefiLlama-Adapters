@@ -1,9 +1,13 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
+const TOKI_LENS_GET_TVL_ABI =
+  "function getTVL(address pool) view returns (tuple(uint256 ptTVLInShare, uint256 ptTVLInAsset, uint256 ptTVLInUSD, uint256 poolTVLInShare, uint256 poolTVLInAsset, uint256 poolTVLInUSD))";
+
 const config = {
   ethereum: {
     factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
+    tokiLens: "0x000000896D3C2837797e9f334b4Cf366Bf645fdF",
     fromBlock: 21942450,
   },
   base: {
@@ -12,6 +16,7 @@ const config = {
   },
   arbitrum: {
     factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
+    tokiLens: "0x000000896D3C2837797e9f334b4Cf366Bf645fdF",
     fromBlock: 314445420,
   },
   optimism: {
@@ -53,7 +58,7 @@ const config = {
 };
 
 async function tvl(api) {
-  const { factory, fromBlock } = config[api.chain];
+  const { factory, tokiLens, fromBlock } = config[api.chain];
 
   const deployLogs = await getLogs({
     api,
@@ -89,21 +94,28 @@ async function tvl(api) {
     permitFailure: true,
   });
 
-  const tokensAndOwners = [];
+  // Separate Curve and TokiHook pools
+  const curveTokensAndOwners = [];
+  const tokiHookPools = [];
+  const tokiHookIndices = [];
+
   for (let i = 0; i < principalTokens.length; i++) {
     const isTokiHook = poolKeyResults[i] && poolKeyResults[i].currency0;
 
     // PT vault always holds target tokens directly
-    tokensAndOwners.push([targets[i], principalTokens[i]]);
+    curveTokensAndOwners.push([targets[i], principalTokens[i]]);
 
-    // Curve pools hold target tokens directly — balanceOf works
-    // TokiHook pools hold liquidity in PoolManager — balanceOf returns 0, skip
-    if (!isTokiHook) {
-      tokensAndOwners.push([targets[i], pools[i]]);
+    if (isTokiHook) {
+      tokiHookPools.push(pools[i]);
+      tokiHookIndices.push(i);
+    } else {
+      // Curve pools hold target tokens directly — balanceOf works
+      curveTokensAndOwners.push([targets[i], pools[i]]);
     }
   }
 
-  const resInTargets = await sumTokens2({ api, tokensAndOwners });
+  // Get Curve TVL via balanceOf
+  const resInTargets = await sumTokens2({ api, tokensAndOwners: curveTokensAndOwners });
 
   const targetToAsset = {};
   const targetToScale = {};
@@ -127,6 +139,38 @@ async function tvl(api) {
       BigInt(resInAsset[assetId]) + adjustedBalance
     ).toString();
   });
+
+  // Get TokiHook TVL via TokiLens.getTVL()
+  if (tokiHookPools.length > 0 && tokiLens) {
+    const tvlResults = await api.multiCall({
+      abi: TOKI_LENS_GET_TVL_ABI,
+      target: tokiLens,
+      calls: tokiHookPools,
+      permitFailure: true,
+    });
+
+    for (let j = 0; j < tokiHookPools.length; j++) {
+      const tvlData = tvlResults[j];
+      if (!tvlData) continue;
+
+      const originalIndex = tokiHookIndices[j];
+      const asset = assets[originalIndex];
+      const scale = scales[originalIndex];
+      if (!asset || !scale) continue;
+
+      const assetId = `${api.chain}:${asset.toLowerCase()}`;
+      // poolTVLInShare = pool liquidity in target token terms (from PoolManager)
+      // ptTVLInShare is already counted via balanceOf(target, pt) above
+      const poolTVL = BigInt(tvlData.poolTVLInShare || 0);
+      if (poolTVL > 0n) {
+        const adjustedBalance = (poolTVL * BigInt(scale)) / BigInt(1e18);
+        resInAsset[assetId] = resInAsset[assetId] ?? "0";
+        resInAsset[assetId] = (
+          BigInt(resInAsset[assetId]) + adjustedBalance
+        ).toString();
+      }
+    }
+  }
 
   return resInAsset;
 }
