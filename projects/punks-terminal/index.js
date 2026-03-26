@@ -15,7 +15,7 @@ module.exports = {
         eventAbi: 'event Deployed(address indexed proxy, address indexed implementation)',
         fromBlock: 19000000,
       })
-      const stashAddresses = logs.map(log => log.proxy)
+      const stashAddresses = [...new Set(logs.map(log => log.proxy.toLowerCase()))]
       const tokensAndOwners = stashAddresses.flatMap(stash => [
         [ETH, stash],
         [WETH, stash],
