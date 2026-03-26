@@ -1,4 +1,3 @@
-
 const VAULTS = ["0x0F54097295E97cE61736bb9a0a1066cDf3e31C8F"];
 
 // Strategies: proof of the collateral held by the vault
