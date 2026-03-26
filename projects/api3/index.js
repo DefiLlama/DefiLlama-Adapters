@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getCuratorExport } = require("../helper/curators");
 
@@ -17,21 +16,17 @@ const configs = {
   }
 }
 
-const stakingTVL = async (api) => {
-  const balances = {}
-  const locked_and_vested = await api.call({
-    target: api3CirculatingSupply,
-    abi: "uint256:getLockedVestings",
-  })
-
-  sdk.util.sumSingleBalance(balances,api3_token,locked_and_vested * -1, api.chain)
-  return sumTokens2({ owner: api3_dao_pool, tokens: [api3_token], balances, api })
+const staking = async (api) => {
+  const balances = await api.call({ target: api3CirculatingSupply, abi: "uint256:getLockedVestings" })
+  api.add(api3_token, -balances)
+  return sumTokens2({ owner: api3_dao_pool, tokens: [api3_token] })
 }
 
 module.exports = {
-  ethereum: {
-    staking: stakingTVL, // tvl / staking
-    tvl: getCuratorExport(configs).ethereum.tvl,
-  },
+  ...getCuratorExport(configs),
   methodology: 'Api3 TVL is all Api3 token staked in the Api3 DAO Pool contract and all assets that are deposited in all vaults curated by Api3.',
+  ethereum: {
+    ...getCuratorExport(configs).ethereum,
+    staking,
+  },
 }
