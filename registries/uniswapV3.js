@@ -1509,6 +1509,13 @@ const uniV3Configs = {
       isAlgebra: true,
     },
   },
+  'trebleswap-v2': {
+    base: {
+      factory: '0x6e606Cf94A4DDc01aEed2Fce16d1b4f5B33e0A31',
+      fromBlock: 39029383,
+      isAlgebra: true,
+    },
+  },
   'ubeswap-v3': {
     celo: {
       factory: '0x67FEa58D5a5a4162cED847E13c2c81c73bf8aeC4',
