@@ -137,35 +137,16 @@ async function getAlephVaultTvl(api, vaults) {
 }
 
 // ---- kpk Fund (OIV) TVL via NAV Calculator ----
-
-const ETH_ALPHA_FUND = {
-  navCalculator: "0xa57A641417fe2703C5364C2f57f35297b16189a5",
-  portfolioSafe: "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b",
-  chains: ["ethereum", "arbitrum", "base", "xdai", "optimism"],
-}
-
 const ETH_ALPHA_FUND_CONFIG = {
-  portfolioSafe: "0x408ea1bC71ec2562ABCB27520cf7077718403496",
+  portfolioSafe: "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b",
   ethereum: {
     tokens: [
-      '0x0000000000000000000000000000000000000000', // ETH
-      '0xae78736Cd615f374D3085123A210448E74Fc6393', // rETH
       '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', // weETH
       '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', // wstETH
       '0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7', // rsETH
-      '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // aEthWETH
-      '0xC035a7cf15375cE2706766804551791aD035E0C2', // aEthLidowstETH
-      '0xfA1fDbBD71B0aA16162D76914d69cD8CB3Ef92da', // aEthLidoWETH
-    ],
-    convexRewardPools: [
-      '0x5411CC583f0b51104fA523eEF9FC77A29DF80F58', // cvxweeth-ng
-    ],
-    balancerV3Gauges: [
-      {
-        gauge: '0x62A66eB9aBf7a788F48D0ce7C0C065df9e09dA19', // rETH-waEthWETH gauge
-        bpt: '0x1ea5870f7C037930CE1d5d8d9317c670e89e13E3',
-        vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9',
-      },
+      '0x2D62109243b87C4bA3EE7bA1D91B0dD0A074d7b1', // aEthrsETH
+      '0xeA51d7853EEFb32b6ee06b1C12E6dcCA88Be0fFE', // aave debt
+      '0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64', // Gearbox dwstETHV3
     ],
   }
 }
@@ -173,58 +154,32 @@ const ETH_ALPHA_FUND_CONFIG = {
 async function getKpkFundTvl(api) {
   const chainCfg = ETH_ALPHA_FUND_CONFIG[api.chain]
   if (!chainCfg) return
-  const safe = ETH_ALPHA_FUND_CONFIG.portfolioSafe
 
-  await sumTokens2({ api, owner: safe, tokens: chainCfg.tokens })
-
-  // Convex staked positions
-  if (chainCfg.convexRewardPools?.length) {
-    await unwrapConvexRewardPools({
-      api,
-      tokensAndOwners: chainCfg.convexRewardPools.map(rp => [rp, safe]),
-    })
-  }
-
-  // Balancer V3 gauge positions
-  for (const { gauge, bpt, vault } of (chainCfg.balancerV3Gauges || [])) {
-    const gaugeBal = await api.call({ abi: 'erc20:balanceOf', target: gauge, params: [safe] })
-    if (Number(gaugeBal) === 0) continue
-    const bptSupply = await api.call({ abi: 'erc20:totalSupply', target: bpt })
-    const info = await api.call({
-      abi: 'function getPoolTokenInfo(address pool) view returns (address[] tokens, uint8[] tokenTypes, uint256[] rawBalances, uint256[] lastLiveBalances)',
-      target: vault,
-      params: [bpt],
-    })
-    for (let i = 0; i < info.tokens.length; i++) {
-      const amount = BigInt(info.rawBalances[i]) * BigInt(gaugeBal) / BigInt(bptSupply)
-      api.add(info.tokens[i], amount.toString())
-    }
-  }
+  await sumTokens2({ api, owner: ETH_ALPHA_FUND_CONFIG.portfolioSafe, tokens: chainCfg.tokens })
 }
 
 // ---- Combined TVL export per chain ----
 
-// const exportObjects = getCuratorExport(configs)
-const exportObjects = {}
+const exportObjects = getCuratorExport(configs)
 
 // Add Gearbox v3.1 collateral + Aleph vault TVL to each chain
-// for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
-//   if (exportObjects[chain] && (chainCfg.gearboxMarketConfigurator || chainCfg.alephVaults)) {
-//     const originalTvl = exportObjects[chain].tvl
-//     exportObjects[chain].tvl = async (api) => {
-//       await originalTvl(api)
-//       await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
-//       await getAlephVaultTvl(api, chainCfg.alephVaults)
-//     }
-//   }
-// }
+for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
+  if (exportObjects[chain] && (chainCfg.gearboxMarketConfigurator || chainCfg.alephVaults)) {
+    const originalTvl = exportObjects[chain].tvl
+    exportObjects[chain].tvl = async (api) => {
+      await originalTvl(api)
+      await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
+      await getAlephVaultTvl(api, chainCfg.alephVaults)
+    }
+  }
+}
 
 // Add kpk Fund (OIV) TVL to each chain the fund is deployed on
 for (const chain of ETH_ALPHA_FUND.chains) {
   if (exportObjects[chain]) {
     const originalTvl = exportObjects[chain].tvl
     exportObjects[chain].tvl = async (api) => {
-      // await originalTvl(api)
+      await originalTvl(api)
       await getKpkFundTvl(api)
     }
   } else {
