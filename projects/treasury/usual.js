@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports } = require("../helper/treasury");
+const { addFiraTreasuryPositions } = require("../fira/treasuryHelper");
 
 const bUSD0  = "0x35d8949372d46b7a3d5a56006ae77b215fc69bc0";
 const tokens = [
@@ -38,18 +39,6 @@ const owners = [
   '0xcbf85D44178c01765Ab32Af72D5E291dcd39A06B', // Treasury 3      
  // '0x28E52d338Aa22Ab3e2331b65291C871B6fd6e517', // LP Holdings
 ]
-const lendingMarketGetUserPositionAbi = "function getUserPosition(tuple(address, address,address, address,uint256,uint256,address), address) view returns (uint256 supplyAssets, uint256 supplyShares, uint256 borrowAssets, uint256 borrowShares, uint256 collateralAssets)";
-const firaLendingMarket= "0xa428723ee8ffd87088c36121d72100b43f11fb6a";
-const UZRMarketParams = [
-    ADDRESSES.ethereum.USD0, // loanToken
-    "0x35D8949372D46B7a3D5A56006AE77B215fc69bC0", // collateralToken (bUSD0)
-    "0x30Da78355FcEA04D1fa34AF3c318BE203C6F2145", // oracle
-    "0xdfCF197B0B65066183b04B88d50ACDC0C4b01385", // irm
-    "880000000000000000",                           // lltv
-    "999900000000000000",                           // param6
-    "0xFE7C47895eDb12a990b311Df33B90Cfea1D44c24",  // Fira UZR vault
-  ];
-  
 // Vaults that need to be priced via convertToAssets 
 const VAULTS = [
   "0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4", // Steakhouse ETH
@@ -88,22 +77,13 @@ base.ethereum.tvl = async (api) => {
   // 1. Run existing treasury logic (standard ERC20 + LPs + UniV3)
   await baseTvl(api)
 
-  // 2. Add Fira position
-  let calls = []
-  owners.forEach(owner => {
-      calls.push({ target: firaLendingMarket, params: [UZRMarketParams, owner] })
-  })
-  // add collateral and subtract borrowed amount
-  const positions = await api.multiCall({ abi: lendingMarketGetUserPositionAbi, calls: calls }) 
-  positions.forEach(position => {
-    api.add(bUSD0, position.collateralAssets)
-    api.add(ADDRESSES.ethereum.USD0,-BigInt(position.borrowAssets) )
-  })
+  // 2. Add Fira positions from fixed/variable/legacy lending markets
+  await addFiraTreasuryPositions(api, owners)
 
 
    // 3. Handle unpriced vaults (Morpho/ERC4626)
   // Step A: Get balances of vault tokens across all owners
-  calls = []
+  let calls = []
   owners.forEach(owner => {
     VAULTS.forEach(vault => {
       calls.push({ target: vault, params: owner })
