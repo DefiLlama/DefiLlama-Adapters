@@ -1,6 +1,6 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
 const axios = require('axios');
-const { getMultiDepositorVaults } = require('../aera-v3/utils')
+const aeraV3 = require('../aera-v3')
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
@@ -274,40 +274,17 @@ async function megavaultTvl(api) {
   api.add(ADDRESSES.ethereum.USDC, (currentTvl * 1e6).toFixed(0));
 }
 
-async function aeraV3Tvl(api) {
-  const vaults = await getMultiDepositorVaults(api)
-
-  await Promise.all(vaults.map(async (vault) => {
-    const [totalSupply, feeCalculator, decimals] = await Promise.all([
-      api.call({ abi: 'function totalSupply() view returns (uint256)', target: vault }),
-      api.call({ abi: 'function feeCalculator() view returns (address)', target: vault }),
-      api.call({ abi: 'function decimals() view returns (uint8)', target: vault }),
-    ])
-    const [numeraireToken, vaultState] = await Promise.all([
-      api.call({ abi: 'function NUMERAIRE() view returns (address)', target: feeCalculator }),
-      api.call({
-        abi: 'function getVaultState(address vault) external view returns ((bool paused, uint8 maxPriceAge, uint16 minUpdateIntervalMinutes, uint16 maxPriceToleranceRatio, uint16 minPriceToleranceRatio, uint8 maxUpdateDelayDays, uint32 timestamp, uint24 accrualLag, uint128 unitPrice, uint128 highestPrice, uint128 lastTotalSupply))',
-        target: feeCalculator,
-        params: [vault],
-      }),
-    ])
-    const unitPrice = vaultState[8]
-    const numeraireBalance = totalSupply * unitPrice / 10 ** decimals
-    api.add(numeraireToken, numeraireBalance)
-  }))
-}
-
 async function combinedEthereumTvl(api) {
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.ethereum?.tvl) await curatorExport.ethereum.tvl(api);
   await megavaultTvl(api);
-  await aeraV3Tvl(api);
+  await aeraV3.ethereum.tvl(api);
 }
 
 async function combinedBaseTvl(api) {
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.base?.tvl) await curatorExport.base.tvl(api);
-  await aeraV3Tvl(api);
+  await aeraV3.base.tvl(api);
 }
 
 module.exports = {
