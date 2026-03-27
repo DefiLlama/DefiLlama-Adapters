@@ -7,7 +7,7 @@ const REGISTRY = '0x1b02E051683b5cfaC5929C25E84adb26ECf87B38'
 const INDEXER_URL = 'https://orca-main-aggr-indx.indexer.hydration.cloud/graphql'
 const GET_RESERVE_DATA_ABI = "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))"
 
-// Decode HydraDX substrate asset ID from EVM precompile address.
+// Decode Hydration substrate asset ID from EVM precompile address.
 // Format: 0x 000000000000000000000000 00000001 XXXXXXXX (last 4 bytes = asset ID)
 function assetIdFromPrecompile(address) {
   const hex = address.toLowerCase().replace('0x', '')
@@ -16,7 +16,7 @@ function assetIdFromPrecompile(address) {
 }
 
 // Fetch stableswap pool map from indexer: poolId (int) -> SS58 accountId.
-// In HydraDX stableswap, pool ID = share token asset ID.
+// In Hydration stableswap, pool ID = share token asset ID.
 async function fetchStableswapPoolMap() {
   const query = `{ stableswaps(first: 1000) { nodes { id accountId } } }`
   const res = await postURL(INDEXER_URL, { query })

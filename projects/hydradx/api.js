@@ -204,7 +204,7 @@ async function omnipoolTvl(api) {
         }
       }
     } catch (error) {
-      console.error(`HydraDX: Error processing XYK pool ${poolAccountId}:`, error);
+      console.error(`Hydration: Error processing XYK pool ${poolAccountId}:`, error);
     }
   }
 
