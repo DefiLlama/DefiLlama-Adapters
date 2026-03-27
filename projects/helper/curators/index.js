@@ -28,7 +28,7 @@ async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults
       adminAddress = new PublicKey(adminAddress)
     // Query vault accounts directly using getProgramAccounts with base58 encoded filter
     const adminBytes = adminAddress.toBuffer()
-    let rawAccounts = await connection.getProgramAccounts(
+    rawAccounts = await connection.getProgramAccounts(
       KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
       {
         filters: [
@@ -500,6 +500,12 @@ async function getCuratorTvl(api, vaults) {
     allVaults.silo = allVaults.silo.concat(await getSiloVaults(api, vaults.siloVaultOwners))
   }
 
+  const logTypeUSD = async (type, usdBefore, api) => {
+    const usdAfter = await api.getUSDValue()
+    const contribution = usdAfter - usdBefore
+    console.log(`[${api.chain}] ${type} TVL: $${contribution.toLocaleString('en-US', { maximumFractionDigits: 0 })}`)
+  }
+
   // Combine all ERC-4626 vaults (morpho, erc4626, etc.) into a single array
   // This ensures de-duplication works across all ERC-4626 vaults regardless of which array they come from
   const allErc4626Vaults = [
@@ -511,41 +517,68 @@ async function getCuratorTvl(api, vaults) {
 
   // Process all ERC-4626 vaults together for proper de-duplication
   if (allErc4626Vaults.length > 0) {
+    const usdBefore = await api.getUSDValue()
     await getCuratorTvlErc4626(api, allErc4626Vaults)
+    await logTypeUSD('morpho/erc4626/mellow', usdBefore, api)
   }
 
   // Process other vault types separately
-  await getCuratorTvlErc4626(api, allVaults.euler)
-  await getCuratorTvlErc4626(api, allVaults.silo)
+  if (allVaults.euler.length > 0) {
+    const usdBefore = await api.getUSDValue()
+    await getCuratorTvlErc4626(api, allVaults.euler)
+    await logTypeUSD('euler', usdBefore, api)
+  } else {
+    await getCuratorTvlErc4626(api, allVaults.euler)
+  }
+
+  if (allVaults.silo.length > 0) {
+    const usdBefore = await api.getUSDValue()
+    await getCuratorTvlErc4626(api, allVaults.silo)
+    await logTypeUSD('silo', usdBefore, api)
+  } else {
+    await getCuratorTvlErc4626(api, allVaults.silo)
+  }
 
   // aera.finance vaults
   if (vaults.aera) {
+    const usdBefore = await api.getUSDValue()
     await getCuratorTvlAeraVault(api, vaults.aera)
+    await logTypeUSD('aera', usdBefore, api)
   }
 
   // vesu.xyz vaults
   if (vaults.vesu) {
+    const usdBefore = await api.getUSDValue()
     await getCuratorTvlVesuVault(api, vaults.vesu)
+    await logTypeUSD('vesu', usdBefore, api)
   }
 
   // vesu.xyz vaults V2
   if (vaults.vesuV2) {
+    const usdBefore = await api.getUSDValue()
     await getCuratorTvlVesuVaultV2(api, vaults.vesuV2)
+    await logTypeUSD('vesuV2', usdBefore, api)
   }
 
   // turtle.club vaults - boring vaults
   if (vaults.turtleclub) {
+    const usdBefore = await api.getUSDValue()
     await getCuratorTvlBoringVault(api, vaults.turtleclub)
+    await logTypeUSD('turtleclub', usdBefore, api)
   }
 
   // symiotic.fi
   if (vaults.symbiotic) {
+    const usdBefore = await api.getUSDValue()
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
+    await logTypeUSD('symbiotic', usdBefore, api)
   }
 
   // nested 4626 vaults
   if (vaults.nestedVaults) {
+    const usdBefore = await api.getUSDValue()
     await getNested4626Vaults(api, vaults.nestedVaults)
+    await logTypeUSD('nestedVaults', usdBefore, api)
   }
 
   return api.getBalances()
