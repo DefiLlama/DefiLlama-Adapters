@@ -42,15 +42,6 @@ const aaveV2Configs = {
     methodology,
     crossfi: '0x09e7b6BF92ba8566939d59fE3e3844385d492E77',
   },
-  'hydration-lending': {
-    methodology,
-    hydradx: {
-      registry: '0x1b02E051683b5cfaC5929C25E84adb26ECf87B38',
-      abis: {
-        getReserveData: "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))",
-      },
-    },
-  },
   'dorian': {
     methodology,
     core: {

@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { postURL } = require('../helper/utils')
 
@@ -54,7 +53,7 @@ const cgMapping = {
   wstETH: 'wrapped-steth',
   LBTC: 'lombard-staked-btc',
   sUSDe: 'ethena-staked-usde',
-  sUSDS: 'savings-usds',
+  sUSDS: 'susds',
   HOLLAR: 'hydrated-dollar',
   PEN: 'pendulum-chain',
   // GDOT: 'gigadot' // skip for doublecount 
@@ -222,4 +221,5 @@ async function omnipoolTvl(api) {
 
 module.exports = {
   hydradx: { tvl: omnipoolTvl },
+  cgMapping,
 }
