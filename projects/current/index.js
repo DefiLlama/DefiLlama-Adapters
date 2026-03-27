@@ -9,7 +9,7 @@ const MARKET_OBJECT_IDS = [
   '0x6f5230c346e27132b8d4d92cb3f4f9c7f4e736d5c32b8f0a2b063c97e67d78f7', // AltCoinMarket
   '0x8e85c433f791685c65fa66923110b8385e13f955daf8792ef805ce2d47139bbc', // EmberMarket
   '0xafe28c816d322a56bdab27b90d4b5e882a0a34ee2d9f02c6a07402a2b69be900', // MatrixGoldMarket
-  '0xafe28c816d322a56bdab27b90d4b5e882a0a34ee2d9f02c6a07402a2b69be900', // EthenaMarket
+  '0xeeef7e9abe201e16c3ca6417b91fa49bec28edcb077eb2fd4a1f126c251e6899', // EthenaMarket
 ]
 
 function coinTypeFromName(name) {
