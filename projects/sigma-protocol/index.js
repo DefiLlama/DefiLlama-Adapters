@@ -33,20 +33,19 @@ module.exports = {
   doublecounted: true,
   bsc: {
     tvl: async (api) => {
-      const stableTotal = await api.call({ target: staticPool, abi: "uint256:totalStableToken" })
-      api.add(staticPoolStableToken, stableTotal)
-      stableTotal = await api.call({ target: stabilityPool1, abi: "uint256:totalStableToken" })
-      api.add(staticPoolStableToken, stableTotal)
-      stableTotal = await api.call({ target: stabilityPool2, abi: "uint256:totalStableToken" })
-      api.add(staticPoolStableToken, stableTotal)
-      stableTotal = await api.call({ target: stabilityPool3, abi: "uint256:totalStableToken" })
-      api.add(staticPoolStableToken, stableTotal)
+      const totals = await api.multiCall({
+        abi: "uint256:totalStableToken",
+        calls: [staticPool, stabilityPool1, stabilityPool2, stabilityPool3],
+      })
+      totals.forEach(t => api.add(staticPoolStableToken, t))
     },
     pool2: async (api) => {
-      const sigmaBnbUsdGaugeBalance = await api.call({ target: sigma_gauge_SIGMA_BNBUSD, abi: "uint256:totalSupply" })
-      api.add(SigmaBnbUSDCurveLP, sigmaBnbUsdGaugeBalance)
-      const usdtBnbUsdGaugeBalance = await api.call({ target: sigma_gauge_USDTbnbUSD, abi: "uint256:totalSupply" })
-      api.add(USDTBnbUSDCurveLP, usdtBnbUsdGaugeBalance)
+      const lpBalances = await api.multiCall({
+        abi: "erc20:totalSupply",
+        calls: [sigma_gauge_SIGMA_BNBUSD, sigma_gauge_USDTbnbUSD],
+      })
+      api.add(SigmaBnbUSDCurveLP, lpBalances[0])
+      api.add(USDTBnbUSDCurveLP, lpBalances[1])
 
       const rawColls = await api.call({ target: longPool, abi: "uint256:getTotalRawCollaterals" })
       api.add(longPoolToken, rawColls)
