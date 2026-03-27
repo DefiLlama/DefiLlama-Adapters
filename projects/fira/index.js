@@ -17,7 +17,7 @@ async function borrowed_v0(api) {
 const v0Tvl = {
   ethereum: {
     tvl: sumTokensExport({
-      tokens: [USD0Token,],  // bUSD0 is intentionally excluded as it is a derivative of USD0, and including it would lead to double counting
+      tokens: [USD0Token, bUSD0Token],
       owners: [UZRLendingMarket],
     }),
     borrowed: borrowed_v0,
@@ -51,24 +51,41 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  // Borrowed is tracked separately from TVL.
-  // we compute borrowed debt from fixed-rate markets only. For variable markets we use the same methodology as morpho.
-  const fixed = await getMarketCreationLogs(api, FIXED_LENDING_MARKET);
+  const [fixed, variable] = await Promise.all([
+    getMarketCreationLogs(api, FIXED_LENDING_MARKET),
+    getMarketCreationLogs(api, VARIABLE_LENDING_MARKET),
+  ]);
 
-  const marketData = await api.multiCall({
-    abi: marketAbi,
-    target: FIXED_LENDING_MARKET,
-    calls: fixed.map(i => i.id),
-    permitFailure: true,
-  });
+  const [fixedData, variableData] = await Promise.all([
+    api.multiCall({
+      abi: marketAbi,
+      target: FIXED_LENDING_MARKET,
+      calls: fixed.map(i => i.id),
+      permitFailure: true,
+    }),
+    api.multiCall({
+      abi: marketAbi,
+      target: VARIABLE_LENDING_MARKET,
+      calls: variable.map(i => i.id),
+      permitFailure: true,
+    }),
+  ]);
 
   fixed.forEach((m, i) => {
-    const data = marketData[i];
+    const data = fixedData[i];
     if (!data || data.totalBorrowAssets == null) return;
-
     api.add(m.marketParams.loanToken, data.totalBorrowAssets);
   });
-  const allTokens = fixed.map(m => m.marketParams.loanToken)
+
+  variable.forEach((m, i) => {
+    const data = variableData[i];
+    if (!data || data.totalBorrowAssets == null) return;
+    api.add(m.marketParams.loanToken, data.totalBorrowAssets);
+  });
+
+  // Exclude Fira-internal tokens (BT, FW) — they have no external market price.
+  // Their underlying value is already captured via USDC/fwUSDC in TVL.
+  const allTokens = [...fixed, ...variable].map(m => m.marketParams.loanToken)
   const allNames = await api.multiCall({ abi: 'string:name', calls: allTokens, permitFailure: true })
   const blacklistedTokens = allTokens.filter((_, i) => allNames[i]?.toLowerCase().includes("fira"))
   blacklistedTokens.forEach(t => api.removeTokenBalance(t))
@@ -85,4 +102,6 @@ const v1Tvl = {
   },
 };
 
-module.exports = mergeExports([v0Tvl, v1Tvl]);
+const merged = mergeExports([v0Tvl, v1Tvl]);
+merged.doublecounted = true;
+module.exports = merged;
