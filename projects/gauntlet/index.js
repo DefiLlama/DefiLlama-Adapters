@@ -6,8 +6,8 @@ const configs = {
   blockchains: {
     ethereum: {
       morpho: [
-        '0x4ff4186188f8406917293a9e01a1ca16d3cf9e59', // Swissborg
-        '0x059fc6723b9bf77dbf4283c8d7c90ea8af44ef10', // Swissborg
+        '0x4ff4186188f8406917293a9e01a1ca16d3cf9e59', 
+        '0x059fc6723b9bf77dbf4283c8d7c90ea8af44ef10',
       ],
       morphoVaultOwners: [
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
@@ -69,9 +69,9 @@ const configs = {
     },
     base: {
       morpho: [
-        '0x616a4e1db48e22028f6bbf20444cd3b8e3273738', // Seamless
-        '0x27d8c7273fd3fcc6956a0b370ce5fd4a7fc65c18', // Seamless
-        '0x5a47c803488fe2bb0a0eaaf346b420e4df22f3c7', // Seamless
+        '0x616a4e1db48e22028f6bbf20444cd3b8e3273738',
+        '0x27d8c7273fd3fcc6956a0b370ce5fd4a7fc65c18',
+        '0x5a47c803488fe2bb0a0eaaf346b420e4df22f3c7',
       ],
       morphoVaultOwners: [
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
@@ -99,10 +99,10 @@ const configs = {
     },
     polygon: {
       morpho: [
-        '0x3f33f9f7e2d7cfbcbdf8ea8b870a6e3d449664c2', // Compound Blue
-        '0x781fb7f6d845e3be129289833b04d43aa8558c42', // Compound Blue
-        '0xf5c81d25ee174d83f1fd202ca94ae6070d073ccf', // Compound Blue
-        '0xfd06859a671c21497a2eb8c5e3fea48de924d6c8', // Compound Blue
+        '0x3f33f9f7e2d7cfbcbdf8ea8b870a6e3d449664c2',
+        '0x781fb7f6d845e3be129289833b04d43aa8558c42',
+        '0xf5c81d25ee174d83f1fd202ca94ae6070d073ccf',
+        '0xfd06859a671c21497a2eb8c5e3fea48de924d6c8',
       ],
       morphoVaultOwners: [
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
@@ -274,13 +274,7 @@ async function tvl(api) {
   }
 
   // Kamino Lend vaults
-  const beforeKamino = { ...api.getBalances() }
   await kaminoLendVaultTvl(api, { adminAddress: GAUNTLET_ADMIN })
-  const afterKamino = api.getBalances()
-  const kaminoOnly = Object.fromEntries(
-    Object.entries(afterKamino).map(([k, v]) => [k, v - (beforeKamino[k] || 0)])
-  )
-  console.log('Kamino TVL:', kaminoOnly)
 }
 
 async function megavaultTvl(api) {
