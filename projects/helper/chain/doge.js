@@ -2,16 +2,27 @@ const sdk = require('@defillama/sdk')
 const { get } = require('../http')
 const plimit = require('p-limit')
 const { sleep } = require('../utils')
+const { getEnv } = require('../env')
 
+const CRYPTOAPIS_API_KEY = getEnv('CRYPTOAPIS_API_KEY');
 const url = addr => 'https://api.blockcypher.com/v1/doge/main/addrs/' + addr + '/balance'
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 const getBalance = rateLimited(_getBalance)
 
 async function _getBalance(addr) {
-  const { final_balance } = await get(url(addr))
-  await sleep(2000)
-  return Number(final_balance)
+  await sleep(3000)
+  try {
+    const { final_balance } = await get(url(addr))
+    return Number(final_balance)
+  } catch (e) {
+    if (CRYPTOAPIS_API_KEY) {
+      const cryptoapisUrl = `https://rest.cryptoapis.io/addresses-latest/utxo/dogecoin/mainnet/${addr}/balance`;
+      const response = await get(cryptoapisUrl, { headers: { 'x-api-key': CRYPTOAPIS_API_KEY } });
+      return Number(response.data.item.confirmedBalance.amount);
+    }
+    throw e;
+  }
 }
 
 async function sumTokens({ api, owners = [] }) {
