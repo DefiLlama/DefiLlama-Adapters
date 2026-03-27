@@ -41,7 +41,8 @@ module.exports = {
       api.add(staticPoolStableToken, stableTotal)
       stableTotal = await api.call({ target: stabilityPool3, abi: "uint256:totalStableToken" })
       api.add(staticPoolStableToken, stableTotal)
-
+    },
+    pool2: async (api) => {
       const sigmaBnbUsdGaugeBalance = await api.call({ target: sigma_gauge_SIGMA_BNBUSD, abi: "uint256:totalSupply" })
       api.add(SigmaBnbUSDCurveLP, sigmaBnbUsdGaugeBalance)
       const usdtBnbUsdGaugeBalance = await api.call({ target: sigma_gauge_USDTbnbUSD, abi: "uint256:totalSupply" })
