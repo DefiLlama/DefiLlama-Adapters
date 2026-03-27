@@ -126,9 +126,9 @@ async function call({ target, abi, params = [], rawStack = false, }) {
   return stack
 }
 
-async function addJettonBalances({ api, jettonAddress, addresses }) {
+async function addJettonBalances({ api, jettonAddress, addresses, chunkSize = 399, sleepMs = 3000 }) {
   api.log('Fetching Jetton balances', { jettonAddress, addresses: addresses.length })
-  const chunks = sliceIntoChunks(addresses, 399)
+  const chunks = sliceIntoChunks(addresses, chunkSize)
   let i = 0
   for (const chunk of chunks) {
     api.log('Fetching Jetton balances', { jettonAddress, chunk: i++, chunks: chunks.length })
@@ -137,7 +137,7 @@ async function addJettonBalances({ api, jettonAddress, addresses }) {
       api.add(jettonAddress, balance)
     })
     if (addresses.length > 199) {
-      await sleep(3000)
+      await sleep(sleepMs)
     }
   }
 }
