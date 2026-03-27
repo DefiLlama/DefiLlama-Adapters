@@ -8,11 +8,12 @@ const tvl = async (api) => {
   let vaults = data.vaults.map(({ address }) => address)
   if (!vaults.length) vaults = [VAULT_ADDRESS]
 
+  let total = 0
   for (const vault of vaults) {
     const { data } = await axios.get(`${ROCKET_API}/collateral?account=${encodeURIComponent(vault)}`)
-    const amounts = Object.values(data.collaterals).reduce((sum, v) => sum + Number(v), 0)
-    return api.addUSDValue(amounts)
+    total += Object.values(data.collaterals).reduce((sum, v) => sum + Number(v), 0)
   }
+  api.addUSDValue(total)
 }
 
 module.exports = {
