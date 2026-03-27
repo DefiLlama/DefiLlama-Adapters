@@ -71,7 +71,6 @@ async function staking(api) {
 module.exports = {
   methodology: "TVL counts Morpho vault deposits across V2 and V3 Surf Liquid vaults. Staking includes SURF staked and SURF subscriptions.",
   doublecounted: true,
-  misrepresentedTokens: true,
   hallmarks: [["2025-11-30", "V3 factory launched"]],
   base: {
     tvl,
