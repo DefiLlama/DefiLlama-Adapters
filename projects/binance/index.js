@@ -167,7 +167,7 @@ chains.forEach((chain) => { chainExports[chain] = { tvl } })
 const ethStakedExport = { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } }
 
 module.exports = mergeExports([chainExports, ethStakedExport])
-module.exports.methodology = 'We collect the wallets from this Binance blog post https://www.binance.com/en/blog/community/our-commitment-to-transparency-2895840147147652626. We are not counting the Binance Recovery Fund wallet. On Ethereum, we also include staked ETH tracked via known withdrawal addresses.'
+module.exports.methodology = 'All assets in wallets mentioned in Binance PoR api & wallets holding backing of binance pegged tokens are included in the tvl. We are not counting the Binance Recovery Fund wallet. On Ethereum, we also include staked ETH tracked via known withdrawal addresses.'
 
 module.exports.bitcoin = { tvl: bitcoinTvl }
 

@@ -17,9 +17,10 @@ const config = {
   ink: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 4580556 },
   soneium: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 2473300 },
   avax: { factory: "0x06380c0e0912312b5150364b9dc4542ba0dbbc85", fromBlock: 56195376 },
-  bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343'] },
+  bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343', '0x8145eb83744aac883b68ae34060bebb5031d8f5c'] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1 },
   monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895 },
+  tempo: { factory: "0x33620f62c5b9b2086dd6b62f4a297a9f30347029", fromBlock: 6475880 },
 }
 const subgraphs = {
   xlayer: {endpoint: '2fc6nFafrPs4xybzHMnmD48qgUYoHTizhDk1mCJJUDjD', factory: '0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32' }

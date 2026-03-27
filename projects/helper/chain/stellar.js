@@ -192,6 +192,90 @@ async function callSoroban(contractId, fnName) {
   return _parseScVal(Buffer.from(resultXdr, 'base64'), 0).value
 }
 
+// Simulate a read-only Soroban contract call with one u32 argument.
+async function callSorobanWithU32Arg(contractId, fnName, argU32) {
+  const contractBytes = decodeStrKey(contractId)
+  const fnPadLen = fnName.length + ((4 - (fnName.length % 4)) % 4)
+  const buf = Buffer.alloc(132 + fnPadLen + 8)
+  let o = 0
+  buf.writeUInt32BE(2, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  o += 32
+  buf.writeUInt32BE(100, o); o += 4
+  buf.writeBigUInt64BE(0n, o); o += 8
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(1, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(24, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(1, o); o += 4
+  contractBytes.copy(buf, o); o += 32
+  buf.writeUInt32BE(fnName.length, o); o += 4
+  buf.write(fnName, o, 'utf8'); o += fnPadLen
+  buf.writeUInt32BE(1, o); o += 4          // 1 arg
+  buf.writeUInt32BE(3, o); o += 4          // SC_VAL_TYPE_U32
+  buf.writeUInt32BE(argU32, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4          // 0 auth
+  buf.writeUInt32BE(0, o); o += 4          // ext v=0
+  buf.writeUInt32BE(0, o); o += 4          // 0 signatures
+
+  const response = await post(SOROBAN_RPC_URL, {
+    jsonrpc: '2.0', id: 1,
+    method: 'simulateTransaction',
+    params: { transaction: buf.toString('base64') }
+  })
+
+  if (response.error) throw new Error(`Soroban RPC error: ${JSON.stringify(response.error)}`)
+  const resultXdr = response?.result?.results?.[0]?.xdr
+  if (!resultXdr) throw new Error(`No result from ${contractId}.${fnName}()`)
+
+  return _parseScVal(Buffer.from(resultXdr, 'base64'), 0).value
+}
+
+// Simulate a read-only Soroban contract call with one contract address argument.
+async function callSorobanWithContractArg(contractId, fnName, argContractId) {
+  const contractBytes = decodeStrKey(contractId)
+  const argBytes = decodeStrKey(argContractId)
+  const fnPadLen = fnName.length + ((4 - (fnName.length % 4)) % 4)
+  const buf = Buffer.alloc(132 + fnPadLen + 40)
+  let o = 0
+  buf.writeUInt32BE(2, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  o += 32
+  buf.writeUInt32BE(100, o); o += 4
+  buf.writeBigUInt64BE(0n, o); o += 8
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(1, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(24, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(1, o); o += 4
+  contractBytes.copy(buf, o); o += 32
+  buf.writeUInt32BE(fnName.length, o); o += 4
+  buf.write(fnName, o, 'utf8'); o += fnPadLen
+  buf.writeUInt32BE(1, o); o += 4
+  buf.writeUInt32BE(18, o); o += 4
+  buf.writeUInt32BE(1, o); o += 4
+  argBytes.copy(buf, o); o += 32
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+  buf.writeUInt32BE(0, o); o += 4
+
+  const response = await post(SOROBAN_RPC_URL, {
+    jsonrpc: '2.0', id: 1,
+    method: 'simulateTransaction',
+    params: { transaction: buf.toString('base64') }
+  })
+
+  if (response.error) throw new Error(`Soroban RPC error: ${JSON.stringify(response.error)}`)
+  const resultXdr = response?.result?.results?.[0]?.xdr
+  if (!resultXdr) throw new Error(`No result from ${contractId}.${fnName}()`)
+
+  return _parseScVal(Buffer.from(resultXdr, 'base64'), 0).value
+}
+
 module.exports = {
   getAssetSupply,
   addUSDCBalance,
@@ -199,5 +283,7 @@ module.exports = {
   getTokenBalance,
   decodeStrKey,
   callSoroban,
+  callSorobanWithContractArg,
+  callSorobanWithU32Arg,
   SOROBAN_RPC_URL,
 }

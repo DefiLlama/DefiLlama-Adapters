@@ -9,6 +9,9 @@ const {
 const {
     allPoolTokens: plasmaPoolTokens
 } = require('./plasma');
+const {
+    allPoolTokens: ethereumPoolTokens
+} = require('./ethereum');
 
 async function sonicTvl(api) {
     // For Sonic chain
@@ -48,10 +51,20 @@ async function plasmaTvl(api) {
     });
 }
 
+async function ethereumTvl(api) {
+    // For Ethereum mainnet
+    const owners = await getConfig('zyfai/'+api.chain, 'https://api.zyf.ai/api/v1/data/active-wallets?chainId=1');
+    return api.sumTokens({
+        tokens: ethereumPoolTokens,
+        owners: owners.filter(o => o !== ''),
+    });
+}
+
 module.exports = {
     methodology: 'Counts the TVL of all smart wallet accounts deployed by ZyFAI protocol across multiple DeFi protocols',
     sonic: { tvl: sonicTvl },
     base: { tvl: baseTvl },
     arbitrum: { tvl: arbitrumTvl },
-    plasma: { tvl: plasmaTvl }
+    plasma: { tvl: plasmaTvl },
+    ethereum: { tvl: ethereumTvl },
 }

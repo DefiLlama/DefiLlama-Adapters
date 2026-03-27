@@ -21,6 +21,9 @@ module.exports = {
     },
     base:{
         tvl: () => getTvlByChain('base')
+    },
+    monad:{
+        tvl: () => getTvlByChain('monad')
     }
 }
 
