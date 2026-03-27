@@ -18,7 +18,7 @@ const tvl = async (api) => {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
-  doubleCounted: true,
+  doublecounted: true,
   methodology: "TVL is calculated by summing all USDC collateral deposited in Rocket Liquidity Provider vaults",
   arbitrum: { tvl },
 };
