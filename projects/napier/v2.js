@@ -7,7 +7,7 @@ const TOKI_LENS_GET_TVL_ABI =
 const config = {
   ethereum: {
     factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
-    tokiLens: "0x000000896D3C2837797e9f334b4Cf366Bf645fdF",
+    tokiLens: "0x00000031F662013D68E6CD0ceFe97043AE0ac5b8",
     fromBlock: 21942450,
   },
   base: {
