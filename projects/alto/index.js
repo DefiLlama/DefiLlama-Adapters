@@ -58,28 +58,9 @@ async function tvl(api) {
   return sumTokens2({ api, tokensAndOwners, blacklistedTokens: blackList });
 }
 
-async function borrowed(api) {
-  const markets = await getMarkets(api);
-  if (!markets.length) return;
-
-  const [borrowTokens, totalBorroweds] = await Promise.all([
-    api.multiCall({ calls: markets, abi: "address:borrowToken", permitFailure: true }),
-    api.multiCall({ calls: markets, abi: "function totalBorrowed() view returns (uint128 assets, uint128 shares)", permitFailure: true }),
-  ]);
-
-  for (let i = 0; i < markets.length; i++) {
-    const borrowToken = borrowTokens[i];
-    const totalBorrowed = totalBorroweds[i];
-    if (borrowToken && totalBorrowed && totalBorrowed.assets !== undefined) {
-      api.add(borrowToken, totalBorrowed.assets);
-    }
-  }
-}
-
 module.exports = {
-  methodology: "TVL = collateral and borrow token balances held by each Alto market, plus underlying assets in permissionless PSMs. Borrowed = total DUSD borrowed across all markets.",
+  methodology: "TVL = collateral balances held by each Alto market, plus underlying assets in permissionless PSMs.",
   ethereum: {
     tvl,
-    borrowed,
   },
 };
