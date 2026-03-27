@@ -5,7 +5,6 @@ const config = {
   ethereum: {
     marketRegistry: "0xBd45d50611c38E35dD1D1119077De1E988eD2257",
     usmRegistry: "0xAD5620e10C33918E2C6A2E8E53325bf98c548E5e",
-    blackList: [],
   },
 };
 
@@ -28,23 +27,14 @@ async function getPermissionlessPsms(api) {
 }
 
 async function tvl(api) {
-  const { blackList = [] } = config[api.chain];
   const [markets, psms] = await Promise.all([getMarkets(api), getPermissionlessPsms(api)]);
-
-  const [collateralTokens, borrowTokens] = await Promise.all([
-    api.multiCall({ calls: markets, abi: "address:collateralToken", permitFailure: true }),
-    api.multiCall({ calls: markets, abi: "address:borrowToken", permitFailure: true }),
-  ]);
+  const collateralTokens = await api.multiCall({ calls: markets, abi: "address:collateralToken", permitFailure: true });
 
   const tokensAndOwners = [];
   for (let i = 0; i < markets.length; i++) {
     const collateralToken = collateralTokens[i];
-    const borrowToken = borrowTokens[i];
     if (collateralToken && collateralToken !== ADDRESSES.null) {
       tokensAndOwners.push([collateralToken, markets[i]]);
-    }
-    if (borrowToken && borrowToken !== ADDRESSES.null) {
-      tokensAndOwners.push([borrowToken, markets[i]]);
     }
   }
 
@@ -55,7 +45,7 @@ async function tvl(api) {
     }
   }
 
-  return sumTokens2({ api, tokensAndOwners, blacklistedTokens: blackList });
+  return sumTokens2({ api, tokensAndOwners });
 }
 
 module.exports = {
