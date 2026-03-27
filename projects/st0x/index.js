@@ -1,10 +1,6 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
-
 // St0x tokenised equities on Base (wrapped versions with Hydrex liquidity pools)
 // These tokens represent tokenised US equities with full redemption rights.
-// TVL = total supply of wrapped tokens that have active Hydrex DEX pools.
-
-const ORDERBOOK = "0xe522cB4a5fCb2eb31a52Ff41a4653d85A4fd7C9D";
+// TVL = total supply of wrapped tokens, priced via CoinGecko.
 
 const tokens = [
   "0xFF05E1bD696900dc6A52CA35Ca61Bb1024eDa8e2", // wtMSTR - Wrapped MicroStrategy
@@ -13,12 +9,13 @@ const tokens = [
 ];
 
 async function tvl(api) {
-  return sumTokens2({ api, owners: [ORDERBOOK], tokens });
+  const supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: tokens });
+  api.addTokens(tokens, supplies);
 }
 
 module.exports = {
   methodology:
-    "TVL is calculated as the value of St0x tokenised equity tokens held in the Rain Orderbook contract, which serves as the liquidity venue for Hydrex pools.",
+    "TVL is the total supply of St0x wrapped tokenised equity tokens (wtMSTR, wtCOIN, wtSPYM) on Base, priced via DeFi AMM liquidity.",
   start: 1710593051,
   base: {
     tvl,
