@@ -1,0 +1,78 @@
+const sui = require('../helper/chain/sui')
+const { post } = require('../helper/http')
+const { getEnv } = require('../helper/env')
+
+const WAD = 10n ** 18n
+
+const MARKET_OBJECT_IDS = [
+  '0x41f3d76aee8b20e53f7d0d395fdc09e241e683c7bc5d0f69674b545ee42549df', // MainMarket
+  '0x6f5230c346e27132b8d4d92cb3f4f9c7f4e736d5c32b8f0a2b063c97e67d78f7', // AltCoinMarket
+  '0x8e85c433f791685c65fa66923110b8385e13f955daf8792ef805ce2d47139bbc', // EmberMarket
+  '0xafe28c816d322a56bdab27b90d4b5e882a0a34ee2d9f02c6a07402a2b69be900', // MatrixGoldMarket
+  '0xafe28c816d322a56bdab27b90d4b5e882a0a34ee2d9f02c6a07402a2b69be900', // EthenaMarket
+]
+
+function coinTypeFromName(name) {
+  return name.startsWith('0x') ? name : `0x${name}`
+}
+
+async function listDynamicFieldObjectIds(parentTableId) {
+  const ids = []
+  let cursor = null
+  const rpc = getEnv('SUI_RPC')
+  do {
+    const { result } = await post(rpc, {
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'suix_getDynamicFields',
+      params: [parentTableId, cursor, 48],
+    })
+    const { data, hasNextPage, nextCursor } = result
+    for (const row of data) ids.push(row.objectId)
+    cursor = hasNextPage ? nextCursor : null
+  } while (cursor)
+  return ids
+}
+
+let loadReserveRowsPromise = null
+
+async function loadReserveRows() {
+  const rows = []
+  for (const marketId of MARKET_OBJECT_IDS) {
+    const marketContent = await sui.getObject(marketId)
+    const fieldIds = await listDynamicFieldObjectIds(
+      marketContent.fields.reserves.fields.table.fields.table.fields.id.id,
+    )
+    const objects = await sui.getObjects(fieldIds)
+    for (const obj of objects) {
+      const name = obj.fields.name.fields.name
+      const reserve = obj.fields.value.fields
+      rows.push({ coinType: coinTypeFromName(name), reserve })
+    }
+  }
+  return rows
+}
+
+function getReserveRows() {
+  if (!loadReserveRowsPromise) loadReserveRowsPromise = loadReserveRows()
+  return loadReserveRowsPromise
+}
+
+async function tvl(api) {
+  for (const { coinType, reserve } of await getReserveRows()) {
+    api.add(coinType, BigInt(reserve.cash))
+  }
+}
+
+async function borrowed(api) {
+  for (const { coinType, reserve } of await getReserveRows()) {
+    api.add(coinType, BigInt(reserve.debt.fields.value) / WAD)
+  }
+}
+
+module.exports = {
+  timetravel: false,
+  methodology:
+    'TVL sums Reserve.cash (u64 underlying units) per asset for each reserve in the listed markets. Per reserve.move, cash is the reserve on-chain underlying balance. Borrowed sums Reserve.debt (fixed-point Decimal) divided by 1e18 — total outstanding borrows. Reserve.cash_reserve (protocol fee accrual) is not included in this TVL sum.',
+  sui: { tvl, borrowed },
+}
