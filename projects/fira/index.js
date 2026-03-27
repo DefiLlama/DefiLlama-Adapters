@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs")
 
 const bUSD0Token = "0x35D8949372D46B7a3D5A56006AE77B215fc69bC0";
+const fwUSDC = '0x62F5366C9E21A95326C461a098a408e034e017b3'
 const USD0Token = ADDRESSES.ethereum.USD0;
 const UZRLendingMarket = "0xa428723eE8ffD87088C36121d72100B43F11fb6A"; // UZR Lending Market (MetaMorpho vault)
 const UZRMarketId = "0xa597b5a36f6cc0ede718ba58b2e23f5c747da810bf8e299022d88123ab03340e";
@@ -33,14 +34,20 @@ async function tvl(api) {
   ]);
   fixed = fixed.map(i => [i.marketParams.loanToken, i.marketParams.collateralToken]).flat()
   variable = variable.map(i => [i.marketParams.loanToken, i.marketParams.collateralToken]).flat()
+
   const ownerTokens = [
     [fixed, FIXED_LENDING_MARKET],
     [variable, VARIABLE_LENDING_MARKET],
+    [[ADDRESSES.ethereum.USDC], fwUSDC], // fwUSDC is a wrapper around USDC, so we need to include it in the TVL calculation to avoid undercounting.
   ]
+
+  const allTokens = ownerTokens.flatMap(i => i[0])
+  const allNames = await api.multiCall({ abi: 'string:name', calls: allTokens, permitFailure: true })
+  const blacklistedTokens = allTokens.filter((_, i) => allNames[i]?.toLowerCase().includes("fira"))  // exclude all fira wrapped tokens from the tvl, we are including the USDC backing it
 
   // TVL must not include borrowed amounts: we only sum the coins actually held by the fixed/variable
   // lending-market contracts (cash reserves + posted collateral).
-  return api.sumTokens({ ownerTokens })
+  return api.sumTokens({ ownerTokens, blacklistedTokens })
 }
 
 async function borrowed(api) {
@@ -61,6 +68,10 @@ async function borrowed(api) {
 
     api.add(m.marketParams.loanToken, data.totalBorrowAssets);
   });
+  const allTokens = fixed.map(m => m.marketParams.loanToken)
+  const allNames = await api.multiCall({ abi: 'string:name', calls: allTokens, permitFailure: true })
+  const blacklistedTokens = allTokens.filter((_, i) => allNames[i]?.toLowerCase().includes("fira"))
+  blacklistedTokens.forEach(t => api.removeTokenBalance(t))
   return api.getBalances()
 }
 
