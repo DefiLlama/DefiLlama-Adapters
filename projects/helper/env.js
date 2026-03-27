@@ -74,6 +74,8 @@ const ENV_KEYS = [
   'UI_TOOL_MODE',
   'P0_API_KEY',
   'CRYPTOAPIS_API_KEY',
+  'TATUM_PUBLIC_API_KEY',
+  'TATUM_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
