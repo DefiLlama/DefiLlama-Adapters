@@ -1,19 +1,18 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumBoringTvl } = require('../helper/boringVault')
 
 // stMANTRA Liquid Staking (ERC-4626 Vault) — also the stMANTRA token address
 const STAKING_VAULT = '0x4131a80b67BE287627766B858C3C6d7f9e900324'
 
-// Mantra EVM tokens not yet in DefiLlama's pricing DB — map via CoinGecko
-const CG_TOKEN_MAPPING = {
-  '0x3806640578b710d8480910bF51510bc538d2F51A': { coingeckoId: 'tether', decimals: 6 },  // USDT
-}
+const LENS = '0x040aa0d3bEdc4aDBEcED86E85Cdd2fB4f7E9Fe52'
 
 // RFR Vaults (BoringVault / Arctic Architecture)
 const RFR_VAULTS = [
   {
     // wmantraUSD Yield Vault
-    boringVault: '0x320C6ebDd3e0c322AFb42D71d264a316fC81E13A',
+    id: '0x320C6ebDd3e0c322AFb42D71d264a316fC81E13A',
     accountant: '0xcB6C931AC97Da626684B44af070465938eAE20b6',
+    lens: LENS,
   },
   // wmantraUSD Points Vault — add here once deployed
 ]
@@ -32,17 +31,8 @@ async function tvl(api) {
   const totalAssets = await api.call({ abi: 'uint256:totalAssets', target: STAKING_VAULT })
   api.add(ADDRESSES.mantra.wMANTRA, totalAssets)
 
-  // 2. RFR Vaults — TVL = totalSupply * getRate / 10^decimals
-  for (const { boringVault, accountant } of RFR_VAULTS) {
-    const [totalSupply, rate, decimals] = await Promise.all([
-      api.call({ abi: 'uint256:totalSupply', target: boringVault }),
-      api.call({ abi: 'uint256:getRate', target: accountant }),
-      api.call({ abi: 'uint8:decimals', target: boringVault }),
-    ])
-    const base = await api.call({ abi: 'address:base', target: accountant })
-    const assets = BigInt(totalSupply) * BigInt(rate) / (10n ** BigInt(decimals))
-    api.add(base, assets.toString())
-  }
+  // 2. RFR Vaults — uses ArcticArchitectureLens.totalAssets() via shared helper
+  await sumBoringTvl({ vaults: RFR_VAULTS, api })
 
   // 3. LP CLM Vaults — balances() returns (amount0, amount1), wants() returns (token0, token1)
   const balances = await api.multiCall({ abi: 'function balances() view returns (uint256, uint256)', calls: CLM_VAULTS })
@@ -56,12 +46,8 @@ async function tvl(api) {
       if (tokens[j].toLowerCase() === STAKING_VAULT.toLowerCase()) {
         // Skip stMANTRA — its backing OM is already counted by totalAssets() above
         continue
-      } else if (CG_TOKEN_MAPPING[tokens[j]]) {
-        const { coingeckoId, decimals } = CG_TOKEN_MAPPING[tokens[j]]
-        api.addCGToken(coingeckoId, Number(bals[j]) / (10 ** decimals))
-      } else {
-        api.add(tokens[j], bals[j])
       }
+      api.add(tokens[j], bals[j])
     }
   }
 }
