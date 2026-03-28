@@ -75,6 +75,11 @@ const configs = {
       staking: ['0x5C75A733656c3E42E44AFFf1aCa1913611F49230', '0x25356aeca4210eF7553140edb9b8026089E49396'],
     },
   },
+  'edel': {
+    ethereum: {
+      poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501']
+    }
+  }
 }
 
 module.exports = buildProtocolExports(configs, aaveV3ExportFn)

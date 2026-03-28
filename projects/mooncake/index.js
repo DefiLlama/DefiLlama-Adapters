@@ -6,19 +6,28 @@ const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
 async function tvl(api) {
   const connection = getConnection();
 
-  const marketStateAccounts = await connection.getProgramAccounts(
-    new PublicKey('mnCk3moW6q9UszVev3C9JjtE4YoviXgLwiLCnUy3c4D'),
-    {
-      filters: [
-        {
-          memcmp: {
-            offset: 0,
-            bytes: bs58.encode(crypto.createHash('sha256').update("account:MarketState").digest().slice(0, 8)),
+  const programIds = [
+    'mnCk3moW6q9UszVev3C9JjtE4YoviXgLwiLCnUy3c4D',
+    'mNckKuED6PTxgdQQgnXYLuFQFDjb3urdTfXDSSUwydJ',
+  ];
+  const marketStateAccounts = [];
+
+  for (const programId of programIds) {
+    const accounts = await connection.getProgramAccounts(
+      new PublicKey(programId),
+      {
+        filters: [
+          {
+            memcmp: {
+              offset: 0,
+              bytes: bs58.encode(crypto.createHash('sha256').update("account:MarketState").digest().slice(0, 8)),
+            },
           },
-        },
-      ]
-    }
-  );
+        ]
+      }
+    );
+    marketStateAccounts.push(...accounts);
+  }
 
   const tokenAccounts = []
 

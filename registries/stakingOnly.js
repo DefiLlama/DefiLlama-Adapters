@@ -62,6 +62,12 @@ const configs = {
       staking: ['0x01F82039810f18F703F4c8b943940ce04Fa00C78', '0x9102E0A76a5e2823073Ed763a32Ba8ca8521b1F3']
     }
   },
+  'mineloot': {
+    methodology: 'TVL is LOOT tokens held in GridMining (mined rewards), Staking (user-staked LOOT), and Lock (user-locked LOOT).',
+    base: {
+      staking: { owners: ['0xA8E2F506aDcbBF18733A9F0f32e3D70b1A34d723', '0xbb9D524e28c7E7b5A9D439D5D1ba68A87788BbB6', '0x554CEAe7b091b21DdAeFe65cF79651132Ee84Ed7'], tokens: ['0x00E701Eff4f9Dc647f1510f835C5d1ee7E41D28f']}
+    }
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
