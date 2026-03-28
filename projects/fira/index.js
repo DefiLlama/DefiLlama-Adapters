@@ -53,22 +53,21 @@ async function tvl(api) {
 async function borrowed(api) {
   // Borrowed is tracked separately from TVL.
   // we compute borrowed debt from fixed-rate markets only. For variable markets we use the same methodology as morpho.
-  const fixed = await getMarketCreationLogs(api, FIXED_LENDING_MARKET);
+  const fixed = await getMarketCreationLogs(api, FIXED_LENDING_MARKET)
+  const variable = await getMarketCreationLogs(api, VARIABLE_LENDING_MARKET)
+  const calls = fixed.map(i => ({ target: FIXED_LENDING_MARKET, params: i.marketParams })).concat(variable.map(i => ({ target: VARIABLE_LENDING_MARKET, params: i.marketParams })))
+  const markets = fixed.concat(variable)
 
-  const marketData = await api.multiCall({
-    abi: marketAbi,
-    target: FIXED_LENDING_MARKET,
-    calls: fixed.map(i => i.id),
-    permitFailure: true,
-  });
 
-  fixed.forEach((m, i) => {
+  const marketData = await api.multiCall({ abi: marketAbi, calls, permitFailure: true, });
+
+  markets.forEach((m, i) => {
     const data = marketData[i];
     if (!data || data.totalBorrowAssets == null) return;
 
     api.add(m.marketParams.loanToken, data.totalBorrowAssets);
   });
-  const allTokens = fixed.map(m => m.marketParams.loanToken)
+  const allTokens = markets.map(m => m.marketParams.loanToken)
   const allNames = await api.multiCall({ abi: 'string:name', calls: allTokens, permitFailure: true })
   const blacklistedTokens = allTokens.filter((_, i) => allNames[i]?.toLowerCase().includes("fira"))
   blacklistedTokens.forEach(t => api.removeTokenBalance(t))
