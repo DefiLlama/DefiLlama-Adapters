@@ -51,7 +51,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "Sum of totalAssets() across all 24 UnblockEquity MetaMorpho V2 vaults on Base. Each vault accepts USDC deposits and lends against tokenized residential property liens (ERC-1155). Vaults are segmented by borrower verification level (Verified/Prime/Standard), recovery type (Lien-Only/Foreclosure), and escrow tier (None/BR3/BR6/BR12).",
-  start: 1742860800, // 2026-03-25 UTC — Phase 06.1 deployment date
+  start: 1774396800, // 2026-03-25 UTC — Phase 06.1 deployment date
   base: {
     tvl,
   },
