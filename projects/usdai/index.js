@@ -17,6 +17,14 @@ const LOAN_ROUTER_SUBGRAPH_API = 'https://api.goldsky.com/api/public/project_clz
 
 const USDAI_CONTRACT = "0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF";
 const STAKED_USDAI_CONTRACT = "0x0B2b2B2076d95dda7817e785989fE353fe955ef9";
+
+// K3 Capital USDai Cluster — Euler v2 vaults on Arbitrum
+// esUSDai-1: sUSDai collateral vault (0x0B2b... asset)
+// eUSDai-2:  USDai collateral vault  (0x0A1a... asset)
+const K3_EULER_VAULTS = [
+  "0xAABb9cbAC15a3D646dCdc6574bCFCfB989E1fDd8", // esUSDai-1 (~467K sUSDai)
+  "0x7D9790403FA53eF3E3a3389c259D244BDc61B785", // eUSDai-2  (~25K USDai)
+];
 const QUEUED_DEPOSITOR_CONTRACT = "0x81cc0DEE5e599784CBB4862c605c7003B0aC5A53";
 const LOAN_ROUTER_CONTRACT = "0x0C2ED170F2bB1DF1a44292Ad621B577b3C9597D1";
 const WRAPPED_M_CONTRACT = "0x437cc33344a0B27A429f795ff6B469C72698B291";
@@ -120,6 +128,15 @@ async function tvl(api) {
     owner: QUEUED_DEPOSITOR_CONTRACT,
     tokens: WHITELISTED_TOKENS,
     permitFailure: true,
+  })
+
+  // K3 Capital USDai Cluster on Euler v2 (Arbitrum)
+  // These Euler vaults hold sUSDai and USDai deposited by users looping via K3's cluster.
+  // DeFiLlama's euler-v2 adapter does not index governed cluster vaults, so we count them here.
+  const k3Assets = await api.multiCall({ abi: 'address:asset', calls: K3_EULER_VAULTS, permitFailure: true })
+  const k3Balances = await api.multiCall({ abi: 'uint256:totalAssets', calls: K3_EULER_VAULTS, permitFailure: true })
+  k3Assets.forEach((asset, i) => {
+    if (asset && k3Balances[i]) api.add(asset, k3Balances[i])
   })
 }
 
