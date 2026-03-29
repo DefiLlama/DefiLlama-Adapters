@@ -1,4 +1,4 @@
-const GBLIN_VAULT = "0xc475851f9101A2AC48a84EcF869766A94D301FaA"
+const GBLIN_VAULT = "0xED334B4CDaFCAe6D42bb9A57DE565fD3e9640a50"
 const BASKET_ABI = 'function basket(uint256) view returns (address token, address oracle, uint24 poolFee, bool isStable, uint256 baseWeight, uint256 dynamicWeight, uint256 peakPrice, uint256 lastPeakUpdate)'
 
 const tvl = async (api) => {
