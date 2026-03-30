@@ -1,13 +1,19 @@
-const GBLIN_VAULT = "0xc475851f9101A2AC48a84EcF869766A94D301FaA"
-const BASKET_ABI = 'function basket(uint256) view returns (address token, address oracle, uint24 poolFee, bool isStable, uint256 baseWeight, uint256 dynamicWeight, uint256 peakPrice, uint256 lastPeakUpdate)'
+const GBLIN_VAULT = "0xED334B4CDaFCAe6D42bb9A57DE565fD3e9640a50";
 
-const tvl = async (api) => {
-  const baskets = await api.fetchList({ target : GBLIN_VAULT, itemCount: 10, itemAbi: BASKET_ABI, permitFailure: true })
-  const tokens = baskets.map(b => b?.token).filter(Boolean)
-  return api.sumTokens({ owner: GBLIN_VAULT, tokens })
+const WETH = "0x4200000000000000000000000000000000000006";
+const cbBTC = "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf";
+const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+async function tvl(api) {
+  return api.sumTokens({
+    owner: GBLIN_VAULT,
+    tokens: [WETH, cbBTC, USDC]
+  });
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing the WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN Autonomous Central Bank contract on Base.",
-  base: { tvl }
-}
+  methodology: "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V4 Vault contract on Base.",
+  base: {
+    tvl
+  }
+};
