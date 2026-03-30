@@ -22,7 +22,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "TVL is the total supply of St0x wrapped tokenised equity tokens (wtMSTR, wtCOIN, wtSPYM) on Base, priced via DefiLlama price feeds.",
-  start: 1770197965,
+  start: 1770197593,
   base: {
     tvl,
   },
