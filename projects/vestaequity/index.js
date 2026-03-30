@@ -18,6 +18,7 @@ async function vestaequityTVL() {
 }
 
 module.exports = {
+  deadFrom: '2025-02-07',
   algorand: {
     tvl: vestaequityTVL,
   }
