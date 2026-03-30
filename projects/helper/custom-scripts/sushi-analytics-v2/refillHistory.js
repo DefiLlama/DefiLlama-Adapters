@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 
 // --- Configuration (can be overridden via args: node refillHistory.js <adapter> <end> <start>) ---
 const ADAPTER = process.argv[2] || 'zest'
-const END_STR = process.argv[3] || '2026-03-30'   // most recent day to fill
+const END_STR = process.argv[3] || '2025-05-13'   // most recent day to fill
 const START_STR = process.argv[4] || '2024-02-26'  // earliest day to fill
 // ------------------------------------------------------------------------------------------------
 
@@ -25,12 +25,12 @@ let consecutiveErrors = 0
 
 for (let ts = endTs; ts >= startTs; ts -= ONE_DAY) {
   const dateStr = new Date(ts * 1e3).toISOString().slice(0, 10)
-  console.log(`\n=== ${dateStr} (ts: ${ts}) ===`)
+  // console.log(`\n=== ${dateStr} (ts: ${ts}) ===`)
 
   try {
     execSync(`npm run start`, {
       stdio: 'inherit',
-      env: { ...process.env, RUN_ONLY: ADAPTER, TIMESTAMP: String(ts) },
+      env: { ...process.env, RUN_ONLY: ADAPTER, TIMESTAMP: String(ts), REFILL_MODE: 'true', },
     })
     consecutiveErrors = 0
   } catch (e) {
