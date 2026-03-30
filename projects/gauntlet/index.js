@@ -1,6 +1,5 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
 const axios = require('axios');
-const aeraV3 = require('../aera-v3')
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
@@ -87,7 +86,7 @@ const configs = {
         '0xdb223128a4524ce733c575421267dc56992c796d',
         '0x70f6fd99a43fce03648b20d44b9f0cd2b14eea68',
         '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
-      ],
+      ]
     },
     polygon: {
       morphoVaultOwners: [
@@ -275,23 +274,20 @@ async function megavaultTvl(api) {
 }
 
 async function combinedEthereumTvl(api) {
+  // First, get the existing curator TVL
   const curatorExport = getCuratorExport(configs);
-  if (curatorExport.ethereum?.tvl) await curatorExport.ethereum.tvl(api);
-  await megavaultTvl(api);
-  await aeraV3.ethereum.tvl(api);
-}
+  if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
+    await curatorExport.ethereum.tvl(api);
+  }
 
-async function combinedBaseTvl(api) {
-  const curatorExport = getCuratorExport(configs);
-  if (curatorExport.base?.tvl) await curatorExport.base.tvl(api);
-  await aeraV3.base.tvl(api);
+  // Then add MegaVault TVL
+  await megavaultTvl(api);
 }
 
 module.exports = {
   ...getCuratorExport(configs),
   solana: { tvl },
   ethereum: { tvl: combinedEthereumTvl },
-  base: { tvl: combinedBaseTvl },
   timetravel: false,
   methodology: configs.methodology,
 }
