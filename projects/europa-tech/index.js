@@ -3,10 +3,11 @@ const sdk = require("@defillama/sdk");
 const EURT = "0xF0ff21C0a3De78a4503A77340079f3d4dad3d373";
 const EUROPA_SHARE_TOKEN = "0x0f3cEe146B7D2F6795E60B33AE6e339A64d77Fc6";
 
-// Share prices in EURT (whole numbers, EUR-pegged, 18 decimals)
-// tokenId 0 = Hotel Baistrocchi (65 EURT/share)
-// tokenId 1 = Albergo Europa    (75 EURT/share)
-const SHARE_PRICES_EURT = [65n, 75n];
+// Share tokens with explicit tokenId and price (EURT, 18 decimals)
+const SHARE_TOKENS = [
+  { tokenId: 0, priceEurt: 65n }, // Hotel Baistrocchi
+  { tokenId: 1, priceEurt: 75n }, // Albergo Europa
+];
 const EURT_DECIMALS = 10n ** 18n;
 
 const totalSupplyPerTokenAbi = "function totalSupplyPerToken(uint256) view returns (uint256)";
@@ -27,9 +28,9 @@ module.exports = {
       // 2. Track tokenized real estate value via EuropaShareToken
       // totalSupplyPerToken(tokenId) returns the number of minted shares (whole units)
       const supplies = await api.multiCall({
-        calls: SHARE_PRICES_EURT.map((_, i) => ({
+        calls: SHARE_TOKENS.map(({ tokenId }) => ({
           target: EUROPA_SHARE_TOKEN,
-          params: [i],
+          params: [tokenId],
         })),
         abi: totalSupplyPerTokenAbi,
       });
@@ -37,7 +38,7 @@ module.exports = {
       // Add each property's TVL: shares × priceInEurt × 10^18
       supplies.forEach((supply, i) => {
         const valueInWei =
-          BigInt(supply) * SHARE_PRICES_EURT[i] * EURT_DECIMALS;
+          BigInt(supply) * SHARE_TOKENS[i].priceEurt * EURT_DECIMALS;
         api.add(EURT, valueInWei.toString());
       });
     },
