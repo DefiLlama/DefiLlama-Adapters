@@ -259,7 +259,7 @@ async function tvl(api) {
   }
 
   // Kamino Lend vaults
-  await kaminoLendVaultTvl(api, { adminAddress: GAUNTLET_ADMIN })
+  await kaminoLendVaultTvl(api, GAUNTLET_ADMIN)
 }
 
 async function megavaultTvl(api) {
