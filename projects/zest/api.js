@@ -73,6 +73,7 @@ async function tvl(api) {
             }
         })
     ))
+    return api.getBalances()
 }
 
 async function borrowed(api) {

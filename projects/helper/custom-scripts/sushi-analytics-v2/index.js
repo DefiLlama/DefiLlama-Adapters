@@ -8,13 +8,10 @@ process.on('uncaughtException', function (err) {
 
 const adaptersDir = '../../../'
 const { bulky, hourlyRun } = require('./adapterMapping')
-const { readFromElastic, writeToElastic } = require('./cache')
+const { readFromElastic, writeToElastic, time, } = require('./cache')
 const sdk = require("@defillama/sdk");
 const { PromisePool } = require('@supercharge/promise-pool')
 
-function time() {
-  return Math.round(Date.now() / 1e3);
-}
 
 const log = sdk.log
 const error = console.error

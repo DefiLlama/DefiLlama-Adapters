@@ -1,6 +1,12 @@
 const sdk = require('@defillama/sdk')
 
+function time() {
+  if (process.env.TIMESTAMP) return +process.env.TIMESTAMP;
+  return Math.round(Date.now() / 1e3);
+}
+
 async function writeToElastic({ project, tvlKey, chain, balances }) {
+  const timeS = new Date(time() * 1e3).toISOString().slice(0, 10)
 
   return sdk.elastic.writeLog('custom-scripts', {
     metadata: {
@@ -9,8 +15,9 @@ async function writeToElastic({ project, tvlKey, chain, balances }) {
     chain,
     project,
     tvlKey,
+    timeS,
     balancesJSON: typeof balances === 'object' ? JSON.stringify(balances) : balances,
-    timestamp: Math.floor(Date.now()),  // think this get overwritten by sdk.elastic
+    timestamp: time() * 1e3,  // think this get overwritten by sdk.elastic
   });
 }
 
@@ -71,6 +78,7 @@ async function readFromElastic({ tvlKey, timestamp, range, project, throwIfMissi
   return record
 }
 module.exports = {
+  time,
   writeToElastic,
   readFromElastic
 };
