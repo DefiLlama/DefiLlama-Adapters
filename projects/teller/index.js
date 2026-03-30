@@ -32,6 +32,34 @@ const poolQuery = `
   }
 `;
 
+const bidQuery = `
+  query ($lastId: ID) {
+    groupPoolBids(first: 1000, where: { id_gt: $lastId }) {
+      id
+      group_pool_address
+      bid_id
+    }
+  }
+`;
+
+const repaidQuery = `
+  query ($lastId: ID) {
+    groupLoanRepaids(first: 1000, where: { id_gt: $lastId }) {
+      id
+      bid_id
+    }
+  }
+`;
+
+const liquidatedQuery = `
+  query ($lastId: ID) {
+    groupDefaultedLoanLiquidateds(first: 1000, where: { id_gt: $lastId }) {
+      id
+      bid_id
+    }
+  }
+`;
+
 async function getPoolConfigs(chain) {
   const pools = [];
 
@@ -48,8 +76,77 @@ async function getPoolConfigs(chain) {
   return pools;
 }
 
+async function getActiveBidIds(chain) {
+  const activeBids = [];
+
+  for (const [label, subgraphs] of [['v2', POOLS_V2], ['v1', POOLS_V1]]) {
+    if (!subgraphs[chain]) continue;
+    const url = subgraphs[chain];
+
+    const [allBids, repaid, liquidated] = await Promise.all([
+      cachedGraphQuery(`teller-bids-${label}-${chain}`, url, bidQuery, { fetchById: true }),
+      cachedGraphQuery(`teller-repaid-${label}-${chain}`, url, repaidQuery, { fetchById: true }),
+      cachedGraphQuery(`teller-liquidated-${label}-${chain}`, url, liquidatedQuery, { fetchById: true }),
+    ]);
+
+    if (!Array.isArray(allBids)) continue;
+
+    const closedBidIds = new Set();
+    if (Array.isArray(repaid)) repaid.forEach(b => closedBidIds.add(b.bid_id));
+    if (Array.isArray(liquidated)) liquidated.forEach(b => closedBidIds.add(b.bid_id));
+
+    for (const bid of allBids) {
+      if (!closedBidIds.has(bid.bid_id)) {
+        activeBids.push(bid);
+      }
+    }
+  }
+
+  return activeBids;
+}
+
+async function getCollateralEscrowTokens(api, pools, activeBids) {
+  if (activeBids.length === 0) return [];
+
+  // Build a map of pool address -> collateral token
+  const poolCollateral = {};
+  for (const pool of pools) {
+    if (pool.collateral_token_address && pool.collateral_token_address !== ZERO_ADDR)
+      poolCollateral[pool.group_pool_address.toLowerCase()] = pool.collateral_token_address;
+  }
+
+  // Get TellerV2 address from the first pool that has active bids
+  const firstPool = activeBids[0].group_pool_address;
+  const tellerV2 = await api.call({ target: firstPool, abi: 'function TELLER_V2() view returns (address)' });
+  const collateralManager = await api.call({ target: tellerV2, abi: 'function collateralManager() view returns (address)' });
+
+  // Get escrow addresses for all active bids
+  const escrows = await api.multiCall({
+    target: collateralManager,
+    calls: activeBids.map(b => b.bid_id),
+    abi: 'function _escrows(uint256) view returns (address)',
+    permitFailure: true,
+  });
+
+  const tokensAndOwners = [];
+  for (let i = 0; i < activeBids.length; i++) {
+    const escrow = escrows[i];
+    if (!escrow || escrow === ZERO_ADDR) continue;
+    const collateralToken = poolCollateral[activeBids[i].group_pool_address.toLowerCase()];
+    if (collateralToken) {
+      tokensAndOwners.push([collateralToken, escrow]);
+    }
+  }
+
+  return tokensAndOwners;
+}
+
 async function tvl(api) {
-  const pools = await getPoolConfigs(api.chain);
+  const [pools, activeBids] = await Promise.all([
+    getPoolConfigs(api.chain),
+    getActiveBidIds(api.chain),
+  ]);
+
   const tokensAndOwners = [];
 
   for (const pool of pools) {
@@ -59,6 +156,10 @@ async function tvl(api) {
     if (pool.collateral_token_address && pool.collateral_token_address !== ZERO_ADDR)
       tokensAndOwners.push([pool.collateral_token_address, owner]);
   }
+
+  // Add collateral held in per-loan escrow contracts
+  const escrowTokens = await getCollateralEscrowTokens(api, pools, activeBids);
+  tokensAndOwners.push(...escrowTokens);
 
   return sumTokens2({ api, tokensAndOwners, permitFailure: true });
 }
@@ -83,7 +184,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: "TVL is pool token balances read on-chain via cached subgraph config. Borrowed is outstanding principal computed on-chain (lended - repaid).",
+  methodology: "TVL is pool token balances plus collateral held in per-loan escrow contracts, all read on-chain. Borrowed is outstanding principal computed on-chain (lended - repaid).",
   timetravel: false,
 };
 
