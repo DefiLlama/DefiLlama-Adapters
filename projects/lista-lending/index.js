@@ -1,11 +1,5 @@
 const { getConfig } = require('../helper/cache')
 
-// Lista Credit (unsecured) market IDs — borrowed is counted in credit-loans adapter only
-const BORROWED_EXCLUDE_MARKET_IDS = {
-  bsc: ['0x523809244d5ec5633a17fee837c16c69a0c6cf3b5596486a6c22b3000ecda5ad'],
-  ethereum: [],
-}
-
 const config = {
   bsc: {
     vault: '0x8F73b65B4caAf64FBA2aF91cC5D4a2A1318E5D8C',
@@ -31,20 +25,16 @@ async function getMarketList(api) {
   return list.filter((m) => m.chain === api.chain)
 }
 
-/** Market IDs for TVL only: exclude Smart Lending (collateral there is in lista-dex). */
+/** Market IDs for TVL: all markets (Smart Lending collateral is in lista-dex swap pools, but loanToken supply is still in vault). */
 async function getMarketIdsForTvl(api) {
   const list = await getMarketList(api)
-  return list
-    .filter((m) => m.isSmartLending !== true)
-    .map((m) => m.marketId)
-    .filter(Boolean)
+  return list.map((m) => m.marketId).filter(Boolean)
 }
 
-/** All market IDs for borrowed (Smart Lending borrowed here; Credit market in credit-loans). */
+/** All market IDs for borrowed (including Smart Lending and Credit markets). */
 async function getAllMarketIds(api) {
   const list = await getMarketList(api)
-  const exclude = new Set((BORROWED_EXCLUDE_MARKET_IDS[api.chain] ?? []).map((id) => id.toLowerCase()))
-  return list.map((m) => m.marketId).filter((id) => id && !exclude.has(id.toLowerCase()))
+  return list.map((m) => m.marketId).filter(Boolean)
 }
 
 async function tvl(api) {
@@ -76,7 +66,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    "TVL counts the tokens locked in the protocol's vaults (excluding Smart Lending markets; those are in lista-dex). Data from Moolah Borrow Market List API.",
+    "TVL counts the tokens locked in the protocol's vaults. Smart Lending swap pool liquidity is tracked separately in lista-dex.",
   start: '2025-04-01',
 }
 
