@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-
 const EURT = "0xF0ff21C0a3De78a4503A77340079f3d4dad3d373";
 const EUROPA_SHARE_TOKEN = "0x0f3cEe146B7D2F6795E60B33AE6e339A64d77Fc6";
 
