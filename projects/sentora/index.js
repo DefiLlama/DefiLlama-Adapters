@@ -1,5 +1,4 @@
 const { getCuratorExport } = require("../helper/curators");
-const { mergeExports } = require("../helper/utils");
 
 const customConfig = {
   ethereum: {
@@ -87,4 +86,13 @@ async function customTvl(api) {
   return api.getBalances()
 }
 
-module.exports = mergeExports([curatorExport, { ethereum: { tvl: customTvl } }])
+module.exports = {
+  ...curatorExport,
+  ethereum: {
+    ...curatorExport.ethereum,
+    tvl: async (api) => {
+      await curatorExport.ethereum.tvl(api)
+      await customTvl(api)
+    },
+  },
+}
