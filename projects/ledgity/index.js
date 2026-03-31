@@ -125,9 +125,7 @@ function buildChainTvl(chain) {
         const lmBal = BigInt(String(excluded[i * 2 + 1]));
         const userSupply = supply - ownerBal - lmBal;
         if (userSupply < 0n) {
-          // Protocol wallets hold more than total supply — no user TVL for this token.
-          console.warn(`[ledgity] net lToken supply < 0 for ${chain}:${t.token} (supply=${supply}, owner=${ownerBal}, lm=${lmBal}), clamping to 0`);
-          return;
+          throw new Error(`[ledgity] net lToken supply < 0 for ${chain}:${t.token} (supply=${supply}, owner=${ownerBal}, lm=${lmBal}) — check exclusion addresses`);
         }
         api.add(t.underlying, userSupply.toString());
       });
