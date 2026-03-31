@@ -5,6 +5,11 @@ const TEMPLAR_REGISTRY_CONTRACTS = [
   'v1.tmplr.near',
 ]
 
+const EXCLUDED_DEPLOYMENT_PATTERNS = [
+  'proxy-oracle-',
+  '-adapter',
+]
+
 const MAX_RETRY_ATTEMPTS = 3
 const RETRY_DELAY_MS = 1000
 const CALL_TIMEOUT_MS = 30000
@@ -223,7 +228,7 @@ async function fetchDeploymentsFromContract(registryContract) {
       hasMore = false
       break
     }
-    const filtered = batch.filter(id => !id.includes('proxy-oracle-') && !id.includes('-adapter'))
+    const filtered = batch.filter(id => !EXCLUDED_DEPLOYMENT_PATTERNS.some(pattern => id.includes(pattern)))
     deployments.push(...filtered)
     hasMore = batch.length === limit
     offset += limit
