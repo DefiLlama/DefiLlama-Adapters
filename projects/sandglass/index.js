@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require('../helper/solana')
 
 const tokensAndOwners = {
@@ -9,14 +10,14 @@ const tokensAndOwners = {
     ["27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4", "uy1xw2f23GipDh3aL8rVWmtPLbaetwiS1uzm9RAUeTy"],
     ["89dkr9ZhU3TGNzMKF7WbbuNBaqaGEgjtWsE33Vi3RBxY", "CwaUu6mzhTtv8T3777akAQEw57eCrHWcFShsKHq4xUod"],
     ["kyJtowDDACsJDm2jr3VZdpCA6pZcKAaNftQwrJ8KBQP", "DTf16ohumTwptoevUGuo5qZvsgibrgnefb6inBZdqDLo"],
-    ["bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1", "6975bo5KMwc7iHJy6yfnxL4HYo9SVSudTAPNM23pnPGA"],
+    [ADDRESSES.solana.bSOL, "6975bo5KMwc7iHJy6yfnxL4HYo9SVSudTAPNM23pnPGA"],
     ["kySo1nETpsZE2NWe5vj2C64mPSciH1SppmHb4XieQ7B", "gcsAMVGbQEwXB3a6Y1gProbV6hqnMr3t6Q9Z4PVUQfY"],
     ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "DL5iykebZDbQhiCXHcsbyPaqeWAZLQQENCZsrpMYTt8c"],
     ["4LJni8SefGqyHWEdk2W8uLWaVL5uA8pfE6MkYvmMmTfF", "JosCLY7dMXJFxjwj1sGArmDSKosAVzhKDHmwdsZBe2K"],
     ["4tARAT4ssRYhrENCTxxZrmjL741eE2G23Q1zLPDW2ipf", "A1CfHVTRh8SqGmtUSTzUrXKzJaAroaRxs5sa5pdY4Gdw"],
     ["D637bg2p2UqPrh3gsm9r2RrBnFezeUt5qspQuJyrBFaN", "FKXrRSwG2ugEt1waao9P6UbnCZyNiBwHDj8m4nLfdteq"],
     ["2RxduzB4xWZRBm5PpdBZmDfVbGFiGD2BJcGSaVZ3tQ8K", "Cz45WXUuz4xs2dGXcqDafFUEkddMs9TspLTYbaxauYzw"],
-    ["J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn", "9tamB4Lu4VicC7zcPcyNwDtQJRnx1rvgXxgzkzEr5mL1"],
+    [ADDRESSES.solana.JitoSOL, "9tamB4Lu4VicC7zcPcyNwDtQJRnx1rvgXxgzkzEr5mL1"],
     ["CETES7CKqqKQizuSN6iWQwmTeFRjbJR6Vw2XRKfEDR8f", "6FtYGDfxQwrh2sHNGkTsirKx5vjxSeD8inwTDtPcipEd"],
     ["WFRGSWjaz8tbAxsJitmbfRuFV2mSNwy7BMWcCwaA28U", "7BRGGfv2dRDRVkUAo8y3M2nLvwRwvVEtx3siikooRDVw"],
     ["WFRGJnQt5pK8Dv4cDAbrSsgPcmboysrmX3RYhmRRyTR", "3XGavdreqzWoa5kw3tUT7UpPmF3yACsF5GeyTtzzxJ8v"],

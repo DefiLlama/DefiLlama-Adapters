@@ -17,7 +17,13 @@ const config = {
                 address: '0x9b694d0ed151374989a4ec71d8a14764ae47f89d',
                 collateralToken: '0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547'
             }
-        }
+        },
+        {
+            "zeta": {
+                address: '0x540095363a3642bc6dde623825261851b71d1b71',
+                collateralToken: '0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547'
+            }
+        },
     ],
     "oasis": [
         {
@@ -29,7 +35,7 @@ const config = {
     ],
     "bitkub": [{
         "bitkub": {
-            address: "0xc293a0a2521188f9c81e6e11f577649e671f9965",
+            address: "0xf38feedb0c85c1e1d6864c7513ac646d28bb0cfc",
             collateralToken: '0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547'
         }
     }],

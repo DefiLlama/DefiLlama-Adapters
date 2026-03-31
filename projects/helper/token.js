@@ -96,7 +96,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
 
     try {
       const cachedTokens = cache?.tokens ?? {}
-      const problemChains = ['zksync_era', 'moonbeam']
+      const problemChains = ['zksync_era', 'moonbeam', 'linea', "polygon_zkevm",]
       const problemChainSet = new Set(problemChains)
       const options = {
         method: 'POST',
@@ -115,9 +115,10 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
           },
           id: 42
         },
-        timeout: 30000, // 30 seconds timeout
+        timeout: 45000, // 45 seconds timeout
       };
       const tokens = cache.tokens ?? {}
+      // console.log('Fetching tokens from Ankr for address:', address, options.data.params.blockchain, (await axios.request(options)).data.result.assets)
       const { data: { result: { assets } } } = await axios.request(options)
       const tokenCache = { timestamp: timeNow, tokens, }
       for (const asset of assets) {

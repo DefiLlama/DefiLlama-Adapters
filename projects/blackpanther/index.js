@@ -1,10 +1,10 @@
-const axios = require('axios')
 const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos");
+const { getConfig } = require('../helper/cache');
 
 const URL = "https://blackpanther.fi/mainnet/api/vaults"
 
 const tvl = async (api) => {
-  const { data } = await axios.get(URL)
+  const data = await getConfig('blackpanther/vaults', URL);
   const vaults = data.map((d) => d.vault_address)
   for (const vault of vaults) {
     const { asset } = await queryContractCosmos({ chain: api.chain, contract: vault, data: { total_vault: {} } });

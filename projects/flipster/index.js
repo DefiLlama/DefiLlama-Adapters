@@ -119,6 +119,12 @@ const config = {
     owners: [
       '0x0613f31af70ce983b9dca574e033a52351fd2e67b1959bf48574c6e9c956f95e'
     ]
+  },
+  stable: {
+    tokens: [ADDRESSES.stable.USDT0],
+    owners: [
+      '0x987753779885D0cB90E368070F54f220AE93E698'
+    ]
   }
 }
 

@@ -48,23 +48,62 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     for (let i = _oldPairInfoLength; i < length; i++)
       pairCalls.push(i)
 
-    const calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
-
-    const [
-      token0s, token1s
-    ] = await Promise.all([
-      api.multiCall({ abi: abi.token0, calls }),
-      api.multiCall({ abi: abi.token1, calls }),
-    ])
-    let symbols
-    if (hasStablePools) {
-      symbols = await api.multiCall({ abi: 'erc20:symbol', calls, })
-      cache.symbols.push(...symbols)
+    let calls
+    if (queryBatched && pairCalls.length > queryBatched) {
+      calls = []
+      const batchedPairCalls = sliceIntoChunks(pairCalls, queryBatched)
+      for (const batch of batchedPairCalls) {
+        const res = await api.multiCall({ abi: abi.allPairs, calls: batch, target: factory })
+        calls.push(...res)
+        sdk.log(`fetched pairs ${calls.length}/${pairCalls.length}`)
+        if (waitBetweenCalls) await sleep(waitBetweenCalls)
+      }
+    } else {
+      calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
     }
 
-    cache.pairs.push(...calls)
-    cache.token0s.push(...token0s)
-    cache.token1s.push(...token1s)
+    let token0s, token1s
+    if (queryBatched && calls.length > queryBatched) {
+      token0s = []
+      token1s = []
+      const batchedCalls = sliceIntoChunks(calls, queryBatched)
+      let done = 0
+      for (const batch of batchedCalls) {
+        const [t0, t1] = await Promise.all([
+          api.multiCall({ abi: abi.token0, calls: batch }),
+          api.multiCall({ abi: abi.token1, calls: batch }),
+        ])
+        token0s.push(...t0)
+        token1s.push(...t1)
+        done += batch.length
+        sdk.log(`fetched token info ${done}/${calls.length}`)
+        if (waitBetweenCalls) await sleep(waitBetweenCalls)
+      }
+    } else {
+      ;[token0s, token1s] = await Promise.all([
+        api.multiCall({ abi: abi.token0, calls }),
+        api.multiCall({ abi: abi.token1, calls }),
+      ])
+    }
+
+    let symbols
+    if (hasStablePools) {
+      if (queryBatched && calls.length > queryBatched) {
+        symbols = []
+        const batchedCalls = sliceIntoChunks(calls, queryBatched)
+        for (const batch of batchedCalls) {
+          symbols.push(...await api.multiCall({ abi: 'erc20:symbol', calls: batch }))
+          if (waitBetweenCalls) await sleep(waitBetweenCalls)
+        }
+      } else {
+        symbols = await api.multiCall({ abi: 'erc20:symbol', calls, })
+      }
+      cache.symbols = cache.symbols.concat(symbols)
+    }
+
+    cache.pairs = cache.pairs.concat(calls)
+    cache.token0s = cache.token0s.concat(token0s)
+    cache.token1s = cache.token1s.concat(token1s)
 
     updateCache = updateCache || cache.pairs.length > _oldPairInfoLength
 
@@ -77,8 +116,12 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     let reserves = []
     if (queryBatched) {
       const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
+      let batchIdx = 0
       for (const calls of batchedCalls) {
-        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls, permitFailure, }))
+        const res = await api.multiCall({ abi: abi.getReserves, calls, permitFailure, })
+        reserves = reserves.concat(res)
+        batchIdx++
+        sdk.log(`fetched reserves batch ${batchIdx}/${batchedCalls.length}`)
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
       }
     } else if (fetchBalances) {

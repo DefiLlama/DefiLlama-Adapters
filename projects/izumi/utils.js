@@ -1,4 +1,3 @@
-const { getChainTransform } = require('../helper/portedTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
@@ -56,7 +55,8 @@ function _liquidity2AmountYAtPoint(liquidity, sqrtPrice, upper) {
   }
 }
 
-async function addiZiPositionBalances(params, balances, chain, transformAddress) {
+async function addiZiPositionBalances(params, balances, chain, ) {
+  const transformAddress = token => `${chain}:${token}`
   const tokenX = params.miningInfo.tokenX_
   const tokenY = params.miningInfo.tokenY_
   const rangeLen = Number(params.miningInfo.rewardUpperTick_) - Number(params.miningInfo.rewardLowerTick_)
@@ -104,7 +104,7 @@ async function addiZiPositionBalances(params, balances, chain, transformAddress)
   sdk.util.sumSingleBalance(balances, transformAddress(tokenY), new BigNumber(amountY).toFixed(0))
 }
 
-async function unwrapiZiswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'bsc', transformAddress, owner, nftAddress, owners }) {
+async function unwrapiZiswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'bsc', owner, nftAddress, owners }) {
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
@@ -128,12 +128,12 @@ async function unwrapiZiswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
       else if (type == 'fixRange') {
         let ownersUni = getUniqueAddresses(owners[type])
         let nftsAndOwners = ownersUni.map(o => [nftAddress, o])
-        await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain, transformAddress })))
+        await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain, })))
       }
       else if (type == 'dynamicRange') {
         let ownersUni = getUniqueAddresses(owners[type])
         let nftsAndOwners = ownersUni.map(o => [nftAddress, o])
-        await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, chain, transformAddress })))
+        await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, chain, })))
       }
     }
   }
@@ -146,10 +146,7 @@ async function unwrapiZiswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
   }
 }
 
-async function unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain = 'bsc', transformAddress }) {
-  if (!transformAddress) {
-    transformAddress = await getChainTransform(chain)
-  }
+async function unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain = 'bsc', }) {
   const miningInfo = (await sdk.api.abi.call({ target: owner, abi: abi.fixRangeMiningInfo, block, chain })).output
   const totalNIZI = (await sdk.api.abi.call({ target: owner, abi: abi.totalNIZI, block, chain })).output
   const factory = (await sdk.api.abi.call({ target: nftAddress, abi: abi.factory, block, chain })).output
@@ -164,15 +161,13 @@ async function unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain =
     state: state,
     totalNIZI: totalNIZI,
   }
-  await addiZiPositionBalances(params, balances, chain, transformAddress)
+  await addiZiPositionBalances(params, balances, chain)
 
   return balances
 }
 
-async function unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, chain = 'bsc', transformAddress }) {
-  if (!transformAddress) {
-    transformAddress = await getChainTransform(chain)
-  }
+async function unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, chain = 'bsc', }) {
+  const transformAddress = token => `${chain}:${token}`
   const miningContractInfo = (await sdk.api.abi.call({ target: owner, abi: abi.DynamicRangeMiningInfo, block, chain })).output
   const tokenA = miningContractInfo.tokenX_
   const tokenB = miningContractInfo.tokenY_
@@ -187,32 +182,7 @@ async function unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, cha
   return balances
 }
 
-async function checkAndFixToken(balances, chain, fixTokens) {
-  if (fixTokens.length) {
-    for (let token of fixTokens) {
-      if (`${chain}:${token.address.toLowerCase()}` in balances || token.address.toLowerCase() in balances) {
-        const [data, { output: decimals }] = await Promise.all([
-          get(`https://izumi.finance/api/v1/token_info/price_info/${token.symbol}/`),
-          sdk.api.erc20.decimals(token.address, chain)
-        ]);
-        let amount = balances[token.address.toLowerCase()] ? balances[token.address.toLowerCase()] : balances[`${chain}:${token.address.toLowerCase()}`]
-        if (!amount) {
-          return;
-        }
-        sdk.util.sumSingleBalance(
-          balances,
-          "usd-coin",
-          amount * data.data / 10 ** decimals
-        );
-        delete balances[token.address.toLowerCase()];
-        delete balances[`${chain}:${token.address.toLowerCase()}`];
-      }
-    }
-  }
-  return;
-}
-
-async function unwrapNFTs({ balances = {}, nftsAndOwners = [], block, chain = 'bsc', transformAddress, owner, nftAddress, config, fixTokens }) {
+async function unwrapNFTs({ balances = {}, block, chain = 'bsc',  nftAddress, config, }) {
   const uniContracts = config.uniContracts
   const iZiContracts = config.iZiContracts
   if (iZiContracts) await unwrapiZiswapV3NFTs({ balances, chain, block, nftAddress, owners: iZiContracts, })

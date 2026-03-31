@@ -111,11 +111,10 @@ module.exports = {
   era: {
     tvl: getUniTVL({ factory: '0xd03D8D566183F0086d8D09A84E1e30b58Dd5619d', useDefaultCoreAssets: true, })
   },
-  op_bnb: {
-    tvl: getUniTVL({ factory: '0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E', useDefaultCoreAssets: true, })
-  },
+  op_bnb: defaultExport,
   arbitrum: { ...defaultExport },
   base: defaultExport,
+  monad: defaultExport,
 }
 
 // https://developer.pancakeswap.finance/contracts/syrup-pools

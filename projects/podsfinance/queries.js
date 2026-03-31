@@ -1,54 +1,35 @@
-const sdk = require("@defillama/sdk");
-
-const { EXPIRATION_START_FROM } = require("./constants.js");
+const { getConfig } = require("../helper/cache.js");
+const constants = require("./constants.js");
+const { EXPIRATION_START_FROM } = constants;
 const { getOptions } = require("./subgraph.js");
 
-async function getTVL(network, block) {
-  const balances = {};
-  const options = await getOptions(network, EXPIRATION_START_FROM);
+async function getTVL(api) {
+  const network = constants[api.chain]
+  const options = await getConfig('podsfinance/' + api.chain, undefined, {
+    fetcher: async () => {
+      const data = await getOptions(network, EXPIRATION_START_FROM)
+      return data.filter(i => i)
+    }
+  })
+  const tokensAndOwners = []
+  options
+    .filter(
+      (option) =>
+        option.strikeAsset &&
+        option.underlyingAsset &&
+        option.address
+    )
+    .forEach((option) => tokensAndOwners.push(
+      [option.strikeAsset, option.address],
+      [option.underlyingAsset, option.address],
+    ))
 
-  const collateralInOptions = await sdk.api.abi.multiCall({
-    abi: "erc20:balanceOf",
-    block,
-    calls: options
-      .filter(
-        (option) =>
-          option &&
-          option.strikeAsset &&
-          option.underlyingAsset &&
-          option.address
-      )
-      .map((option) => [
-        {
-          target: option.strikeAsset,
-          params: [option.address],
-        },
-        {
-          target: option.underlyingAsset,
-          params: [option.address],
-        },
-      ])
-      .reduce((prev, curr) => prev.concat(curr), []),
-    chain: network.name,
-  });
+  options
+    .filter((option) => option.pool && option.pool.address)
+    .forEach((option) => tokensAndOwners.push([option.pool.tokenB, option.pool.address]))
 
-  const stablesInPools = await sdk.api.abi.multiCall({
-    abi: "erc20:balanceOf",
-    block,
-    calls: options
-      .filter((option) => option && option.pool && option.pool.address)
-      .map((option) => ({
-        target: option.pool.tokenB,
-        params: [option.pool.address],
-      })),
-    chain: network.name,
-  });
 
-  const transform = (address) => `${network.name}:${address}`;
-
-  sdk.util.sumMultiBalanceOf(balances, collateralInOptions, true, transform);
-  sdk.util.sumMultiBalanceOf(balances, stablesInPools, true, transform);
-  return balances;
+  return api.sumTokens({ tokensAndOwners })
 }
 
 module.exports = {

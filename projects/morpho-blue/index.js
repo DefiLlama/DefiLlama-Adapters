@@ -9,16 +9,28 @@ const config = {
     blackList: [
       "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
       ADDRESSES.base.USDC,
+      ADDRESSES.optimism.WSTETH,
+      '0x84b78bc998e4b1a63f2cf9ebfe76c55fc96a5a9b'
     ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
+      
+      // bad debt due to resolv hack
+      "0xd9e34b1eed46d123ac1b69b224de1881dbc88798bc7b70f504920f62f58f28cc",
+      "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33",
+      "0x8e7cc042d739a365c43d0a52d5f24160fa7ae9b7e7c9a479bd02a56041d4cf77",
+      "0xcc39b6c92fd03ac608b9239618db8b80a4a2034b0450bdf47b404229571312da",
+      "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
     ],
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd', '0x46415998764c29ab2a25cbea6254146d50d22687', '0x5e331e9ae6e1a5d375f699811736527222a9db15', '0x2dc205f24bcb6b311e5cdf0745b0741648aebd3d', '0xadcdd085ad2887758255090589f72237bdd33d8a', '0xcb327b99ff831bf8223cced12b1338ff3aa322fa', '0xadcdd085ad2887758255090589f72237bdd33d8e'],
     fromBlock: 13977148,
+    blacklistedMarketIds: [
+      '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
+    ]
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
@@ -39,7 +51,7 @@ const config = {
   },
   polygon: {
     morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
-    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719", "0xc69e948a9a5c123704580c46332f90cff1cb215b", "0x316c0b5cd67aa7c2da7a576d3724e3763981d08f", "0xd59a2e7d5110dc379910925aa0472a13e09a093e", "0xc7a357293a35ce4c8d7f2000571043313987aab7", "0xf14c4fd60765e36d63f6c8b8161bd41ba995fb44"],
+    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719", "0xc69e948a9a5c123704580c46332f90cff1cb215b", "0x316c0b5cd67aa7c2da7a576d3724e3763981d08f", "0xd59a2e7d5110dc379910925aa0472a13e09a093e", "0xc7a357293a35ce4c8d7f2000571043313987aab7", "0xf14c4fd60765e36d63f6c8b8161bd41ba995fb44", "0x338a4ef6953b36e67ccf7cffe50ebc74b1d64387", "0x12fd05a9306affc946cb13301d88a102400544d2", "0x8a874eb137d99415bad95c5d4399bc691849d02f", "0x365ab7828ea541c1d6e30472a1a1e7d07600a6bd", "0xc7056597f3a816202486b5082b3291a2023c9633", "0x2faaa34f387e6485671faeda7c021ee6af961d35"],
     fromBlock: 66931042,
   },
   scroll: {
@@ -70,10 +82,10 @@ const config = {
     morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
     fromBlock: 9139027,
   },
-  flame: {
-    morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
-    fromBlock: 5991116,
-  },
+  // flame: {
+  //   morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04", // flame blockchain down from last time I check
+  //   fromBlock: 5991116,
+  // },
   // basecamp:{
   //   morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
   //   fromBlock: 4804080,
@@ -99,6 +111,8 @@ const config = {
   katana: {
     morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
     fromBlock: 2741069,
+    // added a hack server-side to count vb token tvls only on katana but not global
+    // blackList: ['0x2dca96907fde857dd3d816880a0df407eeb2d2f2', '0x203a662b0bd271a6ed5a60edfbd04bfce608fd36', '0x0913da6da4b42f538b445599b46bb4622342cf52', '0xee7d8bcfb72bc1880d0cf19822eb0a2e6577ab62']
   },
   tac: {
     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
@@ -137,6 +151,26 @@ const config = {
     morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
     fromBlock: 450759,
   },
+  monad: {
+    morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
+    fromBlock: 31907457,
+  },
+  stable: {
+    morphoBlue: "0xa40103088A899514E3fe474cD3cc5bf811b1102e",
+    fromBlock: 2348260,
+  },
+  linea: {
+    morphoBlue: "0x6B0D716aC0A45536172308e08fC2C40387262c9F",
+    fromBlock: 25072608,
+  },
+  flare: {
+    morphoBlue: "0xF4346F5132e810f80a28487a79c7559d9797E8B0",
+    fromBlock: 52378788,
+  },
+  citrea: {
+    morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
+    fromBlock: 2528230,
+  },
 }
 
 const eventAbis = {
@@ -147,8 +181,19 @@ const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
+  const useIndexer = api.chain === 'monad' ? true : false
   const extraKey = 'reset-v2'
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, })
+
+  let logs = [];
+  if (api.chain === 'tac') {
+    try {
+      logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
+    } catch (e) {
+      logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache: true, useIndexer })
+    }
+  } else {
+    logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
+  }
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
@@ -158,22 +203,27 @@ const tvl = async (api) => {
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
-  const filterMarkets = marketInfos.filter((_, i) => withdrawQueueLengths[i] == null || withdrawQueueLengths[i] > 30 || withdrawQueueLengths[i] < 0);
+  const collateralWQLMap = new Map(collCalls.map((addr, i) => [addr, withdrawQueueLengths[i]]));
+  const filterMarkets = marketInfos.filter(m => {
+    const wql = collateralWQLMap.get(m.collateralToken.toLowerCase());
+    return wql == null || wql > 30 || wql < 0;
+  });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
-  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList })
+  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 }
 
 const borrowed = async (api) => {
-  const { morphoBlue } = config[api.chain]
+  const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
+  const blackListLower = blackList.map(b => b.toLowerCase())
 
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
-    if (collateralToken.toLowerCase() !== '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') {
-      api.add(loanToken, data.totalBorrowAssets);
-    }
+    if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
+    if (blackListLower.includes(loanToken.toLowerCase())) return;
+    api.add(loanToken, data.totalBorrowAssets);
   });
 }
 

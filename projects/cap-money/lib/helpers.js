@@ -1,12 +1,12 @@
 const { getLogs2 } = require("../../helper/cache/getLogs");
-const { capConfig, capABI, symbioticABI } = require("./configs");
+const { capConfig, capABI, symbioticABI, eigenlayerABI } = require("./configs");
 const { arrayZip } = require("./utils");
 
 const fetchAgentConfigs = async (api, chain) => {
     const infra = capConfig[chain].infra;
-    const networkMiddlewareToNetwork = capConfig[chain].symbiotic.networkMiddlewareToNetwork;
+    const coverageNetworkConfigs = capConfig[chain].coverageNetworkConfigs;
 
-    const agentAndNetworkMiddleware = await getLogs2({
+    const addAgentLogs = await getLogs2({
         api,
         onlyArgs: false, // need the blocknumber
         eventAbi: capABI.Delegation.AddAgentEvent,
@@ -19,32 +19,76 @@ const fetchAgentConfigs = async (api, chain) => {
         })
     })
 
-    const networks = agentAndNetworkMiddleware.map(({ networkMiddleware }) => networkMiddlewareToNetwork[networkMiddleware] ?? networkMiddlewareToNetwork.default)
+    const networkConfigs = addAgentLogs.map(({ agent, networkMiddleware }) => ({
+        agent: agent.toLowerCase(),
+        network: coverageNetworkConfigs[networkMiddleware.toLowerCase()],
+    }))
 
-    const vaults = await api.multiCall({
+    const symbioticNetworkConfigs = networkConfigs
+        .filter(({ network }) => network.type === 'symbiotic');
+
+    const eigenlayerNetworkConfigs = networkConfigs
+        .filter(({ network }) => network.type === 'eigenlayer');
+
+    const symbioticVaults = await api.multiCall({
         abi: capABI.SymbioticNetworkMiddleware.vaults,
-        calls: agentAndNetworkMiddleware.map(({ agent, networkMiddleware }) => ({
-            target: networkMiddleware,
+        calls: symbioticNetworkConfigs.map(({ agent, network }) => ({
+            target: network.networkMiddleware,
             params: [agent]
         }))
     });
-
-    const vaultsCollateral = await api.multiCall({
+    const symbioticVaultsCollateral = await api.multiCall({
         abi: symbioticABI.Vault.collateral,
-        calls: vaults.map((vault) => ({
+        calls: symbioticVaults.map((vault) => ({
             target: vault
         }))
     });
 
-    const agentConfigs = arrayZip(agentAndNetworkMiddleware, networks, vaults, vaultsCollateral)
-        .map(([config, network, vault, vaultCollateral]) => ({
+    const eigenlayerStrategies = await api.multiCall({
+        abi: capABI.EigenlayerServiceManager.operatorToStrategy,
+        calls: eigenlayerNetworkConfigs.map(({ agent, network }) => ({
+            target: network.serviceManager,
+            params: [agent],
+        }))
+    });
+    const eigenlayerUnderlyingTokens = await api.multiCall({
+        abi: eigenlayerABI.IStrategy.underlyingToken,
+        calls: eigenlayerStrategies.map((strategy) => ({
+            target: strategy,
+        }))
+    });
+    const eigenlayerOperators = await api.multiCall({
+        abi: capABI.EigenlayerServiceManager.getEigenOperator,
+        calls: eigenlayerNetworkConfigs.map(({ agent, network }) => ({
+            target: network.serviceManager,
+            params: [agent],
+        }))
+    });
+
+    const symbioticAgentConfigs = arrayZip(symbioticNetworkConfigs, symbioticVaults, symbioticVaultsCollateral)
+        .map(([config, vault, vaultCollateral]) => ({
             ...config,
-            network: network.toLowerCase(),
-            vault: vault.toLowerCase(),
-            vaultCollateral: vaultCollateral.toLowerCase()
+            network: {
+                ...config.network,
+                vault: vault.toLowerCase(),
+            },
+            collateralToken: vaultCollateral.toLowerCase()
         }));
 
-    return agentConfigs;
+    const eigenlayerAgentConfigs = arrayZip(eigenlayerNetworkConfigs, eigenlayerStrategies, eigenlayerUnderlyingTokens, eigenlayerOperators)
+        .map(([config, strategy, underlyingToken, operator]) => ({
+            ...config,
+            network: {
+                ...config.network,
+                strategy: strategy.toLowerCase(),
+                operator: operator.toLowerCase(),
+            },
+            collateralToken: underlyingToken.toLowerCase()
+        }));
+
+
+    const agentConfigs = [...symbioticAgentConfigs, ...eigenlayerAgentConfigs];
+    return { symbioticAgentConfigs, eigenlayerAgentConfigs, agentConfigs };
 }
 
 const fetchAssetAddresses = async (api, chain) => {
@@ -72,8 +116,18 @@ const fetchAssetAddresses = async (api, chain) => {
 }
 
 
+const mapWrappedAssetBalance = (chain, address, availableBalance) => {
+    const wWTGXX = capConfig.ethereum.tokens.wWTGXX;
+    const WTGXX = capConfig.ethereum.tokens.WTGXX;
+    if (chain === 'ethereum' && address.toLowerCase() === wWTGXX.address.toLowerCase()) {
+        return [WTGXX.address, availableBalance /* same decimals, nothing to do */];
+    }
+    return [address, availableBalance];
+}
+
 module.exports = {
     fetchAgentConfigs,
     fetchAssetAddresses,
+    mapWrappedAssetBalance,
 }
 

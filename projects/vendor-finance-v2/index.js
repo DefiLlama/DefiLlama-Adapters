@@ -38,6 +38,7 @@ async function tvl(api) {
 }
 
 const config = {
+  berachain: { factory: '0x914246ceAF07E1E4B22992d733a9eb3D4983233b', fromBlock: 10062470},
   arbitrum: { factory: '0x0b2B8Fbf3dfd6237921A89355cfc08f107bFbf98', fromBlock: 88774917 },
   base: { factory: '0xAf013ba5cE2e3AC97BF93Ea968031B3D0B4682Cf', fromBlock: 33429629},
   spn: { factory: '0xd03b16e994E6D877051878C676cc296eC00f171d', fromBlock: 1816958}

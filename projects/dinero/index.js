@@ -1,5 +1,5 @@
 const { nullAddress } = require("../helper/unwrapLPs");
-const { sumERC4626VaultsExport } = require("../helper/erc4626");
+const { sumERC4626VaultsExport2 } = require("../helper/erc4626");
 
 module.exports = {
   ethereum: {
@@ -10,6 +10,6 @@ module.exports = {
         [nullAddress]: totalSupply
       };
     },
-    staking: sumERC4626VaultsExport({ vaults: ['0x55769490c825CCb09b2A6Ae955203FaBF04857fd'], isOG4626: true, })
+    staking: sumERC4626VaultsExport2({ vaults: ['0x55769490c825CCb09b2A6Ae955203FaBF04857fd'] })
   }
 };

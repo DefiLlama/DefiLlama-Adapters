@@ -2,7 +2,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getProvider, sumTokens2 } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
-const bs58 = require('bs58');
+
+const bs58Encode = anchor.utils.bytes.bs58.encode;
 
 const solProgramId = "CRSeeBqjDnm3UPefJ9gxrtngTsnQRhEJiTA345Q83X3v";
 const usdcProgramId = "1avaAUcjccXCjSZzwUvB2gS3DzkkieV2Mw8CjdN65uu";
@@ -11,8 +12,8 @@ const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ
 const SPL_ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
 const edgeCaseTimestamps = [
-  { start: '2024-04-23', end: 1713885480 }, // 10:32 AM - 10:58 AM ET on April 23, 2024
-  { start: '2024-04-23', end: 1713876060 }, // 8:15 AM - 8:41 AM ET on April 23, 2024
+  { start: '2024-04-23', end: 1713885480 },
+  { start: '2024-04-23', end: 1713876060 },
 ];
 
 const idleAccount = new PublicKey("bkhAyULeiXwju7Zmy4t3paDHtVZjNaofVQ4VgEdTWiE");
@@ -26,21 +27,16 @@ const iscPoolAccount = new PublicKey("CrsxVEF7YNGAk9QwwbB2vuesUWoDopfgFAhA9apoCJ
 
 function getPositionFilters() {
   const sizeFilter = { dataSize: 178 };
+
+  const zeroBuf = Buffer.alloc(8);
+
   const value = BigInt(9999);
   const valueBuffer = Buffer.alloc(8);
   valueBuffer.writeBigUInt64LE(value, 0);
-  const val0Filter = {
-    memcmp: {
-      offset: 40,
-      bytes: bs58.encode(Buffer.from(new Uint8Array(8))),
-    },
-  }
-  const val9999Filter = {
-    memcmp: {
-      offset: 40,
-      bytes: bs58.encode(valueBuffer),
-    },
-  }
+
+  const val0Filter = { memcmp: { offset: 40, bytes: bs58Encode(zeroBuf) } }
+  const val9999Filter = { memcmp: { offset: 40, bytes: bs58Encode(valueBuffer) } }
+
   return [
     [sizeFilter, val0Filter],
     [sizeFilter, val9999Filter],
@@ -49,52 +45,61 @@ function getPositionFilters() {
 
 async function tvl(api) {
   const provider = getProvider();
-  for (const programId of [solProgramId, usdcProgramId]) {
 
+  for (const programId of [solProgramId, usdcProgramId]) {
     const program = new anchor.Program(lavarageIDL, programId, provider);
     const pools = await program.account.pool.all()
+
     const poolMap = {}
-    pools.forEach((pool) => {
-      poolMap[pool.publicKey.toBase58()] = pool.account.collateralType.toBase58()
-    })
+    pools.forEach((pool) => { poolMap[pool.publicKey.toBase58()] = pool.account.collateralType.toBase58() })
+
     for (const filter of getPositionFilters()) {
       const positions = await program.account.position.all(filter)
       positions.forEach(({ account }) => {
         let { closeStatusRecallTimestamp, pool, collateralAmount, timestamp } = account
         const token = poolMap[pool.toBase58()]
-        const closeTS = closeStatusRecallTimestamp.toNumber()
-        const ts = timestamp.toNumber()
+        const closeTS = Number(closeStatusRecallTimestamp?.toNumber?.() ?? 0)
+        const ts = Number(timestamp?.toNumber?.() ?? 0)
+
         if ((closeTS && !isWithinEdgeCaseTimeRange(ts)) || !token) return;
         api.add(token, collateralAmount.toString())
       })
     }
   }
+
   return sumTokens2({
-    balances: api.getBalances(), tokenAccounts: [
+    balances: api.getBalances(),
+    tokenAccounts: [
       getAssociatedTokenAddress(usdcAddress, usdcPoolAccount),
       getAssociatedTokenAddress(iscAddress, iscPoolAccount),
-    ], solOwners: [
-      deployedAccount, pendingUnstakeAccount,
+    ],
+    solOwners: [
+      deployedAccount,
+      pendingUnstakeAccount,
     ]
   })
 }
 
-function getAssociatedTokenAddress(mint, owner,) {
-  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], SPL_ASSOCIATED_TOKEN_PROGRAM_ID);
+function getAssociatedTokenAddress(mint, owner) {
+  const [associatedTokenAddress] = PublicKey.findProgramAddressSync(
+    [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+  );
   return associatedTokenAddress;
 }
 
 function isWithinEdgeCaseTimeRange(closeTimestamp) {
   return edgeCaseTimestamps.some(
-    ({ start, end }) => closeTimestamp >= start && closeTimestamp <= end
+    ({ start, end }) => {
+      const startEpoch = typeof start === 'number' ? start : Math.floor((Date.parse(start) || 0) / 1000);
+      return closeTimestamp >= startEpoch && closeTimestamp <= end
+    }
   );
 }
 
 module.exports = {
   timetravel: false,
-  solana: {
-    tvl,
-  },
+  solana: { tvl },
 };
 
 const lavarageIDL = {

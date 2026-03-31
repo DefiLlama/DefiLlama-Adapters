@@ -12,7 +12,6 @@ Object.keys(config).forEach(chain => {
       const debtTokens = await api.call({ abi: 'address[]:getDebtTokenAddresses', target: tokenManager })
       const blacklistedTokens = debtTokens.concat([ // exclude minted tokens whose backing is already counted towards tvl
         '0x5b8203e65aa5be3f1cf53fd7fa21b91ba4038ecc', // APO - projects own token +  more locked here than mcap on cg + very low liquidity
-        '0x372b2dc06478aa2c8182eee0f12ea0e9a15e2913', // GEM - more locked here than mcap on cg + very low liquidity
       ])
 
       const pairs = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: swapOperations })

@@ -2,7 +2,7 @@ const { sumTokensExport } = require('./helper/unwrapLPs')
 const { compoundExports2 } = require("./helper/compound");
 
 module.exports = {
-  ethereum: compoundExports2({ comptroller: "0x606246e9EF6C70DCb6CEE42136cd06D127E2B7C7", cether: '0x4F905f75F5576228eD2D0EA508Fb0c32a0696090', blacklistedTokens: ['0x3593d125a4f7849a1b059e64f4517a86dd60c95d'] })
+  ethereum: compoundExports2({ comptroller: "0x606246e9EF6C70DCb6CEE42136cd06D127E2B7C7", cether: '0x4F905f75F5576228eD2D0EA508Fb0c32a0696090', blacklistedTokens: ['0x3593d125a4f7849a1b059e64f4517a86dd60c95d'], isInsolvent: true })
 }
 
 const config = {
@@ -79,5 +79,4 @@ Object.keys(config).forEach(chain => {
   // module.exports.deadFrom='2024-07-09'
   module.exports[chain].staking = sumTokensExport({ tokensAndOwners: staking })
   module.exports[chain].pool2 = sumTokensExport({ tokensAndOwners: pool2, resolveLP: true, })
-  module.exports.ethereum.borrowed = () => ({}) // bad debt
 })

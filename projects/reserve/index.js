@@ -52,12 +52,12 @@ const chainConfigs = {
     folioDeployers: [
       { address: "0xe926577a152ffd5f5036f88bf7e8e8d3652b558c", startBlock: 25958000 },
       { address: "0xb8469986840bc9b7bb101c274950c02842755911", startBlock: 27803169 },
-      { address: "0xA203AA351723cf943f91684e9F5eFcA7175Ae7EA", startBlock: 32734503 }
+      { address: "0xA203AA351723cf943f91684e9F5eFcA7175Ae7EA", startBlock: 32733863 }
     ],
     governanceDeployers: [
       { address: "0xdBd9C5a83A3684E80D51fd1c00Af4A1fbfE03D14", startBlock: 25703976 },
       { address: "0x6a66E6E209C7120819cC033d9397E5022C22C872", startBlock: 27803169 },
-      { address: "0x1A7D043c84fe781b6df046fEfCf673F71110208D", startBlock: 32734503 }
+      { address: "0x1A7D043c84fe781b6df046fEfCf673F71110208D", startBlock: 32733863 }
     ],
   },
   arbitrum: {
@@ -70,10 +70,12 @@ const chainConfigs = {
   },
   bsc: {
     folioDeployers: [
-      { address: "0x100E0eFDd7a4f67825E1BE5f0493F8D2AEAc00bb", startBlock: 53679824 }
+      { address: "0x100E0eFDd7a4f67825E1BE5f0493F8D2AEAc00bb", startBlock: 53679824 },
+      { address: "0x5Bed18AcA50E6057E6658Fe8498004092EedCDcF", startBlock: 60701791 }
     ],
     governanceDeployers: [
-      { address: "0xBD49CeAC629d7131B8A975B582AcDAeB5C049bAD", startBlock: 53679824 }
+      { address: "0xBD49CeAC629d7131B8A975B582AcDAeB5C049bAD", startBlock: 53679824 },
+      { address: "0x270d928b9Ee38BAD93601D197256390b3c3C13Ec", startBlock: 60701791 }
     ],
   },
 };

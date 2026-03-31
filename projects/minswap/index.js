@@ -35,8 +35,8 @@ module.exports = {
     staking: stake
   },
   hallmarks: [
-    [1647949370, "Vulnerability Found"],
-    [1712565661, "Stableswap Launch"],
-    [1720584000, "V2 Launch"]
+    ['2022-03-22', "Vulnerability Found"],
+    ['2024-04-08', "Stableswap Launch"],
+    ['2024-07-10', "V2 Launch"]
   ],
 };

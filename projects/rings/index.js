@@ -1,8 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { stakings } = require("../helper/staking");
-const { balanceOf } = require('@defillama/sdk/build/erc20');
-const { ethereum } = require('../helper/whitelistedNfts');
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
@@ -62,9 +59,18 @@ const CONFIG = {
       '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6',  // AUSDC
       '0xe18Ab82c81E7Eecff32B8A82B1b7d2d23F1EcE96',   // AWETH
       '0x80Eede496655FB9047dd39d9f418d5483ED600df', // frxUSD 
-      '0x5Bff88cA1442c2496f7E475E9e7786383Bc070c0' // sfrxUSD
+      ADDRESSES.katana.sfrxUSD // sfrxUSD
     ],
   },
+  plasma: {
+    vaults: [
+      '0xd1E70089Bd036896B7454ED5dc5E74C656CC0F7a',
+    ],
+    supportedAssets: [
+      '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B',
+      ADDRESSES.corn.USDT0
+    ],
+  }
 }
 
 Object.keys(CONFIG).forEach((chain) => {

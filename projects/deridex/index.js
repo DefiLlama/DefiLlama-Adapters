@@ -25,7 +25,7 @@ async function tvl() {
 
 module.exports = {
   hallmarks: [
-    [1675900800, "Project shuts down"]
+    ['2023-02-09', "Project shuts down"]
   ],
   timetravel: false,
   doublecounted: true,

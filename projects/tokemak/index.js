@@ -19,6 +19,7 @@ const AUTOPILOT_SYSTEM_REGISTRIES_BY_CHAIN = {
   8453: '0x18Dc926095A7A007C01Ef836683Fdef4c4371b4e',
   146: '0x1a912EB51D3cF8364eBAEE5A982cA37f25aD8848',
   42161: '0xBFd8E6C9bF2CD5466f5651746f8E946A6C7b4220',
+  9745: '0x9065C0E33Bc8FB31A21874f399985e39bC187D48',
 }
 
 const autopilotContracts = {
@@ -201,6 +202,11 @@ async function arbitrumTvl(api) {
   return sumTokens2({ api })
 }
 
+async function plasmaTvl(api) {
+  await populateAutopilotDetails(9745, api);
+  return sumTokens2({ api })
+}
+
 function lpBalances(holdings, toa, tokens, calls) {
   const manager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14"
   let masterChef
@@ -256,4 +262,7 @@ module.exports = {
   arbitrum: {
     tvl: arbitrumTvl
   },
+  plasma: {
+    tvl: plasmaTvl
+  }
 }
