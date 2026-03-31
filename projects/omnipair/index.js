@@ -1,8 +1,11 @@
 const { getProvider } = require('../helper/solana')
-const { Program } = require('@coral-xyz/anchor')
+const { Program, web3 } = require('@coral-xyz/anchor')
 const idl = require('./omnipair_idl.json')
 
 const PROGRAM_ID = 'omnixgS8fnqHfCcTGKWj6JtKjzpJZ1Y5y9pyFkQDkYE'
+
+const RESERVE_VAULT_SEED = Buffer.from('reserve_vault')
+const COLLATERAL_VAULT_SEED = Buffer.from('collateral_vault')
 
 let _pairsPromise
 
@@ -39,12 +42,54 @@ async function getPairs() {
   return _pairsPromise
 }
 
+function deriveVaultAddress(seed, pair, token) {
+  const [vault] = web3.PublicKey.findProgramAddressSync(
+    [
+      seed,
+      new web3.PublicKey(pair).toBuffer(),
+      new web3.PublicKey(token).toBuffer(),
+    ],
+    new web3.PublicKey(PROGRAM_ID)
+  )
+
+  return vault.toBase58()
+}
+
+async function getTokenAccountBalance(connection, account) {
+  try {
+    const balance = await connection.getTokenAccountBalance(new web3.PublicKey(account))
+    return balance?.value?.amount || '0'
+  } catch (e) {
+    return '0'
+  }
+}
+
 async function tvl(api) {
+  const provider = getProvider()
+  const connection = provider.connection
   const pairs = await getPairs()
 
   for (const pair of pairs) {
-    api.add(pair.token0, pair.reserve0)
-    api.add(pair.token1, pair.reserve1)
+    const reserve0Vault = deriveVaultAddress(RESERVE_VAULT_SEED, pair.pair, pair.token0)
+    const reserve1Vault = deriveVaultAddress(RESERVE_VAULT_SEED, pair.pair, pair.token1)
+    const collateral0Vault = deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, pair.token0)
+    const collateral1Vault = deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, pair.token1)
+
+    const reserve0Balance = await getTokenAccountBalance(connection, reserve0Vault)
+    const reserve1Balance = await getTokenAccountBalance(connection, reserve1Vault)
+
+    api.add(pair.token0, reserve0Balance)
+    api.add(pair.token1, reserve1Balance)
+
+    if (collateral0Vault !== reserve0Vault) {
+      const collateral0Balance = await getTokenAccountBalance(connection, collateral0Vault)
+      api.add(pair.token0, collateral0Balance)
+    }
+
+    if (collateral1Vault !== reserve1Vault) {
+      const collateral1Balance = await getTokenAccountBalance(connection, collateral1Vault)
+      api.add(pair.token1, collateral1Balance)
+    }
   }
 }
 
@@ -59,7 +104,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    'TVL counts Omnipair pool reserves from all Pair accounts on Solana. Borrowed counts outstanding pair debt totals from all Pair accounts.',
+    'TVL counts all tokens locked in Omnipair reserve vaults and collateral vaults across all Pair accounts on Solana. Borrowed counts outstanding debt from totalDebt0 and totalDebt1 across all Pair accounts. Debt is tracked separately and is not included in TVL.',
   timetravel: false,
   solana: {
     tvl,

@@ -2,6 +2,6 @@ const { treasuryExports } = require("../helper/treasury")
 
 module.exports = treasuryExports({
   solana: {
-    owners: ["34rned2SLUcYjUrM9meQkuyJY4QDBcKhkcUPXCgGuXD9"],
+    owners: ["4JpPs9Mi11qoj6GthQPiTjUc4gXq8BAoSs3AD6NVjQUZ"],
   },
 })
