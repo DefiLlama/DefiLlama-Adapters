@@ -166,6 +166,7 @@ const chains = [...new Set([
 ])];
 
 module.exports = {
+  doublecounted: true,
   methodology:
     "TVL is the total underlying assets (USDC/EURC) in Ledgity's lToken rebasing wrappers (LUSDC, LEURC) and lyToken ERC4626 vaults (lyUSD, lyEUR). Protocol-owned lToken balances (owner multisig and liquidity managers) are excluded to avoid double-counting with vault TVL. Staking TVL is the total LDY locked across V1 (LDYStaking) and V2 (StakingPositions) contracts.",
 };
