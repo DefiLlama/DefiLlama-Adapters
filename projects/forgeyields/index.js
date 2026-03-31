@@ -80,8 +80,9 @@ async function ethereumTvl(api) {
   })
 
   gateways.forEach((g, i) => {
-    const underlying = ADDRESSES.ethereum[g.underlyingSymbol] || ADDRESSES.ethereum.WETH
-    api.add(underlying, totalAssets[i])
+    const symbol = g.underlyingSymbol === 'ETH' ? 'WETH' : g.underlyingSymbol
+    const underlying = ADDRESSES.ethereum[symbol]
+    if (underlying) api.add(underlying, totalAssets[i])
   })
 }
 
