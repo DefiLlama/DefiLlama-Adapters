@@ -124,7 +124,12 @@ function buildChainTvl(chain) {
         const ownerBal = BigInt(String(excluded[i * 2]));
         const lmBal = BigInt(String(excluded[i * 2 + 1]));
         const userSupply = supply - ownerBal - lmBal;
-        api.add(t.underlying, (userSupply > 0n ? userSupply : 0n).toString());
+        if (userSupply < 0n) {
+          // Protocol wallets hold more than total supply — no user TVL for this token.
+          console.warn(`[ledgity] net lToken supply < 0 for ${chain}:${t.token} (supply=${supply}, owner=${ownerBal}, lm=${lmBal}), clamping to 0`);
+          return;
+        }
+        api.add(t.underlying, userSupply.toString());
       });
     }
 
@@ -156,7 +161,11 @@ function buildChainStaking(chain) {
 
 // ─── Exports ─────────────────────────────────────────────────────────────────
 
-const chains = ["ethereum", "sonic", "arbitrum", "base", "linea"];
+const chains = [...new Set([
+  ...Object.keys(LTOKENS),
+  ...Object.keys(VAULT_TOKENS),
+  ...Object.keys(STAKING),
+])];
 
 module.exports = {
   methodology:
