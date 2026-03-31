@@ -1,5 +1,5 @@
 module.exports = {
-  misrepresentedTokens: true,
+  misrepresentedTokens: false,
   ethereum: { tvl }
 }
 
