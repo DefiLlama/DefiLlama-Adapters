@@ -72,5 +72,7 @@ async function borrowed(api) {
 
 module.exports = {
   timetravel: false,
+  methodology:
+  'TVL counts on-chain underlying liquidity: for each configured Sui market object, we enumerate reserve entries in the market’s reserve table and sum Reserve.cash (u64, in native token units) per asset. Borrowed counts total outstanding borrows per asset as Reserve.debt (protocol fixed-point Decimal); the raw value field is divided by 1e18 to convert to whole underlying units (fractional part truncated).',
   sui: { tvl, borrowed },
 }
