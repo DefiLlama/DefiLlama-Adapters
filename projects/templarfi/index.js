@@ -223,7 +223,8 @@ async function fetchDeploymentsFromContract(registryContract) {
       hasMore = false
       break
     }
-    deployments.push(...batch)
+    const filtered = batch.filter(id => !id.includes('proxy-oracle-') && !id.includes('-adapter'))
+    deployments.push(...filtered)
     hasMore = batch.length === limit
     offset += limit
   }
