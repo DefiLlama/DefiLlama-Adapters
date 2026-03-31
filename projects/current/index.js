@@ -72,7 +72,5 @@ async function borrowed(api) {
 
 module.exports = {
   timetravel: false,
-  methodology:
-    'TVL sums Reserve.cash (u64 underlying units) per asset for each reserve in the listed markets. Per reserve.move, cash is the reserve on-chain underlying balance. Borrowed sums Reserve.debt (fixed-point Decimal) divided by 1e18 — total outstanding borrows. Reserve.cash_reserve (protocol fee accrual) is not included in this TVL sum.',
   sui: { tvl, borrowed },
 }
