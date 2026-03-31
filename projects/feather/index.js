@@ -9,6 +9,7 @@ const configs = {
         '0x94E6A8714f36cd7220560638882Fc137AB5eb79c',
         '0x948FcC6b7f68f4830Cd69dB1481a9e1A142A4923',
         '0xbD183661d2E8ceFA31799fE3A4cc6f2127963dc5',
+        '0x50715ae180FF0EA799dc8AB635C2D876e528bfe8',
       ],
     },
     celo: {
