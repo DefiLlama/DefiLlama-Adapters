@@ -7,12 +7,13 @@ const PROGRAM_ID = 'omnixgS8fnqHfCcTGKWj6JtKjzpJZ1Y5y9pyFkQDkYE'
 const RESERVE_VAULT_SEED = Buffer.from('reserve_vault')
 const COLLATERAL_VAULT_SEED = Buffer.from('collateral_vault')
 
-let _pairsPromise
+let _programPromise
+let _pairMetadataPromise
 
-async function getPairs() {
-  if (_pairsPromise) return _pairsPromise
+async function getProgram() {
+  if (_programPromise) return _programPromise
 
-  _pairsPromise = (async () => {
+  _programPromise = (async () => {
     const provider = getProvider()
 
     const omnipairIdl = { ...idl }
@@ -20,7 +21,22 @@ async function getPairs() {
     if (!omnipairIdl.metadata) omnipairIdl.metadata = {}
     omnipairIdl.metadata.address = PROGRAM_ID
 
-    const program = new Program(omnipairIdl, provider)
+    return new Program(omnipairIdl, provider)
+  })()
+
+  try {
+    return await _programPromise
+  } catch (e) {
+    _programPromise = undefined
+    throw e
+  }
+}
+
+async function getPairMetadata() {
+  if (_pairMetadataPromise) return _pairMetadataPromise
+
+  _pairMetadataPromise = (async () => {
+    const program = await getProgram()
     const pairs = await program.account.pair.all()
 
     return pairs.map(({ publicKey, account }) => ({
@@ -28,18 +44,35 @@ async function getPairs() {
       token0: account.token0.toBase58(),
       token1: account.token1.toBase58(),
       lpMint: account.lpMint.toBase58(),
-      reserve0: account.reserve0.toString(),
-      reserve1: account.reserve1.toString(),
-      cashReserve0: account.cashReserve0.toString(),
-      cashReserve1: account.cashReserve1.toString(),
-      totalDebt0: account.totalDebt0.toString(),
-      totalDebt1: account.totalDebt1.toString(),
-      totalCollateral0: account.totalCollateral0.toString(),
-      totalCollateral1: account.totalCollateral1.toString(),
     }))
   })()
 
-  return _pairsPromise
+  try {
+    return await _pairMetadataPromise
+  } catch (e) {
+    _pairMetadataPromise = undefined
+    throw e
+  }
+}
+
+async function getFreshPairs() {
+  const program = await getProgram()
+  const pairs = await program.account.pair.all()
+
+  return pairs.map(({ publicKey, account }) => ({
+    pair: publicKey.toBase58(),
+    token0: account.token0.toBase58(),
+    token1: account.token1.toBase58(),
+    lpMint: account.lpMint.toBase58(),
+    reserve0: account.reserve0.toString(),
+    reserve1: account.reserve1.toString(),
+    cashReserve0: account.cashReserve0.toString(),
+    cashReserve1: account.cashReserve1.toString(),
+    totalDebt0: account.totalDebt0.toString(),
+    totalDebt1: account.totalDebt1.toString(),
+    totalCollateral0: account.totalCollateral0.toString(),
+    totalCollateral1: account.totalCollateral1.toString(),
+  }))
 }
 
 function deriveVaultAddress(seed, pair, token) {
@@ -55,19 +88,32 @@ function deriveVaultAddress(seed, pair, token) {
   return vault.toBase58()
 }
 
+function isAccountNotFoundError(e) {
+  const msg = String(e?.message || e || '').toLowerCase()
+
+  return (
+    msg.includes('could not find account') ||
+    msg.includes('account not found') ||
+    msg.includes('could not find') ||
+    msg.includes('failed to find account') ||
+    msg.includes('invalid param: could not find account')
+  )
+}
+
 async function getTokenAccountBalance(connection, account) {
   try {
     const balance = await connection.getTokenAccountBalance(new web3.PublicKey(account))
     return balance?.value?.amount || '0'
   } catch (e) {
-    return '0'
+    if (isAccountNotFoundError(e)) return '0'
+    throw e
   }
 }
 
 async function tvl(api) {
   const provider = getProvider()
   const connection = provider.connection
-  const pairs = await getPairs()
+  const pairs = await getPairMetadata()
 
   for (const pair of pairs) {
     const reserve0Vault = deriveVaultAddress(RESERVE_VAULT_SEED, pair.pair, pair.token0)
@@ -94,7 +140,7 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  const pairs = await getPairs()
+  const pairs = await getFreshPairs()
 
   for (const pair of pairs) {
     api.add(pair.token0, pair.totalDebt0)
