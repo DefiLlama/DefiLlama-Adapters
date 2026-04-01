@@ -35,31 +35,47 @@ const tvl = async (api) => {
     shareManagersByVault[dvvVaults[i].address] = dvvVaults[i].address
   }
 
-  const subvaultsByVault = await api.fetchList({  lengthAbi: abi.subvaults, itemAbi: abi.subvaultAt, targets: coreVaults.map(vault => vault.address), groupedByInput: true })
+  
+  const outerVaultsByVault = {}
+  for (let i = 0; i < vaultsOnChain.length; i++) {
+    outerVaultsByVault[vaultsOnChain[i].address] = []
+    for (let j = 0; j < vaultsOnChain.length; j++) {
+      if (i === j) continue
+      outerVaultsByVault[vaultsOnChain[i].address].push(vaultsOnChain[j].address)
+    }
+  }
 
-  // Exclude double counting of shares from other vaults allocating to this vault
+  // Exclude double counting of shares from other vaults allocating to this vault (in subvaults)
+  const subvaultsByVault = await api.fetchList({ lengthAbi: abi.subvaults, itemAbi: abi.subvaultAt, targets: coreVaults.map(vault => vault.address), groupedByInput: true })
+
   const vaultsOuterSubvaults = {}
   for (let i = 0; i < subvaultsByVault.length; i++) {
     const vault = coreVaults[i]
     vaultsOuterSubvaults[vault.address] = []
     for (let j = 0; j < subvaultsByVault.length; j++) {
       if (i === j) continue
-      vaultsOuterSubvaults[vault.address].push(...subvaultsByVault[j])
+      vaultsOuterSubvaults[vault.address].push(...(subvaultsByVault[j] || []))
     }
   }
   for (let i = 0; i < dvvVaults.length; i++) {
     const vault = dvvVaults[i]
     vaultsOuterSubvaults[vault.address] = []
     for (let j = 0; j < subvaultsByVault.length; j++) {
-      vaultsOuterSubvaults[vault.address].push(...subvaultsByVault[j])
+      vaultsOuterSubvaults[vault.address].push(...(subvaultsByVault[j] || []))
     }
   }
 
-  const vaultBalances = await api.multiCall({ calls: Object.entries(vaultsOuterSubvaults).flatMap(([vault, subvaults]) => subvaults.map(subvault => ({ target: shareManagersByVault[vault], params: [subvault] }))), abi: abi.balanceOf, permitFailure: true })
+  const vaultBalances = await api.multiCall({
+    calls: Object.entries(vaultsOuterSubvaults).flatMap(([vault, subvaults]) =>
+      subvaults.map((subvault) => ({ target: shareManagersByVault[vault], params: [subvault] }))
+    ),
+    abi: abi.balanceOf,
+    permitFailure: true,
+  })
 
   const doubleCountedSharesByVault = {}
 
-  let vaultBalanceIdx = 0;
+  let vaultBalanceIdx = 0
   for (const [vault, subvaults] of Object.entries(vaultsOuterSubvaults)) {
     for (const subvault of subvaults) {
       const balance = BigNumber(vaultBalances[vaultBalanceIdx++])
@@ -75,9 +91,20 @@ const tvl = async (api) => {
     if (!result || !Array.isArray(result)) return
     const vaultAddress = result[0]
     const baseAsset = result[1]
+    const queues = result[5]
+    // Exclude double counting of shares from other vaults allocating to this vault (in deposit queues)
+    let doubleCountedShares = doubleCountedSharesByVault[vaultAddress] || BigNumber(0)
+    for (const queue of queues) {
+      const queueAsset = queue[1]
+      const isDepositQueue = queue[2]
+      const pendingValue = queue[5]
+      if (!isDepositQueue) continue
+      if (outerVaultsByVault[vaultAddress].includes(queueAsset)) {
+        doubleCountedShares = doubleCountedShares.plus(pendingValue)
+      }
+    }
     const totalSupply = BigNumber(result[6])
     let totalBaseAsset = BigNumber(result[9])
-    const doubleCountedShares = doubleCountedSharesByVault[vaultAddress]
     if (!baseAsset || !totalBaseAsset || !doubleCountedShares) return
     if (doubleCountedShares && doubleCountedShares.gt(0)) {
       const doubleCountedAssets = doubleCountedShares.times(totalBaseAsset).div(totalSupply)
