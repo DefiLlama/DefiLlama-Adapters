@@ -21,6 +21,7 @@ const POOLS_V1 = {
 
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
 const BID_STATE_ACCEPTED = '3';
+const COLLATERAL_ERC20 = '0';
 
 const poolQuery = `
   query ($lastId: ID) {
@@ -129,7 +130,7 @@ async function getTellerV2Info(api, pools) {
       const mid = Math.floor((lo + hi) / 2);
       try {
         const state = await api.call({ target: tellerV2, abi: 'function getBidState(uint256) view returns (uint8)', params: [mid] });
-        if (state === '0') hi = mid; else lo = mid + 1;
+        if (String(state) === '0') hi = mid; else lo = mid + 1;
       } catch (e) { hi = mid; }
     }
     totalBids = lo;
@@ -157,7 +158,7 @@ async function getDirectBids(api, tellerInfo, allPoolBidIds) {
     });
 
     for (let i = 0; i < ids.length; i++) {
-      if (states[i] === BID_STATE_ACCEPTED && !allPoolBidIds.has(ids[i])) {
+      if (String(states[i]) === BID_STATE_ACCEPTED && !allPoolBidIds.has(ids[i])) {
         acceptedDirectIds.push(ids[i]);
       }
     }
@@ -268,7 +269,6 @@ async function tvl(api) {
 
     // Direct (non-pool) bid ERC20 collateral (active + defaulted, skipping NFTs)
     const directBids = await getDirectBids(api, tellerInfo, allPoolBidIds);
-    const COLLATERAL_ERC20 = '0';
     for (const bid of directBids) {
       for (const c of bid.collaterals) {
         if (c._collateralAddress && c._collateralAddress !== ZERO_ADDR && String(c._collateralType) === COLLATERAL_ERC20) {
@@ -311,7 +311,7 @@ async function borrowed(api) {
     const bidIds = directBids.map(b => b.bidId);
 
     if (bidIds.length > 0) {
-      const timestamp = Math.floor(Date.now() / 1000);
+      const timestamp = api.timestamp;
       const amountsOwed = await api.multiCall({
         target: tellerInfo.tellerV2,
         calls: bidIds.map(id => ({ params: [id, timestamp] })),
@@ -336,6 +336,6 @@ module.exports = {
   timetravel: false,
 };
 
-["ethereum", "polygon", "arbitrum", "base", "katana", "hyperliquid"].forEach(chain => {
+[...new Set([...Object.keys(POOLS_V2), ...Object.keys(POOLS_V1)])].forEach(chain => {
   module.exports[chain] = { tvl, borrowed };
 });
