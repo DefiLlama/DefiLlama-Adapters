@@ -26,6 +26,9 @@ const orderbooks = {
     ],
     v5: [
       { address: "0x52ceb8ebef648744ffdde89f7bc9c3ac35944775", start: 1760123853 },
+    ],
+    v6: [
+      { address: "0xe522cB4a5fCb2eb31a52Ff41a4653d85A4fd7C9D", start: 1770284635 },
     ]
   },
   bsc: {
@@ -92,8 +95,8 @@ const orderbooks = {
 }
 
 async function tvl(api) {
-  const { v3 = [], v4 = [], v5 = [] } = orderbooks[api.chain]
-  const owners = v3.concat(v4).concat(v5).map(orderbook => orderbook.address)
+  const { v3 = [], v4 = [], v5 = [], v6 = [] } = orderbooks[api.chain]
+  const owners = v3.concat(v4).concat(v5).concat(v6).map(orderbook => orderbook.address)
   return sumTokens2({ api, owners, fetchCoValentTokens: true, permitFailure: true })
 }
 
