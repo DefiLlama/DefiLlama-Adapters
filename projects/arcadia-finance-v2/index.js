@@ -99,7 +99,7 @@ async function unwrapArcadiaAeroLP({ api, ownerIds, chainConfig }) {
 
   await uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft: slipNFT });
   if (slipV2NFT) {
-    await uwrapStakedSlipstreamLP({ api, sSlipV2NftIds, nft: slipV2NFT });
+    await uwrapStakedSlipstreamLP({ api, sSlipNftIds: sSlipV2NftIds, nft: slipV2NFT });
   }
 }
 
