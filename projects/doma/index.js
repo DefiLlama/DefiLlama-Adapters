@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 // USDC.e (Bridged USDC via Stargate) - 6 decimals
-const USDC_E_ADDRESS = '0x31EEf89D5215C305304a2fA5376a1f1b6C5dc477'
+const USDC_E_ADDRESS = ADDRESSES.doma.USDC_e
 
 // DomaFractionalization Diamond Proxy
 const DOMA_FRACTIONALIZATION = '0xd00000000004f450f1438cfA436587d8f8A55A29'

@@ -173,6 +173,26 @@ const configs = {
     start: "2025-11-12",
     ethereum: ['0xa260b049ddD6567E739139404C7554435c456d9E'],
   },
+  'steth-exchange': {
+    ethereum: ['0xee15D71D8322eA88138c323AddbD0dd123A2dFB2'],
+  },
+  'twoxswap': {
+    methodology: 'TVL is the total USDC deposited in the X2Pool ERC-4626 vault, measured via totalAssets().',
+    ethereum: ['0x2a315Fef86916B30905086C85A9cB55E5DCD7ED3']
+  },
+  'yld': {
+    doublecounted: true,
+    ethereum: [
+      '0xCa960E6DF1150100586c51382f619efCCcF72706',
+      '0x8ED5AB1BA2b2E434361858cBD3CA9f374e8b0359',
+    ],
+  },
+  'quell': {
+    doublecounted: true,
+    methodology: "TVL is the total USDC deposited in the Quell RWAVault, an ERC-4626 vault that routes to the Steakhouse USDC MetaMorpho vault for RWA yield.",
+    base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
+    arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051'],
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

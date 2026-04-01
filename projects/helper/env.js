@@ -44,6 +44,9 @@ const DEFAULTS = {
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
+  TEMPO_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
+  PROPTECH_RPC: "https://mainnet.ptekcoin.com",
 }
 
 const ENV_KEYS = [
@@ -71,6 +74,9 @@ const ENV_KEYS = [
   'PROXY_AUTH',
   'UI_TOOL_MODE',
   'P0_API_KEY',
+  'CRYPTOAPIS_API_KEY',
+  'TATUM_PUBLIC_API_KEY',
+  'TATUM_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

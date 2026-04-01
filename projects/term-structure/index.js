@@ -108,6 +108,7 @@ const ADDRESSES = {
     ],
     TermMax4626Factory: [
       { address: "0x67dcDCc57208B574B05999AA3dFA57bfF2324129", fromBlock: 63208984 },
+      { address: "0xbe6f455123f6cdea1352d4510cCDe3D71D139ae7", fromBlock: 80402323 },
     ],
     // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
     //   {
@@ -208,6 +209,40 @@ const ADDRESSES = {
     ],
     TermMax4626Factory: [
       { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
+    ],
+  },
+  xlayer: {
+    FactoryV2: [
+      {
+        address: "0xFaD175CAf9B0Ac0EBca3B1816ec799884EB04B9c",
+        fromBlock: 50664655,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x2e1c769A9BA8248C7c8128c2BEBa11331ebF98Aa",
+        fromBlock: 50664655,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF", fromBlock: 50664655 },
+    ],
+  },
+  base: {
+    FactoryV2: [
+      {
+        address: "0xa6875Af7a45BEf941e484b59C149E5C1772DE643",
+        fromBlock: 43289754,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF",
+        fromBlock: 43289755,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 43289755 },
     ],
   },
 };

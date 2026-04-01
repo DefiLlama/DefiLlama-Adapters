@@ -538,6 +538,7 @@ const uniV3Configs = {
     flow: {
       factory: '0xca6d7Bb03334bBf135902e1d919a5feccb461632',
       fromBlock: 42141486,
+      blacklistedTokens: ['0x2c23fa3f22273194f7a046281861551996183e8d']
     },
   },
   'fluxion-network': {
@@ -1083,6 +1084,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0xff7b3e8c00e57ea31477c32a5b52a58eea47b072',
       fromBlock: 7876741,
+      permitFailure: true,
     },
   },
   'quickswap-v3': {
@@ -1092,11 +1094,7 @@ const uniV3Configs = {
       isAlgebra: true,
       permitFailure: true,
     },
-    dogechain: {
-      factory: '0xd2480162aa7f02ead7bf4c127465446150d58452',
-      fromBlock: 837574,
-      isAlgebra: true,
-    },
+    dogechain: { tvl: () => ({ }) },
     polygon_zkevm: {
       factory: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
       fromBlock: 300,
@@ -1511,6 +1509,13 @@ const uniV3Configs = {
       isAlgebra: true,
     },
   },
+  'trebleswap-v2': {
+    base: {
+      factory: '0x6e606Cf94A4DDc01aEed2Fce16d1b4f5B33e0A31',
+      fromBlock: 39029383,
+      isAlgebra: true,
+    },
+  },
   'ubeswap-v3': {
     celo: {
       factory: '0x67FEa58D5a5a4162cED847E13c2c81c73bf8aeC4',
@@ -1588,6 +1593,12 @@ const uniV3Configs = {
       fromBlock: 33104424,
     },
   },
+  'capybara-v3': {
+    klaytn: {
+      factory: '0xC4C8310080F209629EC4c349cb2A3c6720e1176D',
+      fromBlock: 172328824,
+    },
+  },
   'winnieswap': {
     berachain: {
       factory: '0x76fD9D07d5e4D889CAbED96884F15f7ebdcd6B63',
@@ -1663,6 +1674,15 @@ const uniV3Configs = {
     doma: {
       factory: '0x2e50b586d5bcD04cb6125E028A6a669f7f3cF1C2',
       fromBlock: 1440863,
+    },
+  },
+  'virtus-protocol-cl': {
+    base: {
+      factory: '0x0e5Ab24beBdA7e5Bb3961f7E9b3532a83aE86B48',
+      fromBlock: 42960000,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+      extraKey: 'v1'
     },
   },
 }

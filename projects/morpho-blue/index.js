@@ -15,12 +15,22 @@ const config = {
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
+      
+      // bad debt due to resolv hack
+      "0xd9e34b1eed46d123ac1b69b224de1881dbc88798bc7b70f504920f62f58f28cc",
+      "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33",
+      "0x8e7cc042d739a365c43d0a52d5f24160fa7ae9b7e7c9a479bd02a56041d4cf77",
+      "0xcc39b6c92fd03ac608b9239618db8b80a4a2034b0450bdf47b404229571312da",
+      "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
     ],
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd', '0x46415998764c29ab2a25cbea6254146d50d22687', '0x5e331e9ae6e1a5d375f699811736527222a9db15', '0x2dc205f24bcb6b311e5cdf0745b0741648aebd3d', '0xadcdd085ad2887758255090589f72237bdd33d8a', '0xcb327b99ff831bf8223cced12b1338ff3aa322fa', '0xadcdd085ad2887758255090589f72237bdd33d8e'],
     fromBlock: 13977148,
+    blacklistedMarketIds: [
+      '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
+    ]
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
@@ -101,6 +111,8 @@ const config = {
   katana: {
     morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
     fromBlock: 2741069,
+    // added a hack server-side to count vb token tvls only on katana but not global
+    // blackList: ['0x2dca96907fde857dd3d816880a0df407eeb2d2f2', '0x203a662b0bd271a6ed5a60edfbd04bfce608fd36', '0x0913da6da4b42f538b445599b46bb4622342cf52', '0xee7d8bcfb72bc1880d0cf19822eb0a2e6577ab62']
   },
   tac: {
     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
@@ -159,6 +171,10 @@ const config = {
     morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
     fromBlock: 2528230,
   },
+  celo: {
+    morphoBlue: "0xd24ECdD8C1e0E57a4E26B1a7bbeAa3e95466A569",
+    fromBlock: 40249329,
+  }
 }
 
 const eventAbis = {
@@ -191,22 +207,27 @@ const tvl = async (api) => {
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
-  const filterMarkets = marketInfos.filter((_, i) => withdrawQueueLengths[i] == null || withdrawQueueLengths[i] > 30 || withdrawQueueLengths[i] < 0);
+  const collateralWQLMap = new Map(collCalls.map((addr, i) => [addr, withdrawQueueLengths[i]]));
+  const filterMarkets = marketInfos.filter(m => {
+    const wql = collateralWQLMap.get(m.collateralToken.toLowerCase());
+    return wql == null || wql > 30 || wql < 0;
+  });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 }
 
 const borrowed = async (api) => {
-  const { morphoBlue } = config[api.chain]
+  const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
+  const blackListLower = blackList.map(b => b.toLowerCase())
 
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
-    if (collateralToken.toLowerCase() !== '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') {
-      api.add(loanToken, data.totalBorrowAssets);
-    }
+    if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
+    if (blackListLower.includes(loanToken.toLowerCase())) return;
+    api.add(loanToken, data.totalBorrowAssets);
   });
 }
 

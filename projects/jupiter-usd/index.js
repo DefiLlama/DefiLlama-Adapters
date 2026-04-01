@@ -10,6 +10,6 @@ const { sumTokens2 } = require('../helper/solana')
 module.exports = {
   methodology: `Tokens backing the minted JupUSD`,
   solana: {
-    tvl: api => sumTokens2({ api, owners: ['CkzLnD9r4d4ZZofsgNVo2VNunxDmte5YJ4vfAgMfBZNA', 'B3q4P4XSmycvoHLaiEjchsGDafFPhKokvHvNRuW29N1y'] }),
+    tvl: api => sumTokens2({ api, owners: ['CkzLnD9r4d4ZZofsgNVo2VNunxDmte5YJ4vfAgMfBZNA', 'B3q4P4XSmycvoHLaiEjchsGDafFPhKokvHvNRuW29N1y', '7i6ELgCKhZewDPg4P91w9FYpWKrSx7ptiNrUCrBarHff'] }),
   },
 }
