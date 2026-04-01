@@ -12,7 +12,7 @@ const config = {
 };
 
 module.exports.methodology =
-  "TVL is the total value of collateral assets deposited in ZenSats ERC4626 vaults.";
+  "TVL is the net value of collateral assets in ZenSats ERC4626 vaults (e.g. WBTC held in Aave), net of outstanding debt (e.g. borrowed USDT), denominated in USD.";
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
