@@ -99,6 +99,9 @@ const config = {
   plume_mainnet: {
     morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
     fromBlock: 765994,
+    blacklistedMarketIds: [
+      "0x82e7ab8ccabaac59b5f397507ed031ebf19a9a5b2657c00c93bc2423cd0a890d",
+    ],
   },
   lisk: {
     morphoBlue: "0x00cD58DEEbd7A2F1C55dAec715faF8aed5b27BF8",
