@@ -13,6 +13,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 
 const EUROPA_SHARE_TOKEN = '0x0f3cEe146B7D2F6795E60B33AE6e339A64d77Fc6';
 const API_BASE = 'https://api.europa-tech.org';
+const FETCH_TIMEOUT_MS = 10_000; // 10 s abort timeout
 
 // Properties with tokenId offset (tokenIds start at 1, increment per room)
 const PROPERTIES = [
@@ -26,15 +27,26 @@ const USDC_DECIMALS = 1e6;
 
 const TOTAL_SUPPLY_ABI = 'function totalSupplyPerToken(uint256 tokenId) external view returns (uint256)';
 
+/** Fetch with a hard timeout; throws on non-OK status or network error. */
+async function fetchWithTimeout(url, timeoutMs = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function tvl(api) {
   // Build tokenId → sharePrice map from API
   const tokenPrices = {};
 
   for (const { id, tokenIdOffset } of PROPERTIES) {
     try {
-      const res = await fetch(`${API_BASE}/api/objects/${id}/rooms`);
-      if (!res.ok) continue;
-      const json = await res.json();
+      const json = await fetchWithTimeout(`${API_BASE}/api/objects/${id}/rooms`);
       const rooms = Array.isArray(json) ? json : (json.data || []);
 
       rooms.forEach((room, idx) => {
@@ -43,7 +55,10 @@ async function tvl(api) {
           tokenPrices[tokenId] = Number(room.sharePrice);
         }
       });
-    } catch (_e) { /* skip */ }
+    } catch (err) {
+      console.error(`[europa-tech] Failed to fetch rooms for property ${id} (tokenIdOffset=${tokenIdOffset}):`, err.message);
+      // continue — other properties may still succeed
+    }
   }
 
   const tokenIds = Object.keys(tokenPrices).map(Number);
