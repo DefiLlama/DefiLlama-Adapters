@@ -40,74 +40,14 @@ async function tvl(api) {
     fetchVaultAddresses(), 
     fetchPositionAddresses()
   ]);
-  const driftUserAddresses = positionAddresses.drift ?? []
-
-  const driftVaultAddresses = vaultAddresses.filter(vault => [DRIFT_VAULT_PROGRAM_ID.toBase58(), CUSTOM_PROGRAM_ID.toBase58()].includes(vault.programId) );
   const voltrVaultAddresses = vaultAddresses.filter(vault => vault.programId === VOLTR_PROGRAM_ID.toBase58());
 
-  const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
-
-  // Get all vault accounts first
-  const accounts = await getMultipleAccounts([...vaultUserAddresses, ...driftUserAddresses])
-  const deserializedData = accounts.filter((accountInfo) => !!accountInfo).map(deserializeUserPositions)
-
-  // Collect unique market indices upfront
-  const allSpotIndices = new Set()
-  const allPerpIndices = new Set()
-  
-  deserializedData.forEach(({ spotPositions, perpPositions }) => {
-    spotPositions?.forEach(pos => allSpotIndices.add(pos.market_index))
-    perpPositions?.forEach(pos => allPerpIndices.add(pos.market_index))
-  })
-
-  // Batch fetch 
-  const allKeys = [
-    ...[...allSpotIndices].map(index => getVaultPublicKey('spot_market', index)),
-    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index)),
-  ]
-  
-  const allAccounts = await getMultipleAccounts(allKeys)
-  
-  // Create lookup maps
-  const spotAccountMap = {}
-  const perpAccountMap = {}
-  
-  let offset = 0
-  ;[...allSpotIndices].forEach((index, i) => {
-    spotAccountMap[index] = allAccounts[i]
-    offset = i + 1
-  })
-  ;[...allPerpIndices].forEach((index, i) => {
-    perpAccountMap[index] = allAccounts[i + offset]
-  })
-
-  // Process positions using the cached account data
-  for (const { spotPositions, perpPositions } of deserializedData) {
-    if (spotPositions?.length) {
-      spotPositions.forEach(position => {
-        const tokenMint = getTokenMintFromMarketIndex(position.market_index)
-        const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index])
-        api.add(tokenMint, adjustedBalance)
-      })
-    }
-
-    if (perpPositions?.length) {
-      perpPositions.map(position => {
-        const baseTokenMint = getPerpTokenMintFromMarketIndex(position.market_index)
-        const { baseBalance, quoteBalance } = processPerpPosition(position)
-        api.add(baseTokenMint, baseBalance)
-
-        const quoteTokenMint = getTokenMintFromMarketIndex(0)
-        api.add(quoteTokenMint, quoteBalance)
-
-        const { cumulativeFundingRateLong, cumulativeFundingRateShort } = getPerpMarketFundingRates(perpAccountMap[position.market_index])
-        const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort
-        const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6)
-        const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6))
-        api.add(quoteTokenMint, fundingRatePnl)
-      })
-    }
-  }
+  // Drift vaults disabled - drift was hacked
+  // const driftUserAddresses = positionAddresses.drift ?? []
+  // const driftVaultAddresses = vaultAddresses.filter(vault => [DRIFT_VAULT_PROGRAM_ID.toBase58(), CUSTOM_PROGRAM_ID.toBase58()].includes(vault.programId) );
+  // const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
+  // const accounts = await getMultipleAccounts([...vaultUserAddresses, ...driftUserAddresses])
+  // ... drift position processing removed ...
 
   // Voltr vaults
   const provider = getProvider();

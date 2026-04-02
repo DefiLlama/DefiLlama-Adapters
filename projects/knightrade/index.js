@@ -152,7 +152,7 @@ async function tvlSolana(api) {
     "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
   ]
 
-  await getDriftTvl(api, vaults);
+  // await getDriftTvl(api, vaults); // drift was hacked
   await tvlJupiter(api, vaults);
 
   // add wallet balance 

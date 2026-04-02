@@ -28,10 +28,10 @@ const ENZYME_VAULTS = [
 
 
 async function drift_vaults_tvl(api) {
-  await getDriftVaultTvl(
-    api,
-    DRIFT_VAULTS.map((vault) => vault.address)
-  );
+  // await getDriftVaultTvl(
+  //   api,
+  //   DRIFT_VAULTS.map((vault) => vault.address)
+  // );
 }
 
 async function enzymeTvl(api) {

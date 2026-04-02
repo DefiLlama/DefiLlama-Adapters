@@ -66,7 +66,7 @@ async function nt_vaults_tvl(api) {
 }
 
 async function tvl(api) {
-  await drift_vaults_tvl(api);
+  // await drift_vaults_tvl(api);
   await kamino_vaults_tvl(api);
   await hyperliquid_vaults_tvl(api);
   await nt_vaults_tvl(api);
