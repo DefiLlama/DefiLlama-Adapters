@@ -286,8 +286,10 @@ async function borrowed(api) {
     getPoolConfigs(api.chain),
     getPoolBidData(api.chain),
   ]);
-  const { allPoolBidIds } = poolBidData;
+  const { activeBids, allPoolBidIds } = poolBidData;
   const addresses = pools.map(p => p.group_pool_address);
+
+  const tellerInfo = await getTellerV2Info(api, pools);
 
   // Pool borrowed
   const [lended, repaid, tokens] = await Promise.all([
@@ -304,11 +306,57 @@ async function borrowed(api) {
     }
   }
 
-  // Direct (non-pool) bid borrowed — read remaining principal on-chain
-  const tellerInfo = await getTellerV2Info(api, pools);
+  // Subtract defaulted pool loan principal from pool borrowed totals
+  if (tellerInfo && activeBids.length > 0) {
+    const poolBidIds = activeBids.map(b => b.bid_id);
+    const defaultedFlags = await api.multiCall({
+      target: tellerInfo.tellerV2,
+      calls: poolBidIds,
+      abi: 'function isLoanDefaulted(uint256) view returns (bool)',
+      permitFailure: true,
+    });
+
+    const defaultedBidIds = [];
+    for (let i = 0; i < poolBidIds.length; i++) {
+      if (defaultedFlags[i] === true || defaultedFlags[i] === 'true') {
+        defaultedBidIds.push(poolBidIds[i]);
+      }
+    }
+
+    if (defaultedBidIds.length > 0) {
+      const timestamp = api.timestamp;
+      const [defaultedOwed, defaultedDetails] = await Promise.all([
+        api.multiCall({
+          target: tellerInfo.tellerV2,
+          calls: defaultedBidIds.map(id => ({ params: [id, timestamp] })),
+          abi: 'function calculateAmountOwed(uint256, uint256) view returns (uint256 principal, uint256 interest)',
+          permitFailure: true,
+        }),
+        api.multiCall({
+          target: tellerInfo.tellerV2,
+          calls: defaultedBidIds,
+          abi: 'function getLoanSummary(uint256) view returns (address borrower, address lender, uint256 marketId, address principalTokenAddress, uint256 principalAmount, uint32 acceptedTimestamp, uint32 lastRepaidTimestamp, uint8 bidState)',
+          permitFailure: true,
+        }),
+      ]);
+
+      for (let i = 0; i < defaultedBidIds.length; i++) {
+        const owed = defaultedOwed[i];
+        const detail = defaultedDetails[i];
+        if (!owed || !detail?.principalTokenAddress) continue;
+        const principal = owed.principal || owed[0];
+        if (principal && BigInt(principal) > 0n) {
+          api.add(detail.principalTokenAddress, -BigInt(principal));
+        }
+      }
+    }
+  }
+
+  // Direct (non-pool) bid borrowed — only non-defaulted loans
   if (tellerInfo) {
     const directBids = await getDirectBids(api, tellerInfo, allPoolBidIds);
-    const bidIds = directBids.map(b => b.bidId);
+    const activeDirectBids = directBids.filter(b => !b.defaulted);
+    const bidIds = activeDirectBids.map(b => b.bidId);
 
     if (bidIds.length > 0) {
       const timestamp = api.timestamp;
@@ -319,12 +367,12 @@ async function borrowed(api) {
         permitFailure: true,
       });
 
-      for (let i = 0; i < directBids.length; i++) {
+      for (let i = 0; i < activeDirectBids.length; i++) {
         const owed = amountsOwed[i];
-        if (!owed || !directBids[i].principalToken) continue;
+        if (!owed || !activeDirectBids[i].principalToken) continue;
         const principal = owed.principal || owed[0];
         if (principal && BigInt(principal) > 0n) {
-          api.add(directBids[i].principalToken, principal.toString());
+          api.add(activeDirectBids[i].principalToken, principal.toString());
         }
       }
     }
@@ -332,7 +380,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: "TVL is pool token balances plus collateral in escrow contracts for active loans (pool and direct). Borrowed is outstanding principal from pools plus active direct TellerV2 loans, all on-chain.",
+  methodology: "TVL is pool token balances plus collateral in escrow contracts for active loans (pool and direct). Borrowed is outstanding principal from pools plus active direct TellerV2 loans, excluding defaulted loans, all on-chain.",
   timetravel: false,
 };
 
