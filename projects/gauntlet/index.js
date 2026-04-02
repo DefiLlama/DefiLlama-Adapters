@@ -233,31 +233,13 @@ const GAUNTLET_ADMIN = new PublicKey('JC8sPweHaHr1kWzAvykaAmLsWtSWhi3M4NnyYGRdxg
 
 
 async function tvl(api) {
-  const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
-  const idl = require("../knightrade/drift_idl.json")
-  const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
-  const provider = getProvider()
-  const program = new Program(idl, programId, provider)
-
-  for (let i = 0; i < accounts.length; i++) {
-    const account = accounts[i];
-    if (!account) continue;
-    const userData = program.coder.accounts.decode("User", account.data);
-    for (let j = 0; j < userData.spotPositions.length; j++) {
-      const spotPosition = userData.spotPositions[j];
-      if (!new BN(spotPosition.scaledBalance).isZero()) {
-        const marketIndex = spotPosition.marketIndex
-        const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
-        const scaledBalance = new BN(spotPosition.scaledBalance)
-        const token = getTokenInfo(marketIndex)
-        if (!token) continue;
-        const balance = scaledBalance
-          .mul(new BN(balanceType === 'deposit' ? 1 : -1))
-          .div(new BN(10).pow(new BN(token.decimals - 9)));
-        api.add(token.mint, balance.toString())
-      }
-    }
-  }
+  // Drift vaults disabled - drift was hacked
+  // const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
+  // const idl = require("../knightrade/drift_idl.json")
+  // const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+  // const provider = getProvider()
+  // const program = new Program(idl, programId, provider)
+  // ... drift position processing removed ...
 
   // Kamino Lend vaults
   await kaminoLendVaultTvl(api, GAUNTLET_ADMIN)
@@ -293,5 +275,8 @@ module.exports = {
   ethereum: { tvl: combinedEthereumTvl },
   base: { tvl: combinedBaseTvl },
   timetravel: false,
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
   methodology: configs.methodology,
 }
