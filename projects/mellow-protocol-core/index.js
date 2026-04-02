@@ -15,17 +15,7 @@ const abi = {
 
 let _vaultsApiResponse
 
-const tvl = async (api) => {
-  const chainId = Number(api.chainId)
-  if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://api.mellow.finance/v1/vaults')
-  const vaultsApiResponse = await _vaultsApiResponse;
-
-  const vaultsOnChain = vaultsApiResponse.filter(v => v && Number(v.chain_id) === chainId)
-  const coreVaults = vaultsOnChain.filter(v => v.type === 'core-vault')
-  const dvvVaults  = vaultsOnChain.filter(v => v.type === 'dvv-vault')
-
-  const coreVaultsResults = await api.multiCall({ calls: coreVaults.map((vault) => ({ target: vault.collector, params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]] })), abi: abi.collect, permitFailure: true })
-
+const getDoubleCountedShares = async ({api, vaultsOnChain, coreVaults, dvvVaults, coreVaultsResults}) => {
   const shareManagersByVault = {}
   const coreVaultShareManagers = await api.multiCall({ calls: coreVaults.map(vault => vault.address), abi: abi.shareManager, permitFailure: true })
   for (let i = 0; i < coreVaults.length; i++) {
@@ -79,6 +69,7 @@ const tvl = async (api) => {
   for (const [vault, subvaults] of Object.entries(vaultsOuterSubvaults)) {
     for (const subvault of subvaults) {
       const balance = BigNumber(vaultBalances[vaultBalanceIdx++])
+      if (balance.eq(0)) continue
       if (doubleCountedSharesByVault[vault] == null) {
         doubleCountedSharesByVault[vault] = balance
       } else {
@@ -90,21 +81,47 @@ const tvl = async (api) => {
   coreVaultsResults.forEach((result) => {
     if (!result || !Array.isArray(result)) return
     const vaultAddress = result[0]
-    const baseAsset = result[1]
     const queues = result[5]
-    // Exclude double counting of shares from other vaults allocating to this vault (in deposit queues)
-    let doubleCountedShares = doubleCountedSharesByVault[vaultAddress] || BigNumber(0)
+    // Exclude double counting of other vaults deposited
     for (const queue of queues) {
       const queueAsset = queue[1]
       const isDepositQueue = queue[2]
-      const pendingValue = queue[5]
-      if (!isDepositQueue) continue
+      const pendingValue = BigNumber(queue[5])
+      if (!isDepositQueue || pendingValue.eq(0)) continue
       if (outerVaultsByVault[vaultAddress].includes(queueAsset)) {
-        doubleCountedShares = doubleCountedShares.plus(pendingValue)
+        // queueAsset is another vault address
+        if (doubleCountedSharesByVault[queueAsset] == null) {
+          doubleCountedSharesByVault[queueAsset] = pendingValue
+        } else {
+          doubleCountedSharesByVault[queueAsset] = doubleCountedSharesByVault[queueAsset].plus(pendingValue)
+        }
       }
     }
+  })
+
+  return doubleCountedSharesByVault
+}
+
+const tvl = async (api) => {
+  const chainId = Number(api.chainId)
+  if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://api.mellow.finance/v1/vaults')
+  const vaultsApiResponse = await _vaultsApiResponse;
+
+  const vaultsOnChain = vaultsApiResponse.filter(v => v && Number(v.chain_id) === chainId)
+  const coreVaults = vaultsOnChain.filter(v => v.type === 'core-vault')
+  const dvvVaults  = vaultsOnChain.filter(v => v.type === 'dvv-vault')
+
+  const coreVaultsResults = await api.multiCall({ calls: coreVaults.map((vault) => ({ target: vault.collector, params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]] })), abi: abi.collect, permitFailure: true })
+
+  const doubleCountedSharesByVault = await getDoubleCountedShares({api, vaultsOnChain, coreVaults, dvvVaults, coreVaultsResults})
+
+  coreVaultsResults.forEach((result) => {
+    if (!result || !Array.isArray(result)) return
+    const vaultAddress = result[0]
+    const baseAsset = result[1]
     const totalSupply = BigNumber(result[6])
     let totalBaseAsset = BigNumber(result[9])
+    const doubleCountedShares = doubleCountedSharesByVault[vaultAddress] || BigNumber(0)
     if (!baseAsset || !totalBaseAsset || !doubleCountedShares) return
     if (doubleCountedShares && doubleCountedShares.gt(0)) {
       const doubleCountedAssets = doubleCountedShares.times(totalBaseAsset).div(totalSupply)
