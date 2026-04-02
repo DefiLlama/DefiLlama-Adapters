@@ -29,18 +29,18 @@ module.exports = {
 
       const totalApyShares = apyBalances.reduce((sum, b) => sum + Number(b), 0)
 
-      let apyAsApx = 0
+      let apyAsApxUSD = 0
       if (totalApyShares > 0) {
         const converted = await api.call({
           abi: 'function convertToAssets(uint256) view returns (uint256)',
           target: apyUSD,
           params: [BigInt(Math.floor(totalApyShares)).toString()],
         })
-        apyAsApx = Number(converted)
+        apyAsApxUSD = Number(converted)
       }
 
       const totalApxHeld = apxBalances.reduce((sum, b) => sum + Number(b), 0)
-      const inventory = totalApxHeld + apyAsApx
+      const inventory = totalApxHeld + apyAsApxUSD
       const circulating = (Number(totalSupply) - inventory) / 1e18
 
       api.addCGToken('apxusd', circulating)
