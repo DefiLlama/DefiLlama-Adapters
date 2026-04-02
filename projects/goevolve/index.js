@@ -8,12 +8,7 @@ module.exports['sei'] = {
                 eusd['sei'],
             ].filter(Boolean)
             const supply = await api.multiCall({ calls, abi: 'erc20:totalSupply' })
-            api.addTokens(calls, supply, {
-                name: 'eUSD',
-                symbol: 'eUSD',
-                decimals: 18,
-                chain: 'sei',
-                address: eusd['sei'],
-            });
+            console.log(supply)
+            api.add(calls, supply);
         }
     }
