@@ -216,6 +216,9 @@ const tvl = async (api) => {
     return wql == null || wql > 30 || wql < 0;
   });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
+  
+  if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
+    blackList.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 }
 
