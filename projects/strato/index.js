@@ -21,12 +21,13 @@ async function tvl(api) {
 
   for (const asset of assets) {
     if (!asset?.symbol || asset.amount == null) continue
-    const amount = asset.amount / 1e18
+    const decimals = Math.pow(10, asset.decimals ?? 18)
+    const amount = asset.amount / decimals
     const cgId = CG_TOKEN_MAP[asset.symbol]
     if (cgId) {
       api.addCGToken(cgId, amount)
     } else {
-      const usdValue = asset.totalUsd / 1e18
+      const usdValue = asset.totalUsd / decimals
       api.addUSDValue(usdValue)
     }
   }
