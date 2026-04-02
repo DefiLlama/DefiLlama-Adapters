@@ -1685,6 +1685,12 @@ const uniV3Configs = {
       extraKey: 'v1'
     },
   },
+  'stableswap-xyz-v3': {
+    stable: {
+      factory: '0x88F0a512eF09175D456bc9547f914f48C013E4aA',
+      fromBlock: 3442899,
+    }
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)

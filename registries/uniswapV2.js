@@ -1872,6 +1872,9 @@ const uniV2Configs = {
     },
     stable: '0xc5ba86e4A6F674816fA7c3B7cA438D63ec136bE9',
   },
+  'stableswap-xyz': {
+    stable: '0x25D2d657F539F2bB16eC82773cBE5ee49ddD3c69',
+  },
   'standard-tech': {
     ethereum: '0x53AC1d1FA4F9F6c604B8B198cE29A50d28cbA893',
     metis: '0xFA68bAAdBDCf014fA20bD1A4542967AE40Ddca53',
