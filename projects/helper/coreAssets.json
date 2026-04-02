@@ -1432,9 +1432,7 @@
     "USDC": "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4",
     "oUSDT": "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi",
     "ETH": "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-",
-    "MATIC": "EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX",
     "ORC": "EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD",
-    "MEGA": "EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf",
     "WEMIX": "EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ",
     "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA",
     "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
@@ -1799,6 +1797,9 @@
   },
   "edg": {
     "WEDG": "0x457dE4e275A6b3C0D3750519221dD1dF19d54f01"
+  },
+  "edgex": {
+    "USDC": "0x98d2919b9A214E6Fa5384AC81E6864bA686Ad74c"
   },
   "meer": {
     "MEER_1": "0x470cBFB236860eb5257bBF78715FB5bd77119C2F",
@@ -2378,7 +2379,9 @@
   },
   "mantra": {
     "uom": "uom",
-    "wOM": "0xE3047710EF6cB36Bcf1E58145529778eA7Cb5598"
+    "wMANTRA": "0xE3047710EF6cB36Bcf1E58145529778eA7Cb5598",
+    "USDT": "0x3806640578b710d8480910bF51510bc538d2F51A",
+    "mantraUSD": "0xd2b95283011E47257917770D28Bb3EE44c849f6F"
   },
   "verus": {
     "VERUS": "i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV",

@@ -187,6 +187,12 @@ const configs = {
       '0x8ED5AB1BA2b2E434361858cBD3CA9f374e8b0359',
     ],
   },
+  'quell': {
+    doublecounted: true,
+    methodology: "TVL is the total USDC deposited in the Quell RWAVault, an ERC-4626 vault that routes to the Steakhouse USDC MetaMorpho vault for RWA yield.",
+    base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
+    arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051'],
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

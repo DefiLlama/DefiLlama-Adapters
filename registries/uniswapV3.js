@@ -1084,6 +1084,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0xff7b3e8c00e57ea31477c32a5b52a58eea47b072',
       fromBlock: 7876741,
+      permitFailure: true,
     },
   },
   'quickswap-v3': {
@@ -1508,6 +1509,13 @@ const uniV3Configs = {
       isAlgebra: true,
     },
   },
+  'trebleswap-v2': {
+    base: {
+      factory: '0x6e606Cf94A4DDc01aEed2Fce16d1b4f5B33e0A31',
+      fromBlock: 39029383,
+      isAlgebra: true,
+    },
+  },
   'ubeswap-v3': {
     celo: {
       factory: '0x67FEa58D5a5a4162cED847E13c2c81c73bf8aeC4',
@@ -1667,6 +1675,21 @@ const uniV3Configs = {
       factory: '0x2e50b586d5bcD04cb6125E028A6a669f7f3cF1C2',
       fromBlock: 1440863,
     },
+  },
+  'virtus-protocol-cl': {
+    base: {
+      factory: '0x0e5Ab24beBdA7e5Bb3961f7E9b3532a83aE86B48',
+      fromBlock: 42960000,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+      extraKey: 'v1'
+    },
+  },
+  'stableswap-xyz-v3': {
+    stable: {
+      factory: '0x88F0a512eF09175D456bc9547f914f48C013E4aA',
+      fromBlock: 3442899,
+    }
   },
 }
 
