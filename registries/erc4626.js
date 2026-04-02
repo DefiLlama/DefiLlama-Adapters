@@ -192,6 +192,15 @@ const configs = {
     methodology: "TVL is the total USDC deposited in the Quell RWAVault, an ERC-4626 vault that routes to the Steakhouse USDC MetaMorpho vault for RWA yield.",
     base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
     arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051'],
+  },
+  'zensats': {
+    doublecounted: true,
+    methodology: "TVL is the total assets held in ZenSats ERC4626 vaults, measured via totalAssets().",
+    ethereum: [
+      "0x617A6877f0a55D1eF2B64b5861A2bB5Fe6FEB739",
+      "0xbaEc8343B610A5ee7Ca2c5b93507AC7def98E2B1",
+      "0x7d5281D590Fb0647aDc7d8494a2c8Fb8C2B23cBD",
+    ],
   }
 }
 
