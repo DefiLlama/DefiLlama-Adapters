@@ -1,7 +1,7 @@
 /**
  * Europa Tech — DeFi Llama TVL Adapter
  *
- * EU-regulated fractional real estate platform (CONSOB-registered, MiCA-compliant).
+ * EU-regulated, CONSOB-registered (REA: PR-357580) fractional real estate platform.
  * Hotel shares tokenized as ERC-1155 on Base.
  *
  * Website:  https://europa-tech.org
@@ -83,6 +83,7 @@ async function tvl(api) {
 
 module.exports = {
   misrepresentedTokens: true,
+  timetravel: false,
   methodology:
     'TVL = Σ(on-chain totalSupplyPerToken × EUR sharePrice) per tokenId. ' +
     'On-chain supply via EuropaShareToken.totalSupplyPerToken(). ' +
