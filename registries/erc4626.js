@@ -194,6 +194,7 @@ const configs = {
     arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051'],
   },
   'zensats': {
+    doublecounted: true,
     methodology: "TVL is the total assets held in ZenSats ERC4626 vaults, measured via totalAssets().",
     ethereum: [
       "0x617A6877f0a55D1eF2B64b5861A2bB5Fe6FEB739",
