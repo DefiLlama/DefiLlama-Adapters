@@ -43,6 +43,7 @@ async function fetchWithTimeout(url, timeoutMs = FETCH_TIMEOUT_MS) {
 async function tvl(api) {
   // Build tokenId → sharePrice map from API
   const tokenPrices = {};
+  const failures = [];
 
   for (const { id, tokenIdOffset } of PROPERTIES) {
     try {
@@ -57,8 +58,12 @@ async function tvl(api) {
       });
     } catch (err) {
       console.error(`[europa-tech] Failed to fetch rooms for property ${id} (tokenIdOffset=${tokenIdOffset}):`, err.message);
-      // continue — other properties may still succeed
+      failures.push(id);
     }
+  }
+
+  if (failures.length > 0) {
+    throw new Error(`[europa-tech] Incomplete TVL — failed to load prices for: ${failures.join(', ')}`);
   }
 
   const tokenIds = Object.keys(tokenPrices).map(Number);
