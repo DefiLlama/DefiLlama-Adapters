@@ -15,24 +15,14 @@ const abi = {
 
 let _vaultsApiResponse
 
-const getDoubleCountedShares = async ({api, vaultsOnChain, coreVaults, dvvVaults, coreVaultsResults}) => {
-  const shareManagersByVault = {}
+const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsResults}) => {
+  const shareManagerByVault = {}
   const coreVaultShareManagers = await api.multiCall({ calls: coreVaults.map(vault => vault.address), abi: abi.shareManager, permitFailure: true })
   for (let i = 0; i < coreVaults.length; i++) {
-    shareManagersByVault[coreVaults[i].address] = coreVaultShareManagers[i]
+    shareManagerByVault[coreVaults[i].address] = coreVaultShareManagers[i]
   }
   for (let i = 0; i < dvvVaults.length; i++) {
-    shareManagersByVault[dvvVaults[i].address] = dvvVaults[i].address
-  }
-
-  
-  const outerVaultsByVault = {}
-  for (let i = 0; i < vaultsOnChain.length; i++) {
-    outerVaultsByVault[vaultsOnChain[i].address] = []
-    for (let j = 0; j < vaultsOnChain.length; j++) {
-      if (i === j) continue
-      outerVaultsByVault[vaultsOnChain[i].address].push(vaultsOnChain[j].address)
-    }
+    shareManagerByVault[dvvVaults[i].address] = dvvVaults[i].address
   }
 
   // Exclude double counting of shares from other vaults allocating to this vault (in subvaults)
@@ -57,7 +47,7 @@ const getDoubleCountedShares = async ({api, vaultsOnChain, coreVaults, dvvVaults
 
   const vaultBalances = await api.multiCall({
     calls: Object.entries(vaultsOuterSubvaults).flatMap(([vault, subvaults]) =>
-      subvaults.map((subvault) => ({ target: shareManagersByVault[vault], params: [subvault] }))
+      subvaults.map((subvault) => ({ target: shareManagerByVault[vault], params: [subvault] }))
     ),
     abi: abi.balanceOf,
     permitFailure: true,
@@ -82,13 +72,17 @@ const getDoubleCountedShares = async ({api, vaultsOnChain, coreVaults, dvvVaults
     if (!result || !Array.isArray(result)) return
     const vaultAddress = result[0]
     const queues = result[5]
-    // Exclude double counting of other vaults deposited
+    // Exclude double counting of other vaults deposited into this vault
     for (const queue of queues) {
       const queueAsset = queue[1]
       const isDepositQueue = queue[2]
       const pendingValue = BigNumber(queue[5])
       if (!isDepositQueue || pendingValue.eq(0)) continue
-      if (outerVaultsByVault[vaultAddress].includes(queueAsset)) {
+      for (const vault in shareManagerByVault) {
+        // exclude own vault share manager
+        if (vault === vaultAddress) continue
+        const shareManager = shareManagerByVault[vault]
+        if (queueAsset !== shareManager) continue
         // queueAsset is another vault address
         if (doubleCountedSharesByVault[queueAsset] == null) {
           doubleCountedSharesByVault[queueAsset] = pendingValue
@@ -113,7 +107,7 @@ const tvl = async (api) => {
 
   const coreVaultsResults = await api.multiCall({ calls: coreVaults.map((vault) => ({ target: vault.collector, params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]] })), abi: abi.collect, permitFailure: true })
 
-  const doubleCountedSharesByVault = await getDoubleCountedShares({api, vaultsOnChain, coreVaults, dvvVaults, coreVaultsResults})
+  const doubleCountedSharesByVault = await getDoubleCountedShares({api, coreVaults, dvvVaults, coreVaultsResults})
 
   coreVaultsResults.forEach((result) => {
     if (!result || !Array.isArray(result)) return
