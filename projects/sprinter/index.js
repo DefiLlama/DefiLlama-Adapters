@@ -12,7 +12,19 @@ const abi = {
     }
 };
 
-const tvl = sumERC4626VaultsExport2({ vaults: [HUB_CONTRACT_ADDRESS]})
+async function tvl(api) {
+    const [totalShares, stakedShares] = await Promise.all([
+        api.call({ abi: 'erc20:totalSupply', target: LP_TOKEN_ADDRESS }),
+        api.call({ abi: 'erc20:balanceOf', target: LP_TOKEN_ADDRESS, params: [STAKING_CONTRACT_ADDRESS] }),
+    ])
+    const unstakedShares = BigInt(totalShares.toString()) - BigInt(stakedShares.toString());
+    const unstakedInUSDC = await api.call({
+        abi: abi.hub.convertToAssets,
+        target: HUB_CONTRACT_ADDRESS,
+        params: [unstakedShares],
+    })
+    api.add(USDC_ADDRESS, unstakedInUSDC)
+}
 
 async function staking(api) {
     const stakedBalance = await api.call({
@@ -29,7 +41,7 @@ async function staking(api) {
 }
 
 module.exports = {
-    methodology: 'TVL reads hub vault shares converted to USDC. Staking tracks LP tokens held in mining contract converted to USDC via hub.',
+    methodology: 'TVL reads the total amount of USDC in the vault, deducting staked. Staking TVL reads the amount of shares converted to USDC that is currently staked in the vault.',
     base: {
         tvl,
         staking,
