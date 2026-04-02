@@ -275,5 +275,8 @@ module.exports = {
   ethereum: { tvl: combinedEthereumTvl },
   base: { tvl: combinedBaseTvl },
   timetravel: false,
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
   methodology: configs.methodology,
 }
