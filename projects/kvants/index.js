@@ -53,6 +53,9 @@ async function enzymeTvl(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
   methodology: "The combined TVL of all vaults.",
   solana: { tvl: drift_vaults_tvl },
   base: { tvl: enzymeTvl },
