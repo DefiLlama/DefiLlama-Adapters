@@ -1166,6 +1166,7 @@ const uniV3Configs = {
     ink: {
       factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424',
       fromBlock: 1,
+      blacklistedTokens: ['0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'],
     },
   },
   'retro': {
