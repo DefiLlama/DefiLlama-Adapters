@@ -17,7 +17,10 @@ async function tvl(api) {
   // Redeem formula from contract: usdc_amount = agvt_amount * 10_000_000 / exchange_rate
   // totalSupply is in raw AGVT units (7 decimals), rate uses 7-decimal scaling
   // Result is raw USDC units (6 decimals)
-  const usdcValue = BigInt(totalSupply) * 10_000_000n / BigInt(rate)
+  const rateBn = BigInt(rate)
+  if (rateBn === 0n) throw new Error('Exchange rate is zero')
+
+  const usdcValue = BigInt(totalSupply) * 10_000_000n / rateBn
 
   api.add(USDC, usdcValue.toString())
 }
