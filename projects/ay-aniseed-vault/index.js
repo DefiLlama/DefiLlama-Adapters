@@ -4,6 +4,10 @@ const AGVT_TOKEN = 'CDQDXYC42G4ODKZA7B3RARH6VEOGCCQAX2UXOZLDYBNGDEOWODTSQYAZ'
 const EXCHANGE = 'CATKU4CKIUVPTNTLBHUFWIE5NOXO6CUW7EZGJLNAOZBKTQGXFHFIRN5N'
 const USDC = 'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75'
 
+/**
+ * Calculates TVL by fetching the total AGVT token supply and exchange rate from on-chain contracts,
+ * then converting to the equivalent USDC value using the contract's redeem formula.
+ */
 async function tvl(api) {
   const [totalSupply, rate] = await Promise.all([
     callSoroban(AGVT_TOKEN, 'total_supply'),
