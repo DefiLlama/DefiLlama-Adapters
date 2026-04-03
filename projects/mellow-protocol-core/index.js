@@ -58,7 +58,9 @@ const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsRes
   let vaultBalanceIdx = 0
   for (const [vault, subvaults] of Object.entries(vaultsOuterSubvaults)) {
     for (const subvault of subvaults) {
-      const balance = BigNumber(vaultBalances[vaultBalanceIdx++])
+      const balanceResult = vaultBalances[vaultBalanceIdx++]
+      if (!balanceResult) continue
+      const balance = BigNumber(balanceResult)
       if (balance.eq(0)) continue
       if (doubleCountedSharesByVault[vault] == null) {
         doubleCountedSharesByVault[vault] = balance
@@ -115,8 +117,8 @@ const tvl = async (api) => {
     const baseAsset = result[1]
     const totalSupply = BigNumber(result[6])
     let totalBaseAsset = BigNumber(result[9])
+    if (!baseAsset || !totalBaseAsset || totalSupply.eq(0)) return
     const doubleCountedShares = doubleCountedSharesByVault[vaultAddress] || BigNumber(0)
-    if (!baseAsset || !totalBaseAsset || !doubleCountedShares) return
     if (doubleCountedShares && doubleCountedShares.gt(0)) {
       const doubleCountedAssets = doubleCountedShares.times(totalBaseAsset).div(totalSupply)
       totalBaseAsset = totalBaseAsset.minus(doubleCountedAssets)
@@ -133,8 +135,8 @@ const tvl = async (api) => {
     const asset = dvvVaultsAssets[i]
     let totalAssets = BigNumber(dvvVaultsTotalAssets[i])
     const totalSupply = BigNumber(dvvVaultsTotalSupply[i])
+    if (!asset || !totalAssets || !totalSupply || totalSupply.eq(0)) return
     const doubleCountedShares = doubleCountedSharesByVault[vaultAddress]
-    if (!asset || !totalAssets || !totalSupply || !doubleCountedShares) return
     if (doubleCountedShares && doubleCountedShares.gt(0)) {
       const doubleCountedAssets = doubleCountedShares.times(totalAssets).div(totalSupply)
       totalAssets = totalAssets.minus(doubleCountedAssets)
