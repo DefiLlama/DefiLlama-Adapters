@@ -22,15 +22,15 @@ const stabilityPool3 = "0x1a36aAf9946e38fc770E70878C83fa5EfE86a635"
 //
 // 4. Staked amount of SIGMA/bnbUSD LP (Curve pool SIGMA/bnbUSD) in Gauge
 const SigmaBnbUSDCurveLP = "0xB84637aB9Be835580821A67823f414FFd0bbf625" // Curve TwoCrypto (SIGMA/bnbUSD)
-const sigma_gauge_SIGMA_BNBUSD = "0xeca91be20b9c944b52648b39ff8c250ac10a9882"
+const sigma_gauge_SIGMA_BNBUSD = "0x6a25b41Cd9881477b2b7709f38C5524C38A74Ae5"
 //
 // 5. Staked amount of USDT/bnbUSD LP (Curve pool USDT/bnbUSD) in Gauge
 const USDTBnbUSDCurveLP = "0xE6e2905F54BAF7625F4943B74c50338362741Cd4" // Curve StableSwap NG (USDT/bnbUSD)
-const sigma_gauge_USDTbnbUSD  = "0x7223dd9cd88d5906fbf8336854a9982c8cd02434"
+const sigma_gauge_USDTbnbUSD  = "0x1F04a2AC40020179075d3202c584CC05DC5D95F8"
 //
 // 6. Staked amount of bnbUSD/United Stables(U) LP (Curve pool bnbUSD/U) in Gauge
 const BnbUSDUCurveLP = "0xed55ff3fcb43249838a04a9707ff2c4b825507ff" // Curve StableSwap NG (bnbUSD/U)
-const sigma_gauge_BnbUSDU  = "0x04Bd5c408F2646d6fea8D3cB18A9a58FF305b2Ac"
+const sigma_gauge_BnbUSDU  = "0x17E6e5F03fff1fc7823b9539D14a80e74859c62B"
 
 
 module.exports = {
