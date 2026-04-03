@@ -12,7 +12,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V4 Vault contract on Base.",
+  methodology: "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V5 Vault contract on Base.",
   base: {
     tvl
   }
