@@ -10,8 +10,8 @@ const BETTING_PLATFORM = "0xfed2649741e4d3f6316434d6bdc51d0d0975167a0dc87447122d
 /** @constant {string} SUI_COIN - The SUI native coin type */
 const SUI_COIN = "0x2::sui::SUI";
 
-/** @constant {string} SBETS_COIN - The SBETS governance token type */
-const SBETS_COIN = "0x4d83eab83defa9e2488b3c525f54fc588185cfc1a906e5dada1954bf52296e76::betting::SBETS";
+/** @constant {string} SBETS_COIN - The SBETS governance token coin type */
+const SBETS_COIN = "0x999d696dad9e4684068fa74ef9c5d3afc411d3ba62973bd5d54830f324f29502::sbets::SBETS";
 
 /**
  * Calculates the Total Value Locked (TVL) in the SuiBets betting platform.
