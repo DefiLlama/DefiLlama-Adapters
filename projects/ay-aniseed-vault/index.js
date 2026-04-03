@@ -18,7 +18,10 @@ async function tvl(api) {
   // totalSupply is in raw AGVT units (7 decimals), rate uses 7-decimal scaling
   // Result is raw USDC units (6 decimals)
   const rateBn = BigInt(rate)
-  if (rateBn === 0n) throw new Error('Exchange rate is zero')
+  if (rateBn === 0n) {
+    api.add(USDC, '0')
+    return
+  }
 
   const usdcValue = BigInt(totalSupply) * 10_000_000n / rateBn
 
