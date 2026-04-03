@@ -29,7 +29,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is calculated by multiplying the total AGVT vault token supply by the USDC exchange rate from the Agridex exchange contract, representing the total USDC value backing all vault tokens.',
+  methodology: 'TVL is calculated by converting the total AGVT vault token supply to USDC using the exchange contract redeem formula (supply * scale / rate), representing the total USDC value backing all vault tokens.',
   timetravel: false,
   stellar: { tvl },
 }
