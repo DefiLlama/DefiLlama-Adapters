@@ -44,7 +44,7 @@ const AAVE_POOLS = {
   
   // Dolomite (Ethereum mainnet)
   const DOLOMITE_POOLS = {
-    USDC: '0xf8b2c637A68cF6A17b1DF9F8992EeBeFf63d2dFf',
+    USDC: '0x444868B6e8079ac2c55eea115250f92C2b2c4D14',
   };
   
   // Euler (Ethereum mainnet)

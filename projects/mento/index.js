@@ -30,5 +30,13 @@ module.exports = {
   },
   bitcoin: {
     tvl: sumTokensExport({ owners: bitcoinAddressBook.mento })
-  }
+  }, 
+  monad: {
+    tvl: sumTokensExport({
+      owners: [
+        '0x4255Cf38e51516766180b33122029A88Cb853806',
+      ],
+      tokens: [nullAddress, ADDRESSES.monad.USDC, '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a'],
+    })
+  },
 }

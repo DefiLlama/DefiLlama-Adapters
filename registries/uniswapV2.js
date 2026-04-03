@@ -1872,6 +1872,9 @@ const uniV2Configs = {
     },
     stable: '0xc5ba86e4A6F674816fA7c3B7cA438D63ec136bE9',
   },
+  'stableswap-xyz': {
+    stable: '0x25D2d657F539F2bB16eC82773cBE5ee49ddD3c69',
+  },
   'standard-tech': {
     ethereum: '0x53AC1d1FA4F9F6c604B8B198cE29A50d28cbA893',
     metis: '0xFA68bAAdBDCf014fA20bD1A4542967AE40Ddca53',
@@ -2796,6 +2799,15 @@ const uniV2Configs = {
       },
       staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
     },
+    base: {
+      factory: '0x88888493d3e3a133cB80da23610f23a6D563D083',
+      fetchBalances: true,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint) view returns (address)',
+      },
+      staking: ['0x88889e34e5Eb7a8F0f986DDce5f2711220A0c02F', '0x888859FEaAb4922DFBB9Add836172ec6f38caBb2'],
+    },
   },
   'wingswap': {
     methodology: 'Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2837,7 +2849,29 @@ const uniV2Configs = {
   },
   'velox': {
     base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',
-  }
+  },
+  'capybara-v2': {
+    klaytn: '0xE4296d6161c8a1554a18dba79C0f825cE23bAE42',
+  },
+  'qie-dex': {
+    start: '2025-08-05',
+    qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
+  },
+  'virtus-protocol': {
+    base: '0x7F03ae4452192b0E280fB0d4f9c225DDa88C7623',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      }
+    }
+  },
+  'forest-v1': {
+    bsc: {
+      factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
+      staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

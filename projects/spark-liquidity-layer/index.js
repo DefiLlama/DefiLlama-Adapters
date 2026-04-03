@@ -33,9 +33,11 @@ const mainnetAllocatorToTokens = {
     '0x779224df1c756b4EDD899854F32a53E8c2B2ce5d', // spPYUSD
     '0xe7dF13b8e3d6740fe17CBE928C7334243d86c92f', // spUSDT
     '0x377C3bd93f2a2984E1E7bE6A5C22c525eD4A4815', // spUSDC
-    '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho blue chip sparkUSDC
+    '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho Spark Blue Chip USDC Vault
+    '0xc7CDcFDEfC64631ED6799C95e3b110cd42F2bD22', // morpho Spark Blue Chip USDT Vault
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
+    '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
   ]
 }
 
