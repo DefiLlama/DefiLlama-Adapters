@@ -135,7 +135,7 @@ const tvl = async (api) => {
     const asset = dvvVaultsAssets[i]
     let totalAssets = BigNumber(dvvVaultsTotalAssets[i])
     const totalSupply = BigNumber(dvvVaultsTotalSupply[i])
-    if (!asset || !totalAssets || !totalSupply || totalSupply.eq(0)) return
+    if (!asset || !totalAssets || !totalSupply || totalSupply.eq(0)) continue
     const doubleCountedShares = doubleCountedSharesByVault[vaultAddress]
     if (doubleCountedShares && doubleCountedShares.gt(0)) {
       const doubleCountedAssets = doubleCountedShares.times(totalAssets).div(totalSupply)
