@@ -30,6 +30,8 @@ const abis = {
   totalDebt: 'function totalDebt(uint128) view returns (uint256)',
 };
 
+const activePositionsCache = new WeakMap();
+
 function getPositionIds(totalPositions) {
   const total = Number(totalPositions);
   return Array.from({ length: total }, (_, index) => index + 1);
@@ -86,15 +88,23 @@ async function getActivePositions(api) {
   return positionsPerEscrow.flat();
 }
 
+function getCachedActivePositions(api) {
+  if (!activePositionsCache.has(api)) {
+    activePositionsCache.set(api, getActivePositions(api));
+  }
+
+  return activePositionsCache.get(api);
+}
+
 async function tvl(api) {
-  const activePositions = await getActivePositions(api);
+  const activePositions = await getCachedActivePositions(api);
   activePositions.forEach(({ position }) => {
     api.add(position.token, position.size.toString());
   });
 }
 
 async function borrowed(api) {
-  const activePositions = await getActivePositions(api);
+  const activePositions = await getCachedActivePositions(api);
   if (!activePositions.length) return;
 
   const debts = await api.multiCall({
@@ -105,8 +115,9 @@ async function borrowed(api) {
 
   activePositions.forEach(({ position }, index) => {
     const debt = debts[index];
-    const amount = debt ?? position.loanAmount.toString();
-    if (!amount || amount === '0') return;
+    if (debt === null || debt === undefined) return;
+    const amount = BigInt(debt.toString());
+    if (amount === 0n) return;
     api.add(position.loanToken, amount.toString());
   });
 }
