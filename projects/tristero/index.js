@@ -33,7 +33,11 @@ const abis = {
 const activePositionsCache = new WeakMap();
 
 function getPositionIds(totalPositions) {
-  const total = Number(totalPositions);
+  if (totalPositions === null || totalPositions === undefined) return [];
+
+  const total = Number(BigInt(totalPositions.toString()));
+  if (!Number.isSafeInteger(total) || total < 0) return [];
+
   return Array.from({ length: total }, (_, index) => index + 1);
 }
 
