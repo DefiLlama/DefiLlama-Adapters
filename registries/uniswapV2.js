@@ -1467,6 +1467,7 @@ const uniV2Configs = {
   },
   'pheasantswap': {
     enuls: '0x7bf960B15Cbd9976042257Be3F6Bb2361E107384',
+    deadFrom: '2026-02-11'
   },
   'phenix-dex': {
     cronos: '0x6Bae09822c36a9359d563A22fc7d134eF27a5f60',
