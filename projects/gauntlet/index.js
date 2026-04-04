@@ -1,6 +1,7 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
 const axios = require('axios');
 const aeraV3 = require('../aera-v3')
+const coreAssets = require('../helper/coreAssets.json')
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
@@ -261,6 +262,10 @@ async function combinedEthereumTvl(api) {
   if (curatorExport.ethereum?.tvl) await curatorExport.ethereum.tvl(api);
   await megavaultTvl(api);
   await aeraV3.ethereum.tvl(api);
+  
+  // remove bad debt from Resolv hack
+  // Gauntlet USDC Core vault on Morpho 0xE08145eb0132a219aad1B78a85baD8666a97CB94
+  if (api.timestamp >= 1774224000) api.add(coreAssets.ethereum.USDC, -4087518979934);
 }
 
 async function combinedBaseTvl(api) {
@@ -276,7 +281,8 @@ module.exports = {
   base: { tvl: combinedBaseTvl },
   timetravel: false,
   hallmarks: [
-    ["2026-04-01", "Drift hack"]
+    ["2026-03-22", "Resolve USR hack"],
+    ["2026-04-01", "Drift hack"],
   ],
   methodology: configs.methodology,
 }
