@@ -23,7 +23,6 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const contracts = await getMarkets(api)
-      console.log(contracts)
       const tokens = await api.multiCall({ abi: 'address:asset', calls: contracts })
       return sumTokens2({ api, tokensAndOwners2: [tokens, contracts] })
     },
