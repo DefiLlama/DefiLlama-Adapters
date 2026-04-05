@@ -43,6 +43,7 @@ async function tvl(chain, vaults, api) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology: "TVL is the sum of totalAssets() across all ERC-4626 vaults on BSC, Arbitrum and Avalanche.",
   bsc: {
     tvl: (api) => tvl("bsc", VAULTS.bsc, api),
