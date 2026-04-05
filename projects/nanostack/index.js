@@ -76,7 +76,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   hallmarks: [
-    [1743292800, "SubZero sub-nanosecond finality proven"],
+    ["2026-03-05", "SubZero sub-nanosecond finality proven"],
   ],
 };
 
