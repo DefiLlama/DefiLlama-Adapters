@@ -215,6 +215,8 @@ const configs = {
     ],
   },
   'goevolve': {
+    doublecounted: true,
+    methodology: "TVL is the total assets deposited into the eUSD vault",
     sei: ['0xf2282e641cd3ceeafd4e24663d409fcb68edc1df']
   }
 }
