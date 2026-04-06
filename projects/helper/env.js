@@ -34,6 +34,7 @@ const DEFAULTS = {
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  IGRA_RPC: "https://rpc.igralabs.com:8545",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
