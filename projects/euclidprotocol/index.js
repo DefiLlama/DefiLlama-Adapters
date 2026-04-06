@@ -36,19 +36,23 @@ const TokensQuery = `query Token_denoms($chain: String!) {
 
 async function factoryTvl(api, factoryAddress) {
     const res = await cachedGraphQuery('euclidprotocol/' + api.chain, GRAPHQL_URL, TokensQuery, { variables: { chain: api.chain } })
+    const tokens = res.token.token_denoms.filter(token => !token.token_id.endsWith('.eucl'));
 
     const escrows = await api.multiCall({
         abi: 'function get_token_escrow(string calldata token_id) external view returns (address)',
-        calls: res.token.token_denoms.map(token => ({
+        calls: tokens.map(token => ({
             target: factoryAddress,
             params: [token.token_id],
         }))
     })
 
-    const tokens = res.token.token_denoms.map(token => token.denoms.map(denom => denom.token_type.smart?.contract_address || ADDRESSES.null)).flat()
+    const tokensAndOwners = tokens.map((token, tokenIndex) => token.denoms.map(denom => {
+      return [denom.token_type.smart?.contract_address || ADDRESSES.null, escrows[tokenIndex]]
+    })).flat()
+    
     return sumTokensExport({
         owners: escrows,
-        tokens,
+        tokensAndOwners,
     })(api)
 }
 module.exports = {
