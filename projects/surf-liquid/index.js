@@ -23,9 +23,13 @@ async function tvl(api) {
     calls: v2Owners.map((target) => ({ target })),
   });
   for (let i = 0; i < v2Owners.length; i++) {
-    if (v2Owners[i] && v2Owners[i] !== ZERO_ADDR && v2MorphoVaults[i] && v2MorphoVaults[i] !== ZERO_ADDR) {
+    if (!v2Owners[i] || v2Owners[i] === ZERO_ADDR) continue;
+    // Count Morpho vault shares held by this V2 vault
+    if (v2MorphoVaults[i] && v2MorphoVaults[i] !== ZERO_ADDR) {
       tokensAndOwners.push([v2MorphoVaults[i], v2Owners[i]]);
     }
+    // Also count idle USDC sitting directly in the vault (e.g. during rebalances)
+    tokensAndOwners.push([USDC, v2Owners[i]]);
   }
 
   // V3 Vaults: discover via event logs, read Morpho ERC-4626 positions per asset
@@ -45,9 +49,12 @@ async function tvl(api) {
       calls: v3Vaults.map((vault) => ({ target: vault, params: [asset] })),
     });
     for (let i = 0; i < v3Vaults.length; i++) {
+      // Count Morpho vault shares held by this V3 vault
       if (morphoVaults[i] && morphoVaults[i] !== ZERO_ADDR) {
         tokensAndOwners.push([morphoVaults[i], v3Vaults[i]]);
       }
+      // Also count idle underlying tokens sitting directly in the vault
+      tokensAndOwners.push([asset, v3Vaults[i]]);
     }
   }
 
