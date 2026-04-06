@@ -146,9 +146,16 @@ const tvl = async (api) => {
 }
 
 const chains = ['ethereum', 'monad', 'mezo', 'rsk']
+const deprecatedChains = ['bsc', 'fraxtal', 'lisk']
 
 module.exports.doublecounted = true
 
 chains.forEach((chain) => {
   module.exports[chain] = { tvl }
+})
+
+deprecatedChains.forEach((chain) => {
+  module.exports[chain] = {
+    tvl: () => ({}),
+  }
 })
