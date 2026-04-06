@@ -201,7 +201,19 @@ const configs = {
       "0xbaEc8343B610A5ee7Ca2c5b93507AC7def98E2B1",
       "0x7d5281D590Fb0647aDc7d8494a2c8Fb8C2B23cBD",
     ],
-  }
+  },
+  'loopfi-site': {
+    doublecounted: true,
+    bsc: ['0xE486C62145ba4Cf83aBc186c60b175b132F41c19'],
+    arbitrum: [
+      '0x466d5d9f5eff81C894D3B9dfF8E54D9D334c27d5',
+      '0x1e9102AbDFEedfDFDA1D250600e9A1271fc6cd6C',
+    ],
+    avax: [
+      '0xD67DBfFa04298ec8a0e8119d1f3170164f8c8E6A',
+      '0xdA898Ca31bD7563B7fD308b633631a4B28809DE8',
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
