@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { abi } = require("../dexfinance-vault/abi");
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../helper/unwrapLPs');
 
 const CONFIG = {
   sonic: {
@@ -37,74 +37,97 @@ const getVaults = async (api, factory) => {
   }).flat();
 };
 
-const getVaultsConnectors = async (api, factory, vaultFarms) => {
+const getVaultsConnectors = async (api, vaultFarms) => {
   const connectorsCalls = vaultFarms.map(({ farm, vault }) => ({ params: farm.beacon, target: vault }));
-  const calculationConnectorCalls = vaultFarms.map(({ farm }) => farm.beacon);
   const connectors = await api.multiCall({ abi: abi.vault.farmConnector, calls: connectorsCalls, permitFailure: true });
-  const calculationConnectors = await api.multiCall({ abi: abi.factory.farmCalculationConnector, calls: calculationConnectorCalls, target: factory, permitFailure: true });
 
   return vaultFarms
     .map((item, i) => {
       const connector = connectors[i];
-      const calculationConnector = calculationConnectors[i];
-      if (!connector || !calculationConnector) return null;
+      if (!connector) return null;
       delete item.farm.data;
-      return { ...item, connector, calculationConnector };
+      return { ...item, connector };
     }).filter(item => item !== null);
 };
-
-const getVaultsDatas = async (api, vaultFarms) => {
-  const v2Farms = [];
-  const v3Farms = [];
-  const calls = vaultFarms.map(({ connector }) => connector);
-  const liquidityCalls = vaultFarms.map(({ calculationConnector, connector }) => ({ target: calculationConnector, params: [connector] }));
-  const stakingDatasCalls = vaultFarms.map(({ calculationConnector }) => ({ target: calculationConnector }));
-
-  const [stakingTokens, liquidities, datas] = await Promise.all([
-    api.multiCall({ calls, abi: abi.farm.stakingToken, permitFailure: true }),
-    api.multiCall({ calls: liquidityCalls, abi: abi.vault.liquidity }),
-    api.multiCall({ calls: stakingDatasCalls, abi: abi.farm.stakingTokenData, permitFailure: true })
-  ]);
-
-  vaultFarms.forEach((item, i) => {
-    const stakingToken = stakingTokens[i];
-    const liquidity = liquidities[i];
-    const data = datas[i];
-    if (!stakingToken || !liquidity) return;
-    if (!data) {
-      v2Farms.push({ ...item, stakingToken, liquidity });
-    } else {
-      v3Farms.push({ ...item, stakingToken, liquidity, data });
-    }
-  });
-
-  return { v2Farms, v3Farms };
-};
-
-async function addERC721Data(api, vaultFarms) {
-  const positionIds = await api.multiCall({ abi: abi.farm.tokenId, calls: vaultFarms.map(i => i.connector) });
-  const nftPositionMapping = {};
-  vaultFarms.forEach((item, i) => {
-    if (!+positionIds[i]) return;
-    const nft = item.stakingToken.toLowerCase();
-    if (!nftPositionMapping[nft]) nftPositionMapping[nft] = [];
-    nftPositionMapping[nft].push(positionIds[i]);
-  });
-  for (const [nftAddress, positionIds] of Object.entries(nftPositionMapping))
-    await sumTokens2({ api, uniV3ExtraConfig: { nftAddress, positionIds } });
-}
 
 const getChainFarms = async (api) => {
   const { factory } = CONFIG[api.chain];
   const vaultFarms = await getVaults(api, factory);
-  const vaultFarmsWithConnectors = await getVaultsConnectors(api, factory, vaultFarms);
-  return getVaultsDatas(api, vaultFarmsWithConnectors);
+  const vaultFarmsWithConnectors = await getVaultsConnectors(api, vaultFarms);
+
+  const calls = vaultFarmsWithConnectors.map(({ connector }) => connector);
+  const [stakingTokens, tokenIds] = await Promise.all([
+    api.multiCall({ calls, abi: abi.farm.stakingToken, permitFailure: true }),
+    api.multiCall({ calls, abi: abi.farm.tokenId, permitFailure: true }),
+  ]);
+
+  const nftFarms = [];
+  const tokenFarms = [];
+  vaultFarmsWithConnectors.forEach((item, i) => {
+    if (!stakingTokens[i]) return;
+    if (tokenIds[i] && +tokenIds[i] > 0) {
+      nftFarms.push({ ...item, stakingToken: stakingTokens[i], tokenId: tokenIds[i] });
+    } else {
+      tokenFarms.push({ ...item, stakingToken: stakingTokens[i] });
+    }
+  });
+
+  return { nftFarms, tokenFarms };
 };
 
 const tvl = async (api) => {
-  const { v2Farms, v3Farms } = await getChainFarms(api);
-  v2Farms.forEach(({ stakingToken, liquidity }) => api.add(stakingToken, liquidity));
-  await addERC721Data(api, v3Farms);
+  const { nftFarms, tokenFarms } = await getChainFarms(api);
+
+  // NFT positions
+  const nftPositionMapping = {};
+  nftFarms.forEach(({ stakingToken, tokenId }) => {
+    const nft = stakingToken.toLowerCase();
+    if (!nftPositionMapping[nft]) nftPositionMapping[nft] = [];
+    nftPositionMapping[nft].push(tokenId);
+  });
+  const nftAddresses = Object.keys(nftPositionMapping);
+  const [factoryResults, deployerResults] = await Promise.all([
+    api.multiCall({ calls: nftAddresses, abi: 'address:factory', permitFailure: true }),
+    api.multiCall({ calls: nftAddresses, abi: 'address:deployer', permitFailure: true }),
+  ]);
+  // detect Shadow: deployer exists AND deployer has RamsesV3Factory
+  const deployersToCheck = deployerResults.map((d, i) => d ? { target: d, idx: i } : null).filter(Boolean);
+  const ramsesFactoryResults = deployersToCheck.length
+    ? await api.multiCall({ calls: deployersToCheck.map(d => d.target), abi: 'address:RamsesV3Factory', permitFailure: true })
+    : [];
+  const shadowSet = new Set();
+  deployersToCheck.forEach((d, j) => { if (ramsesFactoryResults[j]) shadowSet.add(d.idx); });
+  // detect Slipstream and Algebra from factory
+  const factoriesWithIndex = factoryResults.map((f, i) => f ? { target: f, idx: i } : null).filter(Boolean);
+  const [poolImplResults, poolByPairResults] = factoriesWithIndex.length ? await Promise.all([
+    api.multiCall({ calls: factoriesWithIndex.map(f => f.target), abi: 'address:poolImplementation', permitFailure: true }),
+    api.multiCall({ calls: factoriesWithIndex.map(f => ({ target: f.target, params: [ADDRESSES.null, ADDRESSES.null] })), abi: 'function poolByPair(address, address) view returns (address)', permitFailure: true }),
+  ]) : [[], []];
+  const slipstreamSet = new Set();
+  const algebraSet = new Set();
+  factoriesWithIndex.forEach((f, j) => {
+    if (poolImplResults[j]) slipstreamSet.add(f.idx);
+    else if (poolByPairResults[j] !== null && poolByPairResults[j] !== undefined) algebraSet.add(f.idx);
+  });
+  for (let i = 0; i < nftAddresses.length; i++) {
+    const positionIds = nftPositionMapping[nftAddresses[i]];
+    if (shadowSet.has(i)) {
+      await unwrapSlipstreamNFT({ api, nftAddress: nftAddresses[i], positionIds, isShadow: true });
+    } else if (slipstreamSet.has(i)) {
+      await unwrapSlipstreamNFT({ api, nftAddress: nftAddresses[i], positionIds });
+    } else if (algebraSet.has(i)) {
+      await unwrapUniswapV3NFT({ api, nftAddress: nftAddresses[i], uniV3ExtraConfig: { positionIds }, isAlgebra: true });
+    } else if (factoryResults[i]) {
+      await sumTokens2({ api, uniV3ExtraConfig: { nftAddress: nftAddresses[i], positionIds } });
+    }
+  }
+
+  // ERC20 tokens and LPs
+  const liquidityCalls = tokenFarms.map(({ connector }) => ({ target: connector, params: [connector] }));
+  const liquidities = await api.multiCall({ calls: liquidityCalls, abi: abi.vault.liquidity, permitFailure: true });
+  tokenFarms.forEach(({ stakingToken }, i) => {
+    if (liquidities[i]) api.add(stakingToken, liquidities[i]);
+  });
   await sumTokens2({ api, resolveLP: true });
 };
 
@@ -129,10 +152,13 @@ module.exports = {
     },
     staking: async (api) => {
       await sumTokens2({ api, tokens: [GDEX_TOKEN], owners: [STAKING_CONTRACT, POOL_ADDRESS] })
-      // gDEX from vault farm LPs
-      const { v2Farms } = await getChainFarms(api);
-      v2Farms.forEach(({ stakingToken, liquidity }) => {
-        if (stakingToken.toLowerCase() === GDEX_TOKEN.toLowerCase()) api.add(GDEX_TOKEN, liquidity)
+      // gDEX held directly by vault farm connectors
+      const { tokenFarms } = await getChainFarms(api);
+      const liquidityCalls = tokenFarms.map(({ connector }) => ({ target: connector, params: [connector] }));
+      const liquidities = await api.multiCall({ calls: liquidityCalls, abi: abi.vault.liquidity, permitFailure: true });
+      tokenFarms.forEach(({ stakingToken }, i) => {
+        if (liquidities[i] && stakingToken.toLowerCase() === GDEX_TOKEN.toLowerCase())
+          api.add(GDEX_TOKEN, liquidities[i]);
       });
     },
   },

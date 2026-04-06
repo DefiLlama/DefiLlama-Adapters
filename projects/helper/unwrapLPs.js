@@ -339,6 +339,9 @@ const factories = {}
 
 const getFactoryKey = (chain, nftAddress) => `${chain}:${nftAddress}`.toLowerCase()
 
+const algebraPositionsABI = 'function positions(uint256) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)';
+const algebraGlobalStateABI = 'function globalState() view returns (uint160 price, int24 tick, uint16 lastFee, uint8 pluginConfig, uint16 communityFee, bool unlocked)';
+
 async function unwrapUniswapV3NFT({
   balances,
   owner,
@@ -347,7 +350,8 @@ async function unwrapUniswapV3NFT({
   api,
   blacklistedTokens = [],
   whitelistedTokens = [],
-  uniV3ExtraConfig = {}
+  uniV3ExtraConfig = {},
+  isAlgebra = false,
 }) {
   const chain = api.chain
 
@@ -389,7 +393,7 @@ async function unwrapUniswapV3NFT({
   }
 
   const positions = await api.multiCall({
-    abi: uniV3ABI.positions,
+    abi: isAlgebra ? algebraPositionsABI : uniV3ABI.positions,
     target: nftAddress,
     calls: positionIds
   })
@@ -398,14 +402,20 @@ async function unwrapUniswapV3NFT({
   positions.forEach(position => lpInfo[getKey(position)] = position)
   const lpInfoArray = Object.values(lpInfo)
 
-  const poolInfos = await api.multiCall({
-    abi: uniV3ABI.getPool,
-    target: factory,
-    calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1, info.fee] })),
-  })
+  const poolInfos = isAlgebra
+    ? await api.multiCall({
+      abi: 'function poolByPair(address, address) view returns (address)',
+      target: factory,
+      calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1] })),
+    })
+    : await api.multiCall({
+      abi: uniV3ABI.getPool,
+      target: factory,
+      calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1, info.fee] })),
+    })
 
   const slot0 = await api.multiCall({
-    abi: uniV3ABI.slot0,
+    abi: isAlgebra ? algebraGlobalStateABI : uniV3ABI.slot0,
     calls: poolInfos
   })
 
@@ -418,6 +428,7 @@ async function unwrapUniswapV3NFT({
     let { token0, token1, fee } = position
     token0 = token0.toLowerCase()
     token1 = token1.toLowerCase()
+    if (isAlgebra) return `${token0}-${token1}`
     return `${token0}-${token1}-${fee}`
   }
 
@@ -434,8 +445,10 @@ async function unwrapUniswapV3NFT({
     const positionId = position.tokenId ?? position.tokenID ?? position.id
     if (positionId && blacklistedPositionIds.has(String(positionId))) return
 
-    const poolKey = `${token0.toLowerCase()}-${token1.toLowerCase()}-${position.fee}`.toLowerCase()
-    if (blacklistedPools.includes(poolKey)) return
+    if (!isAlgebra) {
+      const poolKey = `${token0.toLowerCase()}-${token1.toLowerCase()}-${position.fee}`.toLowerCase()
+      if (blacklistedPools.includes(poolKey)) return
+    }
 
     let amount0 = 0
     let amount1 = 0
@@ -541,7 +554,9 @@ async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
   return positionIdsByNftAddress
 }
 
-async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nftAddress, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
+const shadowV3PositionsABI = 'function positions(uint256) view returns (address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)';
+
+async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nftAddress, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, isShadow = false, }) {
   if (!balances) balances = api.getBalances()
   const chain = api.chain
 
@@ -549,9 +564,15 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
-  const factoryKey = getFactoryKey(chain, nftAddress)
-  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: uniV3ABI.factory, })
-  let factory = (await factories[factoryKey])
+  let factory
+  if (isShadow) {
+    const deployer = await api.call({ target: nftAddress, abi: 'address:deployer' })
+    factory = await api.call({ target: deployer, abi: 'address:RamsesV3Factory' })
+  } else {
+    const factoryKey = getFactoryKey(chain, nftAddress)
+    if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: uniV3ABI.factory, })
+    factory = (await factories[factoryKey])
+  }
 
   if ((!positionIds || positionIds.length === 0) && owner) {  // if positionIds are not provided and owner address is passed
     const nftPositions = await api.call({ target: nftIdFetcher, params: owner, abi: 'erc20:balanceOf' })
@@ -561,7 +582,8 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
     }))
   }
 
-  const positions = (await api.multiCall({ abi: slipstreamNftABI.positions, target: nftAddress, calls: positionIds, }))
+  const positionsAbi = isShadow ? shadowV3PositionsABI : slipstreamNftABI.positions
+  const positions = (await api.multiCall({ abi: positionsAbi, target: nftAddress, calls: positionIds, }))
 
   const lpInfo = {}
   positions.forEach(position => lpInfo[getKey(position)] = position)
@@ -1284,6 +1306,7 @@ module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
   unwrapSlipstreamNFT,
+  unwrapUniswapV3NFT,
   sumTokens,
   genericUnwrapCvx,
   unwrapLPsAuto,
