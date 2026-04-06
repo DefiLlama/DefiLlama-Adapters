@@ -13,11 +13,11 @@ const config = {
   },
   bsc: {
     factory: '0x820FB8127a689327C863de8433278d6181123982',
-    fromBlock: 56792490,
+    fromBlock: 49727757,
   },
   plasma: {
     factory: '0x820FB8127a689327C863de8433278d6181123982',
-    fromBlock: 11386088,
+    fromBlock: 6785181,
   },
 }
 
