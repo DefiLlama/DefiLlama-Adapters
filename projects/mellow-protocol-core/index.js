@@ -145,7 +145,7 @@ const tvl = async (api) => {
   }
 }
 
-const chains = ['ethereum', 'monad', 'mezo', 'rootstock']
+const chains = ['ethereum', 'monad', 'mezo', 'rsk']
 
 module.exports.doublecounted = true
 
