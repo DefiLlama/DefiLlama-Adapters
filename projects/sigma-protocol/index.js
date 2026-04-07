@@ -42,6 +42,10 @@ module.exports = {
         calls: [staticPool, stabilityPool1, stabilityPool2, stabilityPool3],
       })
       totals.forEach(t => api.add(staticPoolStableToken, t))
+
+      const rawColls = await api.call({ target: longPool, abi: "uint256:getTotalRawCollaterals" })
+      api.add(longPoolToken, rawColls)
+      await sumTokens2({ api, owners: [poolManager], tokens: [sy] })
     },
     pool2: async (api) => {
       const lpBalances = await api.multiCall({
@@ -51,10 +55,6 @@ module.exports = {
       api.add(SigmaBnbUSDCurveLP, lpBalances[0])
       api.add(USDTBnbUSDCurveLP, lpBalances[1])
       api.add(BnbUSDUCurveLP, lpBalances[2])
-
-      const rawColls = await api.call({ target: longPool, abi: "uint256:getTotalRawCollaterals" })
-      api.add(longPoolToken, rawColls)
-      await sumTokens2({ api, owners: [poolManager], tokens: [sy] })
     }
   },
 };
