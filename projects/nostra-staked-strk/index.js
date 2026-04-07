@@ -21,5 +21,5 @@ module.exports = {
   starknet: {
     tvl,
   },
-  hallmarks: [[1710349200, "Nostra Staked STRK launch"]],
+  hallmarks: [['2024-03-13', "Nostra Staked STRK launch"]],
 };

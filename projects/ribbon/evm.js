@@ -50,13 +50,6 @@ const wavax = ADDRESSES.avax.WAVAX;
 const savax = ADDRESSES.avax.SAVAX;
 const usdce = ADDRESSES.avax.USDC_e;
 
-async function addVaults({ vaults, api }) {
-  const tokens = vaults.map(i => i[0])
-  const calls = vaults.map(i => i[1])
-  const balance = await api.multiCall({ abi: 'uint256:totalBalance', calls })
-  api.add(tokens, balance)
-}
-
 async function ethTvl(api) {
   const vaults = [
     // theta vault
@@ -80,8 +73,7 @@ async function ethTvl(api) {
     [badger, badgerCallVault],
 
   ]
-
-  await addVaults({ api, vaults, })
+  await api.sumTokens({ tokensAndOwners: vaults })
   // pauser holds a variety of coins
   return sumTokens2({ api, owner: pauserEth, tokens: [nullAddress, usdc, wbtc, steth, aave,], })
 }
@@ -93,7 +85,7 @@ async function avaxTvl(api) {
     [usdce, usdcAvaxPutVault],
   ]
 
-  await addVaults({ api, vaults, })
+  await api.sumTokens({ tokensAndOwners: vaults })
   return sumTokens2({ owner: pauserAvax, tokens: [nullAddress, savax], api, })
 }
 

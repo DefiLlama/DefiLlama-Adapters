@@ -116,6 +116,7 @@ const config = {
       "0x8ed5b6bc3d85be31209fac182466e0bcc30ba3eb",
       "0x076d55c8998da29531ef7fcac2a01fa21582eed2",
       "0xf358d867bf928cb06408ff2b7564fce336e24de8",
+      "0x62425cd6bdcb6bfe51558ea465b063486b70dc9f"
     ],
   },
   bitcoin: {
@@ -132,6 +133,7 @@ const config = {
       "0xef3aeff9a5f61c6dda33069c58c1434006e13b20",
       "0x318d2aae4c99c2e74f7b5949fa1c34df837789b8",
       "0xc851a293ed8b8888a2e4140744973dd23bbcbaf2",
+      "0xfe6290ac9c3c290308341d07464969b697d2a17b"
     ],
   },
   tron: {
@@ -184,6 +186,7 @@ const config = {
       "0x7da0b9211020d3775b18116fe751c555b9a7058c",
       "0x9d271a4e9523d74572b618ec10419a0a330e1bf0",
       "0x1c3944173abee256456b1498299fc501ad5bbd6f",
+      "0x83d8b993ff9795aee4abe8597c1925b50b30d5be"
     ],
   },
   avax: {
@@ -389,7 +392,10 @@ const config = {
     owners: ["0x0051ef9259c7ec0644a80e866ab748a2f30841b3"],
   },
   hyperliquid: {
-    owners: ["0x1c3944173abee256456b1498299fc501ad5bbd6f"],
+    owners: ["0x1c3944173abee256456b1498299fc501ad5bbd6f", "0x1b0bb20d345a2699dd65eb316114c8786ac90761", "0x1d834efd7ac0f39ec63ad5a30bfd4000aba837f7"],
+  },
+  plasma: {
+    owners: ["0x01eadbed08832ba3a12b571b299075dc6b503dca"],
   },
 };
 

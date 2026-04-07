@@ -1,5 +1,15 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const Abis = require("./abi.json");
+const Abis = {
+    "bank": {
+      "usableFtmBalance": "uint256:usableCollateralBalance"
+    },
+    "bankV1": {
+      "usableFtmBalance": "uint256:usableFtmBalance"
+    },
+    "multiFeeDistribution": {
+      "totalSupply": "uint256:totalSupply"
+    }
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const Contracts = {

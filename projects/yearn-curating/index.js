@@ -6,6 +6,8 @@ const configs = {
     ethereum: {
       morphoVaultOwners: [
         '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
+        '0x50B75d586929Ab2F75dC15f07E1B921b7C4Ba8fA',
+        '0x75a1253432356f90611546a487b5350CEF08780D',
       ],
       turtleclub_erc4626: [
         '0xF470EB50B4a60c9b069F7Fd6032532B8F5cC014d',
@@ -18,12 +20,15 @@ const configs = {
       morphoVaultOwners: [
         '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
         '0x50b75d586929ab2f75dc15f07e1b921b7c4ba8fa',
+        '0x75a1253432356f90611546a487b5350CEF08780D',
       ],
     },
     katana: {
       morphoVaultOwners: [
         '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
         '0x518C21DC88D9780c0A1Be566433c571461A70149',
+        '0x50b75d586929ab2f75dc15f07e1b921b7c4ba8fa',
+        '0x75a1253432356f90611546a487b5350CEF08780D',
       ],
       // ausd: [  // already counted as part of yearn
       //   '0x93Fec6639717b6215A48E5a72a162C50DCC40d68'
@@ -39,6 +44,15 @@ const configs = {
     arbitrum: {
       morphoVaultOwners: [
         '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
+        '0x50b75d586929ab2f75dc15f07e1b921b7c4ba8fa',
+        '0x75a1253432356f90611546a487b5350CEF08780D',
+      ],
+    },
+    hyperliquid: {
+      morphoVaultOwners: [
+        '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
+        '0x50b75d586929ab2f75dc15f07e1b921b7c4ba8fa',
+        '0x75a1253432356f90611546a487b5350CEF08780D',
       ],
     },
   }

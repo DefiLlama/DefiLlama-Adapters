@@ -16,11 +16,18 @@ async function getStrategies() {
       vault: strategy.address,
     }))
   
-  return { univ4Pools, morphoStrategies }
+  const eulerStrategies = data
+    .filter(strategy => strategy.liquidityType === 'euler')
+    .map(strategy => ({
+      gauge: strategy.gauge.address,
+      vault: strategy.address,
+    }))
+  
+  return { univ4Pools, morphoStrategies, eulerStrategies }
 }
 
 async function tvlForChain(api) {
-  const { univ4Pools, morphoStrategies } = await getStrategies()
+  const { univ4Pools, morphoStrategies, eulerStrategies } = await getStrategies()
 
   // UniV4 TVL
   if (univ4Pools.length) {
@@ -59,11 +66,33 @@ async function tvlForChain(api) {
     })
   }
 
+  // Euler TVL
+  if (eulerStrategies.length) {
+    const depositAssets = await api.multiCall({ 
+      abi: 'address:asset', 
+      calls: eulerStrategies.map(s => s.vault) 
+    })
+
+    const balanceOfReceipts = await api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: eulerStrategies.map(s => ({ target: s.vault, params: [s.gauge] })),
+    })
+
+    const balances = await api.multiCall({
+      abi: 'function convertToAssets(uint256 shares) view returns (uint256)',
+      calls: eulerStrategies.map((s, i) => ({ target: s.vault, params: [balanceOfReceipts[i]] })),
+    })
+
+    balances.forEach((balance, i) => {
+      api.add(depositAssets[i], balance)
+    })
+  }
+
   return api.getBalances()
 }
 
 module.exports = {
-  methodology: 'TVL counts the tokens locked in ALM vaults & forwarded deposits that Hydrex manages on top of multiple protocols, such as UniV4 and Morpho.',
+  methodology: 'TVL counts the tokens locked in ALM vaults & forwarded deposits that Hydrex manages on top of multiple protocols, such as UniV4, Morpho, and Euler.',
   doublecounted: true,
   start: '2025-06-17',
   base: { tvl: (api) => tvlForChain(api) },

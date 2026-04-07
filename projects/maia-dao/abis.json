@@ -1,7 +1,0 @@
-{
-  "locked": "function locked(uint256) view returns (int128 amount, uint256 end)",
-  "gauges": "function gauges(address) view returns (address)",
-  "balanceOf": "function balanceOf(address) view returns (uint256)",
-  "pools": "function pools(uint256) view returns (address)",
-  "length": "uint256:length"
-}

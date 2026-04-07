@@ -44,6 +44,7 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
+  hallmarks: [["2026-04-01", "Drift hack"]],
   timetravel: false,
   methodology: 'TVL calculated by calling the onchain state of the CRT Vault accounts, and tallying the balance of each strategy.',
   solana: { tvl },

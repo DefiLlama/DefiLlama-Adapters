@@ -178,7 +178,29 @@ const loopscaleIdl = {
   ]
 }
 
-const endpoint = 'https://loopscale-pricing-adapters-109615290061.europe-west2.run.app/decompile_mints'
+const endpoint = 'https://loopscale-pricing-adapters-109615290061.europe-west2.run.app/v1/decompile_mints'
+
+function parseBigIntStringMap(input) {
+  const out = Object.create(null);
+
+  for (const [k, v] of Object.entries(input)) {
+    const s = v.trim();
+
+    out[k] = BigInt(s);
+  }
+
+  return out;
+}
+
+function stringifyBigIntMap(input) {
+  const out = Object.create(null);
+
+  for (const [k, v] of Object.entries(input)) {
+    out[k] = v.toString(10);
+  }
+
+  return out;
+}
 
 const creditbookProgram = (connection) => {
     const provider = new AnchorProvider(
@@ -195,24 +217,25 @@ async function getLoans(connection) {
   return loansBorrowed;
 }
 
-function bytesToNumberLE(bytes) {
+function bytesToBigIntLE(bytes) {
     let result = 0n; // Start with BigInt 0
     for (let i = bytes.length - 1; i >= 0; i--) {
-        result = (result << 8n) | BigInt(bytes[i]);
-
-	}
-
-    return Number(result);
+      result = (result << 8n) | BigInt(bytes[i]);
+    }
+    return result;
 }
 
 function getCollateralValuesForLoans(loans) {
   const mintBalances = {};
   for(let i = 0; i < loans.length; i++) {
-    const collateralData = loans[i].account.collateral[0];
-    const collateralMint = collateralData.assetMint;
-    const totalCollateral = new BN(collateralData.amount[0].reverse()).toNumber();
-
-    mintBalances[collateralMint] = mintBalances[collateralMint] ? mintBalances[collateralMint] + totalCollateral : totalCollateral;
+    const collateralData = loans[i].account.collateral;
+    for (let i = 0; i < collateralData.length; i++) {
+      const collateralMint = collateralData[i].assetMint;
+      const totalCollateral = BigInt(new BN(collateralData[i].amount[0].reverse()));
+      if (collateralMint !== PublicKey.default.toString()) {
+        mintBalances[collateralMint] = mintBalances[collateralMint] ? mintBalances[collateralMint] + totalCollateral : totalCollateral;
+      }
+    }
   }
   return mintBalances;
 }
@@ -225,11 +248,11 @@ function getOutstandingBalanceForStrategy(strategy, currentTimestamp) {
     // interest_per_second
     // times
     // (current_timestamp - last_accrued_timestamp)
-    const lastAccruedTimestamp = bytesToNumberLE(new Uint8Array(strategy.lastAccruedTimestamp[0]));
-    const interestPerSecond = bytesToNumberLE(new Uint8Array(strategy.interestPerSecond[0])) / 1e18;
-    const currentDeployedAmount = bytesToNumberLE(new Uint8Array(strategy.currentDeployedAmount[0]));
-    const outstandingInterestAmount = bytesToNumberLE(new Uint8Array(strategy.outstandingInterestAmount[0]));
-    const unaccruedInterest = interestPerSecond * (currentTimestamp - lastAccruedTimestamp);
+    const lastAccruedTimestamp = bytesToBigIntLE(new Uint8Array(strategy.lastAccruedTimestamp[0]));
+    const interestPerSecond = bytesToBigIntLE(new Uint8Array(strategy.interestPerSecond[0])) / BigInt(1e18);
+    const currentDeployedAmount = bytesToBigIntLE(new Uint8Array(strategy.currentDeployedAmount[0]));
+    const outstandingInterestAmount = bytesToBigIntLE(new Uint8Array(strategy.outstandingInterestAmount[0]));
+    const unaccruedInterest = interestPerSecond * (BigInt(currentTimestamp) - lastAccruedTimestamp);
 
     return currentDeployedAmount + outstandingInterestAmount + unaccruedInterest;
 }
@@ -268,8 +291,8 @@ async function getStrategies(connection) {
 }
 
 function getIdleBalanceForStrategy(strategy) {
-    const amountExternallySupplied = bytesToNumberLE(new Uint8Array(strategy.externalYieldAmount[0]));
-    const amountHeldByStrategy = bytesToNumberLE(new Uint8Array(strategy.tokenBalance[0]));
+    const amountExternallySupplied = bytesToBigIntLE(new Uint8Array(strategy.externalYieldAmount[0]));
+    const amountHeldByStrategy = bytesToBigIntLE(new Uint8Array(strategy.tokenBalance[0]));
 
     return amountExternallySupplied + amountHeldByStrategy;
 }
@@ -285,13 +308,13 @@ async function getDeposits(connection) {
 
     for (const obj of [collateralBalances, idleCapitalBalances]) {
       for (const [key, value] of Object.entries(obj)) {
-        rawDeposits[key] = (rawDeposits[key] || 0) + value;
+        rawDeposits[key] = (rawDeposits[key] || 0n) + value;
       }
     }
 
-    rawDeposits = Object.fromEntries(
-        Object.entries(rawDeposits).filter(([key, value]) => value !== 0)
-    );
+    rawDeposits = stringifyBigIntMap(Object.fromEntries(
+        Object.entries(rawDeposits).filter(([key, value]) => value !== 0n)
+    ));
     
     const response = await fetch(endpoint, {
         method: "POST",
@@ -303,9 +326,9 @@ async function getDeposits(connection) {
         })
     });
 
-    const formattedDeposits = await response.json();
+    const parsedDeposits = parseBigIntStringMap(await response.json());
 
-    return formattedDeposits;
+    return parsedDeposits;
 }
 
 async function tvl(api) {
@@ -327,6 +350,6 @@ module.exports = {
 	doublecounted: false,
 	timetravel: false,
 	methodology:
-		'TVL is calculated by summing up lending deposits and supplied collateral. Borrowed tokens are included.',
+		'TVL is calculated by summing up lending deposits and supplied collateral.',
 	solana: { tvl, borrowed, },
 }

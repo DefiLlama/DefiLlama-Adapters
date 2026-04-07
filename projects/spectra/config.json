@@ -82,5 +82,17 @@
       "factory": "0xac61e44816160028474fd9f5baae492b5620f370",
       "fromBlock": 4715236
     }
+  ],
+  "flare": [
+    {
+      "factory": "0x5c86800dfc65ca3e3a062feeee4d867c92771b95",
+      "fromBlock": 46466744
+    }
+  ],
+  "monad": [
+    {
+      "factory": "0x6cba8213deeafe86ffb38f295edd5625cae4dd05",
+      "fromBlock": 37910245
+    }
   ]
 }

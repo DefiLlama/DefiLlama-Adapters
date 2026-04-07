@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const hexToBytes = (hex) => Array.from(Buffer.from(hex.replace(/^0x/, ""), 'hex'));
 
 const textToBytes = (value) => new TextEncoder().encode(value);

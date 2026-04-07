@@ -79,6 +79,6 @@ module.exports = {
   },
   start: '2022-02-01',
   hallmarks: [
-    [1669852800, "Ensuro V2 Launch"]
+    ['2022-12-01', "Ensuro V2 Launch"]
   ]
 };

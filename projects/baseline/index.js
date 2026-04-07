@@ -34,7 +34,7 @@ async function staking(api) {
 
 module.exports = {
   hallmarks: [
-    [1714251306, "self-whitehack"]
+    ['2024-04-27', "self-whitehack"]
   ],
   doublecounted: true,
   blast: {
