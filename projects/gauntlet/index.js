@@ -282,7 +282,7 @@ module.exports = {
   timetravel: false,
   hallmarks: [
     ["2026-03-22", "Resolve USR hack"],
-    ["2026-04-01", "Drift hack"],
+    ["2026-04-01", "USR losses are realized"],
   ],
   methodology: configs.methodology,
 }
