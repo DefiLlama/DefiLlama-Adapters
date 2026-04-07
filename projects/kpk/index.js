@@ -1,8 +1,9 @@
 const { getCuratorExport } = require("../helper/curators")
-const { sumTokens2, unwrapConvexRewardPools } = require("../helper/unwrapLPs")
+const { sumTokensDebank } = require("../helper/debank")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
+const PORTFOLIO_SAFE="0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b"
 
 const GearboxCompressorABI = {
   // returns credit managers associated with the given legacy (market) configurators
@@ -136,26 +137,11 @@ async function getAlephVaultTvl(api, vaults) {
   }
 }
 
-// ---- kpk Fund (OIV) TVL via NAV Calculator ----
-const ETH_ALPHA_FUND_CONFIG = {
-  portfolioSafe: "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b",
-  ethereum: {
-    tokens: [
-      '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', // weETH
-      '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', // wstETH
-      '0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7', // rsETH
-      '0x2D62109243b87C4bA3EE7bA1D91B0dD0A074d7b1', // aEthrsETH
-      '0xeA51d7853EEFb32b6ee06b1C12E6dcCA88Be0fFE', // aave debt
-      '0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64', // Gearbox dwstETHV3
-    ],
-  }
-}
+// ---- kpk Fund (OIV) TVL via DeBank ----
+const FUND_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
 
 async function getKpkFundTvl(api) {
-  const chainCfg = ETH_ALPHA_FUND_CONFIG[api.chain]
-  if (!chainCfg) return
-
-  await sumTokens2({ api, owner: ETH_ALPHA_FUND_CONFIG.portfolioSafe, tokens: chainCfg.tokens })
+  await sumTokensDebank(api, [PORTFOLIO_SAFE])
 }
 
 // ---- Combined TVL export per chain ----
@@ -175,7 +161,7 @@ for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
 }
 
 // Add kpk Fund (OIV) TVL to each chain the fund is deployed on
-for (const chain of Object.keys(ETH_ALPHA_FUND_CONFIG).filter(k => k !== 'portfolioSafe')) {
+for (const chain of FUND_CHAINS) {
   if (exportObjects[chain]) {
     const originalTvl = exportObjects[chain].tvl
     exportObjects[chain].tvl = async (api) => {
