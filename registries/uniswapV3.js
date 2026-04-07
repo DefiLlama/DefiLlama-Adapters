@@ -1689,8 +1689,8 @@ const uniV3Configs = {
   'stableswap-xyz-v3': {
     stable: {
       factory: '0x88F0a512eF09175D456bc9547f914f48C013E4aA',
-      fromBlock: 4874220,
-      extraKey: 'v2'
+      fromBlock: 18556884,
+      extraKey: 'v1'
     }
   },
 }
