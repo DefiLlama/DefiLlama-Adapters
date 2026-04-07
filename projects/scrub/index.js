@@ -1,5 +1,22 @@
 const { unknownTombs, sumTokensExport } = require("../helper/unknownTokens");
 const { mergeExports } = require("../helper/utils");
+const ADDRESSES = require("../helper/coreAssets.json");
+
+// ─── ScrubVault DepositVault contracts ────────────────────────────────────────
+// ScrubVault is a delta-neutral managed vault: users deposit USDt (Kava) or
+// USDC (Arbitrum) and receive share tokens. The deposited capital is deployed
+// off-chain across centralised and decentralised exchanges running a
+// delta-neutral strategy that earns funding-rate and market-making yield.
+// Because funds are actively managed off-chain, the vault contract itself holds
+// only unprocessed pending deposits; the authoritative accounting value is the
+// on-chain `totalVaultValue` variable, which is updated by the admin/strategy
+// role whenever rewards are distributed or the portfolio is rebalanced.
+// TVL here therefore reflects *assets under management*, not tokens sitting in
+// the contract.
+const KAVA_DEPOSIT_VAULT   = "0x7BFf6c730dA681dF03364c955B165576186370Bc";
+const ARB_DEPOSIT_VAULT    = "0x439a923517C4DFD3F3d0ABb0C36E356D39CF3f9D";
+const KAVA_USDT            = ADDRESSES.kava.USDt;    // 0x919C1c267BC06a7039e03fcc2eF738525769109c
+const ARB_USDC             = ADDRESSES.arbitrum.USDC_CIRCLE; // 0xaf88d065e77c8cC2239327C5EDb3A432268e5831
 
 const rewardPool = ["0xC0608A81Fe9850360B899D5eFC9f34D1cCd58D55"];
 const lps = Object.values({
@@ -48,4 +65,29 @@ const lionStaking = {
   },
 };
 
-module.exports = mergeExports([module.exports, lionStaking]);
+// ─── ScrubVault TVL ───────────────────────────────────────────────────────────
+// `totalVaultValue` (6 decimals, stablecoin-denominated) is the on-chain source
+// of truth for AUM. It is updated via `distributeRewards()` each time the
+// strategy settles PnL back to the vault.
+const scrubVaultTvl = {
+  kava: {
+    tvl: async (api) => {
+      const value = await api.call({
+        abi: "uint256:totalVaultValue",
+        target: KAVA_DEPOSIT_VAULT,
+      });
+      api.add(KAVA_USDT, value);
+    },
+  },
+  arbitrum: {
+    tvl: async (api) => {
+      const value = await api.call({
+        abi: "uint256:totalVaultValue",
+        target: ARB_DEPOSIT_VAULT,
+      });
+      api.add(ARB_USDC, value);
+    },
+  },
+};
+
+module.exports = mergeExports([module.exports, lionStaking, scrubVaultTvl]);
