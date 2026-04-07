@@ -322,6 +322,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], api, own
         case 'sonic': nftAddress = '0x743e03cceb4af2efa3cc76838f6e8b50b63f184c'; break;
         case 'flare': nftAddress = '0xD9770b1C7A6ccd33C75b5bcB1c0078f46bE46657'; break;
         case 'hyperliquid': nftAddress = '0x6eDA206207c09e5428F281761DdC0D300851fBC8'; break;
+        case 'unichain': nftAddress = '0x943e6e07a7E8E791dAFC44083e54041D743C46E9'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
@@ -464,9 +465,10 @@ async function unwrapSlipstreamNFTs({ balances, nftsAndOwners = [], api, owner, 
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
-        case 'optimism': nftAddress = '0xbB5DFE1380333CEE4c2EeBd7202c80dE2256AdF4'; break;
+        case 'optimism': nftAddress = ['0x416b433906b1B72FA758e166e239c43d68dC6F29', '0xbB5DFE1380333CEE4c2EeBd7202c80dE2256AdF4']; break;
         case 'base': nftAddress = '0x827922686190790b37229fd06084350e74485b72'; break;
         case 'swellchain': nftAddress = '0x991d5546C4B442B4c5fdc4c8B8b8d131DEB24702'; break;
+        case 'unichain': nftAddress = '0x991d5546C4B442B4c5fdc4c8B8b8d131DEB24702'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
