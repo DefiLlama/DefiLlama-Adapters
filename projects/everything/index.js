@@ -5,14 +5,19 @@ const config = {
   },
 }
 
-async function tvl(api) {
-  const { factory, vault } = config[api.chain]
+async function getPairsAndTokens(api, factory) {
   const pairs = await api.fetchList({
     lengthAbi: 'uint256:getAllPairsLength',
     itemAbi: 'function getPairAtIndex(uint256) view returns (address)',
     target: factory,
   })
   const tokens = await api.multiCall({ abi: 'function getTokens() view returns (address, address)', calls: pairs })
+  return { pairs, tokens }
+}
+
+async function tvl(api) {
+  const { factory, vault } = config[api.chain]
+  const { pairs, tokens } = await getPairsAndTokens(api, factory)
   const ownerTokens = pairs.map((pair, i) => [tokens[i], pair])
   const allTokens = [...new Set(tokens.flat())]
   ownerTokens.push([allTokens, vault])
@@ -21,12 +26,7 @@ async function tvl(api) {
 
 async function borrowed(api) {
   const { factory } = config[api.chain]
-  const pairs = await api.fetchList({
-    lengthAbi: 'uint256:getAllPairsLength',
-    itemAbi: 'function getPairAtIndex(uint256) view returns (address)',
-    target: factory,
-  })
-  const tokens = await api.multiCall({ abi: 'function getTokens() view returns (address, address)', calls: pairs })
+  const { pairs, tokens } = await getPairsAndTokens(api, factory)
   const borrowed0 = await api.multiCall({ abi: 'uint256:getTotalBorrowed0', calls: pairs })
   const borrowed1 = await api.multiCall({ abi: 'uint256:getTotalBorrowed1', calls: pairs })
   for (let i = 0; i < pairs.length; i++) {
