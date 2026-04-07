@@ -20,13 +20,17 @@ const stabilityPool2 = "0x16D39a7a489DcBEB1EC6Da383F1D95a7b1754c94"
 // 3. Staked amount of USDT in Stability Pool3(SP3)
 const stabilityPool3 = "0x1a36aAf9946e38fc770E70878C83fa5EfE86a635"
 //
-// 4. Staked amount of SIGMA/bnbUSD LP (Curve pool USDT/bnbUSD) in Gauge
+// 4. Staked amount of SIGMA/bnbUSD LP (Curve pool SIGMA/bnbUSD) in Gauge
 const SigmaBnbUSDCurveLP = "0xB84637aB9Be835580821A67823f414FFd0bbf625" // Curve TwoCrypto (SIGMA/bnbUSD)
-const sigma_gauge_SIGMA_BNBUSD = "0xeca91be20b9c944b52648b39ff8c250ac10a9882"
+const sigma_gauge_SIGMA_BNBUSD = "0x6a25b41Cd9881477b2b7709f38C5524C38A74Ae5"
 //
 // 5. Staked amount of USDT/bnbUSD LP (Curve pool USDT/bnbUSD) in Gauge
 const USDTBnbUSDCurveLP = "0xE6e2905F54BAF7625F4943B74c50338362741Cd4" // Curve StableSwap NG (USDT/bnbUSD)
-const sigma_gauge_USDTbnbUSD  = "0x7223dd9cd88d5906fbf8336854a9982c8cd02434"
+const sigma_gauge_USDTbnbUSD  = "0x1F04a2AC40020179075d3202c584CC05DC5D95F8"
+//
+// 6. Staked amount of bnbUSD/United Stables(U) LP (Curve pool bnbUSD/U) in Gauge
+const BnbUSDUCurveLP = "0xed55ff3fcb43249838a04a9707ff2c4b825507ff" // Curve StableSwap NG (bnbUSD/U)
+const sigma_gauge_BnbUSDU  = "0x17E6e5F03fff1fc7823b9539D14a80e74859c62B"
 
 
 module.exports = {
@@ -38,18 +42,19 @@ module.exports = {
         calls: [staticPool, stabilityPool1, stabilityPool2, stabilityPool3],
       })
       totals.forEach(t => api.add(staticPoolStableToken, t))
-    },
-    pool2: async (api) => {
-      const lpBalances = await api.multiCall({
-        abi: "erc20:totalSupply",
-        calls: [sigma_gauge_SIGMA_BNBUSD, sigma_gauge_USDTbnbUSD],
-      })
-      api.add(SigmaBnbUSDCurveLP, lpBalances[0])
-      api.add(USDTBnbUSDCurveLP, lpBalances[1])
 
       const rawColls = await api.call({ target: longPool, abi: "uint256:getTotalRawCollaterals" })
       api.add(longPoolToken, rawColls)
       await sumTokens2({ api, owners: [poolManager], tokens: [sy] })
+    },
+    pool2: async (api) => {
+      const lpBalances = await api.multiCall({
+        abi: "erc20:totalSupply",
+        calls: [sigma_gauge_SIGMA_BNBUSD, sigma_gauge_USDTbnbUSD, sigma_gauge_BnbUSDU],
+      })
+      api.add(SigmaBnbUSDCurveLP, lpBalances[0])
+      api.add(USDTBnbUSDCurveLP, lpBalances[1])
+      api.add(BnbUSDUCurveLP, lpBalances[2])
     }
   },
 };
