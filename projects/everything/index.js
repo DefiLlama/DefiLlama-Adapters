@@ -5,6 +5,7 @@ const config = {
   },
 }
 
+/** @description Fetches all pairs from the factory and their associated token addresses */
 async function getPairsAndTokens(api, factory) {
   const pairs = await api.fetchList({
     lengthAbi: 'uint256:getAllPairsLength',
@@ -15,6 +16,7 @@ async function getPairsAndTokens(api, factory) {
   return { pairs, tokens }
 }
 
+/** @description Calculates TVL by summing tokens locked in AMM pairs and the vault */
 async function tvl(api) {
   const { factory, vault } = config[api.chain]
   const { pairs, tokens } = await getPairsAndTokens(api, factory)
@@ -24,6 +26,7 @@ async function tvl(api) {
   return api.sumTokens({ ownerTokens })
 }
 
+/** @description Calculates total borrowed amounts for each token across all pairs */
 async function borrowed(api) {
   const { factory } = config[api.chain]
   const { pairs, tokens } = await getPairsAndTokens(api, factory)
