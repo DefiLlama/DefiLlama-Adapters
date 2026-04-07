@@ -218,6 +218,11 @@ const configs = {
     doublecounted: true,
     methodology: "TVL is the total assets deposited into the eUSD vault",
     sei: ['0xf2282e641cd3ceeafd4e24663d409fcb68edc1df']
+  },
+  'sprinter': {
+    doublecounted: true,
+    methodology: "TVL reads total hub vault assets (USDC)",
+    base: ['0xa593A9bBBc65be342FF610a01e96da2EB8539FF2']
   }
 }
 
