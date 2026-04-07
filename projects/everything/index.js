@@ -36,6 +36,7 @@ async function borrowed(api) {
     api.add(tokens[i][0], borrowed0[i])
     api.add(tokens[i][1], borrowed1[i])
   }
+  return api.getBalances()
 }
 
 module.exports = {
