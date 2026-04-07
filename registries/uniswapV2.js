@@ -983,6 +983,7 @@ const uniV2Configs = {
   },
   'kaspacom-dex': {
     kasplex: '0xa9CBa43A407c9Eb30933EA21f7b9D74A128D613c',
+    igra: '0x21350BcDa9E81731CF4cDE3DbC457e3de2739c01',
   },
   'katana-ronin': {
     hallmarks: [
