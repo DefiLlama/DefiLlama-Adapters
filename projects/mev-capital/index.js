@@ -247,10 +247,7 @@ const configs = {
         '0xa01227a26a7710bc75071286539e47adb6dea417', // Terminal tUSDe
         '0xa1150cd4a014e06f5e0a6ec9453fe0208da5adab', // Terminal tWETH
       ],
-      midas: [
-        '0x030b69280892c888670edcdcd8b69fd8026a0bf3', // Midas mMEV Vault
-        '0xb64c014307622eb15046c66ff71d04258f5963dc', // Midas mevBTC Vault (price not in the api yet)
-      ],
+      midas: [],
       upshift: [
         '0x5fde59415625401278c4d41c6befce3790eb357f', // The Treehouse Growth Vault
       ],

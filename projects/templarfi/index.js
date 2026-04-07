@@ -17,6 +17,12 @@ function detectCrossChainToken(tokenId) {
     const stellarMappings = {
       '111bzQBB5v7AhLyPMDwS8uJgQV24KaAPXtwyVWu2KXbbfQU6NXRCz': 'coingecko:stellar',
       '111bzQBB65GxAPAVoxqmMcgYo5oS3txhqs1Uh1cgahKQUeTUq1TJu': 'coingecko:usd-coin',
+      '111bzQBB62XZkuam1hPr5wsG54FvwhYaPvecKwgZo1ZoKMWEXcE2n': 'coingecko:paypal-usd',
+      '111bzQBB66Lr9d7WU1sDna78SqG5x1ZraFjkpPdiYXjHFRnZJUhuV': 'coingecko:defi-janus-henderson-anemoy-aaa-clo-fund',
+      '111bzQBB5y5yhcUCbDKaCx4zNjEHQbwLAdvwucCecVzC5Ub7uNKEb': 'coingecko:defi-janus-henderson-anemoy-aaa-clo-fund',
+      '111bzQBB5xzU1EsXby4ckez2qjWFTBiPoqHzZpPkq1Gr9gB7FQpeZ': 'coingecko:solv-protocol-btc',
+      '111bzQBB5uBD3Wrr7pthp8XhJsreEcwTVnmjQ1wpbzkvHLEQf3ygS': 'coingecko:etherfuse-cetes',
+      '111bzQBB5yT2A5maKJqJQsuNg7BA6VG4S4ZATpqmKYLwYBsfEfh6e': 'coingecko:ustbl',
     }
     const match = tokenId.match(/1100_([a-zA-Z0-9]+)$/)
     if (match && stellarMappings[match[1]]) {
@@ -272,8 +278,8 @@ async function processMarket(marketContract) {
       collateralDecimals,
     }
   } catch (error) {
-    if (error.message && error.message.includes('does not exist')) {
-      console.log(`Market ${marketContract} has been deleted, skipping...`)
+    if (error.message && (error.message.includes('does not exist') || error.message.includes('Buffer') || error.message.includes('Received undefined'))) {
+      console.log(`Market ${marketContract} skipped (not a market): ${error.message}`)
       return null
     }
     throw error

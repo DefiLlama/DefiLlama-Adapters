@@ -1467,6 +1467,7 @@ const uniV2Configs = {
   },
   'pheasantswap': {
     enuls: '0x7bf960B15Cbd9976042257Be3F6Bb2361E107384',
+    deadFrom: '2026-02-11'
   },
   'phenix-dex': {
     cronos: '0x6Bae09822c36a9359d563A22fc7d134eF27a5f60',
@@ -1871,6 +1872,9 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     stable: '0xc5ba86e4A6F674816fA7c3B7cA438D63ec136bE9',
+  },
+  'stableswap-xyz': {
+    stable: '0x25D2d657F539F2bB16eC82773cBE5ee49ddD3c69',
   },
   'standard-tech': {
     ethereum: '0x53AC1d1FA4F9F6c604B8B198cE29A50d28cbA893',
@@ -2797,13 +2801,13 @@ const uniV2Configs = {
       staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
     },
     base: {
-      factory: '0x88888493d3e3a133cB80da23610f23a6D563D083',
+      factory: '0x8888A3D87EF6aBC5F50572661E4729A45b255cF6',
       fetchBalances: true,
       abis: {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: 'function allPools(uint) view returns (address)',
       },
-      staking: ['0x88889e34e5Eb7a8F0f986DDce5f2711220A0c02F', '0x888859FEaAb4922DFBB9Add836172ec6f38caBb2'],
+      staking: ['0x88889C4Be508cA88eba6ad802340C0563891D426', '0x888a4F89aF7dD0Be836cA367C9FF5490c0F6e888'],
     },
   },
   'wingswap': {

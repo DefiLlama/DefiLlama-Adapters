@@ -30,7 +30,8 @@ const configs = {
         '0x9cE8A73296704d4689586347eF6e2087c2128F45'
       ],
     }
-  }
+  },
+  // deadFrom: 'xxx', // https://github.com/DefiLlama/DefiLlama-Adapters/pull/18409 - shifting focus to tradfi rails
 }
 
 module.exports = getCuratorExport(configs)

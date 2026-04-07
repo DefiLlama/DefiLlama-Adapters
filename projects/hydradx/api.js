@@ -54,7 +54,7 @@ const cgMapping = {
   wstETH: 'wrapped-steth',
   LBTC: 'lombard-staked-btc',
   sUSDe: 'ethena-staked-usde',
-  sUSDS: 'savings-usds',
+  sUSDS: 'susds',
   HOLLAR: 'hydrated-dollar',
   PEN: 'pendulum-chain',
   // GDOT: 'gigadot' // skip for doublecount 

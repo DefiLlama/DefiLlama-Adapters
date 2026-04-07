@@ -51,6 +51,7 @@ const CONFIG = {
     poolDatas: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
     blacklist_lenders: ETHENA_BLACKLIST
   },
+  xlayer: ['0x6C505C31714f14e8af2A03633EB2Cdfb4959138F'],
 };
 
 module.exports = aaveV3Export(CONFIG)

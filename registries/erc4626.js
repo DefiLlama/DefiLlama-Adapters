@@ -187,6 +187,43 @@ const configs = {
       '0x8ED5AB1BA2b2E434361858cBD3CA9f374e8b0359',
     ],
   },
+  'quell': {
+    doublecounted: true,
+    methodology: "TVL is the total USDC deposited in the Quell RWAVault, an ERC-4626 vault that routes to the Steakhouse USDC MetaMorpho vault for RWA yield.",
+    base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
+    arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051'],
+  },
+  'zensats': {
+    doublecounted: true,
+    methodology: "TVL is the total assets held in ZenSats ERC4626 vaults, measured via totalAssets().",
+    ethereum: [
+      "0x617A6877f0a55D1eF2B64b5861A2bB5Fe6FEB739",
+      "0xbaEc8343B610A5ee7Ca2c5b93507AC7def98E2B1",
+      "0x7d5281D590Fb0647aDc7d8494a2c8Fb8C2B23cBD",
+    ],
+  },
+  'loopfi-site': {
+    doublecounted: true,
+    bsc: ['0xE486C62145ba4Cf83aBc186c60b175b132F41c19'],
+    arbitrum: [
+      '0x466d5d9f5eff81C894D3B9dfF8E54D9D334c27d5',
+      '0x1e9102AbDFEedfDFDA1D250600e9A1271fc6cd6C',
+    ],
+    avax: [
+      '0xD67DBfFa04298ec8a0e8119d1f3170164f8c8E6A',
+      '0xdA898Ca31bD7563B7fD308b633631a4B28809DE8',
+    ],
+  },
+  'goevolve': {
+    doublecounted: true,
+    methodology: "TVL is the total assets deposited into the eUSD vault",
+    sei: ['0xf2282e641cd3ceeafd4e24663d409fcb68edc1df']
+  },
+  'sprinter': {
+    doublecounted: true,
+    methodology: "TVL reads total hub vault assets (USDC)",
+    base: ['0xa593A9bBBc65be342FF610a01e96da2EB8539FF2']
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

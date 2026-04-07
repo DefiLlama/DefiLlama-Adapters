@@ -99,6 +99,9 @@ const config = {
   plume_mainnet: {
     morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
     fromBlock: 765994,
+    blacklistedMarketIds: [
+      "0x82e7ab8ccabaac59b5f397507ed031ebf19a9a5b2657c00c93bc2423cd0a890d",
+    ],
   },
   lisk: {
     morphoBlue: "0x00cD58DEEbd7A2F1C55dAec715faF8aed5b27BF8",
@@ -171,6 +174,10 @@ const config = {
     morphoBlue: "0x99D31FEcc885204b4136ea5D2ef2a37F36E3AeB8",
     fromBlock: 2528230,
   },
+  celo: {
+    morphoBlue: "0xd24ECdD8C1e0E57a4E26B1a7bbeAa3e95466A569",
+    fromBlock: 40249329,
+  }
 }
 
 const eventAbis = {
@@ -203,8 +210,15 @@ const tvl = async (api) => {
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
-  const filterMarkets = marketInfos.filter((_, i) => withdrawQueueLengths[i] == null || withdrawQueueLengths[i] > 30 || withdrawQueueLengths[i] < 0);
+  const collateralWQLMap = new Map(collCalls.map((addr, i) => [addr, withdrawQueueLengths[i]]));
+  const filterMarkets = marketInfos.filter(m => {
+    const wql = collateralWQLMap.get(m.collateralToken.toLowerCase());
+    return wql == null || wql > 30 || wql < 0;
+  });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
+  
+  if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
+    blackList.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
 }
 
