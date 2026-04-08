@@ -19,4 +19,10 @@ module.exports = {
       tokens: ["0xE4248e2105508FcBad3fe95691551d1AF14015f7"],
     }),
   },
+  monad: {
+    tvl: sumTokensExport({
+      owner: "0xE89d322b5822D828B8252D3087be8486cC2048Ef",
+      tokens: ["0x32841A8511D5c2c5b253f45668780B99139e476D"],
+    }),
+  }
 };
