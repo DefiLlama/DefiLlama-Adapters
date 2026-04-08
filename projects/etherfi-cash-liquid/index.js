@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 
 const vaults = [
     '0xf0bb20865277aBd641a307eCe5Ee04E79073416C',
@@ -10,10 +9,8 @@ const vaults = [
 ]
 
 async function tvl(api) {
-    const { timestamp } = api;
-    const scroll_api = new sdk.ChainApi({ timestamp, chain: 'scroll' });
     for (const vault of vaults) {
-       const totalSupply = await scroll_api.call({
+       const totalSupply = await api.call({
             target: vault,
             abi: 'function totalSupply() view returns (uint256)',
         })
@@ -24,6 +21,9 @@ async function tvl(api) {
   module.exports = {
     misrepresentedTokens: true,
     doublecounted: true,
+    optimism: {
+      tvl,
+    },
     scroll: {
       tvl,
     },
