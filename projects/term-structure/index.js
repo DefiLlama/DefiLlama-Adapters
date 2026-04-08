@@ -424,6 +424,30 @@ async function recordVaultV2Assets(api) {
     */
   // console.log('TermMax V2 Vaults found:', vaultV2Addresses, assets, tokens, api.chain);
   await sumTokens2({ api, tokensAndOwners2: [assets, vaultV2Addresses] });
+
+  // Some V2 vaults delegate idle assets to an external Safe via pool().thirdPool().
+  // The [asset, vault] query above returns 0 for those, so we additionally count
+  // the asset balance held by the thirdPool Safe.
+  const pools = await api.multiCall({
+    abi: 'address:pool',
+    calls: vaultV2Addresses,
+    permitFailure: true,
+  })
+  const poolIdx = pools.map((p, i) => p ? i : -1).filter(i => i >= 0)
+  const validPools = poolIdx.map(i => pools[i])
+  const thirdPools = await api.multiCall({
+    abi: 'address:thirdPool',
+    calls: validPools,
+    permitFailure: true,
+  })
+  const extraTokensAndOwners = []
+  thirdPools.forEach((tp, j) => {
+    if (!tp) return
+    const i = poolIdx[j]
+    extraTokensAndOwners.push([assets[i], tp])
+  })
+  if (extraTokensAndOwners.length)
+    await sumTokens2({ api, tokensAndOwners: extraTokensAndOwners })
 }
 
 async function addTermMaxMarketV2Tvl(api) {
