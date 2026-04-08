@@ -74,4 +74,7 @@ module.exports = {
   isHeavyProtocol: true,
   scroll: { tvl, borrowed },
   optimism: { tvl, borrowed },
+  hallmarks: [
+    ['2026-04-08', 'Operation is migrated to OP Mainnet']
+  ]
 }
