@@ -181,10 +181,6 @@ const config = {
   tempo: {
     morphoBlue: "0x10EE9AAC980A180dd4DcFc96C746d60B0EA88f97",
     fromBlock: 12653218,
-  },
-  sei: {
-    morphoBlue: "0xc9cDAc20FCeAAF616f7EB0bb6Cd2c69dcfa9094c",
-    fromBlock: 166036723,
   }
 }
 
@@ -209,12 +205,30 @@ const getMarket = async (api) => {
   } else {
     logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
   }
+  
+  if (api.chain === 'sei') {
+    const existingIds = new Set(logs.map(i => i.id.toLowerCase()))
+    logs.push(...[
+      '0x583da8629bb612169bb4d5753d94d66bffa4390b4f16833a210b75944172f811',
+      '0xbb3ef4b802087585438dc6ee178e295f404d133996880db5e23405d1d73f1d27',
+      '0xe3c959829d236e3838558318340129a737ae0fffa128d891d1d22728d081e419',
+      '0xc56578519e8fb30628d3b8d459193017e776ce8477c0bbf0f2c8de82bd8dccc9',
+      '0xd2fa0b94b6f04615c9472bb25bcb755f5ad5a8f4c17fc04837a31046f0ba5c60',
+      '0x7d754479f40d06180fa1ee66ce1bf0cd97fc156c8f8458e27a18a95b9d1ad46a',
+      '0xd8a344e69e7a2adfb31f5e148f99f231e7738019125aef993a760f680f38795b',
+      '0xcb30b5e1cf1cec7419554e5aa7ed07c75716d3fbdd0f605b014056b0d99c6079',
+      '0xe55fc8aadc1fefe9a2323ab3307bc969779d0acf4e512d8142f392415d4e6162',
+      '0xf0a664c8c553278fccbb9bf7a0b6ff79984e1a3fbd28e6e13870c96ceb9befbf',
+    ].filter(i => !existingIds.has(i)).map(id => ({ id })))
+
+  }
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
+  console.log(`Found ${markets.length} markets for chain ${api.chain}`, markets)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
   const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
