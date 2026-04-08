@@ -983,6 +983,7 @@ const uniV2Configs = {
   },
   'kaspacom-dex': {
     kasplex: '0xa9CBa43A407c9Eb30933EA21f7b9D74A128D613c',
+    igra: '0x21350BcDa9E81731CF4cDE3DbC457e3de2739c01',
   },
   'katana-ronin': {
     hallmarks: [
@@ -2847,6 +2848,9 @@ const uniV2Configs = {
   },
   'zkevmswap': {
     polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
+  },
+  'bcswap': {
+    bcypher: '0x927bf500361987b365f6d0ff38c1d45155f4975c',
   },
   'velox': {
     base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',

@@ -4,7 +4,7 @@ module.exports = {
   base: {
     tvl: sumTokensExport({
       owner: "0x1688aeb3ec7b23a22e2418fdf5bccc67ecf39c0f",
-      tokens: ["0x0a1a3b5f2041f33522c4efc754a7d096f880ee16"],
+      tokens: ["0x0a1a3b5f2041f33522c4efc754a7d096f880ee16", "0xBEEFE94c8aD530842bfE7d8B397938fFc1cb83b2"],
     }),
   },
   arbitrum: {
@@ -19,4 +19,10 @@ module.exports = {
       tokens: ["0xE4248e2105508FcBad3fe95691551d1AF14015f7"],
     }),
   },
+  monad: {
+    tvl: sumTokensExport({
+      owner: "0xE89d322b5822D828B8252D3087be8486cC2048Ef",
+      tokens: ["0x32841A8511D5c2c5b253f45668780B99139e476D"],
+    }),
+  }
 };

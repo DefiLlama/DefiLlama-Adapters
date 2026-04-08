@@ -177,6 +177,14 @@ const config = {
   celo: {
     morphoBlue: "0xd24ECdD8C1e0E57a4E26B1a7bbeAa3e95466A569",
     fromBlock: 40249329,
+  },
+  tempo: {
+    morphoBlue: "0x10EE9AAC980A180dd4DcFc96C746d60B0EA88f97",
+    fromBlock: 12653218,
+  },
+  sei: {
+    morphoBlue: "0xc9cDAc20FCeAAF616f7EB0bb6Cd2c69dcfa9094c",
+    fromBlock: 166036723,
   }
 }
 
