@@ -1,6 +1,4 @@
 const abis = {
-  strategyProxies: 'function strategyProxies(uint256) view returns (address)',
-  strategyVaults: 'function strategyVaults(address) view returns (address)',
   convertToAssets: 'function convertToAssets(uint256) view returns (uint256)',
   asset: 'function asset() view returns (address)',
 }
@@ -36,7 +34,7 @@ function tvl(isBorrowed) {
 
       vaults.forEach((_, i) => {
           if (!underlyings[i] || !totalAssets[i]) return
-          isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], liquidity[i])
+          isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], totalAssets[i])
       })
   }
 }
