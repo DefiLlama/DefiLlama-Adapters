@@ -1,17 +1,24 @@
-const ADDRESSES = require('../helper/coreAssets.json');
 const { sliceIntoChunks, sleep } = require('../helper/utils');
 const { PromisePool } = require('@supercharge/promise-pool');
 
 const CONFIG = {
-  etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
-  cashBorrowerHelperContract: '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B',
-  cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+  scroll: {
+    etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
+    cashBorrowerHelperContract: '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B',
+      cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+  },
+  optimism: {
+    etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
+    cashBorrowerHelperContract: '0x0Da474E396F059594C0412ED79b2C9349bbc8087',
+    cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+  },
 }
 
 const abi = {
   numContractsDeployed: 'function numContractsDeployed() view returns (uint256)',
   getTotalCollateralForSafesWithIndex: 'function getTotalCollateralForSafesWithIndex(uint256 startIndex, uint256 n) view returns (tuple(address token, uint256 amount)[])',
   totalBorrowingAmount: 'function totalBorrowingAmount(address borrowToken) view returns (uint256)',
+  getBorrowTokens: 'function getBorrowTokens() view returns (address[])',
 }
 
 const SAFES_PER_CALL = 50
@@ -19,9 +26,8 @@ const MULTICALL_SIZE = 3
 const CONCURRENCY = 80
 
 const tvl = async (api) => {
-  const { etherFiCashFactory, cashBorrowerHelperContract } = CONFIG
+  const { etherFiCashFactory, cashBorrowerHelperContract } = CONFIG[api.chain]
   const numSafes = (await api.call({ abi: abi.numContractsDeployed, target: etherFiCashFactory })) - 1
-
   const calls = []
   for (let i = 0; i < numSafes; i += SAFES_PER_CALL) {
     calls.push({ target: cashBorrowerHelperContract, params: [i, Math.min(SAFES_PER_CALL, numSafes - i)] })
@@ -57,12 +63,15 @@ const tvl = async (api) => {
 }
 
 async function borrowed(api) {
-  const usdcScroll = ADDRESSES.scroll.USDC
-  const borrowingAmount = await api.call({ target: CONFIG.cashDebitCore, abi: abi.totalBorrowingAmount, params: [usdcScroll] })
-  api.add(usdcScroll, borrowingAmount)
+  const borrowTokens = await api.call({ target: CONFIG[api.chain].cashDebitCore, abi: abi.getBorrowTokens })
+  const borrowAmounts = await api.multiCall({ target: CONFIG[api.chain].cashDebitCore, abi: abi.totalBorrowingAmount, calls: borrowTokens })
+  for (let i = 0; i < borrowTokens.length; i++) {
+    api.add(borrowTokens[i], borrowAmounts[i])
+  }
 }
 
 module.exports = {
   isHeavyProtocol: true,
   scroll: { tvl, borrowed },
+  optimism: { tvl, borrowed },
 }
