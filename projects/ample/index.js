@@ -4,7 +4,7 @@ module.exports = {
   base: {
     tvl: sumTokensExport({
       owner: "0x1688aeb3ec7b23a22e2418fdf5bccc67ecf39c0f",
-      tokens: ["0x0a1a3b5f2041f33522c4efc754a7d096f880ee16"],
+      tokens: ["0x0a1a3b5f2041f33522c4efc754a7d096f880ee16", "0xBEEFE94c8aD530842bfE7d8B397938fFc1cb83b2"],
     }),
   },
   arbitrum: {
