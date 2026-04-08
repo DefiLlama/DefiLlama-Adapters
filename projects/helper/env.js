@@ -48,6 +48,7 @@ const DEFAULTS = {
   TEMPO_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
+  BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
 }
 
 const ENV_KEYS = [
