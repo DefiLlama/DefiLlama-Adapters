@@ -181,6 +181,10 @@ const config = {
   tempo: {
     morphoBlue: "0x10EE9AAC980A180dd4DcFc96C746d60B0EA88f97",
     fromBlock: 12653218,
+  },
+  sei: {
+    morphoBlue: "0xc9cDAc20FCeAAF616f7EB0bb6Cd2c69dcfa9094c",
+    fromBlock: 166036723,
   }
 }
 
