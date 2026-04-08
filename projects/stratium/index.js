@@ -5,12 +5,13 @@ const { parseUnits } = require('ethers');
 const HYPERLIQUID_MAINNET_RPC_URL = 'https://api.hyperliquid.xyz';
 const STAKING_VAULT = '0x3F790D0080a5257a1AEfb257DDCDc19579a8998F';
 const HYPERLIQUID_API_TIMEOUT_MS = 10_000;
+const DECIMAL_STRING_RE = /^(?:0|[1-9]\d*)(?:\.\d+)?$/;
 
 function isValidDelegatorSummary(data) {
   return data
     && typeof data === 'object'
     && ['delegated', 'undelegated', 'totalPendingWithdrawal'].every((field) =>
-      typeof data[field] === 'string' || typeof data[field] === 'number');
+      typeof data[field] === 'string' && DECIMAL_STRING_RE.test(data[field]));
 }
 
 async function getUserStakingSummary(user) {
@@ -31,8 +32,10 @@ async function getUserStakingSummary(user) {
   return data;
 }
 
-function parseHypeAmount(value = '0') {
-  return parseUnits(String(value), 18);
+function parseHypeAmount(value) {
+  if (typeof value !== 'string' || !DECIMAL_STRING_RE.test(value))
+    throw new Error(`Invalid HYPE amount: ${value}`);
+  return parseUnits(value, 18);
 }
 
 async function tvl(api) {
@@ -44,11 +47,7 @@ async function tvl(api) {
     getUserStakingSummary(STAKING_VAULT),
   ]);
 
-  const {
-    delegated = '0',
-    undelegated = '0',
-    totalPendingWithdrawal = '0',
-  } = stakingSummary || {};
+  const { delegated, undelegated, totalPendingWithdrawal } = stakingSummary;
 
   const hypercoreManagedHype =
     parseHypeAmount(delegated) + parseHypeAmount(undelegated) - parseHypeAmount(totalPendingWithdrawal);
