@@ -1,8 +1,25 @@
 const { aaveV3Export } = require("../helper/aave");
 
 // https://aave.com/docs/resources/addresses
+// Ethena backing supply wallets to exclude from TVL
+const ETHENA_BLACKLIST = [
+  { user: '0xb8734a14fbd4aa2d44e6aa830405ffc861ba313c' },
+]
+
 const CONFIG = {
-  ethereum: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758'],
+  ethereum: {
+    poolDatas: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758'],
+    blacklistedTokens: [
+      '0x3de0ff76e8b528c092d47b9dac775931cef80f49',
+      '0x9bf45ab47747f4b4dd09b3c2c73953484b4eb375',
+      '0xaebf0bb9f57e89260d57f31af34eb58657d96ce0',
+      '0x62c6e813b9589c3631ba0cdb013acdb8544038b7',
+      '0xe6a934089bbee34f832060ce98848359883749b3',
+      '0xbc6736d346a5ebc0debc997397912cd9b8fae10a',
+      '0xe8483517077afa11a9b07f849cee2552f040d7b2'
+    ],
+    blacklist_lenders: ETHENA_BLACKLIST,
+  },
   polygon: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   avax: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   arbitrum: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
@@ -19,9 +36,22 @@ const CONFIG = {
   sonic: ['0x306c124fFba5f2Bc0BcAf40D249cf19D492440b9'],
   celo: ['0x33b7d355613110b4E842f5f7057Ccd36fb4cee28'],
   soneium: ['0xa0208CE8356ad6C5EC6dFb8996c9A6B828212022'],
-  plasma: ['0xf2D6E38B407e31E7E7e4a16E6769728b76c7419F'],
+  plasma: {
+    poolDatas: ['0xf2D6E38B407e31E7E7e4a16E6769728b76c7419F'],
+    blacklistedTokens: [
+      '0xab509448ad489e2e1341e25cc500f2596464cc82',
+      '0x54dc267be2839303ff1e323584a16e86cec4aa44',
+      '0x93b544c330f60a2aa05ced87aeeffb8d38fd8c9a',
+      '0x02fcc4989b4c9d435b7ced3fe1ba4cf77bbb5dd8',
+    ],
+    blacklist_lenders: ETHENA_BLACKLIST,
+  },
   megaeth: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
-  mantle: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
+  mantle: {
+    poolDatas: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
+    blacklist_lenders: ETHENA_BLACKLIST
+  },
+  xlayer: ['0x6C505C31714f14e8af2A03633EB2Cdfb4959138F'],
 };
 
 module.exports = aaveV3Export(CONFIG)

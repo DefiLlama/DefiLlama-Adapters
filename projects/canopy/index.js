@@ -146,7 +146,13 @@ module.exports = {
   move: {
     tvl: async (api) => {
       const vaultsInfo = await getCanopyCoreVaults(canopyCoreAddress)
+      const unproductiveVaults = [
+        '0x3ed219ff18a736c4452a71132dd0b1f16911afe2a37ccad9daabb596b8c3d074',  //sUSDa vault
+      ]
       for (const vault of vaultsInfo.vaults) {
+        if (unproductiveVaults.includes(vault.vault_address)) {
+          continue;
+        }
         const asset = vault.asset_address
         const balance = vault.total_asset;
         const asset_name = vault.asset_name;

@@ -24,7 +24,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
   'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion', 'zigchain'
 ]
 const caseSensitiveChains = [...ibcChains, ...svmChains, 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
-  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash',
 ]
 
 const transformTokens = {
@@ -48,6 +48,12 @@ const fixBalancesTokens = {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
+  },
+  igra: {
+    '0x17Ec7E1768c813E2a3a9b0f94A35605CA520C242': { coingeckoId: 'kaspa', decimals: 18 },
+  },
+  bcypher: {
+    '0x1150fd1335b0a53347f8bfb763729a99fbeab2ef': { coingeckoId: 'versatize-coin', decimals: 18 },
   },
 }
 

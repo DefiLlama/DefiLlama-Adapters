@@ -4,8 +4,8 @@ function getTvl(project, tvlKey) {
   return async (timestamp) => {
     if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
     const response = await readFromElastic({
-      tvlKey, 
-      timestamp: timestamp*1000,
+      tvlKey,
+      timestamp: timestamp * 1000,
       project
     })
     return response.balances
