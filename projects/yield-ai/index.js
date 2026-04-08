@@ -349,7 +349,7 @@ async function tvl(api) {
 
   let aptOctasTotal = 0n;
 
-  await PromisePool.withConcurrency(COIN_BALANCE_CONCURRENCY)
+  const aptPoolRes = await PromisePool.withConcurrency(COIN_BALANCE_CONCURRENCY)
     .for(safeAddresses)
     .process(async (addr) => {
       const bal = await function_view({
@@ -364,6 +364,15 @@ async function tvl(api) {
       api.add(APT, balStr);
     });
 
+  if (aptPoolRes?.errors?.length) {
+    aptPoolRes.errors.slice(0, 3).forEach((e) => {
+      console.error("[yield-ai] APT coin::balance error:", e);
+    });
+    throw new Error(
+      `[yield-ai] APT coin::balance had ${aptPoolRes.errors.length} errors`
+    );
+  }
+
   logYieldAi("APT CoinStore total octas (approx log):", aptOctasTotal.toString());
 
   let moarAdds = 0;
@@ -376,7 +385,7 @@ async function tvl(api) {
     }
   }
 
-  await PromisePool.withConcurrency(MOAR_LENS_CONCURRENCY)
+  const moarPoolRes = await PromisePool.withConcurrency(MOAR_LENS_CONCURRENCY)
     .for(jobs)
     .process(async ({ safe, pool }) => {
       const res = await function_view({
@@ -395,6 +404,13 @@ async function tvl(api) {
 
       api.add(tok, depositedStr);
     });
+
+  if (moarPoolRes?.errors?.length) {
+    moarPoolRes.errors.slice(0, 3).forEach((e) => {
+      console.error("[yield-ai] Moar lens error:", e);
+    });
+    throw new Error(`[yield-ai] Moar lens had ${moarPoolRes.errors.length} errors`);
+  }
 
   logYieldAi(
     "Moar lens: non-zero deposit cells=",
@@ -423,6 +439,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   aptos: { tvl },
   methodology:
     "TVL sums (1) fungible-asset balances on each Yield AI vault safe object address (Aptos Labs indexer current_fungible_asset_balances, owner = safe), (2) native APT in 0x1 CoinStore per safe via 0x1::coin::balance<0x1::aptos_coin::AptosCoin> (FA rows for native APT are skipped to avoid double-count with CoinStore), and (3) Moar Market supply-side deposits attributed to each safe: Moar pool list from 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::pool::get_all_pools (paused pools excluded), then per (pool index, safe) 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::lens::get_lp_shares_and_deposited_amount; the deposited underlying amount is response index 1, added using each pool's underlying_asset metadata address (APT pool uses 0xa). Safes are enumerated with 0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700::vault get_total_safes / get_safes_range_info; only entries with exists true are included; paused safes remain included. This matches the product dashboard definition for on-safe plus Moar supply per safe. Moar is also listed separately on DefiLlama; combined chain aggregates may double-count the same underlying assets—maintainers should confirm presentation (see PR). Farming rewards are excluded. Data: Aptos fullnode view API (APTOS_RPC) and Aptos Labs indexer GraphQL for FA on safes.",
