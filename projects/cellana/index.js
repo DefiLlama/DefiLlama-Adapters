@@ -46,7 +46,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "Counts the lamports in each coin container in the Cellena contract account.",
+    "Counts the lamports in each coin container in the Cellana contract account.",
   aptos: {
     tvl,
   }
