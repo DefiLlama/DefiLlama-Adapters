@@ -24,9 +24,12 @@ const SOLANA_CHAIN_ID = 900
 const WSOL = 'So11111111111111111111111111111111111111112'
 
 // Meteora DBC VirtualPool account layout offsets (C-repr bytemuck serialization)
+// Source: Meteora DBC IDL (dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN), VirtualPool type definition
+// Layout: 8-byte discriminator + VolatilityTracker(64) + config/creator/mints/vaults(5×32) + reserves...
+// Verified against on-chain account size of 424 bytes
 const VIRTUAL_POOL_DISCRIMINATOR = [213, 224, 5, 209, 98, 69, 119, 92]
-const QUOTE_RESERVE_OFFSET = 240 // u64 LE
-const IS_MIGRATED_OFFSET = 305   // u8 (0 = active, 1 = migrated)
+const QUOTE_RESERVE_OFFSET = 240 // u64 LE — byte 8 + struct offset 232
+const IS_MIGRATED_OFFSET = 305   // u8 (0 = active, 1 = migrated) — byte 8 + struct offset 297
 
 /**
  * Calculates TVL for Printr protocol on EVM chains
