@@ -41,17 +41,30 @@ async function tvl(api) {
   await api.sumTokens({ owner: treasury, tokens: [wNative, ...(defaultTokens[api.chain] || [])] })
 }
 
+const PAGE_SIZE = 500
+
+async function fetchAllSolanaTokens() {
+  const tokens = []
+  let skip = 0
+  while (true) {
+    const endpoint = `${PRINTR_API}/chains/${SOLANA_CHAIN_ID}/tokenlist.json?size=${PAGE_SIZE}&skip=${skip}`
+    const data = await getConfig(`printr-protocol/${SOLANA_CHAIN_ID}/${skip}`, endpoint)
+    if (!data || !Array.isArray(data.tokens) || !data.tokens.length) break
+    tokens.push(...data.tokens)
+    if (data.tokens.length < PAGE_SIZE) break
+    skip += PAGE_SIZE
+  }
+  return tokens
+}
+
 /**
  * Calculates TVL for Printr protocol on Solana
  * Reads DBC VirtualPool accounts to sum quote_reserve (wSOL) for active curves
  * @param {object} api - DefiLlama SDK API object
  */
 async function solanaTvl(api) {
-  const endpoint = `${PRINTR_API}/chains/${SOLANA_CHAIN_ID}/tokenlist.json`
-  const data = await getConfig(`printr-protocol/${SOLANA_CHAIN_ID}`, endpoint)
-  if (!data || !Array.isArray(data.tokens)) return
-
-  const active = data.tokens.filter(t => t.extensions?.curveAddress && !t.extensions?.isGraduated)
+  const tokens = await fetchAllSolanaTokens()
+  const active = tokens.filter(t => t.extensions?.curveAddress && !t.extensions?.isGraduated)
   if (!active.length) return
 
   const connection = getConnection()
