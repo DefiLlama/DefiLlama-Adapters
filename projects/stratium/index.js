@@ -4,13 +4,31 @@ const { parseUnits } = require('ethers');
 
 const HYPERLIQUID_MAINNET_RPC_URL = 'https://api.hyperliquid.xyz';
 const STAKING_VAULT = '0x3F790D0080a5257a1AEfb257DDCDc19579a8998F';
+const HYPERLIQUID_API_TIMEOUT_MS = 10_000;
+
+function isValidDelegatorSummary(data) {
+  return data
+    && typeof data === 'object'
+    && ['delegated', 'undelegated', 'totalPendingWithdrawal'].every((field) =>
+      typeof data[field] === 'string' || typeof data[field] === 'number');
+}
 
 async function getUserStakingSummary(user) {
-  const response = await axios.post(`${HYPERLIQUID_MAINNET_RPC_URL}/info`, {
-    type: 'delegatorSummary',
-    user,
-  });
-  return response.data;
+  const { data } = await axios.post(
+    `${HYPERLIQUID_MAINNET_RPC_URL}/info`,
+    {
+      type: 'delegatorSummary',
+      user,
+    },
+    {
+      timeout: HYPERLIQUID_API_TIMEOUT_MS,
+    }
+  );
+
+  if (!isValidDelegatorSummary(data))
+    throw new Error(`Hyperliquid delegatorSummary returned invalid data for ${user}`);
+
+  return data;
 }
 
 function parseHypeAmount(value = '0') {
