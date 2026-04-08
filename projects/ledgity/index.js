@@ -2,15 +2,23 @@
 //
 // Three token categories:
 //
-// 1. lTokens (legacy) — ERC20 rebasing wrappers that are 1:1 with their underlying
-//    (LUSDC, LEURC). totalSupply() is in the same decimals as the underlying asset,
-//    so it directly represents the amount of underlying locked in the protocol.
-//    The owner and liquidity-manager wallets hold lToken shares on behalf of the
-//    protocol (e.g. vault strategies); their balances are subtracted so they are
-//    not double-counted alongside vault TVL.
+// 1. lTokens (V1, legacy) — ERC20 rebasing wrappers that are 1:1 with their underlying
+//    (LUSDC, LEURC). realTotalSupply() gives the actual minted supply in the same decimals
+//    as the underlying asset, so it directly represents the amount of underlying locked.
+//    Note: totalSupply() is NOT used because the LToken contract overrides it to include
+//    not-yet-minted amounts (queued withdrawal requests + unclaimed fees), which would
+//    inflate the supply above the sum of all realBalanceOf() values and break the exclusion
+//    arithmetic. realBalanceOf() is used for the same reason on individual addresses.
+//    Two addresses are excluded from lToken TVL:
+//    - Owner (multisig): protocol-owned balance, not user capital.
+//    - Liquidity manager: holds lTokens surrendered by users who migrated to V2 lyToken
+//      vault shares. Those lTokens are not burned — they are retained by the LM as a
+//      safety backup during the V1→V2 transition. Excluding the LM balance prevents
+//      double-counting with lyToken TVL (the migrated users are already counted there).
 //
-// 2. lyTokens (vaults) — ERC4626 vaults (lyUSD, lyEUR). totalAssets() returns the
-//    total underlying (USDC / EURC) currently held by the vault.
+// 2. lyTokens (V2, ERC4626 vaults) — lyUSD, lyEUR. totalAssets() returns the total
+//    underlying (USDC / EURC) currently managed by the vault. This pool is entirely
+//    separate from the V1 lToken pool; no lToken underlying is deposited into lyToken vaults.
 //
 // 3. Staking — LDY tokens locked in either the legacy V1 staking contract or the
 //    V2 StakingPositions contract, measured as LDY.balanceOf(stakingContract).
@@ -94,25 +102,26 @@ const STAKING = {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const balanceOfAbi = "function balanceOf(address) view returns (uint256)";
+const realBalanceOfAbi = "function realBalanceOf(address) view returns (uint256)";
 
 function buildChainTvl(chain) {
   return async (api) => {
     const lTokens = LTOKENS[chain] || [];
     const vaultTokens = VAULT_TOKENS[chain] || [];
 
-    // lToken TVL: totalSupply minus protocol-owned balances (owner + liquidity manager).
-    // The liquidity manager holds lToken shares on behalf of the vault strategy, so
-    // excluding it prevents double-counting with vault TVL.
+    // lToken TVL: realTotalSupply minus protocol-owned balances (owner + liquidity manager).
+    // realTotalSupply/realBalanceOf are used instead of totalSupply/balanceOf because the
+    // LToken contract inflates those with not-yet-minted queued withdrawals and unclaimed
+    // fees, making the subtraction inconsistent (totalSupply > sum of all balanceOf values).
     if (lTokens.length) {
       const supplies = await api.multiCall({
-        abi: "uint256:totalSupply",
+        abi: "uint256:realTotalSupply",
         calls: lTokens.map((t) => t.token),
       });
 
-      // Two balanceOf calls per lToken: owner and liquidity manager
+      // Two realBalanceOf calls per lToken: owner multisig and liquidity manager
       const excluded = await api.multiCall({
-        abi: balanceOfAbi,
+        abi: realBalanceOfAbi,
         calls: lTokens.flatMap((t) => [
           { target: t.token, params: [OWNER] },
           { target: t.token, params: [t.lm] },
@@ -146,7 +155,7 @@ function buildChainStaking(chain) {
   return async (api) => {
     const { ldy, v1, v2 } = STAKING[chain];
     const [v1Bal, v2Bal] = await api.multiCall({
-      abi: balanceOfAbi,
+      abi: "function balanceOf(address) view returns (uint256)",
       calls: [
         { target: ldy, params: [v1] },
         { target: ldy, params: [v2] },
@@ -168,7 +177,7 @@ const chains = [...new Set([
 module.exports = {
   doublecounted: true,
   methodology:
-    "TVL is the total underlying assets (USDC/EURC) in Ledgity's lToken rebasing wrappers (LUSDC, LEURC) and lyToken ERC4626 vaults (lyUSD, lyEUR). Protocol-owned lToken balances (owner multisig and liquidity managers) are excluded to avoid double-counting with vault TVL. Staking TVL is the total LDY locked across V1 (LDYStaking) and V2 (StakingPositions) contracts.",
+    "TVL is the total underlying assets (USDC/EURC) in Ledgity's V1 lToken rebasing wrappers (LUSDC, LEURC) and V2 lyToken ERC4626 vaults (lyUSD, lyEUR). These are separate pools: no lToken underlying is deposited into lyToken vaults. Owner and liquidity-manager lToken balances are excluded — the LM holds lTokens surrendered by users who migrated to V2 vault shares (not burned, kept as a safety backup), so excluding it prevents double-counting with lyToken TVL. Staking TVL is the total LDY locked across V1 (LDYStaking) and V2 (StakingPositions) contracts.",
 };
 
 chains.forEach((chain) => {
