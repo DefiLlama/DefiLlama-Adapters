@@ -31,6 +31,11 @@ const configs = {
         '0x64C18DCC4Ccb3b8D27877a4aeBB4C3126CB39cB9',
       ],
     },
+    sei: {
+      morpho: [
+        '0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06', // PYUSD0 
+      ],
+    },
     solana: {
       kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP'], // Kamino RWA USDC
     },
