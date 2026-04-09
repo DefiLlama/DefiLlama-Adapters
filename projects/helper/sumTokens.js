@@ -1,6 +1,7 @@
 const { ibcChains, getUniqueAddresses } = require('./tokenMapping')
 const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
+const { svmChains, svmChainsSet, } = require('./svmChainConfig')
 const sdk = require('@defillama/sdk')
 const { RateLimiter } = require("limiter");
 
@@ -25,6 +26,7 @@ const helpers = {
   "near": require("./chain/near"),
   "bitcoin": require("./chain/bitcoin"),
   "litecoin": require("./chain/litecoin"),
+  "dash": require("./chain/dash"),
   "polkadot": require("./chain/polkadot"),
   "acala": require("./chain/acala"),
   "bifrost": require("./chain/bifrost"),
@@ -41,6 +43,10 @@ const helpers = {
   "radixdlt": require("./chain/radixdlt"),
   "stellar": require("./chain/stellar"),
 }
+
+svmChains.forEach(chain => {
+  helpers[chain] = helpers.solana
+})
 
 
 // some chains support both evm & non-evm, this is to handle if address provided is not evm
@@ -117,9 +123,13 @@ async function sumTokens(options) {
   if (ibcChains.includes(chain) && nonEvmOwnerFound) helper = helpers.cosmos
 
   if (helper) {
+
+    if (svmChainsSet.has(chain)) {
+      return helper.sumTokens2(options)
+    }
+
     switch (chain) {
-      case 'cardano':
-      case 'solana': return helper.sumTokens2(options)
+      case 'cardano': return helper.sumTokens2(options);
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;
     }

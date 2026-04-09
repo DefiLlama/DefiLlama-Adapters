@@ -180,10 +180,7 @@ module.exports = {
     "155FvRapVDRbFYxaxGxJ9eCQjgr7X2yC6g",
     "bc1q745ywhqsssknaw8s5ycgkv0gulddnasn4tfsjwgm66tvgp2pqpys0zjzt8",
     "bc1q07er4xwsv209cfjsvsl3fjmpvcx462dvpjrjpj",
-    "bc1pg05lsdyzx8j5wastzk0svu84hdrvkel2zfq560a7the5vvjyp27svxwgyx",
-    "bc1qh6u403822hwm7mhncn2dw8pyaup2mwv4p4j8ckfe9p5zj3wdxyeszpsck8",
     "bc1qmvvnxu7739hk9xvgtk4evsx9ycm20ae25gfand",
-    "bc1que9dvsgwlm6vr5chrxm2gu586c5alnq3uxa4e2",
     "bc1qnp5dfweymkfyl3wzmzqxjyq0ejf2cnpynnfkmr",
     "bc1qe0srwsmxx2z0mkksqxx72nsgc9m2lvj4777aq8"
   ],
@@ -319,7 +316,8 @@ module.exports = {
     'bc1qq6py06647kvjctncmm8q4ctl4f4qmtk68fq4dc',
     'bc1qarjgfex5tk57jp4plwm03tf978pcxrr9vaqnxu',
     '3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9',
-    'bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34'
+    'bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34',
+    'bc1pkldc3d64ceqshhznxuj78r6e0a3p7gtdrrue07zmcq54xzlyuu9sppvxk0'
   ],
   merlin: [
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
@@ -729,6 +727,12 @@ module.exports = {
     'bc1qtlen0nuvln3aqcn2r3nljshdmzakq7z5z4rexpk23mj8u8lmc8ysc29jct',
     'bc1qzdt5z4f46jak59jku5jmvv3f2ru20htqs7jhy0whazgd5v4626eq4vkxqz',
     'bc1qzu4lnzfpskwsvnyvzud9a7ru4d2ft7whqvl5d3kskxxhgeupnjjquzvt97',
+    '161AnGzEDJvwfZ6kW5maWigyMvN4vYWyq7',
+'1izotKDuwjVdKSdMmatLaUx7iZf39WF3u',
+'1Q7Xi7BdSwqEozSc8zneH7F6MTsYxv2MhV',
+'1893nTioDembAdRTbx1V4EqYgsfs4nVo6i',
+'15VHjDwgzYoGTQdxUH7rJw5zvzb3y143Ap',
+'1D5a76Rn9VV8iGS5AV7jmMfJTQcPPYuaey'
   ],
   kraken: [
     'bc1qnhmemsqfhycvp6g50v732h7wfwdt68el4ux5ttu8xwsrzngmxv0qr55aga',
@@ -1141,6 +1145,12 @@ module.exports = {
     'bc1p2ecnyf8pgmq6u29h6csgvckj5mg6l36054p2vst0m0edxmg8dusquek4y9',
     'bc1pc5regkaavr8nwk3tt72snnnyj56shc4ss4xn7y60u6mh88vcp03qmg2p2q'
   ],
+  echoMonadEBTC: [
+    'bc1prx589such7z0qch5hgvvs6gvtzxuneyuuarp8hfhc9mcs9u26lqqk374tm',
+    'bc1que9dvsgwlm6vr5chrxm2gu586c5alnq3uxa4e2',
+    'bc1pg05lsdyzx8j5wastzk0svu84hdrvkel2zfq560a7the5vvjyp27svxwgyx',
+    'bc1qsxdn6hwlsezptz5urppq63qchp8lc5pfpv0fa4'
+  ],
   xbtc: [
     'bc1q7mvqd5apnrngm36rwqlgk7nwkt5kwc37thzgd79puh55wscr42mqct7lss'
   ],
@@ -1175,7 +1185,8 @@ module.exports = {
   ],
   weex: [
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
-    "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb"
+    "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",
+    "bc1qeg5xn5plttr7w045apm92yx08c2swc6yw2vtj7"
   ],
   bydfi: [
     'bc1qan8q94rc3hl2jfc0vn8vtfsen0r6e58q80dqf0',

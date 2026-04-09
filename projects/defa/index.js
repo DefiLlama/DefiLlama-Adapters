@@ -60,6 +60,17 @@ async function zigchainTvl(api) {
 // ============================================================
 // Export
 // ============================================================
+async function tvl(api) {
+    const activeTvl = await getActiveTvl();
+  
+    if (activeTvl === 0n) throw new Error("TVL is zero");
+  
+    const normalized = Number(activeTvl) / 1e7;
+    api.addCGToken("usd-coin", normalized);
+  
+    return api.getBalances();
+  }
+  
 
 module.exports = {
   timetravel: false,

@@ -121,6 +121,8 @@ const defaultTokens = {
     '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
     ADDRESSES.bsc.USD1, //USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
+    '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
+    '0x1b66474c8eca3827f16202907f41f63785579716' // exchange token for weex, 
   ],
   tron: [
     nullAddress,
@@ -296,7 +298,29 @@ const defaultTokens = {
     ADDRESSES.mantle.AUSD,
     ADDRESSES.mantle.FBTC
   ],
-  klaytn: [nullAddress, ADDRESSES.klaytn.USDT_1,]
+  klaytn: [nullAddress, ADDRESSES.klaytn.USDT_1,],
+  hyperliquid: [
+    nullAddress,
+    ADDRESSES.hyperliquid.USDT0,
+    ADDRESSES.hyperliquid.USDC,
+  ],
+  sei: [
+    nullAddress,
+    ADDRESSES.sei.USDC,
+    ADDRESSES.sei.USDT,
+    ADDRESSES.sei.USDC_Circle,
+    ADDRESSES.sei.USDT0,
+  ],
+  monad: [
+    nullAddress,
+    ADDRESSES.monad.USDT,
+    ADDRESSES.monad.USDC,
+  ],
+  plasma: [
+    nullAddress,
+    ADDRESSES.plasma.USDT0,
+    ADDRESSES.plasma.WXPL,
+  ],
 }
 
 function cexExports(config) {
