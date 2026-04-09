@@ -2,6 +2,18 @@ const CORE_ASSETS = require("../helper/coreAssets.json");
 const { getLogs, getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
+/**
+ * bsquared excluded: uBTC-WBTC market TVL inflated by minter-funded wallets
+ * and borrow-redeposit loops. All vault/GT deposits trace back to 2-3 uBTC minters:
+ *   0x1c8b1b0ec2c6f0Ef56c740BFD3A95af7cf5f8DC7 (minted 214 uBTC, funded 0x46d1 and 0xb5E0)
+ *   0x8Da30b68b1E11761e1307EB10564a39E01ae4480 (minted 108 uBTC, funded 0xAB34, 0x42Be, 0x3a59)
+ *   0x33aa8b84062583966a33edF235694AcdC6A138eA (minted 100 uBTC)
+ * Borrow-redeposit loop example (0x1c8b):
+ *   borrow 20 WBTC: 0x0bfd30c486a8cad719a73ad200fcbc38decbf2f404066f652b73f175f287b967
+ *   borrow 20 WBTC: 0xff07b8c6d21c947faf895ed00a78aaa8509fe2d207c4b35122d55e35567452e9
+ *   redeposit 40 WBTC: 0x054cf18d0029f27c8ce57c58a947ebd31bf2d557ee46fad62d081c8330c570b2
+ */
+
 const ABIS = {
   Market: {
     config:
@@ -194,23 +206,23 @@ const ADDRESSES = {
       },
     ],
   },
-  bsquared: {
-    FactoryV2: [
-      {
-        address: "0x33931f3898EfB9A42B0D7CFfa9bb50A566A6b421",
-        fromBlock: 28981154,
-      },
-    ],
-    VaultFactoryV2: [
-      {
-        address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
-        fromBlock: 28981154,
-      },
-    ],
-    TermMax4626Factory: [
-      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
-    ],
-  },
+  // bsquared: {
+  //   FactoryV2: [
+  //     {
+  //       address: "0x33931f3898EfB9A42B0D7CFfa9bb50A566A6b421",
+  //       fromBlock: 28981154,
+  //     },
+  //   ],
+  //   VaultFactoryV2: [
+  //     {
+  //       address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
+  //       fromBlock: 28981154,
+  //     },
+  //   ],
+  //   TermMax4626Factory: [
+  //     { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
+  //   ],
+  // },
   xlayer: {
     FactoryV2: [
       {
@@ -650,3 +662,6 @@ Object.keys(ADDRESSES).forEach(chain => {
     },
   }
 })
+
+// bsquared TVL zeroed out — inflated by minter-funded wallets and borrow-redeposit loops
+module.exports.bsquared = { tvl: () => ({}), borrowed: () => ({}) }
