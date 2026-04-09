@@ -1690,7 +1690,8 @@ const uniV3Configs = {
     stable: {
       factory: '0x88F0a512eF09175D456bc9547f914f48C013E4aA',
       fromBlock: 4874220,
-      extraKey: 'v2'
+      extraKey: 'v3',
+      blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
     }
   },
 }
