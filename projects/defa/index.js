@@ -1,4 +1,4 @@
-const axios = require("axios");
+const { callSoroban } = require("../helper/chain/stellar");
 const { queryContract } = require("../helper/chain/cosmos");
 
 // ============================================================
@@ -8,28 +8,12 @@ const { queryContract } = require("../helper/chain/cosmos");
 // with 7 decimal places.
 // ============================================================
 
-const SOROBAN_RPC = "https://soroban-rpc.mainnet.stellar.gateway.fm";
-const STELLAR_SIM_TX =
-  "AAAAAgAAAABInMr//HjTQ5mfaqRBHzYCJKEHrM2r8m9/4lm9PBoMVgABhqAAAAAAAAAAAgAAAAEAAAAAAAAAAAAAAABpkzaBAAAAAAAAAAEAAAAAAAAAGAAAAAAAAAAB61PtVr2XWjuuWsIcyFlAq888asA0bR8BnY/AeIm0wxQAAAAOZ2V0X2FjdGl2ZV90dmwAAAAAAAAAAAAAAAAAAAAAAAA=";
-
-async function getStellarActiveTvl() {
-  const { data: json } = await axios.post(SOROBAN_RPC, {
-    jsonrpc: "2.0",
-    id: 1,
-    method: "simulateTransaction",
-    params: { transaction: STELLAR_SIM_TX },
-  }, { headers: { "Content-Type": "application/json" } });
-
-  const xdr = json?.result?.results?.[0]?.xdr;
-  if (!xdr) throw new Error("TVL value not returned from Soroban simulation");
-
-  const buffer = Buffer.from(xdr, "base64");
-  return BigInt("0x" + buffer.slice(-16).toString("hex"));
-}
+const STELLAR_CONTRACT = "CDVVH3KWXWLVUO5OLLBBZSCZICV46PDKYA2G2HYBTWH4A6EJWTBRIXRK";
 
 async function stellarTvl(api) {
-  const activeTvl = await getStellarActiveTvl();
-  if (activeTvl === 0n) throw new Error("Stellar TVL is zero");
+  const activeTvl = await callSoroban(STELLAR_CONTRACT, "get_active_tvl");
+
+  if (!activeTvl) throw new Error("Stellar TVL is zero");
 
   api.addCGToken("usd-coin", Number(activeTvl) / 1e7);
   return api.getBalances();
@@ -74,6 +58,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   methodology:
     "TVL is the total active liquidity across invoice-backed pools, reported by on-chain Logger contracts on Stellar (Soroban) and ZigChain (CosmWasm).",
   stellar: { tvl: stellarTvl },
