@@ -31,5 +31,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  chia: { tvl },
+  chia: { 
+    tvl: () => ({}),
+    ownTokens: tvl,
+  },
 };
