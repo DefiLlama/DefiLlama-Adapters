@@ -8,12 +8,16 @@ async function tvl(api) {
   const platform = await getObject(BETTING_PLATFORM);
   const fields = platform.fields;
   api.add(SUI_COIN, fields.accrued_fees_sui);
+}
+
+async function ownTokens(api) {
+  const platform = await getObject(BETTING_PLATFORM);
+  const fields = platform.fields;
   api.add(SBETS_COIN, fields.accrued_fees_sbets);
 }
 
 module.exports = {
   timetravel: false,
   methodology: "Protocol-owned treasury: SUI and SBETS accrued as fees by the SuiBets BettingPlatform smart contract. SBETS is the protocol's own token.",
-  sui: { tvl },
-  ownTokens: [SBETS_COIN],
+  sui: { tvl, ownTokens },
 };
