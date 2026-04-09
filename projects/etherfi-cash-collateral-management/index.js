@@ -5,7 +5,7 @@ const CONFIG = {
   scroll: {
     etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
     cashBorrowerHelperContract: '0xF0df37503714f08d0fCA5B434F1FFA2b8b1AF34B',
-      cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
+    cashDebitCore: '0x0078C5a459132e279056B2371fE8A8eC973A9553',
   },
   optimism: {
     etherFiCashFactory: '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF',
@@ -63,6 +63,7 @@ const tvl = async (api) => {
 }
 
 async function borrowed(api) {
+  if (api.chain === 'scroll') return;
   const borrowTokens = await api.call({ target: CONFIG[api.chain].cashDebitCore, abi: abi.getBorrowTokens })
   const borrowAmounts = await api.multiCall({ target: CONFIG[api.chain].cashDebitCore, abi: abi.totalBorrowingAmount, calls: borrowTokens })
   for (let i = 0; i < borrowTokens.length; i++) {
