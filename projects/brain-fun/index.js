@@ -42,7 +42,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "TVL is the sum of realTaoReserve (native TAO locked in the bonding curve) across all tokens deployed by the brain.fun factory contracts (V1 + V2).",
-  start: 1742832000, // 2026-03-31 — first token deploy
+  start: 1774915200, // 2026-03-31 — first token deploy
   bittensor_evm: {
     tvl,
   },
