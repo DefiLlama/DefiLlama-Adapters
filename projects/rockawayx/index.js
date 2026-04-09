@@ -37,7 +37,7 @@ const configs = {
       ],
     },
     solana: {
-      kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP'], // Kamino RWA USDC
+      kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP', '2TNCzzYJt3uHmpFpqeeJkza4pQUK9xoLa79DJH9AdgGA'], // Kamino RWA USDC
     },
   }
 }
