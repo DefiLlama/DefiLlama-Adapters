@@ -13,16 +13,17 @@ const STELLAR_CONTRACT = "CDVVH3KWXWLVUO5OLLBBZSCZICV46PDKYA2G2HYBTWH4A6EJWTBRIX
 async function stellarTvl(api) {
   const activeTvl = await callSoroban(STELLAR_CONTRACT, "get_active_tvl");
 
-  if (!activeTvl) throw new Error("Stellar TVL is zero");
+  const stellarValue = Number(activeTvl) / 1e7;
+  if (!Number.isFinite(stellarValue) || stellarValue <= 0) throw new Error("Stellar TVL is invalid");
 
-  api.addCGToken("usd-coin", Number(activeTvl) / 1e7);
+  api.addCGToken("usd-coin", stellarValue);
   return api.getBalances();
 }
 
 // ============================================================
 // ZigChain — CosmWasm TVL Logger (active_tvl)
 // Queries the on-chain Logger contract via LCD REST endpoint.
-// The contract returns active liquidity in DeFa zigchian contracts denominated in USD
+// The contract returns active liquidity in DeFa zigchain contracts denominated in USD
 // with 6 decimal places.
 // ============================================================
 
@@ -35,9 +36,10 @@ async function zigchainTvl(api) {
     data: { active_tvl: {} },
   });
 
-  if (!activeTvl || activeTvl === "0") throw new Error("ZigChain TVL is zero");
+  const zigValue = Number(activeTvl) / 1e6;
+  if (!Number.isFinite(zigValue) || zigValue <= 0) throw new Error("ZigChain TVL is invalid");
 
-  api.addCGToken("usd-coin", Number(activeTvl) / 1e6);
+  api.addCGToken("usd-coin", zigValue);
   return api.getBalances();
 }
 
