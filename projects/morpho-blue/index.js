@@ -36,6 +36,9 @@ const config = {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
     blackList: ["0xf8b3fa720a9cd8abeed5a81f11f80cd8f93e6b57", "0x010700ab046dd8e92b0e3587842080df36364ed3"], // K token inflated by Kinto exploit
     fromBlock: 296446593,
+    blacklistedMarketIds: [
+      "0xfdb8221edcae73f73485d55c30e706906114bc2ff4634870c5c57e8fb83eae6a", // K/USDC bad debt from Kinto exploit
+    ],
   },
   fraxtal: {
     morphoBlue: "0xa6030627d724bA78a59aCf43Be7550b4C5a0653b",
