@@ -5,6 +5,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const WRAPPER_FACTORIES = {
   unichain: { address: '0x7777655b9474D2f3F27EE44F3FD1343e33ce2777', fromBlock: 42132957 },
   ethereum: { address: '0x77774aBb84EEAbaE05CE00D8a1b83dfc6E93f777', fromBlock: 24589014 },
+  monad: {address: '0x7777dc1a68addc8b5ab991c7f29dc2904367e777', fromBlock: 66930998},
 };
 
 const eulerVaultOwners = ['0x12e74f3C61F6b4d17a9c3Fdb3F42e8f18a8bB394'];
@@ -31,4 +32,5 @@ module.exports = {
   doublecounted: true,
   unichain: { tvl },
   ethereum: { tvl },
+  monad: {tvl},
 };
