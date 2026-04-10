@@ -11,6 +11,7 @@ async function fetchAllVaults() {
     const solOwnersSet = new Set();
     let page = 1;
     let hasMore = true;
+    let fullFetchCompleted = false;
 
     while (hasMore) {
         if (page > MAX_PAGES) {
@@ -35,14 +36,19 @@ async function fetchAllVaults() {
         if (hasMore) await sleep(200);
     }
 
-    return [...solOwnersSet];
+    if (!hasMore) fullFetchCompleted = true;
+
+    return { solOwners: [...solOwnersSet], fullFetchCompleted };
 }
 
 async function tvl() {
     let solOwners;
     try {
-        solOwners = await fetchAllVaults();
-        await setCache(CACHE_KEY, "solana", solOwners);
+        const result = await fetchAllVaults();
+        solOwners = result.solOwners;
+        if (result.fullFetchCompleted) {
+            await setCache(CACHE_KEY, "solana", solOwners);
+        }
     } catch (e) {
         console.error("anoncoin: API fetch failed, falling back to cache", e.message);
         const cached = await getCache(CACHE_KEY, "solana");
