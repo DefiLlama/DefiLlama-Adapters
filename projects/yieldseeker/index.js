@@ -1,16 +1,15 @@
 const { getConfig } = require('../helper/cache');
+const ADDRESSES = require('../helper/coreAssets.json');
 
 const API_URL = 'https://api.yieldseeker.xyz/v1/agent-analytics';
-const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 function normalizeToken(token) {
-  if (token.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase()) return NULL_ADDRESS;
+  if (token.toLowerCase() === ADDRESSES.GAS_TOKEN_2) return ADDRESSES.null;
   return token.toLowerCase();
 }
 
 async function tvl(api) {
-  const { agentAnalytics = [] } = await getConfig('yieldseeker/yield-agents/' + api.chain, API_URL);
+  const { agentAnalytics = [] } = await getConfig('yieldseeker/yield-agents/', API_URL);
   const ownerTokens = [];
   for (const agent of agentAnalytics) {
     if (!agent?.snapshot?.tokenBalances || typeof agent.snapshot.tokenBalances !== 'object') continue;
@@ -20,7 +19,6 @@ async function tvl(api) {
     }
   }
   await api.sumTokens({ ownerTokens, permitFailure: true });
-  return api.getBalances();
 }
 
 module.exports = {
