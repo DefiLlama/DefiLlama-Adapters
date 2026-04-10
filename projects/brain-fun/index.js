@@ -27,15 +27,18 @@ async function tvl(api) {
     calls: tokenIdCalls,
   });
 
-  // Read realTaoReserve from each token (native TAO locked in bonding curves)
+  // Read realTaoReserve from each token (native TAO locked in bonding curves).
+  // permitFailure lets us degrade gracefully if a single token read reverts or
+  // a node misbehaves, instead of failing the whole TVL computation.
   const reserves = await api.multiCall({
     abi: "function realTaoReserve() view returns (uint256)",
     calls: tokenAddresses,
+    permitFailure: true,
   });
 
-  // Sum all reserves as native gas token (TAO)
+  // Sum all successful reserves as native gas token (TAO); skip failed reads.
   reserves.forEach((reserve) => {
-    api.addGasToken(reserve);
+    if (reserve != null) api.addGasToken(reserve);
   });
 }
 
