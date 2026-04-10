@@ -86,10 +86,12 @@ const tvl = async (api) => {
     nftPositionMapping[nft].push(tokenId);
   });
   const nftAddresses = Object.keys(nftPositionMapping);
-  const [factoryResults, deployerResults] = await Promise.all([
+  const [factoryResults, deployerResults, poolManagerResults] = await Promise.all([
     api.multiCall({ calls: nftAddresses, abi: 'address:factory', permitFailure: true }),
     api.multiCall({ calls: nftAddresses, abi: 'address:deployer', permitFailure: true }),
+    api.multiCall({ calls: nftAddresses, abi: 'address:poolManager', permitFailure: true }),
   ]);
+
   // detect Shadow: deployer exists AND deployer has RamsesV3Factory
   const deployersToCheck = deployerResults.map((d, i) => d ? { target: d, idx: i } : null).filter(Boolean);
   const ramsesFactoryResults = deployersToCheck.length
@@ -97,6 +99,7 @@ const tvl = async (api) => {
     : [];
   const shadowSet = new Set();
   deployersToCheck.forEach((d, j) => { if (ramsesFactoryResults[j]) shadowSet.add(d.idx); });
+
   // detect Slipstream and Algebra from factory
   const factoriesWithIndex = factoryResults.map((f, i) => f ? { target: f, idx: i } : null).filter(Boolean);
   const [poolImplResults, poolByPairResults] = factoriesWithIndex.length ? await Promise.all([
@@ -109,6 +112,7 @@ const tvl = async (api) => {
     if (poolImplResults[j]) slipstreamSet.add(f.idx);
     else if (poolByPairResults[j] !== null && poolByPairResults[j] !== undefined) algebraSet.add(f.idx);
   });
+
   for (let i = 0; i < nftAddresses.length; i++) {
     const positionIds = nftPositionMapping[nftAddresses[i]];
     if (shadowSet.has(i)) {
@@ -117,6 +121,8 @@ const tvl = async (api) => {
       await unwrapSlipstreamNFT({ api, nftAddress: nftAddresses[i], positionIds });
     } else if (algebraSet.has(i)) {
       await unwrapUniswapV3NFT({ api, nftAddress: nftAddresses[i], uniV3ExtraConfig: { positionIds }, isAlgebra: true });
+    } else if (poolManagerResults[i]) {
+      await sumTokens2({ api, uniV4ExtraConfig: { nftAddress: nftAddresses[i], positionIds } });
     } else if (factoryResults[i]) {
       await sumTokens2({ api, uniV3ExtraConfig: { nftAddress: nftAddresses[i], positionIds } });
     }
