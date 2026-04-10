@@ -274,8 +274,6 @@ const VAULT_BLACKLIST = {
 // uBTC markets excluded: TVL inflated by minter-funded wallets and borrow-redeposit loops
 const MARKET_BLACKLIST = {
   bsquared: [
-    "0x39256Ad46B721F47d48D1e0918a986cAc0c210ed", // B2BTC/uBTC
-    "0xe7d99048B6A292CBda8c7C3c0D38eBdaB3999870", // WBTC/uBTC
     "0x5022B6563f6bc9f0D47F407ba32B64e1f438213a", // uBTC/WBTC
   ],
 };
