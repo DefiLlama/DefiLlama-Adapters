@@ -1,17 +1,14 @@
-const { getCache, setCache } = require("../helper/cache");
 const { sumTokens2 } = require("../helper/solana");
 const { get } = require("../helper/http");
 const { sleep } = require("../helper/utils");
 
 const API_BASE = "https://api.dubdub.tv/v1/defillama/tvl";
-const CACHE_KEY = "anoncoin-vaults";
 const MAX_PAGES = 1000;
 
 async function fetchAllVaults() {
     const solOwnersSet = new Set();
     let page = 1;
     let hasMore = true;
-    let fullFetchCompleted = false;
 
     while (hasMore) {
         if (page > MAX_PAGES) {
@@ -36,25 +33,11 @@ async function fetchAllVaults() {
         if (hasMore) await sleep(200);
     }
 
-    if (!hasMore) fullFetchCompleted = true;
-
-    return { solOwners: [...solOwnersSet], fullFetchCompleted };
+    return { solOwners: [...solOwnersSet] };
 }
 
 async function tvl() {
-    let solOwners;
-    try {
-        const result = await fetchAllVaults();
-        solOwners = result.solOwners;
-        if (result.fullFetchCompleted) {
-            await setCache(CACHE_KEY, "solana", solOwners);
-        }
-    } catch (e) {
-        console.error("anoncoin: API fetch failed, falling back to cache", e.message);
-        const cached = await getCache(CACHE_KEY, "solana");
-        solOwners = Array.isArray(cached) ? cached : [];
-    }
-
+    const { solOwners } = await fetchAllVaults();
     return sumTokens2({ solOwners });
 }
 
