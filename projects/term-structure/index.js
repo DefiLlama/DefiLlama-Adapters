@@ -3,7 +3,7 @@ const { getLogs, getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 /**
- * bsquared excluded: uBTC-WBTC market TVL inflated by minter-funded wallets
+ * bsquared uBTC/WBTC markets excluded: TVL inflated by minter-funded wallets
  * and borrow-redeposit loops. All vault/GT deposits trace back to 2-3 uBTC minters:
  *   0x1c8b1b0ec2c6f0Ef56c740BFD3A95af7cf5f8DC7 (minted 214 uBTC, funded 0x46d1 and 0xb5E0)
  *   0x8Da30b68b1E11761e1307EB10564a39E01ae4480 (minted 108 uBTC, funded 0xAB34, 0x42Be, 0x3a59)
@@ -206,23 +206,23 @@ const ADDRESSES = {
       },
     ],
   },
-  // bsquared: {
-  //   FactoryV2: [
-  //     {
-  //       address: "0x33931f3898EfB9A42B0D7CFfa9bb50A566A6b421",
-  //       fromBlock: 28981154,
-  //     },
-  //   ],
-  //   VaultFactoryV2: [
-  //     {
-  //       address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
-  //       fromBlock: 28981154,
-  //     },
-  //   ],
-  //   TermMax4626Factory: [
-  //     { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
-  //   ],
-  // },
+  bsquared: {
+    FactoryV2: [
+      {
+        address: "0x33931f3898EfB9A42B0D7CFfa9bb50A566A6b421",
+        fromBlock: 28981154,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
+        fromBlock: 28981154,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
+    ],
+  },
   xlayer: {
     FactoryV2: [
       {
@@ -271,6 +271,15 @@ const VAULT_BLACKLIST = {
   ],
 };
 
+// uBTC markets excluded: TVL inflated by minter-funded wallets and borrow-redeposit loops
+const MARKET_BLACKLIST = {
+  bsquared: [
+    "0x39256Ad46B721F47d48D1e0918a986cAc0c210ed", // B2BTC/uBTC
+    "0xe7d99048B6A292CBda8c7C3c0D38eBdaB3999870", // WBTC/uBTC
+    "0x5022B6563f6bc9f0D47F407ba32B64e1f438213a", // uBTC/WBTC
+  ],
+};
+
 async function getTermMaxMarketAddresses(api) {
   if (!ADDRESSES[api.chain].Factory) return [];
   const logs = await getLogs({
@@ -313,7 +322,8 @@ async function getTermMaxMarketOwnerTokens(api) {
   ]);
   const marketAddresses = []
     .concat(marketV1Addresses)
-    .concat(marketV2Addresses);
+    .concat(marketV2Addresses)
+    .filter(addr => !MARKET_BLACKLIST[api.chain]?.includes(addr));
   const tokens = await api.multiCall({
     abi: ABIS.Market.tokens,
     calls: marketAddresses,
@@ -536,7 +546,7 @@ async function getTermMaxMarketBorrowed(api) {
 }
 
 async function getTermMaxV2MarketBorrowed(api) {
-  const marketAddresses = await getTermMaxMarketV2Addresses(api);
+  const marketAddresses = (await getTermMaxMarketV2Addresses(api)).filter(addr => !MARKET_BLACKLIST[api.chain]?.includes(addr));
   const [tokens, configs] = await Promise.all([
     api.multiCall({
       abi: ABIS.Market.tokens,
@@ -662,6 +672,3 @@ Object.keys(ADDRESSES).forEach(chain => {
     },
   }
 })
-
-// bsquared TVL zeroed out — inflated by minter-funded wallets and borrow-redeposit loops
-module.exports.bsquared = { tvl: () => ({}), borrowed: () => ({}) }
