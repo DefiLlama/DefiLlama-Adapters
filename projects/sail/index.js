@@ -1,6 +1,6 @@
 const { getConfig } = require('../helper/cache');
-const { allPoolTokens: basePoolTokens } = require('./base');
-const { allPoolTokens: arbitrumPoolTokens } = require('./arbitrum');
+const { yieldSourcesAddresses: baseTokens } = require('./base');
+const { yieldSourcesAddresses: arbitrumTokens } = require('./arbitrum');
 
 async function getOwners() {
     const data = await getConfig('sail/active-wallets', 'https://app.sail.money/api/v1/projects/sail/pages/institutions/custom/active_wallets');
@@ -10,16 +10,16 @@ async function getOwners() {
 
 async function baseTvl(api) {
     const owners = await getOwners();
-    return api.sumTokens({ tokens: basePoolTokens, owners });
+    return api.sumTokens({ tokens: baseTokens, owners });
 }
 
 async function arbitrumTvl(api) {
     const owners = await getOwners();
-    return api.sumTokens({ tokens: arbitrumPoolTokens, owners });
+    return api.sumTokens({ tokens: arbitrumTokens, owners });
 }
 
 module.exports = {
-    methodology: 'TVL is calculated by querying onchain balances of Sail smart wallet accounts across DeFi protocols on each supported chain.',
+    methodology: 'TVL is calculated by querying onchain balances of Sail smart wallet accounts across DeFi protocols/vaults on each supported chain.',
     base: { tvl: baseTvl },
     arbitrum: { tvl: arbitrumTvl },
 };
