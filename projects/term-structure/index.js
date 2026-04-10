@@ -629,15 +629,25 @@ async function erc4626VaultsTvl(api) {
   const stableUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: stableERC4626For4626Vaults })
   const thirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: stableERC4626For4626Vaults })
   const stableTokensAndOwners = [];
+  const stableFallbackTokensAndOwners = [];
+  const thirdPoolSupplies = await api.multiCall({
+    abi: 'uint256:totalSupply',
+    calls: thirdPools,
+    permitFailure: true,
+  })
   stableERC4626For4626Vaults.forEach((vault, i) => {
     stableTokensAndOwners.push([stableUnderlyings[i], vault])
-    stableTokensAndOwners.push([thirdPools[i], vault])
-    // fallback: if thirdPool is not ERC20 (e.g. Gnosis Safe), count underlying held by thirdPool
-    stableTokensAndOwners.push([stableUnderlyings[i], thirdPools[i]])
+    if (thirdPoolSupplies[i] == null) {
+      // thirdPool is not ERC20 (e.g. Gnosis Safe), count underlying held by thirdPool
+      stableFallbackTokensAndOwners.push([stableUnderlyings[i], thirdPools[i]])
+    } else {
+      stableTokensAndOwners.push([thirdPools[i], vault])
+    }
   })
 
   await sumTokens2({ api, tokensAndOwners });
-  await sumTokens2({ api, tokensAndOwners: stableTokensAndOwners, permitFailure: true });
+  await sumTokens2({ api, tokensAndOwners: stableTokensAndOwners });
+  await sumTokens2({ api, tokensAndOwners: stableFallbackTokensAndOwners });
 }
 
 module.exports = {
