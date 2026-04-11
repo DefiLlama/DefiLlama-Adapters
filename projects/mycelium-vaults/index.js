@@ -1,23 +1,18 @@
-const VAULTS = {
-  berachain: [
-    {
-      vault: "0x3B4d6c8C73962218724ea140Ad7c7CD13dCF165E",
-      lp: "0x4a254B11810B8EBb63C5468E438FC561Cb1bB1da",
-    },
-  ],
-};
+const { staking } = require("../helper/staking");
 
-async function tvl(api) {
-  for (const v of VAULTS[api.chain] || []) {
-    const totalAssets = await api.call({
-      abi: "function totalAssets() view returns (uint256)",
-      target: v.vault,
-    });
-    api.add(v.lp, totalAssets);
-  }
+// Mycelium Vaults auto-compounds Kodiak LP positions through Infrared Gauges on Berachain.
+// Vault contract holds LP tokens staked in the gauge, totalAssets() returns the current balance.
+// See: https://berascan.com/address/0x3B4d6c8C73962218724ea140Ad7c7CD13dCF165E
+
+const WBERA_HONEY_VAULT = "0x3B4d6c8C73962218724ea140Ad7c7CD13dCF165E";
+const WBERA_HONEY_LP = "0x4a254B11810B8EBb63C5468E438FC561Cb1bB1da";
+
+async function berachainTvl(api) {
+  const assets = await api.call({ abi: "uint256:totalAssets", target: WBERA_HONEY_VAULT });
+  api.add(WBERA_HONEY_LP, assets);
 }
 
 module.exports = {
-  methodology: "TVL is LP tokens in Mycelium auto-compound vaults, staked in Infrared Gauges on Berachain. 1% fee, auto-compounds every 30 min.",
-  berachain: { tvl },
+  methodology: "TVL counts LP tokens held by Mycelium vaults and staked in Infrared gauges.",
+  berachain: { tvl: berachainTvl },
 };
