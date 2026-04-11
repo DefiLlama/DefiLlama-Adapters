@@ -41,6 +41,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  arc: {
+    '0x3600000000000000000000000000000000000000': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0xe9185f0c5f296ed1797aae4238d26ccabeadb86c': { coingeckoId: 'hashnote-usyc', decimals: 6 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },

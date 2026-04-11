@@ -284,6 +284,9 @@
     "VGLMR": "0xffffffff99dabe1a8de0ea22baa6fd48fde96f6c",
     "FIL": "0xffffffffcd0ad0ea6576b7b285295c85e94cf4c1"
   },
+  "arc": {
+    "USDC": "0x3600000000000000000000000000000000000000"
+  },
   "arbitrum": {
     "WETH": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
     "WBTC": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
