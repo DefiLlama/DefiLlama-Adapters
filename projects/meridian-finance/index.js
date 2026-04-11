@@ -12,8 +12,6 @@ async function arcTvl(api) {
       [USDC_ARC, FIRMATA_COMMERCE_ARC],
       [USDC_ARC, FIRMATA_ESCROW_ARC],
       [USYC_ARC, YIELD_VAULT],
-      [USYC_ARC, FIRMATA_COMMERCE_ARC],
-      [USYC_ARC, FIRMATA_ESCROW_ARC],
     ],
   })
 }
