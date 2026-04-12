@@ -6,9 +6,10 @@ const PAIR = "0x8EbbEa445af4Cae8a2FA16b184EeB792d424CD45";
 
 module.exports = {
   misrepresentedTokens: true,
+  timetravel: false, // Set to false for new L1s
   kortana: {
     tvl: async (timestamp, ethBlock, chainBlocks) => {
-      // Direct on-chain verification of the ktUSD/DNR pool
+      // Direct call to Kortana Mainnet RPC
       return sumTokens2({ 
         chain: 'kortana',
         owner: PAIR,
@@ -20,3 +21,5 @@ module.exports = {
     }
   }
 };
+// Note: We will likely need to help the DefiLlama team add 'kortana' 
+// to their sdk/src/computeTVL/balances.ts if the automated test keeps failing.
