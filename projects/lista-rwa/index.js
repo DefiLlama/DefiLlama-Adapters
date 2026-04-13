@@ -34,20 +34,22 @@ async function tvl(api) {
       const totalDeposited = vaultInfos[i].totalDeposited
       const product = dowsureProducts[i]
 
-      // Dowsure vaults support multiple assets, use the assets from API response
-      if (product.assets && product.assets.length > 0) {
-        // For multi-asset vaults, distribute TVL across supported assets
-        // Using totalDeposited as the TVL (in USD terms from the vault)
-        // Default to USDT as the primary asset
-        const primaryAsset = product.assets[0].address
-        api.add(getAddress(primaryAsset), totalDeposited)
+      if (!product.assets || product.assets.length === 0) {
+        throw new Error(`Dowsure product ${product.contract} has no assets defined`)
       }
+
+      // Dowsure vaults pool multiple stablecoins (e.g., USDT/USDC) into a single vault.
+      // The totalDeposited represents the combined TVL. Since we cannot determine
+      // the exact breakdown per asset from the vault contract, we attribute the
+      // entire TVL to the primary asset (first in the list) to avoid double-counting.
+      const primaryAsset = product.assets[0].address
+      api.add(getAddress(primaryAsset), totalDeposited)
     }
   }
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing the totalAssets of Centrifuge RWA products and totalDeposited from Dowsure vault products",
+  methodology: "TVL is calculated by summing the totalAssets of Centrifuge RWA products and totalDeposited from Dowsure vault products. For Dowsure multi-asset vaults, the entire TVL is attributed to the primary asset (first in metadata) since per-asset breakdown is not available on-chain.",
   bsc: {
     tvl,
   },
