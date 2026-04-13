@@ -18,47 +18,54 @@ const config = {
   },
 }
 
+/**
+ * Calculates TVL as circulating apxUSD supply for the given chain.
+ * Subtracts Foundation wallet holdings and (on Ethereum) CCIP bridge-locked tokens.
+ * apyUSD vault shares held by Foundation are converted to apxUSD value via convertToAssets.
+ * All arithmetic uses BigInt to avoid precision loss on uint256 values.
+ * @param {Object} api - DefiLlama SDK chain API
+ */
 async function tvl(api) {
   const chain = api.chain
   const { apxUSD, apyUSD } = config[chain]
 
-  const totalSupply = await api.call({ abi: 'erc20:totalSupply', target: apxUSD })
+  const totalSupply = BigInt(await api.call({ abi: 'erc20:totalSupply', target: apxUSD }))
 
   const apxBalances = await api.multiCall({
     abi: 'erc20:balanceOf',
     calls: foundationWallets.map(w => ({ target: apxUSD, params: [w] })),
   })
+  const totalApxHeld = apxBalances.reduce((sum, b) => sum + BigInt(b), 0n)
 
-  const apyBalances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: foundationWallets.map(w => ({ target: apyUSD, params: [w] })),
-  })
-
-  const totalApyShares = apyBalances.reduce((sum, b) => sum + Number(b), 0)
-
-  let apyAsApxUSD = 0
-  if (totalApyShares > 0 && chain === 'ethereum') {
-    const converted = await api.call({
-      abi: 'function convertToAssets(uint256) view returns (uint256)',
-      target: apyUSD,
-      params: [BigInt(Math.floor(totalApyShares)).toString()],
+  let apyAsApxUSD = 0n
+  if (chain === 'ethereum') {
+    const apyBalances = await api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: foundationWallets.map(w => ({ target: apyUSD, params: [w] })),
     })
-    apyAsApxUSD = Number(converted)
+    const totalApyShares = apyBalances.reduce((sum, b) => sum + BigInt(b), 0n)
+
+    if (totalApyShares > 0n) {
+      const converted = await api.call({
+        abi: 'function convertToAssets(uint256) view returns (uint256)',
+        target: apyUSD,
+        params: [totalApyShares.toString()],
+      })
+      apyAsApxUSD = BigInt(converted)
+    }
   }
 
-  let bridgeLocked = 0
+  let bridgeLocked = 0n
   if (chain === 'ethereum') {
-    const ccipApxBal = await api.call({
+    bridgeLocked = BigInt(await api.call({
       abi: 'erc20:balanceOf',
       target: apxUSD,
       params: [config.ethereum.ccipPool],
-    })
-    bridgeLocked = Number(ccipApxBal)
+    }))
   }
 
-  const totalApxHeld = apxBalances.reduce((sum, b) => sum + Number(b), 0)
   const inventory = totalApxHeld + apyAsApxUSD
-  const circulating = (Number(totalSupply) - inventory - bridgeLocked) / 1e18
+  const circulating = Number((totalSupply - inventory - bridgeLocked) / BigInt(1e18))
 
   api.addCGToken('apxusd', circulating)
 }
