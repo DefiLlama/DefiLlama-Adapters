@@ -12,9 +12,5 @@ module.exports = {
       owner: USDat,
       tokens: [M, USDC],
     }),
-    staking: async function (api) {
-      const totalAssets = await api.call({ target: sUSDat, abi: 'uint256:totalAssets' });
-      api.add(USDat, totalAssets)
-    },
   },
 };
