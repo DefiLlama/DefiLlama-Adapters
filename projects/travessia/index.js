@@ -15,38 +15,43 @@ const VAULTS = {
 
 function tvl(isBorrowed) {
   return async (api) => {
-      const vaults = VAULTS[api.chain]
-      if (!vaults.length) return
+    const vaults = VAULTS[api.chain]
+    if (!vaults?.length) return
 
-      const [supplies, underlyings] = await Promise.all([
-          api.multiCall({ abi: 'erc20:totalSupply', calls: vaults, permitFailure: true }),
-          api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true }),
-      ])
-      
-      const [totalAssets, liquidity] = await Promise.all([
-          api.multiCall({
-              abi: abis.convertToAssets,
-              calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })),
-              permitFailure: true,
-          }),
-          api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
-      ])
+    const [supplies, underlyings] = await Promise.all([
+      api.multiCall({ abi: 'erc20:totalSupply', calls: vaults, permitFailure: true }),
+      api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true }),
+    ])
 
-      vaults.forEach((_, i) => {
-          if (!underlyings[i] || !totalAssets[i]) return
-          isBorrowed ? api.add(underlyings[i], totalAssets[i] - liquidity[i]) : api.add(underlyings[i], totalAssets[i])
-      })
+    const [totalAssets, liquidity] = await Promise.all([
+      api.multiCall({
+        abi: abis.convertToAssets,
+        calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })),
+        permitFailure: true,
+      }),
+      api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: underlyings[i], params: vault })), permitFailure: true })
+    ])
+
+    vaults.forEach((_, i) => {
+      if (!underlyings[i] || !totalAssets[i]) return
+      if (isBorrowed) {
+        if (liquidity[i] == null) return
+        api.add(underlyings[i], totalAssets[i] - liquidity[i])
+      } else {
+        api.add(underlyings[i], totalAssets[i])
+      }
+    })
   }
 }
 
 module.exports = {
   methodology: 'TVL converts each vault totalSupply to underlying via convertToAssets().',
   monad: {
-      tvl: tvl(false),
-      borrowed: tvl(true)
+    tvl: tvl(false),
+    borrowed: tvl(true)
   },
   ethereum: {
-      tvl: tvl(false),
-      borrowed: tvl(true)
+    tvl: tvl(false),
+    borrowed: tvl(true)
   },
 }
