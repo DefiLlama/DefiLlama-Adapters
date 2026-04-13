@@ -46,6 +46,9 @@ const yieldSourcesAddresses = [
     // Yearn
     '0xb739AE19620f7ECB4fb84727f205453aa5bc1AD2', // Yearn Silo Lender
     '0x9FA306b1F4a6a83FEC98d8eBbaBEDfF78C407f6B', // Yearn USDC-2
+    // Reward tokens
+    '0x912CE59144191C1204E64559FE8253a0e49E6548', // ARB
+    '0x40BD670A58238e6E230c430BBb5cE6ec0d40df48', // MORPHO
 ];
 
 module.exports = { yieldSourcesAddresses };

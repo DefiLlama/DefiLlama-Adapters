@@ -45,6 +45,11 @@ const yieldSourcesAddresses = [
     '0x50c749aE210D3977ADC824AE11F3c7fd10c871e9', // Yo yoEUR
     // 40 Acres
     '0xB99B6dF96d4d5448cC0a5B3e0ef7896df9507Cf5', // 40 Acres USDC
+    // Reward tokens
+    '0x1C7a460413dD4e964f96D8dFC56E7223cE88CD85', // SEAM
+    '0x2dAD3a13ef0C6366220f989157009e501e7938F8', // EXTRA
+    '0xBAa5CC21fd487B8Fcc2F632f3F4E8D37262a0842', // MORPHO
+    '0xA88594D404727625A9437C3f886C7643872296AE', // WELL
 ];
 
 module.exports = { yieldSourcesAddresses };
