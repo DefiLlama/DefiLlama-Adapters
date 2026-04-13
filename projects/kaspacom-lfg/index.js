@@ -1,24 +1,35 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const BigNumber = require('bignumber.js')
 
-const BONDING_FACTORY = '0x765331F7a008c0609543aCCa6209d91636BceEAC'
-const WKAS = '0x17Ec7E1768c813E2a3a9b0f94A35605CA520C242'
+const IGRA_BONDING_FACTORY = '0x765331F7a008c0609543aCCa6209d91636BceEAC'
+const KASPLEX_BONDING_FACTORY = '0xb19219AF8a65522f13B51f6401093c8342E27e9D'
 
-async function tvl(api) {
+async function sumNativeKAS(api, factory) {
   const curves = await api.call({
-    target: BONDING_FACTORY,
+    target: factory,
     abi: 'function getAllBondingCurves() view returns (address[])',
   })
 
-  const owners = [BONDING_FACTORY, ...curves]
-  return sumTokens2({
-    api,
-    owners,
-    tokens: [WKAS],
-    fetchCoValentTokens: false,
-  })
+  const owners = [factory, ...curves]
+  const nativeBalances = await Promise.all(owners.map(owner => api.provider.getBalance(owner)))
+
+  return nativeBalances.reduce(
+    (acc, balance) => acc.plus(balance.toString()),
+    new BigNumber(0)
+  )
+}
+
+async function tvlIgra(api) {
+  const nativeKASWei = await sumNativeKAS(api, IGRA_BONDING_FACTORY)
+  api.addCGToken('kaspa', nativeKASWei.div(1e18).toNumber())
+}
+
+async function tvlKasplex(api) {
+  const nativeKASWei = await sumNativeKAS(api, KASPLEX_BONDING_FACTORY)
+  api.addCGToken('kaspa', nativeKASWei.div(1e18).toNumber())
 }
 
 module.exports = {
-  methodology: 'TVL is the total KAS locked in LFG bonding curves (tokens in price discovery phase).',
-  igra: { tvl },
+  methodology: 'TVL is the native KAS currently held in KaspaCom LFG bonding curve contracts across supported launchpad networks. Graduated curves may retain historical reserve data, but TVL counts only live native KAS balances still locked in the contracts.',
+  igra: { tvl: tvlIgra },
+  kasplex: { tvl: tvlKasplex },
 }
