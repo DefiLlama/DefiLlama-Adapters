@@ -11,11 +11,8 @@ const EARN_VAULTS = [
   { asset: '2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH', vault: '7VZ1XKK7Zns6UzRc1Wz54u6cypN7zaduasVXXr7NysxH' }, // USDG
 ]
 
-async function staking(api) {
-  await getSolBalanceFromStakePool(RASOL_STAKE_POOL, api)
-}
-
 async function tvl(api) {
+  await getSolBalanceFromStakePool(RASOL_STAKE_POOL, api)
   for (const { asset, vault } of EARN_VAULTS) {
     const { data } = await get(`https://api.voltr.xyz/vault/${vault}/share-price`)
     api.add(asset, data.totalValue)
@@ -24,9 +21,8 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Liquid staking TVL is the SOL backing raSOL. Earn TVL is the underlying stablecoins (USDC, USD1, USDT, USDS, USDG) held in Hubra Earn vaults backing the receipt tokens (raUSDC, raUSD1, raUSDT, raUSDS, raUSDG).',
+  methodology: 'TVL is the SOL backing raSOL (from the SPL stake pool) plus the underlying stablecoins (USDC, USD1, USDT, USDS, USDG) held in Hubra Earn vaults backing the receipt tokens (raUSDC, raUSD1, raUSDT, raUSDS, raUSDG).',
   solana: {
     tvl,
-    staking,
   },
 }
