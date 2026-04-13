@@ -1,6 +1,6 @@
 // Bounce - Leveraged Tokens on HyperEVM
 // TVL = sum of totalAssets() across all LeveragedToken contracts
-// totalAssets() = baseAssetBalance (HyperEVM) + blockBridging (in-flight) + hyperliquidUsdc (HyperCore perp margin)
+// totalAssets() = baseAssetBalance (HyperEVM) + blockBridging (in-flight) + hyperliquidUsdc (HyperCore idle asset and perp margin)
 //
 // Contract resolution chain:
 //   GlobalStorage.factory()      → Factory address
@@ -25,6 +25,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is the sum of USDC underlying base asset backing all leveraged tokens, including assets held on HyperEVM and in HyperCore perpetual positions.',
+  methodology: 'TVL is the sum of base asset (USDC) backing all leveraged tokens, including assets held on HyperEVM, in-flight during bridging, idle assets on HyperCore, and assets deployed as margin in HyperCore perpetual positions.',
   hyperliquid: { tvl },
 };
