@@ -49,7 +49,11 @@ async function fetchAllSolanaTokens() {
   while (true) {
     const endpoint = `${PRINTR_API}/chains/${SOLANA_CHAIN_ID}/tokenlist.json?size=${PAGE_SIZE}&skip=${skip}`
     const data = await getConfig(`printr-protocol/${SOLANA_CHAIN_ID}/${skip}`, endpoint)
-    if (!data || !Array.isArray(data.tokens) || !data.tokens.length) break
+    if (!data || !Array.isArray(data.tokens)) {
+      if (skip === 0) throw new Error(`Invalid token list response from ${endpoint}`)
+      break
+    }
+    if (!data.tokens.length) break
     tokens.push(...data.tokens)
     if (data.tokens.length < PAGE_SIZE) break
     skip += PAGE_SIZE
@@ -67,9 +71,19 @@ async function solanaTvl(api) {
   const active = tokens.filter(t => t.extensions?.curveAddress && !t.extensions?.isGraduated)
   if (!active.length) return
 
-  const connection = getConnection()
-  const curveKeys = active.map(t => new PublicKey(t.extensions.curveAddress))
+  const seen = new Set()
+  const curveKeys = []
+  for (const t of active) {
+    const addr = t.extensions.curveAddress
+    if (seen.has(addr)) continue
+    seen.add(addr)
+    try {
+      curveKeys.push(new PublicKey(addr))
+    } catch (e) { }
+  }
+  if (!curveKeys.length) return
 
+  const connection = getConnection()
   const chunks = sliceIntoChunks(curveKeys, 100)
   for (const chunk of chunks) {
     const accounts = await connection.getMultipleAccountsInfo(chunk)
@@ -92,6 +106,7 @@ async function solanaTvl(api) {
 }
 
 module.exports = {
+  timetravel: false,
   methodology: `Omnichain token launchpad with Proof of Belief staking, configurable fee distribution, custom bonding curves, and anti-PVP mechanics across 8 chains.
 
 TVL: Sum of reserves locked in active Printr bonding curves and tokens locked in Proof of Belief (POB) staking pools. Each curve holds a base pair token (e.g., USDC, USDT, USD1) that users deposit to buy tokens. Graduated tokens (curves with completionThreshold=0) are excluded as their liquidity has moved to DEX pools (Meteora on Solana, Uniswap V3 on ETH/Base/Arb/Avax, PancakeSwap V3 on BNB/Monad, Merchant Moe on Mantle). Locked POB tokens are not used as liquidity, they represent onchain commitment only.
