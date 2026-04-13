@@ -57,7 +57,6 @@ async function tvlEthereum(api) {
       ADDRESSES.ethereum.USDT,
       ADDRESSES.ethereum.USDe,
       ADDRESSES.ethereum.USDS,
-      ADDRESSES.ethereum.reUSD,
     ]
   })
 
@@ -71,7 +70,6 @@ async function tvlEthereum(api) {
       ADDRESSES.ethereum.USDT,
       ADDRESSES.ethereum.USDe,
       ADDRESSES.ethereum.USDS,
-      ADDRESSES.ethereum.reUSD,
     ]
   })
 }
