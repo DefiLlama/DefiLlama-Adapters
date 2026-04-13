@@ -10,7 +10,7 @@ module.exports = {
   arbitrum: {
     tvl: sumTokensExport({
       owner: "0xd1be1f98991cf69355e468ad15b6d0b6429bcfcb",
-      tokens: ["0x44c10da836d2abe881b77bbb0b3dce5f85c0c1cc"],
+      tokens: ["0x44c10da836d2abe881b77bbb0b3dce5f85c0c1cc", "0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA"],
     }),
   },
   katana: {
