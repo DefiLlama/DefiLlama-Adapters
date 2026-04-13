@@ -1,41 +1,35 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const BigNumber = require('bignumber.js')
 
 const IGRA_BONDING_FACTORY = '0x765331F7a008c0609543aCCa6209d91636BceEAC'
 const KASPLEX_BONDING_FACTORY = '0xb19219AF8a65522f13B51f6401093c8342E27e9D'
-const NATIVE_KAS = '0x0000000000000000000000000000000000000000'
 
-async function tvlIgra(api) {
+async function sumNativeKAS(api, factory) {
   const curves = await api.call({
-    target: IGRA_BONDING_FACTORY,
+    target: factory,
     abi: 'function getAllBondingCurves() view returns (address[])',
   })
 
-  const owners = [IGRA_BONDING_FACTORY, ...curves]
-  return sumTokens2({
-    api,
-    owners,
-    tokens: [NATIVE_KAS],
-    fetchCoValentTokens: false,
-  })
+  const owners = [factory, ...curves]
+  const nativeBalances = await Promise.all(owners.map(owner => api.provider.getBalance(owner)))
+
+  return nativeBalances.reduce(
+    (acc, balance) => acc.plus(balance.toString()),
+    new BigNumber(0)
+  )
+}
+
+async function tvlIgra(api) {
+  const nativeKASWei = await sumNativeKAS(api, IGRA_BONDING_FACTORY)
+  api.addCGToken('kaspa', nativeKASWei.div(1e18).toNumber())
 }
 
 async function tvlKasplex(api) {
-  const curves = await api.call({
-    target: KASPLEX_BONDING_FACTORY,
-    abi: 'function getAllBondingCurves() view returns (address[])',
-  })
-
-  const owners = [KASPLEX_BONDING_FACTORY, ...curves]
-  return sumTokens2({
-    api,
-    owners,
-    tokens: [NATIVE_KAS],
-    fetchCoValentTokens: false,
-  })
+  const nativeKASWei = await sumNativeKAS(api, KASPLEX_BONDING_FACTORY)
+  api.addCGToken('kaspa', nativeKASWei.div(1e18).toNumber())
 }
 
 module.exports = {
-  methodology: 'TVL is the native KAS locked in KaspaCom LFG bonding curves across supported launchpad networks.',
+  methodology: 'TVL is the native KAS currently held in KaspaCom LFG bonding curve contracts across supported launchpad networks. Graduated curves may retain historical reserve data, but TVL counts only live native KAS balances still locked in the contracts.',
   igra: { tvl: tvlIgra },
   kasplex: { tvl: tvlKasplex },
 }
