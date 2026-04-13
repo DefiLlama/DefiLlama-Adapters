@@ -10,7 +10,12 @@ const config = {
     '0x8d010bf9C26881788b4e6bf5Fd1bdC358c8F90b8', // DOT was hacked
   ] },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675 },
-  base: { factory: "0x498581ff718922c3f8e6a244956af099b2652b2b", fromBlock: 25350988 },
+  base: { factory: "0x498581ff718922c3f8e6a244956af099b2652b2b", fromBlock: 25350988, 
+    blacklistedTokens: [
+      '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
+      '0xbc33b4d48f76d17a1800afcb730e8a6aaada7fe5', // vDOT was hacked
+    ]
+   },
   arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872, blacklistedTokens: ['0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1', '0x3e4ffeb394b371aaaa0998488046ca19d870d9ba'] },
   polygon: { factory: "0x67366782805870060151383f4bbff9dab53e5cd6", fromBlock: 66980384 },
   blast: { factory: "0x1631559198a9e474033433b2958dabc135ab6446", fromBlock: 14377311 },
