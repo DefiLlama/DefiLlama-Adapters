@@ -1,4 +1,7 @@
 const yieldSourcesAddresses = [
+    // Stablecoins
+    '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', // USDT0
     // Aave
     '0x724dc807b04555b71ed48a6896b6F41593b8C637', // Aave USDC
     '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // Aave USDT
