@@ -57,7 +57,7 @@ module.exports = {
     {
       name: 'telos',
       tokens: [
-        '0xe6E5f3d264117E030C21920356641DbD5B3d660c', // USDC
+        // '0xe6E5f3d264117E030C21920356641DbD5B3d660c', // USDC - minted by the project?
         '0x63d71E79AdF0886c989A23b04a0E86F1489b6BC3', // WETH
         '0x7bD3ffe9f0C9CF08FD60e102FEa455A6EA580276', // USDT
       ],
