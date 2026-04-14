@@ -4,23 +4,15 @@ const CURVE_PMMS = [
   "0x000027B106df9f417980Bc4EdaDD1087c6f01B99",
 ];
 
-async function tvl(api) {
-  const ownerTokens = await Promise.all(CURVE_PMMS.map(async (pool) => {
-    const [tokenX, tokenY] = await Promise.all([
-      api.call({ abi: 'address:X', target: pool }),
-      api.call({ abi: 'address:Y', target: pool }),
-    ]);
-    return [[tokenX, tokenY], pool];
-  }));
-
-  await api.sumTokens({ ownerTokens });
-  return api.getBalances();
-}
-
 module.exports = {
   methodology:
     "TVL is the total value of tokens held across LunarBase CurvePMM pool contracts on Base.",
   base: {
-    tvl,
+    tvl: async (api) => {
+      const tokenXs = await api.multiCall({ abi: 'address:X', calls: CURVE_PMMS });
+      const tokenYs = await api.multiCall({ abi: 'address:Y', calls: CURVE_PMMS });
+      const ownerTokens = CURVE_PMMS.map((pool, i) => [[tokenXs[i], tokenYs[i]], pool]);
+      return api.sumTokens({ ownerTokens });
+    },
   },
 }
