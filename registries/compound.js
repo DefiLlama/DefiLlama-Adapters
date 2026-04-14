@@ -567,6 +567,9 @@ const configs = {
       { comptroller: '0xE550A886716241AFB7ee276e647207D7667e1E79' },
     ],
   },
+  'xpert': {
+    ink: [{ comptroller: '0x4f3b08B7FE4E14f728d084850A7B9CFF2E759Eb7'}],
+  }
 }
 
 module.exports = buildProtocolExports(configs, compoundExportFn)
