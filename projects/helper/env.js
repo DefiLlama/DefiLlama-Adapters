@@ -47,7 +47,7 @@ const DEFAULTS = {
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
-  MORPH_RPC: 'https://rpc.morphl2.io',
+  WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
 }
 
