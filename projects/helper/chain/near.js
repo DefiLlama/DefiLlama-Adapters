@@ -60,6 +60,10 @@ const tokenMapping = {
   'kat.token0.near': { name: 'nearkat', decimals: 18 },
   'btc.omft.near': { name: 'bitcoin', decimals: 8 },
   'eth-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.omft.near': { name: 'wrapped-btc', decimals: 8 },
+  'cardano.omft.near': { name: 'cardano', decimals: 6 },
+  'doge.omft.near': { name: 'dogecoin', decimals: 8 },
+  'ltc.omft.near': { name: 'litecoin', decimals: 8 },
+  'xrp.omft.near': { name: 'xrp', decimals: 6 },
 }
 
 function shouldRetry(error) {

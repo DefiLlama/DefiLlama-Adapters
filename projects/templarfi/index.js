@@ -39,7 +39,27 @@ function detectCrossChainToken(tokenId) {
   if (tokenId === 'zec.omft.near') {
     return { chain: 'zcash', token: 'coingecko:zcash' }
   }
-  
+
+  // Cardano via omnichain bridge
+  if (tokenId === 'cardano.omft.near') {
+    return { chain: 'cardano', token: 'coingecko:cardano' }
+  }
+
+  // Dogecoin via omnichain bridge
+  if (tokenId === 'doge.omft.near') {
+    return { chain: 'doge', token: 'coingecko:dogecoin' }
+  }
+
+  // Litecoin via omnichain bridge
+  if (tokenId === 'ltc.omft.near') {
+    return { chain: 'litecoin', token: 'coingecko:litecoin' }
+  }
+
+  // XRP via omnichain bridge
+  if (tokenId === 'xrp.omft.near') {
+    return { chain: 'ripple', token: 'coingecko:xrp' }
+  }
+
   // Ethereum tokens via omnichain bridge
   if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
     const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
@@ -351,7 +371,7 @@ async function getChainBorrowed(chain) {
 }
 
 // Supported chains for cross-chain assets
-const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana']
+const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana', 'cardano', 'doge', 'litecoin', 'ripple']
 
 module.exports = {
   methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Bitcoin).',
