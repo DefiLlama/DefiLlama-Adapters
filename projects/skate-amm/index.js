@@ -33,6 +33,7 @@ const evm_config = {
   ],
   "0g": [{ kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 }],
   monad: [{ kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 33372521 }],
+  megaeth: [{ kernelEventEmitter: '0x613d5b5f248Ff95557A8855B7b69Cbde09955C43', fromBlock: 7999879 }],
 }
 
 const svm_config = {

@@ -7,7 +7,6 @@ const MORPHO_POOL_ADDRESSES = {
     // 'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
     'Seamless USDC Vault': '0x616a4E1db48e22028f6bbf20444Cd3b8e3273738',
     'HighYield Clearstar USDC': '0xE74c499fA461AF1844fCa84204490877787cED56',
-    'Clearstar Reactor OpenEden Boosted USDC': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
     'Gauntlet USDC Prime': '0xeE8F4eC5672F09119b96Ab6fB59C27E1b7e44b61',
     'Gauntlet USDC Core': '0xc0c5689e6f4D256E861F65465b691aeEcC0dEb12',
     'Gauntlet USDC Frontier': '0x236919F11ff9eA9550A4287696C2FC9e18E6e890',
@@ -16,6 +15,10 @@ const MORPHO_POOL_ADDRESSES = {
     'Spark USDC Vault': '0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A',
     'Steakhouse Prime USDC': '0xBEEFE94c8aD530842bfE7d8B397938fFc1cb83b2',
     'Steakhouse High Yield USDC': '0xBEEFA7B88064FeEF0cEe02AAeBBd95D30df3878F',
+    'Clearstar USDC Reactor': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
+    'Moonwell Flagship ETH': '0xa0E430870c4604CcfC7B38Ca7845B1FF653D0ff1',
+    'Seamless WETH Vault': '0x27D8c7273fd3fcC6956a0B370cE5Fd4A7fc65c18',
+    'Gauntlet WETH Core': '0x6b13c060F13Af1fdB319F52315BbbF3fb1D88844'
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
@@ -38,6 +41,9 @@ const YIELDFI_BASE_POOLS = {
     'yUSD': '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
     'vyUSD': '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
 };
+const BASE_EULER_POOLS = {
+    'AlphaGrowth': '0x4C1aeda9B43EfcF1da1d1755b18802aAbe90f61E',
+};
 
 const allPoolTokens = [
     ...Object.values(HARVEST_POOLS),
@@ -48,6 +54,7 @@ const allPoolTokens = [
     ...Object.values(SPARK_POOL_ADDRESSES),
     ...Object.values(MORPHO_POOL_ADDRESSES),
     ...Object.values(FLUID_POOL_ADDRESSES),
+    ...Object.values(BASE_EULER_POOLS),
     COMPOUND_TOKEN_ADDRESS,
     AAVE_TOKEN_ADDRESS,
 ]

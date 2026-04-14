@@ -1,26 +1,11 @@
-const axios = require("axios")
+const axios = require('axios')
+const API = "https://api.multipli.fi/multipli/v1/external-aggregator/defillama/tvl/"
 
-
-async function getTvlByChain(chain) {
-    const tvl_response = (await axios.get("https://api.multipli.fi/multipli/v1/external-aggregator/defillama/tvl/"))
-    const tvl = tvl_response.data['payload'][chain]
-    return tvl
+const tvl = async (api) => {
+  const { data } = await axios.get(API)
+  return data.payload[api.chain]
 }
 
-
-module.exports = {
-    timetravel: false,
-    ethereum: {
-        tvl: () => getTvlByChain('ethereum')
-    },
-    bsc: {
-        tvl: () => getTvlByChain('bsc')
-    },
-    avax:{
-        tvl: () => getTvlByChain('avax')
-    },
-    base:{
-        tvl: () => getTvlByChain('base')
-    }
-}
-
+const chains = ['ethereum', 'bsc', 'avax', 'base', 'monad', 'arbitrum']
+module.exports.timetravel = false
+chains.forEach(chain => { module.exports[chain] = { tvl } })
