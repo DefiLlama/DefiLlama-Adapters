@@ -36,7 +36,8 @@ const ERC4626_VAULTS = [
   '0x0A1a3b5f2041F33522C4efc754a7D096f880eE16', // Euler Base USDC
   '0xC063C3b3625DF5F362F60f35B0bcd98e0fa650fb', // Apostro Resolv USDC
   '0x085178078796Da17B191f9081b5E2fCCc79A7eE7', // Frontier YO USDC
-  '0x611745c9107d0197f161556691c5129fD9B898D1', // Edge UltraYield USDC
+  '0x611745c9107d0197f161556691c5129fD9B898D1', // Euler Edge USDC
+  '0x5435BC53f2C61298167cdB11Cdf0Db2BFa259ca0', // Edge UltraYield USDC
   '0x4C1aeda9B43EfcF1da1d1755b18802aAbe90f61E', // AlphaGrowth USDC Base
   // SparkFi
   '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858', // Spark USDC Vault
@@ -81,25 +82,26 @@ async function tvl(api) {
 
   if (vaultsWithBalances.length === 0) return;
 
-  const [assets, totalAssetsList, totalSupplies] = await Promise.all([
-    api.multiCall({ abi: 'address:asset', calls: vaultsWithBalances, permitFailure: true }),
-    api.multiCall({ abi: 'uint256:totalAssets', calls: vaultsWithBalances, permitFailure: true }),
-    api.multiCall({ abi: 'uint256:totalSupply', calls: vaultsWithBalances, permitFailure: true }),
-  ]);
+  const assets = await api.multiCall({ abi: 'address:asset', calls: vaultsWithBalances, permitFailure: true });
+
+  // Use convertToAssets(shareBalance) per vault — this is the canonical ERC4626 conversion
+  // and handles vaults like Revert Lend where totalSupply includes debt shares
+  const underlyingAmounts = await api.multiCall({
+    abi: 'function convertToAssets(uint256) view returns (uint256)',
+    calls: vaultsWithBalances.map((vault) => ({
+      target: vault,
+      params: [BigInt(Math.round(Number(api.getBalances()[`${api.chain}:${vault}`]))).toString()],
+    })),
+    permitFailure: true,
+  });
 
   for (let i = 0; i < vaultsWithBalances.length; i++) {
     const asset = assets[i];
-    const totalAssets = totalAssetsList[i];
-    const totalSupply = totalSupplies[i];
-    if (!asset || !totalAssets || !totalSupply || totalSupply === '0') continue;
+    const underlyingAmount = underlyingAmounts[i];
+    if (!asset || !underlyingAmount) continue;
 
-    const vaultKey = `${api.chain}:${vaultsWithBalances[i]}`;
-    const shareBalance = api.getBalances()[vaultKey];
-    if (!shareBalance || shareBalance === '0') continue;
-
-    api.removeTokenBalance(vaultKey);
-    const underlyingAmount = BigInt(String(shareBalance)) * BigInt(totalAssets) / BigInt(totalSupply);
-    api.add(asset.toLowerCase(), underlyingAmount.toString());
+    api.removeTokenBalance(`${api.chain}:${vaultsWithBalances[i]}`);
+    api.add(asset.toLowerCase(), underlyingAmount);
   }
 }
 
