@@ -12,10 +12,21 @@ async function tvl(api) {
   const { agentAnalytics = [] } = await getConfig('yieldseeker/yield-agents/', API_URL);
   const ownerTokens = [];
   for (const agent of agentAnalytics) {
-    if (!agent?.snapshot?.tokenBalances || typeof agent.snapshot.tokenBalances !== 'object') continue;
-    const tokens = Object.keys(agent.snapshot.tokenBalances).map(normalizeToken);
-    if (tokens.length > 0) {
-      ownerTokens.push([tokens, agent.agentWalletAddress]);
+    const snapshot = agent?.snapshot;
+    if (!snapshot?.tokenBalances || typeof snapshot.tokenBalances !== 'object') continue;
+    const tokenBalancesBase = snapshot.tokenBalancesBase || {};
+    const unpricedTokens = [];
+    for (const [token, rawBalance] of Object.entries(snapshot.tokenBalances)) {
+      const baseValue = tokenBalancesBase[token];
+      if (baseValue && +baseValue > 0) {
+        // API has already converted this token to the base asset (USDC, 6 decimals)
+        api.add(ADDRESSES.base.USDC, +baseValue);
+      } else if (rawBalance && +rawBalance > 0) {
+        unpricedTokens.push(normalizeToken(token));
+      }
+    }
+    if (unpricedTokens.length > 0) {
+      ownerTokens.push([unpricedTokens, agent.agentWalletAddress]);
     }
   }
   await api.sumTokens({ ownerTokens, permitFailure: true });
