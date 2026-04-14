@@ -98,7 +98,7 @@ async function tvl(api) {
     if (!shareBalance || shareBalance === '0') continue;
 
     api.removeTokenBalance(vaultKey);
-    const underlyingAmount = BigInt(Math.floor(+shareBalance)) * BigInt(totalAssets) / BigInt(totalSupply);
+    const underlyingAmount = BigInt(String(shareBalance)) * BigInt(totalAssets) / BigInt(totalSupply);
     api.add(asset.toLowerCase(), underlyingAmount.toString());
   }
 }
