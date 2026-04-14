@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require("../helper/cache");
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ZERO_ADDRESS = ADDRESSES.null;
 
 const CHAIN_TO_API_NETWORK = {
   ethereum: "ethereum",

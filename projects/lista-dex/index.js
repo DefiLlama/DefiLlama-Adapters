@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
 const { nullAddress } = require('../helper/tokenMapping')
 
-const NATIVE_PLACEHOLDER = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+const NATIVE_PLACEHOLDER = ADDRESSES.GAS_TOKEN_2
 
 const config = {
   bsc: {

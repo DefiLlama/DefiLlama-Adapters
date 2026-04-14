@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getTokenData, sumTokens, } = require('../helper/chain/elrond')
 const { nullAddress } = require('../helper/tokenMapping')
 const sui = require('../helper/chain/sui')
@@ -11,7 +12,7 @@ const TOKEN_INFO_SCA_ID = '0x89f42e78ccc517f6641d10163ed39dd6a464d9a01a8d67ea5eb
 // Sui token types
 const CETUS = '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS'
 const SCA = '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA'
-const SUI_TOKEN = '0x2::sui::SUI'
+const SUI_TOKEN = ADDRESSES.sui.SUI
 // MultiversX contracts
 const JWLASH_STAKING = 'erd1qqqqqqqqqqqqqpgqhw2s04kx5crn2yvx5p253aa8fmganjjqdfysjvnluz'
 

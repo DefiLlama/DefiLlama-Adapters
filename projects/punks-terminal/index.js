@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const STASH_FACTORY = '0x000000000000A6fA31F5fC51c1640aAc76866750'
-const WETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-const ETH = '0x0000000000000000000000000000000000000000'
+const WETH = ADDRESSES.ethereum.WETH
+const ETH = ADDRESSES.null
 
 const DEPLOYED_ABI = 'event Deployed(address indexed proxy, address indexed implementation)'
 

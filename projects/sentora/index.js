@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport } = require("../helper/curators");
 
 const customConfig = {
@@ -22,7 +23,7 @@ const customConfig = {
     holding: [
       ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed', '0xA40aFb15275A94F64aF37C0cEaAaA45Cb568A361'],
       ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed', '0xfBCA329E2Ee0c44d8F115A4B8F7ceda9E109f436'],
-      ['0x8236a87084f8b84306f72007f36f2618a5634494', '0x9B6a57Fda106eff13ffE4ea4Ef2783C547f75cd7'],
+      [ADDRESSES.ethereum.LBTC, '0x9B6a57Fda106eff13ffE4ea4Ef2783C547f75cd7'],
       ['0xe72b141df173b999ae7c1adcbf60cc9833ce56a8', '0x778aC5d0EE062502fADaa2d300a51dE0869f7995'],
       ['0x6c3ea9036406852006290770bedfcaba0e23a0e8', '0x2A601FC6C0Cb854fDA82715E49Ab04C5340A0396'],
       ['0x6c3ea9036406852006290770bedfcaba0e23a0e8', '0x11Fd9E49c41738b7500748f7B94B4DBb0E8c13d2'],

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -19,7 +20,7 @@ const POOLS_V1 = {
   base:     'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmekaTZkP9r4mHHawko2z4YLHo7XTfNZ7FrbotViDe6pYt',
 };
 
-const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
+const ZERO_ADDR = ADDRESSES.null;
 const BID_STATE_ACCEPTED = '3';
 const COLLATERAL_ERC20 = '0';
 
