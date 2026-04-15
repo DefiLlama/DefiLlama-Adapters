@@ -2808,7 +2808,7 @@ const uniV2Configs = {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: 'function allPools(uint) view returns (address)',
       },
-      staking: ['0x88889C4Be508cA88eba6ad802340C0563891D426', '0x888a4F89aF7dD0Be836cA367C9FF5490c0F6e888'],
+      staking: { owner: '0x88889C4Be508cA88eba6ad802340C0563891D426', tokens: ['0x888a4F89aF7dD0Be836cA367C9FF5490c0F6e888'], useDefaultCoreAssets: true },
     },
   },
   'wingswap': {
