@@ -12,7 +12,14 @@ async function getData() {
   }
 
   const data = await _dataPromise
-  return Array.isArray(data) ? data : data?.results ?? data?.data ?? []
+  const rows = Array.isArray(data) ? data : data?.results ?? data?.data
+
+  if (!Array.isArray(rows)) {
+    _dataPromise = null
+    throw new Error(`Unexpected Aquarius API response shape: ${JSON.stringify(data).slice(0, 500)}`)
+  }
+
+  return rows
 }
 
 function formatUtcDate(unixTimestamp) {
