@@ -12,7 +12,6 @@ async function getData() {
   }
 
   const data = await _dataPromise
-  _dataPromise = null
   return Array.isArray(data) ? data : data?.results ?? data?.data ?? []
 }
 
