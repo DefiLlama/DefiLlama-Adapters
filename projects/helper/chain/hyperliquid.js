@@ -4,7 +4,9 @@ const API_URL = 'https://api.hyperliquid.xyz/info';
 
 async function getUserStakingSummary(user) {
   const data = await post(API_URL, { type: 'delegatorSummary', user })
-  const { delegated = "0", undelegated = "0", totalPendingWithdrawal = "0" } = data
+  const { delegated, undelegated, totalPendingWithdrawal } = data
+  if (delegated === undefined || undelegated === undefined || totalPendingWithdrawal === undefined)
+    throw new Error(`Unexpected delegatorSummary response for ${user}: ${JSON.stringify(data)}`)
   return { delegated: +delegated, undelegated: +undelegated, totalPendingWithdrawal: +totalPendingWithdrawal }
 }
 
