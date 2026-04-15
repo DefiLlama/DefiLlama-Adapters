@@ -59,20 +59,27 @@ async function tvl(api) {
   const markets = [...logsV45, ...logsV42].map((l) => l.market);
 
   // 3. After graduation `market.ammPool()` returns the DurianAMM pool address;
-  //    pre-graduation it returns the zero address.
+  //    pre-graduation it returns the zero address. We split markets into two
+  //    sets so the curve side counts ONLY ungraduated markets (matches the
+  //    methodology) — graduated markets have transferred their KUB to the
+  //    AMM pool, so counting both would double-count any residual dust.
   const ammPools = await api.multiCall({
     abi: "function ammPool() view returns (address)",
     calls: markets,
     permitFailure: true,
   });
 
-  const liveAmmPools = ammPools.filter(
-    (a) => a && a.toLowerCase() !== nullAddress
-  );
+  const isGraduated = (a) =>
+    a && typeof a === "string" && a.toLowerCase() !== nullAddress;
 
-  // 4. Sum native KUB held across every market AND every graduated AMM pool.
-  //    `permitFailure` keeps the loop alive if a single contract reverts.
-  const owners = [...markets, ...liveAmmPools];
+  const ungraduatedMarkets = markets.filter((_, i) => !isGraduated(ammPools[i]));
+  const liveAmmPools = ammPools.filter(isGraduated);
+
+  // 4. Sum native KUB held across (a) ungraduated markets + (b) graduated AMM
+  //    pools. Dedup owners as a defensive measure against any duplicate event
+  //    log echoes. `permitFailure` on multiCall above already protects against
+  //    individual contract reverts.
+  const owners = Array.from(new Set([...ungraduatedMarkets, ...liveAmmPools]));
   return api.sumTokens({ owners, tokens: [nullAddress] });
 }
 
