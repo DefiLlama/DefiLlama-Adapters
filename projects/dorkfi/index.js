@@ -168,6 +168,8 @@ function makeBorrowed(chain) {
 
 module.exports = {
   timetravel: false,
+  twitter: "dork_fi",
+  audit_links: ["https://github.com/DorkFi/audits/tree/main"],
   methodology:
     "TVL counts all native tokens and ASAs deposited into DorkFi lending pools " +
     "on Algorand and Voi. Borrowed amounts are read from pool contract market " +
