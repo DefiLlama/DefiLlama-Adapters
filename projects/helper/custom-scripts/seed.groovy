@@ -102,3 +102,38 @@ pipelineJob('tvl-custom-scripts/sushi-analytics-v2') {
         }
     }
 }
+
+// PCS V2 Job
+pipelineJob('tvl-custom-scripts/pcs-v2') {
+    displayName('PCS V2 TVL')
+    description('Calculates PancakeSwap V2 TVL on-chain')
+
+    // Keep last 21 builds
+    logRotator {
+        numToKeep(21)
+    }
+
+    // Build triggers - run every 8 hours
+    triggers {
+        cron('0 */8 * * *')
+    }
+
+    environmentVariables {
+        env('RUN_ONLY', 'pcs-v2')
+        env('PCS_PULL', 'true')
+    }
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url(repoUrl)
+                    }
+                    branches('main')
+                }
+            }
+            scriptPath("${customScriptsPath}/sushi-analytics-v2/jfile")
+        }
+    }
+}
