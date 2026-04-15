@@ -107,17 +107,7 @@ async function solanaTvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: `Omnichain token launchpad with Proof of Belief staking, configurable fee distribution, custom bonding curves, and anti-PVP mechanics across 8 chains.
-
-TVL: Sum of reserves locked in active Printr bonding curves and tokens locked in Proof of Belief (POB) staking pools. Each curve holds a base pair token (e.g., USDC, USDT, USD1) that users deposit to buy tokens. Graduated tokens (curves with completionThreshold=0) are excluded as their liquidity has moved to DEX pools (Meteora on Solana, Uniswap V3 on ETH/Base/Arb/Avax, PancakeSwap V3 on BNB/Monad, Merchant Moe on Mantle). Locked POB tokens are not used as liquidity, they represent onchain commitment only.
-
-Fees: Three fee layers per trade. Platform fee (fixed): 0.4% on bonding curve, 0.2% post-graduation. DBC/DLMM fee (dynamic): capped at 0.4% on bonding curve, 0.1% post-graduation. Custom fee (creator-set): up to 1.2% on bonding curve (default 0.5%), up to 0.75% post-graduation (default 0.1%). Max total: 2% bonding curve, 1% post-graduation.
-
-Revenue: Platform fees go to Printr protocol. Creator custom fees distributed based on chosen model: POB Staking (100% to stakers as yield), Buyback & Burn (buy back and burn supply), Liquidity Compounding (fees back to LP), Creator Wallet (to creator, transparent onchain), or No Fee (zero custom fees).
-
-Holders Revenue: When POB Staking is selected, 100% of custom fees flow to stakers as rewards, pro rata by pool share with multipliers (7d=1x, 14d=1.15x, 30d=1.3x, 60d=1.5x, 90d=1.75x, 180d=2.5x). Rewards distribute periodically in base asset + token. Staked tokens are locked, not used as liquidity. No early unstaking. If creator exits, fees continue flowing to community (CTO-ready).
-
-DEX Volume: Total trading volume from all Printr tokens across all supported chains (Solana, Base, BNB, Ethereum, Monad, Avalanche, Mantle, Arbitrum), tracked via on-chain trade events, denominated in the base pair token.`,
+  methodology: `Sum of reserves locked in active Printr bonding curves and tokens locked in Proof of Belief (POB) staking pools. Each curve holds a base pair token (e.g., USDC, USDT, USD1) that users deposit to buy tokens. Graduated tokens (curves with completionThreshold=0) are excluded as their liquidity has moved to DEX pools (Meteora on Solana, Uniswap V3 on ETH/Base/Arb/Avax, PancakeSwap V3 on BNB/Monad, Merchant Moe on Mantle). Locked POB tokens are not used as liquidity, they represent onchain commitment only.`
 }
 
 // Register TVL function for each supported EVM chain
