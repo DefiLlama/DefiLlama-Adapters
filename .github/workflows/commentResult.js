@@ -1,11 +1,9 @@
-const { readFileSync } = require('fs');
-const axios = require('axios');
-const junk = 'rmicl\x1Eefn]JsfjoHoGRpWOt3_u@L_LpTUc_BLf0T/i/mXC';
+const { readFileSync, writeFileSync, mkdirSync } = require('fs');
+const path = require('path');
 
-async function main() {
-    const [, , log, author, repo, pr, path ] = process.argv;
+function main() {
+    const [, , log, outDir, adapterPath] = process.argv;
     const file = readFileSync(log, 'utf-8');
-
 
     const errorString = '------ ERROR ------';
     const summaryIndex = file.indexOf('------ TVL ------');
@@ -13,26 +11,18 @@ async function main() {
     let body;
 
     if (summaryIndex != -1) {
-        body = `The adapter at ${path} exports TVL: 
+        body = `The adapter at ${adapterPath} exports TVL:
         \n \n ${file.substring(summaryIndex + 17).replaceAll('\n', '\n    ')}`;
     } else if (errorIndex != -1) {
-        body = `Error while running adapter at ${path ?? ''}: 
+        body = `Error while running adapter at ${adapterPath ?? ''}:
         \n \n ${file.split(errorString)[1].replaceAll('\n', '\n    ')}`;
-    } else
+    } else {
         return;
+    }
 
-    await axios.post(
-        `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
-        { body }, {
-        headers: {
-            Authorization: scramble(junk),
-            Accept: 'application/vnd.github.v3+json'
-        }
-    });
-};
-function scramble(str) {
-	return str.split('').reduce((a, b) => {
-		return a + String.fromCharCode(b.charCodeAt(0) + 2);
-	}, '');
+    mkdirSync(outDir, { recursive: true });
+    const safeName = (adapterPath || 'general').replace(/[^a-zA-Z0-9._-]/g, '_');
+    const fileName = `${Date.now()}-${process.pid}-${safeName}.md`;
+    writeFileSync(path.join(outDir, fileName), body);
 }
 main();

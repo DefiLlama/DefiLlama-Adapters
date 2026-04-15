@@ -48,4 +48,7 @@ async function borrowed(api) {
 module.exports = {
   methodology: methodologies.lendingMarket,
   bsc: { tvl, borrowed },
+  hallmarks: [
+    ['2026-03-23', 'Affected by Resolv hack'],
+  ]
 };

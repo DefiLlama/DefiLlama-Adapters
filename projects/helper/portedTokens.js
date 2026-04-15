@@ -137,7 +137,7 @@ function transformBalances(chain, balances) {
   return balances
 }
 
-function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens, skipUnknownTokens = false, }) {
 
   if (api) {
     balances = api.getBalances()
@@ -173,6 +173,9 @@ function transformDexBalances({ api, chain, data, balances, restrictTokenRatio =
   function addTokens({ token0, token0Bal, token1, token1Bal }) {
     const isCoreToken0 = coreTokens.has(token0.replace('ibc/', ''))
     const isCoreToken1 = coreTokens.has(token1.replace('ibc/', ''))
+
+    if (skipUnknownTokens && !isCoreToken0 && !isCoreToken1) return;
+
     if ((isCoreToken0 && isCoreToken1) || (!isCoreToken0 && !isCoreToken1)) {
       sdk.util.sumSingleBalance(balances, token0, token0Bal)
       sdk.util.sumSingleBalance(balances, token1, token1Bal)

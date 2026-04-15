@@ -152,12 +152,25 @@ function _parseScVal(buf, offset) {
   }
 }
 
-// Simulate a read-only Soroban contract call via RPC (no args).
-// Takes contractId and function name, returns contract response
-async function callSoroban(contractId, fnName) {
+/**
+ * Simulate a read-only Soroban contract call via RPC.
+ * contractId - Stellar contract address
+ * fnName - Contract function name
+ * args - Optional args: number -> U32, string -> contract address
+ */
+async function callSoroban(contractId, fnName, args = []) {
   const contractBytes = decodeStrKey(contractId)
   const fnPadLen = fnName.length + ((4 - (fnName.length % 4)) % 4)
-  const buf = Buffer.alloc(132 + fnPadLen)
+
+  // Calculate total size of serialized args
+  let argsSize = 0
+  for (const arg of args) {
+    if (typeof arg === 'number') argsSize += 8        // U32: type(4) + value(4)
+    else if (typeof arg === 'string') argsSize += 40  // ADDRESS: type(4) + addrType(4) + bytes(32)
+    else throw new Error(`Unsupported arg type: ${typeof arg}`)
+  }
+
+  const buf = Buffer.alloc(132 + fnPadLen + argsSize)
   let o = 0
   buf.writeUInt32BE(2, o); o += 4        // ENVELOPE_TYPE_TX
   buf.writeUInt32BE(0, o); o += 4        // KEY_TYPE_ED25519
@@ -174,94 +187,21 @@ async function callSoroban(contractId, fnName) {
   contractBytes.copy(buf, o); o += 32    // contractId bytes
   buf.writeUInt32BE(fnName.length, o); o += 4
   buf.write(fnName, o, 'utf8'); o += fnPadLen
-  buf.writeUInt32BE(0, o); o += 4        // 0 args
+  buf.writeUInt32BE(args.length, o); o += 4
+  for (const arg of args) {
+    if (typeof arg === 'number') {
+      buf.writeUInt32BE(3, o); o += 4    // SC_VAL_TYPE_U32
+      buf.writeUInt32BE(arg, o); o += 4
+    } else if (typeof arg === 'string') {
+      const argBytes = decodeStrKey(arg)
+      buf.writeUInt32BE(18, o); o += 4   // SC_VAL_TYPE_ADDRESS
+      buf.writeUInt32BE(1, o); o += 4    // SC_ADDRESS_TYPE_CONTRACT
+      argBytes.copy(buf, o); o += 32
+    }
+  }
   buf.writeUInt32BE(0, o); o += 4        // 0 auth
   buf.writeUInt32BE(0, o); o += 4        // ext v=0
   buf.writeUInt32BE(0, o); o += 4        // 0 signatures
-
-  const response = await post(SOROBAN_RPC_URL, {
-    jsonrpc: '2.0', id: 1,
-    method: 'simulateTransaction',
-    params: { transaction: buf.toString('base64') }
-  })
-
-  if (response.error) throw new Error(`Soroban RPC error: ${JSON.stringify(response.error)}`)
-  const resultXdr = response?.result?.results?.[0]?.xdr
-  if (!resultXdr) throw new Error(`No result from ${contractId}.${fnName}()`)
-
-  return _parseScVal(Buffer.from(resultXdr, 'base64'), 0).value
-}
-
-// Simulate a read-only Soroban contract call with one u32 argument.
-async function callSorobanWithU32Arg(contractId, fnName, argU32) {
-  const contractBytes = decodeStrKey(contractId)
-  const fnPadLen = fnName.length + ((4 - (fnName.length % 4)) % 4)
-  const buf = Buffer.alloc(132 + fnPadLen + 8)
-  let o = 0
-  buf.writeUInt32BE(2, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  o += 32
-  buf.writeUInt32BE(100, o); o += 4
-  buf.writeBigUInt64BE(0n, o); o += 8
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(1, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(24, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(1, o); o += 4
-  contractBytes.copy(buf, o); o += 32
-  buf.writeUInt32BE(fnName.length, o); o += 4
-  buf.write(fnName, o, 'utf8'); o += fnPadLen
-  buf.writeUInt32BE(1, o); o += 4          // 1 arg
-  buf.writeUInt32BE(3, o); o += 4          // SC_VAL_TYPE_U32
-  buf.writeUInt32BE(argU32, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4          // 0 auth
-  buf.writeUInt32BE(0, o); o += 4          // ext v=0
-  buf.writeUInt32BE(0, o); o += 4          // 0 signatures
-
-  const response = await post(SOROBAN_RPC_URL, {
-    jsonrpc: '2.0', id: 1,
-    method: 'simulateTransaction',
-    params: { transaction: buf.toString('base64') }
-  })
-
-  if (response.error) throw new Error(`Soroban RPC error: ${JSON.stringify(response.error)}`)
-  const resultXdr = response?.result?.results?.[0]?.xdr
-  if (!resultXdr) throw new Error(`No result from ${contractId}.${fnName}()`)
-
-  return _parseScVal(Buffer.from(resultXdr, 'base64'), 0).value
-}
-
-// Simulate a read-only Soroban contract call with one contract address argument.
-async function callSorobanWithContractArg(contractId, fnName, argContractId) {
-  const contractBytes = decodeStrKey(contractId)
-  const argBytes = decodeStrKey(argContractId)
-  const fnPadLen = fnName.length + ((4 - (fnName.length % 4)) % 4)
-  const buf = Buffer.alloc(132 + fnPadLen + 40)
-  let o = 0
-  buf.writeUInt32BE(2, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  o += 32
-  buf.writeUInt32BE(100, o); o += 4
-  buf.writeBigUInt64BE(0n, o); o += 8
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(1, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(24, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(1, o); o += 4
-  contractBytes.copy(buf, o); o += 32
-  buf.writeUInt32BE(fnName.length, o); o += 4
-  buf.write(fnName, o, 'utf8'); o += fnPadLen
-  buf.writeUInt32BE(1, o); o += 4
-  buf.writeUInt32BE(18, o); o += 4
-  buf.writeUInt32BE(1, o); o += 4
-  argBytes.copy(buf, o); o += 32
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
-  buf.writeUInt32BE(0, o); o += 4
 
   const response = await post(SOROBAN_RPC_URL, {
     jsonrpc: '2.0', id: 1,
@@ -283,7 +223,5 @@ module.exports = {
   getTokenBalance,
   decodeStrKey,
   callSoroban,
-  callSorobanWithContractArg,
-  callSorobanWithU32Arg,
   SOROBAN_RPC_URL,
 }
