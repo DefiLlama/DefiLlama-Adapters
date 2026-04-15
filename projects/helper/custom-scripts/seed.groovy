@@ -118,9 +118,9 @@ pipelineJob('tvl-custom-scripts/pcs-v2') {
         cron('0 */8 * * *')
     }
 
-    environmentVariables {
-        env('RUN_ONLY', 'pcs-v2')
-        env('PCS_PULL', 'true')
+    parameters {
+        stringParam('RUN_ONLY', 'pcs-v2', 'Run only this adapter')
+        stringParam('PCS_PULL', 'true', 'Enable PCS pull')
     }
 
     definition {
