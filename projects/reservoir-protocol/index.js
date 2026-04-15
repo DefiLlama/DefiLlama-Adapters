@@ -1,6 +1,5 @@
 const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getConfig } = require('../helper/cache')
 
 const config = {
   ethereum: {
@@ -196,15 +195,7 @@ const config = {
 }
 
 const tvl = async (api) => {
-  const { funds = [], tokensAndOwners, blacklistedTokens, } = config[api.chain]
-  const { assets } = await getConfig('reservoir/reserves', 'https://app.reservoir.xyz/api/reserves/raw')
-  const chainReserves = assets.filter(i => i.chainId === api.chainId)
-  console.log(`Found ${chainReserves.length} reserves for chain ${api.chain} (${api.chainId})`)
-  chainReserves.forEach(i => {
-    let token = i.address
-    const owners = Object.values(i.adapters || {})
-    owners.forEach(adapter => tokensAndOwners.push([token, adapter]))
-  })
+  const { funds = [], tokensAndOwners, blacklistedTokens } = config[api.chain]
 
   // Get underlying tokens and balances from funds
   const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
@@ -215,7 +206,7 @@ const tvl = async (api) => {
   api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
 
   // Add regular token balances
-  await api.sumTokens({ tokensAndOwners, blacklistedTokens, })
+  await api.sumTokens({ tokensAndOwners, blacklistedTokens })
 }
 
 Object.keys(config).forEach(chain => {
