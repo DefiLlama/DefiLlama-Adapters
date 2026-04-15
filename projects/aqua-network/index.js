@@ -35,10 +35,15 @@ function pickClosestRow(rows, targetDate) {
   const exactMatch = sortedRows.find((row) => row.date === targetDate)
   if (exactMatch) return exactMatch
 
-  const priorRows = sortedRows.filter((row) => row.date < targetDate)
-  if (priorRows.length) return priorRows[priorRows.length - 1]
+  return sortedRows.reduce((closestRow, currentRow) => {
+    if (!closestRow) return currentRow
 
-  return sortedRows[0]
+    const closestDistance = Math.abs(new Date(closestRow.date).getTime() - new Date(targetDate).getTime())
+    const currentDistance = Math.abs(new Date(currentRow.date).getTime() - new Date(targetDate).getTime())
+
+    if (currentDistance < closestDistance) return currentRow
+    return closestRow
+  }, null)
 }
 
 async function tvl(api) {
