@@ -41,7 +41,12 @@ async function tvl(api) {
 
   if (!row) throw new Error('No Aquarius TVL rows returned by source API')
 
-  api.addCGToken('tether', Number(row.tvl) / 1e7)
+  const tvl = Number(row.tvl) / 1e7
+  if (!Number.isFinite(tvl)) {
+    throw new Error(`Invalid Aquarius TVL value for ${row.date}: ${row.tvl}`)
+  }
+
+  api.addCGToken('tether', tvl)
 }
 
 module.exports = {
