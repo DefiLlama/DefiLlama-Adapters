@@ -10,18 +10,22 @@ const config = {
     alienBaseNFT: "0xb7996d1ecd07fb227e8dca8cd5214bdfb04534e5",
     slipNFT: "0x827922686190790b37229fd06084350e74485b72",
     slipV2NFT: "0xa990C6a764b73BF43cee5Bb40339c3322FB9D55F",
+    slipV3NFT: "0xe1f8cd9AC4e4A65F54f38a5CdAfCA44f6dD68b53",
     wAeroNFT: "0x17B5826382e3a5257b829cF0546A08Bd77409270".toLowerCase(),
     sAeroNFT: "0x9f42361B7602Df1A8Ae28Bf63E6cb1883CD44C27".toLowerCase(),
     sSlipNFT: "0x1Dc7A0f5336F52724B650E39174cfcbbEdD67bF1".toLowerCase(),
     sSlipV2NFT: "0xBed6C3E35B9B1e044b3Bc71465769EdFDC0FDD4c".toLowerCase(),
+    sSlipV3NFT: "0xE0F20BE5886F11CbcD2cb5bA9987Bcbbf1d8ca7b".toLowerCase(),
     wsSlipNFT: "0xD74339e0F10fcE96894916B93E5Cc7dE89C98272".toLowerCase(),
     wsSlipV2NFT: "0x147a2ccbaf4521ad209a2875ae0b3c496f4b25a4".toLowerCase(),
+    wsSlipV3NFT: "0x9189BC25f8faC157B4D87b0b3c14F56bA1477d53".toLowerCase(),
     pools: [
       "0x803ea69c7e87D1d6C86adeB40CB636cC0E6B98E2", // wethPool
       "0x3ec4a293Fb906DD2Cd440c20dECB250DeF141dF1", // usdcPool
       "0xa37E9b4369dc20940009030BfbC2088F09645e3B", // cbbtcPool
     ],
     resolveSlipstreamV2: true,
+    resolveSlipstreamV3: true,
   },
   optimism: {
     chainId: 10,
@@ -55,11 +59,12 @@ const config = {
 };
 
 async function unwrapArcadiaAeroLP({ api, ownerIds, chainConfig }) {
-  const { wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, wsSlipNFT, wsSlipV2NFT, slipNFT, slipV2NFT } = chainConfig
+  const { wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, sSlipV3NFT, wsSlipNFT, wsSlipV2NFT, wsSlipV3NFT, slipNFT, slipV2NFT, slipV3NFT } = chainConfig
   const wAERONFTIds = []
   const sAERONFTIds = []
   const sSlipNftIds = []
   const sSlipV2NftIds = []
+  const sSlipV3NftIds = []
 
   // for each asset address owned by an account
   // check if the asset is the wrapped or staked aero asset module
@@ -82,11 +87,17 @@ async function unwrapArcadiaAeroLP({ api, ownerIds, chainConfig }) {
         case sSlipV2NFT:
           sSlipV2NftIds.push(ids[i]);
           break;
+        case sSlipV3NFT:
+          sSlipV3NftIds.push(ids[i]);
+          break;
         case wsSlipNFT:
           sSlipNftIds.push(ids[i]);
           break;
         case wsSlipV2NFT:
           sSlipV2NftIds.push(ids[i]);
+          break;
+        case wsSlipV3NFT:
+          sSlipV3NftIds.push(ids[i]);
           break;
       }
     }
@@ -101,6 +112,9 @@ async function unwrapArcadiaAeroLP({ api, ownerIds, chainConfig }) {
   if (slipV2NFT) {
     await uwrapStakedSlipstreamLP({ api, sSlipNftIds: sSlipV2NftIds, nft: slipV2NFT });
   }
+  if (slipV3NFT) {
+    await uwrapStakedSlipstreamLP({ api, sSlipNftIds: sSlipV3NftIds, nft: slipV3NFT });
+  }
 }
 
 async function uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft, }) {
@@ -112,8 +126,8 @@ async function uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft, }) {
 
 async function tvl (api) {
   const chainConfig = config[api.chain];
-  const { factory, pools, uniNFT, uniV4NFT, slipNFT, slipV2NFT, wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, alienBaseNFT, wsSlipNFT, wsSlipV2NFT, resolveSlipstreamV2, chainId } = chainConfig;
-  const allNfts = [uniNFT, uniV4NFT, slipNFT, slipV2NFT, wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, alienBaseNFT, wsSlipNFT, wsSlipV2NFT].filter(Boolean);
+  const { factory, pools, uniNFT, uniV4NFT, slipNFT, slipV2NFT, slipV3NFT, wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, sSlipV3NFT, alienBaseNFT, wsSlipNFT, wsSlipV2NFT, wsSlipV3NFT, resolveSlipstreamV2, resolveSlipstreamV3, chainId } = chainConfig;
+  const allNfts = [uniNFT, uniV4NFT, slipNFT, slipV2NFT, slipV3NFT, wAeroNFT, sAeroNFT, sSlipNFT, sSlipV2NFT, sSlipV3NFT, alienBaseNFT, wsSlipNFT, wsSlipV2NFT, wsSlipV3NFT].filter(Boolean);
   const ownerTokens = []
   const ownerIds = []
   const accs = []
@@ -213,7 +227,7 @@ async function tvl (api) {
   if (uniV4Ids.length > 0) {
     await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: {"positionIds":uniV4Ids}})
   }
-  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true, resolveSlipstreamV2: !!resolveSlipstreamV2 })
+  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true, resolveSlipstreamV2: !!resolveSlipstreamV2, resolveSlipstreamV3: !!resolveSlipstreamV3 })
 }
 
 module.exports = {
