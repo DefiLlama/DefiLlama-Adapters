@@ -252,7 +252,7 @@ async function tvl(api) {
   // ... drift position processing removed ...
 
   // Kamino Lend vaults
-  await kaminoLendVaultTvl(api, GAUNTLET_ADMIN)
+  await kaminoLendVaultTvl(api, { adminAddress: GAUNTLET_ADMIN })
 }
 
 async function megavaultTvl(api) {
