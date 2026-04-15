@@ -1,34 +1,48 @@
 const { get } = require('../helper/http')
 const AQUA_STATS_URL = "https://amm-api.aqua.network/api/external/v1/statistics/totals/?size=all"
 
-let _data
+let _dataPromise = null
 
 async function getData() {
-  if (!_data)
-    _data = get(AQUA_STATS_URL)
-  const data = await _data
-  const res = {}
-  data.forEach((item) => {
-    res[item.date] = item.tvl / 1e7
-  })
-  return res
+  if (_dataPromise === null) {
+    _dataPromise = get(AQUA_STATS_URL).catch((err) => {
+      _dataPromise = null
+      throw err
+    })
+  }
+
+  const data = await _dataPromise
+  _dataPromise = null
+  return Array.isArray(data) ? data : data?.results ?? data?.data ?? []
 }
 
-function formatUnixTimestamp(unixTimestamp) {
-  const date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+function formatUtcDate(unixTimestamp) {
+  return new Date(unixTimestamp * 1000).toISOString().slice(0, 10)
+}
+
+function pickClosestRow(rows, targetDate) {
+  const sortedRows = rows
+    .filter((row) => row?.date && row?.tvl != null)
+    .slice()
+    .sort((a, b) => a.date.localeCompare(b.date))
+
+  const exactMatch = sortedRows.find((row) => row.date === targetDate)
+  if (exactMatch) return exactMatch
+
+  const priorRows = sortedRows.filter((row) => row.date < targetDate)
+  if (priorRows.length) return priorRows[priorRows.length - 1]
+
+  return sortedRows[0]
 }
 
 async function tvl(api) {
-  const key = formatUnixTimestamp(api.timestamp)
-  const allData = await getData()
-  const usdValue = allData[key]
-  if (!usdValue)
-    throw new Error('No data found for current date');
-  api.addCGToken('tether', usdValue)
+  const key = formatUtcDate(api.timestamp)
+  const rows = await getData()
+  const row = pickClosestRow(rows, key)
+
+  if (!row) throw new Error('No Aquarius TVL rows returned by source API')
+
+  api.addCGToken('tether', Number(row.tvl) / 1e7)
 }
 
 module.exports = {
