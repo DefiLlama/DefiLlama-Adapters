@@ -118,11 +118,11 @@ async function getTvl(type, fields, api) {
     let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
 
     if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.toNumber()}, marketId: ${fields.id.id}`);
+      // console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.toNumber()}, marketId: ${fields.id.id}`);
       api.add(tokens, syBalance.toNumber());
     } else {
       let underlyingBalance = syBalance.multipliedBy(rate2);
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${underlyingBalance.toNumber()}, marketId: ${fields.id.id}, rate1: ${rate1}, rate2: ${rate2}`);
+      // console.log(`coinType: ${coinConfig.coinType}, syBalance: ${underlyingBalance.toNumber()}, marketId: ${fields.id.id}, rate1: ${rate1}, rate2: ${rate2}`);
       api.add(coinConfig.underlyingCoinType, underlyingBalance.toNumber());
     }
   }

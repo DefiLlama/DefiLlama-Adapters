@@ -13,7 +13,7 @@ module.exports = {
     staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken),
   },
   hallmarks:[
-    [1655991120, "Horizon bridge Hack $100m"],
+    ['2022-06-23', "Horizon bridge Hack $100m"],
   ],
   kava: {
     tvl: () => ({}),

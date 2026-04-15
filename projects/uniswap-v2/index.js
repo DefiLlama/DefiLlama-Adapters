@@ -22,7 +22,8 @@ const config = {
   zora: '0x0F797dC7efaEA995bB916f268D919d0a1950eE3C',
   unichain: '0x1F98400000000000000000000000000000000002',
   monad: '0x182a927119d56008d921126764bf884221b10f59',
-  xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95'
+  xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95',
+  tempo: '0xf9ec577a4e45b5278bb7cf60fcbc20c3acaef68f'
 }
 
 Object.keys(config).forEach(chain => {
@@ -34,7 +35,8 @@ Object.keys(config).forEach(chain => {
 
 module.exports.isHeavyProtocol = true
 
-const graphChains = ['unichain', 'ethereum', 'base']
+// const graphChains = ['unichain', 'ethereum', 'base']
+const graphChains = ['ethereum', 'base']
 
 graphChains.forEach(chain => {
   module.exports[chain] = { tvl: tvlViaGraph }
@@ -44,7 +46,7 @@ async function tvlViaGraph(api) {
   const endpoint = `https://interface.gateway.uniswap.org/v2/uniswap.explore.v1.ExploreStatsService/ProtocolStats?connect=v1&encoding=json&message=%7B%22chainId%22%3A%22${api.chainId}%22%7D`
   const res = await get(endpoint, { headers: { 'origin': 'https://app.uniswap.org' } })
   const v2 = res.dailyProtocolTvl.v2
-  const oneDayBefore = api.timestamp - 86400
+  const oneDayBefore = api.timestamp - 86400 * 5
   const oneDayAfter = api.timestamp + 86400 / 3
   const dayData = v2.find(d => d.timestamp >= oneDayBefore && d.timestamp <= oneDayAfter)
 
