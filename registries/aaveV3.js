@@ -20,6 +20,7 @@ const configs = {
   },
   'purrlend': {
     hyperliquid: ['0xa8Ca6a4A485485910aA4023b9963Dfd2f3A5aeb0'],
+    megaeth: ['0xfCaE4E9Acb1E5C78aa699d43c5cc0eAC5399E754'],
   },
   // --- newly migrated aaveV3Export protocols ---
   'zentra': {
