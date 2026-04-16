@@ -16,6 +16,9 @@ async function fetchAllVaults() {
     hasMore = data.hasMore === true;
     page++;
   }
+  if (hasMore) {
+    throw new Error(`Anoncoin vault pagination exceeded 200 pages; TVL may be incomplete`);
+  }
   return [...solOwners];
 }
 
