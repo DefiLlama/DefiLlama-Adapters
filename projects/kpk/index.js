@@ -1,3 +1,6 @@
+const axios = require("axios")
+const { getEnv } = require("../helper/env")
+const { nullAddress } = require("../helper/sumTokens")
 const { getCuratorExport } = require("../helper/curators")
 const { sumTokensDebank } = require("../helper/debank")
 
@@ -18,7 +21,7 @@ const GearboxCompressorABI = {
 // ---- Config (extend as needed) ----
 const configs = {
   methodology:
-    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, and kpk Fund AUM via onchain NAV Calculators.",
+    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, kpk Fund AUM, and positions in Safes actively managed by kpk via Zodiac Roles Modifier.",
   blockchains: {
     ethereum: {
       // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
@@ -137,11 +140,81 @@ async function getAlephVaultTvl(api, vaults) {
   }
 }
 
-// ---- kpk Fund (OIV) TVL via DeBank ----
-const FUND_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
+// ---- DeBank wallet-token helper (adapter-local) ----
+// sumTokensDebank (shared helper) walks all_complex_protocol_list only, so wallet-held
+// ERC20s sitting directly in a Safe are missed. We fetch them from all_token_list here
+// instead of extending the shared helper to avoid changing behavior for other adapters
+// (contango, stakedao, dhedge, sideshift-ai) whose treasuries combine an on-chain
+// wallet-balance fetch with DeBank protocol positions and would otherwise double-count.
+const DEBANK_API_BASE = "https://pro-openapi.debank.com/v1/user"
+const debankToLlamaChain = {
+  eth: 'ethereum', op: 'optimism', arb: 'arbitrum', avax: 'avax', bsc: 'bsc',
+  ftm: 'fantom', sonic: 'sonic', base: 'base', matic: 'polygon',
+  frax: 'fraxtal', mnt: 'mantle', gno: 'xdai',
+}
+const _walletCache = {}
 
-async function getKpkFundTvl(api) {
-  await sumTokensDebank(api, [PORTFOLIO_SAFE])
+async function _fetchDebankWalletTokens(owners) {
+  const key = owners.map(o => o.toLowerCase()).sort().join(',')
+  if (_walletCache[key]) return _walletCache[key]
+  const apiKey = getEnv('DEBANK_API_KEY')
+  if (!apiKey) {
+    _walletCache[key] = Promise.resolve(owners.map(() => []))
+    return _walletCache[key]
+  }
+  const headers = { accept: 'application/json', AccessKey: apiKey }
+  _walletCache[key] = Promise.all(
+    owners.map(id =>
+      axios.get(`${DEBANK_API_BASE}/all_token_list`, {
+        params: { id, is_all: false },
+        headers,
+      }).then(r => r.data).catch(e => {
+        console.log(`DeBank all_token_list failed for ${id}: ${e.response?.status || e.message}`)
+        return []
+      })
+    )
+  )
+  return _walletCache[key]
+}
+
+async function addDebankWalletTokens(api, owners) {
+  const tokenData = await _fetchDebankWalletTokens(owners)
+  for (const tokens of tokenData) {
+    for (const token of tokens || []) {
+      const llamaChain = debankToLlamaChain[token.chain] || token.chain
+      if (llamaChain !== api.chain) continue
+      if (!token.id) continue
+      const addr = token.id === 'eth' ? nullAddress : token.id.toLowerCase()
+      if (token.amount > 0) api.add(addr, token.amount * 10 ** token.decimals)
+    }
+  }
+}
+
+// ---- kpk Fund (OIV) TVL via DeBank ----
+const OIV_SAFES = [PORTFOLIO_SAFE]
+const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
+
+async function getOivTvl(api) {
+  await sumTokensDebank(api, OIV_SAFES)
+  await addDebankWalletTokens(api, OIV_SAFES)
+}
+
+// ---- Zodiac-managed Safes (Institutional vertical) TVL via DeBank ----
+// Safes owned by external institutions but actively managed by kpk via Zodiac Roles Modifier.
+const ZODIAC_MANAGED_SAFES = [
+  '0x4F2083f5fBede34C2714aFfb3105539775f7FE64', // ENS Endowment Fund
+  '0x616dE58c011F8736fa20c7Ae5352F7f6FB9F0669', // CoW Main Treasury
+  '0x7F8987D6A8bee31bD7bE80E877732579E2582a28', // CoW Defense Fund
+  '0x9009B4411D0e1171cc042b77D7701f46B737Fdb9', // CoW Validator Safe
+  '0x4D1D9D7741740A3E2ffC5507aC643DbA5e81cAe5', // Arbitrum DAO
+  '0x8e53D04644E9ab0412a8c6bd228C84da7664cFE3', // Nexus Mutual
+  '0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89', // Balancer Core Treasury
+]
+const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc', 'polygon']
+
+async function getZodiacManagedTvl(api) {
+  await sumTokensDebank(api, ZODIAC_MANAGED_SAFES)
+  await addDebankWalletTokens(api, ZODIAC_MANAGED_SAFES)
 }
 
 // ---- Combined TVL export per chain ----
@@ -161,15 +234,28 @@ for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
 }
 
 // Add kpk Fund (OIV) TVL to each chain the fund is deployed on
-for (const chain of FUND_CHAINS) {
+for (const chain of OIV_CHAINS) {
   if (exportObjects[chain]) {
     const originalTvl = exportObjects[chain].tvl
     exportObjects[chain].tvl = async (api) => {
       await originalTvl(api)
-      await getKpkFundTvl(api)
+      await getOivTvl(api)
     }
   } else {
-    exportObjects[chain] = { tvl: getKpkFundTvl }
+    exportObjects[chain] = { tvl: getOivTvl }
+  }
+}
+
+// Add Zodiac-managed Safe TVL to each chain where managed funds exist
+for (const chain of ZODIAC_CHAINS) {
+  if (exportObjects[chain]) {
+    const originalTvl = exportObjects[chain].tvl
+    exportObjects[chain].tvl = async (api) => {
+      await originalTvl(api)
+      await getZodiacManagedTvl(api)
+    }
+  } else {
+    exportObjects[chain] = { tvl: getZodiacManagedTvl }
   }
 }
 
