@@ -68,6 +68,12 @@ const configs = {
       staking: { owners: ['0xA8E2F506aDcbBF18733A9F0f32e3D70b1A34d723', '0xbb9D524e28c7E7b5A9D439D5D1ba68A87788BbB6', '0x554CEAe7b091b21DdAeFe65cF79651132Ee84Ed7'], tokens: ['0x00E701Eff4f9Dc647f1510f835C5d1ee7E41D28f']}
     }
   },
+  'cronos-gangsters': {
+    methodology: 'TVL counts GANG tokens locked in Cronos Gangsters staking and competition contracts.',
+    cronos: {
+      staking: { owners: ['0x2099ad49329909FDb620714D01F5A74D57CDeE0C', '0xe546C82f0CedE3341dC402626923A6D4b95234Ee'], tokens: ['0x4cE15b52a34dE6F62448fDBAdDF1dB4811DDC3EF']}
+    }
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
