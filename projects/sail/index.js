@@ -20,18 +20,12 @@ async function getOwners() {
     return owners.filter(o => typeof o === 'string' && /^0x[0-9a-fA-F]{40}$/.test(o));
 }
 
-const MULTICALL_LIMIT = 500;
-
 async function tvl(api) {
     const [owners, tokens] = await Promise.all([
         getOwners(),
         getTokens(api.chain),
     ]);
-
-    const chunkSize = Math.max(1, Math.floor(MULTICALL_LIMIT / tokens.length));
-    for (let i = 0; i < owners.length; i += chunkSize) {
-        await api.sumTokens({ tokens, owners: owners.slice(i, i + chunkSize) });
-    }
+    await api.sumTokens({ tokens, owners, permitFailure: true });
 }
 
 module.exports = {
