@@ -10,7 +10,7 @@ jobs:
         with:
           output: 'json'
           fileOutput: 'json'
-      
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -31,6 +31,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Record PR number
+        run: |
+          mkdir -p pr-comments
+          echo "${{ github.event.number }}" > pr-comments/pr-number.txt
+
       - name: Run changes files through test script
         env:
           LLAMA_DEBUG_MODE: "true"
@@ -50,26 +55,35 @@ jobs:
 
           # fail if package.json or package-lock.json is changed
           FILES_MODIFIED=${{ steps.file_changes.outputs.files_modified }}
-          if [[ $FILES_MODIFIED == *"package.json"* || $FILES_MODIFIED == *"package-lock.json"* ]]; then
-            echo "------ ERROR ------ > Please revert changes to package.json / package-lock.json" > /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt
-            node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}"
+          if [[ $FILES_MODIFIED == *"package.json"* || $FILES_MODIFIED == *"package-lock.json"* || $FILES_MODIFIED == *"pnpm-lock.yaml"* || $FILES_MODIFIED == *"pnpm-workspace.yaml"* ]]; then
+            echo "------ ERROR ------ > Please revert changes to package.json / package-lock.json / pnpm-lock.yaml / pnpm-workspace.yaml" > ${{ github.workspace }}/output.txt
+            node ${{ github.workspace }}/.github/workflows/commentResult.js ${{ github.workspace }}/output.txt ${{ github.workspace }}/pr-comments
             exit 1
           fi
 
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
-          do 
-            { 
+          do
+            {
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
-              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
+              node ${{ github.workspace }}/.github/workflows/commentResult.js ${{ github.workspace }}/output.txt ${{ github.workspace }}/pr-comments ${i}
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
                 exit 1;
               fi
-            } || { 
+            } || {
               echo -n $i
               echo ' doesnt run'
             }
           done
-        
+
+      - name: Upload PR comments artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-comments
+          path: pr-comments/
+          if-no-files-found: ignore
+          retention-days: 1
+
       - name: Run ESLint
         run: |
           npm run lint

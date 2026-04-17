@@ -263,6 +263,18 @@ module.exports = {
     })
     return Array.from(new Set(staticAddresses))
   },
+  symbiosis: async () => {
+    return getConfig('symbiosis/bitcoin-portal-addresses', undefined, {
+      fetcher: async () => {
+        const { addresses } = await get('https://api.symbiosis.finance/crosschain/v2/bitcoin-portal-addresses')
+        return addresses
+      }
+    })
+  },
+  teleswap: async () => {
+    const  { data: { lockers } } = await getConfig('yala/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
+    return lockers.filter(l => l.type === 'BTC').map(l => l.sourceAddress)
+  },
   zenrock: async () => {
     const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
     const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';

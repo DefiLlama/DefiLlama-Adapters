@@ -7,6 +7,9 @@ const configs = {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
       ],
+      eulerVaultOwners: [
+        '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
+      ],
       erc4626: [
         '0x1166250D1d6B5a1DBb73526257f6bb2Bbe235295', // yoUSD IPOR Fusion
         '0xfd843a3D9329C91CA22c5daA994BeA762541F954', // yoETH IPOR Fusion
@@ -15,11 +18,13 @@ const configs = {
     ethereum: {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
+        '0x829A13850b684A575C0580a83322890e19c5eFaa',
       ],
       erc4626: [
         '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
         '0xb2FdA773822E5a04c8A70348d66257DD5Cf442DB', // Upshift LiquityV2
         '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
+        '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23', // IPOR Fusion yoGOLD
       ],
     },
     polygon: {
@@ -35,6 +40,14 @@ const configs = {
     katana: {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+      erc4626: [
+        '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // vbUSDC Metavault on Spectra
+      ],
+    },
+    monad: {
+      eulerVaultOwners: [
+        '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
       ],
     },
     arbitrum: {

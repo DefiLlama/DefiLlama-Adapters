@@ -60,6 +60,10 @@ const tokenMapping = {
   'kat.token0.near': { name: 'nearkat', decimals: 18 },
   'btc.omft.near': { name: 'bitcoin', decimals: 8 },
   'eth-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.omft.near': { name: 'wrapped-btc', decimals: 8 },
+  'cardano.omft.near': { name: 'cardano', decimals: 6 },
+  'doge.omft.near': { name: 'dogecoin', decimals: 8 },
+  'ltc.omft.near': { name: 'litecoin', decimals: 8 },
+  'xrp.omft.near': { name: 'xrp', decimals: 6 },
 }
 
 function shouldRetry(error) {
@@ -119,13 +123,24 @@ async function call(contract, method, args = {}) {
 }
 
 async function getTokenBalance(token, account) {
-  return call(token, "ft_balance_of", { account_id: account })
+  try {
+    const response = await call(token, "ft_balance_of", { account_id: account })
+    return response
+  } catch (e) {
+    if (e.message.includes("does not exist while viewing")) {
+      return 0;
+    }
+    throw e;
+  }
 }
 
 async function addTokenBalances(tokens, account, balances = {}) {
   if (!Array.isArray(tokens)) tokens = [tokens]
-  const fetchBalances = tokens.map(token => addAsset(token, account, balances))
-  await Promise.all(fetchBalances)
+  await sdk.util.runInPromisePool({
+    concurrency: 3,
+    items: tokens,
+    processor: token => addAsset(token, account, balances),
+  })
   return balances
 }
 
@@ -151,8 +166,17 @@ function sumSingleBalance(balances, token, balance) {
 
 async function sumTokens({ balances = {}, owners = [], tokens = []}) {
   tokens = tokens.filter(i => i !== 'aurora')
-  await Promise.all(owners.map(i => addTokenBalances(tokens, i, balances)))
-  const bals = await Promise.all(owners.map(view_account))
+  await sdk.util.runInPromisePool({
+    concurrency: 3,
+    items: owners,
+    processor: i => addTokenBalances(tokens, i, balances),
+  })
+  const bals = []
+  await sdk.util.runInPromisePool({
+    concurrency: 3,
+    items: owners,
+    processor: async i => bals.push(await view_account(i)),
+  })
   const nearBalance = bals.reduce((a,i) => a + (i.amount/1e24), 0)
   sdk.util.sumSingleBalance(balances,'coingecko:near',nearBalance)
   return balances

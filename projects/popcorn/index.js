@@ -46,7 +46,7 @@ const getArbTvl = async (balances, api, vaults) => {
   const assets = await api.multiCall({ abi: abis.asset, calls: filteredVaults, permitFailure: true });
   const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: filteredVaults, permitFailure: true });
   await addFraxVaultToTVL(balances, api);
-  api.add(assets.map(i => i || '0x0000000000000000000000000000000000000000'), totalAssets.map(i => i || 0))
+  api.add(assets.map(i => i || ADDRESSES.null), totalAssets.map(i => i || 0))
   return balances
 }
 
@@ -62,7 +62,7 @@ const tvl = async (api) => {
 
   const assets = await api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults, permitFailure: true })
-  api.add(assets.map(i => i || '0x0000000000000000000000000000000000000000'), totalAssets.map(i => i || 0))
+  api.add(assets.map(i => i || ADDRESSES.null), totalAssets.map(i => i || 0))
   return sumTokens2({ api, resolveLP: true })
 }
 
