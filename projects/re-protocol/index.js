@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { sumTokensDebank } = require('../helper/debank');
 
 const OWNERS = {
   'mainnet': [
@@ -45,24 +44,9 @@ async function tvlEthereum(api) {
 
   api.add(ADDRESSES.ethereum.USDC, offChainData / 100);
 
-  // Handle complex positions in the custodian
-  await sumTokensDebank(api, ['0x295F67Fdb21255A3Db82964445628a706FBe689E']);
-
-  await sumTokens2({
-    api,
-    owners: [OWNERS['mainnet'][0]],
-    tokens: [
-      ADDRESSES.null,
-      ADDRESSES.ethereum.USDC,
-      ADDRESSES.ethereum.USDT,
-      ADDRESSES.ethereum.USDe,
-      ADDRESSES.ethereum.USDS,
-    ]
-  })
-
   return sumTokens2({
     api,
-    owners: OWNERS['mainnet'].slice(1),
+    owners: OWNERS['mainnet'],
     tokens: [
       ADDRESSES.null,
       ADDRESSES.ethereum.USDC,
@@ -75,29 +59,21 @@ async function tvlEthereum(api) {
 }
 
 async function tvlAvax(api) {
-  // Handle complex positions in the custodian
-  await sumTokensDebank(api, ['0x295F67Fdb21255A3Db82964445628a706FBe689E']);
-
   return sumTokens2({ api, owners: OWNERS['avax'], tokens: [ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDe, ADDRESSES.avax.sUSDe, ADDRESSES.avax.USDt, ADDRESSES.avax.reUSD] })
 }
 
 async function tvlArb(api) {
-  // Handle complex positions in the custodian
-  await sumTokensDebank(api, ['0x295F67Fdb21255A3Db82964445628a706FBe689E']);
-
   return sumTokens2({ api, owners: OWNERS['arb'], tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDe, ADDRESSES.arbitrum.sUSDe, ADDRESSES.arbitrum.USDT] })
 }
 
 async function tvlBase(api) {
-  // Handle complex positions in the custodian
-  await sumTokensDebank(api, ['0x295F67Fdb21255A3Db82964445628a706FBe689E']);
-
   return sumTokens2({ api, owners: OWNERS['base'], tokens: [ADDRESSES.null, ADDRESSES.base.USDC, ADDRESSES.base.USDe, ADDRESSES.base.sUSDe, ADDRESSES.base.USDT] })
 }
 
 module.exports = {
   methodology: 'Value of the tokens in the custodian wallets + value of the tokens in redemption reserves + off-chain assets tracked via oracle (tracked as USDC)',
   start: 1737488963, // reUSD Deployment time (https://etherscan.io/tx/0x3094948b3dbe89f4824217e37b8667fbb4d89e18b0b426a453fe7377095c26ea)
+  timetravel: false,
   ethereum: { tvl: tvlEthereum },
   avax: { tvl: tvlAvax },
   arbitrum: { tvl: tvlArb },
