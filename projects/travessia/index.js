@@ -1,10 +1,5 @@
-const VAULTS = {
-  monad: ['0x8D24B48Cb736addb5B7069565F192A052F42Ba61'],
-  ethereum: ['0x4C18E2bb9942b12b28e780acF2D9EC2DDA126df9'],
-}
-
 async function tvl(api) {
-  const vaults = VAULTS[api.chain]
+  const vaults = await fetch(`https://www.travessiacredit.com/api/vaults?chainId=${api.chainId}`).then(r=>r.json()).then(r=>r.map(v=>v.vaultAddress))
   const [supplies, assets] = await Promise.all([
     api.multiCall({ abi: 'erc20:totalSupply', calls: vaults }),
     api.multiCall({ abi: 'address:asset', calls: vaults }),
