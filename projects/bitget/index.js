@@ -87,7 +87,8 @@ const config = {
       "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
       "0x5bdf85216ec1e38d6458c870992a69e38e03f7ef",
       "0xec96bbbe895301710a89a06546264ebb4f0cc546",
-      "0x95ccca6d1859ae5670c2213940c96dcb2e177fcb"
+      "0x95ccca6d1859ae5670c2213940c96dcb2e177fcb",
+      "0x26209d9f0dc3ac0129c3fb1badabfeb9ee728c66",
     ],
     blacklistedTokens: [
       "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
@@ -201,7 +202,8 @@ const config = {
       "DP1FqoBnE23QNNz4LpT9FCQvETdJN4nph5c11NiinrGg",
       "AyhsmFptkM251V1AoH2gf8d4QUnxUkkmaDqFfFwBwGni",
       "4S8C1yrRZmJYPzCqzEVjZYf6qCYWFoF7hWLRzssTCotX",
-      "7TWnq4WeYcwQWBCwKeEX2Q9xqVtthPGkB7adNvueuVuh"
+      "7TWnq4WeYcwQWBCwKeEX2Q9xqVtthPGkB7adNvueuVuh",
+      "EPxGiguU5j5tKFnMQpzMrzczEQ5NRtLWrpG9fADvtadX",
     ],
   },
   metis: {
