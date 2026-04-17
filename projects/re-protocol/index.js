@@ -59,7 +59,7 @@ async function tvlEthereum(api) {
 }
 
 async function tvlAvax(api) {
-  return sumTokens2({ api, owners: OWNERS['avax'], tokens: [ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDe, ADDRESSES.avax.sUSDe, ADDRESSES.avax.USDt, ADDRESSES.avax.reUSD] })
+  return sumTokens2({ api, owners: OWNERS['avax'], tokens: [ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDe, ADDRESSES.avax.sUSDe, ADDRESSES.avax.USDt] })
 }
 
 async function tvlArb(api) {
