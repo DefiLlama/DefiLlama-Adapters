@@ -1,5 +1,4 @@
-const { getConfig } = require('../helper/cache');
-const axios = require('axios');
+const { getConfig, configPost } = require('../helper/cache');
 
 const SUPPORTED_TOKENS_URL = 'https://app.sail.money/api/v1/projects/68b43fb4ced0704efcb3143c/pages/69d7b31663e3b54646702cb7/custom/supported_tokens';
 const ACTIVE_WALLETS_URL = 'https://app.sail.money/api/v1/projects/sail/pages/institutions/custom/get_all_wallets';
@@ -11,36 +10,33 @@ const CHAIN_IDS = {
 };
 
 async function getTokens(chainName) {
-    const chainId = CHAIN_IDS[chainName];
-    const data = await getConfig(`sail/supported-tokens-${chainName}`, undefined, {
-        fetcher: async () => {
-            const { data } = await axios.post(
-                SUPPORTED_TOKENS_URL,
-                { params: { chain: chainId } },
-                { headers: { Authorization: `Bearer ${process.env.SAIL_API_TOKEN}` } }
-            );
-            return Array.isArray(data) ? data : data.result;
-        },
-    });
-    return Array.isArray(data) ? data : data.result;
+    const data = await configPost(`sail/supported-tokens-${chainName}`, SUPPORTED_TOKENS_URL, { params: { chain: CHAIN_IDS[chainName] } });
+    return Array.isArray(data) ? data : (data?.result ?? []);
 }
 
 async function getOwners() {
     const data = await getConfig('sail/active-wallets', ACTIVE_WALLETS_URL);
-    const owners = Array.isArray(data) ? data : data.result;
-    return owners.filter(o => o !== '');
+    const owners = Array.isArray(data) ? data : (data?.result ?? []);
+    return owners.filter(o => typeof o === 'string' && /^0x[0-9a-fA-F]{40}$/.test(o));
 }
+
+const MULTICALL_LIMIT = 500;
 
 async function tvl(api) {
     const [owners, tokens] = await Promise.all([
         getOwners(),
         getTokens(api.chain),
     ]);
-    await api.sumTokens({ tokens, owners });
+
+    const chunkSize = Math.max(1, Math.floor(MULTICALL_LIMIT / tokens.length));
+    for (let i = 0; i < owners.length; i += chunkSize) {
+        await api.sumTokens({ tokens, owners: owners.slice(i, i + chunkSize) });
+    }
 }
 
 module.exports = {
-    methodology: 'TVL is calculated by querying onchain balances of Sail smart wallet accounts across DeFi protocols/vaults on each supported chain.',
+    methodology: 'TVL is the sum of supported-token balances held by Sail smart-wallet accounts on each supported chain, priced via DefiLlama.',
+    isHeavyProtocol: true,
     ethereum: { tvl },
     base: { tvl },
     arbitrum: { tvl },
