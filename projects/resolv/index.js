@@ -7,24 +7,29 @@ const tokens = [
 ]
   
   
-const HACK_START = 1774137600    // 2026-03-25
+const HACK_START = 1774137600    // 2026-03-21
+// https://etherscan.io/tx/0x41b6b9376d174165cbd54ba576c8f6675ff966f17609a7b80d27d8652db1f18f
+// https://etherscan.io/tx/0xfe37f25efd67d0a4da4afe48509b258df48757b97810b28ce4c649658dc33743
+
 const HACK_RESOLVED = 1776444059 // 2026-04-17 — hacked USR burned
+// https://etherscan.io/tx/0x0498bf5b5a2e16e5cf5abccf3f8e00e14c93d785389de5bc44b3a6ec8ac346df
 
 module.exports = {
-  methodology: 'Counts total supply of USR and RLP tokens.',
+  methodology: 'Counts total supply of USR and RLP tokens, excluding 80M USR during hack window.',
   hallmarks: [
-    ["2026-03-21", "80M USR minted in hack, burned by Apr 17"],
+    ["2026-03-21", "80M USR minted in hack"],
   ],
   ethereum: {
     misrepresentedTokens: true,
     tvl: async (api) => {
-      // USR mapped to USDC (1:1 stablecoin)
-      api.add(ADDRESSES.ethereum.USDC, (await api.call({ target: tokens[0], abi: 'erc20:totalSupply' })) / 1e12)
-      // Subtract 80M during hack window (hacked tokens burned Apr 17)
-      if (api.timestamp > HACK_START && api.timestamp < HACK_RESOLVED) {
-        api.add(ADDRESSES.ethereum.USDC, -8e13)
+      if (api.timestamp < HACK_START) {
+        api.add(tokens, await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' }))
+      } else {
+        // After hack we map USR to USDC and subtract 80M during hack window
+        api.add(ADDRESSES.ethereum.USDC, (await api.call({ target: tokens[0], abi: 'erc20:totalSupply' })) / 1e12)
+        if (api.timestamp < HACK_RESOLVED) api.add(ADDRESSES.ethereum.USDC, -8e13)
+        api.add(tokens[1], await api.call({ target: tokens[1], abi: 'erc20:totalSupply' }))
       }
-      api.add(tokens[1], await api.call({ target: tokens[1], abi: 'erc20:totalSupply' }))
     },
     staking: staking('0xFE4BCE4b3949c35fB17691D8b03c3caDBE2E5E23', '0x259338656198eC7A76c729514D3CB45Dfbf768A1'),
   }
