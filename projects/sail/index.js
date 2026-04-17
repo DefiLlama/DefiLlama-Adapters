@@ -2,7 +2,7 @@ const { getConfig } = require('../helper/cache');
 const axios = require('axios');
 
 const SUPPORTED_TOKENS_URL = 'https://app.sail.money/api/v1/projects/68b43fb4ced0704efcb3143c/pages/69d7b31663e3b54646702cb7/custom/supported_tokens';
-const ACTIVE_WALLETS_URL = 'https://app.sail.money/api/v1/projects/sail/pages/institutions/custom/active_wallets';
+const ACTIVE_WALLETS_URL = 'https://app.sail.money/api/v1/projects/sail/pages/institutions/custom/get_all_wallets';
 
 const CHAIN_IDS = {
     ethereum: 1,
