@@ -13,7 +13,7 @@ const HACK_RESOLVED = 1776444059 // 2026-04-17 — hacked USR burned
 module.exports = {
   methodology: 'Counts total supply of USR and RLP tokens.',
   hallmarks: [
-    ["2026-03-21", "80M USR minted in hack, burned by Apr 16"],
+    ["2026-03-21", "80M USR minted in hack, burned by Apr 17"],
   ],
   ethereum: {
     misrepresentedTokens: true,
