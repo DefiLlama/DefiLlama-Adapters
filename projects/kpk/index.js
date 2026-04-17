@@ -153,12 +153,17 @@ const debankToLlamaChain = {
   frax: 'fraxtal', mnt: 'mantle', gno: 'xdai',
 }
 const _walletCache = {}
+let _debankKeyWarned = false
 
 async function _fetchDebankWalletTokens(owners) {
   const key = owners.map(o => o.toLowerCase()).sort().join(',')
   if (_walletCache[key]) return _walletCache[key]
   const apiKey = getEnv('DEBANK_API_KEY')
   if (!apiKey) {
+    if (!_debankKeyWarned) {
+      console.warn('kpk adapter: DEBANK_API_KEY is not set; skipping DeBank wallet-token fetch. Wallet-held ERC20 balances will be missing from TVL.')
+      _debankKeyWarned = true
+    }
     _walletCache[key] = Promise.resolve(owners.map(() => []))
     return _walletCache[key]
   }
