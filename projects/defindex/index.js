@@ -1,25 +1,17 @@
-const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
 
 const DEFINDEX_API_BASE_URL = 'https://api.defindex.io'
-const DEFINDEX_VAULTS_INFO_URL = `${DEFINDEX_API_BASE_URL}/vault/discover?network=mainnet`
-
+const DAY_ONE = 1748518054
 async function tvl(api) {
-    const res = await getConfig('defindex', DEFINDEX_VAULTS_INFO_URL)
-    const vaults = res?.vaults || [] 
-    for (const vault of vaults) {
-        if (!vault.totalManagedFunds || vault.totalManagedFunds.length === 0) {
-            continue
-        }
-        for (const fund of vault.totalManagedFunds) {
-            if (fund.asset && fund.total_amount != null) {
-                api.add(fund.asset, fund.total_amount)
-            }
-        }
-
+    const data = await get(`${DEFINDEX_API_BASE_URL}/tvl?timestamp=${api.timestamp}&network=mainnet`)
+    for (const [assetId, amount] of Object.entries(data.tvl)) {
+        api.add(assetId, amount)
     }
 }
 
 module.exports = {
-  methodology: 'TVL is the sum of all assets managed by DeFindex vaults on Stellar, including idle funds and funds invested in yield strategies.',
+  timetravel: true,
+  start: DAY_ONE,
+  methodology: 'TVL is the sum of all assets managed by DeFindex vaults on Stellar, reconstructed from on-chain indexed events.',
   stellar: { tvl },
 }
