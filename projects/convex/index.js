@@ -95,14 +95,14 @@ const chains = [
 module.exports = {
   doublecounted: true,
   hallmarks: [
-    [1640164144, "cvxFXS Launched"],
-    [1642374675, "MIM depeg"],
-    [1651881600, "UST depeg"],
-    [1654822801, "stETH depeg"],
-    [1667692800, "FTX collapse"],
-    [1690715622, "Curve reentrancy hack"],
-    [1695705887, "cvxFXN Launched"],
-    [1698409703, "cvxPRISMA Launched"],
+    ['2021-12-22', "cvxFXS Launched"],
+    ['2022-01-16', "MIM depeg"],
+    ['2022-05-07', "UST depeg"],
+    ['2022-06-10', "stETH depeg"],
+    ['2022-11-06', "FTX collapse"],
+    ['2023-07-30', "Curve reentrancy hack"],
+    ['2023-09-26', "cvxFXN Launched"],
+    ['2023-10-27', "cvxPRISMA Launched"],
   ]
 };
 

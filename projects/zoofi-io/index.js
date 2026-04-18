@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require('bignumber.js');
 async function tvl(api) {
   const protocols = [
@@ -88,7 +89,7 @@ const lvts = {
   sty: [
     {
       // Verio LvtVault
-      asset: '0x1514000000000000000000000000000000000000',
+      asset: ADDRESSES.sty.WIP,
       vt: '0x92838ccdb9dceabc8e77415d73ecb06f8050cc5f',
       vtHook: '0xee5aeecd6c9409424f88163aff415efcb9027a88',
     }

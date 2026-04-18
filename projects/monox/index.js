@@ -3,7 +3,7 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
   hallmarks: [
-    [1669766400, "swap contract exploit"]
+    ['2022-11-30', "swap contract exploit"]
   ],
   ethereum: {
     tvl: sumTokensExport({

@@ -18,7 +18,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Sums the total invested value from farmz, golemz, and poolz contracts based on their respective latestStats functions.',
-  hallmarks: [[1734804000, "BSC->Base ecosystem migration"]],
+  hallmarks: [['2024-12-21', "BSC->Base ecosystem migration"]],
   misrepresentedTokens: true,
   base: {
     tvl,

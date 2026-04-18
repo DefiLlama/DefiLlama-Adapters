@@ -6,7 +6,6 @@ const config = {
     owners: [
       "0x7bceb96a8757114d79c7dcd6b52c460202f17d13",
       "0xc3b77c3f5a733986558c91e0faf95f1659b1b9b6",
-      "0xe955e61fb93b0871953d5c55f8afd416ebaafda4",
       "0x425c91fbde3d472279b914b7c4c9142266d35004",
       "0x5d75dfc37EFF183435e8fE307bcB05B4d2675F37",
       "0xa0e8C61d1B378c0eC4cFFED9382e5b7fE37a9860",
@@ -20,9 +19,11 @@ const config = {
       "0x504abab033b8ae51cb02fd0ce93a3cda5efd3c64",
       "0xfb20aed5f49a2639d1cb3d5b6e3cc8df6cbcf60a",
       "0xc0f1f047c3c4b52d1e7a54e5583a99c6b3e6d2bb",
-      "0x93d0391d7b28ab1e01df29e49793795dea01ae16",
       "0xf4ed2f0994288c7ce3b3537b4fbfff9c4fc2a3ff",
-      "0x5875d9b0bba20e3b393aad0c61e2e2d78c375db1"
+      "0x5875d9b0bba20e3b393aad0c61e2e2d78c375db1",
+      '0x3425c58b988ebac68b1e7712b152615beaa84bae',
+      '0x725c2bedfe9185c24faf9965f5ec3f7677d6fcff',
+      '0x93D0391D7B28ab1E01DF29e49793795dEa01aE16'
     ],
   },
   bitcoin: {

@@ -78,6 +78,7 @@ const uniV3Config = {
   rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
   plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
   monad: { factory: "0x204faca1764b154221e35c0d20abb3c525710498", fromBlock: 29255827, blacklistedTokens: ['0x760afe86e5de5fa0ee542fc7b7b713e1c5425701'] },
+  tempo: { factory: '0x24a3d4757e330890a8b8978028c9e58e04611fd6', fromBlock: 6455886, },
 }
 
 Object.keys(uniV3Config).forEach(chain => {
@@ -113,7 +114,6 @@ const okuGraphMap = {
   nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
-  saga: 'https://omni.v2.icarus.tools/saga',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
 }
 
@@ -142,7 +142,15 @@ Object.keys(okuGraphMap).forEach(chain => {
           return ownerTokens
         }
       })
-      return api.sumTokens({ ownerTokens, })
+      try {
+        await api.sumTokens({ ownerTokens, })
+      } catch (e) {
+        if (['saga'].includes(chain)) {
+          console.error(`oku-trade ${chain} failed, returning empty TVL`, e)
+          return {}
+        }
+        throw e
+      }
     }
   }
 })

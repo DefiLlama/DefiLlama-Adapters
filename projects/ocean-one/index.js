@@ -10,6 +10,7 @@ const tvl = async (api) => {
 }
 
 module.exports = {
+  deadFrom: "2024-01-21",
   misrepresentedTokens: true,
   mixin: { tvl },
 }

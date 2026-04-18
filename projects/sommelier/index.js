@@ -10,7 +10,7 @@ const {
   optimismCellarsV2p5,
 } = require("./cellar-constants");
 
-const blacklistCellars = ['0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e', '0x5195222f69c5821f8095ec565e71e18ab6a2298f']
+const blacklistCellars = ['0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e', '0x5195222f69c5821f8095ec565e71e18ab6a2298f', '0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A']
 
 async function ethereum_tvl(api) {
   const block = await api.getBlock();
@@ -70,9 +70,9 @@ module.exports = {
   ["arbitrum"]: { tvl: arbitrum_tvl },
   ["optimism"]: { tvl: optimism_tvl },
   hallmarks: [
-    [1658419200, "aave2 Cellar Launch"],
-    [1674671068, "Real Yield USD Cellar Launch"],
-    [1681233049, "Real Yield ETH Cellar Launch"],
-    [1689271200, "Real Yield BTC Cellar Launch"],
+    ['2022-07-21', "aave2 Cellar Launch"],
+    ['2023-01-25', "Real Yield USD Cellar Launch"],
+    ['2023-04-11', "Real Yield ETH Cellar Launch"],
+    ['2023-07-13', "Real Yield BTC Cellar Launch"],
   ],
 };

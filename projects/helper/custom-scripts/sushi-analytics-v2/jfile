@@ -1,0 +1,86 @@
+pipeline {
+    agent any
+
+    environment {
+        // Add your RPC URL as a Jenkins credential (secret text)
+        // SOLANA_RPC = credentials('solana-rpc-url')
+        NODE_OPTIONS = '--max-old-space-size=4096'
+    }
+
+    options {
+        timeout(time: 241, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                 nodejs(nodeJSInstallationName: 'node') {
+                    // Check Node.js and pnpm versions
+                    sh '''
+                        echo "=== Environment Check ==="
+                        node --version
+                        npm --version
+                        which pnpm || npm install -g pnpm
+                        pnpm --version
+                        
+                        echo "=== Installing root dependencies ==="
+                        pnpm install --frozen-lockfile || pnpm install
+                    '''
+                }
+            }
+        }
+
+        stage('Install Sushi Analytics Dependencies') {
+            steps {
+                nodejs(nodeJSInstallationName: 'node') {
+                    dir("${env.WORKSPACE}/projects/helper/custom-scripts/sushi-analytics-v2") {
+                        sh '''
+                            echo "=== Installing sushi analytics dependencies ==="
+                            pnpm install --frozen-lockfile || pnpm install
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Run sushi analytics TVL Script') {
+            steps {
+                nodejs(nodeJSInstallationName: 'node') {
+                    dir("${env.WORKSPACE}/projects/helper/custom-scripts/sushi-analytics-v2") {
+                        script {
+                            def timestamp = new Date().format("yyyy-MM-dd_HH-mm-ss", TimeZone.getTimeZone('UTC'))
+
+                            sh """
+                                echo "=== Running sushi analytics TVL Script ==="
+                                echo "Start time: ${timestamp}"
+
+                                # Run the script and capture output
+                                npm run start 2>&1 | tee output_${timestamp}.log
+
+                                echo "=== Script completed ==="
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    post {
+        always {
+            echo "Pipeline completed with status: ${currentBuild.currentResult}"
+        }
+
+        success {
+            echo "sushi analytics TVL calculation completed successfully"
+        }
+
+        failure {
+            echo "sushi analytics TVL calculation failed"
+        }
+    }
+}

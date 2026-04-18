@@ -20,6 +20,6 @@ module.exports = {
     staking: staking(stakingContracts, [blastup, lockedBlastup]),
   },
   hallmarks: [
-    [1717575654, "IDO Farming Launch"],
+    ['2024-06-05', "IDO Farming Launch"],
   ],
 }

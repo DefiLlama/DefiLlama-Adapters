@@ -10,8 +10,8 @@ module.exports = joeV2Export({
 })
 
 module.exports.hallmarks = [
-  [1682298000, "Launch on Optimism"],
-  [1689037200, "Launch on Arbitrum"],
-  [1690848000, "Launch on Base"],
-  [1702857600, "Launch on ShimmerEVM"]
+  ['2023-04-24', "Launch on Optimism"],
+  ['2023-07-11', "Launch on Arbitrum"],
+  ['2023-08-01', "Launch on Base"],
+  ['2023-12-18', "Launch on ShimmerEVM"]
 ]

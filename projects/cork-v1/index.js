@@ -32,7 +32,7 @@ const eventAbi3 = "event Initialized(address indexed ra, address indexed ct, add
 module.exports = {
   methodology: 'TVL accounts for all assets deposited into the Cork smart contracts.',
   // hallmarks: [
-    // [1741100400, "Cork V1 Launch"],
+    // ['2025-03-04', "Cork V1 Launch"],
     // ['2025-05-28', "Protocol's wstETH:weETH market was exploited"],
   // ],
 }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { sumTokens2: sumTokensSolana } = require('../helper/solana');
 const { getLogs2 } = require('../helper/cache/getLogs')
@@ -18,7 +19,7 @@ async function tvl({ api }) {
   await sumTokens2({
     api,
     owners: [...pools, OLP_VAULT],
-    token: '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
+    token: ADDRESSES.arbitrum.USDC_CIRCLE,
   })
 }
 

@@ -22,7 +22,7 @@ const veSPECTRA = "0x6a89228055c7c28430692e342f149f37462b478b"
 
 module.exports = {
   methodology: `All deposited underlying in Spectra Principal Tokens and all underlying supplied as liquidity in Spectra Markets`,
-  hallmarks: [[1717074000, "V2 Launch"]],
+  hallmarks: [['2024-05-30', "V2 Launch"]],
 };
 
 const curvePoolDeployedTopic = "0x3c7b686d948efcba31c9cfd1aeae78faac70fe0c1ed90d151d49c75e85027a91";

@@ -50,9 +50,9 @@ module.exports = {
   manta: { tvl: sumTokensExport({ ...config, fetchCoValentTokens: false, tokens: Object.values(ADDRESSES.manta) }) },
 
   hallmarks: [
-    [1688688480, "ReHold V2 Launch"],
-    [1689743327, "Ethereum Deployment"],
-    [1690898169, "Limit Orders Launch"],
-    [1698624000, "ReHold Swaps Launch"],
+    ['2023-07-07', "ReHold V2 Launch"],
+    ['2023-07-19', "Ethereum Deployment"],
+    ['2023-08-01', "Limit Orders Launch"],
+    ['2023-10-30', "ReHold Swaps Launch"],
   ],
 };

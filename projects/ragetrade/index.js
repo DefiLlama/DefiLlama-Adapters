@@ -1,7 +1,7 @@
 module.exports = {
   misrepresentedTokens: true,
   hallmarks: [
-    [1670856656, "Launch GLP Vaults"]
+    ['2022-12-12', "Launch GLP Vaults"]
   ],
   arbitrum: {
     tvl: async (api) => {

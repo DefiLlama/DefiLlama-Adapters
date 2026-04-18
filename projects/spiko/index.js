@@ -1,7 +1,7 @@
 const { multiCall } = require("../helper/chain/starknet");
+const { decodeStrKey, SOROBAN_RPC_URL } = require("../helper/chain/stellar");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { post } = require("../helper/http");
-const base32 = require("hi-base32");
 
 const config = {
   polygon: [
@@ -70,19 +70,13 @@ const config = {
   ],
 };
 
-const STELLAR_RPC_URL = "https://soroban-rpc.creit.tech/";
 const STELLAR_LEDGER_ENTRY_CONTRACT_DATA = 6;
 const STELLAR_SC_ADDRESS_TYPE_CONTRACT = 1;
 const STELLAR_SCVAL_LEDGER_KEY_CONTRACT_INSTANCE = 20;
 const STELLAR_CONTRACT_DATA_PERSISTENT = 1;
 
-function decodeContractId(contract) {
-  const raw = Buffer.from(base32.decode.asBytes(contract));
-  return raw.slice(1, -2);
-}
-
 function buildContractInstanceKey(contract) {
-  const payload = decodeContractId(contract);
+  const payload = decodeStrKey(contract);
   const buf = Buffer.alloc(48);
   let offset = 0;
   buf.writeUInt32BE(STELLAR_LEDGER_ENTRY_CONTRACT_DATA, offset);
@@ -116,7 +110,7 @@ function parseTotalSupplyFromEntry(xdr) {
 
 async function fetchStellarSupply(contract) {
   const key = buildContractInstanceKey(contract);
-  const data = await post(STELLAR_RPC_URL, {
+  const data = await post(SOROBAN_RPC_URL, {
     jsonrpc: "2.0",
     id: 1,
     method: "getLedgerEntries",

@@ -17,5 +17,5 @@ module.exports = {
     }),
     staking: staking(stakingPool, mmtToken),
   },
-  hallmarks: [[1677765600, "Closed mainnet"]],
+  hallmarks: [['2023-03-02', "Closed mainnet"]],
 };

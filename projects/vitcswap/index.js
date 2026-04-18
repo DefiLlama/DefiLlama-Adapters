@@ -1,6 +1,7 @@
-const { getExports } = require('../helper/heroku-api')
-
 module.exports = {
   timetravel: false,
-  ...getExports("vitcswap", ['vite']),
+  deadFrom: "2025-03-01",
+  vite: {
+    tvl: () => ({})
+  }
 }

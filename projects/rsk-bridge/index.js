@@ -7,7 +7,7 @@ module.exports = {
     tvl: async (api) => {
       return sumTokens({ 
         chain: 'bitcoin',
-        owners: bitcoinAddressBook.rskBridge, 
+        owners: bitcoinAddressBook.rskBridge,
         balances: api.getBalances(),
       });
     },

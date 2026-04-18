@@ -122,7 +122,7 @@ const config = {
     ]
   },
   doge: {
-    owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']
+    // owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']  // old hot wallet? inactive now
   }
 }
 

@@ -3,7 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs")
 module.exports = {
   methodology: `TVL is supply balance minus borrows the euler contract.`,
   hallmarks: [
-    [1762214400, "Stream finance rug"],
+    ['2025-11-04', "Stream finance rug"],
   ],
 }
 

@@ -6,7 +6,7 @@ async function tvl(api) {
 
 // module.exports = {
 //   hallmarks: [
-//     [1705017600, "Project Exploited"]
+//     ['2024-01-12', "Project Exploited"]
 //   ],
 // }
 
@@ -17,3 +17,5 @@ const config = {
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl }
 })
+
+module.exports.deadFrom = '2024-01-12'  // protocol was hacked
