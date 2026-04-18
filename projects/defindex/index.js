@@ -4,9 +4,14 @@ const DEFINDEX_API_BASE_URL = 'https://api.defindex.io'
 const DAY_ONE = 1748518054
 
 async function tvl(api) {
-  const data = await get(`${DEFINDEX_API_BASE_URL}/tvl?timestamp=${api.timestamp}&network=mainnet`)
-  for (const [assetId, amount] of Object.entries(data.tvl)) {
+  const url = api.timestamp ? `${DEFINDEX_API_BASE_URL}/tvl?timestamp=${api.timestamp}` : `${DEFINDEX_API_BASE_URL}/tvl`
+  try {
+    const data = await get(url)
+    for (const [assetId, amount] of Object.entries(data.tvl)) {
     api.add(assetId, amount)
+    }
+  } catch (error) {
+    console.error('Error fetching DeFindex TVL:', error)
   }
 }
 
