@@ -1,16 +1,6 @@
-import { SimpleAdapter, FetchOptions } from "../../helpers/types";
-
-const adapter: SimpleAdapter = {
-  version: 2,
-  adapter: {
-    hedera: {
-      fetch: async (_options: FetchOptions) => {
-        return {};
-      },
-      start: 1762473600,
-    },
-  },
-  protocolType: "aggregator",
+module.exports = {
+  hedera: {
+    tvl: async () => ({}),
+    start: 1762473600,
+  }
 };
-
-export default adapter;
