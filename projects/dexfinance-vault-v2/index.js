@@ -5,21 +5,27 @@ const { sumTokens2, unwrapSlipstreamNFT, unwrapUniswapV3NFT } = require('../help
 const CONFIG = {
   sonic: {
     factory: "0x095d35c49d2d0ea2eba3e2f9e377966db35af7e2",
+    start: 1744384400, // 2025-04-12
   },
   avax: {
     factory: "0x5764dad2fd4b6918949c6ae86081819ca8c19749",
+    start: 1754952400, // 2025-08-12
   },
   bsc: {
     factory: "0xc9dc65aed28bdb016726d32d0f8c2cd5c9461961",
+    start: 1759405200, // 2025-10-03
   },
   ethereum: {
     factory: "0x4c1a8a04577286ce58d0723b1a90160f380e550a",
+    start: 1769636000, // 2026-01-29
   },
   base: {
     factory: "0xcb34f261a5284554bb9fea8aa12a0578c4ba3fc6",
+    start: 1744386400, // 2025-04-12
   },
   arbitrum: {
     factory: "0x061f8132b344cb2a32d3895eb3ebc2ff87455f79",
+    start: 1771250400, // 2026-02-17
   },
 };
 
@@ -76,6 +82,8 @@ const getChainFarms = async (api) => {
 };
 
 const tvl = async (api) => {
+  if (api.timestamp && api.timestamp < CONFIG[api.chain].start) return {};
+
   const { nftFarms, tokenFarms } = await getChainFarms(api);
 
   // NFT positions
@@ -157,7 +165,10 @@ module.exports = {
       api.removeTokenBalance(GDEX_TOKEN)
     },
     staking: async (api) => {
+      if (api.timestamp && api.timestamp < CONFIG[api.chain].start) return {};
+
       await sumTokens2({ api, tokens: [GDEX_TOKEN], owners: [STAKING_CONTRACT, POOL_ADDRESS] })
+
       // gDEX held directly by vault farm connectors
       const { tokenFarms } = await getChainFarms(api);
       const liquidityCalls = tokenFarms.map(({ connector }) => ({ target: connector, params: [connector] }));
