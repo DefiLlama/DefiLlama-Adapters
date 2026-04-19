@@ -371,7 +371,7 @@ const configs = {
     avax:{
       silo: [
         '0x1f8e769b5b6010b2c2bbcd68629ea1a0a0eda7e3', // BTC.b
-        '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8', // USDC
+        // '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8', // USDC - holds bad debt from xUSD (stream finance)
         '0x4c9edf85b8b33198f0c29a799965b6df1ae67435' // AVAX
       ]
     },
