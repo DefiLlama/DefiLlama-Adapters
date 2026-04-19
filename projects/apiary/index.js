@@ -14,7 +14,12 @@ const APIARY_HONEY_LP = "0x6d03027196F4f2787012D0839915EAbD75e52945";
 
 async function tvl(api) {
   const owners = [TREASURY, YIELD_MANAGER, IBGT_BOND, LP_BOND];
-  const tokens = [IBGT, ADDRESSES.berachain.HONEY, APIARY_HONEY_LP];
+
+  await sumTokens2({
+    api,
+    owners,
+    tokens: [IBGT, ADDRESSES.berachain.HONEY],
+  });
 
   const stakedIbgt = await api.call({
     target: INFRARED_STAKING,
@@ -23,20 +28,37 @@ async function tvl(api) {
   });
   api.add(IBGT, stakedIbgt);
 
-  return sumTokens2({
-    api,
-    owners,
-    tokens,
-    resolveLP: true,
-    blacklistedTokens: [APIARY],
-  });
+  const [token0, lpReserves, lpTotalSupply, ...lpBalances] = await Promise.all([
+    api.call({ target: APIARY_HONEY_LP, abi: "address:token0" }),
+    api.call({
+      target: APIARY_HONEY_LP,
+      abi: "function getReserves() view returns (uint112, uint112, uint32)",
+    }),
+    api.call({ target: APIARY_HONEY_LP, abi: "erc20:totalSupply" }),
+    ...owners.map((owner) =>
+      api.call({
+        target: APIARY_HONEY_LP,
+        abi: "erc20:balanceOf",
+        params: owner,
+      })
+    ),
+  ]);
+
+  const honeyReserve =
+    token0.toLowerCase() === APIARY.toLowerCase() ? lpReserves[1] : lpReserves[0];
+  const totalOwnedLp = lpBalances.reduce((sum, b) => sum + BigInt(b), 0n);
+
+  if (totalOwnedLp > 0n && BigInt(lpTotalSupply) > 0n) {
+    const honeyFromLp = (totalOwnedLp * BigInt(honeyReserve)) / BigInt(lpTotalSupply);
+    api.add(ADDRESSES.berachain.HONEY, honeyFromLp.toString());
+  }
 }
 
 module.exports = {
   doublecounted: true,
   start: "2026-04-06",
   methodology:
-    "TVL is the sum of protocol-owned assets on Berachain: iBGT and HONEY held by the Treasury, YieldManager, and bond depositories, plus iBGT staked on Infrared via the protocol's Infrared adapter. APIARY/HONEY LP tokens held by the protocol are unwrapped to their underlying reserves. The protocol's own APIARY token is excluded from TVL.",
+    "TVL is the sum of protocol-owned assets on Berachain: iBGT and HONEY held by the Treasury, YieldManager, and bond depositories, plus iBGT staked on Infrared via the protocol's Infrared adapter. APIARY/HONEY LP tokens held by the protocol are unwrapped to count only their HONEY-side reserves — the APIARY side is excluded as it is the protocol's own token.",
   berachain: {
     tvl,
   },
