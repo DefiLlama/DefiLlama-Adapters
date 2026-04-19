@@ -14,12 +14,12 @@ const bondContracts = {
     "0x376831fB2457E34559891c32bEb61c442053C066", // AIAccountabilityBonds
   ],
   arbitrum: [
-    "0xdB54B8925664816187646174bdBb6Ac658A55a5F", // AIPartnershipBonds
+    "0xdB54B8925664816187646174bdBb6Ac658A55a5F", // AIPartnershipBonds (same address as Polygon AccountabilityBonds — deterministic CREATE2 deployment, different contract roles per chain)
     "0xef3A944f4d7bb376699C83A29d7Cb42C90D9B6F0", // AIAccountabilityBonds
   ],
   polygon: [
     "0x83dd216449B3F0574E39043ECFE275946fa492e9", // AIPartnershipBonds
-    "0xdB54B8925664816187646174bdBb6Ac658A55a5F", // AIAccountabilityBonds
+    "0xdB54B8925664816187646174bdBb6Ac658A55a5F", // AIAccountabilityBonds (same address as Arbitrum PartnershipBonds — deterministic CREATE2 deployment, different contract roles per chain)
   ],
 };
 
@@ -30,7 +30,7 @@ function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL is the total value of native tokens (ETH, AVAX, MATIC) staked in Vaultfire AI Partnership Bonds and AI Accountability Bonds across all supported chains.",
+    "TVL is the total value of native tokens (ETH, AVAX, POL) staked in Vaultfire AI Partnership Bonds and AI Accountability Bonds across all supported chains.",
   base: { tvl },
   avax: { tvl },
   arbitrum: { tvl },
