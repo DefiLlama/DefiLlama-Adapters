@@ -31,8 +31,6 @@ async function tvl(api) {
       [USDC, DIRECT_MINT],
       [USDT, DIRECT_MINT],
       [ZCHF, DIRECT_MINT_CHF],
-      [enUSD, SAVINGS_USD],
-      [enCHF, SAVINGS_CHF],
     ],
   });
 }
