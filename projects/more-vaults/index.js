@@ -54,10 +54,11 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing the total assets across all MORE Vaults deployed through the registry contracts. MORE Vaults allows users to compose, rebalance, and upgrade DeFi portfolios atomically without redeploying, while depositors hold familiar receipt tokens through every strategy upgrade.",
+  methodology: "TVL is calculated by summing totalAssets for MORE Vaults discovered from factory contracts. For omnichain deployments, only hub vaults are counted because spoke vaults report TVL to the hub via cross-chain messages. MORE Vaults allows users to compose, rebalance, and upgrade DeFi portfolios atomically without redeploying, while depositors hold familiar receipt tokens through every strategy upgrade.",
   flow: { tvl },
   base: { tvl },
   ethereum: { tvl },
   arbitrum: { tvl },
   avax: { tvl },
+  doublecounted: true,
 };
