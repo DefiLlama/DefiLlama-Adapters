@@ -4,11 +4,9 @@ const idl = require('./omnipair_idl.json')
 
 const PROGRAM_ID = 'omnixgS8fnqHfCcTGKWj6JtKjzpJZ1Y5y9pyFkQDkYE'
 
-const RESERVE_VAULT_SEED = Buffer.from('reserve_vault')
 const COLLATERAL_VAULT_SEED = Buffer.from('collateral_vault')
 
 let _programPromise
-let _pairMetadataPromise
 
 async function getProgram() {
   if (_programPromise) return _programPromise
@@ -28,29 +26,6 @@ async function getProgram() {
     return await _programPromise
   } catch (e) {
     _programPromise = undefined
-    throw e
-  }
-}
-
-async function getPairMetadata() {
-  if (_pairMetadataPromise) return _pairMetadataPromise
-
-  _pairMetadataPromise = (async () => {
-    const program = await getProgram()
-    const pairs = await program.account.pair.all()
-
-    return pairs.map(({ publicKey, account }) => ({
-      pair: publicKey.toBase58(),
-      token0: account.token0.toBase58(),
-      token1: account.token1.toBase58(),
-      lpMint: account.lpMint.toBase58(),
-    }))
-  })()
-
-  try {
-    return await _pairMetadataPromise
-  } catch (e) {
-    _pairMetadataPromise = undefined
     throw e
   }
 }
@@ -110,32 +85,32 @@ async function getTokenAccountBalance(connection, account) {
   }
 }
 
+function addReserveSide(api, pair) {
+  api.add(pair.token0, pair.cashReserve0)
+  api.add(pair.token1, pair.cashReserve1)
+}
+
+async function addCollateralSide(api, connection, pair) {
+  const collateral0Vault = deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, pair.token0)
+  const collateral1Vault = deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, pair.token1)
+
+  const [collateral0Balance, collateral1Balance] = await Promise.all([
+    getTokenAccountBalance(connection, collateral0Vault),
+    getTokenAccountBalance(connection, collateral1Vault),
+  ])
+
+  api.add(pair.token0, collateral0Balance)
+  api.add(pair.token1, collateral1Balance)
+}
+
 async function tvl(api) {
   const provider = getProvider()
   const connection = provider.connection
-  const pairs = await getPairMetadata()
+  const pairs = await getFreshPairs()
 
   for (const pair of pairs) {
-    const reserve0Vault = deriveVaultAddress(RESERVE_VAULT_SEED, pair.pair, pair.token0)
-    const reserve1Vault = deriveVaultAddress(RESERVE_VAULT_SEED, pair.pair, pair.token1)
-    const collateral0Vault = deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, pair.token0)
-    const collateral1Vault = deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, pair.token1)
-
-    const reserve0Balance = await getTokenAccountBalance(connection, reserve0Vault)
-    const reserve1Balance = await getTokenAccountBalance(connection, reserve1Vault)
-
-    api.add(pair.token0, reserve0Balance)
-    api.add(pair.token1, reserve1Balance)
-
-    if (collateral0Vault !== reserve0Vault) {
-      const collateral0Balance = await getTokenAccountBalance(connection, collateral0Vault)
-      api.add(pair.token0, collateral0Balance)
-    }
-
-    if (collateral1Vault !== reserve1Vault) {
-      const collateral1Balance = await getTokenAccountBalance(connection, collateral1Vault)
-      api.add(pair.token1, collateral1Balance)
-    }
+    addReserveSide(api, pair)
+    await addCollateralSide(api, connection, pair)
   }
 }
 
@@ -150,7 +125,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    'TVL counts all tokens locked in Omnipair reserve vaults and collateral vaults across all Pair accounts on Solana. Borrowed counts outstanding debt from totalDebt0 and totalDebt1 across all Pair accounts. Debt is tracked separately and is not included in TVL.',
+    'TVL counts assets currently locked in Omnipair reserve vaults via Pair account cashReserve0 and cashReserve1, plus all tokens locked in collateral vaults across all Pair accounts on Solana. Borrowed counts outstanding debt from totalDebt0 and totalDebt1 across all Pair accounts. Separately, Omnipair total deposits can be thought of as reserve exposure plus deposited collateral.',
   timetravel: false,
   solana: {
     tvl,
