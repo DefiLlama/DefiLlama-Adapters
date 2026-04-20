@@ -35,7 +35,7 @@ const splitSourceKey = (sourceKey) => {
 }
 
 async function tvl(api) {
-  const { data } = await axios.get(TVL_ENDPOINT)
+  const { data } = await axios.get(TVL_ENDPOINT, { timeout: 15_000 })
   const positions = Array.isArray(data?.positions) ? data.positions : []
 
   // Pool positions carry a concrete holder address — re-verify their balances
