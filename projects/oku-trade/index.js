@@ -5,7 +5,7 @@ module.exports = {
   ...uniV3Export({
     '0g': {
       factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D',
-      fromBlock: 6674380,
+      fromBlock: 6673868,
     },
   }),
 };
