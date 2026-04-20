@@ -1,8 +1,6 @@
 const { getSolBalanceFromStakePool, getConnection } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 
-const RASOL_STAKE_POOL = 'ECRqn7gaNASuvTyC5xfCUjehWZCSowMXstZiM5DNweyB'
-
 // Voltr vault account layout:
 // offset 104: asset mint (pubkey, 32 bytes)
 // offset 168: totalValue (u64, 8 bytes)
@@ -15,8 +13,6 @@ const EARN_VAULTS = [
 ]
 
 async function tvl(api) {
-  await getSolBalanceFromStakePool(RASOL_STAKE_POOL, api)
-
   const connection = getConnection()
   const accounts = await connection.getMultipleAccountsInfo(EARN_VAULTS.map(v => new PublicKey(v)))
   for (const account of accounts) {
@@ -28,6 +24,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the SOL backing raSOL (from the SPL stake pool) plus the underlying stablecoins held in Hubra Earn vaults (Voltr), read directly from on-chain vault account data.',
+  methodology: 'TVL is the underlying stablecoins held in Hubra Earn vaults (Voltr), read directly from on-chain vault account data.',
   solana: { tvl },
 }
