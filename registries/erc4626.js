@@ -239,6 +239,7 @@ const configs = {
   'aspe-labs': {
     methodology: "TVL is totalAssets() of the ERC4626 vault, including USDC held in the vault contract, USDC reserved for claimable redemptions, and equity value in the HyperCore agent wallet deployed for grid trading.",
     start: '2026-04-02',
+    doublecounted: true,
     hyperliquid: ['0xe67c82f0970D66d8b84dB43F2392E77CE7e4ED75']
   }
 }
