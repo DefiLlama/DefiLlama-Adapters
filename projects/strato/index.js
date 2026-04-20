@@ -84,6 +84,7 @@ function addPriced(api, position, amount) {
     return
   }
 
+  // priceUsd is WAD-scaled (1e18) per the metrics API
   const priceUsd = BigInt(position.priceUsd || '0')
   if (priceUsd === 0n) return
   const usdWei = (amount * priceUsd) / scale
