@@ -7,6 +7,12 @@ const EMBER_VAULTS = {
   ],
 };
 
+const LISTA_VAULTS = {
+  bsc: [
+    '0xb5a30e1fa2cf3c8dea882124b3ab5a47a27c5dd2',
+  ],
+};
+
 const MIDAS_VAULTS = {
   ethereum: [
     '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
@@ -67,6 +73,16 @@ for (const [chain, vaults] of Object.entries(MIDAS_VAULTS)) {
 }
 
 for (const [chain, vaults] of Object.entries(EMBER_VAULTS)) {
+  const baseTvl = adapterExport[chain]?.tvl;
+  adapterExport[chain] = {
+    tvl: async (api) => {
+      if (baseTvl) await baseTvl(api);
+      await sumERC4626Vaults({ api, calls: vaults, isOG4626: true });
+    }
+  };
+}
+
+for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
   const baseTvl = adapterExport[chain]?.tvl;
   adapterExport[chain] = {
     tvl: async (api) => {
