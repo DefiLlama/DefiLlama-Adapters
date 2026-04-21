@@ -4,7 +4,7 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury addresses per chain
 const eth = "0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f";
-// const eth2 = "0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89"; // Managed and tracked by kpk (removed 2026-4-21)
+const eth2 = "0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89";
 const arb = "0xaF23DC5983230E9eEAf93280e312e57539D098D0";
 const pol = "0xeE071f4B516F69a1603dA393CdE8e76C40E5Be85";
 const zkevm = "0x2f237e7643a3bF6Ef265dd6FCBcd26a7Cc38dbAa";
@@ -108,7 +108,7 @@ const avaxOwnTokens = [
 // Keeping old code because karpatkey's api tends to break
 module.exports = treasuryExports({
   ethereum: {
-    owners: [eth],
+    owners: [eth, eth2],
     //tokens: ethTokens,
     ownTokens: ethOwnTokens
   },
