@@ -10,28 +10,24 @@ const OWNERS = {
     '0x5C454f5526e41fBE917b63475CD8CA7E4631B147', // redemption contract
     '0x4691C475bE804Fa85f91c2D6D0aDf03114de3093', // reUSD contract
     '0xE1886BE2bA8B2496c2044a77516F63a734193082', // reUSDe contract
-    '0x2DF87810fCF9b8e6a42adC5923Bc2EE0ca0467CA', // fee vault
   ],
   'avax': [
     '0x295F67Fdb21255A3Db82964445628a706FBe689E', // reUSD custodial wallet
     '0x4F1ff9b995472B27A6BAfEc967986F35Bf1aDaE4', // redemptions wallet
     '0xe13292F97E38da0C64398De5E0bFc95180DE9d23', // redemptions contract
     '0xb22a8533e6cd81598f82514a42F0B3161745fbe1', // reUSD contract
-    '0xa7087c87028E8ecE44d867d8b822a3Ed21eD4ef7', // fee vault
   ],
   'arb': [
     '0x295F67Fdb21255A3Db82964445628a706FBe689E', // reUSD custodial wallet
     '0xfB602cb83c9c15b4cc49340dc9aD7a8C23754BB0', // redemptions wallet
     '0xfd4016Ea13ca8acc04A11a99702dF076A4d3B852', // redemptions contract
     '0x802eDbB1Ec20548A4388ABC337E4011718eb0291', // reUSD contract
-    '0xBa16Fe5B0FC7344cfe649Dd60A05564cDc0bc7dF', // fee vault
   ],
   'base': [
     '0x295F67Fdb21255A3Db82964445628a706FBe689E', // reUSD custodial wallet
     '0x19aff1C007397Bdb7f82BdA18151C28AB4335896', // redemptions wallet
     '0x9AB62AebAbE738AB233C447eEdCE88D1D0a61FE3', // redemptions contract
     '0x7D214438D0F27AfCcC23B3d1e1a53906aCE5CFEa', // reUSD contract
-    '0x6D70D88BF47F26e9F3426Fb4ACaB663d1aAF6901', // fee vault
   ],
 };
 
