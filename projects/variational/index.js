@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { sumTokens2: sumTokensSolana } = require('../helper/solana');
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 const OLP_VAULT = '0x74bbbb0e7f0bad6938509dd4b556a39a4db1f2cd';
@@ -24,8 +23,7 @@ async function tvl({ api }) {
 }
 
 module.exports = {
-  start: 1722470400, // Aug 2024 mainnet launch
+  start: 1738198213, // Jan 30 2025 Mainnet Private Beta Launch
   methodology: `TVL counts USDC held in Variational's Core OLP Vault, and pools created by the factory`,
   arbitrum: { tvl },
-  solana: { tvl: async () => sumTokensSolana({ owner: '7TqJDVSiterQsyFnJ4cgEFGKMk1TCWCc9Az9UtHcK575'})},
 };
