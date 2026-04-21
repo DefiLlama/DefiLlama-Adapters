@@ -145,7 +145,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    'TVL counts assets in Omnipair reserve and collateral vaults. OMFG (protocol token) is tracked under staking.',
+    'TVL counts assets currently locked in Omnipair reserve vaults via Pair account cashReserve0 and cashReserve1, plus all tokens locked in collateral vaults across all Pair accounts on Solana. Borrowed counts outstanding debt from totalDebt0 and totalDebt1 across all Pair accounts. Separately, Omnipair total deposits can be thought of as reserve exposure plus deposited collateral. OMFG token is tracked under staking.',
   timetravel: false,
   solana: {
     tvl,
