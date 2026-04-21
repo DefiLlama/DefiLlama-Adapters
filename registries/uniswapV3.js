@@ -1142,6 +1142,12 @@ const uniV3Configs = {
       fromBlock: 18149975,
     },
   },
+  'ramsesx-poly-cl': {
+    polygon: {
+      factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
+      fromBlock: 82177771,
+    },
+  },
   'reservoir-tools-v3': {
     abstract: {
       factory: '0xA1160e73B63F322ae88cC2d8E700833e71D0b2a1',
