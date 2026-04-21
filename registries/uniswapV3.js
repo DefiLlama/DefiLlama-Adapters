@@ -1694,6 +1694,12 @@ const uniV3Configs = {
       blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
     }
   },
+  'oku-trade': {
+    "0g": {
+      factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D',
+      fromBlock: 6673868
+    }
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
