@@ -31,6 +31,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "TVL counts SOL locked in mining_launcher program PDAs: active rounds, mining boards, global motherlode, and unclaimed miner rewards.",
+  methodology: "TVL counts SOL locked in mining_launcher program PDAs: active rounds, mining boards, global motherlode, and unclaimed miner rewards. All games are discovered dynamically via on-chain program accounts. Protocol fee accruals are tracked separately in treasury.",
   solana: { tvl },
 };
