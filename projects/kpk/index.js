@@ -213,7 +213,6 @@ const ZODIAC_MANAGED_SAFES = [
   '0x9009B4411D0e1171cc042b77D7701f46B737Fdb9', // CoW Validator Safe
   '0x4D1D9D7741740A3E2ffC5507aC643DbA5e81cAe5', // Arbitrum DAO
   '0x8e53D04644E9ab0412a8c6bd228C84da7664cFE3', // Nexus Mutual
-  '0x0EFcCBb9E2C09Ea29551879bd9Da32362b32fc89', // Balancer Core Treasury
 ]
 const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc', 'polygon']
 
