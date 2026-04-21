@@ -61,10 +61,12 @@ const addressBook = {
   }
 };
 
+const normalize = i => i.toLowerCase()
+
 async function unwrap4626Tokens({ api, tokensAndOwners, }) {
   const tokens = tokensAndOwners.map(i => i[0])
   const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })), })
-  const assets = await api.multiCall({ abi: 'address:asset', calls: tokens, })
+  const assets = (await api.multiCall({ abi: 'address:asset', calls: tokens, })).map(normalize)
   const balsInAssets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: tokensAndOwners.map((i, idx) => ({ target: i[0], params: bals[idx] })), })
   api.addTokens(assets, balsInAssets)
   return api.getBalances()
@@ -73,18 +75,20 @@ async function unwrap4626Tokens({ api, tokensAndOwners, }) {
 async function tvl(api) {
   const addresses = addressBook[api.chain];
   // Most of the reserves can only have USDC
-  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc], i.address])
-  // The MSV also has AAVE Native USDC and Compound Blue
-  ownerTokens.push([[addresses.usdc, addresses.aave_v3_usdc], addresses.msv]);
+  const ownerTokens = addresses.reserves.map(i => [[normalize(addresses.usdc)], i.address])
+  // The MSV also has AAVE USDC
+  ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc)], addresses.msv]);
 
+  // Also Morpho vaults
   for (const vault of addresses.morpho_vaults) {
-    await unwrap4626Tokens({api, tokensAndOwners: [[vault, addresses.msv]] });
+    await unwrap4626Tokens({api, tokensAndOwners: [[normalize(vault), normalize(addresses.msv)]] });
   }
   return sumTokens2({ api, ownerTokens});
 }
 
 module.exports = {
-  methodology: `Sums the USDC amounts (both liquid and invested in AAVE) of the different protocol reserves (https://docs.ensuro.co/product-docs/smart-contracts/reserves).`,
+  doublecounted: true,
+  methodology: `Sums the USDC amounts, both liquid and invested in Aave/Morpho vaults, of the different protocol reserves (https://docs.ensuro.co/product-docs/smart-contracts/reserves).`,
   polygon: {
     tvl
   },
