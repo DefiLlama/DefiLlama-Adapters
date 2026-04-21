@@ -203,6 +203,36 @@ const config = {
       "0xc18475f347cc757b3cc49025820248a5f27d97ce",
       "0xd99d81949146b4c13a4a42c9a6addbbd2db932ad",
       "0x400d8280acf364f683e989462879fd8dd358067d",
+      "0xb0a27099582833c0cb8c7a0565759ff145113d64",
+      "0x5ca38fb7cf2b587026a1650f0d2b0a13c41f5d0f",
+      "0xdce83237fbf279c4522e7cac4b10428e2b8694da",
+      "0x08f619716db7c6245401b543e59acac1d25cb483",
+      "0xd5f8c864f21824daf3a4b22d9c33693642ed7634",
+      "0x26704ccfcd45b5780dcd58d38b12f5e0cdb481a0",
+      "0x6709383e211ab08a6e3270532e756220400424a6",
+      "0x83a32a54d31ee4f1f9dffad2a63a6d214e469ec3",
+      "0x3b98b9e9cb75c1cb1729aab8f09ced2936505e4f",
+      "0x8167a1ebf00ff5886d1b5908419bb1159d8cf6a4",
+      "0x7fea5b4568751533039179116e372e26b6b41b13",
+      "0x0c48511102453352fe570370672cd556bf0e63f9",
+      "0x445f16314284b43dfa1fd3cd77b9dea4a1bebd97",
+      "0xacf961ae22191f0d080497a3a3b427180f18ed67",
+      "0xf418263a6468c80d3bcb71033c56aacf81b241ba",
+      "0x073f564419b625a45d8aea3bb0de4d5647113ad7",
+      "0x0750b999e493112c88cb226a13a2a67419f06ad6",
+      "0x0003b5aa5e30e97fcc596bb5d0f3a75255e08d4e",
+      "0x87d0d6c8cdd71a658ecf1566f13e4cbc562beaf9",
+      "0xd7f4a5613b38cb8c09229b7aed99803242fdf0a0",
+      "0xea3b7dac6b96502a04c701d5e71b51912f70143f",
+      "0x1dfc6bec8499fcb5e3151c7c6d27feb9d7eae1d4",
+      "0x85dcd76d4fbd3aa0c85c27b9441222c19a14134b",
+      "0x3d2335cac7b31411467ef03168c5869452fb7e86",
+      "0x608c27519c5e65a61cfc1d2c9e658e5c57a2e3d7",
+      "0x767a905b77b0a40801488c6af8b8b5992b43511c",
+      "0x3425519651e4c42833633fe5c0e24ed89c1023a3",
+      "0x173810f8ca9c4c631aeb1d6c36d007f054fee980",
+      "0x92ea7496eba5f001d620005f88f3e8e686e3d4ea",
+      "0x45f329ff834a84fccea2319f91e1993540b22a2a",
     ], //ETH DONE
   },
   tron: {
@@ -223,6 +253,11 @@ const config = {
       "TLaGjwhvA8XQYSxFAcAXy7Dvuue9eGYitv",
       "TLEXqT4qYJeKr83baQmPgPtvkMrsFp3wvs",
       "TYah6kK3TKwTdTVt4XWpwpFCayLmnbURRM",
+      "TYE5mNXSQHuPAdCa1etk76BKybD4FKJto6",
+      "TNYowvaHncRBWAKDzAySA3uVHLkB9qs62p",
+      "TLNrPon76MdjfvreKXd2nmqod7AdyG9To1",
+      "TBwBJwj81yXc4DNKS19GJcpUUzfSWRbBzS",
+      "TD9GNrgmrg46yistfTMJpRQZcDmDRx1Bmq",
     ], //TRON DONE
   },
   arbitrum: {
@@ -245,6 +280,9 @@ const config = {
     owners: [
       "0x7e4aa755550152a522d9578621ea22edab204308",
       "0x62383739d68dd0f844103db8dfb05a7eded5bbe6",
+      "0xc94bb9b883ab642c1c3ed07af4e36523e7daf1fe",
+      "0x3d3490a4744de78c06fb761bc1e9d17f007a219c",
+      "0xb2cf3660cef92c4b394c741a1ecc29d2bd135fc6",
     ], //AVAX DONE
   },
   polygon: {
@@ -326,6 +364,17 @@ const config = {
       "C68a6RCGLiPskbPYtAcsCjhG8tfTWYcoB4JjCrXFdqyo",
       "AEZoku1fLfUz5JYJ3kJ5YVdf3QT1T4RwdggGbuR8Eakd",
       "CBEADkb8TZAXHjVE3zwad4L995GZE7rJcacJ7asebkVG",
+      "3WjxkXbu9JBosUWUnJpjzec7Wa4rSkWo9khUbbLDCssk",
+      "3LzmBquLMap6ak2ofyeDbH99VhJ84k336RJzkLBwq3b1",
+      "9bAV2yg9oTWMc3sTdXhSeyDhuxs3iYfqvBzq1boYTLJT",
+      "8wM44Ryv9DFCSfkgUnPEPgnsc53arT4cnmXL6LnnC4UW",
+      "9cFGNecbnLNiyYNZYKjN8egmMVrvn7HBQUCN9y6uXeYk",
+      "Da8RuzF4whvWoQP8DD1rZMTi2i1u2VHFcU8zFrwfdBzA",
+      "9aiqyEUmwb63yUjwPHwY4jR68Pj5QsCQBGhYWRJEwXZA",
+      "3bwCjRXv4LASkv7DbLRJi7fDXgRRfEZhEstDVoZsjEHR",
+      "C1Fr2dLHvNMWKFuiM5nK5StfgWjbM6QcZcC5nkcYghkJ",
+      "8PFD2CYF275p8YdRmhk4C1wcNoKeRVrouYdMbZV6HwHH",
+      "3n7E2gZmCaDGpmvmHVHhHg13x7y1zG37tnEXvizxnKY1",
     ],
   }, //SOL DONE
   ripple: {
@@ -340,6 +389,10 @@ const config = {
       "rLrZX3WepAsLRyAmYbFjV9tVPBjzmLis3J",
       "r4eVDKE3P5vK1zsc98dCeBDUM3JqyE4rUU",
       "rKEt6B3sgP8Qpb1PBdmdx54XmbVynpLRsv",
+      "rfumbc2NDjHaDCpgfJRLSafRJNKi6CuwVH",
+      "rfah8jhiJwPhcWEn2eQZehWqKKqAWGjxp1",
+      "rBPzKpfEh6Pv9qjh6gt9E66BL8UVbcZxHP",
+      "rwSY8Fwq6PKKDUtjScSi7ZVap3BJHi6oRs",
     ],
   }, //XRP DONE
   litecoin: {
@@ -512,6 +565,7 @@ const config = {
       "ltc1q8533kzsc5htq9t2wzrlz4rxd8g426hcnpej4rn0wyjc3ffkmg2dslemys3",
       "ltc1qupe6qcd9xlh7a8xe5jdpcl4w0qgxmnxxfz6z6h544zw37xntamcqkppkv6",
       "ltc1qcm29pexe8q9n6qzfquvga8xwj9nqq9txhejq0phuw445h8t0hwsq65njjm",
+      "ltc1q7tm3qxw59zatfzw4993l6h30sp2jwa7dhem62z8v4tw0ty7vl2rsmf963x",
     ],
   }, //LTC DONE wallets with more than 750 LTc
   linea: {
@@ -532,6 +586,7 @@ const config = {
       "1Dkx7zjy4pRMwLQwWkbhb9Jxy7EXLfkdHVRXufwvdLV73QV",
       "16UvKYsqojoivDsNXH3d5G48oXMfo1asxA4NtF2GxhoBjZHz",
       "1gn68eNGNGqV3QjVcRRDVfw22xFn1eFyUizHCENVn256LXh",
+      "14n7KYKKjZohVapvNYnWdCVu7oCJMjyWHqehGcC11wE7dKWv",
     ],
   }, //polkadot DONE
   aptos: {
@@ -550,7 +605,12 @@ const config = {
     ],
   },
   doge: {
-    owners: ["AC8azEyeWHk1L7XKvyeBjJtVwRwXgmP5hQ"],
+    owners: [
+      "AC8azEyeWHk1L7XKvyeBjJtVwRwXgmP5hQ",
+      "A1D5sbS86TMJxwGT5q2oTWkXXLfgJ5j8up",
+      "ADNbM5fBujCRBW1vqezNeAWmnsLp19ki3n",
+      "9vPesMs2Md65mu2JBEccp8RKBqccqaLMRL",
+    ],
   },
   base: {
     owners: [
@@ -604,6 +664,7 @@ const config = {
       "UQA2ogqg4sy7KfGuQVXWtbOm3vnE7NVGCeBCl6-XdJkqy3pq",
       "UQAqc2WkItRXN4xB6n5tBzNxhT8pP-e3MtTlReU3UdIJVI-s",
       // "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
+      "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
     ],
   },
 };
