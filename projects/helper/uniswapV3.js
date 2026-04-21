@@ -16,7 +16,7 @@ function uniV3Export(config) {
   const exports = {}
 
   Object.keys(config).forEach(chain => {
-    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, blacklistedTokens = [], blacklistedOwners = [], permitFailure, sumChunkSize, filterFn, sumChunkSleep, onlyUseExistingCache, } = config[chain]
+    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, blacklistedTokens = [], blacklistedOwners = [], permitFailure, sumChunkSize, filterFn, sumChunkSleep, onlyUseExistingCache, extraKey, } = config[chain]
     if (!topics) topics = isAlgebra ? algebraConfig.topics : uniswapConfig.topics
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
     
@@ -30,6 +30,7 @@ function uniV3Export(config) {
           eventAbi,
           onlyUseExistingCache,
           onlyArgs: true,
+          extraKey,
         })
 
         if (filterFn) 

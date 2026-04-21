@@ -127,6 +127,7 @@ const aaveConfigs = {
     hyperliquid: {
       addressesProviderRegistry: '0x24E301BcBa5C098B3b41eA61a52bFe95Cb728b20',
       dataHelpers: ['0x5481bf8d3946E6A3168640c1D7523eB59F055a29'],
+      staking: ['0x09b2236327d76fcd9e4b72db70a6608c21a94292', '0xbd6dab50f03a305a80037294fa8d1a9dc0cac91b'],
       v3: true,
     },
   },
@@ -293,9 +294,14 @@ const aaveConfigs = {
       blacklistedTokens: ['0x788D96f655735f52c676A133f4dFC53cEC614d4A'],
     },
     sonic: {
-      dataHelpers: ['0xB245F8321E7a4938DEf8bDb2D5E2E16481268c42'],
+      dataHelpers: ['0xB245F8321E7A4938DEf8bDb2D5E2E16481268c42'],
       v3: true,
       blacklistedTokens: ['0x53a6aBb52B2F968fA80dF6A894e4f1b1020DA975', '0x614914B028A7D1fD4Fab1E5a53a3E2dF000bcB0e'],
+    },
+    ethereum: {
+      dataHelpers: ['0x7BC6d94344392ac7898Ce197Ae382e21c71347f2'],
+      v3: true,
+      blacklistedTokens: ['0x07fFf99e1664d9B116fbC158c0E99785F81cA236', '0xb419ecdd222981e7e54cec316797ecb799c6afdc'],  // exclude dETH & dUSD
     },
   },
   'apebank': {

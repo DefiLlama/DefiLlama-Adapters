@@ -983,6 +983,7 @@ const uniV2Configs = {
   },
   'kaspacom-dex': {
     kasplex: '0xa9CBa43A407c9Eb30933EA21f7b9D74A128D613c',
+    igra: '0x21350BcDa9E81731CF4cDE3DbC457e3de2739c01',
   },
   'katana-ronin': {
     hallmarks: [
@@ -1467,6 +1468,7 @@ const uniV2Configs = {
   },
   'pheasantswap': {
     enuls: '0x7bf960B15Cbd9976042257Be3F6Bb2361E107384',
+    deadFrom: '2026-02-11'
   },
   'phenix-dex': {
     cronos: '0x6Bae09822c36a9359d563A22fc7d134eF27a5f60',
@@ -1871,6 +1873,9 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     stable: '0xc5ba86e4A6F674816fA7c3B7cA438D63ec136bE9',
+  },
+  'stableswap-xyz': {
+    stable: '0x25D2d657F539F2bB16eC82773cBE5ee49ddD3c69',
   },
   'standard-tech': {
     ethereum: '0x53AC1d1FA4F9F6c604B8B198cE29A50d28cbA893',
@@ -2796,6 +2801,15 @@ const uniV2Configs = {
       },
       staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
     },
+    base: {
+      factory: '0x8888A3D87EF6aBC5F50572661E4729A45b255cF6',
+      fetchBalances: true,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint) view returns (address)',
+      },
+      staking: ['0x88889C4Be508cA88eba6ad802340C0563891D426', '0x888a4F89aF7dD0Be836cA367C9FF5490c0F6e888'],
+    },
   },
   'wingswap': {
     methodology: 'Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2834,6 +2848,34 @@ const uniV2Configs = {
   },
   'zkevmswap': {
     polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
+  },
+  'bcswap': {
+    bcypher: '0x927bf500361987b365f6d0ff38c1d45155f4975c',
+  },
+  'velox': {
+    base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',
+  },
+  'capybara-v2': {
+    klaytn: '0xE4296d6161c8a1554a18dba79C0f825cE23bAE42',
+  },
+  'qie-dex': {
+    start: '2025-08-05',
+    qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
+  },
+  'virtus-protocol': {
+    base: '0x7F03ae4452192b0E280fB0d4f9c225DDa88C7623',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      }
+    }
+  },
+  'forest-v1': {
+    bsc: {
+      factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
+      staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
+    },
   },
 }
 

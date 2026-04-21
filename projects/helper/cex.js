@@ -122,6 +122,7 @@ const defaultTokens = {
     ADDRESSES.bsc.USD1, //USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
     '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
+    '0x1b66474c8eca3827f16202907f41f63785579716' // exchange token for weex, 
   ],
   tron: [
     nullAddress,

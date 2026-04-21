@@ -1,15 +1,17 @@
 const { get } = require('../helper/http')
 
 async function tvl(api) {
-  const { net_stakings } = await get('https://api.elys.network/elys-network/elys/masterchef/chain_tvl')
-  net_stakings.filter(i => i.denom === 'USDC').map(i => api.addCGToken('usd-coin', i.amount))
+  const { vault_tokens } = await get('https://api.elys.network/elys-network/elys/masterchef/chain_tvl')
+  const vaultUsdc = vault_tokens.find(i => i.denom === 'USDC')?.amount || 0
+  api.addCGToken('usd-coin', vaultUsdc)
 }
 
 
 async function borrowed(api) {
-  const { usdc_staking, net_stakings } = await get('https://api.elys.network/elys-network/elys/masterchef/chain_tvl')
-  api.addCGToken('usd-coin', usdc_staking)
-  net_stakings.filter(i => i.denom === 'USDC').map(i => api.addCGToken('usd-coin', i.amount * -1))
+  const { net_stakings, vault_tokens } = await get('https://api.elys.network/elys-network/elys/masterchef/chain_tvl')
+  const vaultUsdc = vault_tokens.find(i => i.denom === 'USDC')?.amount || 0
+  const netUsdc = net_stakings.find(i => i.denom === 'USDC')?.amount || 0
+  api.addCGToken('usd-coin', vaultUsdc - netUsdc)
 }
 
 

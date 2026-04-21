@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
@@ -19,6 +20,10 @@ const excludeVaults = {
   plume_mainnet: [
     '0x92D374dd17F8416c8129f5Efa81f28E0926a60B7',
     '0x2DFc08F4FAd29761adf4cD9F1918296dC6F305C4',
+    ADDRESSES.bouncebit.wstBBTC, // all depositors from 0x39132fA8C6a8Caf74F6940Ac0B2Caf73F25223b8
+    
+    // 0x39132fA8C6a8Caf74F6940Ac0B2Caf73F25223b8 distributed BTC.B to multiple addresses to made deposits
+    '0x8f083EaFcbba2e126AD9757639c3A1E25a061A08',
   ],
   goat: [
     '0x6f0AfADE16BFD2E7f5515634f2D0E3cd03C845Ef',

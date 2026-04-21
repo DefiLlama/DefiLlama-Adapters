@@ -1,6 +1,16 @@
 const sdk = require('@defillama/sdk')
 
+function time() {
+  if (process.env.TIMESTAMP) return +process.env.TIMESTAMP;
+  return Math.round(Date.now() / 1e3);
+}
+
+function getTimeString() {
+  return new Date(time() * 1e3).toISOString().slice(0, 10)
+}
+
 async function writeToElastic({ project, tvlKey, chain, balances }) {
+  const timeS = getTimeString()
 
   return sdk.elastic.writeLog('custom-scripts', {
     metadata: {
@@ -9,14 +19,16 @@ async function writeToElastic({ project, tvlKey, chain, balances }) {
     chain,
     project,
     tvlKey,
+    timeS,
     balancesJSON: typeof balances === 'object' ? JSON.stringify(balances) : balances,
-    timestamp: Math.floor(Date.now()),  // think this get overwritten by sdk.elastic
+    timestamp: time() * 1e3,  // think this get overwritten by sdk.elastic
   });
 }
 
 
-async function readFromElastic({ tvlKey, timestamp, range, project, throwIfMissing = false }) {
+async function readFromElastic({ tvlKey, timestamp, range = 8 * 3600 * 1000, project, throwIfMissing = false }) {
   const startTime = timestamp - range;
+  const endTime = timestamp + range;
   const response = await sdk.elastic.search({
     index: 'custom-scripts*',
     body: {
@@ -41,15 +53,15 @@ async function readFromElastic({ tvlKey, timestamp, range, project, throwIfMissi
             {
               range: {
                 timestamp: {
-                  gte: startTime * 1000,
-                  lte: timestamp * 1000,
+                  gte: startTime,
+                  lte: endTime,
                 },
               },
             },
           ],
         },
       },
-      size: 1,
+      size: 10,
       sort: [{ timestamp: { order: 'desc' } }],
     },
   });
@@ -64,13 +76,20 @@ async function readFromElastic({ tvlKey, timestamp, range, project, throwIfMissi
     }
   }
 
-  let record = documents[0]
+  let record = documents.reduce((closest, doc) => {
+    const closestDiff = Math.abs(closest.timestamp - timestamp * 1000);
+    const docDiff = Math.abs(doc.timestamp - timestamp * 1000);
+    return docDiff < closestDiff ? doc : closest;
+  })
+
   if (record.balancesJSON)
     return { ...record, balances: JSON.parse(record.balancesJSON) }
 
   return record
 }
 module.exports = {
+  time,
   writeToElastic,
+  getTimeString,
   readFromElastic
 };

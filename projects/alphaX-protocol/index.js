@@ -29,3 +29,8 @@ Object.keys(walletAddresses).forEach(chain => {
     tvl: sumTokensExport({ owners: walletAddresses[chain], tokens: tokenAddress[chain], })
   }
 })
+
+module.exports.hallmarks = [
+  ['2024-08-14', 'Start of Testing and Development Phase'],
+  ['2025-03-20', 'End of Testing and Development Phase'],
+]

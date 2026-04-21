@@ -33,4 +33,7 @@ module.exports = {
   base: { tvl: getAutomationTvl },
   arbitrum: { tvl: getAutomationTvl },
   optimism: { tvl: getAutomationTvl },
+  hallmarks: [
+    ['2026-02-12', 'Summer.fi Pro sunsets'],
+  ],
 };

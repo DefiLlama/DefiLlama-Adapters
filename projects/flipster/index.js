@@ -10,6 +10,7 @@ const config = {
       '0x711948E4d826A37Aa564C41c7B50de7E45c9Ee44',
       '0x8C50172e1534826F40C288A41793cFc57bB37538',
       '0xd157bD19Ea0953f8B29E34b4Bee08fC4cba2B6a4',
+      '0x3c31BDA7A66258193AF972280258c1DC1CcF6acb',
     ],
   },
   tron: {
@@ -125,7 +126,7 @@ const config = {
     owners: [
       '0x987753779885D0cB90E368070F54f220AE93E698'
     ]
-  }
+  },
 }
 
 module.exports = cexExports(config)

@@ -2,6 +2,7 @@
 const AAVE_POOLS = {
     USDC: '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     WETH: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // aEthWETH
+    wstETH: '0x0B925eD163218f6662a35e0f0371Ac234f9E9371', // aEthWSTETH
   };
   
   // Compound V3 (Ethereum mainnet) – Comet addresses
@@ -32,17 +33,23 @@ const AAVE_POOLS = {
     'f(x) Protocol Re7 USDC': '0x4F460bb11cf958606C69A963B4A17f9DaEEea8b6',
     'Avantgarde USDC Conservative': '0xeBBaE8CfAbB0092d5B32f00EBeE0c8139d24dDcd',
     'Coinshift USDC': '0x7204B7Dbf9412567835633B6F00C3Edc3a8D6330',
+    'kpk ETH Yield': '0xc88eFFD6e74D55c78290892809955463468E982A',
+    'Gauntlet WETH Core': '0x4881Ef0BF6d2365D3dd6499ccd7532bcdBCE0658',
+    'Vault Bridge WETH': '0x31A5684983EeE865d943A696AAC155363bA024f9',
+    'Steakhouse ETH': '0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4'
   };
   
   // Fluid (Ethereum mainnet)
   const FLUID_POOLS = {
     USDC: '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // fUSDC
     WETH: '0x90551c1795392094FE6D29B758EcCD233cFAa260', // fWETH
+    'WETH - Leveraged': '0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78',
+    wstETH: '0x2411802D8BEA09be0aF8fD8D08314a63e706b29C',
   };
   
   // Dolomite (Ethereum mainnet)
   const DOLOMITE_POOLS = {
-    USDC: '0xf8b2c637A68cF6A17b1DF9F8992EeBeFf63d2dFf',
+    USDC: '0x444868B6e8079ac2c55eea115250f92C2b2c4D14',
   };
   
   // Euler (Ethereum mainnet)

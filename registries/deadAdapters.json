@@ -2178,14 +2178,6 @@
     },
     "deadFrom": "2025-01-15"
   },
-  "humble": {
-    "deadFrom": "2025-06-01",
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "algorand": {
-      "tvl": "_f"
-    }
-  },
   "hydradex": {
     "deadFrom": "2025-07-01",
     "misrepresentedTokens": true,

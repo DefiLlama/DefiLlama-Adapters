@@ -30,7 +30,14 @@ const vaultConfigs = {
     monad: {
       morphoVaultOwners: [
         '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD',
+        '0x9B97783B747c51b39c3d320050dc9C512868dAa8'
       ],
+    },
+    katana: {
+      morphoVaultOwners: [
+        '0x9B97783B747c51b39c3d320050dc9C512868dAa8',
+        '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD'
+      ]
     }
   }
 };

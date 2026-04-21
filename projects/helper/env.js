@@ -34,6 +34,7 @@ const DEFAULTS = {
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  IGRA_RPC: "https://rpc.igralabs.com:8545",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
@@ -44,6 +45,10 @@ const DEFAULTS = {
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
+  CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
+  PROPTECH_RPC: "https://mainnet.ptekcoin.com",
+  WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
+  BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
 }
 
 const ENV_KEYS = [
@@ -71,6 +76,9 @@ const ENV_KEYS = [
   'PROXY_AUTH',
   'UI_TOOL_MODE',
   'P0_API_KEY',
+  'CRYPTOAPIS_API_KEY',
+  'TATUM_PUBLIC_API_KEY',
+  'TATUM_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
