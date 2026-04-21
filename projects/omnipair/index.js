@@ -3,6 +3,7 @@ const { Program, web3 } = require('@coral-xyz/anchor')
 const idl = require('./omnipair_idl.json')
 
 const PROGRAM_ID = 'omnixgS8fnqHfCcTGKWj6JtKjzpJZ1Y5y9pyFkQDkYE'
+const OMFG = 'omfgRBnxHsNJh6YeGbGAmWenNkenzsXyBXm3WDhmeta'
 
 const COLLATERAL_VAULT_SEED = Buffer.from('collateral_vault')
 
@@ -112,6 +113,24 @@ async function tvl(api) {
     addReserveSide(api, pair)
     await addCollateralSide(api, connection, pair)
   }
+  api.removeTokenBalance(OMFG)
+}
+
+async function staking(api) {
+  const provider = getProvider()
+  const connection = provider.connection
+  const pairs = await getFreshPairs()
+
+  for (const pair of pairs) {
+    if (pair.token0 === OMFG) {
+      api.add(OMFG, pair.cashReserve0)
+      api.add(OMFG, await getTokenAccountBalance(connection, deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, OMFG)))
+    }
+    if (pair.token1 === OMFG) {
+      api.add(OMFG, pair.cashReserve1)
+      api.add(OMFG, await getTokenAccountBalance(connection, deriveVaultAddress(COLLATERAL_VAULT_SEED, pair.pair, OMFG)))
+    }
+  }
 }
 
 async function borrowed(api) {
@@ -121,14 +140,16 @@ async function borrowed(api) {
     api.add(pair.token0, pair.totalDebt0)
     api.add(pair.token1, pair.totalDebt1)
   }
+  api.removeTokenBalance(OMFG)
 }
 
 module.exports = {
   methodology:
-    'TVL counts assets currently locked in Omnipair reserve vaults via Pair account cashReserve0 and cashReserve1, plus all tokens locked in collateral vaults across all Pair accounts on Solana. Borrowed counts outstanding debt from totalDebt0 and totalDebt1 across all Pair accounts. Separately, Omnipair total deposits can be thought of as reserve exposure plus deposited collateral.',
+    'TVL counts assets in Omnipair reserve and collateral vaults. OMFG (protocol token) is tracked under staking.',
   timetravel: false,
   solana: {
     tvl,
+    staking,
     borrowed,
   },
 }
