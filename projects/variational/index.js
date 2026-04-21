@@ -21,14 +21,8 @@ async function tvl({ api }) {
 
   await sumTokens2({
     api,
-    owners: [OLP_VAULT, EVM_OLP_HEDGING],
-    token: ADDRESSES.null,
-  })
-
-  await sumTokens2({
-    api,
     owners: [...pools, OLP_VAULT, EVM_OLP_HEDGING],
-    token: ADDRESSES.arbitrum.USDC_CIRCLE,
+    tokens: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.null],
   })
 };
 
