@@ -58,6 +58,17 @@ function _normalizeAddr(rawId) {
   return rawId === 'eth' ? nullAddress : rawId.toLowerCase()
 }
 
+/**
+ * Sum token balances from DeBank for the given wallet addresses.
+ * Uses `all_complex_protocol_list` for DeFi protocol positions (decomposed into underlying assets)
+ * and optionally `all_token_list` for idle wallet-held tokens not in any protocol.
+ *
+ * @param {string[]} owners - Wallet addresses to query
+ * @param {string[]} [opts.blacklistedTokens] - Token addresses to skip when adding balances (applies to both endpoints)
+ * @param {string[]} [opts.blacklistedPools] - Skip protocol positions whose pool.id matches (e.g. vault addresses already tracked on-chain)
+ * @param {boolean} [opts.stripPoolTokens] - Remove pool/LP token balances that have been added by a separate on-chain read (avoids double-counting with DeBank)
+ * @param {boolean} [opts.includeWalletTokens] - Also fetch idle wallet tokens via `all_token_list` (is_all=false filters out protocol-derived tokens)
+ */
 async function sumTokensDebank(api, owners, { blacklistedTokens = [], blacklistedPools = [], stripPoolTokens = false, includeWalletTokens = false } = {}) {
   const allData = await _fetchDebank('all_complex_protocol_list', owners)
   const blacklist = new Set(blacklistedTokens.map(t => t.toLowerCase()))
