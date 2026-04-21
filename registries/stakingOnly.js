@@ -293,6 +293,11 @@ const configs = {
       pool2: ['0xb015d1D4F846D44A699F5648071496D1eC99C4C5', ['0x517ae0a15932A57D27cE26AE97f5F9Dbc6823907', '0x2b779C9Ed23bb315911EEE910bc3FfAbFfB776bB']],
     },
   },
+  'monstro': {
+    base: {
+      staking: ['0x99741758A3BCD7A95B80845E124C5C499DF4742b', '0x1d3bE1CC80cA89DDbabe5b5C254AF63200e708f7'],
+    },
+  },
   'ora-finance': {
     misrepresentedTokens: true,
     methodology: "Pool2 deposits consist of ORA/AURORA and OSHARE/AURORA LP tokens deposits while the staking TVL consists of the OSHARES tokens locked within the Boardroom.",
