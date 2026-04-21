@@ -21,7 +21,16 @@ const configs = {
     "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, kpk Fund AUM, and positions in Safes actively managed by kpk via Zodiac Roles Modifier.",
   blockchains: {
     ethereum: {
-      morphoVaultOwners: [],
+      // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
+      // (vaults are discovered from event logs, and de-duplication is automatically applied)
+      morphoVaultOwners: [
+        // Add owner addresses here to discover all their Morpho vaults
+        // Example: '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
+      ],
+
+      // Option 2: Use morpho: to specify static Morpho vault addresses
+      // (de-duplication is automatically applied)
+      // You can use BOTH morphoVaultOwners and morpho together - they will be combined
       morpho: [
         "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", //Morpho v1 USDC Prime
         "0x0c6aec603d48eBf1cECc7b247a2c3DA08b398DC1", //Morpho v1 EURC Yield
