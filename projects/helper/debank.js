@@ -25,12 +25,12 @@ function getLlamaChain(debankChain) {
 
 const _cache = {}
 
-function _cacheKey(endpoint, owners) {
-  return endpoint + ':' + owners.map(o => o.toLowerCase()).sort().join(',')
+function _cacheKey(endpoint, owners, isAll) {
+  return endpoint + ':' + isAll + ':' + owners.map(o => o.toLowerCase()).sort().join(',')
 }
 
-async function _fetchDebank(endpoint, owners) {
-  const key = _cacheKey(endpoint, owners)
+async function _fetchDebank(endpoint, owners, { isAll = true } = {}) {
+  const key = _cacheKey(endpoint, owners, isAll)
   if (!_cache[key]) {
     const apiKey = getEnv('DEBANK_API_KEY')
     if (!apiKey) {
@@ -41,7 +41,7 @@ async function _fetchDebank(endpoint, owners) {
     _cache[key] = Promise.all(
       owners.map(id =>
         axios.get(`${DEBANK_API_BASE}/${endpoint}`, {
-          params: { id, is_all: true },
+          params: { id, is_all: isAll },
           headers,
         }).then(r => r.data).catch(e => {
           console.log(`DeBank ${endpoint} failed for ${id}: ${e.response?.status || e.message}`)
@@ -58,14 +58,16 @@ function _normalizeAddr(rawId) {
   return rawId === 'eth' ? nullAddress : rawId.toLowerCase()
 }
 
-async function sumTokensDebank(api, owners, { blacklistedTokens = [], stripPoolTokens = false } = {}) {
+async function sumTokensDebank(api, owners, { blacklistedTokens = [], blacklistedPools = [], stripPoolTokens = false, includeWalletTokens = false } = {}) {
   const allData = await _fetchDebank('all_complex_protocol_list', owners)
   const blacklist = new Set(blacklistedTokens.map(t => t.toLowerCase()))
+  const poolBlacklist = blacklistedPools.length ? new Set(blacklistedPools.map(p => p.toLowerCase())) : null
 
   for (const protocols of allData) {
     for (const protocol of protocols || []) {
       if (getLlamaChain(protocol.chain) !== api.chain) continue
       for (const item of protocol.portfolio_item_list || []) {
+        if (poolBlacklist && item.pool?.id && poolBlacklist.has(item.pool.id.toLowerCase())) continue
         for (const token of item.asset_token_list || []) {
           const addr = _normalizeAddr(token.id)
           if (!addr || blacklist.has(addr)) continue
@@ -74,6 +76,18 @@ async function sumTokensDebank(api, owners, { blacklistedTokens = [], stripPoolT
         if (stripPoolTokens && item.pool?.id) {
           api.removeTokenBalance(item.pool.id.toLowerCase())
         }
+      }
+    }
+  }
+
+  if (includeWalletTokens) {
+    const walletData = await _fetchDebank('all_token_list', owners, { isAll: false })
+    for (const tokens of walletData) {
+      for (const token of tokens || []) {
+        if (getLlamaChain(token.chain) !== api.chain) continue
+        const addr = _normalizeAddr(token.id)
+        if (!addr || blacklist.has(addr)) continue
+        if (token.amount > 0) api.add(addr, token.amount * 10 ** token.decimals)
       }
     }
   }
