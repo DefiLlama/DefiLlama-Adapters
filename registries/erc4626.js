@@ -231,6 +231,11 @@ const configs = {
     katana: ['0xe5092ab6b8b0c37b1bec12c606614706063d04e8'],
     monad: ['0xE89d322b5822D828B8252D3087be8486cC2048Ef'],
   },
+  'arche-money': {
+    'ethereum': [
+      '0x33ffc177a7278ff84aab314a036bc7b799b7cc15', // arUSD
+    ],
+  },
   'tulpea': {
     methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy\'s (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
     start: '2026-04-09',
