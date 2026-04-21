@@ -23,7 +23,7 @@ const LTOKENS = {
   ],
 }
 
-// V2 lyTokens: standard ERC4626 vaults
+// V2 lyTokens: ERC4626 vaults
 const VAULTS = {
   ethereum: ["0x3C769d0e8D21d380228dFB7918c6933bb6ecB6D4", "0x20968165B7d2cDF33aF632aAB3e0539848d44BC8"],
   sonic: ["0x65f75c675Cc76474662DfBF7B6e8683764223001"],
@@ -44,7 +44,7 @@ const allChains = [...new Set([...Object.keys(LTOKENS), ...Object.keys(VAULTS), 
 
 module.exports = {
   doublecounted: true,
-  methodology: "TVL is the total underlying assets (USDC/EURC) in Ledgity's lToken rebasing wrappers and lyToken ERC4626 vaults. Protocol-owned lToken balances are excluded to avoid double-counting with vault TVL. Staking is LDY locked in staking contracts.",
+  methodology: "TVL is the total underlying assets (USDC/EURC) in Ledgity's V1 lToken rebasing wrappers (LUSDC, LEURC) and V2 lyToken ERC4626 vaults (lyUSD, lyEUR). These are separate pools: no lToken underlying is deposited into lyToken vaults. Owner and liquidity-manager lToken balances are excluded — the LM holds lTokens surrendered by users who migrated to V2 vault shares (not burned, kept as a safety backup), so excluding it prevents double-counting with lyToken TVL. Staking TVL is the total LDY locked across V1 (LDYStaking) and V2 (StakingPositions) contracts.",
 }
 
 allChains.forEach(chain => {
