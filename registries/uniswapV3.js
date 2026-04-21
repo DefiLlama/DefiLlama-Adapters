@@ -1142,6 +1142,12 @@ const uniV3Configs = {
       fromBlock: 18149975,
     },
   },
+  'ramsesx-arb-cl': {
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
+    },
+  },
   'ramsesx-poly-cl': {
     polygon: {
       factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
