@@ -1,5 +1,6 @@
 const { getConnection, sumTokens2 } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
+const ADDRESSES = require("../helper/coreAssets.json");
 
 // Streamlock Token Factory program — owns every pool_config and sol_vault PDA
 // created by the launchpad. https://www.streamlock.fun/
@@ -20,7 +21,7 @@ const POOL_CONFIG_SIZE = 401;
 const SOL_VAULT_OFFSET = 40;
 const STAKED_SOL_OFFSET = 316;
 
-const SOL_MINT = "So11111111111111111111111111111111111111112";
+const SOL_MINT = ADDRESSES.solana.SOL;
 
 // Streamflow escrow token accounts for the three team/treasury $LOCK vesting
 // streams. Derived as findProgramAddressSync([b"strm", metadata.toBuffer()],
@@ -82,15 +83,17 @@ async function vesting(api) {
 
 module.exports = {
   timetravel: false,
-  doublecounted: true,
   methodology:
     "TVL sums native SOL held in per-token bonding-curve sol_vault PDAs " +
     "(discovered via getProgramAccounts on the Streamlock Token Factory, " +
     "filtered by the 401-byte PoolConfig account size) plus SOL staked as " +
     "JitoSOL (tracked on-chain in each PoolConfig's staked_sol_lamports " +
-    "field). Vesting tracks $LOCK locked in three Streamflow team/treasury " +
-    "contracts, flagged doublecounted because those streams are also " +
-    "visible to Streamflow's own DefiLlama adapter.",
+    "field); this value is unique to Streamlock and does not overlap with " +
+    "any other DefiLlama adapter. Vesting tracks $LOCK locked in three " +
+    "Streamflow team/treasury contracts and is reported as a separate " +
+    "bucket; those streams are also visible to Streamflow's own adapter, " +
+    "so the vesting bucket alone is the only overlap with another " +
+    "protocol.",
   solana: {
     tvl,
     vesting,
