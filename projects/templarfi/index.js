@@ -9,7 +9,25 @@ const MAX_RETRY_ATTEMPTS = 3
 const RETRY_DELAY_MS = 1000
 const CALL_TIMEOUT_MS = 30000
 
-const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+// These are proxy oracles, adapters and deleted test markets
+const CONTRACTS_TO_SKIP = new Set([
+  'liqtest-ixlm-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-ixlmcetes-ixlmusdc.v1.tmplr.near',
+  'redstone-adapter.v1.tmplr.near',
+  'proxy-oracle-ixlmustry-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-iada-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-ibtc-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-idoge-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-iltc-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-ixrp-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-izec-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-linear-usdt.v1.tmplr.near"',
+  'proxy-oracle-stnear-usdt.v1.tmplr.near",'
+]);
+
+const FAST_FAIL_PATTERNS = ['does not exist', 'Buffer', 'Received undefined']
 
 function detectCrossChainToken(tokenId) {
   // Stellar tokens via HOT omnichain bridge (chain ID 1100)
@@ -89,7 +107,7 @@ async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_D
       return await fn()
     } catch (error) {
       lastError = error
-      if (error.message && error.message.includes('does not exist')) {
+      if (error.message && FAST_FAIL_PATTERNS.some(p => error.message.includes(p))) {
         throw error
       }
       if (attempt === maxAttempts) throw lastError
@@ -254,7 +272,14 @@ async function fetchDeploymentsFromContract(registryContract) {
     offset += limit
   }
 
-  return deployments
+  return deployments.filter(deployment => {
+    if (CONTRACTS_TO_SKIP.has(deployment)) {
+      console.log(`Skipping known non-market contract: ${deployment}`)
+      return false
+    }
+
+    return true
+  })
 }
 
 async function processMarket(marketContract) {
@@ -352,21 +377,24 @@ function aggregateByChain(marketData, type) {
   return chainBalances
 }
 
-let cachedMarketData = null
+let cachedMarketDataPromise = null
+
+async function getMarketDataMemoized() {
+  if (!cachedMarketDataPromise) {
+    cachedMarketDataPromise = getMarketData()
+  }
+  return cachedMarketDataPromise
+}
 
 async function getChainTvl(chain) {
-  if (!cachedMarketData) {
-    cachedMarketData = await getMarketData()
-  }
-  const chainBalances = aggregateByChain(cachedMarketData, 'tvl')
+  const data = await getMarketDataMemoized()
+  const chainBalances = aggregateByChain(data, 'tvl')
   return chainBalances[chain] || {}
 }
 
 async function getChainBorrowed(chain) {
-  if (!cachedMarketData) {
-    cachedMarketData = await getMarketData()
-  }
-  const chainBalances = aggregateByChain(cachedMarketData, 'borrowed')
+  const data = await getMarketDataMemoized()
+  const chainBalances = aggregateByChain(data, 'borrowed')
   return chainBalances[chain] || {}
 }
 
