@@ -323,7 +323,7 @@ async function processMarket(marketContract) {
       collateralDecimals,
     }
   } catch (error) {
-    if (error.message && (error.message.includes('does not exist') || error.message.includes('Buffer') || error.message.includes('Received undefined'))) {
+    if (error.message && FAST_FAIL_PATTERNS.some(p => error.message.includes(p))) {
       console.log(`Market ${marketContract} skipped (not a market): ${error.message}`)
       return null
     }
