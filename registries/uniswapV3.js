@@ -1135,15 +1135,23 @@ const uniV3Configs = {
       factory: '0xaa2cd7477c451e703f3b9ba5663334914763edf8',
       fromBlock: 90593047,
     },
-    hyperliquid: {
-      factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
-      fromBlock: 17985840,
-    },
   },
   'ramses-hl-cl': {
     hyperliquid: {
       factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
       fromBlock: 18149975,
+    },
+  },
+  'ramsesx-arb-cl': {
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
+    },
+  },
+  'ramsesx-poly-cl': {
+    polygon: {
+      factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
+      fromBlock: 82177771,
     },
   },
   'reservoir-tools-v3': {
@@ -1694,6 +1702,12 @@ const uniV3Configs = {
       blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
     }
   },
+  'oku-trade': {
+    "0g": {
+      factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D',
+      fromBlock: 6673868
+    }
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
