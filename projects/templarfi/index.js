@@ -24,7 +24,7 @@ const CONTRACTS_TO_SKIP = new Set([
   'proxy-oracle-ixrp-ixlmusdc.v1.tmplr.near',
   'proxy-oracle-izec-ixlmusdc.v1.tmplr.near',
   'proxy-oracle-linear-usdt.v1.tmplr.near',
-  'proxy-oracle-stnear-usdt.v1.tmplr.near,'
+  'proxy-oracle-stnear-usdt.v1.tmplr.near'
 ]);
 
 const FAST_FAIL_PATTERNS = ['does not exist', 'Buffer', 'Received undefined']
