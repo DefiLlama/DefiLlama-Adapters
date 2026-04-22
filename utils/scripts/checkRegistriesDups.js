@@ -6,10 +6,9 @@ const { getEnv } = require('../../projects/helper/env');
 const Bucket = 'tvl-adapter-cache';
 const REGISTRY_DIR = path.join(__dirname, '../../registries');
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$|^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
-const NON_CHAIN_KEYS = new Set(['methodology', 'misrepresentedTokens', 'doublecounted', 'hallmarks', '_options']);
 
 // Keys that identify a tracked contract
-const KEYS = new Set(['factory', 'comptroller', 'masterchef', 'vault', 'registry']);
+const KEYS = new Set(['factory', 'comptroller', 'masterchef', 'vault', 'registry', 'address']);
 
 function addIfAddress(value, found) {
   if (typeof value === 'string' && ADDRESS_RE.test(value)) found.add(value.toLowerCase());
@@ -21,7 +20,7 @@ function extractTrackedAddresses(chainConfig, found = new Set()) {
     addIfAddress(chainConfig, found);
     return found;
   }
-  // Array form: `chain: [{ comptroller: '0x...' }, ...]` — recurse into each
+  // Array form: `chain: [{ comptroller: '0x...' }, ...]`
   if (Array.isArray(chainConfig)) {
     chainConfig.forEach(item => extractTrackedAddresses(item, found));
     return found;
@@ -56,12 +55,10 @@ async function run() {
 
     if (!configs || typeof configs !== 'object') continue;
 
-    // scoped to this file — same address across registries is not a duplicate
     const addressMap = {};
     for (const [protocol, config] of Object.entries(configs)) {
       if (typeof config !== 'object' || config === null) continue;
       for (const [chain, chainConfig] of Object.entries(config)) {
-        if (NON_CHAIN_KEYS.has(chain)) continue;
         for (const addr of extractTrackedAddresses(chainConfig)) {
           const key = `${chain}:${addr}`;
           if (!addressMap[key]) addressMap[key] = [];
