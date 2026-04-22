@@ -246,6 +246,10 @@ const configs = {
     start: '2026-04-02',
     doublecounted: true,
     hyperliquid: ['0xe67c82f0970D66d8b84dB43F2392E77CE7e4ED75']
+  },
+  'yfarmer': {
+    start: '2026-04-11',
+    base: ['0x71c298a6eb10e7958ce25a450a706330a4c946c0']
   }
 }
 
