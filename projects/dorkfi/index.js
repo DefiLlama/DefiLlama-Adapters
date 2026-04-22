@@ -11,8 +11,10 @@
  *   2. For each market, look up the market app's on-chain account to identify
  *      the underlying token (native coin or ASA balance, excluding the nToken).
  *   3. Report raw token amounts via api.add() so DeFi Llama can price them.
- *   4. ARC-200 token markets (WAD, UNIT on Voi) are hardcoded and valued via
- *      api.addUSDValue() using DorkFi's on-chain price oracle.
+ *   4. Markets whose underlying tokens are not priced by DeFi Llama fall back
+ *      to api.addUSDValue() using DorkFi's on-chain price oracle via the API.
+ *      This covers ARC-200 tokens on Voi (WAD, UNIT) and several Algorand ASAs
+ *      (UNIT, POW, FINITE, FOLKS, HAY, WAD) that lack DeFi Llama price feeds.
  *
  * Borrows use the same logic with totalScaledBorrows × borrowIndex / 1e18.
  */
@@ -29,12 +31,33 @@ const INDEXER_URL = {
   voi:      "https://mainnet-idx.voi.nodely.dev",
 };
 
-// ARC-200 market IDs on Voi: underlying tokens are not visible in account.assets.
-// These markets use DorkFi API's pre-computed USD value via api.addUSDValue().
-// Market IDs (app IDs) that hold ARC-200 tokens as underlying:
-//   420069   = UNIT (ARC-200 governance token)
-//   47138068 = WAD  (ARC-200 stablecoin)
-const ARC200_MARKET_IDS = new Set([420069, 47138068]);
+// Markets whose underlying tokens are not priced by DeFi Llama's price oracle.
+// These fall back to api.addUSDValue() using DorkFi's on-chain price oracle.
+//
+// Voi ARC-200 tokens (balances not visible in account.assets):
+//   420069   = UNIT (ARC-200)
+//   47138068 = WAD  (ARC-200)
+//
+// Algorand ASAs with no DeFi Llama price feed (verified via coins.llama.fi):
+//   3220125024 = UNIT  (ASA 3121954282)
+//   3080081069 = POW   (ASA 2994233666)
+//   3211805086 = FINITE Pool A (ASA 400593267)
+//   3211740909 = FINITE Pool B (ASA 400593267)
+//   3346185062 = FOLKS Pool A  (ASA 3203964481)
+//   3212771255 = FOLKS Pool B  (ASA 3203964481)
+//   3212773584 = HAY           (ASA 3160000000)
+//   3211890928 = HAY           (ASA 3160000000)
+//   3333688448 = WAD on Algorand (ASA 3334160924)
+const USE_API_PRICE = new Set([
+  // Voi ARC-200
+  420069, 47138068,
+  // Algorand — no DeFi Llama price feed
+  3220125024, 3080081069,
+  3211805086, 3211740909,
+  3346185062, 3212771255,
+  3212773584, 3211890928,
+  3333688448,
+]);
 
 // ── API helpers ───────────────────────────────────────────────────────────────
 
@@ -65,56 +88,46 @@ async function lookupAccount(chain, address) {
 // ── Token identification ──────────────────────────────────────────────────────
 
 /**
- * Returns { kind: "native" | "asa" | "arc200", nativeNet?, asaId?, asaAmount? }
+ * Returns { kind: "native" | "asa" | "api_price", nativeNet?, asaId?, asaAmount? }
  *
- * - "native" : market holds meaningful native ALGO/VOI (real deposit balance)
- * - "asa"    : market holds a non-nToken ASA with a real (non-sentinel) balance
- * - "arc200" : underlying is ARC-200 or unknown — use USD value fallback
+ * - "native"    : market holds meaningful native ALGO/VOI (real deposit balance)
+ * - "asa"       : market holds a non-nToken ASA priced by DeFi Llama
+ * - "api_price" : token has no DeFi Llama price — use DorkFi API USD value
  *
- * Native detection uses a high threshold (5e9 microunits ≈ 5,000 ALGO/VOI)
- * to distinguish real native deposits from mere operational min-balances.
- * ARC-200 markets are explicitly listed in ARC200_MARKET_IDS.
+ * Native detection uses a 5e9 microunit threshold to distinguish real deposit
+ * balances (50K+ ALGO, 206M+ VOI) from operational min-balances (~121–1,760).
  */
 function identifyUnderlying(market, account) {
-  // ARC-200 markets are hardcoded — skip account inspection entirely
-  if (ARC200_MARKET_IDS.has(Number(market.marketId))) {
-    return { kind: "arc200" };
+  if (USE_API_PRICE.has(Number(market.marketId))) {
+    return { kind: "api_price" };
   }
 
   const nTokenId   = Number(market.ntokenId);
   const minBalance = account["min-balance"] || 0;
   const nativeNet  = Math.max(0, account.amount - minBalance);
 
-  // uint64 sentinel: near-max values indicate placeholder/nToken ASAs, not real balances
   const UINT64_MAX  = BigInt("18446744073709551615");
   const SENTINEL_LO = UINT64_MAX - BigInt(1_000_000);
 
-  const nonNToken = (account.assets || []).filter(
+  const nonNToken  = (account.assets || []).filter(
     (a) => a["asset-id"] !== nTokenId && a.amount > 0
   );
-  const realAssets = nonNToken.filter(
-    (a) => BigInt(a.amount) < SENTINEL_LO
-  );
+  const realAssets = nonNToken.filter((a) => BigInt(a.amount) < SENTINEL_LO);
 
-  // Native market: nativeNet > 5,000 native coins (5e9 microunits) with no real ASAs.
-  // Threshold chosen to exceed all known operational min-balances (~121–1,760 VOI/ALGO)
-  // while being below real deposit balances (50K+ ALGO, 206M+ VOI).
   if (nativeNet > 5_000_000_000 && realAssets.length === 0) {
     return { kind: "native", nativeNet };
   }
 
-  // ASA market
   if (realAssets.length > 0) {
     realAssets.sort((a, b) => Number(BigInt(b.amount) - BigInt(a.amount)));
     const top = realAssets[0];
     return { kind: "asa", asaId: top["asset-id"], asaAmount: top.amount };
   }
 
-  // ARC-200 / unknown
-  return { kind: "arc200" };
+  return { kind: "api_price" };
 }
 
-// ── Dedup (same market may appear under multiple pools) ───────────────────────
+// ── Dedup ─────────────────────────────────────────────────────────────────────
 
 function dedup(markets) {
   const seen = new Map();
@@ -131,6 +144,12 @@ function dedup(markets) {
 
 function actualAmount(scaled, index) {
   return BigInt(scaled) * BigInt(index) / SCALE;
+}
+
+function borrowUsdFromPrice(borrowAmt, priceStr) {
+  const priceRaw = BigInt(priceStr || "0");
+  if (priceRaw === 0n || borrowAmt === 0n) return 0;
+  return Number(borrowAmt) * Number(priceRaw) / 1e30;
 }
 
 // ── TVL factory ───────────────────────────────────────────────────────────────
@@ -154,12 +173,10 @@ function makeTvl(chain) {
           } else if (token.kind === "asa") {
             api.add(String(token.asaId), token.asaAmount);
           } else {
-            // ARC-200 fallback — use DorkFi API's pre-computed USD value
             const usd = tvlMap[`${market.appId}:${market.marketId}`] || 0;
             if (usd > 0) api.addUSDValue(usd);
           }
         } catch (e) {
-          // Skip transient network errors; re-throw logic errors so CI catches regressions.
           const status = e?.response?.status;
           if (!status || status >= 500 || status === 404 || status === 429) {
             console.error(`dorkfi: skipping market ${market.appId}:${market.marketId} — ${e.message}`);
@@ -178,13 +195,6 @@ function makeBorrowed(chain) {
   return async function borrowed(api) {
     const markets = await fetchMarketData(chain);
 
-    // Borrow USD for ARC-200 markets: baseUnits × price / 1e30 = USD value
-    function borrowUsdFromPrice(borrowAmt, priceStr) {
-      const priceRaw = BigInt(priceStr || "0");
-      if (priceRaw === 0n || borrowAmt === 0n) return 0;
-      return Number(borrowAmt) * Number(priceRaw) / 1e30;
-    }
-
     await Promise.all(
       dedup(markets).map(async (market) => {
         const borrowAmt = actualAmount(market.totalScaledBorrows, market.borrowIndex);
@@ -200,7 +210,6 @@ function makeBorrowed(chain) {
           } else if (token.kind === "asa") {
             api.add(String(token.asaId), borrowAmt.toString());
           } else {
-            // ARC-200 fallback — compute borrow USD from API price oracle
             const usd = borrowUsdFromPrice(borrowAmt, market.price);
             if (usd > 0) api.addUSDValue(usd);
           }
@@ -223,10 +232,10 @@ module.exports = {
   timetravel: false,
   methodology:
     "TVL counts all assets deposited into DorkFi lending pools on Algorand and " +
-    "Voi Network. Native coins (ALGO/VOI) and ASAs are read from market contract " +
-    "accounts. ARC-200 token markets (WAD, UNIT on Voi) use DorkFi's on-chain " +
-    "price oracle via the DorkFi API. Borrowed reflects outstanding loans computed " +
-    "from totalScaledBorrows × borrowIndex / 1e18.",
+    "Voi Network. Standard ASAs and native coins (ALGO/VOI) are priced via DeFi " +
+    "Llama feeds. Tokens without DeFi Llama coverage (UNIT, WAD, POW, FINITE, " +
+    "FOLKS, HAY on Algorand; WAD and UNIT ARC-200s on Voi) use DorkFi's on-chain " +
+    "price oracle. Borrowed reflects totalScaledBorrows × borrowIndex / 1e18.",
   algorand: {
     tvl:      makeTvl("algorand"),
     borrowed: makeBorrowed("algorand"),
