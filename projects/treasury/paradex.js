@@ -1,4 +1,4 @@
-const { treasuryExports, nullAddress } = require("../helper/treasury");
+const { treasuryExports } = require("../helper/treasury");
 const ADDRESSES = require('../helper/coreAssets.json')
 
 //https://app.paradex.trade/dime/overview
@@ -9,7 +9,7 @@ module.exports = treasuryExports({
     ethereum: {
         owners: [PARADEX_TREASURY],
         tokens: [
-            nullAddress,
+            ADDRESSES.null,
             ADDRESSES.ethereum.USDC,
             DIME_TOKEN
         ],
