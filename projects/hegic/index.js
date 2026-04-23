@@ -59,5 +59,5 @@ module.exports = {
     tvl: arbiTvl,
     staking: staking(arbitrum.hergeCoverPool, arbitrum.HEGIC)
   },
-  methodology: `TVL for Hegic is calculated using the HEGIC tokens deposited into Stake & Cover pool on Arbitrum and pools liquidity in USDC, ETH and WBTC`,
+  methodology: `TVL for Hegic is calculated using pool liquidity in USDC, ETH and WBTC. HEGIC tokens deposited into the Stake & Cover pool on Arbitrum are reported under staking.`,
 };
