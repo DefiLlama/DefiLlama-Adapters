@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/solana');
 
 // USDC mint on Solana mainnet
-const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+const USDC_MINT = ADDRESSES.solana.USDC;
 
 // Memento vault treasury addresses (Solana)
 const VAULT_TREASURIES = [

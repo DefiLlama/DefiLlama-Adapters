@@ -35,7 +35,7 @@ module.exports = treasuryExports({
       "1zJX5gRnjLgmTpq5sVwkq69mNDQkCemqoasyjaPW6jm",
       "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
       "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4",
-      "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+      ADDRESSES.solana.JUP,
       "G5bStqnKXv11fmPvMaagUbZi86BGnpf9zZtyPQtAdaos",
       "HUMA1821qVDKta3u2ovmfDQeW2fSQouSKE8fkF44wvGw"
     ]

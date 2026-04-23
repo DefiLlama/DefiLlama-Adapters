@@ -77,6 +77,7 @@ module.exports = {
     [{
       // 'quantumx-network': '/quantumx-network/index',
       'polkadot': '/treasury/polkadot-api',
+      'pcs-v2': '/pancake-swap/pcs-v2-onchain',
       'stackswap': '/stackswap/api',
       'velar-amm': '/velar-amm/api',
       'alexlab': '/alexlab/api',

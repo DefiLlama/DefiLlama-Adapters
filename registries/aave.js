@@ -127,6 +127,7 @@ const aaveConfigs = {
     hyperliquid: {
       addressesProviderRegistry: '0x24E301BcBa5C098B3b41eA61a52bFe95Cb728b20',
       dataHelpers: ['0x5481bf8d3946E6A3168640c1D7523eB59F055a29'],
+      staking: ['0x09b2236327d76fcd9e4b72db70a6608c21a94292', '0xbd6dab50f03a305a80037294fa8d1a9dc0cac91b'],
       v3: true,
     },
   },

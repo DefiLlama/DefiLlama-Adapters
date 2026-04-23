@@ -983,6 +983,7 @@ const uniV2Configs = {
   },
   'kaspacom-dex': {
     kasplex: '0xa9CBa43A407c9Eb30933EA21f7b9D74A128D613c',
+    igra: '0x21350BcDa9E81731CF4cDE3DbC457e3de2739c01',
   },
   'katana-ronin': {
     hallmarks: [
@@ -2659,11 +2660,18 @@ const uniV2Configs = {
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
     arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"] },
-    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
   },
   'ramses-hl-legacy': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+  },
+  'ramsesx-arb-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
+  },
+  'ramsesx-poly-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
   },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
@@ -2847,6 +2855,9 @@ const uniV2Configs = {
   },
   'zkevmswap': {
     polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
+  },
+  'bcswap': {
+    bcypher: '0x927bf500361987b365f6d0ff38c1d45155f4975c',
   },
   'velox': {
     base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',

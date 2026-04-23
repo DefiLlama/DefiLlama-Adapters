@@ -17,7 +17,7 @@ module.exports = {
   hyperliquid: {
     tvl: sumTokensExport({ tokensAndOwners: [
       [
-        "0xb88339cb7199b77e23db6e890353e22632ba630f",
+        ADDRESSES.hyperliquid.USDC,
         '0x6B9E773128f453f5c2C60935Ee2DE2CBc5390A24'
       ],
     ]})

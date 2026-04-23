@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getNFTs, sumTokens } = require("../helper/chain/elrond");
 const { ResultsParser, AbiRegistry, SmartContract, Address, } = require("@multiversx/sdk-core/out");
 const { ProxyNetworkProvider } = require("@multiversx/sdk-network-providers/out");
@@ -42,14 +43,14 @@ const proxyProvider = new ProxyNetworkProvider(networkConfig.gatewayUrl, {
 // ─── Sui Constants ───
 
 // Sui token types
-const WUSDC = '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN'
-const USDC = '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC'
-const SUI_TOKEN = '0x2::sui::SUI'
-const DEEP = '0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP'
+const WUSDC = ADDRESSES.sui.USDC
+const USDC = ADDRESSES.sui.USDC_CIRCLE
+const SUI_TOKEN = ADDRESSES.sui.SUI
+const DEEP = ADDRESSES.sui.DEEP
 const HIPPO = '0x8993129d72e733985f7f1a00396cbd055bad6f817fee36576ce483c8bbb8b87b::hippo::HIPPO'
 const CETUS = '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS'
 const SCA = '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA'
-const WETH = '0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN'
+const WETH = ADDRESSES.sui.WETH
 
 // Cetus farm pools: [farmPoolId, cetusPoolId, coinTypeA, coinTypeB]
 const CETUS_FARMS = [

@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view } = require("../helper/chain/aptos");
 
 const MODULE = "lotto_run";
-const APT = "0x1::aptos_coin::AptosCoin";
+const APT = ADDRESSES.aptos.APT;
 
 const POOLS = [
   "0xc38c49cd3008de7e0f41aadd83155ba1e4e380694db1e48b1f13c404e2451f16",

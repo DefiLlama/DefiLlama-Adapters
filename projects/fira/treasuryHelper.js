@@ -48,7 +48,7 @@ async function getMarketParams(api, lendingMarket) {
   const uniqueByKey = new Map();
   logs.forEach((logArg) => {
     const params = normalizeMarketLogArg(logArg);
-    if (!params[0] || params[0] === "0x0000000000000000000000000000000000000000") return;
+    if (!params[0] || params[0] === ADDRESSES.null) return;
     uniqueByKey.set(params.join("-").toLowerCase(), params);
   });
 
