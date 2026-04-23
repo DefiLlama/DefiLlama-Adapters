@@ -10,12 +10,13 @@ module.exports = {
             fetcher: async () => {
                let items = [];
                let cursor = 0;
+               const limit = 100;
                do {
-                  const { data, next_cursor } = await get(`https://dex.reddicks.meme/api/pairs-defillama?cursor=${cursor}&limit=100`);
+                  const { data, next_cursor } = await get(`https://dex.reddicks.meme/api/pairs-defillama?cursor=${cursor}&limit=${limit}`);
                   items.push(...data);
                   sdk.log(`Fetched ${items.length} pools`, data.length, next_cursor);
-                  cursor = next_cursor;
-               } while (items.length % 100 === 0 && cursor !== 0);
+                  if (next_cursor != null) cursor = next_cursor;
+               } while (data.length === limit && next_cursor != null);
 
                return items;
             }
