@@ -1,5 +1,9 @@
+const { getConfig } = require('../helper/cache')
+
 async function tvl(api) {
-  const vaults = await fetch(`https://www.travessiacredit.com/api/vaults?chainId=${api.chainId}`).then(r=>r.json()).then(r=>r.map(v=>v.vaultAddress))
+  const chainId = api.chainId
+  const config = await getConfig(`travessia-${chainId}`, `https://www.travessiacredit.com/api/vaults?chainId=${chainId}`)
+  const vaults = config.map((res) => res.vaultAddress)
   const [supplies, assets] = await Promise.all([
     api.multiCall({ abi: 'erc20:totalSupply', calls: vaults }),
     api.multiCall({ abi: 'address:asset', calls: vaults }),
