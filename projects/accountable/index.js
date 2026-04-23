@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const FACTORIES = {
     monad: [
         '0x606556A6B544ecDcbf15aF73A63B67516dc16Ad7',
@@ -20,7 +21,7 @@ const abis = {
     asset: 'function asset() view returns (address)',
 }
 
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NULL_ADDRESS = ADDRESSES.null
 
 async function getVaults(api) {
     const vaults = new Set()

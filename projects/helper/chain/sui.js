@@ -36,11 +36,14 @@ async function queryEvents({ eventType, transform = i => i }) {
   return items.map(i => i.parsedJson).map(transform)
 }
 
-async function getObjects(objectIds) {
+async function getObjects(objectIds, { sleep } = {}) {
   if (objectIds.length > 9) {
     const chunks = sliceIntoChunks(objectIds, 9)
     const res = []
-    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
+    for (const chunk of chunks) {
+      if (sleep && res.length) await fnSleep(sleep)
+      res.push(...(await getObjects(chunk)))
+    }
     return res
   }
   const {
@@ -70,7 +73,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
   sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
   const fetchIds = data.filter(idFilter).map(i => i.objectId).filter(i => !addedIds.has(i))
   fetchIds.forEach(i => addedIds.add(i))
-  const objects = await getObjects(fetchIds)
+  const objects = await getObjects(fetchIds, { sleep })
   items.push(...objects)
   if (!hasNextPage) return items
   return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds, sleep })

@@ -10,6 +10,7 @@ const { boringVaultsV0Sonic } = require("./sonic_constants");
 const { boringVaultsV0Scroll } = require("./scroll_constants");
 const { boringVaultsV0Hyperevm } = require("./hyperevm_constants");
 const { boringVaultsV0Plasma } = require("./plasma_constants");
+const { boringVaultsV0Ink } = require("./ink_constants");
 
 module.exports = {
   timetravel: true,
@@ -25,5 +26,6 @@ module.exports = {
   ["sonic"]: { tvl: (api) => chainTvl(api, boringVaultsV0Sonic) },
   ["scroll"]: { tvl: (api) => chainTvl(api, boringVaultsV0Scroll) },
   ["hyperliquid"]: { tvl: (api) => chainTvl(api, boringVaultsV0Hyperevm) },
-  ["plasma"]: { tvl: (api) => chainTvl(api, boringVaultsV0Plasma) }
+  ["plasma"]: { tvl: (api) => chainTvl(api, boringVaultsV0Plasma) },
+  ["ink"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ink) },
 };

@@ -22,11 +22,12 @@ const chainList = require('./projects/helper/chains.json')
 const { log, diplayUnknownTable, sliceIntoChunks, sleep } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
+const { allProtocols } = require('./registries')
 
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
-const whitelistedEnvKeys = new Set(['LLAMA_SANITIZE','TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', 'LLAMA_RUN_LOCAL', ...ENV_KEYS])
+const whitelistedEnvKeys = new Set(['LLAMA_SANITIZE', 'TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', 'LLAMA_RUN_LOCAL', ...ENV_KEYS])
 
 
 
@@ -93,7 +94,7 @@ if (process.argv.length < 3) {
     Eg: node test.js projects/myadapter.js`);
   process.exit(1);
 }
-const passedFile = path.resolve(process.cwd(), process.argv[2]);
+let passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 const originalCall = sdk.api.abi.call
 sdk.api.abi.call = async (...args) => {
@@ -110,7 +111,7 @@ function validateHallmarks(hallmark) {
     throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
   }
   const [timestamp, text] = hallmark
-  if ((typeof timestamp !== 'string'  && !process.env.LLAMA_SANITIZE) || isNaN(+new Date(timestamp))) {
+  if ((typeof timestamp !== 'string' && !process.env.LLAMA_SANITIZE) || isNaN(+new Date(timestamp))) {
     throw new Error("Hallmark timestamp should be a dateString (YYYY-MM-DD)")
   }
   const year = new Date(timestamp * 1000).getFullYear()
@@ -134,11 +135,22 @@ function validateHallmarks(hallmark) {
   }
 
   let module = {};
-  module = require(passedFile)
+  try {
+    module = require(passedFile)
+  } catch (e) {
+    if (allProtocols[moduleArg]) {
+      module = allProtocols[moduleArg]
+      passedFile = `registry:${moduleArg}`
+      console.log(`Loaded module ${moduleArg} from registry`)
+    } else {
+      console.error("Error loading module:", e)
+      process.exit(1)
+    }
+  }
   deadChains.forEach(chain => {
     delete module[chain]
   })
-
+  
   if (module.hallmarks) {
     if (!Array.isArray(module.hallmarks)) {
       throw new Error("Hallmarks should be an array of arrays")
@@ -146,7 +158,7 @@ function validateHallmarks(hallmark) {
     if (module.hallmarks.length > 6) {
       console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
     }
-
+    
     module.hallmarks.forEach(validateHallmarks)
   }
   // await initCache()
@@ -276,16 +288,20 @@ function validateHallmarks(hallmark) {
 
 
 function checkExportKeys(module, filePath, chains) {
+  let _filePath = filePath
   filePath = filePath.split(path.sep)
   filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
 
-  if (filePath.length > 2
+  if ( !_filePath.startsWith('registry:') &&
+    (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
     || (filePath.length === 2 &&
       !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
         || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
         || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
       )))
+    
+    )
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];

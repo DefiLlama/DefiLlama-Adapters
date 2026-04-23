@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -10,9 +11,9 @@ const REVENUE_ROUTER = "0x4cDF668bFa0563C9D0fc5D5bD33191f0a2aE2571";
 const TREASURY = "0x690C2e187c8254a887B35C0B4477ce6787F92855";
 
 // Base chain tokens
-const WETH = "0x4200000000000000000000000000000000000006";
-const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-const CBBTC = "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf";
+const WETH = ADDRESSES.optimism.WETH_1;
+const USDC = ADDRESSES.base.USDC;
+const CBBTC = ADDRESSES.ethereum.cbBTC;
 
 // Base tokens that could be acquired by treasury
 // This list is checked + any tokens discovered from strategies

@@ -63,7 +63,6 @@ module.exports = {
     ['2022-09-02', "Launch on ETH"],
     ['2025-02-24', "TVL Migration to Denaria"]
   ],
-
   polygon: {
     pool2: pool2UniV3({ stakingAddress: '0x313c3F878998622f18761d609AA007F2bbC378Db', chain: 'polygon' })
   }
@@ -72,7 +71,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { staking, token, toa = [] } = config[chain]
   module.exports[chain] = {
-    tvl: (_, _b, {[chain]: block }) => sumTokens2({chain, block, tokensAndOwners: toa }),
-    staking: stakings(staking, token, chain),
+    tvl: () => sumTokens2({ chain, tokensAndOwners: toa }),
+    ...(staking ? { staking: stakings(staking, token, chain) } : {})
   }
 })

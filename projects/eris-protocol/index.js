@@ -55,7 +55,7 @@ const config = {
         "lion-dao",
     },
     tassets: [
-      {
+      /* {
         contract:
           "terra1j35ta0llaxcf55auv2cjqau5a7aee6g8fz7md7my7005cvh23jfsaw83dy",
         exchangeRate:
@@ -68,7 +68,7 @@ const config = {
         exchangeRate:
           "migaloo1mf6ptkssddfmxvhdx0ech0k03ktp6kf9yk59renau2gvht3nq2gqdhts4u",
         origChain: "migaloo",
-      },
+      }, */
     ],
     daos: [
       {

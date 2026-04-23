@@ -21,7 +21,6 @@ module.exports.sui = {
 module.exports.solana = {
   tvl: async (api) => {
     const token = '5aLhp9VnUEKcsdtkfsf2DUgpJfomx7GmYVny24dHUZoB'
-    const res = await getTokenSupplies([token], api)
-    api.add(token, res[token])
+    await getTokenSupplies([token], api)
   }
 }

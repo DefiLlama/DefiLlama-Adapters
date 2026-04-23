@@ -30,15 +30,13 @@ const DEFAULTS = {
   FOGO_RPC: 'https://mainnet.fogo.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
-  INJECTIVE_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
-  OCC_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  IGRA_RPC: "https://rpc.igralabs.com:8545",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
-  PEPU_RPC_MULTICALL: '0xBB6bf9447031408804af92aE6fBeDc002Dcb20aB',  // need to change it to one that works
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
@@ -47,6 +45,10 @@ const DEFAULTS = {
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
+  CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
+  PROPTECH_RPC: "https://mainnet.ptekcoin.com",
+  WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
+  BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
 }
 
 const ENV_KEYS = [
@@ -74,6 +76,9 @@ const ENV_KEYS = [
   'PROXY_AUTH',
   'UI_TOOL_MODE',
   'P0_API_KEY',
+  'CRYPTOAPIS_API_KEY',
+  'TATUM_PUBLIC_API_KEY',
+  'TATUM_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

@@ -22,4 +22,5 @@ module.exports = {
   endpoint,
   endpointMap,
   svmChains,
+  svmChainsSet: new Set(svmChains),
 }

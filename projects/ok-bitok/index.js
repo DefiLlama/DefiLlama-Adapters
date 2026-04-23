@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const VAULT = '0xD772A28caf98cCF3c774c704cA9514A4914b50A0'
-const USDC = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' // Arbitrum native USDC
+const USDC = ADDRESSES.arbitrum.USDC_CIRCLE // Arbitrum native USDC
 
 async function tvl(api) {
   const nav = await api.call({

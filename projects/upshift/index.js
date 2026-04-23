@@ -1,13 +1,8 @@
 const abi = require('./vaultsv2.json')
-const { sui } = require("../helper/chain/rpcProxy");
-const axios = require("axios");
+const sui = require('../helper/chain/sui');
 const { getConfig } = require('../helper/cache');
 
-const suiVaultsEndpoint = "https://vaults.api.sui-prod.bluefin.io/api/v1/vaults/info";
 const vaultsApiEndpoint = "https://api.augustdigital.io/api/v1/tokenized_vault?status=active&load_subaccounts=false&load_snapshots=false";
-const PACKAGE_ID =
-  "0xc83d5406fd355f34d3ce87b35ab2c0b099af9d309ba96c17e40309502a49976f";
-
 // Chain ID to chain name mapping
 const chainIdToName = {
   1: 'ethereum',
@@ -76,19 +71,12 @@ async function sumV2Vaults(api, vaults) {
 }
 
 const suiVaultsTvl = async (api) => {
-  let vaults = (
-    await axios.get(suiVaultsEndpoint)
-  ).data.Vaults;
-  for (const vault of Object.values(vaults)) {
-    if (!suiVaultsToInclude.includes(vault.ObjectId)) continue;
-    const vaultTvl = await sui.query({
-      target: `${PACKAGE_ID}::vault::get_vault_tvl`,
-      contractId: vault.ObjectId,
-      typeArguments: [vault.DepositCoinType, vault.ReceiptCoinType],
-      sender:
-        "0xbaef681eafe323b507b76bdaf397731c26f46a311e5f3520ebb1bde091fff295",
-    });
-    api.add(vault.DepositCoinType, vaultTvl[0]);
+  const vaultObjects = await sui.getObjects(suiVaultsToInclude);
+  for (const vault of vaultObjects) {
+    if (!vault) continue;
+    const depositCoinType = vault.type.split('<')[1].split(',')[0].trim();
+    const balance = vault.fields?.balance;
+    if (balance) api.add(depositCoinType, balance);
   }
 }
 

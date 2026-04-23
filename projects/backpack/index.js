@@ -11,6 +11,9 @@ const _getConfig = async () => {
   data.forEach(({ address, blockchain }) => {
     let chain = blockchain.toLowerCase()
     if (chain === 'avalanche') chain = 'avax'
+    if (chain === 'hyperevm') chain = 'hyperliquid'
+    if (chain === 'dogecoin') chain = 'doge'
+    if (chain === 'xrp') chain = 'ripple'
     if (!config[chain]) config[chain] = { owners: [] }
     config[chain].owners.push(address)
   })
@@ -34,7 +37,12 @@ const CHAINS = [
   'aptos',
   'ripple',
   'plasma',
-  'hyperliquid'
+  'fogo',
+  'stable',
+  'monad',
+  'hyperliquid',
+  'sei',
+  'sui',
 ]
 
 const CHAIN_BLACKLISTS = {
@@ -43,37 +51,38 @@ const CHAIN_BLACKLISTS = {
 
 CHAINS.forEach((chain) => {
   exportObj[chain] = {
-    tvl: async () => {
+    tvl: async (api) => {
       const config = await _getConfig()
       const entry = config[chain]
       if (!entry) return {}
 
-      const tokenLists = [...new Set([
+      const tokens = [
         ...(Object.values(ADDRESSES[chain] || {})),
         ...(defaultTokens[chain] || []),
-      ])]
+      ]
 
-      let { tokensAndOwners, owners, tokens, blacklistedTokens = [], fungibleAssets } = entry
+      let { owners, fungibleAssets } = entry
 
-      if (!tokensAndOwners && !tokens) tokens = tokenLists
 
-      if (CHAIN_BLACKLISTS[chain]) {
-        blacklistedTokens = [
-          ...new Set([...(blacklistedTokens || []), ...CHAIN_BLACKLISTS[chain]]),
-        ]
-      }
-
-      const options = { ...entry, owners, tokens, chain, blacklistedTokens }
+      const options = { owners, tokens, chain, blacklistedTokens: CHAIN_BLACKLISTS[chain] }
 
       switch (chain) {
-        case 'solana': options.includeStakedSol = true
-        case 'eclipse': options.solOwners = owners; break
+        case 'solana':
+          options.includeStakedSol = true;
+          options.onlyTrustedTokens = true;
+        case 'fogo':
+        case 'eclipse':
+          options.solOwners = options.owners;
+          options.tokens = undefined
+          break;
         case 'ton': options.onlyWhitelistedTokens = true; break
         case 'aptos':
           if (Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
-          break
+          break;
+        case 'sei':
+          options.tokens = options.tokens.filter(t => t.startsWith('0x'))
       }
-      return sumTokensExport(options)()
+      return sumTokensExport(options)(api)
     }
   }
 })

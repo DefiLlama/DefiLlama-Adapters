@@ -13,4 +13,7 @@ module.exports = {
   ethereum: {
     tvl: async (api) => tvl(api, '0x59660cb83da31EC23F9d992C11f80Fc527046409', 1),
   },
+  monad: {
+    tvl: async (api) => tvl(api, '0x6B5E332387e8beC98C52F10A72952B17176B4f1b', 11),
+  }
 }; 

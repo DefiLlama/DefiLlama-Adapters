@@ -6,13 +6,17 @@ const USDC_MINT = new PublicKey(ADDRESSES.solana.USDC);
 const ONYC_MINT = new PublicKey("5Y8NV33Vv7WbnLfq3zBcKSdYPrk7g2KoiQoe7M2tcxp5");
 const PROGRAM_ID = new PublicKey("onreuGhHHgVzMWSkj2oQDLDtvvGvoepBPkqyaubFcwe");
 const GET_TVL_DISCRIMINATOR = Buffer.from([88, 225, 219, 204, 86, 91, 184, 51]);
-
-// Program upgrade authority - used as fee payer for simulation since it's a known
-// system-owned account that will exist as long as the protocol is active
-const ONRE_UPGRADE_AUTHORITY = new PublicKey("45YnzauhsBM8CpUz96Djf8UG5vqq2Dua62wuW9H3jaJ5");
+const BPF_LOADER_UPGRADEABLE = new PublicKey('BPFLoaderUpgradeab1e11111111111111111111111');
 
 async function tvl(api) {
   const connection = getConnection();
+
+  const [programDataAddress] = PublicKey.findProgramAddressSync(
+    [PROGRAM_ID.toBuffer()],
+    BPF_LOADER_UPGRADEABLE
+  );
+  const programDataInfo = await connection.getAccountInfo(programDataAddress);
+  const feePayer = new PublicKey('28nYGHJyUVcVdxZtzKByBXEj127XnrUkrE3VaGuWj1ZU'); // random wallet with SOL
 
   const [offerPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("offer"), USDC_MINT.toBuffer(), ONYC_MINT.toBuffer()],
@@ -40,7 +44,7 @@ async function tvl(api) {
   });
 
   const { blockhash } = await connection.getLatestBlockhash();
-  const tx = new Transaction({ recentBlockhash: blockhash, feePayer: ONRE_UPGRADE_AUTHORITY });
+  const tx = new Transaction({ recentBlockhash: blockhash, feePayer });
   tx.add(instruction);
 
   const result = await connection.simulateTransaction(tx);

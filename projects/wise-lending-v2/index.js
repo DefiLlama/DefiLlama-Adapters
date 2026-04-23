@@ -5,18 +5,6 @@ async function tvl(api) {
   return api.sumTokens({ owner: lendingContract, tokens: tvlAddresses });
 }
 
-async function borrowed(api) {
-  const { lending: lendingContract, borrowAddresses } = config[api.chain];
-
-  const borrowAmounts = await api.multiCall({
-    abi: 'function getPseudoTotalBorrowAmount(address) view returns (uint256)',
-    target: lendingContract,
-    calls: borrowAddresses
-  });
-
-  api.add(borrowAddresses, borrowAmounts);
-}
-
 const aavePools = [
   "0x724dc807b04555b71ed48a6896b6F41593b8C637",
   "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
@@ -51,5 +39,5 @@ const config = {
 };
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl, borrowed };
+  module.exports[chain] = { tvl, borrowed: () => ({}) };
 });
