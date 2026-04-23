@@ -24,8 +24,13 @@ module.exports = {
          const data = await queryAddresses({ addresses: pools.map((i) => i.address) });
          const owners = [];
          data.forEach((c) => {
-            owners.push(c.details.state.fields.find((i) => i.field_name === 'base_pool').value);
-            owners.push(c.details.state.fields.find((i) => i.field_name === 'quote_pool').value);
+            const fields = c.details?.state?.fields;
+            if (!Array.isArray(fields)) return;
+            const basePool = fields.find((i) => i.field_name === 'base_pool');
+            const quotePool = fields.find((i) => i.field_name === 'quote_pool');
+            if (!basePool || !quotePool) return;
+            owners.push(basePool.value);
+            owners.push(quotePool.value);
          });
          return sumTokens({ owners, api });
       },
