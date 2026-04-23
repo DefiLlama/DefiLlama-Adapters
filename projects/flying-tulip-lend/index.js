@@ -18,31 +18,31 @@ const ASSET_STATE_ABI =
   'function assetState(address) view returns (uint256 cash, uint256 borrows, uint256 reserves, uint256 utilWad)'
 
 async function fetchStates(api) {
-  return api.multiCall({
+  const reserves = RESERVES[api.chain]
+  const states = await api.multiCall({
     target: LENDING_LENS[api.chain],
     abi: ASSET_STATE_ABI,
-    calls: RESERVES[api.chain],
+    calls: reserves,
   })
+  states.forEach((state, i) => {
+    if (!state) throw new Error(`Missing LendingLens assetState for ${api.chain}:${reserves[i]}`)
+  })
+  return { reserves, states }
 }
 
 async function tvl(api) {
-  const states = await fetchStates(api)
-  const reserves = RESERVES[api.chain]
+  const { reserves, states } = await fetchStates(api)
   reserves.forEach((token, i) => {
     const s = states[i]
-    if (!s) return
     const supplied = BigInt(s.cash) + BigInt(s.borrows)
     api.add(token, supplied.toString())
   })
 }
 
 async function borrowed(api) {
-  const states = await fetchStates(api)
-  const reserves = RESERVES[api.chain]
+  const { reserves, states } = await fetchStates(api)
   reserves.forEach((token, i) => {
-    const s = states[i]
-    if (!s) return
-    api.add(token, s.borrows.toString())
+    api.add(token, states[i].borrows.toString())
   })
 }
 
