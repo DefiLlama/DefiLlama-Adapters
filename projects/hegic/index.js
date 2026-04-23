@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking.js");
 
 const poolsV8888 = {
   ETH_CALL: "0xb9ed94c6d594b2517c4296e24A8c517FF133fb6d",
@@ -46,7 +47,6 @@ async function arbiTvl(api) {
       [arbitrum.USDC, arbitrum.hardcoreStakeAndCover],
       [arbitrum.USDC, arbitrum.hergeOperationalTreasury],
       [arbitrum.USDC, arbitrum.hergePayoff],
-      [arbitrum.HEGIC, arbitrum.hergeCoverPool],
     ],
   });
 }
@@ -57,6 +57,7 @@ module.exports = {
   },
   arbitrum: {
     tvl: arbiTvl,
+    staking: staking(arbitrum.hergeCoverPool, arbitrum.HEGIC)
   },
   methodology: `TVL for Hegic is calculated using the HEGIC tokens deposited into Stake & Cover pool on Arbitrum and pools liquidity in USDC, ETH and WBTC`,
 };
