@@ -1,10 +1,9 @@
-const VAULTS = {
-  monad: ['0x8D24B48Cb736addb5B7069565F192A052F42Ba61'],
-  ethereum: ['0x4C18E2bb9942b12b28e780acF2D9EC2DDA126df9'],
-}
+const { getConfig } = require('../helper/cache')
 
 async function tvl(api) {
-  const vaults = VAULTS[api.chain]
+  const chainId = api.chainId
+  const config = await getConfig(`travessia-${chainId}`, `https://www.travessiacredit.com/api/vaults?chainId=${chainId}`)
+  const vaults = config.map((res) => res.vaultAddress)
   const [supplies, assets] = await Promise.all([
     api.multiCall({ abi: 'erc20:totalSupply', calls: vaults }),
     api.multiCall({ abi: 'address:asset', calls: vaults }),
