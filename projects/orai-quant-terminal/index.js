@@ -22,4 +22,5 @@ module.exports = {
   arbitrum: {
     tvl
   },
+  methodology: "TVL is calculated as the total value locked in the Quant Terminal vaults.",
 };
