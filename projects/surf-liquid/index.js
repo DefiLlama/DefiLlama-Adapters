@@ -9,6 +9,18 @@ const CBBTC = ADDRESSES.ethereum.cbBTC;
 const ASSETS = [USDC, WETH, CBBTC];
 const ZERO_ADDR = ADDRESSES.null;
 
+// V4 — UserVaultFactory + VaultRegistry (same addresses on all chains via CREATE2)
+const V4_FACTORY = "0x8fa50DeA8DB10987D7d22ac092001c3613C18779";
+const V4_REGISTRY = "0x98A0DeF9C959Ec934Df02141291303819369f271";
+
+// fromBlock per chain — safely before March 26, 2026 V4 deployment
+const V4_FROM_BLOCKS = {
+  base: 43800000,
+  ethereum: 22200000,
+  arbitrum: 445000000,
+  polygon: 71000000,
+};
+
 async function tvl(api) {
   // --- Discover vault addresses ---
 
@@ -95,6 +107,49 @@ async function tvl(api) {
   }
 }
 
+async function tvlV4(api) {
+  const fromBlock = V4_FROM_BLOCKS[api.chain];
+  if (!fromBlock) return;
+
+  // Query allowed assets from registry — avoids hardcoding per-chain token addresses
+  const assets = await api.call({
+    abi: "function getAllowedAssets() view returns (address[])",
+    target: V4_REGISTRY,
+  });
+  if (!assets || assets.length === 0) return;
+
+  // Enumerate all personal user vaults deployed by the factory
+  const currentBlock = api.block || await api.getBlock();
+  const vaultLogs = await api.getLogs({
+    target: V4_FACTORY,
+    eventAbi: "event VaultDeployed(address indexed vaultAddress, address indexed owner, bytes32 salt)",
+    onlyArgs: true,
+    fromBlock,
+    toBlock: currentBlock,
+    cacheInCloud: true,
+  });
+  const userVaults = vaultLogs.map((l) => l.vaultAddress);
+  if (userVaults.length === 0) return;
+
+  // For each asset, sum underlying value across all user vaults.
+  // getAssetVaultAssets() calls convertToAssets(shares) on the Morpho vault —
+  // always returns exact underlying regardless of which Morpho vault holds the funds.
+  for (const asset of assets) {
+    const amounts = await api.multiCall({
+      abi: "function getAssetVaultAssets(address) view returns (uint256)",
+      calls: userVaults.map((vault) => ({ target: vault, params: [asset] })),
+    });
+    amounts.forEach((amount) => {
+      if (amount && BigInt(amount) > 0n) api.add(asset, amount);
+    });
+  }
+}
+
+async function tvlBase(api) {
+  await tvl(api);
+  await tvlV4(api);
+}
+
 async function staking(api) {
   // SURF staking contract
   const totalStaked = await api.call({ abi: "uint256:totalStaked", target: SURF_STAKING });
@@ -110,11 +165,23 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: "TVL counts Morpho vault deposits across V2 and V3 Surf Liquid vaults. Staking includes SURF staked and SURF subscriptions.",
+  methodology: "TVL counts Morpho vault deposits across V2/V3 Surf Liquid vaults (Base) and V4 user vaults (Base, Ethereum, Arbitrum, Polygon). Staking includes SURF staked and SURF subscriptions.",
   doublecounted: true,
-  hallmarks: [["2025-11-30", "V3 factory launched"]],
+  hallmarks: [
+    ["2025-11-30", "V3 factory launched"],
+    ["2026-03-26", "V4 launched on Ethereum, Base, Arbitrum, Polygon"],
+  ],
   base: {
-    tvl,
+    tvl: tvlBase,
     staking,
+  },
+  ethereum: {
+    tvl: tvlV4,
+  },
+  arbitrum: {
+    tvl: tvlV4,
+  },
+  polygon: {
+    tvl: tvlV4,
   },
 };
