@@ -49,7 +49,8 @@ const EVENTS = {
   TermMax4626Factory: {
     "StableERC4626For4626Created": "event StableERC4626For4626Created(address indexed caller, address indexed stableERC4626For4626)",
     "StableERC4626ForAaveCreated": "event StableERC4626ForAaveCreated(address indexed caller, address indexed stableERC4626ForAave)",
-    "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)"
+    "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)",
+    "StableERC4626ForCustomizeCreated": "event StableERC4626ForCustomizeCreated(address indexed caller, address indexed stableERC4626ForCustomize)"
   }
 };
 
@@ -137,6 +138,7 @@ const ADDRESSES = {
     },
     TermMax4626Factory: [
       { address: "0xD594eb03a43b4974Aa7B32b5740cdeCe961151Fa", fromBlock: 23489745 },
+      { address: "0x3Cc88086C0a613970565C96F9a1b6BdAd61C5f14", fromBlock: 24790495 },
     ],
     FactoryV2: [
       {
@@ -610,6 +612,15 @@ async function erc4626VaultsTvl(api) {
 
     logs = await getLogs2({
       api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForCustomizeCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626ForCustomizeCreated',
+    });
+    stableERC4626For4626Vaults.push(...logs.map(i => i.stableERC4626ForCustomize));
+
+    logs = await getLogs2({
+      api,
       eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForAaveCreated,
       fromBlock: factory.fromBlock,
       target: factory.address,
@@ -636,13 +647,27 @@ async function erc4626VaultsTvl(api) {
   })
 
   const stableUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: stableERC4626For4626Vaults })
-  const thirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: stableERC4626For4626Vaults })  // morpho vaults?
+  const thirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: stableERC4626For4626Vaults })
+  const stableTokensAndOwners = [];
+  const stableFallbackTokensAndOwners = [];
+  const thirdPoolSupplies = await api.multiCall({
+    abi: 'uint256:totalSupply',
+    calls: thirdPools,
+    permitFailure: true,
+  })
   stableERC4626For4626Vaults.forEach((vault, i) => {
-    tokensAndOwners.push([stableUnderlyings[i], vault])
-    tokensAndOwners.push([thirdPools[i], vault])
+    stableTokensAndOwners.push([stableUnderlyings[i], vault])
+    if (thirdPoolSupplies[i] == null) {
+      // thirdPool is not ERC20 (e.g. Gnosis Safe), count underlying held by thirdPool
+      stableFallbackTokensAndOwners.push([stableUnderlyings[i], thirdPools[i]])
+    } else {
+      stableTokensAndOwners.push([thirdPools[i], vault])
+    }
   })
 
   await sumTokens2({ api, tokensAndOwners });
+  await sumTokens2({ api, tokensAndOwners: stableTokensAndOwners });
+  await sumTokens2({ api, tokensAndOwners: stableFallbackTokensAndOwners });
 }
 
 module.exports = {
