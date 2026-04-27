@@ -92,6 +92,14 @@ const configs = {
       '0x36213ca1483869c5616be738Bf8da7C9B34Ace8d',
     ],
   },
+  'eva': {
+    ethereum: [
+      '0x741bD193B6b40f8703d2e116FD1965421f290F58', // USDC vault
+      '0x501eBf66d76A96D4FB26ccead42957653e16B8B8', // USDT vault
+      '0xdBECD077c1C2feFDCB75f547d1b5a73BF8207e4C', // WETH vault
+    ],
+    start: '2026-03-24',
+  },
   'astake': {
     methodology: "Calculates the total amount of ASTR tokens deposited in the ERC4626 vault",
     astar: ['0x0DC6E8922ac0ECa8287ba22Db14C9Ac9317ed18F'],
@@ -250,7 +258,7 @@ const configs = {
   'yfarmer': {
     start: '2026-04-11',
     base: ['0x71c298a6eb10e7958ce25a450a706330a4c946c0']
-  }
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
