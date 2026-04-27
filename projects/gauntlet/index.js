@@ -283,11 +283,20 @@ async function combinedBaseTvl(api) {
   // await aeraV3.base.tvl(api);
 }
 
+async function combinedBscTvl(api) {
+  const LISTA_START = 1777303000 // 2026-04-27, listing date for BSC Lista (Moolah) vaults
+  
+  if (api.timestamp < LISTA_START) return;
+  const curatorExport = getCuratorExport(configs);
+  if (curatorExport.bsc?.tvl) await curatorExport.bsc.tvl(api);
+}
+
 module.exports = {
   ...getCuratorExport(configs),
   solana: { tvl },
   ethereum: { tvl: combinedEthereumTvl },
   base: { tvl: combinedBaseTvl },
+  bsc: { tvl: combinedBscTvl },
   timetravel: false,
   hallmarks: [
     ["2026-03-22", "Resolve USR hack"],
