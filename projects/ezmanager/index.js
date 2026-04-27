@@ -14,6 +14,17 @@ const config = {
     owner: '0xaB264652495D3d0bDccfCCcC308C794eA0160312',
     resolveUniV3: true,
   },
+  bsc: {
+    owner: '0x10c6d38F0c19c09b7cEFDE5F42494e4FECA08EB2',
+    resolveUniV3: true,
+  },
+  hyperliquid: {
+    owner: '0x6F81790Ebac25497be379Dc66143fb298663Ae11',
+    resolveUniV3: true,
+    uniV3ExtraConfig: {
+      nftAddress: '0xead19ae861c29bbb2101e834922b2feee69b9091',
+    },
+  },
 }
 
 Object.keys(config).forEach((chain) => {
@@ -22,5 +33,5 @@ Object.keys(config).forEach((chain) => {
   }
 })
 
-module.exports.methodology = 'TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, and Ethereum.'
+module.exports.methodology = 'TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, Ethereum, BSC, and Hyperliquid.'
 module.exports.doublecounted = true
