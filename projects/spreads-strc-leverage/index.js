@@ -1,16 +1,9 @@
-// Spreads STRC Leverage — Morpho V2 fork deployed by Spreads on Ink. The
-// 'money market' contract is a private Morpho Blue instance (NOT the canonical
-// 0x857f… deployment), so its TVL is unique to Spreads. Collateral is wSTRC
-// (1:1 wrapper of STRCx, Strategy's tokenized preferred share); loan asset is
-// USDC. wSTRC pricing is configured server-side via the canonical STRCx
-// CoinGecko mapping.
-
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const morphoAbi = require('../helper/abis/morpho.json').morphoBlueFunctions
 
 const MONEY_MARKET = '0x1256bC6D44a4BAf5C67712e3EA6eD1b02758Fb9f'
-const FROM_BLOCK = 38000000
+const FROM_BLOCK = 42572106
 
 const CREATE_MARKET_EVENT =
   'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)'
