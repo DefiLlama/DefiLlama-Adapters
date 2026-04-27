@@ -1,11 +1,16 @@
 const sdk = require('@defillama/sdk')
 
 const subgraphEndpoint = sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/EoCvJ5tyMLMJcTnLQwWpjAtPdn74PcrZgzfcT5bYxNBH')
+const hookAddresses = [
+  '0xa0b0d2d00fd544d8e0887f1a3cedd6e24baf10cc',
+  '0x88c9ff9fc0b22cca42265d3f1d1c2c39e41cdacc',
+]
+
 const subgraphQuery = (blockNumber) => {
   return {
     query: `
       {
-        pools(first: 1000, block: {number: ${blockNumber}}, where: { hooks: "0xa0b0d2d00fd544d8e0887f1a3cedd6e24baf10cc" }) {
+        pools(first: 1000, block: {number: ${blockNumber}}, where: { hooks_in: [${hookAddresses.map(hook => `"${hook}"`).join(', ')}] }) {
           token0 {
             id
             decimals
