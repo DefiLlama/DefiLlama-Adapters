@@ -474,6 +474,7 @@ let cachedNav = null;
 let cacheTimestamp = 0;
 const CACHE_TTL_MS = 60000;
 
+// Latest AUDITED_NAV
 async function getInstrumentsNav() {
     const now = Date.now();
     if (cachedNav && (now - cacheTimestamp) < CACHE_TTL_MS) {
@@ -853,6 +854,7 @@ async function seiTvl() {
 }
 
 module.exports = {
+    timetravel: false,
     methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, XDC, Sei and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
     ethereum: { tvl: ethTvl },
     polygon: { tvl: polygonTvl },
@@ -866,5 +868,5 @@ module.exports = {
     aptos: { tvl: aptosTvl },
     hedera: { tvl: hederaTvl },
     xdc: { tvl: xdcTvl },
-    sei: { tvl: seiTvl },
+    sei: { tvl: seiTvl }
 }
