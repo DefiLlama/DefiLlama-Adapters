@@ -86,9 +86,16 @@ async function getLogs({ target,
     } else {
       // if use indexer flag is enabled, we use the new getLogs method that tries to pull from indexer if it is configured, else from chain rpcs
 
-      logs = await sdk.getEventLogs({
-        chain, target, topic, keys, topics, fromBlock, toBlock, skipIndexer: !useIndexer, entireLog: true,
-      })
+      try {
+        // prefer indexer when available
+        const res = await sdk.getEventLogs({ chain, target, topic, keys, topics, fromBlock, toBlock, skipIndexer: !useIndexer, entireLog: true })
+        // keep compatibility: sdk.getEventLogs may return array or object
+        logs = Array.isArray(res) ? res : (res.output ?? res)
+      } catch (err) {
+        // fallback to chunked RPC fetching on indexer/rpc failure
+        sdk.log(`getEventLogs failed for ${chain}/${target}, falling back to chunkedGetLogs: ${err.message || err}`)
+        logs = await chunkedGetLogs({ chain, target, topic, keys, topics, fromBlock, toBlock })
+      }
 
     }
 
