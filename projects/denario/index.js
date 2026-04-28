@@ -1,14 +1,11 @@
-// Denario Silver Coin is 100% backed by physical silver.
-// Price is determined by the price of silver on the spot market plus premium.
-// The price is stored in the price oracle and updated every minute.
+// Denario Silver Coin (DSC) and Denario Gold Coin (DGC) are 100% backed by physical metals.
+// Token prices come from the Denario price oracle, updated every minute, in 8 decimals.
 
-const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const silverAddress = ADDRESSES.polygon.DSC
 const goldAddress = ADDRESSES.polygon.DGC
 const priceOracle = '0x9be09fa9205e8f6b200d3c71a958ac146913662e'
-// const goldPricequery = 'goldcoin/latest/usd'
 
 const priceOracleABI = [
   {
@@ -26,37 +23,40 @@ const priceOracleABI = [
 const firstBlock = 62270459
 
 async function tvl(api) {
-
 	const totalSilverSupply = await api.call({
 		abi: 'erc20:totalSupply',
 		target: silverAddress,
 	})
-	// const totalGoldSupply = await api.call({
-	// 	abi: 'erc20:totalSupply',
-	// 	target: goldAddress,
-	// })
+	const totalGoldSupply = await api.call({
+		abi: 'erc20:totalSupply',
+		target: goldAddress,
+	})
 
 	const silverPrice = await api.call({
 		target: priceOracle,
 		params: 'silvercoin/latest/USD',
 		abi: priceOracleABI[0]
 	}).then(res => res[0])
-	
-	// Oracle price is in 8 decimals (standard for USD prices)
-	const silverPriceInUSD = silverPrice / 1e8
-	
-	// Calculate total value in USD and add to balances
-	const totalValueInUSD = (totalSilverSupply * silverPriceInUSD) / 1e18 // token has 18 decimals
-	api.add(ADDRESSES.polygon.USDC, totalValueInUSD * 1e6) // USDC has 6 decimals
+	const goldPrice = await api.call({
+		target: priceOracle,
+		params: 'goldcoin/latest/USD',
+		abi: priceOracleABI[0]
+	}).then(res => res[0])
+
+	// Oracle prices are in 8 decimals; tokens have 18 decimals; USDC has 6 decimals
+	const silverValueInUSD = (totalSilverSupply * (silverPrice / 1e8)) / 1e18
+	const goldValueInUSD = (totalGoldSupply * (goldPrice / 1e8)) / 1e18
+	const totalValueInUSD = silverValueInUSD + goldValueInUSD
+	api.add(ADDRESSES.polygon.USDC, totalValueInUSD * 1e6)
 
 	return {
 		[silverAddress]: totalSilverSupply,
-		// [goldAddress]: totalGoldSupply,
+		[goldAddress]: totalGoldSupply,
 	}
 }
 
 module.exports = {
-	methodology: 'TVL corresponds to the total amount of token minted, which is 100% backed by physical metal.',
+	methodology: 'TVL is the total amount of DSC (Denario Silver Coin) and DGC (Denario Gold Coin) tokens minted on Polygon, each 100% backed by physical metal and priced via the Denario on-chain oracle.',
 	start: firstBlock,
 	polygon: {
 		tvl,
