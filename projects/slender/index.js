@@ -3,7 +3,7 @@
  */
 
 const { callSoroban } = require('../helper/chain/stellar')
-const methodologies = require('../../helper/methodologies')
+const methodologies = require('../helper/methodologies')
 
 const POOL_ID = 'CCL2KTHYOVMNNOFDT7PEAHACUBYVFLRH2LYWVQB6IPMHHAVUBC7ZUUC2'
 
@@ -16,7 +16,8 @@ const RESERVES = [
 const COEFF_PRECISION = 1_000_000_000n
 
 async function getReserveAddresses(assetSac) {
-  const rt = await callSoroban(POOL_ID, 'get_reserve', [assetSac])
+  const data = await callSoroban(POOL_ID, 'get_reserve', [assetSac])
+  const rt = data?.reserve_type
   if (!Array.isArray(rt) || rt[0] !== 'Fungible' || rt.length < 3) {
     throw new Error(`Unexpected reserve_type for ${assetSac}: ${JSON.stringify(rt)}`)
   }
