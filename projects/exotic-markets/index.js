@@ -42,8 +42,6 @@ async function getMultipleAccountsInfo(conn, publicKeys, { allowRateLimitSkip = 
       await sleep(500 * (attempt + 1))
     }
   }
-
-  return []
 }
 
 function keyAt(msg, i) {
@@ -97,7 +95,7 @@ async function getTailCandidates(conn) {
 
 async function filterToSplTokenAccounts(conn, addrs, options) {
   if (!addrs.length) return []
-  // Use owner + data length to verify “is SPL token account” quickly
+  // Use owner + data length to verify SPL token accounts quickly.
 
   const out = []
 
