@@ -46,7 +46,10 @@ async function getTokenBalance(marketContractId, tokenId) {
         return BigInt((await alephium.getAlphBalance(contractAddress)).balance);
     } else {
         const tokensBalance = await alephium.getTokensBalance(contractAddress);
-        const tokenBalance = tokensBalance.find(b => b.tokenId === tokenId);
+        // Use case-insensitive comparison to handle hex token IDs with mixed casing
+        // This fixes WBTC and other non-ALPH collateral tokens being excluded from TVL
+        const tokenIdLower = tokenId.toLowerCase();
+        const tokenBalance = (tokensBalance ?? []).find(b => b.tokenId.toLowerCase() === tokenIdLower);
         return BigInt(tokenBalance?.balance ?? 0);
     }
 }
