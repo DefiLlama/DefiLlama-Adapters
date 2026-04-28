@@ -62,7 +62,7 @@ const FAMILIES = {
     // Canonical vault deployed at the same address across all chains
     detect: async (chain) => {
       const code = await getCode(chain, BALANCER_VAULT)
-      if (code.length <= 4) return null
+      if (code == null || code.length <= 4) return null
       // Count registered pools via PoolRegistered event to estimate scale
       const pools = await countEvents(chain, BALANCER_VAULT,
         '0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e')
@@ -90,7 +90,7 @@ const FAMILIES = {
     detect: async function(chain) {
       for (const factory of this.factories) {
         const code = await getCode(chain, factory)
-        if (code.length > 4) {
+        if (code != null && code.length > 4) {
           const pools = await countEvents(chain, factory, this.poolTopic)
           return { address: factory, pools }
         }
@@ -119,7 +119,7 @@ const FAMILIES = {
       for (const c of candidates) {
         if (c.pools < 2) continue // skip singletons — likely test deploys or false positives
         const code = await getCode(chain, c.address)
-        if (code.length <= 4) continue
+        if (code == null || code.length <= 4) continue
         validated.push(c)
       }
       if (!validated.length) return null
@@ -131,7 +131,7 @@ const FAMILIES = {
         adapterMentions(a, 'isAlgebra', 'algebra') &&
         adapterMentions(a, info.address)),
     stub: (chain, info) => ({
-      slug: `algebra-clmm-${chain}`,
+      slug: `algebra-clmm-${chain}-${info.address.slice(2, 8).toLowerCase()}`,
       code: `'use strict'\nconst { uniV3Export } = require('../helper/uniswapV3')\nmodule.exports = uniV3Export({\n  ${chain}: { factory: '${info.address}', fromBlock: 0, isAlgebra: true },\n})\n`,
     }),
   },
@@ -144,7 +144,7 @@ const FAMILIES = {
     poolSelector: '0xd1946dbc',
     detect: async (chain) => {
       const code = await getCode(chain, '0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e')
-      if (code.length > 4) return { address: '0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e', pools: 1 }
+      if (code != null && code.length > 4) return { address: '0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e', pools: 1 }
       // Fallback: check known Aave V3 pool addresses on each chain
       return null
     },
@@ -163,7 +163,7 @@ const FAMILIES = {
     addressProvider: '0x0000000022D53366457F9d5E68Ec105046FC4383',
     detect: async (chain) => {
       const code = await getCode(chain, '0x0000000022D53366457F9d5E68Ec105046FC4383')
-      if (code.length > 4) return { address: '0x0000000022D53366457F9d5E68Ec105046FC4383', pools: 1 }
+      if (code != null && code.length > 4) return { address: '0x0000000022D53366457F9d5E68Ec105046FC4383', pools: 1 }
       return null
     },
     coveredBy: (chain, adapters) =>
@@ -227,12 +227,16 @@ async function withTimeout(promise, ms) {
   ])
 }
 
+// Returns null on RPC failure (same sentinel pattern as countEvents/findFactoriesFromEvents).
 async function getCode(chain, address) {
   try {
     const provider = sdk.getProvider(chain)
     const code = await withTimeout(provider.getCode(address), TIMEOUT_MS)
     return code || '0x'
-  } catch { return '0x' }
+  } catch (err) {
+    console.warn(`  [warn] getCode ${chain} ${address.slice(0, 10)}: ${err.message}`)
+    return null
+  }
 }
 
 // Count events emitted from a specific address (last 2M blocks as proxy).
@@ -402,7 +406,9 @@ async function main() {
               ? family.coveredBy(chain, info, adapters)
               : family.coveredBy(chain, adapters)
             const llamaKey = FAMILY_LLAMA_KEY[familyKey]
-            const apiCovered = llamaCoverage && llamaKey
+            // Algebra uses per-factory localCovered; chain-level API check would hide
+            // uncovered factories when one is already tracked — skip it for algebra.
+            const apiCovered = llamaCoverage && llamaKey && familyKey !== 'algebra'
               ? llamaCoverage[llamaKey].has(chain.toLowerCase())
               : false
             const covered = localCovered || apiCovered
