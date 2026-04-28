@@ -1,5 +1,6 @@
 const { sumTokensExport } = require('../helper/sumTokens')
 const sdk = require('@defillama/sdk')
+const { PublicKey } = require('@solana/web3.js')
 
 const SWAP_CONTRACT = '0x640cB7201810BC920835A598248c4fe4898Bb5e0'
 const TAKER_ADDRESSES_ABI = 'function getTakerAddresses() view returns (string[] receivers, string[] senders)'
@@ -36,11 +37,14 @@ const isBitcoinAddress = address => /^(1|3|bc1)/.test(address)
 const isDogeAddress = address => /^D/.test(address)
 const isRippleAddress = address => /^r/.test(address)
 const isCardanoAddress = address => /^addr/.test(address)
-const isSolanaAddress = address => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)
-  && !isBitcoinAddress(address)
-  && !isDogeAddress(address)
-  && !isRippleAddress(address)
-  && !isCardanoAddress(address)
+function isSolanaAddress(address) {
+  try {
+    new PublicKey(address)
+    return true
+  } catch {
+    return false
+  }
+}
 
 function normalizeOwner(address) {
   if (isEVMAddress(address)) return address.toLowerCase()
