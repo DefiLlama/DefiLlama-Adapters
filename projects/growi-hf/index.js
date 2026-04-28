@@ -12,6 +12,7 @@ async function hyperliquid_tvl(api) {
 
   const allTime = data.portfolio.find(([p]) => p === "allTime")[1];
   const tvlUsd = Number(allTime.accountValueHistory.at(-1)[1]);
+  if (!Number.isFinite(tvlUsd)) throw new Error("Invalid Hyperliquid TVL");
 
   api.add('arbitrum:' + ADDRESSES.arbitrum.USDC_CIRCLE, tvlUsd * 1e6, { skipChain: true });
 }
@@ -19,6 +20,7 @@ async function hyperliquid_tvl(api) {
 async function hibachi_tvl(api) {
   const data = await get(`https://data-api.hibachi.xyz/vault/performance?vaultId=${HIBACHI_VAULT_ID}&timeRange=All`);
   const tvlUsd = Number(data.vaultPerformanceIntervals[data.vaultPerformanceIntervals.length - 1].totalValueLocked);
+  if (!Number.isFinite(tvlUsd)) throw new Error("Invalid Hibachi TVL");
 
   api.add('arbitrum:' + ADDRESSES.arbitrum.USDT, tvlUsd * 1e6, { skipChain: true });
 }
