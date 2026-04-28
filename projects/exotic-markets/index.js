@@ -8,8 +8,12 @@ const snapshot = require('./vaults.json')
 const PROGRAM_ID = new PublicKey('exomt54Csh4fvkUiyV5h6bjNqxDqLdpgHJmLd4eqynk')
 const TOKEN_PROG = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
 // scan this many recent signatures each run (tunable via env)
-const TAIL_LIMIT = Number(process.env.TAIL_LIMIT || 200)
+const TAIL_LIMIT = Number(process.env.TAIL_LIMIT || 0)
 // ----------------
+
+function isRateLimitError(error) {
+  return /429|too many requests/i.test(error?.message || String(error))
+}
 
 function keyAt(msg, i) {
   const k = msg.accountKeys?.[i]
@@ -17,15 +21,29 @@ function keyAt(msg, i) {
 }
 
 async function getTailCandidates(conn) {
+  if (TAIL_LIMIT <= 0) return []
+
   // Fetch most-recent program txs
-  const sigs = await conn.getSignaturesForAddress(PROGRAM_ID, { limit: TAIL_LIMIT })
+  let sigs
+  try {
+    sigs = await conn.getSignaturesForAddress(PROGRAM_ID, { limit: TAIL_LIMIT })
+  } catch (error) {
+    if (isRateLimitError(error)) return []
+    throw error
+  }
   const seen = new Set()
 
   // Very cheap heuristics:
   //  - include every token account appearing in postTokenBalances (actually received/held tokens)
   //  - include initializeAccount* targets from Token Program CPIs (new vaults created)
   for (const s of sigs) {
-    const tx = await conn.getTransaction(s.signature, { maxSupportedTransactionVersion: 0 })
+    let tx
+    try {
+      tx = await conn.getTransaction(s.signature, { maxSupportedTransactionVersion: 0 })
+    } catch (error) {
+      if (isRateLimitError(error)) break
+      continue
+    }
     if (!tx?.meta) continue
     const msg = tx.transaction.message
 
@@ -51,11 +69,17 @@ async function filterToSplTokenAccounts(conn, addrs) {
   // Use owner + data length to verify “is SPL token account” quickly
 
   const out = []
-  const CHUNK_SIZE = 100
+  const CHUNK_SIZE = 50
 
   for (let i = 0; i < addrs.length; i += CHUNK_SIZE) {
     const chunk = addrs.slice(i, i + CHUNK_SIZE)
-    const infos = await conn.getMultipleAccountsInfo(chunk.map(a => new PublicKey(a)))
+    let infos
+    try {
+      infos = await conn.getMultipleAccountsInfo(chunk.map(a => new PublicKey(a)))
+    } catch (error) {
+      if (isRateLimitError(error)) continue
+      throw error
+    }
 
     for (let j = 0; j < infos.length; j++) {
       const info = infos[j]
@@ -82,5 +106,5 @@ async function tvl() {
 module.exports = {
   timetravel: false, // discovery uses recent live txs
   solana: { tvl },
-  methodology: 'Sums balances of snapshot vault SPL token accounts and unions a small live scan of recent program transactions to discover newly created/funded vaults. The snapshot is updated weekly via a separate process.',
+  methodology: 'Sums balances of snapshot vault SPL token accounts and can union an optional best-effort live scan of recent program transactions to discover newly created/funded vaults. The snapshot is updated weekly via a separate process.',
 }
