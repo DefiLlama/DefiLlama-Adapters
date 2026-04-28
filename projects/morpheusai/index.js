@@ -26,9 +26,11 @@ async function tvl(api) {
   const aaveContract = await api.call({ abi: 'address:aavePoolDataProvider', target: PROJECT_CONTRACT_V2 })
   const aTokens = await api.call({ abi: abi.getAllATokens, target: aaveContract })
   const uTokens = await api.call({ abi: abi.getAllReservesTokens, target: aaveContract })
-  const tokens = aTokens.map(i => i.tokenAddress).concat(uTokens.map(i => i.tokenAddress))
-
-  tokens.push(ADDRESSES.ethereum.STETH)
+  const tokens = [...new Set([
+    ...aTokens.map(i => i.tokenAddress),
+    ...uTokens.map(i => i.tokenAddress),
+    ADDRESSES.ethereum.STETH,
+  ])]
   return api.sumTokens({ owners: [PROJECT_CONTRACT_V2, PROJECT_CONTRACT], tokens })
 }
 
