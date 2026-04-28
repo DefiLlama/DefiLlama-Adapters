@@ -1221,6 +1221,12 @@ const uniV3Configs = {
       fromBlock: 1705910,
     },
   },
+  'shapeswap-v3': {
+    shape: {
+      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
+      fromBlock: 6022152,
+    },
+  },
   'sheepdex': {
     bsc: {
       factory: '0x571521f8c16f3c4ed5f2490f19187ba7a5a3cbdf',
