@@ -515,12 +515,25 @@ const BRIDGED_TOKENS = {
     }
 }
 
+let cachedNav = null;
+let cacheTimestamp = 0;
+const CACHE_TTL_MS = 60000;
+
 async function getInstrumentsNav() {
+    const now = Date.now();
+    if (cachedNav && (now - cacheTimestamp) < CACHE_TTL_MS) {
+        return cachedNav;
+    }
     const priceMap = {};
     const uniqueInstrumentID = [...new Set(
-        Object.values(RECEIPT_TOKENS).flatMap(tokens =>
-            Object.values(tokens).map(token => token.instrumentId)
-        )
+        [
+            ...Object.values(RECEIPT_TOKENS).flatMap(tokens =>
+                Object.values(tokens).map(token => token.instrumentId)
+            ),
+            ...Object.values(BRIDGED_TOKENS).flatMap(tokens =>
+                Object.values(tokens).map(token => token.instrumentId)
+            )
+        ]
     )];
 
     const navCalls = uniqueInstrumentID.map(instrumentId => ({
@@ -537,9 +550,13 @@ async function getInstrumentsNav() {
     navResults.output.forEach((result, i) => {
         if (result.success) {
             priceMap[uniqueInstrumentID[i]] = Number(result.output) / 1e6; // Assuming 6 decimals for NAV
+        } else {
+            console.warn(`NAV lookup failed for instrument ${uniqueInstrumentID[i]}`);
         }
     });
 
+    cachedNav = priceMap;
+    cacheTimestamp = now;
     return priceMap;
 }
 
@@ -913,7 +930,6 @@ module.exports = {
     avax: { tvl: avaxTvl },
     aptos: { tvl: aptosTvl },
     hedera: { tvl: hederaTvl },
-    cardano: { tvl: cardanoTvl },
     xdc: { tvl: xdcTvl },
     sei: { tvl: seiTvl },
 }
