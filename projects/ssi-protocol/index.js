@@ -1,11 +1,12 @@
 const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/http');
 
 const abi = {
-  getBasket: 'function getBasket() view returns ((string chain, string symbol, string addr, uint8 decimals, uint256 amount)[])'
+  getBasket: 'function getBasket() view returns ((string chain, string symbol, string addr, uint8 decimals, uint256 amount)[])',
+  totalSupply: 'erc20:totalSupply',
+  balanceOf: 'erc20:balanceOf',
 }
 
-const ssi_tokens = [
+const SSI_TOKENS = [
   // MAG7.ssi
   '0x9E6A46f294bB67c20F1D1E7AfB0bBEf614403B55',
   // DEFI.ssi
@@ -15,42 +16,49 @@ const ssi_tokens = [
 ]
 
 function underlyingExports(chains) {
-  const exportObj = {};
+  const exportObj = {}
   Object.entries(chains).forEach(([chain, [chain_name, native_token]]) => {
     exportObj[chain] = {
-      tvl: async (api, ethBlock, chainBlocks) => {
-        const balances = {};
-        const base_block = await getBlock(api.timestamp, 'base', chainBlocks);
-        const baskets = await Promise.all(ssi_tokens.map(async (ssi_token) => {
-          const res = await sdk.api.abi.call({
-            abi: abi.getBasket,
-            target: ssi_token,
-            chain: 'base',
-            block: base_block,
-          });
-          return res.output;
-        }));
-        baskets.forEach(basket => {
-          basket.forEach(token => {
-            if (token.chain == chain_name) {
-              let token_addr;
-              let token_amount;
-              if (token.addr != '') {
-                token_addr = chain + ':' + token.addr;
-                token_amount = token.amount;
-              } else {
-                token_addr = native_token;
-                token_amount = token.amount / 10 ** token.decimals;
-              }
-              sdk.util.sumSingleBalance(balances, token_addr, token_amount);
+      tvl: async (api) => {
+        const balances = {}
+        const [baskets, supplies] = await Promise.all([
+          sdk.api.abi.multiCall({ abi: abi.getBasket, calls: SSI_TOKENS.map(target => ({ target })), chain: 'base' }),
+          sdk.api.abi.multiCall({ abi: abi.totalSupply, calls: SSI_TOKENS.map(target => ({ target })), chain: 'base' }),
+        ])
+        const basketOutputs = baskets.output.map(i => i.output)
+        const supplyOutputs = supplies.output.map(i => i.output)
+
+        for (let i = 0; i < SSI_TOKENS.length; i++) {
+          const basket = basketOutputs[i] || []
+          const supply = supplyOutputs[i] ? BigInt(supplyOutputs[i]) : 0n
+          if (!supply) continue
+
+          for (const token of basket) {
+            const tokenChain = token.chain ?? token[0]
+            const tokenAddr = token.addr ?? token[2]
+            const tokenDecimals = Number(token.decimals ?? token[3])
+            const tokenAmount = token.amount ?? token[4]
+
+            if (tokenChain !== chain_name) continue
+
+            const amountPerShare = BigInt(tokenAmount || 0)
+            if (!amountPerShare) continue
+            const amount = amountPerShare * supply / (10n ** 18n)
+            if (!amount) continue
+
+            if (tokenAddr) {
+              sdk.util.sumSingleBalance(balances, `${chain}:${tokenAddr}`, amount.toString())
+            } else {
+              sdk.util.sumSingleBalance(balances, native_token, Number(amount) / 10 ** tokenDecimals)
             }
-          });
-        });
-        return balances;
+          }
+        }
+
+        return balances
       }
     }
-  });
-  return exportObj;
+  })
+  return exportObj
 }
 
 module.exports = {
@@ -64,4 +72,4 @@ module.exports = {
     cardano: ['ADA', 'cardano'],
     ripple: ['XRP', 'ripple'],
   })
-};
+}
