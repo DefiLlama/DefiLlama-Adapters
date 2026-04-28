@@ -4,7 +4,7 @@
 
 'use strict'
 
-const { sorobanFactoryTvl } = require('../../helper/chain/sorobanFactory')
+const { sorobanFactoryTvl } = require('../helper/chain/sorobanFactory')
 
 const SOROSWAP_FACTORY = 'CA4HEQTL2WPEUYKYKCDOHCDNIV4QHNJ7EL4J4NQ6VADP7SYHVRYZ7AW2'
 

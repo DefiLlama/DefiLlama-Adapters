@@ -2,7 +2,7 @@
  * Slender Protocol — TVL + Borrowed adapter
  */
 
-const { callSoroban } = require('../../helper/chain/stellar')
+const { callSoroban } = require('../helper/chain/stellar')
 const methodologies = require('../../helper/methodologies')
 
 const POOL_ID = 'CCL2KTHYOVMNNOFDT7PEAHACUBYVFLRH2LYWVQB6IPMHHAVUBC7ZUUC2'
