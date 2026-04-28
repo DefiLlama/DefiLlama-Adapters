@@ -42,14 +42,20 @@ const isSolanaAddress = address => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)
   && !isRippleAddress(address)
   && !isCardanoAddress(address)
 
+function normalizeOwner(address) {
+  if (isEVMAddress(address)) return address.toLowerCase()
+  if (isRippleAddress(address)) return address.split(':')[0]
+  return address
+}
+
 async function getTakerAddresses(api) {
   const baseApi = api.chain === 'base' ? api : new sdk.ChainApi({ chain: 'base', timestamp: api.timestamp })
   const [receivers] = await baseApi.call({ target: SWAP_CONTRACT, abi: TAKER_ADDRESSES_ABI })
-  return [...new Set(receivers)]
+  return receivers
 }
 
 async function getOwners(api, filter) {
-  return (await getTakerAddresses(api)).filter(filter)
+  return [...new Set((await getTakerAddresses(api)).map(normalizeOwner).filter(filter))]
 }
 
 async function evmTvl(api, tokens) {
@@ -63,8 +69,8 @@ async function solanaTvl(api) {
   return sumTokensExport({ tokensAndOwners, computeTokenAccount: true, allowError: true })(api)
 }
 
-async function chainTvl(api, filter, normalize = address => address) {
-  const owners = (await getOwners(api, filter)).map(normalize)
+async function chainTvl(api, filter) {
+  const owners = await getOwners(api, filter)
   return sumTokensExport({ owners })(api)
 }
 
@@ -86,7 +92,7 @@ module.exports = {
     tvl: api => chainTvl(api, isDogeAddress),
   },
   ripple: {
-    tvl: api => chainTvl(api, isRippleAddress, address => address.split(':')[0]),
+    tvl: api => chainTvl(api, isRippleAddress),
   },
   cardano: {
     tvl: api => chainTvl(api, isCardanoAddress),
