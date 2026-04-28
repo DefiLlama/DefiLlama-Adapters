@@ -53,6 +53,7 @@ const abi = {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
+  doublecounted: true,
   methodology: 'Ethereum TVL counts stETH and Aave deposits held by Morpheus capital contracts. Arbitrum and Base staking count the balance of each chain\'s Builders deposit token and are reported under staking because the deposit asset is the protocol token.',
   start: '2024-02-08',
   ethereum: { tvl },
