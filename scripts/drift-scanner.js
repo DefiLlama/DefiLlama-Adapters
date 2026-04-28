@@ -32,16 +32,23 @@ const sdk  = require('@defillama/sdk')
 const argv = process.argv.slice(2)
 const flag = (name, def) => {
   const i = argv.indexOf(name)
-  return i !== -1 ? argv[i + 1] : def
+  if (i === -1) return def
+  const next = argv[i + 1]
+  return (next === undefined || next.startsWith('--')) ? def : next
 }
 const has = (name) => argv.includes(name)
 
+function parseIntFlag(name, def, { min = 1 } = {}) {
+  const v = parseInt(flag(name, String(def)), 10)
+  return Number.isFinite(v) && v >= min ? v : def
+}
+
 const CHAINS_ARG    = flag('--chains', 'all')
 const FAMILIES_ARG  = flag('--families', 'all')
-const TOP           = parseInt(flag('--top', '50'), 10)
-const CONCURRENCY   = parseInt(flag('--concurrency', '15'), 10)
+const TOP           = parseIntFlag('--top', 50, { min: 0 })
+const CONCURRENCY   = parseIntFlag('--concurrency', 15, { min: 1 })
 const GEN_STUBS     = has('--gen-stubs')
-const TIMEOUT_MS    = parseInt(flag('--timeout', '6000'), 10)
+const TIMEOUT_MS    = parseIntFlag('--timeout', 6000, { min: 1 })
 
 // ── Protocol family definitions ────────────────────────────────────────────
 // Each family describes how to detect deployment and how to generate an adapter.
@@ -105,7 +112,7 @@ const FAMILIES = {
     poolTopic: '0x91ccaa7a278130b65168c3a0c8d3bcae84cf5e43704342bd3ec0b59e59c036db',
     detect: async function(chain) {
       const candidates = await findFactoriesFromEvents(chain, this.poolTopic)
-      if (!candidates.length) return null
+      if (!candidates || !candidates.length) return null
       // Validate: a real Algebra factory has code AND its "pool" addresses also have code
       // (removes false positives from non-factory contracts emitting the same topic)
       const validated = []
@@ -119,9 +126,10 @@ const FAMILIES = {
       // Return all validated factories so multi-factory chains each get a gap entry
       return validated.sort((a, b) => b.pools - a.pools)
     },
-    coveredBy: (chain, adapters) =>
+    coveredBy: (chain, info, adapters) =>
       adapters.some(a => adapterCoversChain(a, chain) &&
-        adapterMentions(a, 'isAlgebra', 'algebra')),
+        adapterMentions(a, 'isAlgebra', 'algebra') &&
+        adapterMentions(a, info.address)),
     stub: (chain, info) => ({
       slug: `algebra-clmm-${chain}`,
       code: `'use strict'\nconst { uniV3Export } = require('../helper/uniswapV3')\nmodule.exports = uniV3Export({\n  ${chain}: { factory: '${info.address}', fromBlock: 0, isAlgebra: true },\n})\n`,
@@ -227,7 +235,8 @@ async function getCode(chain, address) {
   } catch { return '0x' }
 }
 
-// Count events emitted from a specific address (last 2M blocks as proxy)
+// Count events emitted from a specific address (last 2M blocks as proxy).
+// Returns null on RPC failure so callers can distinguish "no events" from "unknown".
 async function countEvents(chain, address, topic, maxBlocks = 2_000_000) {
   try {
     const provider = sdk.getProvider(chain)
@@ -238,10 +247,14 @@ async function countEvents(chain, address, topic, maxBlocks = 2_000_000) {
       TIMEOUT_MS * 3,
     )
     return logs.length
-  } catch { return 0 }
+  } catch (err) {
+    console.warn(`  [warn] countEvents ${chain} ${address.slice(0, 10)}: ${err.message}`)
+    return null
+  }
 }
 
-// Find all addresses emitting a given topic (for dynamic factory discovery)
+// Find all addresses emitting a given topic (for dynamic factory discovery).
+// Returns null on RPC failure so callers can treat it as "unknown", not "not deployed".
 async function findFactoriesFromEvents(chain, topic, maxBlocks = 4_000_000) {
   try {
     const provider = sdk.getProvider(chain)
@@ -256,7 +269,10 @@ async function findFactoriesFromEvents(chain, topic, maxBlocks = 4_000_000) {
       counts[log.address] = (counts[log.address] || 0) + 1
     }
     return Object.entries(counts).map(([address, pools]) => ({ address, pools }))
-  } catch { return [] }
+  } catch (err) {
+    console.warn(`  [warn] findFactories ${chain} topic ${topic.slice(0, 10)}: ${err.message}`)
+    return null
+  }
 }
 
 // ── DeFiLlama API coverage (prevents submitting already-tracked protocols) ──
@@ -315,7 +331,7 @@ const EVM_CHAINS = [
   'boba','rsk','telos','meter','xdc','iotaevm','lisk','wc','corn','bob',
   'soneium','unichain','ink','swellchain','manta','xlayer','hemi','plasma',
   'abstract','megaeth','monad','hyperliquid','plume_mainnet','sseed','etlk',
-  'lightlink_phoenix','goat','zklink','iotaevm','tempo','lens','rbn',
+  'lightlink_phoenix','goat','zklink','tempo','lens','rbn',
 ]
 
 function resolveChains() {
@@ -381,7 +397,10 @@ async function main() {
           // Algebra returns an array (one entry per factory); others return a single object
           const infos = Array.isArray(detected) ? detected : [detected]
           return infos.map(info => {
-            const localCovered = family.coveredBy(chain, adapters)
+            // Algebra coveredBy takes (chain, info, adapters) to check per factory address
+            const localCovered = familyKey === 'algebra'
+              ? family.coveredBy(chain, info, adapters)
+              : family.coveredBy(chain, adapters)
             const llamaKey = FAMILY_LLAMA_KEY[familyKey]
             const apiCovered = llamaCoverage && llamaKey
               ? llamaCoverage[llamaKey].has(chain.toLowerCase())
@@ -404,7 +423,7 @@ async function main() {
 
   const deployed = raw.flat().filter(Boolean)
   const gaps     = deployed.filter(r => !r.covered)
-    .sort((a, b) => b.info.pools - a.info.pools)
+    .sort((a, b) => (b.info.pools ?? -1) - (a.info.pools ?? -1))
     .slice(0, TOP)
 
   // ── Report ───────────────────────────────────────────────────────────────
@@ -412,7 +431,7 @@ async function main() {
   console.log(`${'Chain'.padEnd(18)} ${'Family'.padEnd(18)} ${'Pools'.padStart(6)}  Address`)
   console.log('─'.repeat(72))
   for (const g of gaps) {
-    const pools = String(g.info.pools).padStart(6)
+    const pools = g.info.pools == null ? '     ?' : String(g.info.pools).padStart(6)
     const addr  = g.info.address.slice(0, 42)
     console.log(`${g.chain.padEnd(18)} ${g.family.padEnd(18)} ${pools}  ${addr}`)
   }
