@@ -25,6 +25,7 @@
 
 const fs   = require('fs')
 const path = require('path')
+const https = require('https')
 const sdk  = require('@defillama/sdk')
 
 // ── CLI ────────────────────────────────────────────────────────────────────
@@ -115,8 +116,8 @@ const FAMILIES = {
         validated.push(c)
       }
       if (!validated.length) return null
-      const best = validated.sort((a, b) => b.pools - a.pools)[0]
-      return { address: best.address, pools: best.pools, allFactories: validated }
+      // Return all validated factories so multi-factory chains each get a gap entry
+      return validated.sort((a, b) => b.pools - a.pools)
     },
     coveredBy: (chain, adapters) =>
       adapters.some(a => adapterCoversChain(a, chain) &&
@@ -193,9 +194,15 @@ function adapterContent(adapter) {
   return _contentCache[adapter.path]
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// Fix: also match bare object key form  chain: { ... }
 function adapterCoversChain(adapter, chain) {
   const content = adapterContent(adapter)
-  return content.includes(`'${chain}'`) || content.includes(`"${chain}"`)
+  const escaped = escapeRegExp(chain)
+  return new RegExp(`(?:^|[\\s,{])(?:'${escaped}'|"${escaped}"|${escaped})\\s*:`, 'm').test(content)
 }
 
 function adapterMentions(adapter, ...keywords) {
@@ -252,6 +259,52 @@ async function findFactoriesFromEvents(chain, topic, maxBlocks = 4_000_000) {
   } catch { return [] }
 }
 
+// ── DeFiLlama API coverage (prevents submitting already-tracked protocols) ──
+// DeFiLlama's internal adapter DB is larger than the public GitHub repo.
+// A protocol can be tracked (appears in chainTvls) with no public adapter file.
+// We fetch the live protocol list and build a Set<chain> per protocol family.
+
+async function fetchLlamaCoverage() {
+  return new Promise((resolve) => {
+    const req = https.get('https://api.llama.fi/protocols', { timeout: 15000 }, (res) => {
+      const chunks = []
+      res.on('data', c => chunks.push(c))
+      res.on('end', () => {
+        try {
+          const protocols = JSON.parse(Buffer.concat(chunks).toString())
+          // Build map: family-keyword → Set<chain>
+          const coverage = {
+            balancer:  new Set(),
+            algebra:   new Set(),
+            uniswapv3: new Set(),
+            aave:      new Set(),
+            curve:     new Set(),
+          }
+          for (const p of protocols) {
+            const name = (p.name || '').toLowerCase()
+            const slug = (p.slug || '').toLowerCase()
+            const chains = Object.keys(p.chainTvls || {}).map(c => c.toLowerCase())
+            const tag = (kw) => name.includes(kw) || slug.includes(kw)
+            if (tag('balancer') || tag('beets') || tag('bex'))
+              chains.forEach(c => coverage.balancer.add(c))
+            if (tag('algebra') || tag('swapx') || tag('shadow') || tag('hercules'))
+              chains.forEach(c => coverage.algebra.add(c))
+            if (tag('uniswap'))
+              chains.forEach(c => coverage.uniswapv3.add(c))
+            if (tag('aave'))
+              chains.forEach(c => coverage.aave.add(c))
+            if (tag('curve'))
+              chains.forEach(c => coverage.curve.add(c))
+          }
+          resolve(coverage)
+        } catch { resolve(null) }
+      })
+    })
+    req.on('error', () => resolve(null))
+    req.on('timeout', () => { req.destroy(); resolve(null) })
+  })
+}
+
 // ── Chain list ─────────────────────────────────────────────────────────────
 
 // EVM-only chains with a known RPC in the SDK
@@ -292,10 +345,23 @@ async function pLimit(tasks, limit) {
 
 // ── Main ───────────────────────────────────────────────────────────────────
 
+// Family key → keyword used in fetchLlamaCoverage coverage map
+const FAMILY_LLAMA_KEY = {
+  'balancer-v2': 'balancer',
+  'algebra':     'algebra',
+  'uniswap-v3':  'uniswapv3',
+  'aave-v3':     'aave',
+  'curve':       'curve',
+}
+
 async function main() {
   const chains  = resolveChains()
   const familyKeys = resolveFamilies()
   const adapters = buildAdapterIndex()
+
+  process.stdout.write('Fetching DeFiLlama API coverage...')
+  const llamaCoverage = await fetchLlamaCoverage()
+  console.log(llamaCoverage ? ' ok' : ' failed (will rely on local adapter scan only)')
 
   console.log(`\nDeFiLlama Drift Scanner`)
   console.log(`═══════════════════════════════════════════════════════`)
@@ -310,11 +376,20 @@ async function main() {
       if (!family) { console.warn(`Unknown family: ${familyKey}`); continue }
       tasks.push(async () => {
         try {
-          const info = await family.detect(chain)
-          if (!info) return null
-          const covered = family.coveredBy(chain, adapters)
-          return { chain, familyKey, family: family.name, info, covered }
-        } catch { return null }
+          const detected = await family.detect(chain)
+          if (!detected) return []
+          // Algebra returns an array (one entry per factory); others return a single object
+          const infos = Array.isArray(detected) ? detected : [detected]
+          return infos.map(info => {
+            const localCovered = family.coveredBy(chain, adapters)
+            const llamaKey = FAMILY_LLAMA_KEY[familyKey]
+            const apiCovered = llamaCoverage && llamaKey
+              ? llamaCoverage[llamaKey].has(chain.toLowerCase())
+              : false
+            const covered = localCovered || apiCovered
+            return { chain, familyKey, family: family.name, info, covered, apiCovered }
+          })
+        } catch { return [] }
       })
     }
   }
@@ -327,7 +402,7 @@ async function main() {
   clearInterval(tick)
   console.log(' done.\n')
 
-  const deployed = raw.filter(Boolean)
+  const deployed = raw.flat().filter(Boolean)
   const gaps     = deployed.filter(r => !r.covered)
     .sort((a, b) => b.info.pools - a.info.pools)
     .slice(0, TOP)
@@ -342,8 +417,11 @@ async function main() {
     console.log(`${g.chain.padEnd(18)} ${g.family.padEnd(18)} ${pools}  ${addr}`)
   }
 
-  const covered = deployed.filter(r => r.covered)
+  const covered    = deployed.filter(r => r.covered)
+  const apiBlocked = covered.filter(r => r.apiCovered)
   console.log(`\nAlready covered: ${covered.length} / ${deployed.length} detected deployments`)
+  if (apiBlocked.length)
+    console.log(`  (${apiBlocked.length} blocked by DeFiLlama API — not in local adapters but tracked internally)`)
   console.log(`Gaps found:      ${gaps.length}`)
 
   // ── Stub generation ──────────────────────────────────────────────────────
@@ -352,9 +430,14 @@ async function main() {
     for (const g of gaps) {
       const family = FAMILIES[g.familyKey]
       const { slug, code } = family.stub(g.chain, g.info)
-      const dir = path.join(__dirname, '..', 'projects', slug)
+      const dir  = path.join(__dirname, '..', 'projects', slug)
+      const file = path.join(dir, 'index.js')
+      if (fs.existsSync(file)) {
+        console.warn(`  skipped projects/${slug}/index.js (already exists)`)
+        continue
+      }
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-      fs.writeFileSync(path.join(dir, 'index.js'), code)
+      fs.writeFileSync(file, code)
       console.log(`  wrote projects/${slug}/index.js`)
     }
   }
