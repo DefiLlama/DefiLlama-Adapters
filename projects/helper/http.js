@@ -40,13 +40,18 @@ async function withRetry(fn, { retries = DEFAULT_RETRIES, retryDelay = DEFAULT_R
   let lastErr
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const op = timeout === 0  
-        ? fn()  
-        : Promise.race([  
-            fn(),  
-            new Promise((_, rej) => setTimeout(() => rej(new Error('Operation timed out')), timeout)),  
-          ])
-      return await op
+      if (timeout === 0) return await fn()
+      let timer
+      try {
+        return await Promise.race([
+          fn(),
+          new Promise((_, rej) => {
+            timer = setTimeout(() => rej(new Error('Operation timed out')), timeout)
+          }),
+        ])
+      } finally {
+        if (timer) clearTimeout(timer)
+      }
     } catch (e) {
       lastErr = e
       if (attempt === retries || !_isRetryableError(e)) break
