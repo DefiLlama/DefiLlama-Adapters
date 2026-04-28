@@ -6,10 +6,14 @@ const Treasury = "0xBA085e0a14801C8c7A919a90304E75CabB7E3917";
 
 module.exports = treasuryExports({
   arbitrum: {
+    // Disable automatic token discovery because CI hits an invalid Ankr API key.
+    fetchCoValentTokens: false,
     tokens: [],
     owners: [Treasury],
   },
   ethereum: {
+    // Disable automatic token discovery because CI hits an invalid Ankr API key.
+    fetchCoValentTokens: false,
     tokens: [
       nullAddress,
       ADDRESSES.ethereum.USDC,
