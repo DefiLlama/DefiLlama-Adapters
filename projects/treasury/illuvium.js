@@ -1,14 +1,17 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
-const Treasury = "0x58c37a622cdf8ace54d8b25c58223f61d0d738aa";
+// illuvium:Fundraise treasury address
+const Treasury = "0xBA085e0a14801C8c7A919a90304E75CabB7E3917";
 
 module.exports = treasuryExports({
   arbitrum: {
+    fetchCoValentTokens: false,
     tokens: [],
     owners: [Treasury],
   },
   ethereum: {
+    fetchCoValentTokens: false,
     tokens: [
       nullAddress,
       ADDRESSES.ethereum.USDC,
