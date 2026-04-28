@@ -3,12 +3,23 @@ const ADDRESSES = require( '../helper/coreAssets.json' )
 const TD_CONTRACT = '0x469bbd88eEA8A2D9a5C6c82d9890Cf60962C27e6';
 
 async function tvl(api) {
-  const netAssets = await api.call({
-    abi: 'uint256:netAsset',
-    target: TD_CONTRACT
-  } );
+  const [netAsset, tdDecimals, usdcDecimals] = await Promise.all([
+    api.call({
+      target: TD_CONTRACT,
+      abi: 'uint256:netAsset',
+    }),
+    api.call({
+      target: TD_CONTRACT,
+      abi: 'erc20:decimals',
+    }),
+    api.call({
+      target: ADDRESSES.base.USDC,
+      abi: 'erc20:decimals',
+    }),
+  ])
     
-  const normalized = (BigInt(netAssets) / 1000000000000n).toString()
+  const diff = BigInt(tdDecimals) - BigInt(usdcDecimals)
+  const normalized = (BigInt(netAsset) / (10n ** diff)).toString()
 
   api.add(ADDRESSES.base.USDC, normalized)
 }
