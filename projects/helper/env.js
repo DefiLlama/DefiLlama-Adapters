@@ -87,7 +87,12 @@ Object.keys(DEFAULTS).forEach(i => {
 
 
 function getEnv(key) {
-  if (!ENV_KEYS.includes(key)) throw new Error(`Unknown env key: ${key}`)
+  const multiRpcPattern = /^[A-Z0-9_]+_RPC_\d+$/;
+  const isMultiRpcKey = multiRpcPattern.test(key);
+
+  if (!ENV_KEYS.includes(key) && !isMultiRpcKey) {
+    throw new Error(`Unknown env key: ${key}`)
+  }
   const value = process.env[key] ?? DEFAULTS[key]
   return BOOL_KEYS.includes(key) ? !!value : value
 }
