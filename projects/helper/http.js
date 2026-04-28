@@ -88,8 +88,7 @@ async function get(endpoint, options = {}) {
   const { retries, retryDelay, timeout = DEFAULT_TIMEOUT_MS, ...axiosOpts } = options
   const tonApiKey = getEnv('TON_API_KEY')
   if (tonApiKey && endpoint.includes('tonapi.io')) {
-    if (!axiosOpts.headers) axiosOpts.headers = {}
-    axiosOpts.headers['Authorization'] = tonApiKey
+    axiosOpts.headers = { ...axiosOpts.headers, Authorization: tonApiKey }
   }
   try {
     return await withRetry(
