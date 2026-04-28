@@ -18,8 +18,9 @@ const TAIL_LIMIT = getTailLimit()
 function getTailLimit() {
   const rawLimit = process.env.TAIL_LIMIT
   if (!rawLimit) return 0
+  if (!/^\d+$/.test(rawLimit)) return 0
 
-  const parsedLimit = Number.parseInt(rawLimit, 10)
+  const parsedLimit = Number(rawLimit)
   if (!Number.isFinite(parsedLimit) || parsedLimit <= 0) return 0
 
   return Math.min(parsedLimit, MAX_TAIL_LIMIT)
