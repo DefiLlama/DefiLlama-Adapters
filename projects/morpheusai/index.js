@@ -22,9 +22,10 @@ async function tvl(api) {
 // Builders contract deployed 2026-04-28 03:19 UTC (block 457098475);
 // historical runs before this revert on depositToken().
 const ARBITRUM_BUILDERS_DEPLOYMENT = 1777346391;
+const ARBITRUM_BUILDERS_DEPLOYMENT_BLOCK = 457098475;
 
 async function arbitrumStaking(api) {
-  if (api.timestamp < ARBITRUM_BUILDERS_DEPLOYMENT) return {}
+  if (api.timestamp < ARBITRUM_BUILDERS_DEPLOYMENT || api.block < ARBITRUM_BUILDERS_DEPLOYMENT_BLOCK) return {}
   const depositToken = await api.call({ abi: 'address:depositToken', target: ARBITRUM_BUILDERS })
   return api.sumTokens({ owner: ARBITRUM_BUILDERS, tokens: [depositToken] })
 }
