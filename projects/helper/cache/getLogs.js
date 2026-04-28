@@ -80,9 +80,8 @@ async function getLogs({ target,
 
     if (!useIndexer) {
 
-      logs = (await sdk.api.util.getLogs({
-        chain, target, topic, keys, topics, fromBlock, toBlock,
-      })).output
+        // Use safe chunked fetching to avoid overloading RPCs (esp. X Layer)
+        logs = await chunkedGetLogs({ chain, target, topic, keys, topics, fromBlock, toBlock })
 
     } else {
       // if use indexer flag is enabled, we use the new getLogs method that tries to pull from indexer if it is configured, else from chain rpcs
@@ -163,6 +162,38 @@ async function getLogs({ target,
       sdk.log(`Saved ${logs.length} logs to cache: ${chunkKey}, has more: ${hasMore}`)
       index++
     }
+  }
+
+  // Safely fetch logs in conservative chunks with retries and small delays.
+  // This prevents RPC overloads / 429s and enables chains like xlayer to be used.
+  async function chunkedGetLogs({ chain, target, topic, keys, topics, fromBlock, toBlock, maxChunk = 5000, delayMs = 100, maxRetries = 5 }) {
+    const allLogs = []
+    let start = fromBlock
+    // defensive bounds
+    if (!start) start = 0
+    if (!toBlock) throw new Error('Missing toBlock for chunkedGetLogs')
+
+    while (start <= toBlock) {
+      const end = Math.min(start + maxChunk - 1, toBlock)
+      let attempt = 0
+      while (true) {
+        try {
+          const res = await sdk.api.util.getLogs({ chain, target, topic, keys, topics, fromBlock: start, toBlock: end })
+          if (res && res.output) allLogs.push(...res.output)
+          break
+        } catch (err) {
+          attempt++
+          if (attempt > maxRetries) throw err
+          const backoff = Math.pow(2, attempt) * 100
+          await new Promise(r => setTimeout(r, backoff))
+        }
+      }
+      // polite small delay between chunks to reduce rate-limit pressure
+      if (end < toBlock) await new Promise(r => setTimeout(r, delayMs))
+      start = end + 1
+    }
+
+    return allLogs
   }
 
   async function _getCache(key) {
