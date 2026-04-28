@@ -37,7 +37,9 @@ async function getAllData() {
     data.forEach(({ liquidity: { mintPubkey, borrowedAmountWads, supplyPubkey, availableAmount, } }) => {
       tokenAccounts.push(supplyPubkey)
       sdk.util.sumSingleBalance(balances.tvl, mintPubkey.toString(), availableAmount, 'solana')
-      sdk.util.sumSingleBalance(balances.borrowed, mintPubkey.toString(), borrowedAmountWads / 1e18, 'solana')
+      // NOTE: borrowed calculation zeroed out due to bad debt
+      // Original line commented out:
+      // sdk.util.sumSingleBalance(balances.borrowed, mintPubkey.toString(), borrowedAmountWads / 1e18, 'solana')
     })
     return balances
   }
@@ -47,6 +49,8 @@ module.exports = {
   timetravel: false,
   solana: {
     tvl: async () => (await getAllData()).tvl,
-    borrowed: async () => (await getAllData()).borrowed,
+    // NOTE: borrowed function zeroed out due to bad debt
+    // Original implementation would have been: borrowed: async () => (await getAllData()).borrowed,
+    borrowed: () => ({}),
   },
 };

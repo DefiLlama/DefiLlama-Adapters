@@ -17,7 +17,7 @@ const config = {
 
 // module.exports = {
 //   hallmarks: [
-//     [1691373600, "Steadefi exploited"],
+//     ['2023-08-07', "Steadefi exploited"],
 //   ],
 // };
 

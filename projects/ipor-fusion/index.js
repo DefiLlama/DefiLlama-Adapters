@@ -14,11 +14,11 @@ async function tvl(api) {
 
   const chainConfig = config[chain];
   if (!chainConfig || !chainConfig.vaults) {
-    debugLog(`[IPOR Fusion] No vaults found for chain: ${chain}`);
+    debugLog(`[Fusion (by IPOR)] No vaults found for chain: ${chain}`);
     return {};
   }
   
-  debugLog(`[IPOR Fusion] Processing ${chainConfig.vaults.length} vaults on ${chain}:`);
+  debugLog(`[Fusion (by IPOR)] Processing ${chainConfig.vaults.length} vaults on ${chain}:`);
   
   const calls = chainConfig.vaults.map((vault, index) => {
     debugLog(`  Vault ${index + 1}/${chainConfig.vaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
@@ -27,17 +27,17 @@ async function tvl(api) {
 
   totalVaultsProcessed += calls.length;
   
-  debugLog(`[IPOR Fusion] Total vaults processed on ${chain}: ${calls.length}`);
-  debugLog(`[IPOR Fusion] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
+  debugLog(`[Fusion (by IPOR)] Total vaults processed on ${chain}: ${calls.length}`);
+  debugLog(`[Fusion (by IPOR)] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
   
   return api.erc4626Sum2({ calls })
 }
 
 module.exports = {
-  methodology: `Counts the tokens deposited into IPOR Fusion Vaults.`,
+  methodology: `Counts the tokens deposited into Fusion Vaults.`,
   hallmarks: [
-    ["2024-09-30", "IPOR Fusion Vaults Rollout"],
-    ["2025-10-24", "IPOR Fusion Points Program Launch"],
+    ["2024-09-30", "Fusion Vaults Rollout"],
+    ["2025-10-24", "Fusion Points Program Launch"],
     ["2025-11-04", "xUSD Depeg DeFi Contagion"]
   ],
   ethereum: { tvl },
@@ -47,5 +47,6 @@ module.exports = {
   ink: { tvl },
   tac: { tvl },
   plasma: { tvl },
-  avax: { tvl }
+  avax: { tvl },
+  katana: { tvl }
 };

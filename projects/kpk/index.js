@@ -1,7 +1,9 @@
 const { getCuratorExport } = require("../helper/curators")
+const { sumTokensDebank } = require("../helper/debank")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
+const PORTFOLIO_SAFE="0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b"
 
 const GearboxCompressorABI = {
   // returns credit managers associated with the given legacy (market) configurators
@@ -16,7 +18,7 @@ const GearboxCompressorABI = {
 // ---- Config (extend as needed) ----
 const configs = {
   methodology:
-    "Counts (1) assets deposited in curated ERC-4626 vaults and (2) collateral held in Gearbox v3.1 Credit Accounts from the specified Market Configurator. Morpho v1/v2 vaults are deduplicated to avoid double-counting.",
+    "Sum of curated vault deposits (Morpho, Aleph, Euler, Gearbox), Gearbox v3.1 credit account collateral, kpk Fund AUM, and positions in Safes actively managed by kpk via Zodiac Roles Modifier.",
   blockchains: {
     ethereum: {
       // Option 1: Use morphoVaultOwners to dynamically get all Morpho vaults owned by these addresses
@@ -30,8 +32,8 @@ const configs = {
       // (de-duplication is automatically applied)
       // You can use BOTH morphoVaultOwners and morpho together - they will be combined
       morpho: [
-        "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", //Morpho v1 USDC Prime 
-        "0x0c6aec603d48eBf1cECc7b247a2c3DA08b398DC1", //Morpho v1 EURC Yield 
+        "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", //Morpho v1 USDC Prime
+        "0x0c6aec603d48eBf1cECc7b247a2c3DA08b398DC1", //Morpho v1 EURC Yield
         "0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8", //Morpho v1 ETH Prime
         "0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6", //Morpho v2 USDC Prime
         "0xa877D5bb0274dcCbA8556154A30E1Ca4021a275f", //Morpho v2 EURC Yield
@@ -40,24 +42,36 @@ const configs = {
         "0xc88eFFD6e74D55c78290892809955463468E982A", //Morpho v1 ETH Yield
         "0xD5cCe260E7a755DDf0Fb9cdF06443d593AaeaA13", //Morpho v2 USDC Yield
         "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
+        "0xdaD4e51d64c3B65A9d27aD9F3185B09449712065", //Morpho v1 USDT Prime
+        "0x870F0BF29A25A40E7CC087cD5C53e70C11F2C8A8", //Morpho v2 USDT Prime
       ],
 
       // Other ERC-4626 vaults (non-Morpho)
       erc4626: [
+        "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245", //kpk RWA Euler USDC Earn
         "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
         "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
       ],
+
+      // Aleph vaults use underlyingToken() instead of asset(), so they
+      // can't go through the standard ERC-4626 curator helper.
+      alephVaults: [
+        "0x9477df934574d47f240e18cd232e013118666690", //kpk Aleph rETH
+        "0xf857caa91ea4007ec26aee2d039e870eb0fa91bf", //kpk Aleph stETH
+        "0x6cbcc646d7422b734c6fc0954a1c3ca87b1b4ceb", //kpk Aleph osETH
+      ],
+
 
       // NEW: Gearbox v3.1 Market Configurator (legacy configurator) to crawl
       gearboxMarketConfigurator: "0x1b265b97eb169fb6668e3258007c3b0242c7bdbe",
     },
     arbitrum: {
-        // You can use either morphoVaultOwners or morpho here too
-        morpho: [
-          "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
-          "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
-        ],
-      },
+      // You can use either morphoVaultOwners or morpho here too
+      morpho: [
+        "0x2C609d9CfC9dda2dB5C128B2a665D921ec53579d", //Morpho USDC Yield
+        "0x5837e4189819637853a357aF36650902347F5e73", //Morpho USDC Yield v2
+      ],
+    },
   },
 }
 
@@ -112,17 +126,69 @@ async function getGearboxV31Collateral(api, marketConfigurator, pageSize = 1e3) 
   }
 }
 
+// ---- Aleph vault TVL (uses underlyingToken() instead of asset()) ----
+
+async function getAlephVaultTvl(api, vaults) {
+  if (!vaults?.length) return
+  const underlyingTokens = await api.multiCall({ abi: "address:underlyingToken", calls: vaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (underlyingTokens[i] && totalAssets[i]) api.add(underlyingTokens[i], totalAssets[i])
+  }
+}
+
+// ---- kpk Fund (OIV) TVL via DeBank ----
+const OIV_SAFES = [PORTFOLIO_SAFE]
+const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
+
+// ---- Zodiac-managed Safes (Institutional vertical) TVL via DeBank ----
+// Safes owned by external institutions but actively managed by kpk via Zodiac Roles Modifier.
+const ZODIAC_MANAGED_SAFES = [
+  '0x4F2083f5fBede34C2714aFfb3105539775f7FE64', // ENS Endowment Fund
+  '0x616dE58c011F8736fa20c7Ae5352F7f6FB9F0669', // CoW Main Treasury
+  '0x7F8987D6A8bee31bD7bE80E877732579E2582a28', // CoW Defense Fund
+  '0x9009B4411D0e1171cc042b77D7701f46B737Fdb9', // CoW Validator Safe
+  '0x4D1D9D7741740A3E2ffC5507aC643DbA5e81cAe5', // Arbitrum DAO
+  '0x8e53D04644E9ab0412a8c6bd228C84da7664cFE3', // Nexus Mutual
+]
+const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc', 'polygon']
+
+// Returns all kpk curated vaults to use as blacklistedPools in DeBank calls to avoid
+// double counting positions already captured by the curator export's totalAssets()
+function getCuratedVaults(chain) {
+  const cfg = configs.blockchains[chain]
+  if (!cfg) return []
+  return [...(cfg.morpho || []), ...(cfg.erc4626 || []), ...(cfg.alephVaults || [])]
+}
+
+async function getDebankTvl(api, safes) {
+  await sumTokensDebank(api, safes, { includeWalletTokens: true, blacklistedPools: getCuratedVaults(api.chain) })
+}
+
 // ---- Combined TVL export per chain ----
 
+const allChains = [...new Set([...Object.keys(configs.blockchains), ...OIV_CHAINS, ...ZODIAC_CHAINS])]
 const exportObjects = getCuratorExport(configs)
 
-// Add Gearbox v3.1 collateral TVL to each chain
-for (const [chain, chainCfg] of Object.entries(configs.blockchains)) {
-  if (exportObjects[chain] && chainCfg.gearboxMarketConfigurator) {
-    const originalTvl = exportObjects[chain].tvl
-    exportObjects[chain].tvl = async (api) => {
-      await originalTvl(api)
-      await getGearboxV31Collateral(api, chainCfg.gearboxMarketConfigurator)
+for (const chain of allChains) {
+  const curatorTvl = exportObjects[chain]?.tvl
+  exportObjects[chain] = {
+    tvl: async (api) => {
+      // Curated vault deposits (Morpho, Euler, etc.) via getCuratorExport
+      if (curatorTvl) await curatorTvl(api)
+
+      // Gearbox v3.1 credit account collateral + Aleph vault TVL
+      const chainCfg = configs.blockchains[chain]
+      const hasGearbox = chainCfg?.gearboxMarketConfigurator
+      const hasAleph = chainCfg?.alephVaults
+      if (hasGearbox) await getGearboxV31Collateral(api, hasGearbox)
+      if (hasAleph) await getAlephVaultTvl(api, hasAleph)
+
+      // kpk Fund (OIV) TVL via DeBank
+      if (OIV_CHAINS.includes(chain)) await getDebankTvl(api, OIV_SAFES)
+
+      // Zodiac-managed Safe TVL via DeBank
+      if (ZODIAC_CHAINS.includes(chain)) await getDebankTvl(api, ZODIAC_MANAGED_SAFES)
     }
   }
 }

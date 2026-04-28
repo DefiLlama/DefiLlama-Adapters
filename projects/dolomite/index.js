@@ -7,9 +7,11 @@ const BigNumber = require("bignumber.js");
 const basePar = '1000000000000000000'
 
 async function getTokensAndBalances(api, supplyOrBorrow) {
-  const dolomiteMargin = config[api.chain].margin
+  const { margin: dolomiteMargin, blacklistedTokens = [] } = config[api.chain]
+  const blacklistedTokensLCSet = new Set(blacklistedTokens.map(i => i.toLowerCase())) 
+
   let tokens = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTokenAddress, target: dolomiteMargin })
-  
+
   const underlyingTokens = await api.multiCall({ abi: 'address:UNDERLYING_TOKEN', calls: tokens, permitFailure: true, })
   let bals
   if (supplyOrBorrow === 'supply') {
@@ -22,7 +24,7 @@ async function getTokensAndBalances(api, supplyOrBorrow) {
 
   const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens, permitFailure: true, })
   tokens.forEach((v, i) => {
-    if (!symbols[i]?.startsWith('pol-')) {
+    if (!symbols[i]?.startsWith('pol-') && !blacklistedTokensLCSet.has(underlyingTokens[i]?.toLowerCase()) && !blacklistedTokensLCSet.has(v.toLowerCase())) {
       api.add(underlyingTokens[i] ?? v, bals[i])
     }
   })
@@ -43,7 +45,11 @@ module.exports = {
 const config = {
   arbitrum: { margin: '0x6bd780e7fdf01d77e4d475c821f1e7ae05409072', },
   btnx: { margin: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D', },
-  ethereum: { margin: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D', },
+  ethereum: {
+    margin: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D', blacklistedTokens: [
+      '0xda5e1988097297dcdc1f90d4dfe7909e847cbef6', // WLFI - almost all of it is supplied by WLFI team multisig
+    ]
+  },
   polygon_zkevm: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },
   mantle: { margin: '0xE6Ef4f0B2455bAB92ce7cC78E35324ab58917De8', },
   xlayer: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },

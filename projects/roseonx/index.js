@@ -20,6 +20,6 @@ module.exports = {
     )
   },
   hallmarks:[
-      [1697439600, "RoseonX Launch"]
+      ['2023-10-16', "RoseonX Launch"]
   ],
 };

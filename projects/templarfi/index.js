@@ -9,7 +9,25 @@ const MAX_RETRY_ATTEMPTS = 3
 const RETRY_DELAY_MS = 1000
 const CALL_TIMEOUT_MS = 30000
 
-const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+// These are proxy oracles, adapters and deleted test markets
+const CONTRACTS_TO_SKIP = new Set([
+  'liqtest-ixlm-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-ixlmcetes-ixlmusdc.v1.tmplr.near',
+  'redstone-adapter.v1.tmplr.near',
+  'proxy-oracle-ixlmustry-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-iada-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-ibtc-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-idoge-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-iltc-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-ixrp-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-izec-ixlmusdc.v1.tmplr.near',
+  'proxy-oracle-linear-usdt.v1.tmplr.near',
+  'proxy-oracle-stnear-usdt.v1.tmplr.near'
+]);
+
+const FAST_FAIL_PATTERNS = ['does not exist', 'Buffer', 'Received undefined']
 
 function detectCrossChainToken(tokenId) {
   // Stellar tokens via HOT omnichain bridge (chain ID 1100)
@@ -17,6 +35,12 @@ function detectCrossChainToken(tokenId) {
     const stellarMappings = {
       '111bzQBB5v7AhLyPMDwS8uJgQV24KaAPXtwyVWu2KXbbfQU6NXRCz': 'coingecko:stellar',
       '111bzQBB65GxAPAVoxqmMcgYo5oS3txhqs1Uh1cgahKQUeTUq1TJu': 'coingecko:usd-coin',
+      '111bzQBB62XZkuam1hPr5wsG54FvwhYaPvecKwgZo1ZoKMWEXcE2n': 'coingecko:paypal-usd',
+      '111bzQBB66Lr9d7WU1sDna78SqG5x1ZraFjkpPdiYXjHFRnZJUhuV': 'coingecko:defi-janus-henderson-anemoy-aaa-clo-fund',
+      '111bzQBB5y5yhcUCbDKaCx4zNjEHQbwLAdvwucCecVzC5Ub7uNKEb': 'coingecko:defi-janus-henderson-anemoy-aaa-clo-fund',
+      '111bzQBB5xzU1EsXby4ckez2qjWFTBiPoqHzZpPkq1Gr9gB7FQpeZ': 'coingecko:solv-protocol-btc',
+      '111bzQBB5uBD3Wrr7pthp8XhJsreEcwTVnmjQ1wpbzkvHLEQf3ygS': 'coingecko:etherfuse-cetes',
+      '111bzQBB5yT2A5maKJqJQsuNg7BA6VG4S4ZATpqmKYLwYBsfEfh6e': 'coingecko:ustbl',
     }
     const match = tokenId.match(/1100_([a-zA-Z0-9]+)$/)
     if (match && stellarMappings[match[1]]) {
@@ -33,7 +57,27 @@ function detectCrossChainToken(tokenId) {
   if (tokenId === 'zec.omft.near') {
     return { chain: 'zcash', token: 'coingecko:zcash' }
   }
-  
+
+  // Cardano via omnichain bridge
+  if (tokenId === 'cardano.omft.near') {
+    return { chain: 'cardano', token: 'coingecko:cardano' }
+  }
+
+  // Dogecoin via omnichain bridge
+  if (tokenId === 'doge.omft.near') {
+    return { chain: 'doge', token: 'coingecko:dogecoin' }
+  }
+
+  // Litecoin via omnichain bridge
+  if (tokenId === 'ltc.omft.near') {
+    return { chain: 'litecoin', token: 'coingecko:litecoin' }
+  }
+
+  // XRP via omnichain bridge
+  if (tokenId === 'xrp.omft.near') {
+    return { chain: 'ripple', token: 'coingecko:xrp' }
+  }
+
   // Ethereum tokens via omnichain bridge
   if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
     const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
@@ -63,7 +107,7 @@ async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_D
       return await fn()
     } catch (error) {
       lastError = error
-      if (error.message && error.message.includes('does not exist')) {
+      if (error.message && FAST_FAIL_PATTERNS.some(p => error.message.includes(p))) {
         throw error
       }
       if (attempt === maxAttempts) throw lastError
@@ -228,7 +272,14 @@ async function fetchDeploymentsFromContract(registryContract) {
     offset += limit
   }
 
-  return deployments
+  return deployments.filter(deployment => {
+    if (CONTRACTS_TO_SKIP.has(deployment)) {
+      console.log(`Skipping known non-market contract: ${deployment}`)
+      return false
+    }
+
+    return true
+  })
 }
 
 async function processMarket(marketContract) {
@@ -272,8 +323,8 @@ async function processMarket(marketContract) {
       collateralDecimals,
     }
   } catch (error) {
-    if (error.message && error.message.includes('does not exist')) {
-      console.log(`Market ${marketContract} has been deleted, skipping...`)
+    if (error.message && FAST_FAIL_PATTERNS.some(p => error.message.includes(p))) {
+      console.log(`Market ${marketContract} skipped (not a market): ${error.message}`)
       return null
     }
     throw error
@@ -326,26 +377,32 @@ function aggregateByChain(marketData, type) {
   return chainBalances
 }
 
-let cachedMarketData = null
+let cachedMarketDataPromise = null
+
+async function getMarketDataMemoized() {
+  if (!cachedMarketDataPromise) {
+    cachedMarketDataPromise = getMarketData().catch(error => {
+      cachedMarketDataPromise = null
+      throw error
+    })
+  }
+  return cachedMarketDataPromise
+}
 
 async function getChainTvl(chain) {
-  if (!cachedMarketData) {
-    cachedMarketData = await getMarketData()
-  }
-  const chainBalances = aggregateByChain(cachedMarketData, 'tvl')
+  const data = await getMarketDataMemoized()
+  const chainBalances = aggregateByChain(data, 'tvl')
   return chainBalances[chain] || {}
 }
 
 async function getChainBorrowed(chain) {
-  if (!cachedMarketData) {
-    cachedMarketData = await getMarketData()
-  }
-  const chainBalances = aggregateByChain(cachedMarketData, 'borrowed')
+  const data = await getMarketDataMemoized()
+  const chainBalances = aggregateByChain(data, 'borrowed')
   return chainBalances[chain] || {}
 }
 
 // Supported chains for cross-chain assets
-const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana']
+const SUPPORTED_CHAINS = ['near', 'stellar', 'ethereum', 'bitcoin', 'zcash', 'solana', 'cardano', 'doge', 'litecoin', 'ripple']
 
 module.exports = {
   methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment. Assets are attributed to their origin chain (Stellar, Ethereum, Bitcoin).',

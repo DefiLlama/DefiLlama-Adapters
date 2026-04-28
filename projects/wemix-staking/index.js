@@ -38,7 +38,7 @@ async function tvl(api) {
 
 module.exports = {
   hallmarks: [
-    [1687478400, "WONDER Staking Live"]
+    ['2023-06-23', "WONDER Staking Live"]
   ],
   wemix: {
     tvl

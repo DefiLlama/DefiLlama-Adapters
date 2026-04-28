@@ -5,6 +5,20 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 
 const distressedAssets = ['aleth'];
+/**
+ * This vaults were affected by Stream's xUSD incident on 2025 and the underlying platform is returning 
+ * an innacurate (higher) balance that isn't recoverable by users. To avoid overstating the TVL, we are excluding these vaults from the TVL calculation.
+ */
+const blacklistedVaults = {
+  avax: {
+    '0x79a8d2cbdcb651013dae6be25a3813ca70f35732': new Date('2025-12-01'),      // silov2-avalanche-ausd-valamore (~492k, 6 decimals)
+    '0x7e74446ee441a8da46f61f9ada7f8368d26e0eea': new Date('2025-12-01'),     // silov2-avalanche-usdt-valamore (~2.25M, 6 decimals)
+    '0xd1fec8530a8e824f051d80ce17d238e96a75bcb2': new Date('2025-12-01'),     // silov2-avalanche-usdc-mev (~3M, 6 decimals)
+  },
+  arbitrum: {
+    '0x0c0846c5d8194bc327669763ac6af9b788edb409': new Date('2025-12-01'),    // silov2-arbitrum-usdc-valamore (~11.6M, 6 decimals)
+  },
+};
 
 // ABI for Beefy vaults
 const vaultABI = {
@@ -39,6 +53,7 @@ const chains = {
   moonriver: 1285,
   sei: 1329,
   kava: 2222,
+  megaeth: 4326,
   mantle: 5000,
   saga: 5464,
   canto: 7700,
@@ -108,6 +123,7 @@ const beefyChainNameMapping = {
   'aurora': 'aurora',
   'one': 'harmony',
   'harmony': 'harmony',
+  'megaeth': 'megaeth',
 };
 
 async function fetchVaultData() {
@@ -188,14 +204,17 @@ async function tvl(api, isStaking = false) {
   })
   const vaults = vaultsByChain[chain] || [];
 
+  const _blacklistedVaults = blacklistedVaults[chain] || {};
+  const _filteredBlacklistedVaults = Object.entries(_blacklistedVaults).filter(([_, date]) => !api.timestamp || (api.timestamp * 1000 > date)).map(([i]) => i.toLowerCase())
+  const blaclistedVaultSet = new Set(_filteredBlacklistedVaults);
+
   // Filter out BIFI staking vaults and inactive vaults
   let activeVaults = vaults.filter(v => v.isBIFI);
 
   if (!isStaking)
-    activeVaults = vaults.filter(v => !v.isBIFI);
+    activeVaults = vaults.filter(v => !v.isBIFI && !blaclistedVaultSet.has(v.address.toLowerCase()));
 
   // sdk.log(`Active non-BIFI vaults: ${activeVaults.length}`);
-
   const vaultAddresses = activeVaults.map(v => v.address);
 
   let tokens = await api.multiCall({ abi: vaultABI.want, calls: vaultAddresses, permitFailure: true, });
@@ -234,9 +253,10 @@ async function tvl(api, isStaking = false) {
     else if (token && balance) api.add(token, balance);
   });
 
-  return sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
-}
+  await sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
 
+  api.removeTokenBalance('0xf859bf77cbe8699013d6dbc7c2b926aaf307f830')  // bsc - BRY has bad token price
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -247,3 +267,9 @@ module.exports = {
 Object.keys(chains).forEach(chain =>
   module.exports[chain] = { tvl: (api) => tvl(api, false), staking: (api) => tvl(api, true) }
 )
+
+
+module.exports.canto = {
+  tvl: () => ({}),
+  staking: () => ({}),
+}

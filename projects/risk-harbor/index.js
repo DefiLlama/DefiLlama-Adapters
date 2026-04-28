@@ -284,5 +284,5 @@ module.exports = {
   polygon: {
     tvl: evm("polygon"),
   },
-  hallmarks: [[1651881600, "UST depeg"]],
+  hallmarks: [['2022-05-07', "UST depeg"]],
 };

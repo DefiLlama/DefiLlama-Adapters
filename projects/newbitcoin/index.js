@@ -16,6 +16,7 @@ const uniExports = uniV3Export({
 })
 
 module.exports = {
+  deadFrom: "2024-04-28",
   nos: {
     tvl: sdk.util.sumChainTvls([sumTokensExport({ owner: '0xea21fbBB923E553d7b98D14106A104665BA57eCd', tokens: [ADDRESSES.nos.BTC] }), uniExports.nos.tvl])
   }

@@ -11,7 +11,7 @@ const config = {
   avax: '0xc3344870d52688874b06d844E0C36cc39FC727F6',
   bsc: '0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827',
   fantom: '0xcfc785741dc0e98ad4c9f6394bb9d43cd1ef5179',
-  flow: '0x1b97100eA1D7126C4d60027e231EA4CB25314bdb',
+  flow: ADDRESSES.flow.ankrFLOWEVM,
 }
 
 async function getTvls(serviceName, key) {

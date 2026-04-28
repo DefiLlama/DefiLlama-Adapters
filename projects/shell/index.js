@@ -25,6 +25,6 @@ module.exports = {
     tvl: sumTokensExport({ owner: OCEAN_CONTRACT, tokens: TOKEN_CONTRACTS})
   },
   hallmarks: [
-    [1662927378, "Shell v2 Launch"]
+    ['2022-09-11', "Shell v2 Launch"]
   ]
 }; 

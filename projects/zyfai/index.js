@@ -9,6 +9,9 @@ const {
 const {
     allPoolTokens: plasmaPoolTokens
 } = require('./plasma');
+const {
+    allPoolTokens: ethereumPoolTokens
+} = require('./ethereum');
 
 async function sonicTvl(api) {
     // For Sonic chain
@@ -17,7 +20,7 @@ async function sonicTvl(api) {
         beetsTvl(api, owners),
         penpieTvl(api, owners),
     ]);
-    return api.sumTokens({ owners, tokens: sonicTokens })
+    return api.sumTokens({ owners: owners.filter(o => o !== ''), tokens: sonicTokens })
 }
 
 async function baseTvl(api) {
@@ -26,7 +29,7 @@ async function baseTvl(api) {
 
     return api.sumTokens({
         tokens: allPoolTokens,
-        owners
+        owners: owners.filter(o => o !== ''),
     });
 }
 
@@ -35,7 +38,7 @@ async function arbitrumTvl(api) {
     const owners = await getConfig('zyfai/'+api.chain, 'https://api.zyf.ai/api/v1/data/active-wallets?chainId=42161');
     return api.sumTokens({
         tokens: arbitrumPoolTokens,
-        owners
+        owners: owners.filter(o => o !== ''),
     });
 }
 
@@ -44,7 +47,16 @@ async function plasmaTvl(api) {
     const owners = await getConfig('zyfai/'+api.chain, 'https://api.zyf.ai/api/v1/data/active-wallets?chainId=9745');
     return api.sumTokens({
         tokens: plasmaPoolTokens,
-        owners
+        owners: owners.filter(o => o !== ''),
+    });
+}
+
+async function ethereumTvl(api) {
+    // For Ethereum mainnet
+    const owners = await getConfig('zyfai/'+api.chain, 'https://api.zyf.ai/api/v1/data/active-wallets?chainId=1');
+    return api.sumTokens({
+        tokens: ethereumPoolTokens,
+        owners: owners.filter(o => o !== ''),
     });
 }
 
@@ -53,5 +65,6 @@ module.exports = {
     sonic: { tvl: sonicTvl },
     base: { tvl: baseTvl },
     arbitrum: { tvl: arbitrumTvl },
-    plasma: { tvl: plasmaTvl }
+    plasma: { tvl: plasmaTvl },
+    ethereum: { tvl: ethereumTvl },
 }

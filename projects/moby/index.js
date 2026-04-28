@@ -3,8 +3,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
   hallmarks: [
-    // [1736294400,"Private-key Leak Exploit"],
-    [1737072000,"Moby Restored"]
+    // ['2025-01-08',"Private-key Leak Exploit"],
+    ['2025-01-17',"Moby Restored"]
   ],
   arbitrum: {
     tvl: sumTokensExport({ 

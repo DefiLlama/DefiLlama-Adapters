@@ -8,4 +8,5 @@ module.exports = {
 		tvl: () => ({}),
 		staking: () => sumTokens2({ tokenAccounts: [STAKING_VAULT] })
 	},
+	deadFrom: '2026-02-23', // https://x.com/StepFinance_/status/2025986934112145849
 }

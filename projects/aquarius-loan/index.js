@@ -6,4 +6,8 @@ module.exports = {
   core: compoundExports2({ comptroller: '0x6056Eb6a5634468647B8cB892d3DaA5F816939FC', cether: '0x03ef96f537a7cda4411c8643afd9d8814d5b4906'})
 };
 
+// NOTE: borrowed functions zeroed out due to bad debt
+// The compoundExports2 helper would normally calculate borrowed amounts, but we override them to return empty objects
+module.exports.arbitrum.borrowed = () => ({})
+module.exports.core.borrowed = () => ({})
 module.exports.core.staking = stakingPriceLP('0x959C7898318DC3c8fD11cbC5000f4e36F75144EC', '0x204e2D49b7cDA6d93301bcF667A2Da28Fb0e5780', '0xeaf1a065f85cf02547002d26aa42ee4516e21aa1')

@@ -46,7 +46,7 @@ async function polygon(api) {
 
 module.exports = {
   hallmarks: [
-    [1676592000, "Launch on Arbitrum"]
+    ['2023-02-17', "Launch on Arbitrum"]
   ],
   misrepresentedTokens: true,
   arbitrum: {

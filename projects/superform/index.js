@@ -20,7 +20,8 @@ const CONFIG = {
     '0x1fd865a55eaf5333e6374fb3ad66d22e9885d3aa',
     '0x866eb09d3d1397b8a28cfe5dceeaed9362840385',
     '0xd63ace62b925361fc588734022718e919a8081ac',
-    '0xa135d7f10545e3a45e24e79ecd4e4c3c78cf56bf'
+    '0xa135d7f10545e3a45e24e79ecd4e4c3c78cf56bf',
+    '0x806e8538fc05774ea83d9428f778e423f6492475',
   ] },
   polygon: {},
   bsc: {},
@@ -87,10 +88,10 @@ const tvl = async (api) => {
 module.exports = {
   methodology: "counts the TVL of each superform across all the supported networks",
   hallmarks: [
-    [1707350400, "Early Access"],
-    [1715212800, "Open Launch"],
-    [1734012000, "SuperVaults Launch"],
-    [1764802000, "SuperVaults v2 Launch"],
+    ['2024-02-08', "Early Access"],
+    ['2024-05-09', "Open Launch"],
+    ['2024-12-12', "SuperVaults Launch"],
+    ['2025-12-03', "SuperVaults v2 Launch"],
   ]
 };
 

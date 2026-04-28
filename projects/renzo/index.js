@@ -35,7 +35,19 @@ async function solanaTvl() {
   )
 }
 
-const chains = ["mode", "blast", "bsc", "linea", "arbitrum", "base", "optimism", "fraxtal","zircuit","sei" ]
+const chains = [
+  "arbitrum",
+  "base",
+  "bsc",
+  "blast",
+  "fraxtal",
+  "linea",
+  "monad",
+  "mode",
+  "optimism",
+  "sei",
+  "zircuit"
+]
 
 module.exports = {
   doublecounted: true,

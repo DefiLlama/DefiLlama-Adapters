@@ -58,7 +58,7 @@ const chains = ['arbitrum', 'avax', 'blast', 'bsc', 'ethereum', 'fantom', 'kava'
 chains.forEach(chain => module.exports[chain] = { tvl })
 
 module.exports.hallmarks = [
-  [1651881600, "UST depeg"],
-  [1643245200, "0xSifu revealed as QuadrigaCX founder"],
-  [1667826000, "FTX collapse, Alameda repays FTT loans"],
+  ['2022-05-07', "UST depeg"],
+  ['2022-01-27', "0xSifu revealed as QuadrigaCX founder"],
+  ['2022-11-07', "FTX collapse, Alameda repays FTT loans"],
 ]

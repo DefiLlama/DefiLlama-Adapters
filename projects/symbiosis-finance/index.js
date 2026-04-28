@@ -1,13 +1,14 @@
 const config = require("./config");
 const { sumTokensExport } = require('../helper/unwrapLPs')
-const { sumTokensExport: sumTon } = require('../helper/chain/ton')
+const { sumTokensExport: sumTon } = require('../helper/chain/ton');
+const { getBTCExport } = require("../helper/bitcoin-book");
 
 module.exports = {
   methodology: 'Counts the amount of stables locked in Symbiosis protocol contracts: Portals V2',
 };
 
 config.chains.forEach(chainInfo => {
-  const {name: chain, tokens, holders} = chainInfo
+  const { name: chain, tokens, holders } = chainInfo
 
   if (chain === 'ton') {
     module.exports[chain] = {
@@ -26,3 +27,5 @@ deprecatedChains.forEach(chain => {
     tvl: () => ({})
   }
 })
+
+module.exports.bitcoin = { tvl: getBTCExport('symbiosis') }

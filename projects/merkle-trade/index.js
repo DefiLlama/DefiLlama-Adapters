@@ -19,4 +19,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   aptos: { tvl },
+  hallmarks: [
+    ['2026-02-03', 'Project accounces wind down'], // https://x.com/Merkle_Trade/status/2018702107747274998
+  ],
 };

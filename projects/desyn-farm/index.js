@@ -2,7 +2,7 @@ const { getTvlFunction, chains } = require("./helper");
 
 module.exports = {
   hallmarks: [
-    [1719734400, "Launched on Merlin Chain"],
+    ['2024-06-30', "Launched on Merlin Chain"],
   ],
   methodology: 'Focused on airdrops from DeSyn and new chains.',
 }
