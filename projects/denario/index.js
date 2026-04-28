@@ -2,7 +2,6 @@
 // Price is determined by the price of silver on the spot market plus premium.
 // The price is stored in the price oracle and updated every minute.
 
-const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const silverAddress = ADDRESSES.polygon.DSC
@@ -31,10 +30,10 @@ async function tvl(api) {
 		abi: 'erc20:totalSupply',
 		target: silverAddress,
 	})
-	// const totalGoldSupply = await api.call({
-	// 	abi: 'erc20:totalSupply',
-	// 	target: goldAddress,
-	// })
+	const totalGoldSupply = await api.call({
+		abi: 'erc20:totalSupply',
+		target: goldAddress,
+	})
 
 	const silverPrice = await api.call({
 		target: priceOracle,
@@ -51,7 +50,7 @@ async function tvl(api) {
 
 	return {
 		[silverAddress]: totalSilverSupply,
-		// [goldAddress]: totalGoldSupply,
+		[goldAddress]: totalGoldSupply,
 	}
 }
 
