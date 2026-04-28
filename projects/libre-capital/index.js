@@ -4,7 +4,6 @@ const sui = require("../helper/chain/sui");
 const { call } = require('../helper/chain/near')
 const { Connection, PublicKey } = require('@solana/web3.js');
 const { getResource } = require("../helper/chain/aptos");
-const { getTokensMinted } = require("../helper/chain/cardano/blockfrost");
 const { getHederaTokenSupply } = require("../helper/chain/hedera/hederaTokenSupply");
 
 const INSTRUMENT_REGISTRY = "0xF038aca83759589Ef59eFdF10ac63b323137C1D1";
