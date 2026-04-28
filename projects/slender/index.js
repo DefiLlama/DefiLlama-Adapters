@@ -31,11 +31,13 @@ const RESERVES = [
   { symbol: 'USDC', sac: 'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75', geckoId: 'usd-coin', decimals: 7 },
 ]
 
-const COEFF_PRECISION = 1_000_000_000n // 1e9 — Slender stores coefficients at 9 decimal precision
+// Slender stores collat_coeff and debt_coeff at 1e9 precision (initial value = 1_000_000_000n)
+const COEFF_PRECISION = 1_000_000_000n
 
+// callSoroban('get_reserve') returns the full ReserveData MAP; reserve_type is a VEC within it.
+// Runtime-verified: { ..., reserve_type: ["Fungible", s_token_addr, debt_token_addr], ... }
 async function getReserveAddresses(assetSac) {
   const data = await callSoroban(POOL_ID, 'get_reserve', [assetSac])
-  // reserve_type is a VEC: ["Fungible", s_token_address, debt_token_address]
   const rt = data?.reserve_type
   if (!Array.isArray(rt) || rt[0] !== 'Fungible' || rt.length < 3) {
     throw new Error(`Unexpected reserve_type for ${assetSac}: ${JSON.stringify(rt)}`)
@@ -43,20 +45,24 @@ async function getReserveAddresses(assetSac) {
   return { sTokenAddress: rt[1], debtTokenAddress: rt[2] }
 }
 
+// Keep all coefficient math in BigInt until the final division by decimals to avoid
+// Number precision loss on high-TVL pools (raw values can exceed Number.MAX_SAFE_INTEGER).
+function scaleDown(rawBigInt, decimals) {
+  return Number(rawBigInt / BigInt(10 ** decimals))
+}
+
 async function tvl(api) {
   for (const r of RESERVES) {
     const { sTokenAddress } = await getReserveAddresses(r.sac)
 
-    // sToken supply and the collateral coefficient (sToken → underlying exchange rate)
     const [sTokenSupply, collatCoeff] = await Promise.all([
       callSoroban(POOL_ID, 'token_total_supply', [sTokenAddress]),
       callSoroban(POOL_ID, 'collat_coeff', [r.sac]),
     ])
 
-    // underlying_in_1e7 = sTokenSupply × collatCoeff / 1e9
-    // then divide by 1e7 to get the human-readable token amount
+    // underlying (in 1e7 units) = sTokenSupply × collatCoeff / 1e9 — all BigInt
     const underlyingRaw = sTokenSupply * collatCoeff / COEFF_PRECISION
-    api.addCGToken(r.geckoId, Number(underlyingRaw) / Math.pow(10, r.decimals))
+    api.addCGToken(r.geckoId, scaleDown(underlyingRaw, r.decimals))
   }
 }
 
@@ -70,7 +76,7 @@ async function borrowed(api) {
     ])
 
     const underlyingRaw = debtTokenSupply * debtCoeff / COEFF_PRECISION
-    api.addCGToken(r.geckoId, Number(underlyingRaw) / Math.pow(10, r.decimals))
+    api.addCGToken(r.geckoId, scaleDown(underlyingRaw, r.decimals))
   }
 }
 
