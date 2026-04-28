@@ -66,6 +66,7 @@ jobs:
             {
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
               node ${{ github.workspace }}/.github/workflows/commentResult.js ${{ github.workspace }}/output.txt ${{ github.workspace }}/pr-comments ${i}
+              node ${{ github.workspace }}/.github/workflows/sanityCheck.js ${{ github.workspace }}/output.txt ${{ github.workspace }}/pr-comments ${i}
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
                 exit 1;
               fi
