@@ -32,7 +32,7 @@ function isRateLimitError(error) {
 async function getMultipleAccountsInfo(conn, publicKeys, { allowRateLimitSkip = false } = {}) {
   for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
     try {
-      return conn.getMultipleAccountsInfo(publicKeys)
+      return await conn.getMultipleAccountsInfo(publicKeys)
     } catch (error) {
       if (!isRateLimitError(error)) throw error
       if (attempt === RATE_LIMIT_RETRIES) {
