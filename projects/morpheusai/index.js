@@ -19,7 +19,12 @@ async function tvl(api) {
 
 }
 
-async function arbitrumTvl(api) {
+// Builders contract deployed 2026-04-28 03:19 UTC (block 457098475);
+// historical runs before this revert on depositToken().
+const ARBITRUM_BUILDERS_DEPLOYMENT = 1777346391;
+
+async function arbitrumStaking(api) {
+  if (api.timestamp < ARBITRUM_BUILDERS_DEPLOYMENT) return {}
   const depositToken = await api.call({ abi: 'address:depositToken', target: ARBITRUM_BUILDERS })
   return api.sumTokens({ owner: ARBITRUM_BUILDERS, tokens: [depositToken] })
 }
@@ -32,10 +37,10 @@ const abi = {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: 'Ethereum TVL counts stETH and Aave aToken deposits held by the Morpheus capital contracts. Arbitrum TVL counts the deposit token balance held by the Morpheus Builders contract.',
+  methodology: 'Ethereum TVL counts stETH and Aave aToken deposits held by the Morpheus capital contracts. Arbitrum staking counts the MOR balance held by the Morpheus Builders contract; reported under staking because the deposit asset is the protocol token.',
   start: '2024-02-08',  // Feb-08-2024 07:33:35 AM UTC in Unix timestamp
   ethereum: { tvl },
-  arbitrum: { tvl: arbitrumTvl },
+  arbitrum: { tvl: () => ({}), staking: arbitrumStaking },
   hallmarks: [
     ['2024-04-06', "MOR token launch"],  // May-08-2024 12:00:00 AM UTC in Unix timestamp
   ],
