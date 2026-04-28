@@ -33,6 +33,12 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+  rise: {
+    // RISE chain is not yet indexed by coins.llama.fi. USDC on RISE is bridged
+    // from Ethereum via LayerZero, so we price it 1:1 against Ethereum USDC.
+    // Remove this mapping once RISE is added to the price indexer.
+    [ADDRESSES.rise.USDC]: ADDRESSES.ethereum.USDC,
+  },
 }
 const ibcMappings = {
   // Sample Code
