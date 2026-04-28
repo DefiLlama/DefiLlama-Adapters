@@ -16,6 +16,9 @@ class CircuitBreaker {
     this.successCount = 0;
   }
 
+  /**
+   * Record successful request - reset failure count and close circuit if in HALF_OPEN
+   */
   recordSuccess() {
     this.failureCount = 0;
     this.successCount++;
@@ -24,14 +27,32 @@ class CircuitBreaker {
     }
   }
 
+  /**
+   * Record failed request - increment failure count and open circuit if threshold exceeded
+   * If in HALF_OPEN state, immediately reopen (fail-fast on recovery probe failure)
+   */
   recordFailure() {
     this.failureCount++;
     this.lastFailureTime = Date.now();
+
+    // HALF_OPEN: any failure reopens immediately (recovery probe failed)
+    if (this.state === 'HALF_OPEN') {
+      this.state = 'OPEN';
+      this.failureCount = 1;
+      return;
+    }
+
+    // CLOSED: count failures until threshold
     if (this.failureCount >= this.failureThreshold) {
       this.state = 'OPEN';
     }
   }
 
+  /**
+   * Check if endpoint can be attempted
+   * CLOSED/HALF_OPEN: always allow
+   * OPEN: only allow after reset timeout expires
+   */
   canAttempt() {
     if (this.state === 'CLOSED' || this.state === 'HALF_OPEN') {
       return true;
@@ -48,6 +69,9 @@ class CircuitBreaker {
     return false;
   }
 
+  /**
+   * Get current state metrics (for monitoring/health reports)
+   */
   getState() {
     return {
       state: this.state,
@@ -65,6 +89,10 @@ class RPCManager {
     this.timeout = options.timeout || 30000;
   }
 
+  /**
+   * Parse RPC endpoints from environment variables
+   * Supports: single, comma-separated, or numbered (CHAIN_RPC_1, CHAIN_RPC_2)
+   */
   parseChainRpcs(chain) {
     const rpcs = [];
     const upperChain = chain.toUpperCase();
@@ -92,6 +120,9 @@ class RPCManager {
     return rpcs;
   }
 
+  /**
+   * Initialize circuit breakers for a chain (lazy initialization)
+   */
   initChain(chain) {
     if (this.chains.has(chain)) return;
 
@@ -100,6 +131,10 @@ class RPCManager {
     this.chains.set(chain, { rpcs: rpcUrls, breakers, index: 0 });
   }
 
+  /**
+   * Select best available endpoint using round-robin with circuit breaker awareness
+   * Returns null if no endpoints available
+   */
   selectEndpoint(chain) {
     const endpoints = this.chains.get(chain);
     if (!endpoints) return null;
@@ -107,6 +142,7 @@ class RPCManager {
     const { breakers, rpcs, index } = endpoints;
     let attempts = 0;
 
+    // Try to find an available endpoint (round-robin)
     while (attempts < rpcs.length) {
       const idx = (index + attempts) % rpcs.length;
       if (breakers[idx].canAttempt()) {
@@ -116,10 +152,32 @@ class RPCManager {
       attempts++;
     }
 
-    endpoints.index = 0;
-    return rpcs[0];
+    // All endpoints unavailable - return null (fail-fast)
+    return null;
   }
 
+  /**
+   * Redact sensitive data from RPC URL for logging/reporting
+   * Masks query parameters and API keys
+   */
+  redactRpcUrl(url) {
+    try {
+      const urlObj = new URL(url);
+      // Mask query params
+      if (urlObj.search) {
+        urlObj.search = '?[redacted]';
+      }
+      // Mask auth in URL path
+      const redacted = urlObj.toString().replace(/([a-zA-Z0-9]{10,})/g, '[redacted]');
+      return redacted.length > 50 ? redacted.substring(0, 50) + '...' : redacted;
+    } catch {
+      return '[invalid-url]';
+    }
+  }
+
+  /**
+   * Record success/failure metrics for endpoint
+   */
   recordMetrics(chain, rpcUrl, success) {
     const endpoints = this.chains.get(chain);
     if (!endpoints) return;
@@ -135,6 +193,12 @@ class RPCManager {
     }
   }
 
+  /**
+   * Execute function with automatic retry, failover, and exponential backoff
+   * @param {string} chain - Chain name
+   * @param {Function} fn - Function to execute with RPC URL parameter
+   * @param {Object} options - Override options (retries)
+   */
   async callWithRetry(chain, fn, options = {}) {
     this.initChain(chain);
     const maxRetries = options.retries || this.retries;
@@ -159,29 +223,44 @@ class RPCManager {
         if (attempt === maxRetries - 1) throw error;
 
         const backoff = (2 ** attempt) * this.backoffBase;
-        const jitter = backoff * (Math.random() - 0.5);
+        const jitter = backoff * (Math.random() - 0.5); // Jitter: ±50% of backoff
         await sleep(Math.max(10, backoff + jitter));
       }
     }
   }
 
+  /**
+   * Get RPC URL for a chain (uses selectEndpoint with fallback)
+   * @param {string} chain - Chain name
+   * @returns {string|null} RPC URL or null if unavailable
+   */
   getRpcUrl(chain) {
     this.initChain(chain);
     return this.selectEndpoint(chain) || process.env[`${chain.toUpperCase()}_RPC`];
   }
 
+  /**
+   * Get health report for all chains (with redacted URLs for security)
+   * @returns {Object} Health status per chain with endpoint states
+   */
   getHealthReport() {
     const report = {};
     for (const [chain, endpoints] of this.chains) {
       const { rpcs, breakers } = endpoints;
       report[chain] = rpcs.map((rpc, i) => ({
-        url: rpc,
+        url: this.redactRpcUrl(rpc), // Redact credentials
         ...breakers[i].getState(),
       }));
     }
     return report;
   }
 
+  /**
+   * Manually reset circuit for an endpoint (admin/operations use)
+   * @param {string} chain - Chain name
+   * @param {string} rpcUrl - RPC URL to reset
+   * @returns {boolean} True if reset successful
+   */
   resetCircuit(chain, rpcUrl) {
     const endpoints = this.chains.get(chain);
     if (!endpoints) return false;
