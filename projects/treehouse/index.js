@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokensDebank } = require('../helper/debank')
 
 
 async function getInFlightLidoRedemptionNav(api, strategies) {
@@ -77,49 +78,10 @@ async function tvlEthereum(api) {
   await addGrowAutovaultNav(api)
 
   const vault = '0x551d155760ae96050439ad24ae98a96c765d761b'
-  const tokens = await api.call({ abi: 'address[]:getAllowableAssets', target: vault })
-  await api.sumTokens({ owner: vault, tokens })
-
   const storage = await api.call({ abi: 'address:strategyStorage', target: vault })
   const strategies = await api.fetchList({ lengthAbi: 'getStrategyCount', itemAbi: 'getStrategyAddress', target: storage })
-  await getInFlightLidoRedemptionNav(api, strategies)
 
-  await sumTokens2({
-    api, owners: [strategies[0]], fetchCoValentTokens: true, resolveUniV3: true, tokenConfig: {
-      onlyWhitelisted: false,
-    }
-  })
-
-  // covalent doesn't returns these tokens in sumTokens2 above when strategies[1] and [2] are owners,
-  // they may include other unlisted debt and collateral tokens, so we will be using our own nav module
-
-  // strategies[1]
-  // tokensAndOwners:[
-  //     [ADDRESSES.ethereum.WSTETH, '0x5ae0e44de96885702bd99a6914751c952d284938'], // wstETH
-  //     ['0x12B54025C112Aa61fAce2CDB7118740875A566E9', '0x5ae0e44de96885702bd99a6914751c952d284938'], // spark collateral wsteth
-  //     ['0x2e7576042566f8D6990e07A1B61Ad1efd86Ae70d', '0x5ae0e44de96885702bd99a6914751c952d284938'], // spark debt weth
-  // ]
-
-  // strategies[2]
-  // tokensAndOwners:[
-  //     ['0xC035a7cf15375cE2706766804551791aD035E0C2', '0xB27D688Ac06a441c005657971B11521e80CdcE98'], // aavePrime collateral wsteth
-  // ]
-
-  const navRegistry = '0xe2d60463dE3a0221276D737b87C605e0BB5451E9'
-  const navArr = await api.multiCall({
-    abi: "function getStrategyNav(address,(bytes4,bytes)[]) external view returns (uint)", calls: strategies.slice(1).map((e) => ({ target: navRegistry, params: [e, [
-      [
-        `0x75418615`,
-        `0xab311908000000000000000000000000${e.slice(2).toLowerCase()}00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000`
-      ]
-    ]]}))
-  })
-
-  for (let i=0;i<navArr.length;i++) {
-    api.add(ADDRESSES.ethereum.WSTETH, navArr[i])
-  }
-
-  return
+  await sumTokensDebank(api, [vault, ...strategies], { includeWalletTokens: true })
 }
 
 async function tvlMantle(api) {
@@ -128,23 +90,10 @@ async function tvlMantle(api) {
 
 async function tvlAvalanche(api) {
   const vault = '0x3fc60aAc1d843e4e181C7Ab727A4027cb1Ac99ED'
-  const tokens = await api.call({ abi: 'address[]:getAllowableAssets', target: vault, })
-  await api.sumTokens({ owner: vault, tokens })
-
   const storage = await api.call({ abi: 'address:strategyStorage', target: vault })
   const strategies = await api.fetchList({ lengthAbi: 'getStrategyCount', itemAbi: 'getStrategyAddress', target: storage })
 
-
-  const navRegistry = '0x950d8545BB4E58B61230D47314549Cae5bcedCc6'
-  const navArr = await api.multiCall({
-    abi: "function getStrategyNav(address,(bytes4,bytes)[]) external view returns (uint)", calls: strategies.map((e) => ({ target: navRegistry, params: [e, []]}))
-  })
-
-  for (let i=0;i<navArr.length;i++) {
-    api.add(ADDRESSES.avax.SAVAX, navArr[i])
-  }
-
-  return
+  await sumTokensDebank(api, [vault, ...strategies], { includeWalletTokens: true })
 }
 
 module.exports = {
