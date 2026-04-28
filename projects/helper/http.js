@@ -5,8 +5,62 @@ const { getEnv } = require('./env')
 
 const getCacheData = {}
 
+const DEFAULT_TIMEOUT_MS = 60_000
+const DEFAULT_RETRIES = 3
+const DEFAULT_RETRY_DELAY_MS = 500
+
+function _isRetryableError(e) {
+  const status = e?.response?.status
+  if (status === 429) return true
+  if (status >= 500 && status < 600) return true
+  if (status) return false // other 4xx are not retryable
+  // No response → network/timeout/DNS/abort errors
+  return true
+}
+
+// Parse a Retry-After header value (RFC 7231): either delta-seconds or an HTTP-date.
+// Returns delay in ms, or null if the header is absent/unparseable. Caps at 60s to avoid
+// pathological waits from misbehaving servers.
+function _parseRetryAfter(e) {
+  const header = e?.response?.headers?.['retry-after'] ?? e?.response?.headers?.['Retry-After']
+  if (header == null) return null
+  const seconds = Number(header)
+  let ms
+  if (Number.isFinite(seconds)) ms = seconds * 1000
+  else {
+    const ts = Date.parse(header)
+    if (Number.isNaN(ts)) return null
+    ms = ts - Date.now()
+  }
+  if (ms <= 0) return 0
+  return Math.min(ms, 60_000)
+}
+
+async function withRetry(fn, { retries = DEFAULT_RETRIES, retryDelay = DEFAULT_RETRY_DELAY_MS } = {}) {
+  let lastErr
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn()
+    } catch (e) {
+      lastErr = e
+      if (attempt === retries || !_isRetryableError(e)) break
+      const hinted = _parseRetryAfter(e)
+      const backoff = retryDelay * Math.pow(2, attempt) + Math.floor(Math.random() * 250)
+      const delay = hinted != null ? hinted : backoff
+      await new Promise(r => setTimeout(r, delay))
+    }
+  }
+  throw lastErr
+}
+
 async function getCache(endpoint) {
-  if (!getCacheData[endpoint]) getCacheData[endpoint] = get(endpoint)
+  if (!getCacheData[endpoint]) {
+    const promise = get(endpoint)
+    // Don't memoize a rejection forever — a single transient failure would otherwise poison
+    // every subsequent caller in this process. Drop the entry on failure so the next call retries.
+    promise.catch(() => { if (getCacheData[endpoint] === promise) delete getCacheData[endpoint] })
+    getCacheData[endpoint] = promise
+  }
   return getCacheData[endpoint]
 }
 
@@ -25,28 +79,38 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
 }
 
 async function get(endpoint, options = {}) {
+  const { retries, retryDelay, timeout = DEFAULT_TIMEOUT_MS, ...axiosOpts } = options
   const tonApiKey = getEnv('TON_API_KEY')
+  if (tonApiKey && endpoint.includes('tonapi.io')) {
+    if (!axiosOpts.headers) axiosOpts.headers = {}
+    axiosOpts.headers['Authorization'] = tonApiKey
+  }
   try {
-    if (tonApiKey && endpoint.includes('tonapi.io')) {
-      if (!options.headers) options.headers = {}
-      options.headers['Authorization'] = tonApiKey
-    }
-    const data = (await axios.get(endpoint, options)).data
-    return data
+    return await withRetry(
+      async () => (await axios.get(endpoint, { timeout, ...axiosOpts })).data,
+      { retries, retryDelay }
+    )
   } catch (e) {
     sdk.log(e.message)
     throw new Error(`Failed to get ${endpoint}`)
   }
 }
 
-async function getWithMetadata(endpoint) {
-  return axios.get(endpoint)
+async function getWithMetadata(endpoint, options = {}) {
+  const { retries, retryDelay, timeout = DEFAULT_TIMEOUT_MS, ...axiosOpts } = options
+  return withRetry(
+    () => axios.get(endpoint, { timeout, ...axiosOpts }),
+    { retries, retryDelay }
+  )
 }
 
-async function post(endpoint, body, options) {
+async function post(endpoint, body, options = {}) {
+  const { retries, retryDelay, timeout = DEFAULT_TIMEOUT_MS, ...axiosOpts } = options
   try {
-    const data = (await axios.post(endpoint, body, options)).data
-    return data
+    return await withRetry(
+      async () => (await axios.post(endpoint, body, { timeout, ...axiosOpts })).data,
+      { retries, retryDelay }
+    )
   } catch (e) {
     sdk.log(e.message)
     throw new Error(`Failed to post ${endpoint}`)
@@ -89,7 +153,7 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   await api.getBlock()
   const block = api.block
   try {
-    const results = await graphQLClient.request(query, { block })
+    const results = await withRetry(() => graphQLClient.request(query, { block }))
     return results
   } catch (e) {
     e.chain = api.chain
@@ -100,7 +164,7 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
     sdk.log('Block catchup detected: subgraph indexed up to', indexedBlockNumber, 'but requested block was', block, 'falling back to indexed block')
     if (block - blockCatchupLimit > indexedBlockNumber)
       throw e
-    return graphQLClient.request(query, { block: indexedBlockNumber })
+    return withRetry(() => graphQLClient.request(query, { block: indexedBlockNumber }))
   }
 }
 
@@ -137,4 +201,5 @@ module.exports = {
   getBlock,
   getWithMetadata,
   proxiedFetch,
+  withRetry,
 }
