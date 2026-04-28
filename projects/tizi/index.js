@@ -19,9 +19,14 @@ async function tvl(api) {
   ])
     
   const diff = BigInt(tdDecimals) - BigInt(usdcDecimals)
-  const normalized = (BigInt(netAsset) / (10n ** diff)).toString()
+  let normalized
+  if (diff >= 0n) {
+    normalized = BigInt(netAsset) / (10n ** diff)
+  } else {
+    normalized = BigInt(netAsset) * (10n ** (-diff))
+  }
 
-  api.add(ADDRESSES.base.USDC, normalized)
+  api.add(ADDRESSES.base.USDC, normalized.toString())
 }
 
 module.exports = {
