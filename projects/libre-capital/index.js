@@ -547,6 +547,10 @@ async function getInstrumentsNav() {
         chain: 'ethereum'
     });
 
+    if (!navResults?.output?.length) {
+        console.warn('NAV multicall returned no results');
+    }
+
     navResults.output.forEach((result, i) => {
         if (result.success) {
             priceMap[uniqueInstrumentID[i]] = Number(result.output) / 1e6; // Assuming 6 decimals for NAV
