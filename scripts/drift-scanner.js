@@ -414,7 +414,10 @@ async function main() {
             const covered = localCovered || apiCovered
             return { chain, familyKey, family: family.name, info, covered, apiCovered }
           })
-        } catch { return [] }
+        } catch (err) {
+          console.warn(`  [warn] detect ${familyKey}/${chain}: ${err.message}`)
+          return []
+        }
       })
     }
   }
