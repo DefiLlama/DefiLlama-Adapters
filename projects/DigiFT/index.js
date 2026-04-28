@@ -28,6 +28,7 @@ async function calculateTokenNetSupply(api, tokenAddress, managementAddress) {
 }
 
 module.exports = {
+  url: 'https://www.digift.io', // updated from digift.sg per issue #17916
   ethereum: {
     tvl: async (api) => {
       const tokenAPI = new sdk.ChainApi({ chain: 'polygon', timestamp: api.timestamp, });
