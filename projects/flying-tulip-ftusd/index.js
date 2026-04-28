@@ -24,7 +24,6 @@ async function tvl(api) {
     itemAbi: 'function strategies(uint256) view returns (address)',
   })))
   const flat = strategyLists.flatMap((strats, i) => strats.map(strategy => ({ strategy, wrapper: wrappers[i] })))
-  console.log("flat:", flat)
 
   const [positions, underlyings] = await Promise.all([
     api.multiCall({ abi: 'address:positionToken', calls: flat.map(s => ({ target: s.strategy })) }),
