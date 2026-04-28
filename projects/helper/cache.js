@@ -77,10 +77,16 @@ function resetCache() {
 function _isValidCachePayload(json) {
   if (json == null) return false
   if (json?.error?.message) return false
-  if (typeof json === 'string') return json.trim().length > 0
+  if (typeof json === 'string') {
+    const s = json.trim()
+    if (!s) return false
+    if (s.length > 42) {
+      try { JSON.parse(s) } catch { return false }
+    }
+    return true
+  }  
   if (Array.isArray(json)) return json.length > 0
   if (typeof json === 'object') return Object.keys(json).length > 0
-  // primitives (numbers/booleans) — treat as invalid; configs should be objects/arrays/strings
   return false
 }
 

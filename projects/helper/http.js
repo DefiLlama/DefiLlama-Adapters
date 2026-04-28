@@ -36,11 +36,17 @@ function _parseRetryAfter(e) {
   return Math.min(ms, 60_000)
 }
 
-async function withRetry(fn, { retries = DEFAULT_RETRIES, retryDelay = DEFAULT_RETRY_DELAY_MS } = {}) {
+async function withRetry(fn, { retries = DEFAULT_RETRIES, retryDelay = DEFAULT_RETRY_DELAY_MS, timeout = DEFAULT_TIMEOUT_MS } = {}) {  
   let lastErr
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await fn()
+      const op = timeout === 0  
+        ? fn()  
+        : Promise.race([  
+            fn(),  
+            new Promise((_, rej) => setTimeout(() => rej(new Error('Operation timed out')), timeout)),  
+          ])
+      return await op
     } catch (e) {
       lastErr = e
       if (attempt === retries || !_isRetryableError(e)) break
@@ -88,7 +94,7 @@ async function get(endpoint, options = {}) {
   try {
     return await withRetry(
       async () => (await axios.get(endpoint, { timeout, ...axiosOpts })).data,
-      { retries, retryDelay }
+      { retries, retryDelay, timeout }
     )
   } catch (e) {
     sdk.log(e.message)
@@ -100,7 +106,7 @@ async function getWithMetadata(endpoint, options = {}) {
   const { retries, retryDelay, timeout = DEFAULT_TIMEOUT_MS, ...axiosOpts } = options
   return withRetry(
     () => axios.get(endpoint, { timeout, ...axiosOpts }),
-    { retries, retryDelay }
+    { retries, retryDelay, timeout }
   )
 }
 
@@ -109,7 +115,7 @@ async function post(endpoint, body, options = {}) {
   try {
     return await withRetry(
       async () => (await axios.post(endpoint, body, { timeout, ...axiosOpts })).data,
-      { retries, retryDelay }
+      { retries, retryDelay, timeout }
     )
   } catch (e) {
     sdk.log(e.message)
