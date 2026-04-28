@@ -8,6 +8,10 @@ const config = {
 
 const ALPH_TOKEN_ID = '0000000000000000000000000000000000000000000000000000000000000000';
 
+function normalizeTokenId(tokenId) {
+    return typeof tokenId === 'string' ? tokenId.toLowerCase() : tokenId;
+}
+
 const MARKET_CREATED_EVENT_INDEX = 4;
 const MARKET_METHOD_INDEX = 4;
 
@@ -42,13 +46,14 @@ async function getMarkets() {
 
 async function getTokenBalance(marketContractId, tokenId) {
     const contractAddress = alephium.addressFromContractId(marketContractId);
-    if (tokenId === ALPH_TOKEN_ID) {
-        return BigInt((await alephium.getAlphBalance(contractAddress)).balance);
-    } else {
-        const tokensBalance = await alephium.getTokensBalance(contractAddress);
-        const tokenBalance = tokensBalance.find(b => b.tokenId === tokenId);
-        return BigInt(tokenBalance?.balance ?? 0);
+    const tid = normalizeTokenId(tokenId);
+    if (tid === ALPH_TOKEN_ID) {
+        const bal = await alephium.getAlphBalance(contractAddress);
+        return BigInt(bal.balance ?? 0) + BigInt(bal.lockedBalance ?? 0);
     }
+    const tokensBalance = await alephium.getTokensBalance(contractAddress);
+    const tokenBalance = tokensBalance.find(b => normalizeTokenId(b.tokenId) === tid);
+    return BigInt(tokenBalance?.balance ?? 0) + BigInt(tokenBalance?.lockedBalance ?? 0);
 }
 
 async function tvl(api) {
@@ -56,8 +61,8 @@ async function tvl(api) {
     for (const market of markets) {
         const collateral = await getTokenBalance(market.contractId, market.collateralTokenId);
         const loanBalance = await getTokenBalance(market.contractId, market.loanTokenId);
-        api.add(market.collateralTokenId, collateral);
-        api.add(market.loanTokenId, loanBalance);
+        api.add(normalizeTokenId(market.collateralTokenId), collateral);
+        api.add(normalizeTokenId(market.loanTokenId), loanBalance);
     }
 }
 
@@ -71,7 +76,7 @@ async function borrowed(api) {
             args: [{ type: "ByteVec", value: market.marketId }]
         }]);
         const borrowAssets = BigInt(state[0].returns[2].value);
-        api.add(market.loanTokenId, borrowAssets);
+        api.add(normalizeTokenId(market.loanTokenId), borrowAssets);
     }
 }
 
