@@ -6,12 +6,10 @@ const Treasury = "0xBA085e0a14801C8c7A919a90304E75CabB7E3917";
 
 module.exports = treasuryExports({
   arbitrum: {
-    fetchCoValentTokens: false,
     tokens: [],
     owners: [Treasury],
   },
   ethereum: {
-    fetchCoValentTokens: false,
     tokens: [
       nullAddress,
       ADDRESSES.ethereum.USDC,
