@@ -37,9 +37,9 @@ function makeBuildersStaking(chain) {
     const deploy = BUILDERS_DEPLOYMENTS[chain]
     if (deploy && (api.timestamp < deploy.timestamp || api.block < deploy.block)) return {}
     const builder = BUILDERS[chain]
-    const token = builder.token || await api.call({ abi: 'address:depositToken', target: builder.owner, permitFailure: true })
-    if (!token) return {}
-    return api.sumTokens({ owner: builder.owner, tokens: [token], permitFailure: true })
+    const token = builder.token || await api.call({ abi: 'address:depositToken', target: builder.owner })
+    if (!token) throw new Error(`deposit token not found for ${builder.owner}`)
+    return api.sumTokens({ owner: builder.owner, tokens: [token] })
   }
 }
 
