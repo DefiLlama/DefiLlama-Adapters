@@ -15,7 +15,6 @@ const tokensAndOwners = [
 ];
 
 module.exports = {
-  doublecounted: true,
   methodology:
     "Counts the public ERC-20 reserves locked in Zama's confidential wrapper contracts on Ethereum. TVL is the balance of USDC in cUSDC, tGBP in the confidential tGBP wrapper, and USDT in cUSDT.",
   ethereum: {
