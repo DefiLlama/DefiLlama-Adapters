@@ -1,12 +1,8 @@
 const { sumTokensExport } = require('../helper/sumTokens')
+const sdk = require('@defillama/sdk')
 
 const SWAP_CONTRACT = '0x640cB7201810BC920835A598248c4fe4898Bb5e0'
-
-// Custody wallets returned by getTakerAddresses() on SWAP_CONTRACT on Base.
-const EVM_CUSTODY_OWNERS = [
-  '0x605B50f07F46251A7A39fA18C2247FB612f7452F',
-  '0x55ac87E54019fa2e2156a0fAf13176DcdDFA16ce',
-]
+const TAKER_ADDRESSES_ABI = 'function getTakerAddresses() view returns (string[] receivers, string[] senders)'
 
 const ETH_TOKENS = [
   '0x514910771AF9Ca656af840dff83E8264EcF986CA', // LINK
@@ -26,12 +22,6 @@ const BSC_TOKENS = [
   '0xfb5B838b6cfEEdC2873aB27866079AC55363D37E', // FLOKI
 ]
 
-const SOLANA_CUSTODY_OWNERS = [
-  'GQkn3fPeCV4pH1MGZVHsWPpRdq5ENYnaB8GVwSubjkCZ',
-  '8yVXip9eFwdmrbTxPqHsuCvVR5ktBdLGz7S1bUpSx7j6',
-  'CeuKmW1XqgKz4E8JNpZxrysMRsvkEz55qUvm9soqhALY',
-]
-
 const SOLANA_TOKENS = [
   'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN', // JUP
   'EKpQGSJtjMFqKZ9KQanSqYXRcF8BopzLHYxdM65zcjm', // WIF
@@ -41,31 +31,64 @@ const SOLANA_TOKENS = [
   'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn', // PUMP
 ]
 
-const SOLANA_TOKENS_AND_OWNERS = SOLANA_TOKENS
-  .map(token => SOLANA_CUSTODY_OWNERS.map(owner => [token, owner]))
-  .flat()
+const isEVMAddress = address => /^0x[0-9a-fA-F]{40}$/.test(address)
+const isBitcoinAddress = address => /^(1|3|bc1)/.test(address)
+const isDogeAddress = address => /^D/.test(address)
+const isRippleAddress = address => /^r/.test(address)
+const isCardanoAddress = address => /^addr/.test(address)
+const isSolanaAddress = address => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)
+  && !isBitcoinAddress(address)
+  && !isDogeAddress(address)
+  && !isRippleAddress(address)
+  && !isCardanoAddress(address)
+
+async function getTakerAddresses(api) {
+  const baseApi = api.chain === 'base' ? api : new sdk.ChainApi({ chain: 'base', timestamp: api.timestamp })
+  const [receivers] = await baseApi.call({ target: SWAP_CONTRACT, abi: TAKER_ADDRESSES_ABI })
+  return [...new Set(receivers)]
+}
+
+async function getOwners(api, filter) {
+  return (await getTakerAddresses(api)).filter(filter)
+}
+
+async function evmTvl(api, tokens) {
+  const owners = await getOwners(api, isEVMAddress)
+  return sumTokensExport({ owners, tokens })(api)
+}
+
+async function solanaTvl(api) {
+  const owners = await getOwners(api, isSolanaAddress)
+  const tokensAndOwners = SOLANA_TOKENS.map(token => owners.map(owner => [token, owner])).flat()
+  return sumTokensExport({ tokensAndOwners, computeTokenAccount: true, allowError: true })(api)
+}
+
+async function chainTvl(api, filter, normalize = address => address) {
+  const owners = (await getOwners(api, filter)).map(normalize)
+  return sumTokensExport({ owners })(api)
+}
 
 module.exports = {
-  methodology: `TVL counts assets held in SSI protocol custody addresses on each chain. Custody addresses are exposed by the SSI swap contract (${SWAP_CONTRACT}) getTakerAddresses() on Base; basket composition view functions are not used for TVL.`,
+  methodology: `TVL counts assets held in SSI protocol custody addresses on each chain. Custody addresses are fetched from the SSI swap contract (${SWAP_CONTRACT}) getTakerAddresses() on Base; basket composition view functions are not used for TVL.`,
   ethereum: {
-    tvl: sumTokensExport({ owners: EVM_CUSTODY_OWNERS, tokens: ETH_TOKENS }),
+    tvl: api => evmTvl(api, ETH_TOKENS),
   },
   bsc: {
-    tvl: sumTokensExport({ owners: EVM_CUSTODY_OWNERS, tokens: BSC_TOKENS }),
+    tvl: api => evmTvl(api, BSC_TOKENS),
   },
   solana: {
-    tvl: sumTokensExport({ tokensAndOwners: SOLANA_TOKENS_AND_OWNERS, computeTokenAccount: true, allowError: true }),
+    tvl: solanaTvl,
   },
   bitcoin: {
-    tvl: sumTokensExport({ owners: ['1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM'] }),
+    tvl: api => chainTvl(api, isBitcoinAddress),
   },
   doge: {
-    tvl: sumTokensExport({ owners: ['D5gedqfZm198AyTFVg8NqWFUh8bFTdmKj7', 'DPQ3EbacSG6gdakZmXwMu7qS6SbpRUjY4a'] }),
+    tvl: api => chainTvl(api, isDogeAddress),
   },
   ripple: {
-    tvl: sumTokensExport({ owners: ['rp53vxWXuEe9LL6AHcCtzzAvdtynSL1aVM'] }),
+    tvl: api => chainTvl(api, isRippleAddress, address => address.split(':')[0]),
   },
   cardano: {
-    tvl: sumTokensExport({ owners: ['addr1v9nkv9p0gz83ha7hx0h6pg6lrte0t0dsj8tyersc8np5gegrwwxpp'] }),
+    tvl: api => chainTvl(api, isCardanoAddress),
   },
 }
