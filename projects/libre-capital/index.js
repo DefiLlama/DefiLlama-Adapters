@@ -6,11 +6,11 @@ const { Connection, PublicKey } = require('@solana/web3.js');
 const { getResource } = require("../helper/chain/aptos");
 const { getTokensMinted } = require("../helper/chain/cardano/blockfrost");
 const { getHederaTokenSupply } = require("../helper/chain/hedera/hederaTokenSupply");
-const ethers = require("ethers");
 
 const INSTRUMENT_REGISTRY = "0xF038aca83759589Ef59eFdF10ac63b323137C1D1";
-const AUDITED_NAV_PER_SHARE = ethers.keccak256(ethers.toUtf8Bytes("AUDITED_NAV_PER_SHARE"));
-const INSTRUMENT_REGISTRY_ABI = ["function getUint(bytes32 _id, bytes32 _key) public view returns (uint256)"];
+// AUDITED_NAV_PER_SHARE = ethers.keccak256(ethers.toUtf8Bytes("AUDITED_NAV_PER_SHARE"));
+const AUDITED_NAV_PER_SHARE = "0x74e3ef52e302554b3ee08d165247f757c92468d2e258e02549f2b438d2032605";
+const INSTRUMENT_REGISTRY_ABI = "function getUint(bytes32 _id, bytes32 _key) view returns (uint256)";
 
 const RECEIPT_TOKENS = {
     ethereum: {
@@ -531,7 +531,7 @@ async function getInstrumentsNav() {
     const navResults = await sdk.api.abi.multiCall({
         abi: INSTRUMENT_REGISTRY_ABI,
         calls: navCalls,
-        chain: 'mainnet'
+        chain: 'ethereum'
     });
 
     navResults.output.forEach((result, i) => {
