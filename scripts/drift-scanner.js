@@ -117,7 +117,6 @@ const FAMILIES = {
       // (removes false positives from non-factory contracts emitting the same topic)
       const validated = []
       for (const c of candidates) {
-        if (c.pools < 2) continue // skip singletons — likely test deploys or false positives
         const code = await getCode(chain, c.address)
         if (code == null || code.length <= 4) continue
         validated.push(c)
@@ -151,10 +150,7 @@ const FAMILIES = {
     coveredBy: (chain, adapters) =>
       adapters.some(a => adapterCoversChain(a, chain) &&
         adapterMentions(a, 'aave')),
-    stub: (chain, info) => ({
-      slug: `aave-v3-${chain}`,
-      code: `// Add '${chain}' to projects/aave-v3/index.js config:\n// ${chain}: { poolDatas: ['<POOL_DATA_PROVIDER_ADDRESS>'] },\n`,
-    }),
+    stub: () => null, // Aave V3 is a shared adapter — add chain to projects/aave-v3/index.js, not a new directory
   },
 
   'curve': {
@@ -169,10 +165,7 @@ const FAMILIES = {
     coveredBy: (chain, adapters) =>
       adapters.some(a => adapterCoversChain(a, chain) &&
         adapterMentions(a, 'curve')),
-    stub: (chain, info) => ({
-      slug: `curve-${chain}`,
-      code: `// Add '${chain}' to projects/curve/index.js chain list.\n`,
-    }),
+    stub: () => null, // Curve is a shared adapter — add chain to projects/curve/index.js, not a new directory
   },
 
 }
@@ -309,7 +302,7 @@ async function fetchLlamaCoverage() {
               chains.forEach(c => coverage.balancer.add(c))
             if (tag('algebra') || tag('swapx') || tag('shadow') || tag('hercules'))
               chains.forEach(c => coverage.algebra.add(c))
-            if (tag('uniswap'))
+            if (tag('uniswap v3') || tag('uniswapv3') || (tag('uniswap') && tag('v3')) || tag('uni-v3'))
               chains.forEach(c => coverage.uniswapv3.add(c))
             if (tag('aave'))
               chains.forEach(c => coverage.aave.add(c))
@@ -457,7 +450,12 @@ async function main() {
     console.log(`\nGenerating adapter stubs...`)
     for (const g of gaps) {
       const family = FAMILIES[g.familyKey]
-      const { slug, code } = family.stub(g.chain, g.info)
+      const stubResult = family.stub(g.chain, g.info)
+      if (!stubResult) {
+        console.log(`  skipped ${g.family}/${g.chain} (shared adapter — edit existing project manually)`)
+        continue
+      }
+      const { slug, code } = stubResult
       const dir  = path.join(__dirname, '..', 'projects', slug)
       const file = path.join(dir, 'index.js')
       if (fs.existsSync(file)) {
