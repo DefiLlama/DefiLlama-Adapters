@@ -435,51 +435,7 @@ const RECEIPT_TOKENS = {
             instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
             fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
         },
-    },
-    cardano: {
-        UMA: {
-            address: '', // just a placeholder until we get the address
-            decimals: 8,
-            underlying: 'security-token',
-            instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
-        },
-        BHMA: {
-            address: '',
-            decimals: 8,
-            underlying: 'security-token',
-            instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
-        },
-        HLSPC: {
-            address: '',
-            decimals: 8,
-            underlying: 'security-token',
-            instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
-        },
-        APCA: {
-            address: '',
-            decimals: 8,
-            underlying: 'security-token',
-            instrumentId: "0x3636653765336666346534363764313238323964396366340000000000000000",
-            fundName: 'Libre SAF VCC - Access Private Credit Feeder'
-        },
-        LDCFA: {
-            address: '',
-            decimals: 8,
-            underlying: 'security-token',
-            instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
-        },
-        LDCFB: {
-            address: '',
-            decimals: 8,
-            underlying: 'security-token',
-            instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
-        }
-    },
+    }
 }
 
 const BRIDGED_TOKENS = {
@@ -846,30 +802,6 @@ async function hederaTvl() {
     return balances;
 }
 
-async function cardanoTvl() {
-    const balances = {}
-    let totalTvl = 0;
-    const fundPrices = await getInstrumentsNav();
-
-    // Query total supply for each token
-    for (const token of Object.values(RECEIPT_TOKENS.cardano)) {
-
-        // Get the total minted amount of the token
-        const totalMinted = await getTokensMinted(token.address);
-
-        if (totalMinted) {
-            const price = fundPrices[token.instrumentId] || 1;
-            const adjustedBalance = Number(totalMinted) / (10 ** token.decimals);
-            const valueUSD = adjustedBalance * price;
-            totalTvl += valueUSD;
-        }
-    }
-
-    // Return the total value in the format DeFiLlama expects
-    balances['usd-coin'] = totalTvl;
-    return balances;
-}
-
 async function xdcTvl() {
     const balances = {};
     let totalTvl = 0;
@@ -922,7 +854,7 @@ async function seiTvl() {
 }
 
 module.exports = {
-    methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, Cardano, XDC, Sei and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+    methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, XDC, Sei and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
     ethereum: { tvl: ethTvl },
     polygon: { tvl: polygonTvl },
     injective: { tvl: injectiveTvl },
