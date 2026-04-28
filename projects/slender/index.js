@@ -45,10 +45,14 @@ async function getReserveAddresses(assetSac) {
   return { sTokenAddress: rt[1], debtTokenAddress: rt[2] }
 }
 
-// Keep all coefficient math in BigInt until the final division by decimals to avoid
-// Number precision loss on high-TVL pools (raw values can exceed Number.MAX_SAFE_INTEGER).
+// Keep large-value math in BigInt to avoid Number.MAX_SAFE_INTEGER overflow, then recover
+// the fractional part via remainder before converting to Number.
+// e.g. 551700000n with decimals=7: whole=55n, rem=1700000n → 55 + 0.17 = 55.17
 function scaleDown(rawBigInt, decimals) {
-  return Number(rawBigInt / BigInt(10 ** decimals))
+  const divisor = BigInt(10 ** decimals)
+  const whole = rawBigInt / divisor
+  const rem = rawBigInt % divisor
+  return Number(whole) + Number(rem) / (10 ** decimals)
 }
 
 async function tvl(api) {
