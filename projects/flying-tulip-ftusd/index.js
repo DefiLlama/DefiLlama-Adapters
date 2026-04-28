@@ -1,12 +1,3 @@
-// Flying Tulip ftUSD is a stablecoin backed by yield-wrapped collateral.
-// MintAndRedeem -> ftYieldWrapperV2 (one per underlying) -> one or
-// more IStrategy contracts (Aave, Spark, Delta-Neutral, etc). Every strategy
-// exposes positionToken() returning the receipt it holds (aToken,
-// spToken, etc). For strategies whose positionToken equals their own
-// underlying (e.g. Flying Tulip's Delta-Neutral strategy, which routes funds
-// through downstream wrappers), we instead count the strategy shares held by
-// the parent wrapper (priced 1:1 with the underlying).
-
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const MINT_AND_REDEEM = {
@@ -40,8 +31,8 @@ async function tvl(api) {
     api.multiCall({ abi: 'address:token',         calls: flat.map(s => ({ target: s.strategy })) }),
   ])
 
-  // positionToken != token -> external, DL-priced receipt (aToken, spToken)
-  // positionToken == token -> ft strategy (e.g. Delta-Neutral)
+  // positionToken != token -> external (aToken, spToken)
+  // positionToken == token -> ft strategy (e.g. ftDNS-USDC)
   const tokensAndOwners = flat.map((s, i) => positions[i].toLowerCase() !== underlyings[i].toLowerCase()
     ? [positions[i], s.strategy]
     : [s.strategy, s.wrapper]

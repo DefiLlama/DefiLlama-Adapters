@@ -1,9 +1,3 @@
-// Flying Tulip Lend — per-reserve liquidity sits in a ftYieldWrapperV2 keyed
-// by the reserve underlying. Each wrapper either holds the reserve directly
-// (no strategies configured) or deploys it to one or more IStrategy contracts
-// that hold an external yield receipt (aToken, spToken). Borrows still come from 
-// assetState because outstanding debt lives in borrower wallets.
-
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const RESERVES = {
@@ -28,7 +22,7 @@ const ASSET_STATE_ABI =
 async function tvl(api) {
   const reserves = RESERVES[api.chain] || []
 
-  // Enumerate each wrapper's strategies via fetchList
+  // Get list of strategies for each wrapper
   const strategyLists = await Promise.all(reserves.map(({ wrapper: target }) => api.fetchList({
     target,
     lengthAbi: 'uint256:numberOfStrategies',
