@@ -10,7 +10,8 @@ async function tvl(api) {
   const stakingContract = '0x79d2a26b57974e2b2e4d39dc189e818fcc86399337406dec65165b189a6f1ed7'
   const owners = [contractId, stakingContract]
 
-  await sumTokens({ api, owners })
+  const balances = await sumTokens({ api, owners })
+  if (balances[ST_FUEL]) return balances
   return sumTokens({ api, owners, tokens: [ST_FUEL] })
 }
 
