@@ -1,7 +1,17 @@
+const sdk = require('@defillama/sdk')
 const { sumTokens } = require('../helper/sumTokens')
 
 const SWAP_CONTRACT = '0x640cB7201810BC920835A598248c4fe4898Bb5e0'
-const takerAbi = 'function getTakerAddresses() view returns (string[] receivers, string[] senders)'
+const takerAbi = {
+  name: 'getTakerAddresses',
+  type: 'function',
+  stateMutability: 'view',
+  inputs: [],
+  outputs: [
+    { name: 'receivers', type: 'string[]' },
+    { name: 'senders', type: 'string[]' },
+  ],
+}
 
 const ETH_TOKENS = [
   '0x514910771AF9Ca656af840dff83E8264EcF986CA',
@@ -34,7 +44,8 @@ const custodyCache = {}
 
 async function getCustodyOwners(api) {
   if (custodyCache[api.timestamp]) return custodyCache[api.timestamp]
-  const { receivers = [], senders = [] } = await api.call({ target: SWAP_CONTRACT, chain: 'base', abi: takerAbi })
+  const output = await sdk.api.abi.call({ target: SWAP_CONTRACT, chain: 'base', abi: takerAbi })
+  const [receivers = [], senders = []] = output?.output ?? []
   const values = [...receivers, ...senders].filter(Boolean)
   const unique = [...new Set(values)]
 
