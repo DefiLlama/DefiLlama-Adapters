@@ -34,8 +34,13 @@ const RESERVES = [
 // Slender stores collat_coeff and debt_coeff at 1e9 precision (initial value = 1_000_000_000n)
 const COEFF_PRECISION = 1_000_000_000n
 
-// callSoroban('get_reserve') returns the full ReserveData MAP; reserve_type is a VEC within it.
-// Runtime-verified: { ..., reserve_type: ["Fungible", s_token_addr, debt_token_addr], ... }
+/**
+ * Resolve the sToken and debtToken contract addresses for a given reserve asset.
+ * callSoroban('get_reserve') returns the full ReserveData MAP; reserve_type is a VEC within it.
+ * Runtime-verified structure: { ..., reserve_type: ["Fungible", s_token_addr, debt_token_addr], ... }
+ * @param {string} assetSac - Stellar Asset Contract address of the reserve asset
+ * @returns {{ sTokenAddress: string, debtTokenAddress: string }}
+ */
 async function getReserveAddresses(assetSac) {
   const data = await callSoroban(POOL_ID, 'get_reserve', [assetSac])
   const rt = data?.reserve_type
@@ -45,9 +50,15 @@ async function getReserveAddresses(assetSac) {
   return { sTokenAddress: rt[1], debtTokenAddress: rt[2] }
 }
 
-// Keep large-value math in BigInt to avoid Number.MAX_SAFE_INTEGER overflow, then recover
-// the fractional part via remainder before converting to Number.
-// e.g. 551700000n with decimals=7: whole=55n, rem=1700000n → 55 + 0.17 = 55.17
+/**
+ * Convert a raw BigInt token amount to a human-readable Number, preserving fractional precision.
+ * Keeps large-value math in BigInt (avoids Number.MAX_SAFE_INTEGER overflow), then recovers
+ * the fractional part via remainder before the final Number conversion.
+ * e.g. 551700000n with decimals=7: whole=55n, rem=1700000n → 55 + 0.17 = 55.17
+ * @param {bigint} rawBigInt - raw on-chain token amount
+ * @param {number} decimals - token decimal places (7 for all Stellar/Soroban tokens)
+ * @returns {number}
+ */
 function scaleDown(rawBigInt, decimals) {
   const divisor = BigInt(10 ** decimals)
   const whole = rawBigInt / divisor
@@ -55,6 +66,11 @@ function scaleDown(rawBigInt, decimals) {
   return Number(whole) + Number(rem) / (10 ** decimals)
 }
 
+/**
+ * Compute TVL: total underlying deposited per reserve.
+ * underlying = sToken total supply × collat_coeff / 1e9 (all BigInt until final scaleDown)
+ * @param {object} api - DefiLlama adapter API object
+ */
 async function tvl(api) {
   for (const r of RESERVES) {
     const { sTokenAddress } = await getReserveAddresses(r.sac)
@@ -64,12 +80,16 @@ async function tvl(api) {
       callSoroban(POOL_ID, 'collat_coeff', [r.sac]),
     ])
 
-    // underlying (in 1e7 units) = sTokenSupply × collatCoeff / 1e9 — all BigInt
     const underlyingRaw = sTokenSupply * collatCoeff / COEFF_PRECISION
     api.addCGToken(r.geckoId, scaleDown(underlyingRaw, r.decimals))
   }
 }
 
+/**
+ * Compute borrowed: total outstanding loans per reserve.
+ * underlying = debtToken total supply × debt_coeff / 1e9 (all BigInt until final scaleDown)
+ * @param {object} api - DefiLlama adapter API object
+ */
 async function borrowed(api) {
   for (const r of RESERVES) {
     const { debtTokenAddress } = await getReserveAddresses(r.sac)
