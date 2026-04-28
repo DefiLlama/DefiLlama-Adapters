@@ -6,11 +6,18 @@ const { Connection, PublicKey } = require('@solana/web3.js');
 const { getResource } = require("../helper/chain/aptos");
 const { getHederaTokenSupply } = require("../helper/chain/hedera/hederaTokenSupply");
 
+/** @type {string} Instrument Registry address on Ethereum */
 const INSTRUMENT_REGISTRY = "0xF038aca83759589Ef59eFdF10ac63b323137C1D1";
-// AUDITED_NAV_PER_SHARE = ethers.keccak256(ethers.toUtf8Bytes("AUDITED_NAV_PER_SHARE"));
+
+/** @type {string} Hashed key of the audited Net Asset Value */
 const AUDITED_NAV_PER_SHARE = "0x74e3ef52e302554b3ee08d165247f757c92468d2e258e02549f2b438d2032605";
+
+/** @type {string} ABI to query the Instrument Registry */
 const INSTRUMENT_REGISTRY_ABI = "function getUint(bytes32 _id, bytes32 _key) view returns (uint256)";
 
+/** * Configuration of Receipts Tokens (RWA) for each supported chain.
+ * Includes addresses, decimals e Instrument ID for calculating the price.
+ */
 const RECEIPT_TOKENS = {
     ethereum: {
         UMA: {
@@ -437,6 +444,7 @@ const RECEIPT_TOKENS = {
     }
 }
 
+/** Configuration of Bridge Tokens / Security Mirror Tokens for each chain */
 const BRIDGED_TOKENS = {
     sei: {
         UMA: {
@@ -474,7 +482,12 @@ let cachedNav = null;
 let cacheTimestamp = 0;
 const CACHE_TTL_MS = 60000;
 
-// Latest AUDITED_NAV
+/**
+ * Get the Net Asset Value (NAV) for all the Instrument ID defined.
+ * It uses a caching system to prevent excessive RPC calls.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Mapping of the Instrument ID and relative price in USD.
+ */
 async function getInstrumentsNav() {
     const now = Date.now();
     if (cachedNav && (now - cacheTimestamp) < CACHE_TTL_MS) {
@@ -520,6 +533,11 @@ async function getInstrumentsNav() {
     return priceMap;
 }
 
+/**
+ * TVL Calculation for Ethereum Mainnet.
+ * @async
+ * @returns {Promise<Object.<string, number>>} USD balance.
+ */
 async function ethTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -543,6 +561,11 @@ async function ethTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Polygon chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function polygonTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -567,6 +590,11 @@ async function polygonTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Mantra chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function mantraTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -594,6 +622,11 @@ async function mantraTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for SUI chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function suiTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -615,6 +648,11 @@ async function suiTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Immutable chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function imxTvl({ imx: block }) {
     const balances = {}
     let totalTvl = 0;
@@ -643,6 +681,11 @@ async function imxTvl({ imx: block }) {
     return balances;
 }
 
+/**
+ * TVL calculation for Avalanche chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function avaxTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -667,6 +710,11 @@ async function avaxTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Injective chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function injectiveTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -699,6 +747,11 @@ async function injectiveTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Solana chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function solanaTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -727,6 +780,11 @@ async function solanaTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Near chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function nearTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -753,6 +811,11 @@ async function nearTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Aptos chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function aptosTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -780,6 +843,11 @@ async function aptosTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for Hedera chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function hederaTvl() {
     const balances = {}
     let totalTvl = 0;
@@ -802,6 +870,11 @@ async function hederaTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for XDC chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function xdcTvl() {
     const balances = {};
     let totalTvl = 0;
@@ -829,6 +902,11 @@ async function xdcTvl() {
     return balances;
 }
 
+/**
+ * TVL calculation for SEI chain.
+ * @async
+ * @returns {Promise<Object.<string, number>>} Balances in USD.
+ */
 async function seiTvl() {
     const balances = {}
     let totalTvl = 0;
