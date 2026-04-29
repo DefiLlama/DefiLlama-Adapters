@@ -3,11 +3,14 @@ const AAVE_POOLS = {
     USDC: '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     WETH: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // aEthWETH
     wstETH: '0x0B925eD163218f6662a35e0f0371Ac234f9E9371', // aEthWSTETH
+    cbBTC: '0x5c647cE0Ae10658ec44FA4E11A51c96e94efd1Dd', // aEthcbBTC
   };
-  
+
   // Compound V3 (Ethereum mainnet) – Comet addresses
   const COMPOUND_COMET_USDC = '0xc3d688B66703497DAA19211EEdff47f25384cdc3'; // cUSDCv3
   const COMPOUND_COMET_WETH = '0xA17581A9E3356d9A858b789D68B4d866e593aE94'; // cWETHv3
+  const COMPOUND_COMET_WBTC = '0xe85Dc543813B8c2CFEaAc371517b925a166a9293'; // cWBTCv3
+  const COMPOUND_COMET_USDT = '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840'; // cUSDTv3
   
   // Spark (Ethereum mainnet)
   const SPARK_POOLS = {
@@ -36,15 +39,25 @@ const AAVE_POOLS = {
     'kpk ETH Yield': '0xc88eFFD6e74D55c78290892809955463468E982A',
     'Gauntlet WETH Core': '0x4881Ef0BF6d2365D3dd6499ccd7532bcdBCE0658',
     'Vault Bridge WETH': '0x31A5684983EeE865d943A696AAC155363bA024f9',
-    'Steakhouse ETH': '0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4'
+    'Steakhouse ETH': '0xBEEf050ecd6a16c4e7bfFbB52Ebba7846C4b8cD4',
+    'Hyperithm cbBTC Apex': '0xCdbe4A5B5bAd2BC04492052Df2F881B5727d034d',
+    'kpk EURC Yield': '0x0c6aec603d48eBf1cECc7b247a2c3DA08b398DC1',
+    'kpk EURC Yield V2': '0xa877D5bb0274dcCbA8556154A30E1Ca4021a275f',
+    'Steakhouse Prime EURC': '0xbeef003E31546C7210687f1A7b40d096BE83ec58',
+    'Gauntlet EURC Core': '0x2ed10624315b74a78f11FAbedAa1A228c198aEfB',
+    'Sky.money USDT savings': '0x23f5E9c35820f4baB695Ac1F19c203cC3f8e1e11',
+    'Steakhouse Prime Instant USDT': '0xbeef003C68896c7D2c3c60d363e8d71a49Ab2bf9',
+    'Sky.money USDT Risk Capital': '0x2bD3A43863c07B6A01581FADa0E1614ca5DF0E3d',
+    'Steakhouse High Yield Instant USDT': '0xbeeff07d991C04CD640DE9F15C08ba59c4FEDEb7',
   };
-  
+
   // Fluid (Ethereum mainnet)
   const FLUID_POOLS = {
     USDC: '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // fUSDC
     WETH: '0x90551c1795392094FE6D29B758EcCD233cFAa260', // fWETH
     'WETH - Leveraged': '0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78',
     wstETH: '0x2411802D8BEA09be0aF8fD8D08314a63e706b29C',
+    USDT: '0x5C20B550819128074FD538Edf79791733ccEdd18',
   };
   
   // Dolomite (Ethereum mainnet)
@@ -68,6 +81,7 @@ const AAVE_POOLS = {
   const YEARN_VAULTS = {
     WETH: '0xd9BA99D93ea94a65b5BC838a0106cA3AbC82Ec4F',
     'WETH-2': '0xAc37729B76db6438CE62042AE1270ee574CA7571',
+    'USDT-1': '0x310B7Ea7475A0B449Cfd73bE81522F1B88eFAFaa',
   };
   
   // yoProtocol (Ethereum mainnet)
@@ -79,6 +93,8 @@ const AAVE_POOLS = {
     ...Object.values(AAVE_POOLS),
     COMPOUND_COMET_USDC,
     COMPOUND_COMET_WETH,
+    COMPOUND_COMET_WBTC,
+    COMPOUND_COMET_USDT,
     ...Object.values(SPARK_POOLS),
     ...Object.values(ETHEREUM_MORPHO_POOLS),
     ...Object.values(FLUID_POOLS),
