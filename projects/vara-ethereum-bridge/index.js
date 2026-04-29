@@ -19,14 +19,17 @@ async function tvl(api) {
     const wrappedVaraSupply = await api.call({
         abi: 'erc20:totalSupply',
         target: WRAPPED_VARA,
+        permitFailure: true,
     })
 
-    api.add(WRAPPED_VARA, wrappedVaraSupply)
+    if (wrappedVaraSupply) api.add(WRAPPED_VARA, wrappedVaraSupply)
 
     return api.getBalances()
 }
 
 module.exports = {
+    // TODO: set to WRAPPED_VARA deployment timestamp once finalized
+    // start: 0,
     methodology: [
         'TVL is calculated as the sum of the value of tokens locked on the ERC20Manager contract and the value of VARA tokens bridged from the Vara Network.',
         'Only tokens officially supported by the Vara ⇌ Ethereum Bridge are counted.'
