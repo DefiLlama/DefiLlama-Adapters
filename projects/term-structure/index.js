@@ -286,10 +286,24 @@ const MARKET_BLACKLIST = {
 
 // Extra ERC20s that may sit alongside the underlying inside a
 // StableERC4626ForCustomize pool's Gnosis Safe `thirdPool` (e.g. XAUe held next
-// to XAUt). Each address is summed as a separate balanceOf(safe) entry so the
-// price oracle prices each token in its own units.
-const SAFE_EQUIVALENT_TOKEN_ADDRESSES = {
-  ethereum: ["0xd5D6840ed95F58FAf537865DcA15D5f99195F87a"], // XAUe
+// to XAUt).
+//
+// DefiLlama's price service has no oracle for XAUe, so reading its balance
+// directly would silently drop ~$18M on Ethereum. Each entry therefore carries
+// a `priceableToken` + `divisor` so the raw balance is converted to an
+// equivalent raw amount of a token DefiLlama can price.
+//
+// XAUe: 1 token = 0.001 troy oz, 18 decimals.
+// XAUt: 1 token = 1 troy oz, 6 decimals.
+// raw_xaut = raw_xaue * 0.001 / 10^18 * 10^6 = raw_xaue / 10^15.
+const SAFE_EQUIVALENT_TOKENS = {
+  ethereum: [
+    {
+      token: "0xd5D6840ed95F58FAf537865DcA15D5f99195F87a", // XAUe
+      priceableToken: "0x68749665FF8D2d112Fa859AA293F07A622782F38", // XAUt
+      divisor: 10n ** 15n,
+    },
+  ],
 };
 
 // TermMaxViewer (per-chain). Used to surface unclaimed pool rewards for
@@ -685,7 +699,7 @@ async function erc4626VaultsTvl(api) {
   const customizeUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: customizeVaults })
   const customizeThirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: customizeVaults })
   const thirdPoolSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: customizeThirdPools, permitFailure: true })
-  const safeEquivalents = SAFE_EQUIVALENT_TOKEN_ADDRESSES[api.chain] ?? [];
+  const safeBackedSafes = [];
   customizeVaults.forEach((vault, i) => {
     const underlying = customizeUnderlyings[i];
     const thirdPool = customizeThirdPools[i];
@@ -695,13 +709,12 @@ async function erc4626VaultsTvl(api) {
       tokensAndOwners.push([thirdPool, vault]);
     } else {
       tokensAndOwners.push([underlying, thirdPool]);
-      for (const equiv of safeEquivalents) {
-        tokensAndOwners.push([equiv, thirdPool]);
-      }
+      safeBackedSafes.push(thirdPool);
     }
   })
 
   await sumTokens2({ api, tokensAndOwners });
+  await addSafeEquivalentBalances(api, safeBackedSafes);
   await addUnclaimedPoolRewards(api, {
     stableERC4626For4626Vaults,
     stableUnderlyings,
@@ -709,6 +722,34 @@ async function erc4626VaultsTvl(api) {
     customizeUnderlyings,
     thirdPoolSupplies,
   });
+}
+
+// XAUe and similar non-priceable equivalents are remapped to a priceable
+// canonical token (e.g. XAUt) at a fixed raw-unit ratio. balanceOf is batched
+// over (safe x equivalent) pairs.
+async function addSafeEquivalentBalances(api, safeAddresses) {
+  if (safeAddresses.length === 0) return;
+  const equivalents = SAFE_EQUIVALENT_TOKENS[api.chain] ?? [];
+  if (equivalents.length === 0) return;
+
+  const calls = [];
+  for (const safe of safeAddresses) {
+    for (const eq of equivalents) {
+      calls.push({ target: eq.token, params: [safe] });
+    }
+  }
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+
+  let idx = 0;
+  for (const safe of safeAddresses) {
+    for (const eq of equivalents) {
+      const raw = BigInt(balances[idx++] ?? '0');
+      if (raw === 0n) continue;
+      const remapped = raw / eq.divisor;
+      if (remapped === 0n) continue;
+      api.add(eq.priceableToken, remapped.toString());
+    }
+  }
 }
 
 // For4626 and Customize-ERC20 pools route deposits into another ERC4626 where
