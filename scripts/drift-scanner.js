@@ -281,7 +281,9 @@ async function callView(chain, address, funcSig, args = []) {
     const { ethers } = require('ethers')
     const provider = sdk.getProvider(chain)
     const contract = new ethers.Contract(address, [funcSig], provider)
-    const fn = contract[funcSig.match(/function\s+(\w+)/)[1]]
+    const nameMatch = funcSig.match(/function\s+(\w+)/)
+    if (!nameMatch) return null
+    const fn = contract[nameMatch[1]]
     const result = await withTimeout(fn(...args), TIMEOUT_MS)
     return result
   } catch (err) {
@@ -557,8 +559,19 @@ async function main() {
         continue
       }
       const { slug, code } = stubResult
-      const dir  = path.join(__dirname, '..', 'projects', slug)
+      // Reject anything that isn't a plain adapter slug — defends against
+      // path traversal via crafted --chains values feeding into family.stub().
+      if (!/^[a-z0-9][a-z0-9_-]*$/i.test(slug) || slug.length > 64) {
+        console.warn(`  skipped ${g.family}/${g.chain} (invalid slug: ${slug})`)
+        continue
+      }
+      const projectsRoot = path.resolve(__dirname, '..', 'projects')
+      const dir  = path.resolve(projectsRoot, slug)
       const file = path.join(dir, 'index.js')
+      if (!dir.startsWith(projectsRoot + path.sep)) {
+        console.warn(`  skipped ${g.family}/${g.chain} (slug escapes projects/)`)
+        continue
+      }
       if (fs.existsSync(file)) {
         console.warn(`  skipped projects/${slug}/index.js (already exists)`)
         continue
