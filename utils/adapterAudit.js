@@ -180,7 +180,13 @@ function discoverAdapterEntrypoints(files, repoRoot, { baseRef = 'HEAD~1' } = {}
     const parts = relativePath.split('/')
 
     if (parts[0] === 'registries') {
-      discoverRegistryKeys(relativePath, repoRoot, baseRef).forEach((key) => adapters.add(key))
+      const registryKeys = discoverRegistryKeys(relativePath, repoRoot, baseRef)
+      if (registryKeys.length === 0) {
+        skipped.push(relativePath)
+        return
+      }
+
+      registryKeys.forEach((key) => adapters.add(key))
       return
     }
 
@@ -934,12 +940,17 @@ function writeAuditOutputs(auditResult, options, reportOptions = {}) {
   const markdown = buildMarkdownReport(auditResult, reportOptions)
 
   if (options.markdownPath)
-    fs.writeFileSync(path.resolve(auditResult.repoRoot, options.markdownPath), markdown)
+    writeFileCreatingParents(path.resolve(auditResult.repoRoot, options.markdownPath), markdown)
 
   if (options.jsonPath)
-    fs.writeFileSync(path.resolve(auditResult.repoRoot, options.jsonPath), `${JSON.stringify(auditResult, null, 2)}\n`)
+    writeFileCreatingParents(path.resolve(auditResult.repoRoot, options.jsonPath), `${JSON.stringify(auditResult, null, 2)}\n`)
 
   return markdown
+}
+
+function writeFileCreatingParents(filePath, contents) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true })
+  fs.writeFileSync(filePath, contents)
 }
 
 function hasFailures(auditResult) {

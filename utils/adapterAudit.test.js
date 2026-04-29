@@ -11,6 +11,7 @@ const {
   compareAuditResults,
   discoverAdapterEntrypoints,
   parseAdapterArgs,
+  writeAuditOutputs,
 } = require('./adapterAudit')
 
 test('parseAdapterArgs supports repeated dates and output options', () => {
@@ -86,10 +87,12 @@ module.exports = {
   const result = discoverAdapterEntrypoints([
     'registries/new.js',
     'registries/index.js',
+    'registries/utils.js',
+    'registries/deadAdapters.json',
   ], repoRoot)
 
   assert.deepEqual(result.adapters, ['another_adapter', 'new-adapter'])
-  assert.equal(result.adapters.includes('index'), false)
+  assert.deepEqual(result.skipped, ['registries/deadAdapters.json', 'registries/index.js', 'registries/utils.js'])
 })
 
 test('discoverAdapterEntrypoints only extracts added registry keys from tracked diffs', () => {
@@ -197,6 +200,7 @@ module.exports = buildProtocolExports(configs, () => helper)
 
   const result = discoverAdapterEntrypoints(['registries/example.js'], repoRoot, { baseRef: 'HEAD' })
   assert.deepEqual(result.adapters, [])
+  assert.deepEqual(result.skipped, ['registries/example.js'])
 })
 
 test('buildMarkdownReport includes replay commands and fenced failure output', () => {
@@ -274,6 +278,28 @@ test('buildMarkdownReport caps oversized markdown comments', () => {
   assert.ok(markdown.length <= 60000)
   assert.match(markdown, /Report truncated to stay under GitHub's PR comment size limit/)
   assert.match(markdown, /JSON artifact contains the full audit output/)
+})
+
+test('writeAuditOutputs creates parent directories for artifacts', () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'adapter-audit-'))
+  const auditResult = {
+    repoRoot,
+    generatedAt: '2026-04-28T00:00:00.000Z',
+    adapters: [],
+    results: [],
+    skipped: [],
+  }
+
+  writeAuditOutputs(auditResult, {
+    markdownPath: 'nested/comments/adapter-audit.md',
+    jsonPath: 'nested/results/adapter-audit.json',
+  })
+
+  assert.match(fs.readFileSync(path.join(repoRoot, 'nested/comments/adapter-audit.md'), 'utf8'), /Adapter Audit/)
+  assert.deepEqual(
+    JSON.parse(fs.readFileSync(path.join(repoRoot, 'nested/results/adapter-audit.json'), 'utf8')).results,
+    [],
+  )
 })
 
 test('compareAuditResults reports base-to-head TVL deltas', () => {
