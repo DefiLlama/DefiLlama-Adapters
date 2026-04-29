@@ -714,10 +714,13 @@ async function erc4626VaultsTvl(api) {
   // StableERC4626ForCustomize: thirdPool may be either an ERC4626/ERC20 (same
   // accrual story as For4626) OR a Gnosis Safe (XAUt vault on Ethereum). Probe
   // totalSupply() to disambiguate — the Safe contract does not implement it.
+  // Dedupe on (underlying, safe) and on safe alone — multiple vaults can share
+  // a Safe, and we must count its holdings once.
   const customizeUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: customizeVaults })
   const customizeThirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: customizeVaults })
   const thirdPoolSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: customizeThirdPools, permitFailure: true })
-  const safeBackedSafes = [];
+  const seenSafeOwners = new Set();
+  const safeBackedSafes = new Set();
   customizeVaults.forEach((vault, i) => {
     const underlying = customizeUnderlyings[i];
     const thirdPool = customizeThirdPools[i];
@@ -726,13 +729,17 @@ async function erc4626VaultsTvl(api) {
       tokensAndOwners.push([underlying, vault]);
       tokensAndOwners.push([thirdPool, vault]);
     } else {
-      tokensAndOwners.push([underlying, thirdPool]);
-      safeBackedSafes.push(thirdPool);
+      const key = `${underlying.toLowerCase()}|${thirdPool.toLowerCase()}`;
+      if (!seenSafeOwners.has(key)) {
+        seenSafeOwners.add(key);
+        tokensAndOwners.push([underlying, thirdPool]);
+      }
+      safeBackedSafes.add(thirdPool.toLowerCase());
     }
   })
 
   await sumTokens2({ api, tokensAndOwners });
-  await addSafeEquivalentBalances(api, safeBackedSafes);
+  await addSafeEquivalentBalances(api, [...safeBackedSafes]);
   await addUnclaimedPoolRewards(api, {
     stableERC4626For4626Vaults,
     stableUnderlyings,
