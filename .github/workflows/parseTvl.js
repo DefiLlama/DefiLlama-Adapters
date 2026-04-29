@@ -24,7 +24,11 @@ function parseTvl(stdout) {
   const errorIdx = stdout.indexOf(ERROR_MARKER);
   const tvlIdx = stdout.indexOf(TVL_MARKER);
 
-  if (tvlIdx === -1) {
+  // If the run errored at any point, treat the whole output as errored even
+  // when a TVL block was already printed before the failure (e.g. late
+  // assertion, postExit hook throwing). Otherwise we'd render a diff against
+  // partially-broken output.
+  if (errorIdx !== -1 || tvlIdx === -1) {
     return {
       schema: 'tvl-baseline-v1',
       errored: true,

@@ -40,6 +40,14 @@ test('parseTvl: errored shape with no markers at all', () => {
   assert.equal(result.errorTail, null);
 });
 
+test('parseTvl: errored when both TVL and ERROR markers present', () => {
+  const stdout = '------ TVL ------\nethereum 1.00 M\n------ ERROR ------\nboom';
+  const result = parseTvl(stdout);
+  assert.equal(result.errored, true);
+  assert.match(result.errorTail, /boom/);
+  assert.deepEqual(result.totals, {});
+});
+
 test('parseTvl: extracts totals from realistic stdout', () => {
   const stdout = [
     '--- ethereum ---',

@@ -27,7 +27,10 @@ function buildDiffBody({ baseline, current, adapterPath, legacyBody }) {
     const { computeDiff } = require('./computeDiff');
     let diffMd;
     try { diffMd = computeDiff({ baseline, current, adapterPath }); }
-    catch { return null; }
+    catch (e) {
+        console.error('computeDiff failed:', e?.message || e);
+        return null;
+    }
     if (!legacyBody) return diffMd;
     return `${diffMd}\n\n<details><summary>Full PR-run output</summary>\n\n${legacyBody}\n\n</details>`;
 }
