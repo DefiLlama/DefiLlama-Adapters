@@ -263,6 +263,23 @@ const ADDRESSES = {
       { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 43289755 },
     ],
   },
+  pharos: {
+    FactoryV2: [
+      {
+        address: "0xEDC206E67eAc5C949c0a90A02E29B4b2791c8395",
+        fromBlock: 5243188,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x5316b0d2Ee13C81E243226D6BB93CF29FBf95837",
+        fromBlock: 5243205,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xBa38C4D39ECf8401d90e7469dc6eB438547caC81", fromBlock: 5243210 },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
@@ -318,6 +335,7 @@ const TERMMAX_VIEWER_ADDRESS = {
   bsquared:  "0x0d64B9feF3E1f599B88d29Edb54D2F9152CBE496",
   xlayer:    "0xaaa2108dF9c3Aa4d358275340733476d139A1445",
   base:      "0x0d64B9feF3E1f599B88d29Edb54D2F9152CBE496",
+  pharos:    "0x0c30Bd74f891D88E69C07DEb5Ae9dA40C974BfeD",
 };
 
 async function getTermMaxMarketAddresses(api) {
