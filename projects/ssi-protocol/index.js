@@ -63,5 +63,6 @@ module.exports = {
     bitcoin: ['BTC', 'bitcoin'],
     cardano: ['ADA', 'cardano'],
     ripple: ['XRP', 'ripple'],
+    hyperliquid: ['HYPEREVM_HYPE', 'hyperliquid'],
   })
 };
