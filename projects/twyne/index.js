@@ -91,17 +91,27 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-    const twyneVaults = await getTwyneEVaults(api);
+    const collateralVaults = await getCollateralVaults(api);
+    if (collateralVaults.length === 0) return;
 
-    const totalBorrows = await api.multiCall({
-        calls: twyneVaults,
-        abi: 'uint256:totalBorrows',
+    const targetAssets = await api.multiCall({
+        calls: collateralVaults,
+        abi: 'address:targetAsset',
     });
-    await addUnderlyingBalances(api, twyneVaults, totalBorrows);
+    const debts = await api.multiCall({
+        calls: collateralVaults,
+        abi: 'uint256:maxRepay',
+    });
+
+    debts.forEach((amount, i) => {
+        if (targetAssets[i] && amount) {
+            api.add(targetAssets[i], amount);
+        }
+    });
 }
 
 module.exports = {
-    methodology: 'TVL is total credit delegated to intermediate vaults and collateral deposited to Twyne collateral vaults. Borrowed represents outstanding borrows from EVaults.',
+    methodology: 'TVL is total credit delegated to intermediate vaults and collateral deposited to Twyne collateral vaults. Borrowed represents outstanding borrows from external lending protocols (Euler, Aave V3) by Twyne collateral vaults.',
     ethereum: {
         tvl,
         borrowed,

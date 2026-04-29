@@ -58,5 +58,6 @@ module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
   ['2022-08-04', "Start OP Rewards"],
-  ['2022-04-20', "Start AVAX Rewards"]
+  ['2022-04-20', "Start AVAX Rewards"],
+  ['2026-04-18', "KelpDAO hack"],
 ]

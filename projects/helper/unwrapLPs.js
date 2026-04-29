@@ -102,6 +102,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
       case 'bsc': stateViewer = '0xd13Dd3D6E93f276FAfc9Db9E6BB47C1180aeE0c4'; break;
       case 'unichain': stateViewer = '0x86e8631A016F9068C3f085fAF484Ee3F5fDee8f2'; break;
       case 'base': stateViewer = '0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71'; break;
+      case 'monad': stateViewer = '0x77395f3b2e73ae90843717371294fa97cc419d64'; break;
       default: throw new Error('missing default uniswap state viewer address chain: ' + chain)
     }
 
@@ -113,6 +114,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
       case 'bsc': nftAddress = '0x7A4a5c919aE2541AeD11041A1AEeE68f1287f95b'; break;
       case 'unichain': nftAddress = '0x4529A01c7A0410167c5740C487A8DE60232617bf'; break;
       case 'base': nftAddress = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'; break;
+      case 'monad': nftAddress = '0x5b7ec4a94ff9bedb700fb82ab09d5846972f4016'; break;
       default: throw new Error('missing default uniswap nft address chain: ' + chain)
     }
 
@@ -142,6 +144,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
       arbitrum: '655x11nEGRudi5Nh4attV1uMt2YnyFRMaSKRM5QndXLK',
       polygon: '2UKncUpdgZeJVyh6Dv8ai2fTL2MQnig8ySh7YkYcHCsL',
       optimism: '3Tn7Y1NJAr4ySKm7KFu1dwvH2WM3mHJnXzXAxQsdBDvW',
+      monad: '6CQtx9W4b9Kn9cjznXJNLeTvLV1hbpxkaJZkbyXirJuz',
     }
 
     let endpoint = commonConfig.uniV4ExtraConfig.subgraph ?? defaultGraphEndpoints[chain]
@@ -508,6 +511,30 @@ async function unwrapSlipstreamV2NFTs({ balances, nftsAndOwners = [], api, owner
       switch (chain) {
         case 'base': nftAddress = '0xa990C6a764b73BF43cee5Bb40339c3322FB9D55F'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
+      }
+
+    if ((!owners || !owners.length) && owner)
+      owners = [owner]
+    owners = getUniqueAddresses(owners, chain)
+    if (Array.isArray(nftAddress))
+      nftsAndOwners = nftAddress.map(nft => owners.map(o => [nft, o])).flat()
+    else
+      nftsAndOwners = owners.map(o => [nftAddress, o])
+  }
+  const positionIdsByNftAddress = await getPositionIdsByNftAddress({ api, nftsAndOwners, })
+  for (const [nftAddress, positionIds] of Object.entries(positionIdsByNftAddress)) {
+    await unwrapSlipstreamNFT({ balances, positionIds, nftAddress, api, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })
+  }
+  return balances
+}
+
+async function unwrapSlipstreamV3NFTs({ balances, nftsAndOwners = [], api, owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
+  const chain = api.chain
+  if (!nftsAndOwners.length) {
+    if (!nftAddress)
+      switch (chain) {
+        case 'base': nftAddress = '0xe1f8cd9AC4e4A65F54f38a5CdAfCA44f6dD68b53'; break;
+        default: throw new Error('missing default slipstream v3 nft address chain: ' + chain)
       }
 
     if ((!owners || !owners.length) && owner)
@@ -924,6 +951,7 @@ async function sumTokens2({
   resolveUniV4 = false,
   resolveSlipstream = false,
   resolveSlipstreamV2 = false,
+  resolveSlipstreamV3 = false,
   uniV3WhitelistedTokens = [],
   uniV3nftsAndOwners = [],
   resolveArtBlocks = false,
@@ -1075,6 +1103,9 @@ group by
   if (resolveSlipstreamV2)
     await unwrapSlipstreamV2NFTs({ balances, api, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
 
+  if (resolveSlipstreamV3)
+    await unwrapSlipstreamV3NFTs({ balances, api, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
+
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
   tokensAndOwners = getUniqueToA(tokensAndOwners)
@@ -1154,8 +1185,8 @@ async function unwrapHypervisorVaults({ api, lps }) {
   return api.getBalances()
 }
 
-function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveSlipstreamV2, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, logCalls, ...args }) {
-  return async (api) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveSlipstreamV2, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
+function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveSlipstreamV2, resolveSlipstreamV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, logCalls, ...args }) {
+  return async (api) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveUniV4, resolveSlipstream, resolveSlipstreamV2, resolveSlipstreamV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
 }
 
 async function unwrapAuraPool({ api, chain, block, auraPool, owner, balances, isBPool = false, isV2 = true }) {

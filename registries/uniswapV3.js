@@ -1135,15 +1135,23 @@ const uniV3Configs = {
       factory: '0xaa2cd7477c451e703f3b9ba5663334914763edf8',
       fromBlock: 90593047,
     },
-    hyperliquid: {
-      factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
-      fromBlock: 17985840,
-    },
   },
   'ramses-hl-cl': {
     hyperliquid: {
       factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
       fromBlock: 18149975,
+    },
+  },
+  'ramsesx-arb-cl': {
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
+    },
+  },
+  'ramsesx-poly-cl': {
+    polygon: {
+      factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
+      fromBlock: 82177771,
     },
   },
   'reservoir-tools-v3': {
@@ -1153,10 +1161,6 @@ const uniV3Configs = {
     },
     zero_network: {
       factory: '0xA1160e73B63F322ae88cC2d8E700833e71D0b2a1',
-      fromBlock: 1,
-    },
-    shape: {
-      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
       fromBlock: 1,
     },
     redstone: {
@@ -1211,6 +1215,12 @@ const uniV3Configs = {
     sonic: {
       factory: '0xcD2d0637c94fe77C2896BbCBB174cefFb08DE6d7',
       fromBlock: 1705910,
+    },
+  },
+  'shapeswap-v3': {
+    shape: {
+      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
+      fromBlock: 6022152,
     },
   },
   'sheepdex': {

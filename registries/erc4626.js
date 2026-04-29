@@ -92,6 +92,14 @@ const configs = {
       '0x36213ca1483869c5616be738Bf8da7C9B34Ace8d',
     ],
   },
+  'eva': {
+    ethereum: [
+      '0x741bD193B6b40f8703d2e116FD1965421f290F58', // USDC vault
+      '0x501eBf66d76A96D4FB26ccead42957653e16B8B8', // USDT vault
+      '0xdBECD077c1C2feFDCB75f547d1b5a73BF8207e4C', // WETH vault
+    ],
+    start: '2026-03-24',
+  },
   'astake': {
     methodology: "Calculates the total amount of ASTR tokens deposited in the ERC4626 vault",
     astar: ['0x0DC6E8922ac0ECa8287ba22Db14C9Ac9317ed18F'],
@@ -189,9 +197,9 @@ const configs = {
   },
   'quell': {
     doublecounted: true,
-    methodology: "TVL is the total USDC deposited in the Quell RWAVault, an ERC-4626 vault that routes to the Steakhouse USDC MetaMorpho vault for RWA yield.",
+    methodology: "TVL is the total USDC deposited in the Quell ERC4626 RWAVaults, which route USDC to external vaults such as Spark sUSDC and Steakhouse USDC MetaMorpho for RWA yield.",
     base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
-    arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051'],
+    arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051', '0x82bDeB9239d33AAE4b8c38C0C0ef3B088b0Fc791'],
   },
   'zensats': {
     doublecounted: true,
@@ -230,7 +238,27 @@ const configs = {
     base: ['0x1688aeb3ec7b23a22e2418fdf5bccc67ecf39c0f'],
     katana: ['0xe5092ab6b8b0c37b1bec12c606614706063d04e8'],
     monad: ['0xE89d322b5822D828B8252D3087be8486cC2048Ef'],
-  }
+  },
+  'arche-money': {
+    'ethereum': [
+      '0x33ffc177a7278ff84aab314a036bc7b799b7cc15', // arUSD
+    ],
+  },
+  'tulpea': {
+    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy\'s (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
+    start: '2026-04-09',
+    megaeth: ['0xa21eAFee50DA331521B6Ec4Dd33dEd3F9E1bD2Ea']
+  },
+  'aspe-labs': {
+    methodology: "TVL is totalAssets() of the ERC4626 vault, including USDC held in the vault contract, USDC reserved for claimable redemptions, and equity value in the HyperCore agent wallet deployed for grid trading.",
+    start: '2026-04-02',
+    doublecounted: true,
+    hyperliquid: ['0xe67c82f0970D66d8b84dB43F2392E77CE7e4ED75']
+  },
+  'yfarmer': {
+    start: '2026-04-11',
+    base: ['0x71c298a6eb10e7958ce25a450a706330a4c946c0']
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

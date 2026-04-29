@@ -1595,7 +1595,6 @@ const uniV2Configs = {
   'reservoir-tools-v2': {
     abstract: '0x566d7510dEE58360a64C9827257cF6D0Dc43985E',
     zero_network: '0x1B4427e212475B12e62f0f142b8AfEf3BC18B559',
-    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
     ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
   },
   'revoswap': {
@@ -1694,6 +1693,9 @@ const uniV2Configs = {
   },
   'shadowswap': {
     core: '0x326Ee96748E7DcC04BE1Ef8f4E4F6bdd54048932',
+  },
+  'shapeswap-v2': {
+    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
   },
   'sharelock': {
     era: '0xea51CE8A1f9C1Cbbf5B89D9B1dA4A94fB1557866',
@@ -2660,11 +2662,18 @@ const uniV2Configs = {
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
     arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"] },
-    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
   },
   'ramses-hl-legacy': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+  },
+  'ramsesx-arb-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
+  },
+  'ramsesx-poly-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
   },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },

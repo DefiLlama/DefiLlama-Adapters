@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { getUniTVL } = require('../helper/unknownTokens')
 
 const chainConfig = {
@@ -29,6 +29,7 @@ const chainConfig = {
     stakingContracts: ['0xACc89554Fb28A94e5578d8A1B04E88Aa7788D261', '0x68b761d63e488c1d7c5f282c9b7d9a9791c17d3a'],
     blacklist: [
       '0x83b27de2fca046fa63a11c7ce7743de33ec58822', // BUILD - inflating tvl
+      '0xde7d1ce109236b12809c45b23d22f30dba0ef424', // USDS - inflating tvl
     ]
   },
   avax: {
@@ -78,22 +79,14 @@ module.exports = Object.keys(chainConfig).reduce((agg, chain) => {
   const {
     factory, stakingContracts, radio, shack, blacklist,
   } = chainConfig[chain]
-
-  async function staking(ts, ethBlock, chainBlocks) {
-    const block = chainBlocks[chain]
-    const tokens = [radio]
-    if (shack) tokens.push(shack)
-    const balances = {}
-
-    if (!stakingContracts || !stakingContracts.length) return balances
-    return sumTokens2({ chain, block, owners: stakingContracts, tokens, })
-  }
+  const tokens = [radio]
+  if (shack) tokens.push(shack)
 
   agg[chain] = { tvl: getUniTVL({
     chain, factory, 
     useDefaultCoreAssets: true,
     blacklist,
-  }), staking }
+  }), staking: sumTokensExport({ owners: stakingContracts, tokens,}) }
 
   return agg
 }, {})

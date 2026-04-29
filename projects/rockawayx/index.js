@@ -1,9 +1,23 @@
 const { getCuratorExport } = require("../helper/curators");
+const { sumERC4626Vaults } = require("../helper/erc4626");
+
+const EMBER_VAULTS = {
+  ethereum: [
+    '0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074', // eY10K
+  ],
+};
+
+const LISTA_VAULTS = {
+  bsc: [
+    '0xb5a30e1fa2cf3c8dea882124b3ab5a47a27c5dd2',
+  ],
+};
 
 const MIDAS_VAULTS = {
   ethereum: [
     '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
     '0xb64C014307622eB15046C66fF71D04258F5963DC', // mevBTC
+    '0x67E1F506B148d0Fc95a4E3fFb49068ceB6855c05'  // mROX
   ],
   plume_mainnet: [
     '0x7d611dC23267F508DE90724731Dc88CA28Ef7473', // mMEV
@@ -23,8 +37,13 @@ const configs = {
         '0x64C18DCC4Ccb3b8D27877a4aeBB4C3126CB39cB9',
       ],
     },
+    sei: {
+      morpho: [
+        '0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06', // PYUSD0 
+      ],
+    },
     solana: {
-      kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP'], // Kamino RWA USDC
+      kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP', '2TNCzzYJt3uHmpFpqeeJkza4pQUK9xoLa79DJH9AdgGA'], // Kamino RWA USDC
     },
   }
 }
@@ -49,6 +68,26 @@ for (const [chain, vaults] of Object.entries(MIDAS_VAULTS)) {
     tvl: async (api) => {
       if (baseTvl) await baseTvl(api);
       await midasTvl(api, vaults);
+    }
+  };
+}
+
+for (const [chain, vaults] of Object.entries(EMBER_VAULTS)) {
+  const baseTvl = adapterExport[chain]?.tvl;
+  adapterExport[chain] = {
+    tvl: async (api) => {
+      if (baseTvl) await baseTvl(api);
+      await sumERC4626Vaults({ api, calls: vaults, isOG4626: true });
+    }
+  };
+}
+
+for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
+  const baseTvl = adapterExport[chain]?.tvl;
+  adapterExport[chain] = {
+    tvl: async (api) => {
+      if (baseTvl) await baseTvl(api);
+      await sumERC4626Vaults({ api, calls: vaults, isOG4626: true });
     }
   };
 }
