@@ -128,7 +128,7 @@ function validateHallmarks(hallmark) {
 /**
  * Runs adapter validation for a changed module path passed on the command line.
  */
-(async () => {
+async function runAdapterValidation() {
 
   const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
   const legacyMixedCaseModules = new Set(['MorpheusAI'])
@@ -282,7 +282,9 @@ function validateHallmarks(hallmark) {
 
   await preExit()
   process.exit(0);
-})().catch(handleError);
+}
+
+runAdapterValidation().catch(handleError);
 
 
 function checkExportKeys(module, filePath, chains) {
