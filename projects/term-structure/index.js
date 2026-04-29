@@ -27,6 +27,10 @@ const ABIS = {
   Vault: {
     asset: "address:asset",
   },
+  Viewer: {
+    getPoolUnclaimedRewards:
+      "function getPoolUnclaimedRewards(address[] pools) external view returns (address[] asset, uint256[] amount)",
+  },
 };
 
 const EVENTS = {
@@ -286,6 +290,20 @@ const MARKET_BLACKLIST = {
 // price oracle prices each token in its own units.
 const SAFE_EQUIVALENT_TOKEN_ADDRESSES = {
   ethereum: ["0xd5D6840ed95F58FAf537865DcA15D5f99195F87a"], // XAUe
+};
+
+// TermMaxViewer (per-chain). Used to surface unclaimed pool rewards for
+// ERC4626 pools whose principal sits in another ERC4626 (For4626 + Customize-
+// ERC20). Aave-backed pools must NOT use this — accrued interest already
+// rebases into the aToken balance, so adding rewards here would double-count.
+const TERMMAX_VIEWER_ADDRESS = {
+  ethereum:  "0xf574c1d7C18E250c341bdFb478cafefcaCbAbF09",
+  arbitrum:  "0x012BFcbAC9EdEa04DFf07Cc61269E321f4595DfF",
+  bsc:       "0x80906014B577AFd760528FA8B32304A49806580C",
+  berachain: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
+  bsquared:  "0x0d64B9feF3E1f599B88d29Edb54D2F9152CBE496",
+  xlayer:    "0xaaa2108dF9c3Aa4d358275340733476d139A1445",
+  base:      "0x0d64B9feF3E1f599B88d29Edb54D2F9152CBE496",
 };
 
 async function getTermMaxMarketAddresses(api) {
@@ -685,6 +703,70 @@ async function erc4626VaultsTvl(api) {
   })
 
   await sumTokens2({ api, tokensAndOwners });
+  await addUnclaimedPoolRewards(api, {
+    stableERC4626For4626Vaults,
+    stableUnderlyings,
+    customizeVaults,
+    customizeUnderlyings,
+    thirdPoolSupplies,
+  });
+}
+
+// For4626 and Customize-ERC20 pools route deposits into another ERC4626 where
+// yield surfaces only as share-price appreciation. The pool's totalAssets()
+// returns principal-only (1:1 share), so we ask TermMaxViewer for the accrued
+// reward and add it to the underlying balance. Skip pools whose reward asset
+// differs from the pool's underlying — summing them as underlying would be
+// unit-incorrect.
+async function addUnclaimedPoolRewards(api, params) {
+  const viewerAddress = TERMMAX_VIEWER_ADDRESS[api.chain];
+  if (!viewerAddress) return;
+
+  const {
+    stableERC4626For4626Vaults,
+    stableUnderlyings,
+    customizeVaults,
+    customizeUnderlyings,
+    thirdPoolSupplies,
+  } = params;
+
+  const pools = [];
+  const poolUnderlyings = [];
+  stableERC4626For4626Vaults.forEach((vault, i) => {
+    pools.push(vault);
+    poolUnderlyings.push(stableUnderlyings[i]);
+  });
+  customizeVaults.forEach((vault, i) => {
+    if (thirdPoolSupplies[i] === null) return; // Safe-backed: no viewer dispatch
+    pools.push(vault);
+    poolUnderlyings.push(customizeUnderlyings[i]);
+  });
+  if (pools.length === 0) return;
+
+  let result;
+  try {
+    result = await api.call({
+      abi: ABIS.Viewer.getPoolUnclaimedRewards,
+      target: viewerAddress,
+      params: [pools],
+    });
+  } catch (err) {
+    console.warn(`TermMaxViewer.getPoolUnclaimedRewards failed on ${api.chain}`, err.message ?? err);
+    return;
+  }
+
+  const { asset, amount } = result;
+  for (let i = 0; i < pools.length; i += 1) {
+    const rewardAsset = asset[i];
+    const rewardAmount = amount[i] ?? '0';
+    if (!rewardAsset || rewardAsset.toLowerCase() !== poolUnderlyings[i].toLowerCase()) {
+      if (rewardAmount && BigInt(rewardAmount) > 0n) {
+        console.warn(`TermMaxViewer reward asset ${rewardAsset} differs from underlying ${poolUnderlyings[i]} for pool ${pools[i]} on ${api.chain}; skipping`);
+      }
+      continue;
+    }
+    api.add(rewardAsset, rewardAmount);
+  }
 }
 
 module.exports = {
