@@ -31,16 +31,22 @@ const STAKING_POOLS = {
 
 async function tvl(api) {
   const tokensAndOwners = TREASURIES.map(treasury => [CUSD, treasury]);
-  REWARD_VAULTS.forEach(vault => tokensAndOwners.push([CUSD, vault]));
   Object.entries(STAKING_POOLS).forEach(([pool, token]) => {
     tokensAndOwners.push([token, pool]);
   });
   return sumTokens2({ api, tokensAndOwners });
 }
 
+async function staking(api) {
+  // Protocol-owned CUSD reserves funding staking rewards — tracked separately from TVL
+  const tokensAndOwners = REWARD_VAULTS.map(vault => [CUSD, vault]);
+  return sumTokens2({ api, tokensAndOwners });
+}
+
 module.exports = {
-  methodology: "TVL is calculated as the sum of CUSD held in all Treasury contracts (backing tokenized commodities), CUSD in Reward Vaults (funding staking rewards), and commodity tokens staked in Participation Pools.",
+  methodology: "TVL is the sum of CUSD held in Treasury contracts (backing tokenized commodities) and commodity tokens staked in Participation Pools. Reward Vault reserves are protocol-owned CUSD earmarked for staking incentives and are tracked separately under 'staking', not included in TVL.",
   bsc: {
     tvl,
+    staking,
   },
 };
