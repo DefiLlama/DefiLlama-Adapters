@@ -49,6 +49,7 @@ const EVENTS = {
   TermMax4626Factory: {
     "StableERC4626For4626Created": "event StableERC4626For4626Created(address indexed caller, address indexed stableERC4626For4626)",
     "StableERC4626ForAaveCreated": "event StableERC4626ForAaveCreated(address indexed caller, address indexed stableERC4626ForAave)",
+    "StableERC4626ForCustomizeCreated": "event StableERC4626ForCustomizeCreated(address indexed caller, address indexed stableERC4626ForCustomize)",
     "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)"
   }
 };
@@ -137,6 +138,7 @@ const ADDRESSES = {
     },
     TermMax4626Factory: [
       { address: "0xD594eb03a43b4974Aa7B32b5740cdeCe961151Fa", fromBlock: 23489745 },
+      { address: "0x3Cc88086C0a613970565C96F9a1b6BdAd61C5f14", fromBlock: 24790495 },
     ],
     FactoryV2: [
       {
@@ -276,6 +278,14 @@ const MARKET_BLACKLIST = {
   bsquared: [
     "0x5022B6563f6bc9f0D47F407ba32B64e1f438213a", // uBTC/WBTC
   ],
+};
+
+// Extra ERC20s that may sit alongside the underlying inside a
+// StableERC4626ForCustomize pool's Gnosis Safe `thirdPool` (e.g. XAUe held next
+// to XAUt). Each address is summed as a separate balanceOf(safe) entry so the
+// price oracle prices each token in its own units.
+const SAFE_EQUIVALENT_TOKEN_ADDRESSES = {
+  ethereum: ["0xd5D6840ed95F58FAf537865DcA15D5f99195F87a"], // XAUe
 };
 
 async function getTermMaxMarketAddresses(api) {
@@ -597,6 +607,7 @@ async function erc4626VaultsTvl(api) {
   const tokensAndOwners = [];
   const stableERC4626For4626Vaults = [];
   const aaveVaults = [];
+  const customizeVaults = [];
 
   for (const factory of ADDRESSES[api.chain].TermMax4626Factory) {
     let logs = await getLogs2({
@@ -626,6 +637,15 @@ async function erc4626VaultsTvl(api) {
       extraKey: 'VariableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForCustomizeCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626ForCustomizeCreated-20260429',
+    });
+    customizeVaults.push(...logs.map(i => i.stableERC4626ForCustomize));
   }
 
   const aTokens = await api.multiCall({ abi: 'address:aToken', calls: aaveVaults })
@@ -640,6 +660,28 @@ async function erc4626VaultsTvl(api) {
   stableERC4626For4626Vaults.forEach((vault, i) => {
     tokensAndOwners.push([stableUnderlyings[i], vault])
     tokensAndOwners.push([thirdPools[i], vault])
+  })
+
+  // StableERC4626ForCustomize: thirdPool may be either an ERC4626/ERC20 (same
+  // accrual story as For4626) OR a Gnosis Safe (XAUt vault on Ethereum). Probe
+  // totalSupply() to disambiguate — the Safe contract does not implement it.
+  const customizeUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: customizeVaults })
+  const customizeThirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: customizeVaults })
+  const thirdPoolSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: customizeThirdPools, permitFailure: true })
+  const safeEquivalents = SAFE_EQUIVALENT_TOKEN_ADDRESSES[api.chain] ?? [];
+  customizeVaults.forEach((vault, i) => {
+    const underlying = customizeUnderlyings[i];
+    const thirdPool = customizeThirdPools[i];
+    const isErc20ThirdPool = thirdPoolSupplies[i] !== null;
+    if (isErc20ThirdPool) {
+      tokensAndOwners.push([underlying, vault]);
+      tokensAndOwners.push([thirdPool, vault]);
+    } else {
+      tokensAndOwners.push([underlying, thirdPool]);
+      for (const equiv of safeEquivalents) {
+        tokensAndOwners.push([equiv, thirdPool]);
+      }
+    }
   })
 
   await sumTokens2({ api, tokensAndOwners });
