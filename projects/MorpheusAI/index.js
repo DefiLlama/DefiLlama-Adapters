@@ -6,6 +6,10 @@ const BUILDERS_V4 = {
   base: { owner: '0x42BB446eAE6dca7723a9eBdb81EA88aFe77eF4B9', fromBlock: 24381796 },
 }
 
+/**
+ * Counts MorpheusAI Ethereum TVL from the legacy stETH holder before the V2
+ * migration, then from the V2 project contract and related Aave reserve tokens.
+ */
 async function tvl(api) {
   const v2Deployment = +new Date('2025-09-17') / 1e3
   if (api.timestamp < v2Deployment) {
@@ -22,6 +26,9 @@ async function tvl(api) {
 
 }
 
+/**
+ * Counts MOR held by Morpheus BuildersV4 contracts on each chain as staking TVL.
+ */
 async function buildersStaking(api) {
   const { owner, fromBlock } = BUILDERS_V4[api.chain]
   if (api.block && api.block < fromBlock) return {}

@@ -125,6 +125,9 @@ function validateHallmarks(hallmark) {
   }
 }
 
+/**
+ * Runs adapter validation for a changed module path passed on the command line.
+ */
 (async () => {
 
   const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
