@@ -46,6 +46,14 @@ test('parseAdapterArgs rejects empty inline option values', () => {
   assert.throws(() => parseAdapterArgs(['--base='], { allowBase: true }), /--base requires a git ref/)
 })
 
+test('parseAdapterArgs rejects flags accidentally consumed as option values', () => {
+  assert.throws(() => parseAdapterArgs(['--date', '--compare-base']), /--date requires a value/)
+  assert.throws(() => parseAdapterArgs(['--timeout', '--compare-base']), /--timeout requires a value/)
+  assert.throws(() => parseAdapterArgs(['--markdown', '--json=audit.json']), /--markdown requires a path/)
+  assert.throws(() => parseAdapterArgs(['--json', '--compare-base']), /--json requires a path/)
+  assert.throws(() => parseAdapterArgs(['--base', '--compare-base'], { allowBase: true }), /--base requires a git ref/)
+})
+
 test('discoverAdapterEntrypoints maps changed project files to runnable adapters', () => {
   const repoRoot = process.cwd()
   const result = discoverAdapterEntrypoints([
@@ -111,7 +119,9 @@ test('discoverAdapterEntrypoints extracts edited registry entries when key lines
   const repoRoot = createGitRepo()
   fs.mkdirSync(path.join(repoRoot, 'registries'))
   fs.writeFileSync(path.join(repoRoot, 'registries/example.js'), `
-module.exports = {
+const { buildProtocolExports } = require('./utils')
+
+const configs = {
   'edited-adapter': {
     ethereum: { target: '0x111' },
   },
@@ -119,12 +129,16 @@ module.exports = {
     ethereum: { target: '0x222' },
   },
 }
+
+module.exports = buildProtocolExports(configs, () => ({}))
 `)
   git(repoRoot, ['add', '.'])
   git(repoRoot, ['commit', '-m', 'base'])
 
   fs.writeFileSync(path.join(repoRoot, 'registries/example.js'), `
-module.exports = {
+const { buildProtocolExports } = require('./utils')
+
+const configs = {
   'edited-adapter': {
     ethereum: { target: '0x333' },
   },
@@ -132,10 +146,57 @@ module.exports = {
     ethereum: { target: '0x222' },
   },
 }
+
+module.exports = buildProtocolExports(configs, () => ({}))
 `)
 
   const result = discoverAdapterEntrypoints(['registries/example.js'], repoRoot, { baseRef: 'HEAD' })
   assert.deepEqual(result.adapters, ['edited-adapter'])
+})
+
+test('discoverAdapterEntrypoints ignores helper objects in registry files', () => {
+  const repoRoot = createGitRepo()
+  fs.mkdirSync(path.join(repoRoot, 'registries'))
+  fs.writeFileSync(path.join(repoRoot, 'registries/example.js'), `
+const { buildProtocolExports } = require('./utils')
+
+const helper = {
+  'not-an-adapter': {
+    ethereum: { target: '0x111' },
+  },
+}
+
+const configs = {
+  'real-adapter': {
+    ethereum: { target: '0x222' },
+  },
+}
+
+module.exports = buildProtocolExports(configs, () => helper)
+`)
+  git(repoRoot, ['add', '.'])
+  git(repoRoot, ['commit', '-m', 'base'])
+
+  fs.writeFileSync(path.join(repoRoot, 'registries/example.js'), `
+const { buildProtocolExports } = require('./utils')
+
+const helper = {
+  'not-an-adapter': {
+    ethereum: { target: '0x333' },
+  },
+}
+
+const configs = {
+  'real-adapter': {
+    ethereum: { target: '0x222' },
+  },
+}
+
+module.exports = buildProtocolExports(configs, () => helper)
+`)
+
+  const result = discoverAdapterEntrypoints(['registries/example.js'], repoRoot, { baseRef: 'HEAD' })
+  assert.deepEqual(result.adapters, [])
 })
 
 test('buildMarkdownReport includes replay commands and fenced failure output', () => {
@@ -303,6 +364,36 @@ process.exitCode = 1
   assert.equal(result.results[0].status, 'failed')
   assert.match(result.results[0].stdout, /\[adapter-audit: output truncated\]/)
   assert.ok(result.results[0].stdout.length <= 120000)
+})
+
+test('auditChangedAdapters writes a report when changed files map to no adapters', () => {
+  const repoRoot = createGitRepo()
+  fs.mkdirSync(path.join(repoRoot, 'projects/helper'), { recursive: true })
+  fs.writeFileSync(path.join(repoRoot, 'projects/helper/chains.json'), '{"ethereum":1}\n')
+  git(repoRoot, ['add', '.'])
+  git(repoRoot, ['commit', '-m', 'base'])
+
+  fs.writeFileSync(path.join(repoRoot, 'projects/helper/chains.json'), '{"ethereum":1,"base":1}\n')
+  const markdownPath = path.join(repoRoot, 'adapter-audit.md')
+  const jsonPath = path.join(repoRoot, 'adapter-audit.json')
+  const stdout = execFileSync(process.execPath, [
+    path.join(__dirname, 'auditChangedAdapters.js'),
+    '--base',
+    'HEAD',
+    '--markdown',
+    markdownPath,
+    '--json',
+    jsonPath,
+  ], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  })
+
+  assert.match(stdout, /Adapters: 0/)
+  assert.match(fs.readFileSync(markdownPath, 'utf8'), /Skipped Changed Files/)
+  const report = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
+  assert.deepEqual(report.adapters, [])
+  assert.deepEqual(report.skipped, ['projects/helper/chains.json'])
 })
 
 function createGitRepo() {

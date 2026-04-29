@@ -45,7 +45,22 @@ async function main() {
   const { adapters, skipped } = discoverAdapterEntrypoints(changedFiles, repoRoot, { baseRef: options.baseRef })
 
   if (adapters.length === 0) {
-    console.log('No adapter entrypoints found.')
+    const auditResult = {
+      generatedAt: new Date().toISOString(),
+      repoRoot,
+      baseRef: options.baseRef,
+      changedFiles,
+      adapters: [],
+      skipped,
+      results: [],
+    }
+    const markdown = writeAuditOutputs(auditResult, options, {
+      title: 'Changed Adapter Audit',
+      baseRef: options.baseRef,
+      changedFiles,
+      skipped,
+    })
+    process.stdout.write(markdown)
     return
   }
 

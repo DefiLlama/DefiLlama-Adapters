@@ -24,6 +24,8 @@ function getRepoRoot(start = process.cwd()) {
 }
 
 function parsePositiveInteger(value, label) {
+  if (value === undefined || String(value).startsWith('--'))
+    throw new Error(`${label} requires a value`)
   const parsed = Number(value)
   if (!Number.isInteger(parsed) || parsed <= 0)
     throw new Error(`${label} must be a positive integer, got: ${value}`)
@@ -31,7 +33,8 @@ function parsePositiveInteger(value, label) {
 }
 
 function parseRequiredOptionValue(value, option, label = 'value') {
-  if (!value) throw new Error(`${option} requires a ${label}`)
+  if (!value || String(value).startsWith('-'))
+    throw new Error(`${option} requires a ${label}`)
   return value
 }
 
@@ -260,31 +263,151 @@ function getRegistryEntriesFromFile(file, repoRoot) {
 }
 
 function getRegistryEntriesFromSource(source) {
-  const lines = source.split(/\r?\n/)
+  const registrySources = getRegistryObjectSources(source)
   const entries = new Map()
-  let depth = 0
-  let entryDepth
-  let current
 
-  lines.forEach((line, index) => {
-    const key = extractRegistryKey(line)
-    if (!current && key && depth > 0 && (entryDepth === undefined || depth === entryDepth)) {
-      entryDepth = depth
-      current = { key, start: index, depth }
-    }
-
-    const nextDepth = Math.max(0, depth + getBraceDelta(line))
-    if (current && nextDepth <= current.depth) {
-      entries.set(current.key, lines.slice(current.start, index + 1).join('\n'))
-      current = undefined
-    }
-    depth = nextDepth
+  registrySources.forEach((registrySource) => {
+    getTopLevelObjectEntries(registrySource).forEach((value, key) => entries.set(key, value))
   })
 
-  if (current)
-    entries.set(current.key, lines.slice(current.start).join('\n'))
+  return entries
+}
+
+function getRegistryObjectSources(source) {
+  const names = Array.from(source.matchAll(/buildProtocolExports\(\s*([a-zA-Z_$][\w$]*)\s*,/g), (match) => match[1])
+  const objects = names
+    .map((name) => getVariableObjectSource(source, name))
+    .filter(Boolean)
+
+  if (objects.length)
+    return objects
+
+  const exportMatch = source.match(/module\.exports\s*=\s*{/)
+  if (!exportMatch)
+    return []
+
+  return [getObjectSourceAt(source, exportMatch.index + exportMatch[0].lastIndexOf('{'))].filter(Boolean)
+}
+
+function getVariableObjectSource(source, name) {
+  const declaration = new RegExp(`(?:const|let|var)\\s+${name}\\s*=\\s*{`).exec(source)
+  if (!declaration)
+    return undefined
+
+  return getObjectSourceAt(source, declaration.index + declaration[0].lastIndexOf('{'))
+}
+
+function getObjectSourceAt(source, openIndex) {
+  const closeIndex = findMatchingBrace(source, openIndex)
+  if (closeIndex === -1)
+    return undefined
+
+  return source.slice(openIndex, closeIndex + 1)
+}
+
+function getTopLevelObjectEntries(source) {
+  const entries = new Map()
+  let depth = 0
+  let i = 0
+
+  while (i < source.length) {
+    if (source[i] === '/' && source[i + 1] === '/') {
+      i = skipLineComment(source, i + 2)
+      continue
+    }
+
+    if (source[i] === '/' && source[i + 1] === '*') {
+      i = skipBlockComment(source, i + 2)
+      continue
+    }
+
+    if (source[i] === '\'' || source[i] === '"' || source[i] === '`') {
+      if (depth === 1 && source[i] !== '`') {
+        const key = readQuotedString(source, i)
+        const colonIndex = skipWhitespace(source, key.end)
+
+        if (source[colonIndex] === ':' && isRegistryKey(key.value)) {
+          const end = findPropertyEnd(source, colonIndex + 1)
+          entries.set(key.value, source.slice(i, end).trim())
+          i = end
+          continue
+        }
+      }
+
+      i = readQuotedString(source, i).end
+      continue
+    }
+
+    if (source[i] === '{') depth++
+    else if (source[i] === '}') depth = Math.max(0, depth - 1)
+    i++
+  }
 
   return entries
+}
+
+function findMatchingBrace(source, openIndex) {
+  let depth = 0
+  let quote
+  let escaped = false
+  let lineComment = false
+  let blockComment = false
+
+  for (let i = openIndex; i < source.length; i++) {
+    const char = source[i]
+    const next = source[i + 1]
+
+    if (lineComment) {
+      if (char === '\n') lineComment = false
+      continue
+    }
+
+    if (blockComment) {
+      if (char === '*' && next === '/') {
+        blockComment = false
+        i++
+      }
+      continue
+    }
+
+    if (quote) {
+      if (escaped) {
+        escaped = false
+      } else if (char === '\\') {
+        escaped = true
+      } else if (char === quote) {
+        quote = undefined
+      }
+      continue
+    }
+
+    if (char === '/' && next === '/') {
+      lineComment = true
+      i++
+      continue
+    }
+
+    if (char === '/' && next === '*') {
+      blockComment = true
+      i++
+      continue
+    }
+
+    if (char === '\'' || char === '"' || char === '`') {
+      quote = char
+      continue
+    }
+
+    if (char === '{') {
+      depth++
+    } else if (char === '}') {
+      depth--
+      if (depth === 0)
+        return i
+    }
+  }
+
+  return -1
 }
 
 function extractRegistryKey(line) {
@@ -292,13 +415,90 @@ function extractRegistryKey(line) {
   return match?.[1]
 }
 
-function getBraceDelta(line) {
-  let delta = 0
-  for (const char of line) {
-    if (char === '{') delta++
-    else if (char === '}') delta--
+function isRegistryKey(value) {
+  return /^[a-zA-Z0-9][a-zA-Z0-9_-]+$/.test(value)
+}
+
+function skipWhitespace(source, index) {
+  while (index < source.length && /\s/.test(source[index]))
+    index++
+  return index
+}
+
+function skipLineComment(source, index) {
+  while (index < source.length && source[index] !== '\n')
+    index++
+  return index
+}
+
+function skipBlockComment(source, index) {
+  while (index < source.length) {
+    if (source[index] === '*' && source[index + 1] === '/')
+      return index + 2
+    index++
   }
-  return delta
+  return source.length
+}
+
+function readQuotedString(source, index) {
+  const quote = source[index]
+  let value = ''
+  let escaped = false
+  index++
+
+  while (index < source.length) {
+    const char = source[index]
+    if (escaped) {
+      value += char
+      escaped = false
+    } else if (char === '\\') {
+      escaped = true
+    } else if (char === quote) {
+      return { value, end: index + 1 }
+    } else {
+      value += char
+    }
+    index++
+  }
+
+  return { value, end: source.length }
+}
+
+function findPropertyEnd(source, index) {
+  let nesting = 0
+
+  while (index < source.length) {
+    const char = source[index]
+    const next = source[index + 1]
+
+    if (char === '/' && next === '/') {
+      index = skipLineComment(source, index + 2)
+      continue
+    }
+
+    if (char === '/' && next === '*') {
+      index = skipBlockComment(source, index + 2)
+      continue
+    }
+
+    if (char === '\'' || char === '"' || char === '`') {
+      index = readQuotedString(source, index).end
+      continue
+    }
+
+    if (char === '{' || char === '[' || char === '(') nesting++
+    else if (char === '}' || char === ']' || char === ')') {
+      if (nesting === 0)
+        return index
+      nesting--
+    } else if (char === ',' && nesting === 0) {
+      return index
+    }
+
+    index++
+  }
+
+  return source.length
 }
 
 function appendLimited(existing, nextChunk, limit) {
