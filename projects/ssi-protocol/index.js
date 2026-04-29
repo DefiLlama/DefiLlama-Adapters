@@ -43,7 +43,10 @@ function buildTvl(chainName) {
         if (token.chain !== chainName) return
         const amount = token.amount
         if (token.addr !== '') {
-          api.add(api.chain + ':' + token.addr, amount)
+          const tokenAddress = ['ethereum', 'bsc'].includes(api.chain)
+            ? token.addr.toLowerCase()
+            : token.addr
+          api.add(`${api.chain}:${tokenAddress}`, amount)
         } else {
           const cgId = NATIVE_CG_IDS[chainName]
           if (cgId) api.addCGToken(cgId, amount)
