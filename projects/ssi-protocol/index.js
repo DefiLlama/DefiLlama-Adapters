@@ -41,7 +41,7 @@ function buildTvl(chainName) {
     baskets.forEach((basket) => {
       basket.forEach((token) => {
         if (token.chain !== chainName) return
-        const amount = Number(token.amount) / 10 ** Number(token.decimals)
+        const amount = token.amount
         if (token.addr !== '') {
           api.add(api.chain + ':' + token.addr, amount)
         } else {
