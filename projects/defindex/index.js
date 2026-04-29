@@ -1,23 +1,23 @@
-const { getConfig } = require('../helper/cache')
-const { callSoroban } = require('../helper/chain/stellar')
+const { get } = require('../helper/http')
 
-const DEFINDEX_VAULTS_INFO_URL = 'https://api.defindex.io/vault/discover?network=mainnet'
+const DEFINDEX_API_BASE_URL = 'https://api.defindex.io'
+const DAY_ONE = 1748518054
 
 async function tvl(api) {
-    const res = await getConfig('defindex', DEFINDEX_VAULTS_INFO_URL)
-    const vaultAddresses = res?.vaults?.map(v => v.address) || []
-
-    for (const vault of vaultAddresses) {
-        const funds = await callSoroban(vault, 'fetch_total_managed_funds')
-        for (const fund of funds) {
-            if (fund.asset && fund.total_amount != null) {
-                api.add(fund.asset, fund.total_amount.toString())
-            }
-        }
+  const url = api.timestamp ? `${DEFINDEX_API_BASE_URL}/tvl?timestamp=${api.timestamp}` : `${DEFINDEX_API_BASE_URL}/tvl`
+  try {
+    const data = await get(url)
+    for (const [assetId, amount] of Object.entries(data.tvl)) {
+    api.add(assetId, amount)
     }
+  } catch (error) {
+    console.error('Error fetching DeFindex TVL:', error)
+  }
 }
 
 module.exports = {
-    methodology: 'TVL is the sum of all assets managed by DeFindex vaults on Stellar, fetched on-chain via Soroban RPC simulation of each vault contract.',
-    stellar: { tvl },
+  timetravel: true,
+  start: DAY_ONE,
+  methodology: 'TVL is the sum of all assets managed by DeFindex vaults on Stellar, reconstructed from on-chain indexed events.',
+  stellar: { tvl },
 }
