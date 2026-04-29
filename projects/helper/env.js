@@ -79,6 +79,7 @@ const ENV_KEYS = [
   'CRYPTOAPIS_API_KEY',
   'TATUM_PUBLIC_API_KEY',
   'TATUM_API_KEY',
+  'TEAM_WEBHOOK',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

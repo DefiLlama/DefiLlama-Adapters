@@ -1,14 +1,34 @@
+require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
-const sdk = require('@defillama/sdk');
+const axios = require('axios');
 const { getEnv } = require('../../projects/helper/env');
 
-const Bucket = 'tvl-adapter-cache';
 const REGISTRY_DIR = path.join(__dirname, '../../registries');
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$|^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
 // Keys that identify a tracked contract
 const KEYS = new Set(['factory', 'comptroller', 'masterchef', 'vault', 'registry', 'address']);
+
+// Based on defillama-server/defi/src/utils/discord.ts
+async function sendDiscord(message, formatted = true) {
+  const webhookUrl = getEnv('TEAM_WEBHOOK');
+  if (!webhookUrl) {
+    throw new Error(`Missing TEAM_WEBHOOK env var. Could not send: "${message}"`);
+  }
+  const formattedMessage = formatted ? '```\n' + message + '\n```' : message;
+  if (formattedMessage.length >= 2000) {
+    const lines = message.split('\n');
+    if (lines.length <= 2) throw new Error('Lines are too long, reaching infinite recursivity');
+    const mid = Math.round(lines.length / 2);
+    await sendDiscord(lines.slice(0, mid).join('\n'), formatted);
+    await sendDiscord(lines.slice(mid).join('\n'), formatted);
+    return;
+  }
+  await axios.post(`${webhookUrl}?wait=true`, { content: formattedMessage }, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
 
 function addIfAddress(value, found) {
   if (typeof value === 'string' && ADDRESS_RE.test(value)) found.add(value.toLowerCase());
@@ -35,6 +55,14 @@ function extractTrackedAddresses(chainConfig, found = new Set()) {
 
 function loadRawConfigs(filePath) {
   return require(filePath)._rawConfigs;
+}
+
+function formatDuplicates(duplicates) {
+  const entries = Object.entries(duplicates);
+  if (!entries.length) return null;
+  const lines = [`Found ${entries.length} duplicate registry entries:`, ''];
+  for (const [key, protocols] of entries) lines.push(`${key}\n  → ${protocols}`);
+  return lines.join('\n');
 }
 
 async function run() {
@@ -72,18 +100,19 @@ async function run() {
     }
   }
 
-  if (getEnv('STORE_IN_R2')) {
-    try {
-      await sdk.cache.writeCache(`${Bucket}/registry-duplicates.json`, duplicates);
-      console.log('data written to s3 bucket');
-    } catch (e) {
-      sdk.log('failed to write data to s3 bucket: ');
-      sdk.log(e);
-    }
-    return;
-  }
-
   console.table(Object.entries(duplicates));
+
+  const message = formatDuplicates(duplicates);
+  if (message) await sendDiscord(message);
+  else console.log('No duplicate registry entries found.');
 }
 
-run().catch(console.error).then(() => process.exit(0));
+run().catch(async (e) => {
+  console.error(e);
+  try {
+    await sendDiscord(`check-registries-duplicates failed: ${e.message}`);
+  } catch (sendErr) {
+    console.error('Also failed to send discord error:', sendErr.message);
+  }
+  process.exitCode = 1;
+});
