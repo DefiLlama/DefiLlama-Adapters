@@ -23,10 +23,11 @@
 
 'use strict'
 
-const fs   = require('fs')
-const path = require('path')
-const https = require('https')
-const sdk  = require('@defillama/sdk')
+const fs     = require('fs')
+const path   = require('path')
+const https  = require('https')
+const sdk    = require('@defillama/sdk')
+const pLimit = require('p-limit')
 
 // ── CLI ────────────────────────────────────────────────────────────────────
 const argv = process.argv.slice(2)
@@ -49,6 +50,7 @@ const TOP           = parseIntFlag('--top', 50, { min: 0 })
 const CONCURRENCY   = parseIntFlag('--concurrency', 15, { min: 1 })
 const GEN_STUBS     = has('--gen-stubs')
 const TIMEOUT_MS    = parseIntFlag('--timeout', 6000, { min: 1 })
+const JSON_OUT      = flag('--json', null)   // path to write structured gap report
 
 // ── Protocol family definitions ────────────────────────────────────────────
 // Each family describes how to detect deployment and how to generate an adapter.
@@ -113,12 +115,16 @@ const FAMILIES = {
     detect: async function(chain) {
       const candidates = await findFactoriesFromEvents(chain, this.poolTopic)
       if (!candidates || !candidates.length) return null
-      // Validate: a real Algebra factory has code AND its "pool" addresses also have code
+      // Validate: a real Algebra factory has code AND at least one emitted pool has code
       // (removes false positives from non-factory contracts emitting the same topic)
       const validated = []
       for (const c of candidates) {
         const code = await getCode(chain, c.address)
         if (code == null || code.length <= 4) continue
+        if (c.samplePool) {
+          const poolCode = await getCode(chain, c.samplePool)
+          if (poolCode == null || poolCode.length <= 4) continue
+        }
         validated.push(c)
       }
       if (!validated.length) return null
@@ -166,6 +172,43 @@ const FAMILIES = {
       adapters.some(a => adapterCoversChain(a, chain) &&
         adapterMentions(a, 'curve')),
     stub: () => null, // Curve is a shared adapter — add chain to projects/curve/index.js, not a new directory
+  },
+
+
+  'velodrome-cl': {
+    name: 'Velodrome/Solidly CL',
+    // Standard CL factory address used by Velodrome and most Solidly forks
+    factory: '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F',
+    detect: async (chain) => {
+      const factory = '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F'
+      const code = await getCode(chain, factory)
+      if (code == null || code.length <= 4) return null
+      const count = await callView(chain, factory, 'function allPoolsLength() view returns (uint256)')
+      return { address: factory, pools: count != null ? Number(count) : null }
+    },
+    coveredBy: (chain, adapters) =>
+      adapters.some(a => adapterCoversChain(a, chain) &&
+        adapterMentions(a, '0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F', 'velodrome', 'aerodrome')),
+    stub: () => null, // add chain to projects/velodrome-CL/index.js
+  },
+
+  'pancakeswap-v3': {
+    name: 'PancakeSwap V3',
+    // Standard V3 factory — same address across BSC, Ethereum, Arbitrum, Base, etc.
+    factory: '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865',
+    detect: async (chain) => {
+      const factory = '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865'
+      const code = await getCode(chain, factory)
+      if (code == null || code.length <= 4) return null
+      // Count via PoolCreated event topic (same as Uniswap V3)
+      const pools = await countEvents(chain, factory,
+        '0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118')
+      return { address: factory, pools }
+    },
+    coveredBy: (chain, adapters) =>
+      adapters.some(a => adapterCoversChain(a, chain) &&
+        adapterMentions(a, '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865', 'pancakeswap')),
+    stub: () => null, // add chain to projects/pancakeswap-v3/index.js
   },
 
 }
@@ -232,6 +275,20 @@ async function getCode(chain, address) {
   }
 }
 
+// Call a single view function on a contract. Returns null on any failure.
+async function callView(chain, address, funcSig, args = []) {
+  try {
+    const { ethers } = require('ethers')
+    const provider = sdk.getProvider(chain)
+    const contract = new ethers.Contract(address, [funcSig], provider)
+    const fn = contract[funcSig.match(/function\s+(\w+)/)[1]]
+    const result = await withTimeout(fn(...args), TIMEOUT_MS)
+    return result
+  } catch (err) {
+    return null
+  }
+}
+
 // Count events emitted from a specific address (last 2M blocks as proxy).
 // Returns null on RPC failure so callers can distinguish "no events" from "unknown".
 async function countEvents(chain, address, topic, maxBlocks = 2_000_000) {
@@ -251,21 +308,68 @@ async function countEvents(chain, address, topic, maxBlocks = 2_000_000) {
 }
 
 // Find all addresses emitting a given topic (for dynamic factory discovery).
-// Returns null on RPC failure so callers can treat it as "unknown", not "not deployed".
-async function findFactoriesFromEvents(chain, topic, maxBlocks = 4_000_000) {
+// Pages backward in chunks to catch old factories and survive provider log-limit failures.
+// Returns null on outer failure so callers treat it as "unknown", not "not deployed".
+async function findFactoriesFromEvents(chain, topic, maxBlocks = 4_000_000, chunkSize = 100_000, floorBlock = 0) {
   try {
     const provider = sdk.getProvider(chain)
     const latest = await withTimeout(provider.getBlockNumber(), TIMEOUT_MS)
-    const fromBlock = Math.max(0, latest - maxBlocks)
-    const logs = await withTimeout(
-      provider.getLogs({ topics: [topic], fromBlock, toBlock: latest }),
-      TIMEOUT_MS * 4,
-    )
+    const bottomBlock = Math.max(floorBlock, latest - maxBlocks)
     const counts = {}
-    for (const log of logs) {
-      counts[log.address] = (counts[log.address] || 0) + 1
+    const samplePool = {} // factory address → one emitted pool address (from log.data)
+
+    let toBlock = latest
+    while (toBlock > bottomBlock) {
+      const fromBlock = Math.max(bottomBlock, toBlock - chunkSize)
+      let logs = null
+      try {
+        logs = await withTimeout(
+          provider.getLogs({ topics: [topic], fromBlock, toBlock }),
+          TIMEOUT_MS * 4,
+        )
+      } catch (chunkErr) {
+        // On chunk failure, try each half independently before skipping the range
+        const mid = Math.floor((fromBlock + toBlock) / 2)
+        if (mid < toBlock) {
+          let upper = null
+          let lower = null
+          try {
+            upper = await withTimeout(
+              provider.getLogs({ topics: [topic], fromBlock: mid, toBlock }),
+              TIMEOUT_MS * 4,
+            )
+          } catch { /* try lower half regardless */ }
+          try {
+            lower = await withTimeout(
+              provider.getLogs({ topics: [topic], fromBlock, toBlock: mid }),
+              TIMEOUT_MS * 4,
+            )
+          } catch { /* both halves failed */ }
+          if (upper || lower) {
+            logs = [...(upper || []), ...(lower || [])]
+          } else {
+            console.warn(`  [warn] findFactories ${chain} chunk [${fromBlock}-${toBlock}] skipped: ${chunkErr.message}`)
+          }
+        }
+      }
+      if (logs) {
+        for (const log of logs) {
+          counts[log.address] = (counts[log.address] || 0) + 1
+          // Algebra Pool(token0, token1, pool): pool is the non-indexed 3rd param in log.data
+          if (!samplePool[log.address] && log.data && log.data.length >= 42) {
+            samplePool[log.address] = '0x' + log.data.slice(-40)
+          }
+        }
+      }
+      toBlock = fromBlock
     }
-    return Object.entries(counts).map(([address, pools]) => ({ address, pools }))
+
+    if (!Object.keys(counts).length) return []
+    return Object.entries(counts).map(([address, pools]) => ({
+      address,
+      pools,
+      samplePool: samplePool[address] || null,
+    }))
   } catch (err) {
     console.warn(`  [warn] findFactories ${chain} topic ${topic.slice(0, 10)}: ${err.message}`)
     return null
@@ -287,11 +391,13 @@ async function fetchLlamaCoverage() {
           const protocols = JSON.parse(Buffer.concat(chunks).toString())
           // Build map: family-keyword → Set<chain>
           const coverage = {
-            balancer:  new Set(),
-            algebra:   new Set(),
-            uniswapv3: new Set(),
-            aave:      new Set(),
-            curve:     new Set(),
+            balancer:    new Set(),
+            algebra:     new Set(),
+            uniswapv3:   new Set(),
+            aave:        new Set(),
+            curve:       new Set(),
+            velodrome:   new Set(),
+            pancakeswap: new Set(),
           }
           for (const p of protocols) {
             const name = (p.name || '').toLowerCase()
@@ -308,6 +414,10 @@ async function fetchLlamaCoverage() {
               chains.forEach(c => coverage.aave.add(c))
             if (tag('curve'))
               chains.forEach(c => coverage.curve.add(c))
+            if (tag('velodrome') || tag('aerodrome') || tag('solidly'))
+              chains.forEach(c => coverage.velodrome.add(c))
+            if (tag('pancakeswap') || tag('pancake swap'))
+              chains.forEach(c => coverage.pancakeswap.add(c))
           }
           resolve(coverage)
         } catch { resolve(null) }
@@ -320,7 +430,10 @@ async function fetchLlamaCoverage() {
 
 // ── Chain list ─────────────────────────────────────────────────────────────
 
-// EVM-only chains with a known RPC in the SDK
+// EVM-only chains with a known RPC in the @defillama/sdk provider registry.
+// To add a new chain: verify sdk.getProvider(chain) returns a working provider,
+// then append the chain slug here. Slugs come from DefiLlama's chain registry
+// (see https://github.com/DefiLlama/chainlist or sdk/src/providers.js).
 const EVM_CHAINS = [
   'ethereum','arbitrum','optimism','base','polygon','avax','bsc','era','linea',
   'scroll','blast','mantle','mode','fraxtal','berachain','sonic','taiko','celo',
@@ -341,30 +454,17 @@ function resolveFamilies() {
   return FAMILIES_ARG.split(',').map(f => f.trim()).filter(Boolean)
 }
 
-// ── Concurrency limiter ────────────────────────────────────────────────────
-
-async function pLimit(tasks, limit) {
-  const results = []
-  let i = 0
-  async function worker() {
-    while (i < tasks.length) {
-      const idx = i++
-      results[idx] = await tasks[idx]()
-    }
-  }
-  await Promise.all(Array.from({ length: limit }, worker))
-  return results
-}
-
 // ── Main ───────────────────────────────────────────────────────────────────
 
 // Family key → keyword used in fetchLlamaCoverage coverage map
 const FAMILY_LLAMA_KEY = {
-  'balancer-v2': 'balancer',
-  'algebra':     'algebra',
-  'uniswap-v3':  'uniswapv3',
-  'aave-v3':     'aave',
-  'curve':       'curve',
+  'balancer-v2':    'balancer',
+  'algebra':        'algebra',
+  'uniswap-v3':     'uniswapv3',
+  'aave-v3':        'aave',
+  'curve':          'curve',
+  'velodrome-cl':   'velodrome',
+  'pancakeswap-v3': 'pancakeswap',
 }
 
 async function main() {
@@ -419,7 +519,8 @@ async function main() {
   let done = 0
   const tick = setInterval(() => process.stdout.write('.'), 2000)
 
-  const raw = await pLimit(tasks, CONCURRENCY)
+  const limit = pLimit(CONCURRENCY)
+  const raw = await Promise.all(tasks.map(t => limit(t)))
   clearInterval(tick)
   console.log(' done.\n')
 
