@@ -60,7 +60,9 @@ function buildTvl(chainName) {
         } else {
           const cgId = NATIVE_CG_IDS[chainName]
           if (cgId) {
-            api.addCGToken(cgId, amount)
+            const decimals = Number(token.decimals)
+            const normalizedAmount = Number(BigInt(amount) * BigInt(1e9) / BigInt(10 ** decimals)) / 1e9
+            api.addCGToken(cgId, normalizedAmount)
           } else {
             console.warn(`[ssi-protocol] No CoinGecko ID mapped for native chain "${chainName}" — skipping`)
           }
