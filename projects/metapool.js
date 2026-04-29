@@ -3,15 +3,20 @@ const { call, sumSingleBalance } = require('./helper/chain/near')
 
 const META_POOL_CONTRACT = 'meta-pool.near'
 
+/**
+ * NEAR TVL = NEAR backing every stNEAR holder (total_for_staking)
+ *          + NEAR sitting in the stNEAR/NEAR liquidity pool (nslp_liquidity).
+ * Both values are read on-chain from meta-pool.near::get_contract_state().
+ */
 async function tvl() {
   const balances = {}
   const state = await call(META_POOL_CONTRACT, 'get_contract_state', {})
+  const { total_for_staking, nslp_liquidity } = state || {}
 
-  // total_for_staking: NEAR backing every stNEAR holder
-  // nslp_liquidity:    NEAR sitting in the stNEAR/NEAR liquidity pool
-  const totalYocto = (
-    BigInt(state.total_for_staking) + BigInt(state.nslp_liquidity)
-  ).toString()
+  if (total_for_staking == null || nslp_liquidity == null)
+    throw new Error('meta-pool.near::get_contract_state missing total_for_staking or nslp_liquidity')
+
+  const totalYocto = (BigInt(total_for_staking) + BigInt(nslp_liquidity)).toString()
 
   sumSingleBalance(balances, 'wrap.near', totalYocto)
   return balances
