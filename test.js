@@ -172,6 +172,9 @@ async function runAdapterValidation() {
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
 
+  /**
+   * Parses an optional CLI timestamp as unix seconds, milliseconds, or a date string.
+   */
   function parseTimestampArg(arg) {
     if (!arg) return undefined;
     // Accept pure numeric input as unix seconds or milliseconds
@@ -287,6 +290,9 @@ async function runAdapterValidation() {
 runAdapterValidation().catch(handleError);
 
 
+/**
+ * Validates adapter export shape and chain naming for the selected module.
+ */
 function checkExportKeys(module, filePath, chains) {
   let _filePath = filePath
   filePath = filePath.split(path.sep)
