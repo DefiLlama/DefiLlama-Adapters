@@ -30,8 +30,10 @@ async function tvl(api) {
  * Counts MOR held by Morpheus BuildersV4 contracts on each chain as staking TVL.
  */
 async function buildersStaking(api) {
-  const { owner, fromBlock } = BUILDERS_V4[api.chain]
-  if (api.block && api.block < fromBlock) return {}
+  const chainConfig = BUILDERS_V4[api.chain]
+  if (!chainConfig) return {}
+  const { owner, fromBlock } = chainConfig
+  if (typeof api.block === 'number' && api.block < fromBlock) return {}
   const token = await api.call({ target: owner, abi: abi.depositToken, permitFailure: true })
   if (!token) return {}
   const balance = await api.call({ target: token, abi: abi.balanceOf, params: [owner] })
