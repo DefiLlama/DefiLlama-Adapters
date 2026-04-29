@@ -30,9 +30,13 @@ const NATIVE_CG_IDS = {
   DOGE:    'dogecoin',
 }
 
+const _basketCache = new Map()
 async function getBaskets(timestamp) {
-  const baseApi = new sdk.ChainApi({ chain: 'base', timestamp })
-  return baseApi.multiCall({ abi: abi.getBasket, calls: ssi_tokens })
+  if (!_basketCache.has(timestamp)) {
+    const baseApi = new sdk.ChainApi({ chain: 'base', timestamp })
+    _basketCache.set(timestamp, baseApi.multiCall({ abi: abi.getBasket, calls: ssi_tokens }))
+  }
+  return _basketCache.get(timestamp)
 }
 
 function buildTvl(chainName) {
@@ -49,7 +53,11 @@ function buildTvl(chainName) {
           api.add(`${api.chain}:${tokenAddress}`, amount)
         } else {
           const cgId = NATIVE_CG_IDS[chainName]
-          if (cgId) api.addCGToken(cgId, amount)
+          if (cgId) {
+            api.addCGToken(cgId, amount)
+          } else {
+            console.warn(`[ssi-protocol] No CoinGecko ID mapped for native chain "${chainName}" — skipping`)
+          }
         }
       })
     })
