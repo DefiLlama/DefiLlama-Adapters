@@ -14,7 +14,7 @@ async function tvl() {
     contract: STATS_CONTRACT,
     data: QUANT_STATS_TVL_QUERY,
   });
-  balances[`ARBITRUM:${ADDRESSES.arbitrum.USDC}`] = res;
+  balances[`ARBITRUM:${ADDRESSES.arbitrum.USDC_CIRCLE}`] = res;
   return balances;
 }
 
