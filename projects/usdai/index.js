@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = {
   "claimableBaseYield": "uint256:claimableBaseYield",
   "pools": "address[]:pools",
@@ -20,8 +21,8 @@ const QUEUED_DEPOSITOR_CONTRACT = "0x81cc0DEE5e599784CBB4862c605c7003B0aC5A53";
 const LOAN_ROUTER_CONTRACT = "0x0C2ED170F2bB1DF1a44292Ad621B577b3C9597D1";
 const WRAPPED_M_CONTRACT = "0x437cc33344a0B27A429f795ff6B469C72698B291";
 const PYUSD = "0x46850aD61C2B7d64d08c9C754F45254596696984";
-const USDC = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
-const USDT = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9";
+const USDC = ADDRESSES.arbitrum.USDC_CIRCLE;
+const USDT = ADDRESSES.arbitrum.USDT;
 const WHITELISTED_TOKENS = [USDC, USDT, PYUSD];
 const LOAN_TOKENS = [USDC, USDT, PYUSD];
 const LEGACY_POOL_1 = "0x0f62b8C58E1039F246d69bA2215ad5bF0D2Bb867";
@@ -122,6 +123,15 @@ async function tvl(api) {
   })
 }
 
+// Base and Plasma: USDai and sUSDai on these chains are OFT (Omnichain Fungible Token)
+// bridged assets. The underlying PYUSD collateral is held exclusively on Arbitrum and
+// already counted in the Arbitrum TVL function above.
+// These chain entries exist so DeFiLlama displays USD.AI as active on Base and Plasma.
+// No additional TVL is counted here to avoid double-counting the Arbitrum collateral.
+async function tvlOFTChain(_api) {
+  // OFT bridge — underlying assets counted on Arbitrum. No TVL to add here.
+}
+
 async function borrowed(api) {
   // Legacy pools
   const tokens = await api.multiCall({ abi: abi.currencyToken, calls: LEGACY_POOLS, permitFailure: true });
@@ -185,6 +195,12 @@ module.exports = {
   arbitrum: {
     tvl,
     borrowed,
+  },
+  base: {
+    tvl: tvlOFTChain,
+  },
+  plasma: {
+    tvl: tvlOFTChain,
   },
   methodology:
     "TVL is calculated by summing the value of tokens held by the protocol and outstanding claimable yield.",
