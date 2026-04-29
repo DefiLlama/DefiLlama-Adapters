@@ -335,7 +335,7 @@ async function findFactoriesFromEvents(chain, topic, maxBlocks = 4_000_000, chun
           let lower = null
           try {
             upper = await withTimeout(
-              provider.getLogs({ topics: [topic], fromBlock: mid, toBlock }),
+              provider.getLogs({ topics: [topic], fromBlock: mid + 1, toBlock }),
               TIMEOUT_MS * 4,
             )
           } catch { /* try lower half regardless */ }
@@ -361,7 +361,7 @@ async function findFactoriesFromEvents(chain, topic, maxBlocks = 4_000_000, chun
           }
         }
       }
-      toBlock = fromBlock
+      toBlock = fromBlock - 1
     }
 
     if (!Object.keys(counts).length) return []
@@ -567,6 +567,26 @@ async function main() {
       fs.writeFileSync(file, code)
       console.log(`  wrote projects/${slug}/index.js`)
     }
+  }
+
+  if (JSON_OUT) {
+    const report = {
+      timestamp: new Date().toISOString(),
+      gaps: gaps.map(g => ({
+        chain: g.chain,
+        family: g.family,
+        pools: g.info.pools ?? null,
+        address: g.info.address,
+      })),
+      summary: {
+        covered: covered.length,
+        total: deployed.length,
+        apiBlocked: apiBlocked.length,
+        gapsFound: gaps.length,
+      },
+    }
+    fs.writeFileSync(JSON_OUT, JSON.stringify(report, null, 2))
+    console.log(`\nJSON report written to ${JSON_OUT}`)
   }
 
   console.log('\nDone.\n')
