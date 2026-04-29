@@ -12,6 +12,7 @@ async function tvl(api) {
             ADDRESSES.ethereum.USDC,
             ADDRESSES.ethereum.USDT,
             ADDRESSES.ethereum.WETH,
+            ADDRESSES.ethereum.WBTC,
         ],
     })
 
