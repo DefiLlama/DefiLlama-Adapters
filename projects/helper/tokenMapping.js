@@ -48,6 +48,10 @@ const fixBalancesTokens = {
     '0xff12470a969dd362eb6595ffb44c82c959fe9acc': { coingeckoId: 'usda', decimals: 18 },
     '0x5d5c8aec46661f029a5136a4411c73647a5714a7': { coingeckoId: 'susda', decimals: 18 },
   },
+  alephium: {
+    '383bc735a4de6722af80546ec9eeb3cff508f2f68e97da19489ce69f3e703200': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+    '556d9582463fe44fbd108aedc9f409f69086dc78d994b88ea6c9e65f8bf98e00': { coingeckoId: 'tether', decimals: 6 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
