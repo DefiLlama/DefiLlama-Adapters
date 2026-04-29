@@ -33,8 +33,14 @@ const NATIVE_CG_IDS = {
 const _basketCache = new Map()
 async function getBaskets(timestamp) {
   if (!_basketCache.has(timestamp)) {
-    const baseApi = new sdk.ChainApi({ chain: 'base', timestamp })
-    _basketCache.set(timestamp, baseApi.multiCall({ abi: abi.getBasket, calls: ssi_tokens }))
+    const request = (async () => {
+      const baseApi = new sdk.ChainApi({ chain: 'base', timestamp })
+      return baseApi.multiCall({ abi: abi.getBasket, calls: ssi_tokens })
+    })().catch((e) => {
+      _basketCache.delete(timestamp)
+      throw e
+    })
+    _basketCache.set(timestamp, request)
   }
   return _basketCache.get(timestamp)
 }
