@@ -431,11 +431,10 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
-    await Promise.all([
-      getTermMaxVaultAddresses(api),
-      getTermMaxVaultV1PlusAddresses(api),
-    ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses] = await Promise.all([
+    getTermMaxVaultAddresses(api),
+    getTermMaxVaultV1PlusAddresses(api),
+  ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
     .concat(vaultV1PlusAddresses)
