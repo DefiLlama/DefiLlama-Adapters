@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { aQuery, function_view, getResources } = require("../helper/chain/aptos");
+const axios = require("axios");
+const { endpoint: APTOS_ENDPOINT, aQuery, function_view } = require("../helper/chain/aptos");
 const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
@@ -10,6 +11,7 @@ const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const PAGE_SIZE = 50;
 const APT = ADDRESSES.aptos.APT;
 const APT_TYPE_ARG = "0x1::aptos_coin::AptosCoin";
+const ECHELON_VAULT_RESOURCE = `${ECHELON}::lending::Vault`;
 
 const FA_BALANCES_QUERY = gql`
   query YieldAiFaBalances($addresses: [String!]!) {
@@ -58,6 +60,16 @@ async function retryAsync(fn, attempts = 5) {
   throw lastError;
 }
 
+async function getEchelonVaultResource(safe) {
+  const url = `${APTOS_ENDPOINT}/v1/accounts/${safe}/resource/${ECHELON_VAULT_RESOURCE}`;
+  try {
+    return (await axios.get(url)).data;
+  } catch (e) {
+    if (e?.response?.status === 404) return null;
+    throw e;
+  }
+}
+
 async function getSafeAddresses() {
   const total = Number(await function_view({ functionStr: `${VAULT}::vault::get_total_safes`, chain: "aptos" })) || 0;
   const safes = [];
@@ -94,14 +106,7 @@ async function sumEchelonSafePositions(api, safeAddresses) {
   await PromisePool.withConcurrency(1)
     .for(safeAddresses)
     .process(async (safe) => {
-      let resources;
-      try {
-        resources = await retryAsync(() => getResources(safe, "aptos"));
-      } catch (e) {
-        return;
-      }
-
-      const vault = resources.find((r) => r.type === `${ECHELON}::lending::Vault`);
+      const vault = await retryAsync(() => getEchelonVaultResource(safe));
       const collaterals = vault?.data?.collaterals?.data || [];
 
       for (const collateral of collaterals) {
