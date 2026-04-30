@@ -1,20 +1,26 @@
-const {toUSDTBalances} = require("../helper/balances");
-const {default: BigNumber} = require("bignumber.js");
+const { toUSDTBalances } = require('../helper/balances')
+const BigNumber = require('bignumber.js')
 
-const homeVault = "0x717882AB8e82aFD999C7E5bEA87E07eC78D82C62"
+const HAKO_STABLE_VAULT = '0xda6600Dd3124f07EC82304b059248e5b529864df'
+const NORMALIZED_DECIMALS = 18
 
 async function tvl(api) {
-    const asset = await api.call({
-        target: homeVault,
-        abi: 'uint256:totalAssets'
-    })
-    const vaultTVL = BigNumber(asset).div(1e18).toFixed(0)
-    return toUSDTBalances(vaultTVL)
+  const totalAssets = await api.call({
+    target: HAKO_STABLE_VAULT,
+    abi: 'uint256:totalAssets',
+  })
+
+  const vaultTVL = BigNumber(totalAssets.toString())
+    .div(BigNumber(10).pow(NORMALIZED_DECIMALS))
+    .toFixed(0)
+
+  return toUSDTBalances(vaultTVL)
 }
 
 module.exports = {
-    methodology: "We calculate TVL based on the total managed assets (in USD) of our home proxy contracts, accounting for all assets and LP tokens",
-    polygon: {
-        tvl
-    },
-};
+  start: 1771681367,
+  methodology: "We calculate TVL based on the total managed assets (in USD) of our home proxy contract on Base, accounting for all assets and LP tokens",
+  base: {
+    tvl,
+  },
+}
