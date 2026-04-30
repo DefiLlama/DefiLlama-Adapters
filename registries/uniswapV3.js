@@ -1704,6 +1704,10 @@ const uniV3Configs = {
       blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
     }
   },
+  'phlox': {
+    methodology: 'TVL accounts for liquidity on all Uniswap V3-style pools created by the Phlox factory on LUKSO.',
+    lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
