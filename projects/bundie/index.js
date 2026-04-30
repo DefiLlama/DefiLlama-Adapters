@@ -86,7 +86,15 @@ async function tvl(api) {
   // 3. Strategy share tokens — discovered on-chain from RouterManager + Router events.
   const shareTokens = await discoverLocalShareTokens(api);
 
-  const shareTokenBalances = await api.getTokenBalances({ tokens:shareTokens, owners: accounts, withTokenData: true, })
+  const allShareTokenBalances = await api.getTokenBalances({ tokens:shareTokens, owners: accounts, withTokenData: true, })
+  let stBalMap = {}
+  for (const b of allShareTokenBalances) {
+    if (!b.balance || b.balance === '0') continue;
+    stBalMap[b.token] = new BigNumber(stBalMap[b.token]) ?? new BigNumber(0)
+    stBalMap[b.token] = stBalMap[b.token].plus(b.balance)
+    stBalMap[b.token] = stBalMap[b.token].toFixed(0)
+  }
+  const shareTokenBalances = Object.entries(stBalMap)
   const uAssets = await api.multiCall({  abi: 'address:asset', calls: shareTokenBalances.map(([t]) => ({ target: t })) })
   const uBals = await api.multiCall({  abi: 'function convertToAssets(uint256) view returns (uint256)', calls: shareTokenBalances.map(([t, bals]) => ({ target: t, params: [bals] })) })
 
