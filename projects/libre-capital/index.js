@@ -551,7 +551,7 @@ async function ethTvl() {
         });
 
         if (balance?.output) {
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
@@ -601,7 +601,7 @@ async function polygonTvl() {
         });
 
         if (balance?.output) {
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
@@ -633,7 +633,7 @@ async function mantraTvl() {
         });
 
         if (supply?.total_supply) {
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(supply.total_supply) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
@@ -659,7 +659,7 @@ async function suiTvl() {
         const receiptTokenObject = await sui.getObject(token.address);
         if (receiptTokenObject?.fields?.balance) {
             const balance = receiptTokenObject.fields.balance;
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(balance) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
@@ -692,7 +692,7 @@ async function imxTvl({ imx: block }) {
     supplies.output.forEach((supply, i) => {
         if (supply?.output) {
             const token = Object.values(RECEIPT_TOKENS.imx)[i];
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(supply.output) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
@@ -721,7 +721,7 @@ async function avaxTvl() {
         });
 
         if (balance?.output) {
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
@@ -754,7 +754,7 @@ async function injectiveTvl() {
 
         if (supply?.total_supply) {
             const balance = supply.total_supply;
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
 
             // Convert balance to human readable and multiply by price
             const adjustedBalance = Number(balance) / (10 ** token.decimals);
@@ -787,7 +787,7 @@ async function solanaTvl() {
 
         if (supply?.value?.amount) {
             const balance = supply.value.amount;
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
 
             // Convert balance to human readable and multiply by price
             const adjustedBalance = Number(balance) / (10 ** token.decimals);
@@ -818,7 +818,7 @@ async function nearTvl() {
 
         if (supply) {
             const balance = supply;
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
 
             // Convert balance to human readable and multiply by price
             const adjustedBalance = Number(balance) / (10 ** token.decimals);
@@ -852,7 +852,7 @@ async function aptosTvl() {
 
         // Get total supply and price
         const totalSupply = supply?.current?.value || '0';
-        const price = fundPrices[token.instrumentId] || 1;
+        const price = fundPrices[token.instrumentId] ?? 1;
 
         // Convert supply to human readable and multiply by price
         const adjustedSupply = Number(totalSupply) / (10 ** token.decimals);
@@ -881,7 +881,7 @@ async function hederaTvl() {
         const totalSupply = await getHederaTokenSupply(token.address);
 
         if (totalSupply > 0) {
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const valueUSD = totalSupply * price;
             totalTvl += valueUSD;
         }
@@ -913,7 +913,7 @@ async function xdcTvl() {
         })
 
         if (supply?.output) {
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(supply.output) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
@@ -942,7 +942,7 @@ async function seiTvl() {
         });
 
         if (balance?.output) {
-            const price = fundPrices[token.instrumentId] || 1;
+            const price = fundPrices[token.instrumentId] ?? 1;
             const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
