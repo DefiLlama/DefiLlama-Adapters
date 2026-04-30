@@ -39,9 +39,12 @@ module.exports = {
     tvl: async (api) => {
       const list = await getConfig('tempo-stable-dex/tokenlist', TEMPO_TOKENLIST)
       if (!Array.isArray(list?.tokens)) throw new Error('tempo-stable-dex: invalid token list, missing tokens[]')
-      const tokens = list.tokens
-        .map(t => t?.address)
-        .filter(a => typeof a === 'string' && /^0x[a-fA-F0-9]{40}$/.test(a))
+      const tokens = [...new Set(
+        list.tokens
+          .map(t => t?.address)
+          .filter(a => typeof a === 'string' && /^0x[a-fA-F0-9]{40}$/.test(a))
+          .map(a => a.toLowerCase())
+      )]
       if (!tokens.length) throw new Error('tempo-stable-dex: invalid token list, no valid token addresses')
       return api.sumTokens({ owner: STABLECOIN_DEX, tokens })
     }
