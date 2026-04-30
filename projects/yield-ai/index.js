@@ -1,6 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const axios = require("axios");
-const { endpoint: APTOS_ENDPOINT, aQuery, function_view } = require("../helper/chain/aptos");
+const { endpoint: APTOS_ENDPOINT, function_view } = require("../helper/chain/aptos");
 const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
@@ -9,6 +9,7 @@ const VAULT = "0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef15470
 const ECHELON = "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba";
 const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const PAGE_SIZE = 50;
+const APTOS_REST_TIMEOUT_MS = 10_000;
 const APT = ADDRESSES.aptos.APT;
 const APT_TYPE_ARG = "0x1::aptos_coin::AptosCoin";
 const ECHELON_VAULT_RESOURCE = `${ECHELON}::lending::Vault`;
@@ -63,7 +64,17 @@ async function retryAsync(fn, attempts = 5) {
 async function getEchelonVaultResource(safe) {
   const url = `${APTOS_ENDPOINT}/v1/accounts/${safe}/resource/${ECHELON_VAULT_RESOURCE}`;
   try {
-    return (await axios.get(url)).data;
+    return (await axios.get(url, { timeout: APTOS_REST_TIMEOUT_MS })).data;
+  } catch (e) {
+    if (e?.response?.status === 404) return null;
+    throw e;
+  }
+}
+
+async function getAptBalance(addr) {
+  const url = `${APTOS_ENDPOINT}/v1/accounts/${addr}/balance/${APT_TYPE_ARG}`;
+  try {
+    return (await axios.get(url, { timeout: APTOS_REST_TIMEOUT_MS })).data;
   } catch (e) {
     if (e?.response?.status === 404) return null;
     throw e;
@@ -103,7 +114,7 @@ async function sumEchelonSafePositions(api, safeAddresses) {
     return marketMetadataCache.get(market);
   }
 
-  await PromisePool.withConcurrency(1)
+  const { errors } = await PromisePool.withConcurrency(1)
     .for(safeAddresses)
     .process(async (safe) => {
       const vault = await retryAsync(() => getEchelonVaultResource(safe));
@@ -126,6 +137,8 @@ async function sumEchelonSafePositions(api, safeAddresses) {
         if (asset) api.add(asset, amount);
       }
     });
+
+  if (errors.length) throw errors[0];
 }
 
 async function tvl(api) {
@@ -149,10 +162,8 @@ async function tvl(api) {
   // Native APT via CoinStore per safe
   for (const batch of sliceIntoChunks(safeAddresses, 2)) {
     await Promise.all(batch.map(async (addr) => {
-      try {
-        const bal = await aQuery(`/v1/accounts/${addr}/balance/${APT_TYPE_ARG}`, "aptos");
-        if (bal && bal !== "0") api.add(APT, bal);
-      } catch (e) { /* object accounts without a CoinStore return no balance */ }
+      const bal = await retryAsync(() => getAptBalance(addr));
+      if (bal && bal !== "0") api.add(APT, bal);
     }));
   }
 }
