@@ -491,6 +491,7 @@ async function getInstrumentsNav() {
     const priceMap = {};
     const uniqueInstrumentID = [...new Set(
         [
+            ...Object.values(SECURITY_TOKENS.ethereum).map(token => token.instrumentId),
             ...Object.values(RECEIPT_TOKENS).flatMap(tokens =>
                 Object.values(tokens).map(token => token.instrumentId)
             ),
@@ -553,18 +554,21 @@ async function ethTvl() {
     }
 
     // Adjust ETH TVL removing BRIDGED + RECEIPTS
-    totalTvl -= (await suiTvl())['usd-coin'] || 0;
-    totalTvl -= (await seiTvl())['usd-coin'] || 0;
-    totalTvl -= (await imxTvl({}))['usd-coin'] || 0;
-    totalTvl -= (await nearTvl())['usd-coin'] || 0;
-    totalTvl -= (await aptosTvl())['usd-coin'] || 0;
-    totalTvl -= (await hederaTvl())['usd-coin'] || 0;
-    totalTvl -= (await avaxTvl())['usd-coin'] || 0;
-    totalTvl -= (await polygonTvl())['usd-coin'] || 0;
-    totalTvl -= (await xdcTvl())['usd-coin'] || 0;
-    totalTvl -= (await solanaTvl())['usd-coin'] || 0;
-    totalTvl -= (await mantraTvl())['usd-coin'] || 0;
-    totalTvl -= (await injectiveTvl())['usd-coin'] || 0;
+    const chainTvls = await Promise.all([
+        suiTvl(),
+        seiTvl(),
+        imxTvl({}),
+        nearTvl(),
+        aptosTvl(),
+        hederaTvl(),
+        avaxTvl(),
+        polygonTvl(),
+        xdcTvl(),
+        solanaTvl(),
+        mantraTvl(),
+        injectiveTvl(),
+    ]);
+    totalTvl -= chainTvls.reduce((sum, tvl) => sum + (tvl['usd-coin'] || 0), 0);
 
     if (totalTvl < 0) {
         totalTvl = 0;
