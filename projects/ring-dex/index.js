@@ -41,6 +41,9 @@ Object.keys(fewFactoryConfig).forEach(chain => {
   }
 });
 
+/**
+ * Converts Few-wrapped balances in-place until final underlying assets remain.
+ */
 async function unwrapFewBalances(api, balances, fewTokenSet) {
   for (let depth = 0; depth < 6; depth++) {
     const wrappedTokens = Object.keys(balances).filter(token => fewTokenSet.has(token) && balances[token] > 0n)
@@ -67,6 +70,9 @@ async function unwrapFewBalances(api, balances, fewTokenSet) {
   }
 }
 
+/**
+ * Reads each Few wrapper's underlying token, supply, and backing balance.
+ */
 async function getFewTokenInfo(api, fewTokens) {
   const [underlyings, supplies] = await Promise.all([
     api.multiCall({ abi: 'address:token', calls: fewTokens }),
@@ -87,10 +93,16 @@ async function getFewTokenInfo(api, fewTokens) {
   ]))
 }
 
+/**
+ * Normalizes EVM addresses used as map keys.
+ */
 function normalize(address) {
   return address.toLowerCase()
 }
 
+/**
+ * Adds a raw token balance to an in-memory balances map.
+ */
 function addBalance(balances, token, amount) {
   amount = BigInt(amount ?? 0)
   if (amount === 0n) return;
