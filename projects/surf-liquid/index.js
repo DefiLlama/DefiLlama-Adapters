@@ -100,7 +100,8 @@ async function tvl(api) {
 
 async function tvlV4(api) {
   const fromBlock = V4_FROM_BLOCKS[api.chain];
-  if (!fromBlock) return;
+  const toBlock = api.block ?? await api.getBlock();
+  if (!fromBlock || toBlock < fromBlock) return;
 
   const assets = await api.call({ abi: ABI.getAllowedAssets, target: V4_REGISTRY });
   if (!assets || assets.length === 0) return;
