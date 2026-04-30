@@ -18,7 +18,6 @@ async function tvl(api) {
     target: CHECKING_FACTORY,
     topic: ACCOUNT_CREATED_TOPIC,
     fromBlock: 6101653,
-    useIndexer: true
   });
   
   const checkingContracts = logs.flatMap(log => [
