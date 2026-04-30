@@ -50,11 +50,6 @@ const uniV3Configs = {
     start: 7845865,
     megaeth: { factory: '0x1adb8f973373505bb206e0e5d87af8fb1f5514ef', fromBlock: 7845865 },
   },
-  phlox: {
-    methodology: 'TVL accounts for liquidity on all Uniswap V3-style pools created by the Phlox factory on LUKSO.',
-    start: 7393687,
-    lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
-  },
   'superswap-v3': {
     methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
     optimism: { factory: '0xe52a36Bb76e8f40e1117db5Ff14Bd1f7b058B720', fromBlock: 124982239 },
@@ -1708,6 +1703,10 @@ const uniV3Configs = {
       extraKey: 'v3',
       blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
     }
+  },
+  'phlox': {
+    methodology: 'TVL accounts for liquidity on all Uniswap V3-style pools created by the Phlox factory on LUKSO.',
+    lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
   },
 }
 
