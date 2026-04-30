@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const PROJECT_CONTRACT = '0x47176B2Af9885dC6C4575d4eFd63895f7Aaa4790';
 const PROJECT_CONTRACT_V2 = '0xDf1AC1AC255d91F5f4B1E3B4Aef57c5350F64C7A';
 const ARBITRUM_BUILDERS = '0xC0eD68f163d44B6e9985F0041fDf6f67c6BCFF3f';
+const BASE_BUILDERS = '0x42BB446eAE6dca7723a9eBdb81EA88aFe77eF4B9';
 
 async function tvl(api) {
   const v2Deployment = +new Date('2025-09-17') / 1e3
@@ -19,16 +20,20 @@ async function tvl(api) {
 
 }
 
-// Builders contract deployed 2026-04-28 03:19 UTC (block 457098475);
-// historical runs before this revert on depositToken().
-const ARBITRUM_BUILDERS_DEPLOYMENT = 1777346391;
+// Builders contracts; historical runs before deploy revert on depositToken().
+const ARBITRUM_BUILDERS_DEPLOYMENT = 1777346391;       // 2026-04-28 03:19 UTC
 const ARBITRUM_BUILDERS_DEPLOYMENT_BLOCK = 457098475;
+const BASE_BUILDERS_DEPLOYMENT = 1735552939;            // 2024-12-30 10:02 UTC
+const BASE_BUILDERS_DEPLOYMENT_BLOCK = 24381796;
 
-async function arbitrumStaking(api) {
-  if (api.timestamp < ARBITRUM_BUILDERS_DEPLOYMENT || api.block < ARBITRUM_BUILDERS_DEPLOYMENT_BLOCK) return {}
-  const depositToken = await api.call({ abi: 'address:depositToken', target: ARBITRUM_BUILDERS })
-  return api.sumTokens({ owner: ARBITRUM_BUILDERS, tokens: [depositToken] })
+async function buildersStaking(api, builder, deployTs, deployBlock) {
+  if (api.timestamp < deployTs || api.block < deployBlock) return {}
+  const depositToken = await api.call({ abi: 'address:depositToken', target: builder })
+  return api.sumTokens({ owner: builder, tokens: [depositToken] })
 }
+
+const arbitrumStaking = (api) => buildersStaking(api, ARBITRUM_BUILDERS, ARBITRUM_BUILDERS_DEPLOYMENT, ARBITRUM_BUILDERS_DEPLOYMENT_BLOCK)
+const baseStaking = (api) => buildersStaking(api, BASE_BUILDERS, BASE_BUILDERS_DEPLOYMENT, BASE_BUILDERS_DEPLOYMENT_BLOCK)
 
 const abi = {
   "getAllATokens": "function getAllATokens() view returns ((string symbol, address tokenAddress)[])",
@@ -38,10 +43,11 @@ const abi = {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: 'Ethereum TVL counts stETH and Aave aToken deposits held by the Morpheus capital contracts. Arbitrum staking counts the MOR balance held by the Morpheus Builders contract; reported under staking because the deposit asset is the protocol token.',
+  methodology: 'Ethereum TVL counts stETH and Aave aToken deposits held by the Morpheus capital contracts. Arbitrum and Base staking count the MOR balance held by their respective Morpheus Builders contracts; reported under staking because the deposit asset is the protocol token.',
   start: '2024-02-08',  // Feb-08-2024 07:33:35 AM UTC in Unix timestamp
   ethereum: { tvl },
   arbitrum: { tvl: () => ({}), staking: arbitrumStaking },
+  base: { tvl: () => ({}), staking: baseStaking },
   hallmarks: [
     ['2024-04-06', "MOR token launch"],  // May-08-2024 12:00:00 AM UTC in Unix timestamp
   ],
