@@ -45,7 +45,8 @@ Object.keys(fewFactoryConfig).forEach(chain => {
  * Converts Few-wrapped balances in-place until final underlying assets remain.
  */
 async function unwrapFewBalances(api, balances, fewTokenSet) {
-  while (true) {
+  const maxDepth = Math.max(fewTokenSet.size, 1)
+  for (let depth = 0; depth < maxDepth; depth++) {
     const wrappedTokens = Object.keys(balances).filter(token => fewTokenSet.has(token) && balances[token] > 0n)
     if (!wrappedTokens.length) return;
 
