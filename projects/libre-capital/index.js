@@ -846,7 +846,7 @@ async function aptosTvl() {
         if (!supply) continue;
 
         // Get total supply and price
-        const totalSupply = supply.current.value || '0';
+        const totalSupply = supply?.current?.value || '0';
         const price = fundPrices[token.instrumentId] || 1;
 
         // Convert supply to human readable and multiply by price
@@ -950,7 +950,7 @@ async function seiTvl() {
 
 module.exports = {
     timetravel: false,
-    methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of KAIO SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, XDC, Sei and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+    methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of KAIO SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, XDC, Sei, Hedera and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
     ethereum: { tvl: ethTvl },
     polygon: { tvl: polygonTvl },
     injective: { tvl: injectiveTvl },
