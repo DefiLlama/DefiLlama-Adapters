@@ -1,7 +1,11 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const ADDRESSES = require('../helper/coreAssets.json');
 
-// CUSD Token (6 decimals) — settlement currency
+// CUSD Token (6 decimals) — settlement currency (1:1 USD peg, not listed on CoinGecko)
 const CUSD = "0xc5079966b3190909f69306fE7587ffE493dEdB5F";
+
+// BSC USDT (18 decimals) — used as pricing proxy for CUSD
+const BSC_USDT = ADDRESSES.bsc.USDT;
 
 // All Treasury contracts that hold CUSD backing tokenized assets
 const TREASURIES = [
@@ -11,6 +15,7 @@ const TREASURIES = [
   "0xc9298ef68392c48f521f7cb8c8261c88099c4b36",   // Palladium Treasury
   "0x5aeAA55d5024CEf2c32497be59b7506481fCddbD",   // Oil Treasury
   "0x9621bD2eF645cb41356Da9Cab8d9DB1EC4e3be1A",   // Copper Treasury
+  "0xD8875eEf762A6C23f8473E19C896B584BAaF007A",   // Stable Treasury (V3)
 ];
 
 // Staking Reward Vaults (CUSD reserves funding staking rewards)
@@ -21,7 +26,7 @@ const REWARD_VAULTS = [
   "0x2f30fd7b18b8c69e85131e387d88919ae85f26c1",   // Palladium Reward Vault
 ];
 
-// Staking Pools (hold staked commodity tokens)
+// Staking Pools (hold staked commodity tokens — these are also unlisted custom tokens)
 const STAKING_POOLS = {
   "0x60957d156844Bf33A5c5ba3468F0300219c22CAF": "0xEaFfB5Ed6399b54e5b57e8e5fD54B43aA30eB078",   // Gold Pool -> CXAU
   "0x8eBD980217146490B795A225054f1DD73cCffFD9": "0x92F6dED54270bbAb0d54227bD12161f91812eF5d",   // Silver Pool -> CXAG
@@ -29,22 +34,40 @@ const STAKING_POOLS = {
   "0xAD4Bde48D02d94D4fa876DBa345a00a714e76A2A": "0xF4517FaAa550514c12641C45dC000C2946C666b0",   // Palladium Pool -> CXPD
 };
 
-async function tvl(api) {
-  const tokensAndOwners = TREASURIES.map(treasury => [CUSD, treasury]);
-  Object.entries(STAKING_POOLS).forEach(([pool, token]) => {
-    tokensAndOwners.push([token, pool]);
+/**
+ * Read CUSD balanceOf for a list of owners, convert to USDT-equivalent.
+ * CUSD is 6 decimals, BSC USDT is 18 decimals → multiply by 1e12.
+ */
+async function getCusdBalances(api, owners) {
+  const bals = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: owners.map(owner => ({ target: CUSD, params: [owner] })),
   });
-  return sumTokens2({ api, tokensAndOwners });
+  let total = BigInt(0);
+  for (const bal of bals) {
+    total += BigInt(bal || 0);
+  }
+  // Scale from 6 decimals (CUSD) to 18 decimals (USDT)
+  api.add(BSC_USDT, (total * BigInt(1e12)).toString());
+}
+
+async function tvl(api) {
+  // 1. Sum CUSD in all Treasury contracts → report as USDT
+  await getCusdBalances(api, TREASURIES);
+
+  // 2. Sum commodity tokens staked in Participation Pools
+  //    (these are also unlisted tokens — they represent the same CUSD value
+  //     that was used to mint them, but since they don't have CoinGecko prices
+  //     we skip them to avoid double-counting with Treasury CUSD)
 }
 
 async function staking(api) {
-  // Protocol-owned CUSD reserves funding staking rewards — tracked separately from TVL
-  const tokensAndOwners = REWARD_VAULTS.map(vault => [CUSD, vault]);
-  return sumTokens2({ api, tokensAndOwners });
+  // Protocol-owned CUSD reserves funding staking rewards — tracked separately
+  await getCusdBalances(api, REWARD_VAULTS);
 }
 
 module.exports = {
-  methodology: "TVL is the sum of CUSD held in Treasury contracts (backing tokenized commodities) and commodity tokens staked in Participation Pools. Reward Vault reserves are protocol-owned CUSD earmarked for staking incentives and are tracked separately under 'staking', not included in TVL.",
+  methodology: "TVL is the sum of CUSD (USD-pegged stablecoin) held in Treasury contracts backing tokenized commodity tokens. CUSD balances are reported as USDT equivalent. Reward Vault reserves are protocol-owned CUSD earmarked for staking incentives and tracked separately under 'staking'. Staked commodity tokens are excluded to avoid double-counting with Treasury reserves.",
   bsc: {
     tvl,
     staking,
