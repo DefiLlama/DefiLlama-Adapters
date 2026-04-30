@@ -8,10 +8,10 @@ module.exports = {
   timetravel: false,
   stacks: {
     tvl: async () => {
-      const supplyOnStacksuUsdh = await call({ target: USDhContract, abi: 'get-total-supply' });
+      const supplyResult = await call({ target: USDhContract, abi: 'get-total-supply' });
+      const supply = Number(supplyResult.value) / 1e8;
 
-      return { 'hermetica-usdh': Number(supplyOnStacksuUsdh.value) / (10 ** 8) }
+      return { tether: supply }
     }
   },
-  misrepresentedTokens: true
 }
