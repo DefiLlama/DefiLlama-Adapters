@@ -516,13 +516,18 @@ async function getInstrumentsNav() {
         throw new Error('NAV multicall returned no results');
     }
 
+    const failedInstrumentIds = [];
     navResults.output.forEach((result, i) => {
         if (result.success) {
             priceMap[uniqueInstrumentID[i]] = Number(result.output) / 1e6; // Assuming 6 decimals for NAV
         } else {
-            console.warn(`NAV lookup failed for instrument ${uniqueInstrumentID[i]}`);
+            failedInstrumentIds.push(uniqueInstrumentID[i]);
         }
     });
+
+    if (failedInstrumentIds.length) {
+        throw new Error(`NAV lookup failed for instruments: ${failedInstrumentIds.join(', ')}`);
+    }
 
     cachedNav = priceMap;
     cacheTimestamp = now;
