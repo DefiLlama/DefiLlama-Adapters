@@ -1,13 +1,15 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { function_view } = require("../helper/chain/aptos");
+const { aQuery, function_view, getResources } = require("../helper/chain/aptos");
 const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
+const { PromisePool } = require("@supercharge/promise-pool");
 
 const VAULT = "0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700";
-const MOAR = "0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07";
+const ECHELON = "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba";
 const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const PAGE_SIZE = 50;
 const APT = ADDRESSES.aptos.APT;
+const APT_TYPE_ARG = "0x1::aptos_coin::AptosCoin";
 
 const FA_BALANCES_QUERY = gql`
   query YieldAiFaBalances($addresses: [String!]!) {
@@ -19,6 +21,43 @@ const FA_BALANCES_QUERY = gql`
   }
 `;
 
+function normalizeAddress(addr) {
+  if (!addr || typeof addr !== "string") return null;
+  const trimmed = addr.trim().toLowerCase();
+  if (!trimmed) return null;
+  return trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
+}
+
+function normalizeObjectAddress(obj) {
+  if (typeof obj === "string") return normalizeAddress(obj);
+  return normalizeAddress(obj?.inner);
+}
+
+function toIntegerString(v) {
+  if (v == null) return null;
+  if (typeof v === "bigint") return v.toString();
+  if (typeof v === "number") {
+    if (!Number.isFinite(v)) return null;
+    return BigInt(Math.trunc(v)).toString();
+  }
+  const s = String(v).trim();
+  if (!/^\d+$/.test(s)) return null;
+  return s;
+}
+
+async function retryAsync(fn, attempts = 5) {
+  let lastError;
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastError = e;
+      if (i + 1 < attempts) await new Promise((resolve) => setTimeout(resolve, 500 * (i + 1)));
+    }
+  }
+  throw lastError;
+}
+
 async function getSafeAddresses() {
   const total = Number(await function_view({ functionStr: `${VAULT}::vault::get_total_safes`, chain: "aptos" })) || 0;
   const safes = [];
@@ -29,22 +68,59 @@ async function getSafeAddresses() {
     for (const row of rows) {
       const entry = Array.isArray(row) ? { safe_address: row[0], exists: row[3] } : row;
       if (entry.exists === true || entry.exists === "true" || entry.exists === "1") {
-        const addr = entry.safe_address?.trim()?.toLowerCase();
-        if (addr) safes.push(addr.startsWith("0x") ? addr : `0x${addr}`);
+        const addr = normalizeAddress(entry.safe_address);
+        if (addr) safes.push(addr);
       }
     }
   }
   return [...new Set(safes)];
 }
 
-async function getMoarPools() {
-  const pools = await function_view({ functionStr: `${MOAR}::pool::get_all_pools`, chain: "aptos" });
-  if (!Array.isArray(pools)) return [];
-  return pools.map((p, i) => ({
-    index: i,
-    underlying: p?.underlying_asset?.inner ? String(p.underlying_asset.inner).trim().toLowerCase() : null,
-    paused: p?.is_paused === true,
-  })).filter(p => !p.paused && p.underlying);
+async function sumEchelonSafePositions(api, safeAddresses) {
+  const marketMetadataCache = new Map();
+
+  async function getMarketMetadata(market) {
+    if (!marketMetadataCache.has(market)) {
+      const metadata = await retryAsync(() => function_view({
+        functionStr: `${ECHELON}::lending::market_asset_metadata`,
+        args: [market],
+        chain: "aptos",
+      }));
+      marketMetadataCache.set(market, normalizeObjectAddress(metadata));
+    }
+    return marketMetadataCache.get(market);
+  }
+
+  await PromisePool.withConcurrency(1)
+    .for(safeAddresses)
+    .process(async (safe) => {
+      let resources;
+      try {
+        resources = await retryAsync(() => getResources(safe, "aptos"));
+      } catch (e) {
+        return;
+      }
+
+      const vault = resources.find((r) => r.type === `${ECHELON}::lending::Vault`);
+      const collaterals = vault?.data?.collaterals?.data || [];
+
+      for (const collateral of collaterals) {
+        const market = normalizeObjectAddress(collateral?.key);
+        const shares = toIntegerString(collateral?.value);
+        if (!market || !shares || shares === "0") continue;
+
+        const coins = await retryAsync(() => function_view({
+          functionStr: `${ECHELON}::lending::shares_to_coins`,
+          args: [market, shares],
+          chain: "aptos",
+        }));
+        const amount = toIntegerString(coins);
+        if (!amount || amount === "0") continue;
+
+        const asset = await getMarketMetadata(market);
+        if (asset) api.add(asset, amount);
+      }
+    });
 }
 
 async function tvl(api) {
@@ -63,31 +139,15 @@ async function tvl(api) {
     }
   }
 
-  // Native APT via CoinStore per safe
-  for (const batch of sliceIntoChunks(safeAddresses, 10)) {
-    await Promise.all(batch.map(async (addr) => {
-      const bal = await function_view({
-        functionStr: "0x1::coin::balance",
-        type_arguments: ["0x1::aptos_coin::AptosCoin"],
-        args: [addr],
-        chain: "aptos",
-      });
-      if (bal && bal !== "0") api.add(APT, bal);
-    }));
-  }
+  await sumEchelonSafePositions(api, safeAddresses);
 
-  // Moar Market supply-side deposits per safe
-  const pools = await getMoarPools();
-  for (const batch of sliceIntoChunks(safeAddresses, 8)) {
-    const jobs = batch.flatMap(safe => pools.map(pool => ({ safe, pool })));
-    await Promise.all(jobs.map(async ({ safe, pool }) => {
-      const res = await function_view({
-        functionStr: `${MOAR}::lens::get_lp_shares_and_deposited_amount`,
-        args: [String(pool.index), safe],
-        chain: "aptos",
-      });
-      const deposited = Array.isArray(res) ? res[1] : null;
-      if (deposited && deposited !== "0") api.add(pool.underlying, deposited);
+  // Native APT via CoinStore per safe
+  for (const batch of sliceIntoChunks(safeAddresses, 2)) {
+    await Promise.all(batch.map(async (addr) => {
+      try {
+        const bal = await aQuery(`/v1/accounts/${addr}/balance/${APT_TYPE_ARG}`, "aptos");
+        if (bal && bal !== "0") api.add(APT, bal);
+      } catch (e) { /* object accounts without a CoinStore return no balance */ }
     }));
   }
 }
@@ -97,5 +157,5 @@ module.exports = {
   doublecounted: true,
   aptos: { tvl },
   methodology:
-    "TVL sums fungible-asset balances on Yield AI vault safe addresses (via Aptos indexer), native APT in CoinStore per safe, and Moar Market supply-side deposits attributed to each safe. Moar is listed separately on DefiLlama so doublecounted flag is set.",
+    "TVL sums fungible-asset balances on Yield AI vault safe addresses, native APT in CoinStore per safe, and Echelon supply positions held by those safes. Echelon positions are read on-chain from each safe's Echelon lending Vault resource, converted from shares with shares_to_coins, and mapped to underlying assets with market_asset_metadata. The deprecated Moar route is excluded because those positions have been withdrawn. Echelon is listed separately on DefiLlama so doublecounted flag is set. Farming rewards are excluded.",
 };
