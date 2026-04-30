@@ -4,8 +4,10 @@ async function staking(api) {
 }
 
 module.exports = {
+  methodology:
+    "The Arrow protocol is peer-to-peer; by design there is no pooled on-chain TVL.",
   avax: {
     tvl: () => ({}),
     staking,
-  }
-}
+  },
+};
