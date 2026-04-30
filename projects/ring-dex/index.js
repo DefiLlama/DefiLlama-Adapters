@@ -27,11 +27,6 @@ Object.keys(fewFactoryConfig).forEach(chain => {
       const pairs = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factoryConfig[chain].factory })
       const token0s = await api.multiCall({ abi: 'address:token0', calls: pairs })
       const token1s = await api.multiCall({ abi: 'address:token1', calls: pairs })
-      const allTokens = token0s.concat(token1s)
-      const wrappedUnderlyings = await api.multiCall({ abi: 'address:token', calls: allTokens, permitFailure: true })
-      wrappedUnderlyings.forEach((underlying, i) => {
-        if (underlying) fewTokens.push(allTokens[i])
-      })
       const fewTokenSet = new Set(fewTokens.map(normalize))
       const tokenPairs = pairs.flatMap((pair, i) => [[token0s[i], pair], [token1s[i], pair]])
       const pairBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokenPairs.map(([target, pair]) => ({ target, params: [pair] })) })
@@ -56,8 +51,6 @@ async function unwrapFewBalances(api, balances, fewTokenSet) {
 
     wrappedTokens.forEach(token => {
       const balance = balances[token]
-      delete balances[token]
-
       const info = fewTokenInfo[token]
       if (!info) return;
       const supply = BigInt(info.supply)
@@ -66,6 +59,7 @@ async function unwrapFewBalances(api, balances, fewTokenSet) {
       const underlying = normalize(info.underlying)
       if (underlying === token) return;
       addBalance(balances, underlying, balance * BigInt(info.underlyingBalance) / supply)
+      delete balances[token]
       unwrapped = true
     })
 
