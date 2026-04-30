@@ -1,4 +1,5 @@
 const { getConfig } = require('../helper/cache')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // Tempo's enshrined Stablecoin DEX is a system contract predeployed at a fixed
 // address on every Tempo node. It is an on-chain limit-order book (CLOB) for
@@ -8,7 +9,7 @@ const { getConfig } = require('../helper/cache')
 //
 //   Spec:      https://docs.tempo.xyz/protocol/exchange/spec
 //   Predeploy: https://docs.tempo.xyz/quickstart/predeployed-contracts
-const STABLECOIN_DEX = '0xdec0000000000000000000000000000000000000'
+const STABLECOIN_DEX = ADDRESSES.tempo.STABLECOIN_DEX
 
 // Tempo's official Token List Registry (Uniswap-format JSON), maintained by
 // the Tempo team. Pulling the token universe from a curated registry lets the
@@ -37,7 +38,11 @@ module.exports = {
   tempo: {
     tvl: async (api) => {
       const list = await getConfig('tempo-stable-dex/tokenlist', TEMPO_TOKENLIST)
-      const tokens = list.tokens.map(t => t.address)
+      if (!Array.isArray(list?.tokens)) throw new Error('tempo-stable-dex: invalid token list, missing tokens[]')
+      const tokens = list.tokens
+        .map(t => t?.address)
+        .filter(a => typeof a === 'string' && /^0x[a-fA-F0-9]{40}$/.test(a))
+      if (!tokens.length) throw new Error('tempo-stable-dex: invalid token list, no valid token addresses')
       return api.sumTokens({ owner: STABLECOIN_DEX, tokens })
     }
   }

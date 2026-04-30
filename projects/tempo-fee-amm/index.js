@@ -1,4 +1,5 @@
 const { getConfig } = require('../helper/cache')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // Tempo's Fee Manager is a precompile predeployed at a fixed address on every
 // Tempo node. It serves two roles on a single contract surface:
@@ -15,7 +16,7 @@ const { getConfig } = require('../helper/cache')
 //   Source:    https://github.com/tempoxyz/tempo/tree/main/crates/precompiles/src/tip_fee_manager
 //   Spec:      https://docs.tempo.xyz/protocol/fees/spec-fee-amm
 //   Predeploy: https://docs.tempo.xyz/quickstart/predeployed-contracts
-const FEE_MANAGER = '0xfeec000000000000000000000000000000000000'
+const FEE_MANAGER = ADDRESSES.tempo.FEE_MANAGER
 
 // Same official registry used by the Stablecoin DEX adapter
 // (projects/tempo-stable-dex/index.js).
@@ -38,7 +39,11 @@ module.exports = {
   tempo: {
     tvl: async (api) => {
       const list = await getConfig('tempo-fee-amm/tokenlist', TEMPO_TOKENLIST)
-      const tokens = list.tokens.map(t => t.address)
+      if (!Array.isArray(list?.tokens)) throw new Error('tempo-fee-amm: invalid token list, missing tokens[]')
+      const tokens = list.tokens
+        .map(t => t?.address)
+        .filter(a => typeof a === 'string' && /^0x[a-fA-F0-9]{40}$/.test(a))
+      if (!tokens.length) throw new Error('tempo-fee-amm: invalid token list, no valid token addresses')
       return api.sumTokens({ owner: FEE_MANAGER, tokens })
     }
   }
