@@ -34,6 +34,7 @@ const ROUTER_FROM_BLOCK = {
 };
 
 const ZERO = '0x0000000000000000000000000000000000000000';
+const PAGE_SIZE = 500;
 
 const routerMgrAbi = {
   getAllProtocols: 'function getAllProtocols() view returns (string[])',
@@ -81,20 +82,25 @@ async function discoverLocalShareTokens(api) {
   if (!validRouters.length) return [];
 
   const fromBlock = ROUTER_FROM_BLOCK[chain] || 0;
+  const logsByRouter = await Promise.all(
+    validRouters.map(async (router) => {
+      try {
+        const logs = await api.getLogs({
+          target: router,
+          eventAbi: routerAbi.strategySetEvent,
+          onlyArgs: true,
+          fromBlock,
+        });
+        return { router, logs };
+      } catch (e) {
+        return { router, logs: [] };
+      }
+    }),
+  );
+
   const seen = new Set();
   const pairs = [];
-  for (const router of validRouters) {
-    let logs = [];
-    try {
-      logs = await api.getLogs({
-        target: router,
-        eventAbi: routerAbi.strategySetEvent,
-        onlyArgs: true,
-        fromBlock,
-      });
-    } catch (e) {
-      continue;
-    }
+  for (const { router, logs } of logsByRouter) {
     for (const log of logs) {
       const id = log.id;
       const key = `${router.toLowerCase()}-${id}`;
@@ -137,11 +143,16 @@ async function tvl(api) {
   }
   if (!count) return;
 
-  const accounts = await api.multiCall({
-    target: accountManager,
-    abi: accountMgrAbi.at,
-    calls: Array.from({ length: count }, (_, i) => i),
-  });
+  const accounts = [];
+  for (let offset = 0; offset < count; offset += PAGE_SIZE) {
+    const pageLen = Math.min(PAGE_SIZE, count - offset);
+    const page = await api.multiCall({
+      target: accountManager,
+      abi: accountMgrAbi.at,
+      calls: Array.from({ length: pageLen }, (_, i) => offset + i),
+    });
+    accounts.push(...page);
+  }
 
   // 2. Whitelisted asset tokens (idle balances live in the Account itself).
   let whitelistedCount = 0;
@@ -155,11 +166,15 @@ async function tvl(api) {
   let whitelistedTokens = [];
   if (whitelistedCount > 0) {
     try {
-      whitelistedTokens = await api.call({
-        target: accountManager,
-        abi: accountMgrAbi.whitelisted,
-        params: [0, whitelistedCount],
-      });
+      for (let offset = 0; offset < whitelistedCount; offset += PAGE_SIZE) {
+        const pageLen = Math.min(PAGE_SIZE, whitelistedCount - offset);
+        const page = await api.call({
+          target: accountManager,
+          abi: accountMgrAbi.whitelisted,
+          params: [offset, pageLen],
+        });
+        whitelistedTokens.push(...page);
+      }
     } catch (e) {
       whitelistedTokens = [];
     }
