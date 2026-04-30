@@ -15,82 +15,77 @@ const AUDITED_NAV_PER_SHARE = "0x74e3ef52e302554b3ee08d165247f757c92468d2e258e02
 /** @type {string} ABI to query the Instrument Registry */
 const INSTRUMENT_REGISTRY_ABI = "function getUint(bytes32 _id, bytes32 _key) view returns (uint256)";
 
+/** * Configuration of Security Tokens (RWA) on Ethereum.
+ * Includes addresses, decimals e Instrument ID for calculating the price.
+ */
+const SECURITY_TOKENS = {
+    ethereum: {
+        CASHx: {
+            address: '0x42975aae7a124257e7fda7f5e8382f51449b784a',
+            decimals: 18,
+            instrumentId: '0x3636313431343936306633613839373337393633303932640000000000000000',
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
+        },
+        MACROx: {
+            address: '0x98a833de3ead762adc5518ec280b648bba04b642',
+            decimals: 18,
+            instrumentId: '0x3636313431343633306633613839373337393633303932630000000000000000',
+            fundName: 'BH Master Fund Access a sub-fund of KAIO SAF VCC'
+        },
+        VOLTx: {
+            address: '0xd5feb0b03b1c06045c0e0bd28470345e880c4213',
+            decimals: 18,
+            instrumentId: '0x3637313739666237366165623037313161373136386634300000000000000000',
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
+        },
+        SCOPEx: {
+            address: '0x8e3035610d61e6cd5f783b9abb39006527f621c3',
+            decimals: 18,
+            instrumentId: '0x3636633433643637363564313665353638356639333338340000000000000000',
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
+        }
+    }
+}
+
 /** * Configuration of Receipts Tokens (RWA) for each supported chain.
  * Includes addresses, decimals e Instrument ID for calculating the price.
  */
 const RECEIPT_TOKENS = {
-    ethereum: {
-        UMA: {
-            address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
-            decimals: 18,
-            underlying: 'security-token',
-            instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
-        },
-        BHMA: {
-            address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
-            decimals: 18,
-            underlying: 'security-token',
-            instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
-        },
-        BHMB: {
-            address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
-            decimals: 18,
-            underlying: 'security-token',
-            instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
-        },
-        BHMC: {
-            address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
-            decimals: 18,
-            underlying: 'security-token',
-            instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
-        },
-        HLSPC: {
-            address: '0xe5631cCF95350948Ba2D4d8c815c05AFBfb47A9F',
-            decimals: 18,
-            underlying: 'security-token',
-            instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
-        }
-    },
     polygon: {
         UMA: {
             address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         BHMB: {
             address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         BHMC: {
             address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: '0xe5631cCF95350948Ba2D4d8c815c05AFBfb47A9F',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         }
     },
     avalanche: {
@@ -99,42 +94,42 @@ const RECEIPT_TOKENS = {
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: '0xe5631cCF95350948Ba2D4d8c815c05AFBfb47A9F',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         },
         APCA: {
             address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636653765336666346534363764313238323964396366340000000000000000",
-            fundName: 'Libre SAF VCC - Access Private Credit Feeder'
+            fundName: 'KAIO SAF VCC - Access Private Credit Feeder'
         },
         LDCFA: {
             address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
         LDCFB: {
             address: '0xbee4274F1c5EE0B30fC5AAa7842A434C35BF6f7b',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund B'
         },
     },
     injective: {
@@ -143,35 +138,35 @@ const RECEIPT_TOKENS = {
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: 'inj14h6vrgxfshwp30tjne6xw74la6730mf7wy2j3n',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         },
         APCA: {
             address: 'inj1f5zrhkq02fahllqf6g2e37d4aeqfsp63z74t4l',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636653765336666346534363764313238323964396366340000000000000000",
-            fundName: 'Libre SAF VCC - Access Private Credit Feeder'
+            fundName: 'KAIO SAF VCC - Access Private Credit Feeder'
         },
         LDCFA: {
             address: 'inj1qrmw646zfqlq9xxqd5zrvw4yqevxah263l4z27',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
         LDCFB: {
             address: 'inj1kxucwmm5wc640xl0vswf04a0naxm0m9anmzc76',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund B'
         }
     },
     sui: {
@@ -180,28 +175,28 @@ const RECEIPT_TOKENS = {
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0x5cc264ed730baef1315f36b3ad563798aee6febdcd8bee83f580c0d076e06345',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         LDCFA: {
             address: '0xedbdf3711daa627a47c98e17daf0489802d01fcecb0c9b3774e55792db7833e1',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
         HLSPC: {
             address: '0x8e92364602f481d1824700d220c30dc096008e82fc0353f6f42f7358ed0c3f41',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         }
     },
     solana: {
@@ -210,35 +205,35 @@ const RECEIPT_TOKENS = {
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '93qLFcpdpMeSdhsw2SnkBehUvMi8UX9idHpV6ZvNuP8e',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         BHMB: {
             address: '4VXQrtXmNoRoETY7S6uL8NwwGx15UXJ1FU8Q1wgCHjG6',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         BHMC: {
             address: '562Cd8zkXyWJ5ixwY3dKJMRzqToCi2upc12DbyjZ1UwG',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: '2hzQ4sexbsJsSmp1s6gQCKJDmtAx3WnQ3pLZmDJBWpFC',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         }
     },
     near: {
@@ -247,35 +242,35 @@ const RECEIPT_TOKENS = {
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: 'libre_instrument_0.near',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         BHMB: {
             address: 'libre_instrument_3.near',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         BHMC: {
             address: 'libre_instrument_4.near',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: 'libre_instrument_2.near',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         }
     },
     aptos: {
@@ -284,21 +279,21 @@ const RECEIPT_TOKENS = {
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0xabd58a12ca7f20dd397787bd87b674cc2f8cd7168718d5b7a71daa5d89836079',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: '0x7647a37bb1ee1f42953ca4a00f1cf347254d38a2aa31d2e37176bbb94c14cf75',
             decimals: 9,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         }
     },
     mantra: {
@@ -307,21 +302,21 @@ const RECEIPT_TOKENS = {
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636653765336666346534363764313238323964396366340000000000000000",
-            fundName: 'Libre SAF VCC - Access Private Credit Feeder'
+            fundName: 'KAIO SAF VCC - Access Private Credit Feeder'
         },
         LDCFA: {
             address: 'mantra1rl8su3hadqqq2v86lscpuklsh2mh84cxqvjdew4jt9yd07dzekyq7vvhrd',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
         LDCFB: {
             address: 'mantra1vhjnzk9ly03dugffvzfcwgry4dgc8x0sv0nqqtfxj3ajn7rn5ghqjerqcd',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund B'
         }
     },
     imx: {
@@ -330,28 +325,28 @@ const RECEIPT_TOKENS = {
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0x8b37F32749CF339f39bCf5cfF2c880D342ddF64B',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         APCA: {
             address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636653765336666346534363764313238323964396366340000000000000000",
-            fundName: 'Libre SAF VCC - Access Private Credit Feeder'
+            fundName: 'KAIO SAF VCC - Access Private Credit Feeder'
         },
         LDCFA: {
             address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
     },
     hedera: {
@@ -360,42 +355,42 @@ const RECEIPT_TOKENS = {
             decimals: 8,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0.0.9265281',
             decimals: 8,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: '0.0.9265299',
             decimals: 8,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         },
         APCA: {
             address: '0.0.9265301',
             decimals: 8,
             underlying: 'security-token',
             instrumentId: "0x3636653765336666346534363764313238323964396366340000000000000000",
-            fundName: 'Libre SAF VCC - Access Private Credit Feeder'
+            fundName: 'KAIO SAF VCC - Access Private Credit Feeder'
         },
         LDCFA: {
             address: '0.0.9265302',
             decimals: 8,
             underlying: 'security-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
         LDCFB: {
             address: '0.0.9265306',
             decimals: 8,
             underlying: 'security-token',
             instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund B'
         }
     },
     xdc: {
@@ -404,42 +399,42 @@ const RECEIPT_TOKENS = {
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: ' BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPC: {
             address: '0xe5631cCF95350948Ba2D4d8c815c05AFBfb47A9F',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         },
         APCA: {
             address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3636653765336666346534363764313238323964396366340000000000000000",
-            fundName: 'Libre SAF VCC - Access Private Credit Feeder'
+            fundName: 'KAIO SAF VCC - Access Private Credit Feeder'
         },
         LDCFA: {
             address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
         LDCFB: {
             address: '0xbee4274F1c5EE0B30fC5AAa7842A434C35BF6f7b',
             decimals: 18,
             underlying: 'security-token',
             instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund B'
         },
     }
 }
@@ -452,28 +447,28 @@ const BRIDGED_TOKENS = {
             decimals: 18,
             underlying: 'bridged-token',
             instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
-            fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+            fundName: 'USD I Money Market a sub-fund of KAIO SAF VCC'
         },
         BHMA: {
             address: '0xaAf737Ccec9Ba1e7Bfc1d3426E9509A9c88D78EE',
             decimals: 18,
             underlying: 'bridged-token',
             instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-            fundName: 'BH Master Fund Access a sub-fund of Libre SAF VCC'
+            fundName: 'BH Master Fund Access a sub-fund of KAIO SAF VCC'
         },
         HLSPCA: {
             address: '0xA82bF6c49d43A6D5C77F2e5cB6f2b698077D513B',
             decimals: 18,
             underlying: 'bridged-token',
             instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
-            fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+            fundName: 'KAIO SAF VCC - HL Scope Private Credit Access A'
         },
         LDCFA: {
             address: '0x19411c11Aa345A11a36F73Fb047d3a6527e8a204',
             decimals: 18,
             underlying: 'bridged-token',
             instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
-            fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+            fundName: 'KAIO SAF VCC - Laser Digital Carry Fund A'
         },
     }
 }
@@ -517,7 +512,7 @@ async function getInstrumentsNav() {
     });
 
     if (!navResults?.output?.length) {
-        console.warn('NAV multicall returned no results');
+        throw new Error('NAV multicall returned no results');
     }
 
     navResults.output.forEach((result, i) => {
@@ -534,9 +529,9 @@ async function getInstrumentsNav() {
 }
 
 /**
- * TVL Calculation for Ethereum Mainnet.
+ * TVL Calculation for Security Tokens on Ethereum.
  * @async
- * @returns {Promise<Object.<string, number>>} USD balance.
+ * @returns {Promise<Object.<string, number>>} Balance in USD.
  */
 async function ethTvl() {
     const balances = {}
@@ -544,7 +539,7 @@ async function ethTvl() {
     const fundPrices = await getInstrumentsNav();
 
     // Query total supply for each token
-    for (const token of Object.values(RECEIPT_TOKENS.ethereum)) {
+    for (const token of Object.values(SECURITY_TOKENS.ethereum)) {
         const balance = await sdk.api.erc20.totalSupply({
             target: token.address,
         });
@@ -555,6 +550,24 @@ async function ethTvl() {
             const valueUSD = adjustedBalance * price;
             totalTvl += valueUSD;
         }
+    }
+
+    // Adjust ETH TVL removing BRIDGED + RECEIPTS
+    totalTvl -= (await suiTvl())['usd-coin'] || 0;
+    totalTvl -= (await seiTvl())['usd-coin'] || 0;
+    totalTvl -= (await imxTvl({}))['usd-coin'] || 0;
+    totalTvl -= (await nearTvl())['usd-coin'] || 0;
+    totalTvl -= (await aptosTvl())['usd-coin'] || 0;
+    totalTvl -= (await hederaTvl())['usd-coin'] || 0;
+    totalTvl -= (await avaxTvl())['usd-coin'] || 0;
+    totalTvl -= (await polygonTvl())['usd-coin'] || 0;
+    totalTvl -= (await xdcTvl())['usd-coin'] || 0;
+    totalTvl -= (await solanaTvl())['usd-coin'] || 0;
+    totalTvl -= (await mantraTvl())['usd-coin'] || 0;
+    totalTvl -= (await injectiveTvl())['usd-coin'] || 0;
+
+    if (totalTvl < 0) {
+        totalTvl = 0;
     }
 
     balances['usd-coin'] = totalTvl;
@@ -933,7 +946,7 @@ async function seiTvl() {
 
 module.exports = {
     timetravel: false,
-    methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, XDC, Sei and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+    methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of KAIO SAF VCC. These funds are accessible through receipt and bridged tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, XDC, Sei and Avalanche. The value is calculated by multiplying the total supply of receipt and bridge tokens by their respective NAV prices, denominated in their underlying stablecoin value",
     ethereum: { tvl: ethTvl },
     polygon: { tvl: polygonTvl },
     injective: { tvl: injectiveTvl },
