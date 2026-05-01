@@ -23,7 +23,7 @@ const excludeVaults = {
     ADDRESSES.bouncebit.wstBBTC, // all depositors from 0x39132fA8C6a8Caf74F6940Ac0B2Caf73F25223b8
     
     // 0x39132fA8C6a8Caf74F6940Ac0B2Caf73F25223b8 distributed BTC.B to multiple addresses to made deposits
-    '0x8f083EaFcbba2e126AD9757639c3A1E25a061A08',
+    ADDRESSES.bouncebit.wstBBTC,
   ],
   goat: [
     '0x6f0AfADE16BFD2E7f5515634f2D0E3cd03C845Ef',
@@ -43,9 +43,9 @@ chains.forEach(chain => {
       if (api.chain === 'plume_mainnet') api.chainId = 98866
       if (api.chain === 'hsk') api.chainId = 177
       if (!api.chainId) throw new Error('chainId is required, missing in ' + api.chain)
-      const blacklists = excludeVaults[api.chain] || []
+      const blacklists = excludeVaults[api.chain] ? excludeVaults[api.chain].map(i => String(i).toLowerCase()) : []
       const { result } = await getConfig(`pell/${api.chain}-v1`, `https://api.pell.network/v1/stakeList?chainId=${api.chainId}`)
-      const vaults = result.map(f => f.strategyAddress).filter(v => !blacklists.includes(v))
+      const vaults = result.map(f => String(f.strategyAddress).toLowerCase()).filter(v => !blacklists.includes(v))
       const tokens = await api.multiCall({ abi: 'address:underlyingToken', calls: vaults })
       return sumTokens2({ api, tokensAndOwners2: [tokens, vaults], })
     }
