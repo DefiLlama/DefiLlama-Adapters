@@ -1,15 +1,15 @@
-const axios = require('axios')
+const RPC_URL          = 'https://noderpc.strato.nexus/rpc'
+const POOL_FACTORY     = '0x000000000000000000000000000000000000100a'
+const PRICE_ORACLE     = '0x0000000000000000000000000000000000001002'
+const CDP_REGISTRY     = '0x0000000000000000000000000000000000001012'
+const LENDING_REGISTRY = '0x0000000000000000000000000000000000001007'
+const LENDING_POOL     = '0x0000000000000000000000000000000000001005'
+const SAFETY_MODULE    = '0x0000000000000000000000000000000000001015'
+const SAVE_USDST_VAULT = '0x22550671fcad04a213697ac7ae4f4366e96446ed'
+const VAULT            = '0x34bc729f66106a146b0864e673a3571b28fa23e1'
 
-const RPC_URL = 'https://noderpc.strato.nexus/rpc'
-const TVL_ENDPOINT = 'https://app.strato.nexus/api/metrics/tvl'
-
-// STRATO is not yet in @defillama/sdk's providers.json; fall back to this RPC
-// unless the DefiLlama runner has already set STRATO_RPC in its environment.
 if (!process.env.STRATO_RPC) process.env.STRATO_RPC = RPC_URL
 
-// STRATO-issued tokens aren't listed on CoinGecko. We map them to the underlying
-// asset's CG id so DefiLlama can price them; tokens without a mapping (USDST,
-// SILVST, GOLDST) are priced via the protocol oracle's USD quote.
 const CG_TOKEN_MAP = {
   ETH: 'ethereum',
   WBTC: 'wrapped-bitcoin',
@@ -24,76 +24,166 @@ const CG_TOKEN_MAP = {
 }
 
 const WAD = 10n ** 18n
+const RAY = 10n ** 27n
 
-const normalize = (addr) => (addr || '').toLowerCase().replace(/^0x/, '')
+const lc = (v) => v && v.toLowerCase()
 
-const splitSourceKey = (sourceKey) => {
-  if (!sourceKey) return [null, null]
-  const [a, b] = sourceKey.split(':')
-  if (a && b) return [normalize(a), normalize(b)]
-  return [null, normalize(a)]
+async function tryCall(api, opts) {
+  try { return lc(await api.call(opts)) } catch { return null }
+}
+
+async function tryCallRaw(api, opts) {
+  try { return await api.call(opts) } catch { return null }
+}
+
+async function enumerateArray(api, target, abi, max = 50) {
+  const seen = new Set()
+  const out = []
+  for (let i = 0; i < max; i++) {
+    const r = await tryCall(api, { target, abi, params: i })
+    if (!r || r === '0x0000000000000000000000000000000000000000') break
+    if (!seen.has(r)) { seen.add(r); out.push(r) }
+  }
+  return out
+}
+
+async function discoverPools(api) {
+  const poolAddrs = await enumerateArray(
+    api, POOL_FACTORY, 'function allPools(uint256) view returns (address)'
+  )
+  const pools = []
+  for (const pool of poolAddrs) {
+    const tokenA = await tryCall(api, { target: pool, abi: 'function tokenA() view returns (address)' })
+    const tokenB = await tryCall(api, { target: pool, abi: 'function tokenB() view returns (address)' })
+    if (tokenA && tokenB) pools.push({ pool, tokens: [tokenA, tokenB] })
+  }
+  return pools
 }
 
 async function tvl(api) {
-  const { data } = await axios.get(TVL_ENDPOINT, { timeout: 15_000 })
-  const positions = Array.isArray(data?.positions) ? data.positions : []
+  const pools = await discoverPools(api)
 
-  // Pool positions carry a concrete holder address — re-verify their balances
-  // via eth_call. Aggregated buckets (CDP, lending, saveUsdst, safetyModule,
-  // vaults) only expose the asset key, so we use the metrics amount directly.
-  const verifiable = positions
-    .map((pos, i) => {
-      const [holder, sourceToken] = splitSourceKey(pos.sourceKey)
-      const token = normalize(pos.address)
-      if (!token || !holder || !sourceToken || holder === token) return null
-      return { index: i, holder, token }
-    })
-    .filter(Boolean)
+  const cdpVault = await tryCall(api, { target: CDP_REGISTRY, abi: 'function cdpVault() view returns (address)' })
 
-  const results = await Promise.allSettled(
-    verifiable.map(({ holder, token }) =>
-      api.call({ target: token, abi: 'erc20:balanceOf', params: holder })
-    )
+  const collateralVault = await tryCall(api, { target: LENDING_REGISTRY, abi: 'function collateralVault() view returns (address)' })
+  const liquidityPool = await tryCall(api, { target: LENDING_REGISTRY, abi: 'function liquidityPool() view returns (address)' })
+  const borrowableAsset = await tryCall(api, { target: LENDING_POOL, abi: 'function borrowableAsset() view returns (address)' })
+  const lendingCollateralTokens = await enumerateArray(
+    api, LENDING_POOL, 'function configuredAssets(uint256) view returns (address)'
   )
 
-  const onchainByIndex = new Map()
-  for (let k = 0; k < verifiable.length; k++) {
-    const result = results[k]
-    if (result.status === 'fulfilled' && result.value != null) {
-      onchainByIndex.set(verifiable[k].index, BigInt(result.value))
-    }
+  const vaultBotExecutor = await tryCall(api, { target: VAULT, abi: 'function botExecutor() view returns (address)' })
+  const vaultAssets = await enumerateArray(
+    api, VAULT, 'function supportedAssets(uint256) view returns (address)'
+  )
+
+  const saveAsset = await tryCall(api, { target: SAVE_USDST_VAULT, abi: 'function asset() view returns (address)' })
+  const safetyAsset = await tryCall(api, { target: SAFETY_MODULE, abi: 'function asset() view returns (address)' })
+
+  const tokenSet = new Set()
+  pools.forEach(p => p.tokens.forEach(t => tokenSet.add(t)))
+  lendingCollateralTokens.forEach(t => tokenSet.add(t))
+  vaultAssets.forEach(t => tokenSet.add(t))
+  if (borrowableAsset) tokenSet.add(borrowableAsset)
+  if (saveAsset) tokenSet.add(saveAsset)
+  if (safetyAsset) tokenSet.add(safetyAsset)
+  const allTokens = [...tokenSet]
+
+  const tokenInfo = new Map()
+  for (const t of allTokens) {
+    const symbol = await tryCallRaw(api, { target: t, abi: 'erc20:symbol' })
+    const decimals = await tryCallRaw(api, { target: t, abi: 'erc20:decimals' })
+    if (symbol && decimals != null) tokenInfo.set(t, { symbol, decimals: Number(decimals) })
   }
 
-  for (let i = 0; i < positions.length; i++) {
-    const pos = positions[i]
-    const amount = onchainByIndex.has(i) ? onchainByIndex.get(i) : BigInt(pos.amount || '0')
-    addPriced(api, pos, amount)
+  const pairs = []
+  for (const { pool, tokens } of pools) {
+    for (const token of tokens) pairs.push({ holder: pool, token })
+  }
+  if (cdpVault) {
+    for (const token of allTokens) pairs.push({ holder: cdpVault, token })
+  }
+  if (collateralVault) {
+    for (const token of lendingCollateralTokens) pairs.push({ holder: collateralVault, token })
+  }
+  if (liquidityPool && borrowableAsset) {
+    pairs.push({ holder: liquidityPool, token: borrowableAsset })
+  }
+  if (vaultBotExecutor) {
+    for (const token of vaultAssets) pairs.push({ holder: vaultBotExecutor, token })
+  }
+
+  const oracleTokens = allTokens.filter(t => {
+    const info = tokenInfo.get(t); return info && !CG_TOKEN_MAP[info.symbol]
+  })
+
+  const oraclePriceMap = new Map()
+  for (const t of oracleTokens) {
+    const price = await tryCallRaw(api, {
+      target: PRICE_ORACLE,
+      abi: 'function getAssetPrice(address) view returns (uint256)',
+      params: t,
+    })
+    if (price) oraclePriceMap.set(t, BigInt(price))
+  }
+
+  const balances = []
+  for (const { token, holder } of pairs) {
+    balances.push(await tryCallRaw(api, { target: token, abi: 'erc20:balanceOf', params: holder }))
+  }
+
+  let borrowIndex = null, totalScaledDebt = null
+  if (borrowableAsset) {
+    borrowIndex = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function borrowIndex() view returns (uint256)' })
+    totalScaledDebt = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function totalScaledDebt() view returns (uint256)' })
+  }
+
+  for (let i = 0; i < pairs.length; i++) {
+    if (!balances[i]) continue
+    const amount = BigInt(balances[i])
+    if (amount === 0n) continue
+    addToken(api, pairs[i].token, amount, tokenInfo, oraclePriceMap)
+  }
+
+  const saveTotalAssets = saveAsset
+    ? await tryCallRaw(api, { target: SAVE_USDST_VAULT, abi: 'function totalAssets() view returns (uint256)' })
+    : null
+  const safetyTotalAssets = safetyAsset
+    ? await tryCallRaw(api, { target: SAFETY_MODULE, abi: 'function totalAssets() view returns (uint256)' })
+    : null
+
+  if (saveAsset && saveTotalAssets) {
+    const amt = BigInt(saveTotalAssets)
+    if (amt > 0n) addToken(api, saveAsset, amt, tokenInfo, oraclePriceMap)
+  }
+  if (safetyAsset && safetyTotalAssets) {
+    const amt = BigInt(safetyTotalAssets)
+    if (amt > 0n) addToken(api, safetyAsset, amt, tokenInfo, oraclePriceMap)
+  }
+
+  if (borrowableAsset && borrowIndex && totalScaledDebt) {
+    const lendingDebt = (BigInt(totalScaledDebt) * BigInt(borrowIndex)) / RAY
+    if (lendingDebt > 0n) addToken(api, borrowableAsset, lendingDebt, tokenInfo, oraclePriceMap)
   }
 }
 
-function addPriced(api, position, amount) {
-  if (amount === 0n) return
-  const decimals = Number(position.decimals ?? 18)
-  const scale = 10n ** BigInt(decimals)
-  const symbol = position.symbol
-  const humanAmount = Number(amount) / Number(scale)
-  const cgId = CG_TOKEN_MAP[symbol]
-
+function addToken(api, token, amount, tokenInfo, oraclePriceMap) {
+  const info = tokenInfo.get(token)
+  if (!info) return
+  const scale = 10n ** BigInt(info.decimals)
+  const cgId = CG_TOKEN_MAP[info.symbol]
   if (cgId) {
-    api.addCGToken(cgId, humanAmount)
-    return
+    api.addCGToken(cgId, Number(amount) / Number(scale))
+  } else {
+    const priceUsd = oraclePriceMap.get(token)
+    if (!priceUsd) return
+    api.addUSDValue(Number((amount * priceUsd) / scale) / Number(WAD))
   }
-
-  // priceUsd is WAD-scaled (1e18) per the metrics API
-  const priceUsd = BigInt(position.priceUsd || '0')
-  if (priceUsd === 0n) return
-  const usdWei = (amount * priceUsd) / scale
-  api.addUSDValue(Number(usdWei) / Number(WAD))
 }
 
 module.exports = {
   methodology:
-    'Counts underlying assets locked in STRATO DeFi contracts across CDP, lending, pools, saveUSDST, safety module, and vaults. Pool balances are re-verified on-chain via eth_call against the STRATO JSON-RPC; aggregated buckets fall back to the protocol metrics snapshot. Excludes wallet balances, receipt/share tokens, protocol debt, and double counting.',
+    'All values verified on-chain via sequential eth_call (no Multicall3). Swap pools enumerated from PoolFactory.allPools. CDP collateral read from CDPVault, lending deposits from LiquidityPool + CollateralVault, savings from SaveUSDSTVault, staked assets from SafetyModule, and vault holdings from the Vault botExecutor. Holder addresses resolved from on-chain registries (CDPRegistry, LendingRegistry). Prices from CoinGecko or the on-chain PriceOracle.',
   misrepresentedTokens: true,
   timetravel: false,
   start: 1775151906,
