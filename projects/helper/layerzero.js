@@ -29,6 +29,11 @@ async function getSendUlnConfig(api, { oapp, dstEid, endpoint = ENDPOINT_V2 }) {
   assertDvnArrayValid(requiredDVNs, requiredDVNCount, 'required');
   assertDvnArrayValid(optionalDVNs, optionalDVNCount, 'optional');
 
+  const combined = [...requiredDVNs, ...optionalDVNs].map(a => a.toLowerCase());
+  if (new Set(combined).size !== combined.length) {
+    throw new Error('LayerZero DVN config reuses a verifier across required/optional sets; quorum would overstate independent signers');
+  }
+
   return {
     confirmations: Number(config.confirmations),
     requiredDVNCount,
@@ -58,7 +63,7 @@ function getMinimumVerifierQuorum(config) {
 }
 
 async function getIncludedEscrows(api, { escrows, minDvnQuorum }) {
-  if (typeof minDvnQuorum !== 'number' || minDvnQuorum < 1) {
+  if (!Number.isInteger(minDvnQuorum) || minDvnQuorum < 1) {
     throw new Error('sumLayerZeroEscrows requires minDvnQuorum (>= 1). Opting out re-introduces post-KelpDAO risk; see issue #18926.');
   }
 
