@@ -267,7 +267,11 @@ const configs = {
       pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
     }),
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
-  }
+  },
+  'apyx-protocol': {
+    methodology: "TVL is totalAssets() of the apyUSD ERC-4626 savings vault, denominated in apxUSD (Apyx Protocol's synthetic dollar).",
+    ethereum: ['0x38EEb52F0771140d10c4E9A9a72349A329Fe8a6A'],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
