@@ -26,6 +26,7 @@ const CHAIN_IDS_ENVIO = {
   optimism: 10,
   polygon: 137,
   scroll: 534352,
+  sei: 1329,
   sonic: 146,
   sophon: 50104,
   sseed: 5330,
@@ -37,7 +38,6 @@ const CHAIN_IDS_ENVIO = {
 
 // Chains that are not using the Envio indexer but using the Graph.
 const SUBGRAPH_ENDPOINTS = {
-  sei: 'AJU5rBfbuApuJpeZeaz6NYuYnnhAhEy4gFkqsSdAT6xb',
   // iotex: '2P3sxwmcWBjMUv1C79Jh4h6VopBaBZeTocYWDUQqwWFV',
 };
 
@@ -47,9 +47,9 @@ const config = {
 };
 
 const envioPayload = `
-query getChainData($chainId: numeric!) {
-  Contract(where: { _and: { chainId: { _eq: $chainId } , category: {_eq:"lockup"}}}) { id address category }
-  Asset(where: { _and: { chainId: { _eq: $chainId }, lockupStreams_aggregate: { count: { predicate: { _gt:0 }}}}}) { id chainId symbol }
+query getChainData($chainIds: [numeric!]!) {
+  Contract(where: { _and: { chainId: { _in: $chainIds } , category: {_eq:"lockup"}}}) { id address category chainId }
+  Asset(where: { _and: { chainId: { _in: $chainIds }, lockupStreams_aggregate: { count: { predicate: { _gt:0 }}}}}) { id chainId symbol }
 }
 `
 
@@ -60,6 +60,38 @@ const subgraphPayload = `
 }
 `
 
+let envioConfigPromise
+async function getEnvioConfig(chainId) {
+  if (!envioConfigPromise) {
+    envioConfigPromise = request(ENVIO_ENDPOINT, envioPayload, { chainIds: Object.values(CHAIN_IDS_ENVIO) })
+      .then(result => {
+        const contractsByChain = {}
+        const assetsByChain = {}
+
+        for (const contract of result.Contract || []) {
+          const id = String(contract.chainId)
+          contractsByChain[id] = contractsByChain[id] || []
+          contractsByChain[id].push(contract)
+        }
+
+        for (const asset of result.Asset || []) {
+          const id = String(asset.chainId)
+          assetsByChain[id] = assetsByChain[id] || []
+          assetsByChain[id].push(asset)
+        }
+
+        return { contractsByChain, assetsByChain }
+      })
+  }
+
+  const { contractsByChain, assetsByChain } = await envioConfigPromise
+  const id = String(chainId)
+  return {
+    contracts: contractsByChain[id] || [],
+    assets: assetsByChain[id] || [],
+  }
+}
+
 async function getTokensConfig(api, isVesting) {
   const endpoint = config[api.chain];
   if (!endpoint) return { ownerTokens: [] };
@@ -67,7 +99,7 @@ async function getTokensConfig(api, isVesting) {
   const isSubgraph = !!SUBGRAPH_ENDPOINTS[api.chain];
   const result = isSubgraph
     ? await request(sdk.graph.modifyEndpoint(endpoint), subgraphPayload)
-    : await request(ENVIO_ENDPOINT, envioPayload, { chainId: CHAIN_IDS_ENVIO[api.chain] });
+    : await getEnvioConfig(CHAIN_IDS_ENVIO[api.chain]);
 
   if (!result || (!isSubgraph && !CHAIN_IDS_ENVIO[api.chain])) return { ownerTokens: [] };
 
