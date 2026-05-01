@@ -79,7 +79,11 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   for (const chunk of chunks) {
     await sleep(200)
     const { data } = await axios.post(STARKNET_RPC, chunk)
-    allData.push(...data)
+    // Some Starknet RPC providers (e.g. lava.build) return a single object
+    // instead of a one-element array when the batch contains exactly one
+    // request. Normalize so the spread below never gets a non-iterable.
+    const responses = Array.isArray(data) ? data : [data]
+    allData.push(...responses)
   }
 
   const response = []
