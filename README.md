@@ -33,6 +33,28 @@ node test.js projects/aave/v3.js 1729080692
 node test.js projects/aave/v3.js 2024-10-16
 ```
 
+## Auditing adapters
+Run the adapter audit wrapper to execute one or more adapters, capture replay commands, and produce the same Markdown summary used by PR review.
+Pull request CI uses this digest instead of posting one comment per changed adapter.
+In CI, each discovered adapter runs once on the PR branch and once on the base ref.
+
+```bash
+node utils/auditAdapter.js projects/pangolin/index.js
+node utils/auditAdapter.js projects/pangolin/index.js --date 2024-10-16 --markdown adapter-audit.md
+```
+
+To audit only adapter entrypoints changed in the current branch, including project support files and registry entries:
+
+```bash
+node utils/auditChangedAdapters.js --base origin/main
+```
+
+To compare the current branch against the base ref at the same timestamp:
+
+```bash
+node utils/auditChangedAdapters.js --base origin/main --compare-base
+```
+
 ## Changing RPC providers
 If you want to change RPC providers because you need archive node access or because the default ones don't work well enough you can do so by creating an `.env` file and filling it with the env variables to overwrite:
 ```
