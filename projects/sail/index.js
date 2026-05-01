@@ -30,6 +30,7 @@ async function tvl(api) {
 
 module.exports = {
     methodology: 'TVL is the sum of supported-token balances held by Sail smart-wallet accounts on each supported chain, priced via DefiLlama.',
+    hallmarks: [['2026-04-27', 'Security Incident']], // https://x.com/SaildotMoney/status/2049574222784004180
     isHeavyProtocol: true,
     ethereum: { tvl },
     base: { tvl },

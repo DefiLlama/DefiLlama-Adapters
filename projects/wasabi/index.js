@@ -1,6 +1,6 @@
 const { getLogs2 } = require('../helper/cache/getLogs');
 const idl = require('./wasabi_solana.json');
-const { getProvider } = require('../helper/solana');
+const { getProvider, sumTokens2: sumTokensSOL } = require('../helper/solana');
 const { Program } = require("@coral-xyz/anchor");
 
 const config = {
@@ -34,14 +34,14 @@ const solanaTvl = async (api) => {
   const provider = getProvider()
   const program = new Program(idl, provider)
   const vaults = await program.account.lpVault.all()
-  vaults.forEach((data, i) => {
-    const lpAsset = data.account.asset.toString()
-    api.add(lpAsset, data.account.totalAssets)
-  })
+  const tokenAccounts = vaults.map(v => v.account.vault.toString()) 
+  tokenAccounts.push("7JcsyK2AcJMx1V733R1As51DudggH7D38AHvbxapAhXd") 
+
+  return sumTokensSOL({ api, tokenAccounts, })
 }
 
 const tvl = async (api) => {
-  const { pools, fromBlock, tokens = [], toBlock = await api.getBlock() - 100 } = config[api.chain]
+  const { pools, fromBlock, toBlock = await api.getBlock() - 100 } = config[api.chain]
 
   const logs = await Promise.all(
     Object.values(pools).map((pool) =>
@@ -54,12 +54,14 @@ const tvl = async (api) => {
         onlyArgs: true,
         fromBlock,
         toBlock,
+        onlyUseExistingCache: true,
       })
     )
   );
 
   const vaults = [...new Set(logs.flat().map((log) => log[2]))];
-  return api.erc4626Sum({ calls: vaults, isOG4626: true });
+  const tokens  = await api.multiCall({  abi: 'address:asset', calls: vaults })
+  return api.sumTokens({ tokensAndOwners2: [tokens, vaults]})
 }
 
 Object.keys(config).forEach((chain) => {
