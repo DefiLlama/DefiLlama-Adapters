@@ -82,6 +82,10 @@ async function getEnvioConfig(chainId) {
 
         return { contractsByChain, assetsByChain }
       })
+      .catch(error => {
+        envioConfigPromise = undefined
+        throw error
+      })
   }
 
   const { contractsByChain, assetsByChain } = await envioConfigPromise
