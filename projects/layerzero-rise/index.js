@@ -21,5 +21,7 @@ Object.keys(bridgeContracts).forEach(chain => {
   };
 });
 
+module.exports.timetravel = false;
+
 module.exports.methodology =
   'Counts source-side USDC locked in RISE-specific LayerZero escrow contracts on Ethereum, Base, and Arbitrum. Destination minted OFT supply is excluded. Each escrow is included only if its LayerZero send-side ULN config meets the >=2 verifier quorum (requiredDVNCount + optionalDVNThreshold). Escrows whose OApps run a single-DVN setup (the KelpDAO failure mode) are excluded.';
