@@ -52,7 +52,7 @@ async function tvl(api) {
   await getCusdBalances(api, TREASURIES);
 }
 
-async function treasury(api) {
+async function staking(api) {
   // Protocol-owned CUSD reserves funding staking rewards.
   // These are protocol inventory, not user-staked positions.
   await getCusdBalances(api, REWARD_VAULTS);
@@ -60,9 +60,9 @@ async function treasury(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "TVL is the sum of CUSD (USD-pegged stablecoin) held in Treasury contracts backing tokenized commodity tokens. CUSD balances are reported as USDT equivalent (misrepresentedTokens). Reward Vault reserves are protocol-owned CUSD earmarked for staking incentive distribution and tracked separately under 'treasury'. Staked commodity tokens are excluded to avoid double-counting with Treasury reserves.",
+  methodology: "TVL is the sum of CUSD (USD-pegged stablecoin) held in Treasury contracts backing tokenized commodity tokens. CUSD balances are reported as USDT equivalent (misrepresentedTokens). Protocol-owned Reward Vault reserves (CUSD earmarked for staking incentive distribution) are tracked under 'staking' as the closest available category — these are not user-staked positions. Staked commodity tokens are excluded to avoid double-counting with Treasury reserves.",
   bsc: {
     tvl,
-    treasury,
+    staking,
   },
 };
