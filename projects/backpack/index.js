@@ -38,6 +38,7 @@ const CHAINS = [
   'ripple',
   'plasma',
   'fogo',
+  'eclipse',
   'stable',
   'monad',
   'hyperliquid',
@@ -68,8 +69,10 @@ CHAINS.forEach((chain) => {
 
       switch (chain) {
         case 'solana':
+          options.solOwners = options.owners;
           options.includeStakedSol = true;
           options.onlyTrustedTokens = true;
+          break;
         case 'fogo':
         case 'eclipse':
           options.solOwners = options.owners;
