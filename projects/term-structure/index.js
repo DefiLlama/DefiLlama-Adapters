@@ -27,6 +27,10 @@ const ABIS = {
   Vault: {
     asset: "address:asset",
   },
+  Viewer: {
+    getPoolUnclaimedRewards:
+      "function getPoolUnclaimedRewards(address[] pools) external view returns (address[] asset, uint256[] amount)",
+  },
 };
 
 const EVENTS = {
@@ -49,6 +53,7 @@ const EVENTS = {
   TermMax4626Factory: {
     "StableERC4626For4626Created": "event StableERC4626For4626Created(address indexed caller, address indexed stableERC4626For4626)",
     "StableERC4626ForAaveCreated": "event StableERC4626ForAaveCreated(address indexed caller, address indexed stableERC4626ForAave)",
+    "StableERC4626ForCustomizeCreated": "event StableERC4626ForCustomizeCreated(address indexed caller, address indexed stableERC4626ForCustomize)",
     "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)"
   }
 };
@@ -137,6 +142,7 @@ const ADDRESSES = {
     },
     TermMax4626Factory: [
       { address: "0xD594eb03a43b4974Aa7B32b5740cdeCe961151Fa", fromBlock: 23489745 },
+      { address: "0x3Cc88086C0a613970565C96F9a1b6BdAd61C5f14", fromBlock: 24790495 },
     ],
     FactoryV2: [
       {
@@ -257,6 +263,23 @@ const ADDRESSES = {
       { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 43289755 },
     ],
   },
+  pharos: {
+    FactoryV2: [
+      {
+        address: "0xEDC206E67eAc5C949c0a90A02E29B4b2791c8395",
+        fromBlock: 5243188,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x5316b0d2Ee13C81E243226D6BB93CF29FBf95837",
+        fromBlock: 5243205,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xBa38C4D39ECf8401d90e7469dc6eB438547caC81", fromBlock: 5243210 },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
@@ -276,6 +299,43 @@ const MARKET_BLACKLIST = {
   bsquared: [
     "0x5022B6563f6bc9f0D47F407ba32B64e1f438213a", // uBTC/WBTC
   ],
+};
+
+// Extra ERC20s that may sit alongside the underlying inside a
+// StableERC4626ForCustomize pool's Gnosis Safe `thirdPool` (e.g. XAUe held next
+// to XAUt).
+//
+// DefiLlama's price service has no oracle for XAUe, so reading its balance
+// directly would silently drop ~$18M on Ethereum. Each entry therefore carries
+// a `priceableToken` + `divisor` so the raw balance is converted to an
+// equivalent raw amount of a token DefiLlama can price.
+//
+// XAUe: 1 token = 0.001 troy oz, 18 decimals.
+// XAUt: 1 token = 1 troy oz, 6 decimals.
+// raw_xaut = raw_xaue * 0.001 / 10^18 * 10^6 = raw_xaue / 10^15.
+const SAFE_EQUIVALENT_TOKENS = {
+  ethereum: [
+    {
+      token: "0xd5D6840ed95F58FAf537865DcA15D5f99195F87a", // XAUe
+      priceableToken: "0x68749665FF8D2d112Fa859AA293F07A622782F38", // XAUt
+      divisor: 10n ** 15n,
+    },
+  ],
+};
+
+// TermMaxViewer (per-chain). Used to surface unclaimed pool rewards for
+// ERC4626 pools whose principal sits in another ERC4626 (For4626 + Customize-
+// ERC20). Aave-backed pools must NOT use this — accrued interest already
+// rebases into the aToken balance, so adding rewards here would double-count.
+const TERMMAX_VIEWER_ADDRESS = {
+  ethereum:  "0xf574c1d7C18E250c341bdFb478cafefcaCbAbF09",
+  arbitrum:  "0x012BFcbAC9EdEa04DFf07Cc61269E321f4595DfF",
+  bsc:       "0x80906014B577AFd760528FA8B32304A49806580C",
+  berachain: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
+  bsquared:  "0x0d64B9feF3E1f599B88d29Edb54D2F9152CBE496",
+  xlayer:    "0xaaa2108dF9c3Aa4d358275340733476d139A1445",
+  base:      "0x0d64B9feF3E1f599B88d29Edb54D2F9152CBE496",
+  pharos:    "0x0c30Bd74f891D88E69C07DEb5Ae9dA40C974BfeD",
 };
 
 async function getTermMaxMarketAddresses(api) {
@@ -403,11 +463,10 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
-    await Promise.all([
-      getTermMaxVaultAddresses(api),
-      getTermMaxVaultV1PlusAddresses(api),
-    ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses] = await Promise.all([
+    getTermMaxVaultAddresses(api),
+    getTermMaxVaultV1PlusAddresses(api),
+  ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
     .concat(vaultV1PlusAddresses)
@@ -597,6 +656,7 @@ async function erc4626VaultsTvl(api) {
   const tokensAndOwners = [];
   const stableERC4626For4626Vaults = [];
   const aaveVaults = [];
+  const customizeVaults = [];
 
   for (const factory of ADDRESSES[api.chain].TermMax4626Factory) {
     let logs = await getLogs2({
@@ -626,6 +686,15 @@ async function erc4626VaultsTvl(api) {
       extraKey: 'VariableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForCustomizeCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626ForCustomizeCreated-20260429',
+    });
+    customizeVaults.push(...logs.map(i => i.stableERC4626ForCustomize));
   }
 
   const aTokens = await api.multiCall({ abi: 'address:aToken', calls: aaveVaults })
@@ -642,7 +711,127 @@ async function erc4626VaultsTvl(api) {
     tokensAndOwners.push([thirdPools[i], vault])
   })
 
+  // StableERC4626ForCustomize: thirdPool may be either an ERC4626/ERC20 (same
+  // accrual story as For4626) OR a Gnosis Safe (XAUt vault on Ethereum). Probe
+  // totalSupply() to disambiguate — the Safe contract does not implement it.
+  // Dedupe on (underlying, safe) and on safe alone — multiple vaults can share
+  // a Safe, and we must count its holdings once.
+  const customizeUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: customizeVaults })
+  const customizeThirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: customizeVaults })
+  const thirdPoolSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: customizeThirdPools, permitFailure: true })
+  const seenSafeOwners = new Set();
+  const safeBackedSafes = new Set();
+  customizeVaults.forEach((vault, i) => {
+    const underlying = customizeUnderlyings[i];
+    const thirdPool = customizeThirdPools[i];
+    const isErc20ThirdPool = thirdPoolSupplies[i] !== null;
+    if (isErc20ThirdPool) {
+      tokensAndOwners.push([underlying, vault]);
+      tokensAndOwners.push([thirdPool, vault]);
+    } else {
+      const key = `${underlying.toLowerCase()}|${thirdPool.toLowerCase()}`;
+      if (!seenSafeOwners.has(key)) {
+        seenSafeOwners.add(key);
+        tokensAndOwners.push([underlying, thirdPool]);
+      }
+      safeBackedSafes.add(thirdPool.toLowerCase());
+    }
+  })
+
   await sumTokens2({ api, tokensAndOwners });
+  await addSafeEquivalentBalances(api, [...safeBackedSafes]);
+  await addUnclaimedPoolRewards(api, {
+    stableERC4626For4626Vaults,
+    stableUnderlyings,
+    customizeVaults,
+    customizeUnderlyings,
+    thirdPoolSupplies,
+  });
+}
+
+// XAUe and similar non-priceable equivalents are remapped to a priceable
+// canonical token (e.g. XAUt) at a fixed raw-unit ratio. balanceOf is batched
+// over (safe x equivalent) pairs.
+async function addSafeEquivalentBalances(api, safeAddresses) {
+  if (safeAddresses.length === 0) return;
+  const equivalents = SAFE_EQUIVALENT_TOKENS[api.chain] ?? [];
+  if (equivalents.length === 0) return;
+
+  const calls = [];
+  for (const safe of safeAddresses) {
+    for (const eq of equivalents) {
+      calls.push({ target: eq.token, params: [safe] });
+    }
+  }
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+
+  let idx = 0;
+  for (const safe of safeAddresses) {
+    for (const eq of equivalents) {
+      const raw = BigInt(balances[idx++] ?? '0');
+      if (raw === 0n) continue;
+      const remapped = raw / eq.divisor;
+      if (remapped === 0n) continue;
+      api.add(eq.priceableToken, remapped.toString());
+    }
+  }
+}
+
+// For4626 and Customize-ERC20 pools route deposits into another ERC4626 where
+// yield surfaces only as share-price appreciation. The pool's totalAssets()
+// returns principal-only (1:1 share), so we ask TermMaxViewer for the accrued
+// reward and add it to the underlying balance. Skip pools whose reward asset
+// differs from the pool's underlying — summing them as underlying would be
+// unit-incorrect.
+async function addUnclaimedPoolRewards(api, params) {
+  const viewerAddress = TERMMAX_VIEWER_ADDRESS[api.chain];
+  if (!viewerAddress) return;
+
+  const {
+    stableERC4626For4626Vaults,
+    stableUnderlyings,
+    customizeVaults,
+    customizeUnderlyings,
+    thirdPoolSupplies,
+  } = params;
+
+  const pools = [];
+  const poolUnderlyings = [];
+  stableERC4626For4626Vaults.forEach((vault, i) => {
+    pools.push(vault);
+    poolUnderlyings.push(stableUnderlyings[i]);
+  });
+  customizeVaults.forEach((vault, i) => {
+    if (thirdPoolSupplies[i] === null) return; // Safe-backed: no viewer dispatch
+    pools.push(vault);
+    poolUnderlyings.push(customizeUnderlyings[i]);
+  });
+  if (pools.length === 0) return;
+
+  let result;
+  try {
+    result = await api.call({
+      abi: ABIS.Viewer.getPoolUnclaimedRewards,
+      target: viewerAddress,
+      params: [pools],
+    });
+  } catch (err) {
+    console.warn(`TermMaxViewer.getPoolUnclaimedRewards failed on ${api.chain}`, err.message ?? err);
+    return;
+  }
+
+  const { asset, amount } = result;
+  for (let i = 0; i < pools.length; i += 1) {
+    const rewardAsset = asset[i];
+    const rewardAmount = amount[i] ?? '0';
+    if (!rewardAsset || rewardAsset.toLowerCase() !== poolUnderlyings[i].toLowerCase()) {
+      if (rewardAmount && BigInt(rewardAmount) > 0n) {
+        console.warn(`TermMaxViewer reward asset ${rewardAsset} differs from underlying ${poolUnderlyings[i]} for pool ${pools[i]} on ${api.chain}; skipping`);
+      }
+      continue;
+    }
+    api.add(rewardAsset, rewardAmount);
+  }
 }
 
 module.exports = {
