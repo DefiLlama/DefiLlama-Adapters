@@ -43,9 +43,9 @@ chains.forEach(chain => {
       if (api.chain === 'plume_mainnet') api.chainId = 98866
       if (api.chain === 'hsk') api.chainId = 177
       if (!api.chainId) throw new Error('chainId is required, missing in ' + api.chain)
-      const blacklists = excludeVaults[api.chain] || []
+      const blacklists = excludeVaults[api.chain] ? excludeVaults[api.chain].map(i => String(i).toLowerCase()) : []
       const { result } = await getConfig(`pell/${api.chain}-v1`, `https://api.pell.network/v1/stakeList?chainId=${api.chainId}`)
-      const vaults = result.map(f => f.strategyAddress).filter(v => !blacklists.includes(v))
+      const vaults = result.map(f => String(f.strategyAddress).toLowerCase()).filter(v => !blacklists.includes(v))
       const tokens = await api.multiCall({ abi: 'address:underlyingToken', calls: vaults })
       return sumTokens2({ api, tokensAndOwners2: [tokens, vaults], })
     }
