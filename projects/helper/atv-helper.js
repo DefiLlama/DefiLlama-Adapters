@@ -36,17 +36,20 @@ async function getAtvCumulativeTvl(api, vaultConfigs) {
  */
 async function getAtvVaultTokens(api, vaultAddress, vaultType = 'ATV-111', additionalTokens = []) {
   // Always try to get dynamic tokens from vault contract
-  const [_, inputTokens] = await api.call({
+  const inputTokenResult = await api.call({
     abi: ATV_ABIS.getInputToken,
     target: vaultAddress,
     permitFailure: true,
   });
 
-  const uTokens = await api.call({
+  const uTokensResult = await api.call({
     abi: ATV_ABIS.getUTokens,
     target: vaultAddress,
     permitFailure: true,
   });
+
+  const inputTokens = Array.isArray(inputTokenResult) ? inputTokenResult[1] || [] : [];
+  const uTokens = Array.isArray(uTokensResult) ? uTokensResult : [];
 
   // Combine dynamic tokens
   const dynamicTokens = []
