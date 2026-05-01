@@ -3,8 +3,11 @@ const http = require('../http')
 
 const endpoint = () => getEnv('ALEO_RPC')
 
+const axios = require('axios')
+
 async function aQuery(path) {
-  return http.get(`${endpoint()}${path}`)
+  const { data } = await axios.get(`${endpoint()}${path}`)
+  return data
 }
 
 const sdk = require('@defillama/sdk')
@@ -43,6 +46,10 @@ async function sumTokens({ balances = {}, owners = [], api }) {
         // Strip the "u64" or other type suffixes
         const amountStr = res.replace(/u64$/, '')
         const amount = Number(amountStr) / 1e6 // Convert microcredits to Aleo
+
+        if (Number.isNaN(amount)) {
+          throw new Error(`Failed to parse valid numeric balance from Aleo mapping. Received: ${res}`)
+        }
         
         if (api) {
           api.addCGToken('aleo', amount)
@@ -51,10 +58,15 @@ async function sumTokens({ balances = {}, owners = [], api }) {
         }
       }
     } catch (e) {
-      // mapping might return 404 or null if no balance
+      // Only swallow 404/not found errors (which means empty balance/account not initialized). Fail on other RPC issues.
+      if (e.response && e.response.status === 404) {
+        // mapping not found
+        continue
+      }
+      throw e
     }
   }
-  return balances
+  return api ? api.getBalances() : balances
 }
 
 module.exports = {
