@@ -61,6 +61,21 @@ function getMinimumVerifierQuorum(config) {
   return config.requiredDVNCount + config.optionalDVNThreshold;
 }
 
+function getEscrowDstEids(escrow) {
+  const rawEids = escrow.dstEids ?? (escrow.dstEid != null ? [escrow.dstEid] : null);
+  if (!Array.isArray(rawEids) || !rawEids.length) {
+    throw new Error('LayerZero escrow entries require dstEid or non-empty dstEids');
+  }
+  return [...new Set(rawEids)];
+}
+
+async function escrowMeetsQuorum(api, escrow, minDvnQuorum) {
+  const configs = await Promise.all(
+    getEscrowDstEids(escrow).map(dstEid => getSendUlnConfig(api, { ...escrow, dstEid }))
+  );
+  return configs.every(config => getMinimumVerifierQuorum(config) >= minDvnQuorum);
+}
+
 async function getIncludedEscrows(api, { escrows, minDvnQuorum }) {
   if (!Number.isInteger(minDvnQuorum) || minDvnQuorum < 1) {
     throw new Error('sumLayerZeroEscrows requires minDvnQuorum (>= 1). Opting out re-introduces post-KelpDAO risk; see issue #18926.');
@@ -71,12 +86,10 @@ async function getIncludedEscrows(api, { escrows, minDvnQuorum }) {
 
   const includedEscrows = [];
   for (const escrow of escrows) {
-    if (!escrow?.oapp || !escrow?.token || !escrow?.owner || !escrow?.dstEid) {
-      throw new Error('LayerZero escrow entries require owner, token, oapp, and dstEid');
+    if (!escrow?.oapp || !escrow?.token || !escrow?.owner) {
+      throw new Error('LayerZero escrow entries require owner, token, and oapp');
     }
-
-    const config = await getSendUlnConfig(api, escrow);
-    if (getMinimumVerifierQuorum(config) >= minDvnQuorum) includedEscrows.push(escrow);
+    if (await escrowMeetsQuorum(api, escrow, minDvnQuorum)) includedEscrows.push(escrow);
   }
 
   return includedEscrows;
