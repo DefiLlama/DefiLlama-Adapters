@@ -82,7 +82,10 @@ async function getTokenRecords() {
       };
 
       return (await get(`${TREASURY_API}/atBlock/tokenRecords?wg_variables=${encodeURIComponent(JSON.stringify(variables))}`)).data || [];
-    })();
+    })().catch((error) => {
+      tokenRecordsPromise = null;
+      throw error;
+    });
   }
 
   return tokenRecordsPromise;
