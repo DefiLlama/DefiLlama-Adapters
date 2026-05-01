@@ -19,5 +19,6 @@ async function tvl(api) {
 module.exports = {
     methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.',
     start: START,
+    doublecounted: true,
     arbitrum: {tvl},
 }
