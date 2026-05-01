@@ -26,6 +26,18 @@ const SCALE_TO_USDC = 10n ** 38n;
 
 const priceAbi = 'function price() view returns (uint256)';
 
+/**
+ * Computes BTCD TVL on Ethereum and registers it as a USDC balance.
+ *
+ * Reads BTCD.totalSupply and BTCDPegUsdcOracle.price() in parallel, then
+ * scales by 10^38 to convert (BTCD raw 18 dec) × (price × 10^26) into a
+ * USDC raw amount (6 dec). Throws if the oracle returns 0, which Morpho
+ * uses to signal bad feed data instead of reverting.
+ *
+ * @param {import('@defillama/sdk').ChainApi} api - DefiLlama chain API for the active block.
+ * @returns {Promise<void>} Resolves after the USDC-denominated balance is registered via `api.add`.
+ * @throws {Error} If `BTCDPegUsdcOracle.price()` returns 0.
+ */
 async function ethereumTvl(api) {
   const [supply, price] = await Promise.all([
     api.call({ target: BTCD, abi: 'erc20:totalSupply' }),
