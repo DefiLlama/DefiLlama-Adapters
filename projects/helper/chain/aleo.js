@@ -6,12 +6,11 @@ const endpoint = () => getEnv('ALEO_RPC')
 const axios = require('axios')
 
 async function aQuery(path) {
-  const { data } = await axios.get(`${endpoint()}${path}`)
+  const { data } = await axios.get(`${endpoint()}${path}`, { timeout: 3000 })
   return data
 }
 
 const sdk = require('@defillama/sdk')
-const { transformBalances } = require('../portedTokens')
 
 /**
  * Fetch a value from a mapping within an Aleo program.
