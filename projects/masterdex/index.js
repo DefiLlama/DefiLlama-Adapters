@@ -1,25 +1,29 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 
-const MDEX_ETHEREUM = "0xf0610eb7d8ee12d59412da32625d5e273e78ff0b";
-const MDEX_BASE = "0xabc5915cad6b54f48b2a8cd516055f378861c237";
+const POOL_MANAGER = "0x000000000004444c5dc75cB358380D2e3dE08A90";
+const MDEX = "0xf0610eb7d8ee12d59412da32625d5e273e78ff0b";
+const UNI_V4_POSITION_IDS = [
+  "171422", "75342", "75341", "75339", "71766",
+  "916590", "916589", "916588", "916583",
+  "27478", "27477", "998", "995",
+];
 
-const POOL_MANAGER_ETHEREUM = "0x000000000004444c5dc75cB358380D2e3dE08A90";
-const POOL_MANAGER_BASE = "0x498581ff718922c3f8e6a244956af099b2652b2b";
+async function tvl(api) {
+  return sumTokens2({
+    api,
+    resolveUniV4: true,
+    owner: POOL_MANAGER,
+    uniV4ExtraConfig: {
+      positionIds: UNI_V4_POSITION_IDS,
+      whitelistedTokens: [nullAddress, MDEX],
+    },
+  });
+}
 
 module.exports = {
-  methodology:
-    "TVL is the total value of MDEX tokens locked in Uniswap V4 liquidity pools on Ethereum and Base.",
+  methodology: "TVL counts MDEX and ETH locked in protocol-owned Uniswap V4 positions.",
   doublecounted: true,
   ethereum: {
-    tvl: sumTokensExport({
-      owners: [POOL_MANAGER_ETHEREUM],
-      tokens: [MDEX_ETHEREUM],
-    }),
-  },
-  base: {
-    tvl: sumTokensExport({
-      owners: [POOL_MANAGER_BASE],
-      tokens: [MDEX_BASE],
-    }),
+    tvl,
   },
 };
