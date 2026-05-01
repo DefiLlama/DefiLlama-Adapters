@@ -10,7 +10,7 @@ const FIAMMA_BTC_EVM = {
   core:        "0x60C230c38aF6d86b0277a98a1CAeAA345a7B061F",
   unichain:    "0x60C230c38aF6d86b0277a98a1CAeAA345a7B061F",
   plume_mainnet: "0x60C230c38aF6d86b0277a98a1CAeAA345a7B061F",
-  hyperliquid: "0x0CEDa114F533D540c8aF2AeB52942c1a4A0B1e86",  // HyperEVM slug
+  hyperliquid: "0x0CEDa114F533D540c8aF2AeB52942c1a4A0B1e86",
 };
 
 const APTOS_FIAMMA_BTC_METADATA =
@@ -19,32 +19,35 @@ const APTOS_FIAMMA_BTC_METADATA =
 const BTC_DECIMALS = 1e8;
 
 const evmTvl = (chain) => async (api) => {
-  try {
-    const supply = await api.call({
-      target: FIAMMA_BTC_EVM[chain],
-      abi:    "erc20:totalSupply",
-      chain,
-    });
-    if (!supply || supply === "0") return;
-    api.addCGToken("bitcoin", Number(supply) / BTC_DECIMALS);
-  } catch (_) {}
+  const supply = await api.call({
+    target: FIAMMA_BTC_EVM[chain],
+    abi: "erc20:totalSupply",
+    chain,
+  }).catch((e) => {
+    throw new Error(`fiamma:${chain} totalSupply failed: ${e.message}`);
+  });
+
+  if (!supply || supply === "0") return;
+  api.addCGToken("bitcoin", Number(supply) / BTC_DECIMALS);
 };
 
 const aptosTvl = async (api) => {
-  try {
-    const supply = await function_view({
-      functionStr:     "0x1::fungible_asset::supply",
-      type_arguments:  ["0x1::fungible_asset::Metadata"],
-      args:            [APTOS_FIAMMA_BTC_METADATA],
-      chain:           "aptos",
-    });
-    const raw = supply?.vec?.[0] ?? supply;
-    if (!raw) return;
-    api.addCGToken("bitcoin", Number(raw) / BTC_DECIMALS);
-  } catch (_) {}
+  const supply = await function_view({
+    functionStr: "0x1::fungible_asset::supply",
+    type_arguments: ["0x1::fungible_asset::Metadata"],
+    args: [APTOS_FIAMMA_BTC_METADATA],
+    chain: "aptos",
+  }).catch((e) => {
+    throw new Error(`fiamma:aptos supply failed: ${e.message}`);
+  });
+
+  const raw = supply?.vec?.[0] ?? supply;
+  if (!raw) return;
+  api.addCGToken("bitcoin", Number(raw) / BTC_DECIMALS);
 };
 
 module.exports = {
+  timetravel: false,
   methodology:
     "TVL = total supply of FiammaBTC tokens across all chains. " +
     "Each FiammaBTC token represents 1 satoshi of Bitcoin locked in the " +
