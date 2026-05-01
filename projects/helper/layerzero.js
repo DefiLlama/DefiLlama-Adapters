@@ -28,11 +28,7 @@ async function getSendUlnConfig(api, { oapp, dstEid, endpoint = ENDPOINT_V2 }) {
 
   assertDvnArrayValid(requiredDVNs, requiredDVNCount, 'required');
   assertDvnArrayValid(optionalDVNs, optionalDVNCount, 'optional');
-
-  const combined = [...requiredDVNs, ...optionalDVNs].map(a => a.toLowerCase());
-  if (new Set(combined).size !== combined.length) {
-    throw new Error('LayerZero DVN config reuses a verifier across required/optional sets; quorum would overstate independent signers');
-  }
+  assertNoDuplicateDvns([...requiredDVNs, ...optionalDVNs]);
 
   return {
     confirmations: Number(config.confirmations),
@@ -52,9 +48,12 @@ function assertDvnArrayValid(dvns, declaredCount, label) {
   if (dvns.some(addr => addr.toLowerCase() === ZeroAddress.toLowerCase())) {
     throw new Error(`LayerZero ${label} DVN config contains zero-address verifier (KelpDAO-style spoof guard)`);
   }
+}
+
+function assertNoDuplicateDvns(dvns) {
   const lowered = dvns.map(a => a.toLowerCase());
   if (new Set(lowered).size !== lowered.length) {
-    throw new Error(`LayerZero ${label} DVN config contains duplicate verifier; quorum count would overstate independent signers`);
+    throw new Error('LayerZero DVN config contains duplicate verifier; quorum would overstate independent signers');
   }
 }
 
@@ -66,10 +65,15 @@ async function getIncludedEscrows(api, { escrows, minDvnQuorum }) {
   if (!Number.isInteger(minDvnQuorum) || minDvnQuorum < 1) {
     throw new Error('sumLayerZeroEscrows requires minDvnQuorum (>= 1). Opting out re-introduces post-KelpDAO risk; see issue #18926.');
   }
+  if (!Array.isArray(escrows)) {
+    throw new Error('sumLayerZeroEscrows requires escrows to be an array');
+  }
 
   const includedEscrows = [];
   for (const escrow of escrows) {
-    if (!escrow.oapp || !escrow.dstEid) throw new Error('LayerZero DVN gating requires oapp and dstEid per escrow');
+    if (!escrow?.oapp || !escrow?.token || !escrow?.owner || !escrow?.dstEid) {
+      throw new Error('LayerZero escrow entries require owner, token, oapp, and dstEid');
+    }
 
     const config = await getSendUlnConfig(api, escrow);
     if (getMinimumVerifierQuorum(config) >= minDvnQuorum) includedEscrows.push(escrow);
