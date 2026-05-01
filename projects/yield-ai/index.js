@@ -68,7 +68,7 @@ async function tvl(api) {
     await Promise.all(batch.map(async (addr) => {
       const bal = await function_view({
         functionStr: "0x1::coin::balance",
-        type_arguments: ["0x1::aptos_coin::AptosCoin"],
+        type_arguments: [ADDRESSES.aptos.APT],
         args: [addr],
         chain: "aptos",
       });

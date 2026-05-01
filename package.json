@@ -15,6 +15,7 @@
     "useTokenLabels": "node utils/scripts/useTokenLabels.js",
     "biggest-files": "node utils/scripts/sortTopFilesByLines.js",
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
+    "check-registries-duplicates": "node utils/scripts/checkRegistriesDups.js",
     "string-timestamp": "node utils/scripts/stringTimestamp.js",
     "sort-chains": "node projects/helper/getChainList.js"
   },

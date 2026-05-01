@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { defaultTokens } = require('../helper/cex')
 const { getConfig } = require('../helper/cache')
 const { getConnection } = require('../helper/solana')
@@ -21,7 +22,7 @@ const chainIds = {
 // Solana constants
 const PRINTR_API = 'https://api-preview.printr.money'
 const SOLANA_CHAIN_ID = 900
-const WSOL = 'So11111111111111111111111111111111111111112'
+const WSOL = ADDRESSES.solana.SOL
 
 // Meteora DBC VirtualPool account layout offsets (C-repr bytemuck serialization)
 // Source: Meteora DBC IDL (dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN), VirtualPool type definition

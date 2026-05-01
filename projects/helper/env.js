@@ -50,6 +50,7 @@ const DEFAULTS = {
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
+  PHAROS_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",  // v3
 }
 
 const ENV_KEYS = [
@@ -81,6 +82,7 @@ const ENV_KEYS = [
   'TATUM_PUBLIC_API_KEY',
   'TATUM_API_KEY',
   'ALEO_RPC',
+  'TEAM_WEBHOOK',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

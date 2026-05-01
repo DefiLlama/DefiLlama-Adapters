@@ -259,6 +259,15 @@ const configs = {
     start: '2026-04-11',
     base: ['0x71c298a6eb10e7958ce25a450a706330a4c946c0']
   },
+  'r25': {
+    pharos: Object.values({
+      vRPCWeeklyVault: '0x1c2bc8b553d9a7e61f7531a3a4bf2162f4569268',
+      vRPCQuarterlyVault: '0x94f7ebc6ae0819a4b4e231ae6ddaaf9bfd2a1a86',
+      vRPCSemiYearlyVault: '0xee26bb0989691735c997dfdc49a4a607f75e190b',
+      pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
+    }),
+    methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

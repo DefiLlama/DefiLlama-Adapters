@@ -126,7 +126,7 @@ const vaultConfigs = {
     {
       allocator: almProxy.ethereum,
       vaultToken: '0xC02aB1A5eaA8d1B114EF786D9bde108cD4364359', //spUSDS
-      underlyingToken: '0xdC035D45d973E3EC169d2276DDab16f1e407384F',
+      underlyingToken: ADDRESSES.ethereum.USDS,
     },
   ],
   base: [],

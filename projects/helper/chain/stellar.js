@@ -223,5 +223,6 @@ module.exports = {
   getTokenBalance,
   decodeStrKey,
   callSoroban,
+  parseScVal: _parseScVal,
   SOROBAN_RPC_URL,
 }

@@ -23,7 +23,7 @@ const excludeVaults = {
     ADDRESSES.bouncebit.wstBBTC, // all depositors from 0x39132fA8C6a8Caf74F6940Ac0B2Caf73F25223b8
     
     // 0x39132fA8C6a8Caf74F6940Ac0B2Caf73F25223b8 distributed BTC.B to multiple addresses to made deposits
-    '0x8f083EaFcbba2e126AD9757639c3A1E25a061A08',
+    ADDRESSES.bouncebit.wstBBTC,
   ],
   goat: [
     '0x6f0AfADE16BFD2E7f5515634f2D0E3cd03C845Ef',
