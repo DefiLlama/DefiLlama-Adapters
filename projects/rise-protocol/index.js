@@ -50,6 +50,12 @@ let _cache = null
 let _cacheAt = 0
 const CACHE_TTL_MS = 60_000
 
+/**
+ * Loads every Rise market on-chain in three slim getProgramAccounts calls
+ * (groups, metas, linears) and returns one entry per market with its
+ * `mintMain`, `totalCashLiquidity` and `totalDebt`. Result is cached for 60s
+ * so `tvl` and `borrowed` share a single fetch when both are invoked back to back.
+ */
 async function getRiseMarkets() {
   const now = Date.now()
   if (_cache && (now - _cacheAt) < CACHE_TTL_MS) return _cache
@@ -119,6 +125,10 @@ async function getRiseMarkets() {
   return result
 }
 
+/**
+ * TVL: sum of MarketState.totalCashLiquidity across all Rise markets,
+ * grouped by quote-asset mint (WSOL or USDC).
+ */
 async function tvl(api) {
   const markets = await getRiseMarkets()
   for (const m of markets) {
@@ -126,6 +136,10 @@ async function tvl(api) {
   }
 }
 
+/**
+ * Borrowed: sum of MarketState.totalDebt across all Rise markets,
+ * representing main-token debt drawn against token collateral.
+ */
 async function borrowed(api) {
   const markets = await getRiseMarkets()
   for (const m of markets) {
