@@ -1,8 +1,7 @@
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
 
-const STABLECOIN_DEX = "0xdec0000000000000000000000000000000000000"
-
+const FEE_MANAGER = "0xfeec000000000000000000000000000000000000"
 const TEMPO_TOKENLIST = 'https://tokenlist.tempo.xyz/list/4217'
 
 module.exports = {
@@ -15,8 +14,9 @@ module.exports = {
         fetcher: async (url) => {
           const data = await get(TEMPO_TOKENLIST)
           return data.tokens.map(t => t.address)
-        }})
-        return api.sumTokens({ owner: STABLECOIN_DEX, tokens: list })
+        }
+      })
+      return api.sumTokens({ owner: FEE_MANAGER, tokens: list })
     }
   }
 }
