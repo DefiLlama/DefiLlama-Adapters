@@ -1,7 +1,7 @@
 const { getConnection } = require('../helper/solana')
 const { sliceIntoChunks } = require('../helper/utils')
 const { PublicKey } = require('@solana/web3.js')
-const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
+const bs58 = require('bs58').default
 
 // Rise (https://rise.rich) is a Solana launchpad with on-chain lending built in.
 // User-launched tokens live on Rise's program; the actual liquidity, debt and
@@ -68,6 +68,10 @@ async function getRiseMarkets() {
   _inflight = (async () => {
     try {
       const result = await fetchRiseMarkets()
+      // Don't overwrite a known-good snapshot if a refresh comes back empty
+      // (e.g., the RPC silently served an empty getProgramAccounts result):
+      // it would zero out TVL and Borrowed for no real reason.
+      if (!result.length && _cached?.length) return _cached
       _cached = result
       _cachedAt = Date.now()
       return result
