@@ -29,6 +29,7 @@ function maverickTVL(config) {
         return sumTokens2({
           api,
           ownerTokens: logs.map((i) => [[i.tokenA, i.tokenB], i.poolAddress]),
+          permitFailure: true,
         });
       },
     };
