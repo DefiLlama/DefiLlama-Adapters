@@ -71,6 +71,11 @@ async function getRiseMarkets() {
       _cached = result
       _cachedAt = Date.now()
       return result
+    } catch (e) {
+      // Public RPCs throttle aggressively — fall back to the last good snapshot
+      // on a transient failure so a single 429/timeout doesn't take TVL to zero.
+      if (_cached) return _cached
+      throw e
     } finally {
       _inflight = null
     }
