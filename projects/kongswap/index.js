@@ -1,6 +1,7 @@
 const { get } = require('../helper/http')
 
 module.exports = {
+  deadFrom: '2026-04-06',
   misrepresentedTokens: true,
   icp: { tvl },
 }
