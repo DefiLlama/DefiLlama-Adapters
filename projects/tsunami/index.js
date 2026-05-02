@@ -4,6 +4,7 @@ const config = uniV3Export({
   ink: {
     factory: "0xD8B0826150B7686D1F56d6F10E31E58e1BCF1193",
     fromBlock: 39943476,
+    permitFailure: true,
   },
 });
 
