@@ -3,6 +3,7 @@ const { get } = require('../helper/http')
 module.exports = {
   misrepresentedTokens: true,
   icp: { tvl },
+  deadFrom: '2026-04-06',  // project is sunset: https://x.com/KongSwapX/status/2037472225687744664
 }
 
 async function tvl(api) {
