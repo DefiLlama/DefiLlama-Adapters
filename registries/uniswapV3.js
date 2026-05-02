@@ -1458,6 +1458,13 @@ const uniV3Configs = {
       fromBlock: 2445228,
     },
   },
+  'tsunami-v3': {
+    ink: {
+      factory: '0xD8B0826150B7686D1F56d6F10E31E58e1BCF1193',
+      fromBlock: 39943040,
+      permitFailure: true,
+    },
+  },
   'tesseractworld': {
     ace: {
       factory: '0x699cf93f5dec3a3e314f0a31c1f885fb11b983c3',
