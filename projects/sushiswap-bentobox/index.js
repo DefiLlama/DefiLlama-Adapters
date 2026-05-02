@@ -1,5 +1,4 @@
 const { bentobox } = require("./bentobox.js");
-
 const bentobox_chains = [
   "ethereum",
   "polygon",
@@ -16,9 +15,10 @@ const bentobox_chains = [
   //"metis",
   "celo",
 ];
-
 bentobox_chains.forEach((chain) => {
   module.exports[chain] = {
     tvl: chain === "fantom" || chain === "avax" ? () => ({ }) : (api) => bentobox(api),
   };
 });
+
+module.exports.deadFrom = '2024-06-12';
