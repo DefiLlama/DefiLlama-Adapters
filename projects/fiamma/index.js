@@ -41,7 +41,7 @@ const aptosTvl = async (api) => {
     throw new Error(`fiamma:aptos supply failed: ${e.message}`);
   });
 
-  const raw = supply?.vec?.[0] ?? supply;
+  const raw = supply?.vec?.[0];
   if (!raw) return;
   api.addCGToken("bitcoin", Number(raw) / BTC_DECIMALS);
 };
