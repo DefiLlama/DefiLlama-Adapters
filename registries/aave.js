@@ -459,6 +459,11 @@ const aaveConfigs = {
   'magsinio': {
     sonic: '0x67389503F9EF03D5C10074dEfd96E18bc7755194',
   },
+  'k613': {
+    monad: {
+      dataHelpers: ['0xfc87bE7f3657AAD69baDb6247A88E924D1F8bc53'],
+    },
+  },
   'meridian-lend': {
     telos: {
       addressesProviderRegistry: '0xb84171C0824B4F3C0B415706C99A4A8ED5779b75',
