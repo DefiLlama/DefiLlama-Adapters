@@ -3,6 +3,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const treasury_arb = "0x2ccf21e5912e9ecccb0ecdee9744e5c507cf88ae";
 const treasury_eth = "0xEE86E99b42981623236824D33b4235833Afd8044";
+const treasury_eth_2 = "0x169a99B9958386a5D91E732Ed08B344946A92391";
+const treasury_eth_3 = "0xEe900961552Df080712fBeFaEe7152d932b384BC";
 const treasury_op = "0xD4C00FE7657791C2A43025dE483F05E49A5f76A6";
 
 const lyra_eth = "0x01BA67AAC7f75f647D94220Cc98FB30FCc5105Bf";
@@ -16,14 +18,14 @@ module.exports = treasuryExports({
       ADDRESSES.arbitrum.WETH,
      ],
     owners: [treasury_arb],
-    ownTokens: [lyra_arb],
+    ownTokens: [lyra_arb, '0x77b7787a09818502305C95d68A2571F090abb135'],
   },
   ethereum: {
     tokens: [ 
       ADDRESSES.ethereum.USDC,
      ],
-    owners: [treasury_eth],
-    ownTokens: [lyra_eth],
+    owners: [treasury_eth, treasury_eth_2, treasury_eth_3],
+    ownTokens: [lyra_eth, '0xB1D1eae60EEA9525032a6DCb4c1CE336a1dE71BE'],
   },
   optimism: {
     tokens: [ 
@@ -32,6 +34,6 @@ module.exports = treasuryExports({
       ADDRESSES.optimism.WETH,
      ],
     owners: [treasury_op],
-    ownTokens: [lyra_op],
+    ownTokens: [lyra_op, '0x33800De7E817A70A694F31476313A7c572BBa100'],
   },
 })

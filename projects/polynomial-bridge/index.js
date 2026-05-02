@@ -2,6 +2,9 @@ const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
+  hallmarks: [
+    ["2026-02-13", "winddown announced"],
+  ],
   ethereum: {
     tvl: (api) =>
       sumTokens2({

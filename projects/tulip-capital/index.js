@@ -18,6 +18,8 @@ const configs = {
       erc4626: [
         "0x936facdf10c8c36294e7b9d28345255539d81bc7", // Lagoon: RockSolid rock.rETH
         "0xb09f761cb13baca8ec087ac476647361b6314f98", // Lagoon: Flagship cbBTC
+        "0x7a12D4B719F5aA479eCD60dEfED909fb2A37e428", // Lagoon: RockSolid Looped ETH Vault
+        "0xce0b790ae0d8cf91e01f3fb69025e14569b574f3", // Lagoon: Tulipa USDC
       ],
     },
     berachain: {
@@ -49,6 +51,12 @@ const configs = {
     monad: {
       erc4626: [
         "0x0da39b740834090C146dC48357f6A435a1Bb33b3", // Lagoon: MuDigital Tulipa USDC
+        "0x09ca6b76276ec0682adb896418b99cb7e44a58a0", // Gearbox: Tulipa MON v3
+      ]
+    },
+    base: {
+      erc4626: [
+        "0x61a8606e04d350dfa1d1aaa68b37260746ae47d4", // Creditcoop: Tulipa Credit Vault
       ]
     }
   }

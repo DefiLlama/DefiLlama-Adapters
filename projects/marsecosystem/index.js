@@ -2,7 +2,9 @@
 const sdk = require('@defillama/sdk')
 const { unwrapUniswapLPs, } = require("../helper/unwrapLPs");
 const { getConfig } = require('../helper/cache')
-const abi = require("./abi.json");
+const abi = {
+    "sharesTotal": "function sharesTotal(uint256 _pid) view returns (uint256)"
+  };
 const { getUniTVL } = require("../helper/unknownTokens");
 
 const url = 'https://api.marsecosystem.com/api/pools';

@@ -13,6 +13,7 @@ const tokenMapping = {
   'xtokens:XXRP': 'ripple',
   'eosio.token:XPR': 'proton',
   'xtokens:XMT': 'metal',
+  'xmd.token:XMD': 'metal-dollar',
   'xtokens:XUSDC': 'usd-coin',
   'xtokens:XDOGE': 'dogecoin',
   'xtokens:XUSDT': 'tether',
@@ -44,8 +45,9 @@ async function fetchMarkets() {
   return res.rows || []
 }
 
-async function fetchLiquidity(tokenContract, symbol) {
+async function fetchLiquidity(tokenContract, symbol, reserves) {
   // available liquidity (cash) held by lending.loan for a given token
+  // TVL = account balance - reserves (reserves are not available for lending)
   const res = await post(`${API_ENDPOINT}/v1/chain/get_table_rows`, {
     code: tokenContract,
     scope: LENDING_CONTRACT,
@@ -55,7 +57,9 @@ async function fetchLiquidity(tokenContract, symbol) {
   })
   const rows = res.rows || []
   const tokenBalance = rows.find(b => parseAsset(b.balance).symbol === symbol)
-  return tokenBalance ? parseAsset(tokenBalance.balance).amount : 0
+  const accountBalance = tokenBalance ? parseAsset(tokenBalance.balance).amount : 0
+  const reserveAmount = parseAsset(reserves?.quantity).amount || 0
+  return accountBalance - reserveAmount
 }
 
 // ----------------------------
@@ -72,7 +76,7 @@ async function tvl() {
     const cgkId = tokenMapping[internalId]
     if (!cgkId) return
 
-    const cashAvailable = await fetchLiquidity(tokenContract, symbol)
+    const cashAvailable = await fetchLiquidity(tokenContract, symbol, market.total_reserves)
     sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, cashAvailable)
   })
 

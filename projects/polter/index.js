@@ -25,15 +25,13 @@ const base = {
 
 module.exports = {
   // hallmarks: [
-  //   [1731715200,"Price Oracle Exploit"]
+  //   ['2024-11-16',"Price Oracle Exploit"]
   // ],
   sonic: aaveV2Export(sonic.POLTER_LENDINGPOOL_CONTRACT),
-  fantom: aaveV2Export(fantom.POLTER_LENDINGPOOL_CONTRACT),
+  fantom: aaveV2Export(fantom.POLTER_LENDINGPOOL_CONTRACT, { isInsolvent: true }),
   base: aaveV2Export(base.POLTER_LENDINGPOOL_CONTRACT),  
 }
 
 module.exports.sonic.staking = sumTokensExport({ owner: sonic.MULTIFEE_CONTRACT, tokens: [sonic.POLTER_CONTRACT], lps: [sonic.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })
 module.exports.fantom.staking = sumTokensExport({ owner: fantom.MULTIFEE_CONTRACT, tokens: [fantom.POLTER_CONTRACT], lps: [fantom.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })
 module.exports.base.staking = sumTokensExport({ owner: base.MULTIFEE_CONTRACT, tokens: [base.POLTER_CONTRACT], lps: [base.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })
-
-module.exports.fantom.borrowed = () => ({})

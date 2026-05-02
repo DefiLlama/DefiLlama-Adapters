@@ -1,6 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address want, uint256 allocPoint, uint256 lastRewardBlock, uint256 accNATIVEPerShare, address strat)",
-  "poolLength": "uint256:poolLength",
-  "wantLockedTotal": "uint256:wantLockedTotal",
-  "symbol": "string:symbol"
-}

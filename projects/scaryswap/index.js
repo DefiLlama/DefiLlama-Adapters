@@ -1,6 +1,8 @@
 const { getUniTVL } = require("../helper/unknownTokens");
 const { pools, farms } = require("./contracts.json");
-const poolAbi = require("./pool.json");
+const poolAbi = {
+    "rewardsToken": "address:rewardsToken"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const chain = "fantom";

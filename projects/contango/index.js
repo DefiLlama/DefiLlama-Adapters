@@ -1,6 +1,5 @@
 const { getLogs } = require("../helper/cache/getLogs")
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const sdk = require('@defillama/sdk')
 
 const config = {
   arbitrum: {
@@ -17,11 +16,9 @@ Object.keys(config).forEach(chain => {
   const { ladle, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const block = api.block
-      const cauldron = await sdk.api2.abi.call({
+      const cauldron = await api.call({
         target: ladle,
         abi: 'address:cauldron',
-        chain, block,
       })
 
       const logs = await getLogs({
@@ -30,19 +27,17 @@ Object.keys(config).forEach(chain => {
       })
       const ilkIds = logs.map((log) => log.args.ilkId)
 
-      const joins = await sdk.api2.abi.multiCall({
+      const joins = await api.multiCall({
         target: ladle,
         calls: ilkIds,
         abi: abis.joins,
-        chain, block,
       })
-      const tokens = await sdk.api2.abi.multiCall({
+      const tokens = await api.multiCall({
         abi: 'address:asset',
         calls: joins,
-        chain, block,
       })
       const tokensAndOwners = joins.map((t, i) => ([tokens[i], t]))
-      return sumTokens2({ chain, block, tokensAndOwners, })
+      return sumTokens2({ api, tokensAndOwners, })
     }
   }
 })

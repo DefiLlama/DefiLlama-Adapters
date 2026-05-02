@@ -13,9 +13,9 @@ module.exports = {
   methodology:
     "Counts the tokens locked on swap pools based on their holdings.",
   hallmarks: [
-    [1656419883, "Boba adds to FRAX-USDC"],
-    [1658439731, "Boba removes from FRAX-USDC"],
-    [1659129231, "Boba adds to USDC-DAI"],
-    [1665774187, "Boba removes from USDC-DAI"]
+    ['2022-06-28', "Boba adds to FRAX-USDC"],
+    ['2022-07-21', "Boba removes from FRAX-USDC"],
+    ['2022-07-29', "Boba adds to USDC-DAI"],
+    ['2022-10-14', "Boba removes from USDC-DAI"]
   ],
 };

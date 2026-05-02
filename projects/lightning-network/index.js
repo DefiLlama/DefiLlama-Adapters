@@ -12,6 +12,16 @@ async function GetDailyHistory() {
   });
 }
 
+async function GetDailyHistory1() {
+  let data = await get('https://mempool.space/api/v1/lightning/statistics/all');
+
+  data.forEach((row) => {
+    if (!row.total_capacity) return;
+    const day = new Date(row.added * 1000).toISOString().slice(0, 10);
+    dayHistory[day] = row.total_capacity / 1e8
+  });
+}
+
 async function get1MLCapacity() {
   try {
     const data = await get('https://1ml.com/statistics?json=true')
@@ -33,14 +43,15 @@ async function getChannelCapacity(timestamp) {
 }
 
 async function tvl({ timestamp }) {
-  const getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
+  let getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
   let channelCapacity
+  getCurrentTVL = false // temporarily disable live scrape due to 1ML issues
 
   if (getCurrentTVL) {
     channelCapacity = await get1MLCapacity()
   } else {
-    await GetDailyHistory();
-    channelCapacity = await getChannelCapacity(timestamp)
+    await GetDailyHistory1();
+    channelCapacity = await getChannelCapacity(timestamp - 86400)
   }
 
   // if none of our scrape targets worked then throw an error

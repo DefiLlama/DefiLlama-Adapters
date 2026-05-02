@@ -1,5 +1,0 @@
-{
-  "getCurrentTokens": "address[]:getCurrentTokens",
-  "poolLength": "uint256:poolLength",
-  "lpToken": "function lpToken(uint256) view returns (address)"
-}

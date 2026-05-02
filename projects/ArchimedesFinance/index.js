@@ -1,6 +1,9 @@
-const curvePoolAbi = require('./curvePoolAbi.json');
-const archimedesVaultAbi = require('./archimedesVaultAbi.json')
-const ERC20_TOKEN_3CRV = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
+const curvePoolAbi = {
+    "balances": "function balances(uint256 arg0) view returns (uint256)"
+  };
+const archimedesVaultAbi = {
+    "totalAssets": "function totalAssets() view returns (uint256)"
+  };const ERC20_TOKEN_3CRV = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
 const POOL_CONTRACT_LVUSD_3CRV = "0xe9123cbc5d1ea65301d417193c40a72ac8d53501";
 const POOL_INDEX_3CRV = 1;
 const ARCHIMEDES_VAULT_OUSD = "0x4c12c57C37Ff008450A2597e810B51B2BbA0383A";

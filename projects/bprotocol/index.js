@@ -1,6 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const abi = require('./abi.json');
+const abi = {
+    "cdpTvl": "function cdpTvl(address man, uint256 cdp, bytes32 ilk) view returns (uint256)",
+    "cdpi": "function cdpi(address man) view returns (uint256)",
+    "avatarLength": "uint256:avatarLength",
+    "avatars": "function avatars(uint256) view returns (address)",
+    "getAllMarkets": "address[]:getAllMarkets",
+    "balanceOfUnderlying": "function balanceOfUnderlying(address owner) returns (uint256)",
+    "underlying": "address:underlying",
+    "bamms": "function bamms(uint256) view returns (address)",
+    "getCompoundedLUSDDeposit": "function getCompoundedLUSDDeposit(address _depositor) view returns (uint256)"
+  };
 
 const bTvlAddress = '0x60312e01A2ACd1Dac68838C949c1D20C609B20CF';
 const bcdpmanagerAddress = '0x3f30c2381CD8B917Dd96EB2f1A4F96D91324BBed';

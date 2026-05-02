@@ -1,4 +1,12 @@
-const abi = require("./abi.json");
+const abi = {
+    "userInfo": "function userInfo(uint256, address) view returns (uint128 amount, uint128 factor, uint128 rewardDebt, uint128 pendingWom)",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint96 allocPoint, address rewarder, uint256 sumOfFactors, uint104 accWomPerShare, uint104 accWomPerFactorShare, uint40 lastRewardTimestamp)",
+    "pool": "address:pool",
+    "lockedSupply": "uint256:lockedSupply",
+    "underlyingToken": "address:underlyingToken",
+    "quotePotentialWithdraw": "function quotePotentialWithdraw(address token, uint256 liquidity) view returns (uint256 amount, uint256 fee)"
+  };
 const { staking } = require("../helper/staking");
 const config = require("./config");
 

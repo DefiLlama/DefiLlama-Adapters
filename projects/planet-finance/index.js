@@ -1,7 +1,34 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
-const abiV3 = require("./abiV3.json");
-const abiNew = require("./abiNew.json");
+const abi = {
+    "wantLockedTotal": "uint256:wantLockedTotal",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address want, uint256 allocPoint, uint256 lastRewardBlock, uint256 accAQUAPerShare, address strat)",
+    "totalSupply": "uint256:totalSupply",
+    "exchangeRateStored": "uint256:exchangeRateStored",
+    "decimals": "uint8:decimals",
+    "balanceOfGtoken": "uint256:balanceOfGtoken"
+  };
+const abiV3 = {
+    "wantLockedTotal": "uint256:wantLockedTotal",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (uint256 allocPoint, uint256 lastRewardBlock, uint256 accParentGAMMAPerShare, uint256 accGAMMAPerFactorPerShare, uint256 totalEarningFactor, address want, address strat, address pToken, bool hasStratRewards, bool isTimeLocked)",
+    "totalSupply": "uint256:totalSupply",
+    "exchangeRateStored": "uint256:exchangeRateStored",
+    "decimals": "uint8:decimals",
+    "balanceOfGtoken": "uint256:balanceOfGtoken",
+    "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+    "token0": "address:token0",
+    "token1": "address:token1"
+  };
+const abiNew = {
+    "wantLockedTotal": "uint256:wantLockedTotal",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (uint256 allocPoint, uint256 lastRewardBlock, uint256 accGAMMAPerShare, uint256 accGAMMAPerFactorPerShare, uint256 gammaRewardBoostPercentage, uint256 totalFactor, address want, address strat, address gToken, address iToken, bool isInfinity, bool hasStratRewards, bool isBoosted)",
+    "totalSupply": "uint256:totalSupply",
+    "exchangeRateStored": "uint256:exchangeRateStored",
+    "decimals": "uint8:decimals",
+    "balanceOfGtoken": "uint256:balanceOfGtoken"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 

@@ -1,0 +1,6 @@
+# Protect dependency and config files — require @g1nt0ki @0xngmi approval
+/.github/CODEOWNERS @g1nt0ki @0xngmi
+
+package.json @g1nt0ki @0xngmi
+pnpm-lock.yaml @g1nt0ki @0xngmi
+pnpm-workspace.yaml @g1nt0ki @0xngmi

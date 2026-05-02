@@ -1,5 +1,0 @@
-{
-  "getFarms": "address[]:getFarms",
-  "want": "address:want",
-  "stakedWant": "uint256:stakedWant"
-}

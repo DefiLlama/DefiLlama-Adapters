@@ -1,4 +1,7 @@
-const Abis = require('./abi.json');
+const Abis = {
+    "getTokenBalances": "uint256[]:getTokenBalances",
+    "getTokens": "address[]:getTokens"
+  };
 
 const Contracts = {
   moonbeam: {

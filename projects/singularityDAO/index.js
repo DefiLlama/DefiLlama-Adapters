@@ -1,5 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "getCurrentTokens": "address[]:getCurrentTokens",
+    "poolLength": "uint256:poolLength",
+    "lpToken": "function lpToken(uint256) view returns (address)"
+  };
 const { cachedGraphQuery } = require('../helper/cache')
 
 const { sumTokens2 } = require("../helper/unwrapLPs");

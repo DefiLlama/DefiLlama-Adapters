@@ -42,16 +42,20 @@ const configs = {
     katana: {
       morphoVaultOwners: [
         '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+        '0xe6FC2a011153DD5a230725a9F0c89a9c81aB4887',
       ],
     },
     monad: {
       morphoVaultOwners: [
-        '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+        '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
+        '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
+        '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
       ],
     },
     polygon: {
       morphoVaultOwners: [
         '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
+        '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
       ],
     },
   }

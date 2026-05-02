@@ -13,7 +13,7 @@ const LP_MANAGER = '0xb1502cbeffd253e3e695b8910e779cde2e2079ab'
 module.exports = {
   methodology: 'Tokens backing USDW is counted as tvl, and locked wink tokens are counted as staking.',
   hallmarks: [
-    [1736001563, "WINK Finance Launch"],
+    ['2025-01-04', "WINK Finance Launch"],
   ],
   polygon: {
     tvl: sumTokensExport({ owners: [USDW_RESERVE, LP_RESERVE, LP_MANAGER], resolveUniV3: true, blacklistedTokens: [USDW], tokens: [ADDRESSES.polygon.USDT]}),

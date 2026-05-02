@@ -1,7 +1,12 @@
 const { staking } = require('../helper/staking')
 const contracts = require("./contracts.json");
 const { sumTokens2, unwrapLPsAuto } = require("../helper/unwrapLPs");
-const abi = require("./abi.json");
+const abi = {
+    "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt, uint256 boostMultiplier)",
+    "want": "address:want",
+    "lpToken": "function lpToken(uint256) view returns (address)",
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)"
+  };
 const { genericUnwrapCvx } = require("../helper/unwrapLPs");
 
 async function walletBalances(api) {

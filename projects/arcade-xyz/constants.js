@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const SUBGRAPH_URL = 'https://subgraph.satsuma-prod.com/c59d37e827d0/non-fungible-technologies/protocol/api';
+const SUBGRAPH_URL = 'https://api.goldsky.com/api/public/project_cmgx47cdm001ytlp2gac296y1/subgraphs/protocol-v2-stats/v4.4.0/gn';
 const CHAIN = 'ethereum';
 
 // V2 Protocol

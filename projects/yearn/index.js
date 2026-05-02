@@ -38,6 +38,7 @@ const blacklist = [
   '0x7F83935EcFe4729c4Ea592Ab2bC1A32588409797',
   '0x123964EbE096A920dae00Fb795FFBfA0c9Ff4675',
   '0x39546945695DCb1c037C836925B355262f551f55',
+  '0x58900d761Ae3765B75DDFc235c1536B527F25d8F',
   ...v1Vaults,
 ].map(i => i.toLowerCase())
 
@@ -70,7 +71,7 @@ async function tvl(api) {
     bals = bals.map((bal, i) => bal * ratio[i] / 1e18)
     api.addTokens(tokens, bals)
   }
-  return sumTokens2({ api, resolveLP: true })
+  return sumTokens2({ api, resolveLP: api.chain !== 'ethereum' })
 }
 
 
@@ -78,7 +79,7 @@ module.exports = {
   doublecounted: true,
   timetravel: false,
   hallmarks: [
-    [1594944000, "YFI token Launch"],
+    ['2020-07-17', "YFI token Launch"],
   ]
 }
 

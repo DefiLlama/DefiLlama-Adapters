@@ -11,6 +11,8 @@ Object.keys(config).forEach(chain => {
     const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
     const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
     const tokensAndOwners2 = [token0s.concat(token1s), pools.concat(pools)]
-    return api.sumTokens({ tokensAndOwners2, })
+    return api.sumTokens({ tokensAndOwners2, blacklistedTokens: [
+      '0xD9C5A9b5Fe4006CD0fce1f4020BeB9020cbcc6F1', // G-SCORE - token minter holder all of the supply?
+    ] })
   }
 })

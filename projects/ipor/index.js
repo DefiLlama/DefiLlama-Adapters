@@ -68,6 +68,10 @@ module.exports = {
     tvl: calculateTvlForV2
   },
   hallmarks:[
-    [1674648000, "Liquidity Mining Start"]
+    ["2022-08-16", "IPOR Protocol v1 Launch"],
+    ["2023-01-25", "Liquidity Mining Start"],
+    ["2023-03-11", "USDC Depeg DeFi Contagion"],
+    ["2023-05-08", "IPOR Protocol v2 Launch"],
+    ["2023-12-18", "IPOR's stETH Stake Rate Swap Launch"]
   ],
 };

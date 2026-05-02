@@ -7,6 +7,15 @@ const vaults = [
   '0x41cfdef11efd671cbcffa66f57716ee5698308b233359481d52d6dac34b42af2', // APT-kAPT
   '0xfee3dc8a7d53e4ababf77033bb429ecbcaf2d58ba6c2809ab0f503bb14098ea7', // USDt-USDC private
   '0xb60a7fb8a217de3d44085cf37c680a99100e393005081545a5e237797e71952f', // APT-USDC private
+  '0x9b72ae9cccc91591d41120df65cb85a143b57728f29d7e2c107d6c6f4cedd513', // xBTC-aBTC
+  '0x13454d645be72dea56b4e2ce3c2f650435f7ce758032e433d96f93c1cc608acd', // xBTC-uniBTC
+  '0xdb26bbfa121c60508f41da3084b343a175642bf9509e96154d7ac2bfa9c75ebe', // FIABTC-xBTC
+  '0x109a94e8449ac26fc1f2a785fb0d1ca96aa2c0af9d500333fa7a9d31d0043363', // USD1-USDC
+  '0x705360374b2fc0559d389e7f4cc7e2015c36ac210b2d097b2c45a62711d458db', // sUSDe-USDC
+  '0xade4dfb09967f1a7210d8a4b41eba2ae0a972407d0389bcc40f289d070fc10aa', // APT-amAPT
+  '0x588be5afa0572bfecd3fda1555eafebd8b918f8880c6ea682b4554ece4ca2210', // APT-goAPT
+  '0x3f6d0c2044a7e0cfd8e07a89a884c1776e67c10580cf384c5ddceb4f51ead95f', // sUSDe-USDC private
+  '0xb77d3cf996f088b574a5ec7ddd24aa56b413ffe8e861f734558a4cfd49d68d84', // xBTC-aBTC private
 ];
 async function getVaultsLiquidity() {
   const vaultResources = await Promise.all(vaults.map(vault => getResource(vault, '0x19bcbcf8e688fd5ddf52725807bc8bf455a76d4b5a6021cfdc4b5b2652e5cd55::vaults::Vault')));

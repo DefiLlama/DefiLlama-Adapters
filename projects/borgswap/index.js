@@ -1,4 +1,11 @@
-const abi = require("./abi.json");
+const abi = {
+    "masterFarmerPoolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accBSCXPerShare)",
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accLqdrPerShare, uint16 depositFeeBP)",
+    "poolLength": "uint256:poolLength",
+    "balanceOf": "uint256:balanceOf",
+    "lpToken": "function lpToken(uint256) view returns (address)",
+    "strategies": "function strategies(uint256) view returns (address)"
+  };
 
 const MASTERCHEF = "0x4de6c2de6b9eBD974738686C9be7a31597146Ac6";
 const MASTERCHEF2 = "0x92eEd89eeC81d992FF9135Ee451008E93b83dD86";

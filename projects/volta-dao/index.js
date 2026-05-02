@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { stakingUnknownPricedLP } = require("../helper/staking");
+const { stakingPriceLP } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const ftmToken = "0x4c9993c7107495020c2ce9a13d11839f48ecd2e6";
@@ -30,10 +30,10 @@ module.exports = {
     misrepresentedTokens: true,
     fantom: {
         tvl: ftmTvl,
-        staking: stakingUnknownPricedLP(ftmStaking, ftmToken, "fantom", "0x78b51a1fd7524186982c2cb8982df312b1e896a8")
+        staking: stakingPriceLP(ftmStaking, ftmToken, "0x78b51a1fd7524186982c2cb8982df312b1e896a8")
     },
     avax: {
         tvl: avaxTvl,
-        staking: stakingUnknownPricedLP(avaxStaking, avaxToken, "avax", "0x26e7c9b2890440866d7d3f8f84b1ccaff443b9d8")
+        staking: stakingPriceLP(avaxStaking, avaxToken, "0x26e7c9b2890440866d7d3f8f84b1ccaff443b9d8")
     }
 }

@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "underlyingAsset": "function underlyingAsset() external view returns (address)",
+    "totalAssets": "function totalAssets() external view returns (uint256)"
+  };
 const {fetchURL} = require("../helper/utils");
 const { staking } = require('../helper/staking')
 

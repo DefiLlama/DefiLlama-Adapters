@@ -1,6 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "count": "uint256:count",
+    "list": "function list(uint256 offset, uint256 limit) view returns (address[] _policyBooksArr)",
+    "getShieldTokenAddress": "function getShieldTokenAddress(address _policyBook) view returns (address)",
+    "virtualUsdtAccumulatedBalance": "uint256:virtualUsdtAccumulatedBalance"
+  };
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 
 const config = {

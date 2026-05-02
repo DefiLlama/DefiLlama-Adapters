@@ -1,3 +1,0 @@
-{
-    "getAllOTokens": "function getAllOTokens() view returns (tuple(string symbol, address tokenAddress)[])"
-  }

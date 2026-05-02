@@ -1,8 +1,0 @@
-{
-  "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)",
-  "poolLength": "uint256:poolLength",
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accPtpPerShare, address rewarder, uint256 sumOfFactors, uint256 accPtpPerFactorShare)",
-  "totalSupply": "uint256:totalSupply",
-  "underlyingBalance": "uint256:underlyingTokenBalance",
-  "underlyingToken": "address:underlyingToken"
-}

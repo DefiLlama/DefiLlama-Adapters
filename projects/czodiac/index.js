@@ -1,8 +1,14 @@
 const { masterChefExports, } = require("../helper/masterchef");
 const { mergeExports, } = require("../helper/utils");
 const { staking, } = require("../helper/staking")
-const abiChefCzb = require("./abi-chef-czb.json");
-const abiChefCzf = require("./abi-chef-czf.json");
+const abiChefCzb = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCzbPerShare)",
+    "poolLength": "uint256:poolLength"
+  };
+const abiChefCzf = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCzfPerShare)",
+    "poolLength": "uint256:poolLength"
+  };
 
 
 const czr = "0x5cd0c2C744caF04cda258Efc6558A3Ed3defE97b";

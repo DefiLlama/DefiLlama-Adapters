@@ -19,8 +19,8 @@ async function tvl(api) {
 module.exports = {
     methodology: "We sum all the tokens deposited as principal and any unclaimed interest accrued on it.",
     hallmarks: [
-      [1682438400, "Launch of Regen Portal"],
-      [1687276800, "Launch of Frax Portal"]
+      ['2023-04-25', "Launch of Regen Portal"],
+      ['2023-06-20', "Launch of Frax Portal"]
     ],
     ethereum: {
       tvl

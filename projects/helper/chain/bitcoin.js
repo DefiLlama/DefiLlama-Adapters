@@ -106,6 +106,7 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
   if (!timestamp || (now - timestamp) < delay) {
     try {
       await sumTokensBlockchain({ balances, owners, forceCacheUse })
+      // console.log('bitcoin sumTokens from blockchain done', balances)
       return balances
     } catch (e) {
       sdk.log('bitcoin sumTokens error', e.toString())

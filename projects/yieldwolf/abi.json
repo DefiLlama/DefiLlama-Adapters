@@ -1,6 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address stakeToken, address strategy)",
-  "poolLength": "uint256:poolLength",
-  "totalStakeTokens": "uint256:totalStakeTokens",
-  "symbol": "string:symbol"
-}

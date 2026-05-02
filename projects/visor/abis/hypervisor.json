@@ -1,4 +1,0 @@
-{
-  "getCurrentTotalStakeUnits": "uint256:getCurrentTotalStakeUnits",
-  "getHyperVisorData": "function getHypervisorData() view returns (tuple(address stakingToken, address rewardToken, address rewardPool, tuple(uint256 floor, uint256 ceiling, uint256 time) rewardScaling, uint256 rewardSharesOutstanding, uint256 totalStake, uint256 totalStakeUnits, uint256 lastUpdate, tuple(uint256 duration, uint256 start, uint256 shares)[] rewardSchedules) hypervisor)"
-}

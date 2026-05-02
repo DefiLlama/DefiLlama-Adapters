@@ -3,7 +3,7 @@
 const { post } = require('../http')
 const { getEnv } = require('../env')
 
-const endpoint = () => getEnv('FLOW_RPC')
+const endpoint = () => getEnv('FLOW_NON_EVM_RPC') ?? 'https://rest-mainnet.onflow.org'
 
 async function callCadenceScript(script, isNumber = false) {
   const queryCodeBase64 = Buffer.from(script, "utf-8").toString("base64");

@@ -4,7 +4,8 @@ const { request, } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
 const { stakings } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens')
-const { dexExport } = require('../helper/chain/aptos')
+const { dexExport } = require('../helper/chain/aptos');
+const { getExports } = require('../helper/heroku-api');
 
 
 const graphEndpoint = 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange'
@@ -95,7 +96,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.finance/info as the source. Staking accounts for the CAKE locked in MasterChef (0x73feaa1eE314F8c655E354234017bE2193C9E24E)',
   bsc: {
-    tvl: tvlPancakeExplorer,
+    tvl: getExports('pcs-v2', ['bsc']).bsc.tvl,
   },
   ethereum: {
     tvl: getUniTVL({ factory: '0x1097053Fd2ea711dad45caCcc45EfF7548fCB362', useDefaultCoreAssets: true, })

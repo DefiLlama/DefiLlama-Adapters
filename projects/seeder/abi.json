@@ -1,6 +1,0 @@
-{
-  "getAllFarms": "function getAllFarms() view returns (tuple(address stakeToken, uint256 allocationPoint, uint256 lastUpdateBlock, uint256 rewardPerStakeWithBuffer)[])",
-  "symbol": "string:symbol",
-  "getIBPrice": "function getIBPrice(address originToken) view returns (uint256 ibPriceWithPrecision, uint256 precision)",
-  "getNativeIBPrice": "function getNativeIBPrice() view returns (uint256 ibPriceWithPrecision, uint256 precision)"
-}

@@ -1,6 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json')
-const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
+const abi = {
+    "factory": "address:factory",
+    "allPoolsLength": "uint256:allPoolsLength",
+    "allPools": "function allPools(uint256) view returns (address)",
+    "pools": "function pools(uint256) view returns (address)",
+    "token": "address:token"
+  };const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 
 const CONFIG = {

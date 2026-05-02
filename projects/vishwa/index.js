@@ -23,6 +23,6 @@ module.exports = {
     tvl,
   },
   sui: {
-    // tvl: calcSuiTvlByEmberProtocol,
+    // tvl: calcSuiTvlByEmberProtocol, // this is ember's tvl
   }
 };

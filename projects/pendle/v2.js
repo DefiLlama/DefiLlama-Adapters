@@ -338,6 +338,6 @@ async function filterWhitelistedSY(api, sys) {
 }
 
 module.exports.ethereum.staking = staking(
-  contracts.v2.vePENDLE,
+  [contracts.v2.vePENDLE, contracts.v2.sPENDLE],
   contracts.v2.PENDLE
 );

@@ -1,276 +1,390 @@
-const { gql, request } = require("graphql-request");
- 
-
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cachedGraphQuery } = require('../helper/cache')
-
-const sdk = require('@defillama/sdk')
-
-/*
 const { sumTokens2 } = require('../helper/unwrapLPs')
- const { getLogs } = require('../helper/cache/getLogs')
 
+// Pool V2 subgraphs (Ormi Labs for EVM chains, Goldsky for katana/hyperliquid)
+const POOLS_V2 = {
+  ethereum:    'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmW6TetrwFmjiCrTCW15SskJThJvRTvpJVrRNtGMBX51Ag',
+  polygon:     'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmSdT2h3HGXjZ6j2YtTWRJFVm8EJYumzcnfRAgCoFxczmR',
+  arbitrum:    'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmSexfnJV8EZTuVmoXaXJTKpJ7Q6ymPmPV7ShppTWZFe12',
+  base:        'https://api.subgraph.migration.ormilabs.com/subgraphs/id/Qmb86xPeygvQFMmNN9j8aiCXqqFrcsKHu6nTrqfQwPeoqb',
+  katana:      'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-katana/0.4.21.12/gn',
+  hyperliquid: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-hyperevm/0.4.21.8/gn',
+};
 
+// Pool V1 subgraphs (Ormi Labs — separate pool contracts, combined with V2)
+const POOLS_V1 = {
+  ethereum: 'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmSSDg8XePRJu5zibC955LHNV9Au5GPq7qPcUTrmsQu8Wt',
+  polygon:  'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmSeGXy47e9jPAjuaxQ5WwQthzCmMfthh3NKNzLTNm7Cmw',
+  arbitrum: 'https://api.subgraph.migration.ormilabs.com/subgraphs/id/Qme9KeTZdLrVyHh3QRucvjgfnHKkmndjqGEW6hMFKxWv3o',
+  base:     'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmekaTZkP9r4mHHawko2z4YLHo7XTfNZ7FrbotViDe6pYt',
+};
 
-const ogconfig = {
-  ethereum: { factory: '0x2551a099129ad9b0b1fec16f34d9cb73c237be8b', fromBlock: 16472616, tellerV2: '0x00182FdB0B880eE24D428e3Cc39383717677C37e', },
-  polygon: { factory: '0x76888a882a4ff57455b5e74b791dd19df3ba51bb', fromBlock: 38446227, tellerV2: '0xD3D79A066F2cD471841C047D372F218252Dbf8Ed', },
-  arbitrum: { factory: '0x71B04a8569914bCb99D5F95644CF6b089c826024', fromBlock: 108629315, tellerV2: '0x5cfD3aeD08a444Be32839bD911Ebecd688861164', },
-  base: { factory: '0x71B04a8569914bCb99D5F95644CF6b089c826024', fromBlock: 2935376, tellerV2: '0x5cfD3aeD08a444Be32839bD911Ebecd688861164', },
-  katana: { factory: '0x6455F2E1CCb14bd0b675A309276FB5333Dec524f', fromBlock: 6541271, tellerV2: '0xf7B14778035fEAF44540A0bC1D4ED859bCB28229', },
-}
+const ZERO_ADDR = ADDRESSES.null;
+const BID_STATE_ACCEPTED = '3';
+const COLLATERAL_ERC20 = '0';
 
-const blacklistedTokens = ['0x8f9bbbb0282699921372a134b63799a48c7d17fc', '0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401']
-*/
-
-/*
- TO TEST
-node test.js projects/teller/index.js
-*/
-
-const teller_graph_config = {
-
-  ethereum:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/4JruhWH1ZdwvUuMg2xCmtnZQYYHvmEq6cmTcZkpM6pW'),
-  base:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/8jSq7mzq9HEiJEcAZfvrTT4wYk59oMxm82xUpcVBzryF'),
-  arbitrum:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/F2Cgx4q4ATiopuZ13nr1EMKmZXwfAdevF3EujqfayK7a'),
-  katana:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/CfcwmqFDd425rEFQVFk52tJmquETeBiUCmK7kv2DHkPs'),
-
-
-}
-
-
-const tellerGraphQuery = gql`
- {
-    tokenVolumes (orderBy: totalActive, orderDirection: desc ){
-      id
-      token {
-        id
-        address
-        symbol
-        decimals
-      }
-      collateralToken {
-        id
-        address
-        symbol
-        decimals
-      }
-      totalAvailable,
-      outstandingCapital,
-      totalLoaned
-      totalActive
-      totalAccepted
-    }
-}
-`
-
-const activeBidsQuery = gql`
-  query ($skip: Int!) {
-    bids(first: 1000, skip: $skip, where: { status: "Accepted" }) {
-      id
-      bidId
-      lendingTokenAddress
-      principal
-      totalRepaidPrincipal
-    }
-  }
-`
-
-const bidCollateralQuery = gql`
-  query ($skip: Int!) {
-    bidCollaterals(first: 1000, skip: $skip, where: { status: "Deposited" }) {
-      id
-      amount
-      collateralAddress
-      token {
-        address
-        symbol
-        decimals
-      }
-      bid {
-        status
-      }
-    }
-  }
-`
-
-
-
-
-
-const pools_graph_config = {
-  ethereum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-pools-mainnet/version/0.4.21.6/api',
-  base: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-pools-base/version/0.4.21.4/api', 
-  arbitrum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-pools-arbitrum/version/0.4.21.4/api' , 
-}
-
-
-const pools_v2_graph_config = {
-  ethereum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-poolsv2-mainnet/version/0.4.21.5/api',
-  base: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-poolsv2-base/version/0.4.21.5/api', 
-  arbitrum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-poolsv2-arbitrum/version/0.4.21.5/api' , 
-  katana: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-katana/0.4.21.12/gn',
-//   hyperevm: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-hyperevm/0.4.21.11/gn'
-}
-
-
-const poolsGraphQuery = gql`
-  {
-    groupPoolMetrics(first: 1000) {
+const poolQuery = `
+  query ($lastId: ID) {
+    groupPoolMetrics(first: 1000, where: { id_gt: $lastId }) {
       id
       group_pool_address
       principal_token_address
       collateral_token_address
-      total_principal_tokens_committed
-      total_principal_tokens_withdrawn
-      total_principal_tokens_borrowed
-      total_principal_tokens_repaid
-      total_interest_collected
-      token_difference_from_liquidations
-      total_collateral_tokens_deposited
-      total_collateral_tokens_withdrawn
     }
   }
-`
+`;
 
-  
-async function bidCollateralTvl(api) {
-
-    const tellerGraphUrl = teller_graph_config[api.chain]
-
-    // Fetch all BidCollateral entries with status "Deposited" and active bids
-    let allCollaterals = []
-    let skip = 0
-    const pageSize = 1000
-
-    let hasMore = true
-    while (hasMore) {
-      const data = await request(tellerGraphUrl, bidCollateralQuery, { skip })
-      if (!data.bidCollaterals || data.bidCollaterals.length === 0) {
-        hasMore = false
-        break
-      }
-
-      allCollaterals = allCollaterals.concat(data.bidCollaterals)
-
-      if (data.bidCollaterals.length < pageSize) {
-        hasMore = false
-        break
-      }
-      skip += pageSize
+const bidQuery = `
+  query ($lastId: ID) {
+    groupPoolBids(first: 1000, where: { id_gt: $lastId }) {
+      id
+      group_pool_address
+      bid_id
     }
+  }
+`;
 
-    // Filter for active loans only (status: Accepted)
-  //  const activeCollaterals = allCollaterals.filter(c => c.bid.status === 'Accepted')
+const repaidQuery = `
+  query ($lastId: ID) {
+    groupLoanRepaids(first: 1000, where: { id_gt: $lastId }) {
+      id
+      bid_id
+    }
+  }
+`;
 
-    // Sum collateral by token
-    allCollaterals.forEach(collateral => {
-      api.add(collateral.token.address, collateral.amount)
-    })
+const liquidatedQuery = `
+  query ($lastId: ID) {
+    groupDefaultedLoanLiquidateds(first: 1000, where: { id_gt: $lastId }) {
+      id
+      bid_id
+    }
+  }
+`;
 
+async function getPoolConfigs(chain) {
+  const pools = [];
 
+  if (POOLS_V2[chain]) {
+    const v2 = await cachedGraphQuery(`teller-v2-${chain}`, POOLS_V2[chain], poolQuery, { fetchById: true });
+    if (Array.isArray(v2)) pools.push(...v2);
+  }
+
+  if (POOLS_V1[chain]) {
+    const v1 = await cachedGraphQuery(`teller-v1-${chain}`, POOLS_V1[chain], poolQuery, { fetchById: true });
+    if (Array.isArray(v1)) pools.push(...v1);
+  }
+
+  return pools;
 }
 
-async function poolsLenderTvl( api ) {
+async function getPoolBidData(chain) {
+  const activeBids = [];
+  const allPoolBidIds = new Set();
 
-  let allPools = []
+  for (const [label, subgraphs] of [['v2', POOLS_V2], ['v1', POOLS_V1]]) {
+    if (!subgraphs[chain]) continue;
+    const url = subgraphs[chain];
 
-  // Fetch from v1 pools if available
-  if (pools_graph_config[api.chain]) {
-    const { groupPoolMetrics } = await request(pools_graph_config[api.chain], poolsGraphQuery);
-    allPools = allPools.concat(groupPoolMetrics)
-  }
+    const [allBids, repaid, liquidated] = await Promise.all([
+      cachedGraphQuery(`teller-bids-${label}-${chain}`, url, bidQuery, { fetchById: true }),
+      cachedGraphQuery(`teller-repaid-${label}-${chain}`, url, repaidQuery, { fetchById: true }),
+      cachedGraphQuery(`teller-liquidated-${label}-${chain}`, url, liquidatedQuery, { fetchById: true }),
+    ]);
 
-  // Fetch from v2 pools if available
-  if (pools_v2_graph_config[api.chain]) {
-    const { groupPoolMetrics } = await request(pools_v2_graph_config[api.chain], poolsGraphQuery);
-    allPools = allPools.concat(groupPoolMetrics)
-  }
+    if (!Array.isArray(allBids)) continue;
 
-  allPools.forEach(pool => {
-    const totalInterestCollected = BigInt(pool.total_interest_collected || '0')
-    const tokenDifferenceFromLiquidations = BigInt(pool.token_difference_from_liquidations || '0')
-    const totalCollateralEscrowedNet = BigInt(pool.total_collateral_tokens_deposited || '0') - BigInt(pool.total_collateral_tokens_withdrawn || '0')
+    const closedBidIds = new Set();
+    if (Array.isArray(repaid)) repaid.forEach(b => closedBidIds.add(b.bid_id));
+    if (Array.isArray(liquidated)) liquidated.forEach(b => closedBidIds.add(b.bid_id));
 
-    const totalTokensActivelyBorrowed = BigInt(pool.total_principal_tokens_borrowed || '0') - BigInt(pool.total_principal_tokens_repaid || '0')
-    const totalTokensActivelyCommitted =
-      BigInt(pool.total_principal_tokens_committed || '0') +
-      totalInterestCollected +
-      tokenDifferenceFromLiquidations -
-      BigInt(pool.total_principal_tokens_withdrawn || '0')
-
-    // Add collateral TVL 
-  //  if (totalCollateralEscrowedNet > 0n) {
-   //   api.add(pool.collateral_token_address, totalCollateralEscrowedNet.toString())
-   // }
-
-    // Add net principal TVL (committed - borrowed)
-    const netPrincipalTvl = totalTokensActivelyCommitted - totalTokensActivelyBorrowed
-    if (netPrincipalTvl > 0n) {
-      api.add(pool.principal_token_address, netPrincipalTvl.toString())
+    for (const bid of allBids) {
+      allPoolBidIds.add(bid.bid_id);
+      if (!closedBidIds.has(bid.bid_id)) {
+        activeBids.push(bid);
+      }
     }
-  })
+  }
 
-
+  return { activeBids, allPoolBidIds };
 }
 
+async function getTellerV2Info(api, pools) {
+  if (pools.length === 0) return null;
+  let tellerV2;
+  for (const pool of pools) {
+    try {
+      tellerV2 = await api.call({ target: pool.group_pool_address, abi: 'function TELLER_V2() view returns (address)' });
+      if (tellerV2 && tellerV2 !== ZERO_ADDR) break;
+    } catch (e) { continue; }
+  }
+  if (!tellerV2) return null;
+  const collateralManager = await api.call({ target: tellerV2, abi: 'function collateralManager() view returns (address)' });
+  let totalBids;
+  try {
+    totalBids = Number(await api.call({ target: tellerV2, abi: 'function bidId() view returns (uint256)' }));
+  } catch (e) {
+    // Binary search for the bid counter
+    let lo = 0, hi = 50000;
+    while (lo < hi) {
+      const mid = Math.floor((lo + hi) / 2);
+      try {
+        const state = await api.call({ target: tellerV2, abi: 'function getBidState(uint256) view returns (uint8)', params: [mid] });
+        if (String(state) === '0') hi = mid; else lo = mid + 1;
+      } catch (e) { hi = mid; }
+    }
+    totalBids = lo;
+  }
+  return { tellerV2, collateralManager, totalBids };
+}
 
+async function getDirectBids(api, tellerInfo, allPoolBidIds) {
+  if (!tellerInfo) return [];
+  const { tellerV2, collateralManager, totalBids } = tellerInfo;
+
+  // Scan all bids for ACCEPTED state
+  const batchSize = 500;
+  const acceptedDirectIds = [];
+
+  for (let start = 0; start < totalBids; start += batchSize) {
+    const ids = [];
+    for (let i = start; i < Math.min(start + batchSize, totalBids); i++) ids.push(i.toString());
+
+    const states = await api.multiCall({
+      target: tellerV2,
+      calls: ids,
+      abi: 'function getBidState(uint256) view returns (uint8)',
+      permitFailure: true,
+    });
+
+    for (let i = 0; i < ids.length; i++) {
+      if (String(states[i]) === BID_STATE_ACCEPTED && !allPoolBidIds.has(ids[i])) {
+        acceptedDirectIds.push(ids[i]);
+      }
+    }
+  }
+
+  if (acceptedDirectIds.length === 0) return [];
+
+  // Check defaulted status
+  const defaultedFlags = await api.multiCall({
+    target: tellerV2,
+    calls: acceptedDirectIds,
+    abi: 'function isLoanDefaulted(uint256) view returns (bool)',
+    permitFailure: true,
+  });
+
+  // Get loan details, escrow addresses, and collateral info for all accepted direct bids
+  const [details, escrows, collateralInfos] = await Promise.all([
+    api.multiCall({
+      target: tellerV2,
+      calls: acceptedDirectIds,
+      abi: 'function getLoanSummary(uint256) view returns (address borrower, address lender, uint256 marketId, address principalTokenAddress, uint256 principalAmount, uint32 acceptedTimestamp, uint32 lastRepaidTimestamp, uint8 bidState)',
+      permitFailure: true,
+    }),
+    api.multiCall({
+      target: collateralManager,
+      calls: acceptedDirectIds,
+      abi: 'function _escrows(uint256) view returns (address)',
+      permitFailure: true,
+    }),
+    api.multiCall({
+      target: collateralManager,
+      calls: acceptedDirectIds,
+      abi: 'function getCollateralInfo(uint256) view returns (tuple(uint8 _collateralType, uint256 _amount, uint256 _tokenId, address _collateralAddress)[])',
+      permitFailure: true,
+    }),
+  ]);
+
+  const results = [];
+  for (let i = 0; i < acceptedDirectIds.length; i++) {
+    if (!escrows[i] || escrows[i] === ZERO_ADDR) continue;
+    const isDefaulted = defaultedFlags[i] === true || defaultedFlags[i] === 'true';
+    results.push({
+      bidId: acceptedDirectIds[i],
+      principalToken: details[i]?.principalTokenAddress,
+      principalAmount: details[i]?.principalAmount,
+      escrow: escrows[i],
+      collaterals: collateralInfos[i] || [],
+      defaulted: isDefaulted,
+    });
+  }
+
+  return results;
+}
+
+async function getPoolEscrowTokens(api, pools, activeBids, collateralManager) {
+  if (activeBids.length === 0) return [];
+
+  const poolCollateral = {};
+  for (const pool of pools) {
+    if (pool.collateral_token_address && pool.collateral_token_address !== ZERO_ADDR)
+      poolCollateral[pool.group_pool_address.toLowerCase()] = pool.collateral_token_address;
+  }
+
+  const escrows = await api.multiCall({
+    target: collateralManager,
+    calls: activeBids.map(b => b.bid_id),
+    abi: 'function _escrows(uint256) view returns (address)',
+    permitFailure: true,
+  });
+
+  const tokensAndOwners = [];
+  for (let i = 0; i < activeBids.length; i++) {
+    const escrow = escrows[i];
+    if (!escrow || escrow === ZERO_ADDR) continue;
+    const collateralToken = poolCollateral[activeBids[i].group_pool_address.toLowerCase()];
+    if (collateralToken) {
+      tokensAndOwners.push([collateralToken, escrow]);
+    }
+  }
+
+  return tokensAndOwners;
+}
 
 async function tvl(api) {
+  const [pools, poolBidData] = await Promise.all([
+    getPoolConfigs(api.chain),
+    getPoolBidData(api.chain),
+  ]);
+  const { activeBids, allPoolBidIds } = poolBidData;
 
- 
+  const tokensAndOwners = [];
 
-     await bidCollateralTvl ( api )
-
-      await poolsLenderTvl( api)
-
-
-}
-
-
- 
-
-async function bidBorrowed(api){
-  const tellerGraphUrl = teller_graph_config[api.chain]
-
-  // Fetch all active bids with pagination
-  let allBids = []
-  let skip = 0
-  const pageSize = 1000
-
-  let hasMore = true
-  while (hasMore) {
-    const data = await request(tellerGraphUrl, activeBidsQuery, { skip })
-    if (!data.bids || data.bids.length === 0) {
-      hasMore = false
-      break
-    }
-
-    allBids = allBids.concat(data.bids)
-
-    if (data.bids.length < pageSize) {
-      hasMore = false
-      break
-    }
-    skip += pageSize
+  // Pool token balances
+  for (const pool of pools) {
+    const owner = pool.group_pool_address;
+    if (pool.principal_token_address && pool.principal_token_address !== ZERO_ADDR)
+      tokensAndOwners.push([pool.principal_token_address, owner]);
+    if (pool.collateral_token_address && pool.collateral_token_address !== ZERO_ADDR)
+      tokensAndOwners.push([pool.collateral_token_address, owner]);
   }
 
-  // Calculate borrowed amount for each bid (principal - totalRepaidPrincipal)
-  allBids.forEach(bid => {
-    const borrowed = BigInt(bid.principal) - BigInt(bid.totalRepaidPrincipal)
-    if (borrowed > 0n) {
-      api.add(bid.lendingTokenAddress, borrowed.toString())
+  // Get TellerV2 info
+  const tellerInfo = await getTellerV2Info(api, pools);
+  if (tellerInfo) {
+    // Pool escrow collateral
+    const poolEscrowTokens = await getPoolEscrowTokens(api, pools, activeBids, tellerInfo.collateralManager);
+    tokensAndOwners.push(...poolEscrowTokens);
+
+    // Direct (non-pool) bid ERC20 collateral (active + defaulted, skipping NFTs)
+    const directBids = await getDirectBids(api, tellerInfo, allPoolBidIds);
+    for (const bid of directBids) {
+      for (const c of bid.collaterals) {
+        if (c._collateralAddress && c._collateralAddress !== ZERO_ADDR && String(c._collateralType) === COLLATERAL_ERC20) {
+          tokensAndOwners.push([c._collateralAddress, bid.escrow]);
+        }
+      }
     }
-  })
+  }
+
+  return sumTokens2({ api, tokensAndOwners, permitFailure: true });
 }
 
 async function borrowed(api) {
-     await bidBorrowed ( api )
+  const [pools, poolBidData] = await Promise.all([
+    getPoolConfigs(api.chain),
+    getPoolBidData(api.chain),
+  ]);
+  const { activeBids, allPoolBidIds } = poolBidData;
+  const addresses = pools.map(p => p.group_pool_address);
 
+  const tellerInfo = await getTellerV2Info(api, pools);
+
+  // Pool borrowed
+  const [lended, repaid, tokens] = await Promise.all([
+    api.multiCall({ calls: addresses, abi: 'function totalPrincipalTokensLended() view returns (uint256)', permitFailure: true }),
+    api.multiCall({ calls: addresses, abi: 'function totalPrincipalTokensRepaid() view returns (uint256)', permitFailure: true }),
+    api.multiCall({ calls: addresses, abi: 'function getPrincipalTokenAddress() view returns (address)', permitFailure: true }),
+  ]);
+
+  for (let i = 0; i < pools.length; i++) {
+    if (!lended[i] || !repaid[i] || !tokens[i]) continue;
+    const outstanding = BigInt(lended[i]) - BigInt(repaid[i]);
+    if (outstanding > 0n) {
+      api.add(tokens[i], outstanding.toString());
+    }
+  }
+
+  // Subtract defaulted pool loan principal from pool borrowed totals
+  if (tellerInfo && activeBids.length > 0) {
+    const poolBidIds = activeBids.map(b => b.bid_id);
+    const defaultedFlags = await api.multiCall({
+      target: tellerInfo.tellerV2,
+      calls: poolBidIds,
+      abi: 'function isLoanDefaulted(uint256) view returns (bool)',
+      permitFailure: true,
+    });
+
+    const defaultedBidIds = [];
+    for (let i = 0; i < poolBidIds.length; i++) {
+      if (defaultedFlags[i] === true || defaultedFlags[i] === 'true') {
+        defaultedBidIds.push(poolBidIds[i]);
+      }
+    }
+
+    if (defaultedBidIds.length > 0) {
+      const timestamp = api.timestamp;
+      const [defaultedOwed, defaultedDetails] = await Promise.all([
+        api.multiCall({
+          target: tellerInfo.tellerV2,
+          calls: defaultedBidIds.map(id => ({ params: [id, timestamp] })),
+          abi: 'function calculateAmountOwed(uint256, uint256) view returns (uint256 principal, uint256 interest)',
+          permitFailure: true,
+        }),
+        api.multiCall({
+          target: tellerInfo.tellerV2,
+          calls: defaultedBidIds,
+          abi: 'function getLoanSummary(uint256) view returns (address borrower, address lender, uint256 marketId, address principalTokenAddress, uint256 principalAmount, uint32 acceptedTimestamp, uint32 lastRepaidTimestamp, uint8 bidState)',
+          permitFailure: true,
+        }),
+      ]);
+
+      for (let i = 0; i < defaultedBidIds.length; i++) {
+        const owed = defaultedOwed[i];
+        const detail = defaultedDetails[i];
+        if (!owed || !detail?.principalTokenAddress) continue;
+        const principal = owed.principal || owed[0];
+        if (principal && BigInt(principal) > 0n) {
+          api.add(detail.principalTokenAddress, -BigInt(principal));
+        }
+      }
+    }
+  }
+
+  // Direct (non-pool) bid borrowed — only non-defaulted loans
+  if (tellerInfo) {
+    const directBids = await getDirectBids(api, tellerInfo, allPoolBidIds);
+    const activeDirectBids = directBids.filter(b => !b.defaulted);
+    const bidIds = activeDirectBids.map(b => b.bidId);
+
+    if (bidIds.length > 0) {
+      const timestamp = api.timestamp;
+      const amountsOwed = await api.multiCall({
+        target: tellerInfo.tellerV2,
+        calls: bidIds.map(id => ({ params: [id, timestamp] })),
+        abi: 'function calculateAmountOwed(uint256, uint256) view returns (uint256 principal, uint256 interest)',
+        permitFailure: true,
+      });
+
+      for (let i = 0; i < activeDirectBids.length; i++) {
+        const owed = amountsOwed[i];
+        if (!owed || !activeDirectBids[i].principalToken) continue;
+        const principal = owed.principal || owed[0];
+        if (principal && BigInt(principal) > 0n) {
+          api.add(activeDirectBids[i].principalToken, principal.toString());
+        }
+      }
+    }
+  }
 }
 
-// All chains that have either v1 or v2 pools
-const allChains = ["ethereum", "base", "arbitrum", "katana" ]
+module.exports = {
+  methodology: "TVL is pool token balances plus collateral in escrow contracts for active loans (pool and direct). Borrowed is outstanding principal from pools plus active direct TellerV2 loans, excluding defaulted loans, all on-chain.",
+  timetravel: false,
+};
 
-allChains.forEach(chain => {
-  module.exports[chain] = { tvl, borrowed }
-})
+[...new Set([...Object.keys(POOLS_V2), ...Object.keys(POOLS_V1)])].forEach(chain => {
+  module.exports[chain] = { tvl, borrowed };
+});

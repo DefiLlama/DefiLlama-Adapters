@@ -10,7 +10,7 @@ async function getContracts() {
 async function getDeployedContractAddress(chainId) {
   const allContracts = await getContracts()
   const record = allContracts[chainId + ''] ?? []
-  const contracts =  (record ?? [])[0]?.contracts ?? {}
+  const contracts = (record ?? [])[0]?.contracts ?? {}
 
   const result = [
     contracts.Connext?.address,
@@ -29,7 +29,7 @@ let getAssetsPromise
 async function getAssetIds(chainId) {
   const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
   if (!getAssetsPromise)
-    getAssetsPromise = getConfig('connect/assets/'+chainId, url)
+    getAssetsPromise = getConfig('connect/assets/' + chainId, url)
   const data = await getAssetsPromise
   const chainData = data.find(item => item.chainId === chainId) || {}
   const result = Object.entries(chainData.assetId || {}).filter(i => i[0].length && !i[1].symbol.startsWith('next')).map(i => i[0])
@@ -41,15 +41,13 @@ async function getAssetIds(chainId) {
 }
 
 
-function chainTvl(chain) {
-  return async (api) => {
-    const chainId = api.chainId
-    const owners = await getDeployedContractAddress(chainId)
-    if (!owners.length)
-      return {}
-    const tokens = await getAssetIds(chainId)
-    return sumTokens2({ owners, tokens, api, })
-  };
+async function tvl(api) {
+  const chainId = api.chainId
+  const owners = await getDeployedContractAddress(chainId)
+  if (!owners.length)
+    return {}
+  const tokens = await getAssetIds(chainId)
+  return sumTokens2({ owners, tokens, api, })
 }
 
 const chains = [
@@ -82,5 +80,5 @@ const chains = [
 ];
 
 chains.forEach(chain => {
-  module.exports[chain] = { tvl: chainTvl(chain) }
+  module.exports[chain] = { tvl }
 })

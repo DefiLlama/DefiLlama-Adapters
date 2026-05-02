@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
@@ -22,17 +21,16 @@ module.exports = {};
 Object.keys(config).forEach(chain => {
   const { tdex, owner, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, {[chain]: block}) => {
-      const { output: tokens } = await sdk.api.abi.call({
+    tvl: async (api) => {
+      const tokens = await api.call({
         target: tdex,
         abi: abi.getTokenAddressList,
         params: [0, 301],
-        chain, block,
       })
       if (chain === 'bsc') tokens.push(ADDRESSES.bsc.USDT)
       if (chain === 'heco') tokens.push(ADDRESSES.heco.USDT)
       if (chain === 'polygon') tokens.push(ADDRESSES.polygon.USDT)
-      return sumTokens2({ tokens, owner, chain, block, })
+      return sumTokens2({ tokens, owner, api })
     }
   }
 })

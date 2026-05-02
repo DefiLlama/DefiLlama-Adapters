@@ -9,7 +9,9 @@ module.exports = {
   gala: {
     tvl: async (api) => {
       const data = await get('https://dex-backend-prod1.defi.gala.com/coin-gecko/tickers')
-      api.addUSDValue(data.filter(i => !bl.includes(i.pool_id)).map(i => +i.liquidity_in_usd).reduce((acc, i) => acc + i, 0))
+      const totalUSDValue = data.filter(i => !bl.includes(i.pool_id)).map(i => +i.liquidity_in_usd).reduce((acc, i) => acc + i, 0)
+      if (totalUSDValue > 2e8) throw new Error('TVL too high, check if the API is correct')
+      api.addUSDValue(totalUSDValue)
     },
   },
 }

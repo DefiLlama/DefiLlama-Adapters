@@ -12,7 +12,7 @@ async function tvl(api) {
   const info = await queryContract({ contract: perps, chain, data: { 'config': {} }, });
   const perpsVault = await queryContract({ contract: perps, chain, data: { 'vault': {} }, });
 
-  if (perpsVault) api.add(info.base_denom, perpsVault['total_balance']);
+  if (perpsVault) api.add(info.base_denom, perpsVault['total_withdrawal_balance']);
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { getUniTVL } = require('../helper/unknownTokens')
-const { stakingPricedLP } = require('../helper/staking')
+const { stakingPriceLP } = require('../helper/staking')
 
 const WBCH = ADDRESSES.smartbch.WBCH;
 const rBCH = "0xb4602588E5F1F9653B6F234206c91552E457fAcB";
@@ -22,6 +22,6 @@ module.exports = {
     smartbch: {
         tvl: sdk.util.sumChainTvls([bchDexTvl, bchMasterChef]),
         // masterchef: bchMasterChef,
-        staking: stakingPricedLP(MASTERBREEDER, rBCH, "smartbch", rBCH_WBCH_LP, COREASSETNAME),
+        staking: stakingPriceLP(MASTERBREEDER, rBCH, rBCH_WBCH_LP),
     },
 }

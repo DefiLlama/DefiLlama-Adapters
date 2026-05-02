@@ -74,7 +74,7 @@ function addV3PositionBalances(strike, sqrtPricesMap) {
 
 const tvl = async (api) => {
   const chain = api.chain
-  if (chain === 'base' || chain === 'mantle' || chain === 'blast') return
+  if (chain === 'base' || chain === 'mantle' || chain === 'blast' || chain === 'sonic') return
   const endpoint = CONFIG[chain]
   const limit = 1000
   const allData = await fetchStrikes(endpoint, limit, 0)

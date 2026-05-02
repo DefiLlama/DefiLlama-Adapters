@@ -16,6 +16,14 @@ const capConfig = {
                 address: '0xF3E3Eae671000612CE3Fd15e1019154C1a4d693F',
                 fromBlock: 22867447,
             },
+            lz: {
+                cUSDLockbox: {
+                    address: '0xA62571EbdFfAbC3051a2e5B9e1f57b23D830c8Fd',
+                },
+                stcUSDLockbox: {
+                    address: '0x983AEAaA0d0426839158435C43725EA7F45d4137',
+                },
+            }
         },
         tokens: {
             cUSD: {
@@ -31,6 +39,20 @@ const capConfig = {
                 decimals: 18,
                 address: '0x88887bE419578051FF9F4eb6C858A951921D8888',
                 fromBlock: 22874056,
+            },
+            WTGXX: {
+                id: 'WTGXX',
+                coingeckoId: 'wisdomtree-treasury-money-market-digital-fund',
+                decimals: 18,
+                address: '0x1feCF3d9d4Fee7f2c02917A66028a48C6706c179',
+                creationBlock: 20750716n,
+            },
+            wWTGXX: {
+                id: 'wWTGXX',
+                coingeckoId: null,
+                decimals: 18,
+                address: '0x434558CB1EBe9950e8A66f1ef8A15A473Dce7D8c',
+                creationBlock: 23635674n,
             },
         },
         coverageNetworkConfigs: {
@@ -53,6 +75,24 @@ const capConfig = {
             },
         },
     },
+    megaeth: {
+        tokens: {
+            cUSD: {
+                id: 'cUSD',
+                coingeckoId: 'cap-money-c-usd',
+                decimals: 18,
+                address: '0xcCcc62962d17b8914c62D74FfB843d73B2a3cccC',
+                fromBlock: 3267988,
+            },
+            stcUSD: {
+                id: 'stcUSD',
+                coingeckoId: 'cap-money-st-c-usd',
+                decimals: 18,
+                address: '0x88887bE419578051FF9F4eb6C858A951921D8888',
+                fromBlock: 4237023,
+            },
+        }
+    }
 };
 
 const capABI = {

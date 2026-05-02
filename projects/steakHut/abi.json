@@ -1,4 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 accJoePerShare, uint256 lastRewardTimestamp, uint256 totalLpSupply, bool poolEnabled)",
-  "poolLength": "uint256:poolLength"
-}

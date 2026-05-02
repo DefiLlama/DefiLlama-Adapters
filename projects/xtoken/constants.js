@@ -12,7 +12,7 @@ const xsnxaAdminAddr = "0x7Cd5E2d0056a7A7F09CBb86e540Ef4f6dCcc97dd";
 const xsnxaTradeAccountingAddr = "0x6461E964D687E7ca3082bECC595D079C6c775Ac8";
 const xu3lpaAddr = "0xDa4d2152B2230e33c80b0A88b7C28b1C464EE3c2";
 const xu3lpbAddr = "0x420CF01fdC7e3c42c3D89ae8799bACCBfFa9ceAA";
-const xu3lpcAddr = "0x74e87FBA6C4bCd17fe5f14D73f590eD3C13E821B";
+// const xu3lpcAddr = "0x74e87FBA6C4bCd17fe5f14D73f590eD3C13E821B";
 const xu3lpdAddr = "0xdd699eae49a3504a28aeb9bd76a3f0369fa08471";
 const xu3lpeAddr = "0x828EC6E678A40c251f1F37DA389db0f820Af6f9D";
 const xu3lpfAddr = "0x4296d40183356A770Fd8cA3Ba0592f0163BE9CA3";
@@ -67,7 +67,7 @@ module.exports = {
   xsnxaTradeAccountingAddr,
   xu3lpaAddr,
   xu3lpbAddr,
-  xu3lpcAddr,
+  // xu3lpcAddr,
   xu3lpdAddr,
   xu3lpeAddr,
   xu3lpfAddr,

@@ -1,5 +1,9 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address want, uint8 poolType, uint256 allocPoint, uint256 lastRewardTime, uint256 accHEROPerShare, address strat)",
+    "poolLength": "uint256:poolLength",
+    "symbol": "string:symbol"
+  };
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { sumTokens2, } = require("../helper/unwrapLPs");

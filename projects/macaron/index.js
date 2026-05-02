@@ -1,4 +1,11 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accMacaronPerShare, bool isCLP, address cakeStrategy, address syrupToken)",
+    "poolLength": "uint256:poolLength",
+    "stakingToken": "address:stakingToken",
+    "lpSupply": "uint256:lpSupply",
+    "token": "address:token",
+    "balanceOf": "uint256:balanceOf"
+  };
 const config = require("./config");
 const { sumTokensExport, sumTokens2, } = require("../helper/unwrapLPs");
 

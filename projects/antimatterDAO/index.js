@@ -1,5 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "TVL": "uint256:TVL",
+    "allCalls": "function allCalls(uint256) view returns (address)",
+    "allPuts": "function allPuts(uint256) view returns (address)",
+    "underlying": "address:underlying",
+    "length": "uint256:length"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 

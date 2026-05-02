@@ -1,5 +1,9 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accChickenPerShare)",
+    "token": "address:token",
+    "balance": "uint256:balance"
+  };
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
@@ -18,43 +22,18 @@ const kfcVaults = [
 
 
 /*** Vaults TVL Portion ***/
-const ethTvl = async (_ts, block, chainBlocks) => {
+const ethTvl = async (api) => {
     const balances = {};
 
     await addFundsInMasterChef(
         balances,
         chickenChefContract,
-        chainBlocks["ethereum"],
+        api.block,
         "ethereum",
         addr => addr,
         abi.poolInfo,
         [KFC, WETH_KFC_UNIV2, kfcVaults[0], kfcVaults[1]]
-    );
-
-    const kfcTokens = (
-        await sdk.api.abi.multiCall({
-            abi: abi.token,
-            calls: kfcVaults.map(vault => ({
-                target: vault,
-            })),
-            block 
-        })
-    ).output.map(tokens => tokens.output);
-
-    const tokensBalance = (
-        await sdk.api.abi.multiCall({
-            abi: abi.balance,
-            calls: kfcVaults.map(vault => ({
-                target: vault,
-            })),
-            block
-        })
-    ).output.map(bals => bals.output);
-
-    kfcTokens.forEach((token, idx) => {
-        sdk.util.sumSingleBalance(balances, token, tokensBalance[idx]);
-    });
-
+    )
     return balances;
 };
 

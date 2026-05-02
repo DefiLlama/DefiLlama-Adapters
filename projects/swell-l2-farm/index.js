@@ -4,7 +4,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
     hallmarks: [
-        [1714867303,"justin sun depo"]
+        ['2024-05-05',"justin sun depo"]
       ],
     ethereum: {
         tvl: sumTokensExport({

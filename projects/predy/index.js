@@ -13,7 +13,7 @@ module.exports = {
       tvl: sumTokensExport({ owners: [v202Address, v2Address], tokens: [USDC_CONTRACT, WETH_CONTRACT,] }),
   },
   hallmarks: [
-      [1671092333, "Launch Predy V3"],
-      [1678734774, "Launch Predy V3.2"]
+      ['2022-12-15', "Launch Predy V3"],
+      ['2023-03-13', "Launch Predy V3.2"]
   ],
 };

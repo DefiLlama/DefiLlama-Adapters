@@ -1,14 +1,5 @@
-const sdk = require("@defillama/sdk");
-
 // KEA Credit Contract Addresses on Hedera
 const INVOICE_FACTORY_PROXY = "0x79914D3C80246FBC9E40409C4688A4141A3abbCe";
-const INVOICE_NFT_PROXY = "0x28E99733E84dE18fF6f50024F6ad33483B3D7F80";
-
-// Token Addresses (Hedera format: 0.0.tokenId)
-const TOKENS = {
-  PIXD_V1: "0.0.9323052", // 0x00000000000000000000000000000000008e422c (0-decimal)
-  KUSD_V2: "0.0.9590855", // 0x0000000000000000000000000000000000925847 (6-decimal)
-};
 
 // Pool Status Constants - V1/V2
 const POOL_STATUS_V1V2 = {
@@ -37,11 +28,6 @@ const FACTORY_ABI = [
   "function totalPools() external view returns (uint256)",
 ];
 
-const NFT_ABI = [
-  "function getNextTokenId() external view returns (uint256)",
-  "function totalSupply() external view returns (uint256)",
-];
-
 const POOL_V1_ABI = [
   // V1 Pool ABI (simpler structure)
   "function getPoolInfo() external view returns (uint256 nftTokenId, uint256 targetAmount, uint256 currentAmount, uint256 interestRate, uint256 maturityDate, address borrower, uint8 status, uint256 platformFeePercentage, address treasuryWallet)",
@@ -51,25 +37,6 @@ const POOL_V3_ABI = [
   // V3 Pool ABI (upgraded from V2)
   "function getPoolInfo() external view returns (uint256 nftTokenId, uint256 targetAmount, uint256 minAcceptableAmount, uint256 currentAmount, uint256 disbursedAmount, uint256 interestRate, uint256 originationDate, uint256 gracePeriodEndTime, uint256 maturityDate, address borrower, uint8 status, bool gracePeriodProcessed, address bridgeWalletAddress, uint256 supportedTokenCount)",
 ];
-
-/**
- * Determine if a token ID represents V1 or V3
- * Our first 12 NFTs are V1, rest are V3 (V2 was upgraded to V3 in place)
- */
-function getVersionFromTokenId(tokenId) {
-  return Number(tokenId) <= 12 ? "v1" : "v3";
-}
-
-/**
- * Get token configuration based on version
- */
-function getTokenConfig(version) {
-  return {
-    address: version === "v1" ? TOKENS.PIXD_V1 : TOKENS.KUSD_V2,
-    decimals: version === "v1" ? 0 : 6,
-    symbol: version === "v1" ? "PIXD" : "kUSD",
-  };
-}
 
 /**
  * Calculate TVL for a single pool based on its status
@@ -156,105 +123,24 @@ function calculatePoolTVL(poolInfo, version) {
 }
 
 /**
- * Get pool info using the appropriate ABI based on pool index
- * First 12 pools (index 0-11) are V1, rest are V3 (V2 upgraded to V3)
- */
-async function getPoolInfoWithVersion(poolAddress, poolIndex) {
-  // Determine version based on pool index (first 12 are V1, rest are V3)
-  const version = poolIndex < 12 ? "v1" : "v3";
-  const abi = version === "v1" ? POOL_V1_ABI[0] : POOL_V3_ABI[0];
-
-  const result = await sdk.api.abi.call({
-    target: poolAddress,
-    abi: abi,
-    chain: "hedera",
-  });
-
-  if (result.output) {
-    const tokenId = Number(result.output[0]);
-    return {
-      success: true,
-      poolInfo: result.output,
-      version,
-      tokenId,
-    };
-  } else {
-    return { success: false, error: "No output from pool call" };
-  }
-}
-
-/**
  * Main TVL calculation for Hedera
  */
-async function hederaTvl() {
-  const balances = {};
-  let totalV1TVL = 0;
-  let totalV3TVL = 0;
-  let processedPools = 0;
-
-  // Get total NFTs to understand scale
-  // Try getNextTokenId first (KEA Credit specific function)
-  let totalNFTs = 0;
-
-  const nextTokenIdResult = await sdk.api.abi.call({
-    target: INVOICE_NFT_PROXY,
-    abi: NFT_ABI[0], // getNextTokenId
-    chain: "hedera",
-  });
-
-  if (nextTokenIdResult.output !== undefined) {
-    totalNFTs = Number(nextTokenIdResult.output) - 1; // Next token ID - 1 = current total
-  } else {
-    throw new Error("getNextTokenId returned undefined");
-  }
-
+async function hederaTvl(api) {
   // Get all pool addresses
-  const poolsResult = await sdk.api.abi.call({
-    target: INVOICE_FACTORY_PROXY,
-    abi: FACTORY_ABI[0],
-    chain: "hedera",
-  });
+  const poolAddresses = await api.call({    target: INVOICE_FACTORY_PROXY,    abi: FACTORY_ABI[0],  });
+  const v1Pools = poolAddresses.slice(0, 12)
+  const v3Pools = poolAddresses.slice(12)
+  const poolV1Info = await api.multiCall({  abi: POOL_V1_ABI[0] , calls: v1Pools})
+  const poolV3Info = await api.multiCall({  abi: POOL_V3_ABI[0] , calls: v3Pools})
 
-  if (poolsResult.output === undefined) {
-    throw new Error(
-      `Factory getAllPools call failed: ${JSON.stringify(poolsResult)}`
-    );
-  }
+  const v1Tvls = poolV1Info.map(info => calculatePoolTVL(info, "v1"))
+  const v3Tvls = poolV3Info.map(info => calculatePoolTVL(info, "v3"))
 
-  const poolAddresses = poolsResult.output || [];
-
-  // Process each pool
-  for (let i = 0; i < poolAddresses.length; i++) {
-    const poolAddress = poolAddresses[i];
-
-    const poolResult = await getPoolInfoWithVersion(poolAddress, i);
-
-    if (!poolResult.success) {
-      continue;
-    }
-
-    const { poolInfo, version, tokenId } = poolResult;
-
-    // Calculate TVL for this pool
-    const poolTVL = calculatePoolTVL(poolInfo, version);
-
-    if (version === "v1") {
-      totalV1TVL += poolTVL;
-    } else if (version === "v3") {
-      totalV3TVL += poolTVL;
-    }
-
-    processedPools++;
-  }
-
-  const totalTVL = totalV1TVL + totalV3TVL;
-
-  balances["usd-coin"] = totalTVL;
-
-  return balances;
+  api.addUSDValue(v1Tvls.concat(v3Tvls).reduce((a, b) => a + b, 0))
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     "TVL represents the total value locked in KEA Credit's RWA (Real World Assets) invoice tokenization platform on Hedera. Businesses tokenize their invoices as NFTs and receive funding from lenders through investment pools. TVL calculation includes: (1) Active pools - current invested amounts, (2) Funded pools - fully funded target amounts, (3) Partially funded pools - current invested amounts, (4) Pools in grace period - current amounts during active grace period. Excludes repaid, cancelled, defaulted, or refunded pools. The platform operates with two versions: V1 pools (NFT IDs 1-12) using 0-decimal PIXD tokens, and V3 pools (NFT IDs 13+) using 6-decimal kUSD tokens. Both tokens maintain 1:1 USD parity representing underlying invoice values.",
   hedera: {

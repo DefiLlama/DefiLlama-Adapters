@@ -6,7 +6,8 @@ const { post } = require("../helper/http");
 
 const ATMOS_MODULE_ADDRESS = "0xa4a4a31116e114bf3c4f4728914e6b43db73279a4421b0768993e07248fe2234";
 const GET_POOLS_PAGED = `${ATMOS_MODULE_ADDRESS}::liquidity_pool::get_pools_map_paged`;
-const SIMULATE_SWAP = `${ATMOS_MODULE_ADDRESS}::liquidity_pool::simulate_swap_exact_in_weighted`;
+const SIMULATE_SWAP_WEIGHTED = `${ATMOS_MODULE_ADDRESS}::liquidity_pool::simulate_swap_exact_in_weighted`;
+const SIMULATE_SWAP_STABLE = `${ATMOS_MODULE_ADDRESS}::liquidity_pool::simulate_swap_exact_in_stable`;
 
 const POOL_TYPE = {
   STABLE: 100,
@@ -23,6 +24,8 @@ const TOKENS = {
   SOLID: "0xaa925a2232144c11dfe855178e1d252a8d0d4f51f5572fc0ec34efa6333952ae",
   TPC: "0x99f84c4fda663bf3baf3a1b0980386ca084c3e9340a4d3f8713cd54ec85f4cea",
   SUP_USDC: "0xf90b4b9d4a9d87c39fb3140513e52edc3ead5eaddcb9881b02becdeb63c5793d",
+  I_USDC: "0x90a8e901e02ac1539af4a865bbe4a6b96edc27375488803cfbbd6875ec57b281",
+  I_SUPRA: "0x80f0251b74c76f1c477b9209ade65ffb5cfecd9b259875c3865ad645f6c33a3d"
 };
 
 const PRICE_POOLS = {
@@ -30,6 +33,8 @@ const PRICE_POOLS = {
   SOLID: "0x4c7a3828c0da5e49e363b955b30c25a8944f36f27f637fd24a457f13eebefef2",
   TPC: "0x5235d477677a6c5f18f98250fa3f27d3ca81885d2ed9affd4049973379d213d6",
   SUP_USDC: "0x4274ed3b66bee46d049d6217ea005438aef6599674eeb37b77b19aa7a0a91acd",
+  I_USDC: "0xc3b2811077b309e2d6e7014e4b427d0e37377b9a86592d95ee97471cdb8e59af",
+  I_SUPRA: "0x35981f390ac0d7c089c14b156ec0f53c4fe74e0c3342b590110b325c580e7388",
 };
 
 const ONE_TOKEN_DECIMALS = {
@@ -37,6 +42,8 @@ const ONE_TOKEN_DECIMALS = {
   SOLID: 100000000n, // 1e8
   TPC: 1000000n, // 1e6
   SUP_USDC: 1000000n, // 1e6
+  I_USDC: 100000000n, // 1e8
+  I_SUPRA: 100000000n, // 1e8
 };
 
 const FA_TO_COIN = {
@@ -45,7 +52,7 @@ const FA_TO_COIN = {
   [TOKENS.CASH_FA]: TOKENS.CASH,
 };
 
-const CORE_ASSETS = [TOKENS.SUPRA, TOKENS.DEX_USDC, TOKENS.CASH, TOKENS.SOLID, TOKENS.TPC, TOKENS.SUP_USDC];
+const CORE_ASSETS = [TOKENS.SUPRA, TOKENS.DEX_USDC, TOKENS.CASH, TOKENS.SOLID, TOKENS.TPC, TOKENS.SUP_USDC, TOKENS.I_USDC, TOKENS.I_SUPRA];
 
 const isCoreAsset = (coin) => CORE_ASSETS.includes(coin);
 
@@ -79,8 +86,8 @@ async function getAllPools() {
   return pools;
 }
 
-async function getTokenPriceInSupra(poolAddress, tokenFA, amount) {
-  const result = await invokeViewFunction(SIMULATE_SWAP, [], [
+async function getTokenPriceInSupra(poolAddress, tokenFA, amount, poolType = POOL_TYPE.WEIGHTED) {
+  const result = await invokeViewFunction(poolType === POOL_TYPE.WEIGHTED ? SIMULATE_SWAP_WEIGHTED : SIMULATE_SWAP_STABLE, [], [
     poolAddress,
     tokenFA,
     TOKENS.SUPRA_FA,
@@ -91,14 +98,16 @@ async function getTokenPriceInSupra(poolAddress, tokenFA, amount) {
 }
 
 async function fetchTokenPrices() {
-  const [cashPrice, solidPrice, tpcPrice, supUsdcPrice] = await Promise.all([
+  const [cashPrice, solidPrice, tpcPrice, supUsdcPrice, iUsdcPrice, iSupraPrice] = await Promise.all([
     getTokenPriceInSupra(PRICE_POOLS.CASH, TOKENS.CASH_FA, ONE_TOKEN_DECIMALS.CASH.toString()),
     getTokenPriceInSupra(PRICE_POOLS.SOLID, TOKENS.SOLID, ONE_TOKEN_DECIMALS.SOLID.toString()),
     getTokenPriceInSupra(PRICE_POOLS.TPC, TOKENS.TPC, ONE_TOKEN_DECIMALS.TPC.toString()),
     getTokenPriceInSupra(PRICE_POOLS.SUP_USDC, TOKENS.SUP_USDC, ONE_TOKEN_DECIMALS.SUP_USDC.toString()),
+    getTokenPriceInSupra(PRICE_POOLS.I_USDC, TOKENS.I_USDC, ONE_TOKEN_DECIMALS.I_USDC.toString()),
+    getTokenPriceInSupra(PRICE_POOLS.I_SUPRA, TOKENS.I_SUPRA, ONE_TOKEN_DECIMALS.I_SUPRA.toString(), POOL_TYPE.STABLE),
   ]);
 
-  return { cashPrice, solidPrice, tpcPrice, supUsdcPrice };
+  return { cashPrice, solidPrice, tpcPrice, supUsdcPrice, iUsdcPrice, iSupraPrice };
 }
 
 function getAssetWeight(pool, assetIndex, numAssets) {
@@ -128,6 +137,12 @@ function convertToSupra(coin, balance, prices) {
   }
   if (coin === TOKENS.SUP_USDC) {
     return (balance * prices.supUsdcPrice) / ONE_TOKEN_DECIMALS.SUP_USDC;
+  }
+  if (coin === TOKENS.I_USDC) {
+    return (balance * prices.iUsdcPrice) / ONE_TOKEN_DECIMALS.I_USDC;
+  }
+  if (coin === TOKENS.I_SUPRA) {
+    return (balance * prices.iSupraPrice) / ONE_TOKEN_DECIMALS.I_SUPRA;
   }
   return 0n;
 }

@@ -1,4 +1,7 @@
-const abiMoonriver = require('./abi-moonriver.json');
+const abiMoonriver = {
+    "getTokenBalances": "uint256[]:getTokenBalances",
+    "getTokens": "address[]:getTokens"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const Contracts = {

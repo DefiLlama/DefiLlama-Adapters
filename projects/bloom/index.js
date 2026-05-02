@@ -1,4 +1,7 @@
-const abi = require('./abi.json');
+const abi = {
+    "getActiveTokens": "address[]:getActiveTokens",
+    "getInactiveTokens": "address[]:getInactiveTokens"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const REGISTRY = '0xBbBe37FE58e9859b6943AC53bDf4d0827f7F0034';

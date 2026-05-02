@@ -1,6 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
-const ABI = require('./abi.json');
+const ABI = {
+    "underlyingBalance": "function getUnderlyingBalances() public view returns (uint256 amount0Current, uint256 amount1Current)",
+    "getBalanceInCollateralToken": "function getBalanceInCollateralToken() external view returns (uint256 amount)"
+  };
 const config ={
   ethereum: [
     { factory: '0xf1e70677fb1f49471604c012e8B42BA11226336b', fromBlock: 17266660 }, // uniswap

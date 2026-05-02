@@ -24,7 +24,7 @@ module.exports = {
   methodology:
     "All Staking Derivatives are included to the TVL with relative underlying price. Also counted the Avax within the Dynamic Withdrawal Pools.",
   doublecounted: true,
-  hallmarks: [[1658869201, "Launch of yyAVAX"]],
+  hallmarks: [['2022-07-26', "Launch of yyAVAX"]],
   avax: {
     tvl: avax,
   },
