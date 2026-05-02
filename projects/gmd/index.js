@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk');
+const uniV3Abi = require('../helper/abis/uniV3.json')
 const abi = 'uint256:totalUSDvaults';
 
 const arbitrum_vault = "0xA7Ce4434A29549864a46fcE8662fD671c06BA49a";
@@ -48,11 +49,17 @@ function staking(stakingContract, gmdToken, esGmdToken) {
         { target: esGmdToken, params: [stakingContract] },
       ],
     })
-    const [gmdPoolBalance, usdcPoolBalance] = await Promise.all([
-      sdk.api.erc20.balanceOf({ chain: 'arbitrum', target: arbitrum_GMD, owner: arbitrum_gmd_usdc_pool }).then(i => i.output),
-      sdk.api.erc20.balanceOf({ chain: 'arbitrum', target: arbitrum_usdc, owner: arbitrum_gmd_usdc_pool }).then(i => i.output),
-    ])
-    const gmdPrice = (+usdcPoolBalance / 1e6) / (+gmdPoolBalance / 1e18)
+    const { output: { sqrtPriceX96 } } = await sdk.api.abi.call({
+      chain: 'arbitrum',
+      target: arbitrum_gmd_usdc_pool,
+      abi: uniV3Abi.slot0,
+    })
+    const sqrtPrice = Number(sqrtPriceX96) / 2 ** 96
+    const rawPrice = sqrtPrice ** 2
+    const { output: token0 } = await sdk.api.abi.call({ chain: 'arbitrum', target: arbitrum_gmd_usdc_pool, abi: 'address:token0' })
+    const gmdIsToken0 = token0.toLowerCase() === arbitrum_GMD.toLowerCase()
+    const decimalAdjustment = 10 ** (18 - 6)
+    const gmdPrice = gmdIsToken0 ? rawPrice * decimalAdjustment : (1 / rawPrice) * decimalAdjustment
     api.addUSDValue(((+gmdBal + +esGmdBal) / 1e18) * gmdPrice)
   }
 }
