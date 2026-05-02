@@ -197,9 +197,8 @@ const configs = {
   },
   'quell': {
     doublecounted: true,
-    methodology: "TVL is the total USDC deposited in the Quell ERC4626 RWAVaults, which route USDC to external vaults such as Spark sUSDC and Steakhouse USDC MetaMorpho for RWA yield.",
-    base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
-    arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051', '0x82bDeB9239d33AAE4b8c38C0C0ef3B088b0Fc791'],
+    methodology: "TVL is totalAssets() of the Quell RWAVault (ERC-4626) on Arbitrum One. Underlying asset is native USDC. Yield route: Spark sUSDC.",
+    arbitrum: ['0x82bDeB9239d33AAE4b8c38C0C0ef3B088b0Fc791'],
   },
   'zensats': {
     doublecounted: true,
