@@ -1465,6 +1465,12 @@ const uniV3Configs = {
       permitFailure: true,
     },
   },
+  'krokoswap-v3': {
+    kasplex: {
+      factory: '0x0dfb1Bb755d872EA1fa4d95E4ad0c2E6317Ce9B9',
+      fromBlock: 14294547,
+    },
+  },
   'tesseractworld': {
     ace: {
       factory: '0x699cf93f5dec3a3e314f0a31c1f885fb11b983c3',

@@ -2763,6 +2763,9 @@ const uniV2Configs = {
   'venera': {
     bsc: '0x95F9c44fA1585811e1D1a0F59e74174B657B37A5',
   },
+  'krokoswap-v2': {
+    kasplex: '0x4373b7Fcf5059A785843cD224129e01d243Aef71',
+  },
   'versedex': {
     methodology: 'Factory address (0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
     ethereum: '0xee3E9E46E34a27dC755a63e2849C9913Ee1A06E2',
