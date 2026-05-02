@@ -55,7 +55,8 @@ async function icpTvl() {
 
     const balance = Number(tokenMetadata.balance)
     if (balance > 0) {
-      balances[`coingecko:${tokenConfig.coingeckoId}`] = balance / 10 ** tokenConfig.decimals
+      const key = `coingecko:${tokenConfig.coingeckoId}`
+      balances[key] = (balances[key] || 0) + balance / 10 ** tokenConfig.decimals
     }
   }
 
