@@ -78,6 +78,12 @@ const configs = {
     avax: balV2Chain(26386141),
     mode: balV2Chain(8110317),
     fraxtal: balV2Chain(4708596),
+    ink: balV2Chain(34313901),
+    cronos: balV2Chain(15251184),
+    soneium: balV2Chain(21420762),
+    manta: balV2Chain(3871299),
+    moonriver: balV2Chain(9453547),
+    moonbeam: balV2Chain(6942168),
   },
   'swaap-v2': {
     ethereum: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 17598578 },
