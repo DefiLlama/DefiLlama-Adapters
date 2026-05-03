@@ -1,4 +1,5 @@
 const { PublicKey } = require("@solana/web3.js");
+const bs58 = require("bs58").default;
 const {
   getConnection,
   decodeAccount,
@@ -8,23 +9,33 @@ const {
 const idl = require("./idl/krystal_auto_vault.json");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs.js");
 const { getUniqueAddresses } = require("../helper/tokenMapping.js");
-const { get } = require("../helper/http.js");
 
 const CLMM_PROGRAM_ID = new PublicKey(
   "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
 );
 const POSITION_SEED = Buffer.from("position", "utf8");
+const USER_VAULT_ACCOUNT_SIZE = 41;
+const userVaultAccount = idl.accounts.find(({ name }) => name === "UserVault");
 
-async function tvl(api) {
-
-  // Load all the vaults in the program
-  const vaults = await program.account.userVault.all();
-  await addRaydiumPositions({ api, owners: vaults.map(i => i.publicKey) })
-
+if (!userVaultAccount) {
+  throw new Error(`Missing UserVault account in Krystal IDL. Accounts: ${idl.accounts.map(({ name }) => name).join(", ")}`);
 }
 
-async function addRaydiumPositions({ api, owners = [], owner }) {
+const USER_VAULT_DISCRIMINATOR = userVaultAccount.discriminator;
+
+async function tvl(api) {
   const connection = getConnection();
+  const vaults = await connection.getProgramAccounts(new PublicKey(idl.address), {
+    filters: [
+      { dataSize: USER_VAULT_ACCOUNT_SIZE },
+      { memcmp: { offset: 0, bytes: bs58.encode(Buffer.from(USER_VAULT_DISCRIMINATOR)) } },
+    ],
+  });
+
+  await addRaydiumPositions({ api, connection, owners: vaults.map((i) => i.pubkey) });
+}
+
+async function addRaydiumPositions({ api, owners = [], owner, connection = getConnection() }) {
 
   const pools = new Map();
 
@@ -33,17 +44,19 @@ async function addRaydiumPositions({ api, owners = [], owner }) {
 
 
   const positions = [];
-  for (let vault of owners) {
+  await Promise.all(owners.map((vault) => {
     if (typeof vault === "string") vault = new PublicKey(vault);
-    await findClmmPositionsByOwner(connection, vault);
-  }
+    return findClmmPositionsByOwner(connection, vault);
+  }));
 
   const positionAccountInfos = await connection.getMultipleAccountsInfo(pdaPersonalPositionAddressesAll);
 
-  positionAccountInfos.map((account) => {
+  positionAccountInfos.forEach((account) => {
     if (!account) return;
 
-    positions.push(decodeAccount("raydiumPositionInfo", account));
+    try {
+      positions.push(decodeAccount("raydiumPositionInfo", account));
+    } catch {}
   });
 
   const poolIds = getUniqueAddresses(positions.map((position) => position.poolId.toBase58()), "solana");
@@ -52,15 +65,18 @@ async function addRaydiumPositions({ api, owners = [], owner }) {
   for (let i = 0; i < poolIds.length; i++) {
     const poolId = poolIds[i];
     const poolAccount = poolAccounts[i];
-    const poolInfo = decodeAccount("raydiumCLMM", poolAccount);
-    pools.set(poolId, poolInfo);
+    if (!poolAccount) continue;
+    try {
+      pools.set(poolId, decodeAccount("raydiumCLMM", poolAccount));
+    } catch {}
   }
 
   for (const position of positions) {
     const poolId = position.poolId;
     const poolKey = poolId.toBase58();
 
-    let poolInfo = pools.get(poolKey);
+    const poolInfo = pools.get(poolKey);
+    if (!poolInfo) continue;
 
     addUniV3LikePosition({
       api,
@@ -76,10 +92,10 @@ async function addRaydiumPositions({ api, owners = [], owner }) {
 
   async function findClmmPositionsByOwner(connection, owner) {
     const [tokenAccounts, token2022Accounts] = await Promise.all([
-      connection.getParsedTokenAccountsByOwner(owner, {
+      connection.getTokenAccountsByOwner(owner, {
         programId: TOKEN_PROGRAM_ID,
       }),
-      connection.getParsedTokenAccountsByOwner(owner, {
+      connection.getTokenAccountsByOwner(owner, {
         programId: TOKEN_2022_PROGRAM_ID,
       }),
     ]);
@@ -93,12 +109,19 @@ async function addRaydiumPositions({ api, owners = [], owner }) {
     }
 
     const tokenNftMints = [];
-    allTokenAccounts.forEach((tokenAccount) => {
-      const info = tokenAccount.account.data.parsed.info;
-      if (info.tokenAmount.amount == "1" && info.tokenAmount.decimals == 0) {
-        tokenNftMints.push(new PublicKey(info.mint));
+    allTokenAccounts.forEach(({ account }) => {
+      let amount, mint;
+      try {
+        ({ amount, mint } = decodeAccount("tokenAccount", account));
+      } catch {
+        return;
+      }
+      const rawAmount = amount.toString();
+      const token = mint.toBase58();
+      if (rawAmount === "1") {
+        tokenNftMints.push(mint);
       } else {
-        api.add(info.mint, info.tokenAmount.amount)
+        api.add(token, rawAmount)
       }
     });
 
@@ -107,7 +130,6 @@ async function addRaydiumPositions({ api, owners = [], owner }) {
   }
 
 }
-
 
 function getPdaPersonalPositionAddress(nftMint) {
   const [pda] = PublicKey.findProgramAddressSync(
@@ -118,9 +140,4 @@ function getPdaPersonalPositionAddress(nftMint) {
   return pda;
 }
 
-async function tvlApi(api) {
-  const res = await get('https://api.krystal.app/solana/v1/lp/tvl')
-  api.addUSDValue(+res.tvl)
-}
-
-module.exports = { tvl: tvlApi, addRaydiumPositions, };
+module.exports = { tvl, addRaydiumPositions, };
