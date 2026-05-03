@@ -198,7 +198,7 @@ const configs = {
   },
   'quell': {
     doublecounted: true,
-    methodology: "TVL is the total USDC deposited in the Quell ERC4626 RWAVaults, which route USDC to external vaults such as Spark sUSDC and Steakhouse USDC MetaMorpho for RWA yield.",
+    methodology: "TVL is the total USDC deposited in the Quell ERC4626 RWAVaults, measured via totalAssets(). The protocol launched on Base in 2025 routing into the Steakhouse USDC MetaMorpho vault, then migrated to Arbitrum One in March 2026 where it routes into Spark sUSDC. Historical Base + early Arbitrum vaults are retained for chain TVL history; the live yield route on the current Arbitrum RWAVault is Spark sUSDC.",
     base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
     arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051', '0x82bDeB9239d33AAE4b8c38C0C0ef3B088b0Fc791'],
   },
