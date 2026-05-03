@@ -1,0 +1,97 @@
+name: Baseline_On_Merge
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'projects/**'
+
+concurrency:
+  group: tvl-baseline
+  cancel-in-progress: false
+
+jobs:
+  refresh-baselines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Restore baseline cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .tvl-baselines
+          key: tvl-baselines-v1-${{ github.sha }}
+          restore-keys: |
+            tvl-baselines-v1-
+
+      - name: Detect changed adapter files
+        id: changes
+        run: |
+          mkdir -p .tvl-baselines
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE="${AFTER}^"
+          fi
+          git diff --name-only "$BEFORE" "$AFTER" -- 'projects/**' \
+            | grep -E '\.(js|ts)$' \
+            | grep -v '^projects/helper/' \
+            | grep -v '^projects/config/' \
+            > changed.txt || true
+          echo "Changed files:"
+          cat changed.txt || true
+          echo "count=$(wc -l < changed.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Refresh baselines for changed adapters
+        if: steps.changes.outputs.count != '0'
+        env:
+          LLAMA_DEBUG_MODE: "true"
+        run: |
+          set -u
+          while IFS= read -r FILE; do
+            [ -z "$FILE" ] && continue
+            [ ! -f "$FILE" ] && continue
+
+            HASH=$(printf '%s' "$FILE" | sha256sum | cut -c1-16)
+            FILE_SHA=$(git log -1 --format=%H -- "$FILE" || echo "")
+            CAPTURED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            OUT=".tvl-baselines/${HASH}.json"
+
+            echo "::group::Baseline ${FILE}"
+            if node test.js "$FILE" > baseline-output.txt 2>&1; then
+              ADAPTER_PATH="$FILE" FILE_SHA="$FILE_SHA" CAPTURED_AT="$CAPTURED_AT" \
+                node .github/workflows/parseTvl.js baseline-output.txt "$OUT"
+              echo "Wrote ${OUT}"
+            else
+              # Adapter errored on main: skip writing. Next PR sees a cache miss
+              # and falls back to today's behavior. The failing run is already
+              # visible in this workflow's logs.
+              echo "Skipped ${FILE} (test.js errored)"
+            fi
+            echo "::endgroup::"
+          done < changed.txt
+
+      - name: Save baseline cache
+        if: steps.changes.outputs.count != '0'
+        uses: actions/cache/save@v4
+        with:
+          path: .tvl-baselines
+          key: tvl-baselines-v1-${{ github.sha }}

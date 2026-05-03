@@ -31,6 +31,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Restore TVL baselines
+        uses: actions/cache/restore@v4
+        continue-on-error: true
+        with:
+          path: .tvl-baselines
+          key: tvl-baselines-v1-none
+          restore-keys: |
+            tvl-baselines-v1-
+
       - name: Record PR number
         run: |
           mkdir -p pr-comments
@@ -65,7 +74,28 @@ jobs:
           do
             {
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
-              node ${{ github.workspace }}/.github/workflows/commentResult.js ${{ github.workspace }}/output.txt ${{ github.workspace }}/pr-comments ${i}
+
+              # Look for a baseline JSON for this adapter, only if it's a real
+              # file path (skip registry-derived virtual entries) and a cached
+              # baseline exists. Any failure here is non-fatal — we fall back
+              # to today's behavior by passing no baseline arg.
+              BASELINE_JSON=""
+              CURRENT_JSON=""
+              if [ -f "${{ github.workspace }}/${i}" ]; then
+                HASH=$(printf '%s' "${i}" | sha256sum | cut -c1-16)
+                CANDIDATE="${{ github.workspace }}/.tvl-baselines/${HASH}.json"
+                if [ -f "$CANDIDATE" ]; then
+                  CURRENT_JSON="${{ github.workspace }}/current-${HASH}.json"
+                  if node ${{ github.workspace }}/.github/workflows/parseTvl.js output.txt "$CURRENT_JSON"; then
+                    BASELINE_JSON="$CANDIDATE"
+                  else
+                    CURRENT_JSON=""
+                  fi
+                fi
+              fi
+
+              node ${{ github.workspace }}/.github/workflows/commentResult.js ${{ github.workspace }}/output.txt ${{ github.workspace }}/pr-comments ${i} "$BASELINE_JSON" "$CURRENT_JSON"
+
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
                 exit 1;
               fi
