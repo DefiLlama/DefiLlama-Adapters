@@ -33,6 +33,10 @@ const POOLS = [
   'CCUCE5H5CKW3S7JBESGCES6ZGDMWLNRY3HOFET3OH33MXZWKXNJTKSM3', // GBPX-USDC
 ]
 
+/**
+ * Sums USD value of all Phoenix pools via stellar.expert contract balance API.
+ * @param {Object} api - DeFiLlama adapter API
+ */
 async function tvl(api) {
   const results = await Promise.all(
     POOLS.map(async (pool) => {

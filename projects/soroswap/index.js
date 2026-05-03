@@ -8,6 +8,10 @@ const { sorobanFactoryTvl } = require('../helper/chain/sorobanFactory')
 
 const SOROSWAP_FACTORY = 'CA4HEQTL2WPEUYKYKCDOHCDNIV4QHNJ7EL4J4NQ6VADP7SYHVRYZ7AW2'
 
+/**
+ * Walks Soroswap factory (v2 index-based) and accumulates pool USD TVL.
+ * @param {Object} api - DeFiLlama adapter API
+ */
 async function tvl(api) {
   await sorobanFactoryTvl(api, SOROSWAP_FACTORY, {
     style: 'v2',
