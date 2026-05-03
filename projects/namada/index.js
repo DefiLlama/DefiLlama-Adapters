@@ -20,6 +20,8 @@ const TOKEN_MAP = {
   'tnam1phv4vcuw2ftsjahhvg65w4ux8as09tlysuhvzqje': 'nym',                 // NYM
 };
 
+// All supported IBC tokens use 6 decimals (verified via namada-chain-registry).
+// When adding new tokens, verify their decimal places before adding to TOKEN_MAP.
 const DECIMALS = 6;
 
 async function tvl(api) {
