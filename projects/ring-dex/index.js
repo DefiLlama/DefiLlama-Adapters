@@ -1,5 +1,3 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
-
 const fewFactoryConfig = {
   ethereum: { factory: '0x7D86394139bf1122E82FDF45Bb4e3b038A4464DD' },
   blast: { factory: '0x455b20131D59f01d082df1225154fDA813E8CeE9' },
@@ -18,6 +16,10 @@ const factoryConfig = {
   hyperliquid: { factory: '0x4AfC2e4cA0844ad153B090dc32e207c1DD74a8E4' },
 }
 
+module.exports = {
+  methodology: 'TVL is the sum of Ring Swap pair reserves. Few-wrapped reserves are converted to their proportional underlying asset balances using on-chain wrapper balances and total supply.',
+}
+
 Object.keys(fewFactoryConfig).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
@@ -25,14 +27,86 @@ Object.keys(fewFactoryConfig).forEach(chain => {
       const pairs = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factoryConfig[chain].factory })
       const token0s = await api.multiCall({ abi: 'address:token0', calls: pairs })
       const token1s = await api.multiCall({ abi: 'address:token1', calls: pairs })
-      const allTokens = token0s.concat(token1s)
-      const names = await api.multiCall({ abi: 'string:name', calls: allTokens, permitFailure: true })
-      names.forEach((name, i) => {
-        if (!name) return;
-        if (name.startsWith('Few Wrapped')) fewTokens.push(allTokens[i])
+      const fewTokenSet = new Set(fewTokens.map(normalize))
+      const tokenPairs = pairs.flatMap((pair, i) => [[token0s[i], pair], [token1s[i], pair]])
+      const pairBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokenPairs.map(([target, pair]) => ({ target, params: [pair] })) })
+      const balances = {}
+
+      tokenPairs.forEach(([token], i) => {
+        addBalance(balances, token, pairBalances[i])
       })
-      const ownerTokens = pairs.map(((pair, i) => [[token0s[i], token1s[i]], pair]))
-      return sumTokens2({ api, ownerTokens, blacklistedTokens: fewTokens, })
+      await unwrapFewBalances(api, balances, fewTokenSet)
+      Object.entries(balances).forEach(([token, balance]) => api.add(token, balance.toString()))
     }
   }
 });
+
+/**
+ * Converts Few-wrapped balances in-place until final underlying assets remain.
+ */
+async function unwrapFewBalances(api, balances, fewTokenSet) {
+  const maxDepth = Math.max(fewTokenSet.size, 1)
+  for (let depth = 0; depth < maxDepth; depth++) {
+    const wrappedTokens = Object.keys(balances).filter(token => fewTokenSet.has(token) && balances[token] > 0n)
+    if (!wrappedTokens.length) return;
+
+    const fewTokenInfo = await getFewTokenInfo(api, wrappedTokens)
+    let unwrapped = false
+
+    wrappedTokens.forEach(token => {
+      const balance = balances[token]
+      const info = fewTokenInfo[token]
+      if (!info) return;
+      const supply = BigInt(info.supply)
+      if (supply === 0n) return;
+
+      const underlying = normalize(info.underlying)
+      if (underlying === token) return;
+      addBalance(balances, underlying, balance * BigInt(info.underlyingBalance) / supply)
+      delete balances[token]
+      unwrapped = true
+    })
+
+    if (!unwrapped) return;
+  }
+}
+
+/**
+ * Reads each Few wrapper's underlying token, supply, and backing balance.
+ */
+async function getFewTokenInfo(api, fewTokens) {
+  const [underlyings, supplies] = await Promise.all([
+    api.multiCall({ abi: 'address:token', calls: fewTokens }),
+    api.multiCall({ abi: 'erc20:totalSupply', calls: fewTokens }),
+  ])
+  const validTokens = fewTokens
+    .map((wrapper, i) => ({ wrapper, underlying: underlyings[i], supply: supplies[i] }))
+    .filter(({ underlying, supply }) => underlying && supply)
+  if (!validTokens.length) return {}
+  const underlyingBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: validTokens.map(({ wrapper, underlying }) => ({ target: underlying, params: [wrapper] })),
+  })
+
+  return Object.fromEntries(validTokens.map((token, i) => [
+    normalize(token.wrapper),
+    { ...token, underlyingBalance: underlyingBalances[i] }
+  ]))
+}
+
+/**
+ * Normalizes EVM addresses used as map keys.
+ */
+function normalize(address) {
+  return address.toLowerCase()
+}
+
+/**
+ * Adds a raw token balance to an in-memory balances map.
+ */
+function addBalance(balances, token, amount) {
+  amount = BigInt(amount ?? 0)
+  if (amount === 0n) return;
+  const normalizedToken = normalize(token)
+  balances[normalizedToken] = (balances[normalizedToken] ?? 0n) + amount
+}
