@@ -1,42 +1,55 @@
+const { get } = require('../helper/http')
+
 /*
  * Pool Party — Canton Network AMM
  *
- * Pool Party is the first AMM on Canton Network, built by Send Foundation.
- * Pairs at launch: CC/CUSD, CC/USDCx, USDCx/CUSD.
+ * v2 adapter — reads Pool Party's public v1 API on Send Foundation's
+ * validator (Cloudflare Worker). Replaces the prior Lighthouse-only
+ * implementation, which surfaced CC balances per party only and missed
+ * the stablecoin sides of every pool (~99.9% of TVL).
  *
- * TVL methodology:
- *   This adapter mirrors the existing `wcc` adapter
- *   (projects/wcc/index.js) — the only currently supported Canton TVL pattern.
- *   It queries the public Canton Lighthouse API for the CC balance held by
- *   Pool Party's Canton party and reports it as gas-token (CC) TVL.
- *
- *   The Lighthouse API exposes Canton Coin balances per party only; CUSD and
- *   USDCx (the stablecoin sides of Pool Party's pools) are not currently
- *   queryable through public Canton APIs. As a result this adapter
- *   underreports the full pool TVL by roughly the value of the stablecoin
- *   sides. Adding the stablecoin sides is tracked as Phase 2.
- *
- * Docs: https://info.send.it/docs/pool-party/overview
- * App:  https://cantonwallet.com/pools/
+ * Upstream API:   https://api-mainnet.cantonwallet.com/canton/pool-party/public/v1
+ * Spec issue:     https://github.com/0xsend/canton-monorepo/issues/3481
+ * Snapshot cadence: 5 minutes
+ * Auth:           none (public)
  */
 
-const { get } = require('../helper/http')
+const BASE_URL =
+  'https://api-mainnet.cantonwallet.com/canton/pool-party/public/v1'
 
-const BASE_URL = 'https://lighthouse.cantonloop.com/api/parties/'
-
-// Pool Party's Canton party ID. Source:
-// https://info.send.it/docs/miscellaneous/send-contract-addresses
-const parties = [
-  'poolparty::1220f1b0d7a83c7eaaf6d712d95d5952ea2c801238af9c342e8d83c87dfc45c999dc',
-]
+// Pool Party SDK instrument IDs are returned as keys on the /tvl response.
+// Stable identifiers per Send Foundation:
+//   - "Amulet"  : Canton Coin (CC)            — priced via coingecko:canton-network
+//   - "USDCx"   : bridged USDC on Canton      — priced as USDC ($1 stable proxy)
+//   - CUSD UUID : Send's privacy stablecoin   — priced as USDC ($1 stable proxy)
+//
+// CUSD has no CoinGecko listing yet; pricing as USDC matches the methodology
+// used by other Canton stablecoin wrappers on DefiLlama. Brale issues multiple
+// instruments (e.g. SBC) from the same party — only the CUSD UUID below is in
+// scope; any other unknown instrument IDs are intentionally skipped.
+const CUSD_INSTRUMENT_ID = '481871d4-ca56-42a8-b2d3-4b7d28742946'
 
 async function tvl(api) {
-  for (const party of parties) {
-    const { balance } = await get(BASE_URL + party + '/balance')
-    // total_coin_holdings is a decimal-string CC balance.
-    // Convert to atomic units (CC has 18 decimals, matching the wcc adapter's
-    // 1e18 multiplier).
-    api.addGasToken(Number(balance.total_coin_holdings) * 1e18)
+  const data = await get(BASE_URL + '/tvl')
+  const balances = (data && data.tvl) || {}
+
+  for (const [instrumentId, amount] of Object.entries(balances)) {
+    const value = Number(amount)
+    if (!Number.isFinite(value) || value <= 0) continue
+
+    if (instrumentId === 'Amulet') {
+      // Canton Coin (gas token). DefiLlama's Canton pricing config uses
+      // 18-decimal atomic units; matches the existing wcc adapter.
+      api.addGasToken(value * 1e18)
+    } else if (
+      instrumentId === 'USDCx' ||
+      instrumentId === CUSD_INSTRUMENT_ID
+    ) {
+      // USDCx (bridged USDC) and CUSD (Send privacy stable) priced as USDC ($1).
+      // coingecko:usd-coin expects 6-decimal atomic units.
+      api.add('coingecko:usd-coin', value * 1e6, { skipChain: true })
+    }
+    // Unknown instrument IDs (e.g. SBC) are intentionally skipped.
   }
 }
 
@@ -44,10 +57,11 @@ module.exports = {
   timetravel: false,
   canton: { tvl },
   methodology:
-    "TVL is the total Canton Coin (CC) balance held by Pool Party's Canton " +
-    "party, fetched from the public Lighthouse API. Stablecoin sides of pools " +
-    "(CUSD, USDCx) are not yet queryable through public Canton APIs and are " +
-    "not included; this matches the methodology used by the existing wcc " +
-    "adapter and is expected to be expanded once Canton APIs surface " +
-    "non-CC token balances per party.",
+    "TVL is the sum of Canton Coin (CC), CUSD, and USDCx balances held by " +
+    "Pool Party, fetched from the public Pool Party API on Send Foundation's " +
+    "validator (api-mainnet.cantonwallet.com). CC is priced via CoinGecko " +
+    "(canton-network); CUSD (Send's privacy stablecoin) and USDCx (bridged " +
+    "USDC on Canton) are priced as USDC ($1 stable proxy) since neither has " +
+    "a CoinGecko listing. Refresh cadence: 5m. Replaces the previous " +
+    "Lighthouse-based methodology, which exposed CC balances per party only.",
 }
