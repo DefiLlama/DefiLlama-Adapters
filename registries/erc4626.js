@@ -145,7 +145,7 @@ const configs = {
     ],
   },
   'RockSolid': {
-    methodology: 'Calls totalAssets() on the RockSolid rock.rETH, rock.loopedETH, and rockUSDm vaults to get the total amount of rETH and ETH managed by the vaults.',
+    methodology: 'Calls totalAssets() on the RockSolid rock.rETH, rock.loopedETH, and rockUSDm vaults to get the total amount of rETH, ETH, and USDC managed by the vaults.',
     start: 1756339201,
     ethereum: [
       '0x936facdf10c8c36294e7b9d28345255539d81bc7',
