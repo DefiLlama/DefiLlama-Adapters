@@ -1,7 +1,8 @@
 // projects/olympus/index.js
 
 const ADDRESSES = require('../helper/coreAssets.json')
-const { blockQuery } = require("../helper/http");
+const BigNumber = require('bignumber.js')
+const { get } = require("../helper/http");
 const { staking } = require('../helper/staking');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -14,15 +15,24 @@ const OlympusStakings = [
 const OHM_V1 = "0x383518188c0c6d7730d91b2c03a03c837814a899"
 const OHM = "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5"
 const GOHM = "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f"
+const ARBITRUM_OHM = "0xf0cb2dc0db5e6c66B9a70Ac27B06b878da017028"
+const BASE_OHM = "0x060cb087a9730E13aa191f31A6d86bFF8DfcdCC0"
 
-const olympusTokens = [GOHM, OHM];
+const olympusTokens = new Set([
+  GOHM,
+  OHM,
+  ARBITRUM_OHM,
+  BASE_OHM,
+].map(i => i.toLowerCase()));
 
-// Updated subgraph IDs - removed dead chains (Fantom, Polygon), added Base
-const subgraphUrls = {
-  ethereum: "7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp",
-  arbitrum: "8Zxb1kVv9ZBChHXEPSgtC5u5gjCijMn5k8ErpzRYWNgH",
-  base: "3YAC1Gj2AUFCQ8wd4DaBQmqU3DJZjKyr45dQykAtXuMU",
+const CHAIN_NAMES = {
+  ethereum: 'Ethereum',
+  arbitrum: 'Arbitrum',
+  base: 'Base',
 };
+
+const TREASURY_API = 'https://olympus-treasury-subgraph-prod.web.app/operations';
+let tokenRecordsPromise;
 
 /** Map staked assets without price feeds to those with price feeds (1:1) */
 const addressMap = {
@@ -41,114 +51,65 @@ const addressMap = {
 
 const poolsWithoutDecimals = ["0x88051b0eea095007d3bef21ab287be961f3d8598"];
 
-const getLatestBlockIndexed = `
-query {
-  lastBlock: tokenRecords(first: 1, orderBy: block, orderDirection: desc) {
-    block
-    timestamp
-  }
-}`;
-
-/**
- * Builds a GraphQL query to fetch tokenRecords at a specific block.
- * @param {number} block - The block number to query at.
- * @returns {string} GraphQL query string.
- */
-const protocolQuery = (block) => `
-query {
-  tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
-    block
-    timestamp
-    category
-    tokenAddress
-    token
-    balance
-  }
-}
-`;
-
-/**
- * Aggregates token records by tokenAddress, summing balances for duplicate entries.
- * Used to collapse multiple subgraph rows for the same token into a single balance.
- * @param {Array<{tokenAddress: string, balance: string|number, category: string, token: string}>} arr
- * @returns {Array<{tokenAddress: string, balance: number, category: string, token: string}>}
- */
 function sumBalancesByTokenAddress(arr) {
   const map = new Map();
   for (const curr of arr) {
     const existing = map.get(curr.tokenAddress);
     if (existing) {
-      existing.balance += +curr.balance;
+      existing.balance = existing.balance.plus(curr.balance);
     } else {
       map.set(curr.tokenAddress, {
         tokenAddress: curr.tokenAddress,
-        balance: +curr.balance,
-        category: curr.category,
-        token: curr.token,
+        balance: BigNumber(curr.balance),
       });
     }
   }
   return Array.from(map.values());
 }
 
-/**
- * Factory that returns an async TVL function for the given mode.
- *
- * Modes:
- * - 'tvl'       : Treasury assets excluding OHM/gOHM and Protocol-Owned Liquidity.
- *                 POL is tracked in Olympus treasury dashboards and excluded here
- *                 to avoid double-counting with the Uniswap V3 adapter.
- * - 'ownTokens' : Protocol-owned OHM and gOHM only.
- *
- * Note: 'borrowed' (Cooler Loans) is intentionally omitted — tracked separately
- * by the projects/cooler-loans adapter to avoid double-counting.
- *
- * @param {'tvl'|'ownTokens'} mode - Which subset of treasury records to return.
- * @returns {function(api: object): Promise<object>} Async TVL function for DeFiLlama.
- */
+async function getTokenRecords() {
+  if (!tokenRecordsPromise) {
+    tokenRecordsPromise = (async () => {
+      const { data: metrics } = await get(`${TREASURY_API}/latest/metrics`);
+      const blocks = metrics.blocks;
+      const variables = {
+        arbitrumBlock: blocks.Arbitrum,
+        ethereumBlock: blocks.Ethereum,
+        fantomBlock: blocks.Fantom,
+        polygonBlock: blocks.Polygon,
+        baseBlock: blocks.Base,
+        berachainBlock: blocks.Berachain,
+      };
+
+      return (await get(`${TREASURY_API}/atBlock/tokenRecords?wg_variables=${encodeURIComponent(JSON.stringify(variables))}`)).data || [];
+    })().catch((error) => {
+      tokenRecordsPromise = null;
+      throw error;
+    });
+  }
+
+  return tokenRecordsPromise;
+}
+
 function buildTvl(mode = 'tvl') {
   return async function(api) {
-    if (!subgraphUrls[api.chain]) return {};
+    if (!CHAIN_NAMES[api.chain]) return {};
 
-    const indexedBlockForEndpoint = await blockQuery(subgraphUrls[api.chain], getLatestBlockIndexed, { api });
-    const latest = indexedBlockForEndpoint?.lastBlock?.[0];
-    if (!latest) throw new Error('no-indexed-block');
-
-    const blockNum = latest.block;
-    const lastTs = Number(latest.timestamp);
-
-    // Staleness guard (3 days)
-    const aDay = 24 * 3600;
-    const now = Date.now() / 1e3;
-    if (!Number.isFinite(lastTs) || now - lastTs > 3 * aDay) {
-      throw new Error("outdated");
-    }
-
-    const trResp = await blockQuery(subgraphUrls[api.chain], protocolQuery(blockNum), { api });
-    const tokenRecords = trResp?.tokenRecords || [];
-
-    // Exclude Protocol-Owned Liquidity and problematic pools from TVL.
-    // POL (Uniswap V3 LP positions) is tracked separately in Olympus treasury dashboards
-    // and is intentionally excluded here to avoid double-counting with the Uniswap V3 adapter.
+    const tokenRecords = (await getTokenRecords()).filter(record => record.blockchain === CHAIN_NAMES[api.chain]);
     const filteredTokenRecords = tokenRecords.filter(
       (t) => t.category !== 'Protocol-Owned Liquidity' &&
-             !poolsWithoutDecimals.includes(t.tokenAddress)
+             !poolsWithoutDecimals.includes(t.tokenAddress.toLowerCase())
     );
 
-    // Normalize addresses for pricing
     const normalizedRecords = filteredTokenRecords.map((token) => ({
       ...token,
-      tokenAddress: addressMap[token.tokenAddress] || token.tokenAddress,
+      tokenAddress: addressMap[token.tokenAddress.toLowerCase()] || token.tokenAddress.toLowerCase(),
     }));
 
-    const ownTokens = new Set(olympusTokens.map(i => i.toLowerCase()));
-
-    // Exclude borrowed records (Cooler Loans) from TVL/ownTokens — tracked separately.
     const recordsToProcess = normalizedRecords.filter(t =>
       !t.token?.includes('Borrowed Through Cooler Loans')
     );
 
-    // Exclude specific arbitrum pool IDs that break pricing/decimals
     let finalRecords = recordsToProcess;
     if (api.chain === 'arbitrum') {
       finalRecords = recordsToProcess.filter(i => ![
@@ -158,23 +119,24 @@ function buildTvl(mode = 'tvl') {
     }
 
     const tokensToBalances = sumBalancesByTokenAddress(finalRecords);
-    const tokens = tokensToBalances.map(i => i.tokenAddress);
+    const tokens = tokensToBalances.map(i => i.tokenAddress).filter(i => i !== ADDRESSES.null);
     const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true });
+    const decimalsByToken = Object.fromEntries(tokens.map((token, i) => [token, Number(decimals[i]?.toString())]));
 
-    tokensToBalances.forEach((token, i) => {
-      if (decimals[i] == null) return; // skip failed multiCall lookups; null-check avoids dropping 0-decimal tokens
-      const isOwn = ownTokens.has(token.tokenAddress.toLowerCase());
+    tokensToBalances.forEach((token) => {
+      const decimals = token.tokenAddress === ADDRESSES.null ? 18 : decimalsByToken[token.tokenAddress];
+      if (!Number.isFinite(decimals)) return;
+      const isOwn = olympusTokens.has(token.tokenAddress.toLowerCase());
 
       if (mode === 'ownTokens' && !isOwn) return;
       if (mode === 'tvl' && isOwn) return;
 
-      if (token.balance < 0) {
-        // Cooler Loans debt records are filtered upstream; a negative here signals unexpected subgraph data.
-        console.warn(`[olympus] unexpected negative balance for ${token.tokenAddress}: ${token.balance} (mode=${mode}, chain=${api.chain})`);
+      if (token.balance.lt(0)) {
+        console.warn(`[olympus] unexpected negative balance for ${token.tokenAddress}: ${token.balance.toString()} (mode=${mode}, chain=${api.chain})`);
         return;
       }
 
-      api.add(token.tokenAddress, token.balance * 10 ** decimals[i]);
+      api.add(token.tokenAddress, token.balance.shiftedBy(decimals).toFixed(0));
     });
 
     return await sumTokens2({ api, resolveLP: true });
@@ -198,7 +160,7 @@ module.exports = {
     ["2025-12-01", "Convertible Deposits Launch"],
     ["2026-01-08", "CD Lending and Limit Orders"],
   ],
-  methodology: "Treasury value from subgraph excluding protocol-owned OHM and Protocol-Owned Liquidity. POL (Uniswap V3 LP positions) is tracked in Olympus treasury dashboards and excluded here to avoid double-counting with the Uniswap V3 adapter. Cooler Loans debt is tracked by the dedicated cooler-loans adapter.",
+  methodology: "Treasury value from Olympus' treasury API excluding protocol-owned OHM and Protocol-Owned Liquidity. POL (Uniswap V3 LP positions) is tracked in Olympus treasury dashboards and excluded here to avoid double-counting with the Uniswap V3 adapter. Cooler Loans debt is tracked by the dedicated cooler-loans adapter.",
   ethereum: {
     tvl: buildTvl('tvl'),
     staking: staking(OlympusStakings, [OHM, OHM_V1]),
