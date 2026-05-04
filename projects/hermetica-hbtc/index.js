@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { call } = require('../helper/chain/stacks-api')
+const { parseClarityInt } = require('../projects/hermetica/index.js')
 
 const hBTCContract = ADDRESSES.stacks.hBTC;
 const hBTCStateContract = 'SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.state-hbtc-v1';
@@ -9,13 +9,26 @@ module.exports = {
   timetravel: false,
   stacks: {
     tvl: async () => {
+      const [hbtc_contract_address, hbtc_contract_name] = hBTCContract.split('.');
+      const [state_contract_address, state_contract_name] = hBTCStateContract.split('.');
+
       const [microhBTCSupplyStacks, microSharePrice] = await Promise.all([
-        call({ target: hBTCContract, abi: 'get-total-supply' }),
-        call({ target: hBTCStateContract, abi: 'get-share-price' })
+        post(`https://api.mainnet.hiro.so/v2/contracts/call-read/${hbtc_contract_address}/${hbtc_contract_name}/get-total-supply`,
+          {
+            sender: hbtc_contract_address,
+            arguments: []
+          }
+        ),
+        post(`https://api.mainnet.hiro.so/v2/contracts/call-read/${state_contract_address}/${state_contract_name}/get-share-price`,
+          {
+            sender: state_contract_address,
+            arguments: []
+          }
+        )
       ]);
 
-      const sharePrice = Number(microSharePrice) / (10 ** 8);
-      const hBTCSupplyStacks = Number(microhBTCSupplyStacks.value) / (10 ** 8);
+      const sharePrice = Number(parseClarityInt(microSharePrice.result)) / (10 ** 8);
+      const hBTCSupplyStacks = Number(parseClarityInt(microhBTCSupplyStacks.result)) / (10 ** 8);
 
       return { bitcoin: hBTCSupplyStacks * sharePrice };
     }
