@@ -26,9 +26,9 @@ const POOL_ID = 'CCL2KTHYOVMNNOFDT7PEAHACUBYVFLRH2LYWVQB6IPMHHAVUBC7ZUUC2'
 // Stellar Asset Contract (SAC) address for each reserve — passed to pool.get_reserve(asset).
 // Decimals: 7 (standard for all Stellar/Soroban token contracts)
 const RESERVES = [
-  { symbol: 'XLM',  sac: 'CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA', geckoId: 'stellar',  decimals: 7 },
-  { symbol: 'XRP',  sac: 'CAAV3AE3VKD2P4TY7LWTQMMJHIJ4WOCZ5ANCIJPC3NRSERKVXNHBU2W7', geckoId: 'ripple',   decimals: 7 },
-  { symbol: 'USDC', sac: 'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75', geckoId: 'usd-coin', decimals: 7 },
+  { symbol: 'XLM',  sac: 'CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA' },
+  { symbol: 'XRP',  sac: 'CAAV3AE3VKD2P4TY7LWTQMMJHIJ4WOCZ5ANCIJPC3NRSERKVXNHBU2W7' },
+  { symbol: 'USDC', sac: 'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75' },
 ]
 
 // Slender stores collat_coeff and debt_coeff at 1e9 precision (initial value = 1_000_000_000n)
@@ -51,24 +51,8 @@ async function getReserveAddresses(assetSac) {
 }
 
 /**
- * Convert a raw BigInt token amount to a human-readable Number, preserving fractional precision.
- * Keeps large-value math in BigInt (avoids Number.MAX_SAFE_INTEGER overflow), then recovers
- * the fractional part via remainder before the final Number conversion.
- * e.g. 551700000n with decimals=7: whole=55n, rem=1700000n → 55 + 0.17 = 55.17
- * @param {bigint} rawBigInt - raw on-chain token amount
- * @param {number} decimals - token decimal places (7 for all Stellar/Soroban tokens)
- * @returns {number}
- */
-function scaleDown(rawBigInt, decimals) {
-  const divisor = BigInt(10 ** decimals)
-  const whole = rawBigInt / divisor
-  const rem = rawBigInt % divisor
-  return Number(whole) + Number(rem) / (10 ** decimals)
-}
-
-/**
  * Compute TVL: total underlying deposited per reserve.
- * underlying = sToken total supply × collat_coeff / 1e9 (all BigInt until final scaleDown)
+ * underlying = sToken total supply × collat_coeff / 1e9 (BigInt math throughout)
  * @param {object} api - DefiLlama adapter API object
  */
 async function tvl(api) {
@@ -81,13 +65,13 @@ async function tvl(api) {
     ])
 
     const underlyingRaw = sTokenSupply * collatCoeff / COEFF_PRECISION
-    api.addCGToken(r.geckoId, scaleDown(underlyingRaw, r.decimals))
+    api.add(r.sac, underlyingRaw.toString())
   }
 }
 
 /**
  * Compute borrowed: total outstanding loans per reserve.
- * underlying = debtToken total supply × debt_coeff / 1e9 (all BigInt until final scaleDown)
+ * underlying = debtToken total supply × debt_coeff / 1e9 (BigInt math throughout)
  * @param {object} api - DefiLlama adapter API object
  */
 async function borrowed(api) {
@@ -100,7 +84,7 @@ async function borrowed(api) {
     ])
 
     const underlyingRaw = debtTokenSupply * debtCoeff / COEFF_PRECISION
-    api.addCGToken(r.geckoId, scaleDown(underlyingRaw, r.decimals))
+    api.add(r.sac, underlyingRaw.toString())
   }
 }
 
