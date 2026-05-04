@@ -67,7 +67,6 @@ const endPoints = {
   stride: 'https://stride-api.polkachu.com',
   babylon: 'https://babylon-api.polkachu.com',
   milkyway_rollup: 'https://archival-rest-moo-1.anvil.asia-southeast.initia.xyz',
-  titan: 'https://titan-lcd.titanlab.io',
   provenance: 'https://api.provenance.io',
   xion: 'https://api.xion-mainnet-1.burnt.com',
   embr: 'https://rest-embrmainnet-1.anvil.asia-southeast.initia.xyz', 
