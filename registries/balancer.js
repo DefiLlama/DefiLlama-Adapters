@@ -60,6 +60,18 @@ const balancerV2Blacklist = [
   "0xbd1bd5c956684f7eb79da40f582cbe1373a1d593",
 ]
 
+const balancerV3BlacklistSonic = [
+  "0xf6bc16b79c469b94cdd25f3e2334dd4fee47a581", // silo vault ghUSDC
+  "0x9a1bf5365edbb99c2c61ca6d9ffad0b705acfc6f", // silo vault vdUSD
+  "0xf6f87073cf8929c206a77b0694619dc776f89885", // silo vault vgUSDC
+  "0x592d1e187729c76efacc6dffb9355bd7bf47b2a7", // silo vault rescUSD
+  "0x391b3f70e254d582588b27e97e48d1cfcdf0be7e", // silo vault trevee scUSD
+  "0xcccccccca9fc69a2b32408730011edb3205a93a1", // stability wmetascusd
+  "0xe6605932e4a686534d19005bb9db0fba1f101272", // silo market scusd
+  "0x7870ddfd5aca4e977b2287e9a212bcbe8fc4135a", // beefy silo market wrapped
+
+]
+
 const balancerV2Vault = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
 
 function balV2Chain(fromBlock) {
@@ -113,7 +125,7 @@ const configs = {
   'beethovenx': {
     fantom: { vault: '0x20dd72ed959b6147912c2e529f0a0c651c33c9ce', fromBlock: 16896080 },
     optimism: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 7003431 },
-    sonic: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 368312 },
+    sonic: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 368312, blacklistedTokens: balancerV3BlacklistSonic },
   },
   'wavelength': {
     velas: { vault: '0xa4a48dfcae6490afe9c779bf0f324b48683e488c', fromBlock: 56062385, onlyUseExistingCache: true },
