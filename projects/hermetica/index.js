@@ -4,25 +4,23 @@ const { get, post } = require('../helper/http');
 const USDhContract = ADDRESSES.stacks.USDh;
 
 function parseClarityInt(hexString) {
-  // Remove "0x" prefix
+  // call-read returns `(response uint128 ...)`: 0x07 (ok wrapper) + 0x01 (uint128 type) + 16 bytes value.
   let hex = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
-
-  // Skip the first two bytes (Clarity type and metadata)
-  let numberHex = hex.slice(4); // Remove first 2 bytes (4 hex characters)
-
-  // Convert hex to BigInt
+  let numberHex = hex.slice(4);
   let bigIntValue = BigInt("0x" + numberHex);
-
-  // Handle two’s complement for negative numbers
   if (bigIntValue > BigInt("0x7ffffffffffffffffffffffffffffffff")) {
-      bigIntValue = bigIntValue - BigInt("0x100000000000000000000000000000000");
+    bigIntValue = bigIntValue - BigInt("0x100000000000000000000000000000000");
   }
+  return bigIntValue.toString();
+}
 
-  return bigIntValue.toString(); // Return as a readable decimal string
+function clarityResult(response, label) {
+  if (!response.okay) throw new Error(`Hiro call-read failed for ${label}: ${response.cause}`);
+  return response.result;
 }
 
 module.exports = {
-  methodology: 'Counts the number of USDh tokens on Stacks.',
+  methodology: 'stacks.tvl reports the USDh total supply on Stacks (from get-total-supply). bitcoin.tvl is the derived USDh supply on Bitcoin Runes, computed as the off-chain total supply minus the Stacks supply.',
   timetravel: false,
   bitcoin: {
     tvl: async () => {
@@ -38,7 +36,7 @@ module.exports = {
         )
       ]);
 
-      const uUSDhSupplyStacks = Number(parseClarityInt(supplyResponse.result));
+      const uUSDhSupplyStacks = Number(parseClarityInt(clarityResult(supplyResponse, 'usdh get-total-supply')));
 
       const cleanUsdhSupply = supply.result.replace(/[^\d.]/g, '');
       const totaluUSDhSupply = Number(cleanUsdhSupply) * (10 ** 8);
@@ -58,7 +56,7 @@ module.exports = {
         }
       );
 
-      const supplyOnStacksuUsdh = Number(parseClarityInt(supplyResponse.result));
+      const supplyOnStacksuUsdh = Number(parseClarityInt(clarityResult(supplyResponse, 'usdh get-total-supply')));
 
       return { 'hermetica-usdh': Number(supplyOnStacksuUsdh) / (10 ** 8) }
     }
