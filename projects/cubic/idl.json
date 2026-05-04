@@ -1,0 +1,1816 @@
+{
+  "address": "Fc3RtYQey4mngcs3bkC6qyC5Zav3mVmxV7tqvwThwwq7",
+  "metadata": {
+    "name": "cubic_pool",
+    "version": "0.5.0",
+    "spec": "0.1.0",
+    "description": "Cubic Pool DEX - Multi-pool DEX with virtual liquidity and leverage logic"
+  },
+  "instructions": [
+    {
+      "name": "add_liquidity",
+      "docs": [
+        "Add liquidity to a Cubic Pool (proportional join)",
+        "",
+        "### Authority",
+        "- \"liquidity_provider\" - The authority providing liquidity",
+        "",
+        "### Parameters",
+        "- `token_amounts` - Array of token amounts to deposit",
+        "- `minimum_bpt_amount` - Minimum BPT tokens to receive",
+        "",
+        "#### Special Errors",
+        "- `InvalidAmounts` - Token amounts don't match pool composition",
+        "- `InsufficientBptOut` - BPT minted less than minimum"
+      ],
+      "discriminator": [
+        181,
+        157,
+        89,
+        67,
+        143,
+        182,
+        52,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "bpt_mint",
+          "writable": true
+        },
+        {
+          "name": "user_bpt_account",
+          "docs": [
+            "User's BPT token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "user",
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "docs": [
+            "Token program for BPT mint/burn. Per-token programs come via remaining_accounts."
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "token_amounts",
+          "type": {
+            "vec": "u64"
+          }
+        },
+        {
+          "name": "minimum_bpt_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "collect_protocol_fees",
+      "docs": [
+        "Collect protocol fees from a Cubic Pool",
+        "",
+        "### Authority",
+        "- \"collect_protocol_fees_authority\" - Authority from config",
+        "",
+        "### remaining_accounts",
+        "For each token in the pool (in order):",
+        "- vault: TokenAccount - Pool's token vault (writable)",
+        "- recipient: TokenAccount - Authority's recipient account (writable)"
+      ],
+      "discriminator": [
+        22,
+        67,
+        23,
+        98,
+        150,
+        178,
+        70,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "config"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "debug_withdraw_liquidity",
+      "docs": [
+        "Emergency-recovery withdraw without burning LP tokens.",
+        "",
+        "Always compiled into production builds — the admin-panel relies on",
+        "this entrypoint for emergency drain. Originally gated behind the",
+        "`debug-withdraw` cargo feature (audit FIX C-06); the gate was removed",
+        "so the recovery path is guaranteed present in every deploy.",
+        "",
+        "### Authority",
+        "- `collect_protocol_fees_authority` only.",
+        "",
+        "### Prerequisites",
+        "- Pool MUST be disabled (`pool_enabled = false`) before calling —",
+        "enforced inside the handler via `PoolMustBeDisabled`.",
+        "",
+        "### Parameters",
+        "- `token_amounts` — per-token withdraw amounts (use `0` to skip)."
+      ],
+      "discriminator": [
+        139,
+        40,
+        126,
+        103,
+        199,
+        34,
+        143,
+        137
+      ],
+      "accounts": [
+        {
+          "name": "config"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Only collect_protocol_fees_authority (= Treasury PDA) can call this."
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "token_amounts",
+          "type": {
+            "vec": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "get_pool_info",
+      "docs": [
+        "Get all pool data (read-only view function)",
+        "",
+        "This instruction emits a PoolInfo event containing all pool state.",
+        "Call with `simulate: true` to read data without modifying state.",
+        "",
+        "### Usage from TypeScript:",
+        "```typescript",
+        "const tx = await program.methods.getPoolInfo()",
+        ".accounts({ pool: poolPubkey })",
+        ".simulate();",
+        "// Parse PoolInfo event from tx.events",
+        "```"
+      ],
+      "discriminator": [
+        9,
+        48,
+        220,
+        101,
+        22,
+        240,
+        78,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "pool"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_config",
+      "docs": [
+        "Initializes a CubicPoolConfig account that hosts info & authorities",
+        "required to govern a set of Cubic Pools.",
+        "",
+        "### Authority",
+        "- \"authority\" - Admin authority",
+        "",
+        "### Parameters",
+        "- `fee_authority` - Authority authorized to set fees",
+        "- `collect_protocol_fees_authority` - Authority authorized to collect protocol fees",
+        "- `default_protocol_fee_rate` - Default protocol fee rate (basis points)"
+      ],
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "fee_authority",
+          "type": "pubkey"
+        },
+        {
+          "name": "collect_protocol_fees_authority",
+          "type": "pubkey"
+        },
+        {
+          "name": "default_protocol_fee_rate",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "initialize_cubic_pool",
+      "docs": [
+        "Initializes a Cubic Pool with virtual liquidity and weighted balances",
+        "",
+        "### Parameters",
+        "- `tokens` - Array of token mints (2-10 tokens)",
+        "- `normalized_weights` - Normalized weights in basis points (must sum to 10000)",
+        "- `initial_virtual_balances` - Initial virtual balances for each token",
+        "- `swap_fee_rate` - Swap fee rate (hundredths of basis point)",
+        "",
+        "#### Weight Examples",
+        "- 50%/50% pool: [5000, 5000]",
+        "- 80%/20% pool: [8000, 2000]",
+        "- 33%/33%/34% pool: [3333, 3333, 3334]",
+        "",
+        "#### Special Errors",
+        "- `InvalidTokenCount` - Token count must be between 2 and 10",
+        "- `InvalidWeights` - Weights must sum to 10000",
+        "- `InvalidVirtualBalances` - Virtual balances must be greater than zero"
+      ],
+      "discriminator": [
+        215,
+        148,
+        116,
+        207,
+        121,
+        104,
+        111,
+        131
+      ],
+      "accounts": [
+        {
+          "name": "config"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "bpt_mint",
+          "writable": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "tokens",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "normalized_weights",
+          "type": {
+            "vec": "u64"
+          }
+        },
+        {
+          "name": "initial_virtual_balances",
+          "type": {
+            "vec": "u64"
+          }
+        },
+        {
+          "name": "swap_fee_rate",
+          "type": "u32"
+        },
+        {
+          "name": "pool_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "remove_liquidity",
+      "docs": [
+        "Remove liquidity from a Cubic Pool",
+        "",
+        "### Authority",
+        "- \"liquidity_provider\" - The authority removing liquidity",
+        "",
+        "### Parameters",
+        "- `bpt_amount` - Amount of BPT tokens to burn",
+        "- `minimum_token_amounts` - Minimum amounts for each token to receive",
+        "",
+        "#### Special Errors",
+        "- `InsufficientTokensOut` - Token amounts less than minimums"
+      ],
+      "discriminator": [
+        80,
+        85,
+        209,
+        72,
+        24,
+        206,
+        177,
+        108
+      ],
+      "accounts": [
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "bpt_mint",
+          "writable": true
+        },
+        {
+          "name": "user_bpt_account",
+          "docs": [
+            "User's BPT token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "user",
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "docs": [
+            "Token program for BPT burn. Per-token programs come via remaining_accounts."
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "bpt_amount",
+          "type": "u64"
+        },
+        {
+          "name": "minimum_token_amounts",
+          "type": {
+            "vec": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "set_banned_extensions",
+      "docs": [
+        "Set the banned Token-2022 extensions bitmap",
+        "",
+        "### Authority",
+        "- \"collect_protocol_fees_authority\" - Protocol admin",
+        "",
+        "### Parameters",
+        "- `banned_extensions` - Bitmap of banned extension types (bit N = extension type N is banned)",
+        "",
+        "### Default banned extensions",
+        "TransferFeeConfig(1), ConfidentialTransferMint(4), NonTransferable(9),",
+        "InterestBearingConfig(10), PermanentDelegate(12), TransferHook(14)"
+      ],
+      "discriminator": [
+        86,
+        95,
+        249,
+        149,
+        142,
+        105,
+        100,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Only collect_protocol_fees_authority (= Treasury PDA) can update banned extensions."
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "banned_extensions",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "set_pool_enabled",
+      "docs": [
+        "Set the pool_enabled flag for a Cubic Pool",
+        "",
+        "### Authority",
+        "- \"collect_protocol_fees_authority\" - Only protocol admin can enable/disable pool",
+        "",
+        "### Parameters",
+        "- `enabled` - true to enable, false to disable",
+        "",
+        "When disabled: no swaps, no add liquidity, no remove liquidity"
+      ],
+      "discriminator": [
+        53,
+        76,
+        170,
+        37,
+        55,
+        222,
+        63,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "config"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Only collect_protocol_fees_authority (= Treasury PDA) can enable/disable the pool."
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "set_protocol_fee_rate",
+      "docs": [
+        "Set the protocol fee rate for a Cubic Pool",
+        "",
+        "### Authority",
+        "- \"fee_authority\" - Authority from config",
+        "",
+        "### Parameters",
+        "- `protocol_fee_rate` - New protocol fee rate"
+      ],
+      "discriminator": [
+        95,
+        7,
+        4,
+        50,
+        154,
+        79,
+        156,
+        131
+      ],
+      "accounts": [
+        {
+          "name": "config"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Only collect_protocol_fees_authority (= Treasury PDA) can change protocol fee rate."
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "protocol_fee_rate",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "set_swap_fee_rate",
+      "docs": [
+        "Set the swap fee rate for a Cubic Pool",
+        "",
+        "### Authority",
+        "- \"fee_authority\" - Authority from config",
+        "",
+        "### Parameters",
+        "- `swap_fee_rate` - New swap fee rate"
+      ],
+      "discriminator": [
+        144,
+        102,
+        81,
+        175,
+        135,
+        50,
+        36,
+        191
+      ],
+      "accounts": [
+        {
+          "name": "config"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "swap_fee_rate",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "set_swaps_enabled",
+      "docs": [
+        "Set the swaps_enabled flag for a Cubic Pool",
+        "",
+        "### Authority",
+        "- \"collect_protocol_fees_authority\" OR \"fee_authority\"",
+        "",
+        "### Parameters",
+        "- `enabled` - true to enable swaps, false to disable",
+        "",
+        "When disabled: no swaps, but LP can still add/remove liquidity"
+      ],
+      "discriminator": [
+        144,
+        154,
+        205,
+        58,
+        241,
+        169,
+        64,
+        40
+      ],
+      "accounts": [
+        {
+          "name": "config"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "FIX C-27: compile-time validated in handler (both authorities allowed)"
+          ],
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "swap",
+      "docs": [
+        "Perform a swap in a Cubic Pool using virtual liquidity logic",
+        "",
+        "### Authority",
+        "- \"token_authority\" - The authority to withdraw tokens from the input token account",
+        "",
+        "### Parameters",
+        "- `amount_in` - The amount of input token to swap",
+        "- `minimum_amount_out` - The minimum amount of output token expected",
+        "- `token_in_index` - Index of the input token in the pool",
+        "- `token_out_index` - Index of the output token in the pool",
+        "",
+        "#### Special Errors",
+        "- `InvalidTokenIndex` - Token index out of bounds",
+        "- `InsufficientLiquidity` - Not enough liquidity in the pool",
+        "- `SlippageExceeded` - Output amount less than minimum"
+      ],
+      "discriminator": [
+        248,
+        198,
+        158,
+        145,
+        225,
+        117,
+        135,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "token_mint_in",
+          "docs": [
+            "Token mint for input token"
+          ]
+        },
+        {
+          "name": "token_mint_out",
+          "docs": [
+            "Token mint for output token"
+          ]
+        },
+        {
+          "name": "user_token_account_in",
+          "docs": [
+            "User's input token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "user_token_account_out",
+          "docs": [
+            "User's output token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault_in",
+          "docs": [
+            "Pool's input token vault (derived as ATA of pool PDA)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault_out",
+          "docs": [
+            "Pool's output token vault (derived as ATA of pool PDA)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "user",
+          "signer": true
+        },
+        {
+          "name": "token_program_in",
+          "docs": [
+            "Token program for input token"
+          ]
+        },
+        {
+          "name": "token_program_out",
+          "docs": [
+            "Token program for output token"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_in",
+          "type": "u64"
+        },
+        {
+          "name": "minimum_amount_out",
+          "type": "u64"
+        },
+        {
+          "name": "token_in_index",
+          "type": "u8"
+        },
+        {
+          "name": "token_out_index",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "CubicPool",
+      "discriminator": [
+        137,
+        210,
+        42,
+        22,
+        209,
+        156,
+        43,
+        78
+      ]
+    },
+    {
+      "name": "CubicPoolConfig",
+      "discriminator": [
+        4,
+        29,
+        243,
+        10,
+        142,
+        64,
+        232,
+        118
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "BannedExtensionsUpdated",
+      "discriminator": [
+        107,
+        126,
+        13,
+        149,
+        182,
+        108,
+        139,
+        202
+      ]
+    },
+    {
+      "name": "DebugLiquidityWithdrawn",
+      "discriminator": [
+        174,
+        59,
+        149,
+        22,
+        135,
+        129,
+        129,
+        83
+      ]
+    },
+    {
+      "name": "LiquidityAdded",
+      "discriminator": [
+        154,
+        26,
+        221,
+        108,
+        238,
+        64,
+        217,
+        161
+      ]
+    },
+    {
+      "name": "LiquidityRemoved",
+      "discriminator": [
+        225,
+        105,
+        216,
+        39,
+        124,
+        116,
+        169,
+        189
+      ]
+    },
+    {
+      "name": "PoolEnabledUpdated",
+      "discriminator": [
+        101,
+        47,
+        3,
+        240,
+        197,
+        181,
+        236,
+        142
+      ]
+    },
+    {
+      "name": "PoolInfo",
+      "discriminator": [
+        207,
+        20,
+        87,
+        97,
+        251,
+        212,
+        234,
+        45
+      ]
+    },
+    {
+      "name": "PoolInitialized",
+      "discriminator": [
+        100,
+        118,
+        173,
+        87,
+        12,
+        198,
+        254,
+        229
+      ]
+    },
+    {
+      "name": "PoolStateLog",
+      "discriminator": [
+        59,
+        254,
+        237,
+        111,
+        163,
+        10,
+        140,
+        224
+      ]
+    },
+    {
+      "name": "ProtocolFeeRateUpdated",
+      "discriminator": [
+        189,
+        56,
+        7,
+        65,
+        0,
+        95,
+        192,
+        6
+      ]
+    },
+    {
+      "name": "ProtocolFeesCollected",
+      "discriminator": [
+        165,
+        34,
+        125,
+        155,
+        15,
+        86,
+        99,
+        191
+      ]
+    },
+    {
+      "name": "Swap",
+      "discriminator": [
+        81,
+        108,
+        227,
+        190,
+        205,
+        208,
+        10,
+        196
+      ]
+    },
+    {
+      "name": "SwapFeeRateUpdated",
+      "discriminator": [
+        101,
+        132,
+        24,
+        255,
+        91,
+        253,
+        227,
+        101
+      ]
+    },
+    {
+      "name": "SwapsEnabledUpdated",
+      "discriminator": [
+        55,
+        116,
+        118,
+        138,
+        102,
+        26,
+        227,
+        223
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidTokenCount",
+      "msg": "Invalid token count. Must be between 2 and 10"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidTokenIndex",
+      "msg": "Invalid token index"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidWeights",
+      "msg": "Invalid weights. Must sum to 10000 (WEIGHT_SCALE)"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidVirtualBalances",
+      "msg": "Invalid virtual balances. Must be greater than zero"
+    },
+    {
+      "code": 6004,
+      "name": "InsufficientLiquidity",
+      "msg": "Insufficient liquidity in the pool"
+    },
+    {
+      "code": 6005,
+      "name": "SlippageExceeded",
+      "msg": "Slippage tolerance exceeded"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidAmounts",
+      "msg": "Invalid amounts provided"
+    },
+    {
+      "code": 6007,
+      "name": "InsufficientBptOut",
+      "msg": "Insufficient BPT minted"
+    },
+    {
+      "code": 6008,
+      "name": "InsufficientTokensOut",
+      "msg": "Insufficient tokens received"
+    },
+    {
+      "code": 6009,
+      "name": "FeeRateMaxExceeded",
+      "msg": "Fee rate exceeds maximum"
+    },
+    {
+      "code": 6010,
+      "name": "ProtocolFeeRateMaxExceeded",
+      "msg": "Protocol fee rate exceeds maximum"
+    },
+    {
+      "code": 6011,
+      "name": "MathOverflow",
+      "msg": "Math overflow"
+    },
+    {
+      "code": 6012,
+      "name": "MathUnderflow",
+      "msg": "Math underflow"
+    },
+    {
+      "code": 6013,
+      "name": "DivisionByZero",
+      "msg": "Division by zero"
+    },
+    {
+      "code": 6014,
+      "name": "ActualBalanceExceedsVirtual",
+      "msg": "Actual balance must be less than or equal to virtual balance"
+    },
+    {
+      "code": 6015,
+      "name": "TokenMintMismatch",
+      "msg": "Token mint mismatch"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidTokenDecimals",
+      "msg": "Invalid token decimals"
+    },
+    {
+      "code": 6017,
+      "name": "InvariantCalculationFailed",
+      "msg": "Invariant calculation failed"
+    },
+    {
+      "code": 6018,
+      "name": "AmountOutExceedsBalance",
+      "msg": "Amount out exceeds available balance"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidBptAmount",
+      "msg": "Invalid BPT amount"
+    },
+    {
+      "code": 6020,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidMint",
+      "msg": "Invalid mint account"
+    },
+    {
+      "code": 6022,
+      "name": "PoolDisabled",
+      "msg": "Pool is disabled. No operations allowed."
+    },
+    {
+      "code": 6023,
+      "name": "SwapsDisabled",
+      "msg": "Swaps are disabled for this pool."
+    },
+    {
+      "code": 6024,
+      "name": "PoolMustBeDisabled",
+      "msg": "Pool must be disabled before debug operations."
+    },
+    {
+      "code": 6025,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6026,
+      "name": "ZeroFeeAmount",
+      "msg": "Swap amount is too small: fee rounds to zero"
+    },
+    {
+      "code": 6027,
+      "name": "BannedExtension",
+      "msg": "Token mint has a banned Token-2022 extension"
+    },
+    {
+      "code": 6028,
+      "name": "MixedTokenPrograms",
+      "msg": "All tokens in a pool must use the same token program"
+    },
+    {
+      "code": 6029,
+      "name": "TokenProgramMismatch",
+      "msg": "Token program does not match pool's token program"
+    },
+    {
+      "code": 6030,
+      "name": "UserTokenAccountOwnerMismatch",
+      "msg": "User token account owner mismatch"
+    },
+    {
+      "code": 6031,
+      "name": "InitialLiquidityTooSmall",
+      "msg": "Initial liquidity too small - pool would be bricked"
+    },
+    {
+      "code": 6032,
+      "name": "InvalidTokenProgram",
+      "msg": "Invalid token program - must be SPL Token or Token-2022"
+    },
+    {
+      "code": 6033,
+      "name": "InvalidVault",
+      "msg": "Invalid vault account"
+    }
+  ],
+  "types": [
+    {
+      "name": "BannedExtensionsUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_value",
+            "type": "u64"
+          },
+          {
+            "name": "new_value",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CubicPool",
+      "docs": [
+        "Cubic Pool account - implements virtual liquidity with weighted balances",
+        "",
+        "## Layout notes:",
+        "- token_vaults REMOVED → derived as ATA(pool, mint, token_programs[i]) at runtime",
+        "- token_decimals REMOVED → read from mint accounts at runtime",
+        "- bpt_mint REMOVED → derived as PDA [BPT_MINT_SEED, pool.key()]",
+        "- bpt_total_supply REMOVED → read from bpt_mint.supply at runtime",
+        "- pool_id ADDED → allows multiple pools per config",
+        "- token_programs: per-token program IDs (SPL Token or Token-2022, can be mixed)"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "docs": [
+              "Reference to the config account"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Pool bump seed"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "token_count",
+            "docs": [
+              "Number of tokens in the pool (2-10)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "pool_id",
+            "docs": [
+              "Pool identifier / salt — allows multiple pools per config.",
+              "PDA seeds: [CUBIC_POOL_SEED, config.key(), &pool_id.to_le_bytes()]"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "token_mints",
+            "docs": [
+              "Token mints (up to 10)"
+            ],
+            "type": {
+              "array": [
+                "pubkey",
+                10
+              ]
+            }
+          },
+          {
+            "name": "token_programs",
+            "docs": [
+              "Token programs per token (SPL Token or Token-2022, can be mixed)"
+            ],
+            "type": {
+              "array": [
+                "pubkey",
+                10
+              ]
+            }
+          },
+          {
+            "name": "normalized_weights",
+            "docs": [
+              "Normalized weights in basis points (sum to WEIGHT_SCALE = 10000 = 100%)"
+            ],
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "virtual_balances",
+            "docs": [
+              "Virtual balances for each token (in native token units)"
+            ],
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "actual_balances",
+            "docs": [
+              "Actual balances for each token"
+            ],
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "swap_fee_rate",
+            "docs": [
+              "Swap fee rate in hundredths of a basis point (0 to 10000 = 1%)"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "protocol_fee_rate",
+            "docs": [
+              "Protocol fee rate in basis points (0 to 5000 = 50% of swap fee)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "protocol_fees_owed",
+            "docs": [
+              "Protocol fees owed for each token (in native token decimals)"
+            ],
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Pool creation timestamp"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "pool_enabled",
+            "docs": [
+              "Pool enabled flag"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "swaps_enabled",
+            "docs": [
+              "Swaps enabled flag"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "reserved",
+            "docs": [
+              "Reserved for future extensions"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CubicPoolConfig",
+      "docs": [
+        "Configuration for Cubic Pool program"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fee_authority",
+            "docs": [
+              "Authority that can set fees"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "collect_protocol_fees_authority",
+            "docs": [
+              "Authority that can collect protocol fees"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "default_protocol_fee_rate",
+            "docs": [
+              "Default protocol fee rate (basis points, max 5000 = 50% of swap fee)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "banned_extensions",
+            "docs": [
+              "Banned Token-2022 extensions bitmap.",
+              "Bit N set = extension type N is banned from pool tokens.",
+              "Set by collect_protocol_fees_authority via set_banned_extensions."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "reserved",
+            "docs": [
+              "Reserved for future use"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                120
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DebugLiquidityWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_amounts",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LiquidityAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_amounts",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "bpt_amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LiquidityRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "bpt_amount",
+            "type": "u64"
+          },
+          {
+            "name": "token_amounts",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolEnabledUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_value",
+            "type": "bool"
+          },
+          {
+            "name": "new_value",
+            "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolInfo",
+      "docs": [
+        "Comprehensive pool info event for view/getter functionality",
+        "",
+        "This event is emitted by get_pool_info and contains all pool state.",
+        "Use transaction simulation to read this data without modifying state."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "bpt_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_count",
+            "type": "u8"
+          },
+          {
+            "name": "pool_id",
+            "type": "u64"
+          },
+          {
+            "name": "tokens",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "token_vaults",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "normalized_weights",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "virtual_balances",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "actual_balances",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "protocol_fees_owed",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "swap_fee_rate",
+            "type": "u32"
+          },
+          {
+            "name": "protocol_fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "pool_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "swaps_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "token_programs",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_count",
+            "type": "u8"
+          },
+          {
+            "name": "bpt_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolStateLog",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_count",
+            "type": "u8"
+          },
+          {
+            "name": "token_mints",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "normalized_weights",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "virtual_balances",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "actual_balances",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "bpt_total_supply",
+            "type": "u64"
+          },
+          {
+            "name": "swap_fee_rate",
+            "type": "u32"
+          },
+          {
+            "name": "protocol_fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "protocol_fees_owed",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "pool_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "swaps_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtocolFeeRateUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_rate",
+            "type": "u16"
+          },
+          {
+            "name": "new_rate",
+            "type": "u16"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtocolFeesCollected",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_amounts",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Swap",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_in",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_out",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_out",
+            "type": "u64"
+          },
+          {
+            "name": "fee_amount",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapFeeRateUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_rate",
+            "type": "u32"
+          },
+          {
+            "name": "new_rate",
+            "type": "u32"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapsEnabledUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_value",
+            "type": "bool"
+          },
+          {
+            "name": "new_value",
+            "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
