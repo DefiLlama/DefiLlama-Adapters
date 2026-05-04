@@ -26,6 +26,9 @@
     "@defillama/sdk": "latest",
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.87.6",
+    "@stacks/common": "^7.3.1",
+    "@stacks/network": "^7.3.1",
+    "@stacks/transactions": "^7.4.0",
     "@supercharge/promise-pool": "^2.1.0",
     "axios": "^1.6.5",
     "base-x": "^5.0.1",
@@ -48,7 +51,7 @@
     "starknet": "^5.24.3",
     "ws": "^8.18.3"
   },
-  "overrides": {  },
+  "overrides": {},
   "description": "",
   "devDependencies": {
     "eslint": "^9.38.0"
