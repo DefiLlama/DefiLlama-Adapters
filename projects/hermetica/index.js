@@ -20,31 +20,8 @@ function clarityResult(response, label) {
 }
 
 module.exports = {
-  methodology: 'Counts the number of USDh tokens on Stacks and Bitcoin.',
+  methodology: 'Counts the number of USDh tokens on Stacks.',
   timetravel: false,
-  bitcoin: {
-    tvl: async () => {
-      const [contract_address, contract_name] = USDhContract.split('.');
-
-      const [supply, supplyResponse] = await Promise.all([
-        get('https://app.hermetica.fi/api/v1/usdh/supply'),
-        post(`https://api.mainnet.hiro.so/v2/contracts/call-read/${contract_address}/${contract_name}/get-total-supply`,
-          {
-            sender: contract_address,
-            arguments: []
-          }
-        )
-      ]);
-
-      const uUSDhSupplyStacks = Number(parseClarityInt(clarityResult(supplyResponse, 'usdh get-total-supply')));
-
-      const cleanUsdhSupply = supply.result.replace(/[^\d.]/g, '');
-      const totaluUSDhSupply = Number(cleanUsdhSupply) * (10 ** 8);
-      const sUSDhSupplyRunes = totaluUSDhSupply - Number(uUSDhSupplyStacks);
-
-      return { 'hermetica-usdh': sUSDhSupplyRunes / (10 ** 8) }
-    }
-  },
   stacks: {
     tvl: async () => {
       const [contract_address, contract_name] = USDhContract.split('.');
