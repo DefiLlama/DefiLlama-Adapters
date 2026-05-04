@@ -125,7 +125,7 @@ const configs = {
   'beethovenx': {
     fantom: { vault: '0x20dd72ed959b6147912c2e529f0a0c651c33c9ce', fromBlock: 16896080 },
     optimism: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 7003431 },
-    sonic: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 368312, blacklistedTokens: balancerV3BlacklistSonic },
+    sonic: { vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', fromBlock: 368312 },
   },
   'wavelength': {
     velas: { vault: '0xa4a48dfcae6490afe9c779bf0f324b48683e488c', fromBlock: 56062385, onlyUseExistingCache: true },
@@ -166,7 +166,7 @@ const configs = {
   },
   'beethovenx-v3': {
     _options: { helperType: 'v3' },
-    sonic: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 368135 },
+    sonic: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 368135, blacklistedTokens: balancerV3BlacklistSonic },
   },
   'coinhain': {
     _options: { helperType: 'v3' },
