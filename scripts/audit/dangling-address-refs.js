@@ -144,3 +144,5 @@ if (process.env.AUDIT_JSON) {
   console.log('--- JSON ---');
   console.log(JSON.stringify(findings, null, 2));
 }
+
+if (findings.length > 0) process.exit(1);
