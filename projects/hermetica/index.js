@@ -20,7 +20,7 @@ function clarityResult(response, label) {
 }
 
 module.exports = {
-  methodology: 'stacks.tvl reports the USDh total supply on Stacks (from get-total-supply). bitcoin.tvl is the derived USDh supply on Bitcoin Runes, computed as the off-chain total supply minus the Stacks supply.',
+  methodology: 'Counts the number of USDh tokens on Stacks and Bitcoin.',
   timetravel: false,
   bitcoin: {
     tvl: async () => {
