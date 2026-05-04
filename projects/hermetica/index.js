@@ -1,9 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { call } = require('../helper/chain/stacks-api')
+const { get, post } = require('../helper/http');
 
 const USDhContract = ADDRESSES.stacks.USDh;
 
-export function parseClarityInt(hexString) {
+function parseClarityInt(hexString) {
   // Remove "0x" prefix
   let hex = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
 

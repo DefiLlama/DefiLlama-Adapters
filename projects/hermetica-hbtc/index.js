@@ -1,5 +1,15 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { parseClarityInt } = require('../projects/hermetica/index.js')
+const { post } = require('../helper/http');
+
+function parseClarityInt(hexString) {
+  let hex = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
+  let numberHex = hex.slice(4);
+  let bigIntValue = BigInt("0x" + numberHex);
+  if (bigIntValue > BigInt("0x7ffffffffffffffffffffffffffffffff")) {
+    bigIntValue = bigIntValue - BigInt("0x100000000000000000000000000000000");
+  }
+  return bigIntValue.toString();
+}
 
 const hBTCContract = ADDRESSES.stacks.hBTC;
 const hBTCStateContract = 'SP1S1HSFH0SQQGWKB69EYFNY0B1MHRMGXR3J1FH4D.state-hbtc-v1';
