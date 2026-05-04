@@ -127,6 +127,7 @@ const aaveConfigs = {
     hyperliquid: {
       addressesProviderRegistry: '0x24E301BcBa5C098B3b41eA61a52bFe95Cb728b20',
       dataHelpers: ['0x5481bf8d3946E6A3168640c1D7523eB59F055a29'],
+      staking: ['0x09b2236327d76fcd9e4b72db70a6608c21a94292', '0xbd6dab50f03a305a80037294fa8d1a9dc0cac91b'],
       v3: true,
     },
   },
@@ -457,6 +458,11 @@ const aaveConfigs = {
   },
   'magsinio': {
     sonic: '0x67389503F9EF03D5C10074dEfd96E18bc7755194',
+  },
+  'k613': {
+    monad: {
+      dataHelpers: ['0xfc87bE7f3657AAD69baDb6247A88E924D1F8bc53'],
+    },
   },
   'meridian-lend': {
     telos: {

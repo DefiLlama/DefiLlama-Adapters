@@ -398,6 +398,10 @@ const configs = {
       eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
       fromBlock: 117906,
     },
+    megaeth: {
+      eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
+      fromBlock: 5661063,
+    },
   },
   'modemax-perp': {
     mode: {

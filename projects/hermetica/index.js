@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { get, post } = require('../helper/http')
+const { call } = require('../helper/chain/stacks-api')
 
 const USDhContract = ADDRESSES.stacks.USDh;
 
@@ -22,7 +22,7 @@ export function parseClarityInt(hexString) {
 }
 
 module.exports = {
-  methodology: 'Counts the number of USDh tokens on Stacks and Bitcoin (Runes).',
+  methodology: 'Counts the number of USDh tokens on Stacks.',
   timetravel: false,
   bitcoin: {
     tvl: async () => {

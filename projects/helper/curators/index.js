@@ -28,7 +28,7 @@ async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults
       adminAddress = new PublicKey(adminAddress)
     // Query vault accounts directly using getProgramAccounts with base58 encoded filter
     const adminBytes = adminAddress.toBuffer()
-    let rawAccounts = await connection.getProgramAccounts(
+    rawAccounts = await connection.getProgramAccounts(
       KAMINO_LEND_VAULT_LAYER_PROGRAM_ID,
       {
         filters: [

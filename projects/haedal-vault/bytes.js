@@ -1,4 +1,7 @@
-const hexToBytes = (hex) => Array.from(Buffer.from(hex.replace(/^0x/, ""), 'hex'));
+const hexToBytes = (hex) => {
+    const h = hex.replace(/^0x/, "").padStart(64, '0');
+    return Array.from(Buffer.from(h, 'hex'));
+};
 
 const textToBytes = (value) => new TextEncoder().encode(value);
 

@@ -253,7 +253,9 @@ async function tvl(api, isStaking = false) {
     else if (token && balance) api.add(token, balance);
   });
 
-  return sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
+  await sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
+
+  api.removeTokenBalance('0xf859bf77cbe8699013d6dbc7c2b926aaf307f830')  // bsc - BRY has bad token price
 }
 
 module.exports = {
@@ -265,3 +267,9 @@ module.exports = {
 Object.keys(chains).forEach(chain =>
   module.exports[chain] = { tvl: (api) => tvl(api, false), staking: (api) => tvl(api, true) }
 )
+
+
+module.exports.canto = {
+  tvl: () => ({}),
+  staking: () => ({}),
+}

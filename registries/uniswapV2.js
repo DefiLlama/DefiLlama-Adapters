@@ -983,6 +983,7 @@ const uniV2Configs = {
   },
   'kaspacom-dex': {
     kasplex: '0xa9CBa43A407c9Eb30933EA21f7b9D74A128D613c',
+    igra: '0x21350BcDa9E81731CF4cDE3DbC457e3de2739c01',
   },
   'katana-ronin': {
     hallmarks: [
@@ -1043,9 +1044,6 @@ const uniV2Configs = {
     kcc: '0xc0ffee00000e1439651c6ad025ea2a71ed7f3eab',
   },
   'kokomoswap': {
-    bsc: '0x971A5f6Ef792bA565cdF61C904982419AA77989f',
-  },
-  'kokoswap': {
     bsc: '0x971A5f6Ef792bA565cdF61C904982419AA77989f',
   },
   'koone': {
@@ -1467,6 +1465,7 @@ const uniV2Configs = {
   },
   'pheasantswap': {
     enuls: '0x7bf960B15Cbd9976042257Be3F6Bb2361E107384',
+    deadFrom: '2026-02-11'
   },
   'phenix-dex': {
     cronos: '0x6Bae09822c36a9359d563A22fc7d134eF27a5f60',
@@ -1593,7 +1592,6 @@ const uniV2Configs = {
   'reservoir-tools-v2': {
     abstract: '0x566d7510dEE58360a64C9827257cF6D0Dc43985E',
     zero_network: '0x1B4427e212475B12e62f0f142b8AfEf3BC18B559',
-    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
     ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
   },
   'revoswap': {
@@ -1692,6 +1690,9 @@ const uniV2Configs = {
   },
   'shadowswap': {
     core: '0x326Ee96748E7DcC04BE1Ef8f4E4F6bdd54048932',
+  },
+  'shapeswap-v2': {
+    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
   },
   'sharelock': {
     era: '0xea51CE8A1f9C1Cbbf5B89D9B1dA4A94fB1557866',
@@ -1871,6 +1872,9 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     stable: '0xc5ba86e4A6F674816fA7c3B7cA438D63ec136bE9',
+  },
+  'stableswap-xyz': {
+    stable: '0x25D2d657F539F2bB16eC82773cBE5ee49ddD3c69',
   },
   'standard-tech': {
     ethereum: '0x53AC1d1FA4F9F6c604B8B198cE29A50d28cbA893',
@@ -2655,11 +2659,18 @@ const uniV2Configs = {
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
     arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"] },
-    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
   },
   'ramses-hl-legacy': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+  },
+  'ramsesx-arb-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
+  },
+  'ramsesx-poly-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
   },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
@@ -2749,6 +2760,9 @@ const uniV2Configs = {
   'venera': {
     bsc: '0x95F9c44fA1585811e1D1a0F59e74174B657B37A5',
   },
+  'krokoswap-v2': {
+    kasplex: '0x4373b7Fcf5059A785843cD224129e01d243Aef71',
+  },
   'versedex': {
     methodology: 'Factory address (0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
     ethereum: '0xee3E9E46E34a27dC755a63e2849C9913Ee1A06E2',
@@ -2796,6 +2810,15 @@ const uniV2Configs = {
       },
       staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
     },
+    base: {
+      factory: '0x8888A3D87EF6aBC5F50572661E4729A45b255cF6',
+      fetchBalances: true,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint) view returns (address)',
+      },
+      staking: ['0x88889C4Be508cA88eba6ad802340C0563891D426', '0x888a4F89aF7dD0Be836cA367C9FF5490c0F6e888'],
+    },
   },
   'wingswap': {
     methodology: 'Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2835,6 +2858,9 @@ const uniV2Configs = {
   'zkevmswap': {
     polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
   },
+  'bcswap': {
+    bcypher: '0x927bf500361987b365f6d0ff38c1d45155f4975c',
+  },
   'velox': {
     base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',
   },
@@ -2844,7 +2870,22 @@ const uniV2Configs = {
   'qie-dex': {
     start: '2025-08-05',
     qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
-  }
+  },
+  'virtus-protocol': {
+    base: '0x7F03ae4452192b0E280fB0d4f9c225DDa88C7623',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      }
+    }
+  },
+  'forest-v1': {
+    bsc: {
+      factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
+      staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

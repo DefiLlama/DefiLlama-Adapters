@@ -12,8 +12,15 @@ const StructIndex = 7;
 const InputIndex = 1;
 
 async function getVaultTokenBalance(packageId, typeParams, vaultId, poolId) {
+    // Fetch initialSharedVersion for both shared objects
+    const [vaultObj, poolObj] = await Promise.all([
+        sui.call('sui_getObject', [vaultId, { showOwner: true }]),
+        sui.call('sui_getObject', [poolId, { showOwner: true }]),
+    ]);
+    const vaultVersion = vaultObj?.owner?.Shared?.initial_shared_version ?? 0;
+    const poolVersion = poolObj?.owner?.Shared?.initial_shared_version ?? 0;
 
-    const txBlockBytes = buildGetVaultAssetsTxBytes(packageId, typeParams, vaultId, poolId);
+    const txBlockBytes = buildGetVaultAssetsTxBytes(packageId, typeParams, vaultId, poolId, vaultVersion, poolVersion);
 
     const inspectionResult = await sui.call(
         'sui_devInspectTransactionBlock',
@@ -33,14 +40,14 @@ async function getVaultTokenBalance(packageId, typeParams, vaultId, poolId) {
     return [coinA, coinB]
 }
 
-function buildGetVaultAssetsTxBytes(packageId, typeParams, vaultId, poolId) {
+function buildGetVaultAssetsTxBytes(packageId, typeParams, vaultId, poolId, vaultVersion = 0, poolVersion = 0) {
     const kind = {
         "ProgrammableTransaction": {
             "inputs": [{
                 "Object": {
                     "SharedObject": {
                         "objectId": vaultId,
-                        "initialSharedVersion": 0,
+                        "initialSharedVersion": vaultVersion,
                         "mutable": true
                     }
                 },
@@ -48,7 +55,7 @@ function buildGetVaultAssetsTxBytes(packageId, typeParams, vaultId, poolId) {
                 "Object": {
                     "SharedObject": {
                         "objectId": poolId,
-                        "initialSharedVersion": 0,
+                        "initialSharedVersion": poolVersion,
                         "mutable": true
                     }
                 },

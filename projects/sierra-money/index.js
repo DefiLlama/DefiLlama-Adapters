@@ -8,7 +8,8 @@ const openTradeVaults = [
   '0x4a8094F20906a453a4A74769aa74c4012B0d5Df6', // OpenTrade xAaveUSDC-ETH Vault
   '0x4c8eaBA17c3b30295f442A6415d495e8410a5693', // OpenTrade xWildcatWMTUSDC-ETH Vault
   '0x27C3c978e3cBF383ed715D313A2e97c052FbbEe0', // OpenTrade xSOLY Vault
-  '0x0E57DFcF4A53cd1A19256Bd2aF8bC28a9AC7EBE8' // OpenTrade xIGCP Vault
+  '0x0E57DFcF4A53cd1A19256Bd2aF8bC28a9AC7EBE8', // OpenTrade xIGCP Vault
+  '0x6bCB49378Fad952f0fd6Bbdc2cAFf9cc76D5D408' // OpenTrade xUSCLO Vault
 ];
 
 // Owner of reserves backing SIERRA, see https://debank.com/profile/0xBC7C0b1b9C61f35068561077FbaA163707128597 or https://docs.sierra.money/reserves-management/reserve-strategy
