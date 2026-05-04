@@ -26,9 +26,18 @@ async function ethereumTvl(api) {
   api.addCGToken("ethereum", ethAmount);
 }
 
+const SOLANA_TOKENS = [
+  "BUhS5coXEt9hcxN3JSpGYUWSKbNo96RsKu52LcMo12rf",
+  "7TSCoke2mSZzAtyuRmzANf9virrnyv4xSUeaxUrKkLqw",
+  "5pPkhLEJDMFDHUuE1wW5os5YJeyNUDVmih1DKgMFpB38",
+];
+
 async function solanaTvl() {
   const balances = await sumTokens2({
     owner: "Cqv9L3HeevzDQipST26xNR5DBrcRRRqRsg4HTHA1wE9L",
+    tokens: SOLANA_TOKENS,
+    computeTokenAccount: true,
+    allowError: true,
   });
 
   const connection = getConnection();
