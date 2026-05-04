@@ -1,6 +1,5 @@
-const { Program, AnchorProvider } = require("@coral-xyz/anchor");
-const { PublicKey } = require("@solana/web3.js");
-const { getProvider, getConnection, sumTokens2, getAssociatedTokenAddress } = require("../helper/solana");
+const { Program } = require("@coral-xyz/anchor");
+const { getProvider, sumTokens2, getAssociatedTokenAddress } = require("../helper/solana");
 const idl = require("./idl.json");
 
 // Cubic Pool program (mainnet). Source of truth: sdk/src/config/networks.ts
@@ -8,8 +7,7 @@ const PROGRAM_ID = "8iQtGj9mcUfFUGaiCpPy89swC3s8YTC8FhVZWfgeZhwu";
 
 async function tvl(api) {
   const provider = getProvider();
-  const programIdOverride = { ...idl, address: PROGRAM_ID };
-  const program = new Program(programIdOverride, provider);
+  const program = new Program({ ...idl, address: PROGRAM_ID }, provider);
 
   const pools = await program.account.cubicPool.all();
 
