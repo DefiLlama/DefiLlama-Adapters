@@ -54,16 +54,10 @@ const mezoChainTokens = [
 ];
 
 async function ethereumTvl(api) {
-	const [preMigrationTvl, currentTvl, musdBridgeTvl] = await Promise.all([
-		api.sumTokens({ owner: mezoPreMainnetBridge, tokens: ethereumTokens }),
-		api.sumTokens({ owner: mezoMainnetBridge, tokens: ethereumTokens }),
-		api.sumTokens({ owner: musdNttManager, tokens: [ADDRESSES.mezo.MUSD] }),
-	]);
-	return {
-		...preMigrationTvl,
-		...currentTvl,
-		...musdBridgeTvl,
-	};
+	return api.sumTokens({
+		owners: [mezoPreMainnetBridge, mezoMainnetBridge, musdNttManager],
+		tokens: ethereumTokens,
+	});
 }
 
 async function mezoChainTvl(api) {

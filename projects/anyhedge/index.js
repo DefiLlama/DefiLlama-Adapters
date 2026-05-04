@@ -21,8 +21,8 @@ function dayFromTimestamp(ts) {
 }
 
 function addDays(dayStr, n) {
-  const d = new Date(dayStr);
-  d.setDate(d.getDate() + n);
+  const d = new Date(`${dayStr}T00:00:00.000Z`);
+  d.setUTCDate(d.getUTCDate() + n);
   return d.toISOString().slice(0, 10);
 }
 
@@ -40,7 +40,7 @@ async function tvl({ timestamp }) {
   if (day > cutoff) day = cutoff;
 
   // Walk backwards up to 7 days to find available data
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i <= 7; i++) {
     const tvlValue = await getDailyTVL(day);
     if (tvlValue !== null) {
       return { "bitcoin-cash": tvlValue.toFixed(0) };
