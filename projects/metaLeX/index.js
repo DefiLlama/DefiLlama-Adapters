@@ -78,7 +78,7 @@ async function tvl(api) {
 
     // CyberCorp does not emit manager-change events.
     // If MetaLeX later migrates corp manager assignments, we can use block-bounded getter checks.
-    
+
     const paymentTokensByEscrowAddress = new Map();
 
     // Collect payment token addresses from all known deal managers by parsing DealProposed events.
@@ -156,12 +156,10 @@ async function tvl(api) {
 module.exports = {
     methodology: [
         'Tracks payment tokens escrowed in MetaLeX deal and round managers ',
-        'during in-flight fundraising deals and rounds across all deployed cyberCORP entities ',
+        'during in-flight fundraising deals and rounds across all deployed CyberCORP entities ',
         'on Ethereum, Base, and Arbitrum. ',
-        'The adapter uses factory-emitted deal and round manager deployments, then sums payment ',
-        'tokens sitting in those escrow contracts. ',
         'Escrowed value represents committed investor capital locked in trustless escrow ',
-        'awaiting deal close conditions, per the MetaLeX CyberCorps protocol.',
+        'awaiting deal close conditions, per the MetaLeX CyberCORPs protocol.',
     ].join(''),
     misrepresentedTokens: false,
     timetravel: true,
