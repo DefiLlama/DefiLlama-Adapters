@@ -4,9 +4,16 @@ const nativeMaxBtcDenom = 'factory/neutron17sp75wng9vl2hu3sf4ky86d7smmk3wle9gkts
 const neutronRest = 'https://rest.cosmos.directory/neutron/cosmos';
 
 async function tvl(api) {
-  const { amount } = await get(`${neutronRest}/bank/v1beta1/supply/by_denom?denom=${encodeURIComponent(nativeMaxBtcDenom)}`);
+  const response = await get(`${neutronRest}/bank/v1beta1/supply/by_denom?denom=${encodeURIComponent(nativeMaxBtcDenom)}`);
+  const amount = response?.amount;
+  const rawAmount = amount?.amount;
+  const parsedAmount = Number(rawAmount);
 
-  api.addCGToken('bitcoin', Number(amount.amount) / 1e8);
+  if (typeof response !== 'object' || response === null || amount === undefined || !['string', 'number'].includes(typeof rawAmount) || !Number.isFinite(parsedAmount)) {
+    throw new Error(`Unexpected Structured supply response for ${nativeMaxBtcDenom}: ${JSON.stringify(response)}`);
+  }
+
+  api.addCGToken('bitcoin', parsedAmount / 1e8);
 }
 
 module.exports = {
