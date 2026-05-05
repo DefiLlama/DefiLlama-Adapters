@@ -1,7 +1,10 @@
 const { getCuratorExport } = require("../helper/curators");
+const makinaFinance = require("../makina-finance");
+
+const MAKINA_USD_SHF_SYMBOL = 'usdSHFmk'
 
 const configs = {
-  methodology: 'Count all assets are deposited in all vaults curated by Steakhouse Financial.',
+  methodology: 'Count all assets deposited in vaults curated by Steakhouse Financial, plus the usdSHFmk Makina share supply.',
   blockchains: {
     ethereum: {
       morphoVaultOwners: [
@@ -123,4 +126,27 @@ const configs = {
     },
   }
 }
-module.exports = getCuratorExport(configs)
+
+const curatorExport = getCuratorExport(configs)
+
+async function addMakinaVault(api) {
+  const makinaBalances = await makinaFinance.ethereum.tvl(api)
+  const tokens = Object.keys(makinaBalances)
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })
+  tokens.forEach((token, i) => {
+    if (symbols[i] === MAKINA_USD_SHF_SYMBOL) api.add(token, makinaBalances[token])
+  })
+}
+
+module.exports = {
+  ...curatorExport,
+  misrepresentedTokens: true,
+  ethereum: {
+    ...curatorExport.ethereum,
+    tvl: async (api) => {
+      await curatorExport.ethereum.tvl(api)
+      await addMakinaVault(api)
+      return api.getBalances()
+    },
+  },
+}
