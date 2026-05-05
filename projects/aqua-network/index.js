@@ -26,32 +26,12 @@ function formatUtcDate(unixTimestamp) {
   return new Date(unixTimestamp * 1000).toISOString().slice(0, 10)
 }
 
-function pickClosestRow(rows, targetDate) {
-  const sortedRows = rows
-    .filter((row) => row?.date && row?.tvl != null)
-    .slice()
-    .sort((a, b) => a.date.localeCompare(b.date))
-
-  const exactMatch = sortedRows.find((row) => row.date === targetDate)
-  if (exactMatch) return exactMatch
-
-  return sortedRows.reduce((closestRow, currentRow) => {
-    if (!closestRow) return currentRow
-
-    const closestDistance = Math.abs(new Date(closestRow.date).getTime() - new Date(targetDate).getTime())
-    const currentDistance = Math.abs(new Date(currentRow.date).getTime() - new Date(targetDate).getTime())
-
-    if (currentDistance < closestDistance) return currentRow
-    return closestRow
-  }, null)
-}
-
 async function tvl(api) {
   const key = formatUtcDate(api.timestamp)
   const rows = await getData()
-  const row = pickClosestRow(rows, key)
+  const row = rows.find((entry) => entry?.date === key && entry?.tvl != null)
 
-  if (!row) throw new Error('No Aquarius TVL rows returned by source API')
+  if (!row) throw new Error(`No Aquarius TVL data found for ${key}`)
 
   const tvl = Number(row.tvl) / 1e7
   if (!Number.isFinite(tvl)) {
