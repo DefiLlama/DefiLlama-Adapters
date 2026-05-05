@@ -5,31 +5,21 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 // (Curve gauge stakes, FluidLite shares, YieldBasis LT, Morpho Blue supply,
 // Aave V3 variable debt). Off-chain Fireblocks/CEX balances excluded.
 
-// ─────────────────────────── Mainnet token addresses ───────────────────────────
-// Base tokens the protocol settles in.
+// Mainnet tokens
 const WBTC    = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 const USDC    = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const USDS    = '0xdC035D45d973E3EC169d2276DDab16f1e407384F';
 const SUSDS   = '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD';
 const SYRUP   = '0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b';
+const CBBTC   = '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf';
+const HEMIBTC = '0x06ea695B91700071B161A434fED42D1DcbAD9f00';
+const SUSDE   = '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497';
+const AUSDC          = '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c';
+const FLUID_LITE_USD = '0x273DA948ACa9261043fbdb2a857BC255ECC29012'; // not priced — unwrapped via convertToAssets
+const CURVE_HEMI_LP  = '0x66039342C66760874047c36943B1e2d8300363BB';
+const CURVE_SUSDE_LP = '0x3CEf1AFC0E8324b57293a6E7cE663781bbEFBB79';
 
-// Curve pool coins. Curve strategies route deposits through their pools'
-// underlying assets and may hold these idle mid-rebalance.
-const CBBTC   = '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf'; // Coinbase Wrapped BTC
-const HEMIBTC = '0x06ea695B91700071B161A434fED42D1DcbAD9f00'; // hemiBTC
-const SUSDE   = '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497'; // Ethena sUSDe
-
-// Wrapper / LP tokens. Aave aTokens and Curve LPs are priced natively by
-// DefiLlama. fLiteUSD and the YieldBasis LT are NOT — they're handled with
-// explicit unwrap calls in ethereumTvl.
-const AUSDC          = '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c'; // Aave V3 aUSDC
-const FLUID_LITE_USD = '0x273DA948ACa9261043fbdb2a857BC255ECC29012'; // FluidLite ERC-4626 (NOT priced)
-const CURVE_HEMI_LP  = '0x66039342C66760874047c36943B1e2d8300363BB'; // Curve WBTC/cbBTC/HemiBTC pool (also LP)
-const CURVE_SUSDE_LP = '0x3CEf1AFC0E8324b57293a6E7cE663781bbEFBB79'; // Curve sUSDe/sUSDS pool (also LP)
-
-// Curve gauges — staked LP at the gauge maps 1:1 to LP value. The adapter
-// reads balanceOf(gauge, strategy) and registers the result under the LP
-// token's address so DefiLlama's Curve-LP pricing applies.
+// balanceOf(gauge, strategy) maps 1:1 to LP; registered under the LP address.
 const CURVE_GAUGE_STAKES = [
   { gauge: '0xeCBcF829742987c0600e0ee1117a32d09451882E', strategy: '0x7c82B4A667bf5DD6a58DBFDb34ac3A4E0D2C6543', lp: CURVE_HEMI_LP },
   { gauge: '0xc4316d27eC627E03BD4d176E570cD0018e6a0456', strategy: '0x81Ae2ce1a7af582E1f186C0D88415Fd752EAe814', lp: CURVE_SUSDE_LP },
@@ -92,10 +82,7 @@ const MORPHO_VIRTUAL_ASSETS = 1n;
 const MORPHO_VIRTUAL_SHARES = 1000000n; // 1e6
 
 async function ethereumTvl(api) {
-  // Plain balanceOf sweep across every custody and driver address. The
-  // YIELDBASIS driver is excluded entirely (not in `owners`) because its
-  // idle + invested WBTC are both registered below via the strategy's
-  // totalAssets() — including it here would double-count idle WBTC.
+  // YB driver excluded — its full WBTC value is registered via totalAssets() below.
   const owners = [
     ...STATIC_CUSTODY,
     DRV_CURVE_HEMI, DRV_MORPHO_SBTCD, DRV_AAVE_CARRY,
@@ -108,8 +95,6 @@ async function ethereumTvl(api) {
   ];
   await sumTokens2({ api, owners, tokens, permitFailure: true });
 
-  // Curve gauge stakes — balanceOf(gauge, strategy) is the strategy's staked
-  // LP. Register under the LP address so Curve-LP native pricing applies.
   const gaugeBalances = await api.multiCall({
     abi: balanceOfAbi,
     calls: CURVE_GAUGE_STAKES.map((g) => ({ target: g.gauge, params: g.strategy })),
@@ -117,8 +102,6 @@ async function ethereumTvl(api) {
   });
   gaugeBalances.forEach((bal, i) => addIfPositive(api, CURVE_GAUGE_STAKES[i].lp, bal));
 
-  // FluidLite — fLiteUSD shares aren't priced natively. Convert to USDC via
-  // the vault's convertToAssets, then register against USDC.
   const fLiteShares = await api.call({
     target: FLUID_LITE_USD,
     abi: balanceOfAbi,
@@ -133,18 +116,12 @@ async function ethereumTvl(api) {
     addIfPositive(api, USDC, usdc);
   }
 
-  // YieldBasis — yb-WBTC LT shares aren't priced natively. The strategy's
-  // totalAssets() returns idle WBTC + LT shares as a WBTC-equivalent in one
-  // shot. (Tuple return; first slot is the asset amount.)
   const yb = await api.call({
     target: DRV_YIELD_BASIS,
     abi: 'function totalAssets() view returns (uint256 totalAssets_, uint256 totalShares_)',
   });
   addIfPositive(api, WBTC, yb.totalAssets_);
 
-  // Morpho Blue supply positions — account-based, not visible via balanceOf.
-  // Convert supplyShares to loan-token assets using the contract's virtual
-  // offsets and register against loan token.
   const [positions, market] = await Promise.all([
     api.multiCall({
       abi: morphoPositionAbi,
@@ -170,8 +147,6 @@ async function ethereumTvl(api) {
     addIfPositive(api, MORPHO_POSITIONS[i].loanToken, assets);
   });
 
-  // Aave V3 variable-debt subtraction (carry trade borrows WBTC against
-  // USDC). Debt-token balanceOf at the borrower equals outstanding WBTC debt.
   const debt = await api.call({
     target: VAR_DEBT_WBTC,
     abi: balanceOfAbi,
@@ -189,10 +164,6 @@ async function arbitrumTvl(api) {
     api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function GM_TOKEN() view returns (address)' }),
   ]);
 
-  // Idle long/short tokens at the strategy (between deposit/withdrawal cycles)
-  // are first-class collateral and must be summed alongside GM shares. Read
-  // them explicitly via the strategy's getRawBalance() so the accounting is
-  // unambiguous.
   const raw = await api.call({
     target: ARBITRUM_GM_POSITION_MANAGER,
     abi: 'function getRawBalance() view returns (uint256 gmBalance, uint256 idleLongToken, uint256 idleShortToken, bytes32 pendingDepositKey, bytes32 pendingWithdrawalKey)',
@@ -201,7 +172,6 @@ async function arbitrumTvl(api) {
   addIfPositive(api, longToken, raw.idleLongToken);
   addIfPositive(api, shortToken, raw.idleShortToken);
 
-  // Bridge-owned tokens (in-transit between Ethereum and Arbitrum).
   await sumTokens2({
     api,
     owners: ARBITRUM_BRIDGE_OWNERS,
@@ -212,23 +182,11 @@ async function arbitrumTvl(api) {
 
 module.exports = {
   methodology:
-    'BTCD TVL is the on-chain collateral held across the protocol custody ' +
-    'contracts (BTCDMinting, VaultMinting, SlushFund) and the eight active ' +
-    'driver contracts (CURVE WBTC-cbBTC-hemiBTC, MORPHOBLUE sBTCD-WBTC, ' +
-    'YIELDBASIS WBTC, AAVECARRY sBTCD-WBTC, CURVE sUSDe-sUSDS, FLUIDLITE ' +
-    'LiteUSD, SUSDS, UNIV4SWAP SyrupUSDC). Value is read by summing ERC-20 ' +
-    'balanceOf at every custody and driver address for the base tokens ' +
-    '(WBTC, USDC, USDS, sUSDS, SYRUP), pool coins that may sit idle ' +
-    'mid-rebalance (cbBTC, hemiBTC, sUSDe), and natively-priced wrappers ' +
-    '(Aave aUSDC, Curve LPs). Curve gauge stakes are read separately and ' +
-    'registered under the LP token. FluidLite fLiteUSD shares are unwrapped ' +
-    'via vault.convertToAssets() to USDC; YieldBasis yb-WBTC LT shares via ' +
-    'the strategy\'s totalAssets() to WBTC. Morpho Blue supply positions ' +
-    '(account-based) are unwrapped using the contract\'s virtual offsets; ' +
-    'Aave V3 variable WBTC debt is netted out. On Arbitrum the GMX V2 sleeve ' +
-    'is read from the GmPositionManager (idle LONG_TOKEN/SHORT_TOKEN via ' +
-    'getRawBalance() plus GM_TOKEN priced natively). Off-chain custody ' +
-    '(Fireblocks, centralized venues) is not included.',
+    'On-chain collateral across the protocol\'s custody contracts and eight ' +
+    'driver contracts. Most value is captured by ERC-20 balanceOf; Curve gauge ' +
+    'stakes, FluidLite shares, the YieldBasis LT, Morpho Blue supply, and Aave ' +
+    'V3 variable debt are read explicitly. Arbitrum holds the GMX V2 sleeve. ' +
+    'Off-chain custody is not included.',
   ethereum: { tvl: ethereumTvl },
   arbitrum: { tvl: arbitrumTvl },
 };
