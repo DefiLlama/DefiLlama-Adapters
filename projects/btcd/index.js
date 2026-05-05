@@ -70,6 +70,15 @@ const morphoMarketAbi =
 const morphoPositionAbi =
   'function position(bytes32 id, address user) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)';
 
+/**
+ * Adds a token balance to the API accumulator only when strictly positive.
+ * Skips null/undefined/zero amounts so failed multicalls (with permitFailure)
+ * and empty positions don't pollute the TVL with falsy entries.
+ *
+ * @param {object} api    DefiLlama SDK chain API (provides .add()).
+ * @param {string} token  ERC-20 contract address whose balance is being added.
+ * @param {string|number|bigint} amount  Raw on-chain amount (token base units).
+ */
 const addIfPositive = (api, token, amount) => {
   if (amount && BigInt(amount) > 0n) api.add(token, amount.toString());
 };
@@ -81,6 +90,29 @@ const addIfPositive = (api, token, amount) => {
 const MORPHO_VIRTUAL_ASSETS = 1n;
 const MORPHO_VIRTUAL_SHARES = 1000000n; // 1e6
 
+/**
+ * Computes BTCD's Ethereum-mainnet TVL by aggregating on-chain collateral
+ * across custody contracts and strategy drivers.
+ *
+ * Steps:
+ *   1. balanceOf sweep over static custody + driver addresses for all tracked
+ *      ERC-20s (WBTC, stables, LP tokens, aTokens, etc.).
+ *   2. Curve gauge stakes — gauge.balanceOf(strategy) maps 1:1 to LP and is
+ *      registered under the LP address.
+ *   3. FluidLite shares — convertToAssets() unwraps shares to underlying USDC.
+ *   4. YieldBasis driver — totalAssets() reports full WBTC value (the driver
+ *      itself is excluded from the balanceOf sweep to avoid double-counting).
+ *   5. Morpho Blue supply positions — read via position()+market(), applying
+ *      the protocol's virtual-offset share/asset conversion to stay consistent
+ *      with on-chain accounting (sub-bp error otherwise).
+ *   6. Aave V3 variable debt — netted out by subtracting variableDebtWBTC
+ *      from the carry-trade strategy.
+ *
+ * Off-chain Fireblocks/CEX balances are intentionally excluded.
+ *
+ * @param {object} api  DefiLlama SDK ethereum chain API.
+ * @returns {Promise<object>} The accumulated balances map (api.getBalances()).
+ */
 async function ethereumTvl(api) {
   // YB driver excluded — its full WBTC value is registered via totalAssets() below.
   const owners = [
@@ -157,6 +189,20 @@ async function ethereumTvl(api) {
   return api.getBalances();
 }
 
+/**
+ * Computes BTCD's Arbitrum TVL for the GMX V2 sleeve.
+ *
+ * Reads the position manager's configured long/short/GM token addresses on
+ * the fly (no hardcoding), then registers:
+ *   - GM tokens held by the position manager
+ *   - idle long/short tokens awaiting deposit
+ *   - in-transit balances on the bridge owners (BridgeManager + BridgeActor)
+ *
+ * Pending deposit/withdrawal keys returned by getRawBalance() are not yet
+ * factored in — only the realized GM balance and idle inventory are counted.
+ *
+ * @param {object} api  DefiLlama SDK arbitrum chain API.
+ */
 async function arbitrumTvl(api) {
   const [longToken, shortToken, gmToken] = await Promise.all([
     api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function LONG_TOKEN() view returns (address)' }),
