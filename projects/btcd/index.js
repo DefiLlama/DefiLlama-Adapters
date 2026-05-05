@@ -6,7 +6,6 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 //        BTCDMinting     — RFQ minting buffer
 //        VaultMinting    — AMM-style minter (USDC/sUSDS/WBTC accounting)
 //        SlushFund       — primary on-chain treasury
-//        Binance deposit — bridge address for in-transit Binance funds
 //
 //   2. Position-manager contracts that the engine deploys collateral into.
 //      Registered on-chain on the protocol Multicall via addAuthorizedTarget,
@@ -282,6 +281,31 @@ async function discoverDynamicTokens(api, strategies) {
     )
   );
 
+  // UNIV4SWAP strategies hold the non-input leg of a V4 pair (e.g. SyrupSwap
+  // holds SYRUP). The output token doesn't surface via ASSET / marketParams /
+  // Curve coins, so probe the strategy's public token-address constants. The
+  // deployed SyrupSwap exposes SYRUP_TOKEN_ADDRESS + USDC_TOKEN_ADDRESS;
+  // strategies without these getters permit-fail to null.
+  const v4SwapStrategies = strategies.filter((s) =>
+    s.typ.toUpperCase().startsWith('UNIV4SWAP:')
+  );
+  const v4SwapTokens = v4SwapStrategies.length
+    ? (
+        await Promise.all(
+          [
+            'function SYRUP_TOKEN_ADDRESS() view returns (address)',
+            'function USDC_TOKEN_ADDRESS() view returns (address)',
+          ].map((abi) =>
+            api.multiCall({
+              abi,
+              calls: v4SwapStrategies.map((s) => s.target),
+              permitFailure: true,
+            })
+          )
+        )
+      ).flat()
+    : [];
+
   const tokens = new Set();
   const debtPairs = [];
 
@@ -303,6 +327,10 @@ async function discoverDynamicTokens(api, strategies) {
 
   curveCoinsLists.flat().forEach((c) => {
     if (c && c !== ZERO) tokens.add(c.toLowerCase());
+  });
+
+  v4SwapTokens.forEach((t) => {
+    if (t && t !== ZERO) tokens.add(t.toLowerCase());
   });
 
   return { tokens: [...tokens], debtPairs };
