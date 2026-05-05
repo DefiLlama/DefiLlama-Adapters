@@ -83,16 +83,20 @@ async function tvl(api) {
 
     // Collect payment token addresses from all known deal managers by parsing DealProposed events.
     await Promise.all([...dealManagers].map(async (dealManager) => {
-        const deals = await getLogs({
-            api,
-            target: dealManager,
-            eventAbi: ABI.dealProposed,
-            extraKey: 'deal-proposed',
-            onlyArgs: true,
-            permitFailure: true,
-            fromBlock,
-            toBlock,
-        });
+        let deals = [];
+        try {
+            deals = await getLogs({
+                api,
+                target: dealManager,
+                eventAbi: ABI.dealProposed,
+                extraKey: 'deal-proposed',
+                onlyArgs: true,
+                fromBlock,
+                toBlock,
+            });
+        } catch (e) {
+            // Treat failures as empty history so one bad manager does not zero out chain TVL.
+        }
 
         const paymentTokens = [...new Set(deals.map(({ paymentToken }) => paymentToken).filter(Boolean))];
         if (!paymentTokens.length) return;
@@ -103,16 +107,20 @@ async function tvl(api) {
 
     // Collect round payment tokens by finding rounds with EOIs, then reading each round's paymentToken.
     await Promise.all([...roundManagers].map(async (roundManager) => {
-        const eois = await getLogs({
-            api,
-            target: roundManager,
-            eventAbi: ABI.eoiSubmitted,
-            extraKey: 'eoi-submitted',
-            onlyArgs: true,
-            permitFailure: true,
-            fromBlock,
-            toBlock,
-        });
+        let eois = [];
+        try {
+            eois = await getLogs({
+                api,
+                target: roundManager,
+                eventAbi: ABI.eoiSubmitted,
+                extraKey: 'eoi-submitted',
+                onlyArgs: true,
+                fromBlock,
+                toBlock,
+            });
+        } catch (e) {
+            // Treat failures as empty history so one bad manager does not zero out chain TVL.
+        }
 
         const roundIds = [...new Set(eois.map(({ roundId }) => roundId).filter(Boolean))];
         if (!roundIds.length) return;
@@ -133,24 +141,20 @@ async function tvl(api) {
     }));
 
     // Sum escrowed payment token balances only for observed token/escrow-manager pairs.
-    for (const [escrowAddress, tokens] of paymentTokensByEscrowAddress.entries()) {
-        const filteredTokens = [...tokens].filter(token => {
-            const normalized = token.toLowerCase();
-            return normalized !== NULL_ADDRESSES.zero && normalized !== NULL_ADDRESSES.nativePlaceholder;
-        });
-        if (!filteredTokens.length) continue;
+    const calls = [];
+        for (const [escrowAddress, tokens] of paymentTokensByEscrowAddress.entries()) {
+            for (const token of tokens) {
+                const normalized = token.toLowerCase();
+                if (normalized === NULL_ADDRESSES.zero || normalized === NULL_ADDRESSES.nativePlaceholder) continue;
+                calls.push({ target: token, params: escrowAddress });
+            }
+        }
+        if (!calls.length) return;
 
-        const balances = await api.multiCall({
-            abi: 'erc20:balanceOf',
-            calls: filteredTokens.map(token => ({ target: token, params: escrowAddress })),
-            permitFailure: true,
+        const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true });
+        calls.forEach(({ target }, i) => {
+            if (balances[i]) api.add(target, balances[i]);
         });
-
-        filteredTokens.forEach((token, i) => {
-            const balance = balances[i];
-            if (balance) api.add(token, balance);
-        });
-    }
 }
 
 module.exports = {
