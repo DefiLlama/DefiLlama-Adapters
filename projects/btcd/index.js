@@ -1,406 +1,217 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// BTCD is a synthetic basket-backed asset. Its collateral is held by:
+// BTCD is a synthetic basket-backed asset. On-chain collateral lives in:
 //
-//   1. Static custody contracts the protocol always owns:
-//        BTCDMinting     — RFQ minting buffer
-//        VaultMinting    — AMM-style minter (USDC/sUSDS/WBTC accounting)
-//        SlushFund       — primary on-chain treasury
+//   1. Static custody contracts the protocol always owns (BTCDMinting, the
+//      AMM-style VaultMinting, and SlushFund — the on-chain treasury).
 //
-//   2. Position-manager contracts that the engine deploys collateral into.
-//      Registered on-chain on the protocol Multicall via addAuthorizedTarget,
-//      enumerable via getAuthorizedTargets, and identified by a non-empty
-//      TYP() string (the same filter the engine applies). Adding a new
-//      strategy on-chain flows through automatically.
+//   2. Eight position-manager (driver) contracts the engine deploys
+//      collateral into. Their addresses are hardcoded below.
 //
-// The token universe is also derived on-chain — no curated address list:
+// TVL is read by sweeping balanceOf at every custody and driver address for
+// a fixed set of ERC-20s: the protocol's base assets (WBTC, USDC, USDS,
+// sUSDS, SYRUP), pool coins that may sit idle mid-deposit (cbBTC, hemiBTC,
+// sUSDe), and natively-priced wrappers (Aave aUSDC, Curve LPs).
 //
-//      Strategy.ASSET()                     — strategy input/output token
-//      Strategy.marketParams()              — Morpho loan + collateral tokens
-//      AaveV3Pool.getReserveData(asset)     — aToken + variableDebt tokens
-//      CurvePool.coins(0..3)                — Curve pool coin tokens
-//      Strategy {VAULT,POOL,gauge,...}      — wrapper / LP / share tokens
+// Four positions are NOT visible via plain balanceOf and are read explicitly:
+//   * Curve gauge stakes — balanceOf(gauge, strategy) returns staked LP
+//     1:1; the result is registered under the LP token's address so
+//     DefiLlama's native Curve LP pricing applies.
+//   * FluidLite fLiteUSD shares — DefiLlama doesn't price the vault share,
+//     so vault.convertToAssets() converts shares → USDC.
+//   * YieldBasis yb-WBTC LT shares — also not priced natively; the
+//     strategy's totalAssets() returns idle + invested WBTC equivalent in
+//     one shot, so the YB driver is excluded from balanceOf entirely and
+//     registered solely via this single value.
+//   * Morpho Blue supply position — account-based, not a transferable
+//     share token. Shares are converted to assets via the market's
+//     totalSupplyAssets / totalSupplyShares ratio with Morpho's virtual
+//     offsets (VIRTUAL_ASSETS=1, VIRTUAL_SHARES=1e6).
+//   * Aave V3 variable-debt — debt-token balanceOf at the borrower equals
+//     outstanding debt; subtracted from the borrowed underlying (WBTC).
 //
-// Each strategy's value is then read via layered passes:
+// On Arbitrum the GMX V2 sleeve is read directly off the GmPositionManager:
+// idle long/short tokens via getRawBalance() and the strategy's GM-token
+// share priced natively by DefiLlama.
 //
-//   A. Strategy NAV. totalAssets() + ASSET() → register full position against
-//      ASSET. NAV-covered strategies are excluded from later passes.
-//
-//   B. ERC-4626 wrapper unwrap. For each strategy's wrapper pointer, if the
-//      wrapper exposes asset() + convertToAssets(), register shares converted
-//      to underlying assets.
-//
-//   C. Morpho Blue position unwrap. supplyShares × totalSupplyAssets /
-//      totalSupplyShares, registered against the market's loan token.
-//
-//   D. Plain ERC-20 sum across all owners and the discovered token universe.
-//
-//   E. Aave V3 variable-debt subtraction. Carry trades borrow against
-//      collateral and re-supply on Morpho — both legs are visible on-chain
-//      and the offsetting debt is netted out.
-//
-// Off-chain collateral held in Fireblocks-custodied wallets or on centralized
-// venues is intentionally NOT included — DefiLlama TVL reflects on-chain
-// backing only. Uniswap V3 NFT positions are not yet unwrapped.
+// Off-chain collateral held in Fireblocks-custodied wallets or on
+// centralized venues is intentionally NOT included.
 
-const MULTICALL = '0x18f1FAC179feB0ee44F339a616feFb979A6961BE';
-const ZERO = '0x0000000000000000000000000000000000000000';
-const MORPHO_BLUE = '0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb';
-const AAVE_V3_POOL = '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2';
-// Aave V3 reserves to probe in addition to each strategy's ASSET. Carry trades
-// borrow WBTC against USDC, so the WBTC reserve must be probed for debt
-// regardless of whether the strategy's ASSET is USDC.
-const AAVE_PROBE_RESERVES = [
-  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-  '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // WBTC
-  '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
+// ─────────────────────────── Mainnet token addresses ───────────────────────────
+// Base tokens the protocol settles in.
+const WBTC    = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+const USDC    = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const USDS    = '0xdC035D45d973E3EC169d2276DDab16f1e407384F';
+const SUSDS   = '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD';
+const SYRUP   = '0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b';
+
+// Curve pool coins. Curve strategies route deposits through their pools'
+// underlying assets and may hold these idle mid-rebalance.
+const CBBTC   = '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf'; // Coinbase Wrapped BTC
+const HEMIBTC = '0x06ea695B91700071B161A434fED42D1DcbAD9f00'; // hemiBTC
+const SUSDE   = '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497'; // Ethena sUSDe
+
+// Wrapper / LP tokens. Aave aTokens and Curve LPs are priced natively by
+// DefiLlama. fLiteUSD and the YieldBasis LT are NOT — they're handled with
+// explicit unwrap calls in ethereumTvl.
+const AUSDC          = '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c'; // Aave V3 aUSDC
+const FLUID_LITE_USD = '0x273DA948ACa9261043fbdb2a857BC255ECC29012'; // FluidLite ERC-4626 (NOT priced)
+const CURVE_HEMI_LP  = '0x66039342C66760874047c36943B1e2d8300363BB'; // Curve WBTC/cbBTC/HemiBTC pool (also LP)
+const CURVE_SUSDE_LP = '0x3CEf1AFC0E8324b57293a6E7cE663781bbEFBB79'; // Curve sUSDe/sUSDS pool (also LP)
+
+// Curve gauges — staked LP at the gauge maps 1:1 to LP value. The adapter
+// reads balanceOf(gauge, strategy) and registers the result under the LP
+// token's address so DefiLlama's Curve-LP pricing applies.
+const CURVE_GAUGE_STAKES = [
+  { gauge: '0xeCBcF829742987c0600e0ee1117a32d09451882E', strategy: '0x7c82B4A667bf5DD6a58DBFDb34ac3A4E0D2C6543', lp: CURVE_HEMI_LP },
+  { gauge: '0xc4316d27eC627E03BD4d176E570cD0018e6a0456', strategy: '0x81Ae2ce1a7af582E1f186C0D88415Fd752EAe814', lp: CURVE_SUSDE_LP },
 ];
 
+// Aave V3 variable-debt token whose balance equals the strategy's outstanding
+// debt; this is netted against the borrowed underlying (WBTC).
+const VAR_DEBT_WBTC = '0x40aAbEf1aa8f0eEc637E0E7d92fbfFB2F26A8b7B';
+
+// ─────────────────────────── Static custody owners ────────────────────────────
 const STATIC_CUSTODY = [
   '0xD22FFF18B5E25EF1f07F8E194b89966652d44f5b', // BTCDMinting
   '0x700ac5F087468a253920818e662f08AD7d991AF5', // VaultMinting
   '0x98a622d669BaeA302DaB1B489748f78F768E8b25', // SlushFund
 ];
 
-// Arbitrum holds the GMX V2 sleeve. The GmPositionManager wraps a single GMX
-// market — it exposes LONG_TOKEN/SHORT_TOKEN/GM_TOKEN, holds GM-market shares
-// (the GMX V2 LP-like token) plus any idle long/short tokens awaiting deposit.
-// DefiLlama prices canonical GM market tokens natively; idle long/short tokens
-// price as their underlying ERC-20.
+// ──────────────────────── Driver (strategy) addresses ─────────────────────────
+const DRV_CURVE_HEMI    = '0x7c82B4A667bf5DD6a58DBFDb34ac3A4E0D2C6543'; // CURVE:WBTCCBBTCHEMIBTCTRIPOOL:WBTC:0
+const DRV_MORPHO_SBTCD  = '0x24313a5DB051E08e8064582F8a5e2F5C52968319'; // MORPHOBLUE:SBTCDWBTC:WBTC:0
+const DRV_YIELD_BASIS   = '0x174A18b8fdf9ae3ff5e841b69cA9A57D2EBFCA59'; // YIELDBASIS:WBTC:WBTC:0
+const DRV_AAVE_CARRY    = '0x7457Af3cbc75e30042BF1B7dA69cabc5D5563E4b'; // AAVECARRY:SBTCDWBTC:USDC:0
+const DRV_CURVE_SUSDE   = '0x81Ae2ce1a7af582E1f186C0D88415Fd752EAe814'; // CURVE:SUSDESUSDS:USDC:0
+const DRV_FLUID_LITE    = '0xfDD0224cC556aF301E06D46bbe27b5298d25A0F9'; // FLUIDLITE:LITEUSD:USDC:0
+const DRV_SUSDS         = '0x344E78a1B267c19DfD6D53838E8815AC54e2Cf58'; // SUSDS:sUSDS:USDC:0
+const DRV_UNIV4_SYRUP   = '0xdE128F649634e7B3e4b6c372836d38F435DA9Ba3'; // UNIV4SWAP:SYRUPUSDC:USDC:0
+
+// Morpho Blue supply positions (account-based, not balanceOf-visible). Both
+// the MorphoBlueSupply driver and the Aave-carry-trade driver supply WBTC
+// into the same SBTCD-WBTC market.
+const MORPHO_BLUE = '0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb';
+const SBTCD_WBTC_MARKET = '0xc2ab3fb4c64dc05d69a833cbedb82d6869d05135f3a164c0c7b844c8f0a3a220';
+const MORPHO_POSITIONS = [
+  { strategy: DRV_MORPHO_SBTCD, marketId: SBTCD_WBTC_MARKET, loanToken: WBTC },
+  { strategy: DRV_AAVE_CARRY,   marketId: SBTCD_WBTC_MARKET, loanToken: WBTC },
+];
+
+// ─────────────────────────── Arbitrum (GMX V2 sleeve) ─────────────────────────
 const ARBITRUM_GM_POSITION_MANAGER = '0xAf307925E44bbAc289C1EF6221a8Ae36B839f4d0';
 const ARBITRUM_BRIDGE_OWNERS = [
   '0x716fad40899277e5914bf7fc5f2563caf1afc099', // BridgeManager (in-transit)
   '0xAa8DcD578f23A09065Aa6028Aa9c091554055c8A', // BridgeActor
 ];
 
-// View methods strategies use to point at their protocol-side wrapper token.
-const POINTER_ABIS = [
-  'function VAULT() view returns (address)',
-  'function POOL() view returns (address)',
-  'function gauge() view returns (address)',
-  'function LP() view returns (address)',
-  'function lpToken() view returns (address)',
-  'function shareToken() view returns (address)',
-];
-
-const getAuthorizedTargetsAbi = 'function getAuthorizedTargets() view returns (address[])';
-// Every position-manager exposes TYP() returning a non-empty type string
-// (e.g. "MORPHOBLUE:SBTCDWBTC:WBTC:0"). Targets without TYP (Multicall self,
-// BridgeManager, etc.) are non-strategies and must not be probed for NAV /
-// pointers / Morpho positions — the engine itself filters them via its
-// `nonStrategyTargets` set.
-const typAbi = 'function TYP() view returns (string)';
-const totalAssetsAbi = 'function totalAssets() view returns (uint256)';
-const ASSETabi = 'function ASSET() view returns (address)';
-const assetAbi = 'address:asset';
-const convertToAssetsAbi = 'function convertToAssets(uint256) view returns (uint256)';
+// ─────────────────────────────────── ABIs ─────────────────────────────────────
 const balanceOfAbi = 'erc20:balanceOf';
-const marketIdAbi = 'function MARKET_ID() view returns (bytes32)';
-const loanTokenAbi = 'function LOAN_TOKEN() view returns (address)';
-const marketParamsAbi =
-  'function marketParams() view returns (tuple(address loanToken, address collateralToken, address oracle, address irm, uint256 lltv))';
-const morphoPositionAbi =
-  'function position(bytes32 id, address user) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)';
 const morphoMarketAbi =
   'function market(bytes32 id) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)';
-const aaveReserveDataAbi =
-  'function getReserveData(address asset) view returns (tuple(uint256 configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))';
-const curveCoinsAbi = 'function coins(uint256) view returns (address)';
+const morphoPositionAbi =
+  'function position(bytes32 id, address user) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)';
 
-// Pass A: register each strategy's self-reported NAV. Returns the lowercase
-// addresses of strategies that were successfully NAV-covered, so passes B/C
-// can skip them.
-async function strategyNavPass(api, targets) {
-  const [navAssets, navValues] = await Promise.all([
-    api.multiCall({ abi: ASSETabi, calls: targets, permitFailure: true }),
-    api.multiCall({ abi: totalAssetsAbi, calls: targets, permitFailure: true }),
-  ]);
-  const covered = new Set();
-  navAssets.forEach((asset, i) => {
-    const value = navValues[i];
-    if (asset && asset !== ZERO && value && BigInt(value) > 0n) {
-      api.add(asset, value);
-      covered.add(targets[i].toLowerCase());
-    }
-  });
-  return covered;
-}
+const addIfPositive = (api, token, amount) => {
+  if (amount && BigInt(amount) > 0n) api.add(token, amount.toString());
+};
 
-// Pass B: discover each strategy's wrapper pointer, then for any wrapper that
-// is an ERC-4626, register convertToAssets(shares) against the underlying.
-// Wrappers that aren't 4626 fall through and are picked up by the plain ERC-20
-// sum in pass C (e.g. Curve LP tokens, which DefiLlama prices natively).
-async function wrapperUnwrapPass(api, targets) {
-  const pointerLists = await Promise.all(
-    POINTER_ABIS.map((abi) =>
-      api.multiCall({ abi, calls: targets, permitFailure: true })
-    )
-  );
-  const pairs = [];
-  for (let abiIdx = 0; abiIdx < POINTER_ABIS.length; abiIdx++) {
-    for (let tIdx = 0; tIdx < targets.length; tIdx++) {
-      const wrapper = pointerLists[abiIdx][tIdx];
-      if (
-        wrapper &&
-        wrapper !== ZERO &&
-        wrapper.toLowerCase() !== MORPHO_BLUE
-      ) {
-        pairs.push({ wrapper, owner: targets[tIdx] });
-      }
-    }
-  }
-  if (pairs.length === 0) return [];
-
-  const [wrapperAssets, wrapperShares] = await Promise.all([
-    api.multiCall({
-      abi: assetAbi,
-      calls: pairs.map((p) => p.wrapper),
-      permitFailure: true,
-    }),
-    api.multiCall({
-      abi: balanceOfAbi,
-      calls: pairs.map((p) => ({ target: p.wrapper, params: p.owner })),
-      permitFailure: true,
-    }),
-  ]);
-
-  const conversionInputs = [];
-  const conversionMeta = [];
-  pairs.forEach((p, i) => {
-    const asset = wrapperAssets[i];
-    const shares = wrapperShares[i];
-    if (asset && asset !== ZERO && shares && BigInt(shares) > 0n) {
-      conversionInputs.push({ target: p.wrapper, params: shares });
-      conversionMeta.push({ asset });
-    }
-  });
-
-  const wrappers = pairs.map((p) => p.wrapper.toLowerCase());
-
-  if (conversionInputs.length === 0) return wrappers;
-
-  const converted = await api.multiCall({
-    abi: convertToAssetsAbi,
-    calls: conversionInputs,
-    permitFailure: true,
-  });
-  converted.forEach((amount, i) => {
-    if (amount) api.add(conversionMeta[i].asset, amount);
-  });
-  return wrappers;
-}
-
-// Pass C: register Morpho Blue supply positions for any strategy exposing
-// MARKET_ID() + LOAN_TOKEN(). Each supplyShares is converted to assets via the
-// market's totalSupplyAssets/totalSupplyShares ratio and registered against
-// the loan token.
-async function morphoUnwrapPass(api, targets) {
-  // LOAN_TOKEN() is preferred but not all Morpho-aware strategies expose it
-  // (e.g. AaveCarry only has marketParams()). Probe both, prefer the first.
-  const [marketIds, loanTokens, marketParamsList] = await Promise.all([
-    api.multiCall({ abi: marketIdAbi, calls: targets, permitFailure: true }),
-    api.multiCall({ abi: loanTokenAbi, calls: targets, permitFailure: true }),
-    api.multiCall({ abi: marketParamsAbi, calls: targets, permitFailure: true }),
-  ]);
-
-  const inputs = [];
-  targets.forEach((target, i) => {
-    const id = marketIds[i];
-    if (!id || id === '0x' + '0'.repeat(64)) return;
-    const loanToken = loanTokens[i] || (marketParamsList[i] && marketParamsList[i].loanToken);
-    if (!loanToken || loanToken === ZERO) return;
-    inputs.push({ target, id, loanToken });
-  });
-  if (inputs.length === 0) return;
-
-  const [positions, markets] = await Promise.all([
-    api.multiCall({
-      abi: morphoPositionAbi,
-      calls: inputs.map((i) => ({ target: MORPHO_BLUE, params: [i.id, i.target] })),
-      permitFailure: true,
-    }),
-    api.multiCall({
-      abi: morphoMarketAbi,
-      calls: inputs.map((i) => ({ target: MORPHO_BLUE, params: [i.id] })),
-      permitFailure: true,
-    }),
-  ]);
-
-  inputs.forEach((input, i) => {
-    const pos = positions[i];
-    const mkt = markets[i];
-    if (!pos || !mkt) return;
-    const totalSupplyShares = BigInt(mkt.totalSupplyShares);
-    if (totalSupplyShares === 0n) return;
-    const supplyShares = BigInt(pos.supplyShares);
-    if (supplyShares === 0n) return;
-    const supplyAssets = (supplyShares * BigInt(mkt.totalSupplyAssets)) / totalSupplyShares;
-    if (supplyAssets > 0n) api.add(input.loanToken, supplyAssets.toString());
-  });
-}
-
-// Discover ERC-20s held by strategies but not exposed by Multicall.getAuthorizedAssets:
-//
-//   - Aave V3 aTokens & variableDebt tokens — derived from Aave Pool's
-//     getReserveData() for each probed reserve.
-//   - Curve pool coins — walked from each Curve strategy's POOL pointer.
-//   - Morpho collateral tokens — read from each strategy's marketParams().
-//   - Strategy ASSET()s — input/output token of every strategy.
-//
-// Returns { tokens, debtPairs } where tokens is the union of all candidate
-// balance-side ERC-20s, and debtPairs is [debtToken, underlying] for the
-// netting pass.
-async function discoverDynamicTokens(api, strategies) {
-  const targets = strategies.map((s) => s.target);
-
-  const [strategyAssets, marketParamsList, aaveReserves] = await Promise.all([
-    api.multiCall({ abi: ASSETabi, calls: targets, permitFailure: true }),
-    api.multiCall({ abi: marketParamsAbi, calls: targets, permitFailure: true }),
-    api.multiCall({
-      abi: aaveReserveDataAbi,
-      calls: AAVE_PROBE_RESERVES.map((r) => ({ target: AAVE_V3_POOL, params: r })),
-      permitFailure: true,
-    }),
-  ]);
-
-  // Curve coins: probe pool.coins(0..3) for each Curve strategy's POOL.
-  const curveStrategies = strategies.filter((s) => s.typ.toUpperCase().startsWith('CURVE:'));
-  const curvePools = await api.multiCall({
-    abi: 'function POOL() view returns (address)',
-    calls: curveStrategies.map((s) => s.target),
-    permitFailure: true,
-  });
-  const validCurvePools = curvePools.filter((p) => p && p !== ZERO);
-  const curveCoinsLists = await Promise.all(
-    [0, 1, 2, 3].map((i) =>
-      api.multiCall({
-        abi: curveCoinsAbi,
-        calls: validCurvePools.map((p) => ({ target: p, params: [i] })),
-        permitFailure: true,
-      })
-    )
-  );
-
-  // UNIV4SWAP strategies hold the non-input leg of a V4 pair (e.g. SyrupSwap
-  // holds SYRUP). The output token doesn't surface via ASSET / marketParams /
-  // Curve coins, so probe the strategy's public token-address constants. The
-  // deployed SyrupSwap exposes SYRUP_TOKEN_ADDRESS + USDC_TOKEN_ADDRESS;
-  // strategies without these getters permit-fail to null.
-  const v4SwapStrategies = strategies.filter((s) =>
-    s.typ.toUpperCase().startsWith('UNIV4SWAP:')
-  );
-  const v4SwapTokens = v4SwapStrategies.length
-    ? (
-        await Promise.all(
-          [
-            'function SYRUP_TOKEN_ADDRESS() view returns (address)',
-            'function USDC_TOKEN_ADDRESS() view returns (address)',
-          ].map((abi) =>
-            api.multiCall({
-              abi,
-              calls: v4SwapStrategies.map((s) => s.target),
-              permitFailure: true,
-            })
-          )
-        )
-      ).flat()
-    : [];
-
-  const tokens = new Set();
-  const debtPairs = [];
-
-  strategyAssets.forEach((a) => { if (a && a !== ZERO) tokens.add(a.toLowerCase()); });
-
-  marketParamsList.forEach((p) => {
-    if (!p) return;
-    if (p.loanToken && p.loanToken !== ZERO) tokens.add(p.loanToken.toLowerCase());
-    if (p.collateralToken && p.collateralToken !== ZERO) tokens.add(p.collateralToken.toLowerCase());
-  });
-
-  aaveReserves.forEach((r, i) => {
-    if (!r) return;
-    if (r.aTokenAddress && r.aTokenAddress !== ZERO) tokens.add(r.aTokenAddress.toLowerCase());
-    if (r.variableDebtTokenAddress && r.variableDebtTokenAddress !== ZERO) {
-      debtPairs.push([r.variableDebtTokenAddress, AAVE_PROBE_RESERVES[i]]);
-    }
-  });
-
-  curveCoinsLists.flat().forEach((c) => {
-    if (c && c !== ZERO) tokens.add(c.toLowerCase());
-  });
-
-  v4SwapTokens.forEach((t) => {
-    if (t && t !== ZERO) tokens.add(t.toLowerCase());
-  });
-
-  return { tokens: [...tokens], debtPairs };
-}
+// ────────────────────────────── Top-level TVL ─────────────────────────────────
+// Morpho Blue uses virtual offsets on share<->asset conversion to prevent
+// inflation attacks; ignoring them leaves a sub-bp error vs the on-chain
+// value. Mirror the contract's constants.
+const MORPHO_VIRTUAL_ASSETS = 1n;
+const MORPHO_VIRTUAL_SHARES = 1000000n; // 1e6
 
 async function ethereumTvl(api) {
-  const authorizedTargets = await api.call({ target: MULTICALL, abi: getAuthorizedTargetsAbi });
-
-  // Filter to actual strategies — TYP() returns a non-empty type string on
-  // every position manager, and reverts on non-strategy authorized targets
-  // (Multicall self-reference, BridgeManager, etc.). Mirrors the engine's
-  // own `nonStrategyTargets` filter.
-  const types = await api.multiCall({
-    abi: typAbi,
-    calls: authorizedTargets,
-    permitFailure: true,
-  });
-  const strategies = authorizedTargets
-    .map((target, i) => ({ target, typ: types[i] }))
-    .filter((s) => s.typ && s.typ.length > 0);
-  const targets = strategies.map((s) => s.target);
-
-  // Discover the full token universe from on-chain strategy metadata.
-  const { tokens: discoveredTokens, debtPairs } = await discoverDynamicTokens(api, strategies);
-
-  // Pass A: strategies that self-report.
-  const navCovered = await strategyNavPass(api, targets);
-
-  // Pass B: ERC-4626 unwrap for the rest. Returns wrapper addresses so they
-  // can be excluded from the plain ERC-20 sum (avoids double-counting via the
-  // Curve LP path, where DefiLlama auto-prices the LP itself).
-  const nonNavTargets = targets.filter((t) => !navCovered.has(t.toLowerCase()));
-  const unwrappedWrappers = await wrapperUnwrapPass(api, nonNavTargets);
-
-  // Pass C: Morpho Blue positions (account-based, not visible via balanceOf).
-  await morphoUnwrapPass(api, nonNavTargets);
-
-  // Pass D: plain ERC-20 sum across static custody and non-NAV strategies.
-  const owners = [...new Set(
-    [...STATIC_CUSTODY, ...nonNavTargets].map((a) => a.toLowerCase())
-  )];
-  const tokens = [...new Set(
-    [...discoveredTokens, ...unwrappedWrappers].map((a) => a.toLowerCase())
-  )];
+  // Plain balanceOf sweep across every custody and driver address. The
+  // YIELDBASIS driver is excluded entirely (not in `owners`) because its
+  // idle + invested WBTC are both registered below via the strategy's
+  // totalAssets() — including it here would double-count idle WBTC.
+  const owners = [
+    ...STATIC_CUSTODY,
+    DRV_CURVE_HEMI, DRV_MORPHO_SBTCD, DRV_AAVE_CARRY,
+    DRV_CURVE_SUSDE, DRV_FLUID_LITE, DRV_SUSDS, DRV_UNIV4_SYRUP,
+  ];
+  const tokens = [
+    WBTC, USDC, USDS, SUSDS, SYRUP,
+    CBBTC, HEMIBTC, SUSDE,
+    AUSDC, CURVE_HEMI_LP, CURVE_SUSDE_LP,
+  ];
   await sumTokens2({ api, owners, tokens, permitFailure: true });
 
-  // Pass E: subtract debt receipts. Aave V3 issues variable-rate debt tokens
-  // whose balance equals the strategy's outstanding debt. These offset
-  // re-supplied collateral (carry trades) elsewhere in the system.
-  await subtractDebt(api, owners, debtPairs);
+  // Curve gauge stakes — balanceOf(gauge, strategy) is the strategy's staked
+  // LP. Register under the LP address so Curve-LP native pricing applies.
+  const gaugeBalances = await api.multiCall({
+    abi: balanceOfAbi,
+    calls: CURVE_GAUGE_STAKES.map((g) => ({ target: g.gauge, params: g.strategy })),
+    permitFailure: true,
+  });
+  gaugeBalances.forEach((bal, i) => addIfPositive(api, CURVE_GAUGE_STAKES[i].lp, bal));
+
+  // FluidLite — fLiteUSD shares aren't priced natively. Convert to USDC via
+  // the vault's convertToAssets, then register against USDC.
+  const fLiteShares = await api.call({
+    target: FLUID_LITE_USD,
+    abi: balanceOfAbi,
+    params: [DRV_FLUID_LITE],
+  });
+  if (BigInt(fLiteShares) > 0n) {
+    const usdc = await api.call({
+      target: FLUID_LITE_USD,
+      abi: 'function convertToAssets(uint256) view returns (uint256)',
+      params: [fLiteShares],
+    });
+    addIfPositive(api, USDC, usdc);
+  }
+
+  // YieldBasis — yb-WBTC LT shares aren't priced natively. The strategy's
+  // totalAssets() returns idle WBTC + LT shares as a WBTC-equivalent in one
+  // shot. (Tuple return; first slot is the asset amount.)
+  const yb = await api.call({
+    target: DRV_YIELD_BASIS,
+    abi: 'function totalAssets() view returns (uint256 totalAssets_, uint256 totalShares_)',
+  });
+  addIfPositive(api, WBTC, yb.totalAssets_);
+
+  // Morpho Blue supply positions — account-based, not visible via balanceOf.
+  // Convert supplyShares to loan-token assets using the contract's virtual
+  // offsets and register against loan token.
+  const [positions, market] = await Promise.all([
+    api.multiCall({
+      abi: morphoPositionAbi,
+      calls: MORPHO_POSITIONS.map((p) => ({
+        target: MORPHO_BLUE,
+        params: [p.marketId, p.strategy],
+      })),
+      permitFailure: true,
+    }),
+    api.call({
+      target: MORPHO_BLUE,
+      abi: morphoMarketAbi,
+      params: [SBTCD_WBTC_MARKET],
+    }),
+  ]);
+  const totalSupplyAssets = BigInt(market.totalSupplyAssets) + MORPHO_VIRTUAL_ASSETS;
+  const totalSupplyShares = BigInt(market.totalSupplyShares) + MORPHO_VIRTUAL_SHARES;
+  positions.forEach((pos, i) => {
+    if (!pos) return;
+    const shares = BigInt(pos.supplyShares);
+    if (shares === 0n) return;
+    const assets = (shares * totalSupplyAssets) / totalSupplyShares;
+    addIfPositive(api, MORPHO_POSITIONS[i].loanToken, assets);
+  });
+
+  // Aave V3 variable-debt subtraction (carry trade borrows WBTC against
+  // USDC). Debt-token balanceOf at the borrower equals outstanding WBTC debt.
+  const debt = await api.call({
+    target: VAR_DEBT_WBTC,
+    abi: balanceOfAbi,
+    params: [DRV_AAVE_CARRY],
+  });
+  if (debt && BigInt(debt) > 0n) api.add(WBTC, '-' + BigInt(debt).toString());
 
   return api.getBalances();
-}
-
-async function subtractDebt(api, owners, debtPairs) {
-  const calls = [];
-  const meta = [];
-  for (const [debtToken, underlying] of debtPairs) {
-    for (const owner of owners) {
-      calls.push({ target: debtToken, params: owner });
-      meta.push({ underlying });
-    }
-  }
-  if (calls.length === 0) return;
-  const debts = await api.multiCall({ abi: balanceOfAbi, calls, permitFailure: true });
-  debts.forEach((debt, i) => {
-    if (debt && BigInt(debt) > 0n) {
-      api.add(meta[i].underlying, '-' + debt.toString());
-    }
-  });
 }
 
 async function arbitrumTvl(api) {
@@ -409,24 +220,47 @@ async function arbitrumTvl(api) {
     api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function SHORT_TOKEN() view returns (address)' }),
     api.call({ target: ARBITRUM_GM_POSITION_MANAGER, abi: 'function GM_TOKEN() view returns (address)' }),
   ]);
-  const owners = [ARBITRUM_GM_POSITION_MANAGER, ...ARBITRUM_BRIDGE_OWNERS];
-  const tokens = [longToken, shortToken, gmToken];
-  return sumTokens2({ api, owners, tokens, permitFailure: true });
+
+  // Idle long/short tokens at the strategy (between deposit/withdrawal cycles)
+  // are first-class collateral and must be summed alongside GM shares. Read
+  // them explicitly via the strategy's getRawBalance() so the accounting is
+  // unambiguous.
+  const raw = await api.call({
+    target: ARBITRUM_GM_POSITION_MANAGER,
+    abi: 'function getRawBalance() view returns (uint256 gmBalance, uint256 idleLongToken, uint256 idleShortToken, bytes32 pendingDepositKey, bytes32 pendingWithdrawalKey)',
+  });
+  addIfPositive(api, gmToken, raw.gmBalance);
+  addIfPositive(api, longToken, raw.idleLongToken);
+  addIfPositive(api, shortToken, raw.idleShortToken);
+
+  // Bridge-owned tokens (in-transit between Ethereum and Arbitrum).
+  await sumTokens2({
+    api,
+    owners: ARBITRUM_BRIDGE_OWNERS,
+    tokens: [longToken, shortToken, gmToken],
+    permitFailure: true,
+  });
 }
 
 module.exports = {
   methodology:
-    'BTCD TVL is the on-chain collateral held across the protocol custody contracts ' +
-    '(BTCDMinting, VaultMinting, SlushFund, Binance bridge) and every strategy ' +
-    'authorized on the protocol Multicall (getAuthorizedTargets, filtered by TYP). ' +
-    "The token universe is discovered on-chain from each strategy's ASSET / " +
-    'marketParams / wrapper pointers, the Aave V3 reserve table, and Curve pool ' +
-    'coins. Per-strategy value comes from totalAssets() where exposed, ERC-4626 ' +
-    'convertToAssets unwrap (Fluid, Gauntlet, Syrup), Morpho Blue position unwrap, ' +
-    'and plain ERC-20 balances. Aave V3 variable debt is netted out (carry trades ' +
-    'supply collateral elsewhere). On Arbitrum, the GMX V2 sleeve is read from the ' +
-    "GmPositionManager (LONG_TOKEN, SHORT_TOKEN, GM_TOKEN balances). Off-chain " +
-    'custody (Fireblocks, centralized venues) is not included.',
+    'BTCD TVL is the on-chain collateral held across the protocol custody ' +
+    'contracts (BTCDMinting, VaultMinting, SlushFund) and the eight active ' +
+    'driver contracts (CURVE WBTC-cbBTC-hemiBTC, MORPHOBLUE sBTCD-WBTC, ' +
+    'YIELDBASIS WBTC, AAVECARRY sBTCD-WBTC, CURVE sUSDe-sUSDS, FLUIDLITE ' +
+    'LiteUSD, SUSDS, UNIV4SWAP SyrupUSDC). Value is read by summing ERC-20 ' +
+    'balanceOf at every custody and driver address for the base tokens ' +
+    '(WBTC, USDC, USDS, sUSDS, SYRUP), pool coins that may sit idle ' +
+    'mid-rebalance (cbBTC, hemiBTC, sUSDe), and natively-priced wrappers ' +
+    '(Aave aUSDC, Curve LPs). Curve gauge stakes are read separately and ' +
+    'registered under the LP token. FluidLite fLiteUSD shares are unwrapped ' +
+    'via vault.convertToAssets() to USDC; YieldBasis yb-WBTC LT shares via ' +
+    'the strategy\'s totalAssets() to WBTC. Morpho Blue supply positions ' +
+    '(account-based) are unwrapped using the contract\'s virtual offsets; ' +
+    'Aave V3 variable WBTC debt is netted out. On Arbitrum the GMX V2 sleeve ' +
+    'is read from the GmPositionManager (idle LONG_TOKEN/SHORT_TOKEN via ' +
+    'getRawBalance() plus GM_TOKEN priced natively). Off-chain custody ' +
+    '(Fireblocks, centralized venues) is not included.',
   ethereum: { tvl: ethereumTvl },
   arbitrum: { tvl: arbitrumTvl },
 };
