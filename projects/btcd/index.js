@@ -61,7 +61,6 @@ const STATIC_CUSTODY = [
   '0xD22FFF18B5E25EF1f07F8E194b89966652d44f5b', // BTCDMinting
   '0x700ac5F087468a253920818e662f08AD7d991AF5', // VaultMinting
   '0x98a622d669BaeA302DaB1B489748f78F768E8b25', // SlushFund
-  '0xc32f0ef5ebF74929d6D47C05A3a91262E9eD43B9', // Binance deposit (in-transit funds)
 ];
 
 // Arbitrum holds the GMX V2 sleeve. The GmPositionManager wraps a single GMX
