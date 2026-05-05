@@ -11,6 +11,9 @@ const REQUEST_TIMEOUT_MS = 10000;
 
 let requestIdCounter = 1;
 
+/**
+ * Create a JSON-RPC 2.0 request object for Electrum
+ */
 const createElectrumRequest = (method, params = [], id) => ({
   jsonrpc: '2.0',
   method,
@@ -18,6 +21,9 @@ const createElectrumRequest = (method, params = [], id) => ({
   id: id ?? requestIdCounter++,
 });
 
+/**
+ * Open a WebSocket connection to the Electrum server, resolving with the live socket.
+ */
 const connectElectrum = async () =>
   new Promise((resolve, reject) => {
     const ws = new WebSocket(ELECTRUM_WSS);
@@ -25,6 +31,9 @@ const connectElectrum = async () =>
     ws.on('error', (err) => reject(err));
   });
 
+/**
+ * Send an Electrum JSON-RPC request over the socket and resolve with its result, with a timeout.
+ */
 const sendElectrumRequest = (ws, request) =>
   new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -33,14 +42,20 @@ const sendElectrumRequest = (ws, request) =>
     }, REQUEST_TIMEOUT_MS);
 
     const messageHandler = (raw) => {
-      const response = JSON.parse(raw);
-      if (response.id !== request.id) return;
-      clearTimeout(timeout);
-      ws.off('message', messageHandler);
-      if (response.error) {
-        reject(new Error(`Electrum RPC error: ${response.error.message || JSON.stringify(response.error)}`));
-      } else {
-        resolve(response.result);
+      try {
+        const response = JSON.parse(raw);
+        if (response.id !== request.id) return;
+        clearTimeout(timeout);
+        ws.off('message', messageHandler);
+        if (response.error) {
+          reject(new Error(`Electrum RPC error: ${response.error.message || JSON.stringify(response.error)}`));
+        } else {
+          resolve(response.result);
+        }
+      } catch (err) {
+        clearTimeout(timeout);
+        ws.off('message', messageHandler);
+        reject(err);
       }
     };
     ws.on('message', messageHandler);
@@ -48,6 +63,9 @@ const sendElectrumRequest = (ws, request) =>
     ws.send(JSON.stringify(request) + '\n');
   });
 
+/**
+ * Sum BCH satoshis locked across all active loan UTXOs at the loan contract address.
+ */
 const fetchCollateralSats = async (ws) => {
   // Fulcrum: "include_tokens" populates token_data on returned UTXOs
   const request = createElectrumRequest('blockchain.address.listunspent', [LOAN_CONTRACT_ADDRESS, 'include_tokens']);
@@ -62,6 +80,9 @@ const fetchCollateralSats = async (ws) => {
   return loanUtxos.reduce((sum, utxo) => sum + utxo.value, 0);
 };
 
+/**
+ * DefiLlama TVL entrypoint: returns total BCH collateral locked in ParyonUSD.
+ */
 async function tvl() {
   let ws = null;
   try {
