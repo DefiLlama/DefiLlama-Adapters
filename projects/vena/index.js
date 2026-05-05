@@ -16,20 +16,28 @@ const FLUENT_USDNR = `fluent:${USDNR_ADDRESS}`;
 //      key, which would have to live as an env var on DefiLlama's runner. We want
 //      this adapter to work out-of-the-box without secrets, so we price each reserve
 //      via DefiLlama's own coins API (and getSharePrice for sUSDnr) instead.
+function readPrice(pricesByToken, feed) {
+  const entry = pricesByToken[feed];
+  if (!entry) {
+    throw new Error(`vena: no price returned for "${feed}" from coins.llama.fi`);
+  }
+  return new BigNumber(entry.price);
+}
+
 const RESERVES = [
   {
     symbol: 'WETH',
     address: '0x927C469E58Daab257Ea60B2D8c37bEDD2a203A54',
     decimals: 18,
     priceFeed: MAINNET_WETH,
-    calculateUSDPrice: async (_, pricesByToken) => new BigNumber(pricesByToken[MAINNET_WETH].price),
+    calculateUSDPrice: async (_, pricesByToken) => readPrice(pricesByToken, MAINNET_WETH),
   },
   {
     symbol: 'USDnr',
     address: USDNR_ADDRESS,
     decimals: 6,
     priceFeed: FLUENT_USDNR,
-    calculateUSDPrice: async (_, pricesByToken) => new BigNumber(pricesByToken[FLUENT_USDNR].price),
+    calculateUSDPrice: async (_, pricesByToken) => readPrice(pricesByToken, FLUENT_USDNR),
   },
   {
     symbol: 'sUSDnr',
@@ -40,7 +48,7 @@ const RESERVES = [
     // USD price per sUSDnr = (sharePrice / 10^6) * USDnr_USD_price.
     calculateUSDPrice: async (api, pricesByToken) => {
       const sharePrice = await api.call({ target: SUSDNR_VAULT, abi: 'uint256:getSharePrice' });
-      const usdnrPrice = new BigNumber(pricesByToken[FLUENT_USDNR].price);
+      const usdnrPrice = readPrice(pricesByToken, FLUENT_USDNR);
       return new BigNumber(sharePrice.toString()).shiftedBy(-6).times(usdnrPrice);
     },
   },
@@ -80,6 +88,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Total market size of the Vena lending pool on Fluent — sum of each reserve\'s aToken total supply (live, including accrued interest) priced via per-reserve calculateUSDPrice functions. WETH is priced via DefiLlama as mainnet WETH; USDnr is priced via the M^0 token on mainnet; sUSDnr is priced via getSharePrice() on its vault (denominated in USDnr) times the USDnr USD price.',
+  methodology: 'Total market size of the Vena lending pool on Fluent — sum of each reserve\'s aToken total supply (live, including accrued interest) priced via per-reserve calculateUSDPrice functions. WETH is priced via DefiLlama\'s coins API as mainnet WETH; USDnr is priced via DefiLlama\'s coins API directly on Fluent (fluent:USDNR_ADDRESS); sUSDnr is priced as getSharePrice() on its USDnr/sUSDnr vault (USDnr per share) times the USDnr USD price.',
   fluent: { tvl },
 };
