@@ -1,41 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// BTCD is a synthetic basket-backed asset. On-chain collateral lives in:
-//
-//   1. Static custody contracts the protocol always owns (BTCDMinting, the
-//      AMM-style VaultMinting, and SlushFund — the on-chain treasury).
-//
-//   2. Eight position-manager (driver) contracts the engine deploys
-//      collateral into. Their addresses are hardcoded below.
-//
-// TVL is read by sweeping balanceOf at every custody and driver address for
-// a fixed set of ERC-20s: the protocol's base assets (WBTC, USDC, USDS,
-// sUSDS, SYRUP), pool coins that may sit idle mid-deposit (cbBTC, hemiBTC,
-// sUSDe), and natively-priced wrappers (Aave aUSDC, Curve LPs).
-//
-// Four positions are NOT visible via plain balanceOf and are read explicitly:
-//   * Curve gauge stakes — balanceOf(gauge, strategy) returns staked LP
-//     1:1; the result is registered under the LP token's address so
-//     DefiLlama's native Curve LP pricing applies.
-//   * FluidLite fLiteUSD shares — DefiLlama doesn't price the vault share,
-//     so vault.convertToAssets() converts shares → USDC.
-//   * YieldBasis yb-WBTC LT shares — also not priced natively; the
-//     strategy's totalAssets() returns idle + invested WBTC equivalent in
-//     one shot, so the YB driver is excluded from balanceOf entirely and
-//     registered solely via this single value.
-//   * Morpho Blue supply position — account-based, not a transferable
-//     share token. Shares are converted to assets via the market's
-//     totalSupplyAssets / totalSupplyShares ratio with Morpho's virtual
-//     offsets (VIRTUAL_ASSETS=1, VIRTUAL_SHARES=1e6).
-//   * Aave V3 variable-debt — debt-token balanceOf at the borrower equals
-//     outstanding debt; subtracted from the borrowed underlying (WBTC).
-//
-// On Arbitrum the GMX V2 sleeve is read directly off the GmPositionManager:
-// idle long/short tokens via getRawBalance() and the strategy's GM-token
-// share priced natively by DefiLlama.
-//
-// Off-chain collateral held in Fireblocks-custodied wallets or on
-// centralized venues is intentionally NOT included.
+// BTCD on-chain collateral: balanceOf sweep across custody + driver
+// addresses, plus explicit unwraps for positions invisible to balanceOf
+// (Curve gauge stakes, FluidLite shares, YieldBasis LT, Morpho Blue supply,
+// Aave V3 variable debt). Off-chain Fireblocks/CEX balances excluded.
 
 // ─────────────────────────── Mainnet token addresses ───────────────────────────
 // Base tokens the protocol settles in.
