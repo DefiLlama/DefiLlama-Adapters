@@ -30,7 +30,7 @@ const BASE_URL =
 const CUSD_INSTRUMENT_ID = '481871d4-ca56-42a8-b2d3-4b7d28742946'
 
 async function tvl(api) {
-  const data = await get(BASE_URL + '/tvl')
+  const data = await get(`${BASE_URL}/tvl`)
   const balances = (data && data.tvl) || {}
 
   for (const [instrumentId, amount] of Object.entries(balances)) {
@@ -38,16 +38,16 @@ async function tvl(api) {
     if (!Number.isFinite(value) || value <= 0) continue
 
     if (instrumentId === 'Amulet') {
-      // Canton Coin (gas token). DefiLlama's Canton pricing config uses
-      // 18-decimal atomic units; matches the existing wcc adapter.
-      api.addGasToken(value * 1e18)
+      // CC priced via canton-network on CoinGecko; addCGToken takes
+      // human-decimal amounts directly — no decimal scaling.
+      api.addCGToken('canton-network', value)
     } else if (
       instrumentId === 'USDCx' ||
       instrumentId === CUSD_INSTRUMENT_ID
     ) {
       // USDCx (bridged USDC) and CUSD (Send privacy stable) priced as USDC ($1).
-      // coingecko:usd-coin expects 6-decimal atomic units.
-      api.add('coingecko:usd-coin', value * 1e6, { skipChain: true })
+      // addCGToken takes human-decimal amounts directly.
+      api.addCGToken('usd-coin', value)
     }
     // Unknown instrument IDs (e.g. SBC) are intentionally skipped.
   }
