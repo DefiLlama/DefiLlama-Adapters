@@ -65,6 +65,11 @@ const configs = {
         '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
       ],
     },
+    solana: {
+      kaminoLendVaultAdmins: [
+        '9ceRgz579BcfWogs3RE11FKNQaWW7Lmtnev3MXspxUjF',
+      ],
+    },
   }
 }
 module.exports = getCuratorExport(configs)
