@@ -3,6 +3,26 @@ const AQUA_STATS_URL = "https://amm-api.aqua.network/api/external/v1/statistics/
 
 let _dataPromise = null
 
+const RESPONSE_PREVIEW_LIMIT = 500
+const RESPONSE_PREVIEW_KEY_LIMIT = 20
+const RESPONSE_PREVIEW_KEY_LENGTH = 40
+
+function getResponsePreview(data) {
+  if (typeof data === 'string') return data.slice(0, RESPONSE_PREVIEW_LIMIT)
+  if (data === null) return 'null'
+  if (Array.isArray(data)) return `array(length=${data.length})`
+  if (typeof data === 'object') {
+    const keys = []
+    for (const key in data) {
+      if (!Object.prototype.hasOwnProperty.call(data, key)) continue
+      keys.push(key.slice(0, RESPONSE_PREVIEW_KEY_LENGTH))
+      if (keys.length === RESPONSE_PREVIEW_KEY_LIMIT) break
+    }
+    return `object(keys=${keys})`
+  }
+  return String(data).slice(0, RESPONSE_PREVIEW_LIMIT)
+}
+
 async function getData() {
   if (_dataPromise === null) {
     _dataPromise = get(AQUA_STATS_URL).catch((err) => {
@@ -16,7 +36,7 @@ async function getData() {
 
   if (!Array.isArray(rows)) {
     _dataPromise = null
-    throw new Error(`Unexpected Aquarius API response shape: ${JSON.stringify(data).slice(0, 500)}`)
+    throw new Error(`Unexpected Aquarius API response shape: ${getResponsePreview(data)}`)
   }
 
   return rows
