@@ -8,6 +8,14 @@ const USDNR_ADDRESS = '0xD48e565561416dE59DA1050ED70b8d75e8eF28f9';
 const MAINNET_WETH = 'ethereum:0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 const FLUENT_USDNR = `fluent:${USDNR_ADDRESS}`;
 
+// Why we don't read the protocol's own oracle (AaveOracle.getAssetPrice) directly:
+//   1. It's a Pyth Lazer pull oracle — prices are only fresh on-chain right after a
+//      keeper pushes an update. Otherwise `latestAnswer()` reverts on the 30s
+//      staleness check and the oracle returns nothing usable.
+//   2. Pulling a fresh Lazer payload ourselves requires an authenticated Lazer API
+//      key, which would have to live as an env var on DefiLlama's runner. We want
+//      this adapter to work out-of-the-box without secrets, so we price each reserve
+//      via DefiLlama's own coins API (and getSharePrice for sUSDnr) instead.
 const RESERVES = [
   {
     symbol: 'WETH',
