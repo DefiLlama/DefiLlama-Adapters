@@ -90,3 +90,8 @@ const vesting = async (api) => api.sumTokens(await getTokensConfig(api, true));
 module.exports = Object.fromEntries(
   Object.keys(config).map(chain => [chain, { tvl, vesting }])
 );
+
+module.exports.formnetwork = {
+  tvl: () => ({}),
+  vesting: () => ({}),
+}

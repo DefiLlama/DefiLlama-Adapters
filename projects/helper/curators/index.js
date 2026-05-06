@@ -552,17 +552,25 @@ async function getCuratorTvl(api, vaults) {
 }
 
 function getCuratorExport(configs) {
+  const startTs = configs.start
+    ? (typeof configs.start === 'number' ? configs.start : Math.floor(new Date(configs.start).getTime() / 1000))
+    : 0;
+
   const exportObjects = {
     // these tvl are double count
     doublecounted: true,
 
     // methodology
     methodology: configs.methodology ? configs.methodology : 'Count all deposited assets in curated vaults.',
+
+    start: configs.start
   }
 
   for (const [chain, vaultConfigs] of Object.entries(configs.blockchains)) {
     exportObjects[chain] = {
       tvl: async (api) => {
+        // prevent attributing tvl to curators before they began curating
+        if (startTs && api.timestamp && api.timestamp < startTs) return {};
         return getCuratorTvl(api, vaultConfigs)
       }
     }

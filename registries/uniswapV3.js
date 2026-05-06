@@ -255,6 +255,7 @@ const uniV3Configs = {
     morph: {
       factory: '0xFf8578C2949148A6F19b7958aE86CAAb2779CDDD',
       fromBlock: 25159,
+      onlyUseExistingCache: true,
       blacklistedTokens: [
         '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a',
         '0xe3C0FF176eF92FC225096C6d1788cCB818808b35',
@@ -882,13 +883,6 @@ const uniV3Configs = {
       fromBlock: 1,
     },
   },
-  'molten-v4': {
-    core: {
-      factory: '0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597',
-      fromBlock: 15770796,
-      isAlgebra: true,
-    },
-  },
   'monday-trade-spot': {
     monad: {
       factory: '0xc1e98d0a2a58fb8abd10ccc30a58efff4080aa21',
@@ -1163,10 +1157,6 @@ const uniV3Configs = {
       factory: '0xA1160e73B63F322ae88cC2d8E700833e71D0b2a1',
       fromBlock: 1,
     },
-    shape: {
-      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
-      fromBlock: 1,
-    },
     redstone: {
       factory: '0xece75613Aa9b1680f0421E5B2eF376DF68aa83Bb',
       fromBlock: 1,
@@ -1219,6 +1209,12 @@ const uniV3Configs = {
     sonic: {
       factory: '0xcD2d0637c94fe77C2896BbCBB174cefFb08DE6d7',
       fromBlock: 1705910,
+    },
+  },
+  'shapeswap-v3': {
+    shape: {
+      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
+      fromBlock: 6022152,
     },
   },
   'sheepdex': {
@@ -1453,6 +1449,19 @@ const uniV3Configs = {
     oas: {
       factory: '0xe3fc2cB6E8c2671816D15B556B47375Afb2C29bD',
       fromBlock: 2445228,
+    },
+  },
+  'tsunami-v3': {
+    ink: {
+      factory: '0xD8B0826150B7686D1F56d6F10E31E58e1BCF1193',
+      fromBlock: 39943040,
+      permitFailure: true,
+    },
+  },
+  'krokoswap-v3': {
+    kasplex: {
+      factory: '0x0dfb1Bb755d872EA1fa4d95E4ad0c2E6317Ce9B9',
+      fromBlock: 14294547,
     },
   },
   'tesseractworld': {
@@ -1701,6 +1710,10 @@ const uniV3Configs = {
       extraKey: 'v3',
       blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
     }
+  },
+  'phlox': {
+    methodology: 'TVL accounts for liquidity on all Uniswap V3-style pools created by the Phlox factory on LUKSO.',
+    lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
   },
 }
 

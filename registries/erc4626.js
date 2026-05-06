@@ -129,9 +129,8 @@ const configs = {
       '0x6133dA4Cd25773Ebd38542a8aCEF8F94cA89892A',
     ],
   },
-  'paimon': {
-    bsc: ['0x8505c32631034A7cE8800239c08547e0434EdaD9'],
-  },
+  'paimon': { bsc: ['0x8505c32631034A7cE8800239c08547e0434EdaD9'], },
+  'sova': { base: ['0xdFc4047620bd71F3dd781f1048f6890b76281D36'], },
   'altura': {
     hyperliquid: ['0xd0Ee0CF300DFB598270cd7F4D0c6E0D8F6e13f29'],
   },
@@ -145,11 +144,12 @@ const configs = {
     ],
   },
   'RockSolid': {
-    methodology: 'Calls totalAssets() on the RockSolid rock.rETH and rock.loopedETH vaults to get the total amount of rETH and ETH managed by the vaults.',
+    methodology: 'Calls totalAssets() on the RockSolid rock.rETH, rock.loopedETH, and rockUSDm vaults to get the total amount of rETH, ETH, and USDC managed by the vaults.',
     start: 1756339201,
     ethereum: [
       '0x936facdf10c8c36294e7b9d28345255539d81bc7',
       '0x7a12D4B719F5aA479eCD60dEfED909fb2A37e428',
+      '0xba71097e426983d840569edfa1a01396b56d86ad'
     ],
   },
   'avon': {
@@ -197,7 +197,7 @@ const configs = {
   },
   'quell': {
     doublecounted: true,
-    methodology: "TVL is the total USDC deposited in the Quell ERC4626 RWAVaults, which route USDC to external vaults such as Spark sUSDC and Steakhouse USDC MetaMorpho for RWA yield.",
+    methodology: "TVL is the total USDC deposited in the Quell ERC4626 RWAVaults, measured via totalAssets(). The protocol launched on Base in 2025 routing into the Steakhouse USDC MetaMorpho vault, then migrated to Arbitrum One in March 2026 where it routes into Spark sUSDC. Historical Base + early Arbitrum vaults are retained for chain TVL history; the live yield route on the current Arbitrum RWAVault is Spark sUSDC.",
     base: ['0xd85A4301706124699CbA8d0b59E5ED635360868b'],
     arbitrum: ['0x25cf6D8BacCFbF66DC0567844182F063b8BD0051', '0x82bDeB9239d33AAE4b8c38C0C0ef3B088b0Fc791'],
   },
@@ -259,6 +259,15 @@ const configs = {
     start: '2026-04-11',
     base: ['0x71c298a6eb10e7958ce25a450a706330a4c946c0']
   },
+  'r25': {
+    pharos: Object.values({
+      vRPCWeeklyVault: '0x1c2bc8b553d9a7e61f7531a3a4bf2162f4569268',
+      vRPCQuarterlyVault: '0x94f7ebc6ae0819a4b4e231ae6ddaaf9bfd2a1a86',
+      vRPCSemiYearlyVault: '0xee26bb0989691735c997dfdc49a4a607f75e190b',
+      pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
+    }),
+    methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

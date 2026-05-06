@@ -8,8 +8,10 @@ const POOLS_V2 = {
   polygon:     'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmSdT2h3HGXjZ6j2YtTWRJFVm8EJYumzcnfRAgCoFxczmR',
   arbitrum:    'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmSexfnJV8EZTuVmoXaXJTKpJ7Q6ymPmPV7ShppTWZFe12',
   base:        'https://api.subgraph.migration.ormilabs.com/subgraphs/id/Qmb86xPeygvQFMmNN9j8aiCXqqFrcsKHu6nTrqfQwPeoqb',
-  katana:      'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-katana/0.4.21.12/gn',
-  hyperliquid: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-hyperevm/0.4.21.8/gn',
+  bsc:         'https://api.subgraph.migration.ormilabs.com/subgraphs/id/QmcZgjPkhJeUteBtoWqbFGKM3FcCQhv51BhTMnqvYGw8eM',
+  xdc:         'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/tellerv2-poolsv2-xdc/1.0.0/gn',
+  katana:      'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-katana/0.4.21.13/gn',
+  hyperliquid: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-hyperevm/0.4.21.12/gn',
 };
 
 // Pool V1 subgraphs (Ormi Labs — separate pool contracts, combined with V2)
