@@ -2,7 +2,10 @@ const { Program } = require("@coral-xyz/anchor");
 const { getProvider, sumTokens2, getAssociatedTokenAddress } = require("../helper/solana");
 const idl = require("./idl.json");
 
-// Cubic Pool program (mainnet). Source of truth: sdk/src/config/networks.ts
+// Cube DEX pool program (mainnet). The on-chain Rust module is named
+// `cubic_pool` (legacy name from before the protocol rebrand to Cube),
+// hence the Anchor IDL still exposes accounts under `cubicPool`.
+// Source of truth for the program ID: sdk/src/config/networks.ts
 const PROGRAM_ID = "8iQtGj9mcUfFUGaiCpPy89swC3s8YTC8FhVZWfgeZhwu";
 
 async function tvl(api) {
@@ -29,7 +32,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "Sum of USD value of all tokens locked in Cubic weighted pools, computed on-chain by reading every CubicPool account from the program and summing balances of each pool's token vaults (derived as ATA(pool, mint, token_program)).",
+    "Sum of USD value of all tokens locked in Cube weighted pools, computed on-chain by reading every pool account from the Cube program and summing balances of each pool's token vaults (derived as ATA(pool, mint, token_program)).",
   solana: {
     tvl,
   },
