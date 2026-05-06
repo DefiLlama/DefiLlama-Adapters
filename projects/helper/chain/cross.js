@@ -1,8 +1,9 @@
+const ADDRESSES = require('../coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const NATIVE_ADDRESSES = [
     '0x642060e8B44C8f2d6D2974a71a0ca8F995cAfBdA',
-    '0x0000000000000000000000000000000000000000',
+    ADDRESSES.null,
   ];
 
 const CROSS_CHAIN_CONFIG = {

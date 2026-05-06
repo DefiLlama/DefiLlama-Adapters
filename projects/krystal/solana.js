@@ -1,4 +1,3 @@
-const { Program } = require("@coral-xyz/anchor");
 const { PublicKey } = require("@solana/web3.js");
 const {
   getConnection,
@@ -17,18 +16,25 @@ const CLMM_PROGRAM_ID = new PublicKey(
 const POSITION_SEED = Buffer.from("position", "utf8");
 
 async function tvl(api) {
-  const connection = getConnection();
-
-  const program = new Program(idl, { connection });
-  const pools = new Map();
-  const pdaPersonalPositionAddressesAll = []
 
   // Load all the vaults in the program
   const vaults = await program.account.userVault.all();
+  await addRaydiumPositions({ api, owners: vaults.map(i => i.publicKey) })
+
+}
+
+async function addRaydiumPositions({ api, owners = [], owner }) {
+  const connection = getConnection();
+
+  const pools = new Map();
+
+  const pdaPersonalPositionAddressesAll = []
+  if (owner) owners.push(owner)
+
 
   const positions = [];
-  for (const account of vaults) {
-    const vault = account.publicKey;
+  for (let vault of owners) {
+    if (typeof vault === "string") vault = new PublicKey(vault);
     await findClmmPositionsByOwner(connection, vault);
   }
 
@@ -99,6 +105,7 @@ async function tvl(api) {
     const pdaPersonalPositionAddresses = tokenNftMints.map(getPdaPersonalPositionAddress)
     pdaPersonalPositionAddressesAll.push(...pdaPersonalPositionAddresses)
   }
+
 }
 
 
@@ -116,4 +123,4 @@ async function tvlApi(api) {
   api.addUSDValue(+res.tvl)
 }
 
-module.exports = { tvl: tvlApi };
+module.exports = { tvl: tvlApi, addRaydiumPositions, };

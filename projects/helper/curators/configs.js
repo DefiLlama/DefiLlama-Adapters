@@ -12,6 +12,7 @@ const ABI = {
   },
   morphoV2: {
     liquidityAdapter: 'address:liquidityAdapter',
+    adapters: 'function adapters(uint256) view returns (address)',
   },
   morphoAdapter: {
     morphoVaultV1: 'address:morphoVaultV1',
@@ -187,6 +188,14 @@ const MorphoConfigs = {
       {
         address: '0x8Dea49ec5bd5AeAc8bcf96B3E187F59354118291',
         fromBlock: 168896078,
+      }
+    ]
+  },
+  celo: {
+    vaultFactories: [
+      {
+        address: '0x6870aa9f66c1e5efe8dbe8730e86e9e91f688275',
+        fromBlock: 40259931,
       }
     ]
   }

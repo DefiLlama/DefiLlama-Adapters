@@ -140,7 +140,7 @@ const CONFIG = {
   },
   stable: {
     pools: [
-      '0x31eef89d5215c305304a2fa5376a1f1b6c5dc477', // usdc pool
+      ADDRESSES.doma.USDC_e, // usdc pool
       '0x0829f361a05d993d5ceb035ca6df3446b060970b' // weth pool
     ],
   },

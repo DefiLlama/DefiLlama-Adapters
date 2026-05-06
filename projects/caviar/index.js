@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs, } = require('../helper/cache/getLogs')
 const { getUniqueAddresses } = require('../helper/utils')
 
@@ -15,7 +16,7 @@ async function tvl(api) {
   const pools = await api.multiCall({ abi: "function pairs(address, address, bytes32) view returns (address)", calls: calls.map(i => ({ params: i })), target: factory })
 
   const owners = getUniqueAddresses(pools)
-  await api.sumTokens({ owners, tokens: ['0x0000000000000000000000000000000000000000'] })
+  await api.sumTokens({ owners, tokens: [ADDRESSES.null] })
   const balancesV2 = api.getBalancesV2()
   return balancesV2.clone(2).getBalances()
 }

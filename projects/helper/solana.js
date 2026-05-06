@@ -10,6 +10,7 @@ const { queryAllium } = require('./allium');
 
 const sdk = require('@defillama/sdk');
 const { endpointMap, endpoint } = require('./svmChainConfig.js')
+// const { addRaydiumPositions } = require('../krystal/solana.js')
 
 /** Address of the SPL Token program */
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -357,9 +358,13 @@ async function sumTokens2({
   async function getOwnerAllAccounts(owners) {
     sdk.log('fetching sol token balances for', owners.length, 'owners', chain,)
     return runInChunks(owners, async (chunk) => {
-      const body = chunk.map(i => formOwnerBalanceQuery(i))
+      // Query both Token Program and Token-2022 (Token Extensions) - USDTb and other newer tokens use Token-2022
+      const body = chunk.flatMap(owner => [
+        formOwnerBalanceQuery(owner, TOKEN_PROGRAM_ID),
+        formOwnerBalanceQuery(owner, TOKEN_2022_PROGRAM_ID),
+      ])
       const tokenBalances = await http.post(endpoint, body)
-      return tokenBalances.map(i => i.result.value).flat().map(i => ({
+      return tokenBalances.map(i => i.result?.value ?? []).flat().map(i => ({
         account: i.pubkey,
         mint: i.account.data.parsed.info.mint,
         amount: i.account.data.parsed.info.tokenAmount.amount,
@@ -589,7 +594,7 @@ async function sumTokens2_historical({
 
       // Helper to check if mint is native SOL (canonical: So11111..., Allium variant: Sol11111...)
       const isNativeSOL = (mint) => {
-        return mint === ADDRESSES.solana.SOL || mint === 'So11111111111111111111111111111111111111112';
+        return mint === ADDRESSES.solana.SOL || mint === ADDRESSES.solana.SOL;
       };
 
       const tokenBalances = {};
@@ -739,4 +744,5 @@ module.exports = {
   i80f48ToNumber,
   runInChunks,
   getTokenAccountBalances,
+  // addRaydiumPositions,
 };

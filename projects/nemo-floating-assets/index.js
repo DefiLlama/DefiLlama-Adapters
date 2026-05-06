@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
 const {COIN_CONFIG, MMT_TYPE_CONFIG} = require("../nemo/coinConfig.js");
-const {desU64} = require("../nemo/bytes");
+const {fromU64: desU64} = require("../helper/chain/sui");
 const {getExchangeRate} = require("../nemo/price");
 const {getVaultTvlByAmountB, getDynamicFieldObject} = require("../nemo/util");
 
@@ -101,7 +101,6 @@ async function getTvl(type, fields, api) {
   if (coinConfig.provider === 'Nemo') {
     const pt2SyAmount = floatingPt.div(priceVoucher1).times(priceVoucher2);
 
-    console.log(`floatingPt: ${floatingPt.toString()}, ptSupply: ${ptSupply}, pt2SyAmount: ${pt2SyAmount.toString()}, marketId: ${fields.id.id}`);
 
     const vault = await sui.getObject(MMT_TYPE_CONFIG[coinConfig.coinType].VAULT_ID);
     const amountB = await getVaultTvlByAmountB(vault);
@@ -109,8 +108,6 @@ async function getTvl(type, fields, api) {
     const totalSupply = vault.fields.treasury_cap.fields.total_supply.fields.value;
 
     const lpTokenPrice = BigNumber(amountB).div(BigNumber(totalSupply));
-
-    console.log(`lpTokenPrice: ${lpTokenPrice.toString()}, amountB: ${amountB}, totalSupply: ${totalSupply}`);
 
     api.add(coinConfig.underlyingCoinType, pt2SyAmount.times(lpTokenPrice).toFixed(0));
   }

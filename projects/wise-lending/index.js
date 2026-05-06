@@ -17,3 +17,5 @@ const config = {
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl }
 })
+
+module.exports.deadFrom = '2024-01-12'  // protocol was hacked

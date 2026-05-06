@@ -11,17 +11,13 @@ async function tvl_optimism_chain (timestamp, ethBlock) {
 }
 
 module.exports = {
-  optimism: {
-    tvl:tvl_optimism_chain
-  },
-  polynomial: {
-    tvl: sumTokensExport({ owner: '0xc133983D6d9140923b5eaE52664221d9099cf119', tokens: [ADDRESSES.polynomial.solvBtc,ADDRESSES.polynomial.weETH, ADDRESSES.polynomial.wstEth, ADDRESSES.polynomial.wETH]})
-  },
+  deadFrom: "2026-03-02",
+  optimism: { tvl:tvl_optimism_chain },
+  polynomial: { tvl: sumTokensExport({ owner: '0xc133983D6d9140923b5eaE52664221d9099cf119', tokens: [ADDRESSES.polynomial.solvBtc,ADDRESSES.polynomial.weETH, ADDRESSES.polynomial.wstEth, ADDRESSES.polynomial.wETH]}) },
   hallmarks:[
     ['2023-03-27', "Trade Launch"],
     ['2024-08-21', "Polynomial Trade Launch"],
-    ['2025-05-13', "Multicollateral Launch"]
+    ['2025-05-13', "Multicollateral Launch"],
     ["2026-02-13", "winddown announced"],
-    
   ]
 }

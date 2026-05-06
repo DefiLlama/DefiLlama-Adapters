@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // MegaETH Mainnet token addresses
-const WETH  = '0x4200000000000000000000000000000000000006'
-const USDM  = '0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7'
+const WETH  = ADDRESSES.optimism.WETH_1
+const USDM  = ADDRESSES.megaeth.USDm
 const BTC_B = '0xB0F70C0bD6FD87dbEb7C10dC692a2a6106817072'
-const USDT0 = '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb'
+const USDT0 = ADDRESSES.corn.USDT0
 
 // MAOB (orderbook) contracts hold all resting liquidity
 const MAOB_BTC_USDM  = '0xaD7e5CBfB535ceC8d2E58Dca17b11d9bA76f555E'

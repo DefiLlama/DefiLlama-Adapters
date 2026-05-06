@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 
 const config = {
@@ -24,7 +25,7 @@ const reserves = {
         {
             owner: "0xcd9f5907f92818bc06c9ad70217f089e190d2a32", // Earn vault
             tokens: [
-                "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+                ADDRESSES.ethereum.USDC, // USDC
             ],
         },
     ],
