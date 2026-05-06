@@ -5,7 +5,7 @@ const multiSourceLoan = "0xf65b99ce6dc5f6c556172bcc0ff27d3665a7d9a8";
 const userVault = "0x823de2c44369e94cac3da789ad4b6493e27e4bfe";
 
 // V3.1
-const multiSourceLoanV31 = "0xf41B389E0C1950dc0B16C9498eaE77131CC08A56";
+const multiSourceLoanV31 = "0xf41b389e0c1950dc0b16c9498eae77131cc08a56";
 const multiSourceLoanV31Hype = "0x6ad675624ec8320e5806858cd5db101a0b927fd9";
 
 module.exports = {
