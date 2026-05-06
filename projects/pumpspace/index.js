@@ -46,7 +46,7 @@ module.exports = {
       staking([MASTERCHEFS[0]], [TOKENS.SHELL]),
       staking([MASTERCHEFS[0]], [TOKENS.SBWPM]),
       staking([MASTERCHEFS[0]], [TOKENS.SADOL]),
-      staking([MASTERCHEFS[1]], [TOKENS.KRILL]),
+      // staking([MASTERCHEFS[1]], [TOKENS.KRILL]),
       staking([MASTERCHEFS[2]], [TOKENS.PEARL]),
     ])
   },
