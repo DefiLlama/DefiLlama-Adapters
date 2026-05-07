@@ -269,6 +269,7 @@ const configs = {
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
   },
   'visionboard-vault': {
+    timetravel: false,
     hyperliquid: ['0x0a5e236425aca07fd087904F8863CAd554675E06'],
     methodology: 'TVL is calculated from VisionBoard Vault totalAssets() on HyperEVM. Deposits mint VBV vault shares backed by the vault asset, currently USDC.'
   },
