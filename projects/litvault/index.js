@@ -10,7 +10,12 @@ async function tvl(api) {
 }
 
 module.exports = {
-  liteforge: { tvl },
+  liteforge: {
+    tvl,
+    start: '2026-04-15',
+  },
   methodology:
-    "TVL is the total zkLTC deposited into the LitVault contract on LiteForge Testnet.",
+    "TVL is the total zkLTC deposited into the LitVault contract on LiteForge Testnet " +
+    "(Chain ID 4441, Arbitrum Orbit EVM, RPC: https://liteforge.rpc.caldera.xyz/http). " +
+    "Vault shares (lvzkLTC) excluded to avoid double counting.",
 };
