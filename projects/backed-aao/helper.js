@@ -23,4 +23,16 @@ async function getTokensAndOwners(api, ownerField) {
   return projects.map((p) => [p.collateral, p[ownerField]])
 }
 
-module.exports = { START, getTokensAndOwners }
+/** One factory scan; pairs for each (collateral, owner) so TVL includes all listed owners. */
+async function getTokensAndOwnersMulti(api, ownerFields) {
+  const projects = await getProjects(api)
+  const out = []
+  for (const p of projects) {
+    for (const field of ownerFields) {
+      out.push([p.collateral, p[field]])
+    }
+  }
+  return out
+}
+
+module.exports = { START, getTokensAndOwners, getTokensAndOwnersMulti }
