@@ -3,6 +3,71 @@ const { getProvider, } = require('../helper/solana')
 const { Program, BN } = require("@project-serum/anchor");
 const { PublicKey } = require('@solana/web3.js');
 
+const V3minimalIdl = {
+	"instructions": [],
+	"accounts": [{
+		"name": "TokenConfig",
+		"type": {
+			"kind": "struct",
+			"fields": [
+				{
+					"name": "tokenMint",
+					"type": "publicKey"
+				},
+				{
+					"name": "supported",
+					"type": "bool"
+				},
+				{
+					"name": "decimals",
+					"type": "u8"
+				},
+				{
+					"name": "minSubscribeAmount",
+					"type": "u64"
+				},
+				{
+					"name": "isNative",
+					"type": "bool"
+				},
+				{
+					"name": "totalLocked",
+					"type": "u64"
+				},
+				{
+					"name": "totalRedeemed",
+					"type": "u64"
+				},
+				{
+					"name": "totalClaimed",
+					"type": "u64"
+				}
+			]
+		}
+	}]
+}
+
+async function tvlV3(api) {
+  const provider = getProvider()
+  const programId = 'BFVxnJoyUW1xPmaYgsn8NF4GdqPB91Mqqgr7RKaa6YWS'
+
+  const program = new Program(V3minimalIdl, programId, provider)
+
+  const vaults = await program.account.tokenConfig.all()
+
+  for (const vault of vaults) {
+    const { tokenMint, supported, totalLocked, totalRedeemed } = vault.account
+
+    if (supported) {
+      const tvlAmount = totalLocked - totalRedeemed
+
+      api.add(tokenMint.toBase58(), tvlAmount)
+    }
+  }
+
+  return api.getBalances()
+}
+
 const tokenMints = [
   ADDRESSES.solana.SOL,
   ADDRESSES.solana.USDC,
@@ -107,7 +172,7 @@ const minimalIdl = {
 	]
 }
 
-async function tvl(api) {
+async function tvlV2(api) {
   const provider = getProvider()
   const programId = '65YBWQitcBexwuaBKfAV163xDd4LzVAdytATLbttpgxx'
   const strategyIds = [1]
@@ -143,6 +208,12 @@ async function tvl(api) {
     }
   }
 
+  return api.getBalances()
+}
+
+async function tvl(api) {
+	tvlV2(api)
+	tvlV3(api)
   return api.getBalances()
 }
 

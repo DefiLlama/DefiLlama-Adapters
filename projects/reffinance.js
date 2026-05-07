@@ -1,7 +1,6 @@
 const { default: BigNumber } = require('bignumber.js')
 const { call, sumSingleBalance, } = require('./helper/chain/near')
 
-
 const PROJECT_CONTRACT = 'v2.ref-finance.near'
 const PROJECT_DCL_CONTRACT = 'dclv2.ref-labs.near'
 
@@ -39,6 +38,6 @@ module.exports = {
     tvl,
   },
   hallmarks: [
-    [1666648800,"DCB withdrawn liquidity"]
+    ['2022-10-24',"DCB withdrawn liquidity"]
   ],
 };

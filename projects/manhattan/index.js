@@ -1,6 +1,3 @@
-const sdk = require("@defillama/sdk");
-const { sumTokens2 } = require('../helper/unwrapLPs')
-
 const config = {
   polygon: {
     pools: [
@@ -16,18 +13,12 @@ const config = {
   }
 }
 
-module.exports = {};
-
 Object.keys(config).forEach(chain => {
   const { pools } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, {[chain]: block}) => {
-      const collaterals = await sdk.api2.abi.multiCall({
-        abi: "address:collateral",
-        calls: pools,
-        chain, block,
-      })
-      return sumTokens2({ chain, block, tokensAndOwners: collaterals.map((i, idx) => ([i, pools[idx]]))})
+    tvl: async (api) => {
+      const tokens  = await api.multiCall({  abi: 'address:collateral', calls: pools})
+      return api.sumTokens({ tokensAndOwners2: [tokens, pools]})
     }
   }
 })

@@ -1,4 +1,14 @@
-const Abis = require("./abi.json");
+const Abis = {
+    "bank": {
+      "usableCollateralBalance": "uint256:usableCollateralBalance"
+    },
+    "multiFeeDistribution": {
+      "totalSupply": "uint256:totalSupply"
+    },
+    "pair": {
+      "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)"
+    }
+  };
 
 const Contracts = {
   cronos: {

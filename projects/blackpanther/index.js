@@ -1,35 +1,20 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const {
-  queryContract: queryContractCosmos,
-} = require("../helper/chain/cosmos");
+const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos");
+const { getConfig } = require('../helper/cache');
 
-const config = {
-  injective: {
-    farms: [
-      "inj1yjnm0d6lxpuk8a4eulnf80gcx954zcf8rq2sfp",
-      "inj1lw5pd768ghux6dsux24tnqxlqz5pln6kk9rd6c",
-    ],
-  },
-};
+const URL = "https://blackpanther.fi/mainnet/api/vaults"
 
-const usdtDenom = "peggy0xdAC17F958D2ee523a2206206994597C13D831ec7"
-
-async function farm2Tvl(chain, contract, api) {
-  const res = await queryContractCosmos({ chain, contract, data: { total_vaults_in_usdt: {} }, });
-  api.add(usdtDenom, +res)
+const tvl = async (api) => {
+  const data = await getConfig('blackpanther/vaults', URL);
+  const vaults = data.map((d) => d.vault_address)
+  for (const vault of vaults) {
+    const { asset } = await queryContractCosmos({ chain: api.chain, contract: vault, data: { total_vault: {} } });
+    asset.forEach(({ info, amount }) => {
+      api.add(info.native_token.denom, amount)
+    })
+  }
 }
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: true,
-  };
-
-Object.keys(config).forEach(chain => {
-  const { farms } = config[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      await Promise.all(farms.map(farm => farm2Tvl(chain, farm, api)))
-      return api.getBalances()
-    }
-  }
-})
+  injective: { tvl }
+}

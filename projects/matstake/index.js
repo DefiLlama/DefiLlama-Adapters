@@ -1,4 +1,5 @@
-const MAT = '0x44a83a012B926853DFc1BBE2ec5BEf37126067e8'
+const ADDRESSES = require('../helper/coreAssets.json')
+const MAT = ADDRESSES.matchain.MAT
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const POOLS = [
   '0xa1843e71d1390d4A31469A53EeEfBB2f9AAe34ed', // LiquidStakingPool (also holds MAT)

@@ -42,7 +42,7 @@ module.exports = {
   methodology: 'Total Value Locked (TVL) consists of LYX tokens staked in the Stakingverse liquid staking protocol.',
   start: 1975213, // Deployment block of staking protocol
   hallmarks: [
-    [1735507440, "Deployment of sLYX liquid staking token (block 4084835)"]
+    ['2024-12-29', "Deployment of sLYX liquid staking token (block 4084835)"]
   ],
   ethereum: {
     tvl: ethereumTvl,

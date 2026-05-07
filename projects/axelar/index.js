@@ -102,3 +102,6 @@ module.exports.timetravel = false;
 module.exports.ripple = {
   tvl: sumTokensExport({ owner: 'rfmS3zqrQrka8wVyhXifEeyTwe8AMz2Yhw'})
 }
+
+// dead chain
+module.exports.migaloo = { tvl: () => {} };

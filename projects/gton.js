@@ -23,6 +23,6 @@ module.exports = {
             ADDRESSES.fantom.fUSDT,
             '0xf16e81dce15b08f326220742020379b855b87df9',
         ]}),
-        staking: staking([stakingContract, treasury,], gton, chain),
+        staking: staking([stakingContract, treasury,], gton),
     }
 };

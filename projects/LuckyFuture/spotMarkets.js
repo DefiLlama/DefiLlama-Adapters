@@ -17,7 +17,7 @@ const SPOT_MARKETS = {
   },
   17:{
     name:'dSOL',
-    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
+    mint:ADDRESSES.solana.dSOL, 
     decimals: 9
   },
   19: {
@@ -49,9 +49,7 @@ const PERP_MARKETS = {
 };
 
 function getTokenMintFromMarketIndex(marketIndex) {
-  if (!SPOT_MARKETS[marketIndex]) {
-    throw new Error(`Market index ${marketIndex} not found`);
-  }
+  if (!SPOT_MARKETS[marketIndex]) return null
   return SPOT_MARKETS[marketIndex].mint;
 }
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens2, } = require('./helper/unwrapLPs')
 const { getLogs } = require('./helper/cache/getLogs')
 
@@ -5,8 +6,8 @@ const config = require("./1inch/config");
 
 module.exports = {}
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-const ETH_PLACEHOLDER = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+const WETH = ADDRESSES.ethereum.WETH;
+const ETH_PLACEHOLDER = ADDRESSES.GAS_TOKEN_2;
 
 function normalizeToken(address) {
   return address.toLowerCase() === ETH_PLACEHOLDER ? WETH : address;

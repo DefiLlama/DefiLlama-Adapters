@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolCount": "uint256:poolCount",
+    "getPool": "function getPool(uint256 id) view returns (tuple(address pool, string name, uint256 rewardAmount, bool legacy, bool active))",
+    "stakingToken": "address:stakingToken"
+  };
 
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking');

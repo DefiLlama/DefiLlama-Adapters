@@ -3,7 +3,7 @@ const { post } = require('../helper/http')
 
 const { sumTokens } = require('../helper/chain/radixdlt');
 
-const KEY_VALUE_STORE_URL = `https://mainnet.radixdlt.com/state/key-value-store/`
+const KEY_VALUE_STORE_URL = `https://mainnet.radixdlt.com/state/key-value-store`
 
 const lendingPool = 'component_rdx1czmr02yl4da709ceftnm9dnmag7rthu0tu78wmtsn5us9j02d9d0xn'
 

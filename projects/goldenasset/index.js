@@ -4,8 +4,7 @@ const { fetchURL } = require('../helper/utils');
 const PRICE_DISCOUNT = 0.098;
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
+  misrepresentedTokens: true,
   start: 1727914080, // Protocol launch: October 3, 2024 UTC
 
   sei: {
@@ -18,7 +17,7 @@ module.exports = {
       });
 
       // 2. Fetch the historical price
-      const url = `https://api.goldenasset.org/prices/gem?adjustTo=2024-12-03`;
+      const url = `https://api.gemswap.org/prices/gem?adjustTo=2024-12-03`;
       const response = await fetchURL(url);
       const { price: currentPrice, history } = response.data;
 

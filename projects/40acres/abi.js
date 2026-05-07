@@ -7,8 +7,11 @@ const fortyAcresAbi = {
   'activeAssets': 'function activeAssets() public view returns (uint256)'
 }
 
+const portfolioAbi = 'function getAllPortfolios() view returns (address[])';
+
 
 module.exports = {
   erc4626Abi,
-  fortyAcresAbi
+  fortyAcresAbi,
+  portfolioAbi,
 }

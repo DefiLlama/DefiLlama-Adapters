@@ -20,6 +20,7 @@ module.exports = {
         blacklistedTokens: [
           'EQCKiXahTtXh01KzY6yfj9TAzxdunbv5o9dcHv--cbM2eoHf',
           'EQAsHOPv6QeOuno7MxIhLQYjeSSO-vDb44WVoES4deEad__E',
+          'EQA-iWfOSb4tXt_5viDz91V5Kz49Ceyw-WDwiRGiQvrO8D3o'
         ]
       })
     }

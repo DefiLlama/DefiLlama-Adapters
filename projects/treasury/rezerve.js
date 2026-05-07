@@ -17,4 +17,10 @@ module.exports = treasuryExports({
     ownTokens: [rzr],
     resolveLP: true,
   },
+  ethereum: {
+    tokens,
+    owners: [treasury],
+    ownTokens: [rzr],
+    resolveLP: true,
+  },
 });

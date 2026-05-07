@@ -1,6 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2,  } = require('../helper/unwrapLPs');
-const abis = require("./abis.json");
+const abis = {
+    "locked": "function locked(uint256) view returns (int128 amount, uint256 end)",
+    "gauges": "function gauges(address) view returns (address)",
+    "balanceOf": "function balanceOf(address) view returns (uint256)",
+    "pools": "function pools(uint256) view returns (address)",
+    "length": "uint256:length"
+  };
 
 const HERMES = '0xb27bbeaaca2c00d6258c3118bab6b5b6975161c8';
 const blacklistedTokens = ["0xa3e8e7eb4649ffc6f3cbe42b4c2ecf6625d3e802"];
@@ -26,5 +32,9 @@ async function tvl(api) {
 module.exports = {
   metis: {
     tvl: () => ({}),
-  }
+  },
+  hallmarks:[
+    ['2024-08-20', "V2 Launch"],
+    ['2024-09-24', "Whitehack by team"],
+  ]
 }

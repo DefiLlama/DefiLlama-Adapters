@@ -1,4 +1,0 @@
-{
-  "totalGHST": "function totalGHST(address _user) view returns (uint256 _totalGHST)",
-  "tokenIdsOfOwner": "function tokenIdsOfOwner(address _owner) view returns (uint32[] tokenIds_)"
-}

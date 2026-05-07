@@ -12,7 +12,7 @@ const zeroEth = "0xF0939011a9bb95c3B791f0cb546377Ed2693a574";
 const dxpEth="0x88aa4a6C5050b9A1b2Aa7e34D0582025cA6AB745";
 
 const usdtBsc = ADDRESSES.bsc.USDT;
-const daiBsc = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
+const daiBsc = ADDRESSES.bsc.DAI;
 const usdcBsc = ADDRESSES.bsc.USDC;
 const busdBsc = ADDRESSES.bsc.BUSD;
 const ethBsc = ADDRESSES.bsc.ETH;

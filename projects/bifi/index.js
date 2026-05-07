@@ -18,7 +18,7 @@ const chainPools = {
   bsc: {
     null: { pool: '0x170b6AA872166eC2F8515c2B855C34B6C7563c18', token: ADDRESSES.null, },
     usdt: { pool: '0x2A29598cbc17BA112C8Fd0E07Fbf5402eF57E6b8', token: ADDRESSES.bsc.USDT },
-    dai: { pool: '0xB67C5433d234d656002f12664d15ab4b40666D9B', token: '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3' },
+    dai: { pool: '0xB67C5433d234d656002f12664d15ab4b40666D9B', token: ADDRESSES.bsc.DAI },
     eth: { pool: '0xf86d8218BCC15874f5D25c191FdDd43F2334c3EB', token: ADDRESSES.bsc.ETH },
     usdc: { pool: '0xBA9De5a8FD91408826616f2d6d7470A11E34c9F0', token: ADDRESSES.bsc.USDC },
     btcb: { pool: '0x26d0E4707af1c1DAAd8e9BA21b99cDa7Fd24c40B', token: ADDRESSES.bsc.BTCB },

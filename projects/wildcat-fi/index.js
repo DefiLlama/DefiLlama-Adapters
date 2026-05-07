@@ -1,8 +1,13 @@
-// https://wildcat-protocol.gitbook.io/wildcat/technical-deep-dive/contract-deployments
+// https://docs.wildcat.finance/technical-overview/contract-deployments
 const config = {
   ethereum: { archController: '0xfEB516d9D946dD487A9346F6fee11f40C6945eE4', },
+  plasma: { archController: '0xdb2e0DE97d6d96aa56754635704a4273E0F348ae', },
   // sepolia: { archController: '0xC003f20F2642c76B81e5e1620c6D8cdEE826408f', },
 }
+
+const marketBlacklist = [
+  '0x262dd546703760adda0c06279508e04bd1f60dee' // Kinto
+].map(i => i.toLowerCase())
 
 Object.keys(config).forEach(chain => {
   const { archController } = config[chain]
@@ -25,7 +30,9 @@ Object.keys(config).forEach(chain => {
   }
 
   async function getMarkets(api) {
-    const markets = await api.call({ abi: 'address[]:getRegisteredMarkets', target: archController })
+    const markets = (
+      await api.call({ abi: 'address[]:getRegisteredMarkets', target: archController })
+    ).filter(i => !marketBlacklist.includes(i.toLowerCase()))
     const tokens = await api.multiCall({ abi: 'address:asset', calls: markets })
     return { markets, tokens }
   }

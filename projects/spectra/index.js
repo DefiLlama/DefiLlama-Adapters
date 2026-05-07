@@ -1,5 +1,17 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const abi = require("./abi.json");
+const abi = {
+    "markets": {
+      "balances": "function balances(uint256 index) view returns (uint256)"
+    },
+    "pt": {
+      "getIBT": "function getIBT() view returns (address)",
+      "balanceOf": "function balanceOf(address account) view returns (uint256)"
+    },
+    "vault": {
+      "convertToAsset": "function convertToAssets(uint256 shares) view returns (uint256 assets)",
+      "asset": "function asset() view returns (address assetTokenAddress)"
+    }
+  };
 const config = require("./config.json");
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking.js")
@@ -10,7 +22,7 @@ const veSPECTRA = "0x6a89228055c7c28430692e342f149f37462b478b"
 
 module.exports = {
   methodology: `All deposited underlying in Spectra Principal Tokens and all underlying supplied as liquidity in Spectra Markets`,
-  hallmarks: [[1717074000, "V2 Launch"]],
+  hallmarks: [['2024-05-30', "V2 Launch"]],
 };
 
 const curvePoolDeployedTopic = "0x3c7b686d948efcba31c9cfd1aeae78faac70fe0c1ed90d151d49c75e85027a91";

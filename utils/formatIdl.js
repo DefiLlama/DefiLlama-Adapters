@@ -10,7 +10,7 @@ idl.errors = []
 
 const whitelistedTypes = new Set()
 const typeMap = {}
-idl.types.forEach(t => typeMap[t.name] = t)
+idl.types?.forEach(t => typeMap[t.name] = t)
 const whitelistedTypeMap = {}
 const accountMap = {}
 idl.accounts.forEach(a => accountMap[a.name] = a)

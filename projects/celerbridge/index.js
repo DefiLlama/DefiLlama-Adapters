@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens } = require("../helper/unwrapLPs");
+const { sumTokens, sumTokens2 } = require("../helper/unwrapLPs");
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
 
@@ -110,7 +110,7 @@ const liquidityBridgeTokens = [
   {
     // DAI
     avax: ADDRESSES.avax.DAI,
-    bsc: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    bsc: ADDRESSES.bsc.DAI,
     ethereum: ADDRESSES.ethereum.DAI,
     optimism: ADDRESSES.optimism.DAI,
     polygon: ADDRESSES.polygon.DAI,
@@ -366,10 +366,10 @@ const liquidityBridgeTokens = [
     ethereum: "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5",
     bsc: "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5",
   },
-  {
-    // WXT
-    ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
-  },
+  // {  // token value is higher than circulating mcap
+  //   // WXT
+  //   ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
+  // },
   {
     ethereum: ADDRESSES.ethereum.FRAX,
   },
@@ -508,7 +508,7 @@ const liquidityBridgeTokens = [
 ];
 
 function chainTvl(chain) {
-  return async (time, _, {[chain]: block}) => {
+  return async (api) => {
     const toa = []
     liquidityBridgeTokens.forEach(token => {
       if (!token[chain])
@@ -518,8 +518,7 @@ function chainTvl(chain) {
         liquidityBridgeContractsV2[chain].filter(owner => owner.toLowerCase() !== bridgeContractV1.toLowerCase())
           .forEach(owner => toa.push([token[chain], owner]))
     })
-    const balances = await sumTokens({}, toa, block, chain, undefined)
-    return balances
+    return sumTokens2({ tokensAndOwners: toa, permitFailure: true, api })
   };
 }
 
@@ -536,5 +535,5 @@ Array.from(chains).forEach(chain => {
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [
-  [1651881600, "UST depeg"],
+  ['2022-05-07', "UST depeg"],
 ];

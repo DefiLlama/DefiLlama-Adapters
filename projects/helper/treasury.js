@@ -1,44 +1,73 @@
 const ADDRESSES = require('./coreAssets.json')
-const { sumTokensExport, nullAddress, } = require('./sumTokens')
+const { sumTokensExport, nullAddress } = require('./sumTokens')
 const { ankrChainMapping } = require('./token')
 const { defaultTokens } = require('./cex')
+const { getUniqueAddresses } = require('./utils')
+const sdk = require('@defillama/sdk')
+const { sumTokensDebank } = require('./debank')
 
 const ARB = ADDRESSES.arbitrum.ARB;
 
 function treasuryExports(config) {
-  const chains = Object.keys(config)
-  const exportObj = {}
-  chains.forEach(chain => {
+  const { isComplex, complexOwners = [], ...chains } = config;
+
+  const exportObj = {};
+
+  Object.keys(chains).forEach(chain => {
     let { ownTokenOwners = [], ownTokens = [], owners = [], tokens = [], blacklistedTokens = [] } = config[chain]
-    const tvlConfig = { permitFailure: true, ...config[chain], }
+    const tvlConfig = { permitFailure: true, ...config[chain] };
+
     if (chain === 'solana') {
-      tvlConfig.solOwners = owners
+      tvlConfig.solOwners = owners;
     } else if (config[chain].fetchCoValentTokens !== false) {
       if (ankrChainMapping[chain]) {
-        tvlConfig.fetchCoValentTokens = true
-        const { tokenConfig } = config[chain]
-        if (!tokenConfig) {
-          tvlConfig.tokenConfig = { onlyWhitelisted: false, }
-        }
+        tvlConfig.fetchCoValentTokens = true;
+        if (!tvlConfig.tokenConfig) tvlConfig.tokenConfig = { onlyWhitelisted: false };
       } else if (defaultTokens[chain]) {
-        tvlConfig.tokens = [tokens, defaultTokens[chain]].flat()
+        tvlConfig.tokens = [tokens, defaultTokens[chain]].flat();
       }
     }
 
-    tvlConfig.blacklistedTokens = [...ownTokens, ...blacklistedTokens]
+    tvlConfig.blacklistedTokens = [...ownTokens, ...blacklistedTokens];
 
-    if (chain === 'arbitrum') {
-      tvlConfig.tokens = [...tokens, ARB]
+    if (chain === 'arbitrum') tvlConfig.tokens = [...tokens, ARB];
+    if (!Array.isArray(tvlConfig.tokens)) tvlConfig.tokens = [];
+
+    const baseExport = { tvl: sumTokensExport(tvlConfig) };
+
+    const complexExport = isComplex ? {
+      [chain]: {
+        tvl: async (api) => {
+          if (!complexOwners.length) return api.getBalances();
+          const bl = getUniqueAddresses([...ownTokens, ...blacklistedTokens], false)
+          await sumTokensDebank(api, complexOwners, { blacklistedTokens: bl, stripPoolTokens: true })
+          return api.getBalances();
+        }
+      }
+    } : null;
+
+    if (isComplex) {
+      exportObj[chain] = {
+        tvl: sdk.util.sumChainTvls([baseExport.tvl, complexExport[chain].tvl])
+      };
+    } else {
+      exportObj[chain] = baseExport;
     }
-    exportObj[chain] = { tvl: sumTokensExport(tvlConfig) }
 
     if (ownTokens.length > 0) {
-      const { solOwners, ...otherOptions } = config[chain]
-      const options = { ...otherOptions, owners: [...owners, ...ownTokenOwners], tokens: ownTokens, chain, uniV3WhitelistedTokens: ownTokens }
-      exportObj[chain].ownTokens = sumTokensExport(options)
+      const { solOwners, ...other } = config[chain];
+      const opts = {
+        ...other,
+        owners: [...owners, ...ownTokenOwners],
+        tokens: ownTokens,
+        chain,
+        uniV3WhitelistedTokens: ownTokens,
+      };
+      exportObj[chain].ownTokens = sumTokensExport(opts);
     }
-  })
-  return exportObj
+  });
+
+  return exportObj;
 }
 
 function ohmStaking(exports) {

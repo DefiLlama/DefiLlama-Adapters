@@ -1,4 +1,9 @@
-const abi = require("./abi.json");
+const abi = {
+    "getPools": "address[]:getPools",
+    "collateralToken": "address:collateralToken",
+    "currencyToken": "address:currencyToken",
+    "liquidityNodes": "function liquidityNodes(uint128 startTick, uint128 endTick) view returns (tuple(uint128 tick, uint128 value, uint128 shares, uint128 available, uint128 pending, uint128 redemptions, uint128 prev, uint128 next)[])"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const METASTREET_POOL_FACTORY = {

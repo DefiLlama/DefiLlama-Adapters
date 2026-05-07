@@ -13,5 +13,13 @@ module.exports = {
         '0x2Df1c51E09aECF9cacB7bc98cB1742757f163dF7'
       ]
     ]})
+  }, 
+  hyperliquid: {
+    tvl: sumTokensExport({ tokensAndOwners: [
+      [
+        ADDRESSES.hyperliquid.USDC,
+        '0x6B9E773128f453f5c2C60935Ee2DE2CBc5390A24'
+      ],
+    ]})
   }
 }

@@ -56,6 +56,8 @@ async function promoTvl(api) {
   Object.entries(tokenTvls).forEach(([token, balance]) => {
     api.add(token, balance);
   });
+
+  return api.getBalances()
 }
 
 Object.keys(config).forEach(chain => {

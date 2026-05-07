@@ -1,0 +1,96 @@
+{
+  "version": "0.2.0",
+  "name": "drift_vaults",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "vault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "name", "docs": ["The name of the vault. Vault pubkey is derived from this name."], "type": {"array": ["u8", 32]}},
+          {"name": "pubkey", "docs": ["The vault's pubkey. It is a pda of name and also used as the authority for drift user"], "type": "publicKey"},
+          {"name": "manager", "docs": ["The manager of the vault who has ability to update vault params"], "type": "publicKey"},
+          {"name": "tokenAccount", "docs": ["The vaults token account. Used to receive tokens between deposits and withdrawals"], "type": "publicKey"},
+          {"name": "userStats", "docs": ["The drift user stats account for the vault"], "type": "publicKey"},
+          {"name": "user", "docs": ["The drift user account for the vault"], "type": "publicKey"},
+          {
+            "name": "delegate",
+            "docs": ["The vaults designated delegate for drift user account", "can differ from actual user delegate if vault is in liquidation"],
+            "type": "publicKey"
+          },
+          {"name": "liquidationDelegate", "docs": ["The delegate handling liquidation for depositor"], "type": "publicKey"},
+          {"name": "userShares", "docs": ["The sum of all shares held by the users (vault depositors)"], "type": "u128"},
+          {
+            "name": "totalShares",
+            "docs": [
+              "The sum of all shares: deposits from users, manager deposits, manager profit/fee, and protocol profit/fee.",
+              "The manager deposits are total_shares - user_shares - protocol_profit_and_fee_shares."
+            ],
+            "type": "u128"
+          },
+          {"name": "lastFeeUpdateTs", "docs": ["Last fee update unix timestamp"], "type": "i64"},
+          {"name": "liquidationStartTs", "docs": ["When the liquidation starts"], "type": "i64"},
+          {
+            "name": "redeemPeriod",
+            "docs": [
+              "The period (in seconds) that a vault depositor must wait after requesting a withdrawal to finalize withdrawal.",
+              "Currently, the maximum is 90 days."
+            ],
+            "type": "i64"
+          },
+          {"name": "totalWithdrawRequested", "docs": ["The sum of all outstanding withdraw requests"], "type": "u64"},
+          {"name": "maxTokens", "docs": ["Max token capacity, once hit/passed vault will reject new deposits (updatable)"], "type": "u64"},
+          {
+            "name": "managementFee",
+            "docs": ["The annual fee charged on deposits by the manager.", "Traditional funds typically charge 2% per year on assets under management."],
+            "type": "i64"
+          },
+          {"name": "initTs", "docs": ["Timestamp vault initialized"], "type": "i64"},
+          {"name": "netDeposits", "docs": ["The net deposits for the vault"], "type": "i64"},
+          {"name": "managerNetDeposits", "docs": ["The net deposits for the manager"], "type": "i64"},
+          {"name": "totalDeposits", "docs": ["Total deposits"], "type": "u64"},
+          {"name": "totalWithdraws", "docs": ["Total withdraws"], "type": "u64"},
+          {"name": "managerTotalDeposits", "docs": ["Total deposits for the manager"], "type": "u64"},
+          {"name": "managerTotalWithdraws", "docs": ["Total withdraws for the manager"], "type": "u64"},
+          {"name": "managerTotalFee", "docs": ["Total management fee accrued by the manager"], "type": "i64"},
+          {"name": "managerTotalProfitShare", "docs": ["Total profit share accrued by the manager"], "type": "u64"},
+          {"name": "minDepositAmount", "docs": ["The minimum deposit amount"], "type": "u64"},
+          {"name": "lastManagerWithdrawRequest", "type": {"defined": "WithdrawRequest"}},
+          {
+            "name": "sharesBase",
+            "docs": ["The base 10 exponent of the shares (given massive share inflation can occur at near zero vault equity)"],
+            "type": "u32"
+          },
+          {"name": "profitShare", "docs": ["Percentage the manager charges on all profits realized by depositors: PERCENTAGE_PRECISION"], "type": "u32"},
+          {
+            "name": "hurdleRate",
+            "docs": ["Vault manager only collect incentive fees during periods when returns are higher than this amount: PERCENTAGE_PRECISION"],
+            "type": "u32"
+          },
+          {"name": "spotMarketIndex", "docs": ["The spot market index the vault deposits into/withdraws from"], "type": "u16"},
+          {"name": "bump", "docs": ["The bump for the vault pda"], "type": "u8"},
+          {"name": "permissioned", "docs": ["Whether anybody can be a depositor"], "type": "bool"},
+          {"name": "vaultProtocol", "docs": ["The optional [`VaultProtocol`] account."], "type": "bool"},
+          {"name": "padding1", "type": {"array": ["u8", 7]}},
+          {"name": "padding", "type": {"array": ["u64", 7]}}
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "WithdrawRequest",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "shares", "docs": ["request shares of vault withdraw"], "type": "u128"},
+          {"name": "value", "docs": ["requested value (in vault spot_market_index) of shares for withdraw"], "type": "u64"},
+          {"name": "ts", "docs": ["request ts of vault withdraw"], "type": "i64"}
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}

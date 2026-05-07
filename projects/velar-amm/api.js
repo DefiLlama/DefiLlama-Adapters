@@ -16,6 +16,10 @@ async function tvl(api) {
   await uniTvl(api, stableFactory, { isStable: true })
   await uniTvl(api, factory)
   await uniTvl(api, factory2, { isVersion2: true })
+
+  // add pool not part of any registry
+  await sumTokens({ owner: 'SP20X3DC5R091J8B6YPQT638J8NR1W83KN6TN5BJY.curve-pool-v1_0_0_ststx-0001', balances: api.getBalances() })
+
   return api.getBalances()
 }
 
@@ -27,7 +31,7 @@ async function uniTvl(api, factory, { isStable = false, isVersion2 = false } = {
     let res
     if (isVersion2) {
       const pairData = res = await call({ target: factory, abi: 'get-pool', inputArgs: [{ type: 'uint', value: i }] })
-      res = await call({ target: pairData.value.contract.value, abi: 'do-get-pool'})
+      res = await call({ target: pairData.value.contract.value, abi: 'do-get-pool' })
     } else {
       res = await call({ target: factory, abi: 'do-get-pool', inputArgs: [{ type: 'uint', value: i }] })
     }

@@ -1,4 +1,4 @@
-const { stakingUnknownPricedLP } = require("../helper/staking");
+const { stakingPriceLP } = require("../helper/staking");
 const vaultUtils = require("./vault-utils")
 const { pool2Balances } = require("./farm-utils");
 
@@ -15,10 +15,9 @@ module.exports = {
   cronos: {
     tvl:vault,
     pool2: (api) => pool2Balances(api, masterChef),
-    staking: stakingUnknownPricedLP(
+    staking: stakingPriceLP(
       boardroom,
       sky,
-      "cronos",
       "0xaA0845EE17e4f1D4F3A8c22cB1e8102baCf56a77"
     ),
   },

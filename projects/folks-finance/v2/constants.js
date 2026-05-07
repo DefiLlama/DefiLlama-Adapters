@@ -112,7 +112,37 @@ const pools = [
     appId: 1166982094,
     assetId: 1163259470,
     fAssetId: 1166982296,
-  }
+  },
+  // ISOLATED_ALGO
+  {
+    appId: 3184317016,
+    assetId: 0,
+    fAssetId: 3184331013,
+  },
+  // ISOLATED_USDC
+  {
+    appId: 3184324594,
+    assetId: 31566704,
+    fAssetId: 3184331239,
+  },
+  // ISOLATED_TINY
+  {
+    appId: 3184325123,
+    assetId: 2200000000,
+    fAssetId: 3184331789,
+  },
+  // WBTC_NTT
+  {
+    appId: 3514794123,
+    assetId: 3495558025,
+    fAssetId: 3514808410,
+  },
+  // WETH_NTT
+  {
+    appId: 3514795114,
+    assetId: 3495722210,
+    fAssetId: 3514808788,
+  },
 ];
 
 const oracleAppId = 1040271396;

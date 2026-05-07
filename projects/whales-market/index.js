@@ -49,7 +49,7 @@ const insuranceConfig = {
       ADDRESSES.solana.USDC,
       ADDRESSES.solana.SOL,
       ADDRESSES.solana.USDT,
-      'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn'// jito SOL
+      ADDRESSES.solana.JitoSOL// jito SOL
     ],
   },
 

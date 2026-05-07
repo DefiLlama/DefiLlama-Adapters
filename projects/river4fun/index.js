@@ -32,7 +32,7 @@ module.exports = {
       },
       {
         address: '0xD480a0Aab2Bc4A536449B18B7d0C1b3a3c326C93',
-        asset: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d', // USD1
+        asset: ADDRESSES.bsc.USD1, // USD1
       },
       {
         address: '0x9dA4F7DF9d6D4789b9fd47aa98630546FE0DC839',
@@ -97,6 +97,34 @@ module.exports = {
       {
         address: '0x25213f3B73382B7be037332D626255b36242CAd8',
         asset: '0x3c8D20001FE883934A15c949a3355a65Ca984444', // Janitor
+      },
+      {
+        address: '0x84F9C0d827BB03696616BD28020F58514cDADF32',
+        asset: '0x6EA8211A1E47dBD8b55c487c0B906ebC57B94444', // Liberty
+      },
+      {
+        address: '0xC3F64F628E28B6Ba1565dcaF88660ACd449394F8',
+        asset: '0xFE8bF5B8F5e4eb5f9BC2be16303f7dAB8CF56aA8', // BIBI
+      },
+      {
+        address: '0x34471ccFc8f9bFAa4800eFB639C4c7080033aa18',
+        asset: '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
+      },
+      {
+        address: '0x48e791F20c524fA6800D65cA52063eFB66d4E590',
+        asset: '0xc08Cd26474722cE93F4D0c34D16201461c10AA8C', // CARV
+      },
+      {
+        address: '0x69288E9489a557Bb05b26989B8FfD2f5bd4943dF',
+        asset: '0xB78C8F4e04F9d5Fc6Db469DBa25006D9AAa38888', // Pengu
+      },
+      {
+        address: '0xB27773c1F72d74a77DC84409791b4752AE9ef065',
+        asset: '0x6f88DBed8f178F71F6A0C27Df10D4f0B8dDf4444', // Usagi
+      },
+      {
+        address: '0x6671bC9Ef65ac81D57eE22Bc63Cf63B67C34C723',
+        asset: '0x47474747477b199288bF72a1D702f7Fe0Fb1DEeA', // WLFI
       },
     ],
   }),

@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "chainId": 1,
+    "stakingContractAddress": "0x5aA690B8F84077b066EdF0Ac8425CDc4E190CE67",
+    "rewardsContractAddress": "0x97A29CAe634F85b25C8eE7aeB2dEc2583ba30fb1",
+    "depositTokenAddress": "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF",
+    "rewardsTokenAddress": "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF"
+  },
+  {
+    "id": 2,
+    "chainId": 56,
+    "stakingContractAddress": "0x245ca821393e0818f14cfCe432e72894e67DbC90",
+    "rewardsContractAddress": "0x25Bb8CF5Ea1E6CaEcea013D5686ff168F595B1E8",
+    "depositTokenAddress": "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF",
+    "rewardsTokenAddress": "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF"
+  },
+  {
+    "id": 3,
+    "chainId": 56,
+    "stakingContractAddress": "0x0BFF79939ed453Cbd828391Fdcc6EDc2351fe26E",
+    "rewardsContractAddress": "0x74E0E234cD38Ee09431eae823C1017229e015e94",
+    "depositTokenAddress": "0x90Ed8F1dc86388f14b64ba8fb4bbd23099f18240",
+    "rewardsTokenAddress": "0x90Ed8F1dc86388f14b64ba8fb4bbd23099f18240"
+  },
+  {
+    "id": 4,
+    "chainId": 1,
+    "stakingContractAddress": "0x56eD897ffCceAA7A5e59C041380a566d66d6af32",
+    "rewardsContractAddress": "0xf72C709b7f1e4Df9bd4A73E5D4d5E825694816B2",
+    "depositTokenAddress": "0x993864E43Caa7F7F12953AD6fEb1d1Ca635B875F",
+    "rewardsTokenAddress": "0x993864E43Caa7F7F12953AD6fEb1d1Ca635B875F"
+  },
+  {
+    "id": 5,
+    "chainId": 1,
+    "stakingContractAddress": "0xCB85b101C4822A4E3ABCa20e57f1DFf0E2673475",
+    "rewardsContractAddress": "0xA42716ec84013e5e442b527EaD498e396945316F",
+    "depositTokenAddress": "0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85",
+    "rewardsTokenAddress": "0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85"
+  },
+  {
+    "id": 6,
+    "chainId": 1,
+    "stakingContractAddress": "0xa2dc6eC13da4Dadb3C151d0daF220E8071F4E9c5",
+    "rewardsContractAddress": "0x8e61C8FcA989f06E93f36d9CdA035105465C128A",
+    "depositTokenAddress": "0xa1f410f13B6007fCa76833ee7eb58478D47Bc5Ef",
+    "rewardsTokenAddress": "0xa1f410f13B6007fCa76833ee7eb58478D47Bc5Ef"
+  },
+  {
+    "id": 7,
+    "chainId": 56,
+    "stakingContractAddress": "0x863d1b3f532D759f43EBC50EF26e6D4E90Eb5218",
+    "rewardsContractAddress": "0x333bAd5b87AD68bBa37cDfa29EC8C1e7e30EfB66",
+    "depositTokenAddress": "0x602B6C6ccE5F95c00603bd07D8fA7EbAF3747D44",
+    "rewardsTokenAddress": "0x602B6C6ccE5F95c00603bd07D8fA7EbAF3747D44"
+  },
+  {
+    "id": 8,
+    "chainId": 1,
+    "stakingContractAddress": "0xa013139Fea9D0cdF28990CAf3fe31B830e303EcA",
+    "rewardsContractAddress": "0xBC56982B907116F1214d9D7E926C8D926168725f",
+    "depositTokenAddress": "0xF0d33BeDa4d734C72684b5f9abBEbf715D0a7935",
+    "rewardsTokenAddress": "0xF0d33BeDa4d734C72684b5f9abBEbf715D0a7935"
+  },
+  {
+    "id": 9,
+    "chainId": 1,
+    "stakingContractAddress": "0x613765d44A106b5b6ba1fB98b5A1132A9E98929C",
+    "rewardsContractAddress": "0x344794f4A713232C137AB8E289fC5fa3c287f374",
+    "depositTokenAddress": "0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9",
+    "rewardsTokenAddress": "0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9"
+  },
+  {
+    "id": 10,
+    "chainId": 8453,
+    "stakingContractAddress": "0xa2bf1a2434B65c34C2D47fF09022e2289eCCecDe",
+    "rewardsContractAddress": "0x642B3993F5b3e0aef36c88675Ed3Be559F821965",
+    "depositTokenAddress": "0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9",
+    "rewardsTokenAddress": "0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9"
+  },
+  {
+    "id": 11,
+    "chainId": 1,
+    "stakingContractAddress": "0xFD865DEa0ce9836317425d81d05Ec9B60f398Eec",
+    "rewardsContractAddress": "0xB808583001AaA8d2870C629F42aAe1D522D45aAB",
+    "depositTokenAddress": "0x73fBD93bFDa83B111DdC092aa3a4ca77fD30d380",
+    "rewardsTokenAddress": "0x73fBD93bFDa83B111DdC092aa3a4ca77fD30d380"
+  },
+  {
+    "id": 12,
+    "chainId": 8453,
+    "stakingContractAddress": "0x6821813C501ca96A4f6543ed9F994C4423987A82",
+    "rewardsContractAddress": "0x234141dEBCA7b8C2E0024Df31cc223610110D31a",
+    "depositTokenAddress": "0x73fBD93bFDa83B111DdC092aa3a4ca77fD30d380",
+    "rewardsTokenAddress": "0x73fBD93bFDa83B111DdC092aa3a4ca77fD30d380"
+  },
+  {
+    "id": 13,
+    "chainId": 8453,
+    "stakingContractAddress": "0x832358cCBcd27CC5AfdaB10e731e32bb77546371",
+    "rewardsContractAddress": "0x8c1eBDaF55afCd7C53893908277Bb9C8880aaF7f",
+    "depositTokenAddress": "0x6967F0974d76d34e140caE27efeA32CDf546b58E",
+    "rewardsTokenAddress": "0x6967F0974d76d34e140caE27efeA32CDf546b58E"
+  },
+  {
+    "id": 14,
+    "chainId": 56,
+    "stakingContractAddress": "0xD541AebDA7AB1bf53f6f309552459df0DBbD36eA",
+    "rewardsContractAddress": "0xf89f787fAb449f90E798691234F36dBD7551DE67",
+    "depositTokenAddress": "0x53Ffa52f358CCdB59c2a248D5D17AB91a32Ab44d",
+    "rewardsTokenAddress": "0x53Ffa52f358CCdB59c2a248D5D17AB91a32Ab44d"
+  }
+]

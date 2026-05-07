@@ -1,5 +1,17 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const contracts = require('./contracts.json');
+const contracts = {
+    "usdc": {
+      "metis": ADDRESSES.metis.m_USDC
+    },
+    "metis": [
+      {
+        "address": "0xF3f03c110e01dE844fE8a608063bDC9b6c6cdC9f",
+        "token": ADDRESSES.metis.m_USDT,
+        "currency": "m.USDT"
+      }
+    ]
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const { compoundExports } = require("../helper/compound");

@@ -1,10 +1,11 @@
-
+const axios = require('axios');
 const { getLogs } = require('../helper/cache/getLogs')
 const { request, } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
 const { stakings } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens')
-const { dexExport } = require('../helper/chain/aptos')
+const { dexExport } = require('../helper/chain/aptos');
+const { getExports } = require('../helper/heroku-api');
 
 
 const graphEndpoint = 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange'
@@ -72,6 +73,17 @@ async function tvl({ timestamp }, ethBlock, chainBlocks) {
   }
 }
 
+async function tvlPancakeExplorer({ timestamp }) {
+  const response = (await axios.get('https://explorer.pancakeswap.com/api/cached/protocol/chart/v2/bsc/tvl?groupBy=1D')).data
+  for (const item of response) {
+    if (item.bucket.split('T')[0] === new Date(timestamp * 1000).toISOString().split('T')[0]) {
+      return toUSDTBalances(item.tvlUSD)
+    }
+  }
+
+  throw Error('date data not found')
+}
+
 const defaultExport = {
   tvl: getUniTVL({ factory: '0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E', useDefaultCoreAssets: true, })
 }
@@ -84,7 +96,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.finance/info as the source. Staking accounts for the CAKE locked in MasterChef (0x73feaa1eE314F8c655E354234017bE2193C9E24E)',
   bsc: {
-    tvl
+    tvl: getExports('pcs-v2', ['bsc']).bsc.tvl,
   },
   ethereum: {
     tvl: getUniTVL({ factory: '0x1097053Fd2ea711dad45caCcc45EfF7548fCB362', useDefaultCoreAssets: true, })
@@ -100,11 +112,10 @@ module.exports = {
   era: {
     tvl: getUniTVL({ factory: '0xd03D8D566183F0086d8D09A84E1e30b58Dd5619d', useDefaultCoreAssets: true, })
   },
-  op_bnb: {
-    tvl: getUniTVL({ factory: '0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E', useDefaultCoreAssets: true, })
-  },
+  op_bnb: defaultExport,
   arbitrum: { ...defaultExport },
   base: defaultExport,
+  monad: defaultExport,
 }
 
 // https://developer.pancakeswap.finance/contracts/syrup-pools

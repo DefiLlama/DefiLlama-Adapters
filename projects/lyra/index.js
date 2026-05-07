@@ -87,11 +87,11 @@ module.exports = {
         staking: staking("0xcb9f85730f57732fc899fb158164b9ed60c77d49", "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf")
     },
  hallmarks:[
-    [1635218174, "Lyra Token"],
-    [1635822974, "Token Program Start"],
-    [1655341200, "Lyra V1.1 End"],
-    [1656291600, "Lyra Avalon Start"],
-    [1659560056, "OP Rewards Distribution Start"],
-    [1675080000, "Launch on Arbitrum"]
+    ['2021-10-26', "Lyra Token"],
+    ['2021-11-02', "Token Program Start"],
+    ['2022-06-16', "Lyra V1.1 End"],
+    ['2022-06-27', "Lyra Avalon Start"],
+    ['2022-08-03', "OP Rewards Distribution Start"],
+    ['2023-01-30', "Launch on Arbitrum"]
   ]
 }

@@ -2,8 +2,9 @@ const { cachedGraphQuery } = require('../helper/cache')
 const easyBTC = require('./easyBTC')
 const premium = require('./premium')
 const promo = require('./promo')
-const cedefiForCedefi = require('./cedefiFromSolana')
+const cedefiFromSolana = require('./cedefiFromSolana')
 const promoFromSolana = require('./promoFromSolana')
+const cedefiV3 = require('./cedefiV3')
 
 const config = {
   ethereum: {
@@ -40,7 +41,7 @@ async function fetchTokens(chain, subgraphUrl, cacheKey = '') {
 
 async function cedefiTvl(api) {
   if (api.chain === 'base') return {}
-  if (api.chain === 'solana') return cedefiForCedefi[api.chain]?.tvl?.(api) || {}
+  if (api.chain === 'solana') return cedefiFromSolana[api.chain]?.tvl?.(api) || {}
   
   const chain = api.chain
   
@@ -70,16 +71,17 @@ async function cedefiTvl(api) {
 }
 
 async function combinedTvl(api) {
-  const [cedefiBalances, easyBTCBalances, premiumBalances] = await Promise.all([
+  const [cedefiBalances, easyBTCBalances, premiumBalances, cedefiV3Balances, promoBalances, promoFromSolanaBalances] = await Promise.all([
     cedefiTvl(api),
     easyBTC[api.chain]?.tvl?.(api) || {},
     premium[api.chain]?.tvl?.(api) || {},
+    cedefiV3[api.chain]?.tvl?.(api) || {},
     promo[api.chain]?.tvl?.(api) || {},
     promoFromSolana[api.chain]?.tvl?.(api) || {}
   ])
 
   // merge all balances
-  return api.sumTokens([cedefiBalances, easyBTCBalances, premiumBalances])
+  return api.sumTokens([cedefiBalances, easyBTCBalances, premiumBalances, cedefiV3Balances, promoBalances, promoFromSolanaBalances])
 }
 
 module.exports = {

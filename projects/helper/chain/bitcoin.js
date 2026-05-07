@@ -63,7 +63,7 @@ async function _sumTokensBlockchain({ balances = {}, owners = [], forceCacheUse,
   for (let i = 0; i < owners.length; i += STEP) {
     const { addresses } = await get(url3(owners.slice(i, i + STEP)))
     for (const addr of addresses)
-      sdk.util.sumSingleBalance(balances, 'bitcoin', addr.final_balance / 1e8)
+        sdk.util.sumSingleBalance(balances, 'bitcoin', addr.final_balance / 1e8)
     await sleep(10000)
   }
 
@@ -106,6 +106,7 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
   if (!timestamp || (now - timestamp) < delay) {
     try {
       await sumTokensBlockchain({ balances, owners, forceCacheUse })
+      // console.log('bitcoin sumTokens from blockchain done', balances)
       return balances
     } catch (e) {
       sdk.log('bitcoin sumTokens error', e.toString())
@@ -134,23 +135,40 @@ async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse,
 
 // get archive BTC balance
 async function getBalance(addr, timestamp) {
-  const endpoint = url(addr) + '/txs'
-  const txs = await get(endpoint)
-  
   let balance = 0
-  for (const tx of txs) {
-    if (tx.status.block_time <= timestamp) {
-      for (const vin of tx.vin) {
-        if (vin.prevout.scriptpubkey_address === addr) {
-          balance -= vin.prevout.value / 1e8
+
+  if (timestamp > (Date.now() / 1e3) - 30 * 60) { // 30 minutes ago
+    const endpoint = url(addr) + '/utxo'
+    const utxos = await get(endpoint)
+
+    for (const utxo of utxos) {
+      if (utxo.status.block_time <= timestamp) {
+        balance += utxo.value / 1e8
+      }
+    }
+  } else {
+    const endpoint = url(addr) + '/txs'
+    let txs = await get(endpoint)
+
+    while (txs.length) {
+      for (const tx of txs) {
+        if (tx.status.block_time <= timestamp) {
+          for (const vin of tx.vin) {
+            if (vin.prevout.scriptpubkey_address === addr) {
+              balance -= vin.prevout.value / 1e8
+            }
+          }
+
+          for (const vout of tx.vout) {
+            if (vout.scriptpubkey_address === addr) {
+              balance += vout.value / 1e8
+            }
+          }
         }
       }
 
-      for (const vout of tx.vout) {
-        if (vout.scriptpubkey_address === addr) {
-          balance += vout.value / 1e8
-        }
-      }
+      const next = `${endpoint}/chain/${txs[txs.length - 1].txid}`
+      txs = await get(next)
     }
   }
 

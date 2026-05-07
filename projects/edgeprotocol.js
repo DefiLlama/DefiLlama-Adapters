@@ -26,6 +26,6 @@ module.exports = {
         borrowed
     },
     hallmarks: [
-        [1651881600, "UST depeg"],
+        ['2022-05-07', "UST depeg"],
     ]
 };

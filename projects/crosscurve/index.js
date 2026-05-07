@@ -1,263 +1,135 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs");
+const { getConfig } = require("../helper/cache");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+
+const loadPortalBalances = async (api, config, chainKey) => {
+  const chainId = config[chainKey].chainId;
+  const tokensLockedInPortal = Object.values(config)
+    .flatMap(x => x.tokens
+      .filter(t => t.realToken && t.realToken.chainId === chainId)
+      .map(t => t.realToken.address.toLowerCase())
+    )
+
+  const portalBalances = await sumTokens2({
+    api,
+    owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+    tokens: tokensLockedInPortal,
+  });
+
+  return portalBalances;
+}
+
+const tagsRelatedToCrossCurve = [
+  'farming_pool',
+  'voting_pool',
+  'hub_v3_lp',
+  'hub_v2_lp',
+  'hub_v1_5_lp',
+  'hub_crypto_v2_lp',
+];
+
+const loadPoolsBalances = async (api, config, chainKey) => {
+  const crosscurvePools = config[chainKey].pools.filter(pool => tagsRelatedToCrossCurve.some(x => pool.tags.includes(x)))
+  const tokensInPools = crosscurvePools.flatMap(pool => {
+    return pool.coins.map(coin => {
+      const token = config[chainKey].tokens.find(t => t.address.toLowerCase() === coin.toLowerCase())
+
+      if (
+        !token ||
+        token.tags.includes('curve_lp') ||
+        token.tags.includes('synth')
+      ) {
+        return
+      }
+
+      return token.address
+    }).filter(Boolean)
+  })
+
+  if (!tokensInPools.length) {
+    return {}
+  }
+
+  const poolBalances = await sumTokens2({
+    api,
+    owners: crosscurvePools.map(pool => pool.address),
+    tokens: tokensInPools,
+  });
+
+  return poolBalances;
+}
+
+const loadTvl = (chainKey) => async (api) => {
+  const config = await getConfig('crosscurve', 'https://api.crosscurve.fi/networks')
+
+  if (!config[chainKey]) {
+    throw new Error(`Unsupported chain ${chainKey}`)
+  }
+  
+  const portalBalances = await loadPortalBalances(api, config, chainKey);
+  const poolsBalances = await loadPoolsBalances(api, config, chainKey);
+
+  return { ...portalBalances, ...poolsBalances };
+}
 
 module.exports = {
   ethereum: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.ethereum.TUSD, // TUSD
-        ADDRESSES.ethereum.USDT, // USDT
-        ADDRESSES.ethereum.USDC, // USDC
-        ADDRESSES.ethereum.DAI, // DAI
-        "0x4DEcE678ceceb27446b35C672dC7d61F30bAD69E", // crvUSDC
-        "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4", // crvUSDT
-        "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", // 3Crv
-        "0xc4AD29ba4B3c580e6D59105FFf484999997675Ff", // crv3crypto
-        ADDRESSES.ethereum.WETH, // WETH
-        "0xb7ecb2aa52aa64a717180e030241bc75cd946726", // tBTC/WBTC
-        ADDRESSES.ethereum.CRV, // CRV
-      ],
-    }),
+    tvl: loadTvl('ethereum'),
   },
   arbitrum: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0x4D15a3A2286D883AF0AA1B3f21367843FAc63E07", // TUSD
-        ADDRESSES.arbitrum.USDT, // USDT
-        ADDRESSES.arbitrum.USDC, // usdc.e
-        ADDRESSES.optimism.DAI, // DAI
-        "0xec090cf6DD891D2d014beA6edAda6e05E025D93d", // crvUSDC
-        "0x82670f35306253222F8a165869B28c64739ac62e", // 3c-crvUSD
-        "0x73aF1150F265419Ef8a5DB41908B700C32D49135", // crvUSDT
-        "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // 2CRV
-        ADDRESSES.arbitrum.WETH, // WETH
-        "0x186cf879186986a20aadfb7ead50e3c20cb26cec", // 2BTC-ng
-        "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978", // CRV
-        ADDRESSES.arbitrum.WBTC, // WBTC
-      ],
-    }),
+    tvl: loadTvl('arbitrum'),
   },
   polygon: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0x2e1AD108fF1D8C782fcBbB89AAd783aC49586756", // TUSD
-        ADDRESSES.polygon.USDT, // USDT
-        ADDRESSES.polygon.USDC, // usdc.e
-        ADDRESSES.polygon.DAI, // DAI
-        "0x5225010a0ae133b357861782b0b865a48471b2c5", // crvUSDC
-        "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171", // aave
-        "0xa70af99bff6b168327f9d1480e29173e757c7904", // crvUSDT
-        "0xdad97f7713ae9437fa9249920ec8507e5fbb23d3", // crv3crypto
-        ADDRESSES.polygon.WBTC, // WBTC
-        ADDRESSES.polygon.WETH_1, // WETH
-        "0x172370d5cd63279efa6d502dab29171933a610af", // CRV
-      ],
-    }),
+    tvl: loadTvl('polygon'),
   },
   bsc: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.bsc.TUSD, // TUSD
-        ADDRESSES.bsc.USDT, // USDT
-        ADDRESSES.bsc.USDC, // usdc.e
-        "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", // DAI
-        "0xc4ec3ab41182e70ca45a764ffc5c45b9a82ccc97", // crvUSDC
-        "0xA5E0E46462970C9Ee8C2ECadcde254c483748Ec4", // b3pool
-        "0xae87e5fa20f335ce14aa3b9e0616308d9ac7d4ce", // crvUSDT
-        ADDRESSES.bsc.BTCB, // BTCB
-        ADDRESSES.bsc.ETH, // ETH
-      ],
-    }),
+    tvl: loadTvl('bsc'),
   },
   optimism: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0xcB59a0A753fDB7491d5F3D794316F1adE197B21E", // TUSD
-        ADDRESSES.optimism.USDT, // USDT
-        ADDRESSES.optimism.USDC, // usdc.e
-        ADDRESSES.optimism.DAI, // DAI
-        "0x03771e24b7c9172d163bf447490b142a15be3485", // crvUSDC
-        "0x1337bedc9d22ecbe766df105c9623922a27963ec", // 3pool
-        "0xd1b30ba128573fcd7d141c8a987961b40e047bb6", // crvUSDT
-        ADDRESSES.optimism.WETH_1, // WETH
-        "0x1dc5c0f8668a9f54ed922171d578011850ca0341", // 2BTC
-        "0x0994206dfe8de6ec6920ff4d779b0d950605fb53", // CRV
-      ],
-    }),
+    tvl: loadTvl('optimism'),
   },
   avax: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0x1C20E891Bab6b1727d14Da358FAe2984Ed9B59EB", // TUSD
-        ADDRESSES.avax.USDt, // USDT
-        ADDRESSES.avax.USDC, // usdc.e
-        ADDRESSES.avax.DAI, // DAI
-        "0x1337BedC9D22ecbe766dF105c9623922A27963EC", // av3crv
-        "0x1daB6560494B04473A0BE3E7D83CF3Fdf3a51828", // crv3crypto
-        ADDRESSES.avax.BTC_b, // BTC.b
-        ADDRESSES.avax.WETH_e, // WETH.e
-      ],
-    }),
+    tvl: loadTvl('avalanche'),
   },
   base: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0xf6C5F01C7F3148891ad0e19DF78743D31E390D1f", // 4pool
-        ADDRESSES.optimism.WETH_1, // WETH
-        ADDRESSES.ethereum.cbBTC, // cbBTC
-        "0x8Ee73c484A26e0A5df2Ee2a4960B789967dd0415", // CRV
-      ],
-    }),
+    tvl: loadTvl('base'),
   },
   xdai: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0x1337bedc9d22ecbe766df105c9623922a27963ec", // x3CRV
-        ADDRESSES.xdai.WETH, // WETH
-      ],
-    }),
+    tvl: loadTvl('gnosis'),
   },
   blast: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.blast.WETH, // WETH
-        ADDRESSES.blast.USDB, // USDB
-      ],
-    }),
+    tvl: loadTvl('blast'),
   },
   mantle: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.mantle.WETH, // WETH
-        ADDRESSES.mantle.USDC, // USDC
-      ],
-    }),
+    tvl: loadTvl('mantle'),
   },
   linea: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.linea.WETH, // WETH
-        "0x3aab2285ddcddad8edf438c1bab47e1a9d05a9b4", // WBTC
-        ADDRESSES.linea.USDC, // USDC.e
-      ],
-    }),
+    tvl: loadTvl('linea'),
   },
   taiko: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.taiko.WETH, // WETH
-        ADDRESSES.taiko.USDC, // USDC
-      ],
-    }),
+    tvl: loadTvl('taiko'),
   },
   celo: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0x28f209844029755fc563c1bd4fd21f42dc7ce0e4", // Tri-pool
-      ],
-    }),
+    tvl: loadTvl('celo'),
   },
   fraxtal: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        "0xcaef324bea3ff5c7a08710081294f3344ffadc54", // FRAX/USDT
-        "0xfc00000000000000000000000000000000000006", // wfrxETH
-        "0x331b9182088e2a7d6d3fe4742aba1fb231aecc56", // CRV
-      ],
-    }),
+    tvl: loadTvl('fraxtal'),
   },
   kava: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.kava.USDt, // USDt
-      ],
-    }),
+    tvl: loadTvl('kava')
   },
   metis: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.metis.WETH, // WETH
-      ],
-    }),
+    tvl: loadTvl('metis'),
   },
   mode: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.optimism.WETH_1, // WETH
-      ],
-    }),
+    tvl: loadTvl('mode'),
   },
   manta: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.manta.WETH, // WETH
-        ADDRESSES.manta.USDT, // USDT
-      ],
-    }),
+    tvl: loadTvl('manta'),
   },
   sonic: {
-    tvl: async (api) => {
-      const portalBalances = await sumTokens2({
-        api,
-        owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-        tokens: [
-          ADDRESSES.sonic.WETH, // WETH
-          ADDRESSES.sonic.USDC_e, // usdc.e
-        ],
-      });
-
-      const poolBalances = await sumTokens2({
-        api,
-        owners: [
-          "0xF1232a1aB5661aBdD6E02c6D8Ac9940a23Bb0b84", // xfrxUSD
-          "0x346704605c72d9f5f9f02d651e5a3dcce6964f3d", // xfrxETH
-          "0x09679c768d17b52bfa059010475f9a0bdb0d6fea", // xbEthereum
-          "0x1c404afffba0e70426dc601aeaa6205eca8c9078", // xbArbitrum
-          "0x7b823067ece11047f83f48647110e7a777e2bf5a", // xbOptimism
-          "0x538a5534543752d5abbc8cd11760f8be3625e7b1", // xbAvalanche
-          "0xdb0a43327626c0e3e87ce936bc0cdf2ee9475c22", // xbPolygon
-          "0x5fa5168497db4ec1964b3208c18cb6157e5652e4", // xbBSC
-          "0x1894a7203faa464f7afa3b8c319a3cac8beb6cda", // xbBase
-          "0xee05755051e8b1ccf85747a83d0ef8b00f161180", // xbLinea
-          "0x9b78e02ddddda4117ddf6be8a0fbd15c45907895", // xbGnosis
-        ],
-        tokens: [
-          ADDRESSES.sonic.scUSD,
-          "0x80eede496655fb9047dd39d9f418d5483ed600df", // frxUSD
-          ADDRESSES.sonic.scETH,
-          "0x43edd7f3831b08fe70b7555ddd373c8bf65a9050", // frxETH
-          "0xbb30e76d9bb2cc9631f7fc5eb8e87b5aff32bfbd", // scBTC
-        ],
-      });
-
-      return { ...portalBalances, ...poolBalances };
-    },
+    tvl: loadTvl('sonic'),
   },
   fantom: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.fantom.USDC, // USDC,
-        "0x2F733095B80A04b38b0D10cC884524a3d09b836a", // USDC.e
-      ],
-    }),
+    tvl: loadTvl('fantom'),
   },
 };

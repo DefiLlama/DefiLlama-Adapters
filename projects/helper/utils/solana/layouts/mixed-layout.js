@@ -339,8 +339,82 @@ const ZEUS_GUARDIAN_SETTING_LAYOUT = BufferLayout.struct([
   blob(128, "_padding"), // Ensuring 128-byte padding for safety
 ]);
 
+// SendIt Reserve Layout
+const ReserveLayoutSendit = BufferLayout.struct([
+  BufferLayout.u8("version"),
+  LastUpdateLayout,
+  publicKey("lendingMarket"),
+  
+  // Liquidity section
+  publicKey("liquidityMintPubkey"),
+  BufferLayout.u8("liquidityMintDecimals"),
+  publicKey("liquiditySupplyPubkey"),
+  publicKey("liquidityPythOracle"),
+  publicKey("liquiditySwitchboardOracle"),
+  uint64("liquidityAvailableAmount"),
+  uint128("liquidityBorrowedAmountWads"),
+  uint128("liquidityCumulativeBorrowRateWads"),
+  uint128("liquidityMarketPrice"),
+  
+  // Collateral section
+  publicKey("collateralMintPubkey"),
+  uint64("collateralMintTotalSupply"),
+  publicKey("collateralSupplyPubkey"),
+  
+  // Config section
+  BufferLayout.u8("optimalUtilizationRate"),
+  BufferLayout.u8("loanToValueRatio"),
+  BufferLayout.u8("liquidationBonus"),
+  BufferLayout.u8("liquidationThreshold"),
+  BufferLayout.u8("minBorrowRate"),
+  BufferLayout.u8("optimalBorrowRate"),
+  BufferLayout.u8("maxBorrowRate"),
+  uint64("borrowFeeWad"),
+  uint64("flashLoanFeeWad"),
+  BufferLayout.u8("hostFeePercentage"),
+  uint64("depositLimit"),
+  uint64("borrowLimit"),
+  publicKey("feeReceiver"),
+  BufferLayout.u8("protocolLiquidationFee"),
+  BufferLayout.u8("protocolTakeRate"),
+  uint128("accumulatedProtocolFeesWads"),
+  uint64("addedBorrowWeightBPS"),
+  uint128("liquiditySmoothedMarketPrice"),
+  BufferLayout.u8("reserveType"),
+  BufferLayout.u8("maxUtilizationRate"),
+  uint64("superMaxBorrowRate"),
+  BufferLayout.u8("maxLiquidationBonus"),
+  BufferLayout.u8("maxLiquidationThreshold"),
+  uint64("scaledPriceOffsetBPS"),
+  publicKey("extraOracle"),
+  BufferLayout.u8("liquidityExtraMarketPriceFlag"),
+  uint128("liquidityExtraMarketPrice"),
+  uint128("attributedBorrowValue"),
+  uint64("attributedBorrowLimitOpen"),
+  uint64("attributedBorrowLimitClose"),
+  
+  // VestingFees
+  uint128("rewardsPerSlot"),
+  uint64("lastUpdateSlotVesting"),
+  BufferLayout.u8("lastHourIndex"),
+  BufferLayout.seq(uint128(), 72, "hourlyDeltas"),
+  
+  // LiquidityIncentives
+  uint128("incentivesPerSlot"),
+  uint64("lastUpdateSlotIncentives"),
+  BufferLayout.u32("dailyDeltasLength"),
+  BufferLayout.seq(uint128(), 365, "dailyDeltas"),
+  uint128("cumulativeIncentivesPerShare"),
+  publicKey("incentiveTokenMint"),
+  publicKey("incentiveTokenAccount"),
+  BufferLayout.u8("incentiveTokenDecimals"),
+  publicKey("tokenProgramId"),
+  
+  BufferLayout.blob(17, "padding"),
+]);
+
 module.exports = {
-  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
+  ReserveLayout, ReserveLayoutLarix, ReserveLayoutSendit, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
   PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT, METEORA_STABLE_SWAP_LAYOUT, ZEUS_GUARDIAN_SETTING_LAYOUT,
 }
 

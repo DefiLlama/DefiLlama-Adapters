@@ -143,7 +143,7 @@ module.exports = {
         tvl: neutronTvl,
     },
     hallmarks: [
-        [1651881600, "UST depeg"],
+        ['2022-05-07', "UST depeg"],
         ['2022-09-13', 'Stop supporting Terra Classic'],
         ['2023-02-16', 'Relaunch on Osmosis '],
     ],

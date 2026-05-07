@@ -1,21 +1,20 @@
-const utils = require("../helper/utils");
+const { get_account_tvl } = require("../helper/chain/eos");
 
-// https://paycashswap.com
-// https://api.paycashswap.com
-async function eos(api) {
-  const data = {
-    operationName: "TotalLiquidity",
-    variables: {},
-    query: "query TotalLiquidity { totalLiquidityChart { value24h } token(id:100) {liquidity} }"
-  }
-  const { data: { data: { totalLiquidityChart: { value24h }, token: { liquidity } } } } = await utils.postURL("https://api.paycashswap.com/", data);
-  api.addUSDValue(value24h - liquidity)  // exclude self-issued tokens
+const tokens = [
+  ["eosio.token", "EOS", "eos"],
+  ["tethertether", "USDT", "tether"],
+]
+
+// PayCash Swap
+// https://paycash.app/
+async function eos() {
+  return await get_account_tvl("swap.pcash", tokens);
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  methodology: `PayCash Swap TVL is achieved by making a call to its PayCash Swap API.`,
+  timetravel: false,
+  methodology: `PayCash Swap TVL is computed by querying token balances from the 'swap.pcash' contract. Only external tokens (EOS, USDT) are counted, excluding project-owned tokens like MLNK and RUBCASH.`,
   eos: {
     tvl: eos
-  },
+  }
 }

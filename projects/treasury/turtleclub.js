@@ -1,4 +1,4 @@
-const { tokens, treasuryMultisigs, treasuryNFTs, defaultTokens, exceptions } = require('../TurtleClub/assets');
+const { tokens, treasuryMultisigs, treasuryNFTs, defaultTokens, tokenMappingERC20, tokenMapping } = require('../TurtleClub/assets');
 const { ankrChainMapping } = require('../helper/token');
 const { sumTokens2, unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 const SOLIDLY_VE_NFT_ABI = require('../helper/abis/solidlyVeNft.json');
@@ -13,7 +13,7 @@ function formatForTreasuryExport(tokens = {}) {
     return treasuryExportsFormat;
 }
 
-async function sumPositions(api, NFTs) {
+async function sumNFTs(api, NFTs) {
     const waitNFTs = [];
     for (const treasuryNFT of NFTs) {
         const { veNft, owner, baseToken, useLocked = true } = treasuryNFT;
@@ -50,9 +50,12 @@ function turtleTreasuryExports(config, treasuryNFTs) {
         }
 
         const tvl = async (api) => {
-            if (exceptions[chain]?.length > 0) {
+            if (tokenMappingERC20[chain]?.length > 0) {
                 const es = [];
-                exceptions[chain].forEach(async ({ token, use }) => {
+                tokenMappingERC20[chain].forEach(async ({ token, use, coingeckoId, decimals }) => {
+                    const balanceLogic = coingeckoId ?
+                        bal => api.add(coingeckoId, bal / (10 ** decimals), { skipChain: true }) :
+                        bal => api.add(use, bal);
                     es.push((async () => {
                         const balances = await api.multiCall({
                             abi: 'erc20:balanceOf',
@@ -62,14 +65,29 @@ function turtleTreasuryExports(config, treasuryNFTs) {
                             })),
                             permitFailure: true
                         });
-                        balances.filter(b => b !== '0' && !!b).forEach(bal => api.add(use, bal));
+                        balances.filter(b => b !== '0' && !!b).map(bal => Number(bal)).forEach(balanceLogic);
                     })());
                 });
                 await Promise.allSettled(es);
             }
 
+            const xRexAddr = tokens.linea.xREX;
+            const xRexStakedBalances = await api.multiCall({
+                abi: 'function balanceOf(address) view returns (uint256)',
+                calls: treasuryMultisigs.map(owner => ({ params: [owner] })),
+                target: '0xedd7cbc9c47547d0b552d5bc2be76135f49c15b1', // VoteModule staking contract
+                permitFailure: true,
+            });
+            xRexStakedBalances.filter(b => b && b !== '0').map(bal => Number(bal)).forEach(balance => {
+                const xRexMapping = tokenMapping.linea[xRexAddr];
+                if (xRexMapping)
+                    api.add(xRexMapping.coingeckoId, balance / (10 ** xRexMapping.decimals), { skipChain: true });
+                else
+                    api.add(xRexAddr, balance);
+            });
+
             await sumTokens2({ ...api, api, ...tvlConfig });
-            if (treasuryNFTs[chain]?.length > 0) await sumPositions(api, treasuryNFTs[chain]);
+            if (treasuryNFTs[chain]?.length > 0) await sumNFTs(api, treasuryNFTs[chain]);
         };
         exportObj[chain] = { tvl };
     }

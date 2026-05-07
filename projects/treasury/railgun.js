@@ -68,7 +68,7 @@ module.exports = treasuryExports({
         nullAddress,
         ADDRESSES.bsc.WBNB,
         ADDRESSES.bsc.BUSD,
-        "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",//dai
+        ADDRESSES.bsc.DAI,//dai
         ADDRESSES.bsc.USDT,
         "0x39cC67690D0F2d4aCD68d3d9B612a80D780b84c0",//agro
         "0xbF7c81FFF98BbE61B40Ed186e4AfD6DDd01337fe",//egld

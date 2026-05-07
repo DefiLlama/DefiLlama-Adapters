@@ -1,4 +1,0 @@
-{
-  "underlyingBalance": "function getUnderlyingBalances() public view returns (uint256 amount0Current, uint256 amount1Current)",
-  "getBalanceInCollateralToken": "function getBalanceInCollateralToken() external view returns (uint256 amount)"
-}

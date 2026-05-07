@@ -36,17 +36,20 @@ async function getAtvCumulativeTvl(api, vaultConfigs) {
  */
 async function getAtvVaultTokens(api, vaultAddress, vaultType = 'ATV-111', additionalTokens = []) {
   // Always try to get dynamic tokens from vault contract
-  const [_, inputTokens] = await api.call({
+  const inputTokenResult = await api.call({
     abi: ATV_ABIS.getInputToken,
     target: vaultAddress,
     permitFailure: true,
   });
 
-  const uTokens = await api.call({
+  const uTokensResult = await api.call({
     abi: ATV_ABIS.getUTokens,
     target: vaultAddress,
     permitFailure: true,
   });
+
+  const inputTokens = Array.isArray(inputTokenResult) ? inputTokenResult[1] || [] : [];
+  const uTokens = Array.isArray(uTokensResult) ? uTokensResult : [];
 
   // Combine dynamic tokens
   const dynamicTokens = []
@@ -167,18 +170,31 @@ function generateAtvExport(config) {
     exportObject[chain] = {
       // Total cumulative TVL with direct method support
       tvl: async (api) => {
-        // Check if we have storage contracts configured for direct method
-        const hasStorageContracts = vaultConfigs.some(config => 
-          config.storage && !config.storage.startsWith('STORAGE_ADDRESS')
+        // Check if we have storage contracts or ATVPTMAX vaults with getCurrentTVL
+        const hasDirectMethods = vaultConfigs.some(config => 
+          (config.storage && !config.storage.startsWith('STORAGE_ADDRESS')) || config.type === 'ATVPTMAX'
         );
 
-        if (hasStorageContracts) {
+        if (hasDirectMethods) {
           // Use mixed approach: direct where available, fallback otherwise
           let totalUsd = 0;
           const fallbackVaults = [];
 
           for (const config of vaultConfigs) {
-            if (config.storage && !config.storage.startsWith('STORAGE_ADDRESS')) {
+            // ATVPTMAX uses getCurrentTVL directly on the vault contract
+            if (config.type === 'ATVPTMAX') {
+              const tvlInUsd = await api.call({
+                abi: ATV_ABIS.getCurrentTVL,
+                target: config.address,
+                permitFailure: true,
+              });
+              
+              if (tvlInUsd) {
+                totalUsd += Number(tvlInUsd) / 1e18;
+              } else {
+                fallbackVaults.push(config);
+              }
+            } else if (config.storage && !config.storage.startsWith('STORAGE_ADDRESS')) {
               const tvlInUsd = await api.call({
                 abi: ATV_ABIS.calculatePoolInUsd,
                 target: config.storage,
@@ -202,13 +218,8 @@ function generateAtvExport(config) {
           }
 
           // Process fallback vaults if any
-          if (fallbackVaults.length > 0) {
-            const fallbackBalances = await getAtvCumulativeTvl(api, fallbackVaults);
-            // Merge with existing balances
-            Object.entries(fallbackBalances).forEach(([token, amount]) => {
-              api.add(token, amount);
-            });
-          }
+          if (fallbackVaults.length > 0) await getAtvCumulativeTvl(api, fallbackVaults);
+          
 
           return api.getBalances();
         } else {
@@ -278,6 +289,8 @@ const ATV_ABIS = {
   getUTokens: 'function getUTokens() view returns (address[])',
   // Direct TVL calculation from storage contract
   calculatePoolInUsd: 'function calculatePoolInUsd(address afiContract) view returns (uint256)',
+  // Direct TVL calculation from vault contract (ATVPTMAX)
+  getCurrentTVL: 'function getCurrentTVL() view returns (uint256)',
 };
 
 /**

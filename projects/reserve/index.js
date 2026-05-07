@@ -6,6 +6,12 @@ const {
   getStargateLpValues,
   getCompoundUsdcValues,
   _getLogs,
+  unwrapCreamTokens,
+  genericUnwrapCvxDeposit,
+  _getFolioLogs,
+  getFolioTotalAssets,
+  _getStakingTokenLogs,
+  getStakingTokenAssets,
 } = require("./helper");
 
 const chainConfigs = {
@@ -23,6 +29,16 @@ const chainConfigs = {
     fromBlock: 16680995,
     erc4626Wrapped: ["0xaa91d24c2f7dbb6487f61869cd8cd8afd5c5cab2"],
     subgraph_url: "https://subgraph.satsuma-prod.com/327d6f1d3de6/reserve/reserve-mainnet/api",
+    folioDeployers: [
+      { address: "0xaafb13a3df7ce70c140e40c959d58fd5cc443cba", startBlock: 21818973 },
+      { address: "0x4c64ef51cb057867e40114dcfa3702c2955d3644", startBlock: 21848440 },
+      { address: "0xBE3B47587cEeff7D48008A0114f51cD571beC63A", startBlock: 22897712 }
+    ],
+    governanceDeployers: [
+      { address: "0xCB061c96Ff76E027ea99F73ddEe9108Dd6F0c212", startBlock: 21818973 },
+      { address: "0xE926577a152fFD5f5036f88BF7E8E8D3652B558C", startBlock: 22081811 },
+      { address: "0x5Bed18AcA50E6057E6658Fe8498004092EedCDcF", startBlock: 22897712 }
+    ],
   },
   base: {
     deployerAddresses: [
@@ -33,6 +49,16 @@ const chainConfigs = {
     rsr: "0xab36452dbac151be02b16ca17d8919826072f64a",
     fromBlock: 5000000,
     subgraph_url: "https://subgraph.satsuma-prod.com/327d6f1d3de6/reserve/reserve-base/api",
+    folioDeployers: [
+      { address: "0xe926577a152ffd5f5036f88bf7e8e8d3652b558c", startBlock: 25958000 },
+      { address: "0xb8469986840bc9b7bb101c274950c02842755911", startBlock: 27803169 },
+      { address: "0xA203AA351723cf943f91684e9F5eFcA7175Ae7EA", startBlock: 32733863 }
+    ],
+    governanceDeployers: [
+      { address: "0xdBd9C5a83A3684E80D51fd1c00Af4A1fbfE03D14", startBlock: 25703976 },
+      { address: "0x6a66E6E209C7120819cC033d9397E5022C22C872", startBlock: 27803169 },
+      { address: "0x1A7D043c84fe781b6df046fEfCf673F71110208D", startBlock: 32733863 }
+    ],
   },
   arbitrum: {
     deployerAddresses: [
@@ -42,14 +68,33 @@ const chainConfigs = {
     fromBlock: 64464546,
     subgraph_url: "https://subgraph.satsuma-prod.com/327d6f1d3de6/reserve/reserve-arbitrum/api",
   },
+  bsc: {
+    folioDeployers: [
+      { address: "0x100E0eFDd7a4f67825E1BE5f0493F8D2AEAc00bb", startBlock: 53679824 },
+      { address: "0x5Bed18AcA50E6057E6658Fe8498004092EedCDcF", startBlock: 60701791 }
+    ],
+    governanceDeployers: [
+      { address: "0xBD49CeAC629d7131B8A975B582AcDAeB5C049bAD", startBlock: 53679824 },
+      { address: "0x270d928b9Ee38BAD93601D197256390b3c3C13Ec", startBlock: 60701791 }
+    ],
+  },
 };
 
 async function tvl(api) {
   const chain = api.chain;
   const config = chainConfigs[chain];
+
+  if (!config) return;
+
+  if (config.folioDeployers) {
+    const folios = await _getFolioLogs(api, config.folioDeployers);
+    await getFolioTotalAssets(api, folios);
+  }
+
+  if (!config.deployerAddresses) return;
+
   let { erc4626Wrapped = [] } = config;
   erc4626Wrapped = erc4626Wrapped.map((i) => i.toLowerCase());
-  // Common logic for calculating TVL (only mainnet has vault)
   const ownerTokens = config.vault
     ? [
       [
@@ -102,12 +147,13 @@ async function tvl(api) {
   const aTokenWrappersV2 = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave") && allNames[i].includes("interest"));
   const aTokenWrappersV3 = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave") && !allNames[i].includes("interest"));
   const cUsdcV3Wrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped cUSDCv3"));
+  const cUsdtV3Wrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped cUSDTv3"));
   const morphoWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Tokenised Morpho"));
   const stargateLpWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped Stargate"));
   const cTokenWrappers = allTokens.filter(
-    (_, i) => /^Compound.*Vault$/.test(allNames[i]) // Starts with Compound, ends with Vault
+    (_, i) => /^Compound.*Vault$/.test(allNames[i])
   );
-  const convexTokensAndOwners = [];
+    const convexTokensAndOwners = [];
 
   allTokens.forEach((token, i) => {
     if (!allNames[i].startsWith("Flux ")) return;
@@ -136,7 +182,8 @@ async function tvl(api) {
     ...stargateLpWrappers,
     ...cTokenWrappers,
     ...cUsdcV3Wrappers,
-    ...morphoWrappers
+    ...cUsdtV3Wrappers,
+    ...morphoWrappers,
   );
 
   cTokens.forEach((v, i) => ownerTokens.push([[v], cTokenWrappers[i]]));
@@ -154,10 +201,19 @@ async function tvl(api) {
       wrapperBalances
     );
 
-  if (cUsdcV3Wrappers) {
+  if (cUsdcV3Wrappers.length) {
     await getCompoundUsdcValues(
       api,
       cUsdcV3Wrappers,
+      processedWrappers,
+      wrapperBalances
+    );
+  }
+
+  if (cUsdtV3Wrappers.length) {
+    await getCompoundUsdcValues(
+      api,
+      cUsdtV3Wrappers,
       processedWrappers,
       wrapperBalances
     );
@@ -171,77 +227,51 @@ async function tvl(api) {
 
 async function staking(api) {
   const chain = api.chain;
-  const config = chainConfigs[chain]; // Load the config for the specified chain
+  const config = chainConfigs[chain];
   const creationLogs = await _getLogs(api, config);
   const stRsrs = creationLogs.map((i) => i.stRSR);
   return sumTokens2({ api, owners: stRsrs, tokens: [config.rsr] });
 }
 
+async function indexStaking(api) {
+  const chain = api.chain;
+  const config = chainConfigs[chain];
+  
+  if (config.governanceDeployers) {
+    const stakingTokenLogs = await _getStakingTokenLogs(api, config.governanceDeployers);
+    await getStakingTokenAssets(api, stakingTokenLogs);
+  }
+}
+
+async function combinedStaking(api) {
+  const chain = api.chain;
+  const config = chainConfigs[chain];
+  
+  if (config.rsr && config.deployerAddresses) {
+    await staking(api);
+  }
+  
+  if (config.governanceDeployers) {
+    await indexStaking(api);
+  }
+}
+
 module.exports = {
   ethereum: {
     tvl,
-    staking,
+    staking: combinedStaking,
   },
   base: {
     tvl,
-    staking,
+    staking: combinedStaking,
   },
   arbitrum: {
     tvl,
     staking,
   },
-  methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens.`,
+  bsc: {
+    tvl,
+    staking: indexStaking,
+  },
+  methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens and Index Protocol folios. Staking includes both Reserve Protocol RSR staking and Index Protocol governance token staking.`,
 };
-
-
-async function unwrapCreamTokens(api, tokensAndOwners,) {
-  const [balanceOfTokens, exchangeRates, underlyingTokens] = await Promise.all([
-    api.multiCall({
-      calls: tokensAndOwners.map(t => ({
-        target: t[0],
-        params: t[1]
-      })),
-      abi: 'erc20:balanceOf',
-    }),
-    api.multiCall({
-      calls: tokensAndOwners.map(t => ({
-        target: t[0],
-      })),
-      abi: "uint256:exchangeRateStored",
-    }),
-    api.multiCall({
-      calls: tokensAndOwners.map(t => ({
-        target: t[0],
-      })),
-      abi: "address:underlying",
-    })
-  ])
-  balanceOfTokens.forEach((balanceCall, i) => {
-    api.add(underlyingTokens[i], balanceCall * exchangeRates[i] / 1e18)
-  })
-}
-
-async function genericUnwrapCvxDeposit(api, tokensAndOwners) {
-  if (!tokensAndOwners.length) return;
-  const tokens = [...new Set(tokensAndOwners.map((t) => t[0]))];
-  const uTokens = await api.multiCall({ abi: "address:curveToken", calls: tokens, permitFailure: true });
-  const tokenMapping = {};
-  tokens.forEach((token, i) => {
-    if (uTokens[i]) {
-      tokenMapping[token] = uTokens[i];
-    }
-  });
-  // Filter out tokens without curveToken
-  const validTokensAndOwners = tokensAndOwners.filter((t) => tokenMapping[t[0]]);
-  const balances = await api.multiCall({
-    calls: validTokensAndOwners.map((t) => ({
-      target: t[0],
-      params: t[1],
-    })),
-    abi: "erc20:balanceOf",
-  });
-  balances.forEach((balance, i) => {
-    const token = validTokensAndOwners[i][0];
-    api.add(tokenMapping[token], balance);
-  });
-}

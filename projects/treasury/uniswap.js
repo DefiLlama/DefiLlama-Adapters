@@ -11,13 +11,14 @@ const UNI = ADDRESSES.ethereum.UNI;
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
-        nullAddress,
-        ADDRESSES.ethereum.USDC,//USDC
-        ADDRESSES.ethereum.DAI,//DAI
-        '0x028171bCA77440897B824Ca71D1c56caC55b68A3',//aDAI
-        ADDRESSES.ethereum.WETH,//WETH
-        ADDRESSES.ethereum.USDT,//USDT
-     ],
+      nullAddress,
+      ADDRESSES.ethereum.USDC,//USDC
+      ADDRESSES.ethereum.DAI,//DAI
+      '0x028171bCA77440897B824Ca71D1c56caC55b68A3',//aDAI
+      ADDRESSES.ethereum.WETH,//WETH
+      ADDRESSES.ethereum.USDT,//USDT
+    ],
+    fetchCoValentTokens: false,
     owners: [uniTreasury1, uniTreasury2, uniTreasury3],
     ownTokens: [UNI],
   },

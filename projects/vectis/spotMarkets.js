@@ -19,7 +19,7 @@ const SPOT_MARKETS = {
   },
   6: {
     name: 'jitoSOL',
-    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    mint: ADDRESSES.solana.JitoSOL,
     decimals: 9
   },
   16:{
@@ -29,7 +29,7 @@ const SPOT_MARKETS = {
   },
   17:{
     name:'dSOL',
-    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
+    mint:ADDRESSES.solana.dSOL, 
     decimals: 9
   },
   19: {
@@ -39,7 +39,7 @@ const SPOT_MARKETS = {
   },
   22: {
     name: 'PYUSD',
-    mint: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo',
+    mint: ADDRESSES.solana.PYUSD,
     decimals: 6
   },
   28: {
@@ -116,7 +116,9 @@ function processSpotPosition(position, spotMarketAccountInfo) {
     return -balance;  // Return negative for borrows
   }
 
-  return balance;  // Return positive for deposits
+  const cumulativeDepositInterest = getSpotMarketCumulativeDepositInterest(spotMarketAccountInfo);
+
+  return balance * cumulativeDepositInterest / BigInt(10 ** 10);  // Return positive for deposits
 }
 
 function getSpotMarketCumulativeBorrowInterest(accountInfo) {
@@ -128,6 +130,20 @@ function getSpotMarketCumulativeBorrowInterest(accountInfo) {
   
     const lower64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET);
     const upper64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET + 8);
+    
+    return (upper64Bits << 64n) + lower64Bits;
+  }
+
+
+function getSpotMarketCumulativeDepositInterest(accountInfo) {
+    if (!accountInfo) { 
+      throw new Error(`No account info found for market`);
+    }
+  
+    const CUMULATIVE_DEPOSIT_INTEREST_OFFSET = 8 + 48 + 32 + 256 + (16 * 8) + 8 - 16; // 16 bytes before the borrow interest
+  
+    const lower64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_DEPOSIT_INTEREST_OFFSET);
+    const upper64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_DEPOSIT_INTEREST_OFFSET + 8);
     
     return (upper64Bits << 64n) + lower64Bits;
   }
@@ -175,6 +191,7 @@ module.exports = {
   getVaultPublicKey,
   VOLTR_PROGRAM_ID,
   DRIFT_VAULT_PROGRAM_ID,
+  CUSTOM_PROGRAM_ID,
 };
 
 function getVaultPublicKey(seed, marketIndex) {

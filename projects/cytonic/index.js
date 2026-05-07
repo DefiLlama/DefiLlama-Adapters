@@ -75,7 +75,7 @@ module.exports = {
         ADDRESSES.null, // BNB
         ADDRESSES.bsc.USDC, // USDC
         ADDRESSES.bsc.USDT, // USDT
-        '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3', // DAI
+        ADDRESSES.bsc.DAI, // DAI
       ],
     }),
   },

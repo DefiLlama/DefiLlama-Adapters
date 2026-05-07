@@ -1,7 +1,5 @@
 const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 // BSC ADDRESSES
 const ashareTokenAddress = "0xFa4b16b0f63F5A6D0651592620D585D308F749A4";
@@ -29,43 +27,12 @@ const HarmonyLPTokens = [
     "0x90a48cb3a724ef6f8e6240f4788559f6370b6925"
 ]
 
-async function harmonyPool2(timestamp, block, chainBlocks) {
-    let balances = {};
-    const chain = "harmony";
-    block = chainBlocks.harmony;
-    const balance = (await sdk.api.abi.multiCall({
-        calls: HarmonyLPTokens.map(p => ({
-            target: p,
-            params: qshareRewardPool
-        })),
-        abi: "erc20:balanceOf",
-        block,
-        chain
-    })).output;
-
-    let lpPositions = [];
-
-    balance.forEach(p => {
-        lpPositions.push({
-            token: p.input.target,
-            balance: p.output
-        });
-    });
-
-    await unwrapUniswapLPs(balances, lpPositions, block, chain, addr=>{
-        return `harmony:${addr}`;
-    });
-
-    return balances;
-}
-
-
 module.exports = {
     misrepresentedTokens: true,
     harmony: {
         tvl: async () => ({}),
         staking: staking([qshareboardroom, singleQuartzFarm, xquartz], [quartz]),
-        pool2: harmonyPool2
+        pool2: pool2(qshareRewardPool, HarmonyLPTokens)
     },
     bsc: {
         tvl: async () => ({}),

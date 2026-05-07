@@ -27,7 +27,7 @@ async function tvl(api) {
   const tokens = await api.call({  abi: 'address[]:getSupportedAssetList', target: config})
   const bals = await api.multiCall({  abi: 'function getTotalAssetDeposits(address) external view returns (uint256)', calls: tokens, target: DEPOSIT_POOL})
   api.addTokens(tokens, bals);
-  api.addTokens(rstETH, - supplies) // We subtract the rstETH oft on other chains from ethereum chain to avoid double counting once bridged
+  // api.addTokens(rstETH, - supplies) // We subtract the rstETH oft on other chains from ethereum chain to avoid double counting once bridged
   return api.getBalances()
 }
 
@@ -61,6 +61,7 @@ module.exports = {
 Object.keys(oft_tokens).forEach((chain) => {
   const contract = oft_tokens[chain];
   module.exports[chain] = {
-    tvl: async (api) => oft_tvls(api, contract),
+    // tvl: async (api) => oft_tvls(api, contract),
+    tvl: () => ({}),
   };
 });

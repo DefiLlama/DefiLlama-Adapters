@@ -5,7 +5,7 @@ const usdcDenom = "ibc/B559A80D62249C8AA07A380E2A2BEA6E5CA9A6F079C912C3A9E9B4941
 
 async function tvl(api) {
   const data = await queryContract({ contract: jadeContract, chain: "neutron", data: "{\"value\":{}}" });
-  api.add(usdcDenom, data);
+  api.add(usdcDenom, 0); // Mars Hacked
 }
 
 module.exports = {

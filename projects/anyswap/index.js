@@ -64,7 +64,10 @@ const chains = {
 
 let chainData
 async function getChainData() {
-  if (!chainData) chainData = getConfig('anyswap-config', 'https://netapi.anyswap.net/bridge/v2/info').then(i => i.bridgeList.filter(j => j.amount > 0))
+  if (!chainData) chainData = getConfig('anyswap-config-v1', 'broken').then(i => {
+    return i.bridgeList.filter(j => j.amount > 0)
+  })
+
   return chainData
 }
 
@@ -100,7 +103,7 @@ function fetchChain(chain) {
       }
     })
 
-    return sumTokens({ api, tokensAndOwners, blacklistedTokens })
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens })
   }
 }
 
@@ -119,9 +122,12 @@ module.exports = {
   ...chainTvls,
   // fetch: fetchChain(null),
   hallmarks: [
-    [1651881600, "UST depeg"],
-    // [1689202800,"Access to Wallets Lost"]
+    ['2022-05-07', "UST depeg"],
+    // ['2023-07-12',"Access to Wallets Lost"]
   ],
+  // deadFrom: '2023-07-12',  // project was abandoned
 }
 
 module.exports.clv.tvl = () => ({})
+module.exports.fusion.tvl = () => ({})
+module.exports.kardia.tvl = () => ({})

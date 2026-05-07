@@ -4,6 +4,12 @@ const { sumTokensExport } = require('../helper/unwrapLPs');
 const tokens = [
   ADDRESSES.ethereum.USDC,
   ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.WBTC,
+  ADDRESSES.null,
+  ADDRESSES.ethereum.USDe,
+  ADDRESSES.ethereum.WETH,
+  ADDRESSES.ethereum.sUSDe,
+  ADDRESSES.ethereum.cbBTC,
 ];
 
 const walletAddresses = {
@@ -16,10 +22,10 @@ const walletAddresses = {
 };
 
 const tokenAddress = {
-  bsc: [ADDRESSES.bsc.USDT],
-  arbitrum: [ADDRESSES.arbitrum.USDT],
-  base: [ADDRESSES.base.USDT],
-  mantle: [ADDRESSES.mantle.USDT]
+  bsc: [ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, ADDRESSES.null, ADDRESSES.bsc.USD1],
+  arbitrum: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.null, ADDRESSES.arbitrum.WETH],
+  base: [ADDRESSES.base.USDT, ADDRESSES.base.USDC, ADDRESSES.null, ADDRESSES.optimism.WETH_1, ADDRESSES.ethereum.cbBTC],
+  mantle: [ADDRESSES.mantle.USDT, ADDRESSES.mantle.USDC, ADDRESSES.mantle.mETH, ADDRESSES.mantle.cmETH, ADDRESSES.mantle.FBTC, ADDRESSES.arbitrum.USDe, ADDRESSES.mantle.WETH, ADDRESSES.arbitrum.sUSDe]
 }
 
 module.exports = {

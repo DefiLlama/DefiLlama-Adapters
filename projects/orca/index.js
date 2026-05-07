@@ -3,7 +3,8 @@ const { Program, AnchorProvider } = require("@project-serum/anchor");
 const sdk = require('@defillama/sdk')
 const { Connection, PublicKey } = require('@solana/web3.js')
 
-const eclipseRpc = 'https://eclipse.helius-rpc.com'
+// const eclipseRpc = 'https://eclipse.helius-rpc.com'
+const eclipseRpc = 'https://mainnetbeta-rpc.eclipse.xyz'
 
 async function eclipseTvl (api) {
   const connection = new Connection(eclipseRpc)
@@ -51,8 +52,8 @@ module.exports = {
   solana: { tvl: sdk.util.sumChainTvls([orcaV1Tvl, orcaV2Tvl, tvl]) },
   eclipse: { tvl: eclipseTvl },
   hallmarks: [
-    [1628565707, "Token+LM launch"],
-    [1667865600, "FTX collapse"]
+    ['2021-08-10', "Token+LM launch"],
+    ['2022-11-08', "FTX collapse"]
   ]
 };
 

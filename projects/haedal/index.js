@@ -4,7 +4,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 async function suiTVL(api) {
 
-  const walCoinType = '0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL'
+  const walCoinType = ADDRESSES.sui.WAL
 
   const suiStakingObjectID = '0x47b224762220393057ebf4f70501b6e657c3e56684737568439a04f80849b2ca'
   const { fields: suiStaking } = await sui.getObject(suiStakingObjectID)
