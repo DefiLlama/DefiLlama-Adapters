@@ -19,6 +19,8 @@ const iface = new Interface([
   "function totalSupply() view returns (uint256)",
 ]);
 
+let etxPriceInETIPromise;
+
 async function call(target, method, params = []) {
   const { result, error } = await http.post(RPC, {
     jsonrpc: "2.0",
@@ -35,6 +37,12 @@ function toNumber(value) {
 }
 
 async function getETXPriceInETI() {
+  if (etxPriceInETIPromise) return etxPriceInETIPromise;
+  etxPriceInETIPromise = findETXPriceInETI();
+  return etxPriceInETIPromise;
+}
+
+async function findETXPriceInETI() {
   const length = (await call(FACTORY, "allPairsLength"))[0];
 
   for (let i = 0n; i < length; i++) {
@@ -48,6 +56,7 @@ async function getETXPriceInETI() {
     if (token0 === ETI && token1 === ETX) return toNumber(reserve0) / toNumber(reserve1);
     if (token0 === ETX && token1 === ETI) return toNumber(reserve1) / toNumber(reserve0);
   }
+  throw new Error("ETI/ETX pair not found in EticaSwap factory");
 }
 
 async function getStETXPriceInETX() {
@@ -96,7 +105,7 @@ async function staking(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "Counts EticaSwap liquidity and prices ETX-denominated pools through the live ETI/ETX pool. Staking counts ETX deposited in the stETX ERC-4626 vault.",
+  methodology: "Counts EticaSwap liquidity and prices ETX-denominated pools through the live ETI/ETX pool. stETX pools are priced through the stETX ERC-4626 exchange rate. Other ETX pools are treated as balanced 50/50 AMM pools and estimated from the ETX reserve. Staking counts ETX deposited in the stETX ERC-4626 vault.",
   etica: {
     tvl,
     staking,
