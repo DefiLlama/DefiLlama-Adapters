@@ -37,8 +37,16 @@ async function tvl(api) {
   const stakerAum = await fetchStakerAUM();
   if (stakerAum) balances['zigchain:uzig'] = stakerAum;
 
-  const vaults = await get(VAULTS_API);
-  const results = await Promise.all(vaults.map(v => fetchVaultBalance(v.address).catch(() => null)));
+  let vaults = [];
+  try {
+    const payload = await get(VAULTS_API);
+    vaults = Array.isArray(payload) ? payload : [];
+  } catch (_) {
+    vaults = [];
+  }
+  const results = await Promise.all(
+    vaults.map(v => fetchVaultBalance(v.address).catch(() => null))
+  );
   for (const r of results) {
     if (!r || !r.aum || !r.assetDenom) continue;
     const key = `zigchain:${r.assetDenom}`;
