@@ -9,19 +9,24 @@ For each `(chain × protocol-family)` pair, the scanner:
 
 1. **Detects deployment** — checks if the family's canonical contract
    (factory or vault) has bytecode at its known address on that chain.
-2. **Quantifies it** — counts pool-creation events to get a pool-count
-   proxy for TVL.
+   Algebra is the exception — it has no canonical address and discovers
+   factories dynamically from `Pool` event topics.
+2. **Quantifies activity (per-family policy)** — Balancer V2, Uniswap V3,
+   Algebra, and PancakeSwap V3 use `PoolCreated` / `PoolRegistered` /
+   `Pool` event counts as a TVL proxy. Velodrome/Solidly uses an on-chain
+   `allPoolsLength()` view call. Aave V3 and Curve use bytecode-only
+   presence detection (no pool count emitted).
 3. **Checks coverage** — diffs the deployment against existing
-   `projects/*/index.js` adapters (using AST-aware regex on chain keys
-   and contract address mentions) AND against the canonical aggregator
-   registries: `projects/registries/uniswapV3.js`, `aaveV3.js`,
-   `balancer.js`, etc. — so a Uniswap-V3-clone already wired into a
-   registry isn't surfaced as a false-positive gap.
-4. **Ranks gaps** — outputs a table sorted by pool count (TVL proxy),
-   optionally narrowed by `--top N`.
+   `projects/*/index.js` adapters (chain-key match + contract address
+   mention) AND against the canonical aggregator registries
+   (`projects/registries/uniswapV3.js`, `aaveV3.js`, `balancer.js`) so
+   protocols already wired through a registry don't surface as false-
+   positive gaps.
+4. **Ranks gaps** — chain TVL descending, pool count as tiebreaker.
+   Optionally narrowed by `--top N`.
 5. **Generates stubs** (with `--gen-stubs`) — writes `projects/<slug>/index.js`
-   skeletons using existing helper modules (`balancer`, `uniV3`, `algebra`,
-   `aave-v3`, etc.) so a real adapter is one tweak away from running.
+   skeletons against the existing `projects/helper/*` modules so a real
+   adapter is one tweak away from running.
 
 ## Protocol families currently supported
 
@@ -38,9 +43,6 @@ For each `(chain × protocol-family)` pair, the scanner:
 Aave V3 and Curve are detected as binary "deployed / not deployed" — no pool count, just enough to flag a chain that has the canonical contract but no covering adapter. Algebra dynamically discovers factories instead of relying on a curated list, which is what surfaces newer Algebra forks (KittenSwap, Hercules, etc.) on chains nobody has explicitly mapped.
 
 Adding a new family is a single object literal in the `FAMILIES` map at the top of the file (see existing entries for shape).
-
-Adding a new family is a single object literal in the `FAMILIES` map at the
-top of the file (see existing entries for the shape).
 
 ## Usage
 
@@ -73,7 +75,7 @@ node scripts/drift-scanner.js --full-rescan
 |---|---|---|
 | `--chains` | `all` | Comma-separated chain keys, or `all` |
 | `--families` | `all` | Comma-separated family keys, or `all` |
-| `--top N` | `50` | Limit output to top-N gaps by pool count |
+| `--top N` | `50` | Limit output to top-N gaps (ranked by chain TVL, pool count as tiebreaker) |
 | `--concurrency N` | `15` | Parallel chain×family probes (raise on fast network, lower on rate limits) |
 | `--gen-stubs` | off | Write `projects/<slug>/index.js` adapter skeletons for each gap |
 | `--timeout N` | `6000` | Per-call RPC timeout in ms |
@@ -105,7 +107,7 @@ Already covered: 64 / 77 detected deployments
 Gaps found:      13
 ```
 
-Each row is a `(chain, factory)` deployment that has bytecode + (where applicable) pool activity but no covering adapter. Sorting is by chain TVL × pool count; chains the scanner can't detect on (RPC unreachable, family probe times out) are silently skipped.
+Each row is a `(chain, factory)` deployment with bytecode at the canonical address and no covering adapter. Sorting is **chain TVL descending, pool count as tiebreaker**. Chains the scanner can't reach (RPC unreachable, family probe times out) are silently skipped.
 
 ## Performance + caching
 
@@ -123,17 +125,20 @@ Each row is a `(chain, factory)` deployment that has bytecode + (where applicabl
 
 The scanner deliberately does NOT surface a gap when:
 
-1. The chain is in a chain-key alias for an already-existing adapter
-   (`adapterCoversChain` checks `module.exports[chain]`, not just substring
-   matches).
+1. The chain is in the chain-key set of an already-existing adapter
+   (`adapterCoversChain` checks `module.exports[chain]`, not substring).
 2. The factory address appears in a registry file
-   (`projects/registries/uniswapV3.js`, `aaveV3.js`, `balancer.js`) — registry
-   entries cover protocols without a dedicated adapter file.
-3. The deployment has zero pool-creation events (deployed contract,
-   no liquidity yet — not a real gap to fix).
-4. The chain is a known dead deployment (Multichain-collapse Fantom etc.)
-   when the family declares `usesEventScan: true` and finds zero recent
-   events.
+   (`projects/registries/uniswapV3.js`, `aaveV3.js`, `balancer.js`) —
+   registry entries cover protocols without a dedicated adapter file.
+3. The canonical contract has no bytecode on that chain (not deployed at
+   all). Per-family `maxScanBlocks` bounds keep event scans from
+   timing out on high-throughput chains, so a chain with no recent events
+   on a `usesEventScan: true` family doesn't escalate into noise.
+
+Zero-pool-but-deployed contracts **are** surfaced (e.g. Balancer V2 vaults
+with no `PoolRegistered` events yet). They're early-deploy signals — the
+vault is live, pools usually follow within days, and a generated stub is
+ready when they do.
 
 ## Sample run output
 
