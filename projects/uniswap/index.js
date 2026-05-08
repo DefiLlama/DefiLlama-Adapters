@@ -79,6 +79,7 @@ const uniV3Config = {
   plasma: { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 430127, },
   monad: { factory: "0x204faca1764b154221e35c0d20abb3c525710498", fromBlock: 29255827, blacklistedTokens: ['0x760afe86e5de5fa0ee542fc7b7b713e1c5425701'] },
   tempo: { factory: '0x24a3d4757e330890a8b8978028c9e58e04611fd6', fromBlock: 6455886, },
+  '0g': { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 6673868 },
 }
 
 Object.keys(uniV3Config).forEach(chain => {

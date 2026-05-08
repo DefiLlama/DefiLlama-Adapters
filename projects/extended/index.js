@@ -11,8 +11,16 @@ const starknetContracts = [
   '0x060c0f8cdfa28e8a3f719d1e2def2599785d7557a5650794c150d9b557603e48'
 ];
 
+const starknetTokens = [
+  ADDRESSES.starknet.USDC,
+  ADDRESSES.starknet.USDC_CIRCLE,
+  ADDRESSES.starknet.WBTC,
+  ADDRESSES.starknet.ETH,
+  ADDRESSES.starknet.USDT
+]
+
 async function starknetTvl(api) {
-  return sumTokens({ api, owners: starknetContracts, tokens: [ADDRESSES.starknet.USDC, ADDRESSES.starknet.USDC_CIRCLE] })
+  return sumTokens({ api, owners: starknetContracts, tokens: starknetTokens })
 }
 
 module.exports = {

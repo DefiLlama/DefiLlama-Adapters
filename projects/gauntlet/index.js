@@ -125,6 +125,15 @@ const configs = {
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
       ],
     },
+    bsc: {
+      // Moolah Vaults (Morpho V1 fork) curated by Gauntlet on BSC
+      erc4626: [
+        '0xfa27f172e0b6ebcef9c51abf817e2cb142fbe627', // Lista USD1 Vault
+        '0x57134a64b7cd9f9eb72f8255a671f5bf2fe3e2d0', // Lista BNB Vault
+        '0x9a17fd5cb8efc25d11567e713ae795a89775a759', // Lista U Vault
+        '0x6d6783c146f2b0b2774c1725297f1845dc502525', // Lista USDT Vault
+      ],
+    },
   }
 }
 
@@ -243,7 +252,7 @@ async function tvl(api) {
   // ... drift position processing removed ...
 
   // Kamino Lend vaults
-  await kaminoLendVaultTvl(api, GAUNTLET_ADMIN)
+  await kaminoLendVaultTvl(api, { adminAddress: GAUNTLET_ADMIN })
 }
 
 async function megavaultTvl(api) {
@@ -274,11 +283,20 @@ async function combinedBaseTvl(api) {
   // await aeraV3.base.tvl(api);
 }
 
+async function combinedBscTvl(api) {
+  const LISTA_START = 1777303000 // 2026-04-27, listing date for BSC Lista (Moolah) vaults
+  
+  if (api.timestamp < LISTA_START) return;
+  const curatorExport = getCuratorExport(configs);
+  if (curatorExport.bsc?.tvl) await curatorExport.bsc.tvl(api);
+}
+
 module.exports = {
   ...getCuratorExport(configs),
   solana: { tvl },
   ethereum: { tvl: combinedEthereumTvl },
   base: { tvl: combinedBaseTvl },
+  bsc: { tvl: combinedBscTvl },
   timetravel: false,
   hallmarks: [
     ["2026-03-22", "Resolve USR hack"],

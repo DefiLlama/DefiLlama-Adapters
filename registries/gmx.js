@@ -415,6 +415,12 @@ const configs = {
       fromBlock: 13558258,
     },
   },
+  'updown': {
+    celo: {
+      eventEmitter: '0x6db23e3B53958c449b7DF6D639A1333ca99EB937',
+      fromBlock: 57687338,
+    },
+  },
 }
 
 module.exports = buildProtocolExports(configs, gmxExportFn)

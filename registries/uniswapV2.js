@@ -1046,9 +1046,6 @@ const uniV2Configs = {
   'kokomoswap': {
     bsc: '0x971A5f6Ef792bA565cdF61C904982419AA77989f',
   },
-  'kokoswap': {
-    bsc: '0x971A5f6Ef792bA565cdF61C904982419AA77989f',
-  },
   'koone': {
     era: '0x6167ce530e710e29d0F32CFe50062028800e5918',
   },
@@ -1595,7 +1592,6 @@ const uniV2Configs = {
   'reservoir-tools-v2': {
     abstract: '0x566d7510dEE58360a64C9827257cF6D0Dc43985E',
     zero_network: '0x1B4427e212475B12e62f0f142b8AfEf3BC18B559',
-    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
     ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
   },
   'revoswap': {
@@ -1694,6 +1690,9 @@ const uniV2Configs = {
   },
   'shadowswap': {
     core: '0x326Ee96748E7DcC04BE1Ef8f4E4F6bdd54048932',
+  },
+  'shapeswap-v2': {
+    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
   },
   'sharelock': {
     era: '0xea51CE8A1f9C1Cbbf5B89D9B1dA4A94fB1557866',
@@ -2761,6 +2760,9 @@ const uniV2Configs = {
   'venera': {
     bsc: '0x95F9c44fA1585811e1D1a0F59e74174B657B37A5',
   },
+  'krokoswap-v2': {
+    kasplex: '0x4373b7Fcf5059A785843cD224129e01d243Aef71',
+  },
   'versedex': {
     methodology: 'Factory address (0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
     ethereum: '0xee3E9E46E34a27dC755a63e2849C9913Ee1A06E2',
@@ -2883,6 +2885,16 @@ const uniV2Configs = {
       factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
       staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
     },
+  },
+  'mezo-tigris-v3': {
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      fetchBalances: true,
+    },
+    mezo: '0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79',
   },
 }
 
