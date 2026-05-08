@@ -25,15 +25,19 @@ For each `(chain × protocol-family)` pair, the scanner:
 
 ## Protocol families currently supported
 
-| Family | Detection | Notes |
+| Family | Canonical address | Detection method |
 |---|---|---|
-| Balancer V2 | `Vault` at `0xBA12222222228d8Ba445958a75a0704d566BF2C8` | Identical address every chain. Counts `PoolRegistered` events. |
-| Uniswap V3 | Two canonical factory addresses | Counts `PoolCreated` events. |
-| Algebra CLMM | Per-chain factory list (manually curated) | Counts `Pool` events; returns **all** factories per chain (multi-factory chains like Sonic). |
-| Aave V3 | `PoolAddressesProvider` per chain | Counts via `PoolDataProvider.getAllReservesTokens()`. |
-| Curve DEX | `MetaRegistry` + `Factory` addresses | Counts via `pool_count()`. |
-| Velodrome/Solidly CL | Per-chain factory list | Counts pool-create events. |
-| PancakeSwap V3 | Canonical factory address | Counts `PoolCreated` events. |
+| Balancer V2 | `Vault` at `0xBA12222222228d8Ba445958a75a0704d566BF2C8` (identical every chain) | Bytecode check + `PoolRegistered` event count over `maxScanBlocks` window |
+| Uniswap V3 | Two canonical factories | Bytecode check + `PoolCreated` event count |
+| Algebra CLMM | None — discovered dynamically | `findFactoriesFromEvents` walks the chain for `Pool` topic emissions, then validates each candidate factory has bytecode and a sample child pool with bytecode. Returns **all** factories per chain. |
+| Aave V3 | `PoolAddressesProvider` `0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e` | Bytecode check only (returns `pools: 1` as a presence flag — no pool count) |
+| Curve DEX | `AddressProvider` `0x0000000022D53366457F9d5E68Ec105046FC4383` | Bytecode check only (returns `pools: 1` as a presence flag — no pool count) |
+| Velodrome/Solidly CL | Factory `0x04625B046C69577EfC40e6c0Bb83CDBAfab5a55F` | Bytecode check + on-chain `allPoolsLength()` view call |
+| PancakeSwap V3 | Canonical factory | Bytecode check + `PoolCreated` event count |
+
+Aave V3 and Curve are detected as binary "deployed / not deployed" — no pool count, just enough to flag a chain that has the canonical contract but no covering adapter. Algebra dynamically discovers factories instead of relying on a curated list, which is what surfaces newer Algebra forks (KittenSwap, Hercules, etc.) on chains nobody has explicitly mapped.
+
+Adding a new family is a single object literal in the `FAMILIES` map at the top of the file (see existing entries for shape).
 
 Adding a new family is a single object literal in the `FAMILIES` map at the
 top of the file (see existing entries for the shape).
@@ -79,28 +83,36 @@ node scripts/drift-scanner.js --full-rescan
 
 ## Output
 
-```
-─── DRIFT GAPS ───
-chain         family          deployed  pools   covered?    factory
-bsc           algebra         yes       1       NO          0x869479...
-megaeth       algebra         yes       3       NO          0x2aa5cd...
-megaeth       balancer-v2     yes       0       NO          0xBA1222... (vault, no pools yet)
-plume         algebra         yes       18      NO          0x1eb982...
-scroll        curve           yes       1       NO          0x000000...
+Header block, then a gap table, then a summary line. Columns are
+chain · family · chain TVL · pools · factory address (and a parenthesized
+contract name when an explorer lookup resolves it):
 
-13 gap(s) | 4610 adapter(s) checked | 64 already covered
+```
+DeFiLlama Drift Scanner
+═══════════════════════════════════════════════════════
+Chains:   57  |  Families: balancer-v2, uniswap-v3, algebra, aave-v3, curve, velodrome-cl, pancakeswap-v3
+Adapters: 4610 existing  |  Concurrency: 15
+Cache: incremental — 41 chains with prior scan state
+═══════════════════════════════════════════════════════
+
+bsc                algebra            $5.5B        1   0x869479270ff5ff40a9cecd49c004d0698ab4b66a
+megaeth            algebra            $659M        3   0x2aa5cdd3c365ebe2539013dd56c9cd117f0a7b65
+megaeth            balancer-v2        $659M        0   0xBA12222222228d8Ba445958a75a0704d566BF2C8  (Vault)
+plume_mainnet      algebra            $59M        18   0x1eb9822d5176c88b1d4eec353fa956c896d77df9
+scroll             curve              $18.3M       1   0x0000000022D53366457F9d5E68Ec105046FC4383
+
+Already covered: 64 / 77 detected deployments
+Gaps found:      13
 ```
 
-Each row is a `(chain, factory)` deployment that has bytecode + pool activity
-but no covering adapter. Sorting is by pool count descending; chains/families
-the scanner can't detect are silently skipped (no false positives).
+Each row is a `(chain, factory)` deployment that has bytecode + (where applicable) pool activity but no covering adapter. Sorting is by chain TVL × pool count; chains the scanner can't detect on (RPC unreachable, family probe times out) are silently skipped.
 
 ## Performance + caching
 
 - **Incremental JSON cache** — by default the scanner caches per-chain
   scan windows so daily runs are ~2000× lighter on RPC than a cold full
-  scan. Cache lives at `cache/drift-scanner.json`. Use `--full-rescan`
-  to bypass.
+  scan. Cache lives at `data/drift_scanner_cache.json`. Use `--full-rescan`
+  to bypass and rebuild from scratch.
 - **Per-family scan window** — each family declares a `maxScanBlocks`
   bound so high-throughput chains don't block on event-scan timeouts.
 - **Concurrency** — `--concurrency` controls the `p-limit` semaphore

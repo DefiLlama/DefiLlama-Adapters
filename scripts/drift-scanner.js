@@ -547,17 +547,15 @@ const CHAIN_BLOCKSCOUT = {
   kava:      'https://kavascan.com',
   aurora:    'https://explorer.aurora.dev',
   manta:     'https://manta-pacific.blockscout.com',
+  // Only chains where the configured URL is an actual Blockscout V2 instance
+  // exposing /api/v2/smart-contracts. Etherscan-style explorers (sonicscan.org,
+  // fraxscan.com, taikoscan.io, bobascan.com, blastexplorer.io, cornscan.io,
+  // explorer.zksync.io) silently return non-2xx on that path and fall through
+  // to the Etherscan V2 path below when ETHERSCAN_API_KEY is set.
   unichain:  'https://unichain.blockscout.com',
-  ink:       'https://explorer.inkonchain.com',
   berachain: 'https://berachain.blockscout.com',
-  sonic:     'https://sonicscan.org',
+  ink:       'https://explorer.inkonchain.com',
   mantle:    'https://explorer.mantle.xyz',
-  fraxtal:   'https://fraxscan.com',
-  blast:     'https://blastexplorer.io',
-  taiko:     'https://taikoscan.io',
-  corn:      'https://cornscan.io',
-  era:       'https://explorer.zksync.io',
-  boba:      'https://bobascan.com',
 }
 
 // Etherscan V2 chain IDs — used when ETHERSCAN_API_KEY is set (covers chains without Blockscout)
@@ -807,7 +805,10 @@ async function main() {
                 const prev = cache.factories[cacheKey][f.address]
                 cache.factories[cacheKey][f.address] = {
                   firstSeen: prev?.firstSeen ?? now,
-                  pools: Math.max(prev?.pools ?? 0, f.pools ?? 0),
+                  // Incremental scans return only the delta in [fromBlock, latest],
+                  // so accumulate. --full-rescan clears the cache, making prev
+                  // undefined; the addition is safe in both paths.
+                  pools: (prev?.pools ?? 0) + (f.pools ?? 0),
                   samplePool: f.samplePool ?? prev?.samplePool ?? null,
                 }
               }
