@@ -22,5 +22,5 @@ module.exports = {
   solana: {
     tvl,
   },
-  methodology: 'TVL includes native SOL held in Tensor Swap bidding pools and escrow accounts. It is calculated by efficiently fetching all Program Derived Addresses (PDAs) owned by the Tensor Swap program and summing their lamports. The Tensor cNFT program is currently excluded due to RPC limits on account enumeration. Timetravel is disabled as Solana RPCs do not support historical getProgramAccounts queries.'
+  methodology: 'TVL includes native SOL held in Tensor Swap bidding pools and escrow accounts. It is calculated by efficiently fetching all Program Derived Addresses (PDAs) owned by the Tensor Swap program and summing their lamports. The Tensor cNFT program is currently excluded due to RPC limits on account enumeration'
 };
