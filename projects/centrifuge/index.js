@@ -67,6 +67,12 @@ const CONFIG = {
     ],
     assets: [ADDRESSES.hyperliquid.USDC, ADDRESSES.hyperliquid.USDT0, '0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463'] // USDC, USDT0, UBTC
   },
+  pharos: {
+    factories: [
+      { START_BLOCK: 2495896, TOKEN_FACTORY_V3_1: '0xEC3582fcDc34078a4B7a8c75a5a3AE46f48525aB' }, // v3.1
+    ],
+    assets: { USDC: ADDRESSES.pharos.USDC }
+  },
 }
 
 const abis = {
