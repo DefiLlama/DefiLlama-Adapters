@@ -1,64 +1,21 @@
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const subgraphEndpoint = 'https://api.goldsky.com/api/public/project_cm97dvfxxyivn01xe2sda93ka/subgraphs/angstrom-mainnet/1.6.4/gn'
-const subgraphQuery = (blockNumber) => {
-  return {
-    query: `
-      {
-        pools(first: 1000, block: {number: ${blockNumber}}) {
-          token0 {
-            id
-            decimals
-          }
-          token1 {
-            id
-            decimals
-          }
-          totalValueLockedToken0
-          totalValueLockedToken1
-        }    
-      }
+const CONTROLLER = '0x1746484EA5e11C75e009252c102C8C33e0315fD4'
+const HOOK = '0x0000000aa232009084Bd71A5797d089AA4Edfad4'
 
-    `
-  }
-};
-
-async function getGraphBlock() {
-  const query = {
-    query: `
-      {
-        _meta {
-          block {
-            number
-          }
-        }
-      }
-    `
-  }
-  const response = await fetch(subgraphEndpoint, {
-    "body": JSON.stringify(query),
-    "method": "POST"
+const tvl = async (api) => {
+  const total = Number(await api.call({ target: CONTROLLER, abi: 'uint256:totalPools' }))
+  const calls = Array.from({ length: total }, (_, i) => ({ target: CONTROLLER, params: [i] }))
+  const pools = await api.multiCall({
+    abi: 'function getPoolByIndex(uint256) view returns (address asset0, address asset1)',
+    calls,
   })
-  const data = await response.json()
-
-  return Number(data.data._meta.block.number)
+  const tokens = [...new Set(pools.flatMap(p => [p.asset0, p.asset1]))]
+  return sumTokens2({ api, owner: HOOK, tokens })
 }
 
-module.exports.ethereum = {
-  tvl: async (api) => {
-    const block = await api.getBlock(api.timestamp)
-    const graphBlock = await getGraphBlock()
-
-    const response = await fetch(subgraphEndpoint, {
-      "body": JSON.stringify(subgraphQuery(block > graphBlock ? graphBlock : block)),
-      "method": "POST"
-    })
-    const data = await response.json()
-    for (const pool of data.data.pools) {
-      api.add(pool.token0.id, Number(pool.totalValueLockedToken0) * (10**Number(pool.token0.decimals)))
-      api.add(pool.token1.id, Number(pool.totalValueLockedToken1) * (10**Number(pool.token1.decimals)))
-    }
-  },
+module.exports = {
+  doublecounted: true,
+  methodology: "Counts the underlying tokens custodied by the Angstrom hook contract on Uniswap v4. Active Angstrom pools are enumerated on-chain via the ControllerV1 registry (totalPools/getPoolByIndex). LP-deposited liquidity routed through Angstrom pools sits in the Uniswap v4 PoolManager and is already counted under the uniswap-v4 protocol entry; this adapter only attributes the hook's own custody to avoid double-counting.",
+  ethereum: { tvl },
 }
-
-module.exports.doublecounted = true
-module.exports.methodology = 'Count total assets are deposited in Angstrom hooks on Uniswap v4 using subgraph provided by AngStrom.'
