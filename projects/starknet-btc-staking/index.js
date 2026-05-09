@@ -21,11 +21,23 @@ const balanceAbi = (name) => ({
 
 // Active set mixes ERC20 implementations using camelCase (`balanceOf`) and
 // snake_case (`balance_of`); fall back per token rather than failing the call.
+// Only swallow ABI-mismatch errors (different RPCs surface this either as the
+// canonical "entrypoint not found" or as JSON-RPC "Invalid params") so that
+// transient transport failures still propagate instead of silently zeroing
+// the token's contribution to TVL.
+const ABI_MISMATCH_ERROR = /entrypoint|entry point|selector|invalid params/i
+
 async function balanceOf(token, owner) {
+  let lastErr
   for (const name of ["balanceOf", "balance_of"]) {
-    try { return await call({ target: token, abi: balanceAbi(name), params: [owner] }) } catch (_) { /* try next */ }
+    try {
+      return await call({ target: token, abi: balanceAbi(name), params: [owner] })
+    } catch (e) {
+      if (!ABI_MISMATCH_ERROR.test(String(e?.message ?? e))) throw e
+      lastErr = e
+    }
   }
-  return 0
+  throw new Error(`No compatible balance entrypoint found for token ${token}: ${lastErr?.message ?? lastErr}`)
 }
 
 async function tvl(api) {
