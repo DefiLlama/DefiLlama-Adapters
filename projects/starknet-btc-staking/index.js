@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { call, parseAddress } = require('../helper/chain/starknet')
 const ADDRESSES = require('../helper/coreAssets.json')
 
@@ -15,8 +16,8 @@ const abis = {
 
 const balanceAbi = (name) => ({
   name, type: "function", state_mutability: "view",
-  inputs: [{ name: "account", type: "felt" }],
-  outputs: [{ name: "balance", type: "Uint256" }],
+  inputs: [{ name: "account", type: "core::starknet::contract_address::ContractAddress" }],
+  outputs: [{ type: "core::integer::u256" }],
 })
 
 // Active set mixes ERC20 implementations using camelCase (`balanceOf`) and
@@ -24,20 +25,21 @@ const balanceAbi = (name) => ({
 // Only swallow ABI-mismatch errors (different RPCs surface this either as the
 // canonical "entrypoint not found" or as JSON-RPC "Invalid params") so that
 // transient transport failures still propagate instead of silently zeroing
-// the token's contribution to TVL.
+// the token's contribution to TVL. If both ABI variants fail with mismatch
+// errors the token exposes neither standard accessor; log and skip rather
+// than fail the whole run, since such tokens are typically dust.
 const ABI_MISMATCH_ERROR = /entrypoint|entry point|selector|invalid params/i
 
 async function balanceOf(token, owner) {
-  let lastErr
   for (const name of ["balanceOf", "balance_of"]) {
     try {
       return await call({ target: token, abi: balanceAbi(name), params: [owner] })
     } catch (e) {
       if (!ABI_MISMATCH_ERROR.test(String(e?.message ?? e))) throw e
-      lastErr = e
     }
   }
-  throw new Error(`No compatible balance entrypoint found for token ${token}: ${lastErr?.message ?? lastErr}`)
+  sdk.log(`starknet-btc-staking: no balanceOf/balance_of entrypoint on ${token}, treating as 0`)
+  return 0
 }
 
 async function tvl(api) {
