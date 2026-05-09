@@ -36,7 +36,7 @@ async function tryCallRaw(api, opts) {
   try { return await api.call(opts) } catch { return null }
 }
 
-async function enumerateArray(api, target, abi, max = 50) {
+async function enumerateArray(api, target, abi, max = 500) {
   const seen = new Set()
   const out = []
   for (let i = 0; i < max; i++) {
@@ -44,6 +44,7 @@ async function enumerateArray(api, target, abi, max = 50) {
     if (!r || r === '0x0000000000000000000000000000000000000000') break
     if (!seen.has(r)) { seen.add(r); out.push(r) }
   }
+  if (out.length === max) console.warn(`[strato] enumerateArray hit cap ${max} on ${target} — likely truncated`)
   return out
 }
 
@@ -73,9 +74,10 @@ async function tvl(api) {
   )
 
   const vaultBotExecutor = await tryCall(api, { target: VAULT, abi: 'function botExecutor() view returns (address)' })
-  const vaultAssets = await enumerateArray(
-    api, VAULT, 'function supportedAssets(uint256) view returns (address)'
-  )
+  const vaultAssetsRaw = await tryCallRaw(api, {
+    target: VAULT, abi: 'function getSupportedAssets() view returns (address[])'
+  })
+  const vaultAssets = (vaultAssetsRaw || []).map(a => a && a.toLowerCase()).filter(Boolean)
 
   const saveAsset = await tryCall(api, { target: SAVE_USDST_VAULT, abi: 'function asset() view returns (address)' })
   const safetyAsset = await tryCall(api, { target: SAFETY_MODULE, abi: 'function asset() view returns (address)' })
