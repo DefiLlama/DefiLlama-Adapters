@@ -84,7 +84,8 @@ async function fallbackOlympusApiTvl(api, { mode, chains, chainMap, treasuryApi,
   const chainKey = Object.keys(chainMap).find(k => chainMap[k] === api.chain)
   if (!chainKey) return {}
 
-  const ownTokenSet = getAddressSet(chainConfig.ownTokens || defaultOwnTokens)
+  const ownTokens = chainConfig.ownTokens?.length ? chainConfig.ownTokens : defaultOwnTokens
+  const ownTokenSet = getAddressSet(ownTokens)
 
   const chainRecords = records.filter(record => {
     if (record.blockchain !== chainKey) return false
