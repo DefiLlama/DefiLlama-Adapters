@@ -20,15 +20,7 @@ Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Ad
 
 ## Agent skill
 
-This repo includes an agent skill for AI-assisted DefiLlama TVL adapter authoring. It helps coding agents understand protocol details, validate whether a request belongs in `DefiLlama-Adapters`, suggest the likely DefiLlama repo or path when it does not, choose existing adapter patterns, implement TVL adapters in repo style, run `node test.js`, and prepare PR metadata.
-
-Install it with:
-
-```bash
-npx skills@latest add DefiLlama/DefiLlama-Adapters --skill defillama-tvl-adapter-author
-```
-
-The installer supports multiple coding agents, including Claude Code and Codex. It will prompt you to choose where to install the skill. Restart your agent after installing so it can discover the new skill.
+This repo includes an agent skill at `skills/adapter-author/` for AI-assisted DefiLlama TVL adapter authoring. It helps coding agents validate whether a request belongs in `DefiLlama-Adapters`, choose existing adapter patterns, implement TVL adapters in repo style, run `node test.js`, and prepare PR metadata. See `skills/adapter-author/SKILL.md` for usage.
 
 ## Work in progress
 
