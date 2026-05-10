@@ -220,3 +220,7 @@ const tvl = async (api) => {
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl }
 })
+
+module.exports.hallmarks = [
+  ['2025-11-04', 'Stream finance XUSD depeg'],
+]
