@@ -443,6 +443,16 @@ async function getCuratorTvlBoringVault(api, vaults) {
   }
 }
 
+async function getCuratorTvlUpshiftV2(api, vaults) {
+  // Upshift multiAssetVault: non-ERC4626, exposes asset() + getTotalAssets()
+  await api.erc4626Sum({
+    calls: vaults,
+    tokenAbi: ABI.ERC4626.asset,
+    balanceAbi: 'uint256:getTotalAssets',
+    permitFailure: true,
+  })
+}
+
 async function getCuratorTvlSymbioticVault(api, vaults) {
   const assets = await api.multiCall({ abi: ABI.symbiotic.collateral, calls: vaults, permitFailure: true })
   const existedVaults = []
@@ -543,6 +553,11 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
   }
 
+  // upshift.io multiAssetVault (V2)
+  if (vaults.upshiftV2) {
+    await getCuratorTvlUpshiftV2(api, vaults.upshiftV2)
+  }
+
   // nested 4626 vaults
   if (vaults.nestedVaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
@@ -552,17 +567,25 @@ async function getCuratorTvl(api, vaults) {
 }
 
 function getCuratorExport(configs) {
+  const startTs = configs.start
+    ? (typeof configs.start === 'number' ? configs.start : Math.floor(new Date(configs.start).getTime() / 1000))
+    : 0;
+
   const exportObjects = {
     // these tvl are double count
     doublecounted: true,
 
     // methodology
     methodology: configs.methodology ? configs.methodology : 'Count all deposited assets in curated vaults.',
+
+    start: configs.start
   }
 
   for (const [chain, vaultConfigs] of Object.entries(configs.blockchains)) {
     exportObjects[chain] = {
       tvl: async (api) => {
+        // prevent attributing tvl to curators before they began curating
+        if (startTs && api.timestamp && api.timestamp < startTs) return {};
         return getCuratorTvl(api, vaultConfigs)
       }
     }

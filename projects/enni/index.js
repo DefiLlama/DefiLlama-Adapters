@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // ── Tokens ──
-const WETH  = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-const USDC  = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const USDT  = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const WETH  = ADDRESSES.ethereum.WETH;
+const USDC  = ADDRESSES.ethereum.USDC;
+const USDT  = ADDRESSES.ethereum.USDT;
 const ZCHF  = "0xB58E61C3098d85632Df34EecfB899A1Ed80921cB";
 const enUSD = "0xbaA433574b33ff48dB1eCBc805eC2e4f3113Aab8";
 const enCHF = "0x48F062b9d07056b206Ff5BA3A18270C2e2aDdecb";
@@ -59,6 +60,8 @@ async function pool2(api) {
 module.exports = {
   methodology:
     "TVL counts WETH collateral in CDP contracts, USDC/USDT reserves in DirectMint, ZCHF reserves in DirectMintGeneric, and enUSD/enCHF deposited in Savings. ENNI staked in MasterChef (including via Vault) is counted as staking. ENNI-USDC LP in MasterChef is counted as pool2.",
+  deadFrom: '2026-05-04',
+  hallmarks: [['2026-05-04', 'Protocol deprecated']],
   ethereum: {
     tvl,
     staking,

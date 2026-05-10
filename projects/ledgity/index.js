@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const OWNER = "0x972c17D0adA071db4a0395505dD3Ad0a80809053"
@@ -8,18 +9,18 @@ const LM_EUR = "0xF25a516CAF56895032b3f3eE842b45462Ff491c3"
 // (owner multisig + liquidity manager) are excluded to avoid double-counting with vaults (lm holds lTokens migrated to v2).
 const LTOKENS = {
   sonic: [
-    { token: "0xD7cCABfBEfE332C9784FF3debeBdDbc787E75e69", underlying: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894", lm: LM_USD }, // LUSDC
+    { token: "0xD7cCABfBEfE332C9784FF3debeBdDbc787E75e69", underlying: ADDRESSES.sonic.USDC_e, lm: LM_USD }, // LUSDC
     { token: "0x88dC8674339731A12a08624f455Fd41Fe2d6DC82", underlying: "0xe715cbA7B5cCb33790ceBFF1436809d36cb17E57", lm: LM_EUR }, // LEURC
   ],
   arbitrum: [
-    { token: "0xd54d564606611A3502FE8909bBD3075dbeb77813", underlying: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", lm: LM_USD },
+    { token: "0xd54d564606611A3502FE8909bBD3075dbeb77813", underlying: ADDRESSES.arbitrum.USDC_CIRCLE, lm: LM_USD },
   ],
   base: [
-    { token: "0x3C769d0e8D21d380228dFB7918c6933bb6ecB6D4", underlying: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", lm: LM_USD },
+    { token: "0x3C769d0e8D21d380228dFB7918c6933bb6ecB6D4", underlying: ADDRESSES.base.USDC, lm: LM_USD },
     { token: "0x77ce973744745310359B0d1a3415A34FF983708F", underlying: "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42", lm: LM_EUR },
   ],
   linea: [
-    { token: "0x4AF215DbE27fc030F37f73109B85F421FAB45B7a", underlying: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff", lm: LM_USD },
+    { token: "0x4AF215DbE27fc030F37f73109B85F421FAB45B7a", underlying: ADDRESSES.linea.USDC, lm: LM_USD },
   ],
 }
 

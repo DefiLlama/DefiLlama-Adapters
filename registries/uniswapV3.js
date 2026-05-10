@@ -255,6 +255,7 @@ const uniV3Configs = {
     morph: {
       factory: '0xFf8578C2949148A6F19b7958aE86CAAb2779CDDD',
       fromBlock: 25159,
+      onlyUseExistingCache: true,
       blacklistedTokens: [
         '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a',
         '0xe3C0FF176eF92FC225096C6d1788cCB818808b35',
@@ -882,13 +883,6 @@ const uniV3Configs = {
       fromBlock: 1,
     },
   },
-  'molten-v4': {
-    core: {
-      factory: '0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597',
-      fromBlock: 15770796,
-      isAlgebra: true,
-    },
-  },
   'monday-trade-spot': {
     monad: {
       factory: '0xc1e98d0a2a58fb8abd10ccc30a58efff4080aa21',
@@ -1455,6 +1449,19 @@ const uniV3Configs = {
     oas: {
       factory: '0xe3fc2cB6E8c2671816D15B556B47375Afb2C29bD',
       fromBlock: 2445228,
+    },
+  },
+  'tsunami-v3': {
+    ink: {
+      factory: '0xD8B0826150B7686D1F56d6F10E31E58e1BCF1193',
+      fromBlock: 39943040,
+      permitFailure: true,
+    },
+  },
+  'krokoswap-v3': {
+    kasplex: {
+      factory: '0x0dfb1Bb755d872EA1fa4d95E4ad0c2E6317Ce9B9',
+      fromBlock: 14294547,
     },
   },
   'tesseractworld': {

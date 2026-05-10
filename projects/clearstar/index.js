@@ -21,10 +21,12 @@ const configs = {
         '0x829A13850b684A575C0580a83322890e19c5eFaa',
       ],
       erc4626: [
-        '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
-        '0xb2FdA773822E5a04c8A70348d66257DD5Cf442DB', // Upshift LiquityV2
         '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
         '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23', // IPOR Fusion yoGOLD
+      ],
+      upshiftV2: [
+        '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
+        '0xb2FdA773822E5a04c8A70348d66257DD5Cf442DB', // Upshift LiquityV2
       ],
     },
     polygon: {
@@ -76,26 +78,15 @@ const configs = {
         '0x1aEadA3C251215f1294720B80FcB3D1D005F3585', // Core wFLR Vault on Mystic
         '0x53184aDaBF312b490BF1EbcFdC896FEfF6019a14', // Core FXRP Vault on Mystic
       ],
+      upshiftV2: [
+        '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28', // Upshift FXRP
+      ],
     },
   }
 }
 
-const exportObj = getCuratorExport(configs)
-const existingFlareTvl = exportObj.flare?.tvl
-
-// Flare vault uses non-standard getTotalAssets() instead of totalAssets()
-const FLARE_VAULT = '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28' // Upshift FXRP
-exportObj.flare = {
-  tvl: async (api) => {
-    if (existingFlareTvl) await existingFlareTvl(api)
-    const asset = await api.call({ abi: 'address:asset', target: FLARE_VAULT })
-    const totalAssets = await api.call({ abi: 'uint256:getTotalAssets', target: FLARE_VAULT })
-    api.add(asset, totalAssets)
-  }
-}
-
 module.exports = {
-  ...exportObj,
+  ...getCuratorExport(configs),
 
   timetravel: false, // starknet doesn't support historical queries
   hallmarks: [

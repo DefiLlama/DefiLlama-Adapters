@@ -10,6 +10,10 @@ const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$|^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // Keys that identify a tracked contract
 const KEYS = new Set(['factory', 'comptroller', 'masterchef', 'vault', 'registry', 'address']);
 
+const IGNORED = new Set([
+  '0x7C10a3b7EcD42dd7D79C0b9d58dDB812f92B574A' // DogeShrek rebranded to ChewySwap and was listed again; we cant fix by backfilling since dogechain's RPC fails on the necessary historical queries
+].map(a => a.toLowerCase()));
+
 // Based on defillama-server/defi/src/utils/discord.ts
 async function sendDiscord(message, formatted = true) {
   const webhookUrl = getEnv('TEAM_WEBHOOK');
@@ -96,7 +100,11 @@ async function run() {
     }
 
     for (const [key, protocols] of Object.entries(addressMap)) {
-      if (protocols.length > 1) duplicates[`${name} ${key}`] = protocols.join(', ');
+      if (protocols.length > 1) {
+        const addr = key.split(':')[1];
+        if (IGNORED.has(addr)) continue;
+        duplicates[`${name} ${key}`] = protocols.join(', ');
+      }
     }
   }
 

@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getObject } = require("../helper/chain/sui");
 
-const SUI_COIN = "0x2::sui::SUI";
+const SUI_COIN = ADDRESSES.sui.SUI;
 const SBETS_COIN = "0x999d696dad9e4684068fa74ef9c5d3afc411d3ba62973bd5d54830f324f29502::sbets::SBETS";
 const BETTING_PLATFORM = "0xfed2649741e4d3f6316434d6bdc51d0d0975167a0dc87447122d04830d59fdf9";
 
