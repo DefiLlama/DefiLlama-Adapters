@@ -4,8 +4,8 @@ const WTAO = 'WTAO-4f5363'
 
 const tvl = async (api) => {
   const { minted, burnt } = await get(`https://api.multiversx.com/tokens/${WTAO}/supply`)
-  const supply = Number(BigInt(minted) - BigInt(burnt)) / 1e9
-  api.addCGToken('bittensor', supply)
+  const supply = BigInt(minted ?? 0) - BigInt(burnt ?? 0)
+  if (supply > 0n) api.addCGToken('bittensor', Number(supply) / 1e9)
 }
 
 module.exports = {
