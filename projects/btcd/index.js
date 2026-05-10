@@ -161,7 +161,6 @@ async function ethereumTvl(api) {
         target: MORPHO_BLUE,
         params: [p.marketId, p.strategy],
       })),
-      permitFailure: true,
     }),
     api.call({
       target: MORPHO_BLUE,
