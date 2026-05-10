@@ -86,6 +86,7 @@ async function fallbackOlympusApiTvl(api, { mode, chains, chainMap, treasuryApi,
 
   const ownTokens = chainConfig.ownTokens?.length ? chainConfig.ownTokens : defaultOwnTokens
   const ownTokenSet = getAddressSet(ownTokens)
+  const liabilitySet = getAddressSet(chainConfig.liabilityTokens)
 
   const chainRecords = records.filter(record => {
     if (record.blockchain !== chainKey) return false
@@ -97,13 +98,19 @@ async function fallbackOlympusApiTvl(api, { mode, chains, chainMap, treasuryApi,
   if (chainRecords.length === 0) return {}
 
   const tokens = [...new Set(chainRecords.map(record => record.tokenAddress))]
-  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true })
-  const decimalMap = Object.fromEntries(tokens.map((token, i) => [normalize(token), Number(decimals[i])]))
+  const decimalsResults = await safeMultiCall(api, { abi: 'erc20:decimals', calls: tokens })
+  const decimalMap = Object.fromEntries(tokens.map((token, i) => {
+    const decimals = decimalsResults[i]
+    const normalizedDecimals = decimals == null ? null : Number(decimals)
+    return [normalize(token), Number.isFinite(normalizedDecimals) ? normalizedDecimals : null]
+  }))
 
   for (const record of chainRecords) {
     const decimals = decimalMap[normalize(record.tokenAddress)]
     if (decimals == null) continue
-    api.add(record.tokenAddress, new BigNumber(record.balance).shiftedBy(decimals).toFixed(0))
+    let balance = new BigNumber(record.balance).shiftedBy(decimals)
+    if (mode === 'tvl' && liabilitySet.has(normalize(record.tokenAddress))) balance = balance.abs().times(-1)
+    api.add(record.tokenAddress, balance.toFixed(0))
   }
 
   return api.getBalances()
@@ -322,6 +329,7 @@ async function safeCall(api, params) {
   try {
     return await api.call(params)
   } catch (e) {
+    logSafeCallError(api, 'call', params, e)
     return undefined
   }
 }
@@ -330,8 +338,18 @@ async function safeMultiCall(api, params) {
   try {
     return await api.multiCall({ ...params, permitFailure: true })
   } catch (e) {
+    logSafeCallError(api, 'multiCall', params, e)
     return []
   }
+}
+
+function logSafeCallError(api, method, params, error) {
+  const details = [`chain=${api.chain}`]
+  const target = params.target || params.calls?.find?.(call => call?.target)?.target
+  if (target) details.push(`target=${target}`)
+  if (Array.isArray(params.calls)) details.push(`calls=${params.calls.length}`)
+  if (params.abi) details.push(`abi=${params.abi}`)
+  console.warn(`[olympus] safe ${method} failed (${details.join(', ')}): ${error.message}`)
 }
 
 module.exports = {
