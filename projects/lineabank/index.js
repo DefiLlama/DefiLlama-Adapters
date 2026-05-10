@@ -26,9 +26,35 @@ const abis = {
   totalBorrows: "uint256:totalBorrow",
 }
 
+// mphBTC has no on-chain liquidity, so DefiLlama's internal pricing path occasionally
+// returns no price and drops Morph TVL to 0 (issue #14580). The token is pegged 1:1 to
+// BTC, so we read its balance directly and emit it as coingecko:bitcoin.
+const MPHBTC = '0x950e7FB62398C3CcaBaBc0e3e0de3137fb0daCd2'
+const MPHBTC_DECIMALS = 10
+
+async function addMphBtcAsBitcoin(api, comptroller, borrowed) {
+  const cTokens = await api.call({ abi: abis.getAllMarkets, target: comptroller })
+  const underlyings = await api.multiCall({ abi: 'address:underlying', calls: cTokens, permitFailure: true })
+  const idx = underlyings.findIndex(u => u && u.toLowerCase() === MPHBTC.toLowerCase())
+  if (idx === -1) return
+  const cToken = cTokens[idx]
+  const raw = borrowed
+    ? await api.call({ abi: abis.totalBorrows, target: cToken })
+    : await api.call({ abi: 'erc20:balanceOf', target: MPHBTC, params: [cToken] })
+  api.add('coingecko:bitcoin', Number(raw) / 10 ** MPHBTC_DECIMALS)
+}
+
 Object.keys(v2Config).forEach(chain => {
   const comptroller = v2Config[chain]
-  module.exports[chain] = compoundExports2({ comptroller, abis, })
+  if (chain === 'morph') {
+    const base = compoundExports2({ comptroller, abis, blacklistedTokens: [MPHBTC] })
+    module.exports.morph = {
+      tvl: async (api) => { await base.tvl(api); await addMphBtcAsBitcoin(api, comptroller, false) },
+      borrowed: async (api) => { await base.borrowed(api); await addMphBtcAsBitcoin(api, comptroller, true) },
+    }
+  } else {
+    module.exports[chain] = compoundExports2({ comptroller, abis, })
+  }
 })
 
 const compoundExports = {
