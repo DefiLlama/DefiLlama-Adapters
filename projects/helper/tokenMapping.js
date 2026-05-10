@@ -41,6 +41,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  dfio_meta_main: {
+    '0x93e66202a11b1772e55407b32b44e5cd8eda7f22': { coingeckoId: 'tether', decimals: 6 },
+    '0xf22258f57794cc8e06237084b353ab30fffa640b': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
