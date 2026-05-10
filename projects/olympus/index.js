@@ -7,8 +7,8 @@ const OHM = ETH.OHM;
 const GOHM = ETH.GOHM;
 
 const OlympusStakings = [
-  "0x0822F3C03dcc24d200AFF33493Dc08d0e1f274A2",
-  "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a",
+  "0x0822F3C03dcc24d200AFF33493Dc08d0e1f274A2", // Old Staking Contract
+  "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a", // New Staking Contract
   "0xb63cac384247597756545b500253ff8e607a8020",
 ];
 
