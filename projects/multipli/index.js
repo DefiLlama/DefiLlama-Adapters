@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 module.exports = {
-  timetravel: false,
   methodology: 'Counts USDC deposited in Multipli vault and fund manager contracts.',
   avax: {
     tvl: sumTokensExport({
