@@ -139,6 +139,13 @@ const config = {
       fromBlock: 76939871
     },
   },
+  sei: {
+    optinProxyFactory:{
+      address: "0xDa1d1De87C4D90A07a6462cCD9bE651a0d074362",
+      fromBlock: 183102541,
+      useIndexer: true,
+    },
+  },
   sonic: {
     optinProxyFactory:{
       address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
