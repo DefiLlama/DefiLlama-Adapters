@@ -46,7 +46,9 @@ const CONFIG = {
     ],
     blacklist_lenders: ETHENA_BLACKLIST,
   },
-  megaeth: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
+  megaeth: {
+    poolDatas: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
+  },
   mantle: {
     poolDatas: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
     blacklist_lenders: ETHENA_BLACKLIST

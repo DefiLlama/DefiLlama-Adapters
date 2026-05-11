@@ -98,6 +98,6 @@ module.exports = {
   start: '2022-02-01',
   hallmarks: [
     ['2022-12-01', "Ensuro V2 Launch"],
-    ['2025-03-18', "Ensuro V3 Launch"],
+    ['2026-03-18', "Ensuro V3 Launch"],
   ]
 };

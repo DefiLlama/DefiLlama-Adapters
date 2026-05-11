@@ -74,6 +74,12 @@ const configs = {
       staking: { owners: ['0x2099ad49329909FDb620714D01F5A74D57CDeE0C', '0xe546C82f0CedE3341dC402626923A6D4b95234Ee'], tokens: ['0x4cE15b52a34dE6F62448fDBAdDF1dB4811DDC3EF']}
     }
   },
+  'reppo': {
+    methodology: 'TVL is the total REPPO tokens locked in the VeREPPO contract.',
+    base: {
+      staking: { owners: ['0x0EFBE19Cb7B07D934D01990a8989E9CaA98b9009'], tokens: ['0xFf8104251E7761163faC3211eF5583FB3F8583d6']}
+    }
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2

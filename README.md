@@ -18,6 +18,10 @@ Also, don't hesitate to send a message on [our discord](https://discord.defillam
 
 Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/pull_request_template.md when creating a PR.
 
+## Agent skill
+
+This repo includes an agent skill at `skills/adapter-author/` for AI-assisted DefiLlama TVL adapter authoring. It helps coding agents validate whether a request belongs in `DefiLlama-Adapters`, choose existing adapter patterns, implement TVL adapters in repo style, run `node test.js`, and prepare PR metadata. See `skills/adapter-author/SKILL.md` for usage.
+
 ## Work in progress
 
 This is a work in progress. DefiLlama aims to be transparent, accurate, and open source.

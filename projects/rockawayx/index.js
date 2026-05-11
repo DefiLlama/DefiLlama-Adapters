@@ -36,6 +36,9 @@ const configs = {
         '0xE0181090c22579B6A217f1522cbf8c9f1F0C1965',
         '0x64C18DCC4Ccb3b8D27877a4aeBB4C3126CB39cB9',
       ],
+      upshiftV2: [
+        '0xc87DBBB8C67e4F19fCD2E297c05937567b2572Ce', // Upshift Earn ctUSD
+      ],
     },
     sei: {
       morpho: [

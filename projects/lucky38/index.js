@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // DeFi Llama adapter for Lucky38 (randomy.fun)
 // TVL = USDC balance in SharedTreasury (the single shared pool)
 //
@@ -6,7 +7,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const SHARED_TREASURY = '0x39CEBf6B84d37809625c2E68D0e9b2a16861379a';
-const BASE_USDC        = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+const BASE_USDC        = ADDRESSES.base.USDC;
 
 async function tvl(api) {
   return sumTokens2({
