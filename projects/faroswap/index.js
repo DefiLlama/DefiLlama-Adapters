@@ -41,7 +41,11 @@ Object.keys(config).forEach(chain => {
         funcs.push(addUniV3Logs(uniswapV3Factory));
       }
 
-      await Promise.all(funcs)
+      const results = await Promise.allSettled(funcs)
+      const rejected = results.filter(r => r.status === 'rejected')
+      if (rejected.length) {
+        api.log?.(`faroswap: ${rejected.length} log source(s) failed on ${chain}`)
+      }
 
       return api.sumTokens({ ownerTokens, blacklistedTokens, permitFailure: true, })
 
