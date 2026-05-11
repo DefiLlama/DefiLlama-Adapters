@@ -36,6 +36,10 @@ const factories = {
   ethereum: {
     chain_uid: "ethereum",
     factory_address: "0x08E6604931E9c2a978D4861b912f7894CC6063F7"
+  },
+  hyperliquid: {
+    chain_uid: "hyperliquid",
+    factory_address: "0x25bb0cb3b764b6457d5b21d2a28112add800c776"
   }
 };
 
