@@ -28,6 +28,11 @@ assert.deepStrictEqual(getRunFiles({
 }), [])
 
 assert.deepStrictEqual(getRunFiles({
+  modified: '["projects"]',
+  added: '[]',
+}), [])
+
+assert.deepStrictEqual(getRunFiles({
   modified: '["registries/yield.js"]',
   added: '[]',
   readDiff: () => `diff --git a/registries/yield.js b/registries/yield.js

@@ -6,6 +6,7 @@ function getRunFiles({ modified, added, diffBase = 'HEAD~1', readDiff = readGitD
 
   changedFiles.forEach(file => {
     const [root, dir] = file.split('/')
+    if (!dir) return
     if (dir === 'treasury' || dir === 'entities') fileSet.add(file)
     else if (root === 'projects' && dir !== 'helper' && dir !== 'config') fileSet.add(root + '/' + dir)
     else if (root === 'registries' && file.endsWith('.js') && dir !== 'index.js' && dir !== 'utils.js') {
@@ -34,6 +35,7 @@ function parseFileList(data) {
   try {
     const parsed = JSON.parse(input)
     if (Array.isArray(parsed)) return parsed.map(normalizeFile).filter(Boolean)
+    // Some action outputs may arrive as JSON strings that still need parseFileList normalization.
     if (typeof parsed === 'string') return parseFileList(parsed)
   } catch {
     // Fall back to the legacy comma-delimited format.
