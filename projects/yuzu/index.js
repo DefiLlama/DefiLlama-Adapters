@@ -9,6 +9,9 @@ const GET_ALL_POOLS_FUNCTION = `${YUZU_CLMM_PACKAGE}::liquidity_pool::get_all_po
 const GET_POOL_VIEW_FUNCTION = `${YUZU_CLMM_PACKAGE}::liquidity_pool::get_pool_view`;
 // Native MOVE coin is priced as 0xa on Movement chain
 const MOVE_NATIVE = "0xa";
+// Yuzu stores sqrt_price as floor(sqrt(price) * 2^80), where price is raw token_1 / raw token_0.
+// See https://docs.yuzu.finance/technical/smart-contracts/yuzu-clmm/example-usage/tick-math-module
+const Q160 = 2n ** 160n;
 
 /**
  * Retrieves all pool IDs from Yuzu CLMM contract
@@ -53,7 +56,7 @@ const getPoolData = async (poolId, chain) => {
 
 module.exports = {
   timetravel: false,
-  methodology: "Aggregates TVL in all pools in Yuzu CLMM.",
+  methodology: "Aggregates TVL across all Yuzu CLMM pools. For pools where only one side is a priced core asset, the unpriced side's reserves are converted into the priced token's units using the pool's current sqrt_price so concentrated, skewed CLMM reserves are accounted for correctly.",
   move: {
     tvl: async api => {
       const poolIds = await getPoolIds(api.chain);
@@ -63,9 +66,11 @@ module.exports = {
         .for(poolIds)
         .process(id => getPoolData(id, api.chain))
 
-      // Only a handful of Movement tokens have prices on DefiLlama. For pools
-      // where exactly one side is a priced core asset, double-count that side
-      // so the pool's full TVL is reflected (same approach as dexExport).
+      // Most Movement tokens are not priced by DefiLlama. For pools where only
+      // one side is a priced core asset, convert the unpriced side into the
+      // priced token's units using the pool's current sqrt_price. This is
+      // CLMM-correct (works regardless of how skewed the reserves are) since
+      // we use the on-chain spot price rather than assuming balanced reserves.
       const coreTokens = new Set([
         MOVE_NATIVE,
         ...Object.values(coreAssets[api.chain] ?? {}),
@@ -73,19 +78,32 @@ module.exports = {
 
       poolsData.results.forEach(pool => {
         if (!pool) return;
+        const r0 = BigInt(pool.token_0_reserve);
+        const r1 = BigInt(pool.token_1_reserve);
+        if (r0 === 0n && r1 === 0n) return;
+
         const isCore0 = coreTokens.has(pool.token_0);
         const isCore1 = coreTokens.has(pool.token_1);
-        const nonNegligible = pool.token_0_reserve !== '0' && pool.token_1_reserve !== '0';
 
         if (isCore0 && isCore1) {
-          api.add(pool.token_0, pool.token_0_reserve);
-          api.add(pool.token_1, pool.token_1_reserve);
-        } else if (isCore0) {
-          api.add(pool.token_0, pool.token_0_reserve);
-          if (nonNegligible) api.add(pool.token_0, pool.token_0_reserve);
-        } else if (isCore1) {
-          api.add(pool.token_1, pool.token_1_reserve);
-          if (nonNegligible) api.add(pool.token_1, pool.token_1_reserve);
+          api.add(pool.token_0, r0.toString());
+          api.add(pool.token_1, r1.toString());
+          return;
+        }
+        if (!isCore0 && !isCore1) return;
+
+        const sp = BigInt(pool.current_sqrt_price);
+        if (sp === 0n) return;
+        const spSq = sp * sp; // sp^2 ; raw_price = spSq / 2^160
+
+        if (isCore0) {
+          // r1 raw token_1 == r1 / raw_price raw token_0 == r1 * 2^160 / sp^2
+          const r1AsR0 = (r1 * Q160) / spSq;
+          api.add(pool.token_0, (r0 + r1AsR0).toString());
+        } else {
+          // r0 raw token_0 == r0 * raw_price raw token_1 == r0 * sp^2 / 2^160
+          const r0AsR1 = (r0 * spSq) / Q160;
+          api.add(pool.token_1, (r1 + r0AsR1).toString());
         }
       });
     }
