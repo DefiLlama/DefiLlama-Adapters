@@ -4,12 +4,18 @@ const DUSK_RPC = process.env.DUSK_RPC || 'https://nodes.dusk.network'
 const LUX_PER_DUSK = 1_000_000_000n
 const DUSK_COINGECKO_ID = 'dusk-network'
 
+/**
+ * Converts a LUX-denominated staking balance to DUSK.
+ */
 function luxToDusk(lux) {
   const whole = lux / LUX_PER_DUSK
   const fractional = lux % LUX_PER_DUSK
   return Number(whole) + Number(fractional) / 1e9
 }
 
+/**
+ * Fetches Dusk provisioner state and reports native DUSK staking TVL.
+ */
 async function tvl(api) {
   const provisioners = await post(`${DUSK_RPC}/on/node/provisioners`)
 
