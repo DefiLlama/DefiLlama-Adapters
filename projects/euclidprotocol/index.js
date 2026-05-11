@@ -51,7 +51,6 @@ async function factoryTvl(api, factoryAddress) {
     })).flat()
     
     return sumTokensExport({
-        owners: escrows,
         tokensAndOwners,
     })(api)
 }
