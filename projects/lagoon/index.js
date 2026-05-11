@@ -50,13 +50,6 @@ const config = {
       fromBlock: 4061769
     },
   },
-  bsc: {
-    optinProxyFactory:{
-      address: "0x3f680aB9E51EEED9381dE5275f4995611Ff884d5",
-      fromBlock: 56083879,
-      useIndexer: true,
-    },
-  },
   ethereum: {
     vaults:
       [
@@ -77,13 +70,6 @@ const config = {
     beaconFactory: {
       address: "0x09C8803f7Dc251f9FaAE5f56E3B91f8A6d0b70ee",
       fromBlock: 22218451
-    },
-  },
-  hemi: {
-    optinProxyFactory:{
-      address: "0xB457e9C025A8Af99E32b03668e34f80D20A71d2C",
-      fromBlock: 4091220,
-      useIndexer: true,
     },
   },
   hyperliquid: {
@@ -137,13 +123,6 @@ const config = {
     optinProxyFactory:{
       address: "0x0C0E287f6e4de685f4b44A5282A3ad4A29D05a91",
       fromBlock: 76939871
-    },
-  },
-  sei: {
-    optinProxyFactory:{
-      address: "0xDa1d1De87C4D90A07a6462cCD9bE651a0d074362",
-      fromBlock: 183102541,
-      useIndexer: true,
     },
   },
   sonic: {
