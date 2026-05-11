@@ -185,7 +185,8 @@ const config = {
 const vaultsBlacklist = [
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship, on Eth mainnet
   "0xd6DaBAf70977a867Fa884844FC5DCb21DE81c498", // vault tac 9s. but on TAC chain
-  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets 
+  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
+  "0xb114b5a99652a6f6e1e9c13da0a544dc634007b5", // hyperliquid (hyperevm)
 ]
 
 function keepVault(vault, vaultBlacklist) {
