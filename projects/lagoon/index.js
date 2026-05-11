@@ -190,7 +190,8 @@ const vaultsBlacklist = [
 ]
 
 function keepVault(vault, vaultBlacklist) {
-  return  vaultBlacklist.indexOf(vault) == -1;
+  const v = vault.toLowerCase();
+  return !vaultBlacklist.some((b) => b.toLowerCase() === v);
 }
 
 Object.keys(config).forEach((chain) => {
