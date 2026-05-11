@@ -4,7 +4,8 @@ Follow [this guide](https://docs.llama.fi/submit-a-project) to create an adapter
 
 Also, don't hesitate to send a message on [our discord](https://discord.defillama.com/) if we're late to merge your PR.
 
-> If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/dimension-adapters)
+> This repo is for **TVL** adapters.
+> For other metrics such as `volume`, `fees`, `revenue`, `aggregators`, `open-interest`, `active-users`, etc. submit the PR to [DefiLlama/dimension-adapters](https://github.com/DefiLlama/dimension-adapters).
 
 1. PLEASE PLEASE **enable "Allow edits by maintainers" while putting up the PR.**
 2. Once your adapter has been merged, it takes time to show on the UI. No need to notify us on Discord.
