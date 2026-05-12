@@ -20,11 +20,11 @@ async function tvl(api) {
     const {results: poolData, errors } = await PromisePool
         .withConcurrency(5)
         .for(vaults)
-        .process(async (v) => {
+        .process(async (i) => {
             // Collateral token is NOT the baseToken emitted by VaultRegistered
             // Reading directly from storage
-            const collateralToken = await provider.getStorage(v.vault, "0x78");
-            return { vault: v.vault, collateral: "0x" + collateralToken.slice(26) };
+            const collateralToken = await provider.getStorage(i.vault, "0x78");
+            return { vault: i.vault, collateral: "0x" + collateralToken.slice(26) };
         });
 
     if (errors.length) {
