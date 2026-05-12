@@ -17,23 +17,29 @@ async function tvl(api) {
     
     const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC || "https://bsc-dataseed.binance.org");
     
-    const {results: poolData, errors } = await PromisePool
+    const { results: poolData, errors } = await PromisePool
         .withConcurrency(5)
         .for(vaults)
         .process(async (i) => {
             // Collateral token is NOT the baseToken emitted by VaultRegistered
             // Reading directly from storage
             const collateralToken = await provider.getStorage(i.vault, "0x78");
-            return { vault: i.vault, collateral: "0x" + collateralToken.slice(26) };
+            if (!collateralToken || collateralToken === ethers.ZeroHash) {
+                return null;
+            } else {
+                const token = ethers.getAddress("0x" + collateralToken.slice(-40));
+                return { vault: i.vault, collateral: token };
+            };
         });
 
     if (errors.length) {
         throw errors[0];
     };
 
+    const validPools = poolData.filter(Boolean);
     await api.sumTokens({ 
-        tokens: poolData.map(i => i.collateral), 
-        owners: poolData.map(i => i.vault) 
+        tokens: validPools.map(i => i.collateral), 
+        owners: validPools.map(i => i.vault) 
     });
 };
 
