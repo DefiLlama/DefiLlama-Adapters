@@ -1,3 +1,27 @@
+/**
+ * xstocks — Backed Finance's tokenised-equity adapter.
+ *
+ * Each entry in `data` represents one xStock (the on-chain wrapper for a
+ * traditional equity such as AAPLx or NVDAx). The `p` object maps each
+ * supported chain to that token's deployed address on that chain; the
+ * `chainMapping` table tells the generic EVM `tvl` function which key
+ * inside `p` corresponds to its DeFiLlama `api.chain` value
+ * (arbitrum → arbitrum-one is the canonical example; most others are
+ * identity mappings).
+ *
+ * Two TVL paths are exposed:
+ *   - `tvl(api)` — generic EVM handler, used for every EVM chain in
+ *     `chainMapping`. Sums `totalSupply` across every xStock deployed
+ *     on `api.chain`, then subtracts the issuer-held pre-mint balance
+ *     so the published TVL reflects circulating supply only.
+ *   - `solTvl(api)` — Solana handler (Token-2022 mints). Mirrors the
+ *     EVM logic via `getTokenSupplies` + `sumTokens2` from the
+ *     Solana helper module.
+ *
+ * Non-EVM chains (Tron, TON) are recorded in `data.p` for
+ * discoverability but do not yet have a dedicated handler — those are
+ * tracked as follow-up work (see project_xstocks_listing.md upstream).
+ */
 const { getTokenSupplies, sumTokens2 } = require('../helper/solana')
 
 const data = [
@@ -73,6 +97,18 @@ const chainMapping = {
   mantle: 'mantle',
 }
 
+/**
+ * EVM TVL handler — generic over every chain in `chainMapping`.
+ *
+ * Picks the right key inside each `data[i].p` object via
+ * `chainMapping[api.chain]`, fetches the on-chain `totalSupply` for
+ * every xStock that has a deployment on this chain, then subtracts the
+ * issuer-held pre-mint balance so reported TVL reflects user-held
+ * (circulating) supply only.
+ *
+ * @param {object} api — DeFiLlama EVM helper. Provides `api.chain`,
+ *   `api.multiCall`, and `api.add`.
+ */
 async function tvl(api) {
   const chainKey = chainMapping[api.chain]
   const tokens = data.map(stock => stock.p[chainKey]).filter(Boolean)
@@ -91,6 +127,15 @@ Object.keys(chainMapping).forEach(chain => {
   module.exports[chain] = { tvl }
 })
 
+/**
+ * Solana TVL handler — Token-2022 mints under the xStocks program.
+ *
+ * Mirrors `tvl` but uses the Solana helper module
+ * (`getTokenSupplies` + `sumTokens2`) instead of the EVM multicall.
+ * Subtracts the issuer-held pre-mint balance the same way.
+ *
+ * @param {object} api — DeFiLlama Solana helper. Provides `api.add`.
+ */
 async function solTvl(api) {
   const tokens = data.map(stock => stock.p.solana).filter(Boolean)
   const supplies = await getTokenSupplies(tokens)
