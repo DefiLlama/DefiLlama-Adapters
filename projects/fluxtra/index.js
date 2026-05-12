@@ -54,6 +54,6 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
-  methodology: 'TVL is calculated as the sum of: (1) total OM staked via stMANTRA liquid staking (totalAssets), (2) total assets in RFR wmantraUSD yield vaults (totalSupply * exchangeRate), and (3) token balances held in concentrated liquidity management vaults.',
+  methodology: 'TVL is calculated as the sum of: (1) total MANTRA staked via stMANTRA liquid staking (totalAssets), (2) total assets in RFR wmantraUSD yield vaults (totalSupply * exchangeRate), and (3) token balances held in concentrated liquidity management vaults.',
   mantra: { tvl },
 }
