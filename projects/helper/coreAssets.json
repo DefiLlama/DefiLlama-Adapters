@@ -2832,6 +2832,7 @@
     "USDC": "0xe436820ba0C69702c1d3E601d421c0eF38262739"
   },
   "pharos": {
-    "USDC": "0xc879c018db60520f4355c26ed1a6d572cdac1815"
+    "USDC": "0xc879c018db60520f4355c26ed1a6d572cdac1815",
+    "WPROS": "0x52c48d4213107b20bc583832b0d951fb9ca8f0b0"
   }
 }
