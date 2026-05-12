@@ -127,7 +127,7 @@ const beefyChainNameMapping = {
 };
 
 async function fetchVaultData() {
-  const vaultsResponse = await utils.fetchURL('https://api.beefy.finance/vaults');
+  const vaultsResponse = await utils.fetchURL('https://api.beefy.finance/vaults/all');
   const vaults = vaultsResponse.data;
 
   // sdk.log('Raw API response sample:', JSON.stringify(vaults[0], null, 2));
@@ -173,9 +173,10 @@ async function fetchVaultData() {
         id: vault.id,
         address: vault.earnContractAddress,
         token: vault.tokenAddress,
+        type: vault.type,
         isBIFI: vault.id.toLowerCase().includes('bifi'),
         status: vault.status,
-        chain: ourChainName
+        chain: ourChainName,
       });
       mappedVaults++;
     }
@@ -213,6 +214,18 @@ async function tvl(api, isStaking = false) {
 
   if (!isStaking)
     activeVaults = vaults.filter(v => !v.isBIFI && !blaclistedVaultSet.has(v.address.toLowerCase()));
+
+  // Dedup CLM exposures: standard "-vault" wrappers and gov "-rp" reward pools can both reference
+  // the same CLM cow* share. The downstream isConcLP branch reads the CLM's full underlying balances()
+  // off the cow* token, so any vault that resolves to that cow* token contributes the FULL CLM TVL.
+  // When a CLM has both a wrapper and an RP, we'd add the same CLM balances twice. Skip the RP in
+  // that case — the wrapper already covers it.
+  const wrapperTokens = new Set(
+    activeVaults
+      .filter(v => v.type === 'standard' && v.token)
+      .map(v => v.token.toLowerCase())
+  );
+  activeVaults = activeVaults.filter(v => !(v.type === 'gov' && v.token && wrapperTokens.has(v.token.toLowerCase())));
 
   // sdk.log(`Active non-BIFI vaults: ${activeVaults.length}`);
   const vaultAddresses = activeVaults.map(v => v.address);
