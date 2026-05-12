@@ -50,6 +50,12 @@ const DEFAULTS = {
   WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
   PHAROS_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",  // v3
+  // Sentrix Chain (chainId 7119) — canonical Multicall3 deployed at a non-universal
+  // address because Sentrix mainnet predates the standard Nick's-method deploy.
+  // See https://github.com/sentrix-labs/canonical-contracts/blob/main/deployments/7119.json
+  // Public RPC is rate-limited; smaller chunk size keeps multicall fan-out within budget.
+  SRX_RPC_MULTICALL: "0xFd4b34b5763f54a580a0d9f7997A2A993ef9ceE9",
+  SRX_MULTICALL_CHUNK_SIZE: "20",
 }
 
 const ENV_KEYS = [
