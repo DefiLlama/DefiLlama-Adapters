@@ -33,6 +33,11 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+  fluent: {
+    [ADDRESSES.fluent.WETH]: ADDRESSES.ethereum.WETH,
+    [ADDRESSES.fluent.WBTC]: ADDRESSES.ethereum.WBTC,
+    [ADDRESSES.fluent.USDC]: ADDRESSES.ethereum.USDC,
+  },
 }
 const ibcMappings = {
   // Sample Code
@@ -48,6 +53,9 @@ const fixBalancesTokens = {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
+  },
+  fluent: {
+    [ADDRESSES.fluent.BLEND]: { coingeckoId: 'fluent-network', decimals: 18 },
   },
 }
 
