@@ -2,13 +2,11 @@ const { get } = require('../helper/http')
 
 const API_URL = 'https://api.arkonix.xyz/public/vaults'
 
+// Only chains where Arkonix vaults are currently live.
+// Add new chains here as vaults are deployed.
 const CHAINS = {
   1: 'ethereum',
-  10: 'optimism',
-  56: 'bsc',
   42161: 'arbitrum',
-  43114: 'avax',
-  999: 'hyperliquid',
 }
 
 async function getVaultsByChain() {
