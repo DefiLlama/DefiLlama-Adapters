@@ -41,7 +41,7 @@ const data = [
   { "name": "Abbott xStock", "p": { "solana": "XsHtf5RpxsQ7jeJ9ivNewouZKJHbPxhPoEy6yYvULr7", "arbitrum-one": "0x89233399708c18ac6887f90a2b4cd8ba5fedd06e" } },
   { "name": "CrowdStrike xStock", "p": { "arbitrum-one": "0x214151022c2a5e380ab80cdac31f23ae554a7345" } },
   { "name": "AstraZeneca xStock", "p": { "arbitrum-one": "0x5d642505fe1a28897eb3baba665f454755d8daa2" } },
-  { "name": "AppLovin xStock", "p": { "arbitrum-one": "0x50a1291f69d9d3853def8209cfb1af0b46927be1" } },
+  { "name": "AppLovin xStock", "p": { "arbitrum-one": "0x50a1291f69d9d3853def8209cfb1af0b46927be1", "hyperliquid": "0x50a1291f69d9d3853def8209cfb1af0b46927be1", "ink": "0x50a1291f69d9d3853def8209cfb1af0b46927be1", "bsc": "0x50a1291f69d9d3853def8209cfb1af0b46927be1", "tron": "TTCNHD9tFLDSB3Ryn9MjtEv5bkwT6zya42", "ton": "EQCGJ7KuKsFu3w-VmgGVUu5qHgxH0kQee3b9j5HTWi7QEko4", "ethereum": "0x50a1291f69d9d3853def8209cfb1af0b46927be1", "mantle": "0x50a1291f69d9d3853def8209cfb1af0b46927be1", "solana": "XsPdAVBi8Zc1xvv53k4JcMrQaEDTgkGqKYeh7AYgPHV" } },
   { "name": "Netflix xStock", "p": { "arbitrum-one": "0xa6a65ac27e76cd53cb790473e4345c46e5ebf961" } },
   { "name": "Palantir xStock", "p": { "arbitrum-one": "0x6d482cec5f9dd1f05ccee9fd3ff79b246170f8e2" } },
   { "name": "Salesforce xStock", "p": { "arbitrum-one": "0x4a4073f2eaf299a1be22254dcd2c41727f6f54a2" } },
@@ -66,6 +66,11 @@ const data = [
 
 const chainMapping = {
   arbitrum: 'arbitrum-one',
+  hyperliquid: 'hyperliquid',
+  ink: 'ink',
+  bsc: 'bsc',
+  ethereum: 'ethereum',
+  mantle: 'mantle',
 }
 
 async function tvl(api) {
