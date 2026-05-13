@@ -1,11 +1,8 @@
-const sdk = require('@defillama/sdk');
-
 const dataProviderAbi = require('./dataProvider.json');
 
 const COVENANT = '0x11a7ab0a9d7bd531dbcf0f0630bf7167f8f198f6';
 const DATA_PROVIDER = '0x3818a6d5018aa9eb69b6bce09e38a7c24bbe8c22';
 const DEPLOY_BLOCK = 35851140;
-const CHAIN = 'monad';
 
 const NATIVE_MON = '0x0000000000000000000000000000000000000000';
 const USD_CG_ID = 'usd-coin'; // attributed via api.addCGToken to skip chain prefix
@@ -34,11 +31,10 @@ async function tvl(api) {
 
   const marketIds = logs.map((l) => l.marketId);
 
-  const { output: details } = await sdk.api.abi.call({
+  const details = await api.call({
     target: DATA_PROVIDER,
     abi: getMarketsDetailsAbi,
     params: [COVENANT, marketIds],
-    chain: CHAIN,
   });
 
   for (const d of details) {
