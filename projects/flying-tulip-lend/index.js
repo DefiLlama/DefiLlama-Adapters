@@ -33,7 +33,17 @@ const ASSET_STATE_ABI =
 async function tvl(api) {
   const reserves = RESERVES[api.chain] || []
 
-  // Get list of strategies for each wrapper
+  // Total supplied per reserve = cash + borrows.
+  //
+  // `cash` is the idle liquidity that still sits in the system, split between:
+  //   - underlying held at the ftYieldWrapperV2 (not deployed yet)
+  //   - yield receipt (aToken, spToken, ...) held at each of the wrapper's strategies
+  //
+  // `borrows` is the outstanding debt: tokens lent out to borrowers that have
+  // left the wrapper. We have to add this back via LendingLens.assetState
+  // otherwise the adapter under-reports TVL by the entire borrow book.
+
+  // 1) cash side
   const strategyLists = await Promise.all(reserves.map(({ wrapper: target }) => api.fetchList({
     target,
     lengthAbi: 'uint256:numberOfStrategies',
@@ -41,19 +51,23 @@ async function tvl(api) {
   })))
   const strategies = strategyLists.flat()
 
-  // Each strategy exposes positionToken() (aToken, spToken, etc.)
   const positions = strategies.length
     ? await api.multiCall({ abi: 'address:positionToken', calls: strategies.map(target => ({ target })) })
     : []
 
   const tokensAndOwners = [
-    // Idle underlying held by the wrapper
     ...reserves.map(r => [r.token, r.wrapper]),
-    // Yield receipt held by each strategy
     ...strategies.map((s, i) => [positions[i], s]),
   ]
+  await sumTokens2({ api, tokensAndOwners })
 
-  return sumTokens2({ api, tokensAndOwners })
+  // 2) borrows side
+  const states = await api.multiCall({
+    target: LENDING_LENS[api.chain],
+    abi: ASSET_STATE_ABI,
+    calls: reserves.map(r => r.token),
+  })
+  reserves.forEach((r, i) => api.add(r.token, states[i].borrows.toString()))
 }
 
 async function borrowed(api) {
