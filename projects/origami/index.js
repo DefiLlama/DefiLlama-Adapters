@@ -1,144 +1,53 @@
-const sdk = require("@defillama/sdk");
-const { cachedGraphQuery } = require('../helper/cache')
+const { get } = require('../helper/http')
 
-const SUBGRAPH_URL = 'https://origami-vaults-indexer.automation-templedao.link'
-const SUPPORTED_CHAINS = ['ethereum', 'berachain', 'plasma'];
+const API_BASE = 'https://origami-api.automation-templedao.link'
+const SUPPORTED_CHAINS = ['ethereum', 'berachain', 'plasma']
 
 module.exports = {
   doublecounted: true,
-  ...Object.fromEntries(SUPPORTED_CHAINS.map((c) => [c, {tvl, borrowed}])),
+  ...Object.fromEntries(SUPPORTED_CHAINS.map((c) => [c, { tvl, borrowed }])),
 }
 
-async function getVaults(api) {
-  const chainId = api.chainId;
-  if (!chainId) return [];
+async function fetchVaultBalances(api) {
+  const url = new URL("/public/external/vault-token-balances", API_BASE)
+  url.searchParams.append("input", JSON.stringify({ chain: api.chainId }))
 
-  const vaultTypes = [
-    'investmentVaults',
-    'autoStakingVaults',
-    'balanceSheetVaults',
-  ]
-  let query = `{\n`
-  vaultTypes.forEach((vaultT) => {
-    query += `${vaultT}(where: { chainId: ${chainId} }) { items { address vaultKinds } }\n`
-  })
-  query += '}'
-
-  const { investmentVaults, autoStakingVaults, balanceSheetVaults } = await cachedGraphQuery(
-    'origami/' + chainId,
-    SUBGRAPH_URL,
-    query,
-  );
-  const vaults = [
-    ...investmentVaults.items,
-    ...autoStakingVaults.items,
-    ...balanceSheetVaults.items,
-  ]
-  return vaults;
+  const { vault_balances } = await get(url)
+  return vault_balances
 }
 
-function vaultsOfKind(investmentVaults, vaultKind) {
-  return investmentVaults.filter(vault => !!vault.vaultKinds.find(v => v === vaultKind)).map(v => v.address)
-}
+/**
+ * Convert a decimals-normalized f64 (as returned by the vault-token-balances endpoint) 
+ * to a raw uint256 BigInt
+ */
+function toBigInt(amount, decimals) {
+  if (!Number.isFinite(amount) || amount === 0) return 0n
 
-async function processLeveragedVaults(api, vaults) {
-  const [levReserveTokens, assetsAndLiabilities] = await Promise.all([
-    api.multiCall({ calls: vaults, abi: 'address:reserveToken', permitFailure: true }),
-    api.multiCall({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', calls: vaults, permitFailure: true })
-  ])
+  const isNegative = amount < 0
+  const abs = Math.abs(amount)
+  if (decimals === 0) return (isNegative ? -1n : 1n) * BigInt(Math.round(abs))
 
-  vaults.forEach((_vault, i) => {
-    const levReserveToken = levReserveTokens[i]
-    const assetsAndLiability = assetsAndLiabilities[i]
-    if(!levReserveToken || !assetsAndLiability) return
-    const levBal = assetsAndLiability.assets - assetsAndLiability.liabilities
-    api.addToken(levReserveToken, levBal)
-  })
-}
-
-async function processRepricingVaults(api, vaults) {
-  const [decimals, supplies, reserves, rawNonLevTokens] = await Promise.all([
-    api.multiCall({ abi: 'uint8:decimals', calls: vaults, permitFailure: true }),
-    api.multiCall({ abi: 'uint256:totalSupply', calls: vaults, permitFailure: true }),
-    api.multiCall({ abi: 'uint256:reservesPerShare', calls: vaults, permitFailure: true }),
-    api.multiCall({ abi: 'address:reserveToken', calls: vaults, permitFailure: true })
-  ])
-
-  await Promise.all(vaults.map(async (_vault, i) => {
-    const decimal = decimals[i]
-    const supply = supplies[i]
-    const reserve = reserves[i]
-    const rawNonLevToken = rawNonLevTokens[i]
-    if (!decimals || !supply || !reserve || !rawNonLevToken) return
-    const nonLevToken = await api.call({ abi: 'address:baseToken', target: rawNonLevToken })
-    const bal = reserve * supply / 10 ** decimal
-    api.addToken(nonLevToken, bal)
-  }))
-}
-
-async function processErc4626Vaults(api, vaults) {
-  const [assets, totalAssets] = await Promise.all([
-    api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: false })
-  ])
-
-  await Promise.all(vaults.map(async (_vault, i) => {
-    api.addToken(assets[i], totalAssets[i])
-  }))
-}
-
-async function processBalanceSheetVaults(api, vaults) {
-  const [tokens, balanceSheet] = await Promise.all([
-    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
-  ])
-
-  vaults.forEach((_vault, i) => {
-    const vaultTokens = tokens[i]
-    const vaultBalanceSheet = balanceSheet[i]
-
-    vaultTokens.assetTokens.forEach((token, j) => {
-      const assetAmount = vaultBalanceSheet.totalAssets[j];
-      if(!token || !assetAmount) return
-      api.addToken(token, assetAmount)
-    })
-    vaultTokens.liabilityTokens.forEach((token, j) => {
-      const liabilityAmount = vaultBalanceSheet.totalLiabilities[j];
-      if(!token || !liabilityAmount) return
-      api.addToken(token, -liabilityAmount)
-    })
-  })
-}
-
-async function processAutoStakingVaults(api, vaults) {
-  const [stakingToken, totalSupply] = await Promise.all([
-    api.multiCall({ abi: 'function stakingToken() external view returns (address)', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'function totalSupply() external view returns (uint256)', calls: vaults, permitFailure: false })
-  ])
-
-  vaults.forEach((_vault, i) => {
-    api.addToken(stakingToken[i], totalSupply[i])
-  })
+  const [intPart, fracPart = ''] = abs.toFixed(decimals).split('.')
+  const raw = BigInt(intPart + fracPart)
+  return isNegative ? -raw : raw
 }
 
 async function tvl(api) {
-  const vaults = await getVaults(api);
-  await processLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
-  await processRepricingVaults(api, vaultsOfKind(vaults, 'REPRICING'))
-  await processErc4626Vaults(api, vaultsOfKind(vaults, 'ERC4626'))
-  await processBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
-  await processAutoStakingVaults(api, vaultsOfKind(vaults, 'AUTO_STAKING'))
+  const vaults = await fetchVaultBalances(api)
+  for (const v of vaults) {
+    for (const a of v.assets) api.add(a.token, toBigInt(a.amount, a.decimals))
+    for (const l of v.liabilities) api.add(l.token, -toBigInt(l.amount, l.decimals))
+  }
 }
 
 async function borrowedLeveragedVaults(api, leveragedVaults) {
-  // Retrieve the token balance of the underlying debt token
+  if (!leveragedVaults.length) return
   const managers = await api.multiCall({ calls: leveragedVaults, abi: 'address:manager', permitFailure: true })
   const borrowLends = await api.multiCall({ calls: managers, abi: 'address:borrowLend', permitFailure: true })
   const [borrowTokens, borrowAmounts] = await Promise.all([
-    await api.multiCall({ calls: borrowLends, abi: 'address:borrowToken', permitFailure: true }),
-    await api.multiCall({ calls: borrowLends, abi: 'address:debtBalance', permitFailure: true })
+    api.multiCall({ calls: borrowLends, abi: 'address:borrowToken', permitFailure: true }),
+    api.multiCall({ calls: borrowLends, abi: 'address:debtBalance', permitFailure: true }),
   ])
-
   leveragedVaults.forEach((_vault, i) => {
     const debtToken = borrowTokens[i]
     const debtAmount = borrowAmounts[i]
@@ -148,25 +57,15 @@ async function borrowedLeveragedVaults(api, leveragedVaults) {
 }
 
 async function borrowedBalanceSheetVaults(api, vaults) {
-  const [tokens, balanceSheet] = await Promise.all([
-    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
-  ])
-
-  vaults.forEach((_vault, i) => {
-    const vaultTokens = tokens[i]
-    const vaultBalanceSheet = balanceSheet[i]
-
-    vaultTokens.liabilityTokens.forEach((token, j) => {
-      const liabilityAmount = vaultBalanceSheet.totalLiabilities[j];
-      if(!token || !liabilityAmount) return
-      api.addToken(token, liabilityAmount)
-    })
-  })
+  for (const v of vaults) {
+    for (const l of v.liabilities) api.add(l.token, toBigInt(l.amount, l.decimals))
+  }
 }
 
 async function borrowed(api) {
-  const vaults = await getVaults(api);
-  await borrowedLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
-  await borrowedBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
+  const vaults = await fetchVaultBalances(api)
+  const leverageVaults = vaults.filter((v) => v.vault_kinds.includes('LEVERAGE')).map((v) => v.address)
+
+  await borrowedLeveragedVaults(api, leverageVaults)
+  await borrowedBalanceSheetVaults(api, vaults)
 }
