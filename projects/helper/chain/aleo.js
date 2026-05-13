@@ -1,16 +1,11 @@
-const { getEnv } = require('../env')
-const http = require('../http')
-
-const endpoint = () => getEnv('ALEO_RPC')
-
 const axios = require('axios')
 
+const endpoint = 'https://api.provable.com/v1/mainnet'
+
 async function aQuery(path) {
-  const { data } = await axios.get(`${endpoint()}${path}`, { timeout: 3000 })
+  const { data } = await axios.get(`${endpoint}${path}`, { timeout: 3000 })
   return data
 }
-
-const sdk = require('@defillama/sdk')
 
 /**
  * Fetch a value from a mapping within an Aleo program.
@@ -21,21 +16,7 @@ async function getProgramMappingValue(programId, mappingName, key) {
   return aQuery(url)
 }
 
-/**
- * Fetch the latest block height
- */
-async function getLatestHeight() {
-  return aQuery(`/latest/height`)
-}
-
-/**
- * Get block by height
- */
-async function getBlock(height) {
-  return aQuery(`/block/${height}`)
-}
-
-async function sumTokens({ balances = {}, owners = [], api }) {
+async function sumTokens({ owners = [], api }) {
   // Aleo's native token is mapped in credits.aleo -> account
   for (const owner of owners) {
     try {
@@ -46,15 +27,11 @@ async function sumTokens({ balances = {}, owners = [], api }) {
         const amountStr = res.replace(/u64$/, '')
         const amount = Number(amountStr) / 1e6 // Convert microcredits to Aleo
 
-        if (Number.isNaN(amount)) {
-          throw new Error(`Failed to parse valid numeric balance from Aleo mapping. Received: ${res}`)
+        if (!Number.isFinite(amount)) {
+          throw new Error(`Failed to parse valid numeric balance from Aleo mapping for ${owner}. Received: ${res}`)
         }
         
-        if (api) {
-          api.addCGToken('aleo', amount)
-        } else {
-          sdk.util.sumSingleBalance(balances, 'coingecko:aleo', amount)
-        }
+        api.addCGToken('aleo', amount)
       }
     } catch (e) {
       // Only swallow 404/not found errors (which means empty balance/account not initialized). Fail on other RPC issues.
@@ -65,14 +42,10 @@ async function sumTokens({ balances = {}, owners = [], api }) {
       throw e
     }
   }
-  return api ? api.getBalances() : balances
+  return api.getBalances()
 }
 
 module.exports = {
-  endpoint,
-  aQuery,
   getProgramMappingValue,
-  getLatestHeight,
-  getBlock,
   sumTokens,
 }
