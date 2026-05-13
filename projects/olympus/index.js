@@ -13,7 +13,8 @@ const WSOHM = '0xCa76543Cf381ebBB277bE79574059e32108e3E65';
 const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF';
 const VEFXS = '0xc8418af6358ffdda74e09ca9cc3fe03ca6adc5b0';
 
-// Address list: https://docs.olympusdao.finance/main/contracts/addresses
+// Address lists: https://docs.olympusdao.finance/main/contracts/addresses 
+// https://github.com/OlympusDAO/olympus-protocol-metrics-subgraph/blob/120b50a82d5f4be476201965ee3762710778eb92/subgraphs/ethereum/src/utils/Constants.ts
 const OlympusStakings = [
   "0x0822F3C03dcc24d200AFF33493Dc08d0e1f274A2", // Old Staking Contract
   "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a", // V1 Staking Contract
@@ -102,7 +103,7 @@ const ethereumTreasuryTokens = [
   '0x43d4a3cd90ddd2f8f4f693170c9c8098163502ad',
 ];
 
-// Protocol-Owned Liquidity LP tokens — tracked by the Uniswap V3 adapter, not counted here.
+// Protocol-Owned Liquidity LP tokens.
 const ethereumPolTokens = [
   '0xb23dfc0c4502a271976f1ee65321c51be2529640',
   '0x622a725a79c7fe37ad839c640cd62d546712b3a9',
@@ -133,8 +134,6 @@ const chains = {
     owners: ethereumOwners,
     treasuryTokens: ethereumTreasuryTokens,
     // Aave V3 variable debt tokens for Olympus's yield-farming leverage loop.
-    // Tracked as liabilities so the borrowed USDT/USDC net against the reinvested position.
-    // Currently $0 (loop inactive); sourced from Olympus's own subgraph Constants.ts.
     liabilityTokens: [
       '0x6df1c1e379bc5a00a7b4c6e67a203333772f45a8', // variableDebtEthUSDT
       '0x72e95b8931767c79ba4eee721354d6e99a61d004', // variableDebtEthUSDC
@@ -233,7 +232,6 @@ const chains = {
 const normalize = a => a && a.toLowerCase();
 const isAddress = a => !!a && /^0x[a-f0-9]{40}$/.test(normalize(a)) && normalize(a) !== ADDRESSES.null;
 const addressSet = (arr = []) => new Set(arr.filter(Boolean).map(normalize));
-const uniqueAddresses = arr => [...new Set(arr.filter(isAddress).map(a => a.toLowerCase()))];
 
 // Discover the live TRSRY and cross-chain treasury contracts from the Bophades Kernel.
 // Olympus can upgrade the TRSRY module via Kernel migration — never hardcode it.
@@ -261,7 +259,7 @@ async function discoverOwners(api, chainConfig) {
     }
   }
 
-  return uniqueAddresses(owners);
+  return [...addressSet(owners)];
 }
 
 async function addLiabilities(api, owners, liabilityTokens) {
@@ -353,20 +351,20 @@ module.exports = {
   start: '2021-03-24',
   timetravel: false,
   hallmarks: [
-    ['2021-03-24', 'Olympus Launch'],
-    ['2021-10-19', 'OHM v2 Migration begins'],
-    ['2022-01-21', 'Inverse Bonds'],
-    ['2022-04-30', 'Fei Protocol Hack'],
-    ['2022-11-17', 'Range-Bound Stability Launch'],
-    ['2023-07-23', 'Cooler Loans Launch'],
-    ['2024-09-20', 'Yield Repurchase Facility'],
-    ['2024-10-01', 'On-Chain Governance'],
-    ['2024-11-20', 'Emissions Manager Launch'],
-    ['2025-01-15', 'Cooler v2 Launch'],
-    ['2025-12-01', 'Convertible Deposits Launch'],
-    ['2026-01-08', 'CD Lending and Limit Orders'],
+    ["2021-03-24", "Olympus Launch"],
+    ["2021-10-19", "OHM v2 Migration begins"],
+    ["2022-01-21", "Inverse Bonds"],
+    ["2022-04-30", "Fei Protocol Hack"],
+    ["2022-11-17", "Range-Bound Stability Launch"],
+    ["2023-07-23", "Cooler Loans Launch"],
+    ["2024-09-20", "Yield Repurchase Facility"],
+    ["2024-10-01", "On-Chain Governance"],
+    ["2024-11-20", "Emissions Manager Launch"],
+    ["2025-01-15", "Cooler v2 Launch"],
+    ["2025-12-01", "Convertible Deposits Launch"],
+    ["2026-01-08", "CD Lending and Limit Orders"],
   ],
-  methodology: "Treasury balances are read directly on-chain. Owners include the Olympus DAO/policy/yield-farming multisigs plus the live TRSRY and cross-chain custodians discovered via the Bophades Kernel TRSRY + CHREG modules. Aave V3 yield-farming-loop debt (USDT/USDC) is subtracted as a liability. Cooler Loans funds are naturally excluded — lent USDS/DAI has left treasury wallets and is tracked by the dedicated cooler-loans adapter. Protocol-Owned Liquidity is excluded (counted by the Uniswap V3 adapter). OHM/sOHM/gOHM holdings in the treasury are reported under ownTokens.",
+  methodology: "Treasury value from subgraph excluding protocol-owned OHM and Protocol-Owned Liquidity. POL (Uniswap V3 LP positions) is tracked in Olympus treasury dashboards and excluded here to avoid double-counting with the Uniswap V3 adapter. Cooler Loans debt is tracked by the dedicated cooler-loans adapter.",
   ethereum: {
     tvl: buildTvl('tvl'),
     staking: staking(OlympusStakings, [OHM, OHM_V1]),
