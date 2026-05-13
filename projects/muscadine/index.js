@@ -13,6 +13,7 @@ const configs = {
         '0x89712980cb434ef5ae4ab29349419eb976b0b496', // Muscadine USDC Prime
         '0xd6dcad2f7da91fbb27bda471540d9770c97a5a43', // Muscadine WETH Prime
         '0x99dcd0d75822ba398f13b2a8852b07c7e137ec70', // Muscadine cbBTC Prime
+        '0xB15a51F46a53CF7dBB378A459A552F342bC54815', // V2 cbBTC test vault
       ],
     },
   }
