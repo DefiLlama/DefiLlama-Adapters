@@ -41,6 +41,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ethereumclassic: {
+    [ADDRESSES.ethereumclassic.WETC]: { coingeckoId: 'ethereum-classic', decimals: 18 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },

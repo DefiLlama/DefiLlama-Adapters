@@ -827,7 +827,10 @@ const uniV2Configs = {
     arbitrum: '0x989CF6bFA8997E8A01Fa07F3009392d1C734c719',
   },
   'hebeswap': {
-    ethereumclassic: '0x09fafa5eecbc11C3e5d30369e51B7D9aab2f3F53',
+    ethereumclassic: {
+      factory: '0x09fafa5eecbc11C3e5d30369e51B7D9aab2f3F53',
+      permitFailure: true,
+    },
   },
   'heraswap': {
     onus: '0x6CD368495D90b9Ba81660e2b35f7Ea2AcE2B8cD6',
