@@ -9,7 +9,7 @@ const RESERVES = {
     { token: '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', wrapper: '0xd6587e78d252e630d425ecd827017bf81b0ac553' }, // WBTC  -> ftWBTC
     { token: '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', wrapper: '0x727bc187150d5599e7fba32732c21c6d9f5b1837' }, // WETH  -> ftWETH
     { token: '0x000000000eccff26b795f73fb0a70d48da657fef', wrapper: '0x0e794B1FD35A7a5550CD3E305882369FFB2DF7f7' }, // USSD -> ftUSSD
-    // ftUSD is intentionally excluded
+    { token: '0xF7D85EC4E7710f71992752eac2111312e73E9C9C', wrapper: '0xc67D966f761e8cf13Faa0a1E774425290c8453d9' }, // ftUSD -> ftFtUSD
   ],
   ethereum: [
     { token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', wrapper: '0xD2e4A5ac4B4Da102317cF7C9A1289aDF082639E2' }, // USDC -> ftUSDC
@@ -18,7 +18,7 @@ const RESERVES = {
     { token: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', wrapper: '0x1A5730c71576D77048E9FdC79DD40e4B1E8Fe042' }, // WBTC -> ftWBTC
     { token: '0x5DD1A7A369e8273371d2DBf9d83356057088082c', wrapper: '0x7127BB9d9ad0f47B8dA9087e634D67F3946F840E' }, // FT   -> ftFT
     { token: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', wrapper: '0x01980BD1B58313bD3767f6adc75Af8b6464f3db7' }, // wstETH -> ftWstETH (stakedNative)
-    // ftUSD is intentionally excluded (avoids double-count with the ftUSD adapter)
+    { token: '0xF7D85EC4E7710f71992752eac2111312e73E9C9C', wrapper: '0xc67D966f761e8cf13Faa0a1E774425290c8453d9' }, // ftUSD -> ftFtUSD
   ],
 }
 
@@ -82,7 +82,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    'TVL: for each Lend reserve, sums the underlying balance held at its ftYieldWrapperV2 plus the yield receipt (aToken, spToken, etc.) held by each of the wrapper\'s strategies. Borrowed: sums outstanding debt per reserve via LendingLens.assetState.borrows since per-borrower balances are not enumerable on-chain. ftUSD reserve is intentionally excluded to avoid double-counting with the ftUSD adapter.',
+    'TVL: for each Lend reserve, sums the underlying balance held at its ftYieldWrapperV2 plus the yield receipt (aToken, spToken, etc.) held by each of the wrapper\'s strategies, then adds the outstanding borrows per reserve via LendingLens.assetState.borrows (since lent-out tokens have left the wrapper). Borrowed: sums outstanding debt per reserve via LendingLens.assetState.borrows.',
   sonic: { tvl, borrowed },
   ethereum: { tvl, borrowed },
 }
