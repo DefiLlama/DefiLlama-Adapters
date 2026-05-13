@@ -19,7 +19,7 @@ async function solanaTvl(api) {
 }
 
 module.exports = {
-    methodology: "TVL is fetched from api.yo.xyz — /vault/stats for EVM and /solana/vault/stats for Solana. Each vault's TVL is attributed to its primary chain; secondary (cross-chain bridged) access points are excluded since the underlying assets live on the primary chain. Matches the figure displayed on app.yo.xyz.",
+    methodology: "TVL is fetched from api.yo.xyz — /vault/stats for EVM and /solana/vault/stats for Solana. Each vault's TVL is attributed to the chain its underlying assets live on. Matches the figure displayed on app.yo.xyz.",
     base: { tvl: evmTvl },
     ethereum: { tvl: evmTvl },
     solana: { tvl: solanaTvl },
