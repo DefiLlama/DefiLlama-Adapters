@@ -8,6 +8,7 @@ const RESERVES = {
     { token: '0xE5DA20F15420aD15DE0fa650600aFc998bbE3955', wrapper: '0x8b98e46421898437862de44aa63b73b2da69147b' }, // stS  -> ftstS
     { token: '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', wrapper: '0xd6587e78d252e630d425ecd827017bf81b0ac553' }, // WBTC  -> ftWBTC
     { token: '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', wrapper: '0x727bc187150d5599e7fba32732c21c6d9f5b1837' }, // WETH  -> ftWETH
+    { token: '0x000000000eccff26b795f73fb0a70d48da657fef', wrapper: '0x0e794B1FD35A7a5550CD3E305882369FFB2DF7f7' }, // USSD -> ftUSSD
     // ftUSD is intentionally excluded
   ],
   ethereum: [
@@ -16,6 +17,7 @@ const RESERVES = {
     { token: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', wrapper: '0x460494aF61BcB92B59797B4e09C26A5ADecb2da2' }, // WETH -> ftWETH (wNative)
     { token: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', wrapper: '0x1A5730c71576D77048E9FdC79DD40e4B1E8Fe042' }, // WBTC -> ftWBTC
     { token: '0x5DD1A7A369e8273371d2DBf9d83356057088082c', wrapper: '0x7127BB9d9ad0f47B8dA9087e634D67F3946F840E' }, // FT   -> ftFT
+    { token: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', wrapper: '0x01980BD1B58313bD3767f6adc75Af8b6464f3db7' }, // wstETH -> ftWstETH (stakedNative)
     // ftUSD is intentionally excluded (avoids double-count with the ftUSD adapter)
   ],
 }
