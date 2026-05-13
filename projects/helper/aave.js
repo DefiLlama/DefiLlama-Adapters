@@ -403,7 +403,7 @@ function aaveV3Export(config) {
 
     exports[chain] = {
       tvl: (api) => fetchReserveData(api, poolDatas),
-      borrowed: (api) => fetchReserveData(api, poolDatas, true),
+      borrowed: isInsolvent ? async () => ({}) : (api) => fetchReserveData(api, poolDatas, true),
     }
   })
 
