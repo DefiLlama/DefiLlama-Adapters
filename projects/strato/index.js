@@ -1,6 +1,5 @@
 const RPC_URL          = 'https://noderpc.strato.nexus/rpc'
 const POOL_FACTORY     = '0x000000000000000000000000000000000000100a'
-const PRICE_ORACLE     = '0x0000000000000000000000000000000000001002'
 const CDP_REGISTRY     = '0x0000000000000000000000000000000000001012'
 const LENDING_REGISTRY = '0x0000000000000000000000000000000000001007'
 const LENDING_POOL     = '0x0000000000000000000000000000000000001005'
@@ -10,20 +9,6 @@ const VAULT            = '0x34bc729f66106a146b0864e673a3571b28fa23e1'
 
 if (!process.env.STRATO_RPC) process.env.STRATO_RPC = RPC_URL
 
-const CG_TOKEN_MAP = {
-  ETH: 'ethereum',
-  WBTC: 'wrapped-bitcoin',
-  USDC: 'usd-coin',
-  USDT: 'tether',
-  wstETH: 'wrapped-steth',
-  rETH: 'rocket-pool-eth',
-  PAXG: 'pax-gold',
-  XAUt: 'tether-gold',
-  sUSDS: 'susds',
-  syrupUSDC: 'syrupusdc',
-}
-
-const WAD = 10n ** 18n
 const RAY = 10n ** 27n
 
 const lc = (v) => v && v.toLowerCase()
@@ -91,13 +76,6 @@ async function tvl(api) {
   if (safetyAsset) tokenSet.add(safetyAsset)
   const allTokens = [...tokenSet]
 
-  const tokenInfo = new Map()
-  for (const t of allTokens) {
-    const symbol = await tryCallRaw(api, { target: t, abi: 'erc20:symbol' })
-    const decimals = await tryCallRaw(api, { target: t, abi: 'erc20:decimals' })
-    if (symbol && decimals != null) tokenInfo.set(t, { symbol, decimals: Number(decimals) })
-  }
-
   const pairs = []
   for (const { pool, tokens } of pools) {
     for (const token of tokens) pairs.push({ holder: pool, token })
@@ -115,36 +93,16 @@ async function tvl(api) {
     for (const token of vaultAssets) pairs.push({ holder: vaultBotExecutor, token })
   }
 
-  const oracleTokens = allTokens.filter(t => {
-    const info = tokenInfo.get(t); return info && !CG_TOKEN_MAP[info.symbol]
-  })
-
-  const oraclePriceMap = new Map()
-  for (const t of oracleTokens) {
-    const price = await tryCallRaw(api, {
-      target: PRICE_ORACLE,
-      abi: 'function getAssetPrice(address) view returns (uint256)',
-      params: t,
-    })
-    if (price) oraclePriceMap.set(t, BigInt(price))
-  }
-
   const balances = []
   for (const { token, holder } of pairs) {
     balances.push(await tryCallRaw(api, { target: token, abi: 'erc20:balanceOf', params: holder }))
-  }
-
-  let borrowIndex = null, totalScaledDebt = null
-  if (borrowableAsset) {
-    borrowIndex = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function borrowIndex() view returns (uint256)' })
-    totalScaledDebt = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function totalScaledDebt() view returns (uint256)' })
   }
 
   for (let i = 0; i < pairs.length; i++) {
     if (!balances[i]) continue
     const amount = BigInt(balances[i])
     if (amount === 0n) continue
-    addToken(api, pairs[i].token, amount, tokenInfo, oraclePriceMap)
+    api.add(pairs[i].token, amount.toString())
   }
 
   const saveTotalAssets = saveAsset
@@ -156,38 +114,40 @@ async function tvl(api) {
 
   if (saveAsset && saveTotalAssets) {
     const amt = BigInt(saveTotalAssets)
-    if (amt > 0n) addToken(api, saveAsset, amt, tokenInfo, oraclePriceMap)
+    if (amt > 0n) api.add(saveAsset, amt.toString())
   }
   if (safetyAsset && safetyTotalAssets) {
     const amt = BigInt(safetyTotalAssets)
-    if (amt > 0n) addToken(api, safetyAsset, amt, tokenInfo, oraclePriceMap)
-  }
-
-  if (borrowableAsset && borrowIndex && totalScaledDebt) {
-    const lendingDebt = (BigInt(totalScaledDebt) * BigInt(borrowIndex)) / RAY
-    if (lendingDebt > 0n) addToken(api, borrowableAsset, lendingDebt, tokenInfo, oraclePriceMap)
+    if (amt > 0n) api.add(safetyAsset, amt.toString())
   }
 }
 
-function addToken(api, token, amount, tokenInfo, oraclePriceMap) {
-  const info = tokenInfo.get(token)
-  if (!info) return
-  const scale = 10n ** BigInt(info.decimals)
-  const cgId = CG_TOKEN_MAP[info.symbol]
-  if (cgId) {
-    api.addCGToken(cgId, Number(amount) / Number(scale))
-  } else {
-    const priceUsd = oraclePriceMap.get(token)
-    if (!priceUsd) return
-    api.addUSDValue(Number((amount * priceUsd) / scale) / Number(WAD))
-  }
+// NOTE: CDP debt is intentionally NOT included here. STRATO's CDPEngine stores
+// per-collateral debt in `mapping(address => CollateralGlobalState) public record
+// collateralGlobalStates`, and the `record` modifier prevents the standard ABI
+// auto-getter from being exposed via eth_call (selector reverts with "no function
+// for selector"). Reading CDP debt over JSON-RPC requires either an explicit
+// external view getter on CDPEngine or a contract redeploy. Until that lands,
+// `borrowed` reports only the LiquidityPool debt.
+async function borrowed(api) {
+  const borrowableAsset = await tryCall(api, { target: LENDING_POOL, abi: 'function borrowableAsset() view returns (address)' })
+  if (!borrowableAsset) return
+
+  const borrowIndex = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function borrowIndex() view returns (uint256)' })
+  const totalScaledDebt = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function totalScaledDebt() view returns (uint256)' })
+  if (!borrowIndex || !totalScaledDebt) return
+
+  const lendingDebt = (BigInt(totalScaledDebt) * BigInt(borrowIndex)) / RAY
+  if (lendingDebt === 0n) return
+
+  api.add(borrowableAsset, lendingDebt.toString())
 }
 
 module.exports = {
   methodology:
-    'All values verified on-chain via sequential eth_call (no Multicall3). Swap pools enumerated from PoolFactory.allPools. CDP collateral read from CDPVault, lending deposits from LiquidityPool + CollateralVault, savings from SaveUSDSTVault, staked assets from SafetyModule, and vault holdings from the Vault botExecutor. Holder addresses resolved from on-chain registries (CDPRegistry, LendingRegistry). Prices from CoinGecko or the on-chain PriceOracle.',
+    'All values verified on-chain via sequential eth_call (no Multicall3). Swap pools enumerated from PoolFactory.allPools. CDP collateral read from CDPVault, lending deposits (idle liquidity + collateral) from LiquidityPool + CollateralVault, savings from SaveUSDSTVault, staked assets from SafetyModule, and vault holdings from the Vault botExecutor. Holder addresses resolved from on-chain registries (CDPRegistry, LendingRegistry). Outstanding LiquidityPool debt is reported separately under `borrowed` (totalScaledDebt × borrowIndex / RAY against the LiquidityPool borrowableAsset) and is excluded from TVL. CDP debt is not yet included because STRATO CDPEngine state mappings are not exposed via standard ABI auto-getters over eth_call; this will be added once an explicit on-chain view function is available. Prices resolved server-side by DefiLlama for the `strato` chain.',
   misrepresentedTokens: true,
   timetravel: false,
   start: 1775151906,
-  strato: { tvl },
+  strato: { tvl, borrowed },
 }
