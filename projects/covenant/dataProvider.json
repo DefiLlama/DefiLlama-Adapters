@@ -1,0 +1,770 @@
+[
+  {
+    "type": "function",
+    "name": "getMarketDetails",
+    "inputs": [
+      {
+        "name": "covenantLiquid",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "marketId",
+        "type": "bytes20",
+        "internalType": "MarketId"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "marketsDetails",
+        "type": "tuple",
+        "internalType": "struct MarketDetails",
+        "components": [
+          {
+            "name": "marketId",
+            "type": "bytes20",
+            "internalType": "MarketId"
+          },
+          {
+            "name": "baseToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "quoteToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "aToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "zToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "marketParams",
+            "type": "tuple",
+            "internalType": "struct MarketParams",
+            "components": [
+              {
+                "name": "baseToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "quoteToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "curator",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "lex",
+                "type": "address",
+                "internalType": "address"
+              }
+            ]
+          },
+          {
+            "name": "marketState",
+            "type": "tuple",
+            "internalType": "struct MarketState",
+            "components": [
+              {
+                "name": "baseSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "protocolFeeGrowth",
+                "type": "uint128",
+                "internalType": "uint128"
+              },
+              {
+                "name": "authorizedPauseAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "statusFlag",
+                "type": "uint8",
+                "internalType": "uint8"
+              }
+            ]
+          },
+          {
+            "name": "lexState",
+            "type": "tuple",
+            "internalType": "struct LexState",
+            "components": [
+              {
+                "name": "lastDebtNotionalPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "lastBaseTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "lastETWAPBaseSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "lastSqrtPriceX96",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "lastUpdateTimestamp",
+                "type": "uint96",
+                "internalType": "uint96"
+              },
+              {
+                "name": "lastLnRateBias",
+                "type": "int64",
+                "internalType": "int64"
+              }
+            ]
+          },
+          {
+            "name": "lexConfig",
+            "type": "tuple",
+            "internalType": "struct LexConfig",
+            "components": [
+              {
+                "name": "protocolFee",
+                "type": "uint32",
+                "internalType": "uint32"
+              },
+              {
+                "name": "aToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "zToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "noCapLimit",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "scaleDecimals",
+                "type": "int8",
+                "internalType": "int8"
+              },
+              {
+                "name": "adaptive",
+                "type": "bool",
+                "internalType": "bool"
+              }
+            ]
+          },
+          {
+            "name": "lexParams",
+            "type": "tuple",
+            "internalType": "struct LexParams",
+            "components": [
+              {
+                "name": "covenantCore",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "initLnRateBias",
+                "type": "int64",
+                "internalType": "int64"
+              },
+              {
+                "name": "edgeSqrtPriceX96_B",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "edgeSqrtPriceX96_A",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "limHighSqrtPriceX96",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "limMaxSqrtPriceX96",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "debtDuration",
+                "type": "uint32",
+                "internalType": "uint32"
+              },
+              {
+                "name": "swapFee",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "targetXvsL",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          },
+          {
+            "name": "currentLTV",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "targetLTV",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "debtPriceDiscount",
+            "type": "uint128",
+            "internalType": "uint128"
+          },
+          {
+            "name": "tokenPrices",
+            "type": "tuple",
+            "internalType": "struct TokenPrices",
+            "components": [
+              {
+                "name": "baseTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "aTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "zTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getMarketsDetails",
+    "inputs": [
+      {
+        "name": "covenantLiquid",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "marketIds",
+        "type": "bytes20[]",
+        "internalType": "MarketId[]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "marketsDetails",
+        "type": "tuple[]",
+        "internalType": "struct MarketDetails[]",
+        "components": [
+          {
+            "name": "marketId",
+            "type": "bytes20",
+            "internalType": "MarketId"
+          },
+          {
+            "name": "baseToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "quoteToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "aToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "zToken",
+            "type": "tuple",
+            "internalType": "struct ERC20Details",
+            "components": [
+              {
+                "name": "tokenAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "decimals",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "totalSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "internalType": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string",
+                "internalType": "string"
+              }
+            ]
+          },
+          {
+            "name": "marketParams",
+            "type": "tuple",
+            "internalType": "struct MarketParams",
+            "components": [
+              {
+                "name": "baseToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "quoteToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "curator",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "lex",
+                "type": "address",
+                "internalType": "address"
+              }
+            ]
+          },
+          {
+            "name": "marketState",
+            "type": "tuple",
+            "internalType": "struct MarketState",
+            "components": [
+              {
+                "name": "baseSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "protocolFeeGrowth",
+                "type": "uint128",
+                "internalType": "uint128"
+              },
+              {
+                "name": "authorizedPauseAddress",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "statusFlag",
+                "type": "uint8",
+                "internalType": "uint8"
+              }
+            ]
+          },
+          {
+            "name": "lexState",
+            "type": "tuple",
+            "internalType": "struct LexState",
+            "components": [
+              {
+                "name": "lastDebtNotionalPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "lastBaseTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "lastETWAPBaseSupply",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "lastSqrtPriceX96",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "lastUpdateTimestamp",
+                "type": "uint96",
+                "internalType": "uint96"
+              },
+              {
+                "name": "lastLnRateBias",
+                "type": "int64",
+                "internalType": "int64"
+              }
+            ]
+          },
+          {
+            "name": "lexConfig",
+            "type": "tuple",
+            "internalType": "struct LexConfig",
+            "components": [
+              {
+                "name": "protocolFee",
+                "type": "uint32",
+                "internalType": "uint32"
+              },
+              {
+                "name": "aToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "zToken",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "noCapLimit",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "scaleDecimals",
+                "type": "int8",
+                "internalType": "int8"
+              },
+              {
+                "name": "adaptive",
+                "type": "bool",
+                "internalType": "bool"
+              }
+            ]
+          },
+          {
+            "name": "lexParams",
+            "type": "tuple",
+            "internalType": "struct LexParams",
+            "components": [
+              {
+                "name": "covenantCore",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "initLnRateBias",
+                "type": "int64",
+                "internalType": "int64"
+              },
+              {
+                "name": "edgeSqrtPriceX96_B",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "edgeSqrtPriceX96_A",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "limHighSqrtPriceX96",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "limMaxSqrtPriceX96",
+                "type": "uint160",
+                "internalType": "uint160"
+              },
+              {
+                "name": "debtDuration",
+                "type": "uint32",
+                "internalType": "uint32"
+              },
+              {
+                "name": "swapFee",
+                "type": "uint8",
+                "internalType": "uint8"
+              },
+              {
+                "name": "targetXvsL",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          },
+          {
+            "name": "currentLTV",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "targetLTV",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "debtPriceDiscount",
+            "type": "uint128",
+            "internalType": "uint128"
+          },
+          {
+            "name": "tokenPrices",
+            "type": "tuple",
+            "internalType": "struct TokenPrices",
+            "components": [
+              {
+                "name": "baseTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "aTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "zTokenPrice",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "error",
+    "name": "SafeCastOverflowedUintDowncast",
+    "inputs": [
+      {
+        "name": "bits",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "value",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  }
+]
