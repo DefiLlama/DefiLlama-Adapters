@@ -13,6 +13,7 @@ async function staking(api) {
   });
 
   addCrossToken(balances, CROSS_NATIVE_ADDRESS, totalStaked.toString());
+  return balances;
 }
 
 module.exports = {
