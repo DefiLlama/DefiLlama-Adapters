@@ -1,6 +1,10 @@
 name: Test_Change
 on:
   pull_request
+
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -10,35 +14,24 @@ jobs:
         with:
           output: 'json'
           fileOutput: 'json'
-      
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10
-          run_install: false
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: Setup Node.js with pnpm
+        uses: ./.github/actions/setup-node-pnpm
 
       - name: Run changes files through test script
         env:
           LLAMA_DEBUG_MODE: "true"
+          FILES_MODIFIED: ${{ steps.file_changes.outputs.files_modified }}
+          FILES_ADDED: ${{ steps.file_changes.outputs.files_added }}
+          WORKSPACE: ${{ github.workspace }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PR_NUMBER: ${{ github.event.number }}
         run: |
           RUN_FILES=$(
-            MODIFIED=${{ steps.file_changes.outputs.files_modified}} \
-            ADDED=${{ steps.file_changes.outputs.files_added}} \
-            node ${{ github.workspace }}/.github/workflows/getFileList.js
+            MODIFIED="$FILES_MODIFIED" \
+            ADDED="$FILES_ADDED" \
+            node "$WORKSPACE"/.github/workflows/getFileList.js
           )
 
           if [ "$RUN_FILES" = "[]" ]; then
@@ -49,27 +42,26 @@ jobs:
           # pnpm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk @hover-labs/kolibri-js
 
           # fail if package.json or package-lock.json is changed
-          FILES_MODIFIED=${{ steps.file_changes.outputs.files_modified }}
-          if [[ $FILES_MODIFIED == *"package.json"* || $FILES_MODIFIED == *"package-lock.json"* ]]; then
+          if [[ "$FILES_MODIFIED" == *"package.json"* || "$FILES_MODIFIED" == *"package-lock.json"* ]]; then
             echo "------ ERROR ------ > Please revert changes to package.json / package-lock.json" > /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt
-            node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}"
+            node "$WORKSPACE"/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "$REPO_OWNER" "$REPO_NAME" "$PR_NUMBER"
             exit 1
           fi
 
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
-          do 
-            { 
-              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
-              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
+          do
+            {
+              node "$WORKSPACE"/test.js "$WORKSPACE"/${i} 2>&1 | tee output.txt
+              node "$WORKSPACE"/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "$REPO_OWNER" "$REPO_NAME" "$PR_NUMBER" ${i}
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
                 exit 1;
               fi
-            } || { 
+            } || {
               echo -n $i
               echo ' doesnt run'
             }
           done
-        
+
       - name: Run ESLint
         run: |
           npm run lint
