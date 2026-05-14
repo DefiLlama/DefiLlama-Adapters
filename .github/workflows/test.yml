@@ -61,6 +61,20 @@ jobs:
             exit 1
           fi
 
+          # fail if any newly-added lines use api.getLogs(...) — adapters must use the getLogs2 helper instead
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          OFFENDERS=$(git diff "$BASE_SHA" "$HEAD_SHA" -- 'projects/**/*.js' \
+            | grep -nE '^\+[^+].*\bapi\.getLogs\s*\(' || true)
+          if [ -n "$OFFENDERS" ]; then
+            {
+              echo "------ ERROR ------ > Use the getLogs2 helper (require('./helper/cache/getLogs').getLogs2) instead of api.getLogs(...). Found new usage in this PR:"
+              echo "$OFFENDERS"
+            } > ${{ github.workspace }}/output.txt
+            node ${{ github.workspace }}/.github/workflows/commentResult.js ${{ github.workspace }}/output.txt ${{ github.workspace }}/pr-comments
+            exit 1
+          fi
+
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do
             {
