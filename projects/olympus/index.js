@@ -148,10 +148,6 @@ const chains = {
         '0xd683C7051a28fA150EB3F4BD92263865D4a67778',
         '0x27A8c58e3DE84280826d615D80ddb33930383fE9',
       ],
-      fraxLocks: [
-        { target: '0x963f487796d54d2f27bA6F3Fbe91154cA103b199', token: '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC' },
-        { target: '0xc96e1a26264D965078bd01eaceB129A65C09FFE7', token: '0x5271045F7B73c17825A7A7aee6917eE46b0B7520' },
-      ],
     },
   },
   arbitrum: {
