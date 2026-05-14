@@ -11,23 +11,15 @@ if (!process.env.STRATO_RPC) process.env.STRATO_RPC = RPC_URL
 
 const RAY = 10n ** 27n
 
-const lc = (v) => v && v.toLowerCase()
-
-async function tryCall(api, opts) {
-  try { return lc(await api.call(opts)) } catch { return null }
-}
-
-async function tryCallRaw(api, opts) {
-  try { return await api.call(opts) } catch { return null }
-}
-
 async function enumerateArray(api, target, abi, max = 500) {
   const seen = new Set()
   const out = []
   for (let i = 0; i < max; i++) {
-    const r = await tryCall(api, { target, abi, params: i })
+    let r
+    try { r = await api.call({ target, abi, params: i }) } catch { break }
     if (!r || r === '0x0000000000000000000000000000000000000000') break
-    if (!seen.has(r)) { seen.add(r); out.push(r) }
+    const lc = r.toLowerCase()
+    if (!seen.has(lc)) { seen.add(lc); out.push(lc) }
   }
   if (out.length === max) console.warn(`[strato] enumerateArray hit cap ${max} on ${target} — likely truncated`)
   return out
@@ -39,9 +31,9 @@ async function discoverPools(api) {
   )
   const pools = []
   for (const pool of poolAddrs) {
-    const tokenA = await tryCall(api, { target: pool, abi: 'function tokenA() view returns (address)' })
-    const tokenB = await tryCall(api, { target: pool, abi: 'function tokenB() view returns (address)' })
-    if (tokenA && tokenB) pools.push({ pool, tokens: [tokenA, tokenB] })
+    const tokenA = (await api.call({ target: pool, abi: 'function tokenA() view returns (address)' })).toLowerCase()
+    const tokenB = (await api.call({ target: pool, abi: 'function tokenB() view returns (address)' })).toLowerCase()
+    pools.push({ pool, tokens: [tokenA, tokenB] })
   }
   return pools
 }
@@ -49,77 +41,48 @@ async function discoverPools(api) {
 async function tvl(api) {
   const pools = await discoverPools(api)
 
-  const cdpVault = await tryCall(api, { target: CDP_REGISTRY, abi: 'function cdpVault() view returns (address)' })
-
-  const collateralVault = await tryCall(api, { target: LENDING_REGISTRY, abi: 'function collateralVault() view returns (address)' })
-  const liquidityPool = await tryCall(api, { target: LENDING_REGISTRY, abi: 'function liquidityPool() view returns (address)' })
-  const borrowableAsset = await tryCall(api, { target: LENDING_POOL, abi: 'function borrowableAsset() view returns (address)' })
+  const cdpVault         = (await api.call({ target: CDP_REGISTRY,     abi: 'function cdpVault() view returns (address)' })).toLowerCase()
+  const collateralVault  = (await api.call({ target: LENDING_REGISTRY, abi: 'function collateralVault() view returns (address)' })).toLowerCase()
+  const liquidityPool    = (await api.call({ target: LENDING_REGISTRY, abi: 'function liquidityPool() view returns (address)' })).toLowerCase()
+  const borrowableAsset  = (await api.call({ target: LENDING_POOL,     abi: 'function borrowableAsset() view returns (address)' })).toLowerCase()
   const lendingCollateralTokens = await enumerateArray(
     api, LENDING_POOL, 'function configuredAssets(uint256) view returns (address)'
   )
 
-  const vaultBotExecutor = await tryCall(api, { target: VAULT, abi: 'function botExecutor() view returns (address)' })
-  const vaultAssetsRaw = await tryCallRaw(api, {
-    target: VAULT, abi: 'function getSupportedAssets() view returns (address[])'
-  })
-  const vaultAssets = (vaultAssetsRaw || []).map(a => a && a.toLowerCase()).filter(Boolean)
+  const vaultBotExecutor = (await api.call({ target: VAULT, abi: 'function botExecutor() view returns (address)' })).toLowerCase()
+  const vaultAssets      = await enumerateArray(api, VAULT, 'function supportedAssets(uint256) view returns (address)')
 
-  const saveAsset = await tryCall(api, { target: SAVE_USDST_VAULT, abi: 'function asset() view returns (address)' })
-  const safetyAsset = await tryCall(api, { target: SAFETY_MODULE, abi: 'function asset() view returns (address)' })
+  const saveAsset        = (await api.call({ target: SAVE_USDST_VAULT, abi: 'function asset() view returns (address)' })).toLowerCase()
+  const safetyAsset      = (await api.call({ target: SAFETY_MODULE,    abi: 'function asset() view returns (address)' })).toLowerCase()
 
   const tokenSet = new Set()
   pools.forEach(p => p.tokens.forEach(t => tokenSet.add(t)))
   lendingCollateralTokens.forEach(t => tokenSet.add(t))
   vaultAssets.forEach(t => tokenSet.add(t))
-  if (borrowableAsset) tokenSet.add(borrowableAsset)
-  if (saveAsset) tokenSet.add(saveAsset)
-  if (safetyAsset) tokenSet.add(safetyAsset)
+  tokenSet.add(borrowableAsset)
+  tokenSet.add(saveAsset)
+  tokenSet.add(safetyAsset)
   const allTokens = [...tokenSet]
 
   const pairs = []
   for (const { pool, tokens } of pools) {
     for (const token of tokens) pairs.push({ holder: pool, token })
   }
-  if (cdpVault) {
-    for (const token of allTokens) pairs.push({ holder: cdpVault, token })
-  }
-  if (collateralVault) {
-    for (const token of lendingCollateralTokens) pairs.push({ holder: collateralVault, token })
-  }
-  if (liquidityPool && borrowableAsset) {
-    pairs.push({ holder: liquidityPool, token: borrowableAsset })
-  }
-  if (vaultBotExecutor) {
-    for (const token of vaultAssets) pairs.push({ holder: vaultBotExecutor, token })
-  }
+  for (const token of allTokens) pairs.push({ holder: cdpVault, token })
+  for (const token of lendingCollateralTokens) pairs.push({ holder: collateralVault, token })
+  pairs.push({ holder: liquidityPool, token: borrowableAsset })
+  for (const token of vaultAssets) pairs.push({ holder: vaultBotExecutor, token })
 
-  const balances = []
   for (const { token, holder } of pairs) {
-    balances.push(await tryCallRaw(api, { target: token, abi: 'erc20:balanceOf', params: holder }))
+    const balance = await api.call({ target: token, abi: 'erc20:balanceOf', params: holder })
+    if (BigInt(balance) > 0n) api.add(token, balance.toString())
   }
 
-  for (let i = 0; i < pairs.length; i++) {
-    if (!balances[i]) continue
-    const amount = BigInt(balances[i])
-    if (amount === 0n) continue
-    api.add(pairs[i].token, amount.toString())
-  }
+  const saveTotalAssets   = await api.call({ target: SAVE_USDST_VAULT, abi: 'function totalAssets() view returns (uint256)' })
+  const safetyTotalAssets = await api.call({ target: SAFETY_MODULE,    abi: 'function totalAssets() view returns (uint256)' })
 
-  const saveTotalAssets = saveAsset
-    ? await tryCallRaw(api, { target: SAVE_USDST_VAULT, abi: 'function totalAssets() view returns (uint256)' })
-    : null
-  const safetyTotalAssets = safetyAsset
-    ? await tryCallRaw(api, { target: SAFETY_MODULE, abi: 'function totalAssets() view returns (uint256)' })
-    : null
-
-  if (saveAsset && saveTotalAssets) {
-    const amt = BigInt(saveTotalAssets)
-    if (amt > 0n) api.add(saveAsset, amt.toString())
-  }
-  if (safetyAsset && safetyTotalAssets) {
-    const amt = BigInt(safetyTotalAssets)
-    if (amt > 0n) api.add(safetyAsset, amt.toString())
-  }
+  if (BigInt(saveTotalAssets)   > 0n) api.add(saveAsset,   saveTotalAssets.toString())
+  if (BigInt(safetyTotalAssets) > 0n) api.add(safetyAsset, safetyTotalAssets.toString())
 }
 
 // NOTE: CDP debt is intentionally NOT included here. STRATO's CDPEngine stores
@@ -130,17 +93,12 @@ async function tvl(api) {
 // external view getter on CDPEngine or a contract redeploy. Until that lands,
 // `borrowed` reports only the LiquidityPool debt.
 async function borrowed(api) {
-  const borrowableAsset = await tryCall(api, { target: LENDING_POOL, abi: 'function borrowableAsset() view returns (address)' })
-  if (!borrowableAsset) return
-
-  const borrowIndex = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function borrowIndex() view returns (uint256)' })
-  const totalScaledDebt = await tryCallRaw(api, { target: LENDING_POOL, abi: 'function totalScaledDebt() view returns (uint256)' })
-  if (!borrowIndex || !totalScaledDebt) return
+  const borrowableAsset  = await api.call({ target: LENDING_POOL, abi: 'function borrowableAsset() view returns (address)' })
+  const borrowIndex      = await api.call({ target: LENDING_POOL, abi: 'function borrowIndex() view returns (uint256)' })
+  const totalScaledDebt  = await api.call({ target: LENDING_POOL, abi: 'function totalScaledDebt() view returns (uint256)' })
 
   const lendingDebt = (BigInt(totalScaledDebt) * BigInt(borrowIndex)) / RAY
-  if (lendingDebt === 0n) return
-
-  api.add(borrowableAsset, lendingDebt.toString())
+  if (lendingDebt > 0n) api.add(borrowableAsset, lendingDebt.toString())
 }
 
 module.exports = {
