@@ -64,36 +64,36 @@ const ethereumTreasuryTokens = [
   '0x028171bca77440897b824ca71d1c56cac55b68a3', // aDAI
   '0x4579a27af00a62c0eb156349f31b345c08386419', // aLUSD
   '0x4f5923fc5fd4a93352581b38b7cd26943012decf', // aEthUSDe
-  '0x6df1c1e379bc5a00a7b4c6e67a203333772f45a8', // Aave V3 variableDebt USDT — yield-farming loop liability (excluded, subtracted via liabilityTokens)
-  '0x72e95b8931767c79ba4eee721354d6e99a61d004', // Aave V3 variableDebt USDC — yield-farming loop liability (excluded, subtracted via liabilityTokens)
-  '0x853d955acef822db058eb8505911ed77f175b99e', // FRAX
-  '0x5f98805a4e8be255a32880fdec7f6728c6568ba0', // LUSD
+  '0x6df1c1e379bc5a00a7b4c6e67a203333772f45a8', // variableDebtEthUSDT — yield-farming loop liability
+  '0x72e95b8931767c79ba4eee721354d6e99a61d004', // variableDebtEthUSDC — yield-farming loop liability
+  ADDRESSES.ethereum.FRAX,
+  ADDRESSES.ethereum.LUSD,
   ADDRESSES.ethereum.USDC,
-  '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-  '0x4c9EDD5852cd905f086C759E8383e09bff1E68B3', // USDe
-  '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
-  '0x83F20F44975D03b1b09e64809B757c47f942BEeA', // sDAI
-  '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', // sUSDe
-  '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD', // sUSDS
+  ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.USDe,
+  ADDRESSES.ethereum.USDS, 
+  ADDRESSES.ethereum.SDAI, 
+  ADDRESSES.ethereum.sUSDe, 
+  ADDRESSES.ethereum.sUSDS,
   ADDRESSES.ethereum.WBTC,
   ADDRESSES.ethereum.WETH,
   ADDRESSES.ethereum.WSTETH,
-  '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', // weETH
+  ADDRESSES.ethereum.WEETH,
   AURA,
   '0x616e8BfA43F920657B3497DBf40D6b1A02D4608d', // auraBAL
   '0xba100000625a3754423978a60c9317c58a424e3D', // BAL
   ADDRESSES.ethereum.CVX,
-  ADDRESSES.ethereum.vlCVX,                    // priced server-side as CVX
-  '0xd18140b4b819b895a3dba5442f959fa44994af50', // vlCVX v1 (unpriced; add server pricing if balance grows)
-  '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC', // vlAURA   (unpriced; add server pricing if balance grows)
-  '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7',
-  '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0',
-  '0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d',
-  '0x5a98fcbea516cf06857215779fd812ca3bef1b32', // LDO
-  '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2', // SUSHI
+  ADDRESSES.ethereum.vlCVX,                  
+  '0xd18140b4b819b895a3dba5442f959fa44994af50', // vlCVX v1
+  '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC', // vlAURA 
+  ADDRESSES.ethereum.cvxCRV,
+  ADDRESSES.ethereum.FXS,
+  '0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d', // LQTY
+  ADDRESSES.ethereum.LIDO,
+  ADDRESSES.ethereum.SUSHI, 
   '0x8798249c2e607446efb7ad49ec89dd1865ff4272', // xSUSHI
-  '0x2e9d63788249371f1dfc918a52f8d799f4a38c94',
-  '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B',
+  ADDRESSES.ethereum.TOKE,
+  '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B', // TRIBE
   '0xdbdb4d16eda451d0503b854cf79d55697f90c8df', // ALCX
   '0xc55126051b22ebb829d00368f4b12bde432de5da', // BTRFLY v2
   '0x742B70151cd3Bc7ab598aAFF1d54B90c3ebC6027', // rlBTRFLY
@@ -133,11 +133,6 @@ const chains = {
   ethereum: {
     owners: ethereumOwners,
     treasuryTokens: ethereumTreasuryTokens,
-    // Aave V3 variable debt tokens for Olympus's yield-farming leverage loop.
-    liabilityTokens: [
-      '0x6df1c1e379bc5a00a7b4c6e67a203333772f45a8', // variableDebtEthUSDT
-      '0x72e95b8931767c79ba4eee721354d6e99a61d004', // variableDebtEthUSDC
-    ],
     ownTokens: [OHM_V1, OHM, GOHM, SOHM_V1, SOHM_V2, SOHM_V3, WSOHM],
     polTokens: ethereumPolTokens,
     special: {
@@ -166,13 +161,13 @@ const chains = {
     owners: [...ethereumOwners, '0x012BBf0481b97170577745D2167ee14f63E2aD4C'],
     treasuryTokens: [
       ADDRESSES.arbitrum.ARB,
-      '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F',
-      '0x10393c20975cf177a3513071bc110f7962cd67da',
-      '0xfb9E5D956D889D91a82737B9bFCDaC1DCE3e1449',
-      '0x93b346b6bc2548da6a1e7d98e9a421b42541425b',
-      '0x539bde0d7dbd336b79148aa742883198bbf60342',
+      ADDRESSES.arbitrum.FRAX,
+      '0x10393c20975cf177a3513071bc110f7962cd67da', // JONES
+      '0xfb9E5D956D889D91a82737B9bFCDaC1DCE3e1449', // LQTY
+      '0x93b346b6bc2548da6a1e7d98e9a421b42541425b', // LUSD
+      '0x539bde0d7dbd336b79148aa742883198bbf60342', // MAGIC
       ADDRESSES.arbitrum.USDC,
-      '0xa684cd057951541187f288294a1e1c2646aa2d24',
+      '0xa684cd057951541187f288294a1e1c2646aa2d24', // VSTA
       ADDRESSES.arbitrum.WETH,
     ],
     ownTokens: [
@@ -262,15 +257,6 @@ async function discoverOwners(api, chainConfig) {
   return [...addressSet(owners)];
 }
 
-async function addLiabilities(api, owners, liabilityTokens) {
-  if (!liabilityTokens.length || !owners.length) return;
-  const calls = liabilityTokens.flatMap(t => owners.map(o => ({ target: t, params: [o] })));
-  const balances = await api.multiCall({ calls, abi: 'erc20:balanceOf', permitFailure: true });
-  balances.forEach((balance, i) => {
-    if (balance) api.add(calls[i].target, new BigNumber(balance).times(-1).toFixed(0));
-  });
-}
-
 async function addMakerDsr(api, owners, special) {
   if (!special.makerDsr) return;
   const [pies, chi] = await Promise.all([
@@ -317,14 +303,12 @@ function buildTvl(mode) {
     const owners = await discoverOwners(api, chainConfig);
     const ownSet = addressSet(chainConfig.ownTokens);
     const polSet = addressSet(chainConfig.polTokens);
-    const liabilitySet = addressSet(chainConfig.liabilityTokens);
     const blacklist = mode === 'ownTokens' ? [...polSet] : [...ownSet, ...polSet];
 
-    const sourceTokens = mode === 'ownTokens' ? chainConfig.ownTokens : chainConfig.treasuryTokens;
-    const tokens = (sourceTokens || []).filter(t => !liabilitySet.has(normalize(t)));
+    const tokens = mode === 'ownTokens' ? chainConfig.ownTokens : chainConfig.treasuryTokens;
 
     const convexRewardPools = mode === 'tvl' ? chainConfig.special?.convexRewardPools : undefined;
-    if ((tokens.length || convexRewardPools?.length) && owners.length) {
+    if ((tokens?.length || convexRewardPools?.length) && owners.length) {
       await sumTokens2({
         api,
         owners,
@@ -337,7 +321,6 @@ function buildTvl(mode) {
     }
 
     if (mode === 'tvl' && chainConfig.special) {
-      await addLiabilities(api, owners, chainConfig.liabilityTokens || []);
       await addMakerDsr(api, owners, chainConfig.special);
       await addVeFxs(api, chainConfig.special);
       await addFraxLocks(api, owners, chainConfig.special);
