@@ -10,8 +10,10 @@ const SOHM_V1 = '0x31932e6e45012476ba3a3a4953cba62aee77fbbe';
 const SOHM_V2 = '0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f';
 const SOHM_V3 = '0x04906695D6D12CF5459975d7C3C03356E4Ccd460';
 const WSOHM = '0xCa76543Cf381ebBB277bE79574059e32108e3E65';
+
 const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF';
 const VEFXS = '0xc8418af6358ffdda74e09ca9cc3fe03ca6adc5b0';
+const JONES = '0x10393c20975cF177a3513071bC110f7962CD67da';
 
 // Address lists: https://docs.olympusdao.finance/main/contracts/addresses 
 // https://github.com/OlympusDAO/olympus-protocol-metrics-subgraph/blob/120b50a82d5f4be476201965ee3762710778eb92/subgraphs/ethereum/src/utils/Constants.ts
@@ -51,10 +53,6 @@ const ethereumOwners = [
   '0x9A315BdF513367C0377FB36545857d12e85813Ef',
   '0xa8687A15D4BE32CC8F0a8a7B9704a4C3993D9613',
   '0xde7b85f52577b113181921a7aa8fc0c22e309475',
-  '0xd6a6e8d9e82534bd65821142fccd91ec9cf31880',
-  '0xe6343ad0675c9b8d3f32679ae6adba0766a2ab4c',
-  '0x1e094fe00e13fd06d64eea4fb3cd912893606fe0',
-  '0xdb591Ea2e5Db886dA872654D58f6cc584b68e7cC',
   '0x2075e3b46470cfcE124Daaf52b46Dcf965727Dd1',
 ];
 
@@ -138,7 +136,6 @@ const chains = {
     special: {
       bophadesKernel: '0x2286d7f9639e8158FaD1169e76d1FbC38247f54b',
       keycodes: { TRSRY: '0x5452535259', CHREG: '0x4348524547' },
-      makerDsr: '0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7',
       veFxs: {
         token: VEFXS,
         underlying: ADDRESSES.ethereum.FXS,
@@ -158,11 +155,12 @@ const chains = {
     },
   },
   arbitrum: {
-    owners: [...ethereumOwners, '0x012BBf0481b97170577745D2167ee14f63E2aD4C'],
+    owners: [ '0x012BBf0481b97170577745D2167ee14f63E2aD4C'],
     treasuryTokens: [
+      ADDRESSES.null,
       ADDRESSES.arbitrum.ARB,
       ADDRESSES.arbitrum.FRAX,
-      '0x10393c20975cf177a3513071bc110f7962cd67da', // JONES
+      JONES,
       '0xfb9E5D956D889D91a82737B9bFCDaC1DCE3e1449', // LQTY
       '0x93b346b6bc2548da6a1e7d98e9a421b42541425b', // LUSD
       '0x539bde0d7dbd336b79148aa742883198bbf60342', // MAGIC
@@ -175,10 +173,10 @@ const chains = {
       '0x8D9bA570D6cb60C7e3e0F31343Efe75AB8E65FB1', // gOHM (Arb)
     ],
     polTokens: [
-      '0xb3028ca124b80cfe6e9ca57b70ef2f0ccc41ebd40002000000000000000000ba',
-      '0xc61ff48f94d801c1ceface0289085197b5ec44f000020000000000000000004d',
-      '0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0000200000000000000000423',
-      '0xce6195089b302633ed60f3f427d1380f6a2bfbc7000200000000000000000424',
+      '0xb3028ca124b80cfe6e9ca57b70ef2f0ccc41ebd4',
+      '0xc61ff48f94d801c1ceface0289085197b5ec44f0',
+      '0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0',
+      '0xce6195089b302633ed60f3f427d1380f6a2bfbc7',
       '0xaa5bd49f2162ffdc15634c87a77ac67bd51c6a6d',
       '0x292d1587a6bb37e34574c9ad5993f221d8a5616c',
       '0xe8ee01ae5959d3231506fcdef2d5f3e85987a39c',
@@ -187,6 +185,9 @@ const chains = {
       '0xc6f780497a95e246eb9449f5e4770916dcd6396a',
       '0xc31e54c7a869b9fcbecc14363cf510d1c41fa443',
     ],
+    special: {
+      jonesStaking: '0xb94d1959084081c5a11C460012Ab522F5a0FD756'
+    },
   },
   base: {
     owners: ['0x18a390bD45bCc92652b9A91AD51Aed7f1c1358f5'],
@@ -220,6 +221,29 @@ const chains = {
       '0x555BAd9EC18dB19dED0057D2517242399d1c5D87',
       '0xa57Cb177Beebc35A1A26A286951a306d9B752524',
       '0x815596fa7c4d983d1ca5304e5b48978424c1b448',
+    ],
+  },
+  fantom: {
+    owners: ['0x2bc001ffeb862d843e0a02a7163c7d4828e5fb10'], // Cross-Chain Fantom custodian
+    treasuryTokens: [
+      ADDRESSES.fantom.WFTM,
+      '0x74b23882a30290451a17c44f4f05243b6b58c76d', // wETH (multichain bridge)
+      '0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9', // LQDR
+      '0xdc301622e621166bd8e82f2ca0a26c13ad0be355', // FRAX (multichain)
+      '0x841fad6eae12c286d1fd18d1d525dffa75c7effe', // BOO
+      '0xf24bcf4d1e507740041c9cfd2dddb29585adce1e', // BEETS
+      ADDRESSES.fantom.DAI,
+      ADDRESSES.fantom.USDC,
+    ],
+    ownTokens: ['0x91fa20244fb509e8289ca630e5db3e9166233fdc'], // gOHM (Fantom)
+    polTokens: [
+      '0xec7178f4c41f346b2721907f5cf7628e388a7a58', // BOO-WFTM
+      '0x4fe6f19031239f105f753d1df8a0d24857d0caa2', // LQDR-WFTM
+      '0x648a7452da25b4fb4bdb79badf374a8f8a5ea2b5', // WFTM-BEETS
+      '0xf0702249f4d3a25cd3ded7859a165693685ab577', // WFTM-ETH
+      '0xae9bba22e87866e48ccacff0689afaa41eb94995', // WFTM-gOHM
+      '0xcb6eab779780c7fd6d014ab90d8b10e97a1227e2', // WFTM-OXD
+      '0x2b4c76d0dc16be1c31d4c1dc53bf9b45987fc75c', // WFTM-USDC
     ],
   },
 };
@@ -257,17 +281,6 @@ async function discoverOwners(api, chainConfig) {
   return [...addressSet(owners)];
 }
 
-async function addMakerDsr(api, owners, special) {
-  if (!special.makerDsr) return;
-  const [pies, chi] = await Promise.all([
-    api.multiCall({ target: special.makerDsr, calls: owners, abi: 'function pie(address) view returns (uint256)', permitFailure: true }),
-    api.call({ target: special.makerDsr, abi: 'uint256:chi' }),
-  ]);
-  if (!chi) return;
-  const dai = pies.reduce((sum, pie) => sum.plus(new BigNumber(pie || 0).times(chi).div(1e27)), new BigNumber(0));
-  if (dai.gt(0)) api.add(ADDRESSES.ethereum.DAI, dai.toFixed(0));
-}
-
 async function addVeFxs(api, special) {
   if (!special.veFxs) return;
   const { token, underlying, owners } = special.veFxs;
@@ -283,16 +296,12 @@ async function addVeFxs(api, special) {
   });
 }
 
-async function addFraxLocks(api, owners, special) {
-  for (const lock of special.fraxLocks || []) {
-    const balances = await api.multiCall({
-      target: lock.target,
-      calls: owners,
-      abi: 'function lockedLiquidityOf(address account) view returns (uint256)',
-      permitFailure: true,
-    });
-    balances.forEach(b => { if (b) api.add(lock.token, b); });
-  }
+async function addJonesStaking(api, special, owners) {
+  if (!special.jonesStaking) return;
+
+  const calls = owners.map(o => {return {target: special.jonesStaking, params: [0, o]}})
+  const balances = await api.multiCall({owners, calls, abi: 'function userInfo(uint,address) returns(uint,int)'})
+  balances.forEach(b => { if (b) api.add(JONES, b.amount ?? b[0]) });
 }
 
 function buildTvl(mode) {
@@ -304,10 +313,9 @@ function buildTvl(mode) {
     const ownSet = addressSet(chainConfig.ownTokens);
     const polSet = addressSet(chainConfig.polTokens);
     const blacklist = mode === 'ownTokens' ? [...polSet] : [...ownSet, ...polSet];
-
     const tokens = mode === 'ownTokens' ? chainConfig.ownTokens : chainConfig.treasuryTokens;
-
     const convexRewardPools = mode === 'tvl' ? chainConfig.special?.convexRewardPools : undefined;
+    
     if ((tokens?.length || convexRewardPools?.length) && owners.length) {
       await sumTokens2({
         api,
@@ -321,12 +329,9 @@ function buildTvl(mode) {
     }
 
     if (mode === 'tvl' && chainConfig.special) {
-      await addMakerDsr(api, owners, chainConfig.special);
       await addVeFxs(api, chainConfig.special);
-      await addFraxLocks(api, owners, chainConfig.special);
+      await addJonesStaking(api, chainConfig.special, owners);
     }
-
-    api.deleteTokens(blacklist);
   };
 }
 
@@ -353,13 +358,8 @@ module.exports = {
     staking: staking(OlympusStakings, [OHM, OHM_V1]),
     ownTokens: buildTvl('ownTokens'),
   },
-  arbitrum: {
-    tvl: buildTvl('tvl'),
-  },
-  base: {
-    tvl: buildTvl('tvl'),
-  },
-  berachain: {
-    tvl: buildTvl('tvl'),
-  },
+  arbitrum: { tvl: buildTvl('tvl') },
+  base: { tvl: buildTvl('tvl') },
+  berachain: { tvl: buildTvl('tvl') },
+  fantom: { tvl: buildTvl('tvl') },
 };
