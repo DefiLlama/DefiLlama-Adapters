@@ -50,6 +50,6 @@ module.exports = {
   methodology: "TVL is calculated from MyrxSwap AMM liquidity pool reserves on MyrxWallet Network (Chain 8472). Token prices are derived on-chain from the WMRT/MUSD pool where MUSD is the USD stablecoin anchor.",
   myrxwallet: { tvl },
   hallmarks: [
-    [1747267200, "MyrxSwap V1 Launch — Chain 8472"],
+    ["2026-05-07", "MyrxSwap V1 Launch — Chain 8472"],
   ],
 };
