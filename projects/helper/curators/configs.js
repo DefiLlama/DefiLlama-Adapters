@@ -203,7 +203,7 @@ const MorphoConfigs = {
     vaultFactoriesV2: [
       {
         address: '0xf2Aecd4a4d4C21d08770e34F392C4C271aBD9144',
-        fromBlock: 208021118,
+        fromBlock: 213463014,
       }
     ]
   }
