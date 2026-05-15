@@ -18,13 +18,15 @@ Object.keys(config).forEach(chain => {
       const logs = await getLogs2({ api, factory: uniswapV4Factory, eventAbi: uniswapV4InitializeEvent, fromBlock })
       const tokenSet = new Set()
       const ownerTokens = []
+      const hookOwnerTokenSet = new Set()
 
       logs.forEach(({ currency0, currency1, hooks }) => {
         tokenSet.add(currency0)
         tokenSet.add(currency1)
 
         if (hooks !== nullAddress) {
-          ownerTokens.push([[currency0, currency1], hooks])
+          addHookOwnerToken(currency0, hooks)
+          addHookOwnerToken(currency1, hooks)
         }
       })
 
@@ -38,6 +40,13 @@ Object.keys(config).forEach(chain => {
         sumChunkSize: 10000,
         sumChunkSleep: 5000,
       })
+
+      function addHookOwnerToken(token, owner) {
+        const key = `${owner.toLowerCase()}:${token.toLowerCase()}`
+        if (hookOwnerTokenSet.has(key)) return
+        hookOwnerTokenSet.add(key)
+        ownerTokens.push([token, owner])
+      }
     }
   }
 })
