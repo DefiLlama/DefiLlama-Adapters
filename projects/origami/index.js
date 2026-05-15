@@ -39,44 +39,12 @@ async function tvl(api) {
   }
 }
 
-/**
- * @param {ChainApi} api
- * @param {string[]} leveragedVaults - Addresses of vaults whose `vault_kinds` contains 'LEVERAGE'
- */
-async function borrowedLeveragedVaults(api, leveragedVaults) {
-  if (!leveragedVaults.length) return
-  const managers = await api.multiCall({ calls: leveragedVaults, abi: 'address:manager', permitFailure: true })
-  const borrowLends = await api.multiCall({ calls: managers, abi: 'address:borrowLend', permitFailure: true })
-  const [borrowTokens, borrowAmounts] = await Promise.all([
-    api.multiCall({ calls: borrowLends, abi: 'address:borrowToken', permitFailure: true }),
-    api.multiCall({ calls: borrowLends, abi: 'address:debtBalance', permitFailure: true }),
-  ])
-  leveragedVaults.forEach((_vault, i) => {
-    const debtToken = borrowTokens[i]
-    const debtAmount = borrowAmounts[i]
-    if(!debtToken || !debtAmount) return
-    api.addToken(debtToken, debtAmount)
-  })
-}
-
-/**
- * @param {ChainApi} api
- * @param {VaultBalances[]} vaults
- */
-async function nonLeverageVaultLiabilities(api, vaults) {
-  for (const v of vaults) {
-    for (const l of v.liabilities) api.add(l.token, bi(l.amount, l.decimals))
-  }
-}
-
 /** @param {ChainApi} api */
 async function borrowed(api) {
   const vaults = await fetchVaultBalances(api)
-  const leverageVaults = vaults.filter((v) => v.vault_kinds.includes('LEVERAGE')).map((v) => v.address)
-  const nonLeverageVaults = vaults.filter(v => !v.vault_kinds.includes('LEVERAGE'))
-
-  await borrowedLeveragedVaults(api, leverageVaults)
-  await nonLeverageVaultLiabilities(api, nonLeverageVaults)
+  for (const v of vaults) {
+    for (const l of v.liabilities) api.add(l.token, bi(l.amount, l.decimals))
+  }
 }
 
 /**
@@ -99,7 +67,7 @@ async function borrowed(api) {
  * @property {string} address - Vault contract address
  * @property {VaultKind[]} vault_kinds
  * @property {TokenAmount[]} assets
- * @property {TokenAmount[]} liabilities - Only populated for BALANCE_SHEET vaults; LEVERAGE debt is on-chain only (not indexed yet)
+ * @property {TokenAmount[]} liabilities - BALANCE_SHEET vaults: liability_tokens balances. LEVERAGE vaults: borrowed debt token + amount. Empty for ERC4626/REPRICING/AUTO_STAKING.
  */
 
 /** @typedef {import('@defillama/sdk').ChainApi} ChainApi */
