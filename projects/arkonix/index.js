@@ -1,45 +1,28 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 const API_URL = 'https://api.arkonix.xyz/public/vaults'
 
-// Only chains where Arkonix vaults are currently live.
-// Add new chains here as vaults are deployed.
-const CHAINS = {
-  1: 'ethereum',
-  42161: 'arbitrum',
-}
-
-async function getVaultsByChain() {
-  const { share_classes } = await get(API_URL)
-  const byChain = {}
+async function getVaults(chainId) {
+  const { share_classes } = await getConfig('arkonix', API_URL)
+  const vaults = new Set()
   for (const sc of share_classes || []) {
     for (const v of sc.vaults || []) {
-      const chain = CHAINS[v.chain_id]
-      if (!chain || !v.vault_address) continue
-      if (!byChain[chain]) byChain[chain] = []
-      byChain[chain].push(v.vault_address)
+      if (v.chain_id === chainId && v.vault_address)
+        vaults.add(v.vault_address.toLowerCase())
     }
   }
-  return byChain
+  return [...vaults]
 }
 
 const tvl = async (api) => {
-  const vaultsByChain = await getVaultsByChain()
-  const vaults = vaultsByChain[api.chain] || []
+  const vaults = await getVaults(api.chainId)
   if (!vaults.length) return
-  await api.erc4626Sum({
-    calls: vaults,
-    tokenAbi: 'address:asset',
-    balanceAbi: 'uint256:totalAssets',
-    permitFailure: true,
-  })
+  await api.erc4626Sum2({ calls: vaults })
 }
 
 module.exports = {
   methodology:
     'TVL is the sum of totalAssets() across all live Arkonix ERC-7540 vaults, priced by each vault\'s underlying deposit asset. Vault list is sourced from the public Arkonix API.',
+  ethereum: { tvl },
+  arbitrum: { tvl }
 }
-
-Object.keys(CHAINS).forEach((id) => {
-  module.exports[CHAINS[id]] = { tvl }
-})
