@@ -1,6 +1,3 @@
-// DeFiLlama Adapter — MyrxSwap DEX (Chain 8472, MyrxWallet Network)
-// Methodology: TVL from on-chain AMM pool reserves, USD-priced via MUSD stablecoin anchor
-
 const { get } = require("../helper/http");
 const { toUSDTBalances } = require("../helper/balances");
 const { request, gql } = require("graphql-request");
@@ -12,7 +9,8 @@ async function tvlFromOracle() {
   const response = await get(PRICE_ORACLE);
   const pairs    = response.data || [];
   const totalUsd = pairs.reduce((sum, pair) => {
-    return sum + parseFloat(pair.attributes.reserve_in_usd || "0");
+    const reserveUsd = parseFloat(pair?.attributes?.reserve_in_usd || "0");
+    return sum + (isNaN(reserveUsd) ? 0 : reserveUsd);
   }, 0);
   return toUSDTBalances(totalUsd);
 }
@@ -24,14 +22,26 @@ async function tvlFromGraph() {
     }
   }`;
   const { myrxSwapFactory } = await request(GRAPH_URL, query);
-  return toUSDTBalances(parseFloat(myrxSwapFactory.totalLiquidityUSD));
+  if (!myrxSwapFactory) {
+    throw new Error("Factory not found");
+  }
+  const liquidityUsd = parseFloat(myrxSwapFactory.totalLiquidityUSD || "0");
+  if (isNaN(liquidityUsd)) {
+    throw new Error("Invalid totalLiquidityUSD value");
+  }
+  return toUSDTBalances(liquidityUsd);
 }
 
 async function tvl() {
   try {
     return await tvlFromGraph();
   } catch (e) {
-    return await tvlFromOracle();
+    try {
+      return await tvlFromOracle();
+    } catch (oracleError) {
+      console.error("Both graph and oracle failed:", e, oracleError);
+      throw new Error("Unable to fetch TVL from any source");
+    }
   }
 }
 
