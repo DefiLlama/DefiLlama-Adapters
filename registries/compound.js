@@ -569,6 +569,7 @@ const configs = {
   },
   'xpert': {
     ink: [{ comptroller: '0x4f3b08B7FE4E14f728d084850A7B9CFF2E759Eb7'}],
+    base: [{ comptroller: '0xaE9dFbb5E3848AB056acA352D783d7e569EF83b3'}],
   }
 }
 
