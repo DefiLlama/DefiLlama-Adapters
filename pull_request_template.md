@@ -14,42 +14,41 @@
 ---
 ## (Needs to be filled only for new listings)
 
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama): Plaxswap
 
-##### Twitter Link:
+##### Twitter Link: https://x.com/plaxswap
 
 ##### List of audit links if any:
 
-##### Website Link:
+##### Website Link: https://plaxswap.io
 
-##### Logo (High resolution, will be shown with rounded borders):
+##### Logo (High resolution, will be shown with rounded borders): https://plaxswap.io/logo.png
 
-##### Current TVL:
+##### Current TVL: 9.5k USD
 
 ##### Treasury Addresses (if the protocol has treasury)
 
-##### Chain:
+##### Chain: Polygon
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
 
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): PlaxSwap is a decentralized exchange on Polygon based on PancakeSwap V2 architecture.
 
 ##### Token address and ticker if any:
 
-##### Category (full list at https://defillama.com/categories) \*Please choose only one:
+##### Category (full list at https://defillama.com/categories) \*Please choose only one: Dexs
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): AMM TWAP pricing
 
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
+##### Implementation Details: Briefly describe how the oracle is integrated into your project: Pricing is derived from PancakeSwap V2-style AMM liquidity pools on Polygon.
 
-##### Implementation Details: Briefly describe how the oracle is integrated into your project:
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage: https://plaxswap.io
 
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+##### forkedFrom (Does your project originate from another project): PancakeSwap V2
 
-##### forkedFrom (Does your project originate from another project):
+##### methodology (what is being counted as tvl, how is tvl being calculated): TVL is calculated by summing all token liquidity across PlaxSwap LP pairs from the factory contract on Polygon.
 
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### Github org/user (Optional, if your code is open source, we can track activity): https://github.com/plaxswap
 
-##### Github org/user (Optional, if your code is open source, we can track activity):
-
-##### Does this project have a referral program?
+##### Does this project have a referral program? No
