@@ -1,5 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "getPoolTotalDeposited": "function getPoolTotalDeposited(uint256 _poolId) view returns (uint256)",
+    "totalDeposited": "uint256:totalDeposited",
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accRewardPerShare, uint256 workingSupply, uint256 totalDeposited, bool needVesting, uint256 earlyWithdrawFee, uint256 withdrawLock, bool veBoostEnabled)"
+  };
 const { stakings } = require('../helper/staking')
 const { pool2s } = require('../helper/pool2')
 

@@ -62,36 +62,13 @@ const GENESIS_CONTRACTS = [
 async function tvl(api) {
   // Combine minters and genesis contracts
   const allContracts = [...KNOWN_MINTERS, ...GENESIS_CONTRACTS];
-  
-  // Get collateral token address from each contract using WRAPPED_COLLATERAL_TOKEN() function
-  // This makes it dynamic and supports any collateral token without hardcoding
-  // permitFailure: true guards against undeployed/pending contracts
-  const collateralTokens = await api.multiCall({
-    abi: 'function WRAPPED_COLLATERAL_TOKEN() view returns (address)',
-    calls: allContracts,
-    permitFailure: true,
-  });
-  
-  // Build tokensAndOwners array: [collateralToken, contractAddress]
-  // Filter out failed/empty/null/zero address results to handle reverted calls gracefully
-  const tokensAndOwners = [];
-  for (let i = 0; i < allContracts.length; i++) {
-    const collateral = collateralTokens[i];
-    // Only include pairs where collateral token is a valid non-zero address
-    if (collateral && 
-        collateral !== '0x0000000000000000000000000000000000000000' && 
-        collateral !== null && 
-        collateral !== undefined) {
-      tokensAndOwners.push([collateral, allContracts[i]]);
-    }
-  }
 
-  return api.sumTokens({ tokensAndOwners });
+  const collateralTokens = await api.multiCall({ abi: 'address:WRAPPED_COLLATERAL_TOKEN', calls: allContracts, });
+  return api.sumTokens({ tokensAndOwners2: [collateralTokens, allContracts] });
 }
 
 module.exports = {
   methodology: 'TVL is calculated by summing the balances of collateral tokens held by all 0xHarborFi minter and genesis contracts. Each contract\'s collateral token is queried dynamically using WRAPPED_COLLATERAL_TOKEN().',
-  start: 23991071,
   ethereum: {
     tvl,
   },

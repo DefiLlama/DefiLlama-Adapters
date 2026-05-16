@@ -3,17 +3,15 @@ module.exports = {
     {
       name: 'ethereum',
       tokens: [
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC,
-        '0xd38BB40815d2B0c2d2c866e0c72c5728ffC76dd9', // SIS,
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH,
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT,
-        '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // WBTC,
-        '0x12970E6868f88f6557B76120662c1B3E50A646bf', // LADYS,
-        '0xD9A442856C234a39a81a089C06451EBAa4306a72', // pufETH,
-        '0x853d955aCEf822Db058eb8505911ED77F175b99e', // FRAX,
-        '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G,
-        '0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1', // WTON,
+        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+        '0xd38BB40815d2B0c2d2c866e0c72c5728ffC76dd9', // SIS
+        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+        '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // WBTC
+        '0xD9A442856C234a39a81a089C06451EBAa4306a72', // pufETH
+        '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
         '0x4d224452801ACEd8B2F0aebE155379bb5D594381', // APE
+        '0x70b7f7044D2ca8E2F1E999B90EF16d7Cb7A0cDA1', // QUAI
       ],
       holders: [
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal
@@ -22,17 +20,15 @@ module.exports = {
     {
       name: 'bsc',
       tokens: [
-        '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC,
-        '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD,
-        '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', // ETH,
-        '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', // BTCB,
-        '0xF98b660AdF2ed7d9d9D9dAACC2fb0CAce4F21835', // SIS,
-        '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G,
-        '0x76A797A59Ba2C17726896976B7B3747BfD1d220f', // WTON,
-        '0xB3F4D70C6a18cC0F2D1205dbF3B21cB73e1B0592', // GPTW,
-        '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,
-        '0x4b3a2187648902082db0a44e8235d57F3f23DD10', // PINEYE,
+        '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
+        '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
+        '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', // ETH
+        '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', // BTCB
+        '0xF98b660AdF2ed7d9d9D9dAACC2fb0CAce4F21835', // SIS
+        '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
         '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+        // '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,  - counted at source - bitcoin
+        // '0xaa036928c9c0Df07d525B55ea8EE690Bb5a628C1', // EVAA - excluded not user deposits
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -41,7 +37,7 @@ module.exports = {
     {
       name: 'avax',
       tokens: [
-        '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC,
+        '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC
         '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664', // USDC.e
       ],
       holders: [
@@ -51,9 +47,8 @@ module.exports = {
     {
       name: 'polygon',
       tokens: [
-        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC.e,
-        '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', // WETH,
-        '0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89', // FRAX
+        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC.e
+        '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', // WETH
       ],
       holders: [
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal
@@ -62,8 +57,8 @@ module.exports = {
     {
       name: 'telos',
       tokens: [
-        '0xe6E5f3d264117E030C21920356641DbD5B3d660c', // USDC,
-        '0x63d71E79AdF0886c989A23b04a0E86F1489b6BC3', // WETH,
+        // '0xe6E5f3d264117E030C21920356641DbD5B3d660c', // USDC - minted by the project?
+        '0x63d71E79AdF0886c989A23b04a0E86F1489b6BC3', // WETH
         '0x7bD3ffe9f0C9CF08FD60e102FEa455A6EA580276', // USDT
       ],
       holders: [
@@ -91,12 +86,12 @@ module.exports = {
     {
       name: 'era',
       tokens: [
-        '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4', // USDC.e,
-        '0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4', // USDC,
-        '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91', // WETH,
-        '0xBBeB516fb02a01611cBBE0453Fe3c580D7281011', // WBTC,
-        '0xdd9f72afED3631a6C85b5369D84875e6c42f1827', // SIS,
-        '0xED0c95EBe5a3E687cB2224687024FeC6518E683e', // syBTC
+        '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4', // USDC.e
+        '0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4', // USDC
+        '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91', // WETH
+        '0xBBeB516fb02a01611cBBE0453Fe3c580D7281011', // WBTC
+        '0xdd9f72afED3631a6C85b5369D84875e6c42f1827', // SIS
+        // '0xED0c95EBe5a3E687cB2224687024FeC6518E683e', // syBTC  - counted at source - bitcoin
       ],
       holders: [
         '0x4f5456d4d0764473DfCA1ffBB8524C151c4F19b9' // portal
@@ -105,13 +100,10 @@ module.exports = {
     {
       name: 'arbitrum',
       tokens: [
-        '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC,
-        '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', // USDC.e,
-        '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', // WETH,
-        '0x9E758B8a98a42d612b3D38B66a22074DC03D7370', // SIS,
-        '0x3b60FF35D3f7F62d636b067dD0dC0dFdAd670E4E', // LADYS,
-        '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F', // FRAX,
-        '0x1A6B3A62391ECcaaa992ade44cd4AFe6bEC8CfF1', // UXLINK,
+        '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC
+        '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', // USDC.e
+        '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', // WETH
+        '0x9E758B8a98a42d612b3D38B66a22074DC03D7370', // SIS
         '0x7f9FBf9bDd3F4105C478b996B648FE6e828a1e98', // APE
       ],
       holders: [
@@ -121,7 +113,7 @@ module.exports = {
     {
       name: 'optimism',
       tokens: [
-        '0x7F5c764cBc14f9669B88837ca1490cCa17c31607', // USDC.e,
+        '0x7F5c764cBc14f9669B88837ca1490cCa17c31607', // USDC.e
         '0x4200000000000000000000000000000000000006', // WETH
       ],
       holders: [
@@ -131,7 +123,7 @@ module.exports = {
     {
       name: 'arbitrum_nova',
       tokens: [
-        '0x750ba8b76187092B0D1E87E28daaf484d1b5273b', // USDC,
+        '0x750ba8b76187092B0D1E87E28daaf484d1b5273b', // USDC
         '0x722E8BdD2ce80A4422E880164f2079488e115365', // WETH
       ],
       holders: [
@@ -141,8 +133,8 @@ module.exports = {
     {
       name: 'polygon_zkevm',
       tokens: [
-        '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035', // USDC,
-        '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5', // USDC.e,
+        '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035', // USDC
+        '0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5', // USDC.e
         '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9', // WETH
       ],
       holders: [
@@ -152,8 +144,8 @@ module.exports = {
     {
       name: 'linea',
       tokens: [
-        '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f', // WETH,
-        '0x176211869cA2b568f2A7D4EE941E073a821EE1ff', // USDC,
+        '0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f', // WETH
+        '0x176211869cA2b568f2A7D4EE941E073a821EE1ff', // USDC
         '0x6EF95B6f3b0F39508e3E04054Be96D5eE39eDE0d', // SIS
       ],
       holders: [
@@ -163,10 +155,8 @@ module.exports = {
     {
       name: 'mantle',
       tokens: [
-        '0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9', // USDC,
-        '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111', // WETH,
-        '0x1Bdd8878252DaddD3Af2ba30628813271294eDc0', // CATI,
-        '0x482deB2F7B9608a80eA91E71F06380E9891501C6', // UXLINK
+        '0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9', // USDC
+        '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111', // WETH
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
@@ -175,9 +165,10 @@ module.exports = {
     {
       name: 'base',
       tokens: [
-        '0x4200000000000000000000000000000000000006', // WETH,
-        '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA', // USDbC,
+        '0x4200000000000000000000000000000000000006', // WETH
+        '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA', // USDbC
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
+        '0x5c97D726bf5130AE15408cE32bc764e458320D2f', // QUAI
       ],
       holders: [
         '0xEE981B2459331AD268cc63CE6167b446AF4161f8' // portal
@@ -195,10 +186,9 @@ module.exports = {
     {
       name: 'scroll',
       tokens: [
-        '0x5300000000000000000000000000000000000004', // WETH,
-        '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4', // USDC,
-        '0x1467b62A6AE5CdcB10A6a8173cfe187DD2C5a136', // SIS,
-        '0xc4d46E8402F476F269c379677C99F18E22Ea030e', // pufETH
+        '0x5300000000000000000000000000000000000004', // WETH
+        '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4', // USDC
+        '0x1467b62A6AE5CdcB10A6a8173cfe187DD2C5a136', // SIS
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -207,9 +197,8 @@ module.exports = {
     {
       name: 'manta',
       tokens: [
-        '0x0Dc808adcE2099A9F62AA87D9670745AbA741746', // WETH,
-        '0xb73603C5d87fA094B7314C74ACE2e64D165016fb', // USDC,
-        '0xA53E005Cecd3D7C89A4AE814617cC14828b6527E', // pufETH
+        '0x0Dc808adcE2099A9F62AA87D9670745AbA741746', // WETH
+        '0xb73603C5d87fA094B7314C74ACE2e64D165016fb', // USDC
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -227,9 +216,9 @@ module.exports = {
     {
       name: 'ftn',
       tokens: [
-        '0xDeF886C55a79830C47108eeb9c37e78a49684e41', // USDT,
-        '0x4237e0A5b55233D5B6D6d1D9BF421723954130D8', // USDC,
-        '0xE5b3562A0fa9eC3e718C96FfE349e1280D2Be591', // WETH,
+        '0xDeF886C55a79830C47108eeb9c37e78a49684e41', // USDT
+        '0x4237e0A5b55233D5B6D6d1D9BF421723954130D8', // USDC
+        '0xE5b3562A0fa9eC3e718C96FfE349e1280D2Be591', // WETH
         '0x6B6301dcBA742E2320dD083A8d8fDbaB9527484B', // WBTC
       ],
       holders: [
@@ -248,11 +237,11 @@ module.exports = {
     {
       name: 'rsk',
       tokens: [
-        '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USD₮0,
-        '0xef213441A85dF4d7ACbDaE0Cf78004e1E486bB96', // rUSDT,
-        '0x74c9f2b00581F1B11AA7ff05aa9F608B7389De67', // USDC.e,
-        '0x542fDA317318eBF1d3DEAf76E0b632741A7e677d', // WRBTC,
-        '0xB52E582263c1d0189b3cc1402c1B7205b7F2E9Ba', // syBTC
+        '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USD₮0
+        '0xef213441A85dF4d7ACbDaE0Cf78004e1E486bB96', // rUSDT
+        '0x74c9f2b00581F1B11AA7ff05aa9F608B7389De67', // USDC.e
+        '0x542fDA317318eBF1d3DEAf76E0b632741A7e677d', // WRBTC
+        // '0xB52E582263c1d0189b3cc1402c1B7205b7F2E9Ba', // syBTC - counted at source - bitcoin
       ],
       holders: [
         '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4' // portal
@@ -279,8 +268,7 @@ module.exports = {
     {
       name: 'zklink',
       tokens: [
-        '0x8280a4e7D5B3B658ec4580d3Bc30f5e50454F169', // WETH,
-        '0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC', // pufETH
+        '0x8280a4e7D5B3B658ec4580d3Bc30f5e50454F169', // WETH
       ],
       holders: [
         '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189' // portal
@@ -307,9 +295,9 @@ module.exports = {
     {
       name: 'sei',
       tokens: [
-        '0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1', // USDC.n,
-        '0xB75D0B03c06A926e488e2659DF1A861F860bD3d1', // USDT,
-        '0xcB0DdC112EF317271266c83D7179Bf9186b9C658', // GPTW
+        '0xe15fC38F6D8c56aF07bbCBe3BAf5708A2Bf42392', // USDC
+        '0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1', // USDC.n
+        '0xB75D0B03c06A926e488e2659DF1A861F860bD3d1', // USDT
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
@@ -318,8 +306,8 @@ module.exports = {
     {
       name: 'zeta',
       tokens: [
-        '0x1e4bF3CaBD7707089138dD5a545B077413FA83Fc', // pufETH,
         '0x0cbe0dF132a6c6B4a2974Fa1b7Fb953CF0Cc798a', // USDC.ETH
+        '0x1e4bF3CaBD7707089138dD5a545B077413FA83Fc', // pufETH
       ],
       holders: [
         '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf' // portal
@@ -337,7 +325,7 @@ module.exports = {
     {
       name: 'fraxtal',
       tokens: [
-        '0xA8a59D73388D0c4344a7b0Ba287ddb654227c38a', // WETH,
+        '0xA8a59D73388D0c4344a7b0Ba287ddb654227c38a', // WETH
         '0xFc00000000000000000000000000000000000001', // frxUSD
       ],
       holders: [
@@ -347,7 +335,7 @@ module.exports = {
     {
       name: 'gravity',
       tokens: [
-        '0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6', // USDC.e,
+        '0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6', // USDC.e
         '0xBB859E225ac8Fb6BE1C7e38D87b767e95Fef0EbD', // wG
       ],
       holders: [
@@ -366,10 +354,8 @@ module.exports = {
     {
       name: 'ton',
       tokens: [
-        'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', // USDT,
-        'EQBh9XACT0B60U8Q48VnjyqCxzxpM4oA0c8rqKt4h70yk1V5', // UXLINK,
-        'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI,
-        'EQDY2MzMJY_9OWm9UyQNLTU2Qs_8BRomlMUbbADnh-tFkLaU', // PINEYE
+        'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', // USDT
+        // 'EQBKMfjX_a_dsOLm-juxyVZytFP7_KKnzGv6J01kGc72gVBp', // EVAA - excluded not user deposit
       ],
       holders: [
         'EQBZh9CpLZyNlwI7am0PHpVy8T8zdJxAhlG3m3xMi0BoVaUh' // portal
@@ -423,7 +409,7 @@ module.exports = {
     {
       name: 'xdai',
       tokens: [
-        '0x2a22f9c3b484c3629090FeED35F17Ff8F88f76F0', // USDC.e,
+        '0x2a22f9c3b484c3629090FeED35F17Ff8F88f76F0', // USDC.e
         '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1', // WETH
       ],
       holders: [
@@ -460,7 +446,7 @@ module.exports = {
     {
       name: 'op_bnb',
       tokens: [
-        '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea', // WETH,
+        '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea', // WETH
         '0x4200000000000000000000000000000000000006', // WBNB
       ],
       holders: [
@@ -470,8 +456,8 @@ module.exports = {
     {
       name: 'hyperliquid',
       tokens: [
-        '0xBe6727B535545C67d5cAa73dEa54865B92CF7907', // UETH,
-        '0xb88339CB7199b77E23DB6E890353E22632Ba630f', // USDC,
+        '0xBe6727B535545C67d5cAa73dEa54865B92CF7907', // UETH
+        '0xb88339CB7199b77E23DB6E890353E22632Ba630f', // USDC
         '0xab11329560Fa9C9c860Bb21A9342215a1265BBB0', // APE
       ],
       holders: [
@@ -481,8 +467,8 @@ module.exports = {
     {
       name: 'katana',
       tokens: [
-        '0x4200000000000000000000000000000000000006', // WETH,
-        '0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62', // WETH,
+        '0x4200000000000000000000000000000000000006', // WETH
+        '0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62', // WETH
         '0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36', // USDC
       ],
       holders: [
@@ -506,6 +492,33 @@ module.exports = {
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
-    }
+    },
+    {
+      name: 'monad',
+      tokens: [
+        '0x754704Bc059F8C67012fEd69BC8A327a5aafb603', // USDC
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'citrea',
+      tokens: [
+        // '0x384157027B1CDEAc4e26e3709667BB28735379Bb', // syBTC - counted at source - bitcoin
+      ],
+      holders: [
+        '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
+      ]
+    },
+    {
+      name: 'tempo',
+      tokens: [
+        '0x20C000000000000000000000b9537d11c60E8b50', // USDC.e
+      ],
+      holders: [
+        '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
+      ]
+    },
   ]
 }

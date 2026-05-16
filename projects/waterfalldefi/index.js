@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "tranchesAuto": "function tranches(uint256) view returns (uint256 target, uint256 principal, uint256 autoPrincipal, uint256 validPercent, uint256 apy, uint256 fee, uint256 autoValid)",
+    "tranchesNonAuto": "function tranches(uint256) view returns (uint256 target, uint256 principal, uint256 apy, uint256 fee)",
+    "cycleActive": "bool:active"
+  };
 const url = "https://raw.githubusercontent.com/WaterfallDefi/product-addresses/master/main.json";
 let _response
 const { sumTokens2 } = require('../helper/unwrapLPs');

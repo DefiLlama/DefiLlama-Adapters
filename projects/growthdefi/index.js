@@ -1,7 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json")
-
-const config = {
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCakePerShare)",
+    "poolLength": "uint256:poolLength",
+    "symbol": "string:symbol",
+    "reserveToken": "address:reserveToken",
+    "totalReserve": "uint256:totalReserve",
+    "state": "function state() view returns (address _masterChef, uint256 _pid, address _rewardToken, address _routingToken, address _reserveToken, address _treasury, address _collector, address _exchange, uint256 _minimalGulpFactor, uint256 _forceGulpRatio, uint256 _performanceFee, bool _emergencyMode)"
+  };const config = {
   bsc: {
     autoGem: "0xE02CE329281664A5d2BC0006342DC84f6c384663",
     DAI: ADDRESSES.bsc.DAI,

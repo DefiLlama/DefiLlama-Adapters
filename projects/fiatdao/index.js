@@ -1,7 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json')
-
-const { sumTokens2, } = require("../helper/unwrapLPs")
+const abi = {
+    "underlierToken": "address:underlierToken",
+    "underlierScale": "uint256:underlierScale",
+    "token": "address:token",
+    "tokenScale": "uint256:tokenScale",
+    "fairPrice": "function fairPrice(uint256, bool net, bool face) view returns (uint256)",
+    "balanceOf": "function balanceOf(address account, uint256 id) view returns (uint256)"
+  };const { sumTokens2, } = require("../helper/unwrapLPs")
 const { getConfig } = require('../helper/cache')
 
 
@@ -80,8 +85,8 @@ module.exports = {
   methodology: 'TVL includes fair value of collateral backing outstanding $FIAT and the initial FDT Jubilee event',
   ethereum: { tvl },
   hallmarks: [
-    [1635959960, "FDT Jubilee starts"],
-    [1639380013, "FDT Jubilee ends"],
-    [1649604096, "Protocol Launch"]
+    ['2021-11-03', "FDT Jubilee starts"],
+    ['2021-12-13', "FDT Jubilee ends"],
+    ['2022-04-10', "Protocol Launch"]
   ]
 }

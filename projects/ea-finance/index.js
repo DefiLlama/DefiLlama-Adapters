@@ -9,15 +9,8 @@ async function staking(_, _b, _cb, { api }) {
   
   const totalStaked = contractInfo[2];
   
-  const decimals = await api.call({
-    abi: 'erc20:decimals',
-    target: WCC_TOKEN,
-  });
-  
-  const totalStakedFormatted = totalStaked / (10 ** decimals);
-  
   return {
-    'coingecko:canton-network': totalStakedFormatted
+    [`bsc:${WCC_TOKEN}`]: totalStaked
   }
 }
 
@@ -26,7 +19,7 @@ module.exports = {
   start: 1767126150,
   methodology: "TVL is calculated as the total amount of WCC tokens staked in the staking contract. WCC is a wrapped version of CC token (from Canton network) with a 1:1 peg. WCC price should track CC token price.",
   bsc: {
-    tvl: () => ({}),
-    staking: staking
+    tvl: staking,
+    // staking: staking
   }
 }

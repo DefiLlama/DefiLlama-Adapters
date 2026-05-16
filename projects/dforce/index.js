@@ -2,7 +2,19 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const BigNumber = require('bignumber.js');
-const abi = require('./abi.json');
+const abi = {
+    "getBaseData": "function getBaseData() returns (uint256, uint256, uint256, uint256, uint256)",
+    "balanceOfUnderlying": "function balanceOfUnderlying(address _account) view returns (uint256)",
+    "balanceOf": "function balanceOf(address account) view returns (uint256)",
+    "totalSupply": "uint256:totalSupply",
+    "exchangeRateCurrent": "uint256:exchangeRateCurrent",
+    "underlying": "address:underlying",
+    "getUnderlyingPrice": "function getUnderlyingPrice(address _asset) view returns (uint256)",
+    "getAlliTokens": "address[]:getAlliTokens",
+    "isiToken": "bool:isiToken",
+    "getCurrentExchangeRate": "uint256:getCurrentExchangeRate",
+    "oracle": "address:priceOracle"
+  };
 const BASE = BigNumber(10 ** 18)
 const { compoundExports2 } = require('../helper/compound')
 

@@ -85,8 +85,57 @@ const allAbi = [
   },
 ]
 
+const allAbiV2 = [
+  {
+    "type": "function",
+    "name": "asset",
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ],
+    "state_mutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "total_assets",
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "core::integer::u256"
+      }
+    ],
+    "state_mutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "v_token_for_asset",
+    "inputs": [
+      {
+        "name": "pool",
+        "type": "felt"
+      },
+      {
+        "name": "asset",
+        "type": "felt"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ],
+    "state_mutability": "view",
+    "customInput": "address"
+  }
+]
+
 const abi = {}
 allAbi.forEach(i => abi[i.name] = i)
+
+const abiV2 = {}
+allAbiV2.forEach(i => abiV2[i.name] = i)
 
 const assets = [
   ADDRESSES.starknet.ETH,
@@ -103,8 +152,17 @@ const assets = [
   "0x02019e47A0Bc54ea6b4853C6123FfC8158EA3AE2Af4166928b0dE6e89f06De6C" // rUSDC
 ];
 
+const assetsV2 = [
+  ADDRESSES.starknet.ETH,
+  ADDRESSES.starknet.USDC,
+  ADDRESSES.starknet.USDC_CIRCLE,
+]
+
 module.exports = {
   abi,
   allAbi,
+  abiV2,
+  allAbiV2,
   assets,
+  assetsV2,
 }

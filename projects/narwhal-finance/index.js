@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 
 module.exports = {
   hallmarks: [
-    [1689034511, "Launch on Arbitrum & BSC"],
+    ['2023-07-11', "Launch on Arbitrum & BSC"],
   ],
 };
 

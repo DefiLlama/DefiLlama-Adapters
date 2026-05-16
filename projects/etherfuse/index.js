@@ -30,7 +30,15 @@ const config = {
     EUROB: 'EUROB-GCRYUGD5NVARGXT56XEZI5CIFCQETYHAPQQTHO2O3IQZTHDH4LATMYWC',
     TESOURO: 'TESOURO-GCRYUGD5NVARGXT56XEZI5CIFCQETYHAPQQTHO2O3IQZTHDH4LATMYWC',
     USTRY: 'USTRY-GCRYUGD5NVARGXT56XEZI5CIFCQETYHAPQQTHO2O3IQZTHDH4LATMYWC'
-  }
+  },
+  monad: [
+    '0x834df4C1d8f51Be24322E39e4766697BE015512F',
+    '0xC6221856E45ed806F8325a084bED3D69D32C526d',
+    '0x46080F31351A6568f44575E3EFfDE7f0C86867f9',
+    '0xe9c082921dc3564e10196c5cc15dB1250AC7d5C6',
+    '0x7A9990ffe3057EDC18558cA4C8804430fe917456',
+    '0x7ceE47e7B7CD04CF984e8Dd86C42595B5771A9B2'
+  ]
 };
 
 // ---------------- SOLANA TVL ----------------
@@ -45,15 +53,14 @@ async function stellarTVL(api) {
     try {
       const res = await get(`https://api.stellar.expert/explorer/public/asset/${code}-${issuer}`);
       if (!res || !res.supply) {
-        console.log(`Stellar API returned invalid data for ${asset}:`, res);
-        continue;
+        throw new Error(`Stellar API returned invalid data for ${asset}: ${JSON.stringify(res)}`);
       }
 
       // Correct scaling: divide by 10^7 to get actual supply in millions
       const supply = Number(res.supply) / 1e7;
       api.addTokens(asset, supply);
     } catch (err) {
-      console.log(`Error fetching Stellar asset ${asset}:`, err);
+      throw err;
     }
   }
 }
@@ -72,6 +79,7 @@ module.exports = {
   stellar: { tvl: stellarTVL },
   polygon: { tvl: generateEvmTVL(config.polygon) },
   base: { tvl: generateEvmTVL(config.base) },
+  monad: { tvl: generateEvmTVL(config.monad) }
 };
 
 

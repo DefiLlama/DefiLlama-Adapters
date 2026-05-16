@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
     ethereum: {
       tvl: async (api) => {
@@ -8,8 +9,8 @@ module.exports = {
           ],
           tokens: [
             "0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1", // ARB
-            "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-            "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
+            ADDRESSES.ethereum.USDC, // USDC
+            ADDRESSES.ethereum.USDT, // USDT
           ],
         });
       },

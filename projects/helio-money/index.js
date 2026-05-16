@@ -28,7 +28,7 @@ const pool2 = async (api) => {
 module.exports = {
   methodology: "The TVL is calculated by summing the values of tokens held in the specified vault addresses",
   hallmarks: [
-    [1669939200, "aBNBc exploit"],
+    ['2022-12-02', "aBNBc exploit"],
   ],
   bsc: {
     tvl: async (api) => {

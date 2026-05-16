@@ -1,3 +1,0 @@
-{
-  "sharesTotal": "function sharesTotal(uint256 _pid) view returns (uint256)"
-}

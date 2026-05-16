@@ -61,7 +61,7 @@ module.exports = {
     "Adds up the total value locked as collateral in Monroe vaults",
   start: '2024-03-13', // March 13, 2024 00:00 GMT
   hallmarks: [
-    [1722000000, "V2 Launch"]
+    ['2024-07-26', "V2 Launch"]
   ],
 };
 
