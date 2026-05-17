@@ -50,6 +50,7 @@ async function tvl(api) {
     api,
     owners: [...vaults, LOAN_CORE_V2, LOAN_CORE_V3],
     resolveNFTs: true,
+    blacklistedTokens: VAULT_FACTORIES,
   })
 }
 
