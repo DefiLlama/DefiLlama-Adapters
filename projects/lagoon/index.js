@@ -195,29 +195,31 @@ function keepVault(vault, vaultBlacklist) {
 }
 
 Object.keys(config).forEach((chain) => {
-  let { vaults, beaconFactory, optinProxyFactory } = config[chain];
-  
+  const { beaconFactory, optinProxyFactory } = config[chain];
+
   module.exports[chain] = {
     tvl: async (api) => {
+      const staticVaults = config[chain].vaults ?? [];
       if (config[chain].fallbackVaults) {
+        let vaults;
         try {
           const beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock, useIndexer: beaconFactory?.useIndexer});
           const optinProxyFactoryVaults = await getOptinProxyFactoryVaults({ api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock, useIndexer: optinProxyFactory?.useIndexer });
-          vaults = [...beaconFactoryVaults, ...optinProxyFactoryVaults]
+          vaults = [...staticVaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults]
             .filter((v) => keepVault(v, vaultsBlacklist))
         } catch (e) {
-          vaults = config[chain].fallbackVaults;
+          vaults = [...staticVaults, ...config[chain].fallbackVaults]
+            .filter((v) => keepVault(v, vaultsBlacklist));
         }
         return await api.erc4626Sum2({ calls: vaults })
       } else {
-        if (!vaults) vaults = [];
         let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock, useIndexer: beaconFactory?.useIndexer});
         let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock, useIndexer: optinProxyFactory?.useIndexer});
         beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
         optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
-  
+
         return await api.erc4626Sum2({
-          calls: [...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
+          calls: [...staticVaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
         })
       }
     }
