@@ -101,38 +101,11 @@ const ethereumTreasuryTokens = [
   '0x43d4a3cd90ddd2f8f4f693170c9c8098163502ad',
 ];
 
-// Protocol-Owned Liquidity LP tokens.
-const ethereumPolTokens = [
-  '0xb23dfc0c4502a271976f1ee65321c51be2529640',
-  '0x622a725a79c7fe37ad839c640cd62d546712b3a9',
-  '0xc45d42f801105e861e86658648e3678ad7aa70f9',
-  '0x76fcf0e8c7ff37a47a799fa2cd4c13cde0d981c9',
-  '0xa02d8861fbfd0ba3d8ebafa447fe7680a3fa9a93',
-  '0xd1ec5e215e8148d76f4460e4097fd3d5ae0a3558',
-  '0x0ef97ef0e20f84e82ec2d79cbd9eda923c3daf09',
-  '0xd4f79ca0ac83192693bce4699d0c10c66aa6cf0f',
-  '0x32296969ef14eb0c6d29669c550d4a0449130230',
-  '0xfc1e8bf3e81383ef07be24c3fd146745719de48d',
-  '0x6ec38b3228251a0c5d491faf66858e2e23d7728b',
-  '0x38633ed142bcc8128b45ab04a2e4a6e53774699f',
-  '0x5769071665eb8db80e7e9226f92336bb2897dcfa',
-  '0x055475920a8c93cffb64d039a8205f7acc7722d3',
-  '0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c',
-  '0x69b81152c5a8d35a67b32a4d3772795d96cae4da',
-  '0xfffae4a0f4ac251f4705717cd24cadccc9f33e06',
-  '0x46e4d8a1322b9448905225e52f914094dbd6dddf',
-  '0xfdf12d1f85b5082877a6e070524f50f6c84faa6b',
-  '0xe9ab8038ee6dd4fcc7612997fe28d4e22019c4b4',
-  '0x88051b0eea095007d3bef21ab287be961f3d8598',
-  '0x0858e2b0f9d75f7300b38d64482ac2c8df06a755',
-];
-
 const chains = {
   ethereum: {
     owners: ethereumOwners,
     treasuryTokens: ethereumTreasuryTokens,
     ownTokens: [OHM_V1, OHM, GOHM, SOHM_V1, SOHM_V2, SOHM_V3, WSOHM],
-    polTokens: ethereumPolTokens,
     special: {
       bophadesKernel: '0x2286d7f9639e8158FaD1169e76d1FbC38247f54b',
       keycodes: { TRSRY: '0x5452535259', CHREG: '0x4348524547' },
@@ -168,19 +141,6 @@ const chains = {
       '0xf0cb2dc0db5e6c66B9a70Ac27B06b878da017028', // OHM (Arb)
       '0x8D9bA570D6cb60C7e3e0F31343Efe75AB8E65FB1', // gOHM (Arb)
     ],
-    polTokens: [
-      '0xb3028ca124b80cfe6e9ca57b70ef2f0ccc41ebd4',
-      '0xc61ff48f94d801c1ceface0289085197b5ec44f0',
-      '0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0',
-      '0xce6195089b302633ed60f3f427d1380f6a2bfbc7',
-      '0xaa5bd49f2162ffdc15634c87a77ac67bd51c6a6d',
-      '0x292d1587a6bb37e34574c9ad5993f221d8a5616c',
-      '0xe8ee01ae5959d3231506fcdef2d5f3e85987a39c',
-      '0xb7e50106a5bd3cf21af210a755f9c8740890a8c9',
-      '0x8aCd42e4B5A5750B44A28C5fb50906eBfF145359',
-      '0xc6f780497a95e246eb9449f5e4770916dcd6396a',
-      '0xc31e54c7a869b9fcbecc14363cf510d1c41fa443',
-    ],
     special: {
       jonesStaking: '0xb94d1959084081c5a11C460012Ab522F5a0FD756'
     },
@@ -189,10 +149,6 @@ const chains = {
     owners: ['0x18a390bD45bCc92652b9A91AD51Aed7f1c1358f5'],
     treasuryTokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH],
     ownTokens: ['0x060cb087a9730E13aa191f31A6d86bFF8DfcdCC0'], // OHM (Base)
-    polTokens: [
-      '0x5ab4b9e96aeed4820e4be267f42411d722985482',
-      '0x183ea22691c54806FE96555436dd312b6BeFAc2F',
-    ],
   },
   berachain: {
     owners: [
@@ -212,12 +168,6 @@ const chains = {
       ADDRESSES.berachain.WBERA,
     ],
     ownTokens: ['0x18878Df23e2a36f81e820e4b47b4A40576D3159C'], // OHM (Berachain)
-    polTokens: [
-      '0x98bDEEde9A45C28d229285d9d6e9139e9F505391',
-      '0x555BAd9EC18dB19dED0057D2517242399d1c5D87',
-      '0xa57Cb177Beebc35A1A26A286951a306d9B752524',
-      '0x815596fa7c4d983d1ca5304e5b48978424c1b448',
-    ],
   },
   fantom: {
     owners: ['0x2bc001ffeb862d843e0a02a7163c7d4828e5fb10'], // Cross-Chain Fantom custodian
@@ -232,15 +182,6 @@ const chains = {
       ADDRESSES.fantom.USDC,
     ],
     ownTokens: ['0x91fa20244fb509e8289ca630e5db3e9166233fdc'], // gOHM (Fantom)
-    polTokens: [
-      '0xec7178f4c41f346b2721907f5cf7628e388a7a58', // BOO-WFTM
-      '0x4fe6f19031239f105f753d1df8a0d24857d0caa2', // LQDR-WFTM
-      '0x648a7452da25b4fb4bdb79badf374a8f8a5ea2b5', // WFTM-BEETS
-      '0xf0702249f4d3a25cd3ded7859a165693685ab577', // WFTM-ETH
-      '0xae9bba22e87866e48ccacff0689afaa41eb94995', // WFTM-gOHM
-      '0xcb6eab779780c7fd6d014ab90d8b10e97a1227e2', // WFTM-OXD
-      '0x2b4c76d0dc16be1c31d4c1dc53bf9b45987fc75c', // WFTM-USDC
-    ],
   },
 };
 
@@ -307,8 +248,7 @@ function buildTvl(mode) {
 
     const owners = await discoverOwners(api, chainConfig);
     const ownSet = addressSet(chainConfig.ownTokens);
-    const polSet = addressSet(chainConfig.polTokens);
-    const blacklist = mode === 'ownTokens' ? [...polSet] : [...ownSet, ...polSet];
+    const blacklist = mode === 'ownTokens' ? [] : [...ownSet];
     const tokens = mode === 'ownTokens' ? chainConfig.ownTokens : chainConfig.treasuryTokens;
     const convexRewardPools = mode === 'tvl' ? chainConfig.special?.convexRewardPools : undefined;
     
@@ -348,7 +288,7 @@ module.exports = {
     ["2025-12-01", "Convertible Deposits Launch"],
     ["2026-01-08", "CD Lending and Limit Orders"],
   ],
-  methodology: "Treasury value from subgraph excluding protocol-owned OHM and Protocol-Owned Liquidity. POL (Uniswap V3 LP positions) is tracked in Olympus treasury dashboards and excluded here to avoid double-counting with the Uniswap V3 adapter. Cooler Loans debt is tracked by the dedicated cooler-loans adapter.",
+  methodology: "Total value held by treasury addresses and staking contracts excluding protocol-owned OHM and Protocol-Owned Liquidity. Cooler Loans debt is tracked by the dedicated cooler-loans adapter.",
   ethereum: {
     tvl: buildTvl('tvl'),
     staking: staking(OlympusStakings, [OHM, OHM_V1]),
