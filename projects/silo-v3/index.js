@@ -1,5 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 const { configV3 } = require('./config')
 
 const methodology = [
@@ -10,11 +10,8 @@ const methodology = [
 ].join(' ')
 
 const getAssetAbi = 'address:asset'
-const getDebtAssetsAbi =
-  'function getDebtAssets() external view returns (uint256 totalDebtAssets)'
-
-const newSiloEvent =
-  'event NewSilo(address indexed implementation, address indexed token0, address indexed token1, address silo0, address silo1, address siloConfig)'
+const getDebtAssetsAbi = 'function getDebtAssets() external view returns (uint256 totalDebtAssets)'
+const newSiloEvent = 'event NewSilo(address indexed implementation, address indexed token0, address indexed token1, address silo0, address silo1, address siloConfig)'
 
 async function getSilos(api) {
   let siloAddresses = []
@@ -23,7 +20,7 @@ async function getSilos(api) {
   for (const factory of configV3[api.chain].factories) {
     const { SILO_FACTORY, START_BLOCK } = factory
 
-    const logChunk = await getLogs({
+    const logChunk = await getLogs2({
       api,
       target: SILO_FACTORY,
       fromBlock: START_BLOCK,
@@ -31,9 +28,7 @@ async function getSilos(api) {
     })
 
     for (const log of logChunk) {
-      const silo0 = log.args[3]
-      const silo1 = log.args[4]
-      siloAddresses.push(silo0, silo1)
+      siloAddresses.push(log.silo0, log.silo1)
     }
   }
 
@@ -46,11 +41,11 @@ async function tvl(api) {
     const silos = await getSilos(api)
     const assets = await api.multiCall({
       abi: getAssetAbi,
-      calls: silos.map((target) => ({ target })),
+      calls: silos,
     })
     ownerTokens = assets.map((asset, i) => [[asset], silos[i]])
   }
-  return sumTokens2({ api, ownerTokens, blacklistedTokens: [] })
+  return sumTokens2({ api, ownerTokens })
 }
 
 async function borrowed(api) {
@@ -58,11 +53,11 @@ async function borrowed(api) {
   const silos = await getSilos(api)
   const siloAssets = await api.multiCall({
     abi: getAssetAbi,
-    calls: silos.map((target) => ({ target })),
+    calls: silos,
   })
   const borrowAmounts = await api.multiCall({
     abi: getDebtAssetsAbi,
-    calls: silos.map((target) => ({ target })),
+    calls: silos,
   })
   siloAssets.forEach((asset, index) => {
     api.add(asset, borrowAmounts[index])
@@ -70,8 +65,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: methodology,
-  hallmarks: [],
+  methodology,
   arbitrum: { tvl, borrowed },
   avax: { tvl, borrowed },
   ethereum: { tvl, borrowed },
