@@ -554,20 +554,6 @@ const aaveConfigs = {
       },
     },
   },
-  'primefi': {
-    base: {
-      addressesProviderRegistry: '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07',
-      staking: ['0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80', '0x7BBCf1B600565AE023a1806ef637Af4739dE3255']
-    },
-    hyperliquid: {
-      addressesProviderRegistry: '0x69A3c30A85aA1E22791466a08819c1080f0Aab7f',
-      staking: ['0x33cd734739c6DeD500fD080d476D93135cB813Ef', '0x7BBCf1B600565AE023a1806ef637Af4739dE3255']
-    },
-    xdc: {
-      addressesProviderRegistry: '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07',
-      staking: ['0x01E7cd81D3d7A4907815877e0C937a77dE537e99', '0x81B244d0be055EF3BEF1b09B7826Cc2b108B2cBD']
-    },
-  }
 }
 
 module.exports = {
