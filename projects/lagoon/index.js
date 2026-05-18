@@ -204,6 +204,7 @@ Object.keys(config).forEach((chain) => {
           const beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock, useIndexer: beaconFactory?.useIndexer});
           const optinProxyFactoryVaults = await getOptinProxyFactoryVaults({ api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock, useIndexer: optinProxyFactory?.useIndexer });
           vaults = [...beaconFactoryVaults, ...optinProxyFactoryVaults]
+            .filter((v) => keepVault(v, vaultsBlacklist))
         } catch (e) {
           vaults = config[chain].fallbackVaults;
         }
