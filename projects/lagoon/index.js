@@ -159,17 +159,17 @@ const config = {
     },
   },
   
-  unichain: {
-    vaults: [],
-    optinProxyFactory:{
-      address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
-      fromBlock: 22021431
-    },
-    beaconFactory: {
-      address: "0xaba1A2e157Dae248f8630cA550bd826725Ff745c",
-      fromBlock: 14576623
-    },
-  },
+  // unichain: {
+  //   vaults: [],
+  //   optinProxyFactory:{
+  //     address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
+  //     fromBlock: 22021431
+  //   },
+  //   beaconFactory: {
+  //     address: "0xaba1A2e157Dae248f8630cA550bd826725Ff745c",
+  //     fromBlock: 14576623
+  //   },
+  // },
   wc: {
     optinProxyFactory:{
       address: "0xC094C224ce0406BC338E00837B96aD2e265F7287",
