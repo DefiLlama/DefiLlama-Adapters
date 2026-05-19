@@ -36,6 +36,7 @@ async function tvl(api) {
     } catch (e) {
         if (e.message?.includes('429')) throw e
     }
+    return api.getBalances()
 }
 
 async function borrowed(api) {

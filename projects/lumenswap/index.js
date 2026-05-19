@@ -28,5 +28,6 @@ module.exports = {
   methodology:
     'TVL counts the liquidity of the Pools on AMM, data is pulled from the Lumenswap API:"https://api.lumenswap.io/amm/known-pools".',
   misrepresentedTokens: true,
-  stellar: {tvl},
+  deadFrom: '2026-05-10',
+  stellar: { tvl: () => ({}) },
 };

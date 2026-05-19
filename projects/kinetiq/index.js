@@ -1,8 +1,6 @@
-const axios = require('axios');
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
-const sdk = require('@defillama/sdk')
-
-const HYPERLIQUID_MAINNET_RPC_URL = 'https://api.hyperliquid.xyz';
+const { getHypercoreStakedHype } = require('../helper/chain/hyperliquid')
 
 const accountant = '0x9209648Ec9D448EF57116B73A2f081835643dc7A'
 
@@ -19,29 +17,17 @@ const managers = [
   '0x09B4cdA849037D1717e91D201EE416bf1c113895', // hylqHype
 ]
 
-const getUserStakingSummary = async (user) => {
-  const url = `${HYPERLIQUID_MAINNET_RPC_URL}/info`;
-  const response = await axios.post(url, { type: 'delegatorSummary', user });
-  return response.data;
-};
-
 const tvl = async (api) => {
-  const [_hypeBalances, _delegatedBalances] = await Promise.all([
-    Promise.all(managers.map((m) => sdk.api.eth.getBalance({ target: m, chain: 'hyperliquid' }))),
-    Promise.all(managers.map((m) => getUserStakingSummary(m)))
-  ]);
+  await api.sumTokens({ owners: managers, tokens: [ADDRESSES.null] })
 
   const buffBalance = await api.call({ target: "0x393D0B87Ed38fc779FD9611144aE649BA6082109", abi: abis.totalQueuedWithdrawals })
   const hypeBalance = await api.call({ target: accountant, params: [buffBalance], abi: abis.kHYPEToHYPE })
   api.addGasToken(hypeBalance)
 
-  managers.forEach((_, index) => {
-    const hypeBalance = _hypeBalances[index].output
-    const _delegatedBalance = _delegatedBalances[index]
-    const { delegated, undelegated, totalPendingWithdrawal } = _delegatedBalance
-    const delegatedBalance = (+delegated + +undelegated - +totalPendingWithdrawal) * 1e18
-    api.addGasToken(+hypeBalance + delegatedBalance)
-  })
+  const stakedBalances = await Promise.all(managers.map(m => getHypercoreStakedHype(m)))
+  for (const bal of stakedBalances) {
+    api.addGasToken(bal)
+  }
 }
 
 module.exports = {
