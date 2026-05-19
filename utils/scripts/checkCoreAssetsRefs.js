@@ -37,7 +37,7 @@ async function sendDiscord(message, formatted = true) {
 
 function stripComments(src) {
   return src
-    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ''))
     .replace(/(^|[^:])\/\/[^\n]*/g, '$1');
 }
 
