@@ -60,14 +60,6 @@ async function tvl(api) {
     ...strategies.map((s, i) => [positions[i], s]),
   ]
   await sumTokens2({ api, tokensAndOwners })
-
-  // 2) borrows side
-  const states = await api.multiCall({
-    target: LENDING_LENS[api.chain],
-    abi: ASSET_STATE_ABI,
-    calls: reserves.map(r => r.token),
-  })
-  reserves.forEach((r, i) => api.add(r.token, states[i].borrows.toString()))
 }
 
 async function borrowed(api) {
@@ -82,7 +74,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology:
-    'TVL: for each Lend reserve, sums the underlying balance held at its ftYieldWrapperV2 plus the yield receipt (aToken, spToken, etc.) held by each of the wrapper\'s strategies, then adds the outstanding borrows per reserve via LendingLens.assetState.borrows (since lent-out tokens have left the wrapper). Borrowed: sums outstanding debt per reserve via LendingLens.assetState.borrows.',
+    'TVL: for each Lend reserve, sums the underlying balance held at its ftYieldWrapperV2 plus the yield receipt (aToken, spToken, etc.) held by each of the wrapper\'s strategies. Borrowed: sums outstanding debt per reserve via LendingLens.assetState.borrows.',
   sonic: { tvl, borrowed },
   ethereum: { tvl, borrowed },
 }
