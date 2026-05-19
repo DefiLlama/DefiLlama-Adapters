@@ -283,7 +283,13 @@ const configs = {
   'gremlix': {
     arbitrum: ['0x973Ae12aC9078E9f9B1708C477A9670bB3fB0886','0xd519EF317Be061b310D3caA4565Fa1ef466c36C8'],
     methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.'
-  }
+  },
+  'sivo-defi': {
+    methodology: 'TVL is totalAssets() on the Sivo USDC vault, which is part of a multi-asset ERC-7575 setup (share token sivoUSDX at 0x35ba0f7C2bebf25869Fba6D0C1af6a17998562Cc) that tokenizes receivables. The vault accepts USDC to purchase available receivables and issues sivoUSDX shares; totalAssets() reflects the aggregate receivables held plus stablecoin balances backing sivoUSDX across all per-asset 7575 vaults. Only the USDC vault is registered here to avoid triple-counting since every per-asset vault reports the same aggregate totalAssets().',
+    ethereum: [
+      '0x84dd8c1FaF872387DDC0E66F1406DE0e3bF5E83a',
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
