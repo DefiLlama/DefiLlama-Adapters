@@ -2903,7 +2903,7 @@ const uniV2Configs = {
     mezo: '0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79',
   },
   'sentrix-dex': {
-    sentrix: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
+    srx: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
   }
 }
 
