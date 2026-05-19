@@ -6,12 +6,10 @@ const { callSoroban } = require('../helper/chain/stellar')
 const ROUTER = 'CBQDHNBFBZYE4MKPWBSJOPIYLW4SFSXAXUTSXJN76GNKYVYPCKWC6QUK'
 
 const TOKEN_SETS_PAGE = 25n
-const POOL_CONCURRENCY = 10  
 
 async function tvl(api) {
   const totalSets = await callSoroban(ROUTER, 'get_tokens_sets_count')
 
-  const pools = []
   for (let start = 0n; start < totalSets; start += TOKEN_SETS_PAGE) {
     const end = start + TOKEN_SETS_PAGE > totalSets ? totalSets : start + TOKEN_SETS_PAGE
     const batch = await callSoroban(ROUTER, 'get_pools_for_tokens_range', [
@@ -20,23 +18,13 @@ async function tvl(api) {
     ])
     for (const [tokens, poolsMap] of batch) {
       for (const poolAddr of Object.values(poolsMap)) {
-        pools.push({ tokens, poolAddr })
+        const reserves = await callSoroban(poolAddr, 'get_reserves').catch(() => null)
+        if (!reserves) continue
+        for (let j = 0; j < tokens.length; j++) {
+          if (reserves[j] && reserves[j] > 0n) api.add(tokens[j], reserves[j].toString())
+        }
       }
     }
-  }
-
-  for (let i = 0; i < pools.length; i += POOL_CONCURRENCY) {
-    const chunk = pools.slice(i, i + POOL_CONCURRENCY)
-    const reservesList = await Promise.all(
-      chunk.map(p => callSoroban(p.poolAddr, 'get_reserves').catch(() => null))
-    )
-    reservesList.forEach((reserves, idx) => {
-      if (!reserves) return
-      const { tokens } = chunk[idx]
-      for (let j = 0; j < tokens.length; j++) {
-        if (reserves[j] && reserves[j] > 0n) api.add(tokens[j], reserves[j].toString())
-      }
-    })
   }
 }
 
