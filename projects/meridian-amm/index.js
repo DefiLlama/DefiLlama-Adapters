@@ -1,9 +1,11 @@
 const { function_view } = require("../helper/chain/aptos");
+const { sliceIntoChunks } = require("../helper/utils");
 
-const meridianLensAddress = "23e71cc9821bbe85404ab9850694cd319701687265bb18740af067843fc81f1e";
+const meridianPackage = "fbdb3da73efcfa742d542f152d65fc6da7b55dee864cd66475213e4be18c9d54";
+const POOL_BATCH_SIZE = 20;
 
-async function getPools(lensAddress) {
-  return function_view({ functionStr: `${lensAddress}::lens::get_all_pools_info`, type_arguments: [], args: [], chain: 'move' })
+function callPoolView(functionName, args = []) {
+  return function_view({ functionStr: `${meridianPackage}::pool::${functionName}`, args, chain: 'move' });
 }
 
 module.exports = {
@@ -12,16 +14,20 @@ module.exports = {
     "Aggregates TVL in all pools in Meridian's AMM.",
   move: {
     tvl: async (api) => {
-      const poolInfos = await getPools(meridianLensAddress)
-      for (const poolInfo of poolInfos) {
-        const assets = poolInfo.assets_metadata.map(asset => asset.inner)
-        const balances = poolInfo.balances
+      const pools = await callPoolView('pools');
 
-        for (let i = 0; i < assets.length; i++) {
-          api.add(assets[i], balances[i]);
-        }
+      for (const poolBatch of sliceIntoChunks(pools, POOL_BATCH_SIZE)) {
+        await Promise.all(poolBatch.map(async (pool) => {
+          const [assets, balances] = await Promise.all([
+            callPoolView('pool_assets_metadata', [pool.inner]),
+            callPoolView('pool_balances', [pool.inner]),
+          ]);
+
+          for (let i = 0; i < assets.length; i++) {
+            api.add(assets[i].inner, balances[i]);
+          }
+        }));
       }
-
     },
   },
 };

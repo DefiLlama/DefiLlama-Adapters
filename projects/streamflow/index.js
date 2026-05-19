@@ -51,6 +51,8 @@ async function tvl(api) {
 async function vesting(api) {
   await fetchData(api, "amount_locked_core", true);
   await fetchData(api, "amount_locked_vested");
+  // bad data from UCF 
+  delete api._balances['solana:5JkQBPrYdRK7JsC39KPPbZi7r6uLx3ZuL7jjMf4zN4c']
 }
 
 module.exports = {

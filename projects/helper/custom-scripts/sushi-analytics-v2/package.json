@@ -3,7 +3,8 @@
   "version": "0.0.2",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_PATH=./node_modules node --max-old-space-size=4000 index.js"
+    "start": "NODE_PATH=./node_modules node --max-old-space-size=4000 index.js",
+    "refill": "NODE_PATH=./node_modules node --max-old-space-size=4000 refillHistory.js"
   },
   "dependencies": {
     "@blend-capital/blend-sdk": "^3.0.1",

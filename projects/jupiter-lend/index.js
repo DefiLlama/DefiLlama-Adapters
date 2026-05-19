@@ -2,15 +2,23 @@ const { getConfig } = require('../helper/cache')
 const { getProvider, sumTokens2 } = require('../helper/solana')
 const { Program } = require("@coral-xyz/anchor");
 
-async function getData() {
-  const LIQUIDITY_IDL_URL = "https://raw.githubusercontent.com/jup-ag/jupiter-lend/refs/heads/main/target/idl/liquidity.json";
-  const LIQUIDITY_PROGRAM_ID = "jupeiUmn818Jg1ekPURTpr4mFo29p46vygyykFJ3wZC";
+const LIQUIDITY_IDL_URL = "https://raw.githubusercontent.com/jup-ag/jupiter-lend/refs/heads/main/target/idl/liquidity.json";
+const LIQUIDITY_PROGRAM_IDS = [
+  "jupeiUmn818Jg1ekPURTpr4mFo29p46vygyykFJ3wZC", // main deployment
+  "jup6QF1sNDGpkkcu6F4qaFHcRBmnSS1VgyB4uFbBvNS", // isolated Ethena market (shares the liquidity IDL)
+];
 
+async function getData() {
   const idl = await getConfig('jupiter-lend', LIQUIDITY_IDL_URL)
   const provider = getProvider();
-  idl.metadata.address = LIQUIDITY_PROGRAM_ID;
-  const program = new Program(idl, provider);
-  return ( await program.account.tokenReserve.all()).map(i => i.account)
+  const reserves = []
+  for (const programId of LIQUIDITY_PROGRAM_IDS) {
+    const localIdl = { ...idl, address: programId }
+    const program = new Program(localIdl, provider);
+    const accounts = await program.account.tokenReserve.all()
+    reserves.push(...accounts.map(i => i.account))
+  }
+  return reserves
 }
 
 const EXCHANGE_PRICE_PRECISION = 1e12

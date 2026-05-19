@@ -15,7 +15,7 @@ const tokenConfigs = {
     '0x51C2d74017390CbBd30550179A16A1c28F7210fc', // STAC (BNY Mellon via Securitize)
     '0xFa82580c16A31D0c1bC632A36F82e83EfEF3Eec0', // aEthRLUSD (Aave Core)
     '0xE3190143Eb552456F88464662f0c0C4aC67A77eB', // aHorRwaRLUSD (Aave Horizon)
-    '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a', // AUSD (Agora)
+    ADDRESSES.mantle.AUSD, // AUSD (Agora)
     ADDRESSES.ethereum.USDC,
   ],
   base: [

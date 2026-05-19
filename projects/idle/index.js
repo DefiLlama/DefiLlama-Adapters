@@ -106,18 +106,18 @@ async function tvl(api) {
     tokenSafe,
   ] = await Promise.all([
     api.multiCall({ abi: 'uint256:totalSupply', calls: v1 }),
-    api.multiCall({ abi: 'uint256:totalSupply', calls: v3 }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: v3, permitFailure: true }),
     api.multiCall({ abi: 'uint256:totalSupply', calls: safe }),
     api.multiCall({ abi: 'uint256:tokenPrice', calls: v1 }),
-    api.multiCall({ abi: 'uint256:tokenPrice', calls: v3 }),
+    api.multiCall({ abi: 'uint256:tokenPrice', calls: v3, permitFailure: true }),
     api.multiCall({ abi: 'uint256:tokenPrice', calls: safe }),
     api.multiCall({ abi: 'address:token', calls: v1 }),
-    api.multiCall({ abi: 'address:token', calls: v3 }),
+    api.multiCall({ abi: 'address:token', calls: v3, permitFailure: true }),
     api.multiCall({ abi: 'address:token', calls: safe }),
   ])
 
   // Load tokens decimals
-  const callsDecimals = [...tokenV1, ...tokenV3, ...tokenSafe].map( t => ({ target: t, params: [] }) )
+  const callsDecimals = [...tokenV1, ...tokenV3, ...tokenSafe].filter(t => t != null).map( t => ({ target: t, params: [] }) )
   const decimalsResults = await api.multiCall({abi: 'erc20:decimals', calls: callsDecimals})
   const tokensDecimals = decimalsResults.reduce( (tokensDecimals, decimals, i) => {
     const call = callsDecimals[i]
@@ -135,6 +135,7 @@ async function tvl(api) {
   totalSupplyV3.map( (supply, i) => {
     const token = tokenV3[i]
     const tokenPrice = tokenPriceV3[i]
+    if (supply == null || tokenPrice == null || token == null) return
     const vaultTVL = BigNumber(supply).times(tokenPrice).div(1e18).toFixed(0)
     sdk.util.sumSingleBalance(balances, token, vaultTVL, api.chain)
   })
