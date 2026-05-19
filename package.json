@@ -23,7 +23,7 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",
-    "@defillama/sdk": "latest",
+    "@defillama/sdk": "5.0.213",
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.87.6",
     "@supercharge/promise-pool": "^2.1.0",
@@ -48,7 +48,7 @@
     "starknet": "^5.24.3",
     "ws": "^8.18.3"
   },
-  "overrides": {  },
+  "overrides": {},
   "description": "",
   "devDependencies": {
     "eslint": "^9.38.0"

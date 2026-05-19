@@ -827,6 +827,9 @@ const uniV2Configs = {
     arbitrum: '0x989CF6bFA8997E8A01Fa07F3009392d1C734c719',
   },
   'hebeswap': {
+    _options: {
+      skipUnknownTokens: true,
+    },
     ethereumclassic: '0x09fafa5eecbc11C3e5d30369e51B7D9aab2f3F53',
   },
   'heraswap': {

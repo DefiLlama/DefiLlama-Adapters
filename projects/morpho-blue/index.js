@@ -22,6 +22,8 @@ const config = {
       "0x8e7cc042d739a365c43d0a52d5f24160fa7ae9b7e7c9a479bd02a56041d4cf77",
       "0xcc39b6c92fd03ac608b9239618db8b80a4a2034b0450bdf47b404229571312da",
       "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
+
+      "0x0f9563442d64ab3bd3bcb27058db0b0d4046a4c46f0acd811dacae9551d2b129", // sdeUSD/USDC (91.5% LLTV) bad debt from sdeUSD exploit (Nov 2025)
     ],
   },
   base: {

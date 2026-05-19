@@ -1,5 +1,13 @@
+const { PublicKey } = require('@solana/web3.js')
+const { getConnection } = require('../helper/solana')
+
 const YOUSD = '0x0000000f2eB9f69274678c76222B35eEc7588a65'
 const ALCHEMIST_CS = '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23'
+const YVSOL_PROGRAM = 'yvSoLSBaLoqZ2yQttGbaYzHDXr9Bo9UdqtiRDiVaMxP'
+const WSOL = 'So11111111111111111111111111111111111111112'
+const ORACLE_VAULT_DATA_SEED = Buffer.from('yo_oracle_OracleVaultData')
+const VAULT_DATA_SEED = Buffer.from('yo_vault_VaultData')
+const ORACLE_PRICE_DENOMINATOR = 10n ** 9n
 
 const vaults = {
     base: [
@@ -30,10 +38,37 @@ async function ethereumTvl(api) {
     api.add(asset, -assets)
 }
 
+async function solanaTvl(api) {
+    const connection = getConnection()
+    const programId = new PublicKey(YVSOL_PROGRAM)
+    const [vaultDataPda] = PublicKey.findProgramAddressSync([VAULT_DATA_SEED], programId)
+    const vaultData = await connection.getAccountInfo(vaultDataPda)
+    // VaultData layout (after 8-byte anchor discriminator + 1-byte version):
+    //   tokenMint(32) shareMint(32) admin(32) oracle(32) ...
+    const shareMint = new PublicKey(vaultData.data.slice(8 + 1 + 32, 8 + 1 + 64))
+    const oracle = new PublicKey(vaultData.data.slice(8 + 1 + 96, 8 + 1 + 128))
+
+    const [oracleVaultDataPda] = PublicKey.findProgramAddressSync(
+        [ORACLE_VAULT_DATA_SEED, programId.toBuffer()],
+        oracle,
+    )
+    const [oracleVaultData, shareMintInfo] = await Promise.all([
+        connection.getAccountInfo(oracleVaultDataPda),
+        connection.getAccountInfo(shareMint),
+    ])
+    // OracleVaultData: 8(disc) + 1(version) + 32(shareMint) then u128 lastPrice
+    const lastPrice = oracleVaultData.data.readBigUInt64LE(41) | (oracleVaultData.data.readBigUInt64LE(49) << 64n)
+    // SPL token mint supply lives at offset 36
+    const supply = shareMintInfo.data.readBigUInt64LE(36)
+    const lamports = (supply * lastPrice) / ORACLE_PRICE_DENOMINATOR
+    api.add(WSOL, lamports.toString())
+}
+
 module.exports = {
     methodology: "We calculate TVL based on the Total Assets of each vault contract on each chain where users can deposit into YO vaults",
     doublecounted: true,
     base: { tvl },
     ethereum: { tvl: ethereumTvl },
     arbitrum: { tvl },
+    solana: { tvl: solanaTvl },
 };

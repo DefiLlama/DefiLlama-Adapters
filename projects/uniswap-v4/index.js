@@ -8,6 +8,8 @@ const { cachedGraphQuery } = require("../helper/cache");
 const config = {
   ethereum: { factory: "0x000000000004444c5dc75cB358380D2e3dE08A90", fromBlock: 21688329, blacklistedTokens: ['0xb4357054c3da8d46ed642383f03139ac7f090343', '0x2f42b7d686ca3effc69778b6ed8493a7787b4d6e', 
     '0x8d010bf9C26881788b4e6bf5Fd1bdC358c8F90b8', // DOT was hacked
+    '0xb90b2a35c65dbc466b04240097ca756ad2005295', // BOBO is mispriced
+    '0x5888641e3e6cbea6d84ba81edb217bd691d3be38', // BOBO is mispriced
     '0x196c20da81fbc324ecdf55501e95ce9f0bd84d14' // DOT was hacked
   ] },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675, blacklistedTokens: [
@@ -17,6 +19,7 @@ const config = {
     blacklistedTokens: [
       '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
       '0xbc33b4d48f76d17a1800afcb730e8a6aaada7fe5', // vDOT was hacked
+    '0x570b1533f6daa82814b25b62b5c7c4c55eb83947', // BOBO is mispriced
     ]
    },
   arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872, blacklistedTokens: ['0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1', '0x3e4ffeb394b371aaaa0998488046ca19d870d9ba', 

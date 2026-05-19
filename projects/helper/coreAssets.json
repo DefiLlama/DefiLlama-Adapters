@@ -2532,7 +2532,7 @@
     "SAGA": "0xa19377761fed745723b90993988e04d641c2cffe",
     "KING": "0x58d9fbBc6037dedfBA99cAfA28e4C371b795ad97",
     "stATOM": "0xDaF9d9032b5d5C92528d6aFf6a215514B7c21056",
-    "tBTC": "0x7cF468a019C5bf734311D10C3a429bB504CAF3Ce",
+    "tBTC": "0x7cF468a019C5bf734311D10C3a429bB504CAF3ce",
     "yETH": "0xA6F89de43315B444114258f6E6700765D08bcd56",
     "yUSD": "0x839e7e610108Cf3DCc9b40329db33b6E6bc9baCE"
   },
@@ -2663,11 +2663,11 @@
   },
   "titan": {
     "atkx": "atkx",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol",
-    "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc": "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc"
+    "USDC": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc",
+    "USDT": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt",
+    "ETH": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth",
+    "SOL": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol",
+    "WBTC": "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc"
   },
   "xrplevm": {
     "XRP": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -2834,6 +2834,7 @@
     "USDC": "0xe436820ba0C69702c1d3E601d421c0eF38262739"
   },
   "pharos": {
-    "USDC": "0xc879c018db60520f4355c26ed1a6d572cdac1815"
+    "USDC": "0xc879c018db60520f4355c26ed1a6d572cdac1815",
+    "WPROS": "0x52c48d4213107b20bc583832b0d951fb9ca8f0b0"
   }
 }

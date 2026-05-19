@@ -1715,6 +1715,10 @@ const uniV3Configs = {
     methodology: 'TVL accounts for liquidity on all Uniswap V3-style pools created by the Phlox factory on LUKSO.',
     lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
   },
+  'fluxflow-v3': {
+    methodology: 'TVL counts liquidity locked in FluxFlow V3 pools on Fluent. PoolCreated events are read from the factory and reserves of each pool are summed.',
+    fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672}
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)

@@ -1,0 +1,134 @@
+{
+  "address": "8iQtGj9mcUfFUGaiCpPy89swC3s8YTC8FhVZWfgeZhwu",
+  "metadata": {
+    "name": "cubic_pool",
+    "version": "0.5.0",
+    "spec": "0.1.0",
+    "description": "Cubic Pool DEX - Multi-pool DEX with virtual liquidity and leverage logic"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "CubicPool",
+      "discriminator": [
+        137,
+        210,
+        42,
+        22,
+        209,
+        156,
+        43,
+        78
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "CubicPool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "token_count",
+            "type": "u8"
+          },
+          {
+            "name": "pool_id",
+            "type": "u64"
+          },
+          {
+            "name": "token_mints",
+            "type": {
+              "array": [
+                "pubkey",
+                10
+              ]
+            }
+          },
+          {
+            "name": "token_programs",
+            "type": {
+              "array": [
+                "pubkey",
+                10
+              ]
+            }
+          },
+          {
+            "name": "normalized_weights",
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "virtual_balances",
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "actual_balances",
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "swap_fee_rate",
+            "type": "u32"
+          },
+          {
+            "name": "protocol_fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "protocol_fees_owed",
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "pool_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "swaps_enabled",
+            "type": "bool"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
