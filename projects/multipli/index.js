@@ -12,6 +12,7 @@ async function getApiTvl(chain) {
     "https://api.multipli.fi/multipli/v1/external-aggregator/defillama/tvl/"
   );
   const payload = response.data.payload?.[chain] || {};
+
   return Object.fromEntries(
     Object.entries(payload).map(([k, v]) => [k.toLowerCase(), v])
   );
@@ -40,17 +41,20 @@ async function getTokenSupplyTvl(chain, api) {
 }
 
 async function buildTvl(chain, api) {
-  const [apiBalances, supplyBalances] = await Promise.all([
+  const [apiResult, supplyBalances] = await Promise.allSettled([
     getApiTvl(chain),
     getTokenSupplyTvl(chain, api),
   ]);
 
-  const rpcKeys = new Set(Object.keys(supplyBalances));
+  const apiBalances = apiResult.status === "fulfilled" ? apiResult.value : {};
+  const rpcBalances = supplyBalances.status === "fulfilled" ? supplyBalances.value : {};
+
+  const rpcKeys = new Set(Object.keys(rpcBalances));
   const apiOnly = Object.fromEntries(
     Object.entries(apiBalances).filter(([k]) => !rpcKeys.has(k))
   );
 
-  return { ...supplyBalances, ...apiOnly };
+  return { ...rpcBalances, ...apiOnly };
 }
 
 module.exports = {
