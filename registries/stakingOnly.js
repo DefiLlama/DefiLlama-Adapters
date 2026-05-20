@@ -86,7 +86,6 @@ const configs = {
       staking: { owners: ['0x62250aEE40F37e2eb2cd300E5a429d7096C8868F'], tokens: ['0xE444de61752bD13D1D37Ee59c31ef4e489bd727C']}
     }
   },
-
   'venice-protocol': {
     methodology: 'Counts the total VVV tokens locked in the Venice Protocol staking contract (sVVV) on Base.',
     base: {
