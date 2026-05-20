@@ -3,6 +3,7 @@ const utils = require('../helper/utils');
 const url = 'https://api.swap.nerve.network/swap/total/info'
 
 const tvl = async (api) => {
+  throw new Error('API is returning junk')
   const { data } = await utils.fetchURL(url)
   return api.addUSDValue(Math.round(data.data.tvl / 10 ** 18))
 }
