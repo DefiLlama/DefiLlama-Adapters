@@ -165,11 +165,12 @@ const config = {
 const vaultsBlacklist = [
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship, on Eth mainnet
   "0xd6DaBAf70977a867Fa884844FC5DCb21DE81c498", // vault tac 9s. but on TAC chain
-  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets 
+  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
+  "0x17488AEd11845D92f1f113E8DF51f497465D715C", // base
 ]
 
 function keepVault(vault, vaultBlacklist) {
-  return  vaultBlacklist.indexOf(vault) == -1;
+  return !vaultBlacklist.some((b) => b.toLowerCase() === vault.toLowerCase());
 }
 
 Object.keys(config).forEach((chain) => {
