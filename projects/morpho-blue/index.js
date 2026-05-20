@@ -186,7 +186,11 @@ const config = {
   tempo: {
     morphoBlue: "0x10EE9AAC980A180dd4DcFc96C746d60B0EA88f97",
     fromBlock: 12653218,
-  }
+  },
+  klaytn: {
+    morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
+    fromBlock: 208021118,
+  },
 }
 
 const eventAbis = {

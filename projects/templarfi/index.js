@@ -75,7 +75,7 @@ function detectCrossChainToken(tokenId) {
 
   // XRP via omnichain bridge
   if (tokenId === 'xrp.omft.near') {
-    return { chain: 'ripple', token: 'coingecko:xrp' }
+    return { chain: 'ripple', token: 'xrp.omft.near' }
   }
 
   // Ethereum tokens via omnichain bridge
