@@ -8,6 +8,7 @@ const uniV3Configs = {
   'warpx-v3': { megaeth: { factory: '0xf67cF9d6FC433e97Ec39Ae4b7E4451B56B171C8a', fromBlock: 4630394 } },
   'sailfish-v3': { occ: { factory: '0x963A7f4eB46967A9fd3dFbabD354fC294FA2BF5C', fromBlock: 142495 } },
   'tradegpt': { '0g': { factory: '0x6F3945Ab27296D1D66D8EEb042ff1B4fb2E0CE70', fromBlock: 5711733 } },
+  'bond': { '0g': { factory: '0xBDDB3aCF0A90029a1e7ebC3F82C7D9391C429A75', fromBlock: 32738449 } },
   'ultrasolid-v3': { hyperliquid: { factory: '0xD883a0B7889475d362CEA8fDf588266a3da554A1', fromBlock: 10742640 } },
   'juiceswap': { citrea: { factory: '0xd809b1285aDd8eeaF1B1566Bf31B2B4C4Bba8e82', fromBlock: 2651539 } },
   'weero-v3': { klaytn: { factory: '0x6603E53b4Ae1AdB1755bAF62BcbF206f90874178', fromBlock: 186673202 } },
