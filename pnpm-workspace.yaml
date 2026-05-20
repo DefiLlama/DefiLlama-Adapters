@@ -1,4 +1,8 @@
 packages: []
+allowBuilds:
+  bufferutil: set this to true or false
+  rome: set this to true or false
+  utf-8-validate: set this to true or false
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
   - '@defillama/sdk'
