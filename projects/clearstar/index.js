@@ -36,13 +36,11 @@ const configs = {
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
       ],
     },
-    // Unichain temporarily disabled: public RPC multicall3 fails from GH Actions runners,
-    // breaking CI. TVL here is negligible (~$11). Re-enable once RPC is stable.
-    // unichain: {
-    //   morphoVaultOwners: [
-    //     '0x30988479C2E6a03E7fB65138b94762D41a733458',
-    //   ],
-    // },
+    unichain: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+    },
     katana: {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
