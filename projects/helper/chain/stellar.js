@@ -152,8 +152,18 @@ function _parseScVal(buf, offset) {
     }
     case SC_VAL.ADDRESS: {
       const addrType = buf.readUInt32BE(offset); offset += 4
+      let version
+      if (addrType === SC_ADDR.CONTRACT) {
+        version = STRKEY_VERSION.CONTRACT
+      } else if (addrType === SC_ADDR.ACCOUNT) {
+        // AccountID is a PublicKey union; 40 bytes vs SAC's 36
+        const keyType = buf.readUInt32BE(offset); offset += 4
+        if (keyType !== 0) throw new Error(`Unsupported PublicKey type: ${keyType}`)
+        version = STRKEY_VERSION.ACCOUNT
+      } else {
+        throw new Error(`Unsupported SCAddressType: ${addrType}`)
+      }
       const addrBytes = Buffer.from(buf.slice(offset, offset + 32)); offset += 32
-      const version = addrType === SC_ADDR.CONTRACT ? STRKEY_VERSION.CONTRACT : STRKEY_VERSION.ACCOUNT
       return { value: _encodeStrKey(version, addrBytes), offset }
     }
     default: throw new Error(`Unsupported ScVal type: ${type}`)
@@ -204,7 +214,7 @@ function _writeTaggedArg(buf, o, type, v) {
     case 'u128': return _writeInt(buf, o, SC_VAL.U128, v, 16, false)
     case 'i128': return _writeInt(buf, o, SC_VAL.I128, v, 16, true)
     case 'address': {
-      if (typeof v !== 'string') throw new Error(`address expects string, got ${typeof v}`)
+      if (typeof v !== 'string' || !v.startsWith('C')) throw new Error(`address expects SAC string, got ${typeof v}`)
       buf.writeUInt32BE(SC_VAL.ADDRESS, o); o += 4
       buf.writeUInt32BE(SC_ADDR.CONTRACT, o); o += 4
       decodeStrKey(v).copy(buf, o); return o + 32

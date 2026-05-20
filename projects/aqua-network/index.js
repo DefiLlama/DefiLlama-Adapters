@@ -18,7 +18,7 @@ async function tvl(api) {
     ])
     for (const [tokens, poolsMap] of batch) {
       for (const poolAddr of Object.values(poolsMap)) {
-        const reserves = await callSoroban(poolAddr, 'get_reserves').catch(() => null)
+        const reserves = await callSoroban(poolAddr, 'get_reserves')
         if (!reserves) continue
         for (let j = 0; j < tokens.length; j++) {
           if (reserves[j] && reserves[j] > 0n) api.add(tokens[j], reserves[j].toString())
