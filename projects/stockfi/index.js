@@ -14,16 +14,14 @@ async function tvl(api) {
         eventAbi: EVENT_ABI,
         fromBlock: 80743203,
     });
-    
-    const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC || "https://bsc-dataseed.binance.org");
-    
+        
     const { results: poolData, errors } = await PromisePool
         .withConcurrency(5)
         .for(vaults)
         .process(async (i) => {
             // Collateral token is NOT the baseToken emitted by VaultRegistered
             // Reading directly from storage
-            const collateralToken = await provider.getStorage(i.vault, "0x78");
+            const collateralToken = await api.provider.getStorage(i.vault, "0x78");
             if (!collateralToken || collateralToken === ethers.ZeroHash) {
                 return null;
             } else {
