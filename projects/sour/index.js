@@ -1,4 +1,5 @@
-const { sumTokens2 } = require("./helper/solana");
+const { sumTokens2 } = require("../helper/solana");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // Sour LP vault PDA — derived deterministically from the program ID:
 //   findProgramAddressSync([utf8('sour_vault')], 'souryQgnM1xiNuGcmVYLPGT3MKqnGN8QTqP8zk8eape')
@@ -12,7 +13,7 @@ const { sumTokens2 } = require("./helper/solana");
 const SOUR_VAULT_PDA = 'F6aMk3z9TVEuGJ2DQ7uBFrDwJUK88gBxVLnXMSZraGD';
 
 async function tvl() {
-  return sumTokens2({ owner: SOUR_VAULT_PDA });
+  return sumTokens2({ owner: SOUR_VAULT_PDA, tokens: [ADDRESSES.solana.USDC] });
 }
 
 module.exports = {
