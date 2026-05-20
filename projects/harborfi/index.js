@@ -30,6 +30,14 @@ const config = {
       '0x177bb50574CDA129BDd0B0F50d4E061d38AA75Ef',
       // SILVER::stETH::minter
       '0x1c0067BEe039A293804b8BE951B368D2Ec65b3e9',
+      // USD::PAXG::minter
+      '0x7E1D48774F6faD0Aa41cbb47A66BB8Ec3094e3c2',
+      // USD::stETH::minter
+      '0xC14837C30BEdF3081cBa2cDeB067fA6F0381e69b',
+      // USD::tBTC::minter
+      '0x1E326fFF476a5d107f1f6684380f677d2fd5E492',
+      // USD::wBTC::minter
+      '0x0aA2b6Ee6D079f39A52725B33B15854505542B51',
     ],
     genesis: [
       // BTC::fxUSD::genesis
@@ -54,6 +62,14 @@ const config = {
       '0x66d18B9Dd5d1cd51957DFea0e0373b54E06118C8',
       // SILVER::stETH::genesis
       '0x8f655Ca32A1Fa8032955989c19e91886F26439dc',
+      // USD::PAXG::genesis
+      '0x68edA29187587DEf950d566f862FFA85FdA594cf',
+      // USD::stETH::genesis
+      '0x40ff767FF4055D53b1BC1B0141221a37B25905fD',
+      // USD::tBTC::genesis
+      '0x64E72Cbb24D1f80A0f66778dA0b95A46ead30539',
+      // USD::wBTC::genesis
+      '0xbaE2Cab2Ed87D488CF264bA9411A3fDDAB43ec22',
     ],
   },
   megaeth: {
