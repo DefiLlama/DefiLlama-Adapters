@@ -16,6 +16,21 @@ const MC_MG_PAIR = '0x437a433534FF6e7712D7e0A03Fa6CE577EeA1fef';
 const MOGGER_STAKING = '0xfd820E6189Eb3396dA71cB072643A0E1e1239853';
 const JESTERGOONER = '0x2695965Dd283e2425fab5C4c1E0955656802569c';
 
+/**
+ * Compute base TVL for MegaChad on MegaETH.
+ *
+ * Sums two non-overlapping pools of value:
+ *   1. MEGACHAD + MEGAGOONER token reserves held by the MC/MG AMM pair.
+ *   2. MEGACHAD locked in MoggerStaking (single-asset staking vault that
+ *      drips MEGAGOONER rewards Synthetix-style).
+ *
+ * LP tokens staked in JESTERGOONER are intentionally excluded here — they
+ * are accounted for separately under `pool2` to avoid double-counting
+ * (the LP's underlying reserves are already inside `MC_MG_PAIR`).
+ *
+ * @param {Object} api - DefiLlama SDK chain api bound to `megaeth`.
+ * @returns {Promise<Object>} Token balance map returned by `api.sumTokens`.
+ */
 async function tvl(api) {
   return api.sumTokens({
     ownerTokens: [
@@ -25,6 +40,20 @@ async function tvl(api) {
   });
 }
 
+/**
+ * Compute pool2 TVL: MC/MG LP tokens locked in JESTERGOONER V4, unwrapped
+ * into their underlying MEGACHAD + MEGAGOONER reserves.
+ *
+ * Because MegaChadLP exposes `reserveA` / `reserveB` (not the standard V2
+ * `getReserves`), the LP is unwrapped manually:
+ *     amountToken = reserve * (lpHeld / lpTotalSupply)
+ *
+ * Returns early when the pair has zero supply so a freshly deployed pool
+ * does not divide by zero.
+ *
+ * @param {Object} api - DefiLlama SDK chain api bound to `megaeth`.
+ * @returns {Promise<void>} Mutates `api` via `api.add` for each underlying token.
+ */
 async function pool2(api) {
   const [lpHeld, lpTotalSupply, reserveA, reserveB] = await Promise.all([
     api.call({ abi: 'erc20:balanceOf', target: MC_MG_PAIR, params: [JESTERGOONER] }),
