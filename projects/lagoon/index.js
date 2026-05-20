@@ -187,6 +187,7 @@ const vaultsBlacklist = [
   "0xd6DaBAf70977a867Fa884844FC5DCb21DE81c498", // vault tac 9s. but on TAC chain
   "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
   "0xb114b5a99652a6f6e1e9c13da0a544dc634007b5", // hyperliquid (hyperevm)
+  "0x17488aed11845d92f1f113e8df51f497465d715c", // base
 ]
 
 function keepVault(vault, vaultBlacklist) {
