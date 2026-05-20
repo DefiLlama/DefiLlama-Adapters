@@ -80,6 +80,11 @@ const configs = {
     ethereum: {
       poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501']
     }
+  },
+  'vena': {
+    fluent: {
+      poolDatas: ['0xb6eEF266933382661827E36fE3f936396e80166E']
+    }
   }
 }
 
