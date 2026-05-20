@@ -85,6 +85,11 @@ const configs = {
     fluent: {
       poolDatas: ['0xb6eEF266933382661827E36fE3f936396e80166E']
     }
+  },
+  'zona': {
+    pharos: {
+      poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
+    }
   }
 }
 
