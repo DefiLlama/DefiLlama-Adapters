@@ -9,6 +9,7 @@ async function tvl(api) {
     api,
     owner: TURBOLOOP_CONTRACT,
     tokens: [ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC],
+    resolveUniV3: true
   });
 }
 
