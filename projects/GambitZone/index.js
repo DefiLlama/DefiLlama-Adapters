@@ -15,6 +15,6 @@ module.exports = {
   methodology: "Counts USDC held in Gambit custody wallets.",
   timetravel: true,
   misrepresentedTokens: false,
-  start: 0,
+  start: 1777651200,
   arbitrum: { tvl },
 };
