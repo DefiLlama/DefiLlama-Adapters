@@ -88,8 +88,23 @@ async function tvl(api) {
   const { minters, genesis } = config[api.chain];
   const allContracts = [...minters, ...genesis];
 
-  const collateralTokens = await api.multiCall({ abi: 'address:WRAPPED_COLLATERAL_TOKEN', calls: allContracts, });
-  return api.sumTokens({ tokensAndOwners2: [collateralTokens, allContracts] });
+  const collateralTokens = await api.multiCall({
+    abi: 'address:WRAPPED_COLLATERAL_TOKEN',
+    calls: allContracts,
+    permitFailure: true,
+  });
+
+  const ZERO = '0x0000000000000000000000000000000000000000';
+  const filteredTokens = [];
+  const filteredOwners = [];
+
+  collateralTokens.forEach((token, i) => {
+    if (!token || typeof token !== 'string' || token === ZERO) return;
+    filteredTokens.push(token);
+    filteredOwners.push(allContracts[i]);
+  });
+
+  return api.sumTokens({ tokensAndOwners2: [filteredTokens, filteredOwners] });
 }
 
 module.exports = {
