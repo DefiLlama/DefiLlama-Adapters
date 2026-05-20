@@ -8,14 +8,14 @@ const POT_OWNERS = [
 ]
 
 const TRIFECTA_VAULT = '0xD3908dA797eCeC7ea0fBfbacF3118302E215556c'
-const BONDS_TELLER = '0x007F774351e541b8bc720018De0796c4BF5afE3D'
 
 async function tvl(api) {
   await api.sumTokens({
     owners: POT_OWNERS,
     tokens: [ADDRESSES.null, ADDRESSES.berachain.WBERA],
   })
-
+}
+async function pool2(api) {
   // Trifecta deposits its LP into an external strategy, so balanceOf(vault) reads 0.
   const lpToken = await api.call({ target: TRIFECTA_VAULT, abi: 'address:asset' })
   const lpHeld = await api.call({ target: TRIFECTA_VAULT, abi: 'uint256:totalAssets' })
@@ -36,19 +36,8 @@ async function tvl(api) {
     api.add(token0, share(underlying.amount0Current))
     api.add(token1, share(underlying.amount1Current))
   }
-
-  await api.sumTokens({
-    owner: BONDS_TELLER,
-    tokens: [
-      ADDRESSES.null,
-      ADDRESSES.berachain.WBERA,
-      ADDRESSES.berachain.HONEY,
-      ADDRESSES.berachain.USDC,
-    ],
-  })
 }
 
 module.exports = {
-  doublecounted: true,
-  berachain: { tvl },
+  berachain: { tvl, pool2 },
 }
