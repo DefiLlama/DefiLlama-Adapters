@@ -15,7 +15,7 @@ const config = {
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
-      
+
       // bad debt due to resolv hack
       "0xd9e34b1eed46d123ac1b69b224de1881dbc88798bc7b70f504920f62f58f28cc",
       "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33",
@@ -214,7 +214,7 @@ const getMarket = async (api) => {
   } else {
     logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
   }
-  
+
   if (api.chain === 'sei') {
     const existingIds = new Set(logs.map(i => i.id.toLowerCase()))
     logs.push(...[
@@ -234,6 +234,16 @@ const getMarket = async (api) => {
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
+// exclude ethena deposits into markets where collateral is USDe
+const ethenaBlacklist = {
+  ethereum: {
+    wallets: ['0x2Bf5d9a2326Ad3C5Ef8208F91Af79C3ca1F0F67c'],
+    vaults: [
+      '0xBeEFC1CDAfc5b4a649b54D07AFc6bF0f75C6F4E2',   // USDtB vault
+    ],
+  }
+}
+
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
   const markets = await getMarket(api)
@@ -246,7 +256,20 @@ const tvl = async (api) => {
     return wql == null || wql > 30 || wql < 0;
   });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
-  
+
+  if (ethenaBlacklist[api.chain]) {
+    const { wallets = [], vaults = [] } = ethenaBlacklist[api.chain]
+    const balanceCalls = wallets.map((wallet) => vaults.map((vault) => ({ target: vault, params: wallet }))).flat()
+    const balances = await api.multiCall({ calls: balanceCalls, abi: 'erc20:balanceOf', permitFailure: true })
+    const assets = await api.multiCall({ calls: balanceCalls.map(c => c.target), abi: 'address:asset', permitFailure: true })
+    const assetBalances = await api.multiCall({ calls: balanceCalls.map((c, i) => ({ ...c, params: balances[i] })), abi: 'function convertToAssets(uint256) view returns (uint256)' })
+    assetBalances.forEach((balance, i) => {
+      const token = assets[i]
+      console.log(`Ethena blacklist - subtracting ${balance / 1e18} of ${token} from TVL`)
+      api.add(token, balance * -1)
+    })
+  }
+
   if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
     blackList.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })

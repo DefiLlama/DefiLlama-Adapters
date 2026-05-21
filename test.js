@@ -252,6 +252,11 @@ function validateHallmarks(hallmark) {
     );
   }
 
+  if (warningTable.length) {
+    console.log(`WARNING: Found ${warningTable.length} tokens with a very high USD value, please check the following table for more details: `)
+    console.table(warningTable)
+  }
+
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
     console.log(`--- ${chain} ---`);
     let entries = Object.entries(balances)
@@ -398,6 +403,8 @@ function fixBalances(balances) {
   })
 }
 
+const warningTable = []
+
 const confidenceThreshold = 0.5
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
@@ -493,12 +500,12 @@ async function computeTVL(balances, timestamp) {
         usdAmount = amount * data.price;
       }
 
-      if (usdAmount > 1e8) {
-        console.log(`-------------------
-Warning: `)
-        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M) , price data: `, data)
-        console.log(`-------------------`)
+      if (Math.abs(usdAmount) > 1e8) {
+        const chain = address.split(':')[0]
+        warningTable.push({ chain, symbol: data.symbol, usdAmount: humanizeNumber(usdAmount), amount: humanizeNumber(amount), price: data.price, address, confidence: data.confidence, decimals: data.decimals, })
       }
+
+
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;
