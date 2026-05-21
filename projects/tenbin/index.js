@@ -12,8 +12,7 @@ module.exports = {
   methodology:
     "Tenbin is an asset tokenization protocol that brings liquid, yield-bearing " +
     "real-world assets (precious metals, FX and commodities) on-chain. TVL sums the " +
-    "total supply of Tenbin's issued tokens, e.g. Tenbin Gold (tGLD), each fully " +
-    "backed by and redeemable for the underlying asset.",
+    "total value of Tenbin's issued tokens",
   start: "2026-02-10",
   ethereum: {
     tvl: async (api) => {
