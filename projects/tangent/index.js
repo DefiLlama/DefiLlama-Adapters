@@ -25,6 +25,8 @@
  * exposes a getter for all keepers.
  */
 
+const { getLogs2 } = require('../helper/cache/getLogs')
+
 // ----- Tangent core contracts on Ethereum mainnet -----
 const MARKET_CREATOR = '0x214C8A1023B30032a2Eded109146658C6D6F2781'
 const SUSG          = '0xf17d6f98a5c6eaa99d149079984119e0a4ef6900'
@@ -51,16 +53,15 @@ const PEG_KEEPERS = [
 // ---------- Markets ----------
 
 async function getAllMarkets(api) {
-  const toBlock = await api.getBlock()
-
   const logsPerEvent = await Promise.all(
     MARKET_CREATED_EVENTS.map(eventAbi =>
-      api.getLogs({
+      getLogs2({
+        api,
         target: MARKET_CREATOR,
         eventAbi,
-        onlyArgs: true,
         fromBlock: FROM_BLOCK,
-        toBlock,
+        // Each event shares the same target, so disambiguate the on-disk cache key.
+        extraKey: eventAbi.match(/event (\w+)/)[1],
       })
     )
   )
