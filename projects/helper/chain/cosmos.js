@@ -76,7 +76,6 @@ const endPoints = {
   inertia: 'https://rest.inrt.fi',
   union: 'https://rest.union.build',
   zigchain: 'https://public-zigchain-lcd.numia.xyz',
-  lumen: 'https://lcd.lumen.euclidprotocol.com',
 };
 
 const chainSubpaths = {
