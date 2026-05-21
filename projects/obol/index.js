@@ -6,28 +6,23 @@ const ENDPOINT_BEACON = 'https://ethereum-beacon-api.publicnode.com/eth/v1/beaco
 const BEACON_BATCH_SIZE = 2000
 const stakeForSharesABI = "function stakeForShares(uint256 _shares) view returns (uint256)"
 
-// Obol's API defaults to today's snapshot when timestamp is omitted; beacon below also queries head,
-// so the two sources are time-aligned. Historical timetravel isn't supported because publicnode's
-// beacon node is head-only (404s on archived slots).
-const buildUrl = ({ limit, page }) => `${ENDPOINT_BASE}?limit=${limit}&page=${page}&details=true`
+const buildUrl = ({ limit, page, dateString }) =>
+  `${ENDPOINT_BASE}?limit=${limit}&page=${page}&details=true${dateString ? `&timestamp=${dateString}` : ''}`
 
-async function fetchObolPubkeys({ limit = 1000, pageConcurrency = 3 } = {}) {
-  const firstPayload = (await axios.get(buildUrl({ limit, page: 0 }))).data
+async function fetchObolBalances({ dateString, limit = 1000, pageConcurrency = 3 } = {}) {
+  const firstPayload = (await axios.get(buildUrl({ limit, page: 0, dateString }))).data
   const totalPages = Number.isInteger(firstPayload?.total_pages)
     ? firstPayload.total_pages
     : Math.ceil((firstPayload?.total_count ?? firstPayload?.balances?.length ?? 0) / limit)
 
-  const pubkeys = (firstPayload?.balances ?? []).map(b => normalizePubkey(b.public_key)).filter(Boolean)
+  const balances = [...(firstPayload?.balances ?? [])]
   const remaining = Array.from({ length: totalPages - 1 }, (_, i) => i + 1)
   for (let i = 0; i < remaining.length; i += pageConcurrency) {
     const chunk = remaining.slice(i, i + pageConcurrency)
-    const payloads = await Promise.all(chunk.map(page => axios.get(buildUrl({ limit, page }))))
-    for (const r of payloads) for (const b of (r.data?.balances ?? [])) {
-      const pk = normalizePubkey(b.public_key)
-      if (pk) pubkeys.push(pk)
-    }
+    const payloads = await Promise.all(chunk.map(page => axios.get(buildUrl({ limit, page, dateString }))))
+    for (const r of payloads) balances.push(...(r.data?.balances ?? []))
   }
-  return [...new Set(pubkeys)]
+  return balances
 }
 
 function normalizePubkey(pk) {
@@ -49,7 +44,23 @@ async function fetchBeaconValidators(pubkeys) {
 const GWEI_TO_WEI = 1_000_000_000n
 
 const tvl = async (api) => {
-  const pubkeys = await fetchObolPubkeys()
+  const now = Math.floor(Date.now() / 1000)
+  const isHistorical = api.timestamp && api.timestamp < now - 86400
+
+  // uses obol api balances for historical queries
+  if (isHistorical) {
+    const dateString = new Date(api.timestamp * 1000).toISOString().slice(0, 10)
+    const balances = await fetchObolBalances({ dateString })
+    let totalWei = 0n
+    for (const b of balances) {
+      if (b.balance_eth) totalWei += BigInt(Math.floor(b.balance_eth * 1e9)) * GWEI_TO_WEI
+    }
+    api.addGasToken(totalWei)
+    return
+  }
+
+  const balances = await fetchObolBalances()
+  const pubkeys = [...new Set(balances.map(b => normalizePubkey(b.public_key)).filter(Boolean))]
   const validators = await fetchBeaconValidators(pubkeys)
   let totalWei = 0n
   for (const v of validators) {
