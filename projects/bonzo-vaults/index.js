@@ -38,16 +38,22 @@ async function tvl(api) {
   for (const v of (bonzo.vaults || [])) {
     const addr = (v.contractAddress || '').toLowerCase()
     if (!addr || seen.has(addr)) continue
-    seen.add(addr)
-    if (v.strategyType === 'concentratedLiquidity') bonzoClm.push(v.contractAddress)
-    else if (v.strategyType === 'single') bonzoSingle.push(v.contractAddress)
+    if (v.strategyType === 'concentratedLiquidity') {
+      bonzoClm.push(v.contractAddress)
+      seen.add(addr)
+    } else if (v.strategyType === 'single') {
+      bonzoSingle.push(v.contractAddress)
+      seen.add(addr)
+    }
   }
 
   for (const v of (ichi.vaults || [])) {
     const addr = (v.contractAddress || '').toLowerCase()
     if (!addr || seen.has(addr)) continue
-    seen.add(addr)
-    if (v.vaultType === 'ICHI') ichiVaults.push(v.contractAddress)
+    if (v.vaultType === 'ICHI') {
+      ichiVaults.push(v.contractAddress)
+      seen.add(addr)
+    }
   }
 
   if (ichiVaults.length) {
