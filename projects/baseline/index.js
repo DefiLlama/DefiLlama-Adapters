@@ -1,60 +1,69 @@
-const { getCache } = require('../helper/http')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
-const METRICS_URL = 'https://api.baseline.markets/v1/protocol/metrics'
+const RELAY = '0xc81fd894c0ace037d133af4886550ac8133568e8'
 
-async function getReserveMetrics(api) {
-  const data = await getCache(METRICS_URL)
-  if (!Array.isArray(data.reserveMetrics))
-    throw new Error('Baseline metrics response is missing reserveMetrics')
+const POOL_CREATED_EVENT = 'event PoolCreated(address bTokenAddress,address reserveAddress,address creator,address feeRecipient,uint256 creatorFeePct,uint256 initialActivePrice,uint256 initialBlvPrice,uint256 totalReserves,uint256 totalBTokens,uint256 totalCollateral,uint256 totalDebt,bytes32 poolId)'
 
-  return data.reserveMetrics.filter(row => row.chainId === String(api.chainId))
+const config = {
+  ethereum: {
+    relay: RELAY,
+    fromBlock: 24920863,
+    staking: true,
+  },
+  base: {
+    relay: RELAY,
+    fromBlock: 45070267,
+  },
 }
 
-async function getStakingMetrics(api) {
-  const data = await getCache(METRICS_URL)
-  if (!Array.isArray(data.stakingMetrics))
-    throw new Error('Baseline metrics response is missing stakingMetrics')
+async function getPools(api) {
+  const { relay, fromBlock } = config[api.chain]
 
-  return data.stakingMetrics.filter(row => row.chainId === String(api.chainId))
-}
-
-async function addMetric(api, metric) {
-  const reserveMetrics = await getReserveMetrics(api)
-
-  reserveMetrics.forEach(row => {
-    if (!row.tokenAddress || !row[metric]) return
-    api.add(row.tokenAddress, row[metric])
+  return getLogs2({
+    api,
+    target: relay,
+    fromBlock,
+    eventAbi: POOL_CREATED_EVENT,
+    onlyArgs: true,
   })
+}
+
+async function addPoolMetric(api, metric, tokenGetter) {
+  const { relay } = config[api.chain]
+  const pools = await getPools(api)
+  const amounts = await api.multiCall({
+    target: relay,
+    abi: `function ${metric}(address) view returns (uint256)`,
+    calls: pools.map(i => i.bTokenAddress),
+  })
+
+  pools.forEach((pool, i) => api.add(tokenGetter(pool), amounts[i]))
 }
 
 async function tvl(api) {
-  return addMetric(api, 'reserveLiquidity')
+  return addPoolMetric(api, 'settledReserves', pool => pool.reserveAddress)
 }
 
 async function borrowed(api) {
-  return addMetric(api, 'totalDebt')
+  return addPoolMetric(api, 'totalDebt', pool => pool.reserveAddress)
 }
 
 async function staking(api) {
-  const stakingMetrics = await getStakingMetrics(api)
-
-  stakingMetrics.forEach(row => {
-    if (!row.tokenAddress || !row.totalStaked) return
-    api.add(row.tokenAddress, row.totalStaked)
-  })
+  return addPoolMetric(api, 'totalStaked', pool => pool.bTokenAddress)
 }
 
-module.exports = {
-  timetravel: false,
-  methodology:
-    'TVL counts reserve assets held as liquidity in Baseline pools. Borrowed counts reserve assets lent from those pools to borrowers and is reported separately. Staking counts staked B tokens. Staked bTokens are not included in TVL.',
-  ethereum: {
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
     tvl,
     borrowed,
-    staking,
-  },
-  base: {
-    tvl,
-    borrowed,
-  },
-}
+  }
+
+  if (config[chain].staking) module.exports[chain].staking = staking
+})
+
+module.exports.hallmarks = [
+  ['2024-04-27', 'self-whitehack'],
+  ['2026-04-21', 'Mercury launch'],
+]
+
+module.exports.methodology = 'TVL counts settled reserve assets held as liquidity in Baseline Mercury pools. Borrowed counts reserve assets lent from those pools to borrowers and is reported separately. Staking counts staked $B, which is the platform\'s token.'
