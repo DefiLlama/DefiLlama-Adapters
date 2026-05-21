@@ -14,7 +14,12 @@ const RFR_VAULTS = [
     accountant: '0xcB6C931AC97Da626684B44af070465938eAE20b6',
     lens: LENS,
   },
-  // wmantraUSD Points Vault — add here once deployed
+  {
+    // wmantraUSD Points Vault
+    id: '0x33858b629bC4286EC542AAb4D72cF9463162D2A7',
+    accountant: '0x19D2016A569bC46490f9E0cDc7D7515171Cf2fAc',
+    lens: LENS,
+  },
 ]
 
 // LP CLM Vaults (QuickSwap concentrated liquidity)
