@@ -40,6 +40,16 @@ function nativeBalance(balances, denom) {
   return String(row?.amount ?? '0').replace(/[^0-9]/g, '') || '0';
 }
 
+function addToken(api, tokenAddress, amount) {
+  const info = TOKEN_BY_ADDR[tokenAddress] || {};
+  if (tokenAddress.startsWith('ibc/') && info.coingeckoId) {
+    const decimals = info.decimals ?? 6;
+    api.addCGToken(info.coingeckoId, Number(amount) / (10 ** decimals));
+  } else {
+    api.add(tokenAddress, amount);
+  }
+}
+
 // Core worker: optional exclusion for protocol-owned CW20s, with verbose logging
 async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag = '' } = {}) {
   const owners = (contracts[moduleName] || []).filter(Boolean);
@@ -54,7 +64,7 @@ async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag
     for (const denom of NATIVE_DENOMS) {
       const bal = nativeBalance(bank, denom);
       if (+bal > 0) {
-        api.add(denom, bal);
+        addToken(api, denom, bal);
       }
     }
 
@@ -69,7 +79,7 @@ async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag
       const isOwned = OWNED_CW20_SET.has(t.address);
       const excluded = excludeOwnedCw20 && isOwned;
 
-      if (!excluded) api.add(t.address, bal);
+      if (!excluded) addToken(api, t.address, bal);
     }
   }));
 }
@@ -109,7 +119,7 @@ if (abi.borrowed_pools) {
         const borrowedRaw = await smartQuery(pool, { total_borrowed: {} });
         const borrowed = String(borrowedRaw).replace(/[^0-9]/g, '') || '0';
         if (+borrowed > 0) {
-          api.add(token, borrowed);
+          addToken(api, token, borrowed);
         }
       })
     );
