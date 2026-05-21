@@ -4,37 +4,40 @@ const { get } = require('../helper/http')
 const { sleep } = require('../helper/utils')
 
 const CACHE_NAME = 'meteora-dlmm'
+const MAX_PAGES = 200
+
+// Build a canonical pair key from two mint addresses to match the groups endpoint's `lexical_order_mints`
+const pairKey = (mintA, mintB) => [mintA, mintB].sort().join('-')
 
 async function fetchPoolsFromApi() {
     const baseUrl = 'https://dlmm.datapi.meteora.ag/pools'
 
-    const validPoolGroups = new Set();
-    let page = 1;
+    const validPoolPairs = new Set();
+    let groupsPage = 1;
     const pageSize = 99;
 
-    while (true) {
-        const response = await get(`${baseUrl}/groups?page=${page}&page_size=${pageSize}&sort_by=tvl%3Adesc&filter_by=is_blacklisted%3A%3Dfalse`);
+    while (groupsPage < MAX_PAGES) {
+        const response = await get(`${baseUrl}/groups?page=${groupsPage}&page_size=${pageSize}&sort_by=tvl%3Adesc&filter_by=is_blacklisted%3A%3Dfalse`);
         const groups = response.data || [];
         if (groups.length === 0) break;
-        for (const group of groups) validPoolGroups.add(group.group_name);
+        for (const group of groups) validPoolPairs.add(group.lexical_order_mints);
         const lastGroup = groups[groups.length - 1];
         if ((lastGroup.total_tvl || 0) < 0.01) break;
 
         await sleep(100);
-        page++;
+        groupsPage++;
     }
 
     const tokenAccounts = [];
     let poolsPage = 1;
 
-    while (true) {
-        const response = await get(`${baseUrl}?page=${poolsPage}&page_size=${pageSize}&order_by=tvl&order=desc`);
+    while (poolsPage < MAX_PAGES) {
+        const response = await get(`${baseUrl}?page=${poolsPage}&page_size=${pageSize}&sort_by=tvl%3Adesc`);
         const pools = response.data || [];
         if (pools.length === 0) break;
 
         for (const pool of pools) {
-            const reversed = pool.name.split('-').reverse().join('-');
-            if (validPoolGroups.has(pool.name) || validPoolGroups.has(reversed)) {
+            if (validPoolPairs.has(pairKey(pool.token_x.address, pool.token_y.address))) {
                 if (pool.reserve_x) tokenAccounts.push(pool.reserve_x);
                 if (pool.reserve_y) tokenAccounts.push(pool.reserve_y);
             }
