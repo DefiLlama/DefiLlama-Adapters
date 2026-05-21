@@ -48,7 +48,6 @@ async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag
   }
 
   await Promise.all(owners.map(async owner => {
-
     const bank = await bankBalances(owner);
 
     // Natives
@@ -70,30 +69,46 @@ async function fetchBalances(moduleName, api, { excludeOwnedCw20 = false, logTag
       const isOwned = OWNED_CW20_SET.has(t.address);
       const excluded = excludeOwnedCw20 && isOwned;
 
-
       if (!excluded) api.add(t.address, bal);
     }
-
   }));
 }
 
-// Build category fns from abi.json (default: no exclusions)
+// Build category fns from abi.json
 const terraExport = {};
-Object.keys(contracts).forEach(key => {
-  if (contracts[key]?.length) {
-    terraExport[key] = (api) => fetchBalances(key, api, { excludeOwnedCw20: false, logTag: key });
-  }
-});
 
-// TVL: include all desired categories but exclude owner CW20s (e.g., JURIS) everywhere
+// TVL categories to sum
+const TVL_CATEGORIES = ['lending', 'liquidation_queues', 'liquidation_vault', 'margin', 'reserve', 'ownTokens', 'treasury'];
+
 terraExport.tvl = async (api) => {
-  const cats = Object.keys(contracts).filter(k => k !== 'tvl');
-  await Promise.all(cats.map((k) => fetchBalances(k, api, { excludeOwnedCw20: true, logTag: `TVL:${k}` })));
+  await Promise.all(
+    TVL_CATEGORIES.map((k) => fetchBalances(k, api, { excludeOwnedCw20: true, logTag: `TVL:${k}` }))
+  );
 };
- 
+
+// Staking (holds native LUNC or CW20s, owner CW20 JURIS is allowed here)
+if (contracts.staking?.length) {
+  terraExport.staking = (api) => fetchBalances('staking', api, { excludeOwnedCw20: false, logTag: 'staking' });
+}
+
+// Vesting (holds JURIS for vesting, owner CW20 JURIS is allowed here)
+if (contracts.vesting?.length) {
+  terraExport.vesting = (api) => fetchBalances('vesting', api, { excludeOwnedCw20: false, logTag: 'vesting' });
+}
+
+// Pool2 (in case they have it later)
+if (contracts.pool2?.length) {
+  terraExport.pool2 = (api) => fetchBalances('pool2', api, { excludeOwnedCw20: false, logTag: 'pool2' });
+}
+
+// Borrowed (in case they have it later)
+if (contracts.borrowed?.length) {
+  terraExport.borrowed = (api) => fetchBalances('borrowed', api, { excludeOwnedCw20: false, logTag: 'borrowed' });
+}
+
 module.exports = {
   methodology:
-    'TVL sums native denoms and non-owned CW20s across configured contract owners; any CW20 with owner=true in abi.json (e.g., JURIS) is excluded from TVL but still logged for visibility.',
+    'TVL sums native denoms and non-owned CW20s across configured lending pools, liquidation queues, liquidation vault, and margin account contracts. JURIS token is counted in staking and vesting but excluded from TVL.',
   timetravel: false,
   terra: terraExport,
 };
