@@ -59,6 +59,11 @@ function topicAddress(addr) {
   return "0x" + addr.toLowerCase().replace(/^0x/, "").padStart(64, "0");
 }
 
+// Unique padded topics for eth_getLogs OR filter (dedupe shared addresses e.g. vault/wcol).
+const ENDPOINT_TOPICS = [
+  ...new Set(TRADE_ENDPOINTS.map((a) => topicAddress(a))),
+];
+
 function addWallet(wallets, addr) {
   if (!addr) return;
   const lower = String(addr).toLowerCase();
@@ -69,33 +74,32 @@ function addWallet(wallets, addr) {
 
 async function discoverUserWallets(api) {
   const wallets = new Set();
+  const logOpts = {
+    api,
+    target: BASE_USDC,
+    eventAbi: TRANSFER_ABI,
+    onlyArgs: true,
+    fromBlock: WALLET_DISCOVERY_FROM_BLOCK,
+  };
 
-  for (const endpoint of TRADE_ENDPOINTS) {
-    const toTopic = topicAddress(endpoint);
+  const [deposits, withdrawals] = await Promise.all([
+    getLogs({
+      ...logOpts,
+      extraKey: "pred-user-deposits",
+      topics: [TRANSFER_TOPIC, null, ENDPOINT_TOPICS],
+    }),
+    getLogs({
+      ...logOpts,
+      extraKey: "pred-user-withdrawals",
+      topics: [TRANSFER_TOPIC, ENDPOINT_TOPICS, null],
+    }),
+  ]);
 
-    const deposits = await getLogs({
-      api,
-      target: BASE_USDC,
-      eventAbi: TRANSFER_ABI,
-      onlyArgs: true,
-      fromBlock: WALLET_DISCOVERY_FROM_BLOCK,
-      topics: [TRANSFER_TOPIC, null, toTopic],
-    });
-    for (const log of deposits) {
-      addWallet(wallets, log.from);
-    }
-
-    const withdrawals = await getLogs({
-      api,
-      target: BASE_USDC,
-      eventAbi: TRANSFER_ABI,
-      onlyArgs: true,
-      fromBlock: WALLET_DISCOVERY_FROM_BLOCK,
-      topics: [TRANSFER_TOPIC, toTopic, null],
-    });
-    for (const log of withdrawals) {
-      addWallet(wallets, log.to);
-    }
+  for (const log of deposits) {
+    addWallet(wallets, log.from);
+  }
+  for (const log of withdrawals) {
+    addWallet(wallets, log.to);
   }
 
   return [...wallets];
