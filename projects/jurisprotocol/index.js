@@ -101,9 +101,19 @@ if (contracts.pool2?.length) {
   terraExport.pool2 = (api) => fetchBalances('pool2', api, { excludeOwnedCw20: false, logTag: 'pool2' });
 }
 
-// Borrowed (in case they have it later)
-if (contracts.borrowed?.length) {
-  terraExport.borrowed = (api) => fetchBalances('borrowed', api, { excludeOwnedCw20: false, logTag: 'borrowed' });
+// Borrowed
+if (abi.borrowed_pools) {
+  terraExport.borrowed = async (api) => {
+    await Promise.all(
+      Object.entries(abi.borrowed_pools).map(async ([pool, token]) => {
+        const borrowedRaw = await smartQuery(pool, { total_borrowed: {} });
+        const borrowed = String(borrowedRaw).replace(/[^0-9]/g, '') || '0';
+        if (+borrowed > 0) {
+          api.add(token, borrowed);
+        }
+      })
+    );
+  };
 }
 
 module.exports = {

@@ -41,6 +41,10 @@
       "owner": false
     }
   },
+  "borrowed_pools": {
+    "terra1sppah23w9ta0lszdjyxgr2hgc3mdjhxnnnsr3jmxyzjraz60ct0s2ux9u2": "uluna",
+    "terra1j2duml67vl7rhzg43qapnm42n79lwy8a5yedt2taeryvw7a9r8tse6pvfp": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2"
+  },
   "contracts": {
     "staking": [
       "terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y"
