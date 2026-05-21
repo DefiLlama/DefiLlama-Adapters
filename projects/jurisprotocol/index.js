@@ -1,3 +1,4 @@
+const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
 const { queryContract, queryV1Beta1 } = require('../helper/chain/cosmos');
 
@@ -44,7 +45,8 @@ function addToken(api, tokenAddress, amount) {
   const info = TOKEN_BY_ADDR[tokenAddress] || {};
   if (tokenAddress.startsWith('ibc/') && info.coingeckoId) {
     const decimals = info.decimals ?? 6;
-    api.addCGToken(info.coingeckoId, Number(amount) / (10 ** decimals));
+    const balance = new BigNumber(amount).div(10 ** decimals).toNumber();
+    api.addCGToken(info.coingeckoId, balance);
   } else {
     api.add(tokenAddress, amount);
   }
@@ -117,7 +119,8 @@ if (abi.borrowed_pools) {
     await Promise.all(
       Object.entries(abi.borrowed_pools).map(async ([pool, token]) => {
         const borrowedRaw = await smartQuery(pool, { total_borrowed: {} });
-        const borrowed = String(borrowedRaw).replace(/[^0-9]/g, '') || '0';
+        const rawVal = borrowedRaw?.total_borrowed ?? borrowedRaw?.amount ?? borrowedRaw;
+        const borrowed = String(rawVal ?? '0').replace(/[^0-9]/g, '') || '0';
         if (+borrowed > 0) {
           addToken(api, token, borrowed);
         }
