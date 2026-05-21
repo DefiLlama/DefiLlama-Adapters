@@ -44,6 +44,13 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  bot: {
+    '0xD5452816194a3784dBa983426cCe7c122F4abd30': { coingeckoId: "", decimals: 18   }, // native token is not registered 
+    "0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C": {
+      coingeckoId: "tether",
+      decimals: 18, // 以链上 ERC20 decimals() 为准
+    },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
