@@ -7,7 +7,7 @@ const STAKING = '0x60a203ddcde45fbfb325bdeea93824b5726b4df8'
 
 const PAIR_CREATED = 'event PairCreated(address indexed tokenA, address indexed tokenB, address pair, uint256)'
 
-async function tvl(api) {
+async function staking(api) {
   const logs = await getLogs2({
     api,
     target: FFACTORY,
@@ -19,17 +19,13 @@ async function tvl(api) {
     .filter(l => l.tokenA.toLowerCase() === VIRTUAL.toLowerCase() || l.tokenB.toLowerCase() === VIRTUAL.toLowerCase())
     .map(l => l.pair)
 
-  return sumTokens2({ api, tokens: [VIRTUAL], owners: pairs })
-}
-
-async function staking(api) {
-  return sumTokens2({ api, tokens: [VIRTUAL], owners: [STAKING] })
+  return sumTokens2({ api, tokens: [VIRTUAL], owners: [STAKING, ...pairs] })
 }
 
 module.exports = {
-  methodology: 'TVL counts VIRTUAL locked in pre-graduation agent bonding curve pools (FPair). Staking counts VIRTUAL locked in the Virtuals Protocol staking contract.',
+  methodology: 'Counts VIRTUAL locked in pre-graduation agent bonding curve pools (FPair) and VIRTUAL locked in the Virtuals Protocol staking contract.',
   base: {
-    tvl,
+    tvl: () => ({}),
     staking,
   },
 }
