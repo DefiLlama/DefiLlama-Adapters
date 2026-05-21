@@ -8,78 +8,46 @@
 const config = {
   ethereum: {
     minters: [
-      // BTC::fxUSD::minter
-      '0x33e32ff4d0677862fa31582CC654a25b9b1e4888',
-      // BTC::stETH::minter
-      '0xF42516EB885E737780EB864dd07cEc8628000919',
-      // ETH::fxUSD::minter
-      '0xd6E2F8e57b4aFB51C6fA4cbC012e1cE6aEad989F',
-      // EUR::fxUSD::minter
-      '0xDEFB2C04062350678965CBF38A216Cc50723B246',
-      // EUR::stETH::minter
-      '0x68911ea33E11bc77e07f6dA4db6cd23d723641cE',
-      // GOLD::fxUSD::minter
-      '0x880600E0c803d836E305B7c242FC095Eed234A8f',
-      // GOLD::stETH::minter
-      '0xB315DC4698DF45A477d8bb4B0Bc694C4D1Be91b5',
-      // MCAP::fxUSD::minter
-      '0x3d3EAe3a4Ee52ef703216c62EFEC3157694606dE',
-      // MCAP::stETH::minter
-      '0xe37e34Ab0AaaabAc0e20c911349c1dEfAD0691B6',
-      // SILVER::fxUSD::minter
-      '0x177bb50574CDA129BDd0B0F50d4E061d38AA75Ef',
-      // SILVER::stETH::minter
-      '0x1c0067BEe039A293804b8BE951B368D2Ec65b3e9',
-      // USD::PAXG::minter
-      '0x7E1D48774F6faD0Aa41cbb47A66BB8Ec3094e3c2',
-      // USD::stETH::minter
-      '0xC14837C30BEdF3081cBa2cDeB067fA6F0381e69b',
-      // USD::tBTC::minter
-      '0x1E326fFF476a5d107f1f6684380f677d2fd5E492',
-      // USD::wBTC::minter
-      '0x0aA2b6Ee6D079f39A52725B33B15854505542B51',
+      '0x33e32ff4d0677862fa31582CC654a25b9b1e4888', // BTC::fxUSD::minter
+      '0xF42516EB885E737780EB864dd07cEc8628000919', // BTC::stETH::minter
+      '0xd6E2F8e57b4aFB51C6fA4cbC012e1cE6aEad989F', // ETH::fxUSD::minter
+      '0xDEFB2C04062350678965CBF38A216Cc50723B246', // EUR::fxUSD::minter
+      '0x68911ea33E11bc77e07f6dA4db6cd23d723641cE', // EUR::stETH::minter
+      '0x880600E0c803d836E305B7c242FC095Eed234A8f', // GOLD::fxUSD::minter
+      '0xB315DC4698DF45A477d8bb4B0Bc694C4D1Be91b5', // GOLD::stETH::minter
+      '0x3d3EAe3a4Ee52ef703216c62EFEC3157694606dE', // MCAP::fxUSD::minter
+      '0xe37e34Ab0AaaabAc0e20c911349c1dEfAD0691B6', // MCAP::stETH::minter
+      '0x177bb50574CDA129BDd0B0F50d4E061d38AA75Ef', // SILVER::fxUSD::minter
+      '0x1c0067BEe039A293804b8BE951B368D2Ec65b3e9', // SILVER::stETH::minter
+      '0x7E1D48774F6faD0Aa41cbb47A66BB8Ec3094e3c2', // USD::PAXG::minter
+      '0xC14837C30BEdF3081cBa2cDeB067fA6F0381e69b', // USD::stETH::minter
+      '0x1E326fFF476a5d107f1f6684380f677d2fd5E492', // USD::tBTC::minter
+      '0x0aA2b6Ee6D079f39A52725B33B15854505542B51', // USD::wBTC::minter
     ],
     genesis: [
-      // BTC::fxUSD::genesis
-      '0x42cc9a19b358a2A918f891D8a6199d8b05F0BC1C',
-      // BTC::stETH::genesis
-      '0xc64Fc46eED431e92C1b5e24DC296b5985CE6Cc00',
-      // ETH::fxUSD::genesis
-      '0xC9df4f62474Cf6cdE6c064DB29416a9F4f27EBdC',
-      // EUR::fxUSD::genesis
-      '0xa9EB43Ed6Ba3B953a82741F3e226C1d6B029699b',
-      // EUR::stETH::genesis
-      '0xf4F97218a00213a57A32E4606aAecC99e1805A89',
-      // GOLD::fxUSD::genesis
-      '0x2cbF457112Ef5A16cfcA10Fb173d56a5cc9DAa66',
-      // GOLD::stETH::genesis
-      '0x8Ad6b177137A6c33070c27d98355717849Ce526c',
-      // MCAP::fxUSD::genesis
-      '0x7Bfb831E6360D4600C7b9b200F8AcA6f89CecdA4',
-      // MCAP::stETH::genesis
-      '0xa6c02dE8E3150C6ffA9C80F98185d42653CB438d',
-      // SILVER::fxUSD::genesis
-      '0x66d18B9Dd5d1cd51957DFea0e0373b54E06118C8',
-      // SILVER::stETH::genesis
-      '0x8f655Ca32A1Fa8032955989c19e91886F26439dc',
-      // USD::PAXG::genesis
-      '0x68edA29187587DEf950d566f862FFA85FdA594cf',
-      // USD::stETH::genesis
-      '0x40ff767FF4055D53b1BC1B0141221a37B25905fD',
-      // USD::tBTC::genesis
-      '0x64E72Cbb24D1f80A0f66778dA0b95A46ead30539',
-      // USD::wBTC::genesis
-      '0xbaE2Cab2Ed87D488CF264bA9411A3fDDAB43ec22',
+      '0x42cc9a19b358a2A918f891D8a6199d8b05F0BC1C', // BTC::fxUSD::genesis
+      '0xc64Fc46eED431e92C1b5e24DC296b5985CE6Cc00', // BTC::stETH::genesis
+      '0xC9df4f62474Cf6cdE6c064DB29416a9F4f27EBdC', // ETH::fxUSD::genesis
+      '0xa9EB43Ed6Ba3B953a82741F3e226C1d6B029699b', // EUR::fxUSD::genesis
+      '0xf4F97218a00213a57A32E4606aAecC99e1805A89', // EUR::stETH::genesis
+      '0x2cbF457112Ef5A16cfcA10Fb173d56a5cc9DAa66', // GOLD::fxUSD::genesis
+      '0x8Ad6b177137A6c33070c27d98355717849Ce526c', // GOLD::stETH::genesis
+      '0x7Bfb831E6360D4600C7b9b200F8AcA6f89CecdA4', // MCAP::fxUSD::genesis
+      '0xa6c02dE8E3150C6ffA9C80F98185d42653CB438d', // MCAP::stETH::genesis
+      '0x66d18B9Dd5d1cd51957DFea0e0373b54E06118C8', // SILVER::fxUSD::genesis
+      '0x8f655Ca32A1Fa8032955989c19e91886F26439dc', // SILVER::stETH::genesis
+      '0x68edA29187587DEf950d566f862FFA85FdA594cf', // USD::PAXG::genesis
+      '0x40ff767FF4055D53b1BC1B0141221a37B25905fD', // USD::stETH::genesis
+      '0x64E72Cbb24D1f80A0f66778dA0b95A46ead30539', // USD::tBTC::genesis
+      '0xbaE2Cab2Ed87D488CF264bA9411A3fDDAB43ec22', // USD::wBTC::genesis
     ],
   },
   megaeth: {
     minters: [
-      // USD::stETH::minter
-      '0x77aD4a052812f1EeD89Fb4ED309e81c815D8d755',
+      '0x77aD4a052812f1EeD89Fb4ED309e81c815D8d755', // USD::stETH::minter
     ],
     genesis: [
-      // USD::stETH::genesis
-      '0x004C7091051bBD43dd1C26e3E37C85F869a987e7',
+      '0x004C7091051bBD43dd1C26e3E37C85F869a987e7', // USD::stETH::genesis
     ],
   },
 };
@@ -88,23 +56,8 @@ async function tvl(api) {
   const { minters, genesis } = config[api.chain];
   const allContracts = [...minters, ...genesis];
 
-  const collateralTokens = await api.multiCall({
-    abi: 'address:WRAPPED_COLLATERAL_TOKEN',
-    calls: allContracts,
-    permitFailure: true,
-  });
-
-  const ZERO = '0x0000000000000000000000000000000000000000';
-  const filteredTokens = [];
-  const filteredOwners = [];
-
-  collateralTokens.forEach((token, i) => {
-    if (!token || typeof token !== 'string' || token === ZERO) return;
-    filteredTokens.push(token);
-    filteredOwners.push(allContracts[i]);
-  });
-
-  return api.sumTokens({ tokensAndOwners2: [filteredTokens, filteredOwners] });
+  const collateralTokens = await api.multiCall({ abi: 'address:WRAPPED_COLLATERAL_TOKEN', calls: allContracts, });
+  await api.sumTokens({ tokensAndOwners2: [collateralTokens, allContracts] });
 }
 
 module.exports = {
