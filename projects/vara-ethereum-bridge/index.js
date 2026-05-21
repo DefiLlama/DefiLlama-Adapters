@@ -4,18 +4,11 @@ const { post } = require('../helper/http')
 
 const ERC20_MANAGER = '0x16fCff97822fcf3345Fa76D29c229b11C49EaE12';
 
-// Vara network variables
-const TOKENIZED_VARA = '29c42c668012b1ce20720e4615229215023281ef4676fdc77bf047d7fbcb9d17';
-
-// xxHash128("System") + xxHash128("Account"): https://github.com/paritytech/polkadot-sdk/blob/master/substrate/frame/system/src/lib.rs#L977
-const SYSTEM_ACCOUNT_PREFIX = '26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9'
-
-// blake2_128(TOKENIZED_VARA); Blake2_128Concat hasher prefix for the AccountId key: https://github.com/paritytech/polkadot-sdk/blob/master/substrate/frame/support/src/hash.rs#L143
-const BLAKE2_128_HASH = '2be216337508815d413700122d15f57f';
-
 // Storage key: SYSTEM_ACCOUNT_PREFIX + blake2_128(TOKENIZED_VARA) + TOKENIZED_VARA
-const VARA_BALANCE_STORAGE_KEY = '0x' + SYSTEM_ACCOUNT_PREFIX + BLAKE2_128_HASH + TOKENIZED_VARA
-
+// 1. SYSTEM_ACCOUNT_PREFIX: 26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9 - xxHash128("System") + xxHash128("Account"): https://github.com/paritytech/polkadot-sdk/blob/master/substrate/frame/system/src/lib.rs#L977
+// 2. blake2_128(tokenized_vara): 2be216337508815d413700122d15f57f - prefix for the AccountId key: https://github.com/paritytech/polkadot-sdk/blob/master/substrate/frame/support/src/hash.rs#L143
+// 3. TOKENIZED_VARA: 29c42c668012b1ce20720e4615229215023281ef4676fdc77bf047d7fbcb9d17
+const VARA_BALANCE_STORAGE_KEY = '0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da92be216337508815d413700122d15f57f29c42c668012b1ce20720e4615229215023281ef4676fdc77bf047d7fbcb9d17';
 const VARA_RPC = 'https://rpc.vara.network'
 
 async function tvl(api) {
