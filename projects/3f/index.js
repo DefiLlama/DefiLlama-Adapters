@@ -1,7 +1,8 @@
-// 3F — leveraged vaults for tokenized RWAs (Centrifuge JAAA, Superstate USCC).
-// Collateral deposited into the protocol is held as a wrapped token, which
-// DefiLlama already prices. TVL is the on-chain totalSupply of each wrapped
-// token. Add new assets here as more leveraged vaults launch.
+// 3F — leveraged vaults for tokenized RWAs (Centrifuge JAAA, Superstate USCC, FalconX).
+// Collateral deposited into the protocol is held as a wrapped token
+// TVL is the on-chain totalSupply of each wrapped token.
+// Add new assets here as more leveraged vaults launch.
+
 const WRAPPED_ASSETS = [
   { symbol: "wJAAA", address: "0x86b495e4Cb00AB18Ad94BFD7920479cC79E8eBFE" },
   { symbol: "wUSCC", address: "0xF458Ad24B1dE7c653e8471efB0b87710b316b7D9" },
@@ -20,7 +21,7 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: false,
   methodology:
-    "TVL is the total value of collateral wrapped by 3F Labs leveraged vaults, measured as the on-chain totalSupply of each wrapped token (wJAAA, wUSCC).",
+    "TVL is the total value of collateral wrapped by 3F leveraged vaults, measured as the on-chain totalSupply of each wrapped token (wJAAA, wUSCC, wFalconX).",
   ethereum: {
     tvl,
   },
