@@ -1,6 +1,7 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 const RELAY = '0xc81fd894c0ace037d133af4886550ac8133568e8'
+const B_ADDRESS = '0x9fDbDE76236998Dc2836FE67A9954eDE456A1D63'
 
 const POOL_CREATED_EVENT = 'event PoolCreated(address bTokenAddress,address reserveAddress,address creator,address feeRecipient,uint256 creatorFeePct,uint256 initialActivePrice,uint256 initialBlvPrice,uint256 totalReserves,uint256 totalBTokens,uint256 totalCollateral,uint256 totalDebt,bytes32 poolId)'
 
@@ -49,7 +50,14 @@ async function borrowed(api) {
 }
 
 async function staking(api) {
-  return addPoolMetric(api, 'totalStaked', pool => pool.bTokenAddress)
+  const { relay } = config[api.chain]
+  const amount = await api.call({
+    target: relay,
+    abi: 'function totalStaked(address) view returns (uint256)',
+    params: [B_ADDRESS],
+  })
+
+  api.add(B_ADDRESS, amount)
 }
 
 Object.keys(config).forEach(chain => {
@@ -58,6 +66,7 @@ Object.keys(config).forEach(chain => {
     borrowed,
   }
 
+  // Only called on ethereum
   if (config[chain].staking) module.exports[chain].staking = staking
 })
 
