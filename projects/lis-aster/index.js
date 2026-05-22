@@ -22,6 +22,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology:
     'TVL is the ASTER permanently locked through lisAster — equal to lisAster ERC20 total supply (minted 1:1 on deposit).',
   bsc: { tvl },
