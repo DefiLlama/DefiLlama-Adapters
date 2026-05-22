@@ -24,8 +24,7 @@ async function tvl(api) {
   const connection = getConnection();
   const programId = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
   const markets = (await getConfig('kamino-lending', 'https://api.kamino.finance/v2/kamino-market')).map(x => x.lendingMarket);
-  const lendingMarketAuthSeed = 'lma';
-  const tokensAndOwners = [];
+  const tokenAccounts = [];
   const ktokens = {};
 
   const kaminoLendProgram = new Program(kaminoIdl, programId, { connection, publicKey: PublicKey.unique() });
@@ -44,15 +43,11 @@ async function tvl(api) {
         ktokens[reserve.liquidity.mintPubkey] = true;
       } else {
         ktokens[reserve.liquidity.mintPubkey] = false;
-        const [authority] = PublicKey.findProgramAddressSync(
-          [Buffer.from(lendingMarketAuthSeed), new PublicKey(market).toBuffer()],
-          programId
-        );
-        tokensAndOwners.push([reserve.liquidity.mintPubkey, authority]);
+        tokenAccounts.push(reserve.liquidity.supplyVault.toString());
       }
     }
   }
-  await sumTokens2({ api, tokensAndOwners })
+  await sumTokens2({ api, tokenAccounts })
   await subtractEthenaKVaultDeposits(api, connection)
 }
 
