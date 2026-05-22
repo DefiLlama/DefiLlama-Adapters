@@ -2,11 +2,11 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getLogs2 } = require("../helper/cache/getLogs");
 
 const CONFIG = {
-  ESCROW_FACTORY: "0x11c6bb595824014e1c11c6b4a6ad2095cf7d22ab",
-  AGENT_REGISTRY: "0xb528f6ba2d75c383dfe6cdab9957a6cd6b45d90d",
-  TREASURY: "0xcF3f26F73AEc469dfc5a0940b157214fD730B0FB",
-  ZEN: '0x5e7a494312d1943aa01682059df1c0d2f3a27c32',
-  FROM_BLOCK: 24426849 // Deployment block
+  ESCROW_FACTORY: "0xba2c6322fd59e2703a28d82db572950297600129",
+  AGENT_REGISTRY: "0x3406c744958b182d6edd2615ff9e53f0fbc60802",
+  TREASURY: "0xA9790aC657BD38C8Ef2568c1642b02d2B96F20dD",
+  ZEN: '0xa6be5ae3bc634cf44439845365a01c2cd705f32d',
+  FROM_BLOCK: 24525702 // Deployment block
 }
 
 const ESCROW_CREATED_EVENT = "event EscrowCreated(address indexed escrow, address indexed buyer, address indexed seller, address agent, address token, uint256 amount, uint256 creationFee, uint256 version)";
@@ -33,6 +33,6 @@ const staking = async (api) => {
 
 module.exports = {
   methodology: "TVL counts funds locked in active escrow contracts. Staking represents agent stakes in the AgentRegistry (reported separately). Treasury holdings are protocol-owned and excluded from TVL.",
-  start: "2026-02-10",
+  start: "2026-02-24",
   ethereum: { tvl, staking }
 }

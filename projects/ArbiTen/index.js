@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const contracts = {
-    "weth": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+    "weth": ADDRESSES.arbitrum.WETH,
     "_10SHARE": "0xc8a1c0D8255bc2eB5f6236e119E3428FD0c33A74",
     "boardroom": "0xCa262a493aA4FBA5c6913c6FC3AD0bC724f37A2E",
     "masterchef": "0xd3f9f6D52f46BF047388FA0EA19F9e671eaD080a",

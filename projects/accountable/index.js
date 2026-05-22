@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const FACTORIES = {
     monad: [
         '0x606556A6B544ecDcbf15aF73A63B67516dc16Ad7',
@@ -11,6 +12,10 @@ const FACTORIES = {
         '0x2A7F22f81A3d301b8f0EAf4f09a78558c91Fc69a',
         '0xB4082B8126AF8B5345CfB159AC5d4b4F05F54bC5',
     ],
+    citrea: [
+        '0x4927Ce3402035b801A1bEdDC498b7fb2fe9eA181',
+        '0x2f5CAc28cf80D465d7C8D67a49c8e36710a4B83B',
+    ],
 }
 
 const abis = {
@@ -20,7 +25,7 @@ const abis = {
     asset: 'function asset() view returns (address)',
 }
 
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NULL_ADDRESS = ADDRESSES.null
 
 async function getVaults(api) {
     const vaults = new Set()
@@ -90,6 +95,10 @@ module.exports = {
         borrowed: tvl(true)
     },
     ethereum: {
+        tvl: tvl(false),
+        borrowed: tvl(true)
+    },
+    citrea: {
         tvl: tvl(false),
         borrowed: tvl(true)
     },

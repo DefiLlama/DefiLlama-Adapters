@@ -1,6 +1,7 @@
 const { sumTokensExport } = require('../helper/sumTokens')
 
 module.exports = {
+  deadFrom: '2026-03-01',
   timetravel: false,
   ergo: {
     tvl: () => ({}),

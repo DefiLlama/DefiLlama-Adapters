@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require("@solana/web3.js");
 const { getConnection } = require("../helper/solana");
 const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
 const CHOPCORP_PROGRAM_ID = new PublicKey("chopmfFa3T1CzZj9WUgq5e18aMvjufSHGfPTvyKkydL");
-const SOL_MINT = "So11111111111111111111111111111111111111112";
+const SOL_MINT = ADDRESSES.solana.SOL;
 
 const DISCRIMINATORS = {
   Automation: Buffer.from([100, 0, 0, 0, 0, 0, 0, 0]),

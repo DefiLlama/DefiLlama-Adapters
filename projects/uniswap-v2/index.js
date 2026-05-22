@@ -22,7 +22,8 @@ const config = {
   zora: '0x0F797dC7efaEA995bB916f268D919d0a1950eE3C',
   unichain: '0x1F98400000000000000000000000000000000002',
   monad: '0x182a927119d56008d921126764bf884221b10f59',
-  xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95'
+  xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95',
+  tempo: '0xf9ec577a4e45b5278bb7cf60fcbc20c3acaef68f'
 }
 
 Object.keys(config).forEach(chain => {

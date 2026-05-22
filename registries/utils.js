@@ -59,6 +59,7 @@ function buildProtocolExports(configs, exportFn) {
     Object.assign(result, topLevel)
     protocols[name] = result
   })
+  Object.defineProperty(protocols, '_rawConfigs', { value: configs, enumerable: false })
   return protocols
 }
 

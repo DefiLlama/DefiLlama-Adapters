@@ -1,12 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 
 const contracts = {
   "masterChef": "0xb9e7008FA856D66680BeE9E0a24da407D9d7fAD5",
   "stakePools": [
-    "0x0000000000000000000000000000000000000000",
-    "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
-    "0xae78736Cd615f374D3085123A210448E74Fc6393",
+    ADDRESSES.null,
+    ADDRESSES.ethereum.STETH,
+    ADDRESSES.ethereum.RETH,
   ]
 }
 
