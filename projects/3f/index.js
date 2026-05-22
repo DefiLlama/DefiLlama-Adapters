@@ -34,7 +34,7 @@ async function tvl(api) {
  
 
 module.exports = {
-    methodology: "Value of the assets locked inside all wrapper tokens.",
+    methodology: "Value of assets locked inside all wrapper tokens.",
     start: "2026-04-08",
     ethereum: { tvl }
-}
+};
