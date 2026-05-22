@@ -3,8 +3,12 @@ const {joeV2Export} = require('../helper/traderJoeV2')
 /**
  * Exports Trader Joe V2 configuration for SectorOne DEX on MegaETH, Ethereum, Base network
  * @type {Object}
- * @property {Object} megaeth - Configuration for MegaETH, Ethereum, Base network
- * @property {string} megaeth.factory - Factory contract address on MegaETH, Ethereum, Base
+ * @property {Object} ethereum - Configuration for Ethereum network
+ * @property {Object} base - Configuration for Base network
+ * @property {Object} megaeth - Configuration for MegaETH network
+ * @property {string} ethereum.factory - Factory contract address on Ethereum
+ * @property {string} base.factory - Factory contract address on Base
+ * @property {string} megaeth.factory - Factory contract address on MegaETH
  */
 module.exports = joeV2Export({
     ethereum: {
