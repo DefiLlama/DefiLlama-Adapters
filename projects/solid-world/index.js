@@ -1,5 +1,15 @@
 const { config } = require("./config");
-const abi = require("./abi.json");
+const abi = {
+    "getTotalAmounts": "function getTotalAmounts() external view returns (uint256 total0, uint256 total1)",
+    "getBatchCategory": "function getBatchCategory(uint256 batchId) external view returns (uint256 categoryId)",
+    "getBatch": "function getBatch(uint256 batchId) external view returns (uint256 id, uint256 projectId, uint256 collateralizedCredits, address supplier, uint32 certificationDate, uint16 vintage, uint8 status, uint24 batchTA, bool isAccumulating)",
+    "getCategory": "function getCategory(uint256 categoryId) external view returns (uint256 volumeCoefficient, uint40 decayPerSecond, uint16 maxDepreciation, uint24 averageTA, uint32 lastCollateralizationTimestamp, uint256 totalCollateralized, uint256 lastCollateralizationMomentum)",
+    "getCategoryToken": "function getCategoryToken(uint256 categoryId) external view returns (address token)",
+    "totalSupply": "uint256:totalSupply",
+    "balanceOf": "erc20:balanceOf",
+    "token0": "address:token0",
+    "token1": "address:token1"
+  };
 const { fetchForwardContractBatchSupplies } = require("./forward-contract-batch-supply");
 const { fetchCategoriesAndBatches } = require("./categories-and-batches");
 const { valuateBatches } = require("./batch-valuation");

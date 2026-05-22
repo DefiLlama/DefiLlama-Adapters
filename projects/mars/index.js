@@ -114,11 +114,11 @@ module.exports = {
   neutron: { tvl },
   terra: { tvl: () => 0 },
   hallmarks: [
-    [1651881600, 'UST depeg'],
-    [1675774800, 'Relaunch on Osmosis'],
-    [1690945200, 'Launch on Neutron'],
-    [1696906800, 'Mars v2 launch on Osmosis'],
-    [1724166000, 'Mars v2 launch on Neutron'],
-    [1734098400, 'Perps launch on Neutron']
+    ['2022-05-07', 'UST depeg'],
+    ['2023-02-07', 'Relaunch on Osmosis'],
+    ['2023-08-02', 'Launch on Neutron'],
+    ['2023-10-10', 'Mars v2 launch on Osmosis'],
+    ['2024-08-20', 'Mars v2 launch on Neutron'],
+    ['2024-12-13', 'Perps launch on Neutron']
   ],
 };

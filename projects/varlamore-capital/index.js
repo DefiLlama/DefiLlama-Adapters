@@ -27,3 +27,5 @@ const configs = {
 }
 
 module.exports = getCuratorExport(configs)
+// https://github.com/DefiLlama/DefiLlama-Adapters/pull/18101
+module.exports.hallmarks = [['2026-02-23', 'broken Stream finance vaults blacklisted']]

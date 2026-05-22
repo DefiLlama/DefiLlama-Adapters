@@ -1,9 +1,12 @@
 const sdk = require("@defillama/sdk")
 const { sumTokens2, } = require("../helper/unwrapLPs.js")
 const { staking } = require("../helper/staking.js")
-const abi = require("./abi.json")
-
-const SPOOL = '0x40803cea2b2a32bda1be61d3604af6a814e70976'
+const abi = {
+    "spoolController_getAllStrategies": "address[]:getAllStrategies",
+    "masterSpool_getUnderlying": "function getUnderlying(address strat) view returns (uint128)",
+    "masterSpool_getStratUnderlying": "function getStratUnderlying(address strat) returns (uint128)",
+    "strategy_underlying": "address:underlying"
+  };const SPOOL = '0x40803cea2b2a32bda1be61d3604af6a814e70976'
 const SPOOL_staking = '0xc3160C5cc63B6116DD182faA8393d3AD9313e213'
 
 const config = {

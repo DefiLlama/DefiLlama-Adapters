@@ -1,14 +1,16 @@
-const { aaveExports, methodology } = require('../helper/aave')
+const ARM     = "0xAEb0EB3628eAE1B36Ac94FE1033530342ADE0E26";
+const STAKING = "0x02Ef1BAD5aac23366A94110517d46cE4EAb7351C";
 
-const CONFIG = {
-  sonic: ['0x2ce2f663f8C8A011df0ACb1744b45108F61B9005'],
+async function staking(api) {
+  const totalStaked = await api.call({ target: STAKING, abi: "uint256:totalStaked" });
+  api.add(ARM, totalStaked);
 }
 
-module.exports.methodology = methodology
-
-Object.keys(CONFIG).forEach((chain) => {
-  const poolDatas = CONFIG[chain];
-  module.exports[chain] = aaveExports(undefined, undefined, undefined, poolDatas, { v3: true, })
-})
-module.exports.sonic.borrowed = ()  => ({})
-module.exports.deadFrom = '2025-05-01' 
+module.exports = {
+  methodology:
+    "TVL is the ARM principal staked by users in the Aurum staking pool. Read from the on-chain `totalStaked()` accumulator on the staking contract, which excludes the rewards bucket. ARM is the protocol's native token, so the figure is reported under the `staking` bucket.",
+  bsc: {
+    tvl: () => ({}),
+    staking,
+  },
+};

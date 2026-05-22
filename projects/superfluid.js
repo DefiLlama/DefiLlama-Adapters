@@ -240,7 +240,7 @@ const subgraphEndpoints = {
 
 module.exports = {
   methodology: `TVL is the value of SuperTokens in circulation. SuperTokens are Superfluid protocol's extension of the ERC20 token standard with additional functionalities like Money Streaming or Distributions. More on SuperTokens here: https://docs.superfluid.finance/docs/concepts/overview/super-tokens`,
-  // hallmarks: [[1644278400, "Fake ctx hack"]],
+  // hallmarks: [['2022-02-08', "Fake ctx hack"]],
 };
 
 Object.keys(subgraphEndpoints).forEach((chain) => {

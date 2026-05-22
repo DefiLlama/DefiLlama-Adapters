@@ -1,7 +1,13 @@
 const { compoundExports2 } = require('../helper/compound')
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const abi = require("./abi.json");
+const abi = {
+    "getAllMarkets": "address[]:getAllMarkets",
+    "underlying": "address:underlying",
+    "getCash": "uint256:getCash",
+    "totalSupply": "uint256:totalSupply",
+    "supply": "uint256:supply"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // Anchor
@@ -48,8 +54,8 @@ async function tvl(api) {
 module.exports = {
   methodology: "DOLA curve metapool replaced by DOLA",
   hallmarks: [
-    // [1648771200, "INV price hack"],
-    [1655380800, "Inverse Frontier Deprecated"]
+    // ['2022-04-01', "INV price hack"],
+    ['2022-06-16', "Inverse Frontier Deprecated"]
   ],
   start: '2020-12-12', // Dec 12 2020 00:00:00 GMT+0000
   ethereum: { tvl }

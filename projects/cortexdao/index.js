@@ -9,7 +9,7 @@ module.exports = {
     staking: staking(stakingAddress, cxdAddress),
   },
   hallmarks: [
-    [1651881600, "UST depeg"],
-    [1678557600, "USDC depeg"],
+    ['2022-05-07', "UST depeg"],
+    ['2023-03-11', "USDC depeg"],
   ],
 };

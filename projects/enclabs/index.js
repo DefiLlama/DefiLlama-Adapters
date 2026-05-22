@@ -26,18 +26,20 @@ async function tvl(chainComptrollers, chain, ...args) {
   return sdk.util.sumChainTvls(poolsData.map(p => p.tvl))(...args);
 }
 
-async function borrowed(chainComptrollers, chain, ...args) {
-  const poolsData = await getPoolsData(chainComptrollers, chain);
-  return sdk.util.sumChainTvls(poolsData.map(p => p.borrowed))(...args);
-}
+// NOTE: borrowed function zeroed out due to bad debt
+// Original implementation commented out below:
+// async function borrowed(chainComptrollers, chain, ...args) {
+//   const poolsData = await getPoolsData(chainComptrollers, chain);
+//   return sdk.util.sumChainTvls(poolsData.map(p => p.borrowed))(...args);
+// }
 
 module.exports = {
   sonic: {
     tvl: (...args) => tvl(sonicComptrollers, 'sonic', ...args),
-    borrowed: (...args) => borrowed(sonicComptrollers, 'sonic', ...args),
+    borrowed: () => ({}),
   },
   plasma: {
     tvl: (...args) => tvl(plasmaComptrollers, 'plasma', ...args),
-    borrowed: (...args) => borrowed(plasmaComptrollers, 'plasma', ...args),
+    borrowed: () => ({}),
   },
 }

@@ -6,7 +6,7 @@ const blurBiddingAddr = "0x0000000000A39bb272e79075ade125fd351887Ac"
 
 module.exports = {
   hallmarks: [
-    [1676376000, "BLUR token launch"]
+    ['2023-02-14', "BLUR token launch"]
   ],
   methodology: `TVL counts ETH tokens in the Blur Bidding address:${blurBiddingAddr}`,
   ethereum: {

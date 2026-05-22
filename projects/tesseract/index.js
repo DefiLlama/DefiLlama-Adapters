@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "token": "address:token",
+    "totalAssets": "uint256:totalAssets"
+  };
 
 const vaults = [
   "0x57bDbb788d0F39aEAbe66774436c19196653C3F2", // USDC

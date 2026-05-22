@@ -1,17 +1,26 @@
-const { kashiLending } = require("./kashi-lending.js");
-
-const modulesToExport = {};
-const kashi_chains = ["ethereum", "polygon", "bsc", "avax", "arbitrum"];
-
-kashi_chains.forEach((chain) => {
-  modulesToExport[chain] = {
-    tvl: kashiLending(chain, false),
-    borrowed: kashiLending(chain, true),
-  };
-});
+const _f = () => ({})
 
 module.exports = {
-  deadFrom: '2025-01-01',
-  misrepresentedTokens: true,
-  ...modulesToExport,
-};
+  // "deadFrom": "2025-01-01",
+  "misrepresentedTokens": true,
+  "ethereum": {
+    "tvl": _f,
+    "borrowed": _f
+  },
+  "polygon": {
+    "tvl": _f,
+    "borrowed": _f
+  },
+  "bsc": {
+    "tvl": _f,
+    "borrowed": _f
+  },
+  "avax": {
+    "tvl": _f,
+    "borrowed": _f
+  },
+  "arbitrum": {
+    "tvl": _f,
+    "borrowed": _f
+  }
+}

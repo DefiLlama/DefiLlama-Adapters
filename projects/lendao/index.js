@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 
 const PROGRAM_ID = new PublicKey("7abBuE4LdKbyXMxQNJ3UyGVsYmakSAsFQYKgr7GnAht5");
-const USDT_MINT = new PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB");
+const USDT_MINT = new PublicKey(ADDRESSES.solana.USDT);
 const SEED_VAULT_AUTHORITY = Buffer.from("vault_authority");
 
 const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");

@@ -9,7 +9,7 @@ module.exports = {
   timetravel: false,
   solana: { tvl },
   hallmarks: [
-    [1665521360, "Mango Markets Hack"],
-    [1667865600, "FTX collapse"]
+    ['2022-10-11', "Mango Markets Hack"],
+    ['2022-11-08', "FTX collapse"]
   ],
 }

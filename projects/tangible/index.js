@@ -197,7 +197,7 @@ async function tangiblePOL(api) {
 
 module.exports = {
   hallmarks: [
-    [1697032800, "USDR Depeg"]
+    ['2023-10-11', "USDR Depeg"]
   ],
   misrepresentedTokens: true,
   polygon: { tvl, },

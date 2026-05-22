@@ -1,4 +1,9 @@
-const abi = require("./abi.json");
+const abi = {
+    "token": "address:token",
+    "vaultToken": "address:vaultToken",
+    "get_virtual_price": "uint256:get_virtual_price",
+    "getPricePerFullShare": "uint256:getPricePerFullShare"
+  };
 
 const { staking } = require("../helper/staking");
 

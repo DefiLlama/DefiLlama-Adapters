@@ -1,8 +1,0 @@
-{
-  "masterFarmerPoolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accBSCXPerShare)",
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accLqdrPerShare, uint16 depositFeeBP)",
-  "poolLength": "uint256:poolLength",
-  "balanceOf": "uint256:balanceOf",
-  "lpToken": "function lpToken(uint256) view returns (address)",
-  "strategies": "function strategies(uint256) view returns (address)"
-}

@@ -4,7 +4,7 @@ const { invokeViewFunction } = require("../helper/chain/supra");
 const { transformBalances } = require("../helper/portedTokens");
 
 const CDP_GET_TOTAL_STATS_FUNCTION_TYPE =
-  "0x9176f70f125199a3e3d5549ce795a8e906eed75901d535ded623802f15ae3637::cdp_multi::get_total_stats";
+  "0x9176f70f125199a3e3d5549ce795a8e906eed75901d535ded623802f15ae3637::cdp_multi::get_total_stats_combined";
 
 const SUPRA_ADDR = ADDRESSES.supra.SUPRA;
 const STSUPRA_ADDR =

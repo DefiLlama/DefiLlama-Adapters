@@ -4,7 +4,7 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 module.exports = {
   methodology: 'Counts the amount of assets locked in VOOI pools',
   hallmarks: [
-    [1692921600,"DWF Labs Depo 1.5m$"]
+    ['2023-08-25',"DWF Labs Depo 1.5m$"]
   ],
 };
 

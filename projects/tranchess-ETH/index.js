@@ -1,7 +1,8 @@
 const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
-
-const ETHV2Funds = [
+const abi = {
+    "tokenUnderlying": "address:tokenUnderlying",
+    "getTotalUnderlying": "uint256:getTotalUnderlying"
+  };const ETHV2Funds = [
   '0x69c53679EC1C06f3275b64C428e8Cd069a2d3966', // ETH V2 Fund (ETH mainnet)
 ]
 

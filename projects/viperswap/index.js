@@ -8,5 +8,5 @@ module.exports = uniTvlExports({
   'harmony': '0x7d02c116b98d0965ba7b642ace0183ad8b8d2196'
 }, { staking: { harmony: [xviper, viper] },  
   hallmarks:[
-    [1655991120, "Horizon bridge Hack $100m"],
+    ['2022-06-23', "Horizon bridge Hack $100m"],
   ],})

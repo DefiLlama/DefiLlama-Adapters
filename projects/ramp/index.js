@@ -1,4 +1,7 @@
-const abi = require('./abi.json');
+const abi = {
+    "getPoolBalance": "function getPoolBalance(address _token) view returns (uint256)",
+    "getPoolAmount": "function getPoolAmount(address _token) view returns (uint256)"
+  };
 const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -30,7 +33,7 @@ function getChainTVL(chain) {
 const chains = ['ethereum', 'bsc', 'polygon', 'avax',]
 module.exports = {
   hallmarks: [
-    [1661439572, "Remove native assets from tvl"]
+    ['2022-08-25', "Remove native assets from tvl"]
   ],
 }
 

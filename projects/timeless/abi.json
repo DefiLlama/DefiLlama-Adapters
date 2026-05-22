@@ -1,4 +1,0 @@
-{
-  "asset": "address:asset",
-  "convertToAssets": "function convertToAssets(uint256 shares) view returns (uint256)"
-}

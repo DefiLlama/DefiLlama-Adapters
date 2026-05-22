@@ -15,5 +15,6 @@ module.exports = {
   sui: {
     tvl,
   },
+  deadFrom: '2025-10-09', // product discontinued
   methodology: "TVL consists of SUI staked with DegenHive's liquid staking protocol."
 };

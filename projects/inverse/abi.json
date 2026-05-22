@@ -1,7 +1,0 @@
-{
-  "getAllMarkets": "address[]:getAllMarkets",
-  "underlying": "address:underlying",
-  "getCash": "uint256:getCash",
-  "totalSupply": "uint256:totalSupply",
-  "supply": "uint256:supply"
-}
