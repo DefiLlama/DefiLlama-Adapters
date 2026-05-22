@@ -14,27 +14,21 @@ async function tvl(api) {
         eventAbi: EVENT_ABI,
         fromBlock: 80743203,
     });
-        
-    const { results: poolData, errors } = await PromisePool
-        .withConcurrency(5)
-        .for(vaults)
-        .process(async (i) => {
-            // Collateral token is NOT the baseToken emitted by VaultRegistered
-            // Reading directly from storage
-            const collateralToken = await api.provider.getStorage(i.vault, "0x78");
-            if (!collateralToken || collateralToken === ethers.ZeroHash) {
-                return null;
-            } else {
-                const token = ethers.getAddress("0x" + collateralToken.slice(-40));
-                return { vault: i.vault, collateral: token };
-            };
-        });
 
-    if (errors.length) {
-        throw errors[0];
+    const pools = [];
+    for (const vaultData of vaults) {
+        // Collateral token is NOT the baseToken emitted by VaultRegistered
+        // Reading directly from storage        
+        const collateralToken = await api.provider.getStorage(vaultData.vault, "0x78");
+        if (!collateralToken || collateralToken === ethers.ZeroHash) {
+            return null;
+        } else {
+            const token = ethers.getAddress("0x" + collateralToken.slice(-40));
+            pools.push({ vault: vaultData.vault, collateral: token });
+        };
     };
 
-    const validPools = poolData.filter(Boolean);
+    const validPools = pools.filter(Boolean);
     await api.sumTokens({ 
         tokens: validPools.map(i => i.collateral), 
         owners: validPools.map(i => i.vault) 
