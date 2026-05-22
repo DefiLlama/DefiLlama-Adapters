@@ -60,6 +60,7 @@ module.exports = {
     ['2021-10-27', "Potential xSUSHI attack found"],
     ['2022-05-07', "UST depeg"],
     ['2022-06-10', "stETH depeg"],
+    ['2026-04-18', "KelpDAO hack"],
   ],
 };
 // node test.js projects/aave/index.js

@@ -2178,14 +2178,6 @@
     },
     "deadFrom": "2025-01-15"
   },
-  "humble": {
-    "deadFrom": "2025-06-01",
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "algorand": {
-      "tvl": "_f"
-    }
-  },
   "hydradex": {
     "deadFrom": "2025-07-01",
     "misrepresentedTokens": true,
@@ -4607,30 +4599,6 @@
       "tvl": "_f"
     },
     "deadFrom": "2023-08-13"
-  },
-  "sushiswap-kashi": {
-    "deadFrom": "2025-01-01",
-    "misrepresentedTokens": true,
-    "ethereum": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "polygon": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "bsc": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "avax": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "arbitrum": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    }
   },
   "swing-dao": {
     "deadFrom": "2022-03-31",

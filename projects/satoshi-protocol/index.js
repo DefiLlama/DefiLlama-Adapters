@@ -415,7 +415,7 @@ module.exports = {
         assetList: [
           ADDRESSES.xlayer.USDT,
           ADDRESSES.xlayer.USDC,
-          '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USDT0
+          ADDRESSES.stable.USDT0, // USDT0
           '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', // USDG
         ],
       },

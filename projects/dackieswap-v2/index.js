@@ -25,9 +25,11 @@ module.exports = {
   misrepresentedTokens: true,
 }
 
-Object.keys(config).forEach(chain => {
+Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
-    tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true })
+    tvl: chain === 'inevm'
+      ? async () => ({})
+      : getUniTVL({ factory: config[chain], useDefaultCoreAssets: true }),
   }
 })
 

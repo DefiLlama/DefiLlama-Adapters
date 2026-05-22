@@ -34,7 +34,7 @@ const tvl = async (api) => {
       cCache.lastTotalId = +size
 
       const tokens = await api.multiCall({ abi: lockAbi, calls, permitFailure: true })
-      tokens.forEach(({ token } = {}) => token && cCache.tokens.push(token))
+      tokens.forEach(lock => { if (lock?.token) cCache.tokens.push(lock.token) })
       cCache.tokens = getUniqueAddresses(cCache.tokens.filter(i => i))
     })
   )

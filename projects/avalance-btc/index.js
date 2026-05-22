@@ -9,3 +9,7 @@ module.exports = {
     tvl: sumTokensExport({ owners: bitcoinAddressBook.avalanche }),
   },
 };
+
+module.exports.hallmarks = [
+        [1769587279, "Acquired by Lombard"],
+      ]

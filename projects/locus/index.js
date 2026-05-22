@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumERC4626VaultsExport } = require('../helper/erc4626')
 const { staking } = require('../helper/staking')
 
@@ -17,7 +18,7 @@ const CONFIG = {
       contract: '0xEcc5e0c19806Cf47531F307140e8b042D5Afb952',
     },
     tvlExtra: [
-      { token: '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', owner: '0xF8F045583580C4Ba954CD911a8b161FafD89A9EF' },
+      { token: ADDRESSES.arbitrum.USDC, owner: '0xF8F045583580C4Ba954CD911a8b161FafD89A9EF' },
     ],
   },
 }

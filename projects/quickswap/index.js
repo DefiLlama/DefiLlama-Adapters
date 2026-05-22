@@ -27,22 +27,25 @@ const tvl = async (api) => {
   return toUSDTBalances(usdTvl)
 }
 
+const tvlOnChain = getUniTVL({ factory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32', useDefaultCoreAssets: true, queryBatched: 5000, waitBetweenCalls: 1000,  })
+
 module.exports = {
+  // isHeavyProtocol: true,
   misrepresentedTokens: true,
-  polygon:{
+  polygon: {
     staking: staking("0x958d208Cdf087843e9AD98d23823d32E17d723A1", ADDRESSES.polygon.QUICK),
     tvl
   },
-  base: { tvl: getUniTVL({factory: '0xEC6540261aaaE13F236A032d454dc9287E52e56A', useDefaultCoreAssets: true}) },
+  base: { tvl: getUniTVL({ factory: '0xEC6540261aaaE13F236A032d454dc9287E52e56A', useDefaultCoreAssets: true }) },
   // dogechain: {
   //   tvl: getUniTVL({factory: '0xC3550497E591Ac6ed7a7E03ffC711CfB7412E57F'})
   // },
-  hallmarks:[
+  hallmarks: [
     ['2021-01-29', "Aavegotchi LM"],
     ['2021-04-22', "QUICK staking - Dragon's Liar launch"],
     ['2021-04-28', "DeFi season on Polygon PoS begun"],
     ['2021-06-16', "Iron Finance V1 collapse"],
     ['2022-05-04', "QUICK split by 1:1000"],
     ['2022-05-13', "QuickSwap GoDaddy Domain Hijack"]
-   ]
+  ]
 }

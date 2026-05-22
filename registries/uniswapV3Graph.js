@@ -66,6 +66,9 @@ const configs = {
   'cytoswap': {
     hela: { graphURL: 'https://subgraph.snapresearch.xyz/subgraphs/name/cytoswap-mainnet', name: 'cytoswap-hela' },
   },
+  'shido-dex-v3': {
+    shido: { graphURL: 'https://prod-v2-graph-node.shidoscan.com/subgraphs/name/shido/mainnet', name: 'shido-dex-v3-shido' },
+  },
 }
 
 module.exports = buildProtocolExports(configs, uniV3GraphExportFn)

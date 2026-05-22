@@ -1,5 +1,5 @@
-const { ABI } = require("../helper/curators/configs");
 const { getCuratorExport } = require("../helper/curators");
+const { mergeExports } = require("../helper/utils");
 
 const configs = {
   methodology:
@@ -12,6 +12,10 @@ const configs = {
       mellow: [
         "0xc65433845ecD16688eda196497FA9130d6C47Bd8",
         "0x82f5104b23FF2FA54C2345F821dAc9369e9E0B26",
+      ],
+      upshiftV2: [
+        "0xAEEb2fB279a5aA837367B9D2582F898a63b06ca1",
+        "0x0243755a22E37b835486fdAE9A839523ADABd336",
       ],
       erc4626: [
         "0x50bd66d59911f5e086ec87ae43c811e0d059dd11",
@@ -57,49 +61,24 @@ const configs = {
     arbitrum: {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
     },
+    monad: {
+      eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
+    },
   },
 };
 
-const adapter = getCuratorExport(configs);
 
-/**
- * Adds TVL for an ERC4626-like vault that doesn't implement totalAssets().
- * Assumes the vault still exposes `asset()` (standard ERC4626).
- */
-async function addCustom4626Tvl(api, vaultAddress) {
-  // 1) Resolve underlying asset token
-  const asset = await api.call({
-    target: vaultAddress,
-    abi: ABI.ERC4626.asset,
-    permitFailure: true,
-  });
+// EulerDAO sunset its dao curated markets and handed several vaults to K3.
+// Pre-sunset these vaults count under projects/euler-dao, from the sunset date
+// onward they are attributed to K3.
+// https://forum.euler.finance/t/sunsetting-of-dao-managed-market-and-vaults/1828
+const eulerSunsetConfigs = getCuratorExport({
+  start: "2026-05-06",
+  blockchains: {
+    monad: {
+      eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
+    },
+  },
+});
 
-  if (!asset) return;
-
-  // 2) Read total assets using the first ABI that works
-  const total = await api.call({
-    target: vaultAddress,
-    abi: "uint256:getTotalAssets",
-    permitFailure: true,
-  });
-
-  if (total == null) return;
-
-  // 3) Add to balances
-  api.add(asset, total);
-}
-
-// ----------------- override tvl -----------------
-
-const prevEthTvl = adapter.ethereum.tvl;
-
-adapter.ethereum.tvl = async (api) => {
-  // run normal curator aggregation first
-  await prevEthTvl(api);
-
-  // then add your custom vault
-  await addCustom4626Tvl(api, "0xAEEb2fB279a5aA837367B9D2582F898a63b06ca1");
-  await addCustom4626Tvl(api, "0x0243755a22E37b835486fdAE9A839523ADABd336");
-};
-
-module.exports = adapter;
+module.exports = mergeExports([getCuratorExport(configs), eulerSunsetConfigs]);

@@ -1,44 +1,28 @@
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs2 } = require("../helper/cache/getLogs");
 
 const config = {
     "ethereum": {
-        factoryAddress: "0xD567cCbb336Eb71eC2537057E2bCF6DB840bB71d",
-        factoryFromBlock: 24385420,
+        factoryAddress: "0x7cc6fb28ec7b5e7afc3cb3986141797ffc27253c",
+        factoryFromBlock: 24650849,
     },
     "avax": {
-        factoryAddress: "0xD567cCbb336Eb71eC2537057E2bCF6DB840bB71d",
-        factoryFromBlock: 77273727,
+        factoryAddress: "0x7cc6fb28ec7b5e7afc3cb3986141797ffc27253c",
+        factoryFromBlock: 80312789,
     },
-};
-
-// Reserve addresses -- balances held by multisigs and earn vaults
-// that are not deposited into Royco Market Vaults
-const reserves = {
-    "ethereum": [
-        {
-            owner: "0x170ff06326ebb64bf609a848fc143143994af6c8", // Multisig
-            tokens: [
-                "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aaveUSDC (Aave v3)
-            ],
-        },
-        {
-            owner: "0xcd9f5907f92818bc06c9ad70217f089e190d2a32", // Earn vault
-            tokens: [
-                "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-            ],
-        },
-    ],
+    "arbitrum": {
+        factoryAddress: "0x7cc6fb28ec7b5e7afc3cb3986141797ffc27253c",
+        factoryFromBlock: 441493793,
+    },
 };
 
 const tvl = async (api) => {
     // Market Vaults
     const { factoryFromBlock, factoryAddress } = config[api.chain];
 
-    const marketDeployedLogs = await getLogs({
+    const marketDeployedLogs = await getLogs2({
         api,
         target: factoryAddress,
-        eventAbi: "event MarketDeployed((address seniorTranche, address juniorTranche, address kernel, address accountant) roycoMarket, (string seniorTrancheName, string seniorTrancheSymbol, string juniorTrancheName, string juniorTrancheSymbol, bytes32 marketId, address seniorTrancheImplementation, address juniorTrancheImplementation, address kernelImplementation, address accountantImplementation, bytes seniorTrancheInitializationData, bytes juniorTrancheInitializationData, bytes kernelInitializationData, bytes accountantInitializationData, bytes32 seniorTrancheProxyDeploymentSalt, bytes32 juniorTrancheProxyDeploymentSalt, bytes32 kernelProxyDeploymentSalt, bytes32 accountantProxyDeploymentSalt, (address target, bytes4[] selectors, uint64[] roles)[] roles) params)",
-        onlyArgs: true,
+        eventAbi: "event MarketDeployed((address seniorTranche, address juniorTranche, address kernel, address accountant) roycoMarket, (string seniorTrancheName, string seniorTrancheSymbol, string juniorTrancheName, string juniorTrancheSymbol, address seniorTrancheImplementation, address juniorTrancheImplementation, address kernelImplementation, address accountantImplementation, bytes seniorTrancheInitializationData, bytes juniorTrancheInitializationData, bytes kernelInitializationData, bytes accountantInitializationData, bytes32 seniorTrancheProxyDeploymentSalt, bytes32 juniorTrancheProxyDeploymentSalt, bytes32 kernelProxyDeploymentSalt, bytes32 accountantProxyDeploymentSalt, (address target, bytes4[] selectors, uint64[] roles)[] roles) params)",
         fromBlock: factoryFromBlock,
     });
 
@@ -59,20 +43,11 @@ const tvl = async (api) => {
     jtTotalAssets.forEach((result, i) => {
         api.add(juniorAssets[i], BigInt(result.jtAssets));
     });
-
-    // Reserves — multisig and earn vaults
-    const chainReserves = reserves[api.chain];
-    if (chainReserves) {
-        await api.sumTokens({
-            tokensAndOwners: chainReserves.flatMap(({ owner, tokens }) =>
-                tokens.map(token => [token, owner])
-            ),
-        });
-    }
 };
 
 module.exports = {
     methodology: "TVL is computed by reading MarketDeployed events from the Royco V2 factory and summing totalAssets() across senior and junior tranches.",
     ethereum: { tvl },
     avax: { tvl },
+    arbitrum: { tvl },
 }
