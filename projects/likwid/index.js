@@ -1,4 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const VAULT = '0x065d449ec9D139740343990B7E1CF05fA830e4Ba'
 const HELPER = '0x16a9633f8A777CA733073ea2526705cD8338d510'
@@ -47,32 +48,29 @@ const FROM_BLOCKS = {
   bsc: 95732000,
 }
 
-async function getPools(api) {
-  const logs = await getLogs({
+async function getInitLogs(api) {
+  return getLogs({
     api,
     target: VAULT,
     eventAbi: INIT_EVENT_ABI,
     fromBlock: FROM_BLOCKS[api.chain],
     onlyArgs: true,
   })
-  if (!logs.length) return { logs: [], states: [] }
+}
+
+async function tvl(api) {
+  const logs = await getInitLogs(api)
+  const tokens = [...new Set(logs.flatMap(l => [l.currency0, l.currency1]))]
+  return sumTokens2({ api, owner: VAULT, tokens })
+}
+
+async function borrowed(api) {
+  const logs = await getInitLogs(api)
+  if (!logs.length) return
   const states = await api.multiCall({
     abi: POOL_STATE_ABI,
     calls: logs.map(l => ({ target: HELPER, params: [l.id] })),
   })
-  return { logs, states }
-}
-
-async function tvl(api) {
-  const { logs, states } = await getPools(api)
-  states.forEach((state, i) => {
-    api.add(logs[i].currency0, state.realReserve0)
-    api.add(logs[i].currency1, state.realReserve1)
-  })
-}
-
-async function borrowed(api) {
-  const { logs, states } = await getPools(api)
   states.forEach((state, i) => {
     api.add(logs[i].currency0, state.mirrorReserve0)
     api.add(logs[i].currency1, state.mirrorReserve1)
@@ -80,7 +78,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the sum of realReserve0/1 across all initialized Likwid pools — the actual token reserves held by the LikwidVault, which aggregates pair LP deposits and single-sided lending deposits. Borrowed is the sum of mirrorReserve0/1, the synthetic reserves tracking assets borrowed by margin traders.',
+  methodology: 'TVL is the balance of the LikwidVault for every token registered via Initialize events. Borrowed is the sum of mirrorReserve0/1 per pool from the Helper contract, the synthetic reserves tracking assets borrowed by margin traders.',
   start: '2026-02-13',
   ethereum: { tvl, borrowed },
   base: { tvl, borrowed },
