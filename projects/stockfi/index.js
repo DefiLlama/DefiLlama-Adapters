@@ -30,8 +30,7 @@ async function tvl(api) {
 
     const validPools = pools.filter(Boolean);
     await api.sumTokens({ 
-        tokens: validPools.map(i => i.collateral), 
-        owners: validPools.map(i => i.vault) 
+        tokensAndOwners: validPools.map(i => [i.collateral, i.vault])
     });
 };
 
