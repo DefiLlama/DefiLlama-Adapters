@@ -219,7 +219,12 @@ async function tvl(api, isStaking = false) {
   // its standard "-vault" wrapper, and its gov "-rp" reward pool. They all map back to the same
   // underlying tokens, so to avoid double counting we ignore wrappers/RPs and query the CLM directly.
   const clmVaults = activeVaults.filter(v => v.type === 'cowcentrated');
-  activeVaults = activeVaults.filter(v => v.type !== 'cowcentrated' && v.type !== 'gov');
+  const clmAddressSet = new Set(clmVaults.map(v => v.address.toLowerCase()));
+  activeVaults = activeVaults.filter(v =>
+    v.type !== 'cowcentrated' &&
+    v.type !== 'gov' &&
+    !clmAddressSet.has((v.token || '').toLowerCase())
+  );
 
   if (clmVaults.length) {
     const clmAddresses = clmVaults.map(v => v.address);
