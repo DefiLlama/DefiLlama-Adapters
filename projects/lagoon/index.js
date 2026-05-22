@@ -76,10 +76,8 @@ const config = {
     optinProxyFactory:{
       address: "0x90beB507A1BA7D64633540cbce615B574224CD84",
       fromBlock: 12973305,
-      useIndexer: true,
     },
   },
-
   katana: {
     vaults: [],
     optinProxyFactory:{
@@ -159,17 +157,17 @@ const config = {
     },
   },
   
-  // unichain: {
-  //   vaults: [],
-  //   optinProxyFactory:{
-  //     address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
-  //     fromBlock: 22021431
-  //   },
-  //   beaconFactory: {
-  //     address: "0xaba1A2e157Dae248f8630cA550bd826725Ff745c",
-  //     fromBlock: 14576623
-  //   },
-  // },
+  unichain: {
+    vaults: [],
+    optinProxyFactory:{
+      address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
+      fromBlock: 22021431
+    },
+    beaconFactory: {
+      address: "0xaba1A2e157Dae248f8630cA550bd826725Ff745c",
+      fromBlock: 14576623
+    },
+  },
   wc: {
     optinProxyFactory:{
       address: "0xC094C224ce0406BC338E00837B96aD2e265F7287",
@@ -185,42 +183,40 @@ const config = {
 const vaultsBlacklist = [
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship, on Eth mainnet
   "0xd6DaBAf70977a867Fa884844FC5DCb21DE81c498", // vault tac 9s. but on TAC chain
+  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets 
   "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
   "0xb114b5a99652a6f6e1e9c13da0a544dc634007b5", // hyperliquid (hyperevm)
-  "0x17488aed11845d92f1f113e8df51f497465d715c", // base
+  "0x17488aed11845d92f1f113e8df51f497465d715c", // base test vault with fake totalAssets
 ]
 
 function keepVault(vault, vaultBlacklist) {
   const v = vault.toLowerCase();
-  return !vaultBlacklist.some((b) => b.toLowerCase() === v);
+  return !vaultBlacklist.some((b) => b.toLowerCase() === v)
 }
 
 Object.keys(config).forEach((chain) => {
-  const { beaconFactory, optinProxyFactory } = config[chain];
-
+  let { vaults, beaconFactory, optinProxyFactory } = config[chain];
+  
   module.exports[chain] = {
     tvl: async (api) => {
-      const staticVaults = config[chain].vaults ?? [];
       if (config[chain].fallbackVaults) {
-        let vaults;
         try {
-          const beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock, useIndexer: beaconFactory?.useIndexer});
-          const optinProxyFactoryVaults = await getOptinProxyFactoryVaults({ api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock, useIndexer: optinProxyFactory?.useIndexer });
-          vaults = [...staticVaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults]
-            .filter((v) => keepVault(v, vaultsBlacklist))
+          const beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock});
+          const optinProxyFactoryVaults = await getOptinProxyFactoryVaults({ api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock });
+          vaults = [...beaconFactoryVaults, ...optinProxyFactoryVaults]
         } catch (e) {
-          vaults = [...staticVaults, ...config[chain].fallbackVaults]
-            .filter((v) => keepVault(v, vaultsBlacklist));
+          vaults = config[chain].fallbackVaults;
         }
         return await api.erc4626Sum2({ calls: vaults })
       } else {
-        let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock, useIndexer: beaconFactory?.useIndexer});
-        let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock, useIndexer: optinProxyFactory?.useIndexer});
+        if (!vaults) vaults = [];
+        let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock});
+        let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock});
         beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
         optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
-
+  
         return await api.erc4626Sum2({
-          calls: [...staticVaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
+          calls: [...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
         })
       }
     }
@@ -230,7 +226,7 @@ Object.keys(config).forEach((chain) => {
 
 
 const BeaconProxyDeployed = "0xfa8e336138457120a1572efbe25f72698abd5cca1c9be0bce42ad406ff350a2b";
-async function getBeaconFactoryVaults({api, factory, fromBlock, useIndexer})  {
+async function getBeaconFactoryVaults({api, factory, fromBlock})  {
   if (!api || !factory || !fromBlock) return [];
   const logs = await getLogs({
     api,
@@ -239,13 +235,14 @@ async function getBeaconFactoryVaults({api, factory, fromBlock, useIndexer})  {
     eventAbi: "event BeaconProxyDeployed(address proxy, address deployer)",
     onlyArgs: true,
     fromBlock: fromBlock,
-    useIndexer,
+  
+
   });
   if (!logs) return [];
   return logs.map((vault) => vault.proxy);
 }
 const ProxyDeployed = "0x8b5fd0eb1f997b4ecac1f234109294d6ace2519fc7abeab9f315fef38e2eb1dc";
-async function getOptinProxyFactoryVaults({api, factory, fromBlock, useIndexer})  {
+async function getOptinProxyFactoryVaults({api, factory, fromBlock})  {
   if (!api || !factory || !fromBlock) return [];
   const logs = await getLogs({
     api,
@@ -254,7 +251,6 @@ async function getOptinProxyFactoryVaults({api, factory, fromBlock, useIndexer})
     eventAbi: "event ProxyDeployed(address proxy, address deployer)",
     onlyArgs: true,
     fromBlock: fromBlock,
-    useIndexer,
   });
   if (!logs) return [];
   return logs.map((vault) => vault.proxy);
