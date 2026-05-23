@@ -41,6 +41,25 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  dfio_meta_main: {
+    "0x003960f16d9d34f2e98d62723b6721fb92074ad2": "coingecko#pound-sterling",
+    "0x290e52a8819a4fbd0714e517225429aa2b70ec6b": "coingecko#pax-gold",
+    "0x350f54e4d23795f86a9c03988c7135357ccad97c": "coingecko#pound-sterling",
+    "0x54dbd40cf05e15906a2c21f600937e96787f5679": "coingecko#canadian-dollar",
+    "0x8085961f9cf02b4d800a3c6d386d31da4b34266a": "coingecko#euro-coin",
+    "0x873990849dda5117d7c644f0af24370797c03885": "coingecko#swiss-franc",
+    "0x93e66202a11b1772e55407b32b44e5cd8eda7f22": "coingecko#tether",
+    "0x94e408e26c6fd8f4ee00b54df19082fda07dc96e": "coingecko#pax-gold",
+    "0xb7721dd53a8c629d9f1ba31a5819afe250002b03": "coingecko#chainlink",
+    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": "coingecko#ethereum",
+    "0xd51482e567c03899eece3cae8a058161fd56069d": "coingecko#australian-dollar",
+    "0xdf4b71c61e5912712c1bdd451416b9ac26949d72": "coingecko#euro-coin",
+    "0xe94260c555ac1d9d3cc9e1632883452ebdf0082e": "coingecko#bitcoin",
+    "0xee269e1226a334182aace90056ee4ee5cc8a6770": "coingecko#japanese-yen",
+    "0xf22258f57794cc8e06237084b353ab30fffa640b": "coingecko#usd-coin",
+    "0xf4bb2e28688e89fcce3c0580d37d36a7672e8a9f": "coingecko#ethereum",
+  },
+
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
