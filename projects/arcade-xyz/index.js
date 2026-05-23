@@ -100,7 +100,7 @@ module.exports = {
   ethereum: {
     tvl,
     staking: staking([SINGLE_SIDED_STAKING, STAKING_REWARDS], [ARCD]),    
-    pool2: staking(STAKING_REWARDS, [ARCD_WETH_LP]),
+    pool2: pool2(STAKING_REWARDS, [ARCD_WETH_LP]),
     borrowed,
   },
   hallmarks: [
