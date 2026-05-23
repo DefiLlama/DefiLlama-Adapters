@@ -76,70 +76,70 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       owners: ["0x886C6A4ABC064dbf74E7caEc460b7eeC31F1b78C", "0x937824f2516fa58f25aeAb92E7BFf7D74F463B4c"],
-      tokens: [ADDRESSES.bsc.WETH],
+      tokens: ["0xe0E93247376aa097dB308B92e6Ba36bA015535D0", "0xAb57BF30F1354CA0590af22D8974c7f24DB2DbD7"],
       logCalls: true,
     }),
   },
   polygon: {
     tvl: sumTokensExport({
       owners: ["0xF7736443f02913e7e0773052103296CfE1637448", "0x0CA60e6f8589c540200daC9D9Cb27BC2e48eE66A"],
-      tokens: [ADDRESSES.polygon.WETH],
+      tokens: ["0x24293CA562aE1100E60a4640FF49bd656cFf93B4", "0x937824f2516fa58f25aeAb92E7BFf7D74F463B4c"],
       logCalls: true,
     }),
   },
   avax: {
     tvl: sumTokensExport({
       owners: ["0x3f8C409C6072a2B6a4Ff17071927bA70F80c725F", "0x937824f2516fa58f25aeAb92E7BFf7D74F463B4c"],
-      tokens: [ADDRESSES.avax.WETH],
+      tokens: ["0xa4B9DD039565AeD9641D45b57061f99d9cA6Df08", "0x89dd12025bfCD38A168455A44B400e913ED33BE2"],
       logCalls: true,
     }),
   },
   base: {
     tvl: sumTokensExport({
       owners: ["0x24293CA562aE1100E60a4640FF49bd656cFf93B4", "0x937824f2516fa58f25aeAb92E7BFf7D74F463B4c"],
-      tokens: [ADDRESSES.base.WETH],
+      tokens: ["0xe0E93247376aa097dB308B92e6Ba36bA015535D0", "0xAb57BF30F1354CA0590af22D8974c7f24DB2DbD7"],
       logCalls: true,
     }),
   },
   arbitrum: {
     tvl: sumTokensExport({
       owners: ["0x937824f2516fa58f25aeAb92E7BFf7D74F463B4c", "0x73376eB92c16977B126dB9112936A20Fa0De3442"],
-      tokens: [ADDRESSES.arbitrum.WETH],
+      tokens: ["0x89dd12025bfCD38A168455A44B400e913ED33BE2", "0xe0E93247376aa097dB308B92e6Ba36bA015535D0"],
       logCalls: true,
     }),
   },
   optimism: {
     tvl: sumTokensExport({
       owners: ["0x6e94e53F73893b2a6784Df663920D31043A6dE07", "0x24293CA562aE1100E60a4640FF49bd656cFf93B4"],
-      tokens: [ADDRESSES.optimism.WETH],
+      tokens: ["0x89dd12025bfCD38A168455A44B400e913ED33BE2", "0xe0E93247376aa097dB308B92e6Ba36bA015535D0"],
       logCalls: true,
     }),
   },
-  gnosis: {
+  xdai: {
     tvl: sumTokensExport({
       owners: ["0xc8656F24488cb90c452058da92d1a25BA464eaAE", "0xa846aeAD3071df1b6439d5D813156aCE7C2c1DA1"],
-      tokens: [ADDRESSES.gnosis.WETH],
+      tokens: ["0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"],
       logCalls: true,
     }),
   },
   cronos: {
     tvl: sumTokensExport({
       owners: ["0x3Cc23d086fCcbAe1e5f3FE2bA4A263E1D27d8Cab", "0x105F8A15b819948a89153505762444Ee9f324684"],
-      tokens: [ADDRESSES.cronos.WETH],
+      tokens: ["0x99B3511A2d315A497C8112C1fdd8D508d4B1E506", "0x3304b747E565a97ec8AC220b0B6A1f6ffDB837e6"],
       logCalls: true,
     }),
   },
   celo: {
     tvl: sumTokensExport({
       owners: ["0xAb57BF30F1354CA0590af22D8974c7f24DB2DbD7", "0xa780ef19A041745d353c9432f2a7f5A241335ffE"],
-      tokens: [ADDRESSES.celo.WETH],
+      tokens: ["0x2021B12D8138e2D63cF0895eccABC0DFc92416c6"],
       logCalls: true,
     }),
   },
   wemix: {
     tvl: sumTokensExport({
       owners: ["0xD3AD6831aacB5386B8A25BB8D8176a6C8a026f04", "0xa4B9DD039565AeD9641D45b57061f99d9cA6Df08"],
-      tokens: ["0xcb7c000000000000000000000000000000000457", "0x4c38f9a5ed68a04cd28a72e8c68c459ec34576f3"],
+      tokens: ["0x7D72b22a74A216Af4a002a1095C8C707d6eC1C5f"],
       logCalls: true,
     }),
   },
