@@ -11,13 +11,15 @@ const REGISTERED_EVENT_ABI = "event Registered(bytes16 indexed tournamentId, add
 
 const USDM = ADDRESSES.megaeth.USDm;
 const LOG_CHUNK_SIZE = 100_000;
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 async function getLogs2InChunks({ api, target, eventAbi, fromBlock, toBlock }) {
   const logs = [];
-  for (let start = fromBlock; start <= toBlock; start += LOG_CHUNK_SIZE + 1) {
-    const end = Math.min(start + LOG_CHUNK_SIZE, toBlock);
+  for (let start = fromBlock; start <= toBlock; start += LOG_CHUNK_SIZE) {
+    const end = Math.min(start + LOG_CHUNK_SIZE - 1, toBlock);
+    const endKey = end === toBlock ? "tail" : `${end}`;
     // Use a unique cache key per block chunk so each chunk is cached and reused independently
-    const extraKey = `showdown-${target.toLowerCase()}-${start}-${end}`;
+    const extraKey = `showdown-${target.toLowerCase()}-${start}-${endKey}`;
     const chunkLogs = await getLogs2({
       api,
       target,
@@ -56,7 +58,8 @@ async function getShowdownEmbeddedWallets(api) {
     ...tournamentLogs.map((log) => log.wallet),
   ]
     .filter(Boolean)
-    .map((wallet) => wallet.toLowerCase());
+    .map((wallet) => wallet.toLowerCase())
+    .filter((wallet) => wallet !== ZERO_ADDRESS);
 
   return [...new Set(wallets)];
 }
