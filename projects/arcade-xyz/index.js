@@ -1,5 +1,8 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
+const { pool2 } = require('../helper/pool2')
+const { getCoreAssets } = require('../helper/tokenMapping')
+const { sumArtBlocks, whitelistedNFTs } = require('../helper/nft')
 const {
   LOAN_CORE_V2, LOAN_CORE_V3,
   BORROWER_NOTE_V2, BORROWER_NOTE_V3,
@@ -13,6 +16,15 @@ const V2_GET_LOAN = 'function getLoan(uint256) view returns (tuple(uint8 state, 
 const V3_GET_LOAN = 'function getLoan(uint256) view returns (tuple(uint8 state, uint160 startDate, tuple(uint256 proratedInterestRate, uint256 principal, address collateralAddress, uint96 durationSecs, uint256 collateralId, address payableCurrency, uint96 deadline, bytes32 affiliateCode) terms, tuple(uint16 lenderDefaultFee, uint16 lenderInterestFee, uint16 lenderPrincipalFee) feeSnapshot) loanData)'
 
 const LOAN_STATE_ACTIVE = 1
+const INTEREST_RATE_PRECISION = 10n ** 21n
+
+function addBorrowedWithInterest(api, loan) {
+  const { payableCurrency, principal } = loan.terms
+  const rate = loan.terms.interestRate ?? loan.terms.proratedInterestRate
+  api.add(payableCurrency, principal)
+  if (rate)
+    api.add(payableCurrency, (BigInt(principal.toString()) * BigInt(rate.toString()) / INTEREST_RATE_PRECISION).toString())
+}
 
 // Each VaultFactory is an ERC721; the vault NFT is transferred to LoanCore
 // while a loan is active. So vault NFTs held by LoanCore = active vaults.
@@ -46,11 +58,16 @@ async function getActiveVaultAddresses(api) {
 
 async function tvl(api) {
   const vaults = await getActiveVaultAddresses(api)
+  const owners = [...vaults, LOAN_CORE_V2, LOAN_CORE_V3]
+  const balances = {}
+  await sumArtBlocks({ balances, api, owners })
   return sumTokens2({
+    balances,
     api,
-    owners: [...vaults, LOAN_CORE_V2, LOAN_CORE_V3],
-    resolveNFTs: true,
+    owners,
+    tokens: [nullAddress, ...getCoreAssets(api.chain), ...(whitelistedNFTs[api.chain] ?? [])],
     blacklistedTokens: VAULT_FACTORIES,
+    permitFailure: true,
   })
 }
 
@@ -72,7 +89,7 @@ async function borrowed(api) {
     const loans = await api.multiCall({ target: loanCore, abi, calls: loanIds })
     for (const loan of loans) {
       if (Number(loan.state) !== LOAN_STATE_ACTIVE) continue
-      api.add(loan.terms.payableCurrency, loan.terms.principal)
+      addBorrowedWithInterest(api, loan)
     }
   }
 }
@@ -82,7 +99,7 @@ module.exports = {
   start: START_TS_V2_LAUNCH,
   ethereum: {
     tvl,
-    staking: staking([SINGLE_SIDED_STAKING, STAKING_REWARDS], [ARCD]),
+    staking: staking([SINGLE_SIDED_STAKING, STAKING_REWARDS], [ARCD]),    
     pool2: staking(STAKING_REWARDS, [ARCD_WETH_LP]),
     borrowed,
   },
