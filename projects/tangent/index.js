@@ -1,39 +1,11 @@
-/*
- * Tangent Finance — DefiLlama TVL adapter
- *
- * TVL is the sum of:
- *   1. Collateral held across all Tangent lending markets. Each market exposes
- *      totalCollateral() (in raw collateral-token units) and collatToken() (the
- *      address of the collateral — for the wrapped market types this is the
- *      underlying LP, not the gauge/Convex receipt). DefiLlama prices Curve
- *      LPs natively.
- *
- *   2. The full balance of LP tokens held by USG peg keepers (Curve V2 Peg
- *      Keepers, deployed by Tangent against USG-paired stableswap-NG pools).
- *      DefiLlama unwraps the LP into its underlyings and prices each side.
- *      Note: the USG side will be priced at $1 once the stablecoin listing in
- *      peggedassets-server is live, slightly double-counting protocol-minted
- *      USG sitting inside the peg defense pools — this mirrors how Curve's
- *      crvUSD adapter treats its own peg keepers.
- *
- *   3. sUSG, the USG savings vault, reported under `staking` (mirrors how
- *      Curve's scrvUSD appears on DefiLlama).
- *
- * Markets are discovered dynamically by reading the 5 MarketCreator events,
- * so newly deployed markets get picked up without re-PRing. Peg keepers are
- * hardcoded; switch to enumeration via PegKeeperRegulator once that contract
- * exposes a getter for all keepers.
- */
-
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 // ----- Tangent core contracts on Ethereum mainnet -----
 const MARKET_CREATOR = '0x214C8A1023B30032a2Eded109146658C6D6F2781'
-const SUSG          = '0xf17d6f98a5c6eaa99d149079984119e0a4ef6900'
-const USG           = '0xb1c2db5d6ca03fce73dbd304d320bf76c55ae1b1'
 
 // MarketCreator was deployed at block 24634921 — slight safety margin for logs.
 const FROM_BLOCK = 24634900
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 // All five market-template events share the shape (address proxy, string name).
 const MARKET_CREATED_EVENTS = [
@@ -42,12 +14,6 @@ const MARKET_CREATED_EVENTS = [
   'event MarketConvexFxnCreated(address proxy, string name)',
   'event MarketStakeDaoVaultV2Created(address proxy, string name)',
   'event BasicERC20MarketCreated(address proxy, string name)',
-]
-
-// Curve V2 Peg Keepers (expose pegged(), pool(), debt()).
-const PEG_KEEPERS = [
-  '0xf89615f75c8161dc185c03020240905f6b66bad9', // USG-USDC
-  '0x8a7f16508d1e8b48bdf36023f378cc04d9506d4e', // USG-frxUSD
 ]
 
 // ---------- Markets ----------
@@ -69,52 +35,75 @@ async function getAllMarkets(api) {
   return logsPerEvent.flat().map(log => log.proxy)
 }
 
-async function addMarketsTvl(api) {
+async function tvl(api) {
   const markets = await getAllMarkets(api)
   if (markets.length === 0) return
+  const collatTokens = await api.multiCall({ abi: 'address:collatToken', calls: markets })
 
-  const [collatTokens, totalCollaterals] = await Promise.all([
-    api.multiCall({ abi: 'address:collatToken', calls: markets }),
-    api.multiCall({ abi: 'uint256:totalCollateral', calls: markets }),
+  const [receiptTokens, stakingProxyVaults] = await Promise.all([
+    api.multiCall({ abi: 'address:receiptToken', calls: markets, permitFailure: true }),
+    api.multiCall({ abi: 'address:stakingProxyVault', calls: markets, permitFailure: true }),
   ])
-  collatTokens.forEach((token, i) => api.add(token, totalCollaterals[i]))
-}
 
-// ---------- Peg keepers ----------
+  const directCalls = []
+  const proxyVaults = []
 
-async function addPegKeepersTvl(api) {
-  // pool() returns the Curve pool address — for stableswap-NG that's also the LP.
-  const pools = await api.multiCall({ abi: 'address:pool', calls: PEG_KEEPERS })
+  markets.forEach((market, i) => {
+    const receiptToken = firstNonZeroAddress(receiptTokens[i])
+    const stakingProxyVault = firstNonZeroAddress(stakingProxyVaults[i])
 
-  const lpBalances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: PEG_KEEPERS.map((pk, i) => ({ target: pools[i], params: pk })),
+    if (receiptToken) {
+      directCalls.push({ target: receiptToken, params: market, collatToken: collatTokens[i] })
+    } else if (stakingProxyVault) {
+      proxyVaults.push({ vault: stakingProxyVault, collatToken: collatTokens[i] })
+    } else {
+      directCalls.push({ target: collatTokens[i], params: market, collatToken: collatTokens[i] })
+    }
   })
 
-  pools.forEach((lp, i) => api.add(lp, lpBalances[i]))
+  const directBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: directCalls,
+  })
+  directBalances.forEach((balance, i) => api.add(directCalls[i].collatToken, balance))
+
+  await addProxyVaultBalances(api, proxyVaults)
 }
 
-// ---------- Main TVL ----------
+async function addProxyVaultBalances(api, proxyVaults) {
+  if (proxyVaults.length === 0) return
 
-async function tvl(api) {
-  await addMarketsTvl(api)
-  await addPegKeepersTvl(api)
+  const vaults = proxyVaults.map(({ vault }) => vault)
+  const [stakingTokens, rewardContracts] = await Promise.all([
+    api.multiCall({ abi: 'address:stakingToken', calls: vaults }),
+    api.multiCall({ abi: 'address:rewards', calls: vaults }),
+  ])
+
+  const [unstakedBalances, stakedBalances] = await Promise.all([
+    api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: vaults.map((vault, i) => ({ target: stakingTokens[i], params: vault })),
+    }),
+    api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: vaults.map((vault, i) => ({ target: rewardContracts[i], params: vault })),
+    }),
+  ])
+
+  proxyVaults.forEach(({ collatToken }, i) => {
+    const balance = BigInt(unstakedBalances[i]?.toString() ?? 0) + BigInt(stakedBalances[i]?.toString() ?? 0)
+    api.add(collatToken, balance)
+  })
 }
 
-// ---------- sUSG (staking) ----------
-
-async function susgTvl(api) {
-  // sUSG is ERC4626-style; totalAssets() returns the USG backing.
-  const assets = await api.call({ abi: 'uint256:totalAssets', target: SUSG })
-  api.add(USG, assets)
+function firstNonZeroAddress(...addresses) {
+  return addresses.find(address => address && address !== NULL_ADDRESS)
 }
 
 module.exports = {
   methodology:
-    "TVL = collateral held across Tangent markets (totalCollateral() per market) " +
-    "+ LP tokens held by USG peg keepers. sUSG (USG savings vault) reported under Staking.",
+    "TVL = collateral held across Tangent markets.",
   ethereum: {
     tvl,
-    staking: susgTvl,
   },
 }
