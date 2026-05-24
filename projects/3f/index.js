@@ -28,9 +28,10 @@ async function tvl(api) {
     permitFailure: true,
   });
 
+  const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
   const validPairs = wrappedTokens
     .map((vault, i) => ({ vault, token: underlyings[i] }))
-    .filter((i) => i.token);
+    .filter(({ token }) => token && token.toLowerCase() !== ZERO_ADDRESS);
 
   return api.sumTokens({
     tokensAndOwners: validPairs.map((i) => [i.token, i.vault]),
