@@ -1185,6 +1185,7 @@ const uniV3Configs = {
     hedera: {
       factory: '0x00000000000000000000000000000000003c3951',
       fromBlock: 55651154,
+      permitFailure: true,
     },
   },
   'scribe-v4': {
