@@ -40,6 +40,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "TVL is the underlying collateral locked inside 3F's WrappedAsset wrappers. Wrappers are discovered on-chain from the WrappedAsset factory's Deployed events; each is a strict 1:1 wrapper, so TVL is the underlying token balance held by each wrapper, valued at the underlying's market price.",
-  start: "2026-04-09",
+  start: "2026-04-08",
   ethereum: { tvl },
 };
