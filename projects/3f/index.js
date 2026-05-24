@@ -1,46 +1,40 @@
-const { getLogs2 } = require("../helper/cache/getLogs");
+// 3F — leveraged vaults for tokenized RWAs (Centrifuge JAAA, Superstate USCC, FalconX).
+// Collateral deposited into the protocol is held as a 1:1 wrapped token (wJAAA / wUSCC / wFalconX).
+// TVL is the on-chain totalSupply of each wrapped token
 
-
-// Collateral is held in WrappedAsset proxies (strict 1:1 wrappers) deployed by the
-// factory below. We discover every wrapper from its `Deployed` events, resolve each
-// one's `underlying()`, and sum the underlying collateral held by each wrapper — so
-// TVL is priced from the real underlying token and new wrappers are picked up
-// automatically.
-const WRAPPER_ASSET_FACTORY = "0x54f862fa0612a8709f6dec4a7b39af015cd4e82e";
-const DEPLOY_EVENT =
-  "event Deployed(address indexed proxy, address indexed implementation, address indexed admin)";
+const WRAPPED_ASSETS = [
+  {
+    // wJAAA -> JAAA (Janus Henderson Anemoy AAA CLO, via Centrifuge)
+    wrapped: "0x86b495e4Cb00AB18Ad94BFD7920479cC79E8eBFE",
+    underlying: "0x5a0f93d040de44e78f251b03c43be9cf317dcf64",
+  },
+  {
+    // wUSCC -> USCC (Superstate)
+    wrapped: "0xF458Ad24B1dE7c653e8471efB0b87710b316b7D9",
+    underlying: "0x14d60E7FDC0D71d8611742720E4C50E7a974020c",
+  },
+  {
+    // wFalconX -> FalconX (FalconX)
+    wrapped: "0x4614F7A56A3Eb83b2Ff9fA4B4b9575B28Fb68644",
+    underlying: "0xC26A6Fa2C37b38E549a4a1807543801Db684f99C",
+  },
+];
 
 async function tvl(api) {
-  const deployEvents = await getLogs2({
-    api,
-    target: WRAPPER_ASSET_FACTORY,
-    eventAbi: DEPLOY_EVENT,
-    fromBlock: 24841246,
+  const supplies = await api.multiCall({
+    abi: "erc20:totalSupply",
+    calls: WRAPPED_ASSETS.map((a) => a.wrapped),
   });
-
-  const wrappedTokens = deployEvents.map((d) => d.proxy);
-
-  // Only WrappedAsset proxies expose `underlying()`; any other proxy from the
-  // factory returns null and is filtered out (prevents double-counting).
-  const underlyings = await api.multiCall({
-    abi: "address:underlying",
-    calls: wrappedTokens.map((t) => ({ target: t })),
-    permitFailure: true,
-  });
-
-  const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-  const validPairs = wrappedTokens
-    .map((vault, i) => ({ vault, token: underlyings[i] }))
-    .filter(({ token }) => token && token.toLowerCase() !== ZERO_ADDRESS);
-
-  return api.sumTokens({
-    tokensAndOwners: validPairs.map((i) => [i.token, i.vault]),
+  WRAPPED_ASSETS.forEach((a, i) => {
+    api.add(a.underlying, supplies[i]);
   });
 }
 
 module.exports = {
+  misrepresentedTokens: false,
   methodology:
-    "TVL is the underlying collateral locked inside 3F's WrappedAsset wrappers. Wrappers are discovered on-chain from the WrappedAsset factory's Deployed events; each is a strict 1:1 wrapper, so TVL is the underlying token balance held by each wrapper, valued at the underlying's market price.",
-  start: "2026-04-08",
-  ethereum: { tvl },
+    "TVL is the total value of collateral wrapped by 3F Labs leveraged vaults, measured as the on-chain totalSupply of each wrapped token (wJAAA, wUSCC, wFalconX) valued 1:1 at its underlying RWA token (JAAA, USCC, FalconX).",
+  ethereum: {
+    tvl,
+  },
 };
