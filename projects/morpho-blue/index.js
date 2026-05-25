@@ -252,6 +252,7 @@ const tvl = async (api) => {
   // sometimes the tokens left in the vault and not allocated to any market yet, we need to query them separately
   const morphoVaults = await getMorphoVaults(api, undefined, {
     getAllVaults: true,
+    onlyUseExistingCache: api.chain === 'sei'
   })
   const vaultAssets = await api.multiCall({  abi: 'address:asset', calls: morphoVaults, permitFailure: true})
 

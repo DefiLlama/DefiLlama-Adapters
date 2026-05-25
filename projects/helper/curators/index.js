@@ -83,6 +83,7 @@ function isOwner(owner, owners) {
 
 async function getMorphoVaults(api, owners, {
   getAllVaults = false, // needed for morpho tvl computation
+  onlyUseExistingCache = false, 
 } = {}) {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
@@ -97,7 +98,8 @@ async function getMorphoVaults(api, owners, {
           eventAbi: ABI.morpho.CreateMetaMorphoEvent,
           target: factory.address,
           fromBlock: factory.fromBlock,
-          toBlock: safeBlock
+          toBlock: safeBlock,
+          onlyUseExistingCache,
         })
       ).filter(filter).map((log) => log.metaMorpho)
       allVaults = allVaults.concat(vaultOfOwners)
