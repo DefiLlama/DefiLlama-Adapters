@@ -11,6 +11,7 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   CRONOS_MULTICALL_CHUNK_SIZE: "10", // cronos reduced gas limit, this is a workaround to make multicall work
+  HEDERA_MULTICALL_CHUNK_SIZE: "50", // cronos reduced gas limit, this is a workaround to make multicall work
   KATANA_MULTICALL_CHUNK_SIZE: "50",
   STARKNET_RPC: 'https://rpc.starknet.lava.build/',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
@@ -34,6 +35,7 @@ const DEFAULTS = {
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KASPLEX_RPC: "https://evmrpc.kasplex.org",
+  IGRA_RPC: "https://rpc.igralabs.com:8545",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
   SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
@@ -44,9 +46,11 @@ const DEFAULTS = {
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
   TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
   KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
-  TEMPO_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
+  WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
+  BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
+  PHAROS_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",  // v3
 }
 
 const ENV_KEYS = [
@@ -77,6 +81,7 @@ const ENV_KEYS = [
   'CRYPTOAPIS_API_KEY',
   'TATUM_PUBLIC_API_KEY',
   'TATUM_API_KEY',
+  'TEAM_WEBHOOK',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

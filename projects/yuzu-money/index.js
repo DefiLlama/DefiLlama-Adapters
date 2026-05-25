@@ -4,6 +4,9 @@ const CONFIG = {
     // '0xC8A8DF9B210243c55D31c73090F06787aD0A1Bf6', // syzUsd
     '0xEbFC8C2Fe73C431Ef2A371AeA9132110aaB50DCa', // yzPp
   ],
+  monad: [
+    "0xc9ea90692757831d98ac629f2a0140e02b80a7da"
+  ]
 }
 
 const tvl = async (api) => {
@@ -12,7 +15,7 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  methodology: `Aggregate of idle yzUSD, and yzPP`,
+  methodology: `Aggregate of idle yzUSD, yzPP and yzPrime`,
   misrepresentedTokens: true,
 }
 

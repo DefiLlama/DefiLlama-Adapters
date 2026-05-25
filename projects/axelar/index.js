@@ -105,3 +105,4 @@ module.exports.ripple = {
 
 // dead chain
 module.exports.migaloo = { tvl: () => {} };
+module.exports.kujira = { tvl: () => {} };

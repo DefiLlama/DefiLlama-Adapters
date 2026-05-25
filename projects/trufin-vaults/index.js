@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConnection, decodeAccount, getAssociatedTokenAddress } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const { tickToPrice } = require("../helper/utils/tick");
 
 const VAULT_PROGRAM_ID = new PublicKey("5CjtbqE3tE6LDnPU1HKyvnzPsNVkyxF4H6tPRUrTQDX3");
 const RAYDIUM_CLMM_PROGRAM_ID = new PublicKey("CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK");
-const WSOL_MINT = "So11111111111111111111111111111111111111112";
+const WSOL_MINT = ADDRESSES.solana.SOL;
 const TRUSOL_MINT = "6umRHtiuBd1PC6HQhfH9ioNsqY4ihZncZXNPiGu3d3rN";
 const TRUSOL_STAKE_POOL = new PublicKey("EyKyx9LKz7Qbp6PSbBRoMdt8iNYp8PvFVupQTQRMY9AM");
 

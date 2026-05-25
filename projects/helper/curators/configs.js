@@ -198,7 +198,31 @@ const MorphoConfigs = {
         fromBlock: 40259931,
       }
     ]
-  }
+  },
+  klaytn: {
+    vaultFactoriesV2: [
+      {
+        address: '0xf2Aecd4a4d4C21d08770e34F392C4C271aBD9144',
+        fromBlock: 213463014,
+      }
+    ]
+  },
+  tempo: {
+    vaultFactoriesV2: [
+      {
+        address: '0x3DE400E3F79113194fa5AF6Ae5C474947E0C82Db',
+        fromBlock: 12653218,
+      }
+    ]
+  },
+  stable: {
+    vaultFactoriesV2: [
+      {
+        address: '0x7fc35488803D49D00a94b206A223f7661898BE3a',
+        fromBlock: 1506183,
+      }
+    ]
+  },
 }
 
 const EulerConfigs = {

@@ -6,7 +6,7 @@
 const axios = require("axios");
 
 async function tvl({ timestamp }) {
-  const { data } = await axios.get(`http://rostrum.cauldron.quest:8000/cauldron/tvl/${timestamp}`);
+  const { data } = await axios.get(`https://indexer.riften.net/cauldron/tvl/${timestamp}`);
 
   // Every token pair is matched with BCH. We collect the BCH side and multiply by 2 to account for both sides of the pool.
   const total_sats = data.reduce((acc, token_pair) => {
@@ -22,7 +22,7 @@ async function tvl({ timestamp }) {
 }
 
 module.exports = {
-  methodology: "Scrape the blockchain and filter for spent transaction outputs that match the cauldron contract's redeem script. Check if the transaction has an output with a locking script that matches the redeem script in the input. A match on locking script means the funds are still locked in the DEX contract. Aggregate the value of funds in contract utxos.",
+  methodology: "Query the Riftenlabs indexer for pool BCH balances across all active Cauldron pool UTXOs. Cauldron pools are AMMs paired with BCH; the BCH side is doubled to account for both sides of the pool.",
   start: '2023-07-01',
   misrepresentedTokens: true,
   bitcoincash: { tvl },

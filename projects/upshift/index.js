@@ -15,6 +15,7 @@ const chainIdToName = {
   14: 'flare',
   31612: "mezo",
   57073: "ink",
+  25363: "fluent"
 };
 
 const suiVaultsToInclude = [

@@ -102,11 +102,11 @@ const config = {
       "0x96b41289d90444b8add57e6f265db5ae8651df29", // USDC.e
       "0x22757fb83836e3f9f0f353126cacd3b1dc82a387", // cyWETH
       "0xc6b19b06a92b337cbca5f7334d29d45ec4d5e532", // USDT
-      "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6", // cysFLR
+      ADDRESSES.rari.USDC_e, // cysFLR
       "0x19831cfb53a0dbead9866c43557c1d48dff76567", // sFLR
       "0x12e605bc104e93b45e1ad99f9e555f659051c2bb", // WETH
       "0x0b38e83b86d491735feaa0a791f65c2b99535396", // flrETH
-      "0xe7cd86e13ac4309349f30b3435a9d337750fc82d", // eUSDT
+      ADDRESSES.monad.USDT, // eUSDT
       "0x26a1fab310bd080542dc864647d05985360b16a5", // USDT0
       "0x1502fa4be69d526124d453619276faccab275d3d", // WETH
       "0xd8bf1d2720e9ffd01a2f9a2efc3e101a05b852b4", // cyWETH
