@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 async function staking() {
-  var res = await get('https://midgard.ninerealms.com/v2/network')
+  var res = await get('https://gateway.liquify.com/chain/thorchain_midgard/v2/network')
   const { totalActiveBond, totalStandbyBond } = res.bondMetrics
   return {
     "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond)) / 1e8
@@ -53,7 +53,7 @@ const tokenGeckoMapping = {
 const blacklistedPools = []
 
 async function tvl(api) {
-  const pools = await getCache('https://midgard.ninerealms.com/v2/pools')
+  const pools = await getCache('https://gateway.liquify.com/chain/thorchain_midgard/v2/pools')
   const aChain = api.chain
 
   const balances = {}

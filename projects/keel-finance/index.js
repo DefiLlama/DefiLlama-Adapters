@@ -7,7 +7,7 @@ const ETHEREUM_TOKENS = [
     ADDRESSES.ethereum.USDC, // USDC
     ADDRESSES.ethereum.USDT, // USDT
     ADDRESSES.ethereum.DAI, // DAI
-    '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
+    ADDRESSES.ethereum.USDS, // USDS
     ADDRESSES.ethereum.SDAI, // sDAI
     ADDRESSES.ethereum.sUSDS, // sUSDS
     ADDRESSES.ethereum.sUSDe, // sUSDe

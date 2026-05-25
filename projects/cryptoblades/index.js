@@ -1,7 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const transformKey = () => 'bsc:0x154a9f9cbd3449ad22fdae23044319d6ef2a1fab';
-
 const config = {
   bsc: {
     SKILL_TOKEN_CONTRACT: '0x154a9f9cbd3449ad22fdae23044319d6ef2a1fab',
@@ -76,8 +74,8 @@ Object.keys(config).forEach(chain => {
   const { SKILL_TOKEN_CONTRACT, STAKING, } = config[chain]
   module.exports[chain] = {
     tvl: () => ({}),
-    staking: (_, _b, { [chain]: block }) => {
-      return sumTokens2({ chain, block, tokens: [SKILL_TOKEN_CONTRACT], owners: STAKING, transformAddress: transformKey, })
+    staking: (api) => {
+      return sumTokens2({ api, tokens: [SKILL_TOKEN_CONTRACT], owners: STAKING,  })
     },
   }
 })

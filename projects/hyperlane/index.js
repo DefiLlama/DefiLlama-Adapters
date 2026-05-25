@@ -82,11 +82,13 @@ async function tvl(api) {
 // All chains that have collateral/native warp routes in the registry
 const chains = [
   'arbitrum', 'avax', 'base', 'blast', 'bsc', 'celo', 'ethereum',
-  'xdai', 'hyperliquid', 'ink', 'linea', 'mantle', 'metis', 'mint',
+  'xdai', 'hyperliquid', 'ink', 'linea', 'mantle', 'metis',
   'mode', 'optimism', 'polygon', 'scroll', 'sei', 'sonic',
   'swellchain', 'unichain', 'zora', 'plume', 'plasma',
   'vana', 'bsquared',
 ]
+
+const deadChains = ['mint']
 
 module.exports = {
   methodology: 'TVL counts the tokens locked in Hyperlane Warp Route collateral contracts, fetched dynamically from the Hyperlane registry.',
@@ -95,3 +97,8 @@ module.exports = {
 chains.forEach(chain => {
   module.exports[chain] = { tvl }
 })
+
+deadChains.forEach(chain => {
+  module.exports[chain] = { tvl: () => ({}) }
+})
+

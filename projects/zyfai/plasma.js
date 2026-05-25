@@ -1,7 +1,12 @@
-const AAVE_TOKEN_ADDRESS = '0x5D72a9d9A9510Cd8cBdBA12aC62593A58930a948';
+// Aave V3 aToken addresses (Plasma)
+const AAVE_POOLS = {
+    USDT0: '0x5D72a9d9A9510Cd8cBdBA12aC62593A58930a948',
+    WETH: '0xf1aB7f60128924d69f6d7dE25A20eF70bBd43d07',
+};
 
 const FLUID_POOLS = {
     'USDT0': '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B',
+    'WETH Vault': '0x5E494e8912319cefb1d4Fa516807bB65A8CB9E40',
 };
 const PLASMA_EULER_POOLS = {
     'K3 Capital USDT0 Vault': '0xe818ad0D20D504C55601b9d5e0E137314414dec4',
@@ -10,7 +15,7 @@ const PLASMA_EULER_POOLS = {
 };
 
 const allPoolTokens = [
-    AAVE_TOKEN_ADDRESS,
+    ...Object.values(AAVE_POOLS),
     ...Object.values(FLUID_POOLS),
     ...Object.values(PLASMA_EULER_POOLS),
 ]

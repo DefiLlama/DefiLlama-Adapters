@@ -333,7 +333,9 @@ async function filterWhitelistedSY(api, sys) {
     results
   } = await getConfig('pendle/v2-' + api.chain,
     `https://api-v2.pendle.finance/core/v1/${api.chainId}/sys/whitelisted`);
-  const whitelistedSys = new Set(results.map((d) => d.address.toLowerCase()));
+  const whitelistedSys = new Set(
+    results.filter((d) => d?.price?.usd > 0).map((d) => d.address.toLowerCase())
+  );
   return sys.filter((s) => whitelistedSys.has(s));
 }
 

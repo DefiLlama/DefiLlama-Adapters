@@ -2,6 +2,18 @@ const CORE_ASSETS = require("../helper/coreAssets.json");
 const { getLogs, getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
+/**
+ * bsquared uBTC/WBTC markets excluded: TVL inflated by minter-funded wallets
+ * and borrow-redeposit loops. All vault/GT deposits trace back to 2-3 uBTC minters:
+ *   0x1c8b1b0ec2c6f0Ef56c740BFD3A95af7cf5f8DC7 (minted 214 uBTC, funded 0x46d1 and 0xb5E0)
+ *   0x8Da30b68b1E11761e1307EB10564a39E01ae4480 (minted 108 uBTC, funded 0xAB34, 0x42Be, 0x3a59)
+ *   0x33aa8b84062583966a33edF235694AcdC6A138eA (minted 100 uBTC)
+ * Borrow-redeposit loop example (0x1c8b):
+ *   borrow 20 WBTC: 0x0bfd30c486a8cad719a73ad200fcbc38decbf2f404066f652b73f175f287b967
+ *   borrow 20 WBTC: 0xff07b8c6d21c947faf895ed00a78aaa8509fe2d207c4b35122d55e35567452e9
+ *   redeposit 40 WBTC: 0x054cf18d0029f27c8ce57c58a947ebd31bf2d557ee46fad62d081c8330c570b2
+ */
+
 const ABIS = {
   Market: {
     config:
@@ -37,6 +49,7 @@ const EVENTS = {
   TermMax4626Factory: {
     "StableERC4626For4626Created": "event StableERC4626For4626Created(address indexed caller, address indexed stableERC4626For4626)",
     "StableERC4626ForAaveCreated": "event StableERC4626ForAaveCreated(address indexed caller, address indexed stableERC4626ForAave)",
+    "StableERC4626ForCustomizeCreated": "event StableERC4626ForCustomizeCreated(address indexed caller, address indexed stableERC4626ForCustomize)",
     "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)"
   }
 };
@@ -125,6 +138,8 @@ const ADDRESSES = {
     },
     TermMax4626Factory: [
       { address: "0xD594eb03a43b4974Aa7B32b5740cdeCe961151Fa", fromBlock: 23489745 },
+      { address: "0x3Cc88086C0a613970565C96F9a1b6BdAd61C5f14", fromBlock: 24790495 },
+      { address: "0x8ec01a807D088845e5176c20A129ebF9A0101dD5", fromBlock: 25004529 },
     ],
     FactoryV2: [
       {
@@ -259,6 +274,13 @@ const VAULT_BLACKLIST = {
   ],
 };
 
+// uBTC markets excluded: TVL inflated by minter-funded wallets and borrow-redeposit loops
+const MARKET_BLACKLIST = {
+  bsquared: [
+    "0x5022B6563f6bc9f0D47F407ba32B64e1f438213a", // uBTC/WBTC
+  ],
+};
+
 async function getTermMaxMarketAddresses(api) {
   if (!ADDRESSES[api.chain].Factory) return [];
   const logs = await getLogs({
@@ -301,7 +323,8 @@ async function getTermMaxMarketOwnerTokens(api) {
   ]);
   const marketAddresses = []
     .concat(marketV1Addresses)
-    .concat(marketV2Addresses);
+    .concat(marketV2Addresses)
+    .filter(addr => !MARKET_BLACKLIST[api.chain]?.includes(addr));
   const tokens = await api.multiCall({
     abi: ABIS.Market.tokens,
     calls: marketAddresses,
@@ -383,11 +406,10 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
-    await Promise.all([
-      getTermMaxVaultAddresses(api),
-      getTermMaxVaultV1PlusAddresses(api),
-    ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses] = await Promise.all([
+    getTermMaxVaultAddresses(api),
+    getTermMaxVaultV1PlusAddresses(api),
+  ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
     .concat(vaultV1PlusAddresses)
@@ -524,7 +546,7 @@ async function getTermMaxMarketBorrowed(api) {
 }
 
 async function getTermMaxV2MarketBorrowed(api) {
-  const marketAddresses = await getTermMaxMarketV2Addresses(api);
+  const marketAddresses = (await getTermMaxMarketV2Addresses(api)).filter(addr => !MARKET_BLACKLIST[api.chain]?.includes(addr));
   const [tokens, configs] = await Promise.all([
     api.multiCall({
       abi: ABIS.Market.tokens,
@@ -577,6 +599,7 @@ async function erc4626VaultsTvl(api) {
   const tokensAndOwners = [];
   const stableERC4626For4626Vaults = [];
   const aaveVaults = [];
+  const customizeVaults = [];
 
   for (const factory of ADDRESSES[api.chain].TermMax4626Factory) {
     let logs = await getLogs2({
@@ -606,6 +629,15 @@ async function erc4626VaultsTvl(api) {
       extraKey: 'VariableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForCustomizeCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626ForCustomizeCreated-20260429',
+    });
+    customizeVaults.push(...logs.map(i => i.stableERC4626ForCustomize));
   }
 
   const aTokens = await api.multiCall({ abi: 'address:aToken', calls: aaveVaults })
@@ -620,6 +652,18 @@ async function erc4626VaultsTvl(api) {
   stableERC4626For4626Vaults.forEach((vault, i) => {
     tokensAndOwners.push([stableUnderlyings[i], vault])
     tokensAndOwners.push([thirdPools[i], vault])
+  })
+
+  // StableERC4626ForCustomize: thirdPool may be either an ERC4626/ERC20 OR a
+  // Gnosis Safe. Probe totalSupply() to disambiguate — the Safe contract does
+  // not implement it. Safe-backed pools are excluded per DefiLlama methodology.
+  const customizeUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: customizeVaults })
+  const customizeThirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: customizeVaults })
+  const thirdPoolSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: customizeThirdPools, permitFailure: true })
+  customizeVaults.forEach((vault, i) => {
+    if (thirdPoolSupplies[i] === null) return;
+    tokensAndOwners.push([customizeUnderlyings[i], vault]);
+    tokensAndOwners.push([customizeThirdPools[i], vault]);
   })
 
   await sumTokens2({ api, tokensAndOwners });

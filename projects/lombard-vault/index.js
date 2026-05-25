@@ -4,7 +4,7 @@ const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 const LBTCV = '0x5401b8620E5FB570064CA9114fd1e135fd77D57c'       // vault (ETH/Base/BSC)
 const SONIC_VAULT = '0x309f25d839a2fe225e80210e110C99150Db98AAF'  // vault (Sonic)
 
-const LBTC = '0xecAc9C5F704e954931349Da37F60E39f515c11c1'
+const LBTC = ADDRESSES.etlk.LBTC
 
 // ── Add new BoringVault tokens here ──────────────────────────────────────────
 // Unwrapped to underlying base asset in tvlEthExtras.

@@ -1,6 +1,7 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
 const axios = require('axios');
-const aeraV3 = require('../aera-v3')
+// const aeraV3 = require('../aera-v3')  // excluded till we find a way to exclude deposits from aera-v3 into other gauntlet curated vaults
+const coreAssets = require('../helper/coreAssets.json')
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
@@ -9,7 +10,7 @@ const configs = {
       morphoVaultOwners: [
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
         '0xd79766D2FeC43886e995EA415a2Bf406280B2e2C',
-
+        '0xB47f11484e19f1914D32fd393b17671221C10F1F',
       ],
       aera: [
         '0x7c8406384f7a5c147a6add16407803be146147e4',
@@ -68,6 +69,7 @@ const configs = {
       morphoVaultOwners: [
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
         '0xFd144f7A189DBf3c8009F18821028D1CF3EF2428',
+        '0xB47f11484e19f1914D32fd393b17671221C10F1F',
       ],
       aera: [
         '0x9f3ef866e769624d9a7a687a669d226c1e327b4d',
@@ -111,6 +113,20 @@ const configs = {
         '0x5D8C96b76A342c640d9605187daB780f8365F69f',
       ],
     },
+    tempo: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+        '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+      ],
+    },
+    stable: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+        '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+      ],
+    },
     arbitrum: {
       morphoVaultOwners: [
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
@@ -122,6 +138,15 @@ const configs = {
       morphoVaultOwners: [
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
+    },
+    bsc: {
+      // Moolah Vaults (Morpho V1 fork) curated by Gauntlet on BSC
+      erc4626: [
+        '0xfa27f172e0b6ebcef9c51abf817e2cb142fbe627', // Lista USD1 Vault
+        '0x57134a64b7cd9f9eb72f8255a671f5bf2fe3e2d0', // Lista BNB Vault
+        '0x9a17fd5cb8efc25d11567e713ae795a89775a759', // Lista U Vault
+        '0x6d6783c146f2b0b2774c1725297f1845dc502525', // Lista USDT Vault
       ],
     },
   }
@@ -233,34 +258,16 @@ const GAUNTLET_ADMIN = new PublicKey('JC8sPweHaHr1kWzAvykaAmLsWtSWhi3M4NnyYGRdxg
 
 
 async function tvl(api) {
-  const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
-  const idl = require("../knightrade/drift_idl.json")
-  const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
-  const provider = getProvider()
-  const program = new Program(idl, programId, provider)
-
-  for (let i = 0; i < accounts.length; i++) {
-    const account = accounts[i];
-    if (!account) continue;
-    const userData = program.coder.accounts.decode("User", account.data);
-    for (let j = 0; j < userData.spotPositions.length; j++) {
-      const spotPosition = userData.spotPositions[j];
-      if (!new BN(spotPosition.scaledBalance).isZero()) {
-        const marketIndex = spotPosition.marketIndex
-        const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
-        const scaledBalance = new BN(spotPosition.scaledBalance)
-        const token = getTokenInfo(marketIndex)
-        if (!token) continue;
-        const balance = scaledBalance
-          .mul(new BN(balanceType === 'deposit' ? 1 : -1))
-          .div(new BN(10).pow(new BN(token.decimals - 9)));
-        api.add(token.mint, balance.toString())
-      }
-    }
-  }
+  // Drift vaults disabled - drift was hacked
+  // const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
+  // const idl = require("../knightrade/drift_idl.json")
+  // const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+  // const provider = getProvider()
+  // const program = new Program(idl, programId, provider)
+  // ... drift position processing removed ...
 
   // Kamino Lend vaults
-  await kaminoLendVaultTvl(api, GAUNTLET_ADMIN)
+  await kaminoLendVaultTvl(api, { adminAddress: GAUNTLET_ADMIN })
 }
 
 async function megavaultTvl(api) {
@@ -278,13 +285,25 @@ async function combinedEthereumTvl(api) {
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.ethereum?.tvl) await curatorExport.ethereum.tvl(api);
   await megavaultTvl(api);
-  await aeraV3.ethereum.tvl(api);
+  // await aeraV3.ethereum.tvl(api);
+  
+  // remove bad debt from Resolv hack
+  // Gauntlet USDC Core vault on Morpho 0xE08145eb0132a219aad1B78a85baD8666a97CB94
+  if (api.timestamp >= 1774224000) api.add(coreAssets.ethereum.USDC, -4087518979934);
 }
 
 async function combinedBaseTvl(api) {
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.base?.tvl) await curatorExport.base.tvl(api);
-  await aeraV3.base.tvl(api);
+  // await aeraV3.base.tvl(api);
+}
+
+async function combinedBscTvl(api) {
+  const LISTA_START = 1777303000 // 2026-04-27, listing date for BSC Lista (Moolah) vaults
+  
+  if (api.timestamp < LISTA_START) return;
+  const curatorExport = getCuratorExport(configs);
+  if (curatorExport.bsc?.tvl) await curatorExport.bsc.tvl(api);
 }
 
 module.exports = {
@@ -292,6 +311,11 @@ module.exports = {
   solana: { tvl },
   ethereum: { tvl: combinedEthereumTvl },
   base: { tvl: combinedBaseTvl },
+  bsc: { tvl: combinedBscTvl },
   timetravel: false,
+  hallmarks: [
+    ["2026-03-22", "Resolve USR hack"],
+    ["2026-04-01", "USR losses are realized"],
+  ],
   methodology: configs.methodology,
 }

@@ -145,7 +145,11 @@ module.exports = {
   ethereum: {
     tvl,
     staking: staking(addresses.auraLocker, addresses.aura)
-  }
+  },
+  hallmarks: [
+    ['2025-11-04', 'Balancer was hacked'],
+    ['2026-05-13', 'Project announces winding down of operations']
+  ]
 }
 
 Object.keys(config).forEach(chain => {

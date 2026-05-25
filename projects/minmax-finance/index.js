@@ -38,13 +38,13 @@ const tokens = {
   [ADDRESSES.iotex.XIM]: [MINMAX_XIM_B3_POOL, MINMAX_XIM_M3_POOL, MINMAX_XIM_E3_POOL, MINMAX_XIM_E3_METAPOOL, MINMAX_XIM_B3_METAPOOL, MINMAX_XIM_M3_METAPOOL] // decimal: 6
 };
 
-async function tvl(_, _b, {iotex: block}) {
+async function tvl(api) {
   let toa = [];
 
   for (const token in tokens) 
     for(const poolAddress of tokens[token])
       toa.push([token, poolAddress])
-  return sumTokens2({chain: 'iotex', block, tokensAndOwners: toa })
+  return sumTokens2({api, tokensAndOwners: toa })
 }
 
 module.exports = {

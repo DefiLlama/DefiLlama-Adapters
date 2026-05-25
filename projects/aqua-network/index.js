@@ -1,40 +1,36 @@
-const { get } = require('../helper/http')
-const AQUA_STATS_URL = "https://amm-api.aqua.network/api/external/v1/statistics/totals/?size=all"
+const { callSoroban } = require('../helper/chain/stellar')
 
-let _data
+// Aqua Soroban AMM LiquidityPoolRouter contract. Retrieves all pools via the
+// router's get_tokens_sets_count + get_pools_for_tokens_range, then reads each
+// pool's get_reserves: https://github.com/AquaToken/soroban-amm
+const ROUTER = 'CBQDHNBFBZYE4MKPWBSJOPIYLW4SFSXAXUTSXJN76GNKYVYPCKWC6QUK'
 
-async function getData() {
-  if (!_data)
-    _data = get(AQUA_STATS_URL)
-  const data = await _data
-  const res = {}
-  data.forEach((item) => {
-    res[item.date] = item.tvl / 1e7
-  })
-  return res
-}
-
-function formatUnixTimestamp(unixTimestamp) {
-  const date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+const TOKEN_SETS_PAGE = 25n
 
 async function tvl(api) {
-  const key = formatUnixTimestamp(api.timestamp)
-  const allData = await getData()
-  const usdValue = allData[key]
-  if (!usdValue)
-    throw new Error('No data found for current date');
-  api.addCGToken('tether', usdValue)
+  const totalSets = await callSoroban(ROUTER, 'get_tokens_sets_count')
+
+  for (let start = 0n; start < totalSets; start += TOKEN_SETS_PAGE) {
+    const end = start + TOKEN_SETS_PAGE > totalSets ? totalSets : start + TOKEN_SETS_PAGE
+    const batch = await callSoroban(ROUTER, 'get_pools_for_tokens_range', [
+      { type: 'u128', value: start },
+      { type: 'u128', value: end },
+    ])
+    for (const [tokens, poolsMap] of batch) {
+      for (const poolAddr of Object.values(poolsMap)) {
+        const reserves = await callSoroban(poolAddr, 'get_reserves')
+        if (!reserves) continue
+        for (let j = 0; j < tokens.length; j++) {
+          if (reserves[j] && reserves[j] > 0n) api.add(tokens[j], reserves[j].toString())
+        }
+      }
+    }
+  }
 }
 
 module.exports = {
-  start: '2024-07-01',
-  misrepresentedTokens: true,
+  timetravel: false,
   methodology:
-    'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API.',
+    'Counts liquidity locked in all Aqua AMM pools. Enumerates the full pool list on-chain via the LiquidityPoolRouter (get_tokens_sets_count + get_pools_for_tokens_range), then reads each pool contract\'s get_reserves directly.',
   stellar: { tvl },
-};
+}
