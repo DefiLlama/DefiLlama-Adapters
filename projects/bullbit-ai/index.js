@@ -4,6 +4,8 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 const USDC_BASE = ADDRESSES.base.USDC; 
 const POOL_CONTRACTS = [
   "0xa01946A5f6a167e5dDE667C14a4c1841a0B12eA3",
+  "0x58F7260aD7C9ea00be5DB87259D572470E8f9244",
+  "0xc1dc6D5FD4980170BF871Cc0539C2cAf8035C7C4"
 ];
 
 const config = {
