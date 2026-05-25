@@ -1,4 +1,6 @@
-const { getLogs2 } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs');
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { sliceIntoChunks } = require('../helper/utils');
 
 // https://developer.pancakeswap.finance/contracts/infinity/resources/addresses
 const config = {
@@ -16,22 +18,37 @@ Object.keys(config).forEach(chain => {
   const { vault, clPoolManager, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+
+      const fiveHoursAgo = Math.floor(Date.now() / 1000) - 5 * 3600
+      if (api.timestamp > fiveHoursAgo) {
+        api.block = undefined
+      }
+
       const logs = await getLogs2({
         api,
         target: clPoolManager,
         fromBlock,
         eventAbi: 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, address hooks, uint24 fee, bytes32 parameters, uint160 sqrtPriceX96, int24 tick)',
       })
+
       const tokenSet = new Set()
+
       logs.forEach(log => {
         tokenSet.add(String(log.currency0).toLowerCase())
         tokenSet.add(String(log.currency1).toLowerCase())
       })
-      for (const t of blacklistTokens) {
+
+      for (const t of blacklistTokens)
         tokenSet.delete(t.toLowerCase())
-      }
+
+
       const tokens = Array.from(tokenSet)
-      return api.sumTokens({ tokens, owner: vault, })
+
+      const tokenChunks = sliceIntoChunks(tokens, 1000)
+
+      for (const tokens of tokenChunks) {
+        await sumTokens2({ api, tokens, owner: vault, permitFailure: true })
+      }
     }
   }
 })

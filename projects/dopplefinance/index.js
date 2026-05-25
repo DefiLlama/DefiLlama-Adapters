@@ -54,8 +54,7 @@ const assetsOnExchange = {
   ]
 }
 
-async function bscTVL(_, _b, { bsc: block }) {
-  const chain = 'bsc'
+async function bscTVL(api) {
   const pools = [
     '0x5162f992EDF7101637446ecCcD5943A9dcC63A8A',
     '0x449256e20ac3ed7f9ae81c2583068f7508d15c02',
@@ -70,28 +69,26 @@ async function bscTVL(_, _b, { bsc: block }) {
     [ADDRESSES.bsc.USDC, '0xa275769Fb6fF34A1a01C8CE61D0182f5d36AD27A',], // USDC collateral for minting KUSD
   ]
   assetsOnExchange.bsc.forEach(t => pools.forEach(o => toa.push([t, o])))
-  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+  return sumTokens2({ tokensAndOwners: toa, api, })
 }
 
-async function fantom(_, _b, { fantom: block }) {
-  const chain = 'fantom'
+async function fantom(api) {
   const pools = [
     '0x5162f992EDF7101637446ecCcD5943A9dcC63A8A',
   ]
   const toa = []
   assetsOnExchange.fantom.forEach(t => pools.forEach(o => toa.push([t, o])))
-  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+  return sumTokens2({ tokensAndOwners: toa, api, })
 }
 
-async function harmony(_, _b, { harmony: block }) {
-  const chain = 'harmony'
+async function harmony(api) {
   const pools = [
     '0xccb7c3166729fe92c914fb38b850696748d83db8',
     '0x44a783b046f012287a233e4e51949f47a2279dee',
   ]
   const toa = []
   assetsOnExchange.harmony.forEach(t => pools.forEach(o => toa.push([t, o])))
-  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+  return sumTokens2({ tokensAndOwners: toa, api, })
 }
 
 module.exports = {

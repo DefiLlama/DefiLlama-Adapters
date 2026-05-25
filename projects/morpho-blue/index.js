@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getMorphoVaults } = require("../helper/curators");
 
 const config = {
   ethereum: {
@@ -246,6 +247,17 @@ const ethenaBlacklist = {
 
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
+
+  // sometimes the tokens left in the vault and not allocated to any market yet, we need to query them separately
+  const morphoVaults = await getMorphoVaults(api, undefined, {
+    getAllVaults: true,
+  })
+  const vaultAssets = await api.multiCall({  abi: 'address:asset', calls: morphoVaults, permitFailure: true})
+
+  const vaultTaO = vaultAssets.map((asset, i) => ([asset, morphoVaults[i]]).filter(i => i[0]))
+  await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens: blackList, permitFailure: true })
+
+
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
