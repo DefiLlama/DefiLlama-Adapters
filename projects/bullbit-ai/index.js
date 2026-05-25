@@ -21,4 +21,4 @@ Object.keys(config).forEach(chain => {
   };
 });
 
-module.exports.methodology = "TVL is calculated by summing USDC balances held in Bullbit pool, treasury, and operational wallets on Base.";
+module.exports.methodology = "TVL is calculated by summing USDC balances held in Bullbit pool contracts and associated treasury/operational wallets on Base.";
