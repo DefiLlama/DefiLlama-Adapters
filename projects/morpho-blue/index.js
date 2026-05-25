@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
@@ -294,12 +295,37 @@ const borrowed = async (api) => {
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
   const blackListLower = blackList.map(b => b.toLowerCase())
 
+  const priceByAddr = await fetchPriceMap(api, marketInfos.flatMap(m => [m.collateralToken, m.loanToken]))
+  const chainHasPrices = Object.keys(priceByAddr).length > 0
+
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
     if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
     if (blackListLower.includes(loanToken.toLowerCase())) return;
-    api.add(loanToken, data.totalBorrowAssets);
+
+    if (chainHasPrices && collateralToken && collateralToken.toLowerCase() !== nullAddress) {
+      if (!priceByAddr[collateralToken.toLowerCase()]) return;
+    }
+
+    let amount = BigInt(data.totalBorrowAssets || 0)
+    const supply = BigInt(data.totalSupplyAssets || 0)
+    if (amount > supply) amount = supply
+    api.add(loanToken, amount.toString());
   });
+}
+
+async function fetchPriceMap(api, addresses) {
+  const tokens = [...new Set(addresses.filter(a => a && a.toLowerCase() !== nullAddress).map(a => a.toLowerCase()))]
+  if (!tokens.length) return {}
+  const keys = tokens.map(t => `${api.chain}:${t}`)
+  const prices = await sdk.coins.getPrices(keys, 'now').catch(() => ({}))
+  const out = {}
+  Object.entries(prices).forEach(([k, v]) => {
+    if (!v || !v.price) return
+    const addr = k.split(':')[1]
+    if (addr) out[addr.toLowerCase()] = v
+  })
+  return out
 }
 
 Object.keys(config).forEach((chain) => {
