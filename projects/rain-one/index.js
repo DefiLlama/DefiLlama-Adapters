@@ -15,6 +15,7 @@ async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:baseToken', calls: pools })
   const tokensAndOwners = tokens.map((token, i) => [token, pools[i]])
   tokensAndOwners.push([ADDRESSES.arbitrum.USDT, RAIN_RISK_MARKET_RESERVOIR])
+  tokensAndOwners.push([ADDRESSES.arbitrum.USDT, RAIN_LIQUIDITY_RESERVOIR])
   tokensAndOwners.push([ADDRESSES.arbitrum.USDC_CIRCLE, RAIN_LIQUIDITY_RESERVOIR])
   tokensAndOwners.push([RAIN_TOKEN, RAIN_LIQUIDITY_RESERVOIR])
   return sumTokens2({ api, tokensAndOwners, resolveLP: true })
