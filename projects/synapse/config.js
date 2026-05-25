@@ -307,8 +307,8 @@ module.exports = {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
         tokens: [
-          ADDRESSES.harmony.JEWEL,
-          ADDRESSES.harmony.xJEWEL,
+          '0x72cb10c6bfa5624dd07ef608027e366bd690048f',
+          '0xa9ce83507d872c5e1273e745abcfda849daa654f',
           '0x24eA0D436d3c2602fbfEfBe6a16bBc304C963D04', // DFKTEARS
         ]
       },

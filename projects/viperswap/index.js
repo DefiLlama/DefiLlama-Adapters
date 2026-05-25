@@ -1,6 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-
-const viper = ADDRESSES.harmony.VIPER;
+const viper = '0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79';
 const xviper = "0xe064a68994e9380250cfee3e8c0e2ac5c0924548";
 
 const { uniTvlExports } = require('../helper/unknownTokens')
