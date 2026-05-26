@@ -83,11 +83,6 @@ const configs = {
     methodology: "TVL represents the total amount of SOL staked in Adrastea's liquid staking pool",
     solana: '2XhsHdwf4ZDpp2JhpTqPovoVy3L2Atfp1XkLqFMwGP4Y',
   },
-  'solanahub-sol': {
-    doublecounted: true,
-    methodology: "SolanaHub Staked SOL (hubSOL) is a tokenized representation on your staked SOL + stake rewards",
-    solana: 'ECRqn7gaNASuvTyC5xfCUjehWZCSowMXstZiM5DNweyB',
-  },
   'pico-sol': {
     doublecounted: true,
     methodology: "Pico Staked SOL (picoSOL) is a tokenized representation on your staked SOL + stake rewards",
