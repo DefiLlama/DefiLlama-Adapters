@@ -102,9 +102,6 @@ const configs = {
   'thevault': {
     solana: { type: 'staked', address: 'GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW' },
   },
-  'marinade-native': {
-    solana: { type: 'staked', address: 'stWirqFCf2Uts1JBL1Jsd3r6VBWhgnpdPxCTe1MFjrq' },
-  },
   'bnsol': {
     solana: { type: 'staked', address: '75NPzpxoh8sXGuSENFMREidq6FMzEx4g2AfcBEB6qjCV' },
   },
