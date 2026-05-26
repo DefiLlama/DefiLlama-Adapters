@@ -27,7 +27,7 @@ async function tvl(api) {
   // raSOL liquid staking: SPL stake pool totalLamports = SOL backing the LST
   const poolInfo = await connection.getAccountInfo(new PublicKey(RASOL_STAKE_POOL))
   const pool = decodeAccount('stakePool', poolInfo)
-  api.add(ADDRESSES.solana.SOL, +pool.totalLamports)
+  api.add(ADDRESSES.solana.SOL, pool.totalLamports.toString())
 
   // Hubra validator: SOL delegated to the vote account, minus the portion already provided
   // by the raSOL stake pool (otherwise raSOL's delegation would be counted twice).
