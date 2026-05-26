@@ -775,6 +775,10 @@
   "bostrom": {
     "BOOT": "boot"
   },
+  "bot": {
+    "WBOT": "0xD5452816194a3784dBa983426cCe7c122F4abd30",
+    "USDT": "0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C"
+  },
   "orai": {
     "ORAI": "orai",
     "USDT": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
