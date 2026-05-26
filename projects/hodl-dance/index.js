@@ -10,10 +10,16 @@ async function tvl(api) {
     api,
     target: FACTORY,
     fromBlock: START_BLOCK,
-    eventAbi: 'TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
+    eventAbi: 'event TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
   });
 
-  const bondingCurves = logs.map((log) => log.args.bondingCurveAddress);
+  const bondingCurves = logs
+    .map((log) => {
+      if (log.args?.bondingCurveAddress) return log.args.bondingCurveAddress;
+      if (log.topics?.length >= 3) return log.topics[2];
+      return null;
+    })
+    .filter(Boolean);
 
   return sumTokens2({
     api,
