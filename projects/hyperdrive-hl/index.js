@@ -67,8 +67,9 @@ async function tvl(api) {
         abi: ABI.MarketLens.getCollateralAssetsQuery,
     });
 
-    marketData.forEach((datum, i) => {
-        api.add(datum.marketAsset, datum.totalAssets);
+  marketData.forEach((datum, i) => {
+        // count only remaining assets liquidity
+        api.add(datum.marketAsset, datum.totalReserveAssets);
 
         const collateralDatum = collateralData[i];
         const totalCollateral = collateralDatum.reduce((previous, current) => {
