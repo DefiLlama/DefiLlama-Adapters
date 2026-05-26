@@ -23,8 +23,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  bsc: {
-    tvl,
-  },
+  bsc: { tvl },
   methodology: 'TVL is the total BNB locked in all active BondingCurve contracts created by the hodl.dance factory',
 };
