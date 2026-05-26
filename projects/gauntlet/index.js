@@ -125,6 +125,7 @@ const configs = {
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+        '0x1716D63E23BB205544540dc875Ca8bD4FFaF5bB2',
       ],
     },
     arbitrum: {
