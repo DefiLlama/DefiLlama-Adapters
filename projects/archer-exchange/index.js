@@ -7,7 +7,7 @@ const ARCHER_PROGRAM_ID = new PublicKey("Archer8kgiavM61GyusMzaaS2ft5sALtNsD1Hxk
 // ASCII "ACHRMKT1" — discriminator for MarketStateHeader accounts (see archer_v1 IDL)
 const MARKET_DISCRIMINATOR = Buffer.from([65, 67, 72, 82, 77, 75, 84, 49]);
 
-// MarketStateHeader layout offsets
+// MarketStateHeader layout offsets.
 const OFFSET_BASE_VAULT = 8 + 32 + 32 + 32;   // 104
 const OFFSET_QUOTE_VAULT = OFFSET_BASE_VAULT + 32; // 136
 const OFFSET_STATUS = 8 + 32 * 6 + 8 * 7 + 4 * 2 + 2; // 258
