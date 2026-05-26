@@ -188,7 +188,9 @@ async function getSiloVaults(api, owners) {
 }
 
 async function getCuratorTvlErc4626(api, vaults) {
-  if (!vaults || vaults.length === 0) return
+  if (!vaults || vaults.length === 0) return;
+  vaults = vaults.map(v => v.toLowerCase())
+  vaults = [...new Set(vaults)] // de-dup vault addresses
 
   // Get assets and totalAssets for all vaults
   const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
