@@ -6,6 +6,6 @@ const tvl = async (api) => {
   return data.payload[api.chain]
 }
 
-const chains = ['ethereum', 'bsc', 'avax', 'base', 'monad', 'arbitrum']
+const chains = ['ethereum', 'bsc', 'avax', 'base', 'monad', 'arbitrum','pharos']
 module.exports.timetravel = false
 chains.forEach(chain => { module.exports[chain] = { tvl } })
