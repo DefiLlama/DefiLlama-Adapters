@@ -168,6 +168,7 @@ const config = {
   stable: {
     morphoBlue: "0xa40103088A899514E3fe474cD3cc5bf811b1102e",
     fromBlock: 2348260,
+    extraVaults: ['0xb7Df8db22A5DBBFA9ebeb94b3910aec6a4f05c08'],
   },
   linea: {
     morphoBlue: "0x6B0D716aC0A45536172308e08fC2C40387262c9F",
@@ -247,13 +248,14 @@ const ethenaBlacklist = {
 }
 
 const tvl = async (api) => {
-  const { morphoBlue, blackList = [] } = config[api.chain]
+  const { morphoBlue, blackList = [], extraVaults = [] } = config[api.chain]
 
   // sometimes the tokens left in the vault and not allocated to any market yet, we need to query them separately
-  const morphoVaults = await getMorphoVaults(api, undefined, {
+  const discoveredVaults = await getMorphoVaults(api, undefined, {
     getAllVaults: true,
     onlyUseExistingCache: api.chain === 'sei'
   })
+  const morphoVaults = [...new Set([...discoveredVaults, ...extraVaults])]
   const vaultAssets = await api.multiCall({  abi: 'address:asset', calls: morphoVaults, permitFailure: true})
 
   const vaultTaO = vaultAssets.map((asset, i) => ([asset, morphoVaults[i]]).filter(i => i[0]))
