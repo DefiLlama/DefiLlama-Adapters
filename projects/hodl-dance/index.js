@@ -10,7 +10,7 @@ async function tvl(api) {
     api,
     target: FACTORY,
     fromBlock: START_BLOCK,
-    event: 'event TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
+    eventAbi: 'TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
   });
 
   const bondingCurves = logs.map((log) => log.args.bondingCurveAddress);
