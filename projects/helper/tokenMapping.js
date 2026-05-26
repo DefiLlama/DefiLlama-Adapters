@@ -48,7 +48,7 @@ const fixBalancesTokens = {
     '0xD5452816194a3784dBa983426cCe7c122F4abd30': { coingeckoId: "bot", decimals: 18 }, // WBOT (BotChain native, CoinGecko id: bot)
     "0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C": {
       coingeckoId: "tether",
-      decimals: 18, // 以链上 ERC20 decimals() 为准
+      decimals: 6, // 以链上 ERC20 decimals() 为准
     },
   },
   provenance: {
