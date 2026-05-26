@@ -1,3 +1,4 @@
+const { getLogs } = require('../helper/utils');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const ADDRESSES = require('../helper/coreAssets.json');
 
@@ -5,10 +6,11 @@ const FACTORY = '0x99A1F02f56E8356e6E90A880DBb1be6EC7485737';
 const START_BLOCK = 83360171;
 
 async function tvl(api) {
-  const logs = await api.getLogs({
+  const logs = await getLogs({
+    api,
     target: FACTORY,
     fromBlock: START_BLOCK,
-    event: 'TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
+    event: 'event TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
   });
 
   const bondingCurves = logs.map((log) => log.args.bondingCurveAddress);
