@@ -8,7 +8,7 @@ async function tvl(api) {
   const logs = await api.getLogs({
     target: FACTORY,
     fromBlock: START_BLOCK,
-    event: 'event TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
+    event: 'TokenLaunched(address indexed tokenAddress, address indexed bondingCurveAddress, address indexed creator)',
   });
 
   const bondingCurves = logs.map((log) => log.args.bondingCurveAddress);
