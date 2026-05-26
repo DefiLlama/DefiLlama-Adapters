@@ -7,10 +7,10 @@ const ARCHER_PROGRAM_ID = new PublicKey("Archer8kgiavM61GyusMzaaS2ft5sALtNsD1Hxk
 // ASCII "ACHRMKT1" — discriminator for MarketStateHeader accounts (see archer_v1 IDL)
 const MARKET_DISCRIMINATOR = Buffer.from([65, 67, 72, 82, 77, 75, 84, 49]);
 
-// MarketStateHeader layout offsets.
-const OFFSET_BASE_VAULT = 8 + 32 + 32 + 32;   // 104
-const OFFSET_QUOTE_VAULT = OFFSET_BASE_VAULT + 32; // 136
-const OFFSET_STATUS = 8 + 32 * 6 + 8 * 7 + 4 * 2 + 2; // 258
+// MarketStateHeader layout offsets: https://github.com/SquareRoot-Labs/archer-market-maker/blob/e4ade13edc5bcb407618058aa3c03630f00cd32c/src/archer/types.rs#L81
+const OFFSET_BASE_VAULT = 104;
+const OFFSET_QUOTE_VAULT = 136;
+const OFFSET_STATUS = 258;
 const STATUS_CLOSED = 2;
 
 async function tvl(api) {
@@ -30,8 +30,6 @@ async function tvl(api) {
     const quoteVault = new PublicKey(data.slice(OFFSET_QUOTE_VAULT, OFFSET_QUOTE_VAULT + 32)).toBase58();
     vaults.push(baseVault, quoteVault);
   }
-
-  sdk.log("archer-exchange: markets", markets.length, "vaults", vaults.length);
 
   return sumTokens2({ api, tokenAccounts: vaults });
 }
