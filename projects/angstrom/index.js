@@ -1,5 +1,5 @@
 
-const subgraphEndpoint = 'https://api.goldsky.com/api/public/project_cm97dvfxxyivn01xe2sda93ka/subgraphs/angstrom-mainnet/1.6.4/gn'
+const subgraphEndpoint = 'https://api.goldsky.com/api/public/project_cm97dvfxxyivn01xe2sda93ka/subgraphs/angstrom-mainnet/1.7.0/gn'
 const subgraphQuery = (blockNumber) => {
   return {
     query: `

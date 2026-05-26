@@ -49,6 +49,7 @@ const EVENTS = {
   TermMax4626Factory: {
     "StableERC4626For4626Created": "event StableERC4626For4626Created(address indexed caller, address indexed stableERC4626For4626)",
     "StableERC4626ForAaveCreated": "event StableERC4626ForAaveCreated(address indexed caller, address indexed stableERC4626ForAave)",
+    "StableERC4626ForCustomizeCreated": "event StableERC4626ForCustomizeCreated(address indexed caller, address indexed stableERC4626ForCustomize)",
     "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)"
   }
 };
@@ -137,6 +138,8 @@ const ADDRESSES = {
     },
     TermMax4626Factory: [
       { address: "0xD594eb03a43b4974Aa7B32b5740cdeCe961151Fa", fromBlock: 23489745 },
+      { address: "0x3Cc88086C0a613970565C96F9a1b6BdAd61C5f14", fromBlock: 24790495 },
+      { address: "0x8ec01a807D088845e5176c20A129ebF9A0101dD5", fromBlock: 25004529 },
     ],
     FactoryV2: [
       {
@@ -403,11 +406,10 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
-    await Promise.all([
-      getTermMaxVaultAddresses(api),
-      getTermMaxVaultV1PlusAddresses(api),
-    ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses] = await Promise.all([
+    getTermMaxVaultAddresses(api),
+    getTermMaxVaultV1PlusAddresses(api),
+  ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
     .concat(vaultV1PlusAddresses)
@@ -597,6 +599,7 @@ async function erc4626VaultsTvl(api) {
   const tokensAndOwners = [];
   const stableERC4626For4626Vaults = [];
   const aaveVaults = [];
+  const customizeVaults = [];
 
   for (const factory of ADDRESSES[api.chain].TermMax4626Factory) {
     let logs = await getLogs2({
@@ -626,6 +629,15 @@ async function erc4626VaultsTvl(api) {
       extraKey: 'VariableERC4626ForAaveCreated-20260206',
     });
     aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForCustomizeCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626ForCustomizeCreated-20260429',
+    });
+    customizeVaults.push(...logs.map(i => i.stableERC4626ForCustomize));
   }
 
   const aTokens = await api.multiCall({ abi: 'address:aToken', calls: aaveVaults })
@@ -640,6 +652,18 @@ async function erc4626VaultsTvl(api) {
   stableERC4626For4626Vaults.forEach((vault, i) => {
     tokensAndOwners.push([stableUnderlyings[i], vault])
     tokensAndOwners.push([thirdPools[i], vault])
+  })
+
+  // StableERC4626ForCustomize: thirdPool may be either an ERC4626/ERC20 OR a
+  // Gnosis Safe. Probe totalSupply() to disambiguate — the Safe contract does
+  // not implement it. Safe-backed pools are excluded per DefiLlama methodology.
+  const customizeUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: customizeVaults })
+  const customizeThirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: customizeVaults })
+  const thirdPoolSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: customizeThirdPools, permitFailure: true })
+  customizeVaults.forEach((vault, i) => {
+    if (thirdPoolSupplies[i] === null) return;
+    tokensAndOwners.push([customizeUnderlyings[i], vault]);
+    tokensAndOwners.push([customizeThirdPools[i], vault]);
   })
 
   await sumTokens2({ api, tokensAndOwners });

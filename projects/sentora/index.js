@@ -20,15 +20,44 @@ const customConfig = {
       '0x2AFBd96Fb854083574B738b36Af34703C89B8656',
       '0xA43c0C89321b10bF0DbDb0A8fc735c88b9B65792',
     ],
-    holding: [
-      ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed', '0xA40aFb15275A94F64aF37C0cEaAaA45Cb568A361'],
-      ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed', '0xfBCA329E2Ee0c44d8F115A4B8F7ceda9E109f436'],
-      [ADDRESSES.ethereum.LBTC, '0x9B6a57Fda106eff13ffE4ea4Ef2783C547f75cd7'],
-      ['0xe72b141df173b999ae7c1adcbf60cc9833ce56a8', '0x778aC5d0EE062502fADaa2d300a51dE0869f7995'],
-      ['0x6c3ea9036406852006290770bedfcaba0e23a0e8', '0x2A601FC6C0Cb854fDA82715E49Ab04C5340A0396'],
-      ['0x6c3ea9036406852006290770bedfcaba0e23a0e8', '0x11Fd9E49c41738b7500748f7B94B4DBb0E8c13d2'],
-    ],
-  }
+    holding: {
+      '0xA40aFb15275A94F64aF37C0cEaAaA45Cb568A361': ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed'],
+      '0xfBCA329E2Ee0c44d8F115A4B8F7ceda9E109f436': ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed'],
+      '0x9B6a57Fda106eff13ffE4ea4Ef2783C547f75cd7': [ADDRESSES.ethereum.LBTC],
+      '0x778aC5d0EE062502fADaa2d300a51dE0869f7995': ['0xe72b141df173b999ae7c1adcbf60cc9833ce56a8'],
+      '0x2A601FC6C0Cb854fDA82715E49Ab04C5340A0396': ['0x6c3ea9036406852006290770bedfcaba0e23a0e8'],
+      '0x11Fd9E49c41738b7500748f7B94B4DBb0E8c13d2': ['0x6c3ea9036406852006290770bedfcaba0e23a0e8'],
+    },
+    chaosLabsCurators: {
+      wallets: [
+        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271',
+        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f',
+      ],
+      aavePoolDataProviders: [
+        '0x41393e5e337606dc3821075Af65AeE84D7688CBD',
+        '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD',
+        '0xE7d490885A68f00d9886508DF281D67263ed5758',
+      ],
+      extraTokens: [
+        '0x1a88df1cfe15af22b3c4c783d4e6f7f9e0c1885d', // stkGHO
+        '0x83F20F44975D03b1b09e64809B757c47f942BEeA', // sDAI
+        '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD', // sUSDS
+        '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
+        '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
+      ],
+    },
+  },
+  ink: {
+    chaosLabsCurators: {
+      wallets: [
+        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271',
+        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f',
+      ],
+      aavePoolDataProviders: [
+        '0x96086C25d13943C80Ff9a19791a40Df6aFC08328'
+      ],
+    },
+  },
 }
 
 const abis = {
@@ -36,6 +65,8 @@ const abis = {
   loanConfig: 'function loanConfig() view returns (address supplyAddress, address borrowAddress, uint256 minHealthFactor)',
   getSupply: 'uint256:getSupply',
   getBorrow: 'uint256:getBorrow',
+  getAllReservesTokens: 'function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])',
+  getReserveTokensAddresses: 'function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)',
 }
 
 const curatorExport = getCuratorExport({
@@ -72,8 +103,25 @@ const handlers = {
       api.add(borrowAddress, -borrows[i])
     })
   },
-  async holding(api, tokensAndOwners) {
+  async holding(api, ownerTokensMap) {
+    const tokensAndOwners = []
+    for (const [owner, tokens] of Object.entries(ownerTokensMap)) {
+      for (const token of tokens) tokensAndOwners.push([token, owner])
+    }
     return api.sumTokens({ tokensAndOwners })
+  },
+  async chaosLabsCurators(api, { wallets, aavePoolDataProviders = [], extraTokens = [] }) {
+    const aaveTokens = []
+    for (const provider of aavePoolDataProviders) {
+      const reserves = await api.call({ abi: abis.getAllReservesTokens, target: provider })
+      const reserveData = await api.multiCall({
+        abi: abis.getReserveTokensAddresses,
+        calls: reserves.map(r => ({ target: provider, params: [r.tokenAddress] })),
+      })
+      aaveTokens.push(...reserveData.map(r => r.aTokenAddress))
+    }
+    const tokens = [...aaveTokens, ...extraTokens]
+    return api.sumTokens({ tokens, owners: wallets })
   },
 }
 
@@ -87,13 +135,15 @@ async function customTvl(api) {
   return api.getBalances()
 }
 
-module.exports = {
-  ...curatorExport,
-  ethereum: {
-    ...curatorExport.ethereum,
+module.exports = { ...curatorExport }
+
+for (const chain of Object.keys(customConfig)) {
+  const curatorChain = curatorExport[chain]
+  module.exports[chain] = {
+    ...(curatorChain || {}),
     tvl: async (api) => {
-      await curatorExport.ethereum.tvl(api)
+      if (curatorChain?.tvl) await curatorChain.tvl(api)
       await customTvl(api)
     },
-  },
+  }
 }

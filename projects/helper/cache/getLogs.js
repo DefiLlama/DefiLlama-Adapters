@@ -6,6 +6,8 @@ const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
+const problematicChainSet = new Set(['rbn',])
+
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
   api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer }) {
@@ -21,6 +23,8 @@ async function getLogs({ target,
 
   const block = api.block
   const chain = api.chain ?? 'ethereum'
+
+  if (problematicChainSet.has(chain)) onlyUseExistingCache = true
 
   // if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
 

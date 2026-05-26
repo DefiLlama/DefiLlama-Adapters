@@ -3,6 +3,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 const tokensAndOwners = [
     ['0x79eB84B5E30Ef2481c8f00fD0Aa7aAd6Ac0AA54d', '0xE7aEC21BF6420FF483107adCB9360C4b31d69D78'], // autoDOLA in YieldStrategyDola
     ['0xa7569A44f348d3D70d8ad5889e50F78E33d80D35', '0x8b4A75290A1C4935eC1dfd990374AC4BD4D33952'], // autoUSDC in YieldStrategyUSDC
+    ['0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', '0xFc629bC5F6339F77635f4F656FBb114A31F7bCB3'], // sUSDe in YieldStrategyUSDe
 ]
 
 module.exports = {

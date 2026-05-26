@@ -232,12 +232,9 @@
     "wHOO": "0x3eff9d389d13d6352bfb498bcf616ef9b1beac87"
   },
   "harmony": {
-    "JEWEL": "0x72cb10c6bfa5624dd07ef608027e366bd690048f",
     "MIS": "0xd74433b187cf0ba998ad9be3486b929c76815215",
     "WONE": "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
-    "xJEWEL": "0xa9ce83507d872c5e1273e745abcfda849daa654f",
-    "AVAX": "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
-    "VIPER": "0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79"
+    "AVAX": "0xb12c13e66ade1f72f71834f2fc5082db8c091358"
   },
   "optimism": {
     "OP": "0x4200000000000000000000000000000000000042",
@@ -2231,7 +2228,6 @@
     "SAUCE": "0x00000000000000000000000000000000000b2ad5",
     "WHBAR": "0x0000000000000000000000000000000000163b5a",
     "DOVU": "0x000000000000000000000000000000000038b3db",
-    "HLQT": "0x00000000000000000000000000000000005c9f70",
     "HST": "0x00000000000000000000000000000000000ec585",
     "PACK": "0x0000000000000000000000000000000000492a28",
     "STEAM": "0x000000000000000000000000000000000030fb8b",
@@ -2243,6 +2239,9 @@
     "BONZO": "0x00000000000000000000000000000000007e545e",
     "WHBAR_1": "0x00000000000000000000000000000000000F7e89",
     "WHBAR_2": "0x00000000000000000000000000000000002cc823"
+  },
+  "etica": {
+    "WEGAZ": "0x232fb2B87CAce92B2438054A7eB79B4081E3E11a"
   },
   "morph": {
     "WETH": "0x5300000000000000000000000000000000000011",
@@ -2530,7 +2529,7 @@
     "SAGA": "0xa19377761fed745723b90993988e04d641c2cffe",
     "KING": "0x58d9fbBc6037dedfBA99cAfA28e4C371b795ad97",
     "stATOM": "0xDaF9d9032b5d5C92528d6aFf6a215514B7c21056",
-    "tBTC": "0x7cF468a019C5bf734311D10C3a429bB504CAF3Ce",
+    "tBTC": "0x7cF468a019C5bf734311D10C3a429bB504CAF3ce",
     "yETH": "0xA6F89de43315B444114258f6E6700765D08bcd56",
     "yUSD": "0x839e7e610108Cf3DCc9b40329db33b6E6bc9baCE"
   },
@@ -2661,11 +2660,11 @@
   },
   "titan": {
     "atkx": "atkx",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth",
-    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol",
-    "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc": "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc"
+    "USDC": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc",
+    "USDT": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt",
+    "ETH": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth",
+    "SOL": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol",
+    "WBTC": "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc"
   },
   "xrplevm": {
     "XRP": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -2828,7 +2827,14 @@
     "USDT0": "0x20c00000000000000000000014f22ca97301eb73",
     "USDe": "0x20c0000000000000000000002f52d5cc21a3207b"
   },
+  "rise": {
+    "USDC": "0xe436820ba0C69702c1d3E601d421c0eF38262739"
+  },
   "pharos": {
-    "USDC": "0xc879c018db60520f4355c26ed1a6d572cdac1815"
+    "USDC": "0xc879c018db60520f4355c26ed1a6d572cdac1815",
+    "WPROS": "0x52c48d4213107b20bc583832b0d951fb9ca8f0b0"
+    },
+  "srx": {
+    "WSRX": "0x4693b113e523A196d9579333c4ab8358e2656553"
   }
 }

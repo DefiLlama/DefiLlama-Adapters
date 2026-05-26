@@ -267,6 +267,23 @@ const configs = {
       pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
     }),
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
+  },
+  'visionboard-vault': {
+    timetravel: false,
+    hyperliquid: ['0x0a5e236425aca07fd087904F8863CAd554675E06'],
+    methodology: 'TVL is calculated from VisionBoard Vault totalAssets() on HyperEVM. Deposits mint VBV vault shares backed by the vault asset, currently USDC.'
+  },
+  'defimarketplus': {
+    arbitrum: ['0x07fF8bCe905CB285220e4D96d8443cfCF141af8b'],
+    methodology: 'TVL = SafeUsdVault.totalAssets() (idle USDC + USDC deployed to whitelisted lending strategies, minus unvested locked-profit).'
+  },
+  'xeno-money': {
+    base: ['0xC6Aad7c41c66bDC5E138fbd4180cDd3dB0F4fB3F'],
+    methodology: 'TVL is the total ISKe deposited in the sISKe ERC-4626 earn vault, measured via totalAssets().'
+  },
+  'gremlix': {
+    arbitrum: ['0x973Ae12aC9078E9f9B1708C477A9670bB3fB0886','0xd519EF317Be061b310D3caA4565Fa1ef466c36C8'],
+    methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.'
   }
 }
 

@@ -1,7 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getMorphoVaults } = require("../helper/curators");
 
 const config = {
   ethereum: {
@@ -15,13 +17,15 @@ const config = {
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
-      
+
       // bad debt due to resolv hack
       "0xd9e34b1eed46d123ac1b69b224de1881dbc88798bc7b70f504920f62f58f28cc",
       "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33",
       "0x8e7cc042d739a365c43d0a52d5f24160fa7ae9b7e7c9a479bd02a56041d4cf77",
       "0xcc39b6c92fd03ac608b9239618db8b80a4a2034b0450bdf47b404229571312da",
       "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
+
+      "0x0f9563442d64ab3bd3bcb27058db0b0d4046a4c46f0acd811dacae9551d2b129", // sdeUSD/USDC (91.5% LLTV) bad debt from sdeUSD exploit (Nov 2025)
     ],
   },
   base: {
@@ -184,7 +188,11 @@ const config = {
   tempo: {
     morphoBlue: "0x10EE9AAC980A180dd4DcFc96C746d60B0EA88f97",
     fromBlock: 12653218,
-  }
+  },
+  klaytn: {
+    morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
+    fromBlock: 208021118,
+  },
 }
 
 const eventAbis = {
@@ -208,7 +216,7 @@ const getMarket = async (api) => {
   } else {
     logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
   }
-  
+
   if (api.chain === 'sei') {
     const existingIds = new Set(logs.map(i => i.id.toLowerCase()))
     logs.push(...[
@@ -228,8 +236,30 @@ const getMarket = async (api) => {
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
+// exclude ethena deposits into markets where collateral is USDe
+const ethenaBlacklist = {
+  ethereum: {
+    wallets: ['0x2Bf5d9a2326Ad3C5Ef8208F91Af79C3ca1F0F67c'],
+    vaults: [
+      '0xBeEFC1CDAfc5b4a649b54D07AFc6bF0f75C6F4E2',   // USDtB vault
+    ],
+  }
+}
+
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
+
+  // sometimes the tokens left in the vault and not allocated to any market yet, we need to query them separately
+  const morphoVaults = await getMorphoVaults(api, undefined, {
+    getAllVaults: true,
+    onlyUseExistingCache: api.chain === 'sei'
+  })
+  const vaultAssets = await api.multiCall({  abi: 'address:asset', calls: morphoVaults, permitFailure: true})
+
+  const vaultTaO = vaultAssets.map((asset, i) => ([asset, morphoVaults[i]]).filter(i => i[0]))
+  await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens: blackList, permitFailure: true })
+
+
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
@@ -240,7 +270,20 @@ const tvl = async (api) => {
     return wql == null || wql > 30 || wql < 0;
   });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
-  
+
+  if (ethenaBlacklist[api.chain]) {
+    const { wallets = [], vaults = [] } = ethenaBlacklist[api.chain]
+    const balanceCalls = wallets.map((wallet) => vaults.map((vault) => ({ target: vault, params: wallet }))).flat()
+    const balances = await api.multiCall({ calls: balanceCalls, abi: 'erc20:balanceOf', permitFailure: true })
+    const assets = await api.multiCall({ calls: balanceCalls.map(c => c.target), abi: 'address:asset', permitFailure: true })
+    const assetBalances = await api.multiCall({ calls: balanceCalls.map((c, i) => ({ ...c, params: balances[i] })), abi: 'function convertToAssets(uint256) view returns (uint256)' })
+    assetBalances.forEach((balance, i) => {
+      const token = assets[i]
+      console.log(`Ethena blacklist - subtracting ${balance / 1e18} of ${token} from TVL`)
+      api.add(token, balance * -1)
+    })
+  }
+
   if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
     blackList.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
@@ -253,12 +296,37 @@ const borrowed = async (api) => {
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
   const blackListLower = blackList.map(b => b.toLowerCase())
 
+  const priceByAddr = await fetchPriceMap(api, marketInfos.flatMap(m => [m.collateralToken, m.loanToken]))
+  const chainHasPrices = Object.keys(priceByAddr).length > 0
+
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
     if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
     if (blackListLower.includes(loanToken.toLowerCase())) return;
-    api.add(loanToken, data.totalBorrowAssets);
+
+    if (chainHasPrices && collateralToken && collateralToken.toLowerCase() !== nullAddress) {
+      if (!priceByAddr[collateralToken.toLowerCase()]) return;
+    }
+
+    let amount = BigInt(data.totalBorrowAssets || 0)
+    const supply = BigInt(data.totalSupplyAssets || 0)
+    if (amount > supply) amount = supply
+    api.add(loanToken, amount.toString());
   });
+}
+
+async function fetchPriceMap(api, addresses) {
+  const tokens = [...new Set(addresses.filter(a => a && a.toLowerCase() !== nullAddress).map(a => a.toLowerCase()))]
+  if (!tokens.length) return {}
+  const keys = tokens.map(t => `${api.chain}:${t}`)
+  const prices = await sdk.coins.getPrices(keys, 'now').catch(() => ({}))
+  const out = {}
+  Object.entries(prices).forEach(([k, v]) => {
+    if (!v || !v.price) return
+    const addr = k.split(':')[1]
+    if (addr) out[addr.toLowerCase()] = v
+  })
+  return out
 }
 
 Object.keys(config).forEach((chain) => {

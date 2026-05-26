@@ -2,6 +2,7 @@ const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
   methodology: 'Count all assets deposited in all vaults curated by Anthias Labs.',
+  start: '2025-05-27', // https://snapshot.box/#/s:moonwell-governance.eth/proposal/0x38bba3ecc2c5421f7660e124a8d874c70485aec16b2097520cf8fd217efca86d
   blockchains: {
     base: {
       morpho: [

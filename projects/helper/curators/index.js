@@ -81,12 +81,16 @@ function isOwner(owner, owners) {
   return false
 }
 
-async function getMorphoVaults(api, owners) {
+async function getMorphoVaults(api, owners, {
+  getAllVaults = false, // needed for morpho tvl computation
+  onlyUseExistingCache = false, 
+} = {}) {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
 
   // Query v1 vaults
   if (MorphoConfigs[api.chain]?.vaultFactories) {
+    let filter = getAllVaults ? _ => true : log => isOwner(log.initialOwner, owners)
     for (const factory of MorphoConfigs[api.chain].vaultFactories) {
       const vaultOfOwners = (
         await getLogs2({
@@ -94,15 +98,17 @@ async function getMorphoVaults(api, owners) {
           eventAbi: ABI.morpho.CreateMetaMorphoEvent,
           target: factory.address,
           fromBlock: factory.fromBlock,
-          toBlock: safeBlock
+          toBlock: safeBlock,
+          onlyUseExistingCache,
         })
-      ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
+      ).filter(filter).map((log) => log.metaMorpho)
       allVaults = allVaults.concat(vaultOfOwners)
     }
   }
 
   // Query v2 vaults
   if (MorphoConfigs[api.chain]?.vaultFactoriesV2) {
+    let filter = getAllVaults ? _ => true : log => isOwner(log.owner, owners)
     for (const factory of MorphoConfigs[api.chain].vaultFactoriesV2) {
       const vaultOfOwners = (
         await getLogs2({
@@ -112,7 +118,7 @@ async function getMorphoVaults(api, owners) {
           fromBlock: factory.fromBlock,
           toBlock: safeBlock
         })
-      ).filter(log => isOwner(log.owner, owners)).map((log) => log.newVaultV2)
+      ).filter(filter).map((log) => log.newVaultV2)
       allVaults = allVaults.concat(vaultOfOwners)
     }
   }
@@ -443,6 +449,16 @@ async function getCuratorTvlBoringVault(api, vaults) {
   }
 }
 
+async function getCuratorTvlUpshiftV2(api, vaults) {
+  // Upshift multiAssetVault: non-ERC4626, exposes asset() + getTotalAssets()
+  await api.erc4626Sum({
+    calls: vaults,
+    tokenAbi: ABI.ERC4626.asset,
+    balanceAbi: 'uint256:getTotalAssets',
+    permitFailure: true,
+  })
+}
+
 async function getCuratorTvlSymbioticVault(api, vaults) {
   const assets = await api.multiCall({ abi: ABI.symbiotic.collateral, calls: vaults, permitFailure: true })
   const existedVaults = []
@@ -543,6 +559,11 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
   }
 
+  // upshift.io multiAssetVault (V2)
+  if (vaults.upshiftV2) {
+    await getCuratorTvlUpshiftV2(api, vaults.upshiftV2)
+  }
+
   // nested 4626 vaults
   if (vaults.nestedVaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
@@ -552,17 +573,25 @@ async function getCuratorTvl(api, vaults) {
 }
 
 function getCuratorExport(configs) {
+  const startTs = configs.start
+    ? (typeof configs.start === 'number' ? configs.start : Math.floor(new Date(configs.start).getTime() / 1000))
+    : 0;
+
   const exportObjects = {
     // these tvl are double count
     doublecounted: true,
 
     // methodology
     methodology: configs.methodology ? configs.methodology : 'Count all deposited assets in curated vaults.',
+
+    start: configs.start
   }
 
   for (const [chain, vaultConfigs] of Object.entries(configs.blockchains)) {
     exportObjects[chain] = {
       tvl: async (api) => {
+        // prevent attributing tvl to curators before they began curating
+        if (startTs && api.timestamp && api.timestamp < startTs) return {};
         return getCuratorTvl(api, vaultConfigs)
       }
     }
@@ -575,4 +604,5 @@ module.exports = {
   getCuratorTvl,
   getCuratorExport,
   kaminoLendVaultTvl,
+  getMorphoVaults,
 }

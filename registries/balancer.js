@@ -96,6 +96,7 @@ const configs = {
     defiverse: null,
     oas: { vault: '0xfb6f8FEdE0Cb63674Ab964affB93D65a4a7D55eA', fromBlock: 4522800 },
     megaeth: { vault: '0xd5e99c20b2e7Ab4C18b2e1709Fd6F5A20F488637', fromBlock: 9729855 },
+    hyperliquid: { vault: '0x2c0b37305F77309D0BD04fa75848DA2cBb5C4B90', fromBlock: 33401847 },
   },
   'sobal': {
     neon_evm: { vault: '0x7122e35ceC2eED4A989D9b0A71998534A203972C', fromBlock: 206166057, blacklistedTokens: ['0x4440000000000000000000000000000000000002'] },

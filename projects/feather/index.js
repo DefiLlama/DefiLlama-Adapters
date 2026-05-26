@@ -17,6 +17,11 @@ const configs = {
         '0x81c76F62f7E05DEC75800150bA5A23f62e2f091F',
       ],
     },
+    klaytn: {
+      morphoVaultOwners: [
+        '0x6Ba8f7039bC7d79c1959cB8E409Dff2ba05A133E',
+      ],
+    },
   }
 }
 
