@@ -1,4 +1,5 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const RELAY = '0xc81fd894c0ace037d133af4886550ac8133568e8'
 const B_ADDRESS = '0x9fDbDE76236998Dc2836FE67A9954eDE456A1D63'
@@ -9,11 +10,25 @@ const config = {
   ethereum: {
     relay: RELAY,
     fromBlock: 24920863,
-    staking: true,
+    reserves: [
+      ADDRESSES.ethereum.WETH,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.USDT,
+      ADDRESSES.ethereum.WBTC,
+      ADDRESSES.ethereum.cbBTC,
+    ],
   },
   base: {
     relay: RELAY,
     fromBlock: 45070267,
+    reserves: [
+      ADDRESSES.base.WETH,
+      ADDRESSES.base.cbBTC,
+      ADDRESSES.base.USDC,
+      ADDRESSES.base.USDT,
+      ADDRESSES.base.WBTC,
+      '0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b', // VIRTUAL
+    ],
   },
 }
 
@@ -42,7 +57,8 @@ async function addPoolMetric(api, metric, tokenGetter) {
 }
 
 async function tvl(api) {
-  return addPoolMetric(api, 'settledReserves', pool => pool.reserveAddress)
+  const { relay, reserves } = config[api.chain]
+  return api.sumTokens({ owner: relay, tokens: reserves })
 }
 
 async function borrowed(api) {
@@ -60,19 +76,22 @@ async function staking(api) {
   api.add(B_ADDRESS, amount)
 }
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = {
+module.exports = {
+  ethereum: {
     tvl,
     borrowed,
-  }
-
-  // Only called on ethereum
-  if (config[chain].staking) module.exports[chain].staking = staking
-})
-
-module.exports.hallmarks = [
-  ['2024-04-27', 'self-whitehack'],
-  ['2026-04-21', 'Mercury launch'],
-]
-
-module.exports.methodology = 'TVL counts settled reserve assets held as liquidity in Baseline Mercury pools. Borrowed counts reserve assets lent from those pools to borrowers and is reported separately. Staking counts staked $B, which is the platform\'s token.'
+    staking,
+  },
+  base: {
+    tvl,
+    borrowed,
+  },
+  blast: {
+    tvl: () => ({}),
+  },
+  methodology: 'TVL counts reserve assets held as liquidity in Baseline Mercury pools. Borrowed counts reserve assets lent from those pools to borrowers and is reported separately. Staking counts staked $B, which is the platform\'s token.',
+  hallmarks: [
+    ['2024-04-27', 'self-whitehack'],
+    ['2026-04-21', 'Mercury launch'],
+  ],
+}
