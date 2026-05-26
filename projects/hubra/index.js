@@ -19,7 +19,6 @@ const EARN_VAULTS = [
   '3kzb6rcDJxSdkWCwXXP9PULSqBy6rVDNWanzw5dBCYCj', // USDT
   '5mv1cURMSaPU3q3wFVoN4mKMWNFVvUtH3UZrG4Z2Mgfz', // USDS
   '7VZ1XKK7Zns6UzRc1Wz54u6cypN7zaduasVXXr7NysxH', // USDG
-  'Gj8kURFs8fK3GhiX5Yc6H1HQKSpEvLHeDRZsP6Y2D1je', // raSOL (raSOL Max vault)
 ]
 
 async function tvl(api) {
@@ -68,6 +67,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL aggregates: (1) SOL backing raSOL — the SPL stake pool\'s totalLamports; (2) SOL delegated directly to Hubra\'s validator vote account, with the raSOL stake pool\'s own delegation subtracted to avoid double-counting; (3) underlying assets held in Hubra Earn vaults (Voltr) — stablecoin vaults (USDC, USD1, USDT, USDS, USDG) and the raSOL Max vault — read directly from on-chain account data.',
+  methodology: 'TVL aggregates: (1) SOL backing raSOL — the SPL stake pool\'s totalLamports; (2) SOL delegated directly to Hubra\'s validator vote account, with the raSOL stake pool\'s own delegation subtracted to avoid double-counting; (3) underlying assets held in Hubra Earn vaults (Voltr) — stablecoin vaults (USDC, USD1, USDT, USDS, USDG) — read directly from on-chain account data.',
   solana: { tvl },
 }
