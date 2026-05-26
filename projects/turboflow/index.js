@@ -48,10 +48,21 @@ const SOLANA_FIREBLOCKS_PAIRS = SOLANA_FIREBLOCKS_OWNERS.flatMap((owner) => [
 ])
 
 async function solanaTvl(api) {
+  // `computeTokenAccount: true` tells the helper to locally derive the
+  // canonical associated token account (ATA) for each (mint, owner) pair
+  // in `tokensAndOwners`, then read those accounts via `getMultipleAccounts`
+  // instead of issuing `getTokenAccountsByOwner` requests (which public
+  // Solana RPCs throttle aggressively from shared CI egress IPs).
+  //
+  // `allowError: true` tolerates Fireblocks ATAs that have not yet been
+  // initialised on chain (i.e. zero deposits to date): the helper treats
+  // a missing account as a zero balance instead of throwing.
   return solanaSumTokens({
     api,
     tokenAccounts: SOLANA_BRIDGE_TOKEN_ACCOUNTS,
     tokensAndOwners: SOLANA_FIREBLOCKS_PAIRS,
+    computeTokenAccount: true,
+    allowError: true,
   })
 }
 
