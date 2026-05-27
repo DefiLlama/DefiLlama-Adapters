@@ -556,6 +556,11 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlBoringVault(api, vaults.turtleclub)
   }
 
+  // generic Veda boring vaults
+  if (vaults.boringVaults) {
+    await getCuratorTvlBoringVault(api, vaults.boringVaults)
+  }
+
   // symiotic.fi
   if (vaults.symbiotic) {
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
