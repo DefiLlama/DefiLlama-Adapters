@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const ethers = require("ethers");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const MARKET_LENS = "0x7fB0d63E84D847569ca75A6cdbA283bA1401F9f6";
 const ADDRESS_REGISTRY = "0x86ccFbEc579D491e9b37354187dD48a1a9C7c1E7";
@@ -66,17 +67,24 @@ async function tvl(api) {
         calls: marketIds,
         abi: ABI.MarketLens.getCollateralAssetsQuery,
     });
-
-  marketData.forEach((datum, i) => {
+  
+    const tokensAndOwners = [];
+    marketData.forEach((datum, i) => {
+        tokensAndOwners.push([datum.marketAsset, markets[i]])
+        collateralData[i].map(col => {
+          tokensAndOwners.push([col.token, markets[i]])
+        })
         // count only remaining assets liquidity
-        api.add(datum.marketAsset, datum.totalReserveAssets);
+        // api.add(datum.marketAsset, datum.totalReserveAssets);
 
-        const collateralDatum = collateralData[i];
-        const totalCollateral = collateralDatum.reduce((previous, current) => {
-            return previous + BigInt(current.totalValue);
-        }, 0n);
-        api.add(datum.marketAsset, totalCollateral);
+        // const collateralDatum = collateralData[i];
+        // const totalCollateral = collateralDatum.reduce((previous, current) => {
+        //     return previous + BigInt(current.totalValue);
+        // }, 0n);
+        // api.add(datum.marketAsset, totalCollateral);
     });
+  
+    await sumTokens2({ api, tokensAndOwners })
 
     return api.erc4626Sum({ calls: VAULTS, permitFailure: true });
 }
