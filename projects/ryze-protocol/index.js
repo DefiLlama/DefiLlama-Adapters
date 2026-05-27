@@ -43,7 +43,7 @@ module.exports = {
     'Pool addresses are fetched from the WeightedPoolFactory via getPoolCount() and pools(). ' +
     'Each pool underlying token address is retrieved using getPoolAsset(index). ' +
     'Token balances are aggregated using sumTokens2.',
-  start: '2026-04-01',
+  start: '2026-04-12', // actual Base factory deployment date
   base: {
     tvl,
   },
