@@ -11,6 +11,6 @@ module.exports = {
     "Curve-style stable pool balances on dfio_meta_main (ThreePool contract).",
 
   dfio_meta_main: {
-    tvl: sumTokensExport({ owner: '0xE440Ec15805BE4C7BabCD17A63B8C8A08a492e0f', resolveLP: true, useDefaultCoreAssets: true }),
+    tvl: sumTokensExport({ owner: '0xE440Ec15805BE4C7BabCD17A63B8C8A08a492e0f', resolveLP: true }),
   },
 };
