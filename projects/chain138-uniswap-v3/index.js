@@ -10,7 +10,7 @@ module.exports = {
   methodology:
     "Uniswap V3 liquidity on dfio_meta_main via official factory event indexing.",
 
-  dfio_meta_main: {
-    tvl: uniV3Export({ factory: '0x2f7219276e3ce367dB9ec74C1196a8ecEe67841C', fromBlock: 3510162 }),
-  },
+  ...uniV3Export({
+    dfio_meta_main: { factory: '0x2f7219276e3ce367dB9ec74C1196a8ecEe67841C', fromBlock: 3510162 },
+  }),
 };
