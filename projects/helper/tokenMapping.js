@@ -41,6 +41,13 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  igra: {
+    [ADDRESSES.igra.WiKAS]: { coingeckoId: 'kaspa', decimals: 18 },
+    '0xA5b8BF902b2844dA17d4506cc827F7F1681735E7': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x46346F49b4fe8c640c5FCdbed2d6741056FEB959': { coingeckoId: 'tether', decimals: 6 },
+    '0x69790024D44504F05973E127197E6df17e283859': { coingeckoId: 'ethereum', decimals: 18 },
+    '0xF2B48b6e560af8834622203a8EEff6960d6172De': { coingeckoId: 'coinbase-wrapped-btc', decimals: 8 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
