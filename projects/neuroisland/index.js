@@ -9,7 +9,6 @@ module.exports = {
     tvl: sumTokensExport({
       owner: REWARD_VAULT,
       tokens: [ADDRESSES.null],
-      resolveLP: true,
     }),
   },
 }
