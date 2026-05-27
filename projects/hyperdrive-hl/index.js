@@ -70,10 +70,16 @@ async function tvl(api) {
   
     const tokensAndOwners = [];
     marketData.forEach((datum, i) => {
-        tokensAndOwners.push([datum.marketAsset, markets[i]])
+        const tokens = new Set()
+
+        tokens.add(datum.marketAsset)
         collateralData[i].map(col => {
-          tokensAndOwners.push([col.token, markets[i]])
+          tokens.add(col.token)
         })
+
+        for (const token of Array.from(tokens)) {
+          tokensAndOwners.push([token, markets[i]])
+        }
         // count only remaining assets liquidity
         // api.add(datum.marketAsset, datum.totalReserveAssets);
 
