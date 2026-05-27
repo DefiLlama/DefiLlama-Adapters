@@ -74,11 +74,5 @@ module.exports = {
     }),
   },
 
-  wemix: {
-    tvl: sumTokensExport({
-      owners: ["0xD3AD6831aacB5386B8A25BB8D8176a6C8a026f04", "0xa4B9DD039565AeD9641D45b57061f99d9cA6Df08"],
-      tokens: ["0x4c38f9a5ed68a04cd28a72e8c68c459ec34576f3", "0xcb7c000000000000000000000000000000000457"],
-      logCalls: true,
-    }),
-  },
+
 };
