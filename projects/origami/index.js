@@ -1,73 +1,215 @@
 const { get } = require('../helper/http')
-const ethers = require('ethers')
 
 const API_BASE = 'https://origami-api.automation-templedao.link'
-const SUPPORTED_CHAINS = ['ethereum', 'berachain', 'plasma']
+const SUPPORTED_CHAINS = ['ethereum', 'berachain', 'plasma'];
 
 module.exports = {
   doublecounted: true,
-  ...Object.fromEntries(SUPPORTED_CHAINS.map((c) => [c, { tvl, borrowed }])),
+  ...Object.fromEntries(SUPPORTED_CHAINS.map((c) => [c, {tvl, borrowed}])),
 }
 
 /**
- * @param {number} n 
- * @param {number} decimals 
- * @returns {bigint}
+ * Discovers Origami vaults for the active chain via the /vault-token-balances endpoint
+ * @param {ChainApi} api
+ * @returns {Promise<Vault[]>}
  */
-function bi(n, decimals) {
-  return ethers.parseUnits(n.toFixed(decimals), decimals)
+async function getVaults(api) {
+  const chainId = api.chainId;
+  if (!chainId) return [];
+
+  const url = new URL("/public/external/vault-token-balances", API_BASE)
+  url.searchParams.append("input", JSON.stringify({ chain: chainId }))
+
+  const { vault_balances } = await get(url)
+  return vault_balances.map((v) => ({ address: v.address, vaultKinds: v.vault_kinds }));
+}
+
+/**
+ * @param {Vault[]} investmentVaults
+ * @param {VaultKind} vaultKind
+ * @returns {string[]} addresses of vaults carrying the given kind
+ */
+function vaultsOfKind(investmentVaults, vaultKind) {
+  return investmentVaults.filter(vault => !!vault.vaultKinds.find(v => v === vaultKind)).map(v => v.address)
 }
 
 /**
  * @param {ChainApi} api
- * @returns {Promise<VaultBalances[]>}
+ * @param {string[]} vaults - LEVERAGE vault addresses
  */
-async function fetchVaultBalances(api) {
-  const url = new URL("/public/external/vault-token-balances", API_BASE)
-  url.searchParams.append("input", JSON.stringify({ chain: api.chainId }))
+async function processLeveragedVaults(api, vaults) {
+  const [levReserveTokens, assetsAndLiabilities] = await Promise.all([
+    api.multiCall({ calls: vaults, abi: 'address:reserveToken', permitFailure: true }),
+    api.multiCall({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', calls: vaults, permitFailure: true })
+  ])
 
-  const { vault_balances } = await get(url)
-  return vault_balances
+  vaults.forEach((_vault, i) => {
+    const levReserveToken = levReserveTokens[i]
+    const assetsAndLiability = assetsAndLiabilities[i]
+    if(!levReserveToken || !assetsAndLiability) return
+    const levBal = assetsAndLiability.assets - assetsAndLiability.liabilities
+    api.addToken(levReserveToken, levBal)
+  })
+}
+
+/**
+ * @param {ChainApi} api
+ * @param {string[]} vaults - REPRICING vault addresses
+ */
+async function processRepricingVaults(api, vaults) {
+  const [decimals, supplies, reserves, rawNonLevTokens] = await Promise.all([
+    api.multiCall({ abi: 'uint8:decimals', calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: 'uint256:reservesPerShare', calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: 'address:reserveToken', calls: vaults, permitFailure: true })
+  ])
+
+  await Promise.all(vaults.map(async (_vault, i) => {
+    const decimal = decimals[i]
+    const supply = supplies[i]
+    const reserve = reserves[i]
+    const rawNonLevToken = rawNonLevTokens[i]
+    if (!decimals || !supply || !reserve || !rawNonLevToken) return
+    const nonLevToken = await api.call({ abi: 'address:baseToken', target: rawNonLevToken })
+    const bal = reserve * supply / 10 ** decimal
+    api.addToken(nonLevToken, bal)
+  }))
+}
+
+/**
+ * @param {ChainApi} api
+ * @param {string[]} vaults - ERC4626 vault addresses
+ */
+async function processErc4626Vaults(api, vaults) {
+  const [assets, totalAssets] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: false })
+  ])
+
+  await Promise.all(vaults.map(async (_vault, i) => {
+    api.addToken(assets[i], totalAssets[i])
+  }))
+}
+
+/**
+ * @param {ChainApi} api
+ * @param {string[]} vaults - BALANCE_SHEET vault addresses
+ */
+async function processBalanceSheetVaults(api, vaults) {
+  const [tokens, balanceSheet] = await Promise.all([
+    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
+  ])
+
+  vaults.forEach((_vault, i) => {
+    const vaultTokens = tokens[i]
+    const vaultBalanceSheet = balanceSheet[i]
+
+    vaultTokens.assetTokens.forEach((token, j) => {
+      const assetAmount = vaultBalanceSheet.totalAssets[j];
+      if(!token || !assetAmount) return
+      api.addToken(token, assetAmount)
+    })
+    vaultTokens.liabilityTokens.forEach((token, j) => {
+      const liabilityAmount = vaultBalanceSheet.totalLiabilities[j];
+      if(!token || !liabilityAmount) return
+      api.addToken(token, -liabilityAmount)
+    })
+  })
+}
+
+/**
+ * @param {ChainApi} api
+ * @param {string[]} vaults - AUTO_STAKING vault addresses
+ */
+async function processAutoStakingVaults(api, vaults) {
+  const [stakingToken, totalSupply] = await Promise.all([
+    api.multiCall({ abi: 'function stakingToken() external view returns (address)', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'function totalSupply() external view returns (uint256)', calls: vaults, permitFailure: false })
+  ])
+
+  vaults.forEach((_vault, i) => {
+    api.addToken(stakingToken[i], totalSupply[i])
+  })
 }
 
 /** @param {ChainApi} api */
 async function tvl(api) {
-  const vaults = await fetchVaultBalances(api)
-  for (const v of vaults) {
-    for (const a of v.assets) api.add(a.token, bi(a.amount, a.decimals))
-    for (const l of v.liabilities) api.add(l.token, -bi(l.amount, l.decimals))
-  }
+  const vaults = await getVaults(api);
+  await processLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
+  await processRepricingVaults(api, vaultsOfKind(vaults, 'REPRICING'))
+  await processErc4626Vaults(api, vaultsOfKind(vaults, 'ERC4626'))
+  await processBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
+  await processAutoStakingVaults(api, vaultsOfKind(vaults, 'AUTO_STAKING'))
+}
+
+/**
+ * @param {ChainApi} api
+ * @param {string[]} leveragedVaults - LEVERAGE vault addresses
+ */
+async function borrowedLeveragedVaults(api, leveragedVaults) {
+  // Retrieve the token balance of the underlying debt token
+  const managers = await api.multiCall({ calls: leveragedVaults, abi: 'address:manager', permitFailure: true })
+  const borrowLends = await api.multiCall({ calls: managers, abi: 'address:borrowLend', permitFailure: true })
+  const [borrowTokens, borrowAmounts] = await Promise.all([
+    await api.multiCall({ calls: borrowLends, abi: 'address:borrowToken', permitFailure: true }),
+    await api.multiCall({ calls: borrowLends, abi: 'address:debtBalance', permitFailure: true })
+  ])
+
+  leveragedVaults.forEach((_vault, i) => {
+    const debtToken = borrowTokens[i]
+    const debtAmount = borrowAmounts[i]
+    if(!debtToken || !debtAmount) return
+    api.addToken(debtToken, debtAmount)
+  })
+}
+
+/**
+ * @param {ChainApi} api
+ * @param {string[]} vaults - BALANCE_SHEET vault addresses
+ */
+async function borrowedBalanceSheetVaults(api, vaults) {
+  const [tokens, balanceSheet] = await Promise.all([
+    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
+  ])
+
+  vaults.forEach((_vault, i) => {
+    const vaultTokens = tokens[i]
+    const vaultBalanceSheet = balanceSheet[i]
+
+    vaultTokens.liabilityTokens.forEach((token, j) => {
+      const liabilityAmount = vaultBalanceSheet.totalLiabilities[j];
+      if(!token || !liabilityAmount) return
+      api.addToken(token, liabilityAmount)
+    })
+  })
 }
 
 /** @param {ChainApi} api */
 async function borrowed(api) {
-  const vaults = await fetchVaultBalances(api)
-  for (const v of vaults) {
-    for (const l of v.liabilities) api.add(l.token, bi(l.amount, l.decimals))
-  }
+  const vaults = await getVaults(api);
+  await borrowedLeveragedVaults(api, vaultsOfKind(vaults, 'LEVERAGE'))
+  await borrowedBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
 }
 
+/** @typedef {import('@defillama/sdk').ChainApi} ChainApi */
+
 /**
- * Origami vault kind tag. A single vault may carry multiple kinds — e.g. a
- * leveraged ERC4626 vault returns `['ERC4626', 'LEVERAGE']`.
+ * Origami vault kind tag. A vault may carry multiple kinds, e.g. `['ERC4626', 'LEVERAGE']`.
  * @typedef {'ERC4626' | 'REPRICING' | 'LEVERAGE' | 'BALANCE_SHEET' | 'AUTO_STAKING'} VaultKind
  */
 
 /**
- * Single token entry returned by the vault-token-balances endpoint.
- * @typedef {Object} TokenAmount
- * @property {string} token - 0x-prefixed ERC20 address
- * @property {number} amount - Decimals-normalized (human-readable) balance
- * @property {number} decimals - Token decimals, used to denormalize back to raw uint256
- */
-
-/**
- * Per-vault row returned by the vault-token-balances endpoint.
+ * Per-vault row returned by `GET /public/external/vault-token-balances`.
  * @typedef {Object} VaultBalances
  * @property {string} address - Vault contract address
  * @property {VaultKind[]} vault_kinds
- * @property {TokenAmount[]} assets
- * @property {TokenAmount[]} liabilities - BALANCE_SHEET vaults: liability_tokens balances. LEVERAGE vaults: borrowed debt token + amount. Empty for ERC4626/REPRICING/AUTO_STAKING.
  */
 
-/** @typedef {import('@defillama/sdk').ChainApi} ChainApi */
+/**
+ * Vault descriptor consumed by the on-chain balance functions.
+ * @typedef {Object} Vault
+ * @property {string} address
+ * @property {VaultKind[]} vaultKinds
+ */
