@@ -15,6 +15,32 @@ const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xW
 
 const SCALE_FACTOR = 1_000_000n;
 
+const EPOCH_RATE_LOOKBACK = 5n;
+
+async function getLatestEpochRateInfo(connection, currentEpoch) {
+  const firstEpoch =
+    currentEpoch > EPOCH_RATE_LOOKBACK ? currentEpoch - EPOCH_RATE_LOOKBACK : 0n;
+
+  const epochs = [];
+  for (let epoch = currentEpoch - 1n; epoch >= firstEpoch; epoch -= 1n) {
+    epochs.push(epoch);
+  }
+
+  const accounts = await connection.getMultipleAccountsInfo(
+    epochs.map(deriveEpochExchangeRatePda)
+  );
+
+  const index = accounts.findIndex(Boolean);
+  if (index === -1) {
+    throw new Error(`No epoch_rate account found in the last ${EPOCH_RATE_LOOKBACK} epochs`);
+  }
+
+  return {
+    epoch: epochs[index],
+    accountInfo: accounts[index],
+  };
+}
+
 const vaultAuthority = PublicKey.findProgramAddressSync(
   [Buffer.from("vault_authority")],
   TRUBILL_VAULT_PROGRAM_ID,
@@ -83,16 +109,15 @@ async function trubillTvl(api) {
   const connection = getConnection();
 
   const assetControllerInfo = await connection.getAccountInfo(ASSET_CONTROLLER);
-  const lastCompletedEpoch = decodeCurrentEpoch(assetControllerInfo.data) - 1n;
-  const epochRatePda = deriveEpochExchangeRatePda(lastCompletedEpoch);
+  const currentEpoch = decodeCurrentEpoch(assetControllerInfo.data);
+  const { accountInfo: epochRateInfo } = await getLatestEpochRateInfo(connection, currentEpoch);
 
-  const [usdcAtaInfo, ultraAtaInfo, usdcAcctInfo, ultraAcctInfo, epochRateInfo] =
+  const [usdcAtaInfo, ultraAtaInfo, usdcAcctInfo, ultraAcctInfo] =
     await connection.getMultipleAccountsInfo([
       vaultUsdcAta,
       vaultUltraAta,
       usdcAccountingPda,
       ultraAccountingPda,
-      epochRatePda,
     ]);
 
   const usdcHeld = readTokenAccountAmount(usdcAtaInfo);
