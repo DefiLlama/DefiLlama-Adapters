@@ -57,6 +57,15 @@ const config = {
   },
 }
 
+/**
+ * Returns the cached list of Prodigy.Fi vaults that hold collateral directly
+ * (i.e. `collateralPool()` returns the zero address), incrementally scanning
+ * newly deployed vaults from the factory since the previous run.
+ *
+ * @param {object} api - DefiLlama ChainApi bound to the current chain.
+ * @param {string} factory - Factory contract address for this chain.
+ * @returns {Promise<string[]>} Addresses of self-collateralised vaults.
+ */
 async function getSelfCollateralisedVaults(api, factory) {
   const cache = (await getCache(CACHE_PROJECT, api.chain)) || {}
   const selfCollateralised = cache.selfCollateralised || []
@@ -82,6 +91,14 @@ async function getSelfCollateralisedVaults(api, factory) {
   return selfCollateralised
 }
 
+/**
+ * Computes Prodigy.Fi TVL on the active chain by summing the configured
+ * trading-pair tokens held by the chain's collateral pools and by every
+ * self-collateralised vault discovered through the factory.
+ *
+ * @param {object} api - DefiLlama ChainApi bound to the current chain.
+ * @returns {Promise<object>} Balance map produced by `sumTokens2`.
+ */
 async function tvl(api) {
   const { factory, collateralPools, tokens } = config[api.chain]
   const selfCollateralisedVaults = await getSelfCollateralisedVaults(api, factory)
