@@ -684,7 +684,8 @@ Object.keys(ADDRESSES).forEach(chain => {
       await erc4626VaultsTvl(api)
       await getTermStructureTvl(api)
       const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens })
+      await sumTokens2({ api, ownerTokens })
+      if(api.chain == 'bsquared') api.removeTokenBalance('0x796e4D53067FF374B89b2Ac101ce0c1f72ccaAc2') // uBTC - unproductive
     },
     borrowed: async (api) => {
       await Promise.all([
