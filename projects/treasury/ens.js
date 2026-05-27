@@ -11,6 +11,7 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         ADDRESSES.null,
+        ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.sUSDS,
         ADDRESSES.ethereum.LINK
