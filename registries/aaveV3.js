@@ -90,6 +90,11 @@ const configs = {
     pharos: {
       poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
     }
+  },
+  'kaskad': {
+    igra: {
+      poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
+    }
   }
 }
 
