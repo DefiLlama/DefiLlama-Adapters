@@ -42,8 +42,8 @@ module.exports = {
       getTridentTVL({ chain: CHAIN, factory:PUMP_V3 }),
     ]),
     staking: staking(
-      [MASTERCHEFS[0], MASTERCHEFS[2]], 
-      [TOKENS.SHELL, TOKENS.SBWPM, TOKENS.SADOL, TOKENS.PEARL]
+      [MASTERCHEFS[0], MASTERCHEFS[1], MASTERCHEFS[2]], 
+      [TOKENS.SHELL, TOKENS.SBWPM, TOKENS.SADOL, TOKENS.KRILL, TOKENS.PEARL]
     )
   },
 }
