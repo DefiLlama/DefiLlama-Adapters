@@ -1,5 +1,6 @@
 // AUTO-GENERATED — scripts/defillama/generate-bridge-tvl-adapter.py
-// GRU bridge locked collateral (hub c* escrow + CCIP WETH + Mainnet cW* L2 bridge)
+// GRU bridge locked collateral: hub c* escrow (source chain) + CCIP WETH lock boxes.
+// cW* on destination chains are minted transport — not counted (DefiLlama bridge methodology).
 // Regenerate after config/defillama-bridge-collateral-manifest.json changes.
 
 const { sumTokensExport } = require("../helper/unwrapLPs");
@@ -35,28 +36,14 @@ const HUB_OWNERS = [
   "0x34B73e6EDFd9f85a7c25EeD31dcB13aB6E969b96"
 ];
 
-const MAINNET_CW = [
-    "0x07EEd0D7dD40984e47B9D3a3bdded1c536435582",
-    "0x0F91C5E6Ddd46403746aAC970D05d70FFe404780",
-    "0x1dDF9970F01c76A692Fdba2706203E6f16e0C46F",
-    "0x209FE32fe7B541751D190ae4e50cd005DcF8EDb4",
-    "0x2de5F116bFcE3d0f922d9C8351e0c5Fc24b9284a",
-    "0x5020Db641B3Fc0dAbBc0c688C845bc4E3699f35F",
-    "0x572Be0fa8CA0534d642A567CEDb398B771D8a715",
-    "0x855d74FFB6CF75721a9bAbc8B2ed35c8119241dC",
-    "0xACE1DBF857549a11aF1322e1f91F2F64b029c906",
-    "0xaF5017d0163ecb99D9B5D94e3b4D7b09Af44D8AE",
-    "0xc074007dc0bfb384b1cf6426a56287ed23fe4d52",
-    "0xD4aEAa8cD3fB41Dc8437FaC7639B6d91B60A5e8d",
-  ];
-
 module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology:
-    "TVL is ERC-20 (and native where applicable) balances held in deployed GRU bridge contracts: " +
-    "Chain 138 hub escrow (CWMultiTokenBridgeL1, vaults, CCIP WETH bridges), Mainnet cW L2 bridge, " +
-    "and per-chain CCIP WETH lock boxes. c* hub collateral backs cW* mints; DODO AMM liquidity is separate.",
+    "TVL is ERC-20 (and native where applicable) balances held in deployed GRU bridge contracts. " +
+    "c* hub collateral on dfio_meta_main (Chain 138) backs cW* mints on destination chains — " +
+    "only source-chain escrow is counted, not minted cW* on L2. CCIP WETH9/WETH10 lock boxes " +
+    "on each chain hold corridor WETH separately. DODO AMM liquidity is separate.",
 
   dfio_meta_main: {
     tvl: sumTokensExport({
@@ -68,8 +55,8 @@ module.exports = {
 
   ethereum: {
     tvl: sumTokensExport({
-      owners: ["0x2bF74583206A49Be07E0E8A94197C12987AbD7B5", "0xF9A32F37099c582D28b4dE7Fca6eaC1e5259f939", "0xc9901ce2Ddb6490FAA183645147a87496d8b20B6", "0x04E1e22B0D41e99f4275bd40A50480219bc9A223"],
-      tokens: [...MAINNET_CW, ADDRESSES.ethereum.WETH],
+      owners: ["0xF9A32F37099c582D28b4dE7Fca6eaC1e5259f939", "0xc9901ce2Ddb6490FAA183645147a87496d8b20B6", "0x04E1e22B0D41e99f4275bd40A50480219bc9A223"],
+      tokens: [ADDRESSES.ethereum.WETH],
       logCalls: true,
     }),
   },
