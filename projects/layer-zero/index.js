@@ -58,17 +58,14 @@ const chains = [
   'monad', 'fantom', 'tac', 'mode', 'sonic', 'mantle', 'celo', 'fraxtal',
   'citrea', 'stable', 'xdai', 'linea', 'xlayer', 'nibiru', 'abstract',
   'era', 'metis', 'peaq', 'flare', 'astar', 'blast',
-  // 0 tvl
-  // 'plume_mainnet', 'tempo', 'scroll', 'sei', 'unichain', 'morph',
-  // 'soneium', 'manta', 'klaytn', 'xdc', 'swellchain', 'taiko',
-  // 'kava', 'bob', 'flow', 'canto', 'wc', 'hedera', 'op_bnb', 'goat',
-  // 'moonriver', 'conflux', 'lisk', 'megaeth', 'harmony',
-  // dead/rpc errors/no multicall
-  // 'sanko', 'moonbeam', 'tron',
+  'plume_mainnet', 'tempo', 'scroll', 'sei', 'unichain', 'morph',
+  'soneium', 'manta', 'klaytn', 'xdc', 'swellchain', 'taiko',
+  'kava', 'bob', 'flow', 'canto', 'wc', 'hedera', 'op_bnb', 'goat',
+  'moonriver', 'conflux', 'lisk', 'megaeth', 'harmony',
 ]
 
 module.exports = {
-  methodology: 'Counts tokens locked in LayerZero OFTAdapter contracts on each chain. Addresses are fetched from the LayerZero metadata API.',
+  methodology: 'Counts tokens locked in LayerZero adapter contracts on each chain. Addresses are fetched from the LayerZero metadata API.',
 }
 
 chains.forEach(chain => {
