@@ -1,4 +1,4 @@
-const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // Kal Mydas strategy vault pools deployed on Base mainnet (2026-05-01).
 // Each KalPool holds USDC and allocates a fraction to an off-chain operator
@@ -15,6 +15,6 @@ module.exports = {
     methodology:
           'TVL is the sum of USDC held by the five KalPool strategy vault contracts (HORIZON, VALKYRIE, REVOLUTION, TREASURY, ORION) on Base mainnet.',
     base: {
-          tvl: (api) => api.sumTokens({ owners: POOLS, tokens: [USDC] }),
+          tvl: (api) => api.sumTokens({ owners: POOLS, tokens: [ADDRESSES.base.USDC] }),
     },
 };
