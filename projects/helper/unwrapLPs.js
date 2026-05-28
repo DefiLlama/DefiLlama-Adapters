@@ -952,6 +952,7 @@ async function sumTokens2({
   resolveSlipstream = false,
   resolveSlipstreamV2 = false,
   resolveSlipstreamV3 = false,
+  resolveStakewiseDeposits = false,
   uniV3WhitelistedTokens = [],
   uniV3nftsAndOwners = [],
   resolveArtBlocks = false,
@@ -1122,6 +1123,9 @@ group by
 
   if (resolveIchiVault)
     await unwrapHypervisorVaults({ api })
+
+  if (resolveStakewiseDeposits)
+    await unwrapStakewiseDeposits({ api, owners })
 
 
   if (!skipFixBalances) {
@@ -1335,6 +1339,12 @@ async function unwrapSolidlyVeNft({ api, baseToken, veNft, owner, hasTokensOfOwn
   bals.forEach(i => api.add(baseToken, i.amount))
 }
 
+async function unwrapStakewiseDeposits({ api, owners = [], vault = '0xAC0F906E433d58FA868F936E8A43230473652885' }) {
+  const shares = await api.multiCall({ abi: 'function getShares(address) view returns (uint256)', calls: owners, target: vault })
+  const assets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: shares, target: vault })
+  assets.forEach(a => api.add(nullAddress, a))
+}
+
 module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
@@ -1356,3 +1366,4 @@ module.exports = {
   unwrapHypervisorVaults,
   unwrapUniswapV4NFTs,
 }
+

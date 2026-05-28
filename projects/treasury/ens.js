@@ -31,6 +31,7 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.LINK
     ],
     resolveUniV3: true,
+    resolveStakewiseDeposits: true,
     ownTokens: [ENS],
     owners: [treasury, vestingAddress, treasury2, publicGoods, metaGov, metaGov2, eco, eco2, registrar, registrar2, endowment,],
   },
