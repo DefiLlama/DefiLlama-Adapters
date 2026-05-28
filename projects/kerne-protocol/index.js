@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const KERNE_VAULT = '0x8005bc7A86AD904C20fd62788ABED7546c1cF2AC';
 const KUSD_PSM = '0xFf3025ec18e301855aB0f36Ec6ECa115a29A5Fbc';
-const USDC_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+const USDC_BASE = ADDRESSES.base.USDC;
 
 async function tvl(api) {
   await api.sumTokens({ tokensAndOwners: [[ADDRESSES.base.USDC, KUSD_PSM]]})

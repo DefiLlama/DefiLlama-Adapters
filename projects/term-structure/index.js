@@ -685,7 +685,7 @@ Object.keys(ADDRESSES).forEach(chain => {
       await getTermStructureTvl(api)
       const ownerTokens = await getTermMaxOwnerTokens(api);
       await sumTokens2({ api, ownerTokens })
-      if(api.chain == 'bsquared') api.removeTokenBalance('0x796e4D53067FF374B89b2Ac101ce0c1f72ccaAc2') // uBTC - unproductive
+      if(api.chain == 'bsquared') api.removeTokenBalance(ADDRESSES.bsquared.UBTC) // uBTC - unproductive
     },
     borrowed: async (api) => {
       await Promise.all([
