@@ -88,10 +88,14 @@ const configs = {
 }
 
 module.exports = {
-  ...getCuratorExport(configs),
+  // ...getCuratorExport(configs),
 
   timetravel: false, // starknet doesn't support historical queries
   hallmarks: [
     ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
   ],
 }
+
+Object.keys(configs.blockchains).forEach(chain => {
+  module.exports[chain] = {tvl: () => ({})}
+})
