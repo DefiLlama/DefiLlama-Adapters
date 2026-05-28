@@ -2904,6 +2904,9 @@ const uniV2Configs = {
   },
   'sentrix-dex': {
     srx: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
+  },
+  'myrxswap': {
+    mrt: '0x7E4A7CC7D9e4e416E7277F8309cC54cF5FD8AF2b'
   }
 }
 
