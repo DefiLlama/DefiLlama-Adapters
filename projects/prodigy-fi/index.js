@@ -82,7 +82,7 @@ async function getSelfCollateralisedVaults(api, factory) {
   const pages = await api.multiCall({ abi: FACTORY_ABI.getDeployedVaults, calls: pageCalls })
   const newVaults = pages.flat()
 
-  const collateralPools = await api.multiCall({ abi: 'address:collateralPool', calls: newVaults })
+  const collateralPools = await api.multiCall({ abi: 'address:collateralPool', calls: newVaults, permitFailure: true })
   collateralPools.forEach((cp, i) => {
     if (cp === ZERO_ADDRESS) selfCollateralised.push(newVaults[i])
   })
@@ -112,4 +112,3 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl }
 })
-
