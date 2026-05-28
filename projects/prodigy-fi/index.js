@@ -82,7 +82,7 @@ async function getSelfCollateralisedVaults(api, factory) {
   const pages = await api.multiCall({ abi: FACTORY_ABI.getDeployedVaults, calls: pageCalls })
   const newVaults = pages.flat()
 
-  const collateralPools = await api.multiCall({ abi: 'address:collateralPool', calls: newVaults, permitFailure: true })
+  const collateralPools = await api.multiCall({ abi: 'address:collateralPool', calls: newVaults })
   collateralPools.forEach((cp, i) => {
     if (cp === ZERO_ADDRESS) selfCollateralised.push(newVaults[i])
   })
