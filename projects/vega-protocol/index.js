@@ -26,9 +26,6 @@ const contractAbis = {
   "balanceOf": "function balanceOf(address account) view returns (uint256)"
 }
 
-module.exports = {
-};
-
 Object.keys(config).forEach(chain => {
   const { bridge, fromBlock, vega, stakingContract, assetPool, vestingContract } = config[chain]
   const sums = {
@@ -48,7 +45,7 @@ Object.keys(config).forEach(chain => {
   }
 
   if (vestingContract && stakingContract) {
-    sums.staking = async (_, _b, cb, { chain, block, api } = {}) => {
+    sums.staking = async (api) => {
       const vegaStakedInVesting = await api.call({ 
         abi: contractAbis.totalStaked, 
         target: vestingContract 

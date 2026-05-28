@@ -2902,6 +2902,12 @@ const uniV2Configs = {
     },
     mezo: '0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79',
   },
+  'sentrix-dex': {
+    srx: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
+  },
+  'myrxswap': {
+    mrt: '0x7E4A7CC7D9e4e416E7277F8309cC54cF5FD8AF2b'
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

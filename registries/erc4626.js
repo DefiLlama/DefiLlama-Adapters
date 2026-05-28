@@ -245,7 +245,7 @@ const configs = {
     ],
   },
   'tulpea': {
-    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy\'s (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
+    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy's (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
     start: '2026-04-09',
     megaeth: ['0xa21eAFee50DA331521B6Ec4Dd33dEd3F9E1bD2Ea']
   },
@@ -269,6 +269,7 @@ const configs = {
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
   },
   'visionboard-vault': {
+    timetravel: false,
     hyperliquid: ['0x0a5e236425aca07fd087904F8863CAd554675E06'],
     methodology: 'TVL is calculated from VisionBoard Vault totalAssets() on HyperEVM. Deposits mint VBV vault shares backed by the vault asset, currently USDC.'
   },

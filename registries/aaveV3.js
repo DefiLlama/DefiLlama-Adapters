@@ -80,6 +80,21 @@ const configs = {
     ethereum: {
       poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501']
     }
+  },
+  'vena': {
+    fluent: {
+      poolDatas: ['0xb6eEF266933382661827E36fE3f936396e80166E']
+    }
+  },
+  'zona': {
+    pharos: {
+      poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
+    }
+  },
+  'kaskad': {
+    igra: {
+      poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
+    }
   }
 }
 

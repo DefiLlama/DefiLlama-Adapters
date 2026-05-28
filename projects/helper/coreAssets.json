@@ -232,12 +232,9 @@
     "wHOO": "0x3eff9d389d13d6352bfb498bcf616ef9b1beac87"
   },
   "harmony": {
-    "JEWEL": "0x72cb10c6bfa5624dd07ef608027e366bd690048f",
     "MIS": "0xd74433b187cf0ba998ad9be3486b929c76815215",
     "WONE": "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
-    "xJEWEL": "0xa9ce83507d872c5e1273e745abcfda849daa654f",
-    "AVAX": "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
-    "VIPER": "0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79"
+    "AVAX": "0xb12c13e66ade1f72f71834f2fc5082db8c091358"
   },
   "optimism": {
     "OP": "0x4200000000000000000000000000000000000042",
@@ -2836,5 +2833,8 @@
   "pharos": {
     "USDC": "0xc879c018db60520f4355c26ed1a6d572cdac1815",
     "WPROS": "0x52c48d4213107b20bc583832b0d951fb9ca8f0b0"
+    },
+  "srx": {
+    "WSRX": "0x4693b113e523A196d9579333c4ab8358e2656553"
   }
 }

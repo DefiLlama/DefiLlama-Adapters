@@ -86,6 +86,12 @@ const configs = {
       staking: { owners: ['0x62250aEE40F37e2eb2cd300E5a429d7096C8868F'], tokens: ['0xE444de61752bD13D1D37Ee59c31ef4e489bd727C']}
     }
   },
+  'venice-protocol': {
+    methodology: 'Counts the total VVV tokens locked in the Venice Protocol staking contract (sVVV) on Base.',
+    base: {
+      staking: ['0x321b7ff75154472B18EDb199033fF4D116F340Ff', '0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf'],
+    },
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2

@@ -81,12 +81,16 @@ function isOwner(owner, owners) {
   return false
 }
 
-async function getMorphoVaults(api, owners) {
+async function getMorphoVaults(api, owners, {
+  getAllVaults = false, // needed for morpho tvl computation
+  onlyUseExistingCache = false, 
+} = {}) {
   let allVaults = []
   const safeBlock = (await api.getBlock()) - 200
 
   // Query v1 vaults
   if (MorphoConfigs[api.chain]?.vaultFactories) {
+    let filter = getAllVaults ? _ => true : log => isOwner(log.initialOwner, owners)
     for (const factory of MorphoConfigs[api.chain].vaultFactories) {
       const vaultOfOwners = (
         await getLogs2({
@@ -94,15 +98,17 @@ async function getMorphoVaults(api, owners) {
           eventAbi: ABI.morpho.CreateMetaMorphoEvent,
           target: factory.address,
           fromBlock: factory.fromBlock,
-          toBlock: safeBlock
+          toBlock: safeBlock,
+          onlyUseExistingCache,
         })
-      ).filter(log => isOwner(log.initialOwner, owners)).map((log) => log.metaMorpho)
+      ).filter(filter).map((log) => log.metaMorpho)
       allVaults = allVaults.concat(vaultOfOwners)
     }
   }
 
   // Query v2 vaults
   if (MorphoConfigs[api.chain]?.vaultFactoriesV2) {
+    let filter = getAllVaults ? _ => true : log => isOwner(log.owner, owners)
     for (const factory of MorphoConfigs[api.chain].vaultFactoriesV2) {
       const vaultOfOwners = (
         await getLogs2({
@@ -112,7 +118,7 @@ async function getMorphoVaults(api, owners) {
           fromBlock: factory.fromBlock,
           toBlock: safeBlock
         })
-      ).filter(log => isOwner(log.owner, owners)).map((log) => log.newVaultV2)
+      ).filter(filter).map((log) => log.newVaultV2)
       allVaults = allVaults.concat(vaultOfOwners)
     }
   }
@@ -182,7 +188,9 @@ async function getSiloVaults(api, owners) {
 }
 
 async function getCuratorTvlErc4626(api, vaults) {
-  if (!vaults || vaults.length === 0) return
+  if (!vaults || vaults.length === 0) return;
+  vaults = vaults.map(v => v.toLowerCase())
+  vaults = [...new Set(vaults)] // de-dup vault addresses
 
   // Get assets and totalAssets for all vaults
   const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
@@ -548,6 +556,11 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlBoringVault(api, vaults.turtleclub)
   }
 
+  // generic Veda boring vaults
+  if (vaults.boringVaults) {
+    await getCuratorTvlBoringVault(api, vaults.boringVaults)
+  }
+
   // symiotic.fi
   if (vaults.symbiotic) {
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
@@ -598,4 +611,5 @@ module.exports = {
   getCuratorTvl,
   getCuratorExport,
   kaminoLendVaultTvl,
+  getMorphoVaults,
 }
