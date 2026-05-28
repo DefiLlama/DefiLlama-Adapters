@@ -16,7 +16,7 @@ module.exports = {
     "a single shared custody wallet; user deposits route to it via " +
     "destination tags. Per-user accounting is internal to XORA; the on-chain " +
     "balance is the canonical TVL.",
-  start: 1741305600, // 2026-03-07 (treasury first deposit)
+  start: 1772841600, // 2026-03-07 (treasury first deposit)
   ripple: {
     tvl: sumTokensExport({ owners: TREASURY_ADDRESSES }),
   },
