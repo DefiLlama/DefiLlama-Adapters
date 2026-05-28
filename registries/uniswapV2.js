@@ -1292,6 +1292,10 @@ const uniV2Configs = {
   'neptunex': {
     blast: '0x922FeCbE8dbFDfe85FfF4734046347B8E2ee7c82',
   },
+  'tamaswap': {
+    ethereum: '0x00000021543ed46B665A74484c82B71E4eB61e34',
+    // base: '0x00000021543ed46B665A74484c82B71E4eB61e34',
+  },
   'nest-platform-v2': {
     _options: {
       hasStablePools: true,
