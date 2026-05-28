@@ -17,18 +17,21 @@ const eco2 = "0x9B9c249Be04dd433c7e8FbBF5E61E6741b89966D"
 const registrar = "0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5"
 const registrar2 = "0x253553366Da8546fC250F225fe3d25d0C782303b"
 
-const ENS= "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
+const endowment = '0x4F2083f5fBede34C2714aFfb3105539775f7FE64'
+
+const ENS = "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72"
 
 module.exports = treasuryExports({
   ethereum: {
-    tokens: [ 
-        ADDRESSES.null,
-        ADDRESSES.ethereum.WETH,
-        ADDRESSES.ethereum.USDC,
-        ADDRESSES.ethereum.sUSDS,
-        ADDRESSES.ethereum.LINK
-     ],
-     ownTokens: [ENS],
-    owners: [treasury, vestingAddress, treasury2, publicGoods, metaGov, metaGov2, eco, eco2, registrar, registrar2],
+    tokens: [
+      ADDRESSES.null,
+      ADDRESSES.ethereum.WETH,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.sUSDS,
+      ADDRESSES.ethereum.LINK
+    ],
+    resolveUniV3: true,
+    ownTokens: [ENS],
+    owners: [treasury, vestingAddress, treasury2, publicGoods, metaGov, metaGov2, eco, eco2, registrar, registrar2, endowment,],
   },
 })
