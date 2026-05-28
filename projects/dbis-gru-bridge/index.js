@@ -1,6 +1,6 @@
 // AUTO-GENERATED — scripts/defillama/generate-bridge-tvl-adapter.py
 // GRU bridge locked collateral: dfio_meta_main (Chain 138) source-chain escrow only.
-// cW* on destination chains and per-chain CCIP locks are not counted (DefiLlama bridge methodology).
+// Destination chains (cW*, CCIP WETH on eth/bsc/polygon/…) are not exported — Felix review / bridge methodology.
 // Regenerate after config/defillama-bridge-collateral-manifest.json changes.
 
 const { sumTokensExport } = require("../helper/unwrapLPs");
@@ -41,8 +41,8 @@ module.exports = {
   methodology:
     "TVL is ERC-20 balances held in deployed GRU bridge contracts on dfio_meta_main (Chain 138) only. " +
     "Hub c* locked in escrow backs cW* mints on destination chains — minted cW* and destination-chain " +
-    "CCIP lock boxes are not counted. CCIP WETH9/WETH10 on 138 are included in hub owners. " +
-    "DODO AMM liquidity is separate.",
+    "CCIP lock boxes (Ethereum, BSC, Polygon, Arbitrum, Optimism, Base, Avalanche, Gnosis, Cronos, Celo, Wemix) " +
+    "are not counted. CCIP WETH9/WETH10 on Chain 138 are included in hub owners. DODO AMM liquidity is separate.",
 
   dfio_meta_main: {
     tvl: sumTokensExport({
@@ -51,6 +51,4 @@ module.exports = {
       logCalls: true,
     }),
   },
-
-
 };
