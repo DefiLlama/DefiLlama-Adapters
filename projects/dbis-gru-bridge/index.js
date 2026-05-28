@@ -1,10 +1,9 @@
 // AUTO-GENERATED — scripts/defillama/generate-bridge-tvl-adapter.py
-// GRU bridge locked collateral: hub c* escrow (source chain) + CCIP WETH lock boxes.
-// cW* on destination chains are minted transport — not counted (DefiLlama bridge methodology).
+// GRU bridge locked collateral: dfio_meta_main (Chain 138) source-chain escrow only.
+// cW* on destination chains and per-chain CCIP locks are not counted (DefiLlama bridge methodology).
 // Regenerate after config/defillama-bridge-collateral-manifest.json changes.
 
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const ADDRESSES = require("../helper/coreAssets.json");
 
 const HUB_C_TOKENS = [
     "0x003960f16D9d34F2e98d62723B6721Fb92074aD2",
@@ -40,23 +39,15 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology:
-    "TVL is ERC-20 (and native where applicable) balances held in deployed GRU bridge contracts. " +
-    "c* hub collateral on dfio_meta_main (Chain 138) backs cW* mints on destination chains — " +
-    "only source-chain escrow is counted, not minted cW* on L2. CCIP WETH9/WETH10 lock boxes " +
-    "on each chain hold corridor WETH separately. DODO AMM liquidity is separate.",
+    "TVL is ERC-20 balances held in deployed GRU bridge contracts on dfio_meta_main (Chain 138) only. " +
+    "Hub c* locked in escrow backs cW* mints on destination chains — minted cW* and destination-chain " +
+    "CCIP lock boxes are not counted. CCIP WETH9/WETH10 on 138 are included in hub owners. " +
+    "DODO AMM liquidity is separate.",
 
   dfio_meta_main: {
     tvl: sumTokensExport({
       owners: HUB_OWNERS,
       tokens: HUB_C_TOKENS,
-      logCalls: true,
-    }),
-  },
-
-  ethereum: {
-    tvl: sumTokensExport({
-      owners: ["0xF9A32F37099c582D28b4dE7Fca6eaC1e5259f939", "0xc9901ce2Ddb6490FAA183645147a87496d8b20B6", "0x04E1e22B0D41e99f4275bd40A50480219bc9A223"],
-      tokens: [ADDRESSES.ethereum.WETH],
       logCalls: true,
     }),
   },
