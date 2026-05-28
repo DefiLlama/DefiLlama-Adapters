@@ -97,5 +97,7 @@ module.exports = {
 }
 
 Object.keys(configs.blockchains).forEach(chain => {
-  module.exports[chain] = {tvl: () => ({})}
-})
+  module.exports[chain] = {tvl: async () => {
+    throw new Error("Temporary break to fix broken tvl")
+  }
+}})
