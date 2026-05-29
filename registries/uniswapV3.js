@@ -1740,6 +1740,7 @@ const uniV3Configs = {
     dfio_meta_main: {
       factory: '0x2f7219276e3ce367dB9ec74C1196a8ecEe67841C',
       fromBlock: 3510162,
+      permitFailure: true,
     },
   },
 }
