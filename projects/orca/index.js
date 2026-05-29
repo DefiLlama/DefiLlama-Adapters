@@ -88,6 +88,7 @@ module.exports = {
   timetravel: false,
   solana: { tvl: sdk.util.sumChainTvls([orcaV1Tvl, orcaV2Tvl, tvl]) },
   eclipse: { tvl: eclipseTvl },
+  isHeavyProtocol: true,
   hallmarks: [
     ['2021-08-10', "Token+LM launch"],
     ['2022-11-08', "FTX collapse"]
