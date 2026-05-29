@@ -44,7 +44,7 @@ const fixBalancesTokens = {
   inri: {
     '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {
       coingeckoId: 'tether',
-      decimals: 18,
+      decimals: 6,
     },
   },
   ozone: {

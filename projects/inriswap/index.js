@@ -20,6 +20,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     'TVL counts assets held in the official INRISwap iUSD/WINRI pair and the official Liquidity Seeder contract used during the liquidity formation phase. The Seeder holds iUSD and native INRI outside the live pair until the liquidity target is reached.',
   inri: {
