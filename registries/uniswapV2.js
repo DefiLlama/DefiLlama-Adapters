@@ -1292,6 +1292,10 @@ const uniV2Configs = {
   'neptunex': {
     blast: '0x922FeCbE8dbFDfe85FfF4734046347B8E2ee7c82',
   },
+  'tamaswap': {
+    ethereum: '0x00000021543ed46B665A74484c82B71E4eB61e34',
+    // base: '0x00000021543ed46B665A74484c82B71E4eB61e34',
+  },
   'nest-platform-v2': {
     _options: {
       hasStablePools: true,
@@ -2904,6 +2908,9 @@ const uniV2Configs = {
   },
   'sentrix-dex': {
     srx: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
+  },
+  'myrxswap': {
+    mrt: '0x7E4A7CC7D9e4e416E7277F8309cC54cF5FD8AF2b'
   },
   'chain138-uniswap-v2': {
     methodology:

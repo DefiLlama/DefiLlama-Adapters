@@ -1729,6 +1729,10 @@ const uniV3Configs = {
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
     }
   },
+  'kublerx-v3': {
+    methodology: 'TVL is calculated by summing the reserves of all Kublerx V3 pools on KUB. Pools are discovered from PoolCreated events emitted by the V3 factory.',
+    bitkub: { factory: '0xD679d310008A2595B8d3DeB83bb93EB23F9b0942', fromBlock: 31936260 }
+  },
   'chain138-uniswap-v3': {
     methodology:
       'Uniswap V3 liquidity on dfio_meta_main via official factory event indexing.',
