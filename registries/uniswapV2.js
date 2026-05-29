@@ -2904,7 +2904,21 @@ const uniV2Configs = {
   },
   'sentrix-dex': {
     srx: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
-  }
+  },
+  'chain138-uniswap-v2': {
+    methodology:
+      'Counts all liquidity in Uniswap V2 pairs created by the official factory on DeFi Oracle Meta (chainId 138).',
+    misrepresentedTokens: true,
+    _options: { permitFailure: true },
+    dfio_meta_main: '0x0C30F6e67Ab3667fCc2f5CEA8e274ef1FB920279',
+  },
+  'chain138-sushiswap': {
+    methodology:
+      'Counts all liquidity in SushiSwap V2 pairs created by the official factory on DeFi Oracle Meta (chainId 138).',
+    misrepresentedTokens: true,
+    _options: { permitFailure: true },
+    dfio_meta_main: '0x2871207ff0d56089D70c0134d33f1291B6Fce0BE',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

@@ -177,6 +177,16 @@ const configs = {
       "0xdA16D6F08F20249376d01a09FEBbAd395a246b2C", "0x9be4f6a2558f88A82b46947e3703528919CE6414",
     ]},
   },
+  'chain138-balancer-v2': {
+    methodology:
+      'Balancer V2 vault ERC-20 balances on dfio_meta_main (official vault deployment).',
+    misrepresentedTokens: true,
+    dfio_meta_main: {
+      vault: '0x96423d7C1727698D8a25EbFB88131e9422d1a3C3',
+      fromBlock: 3539859,
+      permitFailure: true,
+    },
+  },
 }
 
 module.exports = buildProtocolExports(configs, balancerExportFn)

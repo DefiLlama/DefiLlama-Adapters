@@ -1728,7 +1728,16 @@ const uniV3Configs = {
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
     }
-  }
+  },
+  'chain138-uniswap-v3': {
+    methodology:
+      'Uniswap V3 liquidity on dfio_meta_main via official factory event indexing.',
+    misrepresentedTokens: true,
+    dfio_meta_main: {
+      factory: '0x2f7219276e3ce367dB9ec74C1196a8ecEe67841C',
+      fromBlock: 3510162,
+    },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
