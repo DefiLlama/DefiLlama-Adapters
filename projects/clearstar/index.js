@@ -88,7 +88,7 @@ const configs = {
 }
 
 module.exports = {
-  // ...getCuratorExport(configs),
+  ...getCuratorExport(configs),
 
   timetravel: false, // starknet doesn't support historical queries
   hallmarks: [
@@ -96,8 +96,8 @@ module.exports = {
   ],
 }
 
-Object.keys(configs.blockchains).forEach(chain => {
-  module.exports[chain] = {tvl: async () => {
-    throw new Error("Temporary break to fix broken tvl")
-  }
-}})
+// Object.keys(configs.blockchains).forEach(chain => {
+//   module.exports[chain] = {tvl: async () => {
+//     throw new Error("Temporary break to fix broken tvl")
+//   }
+// }})
