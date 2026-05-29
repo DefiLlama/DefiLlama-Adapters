@@ -16,8 +16,7 @@ async function tvl(api) {
   api.add(ADDRESSES.astar.LAY, veLAY)
   const pools = await api.fetchList({ lengthAbi: ABI.poolLength, itemAbi: ABI.poolInfo, target: BOOSTER_ADDRESS })
   const supply = await api.multiCall({ abi: 'erc20:totalSupply', calls: pools.map(i => i.token) })
-  let i = 0
-  for (const pool of pools) await addTokensInPool(api, pool.lptoken, supply[i++])
+  await Promise.all(pools.map((pool, i) => addTokensInPool(api, pool.lptoken, supply[i])))
 }
 
 module.exports = {
@@ -52,10 +51,10 @@ async function addTokensInPool(api, lpToken, tokenBal) {
     bals = await api.call({  abi: ABI.get_balances, target: REGISTRY_ADDRESS, params: pool })
   }
   const ratio = tokenBal / supply
-  for (const t of tokens) {
-    if (t === ZERO_ADDRESS) continue;
-    const name = await api.call({  abi: 'string:name', target: t })
-    if (name.includes('Kagla.fi')) await addTokensInPool(api, t, bals[tokens.indexOf(t)] * ratio)
-    else api.add(t, bals[tokens.indexOf(t)] * ratio)
-  }
+  const validTokens = tokens.map((t, i) => ({ t, bal: bals[i] })).filter(({ t }) => t !== ZERO_ADDRESS)
+  const names = await Promise.all(validTokens.map(({ t }) => api.call({ abi: 'string:name', target: t })))
+  await Promise.all(validTokens.map(({ t, bal }, i) => {
+    if (names[i].includes('Kagla.fi')) return addTokensInPool(api, t, bal * ratio)
+    else api.add(t, bal * ratio)
+  }))
 }
