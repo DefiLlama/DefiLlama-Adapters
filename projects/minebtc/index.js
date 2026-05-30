@@ -21,6 +21,12 @@ const COUNTRY_RACE_SOL_VAULT = "DRnKgn51Mm7t1UneFD6Je5B6XLWmFt9gBdJN5xPcXfMB";
 const STAKER_SOL_REWARD_VAULT = "FYnbbqMPUetvN22CDeDxAJb4SSXmqZcGEbrwVvoJREvK";
 const FACTION_TREASURY_VAULT = "1gYoc7ojYQdkABsAVFnFQhmYphe532EDnxheRZBDuqr";
 
+/**
+ * Adds the underlying SOL and dBTC value for MineBTC LP tokens staked in the
+ * protocol custodian, using Raydium CP-Swap pool reserves and tracked LP supply.
+ *
+ * @param {object} api DefiLlama chain API accumulator.
+ */
 async function getStakedLpUnderlyingValue(api) {
   const connection = getConnection();
 
@@ -52,6 +58,11 @@ async function getStakedLpUnderlyingValue(api) {
   if (underlyingDbtc > 0n) api.add(DBTC_MINT, underlyingDbtc.toString());
 }
 
+/**
+ * Tracks MineBTC gameplay reward inventory held in protocol-controlled vaults.
+ *
+ * @param {object} api DefiLlama chain API accumulator.
+ */
 async function tvl(api) {
   // User reward pools funded by gameplay and tax cranks.
   await sumTokens2({
@@ -61,6 +72,11 @@ async function tvl(api) {
   });
 }
 
+/**
+ * Tracks user-staked dBTC held by the global staking custodian.
+ *
+ * @param {object} api DefiLlama chain API accumulator.
+ */
 async function staking(api) {
   // Staked dBTC (protocol's own token)
   await sumTokens2({
@@ -69,6 +85,12 @@ async function staking(api) {
   });
 }
 
+/**
+ * Tracks user-staked dBTC/SOL LP exposure by adding the LP custodian's
+ * pro-rata underlying pool reserves.
+ *
+ * @param {object} api DefiLlama chain API accumulator.
+ */
 async function pool2(api) {
   // Staked LP (dBTC/SOL) -> pro-rata underlying value
   await getStakedLpUnderlyingValue(api);
