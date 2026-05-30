@@ -1,68 +1,47 @@
-const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/http');
-
 const abi = {
-  getBasket: 'function getBasket() view returns ((string chain, string symbol, string addr, uint8 decimals, uint256 amount)[])'
+  getBasket: 'function getBasket() view returns ((string chain, string symbol, string addr, uint8 decimals, uint256 amount)[])',
 }
 
-const ssi_tokens = [
-  // MAG7.ssi
-  '0x9E6A46f294bB67c20F1D1E7AfB0bBEf614403B55',
-  // DEFI.ssi
-  '0x164ffdaE2fe3891714bc2968f1875ca4fA1079D0',
-  // MEME.ssi
-  '0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA'
+const SSI_TOKENS = [
+  '0x9E6A46f294bB67c20F1D1E7AfB0bBEf614403B55', // MAG7.ssi
+  '0x164ffdaE2fe3891714bc2968f1875ca4fA1079D0', // DEFI.ssi
+  '0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA', // MEME.ssi
 ]
 
-function underlyingExports(chains) {
-  const exportObj = {};
-  Object.entries(chains).forEach(([chain, [chain_name, native_token]]) => {
-    exportObj[chain] = {
-      tvl: async (api, ethBlock, chainBlocks) => {
-        const balances = {};
-        const base_block = await getBlock(api.timestamp, 'base', chainBlocks);
-        const baskets = await Promise.all(ssi_tokens.map(async (ssi_token) => {
-          const res = await sdk.api.abi.call({
-            abi: abi.getBasket,
-            target: ssi_token,
-            chain: 'base',
-            block: base_block,
-          });
-          return res.output;
-        }));
-        baskets.forEach(basket => {
-          basket.forEach(token => {
-            if (token.chain == chain_name) {
-              let token_addr;
-              let token_amount;
-              if (token.addr != '') {
-                token_addr = chain + ':' + token.addr;
-                token_amount = token.amount;
-              } else {
-                token_addr = native_token;
-                token_amount = token.amount / 10 ** token.decimals;
-              }
-              sdk.util.sumSingleBalance(balances, token_addr, token_amount);
-            }
-          });
-        });
-        return balances;
-      }
+const SYMBOL_TO_CGID = {
+  BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana',
+  BNB: 'binancecoin', BSC_BNB: 'binancecoin',
+  XRP: 'ripple', DOGE: 'dogecoin', ADA: 'cardano',
+  AVAX: 'avalanche-2', DOT: 'polkadot', LINK: 'chainlink',
+  UNI: 'uniswap', AAVE: 'aave', MKR: 'maker',
+  LDO: 'lido-dao', CRV: 'curve-dao-token', SNX: 'havven',
+  COMP: 'compound-governance-token', SUSHI: 'sushi',
+  SHIB: 'shiba-inu', PEPE: 'pepe', FLOKI: 'floki',
+  BONK: 'bonk', WIF: 'dogwifcoin', BRETT: 'brett',
+  MOG: 'mog-coin', POPCAT: 'popcat',
+  USDC: 'usd-coin', USDT: 'tether',
+}
+
+async function tvl(api) {
+  const baskets = await api.multiCall({ abi: abi.getBasket, calls: SSI_TOKENS })
+
+  const balances = {}
+  for (const basket of baskets) {
+    for (const component of basket) {
+      const { symbol, decimals, amount } = component
+      const cgId = SYMBOL_TO_CGID[symbol.toUpperCase()]
+      if (!cgId || BigInt(amount) <= 0n) continue
+      // coingecko IDs require real amount (divided by decimals)
+      const realAmount = Number(amount) / 10 ** Number(decimals)
+      balances[`coingecko:${cgId}`] = (balances[`coingecko:${cgId}`] || 0) + realAmount
     }
-  });
-  return exportObj;
+  }
+  return balances
 }
 
 module.exports = {
-  methodology: 'TVL counts the underlying tokens in the baskets of the SSI tokens.',
-  ...underlyingExports({
-    ethereum: ['ETH', 'ethereum'],
-    bsc: ['BSC_BNB', 'binancecoin'],
-    doge: ['DOGE', 'dogecoin'],
-    hyperliquid: ['HYPEREVM_HYPE', 'hyperliquid'],
-    solana: ['SOL', 'solana'],
-    bitcoin: ['BTC', 'bitcoin'],
-    cardano: ['ADA', 'cardano'],
-    ripple: ['XRP', 'ripple'],
-  })
-};
+  misrepresentedTokens: true,
+  methodology: 'TVL counts the underlying tokens in the baskets of the SSI tokens. For each index token (MAG7.ssi, DEFI.ssi, MEME.ssi), the basket composition is fetched on-chain via getBasket() which returns total underlying asset balances.',
+  start: 1733011200,
+  base: { tvl },
+}
