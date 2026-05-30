@@ -22,6 +22,23 @@ const SYMBOL_TO_CGID = {
   USDC: 'usd-coin', USDT: 'tether',
 }
 
+/**
+ * Maps a basket symbol string to its CoinGecko ID.
+ * @param {string} symbol - The asset symbol returned by getBasket()
+ * @returns {string|undefined} CoinGecko ID or undefined if not mapped
+ */
+function getCoinGeckoId(symbol) {
+  return SYMBOL_TO_CGID[symbol.toUpperCase()]
+}
+
+/**
+ * Computes TVL for the SSI protocol by fetching on-chain basket composition.
+ * For each SSI index token, calls getBasket() which returns the total underlying
+ * asset balances. Maps each asset symbol to a CoinGecko ID and divides by
+ * token decimals to get real amounts.
+ * @param {object} api - DefiLlama ChainApi instance
+ * @returns {object} balances keyed by coingecko:<id>
+ */
 async function tvl(api) {
   const baskets = await api.multiCall({ abi: abi.getBasket, calls: SSI_TOKENS })
 
@@ -29,9 +46,8 @@ async function tvl(api) {
   for (const basket of baskets) {
     for (const component of basket) {
       const { symbol, decimals, amount } = component
-      const cgId = SYMBOL_TO_CGID[symbol.toUpperCase()]
+      const cgId = getCoinGeckoId(symbol)
       if (!cgId || BigInt(amount) <= 0n) continue
-      // coingecko IDs require real amount (divided by decimals)
       const realAmount = Number(amount) / 10 ** Number(decimals)
       balances[`coingecko:${cgId}`] = (balances[`coingecko:${cgId}`] || 0) + realAmount
     }
