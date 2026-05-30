@@ -1,5 +1,4 @@
 const { request } = require('../helper/utils/graphql')
-const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
 
 const CONTANGO_PROXY = "0x6Cae28b3D09D8f8Fc74ccD496AC986FC84C0C24E";
@@ -184,7 +183,7 @@ async function filterPositionsWithPricedCollateral(api, positions) {
 
 const getPositionsTvl = async (api, lens, graphUrl, borrowed, block, excludedIds) => {
   let positions = (await queryPositions(graphUrl, block)).filter(({ id }) => !excludedIds.includes(id))
-  positions = await filterPositionsWithPricedCollateral(api, positions, !borrowed)
+  positions = await filterPositionsWithPricedCollateral(api, positions)
   const parts = positions
     .map(({ id, instrument: { base, quote } }) => [id, [base.id, quote.id]]);
 
