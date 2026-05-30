@@ -48,18 +48,26 @@ const SOLANA_FIREBLOCKS_PAIRS = SOLANA_FIREBLOCKS_OWNERS.flatMap((owner) => [
 ])
 
 async function solanaTvl(api) {
-  // `computeTokenAccount: true` tells the helper to locally derive the
-  // canonical associated token account (ATA) for each (mint, owner) pair
-  // in `tokensAndOwners`, then read those accounts via `getMultipleAccounts`
-  // instead of issuing `getTokenAccountsByOwner` requests (which public
-  // Solana RPCs throttle aggressively from shared CI egress IPs).
-  //
-  // `allowError: true` tolerates Fireblocks ATAs that have not yet been
-  // initialised on chain (i.e. zero deposits to date): the helper treats
-  // a missing account as a zero balance instead of throwing.
-  return solanaSumTokens({
+  // Bridge SPL token accounts are always-initialised production accounts,
+  // so we read them without `allowError` and let any RPC/account error
+  // surface loudly instead of being silently treated as zero balance.
+  await solanaSumTokens({
     api,
     tokenAccounts: SOLANA_BRIDGE_TOKEN_ACCOUNTS,
+  })
+
+  // Fireblocks MPC vaults are owner wallets; the helper derives the
+  // canonical associated token account (ATA) for each (mint, owner) pair
+  // locally and batches the reads via `getMultipleAccounts`, avoiding the
+  // `getTokenAccountsByOwner` path that public Solana RPCs throttle
+  // aggressively from shared CI egress IPs.
+  //
+  // `allowError: true` is scoped to this call only: it tolerates Fireblocks
+  // ATAs that have not yet been initialised on chain (i.e. zero deposits to
+  // date for that mint/owner) by treating a missing account as zero balance
+  // instead of throwing.
+  await solanaSumTokens({
+    api,
     tokensAndOwners: SOLANA_FIREBLOCKS_PAIRS,
     computeTokenAccount: true,
     allowError: true,
