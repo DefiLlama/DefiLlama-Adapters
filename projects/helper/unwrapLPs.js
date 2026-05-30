@@ -534,6 +534,7 @@ async function unwrapSlipstreamV3NFTs({ balances, nftsAndOwners = [], api, owner
     if (!nftAddress)
       switch (chain) {
         case 'base': nftAddress = '0xe1f8cd9AC4e4A65F54f38a5CdAfCA44f6dD68b53'; break;
+        case 'optimism': nftAddress = '0xf7f8ccce99Ca2896eC75D3A399D152dB96808399'; break;
         default: throw new Error('missing default slipstream v3 nft address chain: ' + chain)
       }
 

@@ -2449,7 +2449,9 @@ const uniV2Configs = {
   },
   'equilibre': {
     _options: { hasStablePools: true },
-    kava: { factory: '0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95', staking: ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"] },
+    kava: { factory: '0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95', staking: ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"], blacklistedPools: [
+      '0x78Ef6D3E3d0da9B2248C11BE11743B4C573ADd25',
+    ] },
   },
   'etcmc': {
     methodology: 'Factory address (0x164999e9174686b39987dfB7E0FAb28465b867A5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
