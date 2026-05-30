@@ -31,26 +31,25 @@ async function getStakedLpUnderlyingValue(api) {
     connection.getAccountInfo(new PublicKey(RAYDIUM_POOL_STATE)),
   ]);
 
-  const stakedLp = stakedLpInfo.length > 0 ? Number(stakedLpInfo[0].amount) : 0;
-  if (stakedLp === 0) return;
+  const stakedLp = stakedLpInfo.length > 0 ? BigInt(stakedLpInfo[0].amount) : 0n;
+  if (stakedLp === 0n) return;
 
   // Read lp_supply from pool state account (total LP ever minted, includes burned)
   // LP tokens are burned for permanent liquidity — mint supply shows 0 but pool tracks total
   if (!poolStateAccount || !poolStateAccount.data) return;
-  const lpTotalSupply = Number(poolStateAccount.data.readBigUInt64LE(LP_SUPPLY_OFFSET));
-  if (lpTotalSupply === 0) return;
+  const lpTotalSupply = poolStateAccount.data.readBigUInt64LE(LP_SUPPLY_OFFSET);
+  if (lpTotalSupply === 0n) return;
 
   // Get pool vault reserves (raw amounts)
-  const solInPool = poolVaultBalances.length >= 1 ? Number(poolVaultBalances[0].amount) : 0;
-  const dbtcInPool = poolVaultBalances.length >= 2 ? Number(poolVaultBalances[1].amount) : 0;
+  const solInPool = poolVaultBalances.length >= 1 ? BigInt(poolVaultBalances[0].amount) : 0n;
+  const dbtcInPool = poolVaultBalances.length >= 2 ? BigInt(poolVaultBalances[1].amount) : 0n;
 
   // Calculate pro-rata share of underlying tokens for staked LP
-  const share = stakedLp / lpTotalSupply;
-  const underlyingSol = Math.floor(solInPool * share);
-  const underlyingDbtc = Math.floor(dbtcInPool * share);
+  const underlyingSol = (solInPool * stakedLp) / lpTotalSupply;
+  const underlyingDbtc = (dbtcInPool * stakedLp) / lpTotalSupply;
 
-  if (underlyingSol > 0) api.add(ADDRESSES.solana.SOL, underlyingSol);
-  if (underlyingDbtc > 0) api.add(DBTC_MINT, underlyingDbtc);
+  if (underlyingSol > 0n) api.add(ADDRESSES.solana.SOL, underlyingSol.toString());
+  if (underlyingDbtc > 0n) api.add(DBTC_MINT, underlyingDbtc.toString());
 }
 
 async function tvl(api) {
