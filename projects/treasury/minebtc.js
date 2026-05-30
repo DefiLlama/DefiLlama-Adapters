@@ -1,26 +1,16 @@
 const { sumTokens2 } = require("../helper/solana");
 
-const DOGEBTC_MINT = "BwMCF5LSHPvrR8pLVvcsa4k1AMg4VWVnMWUiNEXMtLkE";
-
-// Protocol-owned DogeBTC vaults (funded by 1% transfer tax)
-const FACTION_TREASURY_VAULT = "GUrrK4c1RmTDqYbEbWSjq6mfUcujpgTtasU4JXVzEKMA";
-const NFT_FLOOR_SWEEP_VAULT = "DRvR4WpLj85Lfvwk3im7Ucrz1s9FPLPUtrTihUiqaPve";
-
-// Protocol-owned SOL vault (staker reward fees from bets)
-const STAKER_SOL_REWARD_VAULT = "HiGNRiXWrqtFbwEH1YKQVHommFU15auksXbe7Qv7Nrrb";
+// Protocol-owned SOL vaults
+const SOL_TREASURY = "2TU3jP7vnhPD1ksVmSMQhuAauuFCuj9magtMWDW65jEx";
+const BUYBACKS_SOL_VAULT = "DdatmQD4g2vQdgAw7RvdZFYSouTEB4ebjXWAqH1T86rs";
+const NFT_SWEEP_SOL_VAULT = "4XDwhMaA98MaiVXpiqbevr9Kwmp9xGV2nGzQVeF7hbRq";
 
 module.exports = {
   solana: {
     tvl: async (api) => {
       await sumTokens2({
         api,
-        solOwners: [STAKER_SOL_REWARD_VAULT],
-      });
-    },
-    ownTokens: async (api) => {
-      await sumTokens2({
-        api,
-        tokenAccounts: [FACTION_TREASURY_VAULT, NFT_FLOOR_SWEEP_VAULT],
+        solOwners: [SOL_TREASURY, BUYBACKS_SOL_VAULT, NFT_SWEEP_SOL_VAULT],
       });
     },
   },
