@@ -1,8 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const PROTOCOL_CONTRACTS = [
-  "0x4e9608d5cf77f22b2d5543b6c65a8c5417e8122c", // wrappedCollateral
-  "0xc83C5Cca746D213D9Cf63FE668E7EB8dEe35314B", // conditionalTokens
+  "0xC7E015B63d8226444A028c57fcaa1d30bfC3178C", // wrappedCollateral
+  "0xb365835F194E383354367572D0eB9d2Dce46b693", // conditionalTokens
 ];
 
 async function tvl(api) {
