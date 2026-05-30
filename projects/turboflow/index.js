@@ -2,20 +2,15 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { sumTokens2: solanaSumTokens } = require('../helper/solana')
 
-// TurboFlow TVL = USDT/USDC held in (1) on-chain bridge contracts on BSC and
-// Solana that receive user deposits, plus (2) Fireblocks MPC custody wallets
-// that back user deposits and settlement obligations.
-//
-// All addresses below are on-chain verifiable and listed publicly by the
-// protocol. No off-chain HTTP source is involved in TVL computation.
+// TurboFlow TVL = USDT/USDC held in the on-chain bridge contracts that
+// receive user deposits on BSC and Solana. Protocol-operated MPC custody
+// wallets (Fireblocks) that back user deposits and settlement obligations
+// are tracked separately as treasury in `projects/treasury/turboflow.js`,
+// per DefiLlama's policy of not counting EOA/safe balances toward TVL.
 
 // --- BSC ---
 
-const BSC_HOLDERS = [
-  '0x145CD0d5C3dD0eF1405dCf1b4D2BCE7c611625dB', // Bridge contract (user deposits)
-  '0x8757f9E16d775759671e95e50D749CECCDA375AE', // Fireblocks MPC vault (SIG)
-  '0x077Ab3f5D4372cA14c6AA417215Af3d91B55bAFc', // Fireblocks MPC vault (TFUSERS)
-]
+const BSC_BRIDGE = '0x145CD0d5C3dD0eF1405dCf1b4D2BCE7c611625dB'
 
 const BSC_TOKENS = [
   ADDRESSES.bsc.USDT, // 0x55d398326f99059fF775485246999027B3197955
@@ -23,7 +18,7 @@ const BSC_TOKENS = [
 ]
 
 async function bscTvl(api) {
-  return sumTokens2({ api, owners: BSC_HOLDERS, tokens: BSC_TOKENS })
+  return sumTokens2({ api, owner: BSC_BRIDGE, tokens: BSC_TOKENS })
 }
 
 // --- Solana ---
@@ -35,48 +30,16 @@ const SOLANA_BRIDGE_TOKEN_ACCOUNTS = [
   '6hVp2UaWWQwGo2c6yHj39WJWDNenR48GsLGKPzSa7EU2', // Bridge USDT SPL account
 ]
 
-// Fireblocks MPC custody — owner wallet pubkeys. The Solana helper derives
-// each owner's associated token accounts for the listed mints automatically.
-const SOLANA_FIREBLOCKS_OWNERS = [
-  '6FaXzEC4CNAh1ECxc8FUnjpcnMYYG4M7DVJ5ZMbTmcWH', // Fireblocks vault (SIG)
-  '4wHLLe6ovPqmGoBjvk6ogxgFbiGMCUUPvnMqmxyprX5C', // Fireblocks vault (TFUSERS)
-]
-
-const SOLANA_FIREBLOCKS_PAIRS = SOLANA_FIREBLOCKS_OWNERS.flatMap((owner) => [
-  [ADDRESSES.solana.USDT, owner],
-  [ADDRESSES.solana.USDC, owner],
-])
-
 async function solanaTvl(api) {
-  // Bridge SPL token accounts are always-initialised production accounts,
-  // so we read them without `allowError` and let any RPC/account error
-  // surface loudly instead of being silently treated as zero balance.
-  await solanaSumTokens({
+  return solanaSumTokens({
     api,
     tokenAccounts: SOLANA_BRIDGE_TOKEN_ACCOUNTS,
-  })
-
-  // Fireblocks MPC vaults are owner wallets; the helper derives the
-  // canonical associated token account (ATA) for each (mint, owner) pair
-  // locally and batches the reads via `getMultipleAccounts`, avoiding the
-  // `getTokenAccountsByOwner` path that public Solana RPCs throttle
-  // aggressively from shared CI egress IPs.
-  //
-  // `allowError: true` is scoped to this call only: it tolerates Fireblocks
-  // ATAs that have not yet been initialised on chain (i.e. zero deposits to
-  // date for that mint/owner) by treating a missing account as zero balance
-  // instead of throwing.
-  await solanaSumTokens({
-    api,
-    tokensAndOwners: SOLANA_FIREBLOCKS_PAIRS,
-    computeTokenAccount: true,
-    allowError: true,
   })
 }
 
 module.exports = {
   methodology:
-    'TVL counts USDT and USDC balances held by TurboFlow on (i) on-chain bridge contracts on BSC and Solana that receive user deposits, and (ii) protocol-operated MPC custody wallets (Fireblocks) that back user deposits and settlement obligations. All custody addresses are listed in this adapter and verifiable on-chain via balanceOf (BSC) and getTokenAccountBalance / getTokenAccountsByOwner (Solana). Excludes trading volume, leveraged notional exposure, unrealized PnL, treasury, and operating funds not allocated to user deposit backing.',
+    'TVL counts USDT and USDC balances held by the TurboFlow bridge contracts on BSC and Solana, which are the on-chain entry points for user deposits. Protocol-operated MPC custody (Fireblocks) backing user deposits is tracked separately as treasury (see projects/treasury/turboflow.js), in line with DefiLlama policy of not counting EOA/safe balances toward TVL. Excludes trading volume, leveraged notional exposure, unrealized PnL, and any non-circulating tokens.',
   start: '2025-10-19',
   bsc: { tvl: bscTvl },
   solana: { tvl: solanaTvl },
