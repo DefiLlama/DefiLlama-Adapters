@@ -1,6 +1,6 @@
 // AUTO-GENERATED — scripts/defillama/generate-chain138-dex-adapters.py
 // Project: chain138-curve on dfio_meta_main (chainId 138)
-// Regenerate after config/chain138-official-protocol-contracts.json changes.
+// Regenerate after config/chain138-defillama-adapter-registry.json changes.
 
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
