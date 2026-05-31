@@ -19,7 +19,10 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   hasStablePools = false,
   stablePoolSymbol = 'sAMM',
   permitFailure = false,
+  skipUnknownTokens = false,
+  blacklistedPools = [],
 }) {
+  const blacklistedPoolsSet = new Set(blacklistedPools.map(i => i.toLowerCase()))
 
   let updateCache = false
 
@@ -55,7 +58,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       for (const batch of batchedPairCalls) {
         const res = await api.multiCall({ abi: abi.allPairs, calls: batch, target: factory })
         calls.push(...res)
-        sdk.log(`fetched pairs ${calls.length}/${pairCalls.length}`)
+        sdk.log(`fetched pairs ${calls.length}/${pairCalls.length}  ${((calls.length / pairCalls.length) * 100).toFixed(2)}%`)
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
       }
     } else {
@@ -76,7 +79,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         token0s.push(...t0)
         token1s.push(...t1)
         done += batch.length
-        sdk.log(`fetched token info ${done}/${calls.length}`)
+        sdk.log(`fetched token info ${done}/${calls.length}  ${((done / calls.length) * 100).toFixed(2)}%`)
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
       }
     } else {
@@ -121,7 +124,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         const res = await api.multiCall({ abi: abi.getReserves, calls, permitFailure, })
         reserves = reserves.concat(res)
         batchIdx++
-        sdk.log(`fetched reserves batch ${batchIdx}/${batchedCalls.length}`)
+        sdk.log(`fetched reserves batch ${batchIdx}/${batchedCalls.length} ${((batchIdx / batchedCalls.length) * 100).toFixed(2)}%`)
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
       }
     } else if (fetchBalances) {
@@ -143,6 +146,13 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (coreAssets) {
       const data = []
       reserves.forEach((dat, i) => {
+
+        const pool = cache.pairs[i].toLowerCase()
+
+        if (blacklistedPoolsSet.has(pool)) {
+          return
+        }
+
         if (!dat) return;
         const { _reserve0, _reserve1 } = dat
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
@@ -158,7 +168,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
           })
         }
       })
-      return transformDexBalances({ balances, chain, data, coreAssets, blacklistedTokens: blacklist })
+      return transformDexBalances({ balances, chain, data, coreAssets, blacklistedTokens: blacklist, skipUnknownTokens, })
     }
 
     const blacklistedSet = new Set(blacklist)

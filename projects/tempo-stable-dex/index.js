@@ -1,17 +1,22 @@
 const { getConfig } = require('../helper/cache')
-const { getLogs2 } = require('../helper/cache/getLogs')
+const { get } = require('../helper/http')
 
-const config = {
-  tempo: { factory: '0xdec0000000000000000000000000000000000000', fromBlock: 6061454},
-}
+const STABLECOIN_DEX = "0xdec0000000000000000000000000000000000000"
 
-Object.keys(config).forEach(chain => {
-  const { factory, fromBlock } = config[chain]
-  module.exports[chain] = {
+const TEMPO_TOKENLIST = 'https://tokenlist.tempo.xyz/list/4217'
+
+module.exports = {
+  methodology:
+    "TVL is the sum of every TIP-20 stablecoin balance held by Tempo's enshrined Stablecoin DEX system contract.",
+  start: '2026-03-18',
+  tempo: {
     tvl: async (api) => {
-      // const logs = await getLogs2({ api, factory, eventAbi: 'event PairCreated(bytes32 indexed key, address indexed base, address indexed quote)', fromBlock, })
-      const { balances } = await getConfig('tempo-stable-dex', 'https://explore.tempo.xyz/api/address/balances/0xdec0000000000000000000000000000000000000')
-      return api.sumTokens({ owner: factory, tokens: balances.map(i => i.token) })
+      const list = await getConfig('tempo-tokenlist', undefined, {
+        fetcher: async (url) => {
+          const data = await get(TEMPO_TOKENLIST)
+          return data.tokens.map(t => t.address)
+        }})
+        return api.sumTokens({ owner: STABLECOIN_DEX, tokens: list })
     }
   }
-})
+}

@@ -4,6 +4,7 @@ const sui = require('../helper/chain/sui')
 const { transformDexBalances } = require('../helper/portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
+const { getEnv } = require('../helper/env')
 
 async function tvl() {
   let data = await getResources('0xa7f01413d33ba919441888637ca1607ca0ddcbfa3c0a9ddea64743aaa560e498')
@@ -30,6 +31,8 @@ async function tvl() {
 }
 
 async function suiTVL(api) {
+  if (!getEnv('IS_RUN_FROM_CUSTOM_JOB')) throw new Error('This job is not meant to be run directly, please use the custom job feature')
+
   const poolObjectID = '0xf699e7f2276f5c9a75944b37a0c5b5d9ddfd2471bf6242483b03ab2887d198d0'
   const { fields: { list: { fields: listObject } } } = await sui.getObject(poolObjectID)
   const items = (await sui.getDynamicFieldObjects({ parent: listObject.id.id })).map(i => i.fields.value.fields.value)

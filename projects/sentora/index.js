@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport } = require("../helper/curators");
 
 const customConfig = {
@@ -19,15 +20,16 @@ const customConfig = {
       '0x2AFBd96Fb854083574B738b36Af34703C89B8656',
       '0xA43c0C89321b10bF0DbDb0A8fc735c88b9B65792',
     ],
-    holding: [
-      ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed', '0xA40aFb15275A94F64aF37C0cEaAaA45Cb568A361'],
-      ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed', '0xfBCA329E2Ee0c44d8F115A4B8F7ceda9E109f436'],
-      ['0x8236a87084f8b84306f72007f36f2618a5634494', '0x9B6a57Fda106eff13ffE4ea4Ef2783C547f75cd7'],
-      ['0xe72b141df173b999ae7c1adcbf60cc9833ce56a8', '0x778aC5d0EE062502fADaa2d300a51dE0869f7995'],
-      ['0x6c3ea9036406852006290770bedfcaba0e23a0e8', '0x2A601FC6C0Cb854fDA82715E49Ab04C5340A0396'],
-      ['0x6c3ea9036406852006290770bedfcaba0e23a0e8', '0x11Fd9E49c41738b7500748f7B94B4DBb0E8c13d2'],
-    ],
-  }
+    holding: {
+      '0xA40aFb15275A94F64aF37C0cEaAaA45Cb568A361': ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed'],
+      '0xfBCA329E2Ee0c44d8F115A4B8F7ceda9E109f436': ['0x8292bb45bf1ee4d140127049757c2e0ff06317ed'],
+      '0x9B6a57Fda106eff13ffE4ea4Ef2783C547f75cd7': [ADDRESSES.ethereum.LBTC],
+      '0x778aC5d0EE062502fADaa2d300a51dE0869f7995': ['0xe72b141df173b999ae7c1adcbf60cc9833ce56a8'],
+      '0x2A601FC6C0Cb854fDA82715E49Ab04C5340A0396': ['0x6c3ea9036406852006290770bedfcaba0e23a0e8'],
+      '0x11Fd9E49c41738b7500748f7B94B4DBb0E8c13d2': ['0x6c3ea9036406852006290770bedfcaba0e23a0e8'],
+    },
+  },
+  ink: {},
 }
 
 const abis = {
@@ -35,6 +37,8 @@ const abis = {
   loanConfig: 'function loanConfig() view returns (address supplyAddress, address borrowAddress, uint256 minHealthFactor)',
   getSupply: 'uint256:getSupply',
   getBorrow: 'uint256:getBorrow',
+  getAllReservesTokens: 'function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])',
+  getReserveTokensAddresses: 'function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)',
 }
 
 const curatorExport = getCuratorExport({
@@ -48,6 +52,18 @@ const curatorExport = getCuratorExport({
       morphoVaultOwners: [
         '0x13DE0cEE0B83562CBfD46682e10FfA4E3c5090e1',
         '0x113191222789173F32B4084EF8d31b5A8aE945bB',
+      ],
+      boringVaults: [
+        '0x7dee0120739b7ec048b469939efb178adbbb19b2', // kBTC vault
+        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271', // boostedUSDC
+        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f', // balancedUSDC
+      ],
+    },
+    ink: {
+      boringVaults: [
+        '0x7dee0120739b7ec048b469939efb178adbbb19b2', // kBTC vault
+        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271', // boostedUSDC
+        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f', // balancedUSDC
       ],
     },
     solana: {
@@ -71,8 +87,25 @@ const handlers = {
       api.add(borrowAddress, -borrows[i])
     })
   },
-  async holding(api, tokensAndOwners) {
+  async holding(api, ownerTokensMap) {
+    const tokensAndOwners = []
+    for (const [owner, tokens] of Object.entries(ownerTokensMap)) {
+      for (const token of tokens) tokensAndOwners.push([token, owner])
+    }
     return api.sumTokens({ tokensAndOwners })
+  },
+  async chaosLabsCurators(api, { wallets, aavePoolDataProviders = [], extraTokens = [] }) {
+    const aaveTokens = []
+    for (const provider of aavePoolDataProviders) {
+      const reserves = await api.call({ abi: abis.getAllReservesTokens, target: provider })
+      const reserveData = await api.multiCall({
+        abi: abis.getReserveTokensAddresses,
+        calls: reserves.map(r => ({ target: provider, params: [r.tokenAddress] })),
+      })
+      aaveTokens.push(...reserveData.map(r => r.aTokenAddress))
+    }
+    const tokens = [...aaveTokens, ...extraTokens]
+    return api.sumTokens({ tokens, owners: wallets })
   },
 }
 
@@ -86,13 +119,15 @@ async function customTvl(api) {
   return api.getBalances()
 }
 
-module.exports = {
-  ...curatorExport,
-  ethereum: {
-    ...curatorExport.ethereum,
+module.exports = { ...curatorExport }
+
+for (const chain of Object.keys(customConfig)) {
+  const curatorChain = curatorExport[chain]
+  module.exports[chain] = {
+    ...(curatorChain || {}),
     tvl: async (api) => {
-      await curatorExport.ethereum.tvl(api)
+      if (curatorChain?.tvl) await curatorChain.tvl(api)
       await customTvl(api)
     },
-  },
+  }
 }

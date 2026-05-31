@@ -161,6 +161,7 @@ const aaveConfigs = {
       blacklistedTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.BTUSD],
       staking: ['0x685D3b02b9b0F044A3C01Dbb95408FC2eB15a3b3', '0xB1EbdD56729940089Ecc3aD0BBEEB12b6842ea6F'],
       pool2: ['0x3eB63cff72f8687f8DE64b2f0e40a5B95302D028', '0x829F540957DFC652c4466a7F34de611E172e64E8'],
+      isInsolvent: true,
     },
   },
   'betterbank': {
@@ -458,6 +459,11 @@ const aaveConfigs = {
   },
   'magsinio': {
     sonic: '0x67389503F9EF03D5C10074dEfd96E18bc7755194',
+  },
+  'k613': {
+    monad: {
+      dataHelpers: ['0xfc87bE7f3657AAD69baDb6247A88E924D1F8bc53'],
+    },
   },
   'meridian-lend': {
     telos: {
