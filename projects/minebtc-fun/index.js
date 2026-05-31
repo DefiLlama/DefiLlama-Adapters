@@ -5,10 +5,11 @@ const ADDRESSES = require("../helper/coreAssets.json");
 // MineBTC Program: 1eotiTH2UxCpPMmtzUDGqf1b8dwM7AMKb8a2Tio51an
 const DBTC_MINT = "CtAu3kc8cQ1jcDMmRTBsDHoPuE3sswCagQ3BuqFDC6dt";
 
-// Raydium CP-Swap Pool (dBTC/SOL)
+// Raydium CP-Swap pool reserves used for dBTC valuation.
+// On-chain token0 vault is wrapped SOL; token1 vault is dBTC.
 const RAYDIUM_POOL_STATE = "F87M4sT6Wtfk4enVVbtM4ZnWsqCE9TXzL12Apwj3Cjtj";
-const POOL_TOKEN0_VAULT = "EMDuS9XZesBDo8urJzwgrKC7qJrLQ6hHXVvSLNE6s3ui";
-const POOL_TOKEN1_VAULT = "79nGAzP7D7GvHe4bPPs4DBHHGXspqE16Kn3w5e9QHEQw";
+const POOL_SOL_VAULT = "EMDuS9XZesBDo8urJzwgrKC7qJrLQ6hHXVvSLNE6s3ui";
+const POOL_DBTC_VAULT = "79nGAzP7D7GvHe4bPPs4DBHHGXspqE16Kn3w5e9QHEQw";
 const LP_SUPPLY_OFFSET = 333;
 const LP_SUPPLY_SIZE = 8;
 
@@ -23,13 +24,13 @@ const STAKER_SOL_REWARD_VAULT = "FYnbbqMPUetvN22CDeDxAJb4SSXmqZcGEbrwVvoJREvK";
 const FACTION_TREASURY_VAULT = "1gYoc7ojYQdkABsAVFnFQhmYphe532EDnxheRZBDuqr";
 
 /**
- * Reads the live Raydium dBTC/SOL pool reserves used for dBTC valuation.
+ * Reads the live Raydium pool reserves used for dBTC valuation.
  *
  * @returns {Promise<{ solInPool: bigint, dbtcInPool: bigint }>} Pool reserves in raw token units.
  */
 async function getPoolReserves() {
   const poolVaultBalances = await getTokenAccountBalances(
-    [POOL_TOKEN0_VAULT, POOL_TOKEN1_VAULT],
+    [POOL_SOL_VAULT, POOL_DBTC_VAULT],
     { individual: true, allowError: true },
   );
 
