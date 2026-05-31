@@ -6,6 +6,10 @@ const { getUniTVL } = require('../helper/unknownTokens')
   const LADYCHEF = '0x09022c3e699B4DdCc9eDf52c9545F33783eB9F43'
   const chain = 'ladychain'
 
+  // Configure LadyChain RPC and multicall for the DefiLlama SDK
+  process.env.LADYCHAIN_RPC = 'https://ladyrpc.us/rpc'
+  process.env.LADYCHAIN_RPC_MULTICALL = '0x36b580266BD2B9581B805BF99D0Db92FbC9CAa56'
+
   const tvl = getUniTVL({ chain, factory: V2_FACTORY, useDefaultCoreAssets: false })
 
   module.exports = {
