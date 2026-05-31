@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk")
 const { uniTvlExport } = require("../helper/unknownTokens")
 
 // ---------- Shared ----------
@@ -33,37 +34,43 @@ const IGRA_ADDRESS_TO_CG = {
     "0x0f85b69da77df32fe2434e7fd705b9cb18dd8982": "nacho-the-kat",
 }
 
-function makeInfinityPools(infPools, addressToCG, chain) {
-    return async function infinityPools(api) {
-        const poolCalls = infPools.map(([, pool]) => ({ target: pool }))
-        const tokenCalls = infPools.map(([token]) => ({ target: token }))
+// Infinity Pools are single-asset vaults: depositors receive a transferable
+// xToken (xZEAL / xNACHO) receipt that appreciates against the underlying via an
+// exchange rate. Value held by each vault = totalStaked + totalRewards, denominated
+// in the underlying token. Tokens are priced via CoinGecko.
+async function addInfinityPools(api, balances, infPools, addressToCG, chain) {
+    const poolCalls = infPools.map(([, pool]) => ({ target: pool }))
+    const tokenCalls = infPools.map(([token]) => ({ target: token }))
 
-        const [stakedArr, rewardsArr, decimalsArr] = await Promise.all([
-            api.multiCall({ abi: inf_pols_abi.totalStaked, calls: poolCalls, permitFailure: true }),
-            api.multiCall({ abi: inf_pols_abi.totalRewards, calls: poolCalls, permitFailure: true }),
-            api.multiCall({ abi: inf_pols_abi.decimals, calls: tokenCalls, permitFailure: true }),
-        ])
+    const [stakedArr, rewardsArr, decimalsArr] = await Promise.all([
+        api.multiCall({ abi: inf_pols_abi.totalStaked, calls: poolCalls, permitFailure: true }),
+        api.multiCall({ abi: inf_pols_abi.totalRewards, calls: poolCalls, permitFailure: true }),
+        api.multiCall({ abi: inf_pols_abi.decimals, calls: tokenCalls, permitFailure: true }),
+    ])
 
-        const balances = {}
+    for (let i = 0; i < infPools.length; i++) {
+        const [token] = infPools[i]
+        const st = stakedArr?.[i]
+        const rw = rewardsArr?.[i]
+        const dec = decimalsArr?.[i]
+        if (st == null || rw == null || dec == null) continue
 
-        for (let i = 0; i < infPools.length; i++) {
-            const [token] = infPools[i]
-            const st = stakedArr?.[i]
-            const rw = rewardsArr?.[i]
-            const dec = decimalsArr?.[i]
-            if (st == null || rw == null || dec == null) continue
+        const accounted = BigInt(st) + BigInt(rw)
+        if (accounted === 0n) continue
 
-            const accounted = BigInt(st) + BigInt(rw)
-            if (accounted === 0n) continue
+        const human = Number(accounted) / 10 ** Number(dec)
 
-            const decimals = Number(dec)
-            const divisor = 10 ** decimals
-            const human = Number(accounted) / divisor
+        const cg = addressToCG[token.toLowerCase()]
+        const key = cg ? `coingecko:${cg}` : `${chain}:${token}`
+        sdk.util.sumSingleBalance(balances, key, human)
+    }
+}
 
-            const key = addressToCG[token.toLowerCase()] || `${chain}:${token}`
-            balances[key] = (balances[key] || 0) + human
-        }
-
+// Combines the UniV2 factory (liquidity pools) TVL with the Infinity Pool vaults TVL.
+function makeTvl(factoryTvl, infPools, addressToCG, chain) {
+    return async function tvl(api) {
+        const balances = (await factoryTvl(api)) || {}
+        await addInfinityPools(api, balances, infPools, addressToCG, chain)
         return balances
     }
 }
@@ -73,12 +80,9 @@ const igraBase = uniTvlExport("igra", FACTORY)
 
 module.exports = {
     kasplex: {
-        tvl: kasplexBase["kasplex"].tvl,
-        staking: makeInfinityPools(KASPLEX_INF_POOLS, KASPLEX_ADDRESS_TO_CG, "kasplex"),
+        tvl: makeTvl(kasplexBase["kasplex"].tvl, KASPLEX_INF_POOLS, KASPLEX_ADDRESS_TO_CG, "kasplex"),
     },
     igra: {
-        tvl: igraBase["igra"].tvl,
-        staking: makeInfinityPools(IGRA_INF_POOLS, IGRA_ADDRESS_TO_CG, "igra"),
+        tvl: makeTvl(igraBase["igra"].tvl, IGRA_INF_POOLS, IGRA_ADDRESS_TO_CG, "igra"),
     },
 }
-
