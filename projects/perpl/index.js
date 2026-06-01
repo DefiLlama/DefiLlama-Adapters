@@ -5,6 +5,7 @@ const EXCHANGE = "0x34B6552d57a35a1D042CcAe1951BD1C370112a6F";
 const AUSD = ADDRESSES.mantle.AUSD;
 
 module.exports = {
+  address: "monad:0x34B6552d57a35a1D042CcAe1951BD1C370112a6F",
   methodology:
     "TVL is the total AUSD collateral deposited in the Perpl Exchange contract.",
   monad: {
