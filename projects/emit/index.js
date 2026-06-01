@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 //adapter for emit.farm on PulseChain
@@ -6,7 +7,7 @@ const EMISSIONS = '0x7Cc0a0ca2f9346AceAdd5110cfa15C4FA12f9251'
 const STAKING = '0x6F0BD602147437F2Ce031dE0809b25a721552148'
 const EMIT_TOKEN = '0x32fB5663619A657839A80133994E45c5e5cDf427'
 
-const ZERO = '0x0000000000000000000000000000000000000000'
+const ZERO = ADDRESSES.null
 
 const abi = {
   poolLength: 'uint256:poolLength',

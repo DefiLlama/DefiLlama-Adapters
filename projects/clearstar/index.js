@@ -89,7 +89,6 @@ const configs = {
 
 module.exports = {
   ...getCuratorExport(configs),
-
   timetravel: false, // starknet doesn't support historical queries
   hallmarks: [
     ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],

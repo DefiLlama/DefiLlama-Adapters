@@ -28,36 +28,8 @@ const customConfig = {
       '0x2A601FC6C0Cb854fDA82715E49Ab04C5340A0396': ['0x6c3ea9036406852006290770bedfcaba0e23a0e8'],
       '0x11Fd9E49c41738b7500748f7B94B4DBb0E8c13d2': ['0x6c3ea9036406852006290770bedfcaba0e23a0e8'],
     },
-    chaosLabsCurators: {
-      wallets: [
-        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271',
-        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f',
-      ],
-      aavePoolDataProviders: [
-        '0x41393e5e337606dc3821075Af65AeE84D7688CBD',
-        '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD',
-        '0xE7d490885A68f00d9886508DF281D67263ed5758',
-      ],
-      extraTokens: [
-        '0x1a88df1cfe15af22b3c4c783d4e6f7f9e0c1885d', // stkGHO
-        '0x83F20F44975D03b1b09e64809B757c47f942BEeA', // sDAI
-        '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD', // sUSDS
-        '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-      ],
-    },
   },
-  ink: {
-    chaosLabsCurators: {
-      wallets: [
-        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271',
-        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f',
-      ],
-      aavePoolDataProviders: [
-        '0x96086C25d13943C80Ff9a19791a40Df6aFC08328'
-      ],
-    },
-  },
+  ink: {},
 }
 
 const abis = {
@@ -80,6 +52,18 @@ const curatorExport = getCuratorExport({
       morphoVaultOwners: [
         '0x13DE0cEE0B83562CBfD46682e10FfA4E3c5090e1',
         '0x113191222789173F32B4084EF8d31b5A8aE945bB',
+      ],
+      boringVaults: [
+        '0x7dee0120739b7ec048b469939efb178adbbb19b2', // kBTC vault
+        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271', // boostedUSDC
+        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f', // balancedUSDC
+      ],
+    },
+    ink: {
+      boringVaults: [
+        '0x7dee0120739b7ec048b469939efb178adbbb19b2', // kBTC vault
+        '0xdbd87325d7b1189dcc9255c4926076ff4a96a271', // boostedUSDC
+        '0xcaae49fb7f74ccfbe8a05e6104b01c097a78789f', // balancedUSDC
       ],
     },
     solana: {
