@@ -15,6 +15,7 @@ const configs = {
         '0xfd843a3D9329C91CA22c5daA994BeA762541F954', // yoETH IPOR Fusion
         '0x17d0f109EE895bAD0b68AA104AA72bd0b003AD8E', // ETH Lending Optimizer IPOR Fusion
         '0x5900C3b72458F12967DC1bef35b92d271F5cDBc1', // cbETH Looper IPOR Fusion
+        '0xD46a3C2D958d0a2cB098d48C48dC19FE3A710F37', // USDC Lending Optimizer IPOR Fusion
       ],
     },
     ethereum: {
