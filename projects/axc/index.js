@@ -2,7 +2,8 @@ const sdk = require('@defillama/sdk');
 
 
 const bscTokens = [
-  "0x6Eca9D3B1ef79F5b45572fb8204835C6A4502bE9", // GIFT
+    "0xfC787d44f3754aDd0242204533b2B4A7eB9876e1", // GYTW
+    "0xb2F0d43f6496b38bb55AbEA0fD2ee5cC891AcB33", // GYT
 ];
 
 async function getTokensTvl(api, chain, tokens) {
@@ -23,6 +24,8 @@ module.exports = {
     tvl: (api) => getTokensTvl(api, 'bsc', bscTokens)
   },
   hallmarks: [
-    ["2025-12-31", "Grow Institutional Fund Token (GIFT) is a RWA token which seeks to track the value of the Grow Heritage Fund"]
+      ["2025-12-31", "Grow Institutional Fund Token (GIFT) is a RWA token which seeks to track the value of the Grow Heritage Fund"],
+      ["2026-04-23", "Growth Yield Token Whitelisted (GYTW) has reissued new tokens to clients with a new token name"],
+      ["2026-04-26", "Growth Yield Token (GYT) is an permissionless RWA token that allows exposure to the Grow Heritage Fund"]
   ]
 };
