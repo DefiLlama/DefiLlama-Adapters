@@ -2,6 +2,9 @@ const { get } = require('../helper/http')
 
 const POOLS_URL = 'https://api.cctools.network/api/markets/send/pools'
 
+// CCTools rejects axios's default User-Agent; identify ourselves explicitly.
+const FETCH_OPTS = { headers: { 'User-Agent': 'DefiLlama-Adapter (pool-party)' } }
+
 // Canonical Canton token IDs → CoinGecko slugs.
 // USDCx (bridged USDC) and CUSD (Send privacy stable) priced as USDC; neither
 // has its own CoinGecko listing.
@@ -12,7 +15,7 @@ const TOKEN_TO_CG = {
 }
 
 async function tvl(api) {
-  const pools = await get(POOLS_URL)
+  const pools = await get(POOLS_URL, FETCH_OPTS)
   for (const pool of pools) {
     if (pool.status !== 'live') continue
     for (const side of [pool.baseReserve, pool.quoteReserve]) {
