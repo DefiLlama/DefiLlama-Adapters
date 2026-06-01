@@ -26,6 +26,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is the USDC reserve held by the Kerne KUSDPSM contract on Base, which backs all circulating kUSD 1:1. This is the protocol\'s live, user-facing deposit surface and matches the published headline TVL at kerne.fi/api/stats. The v1 KerneVault is intentionally excluded: it is in a known degraded accounting state (share supply does not reconcile with backing), deposits are disabled pending a v2 redeploy, and its totalAssets() includes off-chain CEX and Hyperliquid hedge balances that are not on-chain TVL. The vault leg will be re-added when KerneVault v2 redeploys healthy. The kUSD supply itself is not added, since the PSM USDC already backs it 1:1 (counting both would double-count).',
+    'TVL is the USDC reserve held by the Kerne KUSDPSM contract on Base, which backs all circulating kUSD 1:1. This is the protocol\'s live, user-facing deposit surface and matches the published headline TVL at kerne.fi/api/stats.',
   base: { tvl },
 };
