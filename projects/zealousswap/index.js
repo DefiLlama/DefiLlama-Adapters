@@ -64,11 +64,12 @@ async function addInfinityPools(api, balances, infPools, chain) {
         const accounted = BigInt(st) + BigInt(rw)
         if (accounted === 0n) continue
 
-        const human = Number(accounted) / 10 ** Number(dec)
+        const raw = Number(accounted)
+        const human = raw / 10 ** Number(dec)
 
         const cg = ADDRESS_TO_CG[token.toLowerCase()]
         const key = cg ? `coingecko:${cg}` : `${chain}:${token}`
-        sdk.util.sumSingleBalance(balances, key, human)
+        sdk.util.sumSingleBalance(balances, key, cg ? human : raw)
     }
 
     return balances
