@@ -1,6 +1,5 @@
 const { aaveV2Export } = require("../helper/aave");
-const { queryV1Beta1 } = require("../helper/chain/cosmos");
-const { sumTokens } = require('../helper/chain/cosmos')
+const { queryV1Beta1, sumTokens } = require("../helper/chain/cosmos");
 
 const LEVERAGE_MODULE = 'umee185vjuy55vukn8fdz8fax4rs5xnhl3ufmsul2ks'
 
@@ -29,7 +28,7 @@ async function tvl(api) {
   //   api.add(i.base_denom, i.supplied - i.borrowed)
   // );
 
-  await sumTokens({api, owners: [LEVERAGE_MODULE], chain: 'umee'})
+  await sumTokens({api, owners: [LEVERAGE_MODULE]})
 
 }
 
