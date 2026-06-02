@@ -1,6 +1,7 @@
-const abi = {
-  getBasket: 'function getBasket() view returns ((string chain, string symbol, string addr, uint8 decimals, uint256 amount)[])',
-}
+// SSI tokens are custodied index tokens on Base.
+// TVL = totalSupply of each SSI token, priced via their token address.
+// Underlying assets (BTC, ETH, SOL etc.) are held off-chain by Cobo/Ceffu.
+// On-chain TVL is computed from actual token supply × market price.
 
 const SSI_TOKENS = [
   '0x9E6A46f294bB67c20F1D1E7AfB0bBEf614403B55', // MAG7.ssi
@@ -8,56 +9,14 @@ const SSI_TOKENS = [
   '0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA', // MEME.ssi
 ]
 
-const SYMBOL_TO_CGID = {
-  BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana',
-  BNB: 'binancecoin', BSC_BNB: 'binancecoin',
-  XRP: 'ripple', DOGE: 'dogecoin', ADA: 'cardano',
-  AVAX: 'avalanche-2', DOT: 'polkadot', LINK: 'chainlink',
-  UNI: 'uniswap', AAVE: 'aave', MKR: 'maker',
-  LDO: 'lido-dao', CRV: 'curve-dao-token', SNX: 'havven',
-  COMP: 'compound-governance-token', SUSHI: 'sushi',
-  SHIB: 'shiba-inu', PEPE: 'pepe', FLOKI: 'floki',
-  BONK: 'bonk', WIF: 'dogwifcoin', BRETT: 'brett',
-  MOG: 'mog-coin', POPCAT: 'popcat',
-  USDC: 'usd-coin', USDT: 'tether',
-}
-
-/**
- * Maps a basket symbol string to its CoinGecko ID.
- * @param {string} symbol - The asset symbol returned by getBasket()
- * @returns {string|undefined} CoinGecko ID or undefined if not mapped
- */
-function getCoinGeckoId(symbol) {
-  return SYMBOL_TO_CGID[symbol.toUpperCase()]
-}
-
-/**
- * Computes TVL for the SSI protocol by fetching on-chain basket composition.
- * For each SSI index token, calls getBasket() which returns the total underlying
- * asset balances. Maps each asset symbol to a CoinGecko ID and divides by
- * token decimals to get real amounts.
- * @param {object} api - DefiLlama ChainApi instance
- * @returns {object} balances keyed by coingecko:<id>
- */
 async function tvl(api) {
-  const baskets = await api.multiCall({ abi: abi.getBasket, calls: SSI_TOKENS })
-
-  const balances = {}
-  for (const basket of baskets) {
-    for (const component of basket) {
-      const { symbol, decimals, amount } = component
-      const cgId = getCoinGeckoId(symbol)
-      if (!cgId || BigInt(amount) <= 0n) continue
-      const realAmount = Number(amount) / 10 ** Number(decimals)
-      balances[`coingecko:${cgId}`] = (balances[`coingecko:${cgId}`] || 0) + realAmount
-    }
-  }
-  return balances
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: SSI_TOKENS })
+  SSI_TOKENS.forEach((token, i) => api.add(token, supplies[i]))
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  methodology: 'TVL counts the underlying tokens in the baskets of the SSI tokens. For each index token (MAG7.ssi, DEFI.ssi, MEME.ssi), the basket composition is fetched on-chain via getBasket() which returns total underlying asset balances.',
+  misrepresentedTokens: false,
+  methodology: 'TVL is the total supply of each SSI index token (MAG7.ssi, DEFI.ssi, MEME.ssi) multiplied by its market price. SSI tokens are custodied index tokens backed by underlying crypto assets held by institutional custodians.',
   start: 1733011200,
   base: { tvl },
 }
