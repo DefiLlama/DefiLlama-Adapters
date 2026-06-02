@@ -17,4 +17,5 @@ module.exports =  [
   'evmos', // shutdown 2026-05-18: https://x.com/Disperze_/status/2054625049429127192
   'redstone', // shutdown 2026-05-18: https://x.com/redstonexyz/status/2055181780043579468
   'tenet', // stopped producing blocks 2026-04-22: https://tenetscan.io/block/27263599
+  'enuls', // shutdown 2026-03-25 and merged with NerveNetwork: https://x.com/Nuls/status/2029433112254443679 
 ]
