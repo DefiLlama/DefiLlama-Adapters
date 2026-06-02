@@ -31,15 +31,17 @@
  * NOTE: HyperEVM's DeFiLlama chain key is `hyperliquid`, NOT "hyperevm".
  */
 
+// `start` = first pool creation date per chain (verified via subgraph Pair.createdAtTimestamp) —
+// bounds historical runs so DeFiLlama doesn't call allPairsLength before the factory existed.
 const config = {
-  ethereum:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 24882293 },
-  base:        { factory: '0x611103410C8021B51725ab38Cc79C8F0feD715c6', fromBlock: 37314429 },
-  arbitrum:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 452826927 },
-  polygon:     { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 85577619 },
-  hyperliquid: { factory: '0xa575959Ab114BF3a84A9B7D92838aC3b77324E65', fromBlock: 11741392 },
-  apechain:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 37153586 },
-  berachain:   { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 20200289 },
-  monad:       { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 71175180 },
+  ethereum:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 24882293,  start: '2026-04-15' },
+  base:        { factory: '0x611103410C8021B51725ab38Cc79C8F0feD715c6', fromBlock: 37314429,  start: '2025-10-25' },
+  arbitrum:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 452826927, start: '2026-04-15' },
+  polygon:     { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 85577619,  start: '2026-04-15' },
+  hyperliquid: { factory: '0xa575959Ab114BF3a84A9B7D92838aC3b77324E65', fromBlock: 11741392,  start: '2025-08-23' },
+  apechain:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 37153586,  start: '2026-04-28' },
+  berachain:   { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 20200289,  start: '2026-04-28' },
+  monad:       { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 71175180,  start: '2026-04-28' },
 }
 
 const RESERVES_ABI =
@@ -78,19 +80,22 @@ async function tvl(api) {
 
   nftPairs.forEach((pair, i) => {
     const r = reserves[i]
+    const reserve0 = BigInt(r.reserve0 ?? r[0])
+    const reserve1 = BigInt(r.reserve1 ?? r[1])
+    // Skip one-sided/empty pools — if either side is 0 the ×2 doubling would overstate TVL.
+    if (reserve0 === 0n || reserve1 === 0n) return
+
     // Double the fungible reserve to value the whole CPMM 50/50 pool.
     if (fungibleSide[i] === 1) {
-      const bal = BigInt(r.reserve1 ?? r[1])
-      if (bal > 0n) api.add(token1s[i], (bal * 2n).toString())
+      api.add(token1s[i], (reserve1 * 2n).toString())
     } else {
-      const bal = BigInt(r.reserve0 ?? r[0])
-      if (bal > 0n) api.add(token0s[i], (bal * 2n).toString())
+      api.add(token0s[i], (reserve0 * 2n).toString())
     }
   })
 }
 
 Object.keys(config).forEach((chain) => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl, start: config[chain].start }
 })
 
 module.exports.methodology =
@@ -100,5 +105,3 @@ module.exports.methodology =
   "the NFT side's value at the pool's own spot price equals the fungible side. Only native SnF NFT " +
   'pools are counted; delegate (fungible/fungible) pairs route to an upstream DEX and are excluded. ' +
   'Pairs with zero reserves are skipped.'
-
-module.exports.start = '2025-01-01' // informational; per-chain fromBlock drives enumeration
