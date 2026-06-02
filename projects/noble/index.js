@@ -5,7 +5,10 @@ const IGNORE_DENOMS = ['ufrienzies', 'ustake'];
 
 async function tvl(api) {
   const supply = await queryV1Beta1V2({ api, url: NOBLE_SUPPLY_URL })
-  supply.forEach(i => api.add(i.denom, i.amount))
+  supply.forEach(({ denom, amount }) => {
+    if (IGNORE_DENOMS.includes(denom)) return
+    api.add(denom, amount)
+  })
 }
 
 module.exports = {

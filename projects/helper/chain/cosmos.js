@@ -119,12 +119,11 @@ async function queryV1Beta1({ chain, paginationKey, block, url, api } = {}) {
   if (api) chain = api.chain
   const subpath = chainSubpaths[chain] || "cosmos";
   let endpoint = `${getEndpoint(chain)}/${subpath}/${url}`;
-  const sep = endpoint.includes('?') ? '&' : '?';
   if (block !== undefined) {
-    endpoint += sep + `height=${block - (block % 100)}`
+    endpoint += (endpoint.includes('?') ? '&' : '?') + `height=${block - (block % 100)}`
   }
   if (paginationKey) {
-    endpoint += sep + `pagination.key=${encodeURIComponent(paginationKey)}`
+    endpoint += (endpoint.includes('?') ? '&' : '?') + `pagination.key=${encodeURIComponent(paginationKey)}`
   }
   return get(endpoint)
 }
