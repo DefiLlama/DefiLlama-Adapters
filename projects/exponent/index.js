@@ -9,10 +9,7 @@ const idl = require('./idl.json')
 const EXPONENT_CORE_PROGRAM_ID = 'ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7'
 const EXPONENT_CLMM_PROGRAM_ID = 'XPC1MM4dYACDfykNuXYZ5una2DsMDWL24CrYubCvarC'
 const EXPONENT_ORDERBOOK_PROGRAM_ID = 'XPBookgQTN2p8Yw1C2La35XkPMmZTCEYH77AdReVvK1'
-const SYNTHETIC_USD_MINT = 'USD1111111111111111111111111111111111111111'
-const SYNTHETIC_USD9_MINT = 'USD1111111111111111111111111111111111111119'
-const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-const USDE_MINT = 'DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT'
+
 // These protocol buckets are already represented by core vault accounting, so
 // adding managed-strategy exposure back into them would double count TVL.
 const EXPONENT_INTERNAL_PROTOCOL_KEYS = new Set([
@@ -21,10 +18,14 @@ const EXPONENT_INTERNAL_PROTOCOL_KEYS = new Set([
   EXPONENT_ORDERBOOK_PROGRAM_ID,
 ])
 
-function resolveManagedUnderlyingMint(underlyingMint) {
   // Managed vaults can use synthetic quote mints for USD-denominated accounting.
   // DefiLlama needs a real priceable token mint, so normalize them to the same
   // assets used by the standard-yield-tokens endpoint.
+function resolveManagedUnderlyingMint(underlyingMint) {
+  const SYNTHETIC_USD_MINT = 'USD1111111111111111111111111111111111111111'
+  const SYNTHETIC_USD9_MINT = 'USD1111111111111111111111111111111111111119'
+  const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+  const USDE_MINT = 'DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT'
   if (underlyingMint === SYNTHETIC_USD_MINT) return USDC_MINT
   if (underlyingMint === SYNTHETIC_USD9_MINT) return USDE_MINT
   return underlyingMint
