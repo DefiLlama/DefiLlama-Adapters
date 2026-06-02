@@ -36,7 +36,7 @@ async function addManagedVaultAum(api) {
   // dedicated backend endpoint and added separately.
   const managedAum = await getConfig(
     'exponent-managed-total-aum',
-    'https://www.exponent.finance/api/strategies/managed/totalAum'
+    'https://api.exponent.finance/strategies/managed/total-aum'
   )
 
   Object.entries(managedAum || {}).forEach(([protocolKey, mintEntries]) => {
