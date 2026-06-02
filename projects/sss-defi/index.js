@@ -23,9 +23,9 @@ async function tvl(api) {
 
   for (const pool of data.pools) {
     const poolId = Number(decodeNat(pool.pool_id))
-    seen.add(poolId)
     if (!EXPECTED_POOL_IDS.has(poolId)) continue
     if (!pool.enabled || !pool.public_visible || pool.legacy) continue
+    seen.add(poolId)
 
     for (const side of ['0', '1']) {
       const symbol = String(pool[`token${side}_symbol`]).toUpperCase()
