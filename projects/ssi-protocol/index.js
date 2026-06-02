@@ -15,7 +15,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
+  misrepresentedTokens: true,
   methodology: 'TVL is the total supply of each SSI index token (MAG7.ssi, DEFI.ssi, MEME.ssi) multiplied by its market price. SSI tokens are custodied index tokens backed by underlying crypto assets held by institutional custodians.',
   start: 1733011200,
   base: { tvl },
