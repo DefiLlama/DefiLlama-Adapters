@@ -1729,6 +1729,10 @@ const uniV3Configs = {
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
     }
   },
+  'turbo': {
+    methodology: "Counts the tokens locked in Turbo's Uniswap V3 liquidity pools on HyperEVM, enumerated on-chain from the factory's PoolCreated events.",
+    hyperliquid: { factory: '0xc72d2695A203696243Aa3EdD6CC98E43262E007E', fromBlock: 36463669 },
+  },
   'kublerx-v3': {
     methodology: 'TVL is calculated by summing the reserves of all Kublerx V3 pools on KUB. Pools are discovered from PoolCreated events emitted by the V3 factory.',
     bitkub: { factory: '0xD679d310008A2595B8d3DeB83bb93EB23F9b0942', fromBlock: 31936260 }
