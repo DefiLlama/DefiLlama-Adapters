@@ -1,76 +1,104 @@
-const { getLogs } = require('../helper/cache/getLogs');
-const { transformDexBalances } = require('../helper/portedTokens');
-
-module.exports = {
-  misrepresentedTokens: true,
-  methodology: 'TVL counts the liquidity of the pools on each chain.',
-};
+/**
+ * Sweep n' Flip — DeFiLlama TVL adapter (DRAFT)
+ *
+ * Target repo: DefiLlama/DefiLlama-Adapters  →  projects/sweep-n-flip/index.js
+ *
+ * SnF is a Uniswap-V2 fork adapted for NFTs. Each NFT pool is a CPMM 50/50 pair where one
+ * side is a WERC721 wrapper (1 NFT = 1e18 wrapper units) that DeFiLlama's price oracle cannot
+ * price. Because the pool's own spot price is reserveFungible / reserveNFT, the NFT side's value
+ * AT THE POOL PRICE equals the fungible side. So TVL = (priceable fungible reserve) × 2.
+ * This is the accepted DeFiLlama convention for pools with exactly one unpriceable token.
+ *
+ * Pair NFT-detection is exact, not heuristic: the SnF pair exposes public `discrete0()`/
+ * `discrete1()` booleans (true = that side is an NFT wrapper). Verified in
+ * snf-contracts/contracts/core/UniswapV2Pair.sol.
+ *
+ * IMPORTANT: SnF's factory `allPairs` ALSO lists DELEGATE pairs — fungible/fungible pairs whose
+ * stored address is an UPSTREAM DEX pair (Sushi/Pancake/Camelot/etc), not an SnF contract. Those
+ * have no `discrete0/discrete1` getters (call reverts) and are NOT SnF liquidity (they route to the
+ * upstream DEX). So we probe discrete0/discrete1 with permitFailure and count ONLY real NFT pools
+ * (exactly one discrete side). Verified in UniswapV2Factory.sol:createPair (the `else` delegate branch).
+ *
+ * ── BEFORE OPENING THE PR ───────────────────────────────────────────────────────────────────
+ *  1. Run `node test.js projects/sweep-n-flip` inside the DefiLlama-Adapters fork.
+ *  2. Confirm per-token PRICE coverage on the emerging chains (WHYPE/WMON/WAPE/WBERA). If a
+ *     chain's fungible token has no DeFiLlama price source, that chain's TVL reads 0 until they
+ *     add it — document, don't hack a self-price.
+ *  3. Confirm `api.fetchList` enumeration scales on Arbitrum/Polygon (largest pair counts).
+ * ─────────────────────────────────────────────────────────────────────────────────────────────
+ *
+ * Data verified 2026-06-01 from snf-contracts/subgraph/config/*.json + DeFiLlama helper/chains.json.
+ * NOTE: HyperEVM's DeFiLlama chain key is `hyperliquid`, NOT "hyperevm".
+ */
 
 const config = {
-  ethereum: {
-    fromBlock: 12965000,
-    factory: '0x16eD649675e6Ed9F1480091123409B4b8D228dC1',
-  },
-  polygon: {
-    fromBlock: 12965000,
-    factory: '0x16eD649675e6Ed9F1480091123409B4b8D228dC1',
-  },
-  arbitrum: {
-    fromBlock: 101851523,
-    factory: '0x16eD649675e6Ed9F1480091123409B4b8D228dC1',
-  },
-  mode: {
-    fromBlock: 6989680,
-    factory: '0x7962223D940E1b099AbAe8F54caBFB8a3a0887AB',
-  },
-};
+  ethereum:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 24882293 },
+  base:        { factory: '0x611103410C8021B51725ab38Cc79C8F0feD715c6', fromBlock: 37314429 },
+  arbitrum:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 452826927 },
+  polygon:     { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 85577619 },
+  hyperliquid: { factory: '0xa575959Ab114BF3a84A9B7D92838aC3b77324E65', fromBlock: 11741392 },
+  apechain:    { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 37153586 },
+  berachain:   { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 20200289 },
+  monad:       { factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 71175180 },
+}
+
+const RESERVES_ABI =
+  'function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'
+
+async function tvl(api) {
+  const { factory } = config[api.chain]
+
+  // Enumerate every pair via the standard UniV2 allPairs/allPairsLength getters.
+  const pairs = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factory })
+
+  // Probe discrete flags with permitFailure — DELEGATE (foreign upstream-DEX) pairs revert and
+  // come back null; they're excluded. Only SnF NFT pools have exactly one discrete side.
+  const [discrete0s, discrete1s] = await Promise.all([
+    api.multiCall({ abi: 'bool:discrete0', calls: pairs, permitFailure: true }),
+    api.multiCall({ abi: 'bool:discrete1', calls: pairs, permitFailure: true }),
+  ])
+
+  const nftPairs = [] // SnF NFT pools only
+  const fungibleSide = [] // 0 or 1 — which side of the pair is the priceable fungible token
+  pairs.forEach((pair, i) => {
+    const d0 = discrete0s[i]
+    const d1 = discrete1s[i]
+    if (d0 === null || d1 === null) return // delegate/foreign pair → not SnF liquidity
+    if (d0 && !d1) { nftPairs.push(pair); fungibleSide.push(1) } // token1 is fungible
+    else if (!d0 && d1) { nftPairs.push(pair); fungibleSide.push(0) } // token0 is fungible
+    // both true (factory forbids) or both false (delegate) → skip
+  })
+  if (!nftPairs.length) return
+
+  const [token0s, token1s, reserves] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: nftPairs }),
+    api.multiCall({ abi: 'address:token1', calls: nftPairs }),
+    api.multiCall({ abi: RESERVES_ABI, calls: nftPairs }),
+  ])
+
+  nftPairs.forEach((pair, i) => {
+    const r = reserves[i]
+    // Double the fungible reserve to value the whole CPMM 50/50 pool.
+    if (fungibleSide[i] === 1) {
+      const bal = BigInt(r.reserve1 ?? r[1])
+      if (bal > 0n) api.add(token1s[i], (bal * 2n).toString())
+    } else {
+      const bal = BigInt(r.reserve0 ?? r[0])
+      if (bal > 0n) api.add(token0s[i], (bal * 2n).toString())
+    }
+  })
+}
 
 Object.keys(config).forEach((chain) => {
-  const { fromBlock, factory } = config[chain];
-  module.exports[chain] = {
-    tvl: async (api) => {
-      let logs = await getLogs({
-        api,
-        target: factory,
-        eventAbi:
-          'event PairCreated(address indexed token0, address indexed token1, address pair, uint256)',
-        onlyArgs: true,
-        fromBlock,
-      });
+  module.exports[chain] = { tvl }
+})
 
-      let pairs = logs.map((log) => log.pair);
+module.exports.methodology =
+  "TVL is the value locked across Sweep n' Flip's CPMM NFT pools. Each NFT pool pairs a fungible " +
+  'asset (ETH/stablecoin/native) with a WERC721 NFT wrapper. The wrapper is not oracle-priceable, ' +
+  "so the pool's fungible reserve is counted and doubled (×2) — in a constant-product 50/50 pool " +
+  "the NFT side's value at the pool's own spot price equals the fungible side. Only native SnF NFT " +
+  'pools are counted; delegate (fungible/fungible) pairs route to an upstream DEX and are excluded. ' +
+  'Pairs with zero reserves are skipped.'
 
-      const names = await api.multiCall({ abi: 'string:name', calls: pairs });
-
-      logs = logs.filter((pair, i) => names[i] === 'SweepnFlip LPs');
-
-      pairs = logs.map((log) => log.pair);
-
-      const bals0 = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: pairs.map((pair, i) => ({
-          target: logs[i].token0,
-          params: pair,
-        })),
-      });
-
-      const bals1 = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: pairs.map((pair, i) => ({
-          target: logs[i].token1,
-          params: pair,
-        })),
-      });
-
-      return transformDexBalances({
-        chain,
-        data: logs.map((l, i) => ({
-          token0Bal: bals0[i],
-          token1Bal: bals1[i],
-          token0: l.token0,
-          token1: l.token1,
-        })),
-      });
-    },
-  };
-});
+module.exports.start = '2025-01-01' // informational; per-chain fromBlock drives enumeration
