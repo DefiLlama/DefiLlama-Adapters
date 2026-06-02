@@ -4,6 +4,7 @@ const sui = require('../helper/chain/sui')
 const { transformDexBalances } = require('../helper/portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
+const { getEnv } = require('../helper/env')
 
 async function tvl() {
   let data = await getResources('0xa7f01413d33ba919441888637ca1607ca0ddcbfa3c0a9ddea64743aaa560e498')

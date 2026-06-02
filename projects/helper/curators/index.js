@@ -289,10 +289,14 @@ async function getCuratorTvlErc4626(api, vaults) {
 
   // Track which v1 vaults are found via v2 adapters (to avoid double-counting)
   const v1VaultsFromV2 = new Set()
-  for (const v1Address of v1VaultAddresses) {
-    if (v1Address && vaultMap.has(v1Address.toLowerCase())) {
-      v1VaultsFromV2.add(v1Address.toLowerCase())
-    }
+  for (let i = 0; i < v1VaultAddresses.length; i++) {
+    const v1Address = v1VaultAddresses[i]
+    if (!v1Address) continue
+    const v1InList = vaultMap.get(v1Address.toLowerCase())
+    if (!v1InList) continue
+    // make sure the same asset here
+    if (v1InList.asset.toLowerCase() !== v2Vaults[i].asset.toLowerCase()) continue
+    v1VaultsFromV2.add(v1Address.toLowerCase())
   }
 
   // Process non-Morpho vaults, but skip v1 vaults that will be handled via v2 de-duplication
@@ -316,8 +320,9 @@ async function getCuratorTvlErc4626(api, vaults) {
     }
 
     const v1InList = vaultMap.get(v1Address.toLowerCase())
-    if (v1InList) {
-      // v1 is in the curator's vault list, use its data for dedup
+    const assetsMatch = v1InList && v1InList.asset.toLowerCase() === v2.asset.toLowerCase()
+    if (assetsMatch) {
+      // v1 is in the curator's vault list and shares v2's asset — safe to dedup
       const v1 = {
         vault: v1Address,
         asset: v1InList.asset,
@@ -325,7 +330,8 @@ async function getCuratorTvlErc4626(api, vaults) {
       }
       morphoPairs.push({ v1, v2, depositor: v1Depositors[i] })
     } else {
-      // v1 is not owned by this curator, just count v2 normally
+      // Either v1 isn't curated by us, or the resolved "v1" isn't a real Morpho V1 of this v2
+      // (asset mismatch). Either way, count v2 standalone.
       api.add(v2.asset, v2.totalAssets)
     }
   }
@@ -554,6 +560,11 @@ async function getCuratorTvl(api, vaults) {
   // turtle.club vaults - boring vaults
   if (vaults.turtleclub) {
     await getCuratorTvlBoringVault(api, vaults.turtleclub)
+  }
+
+  // generic Veda boring vaults
+  if (vaults.boringVaults) {
+    await getCuratorTvlBoringVault(api, vaults.boringVaults)
   }
 
   // symiotic.fi
