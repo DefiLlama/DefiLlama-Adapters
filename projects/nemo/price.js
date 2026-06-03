@@ -46,7 +46,14 @@ function parseSuiAddress(str) {
 
 async function getExchangeRate(coinConfig) {
   if (coinConfig.provider === 'Scallop') {
-    return await getScallopTokenExchangeRate(coinConfig);
+    try {
+      return await getScallopTokenExchangeRate(coinConfig);
+    } catch (e) {
+      // Scallop package version mismatch after upgrade - return empty to avoid $0 TVL for all markets
+      // TODO: update package address 0x14c26838... and providerVersion object IDs when Nemo team republishes
+      console.error(`Scallop exchange rate failed for ${coinConfig.coinType}: ${e.message}`);
+      return [];
+    }
   } else if (coinConfig.provider === 'Nemo') {
     return await getNemoTokenExchangeRate(coinConfig);
   } else if (coinConfig.coinType === '0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI') {
