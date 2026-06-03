@@ -7,75 +7,59 @@
  * AT THE POOL PRICE equals the fungible side. So TVL = (priceable fungible balance) × 2.
  * This is the accepted DeFiLlama convention for pools with exactly one unpriceable token.
  *
- * Pair NFT-detection is exact, not heuristic: the SnF pair exposes public `discrete0()`/
- * `discrete1()` booleans (true = that side is an NFT wrapper). Verified in
- * snf-contracts/contracts/core/UniswapV2Pair.sol.
- *
- * IMPORTANT: SnF's factory `allPairs` ALSO lists DELEGATE pairs — fungible/fungible pairs whose
- * stored address is an UPSTREAM DEX pair (Sushi/Pancake/Camelot/etc), not an SnF contract. Those
- * have no `discrete0/discrete1` getters (call reverts) and are NOT SnF liquidity (they route to the
- * upstream DEX). So we probe discrete0/discrete1 with permitFailure and count ONLY real NFT pools
- * (exactly one discrete side). Verified in UniswapV2Factory.sol:createPair (the `else` delegate branch).
-
- * Data verified 2026-06-01 from snf-contracts/subgraph/config/*.json + DeFiLlama helper/chains.json.
+ * Pairs are discovered from each factory's `PairCreated` event (cached via getLogs).
  */
 
-// `start` = first pool creation date per chain (verified via subgraph Pair.createdAtTimestamp) —
-// bounds historical runs so DeFiLlama doesn't call allPairsLength before the factory existed.
-// `factories` lists every SnF factory live on the chain: the current deployment plus any legacy deployments
+const { getLogs } = require('../helper/cache/getLogs')
+const { transformDexBalances } = require('../helper/portedTokens')
 
-const { transformDexBalances } = require('../helper/portedTokens');
+const PAIR_CREATED = 'event PairCreated(address indexed token0, address indexed token1, address pair, uint256)'
 
 const config = {
-  ethereum:    { factories: ['0x85039B2e95558aDdCCf4379728b8433C447E37bE', '0x16eD649675e6Ed9F1480091123409B4b8D228dC1'], fromBlock: 24882293,  start: '2026-04-15' },
-  base:        { factories: ['0x611103410C8021B51725ab38Cc79C8F0feD715c6'], fromBlock: 37314429,  start: '2025-10-25' },
-  arbitrum:    { factories: ['0x85039B2e95558aDdCCf4379728b8433C447E37bE', '0x16eD649675e6Ed9F1480091123409B4b8D228dC1'], fromBlock: 452826927, start: '2026-04-15' },
-  polygon:     { factories: ['0x85039B2e95558aDdCCf4379728b8433C447E37bE', '0x16eD649675e6Ed9F1480091123409B4b8D228dC1'], fromBlock: 85577619,  start: '2026-04-15' },
-  hyperliquid: { factories: ['0xa575959Ab114BF3a84A9B7D92838aC3b77324E65'], fromBlock: 11741392,  start: '2025-08-23' },
-  apechain:    { factories: ['0x85039B2e95558aDdCCf4379728b8433C447E37bE'], fromBlock: 37153586,  start: '2026-04-28' },
-  berachain:   { factories: ['0x85039B2e95558aDdCCf4379728b8433C447E37bE'], fromBlock: 20200289,  start: '2026-04-28' },
-  monad:       { factories: ['0x85039B2e95558aDdCCf4379728b8433C447E37bE'], fromBlock: 71175180,  start: '2026-04-28' },
-  mode:        { factories: ['0x7962223D940E1b099AbAe8F54caBFB8a3a0887AB'], fromBlock: 6989680,   start: '2024-06-01' },
+  ethereum:    { start: '2026-04-15', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 24882293 },  { factory: '0x16eD649675e6Ed9F1480091123409B4b8D228dC1', fromBlock: 12965000 }] },
+  base:        { start: '2025-10-25', factories: [{ factory: '0x611103410C8021B51725ab38Cc79C8F0feD715c6', fromBlock: 37314429 }] },
+  arbitrum:    { start: '2026-04-15', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 452826927 }, { factory: '0x16eD649675e6Ed9F1480091123409B4b8D228dC1', fromBlock: 101851523 }] },
+  polygon:     { start: '2026-04-15', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 85577619 },  { factory: '0x16eD649675e6Ed9F1480091123409B4b8D228dC1', fromBlock: 12965000 }] },
+  hyperliquid: { start: '2025-08-23', factories: [{ factory: '0xa575959Ab114BF3a84A9B7D92838aC3b77324E65', fromBlock: 11741392 }] },
+  apechain:    { start: '2026-04-28', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 37153586 }] },
+  berachain:   { start: '2026-04-28', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 20200289 }] },
+  monad:       { start: '2026-04-28', factories: [{ factory: '0x85039B2e95558aDdCCf4379728b8433C447E37bE', fromBlock: 71175180 }] },
+  mode:        { start: '2024-06-01', factories: [{ factory: '0x7962223D940E1b099AbAe8F54caBFB8a3a0887AB', fromBlock: 6989680 }] },
 }
 
 async function tvl(api) {
   const { factories } = config[api.chain]
 
-  // Enumerate every pair across all SnF factories via the standard UniV2
-  // allPairs/allPairsLength getters, then flatten into one list.
-  const pairs = (await Promise.all(
-    factories.map((factory) => api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factory }))
+  // PairCreated gives pair + token0/token1 directly
+  const logs = (await Promise.all(
+    factories.map(({ factory, fromBlock }) =>
+      getLogs({ api, target: factory, eventAbi: PAIR_CREATED, onlyArgs: true, fromBlock }))
   )).flat()
+  if (!logs.length) return
 
-  // Probe discrete flags with permitFailure — DELEGATE (foreign upstream-DEX) pairs revert and
-  // come back null; they're excluded. Only SnF NFT pools have exactly one discrete side.
+  const pairs = logs.map((log) => log.pair)
+
+  // Keep only real SnF NFT pools: exactly one discrete (NFT-wrapper) side. Delegate/foreign pairs
+  // lack discrete0/discrete1 (call reverts → null) and are excluded — hence permitFailure here.
   const [discrete0s, discrete1s] = await Promise.all([
     api.multiCall({ abi: 'bool:discrete0', calls: pairs, permitFailure: true }),
     api.multiCall({ abi: 'bool:discrete1', calls: pairs, permitFailure: true }),
   ])
 
-  const nftPairs = [] // SnF NFT pools only
-  pairs.forEach((pair, i) => {
+  const nftLogs = logs.filter((_, i) => {
     const d0 = discrete0s[i]
     const d1 = discrete1s[i]
-    if (d0 === null || d1 === null) return // delegate/foreign pair → not SnF liquidity
-    // exactly one discrete side = a real SnF NFT pool; both-true (factory forbids) or both-false (delegate) → skip
-    if (d0 !== d1) nftPairs.push(pair)
+    return d0 != null && d1 != null && d0 !== d1 // exactly one discrete side = real SnF NFT pool
   })
-  if (!nftPairs.length) return
-
-  const [token0s, token1s] = await Promise.all([
-    api.multiCall({ abi: 'address:token0', calls: nftPairs }),
-    api.multiCall({ abi: 'address:token1', calls: nftPairs }),
-  ])
+  if (!nftLogs.length) return
 
   const [bals0, bals1] = await Promise.all([
-    api.multiCall({ abi: 'erc20:balanceOf', calls: nftPairs.map((pair, i) => ({ target: token0s[i], params: pair })) }),
-    api.multiCall({ abi: 'erc20:balanceOf', calls: nftPairs.map((pair, i) => ({ target: token1s[i], params: pair })) }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: nftLogs.map((l) => ({ target: l.token0, params: l.pair })) }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: nftLogs.map((l) => ({ target: l.token1, params: l.pair })) }),
   ])
 
-  const data = nftPairs
-    .map((_, i) => ({ token0: token0s[i], token0Bal: bals0[i], token1: token1s[i], token1Bal: bals1[i] }))
+  const data = nftLogs
+    .map((l, i) => ({ token0: l.token0, token0Bal: bals0[i], token1: l.token1, token1Bal: bals1[i] }))
     // Skip one-sided/empty pools so a lone non-zero side can't be doubled into phantom TVL.
     .filter((d) => BigInt(d.token0Bal) !== 0n && BigInt(d.token1Bal) !== 0n)
 
