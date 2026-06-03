@@ -1,6 +1,5 @@
-const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2: solanaSumTokens } = require('../helper/solana')
+const { sumTokensExport } = require('../helper/solana')
 
 const config = {
   ethereum: {
@@ -234,7 +233,7 @@ Object.keys(config).forEach(chain => {
 })
 
 module.exports.solana = {
-  tvl: async () => solanaSumTokens({
+  tvl: sumTokensExport({
     allowError: true,
     tokensAndOwners: [
       ['3b8X44fLF9ooXaUm3hhSgjpmVs6rZZ3pPoGnGahc3Uu7', 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // PRIME (Hastra)
