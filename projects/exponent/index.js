@@ -9,6 +9,8 @@ const idl = require('./idl.json')
 const EXPONENT_CORE_PROGRAM_ID = 'ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7'
 const EXPONENT_CLMM_PROGRAM_ID = 'XPC1MM4dYACDfykNuXYZ5una2DsMDWL24CrYubCvarC'
 const EXPONENT_ORDERBOOK_PROGRAM_ID = 'XPBookgQTN2p8Yw1C2La35XkPMmZTCEYH77AdReVvK1'
+// Exponent stores the SY exchange rate with 1e12 fixed-point precision.
+const SY_EXCHANGE_RATE_SCALE = 12n
 
 // These protocol buckets are already represented by core vault accounting, so
 // adding managed-strategy exposure back into them would double count TVL.
@@ -18,43 +20,39 @@ const EXPONENT_INTERNAL_PROTOCOL_KEYS = new Set([
   EXPONENT_ORDERBOOK_PROGRAM_ID,
 ])
 
-  // Managed vaults can use synthetic quote mints for USD-denominated accounting.
-  // DefiLlama needs a real priceable token mint, so normalize them to the same
-  // assets used by the standard-yield-tokens endpoint.
-function resolveManagedUnderlyingMint(underlyingMint) {
-  const SYNTHETIC_USD_MINT = 'USD1111111111111111111111111111111111111111'
-  const SYNTHETIC_USD9_MINT = 'USD1111111111111111111111111111111111111119'
-  const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-  const USDE_MINT = 'DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT'
-  if (underlyingMint === SYNTHETIC_USD_MINT) return USDC_MINT
-  if (underlyingMint === SYNTHETIC_USD9_MINT) return USDE_MINT
-  return underlyingMint
+// const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
+const EXPONENT_API_V2_BASE = 'http://localhost:3000/api'
+
+function getLastSeenSyExchangeRateRaw(vaultAccount) {
+  const rawRate = vaultAccount?.lastSeenSyExchangeRate?.[0]?.[0]
+  if (rawRate == null) return null
+
+  const rate = BigInt(rawRate.toString())
+  return rate > 0n ? rate : null
 }
 
 async function addManagedVaultAum(api) {
   // Managed strategies can deploy capital into external protocols that are not
-  // visible from the core SY/PT/YT supply alone, so that AUM is fetched from the
-  // dedicated backend endpoint and added separately.
+  // visible from core SY/PT/YT supply alone, so fetch that exposure separately.
   const managedAum = await getConfig(
     'exponent-managed-total-aum',
-    'https://api.exponent.finance/strategies/managed/total-aum'
+    `${EXPONENT_API_V2_BASE}/strategies/managed/total-aum`
   )
 
   Object.entries(managedAum || {}).forEach(([protocolKey, mintEntries]) => {
-    // Skip Exponent-internal venues. Those positions are deployments of capital
-    // that is already accounted for by the core vault TVL.
+    // Skip Exponent-internal venues: that capital is already counted in core TVL.
     if (EXPONENT_INTERNAL_PROTOCOL_KEYS.has(protocolKey)) return;
     if (!mintEntries || typeof mintEntries !== 'object') return;
 
     Object.entries(mintEntries).forEach(([underlyingMint, value]) => {
       if (!value || typeof value !== 'object') return;
 
-      const { aumUnderlyingRaw } = value
-      if (typeof aumUnderlyingRaw !== 'string') return;
+      const amountRaw = value.aumUnderlyingRaw ?? value.amountRaw
+      if (typeof amountRaw !== 'string') return;
 
-      const amount = BigInt(aumUnderlyingRaw)
+      const amount = BigInt(amountRaw)
       if (amount <= 0n) return;
-      api.add(resolveManagedUnderlyingMint(underlyingMint), amount)
+      api.add(underlyingMint, amount)
     })
   })
 }
@@ -64,45 +62,70 @@ async function tvl(api) {
   const connection = getConnection()
   
   const program = new Program(idl, provider)
-  const vaults = await program.account.vault.all()
-  
-  const mintRateMap = {}
-  const mintAccountMap = {}
-  
-  vaults.forEach(v => {
-    const rate = v.account.lastSeenSyExchangeRate[0][0].toString() / 1e12
-    if (rate > 0)
-      mintRateMap[v.account.mintSy.toString()] = v.account.lastSeenSyExchangeRate[0][0].toString() / 1e12
+  const vaultAccounts = await program.account.vault.all()
+  const syExchangeRateBySyMint = {}
+  const syMintAccountMap = {}
+
+  vaultAccounts.forEach((vault) => {
+    const mintSy = vault.account.mintSy.toString()
+    const syExchangeRateRaw = getLastSeenSyExchangeRateRaw(vault.account)
+    if (syExchangeRateRaw) {
+      syExchangeRateBySyMint[mintSy] = syExchangeRateRaw
+    }
   })
 
-  // Fetch mint accounts
-  const mintPubkeys = Object.keys(mintRateMap).map(k => new PublicKey(k))
-  const mintAccounts = await connection.getMultipleAccountsInfo(mintPubkeys);
+  // Fetch SY mint accounts so we can read total supply.
+  const syMintPubkeys = Object.keys(syExchangeRateBySyMint).map((k) => new PublicKey(k))
+  const syMintAccounts = await connection.getMultipleAccountsInfo(syMintPubkeys);
 
-
-  mintAccounts.forEach((a, i) => {
-    mintAccountMap[mintPubkeys[i].toString()] = a
+  syMintAccounts.forEach((a, i) => {
+    syMintAccountMap[syMintPubkeys[i].toString()] = a
   })
   
-  // Fetch Exponent wrapped mints from Exponent API
-  const { data: mints } = await getConfig('exponent', 'https://web-api.exponent.finance/api/lyt-growth/standard-yield-tokens');
+  // quoteMint is the asset produced by the onchain SY exchange rate.
+  // baseMint is the mint DefiLlama TVL should be attributed to for this SY.
+  // For kamino and marginfi, baseMint stays quote_asset.
+  // Otherwise, quote amounts are converted into underlying_asset units.
+  //
+  // quoteToBaseRate converts quote raw amount -> baseMint raw amount.
+  // Consumers must compute:
+  //   baseRaw = floor(quoteRaw * quoteToBaseRate / 10^quoteToBaseRateScale)
+  const syPayload = await getConfig(
+    'exponent-defillama-sy-payload',
+    `${EXPONENT_API_V2_BASE}/defillama/sy-payload`
+  );
+  const syPayloadBySyMint = new Map((Array.isArray(syPayload) ? syPayload : []).map((entry) => [entry.mintSy, entry]));
   
+  for (const [mintSy, payload] of syPayloadBySyMint.entries()) {
+    const mintAccount = syMintAccountMap[mintSy]
+    if (!mintAccount) continue;
 
-  for (let i = 0; i < mints.length; i++) {
-    const { mintSy, mintUnderlying} = mints[i]
-    const mintAccount = mintAccountMap[mintSy]
-    const mintRate = mintRateMap[mintSy]
-    if (!mintAccount || !mintRate) continue;
+    const syExchangeRateRaw = syExchangeRateBySyMint[mintSy]
+    if (!syExchangeRateRaw) continue;
 
-    // Decode mint data
+    const { baseMint, quoteToBaseRate, quoteToBaseRateScale } = payload
+    if (
+      typeof baseMint !== 'string' ||
+      typeof quoteToBaseRate !== 'string' ||
+      typeof quoteToBaseRateScale !== 'number'
+    ) {
+      continue;
+    }
+
+    // Read SY total supply from the mint account.
     const decodedMint = decodeAccount('mint', mintAccount);
-    const supply = decodedMint.supply;
+    const supply = BigInt(decodedMint.supply.toString());
 
-    // As all of the Exponent wrapped tokens are yield bearing tokens, mutiply their supply by their redemption rate to get the base asset amount
-    const amount = supply * mintRate;
+    // lastSeenSyExchangeRate converts SY raw amount -> quote raw amount.
+    const quoteRaw = (supply * syExchangeRateRaw) / (10n ** SY_EXCHANGE_RATE_SCALE)
+    if (quoteRaw <= 0n) continue;
 
-    // Add to balances using the base asset price * the converted amount of base tokens
-    api.add(mintUnderlying, amount);
+    const scaleDenominator = 10n ** BigInt(quoteToBaseRateScale)
+    const amount = (quoteRaw * BigInt(quoteToBaseRate)) / scaleDenominator
+    if (amount <= 0n) continue;
+
+    // Add to balances using the resolved base mint and precomputed quote-to-base rate.
+    api.add(baseMint, amount);
   }
 
   // Add only external managed-strategy exposure on top of core TVL.
@@ -111,6 +134,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "TVL is calculated by summing the total supply of each Exponent wrapped Yield bearing token and multiplying their base asset amount by the price of the underlying token. External AUM from managed vaults is added separately, while Exponent internal protocol exposure is excluded to avoid double counting.",
+  methodology: "TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. External AUM from managed vaults is added separately, while Exponent internal protocol exposure is excluded to avoid double counting.",
   solana: { tvl },
 };
