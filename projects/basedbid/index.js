@@ -119,6 +119,7 @@ const PCS_INFINITY_POSITIONS_ABI =
   'function positions(uint256) view returns ((address currency0, address currency1, address hooks, address poolManager, uint24 fee, bytes32 parameters) poolKey, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, address subscriber)'
 const SLOT0_ABI =
   'function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)'
+const OWNER_OF_ABI = 'function ownerOf(uint256 tokenId) view returns (address)'
 
 function lc(addr) {
   return addr?.toLowerCase()
@@ -155,6 +156,20 @@ function registerPosition({ uniV4ByNft, pcsInfinityIds }, chain, positionManager
   if (isPcsInfinityPosm(chain, positionManager)) {
     pcsInfinityIds.add(id)
   }
+}
+
+async function getOwnedPositionIds(api, nftAddress, positionIds, owner) {
+  if (!nftAddress || !positionIds.length) return []
+
+  const owners = await api.multiCall({
+    abi: OWNER_OF_ABI,
+    target: nftAddress,
+    calls: positionIds,
+    permitFailure: true,
+  })
+  const expectedOwner = lc(owner)
+
+  return positionIds.filter((_, i) => lc(owners[i]) === expectedOwner)
 }
 
 async function collectV4PositionsFromContract(api) {
@@ -209,11 +224,15 @@ async function collectV4PositionsFromContract(api) {
     })
   }
 
+  const verifiedUniV4ByNft = {}
+  for (const [nftAddress, ids] of Object.entries(uniV4ByNft)) {
+    const ownedIds = await getOwnedPositionIds(api, nftAddress, [...ids], basedBid)
+    if (ownedIds.length) verifiedUniV4ByNft[nftAddress] = ownedIds
+  }
+
   return {
-    uniV4ByNft: Object.fromEntries(
-      Object.entries(uniV4ByNft).map(([k, v]) => [k, [...v]]),
-    ),
-    pcsInfinityIds: [...pcsInfinityIds],
+    uniV4ByNft: verifiedUniV4ByNft,
+    pcsInfinityIds: await getOwnedPositionIds(api, PCS_INFINITY_POSM, [...pcsInfinityIds], basedBid),
   }
 }
 
