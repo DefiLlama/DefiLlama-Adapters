@@ -1,7 +1,7 @@
-const { getConnection, getProvider } = require("../helper/solana");
-const { PublicKey } = require("@solana/web3.js");
-const { decodeAccount } = require("../helper/utils/solana/layout");
-const { Program } = require("@coral-xyz/anchor");
+const { getConnection, getProvider } = require('../helper/solana')
+const { PublicKey } = require('@solana/web3.js')
+const { decodeAccount } = require('../helper/utils/solana/layout')
+const { Program } = require('@coral-xyz/anchor')
 
 const { getConfig } = require('../helper/cache')
 const idl = require('./idl.json')
@@ -9,6 +9,10 @@ const idl = require('./idl.json')
 const EXPONENT_CORE_PROGRAM_ID = 'ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7'
 const EXPONENT_CLMM_PROGRAM_ID = 'XPC1MM4dYACDfykNuXYZ5una2DsMDWL24CrYubCvarC'
 const EXPONENT_ORDERBOOK_PROGRAM_ID = 'XPBookgQTN2p8Yw1C2La35XkPMmZTCEYH77AdReVvK1'
+const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
+const DEFILLAMA_SY_PAYLOAD_URL = `${EXPONENT_API_V2_BASE}/defillama/sy-payload`
+const MANAGED_TOTAL_AUM_URL = `${EXPONENT_API_V2_BASE}/strategies/managed/total-aum`
+
 // Exponent stores the SY exchange rate with 1e12 fixed-point precision.
 const SY_EXCHANGE_RATE_SCALE = 12n
 
@@ -20,15 +24,157 @@ const EXPONENT_INTERNAL_PROTOCOL_KEYS = new Set([
   EXPONENT_ORDERBOOK_PROGRAM_ID,
 ])
 
-// const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
-const EXPONENT_API_V2_BASE = 'http://localhost:3000/api'
+function isNonEmptyString(value) {
+  return typeof value === 'string' && value.length > 0
+}
+
+function isNonNegativeInteger(value) {
+  return Number.isInteger(value) && value >= 0
+}
+
+function parsePositiveBigIntString(value) {
+  if (!isNonEmptyString(value) || !/^\d+$/.test(value)) return null
+
+  const amount = BigInt(value)
+  return amount > 0n ? amount : null
+}
 
 function getLastSeenSyExchangeRateRaw(vaultAccount) {
   const rawRate = vaultAccount?.lastSeenSyExchangeRate?.[0]?.[0]
   if (rawRate == null) return null
 
-  const rate = BigInt(rawRate.toString())
-  return rate > 0n ? rate : null
+  const rate = parsePositiveBigIntString(rawRate.toString())
+  return rate ?? null
+}
+
+/**
+ * Converts SY mint supply into quote raw units using the onchain exchange rate.
+ */
+function computeQuoteRawFromSySupply({ supply, syExchangeRateRaw }) {
+  const quoteRaw = (supply * syExchangeRateRaw) / (10n ** SY_EXCHANGE_RATE_SCALE)
+  return quoteRaw > 0n ? quoteRaw : null
+}
+
+/**
+ * Converts quote raw units into DefiLlama base raw units using the precomputed
+ * quote-to-base rate supplied by the API payload.
+ */
+function convertQuoteRawToBaseRaw({ quoteRaw, quoteToBaseRate, quoteToBaseRateScale }) {
+  const rateRaw = parsePositiveBigIntString(quoteToBaseRate)
+  if (!rateRaw || !isNonNegativeInteger(quoteToBaseRateScale)) return null
+
+  const scaleDenominator = 10n ** BigInt(quoteToBaseRateScale)
+  const amount = (quoteRaw * rateRaw) / scaleDenominator
+  return amount > 0n ? amount : null
+}
+
+/**
+ * Validates a DefiLlama SY payload row and returns the fields needed by the
+ * adapter's TVL calculation.
+ */
+function parseSyPayloadEntry(entry) {
+  if (!entry || typeof entry !== 'object') return null
+
+  const { mintSy, baseMint, quoteToBaseRate, quoteToBaseRateScale } = entry
+  if (!isNonEmptyString(mintSy)) return null
+  if (!isNonEmptyString(baseMint)) return null
+  if (!isNonEmptyString(quoteToBaseRate)) return null
+  if (!isNonNegativeInteger(quoteToBaseRateScale)) return null
+
+  return {
+    mintSy,
+    baseMint,
+    quoteToBaseRate,
+    quoteToBaseRateScale,
+  }
+}
+
+function parseManagedAumAmountRaw(value) {
+  if (!value || typeof value !== 'object') return null
+  return parsePositiveBigIntString(value.aumUnderlyingRaw ?? value.amountRaw)
+}
+
+async function fetchVaultAccounts(program) {
+  return program.account.vault.all()
+}
+
+function buildSyExchangeRateByMint(vaultAccounts) {
+  const syExchangeRateByMint = new Map()
+
+  vaultAccounts.forEach((vault) => {
+    const mintSy = vault.account.mintSy.toString()
+    const syExchangeRateRaw = getLastSeenSyExchangeRateRaw(vault.account)
+    if (!syExchangeRateRaw) return
+
+    syExchangeRateByMint.set(mintSy, syExchangeRateRaw)
+  })
+
+  return syExchangeRateByMint
+}
+
+async function fetchSyMintAccountMap(connection, syExchangeRateByMint) {
+  const syMintPubkeys = [...syExchangeRateByMint.keys()].map((mint) => new PublicKey(mint))
+  if (syMintPubkeys.length === 0) return new Map()
+
+  const syMintAccounts = await connection.getMultipleAccountsInfo(syMintPubkeys)
+  const syMintAccountMap = new Map()
+
+  syMintAccounts.forEach((account, index) => {
+    if (!account) return
+    syMintAccountMap.set(syMintPubkeys[index].toString(), account)
+  })
+
+  return syMintAccountMap
+}
+
+async function fetchSyPayloadByMint() {
+  const syPayload = await getConfig(
+    'exponent-defillama-sy-payload',
+    DEFILLAMA_SY_PAYLOAD_URL
+  )
+
+  const syPayloadByMint = new Map()
+  if (!Array.isArray(syPayload)) return syPayloadByMint
+
+  syPayload.forEach((entry) => {
+    const parsedEntry = parseSyPayloadEntry(entry)
+    if (!parsedEntry) return
+
+    syPayloadByMint.set(parsedEntry.mintSy, parsedEntry)
+  })
+
+  return syPayloadByMint
+}
+
+async function addCoreTvl(api, program, connection) {
+  const vaultAccounts = await fetchVaultAccounts(program)
+  const syExchangeRateByMint = buildSyExchangeRateByMint(vaultAccounts)
+  const syMintAccountMap = await fetchSyMintAccountMap(connection, syExchangeRateByMint)
+  const syPayloadByMint = await fetchSyPayloadByMint()
+
+  syPayloadByMint.forEach((payload, mintSy) => {
+    const mintAccount = syMintAccountMap.get(mintSy)
+    if (!mintAccount) return
+
+    const syExchangeRateRaw = syExchangeRateByMint.get(mintSy)
+    if (!syExchangeRateRaw) return
+
+    const decodedMint = decodeAccount('mint', mintAccount)
+    const supply = parsePositiveBigIntString(decodedMint.supply.toString())
+    if (!supply) return
+
+    const quoteRaw = computeQuoteRawFromSySupply({ supply, syExchangeRateRaw })
+    if (!quoteRaw) return
+
+    const amount = convertQuoteRawToBaseRaw({
+      quoteRaw,
+      quoteToBaseRate: payload.quoteToBaseRate,
+      quoteToBaseRateScale: payload.quoteToBaseRateScale,
+    })
+    if (!amount) return
+
+    api.add(payload.baseMint, amount)
+  })
 }
 
 async function addManagedVaultAum(api) {
@@ -36,104 +182,40 @@ async function addManagedVaultAum(api) {
   // visible from core SY/PT/YT supply alone, so fetch that exposure separately.
   const managedAum = await getConfig(
     'exponent-managed-total-aum',
-    `${EXPONENT_API_V2_BASE}/strategies/managed/total-aum`
+    MANAGED_TOTAL_AUM_URL
   )
 
   Object.entries(managedAum || {}).forEach(([protocolKey, mintEntries]) => {
     // Skip Exponent-internal venues: that capital is already counted in core TVL.
-    if (EXPONENT_INTERNAL_PROTOCOL_KEYS.has(protocolKey)) return;
-    if (!mintEntries || typeof mintEntries !== 'object') return;
+    if (EXPONENT_INTERNAL_PROTOCOL_KEYS.has(protocolKey)) return
+    if (!mintEntries || typeof mintEntries !== 'object') return
 
     Object.entries(mintEntries).forEach(([underlyingMint, value]) => {
-      if (!value || typeof value !== 'object') return;
+      if (!isNonEmptyString(underlyingMint)) return
 
-      const amountRaw = value.aumUnderlyingRaw ?? value.amountRaw
-      if (typeof amountRaw !== 'string') return;
+      const amount = parseManagedAumAmountRaw(value)
+      if (!amount) return
 
-      const amount = BigInt(amountRaw)
-      if (amount <= 0n) return;
       api.add(underlyingMint, amount)
     })
   })
 }
 
+/**
+ * Computes Exponent TVL from onchain SY supply and the DefiLlama payload that
+ * maps quote amounts into the final base mint, then adds external managed AUM.
+ */
 async function tvl(api) {
   const provider = getProvider()
   const connection = getConnection()
-  
   const program = new Program(idl, provider)
-  const vaultAccounts = await program.account.vault.all()
-  const syExchangeRateBySyMint = {}
-  const syMintAccountMap = {}
 
-  vaultAccounts.forEach((vault) => {
-    const mintSy = vault.account.mintSy.toString()
-    const syExchangeRateRaw = getLastSeenSyExchangeRateRaw(vault.account)
-    if (syExchangeRateRaw) {
-      syExchangeRateBySyMint[mintSy] = syExchangeRateRaw
-    }
-  })
-
-  // Fetch SY mint accounts so we can read total supply.
-  const syMintPubkeys = Object.keys(syExchangeRateBySyMint).map((k) => new PublicKey(k))
-  const syMintAccounts = await connection.getMultipleAccountsInfo(syMintPubkeys);
-
-  syMintAccounts.forEach((a, i) => {
-    syMintAccountMap[syMintPubkeys[i].toString()] = a
-  })
-  
-  // quoteMint is the asset produced by the onchain SY exchange rate.
-  // baseMint is the mint DefiLlama TVL should be attributed to for this SY.
-  // For kamino and marginfi, baseMint stays quote_asset.
-  // Otherwise, quote amounts are converted into underlying_asset units.
-  //
-  // quoteToBaseRate converts quote raw amount -> baseMint raw amount.
-  // Consumers must compute:
-  //   baseRaw = floor(quoteRaw * quoteToBaseRate / 10^quoteToBaseRateScale)
-  const syPayload = await getConfig(
-    'exponent-defillama-sy-payload',
-    `${EXPONENT_API_V2_BASE}/defillama/sy-payload`
-  );
-  const syPayloadBySyMint = new Map((Array.isArray(syPayload) ? syPayload : []).map((entry) => [entry.mintSy, entry]));
-  
-  for (const [mintSy, payload] of syPayloadBySyMint.entries()) {
-    const mintAccount = syMintAccountMap[mintSy]
-    if (!mintAccount) continue;
-
-    const syExchangeRateRaw = syExchangeRateBySyMint[mintSy]
-    if (!syExchangeRateRaw) continue;
-
-    const { baseMint, quoteToBaseRate, quoteToBaseRateScale } = payload
-    if (
-      typeof baseMint !== 'string' ||
-      typeof quoteToBaseRate !== 'string' ||
-      typeof quoteToBaseRateScale !== 'number'
-    ) {
-      continue;
-    }
-
-    // Read SY total supply from the mint account.
-    const decodedMint = decodeAccount('mint', mintAccount);
-    const supply = BigInt(decodedMint.supply.toString());
-
-    // lastSeenSyExchangeRate converts SY raw amount -> quote raw amount.
-    const quoteRaw = (supply * syExchangeRateRaw) / (10n ** SY_EXCHANGE_RATE_SCALE)
-    if (quoteRaw <= 0n) continue;
-
-    const scaleDenominator = 10n ** BigInt(quoteToBaseRateScale)
-    const amount = (quoteRaw * BigInt(quoteToBaseRate)) / scaleDenominator
-    if (amount <= 0n) continue;
-
-    // Add to balances using the resolved base mint and precomputed quote-to-base rate.
-    api.add(baseMint, amount);
-  }
-
-  // Add only external managed-strategy exposure on top of core TVL.
+  await addCoreTvl(api, program, connection)
   await addManagedVaultAum(api)
 }
 
 module.exports = {
   timetravel: false,
-  methodology: "TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. External AUM from managed vaults is added separately, while Exponent internal protocol exposure is excluded to avoid double counting.",
+  methodology: 'TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. External AUM from managed vaults is added separately, while Exponent internal protocol exposure is excluded to avoid double counting.',
   solana: { tvl },
-};
+}
