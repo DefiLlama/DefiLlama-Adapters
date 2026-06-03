@@ -6,23 +6,12 @@ const { Program } = require('@coral-xyz/anchor')
 const { getConfig } = require('../helper/cache')
 const idl = require('./idl.json')
 
-const EXPONENT_CORE_PROGRAM_ID = 'ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7'
-const EXPONENT_CLMM_PROGRAM_ID = 'XPC1MM4dYACDfykNuXYZ5una2DsMDWL24CrYubCvarC'
-const EXPONENT_ORDERBOOK_PROGRAM_ID = 'XPBookgQTN2p8Yw1C2La35XkPMmZTCEYH77AdReVvK1'
 const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
 const DEFILLAMA_SY_PAYLOAD_URL = `${EXPONENT_API_V2_BASE}/defillama/sy-payload`
 const MANAGED_TOTAL_AUM_URL = `${EXPONENT_API_V2_BASE}/strategies/managed/total-aum`
 
 // Exponent stores the SY exchange rate with 1e12 fixed-point precision.
 const SY_EXCHANGE_RATE_SCALE = 12n
-
-// These protocol buckets are already represented by core vault accounting, so
-// adding managed-strategy exposure back into them would double count TVL.
-const EXPONENT_INTERNAL_PROTOCOL_KEYS = new Set([
-  EXPONENT_CORE_PROGRAM_ID,
-  EXPONENT_CLMM_PROGRAM_ID,
-  EXPONENT_ORDERBOOK_PROGRAM_ID,
-])
 
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.length > 0
@@ -185,9 +174,7 @@ async function addManagedVaultAum(api) {
     MANAGED_TOTAL_AUM_URL
   )
 
-  Object.entries(managedAum || {}).forEach(([protocolKey, mintEntries]) => {
-    // Skip Exponent-internal venues: that capital is already counted in core TVL.
-    if (EXPONENT_INTERNAL_PROTOCOL_KEYS.has(protocolKey)) return
+  Object.entries(managedAum || {}).forEach(([, mintEntries]) => {
     if (!mintEntries || typeof mintEntries !== 'object') return
 
     Object.entries(mintEntries).forEach(([underlyingMint, value]) => {
@@ -216,6 +203,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. External AUM from managed vaults is added separately, while Exponent internal protocol exposure is excluded to avoid double counting.',
+  methodology: 'TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. Managed vault AUM is added separately across all protocol buckets.',
   solana: { tvl },
 }
