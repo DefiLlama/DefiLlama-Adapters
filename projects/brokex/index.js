@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const VAULT_ADDRESS = "0x589178934112DbBa96C17384079206a21B4F20DA";
-const USDC_ADDRESS = "0xc879c018db60520f4355c26ed1a6d572cdac1815";
+const USDC_ADDRESS = "0xC879C018dB60520F4355C26eD1a6D572cdAC1815";
 
 module.exports = {
   methodology: "TVL is computed by summing the balance of USDC locked in the BrokexVault contract.",
