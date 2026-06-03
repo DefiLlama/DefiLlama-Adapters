@@ -77,6 +77,7 @@ async function getTvl(type, fields, api) {
   if (!watchCoinType.includes(coinConfig.coinType)) return null;
 
   const txBlockBytes = await getExchangeRate(coinConfig);
+  if (!txBlockBytes || txBlockBytes.length === 0) return null;
 
   const inspectionResult = await sui.call(
     'sui_devInspectTransactionBlock',
