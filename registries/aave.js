@@ -536,16 +536,10 @@ const aaveConfigs = {
       },
     },
   },
+  // NOTE: starlay's astar market is handled by the standalone projects/starlay adapter
+  // (its legacy Vyper registry reverts on current Astar state). Only acala remains here.
   'starlay': {
     methodology,
-    astar: {
-      addressesProviderRegistry: '0xF6206297b6857779443eF7Eca4a3cFFb1660F952',
-      isInsolvent: true,
-      abis: {
-        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-      },
-      staking: ['0xDf32D28c1BdF25c457E82797316d623C2fcB29C8', ADDRESSES.astar.LAY],
-    },
     acala: {
       addressesProviderRegistry: '0xA666dD28059deF0B45505c1f1a5f49fAd2e03c11',
       isInsolvent: true,

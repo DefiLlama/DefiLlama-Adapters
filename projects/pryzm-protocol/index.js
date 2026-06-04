@@ -30,6 +30,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Counts the liquidity on the refractor module and all AMM pools",
+  deadFrom: '2026-02-09', // chain shutdown
   pryzm: {
     tvl
   },

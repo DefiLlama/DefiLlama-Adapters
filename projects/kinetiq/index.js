@@ -2,13 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { getHypercoreStakedHype } = require('../helper/chain/hyperliquid')
 
-const accountant = '0x9209648Ec9D448EF57116B73A2f081835643dc7A'
-
-const abis = {
-  kHYPEToHYPE: "function kHYPEToHYPE(uint256 kHYPEAmount) view returns (uint256)",
-  totalQueuedWithdrawals: "function totalQueuedWithdrawals() view returns (uint256)",
-}
-
 const managers = [
   '0x393D0B87Ed38fc779FD9611144aE649BA6082109', // kHype
   '0xaD492f9CADcccE9c3c213edd8aE55c152cD3A3ad', // hiHype
@@ -19,10 +12,6 @@ const managers = [
 
 const tvl = async (api) => {
   await api.sumTokens({ owners: managers, tokens: [ADDRESSES.null] })
-
-  const buffBalance = await api.call({ target: "0x393D0B87Ed38fc779FD9611144aE649BA6082109", abi: abis.totalQueuedWithdrawals })
-  const hypeBalance = await api.call({ target: accountant, params: [buffBalance], abi: abis.kHYPEToHYPE })
-  api.addGasToken(hypeBalance)
 
   const stakedBalances = await Promise.all(managers.map(m => getHypercoreStakedHype(m)))
   for (const bal of stakedBalances) {
