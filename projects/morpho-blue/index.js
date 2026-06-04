@@ -193,6 +193,10 @@ const config = {
     morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
     fromBlock: 208021118,
   },
+  arc: {
+    morphoBlue: "0x34CD04070dD72b14E241112F6d83812Df5Af7fCD",
+    fromBlock: 1,
+  },
 }
 
 const eventAbis = {
@@ -332,3 +336,4 @@ async function fetchPriceMap(api, addresses) {
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl, borrowed }
 })
+
