@@ -83,6 +83,16 @@ const config = {
     [ADDRESSES.ethereum.WEETH, '0x66Aaf6Da70dA10aC8dC024E668edcade1C8F5b44'],                // weETH
     ['0xadd353fb2e2c563383ff3272a500f3e7134dafe4', '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // TUNA
   ],
+  sei: [
+    ['0xE30feDd158A2e3b13e9badaeABaFc5516e95e8C7', '0x50Ac664730CdB0485dF09C3f9C269AD48Ccc6836'], // wSEI
+  ],
+  base: [
+    ['0x7FcD174E80f264448ebeE8c88a7C4476AAF58Ea6', '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // wsuperOETHB
+    ['0x764A726d9ceD0433A8D7643335919dEb03a9a935', '0x89030dd230679d27721621b436F24FFEa43cA987'], // POKT
+  ],
+  goat: [
+    [ADDRESSES.goat.BTCB, '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // BTCB
+  ],
 };
 
 Object.keys(config).forEach(chain => {
@@ -91,8 +101,8 @@ Object.keys(config).forEach(chain => {
   };
 });
 
-// Flare TVL is tracked by projects/flamix (same chip contracts)
-// linea/mantle have $0 balance
+// Flare TVL tracked by projects/flamix
+// linea/mantle have $0 balance, goat not yet indexed by DeFiLlama
 ['flare', 'linea', 'mantle'].forEach(chain => {
   module.exports[chain] = { tvl: () => ({}) };
 });

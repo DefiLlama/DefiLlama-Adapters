@@ -90,7 +90,8 @@ const trancheConfig = {
 }
 
 async function tvl(api) {
-  const { v1 = [], v3 = [], safe = [], cdos = [], wrap4626 = [], credits = [] } = contracts[api.chain]
+  const { v1 = [], v3 = [], safe = [], cdos: cdosFromConfig = [], wrap4626 = [], credits = [] } = contracts[api.chain]
+  const cdos = [...cdosFromConfig]
   const balances = {}
   const ownerTokens = []
 

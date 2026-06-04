@@ -1,4 +1,12 @@
 const { getCuratorExport } = require("../helper/curators");
+const ADDRESSES = require("../helper/coreAssets.json");
+const { getTvl: getNtVaultTvl } = require("../neutral-trade/utils/ntVaults");
+
+// Hyperithm strategies onboarded on the Neutral Trade platform (Solana)
+const neutralVaults = [
+  // Hyperithm Cross-Exchange Arb (vaultId 71)
+  { address: '2bPiNfGc7exUcGkvV5nbsSkuNH3inFU18kgNEkB8fiaT', token: ADDRESSES.solana.USDC },
+];
 
 const vaultConfigs = {
   methodology: 'Count all assets are deposited in all vaults curated by Hyperithm.',
@@ -38,6 +46,11 @@ const vaultConfigs = {
         '0x9B97783B747c51b39c3d320050dc9C512868dAa8',
         '0xC56EA16EA06B0a6A7b3B03B2f48751e549bE40fD'
       ]
+    },
+    stable: {
+      morphoVaultOwners: [
+        "0x9B97783B747c51b39c3d320050dc9C512868dAa8"
+      ]
     }
   }
 };
@@ -72,5 +85,14 @@ Object.keys(mtokenConfig).forEach(chain => {
     }
   };
 });
+
+adapterExport.solana = {
+  tvl: async (api) => {
+    for (const vault of neutralVaults) {
+      const bal = await getNtVaultTvl(vault.address);
+      api.add(vault.token, bal);
+    }
+  }
+};
 
 module.exports = adapterExport;

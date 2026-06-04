@@ -8,6 +8,7 @@ const { getUniqueAddresses } = require('../helper/tokenMapping')
 const { sliceIntoChunks } = require('../helper/utils')
 const idl = require('./idl.json')
 
+
 // based.bid contract addresses on each supported chain
 const BASED_BID = {
   ethereum: '0x3cb3D9E659653de02D8e3Aecd4963Ba1Ae429682',
@@ -16,7 +17,7 @@ const BASED_BID = {
   megaeth:  '0x695e175c9704432cdFB98e3C193966F95a5F119D',
 }
 
-const USD1_ETH_BSC = '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d'
+const USD1_ETH_BSC = ADDRESSES.bsc.USD1
 
 const TRACKED_TOKENS = {
   ethereum: [

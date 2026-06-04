@@ -1,5 +1,5 @@
 const { getConfig } = require("../helper/cache");
-const { sumTokens, queryContract, queryV1Beta1, getBalance2 } = require('../helper/chain/cosmos');
+const { sumTokens, queryContract, getBalance2, queryV1Beta1V2 } = require('../helper/chain/cosmos');
 const owners = ["kujira15e682nq9jees29rm9j3h030af86lq2qtlejgphlspzqcvs9whf2q00nua5"]
 
 async function tvl(api) {
@@ -23,21 +23,7 @@ async function calcPOLValue(api) {
   const contracts = await getConfig("mantadao/contracts", "https://raw.githubusercontent.com/Team-Kujira/kujira.js/master/src/resources/contracts.json");
   const bowPools = contracts["kaiyo-1"].bow.map(x => x.address)
 
-  // Get list of total supply of all native denoms
-  let supplyData = await queryV1Beta1({ chain: 'kujira', url: '/bank/v1beta1/supply' });
-
-  let denomSupply = supplyData.supply;
-  let paginationKey = supplyData.pagination.next_key;
-
-  while (paginationKey) {
-    supplyData = await queryV1Beta1({
-      chain: 'kujira',
-      paginationKey: paginationKey,
-      url: '/bank/v1beta1/supply'
-    });
-    denomSupply = denomSupply.concat(supplyData.supply);
-    paginationKey = supplyData.pagination.next_key;
-  }
+  const denomSupply = await queryV1Beta1V2({ chain: 'kujira', url: '/bank/v1beta1/supply'})
 
   // Get all balances of treasury
   const treasuryBalances = await getBalance2({
@@ -102,6 +88,7 @@ async function ownTokens(api) {
 
 module.exports = {
   timetravel: false,
+  deadFrom: '2025-06-25',
   kujira: {
     tvl,
     ownTokens,

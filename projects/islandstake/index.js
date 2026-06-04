@@ -6,7 +6,7 @@ module.exports = {
   ton: {
     tvl: async (api) => {
       const result = await call({ target: 'EQD4l0TnN13SmF_wSIL6ho1sBmqc4H_KN1kFqPjLJgIpkBOZ', abi: 'get_pool_data' });
-      api.addGasToken(result[3]);
+      api.addGasToken(result[0]);
     },
   },
 };

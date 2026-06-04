@@ -86,6 +86,18 @@ const configs = {
       staking: { owners: ['0x62250aEE40F37e2eb2cd300E5a429d7096C8868F'], tokens: ['0xE444de61752bD13D1D37Ee59c31ef4e489bd727C']}
     }
   },
+  'venice-protocol': {
+    methodology: 'Counts the total VVV tokens locked in the Venice Protocol staking contract (sVVV) on Base.',
+    base: {
+      staking: ['0x321b7ff75154472B18EDb199033fF4D116F340Ff', '0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf'],
+    },
+  },
+  'citrea-staking': {
+    methodology: 'Sum of CTR locked by users in the xCTR (Staked CTR) staking contract on Citrea, which grants governance voting power.',
+    citrea: {
+      staking: { owners: ['0x2015F35030A8Ff2C0CA161a865414996F8E80AA4'], tokens: ['0x547AfD93B9c47D552059FEb556909e017f8a9b25']},
+    },
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2

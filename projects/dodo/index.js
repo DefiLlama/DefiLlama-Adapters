@@ -28,6 +28,10 @@ const config = {
   zircuit: { dvmFactory: '0xA909314363840f7c28b8EC314028e21722dd8Cb6', fromBlock: 1455081, dspFactory: '0xA312D73C1b537168f1C8588bDcaB9278df98Cd32', dppFactory: '0xb770C37F3A9eC6f25b791D9c791aDE09B0fb1AB8' },
   hemi: { dvmFactory: '0x6694eebf40924e04c952EA8F1626d19E7a656Bb7', fromBlock: 865590, dspFactory: '0xd0de7cA3298fff085E2cb82F8a861a0254256BA0', dppFactory: '0x297A4885a7da4AaeF340FABEd119e7a6E3f2BCe8', gspFactory: '0x2235bB894b7600F1a370fc595Ee5477999A30441' },
   hsk: { dvmFactory: '0x2235bB894b7600F1a370fc595Ee5477999A30441', fromBlock: 83265, dspFactory: '0x297A4885a7da4AaeF340FABEd119e7a6E3f2BCe8', dppFactory: '0x8Ebbfe204E7EdA4be46b9d09c5dfa8b3e1500462', gspFactory: '0xc6F5e5Ff8AbBe6A94A879A1E378c101E2A6bb9e6' },
+  dfio_meta_main: {
+    dvmFactory: '0xc93870594C7f83A0aE076c2e30b494Efc526b68E',
+    fromBlock: 3510162,
+  },
   // okexchain: { dvmFactory: '0x9aE501385Bc7996A2A4a1FBb00c8d3820611BCB5', fromBlock: 4701083, dspFactory: '0x44D5dF24d5Ef52A791D6436Fa45A8D426f6de34e' },
 }
 
