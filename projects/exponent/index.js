@@ -122,8 +122,11 @@ async function fetchSyPayloadByMint() {
     DEFILLAMA_SY_PAYLOAD_URL
   )
 
+  if (!Array.isArray(syPayload)) {
+    throw new Error('Invalid exponent-defillama-sy-payload response: expected array')
+  }
+
   const syPayloadByMint = new Map()
-  if (!Array.isArray(syPayload)) return syPayloadByMint
 
   syPayload.forEach((entry) => {
     const parsedEntry = parseSyPayloadEntry(entry)
