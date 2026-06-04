@@ -13,6 +13,7 @@ const _getConfig = async () => {
     if (chain === 'avalanche') chain = 'avax'
     if (chain === 'hyperevm') chain = 'hyperliquid'
     if (chain === 'dogecoin') chain = 'doge'
+    if (chain === 'xrp') chain = 'ripple'
     if (!config[chain]) config[chain] = { owners: [] }
     config[chain].owners.push(address)
   })
@@ -35,11 +36,14 @@ const CHAINS = [
   'tron',
   'aptos',
   'ripple',
+  'eclipse',
   'plasma',
   'fogo',
   'stable',
   'monad',
   'hyperliquid',
+  'sei',
+  'sui',
 ]
 
 const CHAIN_BLACKLISTS = {
@@ -75,7 +79,9 @@ CHAINS.forEach((chain) => {
         case 'ton': options.onlyWhitelistedTokens = true; break
         case 'aptos':
           if (Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
-          break
+          break;
+        case 'sei':
+          options.tokens = options.tokens.filter(t => t.startsWith('0x'))
       }
       return sumTokensExport(options)(api)
     }

@@ -2,8 +2,13 @@ const { queryCanister, decodeCandid, hashCandidLabel } = require('../helper/chai
 
 const LENDING_CANISTER_ID = 'hyk4r-jqaaa-aaaar-qb4ca-cai'
 const BTC_POOL_CANISTER_ID = 'hkmli-faaaa-aaaar-qb4ba-cai'
-const ETH_POOL_CANISTER_ID = 'hnnn4-iyaaa-aaaar-qb4bq-cai'
-const ALLOWED_POOL_CANISTERS = new Set([BTC_POOL_CANISTER_ID, ETH_POOL_CANISTER_ID])
+const USDT_POOL_CANISTER_ID = 'hnnn4-iyaaa-aaaar-qb4bq-cai'
+const USDC_POOL_CANISTER_ID = '6sna2-oiaaa-aaaar-qb66q-cai'
+const ALLOWED_POOL_CANISTERS = new Set([
+  BTC_POOL_CANISTER_ID,
+  USDT_POOL_CANISTER_ID,
+  USDC_POOL_CANISTER_ID,
+])
 const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER)
 
 const ASSET_META = {

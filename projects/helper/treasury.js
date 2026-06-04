@@ -4,55 +4,14 @@ const { ankrChainMapping } = require('./token')
 const { defaultTokens } = require('./cex')
 const { getUniqueAddresses } = require('./utils')
 const sdk = require('@defillama/sdk')
-const axios = require('axios')
-const { getEnv } = require('./env')
+const { sumTokensDebank } = require('./debank')
 
 const ARB = ADDRESSES.arbitrum.ARB;
-const API_URL_COMPLEX  = `https://pro-openapi.debank.com/v1/user/all_complex_protocol_list`
-
-const ACCESSKEY = getEnv('DEBANK_API_KEY')
-
-const debankToLlamaChain = {
-  eth: 'ethereum',
-  op: 'optimism',
-  arb: 'arbitrum',
-  avax: 'avax',
-  bsc: 'bsc',
-  ftm: 'fantom',
-  sonic: 'sonic',
-  base: 'base',
-  matic: 'polygon',
-  frax: 'fraxtal',
-  mnt: 'mantle'
-};
-
-function getLlamaChain(debankChain) {
-  return debankToLlamaChain[debankChain] || debankChain;
-}
 
 function treasuryExports(config) {
   const { isComplex, complexOwners = [], ...chains } = config;
 
   const exportObj = {};
-
-  let fetchPromise = null;
-
-  async function getComplexData() {
-    if (!fetchPromise) {
-      fetchPromise = Promise.all(
-        complexOwners.map(id =>
-          axios.get(API_URL_COMPLEX, {
-            params: { id, is_all: true },
-            headers: {
-              'accept': 'application/json',
-              'AccessKey': ACCESSKEY,
-            },
-          }).then(r => ({ id, tokens: r.data }))
-        )
-      );
-    }
-    return fetchPromise;
-  }
 
   Object.keys(chains).forEach(chain => {
     let { ownTokenOwners = [], ownTokens = [], owners = [], tokens = [], blacklistedTokens = [] } = config[chain]
@@ -80,25 +39,8 @@ function treasuryExports(config) {
       [chain]: {
         tvl: async (api) => {
           if (!complexOwners.length) return api.getBalances();
-          const data = await getComplexData();
-          if (!data.length) return api.getBalances();
-
-          const blacklist = new Set(getUniqueAddresses([...ownTokens, ...blacklistedTokens], false));
-
-          for (const entry of data) {
-            for (const token of entry.tokens || []) {
-              if (getLlamaChain(token.chain) !== chain) continue;
-              for (const { asset_token_list = [], pool } of token.portfolio_item_list || []) {
-                for (const { id: rawId, decimals, amount } of asset_token_list) {
-                  if (!rawId) continue;
-                  const addr = rawId === 'eth' ? nullAddress : rawId.toLowerCase();
-                  if (blacklist.has(addr)) continue;
-                  api.add(addr, amount * 10 ** decimals);
-                  if (pool && pool.id) api.removeTokenBalance(pool.id.toLowerCase());
-                }
-              }
-            }
-          }
+          const bl = getUniqueAddresses([...ownTokens, ...blacklistedTokens], false)
+          await sumTokensDebank(api, complexOwners, { blacklistedTokens: bl, stripPoolTokens: true })
           return api.getBalances();
         }
       }

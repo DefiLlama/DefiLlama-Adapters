@@ -1,5 +1,4 @@
 const utils = require('../helper/utils');
-const { toUSDTBalances } = require('../helper/balances');
 
 
 const vaultsEndpoint = "https://staking-api.bim.finance/vaults";
@@ -27,13 +26,7 @@ const getVaultBalances = async (chainId, vaults, api) => {
   }
   const calls = vaults.map(vault => {
     return api.call({
-      abi: {
-        inputs: [],
-        name: 'balance',
-        outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
+      abi: 'uint256:balance',
       target: vault.earnedTokenAddress,
     });
   });
@@ -42,13 +35,13 @@ const getVaultBalances = async (chainId, vaults, api) => {
 };
 
 function fetchChain(chain) {
-  return async (_, _b, _cb, { api, }) => {
+  return async (api) => {
     if (!_response) _response = utils.fetchURL(vaultsEndpoint);
     const vaults = (await _response).data;
     const chainVaults = vaults.filter(vault => vault.chain === chain);
 
     if( !chainVaults || chainVaults.length === 0) {
-      return toUSDTBalances(0);
+      return {}
     }
 
     const balances = await getVaultBalances(chain, chainVaults, api);

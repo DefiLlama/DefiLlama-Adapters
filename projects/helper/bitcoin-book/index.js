@@ -1,70 +1,66 @@
 const imports = [
-  ["wbtc", './wbtc.js'],
-  ["bitmex", './bitmex.js'],
-  ["kucoin", './kucoin.js'],
-  ["okex", './okex.js'],
-  ["chakra", './chakra.js'],
-  ["bitkub", './bitkub-cex.js'],
-  ["coinbasebtc", './coinbase-btc.js'],
-]
-const { sumTokensExport } = require('../sumTokens.js')
-const fetchers = require('./fetchers.js')
+  ["wbtc", "./wbtc.js"],
+  ["bitmex", "./bitmex.js"],
+  ["kucoin", "./kucoin.js"],
+  ["okex", "./okex.js"],
+  ["chakra", "./chakra.js"],
+  ["bitkub", "./bitkub-cex.js"],
+  ["coinbasebtc", "./coinbase-btc.js"],
+];
+const { sumTokensExport } = require("../sumTokens.js");
+const fetchers = require("./fetchers.js");
 
-const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
+const p2pb2b = ["39BFtTzZjj6o2s7eewefFQxqM4617VmhEK"];
 
-const ssiProtocol = [
-  '1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM'
-]
+const ssiProtocol = ["1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM"];
 
-const bitomato = [
-  'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
-]
+const bitomato = ["bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9"];
 
-const lbank = [
-  '1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn',
-]
+const lbank = ["1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn"];
 
 const stacksSBTC = [
   // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
-  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc',
-  'bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy',
-  'bc1p6ys2ervatu00766eeqfmverzegg9fkprn3xjn0ppn70h53qu5vus3yzl0x'
-]
+  "bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc",
+  "bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy",
+  "bc1p6ys2ervatu00766eeqfmverzegg9fkprn3xjn0ppn70h53qu5vus3yzl0x",
+];
 
 const magpie = [
-  '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
-  'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
-]
+  "1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF",
+  "bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8",
+];
 
 function getBTCExport(key) {
-  if (!module.exports[key])
-    throw new Error(`No export found for ${key}`)
-  const value = module.exports[key]
+  if (!module.exports[key]) throw new Error(`No export found for ${key}`);
+  const value = module.exports[key];
 
-  if (Array.isArray(value))
-    return sumTokensExport({ owners: value })
+  if (Array.isArray(value)) return sumTokensExport({ owners: value });
 
-  if (typeof value === 'function')
+  if (typeof value === "function")
     return async (api) => {
-      let owners = await value()
-      return sumTokensExport({ owners })(api)
-    }
+      let owners = await value();
+      return sumTokensExport({ owners })(api);
+    };
 
-  throw new Error(`Unsupported BTC export type for ${key}`)
+  throw new Error(`Unsupported BTC export type for ${key}`);
 }
 
 module.exports = {
   ...fetchers,
   getBTCExport,
 
-  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf', 'bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj'],
+  hemiBTC: [
+    "16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo",
+    "1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf",
+    "bc1q4lpa9d5zxehge7vx86784gcxy23hc3xwp3gl422venswe6pvhh5qpn9xfj",
+  ],
   p2pb2b,
   bitomato,
   lbank,
   stacksSBTC,
   magpie,
   ssiProtocol,
-  'poloniex-cex': [
+  "poloniex-cex": [
     "1LgW4RA5iE98khRJ58Bhx5RLABP3QGjn9y",
     "33Mz8zrWx6yei6itk2mjfCytdKJZEwKeM6",
     "1McbLy27nLVzJ4ubMnFm3jxnQ3nbq2mpr2",
@@ -98,7 +94,7 @@ module.exports = {
     "bc1qqg3cdyadq25zn99sdprr4lgpsxg2za998eygy8",
     "bc1qw4vp94e9egkaxc04qsu5z9aq5pqpku2p6pzer8",
     "bc1q3q7afjarz7l6v49538qs2prffhtawf38ss85k8",
-    "bc1q3smt9ut40eld6tgn42sdlp9yrx98s90unqw3pl"
+    "bc1q3smt9ut40eld6tgn42sdlp9yrx98s90unqw3pl",
   ],
   allo: [
     "bc1pn87rjuhzl3sr9tffhgx3nrrq7rhyxg7y58dl0uk5kyhmkfj26ssqz76lfc",
@@ -107,68 +103,64 @@ module.exports = {
     "bc1pn29hejmt2mrslsa0ttfknp268qrpsmc7wqmw4ddxqytctzjl50ws2yrpmt",
     "bc1pkpddzz2px40f803qug3l28c7d99qvvjkccgzj7tc80xx29pkd2vq3lqrg3",
     "bc1p23su0d2sxwg95c7ny0p5vn4vf83jmvhyzacw3srjv84hmvynkacqe52r9d",
-    "bc1pn6rqr5z8yu5z9qphs0ccmcnt2c8ye04e3f2590rdxsd2mga0harq9k4207"
+    "bc1pn6rqr5z8yu5z9qphs0ccmcnt2c8ye04e3f2590rdxsd2mga0harq9k4207",
   ],
   avalanche: [
-    'bc1q2f0tczgrukdxjrhhadpft2fehzpcrwrz549u90',  // https://prnt.sc/unrBvLvw3z1t 
+    "bc1q2f0tczgrukdxjrhhadpft2fehzpcrwrz549u90", // https://prnt.sc/unrBvLvw3z1t
   ],
   bevm: [
     "bc1p43kqxnf7yxcz5gacmqu98cr2r5gndtauzrwpypdzmsgp7n3lssgs5wruvy",
     "bc1p2s98z85m7dwc7agceh58j54le0nedmqwxvuuj4ex4mwpsv52pjxqkczev9",
   ],
   binance: [
-    '1PJiGp2yDLvUgqeBsuZVCBADArNsk6XEiw',
-    '1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7',
-    '32bhzEniykYRFADVaRM5PYswsjC23cxtes',
-    '34GUzCVLbdkMQ2UdVTaA4nxPwoovVS7y2J',
-    '34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP',
-    '34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo',
-    '36zSLdRv1jyewjaC12fqK5fptn7PqewunL',
-    '38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn',
-    '38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE',
-    '395vnFScKQ1ay695C6v7gf89UzoFpx3WuJ',
-    '39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v',
-    '3AQ8bAh88TQU7JV1H3ovXrwsuV6s3zYZuN',
-    '3AeUiDpPPUrUBS377584sFCpx8KLfpX9Ry',
-    '3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN',
-    '3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2',
-    '3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B',
-    '3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA',
-    '3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ',
-    '3JJmF63ifcamPLiAmLgG96RA599yNtY3EQ',
-    '3JqPhvKkAPcFB3oLELBT7z2tQdjpnxuDi9',
-    '3Jy7A2rThtU9xm4o8gR3a9pvQuxXnRNuNF',
-    '3LQUu4v9z6KNch71j7kbj8GPeAGUo1FW6a',
-    '3LcgLHzTvjLKBixBvkKGiadtiw2GBSKKqH',
-    '3LtrsjtyLsHoG8WQMe2RFw3de4pLTQZNcY',
-    '3M219KR5vEneNb47ewrPfWyb5jQ2DjxRP6',
-    '3Me9QACjioepv2L2oKTC9QQ87NH6vFe1Zj',
-    '3NPL82eaehTFh4r3StpHqVQBTnZJFaGsyy',
-    '3NXCvmLGz9SxYi6TnjbBQfQMcwiZ1iQETa',
-    '3NjHh71XgjikBoTNYdWgXiNeZcLaKNThgb',
-    '3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA',
-    'bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72',
-    'bc1q32lyrhp9zpww22phqjwwmelta0c8a5q990ghs6',
-    'bc1q78ufzeu8w8fwvxuphrdlg446xhyptf28fkatu5',
-    'bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h',
-    'bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h',
+    "1PJiGp2yDLvUgqeBsuZVCBADArNsk6XEiw",
+    "1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7",
+    "32bhzEniykYRFADVaRM5PYswsjC23cxtes",
+    "34GUzCVLbdkMQ2UdVTaA4nxPwoovVS7y2J",
+    "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP",
+    "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo",
+    "36zSLdRv1jyewjaC12fqK5fptn7PqewunL",
+    "38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn",
+    "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE",
+    "395vnFScKQ1ay695C6v7gf89UzoFpx3WuJ",
+    "39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v",
+    "3AQ8bAh88TQU7JV1H3ovXrwsuV6s3zYZuN",
+    "3AeUiDpPPUrUBS377584sFCpx8KLfpX9Ry",
+    "3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN",
+    "3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2",
+    "3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B",
+    "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA",
+    "3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ",
+    "3JJmF63ifcamPLiAmLgG96RA599yNtY3EQ",
+    "3JqPhvKkAPcFB3oLELBT7z2tQdjpnxuDi9",
+    "3Jy7A2rThtU9xm4o8gR3a9pvQuxXnRNuNF",
+    "3LQUu4v9z6KNch71j7kbj8GPeAGUo1FW6a",
+    "3LcgLHzTvjLKBixBvkKGiadtiw2GBSKKqH",
+    "3LtrsjtyLsHoG8WQMe2RFw3de4pLTQZNcY",
+    "3M219KR5vEneNb47ewrPfWyb5jQ2DjxRP6",
+    "3Me9QACjioepv2L2oKTC9QQ87NH6vFe1Zj",
+    "3NPL82eaehTFh4r3StpHqVQBTnZJFaGsyy",
+    "3NXCvmLGz9SxYi6TnjbBQfQMcwiZ1iQETa",
+    "3NjHh71XgjikBoTNYdWgXiNeZcLaKNThgb",
+    "3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA",
+    "bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72",
+    "bc1q32lyrhp9zpww22phqjwwmelta0c8a5q990ghs6",
+    "bc1q78ufzeu8w8fwvxuphrdlg446xhyptf28fkatu5",
+    "bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h",
+    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h",
     // added on the 27/08/2024
-    '3PXBET2GrTwCamkeDzKCx8DeGDyrbuGKoc',
-    '3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud',
-    '3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt',
-    '32BgTv3NSYbMsBTwDbNNN2GKZPCTJSkqDv',
+    "3PXBET2GrTwCamkeDzKCx8DeGDyrbuGKoc",
+    "3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud",
+    "3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt",
+    "32BgTv3NSYbMsBTwDbNNN2GKZPCTJSkqDv",
   ],
-  binance2: [
-    '3LYJfcfHPXYJreMsASk2jkn69LWEYKzexb'
-  ],
+  binance2: ["3LYJfcfHPXYJreMsASk2jkn69LWEYKzexb"],
   bitstable: [
     "bc1p36wvtxursam9cq8zmc9ppvsqf9ulefm7grvlfc4tzc5j83rcggsqh6nxw5", // Native(BTC)
     "bc1p0uw83vg0h32v7kypyvjn9nextku2h7axjdeefy2ewstevnqffaksjzhrdf", // BRC20 deposit
-    "bc1pvngqf24g3hhr5s4ptv472prz576uye8qmagy880ydq5gzpd30pdqtua3rd"  // BRC20 farm
+    "bc1pvngqf24g3hhr5s4ptv472prz576uye8qmagy880ydq5gzpd30pdqtua3rd", // BRC20 farm
   ],
-  boringdao: [
-    '33ZibwpiZe4bM5pwpAdQNqqs2RthLkpJer'
-  ],
+  boringdao: ["33ZibwpiZe4bM5pwpAdQNqqs2RthLkpJer"],
   bsquaredBTC: [
     "bc1qva5m5e7da2zm590z03tdnj42u9q2uye3hgrehwrzgg8j4kxq9seq9rvw0m", // Bitcoin Multisig Addresses
     "bc1qjv2lfrv672rqagycs5zdsggmury0cz2vufek46jj86ddqynyp2qsxm3qfs", // Bitcoin Multisig Addresses
@@ -180,35 +172,30 @@ module.exports = {
     "155FvRapVDRbFYxaxGxJ9eCQjgr7X2yC6g",
     "bc1q745ywhqsssknaw8s5ycgkv0gulddnasn4tfsjwgm66tvgp2pqpys0zjzt8",
     "bc1q07er4xwsv209cfjsvsl3fjmpvcx462dvpjrjpj",
-    "bc1pg05lsdyzx8j5wastzk0svu84hdrvkel2zfq560a7the5vvjyp27svxwgyx",
-    "bc1qh6u403822hwm7mhncn2dw8pyaup2mwv4p4j8ckfe9p5zj3wdxyeszpsck8",
     "bc1qmvvnxu7739hk9xvgtk4evsx9ycm20ae25gfand",
-    "bc1que9dvsgwlm6vr5chrxm2gu586c5alnq3uxa4e2",
     "bc1qnp5dfweymkfyl3wzmzqxjyq0ejf2cnpynnfkmr",
-    "bc1qe0srwsmxx2z0mkksqxx72nsgc9m2lvj4777aq8"
+    "bc1qe0srwsmxx2z0mkksqxx72nsgc9m2lvj4777aq8",
   ],
   bsquaredBRC20: [
-    "bc1q97ctqygjgj0ljxgge4q735ujxvlad8smass7f0axc6x3ggffr8xqwn69hc" // Bitcoin Multisig Addresses
+    "bc1q97ctqygjgj0ljxgge4q735ujxvlad8smass7f0axc6x3ggffr8xqwn69hc", // Bitcoin Multisig Addresses
   ],
-  elSalvador: [
-    '32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo'
-  ],
+  elSalvador: ["32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo"],
   garden: [
     "bc1q4ysrrs8jr9dfcxxpq6gat9etjv88dvfa2z05v5",
     "bc1qkvtk6uerfmr9f6nv6u43lgjsjep02t589etk98",
-    "bc1qucaqzk2gck97r8utx2mgrl5xmpczf6jcqlr8v9"
+    "bc1qucaqzk2gck97r8utx2mgrl5xmpczf6jcqlr8v9",
   ],
   hopeMoney: [
-    '15PYHP5ZW29B3o19jFNKz6RyRdHCtzJj5H',
-    '16BLcAyJR8unm8RpQT9PGTwh5uPpZEf2ut',
-    '3JoCB8ifwhL4YKo9rCYMgVGbqxBqnpQpdS',
-    '179fgM9yyTHj4ZCTfAcGhUFiQMXuPx5xrF',
-    '1LaC3Xt8RZWYH1pjcvXxrWxLvXe7iR3ybe'
+    "15PYHP5ZW29B3o19jFNKz6RyRdHCtzJj5H",
+    "16BLcAyJR8unm8RpQT9PGTwh5uPpZEf2ut",
+    "3JoCB8ifwhL4YKo9rCYMgVGbqxBqnpQpdS",
+    "179fgM9yyTHj4ZCTfAcGhUFiQMXuPx5xrF",
+    "1LaC3Xt8RZWYH1pjcvXxrWxLvXe7iR3ybe",
   ],
   krakenBTC: [
     "bc1qqwf6hexnnswmj6yuhz5xyj20frtp8exv7mclck",
     "bc1q56p075cgup705urqy2w8hwggcf7h7k039afh0g",
-    "bc1q56p075cgup705urqy2w8hwggcf7h7k039afh0g"
+    "bc1q56p075cgup705urqy2w8hwggcf7h7k039afh0g",
   ],
   lorenzo: [
     "bc1qaf6laj9m7jteztyz4lulrtcjtpusfcfnd7r7xn",
@@ -263,63 +250,62 @@ module.exports = {
     "bc1p8lqq8u7rlr38fgttp2hypz9t2vl4r486gkm67mkawyn769e7njmqhyz0tn",
 
     // Ceffu
-    'bc1qjvvw0rur4jl503yu9umwpzlryyg6rr8j97nz80',
+    "bc1qjvvw0rur4jl503yu9umwpzlryyg6rr8j97nz80",
 
     // Cobo
-    'bc1pj9r40wqjwscrqxma2a52sjt8c8pk975m4fjawekf43lk0v34e4qqt4xm9n',
-    'bc1pxwcre508c6fkafuyt65utjv8enul2dmc79rhufq7u22tgtx26u0qajmflu',
+    "bc1pj9r40wqjwscrqxma2a52sjt8c8pk975m4fjawekf43lk0v34e4qqt4xm9n",
+    "bc1pxwcre508c6fkafuyt65utjv8enul2dmc79rhufq7u22tgtx26u0qajmflu",
     // staking gathering address
-    'bc1p9mcc69rz8wdcc4yxxg0uj9qygpsepc6628pzq5l3a08u76d6f3pq246syk',
+    "bc1p9mcc69rz8wdcc4yxxg0uj9qygpsepc6628pzq5l3a08u76d6f3pq246syk",
     // other
-    '36tKXKVAUqEkMx9NyErJv4c3KVEJNnJJYT',
+    "36tKXKVAUqEkMx9NyErJv4c3KVEJNnJJYT",
 
     // small balances left
-    'bc1ppwfa95ug52ufc2azau5wn8qvlss8xkmf8jutydg0azkwegks7wfs7cd98n',
-    'bc1q606v608m2nrpzlqjn9gfwlsaw4dwxhjp82mrps',
-    '1FopykmQHhF51JwZ5co9nEDuQHHL6PqCTn',
-    '1EVosahWYJKUj5b861eiHWvwZxfq5SuXqk',
-    'bc1pzd6luyardlle9f7lul2y8fl72c22p6vxspc4k4g4gzgjf8975s0sr042yt',
+    "bc1ppwfa95ug52ufc2azau5wn8qvlss8xkmf8jutydg0azkwegks7wfs7cd98n",
+    "bc1q606v608m2nrpzlqjn9gfwlsaw4dwxhjp82mrps",
+    "1FopykmQHhF51JwZ5co9nEDuQHHL6PqCTn",
+    "1EVosahWYJKUj5b861eiHWvwZxfq5SuXqk",
+    "bc1pzd6luyardlle9f7lul2y8fl72c22p6vxspc4k4g4gzgjf8975s0sr042yt",
 
-    'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0',
+    "bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0",
 
     // babylon unstake transit address
-    'bc1p754prt7xj5vh9vcrwsjv7aa0f60xlrmm8arcrxg7kcg0gxrtemdsnzlwvn'
-
+    "bc1p754prt7xj5vh9vcrwsjv7aa0f60xlrmm8arcrxg7kcg0gxrtemdsnzlwvn",
   ],
   lorenzo2: [
-    'bc1qndzgrwj3y2lhcklme4t72jxq3df2h05vjdgzpp',
-    'bc1qa4yfx2meqadqwpmqznlct0t2j6pt5tw5xrpz06',
-    'bc1qnvgmve5gs89ugf4n94jzqgan202dve5dtrj220',
-    'bc1qrdnqpvyx5g40ta0wg9js7ky8qx5qglnxyf72qx',
-    '19KdJBkptNL7RJYgsWFvGr8BqGaeV9xEpg',
-    '14eK85UFbR74KADFXkPXKyEDrroiVVGmxX',
+    "bc1qndzgrwj3y2lhcklme4t72jxq3df2h05vjdgzpp",
+    "bc1qa4yfx2meqadqwpmqznlct0t2j6pt5tw5xrpz06",
+    "bc1qnvgmve5gs89ugf4n94jzqgan202dve5dtrj220",
+    "bc1qrdnqpvyx5g40ta0wg9js7ky8qx5qglnxyf72qx",
+    "19KdJBkptNL7RJYgsWFvGr8BqGaeV9xEpg",
+    "14eK85UFbR74KADFXkPXKyEDrroiVVGmxX",
 
-    'bc1pr6pga0d44xm3t8z36qnya6sfznsm8fwkn507x6gqt86xtnvm4h4sj2zqus',
-    '19wFRSr3GYHmVQtnmbkx7Wkjw3jZdyYB9a',
-    'bc1qyd4g2r0n0p9u775z7062rz8j88xxy27kmmh5aj',
-
+    "bc1pr6pga0d44xm3t8z36qnya6sfznsm8fwkn507x6gqt86xtnvm4h4sj2zqus",
+    "19wFRSr3GYHmVQtnmbkx7Wkjw3jZdyYB9a",
+    "bc1qyd4g2r0n0p9u775z7062rz8j88xxy27kmmh5aj",
 
     // new batched TVL
-    'bc1q4cgxdkr6kypy4nxf24zy4l2rjuuavdnflnnfs0',
-    'bc1qdkkv0aqfjqzfj4lszrwnl5ywlm2c8d6uvds26s',
-    'bc1ql70zgt8lmnk2n7z8usdc2cv6kp39722rrj6u4p',
-    'bc1q4kfty7afjs4yse4c3pqwah4eh082e4e0f8fdt4',
-    'bc1q4zqnzrapnvcdye8cl4fymtyz0udk4t60rynx7j',
+    "bc1q4cgxdkr6kypy4nxf24zy4l2rjuuavdnflnnfs0",
+    "bc1qdkkv0aqfjqzfj4lszrwnl5ywlm2c8d6uvds26s",
+    "bc1ql70zgt8lmnk2n7z8usdc2cv6kp39722rrj6u4p",
+    "bc1q4kfty7afjs4yse4c3pqwah4eh082e4e0f8fdt4",
+    "bc1q4zqnzrapnvcdye8cl4fymtyz0udk4t60rynx7j",
 
-    'bc1q2y8q75u3v7y79ay93anmp069kt33tajfly2vv2',
-    'bc1qxqyclhjklh2u6qjcf4h0yzt2nw2hf6ah4k7tmw',
-    'bc1q6al9468v9tjyrrnu3ahzpt4dfdfaehfst2np05',
-    'bc1qurmwjnqmwntzshpevcmpd7ul72hdsnj9wn6wpu',
-    '3FChYicLZ7sD37f7NR2kGHwKCewSgdpzYd',
-    'bc1qjasqm3y6uytk3xklqdzf72rjqan74hf5m7pv0f',
-    'bc1qnaq02d5c94tvml8gn7634shtjr6adkp3g40vhjktl7j2yseu70zs2nmnyu',
-    '1EFjtdZtgn6XyEgwTn5hbZGHxp8amJw38s',
-    'bc1qaxe3lqg0ztsthfsjqwx23j8vgpwjd5750sq6st',
-    'bc1qfx66vlxvmunep6eyyht4ahrer5premffmra86l',
-    'bc1qq6py06647kvjctncmm8q4ctl4f4qmtk68fq4dc',
-    'bc1qarjgfex5tk57jp4plwm03tf978pcxrr9vaqnxu',
-    '3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9',
-    'bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34'
+    "bc1q2y8q75u3v7y79ay93anmp069kt33tajfly2vv2",
+    "bc1qxqyclhjklh2u6qjcf4h0yzt2nw2hf6ah4k7tmw",
+    "bc1q6al9468v9tjyrrnu3ahzpt4dfdfaehfst2np05",
+    "bc1qurmwjnqmwntzshpevcmpd7ul72hdsnj9wn6wpu",
+    "3FChYicLZ7sD37f7NR2kGHwKCewSgdpzYd",
+    "bc1qjasqm3y6uytk3xklqdzf72rjqan74hf5m7pv0f",
+    "bc1qnaq02d5c94tvml8gn7634shtjr6adkp3g40vhjktl7j2yseu70zs2nmnyu",
+    "1EFjtdZtgn6XyEgwTn5hbZGHxp8amJw38s",
+    "bc1qaxe3lqg0ztsthfsjqwx23j8vgpwjd5750sq6st",
+    "bc1qfx66vlxvmunep6eyyht4ahrer5premffmra86l",
+    "bc1qq6py06647kvjctncmm8q4ctl4f4qmtk68fq4dc",
+    "bc1qarjgfex5tk57jp4plwm03tf978pcxrr9vaqnxu",
+    "3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9",
+    "bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34",
+    "bc1pkldc3d64ceqshhznxuj78r6e0a3p7gtdrrue07zmcq54xzlyuu9sppvxk0",
   ],
   merlin: [
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
@@ -350,32 +336,32 @@ module.exports = {
     "17vH7EX655n5L4iPAfVXPn3rVzZbrgKYBC",
     "3Qjmb6Z9i3ySgG7uHFyngRX96PJhYsFZv8",
     "17Wy2634mL7jsSxVjRQS8k2NexVwRh8jXA",
-    "13hxUsGWnJgH2vzscAUrYm7pxgWzTvez7x" // LP MBTC Mint
+    "13hxUsGWnJgH2vzscAUrYm7pxgWzTvez7x", // LP MBTC Mint
   ],
   multibit: [
-    'bc1p6r6hx759e3ulvggvd9x3df0rqh27jz59nvfjd2fzmh3wqyt6walq82u38z', // hot wallet
-    'bc1pyyms2ssr0hagy5j50r5n689e6ye0626v3c98j5fw0jk6tz3vrgts7nt56g',  // cold wallet
-    'bc1qmcrpqanjnrw58y0fvq08fqchgxv5aylctew7vxlkalfns3rpedxsx4hxpu',  // cold wallet
+    "bc1p6r6hx759e3ulvggvd9x3df0rqh27jz59nvfjd2fzmh3wqyt6walq82u38z", // hot wallet
+    "bc1pyyms2ssr0hagy5j50r5n689e6ye0626v3c98j5fw0jk6tz3vrgts7nt56g", // cold wallet
+    "bc1qmcrpqanjnrw58y0fvq08fqchgxv5aylctew7vxlkalfns3rpedxsx4hxpu", // cold wallet
   ],
   obelisk: [
-    'bc1p0tr3dgulgpx43dkktjxy8z2azz6yvx4j7s0lelj67tlwct0wnqtqeakfer',
-    '14ejzLtUSMsjZE8Pp2LUhX3Pf7BbXPeZyP',
-    'bc1qy4pkldj4dqxtqypz6awwj7y8vahkht8uqhdlw3',
-    'bc1qjnhtrjgr4y0new266twr6x6703lshszuey8zwm',
-    'bc1quxgdtm6n9zau50n6aptcyn55gm0r5xjhvl8399',
-    'bc1qt887udazek8rl89ck43nar4397a8qkp9qe9qdp',
-    'bc1qunzwmk6gkx3ugxd4kmult6vl8vlws0w2jfume8jhnyxmz47ucy4qkhqwu6',
+    "bc1p0tr3dgulgpx43dkktjxy8z2azz6yvx4j7s0lelj67tlwct0wnqtqeakfer",
+    "14ejzLtUSMsjZE8Pp2LUhX3Pf7BbXPeZyP",
+    "bc1qy4pkldj4dqxtqypz6awwj7y8vahkht8uqhdlw3",
+    "bc1qjnhtrjgr4y0new266twr6x6703lshszuey8zwm",
+    "bc1quxgdtm6n9zau50n6aptcyn55gm0r5xjhvl8399",
+    "bc1qt887udazek8rl89ck43nar4397a8qkp9qe9qdp",
+    "bc1qunzwmk6gkx3ugxd4kmult6vl8vlws0w2jfume8jhnyxmz47ucy4qkhqwu6",
   ],
   roup: [
-    'bc1pv5lu5aklz64sye9f4zmnjkfg8j6s2tllu3fem4cs9t0hcrnz5e7qy0qw6e',
-    'bc1p2tncs8egnj8e6qt46np3qla70mfx4telu92v4c9hp3pg8khqp37s9lvmfx',
-    'bc1phnxqw4gfq349wm2xcqgqk77544ssqwa6ycuhjh7hdxks4mtjg33qrfenw5',
-    'bc1pfsu3ts4equ7rdy63dgt7shkqlu2n5kw8p0z7p7c8lsrh2yqg40fsvz4ev3'
+    "bc1pv5lu5aklz64sye9f4zmnjkfg8j6s2tllu3fem4cs9t0hcrnz5e7qy0qw6e",
+    "bc1p2tncs8egnj8e6qt46np3qla70mfx4telu92v4c9hp3pg8khqp37s9lvmfx",
+    "bc1phnxqw4gfq349wm2xcqgqk77544ssqwa6ycuhjh7hdxks4mtjg33qrfenw5",
+    "bc1pfsu3ts4equ7rdy63dgt7shkqlu2n5kw8p0z7p7c8lsrh2yqg40fsvz4ev3",
   ],
   tronBTC: [
-    // On the 23/10/2024 , defillma receive a PoR from Tron/HTX team with the respective BTC collateral backing BTC on tron chain 
+    // On the 23/10/2024 , defillma receive a PoR from Tron/HTX team with the respective BTC collateral backing BTC on tron chain
     "1NBX1UZE3EFPTnYNkDfVhRADvVc8v6pRYu",
-    "14NEbSYdjumn9h4spMjbp3PdUpeXuM5PBZ"
+    "14NEbSYdjumn9h4spMjbp3PdUpeXuM5PBZ",
   ],
   xlink: [
     "bc1pylrcm2ym9spaszyrwzhhzc2qf8c3xq65jgmd8udqtd5q73a2fulsztxqyy",
@@ -394,75 +380,77 @@ module.exports = {
     "bc1qxmwuugmcnn5k3hz22cxephy2vkevvt2knsd6u4",
     "1617Cf4qmjqVyiN5weQRo8sZvQvyDjshKP",
   ],
-  xlinkLST: [
-    "bc1p78mvfa550t7acg6wm9cl9543zf68ulhqkxex5pvhv8wnw4qpl3gqmpjy2s"
-  ],
-  xrgb: [
-    "bc1ptm05s4f6f8j78zhx62lzx0dep07f2597nlgeltmm4sjn5stdu6gq4sxg2w"
-  ],
+  xlinkLST: ["bc1p78mvfa550t7acg6wm9cl9543zf68ulhqkxex5pvhv8wnw4qpl3gqmpjy2s"],
+  xrgb: ["bc1ptm05s4f6f8j78zhx62lzx0dep07f2597nlgeltmm4sjn5stdu6gq4sxg2w"],
   imbtc: [
-    '3JMjHDTJjKPnrvS7DycPAgYcA6HrHRk8UG', '3GH4EhMi1MG8rxSiAWqfoiUCMLaWPTCxuy'
+    "3JMjHDTJjKPnrvS7DycPAgYcA6HrHRk8UG",
+    "3GH4EhMi1MG8rxSiAWqfoiUCMLaWPTCxuy",
   ],
   twentyOneCo: [
-    '1HTGi4tfXSEtcXD4pk6S3vBs3s64hWY1pW',
-    '12WZhMFFLHQ4rCMSkeBfbJXRk7aGWyBh1M'
+    "1HTGi4tfXSEtcXD4pk6S3vBs3s64hWY1pW",
+    "12WZhMFFLHQ4rCMSkeBfbJXRk7aGWyBh1M",
   ],
   // Avalon CeDefi Bitcoin addresses
   // Note: Bitcoin TVL tracking is currently disabled in avalon-finance-cedefi adapter
   // Previous addresses were FBTC reserves already tracked by the fbtc adapter
   avalonCedefi: [],
   pstakeBTC: [
-    "bc1qajcp935tuvqakut95f0sc9qm09hxjj6egexl9d", "bc1pzq0ve6e7j6jt4ckx8uzdjyddrfda9ew8dxvrjmkxmfnj9yz68zeqgqh9cl", "bc1pjp9pg0d6wcejlg576st4s8d424zx443mdumdhvjcxx5ehnfk4xcqyru7ay", "bc1px92pntcj0wd5076nnymp787a7qczsaauuefgntxngdwvkd584xgsaagem2", "bc1pxhkczd3jq9nq50p2xll99edhxlx5dj6ztgw5pgtzszjtlvg7tl4s8ttf04", "bc1pxhe0dvtg7q06st7n7k0s6235ed4dhhawhhewpz7f4a0dmcrch09q2shl8y"
+    "bc1qajcp935tuvqakut95f0sc9qm09hxjj6egexl9d",
+    "bc1pzq0ve6e7j6jt4ckx8uzdjyddrfda9ew8dxvrjmkxmfnj9yz68zeqgqh9cl",
+    "bc1pjp9pg0d6wcejlg576st4s8d424zx443mdumdhvjcxx5ehnfk4xcqyru7ay",
+    "bc1px92pntcj0wd5076nnymp787a7qczsaauuefgntxngdwvkd584xgsaagem2",
+    "bc1pxhkczd3jq9nq50p2xll99edhxlx5dj6ztgw5pgtzszjtlvg7tl4s8ttf04",
+    "bc1pxhe0dvtg7q06st7n7k0s6235ed4dhhawhhewpz7f4a0dmcrch09q2shl8y",
   ],
   biconomy: [
     "bc1qx70fn2550vhjetc748wmg4lzv5gy7t56ns92v8",
-    '3PYizTwdQy34GbpzC2D5QmfatUeetc2sEE',
-    'bc1q8pmj4kgvmg0yqpjhqwr9gqxhktlndzultkwaaz',
-    'bc1qlz4as7vs8jr5glhxtee3a0vr40j56uslg24r0w',
+    "3PYizTwdQy34GbpzC2D5QmfatUeetc2sEE",
+    "bc1q8pmj4kgvmg0yqpjhqwr9gqxhktlndzultkwaaz",
+    "bc1qlz4as7vs8jr5glhxtee3a0vr40j56uslg24r0w",
   ],
   bigone: [
-    'bc1qu02z43yduyjx6saeea4l54qqulvz568qnzgaes',
-    '1L5D4Eq2RkEKuN717Gc817MH1Sxs5WwMQh'
+    "bc1qu02z43yduyjx6saeea4l54qqulvz568qnzgaes",
+    "1L5D4Eq2RkEKuN717Gc817MH1Sxs5WwMQh",
   ],
   bingCex: [
-    'bc1qr8e6kmev99jxnk7hpyhex434t59ke5tpvmnyd3',
-    'bc1qzzn5tszxn3ha87xfke540k8pr4favsk9cusakq',
-    'bc1q302u45q2hqafhdaehkkzqkf0l0vkz5l7exx307',
-    'bc1q3h8dk28faa94e9gmw4p0lvywqkw2sazyt3pl05',
+    "bc1qr8e6kmev99jxnk7hpyhex434t59ke5tpvmnyd3",
+    "bc1qzzn5tszxn3ha87xfke540k8pr4favsk9cusakq",
+    "bc1q302u45q2hqafhdaehkkzqkf0l0vkz5l7exx307",
+    "bc1q3h8dk28faa94e9gmw4p0lvywqkw2sazyt3pl05",
   ],
   bitfinex: [
-    '1Kr6QSydW9bFQG1mXiPNNu6WpJGmUa9i1g',  // BTC hot wallet
-    '3JZq4atUahhuA9rLhXLMhhTo133J9rF97j',  // BTC cold wallet
-    'bc1qgdjqv0av3q56jvd82tkdjpy7gdp9ut8tlqmgrpmv24sq90ecnvqqjwvw97', // BTC cold wallet
+    "1Kr6QSydW9bFQG1mXiPNNu6WpJGmUa9i1g", // BTC hot wallet
+    "3JZq4atUahhuA9rLhXLMhhTo133J9rF97j", // BTC cold wallet
+    "bc1qgdjqv0av3q56jvd82tkdjpy7gdp9ut8tlqmgrpmv24sq90ecnvqqjwvw97", // BTC cold wallet
   ],
   bitget: [
-    '1FWQiwK27EnGXb6BiBMRLJvunJQZZPMcGd',
-    '1GDn5X4R5vjdSvFPrq1MJubXFkMHVcFJZv',
-    '3GbdoiTnQrJYatcr2nhq7MYASSCWEKmN6L',
-    '3HcSp9sR23w6MxeRrLqqyDzLqThtSMaypQ',
-    '3MdofQ2ouxom9MzC9kKazGUShoL5R3cVLG',
-    '3Jxc4zsvEruEVAFpvwj818TfZXq5y2DLyF', //add on 12/01/2024
-    '3KUwtHc5UhWQ76z6WrZRQHHVTZMuUWiZcU', // add on 27/05/2024
-    '3H6JnFoz5jcoATKQ83BuQ3cUUCHswqfgtG', // add on 27/05/2024
-    '3AZHcgLnJL5C5xKo33mspyHpQX7x4H5bBw', // add on 27/05/2024
-    '3DSST4myyyRbiGzgCBE1RVHY7GRjDCh4n9', // add on 27/05/2024
-    '3Nu84pbqfcfaFztQ74qc9ni2PH5HGM1bzS', // add on 27/05/2024
-    '34hatYbZ27CLLoZWhuJHzBgoTCwXEv8GwT', // add on 27/05/2024
-    '3Gm1h16ov9cH4o4mChapGUai61K1bAXL3c',
-    '1PX5L73e5325fdrSwDHNTuq8RMM9JKR34q',
-    '1PPyiSbdQeo83ezje6Yv8L3UWpDcx4NtSB',
-    '1NZc5p5YQ21tGjVrurzczq56SVq2tiH6dt',
-    '32qqF3w9W96S6br5x3cR75fgtFZwshjh4X',
-    '3NnoMUQnURz29QLJcvQ5Xy6ztgJ4TYmqY3',
-    '33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE'
+    "1FWQiwK27EnGXb6BiBMRLJvunJQZZPMcGd",
+    "1GDn5X4R5vjdSvFPrq1MJubXFkMHVcFJZv",
+    "3GbdoiTnQrJYatcr2nhq7MYASSCWEKmN6L",
+    "3HcSp9sR23w6MxeRrLqqyDzLqThtSMaypQ",
+    "3MdofQ2ouxom9MzC9kKazGUShoL5R3cVLG",
+    "3Jxc4zsvEruEVAFpvwj818TfZXq5y2DLyF", //add on 12/01/2024
+    "3KUwtHc5UhWQ76z6WrZRQHHVTZMuUWiZcU", // add on 27/05/2024
+    "3H6JnFoz5jcoATKQ83BuQ3cUUCHswqfgtG", // add on 27/05/2024
+    "3AZHcgLnJL5C5xKo33mspyHpQX7x4H5bBw", // add on 27/05/2024
+    "3DSST4myyyRbiGzgCBE1RVHY7GRjDCh4n9", // add on 27/05/2024
+    "3Nu84pbqfcfaFztQ74qc9ni2PH5HGM1bzS", // add on 27/05/2024
+    "34hatYbZ27CLLoZWhuJHzBgoTCwXEv8GwT", // add on 27/05/2024
+    "3Gm1h16ov9cH4o4mChapGUai61K1bAXL3c",
+    "1PX5L73e5325fdrSwDHNTuq8RMM9JKR34q",
+    "1PPyiSbdQeo83ezje6Yv8L3UWpDcx4NtSB",
+    "1NZc5p5YQ21tGjVrurzczq56SVq2tiH6dt",
+    "32qqF3w9W96S6br5x3cR75fgtFZwshjh4X",
+    "3NnoMUQnURz29QLJcvQ5Xy6ztgJ4TYmqY3",
+    "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
   ],
   bitmake: [
     // wallet provide by a bitmake team
-    "3F12ncAyx4VkfpvnS7ZxdpggFx4p9RKfVe"
+    "3F12ncAyx4VkfpvnS7ZxdpggFx4p9RKfVe",
   ],
   bitmark: [
     "37RJkdkzPXCMYSTq74berJYj9FmNn7wFP5",
-    "bc1qmzaf7207zp2mvm8f2f5qaa4va0hxpgpmpc2ryp"
+    "bc1qmzaf7207zp2mvm8f2f5qaa4va0hxpgpmpc2ryp",
   ],
   bitunixCex: [
     "bc1qxh9ruwejxz7ztzxejafd74tyxg4sgfeqxun42f",
@@ -475,8 +463,8 @@ module.exports = {
     //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
     //  '358pjjkYRG8exw2BKZnn7Q9s6SCb7wZEWN',
     //  '3C1ykoWkHBMZwmY8PUUMVxtJJSBkZBCtN8',
-    'bc1qrm2a7u9xyeffvulm6e589qvesmt0v0rjxqfkhv',
-    'bc1qvht34dma2uy23l9j862nnqr38a42kjr66e6lec'
+    "bc1qrm2a7u9xyeffvulm6e589qvesmt0v0rjxqfkhv",
+    "bc1qvht34dma2uy23l9j862nnqr38a42kjr66e6lec",
   ],
   blofinCex: [
     "1Jw4meLNYAaDcNxJwQdMTRVw74hGPcuV8W",
@@ -496,9 +484,7 @@ module.exports = {
     "bc1qwyc5km9j23enhtfke96wt9ejqe9hwdpg222f7f",
     "1BKWQjCcRGjs9TozqbUEiPnehtzGVmHPXT",
   ],
-  btse: [
-    "bc1qaxyju6n2x2tednv8e7hgnhnz44vrfcmuhjxpfk"
-  ],
+  btse: ["bc1qaxyju6n2x2tednv8e7hgnhnz44vrfcmuhjxpfk"],
   bybit: [
     "bc1q2qqqt87kh33s0er58akh7v9cwjgd83z5smh9rp",
     "bc1q9w4g79ndel72lygvwtqzem67z6uqv4yncvqjz3yn8my9swnwflxsutg4cx",
@@ -523,35 +509,36 @@ module.exports = {
     "bc1qr7dl0rtnfvzkfqrvctpk068c8zluknkzapwhe9",
     "bc1q0npwm7hphq4w3pn0m4nr5hmum2sdg725edylgn",
     "bc1qqc0h2sxt9lvrsqt90rtpjqnjj7qcwv457g28h2",
+    "1HDnsptgeJ6fYFHCgd1TFzLSRpuVcV51GL",
+    "1Nb9NUVWpjruzafXh2uKK5v5xxEEL1hPrH",
+    "1P7o14PYsuiaj57DUDWoeD8f36fsc4VgVf",
   ],
-  cakeDefi: [
-    "3GcSHxkKY8ADMWRam51T1WYxYSb2vH62VL"
-  ],
+  cakeDefi: ["3GcSHxkKY8ADMWRam51T1WYxYSb2vH62VL"],
   coindcx: [
-    '12hGEyxk4zMLquxiMiFrkvYSohsXz2D3uZ',
-    'bc1qz22hegkllltcydg3pz3an6h352mjmyp7n2vhd9',
-    '1MzSJodjNmACPKyj9VUv9X55Pby87osLhc',
-    'bc1qucl4n347qc6e48w85xdxcv86sm3an8fr250hhm',
-    '1F6CrpEnHEZh6gQtJ7cf1MtK7Y8GYKoP4i',
-    'bc1qn2xm6agnanuyuwfcfw92el7nvt2lpsqr5s5c0w',
-    '17mxRZ9WeXigSwg3Cm62HxeATnuUphMxGL',
-    'bc1qffg4ya27430vv5ymg2lhf4mj7tvtc3ur5qyyq3',
-    '1JV3umtGC6H6tFUVoFyV5KwbJDscUwrtX7',
-    'bc1qhlyrdhfqry06nj902p9dxdftm4pxkhdqeum8y8',
-    '1KXxS6QnzpB8mSLm5kmXJXqvZF7wVvQDCw',
-    'bc1qedxsgzuj8ga644gwlqw4nw7f3xncq4g2rskmzu',
-    '12T8i8tpeczk5JGf8ppZf1w6SFBRwEa9y4',
-    'bc1qpl5kqjkugyncr72a4fhxvm0360ehfdl27e00ja',
-    '1PRwacjHVksLNTkSYNkiWkRgTm1yDSgLMG',
-    'bc1q7c9ylgjsyc0yaxwm84jjh6avfajzfe7dhk6e0e',
-    '1477uXZ1NfUaaZZdnztQ7h8ftGRpuWQPfA',
-    'bc1qygg2x02cfy0e6r7798v4qrcjjkzm8tl5t0xkwf',
-    'bc1qljm7vwdgdy6ca97stsyjyl3zdjtkdsdm8vnh8f',
-    'bc1qqhwh3tcg5duwq7hdlnlr5n2tg2uq755cwmkjqn',
-    'bc1qqe4g7sjxzk90nsgj0mwufwcdtd7kufg7k32xch',
-    '1avi3SkWKGLis8dGCP9JUnFfVeheP8wkt',
-    'bc1qmulc2ju4kykj24xuw0fu73h9h3usa897xhaucz', //
-    '3Dm2TL1pt1VzeBCq9jgvQG81QPv19PyReh'
+    "12hGEyxk4zMLquxiMiFrkvYSohsXz2D3uZ",
+    "bc1qz22hegkllltcydg3pz3an6h352mjmyp7n2vhd9",
+    "1MzSJodjNmACPKyj9VUv9X55Pby87osLhc",
+    "bc1qucl4n347qc6e48w85xdxcv86sm3an8fr250hhm",
+    "1F6CrpEnHEZh6gQtJ7cf1MtK7Y8GYKoP4i",
+    "bc1qn2xm6agnanuyuwfcfw92el7nvt2lpsqr5s5c0w",
+    "17mxRZ9WeXigSwg3Cm62HxeATnuUphMxGL",
+    "bc1qffg4ya27430vv5ymg2lhf4mj7tvtc3ur5qyyq3",
+    "1JV3umtGC6H6tFUVoFyV5KwbJDscUwrtX7",
+    "bc1qhlyrdhfqry06nj902p9dxdftm4pxkhdqeum8y8",
+    "1KXxS6QnzpB8mSLm5kmXJXqvZF7wVvQDCw",
+    "bc1qedxsgzuj8ga644gwlqw4nw7f3xncq4g2rskmzu",
+    "12T8i8tpeczk5JGf8ppZf1w6SFBRwEa9y4",
+    "bc1qpl5kqjkugyncr72a4fhxvm0360ehfdl27e00ja",
+    "1PRwacjHVksLNTkSYNkiWkRgTm1yDSgLMG",
+    "bc1q7c9ylgjsyc0yaxwm84jjh6avfajzfe7dhk6e0e",
+    "1477uXZ1NfUaaZZdnztQ7h8ftGRpuWQPfA",
+    "bc1qygg2x02cfy0e6r7798v4qrcjjkzm8tl5t0xkwf",
+    "bc1qljm7vwdgdy6ca97stsyjyl3zdjtkdsdm8vnh8f",
+    "bc1qqhwh3tcg5duwq7hdlnlr5n2tg2uq755cwmkjqn",
+    "bc1qqe4g7sjxzk90nsgj0mwufwcdtd7kufg7k32xch",
+    "1avi3SkWKGLis8dGCP9JUnFfVeheP8wkt",
+    "bc1qmulc2ju4kykj24xuw0fu73h9h3usa897xhaucz", //
+    "3Dm2TL1pt1VzeBCq9jgvQG81QPv19PyReh",
   ],
   coinex: [
     /* all empty addresses
@@ -573,34 +560,34 @@ module.exports = {
     '1Ew9SPwBHY8GjHd3uBxhtGcvVmyBN7PHcw',
     '1LYrQCjUf54vf9G4qwFpJQ9RCyL2DprPqQ',
     */
-    'bc1qqz623jyqdsh2w5y5kdmzk2ws6mzr2mt2etv5gx',
-    '31nXEifPqiUL3hqfTP5epd93s3ShNLnWL4'
+    "bc1qqz623jyqdsh2w5y5kdmzk2ws6mzr2mt2etv5gx",
+    "31nXEifPqiUL3hqfTP5epd93s3ShNLnWL4",
   ],
   coinsquare: [
-    '1P7cDFGeWm6ezez6XGXTAjvm8qcsGiMXe7',
-    'bc1q0k5rpdwf7wnq3fuk7dfjqd59p3ke7ufqmlkfp4',
-    'bc1qdstretw2uvhjen7hvgaya3nsjgr430x9jhqf4a',
-    'bc1qez6ezccleuac4dnj5cpexz5mz3j0j3j655j6qn',
-    'bc1qg6a9kpmge0fdwtrymjvq3cydfzgpcge7e05e7z',
-    'bc1qg8fywv20ztsp0edtf53zpsnxeu5cqxrmdwmtjd',
-    'bc1qm5mqpgtt2ufucfdvhu5xcdgs3vzehwu62wsyqy',
-    'bc1qmkkejzrq7ayfjpy7w8gmkhd3uwcy7nryr5apch',
-    'bc1qsjc50kf72r4q44ac28v3vrukaxjg4w30rh0cmm',
-    'bc1qyz9mssutu8xxcgjvsucz38qvxt7hxwtnm5eh8k',
+    "1P7cDFGeWm6ezez6XGXTAjvm8qcsGiMXe7",
+    "bc1q0k5rpdwf7wnq3fuk7dfjqd59p3ke7ufqmlkfp4",
+    "bc1qdstretw2uvhjen7hvgaya3nsjgr430x9jhqf4a",
+    "bc1qez6ezccleuac4dnj5cpexz5mz3j0j3j655j6qn",
+    "bc1qg6a9kpmge0fdwtrymjvq3cydfzgpcge7e05e7z",
+    "bc1qg8fywv20ztsp0edtf53zpsnxeu5cqxrmdwmtjd",
+    "bc1qm5mqpgtt2ufucfdvhu5xcdgs3vzehwu62wsyqy",
+    "bc1qmkkejzrq7ayfjpy7w8gmkhd3uwcy7nryr5apch",
+    "bc1qsjc50kf72r4q44ac28v3vrukaxjg4w30rh0cmm",
+    "bc1qyz9mssutu8xxcgjvsucz38qvxt7hxwtnm5eh8k",
   ],
   coinw: [
-    '14Z9KSmCo1UjvBiXj2j9er35GmGmaFxsmE',
-    '1KYBKqRjGbRynSiyoiHndULssXrEeWhvU8',
+    "14Z9KSmCo1UjvBiXj2j9er35GmGmaFxsmE",
+    "1KYBKqRjGbRynSiyoiHndULssXrEeWhvU8",
   ],
   cryptoCom: [
-    'bc1qpy4jwethqenp4r7hqls660wy8287vw0my32lmy',
-    '3LhhDLBVWBZChNQv8Dn4nDKFnCyojG1FqN',
-    '3QsGsAXQ4rqRNvh5pEW55hf3F9PEyb7rVq',
-    'bc1qr4dl5wa7kl8yu792dceg9z5knl2gkn220lk7a9',
-    'bc1q4c8n5t00jmj8temxdgcc3t32nkg2wjwz24lywv',
-    '14m3sd9HCCFJW4LymahJCKMabAxTK4DAqW',
-    'bc1qjqy709gqpse60hdsm2d2v0dzzu7yp5dej7fdrpl2x3taccvujq4s0vzsyd',
-    'bc1qcdqj2smprre85c78d942wx5tauw5n7uw92r7wr'
+    "bc1qpy4jwethqenp4r7hqls660wy8287vw0my32lmy",
+    "3LhhDLBVWBZChNQv8Dn4nDKFnCyojG1FqN",
+    "3QsGsAXQ4rqRNvh5pEW55hf3F9PEyb7rVq",
+    "bc1qr4dl5wa7kl8yu792dceg9z5knl2gkn220lk7a9",
+    "bc1q4c8n5t00jmj8temxdgcc3t32nkg2wjwz24lywv",
+    "14m3sd9HCCFJW4LymahJCKMabAxTK4DAqW",
+    "bc1qjqy709gqpse60hdsm2d2v0dzzu7yp5dej7fdrpl2x3taccvujq4s0vzsyd",
+    "bc1qcdqj2smprre85c78d942wx5tauw5n7uw92r7wr",
   ],
   deribit: [
     // from https://insights.deribit.com/exchange-updates/proof-of-reserves-deribit/
@@ -612,7 +599,7 @@ module.exports = {
     "1MdrdcEzfiJdvs6eVSwUx6bWboPX8if5U3",
     "35WHp4Hid61peyH4tuhNunwRj2gtNB41Lo",
     "34ZHV8dd6uucEUABUydWpKi6F4qKQntEUf",
-    // added on the 26/06/2024 
+    // added on the 26/06/2024
     "bc1qzwhw94uldd3c8736lsxrda6t6x56030f8zk8nr",
     "bc1qrmuxak470z7zch5f3gz05dc6h4ngwqdq4wx80w",
     "bc1qf6lm99tp5p27hsmyskve236nsv32lnfwt4h8wk",
@@ -630,49 +617,45 @@ module.exports = {
     "3AAUBbKJorvNhEUFhKnep9YTwmZECxE4Nk",
     "3PjNaSeP8GzLjGeu51JR19Q2Lu8W2Te9oc",
     "3NbdrezMzAVVfXv5MTQJn4hWqKhYCTCJoB",
-    "34VXKa5upLWVYMXmgid6bFM4BaQXHxSUoL"
+    "34VXKa5upLWVYMXmgid6bFM4BaQXHxSUoL",
   ],
   mtGoxEntities: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
-    'bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp',
-    'bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs',
-    'bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg'
+    "bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp",
+    "bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs",
+    "bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg",
   ],
   silkroadFBIEntities: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
-    'bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp',
-    'bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs',
-    'bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg'
+    "bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp",
+    "bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs",
+    "bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg",
   ],
-  fastex: [
-    'bc1qs7yen7ljpvyw7vn58ql6zfaddqf4rcjalsgmt5'
-  ],
+  fastex: ["bc1qs7yen7ljpvyw7vn58ql6zfaddqf4rcjalsgmt5"],
   fire: [
-    'bc1q36c0rp4ydl6uvvguhw9nr7njm49addzkgftqev',
-    'bc1q3z0khuld6nd7esv46nxj9ketteqw9qz86peyeh',
-    'bc1q4hz59t7v0uxujuyrhp9679uppur7ke9u3vshvd',
-    'bc1qdlrh7ycyqxe62vk5m70y353vmep9ullxx5j9ar',
+    "bc1q36c0rp4ydl6uvvguhw9nr7njm49addzkgftqev",
+    "bc1q3z0khuld6nd7esv46nxj9ketteqw9qz86peyeh",
+    "bc1q4hz59t7v0uxujuyrhp9679uppur7ke9u3vshvd",
+    "bc1qdlrh7ycyqxe62vk5m70y353vmep9ullxx5j9ar",
   ],
-  flipster: [
-    "31iAUikiV7yKEYBzbA1iHPcanHNsLBFe8C"
-  ],
+  flipster: ["31iAUikiV7yKEYBzbA1iHPcanHNsLBFe8C"],
   gateIo: [
-    '14kmvhQrWrNEHbrSKBySj4qHGjemDtS3SF',
-    '162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw',
-    '1EkkGXR7dTbZbrKFKoe6YEP4gj4GzMeKvw',
-    '1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9',
-    '1HpED69tpKSaEaWpY3Udt1DtcVcuCUoh2Y',
-    '3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M',
-    '1ECeVF6wfbiihCRrrpRnkbwrWsZfYmixMG',
-    '1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG',
-    '1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv',
-    '1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR',
+    "14kmvhQrWrNEHbrSKBySj4qHGjemDtS3SF",
+    "162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw",
+    "1EkkGXR7dTbZbrKFKoe6YEP4gj4GzMeKvw",
+    "1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9",
+    "1HpED69tpKSaEaWpY3Udt1DtcVcuCUoh2Y",
+    "3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M",
+    "1ECeVF6wfbiihCRrrpRnkbwrWsZfYmixMG",
+    "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
+    "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
+    "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
-    "1DywJMqHHMWuP7xyfkRqJZCEe7GdEKFRcp"
+    "1DywJMqHHMWuP7xyfkRqJZCEe7GdEKFRcp",
   ],
   hashkeyExchange: [
     "bc1qqe394jlqq86muq23d4vrnhzzvcv8jnepgt8lx7",
@@ -682,12 +665,8 @@ module.exports = {
     "18oxobhCNKnHjb7nEFDmPdXbCZthFWezrm",
     "bc1q9d5lq9psmkx9rtgewjgez7csg45faak2cccew8", // 2025-05-26
   ],
-  hibt: [
-    "bc1qpxntlx09kqvpwl7vmjw9f28yvytdqkdx8xh63w"
-  ],
-  hotbit: [
-    "1MiFZMJkFMhMrubjjo6f5oEhh7XgSwXWgp"
-  ],
+  hibt: ["bc1qpxntlx09kqvpwl7vmjw9f28yvytdqkdx8xh63w"],
+  hotbit: ["1MiFZMJkFMhMrubjjo6f5oEhh7XgSwXWgp"],
   huobi: [
     "12qTdZHx6f77aQ74CPCZGSY47VaRwYjVD8",
     "143gLvWYUojXaWZRrxquRKpVNTkhmr415B",
@@ -703,61 +682,67 @@ module.exports = {
     "1ENWYLQZJRAZGtwBmoWrhmTtDUtJ5LseVj",
   ],
   kleverExchange: [
-    'bc1qze8pn5vywzk8enqdr9ve28lyas23kurzd37027',
-    'bc1qgy5zyuvsw5wnt5lrx3m62tt2pmdl69avd5vw6n',
-    'bc1qk4l4u3lh7rrufsw0z6vmkln5kesf0a9q0srnkr'
+    "bc1qze8pn5vywzk8enqdr9ve28lyas23kurzd37027",
+    "bc1qgy5zyuvsw5wnt5lrx3m62tt2pmdl69avd5vw6n",
+    "bc1qk4l4u3lh7rrufsw0z6vmkln5kesf0a9q0srnkr",
   ],
   korbit: [
-    '1JtAupan5MSPXxSsWFiwA79bY9LD2Ga1je',
-    '3E8BTrBB7jxAemyUqSnN4YFLMC22cShZJZ',
-    '3GoBetHTvfnaRNQbR4yy5YNUjX4d8mTQKK',
-    'bc1q09j44e0xxxusj3zsan20x7tuvtumxfv9smlq27t0nwp57gxf7htqq6m9lj',
-    'bc1q0uffd8egas4w87dxq998ttfl6j3jtw6k7cafce9v4mvr5qc9tvfq9czqk9',
-    'bc1q33m8td986p3vcnap9zqpx3d8v8zujtkvqacsya5xfvf945vmvxzqth4h4t',
-    'bc1q3yn06lfl8ayjukya52ksff0uaveurfc8lm3ftdgu8ywvwanx8lqswj7w9u',
-    'bc1q4sv2fxlp6w08wkq8ywmughxkm7n75d2fmrgnmvwun6rhepyknjxqm99v4x',
-    'bc1q7fww9657ts2au45wh0ed39rjze6ja93z0498z4j89pqjky266wzs0sz8ka',
-    'bc1q9pnwfyd4jtkulyk4w057wsdjhykaw6fftw06k2cn2m3y7jlsfe2qvxvm8e',
-    'bc1qa8may4g0yzezjyesqcq0mwggy5wwzl0yhs0a8tk9ucej5qg6ujfqscv2jq',
-    'bc1qgkx4ee8ac3as5y4ddhw6uedyk9adsywdzgc0fzxv304lcrh4qs9sn96agt',
-    'bc1qku6z53kuyaj9r898kj6esqnwz7wke82mwgw43vhu33ld7sx3200s2u9p9x',
-    'bc1ql0p3klhr2d8z07ja3t5d5dnxrenhp4gcjeszxpfflr08zaqqx5zqpkeqnl',
-    'bc1qnerwvz93pcj653r5yd4hnd2d7np2drhdhyruj7qdvl3psc5wnf0q6x9me4',
-    'bc1qs9ut74nue7vjknz2eqxegmtuzqhjzx9y8tzjymvlg05v8a5ffr5qz402cx',
-    'bc1qsk6h7d2l7e7r2a8krlxjn6wdnhhszyrtzcugdsfa5zz4syajzl5spd52h5',
-    'bc1qsmqvkwrsy5xw2hm885l5fv7s2hxzauz5fn9jayfmd86305wehrts2lztgs',
-    'bc1qtlen0nuvln3aqcn2r3nljshdmzakq7z5z4rexpk23mj8u8lmc8ysc29jct',
-    'bc1qzdt5z4f46jak59jku5jmvv3f2ru20htqs7jhy0whazgd5v4626eq4vkxqz',
-    'bc1qzu4lnzfpskwsvnyvzud9a7ru4d2ft7whqvl5d3kskxxhgeupnjjquzvt97',
+    "1JtAupan5MSPXxSsWFiwA79bY9LD2Ga1je",
+    "3E8BTrBB7jxAemyUqSnN4YFLMC22cShZJZ",
+    "3GoBetHTvfnaRNQbR4yy5YNUjX4d8mTQKK",
+    "bc1q09j44e0xxxusj3zsan20x7tuvtumxfv9smlq27t0nwp57gxf7htqq6m9lj",
+    "bc1q0uffd8egas4w87dxq998ttfl6j3jtw6k7cafce9v4mvr5qc9tvfq9czqk9",
+    "bc1q33m8td986p3vcnap9zqpx3d8v8zujtkvqacsya5xfvf945vmvxzqth4h4t",
+    "bc1q3yn06lfl8ayjukya52ksff0uaveurfc8lm3ftdgu8ywvwanx8lqswj7w9u",
+    "bc1q4sv2fxlp6w08wkq8ywmughxkm7n75d2fmrgnmvwun6rhepyknjxqm99v4x",
+    "bc1q7fww9657ts2au45wh0ed39rjze6ja93z0498z4j89pqjky266wzs0sz8ka",
+    "bc1q9pnwfyd4jtkulyk4w057wsdjhykaw6fftw06k2cn2m3y7jlsfe2qvxvm8e",
+    "bc1qa8may4g0yzezjyesqcq0mwggy5wwzl0yhs0a8tk9ucej5qg6ujfqscv2jq",
+    "bc1qgkx4ee8ac3as5y4ddhw6uedyk9adsywdzgc0fzxv304lcrh4qs9sn96agt",
+    "bc1qku6z53kuyaj9r898kj6esqnwz7wke82mwgw43vhu33ld7sx3200s2u9p9x",
+    "bc1ql0p3klhr2d8z07ja3t5d5dnxrenhp4gcjeszxpfflr08zaqqx5zqpkeqnl",
+    "bc1qnerwvz93pcj653r5yd4hnd2d7np2drhdhyruj7qdvl3psc5wnf0q6x9me4",
+    "bc1qs9ut74nue7vjknz2eqxegmtuzqhjzx9y8tzjymvlg05v8a5ffr5qz402cx",
+    "bc1qsk6h7d2l7e7r2a8krlxjn6wdnhhszyrtzcugdsfa5zz4syajzl5spd52h5",
+    "bc1qsmqvkwrsy5xw2hm885l5fv7s2hxzauz5fn9jayfmd86305wehrts2lztgs",
+    "bc1qtlen0nuvln3aqcn2r3nljshdmzakq7z5z4rexpk23mj8u8lmc8ysc29jct",
+    "bc1qzdt5z4f46jak59jku5jmvv3f2ru20htqs7jhy0whazgd5v4626eq4vkxqz",
+    "bc1qzu4lnzfpskwsvnyvzud9a7ru4d2ft7whqvl5d3kskxxhgeupnjjquzvt97",
+    "161AnGzEDJvwfZ6kW5maWigyMvN4vYWyq7",
+    "1izotKDuwjVdKSdMmatLaUx7iZf39WF3u",
+    "1Q7Xi7BdSwqEozSc8zneH7F6MTsYxv2MhV",
+    "1893nTioDembAdRTbx1V4EqYgsfs4nVo6i",
+    "15VHjDwgzYoGTQdxUH7rJw5zvzb3y143Ap",
+    "1D5a76Rn9VV8iGS5AV7jmMfJTQcPPYuaey",
   ],
   kraken: [
-    'bc1qnhmemsqfhycvp6g50v732h7wfwdt68el4ux5ttu8xwsrzngmxv0qr55aga',
-    'bc1qa5aux0l2c3l99tpmd9c85770kqpksg3g6dxaw03jj6lphnwy4lqq68xfgc',
-    'bc1q3gqqnn9hr0uachfk6rv3qhf3pp9z8a4z63ksc5qu0c2vvtykqd9qj3fyum',
-    'bc1qplr053c80nzlqapuatfslyhmns6sfn32qzz3xkdn36jjryw8vsys8y7wlc',
-    'bc1qhxv3pg2hsnw3m9jukuc6erjwwd03rzwhd2k6zh5uf6s2lwpuv3rq9zefru',
-    'bc1q08n37tm63z3f0myqe6zjx7ymtng8c9qedpwpplq95qkmx0cpke7qyz4y8v',
-    'bc1q02cq8du8r7ktuy5l0ltc4cv82xnaw4upaaw8y4rq6uycdp0k5nmquljtzk',
-    'bc1qcf9qe8ytx5qlcq0ft4vm2xm3fyfvurrkende46hpmwwnzpctfu3szxpve2',
-    'bc1qrj5vg73fxs6h6pmdjld387j5szkswc2y39rfutw8gl93h647wpksukyln9',
-    'bc1q9hqaqzyf6zsd330pkvtq5uxcxprzr368zdsxx5srtep7kepx523q2gd0ef',
-    'bc1q36l8mssxdlncj7njkqvayv3jumked9jdtjxete66cxnzluf4j0msjm4w80',
-    'bc1qs8cyln26t2f5rwu2frnqvtltfxt0qqql0elmhrpsexlzveap82eqtyvsgu',
-    'bc1qcds58swh4g6zsdmws9ltcdpqz4l44utu5wv9vfpmemps3whgdacqkakrk0',
-    'bc1q75tsfq2c5cqp2ss32qksmnzd9yea2mjsjktdmrz900dcmg43ck4s66sgjx',
+    "bc1qnhmemsqfhycvp6g50v732h7wfwdt68el4ux5ttu8xwsrzngmxv0qr55aga",
+    "bc1qa5aux0l2c3l99tpmd9c85770kqpksg3g6dxaw03jj6lphnwy4lqq68xfgc",
+    "bc1q3gqqnn9hr0uachfk6rv3qhf3pp9z8a4z63ksc5qu0c2vvtykqd9qj3fyum",
+    "bc1qplr053c80nzlqapuatfslyhmns6sfn32qzz3xkdn36jjryw8vsys8y7wlc",
+    "bc1qhxv3pg2hsnw3m9jukuc6erjwwd03rzwhd2k6zh5uf6s2lwpuv3rq9zefru",
+    "bc1q08n37tm63z3f0myqe6zjx7ymtng8c9qedpwpplq95qkmx0cpke7qyz4y8v",
+    "bc1q02cq8du8r7ktuy5l0ltc4cv82xnaw4upaaw8y4rq6uycdp0k5nmquljtzk",
+    "bc1qcf9qe8ytx5qlcq0ft4vm2xm3fyfvurrkende46hpmwwnzpctfu3szxpve2",
+    "bc1qrj5vg73fxs6h6pmdjld387j5szkswc2y39rfutw8gl93h647wpksukyln9",
+    "bc1q9hqaqzyf6zsd330pkvtq5uxcxprzr368zdsxx5srtep7kepx523q2gd0ef",
+    "bc1q36l8mssxdlncj7njkqvayv3jumked9jdtjxete66cxnzluf4j0msjm4w80",
+    "bc1qs8cyln26t2f5rwu2frnqvtltfxt0qqql0elmhrpsexlzveap82eqtyvsgu",
+    "bc1qcds58swh4g6zsdmws9ltcdpqz4l44utu5wv9vfpmemps3whgdacqkakrk0",
+    "bc1q75tsfq2c5cqp2ss32qksmnzd9yea2mjsjktdmrz900dcmg43ck4s66sgjx",
   ],
   latoken: [
     "bc1q48amr6l7dvacdppgucvnswwuyleaqh4dus8z8h",
     "bc1q2cgh9nxn7cqmqhk4hc5fu6mju8nzy9a20qqqh8", //cold
-    "bc1qw5fc9ml9vm4xq5c6xkcdu3vtwyw4gdn8lw0uwq"
+    "bc1qw5fc9ml9vm4xq5c6xkcdu3vtwyw4gdn8lw0uwq",
   ],
   maskex: [
     // this wallet was collected from https://blog.maskex.com/news/announcements/embracing-transparency-maskex-reveals-wallet-addresses
-    "39DUz1NCkLu25GczWiAjjgZBu4mUjKbdNA"
+    "39DUz1NCkLu25GczWiAjjgZBu4mUjKbdNA",
   ],
   mento: [
-    '38EPdP4SPshc5CiUCzKcLP9v7Vqo5u1HBL',
-    '3KWX93e2zPPQ2eWCsUwPAB6VhAKKPLACou'
+    "38EPdP4SPshc5CiUCzKcLP9v7Vqo5u1HBL",
+    "3KWX93e2zPPQ2eWCsUwPAB6VhAKKPLACou",
   ],
   mexcCex: [
     "13uZyaPbt4rTwYQ8xWFySVUzWH3pk2P5c7",
@@ -779,20 +764,20 @@ module.exports = {
     "36HfdAQpCsLEfGf2ghpEh1DzYfB2ScP2Kb",
     "3JncVutg4VK229YuwPDEjM3YWoSiAYDUjN",
     "377LXrSqGXXSiajJwnPKPRA4pFUwqoqg66",
-    '3Byv6jsis7uoRxeunwNAeTvoL8V5akjdK9',
-    '3GvQX1J9VuAB9DyA8HZgZEoURwMZFQqDmK',
-    'bc1qnzf53fl4a0lh00p9207c456xkk9fmgdnm6tyky',
-    '1Euk9cnQm49axFr2sTMaytnYcmBz5oDhZ3',
-    '1MDVjZdX8QD212pT8Z8EMP7DuFQHKqN3mx',
-    '19KYQDpyssRUtpfa4pfAWiNQLeysThd1us',
-    '1NEQFpjSqRMWuHLTrouSbmSgXuJr8zPCN7',
-    '17wgJkQ8v66fXTUawQS3sohEfzP4CCD8Xu',
-    '1Ak5Zk6P3Y7AbrdhWHif7GmEJhd6FqAS9J',
-    'bc1qmklhudjcrz04kgqexwed35faehanvswqdg95k2',
-    'bc1qtdptfrd0erwxsa7xrh97g2rxtm3wy7yetv4648',
-    'bc1qar3hvdpfqy388pkrp95ukewuxsr600wvyf0lxt',
-    'bc1qfs5qwymqcwtdtwjkac4z5h99r6dp4wwvvcfxyr',
-    'bc1qdt0dgff2u8y5pyj525k3qt9zdqyzy4kzznjrl8',
+    "3Byv6jsis7uoRxeunwNAeTvoL8V5akjdK9",
+    "3GvQX1J9VuAB9DyA8HZgZEoURwMZFQqDmK",
+    "bc1qnzf53fl4a0lh00p9207c456xkk9fmgdnm6tyky",
+    "1Euk9cnQm49axFr2sTMaytnYcmBz5oDhZ3",
+    "1MDVjZdX8QD212pT8Z8EMP7DuFQHKqN3mx",
+    "19KYQDpyssRUtpfa4pfAWiNQLeysThd1us",
+    "1NEQFpjSqRMWuHLTrouSbmSgXuJr8zPCN7",
+    "17wgJkQ8v66fXTUawQS3sohEfzP4CCD8Xu",
+    "1Ak5Zk6P3Y7AbrdhWHif7GmEJhd6FqAS9J",
+    "bc1qmklhudjcrz04kgqexwed35faehanvswqdg95k2",
+    "bc1qtdptfrd0erwxsa7xrh97g2rxtm3wy7yetv4648",
+    "bc1qar3hvdpfqy388pkrp95ukewuxsr600wvyf0lxt",
+    "bc1qfs5qwymqcwtdtwjkac4z5h99r6dp4wwvvcfxyr",
+    "bc1qdt0dgff2u8y5pyj525k3qt9zdqyzy4kzznjrl8",
   ],
   mtGox: [
     "17Tf4bVQaCzwWrDWGRPC97RLCHnU4LY8Qr",
@@ -873,11 +858,11 @@ module.exports = {
     "1Pq7hooZbEAz5y3QMnqFY8C5xqTdrjUwcA",
     "1PRXQEoL8vzEzoJJ9hbtAP6NaV2daccAUn",
     "1PxGTuJzDx1ceFHx4Z5CHaWuhiPBNovmZD",
-    "1NA3Tj4b1jtx9eGELe31Jw4DrzTqKP3ayH" //https://www.cryptoground.com/mtgox-cold-wallet-monitor/
+    "1NA3Tj4b1jtx9eGELe31Jw4DrzTqKP3ayH", //https://www.cryptoground.com/mtgox-cold-wallet-monitor/
   ],
   nbx: [
-    'bc1qd79ypayqr03lmvcqc40udn6yuq4mve34ychy6a',
-    'bc1qgxrcuzn62qjk3e3echysa9srg87la26x0qn2sa',
+    "bc1qd79ypayqr03lmvcqc40udn6yuq4mve34ychy6a",
+    "bc1qgxrcuzn62qjk3e3echysa9srg87la26x0qn2sa",
   ],
   nonkyc: [
     // "bc1qy8xx8fcsmdlc447ls4wzw2tn3y6c6cy64wckhz"
@@ -923,43 +908,39 @@ module.exports = {
     "bc1qxx3ehup2yet758ve8ft483tq9u5anw2k0trqps",
     "bc1qcwk60napcfcljv6phg69gfyfmp3emsgdj9cn5v",
     "bc1q4rtnrtnu829eet3m27huh6ld7x0xczjxd5dg5r",
-    "bc1q7vfv3h99vxwu300qej6x2qdfsn58kq6nc9hec6"
+    "bc1q7vfv3h99vxwu300qej6x2qdfsn58kq6nc9hec6",
   ],
   probit: [
     "19EgVpboqNjortWyhJSDAGRvHDtduqiSfr",
     "19AtrEvJv7UY75tvWkXMxLUAYibxpZhFfN",
-    "17PpCEuQUT7xxP1ocfhvFdwQyrB5dG1dQP"
+    "17PpCEuQUT7xxP1ocfhvFdwQyrB5dG1dQP",
   ],
   robinhood: [
     "bc1qprdf80adfz7aekh5nejjfrp3jksc8r929svpxk",
     "bc1qmxcagqze2n4hr5rwflyfu35q90y22raxdgcp4p",
-    "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2"
+    "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2",
   ],
-  rosenBridge: [
-    "bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t"
-  ],
-  rskBridge: [
-    "3GQ87zLKyTygsRMZ1hfCHZSdBxujzKoCCU"
-  ],
+  rosenBridge: ["bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t"],
+  rskBridge: ["3GQ87zLKyTygsRMZ1hfCHZSdBxujzKoCCU"],
   silkroad: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
-    'bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp',
-    'bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs',
-    'bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg'
+    "bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp",
+    "bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs",
+    "bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg",
   ],
   swissborg: [
-    '18DowXoMUQT5EU8zPTDTrq4hrwmi8ddCcc',
-    'bc1qfu6su3qz4tn0et634mv7p090a0cgameq6rdvuc',
-    'bc1qutkfwnuq4v0zdkenqt5vyuxlrmsezldzue5znc',
-    '1Mgs8zLJ7JyngcNRUscayyPHnnYJpJS5x2',
-    'bc1qc8ee9860cdnkyej0ag5hf49pcx7uvz89lkwpr9',
-    '1JgXCkk3gjmgfgjT2vvnjpvqfvNNTFCRpM',
-    'bc1qkgrz5mgsvze06mkexdqghw8udkcv88mmuvaxzz',
-    '1J2xea7M6N2XiQCuN4TuiLPV1TQ2eAwzoa',
-    'bc1qhtvsrdu6a8jddqjnudugvzhqwdg8kdyjf2yfl6',
-    'bc1qv20znwswjzrqffjdkfl2ydahs8439d57r8ctrd',
-    '19zShA6yNj4xf6TF3kQLozfNW3dwEbFikY',
+    "18DowXoMUQT5EU8zPTDTrq4hrwmi8ddCcc",
+    "bc1qfu6su3qz4tn0et634mv7p090a0cgameq6rdvuc",
+    "bc1qutkfwnuq4v0zdkenqt5vyuxlrmsezldzue5znc",
+    "1Mgs8zLJ7JyngcNRUscayyPHnnYJpJS5x2",
+    "bc1qc8ee9860cdnkyej0ag5hf49pcx7uvz89lkwpr9",
+    "1JgXCkk3gjmgfgjT2vvnjpvqfvNNTFCRpM",
+    "bc1qkgrz5mgsvze06mkexdqghw8udkcv88mmuvaxzz",
+    "1J2xea7M6N2XiQCuN4TuiLPV1TQ2eAwzoa",
+    "bc1qhtvsrdu6a8jddqjnudugvzhqwdg8kdyjf2yfl6",
+    "bc1qv20znwswjzrqffjdkfl2ydahs8439d57r8ctrd",
+    "19zShA6yNj4xf6TF3kQLozfNW3dwEbFikY",
   ],
   toobit: [
     "3926KKKCqcLaWpAau73TMo19sNv23s1wji",
@@ -968,14 +949,12 @@ module.exports = {
     "bc1qfmg6286zvzes77359tnmvuqxftqxkz4l842yy5",
     "bc1qqdme8aca3xrpuy6y5nn2rxpyqwsm52sy89pup5",
     "bc1q6ln9rpknwmvaur2qrfeqztz7kjz003kzr3h30n",
-    "bc1qzzr6f2yh649nytecxt8z9nlex0nxrkxletelf0eqdf56tfuzn3wshthqg9"
+    "bc1qzzr6f2yh649nytecxt8z9nlex0nxrkxletelf0eqdf56tfuzn3wshthqg9",
   ],
-  indiaCovid: [
-    "bc1q220k2449fau0pxu9hfn28q3w4k99ep9hwsa5fa"
-  ],
+  indiaCovid: ["bc1q220k2449fau0pxu9hfn28q3w4k99ep9hwsa5fa"],
   wooCEX: [
-    'bc1qh78w4qq9v2dqntjtxne97kp9u2485jdqrfsghh',
-    'bc1qm4hycszv0v0qel3swxqyp57nkpnnrda4rc55lm'
+    "bc1qh78w4qq9v2dqntjtxne97kp9u2485jdqrfsghh",
+    "bc1qm4hycszv0v0qel3swxqyp57nkpnnrda4rc55lm",
   ],
   bitlayerBridge: [
     "132Cka5Vdw9FcFX3eb28xikKAMvhuMJGwi",
@@ -986,77 +965,72 @@ module.exports = {
     "bc1p7agkadaau66jtva9n8k5pg3lsctuyqur8a2l5y9hzwqkh5nlmd0skuhws3",
     "bc1q6are922g2ltnmdll0mesrmdzn5w2xguu7czred",
     "bc1qcpw6j7j72peplt0j34cd8uu5a886t6kkm57zgn",
-    "bc1p4yc7cs24v5z5fxxdlj50zke0f3jwnngklswrpfcea9r3egmsmc6qvxjwpu"
+    "bc1p4yc7cs24v5z5fxxdlj50zke0f3jwnngklswrpfcea9r3egmsmc6qvxjwpu",
   ],
   arkhamExchange: [
-    'bc1qlnkyrrupehgw5evu43erlgkhhagv0uj3yyhacvc65n3ud6qeas0sa958ps'
+    "bc1qlnkyrrupehgw5evu43erlgkhhagv0uj3yyhacvc65n3ud6qeas0sa958ps",
   ],
   nerveNetworkBridge: [
-    'bc1q7l4q8kqekyur4ak3tf4s2rr9rp4nhz6axejxjwrc3f28ywm4tl8smz5dpd',
-    'bc1qzhwyexqzfz4d0mu7ktdad63wfssg08cek9sgjp'
+    "bc1q7l4q8kqekyur4ak3tf4s2rr9rp4nhz6axejxjwrc3f28ywm4tl8smz5dpd",
+    "bc1qzhwyexqzfz4d0mu7ktdad63wfssg08cek9sgjp",
   ],
   nexusbtc: [
-    '31oxjGsmepoq2cipeGQ2zKZRRBCf1m3kAC',
-    '15VcywQLk9bR7kXJR1xvA6U16GBJ6nzPm6',
-    '116EytSxns3SaGU16YQLbw4P7bgbNvtpPk',
-    'bc1qjav0ce3rc5n6espfjndrxck4s44sv66nagccsfqgu7yvwh539nlq6myyad',
-    'bc1q39u0yxprsz6ucq93pgtxksk7ncr4900ypvkwcw',
-    'bc1qy05dur0c4rk78r4mpl4r99glt9x6vs2w756gud',
+    "31oxjGsmepoq2cipeGQ2zKZRRBCf1m3kAC",
+    "15VcywQLk9bR7kXJR1xvA6U16GBJ6nzPm6",
+    "116EytSxns3SaGU16YQLbw4P7bgbNvtpPk",
+    "bc1qjav0ce3rc5n6espfjndrxck4s44sv66nagccsfqgu7yvwh539nlq6myyad",
+    "bc1q39u0yxprsz6ucq93pgtxksk7ncr4900ypvkwcw",
+    "bc1qy05dur0c4rk78r4mpl4r99glt9x6vs2w756gud",
   ],
   tapbit: [
     "1HSRxFoxC7HYbNutGyxCNXmGT1FG3M2Bt3",
-    "1PUvhYpjgvgjzmiwSCuGNqKQjKde29eFbH"
+    "1PUvhYpjgvgjzmiwSCuGNqKQjKde29eFbH",
   ],
-  jbtc: [
-    'bc1qmukuv7j57umsd5tgg9fw88eqap57rzphkfckyp',
-  ],
+  jbtc: ["bc1qmukuv7j57umsd5tgg9fw88eqap57rzphkfckyp"],
   coin8: [
-    '114atFBQoi2nWP5EQKUxmDyiY22Bs4SHkC',
-    '13FTY8oRv6ccsQv4HxmTKSLLvhNBBy5F6x',
-    '1HvVJPnwzHYoQsZyDYBBw1NiH5EuTFDzCB',
-    '1JPkYurLo1CdXShwbUfc8C6LdrXBcYmBrp',
-    '1KdC8jfRX6am6WCtqZP2UV98Czaxmtp6c',
-    '1KxZyrF1SqfNw38fgzYSQhW22JKoJieVtU',
-    'bc1q4w3drxrdhcsxlrhrqpl7kecesn53pf455muj30',
-    '1NW9M4ExnX5DGmdnrp5c3iDU2WNt69RNL3'
+    "114atFBQoi2nWP5EQKUxmDyiY22Bs4SHkC",
+    "13FTY8oRv6ccsQv4HxmTKSLLvhNBBy5F6x",
+    "1HvVJPnwzHYoQsZyDYBBw1NiH5EuTFDzCB",
+    "1JPkYurLo1CdXShwbUfc8C6LdrXBcYmBrp",
+    "1KdC8jfRX6am6WCtqZP2UV98Czaxmtp6c",
+    "1KxZyrF1SqfNw38fgzYSQhW22JKoJieVtU",
+    "bc1q4w3drxrdhcsxlrhrqpl7kecesn53pf455muj30",
+    "1NW9M4ExnX5DGmdnrp5c3iDU2WNt69RNL3",
   ],
   bitrue: [
     "18uhzy546Qz7CxRNkHohg4W9VSkfTkbSvY",
     "bc1pty75p9ejqvpzd3e9zg8eq973txu3eqxg2evmx7mm8wxxln72fyfqs2jass",
-    "bc1pfwf7eszm57uqlnfuctxl688aypzpes2dyc6eekxzwyfytte7xtdsyug6xw" // babylon staked btc by users
+    "bc1pfwf7eszm57uqlnfuctxl688aypzpes2dyc6eekxzwyfytte7xtdsyug6xw", // babylon staked btc by users
   ],
   // https://drive.google.com/drive/folders/17sUsAkpTq_1TPw2uNSPEg1rIeqMN-zn4
   // https://wiki.cygnus.finance/whitepaper/cygnus-omnichain-liquidity-validation-system-lvs/cygnus-lvs-integration/clbtc/security-transparency-and-risk-management
   cygnus: [
-    'bc1q54s2l5ky92fdsu0xscps0044je9nx2sh2mqss8',
-    'bc1qvelcezj27u3m8s0l0a5rql56manc4t839hxzzv',
-    'bc1qhze05vp40ywwpgw6sd7d3mgvc03hxa6l896k0z',
-    'bc1q45n4al3rhlg5m3k54ue0nu9w4apaw9eyndtd3k',
-    'bc1qmrvc9cqwgrez8vn4lyql696vsppymyhxat4eeg',
-    'bc1qatjrpuhf4u7956yvpnt9txfvmtf73ee92hc3d4',
-    'bc1qgv692f4xs0q0uxeaj7pfldw6a0tv39tltfl8yn',
-    'bc1qs96nx6qunenlwcqs8yftd0ktqess85pu9dgq7n',
-    'bc1qds987h4jvcxz6f6fvafjceme2gnn9ymejvxckj',
-    'bc1que7nlpgp2ht9tufazsr336gx7manvwrllmq6my',
-    'bc1qdrs2j8dklgrjtwve57p2aswzqspcwg0s03gja4',
-    'bc1qqsydcxgylkddccq0m42ahun7gghwhtpxekmfa9',
-    'bc1qldwk72rfel4022puypzp6a65vat2g7esncmqul',
-    'bc1qh5f8dujvxx7h443j6myv9l0jaguw2n52nplxwa',
-    'bc1qve59z5wkhg60wfmwyq23vxtyy2ytpk626x78nv',
-    'bc1qhrswrm3kx996404yxudde8x353klfsmqet3dx4',
-    'bc1qdu45tr94607y4935y8cgqgaa6w69am4qk32pqa',
-    'bc1qcjmn5knawm8kf0s74488mz0psa7yrrvz5xzhq7',
-    'bc1qkyekxghyh99kky9wt3ch2hn2uley2ld5ee0ng4',
+    "bc1q54s2l5ky92fdsu0xscps0044je9nx2sh2mqss8",
+    "bc1qvelcezj27u3m8s0l0a5rql56manc4t839hxzzv",
+    "bc1qhze05vp40ywwpgw6sd7d3mgvc03hxa6l896k0z",
+    "bc1q45n4al3rhlg5m3k54ue0nu9w4apaw9eyndtd3k",
+    "bc1qmrvc9cqwgrez8vn4lyql696vsppymyhxat4eeg",
+    "bc1qatjrpuhf4u7956yvpnt9txfvmtf73ee92hc3d4",
+    "bc1qgv692f4xs0q0uxeaj7pfldw6a0tv39tltfl8yn",
+    "bc1qs96nx6qunenlwcqs8yftd0ktqess85pu9dgq7n",
+    "bc1qds987h4jvcxz6f6fvafjceme2gnn9ymejvxckj",
+    "bc1que7nlpgp2ht9tufazsr336gx7manvwrllmq6my",
+    "bc1qdrs2j8dklgrjtwve57p2aswzqspcwg0s03gja4",
+    "bc1qqsydcxgylkddccq0m42ahun7gghwhtpxekmfa9",
+    "bc1qldwk72rfel4022puypzp6a65vat2g7esncmqul",
+    "bc1qh5f8dujvxx7h443j6myv9l0jaguw2n52nplxwa",
+    "bc1qve59z5wkhg60wfmwyq23vxtyy2ytpk626x78nv",
+    "bc1qhrswrm3kx996404yxudde8x353klfsmqet3dx4",
+    "bc1qdu45tr94607y4935y8cgqgaa6w69am4qk32pqa",
+    "bc1qcjmn5knawm8kf0s74488mz0psa7yrrvz5xzhq7",
+    "bc1qkyekxghyh99kky9wt3ch2hn2uley2ld5ee0ng4",
   ],
-  unitbtc: [
-    'bc1pdwu79dady576y3fupmm82m3g7p2p9f6hgyeqy0tdg7ztxg7xrayqlkl8j9',
-  ],
+  unitbtc: ["bc1pdwu79dady576y3fupmm82m3g7p2p9f6hgyeqy0tdg7ztxg7xrayqlkl8j9"],
   backpack: [
     "bc1pmrsvpcv8k5m5ts5js4jl0z30wndv2j90f3gm08et0xueftpwhxesjzfyea",
     "bc1qhv0g0jmt9pp578hkx4w8vus62sgwuc22z0vjpftgcf34533h2dwsrxmxds",
     "bc1q0gw7fexuwthyf9wwzrjn4h0flj5veflwgzdxx0727gt9upfk0cfqfjv42k",
     "bc1qfpk3fj2u9kaw8qq96snm72dws5hyxxym5tf8tn",
-
   ],
   coinbaseltc: [
     "LTbMyvoyfSuQNqG5cGihin6BCbiZay11rU",
@@ -1065,21 +1039,19 @@ module.exports = {
     "LP3k3DmN21xmCay3b5yReLKQKvViCnDPhi",
   ],
   prosper: [
-    "bc1qcrdvx3dvq35kawsp02033pwla244rr6hptg982" //https://app.prosper-fi.com/stats#dao-treasury
+    "bc1qcrdvx3dvq35kawsp02033pwla244rr6hptg982", //https://app.prosper-fi.com/stats#dao-treasury
   ],
-  hotcoin: [
-    "1DTxysZCJYZuHse8cYjZLdgciUAAsX23fy"
-  ],
+  hotcoin: ["1DTxysZCJYZuHse8cYjZLdgciUAAsX23fy"],
   orangex: [
     "17k46YbLif28mDx56VK33zPxGN2B2oJFaW",
     "1C7bgas1p8Xp58EXLipn85j2VLG9FQX9Bv",
     "1Dbn3vrKwsMQfz1Wn4Gpz5nPW75k8LAqLM",
     "1DsLvEYefkTFyZCLfiSucJRjEL5Qm2Moic",
-    "1EJ7W8ZTULqcacqrtgWxptRqyPwro9DVoi"
+    "1EJ7W8ZTULqcacqrtgWxptRqyPwro9DVoi",
   ],
   exmo: [
-    'bc1qa6ztklpcshk048mv5f2f877rudmyv2jaq05n5k',
-    'bc1qgq64fzjjk4rsh008rdq542hve5vmz2uaep7lmx'
+    "bc1qa6ztklpcshk048mv5f2f877rudmyv2jaq05n5k",
+    "bc1qgq64fzjjk4rsh008rdq542hve5vmz2uaep7lmx",
   ],
   esbtc: [
     "bc1qyyd3hmvtlfe7cu3z5gl8r6khkfsjclaure6pqp",
@@ -1114,19 +1086,15 @@ module.exports = {
     "bc1qxpae7fyhqj3886fn7scnn3ln3tp5qqll2g6yqq",
     "bc1q773em34zkr6ccvn5euam29tg2ct056ychpayrh",
     "bc1qf9nwqp05m85fdlt60c95mf8txtw5vk029ahela",
-    "bc1qvz02c57tfxnpgxk029sz0cf6xmp0e94w53xdll"
+    "bc1qvz02c57tfxnpgxk029sz0cf6xmp0e94w53xdll",
   ],
-  bimaCdp: [
-    "bc1q8q5ngue8697flt8yc52xrfppecf47jghhlvq8v96ukeaqz694y7q2tzca9"
-  ],
+  bimaCdp: ["bc1q8q5ngue8697flt8yc52xrfppecf47jghhlvq8v96ukeaqz694y7q2tzca9"],
   tzbtc: [
     "3NKsqccxthpCaVwraPnCWrabRV5aCcTfNM",
     "bc1qfezcal3rf7azajs75c96qaelmuqkpsust6g0qs6jja578amw0lpq98vnd2",
-    "bc1qn4xndkgx0df9jwv79uwrlreaq3luwh3thu5s2traqp3z9kufst6qqwh5tf"
+    "bc1qn4xndkgx0df9jwv79uwrlreaq3luwh3thu5s2traqp3z9kufst6qqwh5tf",
   ],
-  tothemoon: [
-    "bc1q50uxvgu5paqj22fg27s352wggev70xs9f8lhnk"
-  ],
+  tothemoon: ["bc1q50uxvgu5paqj22fg27s352wggev70xs9f8lhnk"],
   indodax: [
     "bc1q38fx9nxc0urh6dln2950j3eetedhwml0xhlfce",
     "bc1qvnk8xkw9esmujpjz00hs4706j3803s9nf5z2px",
@@ -1134,65 +1102,64 @@ module.exports = {
     "bc1q6jt6s62d4hkw5gc5zmzgd6556e23k2xpanedsp",
     "bc1qcygfu0neqgne5ptet9ea4ktm64xh6qklvhwvef",
   ],
-  river: [
-    "bc1qnques8jtyh2t3egwxzjys7ct26sexnujsfsrjz",
-  ],
+  river: ["bc1qnques8jtyh2t3egwxzjys7ct26sexnujsfsrjz"],
   echoMBTC: [
-    'bc1p2ecnyf8pgmq6u29h6csgvckj5mg6l36054p2vst0m0edxmg8dusquek4y9',
-    'bc1pc5regkaavr8nwk3tt72snnnyj56shc4ss4xn7y60u6mh88vcp03qmg2p2q'
+    "bc1p2ecnyf8pgmq6u29h6csgvckj5mg6l36054p2vst0m0edxmg8dusquek4y9",
+    "bc1pc5regkaavr8nwk3tt72snnnyj56shc4ss4xn7y60u6mh88vcp03qmg2p2q",
   ],
-  xbtc: [
-    'bc1q7mvqd5apnrngm36rwqlgk7nwkt5kwc37thzgd79puh55wscr42mqct7lss'
+  echoMonadEBTC: [
+    "bc1prx589such7z0qch5hgvvs6gvtzxuneyuuarp8hfhc9mcs9u26lqqk374tm",
+    "bc1que9dvsgwlm6vr5chrxm2gu586c5alnq3uxa4e2",
+    "bc1pg05lsdyzx8j5wastzk0svu84hdrvkel2zfq560a7the5vvjyp27svxwgyx",
+    "bc1qsxdn6hwlsezptz5urppq63qchp8lc5pfpv0fa4",
   ],
+  xbtc: ["bc1q7mvqd5apnrngm36rwqlgk7nwkt5kwc37thzgd79puh55wscr42mqct7lss"],
   leadbtc: [
-    'bc1ps0es0ycqk5ljgmraku7cyh3h6ksuylxvqpfgd8ut4ce4vvjksukq6pcah7',
-    'bc1qycv6pp9as73a5cm0quqwq70a0tuq4p8guyhuyk'
+    "bc1ps0es0ycqk5ljgmraku7cyh3h6ksuylxvqpfgd8ut4ce4vvjksukq6pcah7",
+    "bc1qycv6pp9as73a5cm0quqwq70a0tuq4p8guyhuyk",
   ],
   bitgetBtc: [
-    'bc1pvwjkr0724ckucdvrtxjzml9ka7jnzzjaejvwfnn8a2avvpnljthseg2a0e',
-    'bc1pxw4gtelg3lkmatdjmjxsp2kx22t44wyk0snkszhvw4prpygz8ajqaw03fs'
+    "bc1pvwjkr0724ckucdvrtxjzml9ka7jnzzjaejvwfnn8a2avvpnljthseg2a0e",
+    "bc1pxw4gtelg3lkmatdjmjxsp2kx22t44wyk0snkszhvw4prpygz8ajqaw03fs",
   ],
-  magicEden: [
-    '3P4WqXDbSLRhzo2H6MT6YFbvBKBDPLbVtQ'
-  ],
+  magicEden: ["3P4WqXDbSLRhzo2H6MT6YFbvBKBDPLbVtQ"],
   gateBtc: [
-    'bc1pjkxsx5sr9g6y2psjv680l40kewhf8xpnal96k9cncxgst7806kzqwxq9n4',
-    'bc1puk7pamvpvy5g4ccw8l0dl368jf5apauu384036yud9n2waq2xqysz0g6w3',
-    'bc1puglknm7e2hk5gdnu9rjx022g7rwc7xwegwdrgwspl07q55p6a3wq4y0rsj',
-    'bc1pg6t68yfcum3d2pp98h3h7sypra2yml03sa00hl7eqxe9zu6z48aqmq8t0s',
-    '1NwrvHiCFRnfkWsqX5yrWg6HK6GkM3gPWA',
-    'bc1p9tw7swmqtfpe8gj7llhvuun86esqs0va9wepwsljva00s8cu25fq3tr775',
-    'bc1p7p0re55adj45dacj83h2jyfz2ka0ghlph7ud8klgq0nc7c2a0d6sx3tcyv',
-    'bc1psd5djk3g7u69upaww2ds44dcs7rlnht4k8yz7xv9wlk3j5sfjz2qg7hc2n',
-    'bc1p6xexk4fmuzafc9ryflmn4ssfgtap0j3p0zrueyagfqnwfqc60mhsjrm0pd',
-    '17KesGyx3sW4afkRp2YJRERNKarCRdfRTZ',
-    '162jqywuy9wRtyyzVa5dbNnmnbuaz7YkAU',
-    '14yyRRiEMJ5q5LmDCH4Nf6Emx7UKhoRfxR',
-    '16pP3Pm2PEVZiMREQ6FJXieTWKE5ZMPfpU'
+    "bc1pjkxsx5sr9g6y2psjv680l40kewhf8xpnal96k9cncxgst7806kzqwxq9n4",
+    "bc1puk7pamvpvy5g4ccw8l0dl368jf5apauu384036yud9n2waq2xqysz0g6w3",
+    "bc1puglknm7e2hk5gdnu9rjx022g7rwc7xwegwdrgwspl07q55p6a3wq4y0rsj",
+    "bc1pg6t68yfcum3d2pp98h3h7sypra2yml03sa00hl7eqxe9zu6z48aqmq8t0s",
+    "1NwrvHiCFRnfkWsqX5yrWg6HK6GkM3gPWA",
+    "bc1p9tw7swmqtfpe8gj7llhvuun86esqs0va9wepwsljva00s8cu25fq3tr775",
+    "bc1p7p0re55adj45dacj83h2jyfz2ka0ghlph7ud8klgq0nc7c2a0d6sx3tcyv",
+    "bc1psd5djk3g7u69upaww2ds44dcs7rlnht4k8yz7xv9wlk3j5sfjz2qg7hc2n",
+    "bc1p6xexk4fmuzafc9ryflmn4ssfgtap0j3p0zrueyagfqnwfqc60mhsjrm0pd",
+    "17KesGyx3sW4afkRp2YJRERNKarCRdfRTZ",
+    "162jqywuy9wRtyyzVa5dbNnmnbuaz7YkAU",
+    "14yyRRiEMJ5q5LmDCH4Nf6Emx7UKhoRfxR",
+    "16pP3Pm2PEVZiMREQ6FJXieTWKE5ZMPfpU",
   ],
-  sodex: [
-    'bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju',
-  ],
+  sodex: ["bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju"],
   weex: [
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
-    "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb"
+    "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",
+    "bc1qeg5xn5plttr7w045apm92yx08c2swc6yw2vtj7",
   ],
   bydfi: [
-    'bc1qan8q94rc3hl2jfc0vn8vtfsen0r6e58q80dqf0',
-    '12F3fSv4zRmw7L1z5M1vFkdYabeETqxisp'
+    "bc1qan8q94rc3hl2jfc0vn8vtfsen0r6e58q80dqf0",
+    "12F3fSv4zRmw7L1z5M1vFkdYabeETqxisp",
   ],
   bytedex: [
-    '1EvrTWTxDqTSKBmsuRzyZAWbHC2zBxQThC',
-    '1EovnsPsskU15rQhoJJiKpUxQzufryvpGm',
-    '3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo',
-    '3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh'
+    "1EvrTWTxDqTSKBmsuRzyZAWbHC2zBxQThC",
+    "1EovnsPsskU15rQhoJJiKpUxQzufryvpGm",
+    "3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo",
+    "3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh",
   ],
-}
+};
 
 imports.forEach(([key, file]) => {
   try {
-    module.exports[key] = require(file)
+    module.exports[key] = require(file);
   } catch (e) {
-    console.error(`Error importing ${key} from ${file}:`, e)
+    console.error(`Error importing ${key} from ${file}:`, e);
   }
-})
+});
