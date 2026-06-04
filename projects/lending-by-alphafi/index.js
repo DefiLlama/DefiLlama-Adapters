@@ -10,7 +10,7 @@ function normalizeSuiType(typeName = '') {
 async function fetchMarkets() {
   return getDynamicFieldObjects({
     parent: marketsTableId,
-    idFilter: (i) => i.objectType === marketType,
+    idFilter: (i) => i.objectType.includes(marketType),
   });
 }
 
