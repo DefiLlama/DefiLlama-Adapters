@@ -2,10 +2,10 @@ const { sumTokensExport } = require('../helper/chain/cardano');
 
 // ADA Harvest - Cardano PlutusV3 flash loan vault + yield aggregator
 // Vault address (base address, delegates to a stake pool):
-//   addr1z993rpqdxcgnncqxjyy37kjy27f94gyvwcatg7x86wk8xjcgucktr6zta3rtuqlqam4395sry3vl5c7ss08m50qtnj6slx9svv
+//   addr1z9mhqtrnwpc76frp2xtgtfyt4lwzzdfwsye0uh335kycu4sgucktr6zta3rtuqlqam4395sry3vl5c7ss08m50qtnj6s5usxpa
 // Docs: https://ada-harvest.com
 
-const VAULT_ADDRESS = 'addr1z993rpqdxcgnncqxjyy37kjy27f94gyvwcatg7x86wk8xjcgucktr6zta3rtuqlqam4395sry3vl5c7ss08m50qtnj6slx9svv';
+const VAULT_ADDRESS = 'addr1z9mhqtrnwpc76frp2xtgtfyt4lwzzdfwsye0uh335kycu4sgucktr6zta3rtuqlqam4395sry3vl5c7ss08m50qtnj6s5usxpa';
 
 module.exports = {
   // Vault funds may later be deployed into Minswap/Liqwid, which have their own
