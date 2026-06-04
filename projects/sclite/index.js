@@ -36,7 +36,7 @@ const config = {
       "TQWHhijq5CrfKt8LGqsaqqz8TzMR1VY5rP", // SCLiTE Listing Fees (TRX)
     ],
   },
-  bchypher: {
+  bchyper: {
    owners: [
       "0x81F2b5344d1714072DD566cF3E27C733B17065F5", // SCLiTE CEX - HOT 1
       "0x444A16E4232a1d791C4afd7dd509ef33D81E66e8", // SCLiTE CEX - HOT 2
