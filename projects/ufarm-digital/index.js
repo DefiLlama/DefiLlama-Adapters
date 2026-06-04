@@ -50,7 +50,9 @@ async function addErc4626Tokens(api, tokensAndOwners) {
   ])
 
   assets.forEach((asset, i) => {
-    if (asset && amounts[i]) api.add(asset, amounts[i])
+    const amount = amounts[i] || activeCalls[i].balance
+    const normalizedAsset = asset?.toLowerCase()
+    if (asset && amount) api.add(normalizedAsset, amount)
   })
   return api.getBalances()
 }
