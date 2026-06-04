@@ -25,6 +25,36 @@ module.exports = {
   doublecounted: true,
 }
 
+async function addErc4626Tokens(api, tokensAndOwners) {
+  if (!tokensAndOwners.length) return api.getBalances()
+
+  const balances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: tokensAndOwners.map(([token, owner]) => ({ target: token, params: owner })),
+    permitFailure: true,
+  })
+  const activeCalls = []
+  balances.forEach((balance, i) => {
+    if (balance && balance !== '0') activeCalls.push({ token: tokensAndOwners[i][0], balance })
+  })
+
+  if (!activeCalls.length) return api.getBalances()
+
+  const [assets, amounts] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: activeCalls.map(i => i.token), permitFailure: true }),
+    api.multiCall({
+      abi: 'function convertToAssets(uint256 shares) view returns (uint256 assets)',
+      calls: activeCalls.map(i => ({ target: i.token, params: i.balance })),
+      permitFailure: true,
+    })
+  ])
+
+  assets.forEach((asset, i) => {
+    if (asset && amounts[i]) api.add(asset, amounts[i])
+  })
+  return api.getBalances()
+}
+
 Object.keys(config).forEach(chain => {
   const { ufarmCore, valueToken, fromBlock, endpoint } = config[chain]
   module.exports[chain] = {
@@ -39,8 +69,28 @@ Object.keys(config).forEach(chain => {
           .filter(a => a?.extraInfo?.project_id === 'convex' && a?.asset)
           .map(a => a.asset)
       ))];
+      const uniV4Ids = []
+      const erc4626TokensAndOwners = []
+      const blacklistedTokens = [...(config[chain].blacklistedTokens || [])]
 
-      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, owners, permitFailure: true })
+      data.forEach(({ assetAllocation = [], poolAddress }) => {
+        if (!poolAddress) return
+        assetAllocation.forEach(({ asset, tokenId, extraInfo, isERC4626 }) => {
+          if (!asset) return
+          if (extraInfo?.project_id === 'uniswap4' && tokenId) {
+            uniV4Ids.push(tokenId)
+            blacklistedTokens.push(asset)
+          }
+          if (isERC4626 === true) {
+            erc4626TokensAndOwners.push([asset, poolAddress])
+            blacklistedTokens.push(asset)
+          }
+        })
+      })
+
+      const balances = await sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, owners, blacklistedTokens, permitFailure: true })
+      if (uniV4Ids.length) await sumTokens2({ api, balances, resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids }, permitFailure: true })
+      return addErc4626Tokens(api, erc4626TokensAndOwners)
     }
   }
 })
