@@ -31,7 +31,7 @@ const FLUID_POOLS = {
     'USDT Vault': '0x4A03F37e7d3fC243e3f99341d36f4b829BEe5E03',
 };
 const ARBITRUM_SILO_POOLS = {
-    'USDC - Varlamore USDC Growth': '0x2BA39e5388aC6C702Cb29AEA78d52aa66832f1ee',
+    // 'USDC - Varlamore USDC Growth': '0x2BA39e5388aC6C702Cb29AEA78d52aa66832f1ee', // distressed
     'Silo Optima Vault': '0x2514A2Ce842705EAD703d02fABFd8250BfCfb8bd',
     'ETH - Ethereal': '0xd8c989aB5f5b2ABDc76a8D3Acec165300BF30ecD',
 };
