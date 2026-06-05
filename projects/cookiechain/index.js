@@ -6,11 +6,13 @@ const RPC = 'https://rpc.cookiescan.io';
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const TOKEN_2022    = 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
 
-const DAMM_VAULT_AUTH = 'AuCPPPDywCr9tq3LrYC4cGM5mpfYpZy1ZKYhshZvPtFj';
-const DBC_VAULT_AUTH  = 'HSYMkG6iYhdqAgLnZQKGkW5Ce5N9zYq1F3dd6m76y5Ki';
+// CookieBox
+const COOKIEBOX_DAMM_VAULT_AUTH = '8WYfVSBcP3T1amRNmTnLfzYd44VDjGpw1jZxrEL8638o';
+const COOKIEBOX_DBC_VAULT_AUTH  = 'HSYMkG6iYhdqAgLnZQKGkW5Ce5N9zYq1F3dd6m76y5Ki';
+const COOKIEBOX_CLMM_PROGRAM    = 'CLMMmWqTtyNSomqXP3kETJy2SGKPdr31USsm4GfbLyKs';
 
-const CLMM_PROGRAM = 'CLMMmWqTtyNSomqXP3kETJy2SGKPdr31USsm4GfbLyKs';
-const SAMM_PROGRAM = 'WTzkPUoprVx7PDc1tfKA5sS7k1ynCgU89WtwZhksHX5';
+// CookieSwap
+const COOKIESWAP_SAMM_PROGRAM = 'WTzkPUoprVx7PDc1tfKA5sS7k1ynCgU89WtwZhksHX5';
 
 const NATIVE_MINT    = 'So11111111111111111111111111111111111111112';
 const COOK_ON_SOLANA = 'solana:36ZrtQoab5MhhySaP1YSTwUahSk6GRVUTtZ6cuVfm9e1';
@@ -117,10 +119,10 @@ async function sumProgramVaults(programId, raw) {
 async function tvl() {
   const raw = {};
 
-  await sumVaultAuth(DAMM_VAULT_AUTH, raw);
-  await sumVaultAuth(DBC_VAULT_AUTH, raw);
-  await sumProgramVaults(CLMM_PROGRAM, raw);
-  await sumProgramVaults(SAMM_PROGRAM, raw);
+  await sumVaultAuth(COOKIEBOX_DAMM_VAULT_AUTH, raw);
+  await sumVaultAuth(COOKIEBOX_DBC_VAULT_AUTH, raw);
+  await sumProgramVaults(COOKIEBOX_CLMM_PROGRAM, raw);
+  await sumProgramVaults(COOKIESWAP_SAMM_PROGRAM, raw);
 
   const mints = Object.keys(raw);
   const decimalsMap = await fetchDecimals(mints);
@@ -139,6 +141,6 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is calculated by summing token balances held in liquidity pool vault accounts across all AMM programs (DAMM, DBC, CLMM, SAMM) on Cookie Chain. Native wSOL is priced via the COOK token on Solana mainnet.',
+  methodology: 'TVL is calculated by summing token balances held in liquidity pool vault accounts across CookieBox DAMM, CookieBox DBC, CookieBox CLMM, and CookieSwap SAMM on Cookie Chain. Native wSOL is priced via the COOK token on Solana mainnet.',
   cookiechain: { tvl },
 };
