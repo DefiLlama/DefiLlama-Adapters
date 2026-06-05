@@ -317,6 +317,13 @@ async function tvl(api) {
   const { uniV4ByNft, pcsInfinityIds } = await collectV4PositionsFromContract(api)
   await unwrapUniV4Positions(api, uniV4ByNft)
   await unwrapPancakeInfinityCL(api, pcsInfinityIds)
+
+  // remove meme tokens from balances
+  const allowed = TRACKED_TOKENS[chain].map(t => `${chain}:${t.toLowerCase()}`)
+  const balances = api.getBalances()
+  for (const key of Object.keys(balances)) {
+    if (!allowed.includes(key.toLowerCase())) delete balances[key]
+  }
 }
 
 function deriveMeteoraPositionPda(nftMint) {
@@ -395,8 +402,8 @@ async function addMeteoraPositions(api, lockPdas) {
     const shareDen = pool.poolLiquidity
     const amountA = allocateShare(pool.tokenAAmount, shareNum, shareDen)
     const amountB = allocateShare(pool.tokenBAmount, shareNum, shareDen)
+    // tokenBMint is the meme token so we only add SOL side
     if (amountA > 0n) api.add(pool.tokenAMint.toBase58(), amountA.toString())
-    if (amountB > 0n) api.add(pool.tokenBMint.toBase58(), amountB.toString())
   })
 }
 
