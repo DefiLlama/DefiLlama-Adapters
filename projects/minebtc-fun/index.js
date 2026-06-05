@@ -5,7 +5,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 // MineBTC Program: 1eotiTH2UxCpPMmtzUDGqf1b8dwM7AMKb8a2Tio51an
 const DBTC_MINT = "CtAu3kc8cQ1jcDMmRTBsDHoPuE3sswCagQ3BuqFDC6dt";
 
-// Raydium CP-Swap pool reserves used for dBTC valuation.
+// Raydium CP-Swap pool reserves used to unwrap staked LP tokens.
 // On-chain token0 vault is wrapped SOL; token1 vault is dBTC.
 const RAYDIUM_POOL_STATE = "F87M4sT6Wtfk4enVVbtM4ZnWsqCE9TXzL12Apwj3Cjtj";
 const POOL_SOL_VAULT = "EMDuS9XZesBDo8urJzwgrKC7qJrLQ6hHXVvSLNE6s3ui";
@@ -24,14 +24,14 @@ const STAKER_SOL_REWARD_VAULT = "FYnbbqMPUetvN22CDeDxAJb4SSXmqZcGEbrwVvoJREvK";
 const FACTION_TREASURY_VAULT = "1gYoc7ojYQdkABsAVFnFQhmYphe532EDnxheRZBDuqr";
 
 /**
- * Reads the live Raydium pool reserves used for dBTC valuation.
+ * Reads the live Raydium pool reserves used to unwrap staked LP tokens.
  *
  * @returns {Promise<{ solInPool: bigint, dbtcInPool: bigint }>} Pool reserves in raw token units.
  */
 async function getPoolReserves() {
   const poolVaultBalances = await getTokenAccountBalances(
     [POOL_SOL_VAULT, POOL_DBTC_VAULT],
-    { individual: true, allowError: true },
+    { individual: true },
   );
 
   return {
@@ -41,34 +41,7 @@ async function getPoolReserves() {
 }
 
 /**
- * Converts a raw dBTC amount to raw SOL value using the live Raydium reserve ratio.
- *
- * @param {bigint} dbtcAmount dBTC amount in raw token units.
- * @param {{ solInPool: bigint, dbtcInPool: bigint }} poolReserves Raydium pool reserves.
- * @returns {bigint} SOL value in lamports.
- */
-function getDbtcValueAsSol(dbtcAmount, { solInPool, dbtcInPool }) {
-  if (dbtcAmount <= 0n || solInPool <= 0n || dbtcInPool <= 0n) return 0n;
-  return (dbtcAmount * solInPool) / dbtcInPool;
-}
-
-/**
- * Reads the raw token amount held by one SPL token account.
- *
- * @param {string} tokenAccount SPL token account address.
- * @returns {Promise<bigint>} Raw token amount.
- */
-async function getTokenAccountAmount(tokenAccount) {
-  const tokenAccountInfo = await getTokenAccountBalances(
-    [tokenAccount],
-    { individual: true, allowError: true },
-  );
-
-  return tokenAccountInfo.length > 0 ? BigInt(tokenAccountInfo[0].amount) : 0n;
-}
-
-/**
- * Adds the underlying SOL and dBTC value for MineBTC LP tokens staked in the
+ * Adds the underlying SOL and dBTC for MineBTC LP tokens staked in the
  * protocol custodian, using Raydium CP-Swap pool reserves and tracked LP supply.
  *
  * @param {object} api DefiLlama chain API accumulator.
@@ -77,7 +50,7 @@ async function getStakedLpUnderlyingValue(api) {
   const connection = getConnection();
 
   const [stakedLpInfo, poolReserves, poolStateAccount] = await Promise.all([
-    getTokenAccountBalances([STAKED_LP_CUSTODIAN], { individual: true, allowError: true }),
+    getTokenAccountBalances([STAKED_LP_CUSTODIAN], { individual: true }),
     getPoolReserves(),
     connection.getAccountInfo(new PublicKey(RAYDIUM_POOL_STATE)),
   ]);
@@ -92,10 +65,9 @@ async function getStakedLpUnderlyingValue(api) {
   const { solInPool, dbtcInPool } = poolReserves;
   const underlyingSol = (solInPool * stakedLp) / lpTotalSupply;
   const underlyingDbtc = (dbtcInPool * stakedLp) / lpTotalSupply;
-  const dbtcValueAsSol = getDbtcValueAsSol(underlyingDbtc, poolReserves);
-  const lpValueAsSol = underlyingSol + dbtcValueAsSol;
 
-  if (lpValueAsSol > 0n) api.add(ADDRESSES.solana.SOL, lpValueAsSol.toString());
+  if (underlyingSol > 0n) api.add(ADDRESSES.solana.SOL, underlyingSol.toString());
+  if (underlyingDbtc > 0n) api.add(DBTC_MINT, underlyingDbtc.toString());
 }
 
 /**
@@ -104,17 +76,10 @@ async function getStakedLpUnderlyingValue(api) {
  * @param {object} api DefiLlama chain API accumulator.
  */
 async function tvl(api) {
-  const [factionTreasuryDbtc, poolReserves] = await Promise.all([
-    getTokenAccountAmount(FACTION_TREASURY_VAULT),
-    getPoolReserves(),
-    sumTokens2({
-      api,
-      solOwners: [SOL_PRIZE_POT, COUNTRY_RACE_SOL_VAULT, STAKER_SOL_REWARD_VAULT],
-    }),
-  ]);
-
-  const factionTreasuryValueAsSol = getDbtcValueAsSol(factionTreasuryDbtc, poolReserves);
-  if (factionTreasuryValueAsSol > 0n) api.add(ADDRESSES.solana.SOL, factionTreasuryValueAsSol.toString());
+  await sumTokens2({
+    api,
+    solOwners: [SOL_PRIZE_POT, COUNTRY_RACE_SOL_VAULT, STAKER_SOL_REWARD_VAULT],
+  });
 }
 
 /**
@@ -123,13 +88,10 @@ async function tvl(api) {
  * @param {object} api DefiLlama chain API accumulator.
  */
 async function staking(api) {
-  const [stakedDbtc, poolReserves] = await Promise.all([
-    getTokenAccountAmount(STAKED_DBTC_CUSTODIAN),
-    getPoolReserves(),
-  ]);
-
-  const stakedDbtcValueAsSol = getDbtcValueAsSol(stakedDbtc, poolReserves);
-  if (stakedDbtcValueAsSol > 0n) api.add(ADDRESSES.solana.SOL, stakedDbtcValueAsSol.toString());
+  await sumTokens2({
+    api,
+    tokenAccounts: [STAKED_DBTC_CUSTODIAN],
+  });
 }
 
 /**
@@ -146,7 +108,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
-    "TVL includes SOL in the Casino prize pot, Country Race reward vault, staking reward vault, and dBTC in the faction-tax reward vault. Staking tracks user-staked dBTC. Pool2 tracks staked dBTC/SOL LP tokens valued by their pro-rata share of underlying assets in the Raydium pool. dBTC is valued from the on-chain Raydium dBTC/SOL pool because it does not yet have a standalone DefiLlama price feed.",
+    "TVL includes SOL in the Casino prize pot, Country Race reward vault, staking reward vault, and dBTC in the faction-tax reward vault. Staking tracks user-staked dBTC. Pool2 tracks staked dBTC/SOL LP tokens by unwrapping them into their pro-rata share of underlying assets in the Raydium pool.",
   solana: {
     tvl,
     staking,
