@@ -12,7 +12,11 @@ const COOKIEBOX_DBC_VAULT_AUTH  = 'HSYMkG6iYhdqAgLnZQKGkW5Ce5N9zYq1F3dd6m76y5Ki'
 const COOKIEBOX_CLMM_PROGRAM    = 'CLMMmWqTtyNSomqXP3kETJy2SGKPdr31USsm4GfbLyKs';
 
 // CookieSwap
-const COOKIESWAP_SAMM_PROGRAM = 'WTzkPUoprVx7PDc1tfKA5sS7k1ynCgU89WtwZhksHX5';
+const COOKIESWAP_BAMM_PROGRAM  = 'WTzkPUoprVx7PDc1tfKA5sS7k1ynCgU89WtwZhksHX5';
+const COOKIESWAP_CPAMM_PROGRAM = 'xYBN2zddsqSy41tg1yD9nJScCmqquZnHUyzXBfLEqC8';
+
+// BangSwap
+const BANGSWAP_CPAMM_PROGRAM = 'DYgGxvJD8GTYQSGFmT4RUab5TJ7W3m7Vrbg2UueNzAq8';
 
 const NATIVE_MINT    = 'So11111111111111111111111111111111111111112';
 const COOK_ON_SOLANA = 'solana:36ZrtQoab5MhhySaP1YSTwUahSk6GRVUTtZ6cuVfm9e1';
@@ -122,7 +126,9 @@ async function tvl() {
   await sumVaultAuth(COOKIEBOX_DAMM_VAULT_AUTH, raw);
   await sumVaultAuth(COOKIEBOX_DBC_VAULT_AUTH, raw);
   await sumProgramVaults(COOKIEBOX_CLMM_PROGRAM, raw);
-  await sumProgramVaults(COOKIESWAP_SAMM_PROGRAM, raw);
+  await sumProgramVaults(COOKIESWAP_BAMM_PROGRAM, raw);
+  await sumProgramVaults(COOKIESWAP_CPAMM_PROGRAM, raw);
+  await sumProgramVaults(BANGSWAP_CPAMM_PROGRAM, raw);
 
   const mints = Object.keys(raw);
   const decimalsMap = await fetchDecimals(mints);
@@ -141,6 +147,6 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is calculated by summing token balances held in liquidity pool vault accounts across CookieBox DAMM, CookieBox DBC, CookieBox CLMM, and CookieSwap SAMM on Cookie Chain. Native wSOL is priced via the COOK token on Solana mainnet.',
+  methodology: 'TVL is calculated by summing token balances held in liquidity pool vault accounts across CookieBox DAMM, CookieBox DBC, CookieBox CLMM, CookieSwap BAMM, CookieSwap CPAMM, and BangSwap CPAMM on Cookie Chain. Native wSOL is priced via the COOK token on Solana mainnet.',
   cookiechain: { tvl },
 };
