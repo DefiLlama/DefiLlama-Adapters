@@ -39,10 +39,28 @@ async function tvl(api) {
     return {};
   }
   
-  debugLog(`[Fusion (by IPOR)] Processing ${chainConfig.vaults.length} vaults on ${chain}:`);
-  
-  const calls = chainConfig.vaults.map((vault, index) => {
-    debugLog(`  Vault ${index + 1}/${chainConfig.vaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
+  // Deduplicate by PlasmaVault address (case-insensitive) so the same vault is only counted once per chain
+  const vaultsByAddress = new Map();
+  const duplicateAddresses = [];
+  for (const vault of chainConfig.vaults) {
+    const key = vault.PlasmaVault.toLowerCase();
+    if (vaultsByAddress.has(key)) {
+      duplicateAddresses.push(vault.PlasmaVault);
+      continue;
+    }
+    vaultsByAddress.set(key, vault);
+  }
+  const uniqueVaults = [...vaultsByAddress.values()];
+
+  if (duplicateAddresses.length > 0) {
+    debugLog(`[Fusion (by IPOR)] Found ${duplicateAddresses.length} duplicate vault(s) by PlasmaVault address on ${chain}; counting each unique address once:`);
+    duplicateAddresses.forEach(address => debugLog(`  Duplicate PlasmaVault: ${address}`));
+  }
+
+  debugLog(`[Fusion (by IPOR)] Processing ${uniqueVaults.length} vaults on ${chain}:`);
+
+  const calls = uniqueVaults.map((vault, index) => {
+    debugLog(`  Vault ${index + 1}/${uniqueVaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
     return vault.PlasmaVault;
   });
 
@@ -52,7 +70,7 @@ async function tvl(api) {
   debugLog(`[Fusion (by IPOR)] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
 
   if (DEBUG_LOGGING) {
-    await logVaultUsdValues(api, chain, chainConfig.vaults, calls)
+    await logVaultUsdValues(api, chain, uniqueVaults, calls)
   }
 
   // permitFailure so vaults not yet deployed at a historical block are skipped instead of throwing
