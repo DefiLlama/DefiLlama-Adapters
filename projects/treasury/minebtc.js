@@ -10,6 +10,7 @@ const NFT_FLOOR_SWEEP_VAULT = "DRvR4WpLj85Lfvwk3im7Ucrz1s9FPLPUtrTihUiqaPve";
 const STAKER_SOL_REWARD_VAULT = "HiGNRiXWrqtFbwEH1YKQVHommFU15auksXbe7Qv7Nrrb";
 
 module.exports = {
+  deadFrom: "2026-05-19",
   solana: {
     tvl: async (api) => {
       await sumTokens2({
