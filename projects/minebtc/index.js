@@ -72,6 +72,7 @@ async function pool2(api) {
 }
 
 module.exports = {
+  deadFrom: "2026-05-19",
   timetravel: false,
   methodology:
     "TVL includes SOL in the betting prize pot. Staking tracks user-staked DogeBTC. Pool2 tracks staked DogeBTC/SOL LP tokens valued by their pro-rata share of underlying assets in the Raydium pool.",
