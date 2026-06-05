@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { getConfig } = require('../helper/cache')
 
 const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/refs/heads/main/mainnet/addresses.json";
