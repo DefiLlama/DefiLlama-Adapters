@@ -67,7 +67,7 @@ async function fetchDecimals(mints) {
 
 function tokenKey(mint) {
   if (mint === NATIVE_MINT) return COOK_ON_SOLANA;
-  return `cookiechain:${mint.toLowerCase()}`;
+  return `cookiechain:${mint}`;
 }
 
 async function getTokenAccountsByOwner(owner, programId) {
