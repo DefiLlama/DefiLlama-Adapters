@@ -8,26 +8,6 @@ const debugLog = (...args) => DEBUG_LOGGING && console.log(...args);
 
 let totalVaultsProcessed = 0;
 
-// Logs the USD value each vault contributes. Enabled by setting DEBUG_LOGGING = true.
-async function logVaultUsdValues(api, chain, vaults, calls) {
-  const assets = await api.multiCall({ calls, abi: 'address:asset', permitFailure: true })
-  const totalAssets = await api.multiCall({ calls, abi: 'uint256:totalAssets', permitFailure: true })
-
-  const rows = await Promise.all(calls.map(async (vaultAddress, i) => {
-    let usd = 0
-    if (assets[i] && totalAssets[i])
-      usd = Number(await sdk.Balances.getUSDValue({ [`${chain}:${assets[i]}`]: totalAssets[i] }, api.timestamp)) || 0
-    return { name: vaults[i].name || 'Unknown', vault: vaultAddress, usd }
-  }))
-
-  rows.sort((a, b) => b.usd - a.usd)
-  console.log(`\n[Fusion (by IPOR)] Per-vault USD value on ${chain}:`)
-  rows.forEach(({ name, vault, usd }) => {
-    console.log(`  ${Math.round(usd).toLocaleString().padStart(15)} USD  ${vault}  ${name}`)
-  })
-  console.log(`  ${Math.round(rows.reduce((s, r) => s + r.usd, 0)).toLocaleString().padStart(15)} USD  TOTAL (${rows.length} vaults)\n`)
-}
-
 async function tvl(api) {
   const config  = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
 
@@ -39,39 +19,20 @@ async function tvl(api) {
     return {};
   }
   
-  // Deduplicate by PlasmaVault address (case-insensitive) so the same vault is only counted once per chain
-  const vaultsByAddress = new Map();
-  const duplicateAddresses = [];
+  // dedupe by PlasmaVault address
+  const seen = new Set();
+  const calls = [];
   for (const vault of chainConfig.vaults) {
     const key = vault.PlasmaVault.toLowerCase();
-    if (vaultsByAddress.has(key)) {
-      duplicateAddresses.push(vault.PlasmaVault);
-      continue;
-    }
-    vaultsByAddress.set(key, vault);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    calls.push(vault.PlasmaVault);
   }
-  const uniqueVaults = [...vaultsByAddress.values()];
-
-  if (duplicateAddresses.length > 0) {
-    debugLog(`[Fusion (by IPOR)] Found ${duplicateAddresses.length} duplicate vault(s) by PlasmaVault address on ${chain}; counting each unique address once:`);
-    duplicateAddresses.forEach(address => debugLog(`  Duplicate PlasmaVault: ${address}`));
-  }
-
-  debugLog(`[Fusion (by IPOR)] Processing ${uniqueVaults.length} vaults on ${chain}:`);
-
-  const calls = uniqueVaults.map((vault, index) => {
-    debugLog(`  Vault ${index + 1}/${uniqueVaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
-    return vault.PlasmaVault;
-  });
 
   totalVaultsProcessed += calls.length;
 
   debugLog(`[Fusion (by IPOR)] Total vaults processed on ${chain}: ${calls.length}`);
   debugLog(`[Fusion (by IPOR)] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
-
-  if (DEBUG_LOGGING) {
-    await logVaultUsdValues(api, chain, uniqueVaults, calls)
-  }
 
   // permitFailure so vaults not yet deployed at a historical block are skipped instead of throwing
   return api.erc4626Sum2({ calls, permitFailure: true })
