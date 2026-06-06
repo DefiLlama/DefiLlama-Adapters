@@ -92,6 +92,12 @@ const configs = {
       staking: ['0x321b7ff75154472B18EDb199033fF4D116F340Ff', '0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf'],
     },
   },
+  'citrea-staking': {
+    methodology: 'Sum of CTR locked by users in the xCTR (Staked CTR) staking contract on Citrea, which grants governance voting power.',
+    citrea: {
+      staking: { owners: ['0x2015F35030A8Ff2C0CA161a865414996F8E80AA4'], tokens: ['0x547AfD93B9c47D552059FEb556909e017f8a9b25']},
+    },
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
