@@ -17,7 +17,6 @@ module.exports = {
         'sora': '/sora/api',
         'bifrost-dex': '/bifrost-dex/api',
         'bifrost-liquid-crowdloan': '/bifrost-liquid-crowdloan/api',
-        'hatom-tao-bridge': '/hatom-tao-bridge/api',
       },
       // {
         // 'blend-pools': '/blend-pools/api.js',  // moved to rpc proxy
