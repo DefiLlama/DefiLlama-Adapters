@@ -1,5 +1,9 @@
-const sdk = require('@defillama/sdk')
 const { uniV3Export } = require('../helper/uniswapV3')
+
+const sumApiTvls = (tvls) => async (api) => {
+  for (const tvl of tvls) await tvl(api)
+  return api.getBalances()
+}
 
 const arbitrumLegacyCl = uniV3Export({
   arbitrum: { factory: '0xaa2cd7477c451e703f3b9ba5663334914763edf8', fromBlock: 90593047 },
@@ -11,7 +15,7 @@ const arbitrumRamsesXCl = uniV3Export({
 
 module.exports = {
   arbitrum: {
-    tvl: sdk.util.sumChainTvls([arbitrumLegacyCl, arbitrumRamsesXCl]),
+    tvl: sumApiTvls([arbitrumLegacyCl, arbitrumRamsesXCl]),
   },
   ...uniV3Export({
     hyperliquid: { factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45', fromBlock: 18149975 },
