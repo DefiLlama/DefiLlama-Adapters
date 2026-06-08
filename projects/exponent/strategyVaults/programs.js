@@ -15,6 +15,8 @@ const exponentClmmIdl = require('./idls/exponent_clmm.json')
 const loopscaleIdl = require('./idls/loopscale.json')
 const kaminoLendingIdl = require('./idls/kamino_lending.json')
 
+const MAX_MULTIPLE_ACCOUNTS = 100
+
 class ReadOnlyWallet {
   constructor() {
     this.payer = web3.Keypair.generate()
@@ -80,14 +82,31 @@ function createStrategyVaultPrograms(connection) {
   const provider = new AnchorProvider(connection, new ReadOnlyWallet(), {})
   const accountCache = new Map()
 
+  const accountInfoKey = (address) => `account:${address.toBase58()}`
+
   const getAccountInfo = async (address) => {
-    const key = `account:${address.toBase58()}`
+    const key = accountInfoKey(address)
     if (!accountCache.has(key)) accountCache.set(key, withRpcRetry(() => connection.getAccountInfo(address)))
     return accountCache.get(key)
   }
 
   const getMultipleAccountsInfo = async (addresses) => {
-    return withRpcRetry(() => connection.getMultipleAccountsInfo(addresses))
+    const missingByKey = new Map()
+    addresses.forEach((address) => {
+      const key = accountInfoKey(address)
+      if (!accountCache.has(key) && !missingByKey.has(key)) missingByKey.set(key, { key, address })
+    })
+
+    const missing = [...missingByKey.values()]
+    for (let i = 0; i < missing.length; i += MAX_MULTIPLE_ACCOUNTS) {
+      const chunk = missing.slice(i, i + MAX_MULTIPLE_ACCOUNTS)
+      const chunkPromise = withRpcRetry(() => connection.getMultipleAccountsInfo(chunk.map(({ address }) => address)))
+      chunk.forEach(({ key }, index) => {
+        accountCache.set(key, chunkPromise.then((infos) => infos[index] || null))
+      })
+    }
+
+    return Promise.all(addresses.map((address) => accountCache.get(accountInfoKey(address))))
   }
 
   const fetchAccount = async (program, accountName, address) => {
