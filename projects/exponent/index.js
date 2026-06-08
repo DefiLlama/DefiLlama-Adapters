@@ -248,7 +248,6 @@ async function addManagedVaultAum(api, connection) {
 
       const payload = managedVaultsPayloadByKey.get(buildManagedVaultsPayloadKey(underlyingMint, result.mint))
       if (!payload) {
-        console.log("api.add", resolveManagedUnderlyingMint(underlyingMint), result.aum)
         api.add(resolveManagedUnderlyingMint(underlyingMint), result.aum)
         return
       }
@@ -259,8 +258,6 @@ async function addManagedVaultAum(api, connection) {
         quoteToBaseRateScale: payload.underlyingToPositionUnderlyingRateScale,
       })
       if (!amount) return
-
-      console.log("api.add",resolveManagedUnderlyingMint(payload.positionUnderlyingMint), amount)
       api.add(resolveManagedUnderlyingMint(payload.positionUnderlyingMint), amount)
     })
   })
