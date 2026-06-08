@@ -98,6 +98,12 @@ const configs = {
       staking: { owners: ['0x2015F35030A8Ff2C0CA161a865414996F8E80AA4'], tokens: ['0x547AfD93B9c47D552059FEb556909e017f8a9b25']},
     },
   },
+  'igra-attestation': {
+    methodology: 'IGRA tokens locked by attesters in the Attestation Diamond contract, securing Igra network state validation with a 6-month lockup.',
+    igra: {
+      staking: { owners: ['0xc24Df70E408739aeF6bF594fd41db4632dF49188'], tokens: ['0x093d77d397F8acCbaee0820345E9E700B1233cD1'] },
+    },
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
