@@ -1,0 +1,1045 @@
+{
+  "version": "1.13.0",
+  "name": "kamino_lending",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Obligation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tag",
+            "type": "u64"
+          },
+          {
+            "name": "lastUpdate",
+            "type": {
+              "defined": "LastUpdate"
+            }
+          },
+          {
+            "name": "lendingMarket",
+            "type": "publicKey"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "deposits",
+            "type": {
+              "array": [
+                {
+                  "defined": "ObligationCollateral"
+                },
+                8
+              ]
+            }
+          },
+          {
+            "name": "lowestReserveDepositLiquidationLtv",
+            "type": "u64"
+          },
+          {
+            "name": "depositedValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "borrows",
+            "type": {
+              "array": [
+                {
+                  "defined": "ObligationLiquidity"
+                },
+                5
+              ]
+            }
+          },
+          {
+            "name": "borrowFactorAdjustedDebtValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "borrowedAssetsMarketValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "allowedBorrowValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "unhealthyBorrowValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "paddingDeprecatedAssetTiers",
+            "type": {
+              "array": [
+                "u8",
+                13
+              ]
+            }
+          },
+          {
+            "name": "elevationGroup",
+            "type": "u8"
+          },
+          {
+            "name": "numOfObsoleteDepositReserves",
+            "type": "u8"
+          },
+          {
+            "name": "hasDebt",
+            "type": "u8"
+          },
+          {
+            "name": "referrer",
+            "type": "publicKey"
+          },
+          {
+            "name": "borrowingDisabled",
+            "type": "u8"
+          },
+          {
+            "name": "autodeleverageTargetLtvPct",
+            "type": "u8"
+          },
+          {
+            "name": "lowestReserveDepositMaxLtvPct",
+            "type": "u8"
+          },
+          {
+            "name": "numOfObsoleteBorrowReserves",
+            "type": "u8"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          },
+          {
+            "name": "highestBorrowFactorPct",
+            "type": "u64"
+          },
+          {
+            "name": "autodeleverageMarginCallStartedTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "obligationOrders",
+            "type": {
+              "array": [
+                {
+                  "defined": "ObligationOrder"
+                },
+                2
+              ]
+            }
+          },
+          {
+            "name": "borrowOrder",
+            "type": {
+              "defined": "BorrowOrder"
+            }
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u64",
+                73
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reserve",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "version",
+            "type": "u64"
+          },
+          {
+            "name": "lastUpdate",
+            "type": {
+              "defined": "LastUpdate"
+            }
+          },
+          {
+            "name": "lendingMarket",
+            "type": "publicKey"
+          },
+          {
+            "name": "farmCollateral",
+            "type": "publicKey"
+          },
+          {
+            "name": "farmDebt",
+            "type": "publicKey"
+          },
+          {
+            "name": "liquidity",
+            "type": {
+              "defined": "ReserveLiquidity"
+            }
+          },
+          {
+            "name": "reserveLiquidityPadding",
+            "type": {
+              "array": [
+                "u64",
+                150
+              ]
+            }
+          },
+          {
+            "name": "collateral",
+            "type": {
+              "defined": "ReserveCollateral"
+            }
+          },
+          {
+            "name": "reserveCollateralPadding",
+            "type": {
+              "array": [
+                "u64",
+                150
+              ]
+            }
+          },
+          {
+            "name": "config",
+            "type": {
+              "defined": "ReserveConfig"
+            }
+          },
+          {
+            "name": "configPadding",
+            "type": {
+              "array": [
+                "u64",
+                114
+              ]
+            }
+          },
+          {
+            "name": "borrowedAmountOutsideElevationGroup",
+            "type": "u64"
+          },
+          {
+            "name": "borrowedAmountsAgainstThisReserveInElevationGroups",
+            "type": {
+              "array": [
+                "u64",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                207
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "LastUpdate",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "slot",
+            "type": "u64"
+          },
+          {
+            "name": "stale",
+            "type": "u8"
+          },
+          {
+            "name": "priceStatus",
+            "type": "u8"
+          },
+          {
+            "name": "placeholder",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BorrowOrder",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "debtLiquidityMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "remainingDebtAmount",
+            "type": "u64"
+          },
+          {
+            "name": "filledDebtDestination",
+            "type": "publicKey"
+          },
+          {
+            "name": "minDebtTermSeconds",
+            "type": "u64"
+          },
+          {
+            "name": "fillableUntilTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "placedAtTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "lastUpdatedAtTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "requestedDebtAmount",
+            "type": "u64"
+          },
+          {
+            "name": "maxBorrowRateBps",
+            "type": "u32"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          },
+          {
+            "name": "endPadding",
+            "type": {
+              "array": [
+                "u64",
+                5
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ObligationCollateral",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "depositReserve",
+            "type": "publicKey"
+          },
+          {
+            "name": "depositedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "marketValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "borrowedAmountAgainstThisCollateralInElevationGroup",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                9
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ObligationLiquidity",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "borrowReserve",
+            "type": "publicKey"
+          },
+          {
+            "name": "cumulativeBorrowRateBsf",
+            "type": {
+              "defined": "BigFractionBytes"
+            }
+          },
+          {
+            "name": "firstBorrowedAtTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "borrowedAmountSf",
+            "type": "u128"
+          },
+          {
+            "name": "marketValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "borrowFactorAdjustedMarketValueSf",
+            "type": "u128"
+          },
+          {
+            "name": "borrowedAmountOutsideElevationGroups",
+            "type": "u64"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u64",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ObligationOrder",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "conditionThresholdSf",
+            "type": "u128"
+          },
+          {
+            "name": "opportunityParameterSf",
+            "type": "u128"
+          },
+          {
+            "name": "minExecutionBonusBps",
+            "type": "u16"
+          },
+          {
+            "name": "maxExecutionBonusBps",
+            "type": "u16"
+          },
+          {
+            "name": "conditionType",
+            "type": "u8"
+          },
+          {
+            "name": "opportunityType",
+            "type": "u8"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                10
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u128",
+                5
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BigFractionBytes",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": {
+              "array": [
+                "u64",
+                4
+              ]
+            }
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReserveCollateral",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mintPubkey",
+            "type": "publicKey"
+          },
+          {
+            "name": "mintTotalSupply",
+            "type": "u64"
+          },
+          {
+            "name": "supplyVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u128",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u128",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReserveConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "paddingDeprecatedAssetTier",
+            "type": "u8"
+          },
+          {
+            "name": "hostFixedInterestRateBps",
+            "type": "u16"
+          },
+          {
+            "name": "minDeleveragingBonusBps",
+            "type": "u16"
+          },
+          {
+            "name": "blockCtokenUsage",
+            "type": "u8"
+          },
+          {
+            "name": "reserved1",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "protocolOrderExecutionFeePct",
+            "type": "u8"
+          },
+          {
+            "name": "protocolTakeRatePct",
+            "type": "u8"
+          },
+          {
+            "name": "protocolLiquidationFeePct",
+            "type": "u8"
+          },
+          {
+            "name": "loanToValuePct",
+            "type": "u8"
+          },
+          {
+            "name": "liquidationThresholdPct",
+            "type": "u8"
+          },
+          {
+            "name": "minLiquidationBonusBps",
+            "type": "u16"
+          },
+          {
+            "name": "maxLiquidationBonusBps",
+            "type": "u16"
+          },
+          {
+            "name": "badDebtLiquidationBonusBps",
+            "type": "u16"
+          },
+          {
+            "name": "deleveragingMarginCallPeriodSecs",
+            "type": "u64"
+          },
+          {
+            "name": "deleveragingThresholdDecreaseBpsPerDay",
+            "type": "u64"
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "ReserveFees"
+            }
+          },
+          {
+            "name": "borrowRateCurve",
+            "type": {
+              "defined": "BorrowRateCurve"
+            }
+          },
+          {
+            "name": "borrowFactorPct",
+            "type": "u64"
+          },
+          {
+            "name": "depositLimit",
+            "type": "u64"
+          },
+          {
+            "name": "borrowLimit",
+            "type": "u64"
+          },
+          {
+            "name": "tokenInfo",
+            "type": {
+              "defined": "TokenInfo"
+            }
+          },
+          {
+            "name": "depositWithdrawalCap",
+            "type": {
+              "defined": "WithdrawalCaps"
+            }
+          },
+          {
+            "name": "debtWithdrawalCap",
+            "type": {
+              "defined": "WithdrawalCaps"
+            }
+          },
+          {
+            "name": "elevationGroups",
+            "type": {
+              "array": [
+                "u8",
+                20
+              ]
+            }
+          },
+          {
+            "name": "disableUsageAsCollOutsideEmode",
+            "type": "u8"
+          },
+          {
+            "name": "utilizationLimitBlockBorrowingAbovePct",
+            "type": "u8"
+          },
+          {
+            "name": "autodeleverageEnabled",
+            "type": "u8"
+          },
+          {
+            "name": "proposerAuthorityLocked",
+            "type": "u8"
+          },
+          {
+            "name": "borrowLimitOutsideElevationGroup",
+            "type": "u64"
+          },
+          {
+            "name": "borrowLimitAgainstThisCollateralInElevationGroup",
+            "type": {
+              "array": [
+                "u64",
+                32
+              ]
+            }
+          },
+          {
+            "name": "deleveragingBonusIncreaseBpsPerDay",
+            "type": "u64"
+          },
+          {
+            "name": "debtMaturityTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "debtTermSeconds",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReserveFees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "originationFeeSf",
+            "type": "u64"
+          },
+          {
+            "name": "flashLoanFeeSf",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReserveLiquidity",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mintPubkey",
+            "type": "publicKey"
+          },
+          {
+            "name": "supplyVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "availableAmount",
+            "type": "u64"
+          },
+          {
+            "name": "borrowedAmountSf",
+            "type": "u128"
+          },
+          {
+            "name": "marketPriceSf",
+            "type": "u128"
+          },
+          {
+            "name": "marketPriceLastUpdatedTs",
+            "type": "u64"
+          },
+          {
+            "name": "mintDecimals",
+            "type": "u64"
+          },
+          {
+            "name": "depositLimitCrossedTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "borrowLimitCrossedTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeBorrowRateBsf",
+            "type": {
+              "defined": "BigFractionBytes"
+            }
+          },
+          {
+            "name": "accumulatedProtocolFeesSf",
+            "type": "u128"
+          },
+          {
+            "name": "accumulatedReferrerFeesSf",
+            "type": "u128"
+          },
+          {
+            "name": "pendingReferrerFeesSf",
+            "type": "u128"
+          },
+          {
+            "name": "absoluteReferralRateSf",
+            "type": "u128"
+          },
+          {
+            "name": "tokenProgram",
+            "type": "publicKey"
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u64",
+                51
+              ]
+            }
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u128",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawalCaps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "configCapacity",
+            "type": "i64"
+          },
+          {
+            "name": "currentTotal",
+            "type": "i64"
+          },
+          {
+            "name": "lastIntervalStartTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "configIntervalLengthSeconds",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceHeuristic",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lower",
+            "type": "u64"
+          },
+          {
+            "name": "upper",
+            "type": "u64"
+          },
+          {
+            "name": "exp",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PythConfiguration",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ScopeConfiguration",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "priceFeed",
+            "type": "publicKey"
+          },
+          {
+            "name": "priceChain",
+            "type": {
+              "array": [
+                "u16",
+                4
+              ]
+            }
+          },
+          {
+            "name": "twapChain",
+            "type": {
+              "array": [
+                "u16",
+                4
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchboardConfiguration",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "priceAggregator",
+            "type": "publicKey"
+          },
+          {
+            "name": "twapAggregator",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TokenInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "heuristic",
+            "type": {
+              "defined": "PriceHeuristic"
+            }
+          },
+          {
+            "name": "maxTwapDivergenceBps",
+            "type": "u64"
+          },
+          {
+            "name": "maxAgePriceSeconds",
+            "type": "u64"
+          },
+          {
+            "name": "maxAgeTwapSeconds",
+            "type": "u64"
+          },
+          {
+            "name": "scopeConfiguration",
+            "type": {
+              "defined": "ScopeConfiguration"
+            }
+          },
+          {
+            "name": "switchboardConfiguration",
+            "type": {
+              "defined": "SwitchboardConfiguration"
+            }
+          },
+          {
+            "name": "pythConfiguration",
+            "type": {
+              "defined": "PythConfiguration"
+            }
+          },
+          {
+            "name": "blockPriceUsage",
+            "type": "u8"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                19
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BorrowRateCurve",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "points",
+            "type": {
+              "array": [
+                {
+                  "defined": "CurvePoint"
+                },
+                11
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CurvePoint",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "utilizationRateBps",
+            "type": "u32"
+          },
+          {
+            "name": "borrowRateBps",
+            "type": "u32"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,426 @@
+{
+  "address": "ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7",
+  "metadata": {
+    "name": "exponent_core",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Vault",
+      "discriminator": [
+        211,
+        8,
+        232,
+        43,
+        2,
+        152,
+        117,
+        119
+      ]
+    },
+    {
+      "name": "YieldTokenPosition",
+      "discriminator": [
+        227,
+        92,
+        146,
+        49,
+        29,
+        85,
+        71,
+        94
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "ClaimLimits",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "claim_window_start_timestamp",
+            "type": "u32"
+          },
+          {
+            "name": "total_claim_amount_in_window",
+            "type": "u64"
+          },
+          {
+            "name": "max_claim_amount_per_window",
+            "type": "u64"
+          },
+          {
+            "name": "claim_window_duration_seconds",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiAccounts",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "get_sy_state",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "deposit_sy",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "withdraw_sy",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "claim_emission",
+            "type": {
+              "vec": {
+                "vec": {
+                  "defined": {
+                    "name": "CpiInterfaceContext"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "get_position_state",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiInterfaceContext",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "alt_index",
+            "type": "u8"
+          },
+          {
+            "name": "is_signer",
+            "type": "bool"
+          },
+          {
+            "name": "is_writable",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EmissionInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "initial_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "last_seen_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "final_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "treasury_token_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "treasury_emission",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Number",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u64",
+              4
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sy_program",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_sy",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_pt",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_sy",
+            "type": "pubkey"
+          },
+          {
+            "name": "yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "address_lookup_table",
+            "type": "pubkey"
+          },
+          {
+            "name": "start_ts",
+            "type": "u32"
+          },
+          {
+            "name": "duration",
+            "type": "u32"
+          },
+          {
+            "name": "signer_seed",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "signer_bump",
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "last_seen_sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "all_time_high_sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "final_sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "total_sy_in_escrow",
+            "type": "u64"
+          },
+          {
+            "name": "sy_for_pt",
+            "type": "u64"
+          },
+          {
+            "name": "pt_supply",
+            "type": "u64"
+          },
+          {
+            "name": "treasury_sy",
+            "type": "u64"
+          },
+          {
+            "name": "uncollected_sy",
+            "type": "u64"
+          },
+          {
+            "name": "treasury_sy_token_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "interest_bps_fee",
+            "type": "u16"
+          },
+          {
+            "name": "min_op_size_strip",
+            "type": "u64"
+          },
+          {
+            "name": "min_op_size_merge",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "EmissionInfo"
+                }
+              }
+            }
+          },
+          {
+            "name": "cpi_accounts",
+            "type": {
+              "defined": {
+                "name": "CpiAccounts"
+              }
+            }
+          },
+          {
+            "name": "claim_limits",
+            "type": {
+              "defined": {
+                "name": "ClaimLimits"
+              }
+            }
+          },
+          {
+            "name": "max_py_supply",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "YieldTokenPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_balance",
+            "type": "u64"
+          },
+          {
+            "name": "interest",
+            "type": {
+              "defined": {
+                "name": "YieldTokenTracker"
+              }
+            }
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "YieldTokenTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "YieldTokenTracker",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "last_seen_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "staged",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

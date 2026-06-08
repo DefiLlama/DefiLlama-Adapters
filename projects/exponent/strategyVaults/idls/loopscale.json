@@ -1,0 +1,399 @@
+{
+  "address": "1oopBoJG58DgkUVKkEzKgyG9dvRmpgeEm1AVjoHkF78",
+  "metadata": {
+    "name": "loopscale",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Strategy",
+      "discriminator": [
+        174,
+        110,
+        39,
+        119,
+        82,
+        106,
+        169,
+        102
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "CapMonitor",
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c",
+        "packed": true
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "start_time_1hr",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "start_time_24hr",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "principal_1hr",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "principal_24hr",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExternalYieldAccounts",
+      "repr": {
+        "kind": "c",
+        "packed": true
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "external_yield_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "external_yield_vault",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PodBool",
+      "repr": {
+        "kind": "transparent"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          "u8"
+        ]
+      }
+    },
+    {
+      "name": "PodDecimal",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u8",
+              24
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "PodU128",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "PodU64",
+      "repr": {
+        "kind": "transparent"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u8",
+              8
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "PodU64CBPS",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u8",
+              8
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Strategy",
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c",
+        "packed": true
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "nonce",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "principal_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "lender",
+            "type": "pubkey"
+          },
+          {
+            "name": "originations_enabled",
+            "type": {
+              "defined": {
+                "name": "PodBool"
+              }
+            }
+          },
+          {
+            "name": "external_yield_source",
+            "type": "u8"
+          },
+          {
+            "name": "interest_per_second",
+            "type": {
+              "defined": {
+                "name": "PodDecimal"
+              }
+            }
+          },
+          {
+            "name": "last_accrued_timestamp",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "liquidity_buffer",
+            "type": {
+              "defined": {
+                "name": "PodU64CBPS"
+              }
+            }
+          },
+          {
+            "name": "token_balance",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "interest_fee",
+            "type": {
+              "defined": {
+                "name": "PodU64CBPS"
+              }
+            }
+          },
+          {
+            "name": "principal_fee",
+            "type": {
+              "defined": {
+                "name": "PodU64CBPS"
+              }
+            }
+          },
+          {
+            "name": "origination_fee",
+            "type": {
+              "defined": {
+                "name": "PodU64CBPS"
+              }
+            }
+          },
+          {
+            "name": "origination_cap",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "external_yield_amount",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "current_deployed_amount",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "outstanding_interest_amount",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "fee_claimable",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "cumulative_principal_originated",
+            "type": {
+              "defined": {
+                "name": "PodU128"
+              }
+            }
+          },
+          {
+            "name": "cumulative_interest_accrued",
+            "type": {
+              "defined": {
+                "name": "PodU128"
+              }
+            }
+          },
+          {
+            "name": "cumulative_loan_count",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "active_loan_count",
+            "type": {
+              "defined": {
+                "name": "PodU64"
+              }
+            }
+          },
+          {
+            "name": "market_information",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral_map",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    {
+                      "defined": {
+                        "name": "PodU64"
+                      }
+                    },
+                    5
+                  ]
+                },
+                200
+              ]
+            }
+          },
+          {
+            "name": "external_yield_accounts",
+            "type": {
+              "defined": {
+                "name": "ExternalYieldAccounts"
+              }
+            }
+          },
+          {
+            "name": "supply_monitor",
+            "type": {
+              "defined": {
+                "name": "CapMonitor"
+              }
+            }
+          },
+          {
+            "name": "withdraw_monitor",
+            "type": {
+              "defined": {
+                "name": "CapMonitor"
+              }
+            }
+          },
+          {
+            "name": "borrow_monitor",
+            "type": {
+              "defined": {
+                "name": "CapMonitor"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

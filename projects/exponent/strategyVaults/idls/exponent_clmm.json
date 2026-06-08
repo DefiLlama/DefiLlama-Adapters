@@ -1,0 +1,732 @@
+{
+  "address": "XPC1MM4dYACDfykNuXYZ5una2DsMDWL24CrYubCvarC",
+  "metadata": {
+    "name": "exponent_clmm",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "LpPosition",
+      "discriminator": [
+        105,
+        241,
+        37,
+        200,
+        224,
+        2,
+        252,
+        90
+      ]
+    },
+    {
+      "name": "MarketThree",
+      "discriminator": [
+        242,
+        240,
+        26,
+        15,
+        148,
+        186,
+        185,
+        205
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "ConfigurationOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ln_fee_rate_root",
+            "type": "f64"
+          },
+          {
+            "name": "treasury_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "min_lp_tick_amount",
+            "type": "u64"
+          },
+          {
+            "name": "epsilon_clamp",
+            "type": "f64"
+          },
+          {
+            "name": "max_lp_supply",
+            "type": "u64"
+          },
+          {
+            "name": "tick_space",
+            "type": "u32"
+          },
+          {
+            "name": "_reserved",
+            "type": {
+              "array": [
+                "u8",
+                1024
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiAccounts",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "get_sy_state",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "deposit_sy",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "withdraw_sy",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "claim_emission",
+            "type": {
+              "vec": {
+                "vec": {
+                  "defined": {
+                    "name": "CpiInterfaceContext"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "get_position_state",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiCoreAccounts",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "strip_sy",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "merge_sy",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiInterfaceContext",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "alt_index",
+            "type": "u8"
+          },
+          {
+            "name": "is_signer",
+            "type": "bool"
+          },
+          {
+            "name": "is_writable",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CrossingSplit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "cross_left_idx",
+            "type": "u32"
+          },
+          {
+            "name": "cross_right_idx",
+            "type": "u32"
+          },
+          {
+            "name": "lp_balance_crossing",
+            "type": "u64"
+          },
+          {
+            "name": "fee_inside_last_a_pt",
+            "type": "u128"
+          },
+          {
+            "name": "fee_inside_last_a_sy",
+            "type": "u128"
+          },
+          {
+            "name": "fee_inside_last_b_pt",
+            "type": "u128"
+          },
+          {
+            "name": "fee_inside_last_b_sy",
+            "type": "u128"
+          },
+          {
+            "name": "fee_inside_last_c_pt",
+            "type": "u128"
+          },
+          {
+            "name": "fee_inside_last_c_sy",
+            "type": "u128"
+          },
+          {
+            "name": "farms_a",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "farms_b",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "farms_c",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "FarmEmission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_rate",
+            "type": "u64"
+          },
+          {
+            "name": "expiry_timestamp",
+            "type": "u32"
+          },
+          {
+            "name": "index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LiquidityNetBalanceLimits",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "window_start_timestamp",
+            "type": "u32"
+          },
+          {
+            "name": "window_start_net_balance",
+            "type": "u64"
+          },
+          {
+            "name": "max_net_balance_change_negative_percentage",
+            "type": "u16"
+          },
+          {
+            "name": "max_net_balance_change_positive_percentage",
+            "type": "u32"
+          },
+          {
+            "name": "window_duration_seconds",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LpFarm",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "last_seen_timestamp",
+            "type": "u32"
+          },
+          {
+            "name": "farm_emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "FarmEmission"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LpPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_inside_last_pt",
+            "type": "u128"
+          },
+          {
+            "name": "fee_inside_last_sy",
+            "type": "u128"
+          },
+          {
+            "name": "lp_balance",
+            "type": "u64"
+          },
+          {
+            "name": "tokens_owed_sy",
+            "type": "u64"
+          },
+          {
+            "name": "tokens_owed_pt",
+            "type": "u64"
+          },
+          {
+            "name": "lower_tick_idx",
+            "type": "u32"
+          },
+          {
+            "name": "upper_tick_idx",
+            "type": "u32"
+          },
+          {
+            "name": "farms",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "share_trackers",
+            "type": {
+              "defined": {
+                "name": "PrincipalShareTrackers"
+              }
+            }
+          },
+          {
+            "name": "crossing_split",
+            "type": {
+              "defined": {
+                "name": "CrossingSplit"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketEmission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_share_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "last_seen_staged",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketEmissions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trackers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "MarketEmission"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketFinancials",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "expiration_ts",
+            "type": "u32"
+          },
+          {
+            "name": "pt_balance",
+            "type": "u64"
+          },
+          {
+            "name": "sy_balance",
+            "type": "u64"
+          },
+          {
+            "name": "sy_user_balance",
+            "type": "u64"
+          },
+          {
+            "name": "liquidity_balance",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketThree",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "address_lookup_table",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_pt",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_sy",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_yt_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_fee_treasury_sy",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_fee_treasury_pt",
+            "type": "pubkey"
+          },
+          {
+            "name": "self_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "ticks",
+            "type": "pubkey"
+          },
+          {
+            "name": "signer_bump",
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "status_flags",
+            "type": "u8"
+          },
+          {
+            "name": "sy_program",
+            "type": "pubkey"
+          },
+          {
+            "name": "exponent_core_program",
+            "type": "pubkey"
+          },
+          {
+            "name": "configuration_options",
+            "type": {
+              "defined": {
+                "name": "ConfigurationOptions"
+              }
+            }
+          },
+          {
+            "name": "financials",
+            "type": {
+              "defined": {
+                "name": "MarketFinancials"
+              }
+            }
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "defined": {
+                "name": "MarketEmissions"
+              }
+            }
+          },
+          {
+            "name": "lp_farm",
+            "type": {
+              "defined": {
+                "name": "LpFarm"
+              }
+            }
+          },
+          {
+            "name": "cpi_sy_accounts",
+            "type": {
+              "defined": {
+                "name": "CpiAccounts"
+              }
+            }
+          },
+          {
+            "name": "cpi_core_accounts",
+            "type": {
+              "defined": {
+                "name": "CpiCoreAccounts"
+              }
+            }
+          },
+          {
+            "name": "is_current_flash_swap",
+            "type": "bool"
+          },
+          {
+            "name": "liquidity_net_balance_limits",
+            "type": {
+              "defined": {
+                "name": "LiquidityNetBalanceLimits"
+              }
+            }
+          },
+          {
+            "name": "seed_id",
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Number",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u64",
+              4
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "PersonalYieldTracker",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "last_seen_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "staged",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PersonalYieldTrackers",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trackers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "PersonalYieldTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PrincipalShare",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tick_idx",
+            "type": "u32"
+          },
+          {
+            "name": "right_tick_idx",
+            "type": "u32"
+          },
+          {
+            "name": "split_epoch",
+            "type": "u64"
+          },
+          {
+            "name": "lp_share",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PrincipalShareTrackers",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trackers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "PrincipalShare"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
