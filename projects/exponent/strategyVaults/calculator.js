@@ -255,6 +255,7 @@ async function calculateOrderbookAum(programs, entry, vault, prices) {
 
     const vaultEscrowIndices = new Set()
     orderbook.userEscrows.forEach((escrow, index) => {
+      if (escrow.user.equals(DEFAULT_PUBLIC_KEY)) return
       if (escrow.user.equals(vault.squadsVault)) vaultEscrowIndices.add(index + 1)
     })
 
@@ -266,7 +267,9 @@ async function calculateOrderbookAum(programs, entry, vault, prices) {
       aumByMint.set(mint, (aumByMint.get(mint) || new BigNumber(0)).plus(getOrderbookOfferValue(offer, syPrice, ptPrice, ytPrice)))
     })
 
-    const userEscrow = orderbook.userEscrows.find((escrow) => escrow.user.equals(vault.squadsVault))
+    const userEscrow = orderbook.userEscrows.find((escrow) => (
+      !escrow.user.equals(DEFAULT_PUBLIC_KEY) && escrow.user.equals(vault.squadsVault)
+    ))
     if (userEscrow) {
       const stagedSy = projectOrderbookStagedSy(userEscrow, syExchangeRate)
       addOrderbookEscrowValue(aumByMint, entry.mint.toBase58(), userEscrow.syAmount + stagedSy, syPrice)
