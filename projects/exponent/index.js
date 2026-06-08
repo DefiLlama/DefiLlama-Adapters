@@ -10,9 +10,9 @@ const {
   resolveManagedUnderlyingMint,
 } = require('./strategyVaults')
 
-// const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
-const EXPONENT_API_V2_BASE = 'http://localhost:3000/api'
+const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
 const DEFILLAMA_SY_PAYLOAD_URL = `${EXPONENT_API_V2_BASE}/defillama/sy-payload`
+const DEFILLAMA_MANAGED_VAULTS_PAYLOAD_URL = `${EXPONENT_API_V2_BASE}/defillama/managed-vaults-payload`
 
 // Exponent stores the SY exchange rate with 1e12 fixed-point precision.
 const SY_EXCHANGE_RATE_SCALE = 12n
@@ -82,6 +82,41 @@ function parseSyPayloadEntry(entry) {
   }
 }
 
+/**
+ * Validates a DefiLlama managed vaults payload row and returns the fields needed
+ * to convert position AUM from strategy vault underlying raw units into the
+ * resolved position underlying mint raw units.
+ */
+function parseManagedVaultsPayloadEntry(entry) {
+  if (!entry || typeof entry !== 'object') return null
+
+  const {
+    strategyVaultUnderlyingMint,
+    positionMint,
+    positionUnderlyingMint,
+    underlyingToPositionUnderlyingRate,
+    underlyingToPositionUnderlyingRateScale,
+  } = entry
+
+  if (!isNonEmptyString(strategyVaultUnderlyingMint)) return null
+  if (!isNonEmptyString(positionMint)) return null
+  if (!isNonEmptyString(positionUnderlyingMint)) return null
+  if (!isNonEmptyString(underlyingToPositionUnderlyingRate)) return null
+  if (!isNonNegativeInteger(underlyingToPositionUnderlyingRateScale)) return null
+
+  return {
+    strategyVaultUnderlyingMint,
+    positionMint,
+    positionUnderlyingMint,
+    underlyingToPositionUnderlyingRate,
+    underlyingToPositionUnderlyingRateScale,
+  }
+}
+
+function buildManagedVaultsPayloadKey(strategyVaultUnderlyingMint, positionMint) {
+  return `${strategyVaultUnderlyingMint}:${positionMint}`
+}
+
 async function fetchVaultAccounts(program) {
   return program.account.vault.all()
 }
@@ -137,6 +172,31 @@ async function fetchSyPayloadByMint() {
   return syPayloadByMint
 }
 
+async function fetchManagedVaultsPayloadByKey() {
+  const payload = await getConfig(
+    'exponent-defillama-managed-vaults-payload',
+    DEFILLAMA_MANAGED_VAULTS_PAYLOAD_URL
+  )
+
+  if (!Array.isArray(payload)) {
+    throw new Error('Invalid exponent-defillama-managed-vaults-payload response: expected array')
+  }
+
+  const payloadByKey = new Map()
+
+  payload.forEach((entry) => {
+    const parsedEntry = parseManagedVaultsPayloadEntry(entry)
+    if (!parsedEntry) return
+
+    payloadByKey.set(
+      buildManagedVaultsPayloadKey(parsedEntry.strategyVaultUnderlyingMint, parsedEntry.positionMint),
+      parsedEntry
+    )
+  })
+
+  return payloadByKey
+}
+
 async function addCoreTvl(api, program, connection) {
   const vaultAccounts = await fetchVaultAccounts(program)
   const syExchangeRateByMint = buildSyExchangeRateByMint(vaultAccounts)
@@ -169,13 +229,40 @@ async function addCoreTvl(api, program, connection) {
 }
 
 async function addManagedVaultAum(api, connection) {
-  const managedVaultAums = await fetchStrategyVaultAums(connection)
+  const [managedVaultAums, managedVaultsPayloadByKey] = await Promise.all([
+    fetchStrategyVaultAums(connection),
+    fetchManagedVaultsPayloadByKey().catch((error) => {
+      console.warn('Failed to fetch Exponent managed vaults payload, using vault underlying fallback', error)
+      return new Map()
+    }),
+  ])
 
-  managedVaultAums.forEach(({ underlyingMint, aumRaw }) => {
+  managedVaultAums.forEach(({ underlyingMint, aumResults }) => {
     if (!isNonEmptyString(underlyingMint)) return
-    if (aumRaw <= 0n) return
+    if (!Array.isArray(aumResults)) return
 
-    api.add(resolveManagedUnderlyingMint(underlyingMint), aumRaw)
+    aumResults.forEach((result) => {
+      if (!result || typeof result !== 'object') return
+      if (!isNonEmptyString(result.mint)) return
+      if (result.aum <= 0n) return
+
+      const payload = managedVaultsPayloadByKey.get(buildManagedVaultsPayloadKey(underlyingMint, result.mint))
+      if (!payload) {
+        console.log("api.add", resolveManagedUnderlyingMint(underlyingMint), result.aum)
+        api.add(resolveManagedUnderlyingMint(underlyingMint), result.aum)
+        return
+      }
+
+      const amount = convertQuoteRawToBaseRaw({
+        quoteRaw: result.aum,
+        quoteToBaseRate: payload.underlyingToPositionUnderlyingRate,
+        quoteToBaseRateScale: payload.underlyingToPositionUnderlyingRateScale,
+      })
+      if (!amount) return
+
+      console.log("api.add",resolveManagedUnderlyingMint(payload.positionUnderlyingMint), amount)
+      api.add(resolveManagedUnderlyingMint(payload.positionUnderlyingMint), amount)
+    })
   })
 }
 
@@ -194,6 +281,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. Managed vault AUM is added from onchain Exponent strategy vault accounts using each vault underlying mint.',
+  methodology: 'TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. Managed vault position AUM is calculated from onchain Exponent strategy vault accounts and remapped through Exponent-provided resolver rates from each strategy vault underlying mint into each position underlying mint.',
   solana: { tvl },
 }

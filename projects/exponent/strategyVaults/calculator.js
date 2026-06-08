@@ -481,7 +481,19 @@ async function calculateClmmPositionAum(programs, entry, vault, prices) {
     const totalValue = resolvePrice(entry.priceIdPt, prices)
       .times(finalPt.toString())
       .plus(resolvePrice(entry.priceIdSy, prices).times(finalSy.toString()))
-    return { positionType: PositionType.ClmmPosition, mint: vault.underlyingMint.toBase58(), aum: decimalFloorToBigInt(totalValue) }
+    return {
+      positionType: PositionType.ClmmPosition,
+      mint: vault.underlyingMint.toBase58(),
+      aum: decimalFloorToBigInt(totalValue),
+      clmmPositionExposure: {
+        ptAmount: finalPt,
+        syAmount: finalSy,
+        clmmMarket: lpPosition.market.toBase58(),
+        positionAddress: entry.lpPosition.toBase58(),
+        lowerTickIdx: lpPosition.lowerTickIdx,
+        upperTickIdx: lpPosition.upperTickIdx,
+      },
+    }
   } catch (error) {
     console.warn('Failed to calculate CLMM position AUM:', error)
     return zeroResult

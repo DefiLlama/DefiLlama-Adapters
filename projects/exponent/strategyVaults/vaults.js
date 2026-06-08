@@ -1,6 +1,9 @@
 const bs58Module = require('bs58')
 
-const { EXPONENT_STRATEGY_VAULT_DISCRIMINATOR, EXPONENT_STRATEGY_VAULTS_PROGRAM_ID } = require('./constants')
+const {
+  EXPONENT_STRATEGY_VAULT_DISCRIMINATOR,
+  EXPONENT_STRATEGY_VAULTS_PROGRAM_ID,
+} = require('./constants')
 
 const bs58 = bs58Module.default || bs58Module
 const TOKEN_ENTRIES_VEC_OFFSET = 104
@@ -35,7 +38,8 @@ async function fetchStrategyVaultAccounts(programs) {
 
   const decoded = []
   rawAccounts.forEach(({ pubkey, account }) => {
-    if (IGNORED_VAULTS.has(pubkey.toBase58())) return
+    const vaultAddress = pubkey.toBase58()
+    if (IGNORED_VAULTS.has(vaultAddress)) return
     if (account.data.length < TOKEN_ENTRIES_VEC_OFFSET + 4) return
     if (account.data.readUInt32LE(TOKEN_ENTRIES_VEC_OFFSET) > MAX_TOKEN_ENTRIES) return
 
