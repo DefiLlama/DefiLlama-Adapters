@@ -5,10 +5,13 @@ const { Program } = require('@coral-xyz/anchor')
 
 const { getConfig } = require('../helper/cache')
 const idl = require('./idl.json')
+const {
+  fetchStrategyVaultAums,
+  resolveManagedUnderlyingMint,
+} = require('./strategyVaults')
 
 const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
 const DEFILLAMA_SY_PAYLOAD_URL = `${EXPONENT_API_V2_BASE}/defillama/sy-payload`
-const MANAGED_TOTAL_AUM_URL = `${EXPONENT_API_V2_BASE}/strategies/managed/total-aum`
 
 // Exponent stores the SY exchange rate with 1e12 fixed-point precision.
 const SY_EXCHANGE_RATE_SCALE = 12n
@@ -76,11 +79,6 @@ function parseSyPayloadEntry(entry) {
     quoteToBaseRate,
     quoteToBaseRateScale,
   }
-}
-
-function parseManagedAumAmountRaw(value) {
-  if (!value || typeof value !== 'object') return null
-  return parsePositiveBigIntString(value.aumUnderlyingRaw ?? value.amountRaw)
 }
 
 async function fetchVaultAccounts(program) {
@@ -169,25 +167,14 @@ async function addCoreTvl(api, program, connection) {
   })
 }
 
-async function addManagedVaultAum(api) {
-  // Managed strategies can deploy capital into external protocols that are not
-  // visible from core SY/PT/YT supply alone, so fetch that exposure separately.
-  const managedAum = await getConfig(
-    'exponent-managed-total-aum',
-    MANAGED_TOTAL_AUM_URL
-  )
+async function addManagedVaultAum(api, connection) {
+  const managedVaultAums = await fetchStrategyVaultAums(connection)
 
-  Object.entries(managedAum || {}).forEach(([, mintEntries]) => {
-    if (!mintEntries || typeof mintEntries !== 'object') return
+  managedVaultAums.forEach(({ underlyingMint, aumRaw }) => {
+    if (!isNonEmptyString(underlyingMint)) return
+    if (aumRaw <= 0n) return
 
-    Object.entries(mintEntries).forEach(([underlyingMint, value]) => {
-      if (!isNonEmptyString(underlyingMint)) return
-
-      const amount = parseManagedAumAmountRaw(value)
-      if (!amount) return
-
-      api.add(underlyingMint, amount)
-    })
+    api.add(resolveManagedUnderlyingMint(underlyingMint), aumRaw)
   })
 }
 
@@ -201,11 +188,11 @@ async function tvl(api) {
   const program = new Program(idl, provider)
 
   await addCoreTvl(api, program, connection)
-  await addManagedVaultAum(api)
+  await addManagedVaultAum(api, connection)
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. Managed vault AUM is added separately across all protocol buckets.',
+  methodology: 'TVL is calculated by summing the total supply of each Exponent wrapped yield-bearing token, converting SY raw supply into quote raw amount via the onchain last seen SY exchange rate, and then remapping that quote amount into the DefiLlama base mint when needed. For kamino and marginfi, the base mint remains the quote asset; otherwise the quote amount is converted into underlying asset units. Managed vault AUM is added from onchain Exponent strategy vault accounts using each vault underlying mint.',
   solana: { tvl },
 }
