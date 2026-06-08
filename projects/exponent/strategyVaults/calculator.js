@@ -46,6 +46,14 @@ const PositionType = {
 const DEFAULT_PUBLIC_KEY = PublicKey.default
 const KAMINO_RESERVE_FARM_KIND_COLLATERAL = 0
 const KAMINO_RESERVE_FARM_KIND_DEBT = 1
+const LOOPSCALE_LOAN_DISCRIMINATOR = Buffer.from([20, 195, 70, 117, 165, 227, 182, 1])
+const LOOPSCALE_DISCRIMINATOR_LEN = 8
+const LOOPSCALE_LOAN_HEADER_LEN = 51
+const LOOPSCALE_LEDGER_LEN = 182
+const LOOPSCALE_COLLATERAL_LEN = 73
+const LOOPSCALE_LEDGER_COUNT = 5
+const LOOPSCALE_COLLATERAL_COUNT = 5
+const LOOPSCALE_DECIMAL_SCALE = 1_000_000_000_000_000_000n
 
 function tupleValue(value) {
   if (!value) return null
@@ -57,6 +65,14 @@ function numericBn(value) {
   if (value == null) return 0
   if (typeof value === 'number') return value
   return Number(value.toString())
+}
+
+function readBigUIntLE(buffer, offset, byteLength) {
+  let result = 0n
+  for (let i = 0; i < byteLength; i += 1) {
+    result += BigInt(buffer[offset + i]) << BigInt(i * 8)
+  }
+  return result
 }
 
 async function getCurrentValuationClock(connection) {
@@ -500,6 +516,108 @@ async function calculateClmmPositionAum(programs, entry, vault, prices) {
   }
 }
 
+function parseLoopscaleLoan(data) {
+  const buffer = Buffer.from(data)
+  const ledgersOffset = LOOPSCALE_DISCRIMINATOR_LEN + LOOPSCALE_LOAN_HEADER_LEN
+  const collateralOffset = ledgersOffset + LOOPSCALE_LEDGER_LEN * LOOPSCALE_LEDGER_COUNT
+  const requiredLen = collateralOffset + LOOPSCALE_COLLATERAL_LEN * LOOPSCALE_COLLATERAL_COUNT
+  if (buffer.length < requiredLen) throw new Error('Loopscale loan account data too short')
+  if (!buffer.subarray(0, LOOPSCALE_DISCRIMINATOR_LEN).equals(LOOPSCALE_LOAN_DISCRIMINATOR)) {
+    throw new Error('Invalid Loopscale loan discriminator')
+  }
+
+  const ledgers = []
+  for (let i = 0; i < LOOPSCALE_LEDGER_COUNT; i += 1) {
+    const offset = ledgersOffset + i * LOOPSCALE_LEDGER_LEN
+    ledgers.push({
+      principalMint: new PublicKey(buffer.subarray(offset + 33, offset + 65)),
+      principalDue: buffer.readBigUInt64LE(offset + 97),
+      principalRepaid: buffer.readBigUInt64LE(offset + 105),
+      interestOutstanding: buffer.readBigUInt64LE(offset + 113),
+      lastInterestUpdatedTime: buffer.readBigUInt64LE(offset + 121),
+      interestPerSecond: readBigUIntLE(buffer, offset + 134, 24),
+    })
+  }
+
+  const collateral = []
+  for (let i = 0; i < LOOPSCALE_COLLATERAL_COUNT; i += 1) {
+    const offset = collateralOffset + i * LOOPSCALE_COLLATERAL_LEN
+    collateral.push({
+      assetMint: new PublicKey(buffer.subarray(offset, offset + 32)),
+      amount: buffer.readBigUInt64LE(offset + 32),
+    })
+  }
+
+  return { ledgers, collateral }
+}
+
+function calculateLoopscaleUnaccruedInterest(ledger, valuationClock) {
+  if (ledger.interestPerSecond === 0n) return 0n
+  const currentUnixTimestamp = valuationClock.currentUnixTimestamp
+  if (currentUnixTimestamp < ledger.lastInterestUpdatedTime) {
+    throw new Error('Loopscale loan ledger has future last interest update timestamp')
+  }
+  return (ledger.interestPerSecond * (currentUnixTimestamp - ledger.lastInterestUpdatedTime)) / LOOPSCALE_DECIMAL_SCALE
+}
+
+async function calculateLoopscaleLoanAum(programs, entry, vault, prices, valuationClock) {
+  const mint = vault.underlyingMint.toBase58()
+  try {
+    const info = await programs.cache.getAccountInfo(entry.loan)
+    if (!info?.data) return { positionType: PositionType.LoopscaleLoan, mint, aum: 0n }
+    if (!info.owner?.equals(programs.loopscale.programId)) throw new Error('Loopscale loan account owner mismatch')
+
+    const loan = parseLoopscaleLoan(info.data)
+    const mintPriceMap = new Map((vault.tokenEntries || []).map((tokenEntry) => [
+      tokenEntry.mint.toBase58(),
+      tokenEntry.priceId,
+    ]))
+    const exposureByMint = new Map()
+    let collateralValue = new BigNumber(0)
+    let debtValue = new BigNumber(0)
+
+    for (const collateral of loan.collateral) {
+      const collateralMint = collateral.assetMint.toBase58()
+      if (collateral.assetMint.equals(DEFAULT_PUBLIC_KEY) || collateral.amount === 0n) continue
+      const priceId = mintPriceMap.get(collateralMint)
+      if (!priceId) continue
+
+      const value = resolvePrice(priceId, prices).times(collateral.amount.toString())
+      collateralValue = collateralValue.plus(value)
+      exposureByMint.set(collateralMint, (exposureByMint.get(collateralMint) || 0n) + decimalFloorToBigInt(value))
+    }
+
+    for (const ledger of loan.ledgers) {
+      const liveInterest = ledger.interestOutstanding + calculateLoopscaleUnaccruedInterest(ledger, valuationClock)
+      const outstanding = ledger.principalDue > ledger.principalRepaid
+        ? ledger.principalDue - ledger.principalRepaid + liveInterest
+        : liveInterest
+      if (outstanding === 0n) continue
+
+      const principalMint = ledger.principalMint.toBase58()
+      const priceId = mintPriceMap.get(principalMint)
+      if (!priceId) continue
+
+      const value = resolvePrice(priceId, prices).times(outstanding.toString())
+      debtValue = debtValue.plus(value)
+      exposureByMint.set(principalMint, (exposureByMint.get(principalMint) || 0n) - decimalFloorToBigInt(value))
+    }
+
+    return {
+      positionType: PositionType.LoopscaleLoan,
+      mint,
+      aum: decimalFloorToBigInt(BigNumber.max(collateralValue.minus(debtValue), 0)),
+      loopscaleLoanExposure: Array.from(exposureByMint.entries()).map(([exposureMint, amount]) => ({
+        mint: exposureMint,
+        amount,
+      })),
+    }
+  } catch (error) {
+    console.warn('Failed to calculate Loopscale loan AUM:', error)
+    return { positionType: PositionType.LoopscaleLoan, mint, aum: 0n }
+  }
+}
+
 async function calculateLoopscaleStrategyAum(programs, entry, vault, prices) {
   const underlyingMint = vault.underlyingMint.toBase58()
   try {
@@ -581,10 +699,7 @@ async function calculatePositionAum(programs, position, vault, prices, valuation
   }
   if (position.clmmPosition) return [await calculateClmmPositionAum(programs, tupleValue(position.clmmPosition), vault, prices)]
   if (position.loopscaleStrategy) return [await calculateLoopscaleStrategyAum(programs, tupleValue(position.loopscaleStrategy), vault, prices)]
-  if (position.loopscaleLoan) {
-    console.warn('Loopscale loan AUM is not implemented in DefiLlama Exponent strategy vault adapter yet')
-    return [{ positionType: PositionType.LoopscaleLoan, mint: vault.underlyingMint.toBase58(), aum: 0n }]
-  }
+  if (position.loopscaleLoan) return [await calculateLoopscaleLoanAum(programs, tupleValue(position.loopscaleLoan), vault, prices, valuationClock)]
   if (position.kaminoFarm) {
     return [await calculateKaminoFarmAum(programs, tupleValue(position.kaminoFarm), vault, prices, valuationClock)]
   }
