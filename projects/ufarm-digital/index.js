@@ -53,7 +53,7 @@ Object.keys(config).forEach(chain => {
       await sumTokens2({ api, ownerTokens, owners, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, blacklistedTokens: [...blacklistedTokens, ...uniV4Blacklist], permitFailure: true })
 
       if (uniV4PositionIds.length) {
-        await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4PositionIds }, permitFailure: true })
+        await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4PositionIds }, blacklistedTokens: [...blacklistedTokens, ...uniV4Blacklist], permitFailure: true })
       }
     }
   }
