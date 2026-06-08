@@ -10,7 +10,8 @@ const {
   resolveManagedUnderlyingMint,
 } = require('./strategyVaults')
 
-const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
+// const EXPONENT_API_V2_BASE = 'https://api.exponent.finance'
+const EXPONENT_API_V2_BASE = 'http://localhost:3000/api'
 const DEFILLAMA_SY_PAYLOAD_URL = `${EXPONENT_API_V2_BASE}/defillama/sy-payload`
 
 // Exponent stores the SY exchange rate with 1e12 fixed-point precision.

@@ -1,0 +1,7194 @@
+{
+  "address": "ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7",
+  "metadata": {
+    "name": "exponent_core",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "add_emission",
+      "discriminator": [
+        18
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "fee_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "admin"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "robot_token_account",
+          "docs": [
+            "Assert that the new token account is owned by the vault"
+          ]
+        },
+        {
+          "name": "treasury_token_account"
+        },
+        {
+          "name": "yield_position",
+          "docs": [
+            "Increase the robot's position size"
+          ],
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "cpi_accounts",
+          "type": {
+            "defined": {
+              "name": "CpiAccounts"
+            }
+          }
+        },
+        {
+          "name": "treasury_fee_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "add_farm",
+      "discriminator": [
+        22
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "signer": true
+        },
+        {
+          "name": "fee_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint_new"
+        },
+        {
+          "name": "admin_state"
+        },
+        {
+          "name": "token_source",
+          "writable": true
+        },
+        {
+          "name": "token_farm",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "token_rate",
+          "type": "u64"
+        },
+        {
+          "name": "until_timestamp",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "add_lp_tokens_metadata",
+      "discriminator": [
+        41
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin"
+        },
+        {
+          "name": "market"
+        },
+        {
+          "name": "mint_lp"
+        },
+        {
+          "name": "metadata",
+          "writable": true
+        },
+        {
+          "name": "token_metadata_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "add_market_emission",
+      "discriminator": [
+        25
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "signer": true
+        },
+        {
+          "name": "fee_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint_new"
+        },
+        {
+          "name": "admin_state"
+        },
+        {
+          "name": "token_emission",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "cpi_accounts",
+          "type": {
+            "defined": {
+              "name": "CpiAccounts"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "buy_yt",
+      "docs": [
+        "Buy YT with SY"
+      ],
+      "discriminator": [
+        0
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_sy_trader",
+          "docs": [
+            "Source account for the trader's SY tokens"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_yt_trader",
+          "docs": [
+            "Destination for receiving YT tokens"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "Temporary SY account owned by market"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity owned by market"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "vault_authority",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow_vault",
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table_vault"
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "sy_in",
+          "type": "u64"
+        },
+        {
+          "name": "yt_out",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "BuyYtEvent"
+        }
+      }
+    },
+    {
+      "name": "claim_farm_emissions",
+      "discriminator": [
+        24
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market"
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "token_dst",
+          "writable": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "token_farm",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": {
+            "defined": {
+              "name": "Amount"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "ClaimFarmEmissionsEventV2"
+        }
+      }
+    },
+    {
+      "name": "collect_emission",
+      "discriminator": [
+        19
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "emission_escrow",
+          "writable": true
+        },
+        {
+          "name": "emission_dst",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "treasury_emission_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "index",
+          "type": "u16"
+        },
+        {
+          "name": "amount",
+          "type": {
+            "defined": {
+              "name": "Amount"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "CollectEmissionEventV2"
+        }
+      }
+    },
+    {
+      "name": "collect_interest",
+      "discriminator": [
+        6
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "docs": [
+            "Owner of the YieldTokenPosition"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "yield_position",
+          "docs": [
+            "Owner's position data for YT deposits"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The vault that holds the SY tokens in escrow"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_dst",
+          "docs": [
+            "The receiving token account for SY withdrawn"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "treasury_sy_token_account",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": {
+            "defined": {
+              "name": "Amount"
+            }
+          }
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "CollectInterestEventV2"
+        }
+      }
+    },
+    {
+      "name": "collect_treasury_emission",
+      "discriminator": [
+        20
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "yield_position",
+          "docs": [
+            "constrained by vault"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "constrained by vault"
+          ]
+        },
+        {
+          "name": "emission_escrow",
+          "writable": true
+        },
+        {
+          "name": "emission_dst",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "admin"
+        }
+      ],
+      "args": [
+        {
+          "name": "emission_index",
+          "type": "u16"
+        },
+        {
+          "name": "amount",
+          "type": {
+            "defined": {
+              "name": "Amount"
+            }
+          }
+        },
+        {
+          "name": "kind",
+          "type": {
+            "defined": {
+              "name": "CollectTreasuryEmissionKind"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "collect_treasury_interest",
+      "discriminator": [
+        21
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The vault that holds the SY tokens in escrow"
+          ],
+          "writable": true
+        },
+        {
+          "name": "sy_dst",
+          "docs": [
+            "The receiving token account for SY withdrawn"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "writable": true
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "admin"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": {
+            "defined": {
+              "name": "Amount"
+            }
+          }
+        },
+        {
+          "name": "kind",
+          "type": {
+            "defined": {
+              "name": "CollectTreasuryInterestKind"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "deposit_yt",
+      "docs": [
+        "Deposit YT into escrow in order to earn rewards & SY interest"
+      ],
+      "discriminator": [
+        7
+      ],
+      "accounts": [
+        {
+          "name": "depositor",
+          "docs": [
+            "Permissionless depositor - not necessarily the owner of the YieldTokenPosition"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "Vault that manages YT"
+          ],
+          "writable": true
+        },
+        {
+          "name": "user_yield_position",
+          "docs": [
+            "Position data for YT deposits, linked to vault"
+          ],
+          "writable": true
+        },
+        {
+          "name": "yt_src",
+          "docs": [
+            "Depositor's YT token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_yt",
+          "docs": [
+            "Vault-owned escrow account for YT"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program",
+          "docs": [
+            "The SY interface implementation for the vault's token"
+          ]
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "yield_position",
+          "docs": [
+            "Vault-owned yield token position"
+          ],
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "DepositYtEventV2"
+        }
+      }
+    },
+    {
+      "name": "init_lp_position",
+      "docs": [
+        "Initialize a LP position for a user to deposit LP tokens into"
+      ],
+      "discriminator": [
+        13
+      ],
+      "accounts": [
+        {
+          "name": "fee_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "owner"
+        },
+        {
+          "name": "market"
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "InitLpPositionEvent"
+        }
+      }
+    },
+    {
+      "name": "init_market_two",
+      "discriminator": [
+        10
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin_signer",
+          "signer": true
+        },
+        {
+          "name": "market",
+          "docs": [
+            "There is 1 market per vault"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "Links the mint_sy & mint_pt & sy_program together"
+          ]
+        },
+        {
+          "name": "mint_sy"
+        },
+        {
+          "name": "mint_pt"
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "escrow_pt",
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "docs": [
+            "This account for SY is only a temporary pass-through account",
+            "It is used to transfer SY tokens from the signer to the market",
+            "And then from the market to the SY program's escrow"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_lp",
+          "docs": [
+            "Holds activated LP tokens for farming & SY emissions"
+          ],
+          "writable": true
+        },
+        {
+          "name": "pt_src",
+          "docs": [
+            "Signer's PT token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "sy_src",
+          "docs": [
+            "Signer's SY token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "lp_dst",
+          "docs": [
+            "Receiving account for LP tokens"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "docs": [
+            "Use the old Token program as the implementation for PT & SY & LP tokens"
+          ]
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "associated_token_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "admin"
+        },
+        {
+          "name": "token_treasury_fee_sy"
+        }
+      ],
+      "args": [
+        {
+          "name": "ln_fee_rate_root",
+          "type": "f64"
+        },
+        {
+          "name": "rate_scalar_root",
+          "type": "f64"
+        },
+        {
+          "name": "init_rate_anchor",
+          "type": "f64"
+        },
+        {
+          "name": "sy_exchange_rate",
+          "type": {
+            "defined": {
+              "name": "Number"
+            }
+          }
+        },
+        {
+          "name": "pt_init",
+          "type": "u64"
+        },
+        {
+          "name": "sy_init",
+          "type": "u64"
+        },
+        {
+          "name": "fee_treasury_sy_bps",
+          "type": "u16"
+        },
+        {
+          "name": "cpi_accounts",
+          "type": {
+            "defined": {
+              "name": "CpiAccounts"
+            }
+          }
+        },
+        {
+          "name": "seed_id",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "initialize_vault",
+      "docs": [
+        "High-trust function to init vault"
+      ],
+      "discriminator": [
+        2
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin"
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "The signer for the vault"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "escrow_yt",
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "writable": true
+        },
+        {
+          "name": "mint_sy"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "treasury_token_account"
+        },
+        {
+          "name": "associated_token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "metadata",
+          "writable": true
+        },
+        {
+          "name": "token_metadata_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "start_timestamp",
+          "type": "u32"
+        },
+        {
+          "name": "duration",
+          "type": "u32"
+        },
+        {
+          "name": "interest_bps_fee",
+          "type": "u16"
+        },
+        {
+          "name": "cpi_accounts",
+          "type": {
+            "defined": {
+              "name": "CpiAccounts"
+            }
+          }
+        },
+        {
+          "name": "min_op_size_strip",
+          "type": "u64"
+        },
+        {
+          "name": "min_op_size_merge",
+          "type": "u64"
+        },
+        {
+          "name": "pt_metadata_name",
+          "type": "string"
+        },
+        {
+          "name": "pt_metadata_symbol",
+          "type": "string"
+        },
+        {
+          "name": "pt_metadata_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "initialize_yield_position",
+      "discriminator": [
+        3
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "docs": [
+            "Owner of the new YieldTokenPosition",
+            "ie - the \"owner\" is not a Signer"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault"
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "InitializeYieldPositionEvent"
+        }
+      }
+    },
+    {
+      "name": "market_collect_emission",
+      "docs": [
+        "Collect a staged emission"
+      ],
+      "discriminator": [
+        16
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "token_emission_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_emission_dst",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "emission_index",
+          "type": "u16"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "MarketCollectEmissionEventV2"
+        }
+      }
+    },
+    {
+      "name": "market_deposit_lp",
+      "docs": [
+        "Deposit LP tokens into a personal LP position account"
+      ],
+      "discriminator": [
+        14
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "token_lp_src",
+          "writable": true
+        },
+        {
+          "name": "token_lp_escrow",
+          "writable": true
+        },
+        {
+          "name": "mint_lp"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "DepositLpEventV2"
+        }
+      }
+    },
+    {
+      "name": "market_two_deposit_liquidity",
+      "discriminator": [
+        11
+      ],
+      "accounts": [
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_pt_src",
+          "writable": true
+        },
+        {
+          "name": "token_sy_src",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_lp_dst",
+          "writable": true
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table",
+          "docs": [
+            "Address lookup table for vault"
+          ]
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "pt_intent",
+          "type": "u64"
+        },
+        {
+          "name": "sy_intent",
+          "type": "u64"
+        },
+        {
+          "name": "min_lp_out",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "DepositLiquidityEvent"
+        }
+      }
+    },
+    {
+      "name": "market_two_withdraw_liquidity",
+      "discriminator": [
+        12
+      ],
+      "accounts": [
+        {
+          "name": "withdrawer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_pt_dst",
+          "writable": true
+        },
+        {
+          "name": "token_sy_dst",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "Market PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "Market-owned interchange account for SY"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_lp_src",
+          "writable": true
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table",
+          "docs": [
+            "Address lookup table for vault"
+          ]
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "lp_in",
+          "type": "u64"
+        },
+        {
+          "name": "min_pt_out",
+          "type": "u64"
+        },
+        {
+          "name": "min_sy_out",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "WithdrawLiquidityEvent"
+        }
+      }
+    },
+    {
+      "name": "market_withdraw_lp",
+      "docs": [
+        "Withdraw LP tokens from personal LP position account"
+      ],
+      "discriminator": [
+        15
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "mint_lp"
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "token_lp_dst",
+          "writable": true
+        },
+        {
+          "name": "token_lp_escrow",
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "WithdrawLpEventV2"
+        }
+      }
+    },
+    {
+      "name": "merge",
+      "docs": [
+        "Merge PT + YT into SY",
+        "Redeems & burns them, in exchange for SY"
+      ],
+      "discriminator": [
+        5
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "This authority owns the escrow_sy account & the robot account with the SY program",
+            "Needs to be mutable to be used in deposit_sy CPI"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "sy_dst",
+          "docs": [
+            "Destination account for SY withdrawn from vault"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "docs": [
+            "Vault-owned account for SY tokens"
+          ],
+          "writable": true
+        },
+        {
+          "name": "yt_src",
+          "docs": [
+            "The owner's YT token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "pt_src",
+          "docs": [
+            "The owner's PT token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "docs": [
+            "Mint for YT -- needed for burning"
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "docs": [
+            "Mint for PT -- needed for burning"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "yield_position",
+          "docs": [
+            "Yield position for the vault robot account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "MergeEvent"
+        }
+      }
+    },
+    {
+      "name": "modify_farm",
+      "discriminator": [
+        23
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "signer": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "admin_state"
+        },
+        {
+          "name": "token_source",
+          "writable": true
+        },
+        {
+          "name": "token_farm",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "until_timestamp",
+          "type": "u32"
+        },
+        {
+          "name": "new_rate",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "modify_market_setting",
+      "discriminator": [
+        27
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin_state"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "action",
+          "type": {
+            "defined": {
+              "name": "MarketAdminAction"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "modify_vault_setting",
+      "discriminator": [
+        26
+      ],
+      "accounts": [
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin_state"
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "action",
+          "type": {
+            "defined": {
+              "name": "AdminAction"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "realloc_market",
+      "discriminator": [
+        40
+      ],
+      "accounts": [
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin_state"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "rent"
+        }
+      ],
+      "args": [
+        {
+          "name": "additional_bytes",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "sell_yt",
+      "docs": [
+        "Sell YT for SY"
+      ],
+      "discriminator": [
+        1
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_yt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_pt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_sy_trader",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "Account owned by market",
+            "This is a temporary account that receives SY tokens from the user, after which it transfers them to the SY program"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "authority_vault",
+          "docs": [
+            "Vault-robot authority"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow_vault",
+          "docs": [
+            "Vault-robot owned escrow account for SY"
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table_vault",
+          "docs": [
+            "ALT owned by vault"
+          ]
+        },
+        {
+          "name": "yield_position_vault",
+          "docs": [
+            "Yield position owned by vault robot"
+          ],
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "yt_in",
+          "type": "u64"
+        },
+        {
+          "name": "min_sy_out",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "SellYtEvent"
+        }
+      }
+    },
+    {
+      "name": "stage_yt_yield",
+      "discriminator": [
+        9
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "user_yield_position",
+          "docs": [
+            "Position data for YT deposits, linked to vault"
+          ],
+          "writable": true
+        },
+        {
+          "name": "yield_position",
+          "docs": [
+            "Yield position for the vault robot account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "StageYieldEventV2"
+        }
+      }
+    },
+    {
+      "name": "strip",
+      "docs": [
+        "Strip SY into PT + YT"
+      ],
+      "discriminator": [
+        4
+      ],
+      "accounts": [
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "This account owns the mints for PT & YT",
+            "And owns the robot account with the SY program",
+            "Needs to be mutable to be used in deposit_sy CPI"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "sy_src",
+          "docs": [
+            "Depositor's SY token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "docs": [
+            "Temporary account owned by the vault for receiving SY tokens before depositing into the SY Program's escrow account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "yt_dst",
+          "docs": [
+            "Final destination for receiving YT (probably, but not necessarily, owned by the depositor)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "pt_dst",
+          "docs": [
+            "Final destination for receiving PT (probably, but not necessarily, owned by the depositor)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "address_lookup_table",
+          "docs": [
+            "Address lookup table for vault"
+          ]
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "yield_position",
+          "docs": [
+            "Vault-owned yield position account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "StripEvent"
+        }
+      }
+    },
+    {
+      "name": "trade_pt",
+      "discriminator": [
+        17
+      ],
+      "accounts": [
+        {
+          "name": "trader",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_sy_trader",
+          "docs": [
+            "Trader's SY token account",
+            "Mint is constrained by TokenProgram"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_trader",
+          "docs": [
+            "Receiving PT token account",
+            "Mint is constrained by TokenProgram"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "Account owned by market",
+            "This is a temporary account that receives SY tokens from the user, after which it transfers them to the SY program"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "net_trader_pt",
+          "type": "i64"
+        },
+        {
+          "name": "sy_constraint",
+          "type": "i64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "TradePtEvent"
+        }
+      }
+    },
+    {
+      "name": "withdraw_yt",
+      "discriminator": [
+        8
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "Vault that manages YT"
+          ],
+          "writable": true
+        },
+        {
+          "name": "user_yield_position",
+          "docs": [
+            "Position data for YT deposits, linked to vault"
+          ],
+          "writable": true
+        },
+        {
+          "name": "yt_dst",
+          "docs": [
+            "Withdrawer's YT token account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_yt",
+          "docs": [
+            "Vault-owned escrow account for YT"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "sy_program",
+          "docs": [
+            "The SY interface implementation for the vault's token"
+          ]
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ],
+      "returns": {
+        "defined": {
+          "name": "WithdrawYtEventV2"
+        }
+      }
+    },
+    {
+      "name": "wrapper_buy_pt",
+      "discriminator": [
+        29
+      ],
+      "accounts": [
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_sy_trader",
+          "writable": true
+        },
+        {
+          "name": "token_pt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "pt_amount",
+          "type": "u64"
+        },
+        {
+          "name": "max_base_amount",
+          "type": "u64"
+        },
+        {
+          "name": "mint_sy_rem_accounts_until",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_buy_yt",
+      "discriminator": [
+        31
+      ],
+      "accounts": [
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_sy_trader",
+          "writable": true
+        },
+        {
+          "name": "token_yt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_pt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "writable": true
+        },
+        {
+          "name": "market_address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "vault_authority",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow_vault",
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "vault_address_lookup_table"
+        },
+        {
+          "name": "user_yield_position",
+          "writable": true
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "escrow_yt",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "yt_out",
+          "type": "u64"
+        },
+        {
+          "name": "max_base_amount",
+          "type": "u64"
+        },
+        {
+          "name": "mint_sy_accounts_length",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_collect_interest",
+      "discriminator": [
+        33
+      ],
+      "accounts": [
+        {
+          "name": "claimer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "The authority owned by the vault for minting PT/YT"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "escrow_sy",
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "token_sy_dst",
+          "writable": true
+        },
+        {
+          "name": "treasury_sy_token_account",
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "redeem_sy_accounts_length",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_merge",
+      "discriminator": [
+        39
+      ],
+      "accounts": [
+        {
+          "name": "merger",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_sy_merger",
+          "docs": [
+            "Token account for SY owned by the merger"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "writable": true
+        },
+        {
+          "name": "token_yt_merger",
+          "writable": true
+        },
+        {
+          "name": "token_pt_merger",
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true
+        },
+        {
+          "name": "vault_address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "vault_robot_yield_position",
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_py",
+          "type": "u64"
+        },
+        {
+          "name": "redeem_sy_accounts_until",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_provide_liquidity",
+      "docs": [
+        "Provide liquidity to a market starting with a base asset",
+        "This instruction",
+        "- deposits base asset for SY",
+        "- strips a portion of the SY into PT & YT",
+        "- provides the remaining SY with the PT into the market",
+        "- keeps the YT",
+        "",
+        "# Arguments",
+        "- `amount_base` - The amount of base asset to deposit",
+        "- `min_lp_out` - The minimum amount of LP tokens to receive",
+        "- `mint_base_accounts_until` - The index of the account to use for the base asset mint"
+      ],
+      "discriminator": [
+        28
+      ],
+      "accounts": [
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "The authority owned by the vault for minting PT/YT"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "SY token account owned by the market"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_lp_dst",
+          "writable": true
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "token_sy_depositor",
+          "docs": [
+            "Token account for SY owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "writable": true
+        },
+        {
+          "name": "token_yt_depositor",
+          "docs": [
+            "Token account for YT owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_depositor",
+          "docs": [
+            "Token account for PT owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "vault_address_lookup_table"
+        },
+        {
+          "name": "market_address_lookup_table"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "user_yield_position",
+          "writable": true
+        },
+        {
+          "name": "escrow_yt",
+          "writable": true
+        },
+        {
+          "name": "token_lp_escrow",
+          "writable": true
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "vault_robot_yield_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_base",
+          "type": "u64"
+        },
+        {
+          "name": "min_lp_out",
+          "type": "u64"
+        },
+        {
+          "name": "mint_base_accounts_until",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_provide_liquidity_base",
+      "discriminator": [
+        36
+      ],
+      "accounts": [
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "SY token account owned by the market"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_lp_dst",
+          "writable": true
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "token_sy_depositor",
+          "docs": [
+            "Token account for SY owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_depositor",
+          "docs": [
+            "Token account for PT owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "market_address_lookup_table"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "token_lp_escrow",
+          "writable": true
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_base",
+          "type": "u64"
+        },
+        {
+          "name": "min_lp_out",
+          "type": "u64"
+        },
+        {
+          "name": "mint_sy_accounts_until",
+          "type": "u8"
+        },
+        {
+          "name": "external_pt_to_buy",
+          "type": "u64"
+        },
+        {
+          "name": "external_sy_constraint",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_provide_liquidity_classic",
+      "discriminator": [
+        37
+      ],
+      "accounts": [
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "SY token account owned by the market"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_lp_dst",
+          "writable": true
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "token_sy_depositor",
+          "docs": [
+            "Token account for SY owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_depositor",
+          "docs": [
+            "Token account for PT owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "market_address_lookup_table"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_lp_escrow",
+          "writable": true
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_base",
+          "type": "u64"
+        },
+        {
+          "name": "amount_pt",
+          "type": "u64"
+        },
+        {
+          "name": "min_lp_out",
+          "type": "u64"
+        },
+        {
+          "name": "mint_sy_accounts_until",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_sell_pt",
+      "discriminator": [
+        30
+      ],
+      "accounts": [
+        {
+          "name": "seller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_sy_trader",
+          "writable": true
+        },
+        {
+          "name": "token_pt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "writable": true
+        },
+        {
+          "name": "address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_pt",
+          "type": "u64"
+        },
+        {
+          "name": "min_base_amount",
+          "type": "u64"
+        },
+        {
+          "name": "redeem_sy_rem_accounts_until",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_sell_yt",
+      "discriminator": [
+        32
+      ],
+      "accounts": [
+        {
+          "name": "seller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_sy_trader",
+          "writable": true
+        },
+        {
+          "name": "token_yt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_pt_trader",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "writable": true
+        },
+        {
+          "name": "market_address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "vault_authority",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow_vault",
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "vault_address_lookup_table"
+        },
+        {
+          "name": "yield_position",
+          "writable": true
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "yt_amount",
+          "type": "u64"
+        },
+        {
+          "name": "min_base_amount",
+          "type": "u64"
+        },
+        {
+          "name": "redeem_sy_accounts_until",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_strip",
+      "discriminator": [
+        38
+      ],
+      "accounts": [
+        {
+          "name": "depositor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_sy_depositor",
+          "docs": [
+            "Token account for SY owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "escrow_sy",
+          "writable": true
+        },
+        {
+          "name": "token_yt_depositor",
+          "writable": true
+        },
+        {
+          "name": "token_pt_depositor",
+          "writable": true
+        },
+        {
+          "name": "mint_yt",
+          "writable": true
+        },
+        {
+          "name": "mint_pt",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true
+        },
+        {
+          "name": "vault_address_lookup_table"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "escrow_yt",
+          "writable": true
+        },
+        {
+          "name": "user_yield_position",
+          "writable": true
+        },
+        {
+          "name": "vault_robot_yield_position",
+          "writable": true
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_base",
+          "type": "u64"
+        },
+        {
+          "name": "mint_sy_accounts_until",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_withdraw_liquidity",
+      "discriminator": [
+        34
+      ],
+      "accounts": [
+        {
+          "name": "withdrawer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "SY token account owned by the market"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_lp_src",
+          "writable": true
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "token_sy_withdrawer",
+          "docs": [
+            "Token account for SY owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_withdrawer",
+          "docs": [
+            "Token account for PT owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "market_address_lookup_table"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_lp_escrow",
+          "writable": true
+        },
+        {
+          "name": "token_fee_treasury_sy",
+          "writable": true
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_lp",
+          "type": "u64"
+        },
+        {
+          "name": "sy_constraint",
+          "type": "u64"
+        },
+        {
+          "name": "redeem_sy_accounts_length",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "wrapper_withdraw_liquidity_classic",
+      "discriminator": [
+        35
+      ],
+      "accounts": [
+        {
+          "name": "withdrawer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "market",
+          "writable": true
+        },
+        {
+          "name": "token_pt_escrow",
+          "docs": [
+            "PT liquidity account"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_sy_escrow",
+          "docs": [
+            "SY token account owned by the market"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_lp_src",
+          "writable": true
+        },
+        {
+          "name": "mint_lp",
+          "writable": true
+        },
+        {
+          "name": "token_sy_withdrawer",
+          "docs": [
+            "Token account for SY owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_pt_withdrawer",
+          "docs": [
+            "Token account for PT owned by the depositor"
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "market_address_lookup_table"
+        },
+        {
+          "name": "sy_program"
+        },
+        {
+          "name": "token_lp_escrow",
+          "writable": true
+        },
+        {
+          "name": "lp_position",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "event_authority"
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_lp",
+          "type": "u64"
+        },
+        {
+          "name": "redeem_sy_accounts_length",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Admin",
+      "discriminator": [
+        244,
+        158,
+        220,
+        65,
+        8,
+        73,
+        4,
+        65
+      ]
+    },
+    {
+      "name": "LpPosition",
+      "discriminator": [
+        105,
+        241,
+        37,
+        200,
+        224,
+        2,
+        252,
+        90
+      ]
+    },
+    {
+      "name": "MarketTwo",
+      "discriminator": [
+        212,
+        4,
+        132,
+        126,
+        169,
+        121,
+        121,
+        20
+      ]
+    },
+    {
+      "name": "Vault",
+      "discriminator": [
+        211,
+        8,
+        232,
+        43,
+        2,
+        152,
+        117,
+        119
+      ]
+    },
+    {
+      "name": "YieldTokenPosition",
+      "discriminator": [
+        227,
+        92,
+        146,
+        49,
+        29,
+        85,
+        71,
+        94
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "BuyPtEvent",
+      "discriminator": [
+        62,
+        132,
+        50,
+        43,
+        219,
+        234,
+        221,
+        167
+      ]
+    },
+    {
+      "name": "BuyYtEvent",
+      "discriminator": [
+        172,
+        181,
+        56,
+        183,
+        219,
+        24,
+        130,
+        64
+      ]
+    },
+    {
+      "name": "ClaimFarmEmissionsEvent",
+      "discriminator": [
+        184,
+        10,
+        159,
+        144,
+        144,
+        194,
+        166,
+        92
+      ]
+    },
+    {
+      "name": "ClaimFarmEmissionsEventV2",
+      "discriminator": [
+        179,
+        43,
+        141,
+        15,
+        184,
+        80,
+        2,
+        47
+      ]
+    },
+    {
+      "name": "CollectEmissionEvent",
+      "discriminator": [
+        220,
+        173,
+        217,
+        52,
+        133,
+        253,
+        5,
+        114
+      ]
+    },
+    {
+      "name": "CollectEmissionEventV2",
+      "discriminator": [
+        235,
+        35,
+        233,
+        149,
+        215,
+        221,
+        100,
+        66
+      ]
+    },
+    {
+      "name": "CollectInterestEvent",
+      "discriminator": [
+        95,
+        53,
+        16,
+        82,
+        91,
+        39,
+        176,
+        252
+      ]
+    },
+    {
+      "name": "CollectInterestEventV2",
+      "discriminator": [
+        208,
+        173,
+        139,
+        10,
+        96,
+        51,
+        184,
+        154
+      ]
+    },
+    {
+      "name": "DepositLiquidityEvent",
+      "discriminator": [
+        169,
+        84,
+        67,
+        174,
+        222,
+        138,
+        16,
+        123
+      ]
+    },
+    {
+      "name": "DepositLpEvent",
+      "discriminator": [
+        118,
+        20,
+        164,
+        8,
+        112,
+        130,
+        3,
+        62
+      ]
+    },
+    {
+      "name": "DepositLpEventV2",
+      "discriminator": [
+        49,
+        159,
+        183,
+        208,
+        173,
+        243,
+        36,
+        137
+      ]
+    },
+    {
+      "name": "DepositYtEvent",
+      "discriminator": [
+        78,
+        226,
+        18,
+        115,
+        161,
+        164,
+        137,
+        112
+      ]
+    },
+    {
+      "name": "DepositYtEventV2",
+      "discriminator": [
+        24,
+        10,
+        201,
+        118,
+        79,
+        178,
+        237,
+        243
+      ]
+    },
+    {
+      "name": "InitLpPositionEvent",
+      "discriminator": [
+        7,
+        245,
+        31,
+        228,
+        42,
+        49,
+        201,
+        192
+      ]
+    },
+    {
+      "name": "InitializeYieldPositionEvent",
+      "discriminator": [
+        114,
+        53,
+        131,
+        31,
+        90,
+        57,
+        208,
+        196
+      ]
+    },
+    {
+      "name": "MarketCollectEmissionEvent",
+      "discriminator": [
+        125,
+        129,
+        15,
+        139,
+        232,
+        244,
+        82,
+        67
+      ]
+    },
+    {
+      "name": "MarketCollectEmissionEventV2",
+      "discriminator": [
+        173,
+        158,
+        156,
+        218,
+        11,
+        243,
+        57,
+        54
+      ]
+    },
+    {
+      "name": "MergeEvent",
+      "discriminator": [
+        25,
+        30,
+        29,
+        41,
+        108,
+        139,
+        103,
+        4
+      ]
+    },
+    {
+      "name": "SellPtEvent",
+      "discriminator": [
+        103,
+        139,
+        188,
+        216,
+        68,
+        124,
+        110,
+        63
+      ]
+    },
+    {
+      "name": "SellYtEvent",
+      "discriminator": [
+        149,
+        147,
+        29,
+        159,
+        148,
+        240,
+        129,
+        7
+      ]
+    },
+    {
+      "name": "StageYieldEvent",
+      "discriminator": [
+        248,
+        92,
+        96,
+        80,
+        238,
+        94,
+        91,
+        195
+      ]
+    },
+    {
+      "name": "StageYieldEventV2",
+      "discriminator": [
+        23,
+        7,
+        36,
+        198,
+        5,
+        216,
+        217,
+        189
+      ]
+    },
+    {
+      "name": "StripEvent",
+      "discriminator": [
+        114,
+        189,
+        26,
+        143,
+        143,
+        50,
+        197,
+        89
+      ]
+    },
+    {
+      "name": "TradePtEvent",
+      "discriminator": [
+        159,
+        225,
+        96,
+        81,
+        255,
+        227,
+        233,
+        174
+      ]
+    },
+    {
+      "name": "WithdrawLiquidityEvent",
+      "discriminator": [
+        214,
+        6,
+        161,
+        45,
+        191,
+        142,
+        124,
+        186
+      ]
+    },
+    {
+      "name": "WithdrawLpEvent",
+      "discriminator": [
+        200,
+        158,
+        208,
+        54,
+        94,
+        239,
+        92,
+        222
+      ]
+    },
+    {
+      "name": "WithdrawLpEventV2",
+      "discriminator": [
+        17,
+        227,
+        69,
+        154,
+        238,
+        182,
+        86,
+        33
+      ]
+    },
+    {
+      "name": "WithdrawYtEvent",
+      "discriminator": [
+        190,
+        66,
+        234,
+        53,
+        4,
+        207,
+        221,
+        17
+      ]
+    },
+    {
+      "name": "WithdrawYtEventV2",
+      "discriminator": [
+        41,
+        253,
+        139,
+        142,
+        167,
+        187,
+        86,
+        118
+      ]
+    },
+    {
+      "name": "WrapperBuyYtEvent",
+      "discriminator": [
+        148,
+        95,
+        21,
+        54,
+        99,
+        16,
+        15,
+        40
+      ]
+    },
+    {
+      "name": "WrapperCollectInterestEvent",
+      "discriminator": [
+        177,
+        39,
+        249,
+        210,
+        72,
+        117,
+        16,
+        192
+      ]
+    },
+    {
+      "name": "WrapperMergeEvent",
+      "discriminator": [
+        97,
+        26,
+        173,
+        147,
+        157,
+        218,
+        37,
+        102
+      ]
+    },
+    {
+      "name": "WrapperProvideLiquidityBaseEvent",
+      "discriminator": [
+        60,
+        121,
+        164,
+        93,
+        220,
+        13,
+        142,
+        197
+      ]
+    },
+    {
+      "name": "WrapperProvideLiquidityClassicEvent",
+      "discriminator": [
+        87,
+        163,
+        150,
+        162,
+        186,
+        147,
+        234,
+        200
+      ]
+    },
+    {
+      "name": "WrapperProvideLiquidityEvent",
+      "discriminator": [
+        209,
+        42,
+        227,
+        77,
+        187,
+        216,
+        17,
+        177
+      ]
+    },
+    {
+      "name": "WrapperSellYtEvent",
+      "discriminator": [
+        252,
+        140,
+        45,
+        253,
+        6,
+        94,
+        95,
+        135
+      ]
+    },
+    {
+      "name": "WrapperStripEvent",
+      "discriminator": [
+        70,
+        128,
+        226,
+        182,
+        17,
+        99,
+        235,
+        18
+      ]
+    },
+    {
+      "name": "WrapperWithdrawLiquidityClassicEvent",
+      "discriminator": [
+        18,
+        154,
+        212,
+        39,
+        36,
+        23,
+        158,
+        124
+      ]
+    },
+    {
+      "name": "WrapperWithdrawLiquidityEvent",
+      "discriminator": [
+        52,
+        32,
+        180,
+        241,
+        36,
+        221,
+        72,
+        167
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidProxyAccount",
+      "msg": "Invalid Proxy Account"
+    },
+    {
+      "code": 6001,
+      "name": "VaultExpired",
+      "msg": "Vault is expired"
+    },
+    {
+      "code": 6002,
+      "name": "EmissionIndexMustBeSequential",
+      "msg": "Emission Index must be sequential"
+    },
+    {
+      "code": 6003,
+      "name": "AmountLargerThanStaged",
+      "msg": "Amount larger than staged"
+    },
+    {
+      "code": 6004,
+      "name": "MathOverflow",
+      "msg": "Math overflow"
+    },
+    {
+      "code": 6005,
+      "name": "DurationNegative",
+      "msg": "Duration is negative"
+    },
+    {
+      "code": 6006,
+      "name": "FarmDoesNotExist",
+      "msg": "Farm does not exist"
+    },
+    {
+      "code": 6007,
+      "name": "LpSupplyMaximumExceeded",
+      "msg": "Lp supply maximum exceeded"
+    },
+    {
+      "code": 6008,
+      "name": "VaultIsNotActive",
+      "msg": "Vault has not started yet or has ended"
+    },
+    {
+      "code": 6009,
+      "name": "OperationAmountTooSmall",
+      "msg": "Operation amount too small"
+    },
+    {
+      "code": 6010,
+      "name": "StrippingDisabled",
+      "msg": "Stripping is disabled"
+    },
+    {
+      "code": 6011,
+      "name": "MergingDisabled",
+      "msg": "Merging is disabled"
+    },
+    {
+      "code": 6012,
+      "name": "DepositingYtDisabled",
+      "msg": "Depositing YT is disabled"
+    },
+    {
+      "code": 6013,
+      "name": "WithdrawingYtDisabled",
+      "msg": "Withdrawing YT is disabled"
+    },
+    {
+      "code": 6014,
+      "name": "CollectingInterestDisabled",
+      "msg": "Collecting interest is disabled"
+    },
+    {
+      "code": 6015,
+      "name": "CollectingEmissionsDisabled",
+      "msg": "Collecting Emissions is disabled"
+    },
+    {
+      "code": 6016,
+      "name": "BuyingPtDisabled",
+      "msg": "Buying PT is disabled"
+    },
+    {
+      "code": 6017,
+      "name": "SellingPtDisabled",
+      "msg": "Selling PT is disabled"
+    },
+    {
+      "code": 6018,
+      "name": "BuyingYtDisabled",
+      "msg": "Buying YT is disabled"
+    },
+    {
+      "code": 6019,
+      "name": "SellingYtDisabled",
+      "msg": "Selling YT is disabled"
+    },
+    {
+      "code": 6020,
+      "name": "DepositingLiquidityDisabled",
+      "msg": "Depositing Liquidity is disabled"
+    },
+    {
+      "code": 6021,
+      "name": "WithdrawingLiquidityDisabled",
+      "msg": "Withdrawing Liquidity is disabled"
+    },
+    {
+      "code": 6022,
+      "name": "VaultInEmergencyMode",
+      "msg": "Vault is in emergency mode"
+    },
+    {
+      "code": 6023,
+      "name": "FarmAlreadyExists",
+      "msg": "Farm already exists"
+    },
+    {
+      "code": 6024,
+      "name": "ClaimLimitExceeded",
+      "msg": "Claim limit exceeded"
+    },
+    {
+      "code": 6025,
+      "name": "NetBalanceChangeExceedsLimit",
+      "msg": "Net balance change exceeds limit"
+    },
+    {
+      "code": 6026,
+      "name": "MinSyOutNotMet",
+      "msg": "Min SY out not met"
+    },
+    {
+      "code": 6027,
+      "name": "MinPtOutNotMet",
+      "msg": "Min PT out not met"
+    },
+    {
+      "code": 6028,
+      "name": "MinLpOutNotMet",
+      "msg": "Min LP out not met"
+    }
+  ],
+  "types": [
+    {
+      "name": "Admin",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uber_admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "proposed_uber_admin",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "principles",
+            "type": {
+              "defined": {
+                "name": "Principles"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdminAction",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "SetVaultStatus",
+            "fields": [
+              "u8"
+            ]
+          },
+          {
+            "name": "ChangeVaultBpsFee",
+            "fields": [
+              "u16"
+            ]
+          },
+          {
+            "name": "ChangeVaultTreasuryTokenAccount",
+            "fields": [
+              "pubkey"
+            ]
+          },
+          {
+            "name": "ChangeEmissionTreasuryTokenAccount",
+            "fields": [
+              {
+                "name": "emission_index",
+                "type": "u16"
+              },
+              {
+                "name": "new_token_account",
+                "type": "pubkey"
+              }
+            ]
+          },
+          {
+            "name": "ChangeMinOperationSize",
+            "fields": [
+              {
+                "name": "is_strip",
+                "type": "bool"
+              },
+              {
+                "name": "new_size",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "ChangeEmissionBpsFee",
+            "fields": [
+              {
+                "name": "emission_index",
+                "type": "u16"
+              },
+              {
+                "name": "new_fee_bps",
+                "type": "u16"
+              }
+            ]
+          },
+          {
+            "name": "ChangeCpiAccounts",
+            "fields": [
+              {
+                "name": "cpi_accounts",
+                "type": {
+                  "defined": {
+                    "name": "CpiAccounts"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "ChangeClaimLimits",
+            "fields": [
+              {
+                "name": "max_claim_amount_per_window",
+                "type": "u64"
+              },
+              {
+                "name": "claim_window_duration_seconds",
+                "type": "u32"
+              }
+            ]
+          },
+          {
+            "name": "ChangeMaxPySupply",
+            "fields": [
+              {
+                "name": "new_max_py_supply",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "ChangeAddressLookupTable",
+            "fields": [
+              "pubkey"
+            ]
+          },
+          {
+            "name": "RemoveVaultEmission",
+            "fields": [
+              "u8"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Amount",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "All"
+          },
+          {
+            "name": "Some",
+            "fields": [
+              "u64"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "BuyPtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "base_amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "pt_amount_out",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BuyYtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_yt_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "max_sy_in",
+            "type": "u64"
+          },
+          {
+            "name": "yt_out",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "sy_to_strip",
+            "type": "u64"
+          },
+          {
+            "name": "sy_borrowed",
+            "type": "u64"
+          },
+          {
+            "name": "pt_out",
+            "type": "u64"
+          },
+          {
+            "name": "sy_repaid",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimFarmEmissionsEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_farm",
+            "type": "pubkey"
+          },
+          {
+            "name": "farm_index",
+            "type": "u8"
+          },
+          {
+            "name": "amount_claimed",
+            "type": "u64"
+          },
+          {
+            "name": "remaining_staged",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimFarmEmissionsEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_farm",
+            "type": "pubkey"
+          },
+          {
+            "name": "farm_index",
+            "type": "u8"
+          },
+          {
+            "name": "amount_claimed",
+            "type": "u64"
+          },
+          {
+            "name": "remaining_staged",
+            "type": "u64"
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "farms",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimLimits",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "claim_window_start_timestamp",
+            "type": "u32"
+          },
+          {
+            "name": "total_claim_amount_in_window",
+            "type": "u64"
+          },
+          {
+            "name": "max_claim_amount_per_window",
+            "type": "u64"
+          },
+          {
+            "name": "claim_window_duration_seconds",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollectEmissionEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "emission_index",
+            "type": "u16"
+          },
+          {
+            "name": "amount_to_user",
+            "type": "u64"
+          },
+          {
+            "name": "amount_to_treasury",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollectEmissionEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "emission_index",
+            "type": "u16"
+          },
+          {
+            "name": "amount_to_user",
+            "type": "u64"
+          },
+          {
+            "name": "amount_to_treasury",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "user_interest",
+            "type": {
+              "defined": {
+                "name": "YieldTokenTracker"
+              }
+            }
+          },
+          {
+            "name": "user_emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "YieldTokenTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollectInterestEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_to_user",
+            "type": "u64"
+          },
+          {
+            "name": "amount_to_treasury",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollectInterestEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_to_user",
+            "type": "u64"
+          },
+          {
+            "name": "amount_to_treasury",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "user_interest",
+            "type": {
+              "defined": {
+                "name": "YieldTokenTracker"
+              }
+            }
+          },
+          {
+            "name": "user_emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "YieldTokenTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollectTreasuryEmissionKind",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "YieldPosition"
+          },
+          {
+            "name": "TreasuryEmission"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollectTreasuryInterestKind",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "YieldPosition"
+          },
+          {
+            "name": "TreasuryInterest"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiAccounts",
+      "docs": [
+        "Account lists for validating CPI calls to the SY program"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "get_sy_state",
+            "docs": [
+              "Fetch SY state"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "deposit_sy",
+            "docs": [
+              "Deposit SY into personal account owned by vault"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "withdraw_sy",
+            "docs": [
+              "Withdraw SY from personal account owned by vault"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          },
+          {
+            "name": "claim_emission",
+            "docs": [
+              "Settle rewards for vault to accounts owned by the vault"
+            ],
+            "type": {
+              "vec": {
+                "vec": {
+                  "defined": {
+                    "name": "CpiInterfaceContext"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "get_position_state",
+            "docs": [
+              "Get personal yield position"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CpiInterfaceContext"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CpiInterfaceContext",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "alt_index",
+            "docs": [
+              "Address-lookup-table index"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "is_signer",
+            "type": "bool"
+          },
+          {
+            "name": "is_writable",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositLiquidityEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "depositor",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp",
+            "type": "pubkey"
+          },
+          {
+            "name": "pt_intent",
+            "type": "u64"
+          },
+          {
+            "name": "sy_intent",
+            "type": "u64"
+          },
+          {
+            "name": "pt_in",
+            "type": "u64"
+          },
+          {
+            "name": "sy_in",
+            "type": "u64"
+          },
+          {
+            "name": "lp_out",
+            "type": "u64"
+          },
+          {
+            "name": "new_lp_supply",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositLpEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "new_lp_balance",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositLpEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "new_lp_balance",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "farms",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositYtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "depositor",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "user_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "vault_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "user_staged_yield",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DepositYtEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "depositor",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "user_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "vault_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "user_staged_yield",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "user_interest",
+            "type": {
+              "defined": {
+                "name": "YieldTokenTracker"
+              }
+            }
+          },
+          {
+            "name": "user_emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "YieldTokenTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "EmissionInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_account",
+            "docs": [
+              "The token account for the emission where the vault authority is the authority"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "initial_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "last_seen_index",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "final_index",
+            "docs": [
+              "The final index is used to track the last claimable index after the vault expires"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "treasury_token_account",
+            "docs": [
+              "The treasury token account for this reward"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_bps",
+            "docs": [
+              "The fee taken from emission collecting"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "treasury_emission",
+            "docs": [
+              "The lambo fund"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FarmEmission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "docs": [
+              "Mint for the emission token"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "token_rate",
+            "docs": [
+              "Rate at which the emission token is emitted per second"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "expiry_timestamp",
+            "docs": [
+              "Expiration timestamp for the emission token"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "index",
+            "docs": [
+              "Index for converting LP shares into earned emissions"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitLpPositionEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fee_payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "num_emission_trackers",
+            "type": "u8"
+          },
+          {
+            "name": "num_farm_emissions",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitializeYieldPositionEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LiquidityNetBalanceLimits",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "window_start_timestamp",
+            "type": "u32"
+          },
+          {
+            "name": "window_start_net_balance",
+            "type": "u64"
+          },
+          {
+            "name": "max_net_balance_change_negative_percentage",
+            "docs": [
+              "Maximum allowed negative change in basis points (10000 = 100%)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "max_net_balance_change_positive_percentage",
+            "docs": [
+              "Maximum allowed positive change in basis points (10000 = 100%)",
+              "Using u32 to allow for very large increases (up to ~429,496%)"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "window_duration_seconds",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LpFarm",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "last_seen_timestamp",
+            "type": "u32"
+          },
+          {
+            "name": "farm_emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "FarmEmission"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LpPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "Link to address that owns this position"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "docs": [
+              "Link to market that manages the LP"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_balance",
+            "docs": [
+              "Track the LP balance of the user here"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "emissions",
+            "docs": [
+              "Tracker for emissions earned (paid in emission tokens)"
+            ],
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "farms",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketAdminAction",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "SetStatus",
+            "fields": [
+              "u8"
+            ]
+          },
+          {
+            "name": "SetMaxLpSupply",
+            "fields": [
+              "u64"
+            ]
+          },
+          {
+            "name": "ChangeTreasuryTradeSyBpsFee",
+            "fields": [
+              "u16"
+            ]
+          },
+          {
+            "name": "ChangeLnFeeRateRoot",
+            "fields": [
+              "f64"
+            ]
+          },
+          {
+            "name": "ChangeRateScalarRoot",
+            "fields": [
+              "f64"
+            ]
+          },
+          {
+            "name": "ChangeCpiAccounts",
+            "fields": [
+              {
+                "name": "cpi_accounts",
+                "type": {
+                  "defined": {
+                    "name": "CpiAccounts"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "ChangeLiquidityNetBalanceLimits",
+            "fields": [
+              {
+                "name": "max_net_balance_change_negative_percentage",
+                "type": "u16"
+              },
+              {
+                "name": "max_net_balance_change_positive_percentage",
+                "type": "u32"
+              },
+              {
+                "name": "window_duration_seconds",
+                "type": "u32"
+              }
+            ]
+          },
+          {
+            "name": "ChangeAddressLookupTable",
+            "fields": [
+              "pubkey"
+            ]
+          },
+          {
+            "name": "RemoveMarketEmission",
+            "fields": [
+              "u8"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketCollectEmissionEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_emission_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_emission_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "emission_index",
+            "type": "u16"
+          },
+          {
+            "name": "amount_collected",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketCollectEmissionEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_emission_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_emission_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "emission_index",
+            "type": "u16"
+          },
+          {
+            "name": "amount_collected",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "farms",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketEmission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_escrow",
+            "docs": [
+              "Escrow account that receives the emissions from the SY program",
+              "And then passes them through to the user"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_share_index",
+            "docs": [
+              "Index for converting LP shares into earned emissions"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "last_seen_staged",
+            "docs": [
+              "The difference between the staged amount and collected emission amount"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketEmissions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trackers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "MarketEmission"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketFinancials",
+      "docs": [
+        "Financial parameters for the market"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "expiration_ts",
+            "docs": [
+              "Expiration timestamp, which is copied from the vault associated with the PT"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pt_balance",
+            "docs": [
+              "Balance of PT in the market",
+              "This amount is tracked separately to prevent bugs from token transfers directly to the market"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "sy_balance",
+            "docs": [
+              "Balance of SY in the market",
+              "This amount is tracked separately to prevent bugs from token transfers directly to the market"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "ln_fee_rate_root",
+            "docs": [
+              "Initial log of fee rate, which decreases over time"
+            ],
+            "type": "f64"
+          },
+          {
+            "name": "last_ln_implied_rate",
+            "docs": [
+              "Last seen log of implied rate (APY) for PT",
+              "Used to maintain continuity of the APY between trades over time"
+            ],
+            "type": "f64"
+          },
+          {
+            "name": "rate_scalar_root",
+            "docs": [
+              "Initial rate scalar, which increases over time"
+            ],
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketTwo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "address_lookup_table",
+            "docs": [
+              "Address to ALT"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_pt",
+            "docs": [
+              "Mint of the vault's PT token"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_sy",
+            "docs": [
+              "Mint of the SY program's SY token"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "docs": [
+              "Link to yield-stripping vault"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp",
+            "docs": [
+              "Mint for the market's LP tokens"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_escrow",
+            "docs": [
+              "Holds the LP tokens that are earning emissions",
+              "This is where LP holders \"stake\" their LP tokens"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_escrow",
+            "docs": [
+              "Token account that holds PT liquidity"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "docs": [
+              "Pass-through token account for SY moving from the depositor to the SY program"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "token_fee_treasury_sy",
+            "docs": [
+              "Token account that holds SY fees from trade_pt"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_treasury_sy_bps",
+            "docs": [
+              "Fee treasury SY BPS"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "self_address",
+            "docs": [
+              "Authority for CPI calls owned by the market struct"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "signer_bump",
+            "docs": [
+              "Bump for signing the PDA"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "status_flags",
+            "type": "u8"
+          },
+          {
+            "name": "sy_program",
+            "docs": [
+              "Link to the SY program ID"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "financials",
+            "type": {
+              "defined": {
+                "name": "MarketFinancials"
+              }
+            }
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "defined": {
+                "name": "MarketEmissions"
+              }
+            }
+          },
+          {
+            "name": "lp_farm",
+            "type": {
+              "defined": {
+                "name": "LpFarm"
+              }
+            }
+          },
+          {
+            "name": "max_lp_supply",
+            "type": "u64"
+          },
+          {
+            "name": "lp_escrow_amount",
+            "type": "u64"
+          },
+          {
+            "name": "cpi_accounts",
+            "docs": [
+              "Record of CPI accounts"
+            ],
+            "type": {
+              "defined": {
+                "name": "CpiAccounts"
+              }
+            }
+          },
+          {
+            "name": "is_current_flash_swap",
+            "type": "bool"
+          },
+          {
+            "name": "liquidity_net_balance_limits",
+            "type": {
+              "defined": {
+                "name": "LiquidityNetBalanceLimits"
+              }
+            }
+          },
+          {
+            "name": "seed_id",
+            "docs": [
+              "Unique seed id for the market"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MergeEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "sy_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_sy",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "pt_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_pt",
+            "type": "pubkey"
+          },
+          {
+            "name": "yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_py_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_sy_out",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "pt_redemption_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "total_sy_in_escrow",
+            "type": "u64"
+          },
+          {
+            "name": "pt_supply",
+            "type": "u64"
+          },
+          {
+            "name": "yt_balance",
+            "type": "u64"
+          },
+          {
+            "name": "sy_for_pt",
+            "type": "u64"
+          },
+          {
+            "name": "is_vault_active",
+            "type": "bool"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Number",
+      "docs": [
+        "High precision number, stored as 4 u64 words in little endian"
+      ],
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "array": [
+              "u64",
+              4
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "PersonalYieldTracker",
+      "docs": [
+        "Generic tracker for interest and emissions earned by deposits"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "last_seen_index",
+            "docs": [
+              "The index is the per-share value of the SY token",
+              "Note that the YT balance must be converted to the equivalent SY balance"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "staged",
+            "docs": [
+              "Staged tokens that may be withdrawn"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PersonalYieldTrackers",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trackers",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "PersonalYieldTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PrincipleDetails",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "administrators",
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Principles",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "hot_admin",
+            "type": {
+              "defined": {
+                "name": "PrincipleDetails"
+              }
+            }
+          },
+          {
+            "name": "cold_admin",
+            "type": {
+              "defined": {
+                "name": "PrincipleDetails"
+              }
+            }
+          },
+          {
+            "name": "pause_admin",
+            "type": {
+              "defined": {
+                "name": "PrincipleDetails"
+              }
+            }
+          },
+          {
+            "name": "reserved1",
+            "type": {
+              "defined": {
+                "name": "PrincipleDetails"
+              }
+            }
+          },
+          {
+            "name": "reserved2",
+            "type": {
+              "defined": {
+                "name": "PrincipleDetails"
+              }
+            }
+          },
+          {
+            "name": "reserved3",
+            "type": {
+              "defined": {
+                "name": "PrincipleDetails"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SellPtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "pt_amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "base_amount_out",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SellYtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_yt_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_yt_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_sy_received_from_merge",
+            "type": "u64"
+          },
+          {
+            "name": "amount_sy_spent_buying_pt",
+            "type": "u64"
+          },
+          {
+            "name": "amount_sy_out",
+            "type": "u64"
+          },
+          {
+            "name": "pt_borrowed_and_repaid",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StageYieldEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "user_yt_balance",
+            "type": "u64"
+          },
+          {
+            "name": "user_staged_yield",
+            "type": "u64"
+          },
+          {
+            "name": "user_staged_emissions",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StageYieldEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "user_yt_balance",
+            "type": "u64"
+          },
+          {
+            "name": "user_staged_yield",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "user_interest",
+            "type": {
+              "defined": {
+                "name": "YieldTokenTracker"
+              }
+            }
+          },
+          {
+            "name": "user_emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "YieldTokenTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "StripEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "depositor",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "sy_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_sy",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "pt_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_pt",
+            "type": "pubkey"
+          },
+          {
+            "name": "yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_sy_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_py_out",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "total_sy_in_escrow",
+            "type": "u64"
+          },
+          {
+            "name": "pt_supply",
+            "type": "u64"
+          },
+          {
+            "name": "yt_balance",
+            "type": "u64"
+          },
+          {
+            "name": "all_time_high_sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "sy_for_pt",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TradePtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_trader",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "net_trader_pt",
+            "type": "i64"
+          },
+          {
+            "name": "net_trader_sy",
+            "type": "i64"
+          },
+          {
+            "name": "fee_sy",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sy_program",
+            "docs": [
+              "Link to SY program"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_sy",
+            "docs": [
+              "Mint for SY token"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_yt",
+            "docs": [
+              "Mint for the vault-specific YT token"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_pt",
+            "docs": [
+              "Mint for the vault-specific PT token"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_yt",
+            "docs": [
+              "Escrow account for holding deposited YT"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_sy",
+            "docs": [
+              "Escrow account that holds temporary SY tokens",
+              "As an interchange between users and the SY program"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "yield_position",
+            "docs": [
+              "Link to a vault-owned YT position",
+              "This account collects yield from all \"unstaked\" YT"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "address_lookup_table",
+            "docs": [
+              "Address lookup table key for vault"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "start_ts",
+            "docs": [
+              "start timestamp"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "duration",
+            "docs": [
+              "seconds duration"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "signer_seed",
+            "docs": [
+              "Seed for CPI signing"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "docs": [
+              "Authority for CPI signing"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "signer_bump",
+            "docs": [
+              "bump for signer authority PDA"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "last_seen_sy_exchange_rate",
+            "docs": [
+              "Last seen SY exchange rate",
+              "This continues to be updated even after vault maturity to track SY appreciation for treasury collection"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "all_time_high_sy_exchange_rate",
+            "docs": [
+              "This is the all time high exchange rate for SY"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "final_sy_exchange_rate",
+            "docs": [
+              "This is the exchange rate for SY when the vault expires"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "total_sy_in_escrow",
+            "docs": [
+              "How much SY is held in escrow"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "sy_for_pt",
+            "docs": [
+              "The total SY set aside to back the PT holders",
+              "This value is updated on every operation that touches the PT supply or the last seen exchange rate"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pt_supply",
+            "docs": [
+              "Total supply of PT"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "treasury_sy",
+            "docs": [
+              "Amount of SY staged for the treasury"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "uncollected_sy",
+            "docs": [
+              "SY that has been earned by YT, but not yet collected"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "treasury_sy_token_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "interest_bps_fee",
+            "type": "u16"
+          },
+          {
+            "name": "min_op_size_strip",
+            "type": "u64"
+          },
+          {
+            "name": "min_op_size_merge",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "EmissionInfo"
+                }
+              }
+            }
+          },
+          {
+            "name": "cpi_accounts",
+            "type": {
+              "defined": {
+                "name": "CpiAccounts"
+              }
+            }
+          },
+          {
+            "name": "claim_limits",
+            "type": {
+              "defined": {
+                "name": "ClaimLimits"
+              }
+            }
+          },
+          {
+            "name": "max_py_supply",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawLiquidityEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "withdrawer",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_pt_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_sy_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_src",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_in",
+            "type": "u64"
+          },
+          {
+            "name": "pt_out",
+            "type": "u64"
+          },
+          {
+            "name": "sy_out",
+            "type": "u64"
+          },
+          {
+            "name": "new_lp_supply",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawLpEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "new_lp_balance",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawLpEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_lp",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_lp_escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "new_lp_balance",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "emissions",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          },
+          {
+            "name": "farms",
+            "type": {
+              "defined": {
+                "name": "PersonalYieldTrackers"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawYtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "user_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "vault_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "user_staged_yield",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawYtEventV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "user_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_yield_position",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_dst",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_yt",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "sy_exchange_rate",
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "user_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "vault_yt_balance_after",
+            "type": "u64"
+          },
+          {
+            "name": "user_staged_yield",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "user_interest",
+            "type": {
+              "defined": {
+                "name": "YieldTokenTracker"
+              }
+            }
+          },
+          {
+            "name": "user_emissions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "YieldTokenTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperBuyYtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_out_amount",
+            "type": "u64"
+          },
+          {
+            "name": "base_in_amount",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperCollectInterestEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "depositor",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_base_collected",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperMergeEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_py_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_sy_redeemed",
+            "type": "u64"
+          },
+          {
+            "name": "amount_base_out",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperProvideLiquidityBaseEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "market_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_base_in",
+            "type": "u64"
+          },
+          {
+            "name": "trade_amount_pt_out",
+            "type": "u64"
+          },
+          {
+            "name": "trade_amount_sy_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_lp_out",
+            "type": "u64"
+          },
+          {
+            "name": "lp_price",
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperProvideLiquidityClassicEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "market_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_base_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_pt_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_lp_out",
+            "type": "u64"
+          },
+          {
+            "name": "lp_price",
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperProvideLiquidityEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "market_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_base_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_lp_out",
+            "type": "u64"
+          },
+          {
+            "name": "amount_yt_out",
+            "type": "u64"
+          },
+          {
+            "name": "lp_price",
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperSellYtEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "market",
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_in_amount",
+            "type": "u64"
+          },
+          {
+            "name": "base_out_amount",
+            "type": "u64"
+          },
+          {
+            "name": "unix_timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperStripEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_base_in",
+            "type": "u64"
+          },
+          {
+            "name": "amount_sy_stripped",
+            "type": "u64"
+          },
+          {
+            "name": "amount_py_out",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperWithdrawLiquidityClassicEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_address",
+            "docs": [
+              "User who withdrew liquidity"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "market_address",
+            "docs": [
+              "Market that the user withdrew liquidity from"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_base_out",
+            "docs": [
+              "Amount of base token out"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "amount_lp_in",
+            "docs": [
+              "Amount of LP token in"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "amount_pt_out",
+            "docs": [
+              "Amount of PT token out"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lp_price",
+            "docs": [
+              "LP price in asset"
+            ],
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WrapperWithdrawLiquidityEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "market_address",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_base_out",
+            "type": "u64"
+          },
+          {
+            "name": "amount_lp_in",
+            "type": "u64"
+          },
+          {
+            "name": "lp_price",
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "YieldTokenPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "Link to address that owns this position"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "docs": [
+              "Link to vault that manages the YT"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "yt_balance",
+            "docs": [
+              "Track the YT balance of the user here"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "interest",
+            "docs": [
+              "Tracker for interest earned (paid in SY)"
+            ],
+            "type": {
+              "defined": {
+                "name": "YieldTokenTracker"
+              }
+            }
+          },
+          {
+            "name": "emissions",
+            "docs": [
+              "Tracker for emissions earned (paid in emission tokens)"
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "YieldTokenTracker"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "YieldTokenTracker",
+      "docs": [
+        "Generic tracker for interest and emissions earned by YT deposits"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "last_seen_index",
+            "docs": [
+              "The index is the per-share value of the SY token",
+              "Note that the YT balance must be converted to the equivalent SY balance"
+            ],
+            "type": {
+              "defined": {
+                "name": "Number"
+              }
+            }
+          },
+          {
+            "name": "staged",
+            "docs": [
+              "Staged tokens that may be withdrawn"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}
