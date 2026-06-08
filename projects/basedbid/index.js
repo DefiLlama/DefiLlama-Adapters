@@ -8,7 +8,6 @@ const { getUniqueAddresses } = require('../helper/tokenMapping')
 const { sliceIntoChunks } = require('../helper/utils')
 const idl = require('./idl.json')
 
-
 // based.bid contract addresses on each supported chain
 const BASED_BID = {
   ethereum: '0x3cb3D9E659653de02D8e3Aecd4963Ba1Ae429682',
@@ -301,29 +300,25 @@ async function unwrapPancakeInfinityCL(api, positionIds) {
 }
 
 async function tvl(api) {
-  const chain = api.chain
-  const owner = BASED_BID[chain]
+  const owner = BASED_BID[api.chain]
 
-  // 1. Native coin + stablecoins held directly by based.bid.
-  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[chain] || [] })
+  // Native coin + stablecoins held directly by based.bid.
+  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[api.chain] || [] })
+}
 
-  // 2. Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager).
-  for (const nftAddress of UNIV3_LIKE_NFTS[chain] || []) {
+async function pool2(api) {
+  const owner = BASED_BID[api.chain]
+
+  // Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager).
+  for (const nftAddress of UNIV3_LIKE_NFTS[api.chain] || []) {
     await sumTokens2({ api, owner, uniV3ExtraConfig: { nftAddress } })
   }
 
-  // 3. Uniswap V4 + PancakeSwap Infinity CL — position managers and tokenIds
-  //    come from the based.bid registry (meme + flash launch pools).
+  // Uniswap V4 + PancakeSwap Infinity CL — position managers and tokenIds
+  // come from the based.bid registry (meme + flash launch pools).
   const { uniV4ByNft, pcsInfinityIds } = await collectV4PositionsFromContract(api)
   await unwrapUniV4Positions(api, uniV4ByNft)
   await unwrapPancakeInfinityCL(api, pcsInfinityIds)
-
-  // remove meme tokens from balances
-  const allowed = TRACKED_TOKENS[chain].map(t => `${chain}:${t.toLowerCase()}`)
-  const balances = api.getBalances()
-  for (const key of Object.keys(balances)) {
-    if (!allowed.includes(key.toLowerCase())) delete balances[key]
-  }
 }
 
 function deriveMeteoraPositionPda(nftMint) {
@@ -402,8 +397,8 @@ async function addMeteoraPositions(api, lockPdas) {
     const shareDen = pool.poolLiquidity
     const amountA = allocateShare(pool.tokenAAmount, shareNum, shareDen)
     const amountB = allocateShare(pool.tokenBAmount, shareNum, shareDen)
-    // tokenBMint is the meme token so we only add SOL side
     if (amountA > 0n) api.add(pool.tokenAMint.toBase58(), amountA.toString())
+    if (amountB > 0n) api.add(pool.tokenBMint.toBase58(), amountB.toString())
   })
 }
 
@@ -498,15 +493,19 @@ async function solanaTvl(api) {
   const provider = getProvider()
   const program = new Program(idl, SOL_PROGRAM_ID, provider)
 
-  const [appStorage, memeTokens, lockPdas] = await Promise.all([
+  const [appStorage, memeTokens] = await Promise.all([
     program.account.appStorage.fetch(SOL_APP_STORAGE),
-    program.account.memeTokenData.all(),
-    program.account.lockPda.all(),
+    program.account.memeTokenData.all()
   ])
 
   await addTreasuryLockBalances(api, appStorage.treasury, appStorage.lock)
-
   addBondingCurveReserves(api, memeTokens)
+}
+
+async function solanaPool2(api) {
+  const provider = getProvider()
+  const program = new Program(idl, SOL_PROGRAM_ID, provider)
+  const lockPdas = await program.account.lockPda.all()
 
   await addMeteoraPositions(api, lockPdas)
   await addRaydiumClmmPositions(api, lockPdas)
@@ -514,11 +513,11 @@ async function solanaTvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology:
-    'TVL is the sum of (1) native coin and USDT/USDC/USD1/wrapped-native balances held by the based.bid contract (EVM) or treasury/lock accounts (Solana), plus (2) active bonding-curve collateral on Solana, plus (3) liquidity in Uniswap V3 and PancakeSwap V3 positions owned by based.bid, plus (4) Uniswap V4 and PancakeSwap Infinity CL positions registered on the based.bid contract (EVM), plus (5) Meteora DAMM v2 and Raydium CLMM positions controlled by based.bid lock PDAs (Solana).',
-  ethereum: { tvl },
-  bsc:      { tvl },
-  base:     { tvl },
-  megaeth:  { tvl },
-  solana:   { tvl: solanaTvl },
+  doublecounted: true,
+  methodology: 'TVL: (1) native coin and USDT/USDC/USD1/wrapped-native balances at the based.bid contract (EVM) or treasury/lock accounts (Solana), plus (2) active bonding-curve collateral on Solana. pool2: meme coin/native Uniswap V3, Uniswap V4, PancakeSwap V3, and PancakeSwap Infinity CL positions owned by based.bid (EVM), plus Meteora DAMM v2 and Raydium CLMM positions controlled by based.bid lock PDAs (Solana).',
+  ethereum: { tvl, pool2 },
+  bsc:      { tvl, pool2 },
+  base:     { tvl, pool2 },
+  megaeth:  { tvl, pool2 },
+  solana:   { tvl: solanaTvl, pool2: solanaPool2 },
 }
