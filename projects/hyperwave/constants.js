@@ -80,7 +80,7 @@ const HWHYPE_VAULT_TOKENS = [
 const HYPEREVM_HWUSD_VAULT_TOKENS = [
     ADDRESSES.hyperliquid.USDT0,
     ADDRESSES.hyperliquid.USDe,
-    '0xb88339CB7199b77E23DB6E890353E22632Ba630f', // USDC
+    ADDRESSES.hyperliquid.USDC, // USDC
     '0xb50A96253aBDF803D85efcDce07Ad8becBc52BD5', // USDHl
     '0x1Ca7e21B2dAa5Ab2eB9de7cf8f34dCf9c8683007', // hyUSDT0 (hypurrfi)
     '0xe8F7D82A73f13A64d689e7ddAD06139BFb51f9C6', // hyUSDe (hypurrfi)
@@ -134,7 +134,7 @@ const HWUSD_META_MORPHO_VAULTS = [
         // feUSDC
         wallet: HWUSD_VAULT,
         vault: "0x8A862fD6c12f9ad34C9c2ff45AB2b6712e8CEa27",
-        underlying: "0xb88339CB7199b77E23DB6E890353E22632Ba630f", // USDC on HyperLiquid
+        underlying: ADDRESSES.hyperliquid.USDC, // USDC on HyperLiquid
         decimals: 18,
         chain: 'hyperliquid'
     },

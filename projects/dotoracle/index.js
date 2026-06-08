@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
-const { staking} = require('../helper/staking')
+const { nullAddress, sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 // data taken from https://github.com/dotoracle/bridge-contracts/tree/master/deployments
 const config = {
@@ -55,15 +55,12 @@ const config = {
   },
 }
 
-module.exports = {
-};
-
 Object.keys(config).forEach(chain => {
+  let { bridges: owners, tokens } = config[chain]
+  tokens = Object.values(tokens)
+
   module.exports[chain] = {
-    tvl: (_, _b, {[chain]: block}) => {
-      const { bridges: owners, tokens } = config[chain]
-      return sumTokens2({ tokens: Object.values(tokens), owners, chain, block })
-    }
+    tvl: sumTokensExport({ owners, tokens })
   }
 })
 

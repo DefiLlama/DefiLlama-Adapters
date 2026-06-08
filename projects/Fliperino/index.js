@@ -4,8 +4,8 @@ const fliperinoContractETHW = "0x877929914e9854066FC4f1d4B1db2f8b029FeB79";
 
 module.exports = {
   ethpow: {
-    tvl: async ( _, _b,{ ethpow: block}) => {
-      return sumTokens2({ owner: fliperinoContractETHW, chain: 'ethpow', block, tokens: [nullAddress]})
+    tvl: async (api) => {
+      return sumTokens2({ owner: fliperinoContractETHW, api, tokens: [nullAddress]})
     },
   },
 };

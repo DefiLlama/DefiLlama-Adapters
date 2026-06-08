@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
 const {COIN_CONFIG, MMT_TYPE_CONFIG} = require("../nemo/coinConfig.js");
-const {desU64} = require("../nemo/bytes");
+const {fromU64: desU64} = require("../helper/chain/sui");
 const {getExchangeRate} = require("../nemo/price");
 const {getVaultTvlByAmountB, getDynamicFieldObject} = require("../nemo/util");
 

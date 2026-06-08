@@ -22,6 +22,10 @@ const config = {
     vault: "0xbA1cf8A63227b46575AF823BEB4d83D1025eff09",
     vaultFromBlock: 355397381,
   },
+  monad: {
+    vault: "0xcD1D2D602C3e7394515DaAe96e4FFe16DE71e5B4",
+    vaultFromBlock: 70146973,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
