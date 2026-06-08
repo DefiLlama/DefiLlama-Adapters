@@ -1,5 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { function_view } = require("../helper/chain/aptos");
+const { function_view, getResource } = require("../helper/chain/aptos");
 const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
@@ -32,11 +32,34 @@ const VAULT =
 const MOAR =
   "0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07";
 
+const ECHELON =
+  "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba";
+
+const ECHELON_VAULT_RESOURCE = `${ECHELON}::lending::Vault`;
+
+const HYPERION_DEX =
+  "0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c";
+
 const INDEXER_URL = "https://api.mainnet.aptoslabs.com/v1/graphql";
 const PAGE_SIZE = 50;
 const OWNER_BATCH_SIZE = 30;
 const COIN_BALANCE_CONCURRENCY = 10;
 const MOAR_LENS_CONCURRENCY = 8;
+const ECHELON_CONCURRENCY = 1;
+const HYPERION_LP_CONCURRENCY = 8;
+
+/** Known Hyperion pools used by Yield AI safes (token_a/token_b = pool canonical order). */
+const YIELD_AI_HYPERION_POOLS = [
+  {
+    poolAddress:
+      "0xa7bb8c9b3215e29a3e2c2370dcbad9c71816d385e7863170b147243724b2da58",
+    tokenA:
+      "0x68844a0d7f2587e726ad0579f3d640865bb4162c08a4589eeda3f9689ec52a3d",
+    tokenB:
+      "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b",
+    feeTier: 1,
+  },
+];
 
 const APT = ADDRESSES.aptos.APT;
 const COIN_BALANCE_FN = "0x1::coin::balance";
@@ -89,6 +112,45 @@ function normalizeAptosAddress(addr) {
   return withPrefix.toLowerCase();
 }
 
+/** Aptos object addresses are often shortened on-chain; pad for stable pricing keys. */
+function padAptosAddress(addr) {
+  const normalized = normalizeAptosAddress(addr);
+  if (!normalized) return null;
+  const hex = normalized.slice(2);
+  if (!/^[0-9a-f]+$/.test(hex)) return normalized;
+  return `0x${hex.padStart(64, "0")}`;
+}
+
+function normalizeObjectAddress(obj) {
+  if (typeof obj === "string") return normalizeAptosAddress(obj);
+  return normalizeAptosAddress(obj?.inner);
+}
+
+async function retryAsync(fn, attempts = 6) {
+  let lastError;
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastError = e;
+      if (i + 1 < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, 600 * (i + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
+async function getEchelonVaultResource(safe) {
+  try {
+    return await retryAsync(() =>
+      getResource(safe, ECHELON_VAULT_RESOURCE, "aptos")
+    );
+  } catch {
+    return null;
+  }
+}
+
 /** Moar / views return metadata inner; keep 0xa-style APT shorthand as-is (lower case). */
 function normalizeUnderlyingTokenId(inner) {
   if (inner == null) return null;
@@ -119,6 +181,193 @@ function toIntegerString(v) {
   const intPart = s.split(".")[0].split("e")[0].split("E")[0];
   if (!/^-?\d+$/.test(intPart)) return null;
   return intPart;
+}
+
+/** Hyperion ticks are i32 stored as two's-complement u32 on-chain. */
+function decodeI32Tick(raw) {
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return null;
+  if (n >= 0x80000000) return n - 0x100000000;
+  return Math.trunc(n);
+}
+
+function tickToSqrtPrice(tick) {
+  return Math.pow(1.0001, tick / 2);
+}
+
+function pairKey(tokenA, tokenB) {
+  const a = normalizeUnderlyingTokenId(tokenA);
+  const b = normalizeUnderlyingTokenId(tokenB);
+  if (!a || !b) return null;
+  return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+function buildHyperionPoolLookup() {
+  const byPair = new Map();
+  for (const pool of YIELD_AI_HYPERION_POOLS) {
+    const key = pairKey(pool.tokenA, pool.tokenB);
+    if (key) byPair.set(key, pool);
+  }
+  return byPair;
+}
+
+const HYPERION_POOL_BY_PAIR = buildHyperionPoolLookup();
+
+function unwrapPositionAddresses(raw) {
+  if (raw == null) return [];
+  if (!Array.isArray(raw)) return [];
+  if (raw.length === 1 && Array.isArray(raw[0])) return raw[0];
+  if (raw.length && typeof raw[0] === "object" && raw[0] != null) return [];
+  return raw;
+}
+
+function normalizeHyperionPosition(raw, positionFallback) {
+  if (raw == null) return null;
+  const entry = Array.isArray(raw) ? raw[0] : raw;
+  if (!entry || typeof entry !== "object") return null;
+
+  const position =
+    normalizeAptosAddress(entry.position) ||
+    normalizeAptosAddress(positionFallback);
+  const tokenA = normalizeUnderlyingTokenId(entry.token_a ?? entry.tokenA);
+  const tokenB = normalizeUnderlyingTokenId(entry.token_b ?? entry.tokenB);
+  const tickLower = decodeI32Tick(entry.tick_lower ?? entry.tickLower);
+  const tickUpper = decodeI32Tick(entry.tick_upper ?? entry.tickUpper);
+
+  return {
+    position,
+    tokenA,
+    tokenB,
+    feeTier: Number(entry.fee_tier ?? entry.feeTier ?? 0),
+    tickLower,
+    tickUpper,
+    closed: entry.closed === true,
+    liquidity: toIntegerString(entry.liquidity),
+    amountA: toIntegerString(entry.amount_a ?? entry.amountA),
+    amountB: toIntegerString(entry.amount_b ?? entry.amountB),
+  };
+}
+
+function computeAmountsFromLiquidity({
+  liquidity,
+  tickLower,
+  tickUpper,
+  currentTick,
+}) {
+  const liqStr = toIntegerString(liquidity);
+  if (
+    !liqStr ||
+    liqStr === "0" ||
+    tickLower == null ||
+    tickUpper == null ||
+    currentTick == null
+  ) {
+    return { amountA: null, amountB: null };
+  }
+
+  const L = Number(liqStr);
+  if (!Number.isFinite(L) || L <= 0) return { amountA: null, amountB: null };
+
+  const sp = tickToSqrtPrice(currentTick);
+  const spa = tickToSqrtPrice(tickLower);
+  const spb = tickToSqrtPrice(tickUpper);
+  if (!Number.isFinite(sp) || !Number.isFinite(spa) || !Number.isFinite(spb)) {
+    return { amountA: null, amountB: null };
+  }
+
+  let amountA = 0;
+  let amountB = 0;
+
+  if (currentTick < tickLower) {
+    amountA = (L * (spb - spa)) / (spa * spb);
+  } else if (currentTick >= tickUpper) {
+    amountB = L * (spb - spa);
+  } else {
+    amountA = (L * (spb - sp)) / (sp * spb);
+    amountB = L * (sp - spa);
+  }
+
+  const amountAStr = toIntegerString(Math.max(0, Math.floor(amountA)));
+  const amountBStr = toIntegerString(Math.max(0, Math.floor(amountB)));
+  return { amountA: amountAStr, amountB: amountBStr };
+}
+
+async function resolveHyperionPoolAddress(pos) {
+  const key = pairKey(pos.tokenA, pos.tokenB);
+  const known = key ? HYPERION_POOL_BY_PAIR.get(key) : null;
+  if (known?.poolAddress) return known.poolAddress;
+
+  try {
+    const poolAddr = await function_view({
+      functionStr: `${HYPERION_DEX}::pool_v3::liquidity_pool_address_safe`,
+      args: [pos.tokenA, pos.tokenB, String(pos.feeTier)],
+      chain: "aptos",
+    });
+    return normalizeAptosAddress(poolAddr);
+  } catch {
+    return null;
+  }
+}
+
+const hyperionCurrentTickCache = new Map();
+
+async function getHyperionPoolCurrentTick(poolAddress) {
+  const pool = normalizeAptosAddress(poolAddress);
+  if (!pool) return null;
+  if (hyperionCurrentTickCache.has(pool)) {
+    return hyperionCurrentTickCache.get(pool);
+  }
+
+  const res = await function_view({
+    functionStr: `${HYPERION_DEX}::pool_v3::current_tick_and_price`,
+    args: [pool],
+    chain: "aptos",
+  });
+  const tickRaw = Array.isArray(res) ? res[0] : res;
+  const tick = decodeI32Tick(tickRaw);
+  hyperionCurrentTickCache.set(pool, tick);
+  return tick;
+}
+
+async function resolveHyperionPositionAmounts(pos) {
+  let amountA = pos.amountA;
+  let amountB = pos.amountB;
+  const hasLiveA = amountA && amountA !== "0";
+  const hasLiveB = amountB && amountB !== "0";
+  if (hasLiveA || hasLiveB) return { amountA, amountB };
+
+  if (pos.position) {
+    try {
+      const routerRes = await function_view({
+        functionStr: `${HYPERION_DEX}::router_v3::get_amount_by_liquidity`,
+        args: [pos.position],
+        chain: "aptos",
+      });
+      if (Array.isArray(routerRes)) {
+        amountA = toIntegerString(routerRes[0]);
+        amountB = toIntegerString(routerRes[1]);
+        if (
+          (amountA && amountA !== "0") ||
+          (amountB && amountB !== "0")
+        ) {
+          return { amountA, amountB };
+        }
+      }
+    } catch {
+      // closed / missing position objects abort this view
+    }
+  }
+
+  const poolAddress = await resolveHyperionPoolAddress(pos);
+  if (!poolAddress) return { amountA: null, amountB: null };
+
+  const currentTick = await getHyperionPoolCurrentTick(poolAddress);
+  return computeAmountsFromLiquidity({
+    liquidity: pos.liquidity,
+    tickLower: pos.tickLower,
+    tickUpper: pos.tickUpper,
+    currentTick,
+  });
 }
 
 async function fetchMoarPoolsCached() {
@@ -232,6 +481,70 @@ async function fetchExistingSafeAndOwnerAddresses() {
   return { safeAddresses, ownerAddresses };
 }
 
+async function sumEchelonSafePositions(api, safeAddresses) {
+  if (!safeAddresses.length) return { adds: 0, totalsByAsset: new Map() };
+
+  const marketMetadataCache = new Map();
+  let adds = 0;
+  const totalsByAsset = new Map();
+
+  async function getMarketMetadata(market) {
+    if (!marketMetadataCache.has(market)) {
+      const metadata = await retryAsync(() =>
+        function_view({
+          functionStr: `${ECHELON}::lending::market_asset_metadata`,
+          args: [market],
+          chain: "aptos",
+        })
+      );
+      marketMetadataCache.set(
+        market,
+        padAptosAddress(normalizeObjectAddress(metadata))
+      );
+    }
+    return marketMetadataCache.get(market);
+  }
+
+  await PromisePool.withConcurrency(ECHELON_CONCURRENCY)
+    .for(safeAddresses)
+    .process(async (safe) => {
+      try {
+        const vault = await retryAsync(() => getEchelonVaultResource(safe));
+        const collaterals =
+          vault?.data?.collaterals?.data || vault?.collaterals?.data || [];
+
+        for (const collateral of collaterals) {
+          const market = padAptosAddress(
+            normalizeObjectAddress(collateral?.key)
+          );
+          if (!market) continue;
+
+          const coins = await retryAsync(() =>
+            function_view({
+              functionStr: `${ECHELON}::lending::account_coins`,
+              args: [safe, market],
+              chain: "aptos",
+            })
+          );
+          const amount = toIntegerString(coins);
+          if (!amount || amount === "0") continue;
+
+          const asset = await getMarketMetadata(market);
+          if (!asset) continue;
+
+          adds += 1;
+          const prev = totalsByAsset.get(asset) || 0n;
+          totalsByAsset.set(asset, prev + BigInt(amount));
+          api.add(asset, amount);
+        }
+      } catch (e) {
+        logYieldAi("Echelon safe skipped:", safe, e?.message || e);
+      }
+    });
+
+  return { adds, totalsByAsset };
+}
+
 async function indexerFaDiagnostics(graphQLClient, label, addresses) {
   let rowsTotal = 0;
   const sumByAsset = new Map();
@@ -288,6 +601,22 @@ async function tvl(api) {
         i: p.poolIndex,
         u: p.underlyingInner,
         n: p.name,
+      })),
+      2000
+    )
+  );
+
+  const { adds: echelonAdds, totalsByAsset: echelonTotalsByAsset } =
+    await sumEchelonSafePositions(api, safeAddresses);
+
+  logYieldAi(
+    "Echelon supply: non-zero cells=",
+    echelonAdds,
+    "by asset:",
+    safeJsonSample(
+      [...echelonTotalsByAsset.entries()].map(([a, s]) => ({
+        asset: a,
+        raw: s.toString(),
       })),
       2000
     )
@@ -409,21 +738,94 @@ async function tvl(api) {
     )
   );
 
+  let hyperionAdds = 0;
+  const hyperionTotalsByAsset = new Map();
+
+  await PromisePool.withConcurrency(HYPERION_LP_CONCURRENCY)
+    .for(safeAddresses)
+    .process(async (safe) => {
+      const configExists = await function_view({
+        functionStr: `${VAULT}::vault::hyperion_lp_config_exists`,
+        args: [safe],
+        chain: "aptos",
+      })
+        .then((res) => {
+          const v = Array.isArray(res) ? res[0] : res;
+          return v === true || v === "true" || v === 1 || v === "1";
+        })
+        .catch(() => false);
+      if (!configExists) return;
+
+      const positionsRaw = await function_view({
+        functionStr: `${VAULT}::vault::get_hyperion_positions`,
+        args: [safe],
+        chain: "aptos",
+      }).catch(() => []);
+
+      const positionAddresses = unwrapPositionAddresses(positionsRaw);
+      if (!positionAddresses.length) return;
+
+      for (const positionAddr of positionAddresses) {
+        const posRaw = await function_view({
+          functionStr: `${VAULT}::vault::get_hyperion_position`,
+          args: [safe, positionAddr],
+          chain: "aptos",
+        }).catch(() => null);
+
+        const pos = normalizeHyperionPosition(posRaw, positionAddr);
+        if (!pos || pos.closed) continue;
+
+        const { amountA, amountB } = await resolveHyperionPositionAmounts(pos);
+
+        if (amountA && amountA !== "0" && pos.tokenA) {
+          hyperionAdds += 1;
+          const prev = hyperionTotalsByAsset.get(pos.tokenA) || 0n;
+          hyperionTotalsByAsset.set(pos.tokenA, prev + BigInt(amountA));
+          api.add(pos.tokenA, amountA);
+        }
+
+        if (amountB && amountB !== "0" && pos.tokenB) {
+          hyperionAdds += 1;
+          const prev = hyperionTotalsByAsset.get(pos.tokenB) || 0n;
+          hyperionTotalsByAsset.set(pos.tokenB, prev + BigInt(amountB));
+          api.add(pos.tokenB, amountB);
+        }
+      }
+    });
+
+  logYieldAi(
+    "Hyperion LP: non-zero amount cells=",
+    hyperionAdds,
+    "by asset:",
+    safeJsonSample(
+      [...hyperionTotalsByAsset.entries()].map(([a, s]) => ({
+        asset: a,
+        raw: s.toString(),
+      })),
+      2000
+    )
+  );
+
   if (VERBOSE) {
     logYieldAi(
       "TVL build: safes=",
       safeAddresses.length,
       "FA asset kinds=",
       faTotalsByAsset.size,
+      "Echelon asset kinds=",
+      echelonTotalsByAsset.size,
       "Moar asset kinds=",
-      moarTotalsByAsset.size
+      moarTotalsByAsset.size,
+      "Hyperion asset kinds=",
+      hyperionTotalsByAsset.size
     );
   }
 }
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   aptos: { tvl },
   methodology:
-    "TVL sums (1) fungible-asset balances on each Yield AI vault safe object address (Aptos Labs indexer current_fungible_asset_balances, owner = safe), (2) native APT in 0x1 CoinStore per safe via 0x1::coin::balance<0x1::aptos_coin::AptosCoin> (FA rows for native APT are skipped to avoid double-count with CoinStore), and (3) Moar Market supply-side deposits attributed to each safe: Moar pool list from 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::pool::get_all_pools (paused pools excluded), then per (pool index, safe) 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::lens::get_lp_shares_and_deposited_amount; the deposited underlying amount is response index 1, added using each pool's underlying_asset metadata address (APT pool uses 0xa). Safes are enumerated with 0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700::vault get_total_safes / get_safes_range_info; only entries with exists true are included; paused safes remain included. This matches the product dashboard definition for on-safe plus Moar supply per safe. Moar is also listed separately on DefiLlama; combined chain aggregates may double-count the same underlying assets—maintainers should confirm presentation (see PR). Farming rewards are excluded. Data: Aptos fullnode view API (APTOS_RPC) and Aptos Labs indexer GraphQL for FA on safes.",
+    "TVL sums (1) fungible-asset balances on each Yield AI vault safe object address (Aptos Labs indexer current_fungible_asset_balances, owner = safe), (2) native APT in 0x1 CoinStore per safe via 0x1::coin::balance<0x1::aptos_coin::AptosCoin> (FA rows for native APT are skipped to avoid double-count with CoinStore), (3) Echelon supply positions held by each safe: read on-chain from 0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::lending::Vault collaterals, resolve supplied amounts with lending::account_coins per market, and map underlying FA metadata with lending::market_asset_metadata (includes USD1 and other supplied assets), (4) Moar Market supply-side deposits attributed to each safe: Moar pool list from 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::pool::get_all_pools (paused pools excluded), then per (pool index, safe) 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::lens::get_lp_shares_and_deposited_amount; the deposited underlying amount is response index 1, added using each pool's underlying_asset metadata address (APT pool uses 0xa), and (5) open Hyperion CLMM LP positions per safe via 0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700::vault::get_hyperion_positions / get_hyperion_position (token_a/token_b FA metadata addresses and amount_a/amount_b base units; closed positions excluded). When live amounts are zero, amounts are derived from 0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c::router_v3::get_amount_by_liquidity or, if needed, from position liquidity plus tick range and the pool current tick from pool_v3::current_tick_and_price. Safes are enumerated with 0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700::vault get_total_safes / get_safes_range_info; only entries with exists true are included; paused safes remain included. Echelon, Moar, and Hyperion are also listed separately on DefiLlama; combined chain aggregates may double-count the same underlying assets. Decibel margin is excluded. Farming rewards are excluded. Data: Aptos fullnode view API (APTOS_RPC) and Aptos Labs indexer GraphQL for FA on safes.",
 };
