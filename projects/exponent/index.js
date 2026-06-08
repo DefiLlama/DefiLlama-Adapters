@@ -16,6 +16,7 @@ const DEFILLAMA_MANAGED_VAULTS_PAYLOAD_URL = `${EXPONENT_API_V2_BASE}/defillama/
 
 // Exponent stores the SY exchange rate with 1e12 fixed-point precision.
 const SY_EXCHANGE_RATE_SCALE = 12n
+const MAX_RATE_SCALE = 36
 
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.length > 0
@@ -23,6 +24,10 @@ function isNonEmptyString(value) {
 
 function isNonNegativeInteger(value) {
   return Number.isInteger(value) && value >= 0
+}
+
+function isSafeRateScale(value) {
+  return Number.isInteger(value) && value >= 0 && value <= MAX_RATE_SCALE
 }
 
 function parsePositiveBigIntString(value) {
@@ -54,7 +59,7 @@ function computeQuoteRawFromSySupply({ supply, syExchangeRateRaw }) {
  */
 function convertQuoteRawToBaseRaw({ quoteRaw, quoteToBaseRate, quoteToBaseRateScale }) {
   const rateRaw = parsePositiveBigIntString(quoteToBaseRate)
-  if (!rateRaw || !isNonNegativeInteger(quoteToBaseRateScale)) return null
+  if (!rateRaw || !isSafeRateScale(quoteToBaseRateScale)) return null
 
   const scaleDenominator = 10n ** BigInt(quoteToBaseRateScale)
   const amount = (quoteRaw * rateRaw) / scaleDenominator
@@ -72,7 +77,7 @@ function parseSyPayloadEntry(entry) {
   if (!isNonEmptyString(mintSy)) return null
   if (!isNonEmptyString(baseMint)) return null
   if (!isNonEmptyString(quoteToBaseRate)) return null
-  if (!isNonNegativeInteger(quoteToBaseRateScale)) return null
+  if (!isSafeRateScale(quoteToBaseRateScale)) return null
 
   return {
     mintSy,
@@ -102,7 +107,7 @@ function parseManagedVaultsPayloadEntry(entry) {
   if (!isNonEmptyString(positionMint)) return null
   if (!isNonEmptyString(positionUnderlyingMint)) return null
   if (!isNonEmptyString(underlyingToPositionUnderlyingRate)) return null
-  if (!isNonNegativeInteger(underlyingToPositionUnderlyingRateScale)) return null
+  if (!isSafeRateScale(underlyingToPositionUnderlyingRateScale)) return null
 
   return {
     strategyVaultUnderlyingMint,
