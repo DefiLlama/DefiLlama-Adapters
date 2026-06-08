@@ -35,22 +35,16 @@ async function readU64(storageKey, at) {
   return Number(buf.readBigUInt64LE())
 }
 
-/**
- * Prices the TAO and alpha legs of the Chutes pool. Both reads are pinned to
- * one finalized block so the two legs are a consistent snapshot.
- */
 async function tvl(api) {
   const at = await rpc('chain_getFinalizedHead', [])
   const taoIn = await readU64(SUBNET_TAO + u16le(CHUTES_NETUID), at)
-  const alphaIn = await readU64(SUBNET_ALPHA_IN + u16le(CHUTES_NETUID), at)
   api.addCGToken('bittensor', taoIn / 1e9)
-  api.addCGToken('chutes', alphaIn / 1e9)
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    'Counts the TAO and alpha reserves of the Chutes (netuid 64) dTAO liquidity pool, read from SubtensorModule.SubnetTAO and SubtensorModule.SubnetAlphaIn on public chain RPC.',
+    'Counts the TAO reserves of the Chutes (netuid 64) dTAO liquidity pool, read from SubtensorModule.SubnetTAO and SubtensorModule.SubnetAlphaIn on public chain RPC.',
   bittensor: {
     tvl,
   },
