@@ -8,12 +8,13 @@ const STAKER_OFFSET = 12
 const DEACTIVATION_OFFSET = 172
 const U64_MAX = 0xffffffffffffffffn
 
-// Solana RPC occasionally returns stale/buggy gPA snapshots that inflate
-// the active-stake sum by ~2.5x. Each fetch is compared to the last good value
-// in cache; anything >50% above baseline is retried after RETRY_DELAY_MS.
+// RPC occasionally returns extra SA that increases sum by ~2.5x. Each fetch is compared 
+// to the last value in cache; anything >50% above baseline is retried after RETRY_DELAY_MS.
 const SPIKE_THRESHOLD_BPS = 5000n
 const RETRY_ATTEMPTS = 3
 const RETRY_DELAY_MS = 1000
+// todo: remove once cache is set
+const BASELINE = 1148868506938795n  // 1.1M SOL, 2026-06
 
 async function fetchWithRetries(connection, cached) {
   const spikeCap = cached + (cached * SPIKE_THRESHOLD_BPS) / 10000n
@@ -41,8 +42,11 @@ async function fetchWithRetries(connection, cached) {
 
 async function tvl(api) {
   const cache = await getCache('marinade-select', 'solana')
-  const cached = cache?.activeLamports ? BigInt(cache.activeLamports) : null
-  if (!cached) throw new Error('marinade-select: missing reference cache')
+  const cached = (cache?.activeLamports ? BigInt(cache.activeLamports) : null) ?? BASELINE
+
+  // todo: use instead once initial cache is set
+  // const cached = cache?.activeLamports ? BigInt(cache.activeLamports) : null
+  // if (!cached) throw new Error('marinade-select: missing reference cache')
 
   const balance = await fetchWithRetries(getConnection(), cached)
   if (balance === null) throw new Error(`marinade-select: ${RETRY_ATTEMPTS} attempts spiked or errored`)
@@ -54,6 +58,5 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   solana: { tvl },
-  methodology:
-    'Counts SOL in stake accounts where Marinade Select (STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps) is the staker authority. Only active stake (deactivation_epoch = u64::MAX) is counted; accounts in cooldown are excluded. The result is cached across runs; any sample more than 50% above the cached baseline is rejected as a known gPA inconsistency and retried via a fallback RPC. If both attempts spike or error, the adapter throws.',
+  methodology: 'We sum the amount of SOL staked by account STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps.',
 }
