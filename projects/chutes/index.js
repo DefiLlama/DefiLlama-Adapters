@@ -35,6 +35,7 @@ async function readU64(storageKey, at) {
   return Number(buf.readBigUInt64LE())
 }
 
+/** Only track TAO side of subnet AMM: https://docs.learnbittensor.org/subnets/understanding-subnets#liquidity-pools */
 async function tvl(api) {
   const at = await rpc('chain_getFinalizedHead', [])
   const taoIn = await readU64(SUBNET_TAO + u16le(CHUTES_NETUID), at)
