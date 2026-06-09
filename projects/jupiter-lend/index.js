@@ -1,6 +1,7 @@
 const { getConfig } = require('../helper/cache')
 const { getProvider, sumTokens2, getTokenAccountBalances } = require('../helper/solana')
 const { Program } = require("@coral-xyz/anchor");
+const { PublicKey } = require('@solana/web3.js');
 
 const LIQUIDITY_IDL_URL = "https://raw.githubusercontent.com/jup-ag/jupiter-lend/refs/heads/main/target/idl/liquidity.json";
 const LIQUIDITY_PROGRAM_IDS = [
@@ -35,12 +36,18 @@ async function tvl(api) {
   tokenReserves.forEach(r => { reserveByMint[r.mint.toBase58()] = r })
   const accounts = Object.keys(ETHENA_ATOKEN_ACCOUNTS)
   const balances = await getTokenAccountBalances(accounts, { individual: true, allowError: true })
-  balances.forEach((b, i) => {
+  const connection = getProvider().connection
+  for (let i = 0; i < balances.length; i++) {
+    const b = balances[i]
     const underlyingMint = ETHENA_ATOKEN_ACCOUNTS[accounts[i]]
     const reserve = reserveByMint[underlyingMint]
-    const underlying = +b.amount * (+reserve.supplyExchangePrice.toString()) / EXCHANGE_PRICE_PRECISION
-    api.add(underlyingMint, -underlying)
-  })
+    if (!reserve) continue
+    const totalReceiptSupply = +(await connection.getTokenSupply(new PublicKey(b.mint))).value.amount
+    if (!totalReceiptSupply) continue
+    const vaultFree = +(await getTokenAccountBalances([reserve.vault.toBase58()], { individual: true }))[0].amount
+    const ethenaShare = +b.amount / totalReceiptSupply
+    api.add(underlyingMint, -ethenaShare * vaultFree)
+  }
 }
 async function borrowed(api) {
   const tokenReserves = await getData()
