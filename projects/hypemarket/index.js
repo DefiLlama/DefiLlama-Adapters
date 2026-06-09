@@ -22,8 +22,10 @@ async function tvl(api) {
   for (const t of tokens) {
     const cgId = t.coingeckoId || SYMBOL_TO_CG[String(t.symbol || '').toUpperCase()]
     if (!cgId) continue // unpriceable collateral — skip rather than mis-value
+    const amount = Number(t.amount)
+    if (!Number.isFinite(amount) || amount <= 0) continue // skip missing/NaN/non-positive amounts
     // `amount` is whole tokens (rawAmount / 10**decimals); addCGToken prices by CoinGecko id.
-    api.addCGToken(cgId, Number(t.amount))
+    api.addCGToken(cgId, amount)
   }
 }
 
