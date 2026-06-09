@@ -44,9 +44,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology:
-    'Counts the TAO reserves of the Chutes (netuid 64) dTAO liquidity pool, read from SubtensorModule.SubnetTAO and SubtensorModule.SubnetAlphaIn on public chain RPC.',
-  bittensor: {
-    tvl,
-  },
+  methodology: 'Counts the TAO reserves of the Chutes (netuid 64) dTAO liquidity pool, read from SubtensorModule.SubnetTAO on public chain RPC.',
+  bittensor: { tvl },
 }
