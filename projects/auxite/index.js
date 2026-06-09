@@ -37,13 +37,22 @@ module.exports = {
   base: {
     tvl: async (api) => {
       const USDC = ADDRESSES.base?.USDC || "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-      const [supplies, prices] = await Promise.all([
-        api.multiCall({ abi: 'erc20:totalSupply', calls: Object.values(AUXITE_TOKENS) }),
+      const calls = Object.values(AUXITE_TOKENS);
+      const [supplies, decimals, prices] = await Promise.all([
+        api.multiCall({ abi: 'erc20:totalSupply', calls }),
+        api.multiCall({ abi: 'erc20:decimals', calls }),
         getPrices(api),
       ]);
+      // Units: oracle getAllPrices() returns USD per KILOGRAM scaled by 1e6
+      // (6 dp); USDC has 6 dp. With grams = supply / 10^tokenDecimals:
+      //   value_usdc = (supply / 10^d) grams
+      //              * (price / 1e6 USD/kg / 1e3 USD/g) USD per gram
+      //              * 1e6 (USDC dp)
+      //              = supply * price / 10^(d + 3)
       let total = 0n;
       Object.keys(AUXITE_TOKENS).forEach((sym, i) => {
-        total += (BigInt(supplies[i] ?? 0) * BigInt(prices[sym] ?? 0)) / 1000000n;
+        const d = Number(decimals[i] ?? 3);
+        total += (BigInt(supplies[i] ?? 0) * BigInt(prices[sym] ?? 0)) / (10n ** BigInt(d + 3));
       });
       api.add(USDC, total.toString());
     },
