@@ -98,6 +98,12 @@ const configs = {
       staking: { owners: ['0x2015F35030A8Ff2C0CA161a865414996F8E80AA4'], tokens: ['0x547AfD93B9c47D552059FEb556909e017f8a9b25']},
     },
   },
+  'tokamak-network': {
+    methodology: 'TON staked through Tokamak Network seigniorage staking on Ethereum L1. Stakers delegate TON to operator (DAO candidate) contracts; the principal is custodied as WTON (27-decimal wrapped TON) in the DepositManager (0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e). Reported staking value is the DepositManager WTON balance.',
+    ethereum: {
+      staking: { owners: ['0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e'], tokens: ['0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2']},
+    },
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
