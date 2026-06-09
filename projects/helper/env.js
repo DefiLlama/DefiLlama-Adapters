@@ -31,6 +31,7 @@ const DEFAULTS = {
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FOGO_RPC: 'https://mainnet.fogo.io',
+  COOKIECHAIN_RPC: 'https://rpc.cookiescan.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
