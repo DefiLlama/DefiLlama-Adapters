@@ -23,11 +23,8 @@ const config = {
     '0x4851D4891321035729713D43bE1F4bb883Dffd34': ADDRESSES.hyperliquid.USDC, // MEV USDC
   },
   standaloneVaults: {
-    '0x6EB6724D8D3D4FF9E24d872E8c38403169dC05f8': '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', // xAUT
     '0x441794D6a8F9A3739F5D4E98a728937b33489D29': ADDRESSES.hyperliquid.WHYPE, // liquidHYPE
     '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42': ADDRESSES.corn.USDT0, // wVLP
-    '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29': ADDRESSES.corn.USDT0, // dnHYPE
-    '0x8858A307a85982c2B3CB2AcE1720237f2f09c39B': ADDRESSES.corn.USDT0, // dnPUMP
     // '0xd8FC8F0b03eBA61F64D08B0bef69d80916E5DdA9': ADDRESSES.hyperliquid.WHYPE, // beHYPE → lst adapter
   }
 }
@@ -41,6 +38,9 @@ const rateVaults = [
   { vault: '0x057ced81348D57Aad579A672d521d7b4396E8a61', rate: '0xe0995A641d454c149E6C808BAA37Cb2B38763316', underlying: ADDRESSES.hyperliquid.USDC, shareDecimals: 18, underlyingDecimals: 6 }, // hbUSDC
   { vault: '0x4Cc221cf1444333510a634CE0D8209D2D11B9bbA', rate: '0xC23cdFe493bB5E69bedfCF6E710f508710ac668B', underlying: ADDRESSES.corn.USDT0, shareDecimals: 6, underlyingDecimals: 6 }, // nLP
   { vault: '0x9065E3153B1393Bb5f76520cdc1e08E49eb04B03', rate: '0x5362454e5648C6Ac7F03969E8a62CFc61F99b9D6', underlying: ADDRESSES.hyperliquid.USDC, shareDecimals: 6, underlyingDecimals: 6 }, // masterUSD
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', rate: '0x5100Aee934F0EE05FA78B03114a068Da18aFEd8D', underlying: ADDRESSES.corn.USDT0, shareDecimals: 18, underlyingDecimals: 6 }, // dnHYPE
+  { vault: '0x8858A307a85982c2B3CB2AcE1720237f2f09c39B', rate: '0x58F6138DB540D0f5bfB24Fd9b17db54694a92ea6', underlying: ADDRESSES.corn.USDT0, shareDecimals: 18, underlyingDecimals: 6 }, // dnPUMP
+  { vault: '0x6EB6724D8D3D4FF9E24d872E8c38403169dC05f8', rate: '0x988E3E2C26840F2cAe2c5fB55fAeb5e59CE1A597', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', shareDecimals: 18, underlyingDecimals: 6 }, // hbXAUt
 ]
 
 const sixDecimalTokens = [
