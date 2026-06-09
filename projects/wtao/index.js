@@ -35,31 +35,37 @@ const u16le = (n) => Buffer.from([n & 0xff, (n >> 8) & 0xff]); // Identity(u16 n
 const prefix = (item) => Buffer.concat([hexToBuf(PALLET), hexToBuf(ITEM[item])]);
 const keyHex = (buf) => '0x' + buf.toString('hex');
 
+/** Read a little-endian u128 from buffer b at offset o. */
 function u128LE(b, o) { let v = 0n; for (let i = 15; i >= 0; i--) v = (v << 8n) | BigInt(b[o + i]); return v; }
+/** Read a little-endian u64 from buffer b at offset o. */
 function u64LE(b, o) { let v = 0n; for (let i = 7; i >= 0; i--) v = (v << 8n) | BigInt(b[o + i]); return v; }
+/** Read a little-endian signed i64 from buffer b at offset o. */
 function i64LE(b, o) { let v = u64LE(b, o); if (v & (1n << 63n)) v -= (1n << 64n); return v; }
 // V2 SafeDecimal {mantissa:u128, exponent:i64}: real = m * 2^e
 const fpV2 = (b) => (!b || b.length < 24) ? 0 : Number(u128LE(b, 0)) * Math.pow(2, Number(i64LE(b, 16)));
 // V1 U64F64 {bits:u128}: real = bits / 2^64
 const fpV1 = (b) => (!b || b.length < 16) ? 0 : Number(u128LE(b, 0)) / Math.pow(2, 64);
 
+/** One substrate JSON-RPC call; throws on an error body. */
 async function rpc(method, params) {
   const res = await post(RPC, { jsonrpc: '2.0', id: 1, method, params }, { timeout: 30000 });
   if (res.error) throw new Error(`${method}: ${JSON.stringify(res.error)}`);
   return res.result;
 }
-async function getMany(keyBufs) {
+/** Batch-read many storage keys at one block; returns Map<keyHex, valueHex|null>. */
+async function getMany(keyBufs, at) {
   if (!keyBufs.length) return new Map();
   const keys = keyBufs.map(keyHex);
-  const res = await rpc('state_queryStorageAt', [keys]);
+  const res = await rpc('state_queryStorageAt', [keys, at]);
   const out = new Map(keys.map((k) => [k, null]));
   for (const cs of res) for (const [k, v] of cs.changes) out.set(k, v);
   return out;
 }
-async function netuidsUnder(pfx) {
+/** Enumerate the netuids present under a storage prefix at one block. */
+async function netuidsUnder(pfx, at) {
   const out = []; let start = keyHex(pfx);
   for (;;) {
-    const keys = await rpc('state_getKeysPaged', [keyHex(pfx), 200, start]);
+    const keys = await rpc('state_getKeysPaged', [keyHex(pfx), 200, start, at]);
     if (!keys.length) break;
     for (const kh of keys) { const t = hexToBuf(kh).subarray(pfx.length); out.push(t[0] | (t[1] << 8)); }
     if (keys.length < 200) break;
@@ -68,17 +74,22 @@ async function netuidsUnder(pfx) {
   return out;
 }
 
+/** TVL = TAO locked on Bittensor backing wTAO: the custody coldkey's free
+ * balance plus its total staked TAO. All reads are pinned to one finalized
+ * block so the multi-step stake walk is a consistent snapshot. */
 async function tvl(api) {
   const cold = hexToBuf(CUSTODY);
+  // Pin every read to one finalized block (state advances between calls otherwise).
+  const at = await rpc('chain_getFinalizedHead', []);
 
   // Free balance: System.Account, free = u128 LE at byte offset 16.
   const accKey = keyHex(Buffer.concat([hexToBuf(SYS_ACCOUNT), blake128(cold), cold]));
-  const accRaw = await rpc('state_getStorage', [accKey]);
+  const accRaw = await rpc('state_getStorage', [accKey, at]);
   const free = accRaw ? Number(u128LE(hexToBuf(accRaw), 16)) / 1e9 : 0;
 
   // Hotkeys this coldkey stakes to: StakingHotkeys(cold) -> Vec<AccountId32>.
   const shKey = keyHex(Buffer.concat([prefix('StakingHotkeys'), b2c(cold)]));
-  const shRaw = await rpc('state_getStorage', [shKey]);
+  const shRaw = await rpc('state_getStorage', [shKey, at]);
   const hotkeys = [];
   if (shRaw) {
     const b = hexToBuf(shRaw), mode = b[0] & 3;
@@ -94,8 +105,8 @@ async function tvl(api) {
   const aV1 = (hot) => Buffer.concat([prefix('Alpha'), b2c(hot), b2c(cold)]);
   const entries = [];
   for (const hot of hotkeys) {
-    for (const n of await netuidsUnder(aV2(hot))) entries.push({ hot, net: n, v: 2 });
-    for (const n of await netuidsUnder(aV1(hot))) entries.push({ hot, net: n, v: 1 });
+    for (const n of await netuidsUnder(aV2(hot), at)) entries.push({ hot, net: n, v: 2 });
+    for (const n of await netuidsUnder(aV1(hot), at)) entries.push({ hot, net: n, v: 1 });
   }
 
   // One batched read of every share/total/pool value needed.
@@ -109,7 +120,7 @@ async function tvl(api) {
       reads.push(Buffer.concat([prefix('SubnetAlphaIn'), u16le(e.net)]));
     }
   }
-  const vals = await getMany(reads);
+  const vals = await getMany(reads, at);
   const V = (buf) => vals.get(keyHex(buf));
 
   let stakeTao = 0;
@@ -144,7 +155,7 @@ module.exports = {
   timetravel: false,
   methodology:
     'TAO locked on Bittensor backing wTAO on Ethereum. The bridge custody coldkey (5HiveMEoWPmQmBAb8v63bKPcFhgTGCmST1TVZNvPHSTKFLCv) holds the collateral and stakes most of it, so TVL is its free balance plus its total staked TAO, read keyless from public substrate RPC (dTAO share pools, alpha valued at each subnet pool price; root is 1:1).',
-  bittensor: {
+  ethereum: {
     tvl,
   },
 };
