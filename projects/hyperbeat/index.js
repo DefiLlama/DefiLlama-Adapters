@@ -40,6 +40,7 @@ const rateVaults = [
   { vault: '0x5e105266db42f78FA814322Bce7f388B4C2e61eb', rate: '0x3636a26ec1d512c5eCff42F7Adaa5cE7964C6579', underlying: ADDRESSES.corn.USDT0, shareDecimals: 18, underlyingDecimals: 6 }, // hbUSDT
   { vault: '0x057ced81348D57Aad579A672d521d7b4396E8a61', rate: '0xe0995A641d454c149E6C808BAA37Cb2B38763316', underlying: ADDRESSES.hyperliquid.USDC, shareDecimals: 18, underlyingDecimals: 6 }, // hbUSDC
   { vault: '0x4Cc221cf1444333510a634CE0D8209D2D11B9bbA', rate: '0xC23cdFe493bB5E69bedfCF6E710f508710ac668B', underlying: ADDRESSES.corn.USDT0, shareDecimals: 6, underlyingDecimals: 6 }, // nLP
+  { vault: '0x9065E3153B1393Bb5f76520cdc1e08E49eb04B03', rate: '0x5362454e5648C6Ac7F03969E8a62CFc61F99b9D6', underlying: ADDRESSES.hyperliquid.USDC, shareDecimals: 6, underlyingDecimals: 6 }, // masterUSD
 ]
 
 const sixDecimalTokens = [
