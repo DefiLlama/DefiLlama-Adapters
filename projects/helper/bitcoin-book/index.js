@@ -10,7 +10,7 @@ const imports = [
 const { sumTokensExport } = require("../sumTokens.js");
 const fetchers = require("./fetchers.js");
 
-const p2pb2b = ["39BFtTzZjj6o2s7eewefFQxqM4617VmhEK"];
+const p2pb2b = ["bc1qsllhrk7w4e4kprc5qhqtqg9p6e83ektc2d7qma"];
 
 const ssiProtocol = ["1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM"];
 
