@@ -1,19 +1,16 @@
-const { get } = require('../helper/http')
+const { getTokenSupplies } = require('../helper/solana')
 
-const RESERVES_FEED = 'https://accountable.prod.opendelta.com:8443/dashboard'
+const NX8_MINT = 'NX8DuAWprqWAYDvpkkuhKnPfGRXQQhgiw85pCkgvFYk'
 
 async function tvl(api) {
-  const { res, data } = await get(RESERVES_FEED)
-  const totalReserves = data?.reserves?.total_reserves?.value
-  if (res !== 'ok' || !totalReserves || totalReserves <= 0)
-    throw new Error('OpenDelta reserves feed returned no total_reserves value')
-  api.addUSDValue(totalReserves)
+  await getTokenSupplies([NX8_MINT], api)
 }
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: true,
-  methodology: "TVL is the total custodied reserves (USD) backing OpenDelta's NX8 tokenized L1 index token, sourced from Accountable's proof-of-reserves feed.",
+  methodology:
+    "Total on-chain supply of the NX8 index token (Solana mint " +
+    "NX8DuAWprqWAYDvpkkuhKnPfGRXQQhgiw85pCkgvFYk) valued at its market price.",
   solana: {
     tvl,
   },
