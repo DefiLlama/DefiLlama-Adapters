@@ -93,9 +93,16 @@ const suiVaultsTvl = async (api) => {
 
 const stellarVaultsTvl = async (api) => {
   for (const vault of stellarVaultsToInclude) {
-    const asset = await callSoroban(vault, 'query_asset')
-    const totalAssets = await callSoroban(vault, 'total_assets')
-    api.add(asset, totalAssets.toString())
+    // Isolate per-vault failures (e.g. a transient Soroban RPC error) so one
+    // bad read doesn't drop the whole chain's TVL. api.add runs only when both
+    // the asset and total_assets reads succeed.
+    try {
+      const asset = await callSoroban(vault, 'query_asset')
+      const totalAssets = await callSoroban(vault, 'total_assets')
+      api.add(asset, totalAssets.toString())
+    } catch (e) {
+      console.error(`upshift: skipping Stellar vault ${vault}:`, e.message)
+    }
   }
 }
 
