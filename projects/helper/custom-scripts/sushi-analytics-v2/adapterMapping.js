@@ -7,7 +7,6 @@ module.exports = {
         'astar-dapps-staking': '/astar-dapps-staking/api',
         'injective-orderbook': '/injective-orderbook/api',
         'lisa': '/lisa/api',
-        'chutes': '/chutes/api',
         'zest': '/zest/api',
         'hermetica-hbtc': '/hermetica-hbtc/api',
       },

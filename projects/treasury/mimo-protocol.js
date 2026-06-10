@@ -143,7 +143,7 @@ module.exports = treasuryExports({
     fantom: {
         tokens: [
             nullAddress,
-            ADDRESSES.fantom.USDC
+            "0x04068da6c83afcfa0e13ba15a6696662335d5b75"
         ],
         owners: [TREASURY.fantom, BOUGHT_BACK_MIMO.fantom],
         ownTokens: [MIMO.fantom,],

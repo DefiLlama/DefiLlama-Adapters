@@ -6,7 +6,7 @@ const { pool2 } = require('../helper/pool2')
 
 const tokens = Object.values({
   nullAddress,
-  "USDC": ADDRESSES.fantom.USDC,
+  "USDC": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
   "xBOO": "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
   "SHADE": "0x3A3841f5fa9f2c283EA567d5Aeea3Af022dD2262"
 })

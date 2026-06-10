@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { eulerTokens } = require('../helper/tokenMapping')
 const { getLogs } = require('../helper/cache/getLogs')
 const BigNumber = require("bignumber.js");
 
@@ -149,7 +148,7 @@ async function tvl(api) {
   })
 
   const trancheTokensMapping = {}
-  const blacklistedTokens = [...eulerTokens]
+  const blacklistedTokens = []
 
   const { factory, fromBlock } = trancheConfig[api.chain] ?? {}
   if (factory) {

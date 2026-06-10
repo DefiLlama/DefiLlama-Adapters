@@ -60,7 +60,7 @@ module.exports = treasuryExports({
       nullAddress,
       ADDRESSES.bsc.USDC,
       ADDRESSES.bsc.BUSD,
-      ADDRESSES.fantom.fUSDT,
+      "0x049d68029688eabf473097a2fc38ef61633a3c7a",
       ADDRESSES.bsc.BTCB,
       "0x54261774905f3e6E9718f2ABb10ed6555cae308a",//anybtc
       "0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096",//nrv
@@ -74,7 +74,7 @@ module.exports = treasuryExports({
       nullAddress,
       //"0xE55e19Fb4F2D85af758950957714292DAC1e25B2",//syn
       "0x74b23882a30290451A17c44f4F05243b6b58C76d",//eth
-      ADDRESSES.fantom.USDC,
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
       ADDRESSES.fantom.WFTM,
     ],
     owners: [FantomTreasury],

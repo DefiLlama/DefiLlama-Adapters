@@ -26,8 +26,8 @@ const polygon_tokens = [
 ]
 
 const kava_tokens = [
-    ADDRESSES.kava.WKAVA, ADDRESSES.telos.ETH,
-    ADDRESSES.moonriver.USDT, ADDRESSES.kava.axlUSDC,
+    ADDRESSES.kava.WKAVA, "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
+    "0xb44a9b6905af7c801311e8f4e76932ee959c663c", ADDRESSES.kava.axlUSDC,
     '0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997',
     nullAddress
 ]

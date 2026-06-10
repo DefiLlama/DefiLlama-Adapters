@@ -28,13 +28,13 @@ const assetsOnExchange = {
   ],
   fantom: [
     // * USDC
-    ADDRESSES.fantom.USDC,
+    "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
     // * fUSDT
-    ADDRESSES.fantom.fUSDT,
+    "0x049d68029688eabf473097a2fc38ef61633a3c7a",
     // * DAI
-    ADDRESSES.fantom.DAI,
+    "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
     // * MIM
-    ADDRESSES.fantom.MIM,
+    "0x82f0b8b456c1a451378467398982d4834b6829c1",
   ],
   harmony: [
     // * KUSD

@@ -63,7 +63,7 @@ module.exports = {
       ],
     },
     {
-      tokens: [ADDRESSES.shiden.ETH], // ETH
+      tokens: ["0x765277eebeca2e31912c9946eae1021199b39c61"], // ETH
       holders: [
         '0x2D3bAeBa85D78D202887D34f5618380e90F3c272',
         '0xD2510D275dbca0fe333dAff8Eb51b9105f6aC212',

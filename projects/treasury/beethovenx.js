@@ -7,7 +7,7 @@ const eth = "0xea06e1b4259730724885a39ce3ca670efb020e26";
 
 const ftmTokens = [
   nullAddress,
-  ADDRESSES.fantom.USDC, // USDC
+  "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
   "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE", // BOO
   ADDRESSES.fantom.WFTM, // WFTM
   "0x91a40c733c97a6e1bf876eaf9ed8c08102eb491f", // lzDAI

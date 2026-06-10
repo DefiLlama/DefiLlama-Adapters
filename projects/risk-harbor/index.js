@@ -95,7 +95,7 @@ const networks = {
   fantom: {
     vaults: [
       [
-        ADDRESSES.fantom.USDC,
+        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
         "0xca67B16b02E418CFbC9EF287C7C20B77dbb665f2",
       ],
     ],

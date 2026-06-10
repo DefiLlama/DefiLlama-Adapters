@@ -10,7 +10,8 @@ const config = {
     '0x8d010bf9C26881788b4e6bf5Fd1bdC358c8F90b8', // DOT was hacked
     '0xb90b2a35c65dbc466b04240097ca756ad2005295', // BOBO is mispriced
     '0x5888641e3e6cbea6d84ba81edb217bd691d3be38', // BOBO is mispriced
-    '0x196c20da81fbc324ecdf55501e95ce9f0bd84d14' // DOT was hacked
+    '0x196c20da81fbc324ecdf55501e95ce9f0bd84d14', // DOT was hacked
+    "0xcf5104D094e3864CfCBDa43B82e1cEFD26A016eB", // H hacked 2026-06-08
   ] },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675, blacklistedTokens: [
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked

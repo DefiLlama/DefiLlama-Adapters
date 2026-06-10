@@ -116,8 +116,8 @@ const tokens = {
     // Project tokens
     BRIDGE: "0x92868A5255C628dA08F550a858A802f5351C5223",
     // Stablecoins
-    USDC: ADDRESSES.fantom.USDC,
-    USDT: ADDRESSES.fantom.fUSDT,
+    USDC: "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+    USDT: "0x049d68029688eabf473097a2fc38ef61633a3c7a",
     // Network Tokens
     WETH: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
   }

@@ -8,7 +8,7 @@ const owners = ["0x29187b10a04B269Cf067AE013B3ab58d4affaC03", "0xaaef45e31e2d286
 const treasuryTokens = [
   ADDRESSES.null, 
   wFTM, // WFTM
-  ADDRESSES.fantom.USDC, // USDC
+  "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
   "0xf704f5ac5edf152168e07e6f5f108366911250ac", // WFTM/KNGFUU, needs to account only half of it
 ]
 
