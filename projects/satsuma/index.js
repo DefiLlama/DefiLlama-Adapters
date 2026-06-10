@@ -1,0 +1,78 @@
+const { sumTokens2 } = require('../helper/unwrapLPs');
+
+const SATSUMA_DEX_POOL_ADDRESSES = [
+  '0xb22325fe6e033c6b7cefb7bc69c9650ffdc691f9',
+  '0x78de0ada441a6bfe092967bb40ce30d7c77aad2c',
+  '0x172d2ab563afdaace7247a6592ee1be62e791165',
+  '0x5d4b518984ae9778479ee2ea782b9925bbf17080',
+  '0x3560aa7a517b3e1fb6cddf225baf2febde3cb76c',
+  '0xaea5cf09209631b6a3a69d5798034e2efdbe2cc8',
+  '0x8f87f74d009e18b745fe6fb59d5859911a2c3db7',
+  '0xa82eee40f1c88d773c93771d5b1fac61db311945',
+  '0x28457e8dea5d0a136fb30079c6ee6f20bb3d52e0',
+  '0xc9319c34e709e6e9156f22e7287af3a373b6547c',
+  '0x42abc39798a5ce71bd8bd2a673dd17ada45977a5',
+  '0x298a4e0ec1af98066b79836ea99dcc2dd5437f67',
+  '0xea3fa2b0c8223b1367bdffcaa030e6a77c3c2ef0',
+  '0x9ad930b091e6b7173ee85636067245b0ceddee63',
+];
+
+const ICHI_CITREA_VAULTS = [
+  '0x8B759858f688A3e04411805f8954724f552b8061',
+  '0x0b3E6074502301D4CF62F9748D38Ca781d95F944',
+  '0xb5747c92D41540DFb7F04f6CbC739367fD25ED73',
+  '0xA0DAc5c92d4537043FC989a730EF3247c6BfA7e8',
+  '0x6a5e1718953e4a332d199e1f2cff24b18e97f067',
+  '0xcc16b6944f0b48599af596a79c6bf5cec93740ad',
+  '0x5f4164313912ef8ADFC569d90B15550228B43ba1',
+  '0x3B13E09dEA65ab83644B44C50CfA75a06A589421',
+  '0xe6cA7dEd0a0D5B07B40999E90f84f85B242441Dd',
+  '0xb665ffd7422b89B7138cD58bDa244de97c27067e',
+  '0xFb7ea62B5721eeCAF80D53bD05C9E61BD57A3352',
+  '0xbd55166776c944A3f47B775d9727cE888e69a010',
+  '0x87aC471B15EbFaB2Ab7F2Ac37434A95F914F8030',
+  '0x2C667401846c5B8820e8C43bb04Fd39A6D92C54A',
+  '0x5704c4116F3D34CB1b6a8559e20998D67030431d',
+  '0xcAb47638478935A6FEac6B919Da6976db740D7d1',
+  '0x5C8c7EF6095A3c756552A14d1c7A2fB05Ac28c09',
+  '0x5A4785D8cA59b5e6B418a12f3E0da3Dc3DC65A31',
+  '0xdB617d7dae5A4441582a5768e6f9dB999a3c8623',
+  '0x4dfEA0f6a5D0E962eac721dA40FCEa65B6F6dA3ce',
+];
+
+const SATSUMA_TOKENS = [
+  '0x547afd93b9c47d552059feb556909e017f8a9b25', // CTR
+  '0x8d82c4e3c936c7b5724a382a9c5a4e6eb7ab6d5d', // ctUSD
+  '0xe045e6c36cf77faa2cfb54466d71a3aef7bbe839', // USDC.e
+  '0xac8c1aeb584765db16ac3e08d4736cfce198589b', // GUSD
+  '0x3100000000000000000000000000000000000006', // WCBTC
+  '0x60bf948001e7b7ea03ddaaddae048af7402e7b74', // SUMA
+  '0xdf240dc08b0fdad1d93b74d5048871232f6bea3d', // WBTC.e
+  '0xd2dd3dac986cd8256a51d9e3dbcb9151f0aeeb41', // SHITREA
+  '0xdba0f380509a3e7562c029f308e9867021d32af0', // s33
+  '0x8b1f8420ad450c0cb7e80dbf6bdd54b648cc66de', // CST
+  '0xc778f3a8bcdf9f8daee9d0e8508af83e90e9b1f9', // wKcBTC
+  '0x9f3096bac87e7f03dc09b0b416eb0df837304dc4', // USDT.e
+  '0xa552bbf690436d6f16ff5aab14004792f551becb', // TTA
+  '0xf8123977ebc310cb0b2f8b8e54f9fecea5489a92', // TTB
+];
+
+async function tvl(api) {
+  return sumTokens2({
+    api,
+    tokens: SATSUMA_TOKENS,
+    owners: [
+      ...SATSUMA_DEX_POOL_ADDRESSES,
+      ...ICHI_CITREA_VAULTS,
+    ],
+    resolveLP: true,
+    permitFailure: true,
+  });
+}
+
+module.exports = {
+  methodology: 'TVL is calculated by summing token balances in Satsuma Algebra pools on Citrea plus idle balances held by Satsuma ICHI vaults. Token pricing is provided by the DefiLlama coins API.',
+  citrea: {
+    tvl,
+  },
+};
