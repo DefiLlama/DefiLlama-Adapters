@@ -96,6 +96,7 @@ async function tvl(api) {
     let count, off;
     if (mode === 0) { count = b[0] >> 2; off = 1; }
     else if (mode === 1) { count = (b[0] | (b[1] << 8)) >> 2; off = 2; }
+    else if (mode === 2) { count = (b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24)) >>> 2; off = 4; }
     else throw new Error('unexpected compact vec length');
     for (let i = 0; i < count; i++) { hotkeys.push(Buffer.from(b.subarray(off, off + 32))); off += 32; }
   }
