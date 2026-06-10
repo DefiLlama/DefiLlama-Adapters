@@ -10,6 +10,7 @@ const { queryAllium } = require('./allium');
 
 const sdk = require('@defillama/sdk');
 const { endpointMap, endpoint } = require('./svmChainConfig.js')
+// const { addRaydiumPositions } = require('../krystal/solana.js')
 
 /** Address of the SPL Token program */
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -36,6 +37,7 @@ const blacklistedTokens_default = [
 const whitelistedTokens = {
   solana: [
     ...(Object.values(ADDRESSES.solana)),
+    '72puLt71H93Z9CzHuBRTwFpL4TG3WZUhnoCC7p8gxigu', // USDGO 
   ]
 }
 
@@ -743,4 +745,5 @@ module.exports = {
   i80f48ToNumber,
   runInChunks,
   getTokenAccountBalances,
+  // addRaydiumPositions,
 };

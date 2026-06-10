@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
   fyields: [
     {
-      yieldBearingAsset: ADDRESSES.fantom.MIM, //MIM
+      yieldBearingAsset: "0x82f0b8b456c1a451378467398982d4834b6829c1", //MIM
       yieldProxy: "0xf730167FC2aF7a02db63d3e8CE54179A70Ea72b7",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
@@ -22,7 +22,7 @@ module.exports = {
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: ADDRESSES.fantom.USDC, //USDC
+      yieldBearingAsset: "0x04068da6c83afcfa0e13ba15a6696662335d5b75", //USDC
       yieldProxy: "0xc0Cf1846134D90CDA5eC8244fe8c992F7A96500F",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
@@ -32,12 +32,12 @@ module.exports = {
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: ADDRESSES.fantom.fUSDT, //fUSDT
+      yieldBearingAsset: "0x049d68029688eabf473097a2fc38ef61633a3c7a", //fUSDT
       yieldProxy: "0xD30303241c53097FEa1f6D75f4f0a77FEF22d435",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: ADDRESSES.fantom.DAI, //DAI
+      yieldBearingAsset: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", //DAI
       yieldProxy: "0xf58e5571FaEB95C703e0eBb4fDFC2eb7dB18FC53",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },

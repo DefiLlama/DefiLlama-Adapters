@@ -129,6 +129,9 @@ const uniV2Configs = {
   'astarexchange': {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
+  'eticahub': {
+    etica: { factory: '0xfc8dE5A5087c8825AA54E2C57B3FFe0e23784bc3' , staking: ['0x75d81d03a98CD9195593b8963aF17E13fAa70334', '0xa5a1bc6307b0b87989b8456d4b35f88a68650044']},
+  },
   'asteroneo': {
     neox: '0x1dAbb81D9Faeb1DF4a8c97A60C5269c7D45e66B0',
   },
@@ -310,7 +313,7 @@ const uniV2Configs = {
     occ: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     rari: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     reya: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
-    sanko: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
+    // sanko: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4', // chain was down from 2026-03-07
     spn: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4',
     xai: '0x18E621B64d7808c3C47bccbbD7485d23F257D26f',
   },
@@ -824,6 +827,9 @@ const uniV2Configs = {
     arbitrum: '0x989CF6bFA8997E8A01Fa07F3009392d1C734c719',
   },
   'hebeswap': {
+    _options: {
+      skipUnknownTokens: true,
+    },
     ethereumclassic: '0x09fafa5eecbc11C3e5d30369e51B7D9aab2f3F53',
   },
   'heraswap': {
@@ -983,6 +989,7 @@ const uniV2Configs = {
   },
   'kaspacom-dex': {
     kasplex: '0xa9CBa43A407c9Eb30933EA21f7b9D74A128D613c',
+    igra: '0x21350BcDa9E81731CF4cDE3DbC457e3de2739c01',
   },
   'katana-ronin': {
     hallmarks: [
@@ -1043,9 +1050,6 @@ const uniV2Configs = {
     kcc: '0xc0ffee00000e1439651c6ad025ea2a71ed7f3eab',
   },
   'kokomoswap': {
-    bsc: '0x971A5f6Ef792bA565cdF61C904982419AA77989f',
-  },
-  'kokoswap': {
     bsc: '0x971A5f6Ef792bA565cdF61C904982419AA77989f',
   },
   'koone': {
@@ -1288,6 +1292,10 @@ const uniV2Configs = {
   'neptunex': {
     blast: '0x922FeCbE8dbFDfe85FfF4734046347B8E2ee7c82',
   },
+  'tamaswap': {
+    ethereum: '0x00000021543ed46B665A74484c82B71E4eB61e34',
+    // base: '0x00000021543ed46B665A74484c82B71E4eB61e34',
+  },
   'nest-platform-v2': {
     _options: {
       hasStablePools: true,
@@ -1467,6 +1475,7 @@ const uniV2Configs = {
   },
   'pheasantswap': {
     enuls: '0x7bf960B15Cbd9976042257Be3F6Bb2361E107384',
+    deadFrom: '2026-02-11'
   },
   'phenix-dex': {
     cronos: '0x6Bae09822c36a9359d563A22fc7d134eF27a5f60',
@@ -1593,7 +1602,6 @@ const uniV2Configs = {
   'reservoir-tools-v2': {
     abstract: '0x566d7510dEE58360a64C9827257cF6D0Dc43985E',
     zero_network: '0x1B4427e212475B12e62f0f142b8AfEf3BC18B559',
-    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
     ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
   },
   'revoswap': {
@@ -1692,6 +1700,9 @@ const uniV2Configs = {
   },
   'shadowswap': {
     core: '0x326Ee96748E7DcC04BE1Ef8f4E4F6bdd54048932',
+  },
+  'shapeswap-v2': {
+    shape: '0xb411eaf2f2070822b26e372e3ea63c5060ba45e6',
   },
   'sharelock': {
     era: '0xea51CE8A1f9C1Cbbf5B89D9B1dA4A94fB1557866',
@@ -1871,6 +1882,9 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     stable: '0xc5ba86e4A6F674816fA7c3B7cA438D63ec136bE9',
+  },
+  'stableswap-xyz': {
+    stable: '0x25D2d657F539F2bB16eC82773cBE5ee49ddD3c69',
   },
   'standard-tech': {
     ethereum: '0x53AC1d1FA4F9F6c604B8B198cE29A50d28cbA893',
@@ -2321,7 +2335,7 @@ const uniV2Configs = {
   },
   'alienbase': {
     methodology: 'Uses Uniswap-style factory address to find and price liquidity pairs.',
-    base: { factory: '0x3E84D913803b02A4a7f027165E8cA42C14C0FdE7', staking: [["0x52eaecac2402633d98b95213d0b473e069d86590","0x365c6d588e8611125De3bEA5B9280C304FA54113"], "0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4"] },
+    base: { factory: '0x3E84D913803b02A4a7f027165E8cA42C14C0FdE7', staking: [["0x52eaecac2402633d98b95213d0b473e069d86590", "0x365c6d588e8611125De3bEA5B9280C304FA54113"], "0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4"] },
   },
   'alienfi': {
     methodology: 'TVL consists of pools created by the factory contract',
@@ -2331,7 +2345,7 @@ const uniV2Configs = {
     bsc: { factory: '0xC7a506ab3ac668EAb6bF9eCf971433D6CFeF05D9', staking: ["0x4f7b2Be2bc3C61009e9aE520CCfc830612A10694", "0x557233E794d1a5FbCc6D26dca49147379ea5073c"] },
   },
   'aliumswap': {
-    bsc: { factory: '0xbEAC7e750728e865A3cb39D5ED6E3A3044ae4B98', staking: [["0x95CDf618b6aF0ec1812290A777955D3609B0508d","0x4f388167F8B52F89C87A4E46706b9C1408F2c137"], "0x7C38870e93A1f959cB6c533eB10bBc3e438AaC11"] },
+    bsc: { factory: '0xbEAC7e750728e865A3cb39D5ED6E3A3044ae4B98', staking: [["0x95CDf618b6aF0ec1812290A777955D3609B0508d", "0x4f388167F8B52F89C87A4E46706b9C1408F2c137"], "0x7C38870e93A1f959cB6c533eB10bBc3e438AaC11"] },
   },
   'ampleswap': {
     methodology: 'Uses factory(0x381fefadab5466bff0e8e96842e8e76a143e8f73) address and whitelisted tokens address to find and price Liquidity Pool pairs',
@@ -2341,7 +2355,7 @@ const uniV2Configs = {
   },
   'apeswap-amm': {
     methodology: 'TVL comes from the DEX liquidity pools, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9 and 0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B',
-    bsc: { factory: '0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6', staking: [["0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9","0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B"], ["0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95","0x34294AfABCbaFfc616ac6614F6d2e17260b78BEd"], "bsc"] },
+    bsc: { factory: '0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6', staking: [["0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9", "0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B"], ["0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95", "0x34294AfABCbaFfc616ac6614F6d2e17260b78BEd"], "bsc"] },
     polygon: '0xcf083be4164828f00cae704ec15a36d711491284',
     ethereum: '0xBAe5dc9B19004883d0377419FeF3c2C8832d7d7B',
     telos: '0x411172Dfcd5f68307656A1ff35520841C2F7fAec',
@@ -2365,7 +2379,7 @@ const uniV2Configs = {
     hallmarks: [
       ['2022-05-07', 'UST depeg'],
     ],
-    bsc: { factory: '0x858e3312ed3a876947ea49d572a7c42de08af7ee', staking: [["0xDbc1A13490deeF9c3C12b44FE77b503c1B061739","0x13e9031133E901d5214fb4D593DF8ECc034c8237","0xD4855892a3188DA76da0066b9e4918939511E67a","0x9b9F3F1112E74765518cE93B1489c70F6db52bFf","0x683963df7331c65Df8ACE6818651a7611bdc39E5","0xBD09D5E5dcC904bbf8649af78d323eEfdf7b0D1D","0x8b10E6959F2915f532fE142b9C53B167eEC42fF4","0x7D621C9F70B3743CbAb15c22d781754FcD7c9589","0x1F337dea1679730906F46A06fd6034054BD32970","0x131010022654B57b0C39c918ef8313ce79Fa04B8","0x6653c3c4CD2083fEbFf49A52F9a5ce4c30978A25","0x44EeCE1e9ccbaa5Ad0b8C14192467Ab83BE0BA51","0xA394dD5ADC4AAF41aa1f9CFf28158A6AF2823459","0x6cBbA2f3BD677Da630aEd2311253713e8Ba1394D","0xa3A911033af250f7013597A6AF6a719906Ac4444","0xE42D17b1a734e04d2e0cB33234Ab074E21c175A7","0xAa2b37d023Ffa244022A9aa60EeB351cc79FD4e5","0x69C4c9cf979431DA6C4B4a2F3874E6378DFC8157","0xE056FB8Ce6A3437530B1AfF799185A009b25990b","0xf31F62A6Afb0546771a821e0F98FD187Ee7f7d4C","0x2792Ccd3F02a22beBa49F28F3ab0B52dF18BD280","0x109eAA8b5Ea469fb5aCe0647A93695D8DCD5e836"], "0x965f527d9159dce6288a2219db51fc6eef120dd1"] },
+    bsc: { factory: '0x858e3312ed3a876947ea49d572a7c42de08af7ee', staking: [["0xDbc1A13490deeF9c3C12b44FE77b503c1B061739", "0x13e9031133E901d5214fb4D593DF8ECc034c8237", "0xD4855892a3188DA76da0066b9e4918939511E67a", "0x9b9F3F1112E74765518cE93B1489c70F6db52bFf", "0x683963df7331c65Df8ACE6818651a7611bdc39E5", "0xBD09D5E5dcC904bbf8649af78d323eEfdf7b0D1D", "0x8b10E6959F2915f532fE142b9C53B167eEC42fF4", "0x7D621C9F70B3743CbAb15c22d781754FcD7c9589", "0x1F337dea1679730906F46A06fd6034054BD32970", "0x131010022654B57b0C39c918ef8313ce79Fa04B8", "0x6653c3c4CD2083fEbFf49A52F9a5ce4c30978A25", "0x44EeCE1e9ccbaa5Ad0b8C14192467Ab83BE0BA51", "0xA394dD5ADC4AAF41aa1f9CFf28158A6AF2823459", "0x6cBbA2f3BD677Da630aEd2311253713e8Ba1394D", "0xa3A911033af250f7013597A6AF6a719906Ac4444", "0xE42D17b1a734e04d2e0cB33234Ab074E21c175A7", "0xAa2b37d023Ffa244022A9aa60EeB351cc79FD4e5", "0x69C4c9cf979431DA6C4B4a2F3874E6378DFC8157", "0xE056FB8Ce6A3437530B1AfF799185A009b25990b", "0xf31F62A6Afb0546771a821e0F98FD187Ee7f7d4C", "0x2792Ccd3F02a22beBa49F28F3ab0B52dF18BD280", "0x109eAA8b5Ea469fb5aCe0647A93695D8DCD5e836"], "0x965f527d9159dce6288a2219db51fc6eef120dd1"] },
   },
   'bscswap': {
     methodology: 'Factory address on BSC (0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2385,7 +2399,7 @@ const uniV2Configs = {
   },
   'candycity': {
     methodology: 'Factory address (0x84343b84EEd78228CCFB65EAdEe7659F246023bf) is used to find the LP pairs. TVL is equal to the liquidity on the AMM and the candy tokens in the staking pools / vault / vesting contract / lock contract.',
-    cronos: { factory: '0x84343b84EEd78228CCFB65EAdEe7659F246023bf', staking: [["0xDAf7c0e2882818b46c36AdBCe95399821Eca08F8","0x8FEf43b1f3046F8f58A76c64aD01Bc8d82ff0ad1","0xA46C4a3428a5E9B5C84A4457215D98BC8DC17AbB","0xCa207941946218126BD7BBe44C5d457753490b4A","0x7CeA583ea310b3A8a72Ed42B3364aff16d24B3A2","0xE56C1A8D4E90d82BA06F3f49efEc69f736a32070","0xc568Ce4C714c5Ec819eA8F52596a6Fd9523A2B81"], "0x06C04B0AD236e7Ca3B3189b1d049FE80109C7977"], vesting: ["0x427f1230A547566a51F5Ffd5698BB65c06acA2D2", "0x06C04B0AD236e7Ca3B3189b1d049FE80109C7977"] },
+    cronos: { factory: '0x84343b84EEd78228CCFB65EAdEe7659F246023bf', staking: [["0xDAf7c0e2882818b46c36AdBCe95399821Eca08F8", "0x8FEf43b1f3046F8f58A76c64aD01Bc8d82ff0ad1", "0xA46C4a3428a5E9B5C84A4457215D98BC8DC17AbB", "0xCa207941946218126BD7BBe44C5d457753490b4A", "0x7CeA583ea310b3A8a72Ed42B3364aff16d24B3A2", "0xE56C1A8D4E90d82BA06F3f49efEc69f736a32070", "0xc568Ce4C714c5Ec819eA8F52596a6Fd9523A2B81"], "0x06C04B0AD236e7Ca3B3189b1d049FE80109C7977"], vesting: ["0x427f1230A547566a51F5Ffd5698BB65c06acA2D2", "0x06C04B0AD236e7Ca3B3189b1d049FE80109C7977"] },
   },
   'casinocronos': {
     methodology: 'Factory address (0x570aA1E0aa3d679Bc9DaAA47564ed3Daba1208FE) is used to find the LP pairs. TVL is equal to the liquidity on the AMM, while staking is the amount of CASINO tokens found in the Masterchef(0x81b5118bF8A720B19FEC6F3078d2b555790cb0AB).',
@@ -2428,14 +2442,16 @@ const uniV2Configs = {
     megaeth: '0xC60940F182F7699522970517f6d753A560546937',
   },
   'dddx': {
-    bsc: { factory: '0xb5737A06c330c22056C77a4205D16fFD1436c81b', staking: [["0x488f0252B4bEa5A851FE9C827894d08868D552C0","0xAd8Ab2C2270Ab0603CFC674d28fd545495369f31","0x37056DbB4352877C94Ef6bDbB8C314f749258fCA"], "0x4B6ee8188d6Df169E1071a7c96929640D61f144f"] },
+    bsc: { factory: '0xb5737A06c330c22056C77a4205D16fFD1436c81b', staking: [["0x488f0252B4bEa5A851FE9C827894d08868D552C0", "0xAd8Ab2C2270Ab0603CFC674d28fd545495369f31", "0x37056DbB4352877C94Ef6bDbB8C314f749258fCA"], "0x4B6ee8188d6Df169E1071a7c96929640D61f144f"] },
   },
   'dogmoney': {
     dogechain: { factory: '0xaF85e6eD0Da6f7F5F86F2f5A7d595B1b0F35706C', staking: { owner: '0xC5c70fA7A518bE9229eB0Dc84e70a91683694562', tokens: ['0x93C8a00416dD8AB9701fa15CA120160172039851'], lps: ['0x9ab710cd0bfbee60e14115d19c76213c4d4b1687'], useDefaultCoreAssets: true } },
   },
   'equilibre': {
     _options: { hasStablePools: true },
-    kava: { factory: '0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95', staking: ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"] },
+    kava: { factory: '0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95', staking: ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"], blacklistedPools: [
+      '0x78Ef6D3E3d0da9B2248C11BE11743B4C573ADd25',
+    ] },
   },
   'etcmc': {
     methodology: 'Factory address (0x164999e9174686b39987dfB7E0FAb28465b867A5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2526,7 +2542,7 @@ const uniV2Configs = {
     scroll: '0xa2899c776baaf9925d432f83c950d5054a6cf59c',
   },
   'leonicornswap': {
-    bsc: { factory: '0xEB10f4Fe2A57383215646b4aC0Da70F8EDc69D4F', staking: ["0x72F8fE2489A4d480957d5dF9924166e7a8DDaBBf", ["0x2c8368f8F474Ed9aF49b87eAc77061BEb986c2f1","0x27E873bee690C8E161813DE3566E9E18a64b0381"]] },
+    bsc: { factory: '0xEB10f4Fe2A57383215646b4aC0Da70F8EDc69D4F', staking: ["0x72F8fE2489A4d480957d5dF9924166e7a8DDaBBf", ["0x2c8368f8F474Ed9aF49b87eAc77061BEb986c2f1", "0x27E873bee690C8E161813DE3566E9E18a64b0381"]] },
   },
   'lfgswap-core': {
     core: '0xA1ADD165AED06D26fC1110b153ae17a5A5ae389e',
@@ -2563,10 +2579,10 @@ const uniV2Configs = {
   },
   'mochiswap': {
     hallmarks: [
-      [["2022-06-23","Horizon bridge Hack $100m"]],
+      [["2022-06-23", "Horizon bridge Hack $100m"]],
     ],
     bsc: { factory: '0xCBac17919f7aad11E623Af4FeA98B10B84802eAc', staking: ["0x464F1A30e5A5b5b2D3c5f4F0e823e01EeFE304df", "0x2d0e75b683e8b56243b429b24f2b08bcc1ffd8da"] },
-    harmony: { factory: '0x3bEF610a4A6736Fd00EBf9A73DA5535B413d82F6', staking: ["0xd0cb3e55449646c9735d53e83eea5eb7e97a52dc", "0x691f37653f2fbed9063febb1a7f54bc5c40bed8c"],},
+    harmony: { factory: '0x3bEF610a4A6736Fd00EBf9A73DA5535B413d82F6', staking: ["0xd0cb3e55449646c9735d53e83eea5eb7e97a52dc", "0x691f37653f2fbed9063febb1a7f54bc5c40bed8c"], },
   },
   'moonbase': {
     base: '0xe396465A85deDB00FA8774162B106833dE51Ea41',
@@ -2623,7 +2639,7 @@ const uniV2Configs = {
     bsc: { factory: '0x1A04Afe9778f95829017741bF46C9524B91433fB', staking: ["0xd67a0CE4B1484DBa8dB53349F9b26a3272dB04F5", "0x42b98A2f73a282D731b0B8F4ACfB6cAF3565496B"] },
   },
   'paintswap': {
-    fantom: { factory: '0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5', staking: [["0xCb80F529724B9620145230A0C866AC2FACBE4e3D","0x9076C96e01F6F13e1eC4832354dF970d245e124F"], "0x85dec8c4b2680793661bca91a8f129607571863d"] },
+    fantom: { factory: '0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5', staking: [["0xCb80F529724B9620145230A0C866AC2FACBE4e3D", "0x9076C96e01F6F13e1eC4832354dF970d245e124F"], "0x85dec8c4b2680793661bca91a8f129607571863d"] },
   },
   'partyswap': {
     avax: { factory: '0x58a08bc28f3e8dab8fb2773d8f243bc740398b09', staking: ["0xA07d1932775f22DaeDA671812c16F859b4257363", "0x25afd99fcb474d7c336a2971f26966da652a92bc", "0x379842a6cd96a70ebce66004275ce0c68069df62", "avalanche-2"] },
@@ -2655,11 +2671,18 @@ const uniV2Configs = {
   'ramses': {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
     arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"] },
-    hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
   },
   'ramses-hl-legacy': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
+  },
+  'ramsesx-arb-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
+  },
+  'ramsesx-poly-legacy': {
+    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
+    polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
   },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
@@ -2721,7 +2744,7 @@ const uniV2Configs = {
     metis: { factory: '0x2CdFB20205701FF01689461610C9F321D1d00F80', staking: ["0x54A8fB8c634dED694D270b78Cb931cA6bF241E21", "0x69fdb77064ec5c84FA2F21072973eB28441F43F3"] },
   },
   'tideswap': {
-    ink: {factory: '0x2ebE0528aDED9fA8d745B7C7082fb90d7C7B6Ec8'}
+    ink: { factory: '0x2ebE0528aDED9fA8d745B7C7082fb90d7C7B6Ec8' }
   },
   'tulip': {
     oasis: { factory: '0x90a5e676EFBdeFeeeb015cd87484B712fd54C96A', staking: ["0xceF2f95f185D49bcd1c10DE7f23BEaCBaae6eD0f", "0x2736643C7fFFe186984f60a2d34b91b1b7398bF1"] },
@@ -2748,6 +2771,9 @@ const uniV2Configs = {
   },
   'venera': {
     bsc: '0x95F9c44fA1585811e1D1a0F59e74174B657B37A5',
+  },
+  'krokoswap-v2': {
+    kasplex: '0x4373b7Fcf5059A785843cD224129e01d243Aef71',
   },
   'versedex': {
     methodology: 'Factory address (0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2796,6 +2822,15 @@ const uniV2Configs = {
       },
       staking: ['0x9312A9702c3F0105246e12874c4A0EdC6aD07593', '0x80B56cF09c18e642DC04d94b8AD25Bb5605c1421'],
     },
+    base: {
+      factory: '0x8888A3D87EF6aBC5F50572661E4729A45b255cF6',
+      fetchBalances: true,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint) view returns (address)',
+      },
+      staking: ['0x88889C4Be508cA88eba6ad802340C0563891D426', '0x888a4F89aF7dD0Be836cA367C9FF5490c0F6e888'],
+    },
   },
   'wingswap': {
     methodology: 'Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2828,13 +2863,57 @@ const uniV2Configs = {
   },
   'zkSwap-finance': {
     methodology: 'TVL is total liquidity of all liquidity pools.',
-    era: { factory: '0x3a76e377ed58c8731f9df3a36155942438744ce3', staking: [["0x9F9D043fB77A194b4216784Eb5985c471b979D67","0x4Ca2aC3513739ceBF053B66a1d59C88d925f1987","0x056f1960b5CF53676AD9C0A7113363A812DC0c8e"], ["0x31C2c031fDc9d33e974f327Ab0d9883Eae06cA4A"]] },
+    era: { factory: '0x3a76e377ed58c8731f9df3a36155942438744ce3', staking: [["0x9F9D043fB77A194b4216784Eb5985c471b979D67", "0x4Ca2aC3513739ceBF053B66a1d59C88d925f1987", "0x056f1960b5CF53676AD9C0A7113363A812DC0c8e"], ["0x31C2c031fDc9d33e974f327Ab0d9883Eae06cA4A"]] },
     sonic: '0xCe98a0E578b639AA90EE96eD5ba8E5a4022de529',
     monad: '0x0ff16867BcaC3C5fdc2dc73558e3F8e2ed89EEA2',
   },
   'zkevmswap': {
     polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
   },
+  'bcswap': {
+    bcypher: '0x927bf500361987b365f6d0ff38c1d45155f4975c',
+  },
+  'velox': {
+    base: '0xa28dBAE4D926067F4c343aA8071e833b04C8b99E',
+  },
+  'capybara-v2': {
+    klaytn: '0xE4296d6161c8a1554a18dba79C0f825cE23bAE42',
+  },
+  'qie-dex': {
+    start: '2025-08-05',
+    qiev3: '0x8E23128a5511223bE6c0d64106e2D4508C08398C'
+  },
+  'virtus-protocol': {
+    base: '0x7F03ae4452192b0E280fB0d4f9c225DDa88C7623',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      }
+    }
+  },
+  'forest-v1': {
+    bsc: {
+      factory: '0x9d5ef0f61a5e88d90fb231f84413b5fc43bf6a9e',
+      staking: ['0xb6C6B8bF9d415E2D91B95134800De146Dcc5dc94', '0x11cf6bf6d87cb0eb9c294fd6cbfec91ee3a1a7d0'],
+    },
+  },
+  'mezo-tigris-v3': {
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      fetchBalances: true,
+    },
+    mezo: '0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79',
+  },
+  'sentrix-dex': {
+    srx: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
+  },
+  'myrxswap': {
+    mrt: '0x7E4A7CC7D9e4e416E7277F8309cC54cF5FD8AF2b'
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

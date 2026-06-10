@@ -92,7 +92,7 @@ const config = {
       ADDRESSES.cronos.WBTC, // btc
       '0xe44Fd7fCb2b1581822D0c862B68222998a0c299a', // eth
       '0xb9Ce0dd29C91E02d4620F57a66700Fc5e41d6D15', // xrp
-      ADDRESSES.telos.ETH, // bnb
+      "0xfa9343c3897324496a05fc75abed6bac29f8a40f", // bnb
       '0xc9DE0F3e08162312528FF72559db82590b481800', // sol
       '0x1a8E39ae59e5556B56b76fCBA98d22c9ae557396', // doge
       '0x0e517979C2c1c1522ddB0c73905e0D39b3F990c0', // ada

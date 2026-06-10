@@ -30,7 +30,7 @@ const AAVE_WRAPPERS = [
 ]
 
 // Underlying tokens for the wrappers (Ethereum)
-const USDS = '0xdC035D45d973E3EC169d2276DDab16f1e407384F'
+const USDS = ADDRESSES.ethereum.USDS
 const USDTb = '0xC139190F447e929f090Edeb554D95AbB8b18aC1C'
 
 // FT token address

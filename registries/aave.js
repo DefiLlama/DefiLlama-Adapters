@@ -127,6 +127,7 @@ const aaveConfigs = {
     hyperliquid: {
       addressesProviderRegistry: '0x24E301BcBa5C098B3b41eA61a52bFe95Cb728b20',
       dataHelpers: ['0x5481bf8d3946E6A3168640c1D7523eB59F055a29'],
+      staking: ['0x09b2236327d76fcd9e4b72db70a6608c21a94292', '0xbd6dab50f03a305a80037294fa8d1a9dc0cac91b'],
       v3: true,
     },
   },
@@ -160,6 +161,7 @@ const aaveConfigs = {
       blacklistedTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.BTUSD],
       staking: ['0x685D3b02b9b0F044A3C01Dbb95408FC2eB15a3b3', '0xB1EbdD56729940089Ecc3aD0BBEEB12b6842ea6F'],
       pool2: ['0x3eB63cff72f8687f8DE64b2f0e40a5B95302D028', '0x829F540957DFC652c4466a7F34de611E172e64E8'],
+      isInsolvent: true,
     },
   },
   'betterbank': {
@@ -293,9 +295,14 @@ const aaveConfigs = {
       blacklistedTokens: ['0x788D96f655735f52c676A133f4dFC53cEC614d4A'],
     },
     sonic: {
-      dataHelpers: ['0xB245F8321E7a4938DEf8bDb2D5E2E16481268c42'],
+      dataHelpers: ['0xB245F8321E7A4938DEf8bDb2D5E2E16481268c42'],
       v3: true,
       blacklistedTokens: ['0x53a6aBb52B2F968fA80dF6A894e4f1b1020DA975', '0x614914B028A7D1fD4Fab1E5a53a3E2dF000bcB0e'],
+    },
+    ethereum: {
+      dataHelpers: ['0x7BC6d94344392ac7898Ce197Ae382e21c71347f2'],
+      v3: true,
+      blacklistedTokens: ['0x07fFf99e1664d9B116fbC158c0E99785F81cA236', '0xb419ecdd222981e7e54cec316797ecb799c6afdc'],  // exclude dETH & dUSD
     },
   },
   'apebank': {
@@ -453,6 +460,11 @@ const aaveConfigs = {
   'magsinio': {
     sonic: '0x67389503F9EF03D5C10074dEfd96E18bc7755194',
   },
+  'k613': {
+    monad: {
+      dataHelpers: ['0xfc87bE7f3657AAD69baDb6247A88E924D1F8bc53'],
+    },
+  },
   'meridian-lend': {
     telos: {
       addressesProviderRegistry: '0xb84171C0824B4F3C0B415706C99A4A8ED5779b75',
@@ -521,24 +533,6 @@ const aaveConfigs = {
       isInsolvent: true,
       abis: {
         getAllATokens: "function getAllBTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-      },
-    },
-  },
-  'starlay': {
-    methodology,
-    astar: {
-      addressesProviderRegistry: '0xF6206297b6857779443eF7Eca4a3cFFb1660F952',
-      isInsolvent: true,
-      abis: {
-        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-      },
-      staking: ['0xDf32D28c1BdF25c457E82797316d623C2fcB29C8', ADDRESSES.astar.LAY],
-    },
-    acala: {
-      addressesProviderRegistry: '0xA666dD28059deF0B45505c1f1a5f49fAd2e03c11',
-      isInsolvent: true,
-      abis: {
-        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])",
       },
     },
   },

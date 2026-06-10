@@ -7,9 +7,16 @@ const configs = {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
       ],
+      eulerVaultOwners: [
+        '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
+        '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
+      ],
       erc4626: [
         '0x1166250D1d6B5a1DBb73526257f6bb2Bbe235295', // yoUSD IPOR Fusion
         '0xfd843a3D9329C91CA22c5daA994BeA762541F954', // yoETH IPOR Fusion
+        '0x17d0f109EE895bAD0b68AA104AA72bd0b003AD8E', // ETH Lending Optimizer IPOR Fusion
+        '0x5900C3b72458F12967DC1bef35b92d271F5cDBc1', // cbETH Looper IPOR Fusion
+        '0xD46a3C2D958d0a2cB098d48C48dC19FE3A710F37', // USDC Lending Optimizer IPOR Fusion
       ],
     },
     ethereum: {
@@ -18,10 +25,12 @@ const configs = {
         '0x829A13850b684A575C0580a83322890e19c5eFaa',
       ],
       erc4626: [
-        '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
-        '0xb2FdA773822E5a04c8A70348d66257DD5Cf442DB', // Upshift LiquityV2
         '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
         '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23', // IPOR Fusion yoGOLD
+      ],
+      upshiftV2: [
+        '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
+        '0xb2FdA773822E5a04c8A70348d66257DD5Cf442DB', // Upshift LiquityV2
       ],
     },
     polygon: {
@@ -37,6 +46,14 @@ const configs = {
     katana: {
       morphoVaultOwners: [
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
+      ],
+      erc4626: [
+        '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // vbUSDC Metavault on Spectra
+      ],
+    },
+    monad: {
+      eulerVaultOwners: [
+        '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
       ],
     },
     arbitrum: {
@@ -65,27 +82,15 @@ const configs = {
         '0x1aEadA3C251215f1294720B80FcB3D1D005F3585', // Core wFLR Vault on Mystic
         '0x53184aDaBF312b490BF1EbcFdC896FEfF6019a14', // Core FXRP Vault on Mystic
       ],
+      upshiftV2: [
+        '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28', // Upshift FXRP
+      ],
     },
   }
 }
 
-const exportObj = getCuratorExport(configs)
-const existingFlareTvl = exportObj.flare?.tvl
-
-// Flare vault uses non-standard getTotalAssets() instead of totalAssets()
-const FLARE_VAULT = '0x373D7d201C8134D4a2f7b5c63560da217e3dEA28' // Upshift FXRP
-exportObj.flare = {
-  tvl: async (api) => {
-    if (existingFlareTvl) await existingFlareTvl(api)
-    const asset = await api.call({ abi: 'address:asset', target: FLARE_VAULT })
-    const totalAssets = await api.call({ abi: 'uint256:getTotalAssets', target: FLARE_VAULT })
-    api.add(asset, totalAssets)
-  }
-}
-
 module.exports = {
-  ...exportObj,
-
+  ...getCuratorExport(configs),
   timetravel: false, // starknet doesn't support historical queries
   hallmarks: [
     ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],

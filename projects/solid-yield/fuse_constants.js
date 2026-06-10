@@ -18,7 +18,16 @@ const boringVaultsV0Fuse = [
     lens: "0x8478Cc70B7e389212D301Fef4f9aDfd4F869f28D",
     startBlock: 40381360, 
     baseAsset: ADDRESSES.fuse.WFUSE, 
-  }
+  },
+  {
+    name: "Solid ETH",
+    vault: "0xEf1c1fFbEabDF358E61D3F5F14777e9c1bC8D1c7",
+    accountant: "0x4BD5873720072b4AC7956898dbCBc543b2fD3749",
+    teller: "0xEaacf4534cCC05CAd929830fAF611d872b291d41",
+    lens: "0x8478Cc70B7e389212D301Fef4f9aDfd4F869f28D",
+    startBlock: 41311096,
+    baseAsset: ADDRESSES.fuse.WETH_3,
+  },
 ];
 
 module.exports = {

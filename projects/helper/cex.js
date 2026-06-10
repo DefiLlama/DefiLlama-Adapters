@@ -29,7 +29,7 @@ const defaultTokens = {
     ADDRESSES.ethereum.MKR,  // MKR
     ADDRESSES.ethereum.CRV,  // CRV
     '0x92d6c1e31e14520e676a687f0a93788b716beff5',  // DYDX
-    ADDRESSES.ethereum.FTM,  // FTM
+    "0x4e15361fd6b4bb609fa63c81a2be19d873717870",  // FTM
     ADDRESSES.ethereum.SUSHI,  // SUSHI
     '0x15d4c048f83bd7e37d49ea4c83a07267ec4203da', // GALA
     '0x3845badade8e6dff049820680d1f14bd3903a5d0',  // SAND
@@ -121,6 +121,8 @@ const defaultTokens = {
     '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
     ADDRESSES.bsc.USD1, //USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
+    '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
+    '0x1b66474c8eca3827f16202907f41f63785579716' // exchange token for weex, 
   ],
   tron: [
     nullAddress,
@@ -249,12 +251,12 @@ const defaultTokens = {
   ],
   moonbeam: [
     nullAddress,
-    ADDRESSES.telos.USDT, //usdt
+    "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73", //usdt
     "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
   ],
   moonriver: [
     nullAddress,
-    ADDRESSES.moonriver.USDT, //usdt
+    "0xb44a9b6905af7c801311e8f4e76932ee959c663c", //usdt
   ],
   kava: [
     nullAddress,
@@ -301,7 +303,24 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.hyperliquid.USDT0,
     ADDRESSES.hyperliquid.USDC,
-  ]
+  ],
+  sei: [
+    nullAddress,
+    ADDRESSES.sei.USDC,
+    ADDRESSES.sei.USDT,
+    ADDRESSES.sei.USDC_Circle,
+    ADDRESSES.sei.USDT0,
+  ],
+  monad: [
+    nullAddress,
+    ADDRESSES.monad.USDT,
+    ADDRESSES.monad.USDC,
+  ],
+  plasma: [
+    nullAddress,
+    ADDRESSES.plasma.USDT0,
+    ADDRESSES.plasma.WXPL,
+  ],
 }
 
 function cexExports(config) {

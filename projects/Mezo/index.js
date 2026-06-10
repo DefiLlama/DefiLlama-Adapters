@@ -1,4 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 // https://mezo.org/docs/users/resources/contracts-reference
 
@@ -25,27 +26,7 @@ const mezoPreMainnetBridge = "0xAB13B8eecf5AA2460841d75da5d5D861fD5B8A39";
 //https://github.com/mezo-org/mezod/blob/main/ethereum/bindings/portal/mainnet/gen/_address/MezoBridge
 const mezoMainnetBridge = "0xF6680EA3b480cA2b72D96ea13cCAF2cFd8e6908c";
 
-const getTvl = async (api, owners) => {
-	return api.sumTokens({
-		api,
-		owner: [owners],
-		tokens: mezoTokens,
-	});
-};
-
-async function tvl(api) {
-	const [preMigrationTvl, currentTvl] = await Promise.all([
-		getTvl(api, mezoPreMainnetBridge),
-		getTvl(api, mezoMainnetBridge),
-	]);
-	return {
-		...preMigrationTvl,
-		...currentTvl,
-	};
-}
-
 module.exports = {
 	hallmarks: [['2025-05-23', "Mezo Mainnet Migration"]],
-	ethereum: { tvl },
-  // mezo: { tvl },
+	ethereum: { tvl: sumTokensExport({ owners: [mezoPreMainnetBridge, mezoMainnetBridge], tokens: mezoTokens }) },
 };

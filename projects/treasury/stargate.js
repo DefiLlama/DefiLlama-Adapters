@@ -135,7 +135,7 @@ module.exports = treasuryExports({
     owners: [fantom],
     tokens: [
       nullAddress,
-      ADDRESSES.fantom.USDC,
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
       "0x12edeA9cd262006cC3C4E77c90d2CD2DD4b1eb97", // S*USDC
     ],
     ownTokens: [

@@ -29,6 +29,7 @@ const CONFIG = {
   ripple: { owners: ['r9R8jciZBYGq32DxxQrBPi5ysZm67iQitH'] },
 
   litecoin: { owners: ['LQjEMkuiA2pCwFeUPwsu6ktzUubBVLsahX'] },
+  dash: { owners: ['XxA9DbXaFpF4GFY8KUNX7eAxhZPsWtcKhc'] },
 
   tron: { owners: ['TX5XiRXdyz7sdFwF5mnhT1QoGCpbkncpke', 'TNzQzT8wDF1GVevMqehVDY51ucxxrNfCap'] },
   near: { owners: ['intents.near'], tokens: ['zec.omft.near', 'wrap.near', 'token.rhealab.near'] },
