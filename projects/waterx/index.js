@@ -1,35 +1,29 @@
 const sui = require("../helper/chain/sui");
 
-// WaterX is a perpetuals DEX + prediction market on Sui.
-// LPs deposit collateral into the WLP liquidity pool (`waterx_perp::lp_pool::WlpPool`),
-// which backs all perp positions. TVL = the collateral held in that pool.
-const WLP_POOL = "0xfcf9c1beaae8274a32cf3cc4717ec24acf3f96195abb213f0db4d6c80055a545";
-
-// WaterX USD (`...::usd::USD`) is a 1:1-backed stablecoin minted by waterx_credit.
-// It is not yet on DefiLlama's price feeds, so we value it 1:1 against USDC.
-const WATERX_USD = "0xc70a37eafe54712b520cb6566e5a2d2f60bc70f32eb9fb08cac40394b5a96bf4::usd::USD";
+// WaterX is a perpetuals DEX + prediction market on Sui. All user value enters
+// through a Peg Stability Module (native_custody::custody_vault): users deposit
+// real stablecoins (USDC / USDsui), which are locked in the vault and back the
+// 1:1 WaterX USD credit unit minted against them. That WaterX USD is then used
+// internally as WLP liquidity and as perp position collateral.
+//
+// Counting the vault's real backing assets therefore captures the protocol's
+// full TVL in one place — LP liquidity, trader collateral and idle balances
+// alike — without double-counting the synthetic WaterX USD that represents them.
+const CUSTODY_VAULT = "0xf27ebfd21ea4ea759beefb1c4385825e02ab6c50f57305abec601ea4522d04bd";
 
 async function tvl(api) {
-  const { fields } = await sui.getObject(WLP_POOL);
-  const tokenPools = fields.token_pools;
-  const tokenTypes = fields.token_types;
-
-  tokenPools.forEach((tp, i) => {
-    const coin = "0x" + tokenTypes[i].fields.name;
-    const { liquidity_amount, token_decimal } = tp.fields;
-    if (coin.toLowerCase() === WATERX_USD.toLowerCase()) {
-      // 1:1-backed WaterX USD -> price as USDC-equivalent
-      api.addCGToken("usd-coin", liquidity_amount / 10 ** token_decimal);
-    } else {
-      api.add(coin, liquidity_amount);
-    }
+  const vaults = await sui.getDynamicFieldObjects({ parent: CUSTODY_VAULT });
+  vaults.forEach(({ type, fields }) => {
+    // type: ...::custody_vault::SingleVault<0x..::usdc::USDC>
+    const coin = type.slice(type.indexOf("<") + 1, type.lastIndexOf(">"));
+    api.add(coin, fields.balance);
   });
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    "Counts collateral tokens held in the WaterX WLP liquidity pool (waterx_perp::lp_pool), which backs all perpetual positions. WaterX USD, a 1:1-backed stablecoin, is valued at $1.",
+    "Counts the real stablecoin reserves (USDC, USDsui) locked in the WaterX custody vault (native_custody::custody_vault), the Peg Stability Module that backs every WaterX USD 1:1. This captures the protocol's full TVL — WLP liquidity, perp position collateral and idle account balances — since all of it is denominated in WaterX USD redeemable against these reserves.",
   sui: {
     tvl,
   },
