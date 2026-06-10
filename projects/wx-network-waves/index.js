@@ -1,13 +1,10 @@
 const { wavesBalanceDetails } = require("../helper/chain/waves");
-const sdk = require('@defillama/sdk')
 
 const WXStakingNode = "3P3RZeHi4LTjpZdpw7kmkVSbQ84qDfrVy8G";
 
-async function wavesTVL() {
-  const balances = {};
+async function wavesTVL(api) {
   const { effective } = await wavesBalanceDetails(WXStakingNode);
-  sdk.util.sumSingleBalance(balances,'waves', effective / 1e8)
-  return balances;
+  api.addCGToken('waves', effective / 1e8)
 }
 
 module.exports = {

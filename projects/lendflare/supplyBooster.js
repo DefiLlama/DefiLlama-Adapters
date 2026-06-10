@@ -12,31 +12,22 @@ const supplyPools = [
     { virtualBalance: "0x6d18E830A938F0eAF206f1BD80b79a851E5f37A3", decimals: 18, coinName: "ethereum" },
 ]
 
-async function getTotalSupply(pools, chainBlocks) {
-    const output = (await sdk.api.abi.multiCall({
-        block: chainBlocks.ethereum,
-        chain: "ethereum",
+async function getTotalSupply(pools, api) {
+    const totalSupplies = await api.multiCall({
         abi: 'erc20:totalSupply',
-        calls: pools.map((pool, i) => {
-            return {
-                target: pool.virtualBalance
-            }
-        })
-    })).output.map((result, i) => {
-        for (let p of pools) {
-            if (p.virtualBalance == result.input.target) {
-                p.totalSupply = (new BN(result.output));
-                p.totalSupplyString = p.totalSupply.toString();
-            }
-        }
+        calls: pools.map(pool => pool.virtualBalance),
+    });
+    pools.forEach((p, i) => {
+        p.totalSupply = new BN(totalSupplies[i]);
+        p.totalSupplyString = p.totalSupply.toString();
     });
 
     return pools;
 }
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(api) {
     const balances = {}
-    const pools = await getTotalSupply(supplyPools, chainBlocks);
+    const pools = await getTotalSupply(supplyPools, api);
     for (let pool of pools)
         sdk.util.sumSingleBalance(balances, pool.coinName, pool.totalSupply/(10 ** pool.decimals))
 

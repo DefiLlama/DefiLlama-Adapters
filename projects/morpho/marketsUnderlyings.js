@@ -1,10 +1,5 @@
-const sdk = require("@defillama/sdk");
 const abi = require("../helper/abis/morpho.json");
-module.exports =  async (markets, block) => (await sdk.api.abi.multiCall({
-  calls: markets.map(market => ({
-    target: market,
-  })),
-  block,
-  chain: "ethereum",
+module.exports = async (api, markets) => (await api.multiCall({
+  calls: markets,
   abi: abi.cToken.underlying
-})).output.map(result => result.output.toLowerCase())
+})).map(result => result.toLowerCase())
