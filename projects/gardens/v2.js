@@ -1,17 +1,20 @@
 const {  getAddress } = require('ethers');
-const { gql } = require('graphql-request');
+const { gql, GraphQLClient } = require('graphql-request');
+const sdk = require('@defillama/sdk');
+const { endpoint } = require('../helper/svmChainConfig');
 
 const CV_STRATEGY_ABI = {
   getPoolAmount: 'function getPoolAmount() view returns (uint256)',
 };
 
 const subgraphs = {
-  polygon: 'https://api.studio.thegraph.com/query/102093/gardens-v2---polygon/version/latest/',
-  xdai: 'https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/version/latest/',
-  arbitrum: 'https://api.studio.thegraph.com/query/102093/gardens-v2---arbitrum/latest/',
-  base: 'https://api.studio.thegraph.com/query/102093/gardens-v2---base/version/latest/',
-  celo: 'https://api.studio.thegraph.com/query/102093/gardens-v2---celo/version/latest/',
-  optimism: 'https://api.studio.thegraph.com/query/102093/gardens-v2---optimism/version/latest/',
+  polygon: sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/4vsznmRkUGm9DZFBwvC6PDvGPVfVLQcUUr5ExdTNZiUc'),
+  xdai: sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/ELGHrYhvJJQrYkVsYWS5iDuFpQ1p834Q2k2kBmUAVZAi'),
+  arbitrum: sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/9ejruFicuLT6hfuXNTnS8UCwxTWrHz4uinesdZu1dKmk'),
+  base: sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/HAjsxiYJEkV8oDZgVTaJE9NQ2XzgqekFbY99tMGu53eJ'),
+  celo: sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/BsXEnGaXdj3CkGRn95bswGcv2mQX7m8kNq7M7WBxxPx8'),
+  optimism: sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/FmcVWeR9xdJyjM53DPuCvEdH24fSXARdq4K5K8EZRZVp'),
+  ethereum: sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/39E6r8bqUTeyrSb4JWMkqcVBKqeKAwJVp6mPhoDCtgbB'),
 };
 
 
@@ -36,11 +39,13 @@ const query = gql`
 async function fetchStrategiesAndCommunities(api) {
   const subgraph = subgraphs[api.chain];
   if (!subgraph) throw new Error(`No subgraph for chain ${api.chain}`);
-
-  const data = await fetch(subgraph, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) })
-    .then(res => res.json())
-    .then(res => res.data);
-  if (!data) throw new Error(`No data from subgraph for chain ${api.chain}`);
+  
+  var graphQLClient = new GraphQLClient(subgraph)
+  const data = await graphQLClient.request(query);
+  if (!data) {
+    console.error(`Error fetching data from subgraph for chain ${api.chain}:`);
+    throw new Error(`No data from subgraph for chain ${api.chain}`);
+  }
   if (!data.cvstrategies || !data.registryCommunities) throw new Error(`Missing data from subgraph for chain ${api.chain}`);
   const strategies = data.cvstrategies;
   const communities = data.registryCommunities;
@@ -85,4 +90,5 @@ module.exports = {
   optimism: { tvl },
   polygon: { tvl },
   celo: { tvl },
+  ethereum: { tvl },
 };
