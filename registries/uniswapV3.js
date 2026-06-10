@@ -1736,6 +1736,18 @@ const uniV3Configs = {
   'kublerx-v3': {
     methodology: 'TVL is calculated by summing the reserves of all Kublerx V3 pools on KUB. Pools are discovered from PoolCreated events emitted by the V3 factory.',
     bitkub: { factory: '0xD679d310008A2595B8d3DeB83bb93EB23F9b0942', fromBlock: 31936260 }
+  },
+  'metric': {
+    methodology: 'Counts all tokens across all metric pools.',
+    ethereum: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 24521185, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    base: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 42540736, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    arbitrum: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 435210755, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    bsc: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 82964761, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    avax: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 78822864, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    polygon: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 83380134, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    megaeth: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 9083666, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    hyperliquid: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 30774348, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
+    // monad: { factory: '0xe22F9fc0f04486dE25ed6CF1800a4a47aFD82e0C', fromBlock: 64807339, eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address indexed manager, address pool, bytes32 poolKey)'},
   }
 }
 
