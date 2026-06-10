@@ -168,7 +168,20 @@ const getJaaaSolanaSupply = async () => {
   return supplies[JAAA_SOLANA_MINT]
 }
 
+// getTokenSupplies reads the mint's live supply from the Solana RPC and is not
+// block/timestamp aware, unlike the EVM vault reads. To avoid subtracting today's
+// JAAA supply from historical Ethereum balances during backfill, the Solana
+// adjustment is applied only to live runs (the current UTC day). Historical points
+// keep all JAAA backing on Ethereum, where it was before the Solana mint launched
+// and where it remains unmeasurable historically.
+const startOfTodayUTC = () => {
+  const now = new Date()
+  return Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000)
+}
+const isHistorical = (api) => api.timestamp && api.timestamp < startOfTodayUTC()
+
 const solanaTvl = async (api) => {
+  if (isHistorical(api)) return
   const supply = await getJaaaSolanaSupply()
   if (supply) api.add(`ethereum:${JAAA_EVM}`, supply, { skipChain: true })
 }
@@ -177,6 +190,7 @@ const solanaTvl = async (api) => {
 // whose backing is already reflected in the vault assets measured above.
 const ethereumTvl = async (api) => {
   await tvl(api)
+  if (isHistorical(api)) return
   const supply = await getJaaaSolanaSupply()
   if (supply) api.add(JAAA_EVM, (-BigInt(supply)).toString())
 }
