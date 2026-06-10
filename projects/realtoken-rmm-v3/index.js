@@ -27,9 +27,12 @@ async function getMarket(api) {
 }
 
 function addUsd(api, amounts, decimals, prices, baseUnit) {
+  const SCALE = 10n ** 18n; // keep fractional precision through integer math
+  const base = BigInt(baseUnit);
   amounts.forEach((amount, i) => {
-    const usd = (Number(amount) / 10 ** Number(decimals[i])) * (Number(prices[i]) / Number(baseUnit));
-    api.addUSDValue(usd);
+    const denom = 10n ** BigInt(decimals[i]) * base;
+    const usdScaled = (BigInt(amount) * BigInt(prices[i]) * SCALE) / denom;
+    api.addUSDValue(Number(usdScaled) / 1e18);
   });
 }
 
@@ -43,7 +46,7 @@ async function borrowed(api) {
   const { reserveTokens, prices, baseUnit, decimals } = await getMarket(api);
   const variableDebt = await api.multiCall({ abi: "erc20:totalSupply", calls: reserveTokens.map((r) => r.variableDebtTokenAddress) });
   const stableDebt = await api.multiCall({ abi: "erc20:totalSupply", calls: reserveTokens.map((r) => r.stableDebtTokenAddress) });
-  const debt = variableDebt.map((v, i) => Number(v) + Number(stableDebt[i]));
+  const debt = variableDebt.map((v, i) => (BigInt(v) + BigInt(stableDebt[i])).toString());
   addUsd(api, debt, decimals, prices, baseUnit);
 }
 
