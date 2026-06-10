@@ -39,7 +39,6 @@
     "MKR": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
     "CRV": "0xd533a949740bb3306d119cc777fa900ba034cd52",
     "CRVUSD": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
-    "FTM": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
     "GNO": "0x6810e776880C02933D47DB1b9fc05908e5386b96",
     "LUSD": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
     "sUSD_OLD": "0x57ab1e02fee23774580c119740129eac7081e9d3",
@@ -76,16 +75,10 @@
     "WFTM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
     "WBTC": "0x321162cd933e2be498cd2267a90534a804051b11",
     "WETH": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
-    "USDC": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
     "USDC_L0": "0x28a92dde19D9989F39A49905d7C9C2FAc7799bDf",
-    "fUSDT": "0x049d68029688eabf473097a2fc38ef61633a3c7a",
-    "DAI": "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
-    "MIM": "0x82f0b8b456c1a451378467398982d4834b6829c1",
     "renBTC": "0xdbf31df14b66535af65aac99c32e9ea844e14501",
     "cUSD": "0xe3a486c1903ea794eed5d5fa0c9473c7d7708f40",
-    "anyUSDC": "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605",
-    "nUSD": "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3",
-    "nICE": "0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443"
+    "nUSD": "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3"
   },
   "csc": {
     "WCET": "0xe6f8988d30614afe4f7124b76477add79c665822",
@@ -233,8 +226,7 @@
   },
   "harmony": {
     "MIS": "0xd74433b187cf0ba998ad9be3486b929c76815215",
-    "WONE": "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
-    "AVAX": "0xb12c13e66ade1f72f71834f2fc5082db8c091358"
+    "WONE": "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a"
   },
   "optimism": {
     "OP": "0x4200000000000000000000000000000000000042",
@@ -260,9 +252,6 @@
   },
   "moonriver": {
     "WMOVR": "0xe3c7487eb01c74b73b7184d198c7fbf46b34e5af",
-    "USDT": "0xb44a9b6905af7c801311e8f4e76932ee959c663c",
-    "USDC": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
-    "ETH": "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c",
     "ELK": "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
     "BEPRO": "0xcb4a593ce512d78162c58384f0b2fd6e802c2c47",
     "MOVR": "0xffffffff98e37bf6a393504b5adc5b53b4d0ba11",
@@ -297,7 +286,6 @@
     "USDT": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
     "ARBY": "0x09ad12552ec45f82be90b38dfe7b06332a680864",
     "ARB": "0x912ce59144191c1204e64559fe8253a0e49e6548",
-    "MIM": "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
     "renBTC": "0xdbf31df14b66535af65aac99c32e9ea844e14501",
     "DFL": "0x31635a2a3892daec7c399102676e344f55d20da7",
     "FEI": "0x4a717522566c7a09fd2774ccedc5a8c43c5f9fd2",
@@ -380,8 +368,6 @@
     "KUS": "0x4a81704d8c16d9fb0d7f61b747d0b5a272badf14",
     "ELK": "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
     "BNB": "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c",
-    "DAI": "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055",
-    "WBTC": "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0",
     "ETH": "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1",
     "WKCS": "0x4446fc4eb47f2f6586f9faab68b3498f86c07521",
     "MJT": "0x2ca48b4eea5a731c2b54e7c3944dbdb87c0cfb6f",
@@ -454,7 +440,6 @@
     "USDC": "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc",
     "USDT": "0x5de1677344d3cb0d7d465c10b72a8f60699c062d",
     "DAI": "0xf74195bb8a5cf652411867c5c2c5b8c2a402be35",
-    "BUSD": "0x461d52769884ca6235b685ef2040f47d30c94eb5",
     "FRAX": "0x7562f525106f5d54e891e005867bf489b5988cd9",
     "WBTC": "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b",
     "OMG": "0xe1e2ec9a85c607092668789581251115bcbd20de",
@@ -591,10 +576,6 @@
   "telos": {
     "WTLOS": "0xd102ce6a4db07d247fcc28f366a623df0938ca9e",
     "WTLOS_1": "0xdc2393dc10734bf153153038943a5deb42b209cd",
-    "ETH": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
-    "WBTC": "0xf390830df829cf22c53c8840554b98eafc5dcbc2",
-    "USDC": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
-    "USDT": "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73",
     "STLOS": "0xb4b01216a5bc8f1c8a33cd990a1239030e60c905",
     "sBUSD": "0x017043607270ecbb440e20b0f0bc5e760818b3d8",
     "syUSDC": "0xe6E5f3d264117E030C21920356641DbD5B3d660c"
@@ -932,10 +913,8 @@
     "USDT": "0x7f8e71dd5a7e445725f0ef94c7f01806299e877a",
     "WBTC": "0xd0c6179c43c00221915f1a61f8ec06a5aa32f9ec",
     "FRAX": "0x10d70831f9c3c11c5fe683b2f1be334503880db6",
-    "BUSD": "0x332730a4f6e03d9c55829435f10360e13cfa41ff",
     "BNB": "0x1fc532187b4848d2f9c564531b776a4f8e11201d",
     "QUICK": "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
-    "MATIC": "0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98",
     "WETH": "0x9f4614e4ea4a0d7c4b1f946057ec030bee416cbb"
   },
   "canto": {
@@ -991,11 +970,8 @@
     "WSDN": "0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef",
     "USDC": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
     "USDT": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
-    "JPYC": "0x735abe48e8782948a37c7765ecb76b98cde97b0f",
     "STND": "0x722377a047e89ca735f09eb7cccab780943c4cb4",
-    "ETH": "0x765277eebeca2e31912c9946eae1021199b39c61",
-    "BNB": "0x332730a4f6e03d9c55829435f10360e13cfa41ff",
-    "BUSD": "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a"
+    "BNB": "0x332730a4f6e03d9c55829435f10360e13cfa41ff"
   },
   "tezos": {
     "USDtz": "KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9",
@@ -1148,10 +1124,7 @@
     "WETH": "0x726138359c17f1e56ba8c4f737a7caf724f6010b"
   },
   "syscoin": {
-    "WSYS": "0xd3e822f3ef011ca5f17d82c956d952d8d7c3a1bb",
-    "USDC": "0x2bf9b864cdc97b08b6d79ad4663e71b8ab65c45c",
-    "ETH": "0x7c598c96d02398d89fbcb9d41eab3df0c16f227d",
-    "USDT": "0x922d641a426dcffaef11680e5358f34d97d112e1"
+    "WSYS": "0xd3e822f3ef011ca5f17d82c956d952d8d7c3a1bb"
   },
   "rollux": {
     "WSYS": "0x4200000000000000000000000000000000000006",

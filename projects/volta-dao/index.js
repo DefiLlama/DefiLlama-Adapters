@@ -6,7 +6,7 @@ const ftmToken = "0x4c9993c7107495020c2ce9a13d11839f48ecd2e6";
 const ftmStaking = "0xc6a54adddf7463f73a4c5a8e3e480bc798cf8a09";
 const ftmTreasury = "0x05ab17e4dfa87ef4ac487ed20cfcc2ae75c2a792";
 const ftmTokens = [
-    ADDRESSES.fantom.DAI,
+    "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
     "0x78b51a1fd7524186982c2cb8982df312b1e896a8"
 ];
 

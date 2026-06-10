@@ -18,10 +18,10 @@ async function tvl(api) {
       ['0x74b23882a30290451A17c44f4F05243b6b58C76d', contracts.ethVault],
       ['0x511D35c52a3C244E7b8bd92c0C297755FbD89212', contracts.avaxVault],
       ['0x6c021ae822bea943b2e66552bde1d2696a53fbb7', contracts.tombVault],
-      [ADDRESSES.fantom.DAI, contracts.ftmVault],
-      [ADDRESSES.fantom.DAI, contracts.ethVault],
-      [ADDRESSES.fantom.DAI, contracts.avaxVault],
-      [ADDRESSES.fantom.DAI, contracts.tombVault],
+      ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", contracts.ftmVault],
+      ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", contracts.ethVault],
+      ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", contracts.avaxVault],
+      ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", contracts.tombVault],
     ]
   })
 }

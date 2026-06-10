@@ -45,7 +45,7 @@ const config = {
 
 const blacklistedTokens = {
   ethereum: ['0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3'], //MIM
-  arbitrum: [ADDRESSES.arbitrum.MIM], //MIM
+  arbitrum: ["0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a"], //MIM
   avax: ['0x130966628846bfd36ff31a822705796e8cb8c18d'], //MIM
 }
 

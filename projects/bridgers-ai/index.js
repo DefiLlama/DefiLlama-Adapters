@@ -93,9 +93,9 @@ const tokensConf = {
   },
   fantom: {
     FTM: nullAddress,
-    USDC: ADDRESSES.fantom.USDC,
-    USDT: ADDRESSES.fantom.fUSDT,
-    DAI: ADDRESSES.fantom.DAI,
+    USDC: "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+    USDT: "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+    DAI: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
     WETH: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
   },
   arbitrum: {

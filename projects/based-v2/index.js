@@ -5,7 +5,7 @@ const { stakings } = require("../helper/staking");
 //BASED V2
 const smelt = "0x141FaA507855E56396EAdBD25EC82656755CD61e";
 const BoardroomV2 = "0x8ff9eFB99D522fAC6a21363b7Ca54d25477637F6";
-const usdc = ADDRESSES.fantom.USDC;
+const usdc = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const wftm = ADDRESSES.fantom.WFTM;
 const treasuryAddress = '0x0A10daD90b9C6FB8B87BFf3857A4B012890C53A5';
 

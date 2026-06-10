@@ -6,7 +6,7 @@ module.exports = ohmTvl(treasury, [
     //USDC
     [ADDRESSES.arbitrum.USDC, false],
     //MIM
-    [ADDRESSES.arbitrum.MIM, false],
+    ["0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a", false],
     //sushi LP
     ["0xe4ad045abb586dbdae6b11a4d2c6ff5434b93ed1", true],
     //

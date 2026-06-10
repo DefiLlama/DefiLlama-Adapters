@@ -178,8 +178,8 @@ const chains = {
       '0xdc301622e621166bd8e82f2ca0a26c13ad0be355', // FRAX (multichain)
       '0x841fad6eae12c286d1fd18d1d525dffa75c7effe', // BOO
       '0xf24bcf4d1e507740041c9cfd2dddb29585adce1e', // BEETS
-      ADDRESSES.fantom.DAI,
-      ADDRESSES.fantom.USDC,
+      "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
     ],
     ownTokens: ['0x91fa20244fb509e8289ca630e5db3e9166233fdc'], // gOHM (Fantom)
   },
