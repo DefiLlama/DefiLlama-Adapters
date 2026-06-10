@@ -12,17 +12,20 @@ const provenanceUrl = endPoints["provenance"] + `/cosmos/bank/v1beta1/supply/by_
 const tvl = async (api) => {
     try {
         const response = await fetch(provenanceUrl)
-        if (!response.ok) throw new Error(response.json() || `Failed to fetch provenance ${fgrsBaseDenom} amount`)
+        if (!response.ok) {
+            const body = await response.text();
+            throw new Error( `Failed to fetch provenance ${fgrsBaseDenom} amount: ${response.status} ${body}`)
+        }
         const nfgrdSupply = await response.json()
         api.add(fgrsBaseDenom, nfgrdSupply.amount.amount)
         return sumTokens2({ api })
     } catch (e) {
-        throw new Error("Failed to return FGRS TVL", e)
+        throw new Error(`Failed to return FGRS TVL: ${e.message}`)
     }
 }
 
 module.exports = {
-    timetravel: true,
+    timetravel: false,
     methodology: "OPEN FGRS TVL is the sum of all FGRS tokens on Provenance",
     provenance: { tvl },
 }
