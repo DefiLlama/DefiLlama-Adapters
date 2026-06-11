@@ -13,8 +13,9 @@ async function tvl(api) {
   // EVM USDC in the MonetrixVault and RedeemEscrow, plus the protocol's
   // Hyperliquid Core account equity (perp margin, spot hedges, HLP and
   // borrow-lend balances) valued via Hyperliquid precompiles
-  const totalBacking = await api.call({ target: MONETRIX_ACCOUNTANT, abi: 'uint256:totalBacking' })
-  api.add(USDC, totalBacking)
+  const totalBackingSigned = await api.call({ target: MONETRIX_ACCOUNTANT, abi: 'function totalBackingSigned() view returns (int256)' })
+  // negative backing (mark-to-market drawdown) clamps to zero
+  if (BigInt(totalBackingSigned) > 0n) api.add(USDC, totalBackingSigned)
 }
 
 module.exports = {
