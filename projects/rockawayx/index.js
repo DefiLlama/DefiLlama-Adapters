@@ -111,9 +111,12 @@ for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
 
 async function accountableTvl(api, strategies) {
   // Accountable yield strategies report their NAV (deployed + idle assets) via lastTotalAssets
-  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies });
-  const totalAssets = await api.multiCall({ abi: 'uint256:lastTotalAssets', calls: strategies });
-  api.add(assets, totalAssets);
+  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies, permitFailure: true });
+  const totalAssets = await api.multiCall({ abi: 'uint256:lastTotalAssets', calls: strategies, permitFailure: true });
+  for (let i = 0; i < strategies.length; i++) {
+    if (!assets[i] || totalAssets[i] === null || totalAssets[i] === undefined) continue;
+    api.add(assets[i], totalAssets[i]);
+  }
 }
 
 for (const [chain, vaults] of Object.entries(ACCOUNTABLE_VAULTS)) {
