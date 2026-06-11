@@ -92,7 +92,7 @@ async function getAvaxTvl(api) {
     })
   });
 
-  portfolioBalances.forEach(balance => api.addTokens(baseTokenMapping[chain]['pharaoh'], balance));
+  portfolioBalances.forEach(balance => api.add(baseTokenMapping[chain]['pharaoh'], balance));
 
     await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[chain]['blackhole'], veNft: veNftMapping[chain]['blackhole'], owner:fortyAcresMapping[chain][1],isAltAbi:true});
 }
