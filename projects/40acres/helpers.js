@@ -36,18 +36,14 @@ const veNftMapping = {
     blackhole: '0xEac562811cc6abDbB2c9EE88719eCA4eE79Ad763' //veBLACK
   }
 }
-
-const portfolioFactories = {
-  optimism: "0x8a71e4bab42ddc3d996fa4b4780919567e367924",
-  base: "0x967361472f99fedc26a2b8bb3cfc1d0966979c8e",
-  avax: "0x52d43C377e498980135C8F2E858f120A18Ea96C2"
-}
-
+const portfolioManager = "0x40ac2e40acb7bdd6ec83e468143262fe216529ec";
+const avaxPortfolioFactory = '0x52d43C377e498980135C8F2E858f120A18Ea96C2';
 const paraohVoterModule = "0x34F233F868CdB42446a18562710eE705d66f846b";
 
 const assetAbi = 'address:asset';
 const activeAssetsAbi = 'uint256:activeAssets';
 const portfolioAbi = 'address[]:getAllPortfolios';
+const allFactoriesAbi = 'address[]:getAllFactories';
 
 async function getVaultBalance(api) {
   const vaultToken = await api.multiCall({ calls: vaultMapping[api.chain], abi: assetAbi, });
@@ -82,7 +78,7 @@ async function getBorrowed(api) {
 async function getAvaxTvl(api) {
   const chain = 'avax'
   const portfolioList = await api.call({
-    target: portfolioFactories[chain],
+    target: avaxPortfolioFactory,
     abi: portfolioAbi,
   });
 
@@ -103,12 +99,12 @@ async function getAvaxTvl(api) {
 
 async function getPortfolioVeNftTvl(api) {
   const chain = api.chain;
-  const portfolios = await api.call({
-    target: portfolioFactories[chain],
-    abi: portfolioAbi,
-  });
+  const factories = await api.call({ target: portfolioManager, abi: allFactoriesAbi })
+  const portfolios = await api.multiCall({ calls: factories.map(f => ({target: f})), abi: portfolioAbi});
+  const allPortfolios = [...new Set(portfolios.flat().map(a => a.toLowerCase()))]
+  
   await sdk.util.runInPromisePool({
-    items: portfolios,
+    items: allPortfolios,
     concurrency: 10,
     processor: owner => unwrapSolidlyVeNft({
       api,
