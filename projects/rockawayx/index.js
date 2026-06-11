@@ -13,6 +13,12 @@ const LISTA_VAULTS = {
   ],
 };
 
+const ACCOUNTABLE_VAULTS = {
+  ethereum: [
+    '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', // Accountable USDC yield strategy
+  ],
+};
+
 const MIDAS_VAULTS = {
   ethereum: [
     '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
@@ -99,6 +105,23 @@ for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
     tvl: async (api) => {
       if (baseTvl) await baseTvl(api);
       await sumERC4626Vaults({ api, calls: vaults, isOG4626: true });
+    }
+  };
+}
+
+async function accountableTvl(api, strategies) {
+  // Accountable yield strategies report their NAV (deployed + idle assets) via lastTotalAssets
+  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies });
+  const totalAssets = await api.multiCall({ abi: 'uint256:lastTotalAssets', calls: strategies });
+  api.add(assets, totalAssets);
+}
+
+for (const [chain, vaults] of Object.entries(ACCOUNTABLE_VAULTS)) {
+  const baseTvl = adapterExport[chain]?.tvl;
+  adapterExport[chain] = {
+    tvl: async (api) => {
+      if (baseTvl) await baseTvl(api);
+      await accountableTvl(api, vaults);
     }
   };
 }
