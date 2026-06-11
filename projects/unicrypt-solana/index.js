@@ -1,19 +1,18 @@
-const { addAmmLocks, addNewAmmLocks } = require('./ammv4')
-const { addCpSwapLocks } = require('./cpswap')
-const { addClmmLocks } = require('./clmm')
-const { addMeteoraLocks } = require('./meteora-dlmm')
+const { get } = require('../helper/http')
+
+const TVL_API = 'https://api-lock-service.uncx.network/tvl?chain=sol&type=all'
 
 async function tvl(api) {
-  await addAmmLocks(api)
-  await addNewAmmLocks(api)
-  await addCpSwapLocks(api)
-  await addClmmLocks(api)
-  await addMeteoraLocks(api)
+  const { result } = await get(TVL_API)
+  const lockersTvlUsd = Number(result?.lockersTvlUsd || 0)
+  const vestingTvlUsd = Number(result?.vestingTvlUsd || 0)
+
+  api.addUSDValue(lockersTvlUsd + vestingTvlUsd)
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: 'TVL is computed fully onchain: AMM/NEW AMM/CP-Swap locks are valued from live UNCX LP vault balances plus live pool reserves/supply, CLMM locks are decoded and unwrapped to underlying token amounts from Raydium position/pool state, and Meteora locks are decoded from locker TokenLock accounts and valued from DLMM Position/BinArray/LbPair state.',
+  methodology: 'TVL is fetched from the UNCX API and reported as the sum of Solana lockers TVL and vesting TVL in USD.',
   solana: { tvl },
 }
