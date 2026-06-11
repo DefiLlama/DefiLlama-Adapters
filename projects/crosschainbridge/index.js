@@ -1,6 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 
 const getBridgeContract = (chain) => {
   switch (chain) {
@@ -127,45 +125,18 @@ const tokens = {
  * END OF CONFIGURATION
  */
 
-const getAddrPrefix = (chain) => (chain === "ethereum" ? "" : `${chain}:`);
-
-const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
-  const balances = {};
+const createTvlFunction = (chain) => async (api) => {
   const bridgeContract = getBridgeContract(chain);
-
-  for (const [symbol, address] of Object.entries(tokens[chain])) {
-    let tokenBalance = BigNumber(0);
-    // Get balance of token in bridge contract
-    const result = await sdk.api.erc20.balanceOf({
-      target: address,
-      owner: bridgeContract,
-      chain,
-      block: chainBlocks[chain],
-    });
-    tokenBalance = tokenBalance.plus(result.output);
-
-    balances[`${getAddrPrefix(chain)}${address}`] = tokenBalance.toFixed();
-  }
-  return balances;
+  return api.sumTokens({ owner: bridgeContract, tokens: Object.values(tokens[chain]) });
 };
 
-const createRewardPoolsTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
+const createRewardPoolsTvlFunction = (chain) => async (api) => {
   const bridgeTokenAddress = tokens[chain].BRIDGE;
   const rewardPoolsContract = getRewardPools(chain);
 
-  if (!bridgeTokenAddress) return 0;
+  if (!bridgeTokenAddress) return {};
 
-  let tokenBalance = BigNumber(0);
-
-  const resultRewardPools = await sdk.api.erc20.balanceOf({
-    target: bridgeTokenAddress,
-    owner: rewardPoolsContract,
-    chain,
-    block: chainBlocks[chain],
-  });
-  tokenBalance = tokenBalance.plus(resultRewardPools.output);
-
-  return { [`${getAddrPrefix(chain)}${bridgeTokenAddress}`] : tokenBalance.toFixed() };
+  return api.sumTokens({ owner: rewardPoolsContract, tokens: [bridgeTokenAddress] });
 };
 
 const toExport = {};
