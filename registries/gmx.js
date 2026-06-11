@@ -175,7 +175,6 @@ const configs = {
     methodology: 'BMX Classic liquidity is calculated by the value of tokens in the BLT/MLT pool. TVL also includes BMX staked.',
     base: {
       vault: '0xec8d8D4b215727f3476FF0ab41c406FA99b4272C',
-      staking: ['0x3085F25Cbb5F34531229077BAAC20B9ef2AE85CB', '0x548f93779fBC992010C07467cBaf329DD5F059B7'],
     },
     sonic: '0x9cC4E8e60a2c9a67Ac7D20f54607f98EfBA38AcF',
     mode: {
