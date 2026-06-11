@@ -827,6 +827,9 @@ const uniV2Configs = {
     arbitrum: '0x989CF6bFA8997E8A01Fa07F3009392d1C734c719',
   },
   'hebeswap': {
+    _options: {
+      skipUnknownTokens: true,
+    },
     ethereumclassic: '0x09fafa5eecbc11C3e5d30369e51B7D9aab2f3F53',
   },
   'heraswap': {
@@ -1288,6 +1291,10 @@ const uniV2Configs = {
   },
   'neptunex': {
     blast: '0x922FeCbE8dbFDfe85FfF4734046347B8E2ee7c82',
+  },
+  'tamaswap': {
+    ethereum: '0x00000021543ed46B665A74484c82B71E4eB61e34',
+    // base: '0x00000021543ed46B665A74484c82B71E4eB61e34',
   },
   'nest-platform-v2': {
     _options: {
@@ -2442,7 +2449,9 @@ const uniV2Configs = {
   },
   'equilibre': {
     _options: { hasStablePools: true },
-    kava: { factory: '0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95', staking: ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"] },
+    kava: { factory: '0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95', staking: ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"], blacklistedPools: [
+      '0x78Ef6D3E3d0da9B2248C11BE11743B4C573ADd25',
+    ] },
   },
   'etcmc': {
     methodology: 'Factory address (0x164999e9174686b39987dfB7E0FAb28465b867A5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.',
@@ -2899,6 +2908,12 @@ const uniV2Configs = {
     },
     mezo: '0xBB24AF5c6fB88F1d191FA76055e30BF881BeEb79',
   },
+  'sentrix-dex': {
+    srx: '0xC5344f0DDE0B9916217449Ad9222e446475aD936'
+  },
+  'myrxswap': {
+    mrt: '0x7E4A7CC7D9e4e416E7277F8309cC54cF5FD8AF2b'
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

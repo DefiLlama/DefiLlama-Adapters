@@ -10,7 +10,7 @@ const imports = [
 const { sumTokensExport } = require("../sumTokens.js");
 const fetchers = require("./fetchers.js");
 
-const p2pb2b = ["39BFtTzZjj6o2s7eewefFQxqM4617VmhEK"];
+const p2pb2b = ["bc1qsllhrk7w4e4kprc5qhqtqg9p6e83ektc2d7qma"];
 
 const ssiProtocol = ["1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM"];
 
@@ -909,6 +909,11 @@ module.exports = {
     "bc1qcwk60napcfcljv6phg69gfyfmp3emsgdj9cn5v",
     "bc1q4rtnrtnu829eet3m27huh6ld7x0xczjxd5dg5r",
     "bc1q7vfv3h99vxwu300qej6x2qdfsn58kq6nc9hec6",
+    "bc1qaxrcxhhukne3mnk7jt60d7hgn9a2dqt0gmwh67",
+    "bc1qgu9sf2888glnm6xzfz0q503gpdn64u2swlj2qh",
+    "bc1qh24tm2d8ve8nvjx6uugm2mf28m2z5ytdjvk06v",
+    "bc1ql3fe2x2tpyl75hwn7xe0g42dsenaxvr6qvccdy",
+    "bc1qn54dfx4r8tf7ychn6fvas8tczkcq302gjfsrh4",
   ],
   probit: [
     "19EgVpboqNjortWyhJSDAGRvHDtduqiSfr",

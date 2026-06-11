@@ -20,7 +20,7 @@ const config = {
 // Count only the exogenous side of the LPs (exclude NUM)
 function makeChainTVL(chain) {
   const { farm, lp, num } = config[chain];
-  return async (_, _b, _c, { api }) =>
+  return async (api) =>
     sumTokens2({
       api,
       owners: [farm],          // farm contract holds the staked LPs

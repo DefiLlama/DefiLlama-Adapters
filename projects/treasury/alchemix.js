@@ -50,8 +50,8 @@ module.exports = treasuryExports({
   fantom: {
     tokens: [ 
         nullAddress,
-        ADDRESSES.fantom.USDC,//USDC
-        ADDRESSES.fantom.DAI,
+        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",//USDC
+        "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
         ADDRESSES.fantom.WFTM
      ],
     owners: [treasuryFTM], 

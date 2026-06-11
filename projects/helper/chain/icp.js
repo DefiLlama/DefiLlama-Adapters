@@ -6,7 +6,9 @@ const CANDID_TYPE = {
   null: -1,
   bool: -2,
   nat: -3,
+  nat8: -5,
   nat64: -8,
+  float64: -14,
   text: -15,
   opt: -18,
   vec: -19,
@@ -322,9 +324,15 @@ function decodeCandid(bytes, labelHashMap) {
       return value === 1
     }
     if (typeRef === CANDID_TYPE.nat) return decodeUleb128(bytes, state)
+    if (typeRef === CANDID_TYPE.nat8) return bytes[state.i++]
     if (typeRef === CANDID_TYPE.nat64) {
       let out = 0n
       for (let i = 0; i < 8; i++) out |= BigInt(bytes[state.i++]) << BigInt(i * 8)
+      return out
+    }
+    if (typeRef === CANDID_TYPE.float64) {
+      const out = Buffer.from(bytes.slice(state.i, state.i + 8)).readDoubleLE()
+      state.i += 8
       return out
     }
     if (typeRef === CANDID_TYPE.text) {

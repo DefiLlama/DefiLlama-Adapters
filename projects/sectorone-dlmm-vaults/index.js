@@ -10,6 +10,8 @@ const vaultABI = {
 };
 
 const FACTORIES = {
+    ethereum: "0x2a1960451c99947a9C14f0fa7911df5FA0D0e322",
+    base: "0x8f04FF2198550DFdF5169892D1D47573b4F71BA6",
     megaeth: "0x958E7D2eDaeE6A0CcF928a40c386b655A7008243",
 };
 

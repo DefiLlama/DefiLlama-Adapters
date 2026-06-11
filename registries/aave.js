@@ -161,6 +161,7 @@ const aaveConfigs = {
       blacklistedTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.BTUSD],
       staking: ['0x685D3b02b9b0F044A3C01Dbb95408FC2eB15a3b3', '0xB1EbdD56729940089Ecc3aD0BBEEB12b6842ea6F'],
       pool2: ['0x3eB63cff72f8687f8DE64b2f0e40a5B95302D028', '0x829F540957DFC652c4466a7F34de611E172e64E8'],
+      isInsolvent: true,
     },
   },
   'betterbank': {
@@ -532,24 +533,6 @@ const aaveConfigs = {
       isInsolvent: true,
       abis: {
         getAllATokens: "function getAllBTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-      },
-    },
-  },
-  'starlay': {
-    methodology,
-    astar: {
-      addressesProviderRegistry: '0xF6206297b6857779443eF7Eca4a3cFFb1660F952',
-      isInsolvent: true,
-      abis: {
-        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-      },
-      staking: ['0xDf32D28c1BdF25c457E82797316d623C2fcB29C8', ADDRESSES.astar.LAY],
-    },
-    acala: {
-      addressesProviderRegistry: '0xA666dD28059deF0B45505c1f1a5f49fAd2e03c11',
-      isInsolvent: true,
-      abis: {
-        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])",
       },
     },
   },

@@ -42,6 +42,7 @@ const helpers = {
   "fuel": require("./chain/fuel"),
   "radixdlt": require("./chain/radixdlt"),
   "stellar": require("./chain/stellar"),
+  "aleo": require("./chain/aleo"),
 }
 
 svmChains.forEach(chain => {

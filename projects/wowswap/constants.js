@@ -26,7 +26,7 @@ const chains = {
   "heco": {
     reserveFactory: "0x518C21A2Edc710b0c627DBbCb0Af34531Dd1724a",
     pairFactory: "0x86fEA7A7c7f2503cdDb4Ad0E4e7977E8bDcb1872",
-    WOW: ADDRESSES.telos.USDT,
+    WOW: "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73",
     xWOW: "0x72c0A253C84ADa1b1379b2A66ce51862d9bf159B",
     WOWLP: "0x5E5f16A910B7b44f4F8090798BaADEfBC1388253"
   },

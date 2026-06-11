@@ -6,7 +6,7 @@ const CONTRACT_V4 = '0x777777779d229cdF3110e9de47943791c26300Ef'
 const USDC = ADDRESSES.base.USDC
 const chain = 'base'
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   return sumTokens2({
     api,
     tokens: [USDC],

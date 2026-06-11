@@ -1,3 +1,4 @@
+const { getLogs2 } = require('../helper/cache/getLogs');
 const ADDRESSES = require('../helper/coreAssets.json')
 const V2_FACTORY = "0x1D283b668F947E03E8ac8ce8DA5505020434ea0E";
 const V3_FACTORY = "0xf1d64dee9f8e109362309a4bfbb523c8e54fa1aa";
@@ -32,15 +33,12 @@ const ABI = {
 };
 
 async function discoverVaults(api, factory, eventAbi, fromBlock) {
-  const toBlock = api.block || await api.getBlock();
-  const logs = await api.getLogs({
+  const logs = await getLogs2({
+    api,
     target: factory,
     eventAbi,
-    onlyArgs: true,
     fromBlock,
-    toBlock,
-    cacheInCloud: true,
-  });
+  })
   return logs.map((l) => l.vaultAddress);
 }
 

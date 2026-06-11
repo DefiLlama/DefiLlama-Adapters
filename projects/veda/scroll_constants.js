@@ -17,7 +17,7 @@ const boringVaultsV0Scroll = [
     teller: "0x221Ea02d409074546265CCD1123050F4D498ef64",
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
     startBlock: 12749211, 
-    baseAsset: ADDRESSES.scroll.USDC_e,
+    baseAsset: ADDRESSES.scroll.USDC,
   },
     {
     name: "Liquid BTC",
@@ -44,7 +44,7 @@ const boringVaultsV0Scroll = [
     teller: "0xCc9A7620D0358a521A068B444846E3D5DebEa8fA",
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
     startBlock: 12775217, 
-    baseAsset: ADDRESSES.scroll.USDC_e,
+    baseAsset: ADDRESSES.arbitrum.USDe,
   },
 ];
 

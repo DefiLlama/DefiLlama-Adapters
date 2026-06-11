@@ -10,7 +10,7 @@ module.exports = treasuryExports({
       nullAddress,
       ADDRESSES.arbitrum.USDC, // USDC
       "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8", // GRAIL
-      ADDRESSES.arbitrum.MIM, // MIM
+      "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a", // MIM
       "0x3CAaE25Ee616f2C8E13C74dA0813402eae3F496b", // xGRAIL
       "0x616279fF3dBf57A55e3d1F2E309e5D704E4e58Ae", // jGLP-USDC CMLT-LP
       "0x2bcd0aac7D98697D8760fB291625829113E354e7", // jUSDC-WETH CMLT-LP

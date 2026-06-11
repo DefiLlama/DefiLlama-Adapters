@@ -35,9 +35,17 @@ const configs = {
         '0x5f829B1B473cBA86838E1B7BB7E144DbDE228e21',
         '0xE0181090c22579B6A217f1522cbf8c9f1F0C1965',
         '0x64C18DCC4Ccb3b8D27877a4aeBB4C3126CB39cB9',
+        '0xd65d6E8dbC3Cd3D12418199E6f4014dB3aaa0097',
+        '0xe99A27169c2aA26a8f2757949d09Fa3f9A8f0B3B',
+        '0x8aC91877b93330f52b2979a31a4879506021475c'
       ],
       upshiftV2: [
         '0xc87DBBB8C67e4F19fCD2E297c05937567b2572Ce', // Upshift Earn ctUSD
+      ],
+    },
+    base: {
+      morpho: [
+        '0xAE4181CFB5aaA08bbE77d269c6B595672b9F9Edc',
       ],
     },
     sei: {

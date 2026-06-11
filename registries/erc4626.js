@@ -31,12 +31,6 @@ const configs = {
     arbitrum: ['0xd8dd54df1a7d2ea022b983756d8a481eea2a382a'],
     avax: ['0xbE6eB54D1e96CC59338BE9A281d840AcE82df095'],
   },
-  'kaia-superEarn': {
-    klaytn: [
-      '0x3B37DB3AC2a58f2daBA1a7d66d023937d61Fc95b',
-      '0x4E4654cE4Ca7ff0ba66a0A4a588A4bd55A6f9A33',
-    ],
-  },
   'k-bit': {
     methodology: "K-BIT Vault is a core component of the K-BIT ecosystem, enabling users to participate in the platform by depositing USDT and receiving KLP tokens in return.",
     klaytn: [
@@ -245,7 +239,7 @@ const configs = {
     ],
   },
   'tulpea': {
-    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy\'s (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
+    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy's (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
     start: '2026-04-09',
     megaeth: ['0xa21eAFee50DA331521B6Ec4Dd33dEd3F9E1bD2Ea']
   },
@@ -269,6 +263,7 @@ const configs = {
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
   },
   'visionboard-vault': {
+    timetravel: false,
     hyperliquid: ['0x0a5e236425aca07fd087904F8863CAd554675E06'],
     methodology: 'TVL is calculated from VisionBoard Vault totalAssets() on HyperEVM. Deposits mint VBV vault shares backed by the vault asset, currently USDC.'
   },

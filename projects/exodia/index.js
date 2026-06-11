@@ -6,7 +6,7 @@ const exod = "0x3b57f3feaaf1e8254ec680275ee6e7727c7413c7"
 const gohm = "0x91fa20244fb509e8289ca630e5db3e9166233fdc"
 const mai = "0xfb98b335551a418cd0737375a2ea0ded62ea213b"
 const treasury = "0x6a654d988eebcd9ffb48ecd5af9bd79e090d8347"
-const dai = ADDRESSES.fantom.DAI
+const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
 const wftm = ADDRESSES.fantom.WFTM
 
 

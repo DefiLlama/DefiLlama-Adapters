@@ -19,7 +19,9 @@ const pools = {
     "0x4C79B2368d0FFa1BC7399ee0fB3569e220C3f52d": "0xD793c04B87386A6bb84ee61D98e0065FdE7fdA5E", // sAUSD
     "0x9f2Bc225892Eee4C2B579d4b7cB3a74859b5D622": "0x9dcB0D17eDDE04D27F387c89fECb78654C373858", // yzUSD
     "0x8A0F894ec72c879b0f808c6d3FC1FBc7B130Cc69": "0x484be0540aD49f351eaa04eeB35dF0f937D4E73f" // syzUSD
-    // excluded as this address: 0x382447f3b9233f9f4aea2550ebd7fdc424cf98cd distributed to multiple Safe wallets and made deposits
+    // Excluded as this address: 0x382447f3b9233f9f4aea2550ebd7fdc424cf98cd distributed to multiple Safe wallets and made deposits
+    // Also, a couple fresh EOAs were funded with MON (0xCDcF1dcc7c0f9e20Ff2A1888E8BEa50a0d4e2bC8 and 0x4ab86d576746a26c4aa589a0227d842146adcff4), 
+    // then they sent MON to 4 new EOAs each, then all 10 EOAs borrowed enzoBTC.
     // "0x43dF57B359141aAe021E64375dDaA0b2bb89b148": "0xD7aCB868F97F8286D5d3A0Fd5Ef112a8a72eCD90", // enzoBTC 
 }
 

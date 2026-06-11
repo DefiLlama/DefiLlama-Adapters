@@ -10,7 +10,7 @@ const KACFactory = {
 };
 const KAC = {
   bsc: "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB",
-  shiden: ADDRESSES.harmony.AVAX,
+  shiden: "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
 };
 
 
