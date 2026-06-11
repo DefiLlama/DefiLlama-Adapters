@@ -40,6 +40,23 @@ if (process.env.LLAMA_SANITIZE)
   })
 process.env.SKIP_RPC_CHECK = 'true'
 
+function analyzeBalances(balances) {
+  let hasNaN = false;
+  let hasNegative = false;
+
+  function visit(val) {
+    if (val == null) return;
+    if (typeof val === "number") {
+      if (Number.isNaN(val)) hasNaN = true;
+      if (val < 0) hasNegative = true;
+    } else if (typeof val === "object") {
+      for (const v of Object.values(val)) visit(v);
+    }
+  }
+
+  visit(balances);
+  return { hasNaN, hasNegative };
+}
 
 async function getTvl(
   unixTimestamp,
@@ -58,6 +75,13 @@ async function getTvl(
 
   let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
   if (tvlBalances === undefined) tvlBalances = api.getBalances()
+
+    const { hasNaN, hasNegative } = analyzeBalances(tvlBalances);
+    if (hasNaN || hasNegative) {
+      console.warn(
+        `Health check warning for ${storedKey}: hasNaN=${hasNaN}, hasNegative=${hasNegative}`
+      );
+    }
   const tvlResults = await computeTVL(tvlBalances, unixTimestamp);
   await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
   usdTvls[storedKey] = tvlResults.usdTvl;
