@@ -13,6 +13,12 @@ const LISTA_VAULTS = {
   ],
 };
 
+const ACCOUNTABLE_VAULTS = {
+  ethereum: [
+    '0x0F0a9d3F0bc6006143c96E6995572b51413CB3c4', // Accountable USDC yield strategy
+  ],
+};
+
 const MIDAS_VAULTS = {
   ethereum: [
     '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
@@ -54,7 +60,7 @@ const configs = {
       ],
     },
     solana: {
-      kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP', '2TNCzzYJt3uHmpFpqeeJkza4pQUK9xoLa79DJH9AdgGA'], // Kamino RWA USDC
+      kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP', '2TNCzzYJt3uHmpFpqeeJkza4pQUK9xoLa79DJH9AdgGA', 'HoffqVZUNGGpEAhE42E1DqNYSwJjCkorfgiBN6NpT2or'], // Kamino RWA USDC
     },
   }
 }
@@ -99,6 +105,26 @@ for (const [chain, vaults] of Object.entries(LISTA_VAULTS)) {
     tvl: async (api) => {
       if (baseTvl) await baseTvl(api);
       await sumERC4626Vaults({ api, calls: vaults, isOG4626: true });
+    }
+  };
+}
+
+async function accountableTvl(api, strategies) {
+  // Accountable yield strategies report their NAV (deployed + idle assets) via lastTotalAssets
+  const assets = await api.multiCall({ abi: 'address:asset', calls: strategies, permitFailure: true });
+  const totalAssets = await api.multiCall({ abi: 'uint256:lastTotalAssets', calls: strategies, permitFailure: true });
+  for (let i = 0; i < strategies.length; i++) {
+    if (!assets[i] || totalAssets[i] === null || totalAssets[i] === undefined) continue;
+    api.add(assets[i], totalAssets[i]);
+  }
+}
+
+for (const [chain, vaults] of Object.entries(ACCOUNTABLE_VAULTS)) {
+  const baseTvl = adapterExport[chain]?.tvl;
+  adapterExport[chain] = {
+    tvl: async (api) => {
+      if (baseTvl) await baseTvl(api);
+      await accountableTvl(api, vaults);
     }
   };
 }
