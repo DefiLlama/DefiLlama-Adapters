@@ -4,8 +4,10 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 // Panther Protocol v1 vault holds all shielded pool deposits
 const vault = "0xDD1fD1a7b4482Dce1287aFFE6Ca8EA128C7a9046";
+const ZKP = "0x9A06Db14D639796B25A6ceC6A1bf614fd98815EC";
 const zAssets = [
   ADDRESSES.null, // POL
+  ZKP,
   ADDRESSES.polygon.QUICK,
   ADDRESSES.polygon.WETH_1,
   ADDRESSES.polygon.WBTC,
@@ -18,11 +20,10 @@ const zAssets = [
 
 const contracts = {
   polygon: {
-    core: "0x9A06Db14D639796B25A6ceC6A1bf614fd98815EC",
+    core: ZKP,
     staking: [
       "0x4cec451f63dbe47d9da2debe2b734e4cb4000eac",
       "0x5e7fda6d9f5024c4ad1c780839987ab8c76486c9",
-      vault
     ],
   },
   ethereum: {
@@ -32,7 +33,7 @@ const contracts = {
 };
 
 module.exports = {
-  methodology: "TVL is the value of assets deposited into the Panther Protocol shielded pool, held by the protocol Vault contract. Staking counts ZKP tokens in the vault and staking contracts.",
+  methodology: "TVL is the value of assets deposited into the Panther Protocol shielded pool, held by the protocol Vault contract. Staking counts ZKP tokens in the v0 staking contracts.",
   polygon: { tvl: sumTokensExport({ owner: vault, tokens: zAssets })},
   ethereum: { tvl: () => ({}) }
 };
