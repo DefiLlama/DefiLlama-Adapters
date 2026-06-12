@@ -20,6 +20,10 @@ module.exports = {
         ADDRESSES.hyperliquid.USDC,
         '0x6B9E773128f453f5c2C60935Ee2DE2CBc5390A24'
       ],
+      [
+        ADDRESSES.hyperliquid.USDC,
+        '0xdb861e302ef7b7578a448e951aede06302936c28'
+      ],
     ]})
   }
 }
