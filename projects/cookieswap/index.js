@@ -26,6 +26,7 @@ async function getSplTokenSwapVaults(connection) {
   const vaults = []
   for (const { account } of accounts) {
     if (account.data[0] !== 0x01 || account.data[1] !== 0x01) continue
+    if (account.data.length < 99) continue
     vaults.push(new PublicKey(account.data.slice(35, 67)).toBase58())
     vaults.push(new PublicKey(account.data.slice(67, 99)).toBase58())
   }
