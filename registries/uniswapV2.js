@@ -267,7 +267,7 @@ const uniV2Configs = {
   'BroSwap': {
     core: '0x8edF7B8411b2e5dB740dbbf949E011e59fc7980a',
   },
-  'brownfi': {
+  'brownfi-v2': {
     berachain: '0x43AB776770cC5c739adDf318Af712DD40918C42d',
     base: '0x43AB776770cC5c739adDf318Af712DD40918C42d',
     arbitrum: '0xD05395a6b6542020FBD38D31fe1377130b35592E',
@@ -275,6 +275,10 @@ const uniV2Configs = {
     bsc: '0x43AB776770cC5c739adDf318Af712DD40918C42d',
     linea: '0x43AB776770cC5c739adDf318Af712DD40918C42d',
     monad: '0x68bc42F886ddf6a4b0B90a9496493dA1f8304536',
+  },
+  'brownfi-v3': {
+    berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
+    hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
   },
   'bswap': {
     chainx: '0x356FD03E73ce821d5F7dFea51d1cB336EeFd67b1',
