@@ -40,7 +40,10 @@ async function tvl(api) {
   // Valuation via issuer NAV: TVL = Σ grams × USD/gram.
   let priced = false;
   try {
-    const res = await fetch(PRICES_URL).then((r) => r.json());
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    const res = await fetch(PRICES_URL, { signal: controller.signal }).then((r) => r.json());
+    clearTimeout(timeout);
     const px = (res && res.prices) || {};
     let usd = 0;
     for (const s of symbols) {
@@ -53,7 +56,8 @@ async function tvl(api) {
       priced = true;
     }
   } catch (e) {
-    // fall through to the gold-only fallback below
+    // NAV feed unreachable — log and fall through to the gold-only fallback below.
+    console.log("Auxite NAV fetch failed, using PAX Gold fallback:", e.message);
   }
 
   // Fallback: if the NAV feed is unreachable, value gold via PAX Gold (the
