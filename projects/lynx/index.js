@@ -42,11 +42,11 @@ const config = {
     [ADDRESSES.fuse.WFUSE, '0x962FD1B229c8c775bC2E37A8a90dac4f3C0105B7'],                   // WFUSE
     ['0x2363Df84fDb7D4ee9d4E1A15c763BB6b7177eAEe', '0x028815b56433a4AAe10087290d1Ed9Ef7437068F'], // MST
     [ADDRESSES.fuse.SFUSE, '0x707f3d554B47E17F1FDfb408FE091B39D51929CF'],                    // sFUSE
-    ['0x34Ef2Cc892a88415e9f02b91BfA9c91fC0bE6bD4', '0x094DE4d315198Df981D3a20ceFc3381B2182a572'], // VOLT
+    [ADDRESSES.fuse.VOLT, '0x094DE4d315198Df981D3a20ceFc3381B2182a572'], // VOLT
   ],
   arbitrum: [
     [ADDRESSES.arbitrum.ARB, '0x094DE4d315198Df981D3a20ceFc3381B2182a572'],                  // ARB
-    ['0x004626A008B1aCdC4c74ab51644093b155e59A23', '0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90'], // stEUR
+    [ADDRESSES.celo.STEUR, '0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90'], // stEUR
     ['0xf5a27e55c748bcddbfea5477cb9ae924f0f7fd2e', '0xd22c72ab0f4967edb876d84773bff0b60a92e51a'], // TST
     ['0x643b34980e635719c15a2d4ce69571a258f940e9', '0x3552fE61af3F6d3235Dd1CB75402d4281d1FbaC6'], // EUROs
     ['0x894134a25a5faC1c2C26F1d8fBf05111a3CB9487', '0xBe1fa4177fBf43683434CecD5563DA6Ea00FD474'], // GRAI
@@ -83,6 +83,16 @@ const config = {
     [ADDRESSES.ethereum.WEETH, '0x66Aaf6Da70dA10aC8dC024E668edcade1C8F5b44'],                // weETH
     ['0xadd353fb2e2c563383ff3272a500f3e7134dafe4', '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // TUNA
   ],
+  sei: [
+    ['0xE30feDd158A2e3b13e9badaeABaFc5516e95e8C7', '0x50Ac664730CdB0485dF09C3f9C269AD48Ccc6836'], // wSEI
+  ],
+  base: [
+    ['0x7FcD174E80f264448ebeE8c88a7C4476AAF58Ea6', '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // wsuperOETHB
+    ['0x764A726d9ceD0433A8D7643335919dEb03a9a935', '0x89030dd230679d27721621b436F24FFEa43cA987'], // POKT
+  ],
+  goat: [
+    [ADDRESSES.goat.BTCB, '0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94'], // BTCB
+  ],
 };
 
 Object.keys(config).forEach(chain => {
@@ -91,8 +101,8 @@ Object.keys(config).forEach(chain => {
   };
 });
 
-// Flare TVL is tracked by projects/flamix (same chip contracts)
-// linea/mantle have $0 balance
+// Flare TVL tracked by projects/flamix
+// linea/mantle have $0 balance, goat not yet indexed by DeFiLlama
 ['flare', 'linea', 'mantle'].forEach(chain => {
   module.exports[chain] = { tvl: () => ({}) };
 });

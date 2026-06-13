@@ -58,6 +58,7 @@ async function run() {
   // Iterate through all files/folders in ../projects and add missing ones
   const projectsPath = __dirname + '/../projects'
   const projectFiles = fs.readdirSync(projectsPath)
+  const ignoredFolders = new Set(['treasury', 'entities', 'helper', 'stacks'])  // these folders contain submodules that will be imported separately
 
   for (const file of projectFiles) {
     const filePath = `${projectsPath}/${file}`
@@ -65,6 +66,7 @@ async function run() {
     let modulePath, importPath, pModule
 
     if (stat.isDirectory()) {
+      if (ignoredFolders.has(file)) continue  // skip these folders as they contain submodules that will be imported separately
       importPath = `${projectsPath}/${file}/index.js`
       modulePath = `${file}/index.js`
       pModule = file
@@ -79,7 +81,9 @@ async function run() {
     let moduleObject = undefined
     try {
       moduleObject = require(importPath)
-    } catch (e) { }
+    } catch (e) {
+      console.error(`Error importing module ${pModule} from path ${importPath}:`, e)
+    }
 
     addModule({ moduleObject, modulePath, moduleKey: pModule, warnOnMissing: false })
   }

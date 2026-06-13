@@ -3,6 +3,13 @@ const ADDRESSES = require('../helper/coreAssets.json');
 // AID.v0 token address (same on all chains: Ethereum, BNB Chain, Base, Arbitrum)
 const AID_TOKEN = '0x18F52B3fb465118731d9e0d276d4Eb3599D57596';
 
+const MIGRATION_CONTRACTS = {
+    ethereum: '0x410c19f3f80b64c7486ae34890ee9251d0696433',
+    arbitrum: '0x77b69A6bAE1360A176452B00F61A0Fc21C7EF333',
+    base: '0xE2b908aa7C5DECBFC4260E52e138fc8d08272D03',
+    bsc: '0x77b69A6bAE1360A176452B00F61A0Fc21C7EF333'
+};
+
 // Legacy AIDa (Alpha) pool contracts
 const aidaContracts = {
     ethereum: [
@@ -51,17 +58,17 @@ const aidaContracts = {
     ],
     sty: [
         {
-            token: '0xF1815bd50389c46847f0Bda824eC8da914045D14', // USDC
+            token: ADDRESSES.flow.stgUSDC, // USDC
             poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
         }
     ],
     bsc: [
         {
-            token: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d', // USD1
+            token: ADDRESSES.bsc.USD1, // USD1
             poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42'
         },
         {
-            token: '0x55d398326f99059ff775485246999027b3197955', // USDT
+            token: ADDRESSES.bsc.USDT, // USDT
             poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340'
         }
     ]
@@ -75,17 +82,30 @@ const balanceOfABI = "function balanceOf(address) external view returns (uint256
 async function aidaTvl(api) {
     const chain = api.chain;
     const pools = aidaContracts[chain];
+    if (!pools?.length) return api.getBalances();
 
-    if (pools && pools.length > 0) {
-        const totalAssetsAmounts = await api.multiCall({
-            abi: totalAssetsABI,
-            calls: pools.map(p => p.poolToken),
-        });
+    const poolAddrs = pools.map(p => p.poolToken);
+    const migration = MIGRATION_CONTRACTS[chain];
 
-        totalAssetsAmounts.forEach((amount, index) => {
-            api.add(pools[index].token, amount);
-        });
+    if (!migration) {
+        const totalAssetsAmounts = await api.multiCall({ abi: totalAssetsABI, calls: poolAddrs });
+        totalAssetsAmounts.forEach((amount, i) => api.add(pools[i].token, amount));
+        return api.getBalances();
     }
+
+    const [totalAssets, totalSupplies, migrationBals] = await Promise.all([
+        api.multiCall({ abi: totalAssetsABI, calls: poolAddrs }),
+        api.multiCall({ abi: totalSupplyABI, calls: poolAddrs }),
+        api.multiCall({ abi: balanceOfABI, calls: poolAddrs.map(p => ({ target: p, params: migration })) }),
+    ]);
+
+    totalAssets.forEach((assets, i) => {
+        const supply = BigInt(totalSupplies[i]);
+        if (supply === 0n) return;
+        const claimableShares = supply - BigInt(migrationBals[i]);
+        const claimable = (BigInt(assets) * claimableShares) / supply;
+        api.add(pools[i].token, claimable.toString());
+    });
 
     return api.getBalances();
 }

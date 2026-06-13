@@ -1,17 +1,14 @@
 const STAKING_CONTRACT = '0x23EbC3770f98c01EDAB20eb1eF17Ee633c19b467';
 const WCC_TOKEN = '0x6050D829F5a5E0eA758D8357DDcdeC1381699248';
 
-async function staking(_, _b, _cb, { api }) {
+async function staking(api) {
   const contractInfo = await api.call({
     abi: 'function getContractInfo() view returns (uint256 rewardPerPeriodAmount, uint256 rewardPeriodSeconds, uint256 totalStakedAmount, uint256 totalClaimedAmount, uint256 totalFeesAmount, uint256 rewardStartTimestamp, uint256 lastRewardUpdateTimestamp, uint256 currentTime, uint256 poolCapAmount, uint256 walletCapAmount, uint256 depositFee)',
     target: STAKING_CONTRACT,
   })
   
   const totalStaked = contractInfo[2];
-  
-  return {
-    [`bsc:${WCC_TOKEN}`]: totalStaked
-  }
+  api.add(WCC_TOKEN, totalStaked)
 }
 
 module.exports = {

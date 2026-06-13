@@ -15,17 +15,11 @@ const VAULTS = {
 }
 
 async function tvl(api) {
-  const balances = {};
-  const vaults = Object.values(VAULTS[api.chain])
-  const bals  = await api.multiCall({  abi: 'uint256:getTotalDeposit', calls: vaults})
-  let usd = 0
-  if(api.chain === 'bsc') {
-    usd = bals.reduce((acc, i) => Number(acc) + Number(i), 0)
-  } else {
-    usd = bals.reduce((acc, i) => Number(acc) + Number(i)/1e12, 0)
-  }
-  balances[`${api.chain}:${ADDRESSES[api.chain].USDT}`] = usd
-  return balances
+  const vaults = Object.values(VAULTS[api.chain] ?? {});
+  const decimalsDivider = api.chain === 'bsc' ? 1 : 1e12;
+  const deposits = await api.multiCall({ abi: 'uint256:getTotalDeposit', calls: vaults, permitFailure: true });
+  const usd = deposits.reduce((sum, value) => sum + Number(value || 0) / decimalsDivider, 0);
+  return { [`${api.chain}:${ADDRESSES[api.chain].USDT}`]: usd };
 }
 
 module.exports = {

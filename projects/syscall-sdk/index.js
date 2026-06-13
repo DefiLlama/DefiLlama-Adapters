@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 // Syscall-SDK Gateway Contract
@@ -9,7 +10,7 @@ module.exports = {
     tvl: sumTokensExport({ 
         owner: SYSCALL_CONTRACT, 
         tokens: [
-            "0x0000000000000000000000000000000000000000" // Null address = Native ETH
+            ADDRESSES.null // Null address = Native ETH
         ]
     })
   }

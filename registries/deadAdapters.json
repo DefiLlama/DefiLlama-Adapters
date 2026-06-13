@@ -2178,14 +2178,6 @@
     },
     "deadFrom": "2025-01-15"
   },
-  "humble": {
-    "deadFrom": "2025-06-01",
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "algorand": {
-      "tvl": "_f"
-    }
-  },
   "hydradex": {
     "deadFrom": "2025-07-01",
     "misrepresentedTokens": true,
@@ -4608,30 +4600,6 @@
     },
     "deadFrom": "2023-08-13"
   },
-  "sushiswap-kashi": {
-    "deadFrom": "2025-01-01",
-    "misrepresentedTokens": true,
-    "ethereum": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "polygon": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "bsc": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "avax": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    },
-    "arbitrum": {
-      "tvl": "_f",
-      "borrowed": "_f"
-    }
-  },
   "swing-dao": {
     "deadFrom": "2022-03-31",
     "misrepresentedTokens": true,
@@ -5413,6 +5381,447 @@
     "misrepresentedTokens": true,
     "methodology": "Factory address (0x26e13874ad1cd512b29795dafe3937e1c6f6d507) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
     "zyx": {
+      "tvl": "_f"
+    }
+  },
+  "treasury/mantadao": {
+    "timetravel": false,
+    "deadFrom": "2025-06-25",
+    "kujira": {
+      "tvl": "_f",
+      "ownTokens": "_f"
+    }
+  },
+  "DegenHive-amm": {
+    "timetravel": false,
+    "sui": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-10-09",
+    "methodology": "TVL consists of the liquidity in the DegenHive's AMM pools."
+  },
+  "DegenHive-dsui": {
+    "timetravel": false,
+    "sui": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-10-09",
+    "methodology": "TVL consists of SUI staked with DegenHive's liquid staking protocol."
+  },
+  "DegenHive-memepad": {
+    "timetravel": false,
+    "sui": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-10-09",
+    "methodology": "TVL consists of the liquidity in meme-coin launchpad pools."
+  },
+  "biconomy": {
+    "hallmarks": [
+      [
+        "2022-05-07",
+        "UST depeg"
+      ],
+      [
+        "2024-12-31",
+        "Biconomy decommissions Hyphen"
+      ]
+    ],
+    "deadFrom": "2024-12-31",
+    "methodology": "Biconomy TVL is the USD value of token balances in the Hyphen 2.0 contracts.",
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "polygon": {
+      "tvl": "_f"
+    },
+    "avax": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "optimism": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    }
+  },
+  "bido": {
+    "bevm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "bitdrome": {
+    "bevm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "capybara-perp": {
+    "klaytn": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-02-04"
+  },
+  "colt": {
+    "methodology": "Includes TVL for issued stablecoins (e.g. $D).",
+    "saga": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "credbull": {
+    "methodology": "TVL consist of the sum of every deposit of all vaults for a given asset.",
+    "hallmarks": [
+      [
+        "2025-10-07",
+        "Project ceases operation"
+      ]
+    ],
+    "deadFrom": "2025-10-07",
+    "arbitrum": {
+      "tvl": "_f",
+      "borrowed": "_f",
+      "staking": "_f"
+    },
+    "btr": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "plume_mainnet": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "polygon": {
+      "borrowed": "_f",
+      "tvl": "_f"
+    }
+  },
+  "defily-dex": {
+    "misrepresentedTokens": true,
+    "onus": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "dfs": {
+    "timetravel": false,
+    "deadFrom": "2024-11-17",
+    "methodology": "DFS TVL is achieved by querying token balances from DFS's AMM swap liquidity smart contract.",
+    "eos": {
+      "tvl": "_f"
+    },
+    "dfs": {
+      "tvl": "_f"
+    }
+  },
+  "diffusionfi": {
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x6abdda34fb225be4610a2d153845e09429523cd2) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "evmos": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "enni": {
+    "methodology": "TVL counts WETH collateral in CDP contracts, USDC/USDT reserves in DirectMint, ZCHF reserves in DirectMintGeneric, and enUSD/enCHF deposited in Savings. ENNI staked in MasterChef (including via Vault) is counted as staking. ENNI-USDC LP in MasterChef is counted as pool2.",
+    "deadFrom": "2026-05-04",
+    "hallmarks": [
+      [
+        "2026-05-04",
+        "Protocol deprecated"
+      ]
+    ],
+    "ethereum": {
+      "tvl": "_f",
+      "staking": "_f",
+      "pool2": "_f"
+    }
+  },
+  "ergopad": {
+    "deadFrom": "2026-03-01",
+    "timetravel": false,
+    "ergo": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
+  "evmoswap": {
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xF24E36e53628C3086493B9EfA785ab9DD85232EB) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "evmos": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "goaradio": {
+    "methodology": "TVL counts GOA tokens locked in Listen2Earn and View2Earn contracts on Goaradio chain.",
+    "start": 1735728000,
+    "saga": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "goosefx": {
+    "deadFrom": "2024-10-01",
+    "timetravel": false,
+    "solana": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
+  "hodl": {
+    "deadFrom": "2024-10-01",
+    "misrepresentedTokens": true,
+    "mixin": {
+      "tvl": "_f"
+    }
+  },
+  "hyperiondex": {
+    "methodology": "Counts the total liquidity in all pools on Hyperion.",
+    "titan": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "joltify-lending": {
+    "deadFrom": "2025-08-16",
+    "timetravel": false,
+    "joltify": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    }
+  },
+  "joltify-rwa": {
+    "deadFrom": "2024-12-12",
+    "timetravel": false,
+    "joltify": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    }
+  },
+  "kinesis": {
+    "evmos": {
+      "tvl": "_f"
+    },
+    "methodology": "Counts as TVL all the Assets deposited on EVMOS through different Pool Contracts",
+    "deadFrom": "2026-06-10"
+  },
+  "kongswap": {
+    "misrepresentedTokens": true,
+    "icp": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-04-06"
+  },
+  "laraProtocol": {
+    "tara": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "lenlen": {
+    "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.. TVL is calculated by getting the market addresses from comptroller and calling the totalsCollaterals() on-chain method to get the amount of tokens locked in each of these addresses, then we get the price of each token from coingecko.",
+    "vision": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "lumenswap": {
+    "methodology": "TVL counts the liquidity of the Pools on AMM, data is pulled from the Lumenswap API:\"https://api.lumenswap.io/amm/known-pools\".",
+    "misrepresentedTokens": true,
+    "deadFrom": "2026-05-10",
+    "stellar": {
+      "tvl": "_f"
+    }
+  },
+  "mustang": {
+    "saga": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "newbitcoin": {
+    "deadFrom": "2024-04-28",
+    "nos": {
+      "tvl": "_f"
+    }
+  },
+  "ocean-one": {
+    "deadFrom": "2024-01-21",
+    "misrepresentedTokens": true,
+    "mixin": {
+      "tvl": "_f"
+    }
+  },
+  "onus-usdo": {
+    "onus": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-06-10"
+  },
+  "paraspace-v2": {
+    "hallmarks": [],
+    "deadFrom": "2026-05-15",
+    "methodology": "TVL includes ERC-20 and ERC-721 tokens that have been supplied as well as ERC-20 tokens that are supplied for lending.",
+    "ethereum": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    }
+  },
+  "pike": {
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "optimism": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "base": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-01-28"
+  },
+  "pnetwork": {
+    "deadFrom": "2024-11-29",
+    "misrepresentedTokens": true,
+    "methodology": "Queries the pNetwork database, using the same API endpoint as their own UI. TVL is based on the amount of assets “locked” in the system and that therefore has a 1:1 tokenization on a host blockchain, including all of the assets and all of the blockchains supported by pNetwork.",
+    "algorand": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "eos": {
+      "tvl": "_f"
+    },
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "polygon": {
+      "tvl": "_f"
+    },
+    "telos": {
+      "tvl": "_f"
+    },
+    "ultra": {
+      "tvl": "_f"
+    },
+    "xdai": {
+      "tvl": "_f"
+    }
+  },
+  "polynomial-trade": {
+    "deadFrom": "2026-03-02",
+    "optimism": {
+      "tvl": "_f"
+    },
+    "polynomial": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2023-03-27",
+        "Trade Launch"
+      ],
+      [
+        "2024-08-21",
+        "Polynomial Trade Launch"
+      ],
+      [
+        "2025-05-13",
+        "Multicollateral Launch"
+      ],
+      [
+        "2026-02-13",
+        "winddown announced"
+      ]
+    ]
+  },
+  "pryzm-protocol": {
+    "methodology": "Counts the liquidity on the refractor module and all AMM pools",
+    "deadFrom": "2026-02-09",
+    "pryzm": {
+      "tvl": "_f"
+    }
+  },
+  "roup": {
+    "timetravel": false,
+    "methodology": "Tokens bridged via ROUP are counted as TVL",
+    "deadFrom": "2026-04-10",
+    "bitcoin": {
+      "tvl": "_f"
+    }
+  },
+  "shoebillFinance": {
+    "misrepresentedTokens": true,
+    "doublecounted": true,
+    "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
+    "deadFrom": "2026-01-01",
+    "klaytn": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "kava": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    }
+  },
+  "step-finance": {
+    "timetravel": false,
+    "solana": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-02-23"
+  },
+  "usdx": {
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-11-14"
+  },
+  "vestaequity": {
+    "deadFrom": "2025-02-07",
+    "algorand": {
+      "tvl": "_f"
+    }
+  },
+  "vitcswap": {
+    "timetravel": false,
+    "deadFrom": "2025-03-01",
+    "vite": {
+      "tvl": "_f"
+    }
+  },
+  "wise-lending": {
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2024-01-12"
+  },
+  "xrgb": {
+    "methodology": "XRGB as bridge,Unlock ERC404 on all chains",
+    "deadFrom": "2024-06-10",
+    "bitcoin": {
       "tvl": "_f"
     }
   }

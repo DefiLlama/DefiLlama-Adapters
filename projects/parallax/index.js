@@ -22,7 +22,6 @@ async function ethTvl(api) {
     abi: prllxERC20["strategies"],
   });
 
-  const balances = {};
   const { price, decimals } = await getPriceAura(
     contracts.eth.lpAddress,
     contracts.eth.feedAddress,
@@ -35,18 +34,12 @@ async function ethTvl(api) {
     .times(1e6)
     .toFixed(0);
 
-  sdk.util.sumSingleBalance(
-    balances,
-    `ethereum:${contracts.eth.usdc}`,
-    totalStakedTVL
-  );
+  api.add(contracts.eth.usdc, totalStakedTVL);
 
-  return balances;
+  return api.getBalances();
 }
 
 async function arbitrumTvl(api) {
-  const balances = {};
-
   const strategyId = await api.call({
     target: contracts.arbitrum.mim.parallaxCoreAddress,
     params: contracts.arbitrum.mim.strategyAddress,
@@ -91,11 +84,7 @@ async function arbitrumTvl(api) {
   // const totalStakedTVLMIMAll =
   //   Number(totalStakedTVLMIM) + Number(totalStakedTVLMIMOld);
 
-  sdk.util.sumSingleBalance(
-    balances,
-    `arbitrum:${contracts.arbitrum.mim.usdc}`,
-    totalStakedTVLMIM
-  );
+  api.add(contracts.arbitrum.mim.usdc, totalStakedTVLMIM);
 
   const strategySushiId = await api.call({
     target: contracts.arbitrum.sushi.parallaxAddr,
@@ -140,13 +129,9 @@ async function arbitrumTvl(api) {
   const totalStakedTVL =
     Number(totalStakedTVLSushi) + Number(totalStakedTVLGmx);
 
-  sdk.util.sumSingleBalance(
-    balances,
-    `arbitrum:${contracts.arbitrum.sushi.usdc}`,
-    totalStakedTVL
-  );
+  api.add(contracts.arbitrum.sushi.usdc, totalStakedTVL);
 
-  return balances;
+  return api.getBalances();
 }
 
 async function eraTvl(api) {

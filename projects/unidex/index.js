@@ -8,8 +8,8 @@ async function FantomTvl(_time, _ethBlock, { fantom: block }) {
     "usdcPool": "0x7A494C755911Ce06444C47248108439a06Ac028C",
     "daiPool": "0xc451df1b05828519c014cb967ef1a614bd41834d",
   };
-  const usdc = ADDRESSES.fantom.USDC;
-  const dai = ADDRESSES.fantom.DAI;
+  const usdc = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
+  const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e";
   const chain = 'fantom'
   const tokens = [usdc, dai, nullAddress]
   const owners = Object.values(contracts)
@@ -39,7 +39,7 @@ async function ArbitrumTvl(_time, _ethBlock, { arbitrum: block }) {
   const usdt = ADDRESSES.arbitrum.USDT;
   const wbtc = ADDRESSES.arbitrum.WBTC;
   const arb = ADDRESSES.arbitrum.ARB;
-  const mim = ADDRESSES.arbitrum.MIM;
+  const mim = "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
   const gdai = "0xd85e038593d7a098614721eae955ec2022b9b91b";
   const ram = "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418";
   const mai = ADDRESSES.arbitrum.WSTETH;

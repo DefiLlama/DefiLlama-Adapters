@@ -12,6 +12,7 @@ const ABI = {
   },
   morphoV2: {
     liquidityAdapter: 'address:liquidityAdapter',
+    adapters: 'function adapters(uint256) view returns (address)',
   },
   morphoAdapter: {
     morphoVaultV1: 'address:morphoVaultV1',
@@ -61,6 +62,14 @@ const MorphoConfigs = {
       {
         address: '0xA1D94F746dEfa1928926b84fB2596c06926C0405',
         fromBlock: 23375073,
+      },
+    ],
+  },
+  arc: {
+    vaultFactoriesV2: [
+      {
+        address: '0x3b0eefaBfa22ec7CF2c73877ac16e78D76749f12',
+        fromBlock: 1,
       },
     ],
   },
@@ -189,7 +198,39 @@ const MorphoConfigs = {
         fromBlock: 168896078,
       }
     ]
-  }
+  },
+  celo: {
+    vaultFactories: [
+      {
+        address: '0x6870aa9f66c1e5efe8dbe8730e86e9e91f688275',
+        fromBlock: 40259931,
+      }
+    ]
+  },
+  klaytn: {
+    vaultFactoriesV2: [
+      {
+        address: '0xf2Aecd4a4d4C21d08770e34F392C4C271aBD9144',
+        fromBlock: 213463014,
+      }
+    ]
+  },
+  tempo: {
+    vaultFactoriesV2: [
+      {
+        address: '0x3DE400E3F79113194fa5AF6Ae5C474947E0C82Db',
+        fromBlock: 12653218,
+      }
+    ]
+  },
+  stable: {
+    vaultFactoriesV2: [
+      {
+        address: '0x7fc35488803D49D00a94b206A223f7661898BE3a',
+        fromBlock: 1506183,
+      }
+    ]
+  },
 }
 
 const EulerConfigs = {

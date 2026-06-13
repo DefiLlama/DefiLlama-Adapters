@@ -33,6 +33,11 @@ async function getEigenPods(timestamp) {
     .split("T")[0] + "T23:59:59"
 
   const query = `
+    WITH latest_slot AS (
+      SELECT MAX(slot_timestamp) AS ts
+      FROM beacon.validator.balances
+      WHERE slot_timestamp <= '${targetDate}'
+    )
     SELECT SUM(balance) AS sum
     FROM (
       SELECT params
@@ -49,7 +54,7 @@ async function getEigenPods(timestamp) {
         'pending_initialized',
         'withdrawal_possible'
       )
-        AND slot_timestamp = '${targetDate}'
+        AND slot_timestamp = (SELECT ts FROM latest_slot)
     ) beacon
     WHERE pods.params['eigenPod'] = beacon.WITHDRAWAL_ADDRESS
   `

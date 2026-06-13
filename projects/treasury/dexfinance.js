@@ -62,7 +62,10 @@ module.exports = treasuryExports({
 	// 	]
 	// },
 	base: {
-		owners: [mainTreasury],
+		owners: [mainTreasury, '0x38d52734d7f9da7b45cdba4c2ab116dfe0120327'],
+		resolveLP: true,
+		resolveUniV3: true,
+		ownTokens: ['0x53cb59d32a8d08fc6d3f81454f150946a028a44d'],
 		tokens: [
 			ADDRESSES.base.USDC,
 			'0x532f27101965dd16442e59d40670faf5ebb142e4', //brett

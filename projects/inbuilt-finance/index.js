@@ -1,8 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const token_USDC = ADDRESSES.telos.ETH;
-const token_USDT = ADDRESSES.moonriver.USDT;
+const token_USDC = "0xfa9343c3897324496a05fc75abed6bac29f8a40f";
+const token_USDT = "0xb44a9b6905af7c801311e8f4e76932ee959c663c";
 const masterchef = "0x68DB81eAB568174D54F3fd0d9e035eDe9AAEd3e2";
 
 module.exports = {

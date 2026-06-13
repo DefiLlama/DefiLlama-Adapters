@@ -2,7 +2,7 @@ const { sumTokens2 } = require('./helper/solana')
 
 async function tvl() {
   const owner = '7Ne6h2w3LpTNTa7CNYcUs7UkjeJT3oW7jcrXWfVScTXW'
-  return sumTokens2({  owner })
+  return sumTokens2({  owner, onlyTrustedTokens: true,  })
 }
 
 module.exports = {

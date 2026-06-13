@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens } = require("../helper/unwrapLPs");
+const { sumTokens, sumTokens2 } = require("../helper/unwrapLPs");
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
 
@@ -79,7 +79,7 @@ const liquidityBridgeTokens = [
     avax: ADDRESSES.avax.USDT_e,
     bsc: ADDRESSES.bsc.USDT,
     ethereum: ADDRESSES.ethereum.USDT,
-    fantom: ADDRESSES.fantom.fUSDT,
+    fantom: "0x049d68029688eabf473097a2fc38ef61633a3c7a",
     heco: ADDRESSES.heco.USDT,
     okexchain: ADDRESSES.okexchain.USDT,
     optimism: ADDRESSES.optimism.USDT,
@@ -94,7 +94,7 @@ const liquidityBridgeTokens = [
     boba: ADDRESSES.boba.USDC,
     bsc: ADDRESSES.bsc.USDC,
     ethereum: ADDRESSES.ethereum.USDC,
-    fantom: ADDRESSES.fantom.USDC,
+    fantom: "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
     // harmony: "0x985458e523db3d53125813ed68c274899e9dfab4",
     heco: ADDRESSES.heco.USDC_HECO,
     okexchain: ADDRESSES.okexchain.USDC,
@@ -366,10 +366,10 @@ const liquidityBridgeTokens = [
     ethereum: "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5",
     bsc: "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5",
   },
-  {
-    // WXT
-    ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
-  },
+  // {  // token value is higher than circulating mcap
+  //   // WXT
+  //   ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
+  // },
   {
     ethereum: ADDRESSES.ethereum.FRAX,
   },
@@ -508,7 +508,7 @@ const liquidityBridgeTokens = [
 ];
 
 function chainTvl(chain) {
-  return async (time, _, {[chain]: block}) => {
+  return async (api) => {
     const toa = []
     liquidityBridgeTokens.forEach(token => {
       if (!token[chain])
@@ -518,8 +518,7 @@ function chainTvl(chain) {
         liquidityBridgeContractsV2[chain].filter(owner => owner.toLowerCase() !== bridgeContractV1.toLowerCase())
           .forEach(owner => toa.push([token[chain], owner]))
     })
-    const balances = await sumTokens({}, toa, block, chain, undefined)
-    return balances
+    return sumTokens2({ tokensAndOwners: toa, permitFailure: true, api })
   };
 }
 

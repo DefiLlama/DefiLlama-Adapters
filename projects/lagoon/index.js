@@ -72,7 +72,12 @@ const config = {
       fromBlock: 22218451
     },
   },
-  
+  hyperliquid: {
+    optinProxyFactory:{
+      address: "0x90beB507A1BA7D64633540cbce615B574224CD84",
+      fromBlock: 12973305,
+    },
+  },
   katana: {
     vaults: [],
     optinProxyFactory:{
@@ -124,7 +129,7 @@ const config = {
       fromBlock: 38968917
     },
     beaconFactory: {
-      address: "0x8846189A4E46997Dd30Fd9e8bE48C1fA1B846920",
+      address: "0x99CD0b8b32B15922f0754Fddc21323b5278c5261",
       fromBlock: 21645993,
     }
   },
@@ -179,10 +184,14 @@ const vaultsBlacklist = [
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship, on Eth mainnet
   "0xd6DaBAf70977a867Fa884844FC5DCb21DE81c498", // vault tac 9s. but on TAC chain
   "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets 
+  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
+  "0xb114b5a99652a6f6e1e9c13da0a544dc634007b5", // hyperliquid (hyperevm)
+  "0x17488aed11845d92f1f113e8df51f497465d715c", // base test vault with fake totalAssets
 ]
 
 function keepVault(vault, vaultBlacklist) {
-  return  vaultBlacklist.indexOf(vault) == -1;
+  const v = vault.toLowerCase();
+  return !vaultBlacklist.some((b) => b.toLowerCase() === v)
 }
 
 Object.keys(config).forEach((chain) => {

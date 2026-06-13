@@ -44,6 +44,66 @@ const configs = {
     },
     fantom: {},
   },
+  'solvr': {
+    methodology: 'TVL is calculated as the total SOLVR tokens staked in the SolvrStaking contract on Base.',
+    base: { 
+      staking: ["0xde2dc52d8ac7b793a9558b7b13b7b24f5c3b983a", "0x6DfB7BFA06e7c2B6c20C22c0afb44852C201eB07"]
+    }
+  },
+  'nickel': {
+    methodology: 'TVL is NICKEL tokens held in GridMining (mined rewards) and Staking (user-staked NICKEL).',
+    base: { 
+      staking: { owners: ["0xEF35314a4F3a1F8CE89095202dABAeEe1CaAd760", "0x93CF815EC397C526576078A74197c3fa2d769b80"], tokens: ['0xe11b4DD87675B52980b3427029a2d792A4A05aa2']}
+    }
+  },
+  'bitchemical': {
+    methodology: 'Counts BCHEM held by the Bitchemical staking contract on BNB Chain.',
+    bsc: {
+      staking: ['0x01F82039810f18F703F4c8b943940ce04Fa00C78', '0x9102E0A76a5e2823073Ed763a32Ba8ca8521b1F3']
+    }
+  },
+  'mineloot': {
+    methodology: 'TVL is LOOT tokens held in GridMining (mined rewards), Staking (user-staked LOOT), and Lock (user-locked LOOT).',
+    base: {
+      staking: { owners: ['0xA8E2F506aDcbBF18733A9F0f32e3D70b1A34d723', '0xbb9D524e28c7E7b5A9D439D5D1ba68A87788BbB6', '0x554CEAe7b091b21DdAeFe65cF79651132Ee84Ed7'], tokens: ['0x00E701Eff4f9Dc647f1510f835C5d1ee7E41D28f']}
+    }
+  },
+  'cronos-gangsters': {
+    methodology: 'TVL counts GANG tokens locked in Cronos Gangsters staking and competition contracts.',
+    cronos: {
+      staking: { owners: ['0x2099ad49329909FDb620714D01F5A74D57CDeE0C', '0xe546C82f0CedE3341dC402626923A6D4b95234Ee'], tokens: ['0x4cE15b52a34dE6F62448fDBAdDF1dB4811DDC3EF']}
+    }
+  },
+  'reppo': {
+    methodology: 'TVL is the total REPPO tokens locked in the VeREPPO contract.',
+    base: {
+      staking: { owners: ['0x0EFBE19Cb7B07D934D01990a8989E9CaA98b9009'], tokens: ['0xFf8104251E7761163faC3211eF5583FB3F8583d6']}
+    }
+  },
+  'nara': {
+    methodology: 'TVL is the total NARA locked in NARAEngineV2. Users lock NARA for a chosen duration and earn NARA + ETH rewards every 15-minute epoch.',
+    base: {
+      staking: { owners: ['0x62250aEE40F37e2eb2cd300E5a429d7096C8868F'], tokens: ['0xE444de61752bD13D1D37Ee59c31ef4e489bd727C']}
+    }
+  },
+  'venice-protocol': {
+    methodology: 'Counts the total VVV tokens locked in the Venice Protocol staking contract (sVVV) on Base.',
+    base: {
+      staking: ['0x321b7ff75154472B18EDb199033fF4D116F340Ff', '0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf'],
+    },
+  },
+  'citrea-staking': {
+    methodology: 'Sum of CTR locked by users in the xCTR (Staked CTR) staking contract on Citrea, which grants governance voting power.',
+    citrea: {
+      staking: { owners: ['0x2015F35030A8Ff2C0CA161a865414996F8E80AA4'], tokens: ['0x547AfD93B9c47D552059FEb556909e017f8a9b25']},
+    },
+  },
+  'tokamak-network': {
+    methodology: 'TON staked through Tokamak Network seigniorage staking on Ethereum L1. Stakers delegate TON to operator (DAO candidate) contracts; the principal is custodied as WTON (27-decimal wrapped TON) in the DepositManager (0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e). Reported staking value is the DepositManager WTON balance.',
+    ethereum: {
+      staking: { owners: ['0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e'], tokens: ['0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2']},
+    },
+  },
 
   // ============================================================
   // Tomb forks (tombTvl, tokensOnCoingecko=true) - array staking + array pool2
@@ -93,6 +153,7 @@ const configs = {
     },
   },
   'athena-money': {
+    deadFrom: '2026-01-19',
     misrepresentedTokens: true,
     moonriver: {
       staking: { owners: ['0x1Dc0A29e51521E2e9262b91E6E78F4c15A4B7A1a'], tokens: ['0xBEcc61601c59d5aFFFCe750D201eC98CdC70DB796'], lps: ['0xc89c09a04440b7952790969ef470f8215bce4804'], useDefaultCoreAssets: true },

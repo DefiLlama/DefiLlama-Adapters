@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 const sdk = require('@defillama/sdk')
 
 const binanceNetworkMapping = {
@@ -156,7 +157,7 @@ async function _getChainMappings() {
       const chain = binanceNetworkMapping[network]
       if (!chain) return;
       if (!contractAddress?.startsWith('0x')) return;
-      if (contractAddress.length !== '0x5a98fcbea516cf06857215779fd812ca3bef1b32'.length) return;
+      if (contractAddress.length !== ADDRESSES.ethereum.LIDO.length) return;
       if (!mappings[chain]) mappings[chain] = []
 
       mappings[chain].push(contractAddress)

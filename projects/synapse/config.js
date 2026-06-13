@@ -170,17 +170,17 @@ module.exports = {
         {
           pool: '0x85662fd123280827e11c59973ac9fcbe838dc3b4',
           tokens: [
-            ADDRESSES.fantom.USDC,
-            ADDRESSES.fantom.fUSDT,
+            "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+            "0x049d68029688eabf473097a2fc38ef61633a3c7a",
             // "0xED2a7edd7413021d440b09D654f3b87712abAB66", // nusd
           ]
         },
         {
           pool: ADDRESSES.arbitrum.nUSD,
           tokens: [
-            ADDRESSES.fantom.MIM,
-            ADDRESSES.fantom.USDC,
-            ADDRESSES.fantom.fUSDT,
+            "0x82f0b8b456c1a451378467398982d4834b6829c1",
+            "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+            "0x049d68029688eabf473097a2fc38ef61633a3c7a",
             // "0xED2a7edd7413021d440b09D654f3b87712abAB66", // nusd
           ]
         },
@@ -276,7 +276,7 @@ module.exports = {
           tokens: [
             ADDRESSES.arbitrum.USDT,
             ADDRESSES.arbitrum.USDC,
-            ADDRESSES.arbitrum.MIM,
+            "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
             // ADDRESSES.arbitrum.nUSD, // nusd
           ]
         },
@@ -307,8 +307,8 @@ module.exports = {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
         tokens: [
-          ADDRESSES.harmony.JEWEL,
-          ADDRESSES.harmony.xJEWEL,
+          '0x72cb10c6bfa5624dd07ef608027e366bd690048f',
+          '0xa9ce83507d872c5e1273e745abcfda849daa654f',
           '0x24eA0D436d3c2602fbfEfBe6a16bBc304C963D04', // DFKTEARS
         ]
       },
@@ -332,7 +332,7 @@ module.exports = {
         {
           pool: '0x00A4F57D926781f62D09bb05ec76e6D8aE4268da',
           tokens: [
-            ADDRESSES.harmony.AVAX,
+            "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
             // "???", // synAvax
           ]
         },

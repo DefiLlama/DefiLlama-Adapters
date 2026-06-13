@@ -14,7 +14,7 @@ module.exports = treasuryExports({
         ADDRESSES.arbitrum.LINK, //  LINK
         '0x82e3a8f066a6989666b031d916c43672085b1582', //  YEARN
      ],
-    owners: ['0xa079c6b032133b95cf8b3d273d27eeb6b110a469'],
+    owners: ['0xa079c6b032133b95cf8b3d273d27eeb6b110a469', '0x1bEa6d05F78aC077022A154E693F38c6b5113Ae5', ],  // Treasury, Insurance
     ownTokens: ['0x51fc0f6660482ea73330e414efd7808811a57fa2'],
     resolveUniV3: true,
   },
