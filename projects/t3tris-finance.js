@@ -16,11 +16,11 @@
  * They are reported separately per token via api.add() for transparency,
  * though DefiLlama sums them into a single TVL figure per token.
  *
- * The factory address is deterministic (CREATE3) and identical on all chains.
+ * The protocol address is deterministic (CREATE3) and identical on all chains.
  */
 
-// T3tris protocol factory — deterministic CREATE3 address, same on all EVM chains
-const T3TRIS_FACTORY = "0x7DD63c4eE5CD277B7870155371a6d62A2f7b1652";
+// T3tris protocol v1 proxy — deterministic CREATE3 address, same on all EVM chains
+const T3TRIS_FACTORY = "0x0000000000CC53b5Fd649b80f08b05405779cC71";
 
 const ABI = {
   getDeployedVaultsCount:
@@ -33,11 +33,18 @@ const ABI = {
 };
 
 async function tvl(api) {
-  // Get number of deployed vaults from the factory
-  const count = await api.call({
-    abi: ABI.getDeployedVaultsCount,
-    target: T3TRIS_FACTORY,
-  });
+  // The protocol proxy has a deterministic address but is only deployed on a
+  // subset of chains (Arbitrum for now). On chains without the contract, the
+  // call reverts — treat that as zero TVL for this chain.
+  let count;
+  try {
+    count = await api.call({
+      abi: ABI.getDeployedVaultsCount,
+      target: T3TRIS_FACTORY,
+    });
+  } catch {
+    return {};
+  }
 
   if (count == 0) return {};
 
