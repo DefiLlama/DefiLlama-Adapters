@@ -48,6 +48,9 @@ const config = {
       "45R4S2Hc62tRRbgZhkgPC4fdn5f3h5Zj7oCA93yA5En6", // cold -  user
       "BwLnmeQErGN8TsvMFr2ywWhX6qAL74w1FMo5Z18qRzWD", // cold - house
     ],
+    blacklistedTokens: [
+      '72puLt71H93Z9CzHuBRTwFpL4TG3WZUhnoCC7p8gxigu', // USDGO - own token
+    ]
   },
   avax: {
     owners: [

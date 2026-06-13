@@ -16,8 +16,10 @@ async function suiTvl(api) {
   const usdc_vault_object = await sui.getObject(USDC_VAULT_ID);
   const usdcAmount = object.fields.coinBalance;
   const vaultAmount = usdc_vault_object.fields.total_locked_amount;
+  const amount = vaultAmount > usdcAmount ? 0 : usdcAmount - vaultAmount;
+  
   // div by 1e6 as usdc coin has 6 precision
-  api.add(ADDRESSES.sui.USDC, usdcAmount-vaultAmount);
+  api.add(ADDRESSES.sui.USDC, amount);
 }
 
 module.exports = {

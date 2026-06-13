@@ -3,7 +3,7 @@ const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
 const {COIN_CONFIG} = require("./coinConfig.js");
 
-const {desU64, desU128} = require("./bytes");
+const {fromU64: desU64, fromU128: desU128} = require("../helper/chain/sui");
 const {getExchangeRate} = require("./price");
 const {MMT_TYPE_CONFIG} = require("./coinConfig");
 const {getVaultTvlByAmountB, getDynamicFieldObject} = require("./util");
@@ -118,11 +118,11 @@ async function getTvl(type, fields, api) {
     let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
 
     if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.toNumber()}, marketId: ${fields.id.id}`);
+      // console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.toNumber()}, marketId: ${fields.id.id}`);
       api.add(tokens, syBalance.toNumber());
     } else {
       let underlyingBalance = syBalance.multipliedBy(rate2);
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${underlyingBalance.toNumber()}, marketId: ${fields.id.id}, rate1: ${rate1}, rate2: ${rate2}`);
+      // console.log(`coinType: ${coinConfig.coinType}, syBalance: ${underlyingBalance.toNumber()}, marketId: ${fields.id.id}, rate1: ${rate1}, rate2: ${rate2}`);
       api.add(coinConfig.underlyingCoinType, underlyingBalance.toNumber());
     }
   }

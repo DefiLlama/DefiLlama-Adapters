@@ -14,7 +14,7 @@ const config = {
     nativeBridge: ['0xD4aE8F772dcf2e20b103c740AfD9D9f9E78dbfFC'], tokenBridge: ['0x8783256443217856B716464A068aabdecc3F0b95'], tokens: [ADDRESSES.avax.USDt],
   },
   fantom: {
-    nativeBridge: ['0x012cebA65fD071473a9E0d3C5048702734a1eE5e'], tokenBridge: ['0x73Ec53a1Ee3Ea275D95212b41Dcce8cb9e0206Cd'], tokens: [ADDRESSES.fantom.fUSDT],
+    nativeBridge: ['0x012cebA65fD071473a9E0d3C5048702734a1eE5e'], tokenBridge: ['0x73Ec53a1Ee3Ea275D95212b41Dcce8cb9e0206Cd'], tokens: ["0x049d68029688eabf473097a2fc38ef61633a3c7a"],
   },
   arbitrum: {
     nativeBridge: ['0xD4aE8F772dcf2e20b103c740AfD9D9f9E78dbfFC'], tokenBridge: ['0x43d92690D302C0e9f2fBD624eb9589F52b5AD115'], tokens: [ADDRESSES.arbitrum.USDT],

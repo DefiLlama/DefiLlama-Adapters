@@ -47,17 +47,6 @@ const balancerV2Blacklist = [
   "0x00f109f744B5C918b13d4e6a834887Eb7d651535", "0x645F7dd67479663EE7a42feFEC2E55A857cb1833", "0x4922a015c4407F87432B179bb209e125432E4a2A",
   "0xdA16D6F08F20249376d01a09FEBbAd395a246b2C", "0x9be4f6a2558f88A82b46947e3703528919CE6414", "0xa7fd7d83e2d63f093b71c5f3b84c27cff66a7802",
   "0xacfbe6979d58b55a681875fc9adad0da4a37a51b", "0xd6d9bc8e2b894b5c73833947abdb5031cc7a4894",
-  // eulerTokens
-  "0x1b808f49add4b8c6b5117d9681cf7312fcf0dc1d",
-  "0xe025e3ca2be02316033184551d4d3aa22024d9dc",
-  "0xeb91861f8a4e1c12333f42dce8fb0ecdc28da716",
-  "0x4d19f33948b99800b6113ff3e83bec9b537c85d2",
-  "0x5484451a88a35cd0878a1be177435ca8a0e4054e",
-  "0x64ad6d2472de5ddd3801fb4027c96c3ee7a7ee82",
-  "0x60897720aa966452e8706e74296b018990aec527",
-  "0x3c66B18F67CA6C1A71F829E2F6a0c987f97462d0",
-  "0x4169Df1B7820702f566cc10938DA51F6F597d264",
-  "0xbd1bd5c956684f7eb79da40f582cbe1373a1d593",
 ]
 
 const balancerV2Vault = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'
@@ -95,6 +84,8 @@ const configs = {
   'gaming-dex': {
     defiverse: null,
     oas: { vault: '0xfb6f8FEdE0Cb63674Ab964affB93D65a4a7D55eA', fromBlock: 4522800 },
+    megaeth: { vault: '0xd5e99c20b2e7Ab4C18b2e1709Fd6F5A20F488637', fromBlock: 9729855 },
+    hyperliquid: { vault: '0x2c0b37305F77309D0BD04fa75848DA2cBb5C4B90', fromBlock: 33401847 },
   },
   'sobal': {
     neon_evm: { vault: '0x7122e35ceC2eED4A989D9b0A71998534A203972C', fromBlock: 206166057, blacklistedTokens: ['0x4440000000000000000000000000000000000002'] },
@@ -149,6 +140,7 @@ const configs = {
     avax: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 59955604 },
     hyperliquid: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 6132445 },
     plasma: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 782595 },
+    monad: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 22091249 }
   },
   'beethovenx-v3': {
     _options: { helperType: 'v3' },

@@ -66,7 +66,7 @@ async function nt_vaults_tvl(api) {
 }
 
 async function tvl(api) {
-  await drift_vaults_tvl(api);
+  // await drift_vaults_tvl(api);
   await kamino_vaults_tvl(api);
   await hyperliquid_vaults_tvl(api);
   await nt_vaults_tvl(api);
@@ -76,6 +76,9 @@ async function tvl(api) {
 module.exports = {
   start: START_TIMESTAMP,
   timetravel: false,
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
   doublecounted: false,
   methodology: "The combined TVL and PnL of all public and private vaults.",
   solana: { tvl },

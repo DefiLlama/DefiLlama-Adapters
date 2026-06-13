@@ -28,5 +28,11 @@
       "metavaultRegistry": "0x191ea03cccc27546ba9f5161b4948b6afce5263f",
       "fromBlock": 23301734
     }
+  ],
+  "flare": [
+    {
+      "metavaultRegistry": "0x2154a519d08bfd3f6e0303fd3ac0511c58424bbe",
+      "fromBlock": 56197360
+    }
   ]
 }

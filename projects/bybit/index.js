@@ -116,7 +116,14 @@ const config = {
       "0x8ed5b6bc3d85be31209fac182466e0bcc30ba3eb",
       "0x076d55c8998da29531ef7fcac2a01fa21582eed2",
       "0xf358d867bf928cb06408ff2b7564fce336e24de8",
-      "0x62425cd6bdcb6bfe51558ea465b063486b70dc9f"
+      "0x62425cd6bdcb6bfe51558ea465b063486b70dc9f",
+      "0xd07e6ab4b75b3da5a96b5e81064a65fc04f98814",
+      "0xf440139a62b2b939699c5b3e09f88e40464ab9bc",
+      "0x18673311fec54ac2244a602e6d91845553d24e62",
+      "0x93228d328c9c74c2bfe9f97638bbb5ef322f2bd5",
+      "0xd4d2e6ebca6c94dd28a0935ae468012fdda5d35a",
+      "0x554e61af48afb53bd28670c3a2aa14ce858e63dd",
+      "0x223fea5291d43a2fb372c5f332e9ade371ded0b5",
     ],
   },
   bitcoin: {
@@ -133,7 +140,12 @@ const config = {
       "0xef3aeff9a5f61c6dda33069c58c1434006e13b20",
       "0x318d2aae4c99c2e74f7b5949fa1c34df837789b8",
       "0xc851a293ed8b8888a2e4140744973dd23bbcbaf2",
-      "0xfe6290ac9c3c290308341d07464969b697d2a17b"
+      "0xfe6290ac9c3c290308341d07464969b697d2a17b",
+      "0xf440139a62b2b939699c5b3e09f88e40464ab9bc",
+      "0x18673311fec54ac2244a602e6d91845553d24e62",
+      "0x93228d328c9c74c2bfe9f97638bbb5ef322f2bd5",
+      "0xd4d2e6ebca6c94dd28a0935ae468012fdda5d35a",
+      "0xbedf525201f58984182d2ad607a343ac8a2e54a2",
     ],
   },
   tron: {
@@ -165,6 +177,12 @@ const config = {
       "TPsMJ3BE9ixSQ7guFbVLZ4eou6SATBSqHH",
       "TKhXDEshLkYEYfaPzvKfEj8zCztSqDNUw2",
       "TJv1ARa4yPATHdETtahhz4h9R3Txspcufg",
+      "TDJ7XZph16aa3B9ey46R9CcbQuo1a3ZVAX",
+      "TAhUwQHXSpNMEuspLzrP8LakwKNQKNYTgh",
+      "TBTPEbJwwTfNMNN6j9UpDkoPeBhdDJhg4R",
+      "TPiL8in2nHcgNwiWcyfC6XwCQv4BmWnfLp",
+      "TLC5ZSmSMVVhXvZs5xeSSdxsj5tdz3KdpF",
+      "TSvwBJi2TbngwJfPmjSyfUYPFfGdJ7pJnR",
     ],
   },
   polygon: {
@@ -174,6 +192,8 @@ const config = {
       "0x7e8c73462aaa9d61c801bd9f5682db014387621a",
       "0xa85c29b94f8a22a7268facee89ef4eca051be2ce",
       "0x1347378b1d0eb69d3462e09b3dfa2fe28ebe74ec",
+      "0x18673311fec54ac2244a602e6d91845553d24e62",
+      "0x93228d328c9c74c2bfe9f97638bbb5ef322f2bd5",
     ],
   },
   arbitrum: {
@@ -186,7 +206,12 @@ const config = {
       "0x7da0b9211020d3775b18116fe751c555b9a7058c",
       "0x9d271a4e9523d74572b618ec10419a0a330e1bf0",
       "0x1c3944173abee256456b1498299fc501ad5bbd6f",
-      "0x83d8b993ff9795aee4abe8597c1925b50b30d5be"
+      "0x83d8b993ff9795aee4abe8597c1925b50b30d5be",
+      "0xf440139a62b2b939699c5b3e09f88e40464ab9bc",
+      "0x18673311fec54ac2244a602e6d91845553d24e62",
+      "0x93228d328c9c74c2bfe9f97638bbb5ef322f2bd5",
+      "0xd4d2e6ebca6c94dd28a0935ae468012fdda5d35a",
+      "0xbedf525201f58984182d2ad607a343ac8a2e54a2",
     ],
   },
   avax: {
@@ -197,6 +222,10 @@ const config = {
       "0x0a7e3e04fb45af4233a27bcf23f2c94f5babcf39",
       "0x3062e4ed0282f86d1b8481d06c30d7f2382776a7",
       "0x1c3944173abee256456b1498299fc501ad5bbd6f",
+      "0xf440139a62b2b939699c5b3e09f88e40464ab9bc",
+      "0x18673311fec54ac2244a602e6d91845553d24e62",
+      "0x93228d328c9c74c2bfe9f97638bbb5ef322f2bd5",
+      "0xbedf525201f58984182d2ad607a343ac8a2e54a2",
     ],
   },
   ripple: {
@@ -209,7 +238,9 @@ const config = {
       "rpwsiBrcXeVTyNPG445TzPbXSBdL9xHB83",
       "rBdPX224aE6Rsa2cw8uGvaw73fzcpEo5Ue",
       "rKwtFTDNTTeLVcj7ahz9PXBEx2V9bPCg44",
-      "rMXWrmn3FpmA65UPyzDTez4Jt29NeqkKes"
+      "rMXWrmn3FpmA65UPyzDTez4Jt29NeqkKes",
+      "rh37VYCg1TT8WiMs9xErd5Dg3H7C1L8jrC",
+      "rHBqbPrQX4xX4hLqF6PVxvpEVzDQgWG5BG",
     ],
   },
   optimism: {
@@ -221,6 +252,9 @@ const config = {
       "0x75df67943d35129dd22da5d14fda4983571f553a",
       "0xc0e17ad342afabd36b3971f8305ff147006962ae",
       "0x6d37817d118f72f362cf01e64d9454bdd8e8e92f",
+      "0xd1c3ee17103289acbda421cbe5382a05507ae0ac",
+      "0x5f44b6fc5a741bb0c68eb8587ee53203a644a155",
+      "0x93228d328c9c74c2bfe9f97638bbb5ef322f2bd5",
     ],
   },
   era: {
@@ -266,6 +300,12 @@ const config = {
       "6coXmZ8FRDRcuGQnoa1wH9GTrzJ7d1cD7NhiVDdMKt7F",
       "98Nfcvz1yFgwimcmQNBpqob4bzSBqxCsCynigyFdDaZV",
       "EVTzXcENdy55DpysRQ5mptcxfzZagucJdEb8jMEKQAxz",
+      "FPXq2NmXuSA1G2dGd8znUjT5G14zvmjoGFFfo7GKUm7k",
+      "4raqd4tCEnm2yGeUocVqPgN2MPB1W6A3EZfC8LoMChvf",
+      "EtpkJkZEyihfVdv7SnAvC8a15oCEtjyQMjGGbFchrW3y",
+      "5CZR5hYgodu1k8HQM3uPkmRj7qUbAhprRXT1M1rWQ9yH",
+      "FXj41NQK2mDTBC5rkpJ3H6wsATQqPsp59LezoFeb4DyS",
+      "9qoSqfZrFkqNLZjvLoGNULN4NoYrwAzUAHqCWvfjrwGG",
     ],
   },
   cardano: {
@@ -274,6 +314,10 @@ const config = {
   aptos: {
     owners: [
       "0x84b1675891d370d5de8f169031f9c3116d7add256ecf50a4bc71e3135ddba6e0",
+      "0x9db9476ece7dfe1bd37318911e8a4cfed159d247a2140930364a9d21205b3446",
+      "0xbee9af008e325a3cc86c533d32c4b7c50199ca0b441106d582da9de5f63f0b1b",
+      "0x118db0fecb576630cb1c977efb0de29d3692cafbe8dc88f5289f712e35d9a1e8",
+      "0xbee9af008e325a3cc86c533d32c4b7c50199ca0b441106d582da9de5f63f0b1b",
     ],
   },
   taiko: {
@@ -292,6 +336,9 @@ const config = {
       "0xee5B5B923fFcE93A870B3104b7CA09c3db80047A",
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
       "0x7e8c73462aaa9d61c801bd9f5682db014387621a",
+      "0xe1b2fd7fc19f80e6651a7ebc131642b19ac25aeb",
+      "0x18673311fec54ac2244a602e6d91845553d24e62",
+      "0x93228d328c9c74c2bfe9f97638bbb5ef322f2bd5",
     ],
   },
   fantom: {
@@ -311,6 +358,8 @@ const config = {
       "LKxNtynH2GxLc2oLxUGL6ryckK8JMdP5BR",
       "ltc1qp7cnlxmz8wgc93g0m020ckru2s55t25y3wunf6",
       "LfajbWicGAVvhEMZtCm3a1aMqynpSPHhS6",
+      "LWaHxwrtsLzYrrZjMSNDg9qeDLRUE9Dbjc",
+      "Lh5K3aS8FaXkNJSaAXa9m5ZPYy3UP7oPvG",
     ],
   },
   manta: {
@@ -378,6 +427,10 @@ const config = {
       "EQB9Ez1OQlyOAN4BVROkTmbm0WOyHnFyCux1eZZeXeKMVV6_",
       "EQBKHCC8mm-SlPdfHIen84OotzpIOi5tyzYw3b54s8ytANhS",
       "EQC90NgG5ixY7Ol3SDRQhAEZRvBUUI6dYsWfnfFXw9f3_Ij0",
+      "UQAYkfdNxD2_LG721frWLGOvvH-lVjj3ZR4BIArQJKiZLVyh",
+      "UQDxXSIWbDH_Wa6BrV_lnoWB0xLxiLtTHGgl3pBPBssarV-i",
+      "EQDpe7_gPnmOcdho13D9TzSVoqQYFsOlD9VvxwZjuinYM6VU",
+      "EQAKN_kisBAua9xsLDmcD9rXqHXvRSaFvhTBsp2dU6Prp06k",
     ],
   },
   dydx: { owners: ["dydx10sdnqxvrwe3mhducn6plyewul84edgd47rfnfe"] },
@@ -392,10 +445,19 @@ const config = {
     owners: ["0x0051ef9259c7ec0644a80e866ab748a2f30841b3"],
   },
   hyperliquid: {
-    owners: ["0x1c3944173abee256456b1498299fc501ad5bbd6f", "0x1b0bb20d345a2699dd65eb316114c8786ac90761", "0x1d834efd7ac0f39ec63ad5a30bfd4000aba837f7"],
+    owners: [
+      "0x1c3944173abee256456b1498299fc501ad5bbd6f",
+      "0x1b0bb20d345a2699dd65eb316114c8786ac90761",
+      "0x1d834efd7ac0f39ec63ad5a30bfd4000aba837f7",
+    ],
   },
   plasma: {
     owners: ["0x01eadbed08832ba3a12b571b299075dc6b503dca"],
+  },
+  sui: {
+    owners: [
+      "0x60dd01bc037e2c1ea2aaf02187701f9f4453ba323338d2f2f521957065b0984d",
+    ],
   },
 };
 

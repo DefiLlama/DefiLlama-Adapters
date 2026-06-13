@@ -18,7 +18,7 @@ const tokens = {
     USDC: ADDRESSES.base.USDC,
   },
   megaeth: {
-    USDM: "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7" // USDm
+    USDM: ADDRESSES.megaeth.USDm // USDm
   }
 };
 

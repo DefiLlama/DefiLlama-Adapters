@@ -145,7 +145,7 @@ const usdc_avax = ADDRESSES.avax.USDC
 
 // Fantom Assets
 const wftm = ADDRESSES.fantom.WFTM
-const fusdc = ADDRESSES.fantom.USDC
+const fusdc = "0x04068da6c83afcfa0e13ba15a6696662335d5b75"
 
 // Binance Smart Chain Assets
 const busd = ADDRESSES.bsc.BUSD
@@ -334,9 +334,11 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { tokensAndOwners, uniV3Owners } = config[chain]
   module.exports[chain] = {
-    tvl: async (api) => {
-      if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true})
-      return sumTokens2({ api, tokensAndOwners})
-    }
+    tvl: chain === 'inevm'
+      ? async () => ({})
+      : async (api) => {
+          if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true })
+          return sumTokens2({ api, tokensAndOwners })
+        }
   }
 })

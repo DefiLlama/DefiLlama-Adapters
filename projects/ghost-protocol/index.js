@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const POOLS = [
@@ -12,7 +13,7 @@ async function tvl(api) {
   return sumTokens2({ 
     api, 
     owners: POOLS, 
-    tokens: ['0x0000000000000000000000000000000000000000'] // Native MON
+    tokens: [ADDRESSES.null] // Native MON
   })
 }
 

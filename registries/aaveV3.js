@@ -18,21 +18,25 @@ const configs = {
   'unilend-protocol': {
     unit0: ['0x99118c1Ca7D0DC824719E740d4b4721009a267d6'],
   },
+  'purrlend': {
+    hyperliquid:{poolDatas: ['0xa8Ca6a4A485485910aA4023b9963Dfd2f3A5aeb0'], isInsolvent: true},
+    megaeth: { poolDatas: ['0xfCaE4E9Acb1E5C78aa699d43c5cc0eAC5399E754'], isInsolvent: true },
+  },
   // --- newly migrated aaveV3Export protocols ---
   'zentra': {
     citrea: '0x0FC811fE6bD0Be53717f9ca722E30a7bc4B90C31',
   },
   'ploutos': {
     hallmarks: [],
-    base: ['0x7dcb86dC49543E14A98F80597696fe5f444f58bC'],
-    arbitrum: ['0x0F65a7fBCb69074cF8BE8De1E01Ef573da34bD59'],
-    polygon: ['0x6A9b632010226F9bBbf2B6cb8B6990bE3F90cb0e'],
-    katana: ['0x4DC446e349bDA9516033E11D63f1851d6B5Fd492'],
-    plasma: ['0x9C48A6D3e859ab124A8873D73b2678354D0B4c0A'],
-    hemi: ['0x0F65a7fBCb69074cF8BE8De1E01Ef573da34bD59'],
-    ethereum: ['0x1A875c28610F0155D377bBD725cc59d055e2D192'],
-    avax: ['0xA5217D7cceAa7DCdcc613E88DcFc98A0f145b384'],
-    hyperliquid: ['0x429e14fCa77b0eC3FAf32a65d09Da97e67E82826'],
+    base:       { poolDatas: ['0x7dcb86dC49543E14A98F80597696fe5f444f58bC'], isInsolvent: true },
+    arbitrum:   { poolDatas: ['0x0F65a7fBCb69074cF8BE8De1E01Ef573da34bD59'], isInsolvent: true },
+    polygon:    { poolDatas: ['0x6A9b632010226F9bBbf2B6cb8B6990bE3F90cb0e'], isInsolvent: true },
+    katana:     { poolDatas: ['0x4DC446e349bDA9516033E11D63f1851d6B5Fd492'], isInsolvent: true },
+    plasma:     { poolDatas: ['0x9C48A6D3e859ab124A8873D73b2678354D0B4c0A'], isInsolvent: true },
+    hemi:       { poolDatas: ['0x0F65a7fBCb69074cF8BE8De1E01Ef573da34bD59'], isInsolvent: true },
+    ethereum:   { poolDatas: ['0x1A875c28610F0155D377bBD725cc59d055e2D192'], isInsolvent: true },
+    avax:       { poolDatas: ['0xA5217D7cceAa7DCdcc613E88DcFc98A0f145b384'], isInsolvent: true },
+    hyperliquid:{ poolDatas: ['0x429e14fCa77b0eC3FAf32a65d09Da97e67E82826'], isInsolvent: true },
   },
   'hyperloan': {
     hallmarks: [
@@ -72,6 +76,26 @@ const configs = {
       staking: ['0x5C75A733656c3E42E44AFFf1aCa1913611F49230', '0x25356aeca4210eF7553140edb9b8026089E49396'],
     },
   },
+  'edel': {
+    ethereum: {
+      poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501']
+    }
+  },
+  'vena': {
+    fluent: {
+      poolDatas: ['0xb6eEF266933382661827E36fE3f936396e80166E']
+    }
+  },
+  'zona': {
+    pharos: {
+      poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
+    }
+  },
+  'kaskad': {
+    igra: {
+      poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
+    }
+  }
 }
 
 module.exports = buildProtocolExports(configs, aaveV3ExportFn)

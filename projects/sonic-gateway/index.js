@@ -19,11 +19,11 @@ module.exports = {
       await sumTokens2({
         api,
         owner: bridge,
-        blacklistedTokens: [ADDRESSES.ethereum.FTM],
+        blacklistedTokens: ["0x4e15361fd6b4bb609fa63c81a2be19d873717870"],
         fetchCoValentTokens: true,
       })
 
-      const ftmBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.ethereum.FTM, params: bridge })
+      const ftmBalance = await api.call({ abi: 'erc20:balanceOf', target: "0x4e15361fd6b4bb609fa63c81a2be19d873717870", params: bridge })
       api.add('sonic:' + ADDRESSES.null, ftmBalance, { skipChain: true })
     },
   },

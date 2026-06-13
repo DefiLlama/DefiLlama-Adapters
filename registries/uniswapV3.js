@@ -8,6 +8,7 @@ const uniV3Configs = {
   'warpx-v3': { megaeth: { factory: '0xf67cF9d6FC433e97Ec39Ae4b7E4451B56B171C8a', fromBlock: 4630394 } },
   'sailfish-v3': { occ: { factory: '0x963A7f4eB46967A9fd3dFbabD354fC294FA2BF5C', fromBlock: 142495 } },
   'tradegpt': { '0g': { factory: '0x6F3945Ab27296D1D66D8EEb042ff1B4fb2E0CE70', fromBlock: 5711733 } },
+  'bond': { '0g': { factory: '0xBDDB3aCF0A90029a1e7ebC3F82C7D9391C429A75', fromBlock: 32738449 } },
   'ultrasolid-v3': { hyperliquid: { factory: '0xD883a0B7889475d362CEA8fDf588266a3da554A1', fromBlock: 10742640 } },
   'juiceswap': { citrea: { factory: '0xd809b1285aDd8eeaF1B1566Bf31B2B4C4Bba8e82', fromBlock: 2651539 } },
   'weero-v3': { klaytn: { factory: '0x6603E53b4Ae1AdB1755bAF62BcbF206f90874178', fromBlock: 186673202 } },
@@ -255,6 +256,7 @@ const uniV3Configs = {
     morph: {
       factory: '0xFf8578C2949148A6F19b7958aE86CAAb2779CDDD',
       fromBlock: 25159,
+      onlyUseExistingCache: true,
       blacklistedTokens: [
         '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a',
         '0xe3C0FF176eF92FC225096C6d1788cCB818808b35',
@@ -538,6 +540,7 @@ const uniV3Configs = {
     flow: {
       factory: '0xca6d7Bb03334bBf135902e1d919a5feccb461632',
       fromBlock: 42141486,
+      blacklistedTokens: ['0x2c23fa3f22273194f7a046281861551996183e8d']
     },
   },
   'fluxion-network': {
@@ -881,13 +884,6 @@ const uniV3Configs = {
       fromBlock: 1,
     },
   },
-  'molten-v4': {
-    core: {
-      factory: '0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597',
-      fromBlock: 15770796,
-      isAlgebra: true,
-    },
-  },
   'monday-trade-spot': {
     monad: {
       factory: '0xc1e98d0a2a58fb8abd10ccc30a58efff4080aa21',
@@ -1083,6 +1079,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0xff7b3e8c00e57ea31477c32a5b52a58eea47b072',
       fromBlock: 7876741,
+      permitFailure: true,
     },
   },
   'quickswap-v3': {
@@ -1092,11 +1089,7 @@ const uniV3Configs = {
       isAlgebra: true,
       permitFailure: true,
     },
-    dogechain: {
-      factory: '0xd2480162aa7f02ead7bf4c127465446150d58452',
-      fromBlock: 837574,
-      isAlgebra: true,
-    },
+    dogechain: { tvl: () => ({ }) },
     polygon_zkevm: {
       factory: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
       fromBlock: 300,
@@ -1137,15 +1130,23 @@ const uniV3Configs = {
       factory: '0xaa2cd7477c451e703f3b9ba5663334914763edf8',
       fromBlock: 90593047,
     },
-    hyperliquid: {
-      factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
-      fromBlock: 17985840,
-    },
   },
   'ramses-hl-cl': {
     hyperliquid: {
       factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
       fromBlock: 18149975,
+    },
+  },
+  'ramsesx-arb-cl': {
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
+    },
+  },
+  'ramsesx-poly-cl': {
+    polygon: {
+      factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
+      fromBlock: 82177771,
     },
   },
   'reservoir-tools-v3': {
@@ -1157,10 +1158,6 @@ const uniV3Configs = {
       factory: '0xA1160e73B63F322ae88cC2d8E700833e71D0b2a1',
       fromBlock: 1,
     },
-    shape: {
-      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
-      fromBlock: 1,
-    },
     redstone: {
       factory: '0xece75613Aa9b1680f0421E5B2eF376DF68aa83Bb',
       fromBlock: 1,
@@ -1168,6 +1165,7 @@ const uniV3Configs = {
     ink: {
       factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424',
       fromBlock: 1,
+      blacklistedTokens: ['0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'],
     },
   },
   'retro': {
@@ -1187,6 +1185,7 @@ const uniV3Configs = {
     hedera: {
       factory: '0x00000000000000000000000000000000003c3951',
       fromBlock: 55651154,
+      permitFailure: true,
     },
   },
   'scribe-v4': {
@@ -1212,6 +1211,12 @@ const uniV3Configs = {
     sonic: {
       factory: '0xcD2d0637c94fe77C2896BbCBB174cefFb08DE6d7',
       fromBlock: 1705910,
+    },
+  },
+  'shapeswap-v3': {
+    shape: {
+      factory: '0xeCf9288395797Da137f663a7DD0F0CDF918776F8',
+      fromBlock: 6022152,
     },
   },
   'sheepdex': {
@@ -1448,6 +1453,19 @@ const uniV3Configs = {
       fromBlock: 2445228,
     },
   },
+  'tsunami-v3': {
+    ink: {
+      factory: '0xD8B0826150B7686D1F56d6F10E31E58e1BCF1193',
+      fromBlock: 39943040,
+      permitFailure: true,
+    },
+  },
+  'krokoswap-v3': {
+    kasplex: {
+      factory: '0x0dfb1Bb755d872EA1fa4d95E4ad0c2E6317Ce9B9',
+      fromBlock: 14294547,
+    },
+  },
   'tesseractworld': {
     ace: {
       factory: '0x699cf93f5dec3a3e314f0a31c1f885fb11b983c3',
@@ -1508,6 +1526,13 @@ const uniV3Configs = {
     base: {
       factory: '0xAC900f12fB25d514e3ccFE8572B153A9991cA4e7',
       fromBlock: 25118568,
+      isAlgebra: true,
+    },
+  },
+  'trebleswap-v2': {
+    base: {
+      factory: '0x6e606Cf94A4DDc01aEed2Fce16d1b4f5B33e0A31',
+      fromBlock: 39029383,
       isAlgebra: true,
     },
   },
@@ -1588,6 +1613,12 @@ const uniV3Configs = {
       fromBlock: 33104424,
     },
   },
+  'capybara-v3': {
+    klaytn: {
+      factory: '0xC4C8310080F209629EC4c349cb2A3c6720e1176D',
+      fromBlock: 172328824,
+    },
+  },
   'winnieswap': {
     berachain: {
       factory: '0x76fD9D07d5e4D889CAbED96884F15f7ebdcd6B63',
@@ -1665,6 +1696,47 @@ const uniV3Configs = {
       fromBlock: 1440863,
     },
   },
+  'virtus-protocol-cl': {
+    base: {
+      factory: '0x0e5Ab24beBdA7e5Bb3961f7E9b3532a83aE86B48',
+      fromBlock: 42960000,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+      extraKey: 'v1'
+    },
+  },
+  'stableswap-xyz-v3': {
+    stable: {
+      factory: '0x88F0a512eF09175D456bc9547f914f48C013E4aA',
+      fromBlock: 4874220,
+      extraKey: 'v3',
+      blacklistedTokens: ['0xded1660192d4d82e7c0b628ba556861edbb5cada', '0x5d442b349590a6048eb2dc0ec346caa5f47a9ab5'],
+    }
+  },
+  'phlox': {
+    methodology: 'TVL accounts for liquidity on all Uniswap V3-style pools created by the Phlox factory on LUKSO.',
+    lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
+  },
+  'fluxflow-v3': {
+    methodology: 'TVL counts liquidity locked in FluxFlow V3 pools on Fluent. PoolCreated events are read from the factory and reserves of each pool are summed.',
+    fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672}
+  },
+  'topaz-cl': {
+    bsc: { 
+      factory: '0x73DC984D9490286E735548f61dfCCec67Af82ed9',
+      fromBlock: 98756164,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
+    }
+  },
+  'turbo': {
+    methodology: "Counts the tokens locked in Turbo's Uniswap V3 liquidity pools on HyperEVM, enumerated on-chain from the factory's PoolCreated events.",
+    hyperliquid: { factory: '0xc72d2695A203696243Aa3EdD6CC98E43262E007E', fromBlock: 36463669 },
+  },
+  'kublerx-v3': {
+    methodology: 'TVL is calculated by summing the reserves of all Kublerx V3 pools on KUB. Pools are discovered from PoolCreated events emitted by the V3 factory.',
+    bitkub: { factory: '0xD679d310008A2595B8d3DeB83bb93EB23F9b0942', fromBlock: 31936260 }
+  }
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)

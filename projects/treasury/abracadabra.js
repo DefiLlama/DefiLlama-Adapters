@@ -40,7 +40,7 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       ADDRESSES.arbitrum.ARB, // ARB
-      ADDRESSES.arbitrum.MIM, // MIM
+      "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a", // MIM
       ADDRESSES.arbitrum.USDC, // USDC
       ADDRESSES.arbitrum.USDT, // USDT
       // Magic autocompounders

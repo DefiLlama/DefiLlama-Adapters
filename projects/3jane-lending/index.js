@@ -2,11 +2,14 @@ const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const abi = require("../helper/abis/morpho.json");
 
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const contract = "0xde6e08ac208088cc62812ba30608d852c6b0ecbc"
 const fromBlock = 23214670
 
 async function tvl(api) {
-  return sumTokens2({ tokens: ["0xd4fa2d31b7968e448877f69a96de69f5de8cd23e"], owner: contract, api })
+  const jane3 = '0x056B269Eb1f75477a8666ae8C7fE01b64dD55eCc'
+  return sumTokens2({ tokens: ["0xd4fa2d31b7968e448877f69a96de69f5de8cd23e", ADDRESSES.ethereum.USDC], owners: [contract, jane3], api })
 }
 
 const eventAbis = {
@@ -26,7 +29,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: `We count the tokens on ${contract}`,
+  methodology: `We count the tokens on the contract`,
   ethereum: {
     tvl,
     borrowed,
