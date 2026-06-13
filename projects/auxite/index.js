@@ -1,86 +1,74 @@
-/**
- * Auxite - Tokenized Precious Metals (RWA)
- */
-
-const ADDRESSES = require('../helper/coreAssets.json');
-
-const AUXITE_TOKENS = {
-  AUXG: "0x390164702040B509A3D752243F92C2Ac0318989D",
-  AUXS: "0x82F6EB8Ba5C84c8Fd395b25a7A40ade08F0868aa",
-  AUXPT: "0x119de594170b68561b1761ae1246C5154F94705d",
-  AUXPD: "0xe051B2603617277Ab50C509F5A38C16056C1C908",
+// DefiLlama TVL adapter — Auxite (tokenized precious metals on Base)
+// ----------------------------------------------------------------------------
+// Drop this into your DefiLlama-Adapters fork at: projects/auxite/index.js
+// then open a PR. It REPLACES any adapter pointing at the old mirror contracts
+// (0x24acdf…/0xb03471…/0xe5640d…/0x1c99a4…), which are being retired.
+//
+// Model: each token's on-chain totalSupply = full physical vault metal (AUM),
+// 3 decimals (1 token = 1 gram). TVL = Σ grams × spot USD/gram (issuer NAV).
+//
+// Canonical AuxiteMetal contracts (Base mainnet, deployed 2026-06-09):
+const TOKENS = {
+  AUXG: "0xCef9D7593E8Ba796eE05C54B8983B7749bB1218a", // gold
+  AUXS: "0xB0aC63aeD12b5A0Ee710618D99444bf126068c1a", // silver
+  AUXPT: "0x39F314fb20668997A2ADDaB1eA9236e0072D5E2D", // platinum
+  AUXPD: "0x6e4837fCf158D15ABFdf90b3954D041D452BE832", // palladium
 };
 
-const ORACLE_ADDRESS = "0x585314943599C810698E3263aE9F9ec4C1C25Ff2";
-const STAKING_CONTRACT = "0x1656DcCC8277bC7D6aF93F71464D64ebBC15574d";
+const GRAMS_PER_TROY_OZ = 31.1034768;
+const TOKEN_DECIMALS = 3; // 1 gram = 1000 raw units
 
-const ORACLE_ABI = {
-  getAllPrices: "function getAllPrices() view returns (uint256 gold, uint256 silver, uint256 platinum, uint256 palladium, uint256 eth)",
-};
+// Physical precious metals have NO on-chain DEX price, so the canonical valuation
+// is the issuer's published per-gram NAV (gold/silver/platinum/palladium), the
+// same feed that backs the tokens 1:1. Supply is still read on-chain (verifiable);
+// only the $/gram valuation comes from the NAV feed.
+const PRICES_URL = "https://vault.auxite.io/api/prices"; // { prices: { AUXG, AUXS, AUXPT, AUXPD } } USD/gram
 
-async function getPrices(api) {
-  const allPrices = await api.call({
-    target: ORACLE_ADDRESS,
-    abi: ORACLE_ABI.getAllPrices
+async function tvl(api) {
+  const symbols = Object.keys(TOKENS);
+
+  // On-chain supply per token (grams).
+  const supplies = await api.multiCall({
+    abi: "uint256:totalSupply",
+    calls: symbols.map((s) => TOKENS[s]),
   });
-  
-  return {
-    AUXG: allPrices.gold || allPrices[0],
-    AUXS: allPrices.silver || allPrices[1],
-    AUXPT: allPrices.platinum || allPrices[2],
-    AUXPD: allPrices.palladium || allPrices[3],
-  };
-}
-
-async function calculateTvl(api, balances, prices) {
-  const USDC_BASE = ADDRESSES.base?.USDC || "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-  
-  let totalUsdcUnits = 0n;
-  
-  Object.keys(AUXITE_TOKENS).forEach((symbol, i) => {
-    const balance = BigInt(balances[i] || 0);
-    const pricePerKgE6 = BigInt(prices[symbol] || 0);
-    const valueUsdc = (balance * pricePerKgE6) / 1000000n;
-    totalUsdcUnits += valueUsdc;
+  const grams = {};
+  symbols.forEach((s, i) => {
+    grams[s] = Number(supplies[i]) / 10 ** TOKEN_DECIMALS;
   });
-  
-  api.add(USDC_BASE, totalUsdcUnits.toString());
+
+  // Valuation via issuer NAV: TVL = Σ grams × USD/gram.
+  let priced = false;
+  try {
+    const res = await fetch(PRICES_URL).then((r) => r.json());
+    const px = (res && res.prices) || {};
+    let usd = 0;
+    for (const s of symbols) {
+      const perGram = Number(px[s]);
+      if (grams[s] > 0 && perGram > 0) usd += grams[s] * perGram;
+    }
+    // addUSDValue: add a raw USD amount to TVL (DefiLlama ChainApi).
+    if (usd > 0) {
+      api.addUSDValue(usd);
+      priced = true;
+    }
+  } catch (e) {
+    // fall through to the gold-only fallback below
+  }
+
+  // Fallback: if the NAV feed is unreachable, value gold via PAX Gold (the
+  // dominant share of AUM) so TVL is still meaningful rather than zero.
+  if (!priced && grams.AUXG > 0) {
+    api.addCGToken("pax-gold", grams.AUXG / GRAMS_PER_TROY_OZ);
+  }
+
+  return api.getBalances();
 }
 
 module.exports = {
-  methodology: "TVL is calculated from total supply of AUXG, AUXS, AUXPT, AUXPD tokens multiplied by metal prices from Auxite Oracle. Each token = 1 gram of physically-backed precious metal.",
-  
+  methodology:
+    "AUM = on-chain totalSupply (grams) of each Auxite metal token on Base, valued at the issuer's published per-gram USD NAV for gold, silver, platinum and palladium. Each token is 1:1 backed by allocated physical metal (custody: Silver Bullion SG; attestation: The Network Firm).",
   base: {
-    tvl: async (api) => {
-      const [supplies, prices] = await Promise.all([
-        api.multiCall({
-          abi: 'erc20:totalSupply',
-          calls: Object.values(AUXITE_TOKENS),
-        }),
-        getPrices(api)
-      ]);
-      await calculateTvl(api, supplies, prices);
-    },
-    
-    staking: async (api) => {
-      const [stakedBalances, prices] = await Promise.all([
-        api.multiCall({
-          abi: 'erc20:balanceOf',
-          calls: Object.values(AUXITE_TOKENS).map(token => ({
-            target: token,
-            params: [STAKING_CONTRACT]
-          })),
-        }),
-        getPrices(api)
-      ]);
-      await calculateTvl(api, stakedBalances, prices);
-    },
+    tvl,
   },
-  
-  doublecounted: true,
-  misrepresentedTokens: true,
 };
-
-module.exports.hallmarks = [
-  ['2026-02-02', "V8 tokens deployed on Base Mainnet"],
-];
