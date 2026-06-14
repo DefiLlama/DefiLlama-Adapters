@@ -71,7 +71,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "AUM = on-chain totalSupply (grams) of each Auxite metal token on Base, valued at the issuer's published per-gram USD NAV for gold, silver, platinum and palladium. Each token is 1:1 backed by allocated physical metal (custody: Silver Bullion SG; attestation: The Network Firm).",
+    "AUM = on-chain totalSupply (grams) of each Auxite metal token on Base, valued at the issuer's published per-gram USD NAV for gold, silver, platinum and palladium. Each token is 1:1 backed by allocated physical metal held in regulated vaults (Istanbul, Dubai, Singapore); independently attested by The Network Firm.",
   base: {
     tvl,
   },
