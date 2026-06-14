@@ -33,6 +33,7 @@ const contracts = {
   // Staking
   WikiStaking:         "0xDD551D705fAbD4380D2C95F7345b671cE3310bd2",
   WikiLiquidStaking:   "0x6ac54F360315E0B3Dae455ad371A06d154b410B2",
+  WikiGaugeVoting:     "0x016886FF6fdab890Dd03aE7a1D6535ef57f06F92",  // ← ADD THIS
 
   // Lending
   WikiLending:         "0x74635CFa33EEAe220367fF10C598e098a29e9246",
