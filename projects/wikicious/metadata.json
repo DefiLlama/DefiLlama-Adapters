@@ -1,0 +1,16 @@
+{
+  "name": "Wikicious",
+  "logo": "https://github.com/hetwik/New-v6-contracts-for-wikicious-/blob/main/wikicious-pfp-gold%20(1).png",
+  "category": "Dexes",
+  "chains": ["Arbitrum"],
+  "twitter": "WikiciousHQ",
+  "url": "https://wikicious.io",
+  "description": "India's first fully on-chain DEX on Arbitrum One. 133 audited smart contracts covering perpetual futures (WikiPerp, 48 markets, 50x leverage), spot AMM (WikiAMM), yield aggregation (WikiYield), cross-chain bridging (WikiBridge), liquid staking (WikiStaking), copy trading (WikiCopyTrading), and the world's first on-chain prop trading (WikiPropChallenge). $25M raised.",
+  "auditLinks": [
+    "https://wikicious.io"
+  ],
+  "github": [
+    "https://github.com/wikicious"
+  ],
+  "token": "0xa681Bf6f0449ABc4E98DCa3468488Fe1b24FdD0F"
+}
