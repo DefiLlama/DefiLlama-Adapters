@@ -26,13 +26,10 @@ async function tvl(api) {
     });
 
     const uniqueTokenAccounts = [...new Set(tokenAccounts)];
-    if (tokenVault && tokenVault.length > 0) {
-        tokenVault.forEach((data) => {
-            const mint = data.account.mintKey.toString()
-            api.add(mint, data.account.totalBorrowed)
-        })
-    }
 
+    // Only count coins actually held in the protocol's vaults. totalBorrowed is
+    // liquidity that has been borrowed out of the vaults (not held by the
+    // protocol), so it must not be added to TVL.
     return sumTokens2({
         tokenAccounts: uniqueTokenAccounts.filter(i => i !== '11111111111111111111111111111111'),
         blacklistedTokens, 
