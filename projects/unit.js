@@ -15,7 +15,7 @@ async function tvl(ts, block) {
     ADDRESSES.ethereum.USDC,
     '0xbC396689893D065F41bc2C6EcbeE5e0085233447',
     ADDRESSES.ethereum.AAVE,
-    ADDRESSES.ethereum.FTM,
+    "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
     ADDRESSES.ethereum.YFI,
     ADDRESSES.ethereum.CRV,
     ADDRESSES.ethereum.SUSHI,

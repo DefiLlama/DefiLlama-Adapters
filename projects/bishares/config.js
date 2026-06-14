@@ -17,7 +17,7 @@ module.exports = {
         "0x259c0cf00f8710b473457314420114ae4c87cee5"
       ],
       [
-        ADDRESSES.fantom.MIM,
+        "0x82f0b8b456c1a451378467398982d4834b6829c1",
         "0x259c0cf00f8710b473457314420114ae4c87cee5"
       ],
       [
@@ -65,7 +65,7 @@ module.exports = {
         "0xa55568847c5c5be3b6c59c6e57e74677591d900d"
       ],
       [
-        ADDRESSES.fantom.MIM,
+        "0x82f0b8b456c1a451378467398982d4834b6829c1",
         "0xa55568847c5c5be3b6c59c6e57e74677591d900d"
       ],
       [
@@ -101,7 +101,7 @@ module.exports = {
         "0xab8ac08c597fb090b36eb514ba3f3a8b4a78aed1"
       ],
       [
-        ADDRESSES.fantom.MIM,
+        "0x82f0b8b456c1a451378467398982d4834b6829c1",
         "0xab8ac08c597fb090b36eb514ba3f3a8b4a78aed1"
       ],
       [
@@ -133,7 +133,7 @@ module.exports = {
         "0xead77cdfeb1fe4672704ba322d63a3d2bdca2025"
       ],
       [
-        ADDRESSES.fantom.MIM,
+        "0x82f0b8b456c1a451378467398982d4834b6829c1",
         "0xead77cdfeb1fe4672704ba322d63a3d2bdca2025"
       ],
       [

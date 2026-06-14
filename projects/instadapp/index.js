@@ -109,9 +109,9 @@ async function fantomTvl(api) {
   const tokens = [
     ADDRESSES.null, // Native FTM
     ADDRESSES.fantom.WFTM, // WFTM
-    ADDRESSES.fantom.USDC, // USDC
-    ADDRESSES.fantom.DAI, // DAI
-    ADDRESSES.fantom.fUSDT, // fUSDT
+    "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
+    "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", // DAI
+    "0x049d68029688eabf473097a2fc38ef61633a3c7a", // fUSDT
     '0x74b23882a30290451A17c44f4F05243b6b58C76d', // WETH
     ADDRESSES.fantom.WBTC, // WBTC
   ];

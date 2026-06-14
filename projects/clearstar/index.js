@@ -9,6 +9,7 @@ const configs = {
       ],
       eulerVaultOwners: [
         '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
+        '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
       ],
       erc4626: [
         '0x1166250D1d6B5a1DBb73526257f6bb2Bbe235295', // yoUSD IPOR Fusion

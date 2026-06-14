@@ -9,8 +9,8 @@ const treasuryTokens = [
     [ADDRESSES.fantom.WFTM, false], //WFTM
     [ADDRESSES.fantom.WBTC, false], //WBTC
     ["0x74b23882a30290451A17c44f4F05243b6b58C76d", false], //WETH
-    [ADDRESSES.fantom.DAI, false], //DAI
-    [ADDRESSES.fantom.MIM, false], //MIM
+    ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", false], //DAI
+    ["0x82f0b8b456c1a451378467398982d4834b6829c1", false], //MIM
     ["0x761D6a950c8F441D616f34d6D918230936a3F27b", true], //MiniPanther-DAI
    ]
 

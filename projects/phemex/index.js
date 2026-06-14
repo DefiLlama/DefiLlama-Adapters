@@ -72,7 +72,8 @@ const config = {
     owners: [
       'rQKKvBvEfXbTThkqrtqaY3sAKuW6iqcMzX',
       'rLMAAuqJowC5yMccaPnappeLM8vDfdiDTg',
-      'rN8fxXkmsTbgMxmisfvtK5AXwauXRkjgvd'
+      'rN8fxXkmsTbgMxmisfvtK5AXwauXRkjgvd',
+      'rECMhXVnonW7kcpzWPASaNdvgKQu2N6TLp'
     ],
   },
   sui: {
@@ -85,12 +86,16 @@ const config = {
     owners: [
       'THAABzWrhp84Nr7gxss7qhtzA5mp3d1qUo',
       'TMHKjGvQ2trQkBEnAgx7RvV77Xn8w1JDP7',
+      'THe3CVBSKGdfeW58B2MLCJ9u5W74MCGL8M',
+      'TM7rxykbNRuFd2iZ1zVH4P8xrpSCduw9vD',
+      'TEdkCXtBpmze8VmmbMV1WEBiagvrUf7Hk5'
     ],
   },
   solana: {
     owners: [
       'EWSHJzKpzjpwz9GuNKkXWMHXAiwtB7obSGhdFKu5QZku',
-      '5xYNhZRW1rEofFon3X2JgaZtrnu5vo5xXD61jHof3p37'
+      '5xYNhZRW1rEofFon3X2JgaZtrnu5vo5xXD61jHof3p37',
+      'Bamf8nuqeEqtP8dL68ShsXroGx2yjQKf1C9jeFSV8qKX'
     ],
   },
   polkadot: {

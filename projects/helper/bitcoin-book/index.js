@@ -10,7 +10,7 @@ const imports = [
 const { sumTokensExport } = require("../sumTokens.js");
 const fetchers = require("./fetchers.js");
 
-const p2pb2b = ["39BFtTzZjj6o2s7eewefFQxqM4617VmhEK"];
+const p2pb2b = ["bc1qsllhrk7w4e4kprc5qhqtqg9p6e83ektc2d7qma"];
 
 const ssiProtocol = ["1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM"];
 
@@ -1158,6 +1158,12 @@ module.exports = {
     "1EovnsPsskU15rQhoJJiKpUxQzufryvpGm",
     "3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo",
     "3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh",
+  ],
+  circleBTC: [
+    '1JkKmG26nUBcPS99TsCVsReSXvLkEai4ca',
+    '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
+    '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
+    '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
   ],
 };
 

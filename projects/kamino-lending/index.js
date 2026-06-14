@@ -18,6 +18,12 @@ const ETHENA_KVAULT_POSITIONS = [
     kTokenVault: 'GwHpfLMCcScMtXpuLJ6E2a4ANHdHHRZypNnnMVgkH8Zf', // KVault's kUSDG holding
     underlying: '2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH', // USDG
   },
+  {
+    farmUserState: 'CXiSvtSZnqpYf9b4JqLA9NBNBeHnpDELfbbsX8avqj33', // ethena's stake in the kPYUSD receipt farm
+    walletReceiptAccounts: ['35h4x1e9LjcHiyr7WeaCEVBPPjARdPCQHYZ5HQJyqtGV'], // unstaked PYUSD receipt held by ethena
+    kTokenVault: '22qw3R6Cqt98Np8tVE7HXuDtpH3Yn6Ludmz7x5y3KVqR', // KVault's kPYUSD holding
+    underlying: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo', // PYUSD
+  },
 ]
 
 async function tvl(api) {
