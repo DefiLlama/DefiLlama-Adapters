@@ -2919,6 +2919,10 @@ const uniV2Configs = {
   },
   'myrxswap': {
     mrt: '0x7E4A7CC7D9e4e416E7277F8309cC54cF5FD8AF2b'
+  },
+  'brownfi-v3': {
+    berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
+    hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
   }
 }
 
