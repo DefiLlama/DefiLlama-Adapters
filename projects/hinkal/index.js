@@ -5,6 +5,7 @@ const { getAllTokenBalances } = require("./hinkalUtils.js");
 const { sumTokensExport } = require("../helper/solana.js");
 const ownerByChain = require("./owners.js");
 const { addPublicTvl } = require("./publicTvl.js");
+const solanaTokens = require("./solanaTokens.js");
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -66,7 +67,10 @@ module.exports = {
     tvl: async (api) => {
       await sumTokensExport({
         owner: ownerByChain.solana,
+        tokens: solanaTokens,
         solOwners: [ownerByChain.solana],
+        computeTokenAccount: true,
+        allowError: true,
       })(api);
       await addPublicTvl(api);
       return api.getBalances();
