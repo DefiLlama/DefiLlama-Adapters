@@ -13,20 +13,14 @@ const CHAIN_TO_ID = {
   tron: 728126428,
 };
 
-let cache;
 const getLatestPublicTvlByChainId = async () => {
-  if (!cache) {
-    cache = (async () => {
-      const { data } = await get(PUBLIC_TVL_URL);
-      const latestTs = Math.max(...data.map((d) => d.timestamp));
-      const byChainId = {};
-      for (const row of data) {
-        if (row.timestamp === latestTs) byChainId[row.chainId] = row.tvl;
-      }
-      return byChainId;
-    })();
+  const { data } = await get(PUBLIC_TVL_URL);
+  const latestTs = Math.max(...data.map((d) => d.timestamp));
+  const byChainId = {};
+  for (const row of data) {
+    if (row.timestamp === latestTs) byChainId[row.chainId] = row.tvl;
   }
-  return cache;
+  return byChainId;
 };
 
 const addPublicTvl = async (api) => {
