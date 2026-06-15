@@ -892,6 +892,12 @@ const uniV2Configs = {
   'hypertrade-v2': {
     hyperliquid: '0x4b6ac7503d3fd79ce23d7ae463d14aaaf07f6573',
   },
+  'hyperdrome': {
+    _options: {
+      hasStablePools: true,
+    },
+    hyperliquid: '0x2fd54310cE91919c2F328e7C9028A854De40673E',
+  },
   'iceswap': {
     base: '0x79b8F15a3bEEcd5014B748499Ec89692665ea368',
   },
