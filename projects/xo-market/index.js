@@ -36,11 +36,7 @@ async function fetchAllMarkets() {
 
 async function tvl(api) {
   const markets = await fetchAllMarkets()
-  return sumTokens2({
-    api,
-    tokensAndOwners: markets.map((m) => [USDC_E, m]),
-    permitFailure: true,
-  })
+  return sumTokens2({api, tokensAndOwners: markets.map((m) => [USDC_E, m])}) 
 }
 
 module.exports = {
