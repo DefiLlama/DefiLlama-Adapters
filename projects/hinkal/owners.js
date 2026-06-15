@@ -6,6 +6,8 @@ const ownerByChain = {
   optimism: SHARED_OWNER,
   polygon: SHARED_OWNER,
   base: SHARED_OWNER,
+  tron: "TKFUxULu53pSfDkSZwF85PFuKBw1K9axaw",
+  solana: "HrcpUS1oFVqeNVZxwHZP2fHSiXJWpv4DTN6qyQX4tAJa",
 };
 
 module.exports = ownerByChain;
