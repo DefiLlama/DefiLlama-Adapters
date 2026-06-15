@@ -55,12 +55,6 @@ const fixBalancesTokens = {
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
-  xo: {
-    '0xCf65732699b4eFc2Bc7b87fB6d75F3aAa6CFC867': {
-      coingeckoId: 'usd-coin',
-      decimals: 18,
-    },
-  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
