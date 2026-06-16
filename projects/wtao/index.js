@@ -1,12 +1,3 @@
-// wTAO: native TAO bridged from Bittensor and minted 1:1 as an ERC-20 on
-// Ethereum. Per maintainer guidance, TVL is the collateral LOCKED ON THE
-// SOURCE CHAIN (Bittensor), not the wrapped supply. The bridge's Bittensor
-// custody coldkey holds the backing and stakes ~all of it through a validator
-// (dlnews.com/articles/defi/wrapped-tao-on-ethereum-...), so the locked amount
-// is the coldkey's free balance PLUS its staked TAO. Read keyless from public
-// substrate RPC: free from System.Account, stake by summing the coldkey's
-// dTAO positions (share pools, both the V2 store and the legacy V1 store),
-// converting alpha -> TAO at each subnet's pool price (root/netuid 0 is 1:1).
 const blake = require('blakejs');
 const { post } = require('../helper/http');
 
@@ -23,8 +14,6 @@ const ITEM = {
   TotalHotkeyShares: '3dbb78074d07a16f4942c7df159ed5e5',
   TotalHotkeySharesV2: 'e47c637aa82c21537eb9caa511e543c5',
   TotalHotkeyAlpha: 'ee25c3b5b1886863480497907f1829e6',
-  SubnetTAO: '7a57dce016211512d1700561066b85a3',
-  SubnetAlphaIn: '2ce12f7007574647d692ac7edf8b7a53',
 };
 const SYS_ACCOUNT = '26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9';
 
@@ -72,7 +61,7 @@ async function netuidsUnder(pfx, at) {
     start = keys[keys.length - 1];
   }
   return out;
-}
+} 
 
 /** TVL = TAO locked on Bittensor backing wTAO: the custody coldkey's free
  * balance plus its total staked TAO. All reads are pinned to one finalized
@@ -116,15 +105,10 @@ async function tvl(api) {
     reads.push(e.v === 2 ? Buffer.concat([aV2(e.hot), u16le(e.net)]) : Buffer.concat([aV1(e.hot), u16le(e.net)]));
     reads.push(Buffer.concat([prefix(e.v === 2 ? 'TotalHotkeySharesV2' : 'TotalHotkeyShares'), b2c(e.hot), u16le(e.net)]));
     reads.push(Buffer.concat([prefix('TotalHotkeyAlpha'), b2c(e.hot), u16le(e.net)]));
-    if (e.net !== 0) {
-      reads.push(Buffer.concat([prefix('SubnetTAO'), u16le(e.net)]));
-      reads.push(Buffer.concat([prefix('SubnetAlphaIn'), u16le(e.net)]));
-    }
   }
   const vals = await getMany(reads, at);
   const V = (buf) => vals.get(keyHex(buf));
 
-  let stakeTao = 0;
   for (const e of entries) {
     let alpha;
     if (e.v === 2) {
@@ -139,24 +123,14 @@ async function tvl(api) {
       alpha = fpV1(hexToBuf(V(Buffer.concat([aV1(e.hot), u16le(e.net)])) || '0x'));
       if (!alpha) continue;
     }
-    let price = 1; // root (netuid 0) is TAO 1:1
-    if (e.net !== 0) {
-      const t = V(Buffer.concat([prefix('SubnetTAO'), u16le(e.net)]));
-      const a = V(Buffer.concat([prefix('SubnetAlphaIn'), u16le(e.net)]));
-      const T = t ? u64LE(hexToBuf(t), 0) : 0n, A = a ? u64LE(hexToBuf(a), 0) : 0n;
-      price = A === 0n ? 0 : Number(T) / Number(A);
-    }
-    stakeTao += (alpha * price) / 1e9;
+    api.add(e.net.toString(), alpha)
   }
 
-  api.addCGToken('bittensor', free + stakeTao);
+  api.addCGToken('bittensor', free);
 }
 
 module.exports = {
   timetravel: false,
-  methodology:
-    'TAO locked on Bittensor backing wTAO on Ethereum. The bridge custody coldkey (5HiveMEoWPmQmBAb8v63bKPcFhgTGCmST1TVZNvPHSTKFLCv) holds the collateral and stakes most of it, so TVL is its free balance plus its total staked TAO, read keyless from public substrate RPC (dTAO share pools, alpha valued at each subnet pool price; root is 1:1).',
-  ethereum: {
-    tvl,
-  },
+  methodology: 'TAO locked on Bittensor backing wTAO on Ethereum. The bridge custody coldkey (5HiveMEoWPmQmBAb8v63bKPcFhgTGCmST1TVZNvPHSTKFLCv) holds the collateral and stakes most of it, so TVL is its free balance plus its total staked TAO, read keyless from public substrate RPC (dTAO share pools, alpha priced using subnet AMM).',
+  bittensor: { tvl }, 
 };
