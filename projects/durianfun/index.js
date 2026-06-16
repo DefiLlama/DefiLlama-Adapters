@@ -1,17 +1,20 @@
 /**
  * Durianfun — meme-token launchpad on KUB Chain (chainId 96).
  *
- * Tracks native KUB locked across THREE generations of the launchpad:
+ * Tracks native KUB locked across FOUR generations of the launchpad:
  *   - V4.2 (legacy main, frozen)
  *   - V4.5 (current sacred main, frozen — no new tokens, residual liquidity)
- *   - V4.6.6 Deluxe (production, deployed 2026-05-03)
+ *   - V4.6.6 Deluxe (deployed 2026-05-03)
+ *   - V4.6.7 (current production, deployed 2026-05-31 — dual graduation:
+ *     in-contract DurianAMM (native KUB) OR external KUBLERX V3 pool (KKUB))
  *
  * ── TVL formula ────────────────────────────────────────────────────
  *
  *   TVL = Σ(native KUB held by every BondingCurveMarket that has
- *           NOT yet graduated, across all three factories)
+ *           NOT yet graduated, across all four factories)
  *       + Σ(native KUB held by every DurianAMM pool produced by
  *           graduations from those factories)
+ *       + Σ(KKUB held by every V4.6.7 KUBLERX-graduated V3 pool)
  *
  * Each launchpad token gets:
  *   1. A `BondingCurveMarket` (BCM) that holds native KUB during the
@@ -40,8 +43,10 @@
  * every `createToken()` call. `topics[2]` is the indexed BCM market
  * address. We scan from each factory's deploy block and feed all BCMs
  * into a single `multiCall` of `ammPool()` to detect graduation. Then
- * we `sumTokens({ owners, tokens: [nullAddress] })` to fetch native
- * KUB balances in one batched RPC pass.
+ * we `sumTokens({ owners, tokens: [nullAddress, KKUB] })` to fetch
+ * native KUB + (for KUBLERX-graduated V4.6.7 pools) KKUB balances in
+ * one batched RPC pass. Each owner holds native KUB or KKUB, never
+ * both, so summing both sentinels never double-counts.
  *
  * ── Note on Bond Pool TVL methodology divergence ───────────────────
  *
@@ -62,23 +67,36 @@ const { nullAddress } = require("../helper/unwrapLPs");
 const FACTORY_V45 = "0xdf4f3dB298A9aDe853191F58b4b2a322D47EC005";
 const FACTORY_V42 = "0xeadEc9dA89F97Ae6215362EBA4B33F3F1d1775b2";
 
-// V4.6.6 Deluxe — production launchpad deployed 2026-05-03.
-// Native KUB only (createToken is payable, not dKUB-minted).
-// If a V4.6.7 ships, add a NEW factory entry — the adapter still
-// aggregates without code changes elsewhere.
+// V4.6.6 Deluxe — deployed 2026-05-03. Native KUB only.
 const FACTORY_V466 = "0x89b6b73BD18dbEA0e2218c25c1963fd5FBaB3c87";
+
+// V4.6.7 — current production launchpad, deployed 2026-05-31. Dual
+// graduation: in-contract DurianAMM (native KUB) OR external KUBLERX
+// V3 pool (KUB wrapped as KKUB). Its TokenCreated appends a trailing
+// `uint8 graduationTarget`, changing the event hash — so it needs its
+// own 8-arg ABI (below); the 7-arg ABI matches zero V4.6.7 events.
+const FACTORY_V467 = "0x0480017E51dC813a0fad8aA73EAb2f8476ac0e8F";
+
+// KKUB (wrapped native KUB) — the V4.6.7 KUBLERX-graduated side holds
+// KUB wrapped as KKUB. Summed alongside native KUB (see header).
+const KKUB = "0x67eBD850304c70d983B2d1b93ea79c7CD6c3F6b5";
 
 const FACTORY_V45_BLOCK = 30_999_992;
 const FACTORY_V42_BLOCK = 30_990_140;
 const FACTORY_V466_BLOCK = 31_393_573;
+const FACTORY_V467_BLOCK = 32_196_516;
 
 // Identical signature across V4.2 / V4.5 / V4.6.6.
 const TOKEN_CREATED_ABI =
   "event TokenCreated(address indexed token, address indexed market, address indexed creator, string name, string symbol, uint256 totalSupply, uint256 timestamp)";
 
+// V4.6.7 appends a trailing `uint8 graduationTarget` → distinct event hash.
+const TOKEN_CREATED_ABI_V467 =
+  "event TokenCreated(address indexed token, address indexed market, address indexed creator, string name, string symbol, uint256 totalSupply, uint256 timestamp, uint8 graduationTarget)";
+
 async function tvl(api) {
-  // 1. Pull every TokenCreated event from all three factories in parallel.
-  const [logsV45, logsV42, logsV466] = await Promise.all([
+  // 1. Pull every TokenCreated event from all four factories in parallel.
+  const [logsV45, logsV42, logsV466, logsV467] = await Promise.all([
     getLogs({
       api,
       target: FACTORY_V45,
@@ -100,10 +118,17 @@ async function tvl(api) {
       fromBlock: FACTORY_V466_BLOCK,
       onlyArgs: true,
     }),
+    getLogs({
+      api,
+      target: FACTORY_V467,
+      eventAbi: TOKEN_CREATED_ABI_V467,
+      fromBlock: FACTORY_V467_BLOCK,
+      onlyArgs: true,
+    }),
   ]);
 
   // 2. Each `market` is a bonding-curve contract that holds KUB until graduation.
-  const markets = [...logsV45, ...logsV42, ...logsV466].map((l) => l.market);
+  const markets = [...logsV45, ...logsV42, ...logsV466, ...logsV467].map((l) => l.market);
   if (markets.length === 0) return {};
 
   // 3. After graduation `market.ammPool()` returns the DurianAMM pool address;
@@ -128,12 +153,12 @@ async function tvl(api) {
   //    log echoes. `permitFailure` on multiCall above already protects against
   //    individual contract reverts.
   const owners = Array.from(new Set([...ungraduatedMarkets, ...liveAmmPools]));
-  return api.sumTokens({ owners, tokens: [nullAddress] });
+  return api.sumTokens({ owners, tokens: [nullAddress, KKUB] });
 }
 
 module.exports = {
   methodology:
-    "TVL counts native KUB locked in (a) Durianfun bonding-curve markets that have not yet graduated (V4.2 + V4.5 + V4.6.6 Deluxe), and (b) DurianAMM liquidity pools that hold post-graduation liquidity. Meme-token reserves are intentionally excluded to avoid circular pricing, and the separately-deployed Factory-D test environment is excluded.",
+    "TVL counts native KUB locked in (a) Durianfun bonding-curve markets that have not yet graduated (V4.2 + V4.5 + V4.6.6 Deluxe + V4.6.7), and (b) post-graduation liquidity pools. V4.6.7 tokens that graduate to a KUBLERX V3 pool hold wrapped KKUB, which is summed alongside native KUB. Meme-token reserves are intentionally excluded to avoid circular pricing, and the separately-deployed Factory-D test environment is excluded.",
   start: FACTORY_V42_BLOCK,
   bitkub: { tvl },
 };
