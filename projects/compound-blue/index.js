@@ -77,7 +77,7 @@ async function borrowed(api) {
 module.exports = {
   doublecounted: true,
   methodology: 'Count total assets are deposited in Morpho Blue vaults.',
-  start: '2026-03-06',
+  start: '2025-03-06',
   polygon: {
     tvl,
     borrowed,
