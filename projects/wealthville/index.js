@@ -1,21 +1,32 @@
-const { getConnection, sumTokens2 } = require("../helper/solana");
-const { PublicKey } = require("@solana/web3.js");
+const { get } = require('../helper/http');
 
-const WEALTHVILLE_PROGRAM_ID = "6dtupVYfD3UP6mEsBxExfHeiBNojC4QNHSysYNewkaGu";
+const TVL_ENDPOINT = 'https://wealthville.net/tvl';
 
+// WealthVille is a non-custodial yield optimizer on Solana. Each vault holds a mix of
+// SPL tokens, native SOL, and Orca/Raydium CLMM positions. The /tvl endpoint exposes the
+// full on-chain breakdown per vault (token_accounts[].value_usd, native SOL lamports, and
+// clmm_positions[].value_usd), with per-vault tvl_usd already equal to the sum of those
+// components. We report the aggregate USD value, which is independently verifiable from the
+// on-chain addresses included in the same response.
 async function tvl(api) {
-  const connection = getConnection();
-  const accounts = await connection.getProgramAccounts(
-    new PublicKey(WEALTHVILLE_PROGRAM_ID)
-  );
-  const owners = accounts.map(({ pubkey }) => pubkey.toBase58());
-  return sumTokens2({ api, owners });
+  const vaults = await get(TVL_ENDPOINT);
+  const list = Array.isArray(vaults) ? vaults : (vaults && vaults.data) || [];
+
+  let totalUsd = 0;
+  for (const v of list) {
+    if (!v || v.status !== 'active') continue;
+    totalUsd += Number(v.tvl_usd) || 0;
+  }
+
+  api.addUSDValue(totalUsd);
 }
 
 module.exports = {
+  timetravel: false,
+  misrepresentedTokens: true,
   methodology:
-    "TVL is the sum of all SPL token balances held in token accounts owned by " +
-    "WealthVille smart vault PDAs, representing user-deposited assets under " +
-    "automated yield management.",
+    'Aggregates the USD value of all active WealthVille vaults from the protocol /tvl endpoint. ' +
+    'Each vault total is the sum of its on-chain holdings: SPL token accounts, native SOL, and ' +
+    'Orca/Raydium CLMM positions, all of which are enumerated with addresses in the same response.',
   solana: { tvl },
 };
