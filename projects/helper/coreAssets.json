@@ -354,7 +354,6 @@
   "oasis": {
     "WETH": "0x3223f17957ba502cbe71401d55a0db26e5f7c68f",
     "ceUSDT": "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e",
-    "USDT": "0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8",
     "USDC": "0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd",
     "wROSE": "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733",
     "WROSE": "0x5c78a65ad6d0ec6618788b6e8e211f31729111ca",
@@ -384,7 +383,6 @@
     "rFTM": "0xa9109271abcf0c4106ab7366b4edb34405947eed",
     "DAI": "0x4651b38e7ec14bb3db731369bfe5b08f2466bd0a",
     "RELAY": "0xfe282af5f9eb59c30a3f78789eeffa704188bdd4",
-    "FTM": "0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8",
     "MATIC": "0x4b9d2923d875edf43980bf5ddddede3fb20fc742",
     "SYN": "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00",
     "BORING": "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34",
@@ -556,7 +554,6 @@
     "BAMBOO": "0x300a8be53b4b5557f48620d578e7461e3b927dd0",
     "_AVAX": "0x525bd1f949ffa2a0c5820f3b6fe61bb897466ff7",
     "SWAPZ": "0x9b6fbf0ea23faf0d77b94d5699b44062e5e747ac",
-    "DAI": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
     "sVLX": "0xaadbaa6758fc00dec9b43a0364a372605d8f1883",
     "VLX": "0x2b1abeb48f875465bf0d3a262a2080ab1c7a3e39",
     "ETH_1": "0x380f73bad5e7396b260f737291ae5a8100baabcd",
@@ -896,7 +893,6 @@
     "WBTC": "0xd0c6179c43c00221915f1a61f8ec06a5aa32f9ec",
     "FRAX": "0x10d70831f9c3c11c5fe683b2f1be334503880db6",
     "BNB": "0x1fc532187b4848d2f9c564531b776a4f8e11201d",
-    "QUICK": "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
     "WETH": "0x9f4614e4ea4a0d7c4b1f946057ec030bee416cbb"
   },
   "canto": {
@@ -950,8 +946,7 @@
   },
   "shiden": {
     "WSDN": "0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef",
-    "STND": "0x722377a047e89ca735f09eb7cccab780943c4cb4",
-    "BNB": "0x332730a4f6e03d9c55829435f10360e13cfa41ff"
+    "STND": "0x722377a047e89ca735f09eb7cccab780943c4cb4"
   },
   "tezos": {
     "USDtz": "KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9",
@@ -1121,7 +1116,6 @@
   "kava": {
     "WKAVA": "0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b",
     "USDt": "0x919C1c267BC06a7039e03fcc2eF738525769109c",
-    "BNB": "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a",
     "WETH": "0xc13791da84f43525189456cfe2026c60d3b7f706",
     "axlUSDC": "0xeb466342c4d449bc9f53a865d5cb90586f405215",
     "axlUSDT": "0x7f5373ae26c3e8ffc4c77b7255df7ec1a9af52a6",
