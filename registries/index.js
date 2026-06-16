@@ -14,6 +14,7 @@ const adapterRoutes = [
   './uniswapV3Graph.js',
   './balancer.js',
   './gmx.js',
+  './traderJoeV2.js',
 ]
 const allProtocols = {}
 
