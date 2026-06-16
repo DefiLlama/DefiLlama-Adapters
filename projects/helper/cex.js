@@ -29,7 +29,7 @@ const defaultTokens = {
     ADDRESSES.ethereum.MKR,  // MKR
     ADDRESSES.ethereum.CRV,  // CRV
     '0x92d6c1e31e14520e676a687f0a93788b716beff5',  // DYDX
-    "0x4e15361fd6b4bb609fa63c81a2be19d873717870",  // FTM
+    ADDRESSES.ethereum.FTM,  // FTM
     ADDRESSES.ethereum.SUSHI,  // SUSHI
     '0x15d4c048f83bd7e37d49ea4c83a07267ec4203da', // GALA
     '0x3845badade8e6dff049820680d1f14bd3903a5d0',  // SAND
@@ -251,12 +251,11 @@ const defaultTokens = {
   ],
   moonbeam: [
     nullAddress,
-    "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73", //usdt
     "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
   ],
   moonriver: [
     nullAddress,
-    "0xb44a9b6905af7c801311e8f4e76932ee959c663c", //usdt
+    ADDRESSES.godwoken_v1.WBTC, //usdt
   ],
   kava: [
     nullAddress,

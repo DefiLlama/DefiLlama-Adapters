@@ -4,7 +4,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const METADATA_URL = 'https://metadata.layerzero-api.com/v1/metadata'
 
-const NATIVES = ['0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000']
+const NATIVES = [ADDRESSES.metis.Metis]
 
 const CHAIN_MAP = {
   avax:          'avalanche',

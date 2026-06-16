@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const TOKEN_ADMIN_REGISTRY = {
@@ -45,7 +46,7 @@ async function tvl(api) {
 
   const pairs = tokens
     .map((t, i) => [t, pools[i]])
-    .filter(([, p]) => p && p !== '0x0000000000000000000000000000000000000000')
+    .filter(([, p]) => p && p !== ADDRESSES.null)
 
   const types = await api.multiCall({
     abi: 'function typeAndVersion() view returns (string)',
