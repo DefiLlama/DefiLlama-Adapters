@@ -255,13 +255,10 @@ const defaultTokens = {
   ],
   moonriver: [
     nullAddress,
-    ADDRESSES.godwoken_v1.WBTC, //usdt
   ],
   kava: [
     nullAddress,
-    ADDRESSES.kava.USDT,
     ADDRESSES.kava.USDt,
-    ADDRESSES.kava.USDC
   ],
   cronos: [
     nullAddress,

@@ -4,7 +4,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const usdPoolAddress = "0x417E9d065ee22DFB7CC6C63C403600E27627F333";
 const oUSDPoolAddress = "0xD18AbE9bcedeb5A9a65439e604b0BE8db0bdB176"
 const BAIPoolAddress = "0x290c7577D209c2d8DB06F377af31318cE31938fB"
-const StarlayPoolAddress = "0x0fB8C4eB33A30eBb01588e3110968430E3E69D58"
 const JPYCPoolAddress = "0xEd6e10Fc171f2768D9c056260b18D814035F8266"
 const WBTCPoolAddress = "0xff390905269Ac30eA640dBaBdF5960D7B860f2CF"
 const WETHPoolAddress = "0x46F63Ec42eFcf972FCeF2330cC22e6ED1fCEB950"
@@ -22,10 +21,6 @@ const USDT = ADDRESSES.astar.USDT
 const BUSD = ADDRESSES.oasis.ceUSDT
 const oUSD = ADDRESSES.astar.oUSD;
 const BAI = ADDRESSES.astar.BAI;
-const LDAI = ADDRESSES.astar.lDAI
-const LUSDC = ADDRESSES.astar.lUSDC
-const LUSDT = ADDRESSES.astar.lUSDT
-const LBUSD = ADDRESSES.astar.lBUSD
 const JPYC = ADDRESSES.astar.JPYC
 const WBTC = ADDRESSES.astar.WBTC
 const WETH = ADDRESSES.moonbeam.USDT
@@ -45,7 +40,6 @@ module.exports = {
         [usdPoolAddress]: [DAI, USDC, USDT, BUSD],
         [oUSDPoolAddress]: [oUSD],
         [BAIPoolAddress]: [BAI],
-        [StarlayPoolAddress]: [LDAI, LUSDC, LUSDT, LBUSD],
         [JPYCPoolAddress]: [JPYC],
         [WBNBPoolAddress]: [WBNB],
         [WBTCPoolAddress]: [WBTC],

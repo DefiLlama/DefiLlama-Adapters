@@ -31,7 +31,6 @@ const stableTokenAddresses = [
 
   // metis
   ADDRESSES.metis.m_USDC,
-  ADDRESSES.metis.BUSD,
 
   // avax
   ADDRESSES.avax.DAI,
