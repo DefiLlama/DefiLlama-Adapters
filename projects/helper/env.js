@@ -15,6 +15,7 @@ const DEFAULTS = {
   KATANA_MULTICALL_CHUNK_SIZE: "50",
   SEI_BLOCK_LOW: "150023881",
   STARKNET_RPC: 'https://rpc.starknet.lava.build/',
+  STARKNET_MULTICALL: '0x01a33330996310a1e3fa1df5b16c1e07f0491fdd20c441126e02613b948f0225',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
