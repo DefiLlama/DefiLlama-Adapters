@@ -64,7 +64,6 @@ async function tvl(api) {
 
 async function solanaTvl(api) {
   const LR_PROGRAM = new PublicKey('8eqh8wppT9c5rw4ERqNCffvU6cNFJWff9WmkcYtmGiqC')
-  const POOL_STATE_SEED   = Buffer.from('ccip_tokenpool_config')
   const POOL_SIGNER_SEED  = Buffer.from('ccip_tokenpool_signer')
   // Anchor discrim. for `State` account: sha256("account:State")[0..8]
   const STATE_DISC = bs58.encode(Buffer.from('d8926b5e684bb6b1', 'hex'))
@@ -83,7 +82,7 @@ async function solanaTvl(api) {
 }
 
 module.exports = {
-  methodology: 'Sums tokens locked in CCIP LockRelease TokenPools, pulled from each chain\'s TokenAdminRegistry or LockAndRelase PDAs.',
+  methodology: 'Sums tokens locked in CCIP LockRelease TokenPools, pulled from each chain\'s TokenAdminRegistry or LockAndRelease PDAs.',
   solana: { tvl: solanaTvl }
 }
 
