@@ -38,6 +38,7 @@ async function tvl(api) {
           fromBlock: startBlock,
           eventAbi,
           extraKey,
+          skipCacheRead: true,
           onlyArgs: false,
           transform: (log) => ({
             blockNumber: log.blockNumber,
