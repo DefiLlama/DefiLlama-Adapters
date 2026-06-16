@@ -11,6 +11,16 @@ const sui = require("../helper/chain/sui");
 // alike — without double-counting the synthetic WaterX USD that represents them.
 const CUSTODY_VAULT = "0xf27ebfd21ea4ea759beefb1c4385825e02ab6c50f57305abec601ea4522d04bd";
 
+/**
+ * Computes WaterX TVL on Sui from the custody vault's real backing reserves.
+ *
+ * Enumerates the dynamic-field `SingleVault<T>` objects held under
+ * `CUSTODY_VAULT`, derives each reserve's coin type from the struct's generic
+ * type string, and sums every vault's on-chain `balance` into the TVL totals.
+ *
+ * @param {object} api - DefiLlama SDK helper; balances are accumulated via `api.add`.
+ * @returns {Promise<void>} Resolves once every vault balance has been added.
+ */
 async function tvl(api) {
   const vaults = await sui.getDynamicFieldObjects({ parent: CUSTODY_VAULT });
   vaults.forEach(({ type, fields }) => {
