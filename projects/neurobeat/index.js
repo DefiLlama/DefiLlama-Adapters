@@ -4,7 +4,7 @@
 //           pools them and distributes weekly prizes on-chain.
 // TVL = native CRO balance held in the contract at any given block.
 
-const NEUROBEAT_CONTRACT = '0xDeb77dAf2A427fee514CE53143e407276BBf1F45';
+const NEUROBEAT_CONTRACT = '0xDeb77dAf2A427Fee514CE53143e407276BBf1F45';
 
 async function tvl(api) {
   const balance = await api.provider.getBalance(NEUROBEAT_CONTRACT);
@@ -12,9 +12,11 @@ async function tvl(api) {
 }
 
 module.exports = {
+  name: 'NeuroBeat',
+  url: 'https://neuroisland.io',
   methodology:
     'TVL counts the native CRO held inside the NeuroBeat game contract ' +
-    '(0xDeb77dAf2A427fee514CE53143e407276BBf1F45). ' +
+    '(0xDeb77dAf2A427Fee514CE53143e407276BBf1F45). ' +
     'Players pay a CRO entry fee; funds accumulate in the contract and are ' +
     'distributed as weekly prizes via on-chain setPrizes() calls.',
   cronos: {
