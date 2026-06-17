@@ -2,7 +2,7 @@ const { PublicKey } = require('@solana/web3.js')
 let bs58 = require('bs58'); if (bs58.default) bs58 = bs58.default
 const { getConnection } = require('../helper/solana')
 const { queryAllium } = require('../helper/allium')
-const { sliceIntoChunks } = require('../helper/utils')
+const { sliceIntoChunks, sleep } = require('../helper/utils')
 
 // SPL Governance program instances that hold Realms DAO treasuries.
 const GOV_PROGRAMS = [
@@ -43,27 +43,44 @@ function nativeTreasury(programId, governance) {
   return PublicKey.findProgramAddressSync([Buffer.from('native-treasury'), governance.toBuffer()], programId)[0]
 }
 
-// Enumerate every governance across all program instances, derive its native treasury PDA.
+// getProgramAccounts is rate-limited / can transiently fail on shared RPCs. Retry with backoff.
+// A genuinely un-enumerable program (index too large -> getProgramAccountsV2) is re-thrown so
+// the caller can skip it.
+async function getGovernanceAccounts(connection, programId, discriminator) {
+  const params = {
+    dataSlice: { offset: 0, length: 0 },
+    filters: [{ memcmp: { offset: 0, bytes: bs58.encode(Buffer.from([discriminator])) } }],
+  }
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await connection.getProgramAccounts(programId, params)
+    } catch (e) {
+      const msg = e.message || ''
+      if (/getProgramAccountsV2|account index|too large/i.test(msg)) throw e // un-enumerable -> skip
+      if (attempt >= 6) throw e
+      await sleep(4000 * (attempt + 1)) // transient (429 / network) -> back off
+    }
+  }
+}
+
+// Enumerate every governance across all program instances (sequentially, to stay under RPC rate
+// limits), derive its native treasury PDA.
 async function getTreasuryOwners() {
   const connection = getConnection()
   const owners = new Set()
   for (const program of GOV_PROGRAMS) {
     const programId = new PublicKey(program)
     try {
-      const batches = await Promise.all(GOVERNANCE_DISCRIMINATORS.map(discriminator =>
-        connection.getProgramAccounts(programId, {
-          dataSlice: { offset: 0, length: 0 },
-          filters: [{ memcmp: { offset: 0, bytes: bs58.encode(Buffer.from([discriminator])) } }],
-        })
-      ))
-      for (const accounts of batches)
+      for (const discriminator of GOVERNANCE_DISCRIMINATORS) {
+        const accounts = await getGovernanceAccounts(connection, programId, discriminator)
         for (const { pubkey } of accounts)
           owners.add(nativeTreasury(programId, pubkey).toString())
+        await sleep(300)
+      }
     } catch (e) {
       // A few legacy program instances have account indexes too large for a plain
-      // getProgramAccounts (RPCs ask for paginated getProgramAccountsV2); they hold
-      // negligible treasury value, so skip them. Any other error propagates.
-      if (!/getProgramAccountsV2|account index|overloaded|too large/i.test(e.message)) throw e
+      // getProgramAccounts; they hold negligible treasury value, so skip them.
+      if (!/getProgramAccountsV2|account index|too large/i.test(e.message)) throw e
       console.error(`spl-governance: skipping program ${program} (account set too large to enumerate):`, e.message)
     }
   }
