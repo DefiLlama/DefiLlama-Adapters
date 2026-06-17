@@ -31,7 +31,7 @@ async function tvl(api) {
     api.call({ abi: 'erc20:balanceOf',   target: PB_USDL_LP, params: [VAULT] }),
     api.call({ abi: 'erc20:totalSupply', target: PB_USDL_LP }),
     api.call({
-      abi: 'function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32)',
+      abi: 'function getReserves() view returns (uint112, uint112, uint32)',
       target: PB_USDL_LP,
     }),
   ])
