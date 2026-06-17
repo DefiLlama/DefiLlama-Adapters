@@ -22,7 +22,7 @@ const TRADE_STATE_TOKEN_SIZE_OFFSET = 168
 const TRADE_STATE_BUY_PRICE_OFFSET = 176
 
 const SIG_PAGE_SIZE = 300
-const SIG_MAX_PAGES = 10
+const MAX_SCAN_MS = 60_000
 const TX_BATCH = 25
 
 const [PROGRAM_SIGNER] = PublicKey.findProgramAddressSync(
@@ -56,13 +56,17 @@ function parseSellListing(tx) {
     const ah = keys[idx[4]]
     const tradeState = keys[idx[6]]?.toBase58()
     if (!seller || !sellerTokenAccount || !tradeState || !ah?.equals(AUCTION_HOUSE)) continue
-    const mint =
-      tx.meta?.postTokenBalances?.find(
-        (b) => b.owner === seller && b.uiTokenAmount?.decimals === 0,
-      )?.mint ??
-      tx.meta?.preTokenBalances?.find(
-        (b) => b.owner === seller && b.uiTokenAmount?.decimals === 0,
+    const sellerTokenAccountIndex = idx[1]
+    const matchSellerNftMint = (balances) =>
+      balances?.find(
+        (b) =>
+          b.accountIndex === sellerTokenAccountIndex &&
+          b.owner === seller &&
+          b.uiTokenAmount?.decimals === 0,
       )?.mint
+    const mint =
+      matchSellerNftMint(tx.meta?.postTokenBalances) ??
+      matchSellerNftMint(tx.meta?.preTokenBalances)
     const price = data.readBigUInt64LE(11)
     const tokenSize = data.readBigUInt64LE(19)
     if (!mint || price <= 0n || tokenSize <= 0n) continue
@@ -83,7 +87,7 @@ function tradeStatesFromTx(tx) {
     const idx = ix.accountKeyIndexes
     if (disc.equals(DISC.public_buy)) {
       if (!hasLog(tx, 'Instruction: PublicBuy') || data.length < 26 || idx.length < 11) continue
-      const ah = keys[idx[9]]
+      const ah = keys[idx[8]]
       const tradeState = keys[idx[10]]?.toBase58()
       if (tradeState && ah?.equals(AUCTION_HOUSE)) out.push(tradeState)
     }
@@ -94,7 +98,8 @@ function tradeStatesFromTx(tx) {
 async function recentSignatures(connection, address) {
   const sigs = []
   let before
-  for (let page = 0; page < SIG_MAX_PAGES; page += 1) {
+  const started = Date.now()
+  while (Date.now() - started < MAX_SCAN_MS) {
     const batch = await connection.getSignaturesForAddress(address, {
       limit: SIG_PAGE_SIZE,
       ...(before ? { before } : {}),
@@ -147,7 +152,7 @@ async function sumListedNftEscrow(connection, api) {
       if (!(await isActiveListing(connection, sell))) continue
       if (seenMints.has(sell.mint)) continue
       seenMints.add(sell.mint)
-      api.add(NATIVE_MINT, sell.price)
+      api.add(NATIVE_MINT, sell.price.toString())
       api.add(sell.mint, 1)
     }
   }
@@ -188,7 +193,7 @@ async function sumBidEscrow(connection, api) {
     const treasuryMint = new PublicKey(
       data.slice(TRADE_STATE_TREASURY_MINT_OFFSET, TRADE_STATE_TREASURY_MINT_OFFSET + 32),
     ).toBase58()
-    api.add(treasuryMint, buyPrice)
+    api.add(treasuryMint, buyPrice.toString())
   }
 }
 
