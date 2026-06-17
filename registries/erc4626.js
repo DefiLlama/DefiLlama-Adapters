@@ -43,7 +43,11 @@ const configs = {
     ethereum: ['0x8DB2350D78aBc13f5673A411D4700BCF87864dDE'],
   },
   'snowbl-capital': {
-    base: ['0xd61bfc9ca1d0d2b03a3dd74e2ab81df8e5f606e8'],
+    base: [
+      '0x0e1a8354e10057092ecb7218b784c0c21710db91', // sUSD
+      '0xffa67bd20e656f1c7873525df81728e9d26c8ee2', // sETH
+      '0xf423393e84ca810e1955a7806d1cd84d18099809', // sBTC
+    ],
   },
   'return-finance': {
     doublecounted: true,
