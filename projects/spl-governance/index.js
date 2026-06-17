@@ -1,11 +1,10 @@
 const { PublicKey } = require('@solana/web3.js')
 let bs58 = require('bs58'); if (bs58.default) bs58 = bs58.default
-const { getConnection, sumTokens2 } = require('../helper/solana')
-const { sliceIntoChunks, sleep } = require('../helper/utils')
-const { getCache } = require('../helper/http')
+const { getConnection } = require('../helper/solana')
+const { queryAllium } = require('../helper/allium')
+const { sliceIntoChunks } = require('../helper/utils')
 
 // SPL Governance program instances that hold Realms DAO treasuries.
-// Same set the protocol's own TVL service tracks (https://realms.today / spl-governance deployments).
 const GOV_PROGRAMS = [
   'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   'gUAedF544JeE6NYbQakQvribHykUNgaPJqcgf3UQVnY',
@@ -37,7 +36,6 @@ const GOV_PROGRAMS = [
 // GovernanceAccountType discriminators that own treasuries:
 // V1 Governance/ProgramGovernance/MintGovernance/TokenGovernance = 3,4,9,10; V2 = 18,19,20,21
 const GOVERNANCE_DISCRIMINATORS = [3, 4, 9, 10, 18, 19, 20, 21]
-const SOL = 'So11111111111111111111111111111111111111112'
 const isSolOrStable = (symbol) => ['sol', 'usd', 'btc', 'eth'].some(k => (symbol || '').toLowerCase().includes(k))
 
 // Treasuries hold assets in the governance's native-treasury PDA (seeds: ['native-treasury', governance])
@@ -45,43 +43,22 @@ function nativeTreasury(programId, governance) {
   return PublicKey.findProgramAddressSync([Buffer.from('native-treasury'), governance.toBuffer()], programId)[0]
 }
 
-let statePromise
-function getState() {
-  if (!statePromise) statePromise = computeState()
-  return statePromise
-}
-
-// getProgramAccounts on busy governance programs can transiently overload an RPC's
-// account index; retry with backoff. Only pubkeys are needed, so data is sliced out.
-async function getGovernanceAccounts(connection, programId, discriminator) {
-  const params = {
-    dataSlice: { offset: 0, length: 0 },
-    filters: [{ memcmp: { offset: 0, bytes: bs58.encode(Buffer.from([discriminator])) } }],
-  }
-  for (let attempt = 0; ; attempt++) {
-    try {
-      return await connection.getProgramAccounts(programId, params)
-    } catch (e) {
-      if (attempt >= 4) throw e
-      await sleep(3000 * (attempt + 1))
-    }
-  }
-}
-
-async function computeState() {
+// Enumerate every governance across all program instances, derive its native treasury PDA.
+async function getTreasuryOwners() {
   const connection = getConnection()
-
-  // 1. Enumerate every governance across all program instances, derive its native treasury PDA
   const owners = new Set()
   for (const program of GOV_PROGRAMS) {
     const programId = new PublicKey(program)
     try {
-      for (const discriminator of GOVERNANCE_DISCRIMINATORS) {
-        const accounts = await getGovernanceAccounts(connection, programId, discriminator)
+      const batches = await Promise.all(GOVERNANCE_DISCRIMINATORS.map(discriminator =>
+        connection.getProgramAccounts(programId, {
+          dataSlice: { offset: 0, length: 0 },
+          filters: [{ memcmp: { offset: 0, bytes: bs58.encode(Buffer.from([discriminator])) } }],
+        })
+      ))
+      for (const accounts of batches)
         for (const { pubkey } of accounts)
           owners.add(nativeTreasury(programId, pubkey).toString())
-        await sleep(250)
-      }
     } catch (e) {
       // A few legacy program instances have account indexes too large for a plain
       // getProgramAccounts (RPCs ask for paginated getProgramAccountsV2); they hold
@@ -90,56 +67,52 @@ async function computeState() {
       console.error(`spl-governance: skipping program ${program} (account set too large to enumerate):`, e.message)
     }
   }
-  const ownerList = [...owners]
-
-  // 2. SPL token balances held by those treasuries
-  const balances = {}
-  await sumTokens2({ balances, owners: ownerList, chain: 'solana' })
-
-  // 3. Native SOL held by those treasuries. Kept as a separate number: sumTokens2 stores
-  //    balance values as strings, so adding lamports into that object would concatenate.
-  let solLamports = 0
-  for (const chunk of sliceIntoChunks(ownerList, 100)) {
-    const infos = await connection.getMultipleAccountsInfo(chunk.map(o => new PublicKey(o)))
-    for (const info of infos) solLamports += info?.lamports || 0
-  }
-
-  // 4. Split token holdings by kind: SOL/stables/BTC/ETH count as TVL, governance tokens as staking
-  const mints = Object.keys(balances).map(k => k.replace('solana:', ''))
-  const symbols = await getSymbols(mints)
-  const tvlBalances = {}, stakingBalances = {}
-  for (const key of Object.keys(balances)) {
-    const mint = key.replace('solana:', '')
-    const bucket = isSolOrStable(symbols[mint]) ? tvlBalances : stakingBalances
-    bucket[key] = balances[key]
-  }
-  return { tvlBalances, stakingBalances, solLamports }
+  return [...owners]
 }
 
-async function getSymbols(mints) {
-  const symbols = {}
-  for (const chunk of sliceIntoChunks(mints, 50)) {
-    const keys = chunk.map(m => `solana:${m}`).join(',')
-    const { coins = {} } = await getCache(`https://coins.llama.fi/prices/current/${keys}`)
-    for (const m of chunk) symbols[m] = coins[`solana:${m}`]?.symbol
+let statePromise
+function getState() {
+  if (!statePromise) statePromise = computeState().catch(e => { statePromise = undefined; throw e })
+  return statePromise
+}
+
+async function computeState() {
+  const owners = await getTreasuryOwners()
+
+  // Sum treasury holdings (SOL + SPL) from Allium's daily balance snapshots, in chunks to keep
+  // each query small. The inner subquery pins each chunk to its latest available snapshot date.
+  let tvlUsd = 0, stakingUsd = 0
+  for (const chunk of sliceIntoChunks(owners, 500)) {
+    const list = chunk.map(a => `'${a}'`).join(', ')
+    const sql = `
+      SELECT token_symbol, SUM(usd_amount) AS usd_amount
+      FROM solana.assets.balances_daily
+      WHERE date = (SELECT MAX(date) FROM solana.assets.balances_daily WHERE address IN (${list}))
+        AND address IN (${list})
+        AND usd_amount > 0
+      GROUP BY token_symbol`
+    const rows = await queryAllium(sql)
+    for (const { token_symbol, usd_amount } of rows) {
+      if (isSolOrStable(token_symbol)) tvlUsd += Number(usd_amount) || 0
+      else stakingUsd += Number(usd_amount) || 0
+    }
   }
-  return symbols
+  return { tvlUsd, stakingUsd }
 }
 
 async function tvl(api) {
-  const { tvlBalances, solLamports } = await getState()
-  for (const [key, amount] of Object.entries(tvlBalances)) api.add(key.replace('solana:', ''), amount)
-  if (solLamports > 0) api.add(SOL, solLamports) // native SOL counts as TVL
+  const { tvlUsd } = await getState()
+  api.addUSDValue(tvlUsd)
 }
 
 async function staking(api) {
-  const { stakingBalances } = await getState()
-  for (const [key, amount] of Object.entries(stakingBalances)) api.add(key.replace('solana:', ''), amount)
+  const { stakingUsd } = await getState()
+  api.addUSDValue(stakingUsd)
 }
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: 'Enumerates DAO treasuries across the SPL Governance program instances on-chain and sums their holdings. SOL, stables, BTC and ETH held in the treasuries are counted under TVL; governance tokens are counted under staking.',
+  methodology: 'Enumerates DAO treasuries across the SPL Governance program instances on-chain, then sums their holdings from the latest Allium daily balance snapshot. SOL, stables, BTC and ETH held in the treasuries are counted under TVL; governance tokens under staking.',
   timetravel: false,
   solana: { tvl, staking },
 }
