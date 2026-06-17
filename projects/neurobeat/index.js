@@ -12,8 +12,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  name: 'NeuroBeat',
-  url: 'https://neuroisland.io',
   methodology:
     'TVL counts the native CRO held inside the NeuroBeat game contract ' +
     '(0xDeb77dAf2A427Fee514CE53143e407276BBf1F45). ' +
