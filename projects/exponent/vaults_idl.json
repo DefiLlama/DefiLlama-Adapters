@@ -7,18 +7,6 @@
   ],
   "types": [
     {
-      "name": "ClmmPositionEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "lp_position", "type": "pubkey"},
-          {"name": "market", "type": "pubkey"},
-          {"name": "price_id_pt", "type": {"defined": {"name": "PriceId"}}},
-          {"name": "price_id_sy", "type": {"defined": {"name": "PriceId"}}}
-        ]
-      }
-    },
-    {
       "name": "ExponentStrategyVault",
       "type": {
         "kind": "struct",
@@ -35,84 +23,7 @@
           {"name": "self_address", "type": "pubkey"},
           {"name": "signer_bump", "type": {"array": ["u8", 1]}},
           {"name": "status_flags", "type": "u8"},
-          {"name": "financials", "type": {"defined": {"name": "VaultFinancials"}}},
-          {"name": "strategy_positions", "type": {"vec": {"defined": {"name": "StrategyPosition"}}}},
-          {"name": "max_aum_supply", "type": "u64"},
-          {"name": "seed_id", "type": {"array": ["u8", 8]}},
-          {"name": "roles", "type": {"defined": {"name": "VaultRoles"}}},
-          {"name": "proposal_vote_config", "type": {"defined": {"name": "ProposalVoteConfig"}}},
-          {"name": "reserves_config", "type": {"defined": {"name": "VaultConfig"}}}
-        ]
-      }
-    },
-    {
-      "name": "KaminoFarmEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "farm_state", "type": "pubkey"},
-          {"name": "user_state", "type": "pubkey"}
-        ]
-      }
-    },
-    {
-      "name": "KaminoObligationEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "obligation", "type": "pubkey"},
-          {"name": "lending_program_id", "type": "pubkey"},
-          {"name": "quote_price_id", "type": {"defined": {"name": "PriceId"}}},
-          {"name": "reserve_price_mappings", "type": {"vec": {"defined": {"name": "ReservePriceMapping"}}}},
-          {"name": "reserve_farm_mappings", "type": {"vec": {"defined": {"name": "ReserveFarmMapping"}}}},
-          {"name": "min_price_status_flags", "type": "u8"}
-        ]
-      }
-    },
-    {
-      "name": "LoopscaleLoanEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "loan", "type": "pubkey"}
-        ]
-      }
-    },
-    {
-      "name": "LoopscaleStrategyEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "strategy", "type": "pubkey"}
-        ]
-      }
-    },
-    {
-      "name": "ObligationType",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "KaminoObligation",
-            "fields": [
-              {"defined": {"name": "KaminoObligationEntry"}}
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "OrderbookEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "orderbook", "type": "pubkey"},
-          {"name": "user_escrow_idx", "type": "u32"},
-          {"name": "mint", "type": "pubkey"},
-          {"name": "offer_idx_vec", "type": {"vec": "u32"}},
-          {"name": "price_id_pt", "type": {"defined": {"name": "PriceId"}}},
-          {"name": "price_id_sy", "type": {"defined": {"name": "PriceId"}}},
-          {"name": "base_mint", "type": "pubkey"}
+          {"name": "financials", "type": {"defined": {"name": "VaultFinancials"}}}
         ]
       }
     },
@@ -137,122 +48,6 @@
       }
     },
     {
-      "name": "ProposalVoteConfig",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "min_voting_period_seconds", "type": "u32"},
-          {"name": "max_voting_period_seconds", "type": "u32"},
-          {"name": "default_voting_period_seconds", "type": "u32"},
-          {"name": "default_timelock_seconds", "type": "u32"},
-          {"name": "rejection_threshold_bps", "type": "u64"},
-          {"name": "next_proposal_id", "type": "u64"},
-          {"name": "voting_enabled", "type": "bool"},
-          {"name": "live_proposals_count", "type": "u8"},
-          {"name": "max_concurrent_live_proposals", "type": "u8"},
-          {"name": "reserved", "type": {"array": ["u8", 30]}}
-        ]
-      }
-    },
-    {
-      "name": "ReserveFarmMapping",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "reserve", "type": "pubkey"},
-          {"name": "farm_kind", "type": "u8"},
-          {"name": "farm_state", "type": "pubkey"}
-        ]
-      }
-    },
-    {
-      "name": "ReservePriceMapping",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "reserve", "type": "pubkey"},
-          {"name": "reserve_price_id", "type": {"defined": {"name": "PriceId"}}}
-        ]
-      }
-    },
-    {
-      "name": "StrategyPosition",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Orderbook",
-            "fields": [
-              {"defined": {"name": "OrderbookEntry"}}
-            ]
-          },
-          {
-            "name": "TokenAccount",
-            "fields": [
-              {"defined": {"name": "TokenAccountEntry"}}
-            ]
-          },
-          {
-            "name": "Obligation",
-            "fields": [
-              {"defined": {"name": "ObligationType"}}
-            ]
-          },
-          {
-            "name": "YieldPosition",
-            "fields": [
-              {"defined": {"name": "YieldPositionEntry"}}
-            ]
-          },
-          {
-            "name": "ClmmPosition",
-            "fields": [
-              {"defined": {"name": "ClmmPositionEntry"}}
-            ]
-          },
-          {
-            "name": "LoopscaleLoan",
-            "fields": [
-              {"defined": {"name": "LoopscaleLoanEntry"}}
-            ]
-          },
-          {
-            "name": "LoopscaleStrategy",
-            "fields": [
-              {"defined": {"name": "LoopscaleStrategyEntry"}}
-            ]
-          },
-          {
-            "name": "KaminoFarm",
-            "fields": [
-              {"defined": {"name": "KaminoFarmEntry"}}
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "TokenAccountBalance",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "token_account", "type": "pubkey"},
-          {"name": "price_id", "type": {"defined": {"name": "PriceId"}}},
-          {"name": "last_observed_amount", "type": "u64"}
-        ]
-      }
-    },
-    {
-      "name": "TokenAccountEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "token_mint", "type": "pubkey"},
-          {"name": "balances", "type": {"vec": {"defined": {"name": "TokenAccountBalance"}}}}
-        ]
-      }
-    },
-    {
       "name": "TokenEntry",
       "type": {
         "kind": "struct",
@@ -267,89 +62,13 @@
       }
     },
     {
-      "name": "VaultConfig",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "reserves_share_bp", "type": "u32"},
-          {"name": "withdrawal_period", "type": {"defined": {"name": "WithdrawalPeriodSettings"}}},
-          {"name": "fast_withdrawal_cut_bp", "type": "u32"},
-          {"name": "instant_withdrawal_window_limit_bp", "type": "u32"},
-          {"name": "management_fee_bps", "type": "u64"},
-          {"name": "withdrawal_cancel_cooldown_seconds", "type": "u32"},
-          {"name": "max_swap_slippage_bp", "type": "u32"},
-          {"name": "nav_aum_change_threshold_bps", "type": "u32"},
-          {"name": "padding", "type": {"array": ["u8", 5]}},
-          {"name": "padding1", "type": {"array": ["u8", 32]}},
-          {"name": "padding2", "type": {"array": ["u8", 32]}},
-          {"name": "padding3", "type": {"array": ["u8", 32]}}
-        ]
-      }
-    },
-    {
       "name": "VaultFinancials",
       "type": {
         "kind": "struct",
         "fields": [
           {"name": "lp_balance", "type": "u64"},
           {"name": "aum_in_base", "type": "u64"},
-          {"name": "aum_in_base_in_positions", "type": "u64"},
-          {"name": "reserved_lp_locked_for_withdrawal", "type": {"array": ["u8", 8]}},
-          {"name": "pending_management_fee_lp", "type": "u64"},
-          {"name": "last_management_fee_accrued_at", "type": "u64"},
-          {"name": "pending_withdrawal_backlog_due_at", "type": "u32"},
-          {"name": "instant_withdrawal_window_end", "type": "u32"},
-          {"name": "instant_withdrawal_window_cap_aum", "type": "u64"},
-          {"name": "instant_withdrawn_aum_in_window", "type": "u64"},
-          {"name": "reserved1", "type": {"array": ["u8", 8]}},
-          {"name": "total_lp_staked_in_votes", "type": "u64"},
-          {"name": "total_lp_pending_withdrawals", "type": "u64"}
-        ]
-      }
-    },
-    {
-      "name": "VaultRoles",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "manager", "type": {"vec": "pubkey"}},
-          {"name": "curator", "type": {"vec": "pubkey"}},
-          {"name": "allocator", "type": {"vec": "pubkey"}},
-          {"name": "sentinel", "type": {"vec": "pubkey"}}
-        ]
-      }
-    },
-    {
-      "name": "WithdrawalPeriodSettings",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Interval",
-            "fields": [
-              {"name": "lock_time_seconds", "type": "u32"}
-            ]
-          },
-          {
-            "name": "WeeklySchedule",
-            "fields": [
-              {"name": "days_of_week", "type": "u8"},
-              {"name": "week_interval", "type": "u8"},
-              {"name": "reference_timestamp", "type": "u32"}
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "YieldPositionEntry",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {"name": "yield_position", "type": "pubkey"},
-          {"name": "vault", "type": "pubkey"},
-          {"name": "price_id_pt", "type": {"defined": {"name": "PriceId"}}},
-          {"name": "price_id_sy", "type": {"defined": {"name": "PriceId"}}}
+          {"name": "aum_in_base_in_positions", "type": "u64"}
         ]
       }
     }
