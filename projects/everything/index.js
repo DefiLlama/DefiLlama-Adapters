@@ -3,13 +3,13 @@ const config = {
     factory: '0xa88216E6Cf409a25c719234C4817628Ae406b6A7',
     vault: '0xabD8DC06559634e59F6698c33A5E65e90e917b91',
   },
-  base: {
-    factory: '0xC264944E9E7073F8F98fEf7338Cda973914FcA44',
-    vault: '0xa1cbc206550Cae7A07A55C38972C028aB74182F5',
-  },
   bsc: {
     factory: '0xabD8DC06559634e59F6698c33A5E65e90e917b91',
     vault: '0xb15E7a89e71b8468C23Eb330f837CaF0f2Ff7628',
+  },
+  base: {
+    factory: '0xC264944E9E7073F8F98fEf7338Cda973914FcA44',
+    vault: '0xa1cbc206550Cae7A07A55C38972C028aB74182F5',
   },
   ethereum: {
     factory: '0xaCb586186f72D7bB7fA68ffe53e88bbcdcCD60e4',
