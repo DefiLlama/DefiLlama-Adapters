@@ -5,7 +5,9 @@ const FUND_SUMMARY_ABI =
 
 async function tvl(api) {
   const summary = await api.call({ target: POOL, abi: FUND_SUMMARY_ABI });
-  api.addUSDValue(Number(summary.totalFundValue) / 1e18);
+  // Normalize the 1e18-scaled uint256 in BigInt before converting to Number,
+  // so large fund values don't lose precision past Number.MAX_SAFE_INTEGER.
+  api.addUSDValue(Number(BigInt(summary.totalFundValue) / 10n ** 12n) / 1e6);
 }
 
 module.exports = {
