@@ -35,13 +35,24 @@ async function getHybondTVL(api, chain) {
     target: oracle,
   })
 
-  const price = latestRoundData.answer ?? latestRoundData[1]
+  const roundId = BigInt(latestRoundData.roundId ?? latestRoundData[0])
+  const price = BigInt(latestRoundData.answer ?? latestRoundData[1])
+  const updatedAt = BigInt(latestRoundData.updatedAt ?? latestRoundData[3])
+  const answeredInRound = BigInt(latestRoundData.answeredInRound ?? latestRoundData[4])
+
+  if (price <= 0n) throw new Error(`Invalid HYBOND oracle price on ${chain}`)
+  if (updatedAt === 0n || answeredInRound < roundId) {
+    throw new Error(`Stale/incomplete HYBOND oracle round on ${chain}`)
+  }
 
   const tvlUsd =
-    Number(totalSupply) *
-    Number(price) /
-    10 ** Number(tokenDecimals) /
-    10 ** Number(oracleDecimals)
+    Number(
+      BigInt(totalSupply) *
+        price *
+        1000000n /
+        10n ** BigInt(tokenDecimals) /
+        10n ** BigInt(oracleDecimals)
+    ) / 1e6
 
   api.addUSDValue(tvlUsd)
 }
