@@ -36,8 +36,9 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   delete requestData.contractAddress
   delete requestData.entrypoint
   if (abi.customInput === 'address') requestData.calldata = params
-  // Starknet RPC now (2026-06-11) rejects calls without 0x prefix
-  // if (abi.customInput === 'address') requestData.calldata = params.map(i => i.slice(2))
+  // Starknet RPC now (2026-06-11) rejects calldata felts without a 0x prefix.
+  // `populate` emits decimal strings (e.g. "0"), so normalize every felt to hex.
+  requestData.calldata = requestData.calldata.map(i => number.toHex(i))
   return getCallBody(requestData, id)
 
   function getCallBody(i) {
