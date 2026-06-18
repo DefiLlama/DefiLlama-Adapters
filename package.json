@@ -4,14 +4,14 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Please run: node test.js projects/<adapter>.js\" && exit 1",
     "build": "node scripts/buildImports.js",
     "lint": "eslint -c eslint.config.js .",
     "eslint:github-action": "eslint -c eslint.config.js .",
     "test-interactive": "node utils/testInteractive",
-    "tvl": "cd utils;npm i; cd ..; node utils/testInteractive",
-    "treasury": "cd utils;npm i; cd ..; node utils/testInteractive treasury",
-    "entities": "cd utils;npm i; cd ..; node utils/testInteractive entities",
+    "tvl": "node utils/testInteractive",
+    "treasury": "node utils/testInteractive treasury",
+    "entities": "node utils/testInteractive entities",
     "useTokenLabels": "node utils/scripts/useTokenLabels.js",
     "biggest-files": "node utils/scripts/sortTopFilesByLines.js",
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
@@ -47,11 +47,19 @@
     "miscreant": "^0.3.2",
     "p-limit": "^3.1.0",
     "starknet": "^5.24.3",
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "glob": "^8.0.3",
+    "jsonfile": "^6.1.0",
+    "solc": "^0.8.20"
   },
   "overrides": {},
   "description": "",
   "devDependencies": {
-    "eslint": "^9.38.0"
-  }
+    "eslint": "^9.38.0",
+    "inquirer": "^8.2.4",
+    "inquirer-fuzzy-path": "^2.3.0",
+    "inquirer-autocomplete-prompt": "^1.4.0",
+    "fuzzy": "^0.1.3"
+  },
+  "packageManager": "pnpm@11.7.0+sha512.19cc852c120c7125760f2443ee6be0ca5b40f9f50598de1a09a1f177503e010e57c23c77646e01e761de59bf874fb22a3398c33ab9691fc13eb946b6f0f4d620"
 }
