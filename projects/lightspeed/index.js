@@ -1,35 +1,48 @@
 const { get } = require('../helper/http')
 
-const FEATURED_APP_LOCKING_URL = 'https://lighthouse.cantonloop.com/api/featured-app-locking'
-const TEMPLE_APP_NAMES = new Set(['Temple Trading', 'Temple Trading Expansion'])
+const EXCHANGE_API = 'https://api.templedigitalgroup.com/api/exchange'
+const ORDERBOOK_DEPTH = 10000
+
+const CG_TOKENS = {
+  CBTC: 'bitcoin',
+  USDA: 'usd-coin',
+  USDCx: 'usd-coin',
+}
+
+function addAsset(api, asset, amount) {
+  if (!amount) return
+  if (asset === 'CC') return api.addGasToken(amount * 1e18)
+  if (!CG_TOKENS[asset]) throw new Error(`Missing pricing mapping for ${asset}`)
+  api.addCGToken(CG_TOKENS[asset], amount)
+}
+
+function addAmount(amounts, asset, amount) {
+  if (!Number.isFinite(amount) || amount <= 0) return
+  amounts[asset] = (amounts[asset] || 0) + amount
+}
 
 async function tvl(api) {
-  const { apps } = await get(FEATURED_APP_LOCKING_URL)
-  const templeApps = apps.filter(({ app_name, institution }) =>
-    institution === 'Temple' && TEMPLE_APP_NAMES.has(app_name)
-  )
+  const tickers = await get(`${EXCHANGE_API}/tickers`)
+  const amounts = {}
 
-  if (!templeApps.length) throw new Error('No Temple featured-app locking rows found')
+  for (const ticker of tickers) {
+    const orderbook = await get(`${EXCHANGE_API}/orderbook?ticker_id=${ticker.ticker_id}&depth=${ORDERBOOK_DEPTH}`)
 
-  const balancesByWallet = {}
-  for (const app of templeApps) {
-    for (const wallet of app.locking_wallets || []) {
-      if (!wallet.indexed) continue
-      balancesByWallet[wallet.address] = wallet.total_balance
+    for (const [price, quantity] of orderbook.bids || []) {
+      addAmount(amounts, ticker.target_currency, Number(price) * Number(quantity))
+    }
+
+    for (const [, quantity] of orderbook.asks || []) {
+      addAmount(amounts, ticker.base_currency, Number(quantity))
     }
   }
 
-  const balances = Object.values(balancesByWallet)
-  if (!balances.length) throw new Error('No indexed Temple locking wallets found')
-
-  for (const balance of balances) {
-    api.addGasToken(Number(balance) * 1e18)
-  }
+  Object.entries(amounts).forEach(([asset, amount]) => addAsset(api, asset, amount))
 }
 
 module.exports = {
   timetravel: false,
   canton: { tvl },
   methodology:
-    "TVL is the deduplicated CC balance in Temple's indexed CIP-0116 featured-app locking wallet for Temple Trading/Lightspeed, sourced from Lighthouse's public Canton explorer API.",
+    "TVL is the current resting liquidity on Lightspeed's public spot orderbooks. Bid-side liquidity is counted as quote assets, ask-side liquidity is counted as base assets, and all listed Lightspeed markets are fetched from Temple's public exchange-listing API.",
 }
