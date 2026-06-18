@@ -15,6 +15,7 @@ const CONFIG = {
   optimism: { owners: EVM },
   polygon: { owners: EVM },
   avax: { owners: EVM },
+  adi: { owners: EVM, tokens: [native] },
   monad: { owners: EVM, tokens: [native] },
   berachain: { owners: EVM, tokens: [native, ADDRESSES.stable.USDT0] },
   xdai: { owners: EVM, tokens: [native, '0x2a22f9c3b484c3629090feed35f17ff8f88f76f0', '0x8e34bfec4f6eb781f9743d9b4af99cd23f9b7053', '0x177127622c4a00f3d409b75571e12cb3c8973d3c'] },
