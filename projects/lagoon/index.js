@@ -215,9 +215,12 @@ Object.keys(config).forEach((chain) => {
         beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
         optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
   
-        return await api.erc4626Sum2({
-          calls: [...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
-        })
+        // A vault can appear both in the static `vaults` list and in the factory
+        // deploy logs (when it was deployed at/after the factory fromBlock). erc4626Sum2
+        // does not de-duplicate its calls, so such a vault would be counted twice;
+        // de-duplicate the merged list before summing.
+        const calls = [...new Set([...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults].map((v) => v.toLowerCase()))]
+        return await api.erc4626Sum2({ calls })
       }
     }
   }}
