@@ -19,20 +19,6 @@ const ACCOUNTABLE_VAULTS = {
   ],
 };
 
-const MIDAS_VAULTS = {
-  ethereum: [
-    '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
-    '0xb64C014307622eB15046C66fF71D04258F5963DC', // mevBTC
-    '0x67E1F506B148d0Fc95a4E3fFb49068ceB6855c05'  // mROX
-  ],
-  plume_mainnet: [
-    '0x7d611dC23267F508DE90724731Dc88CA28Ef7473', // mMEV
-  ],
-  etlk: [
-    '0x5542F82389b76C23f5848268893234d8A63fd5c8', // mMEV
-  ],
-};
-
 const configs = {
   methodology: 'Count all assets deposited in all vaults curated by RockawayX.',
   blockchains: {
@@ -77,16 +63,6 @@ async function midasTvl(api, vaults) {
     if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
     api.add(vaults[i], totalSupplies[i]);
   }
-}
-
-for (const [chain, vaults] of Object.entries(MIDAS_VAULTS)) {
-  const baseTvl = adapterExport[chain]?.tvl;
-  adapterExport[chain] = {
-    tvl: async (api) => {
-      if (baseTvl) await baseTvl(api);
-      await midasTvl(api, vaults);
-    }
-  };
 }
 
 for (const [chain, vaults] of Object.entries(EMBER_VAULTS)) {
