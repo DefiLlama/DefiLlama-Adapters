@@ -465,6 +465,12 @@ const aaveConfigs = {
       dataHelpers: ['0xfc87bE7f3657AAD69baDb6247A88E924D1F8bc53'],
     },
   },
+  'velkonix': {
+    megaeth: {
+      dataHelpers: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'],
+      v3: true,
+    },
+  },
   'meridian-lend': {
     telos: {
       addressesProviderRegistry: '0xb84171C0824B4F3C0B415706C99A4A8ED5779b75',
