@@ -148,7 +148,7 @@ const tokens = {
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
     },
     avax: {
-        sBUSD: ADDRESSES.avax.sBUSD,
+        sBUSD: '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd',
         EURA: '0xAEC8318a9a59bAEb39861d10ff6C7f7bf1F96C57',
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
     },

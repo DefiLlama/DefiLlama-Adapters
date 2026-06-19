@@ -21,14 +21,12 @@ const vaults = [
 ]
 const tokens = [
   ADDRESSES.klaytn.KDAI,
-  ADDRESSES.klaytn.oBUSD,
   ADDRESSES.klaytn.oUSDC,
   ADDRESSES.klaytn.KSD,
   ADDRESSES.klaytn.KASH,
   '0x807c4e063eb0ac21e8eef7623a6ed50a8ede58ca',
   ADDRESSES.klaytn.oUSDT,
   ADDRESSES.klaytn.pUSD,
-  ADDRESSES.klaytn.USDK,
 ]
 
 

@@ -60,6 +60,13 @@ const YIELDFI_BASE_POOLS = {
 const BASE_EULER_POOLS = {
     'AlphaGrowth': '0x4C1aeda9B43EfcF1da1d1755b18802aAbe90f61E',
     'Euler Base cbBTC': '0x882018411Bc4A020A879CEE183441fC9fa5D7f8B',
+    'Clearstar ETH Fusion': '0xdc4efb20ce286b421f6361734a2a006a1f24af8d'
+};
+
+const SUPERFORM_POOLS = {
+    'Flagship Base USDC SuperVault': '0x11820afe50ea96851ee2bdbae329d97771e41ec6',
+    'Flagship Base WETH SuperVault': '0x0e70c10fa06931f7b878653a15aecc86145c1af7', 
+    'Flagship Base CBBTC SuperVault': '0xfc8a6526ffcd8248b8d0f8dac8037dbe438924ce'
 };
 
 const BASE_YEARN_POOLS = {
@@ -89,6 +96,7 @@ const allPoolTokens = [
     // ...Object.values(BASE_LAZY_SUMMER_POOLS),
     COMPOUND_TOKEN_ADDRESS,
     ...Object.values(BASE_AAVE_POOLS),
+    ...Object.values(SUPERFORM_POOLS),
 ]
 
 module.exports = {

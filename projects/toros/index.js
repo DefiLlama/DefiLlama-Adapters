@@ -33,7 +33,7 @@ module.exports = {
     misrepresentedTokens: true,
   start: '2021-08-01', // Sunday, August 1, 2021 12:00:00 AM
   methodology:
-    "Aggregates total value of each Toros vault on Polygon, Optimism, Arbitrum, Base and Ethereum",
+    "Aggregates total value of each Toros vault on Polygon, Optimism, Arbitrum, Base, Ethereum and Hyperliquid",
   polygon: {
     tvl,
   },
@@ -47,6 +47,9 @@ module.exports = {
     tvl,
   },
   ethereum: {
+    tvl,
+  },
+  hyperliquid: {
     tvl,
   },
   hallmarks: [

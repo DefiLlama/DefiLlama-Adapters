@@ -72,7 +72,7 @@ const config = {
       { name: "dfyn-network", address: "0x9695e0114e12C0d3A3636fAb5A18e6b737529023", decimals: 18 },
       { name: "wbnb", address: ADDRESSES.ethereum.BNB, decimals: 18 },
       { name: "avalanche-wormhole", address: "0x85f138bfEE4ef8e540890CFb48F620571d67Eda3", decimals: 18 },
-      { name: "fantom", address: "0x4e15361fd6b4bb609fa63c81a2be19d873717870", decimals: 18 },
+      { name: "fantom", address: ADDRESSES.ethereum.FTM, decimals: 18 },
       { name: "weth", address: ADDRESSES.ethereum.WETH, decimals: 18 },
       { name: "wrapped-cro", address: "0xA0b73E1Ff0B80914AB6fe0444E65848C4C34450b", decimals: 18 },
     ]
@@ -82,7 +82,7 @@ const config = {
     tokens: [
       { name: "usd-coin", address: ADDRESSES.aurora.USDC_e, decimals: 6 },
       { name: "weth", address: "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB", decimals: 18 },
-      { name: "wmatic", address: ADDRESSES.oasis.USDT, decimals: 18 },
+      { name: "wmatic", address: '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8', decimals: 18 },
       { name: "wbnb", address: "0x2bf9b864cdc97b08b6d79ad4663e71b8ab65c45c", decimals: 18 },
       { name: "wrapped-avax", address: "0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844", decimals: 18 },
     ],

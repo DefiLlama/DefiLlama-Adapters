@@ -70,7 +70,7 @@ const usdcMetis = ADDRESSES.metis.m_USDC;
 const usdtMetis = ADDRESSES.metis.m_USDT;
 const maticMetis = ADDRESSES.metis.MATIC;
 const mimMetis = "0x44Dd7C98885cD3086E723B8554a90c9cC4089C4C";
-const ftmMetis = ADDRESSES.oasis.USDT
+const ftmMetis = '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8'
 const metis = ADDRESSES.metis.Metis;
 const mdaiMetis="0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0";
 
@@ -81,7 +81,7 @@ const daiCronos = "0xF2001B145b43032AAF5Ee2884e456CCd805F677D";
 const usdcCronos = ADDRESSES.cronos.USDC;
 const wbtcCronos = ADDRESSES.cronos.WBTC;
 const wethCronos = "0xe44fd7fcb2b1581822d0c862b68222998a0c299a";
-const busdCronos = ADDRESSES.oasis.USDT;
+const busdCronos = '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8';
 const wCronos = ADDRESSES.cronos.WCRO_1;
 
 

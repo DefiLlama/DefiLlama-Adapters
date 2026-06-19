@@ -1,5 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-
 const KACMasterChefContract = {
   bsc: "0x81b71D0bC2De38e37978E6701C342d0b7AA67D59",
   shiden: "0x293A7824582C56B0842535f94F6E3841888168C8",
@@ -10,7 +8,7 @@ const KACFactory = {
 };
 const KAC = {
   bsc: "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB",
-  shiden: "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
+  shiden: '0xb12c13e66ade1f72f71834f2fc5082db8c091358',
 };
 
 
