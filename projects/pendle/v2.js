@@ -184,6 +184,13 @@ const config = {
         fromBlock: 4278863
       } // v6
     ], 
+  },
+  monad: {
+    factories: [{
+        factory: "0xA3cb62a49b66eB2536cf6F3C7AC82293784888A3",
+        fromBlock: 75588954
+      }, // v6
+    ],
   }
 };
 
