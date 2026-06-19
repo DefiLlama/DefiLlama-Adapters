@@ -57,7 +57,6 @@ const config = {
 function buildTvl(chainConfig) {
   return async (api) => {
     const keys = await api.call({ target: chainConfig.clCore, abi: listUserPositionKeys, params: [chainConfig.wrapper] })
-    if (!keys.length) return api.getBalances()
 
     const dexes = Object.fromEntries(Object.entries(chainConfig.dexes).map(([dex, value]) => [dex.toLowerCase(), value]))
     const wrapper = chainConfig.wrapper.toLowerCase()
@@ -76,15 +75,11 @@ function buildTvl(chainConfig) {
       groups[groupKey].positionIds.push(position.tokenId)
     })
 
-    for (const group of Object.values(groups)) {
-      if (group.type === 'slipstream') {
-        await unwrapSlipstreamNFT({ api, balances: api.getBalances(), nftAddress: group.nftAddress, positionIds: group.positionIds })
-      } else {
-        await unwrapUniswapV3NFT({ api, balances: api.getBalances(), nftAddress: group.nftAddress, uniV3ExtraConfig: { positionIds: group.positionIds } })
-      }
-    }
-
-    return api.getBalances()
+    for (const group of Object.values(groups))
+      if (group.type === 'slipstream')
+        await unwrapSlipstreamNFT({ api, nftAddress: group.nftAddress, positionIds: group.positionIds })
+      else
+        await unwrapUniswapV3NFT({ api, nftAddress: group.nftAddress, uniV3ExtraConfig: { positionIds: group.positionIds } })
   }
 }
 
