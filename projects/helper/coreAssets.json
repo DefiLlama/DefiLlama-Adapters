@@ -51,6 +51,7 @@
     "EETH": "0x35fa164735182de50811e8e2e824cfb9b6118ac2",
     "EUSD": "0x939778D83b46B456224A33Fb59630B11DEC56663",
     "EBTC": "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642",
+    "FTM": "0x4E15361FD6b4BB609Fa63C81A2be19d873717870",
     "AEVO": "0xB528edBef013aff855ac3c50b381f253aF13b997",
     "STONE": "0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0",
     "USDM": "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C",
@@ -111,7 +112,6 @@
     "xJOE": "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33",
     "LVTX": "0x574679ec54972cf6d705e0a71467bb5bb362919d",
     "sUSDC": "0x2f28add68e59733d23d5f57d94c31fb965f835d0",
-    "sBUSD": "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd",
     "UTY": "0xdbc5192a6b6ffee7451301bb4ec312f844f02b4a",
     "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
     "sUSDe": "0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2",
@@ -145,7 +145,6 @@
     "YGG": "0x13ab6739368a4e4abf24695bf52959224367391f",
     "IVN": "0x6a46d878401f46b4c7f665f065e0667580e031ec",
     "ankrBNB": "0xe85afccdafbe7f2b096f268e31cce3da8da2990a",
-    "aBNBb": "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d",
     "TUSD": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9",
     "WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
     "weETH": "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
@@ -169,7 +168,6 @@
     "WSTETH": "0x03b54A6e9a984069379fae1a4fC4dBAE93B3bCCD",
     "DINO": "0xaa9654becca45b5bdfa5ac646c939c62b527d394",
     "sUSDC": "0x2f28add68e59733d23d5f57d94c31fb965f835d0",
-    "sBUSD": "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd",
     "RADIO": "0x613a489785c95afeb3b404cc41565ccff107b6e0",
     "YIN": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8",
     "BNB": "0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f",
@@ -356,7 +354,6 @@
   "oasis": {
     "WETH": "0x3223f17957ba502cbe71401d55a0db26e5f7c68f",
     "ceUSDT": "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e",
-    "USDT": "0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8",
     "USDC": "0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd",
     "wROSE": "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733",
     "WROSE": "0x5c78a65ad6d0ec6618788b6e8e211f31729111ca",
@@ -364,10 +361,8 @@
     "ceUSDC": "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c"
   },
   "kcc": {
-    "BUSD": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
     "KUS": "0x4a81704d8c16d9fb0d7f61b747d0b5a272badf14",
     "ELK": "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
-    "BNB": "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c",
     "ETH": "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1",
     "WKCS": "0x4446fc4eb47f2f6586f9faab68b3498f86c07521",
     "MJT": "0x2ca48b4eea5a731c2b54e7c3944dbdb87c0cfb6f",
@@ -384,12 +379,10 @@
     "m_USDC": "0xea32a96608495e54156ae48931a7c20f0dcc1a21",
     "BNB": "0x2692be44a6e38b698731fddf417d060f0d20a0cb",
     "WBTC": "0xa5b55ab1daf0f8e1efc0eb1931a957fd89b918f4",
-    "BUSD": "0x12d84f1cfe870ca9c9df9785f8954341d7fbb249",
     "rAVAX": "0xe253e0cea0cdd43d9628567d097052b33f98d611",
     "rFTM": "0xa9109271abcf0c4106ab7366b4edb34405947eed",
     "DAI": "0x4651b38e7ec14bb3db731369bfe5b08f2466bd0a",
     "RELAY": "0xfe282af5f9eb59c30a3f78789eeffa704188bdd4",
-    "FTM": "0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8",
     "MATIC": "0x4b9d2923d875edf43980bf5ddddede3fb20fc742",
     "SYN": "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00",
     "BORING": "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34",
@@ -443,8 +436,7 @@
     "FRAX": "0x7562f525106f5d54e891e005867bf489b5988cd9",
     "WBTC": "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b",
     "OMG": "0xe1e2ec9a85c607092668789581251115bcbd20de",
-    "sUSDC": "0x2f28add68e59733d23d5f57d94c31fb965f835d0",
-    "sBUSD": "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd"
+    "sUSDC": "0x2f28add68e59733d23d5f57d94c31fb965f835d0"
   },
   "findora": {
     "WCET": "0xE6f8988d30614afE4F7124b76477Add79c665822",
@@ -452,7 +444,6 @@
     "WETH_b": "0x008a628826e9470337e0cd9c0c944143a83f32f3",
     "USDT_b": "0x93edfa31d7ac69999e964dac9c25cd6402c75db3",
     "USDC_b": "0xda33ef1a7b48bebbf579ee86dfa735a9529c4950",
-    "BUSD_b": "0xe80eb4a234f718edc5b76bb442653827d20ebb2d",
     "WBTC_b": "0x07efa82e00e458ca3d53f2cd5b162e520f46d911",
     "FRA": "0x0000000000000000000000000000000000001000",
     "USDC_e": "0x2e8079e0fe49626af8716fc38adea6799065d7f7",
@@ -494,7 +485,6 @@
     "pUSD": "0x168439b5eebe8c83db9eef44a0d76c6f54767ae4",
     "KSD": "0x4fa62f1f404188ce860c8f0041d6ac3765a72e67",
     "KASH": "0xce40569d65106c32550626822b91565643c07823",
-    "oBUSD": "0x210bc03f49052169d5588a52c317f71cf2078b85",
     "WBTC": "0x981846be8d2d697f4dfef6689a161a25ffbab8f9",
     "WETH": "0x98a8345bb9d3dda9d808ca1c9142a28f6b0430e1",
     "KDAI": "0x5c74070fdea071359b86082bd9f9b3deaafbe32b",
@@ -514,7 +504,6 @@
     "aUSDT_Wormhole_": "0x98aedff55dcc2e7a7d1899b325d1680527dd2742",
     "aDAI": "0x2ff5371dad5c6ef76d55213b7c5a519f6654ba17",
     "aDAI_Wormhole_": "0xe9a88c33abf71c902f7581321d05e6516cbca761",
-    "USDK": "0xd2137fdf10bd9e4e850c17539eb24cfe28777753",
     "NPT": "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815",
     "USDT_1": "0xd077a400968890eacc75cdc901f0356c943e4fdb",
     "stKaia": "0x42952B873ed6f7f0A7E4992E2a9818E3A9001995"
@@ -530,8 +519,7 @@
     "AURORA": "0x8bec47865ade3b172a928df8f990bc7f2a3b9f79",
     "FRAX": "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2",
     "nUSD": "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c",
-    "sUSDC": "0x42cc1cbf253f89be6814a0f59f745b40b69b6220",
-    "sBUSD": "0xd5e98caeb396dabe5a102bb9256b552944e3401f"
+    "sUSDC": "0x42cc1cbf253f89be6814a0f59f745b40b69b6220"
   },
   "dfk": {
     "WJEWEL": "0xccb93dabd71c8dad03fc4ce5559dc3d89f67a260",
@@ -557,7 +545,6 @@
     "WVLX": "0xe41c4324dcbd2926481101f8580d13930aff8a75",
     "ETH": "0x85219708c49aa701871ad330a94ea0f41dff24ca",
     "_MATIC": "0x6ab0b8c1a35f9f4ce107ccbd05049cb1dbd99ec5",
-    "WBTC": "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c",
     "_BNB": "0x2b8e9cd44c9e09d936149549a8d207c918ecb5c4",
     "FTM": "0xc9b3aa6e91d70f4ca0988d643ca2bb93851f3de4",
     "USDC": "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993",
@@ -566,7 +553,6 @@
     "BAMBOO": "0x300a8be53b4b5557f48620d578e7461e3b927dd0",
     "_AVAX": "0x525bd1f949ffa2a0c5820f3b6fe61bb897466ff7",
     "SWAPZ": "0x9b6fbf0ea23faf0d77b94d5699b44062e5e747ac",
-    "DAI": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
     "sVLX": "0xaadbaa6758fc00dec9b43a0364a372605d8f1883",
     "VLX": "0x2b1abeb48f875465bf0d3a262a2080ab1c7a3e39",
     "ETH_1": "0x380f73bad5e7396b260f737291ae5a8100baabcd",
@@ -577,12 +563,10 @@
     "WTLOS": "0xd102ce6a4db07d247fcc28f366a623df0938ca9e",
     "WTLOS_1": "0xdc2393dc10734bf153153038943a5deb42b209cd",
     "STLOS": "0xb4b01216a5bc8f1c8a33cd990a1239030e60c905",
-    "sBUSD": "0x017043607270ecbb440e20b0f0bc5e760818b3d8",
     "syUSDC": "0xe6E5f3d264117E030C21920356641DbD5B3d660c"
   },
   "reichain": {
-    "BNB": "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d",
-    "kBUSD": "0xdd2bb4e845bd97580020d8f9f58ec95bf549c3d9"
+    "BNB": "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d"
   },
   "solana": {
     "SOL": "So11111111111111111111111111111111111111112",
@@ -658,16 +642,12 @@
     "oUSD": "0x29f6e49c6e3397c3a84f715885f9f233a441165c",
     "KGL": "0x257f1a047948f73158dadd03eb84b34498bcdc60",
     "LAY": "0xc4335b1b76fa6d52877b3046eca68f6e708a27dd",
-    "lUSDT": "0x430d50963d9635bbef5a2ff27bd0bddc26ed691f",
     "nASTR": "0xe511ed88575c57767bafb72bfd10775413e3f2b0",
-    "lUSDC": "0xc404e12d3466accb625c67dbab2e1a8a457def3c",
-    "lDAI": "0x4dd9c468a44f3fef662c35c1e9a6108b70415c2c",
     "aBaiUsdc": "0xdbd71969ac2583a9a20af3fb81fe9c20547f30f3",
     "aDaiUsdc": "0x9914bff0437f914549c673b34808af6020e2b453",
     "aBusdUsdc": "0x347e53263f8fb843ec605a1577ec7c8c0cac7a58",
     "aUsdtUsdc": "0x02dac4898b2c2ca9d50ff8d6a7726166cf7bcfd0",
     "BUSD": "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e",
-    "lBUSD": "0xb7ab962c42a8bb443e0362f58a5a43814c573ffb",
     "BAI": "0x733ebcc6df85f8266349defd0980f8ced9b45f35",
     "ATID": "0x5271d85ce4241b310c0b34b7c2f1f036686a6d7c",
     "JPYC": "0x431d5dff03120afa4bdf332c61a6e1766ef37bdb",
@@ -824,7 +804,6 @@
     "WALGO": "0xaf86e6c5fd9daf53e5100ed38bab2572609fca27",
     "USDC": "0x2421db204968a367cc2c866cd057fa754cb84edf",
     "USDt": "0x32564ae38e5dbf316958ce25a6ad2a2249ebcc2d",
-    "USDT": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
     "BLUES": "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055",
     "BUSD": "0x8dc0dfa2aec0d4410c8c60c5f9cd0cd37b05a06a",
     "DAI": "0x150d2421e09eea31beaa68b7a248700eeceda87a"
@@ -909,12 +888,10 @@
     "DC": "0x7b4328c127b85369d9f82ca0503b000d09cf9180",
     "USDC": "0x85c2d3bebffd83025910985389ab8ad655abc946",
     "DAI": "0xb3306f03595490e5cc3a1b1704a5a158d3436ffc",
-    "ETH": "0xb44a9b6905af7c801311e8f4e76932ee959c663c",
     "USDT": "0x7f8e71dd5a7e445725f0ef94c7f01806299e877a",
     "WBTC": "0xd0c6179c43c00221915f1a61f8ec06a5aa32f9ec",
     "FRAX": "0x10d70831f9c3c11c5fe683b2f1be334503880db6",
     "BNB": "0x1fc532187b4848d2f9c564531b776a4f8e11201d",
-    "QUICK": "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
     "WETH": "0x9f4614e4ea4a0d7c4b1f946057ec030bee416cbb"
   },
   "canto": {
@@ -968,10 +945,7 @@
   },
   "shiden": {
     "WSDN": "0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef",
-    "USDC": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
-    "USDT": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
-    "STND": "0x722377a047e89ca735f09eb7cccab780943c4cb4",
-    "BNB": "0x332730a4f6e03d9c55829435f10360e13cfa41ff"
+    "STND": "0x722377a047e89ca735f09eb7cccab780943c4cb4"
   },
   "tezos": {
     "USDtz": "KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9",
@@ -1045,13 +1019,9 @@
     "WBTC_eth": "0x82455018f2c32943b3f12f4e59d0da2faf2257ef",
     "BTCB_bsc": "0xef2439e020509259fa603c34b35a81ffe676cfb4",
     "WETH": "0xb66954619363145a05ef835547449eb9050d82f6",
-    "USDC": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
     "USDC_bsc": "0xfa307cfdea89dc197a346c338a98ac85d517af6e",
     "USDT_bsc": "0xdff2facdfe47c1d5b51f18231f900949f1d5988f",
-    "DAI": "0x765277eebeca2e31912c9946eae1021199b39c61",
-    "USDT": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
-    "BUSD": "0xcd7bc9fc617a4f82ec1c8359d1c8610b90e3b44c",
-    "WBTC": "0xb44a9b6905af7c801311e8f4e76932ee959c663c"
+    "BUSD": "0xcd7bc9fc617a4f82ec1c8359d1c8610b90e3b44c"
   },
   "waves": {
     "BNB": "5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR",
@@ -1144,15 +1114,7 @@
   },
   "kava": {
     "WKAVA": "0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b",
-    "USDC": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
-    "USDT": "0xb44a9b6905af7c801311e8f4e76932ee959c663c",
     "USDt": "0x919C1c267BC06a7039e03fcc2eF738525769109c",
-    "WBTC": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
-    "DAI": "0x765277eebeca2e31912c9946eae1021199b39c61",
-    "SUSHI": "0x7c598c96d02398d89fbcb9d41eab3df0c16f227d",
-    "ETH": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
-    "BUSD": "0x332730a4f6e03d9c55829435f10360e13cfa41ff",
-    "BNB": "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a",
     "WETH": "0xc13791da84f43525189456cfe2026c60d3b7f706",
     "axlUSDC": "0xeb466342c4d449bc9f53a865d5cb90586f405215",
     "axlUSDT": "0x7f5373ae26c3e8ffc4c77b7255df7ec1a9af52a6",
@@ -1216,7 +1178,6 @@
     "ioBUSD": "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4",
     "DAI_matic": "0x62a9d987cbf4c45a550deed5b57b200d7a319632",
     "ioDAI": "0x1cbad85aa66ff3c12dc84c5881886eeb29c1bb9b",
-    "anyXIM": "0xd6070ae98b8069de6b494332d1a1a81b6179d960",
     "XIM": "0xec690cdd448e3cbb51ed135df72301c3265a8f80",
     "CYC": "0x4d7b88403aa2f502bf289584160db01ca442426c",
     "ioETH": "0x0258866edaf84d6081df17660357ab20a07d0c80",
@@ -1284,10 +1245,7 @@
   },
   "wemix": {
     "WWEMIX": "0x7d72b22a74a216af4a002a1095c8c707d6ec1c5f",
-    "WEMIX_": "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
-    "KLAY": "0x461d52769884ca6235b685ef2040f47d30c94eb5",
-    "ETH": "0x765277EebeCA2e31912C9946eAe1021199B39C61",
-    "USDC": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d"
+    "WEMIX_": "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1"
   },
   "tlchain": {
     "WTLC": "0x422b6cdf97c750a0edcddc39c88f25379e59e96e"
@@ -1299,11 +1257,7 @@
     "WDXT": "0x414b8baf9950c87804cf7e23bb43a58ae7e1e202"
   },
   "step": {
-    "WFITFI": "0xb58a9d5920af6ac1a9522b0b10f55df16686d1b6",
-    "USDC": "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d",
-    "USDT": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
-    "ETH": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
-    "BNB": "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73"
+    "WFITFI": "0xb58a9d5920af6ac1a9522b0b10f55df16686d1b6"
   },
   "flare": {
     "WFLR": "0x1d80c49bbbcd1c0911346656b529df9e5c2f783d"
@@ -1495,11 +1449,7 @@
     "USDC_CIRCLE": "0x37eaa0ef3549a5bb7d431be78a3d99bd360d19e5"
   },
   "eos_evm": {
-    "WEOS": "0xc00592aA41D32D137dC480d9f6d0Df19b860104F",
-    "ETH": "0x922d641a426dcffaef11680e5358f34d97d112e1",
-    "USDC": "0x765277eebeca2e31912c9946eae1021199b39c61",
-    "USDT": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
-    "WBTC": "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73"
+    "WEOS": "0xc00592aA41D32D137dC480d9f6d0Df19b860104F"
   },
   "oas": {
     "WOAS": "0x5200000000000000000000000000000000000001"
@@ -2712,6 +2662,9 @@
     "USDC": "0x02D45d684A233F3bA0C55fE941854FC0E5235fE1",
     "USDT": "0xb575796D293f37F112f3694b8ff48D711FE67EC7",
     "USDH": "0x26df50102098C19aB4374b2D5572a1bCde38f160"
+  },
+  "xo": {
+    "USDC": "0xCf65732699b4eFc2Bc7b87fB6d75F3aAa6CFC867"
   },
   "eventum": {
     "USDT": "0xC9b68d8ab057b52785cF0e8e983A2eaFE6858979"

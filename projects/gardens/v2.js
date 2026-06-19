@@ -6,12 +6,13 @@ const CV_STRATEGY_ABI = {
 };
 
 const subgraphs = {
-  polygon: 'https://api.studio.thegraph.com/query/102093/gardens-v2---polygon/version/latest/',
-  xdai: 'https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/version/latest/',
-  arbitrum: 'https://api.studio.thegraph.com/query/102093/gardens-v2---arbitrum/version/latest/',
-  base: 'https://api.studio.thegraph.com/query/102093/gardens-v2---base/version/latest/',
-  celo: 'https://api.studio.thegraph.com/query/102093/gardens-v2---celo/version/latest/',
-  optimism: 'https://api.studio.thegraph.com/query/102093/gardens-v2---optimism/version/latest/',
+  polygon: 'https://gateway.thegraph.com/api/{api-key}/subgraphs/id/4vsznmRkUGm9DZFBwvC6PDvGPVfVLQcUUr5ExdTNZiUc',
+  xdai: 'https://gateway.thegraph.com/api/{api-key}/subgraphs/id/ELGHrYhvJJQrYkVsYWS5iDuFpQ1p834Q2k2kBmUAVZAi',
+  arbitrum: 'https://gateway.thegraph.com/api/{api-key}/subgraphs/id/9ejruFicuLT6hfuXNTnS8UCwxTWrHz4uinesdZu1dKmk',
+  base: 'https://gateway.thegraph.com/api/{api-key}/subgraphs/id/HAjsxiYJEkV8oDZgVTaJE9NQ2XzgqekFbY99tMGu53eJ',
+  celo: 'https://gateway.thegraph.com/api/{api-key}/subgraphs/id/BsXEnGaXdj3CkGRn95bswGcv2mQX7m8kNq7M7WBxxPx8',
+  optimism: 'https://gateway.thegraph.com/api/{api-key}/subgraphs/id/FmcVWeR9xdJyjM53DPuCvEdH24fSXARdq4K5K8EZRZVp',
+  ethereum: 'https://gateway.thegraph.com/api/{api-key}/subgraphs/id/39E6r8bqUTeyrSb4JWMkqcVBKqeKAwJVp6mPhoDCtgbB',
 };
 
 
@@ -37,10 +38,13 @@ async function fetchStrategiesAndCommunities(api) {
   const subgraph = subgraphs[api.chain];
   if (!subgraph) throw new Error(`No subgraph for chain ${api.chain}`);
 
-  const data = await fetch(subgraph, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) })
-    .then(res => res.json())
-    .then(res => res.data);
-  if (!data) throw new Error(`No data from subgraph for chain ${api.chain}`);
+  const res = await fetch(subgraph, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer cac537bc551071b0753a5769fb37685c` }, body: JSON.stringify({ query }) })
+    .then(res => res.json());
+  const data = res.data;
+  if (!data) {
+    console.error(`Error fetching data from subgraph for chain ${api.chain}:`, res);
+    throw new Error(`No data from subgraph for chain ${api.chain}`);
+  }
   if (!data.cvstrategies || !data.registryCommunities) throw new Error(`Missing data from subgraph for chain ${api.chain}`);
   const strategies = data.cvstrategies;
   const communities = data.registryCommunities;
@@ -85,4 +89,5 @@ module.exports = {
   optimism: { tvl },
   polygon: { tvl },
   celo: { tvl },
+  ethereum: { tvl },
 };

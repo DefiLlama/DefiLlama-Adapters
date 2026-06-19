@@ -332,7 +332,7 @@ module.exports = {
         {
           pool: '0x00A4F57D926781f62D09bb05ec76e6D8aE4268da',
           tokens: [
-            "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
+            '0xb12c13e66ade1f72f71834f2fc5082db8c091358',
             // "???", // synAvax
           ]
         },

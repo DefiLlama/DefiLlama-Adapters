@@ -27,7 +27,7 @@ const poolInfoAbi = "function poolInfo(uint256) view returns (address lptoken, a
 //
 // lptoken -> { pool, coins } snapshotted from the Kagla registry at an earlier block.
 const lpToPool = {
-  '0x18bdb86e835e9952cfaa844eb923e470e832ad58': { pool: '0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e', coins: ['0x6a2d262d56735dba19dd70682b39f6be9a931d98', '0x3795c36e7d12a8c252a20c5a7b455f7c57b60283', '0x6de33698e9e9b787e09d3bd7771ef63557e148bb'] },
+  '0x18bdb86e835e9952cfaa844eb923e470e832ad58': { pool: ADDRESSES.oasis.ceUSDT, coins: [ADDRESSES.moonbeam.USDC, '0x3795c36e7d12a8c252a20c5a7b455f7c57b60283', '0x6de33698e9e9b787e09d3bd7771ef63557e148bb'] },
   '0xe12332a6118832cbafc1913ec5d8c3a05e6fd880': { pool: '0xe12332a6118832cbafc1913ec5d8c3a05e6fd880', coins: ['0xffffffff00000000000000010000000000000001', '0x18bdb86e835e9952cfaa844eb923e470e832ad58'] },
   '0xdc1c5babb4dad3117fd46d542f3b356d171417fa': { pool: '0xdc1c5babb4dad3117fd46d542f3b356d171417fa', coins: ['0xffffffff000000000000000000000001000007c0', '0x18bdb86e835e9952cfaa844eb923e470e832ad58'] },
   '0xb91e7abcbf38d0cac1f99b062b75ae0c18e169d1': { pool: '0x578aa1be6d258677e80c9067711861dd981a663e', coins: ['0x257f1a047948f73158dadd03eb84b34498bcdc60', '0x5eaae8435b178d4677904430bac5079e73afa56e'] },

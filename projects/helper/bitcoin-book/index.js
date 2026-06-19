@@ -1159,6 +1159,12 @@ module.exports = {
     "3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo",
     "3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh",
   ],
+  circleBTC: [
+    '1JkKmG26nUBcPS99TsCVsReSXvLkEai4ca',
+    '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
+    '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
+    '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
+  ],
 };
 
 imports.forEach(([key, file]) => {

@@ -1,5 +1,4 @@
 const ADDRESSES = require('./helper/coreAssets.json')
-const { sumTokens } = require('./helper/unwrapLPs');
 const { staking } = require('./helper/staking');
 
 const liquidityMinesAddress = '0x4DaC3e07316D2A31baABb252D89663deE8F76f09';
@@ -19,10 +18,9 @@ const stakedTokens = [
 const GDAOLP = '0x4d184bf6f805ee839517164d301f0c4e5d25c374';
 const gdaoToken = '0x515d7E9D75E2b76DB60F8a051Cd890eBa23286Bc';
 
-async function tvl(ts, block) {
-	const balances = {}
+async function tvl(api) {
 	const tao = stakedTokens.map(t => [t, liquidityMinesAddress])
-	return sumTokens(balances, tao, block)
+	return api.sumTokens({ tokensAndOwners: tao })
 }
 
 

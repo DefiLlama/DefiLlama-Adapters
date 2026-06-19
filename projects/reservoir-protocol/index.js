@@ -237,7 +237,7 @@ module.exports.solana = {
     allowError: true,
     tokensAndOwners: [
       ['3b8X44fLF9ooXaUm3hhSgjpmVs6rZZ3pPoGnGahc3Uu7', 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // PRIME (Hastra)
-      ['2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo', 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // kV-PYUSD (Kamino - Sentora)
+      [ADDRESSES.solana.PYUSD, 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // kV-PYUSD (Kamino - Sentora)
     ]
   })
 }

@@ -1,4 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { PublicKey } = require('@solana/web3.js')
+const { getConnection } = require('../helper/solana')
+const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
 const TOKEN_ADMIN_REGISTRY = {
   ethereum: '0xb22764f98dD05c789929716D677382Df22C05Cb6',
@@ -59,8 +62,28 @@ async function tvl(api) {
   return sumTokens2({ api, tokensAndOwners: lockReleasePairs })
 }
 
+async function solanaTvl(api) {
+  const LR_PROGRAM = new PublicKey('8eqh8wppT9c5rw4ERqNCffvU6cNFJWff9WmkcYtmGiqC')
+  const POOL_SIGNER_SEED  = Buffer.from('ccip_tokenpool_signer')
+  // Anchor discrim. for `State` account: sha256("account:State")[0..8]
+  const STATE_DISC = bs58.encode(Buffer.from('d8926b5e684bb6b1', 'hex'))
+  const conn = getConnection('solana')
+  const states = await conn.getProgramAccounts(LR_PROGRAM, {
+    filters: [{ memcmp: { offset: 0, bytes: STATE_DISC } }],
+  })
+
+  for (const { account } of states) {
+    // State layout: 8 disc + 1 version + 32 token_program + 32 mint: https://github.com/smartcontractkit/chainlink-ccip/blob/main/chains/solana/contracts/target/idl/lockrelease_token_pool.json
+    const mint = new PublicKey(account.data.slice(41, 73))
+    const [signer] = PublicKey.findProgramAddressSync([POOL_SIGNER_SEED, mint.toBuffer()], LR_PROGRAM)
+    const toa = await conn.getTokenAccountsByOwner(signer, { mint })
+    for (const a of toa.value) api.add(mint.toBase58(), a.account.data.readBigUInt64LE(64))
+  }
+}
+
 module.exports = {
-  methodology: 'Sums tokens locked in CCIP LockRelease TokenPools, pulled from each chain\'s TokenAdminRegistry.',
+  methodology: 'Sums tokens locked in CCIP LockRelease TokenPools, pulled from each chain\'s TokenAdminRegistry or LockAndRelease PDAs.',
+  solana: { tvl: solanaTvl }
 }
 
 Object.keys(TOKEN_ADMIN_REGISTRY).forEach(chain => {

@@ -19,7 +19,7 @@ module.exports = {
       '0x956F47F50A910163D8BF957Cf5846D573E7f87CA', // FEI
       ADDRESSES.ethereum.DAI, // DAI
       '0xba100000625a3754423978a60c9317c58a424e3D', // BAL
-      "0x4e15361fd6b4bb609fa63c81a2be19d873717870", // FTM
+      ADDRESSES.ethereum.FTM, // FTM
       '0xdd974D5C2e2928deA5F71b9825b8b646686BD200', // KNC
       ADDRESSES.ethereum.AAVE, // AAVE
       ADDRESSES.ethereum.CRV, // CRV
