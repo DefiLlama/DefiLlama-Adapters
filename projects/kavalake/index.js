@@ -2,8 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 module.exports = {
-  timetravel: false,
-  misrepresentedTokens: false,
   methodology: "TVL is calculated based on the amount of WKAVA held in the KavaLake liquid staking vault on Kava EVM.",
   kava: {
     tvl: sumTokensExport({
