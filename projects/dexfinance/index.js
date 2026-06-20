@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { ETF_ABI, } = require('./abi');
+const ETF_ABI = {
+  'getCurrentTokens': "address[]:getCurrentTokens"
+};
 const { sumTokensExport, } = require('../helper/unwrapLPs')
 
 const REGULATION_STAKING_POOL = '0xd69db827939e26511068aa2bf742e7463b292190'

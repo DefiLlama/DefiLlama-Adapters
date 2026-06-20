@@ -1,5 +1,8 @@
 // Delta.theta Factory ABI (for needed calls)
-const factoryABI = require('./factory.abi');
+const factoryABI = {
+  pairsLength: "uint16:pairsLength",
+  pairsList: "function pairsList(uint256) view returns (address)",
+};
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 // Delta.theta Factory Address (On all chains)

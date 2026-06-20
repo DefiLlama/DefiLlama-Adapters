@@ -1,4 +1,30 @@
-const { NexaAggregatorAbi } = require("./abi");
+const NexaAggregator = [
+    {
+        "type": "function",
+        "name": "latestAnswer",
+        "inputs": [],
+        "outputs": [
+            {
+                "type": "int256"
+            }
+        ],
+        "state_mutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "decimals",
+        "inputs": [],
+        "outputs": [
+            {
+                "type": "uint8"
+            }
+        ],
+        "state_mutability": "view"
+    }
+]
+
+const NexaAggregatorAbi = {}
+NexaAggregator.forEach(i => NexaAggregatorAbi[i.name] = i)
 
 const BOHMETH = "0x40EF495dF42Fcfd1A4C33450Dfe61cfAC97Fe7dB"
 const BoseraHKDMMF = '0xc7167fC4C7d95b6faa30d63509D7392474a0B955'

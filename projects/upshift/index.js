@@ -1,4 +1,31 @@
-const abi = require('./vaultsv2.json')
+const abi = [
+  {
+    "inputs": [],
+    "name": "getTotalAssets",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "asset",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
 const sui = require('../helper/chain/sui');
 const { callSoroban } = require('../helper/chain/stellar');
 const { getConfig } = require('../helper/cache');
