@@ -57,7 +57,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false, // state-based: getProgramAccounts only reflects the current slot
   methodology:
-    "TVL is the native SOL escrowed in pre-graduation bonding curves. The curve program (6eLrwpkYUTVg9XFwB9Cv2VBh7hTp5RKAZPXkzQCWEq3g) holds one BondingCurve per market; we enumerate them and sum the lamports held by each curve's sol_vault escrow PDA for curves in Active or GraduationPending status. Excluded to avoid circular double-counting: the curve's virtual reserves (a pricing device, not real assets), the protocol-minted $TICKER in the curve token vault and the paired CPMM (whose collateral IS $TICKER, backed by the very SOL already counted here), and graduated markets (their 75 SOL has migrated to a Meteora DAMM v2 pool and is counted by Meteora's adapter).",
+    "TVL is the native SOL escrowed in pre-graduation bonding curves. The curve program (71ywu6cFWETLyiz1KcuMwq2wfguYfra7b1bCPinVqKm3) holds one BondingCurve per market; we enumerate them and sum the lamports held by each curve's sol_vault escrow PDA for curves in Active or GraduationPending status. Excluded to avoid circular double-counting: the curve's virtual reserves (a pricing device, not real assets), the protocol-minted $TICKER in the curve token vault and the paired CPMM (whose collateral IS $TICKER, backed by the very SOL already counted here), and graduated markets (their 75 SOL has migrated to a Meteora DAMM v2 pool and is counted by Meteora's adapter).",
   solana: {
     tvl,
   },
