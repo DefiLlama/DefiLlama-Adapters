@@ -1,16 +1,25 @@
 // DefiLlama TVL adapter for Hootdex (Pecu Novus Blockchain).
-
 const HOOTDEX_API = (process.env.HOOTDEX_API || "https://api.pecunovus.net")
   .replace(/\/+$/, ""); // strip trailing slash so URL doesn't end up "//wallet"
 const ROUTE_PREFIX = "/wallet";
 const CHAIN = "pecu"; // Pecu Novus mainnet, Chain ID 27272727
 const USD_PEG_CGID = "tether";
+const FETCH_TIMEOUT_MS = 30_000;
 
 async function getJson(path) {
   const url = `${HOOTDEX_API}${ROUTE_PREFIX}${path}`;
-  const res = await fetch(url, { headers: { accept: "application/json" } });
-  if (!res.ok) throw new Error(`Hootdex API ${res.status} for ${path}`);
-  return res.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      headers: { accept: "application/json" },
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`Hootdex API ${res.status} for ${path}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function tvl(api) {
@@ -33,5 +42,6 @@ module.exports = {
     "as reported by the Hootdex /wallet/tvl endpoint. Balances settle off-chain " +
     "on Pecu Novus (Chain ID 27272727) and are reported in USD.",
   misrepresentedTokens: true,
+  timetravel: false,
   [CHAIN]: { tvl },
-}
+};
