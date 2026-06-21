@@ -17,6 +17,7 @@ const adapterRoutes = [
   './traderJoeV2.js',
   './liquity.js',
   './treasury.js',
+  './bitcoin.js',
   '../cex/index.js',
 ]
 const allProtocols = {}
