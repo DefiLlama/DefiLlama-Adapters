@@ -18,6 +18,7 @@ const adapterRoutes = [
   './liquity.js',
   './treasury.js',
   './bitcoin.js',
+  './curators.js',
   '../cex/index.js',
 ]
 const allProtocols = {}
