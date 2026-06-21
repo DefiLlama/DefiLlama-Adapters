@@ -38,10 +38,19 @@ const ABI = {
 };
 
 // Verified, non-blacklisted vaults for the given chainId, from the ecosystem API.
+// Records are external data, so require a usable address + asset before trusting
+// them in on-chain calls (a malformed entry would otherwise abort the chain).
 async function getVerifiedVaults(chainId) {
   const all = await getConfig("t3tris-finance/vaults", VAULTS_API);
   return (all || []).filter(
-    (v) => v.verified && !v.blacklisted && Number(v.chainId) === chainId,
+    (v) =>
+      v?.verified &&
+      !v?.blacklisted &&
+      Number(v?.chainId) === chainId &&
+      typeof v?.address === "string" &&
+      v.address &&
+      typeof v?.asset === "string" &&
+      v.asset,
   );
 }
 
