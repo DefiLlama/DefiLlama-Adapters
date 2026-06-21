@@ -19,6 +19,7 @@ const adapterRoutes = [
   './treasury.js',
   './bitcoin.js',
   './curators.js',
+  './sumTokens.js',
   '../cex/index.js',
 ]
 const allProtocols = {}
