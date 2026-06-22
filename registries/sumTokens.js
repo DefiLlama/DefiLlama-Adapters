@@ -13007,120 +13007,6 @@ const configs = {
       ]
     },
   },
-  "demeter": {
-    "heco": {
-      "tokensAndOwners": [
-        [
-          "0xa71edc38d189767582c38a3145b5873052c3e47a",
-          "0x8d8fD8139CEaf0034A021E6eb039bB6f70C83d9c"
-        ],
-        [
-          "0x0298c2b32eaE4da002a15f36fdf7615BEa3DA047",
-          "0xe2CE3BDe9f94C41E839287af95feE7c07807Cf71"
-        ],
-        [
-          "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa",
-          "0x62Ac818EcaF5A351d48CB7f95A07E2dA7E97ABca"
-        ],
-        [
-          "0x64FF637fB478863B7468bc97D30a5bF3A428a1fD",
-          "0x59a626a783A9C071fDcEFC95B3664a34d0592e24"
-        ],
-        [
-          "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f",
-          "0xDA77B5663a0baFa56080Ae5D0a1F462848465b14"
-        ],
-        [
-          "0xA2c49cEe16a5E5bDEFDe931107dc1fae9f7773E3",
-          "0x63fB23F78923320DE2816562401a2658321fFB11"
-        ],
-        [
-          "0xae3a768f9aB104c69A7CD6041fE16fFa235d1810",
-          "0xe867f648957Fa769E43E30b99Faa008C1A39808f"
-        ],
-        [
-          "0xeF3CEBD77E0C52cb6f60875d9306397B5Caca375",
-          "0x31f7C57AA9ecC0Da99105F2d7ad2c30c9DF1c1Dc"
-        ],
-        [
-          "0x9e004545c59D359F6B7BFB06a26390b087717b42",
-          "0xF677108CB45e702DF16B42F7B37a1305239FC75A"
-        ],
-        [
-          "0x22C54cE8321A4015740eE1109D9cBc25815C46E6",
-          "0x103fC41D79C4AdA572B158b39De4d5b30d45ddf6"
-        ],
-        [
-          "0x25D2e80cB6B86881Fd7e07dd263Fb79f4AbE033c",
-          "0xc790FF20B8479e1FEdF73f78dC07C40DB79D8474"
-        ],
-        [
-          "0xFBe7b74623e4be82279027a286fa3A5b5280F77c",
-          "0x38D8f533adE6c37D578A247d9446a90dcCD775B8"
-        ],
-        [
-          "0x793c2a814e23EE38aB46412Be65E94Fe47D4B397",
-          "0x0a58BF4102059911AC9588A7BF10E93717C96FaD"
-        ],
-        [
-          "0x78C90d3f8A64474982417cDB490E840c01E516D4",
-          "0xA5d68959ADb1E9B48364FF70Bb67A92eEe1C95D0"
-        ],
-        [
-          "0xdff86B408284dff30A7CAD7688fEdB465734501C",
-          "0x342eFBf098c06b80d1252147FF850E5d3993D3D6"
-        ],
-        [
-          "0x499B6E03749B4bAF95F9E70EeD5355b138EA6C31",
-          "0xCc54fF772Ead487296cBb9e3614aDDd0989f1968"
-        ]
-      ]
-    },
-    "bsc": {
-      "tokensAndOwners": [
-        [
-          "0x55d398326f99059ff775485246999027b3197955",
-          "0x89bB17aF665Ec0607268C697Bb294117992027Cf"
-        ],
-        [
-          "0xe9e7cea3dedca5984780bafc599bd69add087d56",
-          "0xB275b6AE294159278547297dBE7617f66A7bC6e2"
-        ],
-        [
-          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
-          "0x6c9FcBD7aD9dFB241f4fA2cc08FaABb42d764606"
-        ],
-        [
-          "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
-          "0x4A345187BFAe9A14DA764C2222c4B7E816C18216"
-        ],
-        [
-          "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-          "0x5C4E2B1E6E03cCF5F3c3356C008a69C7f93BD10B"
-        ],
-        [
-          "0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402",
-          "0xB0568DbD78D3920903e71Fc3F3034c0a4A7d1cCb"
-        ],
-        [
-          "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153",
-          "0x606Bb7e9B80bA73D1303f1c3625Cf7F09249D680"
-        ],
-        [
-          "0x8fF795a6F4D97E7887C79beA79aba5cc76444aDf",
-          "0x511069c79dff79dfC0D0C69C4b4A40C4cADe68f4"
-        ],
-        [
-          "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD",
-          "0x217D2C538628762981E18C32A0B789f94D2368Df"
-        ],
-        [
-          "0xBf5140A22578168FD562DCcF235E5D43A02ce9B1",
-          "0x336Dd5b84ca82F0d0CEB790D257f0E66Dd3C5478"
-        ]
-      ]
-    },
-  },
   "denaria": {
     "methodology": "Counts USDC locked in Denaria Vault(s) on Linea.",
     "linea": {
@@ -14923,7 +14809,7 @@ const configs = {
       ]
     },
   },
-  "flame-dex": {
+  "flamedefi": {
     "tezos": {
       "owners": [
         "KT1PRtrP7pKZ3PSLwgfTwt8hD39bxVojoKuX"
@@ -16818,99 +16704,6 @@ const configs = {
           "0x0000000000000000000000000000000000000000",
           "0x34583A7080d47Af38d76Bae78c51Ecd0C64442cF"
         ]
-      ]
-    },
-  },
-  "instadapp": {
-    "methodology": "TVL counts all tokens held across InstaDapp's Smart Accounts (DSA) contracts on multiple chains including Index, InstaList, InstaAccount, InstaConnectors, InstaMemory, Implementations, InstaFlashAggregator, InstaFlashResolver, and Treasury. Tracks major stablecoins and blue-chip assets deposited by users.",
-    "start": 1630454400,
-    "arbitrum": {
-      "owners": [
-        "0x1eE00C305C51Ff3bE60162456A9B533C07cD9288",
-        "0x3565F6057b7fFE36984779A507fC87b31EFb0f09",
-        "0x857f3b524317C0C403EC40e01837F1B160F9E7Ab",
-        "0x67fCE99Dd6d8d659eea2a1ac1b8881c57eb6592B",
-        "0xc109f7Ef06152c3a63dc7254fD861E612d3Ac571",
-        "0xF3Bb2FbdCDa1B8B6d19f513D69462eA548d0eF12",
-        "0x1f882522DF99820dF8e586b6df8bAae2b91a782d",
-        "0x33D8F735DD64ceC51d212616BCa5Ad9b7769CD34",
-        "0xf81AB897E3940E95d749fF2e1F8D38f9b7cBe3cf"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x912ce59144191c1204e64559fe8253a0e49e6548",
-        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
-        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-        "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
-        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
-        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
-      ]
-    },
-    "polygon": {
-      "owners": [
-        "0xA9B99766E6C676Cf1975c0D3166F96C0848fF5ad",
-        "0x839c2D3aDe63DF5b0b8F3E57D5e145057Ab41556",
-        "0x28846f4051EB05594B3fF9dE76b7B5bf00431155",
-        "0x2A00684bFAb9717C21271E0751BCcb7d2D763c88",
-        "0x6C7256cf7C003dD85683339F75DdE9971f98f2FD",
-        "0x39d3d5e7c11D61E072511485878dd84711c19d4A",
-        "0xB2A7F20D10A006B0bEA86Ce42F2524Fde5D6a0F4",
-        "0xa996699a8f3716FCB5D26652a81b037554128136",
-        "0x6e9d36eaeC63Bc3aD4A47fb0d7826A9922AAfC22"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-        "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-        "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
-        "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
-      ]
-    },
-    "optimism": {
-      "owners": [
-        "0x6CE3e607C808b4f4C26B7F6aDAeB619e49CAbb25",
-        "0x9926955e0Dd681Dc303370C52f4Ad0a4dd061687",
-        "0x0a0a82D2F86b9E46AE60E22FCE4e8b916F858Ddc",
-        "0x127d8cD0E2b2E0366D522DeA53A787bfE9002C14",
-        "0x3254Ce8f5b1c82431B8f21Df01918342215825C2",
-        "0x01fEF4d2B513C9F69E34b2f93Ef707FA9Ff60109",
-        "0x84e6b05a089d5677a702cf61dc14335b4be5b282",
-        "0x810D6b2425Dc5523525D1F45CC548ae9a085F5Ea",
-        "0xdaf12965b3d5bf60843aa1fb49e2688919e697a0"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x4200000000000000000000000000000000000042",
-        "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
-        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
-        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-        "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
-        "0x4200000000000000000000000000000000000006",
-        "0x68f180fcCe6836688e9084f035309E29Bf0A2095"
-      ]
-    },
-    "fantom": {
-      "owners": [
-        "0x2fa042BEEB7A40A7078EaA5aC755e3842248292b",
-        "0x10e166c3FAF887D8a61dE6c25039231eE694E926",
-        "0x1a0862ecA9eAc5028aBdf85bD095fd13a7eebA2f",
-        "0x819910794a030403F69247E1e5C0bBfF1593B968",
-        "0x56439117379A53bE3CC2C55217251e2481B7a1C8",
-        "0xF0b36681C9d3ED74227880646De41c4a979AC191",
-        "0x6C4061A00F8739d528b185CC683B6400E0cd396a"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
-        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
-        "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
-        "0x049d68029688eabf473097a2fc38ef61633a3c7a",
-        "0x74b23882a30290451A17c44f4F05243b6b58C76d",
-        "0x321162cd933e2be498cd2267a90534a804051b11"
       ]
     },
   },
@@ -22617,6 +22410,37 @@ const configs = {
       }
     },
   },
+  "pegasusdao": {
+    "cronos": {
+      "tvl": {
+        "owner": "0x64bfCBe4480B53E8234Ca258a96720F29fe6A6fB",
+        "tokens": [
+          "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
+          "0xc21223249ca28397b4b6541dffaecc539bff0c59",
+          "0x97749c9b61f878a880dfe312d2594ae07aed7656",
+          "0xb8df27c687c6af9afe845a2afad2d01e199f4878",
+          "0x43713f13a350d104319126c13cd7402822a44f6b"
+        ]
+      },
+      "staking": {
+        "owner": "0x7614A4CEB3ACdfCd4841D7bD76c30e7a401E83cd",
+        "tokens": [
+          "0xBBd4650EeA85f9DBd83d6Fb2a6E8B3d8f32FE1C5"
+        ]
+      },
+      "pool2": {
+        "owners": [
+          "0x7614A4CEB3ACdfCd4841D7bD76c30e7a401E83cd",
+          "0xdd403db142a320261858840103b907c2486240c6"
+        ],
+        "tokens": [
+          "0x43713f13a350d104319126c13cd7402822a44f6b",
+          "0xadab84bf91c130af81d76be9d7f28b8c4f515367"
+        ],
+        "resolveLP": true
+      }
+    },
+  },
   "pepu-bridge": {
     "ethereum": {
       "owners": [
@@ -26085,6 +25909,17 @@ const configs = {
       "owner": "8gEGZbUfVE1poBq71VHKX9LU7ca4x8wTUyZgcbyQe51s"
     },
   },
+  "soluna": {
+    "hallmarks": [
+      [
+        "2022-05-07",
+        "UST depeg"
+      ]
+    ],
+    "terra": {
+      "owner": "terra1qwzdua7928ugklpytdzhua92gnkxp9z4vhelq8"
+    },
+  },
   "somnex-perp": {
     "somnia": {
       "owners": [
@@ -26264,6 +26099,15 @@ const configs = {
           "0x1337420dED5ADb9980CFc35f8f2B054ea86f8aB1"
         ]
       }
+    },
+  },
+  "squa-defi": {
+    "methodology": "Counts USDC on the KeyManager contract (0xfad362E479AA318F2De7b2c8a1993Df9BB2B3b1f)",
+    "base": {
+      "owner": "0xfad362E479AA318F2De7b2c8a1993Df9BB2B3b1f",
+      "tokens": [
+        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      ]
     },
   },
   "stab-protocol": {
@@ -28520,6 +28364,118 @@ const configs = {
         "0x0bd48f6B86a26D3a217d0Fa6FfE2B491B956A7a2"
       ],
       "fetchCoValentTokens": true
+    },
+  },
+  "unidex": {
+    "methodology": "Assets staked in the pool and trading contracts",
+    "fantom": {
+      "tokens": [
+        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+        "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+        "0x0000000000000000000000000000000000000000"
+      ],
+      "owners": [
+        "0xBec7d4561037e657830F78b87e780AeE1d09Fc7B",
+        "0x7A494C755911Ce06444C47248108439a06Ac028C",
+        "0xc451df1b05828519c014cb967ef1a614bd41834d"
+      ]
+    },
+    "arbitrum": {
+      "tokens": [
+        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+        "0x0000000000000000000000000000000000000000",
+        "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x912ce59144191c1204e64559fe8253a0e49e6548",
+        "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
+        "0xd85e038593d7a098614721eae955ec2022b9b91b",
+        "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418",
+        "0x5979D7b546E38E414F7E9822514be443A4800529",
+        "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+        "0x5979D7b546E38E414F7E9822514be443A4800529",
+        "0x18c11FD286C5EC11c3b683Caa813B77f5163A122",
+        "0x031d35296154279dc1984dcd93e392b1f946737b",
+        "0x0Ae38f7E10A43B5b2fB064B42a2f4514cbA909ef"
+      ],
+      "owners": [
+        "0xdAF7D157F5c6E0F1d7917Ca02a7C185cEF81e6d0",
+        "0x09E122453A079bc2Be621769ae7799e53dA0054E",
+        "0xb764729C6bEbd6E60E151F2c46aFce7D6Ff513fD",
+        "0x9f6B9e253De52C5fD6c65283ff472b15520a7070",
+        "0xe736742Eb62F271c48F4a26168FD8F356AeE68db",
+        "0xF1Cb521C753e41906073eBEd30FE34BCB00845f8",
+        "0x266B30394da3D99a846dD30A2F7C50bb523c5dE1",
+        "0x7638Db20715c5AC09f52bE1E3a4DBb220680BdFd",
+        "0x914172b52262E867D8f2959D884e0ea73795B2c6",
+        "0xEfD0B28810dC3cdD88763f40DCc44462bb85Cf32",
+        "0xDaa78E776D3788F9FBABDAc02aa6De45f7BC50C6",
+        "0x53C6c525a635eF56Bce43d4523D90aACE551D81b",
+        "0x13ff1aB07540b1681173003E361D046530506c11",
+        "0x99DDb3E66A592579B9D46a47824042F62D690a9e",
+        "0x5372Af9b4E9d4b9C016574Dad0f2406Dfe023D5F"
+      ]
+    },
+    "base": {
+      "tokens": [
+        "0x0000000000000000000000000000000000000000"
+      ],
+      "owners": [
+        "0x9Ba3db52BC401F4EF8ba23e56268C3AdE0290837"
+      ]
+    },
+    "boba": {
+      "tokens": [
+        "0x0000000000000000000000000000000000000000"
+      ],
+      "owners": [
+        "0x9673B0E0F07e4a6da712F6847aE93C3F157DD509"
+      ]
+    },
+    "evmos": {
+      "tokens": [
+        "0x2c68d1d6ab986ff4640b51e1f14c716a076e44c4",
+        "0x0000000000000000000000000000000000000000"
+      ],
+      "owners": [
+        "0x21708707f03A19C3a4ea5E1a132B5cF96b86F294"
+      ]
+    },
+    "metis": {
+      "tokens": [
+        "0x420000000000000000000000000000000000000a",
+        "0x0000000000000000000000000000000000000000"
+      ],
+      "owners": [
+        "0x9Ba3db52BC401F4EF8ba23e56268C3AdE0290837",
+        "0xb3D7D548dA38Dac2876Da57842a3cbaaf9a3bD96"
+      ]
+    },
+    "optimism": {
+      "tokens": [
+        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+        "0x0000000000000000000000000000000000000000"
+      ],
+      "owners": [
+        "0xCdDF71750E596b4C38785afFEc3bd4C9bff43f6F",
+        "0x68A4cF26705B3cEaB49d1C99DE98F3Db28ee767E"
+      ]
+    },
+    "era": {
+      "tokens": [
+        "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+      ],
+      "owners": [
+        "0xa41A6a4A04E711B53a82E594CeB525e89206627A"
+      ]
+    },
+    "bsc": {
+      "tokens": [
+        "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+      ],
+      "owners": [
+        "0xa8D4bd632f394CED42BD439Bc34F09198072e519"
+      ]
     },
   },
   "unipower": {

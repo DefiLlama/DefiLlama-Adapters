@@ -20,6 +20,7 @@ const adapterRoutes = [
   './bitcoin.js',
   './curators.js',
   './sumTokens.js',
+  './friend-tech.js',
   '../cex/index.js',
 ]
 const allProtocols = {}

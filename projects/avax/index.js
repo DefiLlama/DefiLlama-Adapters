@@ -1,5 +1,4 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { bitcoin } = require("../avalance-btc");
 
 module.exports = {
   ethereum: {
@@ -10,5 +9,7 @@ module.exports = {
         fetchCoValentTokens: true,
       }),
   },
-  bitcoin,
+  bitcoin: {
+    tvl: () => ({}), // migrated to lombard
+  },
 };
