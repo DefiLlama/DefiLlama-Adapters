@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getProvider } = require("../helper/solana");
 const { Program } = require("@coral-xyz/anchor");
 const idl = {
@@ -78,7 +79,7 @@ const idl = {
 };
 
 const SYNTHETIC_MINT_MAP = {
-  'USD1111111111111111111111111111111111111111': 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // synthetic USD -> USDC
+  'USD1111111111111111111111111111111111111111': ADDRESSES.solana.USDC, // synthetic USD -> USDC
   'USD1111111111111111111111111111111111111119': 'DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT', // synthetic USD9 -> USDe
 }
 

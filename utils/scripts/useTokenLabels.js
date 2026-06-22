@@ -24,6 +24,12 @@ function run() {
     // console.log(files)
     files.forEach(updateFile)
   })
+
+  glob(rootFolder + '/../registries/**/*.js', {}, async (e, files) => {
+    console.log('JSON file count', files.length)
+    // console.log(files)
+    files.forEach(updateFile)
+  })
 }
 
 run()

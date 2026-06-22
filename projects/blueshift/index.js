@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const abi = {
@@ -27,14 +28,14 @@ const { registry, manualPool, blueschain, } = {
     "milkomeda": {
       "reserve": "0xa2351AEA209ceB0ffeCd77149eC615335d7f513d",
       "tokens": [
-        "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9",
-        "0x8c008BBA2Dd56b99f4A6aB276bE3a478cB075F0C"
+        ADDRESSES.milkomeda.WADA,
+        ADDRESSES.milkomeda.BLUES
       ]
     },
     "polygon": {
       "reserve": "0x3abd79823C595C0778e51246c491126e77367b20",
       "tokens": [
-        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+        ADDRESSES.polygon.WMATIC_2
       ]
     }
   }

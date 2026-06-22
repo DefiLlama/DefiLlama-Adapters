@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require("../helper/unknownTokens");
 const { pools, farms } = {
   "pools": [
@@ -15,7 +16,7 @@ const { pools, farms } = {
   ],
   "farms": [
     { "contract": "0x335974e9A7449765DfE891dFc9e9ECF4Ae0E1F08", "token": "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E" },
-    { "contract": "0x7968FC7B3aBf481d8D6577D048DbE10930Bb48BA", "token": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83" },
+    { "contract": "0x7968FC7B3aBf481d8D6577D048DbE10930Bb48BA", "token": ADDRESSES.fantom.WFTM },
     { "contract": "0x4c2032f0F6856be925B1f5E217e01ca8bd4197F6", "token": "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75" },
     { "contract": "0x1ad66466Fc9Cdd5992b3919E475885aCC572887a", "token": "0xAD522217E64Ec347601015797Dd39050A2a69694" },
     { "contract": "0xC17c92E9b2A9Be62e3547819438482033c5d4026", "token": "0xAD522217E64Ec347601015797Dd39050A2a69694" },
