@@ -320,10 +320,26 @@ const defaultTokens = {
 }
 
 function cexExports(config) {
+  // bitcoin can be passed as a key string (or { key }) that is looked up in the
+  // bitcoin addressbook and converted to the appropriate export, e.g. bitcoin: 'korbit'
+  let btcExport
+  if (config.bitcoin !== undefined) {
+    const btcKey = typeof config.bitcoin === 'string'
+      ? config.bitcoin
+      : (config.bitcoin && typeof config.bitcoin.key === 'string' ? config.bitcoin.key : undefined)
+    if (btcKey) {
+      const { getBTCExport } = require('./bitcoin-book/index.js')
+      btcExport = getBTCExport(btcKey)
+      config = { ...config }
+      delete config.bitcoin
+    }
+  }
+
   const chains = Object.keys(config).filter(i => i !== 'bep2')
   const exportObj = {
     timetravel: false,
   }
+  if (btcExport) exportObj.bitcoin = { tvl: btcExport }
   chains.forEach(chain => {
     let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = config[chain]
 

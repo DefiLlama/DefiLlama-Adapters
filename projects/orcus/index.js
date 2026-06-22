@@ -3,7 +3,9 @@ const { sumTokens } = require('../helper/unwrapLPs')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const { createIncrementArray } = require('../helper/utils')
 const masterChefABI = require('../helper/abis/masterchef.json')
-const abi = require('./abi')
+const abi = {
+  lpToken: "function lpToken(uint256) view returns (address)",
+}
 
 const MASTER_CHEF = '0xfa1Cfa75bFae8303A9Fe8aF711AacD59015eE6d4'
 const USDC = ADDRESSES.moonbeam.USDC

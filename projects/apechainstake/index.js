@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/unwrapLPs')
-const { APE_STAKE_CONTRACT } = require('./config')
+const APE_STAKE_CONTRACT = "0x4Ba2396086d52cA68a37D9C0FA364286e9c7835a"
 const abi = require('./abis/apeStake.json')
 
 async function stakingTvl(api) {

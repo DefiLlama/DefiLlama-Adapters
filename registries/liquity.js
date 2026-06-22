@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { getLiquityTvl, getLiquityV2Tvl } = require('../projects/helper/liquity')
 const { buildProtocolExports } = require('./utils')
 
@@ -219,7 +220,7 @@ const configs = {
         { troveManager: '0x21d81DABF6985587CE64C2E8EB12F69DF2178fe2' },
         { troveManager: '0xAeB0B38040aDdc4a2b520919f13944D9bC944435' },
         { troveManager: '0x4315BcE6076953571caf1903d15D682727FBD935' },
-        { troveManager: '0xFF5F4bA96586EDae7E7D838D8770dFB3376Ec245', collateralToken: '0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894' }, // uniBTC
+        { troveManager: '0xFF5F4bA96586EDae7E7D838D8770dFB3376Ec245', collateralToken: ADDRESSES.bob.uniBTC }, // uniBTC
       ],
     },
   },
@@ -227,14 +228,14 @@ const configs = {
     polygon: {
       troveManagers: [
         { troveManager: '0xA2A065DBCBAE680DF2E6bfB7E5E41F1f1710e63b' },
-        { troveManager: '0x09273531f634391dE6be7e63C819F4ccC086F41c', collateralToken: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174' }, // USDC (polygon)
+        { troveManager: '0x09273531f634391dE6be7e63C819F4ccC086F41c', collateralToken: ADDRESSES.polygon.USDC }, // USDC (polygon)
       ],
     },
   },
   'satoshi-finance': {
     bsc: {
       troveManager: '0x3cd34afeba07c02443BECBb2840506F4230f84cB',
-      collateralToken: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', // BTCB (bsc)
+      collateralToken: ADDRESSES.bsc.BTCB, // BTCB (bsc)
       staking: ['0x28c0e5160AB7B821A98745A3236aD2414F5dC041', '0x708bAac4B235d3F62bD18e58c0594b8B20b2ED5B'],
     },
   },
