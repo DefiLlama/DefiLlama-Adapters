@@ -4112,6 +4112,13 @@
     "methodology": "We count all RING deposited into wRING contract",
     "deadFrom": "2023-05-09"
   },
+  "rocketswap": {
+    "timetravel": false,
+    "lamden": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2023-12-09"
+  },
   "rockswap": {
     "deadFrom": "2025-11-04",
     "bitrock": {
