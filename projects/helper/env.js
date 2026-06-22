@@ -22,6 +22,8 @@ const DEFAULTS = {
   SOON_RPC: "https://rpc.mainnet.soo.network/rpc",
   SOON_BASE_RPC: "https://rpc.soonbase.soo.network/rpc",
   SOON_BSC_RPC: "https://rpc.svmbnbmainnet.soo.network/rpc",
+  ANUBIS_RPC: "https://rpc.anubispace.org",
+  ANUBIS_RPC_CHAIN_ID: "6714",
   ASTAR_RPC: "https://astar.blockscout.com/api/eth-rpc",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
