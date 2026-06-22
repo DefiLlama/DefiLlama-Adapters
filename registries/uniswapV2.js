@@ -1617,6 +1617,10 @@ const uniV2Configs = {
   'rexdex': {
     wan: '0xCc2F30462ED1C47Dd7Fb75C81c7F4Cd721eB2A66',
   },
+  'rocketswap': {
+    methodology: 'TVL is calculated from RocketSwap AMM liquidity pools using the Uniswap V2 factory.',
+    anubis: '0xaf6F4e641C86A25518509BC840051A8652Af598A',
+  },
   'rocketswap-cc': {
     base: '0x1b8128c3a1b7d20053d10763ff02466ca7ff99fc',
   },

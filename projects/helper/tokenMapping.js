@@ -40,32 +40,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  anubi: {
-    '0x83fd06f0846d9d90b3016bf670efe2e0b11cde14': {
-      coingeckoId: 'dai',
-      decimals: 18,
-    },
-    '0xdfb6a28bc6dc51fed17c27c880f2c66cdd040a3e': {
-      coingeckoId: 'tether',
-      decimals: 6,
-    },
-    '0x7dd9c7cbc32df500fa3c06fd60cd62c4e97b2eef': {
-      coingeckoId: 'usd-coin',
-      decimals: 6,
-    },
-    '0xca326ae4fe47d07e7d20421170dadacd92ed694c': {
-      coingeckoId: 'ethereum',
-      decimals: 18,
-    },
-    '0x699d13487ed6b78953da2750887b58ef738f9636': {
-      coingeckoId: 'binancecoin',
-      decimals: 18,
-    },
-    '0x72cf15f74657bb00dd1d8dd475248dee644f689a': {
-      coingeckoId: 'polygon-ecosystem-token',
-      decimals: 18,
-    },
-  },
   inri: {
     '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {
       coingeckoId: 'tether',
