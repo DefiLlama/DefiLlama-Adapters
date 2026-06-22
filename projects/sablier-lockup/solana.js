@@ -21,7 +21,7 @@ async function tvl() {
     .map((s) => s.funderAta)
     .filter((a) => a && !BLACKLISTED_ACCOUNTS.has(a));
 
-  return sumTokens2({ tokenAccounts });
+  return sumTokens2({ tokenAccounts, allowError: true });
 }
 
 module.exports = {

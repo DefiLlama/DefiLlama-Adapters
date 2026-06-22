@@ -1,4 +1,4 @@
-const { callSoroban, callSorobanWithContractArg, callSorobanWithU32Arg } = require('../helper/chain/stellar')
+const { callSoroban } = require('../helper/chain/stellar')
 
 const STAKING_CONTRACT = 'CC72BEVVKHQ57PB5FCKAZYRXCSR6DOQSTN46QR7RZMMM64YWNRPDS24S'
 const AQUA_TOKEN = 'CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK'
@@ -8,8 +8,8 @@ const AQUARIUS_POOL_0 = 'CAMXZXXBD7DFBLYLHUW24U4MY37X7SU5XXT5ZVVUBXRXWLAIM7INI7G
 // Treasury: protocol-owned liquidity in the Aquarius BLUB-AQUA pool
 async function tvl(api) {
   const [lpBalance, poolInfo, reserves, totalShares] = await Promise.all([
-    callSorobanWithContractArg(POOL_0_SHARE_TOKEN, 'balance', STAKING_CONTRACT),
-    callSorobanWithU32Arg(STAKING_CONTRACT, 'get_pool_info', 0),
+    callSoroban(POOL_0_SHARE_TOKEN, 'balance', [STAKING_CONTRACT]),
+    callSoroban(STAKING_CONTRACT, 'get_pool_info', [0]),
     callSoroban(AQUARIUS_POOL_0, 'get_reserves'),
     callSoroban(AQUARIUS_POOL_0, 'get_total_shares'),
   ])

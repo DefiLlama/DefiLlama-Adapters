@@ -4,6 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 // MegaETH Mainnet token addresses
 const WETH  = ADDRESSES.optimism.WETH_1
 const USDM  = ADDRESSES.megaeth.USDm
+const MEGA  = ADDRESSES.megaeth.MEGA
 const BTC_B = '0xB0F70C0bD6FD87dbEb7C10dC692a2a6106817072'
 const USDT0 = ADDRESSES.corn.USDT0
 
@@ -11,11 +12,13 @@ const USDT0 = ADDRESSES.corn.USDT0
 const MAOB_BTC_USDM  = '0xaD7e5CBfB535ceC8d2E58Dca17b11d9bA76f555E'
 const MAOB_WETH_USDM = '0x23469683e25b780DFDC11410a8e83c923caDF125'
 const MAOB_USDT0_USDM = '0xDf1576c3C82C9f8B759C69f4cF256061C6Fe1f9e'
+const MAOB_MEGA_USDM = '0x20C7B6B34bB8B8efb46828cF9383BFf8b7856E46'
 
 // CLP vault contracts hold free (undeployed) liquidity
 const CLP_BTC_USDM  = '0x26F35fcbA3C1387dBaC477d82Bb8a66fA2eDfb4E'
 const CLP_WETH_USDM = '0x11469caf743C2bFBD663C42A2E339A75E053075C'
 const CLP_USDT0_USDM = '0xC397f8ffd517EDA78da4dE59c53516B65846a82A'
+const CLP_MEGA_USDM = '0xcC32b639767126f08A51ca5284F9a72150F418D5'
 
 /**
  * Calculates Canonic protocol TVL by summing balanceOf for base and quote
@@ -34,6 +37,8 @@ async function tvl(api) {
       [USDM,  MAOB_WETH_USDM],
       [USDT0, MAOB_USDT0_USDM],
       [USDM,  MAOB_USDT0_USDM],
+      [MEGA,  MAOB_MEGA_USDM],
+      [USDM,  MAOB_MEGA_USDM],
       // CLP vaults (free/undeployed funds only)
       [BTC_B, CLP_BTC_USDM],
       [USDM,  CLP_BTC_USDM],
@@ -41,6 +46,8 @@ async function tvl(api) {
       [USDM,  CLP_WETH_USDM],
       [USDT0, CLP_USDT0_USDM],
       [USDM,  CLP_USDT0_USDM],
+      [MEGA,  CLP_MEGA_USDM],
+      [USDM,  CLP_MEGA_USDM],
     ],
   })
 }

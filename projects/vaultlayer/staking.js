@@ -30,11 +30,11 @@ async function tvlBitcoinStaking() {
   const totalDelegators = await api.call({ abi: abi.maxAllowedDelegators, target: VAULTER_CORE });
   
   // Gather on-chain delegator addresses
-  const dualDelegators = [];
-  for (let i = 0; i < Number(totalDelegators); i++) {
-      const del = await api.call({ abi: abi.allowedDelegators, target: VAULTER_CORE, params: [i] });
-      dualDelegators.push(del);
-  }
+  const dualDelegators = await api.multiCall({
+    abi: abi.allowedDelegators,
+    target: VAULTER_CORE,
+    calls: [...Array(Number(totalDelegators)).keys()],
+  });
 
   // Fetch list of redeeem addresses for Staked Bitcion on CoreDao
   let btcDelegations = [];

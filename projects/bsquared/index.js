@@ -14,7 +14,7 @@ module.exports = {
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
       sumTokensExport({ owners: bitcoinAddressBook.bsquaredBTC }),
-      sumBRC20TokensExport({ owners: bitcoinAddressBook.bsquaredBRC20 }),
+      // sumBRC20TokensExport({ owners: bitcoinAddressBook.bsquaredBRC20 }),  // disable brc20
     ]),
   },
   ethereum: {

@@ -46,16 +46,21 @@ const CONFIG = {
     ],
     blacklist_lenders: ETHENA_BLACKLIST,
   },
-  megaeth: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
+  megaeth: {
+    poolDatas: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
+    blacklist_lenders: ETHENA_BLACKLIST,
+  },
   mantle: {
     poolDatas: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
     blacklist_lenders: ETHENA_BLACKLIST
   },
+  xlayer: ['0x6C505C31714f14e8af2A03633EB2Cdfb4959138F'],
 };
 
 module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
   ['2022-08-04', "Start OP Rewards"],
-  ['2022-04-20', "Start AVAX Rewards"]
+  ['2022-04-20', "Start AVAX Rewards"],
+  ['2026-04-18', "KelpDAO hack"],
 ]

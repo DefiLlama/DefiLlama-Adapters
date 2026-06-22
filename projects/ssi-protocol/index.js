@@ -59,6 +59,7 @@ module.exports = {
     ethereum: ['ETH', 'ethereum'],
     bsc: ['BSC_BNB', 'binancecoin'],
     doge: ['DOGE', 'dogecoin'],
+    hyperliquid: ['HYPEREVM_HYPE', 'hyperliquid'],
     solana: ['SOL', 'solana'],
     bitcoin: ['BTC', 'bitcoin'],
     cardano: ['ADA', 'cardano'],

@@ -127,7 +127,7 @@ const beefyChainNameMapping = {
 };
 
 async function fetchVaultData() {
-  const vaultsResponse = await utils.fetchURL('https://api.beefy.finance/vaults');
+  const vaultsResponse = await utils.fetchURL('https://api.beefy.finance/vaults/all');
   const vaults = vaultsResponse.data;
 
   // sdk.log('Raw API response sample:', JSON.stringify(vaults[0], null, 2));
@@ -173,9 +173,10 @@ async function fetchVaultData() {
         id: vault.id,
         address: vault.earnContractAddress,
         token: vault.tokenAddress,
+        type: vault.type,
         isBIFI: vault.id.toLowerCase().includes('bifi'),
         status: vault.status,
-        chain: ourChainName
+        chain: ourChainName,
       });
       mappedVaults++;
     }
@@ -214,6 +215,30 @@ async function tvl(api, isStaking = false) {
   if (!isStaking)
     activeVaults = vaults.filter(v => !v.isBIFI && !blaclistedVaultSet.has(v.address.toLowerCase()));
 
+  // CLM exposures are surfaced by multiple entries in /vaults/all: the cowcentrated CLM itself,
+  // its standard "-vault" wrapper, and its gov "-rp" reward pool. They all map back to the same
+  // underlying tokens, so to avoid double counting we ignore wrappers/RPs and query the CLM directly.
+  const clmVaults = activeVaults.filter(v => v.type === 'cowcentrated');
+  const clmAddressSet = new Set(clmVaults.map(v => v.address.toLowerCase()));
+  activeVaults = activeVaults.filter(v =>
+    v.type !== 'cowcentrated' &&
+    v.type !== 'gov' &&
+    !clmAddressSet.has((v.token || '').toLowerCase())
+  );
+
+  if (clmVaults.length) {
+    const clmAddresses = clmVaults.map(v => v.address);
+    const clmWants = await api.multiCall({ abi: 'function wants() view returns (address token0, address token1)', calls: clmAddresses, permitFailure: true, });
+    const clmBalances = await api.multiCall({ abi: 'function balances() view returns (uint256 balance0, uint256 balance1)', calls: clmAddresses, permitFailure: true, });
+    clmWants.forEach((w, i) => {
+      const b = clmBalances[i];
+      if (w && b) {
+        api.add(w.token0, b.balance0);
+        api.add(w.token1, b.balance1);
+      }
+    });
+  }
+
   // sdk.log(`Active non-BIFI vaults: ${activeVaults.length}`);
   const vaultAddresses = activeVaults.map(v => v.address);
 
@@ -231,29 +256,16 @@ async function tvl(api, isStaking = false) {
     }
   })
 
-  const tokenSymbols = await api.multiCall({ abi: 'string:symbol', calls: wants, permitFailure: true, });
-  const wantTokens = await api.multiCall({ abi: 'function wants() view returns (address token0, address token1)', calls: wants, permitFailure: true, });
-  const wantBalances = await api.multiCall({ abi: 'function balances() view returns  (uint256 balance0, uint256 balance1)', calls: wants, permitFailure: true, });
-
   const balances = await api.multiCall({ abi: vaultABI.balance, calls: filteredVaults, permitFailure: true, });
 
   wants.forEach((token, i) => {
     const balance = balances[i]
-    const tokenSymbol = tokenSymbols[i] ?? ''
-    const multiTokens = wantTokens[i]
-    const multiBalances = wantBalances[i]
-
-    // check if this is a token for a concentrated LP (uni v3 style)
-    const isConcLP = tokenSymbol.startsWith('cow') && tokenSymbol.includes('-') && multiTokens && multiBalances
-
-    if (isConcLP) {
-      api.add(multiTokens.token0, multiBalances.balance0);
-      api.add(multiTokens.token1, multiBalances.balance1);
-    }
-    else if (token && balance) api.add(token, balance);
+    if (token && balance) api.add(token, balance);
   });
 
-  return sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
+  await sumTokens2({ api, resolveLP: true, resolveIchiVault: true, });
+
+  api.removeTokenBalance('0xf859bf77cbe8699013d6dbc7c2b926aaf307f830')  // bsc - BRY has bad token price
 }
 
 module.exports = {
@@ -265,3 +277,9 @@ module.exports = {
 Object.keys(chains).forEach(chain =>
   module.exports[chain] = { tvl: (api) => tvl(api, false), staking: (api) => tvl(api, true) }
 )
+
+
+module.exports.canto = {
+  tvl: () => ({}),
+  staking: () => ({}),
+}

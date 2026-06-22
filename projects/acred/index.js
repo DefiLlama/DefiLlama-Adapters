@@ -34,10 +34,11 @@ async function tvl(api) {
   if (!chainAddresses) return api.getBalances();
 
   // Solana:
-  // Supply may be zero if the mint is not indexed or has no discoverable supply.
-  // This is expected behavior and values should not be inferred from other chains.
+  // getTokenSupplies adds the supply to the balances (keyed solana:<mint>);
+  // return the api balances so the value is priced, consistent with the other chains.
   if (chain === 'solana') {
-    return getTokenSupplies([chainAddresses.token], { api });
+    await getTokenSupplies([chainAddresses.token], { api });
+    return api.getBalances();
   }
 
   // Aptos:

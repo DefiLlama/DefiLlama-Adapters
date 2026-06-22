@@ -48,8 +48,8 @@ const config = {
 
 const envioPayload = `
 query getChainData($chainId: numeric!) {
-  Contract(where: { chainId: { _eq: $chainId } }) { id address category }
-  Asset(where: { chainId: { _eq: $chainId } }) { id chainId symbol }
+  Contract(where: { _and: { chainId: { _eq: $chainId } , category: {_eq:"lockup"}}}) { id address category }
+  Asset(where: { _and: { chainId: { _eq: $chainId }, lockupStreams_aggregate: { count: { predicate: { _gt:0 }}}}}) { id chainId symbol }
 }
 `
 
@@ -90,3 +90,8 @@ const vesting = async (api) => api.sumTokens(await getTokensConfig(api, true));
 module.exports = Object.fromEntries(
   Object.keys(config).map(chain => [chain, { tvl, vesting }])
 );
+
+module.exports.formnetwork = {
+  tvl: () => ({}),
+  vesting: () => ({}),
+}

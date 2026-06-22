@@ -122,6 +122,7 @@ const defaultTokens = {
     ADDRESSES.bsc.USD1, //USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
     '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
+    '0x1b66474c8eca3827f16202907f41f63785579716' // exchange token for weex, 
   ],
   tron: [
     nullAddress,
@@ -250,18 +251,14 @@ const defaultTokens = {
   ],
   moonbeam: [
     nullAddress,
-    ADDRESSES.telos.USDT, //usdt
     "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
   ],
   moonriver: [
     nullAddress,
-    ADDRESSES.moonriver.USDT, //usdt
   ],
   kava: [
     nullAddress,
-    ADDRESSES.kava.USDT,
     ADDRESSES.kava.USDt,
-    ADDRESSES.kava.USDC
   ],
   cronos: [
     nullAddress,

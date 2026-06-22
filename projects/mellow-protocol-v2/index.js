@@ -5,7 +5,7 @@ const EXCLUDED_TYPES = new Set(['core-vault', 'dvv-vault'])
 
 const tvl = async (api) => {
   const chainId = Number(api.chainId)
-  if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://points.mellow.finance/v1/vaults')
+  if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://api.mellow.finance/v1/vaults')
   const vaultsApiResponse = await _vaultsApiResponse;
 
   const erc4626Vaults = vaultsApiResponse.filter(v => v && !EXCLUDED_TYPES.has(v.type) && Number(v.chain_id) === chainId)

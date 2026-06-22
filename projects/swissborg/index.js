@@ -79,6 +79,7 @@ const config = {
       'FQxGUUAX3BdFArA2XdvPcRHt4CmRMCw5wLt8F5uDXmwa',
       'EKtwdf5gFPb58WJPENcS8qqPRoAkEwDLHfHk2S2nbTnB',
       'HGqHR9Wm6ETAgQHj7q1qcmywXHfDx48VuVovQpGTgsHU',
+      '5GkNxL9QTRDdRFgJrhczbKUwDFecRa9obewHmPwfXGZW',
     ],
   },
   polkadot: {
@@ -88,6 +89,7 @@ const config = {
       '15mENJiKxtbxE2PNcB8qTaatYKjFTN4kitEzZ5eiHFGW3DVU',
       '12xHzb3NT4e8MAWwJUGfhTD7R41Abyfa3NdYDGqqL3V64PLG',
       '157zgQi6M5tn8U2aRQNh5tG7rj9Lif76xPxJnmJcfmbCGsQ3',
+      '128so5uC4TXG49q6s2zUYSU3nP4CkUYprAxdUMsHyaxPRA6f',
     ],
   },
   cardano: {
@@ -100,6 +102,8 @@ const config = {
       'addr1qy2muwyr7edegpw4ywn50jnzw7kkpxjw7rjsuf27ws668yswdttyth96zpsjwfuf6m9x2ccgwz0p0864uvavs3qtfkgsaa2jy3',
       'addr1qxfcqh0yylf0zan0s4c6a2pt5jkulryqjfjrn8vll253m3skcrtekcs32m5d3nqvrayrmngkv6zz5zkvtldrllprshzqk0z64f',
       'addr1qygcz8flfwuzwtqxk58chs8g5htsghxyk7ltkt4rlp0c4h98heedkjaf00sg4ec4lh9vlsw988d58t207a86jp00npvspv7zpu',
+      'addr1q9agg3ljmqtvcyz4yw92kvmz6sctj03zy5fvynjv7m8pzraxqqlken6uqfrvxr5qa3yrac593hlmmnjxrjzk6qkzyqwqke4uf9',
+      'addr1q9agg3ljmqtvcyz4yw92kvmz6sctj03zy5fvynjv7m8pzref3pwu5zst9u9hwxe3djpu6nrwn2eul9wnm0gneq26808sffzugd',
     ],
   },
   hedera: {

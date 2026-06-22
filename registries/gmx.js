@@ -398,6 +398,10 @@ const configs = {
       eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
       fromBlock: 117906,
     },
+    megaeth: {
+      eventEmitter: '0xAf2E131d483cedE068e21a9228aD91E623a989C2',
+      fromBlock: 5661063,
+    },
   },
   'modemax-perp': {
     mode: {
@@ -409,6 +413,12 @@ const configs = {
     core: {
       eventEmitter: '0x29792F84224c77e2c672213c4d942fE280D596ef',
       fromBlock: 13558258,
+    },
+  },
+  'updown': {
+    celo: {
+      eventEmitter: '0x6db23e3B53958c449b7DF6D639A1333ca99EB937',
+      fromBlock: 57687338,
     },
   },
 }

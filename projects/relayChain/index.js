@@ -45,17 +45,17 @@ const daiMatic = ADDRESSES.polygon.DAI;
 const usdtMatic = ADDRESSES.polygon.USDT;
 
 
-const usdtMoonriver = ADDRESSES.moonriver.USDT;
+const usdtMoonriver = "0xb44a9b6905af7c801311e8f4e76932ee959c663c";
 const daiMoonriver = "0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844";
-const usdcMoonriver = ADDRESSES.moonriver.USDC;
+const usdcMoonriver = "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d";
 const wbtcMoonriver = "0xE6a991Ffa8CfE62B0bf6BF72959A3d4f11B2E0f5";
 const wethMoonriver = "0x3Ca3fEFA944753b43c751336A5dF531bDD6598B6";
 const wMOVR = "0x98878B06940aE243284CA214f92Bb71a2b032B8A";
 
 
 const usdtFantom = "0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9";
-const daiFantom = ADDRESSES.fantom.DAI;
-const usdcFantom = ADDRESSES.fantom.USDC;
+const daiFantom = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e";
+const usdcFantom = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const wFantom = ADDRESSES.fantom.WFTM;
 const btcFantom = ADDRESSES.fantom.WBTC;
 
@@ -70,7 +70,7 @@ const usdcMetis = ADDRESSES.metis.m_USDC;
 const usdtMetis = ADDRESSES.metis.m_USDT;
 const maticMetis = ADDRESSES.metis.MATIC;
 const mimMetis = "0x44Dd7C98885cD3086E723B8554a90c9cC4089C4C";
-const ftmMetis = ADDRESSES.oasis.USDT
+const ftmMetis = '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8'
 const metis = ADDRESSES.metis.Metis;
 const mdaiMetis="0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0";
 
@@ -81,7 +81,7 @@ const daiCronos = "0xF2001B145b43032AAF5Ee2884e456CCd805F677D";
 const usdcCronos = ADDRESSES.cronos.USDC;
 const wbtcCronos = ADDRESSES.cronos.WBTC;
 const wethCronos = "0xe44fd7fcb2b1581822d0c862b68222998a0c299a";
-const busdCronos = ADDRESSES.oasis.USDT;
+const busdCronos = '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8';
 const wCronos = ADDRESSES.cronos.WCRO_1;
 
 

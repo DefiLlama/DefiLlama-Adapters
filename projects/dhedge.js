@@ -7,6 +7,7 @@ const DHEDGE_FACTORY_PROXIES = {
   arbitrum: "0xffFb5fB14606EB3a548C113026355020dDF27535",
   base: "0x49Afe3abCf66CF09Fab86cb1139D8811C8afe56F",
   plasma: "0xAec4975Fc8ad911464D2948D771488b30F6eEE87",
+  hyperliquid: "0x615037C2Df6FA97634c5aD2d8144708b9dd3B176",
 };
 
 const CONFIG_DATA_MSTABLE = {
@@ -35,6 +36,10 @@ const CONFIG_DATA_TOROS = {
   },
   ethereum: {
     dhedgeFactory: "0x96d33bcf84dde326014248e2896f79bbb9c13d6d",
+    torosMultisigManager: "0xfbd2b4216f422dc1eee1cff4fb64b726f099def5",
+  },
+  hyperliquid: {
+    dhedgeFactory: "0x615037c2df6fa97634c5ad2d8144708b9dd3b176",
     torosMultisigManager: "0xfbd2b4216f422dc1eee1cff4fb64b726f099def5",
   },
 };
@@ -88,7 +93,7 @@ const tvl = async (api) => {
 
 const getTorosVaultsAddresses = async (api) =>{
   const { chain } = api
-  if (chain !== 'plasma' ){
+  if (chain !== 'plasma'){
     const { dhedgeFactory, torosMultisigManager } = CONFIG_DATA_TOROS[chain];
     return await api.call({
       abi: DHEDGE_V2_FACTORY_ABI,
@@ -159,6 +164,9 @@ module.exports = {
     tvl,
   },
   plasma: {
+    tvl,
+  },
+  hyperliquid: {
     tvl,
   },
   misrepresentedTokens: true,

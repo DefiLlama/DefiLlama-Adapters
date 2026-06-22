@@ -208,8 +208,8 @@ function getStakingFunction(chain) {
     return staking(stakingData.contractAddress, stakingData.abrAddress, chain, "allbridge", stakingData.decimals);
 }
 
-async function solanaTvl() {
-    return solana.sumTokens2({ tokenAccounts: solanaData.tokens.map(i => i.tokenAccount)})
+async function solanaTvl() {    
+    return solana.sumTokens2({ tokenAccounts: solanaData.tokens.map(i => i.tokenAccount), allowError: true}) // Skip closed TAs
 }
 
 async function solanaStaking() {

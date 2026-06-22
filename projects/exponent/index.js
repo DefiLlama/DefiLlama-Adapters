@@ -59,4 +59,3 @@ module.exports = {
   methodology: "TVL is calculated by summing the total supply of each Exponent wrapped Yield bearing token and multiplying their base asset amount by the price of the underlying token",
   solana: { tvl },
 };
-

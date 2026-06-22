@@ -64,54 +64,53 @@ async function computeFusionTVL(api) {
   api.addTokens(fusionContracts.map(c => c.token), totalAssets);
 }
 
-async function _computeEkuboTVL(
-  address
-) {
-  const totalShares = await call({
-    target: address,
-    abi: EkuboAbiMap.total_supply
+// Batched: one multiCall for all total_supply, then one for all convert_to_assets.
+async function _computeEkuboTVLBatch(contracts) {
+  const totalShares = await multiCall({
+    calls: contracts.map(c => c.address),
+    abi: EkuboAbiMap.total_supply,
   })
 
-  const hexValue = '0x' + BigInt(totalShares).toString(16);
-
-  const assets = await call({
-    target: address,
-    params: [hexValue, '0x0'],
-    abi: { ...EkuboAbiMap.convert_to_assets, customInput: 'address' }
+  const assets = await multiCall({
+    calls: contracts.map((c, i) => ({
+      target: c.address,
+      params: ['0x' + BigInt(totalShares[i]).toString(16), '0x0'],
+    })),
+    abi: { ...EkuboAbiMap.convert_to_assets, customInput: 'address' },
   })
 
   return assets
-} 
+}
 
 async function computeEkuboTVL(api) {
   const ekuboContracts = STRATEGIES.EkuboVaults
-  
-  for (const c of ekuboContracts) {
-    const assets = await _computeEkuboTVL(c.address)
+  const assetsList = await _computeEkuboTVLBatch(ekuboContracts)
 
+  ekuboContracts.forEach((c, i) => {
+    const assets = assetsList[i]
     api.addTokens(c.token1, assets['2'])
     api.addTokens(c.token2, assets['1'])
-  }
+  })
 }
 
 async function computeEkuboBTCTvl(api) {
   const ekuboContracts = STRATEGIES.EkuboVaultsEndurBTC
+  const assetsList = await _computeEkuboTVLBatch(ekuboContracts)
 
-  for (const c of ekuboContracts) {
-    const assets = await _computeEkuboTVL(c.address)
-
-    const hexValue = '0x' + BigInt(assets['1']).toString(16);
-    // convert lst variant to its btc form
-    const lstAssets = await call ({
+  // convert each lst variant to its btc form in one batched multiCall
+  const lstAssets = await multiCall({
+    calls: ekuboContracts.map((c, i) => ({
       target: c.token2,
-      params: [hexValue, '0x0'],
-      abi: {...endurABIMap.convert_to_assets, customInput: 'address'}
-    })
-    
+      params: ['0x' + BigInt(assetsList[i]['1']).toString(16), '0x0'],
+    })),
+    abi: { ...endurABIMap.convert_to_assets, customInput: 'address' },
+  })
+
+  ekuboContracts.forEach((c, i) => {
     // add these assets to native btc token
-    let totalAssets = Number(assets['2']) + Number(lstAssets)
+    const totalAssets = Number(assetsList[i]['2']) + Number(lstAssets[i])
     api.addTokens(c.token1, totalAssets)
-  }
+  })
 }
 
 async function computeEvergreenTVL(api) {
@@ -154,6 +153,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  isHeavyProtocol: true,  
   doublecounted: true,
   methodology: "The TVL is calculated as a sum of total assets deposited into strategies",
   starknet: {

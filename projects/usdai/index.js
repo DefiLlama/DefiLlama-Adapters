@@ -161,25 +161,30 @@ async function borrowed(api) {
   const { loanRouterEvents } = await request(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, {
     timestampLte: String(api.timestamp),
   });
-  for (const event of loanRouterEvents) {
+  const loanStates = await api.multiCall({
+    abi: abi.loanState,
+    target: LOAN_ROUTER_CONTRACT,
+    calls: loanRouterEvents.map((event) => ({ params: [event.loanTermsHash] })),
+  });
+  loanRouterEvents.forEach((event, i) => {
     // Get the currency token
     const { currencyToken } = event.loanOriginated;
 
     // Get scaled balance
-    const [status, , , scaledBalance] = await api.call({ abi: abi.loanState, target: LOAN_ROUTER_CONTRACT, params: [event.loanTermsHash] });
+    const [status, , , scaledBalance] = loanStates[i];
 
     // If the loan is inactive, continue
-    if (+status !== 1) continue;
+    if (+status !== 1) return;
 
     // If the currency token has more than 18 decimals, continue
-    if (currencyToken.decimals > 18) continue;
+    if (currencyToken.decimals > 18) return;
 
     // Scale down by the decimals of the currency token
     const unscaledBalance = BigInt(scaledBalance) / BigInt(10 ** (18 - currencyToken.decimals));
 
     // Add the balance to the TVL
     api.add(currencyToken.id, unscaledBalance);
-  }
+  });
 }
 
 module.exports = {

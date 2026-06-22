@@ -24,7 +24,7 @@ const BigNumber = require("bignumber.js");
 const MASTERCHEF = "0x742474dae70fa2ab063ab786b1fbe5704e861a0c";
 const MINICHEF = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
 const BSCMINICHEF = "0xD46db083De31c64AF3F680f139A31fF37bac004f";
-const usdcTokenAddress = ADDRESSES.fantom.USDC;
+const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const wftmTokenAddress = ADDRESSES.fantom.WFTM;
 const beethovenVaultAddress = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
 

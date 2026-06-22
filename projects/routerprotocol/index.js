@@ -23,7 +23,7 @@ const config = {
   fantom: {
     contractAddress: "0x6e14f48576265272B6CAA3A7cC500a26050Be64E",
     tokens: [
-      { name: "usd-coin", address: ADDRESSES.fantom.USDC, decimals: 6 },
+      { name: "usd-coin", address: "0x04068da6c83afcfa0e13ba15a6696662335d5b75", decimals: 6 },
       { name: "wmatic", address: "0x40DF1Ae6074C35047BFF66675488Aa2f9f6384F3", decimals: 18 },
       { name: "wbnb", address: "0x27f26F00e1605903645BbaBC0a73E35027Dccd45", decimals: 18 },
       { name: "wrapped-avax", address: "0x511D35c52a3C244E7b8bd92c0C297755FbD89212", decimals: 18 },
@@ -82,8 +82,8 @@ const config = {
     tokens: [
       { name: "usd-coin", address: ADDRESSES.aurora.USDC_e, decimals: 6 },
       { name: "weth", address: "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB", decimals: 18 },
-      { name: "wmatic", address: ADDRESSES.oasis.USDT, decimals: 18 },
-      { name: "wbnb", address: ADDRESSES.syscoin.USDC, decimals: 18 },
+      { name: "wmatic", address: '0x6ab6d61428fde76768d7b45d8bfeec19c6ef91a8', decimals: 18 },
+      { name: "wbnb", address: "0x2bf9b864cdc97b08b6d79ad4663e71b8ab65c45c", decimals: 18 },
       { name: "wrapped-avax", address: "0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844", decimals: 18 },
     ],
   },
@@ -99,16 +99,16 @@ const config = {
       { name: "usd-coin", address: ADDRESSES.cronos.USDC, decimals: 6 },
       { name: "wrapped-cro", address: ADDRESSES.cronos.WCRO_1, decimals: 18 },
       { name: "wmatic", address: "0xad79AC3c5a5c15C6B9194F5568e451b3fc3C2B40", decimals: 18 },
-      { name: "wbnb", address: ADDRESSES.telos.ETH, decimals: 18 },
-      { name: "wrapped-avax", address: ADDRESSES.shiden.ETH, decimals: 18 },
+      { name: "wbnb", address: "0xfa9343c3897324496a05fc75abed6bac29f8a40f", decimals: 18 },
+      { name: "wrapped-avax", address: "0x765277eebeca2e31912c9946eae1021199b39c61", decimals: 18 },
       { name: "weth", address: "0xe44Fd7fCb2b1581822D0c862B68222998a0c299a", decimals: 18 },
-      { name: "wrapped-fantom", address: ADDRESSES.moonriver.USDT, decimals: 18 },
+      { name: "wrapped-fantom", address: "0xb44a9b6905af7c801311e8f4e76932ee959c663c", decimals: 18 },
     ],
   },
   kava: {
     contractAddress: "0x6e14f48576265272B6CAA3A7cC500a26050Be64E",
     tokens: [
-      { name: "usd-coin", address: ADDRESSES.telos.ETH, decimals: 6 },
+      { name: "usd-coin", address: "0xfa9343c3897324496a05fc75abed6bac29f8a40f", decimals: 6 },
     ],
   },
 }

@@ -3,7 +3,7 @@ const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
 const {COIN_CONFIG} = require("./coinConfig.js");
 
-const {desU64, desU128} = require("./bytes");
+const {fromU64: desU64, fromU128: desU128} = require("../helper/chain/sui");
 const {getExchangeRate} = require("./price");
 const {MMT_TYPE_CONFIG} = require("./coinConfig");
 const {getVaultTvlByAmountB, getDynamicFieldObject} = require("./util");
