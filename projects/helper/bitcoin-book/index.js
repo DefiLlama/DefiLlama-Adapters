@@ -306,6 +306,7 @@ module.exports = {
     "3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9",
     "bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34",
     "bc1pkldc3d64ceqshhznxuj78r6e0a3p7gtdrrue07zmcq54xzlyuu9sppvxk0",
+    "bc1q47zfy02qemw2eeqk673dsfcmwlqapsn420yde4",
   ],
   merlin: [
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
