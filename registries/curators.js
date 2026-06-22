@@ -93,8 +93,8 @@ const configs = {
     _meta: {
       timetravel: false,
       hallmarks: [
-    ['2025-06-01', "Start tracking vaults on starknet"],
-  ],
+        ['2025-06-01', "Start tracking vaults on starknet"],
+      ],
     },
   },
   "anthias": {
@@ -352,12 +352,12 @@ const configs = {
     },
     _meta: {
       timetravel: false, // starknet doesn't support historical queries
-  hallmarks: [
-    ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
-  ],
       hallmarks: [
-    ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
-  ],
+        ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
+      ],
+      hallmarks: [
+        ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
+      ],
     },
   },
   "cozy-v3": {
@@ -372,9 +372,9 @@ const configs = {
   },
   "edge-capital": {
     config: {
-      methodology: 'Count all assets are deposited in all vaults curated by Edge Capital.',
+      methodology: 'Counts all assets deposited in vaults curated by Muscadine.',
       blockchains: {
-        tac:{
+        tac: {
           eulerVaultOwners: [
             '0xB2b9a27a6160Bf9ffbD1a8d245f5de75541b1DDD',
             '0x1280e86Cd7787FfA55d37759C0342F8CD3c7594a',
@@ -564,10 +564,11 @@ const configs = {
             '0xf7e26Fa48A568b8b0038e104DfD8ABdf0f99074F', // Muscadine USDC Vault
             '0xAeCc8113a7bD0CFAF7000EA7A31afFD4691ff3E9', // Muscadine cbBTC Vault
             '0x21e0d366272798da3A977FEBA699FCB91959d120', // Muscadine WETH Vault
-            // V2 Vaults (Prime)
+            // V2 Vaults
             '0x89712980cb434ef5ae4ab29349419eb976b0b496', // Muscadine USDC Prime
             '0xd6dcad2f7da91fbb27bda471540d9770c97a5a43', // Muscadine WETH Prime
             '0x99dcd0d75822ba398f13b2a8852b07c7e137ec70', // Muscadine cbBTC Prime
+            '0x314fD07319ef645bA7D548915CCd91F4788A1839', // Muscadine USDC Frontier
           ],
         },
       }
@@ -662,17 +663,17 @@ const configs = {
             '0x598A41fA4826e673829D4c5AfD982C0a43977ca6',
           ],
         },
-        polygon:{
+        polygon: {
           morphoVaultOwners: [
             '0x7B41b9891887820A75A51a1025dB1A54f4798521',
           ],
         },
-        unichain:{
+        unichain: {
           morphoVaultOwners: [
             '0x187620a61f4f00Cb629b38e1b38BEe8Ea60d2B8D',
           ],
         },
-        plume_mainnet:{
+        plume_mainnet: {
           morphoVaultOwners: [
             '0x7B41b9891887820A75A51a1025dB1A54f4798521',
             '0x06590Fef209Ebc1f8eEF83dA05984cD4eFf0d0E3',
@@ -697,12 +698,12 @@ const configs = {
             '0x03a8416bf20d036df5b1cf3447630a2e1cb04685f6b0c3a70ed7fb1473548ecf', // Re7 xBTC
           ],
         },
-        tac:{
+        tac: {
           eulerVaultOwners: [
             '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
           ],
         },
-        linea:{
+        linea: {
           eulerVaultOwners: [
             '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
           ],
@@ -716,14 +717,14 @@ const configs = {
     },
     _meta: {
       timetravel: false, // starknet doesn't support historical queries
-  hallmarks: [
-    ['2025-06-01', "Start tracking Vesu V1 vaults on Starknet"],
-    ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
-  ],
       hallmarks: [
-    ['2025-06-01', "Start tracking Vesu V1 vaults on Starknet"],
-    ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
-  ],
+        ['2025-06-01', "Start tracking Vesu V1 vaults on Starknet"],
+        ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
+      ],
+      hallmarks: [
+        ['2025-06-01', "Start tracking Vesu V1 vaults on Starknet"],
+        ['2026-02-10', "Start tracking Vesu V2 vaults on Starknet"],
+      ],
     },
   },
   "relend": {
@@ -773,9 +774,9 @@ const configs = {
             '0xf42bca228D9bd3e2F8EE65Fec3d21De1063882d4',
             '0x2bD3A43863c07B6A01581FADa0E1614ca5DF0E3d'
           ],
-          
+
         },
-        
+
       }
     },
   },
@@ -923,34 +924,42 @@ const configs = {
   },
   "taulabs": {
     config: {
-        methodology: 'Count all assets deposited in TAU Labs vaults.',
-        blockchains: {
-            ethereum: {
-                erc4626: [
-                    '0xb0f56bb0bf13ee05fef8cd2d8df5ffdfcac7a74f',
-                    '0x6f66b845604dad6e80b2a1472e6cacbbe66a8c40',
-                    '0x43a32d4f6c582f281c52393f8f9e5ace1d4a1e68',
-                    '0xe48cdd5ecec5aa53e630a7b4df12f79067b68dac',
-                    '0x63103375659d0aa94e9f35df15be01a3dd1ae9c0',
-                    '0xc50b2d51fd1e2ac67a9c09eaf63c24ea2465c64b',
-                    '0xc2a119ea6de75e4b1451330321cb2474eb8d82d4',
-                    '0x60e36a79c3d21120350e39b5ea59ae26b75ae74c',
-                    '0xd36f53497507e948df9f277cf8c3ececb09a1c1d',
-                    '0x604117f0c94561231060f56cd2ddd16245d434c5',
-                    '0xad685fec2066d7f5436f5804882998ba79725706',
-                ],
-            },
-            flow: {
-                erc4626: [
-                    '0xc52E820d2D6207D18667a97e2c6Ac22eB26E803c',
-                ]
-            },
-            plasma: {
-                erc4626: [
-                    '0x0a71624ab3e8101f78d95dfc81e0f1f31128ed7a',
-                ]
-            }
+      methodology: 'Count all assets deposited in TAU Labs vaults.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xb0f56bb0bf13ee05fef8cd2d8df5ffdfcac7a74f',
+            '0x6f66b845604dad6e80b2a1472e6cacbbe66a8c40',
+            '0x43a32d4f6c582f281c52393f8f9e5ace1d4a1e68',
+            '0xe48cdd5ecec5aa53e630a7b4df12f79067b68dac',
+            '0x63103375659d0aa94e9f35df15be01a3dd1ae9c0',
+            '0xc50b2d51fd1e2ac67a9c09eaf63c24ea2465c64b',
+            '0xc2a119ea6de75e4b1451330321cb2474eb8d82d4',
+            '0x60e36a79c3d21120350e39b5ea59ae26b75ae74c',
+            '0xd36f53497507e948df9f277cf8c3ececb09a1c1d',
+            '0x604117f0c94561231060f56cd2ddd16245d434c5',
+            '0xad685fec2066d7f5436f5804882998ba79725706',
+            '0xdf8a0d3c90462c4c9b5a8697c119fa67cb84a874',
+            '0x5fe86b1adee4b18f6a8c55ea0bdbb55e2e445159'
+          ],
+        },
+        flow: {
+          erc4626: [
+            '0xc52E820d2D6207D18667a97e2c6Ac22eB26E803c',
+          ]
+        },
+        plasma: {
+          erc4626: [
+            '0x0a71624ab3e8101f78d95dfc81e0f1f31128ed7a',
+          ]
+        },
+        base: {
+          erc4626: [
+            '0x01a6ff6eb333c1393ef424f5894b18367f1499a8',
+            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8'
+          ]
         }
+      }
     },
   },
   "telosc": {
