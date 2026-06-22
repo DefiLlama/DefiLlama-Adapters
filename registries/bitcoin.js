@@ -38,6 +38,7 @@ const configs = {
   },
   "btnx": {
     bitcoin: 'btnx',
+    timetravel: false,
   },
   "chakra": {
     bitcoin: 'chakra',
@@ -65,6 +66,7 @@ const configs = {
   },
   "fbtc": {
     bitcoin: 'fbtc',
+    timetravel: false,
   },
   "gate-btc": {
     bitcoin: 'gateBtc',
@@ -72,6 +74,7 @@ const configs = {
   },
   "hemi-btc": {
     bitcoin: 'hemiBTC',
+    timetravel: false,
   },
   "kraken-btc": {
     bitcoin: 'krakenBTC',
@@ -116,6 +119,7 @@ const configs = {
   },
   "zeus": {
     bitcoin: 'zeusZBTC',
+    timetravel: false,
   },
 }
 

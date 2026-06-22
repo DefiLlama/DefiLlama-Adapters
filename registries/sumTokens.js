@@ -1,16 +1,25 @@
 const { sumTokensExport } = require('../projects/helper/sumTokens')
-const { buildProtocolExports } = require('./utils')
+const { staking: stakingFn } = require('../projects/helper/staking')
+const { pool2: pool2Fn } = require('../projects/helper/pool2')
 
-// Adapters whose entire TVL is a static sumTokensExport(options) per chain.
-// Each chain value is the exact options object that was passed to sumTokensExport
-// (owners/tokens/tokensAndOwners and any declarative flags like resolveLP,
-// fetchCoValentTokens, blacklistedTokens, etc.). Top-level keys are protocol metadata.
-function sumTokensExportFn(chainConfigs) {
-  const result = {}
-  for (const [chain, options] of Object.entries(chainConfigs)) {
-    result[chain] = { tvl: sumTokensExport({ ...options, chain }) }
-  }
-  return result
+// Registry for adapters whose TVL (and optional staking/pool2/borrowed buckets) are static sumTokens calls.
+// A chain's value is EITHER a plain sumTokens options object (=> treated as { tvl }),
+// OR a bucket map keyed by tvl/staking/pool2/borrowed where each value is:
+//   plain options object -> sumTokensExport(opts); { __staking:[args] } -> stakingFn(...);
+//   { __pool2:[args] } -> pool2Fn(...); { __empty:true } -> () => ({}).
+const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens"])
+const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting"])
+
+function buildBucket(spec, chain) {
+  if (spec.__empty) return () => ({})
+  if (spec.__staking) return stakingFn(...spec.__staking)
+  if (spec.__pool2) return pool2Fn(...spec.__pool2)
+  return sumTokensExport({ ...spec, chain })
+}
+function isBucketMap(v) {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return false
+  const keys = Object.keys(v)
+  return keys.length > 0 && keys.every(k => BUCKET_KEYS.has(k))
 }
 
 const configs = {
@@ -34,6 +43,22 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "0xscans": {
+    "methodology": "Counts all 0xScans tokens in the staking pools",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x67a37e939A46eFFd65A91949eC7c8587BD82aAa7"
+        ],
+        "tokens": [
+          "0x10703cA5e253306e2ABABD68e963198be8887c81"
+        ]
+      }
     },
   },
   "0xzebra": {
@@ -196,6 +221,24 @@ const configs = {
       ]
     },
   },
+  "DeNet": {
+    "start": "2023-08-11",
+    "methodology": "Total amount of DE tokens used for DeNet storage payments",
+    "polygon": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x6261e1aac369cd694093455f9e2b65b31acedda1",
+          "0x1a9b54A3075119f1546C52cA0940551A6ce5d2D0"
+        ],
+        "tokens": [
+          "0x081Ec4c0e30159C8259BAD8F4887f83010a681DC"
+        ]
+      }
+    },
+  },
   "Delea": {
     "methodology": "Counts Delea smartcontract balance as TVL.",
     "misrepresentedTokens": true,
@@ -312,6 +355,27 @@ const configs = {
       ]
     },
   },
+  "IgnoreFUD": {
+    "core": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x2CaBc908c163f966fD9A1493211F91B0371A8575",
+          "0xBA554Bd93BF6EE9E2F2f85F9448513F932E338Ad",
+          "0x8b3cC46943243E260E201ADd16F2ed15253f6702"
+        ],
+        "tokens": [
+          "0x98564E70c7fCC6d947fFE6d9EfeD5ba68b306F2E"
+        ],
+        "useDefaultCoreAssets": true,
+        "lps": [
+          "0x5Ab9f0Ea4fD182a1edC89D379c1F1c5d6B6eF623"
+        ]
+      }
+    },
+  },
   "KungFuu-Finance": {
     "fantom": {
       "owners": [
@@ -327,6 +391,45 @@ const configs = {
       ]
     },
   },
+  "LamaMiner": {
+    "misrepresentedTokens": true,
+    "methodology": "counts the number of LAMA tokens in the Lama Miner contract.",
+    "start": "2024-04-01",
+    "avax": {
+      "tvl": {
+        "owner": "0x1f4292Cf1C0fDa5Ef1C3e9d1e59C13bd1808DD10",
+        "tokens": [
+          "0x89A8633bcaD3af0951acC5137811ea21a17C37DC"
+        ],
+        "lps": [
+          "0xf3336be3416916D26840f41780E0cBc861eF3B3C"
+        ],
+        "useDefaultCoreAssets": true
+      },
+      "staking": {
+        "owner": "0xc16ce7B683da825906c6CA8Df33986c6Ef9B287B",
+        "tokens": [
+          "0x89A8633bcaD3af0951acC5137811ea21a17C37DC"
+        ],
+        "lps": [
+          "0xf3336be3416916D26840f41780E0cBc861eF3B3C",
+          "0x3a74922803415Dfc43c0030d47707b20f4c1b05d"
+        ],
+        "useDefaultCoreAssets": true
+      }
+    },
+  },
+  "MAYZ": {
+    "timetravel": false,
+    "cardano": {
+      "tvl": {
+        "owner": "addr1wxlgzwu4vr5h75ndr523unyqrsq6g455uhudps02h403t4qkjud9l"
+      },
+      "staking": {
+        "owner": "addr1wxn9kx9w0gjzfkyuejqtt834z04gd9yrans6hy0xt5vunpslcg4j7"
+      }
+    },
+  },
   "MantaTimeLockContract": {
     "methodology": "counts the number of (MANTA OR STONE) in the time lock contract.",
     "manta": {
@@ -335,6 +438,53 @@ const configs = {
         "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
         "0xEc901DA9c68E90798BbBb74c11406A32A70652C3"
       ]
+    },
+  },
+  "Metahub-Finance": {
+    "polygon": {
+      "tvl": {
+        "owners": [
+          "0xF3Bc54A6b9615569194a203f852E64476f70d875",
+          "0x58e353BA88F22d6955b99Ee3a84826751F5B01be",
+          "0x126b40E61efAE1ef7b86ed3ffF4083369E3DaDF3",
+          "0x8Db60A7F9Ff1C92288C905fE780aE4D6f69Dd72e",
+          "0x0C6feFB39a0fe19054490F18C3Cb2412f407F650",
+          "0xf72d1642a6ce6e8b50597b6dca636488e14b666b",
+          "0xf416E1c9AdeCc1F8AF16E5fc26b06F69520A613b",
+          "0x1a0900f58ed4c558a0b35f184276ec9383ff29b0",
+          "0x56485038b32a24C7f5Ee1449eaC7f444ca4b21F2"
+        ],
+        "token": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
+      },
+      "staking": {
+        "owners": [
+          "0xF3Bc54A6b9615569194a203f852E64476f70d875",
+          "0x58e353BA88F22d6955b99Ee3a84826751F5B01be",
+          "0x126b40E61efAE1ef7b86ed3ffF4083369E3DaDF3",
+          "0x8Db60A7F9Ff1C92288C905fE780aE4D6f69Dd72e",
+          "0x0C6feFB39a0fe19054490F18C3Cb2412f407F650",
+          "0xf72d1642a6ce6e8b50597b6dca636488e14b666b",
+          "0xf416E1c9AdeCc1F8AF16E5fc26b06F69520A613b",
+          "0x1a0900f58ed4c558a0b35f184276ec9383ff29b0",
+          "0x56485038b32a24C7f5Ee1449eaC7f444ca4b21F2"
+        ],
+        "token": "0x94b959c93761835f634B8d6E655070C58E2CAa12"
+      },
+      "pool2": {
+        "owners": [
+          "0xF3Bc54A6b9615569194a203f852E64476f70d875",
+          "0x58e353BA88F22d6955b99Ee3a84826751F5B01be",
+          "0x126b40E61efAE1ef7b86ed3ffF4083369E3DaDF3",
+          "0x8Db60A7F9Ff1C92288C905fE780aE4D6f69Dd72e",
+          "0x0C6feFB39a0fe19054490F18C3Cb2412f407F650",
+          "0xf72d1642a6ce6e8b50597b6dca636488e14b666b",
+          "0xf416E1c9AdeCc1F8AF16E5fc26b06F69520A613b",
+          "0x1a0900f58ed4c558a0b35f184276ec9383ff29b0",
+          "0x56485038b32a24C7f5Ee1449eaC7f444ca4b21F2"
+        ],
+        "token": "0xD12bA2A40289Ed8728682447DC77D001F03675F9",
+        "resolveLP": true
+      }
     },
   },
   "Mezo": {
@@ -516,6 +666,38 @@ const configs = {
       ]
     },
   },
+  "aada": {
+    "methodology": "Calculates the total of idle tokens held in pool contracts or collateral tokens secured in the collateral contract.",
+    "timetravel": false,
+    "hallmarks": [
+      [
+        "2024-02-22",
+        "V2 Launch"
+      ]
+    ],
+    "cardano": {
+      "staking": {
+        "owner": "addr1wyvej5rmcrhfpcwrwmnqsjtwvf8gv3dn64vwy3xzekp95wqqhdkwa",
+        "tokens": [
+          "8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f6958741414441"
+        ]
+      },
+      "tvl": {
+        "scripts": [
+          "addr1zy9940grv28qxz9k82l9gmqd80vfd8a2734e35yzsz9cqktfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9smq5w00",
+          "addr1zykhtew0z93z6hmgu2ew7kl9puqz0wmafp0f3jypuejkwmrfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9skq4p22",
+          "addr1zxfgvtfgp9476dhmq8fkm3x8wg20v33s6c9unyxmnpm0y5rfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9st8q78h",
+          "addr1zxcjtxuc7mj8w6v9l3dfxvm30kxf78nzw387mqjqvszxr4mfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9sp92046",
+          "addr1zytwe3qhc0kf5k8yaur60cnhcxjg9zvfdnftp0rfu2czprtfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9sgzwepc",
+          "addr1zyc7w5n699ews00yujnhw59g4nuzykuzgl5x6nzqp49zv5tfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9sdyxnxc",
+          "addr1zy6v8c7xdhftln7zk5uvt9h6jaknaxlx6hz5nkw63mpgwamfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9sw9snf6",
+          "script1xt5vpt33fm6tu3fvz65enpnlvmg6z7gle9evktmuwn3c6gjfc7p",
+          "script1nwvlaa0wnf43wzjp3xv738k6myam74dlrlh027mq20trg3ng772",
+          "script1sqscxzh7mkzlmgf98k3tuadkds8xt3yzzj8t3jnfpypukld9xck"
+        ]
+      }
+    },
+  },
   "aboard-exchange": {
     "methodology": "TVL is equal to users' deposits minus withdrawals",
     "start": "2022-01-08",
@@ -582,6 +764,29 @@ const configs = {
       ]
     },
   },
+  "acet": {
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x9F3BCBE48E8b754F331Dfc694A894e8E686aC31D",
+            "0x64D2C3a33F5bc09Dc045f9A20fA4cA4f42215c0b"
+          ],
+          [
+            "0x9F3BCBE48E8b754F331Dfc694A894e8E686aC31D",
+            "0xfb62ea552eeba8b00cc5db56ba8d7c50429c0001"
+          ],
+          [
+            "0x9F3BCBE48E8b754F331Dfc694A894e8E686aC31D",
+            "0x38506a479E8959150466cE9253c19089fd0907D7"
+          ]
+        ]
+      }
+    },
+  },
   "ad-astra": {
     "ethereum": {
       "owner": "0x92a26975433a61cf1134802586aa669bab8b69f3",
@@ -620,6 +825,72 @@ const configs = {
       ]
     },
   },
+  "aevo-xyz": {
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x4082C9647c098a6493fb499EaE63b5ce3259c574",
+          "0x426d1F3866BfcDF4d0efEfeD1Ba3c5E06CaECbE6"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+          "0x83f20f44975d03b1b09e64809b757c47f942beea",
+          "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x38913051E01D4F6910cB66bB9aC3cb77D746Ad81",
+          [
+            "0xB528edBef013aff855ac3c50b381f253aF13b997"
+          ]
+        ]
+      }
+    },
+    "arbitrum": {
+      "owners": [
+        "0x80d40e32fad8be8da5c6a42b8af1e181984d137c",
+        "0x7711C90bD0a148F3dd3f0e587742dc152c3E9DDB",
+        "0x90bFB3C35ddfBbA42D998414F0ff1eADD430E161"
+      ],
+      "tokens": [
+        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+        "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+      ]
+    },
+    "optimism": {
+      "owners": [
+        "0xfff4a34925301d231ddf42b871c3b199c1e80584",
+        "0x7809621a6D7e61E400853C64b61568aA773A28Ef",
+        "0x5c7Dd6cb73d93879E94F20d103804C495A10aE7e"
+      ],
+      "tokens": [
+        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+        "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
+        "0x4200000000000000000000000000000000000006",
+        "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85"
+      ]
+    },
+    "base": {
+      "owners": [
+        "0x6ee3907D1B9423584195979812379143B327fb48",
+        "0xA8bD0eCb10a83CC6E14FC5381f384DD3C0779e8B"
+      ],
+      "tokens": [
+        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+        "0x4200000000000000000000000000000000000006"
+      ]
+    },
+  },
   "afx": {
     "methodology": "Counts USDC deposited through Arbitrum and locked in the AFX bridge contract.",
     "arbitrum": {
@@ -627,6 +898,16 @@ const configs = {
       "tokens": [
         "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
       ]
+    },
+  },
+  "agix-staking": {
+    "cardano": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "addr1wxqv435zesjj290fdv7d3ckzxh66pdxpuf9hx3gexf56u6gegh8zj"
+      }
     },
   },
   "ainn-layer2": {
@@ -780,18 +1061,6 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
-  "animal-farm-dog": {
-    "misrepresentedTokens": true,
-    "bsc": {
-      "tokensAndOwners": [
-        [
-          "0x0000000000000000000000000000000000000000",
-          "0x4c004c4fb925be396f902de262f2817deebc22ec"
-        ]
-      ],
-      "chain": "bsc"
-    },
-  },
   "anome": {
     "bsc": {
       "owner": "0x210d75B7C94aDf9FC1a2bCd047D76890479234e3",
@@ -825,6 +1094,28 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "apechain": {
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+            "0xc8a12b1DB09ec5a43919906d94Fa7eeAef1131D1"
+          ],
+          [
+            "0x83f20f44975d03b1b09e64809b757c47f942beea",
+            "0xf33D21137cD0B878f3A18Cc60cD74F842c59cb00"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x5954aB967Bc958940b7EB73ee84797Dc8a2AFbb9",
+          "0x4d224452801ACEd8B2F0aebE155379bb5D594381"
+        ]
+      }
     },
   },
   "apestore": {
@@ -1008,6 +1299,30 @@ const configs = {
       "onlyTrustedTokens": true
     },
   },
+  "arbinyan": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts as TVL the ETH asset deposited through StakingETH Contract, and we count Staking and Pool2 parts in the same way",
+    "arbitrum": {
+      "staking": {
+        "__staking": [
+          "0x32e5594F14de658b0d577D6560fA0d9C6F1aa724",
+          "0xed3fb761414da74b74f33e5c5a1f78104b188dfc"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x62FF5Be795262999fc1EbaC29277575031d2dA2C",
+          "0x70df9dd83be2a9f9fcc58dd7c00d032d007b7859"
+        ]
+      },
+      "tvl": {
+        "owner": "0x9F7968de728aC7A6769141F63dCA03FD8b03A76F",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      }
+    },
+  },
   "arbitrum": {
     "ethereum": {
       "owners": [
@@ -1129,6 +1444,29 @@ const configs = {
       ]
     },
   },
+  "artcpaclub": {
+    "timetravel": false,
+    "elrond": {
+      "tvl": {
+        "owners": [
+          "erd1qqqqqqqqqqqqqpgqfken0exk7jpr85dx6f8ym3jgcagesfcqkqys0xnquf",
+          "erd1qqqqqqqqqqqqqpgqj8exjpz38agu78sxh5rlxcp2kmxy35m6kqysscypf3"
+        ],
+        "blacklistedTokens": [
+          "CPA-97530a"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "erd1qqqqqqqqqqqqqpgqfken0exk7jpr85dx6f8ym3jgcagesfcqkqys0xnquf",
+          "erd1qqqqqqqqqqqqqpgqj8exjpz38agu78sxh5rlxcp2kmxy35m6kqysscypf3"
+        ],
+        "tokens": [
+          "CPA-97530a"
+        ]
+      }
+    },
+  },
   "artura": {
     "methodology": "counts the value of PUSD in the Artura Vault contract.",
     "btnx": {
@@ -1138,6 +1476,22 @@ const configs = {
           "0x795E2FCb8E2A3786F4A318b84a6e1BfFF4Cf285A"
         ]
       ]
+    },
+  },
+  "astrolescent": {
+    "methodology": "TVL consists of combining the liquidity pools and the staking portion is made up of ASTRL deposited to receive a yield",
+    "timetravel": false,
+    "radixdlt": {
+      "tvl": {
+        "owners": [
+          "pool_rdx1cmncelp9fkkxdw278498p88fah5hrevjejeynt54skwucqku3mfruw"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "pool_rdx1c325zs6dz3un8ykkjavy9fkvvyzarkaehgsl408qup6f95aup3le3w"
+        ]
+      }
     },
   },
   "asymetrix": {
@@ -1151,6 +1505,38 @@ const configs = {
         "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
         "0x35fa164735182de50811e8e2e824cfb9b6118ac2"
       ]
+    },
+  },
+  "athos": {
+    "misrepresentedTokens": true,
+    "moonbeam": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x2dfdb2e340eadb2e29117a2b31c139fe81c550a9",
+        "tokens": [
+          "0xcbabee0658725b5b21e1512244734a5d5c6b51d6"
+        ]
+      }
+    },
+  },
+  "atlendis": {
+    "polygon": {
+      "tvl": {
+        "owners": [
+          "0xbc13e1B5DA083b10622Ff5B52c9cFa1912F10B1F",
+          "0x2fA375961A0cB525dB0f00af4E081a806A8639Fd"
+        ],
+        "tokens": [
+          "0x60D55F02A771d515e077c9C2403a1ef324885CeC",
+          "0x1a13f4ca1d028320a707d99520abfefca3998b7f",
+          "0xE0B52e49357Fd4DAf2c15e02058DCE6BC0057db4"
+        ]
+      },
+      "borrowed": {
+        "__empty": true
+      }
     },
   },
   "atrix": {
@@ -1329,6 +1715,31 @@ const configs = {
       ]
     },
   },
+  "back-to-bitcoin": {
+    "bsc": {
+      "tvl": {
+        "owners": [
+          "0x1EE28d16C380B2137E63EBf92a9F5B42e63E9500",
+          "0xa253D8BB6Ed85CE1F8FA646794E5681F30542aC9",
+          "0x3e846dCdaFd15770957935C23F0524497281ff0D"
+        ],
+        "tokens": [
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c"
+        ]
+      },
+      "pool2": {
+        "owners": [
+          "0xB9922b10F86f92208ff7E6c4708D4f7C20CbFEb0",
+          "0x004d02677d22f0e6a977dbF5eEa3351580220997"
+        ],
+        "tokens": [
+          "0xfa9B1a0a0851b951eA1D6a2DA2CB6E4025db643b",
+          "0x70E3eEaacC553dA549fbD734475f61e00A40AA28"
+        ],
+        "resolveLP": true
+      }
+    },
+  },
   "baker-dao": {
     "methodology": "Measures the total value of BERA held in the protocol's contract",
     "berachain": {
@@ -1396,6 +1807,60 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "based-v2": {
+    "fantom": {
+      "tvl": {
+        "__empty": true
+      },
+      "treasury": {
+        "owner": "0x0A10daD90b9C6FB8B87BFf3857A4B012890C53A5",
+        "tokens": [
+          "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+          "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x8ff9eFB99D522fAC6a21363b7Ca54d25477637F6",
+          "0xAEbfF260074782a3DfD8981352b44767A05fa2eD",
+          "0x525ca3877a78c6AE12292D0a55765775e3943379",
+          "0x62A2Ff4BcCC5dD5316C358cDF079EC5e5c0851fe"
+        ],
+        "tokens": [
+          "0x141FaA507855E56396EAdBD25EC82656755CD61e"
+        ]
+      }
+    },
+  },
+  "basemax-finance": {
+    "methodology": "Counts USDC deposited to trade and to mint BLP. Staking counts BSM and esBSM deposited to earn esBSM",
+    "base": {
+      "tvl": {
+        "__staking": [
+          "0xEDFFF5d0C68cFBd44FA12659Fd9AD55F04748874",
+          "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA"
+        ]
+      },
+      "pool2": {
+        "owner": "0xe2cb504d51fd16d8bdf533c58553ed3f4f755f00",
+        "tokens": [
+          "0xd2eb1de935fe66501aece023b0437fa7b9c40a25"
+        ],
+        "useDefaultCoreAssets": true
+      },
+      "staking": {
+        "owner": "0x957e6844aa7e963dc26447646be268932b785200",
+        "tokens": [
+          "0xc5dc1b9413c47089641d811b6336c0f2fe440883"
+        ],
+        "useDefaultCoreAssets": true,
+        "lps": [
+          "0xd2eb1de935fe66501aece023b0437fa7b9c40a25"
+        ]
+      }
+    },
+  },
   "basevol": {
     "methodology": "Counts the USDC amount held in the ClearingHouse and Vault contracts.",
     "base": {
@@ -1425,6 +1890,19 @@ const configs = {
       ]
     },
   },
+  "basis-market": {
+    "methodology": "TVL for basis market is staking for now",
+    "solana": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokenAccounts": [
+          "3sBX8hj4URsiBCSRV26fEHkake295fQnM44EYKKsSs51"
+        ]
+      }
+    },
+  },
   "bb-club-cdp": {
     "bouncebit": {
       "owner": "0xdE1F1Ff02D565E554E63AEfe80cB6818eAaCD6A8",
@@ -1435,6 +1913,36 @@ const configs = {
     "bouncebit": {
       "owner": "0xA19237FFc49D1b71f00DA1a82cfF79CE7789f74A",
       "token": "0xF4c20e5004C6FDCDdA920bDD491ba8C98a9c5863"
+    },
+  },
+  "bchpad": {
+    "methodology": "BCHPad uses LP pools created on other dexes and single asset pools of non-native tokens for their liquidity mining, these pools are used for TVL calculation.",
+    "smartbch": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x265bd28d79400d55a1665707fa14a72978fa6043",
+            "0x9F8a513C11c278dfF624678108B41310fA0398E3"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x8221d04a71fcd0dd3d096cb3b49e22918095933f",
+            "0x87DfAE804cF62A1FcafA4395346f3c6331E1032b"
+          ]
+        ],
+        "resolveLP": true
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x9192940099fDB2338B928DE2cad9Cd1525fEa881",
+            "0xc39f046a0E2d081e2D01558269D1e3720D2D2EA1"
+          ]
+        ]
+      }
     },
   },
   "beamer": {
@@ -1489,6 +1997,47 @@ const configs = {
         "0x890ff7533Ca0C44F33167FdEEeaB1cA7E690634F"
       ],
       "resolveLP": true
+    },
+  },
+  "bepro": {
+    "methodology": "counts the number of BEPRO tokens on Moonbeam Network contracts",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [],
+        "tokens": [
+          "0xcf3c8be2e2c42331da80ef210e9b1b307c03d36a"
+        ]
+      }
+    },
+    "moonriver": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x85dE589aDc4bC5F17075fcd603E8A0f7561d90C9"
+        ],
+        "tokens": [
+          "0xcb4a593ce512d78162c58384f0b2fd6e802c2c47"
+        ]
+      }
+    },
+    "moonbeam": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0xa9938c8712552Fe0b5312547fA96Ad9f14d58d3C",
+          "0x34DD5F63437FdC20557a8C6dDAeA056d3661c5e0"
+        ],
+        "tokens": [
+          "0x4edf8e0778967012d46968ceadb75436d0426f88"
+        ]
+      }
     },
   },
   "betmode": {
@@ -1556,20 +2105,6 @@ const configs = {
       ]
     },
   },
-  "bitBTC": {
-    "optimism": {
-      "tokensAndOwners": [
-        [
-          "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
-          "0x03bBa86E68c7DD733703cbCD44072082aF702d85"
-        ],
-        [
-          "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
-          "0xEcbaFFaa5c4e94219f4C166DaC9D4A1520CAd827"
-        ]
-      ]
-    },
-  },
   "bitchill": {
     "doublecounted": true,
     "methodology": "TVL is the sum of lending token balances (kDOC, iSUSD, kUSDRIF) held by BitChill DCA handlers on Rootstock.",
@@ -1611,6 +2146,27 @@ const configs = {
         "0xE7E1b1F216d81a4b2c018657f26Eda8FE2F91e26",
         "0xeC938Bc5b201E96b6AFE97070a8Ea967E0dcAe96"
       ]
+    },
+  },
+  "bitgert": {
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "__staking": [
+          "0xd578bf8cc81a89619681c5969d99ea18a609c0c3",
+          "0x8FFf93E810a2eDaaFc326eDEE51071DA9d398E83"
+        ]
+      }
+    },
+    "bitgert": {
+      "staking": {
+        "owner": "0x8Ed91b2f3d9f6a5Ee426B4705F981090a7403795",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      }
     },
   },
   "bitlayer-btc": {
@@ -1707,6 +2263,56 @@ const configs = {
       ]
     },
   },
+  "blackhaven": {
+    "methodology": "Counts the RBT tokens staked in the bond contract.",
+    "megaeth": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x40f5F3654Db5F7F56cCe33caF0F7a0CAaaE57EAc",
+        "token": "0x8F77A685bDe702E6d32A103e9AeB41906317D7e5"
+      }
+    },
+  },
+  "blackpool": {
+    "methodology": "TVL of BlackPool corresponds to staking which consists of xBPT staking on mainnet + LP staking on mainnet/sushiswap (BPT/WETH in masterchef) + LP staking on polygon/cometh (BPT/WETH + BPT/MUST)",
+    "ethereum": {
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x0eC9F76202a7061eB9b3a7D6B59D36215A7e37da",
+            "0x46c5098f73fa656e82d7e9afbf3c00b32b7b1ee2"
+          ],
+          [
+            "0x57024267e8272618f9c5037d373043a8646507e5",
+            "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd"
+          ]
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    },
+    "polygon": {
+      "staking": {
+        "resolveLP": true,
+        "tokensAndOwners": [
+          [
+            "0x1f2f74bf3478ab4614e002cad1c67d3a84a5c2bd",
+            "0xe3ae080d6a4f1ac5ababf514f871428342135877"
+          ],
+          [
+            "0xc8978a3de5ce54e1a2fe88d2036e2cc972238126",
+            "0xe29544a8145978a2355e44fbac61f4748f0ecca6"
+          ]
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    },
+  },
   "blackwing": {
     "arbitrum": {
       "tokens": [
@@ -1761,6 +2367,32 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "blastfutures": {
+    "blast": {
+      "__empty": true
+    },
+  },
+  "blastoff": {
+    "methodology": "counts the amount of USDB and ETH locked in 2 staking contracts",
+    "blast": {
+      "tvl": {
+        "owners": [
+          "0xd95773e5b1eedc7ff302a70acd0eb370927397d2",
+          "0xd9747a98624f0B64B4412632C420672E16432334"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0x4300000000000000000000000000000000000003"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xC9B6c67af496E92F64b1C136B3FaD15e3b02cbb4",
+          "0xD55eDfc79c0d14084260D16f38BdA75e28AbFb6A"
+        ]
+      }
+    },
+  },
   "blex": {
     "start": "2023-08-05",
     "hallmarks": [
@@ -1813,6 +2445,79 @@ const configs = {
       ],
       "tokens": [
         "0x4300000000000000000000000000000000000003"
+      ]
+    },
+  },
+  "blue-protocol": {
+    "methodology": "Counts staked BLUE tokens and treasury holdings",
+    "bsc": {
+      "staking": {
+        "owners": [
+          "0xD245f811d2B8e94aA4EC23D430017d7EfE390439"
+        ],
+        "tokens": [
+          "0xa90298e5B1203A2DD0006A75EABE158989C406Fb"
+        ]
+      },
+      "tvl": {
+        "owners": [
+          "0xC2d2D7eB9cbF2985714E3310bFDB8eEcC3E96992"
+        ],
+        "tokens": [
+          "0x55d398326f99059ff775485246999027b3197955",
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+          "0xC9Ad421f96579AcE066eC188a7Bba472fB83017F"
+        ],
+        "blacklistedTokens": [
+          "0xa90298e5B1203A2DD0006A75EABE158989C406Fb"
+        ]
+      },
+      "pool2": {
+        "owners": [
+          "0xC2d2D7eB9cbF2985714E3310bFDB8eEcC3E96992"
+        ],
+        "tokens": [
+          "0x149b55D78f6380Af73FFe57e9aDb7F1963BC251a",
+          "0xeb7fE075B7677c98C75E105d4f5ACE0e19505567"
+        ],
+        "resolveLP": true,
+        "blacklistedTokens": [
+          "0xa90298e5B1203A2DD0006A75EABE158989C406Fb"
+        ]
+      }
+    },
+  },
+  "blur": {
+    "hallmarks": [
+      [
+        "2023-02-14",
+        "BLUR token launch"
+      ]
+    ],
+    "methodology": "TVL counts ETH tokens in the Blur Bidding address:0x0000000000A39bb272e79075ade125fd351887Ac",
+    "ethereum": {
+      "staking": {
+        "__staking": [
+          "0xeC2432a227440139DDF1044c3feA7Ae03203933E",
+          "0x5283d291dbcf85356a21ba090e6db59121208b44"
+        ]
+      },
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x0000000000A39bb272e79075ade125fd351887Ac"
+          ]
+        ]
+      }
+    },
+    "blast": {
+      "tokensAndOwners": [
+        [
+          "0x0000000000000000000000000000000000000000",
+          "0xB772d5C5F4A2Eef67dfbc89AA658D2711341b8E5"
+        ]
       ]
     },
   },
@@ -1916,16 +2621,6 @@ const configs = {
       ]
     },
   },
-  "boop-fun": {
-    "solana": {
-      "tokensAndOwners": [
-        [
-          "So11111111111111111111111111111111111111112",
-          "GVVUi6DaocSEAp8ATnXFAPNF5irCWjCvmPCzoaGAf5eJ"
-        ]
-      ]
-    },
-  },
   "borb": {
     "methodology": "counts the number of USDT and USDC tokens in the BorB contracts.",
     "bsc": {
@@ -1958,6 +2653,69 @@ const configs = {
           "0x1080808080f145b14228443212e62447C112ADaD"
         ]
       ]
+    },
+  },
+  "botto": {
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x19cd3998f106ecc40ee7668c19c47e18b491e8a6",
+          "0xf8515cae6915838543bcd7756f39268ce8f853fd"
+        ],
+        "token": "0x0000000000000000000000000000000000000000"
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x19cd3998f106ecc40ee7668c19c47e18b491e8a6",
+            "0xf8515cae6915838543bcd7756f39268ce8f853fd"
+          ],
+          "0x9DFAD1b7102D46b1b197b90095B5c4E9f5845BBA"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          [
+            "0x19cd3998f106ecc40ee7668c19c47e18b491e8a6",
+            "0xf8515cae6915838543bcd7756f39268ce8f853fd"
+          ],
+          "0x9FF68F61cA5EB0c6606dC517a9d44001e564bb66"
+        ]
+      }
+    },
+    "base": {
+      "staking": {
+        "__staking": [
+          "0x8a7a5991aAf142B43E58253Bd6791e240084F0A9",
+          "0x24914CB6BD01E6a0CF2a9c0478e33c25926e6a0c"
+        ]
+      }
+    },
+  },
+  "bounce": {
+    "ethereum": {
+      "tvl": {
+        "tokens": [
+          "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        ],
+        "owners": [
+          "0x73282A63F0e3D7e9604575420F777361ecA3C86A",
+          "0x6fe40f415448d930166f9110D3bBe2146383bC66"
+        ]
+      },
+      "pool2": {
+        "owner": "0xbe5a88b573290e548759520a083a61051b258451",
+        "tokens": [
+          "0x0f8086d08a69ebd8e3a130a87a3b6a260723976f"
+        ]
+      },
+      "staking": {
+        "owner": "0x98945BC69A554F8b129b09aC8AfDc2cc2431c48E",
+        "tokens": [
+          "0xA9B1Eb5908CfC3cdf91F9B8B3a74108598009096"
+        ]
+      }
     },
   },
   "bounce-bit": {
@@ -2247,6 +3005,32 @@ const configs = {
       ]
     },
   },
+  "bright-union": {
+    "ethereum": {
+      "tvl": {
+        "owner": "0xa4b032895BcB6B11ec7d21380f557919D448FD04",
+        "tokens": [
+          "0x6b175474e89094c44da98b954eedeac495271d0f"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          [
+            "0x160c43821004Cb76C7e9727159dD64ab8468f61C"
+          ],
+          [
+            "0xf4835af5387fab6bbc59f496cbcfa92998469b7b"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x1EB7c3CBac942983B80b384A978946DcEDc6CF5a",
+          "0xbeab712832112bd7664226db7cd025b153d3af55"
+        ]
+      }
+    },
+  },
   "brinc": {
     "hallmarks": [
       [
@@ -2386,6 +3170,73 @@ const configs = {
           "0xd267F821F1b8344B5A63626c8c824697194A173E",
           "0x0B31FeE8bF53bFe2f5F7083B73A4c9C8B517E32F"
         ]
+      ]
+    },
+  },
+  "buffer": {
+    "hallmarks": [
+      [
+        "2022-10-26",
+        "Shifted to USDC POL pool"
+      ],
+      [
+        "2023-01-30",
+        "Opened USDC BLP pool to the public"
+      ],
+      [
+        "2023-02-22",
+        "Added a USDC Pool on polygon"
+      ],
+      [
+        "2023-03-22",
+        "Added ARB Pool"
+      ],
+      [
+        "2023-04-14",
+        "Added USDC Protocol owned liquidity Pool"
+      ],
+      [
+        "2023-09-01",
+        "Debuted Version 2.5"
+      ],
+      [
+        "2024-01-03",
+        "Launched above/below options"
+      ],
+      [
+        "2024-05-30",
+        "Debuted Version 2.6"
+      ]
+    ],
+    "arbitrum": {
+      "staking": {
+        "__staking": [
+          "0x173817F33f1C09bCb0df436c2f327B9504d6e067",
+          "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D"
+        ]
+      },
+      "tvl": {
+        "tokens": [
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "0x912ce59144191c1204e64559fe8253a0e49e6548",
+          "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+        ],
+        "owners": [
+          "0x37Cdbe3063002383B2018240bdAFE05127d36c3C",
+          "0x4d338bc1a2380752736718f49bd45d9a040fdff8",
+          "0x6Ec7B10bF7331794adAaf235cb47a2A292cD9c7e",
+          "0xaE0628C88EC6C418B3F5C005f804E905f8123833",
+          "0xfD9f8841C471Fcc55f5c09B8ad868BdC9eDeBDE1",
+          "0x9501a00d7d4BC7558196B2e4d61c0ec5D16dEfb2"
+        ]
+      }
+    },
+    "polygon": {
+      "tokens": [
+        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+      ],
+      "owners": [
+        "0x6FD5B386d8bed29b3b62C0856250cdD849b3564d"
       ]
     },
   },
@@ -2631,6 +3482,141 @@ const configs = {
       "tokens": [
         "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
       ]
+    },
+  },
+  "cantohm": {
+    "misrepresentedTokens": true,
+    "canto": {
+      "tvl": {
+        "owner": "0xB8Ce90A08bdAdd3e6e6cD3173c0661FA94Aa81c5",
+        "tokens": [
+          "0x4e71a2e537b7f9d9413d3991d37958c0b5e1e503",
+          "0x826551890dc65655a0aceca109ab11abdbd7a07b",
+          "0x2382994D8A15d2dd2aAE10561688Ef6cbe10CB8C",
+          "0x5d3B693C00140E0cA2826C4AbC9E38b2E8CCd8f2",
+          "0x1D20635535307208919f0b67c3B2065965A85aA9"
+        ],
+        "useDefaultCoreAssets": true
+      },
+      "staking": {
+        "owner": "0x6bb55835407Aa076B9028Cd8498788659346828e",
+        "tokens": [
+          "0x533C0f08BE45eaaC821392B85E67Fb0c7DC2cab7"
+        ],
+        "lps": [
+          "0x2382994D8A15d2dd2aAE10561688Ef6cbe10CB8C",
+          "0x5d3B693C00140E0cA2826C4AbC9E38b2E8CCd8f2",
+          "0x1D20635535307208919f0b67c3B2065965A85aA9"
+        ],
+        "useDefaultCoreAssets": true
+      }
+    },
+  },
+  "cap": {
+    "methodology": "ETH locked on trading contracts",
+    "arbitrum": {
+      "staking": {
+        "owner": "0xC8CDd2Ea6A5149ced1F2d225D16a775ee081C67D",
+        "tokens": [
+          "0x031d35296154279dc1984dcd93e392b1f946737b"
+        ]
+      },
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x9BC357bc5b312AaCD41a84F3C687F031B8786853"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0xA55Eee92a46A50A4C65908F28A0BE966D3e71633"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0xCAEc650502F15c1a6bFf1C2288fC8F819776B2eC"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0xbEd32937D8A5D1421241F52809908f1a17D75bDb"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0xE0cCd451BB57851c1B2172c07d8b4A7c6952a54e"
+          ],
+          [
+            "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+            "0x958cc92297e6F087f41A86125BA8E121F0FbEcF2"
+          ],
+          [
+            "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+            "0xf16033d20adda47dc99ea291d0f4c4fef2ff47af"
+          ]
+        ]
+      }
+    },
+  },
+  "cap-v4": {
+    "arbitrum": {
+      "tvl": {
+        "owners": [
+          "0xba9736a3fc948f8c489a7e975114eaf2b7f1c3fc",
+          "0xe00975A0D7def3FAE93832cc72D5ff50432fc857"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xba9736a3fc948f8c489a7e975114eaf2b7f1c3fc",
+          "0xe00975A0D7def3FAE93832cc72D5ff50432fc857"
+        ],
+        "tokens": [
+          "0x031d35296154279dc1984dcd93e392b1f946737b"
+        ]
+      }
+    },
+    "base": {
+      "owners": [
+        "0x8508ea3bf4a8ec12cf6a6799421b725300f9a6dd"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000",
+        "0x4200000000000000000000000000000000000006"
+      ]
+    },
+  },
+  "carbon": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts as TVL the ETH asset deposited through StakingETH Contract, and we count Staking and Pool2 parts in the same way",
+    "arbitrum": {
+      "staking": {
+        "__staking": [
+          "0x2C5058325373d02Dfd6c08E48d91FcAf8fD49f45",
+          "0xfa42da1bd08341537a44a4ca9d236d1c00a98b40"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          [
+            "0x701e594B58b183b93C1ebaE437fBC9a9A3eC97d7",
+            "0x45acd6Af27B2506ad68C0fEA9F597D6eE6818722"
+          ],
+          [
+            "0x08da83452Ae158c3F348d4e0789b7A78989f34eE",
+            "0x89450F6C7d7f2c5971E9Ee28e94d8b199d17f673"
+          ]
+        ]
+      },
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x27F0408729dCC6A4672e1062f5003D2a07E4E10D"
+          ]
+        ]
+      }
     },
   },
   "cat-in-a-box": {
@@ -6115,6 +7101,23 @@ const configs = {
       ]
     },
   },
+  "chainlink": {
+    "ethereum": {
+      "staking": {
+        "owners": [
+          "0xbc10f2e862ed4502144c7d632a3459f49dfcdb5e",
+          "0xa1d76a7ca72128541e9fcacafbda3a92ef94fdc5",
+          "0x3feB1e09b4bb0E7f0387CeE092a52e85797ab889"
+        ],
+        "tokens": [
+          "0x514910771af9ca656af840dff83e8264ecf986ca"
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    },
+  },
   "chainport": {
     "ethereum": {
       "owners": [
@@ -6251,6 +7254,27 @@ const configs = {
       "token": "0x5dF82810CB4B8f3e0Da3c031cCc9208ee9cF9500"
     },
   },
+  "citadao": {
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "resolveUniV3": true,
+        "owners": [
+          "0xc8b1039928a98d7a272f6942d86814ed9d8f9f17",
+          "0x3f96c580436dd59404ba612bf6d8079dc10f6f7e",
+          "0xda62d109064138c14d45085b6e49568e1c0b4e23"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x20891b408c35e0b7ece14df59f259be3c763f120",
+          "0x3541a5c1b04adaba0b83f161747815cd7b1516bc"
+        ]
+      }
+    },
+  },
   "citrea-ctusd": {
     "methodology": "TVL counts the total value of M tokens backing ctUSD.",
     "citrea": {
@@ -6275,6 +7299,86 @@ const configs = {
       ]
     },
   },
+  "citycoins": {
+    "methodology": "Added STX in contracts as TVL, and native tokens in it as staking",
+    "stacks": {
+      "tvl": {
+        "owners": [
+          "SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-core-v1",
+          "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2",
+          "SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-core-v1",
+          "SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2",
+          "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3",
+          "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd012-redemption-nyc"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-core-v1",
+          "SPSCWDV3RKV5ZRN1FQD84YE1NQFEDJ9R1F4DYQ11.newyorkcitycoin-core-v2",
+          "SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-core-v1",
+          "SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2",
+          "SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-mining-v3"
+        ],
+        "blacklistedTokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      }
+    },
+  },
+  "civfund": {
+    "misrepresentedTokens": true,
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x8a774F790aBEAEF97b118112c790D0dcccA61099",
+        "tokens": [
+          "0x37fE0f067FA808fFBDd12891C0858532CFE7361d",
+          "0x73A83269b9bbAFC427E76Be0A2C1a1db2a26f4C2"
+        ]
+      },
+      "pool2": {
+        "owner": "0x8a774F790aBEAEF97b118112c790D0dcccA61099",
+        "tokens": [
+          "0xED247449A7CA06DB5b27B44B2c092f0B48bbDB77",
+          "0x6C406daecA809382E649d6c8f768450bF8Dbc1dD",
+          "0xA65653BB6e1338dbCe69191bb1328700881fC051"
+        ]
+      }
+    },
+  },
+  "claimrush": {
+    "methodology": "Pool2 = Aerodrome v2 vAMM WETH/CLAIM LP tokens custodied by LpStakingVault7D (7-day rolling staking position for active stakers) plus GenesisLPVault24M (24-month time-locked genesis seed liquidity). LP tokens are unwrapped into their underlying WETH and CLAIM reserves. Staking bucket = CLAIM principal locked in VeClaimNFT (voting-escrow NFT, max 1-year linear-decay locks) to receive a pro-rata share of ETH royalties from every Mine takeover.",
+    "base": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x7274599ec9DBf15D474A6FB18aA285aE001d87Aa",
+            "0xafdbB422CF75D6f2C557BDD2EF955c518b086271"
+          ],
+          [
+            "0x7274599ec9DBf15D474A6FB18aA285aE001d87Aa",
+            "0x1532F33e53680f89d083a0bf5baedcCCD2E7267a"
+          ]
+        ],
+        "resolveLP": true
+      },
+      "staking": {
+        "__staking": [
+          "0x876Da22a5bBEe4f8963b791631D2cAC5199389eE",
+          "0x059D278233fEC14CB6D1A74E6FB482BC3f91ADbf"
+        ]
+      }
+    },
+  },
   "clawloan": {
     "methodology": "TVL is calculated as the total USDC deposited in LendingPoolV2 contracts across all chains. Clawloan provides uncollateralized micro-loans ($0.50-$100) to verified AI agents for operational costs like gas, API calls, and compute.",
     "base": {
@@ -6294,6 +7398,34 @@ const configs = {
       "tokens": [
         "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85"
       ]
+    },
+  },
+  "cmdao-gameswap": {
+    "jbc": {
+      "owner": "0x280608DD7712a5675041b95d0000B9089903B569",
+      "tokens": [
+        "0x24599b658b57f91E7643f4F154B16bcd2884f9ac"
+      ]
+    },
+    "optimism": {
+      "pool2": {
+        "__pool2": [
+          "0x51f97e67b2ff5ed064dc2b27b7a745e0d4c47ee0",
+          [
+            "0xA41F70B283b8f097112ca3Bb63cB2718EE662e49"
+          ]
+        ]
+      }
+    },
+    "bitkub": {
+      "pool2": {
+        "__pool2": [
+          "0xe5B764566CB5b26fE7568e59370368ACf9c7c5c3",
+          [
+            "0x5Cced24E580586841f326d5088D288e6Ddd201dA"
+          ]
+        ]
+      }
     },
   },
   "cochilli": {
@@ -9310,6 +10442,27 @@ const configs = {
       ]
     },
   },
+  "coindrip": {
+    "timetravel": false,
+    "elrond": {
+      "tvl": {
+        "owner": "erd1qqqqqqqqqqqqqpgqqnm3x37972323nuv3l3kywev0n8q5n6gyc8qwljqz9",
+        "whitelistedTokens": [
+          "0x0000000000000000000000000000000000000000",
+          "WEGLD-bd4d79",
+          "USDC-c76f1f"
+        ]
+      },
+      "vesting": {
+        "owner": "erd1qqqqqqqqqqqqqpgqqnm3x37972323nuv3l3kywev0n8q5n6gyc8qwljqz9",
+        "blacklistedTokens": [
+          "0x0000000000000000000000000000000000000000",
+          "WEGLD-bd4d79",
+          "USDC-c76f1f"
+        ]
+      }
+    },
+  },
   "comdex": {
     "methodology": "TVL is the USDT held in the StableTreasury contract. When users mint CUSD via ComdexStableMarket.buyCUSD(), USDT is deposited 1:1 into the StableTreasury.",
     "bsc": {
@@ -9319,6 +10472,37 @@ const configs = {
           "0xD8875eEf762A6C23f8473E19C896B584BAaF007A"
         ]
       ]
+    },
+  },
+  "comfymoney": {
+    "methodology": "Pool2 deposits consist of COMFY/ONE and CSHARE/ONE LP tokens deposited in the MasterChef based contracts, whilst the staking TVL consists of the CSHARE tokens locked within the Zen Den contract(0x108426718E67da46e09E841bC4e8430A824BDaFc).",
+    "harmony": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0xF2d9E493a280545699E3C07aEe22eaE9EF24DDb7",
+            "0x893F07c9E10932349b01Db7A3833Fe756C2D59A8"
+          ],
+          [
+            "0x8fd44A4fB89e26A97B0eDf99535236D415D03E50",
+            "0x53efc025d19270b899eBf89DD89a1F58CE1CD66f"
+          ],
+          [
+            "0xF2d9E493a280545699E3C07aEe22eaE9EF24DDb7",
+            "0x53efc025d19270b899eBf89DD89a1F58CE1CD66f"
+          ]
+        ],
+        "resolveLP": true
+      },
+      "staking": {
+        "__staking": [
+          "0x108426718E67da46e09E841bC4e8430A824BDaFc",
+          "0x3CB98cacd44Ee77eb35E99EB74Ace91bF550c964"
+        ]
+      }
     },
   },
   "componentswap": {
@@ -9331,27 +10515,1524 @@ const configs = {
       ]
     },
   },
-  "compx-cdp": {
+  "compx-streaming": {
     "algorand": {
-      "owners": [
-        "XN4OX5OFLZFLDBI4J36EGOIMKGR4NISEVFCQRXDTC4WT35GPBM5EJI7IOA",
-        "ABU4ZY2UAPJWIZPE5FZP6GWVXTIP77YNAF3KBWBNW6KNBZALKRKPZL6HLM",
-        "YVQRJKC7TUD3XB3XCAA7SMY5OG7AHOTU465DI7HIOL4NQZMG52NXLBOMYA",
-        "RQ4MNDFSG4CCCWEJMRNGE5ZRNV3F2PHZSDJZ5X266MXA65HMLRFFXNAW5Y",
-        "ODJPJKPAHL7NPRJC5XF42SWFHB37ECCQEGFJIA4TFWOXGKJQA6M7S5NL2M",
-        "UVSJVQXX3KYYWTQVXPRTIA5QXYAM6Y26JI2P2NZP25RSJTVMP3X7ODNC5Q",
-        "DMVBFMMH3RIKCS3V77DCETWJDA2HW4LPEBURBUD7RQNVK5SKH5QZG6ZF4Q",
-        "H4437RZ3W2Q7JXIRPDIEFO65QNNTH4SICMNWT4SSEHNQ4UPIMAO63DNZGI",
-        "MJET3QJDM5MXC5ZREAPW5PUK4HN73VRYMAFGMPWG7VEIRQIHFQPSMA6CUQ",
-        "XXLNQOR5XNJU57W2TQ3WEJTL2RGQ2ABCSAU2CX4NSZZGPHB5WSOTT6BZXA",
-        "RJQNFSLZWSZ3W6N5TJCS2F6KNEWTXUQDFI7GXDXXCOC5UDIPYYN3W665YE",
-        "QTFSX7MJLUBP4TLCRNGMEQCOCG6Z2O5A7RAUREW5S5RYIGMGYDLDYYSMAQ",
-        "HVDIX7FCCJGH3XFJNTEAQZ22CQTD2LUD7NKN7JCY37SGFA2763A4NHUHRQ",
-        "I4O4APZDX7R7GL26JA2G6ENO5KZHIN4ZLRJR4DANXJC6GU7A2SI6VNY6LA"
-      ],
-      "blacklistedTokens": [
-        "760037151"
-      ]
+      "tvl": {
+        "owners": [
+          "727EOCPKYGDGNEQ34CU7FTLGBAFUCYCO57JPMBLVCD53QVTOWKXZ75F2ZE",
+          "42XXQUT4HIQAOTTA7UMSRRLMYIJCZG7O5V4DGBH3BX7SYWWT5J5PDOPRWM",
+          "SZPOLUEP4WC3I2H3QMVYYSBVEC3IBNRCXA7H5IVFSIVOJNLI3LKQHG2G2U",
+          "PJFLOIH7RZS5FQO5FDCJOCWS7CT4LUSTQF37FCREPTHNDM67NPSC3DRT3E",
+          "6SCBK5YP5QMZ33SBQVIE22XMSMZ3Z6N5OBXDZPT5AG5UOM3FTSKESDKR5M",
+          "FZOR4OPVO4XOKUSGPRUXI2RTCXIPA6EKJCFDYDRZ43VBTR466LZK2NJIIU",
+          "LS252RNCWDFQB2LUZDBOYKIOMR4FZTAY6BVF4XJDECL2VN36LAEAVGXF3Q",
+          "LUURYIH6OQ5EWWKOUUX7R535UOEBHTH7GM7DUVBNQNGTJGIMMUWXNWFYFU",
+          "5VZN7AG3GW6QLPIQ5WNGNXRLEMISXFMUL4EGKPPFJSNXTRNALW7OS4FRB4",
+          "KIUXWTSHHKKBNRHRL5LEYDX2D356OYWUTUI7P76FCCVFWJARESIYVU5NGM",
+          "HE6U7OBALSG77FMJUVDRL46KZSJLR4BJ6AZWMTGAO4SFZJ7BRIJVDFX2OU",
+          "6LKYWYJR34VGPUSWPQZZYGOLZYCIBJ2M55F33NV3H3X2DXCFVNCGYPI4EE",
+          "PIDCQZHJXVMLJB5YCTKCMHHFE4OHJGHYWDPVSALQRA5HPI2TZVPRVVDWGQ",
+          "L7J3JGH5W7TSVTT6QISUKPTY7URF3LJ53ULUN6MVZXIWPX5FTMNMGC4OXU",
+          "WO7TNDWNDOTZDQWMES23FWAB5EC5U6SHZX66CZRCMCZSKRUPFBUBGDR25Y",
+          "A7VHIJ57JAN7IJHJZP2RNBWII5O4SQ3FI6EEEAF2Y2NA5TTDEUWBKM6ULI",
+          "PJYXDNUUWC7LR45JL35L653XKMTCGMKEV52PPS57Y3ZBXRSJ2WKZF67S6Y",
+          "DEN6PQUQQBT5AVIFMR7V4ZWIXTDNICKINDBJQSZN2M7XBW5SON47O7SCBY",
+          "TEBCZY2EMUQP5YWHPHM5Z3SGOO5Y3YX2UIJAO2GVP4F5D6SEMOOIMWSMGQ",
+          "JDGXYCSNW4LQU2Y3DA7UZWDSR2QGPZ45MC376LCM6GR74IIV4ZHXMHE7JY",
+          "4DHEYLZW76ZWDZPN7E4DW5JYKWWYFMN7MXBWM2ENODTQXMISH4YQN2OWJU",
+          "AN7ZEW5TW4BRUUJM4X32XQLIXNLIKQYWFTWHN33VRUIEEZOMWOO2GVB4EM",
+          "USCQ2ZO2ALCSUMPG7IFWHIAAK552Q7CKX5FOT5YWF2HL7GKMAO4TBECZ4Q",
+          "E5SIZJ3C4SLVNUHLE3WOAVMBRJTBPC6GFXWDYCD4IM4RGJULCM7FVVMNZA",
+          "QKD7D2H5ODNIUSPJY2OBKFNWNA3MINTUGOOV5FMZX5NTHPEKXOAPWO2T2U",
+          "6KTRXQKZMHPYEHSNYOU4IMYUGJQRW7PJO6VPKCO2OVXBVVMYRCIQQG6OHQ",
+          "GHMEWUBWC2LVXHC27W5EURBX2BOX3BFORZO5BICC6UHP2RC6SUQW32VIM4",
+          "MENVLTK76FAM6UA2LNHNBMBO5N6JYYHGGWKL5AUEC7XN5FDTJALU6OHRSQ",
+          "DSTMBNHY52FU3APMD5IPJZMLHL2GXP7RH6U3US2CQVABQO54RZU4D5SRHQ",
+          "TIBIGE2XC2VKFC47MMPQWW555H5INIBYZNLUEWPMTGSW77LKYB746VQS7Q",
+          "3SIMHBUHZVATZQX4PTC7ND35NQP6DTZMBFKBWIB3TPTY2PSS4BB5RNEMIE",
+          "TZAIXQXH7X4CJLELOSHMMTPFTFINOV6ZHGDX36XAWNXD3RZPIQWVMLJRW4",
+          "AX67SCWNVXRP45DIATSQLZTDCPNXPOORUL4SQWVJMZRADPM2ZUZ5XM2NUY",
+          "IGEDH2UR66JG6UVMFLWMY3V2R7VXNPRWRTDN4YYAE222KZU6PPG6ANX33E",
+          "RBN2OWIUXE7GJY4KNOFX6PZQTIF3UBVSLGYHR4A5K35YP37PUXNKAN43XU",
+          "H3YUWFNWD2GO3PYINU3CHAW7BZLLGWQVU6MFGOFXYAT4QGD2E4I7EXFVP4",
+          "62LEHE6SN7N7MWWJDLISSEE34OWKHJUMR7EROAO6PJEWXVZMV3ZGN6HPUI",
+          "DI5EG5WWGEPZJ4SDJR4W5O5RT6TSEAJF7HL24Y2ZQTYPCRSHKVVZMQTHQI",
+          "T2BFQSNLW2ODZGYGUESUEVDRNLFMMAJGSB3NZE6U44FFS3PTZMBC4H6W2Q",
+          "JZOCMMDR3W7UWHVGCXEGN5IKBD5KXDRDCMIFYHBFR2EINX43CSG726PSZY",
+          "YYKY3TGCBBSOLEBJM756MTR3K3JCZJEPH34VG7J4PPDRHRWRUQ473RE3XY",
+          "EPEQ4FSA6YZ6RLXOOB22BMGFTIRX4BOA5NX3RFLHUOE4YSFARSDURMFMYA",
+          "4SO2HV2NGBYJ3446UCBZJ6MCLHU4TVLSN2E5NGUC7NUKCRX5RUN2EWLJEM",
+          "4CFTTQX4W3O5P2HLKQ2YXNDWAXR4JII2SYOUDVVVAKYW2OPPAI2Q6PK6GI",
+          "RNHSZLSEUOWFFLVZLKJVWN2ESZGNLAIH2NEZ24ITOWFYCEZ5FE5BTIZRYU",
+          "SSMXBA6ALQWQVJFDNNU5QMJNM3ZPAYQ6LSXAMSR3P2KM2PZFW64PF5LMKI",
+          "LYBMBBQ435RC23GUZTB5LUZM5XII5BSTMGHRYATS47QVQAXSJGEJMPDZF4",
+          "F3NVOLGJMKKPK657XM3X3JYJQEAEMUEBKEAGL4KWCPFVIMZTZ4KSZPOCN4",
+          "UETDRYLV6UZU2YBHV32ASBWOKDOPKP233G57GNBM7A4ECZP2UI2SOJ3NJE",
+          "HOY6FR2Y3FMIPGY32YIOHIHZC7JWAPRCYLSEPTOKPBZ6TA6O42IJVSD4O4",
+          "63JWCRXLP4QZ45VKZKHSP7QGVLX4HDBOCCFKNG3E62MG4FGWHN3VON3VGY",
+          "DU6MCYW6D5IKIOBSXVUZ4UU35VOLUAMPBMGS7PGZNVPWOHAZY4ISBKSY4A",
+          "PGMJWCJKGWMDEHIO6XTGEVCCCMUMZPDWHIUS4W7H35OECH6OLEPZRV2I2U",
+          "KP7XLFQKFOSZGJX4PKIRUHQK5T62CTZO44W5I5WEQTL4RAJLBRDF2K7VTA",
+          "IS24FAZTAFSLZJDA6NQG7H7KDLH5TI7GQ76KURNX2WYB56GVZURY4XCV2M",
+          "47BXWI5C524UO74AFHA5WYAN6ODCQTMJDOFURDONAXP2436WPO6D7T57RQ",
+          "B7LSGEATTTEDUMAHONCCNXWYFJYKWJSPRBJ5RYVBDXE6PBDRKPHAEN7RTM",
+          "6BRE5TR67BTUFSZQH5UHLDL4GN6WKDZLZWJCPRPRVJRRKVOH7RINIDIYQI",
+          "ZE6XNSVH4MBZEOJFNLECHUSYDGOV75GDCJ3XW6CVDYQYLCZ7NLFOX4FV2E",
+          "WKMJX73EFDK57FVDDN7F2LNVVHTXZ2BBX4HVF4WXKUD6S6LIZY2WM572EQ",
+          "JK24WMALOOLJTQFNUWMP6GJCZBNAX76SUFTJBN5XQIXULSZZJGXDTUGFDI",
+          "N4QXWDLUCCG6EGL7TIZKXXZWXJMFKMNVWYJG5C5SZJNVITTWN43NJ7OW5Y",
+          "5VVHMEYI5AVEFAPG3UTS6722U55ML7SCTMCB6635DTXBUQPSTZZLXK7ZXM",
+          "OCP3FTZQBMN55JSMHNVILRRX5I4FGHK3MNWGAA6UMFGGU3OH3FXTQ3X7OE",
+          "LFTNSC3BNVVKOJXA3I4IK33X3TNE2EYI4XAWBI6COVEIL7SYSPAMRRWHWQ",
+          "P3EUJHCLJVPAG26YAHZD3NJ5VU4A7IN4FRCK3YBJR55XQT2QSDCWGSH6YE",
+          "EJHYNU2GTGTT65WGLGBRW2KUFMBABWZUS3VJUQN6ME4W2Q2DYE5GVNCUCU",
+          "MUMXHU4FF4WKMUXSDZ4S63FG5LMCGG5TR7MS4YM24RTRVRU7LJPNOIUPNE",
+          "VN3AG2GERPSFPUALBOOHTKIZOXR5ZXQA2KRAFMBEZ3AP3CYZFDUMPSNYWA",
+          "BMAOCFA3LKS5RXDK4QRHR63GH35KR3AZVVC6PX6GOP2O4LDZKOKQE5GWVU",
+          "RVL4D3XWTOLLLCJW7MVZDDW7UNOMOIY6IA2BUAXPO5EGPUB735VAVLFKJY",
+          "Z27TZXWM3FJLMUCVH6LYDIMZLNYQKRV247EEKG44ZDZNQROLMHLLT72X2E",
+          "RVVBIGHFBZXZ7J6DLUALFBQSCEL44KLHJ3JMCB3GDQ74ZHKMQWJJHJ4LHM",
+          "PKEJAPTTNXEOMHV23TUETMNXLJV4SIM7PTB5B4CB7LU6C3HTNJTSSH4RZI",
+          "PFOWNJDQKJZTCZGFTDV3MYI4YUJOULZNLM6VL5FUDEJWT4UHECEDWMPI3A",
+          "VP5FCECXYP5GGMLLYRBKV3YI5PM56NJJGIY7XZFEVAGIG54AZS2FKD55EI",
+          "TOVSCZU64PVLJKCEN2C3DSAK774K3QZFQP55UGAV6ULKSGOHO7M2CT3IS4",
+          "ENEYVJSWUKHDWN7IV6LH472WHZI5TMEMZDO3Q3DXBNKOBST7GN7XHTW7WM",
+          "IECPZJDZDG7B4ITOC4MVUJW65LX7LU3RQ32CNVCVYY6L6WZINZELMNUJGA",
+          "AX6CE4BM7MN62KWV3LLSYRVLJASXRXLS3M2UM27QQHBQ2PDMS6A5PYPSWI",
+          "F3E7CKCUC6BZYNUNBCDCP53C6ZLNKTVLKZZVBTO7DYRYNX43Y5U4OC72DY",
+          "CHFY3ULWE6ET3UQEMFMYWOMQHEQZLJIUHVKACBNGE3PGGGMJHDFPQU6AEA",
+          "3KV34BYY5C4A3T7JTVAQT7SQRKLEPKLW4GAVP2DUBK6WQSRBJUF7QIRMFI",
+          "KQWXLOSV5SAJBPMBYDCDQOCCF7EP2XXY4JXXWIVEOHRCO4FY7E6HCLDJX4",
+          "B5FQ4B5KOFI43OUZTHZF4UDBOELQ6EKQ6EEEC4JQTLF6RVIGDIOZT6WJIA",
+          "HQZ4CFXUWV2BW7QYBJCYZ3PW5QTMAJCONZBRLJ55IVYU2RQAR4JA5PCAIE",
+          "22BRE67DSXBKOLI3LXZPOJMPZQ4OWI6XZ5M7WP7HEYK3AFWLVYBDX2FFVQ",
+          "VIT2ZTQEQEEP6YA5BIDVBOKK2QEUGTPDP3E52NB3HHX7N72SYIQ6IV2GVA",
+          "3MYXHQ6VVXOYPDSR7CMSEHILCJU33UW7RMBCJHGMSBIF4B5UTYKPU6G3KM",
+          "MH3HFOC5AGQEWHJKFZ4MXULQDWFO6FH62GLPXKN2FWTW3WPZPHJWEWHYSE",
+          "LPCLSRXYWRX6JWEHYWSPUSFPXDN2EWMGGQ3IEYW74UMQ6CMSWZW7P2PWOU",
+          "V7CLRXIGS5LBG35T5WOYDOEJKGKYGB6FRV22NI3IAD543IXCDEARNXA3QM",
+          "KTZ4PY43JXJPUV5MRRHBSZNOJIGBB74KIN2PMYQITZJZ6C6O7Q5XMHCPTA",
+          "HUU6S7MEIR26QLGM5G4V332SDEDLDRQ34XH6QTKYXU6BTA5IVS6JQI5WYI",
+          "DUNRH7MR4FWOGQKHUTZCGTVQ6IFXA52RH6QMMP6XCVBUXRA4KZUOO6R4DU",
+          "K6VXF7VJMIUY5SFCEQWU5S4JEEZQENN6JOZFTOWCO5A5KES6RVBCPIEDZY",
+          "EK6WWZQNIDDMNVVAE4KZNDDKUOK44UA27RB7VC4WKZBKIMDPOZKPUGSRZA",
+          "PWO2WY4B5X5E252A6WY73QIHBL726F5FLZO4U3YEQVYKRSQND722ALOH2E",
+          "ADCV5QDXS7W3LVOT2S6F4DBKWX27ZZ6LXVWP2QJY32MB6QFBBVL75MOBME",
+          "3B4GGBIZ5WYCI2IH6WDBS36ORP6K4FGS3QFEJ5JF7MMX53EB2ORWPGGF7A",
+          "XKH5W3D5IYKZXX54RSDYKIIRJ4UQUCJRSST7FKWVYSTRAMLIRVCKZVMA5Y",
+          "5N3U4LUHBJ3KDQG63CUWV6GVZVR7O3OBKPURG6YFGNO6BVQRVRX4AQ64W4",
+          "3S5VL3EL54L6NWF7RIY7IZ2OKCADR6OTZ4EUBJIXOMEPPJUTTE5QJN4BE4",
+          "Q6MMGK6D7DNJNDNE2GPXQZXZMH3NYTQXCKQSKPMDP76XM3AI57Y7RGE4Z4",
+          "SBCAC6KZR6RIDDITJB6XUICPSL2WIPXJBOKLWZHCL6B7SUX6PBG57UGI34",
+          "22Q64Z7XEXD2XFD3CMCRSAOAXIF2SZCBGINGWTGVGZJWWHPFSRI3L2ZZ54",
+          "NAVMSOK5H63ZBFE2BDBV6DYYQEJXP3FH53VTOACAMXTROZTBFMJ3LU2MP4",
+          "6MVSUITWORTERE6ZLQDYZ7QHVJZKOHFSZF4NUIA35FJKODANGH6ZNNV6O4",
+          "PEG5MAO5A3SWZP42J6HTMUR7RKFLO7BYFPXKVXGEFFAO6XU34E7H5PJUUI",
+          "XQ62E2FT43G6Q7WPQIEUPYDVR74Q47T4GJENHH3BBJODRH6HP5KKEPFIWA",
+          "TFUW3KPKX7OXJ5CCYD54HWVKKMXN4GEEGIM2SZW6U4BVWI6EUCC57CQQM4",
+          "QD3VCRH7QVGRGFZPDCJ7UCDAXF3ZQ7JWYEPZ37J2RMEAJ67237GSQENHSE",
+          "5IRA5TVRPYQDLZJFIYAKGX2LVH35NQ4F4SLDJR454ICKWNNNP3AWN4G4JU",
+          "WVBT5E6XKIGIYV7QJYG4MTKY44ZWK4VGJUJVONAVNNSFNK7BADLBPNNKOM",
+          "TORINIIHWJNACSQLAHWVLHM6STVXKDTOROJMB63XUAHK573LGGCSHCZABE",
+          "TJYQQFIBPFWLZVLSFUJCSEMRUAAI7E25I53LOL7A7VADCD7HBUERS5RVFQ",
+          "ZAVG5GRBTD6IX2EOETZZPK4I4H57P5HZAFDTE7XEVHMGCHYYGHAMWWOI3A",
+          "6JCUXMPKC55DKIFS5JKGQOG7JSLFJOTZ3ZHTRHF5KVI7ZPTELCZSE7SUEI",
+          "FE2VYNCNZXMYFVI2IKYDTOPTZZYQMBCNDCHHVWT4NAD6RKSTWBTI7GH4IE",
+          "FCVSAN7UWQBL4XSAVMT2X6CKJWLNMYTROK7SZEMXRHKVEVEHBJMV73U4WY",
+          "ZZDZRA56URYGEWAOJLYJBBIQSVMGW6N4EJ26CRDZ5SOSIJB6TCZW6AHZRA",
+          "YROMD5XPWALUGW5HQBZN3TUW5BAL2CEDNLIZ5ON2Z4GFRE3OWYZKSOLP34",
+          "C34YBFCGYG7P5B4J2O43E5DRY33FU6TX2GZDRWPKTOWTWBR2Z7BB4ADGTY",
+          "36CNBZW4CDFJ3OM4HRFY3LWHGVFHGH6IF6P2AK7F4R65XEZXK6PGZUE6TA",
+          "YTKI7LWY4S6COTVH5ND4NPHU5WVFVVX7YDW5NUXGN4DVWPP4XXD7V65O6M",
+          "OVOETABOIMYVDHQU67MBWSPZGY7A4WU2QGIWXBAC5LFQRX6MSMFEUXYZNM",
+          "76XFCJUVFCCLTX2633INQLF6FZFXPGRCV6S363VFICFQP2GI6W2UUZVNJA",
+          "RL3X7Q4ARGLANP4VSXFPSHHZ3IP6P2UY6LXZD5OP3SJNIYL422JMN5KJCQ",
+          "K6VTT63GMOZPHVGR7WEQM5FHSD4TRNABAE2E6LCUVFRGNHWR46GIERTMRM",
+          "PXTJOT6AXY7HUITTNXCUTFG7H3ZUVFQ5YCSA3D4MWIMWIUECEOPBGJGPPI",
+          "LWQNFGZ7LYHGPMD6T3XABDK2OVHI6QT6XGVZKYQT5FHRWPQMLD6MLOXTYA",
+          "2HOLZE3SK4LVJY66MHHDK4WNNFUJWTUYXA4DQBBU6URAYL36AT6JAZ673M",
+          "E4FGLYT4GF5HB2VWUEUMHTXKXY2ENJPK6WWMYTHRTT3BZTFHL544T6AU2A",
+          "M5YZTW53RZ2YQV22XXK36JDIWAKKIQMSDH5FUQOG7GMNTENZIKZU3HDQXE",
+          "G6XGWCZSEUEHAZ4PSTCYAWHRFEHEJT7HKBLMA3AVMXYIK4GDQTWK65P5B4",
+          "HKKERNO2OQKJQ6QRNVKFIEFNPHUWE72WCKNPT6BHUJFNCTUZGOFIJKJNPU",
+          "5PSEXWFHFODEHH5JNJM4UFLBJ6Y2E53KHN3Z2HOM5M5R67W5UNITYGLQA4",
+          "BSTRYVGDJYX57ARPRVUZGIYSXGGC4JFSQPEOFCFHSYM6ZIAVINW6OZMRPM",
+          "3ZCQNN4EGZUCGRSGDWFDLSJE6CGY2J46CG76Y2G2VZRHVYPSVUE4SF5UVU",
+          "ETPEZBSDAXQV4PUUA4KATT35LWCCTL7RRT2OE2KP2BUVG2L6NTKQULQJ34",
+          "TBVKWTYMU2XHTOH3PDG4P7VMWPKSCY6CCOARJZ6NPEPRLRYVDYVQWUMGIA",
+          "5J5XZWTXMDVIM6WNPW4M2AZE2N2XPE2H5WKFASKUHLUC6P5OKB7Y2GDI3A",
+          "64WRXESYSBOC26U5AR6KEYYRHJZERCGZ4NLL7P7G3HF6YOADOCHSMY4OGQ",
+          "ZD736266JQ6R6EWMNDS3SONJK4F64R6YAJKS6H2CZO75IQ6GXC7ZCWZMFQ",
+          "H7K6KLZMPVWF4J3R57USL7UBBETD6RF7VNO6NVZMZMMK3NBHDLGYY75QSI",
+          "DSNIBSUIW3UF5OMZI35PTD3LRAFZD47OEKJJIBUX2RK7V6XXPEL4RTJSVI"
+        ]
+      },
+      "vesting": {
+        "owners": [
+          "6NZHVSQWCXKGXTZG7UGXU4MKL43LMHYHMR3ZQWSV7P7VQVLZCHKEVXMPW4",
+          "JBV23ATJIL4MWXIJXZ6L2EJSJZOMP7YENNGUNQZAUTEN7QYSPC5ZHPR6SY",
+          "Z4ETGZG4NJOZ3BDWVWPQSV5J5BRYI3QBK6PQMQ6T5YTXK6XFJNX267TT6I",
+          "UHUJCOY74N3SYCXNYL5OV2VF6DTGX2C47VXAY2VOTQP7W56WF6Y4JW3JCE",
+          "XVLDFDS7ZVE5QH5ES4VO3VQ2A4OYMDL27M6NW3QDNJMVCXRQVIXC6WU4GU",
+          "COKJPFVPJDAEIS2MSJZZ6HREHQU7UEEZJFWT3R6J3BGS2UDERGN4G7M2UA",
+          "NYDZV5MKWSEYCF237UMJ63XXPI5BNX3F5VTURJAZ3WZTVXHSFUUZREHFII",
+          "YGNYD6XGX2JPR2MIQ7GXW6YMWCTTRLQYL4LBSRQRLVN45H75QQTRRJSVAQ",
+          "CZ3JOD5SD7HRCPZJT2QPC6465REXDDKTFF523QEYARXPPWOSH6HZQSJSTY",
+          "LXJAEE2V3GQN27FAR3VBQHYNBZ2TDL3Q6LNVDEOGFY3W54ZXVABRPPVVSE",
+          "JMVKUOS5QOPQQAAVFMUP3UHTSWSDF7SQYISBT4G5H2B7IWLXD2UCIRLQD4",
+          "LSB2BQRKS5TEGH4L5CZ4ERXEM3T5YCJZH6JAKDE5KJ7TAP43V66SWR7XXI",
+          "WDLEABJ7X4RHEK5RQOBCUNBU4FBBEOPERD6HCJDDGW6LKDHCJVBQINTV5M",
+          "FFZ2YSPGNY7SQLMFTFB5EQLHB722BBBT4ZWLLZW2SQSWOIX65P3GPMXCKI",
+          "PXK5HVC2YNVZTFU3S3F6366GYJOJ3DNY7X7F7PRHN4DRIKALZQZX5MBUUE",
+          "AQ564KRINVG5HNMOLWUUBX74NQLWYGWPXUMINN23XLEDD26ZBW6HCXIUIU",
+          "GYX2KBBSB42LMQTVKISRCH72O25D3RDTEZLWW2A5SWIXC3TBL3W5BOXJMY",
+          "7C7EAKEICGCBMOX22EL7RTM3RNA5MES6V4QNWYXJYQONM3LTMCN6XOGCAI",
+          "US6VKBKIFG6ETTC56PTS37HARPOTVZTKUGBVKCQEPOPQ36JLEOL24H6UAE",
+          "XIO3QD4DFE2VBWHSSTJ6EEYPOXYMKT7Z2MSG3SPSVDA53PL6QGBHNVYA4E",
+          "I3SBZAHFDFNUES2U76VW65UTLULLA27DJ5FGW7LW7RZ3GY37CL4YNUU73A",
+          "CDFP5EV2HRB2L2VAMHWTU5TM26Z5ECMJIHQQJG3XP3FWQS7IXPEF2MPSVY",
+          "QIAYMG6HMF5AK5YTTVVTU2LFT7PBW6FMK7DNZTUA4TRDWR2B6ETSKWTH2Q",
+          "YDOWEJUSUZFRLEVMU6UBWRJI56VKF4OODMJ4XNRARHZYJNEMPUUBJRYROU",
+          "K5BKZURBLTZYPR7ZNGFCIE2SJF4ECKGP5PSCMPP4JGHV46MENMW4C3O7BU",
+          "RUA67B3L3ANR4FBSX3TWTSXB5B6AKDM7P3MK4FANEU4N4E7D4RDSWFCN5Q",
+          "R6S2NGEKW4WYGZJ66WQ2CJMF4FU7MJ5OZR2MECITS4GQCGL5CZ4SJ4J52I",
+          "LEHV2C6MEDI6EGITH5DZCOPJNWNGTWY6YHW2YXP64MEESFM3L5WZYNTUQY",
+          "5JD5KOJ4FIUR74PFINF7R4XP6IAIBYCJIDHL3TJGKT7VLR4KA66BPTHST4",
+          "IL3CVC26MGJ5FCICINAS4TXSPVS64UEPS6DVSNXX74DRRQ4VXSAH7BXSDM",
+          "CUO5AGPSL6QCFPLJJDROWXPXFN2MMVVCQWLNNYNWUZLRI7VTZQ4H44ELUA",
+          "Q7LYRT2AQ7XUXD4UOPVWEMRRNPQ2RYJKE4EJHN6QLQBKP5GPP5UKE5SVXU",
+          "BGV2RZGFEW5A2KB7FXELAHRDQ3FJFZMN7G3EMZ5FMQYFC3ZXI23RKIHKYY",
+          "R2HTMP3CFYEKPZKMSP2LPIDPAORECQANIRZPACCGBWKO2R55WAOAKP4D4Y",
+          "7UTNRF7GFTG2USTLWCKEJI4E5BQWFS565G2VIPWSJV5RMXCIUF6G2CKAOM",
+          "L4P4BFYLWC3SAOWV4S33URGHN4JPDBIGXOG4LHXJNPKV3DYSJGBX6GNX54",
+          "IACEXY4BB3X7RHI4MVNHV4FLFDQ5CMHEBYQRQFDL6H4XRSLBNYRET5VQTE",
+          "H3BOI3DNILFBOA6TS3BP3Y2ZRQWAP2F2IN7E67YNDFJELZ6LBAFWM7WLWE",
+          "757YROFMFYYRZX5BRAIBXN47ORU7L26NKBU45XQBJ2FIT2FWSKPUBC6VMA",
+          "NKPAMUECWLJFCJ4NQ2CTWRVCJ3YEVLHMM4UURMYLNQPCZO2M54YHNHUKGA",
+          "3CWR7YQFOJZCFX5FTMQ56DUWRRCGK5LHMIOVLPDGGGTLJ6KLMBGCF3ZDHE",
+          "BP4MFLDFKDHXHF5F6T3JUB35LFG5L22ZMEM3LZMFGMTUJDOULHPNJUZ76E",
+          "A7FDBHHODZ3YZKUX4NOVWUZKZESS7GXPSBTM2VPL5KMIUFAF5AQ4WX5AKI",
+          "KXHYOTSCRUPNOVYAD3WO2YQ2WOABHWZPX65K6PULXVJKIKF3FA6EHUFZD4",
+          "KA7HRVAE4IOTNGMSF5SYKYNUMLQNTIF7AKLSEXAJMJVEAFPG6SCF7BCDLU",
+          "6IBH7KYAY7225SPRGXW2GFGCGHTO2EAN6KHRGC4RFUT4G4LZK3A2AGDBEI",
+          "QPER4EHXTGMIJOVQ2ZPXSD6N4DCDF375VRFTNNO2V5S3O2EB4NLKO4JFHU",
+          "P4E6UUIGYXR64NSPOVZQDRBLSND2NCTJ4C42FUXJGYU7WH2KWTGBFVHK6Q",
+          "CHXQSCBDTSAGDD6RLJQOWUSC4HUSKBKMDXDRMPGHHYGPNSCDRX5LSLIIBQ",
+          "SOMDOCXTCM3V5IYPY2FVM4QSXDGONHJI6KRDRNLGQYE4E2DEQT6ISXASNI",
+          "SQIGMKHZK5NYBS2D262CBTNOPRGVDBCKNKNC5KM67LOGRIO2Z7NB4GRANA",
+          "Q5N46JZNN7SDKMAWYTFLBEU6MDKIN33PLF7XFXEW65DK2LI5XNSDZVRSJ4",
+          "N2RE5B366JQQ3H2ZSQTJ7Z3ERSJEJ6X6CGSMFSW3SC7XQJS42YYHDXPQTI",
+          "6PLLYBDUPKVXR3XLFTRGNPNSGIWMIBI5W4UOWS7QJQUZAGSSSHWH5CNLTA",
+          "4COIXUB4LH54WF2THKLKQQPMNZLLUKWJ2EI3E7XWJ7JVQLURYA6EM62T6E",
+          "PLVSAHXIFF7V7TWSW5BUJP4XTLHZH4IDLCME3UCXBIR7DYFJHGD6OKTQHY",
+          "Z3KCT46T5IBVS7ETAGHB5VVYOA5NGEXDTKE7V3OFZNLM3C6JQEZL7PZ6R4",
+          "PUMLEFE6MO4JFMRRZ422JTSZYS5MZVDN3QPZPSAK3N3JOXE456LN7D2ZDM",
+          "TEZQONN7755PKNTVTZFRGH6PIBJ2GFISFWBWW5XVJA2TXVUJTJ2IDBYMAQ",
+          "VR3B4GQ3PIGRLQTWU23LRZ3PGJ7FLEOXHCTIR3QO6I3OHVHMPMUIJAVJWM",
+          "ZWPM6SOEURWHIMMS7JWE5RFXG4Z7F5BLPFTIS2U7L5V2EI5HFHQ6I4EI6I",
+          "2JQSJHTNA3ZBMASKZSTVOGOQM3OKOAK2IVGMIHCXX4B7X7TIHVWV5P5PBE",
+          "4M2RPD5YR64FB4RESAL5LJS6EE3GFS6DTXJSTOCCOE4SMHWFWERK7ILYLE",
+          "5UN7KF5KUIA6AIDCTM7DJ6VFJ3RXFKV4KSMHSG5JSBQ77D5QOFX7WFXA64",
+          "X5MUJWRJBP7OQ7ONNEHDUGF2EAT5DT7QI7AEPZYLX6OVKKF4WZLJ7NQGNU",
+          "ZUPI4DMPJ2XWPZ6HA52APPF4K32VICOYHQU6UUN2YOABY3WVHXIDAAUQBQ",
+          "HQRFS2ERL74VOI23QNM6SNKQIABVHFQIAD7TS744UYUASURTQBLHR5SIHQ",
+          "6YJQ2CVQBD7INTYOIZGQTPZNSYMJY7ZOXQILWGGKNYBFV46S2B5WJ2SNSU",
+          "IKKNJ6XCTEJPITJ7FWNJFVCFP7UBHE5GOOLOH6AWH2RTRCBUH2GOW3SBJQ",
+          "ZHJYAF3IZKYWSWQ4FZFERPTG2RY4E3CE2AOEYYVB4OCKQ34IQDDW6CU77I",
+          "3ZMLGIGQPQZNBW5BP724D5EOJQFB36BXY3MZP5NW5PFZAYH5G5UAIXJAWU",
+          "KRY4Z7NUN7THGZLCM7Z2TQW24ODFJFQCXEYJXAWZE4DWF6SFZHQRNX4EXY",
+          "C2BOWNLHKH3GOJGTYZOMEJMER2BTTTKMAY3ESJ77MUV66N4EG2SBL5GFRM",
+          "2EG3ZLOWBMA6ZQ7WFI7BJVPY3IAQH33TGD3A6GM7FFDBDC5EBF54GOV2LU",
+          "4NXOIBQOOJUO2VPVKMVPENXENAO3RLVBHRRUA6LVKFY4V4E36LK2SOLGC4",
+          "37LI5WITOCWFJSPXGBMPMYRSYSUL2QPP5IR5TENIAYYQ56LSBWJ3QQSCMI",
+          "GVCK3V5A3Z5RZ7EO36RJTELR7CGAJBEYVKSFJFVVXO2XTC5UKJGINWFTLA",
+          "WMTZZ7ME5X4YYRGRNB7ROZMOVZP2AMZKIDZCZR4XSMVP7BQIIIJAKFS7X4",
+          "NDG7KO5NAQYBJM2DDVTVY3XMAFOK6Q3J3DOTZ34Y7WOU7OMZEWDPXFFZXY",
+          "ADQD5P5BF3QSGJXGWDJBM5LA4BFCF7QLHMFVA5AUWUSZDDHY6UU24VBGOA",
+          "7OP5IHGCWH2HT6IRWHP7HUUSPVUD5QKZ5QGE7OZTIWBGC2QIULW5XPRKFQ",
+          "MEOLBNJ4UKDD7AIIEI7EK5DV3J4IGK6NVRBV6C4BJIS7HGGNQOBX24S4FQ",
+          "LBC7XQXMEUJ5UGIHSPZ3VWKBNJXMAUG3VH5I4ABSMHPIOZIDKVIQKPZYJI",
+          "SCH6Y3AGQ6MZFWUY4S7ZSOH5YRUJSR3ZE7YAS7ZYKOMDOK6HPLKFOPADWQ",
+          "WZV3USVQ7UDTR7KYVGRKJIUDZOMP6LFZX2MU63WJJFFEYGYY534DR42ABM",
+          "UWGRBX26PMUK3BX7IX7JSETNLKWTG6JYQ7I4V2WCZPZFX67CJIP4HHW7UA",
+          "PVXWM2RG5F4F6GP3SWLZDUYWX6OFARJKZRO7JTCQRRTWU6MI2GK67K37OI",
+          "D4EINE65EE3OLB5XSLREL5MTYOHS2DF2KTXDEKWZAMHSJWJED6Z5PGFJ2Y",
+          "GL2YJJWLZMG3WGH25UQR4PWVIVP2W5LEDNLN57OXWIRUOOQQSMXE3AEA44",
+          "SCXJ3FZIYD2X5XWZ7CFEOD4RX2P5USUD7P6UZPEPT5OLQ4EXJNIWOVEVH4",
+          "GS34NNRRWZEVFCCLNUIWTAWXDQNSZLGXLMK2PPUVLISX6MHN5AA6M2EK7U",
+          "MD46BIKX5FUNOK7WYWD3A2VJJDLJZHUQVAHCADYRUXVEA6RYV2TD2WD3HY",
+          "KXZGTHAZ3KVFSYBVN325HPKEM73LDCKAS33OUZYYUO777ECXLW7AYVG5EM",
+          "5C56DOCIMLZQW53OC4HV2O5FOZTEJHMU7Q2BPSVODCSEWNJRUJII4WYLNE",
+          "E74YURUFJK3V74LJJENKHBP2GDHJPLZGAQSCV7EW3ENA4BFFQK3ONCMQIU",
+          "EQQCCLNPV6C3LKATP5K3YMCPH7DRT37QWX4N7ZPGHQKVM2ICFYQB77TQHQ",
+          "BPG4FKP7TTXECCJRGQDW6YUQY7ERXQO2GUAH3AKDNQIP22QEMZZEOJ6PE4",
+          "PVGAZL4E4O7U5WCOBXSN5TQKTC6VIPSNBGPFRWJUMJ75DUDC5G4GFBOA5Q",
+          "7VCNULQOSVKBR6WWQJGNNYJI4GZ5QV4XMRPUOITHIYQKW6R2QDOSU4KP7I",
+          "5I6ZP6MEEXDB7CEYX4NCV5R7QLIQTIW3H26QQQ56NNYNSNKKCNGXPFJGMY",
+          "3JI5BVGZVXVG2F5BGSEHZX2TO4FXCR2FAHXWIRTQXJZWMYYNBFLE7YO7I4",
+          "5U36MRMRRUWACTUV3I2PCOSLXSX2XYPJVD52ROLI3CHEVVU4FBNOGPPLNQ",
+          "SY25ATKW3SV2J2KOW6MCHTRG2ONQCNU3YSSH32B7GTGN5SFTYPP7KCSUFM",
+          "YIZXISYIG5MIVWDKW66G26KODQV4UHAWN5IQEIWO4WOO4SSK6R4MHPG3H4",
+          "AOSRU5B6R723F5XJ2QH2WJ4VXGCIVTJ6PDDS55EYEI3KPJHCEH7XOK7OQQ",
+          "5WGGUNCMPFZ46X4OK7DGDNG6TZWBFDRR55FRN7GRJ2VYP5C4BL5FA53I5A",
+          "G3PSVHFJAA3F2XOSOAVXAXHF2HWO7PZCPPIZSEWDRKZQRN73OC3TIKOB24",
+          "F67524IVLARQUCRQQ7QDB3EVLJDEKZIDL4TTMCKF7NKERIGBKZXO4DGIMA",
+          "TLRBUCITSZTU6HNP7VOZY5V3UVS3GED5WSXFVBX3OM4RKBCLN4DWVFXUEI",
+          "UTOHUCKCLOANZAUQGCVRU4QKXCHUMRVWT2YPME2VB7M7THDJQRIRJIGW4A",
+          "WYPHX34CADVWARF6JIDFWSODNMPCARJGOTXZMNN6XFC27LIYGFXYWOG4LI",
+          "B5IGCMROOEVEFEQDXWNUWUGC2P6IKTVJ5XBVBB6LBTYTKPBQ4K4QT4GS2I",
+          "UVMBOEXTLQA3C5M4PUGKAVMGIS6WPCPLAGAQPMFRIQP7J6FEXR2NRHKNIA",
+          "UOERAVRJRNXMMRGHANZCB7272RA67TPXCCH6J2RMPI43AKKFOWKMK32S5A",
+          "DQYI2XPHWO2UYSGELNPZUX4SZBJJ3SLYONOD5DA2S4V5NVLRP7JLUIOV5Y",
+          "JSAV3EQHB242222ROFETFCFBVMS3X4K5BMFQBZ6SYN4SBOYXAJHEBY4M4Y",
+          "SOQH5NNR6KSFBOG5FPOIC5XRL3LPPE4ABDQUNIB6NMKWVNUTARPX4ONO4Y",
+          "BLJFTATOZPIJVLPK3W6JQABANSKQUTUJCRRPMJOM2ALQPD7HXVKMX35YOI",
+          "5HCS6SKUU4PL26SC3EM2FBCQ3Z3CGB3VONTTSDWYYXHY5FTDTOTKG5AYMI",
+          "KK5YOOPRRFB6WJZV72TZFUQBTG3WBYHLYVWXHA2476RTRNFTA5RTW2LFNU",
+          "5RFHWHU5HIDCUN6LCNPIEWNXIO7P34UEA3CLSP3NXS47P2WXZIWAZGNDZY",
+          "DUZ3TAR56YTTSSWOMO7DNJ42OA2YZEOGZCZ5BY7NUICTHERY3EYWC2H2CM",
+          "UJLSJTWBDV5XYRA3ZLWFD54VQN4VCJA32PATWSG3TANVG3HR377VEZAOJE",
+          "6YTMQTF2A4LVCMNZAPMBGMFLRUPBN7ZKQ7W72YSRTDQ75E5GDXBZAZ4SWA",
+          "IXXRH5BJFCG5ZVMGZZM3AQF2PZKCKUAUT5U7EA4LTES26GVKRJZK4VUPME",
+          "XOY22LJWPN2ZTZMHDRH5ANIZL6ECUO6X2OCKO5R7G62MQDUBOISG2S27X4",
+          "QIFEJ235P6LAQ6ZYI5YYULV35HWAPFXKNRG7NZH77C6FJSDUPPMOEQLZ6A",
+          "S6W6XYJIGYURVE6QI27D23QSTIR57Q376QGEZJQGYYRXXSFCUNOI55TUCU",
+          "LGDWP6UV75RGUJ7ITKQA7U3MJ7BQAYCEJJ4KVQ757O7RBMQQ3UMVK5KI44",
+          "GUDUMF7UWX5YILPI2R7OYYIII3V5J2CFXWS562VFX3PDYRTHACMUQYJC5U",
+          "67BZT4M7HB5CKLHBDLXMYMFFHTYSI5QCLOAMB635DFNP45JW44ZC2WT5R4",
+          "5TVYXJWT2Q655WSCUKV65EXWR4MTNTNNCNP6IU5P2ZHUHPUR26P4NC7KYQ",
+          "LAAE7QGABBVRZR3RM225I72F73E6VHPAYLBZCQGMFJAOVZW2HOIOJ3Z2NY",
+          "FZKTUHAGZXA2PAC5S2YIJPNWVYSA5HN7J4BQAGM4NRK5XLZS4VKHCTDVRM",
+          "22E6IUECDTJ5POE4WSJBZ73TZSNMRWK3FR4CDPEGLHPLPYQ7DEPZQZCCYE",
+          "TA4PVZAST5CJKIM4LVZCU5IBRWVD7ZEXCJ67OQO53BIGYF3D67YPHSE7FU",
+          "ADX3QD56PY7I2LRMORF3PR4QYJCBPNJAN4OCJQLIQQRGBXLVDVMHXYLYSM",
+          "VTK7J2MFJ27YL3SR3LNADRFDYXZQW6W6MFKKYS4WPVERND2PMIZCIBOZJM",
+          "7NCAUGVBCIS3COZJU7JFKWIS3M3MKA2VJ5K5EDFNZS5Q6L6KMYMBREEAGA",
+          "KOUXIAON7RXRZ5XHONUIUR5EMWOZE57WJPUZ2JXLE6KKPOBZFGYJHEA3RA",
+          "YM35SRRRK5GSU46Z55TBCTP7N3UAVBZASKKXM5GSVMQPJDQ6EYLSZUXCME",
+          "EIECU6DWHXJNMSOGZYIYTM5XZA6AJGWISYBNTLTCAUVRYPMYPIK3O4Q7II",
+          "SMRIIY6M3SGKRVQXSKSYKOKKHR5QKZT3LPKRMABENBTYVWZ2O5XBRCNHHQ",
+          "T375PXW3SCX726PBIK2CSCY43XIPQFVOER23VRCNJAG7HSUUIJJKXAYXLI",
+          "YZ5BVFQSTQUN6B6V53WIL42E3GJLI4P6Y5GD2GOUWCI7KNPVFJ3UXTQQ3Y",
+          "HNTZWJGL47HVOVIZZDPSHPGQ6JXUASLVP2XN2VSG4V7CWO7OSNOD7UZUE4",
+          "SI7ZXQ6QETOTNIONIVLQTDHPQZUQ4WRNMBLSG3AUPVIK26VMQEOUXYBTWY",
+          "S7H3VZCGSO2LGFQCKXMOHQEJCQ6ONLG5ZUVOOJMMU6UUV4FV35S6Q7OXNQ",
+          "GDSEW6NH7LQO4GJOQMOJFYPP2QX4X4WBOXQGXYKKHXG46ML2E5WL7SDF2Y",
+          "5FXZSA6IPV3UMCZPLOUQEFEY5LLHGT7USEM3IQDHPNYGZ33ZDVCOUDMAKI",
+          "S7UYOJIPT6FDQ5HKZWNEGTPJKVRF72VWGRTBLZCL3FGHRPC3ZCVM7WR5ZM",
+          "7MCNEZKRE3EDGR2C6R6OJAPOFOTSEA5SS24S3PTBVWOJZSVC2HNCSGEOHM",
+          "XXE2LBHBTSJ64KIAIXHPQY632TXD35CU75QSBD6RWP2YSETQTVEKZXNIOA",
+          "PBLYCFRTWAPPBWWYVG63RDXBFLKOOUFXQ2HQY4SA3FZIUIPMYHYXADHUDU",
+          "RR3SHUYMXKFFNVJKYIEJMF4WKL6LZEAFGFHJ3WJVANSVVKLFWF2Z53V3D4",
+          "MLCKGIBV75PNBUWFSQKHKLQWBQMZ5UG6XXDCSU2O66AA2ZWUAWK7C4LCSQ",
+          "OIJHDS2VBWFIP7FC5IGU2VQPBFKDB64HWBJ25EHQTB7QOCEEMPBP52ASAM",
+          "33JM6G343HGKXE5LJJTIIFRRSL7BTDMDDBJRCFQPCAETH47NB6IZPM32Q4",
+          "ASQXUKUF6HRDVOX7SV6G3K35QYBAAKO2LJBBBVKPFIFYT52YCEVVOELMAE",
+          "N7HLBNL3QJT3QN4TRJZSXOE6X72735CK3ZNL6KV3UUAHIMVUH6SZ2FZ2WA",
+          "C74L5ZOXRMW7WLIARSBD2JAT4W5SKYFIQ4UM6VDZMYXUJCWCEYLW26MKMI",
+          "I7DBJVPX2T5UIC7475MIK4KQE3LCH7NWS7M35TYJIE7BPR6BCWX2655MOQ",
+          "5NINFPX4HO75MHVB7KLTJHLC2M3VGQ2R6CYHYH76JOZETJONBCE5PSCLNE",
+          "UA3XWVNDTIAXSUIHIFDB2W6ZLP5X6KLMNLYY7LPLGYQXN3KAN3NDNSEHBE",
+          "COSKT6WJZAEWMIUMJJKF3RETFIBW2XH3ZOAN3NEKUCBY4ZKC4WSLNSOEZ4",
+          "LDMFB2SG635OCXSNGFHMQSZZUJKVYT3QMN4VOPQ5AF3HODU47SUD2BFZUA",
+          "BJBCCPYYBA3M2GRYQZTAE5CBTSYTQCTMSOYJBGPTK5BHBLYQLQ3YE73YCI",
+          "6IJHDTMALSG2Z3Y6PJUIVYPTSJB5AFTMV5DDHWK76UZ3MDHJMZQKSCL5HI",
+          "RCPLPAK646NXACS5OUNKQFGPVUWYXVOALBCUIJSNVUCWBQV57PFO34I4J4",
+          "4RTJNSPGAVXDRPU2Q77L4YOQQD3JNQGX7AQT4O6SKUOS4JQQDJZZYMVRQ4",
+          "X5C3UCBNPHYIWYSPHDO6CNTCJLIHCMMDMYTL5D3VWYL3MBJVLOESDVVW4A",
+          "XYBBLFVFGMBEQR2CPOUDKE6OCR5SCDU3MYOSVHYSDYHOLYOEP7P5Q662FQ",
+          "NYF6FNJQK5U2PKAJYRUCRLPE2QMZU5J4Q4DZLHLBU5RT3D7NATTLN63GGA",
+          "F5DKGIH3BB7O3NQ5HNVS4TXY5ZX27BU4AQTFZ6TK43HK2IHEWRSPYAPDJE",
+          "AA2SF2F5NHOPF5BBZZNRB6YMIMDSMFQPUQ7KCFQHFWNZYOQE4V524PRXHA",
+          "PTTARZWMXVLQRYF4YSYF5BMYZO5EBXOY6KY34FPI7MEP34FZME42N4OI3Q",
+          "Q3YYBFGPQ4APC7NQ2CWXKLL43VNNDKQBVHD3FDHKLBCICSXBEREK2ROCQQ",
+          "HWT2XEOPMICAOHRCRU5IQGASNFUOMBJFN5RTIOCNOTPE5JGBXLTUC4CSII",
+          "3XARM5CV525YEWQZZXWYJQCYSHODVS6XIJIJK7ISXS4I5TALWEWKYKZWJU",
+          "PKAEAOUPSCM3C7MWQDFZKEPIZA6YOJBI5DSDT2DVPUEXAXS2KA7R5QSENA",
+          "2LEYKNRIS367W3CVUJGUI4CFTXVHPZFNFSB7PERKPAPBH6WNFAKFU3DC2Y",
+          "OOLZPRD6MMOTGUXUM4MUFRDI4O762I7SMTZCJUYLVUMZOJHEPFARLKJSHM",
+          "XHZ4E4GNS4DGBAFY7JLR37S2CHBL6PNRGS2VDP2HFLEPCL2CYBIS36B5BM",
+          "C4XHX2LPRKTGJCDMU4MWZKDQTQCH42JZFOTBTKLJFFNPRVH5VVKCYB3P4M",
+          "MN3V3JUZH6IDLPIWVKTPOOI53ZBJZBMDNEUY32FLH7M6BXIFSOF4TFXL4U",
+          "UUUC5IVCKNTAHMZIE2HXGV3HGA2IUYMJWEKFDUCJVDJOYYDQOWQ7OKSGRE",
+          "XWUNC6R4XRXKNTCT5QLNVX7WW6L5J4IBDVZGA5FJSGCWWBGVPN67ML5ZM4",
+          "YXJXKPAL74NJL66YCC657FLGYXGTV6P3IABF2ZX75UPFZDYYXWQDEHHNJQ",
+          "JBUANTNFQWVEPASWCW6IRJHYS33IXC77HA3DEKXKTVUH6EWQGUVLOMT7JM",
+          "BAI22TQZV654DGJFGIA2S2SUK55Q56CDDRFDRTZJ5CIJFWZJJZI7VUEKVM",
+          "LRC7OQXAQ63OFQN3JFRFQXR672TRK3CS2XQNIQOGZLIKNWUFWQKLIPJGBI",
+          "6FXUFBT6S4NRTJS3FV22HG6CDAQM4YJ5OWNR6JXSFLQU7V5C64XMLLPM7U",
+          "JQTE2UFKLHASJS4NUN7R2TYPB7LRFISSWP6GHVRKA2NCAASXGYQAT44YDA",
+          "HCL5YB23NGODUFNUMGORF54URMD2GTDKNPHONVWHJYQOF7UCQP72FRSLVQ",
+          "YU3WXB6QQUON5ELY2UFX6P7PPSHT25WDFLUWFCJYN2QLPOIUEYTZGIOAEA",
+          "QCHM5LSPVSOS5QHWPXHP6EQPMPS4WLLUL3TDLHQEGP6Q7GAZGFKTLNXLZY",
+          "TRWQSZAUHR6A2C4QB5N5BWXI5UXCYVTYIH4IBX5FZHIG34D4WIA42ZVRXY",
+          "PVEOZ6JWSJFBOYQHDVXSS5ZORBVJXZXTAFCO6ABAVWNMCOHYY4SEOWINAE",
+          "3QOERJEINS7BT55OVV23FSMJZFHWJ4V36V3POUKTPZUTVOIBJB3TFXANN4",
+          "NX6V3JM5OU2HOURNQ4FSLW6GLRHLMCCE56JXOXEFKP4DGYCDRKF2PGGODY",
+          "BHWUXMKCQKEQ3YRL3GCZ3RB2X5UWZ4JFOVEEEAD2U7G4TWR6RMYXPV5RN4",
+          "VCC3I55DGP7RQ6I5JTKHAWGJFZGCP6IXIFNQAFFOL2HYABP5NYNBJIK46U",
+          "WH6UJ2SGJLXZB42F447LBVJARUQ4HSLHFTZ3SVTVLXAX5QVZ6LWWJE5IYI",
+          "OPPOAPJNMRJOD5S2K5B7LFOUFAOVZ2OBN2W6V2E2A27NKTIMJTDDVYWR5A",
+          "HTATHRE6WEL6EDRIM3Y73M4NOCHTE6FXN4OISYZEOBQWNGPXOOUDRR3OSM",
+          "3YUGP3MS7V5VUFDVZBWHXXG2R5DH6PKH2QRCT2FYIM4GOXAYMCRFFCA5QQ",
+          "VWWTUIR7GK2CBEW2QHU7UOLYGYOCS3JSXDR3UXUTTGEVWM5ESW7QZPA4PI",
+          "R5TQX6UUZMQKMO6TB5WIPFWJ63ESV7LR4HTGG6OM7H3UTPNLPPWFAMIOJU",
+          "APRVFBXYSOZHPB7QGYVOXMPN3NRZCD62AHUCHTWIC3KH4PIRERFRZVYPRI",
+          "WDTREZJ36OX3U2LGKUWYCTN3TPC6UVFGZBB25KNU2ZVHPQQC2WLBBHGB6A",
+          "MWD7E77TJLADQN6PTPYGNREDQESZKYXH6LHUSBUOSSYVGSGM6AXDPQPUZQ",
+          "EGUCPA2BYMGCDMEDCKVAMR7TZQ2GUDNB2SUVVK27AC4REAQHL2XW3QM2DM",
+          "7C26CG6FH672NIJELBXNJAHRP6VDCA2JXILUGMBOCQLV3ZJ2EGWA53PLFY",
+          "RSQL7KOECS42BEWB73Y2DBJPPQSVH5LDUELO52CCWUZDD7BVRJ4PM46EPM",
+          "I4CKCHJXJGQWCR3M3CREAYP6MYY74ASI3P2LLAS7DS3ZWDQYXFWTTGZS5M",
+          "3OIOGER4GCYDREOO3Y55XEMTTFS7R5PH5N7KCI3HAYYN5FISRXNA3OZ3WA",
+          "CCH6XWJNAAWKA3QFEVVPIEU243YWZHCEPZJHSO53IRT7GXQAK73MMNUHOU",
+          "IRCSIE2GD75ALB375TMWLGIMCYLMLCFL4BOLO75KZJNRZF5CMH7YFT5LKI",
+          "XINRE3SIIXDREZ3MCUV7DWNAW4G6DZ33VWUR3SU4HGFZGPONOEEY6G4EA4",
+          "G4COANZP24XLPBKWGU357CM6EIEROANNWC3FQG6BTLCR24VPH24V5NIE2M",
+          "NIMANT4QKIF3REB7AHICK6W75BC4VLVQU4EUQ7STYPXNMF2JXW2EW2UKDU",
+          "NADOQO7TRFILOMYYJQMYZFPHZJSFJU6JN75FUHYSKKW4WUAKFC4QPGR7ZA",
+          "QP26FZCFJBHOHSJMAN25EPQZCETAGAD64FXUX2VGRX7O2J4TU7S75BB67Q",
+          "X64WUHTWSXCRKNLKRKHU3FDLH3JMHTXHJPY67VHP3VYATGOHTEF7OOYNMY",
+          "QXAZYI62BJGHBYTZJGUNAOTJK6MURVRG34OQIWPVCOTF3TLPCWS4ZGQFGI",
+          "JYJ4Y6VBBLTL4RWYX6AXQOYZMOIBZAMQAUJETYUVYMGJHU5NLQ4RLTLK4Y",
+          "3BV3TDP2O5NNMZ2KKUES3ZRO4FZVKLA7EGXK66NZTNFH7RXT4EU6Y77YFQ",
+          "JEVYJPWHPEZSYFSQIMOAZLPNKR72S46D7LZU7UA5MFC4KFR4KBY6QTKJQY",
+          "UM5FPFAB4KXI7PS5D5B26IT4IL2ZFVXRNXSAE6MJGLKQGUZMPLJRQIRXQA",
+          "R65R45YSFMAWZEXCQI7Y6R6EH7HFXUCUA6MSEC6WOONG37NT7RNBJXYTSU",
+          "7ADWUEIOUWOXOH2JIYV7QZKWVBW3WV2HWBAGWUSUS7JJI4K7EE55ABJ4JM",
+          "V2MBE43VV67ZSMGNCMCF4SP5VYT3UDIUZKPLOWYT3HSZLHAWOMVHNZXL2Y",
+          "2PNLMY4ASPUEX2ZAZABXLVKJAUFKYZ2ETOUPIQ4KZL5GX6HYVFYKN3ITNA",
+          "GX44UR27UIWFDXTATKD35FUSOGMVI7M6VEGELEDOCZOECPHAWVUIGRDECE",
+          "EXA3BNKQVR56FBZLGXI2RREWR4NHAJIEW65Q4LFFLCJ4LXGBIVUJGHLKJM",
+          "LBIQ5FTXOB4O2BY7QZLGG2WIHXONH5S3TYUCLTELHJ4FSBNKEWLWD7TWRU",
+          "MWALGYLW3EQH3RPT4JPXY2AZK45YRDZEIDADDBBXEBH6MTQAOBEZ4POKYU",
+          "KSVEVWY6FBDGNM2J2FD5HKNYV7MWOZKHLL3HWBAISSYHDSEQ2D7CFLELWQ",
+          "SBWSIZQRNC5W25HFOMJ2WSA5DTYWGDC6B4GITMOMY2D4MIIGUCVX3IBSCI",
+          "S5X2HVFHRMC24EXLYE43FQVASFJBZUCXOIW4ZK4XRNIOTJQSEJA6KNI2QA",
+          "UOUFNPL2GQF3O6UPNNU4TZ7TXXFDDJHYKT3SDCNINKGNFZE6MWOXE633UQ",
+          "IBJ4PX4USGEK7T4K4LHTVHLXRYO4QCFVE4UHEGHQ64EJUYI6CQGT7JJTW4",
+          "XYBNJPFBBZ4UNSQFDEPEH26YPEDSUOP6UVUVVS5UXVOR2ACNEKGNRVRJ7Y",
+          "XGKPYFODM63QF2IKGPOYCD6UJG3W73XYD4VK4AMZGL5SGSFGSW4VFGCMJI",
+          "3BO6GXR2OLUUB4EIM7HNGJBP7YCTGA2QZ6C624USEHSFLKPZVEC7B227ZI",
+          "YQL2CQYQD33EBPXGS2PANDAUHYXGXBQHSCRBKB4SCBVMQVFJI5PMD5DUSQ",
+          "WDY5SXXEDOIGWLHPQTCQUDIYGREVACISXLDFJPT7OWXKKPVEPT5N7PUW4I",
+          "6P7UZFNSZWIUPMABTJRC3L3VQQK65OE5UZ6WC4AQCJKJQFIFACGJ43N65U",
+          "MQD6HTEQJGMK5CZ5FQK6Y2DFMBMQOVUF3GXV3ML4GCNO2MHDV4CTGK4XQQ",
+          "3C2QESCVMFTLHIZLYAP4QYUHBZFSP3DXZ7LQVLXZKC4TTUPO4LDUTRUT4E",
+          "VQATZSK4VKFSQHGE6JNBAEGFQ763S5MBER7GFA33AJRDWAZWCE6T33HPAQ",
+          "NV6AOHBSGBWHCRIBKI77CA4TACDOERKKQIPGTHCMD6FBUMU2RLP3OH53UA",
+          "DOUBY7ENLU63BBK5QCDBDTT46Z3KXH7HGOGPAFLFVYOJNKQN4LAEGBIQXY",
+          "SSVMYW6OC637FILNHWGAM4VR5RLNTNM2Q4P74KBG4SXPXFAUWQL3FVJXZM",
+          "LKB2KDL2U7VBYOL55VXEDC5FOAJZBY7SLDWCBL5IPDPZXGWEHGJGBS6RXM",
+          "B4K2FCB2KG3BGTKQ33IZNXHYZ5YDR3RVO7OIPGPQLBFDCGMFIBVPPWUQQ4",
+          "7D3QNPRW7CK7IP577Q7VPARCBRYX3XSGRYGLASQKI5HUPUTMXEE3JSL6DQ",
+          "3CV3ZFVJH3RUTBZFFNLTYM2XK6FFPSROZGHD4MWA5UGIOA2YNBEDRQNYNM",
+          "2NDU76M4VYOFXZFO32LD7NUU6ACUO77V7SEJAAYBFBRNU4WV3OANAZ736M",
+          "EODZPI6AOLFOYHV372R7Q7VFCHWJSL5EPDN7KJ5NLQBGKVF2T4QQBBE3RM",
+          "47FHUMFXVR2JAO3PCVZG5TNZ4FQTAYT7SFZ7M53KP5VT6CFP5ZPE6OFNV4",
+          "6WXRTBTVIDRBSSNHH2DV4RHW54QBTGVJXAAFBR3Q3IRFYFJ6BV7JG56G5E",
+          "G5BMOGNPJMK6DOAYRIPMOE3GZS4PDACEV7MFHHJGW7YP3RJHDZENPDXE7U",
+          "QIYFCY2DY5JZFLROAAVNT46IMYLXHRGN266JNMNWJL62IZ3ZLIQSVWEZ5Q",
+          "AIZVPXWJCEOQV5BT4ZZULG4MYDVPI4UFY5DJI3ODJDFC5DZIW5U2MRIG3M",
+          "LBGZC2EDRXRQOJTD2IDWJHQZHRL6DVV3CRWQOW52B44N3NE62O6AWOZIZE",
+          "KI6D65JXFTCMJFNAWEPJRL4ZHECRKVU4ZRFOBHVRORK24MFYVXF4GIZ2HA",
+          "JSR7D2CUFHZENPKEB5U3XDFXMZDSE2CZEJKX2GSQM62GHZ5UKIFIPMYHOA",
+          "D2TM3W2KT6DNFFW5ODJUJKX2T5WEA2JUPY47ZMXCYPP5EYGWEQFACM3HQE",
+          "JOGHTI6EQH3BCF3QYPL3CTEP35CTC7ARNTXRQX2HHWMFXR4IK32GGET7OY",
+          "W6KEXJJHTYIHCKZ65QTZSREHXAYBUD2ALIR2HWZXAWFUYIGP67AMD24TM4",
+          "PFX2K77PTFURY4MMAXTBIX5GG2CC4HE7TL5AVEFMEZEZ7C3IC3TG5HH4Y4",
+          "R3IDHLBCBSS2756DTIUVFZNVE5KVIAFZTJZWEXOFVX7LU3FNSGC73SUPLA",
+          "TAEFJ5TFJQ7BNK425P4ZQEGBCPE3DL5U37PT3CZ7BTT6NLEQQPA4YWTOSM",
+          "VKPMEANG5TTZ7FZUIIFH7ZUCRCJBOJPLOWIIFC6BDASLB27LI2NO5IZHDY",
+          "IWG36JLTNPQFVNLJDFRDP624FRJ5QN44CMC7TS6JQAFQ5KPZT5F57QUIQA",
+          "TCZYDEOBE7KFEMDC7UYESX7IRMZZGY6VSUVU4HKV66AIG4ODW6NCJ4N3UQ",
+          "TT7SWWMNFFAQAGGPZRUEQL3436M7D45F3GIVMXHJEAU2Q6G74KMZTD3RNA",
+          "URBIBGFYOB6EPCT6FSPNYNEK2WQY4T37TY6X5BZGEJCRTJKUUVEJEEI54E",
+          "D5QZWQA6NXPEU2SVPYZ45H47SDCKM2ZPIPQ7QF3D7C3BPCVXISPRUF3INU",
+          "KJCSYGVEMTKUJXZPG73427PDRV6RG6XZRGPTVH2YCEUNAQLWZS7XHF4EVQ",
+          "L4U5VRSJXL66H3CXWHHGORE7UPXGRLHLRS6XRWGYK474GPAG4CUSBQPXIE",
+          "674IXLBBM776X7RJN7VXMBOBWXNXEYMBMJF65HNCIYYMI5HKODG77GUUD4",
+          "6G6BPF47HXZBVEBTXLRHJ3X2EREJJ5BUNP6ZKG5TRRL2BUAH4NZKS7V67E",
+          "ODZ4T2IVTCMZSUO3DKYC6A26YC3I2H5ZOKH3OXFZSNGJFDZNYDJXVJ72X4",
+          "6UEZWGNHLPQBXVSYJIRI6JYAJKAUPQCYXNAIRB4RVHUZPQXZ6BGWFMVDOU",
+          "FAG5AHNDQ7FB6Z44JWJLQ35BKMTADTEECVMCBYMMDUSCEYTNPERNZIKAOU",
+          "GYI7ZNFDRYIYYRY24A5FXZKTHVAW524E7MYNQ3LSVV7MFSCYBNII3EJHBA",
+          "633KA5FIKL7UP4WNDPBNRQVSU6EAFKU7GCEMAIZIEQWAAB2MUE5C2ZK5XI",
+          "Q7TDNXQXR3SRMFP6EEY4WPBLAPWAUXWHWCJWRQWHETDWUUC6NOBMVFUHYE",
+          "MPKMYJOSPC6T2FCVRXF24LMXUJOVTELEVHXFVDGZNTZSVIOFNRM2T4YIJI",
+          "2VSFFETMEJ5P47NGKESB74NNSGTQ4GS72GX3S5NT7QSZOTLRRGNDSR7FRM",
+          "YCUQRCEJM4OCJYHIWJVD6DBKXKD62XBTVR3U5LIQODDI5JN7MXTVCWKRMU",
+          "VQY2FEJFJN3KLVRHNLBO2Y52SB2IYHJ4EXECJ2LU7ALTVW45PQBHOZB6O4",
+          "UJ2IKE4NKSZXOARR5WJZU3ERVJNUDYFPWR4VO7HTBAYCO27GVBIPTELJVM",
+          "KS3PPNL4QCNVQVYMXROGEOO2ICSRK6EPNSZ4F7D5MLLF7OYK3TJV4J2Y44",
+          "YPAFMDUXWNY3H7OVD5TV5PCGPFPOQMPZESNRE3OQQH2AHK55RTFIUQYEKE",
+          "5HKI46JNMWJFCNR6U6GFDFVM7BUB6KNJRMYRA4JF4FMX3ZX5JKCHSNICAM",
+          "4OMAPPD5JEIR2WV3IS6VLL3WI4FAXKLORHNO6XOGXH2PXE3BGVNHNRWOXE",
+          "K2DXR5WBTJ4IZEWJOVAPEB3FVLRJPO7VSPBTET243TAEZJKGWFRYLH3LIQ",
+          "IP574XL2O6DLOVUNOYCCSY7N35INM25XL3YEJO64EM7G4I264BN2G4AVYM",
+          "NTD7XNWWSACF36IJRGI4H777HIELU44WFGHQV5MVXNTGFTN4GA3L3R7CKE",
+          "PQYRY4PSSKPDWV7BYMQKQJQJWVZLWFOFONTRV4AUD53R25GU4DMGGDHV6I",
+          "VQBXCUQTFGSCC5KVQSKSYSPVTZWQDYEPAAJ2Z4GZB7WADRSRVM33WOCXGA",
+          "CUTZPKLKVX2BHBJ3NUYKP3ZNJBNGWFORH67TLIMAHHNZVETJOUIPMTEVDA",
+          "NOZVJN5VNSZHMHYQ7WOCVCHNWTMJIJNJ5H7K2MKZ3AIUTB5V2VKGILSYNE",
+          "TRTWGM6HMYROTCOJXRZVE4RLSRWLJZRGB6VAEAWJK3FUNVHDLZP2CNASEM",
+          "2VUOTBGC65KJPD6G7IDOVJ7DJLF23LRI4AZ2YEZVHE6R7VXEUTEE4NNJUM",
+          "7SDWXDPAFLJZDGNQP5BA2AZN7GMHC4OASHVEMHFFSENJK62AMNB2ZLCJNY",
+          "UAUUBR77FGMNROJ7LFC57VLWAJAWEMCPWG63TABZ4ENSG66JINQUVBG6LU",
+          "MFP2R6TF6GES5Y5PA5ZUNODYFCMUL5DXF26NZNAVEN24Y33E2YKYSVYOAI",
+          "KSRMPG2WOYM3SNHU3SEVZH3Y6XUH4ZL5C4VVTYDPXOYWFSLCBBGYBK4HOA",
+          "KBVGRUAWY7NLD3ACFC5XF4ZUBWFGN2U4ERY3OR6XAH4BOOVXRUNVED43ZE",
+          "OOCV6EFBZ2JRCGBMUCAKPRJDHNWFWBJXJFTG7HABEPWB42MYXVN2CNFBEE",
+          "AC4DF6IAXXCNDYLGP3R6EMDLVXU652NEOFVCOYOSAXBOKJUZGWX4KDDNT4",
+          "AGYWMO2U52ZKMILIL3JXDVWKXDTMF26GWVLQQW3ZHC3FX4K4C4YYW7NQEI",
+          "RCVTVNPNL5QGQWQYFXUCXGU4EYA5GNV47QNLM4LLMEYADRJVW72WWASOHE",
+          "V5FAZAD7A5BDCT6P4MW6DUVSDVUQNOBFDIASDZMRBY26LB6LOT67J7H73Q",
+          "VSY5QO6V5VBCAJKKXDV64LHVVI2TZV727JH56FE7WB2US4AADUPKH4ZERM",
+          "NOEY3XWJEON5IMDZKHO4EC7X34XKHR3W6DSFUSWU5VUUX4AYTUZL3Q563I",
+          "EELGAICCR3NQW4O2UC4DHVQP4H7FCH7O3EBODOQ3XHAOHWCDB7QQWYNWKI",
+          "55GA3OAWGZSER4NCOP2LYO2NPALKPALCT5FTQFEEZVG4MIEBSFZBAQOMIM",
+          "RRTP3JXNV6QVVBZNXFK4IET7N7YNUFDQ7NFZ4V5TQJKFKMWAJPEPMZ7PGQ",
+          "5TAS36FP3TEXUK7F4EZU4U2O4W6VAJMMLPBPKKKLVN6NC6F2N6MRIKWHKM",
+          "ORNKULXHXKCEUAKACW2KJUPP6B5GVFANSDQCXSZQEEIP35R7H4U332G5WE",
+          "S4MIMR4LS3VUD4X2IM4VY77WBV3R4B6OHWUQM4M6F2TDLKMUQMCKOMXARU",
+          "I4WS3SEXBT7HP6MUSDZU56S3RZLGSAT2XROQQHGQID3V2DIBGNR2VE4IZQ",
+          "VQX24THVQESYTANI5ICT2A5M7SG2HB3IMECU56VCM5JAKCXOFAJI4AYEFU",
+          "RHPZ55JFO6SXQJ5JMDR2QMDOFLX5ZCUAU47FVLR5XW44FPLSUWFIMJGHIY",
+          "3FNC4VNRGL4GBVA2457LGO4MBP7OOYR7CXWORH55ZHFQ4SBVYORRGHRQH4",
+          "7MISTB4NKA3HBT7HWJ26IJLLZE43VDBEZ66A2T5KYYKQSAOZOIZOLAII5M",
+          "4GW3PZGAGVK5TB2TH3ZOZSRTPWSEWXCCGMIPJBBGVQCL5XCUJDY53NEJLU",
+          "646NM56CN7T5PYR3XHKIYJ465LNWYMYQEA4SEY5GHXHYVUHBG73BC32BPY",
+          "MICLXPKHFLYJM74LDQ3ZZZPFVRC77YQPTFYFJGWHYXOE2RMPILVISY3FNM",
+          "UFTOCDWQGL4MSYYHZTXJ25HMTH2IEP6NWWQDWVM7QXDMXRBKH466V7VCXA",
+          "HTAC25RB247WR4ZHLLYWRKOCTZQDAJ5VM32TDG4JWIZUDU3ZOVTFITK7YY",
+          "6VTURUWSOYUODY5IPNEHZD6U5CE7HX5DCI6GOH4VT6NQG5QMZPXLKRKTDY",
+          "2DY4MPLFBE4DQA34M5ZIXMF6UOWDAC5F4655WE5E5S6T2IPUPD76K4M6LQ",
+          "LOV3H6RZXZ2MZVIWX33JRGOBP5PHKUIAR4KKV2QX3RZQMDDOHU4K4IHCY4",
+          "3MQU3WSDAMQOJ3FOQDJPS7JMRGGNL4B4EN7ZD7UVNXT6GBCCTT3HAKF3V4",
+          "EIOUKMUVPDLG2NACUBFLO3GRZOSHNDAL4SVEK2DWBF2ZMYJY5M3BERXQQI",
+          "UIUQKW377SCQXLXVXYKBN7AAPFB37H45W7E62W7XGYHDFKR4IW2D25PBKQ",
+          "WHG7AAUDNQ5JUDN2CKDK5PQ2HTG5Q433YUPCV24GHDQTVQBJCE2HFXDLBQ",
+          "2W2KDQ5OCTPMKV4QMKIKGNGV5RM7H6265EWLX4EK5WMYC3JCAZ64LMX4AQ",
+          "KOXGHH2FXOY7T7LYMHEKULFZDVVIVZT3HAERJMHLNRL4FO4TDVUOTYNKHA",
+          "FOY5SB5ZWBSWIK7RNSKIAV3P6SE27Z6T6EJG6M652ECMQVF7GZPBBDBKHU",
+          "UYTOTE2DL5EKQKM5H5HIZFOA45JG2DRVQE72TMP24334LIODF4O7K5LRLY",
+          "NROHRCXQSQ52KPSQHOCUI27OFTAPPIONCTUXB76KWDRTSGDQNOLXSDYV4Y",
+          "UBW4EIMYBHHMLQFIYMBV4AE2PMJHFFKUHBGOES2HKD6OHN2PUJBW66H2QI",
+          "XAAJ4DHGB6T3WVOPNW5XZZZ5JIBJXBBMEZ2VFIRVGQ55BZ2NUV64YBGAXM",
+          "S7RDR3A6BXWYPXCJ6Y37CTARG5KLTHK6GC446CBH4LNUFYSM5MQXDWRHDA",
+          "7B7GGAWJZADUACYFRGKJLG6Z6ADZEI5FEZGOJ3HWR66H2L2HMTHVCK2Q5I",
+          "YYTNMUKIAYMSIIVNCZBU3PDZWWJV25QNIVIPERIPLN23PAOJPKDVCGXX2M",
+          "LP4TA3WEDXL5IYGU2DSWQLWTBUBZUMMNUXKXI3OX7NNG4CGNLZN5BNV6RY",
+          "OQA2H2TKMR5EYJARHPO52J7LEF7MXHQQ7SUYPMRPB75SBUR6YG3ABEJ7IA",
+          "XCNTEPXG5XGFYPP3RXEXKJW4O3TUKRUKLXLQCPJZXCN3N2X3UUGV364NEM",
+          "PJRKBOQMDOYXJH4JQRUTGBRBYUMQ6COMFWRKLOS2SSZKPR4DLO27G2CYYI",
+          "5U46TF3QURDFWQ55IY4QPLGOKRV6CHJ26XDKNRGNZJOXVRFEP4VKZTQGIM",
+          "LGOFKI3RPRI2JSCUI2MON5NBISI3ICEXJF7VJHFMV7RH6UJ2CESQEWFNXE",
+          "SVHG6K3L4APNSUIK7LQSPIZF5SHOJRCWIKUSWP4HPRAKVMEBCGCJSED3JY",
+          "XC677LHMXHETQDWAOXH4M4R2VEBJN6QLNUSC4D5K75SQQMH56GM3J5G6NQ",
+          "DSAVZRPWSXNLCRMVXQ272IRETMLFZVLZPQH7L7274Z5V7S2E2ED6FE6TD4",
+          "GTUKNS7ROWGV2HEKM3YO657MIZY6UTAI3PAEKI44KJESHY6KDRZXP4EHQQ",
+          "2543LCWQ743DX2WZGZEINB5DGORXPAWHVTKGP4OM3JI57PS2SDQKXHBSFM",
+          "TODG3QG43TBUP3PPIDHL2E64SRMK2JFEEEN5XDRO5MUYASMH5K7U5V6LWE",
+          "YW4DU7YZPMTGSDIYBW67VGDGZAYVBJ4GGHTGO5HH2V4WCUYEZKQHIA4KZM",
+          "ASLRPT355UGXA4OGUWVEJXASSJ45O5WNOOZFGYVBJD3YFN73LHNYZ7X2KU",
+          "HWXPJRKZDLWHMRRPGAEAJSXSWKV5PBPSRF4URG42JJ2OZDVW5VIS6XAOYE",
+          "4K7DHCNF3HSPCBSCPFSYSQRIUIEJUHQYF5BVTA27IRBEOFLDBH2XNO6624",
+          "PBZVPUBS2W2VAQR75IXZNJ3TMF2A5TDPXNPYMZM4G2HOM2ZEYEQHQXONV4",
+          "4WOF3UUL53NIA6S6PHJJDDC5CJQFSE27IRFQF6Z4ATRIMEJWY7WGJLMOUA",
+          "T4TPKYHNMFIV4GJVAB3BRUA6HUBPTJMXBCYLAPKAJCYQKWVJHXZBRBCUYU",
+          "ZNURGQ4NKZGHQ6JX7QDKB64HOTAVE4FCA64LYHNV42SZT6RYIOKDVWD6DM",
+          "NINMM6KJADECFALWTFTP4BRMLLJLFAGPEFV6ZTQNIIIH6B7N36LRTDXXLQ",
+          "CKYLDFQP4AXI57JFCEAJ2N4VGBAWCRTM35A44L7K45YKY2MIAQCJL5E2AY",
+          "K3SO6YEC7DQJGJSQHBXFH2TZUP2OXCFW77KWHDLAJ6SSTG7SGJQJGVJ3OM",
+          "EY7SDX2F4PSDGYWLTXG2VXKOKBZQQDBSS5ZSCIPYDN7HYX4UMMX4ZO4CKQ",
+          "GAUJ64WT3YFHJXTZEEQRG6WWAOUX7XBPFE75IYDJNAE5LUBSZBMALV6YOM",
+          "BABNSXYKDSMIIVNGZ7FOIJK43VCBSJMVFF7OHKJ7VUBDZEFCRWQX5CY4DA",
+          "ZTFT6VE7GNKWUMPFDKVF7IFBNLBMULDJEF5RNJN23QARWIVRWJY6J3T74M",
+          "QD3WUKFZNF5CFZVGY3GQ6F3QQCNM3ROLPOHBNCLGFVH4H6LQTX3DG7WM3Q",
+          "4JXAN6WNOKNZJSKMUUKK234FXY5JJF2YV3MJHSXFEMW5V2RLWUBAD7GFVA",
+          "2KCODJ2VFQAMUDTJCNGSP4B6HN42QSB5452C4G2HLJ3NJYMO5SVBSOKXMM",
+          "DID2UTCZ3Z4TJLKNMXK2QSGLTAABSHDS5UZGIB7XCAVF5OVTIWV5EHRSAA",
+          "3T53HPI227TXCSA5HCKGCQ7JLM5YSXCFQKVMXMN7U3JW2HE3LVZZLLABOQ",
+          "RRBLXTMZ43TGLXSBHRG47DUBZ2N326EMUPHHGXFJT5TB2QI26Y266I27VQ",
+          "CPOFE3J3JOB3R2JOSK4XLACADSAGD4L33GBBFDIBNCMX5SMRPOY2HT6BQA",
+          "LUDLWLFAIPDUAVEASM6ZLKBLTX2D6JMLGUXHLRE4LPCVOVEE6UAZOO3TRY",
+          "SIUVEYKLW4DCWVCSMNB6QIOCBXSICM2DJZHIG7IPBARGXM57HSQKNBFJUU",
+          "SMOOTN3F6S7CVRI7NTKN26LCJKVNFZQOTODZII5CMWVCPVUTET25QPKUPU",
+          "W5TS4G7XHO4PRHYLQ3EPV2HAHCHJMNOLISXZKXFVB4AURZ6K4SIT5IL7EY",
+          "PPTJF5MZFAKFRW2VPKAKSLV7FIB3HFJU2AKTE6FKXSRCU5DLF73LTXHJT4",
+          "2KPSKPRL7PZ4LYTUYIGQJGH4K3LUKAGHCL5QF2IMJ4J5HJCKY342XEHYZU",
+          "EI7RIVA6PNAPFXN2N4C6KCFWNVJJSH5J3ZAPNZ2X7CF4OCUYBYX3EGN4HY",
+          "VOLZIEL3T4APQV7BXNRWEHW75WD5OTYIRJVSC454LZWJPIUVE2P3VKU27I",
+          "DB25O53SULJA66GM3YJMGVYHXIT4CI3XGR4RJ4FOAX2DM6CRAOTHG6T67E",
+          "DJUZJHCZ7U477XWYJCMH4JNP4BGCLN6YLIKQ7SKXFLJXKYO55JHLXBJBTU",
+          "DNF2NMNLBO2RV2FMKYWJFTVA6JDTYSUO2C7WCN3Y4UKX2RFCI6VN7MWNIY",
+          "R5I7WR4SUCYSH5YV4MBLKIUNH4CROC26BS6SDO26WOMUM4SB7JCAWTZOHQ",
+          "HBSK4SKGSN4RT3JIW45DT3XZYY5ZZ47H6STVZJOGE5SIYAVXC5TUHDPIYA",
+          "4QM4UKY5SBXDCHYDR4RCXWWUEKFNQZBB6VCMILAZ7HVAAMU6U3TNV5JOOQ",
+          "IGDPY5UPDN3X56OCQ2TS6P4Y7MVUFHVLBFPROY7P3VNLF6XVT3YSNJGJ2Y",
+          "L7OAAVNXBHQQBYJ3YRAAD3IC23YBSQF2PLJTSPAF3LSDTNHIW5AHAZ7AVM",
+          "SBFVTEBWCRC5HIGVDLCFIP4M73WZD4EJU75XOQPLVP3AGMEUATVTWT5PKM",
+          "7PK4BSU564GIINQIDYQYJGYXAYJR2UYQJPN7MIQ7EBS7C6FJC6WKJDJJG4",
+          "PR3HMUCRLXPTLTPPYAUDOEHCZ5IS4SOQFNV6KEHT7UY23BOVDVZAF6KTGU",
+          "XHUWG7BAE2DGFUBPYNHQYAG2U5XPD57WHWYHDMZD3ITNTLUO4VLRCTOXNI",
+          "NEIUI5BQ47GYM2EF27JS2TU4SCUCBVRZBFS6KEIRFPOLEOPM4HFSHFO35I",
+          "HERR3CMOV3OXKN2MX3LJGNRFHHEXTTD52YEJ6LH7BBSP42RZA66GSMYJQM",
+          "Z5ZACGDXAEIEOGS2T4V3UDMK4643VBQNY47R6WG6UD53T6WIKVBLQMJ5RU",
+          "2TNKEWNNE6WZS6HSDLTIUX6743DQHHB4G6LUPG53A5PIHWLEAOZJNX5NBQ",
+          "DBZZNNSY4KNMV5WLYO43IWZDL7PCODK24RE6ZGUBTUWFCPDDDJVKOA6KVE",
+          "NVPHLLT3TNP66BON67IXQNUOHCPUEEKXRD2MWD2DNER5C36ICPYSLKXYNY",
+          "ZRSV2DXW3F3SUHMOLVP3O2QLNII3H2AQFBJGLSXDEJOSIV7PYXJJYWP52A",
+          "Y6ZTV5DHA7CMO4X6DMUHHK5I3ONKRI7JFJW7KUU4G5K2Y6G5TIYCHLZITU",
+          "GGW4QLHADTHIAXYFZFF5R7UCRXBJDTW4E5AYSAVNFX3DQVLDPNMZ5HQUEY",
+          "WKHS23HWZVZBXOG2DJQLZPU2IWNH47NNVEEF5LB2PT3VWWNLIQETLL5TGA",
+          "ABSRUVTCPCRTLU3OQZC5WOJCIBXUZH64D4CHR2Q7ULX3YCDUS5G6KEKJV4",
+          "57J72L4QLBIUAWDIALC4SVJC4T2SKJAJUHAMFDVIQBIXG7WP36AHSY3C6M",
+          "HO6GOWSWVAGIO6UKGSQGMRJJPUSK6MBMYYOSJHMRW44EMHWX4WHB2VUEUY",
+          "JTLTNNNLYDA4EPSAMPT4JK4ACGW6PZZGRBHDAKGDLLAY4KUK266T4EWPNI",
+          "PFGJWLBOUIXG3WXAMQQBXY545PUSVTYO2QUBOAD4LUTN4YJPCR3PBCMZMY",
+          "VYXSHWDSQL4UBJ7L7HQPZTLMNURUAUDTIKL5XVX7DUIYPRT5V6CE37UKUY",
+          "5QQJD4GUDRAIPNCVNTUEQATMQF5QZGRVXZ5Y6XNW7EZVPYL4MXPXMTZKUM",
+          "PMJ3VVZZAESIHWD3TA75AZL3FZLVPFDIRWCHD4JDFHMSNE366OAAGRUWXM",
+          "XDO7TI6UOUFMZPMU4GHQJ4FHHVLPO7JT5MVAFBMORQ2XQZJFUM7E4QZ5HE",
+          "4T3Y62QPAUYXMSLP2YUHNJPW4KCCTRKBHJ36W572CYFU6RR2DHAPV56NLQ",
+          "KCAP5VZCCOAYQU774C6VS6R436ZTLM2MUGEXYBTP3S35VBLXFLXLNQROJM",
+          "5IM7QGW7RKAVCSUF45URK4QWSD2R37WXN2BD3WVVEAPV7EGQWLVUOJOUEM",
+          "FELESRGRDL2GQKEOBY5CVYVMXOK72HY276K6BDW46AGTMCD7GO54V7WBII",
+          "OJ6DJ3UIBRZ4B2JYKUQJICEIWNRCQJLPON5PANKQDLZF4RXLY67OY25HHI",
+          "TJTW56LMWSFY6JLPIC3JQQLYWGODR7SGDSEQIN4ZAF7GFBUK2EM74TQAEY",
+          "GR7RUHTGVF5HWGWEUZIIBSRHS7L2MTRO5E7IEFJ7MV6EBLL6DBSUZ4GOLE",
+          "RYMXCMNCLYDU6C7Z6ICGZFXZ3YJDJGXTY5AKLLIT5ACFM6BVCW3YGFISIA",
+          "GN3H7WJ24CNKIRM4PFQHQ7BRDRPDIO43D6A2RXGTJ67DSOOVZLNP7UG5BA",
+          "7O7YANZRWPBMEBWBABJSMVUYES6DMWDH5QCCSSJK3QGF33OHSBLM77UO2Q",
+          "NA7FPSKVTM7OL53FAHF5ZFS3VIQK66HUGN5RW3IP2OE6RM64YI2ZAPSANQ",
+          "YBI7BMX3KBNVP4SQ7ZZ7KHELC2RG2ZHR2QUXYSD6NBNDMIEG3KCLPTD2B4",
+          "EJTNUWEG6JGBCUGBJCM42CWLYR7CHFVT4W5IWTLVOFYJHDOSUN44DPWINY",
+          "GAZMAP6SQ35TN3MCACRBU4OGD6YXFGIS5GKU4D72Q3CD6KBVYI2FWLZGLA",
+          "HE5HOGO6D7HGIV3XELQLM5BY742BQDMRX7QCLIS35NRWQYTM6JMTEHFJVM",
+          "WUI5GRPK2SVK2QN5ANA4HUPDJQXNKUMR36PHZQLONLRV3NJYQ7EBEFIYBY",
+          "36BLKOROT2M3NSLRQRLVIBTBPVYGFX6YJUJ5CENOJPZNAALKXVPQABTSFE",
+          "AHOT6WSVKVJA5V4XNZIMBJJQB7PQN44DAD7VRNMT6SSHSERQOCJCHLJHJU",
+          "OE4YRUEPEPDVNWQCYTOXVYVRLKTWIKKOM5GPKD2IGE5AOPGTTJUEHJHR6Y",
+          "MN4HS62HMYMRYNAUOQJDUPGJAVR5YDD2BAYEWPN76QFS5YY7NZEHQPM7C4",
+          "FEIFCZZYWTXQYOGSGC35HJGE6I6QQTIYZLAPN73BJI33BTTVCNFKW4A6ZY",
+          "RYEF72T46VGUSVVFFIZT24WEH2WTCEBQW42RVE7Q2B3OA26ZAURCGTZ75U",
+          "65BWJFNOZ4EQMAQ5REY6A3TLTVVFSSO3V4DGCIDA5W2HRB3K2XTWNUL5LY",
+          "2OPJXOPLKP63E3PFYUXQ5HEQSVDGU5CR7VWXU6IJPLGHZMOVXEDIXJKV6I",
+          "DOEK3HZ6K3VITNE4ERIB5AKW7WGEQ6G3J6J4SRPB4L25BJDBIXY4TWMBLE",
+          "AGPC4QXC3YZDZL37KRNQHCZCZMS3NKK7LISPW6YSQF4FB72WF5NMMWM6UE",
+          "SGQIRLSRFCITIT2BAZQIA5JNZ5NHAMINJBABVHK4RTYLJJBMQTOMJYZVSY",
+          "6R7MUJX7MHDY7SERT3YMP6L2WOD332JNJ35XQS2U7C5RFAYL4M6UQCYPOE",
+          "4DN7E6OQUO564VHMDN66MLPNXPSEEZDOUGIJJ2BANIFPON4Q3L6LOUOIGU",
+          "7SDD4IW4WL5DSE4MI5WXFFOYDEFUOSNS2GYNMU75O7MNEWNXTEJHCND7PU",
+          "HYB37QVVXG2CKAHJRFDOXZPXS2AUXJXAPPUZNXIMR2BHUN5EFZ2KIZ4FAI",
+          "RKT7LXBARAQLDHL2NJOIVBXQ35UWNBISU2OTNGZKUQ43I5XSJPZKXYM7DM",
+          "2C2CH57W54HELFJIR3Y7RCTX7K32FG4FX2YNTB2IM5UYBHEFLNBXXUVMBY",
+          "SQOPI7YK6GUS7FCT7WVTJK4IULJKCJXZSQB4AXFUS6PP4GOBVKZ2ARSM2A",
+          "77OW4XHAWCUQA7NW3EMYD5CQAB4XFTRP4ALTBCVET2PCFV3JDNPP2Z6YME",
+          "3UIFEVEO5YTYS2EOWEPEQ2XQKNZJERU673LKZDAOJIXFAPHCC4N3UGFMFQ",
+          "HQLNJ5EHO67TGXKN6DE53K6Z2S6O6G6VCEVJ3H3SHSV5LGSS7SJSQ5MZS4",
+          "AQB5HTGHLO5SNYTXUXMGP34PAORBZE5V3OLMZXCIRZCEYNNCFDP3TCH7QM",
+          "PBMWBPNZD3GC4UEYM5ICT3GO5CUAQSTSKLAGNGNSHGH2P2UUPX4BZPFVT4",
+          "M6G6JEOTUFM2BHAV5MTGETHSUEECC2ZIIZPL5F2336BPN4LJ4WG64WKMQ4",
+          "B4DYLVQLGK4PJYQSMAHCP7ZXPUZFAHBZ5WREP67A3SCP7COSNZ5M367MRU",
+          "UQXFW2EIGSSDL7TZCGO6RQ2CHE6LL4BMQQSTT5QMZQ4CNJKE3UI4ZKVQEU",
+          "L7JE2KFMY2RITBTULKNDENKF6OXPY4SZFC7PJDFJ5MXSLLSWBMWAXT3ECA",
+          "OVVAZPVMFD5N7MHB74DLWVI55ZN2UIUACTKJAQZ5OCQ3S6XI4BNT5GF6U4",
+          "FVM4TY5E4TVHBKV5HFPP7DMDV5DBZ6RHK77M5FNV2WQHLYE5GIRVT3QJGU",
+          "SLD3GKGYBPLIUXS2MADUR664EO2YCSRGTJRUM76RUC6OA6NYCAXVGCXJDM",
+          "SCPPKMN746BISIWIXGA6AH2JT4LX5MNWLBXYLNO2RAGIECELBHLBB4AIR4",
+          "2I3DUJLDKGHLZRWTIVQRX5Y5EVZ3PFLOADOWVX4E6SNA4I7JGAMPGS55SQ",
+          "K7LYQONICFSCPQUQRRCB3GZDCVL6NRYXJLKUMXOI7LC6WFOZ75AIGEBJIA",
+          "YCLOQQEV3JMUBYVGIB4UGR3K5WB7CVHPTRNNYRTL4NSZEWVP2FVTEQHIWQ",
+          "WTHJ6FRCUNGURDPSJXWBAWXJWFZVP2VO5EM52J5UYFYYR3WLLIYVLPARII",
+          "PWTVUUQLMTN7JNXNPCMP43BIBPZSYOIWE4PBEVUDNNTXRLFF6XU3PJXWS4",
+          "37SO3XNDZLPZC647QK6KRVW2UN32KG3HCMIXMFLKKAVZJHAAJSXFNDNKMA",
+          "AHVSOD6EQCH3F3B2IEP3RJHBKGHDPR7IMOD5222B6PFMUFW3RZOQWMJYEE",
+          "ZPEVLBNHODOUZ4CSAXY5PKR2OTBC2J23M6PPERMXI5WM4JFOCUBTAZ6GLA",
+          "IZWUBP57V6HXH6YG2IXOOKHEP74CNQ426JZ54TYM3F4VZ7CXKFO63TZKHY",
+          "F5FXNQU5P3JAXEHBSOOUR2FYM3GMUY2IN33LY5ARNYQLX3T6PRTIBGOMFI",
+          "ZCGAWWS4OWOU2VANT6O7RWBHKQD727TR4TN5C5JHJCHN5YZLQS4TS6U5FQ",
+          "F454UX33ND7RIC3YCQ4TTDEPTQJGYDGZ432KZLQOY7BKSTWVCWOV2LITYM",
+          "H3M54Q6J2HJVOHRTLXYF222FI7UUOE3DA4763OXADGU3FN65TR5ISFAWTE",
+          "FRHUTUNAWEU24BSTPAXVWKU2TVPYGDDEB7GPMROJH7DF2IT3K7F553DIBE",
+          "JVPJU6HNVNBT6TYWEWKGJSAYMCEDPA4WWEMQO2NOHDYYX42OT2CFWMDQ6I",
+          "67E3B7JJZGJHWMINA6BOS7PGYTJKDH6C2ROY37OU7EY6WELZZKB2HU3N7M",
+          "CA5MO6KHUCYHISDQFUAHOQHZQCPONVUOPUUWTP2O2XX4ISP4DB7QCDGC7A",
+          "2K5Q4WG7U4SSD45CR6MJTIGH6FTDIRJYJ4V6U5ISFDCUTVYZ2JMF6FDJAM",
+          "2OA4XISBX246WJWGCUZ5CGCEZZTYFEP62426HQL2XEU7AKUEXRZIQBP7QE",
+          "F46Z6BHNO34IWMYKFMNT7UVMSJ3RAEAI7W3SR43O5R7L7IQ4DF6XRXDLKU",
+          "JF3CKD3RLEB6ZP2X2PFJ75ULQF53UY6Z3OI6ICXL4MHAIP5FFIBLGZ4MY4",
+          "CRQDL6I3RQT4GZ37I6LKZOKQJRTA52GNNB65UJ3OP3W5EXRCMX462D5AJU",
+          "T5R556DO7VPOXCJ2IU7EYW77V2CXOQTMKIBXUHKEFGCMRCC32ERXALN4AI",
+          "NFFW5CXF5UKXPET5Y3HHBMMEVTTFNEYBKDQS76PLAWTDJIUIQQU5LN5WVM",
+          "AE5UWAPO5YFHYD62XXBDS4G3UVQ2W732CQYE6VNHX4QVX2ZUCA72H4M7S4",
+          "WYPLNLKLEZ7V7FHLIIHZU5LSYKJ6D5HMV3NFI3KSFMGR4NN54YPFNTFAVY",
+          "UKQUSFO3VG3ZK4IAM5VSBQ425PJETFHQXDABAVDQSXMULOY3AOR5F2WJSQ",
+          "H3V7OGOJRKOE6KOS5OSISPPPCQKLN4W46YY7VF3ERRXQG32C2FD4GGNH5A",
+          "PIFEHUDX65JQLXMZATODHCC2YH45RE2RQHJVJW5JX2X5PDTSTABTFKC5HU",
+          "GSRUIUXSWJ6WVDUAFJET5KJEU47EVPXOGKNFVKRI3U23PIRL3EMPBMBRFM",
+          "RAO63DKXOH4KQOBAOTXUTYTPV4RBN6M22FKSLLDPTFBO2COA6O4EKWC3KM",
+          "Q5DBB4JCWELO3AIHU4ERY25ZWAYYC4JWTGWLUXKRXIJULZAA5X6LJE7V74",
+          "CXB5CSDBHS46UNWGF72F6ZGKCEGCW5AL3GLNB2HH4YTKSAESOAJO7OEZHU",
+          "ZHVPMHFFH6PPCCYTW3IIDD7CJP6SJQP7NFIP7AWBDSNO7K6DVNJVJTGGDA",
+          "NEH7JPX6LZ4BTVAREQL2EF2HZ33OCMNJOLD2B6J3FY3D25FUDR4VSD6EF4",
+          "LPVIJALQ7YO3SUIOVLSAE5M2CMDF2II6SZ2PVMGLIL66UT6FX7M2D7PDLU",
+          "O5JFY4RY5OTYEGMFSZJGYANASRZNNLWM6B5CRPA2U43J22I5A4KS56ZJXM",
+          "G2KY73VAB57PIHUHUTB6O3M6JDLKXYKUECN3YSVYTBEIXQAP7WHLQ7U6KI",
+          "3TBEUINKZNDVGVKAXRIXCMWIHDLPVNEWR2RCMLE5NF6WTB4IB6J5BNL6H4",
+          "3WV566ORUGQ262N3DXOU3FFL7QO2ZH2KWX7V2BSUDNOAFEHSS4IJNVUSP4",
+          "BIDTU4VNDYCIJPDHG3YXPJ4SCAVNMFLRWA43QR7CMTYJHWNOR5EWPQKDII",
+          "5DXWSWW4QV2IUBKC7P7SD37FN7DN73V2JNVVO5QAO4LNH3XIUX7TOKSNAE",
+          "UXIKT4456AATBWHSKDIU7NID2IJZNCIGC6K6LKEH44W772YI4Z7F347V3I",
+          "H4BYOLOHOS6MPBCJQYYFBRRRDDVPSNFLQ5P6QCW5L64JQSAO3774VIPD7U",
+          "JC7QRGRMNETEKA477DMIGHJVSBPJTNLXZYP3RQ3ANVILEDBI4R64W2DO3M",
+          "TQG2QSDW2RXLTLF3IBSD4CBTLRYZNJVHOK3AEX5FNYOORGR6CQRVPG7654",
+          "DOBP7XEHRJG3UYT2KJVJLIYTPQY6MGKHRB6PFBPYC5FMMOE3XQBEE6ICNE",
+          "RUJZKSBCTAEH7WLOPIRATBQGCLCSZEHCBXJ6INOLEYSBE5MXYKLPM5GXBY",
+          "GT35Y25WMN7OFR6N7RBCS5H3MUL4GNMKVDTNJA6PW3DIINHJGCDOQFS3S4",
+          "RR7PMTLZRSZC3556AGQ74K2DC2QUOWUWNYPVBLPQCGCQGE4ENTTLST5QK4",
+          "EZOEKR7JHZUFUHUTBGNNV4ZWSIB4TFSXQLATMXKVQDYBFJZSQ7COQ6ATOI",
+          "NQSB72FJ3N42VT5WG65U3BUBYHN7EVYH3N2LSQ3AIAVN2OJWNEZ3BB2354",
+          "HXWWOYERGX5H5K2Z7CVVBKLGG66AVTECEVNLY43VMI2VCDR3CKIABBC3YQ",
+          "GD2ACTFS6A5UEJLURPVER66EBGVG4H2XN4LCZFMSD4X32ZLW4NC2ZTUCYQ",
+          "Y5RPHLKW6LMGEH6OEHCKD4L4RP5ARP2CZVZVZR256RMV25YGCU7YOPX7NQ",
+          "5VFFNA2QZLWSPTNQFGZ2MJX3YWPXRETCNR2Z25Q2EP7D3KFAUP2TWLBLXQ",
+          "J3PANFLA2IKBFH3KHY4IRBN7S6NOID7QUS5KON3TWX2WJAWA4R2C7PT2PY",
+          "532DLISZRKTRB6IHFXIGAEETWBVBGBURRX2UHBGKM6MA47ST3S3IPGGKRA",
+          "OTVRQ2Y6ESRVFHOFT37VKBLEXYGTZGUE7YCY3VMFUQFY5CDLKWHM2MP7XQ",
+          "2B5Q56P3IVNEYUIVFGPHIE3ZVNJ62FKGIHBMBJIOINYDIJG7BAD3KKX7HY",
+          "IISETOZUQWYEW4FJTYZWEYHSCTK46IU7P5P66RGWLI5ILXVV542D3QHKRE",
+          "4HFOBGAA5PXZUSITZVUYHC75ICRSDOZ727PKJB4TIH6HLXUESZ7AH36YSU",
+          "FXIJTJXNQLZ5RZBQ2CGKZTVH5MNX56S4XBWKHJXS6O5XUPP3VND5IRAAFY",
+          "YC76IUGGNQHZJOA2HGYK5M4EZ26PYPXAVZIHQQ6DCGORGTGNGJOODLHQWA",
+          "MSUCQ7DZFNGE5THV37HCPHB2ELRJENFH7Y7AQ4PKUFBIVJP6QPHUAA3LQM",
+          "CDX4RYAEUAKYP5GHDFDLPDZEB7RDMDPSWBC6NFIKVYFYITIAFS7OPLYTFY",
+          "LFVOFG5XMLCTB6V4YR7UXZIFLP3T7IRWD3W3OVOKSPKYQVVR2FJPQGMYQY",
+          "HHDXFQOYGRCUZIM2YSSMWS3U2ORSO34TZKWA3WUGJCLGKVVUVZ3R7IW2P4",
+          "724GQQ2RXC4UTLDO5UMQUBYHLRZTLCTR644AGCH4NBY5LR772B5PWWNDJA",
+          "FUICWK4QIJ3M4VM4CCHEVU65AD5LU6VVHJCF5YN56R2T6T5LCF3C3RTR5Q",
+          "4SZVVTYYTEEC5KKCZ2VVC23OXNGHN7FRR24FTBAHIKEHOQMZFYTL46RT5A",
+          "QS6F7UQWJ2GFX62YWRLNYSJJF56MCXJBA6WPDBPMFFWRNKFAB3LZDFZVHI",
+          "LXAOK42KT2G7UTYSPBWYBRWUN26YKCVABCSTPZIW4HFJQ77A573AXZPZDI",
+          "K3F7AJNJKP27X3XQPCOQKTKZYQVXJ7SFQ2DOCBXOOCEBWQOQU4O2WGRAFI",
+          "ZUCQYZMIHRTDZKY3IR3E6MHCAR3ZYYV7PNEXMYVA5AAIHSRHBBCGKSL2U4",
+          "VDL5DQ7T4KTIZGH3NASZAU5PVH3PRA7HIMB2XATYNW24WCSQ4TST65UIIU",
+          "ZIZHB6QMHXBHHKODUMBQYVAK2NZG3IBW7KBKRJ5YAZYC6DDRYKSR7QRWBE",
+          "3WAV3HCC5KQIWYGBQSYUXOJDK7HV64OZRIH2NSWYPKJCJEAEACXDTEDK3U",
+          "EKEDNX4QAEKM5UUY7XCBEQEOP4YJVJOQZTYNIH3IVQ7BYPMFXGSXOGVD34",
+          "IHTXJ7TSERLP2TMUUCJ74NOZBWR442VFYD4HQD3NHNR63SKIIFB43SA7GA",
+          "J7QSYILGBVETLFYVZQ7ZIN6XAS7NVRV2P2TPMDYZQVKP3AJGGAHHKPQBUQ",
+          "3244BWCUOD5DEOGAR5RD6WJV67WBMQQPYUKBFEGCRFAQTKRXHGNXEGKXZU",
+          "HVYDKRZWBYGBMO6EEMI7TM57XFLS3BHKYICTNNT7REQKUEYUHHYBU7RZ5E",
+          "FXM7OL5ZMDH5ZXHTPCLT7DIIWDKTCQFVT6SCNVHAQYYI5G7Z2CFPXH2D74",
+          "VYPLWM2ZMPY2ENP6CNIXX5H576BJFB7LOP7XEJDFXL7GOUHQSJT56LJJJA",
+          "XNOL3KOYIIDXUD35A4UVFPUZWHZTBUBBSUV6VZJ7D7EYHBDGM6MJQZUAII",
+          "ONYSBD5JGICM2J4WGOU2SSBJ4OXJ22GW5BVRAWUFW4EZCJCMGZ4JWEVJYE",
+          "3HXQV3G7GZKFFTZEA4IBGEZ7UEZHP3SXRHEDLGDGUPWQGP27DKR5OYPMOU",
+          "6IIIKOTOZ2XQ62XTMNLTFAIYJ3WUBBE22PQFAXFMXIOUJNGIPTVEENEXIY",
+          "DVYTF3QMX4FZVDCIQEJ6KTQJKZB5PWUGRVQ2H55MCISWGJRJ5EV222WVHQ",
+          "S77OWXUK4JW6CHWFYYHEX5Y4Q4HOO4Q7C3MDX4IIDRJ77CU3VSSWDQS5GU",
+          "G4ZXKSFFQDD7AIASPBK4AZGAP5COMM3VWIHT55UFFAJ4S6TH6CHOLXZ63E",
+          "QWKHRZHAAOKRICAGJTGH3Y7XJKH2KQZ5YPIVFYOAAMFNS6KW7RS6LZMV4M",
+          "NVG3Z3ZX7SN6UWLVKEB76YKWDKJQMZW42KMZK5YJP4CYYM6GEOPQSAAEPY",
+          "GVAPN6O5PRCJIFBQH5VLEH34ZA46VQNOHK6ZDQETQR3IOIEGANSFV5JYEI",
+          "SFG5K54EVV2BXI7Y437OTFMHWJMZNWTZCVYWPLLCC4GDMHCFYF2YENUXTM",
+          "LBCE4KNRKEFERFAES4QIALGFW4X3EZA4M3DM23WQ3IQIVYL42B2EHHXX2E",
+          "64JFT7SJRXIZHRIULBPEYSRE5RC7XNMHIBH4ICOPMAVMIFQVKBPELWFTEA",
+          "QOP6I2RPLZUKKGAUHSQX5NRM4WDN45MR5RLRPFTBQW5BROJVTKGRHXFZKI",
+          "UQ7FIQ56CJIXTMYI6V4HCYZCFWFB7C7N33TLORFDUZX34A47FOWYAJFRTQ",
+          "3E3DFKUVH6TQXWVNJERFTOHGGNPC3TCKMHT63A5KIS6QRKVRVG6YUSZELU",
+          "BBZOPJJVF4ZQ4QGFNT544TU5G6ZREUBY3DUPKN5YHKOR3LRUWS6RF5GDJI",
+          "I2U2X6ZAYRW6J7BQDXW3DXSLHVAYYY5YPB6BVHPZ4PWM7RFIDI2TI24LFA",
+          "G2JZGNJOVCHVOK6ZCWXJMG7E44NSTLUOLJSCFJHRPVWB4DGSTIN6BVOOHY",
+          "O5ZBBIGMJRTLVNNQWGTPTBDX4BLHFMQS4Q6ORPOJYXM6ZSYPIZLVALPAAA",
+          "YLNHJ4I3AMMN6KUHXGSO5EZVKNUXCKSWBZZOBR4Z5CGGRRGTE5NWU2N3T4",
+          "NIHIHCTBYTTZ7OS4THDPWC5SFPXFGJCUSHCKEOVPG5G5FBBTVPQPR35ZJU",
+          "IZ6NT2XCIL4CODJWDJTOCPNY3DT55XPCSF6RAGYBJ4KFHTCZGMYG26KSU4",
+          "K7JAONSFW7FOEZ3XXSWFTSPWXO3DJJKO3ZFGYEKJNEND5WTV4CGUFDQTNI",
+          "WDZFVVZSSXKRBC4BITJGBW6J6DOWTPKHWQL2Q3Z3WZ6L4FQEIBY66DKFGM",
+          "OMYCKZLSAUK4SZGVVRXI4B67IYARCJFHGFOZEETMI4OQBGIJ3S5TPXZ7MA",
+          "JLZPGKH7IGJO5ZAAK6X5KYAM3FAVJM7ITMM2SEACGU4XTZQ6EDFKWHKADE",
+          "DT2ZKFTTRO6WKWR7TYHUZOLRISOLZLOCK4HWPXAYLIEH4GTJ3PQ4GEFYKM",
+          "SJ7NVNNFBWM7JS5GBQCECUQNWOG6MBTJJOTSYIM32FGKYBSCL5IDJTQX5U",
+          "2KQGZQI7TAJJJFFDX6PSEIAZLFKZNQSLDH3UJ54SZJIVLO3H4CAIYSALTY",
+          "Y5FAX7WD6WTZKLCXBA7FMOUKDOGE5MDFGUJROIMXJMD6UBBCOQVMVXZMNE",
+          "VF4OKEXCJUT6OZKSD5TYPFAFGPXSTX5VK2OMMWQNOWCJ3NGCWJJA6W2L3Q",
+          "NVS2X6RESOG6IXO54272NGP32NCTZIQ23P24G3OKSPMCD45YMPHCZJXSZQ",
+          "RCYF3HCPD2TR3BX3IUDXC3N2YQBKCC75WA4SFBXRCMFMXB6LV7QR2NVPJ4",
+          "37TSQURAZAHPZUWYFBJTMDFP4L3JNMZIVNKFUR62SIYRKF7DFEYTNUXHGY",
+          "7NBDPOCPCSFU3TRWFAMVVZIIGH2WEYT52QFW6KEK7W5TV5YSKFRVF6NZSQ",
+          "EXQOKRVU2AUND7RFVLPPI56SWVKCX5D565CGDNOYOUDSBYLVQNXSAV5Z7A",
+          "WIVWO2QXI3NVWJ63QPXLEO3JF2C4I7O7DOCYUSGXAZGJVPMXUKPH7R46HI",
+          "S7DC7YM3U3XJZM4NODGTN3OLEPVV2AK2G23NNXXQ5RFNGAKECBZW57XCS4",
+          "E7AJDFRZAOFEJA5S7UDO67JLUKOBNXQMKTM6VDBTNP2NLUOWRC7CP4ASFY",
+          "7ZTGIB2GKZOEAHWUEFIQO76ZZIUGLEA7QYYXAUN7IVXPJNLXIPKDSHHWXA",
+          "MVH4YJKJXU3SK47SVTVDX2OB4CFRGFIOPTHGA6ZFTVO27VNJX2ET2UBBIQ",
+          "OHRXDQTDJT42SSTBPZDAPPP4JSW6G2OQNQLBKM5RUQDPGNHHYXN4NC26LI",
+          "ZG42GM6SHUOV6WHVCDF2RSX7KVXJCKEBNKZP7HLVBAI5FHQGCDTD7PGPLQ",
+          "SNRTA76N7Q3QW5RZE5JBLNCGKG2MNGECG4O52RSPZ7LIL2BPM7NYQFQC2A",
+          "RGKKTUSYOPWYI4NWMPI5TSBFI6NX552GGG47FEW5KMGJKQEWWWIHCHFQVU",
+          "BZO7OZ4GAIV4JMRG5G6P5VBYQAAQFJQQFSTWWRQ4FN7BMQ752FISZIC64U",
+          "GZBZZGTL4VAMHRC2ZMGUD3FDP7LLA44WI3MIHIMJBY5UFYL5B6KDNAQSOI",
+          "7CIVW2RIQOEEZBJRZ7UC7UEPL2J7VEJQB2NINKK36KAJG6GJFVEXGSIEYQ",
+          "Q3FZMA5FJRVCFNHATAWDLSJNENGOMP536QNE2Y65FR4JQW64MFY6UVUNXI",
+          "UGM5TK7YJ66KXBL3IDFHVZLXIURFGE32XQIKKVH4X5T6AECBV5BU4KL2WY",
+          "24BZDEGINF6R4ZYW6Z4H6LUS7PLITJLGUQEQTX2HNIGR7NY3OSDYENQSUE",
+          "22RJHAMWBMOSONISGA2HDDVB2KQDGWYSLLE4BYBEVAZYYVX7RXADGEXALQ",
+          "OGVWOGRGXG5S4CPBNIJNDU6CF5IWMTZS7FS55YQ63NH3SD7QTE32SXN4PI",
+          "LPI6HRVAT2ZPAAUXE7G2UF663X2PNXPHJPUH3O7YO22TIBCPSB6ZCFGBQM",
+          "JA4LAF6PWT2Z2TFZFE7YNVVKK6DLSB2CA2PFA4K4SXUP6UKSJ5ZOYBZCDU",
+          "DSDPPBDFFHNZSNXJGW6Z4EY3RKFTLTSCGTRFMJKL32EG57RMON5SPODGNU",
+          "J24SETTFSP67G27N6FLAIQWMNGKXC2SKTOX4DNJL2D35ZUFHU7CAG2UYOQ",
+          "CO6JEJRZOO2JF3I4A5SPFXYGIDKEBSBEGYX4FKSQR7RHDLAL6VRLHGF2JU",
+          "L5A2O7P4PPPRNV2IR2NYKUYR3RT27AKI6PZ6TWSQCL6U76RGGVXIRCEJII",
+          "KVPH6ON2CS4ETOBJIK4GNNGWBDZV6QMEZUD6Z7IDCTUOVTYR33ZALEB6QE",
+          "6J6S7RETGRFXNWR7AQC4K5EA4QSI53ZL6XJYOP4LRSL734NBBKIADWP76E",
+          "7XV3CBJK6ULZWQ4BTCCXGS3HYRTSHSI3V6GITHTZ7LDA5QFJTJWM4ULKXY",
+          "V4GKVMW4U6PBONUBLHELUNGEXL5S4Y4JLFWQ72IDOL3IOE5PMJQF4KCMWM",
+          "CAAMTUL5AZSY5A7VUVIHMIBLV6KGJB4NICKY2YQ2ECIMUBIG5TIAVR5S5I",
+          "5HIVL2RBCOP275UBGVL5DNWJRTD6ZR7DPEYTLNOK5GDHP7KT5XDOPMC6D4",
+          "TXRX5ETOR64Z4TWJHSUX6QANZ6M4VXQGNHJHAKIRLFC2CIR5HXMHD5GD64",
+          "64YQE4ISRPKBOVO3O6GUHAKP53HRAU5W664UBM7FAWV5DHMVX2YLME4FEU",
+          "QZUZK2AQLZMZK33CRWDX24C6EVOYFVVBUD4X5AGR4XHAUXR5J7TRF5LGBA",
+          "BIUGGQHU7QAGAMOBYOBTSOYRD7WOCDNWDFET7CMZ5OVJFM3Z7CUHNFA6P4",
+          "SNBZEAKVHCWXYW536I4X3TS7FRN5Y6RTPEFHRAO7DFR2AXBNIXABRE7MQA",
+          "XCB6TH5TLZJHYJIHLII3LLTX3KO3FPMXFW3VNZTYIMUD75JEMMR5G3PQA4",
+          "V4VU777UJ4SSERO3NUH7YQ2CI7EGXGP2DA6RJYKRNMY3PWKNGKMZN2J3DU",
+          "CKJ37NJSYES4LLCBDBDJSQI7BGHU2JMDZW6OO4UI2UPJ3M3YI2MRYDC434",
+          "K4J4SPDRQSWHGN6YSYAJIL3TEU2NB43MC3WQAIRITVJBVXF2XNB7PDOHRI",
+          "QIAGOHXN26TE2APRHK74HXZDAJDF3I7VRB7CB4U2RKCDVC67SDECOUH5AE",
+          "NCQZYR6NZ4KZE6ZQDAINPC47EIPF46EBNNOLS2T7BZ2UGJJJXKGLNLPRLY",
+          "4ZLPTCMPG23N5MZZYZSVBU2FFY2OQOIXI25PTVX4ZPTCAIOS7ELCZKK62Q",
+          "DOHL3U2HYNDDH4JUIMRUPCTCFVNUDHL3FXNKVZST7P577PLZMMOCRT757M",
+          "CAXKPQQT3V65YEMULP6RBQ2IBUFE2QA4FFSV5E5CTXUXG2HKBCKBNSZ4DU",
+          "M74A6CIFVI3C5EV6HCUATJ7ICKT7LWYE6DFHDK2DYVQRD2L7EH75OBYPAQ",
+          "S7DCHUZHHBKSZ5UAI2RHSGJKCXVY2TGNCSQH6XUULFI5AECCWIRAENC7QA",
+          "TYDPGURHTNOUNVYI6W4HDZ6XSSWIDWX6CCT3R3TU6V676JJ5HMOG3OMX3Y",
+          "QTAUYJL5DVD3OV2HS7KEMZBDVFWBDQAVL77SYCX6VL5U6MN6HFTIKLIOSI",
+          "VVOHBB5HFJOQ3MYK4B3RHGAVJ2YHJI7TDF5XVQZPALLWWVWGCAJH2AF5FU",
+          "6D3YNZAEXAOIWLZZEOC5TW4SMR6JZK6EQHTWGLV5KTIVSJGKTB72G7HRNQ",
+          "OW32EVWPVYEH2FQEYC57FFB3NQSPHH2ZDTQAQWXQSVOOJCBY5YCQIFLPT4",
+          "2F3KAUWRYMMQWLRAN2VVQ2GMUGIQNYIL43DW6WGEJDQZRBIKC6RGQJEPO4",
+          "SZ3P2FBXXIP7AHS2KWEXDXLELP7AQ4I3MHFIFV4VJTLZPI4O2GASLVJJ3Y",
+          "W7KMU2ZQKX6TAMYSJ6VMHMA3AXMB77DV4I6RXE7L72ETRRBAS3T3HCLJ3U",
+          "TCWN64BWIY3WAAXWP5VT7HU63D4HBYBPQZ4YRNYNWZCWWXRIGGY7FFDVZE",
+          "ANPQDNDEXKM3277TGH7PKR2VRROCZAWMDDXBLACORT5OMHRCXHQTZJK4JE",
+          "Y4PDHCI4L643ZOR2YTJTHDK53YYBUZCJ4NFRNKBVFB3PYPBT5P3QEP4SFA",
+          "X3GFFKRBBSEDPRX436VPL4ZBQZGPWZPXXER66QYOTGYYRIEO2OV5BTXSTY",
+          "WHBQXKBKSGJLMZEWS5N4LNG2R433WYDAJXWI3F6XTA7HWGWVTF64LCR4XI",
+          "MDSKBT4QGRMBEFICAAYDQAEJUCYZXOHL5IW2CVJUV2AHGEZIU6JZ6FDSM4",
+          "L45IGFKNG5Y2SUH6MFDUIAV6AJM5KEEDDQYSTOEUO2ORRO7GELBBVEPIPU",
+          "KA62EP22DAPLNDIDIZVIHHLAERF6FFRUY62XTF2M7CAJEGTQ5U5EXLJOUY",
+          "4JVSVQOLA5WUNJFJJ5YKO753IWBBABGRZUT6KYL54LKXASKAMGQY5OPJJY",
+          "YCD7UJJFPHA75RHEHZYADGVD3UFUOQ7J3T7TD2W6DSRIYJZPTDVTS6GZ6M",
+          "5R5XMBMYKZIFLFG5UWABUOR3WBC5SFXZABWRFHLJP7KQWEMCL3A2CIOYLQ",
+          "BQQHWO4NJU2UNC4HNYKWTO32UJNDGR2DZBTKUSR5ZZP2GDU47UCPEW5MPI",
+          "GWVLONVPLNZOZGM4ZZXHMI2HI5EYJJ2OFHOYLU5EEBL2IGSJ6WGW6EGDWU",
+          "S5J6237T2G3C5JDG7QCUIZ57X5TCJ322PNU33L7XQXCZYALBCLXF24UDQY",
+          "HSOCAKRVHP3QWLL526BFGGD37KYCF7PPNHGTARMMHMC22F53RRQ4VXITRI",
+          "L3SEYGIFF2BOUT37KU47J4YHRUVNNLHGZ3GKLQW246LLGDKMKUJNS6XY6E",
+          "O33JVAEF7RK7U4W4LGFLLELH4MLEP5ZZDIGC53LGO7DJ3XHMG4TW5IZVGI",
+          "54XDTI7DTGMWLJP4FW43H5SSYFDJEMJYVNGZO47CPWTASZORQNFJGOZJZM",
+          "ZSOCOMIK3PWKK77XCZALN6RDP6W367HHYIY2E2HQUKTTXWSKSZAMNRPLJI",
+          "USBDIODH7JP4K63QFC7YSDB6UYKT3GZ6CN76BM7HSEWVBKLWAMHDHLLENM",
+          "GEKPGCXELRSWI7NQ2XKET7RFSSV2RJMUPFK3AKKSPX55HA4UTRHIARX37Y",
+          "DRJI4OHG2TMK2HUNPSNYASJJN7PJDJBMPW5AMBRLNC6Y23SMXOL26ZO74Y",
+          "UAYCDYMUKTBLJZAJSVXFUBZAJDWCE3EYXIDGB6XCIWQQWB4TM4AO7MWKBI",
+          "236J7TG7E4FNBTCDEW2UCWAG363TQ6HFTLS5XKIXDFWLCPURHHK2AWYROE",
+          "MJNAMUB7D3IQCMEIWSMRNJNEBMPD7OCXUPRJB4B66X2K4UOR37UKIMIXQ4",
+          "2U5NCTB5WDP46CIRG65P2HE2DPIA32LCAXM2AKADIWQQFOTNBXIMAQUBYU",
+          "IYDY5ZZS53HPBLU4FUYKYRTXWLQZQ22UPMW7JTO5BUPHC3SSCRKHPPUYV4",
+          "AZGAGYLTRTOUMK3AYVLND7FLEPFZRB6DJGXU7H3ZBDIRGXPCWKY7FQUWQI",
+          "R6DWPMKNNFMI5F4BYXRRFSDFS5OJHEZHESCNKCQ7P2YEQ6PN2CYZORFM4A",
+          "NEKX7PIDIP5WBYPNURRVNJIT2QLQXTKH7WCUE2CDUP7OMCBEKJUNFYFOSY",
+          "K5TS7VLR63OZT2XZBXMAW7I6QEAZBSVBUSPCKYQXLCSMYJ337HZFHMHBKA",
+          "6RWROMT4L3Y3ZXQE2TK6NIN3J3RF5YPDTMYBFK6HDPKM23F2VYYWACDQR4",
+          "DSBCG2FORGX4RGZNSSPFM7DDPUDLFLMIJI3M4W2Y6CFVTVIFX45GOFLI7M",
+          "5GEXLLGTAMM35R6JERPH2DNFZD4DPYSX5WFB5SN7KJJBSPJI2Q7AWEOQTM",
+          "5SMZS7576XQOJ7LGLCD7KD4ZRDM5XMPWWDKYZZ5NM6VERF6AQLBWCV5ZOY",
+          "OWARNBYQ62VAERID5S25V3WRAVEH3DRN2ZBE2WG55CDCELO6FHRXO4A5ZA",
+          "3FCD7HFUIO7GKD7YRCVDAGAO4SLVNGSBYLLPGUY2ILYTUQ3IE5KI2WGAUQ",
+          "DNWJQGUOPYUHNQBN2Y42VC53J4TAOZWWWPWCRLKMC4NGT4LIAGTYMEIH6Q",
+          "4WVMYYCZXGNPOD3FNN3SG5NY7VJ7DYFDCMDVNU4A6R3CKGFCM6PJDLZAWA",
+          "5KUZDCA73EBK2CDQHAMR5RFCW7BF4HTAU2FAQ2P3SQGXKCTPV2RMDE7IS4",
+          "OOFYFC52TDW4E7LRSVXZH7NAN2MVC7JFYOWU7H5LSKJYT3YX32B5F3RPNQ",
+          "BOSHV6UOHQGHVXEKA4JZEPIEML3SGGANUAUBU55UJR2G6BWIDZFPCTYLXA",
+          "RCFA7XC6PTVPZCRTOSQF7SEZVNSFWYSYHMBVPULMWIOABTBENGXOB34F44",
+          "MQ27XJV7T4INJ2DULJQG7J2B3BZNN57VG25DW5KSKCW74AYAOWFTZMJDEU",
+          "EGC7MJJODMOJHCNCGPTGJXWXQJL64PVTLBSQ2AUE7ZFWTLACTYNKGKVG6E",
+          "PFOUODSYJ675NBS3NBVUZZ23NV2SNRHGX3VZX5VLK4W4LWELZMYQYMNFQQ",
+          "CLDONDXARZJXIHMFI3O66N2455LHLVBDOL7FKAHFA6WBMSALSKWXVH52MU",
+          "E75X2VHE7XSUXCDNDVKIYQRDC6QAF36F7CIO43E2WSS56XPIRDG4XEAXOI",
+          "B55OWNECD4U2UBACIP4Q76CY65MZDBKFCV2Y47YZUO75RO3Z3DCOPKVPC4",
+          "7UA3Q6DQJGFBHS74MQ6XFYHNXJ2ECOJPD5VLCVZNKXYZ2HTYQ6IWN3IVPE",
+          "GAV5RZ6CCFGEV3YWBBQQXGAVAOMH33HXFPHQQU3VC3CBLPYKOCZZ25FMLU",
+          "3AGLXZAAREL65WN5OSBYT6CHGHUZ5VZGPTK2C6DRHDBFZIY6CEN6DKFFOA",
+          "G4B46UK5DRXEIU7UJRFAHPXZHAOHU2FZRTZ5JN5MI2ODH2AREL6VYBQBBA",
+          "LXAYWA6OFS7PXHSRUQHVRFMLS7AH2KJGW5UW5LTD33V4BSCPK2BIQDZAAY",
+          "26A7KNV4LQJH4M26CGH7LMZREA3IJE2C2L6IOQVJS57O32BWMIVDOQEDGM",
+          "Z2COXLVCCUCPEDCHURKSGSNLAMCVQD7XE2H6YKQEXHOVQYYPANZRACMKJQ",
+          "EO253ZXWP3TU3FTL7XVWUE2RSI6WFNHHVSCFLE2KU7C3LI7WLKP2QEGUGQ",
+          "VVI3BB6X6PY7LTXGKPUZR6YKFM523WLK6KT7KZULC36RAXMGXVG47QH7NY",
+          "YQ2NWNEEYZ2VT5IODN6QIDIWFHOAI2LCEFGUTSQ5UBE6CHGE5YWA2TTWTE",
+          "DDXMOH7YBBZIP4GRESXZ7OFX5XC6ZAVDND2Y3DKS5B2PVMUAW7PHLP5FNU",
+          "PR75A5UZAYZWRZBR3YEMM4SM4NBK44PTINFQ46LU3EQVTCBH4NKDXPXKLM",
+          "UDCRI64UAYQMJGWUSG3SSILFHLGNIW6NM3MCCL3AFNS4YMK2YEDYRZMZYM",
+          "6WJYCBRPKIOCC4OWGABRLEBVQZNP2HJLGVZ3XBIAALSCTTJTOAALSM67XY",
+          "5M3RMIWY74IGRYC5AOGZEISKKTJEOD62GMAKN7H7WIODNCSBJ53JEDZMTE",
+          "QC2KLD6P6WQ5TVDIZWMBMW2EQV3I5WZX2KSBECVXASZHHIFT3UW4OOJMTA",
+          "3MVIHS62FA325PF2FC2J3GR2MKSQG4UUHFYDUVSFDIZSG6ISDR33ZVHSHE",
+          "6JBTTF322U37YLAKKJ5CHD7GTT6337N4L57TMGFRDYVZ5AYDQ5GTPMJMVM",
+          "DAT725O4HB45PYO22KSPNOHI4TGW4S6FYZLLPP6JPZQMUERCPQVHCHRJII",
+          "VOYMK6QK2YD4JVPP7TELY4IBPO7KSSL6VSQHXGAHTXCWRMAG2TLQU5UGSY",
+          "6UFM4INDLQJ4MVANGDR5B6HYKW7D3J7JUXPYNEYGE7T2GZQSKICBNYLFHY",
+          "L2HO3HCOGBPCKDCM56MRECDREINBNZSFX6BAA72BWPJW6BGOJTZNEWWSWY",
+          "DQZM2SAFPNJGK3DXTWPGOTKBG2PMOJ32L2GAC6LMU2JDZXVVDZ5PF2L3JE",
+          "WARXIJMDLTWPESGYZT3EPCBBKATYZ4SYYNZGHETZCTQJZKMWEXGAVWCPS4",
+          "JQWWEGUAYP3FCZCNQJJ6TNJJKWWXVICSAIWD55NR4LEZ7SIAVOPJWPDMAE",
+          "GYXKZOXSXD5MAIG2BK22JFYDHRMBX6T37ZBIXTEDQQ4SQJWGQDWPI36EEQ",
+          "WY6663NHXCM563HB66E7WFXGHJ47MXEZJX26XVDPK6E3MAHXAKIGWN3INY",
+          "5VDF7JBRCGG77Z4PVIVHI6T46TMFG5GIKX2NHGFVAQ27VHQYL2ZVGPM66I",
+          "4HS2BXUJSZCUN43575LZMI2I3YDM2VSRMC24JHOFVOB7IG7AMOUVBJT6PM",
+          "4PVPHPT4P7ZY4GBVPBGYZ7SJH5JIRCBHFPUXFNF6EU4JEUFUBITBSKM3TY",
+          "BSKJN44OVDZIF7SJDYEDV7BAMZU6EVBLAPTDJHJEKTQLMYEKN64S5DPM3A",
+          "2PJG7CQNJAHNZQOS24OW2UJVZBYNVXEW6ZDEDWSKL2XFCSRLIKI7ZUQ74Q",
+          "VXMYUC6QLEHPP26XOQZXRXLGJZHAH7LX66M45LCTR5I7NLBSAMBMM3Z6FU",
+          "XQMPEBR6QBPYCQLNIEDZ3SXLEQTAULEAKLBPZAF5DLPYEGUT2GUV7U7C34",
+          "27REXNYHPDMZHGAPBW44KOP4LXSZZPDHRRGB67PVGHJMIEPTEITZADN5RE",
+          "KBPW4YUSQJ2ZYH342FLKMC6GAGW25ISYWGSJGPZ5WT4BWOMPUJPRABPTHE",
+          "XMGIZRJQIOXJA3C2R4JKOUV25GM3JLHDQJ3LKGYMDAURUG5PS3CJRXRCVE",
+          "OTHFNZBEMFOYSL44UJDPVWCUBBPQ6Q6DLWUC2GFELA4YP7W2FU5QISUUSM",
+          "4NZ2ZIUAMBFLOEZMJWI243TLT2HCQGJS2FCRXGIUBZRFPWI5EPA5VNZ44I",
+          "W6Y2P3KMKPKGZPQHU2PVZTBB3EVO4A4TJQCLCPLJ4E5SY5OKSGYCI2T5LI",
+          "IPPZ3EB223S3JOG3V24WYBRCBC6YZUMVBMISAD7CWNXQPX7TLIKXBESVXU",
+          "DNABIFUYKC74QTQKCPMW53RVB4MJLBC53ZPFDZBLGO6MY4TXCKSUWKITWM",
+          "YIOLU2A7DKXEHSMDRVI4CPACMFW5VAXGQUBID7JDDTSQC4J4FMLOCSZOT4",
+          "TOQKREMLXQ4WHOOMQPSKX3S4Q5NUPDLPW62R7BYRLUMR3W4WCKXXNLM5PY",
+          "757LP6XR47BRE7E5LGW3B4B4GBQMLZGQJIG36NPCB5L5FUQMEKZOPGHRSM",
+          "M2OYRGCRFBVWDAG3KTPX6OZBZTLC47QJ6SGOBMKLWA5DL4CINER5DGSXE4",
+          "XJXK3PB4BMELNIXQWB76BAVXL5BSBJXNPGBWFXUMFDMRE7HNPZ7SK2U3YI",
+          "F2GJ35TMGJMDPQU5BJTPVVSL3VFWNXQHH7735SNPQGR4HVFJ6I3NSOGOQY",
+          "KVLCQGW5Q27767SPGU4KVJEGK3DIRAAROFMCNCRP2E3CSA4C4RZ2KIJ2OM",
+          "6YTP5XXPWMX5I7CFMXGDLZ7VHAPMWNTEEDAC6KS2PHTLBDMZWGI2PUD26Q",
+          "N4BKLYQZBZMAODFV6WTBKTX774LVG3EHSQRME6L6DY3DRLBPE33XGS4CJY",
+          "HVTTI5LS6REU7HP6WAMCUMI6JDE52GHIFBTIG4HLCBP7AOZTQTRO2U5V6A",
+          "NJ2ZCHB6MKI2ERGTYS5ECAKN53RZ5JXV62EI4K22MIWOS2EL7UAFCT2DKQ",
+          "BEGMO3QQIHXVRIBO66P3V523O5HQRZOMAIQQDCV25LL3C26TAIRX4XEG3U",
+          "AMNLFGETLHLIRRZANNDGIHJAE5SHXYWZ6YXVTV6ULSLERQ5LGFOBTJ6OB4",
+          "I6D2VP2ZZ2AKL5EWA6KWIYRM2K4KSIHZQHJRT3WGGS4FSUABOPFTS4YEA4",
+          "Q5Z75WTHMK4O5UTPQ744UKEEB2M725PDWXYA3LWEPQLOVUTQ4UYSZJGWX4",
+          "PDE6HJZADFISPT3567R6RWMHTZZMZQ54FNSC32JZ3L3NNLV2ZWS6YJKDS4",
+          "XPK7VJF4WL2PVHCDNEOKTF3SHWO3Y2KIJMD4JBY6EBOGVTMHR3ITJWFI3Q",
+          "VLX32WPFXT3IBYO3CD266UDFKX4CHC3DGXPT4GLGKSWSEJJH66URMWURGA",
+          "4MLPT25LHYGTQKYSF3YOSK2HJHVPSJ7GXMVLBIZP6TXJAT7RDDQLD7VLHE",
+          "WAET7QN3OLXRLW6JEX26LESTN6CNLXHGSGXDGD7SFDTQ6DVNUK3AVN4GAY",
+          "LRSV6BTOFFDJZT5TJIGDXWBF4SBAODPKHBC72KLUMYI3JEGWALZCUU6ANE",
+          "7E6YK2K6J37LHRHWB4JESWOHA4CC7GQOXFI4NZYGUWOXAZ4QI4IO5RHAH4",
+          "ZA2ZFV5UKB35VEZ52ERTNM557324TYHYVKTQ5ID6HRMBW2UZCMHZB2BX5M",
+          "Y2R4J6EAUGF45UG7VXI3BYVVYWU7F2KPELXBK4PWHOH4WUXVALSR4SXLLI",
+          "HGSPCZZ23AKFWBWDIHUJODJWC365KRISAS643RV4S7OV234VXHORSDNH6Q",
+          "UROSD2C73LXPKDWVVIPB5CJKYCSDMGXABF4YCWXLI4GNP2OIH5EWBSMVVU",
+          "STHOQ2YDWLUQTAKWV3KAW34BKBN4KMJSI62ZXWEACFUX4XXF5P4RZZELBM",
+          "YKPSMVGFORSCM2F6Z2H32LXI5LNSAV3XQWKDRHORCNLLRMZUVUSRYIXAWU",
+          "7IZPUU6K5LQG2WXVXSR2FZV5FOD52YI3HMLAUMHABKI7K5S6BG2KULSNW4",
+          "2LXSUJKJZHQOAUXOVPD2KZWC2S546Q3IJR5LRLAU6DIKH6EA7VC4LMSDXE",
+          "BJE2M2AUXEXWXO7AQS2JEPBX6KDHHT3QFL5Q3JPYXAKSQ5QDY4GQISC6YQ",
+          "6FSUWEZ6TDVEDF5AIRFCRBDVO6JG3Z6HR44DSIRWW666TMRSUOFZAIHMN4",
+          "QZJ22ZNGPTC3TNQCVNMMWPX7TFMHCNVCUKUZ7ZFOIK7SIPZHJZS2DZPKTI",
+          "5H4CXOWMFGL2ICEIOFHDGMRACRFLCLUG4BORH33YSLDRMM3NVL7Z333HL4",
+          "ISWF5FNBKRFRIL45YBQKQ6KLUZTICEHAQHWC666HW65XVDBIVO66D6VG6Y",
+          "RHYEE2A3A2U6QU5SIYTLZBJQSZ5B6OVZD6ZIMVZ26PH3XYLUWM5NNN7I74",
+          "VIU35Q5LXQNVQRZVGV6IDRR3H3K4IBOIIT67RH6SP6YNLKVT44O7MFHYOM",
+          "L6LPLKRYWYNZSOGPOHUZUYZ5HFOCT6ZM2K65OOSOXCN7XXYOTVISYJXGY4",
+          "BOA5UWPYIHM77GDPK5JXNE6CDGQK2IM34X3C2EYUNR2L3TQRO5ZGPHAXBU",
+          "WBSCR6O3ATFNMWL2CDLJ5A4EWENH5UOVHVZQ4INADZXP6IRMCN3H4L6NUQ",
+          "TTFKIVW33ICBGYF75LYM6EQDLYWRTZTVCT2OOYSNVL23XI3BJP324WDVQU",
+          "IRFTZ6U2NICLV3KF6R42ROB6KXX5COFCOD6TOHZDCLNDNHEJJLGGWJW7IM",
+          "R6QD6D3RGLFW77SSRJCJBI7BDPAYYTHGNLB4RY377UOPCTNOFRIGJEX3JU",
+          "XYHM63A5YXG3FFZE4QBRHHAHOOZZAXACYPGL4B35HUBC452THU2EAHAU5E",
+          "NDJHMHW63UCNJBJ3FKQQQCCZ32LLS2QW4VZUPV2OHZR4P3UAEATGXU4HJM",
+          "OREFUZNTYX2YTVSJYLOWEAITHHYVD6WR43RA2W2X6BP76WSMDJ4YZRRBRM",
+          "QZY7EIXC4B6W3N6KA7BB7SLS7I2H532OAJMQXYHUDJLK2DOPCEECXRRPNA",
+          "NPSUX2XA5GQXAYFZ7WTAUABLC4FVK65FLBUWDMHPJ6GOHILJ2KFQXCIDJE",
+          "ZW5ZGQSEUSN53OUIYL2CISYC2C74PXAJUMEOVXZQQSDCSATMLQLL3RV6ZU",
+          "DOBAIRWOXBPTPHBS5C7HFN5NCKNIWDJBUTKAWS3IOA6GIFENWRD5WQ5B6I",
+          "APBAHMNASG65HSMHSFDCGS5OKPWXTPIG5WBZJMVQZBKF2ZUF2BWZ5Q6ITM",
+          "A5PZIAIVJ2YI46HYKBIJ5DMVIWY3MEBCX6YZIXZDTCGPU3MUSHYQVBDCR4",
+          "FSUHFJUB6RVO527K5XE4CQETXEVBD34Q2NVIWWN6SRUIWEXCLRPGNU2RNM",
+          "3T6BSG4UNFNHOZXGXA7LWA47IT2OIESJ3U7NPT536PZ7CENKTJF4FMCGBA",
+          "Z6P3K2S57HYWEYUKZMBAI2L7MDNBQZZS27PA3TU7MJIWQLEKKT6SZLV7DQ",
+          "6L2ISYOAFSNJE6V53T5ZYA3FC2QBHYDCL7T2SB3LLSEZORC6F4M7SQAVPY",
+          "TMLD52VJ7SESQCKV4Z6KAF75EKZQSPTLVYOEXML34JZLYHQ3OGMZDNHVCQ",
+          "KDLRWYQQN52F2QY523QJDGEIHP5E745P6GREIQTUL543IP3YUGOGNQ453A",
+          "RIXRO66WNLVLNOALPZZXBIRTDBZMXCR7WYV7DP23Q7TA4OKV7HLOT2QNTQ",
+          "SQ5NRWD4PEOSCHIBO26FB5ZOSXSPYZLNYQQYO5V5KF6TZNHDSM4MDOPUFM",
+          "7BIX3GYCFAJ6IC7TYIBKYODWQFS3O2MP7JHC64YVLTC6Y2UHN4U2LJXUQA",
+          "YUCAGZTPXDVU4SN7NGBJX56CE7HHYLV555GQKOAPFTEKW56SRS7L2ODYHI",
+          "CJE7CZ35GRONCFNA5DYCVS76VKPXZ2KH3GKVPHKIUTA54CGFHJUN4VDHHY",
+          "RTCXN5LE2G6RT6IK4NSL53TZYTLLLA2VOZ5YYCZDB4MT26X45DPGCJBVRE",
+          "U23YULKT43MEQLQ4W6OAQ5SHOUVJVTOXT6MWL7566TH4HV75WZL54IJXTU",
+          "YTPQWRUKRKJYUY4HQQOHH7UAXPPLYEDWDZWWG3LP46JXFUV33U7ZGVVFXQ",
+          "JFK5SVBRVTGMNADSZ57GQMTADGLRQ4LZHE3PVJN3E6XNYTBE75MWAEYINI",
+          "7HUBBWC4MPKOYFBDWKDYXFNOXIC6WRZCSYH3W4ISULI2VPD3DJ4AGRNCFA",
+          "FTDRZV7HLLILHEDEVZPXYRIJOA4V7PYFYQPXKTNM3CJ4RI6VEPB2ITX34I",
+          "KSIWBELHCPD2TREOJDAPWOAXLSQELFLPP3GBH2CPQKM3EBIKCMG7SM77IY",
+          "5TYGYMO4VVF4WY4R5Y3WOIP235NFPDQLBRDNMXQWLL7B5Z3LHN3IOWD5WA",
+          "6XU2XXR4QRHOE4GWBF3LHYS5XZBC6RACQRMWI35LYR7S2IUPZQNGFFYEJ4",
+          "7EQDLPMOAV4WEPJT35NDZ5MTEOTKEAMLFP3FHS4JH6XYYQVJTWVXOHSVAY",
+          "QGHWKUUF7X2DCOWMGON6HBINUTO7XIQZKCMZLFBWHBLLVDV2HSQOQVWVUE",
+          "7EH4Z7DU7KCF7V2ZWOXW4UOOZKLNIQAQ3R6LBROCL5FINF6H6AMLSVJVYA",
+          "FLDUVWUIQGZYIEOW2XRLHHU4VKFAPYJMUO3PYOOLLG5UCLYJTWOL55OI54",
+          "RIVBOBKCRE3A4IJDWQQ6577ENCQ255OXQ4MDIJWMCLO6WEUQUFFT7RG7SY",
+          "52BDWRZE5POMT5TUNHT4XJRPXJXHUGLUPWV3UTUCRKE7OQC5EIUNMJSTWU",
+          "MVBRYLHSTNACWE5YFGR5VCEJF34I4F2GQE7NKSFUJT4PJY2PCBYPKWWI3A",
+          "F5MOPIULXQAP7KGLHKVO6P7XFZTPATBBGFCW5ZS77GYMQET76LGH4DU5EU",
+          "HIGTEZKGQ2ML7QQX272CATLWCWNN6R3OVSBYQJMQSCKFNYFP54RK323DOI",
+          "VGCR5BKLVYFYQI4WDCBJJM52DT3QIV4SLIJRGUAQYFGKPIYSQHC7G7UNJA",
+          "GMRG45CSSBBYV2P2CRTUAU2LRHAMKP2IYVYU3GXIJVT44NCQRJTTEZXGKM",
+          "JBR7DI7IO6KENXNC3LMZD2GI56ZQ6JCMVR47PTPN2N3YPUPQMGXTVN6BNQ",
+          "T7P6VMB5LYWXS226GKTL3FLWV2OK3PUKA6DP456AUKAPHNUWV24RSNRV2M",
+          "BZSHKT3DNHQUDTFQ66FWZT3F7BLPGCZO7HABX6GEJWVZZ63L5BQ55V4VD4",
+          "NDUSK7MSX2MV2347D443DMKXFIYCSX3CCZQ53GZVCMFBRDPV3RYXUKHU7A",
+          "DQ2NSFRQU6IZ5H6UPUQY3UOUPEPN3VKOPDNMYYCID4S6WOZBX4DMTLZQ5Y",
+          "ZHNNYI4FGN5FVOV5NLNOKJC73FUF2IHHDECEOERKGVAZDDLCBCMHQYDRXY",
+          "YOYEQANI6TIYJACYSJLQVHZXLWWWTHY7GA3WXCKD7TD2SN6BRTIEYELGZ4",
+          "XHCR5Z6R7DDXPVA4TJM5MYVEZZ7VF4TDQQNVBH2L7LXO6BONLHHQIU52AM",
+          "2LMYF4S6CVKC3M36N6Q7QQ3MZQD3CNQZF2H2LFK2DHPHLM7V2KCK56MHR4",
+          "NAZKBRPB3QSVAI7YAAKDYRGZQMDM2A6P7CG32DJ72YPYOFNKZAGO5RQLXQ",
+          "WKNINF4TMCYJMKRDREFG46LFC2O7DHC3457S56DAUK4KUWCYDKJOALK6CE",
+          "W4UHH6TNVFV3P6STZB62RCT2ZWKH7TBOHXMZLTC27C4EZPHWRGJMYZO3DA",
+          "45BSJR7X27ELF7XRONNKUGMNAOGD35LASP2DLYT4E7M3ESGAZLENN5QNHU",
+          "VZGNF4KNKIJVX5LCB63LLG7LVNAMJVUF3LJOLWFAFIM4AYWZPGRK2Z25XM",
+          "W6H5BFSUYNOK5ARUDWLFJ4PGS62CM432FLIHZUIGXWBGVXM6W74NHXRNFQ",
+          "DMM7BQ7MPJJ2RFS3MBRYANRN4PRDOGQ6UNREEEDG6CBPVNCRIR57RYSBUE",
+          "O5XHEJ7XEI5W6KGJZOBHRAHELSJN7MXW354WJ4TYCXJX3JFU6U7CNCWVPU",
+          "NKZA7A6E7EFFJC2NDZR57D5ZMX2OZE5SIZO45WOVSORYMEOVL63Q2VAU64",
+          "2P62KNITRDZZ2K65JMQOQJGZV3CLCTEZ6YDJJCVKRTR3WKQ4YUR7HNT2RQ",
+          "VTRUXKL5NCA52NIJLCTSUWGKC27X6VEBXPABVXDCJYQAZVZY4U66L4W4FU",
+          "WD67JWFCXVQ72MKQXMWTUL2U5VUGBEVZ3USL4K2P5C7GYFSDWWBSKXLMEE",
+          "YSIXOY2GOWKLEFU3UUIVAF4OXMFLTA65MEV6PLP6EZ7HJUNUINX3W6HXTI",
+          "SLGHBODL2TCVSDCD3SASEPZITEXSL276EEO75WOD6WNHUR6GS7VDH2Y3FQ",
+          "VWDRRYZXQS632IKO3IHRSGF3RJHG2JWFT2GBLRRNR6Y3SQ4ISXR3JMCLW4",
+          "2Y2WKLYOL2J77AMODTV6W23QISOMKAM5YGLQHJSSSNMCQCIYKZGCYOGQ7E",
+          "R3GVNMSAUDRKEP5AMZUYGBXMU4SVZ46NOETWVZFDEWYGL2X6XNZKB3EYVU",
+          "MM57XWK24WN2KA2SBCQNIVSOUQXKF5LBPYBVIX4YXFBJBHEIU63CQLBISE",
+          "4A6XSG3X55ORJSTFX6HLLJQKE2NSQYPDCXBLE6ROHDND45TG2PU3JAADNA",
+          "OHZ3TZAEIDE7FETRKPHMNZCUYTLIJ4EAIQERDTLK3FMYXIBCZOPZU3NVEY",
+          "JZKVPCO3U4MO4C6DSPYLKLF3K336I34PTLTHGHMXDYF6ESOPZFHWPG7LHA",
+          "ZPQL2NZEAL7SQHJKBBQRULABDKZQIAE6VY6H7DG3DDLHIFTPE7IQ5VOIJM",
+          "2BN5NNVSGWYCZKXMIJEPITXFA5NTL3DF332ZJYAIGEBWKWUKDIVVXZPE2A",
+          "EGJQ46VJBZ5KXVZF7ZOZP4JEJXWHP3G6CX6IJPOCQQ3FU663DTDCZ42GZA",
+          "3ITU73FAASCPV7YL2WBF6WA6ATIPUGJ7LNMQMDUDY4QW2VU6BOBMEAQ6AA",
+          "HF4CLOZMSAELHOTI4L3TX4S3NCEME37VMVPT2DITP6QPMH5B73FWYCRWUY",
+          "EPYUUOAPWPIZ5RJSPYKVH33II2KKF2LT66T2C4EFYMF5LG55B7XUK3ZOFA",
+          "2W7ZH4SS5LW3TH2BUYXBMLUIDW5WBPPQPKX5G3XTCTFHQER4O6EHX3NFCI",
+          "6QQ3AGMO6CEQ2N5TJG2UT3VYPYO65PABPDT52Z7TRQ2GLH7MHD7WKNRVYU",
+          "66HHB7BXBVBJALKAXT4IFG3HFQMEMN2PNSGIONFUGSAQLF2C75ZLQCPCII",
+          "YTNWGYHNYBRIVP2JMFVM5YLAYUXSGWNICLIQNRNPQMUQKRXGE5ETD2QBL4",
+          "TAASFOLYT5UBX2LEHSZMMQFP7JKOUJRMCQOHPU4EVHWZWLSO4N2RJSO2NA",
+          "4CJ75JR6NZQNW3TJWXV3CHS2RVPGYVB47RGHGOS4CV5GT4ZRR3XSHGO2HQ",
+          "3FVMSBLBXR4E7KBE52IG5WOZE4XD53FPAJW52AKN5WCMGCZRSDVTIRHGTU",
+          "SO3TYFNB4V2GPWWX6EV4LTLQPNDRL6GLRPSW6MUAAKNWF3ENCABCHRRJNU",
+          "IOECSPUQBVMA5CVVPGUA5BANHPBKOQIRVCMX7SVLRKJBV5TCXRMWWVHSCI",
+          "C7OQGHQCC64XHULITAM3CJY6A6AM3QSLG3F27FXXB635LT6W4ZUBU2PFS4",
+          "7ATJ6MZUNPVKOT2UU34PLOM7UPN3IXXRCK6IB7Q2ZZ7BIZG2UBXW25I754",
+          "ZV4XLVW3CMWGQ5LWML4RMKOUCXIDBRBEGAAHVYUCCXQBLQ2S2RZ3EOEWHQ",
+          "GEWHMDXGPMUCHTOHFS53EYA37M3ZS34H5YINMGNW57JWQNY33IRGHIRGYQ",
+          "B7CVVOFJBLP4XK3MHV62YHFY25KMOS3NBR7O6MNA77KVMFPDWZE3QV2DFU",
+          "IAB6DF6O2I3BMIMLAN6YO43NSNKUTCZCVERLYRWEAN4OADE6HGVS2ZK3JY",
+          "J5CYTWGVSZ4KQAUNII7NJEBSW6Z47R7AJD43IKNTQEHWSJYZQZMFJT36DI",
+          "PZBWVR6545NMRCV53LRDWJPR64DCEF5PJPX5LMOXP42AASW42LBKV7GHNE",
+          "YZTEKE4LFOLETK5KKY2EIG5BFLQM662WXNUG5MTOQB5FO7S4GN7TUWBIHA",
+          "Q5FT2TACY535XCJH4BSP3YQRT4CBLXRUBY4D3BCIEO5EEDI5APHJYNN3KQ",
+          "BDBSJKGFGOUOZABRNHBCDLQY73D3J76I6YDG2SNQKZSWPW2T7IT335XSJM",
+          "GTAAEOXBQOAUQNXD5WGEBFJGJTJGS3LSCD25OEI5GURRDP5XUWVAGQOLCI",
+          "GOVGZAASRMVHPQK2OPKSZXT3SYCILKYWTADZBBTOHNEOKDL4KSEG6O4CHM",
+          "FVR45AMJWL4W4ICRUK7QEOUSPW57ZE4WDZU7NI7AX7WY5BJLPUG26XXZBM",
+          "WNQLVFLLSFUWYRE3AKKXRE5TU35UHH4WKLZEJ3B6MYKYKP75PZWACNCDZA",
+          "3UGHNM4FUBW7TGFNA7JWBIK5MHSS2EZHV3FTTEPXK3IW3IQJBGFB6L6C7A",
+          "DQVAJWYPZI4YEQEFCS4BA7MBTT4AMRW4MGTXV4ZX5IB7VE4ESZJAWMYX5A",
+          "YLASZZ2UNKHGTZGCKQC7QDSVEAVGTTMOCTAWOGS2EEIATQ256DV6PR7TOY",
+          "F3BDSOARVCJJLGIQFOU6JRRJSIFJMKVXMGQ3OP2G7QUDDZCE74JMNAVBKI",
+          "AYHGQXQDQPMDBEGZHEN6EII2LZJHQUJ6XSPIVJYKA2XHXKAIRNPMP5OESQ",
+          "YYHKBIP5G6LPPCFXXXOXXYAPAGMC2KWT63ZTRKMILB6B7LID2JSSWZWFTU",
+          "C7LBWKANGB2JTGYUOIB4PYWL7H2Z7QPGW2RJUZHROTEEENRVSM25GO5LVQ",
+          "Q64HSTP6UGOCC4WPFNOT72VYM7WWC4ESYCI3LOF42NNZIWQQJK6G64PKLA",
+          "QHD5YKQFI3YE4B4GWZUFCDH3SEF4QFPAPCFODPKMQAUSHSQ7XR6D6ICWUM",
+          "4NJCUBCM3QP5O6CECVH2M2PRIVHARAZX4RE7YQCWMUNJT32TT3YYTQDVHY",
+          "SQM5YMA6VRW5YCSXPAXD3G6Z45QSPH3ZPBXPKD5SIPJIJH67S37CBB753U",
+          "3EPATPBNJJ5T5RCLGN2UFM7JI3MT5JH257EEMF5SHZLX2KCZEQ2ZP54N5U",
+          "U4J7FJYKZHVEGGRIN2SYSUZLAT476EK427OV7PP7SXNU7KK5XIJGRUG63E",
+          "E4WW5U2CLVESBRC462GAA3JJE55IWIYMJGHZ6E3PUBK5RBX5EXEEE6CTBQ",
+          "HFVPZZEXSYKNFIBPDZ7SG5AAGDWMK6VSJ3E7HO3N7GYZOVO36VT56CGJDU",
+          "5HV5UKGSYB6A3JD7OI27TNADYTVO7MK732PA5DLKRCESQ4YXPLW6HFLXEA",
+          "JBLDOBDKPZXJN4EQZJZNJGAJ6SCHIJ4TW4CCBRE6D5HYACFTRPF3GKGCNI",
+          "5MLMHFI2MU3ZCO7ZMH4KE2Y5OEOTYCEWJYBNF4NYZ3RK5CO5Y5U7C556EE",
+          "4IO26UZMFNMQKX6DSE6LWZKVZ5GOHPVPIVBIQ5F5ETU3QQE6LJ7RP3JETA",
+          "A6O2TJXPGTFF5MM7YG3IZAJLQ733HGIBSHVISWDPDI34JKRVAXRTXK6MLQ",
+          "ZRJVDUXCYQUJSQME7AD6XFORPT2LZWYMQ5KZMDRLMEAQMQPQWK2BIJTHDU",
+          "O3JCQ6OUL2LO47CJYKXNB24GUFPQTPGSPCLV43OQKF4LVYCFTM7CXTZ3Y4",
+          "GXD7IXG77FMNSRSXANVEAU3O7PLGC57NSAYCQFHMK6BSG627BXZLH4IQEU",
+          "6NWQMTQK6ROURT7PANBPVWM7XO6O7N4CSOHAW3H3QS4QKXJ3TH7DHJ2T7U",
+          "GILIBPBXBXADRXVZERUJ2UIU7I3HTSL2SMI6TBMA4IYYI2VMGBTOUTW6ZY",
+          "ID2HVPEXVEWZ7STUJLABHIYUIJIUCZRPRJ6GJU2IBYADJL775IJQNIA2N4",
+          "OHABPMNZJCZD5ZTSAVZ4MW6PBZIMYWREUQV7QJVAITQVXE65V4KALGRCAQ",
+          "QP63MVKHI7LSLRFB2JM3CHIDRDBJUVHAKM4QUAOEVCJOWZCOEJFGURQN4I",
+          "5MD4E244H3DJN542FCHSIF6WD3EAUSVJ25B4EQHFEGG567S2PSOHZUATX4",
+          "MAETUVIXKO7NC6ZZTHAUKI4IVQT2BYJBEM2ORTXEEXXBBHCDRRU45TW5OQ",
+          "2VKF3ILNX22SVWRVH766RA5KRU73RR6JEHMKJN7S25EN6RDHQHNA6S2EJQ",
+          "RZX2RWRFFIWXGYCPGRAD7A4HQINXR5DGAZNDJLVZK2PEYKDVAZ447J3VVU",
+          "OJ7IYAPSC6ENSFO4SWDENKA4VO6K5IIICLDMQJYGXKPNARBBD3R3Y5T7YU",
+          "QG2UZOV334HK7LBZL3APL5XBRWUJV26JO7HXVPJHBVSBE3KLUXLYXRZZCA",
+          "73OULXXJB7QZNAU7YT75ZIZPMZXLVJZZCY2OGEQ3EXL3N7TM5WAYXABOYY",
+          "B3XQ2PTDFAOF72JPSBGT43C6HFN3PEOJ7SSUPL26V7AHYZH4NKNHNKQ7H4",
+          "3JIW7YENSIXEDUXAN4TNAHVFPFFIA7CPAJNXEQD32LBT5NVIXUW2TPYOTM",
+          "FZQ6HXZZYVJKXOKBI3RGKQUQPIUWNHJQVZTJEWQXH2KS7HB6PXYLSFA4JU",
+          "KTH5D7HHJC74MKTM3WLSZ3WMTTIDFQSJ5YPEM4G7A54WXXF4WZHMME2TFI",
+          "YUGJB45J7M6IJLKIOBBJTRJNA324PPO54PEPHUE7KDON346GMLDK2UQHMA",
+          "EZRKMHGEL3GU3WX7IIOW4D4GPSGBYCYZBPQKA5W4ECU3B46SOP7BR2BMFQ",
+          "UBF6X5VHYDBNIURPBTPWEAN5ADF47WYMBD6ABBGHWMVVSN3KAT67ISHDMM",
+          "2LVVPFP777HHD6B4JMGH3IBBA4I7JP7BACZF2EWNGTAKPJJ2K3A5XVPLLE",
+          "U5YO3JB7CQIQXNPHEUDNSMB42HKOOWHYZLX2QOH2XHNIW6FCNFUMRBRK34",
+          "BIGSYIVXUBL36UUFI7ILSRNMLYMJAEN4F2YIGWTQIQCZ5X6EVZUGW42RYA",
+          "FXT5DXDRZCSIAF6R5N5BUOO6U3H2VHCR5MMZSEE24DPJFOU4NDIZ37ZRFM",
+          "7XD74BT7EKVFWKUIKMMZPN2XZK5XAEYC7XHWWO5DOWVWNC5LH4VIQ4ZMRI",
+          "BZSTXHM2GNIROUHOLTQ6XLLLGBBMJU7JNJOFF7SJBGZSIW2JC5CNLHWGRU",
+          "C6US6QXPEIXDCTC2C4M3KSWOLE3U5DB2PBKUCFQDWCM3WTBGKA2KLJHGYI",
+          "ZFSQ6TSGH3ROUPLMGNPBIC23CWD56A5I3JCCKJPITNXSUZUYTH64VN47IE",
+          "F3X5HD75H5YSTCYLRM42O5TIYS4OHDT7PJNQ6W6M464PNAT3LDTHBAS724",
+          "4B42EPVRJI3DWB6BEEOTBHYZ3YD6LTWVIMJRMR2X5OJGBEHYNVKLE7UZUA",
+          "YL2I6YD2IVGWIGJ2JX4HR7I3NCCDJBCAGKYE37ZTXOQ2RIHO3WEERZ3BNE",
+          "2IPVVZOGP2HSTNTDDA5SPBENMW7LZMDMDI74I2BRYWQAHVLZVPBOU4WBZA",
+          "VVSVOJC54CUZ3LDAQKCNCZBF66S5V3PIWTMGLTJ4JFR5YKDLZK62NFD334",
+          "BH2AIBUZCW3O3VFP4DLQJK7CAGS33GGHOHD2Y34UBZCZBVUF7FIUEX2GHE",
+          "XUFNYXAS735QNFDOZSPY7GY7DPRZIWU4FL4ZD5TLGQPIDQATWY3SFRDCVM",
+          "4Z6PGUMJR576UJSBY2JCUYBQ2N5MSHMAMBHZANKL2R5KADLHZVU3LH633E",
+          "N3CCICYWLWQDQ7TIWJU7BGTJ2H6KHJZ45BIPVXGH5HS4E3LXIXIK54WNPU",
+          "ZQ56Q2MYTNZROTYRYVGHOGDW4Q7QOA4EGDIZQ7BZF6CX6Y4W2W7LTPDXFU",
+          "XV5TM5RO77IINRJ4WBP5JKRFHCZC6ADRSDMFGFFYUXJL3OQ6M5MIBU4NOQ",
+          "HV5EPQUQKYTEF5USFFJ33PSDLF5TGQWT5R3T5BQUVX4YUW5Y7MPSQ4EPL4",
+          "JRYUAA4JQA6IFZPG72OHFMYQ2JD4A6MNWA7N2GOW5ECYOJPR6B4NWDLYGI",
+          "PSCKFH56ZEKH2ULSCFK3X4JVMUM4Q6QS4U4ZLBZE3OLYJ75BJV6VJPBRLU",
+          "VSVGAMJ5UQ27WHHMYKLEYPEGXEXAYE6DJNT6H6SRTHPRSBSACZ66UYBGMU",
+          "JQQHRKKFLW4WPJOB5FJ5EGY7QEPNTNSXSRR2EYPDXDTFFOSFFI4K274BGE",
+          "BTILPYCTSCZI4NV6MDEORL32NM7G5GCYFM67S4LFL35ZJMXQZ6EYCI4C3E",
+          "5FXLDGHDN76KAMEQER2HMYW5SEUPXFQW7L2RDITQNIBDEX7G4UPD2RL7OI",
+          "A37REEWXFHULK5BFLVAKQ2JVQIIVPAPAOVNSC26ZAZWAEDI3VXWWO3D5NY",
+          "ZG7JOL5XUPZ43ASIIH5VQTIPMOLIRW72MNWJT2XNL3JD7PZPX2LNZVHOTE",
+          "GFNB4UPGUG2D3UMXFVDPMMCBLUXW7OUINPKRAKINDKZDXVBFI4NVEFWCWY",
+          "H2PYGKFZB4DQVZFKNGDOCZB4TMPBT7YVBGBUY6RBQ5KWAQUR7JGIH7NRIQ",
+          "5ACZLMDKCAQBSIVSWATWEJF4LJVIJKUFDTYT4B663H3IZALVTIS7ONGPVA",
+          "LLVAQCOLG6IZJSVWRPVIMMFOPWCBFMCU3FOVLJ4LPYGZFG6XH7SSSBQRUM",
+          "OT6SCFIBWQHG76577PDBGDVXMYLX3NHPZ74FUB2VKTR6MO5VHKHBPAO5UA",
+          "U3GINNPWB4UOE4654XWJC3DAQOEWXOIVNNVLZ57U6ZYIMF4K2NEBEVO6AM",
+          "DI2HF6IIS7B54QUAR3NETLAY5NQAA7VXS3RYBCQJJB7ZPIGVLV6ZPY2RMM",
+          "W5TPVQSQQ2IO2Z2YEAHWZYAIDZSMMM2T6QPFESC6ILPBP5SK7ZHQERQ6HM",
+          "R6QNJ3ZVOTBWNCXULGX5RXEFSHU6FFMBYW4V7XO63O7WB6WUTS5VQD7OJA",
+          "P43ZTH4VBBNCYDX22LMQCEFXELGBFBDQ7JLTCLKN6ESDZE6J6MXYHGXVHE",
+          "YHB3EUYYSAQHYAQSQGGQ5JG2QVWLTU5P2L6JYFTG2RK6XUQ4ARPTZ4TGGY",
+          "SGCHDTFPQ52PBJ3KBXAUQRLCMSGZFMG4F57BPQVBGVO2JTDILG7I35AQT4",
+          "ZDSHFK24YX2BRM4ICJB5FMTQHIRQWFBTYNRWTE4TIRYG37JNGOYYPZM6NI",
+          "P5CGC5D6N24ZHAGVP3FB4U3JYUZJT2SNLUXIQFENJVHWNE7BCWAIUHMX7A",
+          "FMIUGA2VX3EKRAOM56N7C72FLXEFOKJNDUIPC2DBNFORXJRLRDIHGI3QFA",
+          "3UHYS35QMVHHELKRRVEG6KXZPSSHZOYOBNEZX6YGU23NP5QQXVA7HWNGUE",
+          "VCLACWWI5EVRLAGPLV6DS22IHPY4G6PUNPUX6DURBSN5GDQFP3G3AQGKVA",
+          "3I3BUCRRL2YE3A4DEGFM2F46CX5EKBHPSTJHAKRFPI6IAKUB2FVABCJRTQ",
+          "7NO6WDSFCI6IZDXX25KBCZMBJIF2S2EL54OKKTS6ITKHJHFJZDPN5VBMSM",
+          "CWHE5KZRBF2U25C7JIB4LT3PPQC2RSP5TRCX5II6OS35O2QMQXOWLUBRYA",
+          "EYLL5FP7NEG7GNXDLGJ67YVF4INDEAFCTFUHDEIHCKIY3K5TDS3TYWOYSE",
+          "QZTAU7MK7NJO7HI6I3XIPC2SHMYYJA3EU5LYV4QSE5US5IAA6KP6F3MVKE",
+          "M555Y4D4XQCHTQLSERVMSKVHLLMCJ3WE3ZI4C7EMLO242D4O3EKKIC5JCA",
+          "T5YZOG5MCIESWFSWVEK3LNEN63E45KX6P56DVFCNFGSDGJAEVH7CT7YK3A",
+          "O46KNWSWE4G5YCHZQUVZ7TDNMUBMT2CHTBDJ7QIQ4GBF4IPEZP4UIUCML4",
+          "HQGJF3CN3HAGNBJ5WUD3GOFHJLFDDSMKGS4XN6MXJG7FIZJOTWSTLOKI7Y",
+          "OXDA6DOMWT23COAKBEX3G7YPLHPANIRVLZ524CRDUUCGI56HBRKM3PWGRE",
+          "VJI75G3VF2QJORMO7I2I2POWMJ4LNI6CYU32IJJ3QOOI3J4G4YW27HSQKQ",
+          "HX46DLDYFZFSVVGU5LSWVCWUP2H5X7QV56MGMCQ3TY4GUCKX5OFISPYYCQ",
+          "YAUXXY25SORSA724HP6R4ZPQTE32WM5OHHA6N4P7PTXQO6EOWJHAPWMSJE",
+          "YGSKG5T3AG3GWCWTCKCT5MOPPG6IKSQNCF2J4TAQLNNWHZQIE6A4Q5DQLA",
+          "Q3RCOI72SYKD7X626Q6ZE2WWU5R5INZNI6HR5VIP447M6IDZK7AKI457PU",
+          "HYMZ3PWIHFGYEWIM4WH7W7JTVN7TIWL4HPUCBYCOCL4DI5EZJ5CE7T6IUU",
+          "VACK3NTXLJSVKSHHUKONXAPNZI7K3QYHSHEPCLB7NP53P3UTH2Q5RHCODA",
+          "DYCCTPVGGLHFTXCAF6IALHHCLQYDJK6HOPHUYTX5A2Q2UQUXK7PNZIM37M",
+          "HJ3W6ZLH5FMGGII6OUYKFZNT7T3LL63MZS2WET3KU54DSGJTENFWIRHC7Q",
+          "ZWFIKHHGSNZ5BCV3NEI4SFFVYELS3YIMZPW3WDBK3XCDSEJ7DI6HFIF5TQ",
+          "YMVLDY2FGPKUNVS3RPEYWACRDIWMZWWQC6HTFHLOVAG4P6Y62EHORHTLZY",
+          "QIFAPVFBCU6Q2Y4QTTB7QTWUP2ZLTRZNTF43CVUXGKIPYGO2BDJWULPRPI",
+          "57IR5PYRR3WGVRA6ZKNKTV3EK4UZ6GAQS3J72HM266CKZPGJKBYQASWSCE",
+          "JGRCWRIV47JWJQFSDFPCQTB3G4WKU7GUKXKP5V7I73UQSTM5ZYOHI3X2VY",
+          "QY77QSTSRQFGGJ6HOSTXGGZYBCMNZFD4LLEQECZ2XIDGV3XSLN6ZZY7RB4",
+          "5J5G65J66GJHDWU3PVFQTBTVX26Q4UMJYCOT4HRQTV422IHXKEHI56FURQ",
+          "ICPTC6C6CGH6MXGVGXCQLPVWWILPRW6O6TAV2K3FWBIDCX2XBEF5KG2KXU",
+          "SAHU6IT7465QN7VAPDQAY4QQSU6WWQC7IN2L5NOHMDPEAW2BKSSSYJCGJA",
+          "IMZIYV3BEQXRO7UUVTXZ2JRMOQZGHQ77PAJM24SIKLFKL5KRAJT7G5PPHY",
+          "6TZ24A5KI4Y3GHXARRRNXCBW3UXDDMVPYRTHXSOVSRZ6S6XDM3XJDGGLD4",
+          "SYFQ2BE7PTUR7XUGMMEVYBPWRXY7N2VJDXF54K7P4ZXQXFQETEM4ZKGKFE",
+          "K3PPYBU7EUOMW62R5CJ4SAX37CVQ56VZ3B7E45NIKER6QDBRJ6JOFYQZLA",
+          "7QXBEBV2HUVMJNAY3RSU2JK3YAFTN2BKTUJMTBNLRRYMLVQTMQB3GF5WTQ",
+          "CQEE5HX5IX3VPNGM4R2PTYAEJYVLBCMYDCXDMQTMTQ5PB6H42MEDSPF5H4",
+          "WFCPJLP5NMMXLTB4DATINSNUPDO5QDCJM363RW4357M77LMN52HVMQY4RI",
+          "UPGSHXLGJXPE2U2AHZKTVFYBV4GM56VJMG7FFPZTZDQZLNMG5KTKLPUU5A",
+          "PBBXMVHFFUIOP6MJ5VANPX3QCKUPE6ZWO7HKS4TVEZKF5ZMZU4UFQW5YYY",
+          "2SLB7TAL23L6B4VCXNGKX2FD6526M4GCWLSQA5K2IQN3BOOBKJRJJ265GI",
+          "ZC4FAYMA57S5O3ZDKVBBJRCMLPHREFE74ACD4GTU5USHZK4UG6R4OSFRNQ",
+          "KTWLSDELBFFAVAJ4LDY3RF5XJFQ63SWDZCPCIQU6LFQG7F2NCZEPK46QCU",
+          "ZPMET3EQGUELK66ZT562GXQJSHEZH67RA3A5OO4P77KQVKYCDOYJVKE4MQ",
+          "J2VHJ4I3TIKAQDNAETFMK43SMJOUMDOFYIYQYSSCEXTVC7P5ECSCILPPJM",
+          "BXFZKL6RYZZSQL3AL66BOHY3SJWIMJ6GVL4UBBVWI3BYBCGS4YQJZRCRZU",
+          "RY557YW4JST2LUAHJBUXWJC4CQIU2W3VOEQEJVSJ3K5J77KVK3ZJWKAXRQ",
+          "IWVH3YTPLGVKXZJIJR6X7CNQVCBNIINQ45CPDJYQ2C55I6Z74ODQO3GX5Y",
+          "GFIPCZGMBYRV725SN3CHNNCQ4XOBLPY7PRF3IJDJUYOQ2V2AK5BWN55LE4",
+          "LNG226B4NTR5ERCYEZSZQH6HBGKZIT23I7PK7B2UD5MFQRARZTEO6JNNZ4",
+          "RKOATLZYNRASKSF65AMLZSWXM4F5HEZF4JQOJ7YFAFWJ62CEHX37Z4627U",
+          "W3ZS25URQD62WQWOZ3AWPTPUGWOCFKHJQC62BIXOQD5YJXRPCYMUHZWFVA",
+          "GD5B6PAOG3WWI2VXRIRI7PTRYQ4QFNESEA4M6IXKGFY6Z3HQL6BUEFGQPY",
+          "OWW6YQCM5MKXSSVUFWWJ3357FHYAFG6KXNYALYQN5VAJRGBDAXZW63JURU",
+          "5DV2REAMCBK4WVMLPIRRVMDKZSPTQVTE6GKSX3KFGKL7ZPSFFE5VXHYWAY",
+          "KDIPIS4DR63E5O2TXTGMI5VEYOQLLPDFLL5SXCYCMBJSO3F7M66AZIHJY4",
+          "QGDY6YLPQZABBXXOYR2RKLMGIICLSEFFLX5CEMZBRRHBWAWM5PI7SIVG3U",
+          "BOMJGYHPLFNCMA4PQU3R7W6FM5ITWEOOMMPH5M7XSWPYDJNHYLOQ2O24BI",
+          "D2FJJY77UQTQJPID2R2D7XQPFFTDJQKYCD2A3AANK76D3R7NBO4NM6BY3Y",
+          "HENJ5RCAP63YETFVRGDLDVJZ3YUEIALOAZZQBULJEOOTP46PTAEHULWTMY",
+          "ACTNZ6AJOGWDEEV37V2D2NCDOZSDBX6XPETBFYA6RMJ6UU6FDJU6WZA2WI",
+          "A5K2JPHJOWWVFQBL23K2VUM53B4265FBGDOM7SAGOKRKRI3BU2TYGFZF4A",
+          "DUMUENAYU4G3CSA7ZO34ZEJMF3STF7X3XQQYU23TDTXPULDZLN35LJ5N4A",
+          "FXAMYQ4QBF5EMJZY247ARY73KEJRT57YZ6GWZG4GK63OCKZ37TP4BLSJHY",
+          "Q4K4JKNCQ2YCKI6GMGJWJCQZSVYCFBAISFHP2T5PPIL4YYM7CP5QEFQV2U",
+          "2Y5DGZXQ6DTHUXOLA2NATICLXLUEOJ42V3326ARWW66RWXDXCBWKVPQSCE",
+          "MBXGP2CHV57ZUN7NAZQX2ZQXKR54URGTQWEEPWKJR53XDGH7CE5CGRSQAE",
+          "W62KQDGQ6NEWJP3V7K23OMWH5MIHMCZIHHSERBNADKGUA7E3MBEUK67R4E",
+          "4Z34YFAFQXGWFUHZNHDNRU5RN7PFTYV4GJJE5WVSIRAGAN33JD2FRNK5V4",
+          "BR4WRZ27NUKMTYU4V2IV2J3VK7MIT5LCFBWFHDPXOEQ5T6J47ZYSIFHWBE",
+          "NIS4HZUCT2DJJV7DLOUDAIZMSRCB3MOWAMM5DYMNIX3FZOCGEXIB36UCVU",
+          "XUMHEI6IHCRYACKCRK2DOI72MJGLDSRHHRYSY4BIUIHZWAQGUFLD3JDLGI",
+          "3IMGRC3FDULYEYHG4OIBK6B2B7KNCMLLGYZZW35I7YRZ6PP3SRJPQQ4OXQ",
+          "64PZFN5ETCJR2VAFPWN6YP4P2TP7FTZOOF2KA47NUZRGHZY26OU4BD4WME",
+          "FHOVL5LLG2A2NBULNF3PXXD3MWXHRI3M73UBDPEIVYD4UHG2MC33ZE2AGM",
+          "IV4ZJA2KPZMU7U3ZCPI3G5LG2MTL3ERGHKBZZHIO2DLEGEI2O5SWYQLXYY",
+          "RIKNMHOCFFDBAOKHKU7YCHDRNMT2UNL64GIHEMWO64PV3XVQ7Y5U4LQV2E",
+          "XQBP7XVDDX6UG3XEULWPOO6TEKDDAO77XB5K7A2PNARSWGYDBCUX4L2RTY",
+          "UTRHVJKITI2G25XHJHIK4OE7U4UTRGANXRNB2RGINEGVRV3RCLWEAOYNZY",
+          "ZLKMQMYWXHZ6CC5LLSX5QBW2FNSGZV62YNGJVT5YC7QCES7KB7RHNEGVSM",
+          "HP5LBCIPPA6FUES3S3ZFIWNXLNFMSH7I7ZDNWP5O6OZVP7YE6MLYZ26PDI",
+          "FO3W55CYCL3GVCK7QU6FBGHDGDAPSLRHV27ZU5RSKS3NWJJFVSRVLXMBGE",
+          "U6VYPHJYTDVKIIDAUIAXY4F2OXBIERVD6JXF3L4EUEYLIALQMK3IS7H3SE",
+          "RSL3W5225EPQUEAYN3PUL4CVGH2KQCOTVEZQQ5VDQDCJBRVR3XWD6RPA5U",
+          "B22UOILPERP7UF4IX44NYW2OR44JXKPVML4QBI2DKZNUH5JTTIAHPAMBP4",
+          "EAVWHQCRNZB4E4N5XA3DPZ7G5UYQPEPTZYFUDEBLZZLJPEBLNDDWGHYYY4",
+          "PEHVZZDHZK3KP5Z5B5OSDJSRCAFV6R3P5L62KVVFAWUTP4AW37HL3NFGIU",
+          "D4VD34Q4BWP2XE72XCZDUXKL5TGR3UVMAIIMUIGB7NHG53MLIULDTTU6OM",
+          "C7LIJ6D266YFJKYAH7JAT34TCVLTQO2IQTJB3IF2POJOX57J6ECA24NNCA",
+          "ZTKUHUFTZHMG444BJVK3Y3P7VL53C5TPL7VC4RTHH5TUNFI22HCUPG3R3A",
+          "276USVS4NDLOGUB4DKWP4YYQYSPVXL37K2WXQYSEYD2M6RUD3TAXAFRDQM",
+          "PUQKWQ25KZMZ537U4KRMJKF4QNEKXK53GWY5WKBBIQ3WTMIVEP6MSUOJYQ",
+          "2O33QTWCDL4TOR5FDN4QAHI7ADQKZX6OYUGL7PNFRJIWGKQJ5W5VRKN6SY",
+          "72NWMUHQVJ4E4K6NUDWLA4GVYEK45W3T6ROWO6GKN3J2M4SY2QARFWHHVM",
+          "DWXPVH5J4FFVPFXKK3ON6I5OTF277MX4FHEBEYE44W7TJIGB2MCGNS3VU4",
+          "SXUTOIXG5LIAGOFPBWTG6LQZOQD2WYSH3G45X7XNHD25KDTF2PVRT36LDI",
+          "X7D2TJ5RSPTZKSVWLAYI4S5XXD6P46ZIM6RNZLBMOJHXCEF5HV5HTFF6ZQ",
+          "GUFGMRGAY6LYSETLJABYFOIIFVP4NVU2V6DXX77AN3HY2P6BMROCUM6GRM",
+          "O2WHXA54PSUZBHL6FQE2VMRGY5WPLAMMWNMGHYNKYHG37CC323E7VR2WKI",
+          "XDI2MAQTUXCELCE4GPGHA5D2TTF4HLEJM4P54RYBCOBAVEFO5D6MS3AX5I",
+          "SDH6QP76ERGPL6CY3LM2VJDYGGMVOJEOFNW67QLNURHDA4TUBYL5QWR3VY",
+          "HVZUWCYJDWP2LMGGU65I4DNZOQGE3P3YELEARBKAI4G66FGLSTISA4KJC4",
+          "YSGVI44XJHMFHGJJVGRURITU2NQC5I6QH446MM53RK2RVYAS7SW2UAMTRI",
+          "AIJTG6TUMHLK4LND63FWT5RSZRABG5TGQ6BEU5FS2PHBXMEPPWU3ZIYBTQ",
+          "M6R7Z4E4RHZULUY3EJCXPJF7TAFBLLCOFSORC6MIB2RTVOIGYLONYHHLDY",
+          "OHB7VZVCCQVJEIHPFL5VGBKYNOHS5A55Q4IAJR6YIHF6PZ6HMWX3JJVY7Q",
+          "BCBYLWBT3FNSPFTE2HGTZDZZJDOZWK2W3QT77RE2KCU6W6GGOCCIZCPSVQ",
+          "BTB5F7346ZNSWXYKF5DWZX5Q3GPWOKWFQHFJCTCOK5AKBBREN72PU4AV2U",
+          "JFOBSQ4EPWVWAQ7BAREMH2TGJOB6BDZ4FHZW3HSS3E45PXKSQNLESO65SA",
+          "FKSZLLPKY2DGWL4JAPII22K45ZTRVOARICINWRY3WEX3LYH2HI5QTKIMXM",
+          "E3UZPOK27DPSCZGKZQLFLFHX7BYF7X2R3MH7K24EBADZMYKYKSWJUGJC7Y",
+          "FVAKVJPA2DPPEB2F3NDTJGKFWG3KFNVZBG6UUNPKQNBRMPPXJKEH7X4GGE",
+          "Y3DEG2CL5QXKBX2GAXKV7LARYMVZ2FFRALYO2I5YAYTG2YKQBGQXCBUCO4",
+          "O4XTFNSE32WJMQMZK2F4SH3W3KYOF6Z4SIH7OOCE2XOR236KRMRP5ACFBM",
+          "KATT4H56TWJ56YL4N2E4SCIXZBV44ZQWKUAIDEKTKSE2F5ULPNOWFMT3KY",
+          "GKDPFFLIM6BWEL5LDF2V7MC46NTZKCATBJZUBLRSHISEAS2AXCXMVRW4XM",
+          "MNAJIU5TAD45R5AJLHONJGD4SKED6IPQOFHCBOHQUAXTPRQY4XA4ABSJLM",
+          "LCC64BFAYAKGPVECBD256LBK2QYJDITK5BWMO4GIXDDQFEY6ZEPF23IAXY",
+          "XHAJNII4FFII37OQXWE5KX2NX6TKNCEKOQOOW7YN2FBH6R2CULNPD25UP4",
+          "JKA2M3Y7HIJ5BKRDQWNY6OJK2RQILDRHRLFW65YAH4LG2T5D2NUBKKMPQ4",
+          "ZC5LUD42JDGWI7TGRBVZO2XASKQUHRVOSM5OVYGYX2NACRGSSI7ET5SOUA",
+          "CPP54F2INURO3OFUYIHO7YFZ7S6IRMI2TOC7SSHORLFVDL3EUN6YVNCB6I",
+          "VPLZSNAYOEVZJ53QZO3VCMZAJA7QHOLNWRWUCZYXXA3WCP7RHJRNV5AWMQ",
+          "JQX4W32G35MHCNLPJOT67EHAUJMAQQVK7QPU7KTPH66T2OKVFQHRZN5NVY",
+          "ZNYBMGJJR7WPBVOESXIPIWVFHM4YCZUKLTS7RUS6C7YOK3VN4BQTJRT73E",
+          "D5AVGJ2YZGNOSPZ6V4J5LITSUJC4LUWCCUI2YVCBR4EJLZU6MDDF4ESPQY",
+          "FUSMO43JJ5ALGFU4CPHWNCE5IEDVFFBPZRB7LKK4UXWGK7I4MFEGJZBHKM",
+          "ZFD7ADUZVUO5OL4EWWCZACPLAUOEAQGWZPNRLBBVEBMWW6DCWABP7LXTXY",
+          "ZJQSZG72H74NFBVMYOAT3D4CPDJOHDBOFUROPP5GIIUAGBAR3FSTKFGN44",
+          "GYZFVKGES4M54BUD2FITT2BNSQ4Y63237OSQGQ4UVHZ7WEO2S5MPNUJX6U",
+          "U647BQBW6OI4TVHVXURZYMRICUNKS3A4U4M4A6KHSHSW733JHANRV2XTQ4",
+          "J5SUIVJ2ZS455NVR2U6LA2UKAOIROVIM5RBWNW4QVQURGDBHR4CJRWGCGU",
+          "4DHOCHBUF35PFWLPOOWS4ULOPRAJM36HTHF254OA2GNRTIZCEG4HY3BQEE",
+          "JDI77SR32FPC6A4PNU75CDYHBEYQAES25KMJDOE3NAQZU4OASCHUG7YVUY",
+          "WSUNKFIGW47RIRN27JRZX64ZCUBS5K5OACYWHKYSECDSE63LIZSW7EFM2Q",
+          "N67NZQWFEGHRGDHAT6RDPP7CYPW6NREIBBEYDNAGFSOVTTAW3TU5XHOFVQ",
+          "LVBJLYI2F22FAA7LYVVQIS4IGHWBH5TZED2DA2QKTMLXWKN222HMWCAYOY",
+          "3OP7KLNK6RZBWUF74DLNNUVUNGZWRJAKQ2KJLDE75NAXKXP7LRAXMRVN5A",
+          "4FFNCQBMYIZQUFY7VFT6DZJ6U33LFEWYJL3VAPP5A5XJRHH47RIJBRZCOU",
+          "RN7WYPTMZIVQBT5X6NZA7BA6ESBZYKAM6X4IYA2TR7D4H3WE5DPZJ45DQM",
+          "LW6NO7NWZ3NZGH6JRE5AB6IAEI3KKM2QTD7NJPU2ASTAXU36NUR43EVNYI",
+          "N4IVF5OLEDJPBU54LLNY5ZRHKE46UNC3XDKADSCGRUCTFWBPDSGY2XOAQA",
+          "VUVM2ZZRJJQ674RBGHZNM4XURYJP6YCMVLKDVXX4EOOLYHDLRATUESY2IM",
+          "XJDJDDFT6XWT354U47GKGNJJBTI2Y3JKCLCONE4UZ3XG4NWCJELJO4ZPPE",
+          "AE4FCQHERDFMVKMKW3S6SIGYO6DLJC5JQTBMZZCRVRW24QAFA66VJPT4NU",
+          "VBUBCYY3NM3E4X6XZA4YBPYGN5VHPICVZ7EIZLBI2WQK2PZCEKGTXHYSKE",
+          "M5YXDPVYWMODG44ABU7LKTT6D4NFGN2QFVA7R2CUH6EWVNUTAYSSBAR7VI",
+          "2F5KDZCYB2CFYTAMVL4KZTXR3GFHLL3KVSI2X2IGFTZ2M2FEKAOC5DN4AQ",
+          "3HHPHFETTL46LI6PLI43RVSCBDX6FCC5XFW4HK6B5K23H3VURYAL3AKNQA",
+          "6EOIZPNZLPXZMEEULYCSOF47YPJ6ZD6ZIHC3IVVXYO5UKE4GUAQZ4WADEA",
+          "LPGBDBJ5HQY2OAUC62QZCJED4MYABJMLCTGMG3ZUCXKEAZH2Q75XV5VCC4",
+          "HG7F2P6OMCX4BTFKNN4SU2NSHECLA6JSQU43YV5Y5ANL3K3AM4HQF4VPRI",
+          "5UJZ4M5YNJ2GW65IVCV2MJWNILHO34BO6I32SEDFI3XBVCIRPRM37LLHTM",
+          "7QXGI5MKIIT75BINTNW235UUWOGSMTZG252IT4QYGW3EN5MZ6YSQO455RY",
+          "4V4ICOLYZ3NF6FJDGJVFEKFQUETK3Y4ZXH4LKHNWK6KJYTT7RYXAZLHXFM",
+          "OSD5ETY6TUNWJ4QDMLSUWRGCXP2PYU7EZV6DLOLMJL5TEFQZXXUJPIETXQ",
+          "UX6TNW4ICDWCPGHZDOBHP2RBL45NYSD4XWHIQ5PIO6RBSZYMQ4LLVGLPJQ",
+          "EDABBZ2ZOV2HYKM4ZDVQXUBAKJD3TWT6HW2YZ32DDR7PO7ECBJBMFUOJBU",
+          "UOSNI23EDR2PIOC7IYVIFYE6XADT6S2UJV3YBMNW3DONO2UPCXN4N2MULQ",
+          "66JD44ALGMQSTKPVA7Y53B2QIW6ZHS4JHDEXCH6LYSBGACIH5S6QXHQDEQ",
+          "WCB52FRDWSVSDXB6APKMWXXNKOEZNKFEOXK4U7LTF3RTNQKNWN5PHLRVXM",
+          "7FHDBKKH5XRXXQFOVNRVGYRKLZLGXWCWHBCRTY2VFOWCRRVT37WMI3WBUM",
+          "VRMX3SJ4OT7MIYCMTSGPKLO4YMVF2MS5Z2USNUEBVCCOWEL2ZH234BJDU4",
+          "RYHCX26JY4OHJGBM3DARQZWEKOYGWPQ53NQW6B6CNB56YIGAUKTLVHSIDE",
+          "RZN5MF6GNNU4HRDWGC3HHFXBGNZ577S7CPJYB7S4KHDR3JEC3G2VXCB7GM",
+          "3QBLIHECGAKWMZXEZOBVU6AJ7LS67PT277OPWZFNTVTYTZTBZ7PNYQM74I",
+          "R6AU66KNP2UIGC5E44VURMMVTEI4I3J2HJTMQU2ORQP4U23Z5HPYMAUVOA",
+          "VXJM7ME6NXKPFVE6Y62YMU4ZVHFQIX53HHDM3PBYYR2XIUKMDDEIAMUPLI",
+          "Z6DNLJWITNWQB6KE6XNJGTIBNKPGW3BBW7XGKGM2HKCUABWKQOHAOVYH2U",
+          "UPI5J5ZCQG5SEYQOCXHLFD4K7K3VNG54RUBTUVXL55I66YF75ZGEA22W3M",
+          "GDPSNUFWS63A6HJOXYOIUUHRRUSOVEQN7CLIPUNLRUPC4BO2FXQYU2FV7A",
+          "LWOVX7NL5XFRA5HU6D74RZ6ZD5GUCOCVUPFW3ADZ62QHDFXCDIHSK6HCRM",
+          "DBKSUARHWBYFIVA5YLORDELWIQDVALHVL6CBP4OIYNTMAVK6JH2PK3QA6Y",
+          "4HUBQIHUP6EKOKK2WK26B5G4GECJDNYRTYYYCNLSMWEAFEBMMBRRI475XY",
+          "W3DMQLMIX2BPLZV7OOXGL2JEV6DDFWQOKD63EB6ESNTFHZSBP3GFWO6GIM",
+          "PDE5K5W7FKH6ZR4REMVNWKAOCCCBBGZYMBH2UU6UBKS3NXO5GZVJ54TTAI",
+          "5XHJBYSCTBQUTOYVZHYH2EQRB2PIX7I6QUOFBEQSEAOYNRFD7QFOGWTT4A",
+          "AGMB5ZYVX2QFIWF64ZAQVPNPAFLWLWNO6QIWDCSIJJ43RLNKYVGCSZNPW4",
+          "RSXYLO2XN5RZFULUIYBJ2G5S7Z6DV7AL7WOUE2T5WNNQB6YIVMG2CDRHDA",
+          "BAKNUDPXSX6DO7YHID3FA53ATINRT7KQDKG2O5KEYBYF4F2PU6PDY4HRNM",
+          "I36FWFY6Q6HUQEI3SFEQQR3SNLN47RU7UVPU2YHIUOJJWNMNLYGKBUHNVE",
+          "GL3UVXZTGVTD26B6WJON3S7VE7DVJYJU4RPX6XI33MGYMHOX7B5KDA2PKM",
+          "CFIIX4LP27MMG6YIHXPX5YAS6U4X4QAXZWZFZWGRBYQUQCBIWCASF2IG7Q",
+          "Q5YI2TKFRJ5KC4ABUVRIM5QZE5QJHMGCVNN3HFLQE6FLKUMS2FO6ZGYKPA",
+          "CTBKWAR3IH6QJGN3PBHJVZYQKBRKNFA3JN7JJACIRDOGRTA6OIBNQACQDI",
+          "SHE377ZKRJEDQUYKSN7LWR7Q34CPNCGB3MHMOTQVDRFVOEUOE6QEVVFDSA",
+          "GJQ4DHORQFAPURFC4I3SH5GEH7EFLAKHWIL5C7OWW3LHJTIYKI2VYZLFEA",
+          "HNGWPBESJQHI4HDVNCQI3F4QZ3IJBJVPW2ZCOFFSG2KZLFWXZEOYFMOSWY",
+          "XJPPAID63HAMNNYRR4LSWX5TEGHQVBPOHVXW62Y6L735N6H7NAQVZIQK2E",
+          "TAS3FX5H4GBSNEWZEYU3LTVDXEWTHB6VXDXFWZBTNDKI7IHI74PCAATK2Y",
+          "LYOB3SO7FGVYNRDVGD6CJ7PWEWBWUIX5ZYBUYBQY6JHSERBOUJNP5CE4CE",
+          "DQ4BT3WQTU27LO6N2MLRDXE4HC7AVG5ILVRUSKXJRUFD5IJ3PC6FYTKOAQ",
+          "6LFIAZNVT6CG7IQN3SZL5THNRI6UQ3EV5Y2FQBNPKFCEK3ZKF2DF32F2H4",
+          "3ERHQLWGRKEYTHNMMEOIJPQJ43YY5HCR6PKAKXQCCQTVXUZUEWHMGZVSRU",
+          "HP2RTWG26MS2YGF7GJATIVWJGLSLJK5PQFTLWARRODI4IJTNX7DRXSJLUI",
+          "HJUFJKVLWKFLW6J7OW5KBSO6Y7XH4D6TRKSSOM6I2WTEQEYHNA25DC5TXU",
+          "OVO2DFH7NLV5NEVOXE7BMVPG7JERNP5W2Q4MOT7RBW55AHIG5PDHOK7DOI",
+          "HFI5HHDMYQETSAY6RZ5HEX5AZN6SWJJZM5VV2NMAGNGPKFY5ACGJWBM7AQ",
+          "YHTYDDUPKBFLJANBX6KK3PZ356PKIEGLCUBWEP4CUCZD6SOOHX6GE3EMCE",
+          "HFF3PTWLAACHYQGI42D6X6FEH3OMJHOSDRNALHSVY4EHDQTSWIHE4E2NWM",
+          "LO5L5BC2FENJNMKYOZ4KL2FLNDE7Z25Y6NTYMWU77AC2DI4AINRQTSWQQY",
+          "DLRLJNHR7XMM6BLENYKW5YBRBMDNCS6PUM2U7H7XYXLYQDC3KODIMZMBXY",
+          "FLQTNATOGL2X4EMI4SI4FOJX2PGL55T64EYLHPTTZFP5LIDD4UPTPU2BWI",
+          "BTRFOGLHYIDCEF3VBPBW643PS5BSXVZBYR4UO4UZUCL72MVPIPU36MN5CA",
+          "Y4JU5H34VBFFEKTYOAQ5IFR724BVV62UYJWRQLETW4SOT6VRAD5TXQJWOE",
+          "WUMSM2VTPHH7WXC2Z6RRK5BHXENMAGNBOKT5SCAOIUXQSPG4XDJMKM2TTA",
+          "QXCPGD53DXMTPIMYNHQXHWJWY54FT7XEEEDXX6PMJRZPNYEOZFDKR3HVSI",
+          "D45NNIWA5ZGI4XHFNW77NBHRMECATVE4AX6YU2BJGFPGVBPW7MIQCIOEWE",
+          "YHOAFCCKHW2PCEXXGVD3ATCTPCOGURYN3JPSDEP5G5DHACVXF6Z2F5XVAY",
+          "PGFTWNXGSY5DSPK6Y5NZUIHNW2VFUQQVT4USZEW5QG6XKP4VYLYVTAHS6U",
+          "NDMB357PAXJPR5HIYQ2HCORQPA5YC6L6GZT3ZAKPJEYIN7UYQWYWA7Y3SM",
+          "4FT3SZ6OLWOVJTQM2LTF4I7252OLZFCFJ4MAULIMUMY3NHULNFNNJS65QE",
+          "V3HJFS64RAL5DHHIP7HGQJ6KOCI27M24M44M6XMSAHHZLWCNVCA27KU7YA",
+          "TMODMXEITZAMARP6CP7NTMXYXEQNXR3YFQS2ZDQQD5JCG6ZJNE6R4TXOG4",
+          "XTXHSN2IVAF4KQFL7ICHSVUX3SFUAX2O6ALKCY6XXPCJI77HBUVRT4R7AU",
+          "EFHOR4VLLXP7XOLV5PCFTFEDJRHORVPAFO5CLETQTVPT7CDFPCIHW472VQ",
+          "DBXGCXZXUY62CDTKZXCLCKFTWAOELYVCCYCHZJTXV44H76MFZ7NMZCHV5Q",
+          "A7DPMHBVEK4BEZY7YKZGZKM3BEV5HQLQW7YVUZLVCWOMN2ANJQ5K3DUFPY",
+          "CYPNU7HCCZSV3TDJLGJOQVPPJVAMCX3CNAC4GZIQ4IXZ3LPB2WUH4BELNM",
+          "NFN6H3ODZU3HDBKWS6XOVACU7WCOFFDALXRMGMJ3HISUMRANKWPDQTR3ZI",
+          "IY6P5DKD2ESEV6OA6HIUUK5XIWDRT6R5BGAMBTC2PMJHP3C2GHWN5R4TSM",
+          "TFA7IXD3QOOJJFLXYY2GE4V5YPONUA3PY23RQTEL6TJ7GP7NUFOXRKRU2Y",
+          "QRX3RYY26E6ULSIUPFG5XO2YH52LA7UYZV57S2C7GGFDZZP2OMXBK4U2JM",
+          "5ISWO4KCMOQMLAD63SRIKKYMJOYS7V43IQYE47SCSGOJKBHVEMFXYTO2UE",
+          "EJ7UTSV36VTF4VSWRTFQ5T6UNZABKDSJESLTTRD4EYYKSERXXLDJRK7QWE",
+          "BRHTOVF4A2U3CMTLVD5S5UQ5MHG7FOEJWBFSDD3AVRBLHJVC5ZSMJOTWEA",
+          "2EUJMZMKWTCJJDQ6OND5ANTCKMKOHGNGCLKQ7HC7KE7FUR6GI7NG3B5KMI",
+          "UMJBGKH7Q43UBXE4GX3GWKFTXHBX4KIEURZOUAHK6UJ42FJK2AU6KIBUOM",
+          "YOIHFJPTUWVHHPCQNVXPUAE6SD4XUSAYVV5KJWYJETFUMZMARFCXUOJEGU",
+          "P2FAY54SXVQ2ZMQNTFTVNXVI3FBQFQ7DGPESX3TAKQR55367JBKSGB6M7Q",
+          "T5GCCFV6YAXSQEJVPBAEKGFZ35LF6JPOFM2T4CY2UPS3TLDGRVZNUPDVX4",
+          "5YJZ3YPF5LTEO3JYBWEKW6J6LPRAZTIMOLTFOWOEIHLDK5BDSANJWQETF4",
+          "ZF3UL3BRXSYC2RNYHYGR4ROXENVVWKMGWY7TSDNH2ULBFKCGT3GSSYXAJI",
+          "2BURV2H7CBKAQMFZNLQY22BSJFV2JUARQ6ZKSL3ALYCHJGJYBWYVZVZ3KQ",
+          "43SZZEXOPV6XIG4Y6HSC3H75I4LDDGZVI2FTLBHFGPRZDFIKHFK5E73CCY",
+          "26VJJFGRT2UJHTBEDD2OUBD64YEZWSVR2JB7EF75ZKU35RQXOHJIELY4ZY",
+          "OPN752NQE7JGZJW7I3CEMV7MH7KVEVJMKNSNWFU52D6ANW7HXYU2QUJHLU",
+          "37VO2RTV2CDZS3IPHG4Y6DW45VFQ635C3JKCFIZ5Y3KVPG7GRBIUKYCIXQ",
+          "MALWCNQNL2IYU7NWRPTD54UUSMPTYED43KC7XT4IBALW2XMQEKVTT7OVOI",
+          "7S7EH2TCN22JBGUAJ3AITJBSFDOOTVCJMXI7W4G5YODTOAZ5CGIQZDK7QM",
+          "RZN3N6LHMFY6UO3O7HPJN5QKIZS5OJZXPKRXKGKLZAYSHRTXHHEVTALQUU",
+          "F6B3VFBGGX7S3PLHFZWMONG6ZZJGFPWYHXEDGWUJDFS2R42WN4HQUB5QD4",
+          "QZ2OUXEEYCBA6TRNPZSZR5V2E4LGNMGHDSXGFEN6WBCR7MNR5AI4P5A5R4",
+          "5C55MMTCXQCWA7UOUH6WZCSC3E7NSGKLNSIP74X5H5IRHQLDW4NW3SGIWI",
+          "FQXUNNL7IMP6VJ2HPLRQM7EJZ7XTEUXRAJ5QQJXPGIF4ICEMPGEVZMEYI4",
+          "PI3V2TNRM3Q76EK7HMKMH7D7THJHH66OE4S4S2NGRRK4O2RE6FCYZ5GB4Q",
+          "4Y3LZRG2C2E7Y4MGMU2Y5IM3WVZN4STWWCAYVKJRLKJX4OTMORA3X3GFJE",
+          "TTBLP646MKC5LCLY5XVAHRUSWCEY2KJH35KGXTOBA6TKPNA6WRTV6HRBEM",
+          "ZCZLBBFSJ2APQABWYO7CHL3BT3COIXUQM52Q36W46CPML352HGNM5ZS4AI",
+          "XGYD4GWUOHOGA34GDBNCF24YUXEVPGHEOB2J3FYAIDBYFY5M3RC5P7ODRU",
+          "SPCHIVWIQXS4HIWBQFDYMM6HCFRLBE7KRBUDXGS3K4QIF4M7VCFXLCEC4M",
+          "ZCKABZC537UHCO53DGGSS7OBVJYDCNOUDBUYKTMZMGRQOGAYB5BCIDUZ7I",
+          "Y6K2WFROMRN3KM52ABM7U7RB7JOW5GBPTJUN2BBZ4JQPC3P6LGJTC7JIY4",
+          "ETJB4DDCAXXL26MTFVA4MULVDREYK4XLXPZ4RUJ6KGRKHI5CCPCAZL3Q2U",
+          "BIGPVVHT4RMJ2OF2RRDZJZVS2HMUPG3CEV3EHYOZZKG4LEI5UP3VG3XT4M",
+          "MUWWRV36NUJ4DNC4YYME362Y24KQILVOKLIS6NRB6BOO3BL7FDIRJQGO3E",
+          "IUFKL7ZVJNQ7PNMOEMX4LDJKP344OHJ2L3GDBDQE5MOEDX7DAD2FDLQLGA",
+          "WCDRQDCIUYQT5ULR4X66UEBXLKJPEFRULLSIRCDKCY5GGKCPDYYXLXEF5I",
+          "MMZ5QNFWRUJ7SUFS5RTEJMLQQES2D6LKPSNEUAWE5QNJXYIKQZHFDIZ5KQ",
+          "KKAQ5HNKQCYODNDJFKXW73JVZK6W2GA4N2D663LXJJOHFI62UTNL4L3A4U",
+          "JXWQOSHHVVD2XISLDBMIPQK4XOADUOX7L7UXXKGWUU3RI3P5YENEI4CIZQ",
+          "KH6WQV6ITZAF6NN7GS3HY5D7EEANOFZ2DDM3TUZBDP2GZ5D6DQCVQLABCQ",
+          "35KXRSCPRFCSTR6O62XTHZSOSEMGCAPA7H7NQ2DABUZRIPQYAKL2NC43SI",
+          "QYJTU5PTXM5RPJVW2TLLXOWPMHMVDAE7Y3APKTIV2OA7AP25ALLPZAYOYU",
+          "LSKGNDQFCEFI4OYWTVQHB6CKO3TKCL5ZNDR4V5AAFEQKWKRWMTSZT73LQ4",
+          "KAQ5T3BT6GRMMARZTNWU6O3CI7KXDWLBDPNA4A53V6EQ5ESB4EZMAU53RA",
+          "QCLTCNA4W24RAX3S66ILGBFTIAF7JTBK7R4DAVHJIKKGB6YKKC6VN57D74",
+          "6AJQHVZGIDUD4HNR3EBKSVJCISEHHQUTHKOIUHNUM6O7WAMSNISI2HGJHA",
+          "MMM5JM6JAI7H5QFYSL7M6ZZHIEZB2Z4EY4BNNDLCRBCY7XRPP3LEUSGNFI",
+          "YOXHJXSQBWDV347GBT4EFRQAQWEGCSFVUQMYWOQ5KXZEKZICS2EL7EZJLU",
+          "4CTDT3FPYZ5AN2OGYRYWRSNSAAZBRGRI7PS42XN7SXKRF7VFB4ULG2VYO4",
+          "U4NRLOBA4IOQBKDRA7JWVEYAVXHAF24F5CMBMOQBRABD23S3LT2RV4W5QE",
+          "35S2KDXYALT37HBNYDRDBFDFQGJHZEUHLPSP6NKKWDINI37SPUAA5NL3WU",
+          "UOUZNZVBA6U44CX5NDHRKD76WTLPZXMHW3A64NK7H3LJEJXCRBBKIPJHVA",
+          "RCET4ADKQZ47EDOWRLKM2D7K4Q4KLFRAPD6O5IQ2RLLCEQECBZC3UKSE5E",
+          "XRV2JVM4MT4WQYNAFGNXFUUZSMD6A6COXXJDY3L6Q3WOHMHQ6HVS3STWAY",
+          "CCY42OQ344ONOIBC4S7OVAUN4I2IZCMCMKZ3UYAESWFV4J4AX6Z7LC3B4U",
+          "IWCDAP7VFDUI4MTJX56E37ZY7PW5CODUUC26YHHKLJCTGGCXJHIF2NT2RI",
+          "DOKVN2LRHVZUT3IL2G7ZHVYJP5FTOY5KYMG5FP6XWUNGCMDK2FCRAUCANY",
+          "AHPSP4AHPAFH3KOOVN7X6PNBNHM7Q4DEYQHUIUSOKX7DJJLM5QI3WL65UE",
+          "QTPCKTINDFENABGKRTQRI6CW3V4YTZPMBGYT4O4YUFASFCL3XBLU2KDPKI",
+          "WRM6OFMYG7JSAA35MXE426F6HJCJQ3NG6N5H6XNUASY46EH36IJ2JGFTLU",
+          "75ONJM6B6VCIINXHL5CPVOIC2UMZWITCULB7BEPXUDSEZZ2VV5SCKTWVIY",
+          "LZE2RLWKJVOEGVUTK47TG43LQVVMUHIDA7YIGZKJDMN6ED3OQ4GTDDP2TA",
+          "EJ6DM7WRATTREZ3R3LQRJLIQCPD7RXQZAALE4P7K4U5YXHWDWGBYBZ3WPI",
+          "RCM2NUFSAAF6F3HANCJCXCNMCBYH6DFIU4C37LVQ7SKNOMXVB4KUCXMWBI",
+          "VEY65YLA773RADIXETGZ4XXRK24CWYUMD3LXGHSRUSDRLLAKELMYJ4YROI",
+          "MESXQSLSOZVLDEQPAIIKCNQOHQNKBYSYKT7VRTDMNR2KHDLYVD6IDEQGSI",
+          "T3CHM2UO4OGYCBOIGT4PNAMGNW7M76K5F4HDM7G4JQYDEELN76LEIVFMSU",
+          "CTRFHSOCMCPFQZVHZ3YE56DNCPN5SGZZY7ESTKPA7QTBYGY3ZSKG5YPLOQ",
+          "Y5D23AR6HIGIOX7JH4BDNELL2PUJ726DGCE7UEFDUQ3MYADDEV2XFDZDOY",
+          "7AQL4UXFPAJGBDYG6I2JEQJ22FBI26ZDJRXZCFDIMH55C4M7HYKJIBYOBY",
+          "L5ZLGDTSFASU77RNOI2HBBBCJQGFUBY2E7QKVBZKCQFANHLRNV6KLME2TQ",
+          "OWXPNKKTJRBZASC4RHSUNST77LREBYNZI3ZGEBA6JPCQUGKTZBCCVTXV3E",
+          "NIOJCW6VJZ26FWJMFHBZWLSPPSYOX3QBCDLGU36ME2UR2LLRY3YFMI22BM",
+          "TDUEOIASSFEKIV54D2BJTKJ7STCPWCHQXRQUOC7NPVOARBLTKWC7YWIDJY",
+          "VBXTSD7KOAGTKLSNEX5P3BTEQKK2IUGZJ6SQZJQXB5KWHBH3M5RPGAKBZY",
+          "S44OVYEI4W6MRES7HW5SL3J4VDQAUFLLXUJTQOWGH2KKJGQW2KOYMFN6WE",
+          "NZGQRBUC5ULLFTWYAFBVM7USLYANZHGTNHGDMTSNH4HK7KRBS5BDWW47FE",
+          "HXXAOVBQ54AWMRQGIDHWAVEERYXEKUEVCYB2XJMWR4AA4VWWYMDAK7AINU",
+          "YES6VTQTWRTSU3ETBDN2JDYM6HG7JSADP4V6OB4WHSQ45V7Z5BJSXMQHZE",
+          "CSZKYCR6WKGZWHDYBNXW4QYNMTZ55GCCYHAEXLGDS6VSAZGWFWQGM776LM",
+          "LQWMSUA32LZ3G5QJ5LOG6UW3ASWIR6LNXMLU73EBCBMMCJV6DS5JUQFVP4",
+          "6IOMWYUTFK2MWGYMGWIK72SG34HTW4VKDUCJMTUU6PW6QDD4AB4YS4HJ6Y",
+          "SJAXDOKCHG6JE3TQAOW6UKPAFXCMALM5C5M6ITZJVLQVZMESCYKD7BXBYI",
+          "IPACOQ3RKCKN5YRLL2TK5GT6OR6XEDN4SY66IMD5Q2EEC5H2RAEJYFDXNY",
+          "TTI2Q6FO6GKD7IRJJ2GP5QX62BKF664ZUK3QVTNEPDTSCNPYQ2YIFW4DNM",
+          "YSFD4QZM7R6N55VGVGXATPT4J74KNLFZ44BUGOU5ZK5ZVREHUE347AHRL4",
+          "XPGCHQTPOS5FQ5FHJNZ2N4BCD4IZCPMDHZ5HGCPEGPHBKSBTG4X42MTT7A",
+          "6U7IG2XVT5ICSRYHXNC5YAIQEKFPI5XWZI64OG5EOTFNIH63OD2KAQ33PU",
+          "GCWFYWTNQUQPCZ2MMCJJ4E4JMRJCQ6RBUFHU6CGZR7WMJIW7DT7PMQLNNQ",
+          "PDOTMUVB23J3GFSBTI6QGYQJ2XNOLCZ6ACQ7E2IILHIG7X44ZLCGFI3G3A",
+          "IFNE3677YQ677GAIJQK2K5BVSXK35L5YOFP227PXHZVJ3QZMO77VZXOJLY",
+          "VEC3FUC22NUZHNQNUMR5W7TAWLA2GV2J4IDOTDMLMGBWNC3EZ2W4VXV5SA",
+          "A2NEFJALGRXT72EWJYDWYZ3JVSF3NCZQMQC7J5JTWJKVJNEK2E2HZUMXPQ",
+          "U46VR4DIOG7W3CIAWZ4VFEZECA2S7ZWEAYPHD4UF2V3IOLA6KO5WHTXZB4",
+          "G6Z37DCDQ7HPB6R56TBHI6YQZGPS4YXYGO2YHEB5CVB2NHE5MWCWNTTWX4",
+          "F6KDLLX4LMMUUYLHVCPYP3KFQOKWR4OIF6V6IYY75YK6MUISNDEKWBRW2U",
+          "PYYGODOWJOMULQQOFERHQAQ25X2OL5XG2IRWN74HE3WF3VEJIEWNHCDSLE",
+          "BSWZQ4PSUGEWJUAM3VAYC4KA5XLGUF4UWL6WCYD7KQGUQW4A2MRUQ3NRXM",
+          "FYG32ZZXUTB7INJE36ZG6QLARRK2E23FSUXKYM3DFQ3MSO4DKSJQ75YVMY",
+          "MG3WOUD6CMEAAIT36C5LTWDYKCHL4DMR3ZWYZM3IS5NPYDP55JJZWMHTBQ",
+          "KIFPZYRYL2AHJF37Q4XMRFMHSEFRJGFKVJT6CJCMFKXBXIOE6DRUOEICW4",
+          "6VMTT3GPQ4VB2BAHP332RUUTK5JALSZ5HMQT6BCWYKVKWFKPAEFSOGTWDU",
+          "QCZGS3XAC6JRRMG5EAYXWRVVIY5PSNE4Y5CJSRTLRSITVKNBS4SOPNGJG4",
+          "D3ENDVIIEACCN2ZUZJCAC4EARDDPE7ZK62ZH6ZB2CITWII5CQI2YGWPIUA",
+          "QF7I3EZS7E5QLLUZ3D2SKQBKD4DDWVTT5NIMLEDR7LXG2EICIUEOCGAXHQ",
+          "AR4TUC52W2J3KM6SEQM2OPGUFYPPNWLCLMLQHQX4BLE2YMR4AR4AKP62MY",
+          "4KYW2ZO5ZBLB3OAIGP5VDL7QVATZ357NL7FXONYRCBRS6SUE5BERHPWHCU",
+          "7PBK737LV4QEOIBMEWJBTOLRIAVIG6HWEOT6NFJNUE7LONBFGWVRZ6P6LA",
+          "4TWERPI7OI7STKKOUFCXG6ZVQ65QOYJRLTJGUAMWAYOAM6IDHRHCVUULCQ",
+          "5GQYSMJ5FADXP6PJVKZKFECYQUVNSGUKD55E6NSGTFSFP4Q3D247UI6KDM",
+          "FHHHJJBBH2NNY2PRH5E3WI5Z5LV5BTDG3IVE3GL26PBYWRZAS47HCLV454",
+          "N2EB6YYHJFYKYXFYEESMXWINE4Q2FEF4SKWAI2AONLR3DH46KEMBBTSBCI",
+          "RATFS22VHJH5X33HZGTERKRSZZ6SIWFD5HFVARFUEXLFIDRMFKHQUHJMUA",
+          "WJHZAWV2OFRZ5VZ5ILMO45NY23J6JNN4HFADZDJNMUNZFTWF75AFMEAND4",
+          "PDKW2MGS2GULCKQ6FUQFIFWZ2IRXHCZ4PESE6SCJ4LZRF2FI3RJAVJDRRI",
+          "G35D6SGLDHRQV4AS67BUOMLHMMIHWMQJJSFUXJEY657F2JM4ODHR6AT53A",
+          "AZCFXUROSBJLN2WGU6HUCGOAT2L5TUVPD5F5GVV723NZTLPHHLI2V2BRSE",
+          "C26SKEKQFZZQDEPEFHMU57GMHPPKGFSDUZD775MHPIMSDIFTK6YGFC4KMI",
+          "PVMLPFOGG5WDWGN24EKBT4WG7NOW3LCQIVBJTVEKMBNDXF6X2JQLPUSYHI",
+          "HUXIGRQXJ5PQLF7Z36YYDDSHJHTKY5CN4MUP2TFVBP6VB6I4SHUFZVC7UA",
+          "LFENGRJDUICZTOORSQK6XYM5P732P66JDACZGYW2ZPK7UB5VQNZZD2VODA",
+          "S4MKLVS3SNGU2LT6IEJFVNDOAA6XM4AZFNMZCQ5FDEI2CKVVJOUGRX5ZEQ",
+          "N6EOZ5GPEOHXURMUVRSV5PCPP7GZAT2DQMQBCL4JY7C3BASRWC7WE7RKFY",
+          "2EXZNXGEUEAXKZ2VSLCXAMWB356RL2T23A7WCSXLVY4DF3V5AQNKMUOG44",
+          "NGHQRA7YBXR4322SAS5OLO5BKO4HJ3NXJVOLBOZMLM6MOVJOHNNGN2LWS4",
+          "X5D3JOGEBEUJAG65RLU5LAI3GTTVEPSNUNEBGIWO2KQYXXLO7S5RFMRQKQ",
+          "5MWUSWUV7OUORHRIBY7O5KLQHVPHURZLTT6QGF3NZGGPUVB4PKN7YTWCTI",
+          "2HQGSN35HBRWQOKBT2XVQYOJ5SK5TF4NB77EQCS2LZOSGAMZME6XZTTFWU",
+          "ISJ2FSCNTELUQDTGSDQFYH22W62NV5Q3Q5A4UQN45IRJHIS2SA6CJAMW3M",
+          "O4JAI7C57WCXURNYC3I5NTQ5DZZC6KNDKYBUG2DSKYACK5Q5STWYDIZCOA",
+          "JEGI6AJWRHG7AG34OQMV4N4H7NQNX7LBG2MK42JUTRQR7J2ZSQHYQIKCNA",
+          "QBUI7KDJ3CI4VRLKXZH6DHLN2KZVOZU4P33F4RH67S5UFF45RVIVWOE3JM",
+          "3IMQHLCH4Q4PEP7F2DRNHZC4FEKRVKZYSYNG4NSGSLRFGHFP6CFIZ7PYIM",
+          "ISCTGPI2QLYFEZ7NUKKD5MZVYEJKSS2IHC24BLTKMVAAEQTB3LBLMEOYUA",
+          "6O5XLXLDZUHOOHM2IXNLCCIIPAPAFEFA53XWQDJPQWGH5SAWN2JCM5ID7Q",
+          "AWFDG7ANRFIAT2WIT4AYVYNSWGEBKZYBU32QLNRKVVZDCX5SAHYVAQXE74",
+          "TZSQT6H7FQXTGSDUNFZ3IPOKH5IPZF4Y5XIKLDBPIX6M3ICC3DAJYDUVAE",
+          "FL6WULNAFCIUC6BZS6CMEOJJ2OXVG4UHQDMNJ4322SKYVQCN35ZYKENWYM",
+          "JK4A3OL6B2762PRU4NYGYQJFRBP7IVNV7OQIRM4UURBPOOEEQ6PFYE5VFM",
+          "WXOUJHUZ2VFYBA463E36W2IDNDXDUFCDY7CX77SJO525PPF3OL5QKEVX7U",
+          "E2ZZYORZ2HTKLN7MO6RZZQEH6RJ4B7S44TM26IN4W3HKFV6SIS4AE3MB4Y",
+          "4MOQA4VD2EF6H43FZGTM65CHFNDR3GAMWCET5VMDKKMGNVH5PHECJGS5TE",
+          "PVWCM7WRUYJDPSVV66MRAUFAEIXEEBH5W5GA5CPXO4FHKH2REKZVXF26JM",
+          "FAKGRSU2SLKX2ZETTMRAAN43MJSUFTILHZ42QCL3QJOZHWRBZEQRM74LQQ",
+          "NFONXSCJTOGZHU5GJN7WZSG6YPRDRAOXOFY4YJK6ZLNGCR3CDBWQHBPUTY",
+          "3C4TMII53NYMLQTZBQPH6JVFT7RQ6EM6LRVK6D56NWUYQNFV5MHU74MGV4",
+          "3OK6L5URB6YZMADL57NFOXR3V42V6IJJW5YVOK7E3F3G6XZB4WH6L4MG2E",
+          "K657EYEGQONFFLC7Q2RWLLJ3MAI6PWMS4L4K3NQ34L6QFPNY6P5X7MR7JI",
+          "OUYNXGHCBAPF7YY6CTH364CNEBDFVV6KLIGLQJ74NN5FNNGV5IIEKQU6OA",
+          "572GOFEJUJ73M762IGW6UCFQ37U2GPSQBVE32XICU7TOFFMAXJ6QOT4USQ",
+          "USOHCGU4Y4XSQB7EAWBDBU2R6VBLMSXDAGBBFRRXYOUUYLIK2HOWEHWKBM",
+          "23CZ3VHSGZK4SKKEEVLBOW7ZPQYQA5VFVTASTWNKOPXDP66OLZ6SVEWWWI",
+          "CICCJE76DAWGBP3BZE63TPI36JHE5SB5OU5A2WOXMOBE7UAVAEC2GQAMVA",
+          "ILK6TNVYAFZPRIU4YXQ2DM3S3LGVRC2DIFHDYKANRQX2GJFZPGBZNXFX6Y",
+          "VDFZMFD7LLQ3S5KPJZWGYW6AYVKQISV5ARC4TRJ2JNPKGY2FQKYHZSUC5Q",
+          "QYZRT242XT4JQ2VWN7QNY2VIWSQLWC7BQXOUZYJTRVQ7TRNZAQITUXTSQQ",
+          "XWSUAPEQGTQ36XEGRYSAB5IBZB7VYJPCNLTKRJ3RB2OFSERBXK7US7V2IY",
+          "BCOZVLPLIEH2474DAI6G53BI5SD5FBVKYMHGMHYYEINJ7S6F64MHRJQK4I",
+          "7DPVOOMADPJTOOCBQZDI6CHP5JL5NRX5Y6MFZXVR4THLOE53DJI2P6DHUQ",
+          "7TDN7Q6LVN4WNHLDL4JLG2XMDK7H67MFGVEYVODLVBIKLDQJUWTLNGVACU",
+          "BHT4PK4MGUWRIY5RUUYFJGNS3FAQP23YMBDUJSARBG6F5I7TYLSWGVZ4MQ",
+          "TFQSJJGFI634F5RTSTIZ6OITU2JW4GZ7MVF4BMROVH45HYWW7DTQQPUL4Q",
+          "WVNMYAD5XWOTGTHPLC5ZB4JEAB4DDVC5KVUXV5UNYUES43XSFZ7ORTIBIQ",
+          "5VY2FVAOW2ISU6WZCUUXAN44MWL74WY54C6VDVF2SEWJ3FJ57PEH6ZFZBY",
+          "NFZGE6RJVILSAON43LKTRJJPNBTB5KHEM7HA2N4HPQ7PODLDF7SFQCQRNQ",
+          "AWLERZUAKTH35RGYBBMUYH2D62TKGIAAJ2C3XAVGQYR2J5UGN36AA2UOWQ",
+          "3B5TBZ6DRYTSLBDICEZ74VKCDN55V3CDN2LAMKXIXDKXUBWFOBTWHI2ETU",
+          "WIEPYU2BE4JUZ4QKE4TTHGLDC4NYLRWVQG25JYHPF2YAM3LU5PNHREG4LY",
+          "2UVXJDGEZMTKAAGNIEHVGHN4O3IS37BK7UC4Y7KCXBZ36IV7B25EI5A7AA",
+          "DJZN3NIG5EKFNVVPI6NKGHU54KJN4O5T2SKI5X3ASCSH2TU5BBEN5UNE7A",
+          "5ZBRUTJPR3W4VATF3MNVAG7UNOZW6U6UEJ5PPGFWHNMLMGPKPDC5JCKXXM",
+          "WUQSEU65WVN767AFYRU5EAMN2SZKKJ27YLEXC7FK5KS3IS4TGUFDVIEUIE",
+          "3GW3OBOPZRO7KVQEXJYGK7QWAF6FB2KOV57QPHPHE6ZVAACUEZUS7CL4FM",
+          "22JNLTKXCPMZJRUSWPQMYBRU4L2LVD3O66J6LJWRTPLCSSKRSO2QLQ6SAE"
+        ]
+      }
     },
   },
   "conduit-bridge": {
@@ -9510,6 +12191,27 @@ const configs = {
       "permitFailure": true
     },
   },
+  "covo-v2": {
+    "polygon": {
+      "tvl": {
+        "owners": [
+          "0xED29cB1b164dd7EA1c5065E79a15dA31EC34327B"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xED29cB1b164dd7EA1c5065E79a15dA31EC34327B"
+        ],
+        "tokens": [
+          "0x681D3e1b54B3E1a338feB5B076cebf53a697d51F"
+        ]
+      }
+    },
+  },
   "crackandstack": {
     "methodology": "Crack & Stack TVL is the backed value of the Lanterns NFT.",
     "taiko": {
@@ -9537,6 +12239,138 @@ const configs = {
         "0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c"
       ],
       "owner": "0x907F40d1D6649810E0C6C2Af5e0d42c7C10ad295"
+    },
+  },
+  "crosschainbridge": {
+    "ethereum": {
+      "tvl": {
+        "owner": "0xCBCe172d7af2616804ab5b2494102dAeC47B2635",
+        "tokens": [
+          "0x8eEF5a82E6Aa222a60F009ac18c24EE12dBf4b41",
+          "0x92868a5255c628da08f550a858a802f5351c5223",
+          "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+          "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+          "0xa143ac515dca260a46c742c7251ef3b268639593",
+          "0x77e9618179820961ee99a988983bc9ab41ff3112",
+          "0x65ad6a2288b2dd23e466226397c8f5d1794e58fc",
+          "0xa0dc5132c91ea4d94fcf1727c32cc5a303b34cfc",
+          "0xA6F7645ed967FAF708A614a2fcA8D4790138586f",
+          "0x1796ae0b0fa4862485106a0de9b654efe301d0b2",
+          "0x464FdB8AFFC9bac185A7393fd4298137866DCFB8",
+          "0x6d1DC3928604b00180Bb570BdAe94b9698d33b79",
+          "0x474021845c4643113458ea4414bdb7fb74a01a77",
+          "0xf720e38f678b29b243f7d53b56acbf5de98f2385",
+          "0x5b52bfb8062ce664d74bbcd4cd6dc7df53fd7233"
+        ]
+      },
+      "staking": {
+        "owner": "0x0BDC1f983bC82B8F6F6BCcbF9810A9cdC1FE455f",
+        "tokens": [
+          "0x92868a5255c628da08f550a858a802f5351c5223"
+        ]
+      }
+    },
+    "bsc": {
+      "tvl": {
+        "owner": "0xCBCe172d7af2616804ab5b2494102dAeC47B2635",
+        "tokens": [
+          "0x1ffd0b47127fdd4097e54521c9e2c7f0d66aafc5",
+          "0x92868a5255c628da08f550a858a802f5351c5223",
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+          "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+          "0x55d398326f99059ff775485246999027b3197955",
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+          "0xcc42724c6683b7e57334c4e856f4c9965ed682bd",
+          "0x0c37bcf456bc661c14d596683325623076d7e283",
+          "0x66cafcf6c32315623c7ffd3f2ff690aa36ebed38",
+          "0xa143ac515dca260a46c742c7251ef3b268639593",
+          "0x8fb1a59ca2d57b51e5971a85277efe72c4492983",
+          "0x2cb34f6a300813da9312b84ab566b2e51cc02921",
+          "0x65ad6a2288b2dd23e466226397c8f5d1794e58fc",
+          "0xd85ad783cc94bd04196a13dc042a3054a9b52210",
+          "0xa0dc5132c91ea4d94fcf1727c32cc5a303b34cfc",
+          "0xA6F7645ed967FAF708A614a2fcA8D4790138586f",
+          "0x1796ae0b0fa4862485106a0de9b654efe301d0b2",
+          "0x12bb890508c125661e03b09ec06e404bc9289040",
+          "0x464FdB8AFFC9bac185A7393fd4298137866DCFB8",
+          "0x6d1dc3928604b00180bb570bdae94b9698d33b79",
+          "0x474021845C4643113458ea4414bdb7fB74A01A77",
+          "0x42BFE4A3E023f2C90aEBFfbd9B667599Fa38514F",
+          "0xf720e38f678b29b243f7d53b56acbf5de98f2385",
+          "0x85eac5ac2f758618dfa09bdbe0cf174e7d574d5b",
+          "0x5b52bfb8062ce664d74bbcd4cd6dc7df53fd7233"
+        ]
+      },
+      "staking": {
+        "owner": "0x0BDC1f983bC82B8F6F6BCcbF9810A9cdC1FE455f",
+        "tokens": [
+          "0x92868a5255c628da08f550a858a802f5351c5223"
+        ]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "owner": "0xCBCe172d7af2616804ab5b2494102dAeC47B2635",
+        "tokens": [
+          "0x8eEF5a82E6Aa222a60F009ac18c24EE12dBf4b41",
+          "0x92868a5255c628da08f550a858a802f5351c5223",
+          "0xdab529f40e671a1d4bf91361c21bf9f0c9712ab7",
+          "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+          "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+          "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+          "0x2f0e07e881363bb1cdff32971b2f8c87ef8ff432",
+          "0x65ad6a2288b2dd23e466226397c8f5d1794e58fc",
+          "0x1796ae0b0fa4862485106a0de9b654efe301d0b2",
+          "0xa6516f07c5fc7169fca3149b188c37ca617f1d41"
+        ]
+      },
+      "staking": {
+        "owner": "0x0BDC1f983bC82B8F6F6BCcbF9810A9cdC1FE455f",
+        "tokens": [
+          "0x92868a5255c628da08f550a858a802f5351c5223"
+        ]
+      }
+    },
+    "avax": {
+      "tvl": {
+        "owner": "0x46325c7005F04900F8D74cD0eAB903597b6EFFFF",
+        "tokens": [
+          "0xC0367f9b1f84Ca8DE127226AC2A994EA4bf1e41b",
+          "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+          "0xc7198437980c041c805a1edcba50c1ce5db95118",
+          "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab"
+        ]
+      },
+      "staking": {
+        "owner": "0xbAb537b7AE2Fcb00eeA7e91Fa4782EEbaD3B6d10",
+        "tokens": [
+          "0xC0367f9b1f84Ca8DE127226AC2A994EA4bf1e41b"
+        ]
+      }
+    },
+    "fantom": {
+      "tvl": {
+        "owner": "0xCBCe172d7af2616804ab5b2494102dAeC47B2635",
+        "tokens": [
+          "0x92868A5255C628dA08F550a858A802f5351C5223",
+          "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+          "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+          "0x74b23882a30290451A17c44f4F05243b6b58C76d"
+        ]
+      },
+      "staking": {
+        "owner": "0x6eBC0D4Ae955218195E6D016Fb9D4358Ee34d1F9",
+        "tokens": [
+          "0x92868A5255C628dA08F550a858A802f5351C5223"
+        ]
+      }
     },
   },
   "crovegas": {
@@ -9591,6 +12425,108 @@ const configs = {
       ]
     },
   },
+  "cryptoblades": {
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokens": [
+          "0x154a9f9cbd3449ad22fdae23044319d6ef2a1fab"
+        ],
+        "owners": [
+          "0x895BF27C99822Ef5ba88A3E6764F6247e13f0dfA",
+          "0xd6b2D8f59Bf30cfE7009fB4fC00a7b13Ca836A2c",
+          "0xc42dF5397B3C0B45DeDaCB83F7aDb1F30B73097d",
+          "0x3C06533B42A802f3Ac0E770CCBBeA9fa7Cae9572"
+        ]
+      }
+    },
+    "heco": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokens": [
+          "0x27d4DfDB3fDf58e198bA4dbc23B2F82c0b8e3405"
+        ],
+        "owners": [
+          "0x9810A3f2D59772f04846acA2Ba0F01caE6f43B9c",
+          "0x6109A500e5b9CE40FFe075Ea3A6beA6e93c23BcF"
+        ]
+      }
+    },
+    "okexchain": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokens": [
+          "0xcC137b0713E0DC63b1fA136272014F2A54Dd7aCB"
+        ],
+        "owners": [
+          "0xC5707a6a16CCe1963Ec3E6cdEE0A91e4876Be395",
+          "0x105A0Aa801080A89465bA1f8b6696971FD5F3a6D"
+        ]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokens": [
+          "0x863D6074aFaF02D9D41A5f8Ea83278DF7089aA86"
+        ],
+        "owners": [
+          "0xE34e7cA8e64884E3b5Cd48991ba229d8302E85da",
+          "0x96a5448BB59aD9Cccc3a4112c2c57a420768b499"
+        ]
+      }
+    },
+    "avax": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokens": [
+          "0x483416eB3aFA601B9C6385f63CeC0C82B6aBf1fb"
+        ],
+        "owners": [
+          "0x96438Debb1419bF0B53119Edae6e664c931504CA",
+          "0xE8f14F0a5a5f059ae060664e0f165B7e5A52e4e5"
+        ]
+      }
+    },
+    "aurora": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokens": [
+          "0xE723111a6Ac865EB6E2d62e87432bdC6e2c4a86E"
+        ],
+        "owners": [
+          "0x5F6E97612482095C0c2C02BC495C0171e61017d7",
+          "0x07f8aA038CD6a3B5FDC6ed58F608Eb33d98b299e"
+        ]
+      }
+    },
+    "kava": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokens": [
+          "0xC28a73FCb6248Cb1718A50a9EC9cBC361dee3ea1"
+        ],
+        "owners": [
+          "0xA0D3F71E7CbCac550bb3f71C27f91a436A02dEC5",
+          "0xCb850EEd27fF37B591c88967b5E7bC63De121FBd"
+        ]
+      }
+    },
+  },
   "csrfi": {
     "methodology": "Value of all Canto in the CSR contracts",
     "canto": {
@@ -9601,15 +12537,6 @@ const configs = {
         "0xe73191C7D3a47E45780c76cB82AE091815F4C8F9",
         "0xbe1Be54f6251109d5fB2532b85d7eE9Cb375C43f",
         "0x33544082114fF42974B2965e057e24AC52b75871"
-      ]
-    },
-  },
-  "cswap-dex": {
-    "timetravel": false,
-    "cardano": {
-      "owners": [
-        "addr1z8ke0c9p89rjfwmuh98jpt8ky74uy5mffjft3zlcld9h7ml3lmln3mwk0y3zsh3gs3dzqlwa9rjzrxawkwm4udw9axhs6fuu6e",
-        "addr1z8d9k3aw6w24eyfjacy809h68dv2rwnpw0arrfau98jk6nhv88awp8sgxk65d6kry0mar3rd0dlkfljz7dv64eu39vfs38yd9p"
       ]
     },
   },
@@ -9658,6 +12585,130 @@ const configs = {
       ],
       "fetchCoValentTokens": true,
       "permitFailure": true
+    },
+  },
+  "cyclone": {
+    "iotex": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xf87aed04889a1dd0159d9c22b0d57b345ab16ddd",
+            "0xfa886fe8d27b284525974ddc6e2c0cb858a57251"
+          ],
+          [
+            "0x3fe04320885e6124231254c802004871be681218",
+            "0x0ad3bee1ee270339c921fb20686bfd90245ee5d8"
+          ],
+          [
+            "0x84abcb2832be606341a50128aeb1db43aa017449",
+            "0xdfbdf24b8019ef44f321de54d456ddd216e73163"
+          ]
+        ]
+      },
+      "pool2": {
+        "owner": "0xacf00a84559f536ba64064a4c73b74698013ef36",
+        "tokens": [
+          "0x1381b170681074fedaf1c4e35be1880bc4e85c4a"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xb80d026a7faa8c35def0e430f9b36163ac949c19",
+          "0x4d7b88403aa2f502bf289584160db01ca442426c",
+          "iotex",
+          "cyclone-protocol",
+          18
+        ]
+      }
+    },
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0xd619c8da0a58b63be7fa69b4cc648916fe95fa1b"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x52609307f2f6c43b7df63364ef65718d299ac246"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0xb6e9ea062a7719846bc9e3e3ae8712e74faad376"
+          ],
+          [
+            "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            "0xa38b6742cef9573f7f97c387278fa31482539c3d"
+          ],
+          [
+            "0x77777feddddffc19ff86db637967013e6c6a116c",
+            "0x09f03488291063a8f3c67d2aab7002419d11c113"
+          ]
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0xdc71bc29d12960a3ee5452fac6f033a1b8e756fb",
+          "0x37d9c7f451e5c619a7d4ca01e06761eb7dae6f89"
+        ]
+      }
+    },
+    "bsc": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x66b5e322dc31f8c7a33ffd23975163795f8d16c7"
+          ],
+          [
+            "0x9678e42cebeb63f23197d726b29b1cb20d0064e5",
+            "0x79459751F6882868D1299Bfa412428488b434541"
+          ],
+          [
+            "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+            "0xbe19d541389c9d3e03efc08f3d5008e8c9cc42a5"
+          ]
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x92a737097d711bec4c31351997254e98e5f0d430",
+          "0xecf30fbecfa642012f54212a3be92eef1e48edac"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xD90a6BF8439EF7214cF00Da83E926068b6a507eC",
+          "0x810ee35443639348adbbc467b33310d2ab43c168",
+          "bsc",
+          "cyclone-protocol",
+          18
+        ]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x831753dd7087cac61ab5644b308642cc1c33dc13",
+            "0x3E2c1b4dfA868A6ffD8CdC20D7BFa9Abb4462284"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x87059fDff1dC655ACf8652bA530d89f38de22f16"
+          ],
+          [
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "0xb5AEE5f2743A9f4abcE9C964d1530e3E96725Be7"
+          ]
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0xa8c187d8773bc9e49a10554715ff49bdcf39d55d",
+          "0x6eA88502BC127EF1a7f45fAC6B7168fc0633Ba51"
+        ]
+      }
     },
   },
   "cygnus-fi-restake": {
@@ -9756,6 +12807,26 @@ const configs = {
       ]
     },
   },
+  "danzo-arena": {
+    "methodology": "Calculates the total of idle tokens held in the above mentioned address",
+    "timetravel": false,
+    "cardano": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "scripts": [
+          "addr1vx4caaf06swdn7cdfc7pu3sw235zvuhd02tw2np4uac9mwcp2vt4y",
+          "addr1q8wu9v2wn8hkzq2g7q3ez8a99thw0gwmlhgpc2crmfk982xr2rqrszevgfwunrxu8ajh7pfhmaf6ppj60nj8rnhqhl4srgnekp",
+          "addr1vxherk6ug9235v0mrrmywsr2493sxsydmaylzajs7xavd9q30593r",
+          "addr1vy3jm4p3s0ufyu4y7zv9jhzzf3uj0j5r9zegkge7gpdt7zgk33jxw",
+          "addr1vxqnqk9vfxne3p3ecktnshjjjvyzfxc9pgyf9ux76nrukpq4j73z8",
+          "addr1vxh2lgfhrd65zer39d5a2lyfsmke9628n4fcu92yvq4ufgcuuy7th",
+          "addr1v8zyytsux8kg0ues0xd40m9yvghjs6s3vr92ndujq3lxqzscq75s0"
+        ]
+      }
+    },
+  },
   "deadbox": {
     "methodology": "Counts WETH, wstETH, and rETH deposited as collateral in DRP.",
     "ethereum": {
@@ -9820,6 +12891,45 @@ const configs = {
       "tokens": [
         "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
       ]
+    },
+  },
+  "defidash": {
+    "methodology": "Counts the ETH and/or ERC20 tokens held in the DefiDash contract as TVL.",
+    "base": {
+      "tvl": {
+        "owner": "0x59B88318d239da34188C42B9e76aAC6D50265974",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x59B88318d239da34188C42B9e76aAC6D50265974",
+          "0xd6df108d516a5dc83f39020a349085c79d4edf0d"
+        ]
+      }
+    },
+  },
+  "defifranc": {
+    "start": "2022-09-25",
+    "methodology": "Total deposits of ETH and wBTC for borrowed DCHF.",
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x77E034c8A1392d99a2C776A6C1593866fEE36a33",
+          "0xC1f785B74a01dd9FAc0dE6070bC583fe9eaC7Ab5"
+        ],
+        "tokens": [
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x8Bc3702c35D33E5DF7cb0F06cb72a0c34Ae0C56F",
+          "0x1EA48B9965bb5086F3b468E50ED93888a661fc17"
+        ]
+      }
     },
   },
   "defirex": {
@@ -9899,7 +13009,6 @@ const configs = {
   },
   "demeter": {
     "heco": {
-      "chain": "heco",
       "tokensAndOwners": [
         [
           "0xa71edc38d189767582c38a3145b5873052c3e47a",
@@ -9968,7 +13077,6 @@ const configs = {
       ]
     },
     "bsc": {
-      "chain": "bsc",
       "tokensAndOwners": [
         [
           "0x55d398326f99059ff775485246999027b3197955",
@@ -10048,7 +13156,6 @@ const configs = {
   },
   "deusfi": {
     "ethereum": {
-      "chain": "ethereum",
       "tokensAndOwners": [
         [
           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -10057,7 +13164,6 @@ const configs = {
       ]
     },
     "polygon": {
-      "chain": "polygon",
       "tokensAndOwners": [
         [
           "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
@@ -10066,7 +13172,6 @@ const configs = {
       ]
     },
     "fantom": {
-      "chain": "fantom",
       "tokensAndOwners": [
         [
           "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
@@ -10196,6 +13301,30 @@ const configs = {
       "owner": "0x7c293b054938bedca41354203be4c08aec2c3466412cac803f4ad62abf22e476"
     },
   },
+  "dip-exchange": {
+    "hallmarks": [
+      [
+        "2023-08-14",
+        "Referral contract exploited"
+      ]
+    ],
+    "base": {
+      "tvl": {
+        "owner": "0xd91bBA888c1F80BeD01b66830D006c26a7e8625c",
+        "tokens": [
+          "0x1a35EE4640b0A3B87705B0A4B45D227Ba60Ca2ad",
+          "0x4200000000000000000000000000000000000006",
+          "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0xF2DDfFEd949EEA23F838C8518A48E4D09Cac9b18",
+          "0x0BE2EF4a1CC597dDd2a354505E08d7934802029d"
+        ]
+      }
+    },
+  },
   "dmdprotocol": {
     "methodology": "Counts total tBTC locked in BTCReserveVault contract",
     "base": {
@@ -10227,6 +13356,89 @@ const configs = {
         "0xfb5B838b6cfEEdC2873aB27866079AC55363D37E",
         "0x55d398326f99059ff775485246999027b3197955"
       ]
+    },
+  },
+  "dokidoki": {
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xb3a2AF499aF8f717BB3431968f8e0b038C975686",
+            "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+          ],
+          [
+            "0xde846827cE3022EcD5eFD6ed316a2dEf9AB299B8",
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+          ]
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x0CE0f2b998C0a1b0280Dcc95935108781d18E65b",
+            "0x9cEB84f92A0561fa3Cc4132aB9c0b76A59787544"
+          ],
+          [
+            "0x4a5573eE3F333260DB50A385F6fFDAc440fc80b1",
+            "0x9cEB84f92A0561fa3Cc4132aB9c0b76A59787544"
+          ],
+          [
+            "0xdf4F609134a84aae1D18dCe8d863b099c6455598",
+            "0x910524678C0B1B23FFB9285a81f99C29C11CBaEd"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x1D4b2B2a2Ca8762410801b51f128B73743439E39",
+            "0x95583A6F7aAAA56C48b27413d070219e22844435"
+          ],
+          [
+            "0x1D4b2B2a2Ca8762410801b51f128B73743439E39",
+            "0xB89cf3528A3a62C2f58BDbcFd7C15312a33ce91D"
+          ],
+          [
+            "0x654def3E97C3F4218C3f49ace81687483C361b2b",
+            "0x27599F0b45008dAD28899e8E278ab191673C9179"
+          ]
+        ],
+        "resolveLP": true
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xE699FFCeD532BB43BD2A84C82c73C858758d12cC",
+            "0x5C7F7Fe4766fE8f0fa9b41E2E4194d939488ff1C"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0xd0985A2E8410c03B3bB0D7997DA433428D58342f",
+            "0xc0a1dFb85734E465C5dadc5683DE58358C906598"
+          ],
+          [
+            "0x92Bb3233F59561FC1fEC53EfC3339E4Af8E917F4",
+            "0x69Cb6f98E45c13A230d292bE0a6aF93a6521c39B"
+          ],
+          [
+            "0x9cb31B03089eca4C0f42554256d0217326D15AE7",
+            "0x2146baC214D9BF2Da56c3d4A69b9149e457F9d8c"
+          ],
+          [
+            "0xcCeD5cB001D6081c4561bf7911F11Ccd9aAA1474",
+            "0xBbDC1681e43549d3871CF1953D1dD9afF320feF0"
+          ]
+        ],
+        "resolveLP": true
+      }
     },
   },
   "dopplefinance": {
@@ -10671,55 +13883,19 @@ const configs = {
       ]
     },
   },
-  "dotoracle": {
-    "ethereum": {
-      "owners": [
-        "0x02b758ce469af940C57A42aD1dE5D404122bc283"
+  "drachma": {
+    "metis": {
+      "tokensAndOwners": [
+        [
+          "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc",
+          "0xF3f03c110e01dE844fE8a608063bDC9b6c6cdC9f"
+        ],
+        [
+          "0xea32a96608495e54156ae48931a7c20f0dcc1a21",
+          "0xF3f03c110e01dE844fE8a608063bDC9b6c6cdC9f"
+        ]
       ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "0x853d955aCEf822Db058eb8505911ED77F175b99e",
-        "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
-        "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
-        "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
-      ]
-    },
-    "avax": {
-      "owners": [
-        "0x328A523B71545ddE8CD12a685318F2777D68798D"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x22d4002028f537599be9f666d1c4fa138522f9c8"
-      ]
-    },
-    "bsc": {
-      "owners": [
-        "0x328A523B71545ddE8CD12a685318F2777D68798D"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0xe9e7cea3dedca5984780bafc599bd69add087d56"
-      ]
-    },
-    "okexchain": {
-      "owners": [
-        "0x328A523B71545ddE8CD12a685318F2777D68798D"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000"
-      ]
-    },
-    "moonbeam": {
-      "owners": [
-        "0x328A523B71545ddE8CD12a685318F2777D68798D"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000"
-      ]
+      "resolveLP": true
     },
   },
   "dripit": {
@@ -10851,6 +14027,27 @@ const configs = {
       ]
     },
   },
+  "earlyfans": {
+    "methodology": "TVL counts the EARLY on 0x7135B32e9903BdB4e19a8b1D22fC2038964B8451 and ETH on 0x4b17a9318238403ddac8E3a790C3b06D18132Bf4, 0x169BC25B709f05c69daE264487cd84Be526AFb9a and 0x55BcC767F4ADD89BB7C316C560701A0a331DF746.",
+    "blast": {
+      "tvl": {
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ],
+        "owners": [
+          "0x4b17a9318238403ddac8E3a790C3b06D18132Bf4",
+          "0x169BC25B709f05c69daE264487cd84Be526AFb9a",
+          "0x55BcC767F4ADD89BB7C316C560701A0a331DF746"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x4b17a9318238403ddac8E3a790C3b06D18132Bf4",
+          "0x7135B32e9903BdB4e19a8b1D22fC2038964B8451"
+        ]
+      }
+    },
+  },
   "ebtc": {
     "timetravel": true,
     "misrepresentedTokens": false,
@@ -10921,6 +14118,49 @@ const configs = {
       ]
     },
   },
+  "eklipse": {
+    "klaytn": {
+      "tvl": {
+        "owners": [
+          "0x4F5d9F3b17988aA047e6F1Bc511fEc0BF25691f4",
+          "0xe59234EeDC854b3b37D48EFd8a529069C3990F83",
+          "0xddA06aaB425a1A390c131F790A56AB3380e3B7EC",
+          "0x7f352a4332fAD433D381d700118f8C9b0A1E1abb",
+          "0xB1b782f2D30505e9984e37e00C6494437d94c223",
+          "0x75Dc33f8247245E8E08852E68E7f275E2a41fD40",
+          "0x4F5d9F3b17988aA047e6F1Bc511fEc0BF25691f4",
+          "0x323fdda29fa2B8028eF9Fb48c1D45e5A39214D9A",
+          "0x5B4ed8321ea13047195104037798f29257EAc28c",
+          "0x29c6Eb808020Ef4889A9f25d35b69edBAfB0C78e"
+        ],
+        "tokens": [
+          "0x5c74070fdea071359b86082bd9f9b3deaafbe32b",
+          "0x754288077d0ff82af7a5317c7cb8c444d421d103",
+          "0x4fa62f1f404188ce860c8f0041d6ac3765a72e67",
+          "0xce40569d65106c32550626822b91565643c07823",
+          "0x807c4e063eb0ac21e8eef7623a6ed50a8ede58ca",
+          "0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167",
+          "0x168439b5eebe8c83db9eef44a0d76c6f54767ae4"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xD067C3b871ee9E07BA4205A8F96c182baBBA6c58",
+          "0x807c4e063eb0ac21e8eef7623a6ed50a8ede58ca"
+        ]
+      },
+      "pool2": {
+        "tokens": [
+          "0x219ee5d76593f5bd639125b6411a17d309e3ad31",
+          "0x5db231ac93faaad876155dc0853bb11a2f4b0fb2"
+        ],
+        "owners": [
+          "0x625ae9043e8730c4a1e30b36838502fb90e1d3c2"
+        ],
+        "resolveLP": true
+      }
+    },
+  },
   "ekubo-evm": {
     "ethereum": {
       "owners": [
@@ -10940,8 +14180,7 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-      ],
-      "chain": "ethereum"
+      ]
     },
     "base": {
       "owners": [
@@ -10949,8 +14188,7 @@ const configs = {
       ],
       "tokens": [
         "0x0000000000000000000000000000000000000000"
-      ],
-      "chain": "base"
+      ]
     },
     "arbitrum": {
       "owners": [
@@ -10959,8 +14197,7 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
-      ],
-      "chain": "arbitrum"
+      ]
     },
     "polygon": {
       "owners": [
@@ -10971,8 +14208,7 @@ const configs = {
         "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
         "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
         "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
-      ],
-      "chain": "polygon"
+      ]
     },
     "bsc": {
       "owners": [
@@ -10983,8 +14219,40 @@ const configs = {
         "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
         "0x55d398326f99059ff775485246999027b3197955",
         "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
-      ],
-      "chain": "bsc"
+      ]
+    },
+  },
+  "elephantmoney": {
+    "bsc": {
+      "pool2": {
+        "__pool2": [
+          [
+            "0xdd325C38b12903B727D16961e61333f4871A70E0",
+            "0xE283D0e3B8c102BAdF5E8166B73E02D96d92F688"
+          ],
+          [
+            "0xf15A72B15fC4CAeD6FaDB1ba7347f6CCD1E0Aede",
+            "0x1cea83ec5e48d9157fcae27a19807bef79195ce1",
+            "0x647bc907d520c3f63be38d01dbd979f5606bec48"
+          ]
+        ]
+      },
+      "tvl": {
+        "tokens": [
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+        ],
+        "owners": [
+          "0xCb5a02BB3a38e92E591d323d6824586608cE8cE4"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xAF0980A0f52954777C491166E7F40DB2B6fBb4Fc"
+        ],
+        "tokens": [
+          "0xE283D0e3B8c102BAdF5E8166B73E02D96d92F688"
+        ]
+      }
     },
   },
   "elysiumBridge": {
@@ -11019,8 +14287,7 @@ const configs = {
       ],
       "tokens": [
         "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e"
-      ],
-      "chain": "avax"
+      ]
     },
   },
   "endurance-bridge": {
@@ -11074,6 +14341,44 @@ const configs = {
       "logCalls": true
     },
   },
+  "enosys-governance": {
+    "songbird": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xc348f894d0e939fe72c467156e6d7dcbd6f16e21",
+            "0xc4D89F8f593F215f3636793E3353A36C196Cf87A"
+          ],
+          [
+            "0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B",
+            "0xA83E90337e2711b1c84df0AD7428403dBd0ce730"
+          ]
+        ],
+        "logCalls": true
+      }
+    },
+    "flare": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x140D8d3649Ec605CF69018C627fB44cCC76eC89f",
+            "0x988E94a0AEFB1fCdC0C4d44dDBa103C5d4c6c6b0"
+          ],
+          [
+            "0xfF56Eb5b1a7FAa972291117E5E9565dA29bc808d",
+            "0x7eB8CeB0F64D934a31835b98eB4cbAb3cA56dF28"
+          ]
+        ],
+        "logCalls": true
+      }
+    },
+  },
   "enso-finance": {
     "methodology": "Get the list of whitelisted index tokens from accepted adapters - TokenSet IndexCoop Indexed PowerPool and PieDAO - and query the amounts held by the vampire LiquidityMigrationV2 contract",
     "ethereum": {
@@ -11104,139 +14409,6 @@ const configs = {
         "0x83b546e10917432a722444672504f0d459472171"
       ],
       "resolveLP": true
-    },
-  },
-  "envelop": {
-    "methodology": "TVL is the collateral coins, tokens, NFTs wrapped in Envelop vaults.",
-    "hallmarks": [
-      [
-        "2024-03-05",
-        "Blast Mainnet deployment"
-      ],
-      [
-        "2021-10-20",
-        "Envelop(NIFTSY) TGE"
-      ]
-    ],
-    "ethereum": {
-      "owners": [
-        "0x765886A9f388ca58092Bba5b6191b1e57e0950Bf",
-        "0x53c55bB901812551aa36cbf022B5df35B24C9f59",
-        "0x2C72097760B3f0E781C9499dD94486E46DFD664C"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-      ]
-    },
-    "bsc": {
-      "owners": [
-        "0x2E2F00Dfac24C4cCB9c7cCACacFc066bAa2938f5",
-        "0xF81356B101A52cf62BBe1E34353a139934dE4c17",
-        "0x4a80d07a1e8c15069c397cf34c407a627dcb8487",
-        "0x0a18Abe3030C9E766329b9b9A05d2D9bD03C4F8F",
-        "0x98CADa78CFE0BCf17BF9aD96dA4B824C96c9d837"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x55d398326f99059ff775485246999027b3197955",
-        "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-        "0xe9e7cea3dedca5984780bafc599bd69add087d56",
-        "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3"
-      ]
-    },
-    "polygon": {
-      "owners": [
-        "0x4640024F4e00De23211ca505f3021d460c01a2a8",
-        "0xFcE14427Eb7e5df0c5313249b19B56b81633Df8A",
-        "0x018Ab23bae3eD9Ec598B1239f37B998fEDB75af3",
-        "0xc2571eBbc8F2af4f832bB8a2D3A4b0932Ce24773"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-        "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
-      ]
-    },
-    "arbitrum": {
-      "owners": [
-        "0x6664c8118284b3F5ECB47c2105cAa544Ab0Cf75B"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x6ab707Aca953eDAeFBc4fD23bA73294241490620"
-      ]
-    },
-    "optimism": {
-      "owners": [],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000"
-      ]
-    },
-    "avax": {
-      "owners": [
-        "0xc2571eBbc8F2af4f832bB8a2D3A4b0932Ce24773"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000"
-      ]
-    },
-    "blast": {
-      "owners": [
-        "0xd3807CE2F215DC42ca4bfA616B16C20b0B195128",
-        "0x2333615f43f898cD4368513fa59b0fDcF945f492"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x4300000000000000000000000000000000000003",
-        "0x4300000000000000000000000000000000000004"
-      ]
-    },
-  },
-  "epoch-island": {
-    "start": "2023-11-17",
-    "hallmarks": [
-      [
-        "2023-11-17",
-        "vEPOCH Launch"
-      ],
-      [
-        "2024-01-03",
-        "ITO Launch"
-      ]
-    ],
-    "ethereum": {
-      "blacklistedTokens": [
-        "0x97D0CfEB4FdE54B430307c9482d6f79C761Fe9B6"
-      ],
-      "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98",
-      "fetchCoValentTokens": true
-    },
-    "base": {
-      "blacklistedTokens": [
-        "0x287f0D88e29a3D7AEb4d0c10BAE5B902dB69B17D"
-      ],
-      "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98",
-      "fetchCoValentTokens": true
-    },
-    "arbitrum": {
-      "blacklistedTokens": [
-        "0x4939ac5c1855302891c5888634b2f65cc30b9155"
-      ],
-      "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98",
-      "fetchCoValentTokens": true
-    },
-    "optimism": {
-      "blacklistedTokens": [
-        "0xd1cac46a9a77169C310c2C780A4267eE6CA884f5"
-      ],
-      "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98",
-      "fetchCoValentTokens": true
     },
   },
   "equation-v2": {
@@ -11426,6 +14598,32 @@ const configs = {
       ]
     },
   },
+  "euphoria": {
+    "methodology": "Counts tokens in the treasury for tvl and staked WAGMI for staking",
+    "harmony": {
+      "tvl": {
+        "owners": [
+          "0x1A9Be7D6f94D3Ba8c37568E08D8D8780AAD128E6"
+        ],
+        "tokens": [
+          "0xEf977d2f931C1978Db5F6747666fa1eACB0d0339",
+          "0xb8F4c06dD0C2f9eb5e67B4FAA2d56Ff3543d6765",
+          "0x224e64ec1BDce3870a6a6c777eDd450454068FEC",
+          "0xd7E332b4C9f97eA6D05Db8C38F133307ad8847F3",
+          "0x985458e523db3d53125813ed68c274899e9dfab4",
+          "0xe176ebe47d621b984a73036b9da5d834411ef734",
+          "0x29c1e9fc7a4c19c8fcaf2d2b2de213ef0f323f0c"
+        ],
+        "resolveLP": true
+      },
+      "staking": {
+        "__staking": [
+          "0x95066025af40F7f7832f61422802cD1e13C23753",
+          "0x0dc78c79B4eB080eaD5C1d16559225a46b580694"
+        ]
+      }
+    },
+  },
   "euphoria-fi": {
     "methodology": "USDM in the vault",
     "megaeth": {
@@ -11507,8 +14705,7 @@ const configs = {
       ],
       "tokens": [
         "0x0000000000000000000000000000000000000000"
-      ],
-      "chain": "hyperliquid"
+      ]
     },
   },
   "fathom-CDP": {
@@ -11681,7 +14878,6 @@ const configs = {
       ]
     ],
     "ethereum": {
-      "chain": "ethereum",
       "tokensAndOwners": [
         [
           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -11698,7 +14894,6 @@ const configs = {
       ]
     },
     "wan": {
-      "chain": "wan",
       "tokensAndOwners": [
         [
           "0x11e77E27Af5539872efEd10abaA0b408cfd9fBBD",
@@ -11707,7 +14902,6 @@ const configs = {
       ]
     },
     "bsc": {
-      "chain": "bsc",
       "tokensAndOwners": [
         [
           "0xe9e7cea3dedca5984780bafc599bd69add087d56",
@@ -11839,6 +15033,31 @@ const configs = {
       ]
     },
   },
+  "flooring-io": {
+    "ethereum": {
+      "tvl": {
+        "owner": "0x3eb879cc9a0Ef4C6f1d870A40ae187768c278Da2",
+        "tokens": [
+          "0xb6a37b5d14d502c3ab0ae6f3a0e058bc9517786e",
+          "0xfd1b0b0dfa524e1fd42e7d51155a663c581bbd50",
+          "0xbd3531da5cf5857e7cfaa92426877b022e612cf8",
+          "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"
+        ],
+        "fetchCoValentTokens": true,
+        "resolveNFTs": true,
+        "blacklistedTokens": [
+          "0x102c776DDB30C754dEd4fDcC77A19230A60D4e4f",
+          "0x9b947Cc819b00AF2e377C025C3f386fbf3C0055c"
+        ]
+      },
+      "staking": {
+        "owner": "0x3eb879cc9a0Ef4C6f1d870A40ae187768c278Da2",
+        "tokens": [
+          "0x102c776DDB30C754dEd4fDcC77A19230A60D4e4f"
+        ]
+      }
+    },
+  },
   "flrbank": {
     "flare": {
       "owners": [
@@ -11916,6 +15135,19 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "forta": {
+    "polygon": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0xd2863157539b1d11f39ce23fc4834b62082f6874",
+        "tokens": [
+          "0x9ff62d1fc52a907b6dcba8077c2ddca6e6a9d3e1"
+        ]
+      }
+    },
+  },
   "four-meme": {
     "bsc": {
       "owners": [
@@ -11952,6 +15184,26 @@ const configs = {
         "0x36cb65c1967A0Fb0EEE11569C51C2f2aA1Ca6f6D"
       ],
       "fetchCoValentTokens": true
+    },
+  },
+  "frenpets": {
+    "methodology": "We counts tvl and staking from the main diamond contract",
+    "misrepresentedTokens": false,
+    "base": {
+      "tvl": {
+        "owners": [
+          "0x0e22B5f3E11944578b37ED04F5312Dfc246f443C"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x0e22B5f3E11944578b37ED04F5312Dfc246f443C",
+          "0xFF0C532FDB8Cd566Ae169C1CB157ff2Bdc83E105"
+        ]
+      }
     },
   },
   "friend3": {
@@ -12008,6 +15260,193 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "gainsNetwork": {
+    "hallmarks": [
+      [
+        "2023-01-01",
+        "Launch on Arbitrum"
+      ],
+      [
+        "2024-01-18",
+        "Launched gETH and gUSDC"
+      ],
+      [
+        "2024-09-29",
+        "Launch on Base"
+      ],
+      [
+        "2024-11-22",
+        "Launch on ApeChain"
+      ],
+      [
+        "2026-02-09",
+        "Launch on MegaETH"
+      ]
+    ],
+    "polygon": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            "0x91993f2101cc758D0dEB7279d41e880F7dEFe827"
+          ],
+          [
+            "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            "0x29019Fe2e72E8d4D2118E8D0318BeF389ffe2C81"
+          ],
+          [
+            "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+            "0x1544E1fF1a6f6Bdbfb901622C12bb352a43464Fb"
+          ],
+          [
+            "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            "0x209A9A01980377916851af2cA075C2b170452018"
+          ],
+          [
+            "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+            "0x209A9A01980377916851af2cA075C2b170452018"
+          ],
+          [
+            "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            "0x209A9A01980377916851af2cA075C2b170452018"
+          ]
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x33025b177A35F6275b78f9c25684273fc24B4e43",
+          "0x6e53cb6942e518376e9e763554db1a45ddcd25c4",
+          "polygon"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xfb06a737f549eb2512eb6082a808fc7f16c0819d",
+          "0xE5417Af564e4bFDA1c483642db72007871397896"
+        ]
+      }
+    },
+    "arbitrum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+            "0xd85E038593d7A098614721EaE955EC2022B9B91B"
+          ],
+          [
+            "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+            "0xd3443ee1e91aF28e5FB858Fbd0D72A63bA8046E0"
+          ],
+          [
+            "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+            "0x5977A9682D7AF81D347CFc338c61692163a2784C"
+          ],
+          [
+            "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+            "0xFF162c694eAA571f685030649814282eA457f169"
+          ],
+          [
+            "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+            "0xFF162c694eAA571f685030649814282eA457f169"
+          ],
+          [
+            "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+            "0xFF162c694eAA571f685030649814282eA457f169"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6",
+            "0x7edDE7e5900633F698EaB0Dbc97DE640fC5dC015"
+          ],
+          "0x18c11fd286c5ec11c3b683caa813b77f5163a122"
+        ]
+      }
+    },
+    "base": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "0xad20523A7dC37bAbc1CC74897E4977232b3D02e5"
+          ],
+          [
+            "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "0x6cD5aC19a07518A8092eEFfDA4f1174C72704eeb"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x28efAa11199DAF45AA8fBf95f920e5bc090DCbF3"
+          ],
+          "0xFB1Aaba03c31EA98A3eEC7591808AcB1947ee7Ac"
+        ]
+      }
+    },
+    "apechain": {
+      "tvl": {
+        "owner": "0x00000000000f7e000644657dC9417b185962645a",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x6dCD75474F9BDE2793cb3Da00b8959fb27BFa9d5"
+          ],
+          "0xe31C676d8235437597581b44c1c4f8A30e90b38a"
+        ]
+      }
+    },
+    "megaeth": {
+      "tokensAndOwners": [
+        [
+          "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7",
+          "0x46344456f130e9dcdeA7F98cDb0E02fB9F4ab72D"
+        ],
+        [
+          "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7",
+          "0x2D5B1ba6E2093a5b927Fe5bF8C049B107de31eaF"
+        ]
+      ]
+    },
+  },
+  "gambit": {
+    "methodology": "Count the USDC that has been deposited on Gambit",
+    "era": {
+      "owners": [
+        "0x0729e806f57CE71dA4464c6B2d313E517f41560b",
+        "0x1fb8611064a09469F808263C398623A86e7Aa883"
+      ],
+      "tokens": [
+        "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+      ]
+    },
+    "arbitrum": {
+      "tvl": {
+        "owners": [
+          "0xAC29F414FB40BA4e29Ab8504a55cBfFD315D2430",
+          "0x15c80BbC0D05656002BD922BFbf46e185BCa5A9e"
+        ],
+        "tokens": [
+          "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x05027E21F6cEfb38970f4e0c04cD6DacA15aCBcE"
+        ],
+        "tokens": [
+          "0x4e7e5023656863E26f50E2E6E59489A852C212c1"
+        ]
+      }
+    },
+  },
   "gambit-financial": {
     "bsc": {
       "owner": "0xc73A8DcAc88498FD4b4B1b2AaA37b0a2614Ff67B",
@@ -12019,6 +15458,31 @@ const configs = {
         "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
         "0x55d398326f99059ff775485246999027b3197955"
       ]
+    },
+  },
+  "gamblefi": {
+    "methodology": "Counts tokens on the treasury for tvl and staked BETIFY for staking",
+    "cronos": {
+      "tvl": {
+        "owners": [
+          "0x596a6DFf0CF36fABf75EDeB6aA2992C950Ff14bA",
+          "0xEe376093ccDB3D81f226C2290868219687226845",
+          "0x40822C8E1389dE62980691bF0AFBd5B8D1D56cB7"
+        ],
+        "tokens": [
+          "0xf2001b145b43032aaf5ee2884e456ccd805f677d",
+          "0x76f0adfff61fd9a542a36a98b96909ec7d3a8c53",
+          "0xe2c5275d86D2fB860F19a2CbBED9967d39AA73e8",
+          "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
+          "0x3e7dfdd82965515e9b6398d91b991f5d4c830ef6"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x335CAC92af7015BE7802170B62Ebc4C74900484d",
+          "0xD465b6B4937D768075414D413e981Af0b49349Cc"
+        ]
+      }
     },
   },
   "garble-money": {
@@ -12057,6 +15521,59 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "gdao": {
+    "methodology": "TVL counts tokens deposited in the Liquidity Mining program.",
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x514910771af9ca656af840dff83e8264ecf986ca",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ],
+          [
+            "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ],
+          [
+            "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ],
+          [
+            "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ],
+          [
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ],
+          [
+            "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ],
+          [
+            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ],
+          [
+            "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
+            "0x4DaC3e07316D2A31baABb252D89663deE8F76f09"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xda58927f4065f1d02a6ea850c2aac49d7362a643",
+          "0x515d7E9D75E2b76DB60F8a051Cd890eBa23286Bc"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          "0xda58927f4065f1d02a6ea850c2aac49d7362a643",
+          "0x4d184bf6f805ee839517164d301f0c4e5d25c374"
+        ]
+      }
+    },
+  },
   "gdl": {
     "avax": {
       "tokensAndOwners": [
@@ -12077,6 +15594,28 @@ const configs = {
           "0x34C8712Cc527a8E6834787Bd9e3AD4F2537B0f50"
         ]
       ]
+    },
+  },
+  "genius-yield": {
+    "timetravel": false,
+    "cardano": {
+      "staking": {
+        "owner": "addr1w8r99sv75y9tqfdzkzyqdqhedgnef47w4x7y0qnyts8pznq87e4wh",
+        "tokens": [
+          "dda5fdb1002f7389b33e036b6afee82a8189becb6cba852e8b79b4fb0014df1047454e53",
+          "5dac8536653edc12f6f5e1045d8164b9f59998d3bdc300fc928434894e4d4b52",
+          "edfd7a1d77bcb8b884c474bdc92a16002d1fb720e454fa6e993444794e5458",
+          "6c8642400e8437f737eb86df0fc8a8437c760f48592b1ba8f5767e81456d706f7761",
+          "fbae99b8679369079a7f6f0da14a2cf1c2d6bfd3afdf3a96a64ab67a0014df1047454e5358"
+        ]
+      },
+      "tvl": {
+        "owners": [
+          "addr_vkh1ahllvc7n0lzljafmcs3zurdzhlsg4fydkzph6tpjnt0tx0asedu",
+          "addr_vkh14rtl7h85cytjwq5gxuhe4j8peedhtzhptfu9r3qkvxjgcz7xfs0",
+          "addr_vkh1pgev05dyt75xrj9x3qffrxarhgv87tdxmp8ldppctvsxgnnucxs"
+        ]
+      }
     },
   },
   "gfex": {
@@ -12103,6 +15642,29 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "glorb": {
+    "methodology": "TVL is ETH locked in Snatch prize pot and jackpot, plus ETH in Mines jackpot and operational pools. Staking tracks GLORB held in Mines emission and jackpot pools.",
+    "start": 1738368000,
+    "base": {
+      "tvl": {
+        "owners": [
+          "0x1Ef75dc4904b71021F308a8D276be346889fEe62",
+          "0x8536f84d0300Be2B6733B69Bcd48613a9E04E918"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x8536f84d0300Be2B6733B69Bcd48613a9E04E918"
+        ],
+        "tokens": [
+          "0xa26303226Baa2299adA8D573a6FcD792aB1CFB07"
+        ]
+      }
     },
   },
   "gluon-gold": {
@@ -12286,6 +15848,36 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "gton": {
+    "fantom": {
+      "tvl": {
+        "owner": "0xB3D22267E7260ec6c3931d50D215ABa5Fd54506a",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xddcb3ffd12750b45d32e084887fdf1aabab34239",
+          "0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
+          "0x5cc61a78f164885776aa610fb0fe1257df78e59b",
+          "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+          "0xb688e18f34e6e424c44b247318f22367ed7df3e2",
+          "0xdbf31df14b66535af65aac99c32e9ea844e14501",
+          "0x1E4F97b9f9F913c46F1632781732927B9019C68b",
+          "0x657A1861c15A3deD9AF0B6799a195a249ebdCbc6",
+          "0xc3f069d7439baf6d4d6e9478d9cc77778e62d147",
+          "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+          "0xf16e81dce15b08f326220742020379b855b87df9"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0xB0dAAb4eb0C23aFFaA5c9943d6f361b51479ac48",
+            "0xB3D22267E7260ec6c3931d50D215ABa5Fd54506a"
+          ],
+          "0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4"
+        ]
+      }
+    },
+  },
   "gudchain": {
     "ethereum": {
       "owner": "0xd759e176DEF0F14e5C2D300238d41b1CBB5585BF",
@@ -12309,11 +15901,214 @@ const configs = {
       ]
     },
   },
+  "hakka": {
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x66be1bc6C6aF47900BBD4F3711801bE6C2c6CB32"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x83D0D842e6DB3B020f384a2af11bD14787BEC8E7"
+          ],
+          [
+            "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+            "0x83D0D842e6DB3B020f384a2af11bD14787BEC8E7"
+          ],
+          [
+            "0x35101c731b1548B5e48bb23F99eDBc2f5c341935",
+            "0x83D0D842e6DB3B020f384a2af11bD14787BEC8E7"
+          ],
+          [
+            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "0x83D0D842e6DB3B020f384a2af11bD14787BEC8E7"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x1B8874BaceAAfba9eA194a625d12E8b270D77016",
+            "0x6EE6683Cb9b44810369C873679f8073bCBE52F27"
+          ],
+          [
+            "0xaE95D3198d602acFB18F9188d733d710e14A27Dd",
+            "0x3792ee68E736b8214D4eDC91b1B3340B525e00BF"
+          ]
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xd9958826Bce875A75cc1789D5929459E6ff15040",
+          "0x0F2fd95c221770d108aCD5363D25b06Bdc43140B"
+        ],
+        "tokens": [
+          "0x0E29e5AbbB5FD88e28b2d355774e73BD47dE3bcd"
+        ]
+      }
+    },
+    "bsc": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+            "0x75192D6f3d51554CC2eE7B40C3aAc5f97934ce7E"
+          ],
+          [
+            "0x55d398326f99059ff775485246999027b3197955",
+            "0x75192D6f3d51554CC2eE7B40C3aAc5f97934ce7E"
+          ]
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xD8B3fF98025Cf203Ba6D7Bb2d25DBeEF9539E6FB",
+          "0x517Ef6281a9b3dc4Ef6B0318Bc5EDFDCf677d29D",
+          "0x0A3e364eE37bac9E6aFF9E864E65B4603D5BC5D4"
+        ],
+        "tokens": [
+          "0x1d1eb8e8293222e1a29d2c0e4ce6c0acfd89aaac"
+        ]
+      }
+    },
+  },
+  "halodao": {
+    "ethereum": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0x70e8de73ce538da2beed35d14187f6959a8eca96",
+              "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+            ],
+            "0x64DCbDeb83e39f152B7Faf83E5E5673faCA0D42A"
+          ],
+          [
+            [
+              "0x00000100F2A2bd000715001920eB70D229700085",
+              "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+            ],
+            "0xE15E50fF9d52beC41D53d3173F2ed40834D455f4"
+          ],
+          [
+            [
+              "0x00006100F7090010005F1bd7aE6122c3C2CF0090",
+              "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+            ],
+            "0x11816335DEe6763e2A7B6080b2b2980Eac7F85E4"
+          ],
+          [
+            [
+              "0x00000000441378008ea67f4284a57932b1c000a5",
+              "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+            ],
+            "0x2ED09E2961D72659E4002ba8C2BaDfedC7db19B7"
+          ]
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x9cFf4A10b6Fb163a4DF369AaFed9d95838222ca6",
+          "0x3E8E036Ddfd310B0838d3CC881A9fa827778845D"
+        ]
+      }
+    },
+    "polygon": {
+      "ownerTokens": [
+        [
+          [
+            "0x769434dca303597c8fc4997bf3dab233e961eda2",
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+          ],
+          "0x8123C64D6607412C7Ac9E880f12245ef22558b14"
+        ],
+        [
+          [
+            "0x6d3cC56DFC016151eE2613BdDe0e03Af9ba885CC",
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+          ],
+          "0xaEad273bc7E17DD6951ceD3264B1dBa8A19114C2"
+        ],
+        [
+          [
+            "0xe4F7761b541668f88d04fe9F2E9DF10CA613aEf7",
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+          ],
+          "0x95AB308bE1e209eB6FfdD3279B5ea71D365AD30B"
+        ],
+        [
+          [
+            "0x81A123f10C78216d32F8655eb1A88B5E9A3e9f2F",
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+          ],
+          "0xbF772a745533f6bAd97C58D2cb6B241eF7487242"
+        ]
+      ]
+    },
+    "arbitrum": {
+      "ownerTokens": [
+        [
+          [
+            "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+            "0x3d147cD9aC957B2a5F968dE9d1c6B9d0872286a0"
+          ],
+          "0x90b48bb20048786b167473dfeec443142d043cf7"
+        ],
+        [
+          [
+            "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+            "0x7E141940932E3D13bfa54B224cb4a16510519308"
+          ],
+          "0xd5ad9eed5c5f28d83933779cd7e677e112991f51"
+        ]
+      ]
+    },
+  },
+  "handlefi": {
+    "methodology": "TVL on arbitrum is sum of all collateralTokens (weth only atm) provided in vaults to mint any fxTokens on arbitrum. TVL on mainnet is given by collateral provided to Rari Fuse pools #72 and #116 against WETH, FEI, DAI, USDC, USDT, FRAX for now.",
+    "arbitrum": {
+      "tvl": {
+        "owner": "0x5710B75A0aA37f4Da939A61bb53c519296627994",
+        "tokens": [
+          "0x5979D7b546E38E414F7E9822514be443A4800529",
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          "0x5cdeb8ff5fd3a3361e27e491696515f1d119537a",
+          "0x9745e5cc0522827958ee3fc2c03247276d359186"
+        ]
+      }
+    },
+  },
   "handlefi-hsp": {
     "methodology": "TVL on arbitrum is the sum of all handle synthetic perpetuals (hSP) deposits",
     "arbitrum": {
       "owner": "0x5CE8dDD04F3576C93eDdDf0eb58bf2c7f643Ad0A",
       "tokens": []
+    },
+  },
+  "hashai": {
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0xd2fe354cfebaa06f2140f13b66d0b3e1fc3ceec0",
+          "0x27cc372757ca955ebf93bd577cd95c4e12f5c14b"
+        ],
+        "token": "0x0000000000000000000000000000000000000000"
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0xd2fe354cfebaa06f2140f13b66d0b3e1fc3ceec0",
+            "0x27cc372757ca955ebf93bd577cd95c4e12f5c14b"
+          ],
+          "0x292fcDD1B104DE5A00250fEBbA9bC6A5092A0076"
+        ]
+      }
     },
   },
   "hedgehog-protocol": {
@@ -12407,6 +16202,18 @@ const configs = {
       ]
     },
   },
+  "hemi-locking": {
+    "methodology": "Staking TVL = amount of HEMI locked in veHEMI (VotingEscrow). We sum the escrow’s HEMI balance.",
+    "hemi": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x371d3718D5b7F75EAb050FAe6Da7DF3092031c89",
+        "token": "0x99e3dE3817F6081B2568208337ef83295b7f591D"
+      }
+    },
+  },
   "hemi-staking": {
     "doublecounted": true,
     "hemi": {
@@ -12438,6 +16245,28 @@ const configs = {
         "0x028DE74e2fE336511A8E5FAb0426D1cfD5110DBb",
         "0x8970a6A9Eae065aA81a94E86ebCAF4F3d4dd6DA1"
       ]
+    },
+  },
+  "hermes-v2": {
+    "doublecounted": true,
+    "methodology": "The sum of All staked Uniswap V3 NFTs and burnt Hermes for staked TVL.",
+    "hallmarks": [
+      [
+        "2025-12-15",
+        "Yield Nest ynRWAx Liquidity Campaign Starts"
+      ]
+    ],
+    "arbitrum": {
+      "tvl": {
+        "owner": "0x54De3b7b5D1993Db4B2a93C897b5272FBd60e99E",
+        "resolveUniV3": true
+      },
+      "staking": {
+        "__staking": [
+          "0x3A0000000000E1007cEb00351F65a1806eCd937C",
+          "0x45940000009600102A1c002F0097C4A500fa00AB"
+        ]
+      }
     },
   },
   "hi-market": {
@@ -12495,6 +16324,64 @@ const configs = {
       ]
     },
   },
+  "holdstation": {
+    "era": {
+      "tvl": {
+        "tokens": [
+          "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+        ],
+        "owners": [
+          "0xaf08a9d918f16332F22cf8Dc9ABE9D9E14DdcbC2"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x7cF68AA037c67B6dae9814745345FFa9FC7075b1"
+          ],
+          [
+            "0xed4040fD47629e7c8FBB7DA76bb50B3e7695F0f2"
+          ]
+        ]
+      }
+    },
+    "berachain": {
+      "tvl": {
+        "tokens": [
+          "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce"
+        ],
+        "owners": [
+          "0x6a6E4ad4a5ca14B940Cd6949b1A90f947AE21c19"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0xA8dBa750A2D76586a234efB7bDF1d34fdCc48E14"
+          ],
+          [
+            "0xFF0a636Dfc44Bb0129b631cDd38D21B613290c98"
+          ]
+        ]
+      }
+    },
+    "wc": {
+      "tokens": [
+        "0x2cFc85d8E48F8EAB294be644d9E25C3030863003"
+      ],
+      "owners": [
+        "0x9BD647B2C8Fed689ADd2e7AA8b428d3eD12f75cb"
+      ]
+    },
+    "bsc": {
+      "tokens": [
+        "0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d"
+      ],
+      "owners": [
+        "0x7470C48FBf23067F6F8Ef63f7D9B4A2aA5D0afEf"
+      ]
+    },
+  },
   "hope-money": {
     "methodology": "Tokens held in coinbase custody. Reserve info taken from: https://hope.money/gomboc.html",
     "doublecounted": true,
@@ -12537,15 +16424,6 @@ const configs = {
     "hsk": {
       "owner": "0xd30a4ca3b40ea4ff00e81b0471750aa9a94ce9b1",
       "token": "0x0000000000000000000000000000000000000000"
-    },
-  },
-  "hubble": {
-    "timetravel": false,
-    "solana": {
-      "owners": [
-        "HZYHFagpyCqXuQjrSCN2jWrMHTVHPf9VWP79UGyvo95L",
-        "8WrqMitrgjzfqaPJ5PK6X3VT6B1Z8rDgQQny2aWwvJ8q"
-      ]
     },
   },
   "hypepool": {
@@ -12758,10 +16636,55 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "immutablex": {
+    "hallmarks": [
+      [
+        "2022-01-27",
+        "OMI migration"
+      ]
+    ],
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x5FDCCA53617f4d2b9134B29090C87D01058e27e9"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0xeD35af169aF46a02eE13b9d79Eb57d6D68C1749e",
+          "0xccC8cb5229B0ac8069C51fd58367Fd1e622aFD97"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x5FDCCA53617f4d2b9134B29090C87D01058e27e9"
+        ],
+        "tokens": [
+          "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF"
+        ]
+      }
+    },
+  },
+  "inbuilt-finance": {
+    "kava": {
+      "tvl": {
+        "owner": "0x68DB81eAB568174D54F3fd0d9e035eDe9AAEd3e2",
+        "tokens": [
+          "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
+          "0xb44a9b6905af7c801311e8f4e76932ee959c663c"
+        ]
+      },
+      "staking": {
+        "owner": "0x68DB81eAB568174D54F3fd0d9e035eDe9AAEd3e2",
+        "tokens": [
+          "0xa0eeda2e3075092d66384fe8c91a1da4bca21788"
+        ]
+      }
+    },
+  },
   "incognito": {
     "methodology": "Calculates the quantity of tokens held within Incognito contracts.",
     "ethereum": {
-      "chain": "ethereum",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x6b175474e89094c44da98b954eedeac495271d0f",
@@ -12786,7 +16709,6 @@ const configs = {
       ]
     },
     "bsc": {
-      "chain": "bsc",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
@@ -12809,7 +16731,6 @@ const configs = {
       ]
     },
     "avax": {
-      "chain": "avax",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
@@ -12820,7 +16741,6 @@ const configs = {
       ]
     },
     "polygon": {
-      "chain": "polygon",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x0000000000000000000000000000000000001010",
@@ -12837,7 +16757,6 @@ const configs = {
       ]
     },
     "fantom": {
-      "chain": "fantom",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
@@ -13230,6 +17149,145 @@ const configs = {
       ]
     },
   },
+  "kagla": {
+    "astar": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0x6de33698e9e9b787e09d3bd7771ef63557e148bb",
+              "0x6a2d262d56735dba19dd70682b39f6be9a931d98",
+              "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283"
+            ],
+            "0xeb97bc7c4ca99fa8078ff879905338517821b9f5"
+          ],
+          [
+            [
+              "0x4dd9c468a44f3fef662c35c1e9a6108b70415c2c",
+              "0xc404e12d3466accb625c67dbab2e1a8a457def3c",
+              "0x430d50963d9635bbef5a2ff27bd0bddc26ed691f"
+            ],
+            "0xed29ca5c39e35793f63f4485873abbb52cb29308"
+          ],
+          [
+            [
+              "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0x247f10e06536dd774f11fa5f8309c21b6647fc9a"
+          ],
+          [
+            [
+              "0x733ebcc6df85f8266349defd0980f8ced9b45f35",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0x60b26fd3251bc15045e3f94a2c30751a022dfcc3"
+          ],
+          [
+            [
+              "0x29f6e49c6e3397c3a84f715885f9f233a441165c",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0xbb70f16f2a115af2faf3b8abfefaf61969909a21"
+          ],
+          [
+            [
+              "0xffffffff00000000000000010000000000000001",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0xe12332a6118832cbafc1913ec5d8c3a05e6fd880"
+          ],
+          [
+            [
+              "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+              "0xe511ed88575c57767bafb72bfd10775413e3f2b0"
+            ],
+            "0x327d5322242b5558beba1dfb9c02a9da63551d67"
+          ],
+          [
+            [
+              "0xdbd71969ac2583a9a20af3fb81fe9c20547f30f3",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0x222660f8729897a703412cd965d85688c396e7df"
+          ],
+          [
+            [
+              "0x9914bff0437f914549c673b34808af6020e2b453",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0xabc6830022c18a60e80108ca8a66e4524e7104a1"
+          ],
+          [
+            [
+              "0x347e53263f8fb843ec605a1577ec7c8c0cac7a58",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0x5b14ec307ac141688c6c3c55253f12cdefb0bcf9"
+          ],
+          [
+            [
+              "0x02dac4898b2c2ca9d50ff8d6a7726166cf7bcfd0",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0xdccafcda0953b2948b40e0cdc94c900f0d2d6368"
+          ],
+          [
+            [
+              "0x257f1a047948f73158dadd03eb84b34498bcdc60",
+              "0x5eaae8435b178d4677904430bac5079e73afa56e"
+            ],
+            "0x578aa1be6d258677e80c9067711861dd981a663e"
+          ],
+          [
+            [
+              "0xc4335b1b76fa6d52877b3046eca68f6e708a27dd",
+              "0xddf2ad1d9bfa208228166311fc22e76ea7a4c44d"
+            ],
+            "0x4fd9011f0867e7e8af7608ad1bb969da8b0aba9b"
+          ],
+          [
+            [
+              "0xffffffff000000000000000000000001000007c0",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0xdc1c5babb4dad3117fd46d542f3b356d171417fa"
+          ],
+          [
+            [
+              "0xffffffff00000000000000010000000000000003",
+              "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+            ],
+            "0x77579ca9dd0e8af9c4b40dc9c0bfecbdbc073cf5"
+          ]
+        ],
+        "blacklistedTokens": [
+          "0xeb97bc7c4ca99fa8078ff879905338517821b9f5",
+          "0xed29ca5c39e35793f63f4485873abbb52cb29308",
+          "0x247f10e06536dd774f11fa5f8309c21b6647fc9a",
+          "0x60b26fd3251bc15045e3f94a2c30751a022dfcc3",
+          "0xbb70f16f2a115af2faf3b8abfefaf61969909a21",
+          "0xe12332a6118832cbafc1913ec5d8c3a05e6fd880",
+          "0x327d5322242b5558beba1dfb9c02a9da63551d67",
+          "0x222660f8729897a703412cd965d85688c396e7df",
+          "0xabc6830022c18a60e80108ca8a66e4524e7104a1",
+          "0x5b14ec307ac141688c6c3c55253f12cdefb0bcf9",
+          "0xdccafcda0953b2948b40e0cdc94c900f0d2d6368",
+          "0x578aa1be6d258677e80c9067711861dd981a663e",
+          "0x4fd9011f0867e7e8af7608ad1bb969da8b0aba9b",
+          "0xdc1c5babb4dad3117fd46d542f3b356d171417fa",
+          "0x77579ca9dd0e8af9c4b40dc9c0bfecbdbc073cf5",
+          "0x18bdb86e835e9952cfaa844eb923e470e832ad58"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x432c8199F548425F7d5746416D98126E521e8174",
+          "0x257f1a047948f73158dadd03eb84b34498bcdc60"
+        ]
+      }
+    },
+  },
   "kaiafun": {
     "klaytn": {
       "owners": [
@@ -13254,6 +17312,23 @@ const configs = {
         "0xeeCE9CD7Abd1CC84d9dfc7493e7e68079E47eA73"
       ],
       "fetchCoValentTokens": true
+    },
+  },
+  "kavafc": {
+    "kava": {
+      "staking": {
+        "owner": "0xa07deE8FF35fE2e2961a7e1006EAdA98E24aE82E",
+        "tokens": [
+          "0x990e157fC8a492c28F5B50022F000183131b9026"
+        ],
+        "lps": [
+          "0x09d6561b3795ae237e42f7adf3dc83742e10a2e8"
+        ],
+        "useDefaultCoreAssets": true
+      },
+      "tvl": {
+        "__empty": true
+      }
     },
   },
   "kavalake": {
@@ -13486,6 +17561,25 @@ const configs = {
       "logCalls": true
     },
   },
+  "laika-ai": {
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "__staking": [
+          "0x0F571BdbCAC2E41503c0cca86E6aE320e9E6093C",
+          "0x1865dc79a9e4b5751531099057d7ee801033d268"
+        ]
+      },
+      "pool2": {
+        "owner": "0x0F571BdbCAC2E41503c0cca86E6aE320e9E6093C",
+        "tokens": [
+          "0x712903c3ca65aeeb2e5452d04da090796fcae0df"
+        ]
+      }
+    },
+  },
   "layerakira": {
     "timetravel": true,
     "methodology": "The TVL is calculated as a sum of total assets deposited into the core contract of LayerAkira DEX",
@@ -13536,7 +17630,6 @@ const configs = {
       ]
     ],
     "osmosis": {
-      "chain": "osmosis",
       "owners": [
         "osmo13kgh3aksdnhs5jkd63uut9x3us9hfeyzldjgnma6eksj9g3c0cfs3z7wcp",
         "osmo1hd7r733w49wrqnxx3daz4gy7kvdhgwsjwn28wj7msjfk4tde89aqjqhu8x",
@@ -13589,7 +17682,6 @@ const configs = {
       ]
     },
     "sei": {
-      "chain": "sei",
       "owners": [
         "sei1tasaxmw8axfmcmzg2m9zp24msuurfkz3m44mga2dl98eh0txcxjspw9rga",
         "sei1rl9z38s9t853jddjfexxkqqpq5d5wpzrqudfg7ruchzymxhms7pq39j645",
@@ -13602,7 +17694,6 @@ const configs = {
       ]
     },
     "injective": {
-      "chain": "injective",
       "owners": [
         "inj179kyuxhegjne8s402m90h2palv8q7e5ssjyth7",
         "inj1hkv3pzkpvug7paf0kwqu40yf4nt40fprva9shr",
@@ -13615,7 +17706,6 @@ const configs = {
       ]
     },
     "neutron": {
-      "chain": "neutron",
       "owners": [
         "neutron147p2vs4zh772naq5nrquxah84gff6nz7eumcrvqe660d34m0drks64m53d",
         "neutron1awkajw4ltv0uw3jhqg5gx2lwkwl0nyg4krq54dg8x5w7qawcymyqenzcnk",
@@ -13626,6 +17716,84 @@ const configs = {
       "blacklistedTokens": [
         "ibc:FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668"
       ]
+    },
+  },
+  "level": {
+    "bsc": {
+      "tvl": {
+        "owner": "0xA5aBFB56a78D2BD4689b25B8A77fd49Bb0675874",
+        "tokens": [
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+          "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+          "0x55d398326f99059ff775485246999027b3197955"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x5ae081b6647aef897dec738642089d4bda93c0e7",
+          "0x70f16782010fa7ddf032a6aacdeed05ac6b0bc85"
+        ]
+      }
+    },
+    "arbitrum": {
+      "owner": "0x32B7bF19cb8b95C27E644183837813d4b595dcc6",
+      "tokens": [
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+        "0x912ce59144191c1204e64559fe8253a0e49e6548"
+      ]
+    },
+  },
+  "level-money": {
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x7FDA203f6F77545548E984133be62693bCD61497",
+          "0x834d9c7688ca1c10479931de906bcc44879a0446",
+          "0x8e7046e27d14d09bdacde9260ff7c8c2be68a41f",
+          "0x7B2c2C905184CEf1FABe920D4CbEA525acAa6f14",
+          "0x21c937d436f2d86859ce60311290a8072368932d",
+          "0x834D9c7688ca1C10479931dE906bCC44879A0446",
+          "0x78c6B27Be6DB520d332b1b44323F94bC831F5e33",
+          "0xb723377679b807370Ae8615ae3E76F6D1E75a5F2"
+        ],
+        "tokens": [
+          "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "0x83f20f44975d03b1b09e64809b757c47f942beea",
+          "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
+          "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+          "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "0x0022228a2cc5E7eF0274A7Baa600d44da5aB5776",
+          "0xa663b02cf0a4b149d2ad41910cb81e23e1c41c32",
+          "0x57F5E098CaD7A3D1Eed53991D4d66C45C9AF7812",
+          "0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5",
+          "0x35D8949372D46B7a3D5A56006AE77B215fc69bC0",
+          "0x15700B564Ca08D9439C58cA5053166E8317aa138",
+          "0x5C5b196aBE0d54485975D1Ec29617D42D9198326",
+          "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c",
+          "0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a",
+          "0x437cc33344a0B27A429f795ff6B469C72698B291",
+          "0x8a60e489004ca22d775c5f2c657598278d17d9c2",
+          "0x2b66aade1e9c062ff411bd47c44e0ad696d43bd9",
+          "0x4956b52aE2fF65D74CA2d61207523288e4528f96",
+          "0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110",
+          "0xfd03723a9a3abe0562451496a9a394d2c4bad4ab",
+          "0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB"
+        ]
+      },
+      "pool2": {
+        "owner": "0x80B73eF4534FE245300017A5197451973559c00f",
+        "tokens": [
+          "0x1220868672d5b10f3e1cb9ab519e4d0b08545ea4"
+        ]
+      }
     },
   },
   "lien": {
@@ -13682,6 +17850,42 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "linqai": {
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xD4F4D0a10BcaE123bB6655E8Fe93a30d01eEbD04",
+            "0x786d0536B63f3638bcD17897A98B066D901C27b8"
+          ],
+          [
+            "0xD4F4D0a10BcaE123bB6655E8Fe93a30d01eEbD04",
+            "0xCB5Dc61Cc672761Ec049dd9349745b418580BC83"
+          ]
+        ]
+      }
+    },
+  },
+  "lioncommerce": {
+    "kava": {
+      "staking": {
+        "owner": "0x52b18024e084150e001a34be9c7a41706517d79f",
+        "tokens": [
+          "0x990e157fC8a492c28F5B50022F000183131b9026"
+        ],
+        "lps": [
+          "0x09d6561b3795ae237e42f7adf3dc83742e10a2e8"
+        ],
+        "useDefaultCoreAssets": true
+      },
+      "tvl": {
+        "__empty": true
+      }
+    },
+  },
   "liquidity-house": {
     "methodology": "TVL is the total quantity of USDC held in the contract",
     "etlk": {
@@ -13716,6 +17920,64 @@ const configs = {
       ]
     },
   },
+  "luckychip": {
+    "methodology": "TVL comes from the tables of LuckyChip for now.",
+    "bsc": {
+      "staking": {
+        "__staking": [
+          "0x15D2a6FC45aF66A2952dC27c40450C1F06A1eC2b",
+          "0x6012C3a742f92103d238F1c8306cF8fbcDEca8B3"
+        ]
+      },
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x45218EDE6f026F0994C55b6Fa3554A8Ea989f819"
+          ],
+          [
+            "0x55d398326f99059ff775485246999027b3197955",
+            "0x682ce0e340A0248B4554E14e834969F2E421dB2D"
+          ]
+        ]
+      }
+    },
+  },
+  "lunafi": {
+    "polygon": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+            "0x1311DCADf3330dD0AEB4d03177F9568880Febb34"
+          ],
+          [
+            "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+            "0x2Bb91032F277BDc0DA7De271Ba03B3341B73b4c1"
+          ],
+          [
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "0x14e849B39CA7De7197763b6254EE57eDBE0F3375"
+          ]
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x4175acd3d7f128cf41d42826cce2185a5ade7c82",
+          [
+            "0x72CF5ee9ee918a529b25BBcB0372594008178535",
+            "0xE3108CDCfb18E7B3e558b37bfD4473CBDE1Fd05c"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xfc604b6fD73a1bc60d31be111F798dd0D4137812",
+          "0x77d97db5615dfe8a2d16b38eaa3f8f34524a0a74"
+        ]
+      }
+    },
+  },
   "lybra": {
     "start": "2023-04-23",
     "ethereum": {
@@ -13741,6 +18003,98 @@ const configs = {
           "0x090B2787D6798000710a8e821EC6111d254bb958"
         ]
       ]
+    },
+  },
+  "lyra": {
+    "methodology": "TVL counts the option market locked synth value, along with USDC in safety module.",
+    "hallmarks": [
+      [
+        "2021-10-26",
+        "Lyra Token"
+      ],
+      [
+        "2021-11-02",
+        "Token Program Start"
+      ],
+      [
+        "2022-06-16",
+        "Lyra V1.1 End"
+      ],
+      [
+        "2022-06-27",
+        "Lyra Avalon Start"
+      ],
+      [
+        "2022-08-03",
+        "OP Rewards Distribution Start"
+      ],
+      [
+        "2023-01-30",
+        "Launch on Arbitrum"
+      ]
+    ],
+    "optimism": {
+      "owners": [
+        "0x7af4e1ce484f40d927b9c90fb6905df4376fc3f6",
+        "0xd7d974e81382d05e8d9fc6d0d17d0d852e9806dd",
+        "0x2935cd347b79c319a6464fe3b1087170f142418c",
+        "0x69b4b35504a8c1d6179fef7addcdb37a8c663bc9",
+        "0x788843de0be1598155bffaab7cfa2ecbd542e7f1",
+        "0xe722f9aee66f649fbfc8cb0d4f906cb55803553c",
+        "0x585a72ccecde68ddfe5327b23134723a305d70f3",
+        "0x0a68e15f8e289b9f1ad1bcad524fea30c6125c2d",
+        "0x5db73886c4730dbf3c562ebf8044e19e8c93843e",
+        "0x3c73cd65d708a5c951f0cc19a4d0bb6559ae20c5",
+        "0xa33c1963d74d203df6bffdfda3bff39a1d76e1d0",
+        "0x3e86b53e1d7da7edba225c3a218d0b5a7544fdfd",
+        "0x26cf967e466d9fd60af7d1b78a01c43e75e03b32",
+        "0xa5ce396616c7d14f61b5b9bba3a57388db885b2e",
+        "0x8512028339bb67aee47c06a298031d91bb7d15ba",
+        "0xa95c6d6a2765627a854960e9ee96f607b857385a",
+        "0x292a5929bd150d28eda3c17d9b7c754968b2899d",
+        "0xa49f2ea43b445f9a2467b7279cfa1f6a0c2e3f4f",
+        "0xb8e90fd247700de65450aacd4a47b2948dc59fc1",
+        "0xacacff03241256304e841e89c13319eae09f14b3",
+        "0x12a4fd54aa321eb16b45310ccb177bd87c6ae447",
+        "0xdd0d125475453767e65f1a4dd30b62699fdcc9f5"
+      ],
+      "tokens": [
+        "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9",
+        "0xe405de8f52ba7559f9df3c368500b6e6ae6cee49",
+        "0xc5db22719a06418028a40a9b5e9a7c02959d0d08",
+        "0x298b9b95708152ff6968aafd889c6586e9169f1d",
+        "0x4200000000000000000000000000000000000042",
+        "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
+        "0x121ab82b49b2bc4c7901ca46b8277962b4350204",
+        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"
+      ]
+    },
+    "arbitrum": {
+      "owners": [
+        "0xef4a92fcde48c84ef2b5c4a141a4cd1988fc73a9",
+        "0x5a4842c0c1f81ebbae7bb3ec07edf7ae55aac631",
+        "0xb619913921356904bf62aba7271e694fd95aa10d",
+        "0xec6f3ef9481e7b8484290edbae2cedcdb0ce790e"
+      ],
+      "tokens": [
+        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f"
+      ]
+    },
+    "ethereum": {
+      "tvl": {
+        "__staking": [
+          "0x54d59c4596c7ea66fd62188ba1e16db39e6f5472",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xcb9f85730f57732fc899fb158164b9ed60c77d49",
+          "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf"
+        ]
+      }
     },
   },
   "magic-farm": {
@@ -13790,6 +18144,57 @@ const configs = {
           "0xb6943369cba1248071ddd5b9e23dd35eb9d0fcd9"
         ]
       ]
+    },
+  },
+  "mahaxyz": {
+    "ethereum": {
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x7d2dffa9e903b8377c96196da424c7965b06bcc3",
+            "0xe2ebbf803d0199a5a26108ba36fbac366b201be1"
+          ],
+          [
+            "0x4a0c954d0f19269f4fc5c217821c6150a8870ad4",
+            "0xdfb06c4c562bcc810c112fbac99c59c2856b86d1"
+          ],
+          [
+            "0x53ad9268a66cef20a4c458d759eee5aa55be1140",
+            "0xfdaeb792ff19e7bd4f7ed5d6ce2ef7925d002a19"
+          ]
+        ],
+        "resolveLP": true
+      },
+      "tvl": {
+        "owners": [
+          "0x7dcde153e4cace9ca852590d9654c7694388db54"
+        ],
+        "tokens": [
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0x9d39a5de30e57443bff2a8307a4256c8797a3497"
+        ]
+      }
+    },
+    "base": {
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x96A0EC12A9F3bEabFf9Bb59c3F33EE439dAF2a85",
+            "0xe77b404e934c1d97f179061349F459847f70Cd8C"
+          ],
+          [
+            "0x93EdC603D7A2eA03518Ac55219cAD320010a58e4",
+            "0xD87ECeF739161be77bbe9891dBA80F14275BBE34"
+          ]
+        ],
+        "resolveLP": true
+      },
+      "staking": {
+        "__staking": [
+          "0x7DF7505aa7cfAb3AC1A8D1EC225f2fafe5f04c74",
+          "0x554bba833518793056CF105E66aBEA330672c0dE"
+        ]
+      }
     },
   },
   "manta-cedefi-stake": {
@@ -13848,6 +18253,30 @@ const configs = {
         ]
       ],
       "resolveLP": true
+    },
+  },
+  "matrixai": {
+    "methodology": "This is only the TVL of the genesis pools ",
+    "sonic": {
+      "tvl": {
+        "owner": "0x068112669651f2a0DbD5B97dd03077464cba5Ea8",
+        "tokens": [
+          "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+          "0xe5da20f15420ad15de0fa650600afc998bbe3955",
+          "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
+          "0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE",
+          "0x44E23B1F3f4511b3a7e81077Fd9F2858dF1B7579",
+          "0x79bbF4508B1391af3A0F4B30bb5FC4aa9ab0E07C",
+          "0x3333111A391cC08fa51353E9195526A70b333333",
+          "0x9fDbC3f8Abc05Fa8f3Ad3C17D2F806c1230c4564"
+        ]
+      },
+      "pool2": {
+        "owner": "0x068112669651f2a0DbD5B97dd03077464cba5Ea8",
+        "tokens": [
+          "0x37C4c5e345ae4d4041b7f519343f942716fc6fE6"
+        ]
+      }
     },
   },
   "mayan-finance": {
@@ -13940,6 +18369,20 @@ const configs = {
       ]
     },
   },
+  "meld": {
+    "timetravel": false,
+    "cardano": {
+      "staking": {
+        "owner": "addr1wxar2qwdzuxfvdyuxsk9aapy93vkkk904mxullqtkp90pmqh0xrmz",
+        "tokens": [
+          "6ac8ef33b510ec004fe11585f7c5a9f0c07f0c23428ab4f29c1d7d104d454c44"
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    },
+  },
   "mellow": {
     "methodology": "We count the ETH on 0x0c884b56fa7dd33a1f4e8b05e7105217c2456219",
     "base": {
@@ -13981,8 +18424,7 @@ const configs = {
         "0xcebA9300f2b948710d2653dD7B07f33A8B32118C",
         "0xeb466342c4d449bc9f53a865d5cb90586f405215",
         "0x4f604735c1cf31399c6e711d5962b2b3e0225ad3"
-      ],
-      "chain": "celo"
+      ]
     },
     "ethereum": {
       "owners": [
@@ -13997,8 +18439,7 @@ const configs = {
         "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
         "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
-      ],
-      "chain": "ethereum"
+      ]
     },
     "bitcoin": {
       "owners": [
@@ -14125,6 +18566,38 @@ const configs = {
       ]
     },
   },
+  "mew-fi": {
+    "timetravel": false,
+    "ergo": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "2Czxg7U54ZyGMzjt35EYX9g98H9UjFqteuYWX5CSgGCYWAjg1ng2jgm4BHjA6u1Azeo7EYQsBMVLbhRreNASJu54ho"
+      }
+    },
+  },
+  "mezo-earn": {
+    "methodology": "TVL counts BTC locked by users in the veBTC vote-escrow contract. MEZO locked in veMEZO is the protocol own governance token and is reported separately under staking.",
+    "mezo": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x7b7C000000000000000000000000000000000000",
+            "0x3D4b1b884A7a1E59fE8589a3296EC8f8cBB6f279"
+          ]
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x7B7c000000000000000000000000000000000001",
+            "0xb90fdAd3DFD180458D62Cc6acedc983D78E20122"
+          ]
+        ]
+      }
+    },
+  },
   "microcreditproject": {
     "islm": {
       "owners": [
@@ -14141,9 +18614,47 @@ const configs = {
     "timetravel": false,
     "methodology": "TVL counts SOL locked in the mining vault. Staking counts the protocol's own GPU tokens locked in the GPU vault. Mining Tycoon is a dual-currency mining pool where users buy mining power with SOL or GPU tokens and earn proportional rewards from both vaults.",
     "solana": {
-      "solOwners": [
-        "CGEx1B3rt2V8kGXfz3tXvUat865SSL9VcLncQNnkJ6Ve"
-      ]
+      "tvl": {
+        "solOwners": [
+          "CGEx1B3rt2V8kGXfz3tXvUat865SSL9VcLncQNnkJ6Ve"
+        ]
+      },
+      "staking": {
+        "tokenAccounts": [
+          "HgBn4nYLJkmWSd3qsgDD6WANUhG84Fyk9s9od7RwffAz"
+        ]
+      }
+    },
+  },
+  "miningtycoon": {
+    "methodology": "TVL counts USDT staked to earn NT tokens and the staking portion of TVL counts the NT tokens that are staked to earn more NT tokens",
+    "bsc": {
+      "tvl": {
+        "__staking": [
+          "0x973fEAf394F5E882B0F8a9B5CDC0b3E28AA08926",
+          "0x55d398326f99059fF775485246999027B3197955"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x973fEAf394F5E882B0F8a9B5CDC0b3E28AA08926",
+          "0xfbcf80ed90856AF0d6d9655F746331763EfDb22c"
+        ]
+      }
+    },
+    "heco": {
+      "tvl": {
+        "__staking": [
+          "0x8A6AE8076A1866877e006cC9b4bd0378646A9bD5",
+          "0xa71EdC38d189767582C38A3145b5873052c3e47a"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x8A6AE8076A1866877e006cC9b4bd0378646A9bD5",
+          "0x8b70512b5248e7c1f0f6996e2fde2e952708c4c9"
+        ]
+      }
     },
   },
   "minmax-finance": {
@@ -14313,6 +18824,46 @@ const configs = {
       ]
     },
   },
+  "minswap": {
+    "timetravel": false,
+    "hallmarks": [
+      [
+        "2022-03-22",
+        "Vulnerability Found"
+      ],
+      [
+        "2024-04-08",
+        "Stableswap Launch"
+      ],
+      [
+        "2024-07-10",
+        "V2 Launch"
+      ]
+    ],
+    "cardano": {
+      "tvl": {
+        "owners": [
+          "script1uychk9f04tqngfhx4qlqdlug5ntzen3uzc62kzj7cyesjk0d9me",
+          "script15ew2tzjwn364l2pszu7j5h9w63v2crrnl97m074w9elrkxhah0e",
+          "script1agrmwv7exgffcdu27cn5xmnuhsh0p0ukuqpkhdgm800xksw7e2w",
+          "script1c03gcdkrg3e3twj62menmf4xmhqhwz58d2xe7r9n497yc6r9qhd",
+          "addr1wywdvw0qwv2n97e8y5jsfqq3qryu6re3gxwqcc7fzscpwugxz5dwe",
+          "addr1wxxdvtj6y4fut4tmu796qpvy2xujtd836yg69ahat3e6jjcelrf94",
+          "addr1w9520fyp6g3pjwd0ymfy4v2xka54ek6ulv4h8vce54zfyfcm2m0sm",
+          "addr1wx4w03kq5tfhaad2fmglefgejj0anajcsvvg88w96lrmylc7mx5rm",
+          "addr1wy7kkcpuf39tusnnyga5t2zcul65dwx9yqzg7sep3cjscesx2q5m5",
+          "addr1wx8d45xlfrlxd7tctve8xgdtk59j849n00zz2pgyvv47t8sxa6t53",
+          "addr1wyge54qpez2zc250f8frwtksjzrg4l6n5cs34psqas9uz0syae9sf"
+        ]
+      },
+      "staking": {
+        "owner": "addr1wy3fscaws62d59k6qqhg3xsarx7vstzczgjmdhx2jh7knksj7w3y7",
+        "tokens": [
+          "29d222ce763455e3d7a09a665ce554f00ac89d2e99a1a83d267170c64d494e"
+        ]
+      }
+    },
+  },
   "mint-chain": {
     "ethereum": {
       "owners": [
@@ -14321,6 +18872,19 @@ const configs = {
       ],
       "fetchCoValentTokens": true,
       "permitFailure": true
+    },
+  },
+  "mint-club": {
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x8BBac0C7583Cc146244a18863E708bFFbbF19975",
+        "tokens": [
+          "0x1f3Af095CDa17d63cad238358837321e95FC5915"
+        ]
+      }
     },
   },
   "minu": {
@@ -14611,6 +19175,35 @@ const configs = {
         "0x57f008172cf89b972db3db7dd032e66be4af1a8c",
         "0x552b9aa0eee500c60f09456e49fbc1096322714c"
       ]
+    },
+  },
+  "mobiusfinance": {
+    "polygon": {
+      "tvl": {
+        "owner": "0xa6D0e001A257296d5246edcEFE4Ac56BD558F6c6",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+          "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1",
+          "0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xa6D0e001A257296d5246edcEFE4Ac56BD558F6c6",
+          "0x2db0Db271a10661e7090b6758350E18F6798a49D"
+        ]
+      },
+      "pool2": {
+        "tokens": [
+          "0x162b21ba1a90dd9384c615192fa4053217d2a8db",
+          "0x53add4c98b2787f690042771ca8e512a5793e9c9",
+          "0x49d8136336e3feb7128c12172ae5ff78238a88be"
+        ],
+        "owner": "0xf12d4CF635c5D5107D67356090A941bD80f2556C",
+        "resolveLP": true
+      }
     },
   },
   "moby": {
@@ -14942,6 +19535,30 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "mymetatrader": {
+    "hallmarks": [
+      [
+        "2023-03-02",
+        "Closed mainnet"
+      ]
+    ],
+    "arbitrum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+            "0x992EB7040b66b13abEa94E2621D4E61d5CE608BD"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xBdB00022030C9D715A10F2fCeDb19e99020Aa357",
+          "0x27d8de4c30ffde34e982482ae504fc7f23061f61"
+        ]
+      }
+    },
+  },
   "myriad-markets": {
     "abstract": {
       "owner": "0x3e0F5F8F5Fb043aBFA475C0308417Bf72c463289",
@@ -15078,7 +19695,6 @@ const configs = {
     "timetravel": false,
     "methodology": "TVL calculated from tokens locked in NEAR Intents Verifier contract across multiple chains",
     "ethereum": {
-      "chain": "ethereum",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -15253,7 +19869,6 @@ const configs = {
       ]
     },
     "arbitrum": {
-      "chain": "arbitrum",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
@@ -15300,7 +19915,6 @@ const configs = {
       ]
     },
     "aurora": {
-      "chain": "aurora",
       "tokens": [
         "0x274d83086c356e0cfc75933fbf838ca10a7e8274",
         "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
@@ -15322,7 +19936,6 @@ const configs = {
       ]
     },
     "base": {
-      "chain": "base",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3",
@@ -15352,7 +19965,6 @@ const configs = {
       ]
     },
     "optimism": {
-      "chain": "optimism",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x4200000000000000000000000000000000000042",
@@ -15388,7 +20000,6 @@ const configs = {
       ]
     },
     "polygon": {
-      "chain": "polygon",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
@@ -15432,7 +20043,6 @@ const configs = {
       ]
     },
     "avax": {
-      "chain": "avax",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7",
@@ -15469,7 +20079,6 @@ const configs = {
       ]
     },
     "monad": {
-      "chain": "monad",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xe7cd86e13AC4309349F30B3435a9d337750fC82D",
@@ -15491,7 +20100,6 @@ const configs = {
       ]
     },
     "berachain": {
-      "chain": "berachain",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
@@ -15518,7 +20126,6 @@ const configs = {
       ]
     },
     "xdai": {
-      "chain": "xdai",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0x2a22f9c3b484c3629090feed35f17ff8f88f76f0",
@@ -15550,7 +20157,6 @@ const configs = {
       ]
     },
     "bsc": {
-      "chain": "bsc",
       "tokens": [
         "0x000ae314e2a2172a039b26378814c252734f556a",
         "0x4c067de26475e1cefee8b8d1f6e2266b33a2372e",
@@ -15630,7 +20236,6 @@ const configs = {
       ]
     },
     "xlayer": {
-      "chain": "xlayer",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "0xe538905cf8410324e03a5a23c1c177a474d59b2b",
@@ -15650,7 +20255,6 @@ const configs = {
       ]
     },
     "solana": {
-      "chain": "solana",
       "tokens": [
         "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
         "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
@@ -15693,7 +20297,6 @@ const configs = {
       ]
     },
     "ton": {
-      "chain": "ton",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
@@ -15729,7 +20332,6 @@ const configs = {
       ]
     },
     "bitcoin": {
-      "chain": "bitcoin",
       "tokens": [],
       "owners": [
         "1C6XJtNXiuXvk4oUAVMkKF57CRpaTrN5Ra"
@@ -15740,7 +20342,6 @@ const configs = {
       ]
     },
     "doge": {
-      "chain": "doge",
       "tokens": [],
       "owners": [
         "DRmCnxzL9U11EJzLmWkm2ikaZikPFbLuQD"
@@ -15751,7 +20352,6 @@ const configs = {
       ]
     },
     "ripple": {
-      "chain": "ripple",
       "tokens": [
         "XRP"
       ],
@@ -15764,7 +20364,6 @@ const configs = {
       ]
     },
     "litecoin": {
-      "chain": "litecoin",
       "tokens": [],
       "owners": [
         "LQjEMkuiA2pCwFeUPwsu6ktzUubBVLsahX"
@@ -15775,7 +20374,6 @@ const configs = {
       ]
     },
     "dash": {
-      "chain": "dash",
       "tokens": [],
       "owners": [
         "XxA9DbXaFpF4GFY8KUNX7eAxhZPsWtcKhc"
@@ -15786,7 +20384,6 @@ const configs = {
       ]
     },
     "tron": {
-      "chain": "tron",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
@@ -15819,7 +20416,6 @@ const configs = {
       ]
     },
     "near": {
-      "chain": "near",
       "tokens": [
         "zec.omft.near",
         "wrap.near",
@@ -15840,7 +20436,6 @@ const configs = {
       ]
     },
     "sui": {
-      "chain": "sui",
       "tokens": [
         "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
         "0xa198f3be41cda8c07b3bf3fee02263526e535d682499806979a111e88a5a8d0f::coin::COIN",
@@ -15876,7 +20471,6 @@ const configs = {
       ]
     },
     "aptos": {
-      "chain": "aptos",
       "tokens": [
         "0x1::aptos_coin::AptosCoin",
         "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T",
@@ -15918,7 +20512,6 @@ const configs = {
       ]
     },
     "stellar": {
-      "chain": "stellar",
       "tokens": [
         "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA",
         "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
@@ -15933,7 +20526,6 @@ const configs = {
       ]
     },
     "cardano": {
-      "chain": "cardano",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
         "ADA"
@@ -15947,27 +20539,6 @@ const configs = {
       ]
     },
   },
-  "nearlenddao": {
-    "timetravel": false,
-    "methodology": "Summed up all the tokens deposited in their main lending contract",
-    "near": {
-      "owners": [
-        "v1.nearlend-official.near"
-      ],
-      "tokens": [
-        "6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near",
-        "aurora",
-        "usdt.tether-token.near",
-        "dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near",
-        "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
-        "a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near",
-        "wrap.near",
-        "linear-protocol.near",
-        "meta-pool.near",
-        "853d955acef822db058eb8505911ed77f175b99e.factory.bridge.near"
-      ]
-    },
-  },
   "neony": {
     "methodology": "TVL counts all SPL tokens and native SOL held in Neony treasury wallets on Solana.",
     "timetravel": true,
@@ -15977,6 +20548,32 @@ const configs = {
         "CzewUJa69Mg1edR8womYzCJaHK5QtR7ymJU4924LBS5x",
         "omJhdDwnGiViXtateVXB1pm5B4iWwrj95f2ZMFeGhkW"
       ]
+    },
+  },
+  "neopin-staking": {
+    "timetravel": false,
+    "klaytn": {
+      "tvl": {
+        "owners": [
+          "0xf9d92BAd7b1410dfFB0a204B7aa418C9fd5A898F",
+          "0xf20816C9bdcb25da3ba79b206e9b7107ae02ae10",
+          "0x489d6d679F1CA4cFE6976C55B54427D1AaDb8057",
+          "0x184E039D35cce96511E32c1aF85907664fb0e646"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x306ee01a6ba3b4a8e993fa2c1adc7ea24462000c",
+          "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815",
+          "klaytn"
+        ]
+      }
+    },
+    "tron": {
+      "__empty": true
     },
   },
   "nereus": {
@@ -16028,6 +20625,62 @@ const configs = {
       ]
     },
   },
+  "nerve": {
+    "misrepresentedTokens": true,
+    "start": "2021-03-01",
+    "bsc": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+              "0x55d398326f99059ff775485246999027b3197955",
+              "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+            ],
+            "0x1b3771a66ee31180906972580ade9b81afc5fcdc"
+          ],
+          [
+            [
+              "0x54261774905f3e6e9718f2abb10ed6555cae308a",
+              "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c"
+            ],
+            "0x6C341938bB75dDe823FAAfe7f446925c66E6270c"
+          ],
+          [
+            [
+              "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+              "0x6f817a0ce8f7640add3bc0c1c2298635043c2423"
+            ],
+            "0x146CD24dCc9f4EB224DFd010c5Bf2b0D25aFA9C0"
+          ],
+          [
+            [
+              "0x07663837218a003e66310a01596af4bf4e44623d"
+            ],
+            "0x0eafaa7ed9866c1f08ac21dd0ef3395e910f7114"
+          ],
+          [
+            [
+              "0x049d68029688eabf473097a2fc38ef61633a3c7a"
+            ],
+            "0xd0fBF0A224563D5fFc8A57e4fdA6Ae080EbCf3D3"
+          ],
+          [
+            [
+              "0x23396cf899ca06c4472205fc903bdb4de249d6fc"
+            ],
+            "0x2dcCe1586b1664f41C72206900e404Ec3cA130e0"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x15B9462d4Eb94222a7506Bc7A25FB27a2359291e",
+          "0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096"
+        ]
+      }
+    },
+  },
   "nest-credit": {
     "methodology": "TVL is the total value of assets deposited in Nest Credit vaults across all chains",
     "ethereum": {
@@ -16070,6 +20723,95 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "neuy": {
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x83833e3c5363b51db01e74ccc97e98a09ce86dcc",
+          "0x82bcd0c19acb970a75771b370f2a3adea1702a44"
+        ],
+        "tokens": [
+          "0xa80505c408C4DEFD9522981cD77e026f5a49FE63"
+        ]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x8574f0F28Bbd7BCfFec50B00cc4D153C564bfC05",
+          "0x83139cf662df4fee8797Dc916EF2B5aaFE86eB16"
+        ],
+        "tokens": [
+          "0x62a872d9977Db171d9e213A5dc2b782e72ca0033"
+        ]
+      }
+    },
+    "base": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x8087712d2C942B6A6683d91e462207Ed9cFC8d5f"
+        ],
+        "tokens": [
+          "0x3cf255a7a03d74b6f9d58456cbedbc0705626354"
+        ]
+      }
+    },
+  },
+  "nexion": {
+    "methodology": "TVL is farm deposits. Lending TVL and borrowed are tracked separately in the nexion-lending adapter. Staking is NEON locked in staking contracts (V1 + V2).",
+    "pulse": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xefd766ccb38eaf1dfd701853bfce31359239f305",
+            "0xdF6ec9b93fa473Cb6772dc47326338ecBa374D39"
+          ],
+          [
+            "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
+            "0xdF6ec9b93fa473Cb6772dc47326338ecBa374D39"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0xdF6ec9b93fa473Cb6772dc47326338ecBa374D39"
+          ],
+          [
+            "0xefd766ccb38eaf1dfd701853bfce31359239f305",
+            "0x80020303898695b3Ab8017869B6158B49cD5B6CC"
+          ],
+          [
+            "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
+            "0x80020303898695b3Ab8017869B6158B49cD5B6CC"
+          ],
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x80020303898695b3Ab8017869B6158B49cD5B6CC"
+          ]
+        ],
+        "resolveLP": true
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xF2Da3942616880E52e841E5C504B5A9Fba23FFF0",
+            "0x00149EF1A0a41083bC3996d026a7c0f32fc5cb73"
+          ],
+          [
+            "0xF2Da3942616880E52e841E5C504B5A9Fba23FFF0",
+            "0xB4f064f8c0CB1118d1326Df6E74b05D6B12d0b2B"
+          ]
+        ]
+      }
     },
   },
   "nftfi": {
@@ -16120,6 +20862,23 @@ const configs = {
           "0x0b32E91C276377b3b3CdB332e902207Defe542bd"
         ]
       ]
+    },
+  },
+  "nineninedex": {
+    "methodology": "Counts native BDAG locked in the BondingCurve contract as TVL, and Token999 (999) staked in the Staking999 contract.",
+    "blockdag": {
+      "tvl": {
+        "owner": "0x0b6A9622fdC63B2aB23494b79d8e1816E572969C",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "owner": "0x5fc9Cfb37f8Fd15BDBfeD8732cE247815b36eD9f",
+        "tokens": [
+          "0x1667810674ebA5aEf308CE6cC53cf4C6CfF5E94f"
+        ]
+      }
     },
   },
   "nocturne_xyz": {
@@ -16186,6 +20945,210 @@ const configs = {
       ]
     },
   },
+  "nord-finance": {
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "0x53E1c9750014C7Cf8303D69A3CA06A555C739DD0"
+          ],
+          [
+            "0xdac17f958d2ee523a2206206994597c13d831ec7",
+            "0xCD4F2844b11A4515398fD2201247Cf2ed411245f"
+          ],
+          [
+            "0x6b175474e89094c44da98b954eedeac495271d0f",
+            "0x6Db6ABb2a55154C385e90d3fD05EE8ca46e3BA35"
+          ],
+          [
+            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "0xD824fDFEdbE9b99F0B27e911Ad963Ec4544dF2Dc"
+          ],
+          [
+            "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+            "0xD824fDFEdbE9b99F0B27e911Ad963Ec4544dF2Dc"
+          ],
+          [
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "0xD824fDFEdbE9b99F0B27e911Ad963Ec4544dF2Dc"
+          ],
+          [
+            "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+            "0xD824fDFEdbE9b99F0B27e911Ad963Ec4544dF2Dc"
+          ],
+          [
+            "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+            "0xD824fDFEdbE9b99F0B27e911Ad963Ec4544dF2Dc"
+          ],
+          [
+            "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+            "0xD824fDFEdbE9b99F0B27e911Ad963Ec4544dF2Dc"
+          ],
+          [
+            "0xd533a949740bb3306d119cc777fa900ba034cd52",
+            "0xD824fDFEdbE9b99F0B27e911Ad963Ec4544dF2Dc"
+          ]
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x6e9730ecffbed43fd876a264c982e254ef05a0de",
+            "0x2b9a023415f0feeb88597c1a7d09fdefa0ef5614"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x5239873C892376799B6Cb49a3CFB1146d4A260b8",
+            "0x8c043C37a5f16440A1d6919C7F60aBaEd0592b31"
+          ]
+        ]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "0x8a5Ae804Da4924081663D4C5DaB4DC9BB7092E2E"
+          ],
+          [
+            "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+            "0xa4dbb459fb9051b976947d2d8ab74477e1720a73"
+          ],
+          [
+            "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            "0xeE2dEf710a8a0021DCbF99C4cD7f69Dc536fc57b"
+          ],
+          [
+            "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+            "0x014fD6Db604b55eF900704ed5c25F9Ef61e8B225"
+          ],
+          [
+            "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+            "0x014fD6Db604b55eF900704ed5c25F9Ef61e8B225"
+          ],
+          [
+            "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
+            "0x014fD6Db604b55eF900704ed5c25F9Ef61e8B225"
+          ],
+          [
+            "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
+            "0x014fD6Db604b55eF900704ed5c25F9Ef61e8B225"
+          ],
+          [
+            "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+            "0x014fD6Db604b55eF900704ed5c25F9Ef61e8B225"
+          ],
+          [
+            "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+            "0x014fD6Db604b55eF900704ed5c25F9Ef61e8B225"
+          ],
+          [
+            "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "0x014fD6Db604b55eF900704ed5c25F9Ef61e8B225"
+          ]
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xf6f85b3f9fd581c2ee717c404f7684486f057f95",
+            "0xf0882a08D855ec8Ad3f25087dE3FB311A5344b20"
+          ],
+          [
+            "0xf6f85b3f9fd581c2ee717c404f7684486f057f95",
+            "0x9b2311c6D57EA5a65B29223C87C50C59E1D9cF13"
+          ]
+        ]
+      }
+    },
+    "avax": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0xAA1110b6A39647f93dfBbc6345216912E1dee6FF"
+          ],
+          [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xFbb37792f98fd57AC1f2f20b151e2db5cceF7F11"
+          ],
+          [
+            "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+            "0xaF3745feCEe0a79c5F19991291Cd60B716C4F698"
+          ]
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0x8965349fb649a33a30cbfda057d8ec2c48abe2a2",
+            "0x1929aED2175688252C9388df11B162F7303ff926"
+          ]
+        ]
+      }
+    },
+  },
+  "numbers": {
+    "misrepresentedTokens": true,
+    "methodology": "Core TVL = non‑NUM assets (USDC on Ethereum, BUSD on BSC) derived from unwrapping the LP tokens staked in the farm contracts. 'staking' tracks single‑asset NUM staking and 'pool2' tracks full NUM‑LP staking. NUM itself is excluded from core TVL to avoid double counting.",
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x0cc111738b9627F6f518D746d8Ca9493E9074ABe"
+        ],
+        "tokens": [
+          "0x22527f92f43Dc8bEa6387CE40B87EbAa21f51Df3"
+        ],
+        "resolveLP": true,
+        "blacklistedTokens": [
+          "0x3496b523e5c00a4b4150d6721320cddb234c3079"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x0cc111738b9627F6f518D746d8Ca9493E9074ABe",
+          "0x3496b523e5c00a4b4150d6721320cddb234c3079"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x0cc111738b9627F6f518D746d8Ca9493E9074ABe",
+          "0x22527f92f43Dc8bEa6387CE40B87EbAa21f51Df3"
+        ]
+      }
+    },
+    "bsc": {
+      "tvl": {
+        "owners": [
+          "0xc0bE417Db06c4Ec2bDdD7432780AB1d47ae816Fe"
+        ],
+        "tokens": [
+          "0x3b17F6682E8205239B5d4773CE3c1d9632743e88"
+        ],
+        "resolveLP": true,
+        "blacklistedTokens": [
+          "0xeceb87cf00dcbf2d4e2880223743ff087a995ad9"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xc0bE417Db06c4Ec2bDdD7432780AB1d47ae816Fe",
+          "0xeceb87cf00dcbf2d4e2880223743ff087a995ad9"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0xc0bE417Db06c4Ec2bDdD7432780AB1d47ae816Fe",
+          "0x3b17F6682E8205239B5d4773CE3c1d9632743e88"
+        ]
+      }
+    },
+  },
   "nuon": {
     "arbitrum": {
       "owner": "0x27788F93eEbB53728b887f13c16AdA286e1b6e92",
@@ -16193,6 +21156,131 @@ const configs = {
         "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
         "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
       ]
+    },
+  },
+  "oceanus": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts liquidity on the Pool2s and Staking parts",
+    "metis": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "0": "0x4624cB661b8d5F49c28231D3F819B492c21D495f",
+        "1": "0x0aED328D80A8750ED27A19B177025eea1B6D4932",
+        "2": "0xc4a5b1CdCcD8CF80aC7cB5B86Fe5a8D64DBA9D0F"
+      },
+      "pool2": {
+        "__pool2": [
+          "0xc4a5b1CdCcD8CF80aC7cB5B86Fe5a8D64DBA9D0F",
+          [
+            "0x08df8bc8c64d121a68b4d384172aa97624cc6bbf",
+            "0xc524bef25df04efea73364d487accd241b73ccd2"
+          ]
+        ]
+      }
+    },
+  },
+  "oddz": {
+    "bsc": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+            "0x99f29c537c70897f60c9774d3f13bd081D423467"
+          ]
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xcd40f2670cf58720b694968698a5514e924f742d",
+            "0x636f9d2Bb973D2E54d2577b9976DedFDc21E6672"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x3c2c77353E2F6AC1578807b6b2336Bf3a3CbB014",
+            "0xA3Fc4F2D307d8202468a223f35Bba978114A994C"
+          ]
+        ],
+        "resolveLP": true
+      }
+    },
+    "avax": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0x6a165bA195D9d331b2A1C9648328d409aA599465"
+          ]
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xB0a6e056B587D0a85640b39b1cB44086F7a26A1E",
+            "0xd0A145aF8F200Fc8e4d118c6e4d4a77eE1ba8E2e"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0xBAe8Ee2D95Aa5c68Fe8373Cd0208227E94075D5d",
+            "0x8fD9f9AEd3a1a823693580CCcf482A04Db2Ad4f3"
+          ]
+        ],
+        "resolveLP": true
+      }
+    },
+  },
+  "offshore-cash": {
+    "methodology": "TVL counts ETH deposited in the MainPool privacy contract. Staking includes OFF tokens in Governance Staking (revenue share with 7d-4yr lock, 1x-2.5x multiplier) and RelayerRegistry collateral (20K OFF per relayer). Vesting tracks OFF in TokenVesting (65M Treasury: 5yr linear, 3mo cliff; 25M Team: 3yr linear, 1yr cliff) and Timelock (governance treasury).",
+    "ethereum": {
+      "tvl": {
+        "owner": "0x7dc44f4d7d13853a14b26169c8479bec3939649d",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x1df7648356f675abd79f9440f14e56c378b61f44",
+          "0x8d5ba08b1db746803da28dcda69e0065eb52d45a"
+        ],
+        "tokens": [
+          "0x1d0a521b57850a94abcd78ad4180764285225842"
+        ]
+      },
+      "vesting": {
+        "owners": [
+          "0x914955471f2e8067548460e4ea8fd94b57a10ab0",
+          "0x887d683078bf8f4fa6d3ea165f4b3e4866fe39d9"
+        ],
+        "tokens": [
+          "0x1d0a521b57850a94abcd78ad4180764285225842"
+        ]
+      }
+    },
+  },
+  "offshore-protocol": {
+    "methodology": "Tvl: USDM held in the OffshoreVault. Staking: Dirty tokens in the faction staking contract",
+    "megaeth": {
+      "tvl": {
+        "owner": "0x955a4adDc17114C36726c12af9c73E23E497c2bD",
+        "tokens": [
+          "0xFAfDdbb3FC7688494971a79cc65DCa3EF82079E7"
+        ]
+      },
+      "staking": {
+        "owner": "0x3620bbEDED3BcF1b3409098Dc152b0EEcf66eA8e",
+        "tokens": [
+          "0xC2f34f8849a8607FD73E06D6849bDA07C2b7DE38"
+        ]
+      }
     },
   },
   "okie-launch": {
@@ -16256,6 +21344,23 @@ const configs = {
       ]
     },
   },
+  "onedex": {
+    "timetravel": false,
+    "elrond": {
+      "tvl": {
+        "owner": "erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc",
+        "blacklistedTokens": [
+          "GROK-f2a62f"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "erd1qqqqqqqqqqqqqpgql9z9vm8d599ya2r9seklpkcas6qmude4mvlsgrj7hv",
+          "erd1qqqqqqqqqqqqqpgq8nlmvjm8gum6y2kqe0v296kgu8cm4jlemvlsays3ku"
+        ]
+      }
+    },
+  },
   "oneguyfinance": {
     "methodology": "TVL is the total amount of MATIC held on smart-contracts.",
     "polygon": {
@@ -16265,6 +21370,26 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "opengpu": {
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x3C9634620A626b7e9a3fB74A8f800d67cdaF2A5B",
+          "0x695a9c59cd823cbb2cd8331a835d1eb7982b170a"
+        ],
+        "token": "0x0000000000000000000000000000000000000000"
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x3C9634620A626b7e9a3fB74A8f800d67cdaF2A5B",
+            "0x695a9c59cd823cbb2cd8331a835d1eb7982b170a"
+          ],
+          "0x067Def80D66fB69C276e53b641f37ff7525162f6"
+        ]
+      }
     },
   },
   "opinion": {
@@ -16284,6 +21409,27 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "optionBlitz": {
+    "arbitrum": {
+      "tvl": {
+        "owners": [
+          "0x257C2039747FBd0217D97335B6269fb1FbFA4C03"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x257C2039747FBd0217D97335B6269fb1FbFA4C03"
+        ],
+        "tokens": [
+          "0x220251092F8B63efD0341F69f6ca907Bd6f271Bf"
+        ]
+      }
     },
   },
   "opus": {
@@ -16387,6 +21533,46 @@ const configs = {
           "0x079eaeb2891acc0d884d22f2626adb734a0ab4038a56c5029c7127e4e9f59bd8"
         ]
       ]
+    },
+  },
+  "oraichain": {
+    "ethereum": {
+      "staking": {
+        "owners": [
+          "0x18eb0132b516d5622f630DCFCaD4b17789372632",
+          "0x51772eFd4b6d0b5e69C9e77b7B661Ea8D417A66F",
+          "0xc187c9782364e3db55802f3a51ac887ca8d1b43a",
+          "0x8dcff4f1653f45cf418b0b3a5080a0fdcac577c8",
+          "0x289268e0b5f05e514834ea37aa9777ce077696a0",
+          "0xb4d6bafed9c6451aeb15665982b55af5913f22cf",
+          "0xdC398B05E6646764C0bF02ead1dE2ec192d64F7d"
+        ],
+        "tokens": [
+          "0x9081b50bad8beefac48cc616694c26b027c559bb",
+          "0x4c11249814f11b9346808179cf06e71ac328c1b5",
+          "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        ],
+        "resolveLP": true
+      },
+      "tvl": {
+        "__empty": true
+      }
+    },
+    "bsc": {
+      "staking": {
+        "owners": [
+          "0x12BC187A741B5fcBF34DE88Cb87527A29BEab750",
+          "0xB997800DDf3e46be4683d2d444868F1E632f79Ac",
+          "0xF33e0597183266e163895F99540420b8A13F8d95",
+          "0x2d1368d32d8027041c890b77af02c848dbe4288b",
+          "0x78850f0822c8da6a9d06031360f2b7ed1694105e"
+        ],
+        "tokens": [
+          "0xF7697Db76FBf4Ba5D22c0C72AB986cf751FBa3aF",
+          "0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0"
+        ],
+        "resolveLP": true
+      }
     },
   },
   "orderly": {
@@ -16496,6 +21682,25 @@ const configs = {
       ]
     },
   },
+  "paal": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts all PALL staking in the 3 pools",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x85e253162C7e97275b703980F6b6fA8c0469D624",
+          "0x163Ad6AC78FFE40E194310faEaDA8f6615942d7b",
+          "0x8431060c8e72793aFaDA261E9DD0Ab950e80894F"
+        ],
+        "tokens": [
+          "0x14feE680690900BA0ccCfC76AD70Fd1b95D10e16"
+        ]
+      }
+    },
+  },
   "paintswap-orderbook": {
     "sonic": {
       "tokensAndOwners": [
@@ -16537,6 +21742,62 @@ const configs = {
       ]
     },
   },
+  "palm-economy": {
+    "timetravel": false,
+    "cardano": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "addr1wxu6gpdsy6xv5c5r9s9t3ngyh0svvn8lqgfajwgxpry3slg86ahe3",
+        "tokens": [
+          "b7c5cd554f3e83c8aa0900a0c9053284a5348244d23d0406c28eaf4d50414c4d0a"
+        ]
+      }
+    },
+  },
+  "panther-protocol": {
+    "methodology": "TVL is the value of assets deposited into the Panther Protocol shielded pool, held by the protocol Vault contract. Staking counts ZKP tokens in the vault and staking contracts.",
+    "polygon": {
+      "tvl": {
+        "owner": "0xDD1fD1a7b4482Dce1287aFFE6Ca8EA128C7a9046",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xb5c064f955d8e7f38fe0460c556a72987494ee17",
+          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+          "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+          "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+          "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",
+          "0xb33EaAd8d922B1083446DC23f610c2567fB5180f",
+          "0xD6DF932A45C0f255f85145f286eA0b292B21C90B",
+          "0x5fe2B58c013d7601147DcdD68C143A77499f5531"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x4cec451f63dbe47d9da2debe2b734e4cb4000eac",
+          "0x5e7fda6d9f5024c4ad1c780839987ab8c76486c9",
+          "0xDD1fD1a7b4482Dce1287aFFE6Ca8EA128C7a9046"
+        ],
+        "tokens": [
+          "0x9A06Db14D639796B25A6ceC6A1bf614fd98815EC"
+        ]
+      }
+    },
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0xf4d06d72dacdd8393fa4ea72fdcc10049711f899"
+        ],
+        "tokens": [
+          "0x909E34d3f6124C324ac83DccA84b74398a6fa173"
+        ]
+      }
+    },
+  },
   "paradex": {
     "ethereum": {
       "owners": [
@@ -16545,6 +21806,24 @@ const configs = {
       "tokens": [
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
       ]
+    },
+  },
+  "parasset": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts liquidty on the Insurance",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x505eFcC134552e34ec67633D1254704B09584227",
+          "0x9a5C88aC0F209F284E35b4306710fEf83b8f9723"
+        ],
+        "tokens": [
+          "0x04abeda201850ac0124161f037efd70c74ddc74c"
+        ]
+      }
     },
   },
   "particle-trade": {
@@ -17279,6 +22558,65 @@ const configs = {
       ]
     },
   },
+  "peakdefi": {
+    "start": "2020-12-08",
+    "bsc": {
+      "staking": {
+        "__staking": [
+          "0xe9428B8acaA6b9d7C3314D093975c291Ec59A009",
+          "0x630d98424eFe0Ea27fB1b3Ab7741907DFFEaAd78"
+        ]
+      }
+    },
+    "ethereum": {
+      "staking": {
+        "__staking": [
+          "0x9733f49D577dA2b6705cA173382C0e3CdFff2A48",
+          "0x630d98424eFe0Ea27fB1b3Ab7741907DFFEaAd78"
+        ]
+      },
+      "tvl": {
+        "owners": [
+          "0x07cDB44fA1E7eCEb638c12A3451A3Dc9CE1400e4",
+          "0xC120C7dB0804ae3AbEB1d5f9c9C70402347B4685"
+        ],
+        "tokens": [
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        ]
+      }
+    },
+  },
+  "peardao": {
+    "methodology": "Counts the value of LP tokens and PEX tokens in the staking contracts, assets locked in the P2P escrow contract, and assets in the treasury contract.",
+    "bsc": {
+      "tvl": {
+        "tokens": [
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+          "0x55d398326f99059ff775485246999027b3197955",
+          "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "0x23396cF899Ca06c4472205fC903bDB4de249D6fC",
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c"
+        ],
+        "owner": "0x8996Da635aFabd360fbABB80e7Be5028324B8323"
+      },
+      "staking": {
+        "owners": [
+          "0x263e0910C8c1B77B80CB9947B0FAC3735a6FEf4C",
+          "0x5F57dCa7D4f81D56C777E060D9dC81AF112d23eb"
+        ],
+        "tokens": [
+          "0x6a0b66710567b6beb81A71F7e9466450a91a384b"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652",
+          "0x5ca96E8bDe0Bc587DaC9e02422Fd205b1102DAa4"
+        ]
+      }
+    },
+  },
   "pepu-bridge": {
     "ethereum": {
       "owners": [
@@ -17397,6 +22735,54 @@ const configs = {
       ]
     },
   },
+  "pinnako": {
+    "era": {
+      "tvl": {
+        "owner": "0x87A43dfAB5068c9Ae2f75da2906559bc9A71b42d",
+        "tokens": [
+          "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+          "0xBBeB516fb02a01611cBBE0453Fe3c580D7281011",
+          "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4",
+          "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C"
+        ]
+      },
+      "staking": {
+        "owner": "0x2A283C805D11ad77161Be0c503805a2b8Bc7Fd84",
+        "tokens": [
+          "0xf8C6dA1bbdc31Ea5F968AcE76E931685cA7F9962"
+        ]
+      }
+    },
+  },
+  "pizzax": {
+    "methodology": "PizzaX is a Defi Miners. A fun platform to generate 15%/Day ROI for Lifetime — Pool as a Service (PAAS)",
+    "bsc": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x0000000000000000000000000000000000000000",
+            "0x0c869d0de4f0f3119b96221c0ef4849cb1f1e583"
+          ],
+          [
+            "0x55d398326f99059ff775485246999027b3197955",
+            "0xaE13bba370E2A8D2Fa651C60a4B628CA71615ef0"
+          ]
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x1A504B8b13AC0e80f235D850FC1484EaA7633B51"
+        ],
+        "tokens": [
+          "0x488739D593DC2BC13Fd738CBaa35498bad5F8556"
+        ],
+        "lps": [
+          "0x7cb4161cA48617d438Af3c8E130E4D0D8Ec80823"
+        ],
+        "useDefaultCoreAssets": true
+      }
+    },
+  },
   "pmi-protocol": {
     "methodology": "TVL is the sum of all assets held by the PMI vault — USDC buffer plus the underlying index tokens (UMA, WMATIC, GNO) purchased via Uniswap V3.",
     "start": 85617867,
@@ -17408,6 +22794,151 @@ const configs = {
         "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
         "0x5FFD62D3C3eE2E81C00A7b9079FB248e7dF024A8"
       ]
+    },
+  },
+  "polkamarkets": {
+    "methodology": "Polkamarkets TVL equals the V1 contracts' EVM balance + V2 contracts tokens balance.\n Polkamarkets staking TVL is the POLK balance of the V1+V2 bonds contracts, plus the POLK balance of V3 predictionMarketManager and predictionMarketFactory contracts.",
+    "ethereum": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0x0000000000000000000000000000000000000000"
+            ],
+            "0xc24a02d81dee67fd52cc95b0d04172032971ea10"
+          ]
+        ],
+        "blacklistedTokens": [
+          "0xd478161c952357f05f0292b56012cd8457f1cfbf"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0xfa443f0ec4aed3e87c6d608ecf737a83d950427b"
+          ],
+          "0xd478161c952357f05f0292b56012cd8457f1cfbf"
+        ]
+      }
+    },
+    "moonriver": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0x0000000000000000000000000000000000000000"
+            ],
+            "0xdcbe79f74c98368141798ea0b7b979b9ba54b026"
+          ],
+          [
+            [
+              "0x98878b06940ae243284ca214f92bb71a2b032b8a"
+            ],
+            "0x6413734f92248D4B29ae35883290BD93212654Dc"
+          ]
+        ],
+        "blacklistedTokens": [
+          "0x8b29344f368b5fa35595325903fe0eaab70c8e1f"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x60d7956805ec5a698173def4d0e1ecdefb06cc57",
+            "0x9aB1213d360bEa3edA75D88D81D7fbfc9fd37F2b"
+          ],
+          "0x8b29344f368b5fa35595325903fe0eaab70c8e1f"
+        ]
+      }
+    },
+    "moonbeam": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0x0000000000000000000000000000000000000000"
+            ],
+            "0x21DFb0a12D77f4e0D2cF9008d0C2643d1e36DA41"
+          ],
+          [
+            [
+              "0xacc15dc74880c9944775448304b263d191c6077f"
+            ],
+            "0xaaC0068EbE0BFff0FE5E3819af0c46850dC4Cc05"
+          ]
+        ],
+        "blacklistedTokens": [
+          "0x8b29344f368b5fa35595325903fe0eaab70c8e1f"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x83d3f4769a19f1b43337888b0290f5473cf508b2",
+            "0xf5872382381cc1a37993d185abb6281fe47f5380"
+          ],
+          "0x8b29344f368b5fa35595325903fe0eaab70c8e1f"
+        ]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+              "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+              "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
+            ],
+            "0x60d7956805ec5a698173def4d0e1ecdefb06cc57"
+          ]
+        ],
+        "blacklistedTokens": [
+          "0x996F19d4b1cE6D5AD72CEaaa53152CEB1B187fD0"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x83d3f4769a19f1b43337888b0290f5473cf508b2"
+          ],
+          "0x996F19d4b1cE6D5AD72CEaaa53152CEB1B187fD0"
+        ]
+      }
+    },
+    "xdai": {
+      "tvl": {
+        "ownerTokens": [],
+        "blacklistedTokens": [
+          "0x9a2a80c38abb1fdc3cb0fbf94fefe88bef828e00"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x537dc41fbb4f9faa4b9d6f8e6c2eb9071274f72b",
+            "0xBC39fa757886E8A56422Abc460b1FFfc70bbaeC6"
+          ],
+          "0x9a2a80c38abb1fdc3cb0fbf94fefe88bef828e00"
+        ]
+      }
+    },
+    "celo": {
+      "tvl": {
+        "ownerTokens": [],
+        "blacklistedTokens": [
+          "0xb4d8a602fff7790eec3f2c0c1a51a475ee399b2d"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x1f021be85d6b4d1867c43ef98d30ccc5a44791de",
+            "0x0ec82449555efbe9a67cc51de3ef23a56dd79352"
+          ],
+          "0xb4d8a602fff7790eec3f2c0c1a51a475ee399b2d"
+        ]
+      }
     },
   },
   "polygon": {
@@ -17815,6 +23346,32 @@ const configs = {
       ]
     },
   },
+  "poolznetwork": {
+    "bsc": {
+      "tvl": {
+        "owners": [
+          "0xCc8f6A82Ff034C15dFDAcBcab29F7Ea28C616EF7",
+          "0x41b56bF3b21C53F6394a44A2ff84f1d2bBC27841",
+          "0x7Ff9315f538dF7eC76Ec4815249Dd30519726460"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0x55d398326f99059ff775485246999027b3197955",
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x5eb57B1210338b13E3D5572d5e1670285Aa71702",
+            "0x436CE2ce8d8d2Ccc062f6e92faF410DB4d397905",
+            "0xbAeA9aBA1454DF334943951d51116aE342eAB255"
+          ],
+          "0xbAeA9aBA1454DF334943951d51116aE342eAB255"
+        ]
+      }
+    },
+  },
   "portal-defi": {
     "methodology": "TVL = Portal staking contract balances. No AMM liquidity included because Portal uses atomic swaps.",
     "ethereum": {
@@ -17981,93 +23538,6 @@ const configs = {
       "owner": "0x364d05055614B506e2b9A287E4ac34167204cA83"
     },
   },
-  "proteo-farms": {
-    "timetravel": false,
-    "elrond": {
-      "tokensAndOwners": [
-        [
-          "0x0000000000000000000000000000000000000000",
-          "erd1qqqqqqqqqqqqqpgqwqxfv48h9ssns5cc69yudvph297veqeeznyqr4l930"
-        ],
-        [
-          "0x0000000000000000000000000000000000000000",
-          "erd1qqqqqqqqqqqqqpgqyhj3hk6kkw7405j42g20th3g2h5s8076znyqrpe2pr"
-        ],
-        [
-          "USDC-c76f1f",
-          "erd1qqqqqqqqqqqqqpgq3lh80a92d49am3t2pfzheapdxtykzt5kznyqsjhfrx"
-        ],
-        [
-          "USDC-c76f1f",
-          "erd1qqqqqqqqqqqqqpgq25l7fgjdecaanxuuzxnquzs7k80q6mqaznyqzjclf5"
-        ],
-        [
-          "ZPAYWEGLD-34e5c1",
-          "erd1qqqqqqqqqqqqqpgqrpa6ezy0q4xuj6y9plgv85va43x7wy3dznyqr2rwcz"
-        ],
-        [
-          "ZPAYWEGLD-34e5c1",
-          "erd1qqqqqqqqqqqqqpgqpn4fnee2mwkqea6x65xdsgp2whfcl964znyqw67z9s"
-        ],
-        [
-          "ZPAY-247875",
-          "erd1qqqqqqqqqqqqqpgq4szwc687pqfv3euah6ph0tx6a7n9xn7mznyqefetyg"
-        ],
-        [
-          "KROUSDC-7787ab",
-          "erd1qqqqqqqqqqqqqpgqu693lwsewjvs5f9mssk0fpfex00q77zfznyq4cd0rt"
-        ],
-        [
-          "KROUSDC-7787ab",
-          "erd1qqqqqqqqqqqqqpgqa6y0t72nglqdlqe7cv5cqjsam2ssm4w3znyqdrphza"
-        ],
-        [
-          "AEROWEGLD-81cc37",
-          "erd1qqqqqqqqqqqqqpgqapmdgehzl22pu6m5pkvy2fhzm49uxkxhznyqhwhcx5"
-        ],
-        [
-          "AEROWEGLD-81cc37",
-          "erd1qqqqqqqqqqqqqpgqnedra5da464rkcektgzyv0qxcgqgyh26znyq8q4phx"
-        ],
-        [
-          "UTK-2f80e9",
-          "erd1qqqqqqqqqqqqqpgqhr56z8yg8e7254dd46ngd92lj95wp7pmznyq22sdtu"
-        ],
-        [
-          "WBTC-5349b3",
-          "erd1qqqqqqqqqqqqqpgqthjr3qyjev246dut0f06dx8tw3p8njv7znyq408ttl"
-        ],
-        [
-          "WETH-b4ca29",
-          "erd1qqqqqqqqqqqqqpgqh47rhd4zpwpe93j7nx625dykr6k7xtj4znyq36v5se"
-        ],
-        [
-          "CYBERWEGLD-45a866",
-          "erd1qqqqqqqqqqqqqpgqvvn3s8ndrxqu6ndgnvsfp4sx9wgtv9z2znyqrfyhsf"
-        ],
-        [
-          "CYBERWEGLD-45a866",
-          "erd1qqqqqqqqqqqqqpgqrgve6e0m6le5cn8lng9g2z3a9apq85ltznyqzc64ns"
-        ],
-        [
-          "WAMWEGLD-cdfa74",
-          "erd1qqqqqqqqqqqqqpgqwjxup8jwlhwzuz032cx9w8qajqsyl0jjznyqvfp4e0"
-        ],
-        [
-          "WAMWEGLD-cdfa74",
-          "erd1qqqqqqqqqqqqqpgqkm0aktstdnrq58n5ysyqqkq4qudnea98znyqz0a97d"
-        ],
-        [
-          "OFEWEGLD-73840b",
-          "erd1qqqqqqqqqqqqqpgqq739cgj7nale069vy44kxmau7j4zt06sznyq4g692l"
-        ],
-        [
-          "OFEWEGLD-73840b",
-          "erd1qqqqqqqqqqqqqpgqjrq0pez7fve20daceuc7xqy9den005d7znyqcqj8tk"
-        ]
-      ]
-    },
-  },
   "psy": {
     "methodology": "Adds up the total value locked as collateral on the Gravita platform",
     "start": "2023-07-16",
@@ -18076,6 +23546,61 @@ const configs = {
         "0x95ab45875cffdba1e5f451b950bc2e42c0053f39"
       ],
       "owner": "0x8726F6Aa2857Ed2E13829f2c9c5355aE190d1E23"
+    },
+  },
+  "puff-penthouse": {
+    "mantle": {
+      "staking": {
+        "owners": [
+          "0xBeCd6b3D8B06479c83533f0d7E6DF1b0e413AeEa",
+          "0x1260140fEa31cf920D7D890aD1de85cbAC1Fea12",
+          "0x35Ee9e36804d358A2892FA0De336426cC3Cb18e4"
+        ],
+        "tokens": [
+          "0x26a6b0dcdCfb981362aFA56D581e4A7dBA3Be140"
+        ]
+      },
+      "tvl": {
+        "tokens": [
+          "0xcDA86A272531e8640cD7F1a92c01839911B90bb0"
+        ],
+        "owners": [
+          "0x0CC41C11878254aF8E65ca61C03DD03735F2DC6d",
+          "0x1260140fEa31cf920D7D890aD1de85cbAC1Fea12",
+          "0x35Ee9e36804d358A2892FA0De336426cC3Cb18e4"
+        ]
+      }
+    },
+  },
+  "pulsar-money": {
+    "timetravel": false,
+    "elrond": {
+      "tvl": {
+        "owners": [
+          "erd1qqqqqqqqqqqqqpgq39rqpn2xvm0ykl2ccaa4h5zk5c9r647wdteswmap9l",
+          "erd1qqqqqqqqqqqqqpgq85tlmqudva0fyawkkuc6qga60kclzyzj60ws7kxxf5",
+          "erd1qqqqqqqqqqqqqpgqd6l8ayd0zxfekl53geyxgjzjxu3ceyca60wsje6asx",
+          "erd1qqqqqqqqqqqqqpgq2jjxnsa025me89a4pe5az9dujz28us7t60wsz3mcxs"
+        ],
+        "whitelistedTokens": [
+          "0x0000000000000000000000000000000000000000",
+          "WEGLD-bd4d79",
+          "USDC-c76f1f"
+        ]
+      },
+      "vesting": {
+        "owners": [
+          "erd1qqqqqqqqqqqqqpgq39rqpn2xvm0ykl2ccaa4h5zk5c9r647wdteswmap9l",
+          "erd1qqqqqqqqqqqqqpgq85tlmqudva0fyawkkuc6qga60kclzyzj60ws7kxxf5",
+          "erd1qqqqqqqqqqqqqpgqd6l8ayd0zxfekl53geyxgjzjxu3ceyca60wsje6asx",
+          "erd1qqqqqqqqqqqqqpgq2jjxnsa025me89a4pe5az9dujz28us7t60wsz3mcxs"
+        ],
+        "blacklistedTokens": [
+          "0x0000000000000000000000000000000000000000",
+          "WEGLD-bd4d79",
+          "USDC-c76f1f"
+        ]
+      }
     },
   },
   "pulsechain": {
@@ -18114,6 +23639,62 @@ const configs = {
         "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
         "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
       ]
+    },
+  },
+  "purefi": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts tvl of the assets staked on the Farming seccion thgough Farming Contracts",
+    "ethereum": {
+      "staking": {
+        "__staking": [
+          "0xafAb7848AaB0F9EEF9F9e29a83BdBBBdDE02ECe5",
+          "0xcDa4e840411C00a614aD9205CAEC807c7458a0E3"
+        ]
+      }
+    },
+    "bsc": {
+      "staking": {
+        "owners": [
+          "0x33f86fDc03387A066c4395677658747c696932Eb",
+          "0xAc8892AC86bB02F26544F31af06b86fdD2105862",
+          "0x8a92E706cd359536D7A57dC9CC24054f7B17e021",
+          "0x9ed4B0a2B8345EEb1e43A4D0298e351fc320D278",
+          "0xafAb7848AaB0F9EEF9F9e29a83BdBBBdDE02ECe5",
+          "0x0274c78595B25eBBA4F9e20610422d04d8Dc8086",
+          "0xfdd4eF64dA10fa5809AaBe98a225A4b94E53d8e1",
+          "0x42554c3211e77e65a6c7b6e511be64b4adac6727",
+          "0x0e2F752C845Bdb31368d7012CA93f45AF345Ec73",
+          "0x2905f7d2B05b5Fb22afe4F2B84590f29Bb40D326"
+        ],
+        "tokens": [
+          "0xe2a59d5e33c6540e18aaa46bf98917ac3158db0d"
+        ]
+      }
+    },
+    "polygon": {
+      "staking": {
+        "owners": [
+          "0x532516B671ebD92f2F1775b6d7CCA38165694DFC",
+          "0x5A26315f72efB90eC77a879eF781246B663d5482",
+          "0x236e7E724c309fEaEBB1d5a36b33a3b8f1617952",
+          "0xF1a44C75E4D92f4DA737485f96b0c2a1327d91b2"
+        ],
+        "tokens": [
+          "0x3c205C8B3e02421Da82064646788c82f7bd753B9"
+        ]
+      },
+      "tvl": {
+        "owners": [
+          "0x532516B671ebD92f2F1775b6d7CCA38165694DFC",
+          "0x5A26315f72efB90eC77a879eF781246B663d5482",
+          "0x236e7E724c309fEaEBB1d5a36b33a3b8f1617952",
+          "0xF1a44C75E4D92f4DA737485f96b0c2a1327d91b2"
+        ],
+        "tokens": [
+          "0x04b33078Ea1aEf29bf3fB29c6aB7B200C58ea126",
+          "0x11a819beb0aa3327e39f52f90d65cc9bca499f33"
+        ]
+      }
     },
   },
   "q-borrowing": {
@@ -18182,6 +23763,69 @@ const configs = {
       "tokens": [
         "0x3b2bf2b523f54c4e454f08aa286d03115aff326c",
         "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1"
+      ]
+    },
+  },
+  "rabbitx": {
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0xFc7f884DE22a59c0009C91733196b012Aecb8F41",
+          "0x3b8F6D6970a24A58b52374C539297ae02A3c4Ae4",
+          "0x7fAb440A0251dA67B316d2c0431E3Ccf4520Cd42",
+          "0x1171651A1917C7DE22cF2047D1D7Cb9d97039811"
+        ],
+        "tokens": [
+          "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x0c378FB17E87B180256a87e3f671cd83Bf3236DB",
+          "0x3Ba925fdeAe6B46d0BB4d424D829982Cb2F7309e"
+        ]
+      }
+    },
+    "blast": {
+      "tvl": {
+        "owners": [
+          "0x3Ba925fdeAe6B46d0BB4d424D829982Cb2F7309e",
+          "0x212f3a03b0e67f2d0afc7bca138707cf9fd6a0e6"
+        ],
+        "tokens": [
+          "0x4300000000000000000000000000000000000003",
+          "0x4300000000000000000000000000000000000004"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x67dBA61709D78806395acDBa3EF9Df686aF5dc24",
+          "0x236bb48fcF61ce996B2C8C196a9258c176100c7d"
+        ]
+      }
+    },
+    "sonic": {
+      "owners": [
+        "0xaC63e55a9D6B331987072f98beDf216F51370E28"
+      ],
+      "tokens": [
+        "0x29219dd400f2Bf60E5a23d13Be72B486D4038894"
+      ]
+    },
+    "base": {
+      "owners": [
+        "0x07607d79Bc28669bbF7ec6cfC7Ae68AA6964C762"
+      ],
+      "tokens": [
+        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      ]
+    },
+    "arbitrum": {
+      "owners": [
+        "0x2E89ECF3945fcBdA70770f59F3833aC7D08b83c0"
+      ],
+      "tokens": [
+        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
       ]
     },
   },
@@ -18405,6 +24049,22 @@ const configs = {
         "0xC7bCb0e8839a28A1cFadd1CF716de9016CdA51ae"
       ],
       "fetchCoValentTokens": true
+    },
+  },
+  "redstone-oracles": {
+    "timetravel": true,
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x903a1FF023a35EFeD333ee9D6bF30629A098B9ed"
+        ],
+        "tokens": [
+          "0xc43c6bfeDA065fE2c4c11765Bf838789bd0BB5dE"
+        ]
+      }
     },
   },
   "reflexer": {
@@ -18835,6 +24495,25 @@ const configs = {
       ]
     },
   },
+  "rhea": {
+    "methodology": "Counts tokens on the treasury for tvl and staked RHEA for staking",
+    "misrepresentedTokens": true,
+    "klaytn": {
+      "tvl": {
+        "owner": "0x32F71263CF373d726f4e45286Bbb6935d553E8D0",
+        "tokens": [
+          "0x0b8ac02bf51e1c3a809f8f773dd44025c31c4467",
+          "0x5c74070fdea071359b86082bd9f9b3deaafbe32b"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xee0f2e95e69d4246f8267be6d0f2610ce75d993c",
+          "0x0758fb651282581f86316514e8f5021493e9ed83"
+        ]
+      }
+    },
+  },
   "rho-x": {
     "start": "2025-09-22",
     "ethereum": {
@@ -18846,6 +24525,51 @@ const configs = {
         "0x4274cD7277C7bb0806Bd5FE84b9aDAE466a8DA0a",
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
       ]
+    },
+  },
+  "ridotto": {
+    "bsc": {
+      "staking": {
+        "tokensAndOwners": [
+          [
+            "0xe9c64384dEb0C2bF06D991A8D708c77eb545E3d5",
+            "0x0d514227db4eB4C9ed86a261622BcA326e95a376"
+          ],
+          [
+            "0xe9c64384dEb0C2bF06D991A8D708c77eb545E3d5",
+            "0xCc6EE7b545EFa1bE02DC08B1e24c2bAe23c2bf9C"
+          ],
+          [
+            "0xe9c64384dEb0C2bF06D991A8D708c77eb545E3d5",
+            "0x2Ae4Ca022882491a7D1229dA25E9E7c6b89AA189"
+          ]
+        ]
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x3B1Be589E16A1c1f09F554a2339d65cE30125210",
+            "0xed60979cA4743aFd86Ad6B204cD5DC2671B4c8d4"
+          ],
+          [
+            "0x3B1Be589E16A1c1f09F554a2339d65cE30125210",
+            "0xf11F35f79CB0FFF47d3467AFF655dCaf67de7570"
+          ],
+          [
+            "0x3B1Be589E16A1c1f09F554a2339d65cE30125210",
+            "0x2Ae4Ca022882491a7D1229dA25E9E7c6b89AA189"
+          ]
+        ],
+        "resolveLP": true
+      },
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x55d398326f99059ff775485246999027b3197955",
+            "0x2c5B04F5744724ccEaAdA451f81b6E6a98D53fde"
+          ]
+        ]
+      }
     },
   },
   "rif-on-chain": {
@@ -19073,18 +24797,6 @@ const configs = {
       ]
     },
   },
-  "robots-farm": {
-    "start": 1688923873,
-    "methodology": "TVL includes tokens staked in our contracts",
-    "base": {
-      "owners": [
-        "0x51C84b14F63999604246Ec7De0e777500D0631D0"
-      ],
-      "tokens": [
-        "0x4200000000000000000000000000000000000006"
-      ]
-    },
-  },
   "rocket-bridge": {
     "timetravel": false,
     "misrepresentedTokens": false,
@@ -19129,6 +24841,188 @@ const configs = {
     "ethereum": {
       "owner": "0x64192819Ac13Ef72bF6b5AE239AC672B43a9AF08",
       "fetchCoValentTokens": true
+    },
+  },
+  "rootstock-collective": {
+    "rsk": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x5db91e24BD32059584bbDb831A901f1199f3d459",
+        "tokens": [
+          "0x2aCc95758f8b5F583470bA265Eb685a8f45fC9D5"
+        ]
+      }
+    },
+  },
+  "rose": {
+    "methodology": "TVL is computed as the sum of the underlying token balances on all Rose liquidity pools",
+    "aurora": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0xe3520349F477A5F6EB06107066048508498A291b",
+              "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
+              "0x4988a896b1227218e4a686fde5eabdcabd91571f"
+            ],
+            "0xc90dB0d8713414d78523436dC347419164544A3f"
+          ],
+          [
+            [
+              "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2"
+            ],
+            "0xa34315F1ef49392387Dd143f4578083A9Bd33E94"
+          ],
+          [
+            [
+              "0x5ce9F0B6AFb36135b5ddBF11705cEB65E634A9dC"
+            ],
+            "0x8fe44f5cce02D5BE44e3446bBc2e8132958d22B8"
+          ],
+          [
+            [
+              "0xdfa46478f9e5ea86d57387849598dbfb2e964b02"
+            ],
+            "0x65a761136815B45A9d78d9781d22d47247B49D23"
+          ],
+          [
+            [
+              "0xc42c30ac6cc15fac9bd938618bcaa1a1fae8501d",
+              "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
+              "0x4988a896b1227218e4a686fde5eabdcabd91571f",
+              "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB",
+              "0x5ce9F0B6AFb36135b5ddBF11705cEB65E634A9dC",
+              "0xf4eb217ba2454613b15dbdea6e5f22276410e89e"
+            ],
+            "0xee793001Ce9Fa988712B15a59CCf5dC7d54b22FF"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xe23d2289FBca7De725DC21a13fC096787A85e16F",
+          "0xdcD6D4e2B3e1D1E1E6Fa8C21C8A323DcbecfF970"
+        ]
+      }
+    },
+  },
+  "rosen-bridge": {
+    "timetravel": false,
+    "ergo": {
+      "tvl": {
+        "owners": [
+          "nB3L2PD3J4rMmyGk7nnNdESpPXxhPRQ4t1chF8LTXtceMQjKCEgL2pFjPY6cehGjyEFZyHEomBTFXZyqfonvxDozrTtK5JzatD8SdmcPeJNWPvdRb5UxEMXE4WQtpAFzt2veT8Z6bmoWN",
+          "HNJiaJVyw1qtkiuQYxDTjaA8rmogotVzADinCt5qqavoyoREWM27WAp6f9Y79meFcMoJLt3yr8nsWC5xU5474ojCxE7VweGpd9sLz79VrSiyu7zBjBXPjgGLFZdJAEJhsH8A4y924MVZa7D9te6t3FUiLcpyTbrvTBhD7SpnD6hUjbGszCEGf1fRX1SmWZikeXcJEkfej42dPRimT6Fw423XAc9Tbeih8ZW8x7f5Y7y8frF5kxEdw998JdLU6UzPSwhrDjfKhySqmssQeQxCFwb19PMCB8ZZtx2mGwczr2H12Yi3hnEWn9ArqRqKWip24pJgm6e4Ky7n7BzGRRTmDtcA2EGH3zEVzpRH6aNSHE1MJ51dbCZSNFnRJfk3vxenkSevCfvEMfn5KyQP9wPU5foZACuHX8TQXvVUe1va3HXJFwCm74gxRssBy61GcYdwVbtxykPrw3t6aDX7c46BejsXvEaz5Ydcu7U8MJCoYia9pZ6zkjAj8d7Su12DMK1aLkBxw4vY2zQYc"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "18c938e1924fc3eadc266e75ec02d81fe73b56e4e9f4e268dffffcb30387c42d",
+          "b0b312cde931c8bbdac0dac5bfd8e2c03bf4611275dc967988c8d15bd5ec20e0",
+          "0cd8c9f416e5b1ca9f986a7f10a84191dfb85941619e49e53c0dc30ebf83324b",
+          "f0d5bdf474fcbd4249608e6dc6e9cf34a327b218f66445ea545b4c711b4676e3",
+          "01dce8a5632d19799950ff90bca3b5d0ca3ebfa8aaafd06f0cc6dd1e97150e7f",
+          "00bd762484086cf560d3127eb53f0769d76244d9737636b2699d55c56cd470bf",
+          "fcfca7654fb0da57ecf9a3f489bcbeb1d43b56dce7e73b352f7bc6f2561d2a1b",
+          "843b5a2a0658550339c38f29827861fe459ce5206edaf17163113cccafc77af1",
+          "886b7721bef42f60c6317d37d8752da8aca01898cae7dae61808c4a14225edc8",
+          "9944ff273ff169f32b851b96bbecdbb67f223101c15ae143de82b3e7f75b19d2",
+          "6c35aa395c7c75b0f67f7804d6930f0e11ef93c3387dc1faa86498d54af7962c",
+          "1fd6e032e8476c4aa54c18c1a308dce83940e8f4a28f576440513ed7326ad489",
+          "089990451bb430f05a85f4ef3bcb6ebf852b3d6ee68d86d78658b9ccef20074f",
+          "003bd19d0187117f130b62e1bcab0939929ff5c7709f843c5c4dd158949285d0",
+          "03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04",
+          "9a06d9e545a41fd51eeffc5e20d818073bf820c635e2a9d922269913e0de369d",
+          "012c74dcd0920ce0c3f9f3945d509ea07b33872f3f144b816bcd7b664b22d5b3",
+          "59ee24951ce668f0ed32bdb2e2e5731b6c36128748a3b23c28407c5f8ccbf0f6"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "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"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "8b08cdd5449a9592a9e79711d7d79249d7a03c535d17efaee83e216e80a44c4b"
+        ]
+      }
+    },
+    "cardano": {
+      "owners": [
+        "addr1v8kqhz5lkdxqm8qtkn4lgd9f4890v0j6advjfmk5k9amu4c535lsu",
+        "addr1x8x6ca648w25x085dg8xs6k5e69yemr5hakcnl0gshmal6gahwzvy33q3jhr74lurpr9p0n8derw58fh7snq2zwxe8zsdkcqrj"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000",
+        "3a89cf5f2f18887fcaec3d2e9bd4fee52caeaebc50f338ff23861cec42414e41",
+        "016be5325fd988fea98ad422fcfd53e5352cacfced5c106a932a35a442544e",
+        "5612bee388219c1b76fd527ed0fa5aa1d28652838bcab4ee4ee63197446973636f696e",
+        "a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235484f534b59",
+        "95a427e384527065f2f8946f5e86320d0117839a5e98ea2c0b55fb0048554e54",
+        "5d16cc1a177b5d9ba9cfa9793b07e60f1fb70fea1f8aef064415d114494147",
+        "533bb94a8850ee3ccbe483106489399112b74c905342cb1792a797a0494e4459",
+        "da8c30857834c6ae7203935b89278c532b3995245295456f993e1d244c51",
+        "29d222ce763455e3d7a09a665ce554f00ac89d2e99a1a83d267170c64d494e",
+        "43b07d4037f0d75ee10f9863097463fc02ff3c0b8b705ae61d9c75bf4d796e746820546f6b656e",
+        "c881c20e49dbaca3ff6cef365969354150983230c39520b917f5cf7c4e696b65",
+        "2852268cf6e2db42e20f2fd3125f541e5d6c5a3d70b4dda17c2daa82",
+        "f6099832f9563e4cf59602b3351c3c5a8a7dda2d44575ef69b82cf8d",
+        "b7c5cd554f3e83c8aa0900a0c9053284a5348244d23d0406c28eaf4d50414c4d0a",
+        "279c909f348e533da5808898f87f9a14bb2c3dfbbacccd631d927a3f534e454b",
+        "f6099832f9563e4cf59602b3351c3c5a8a7dda2d44575ef69b82cf8d",
+        "e13f55c16b8718edac43614146c00cadc45991af3a5355d0386a9f0343727970746f536f636b7a",
+        "ececc92aeaaac1f5b665f567b01baec8bc2771804b4c21716a87a4e353504c415348",
+        "766fce8055f39d40fcfc19721677b3deb2e7846950ae08dce757f1e753554741522042555348",
+        "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d7753554e444145",
+        "804f5544c1962a40546827cab750a88404dc7108c0f588b72964754f56594649"
+      ]
+    },
+    "bitcoin": {
+      "owners": [
+        "bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t"
+      ]
+    },
+    "ethereum": {
+      "owners": [
+        "0x451698faa07fc68301af622a3ad42205f13c6e4b",
+        "0x5f64a7a5FDAA1CF64e4507E7cA5Be164E59EfBbF"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000"
+      ]
+    },
+    "bsc": {
+      "owners": [
+        "0x34c9f8a268df15fb38811800Cb6e7F6a109cd0E7",
+        "0x5f64a7a5FDAA1CF64e4507E7cA5Be164E59EfBbF"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000"
+      ]
+    },
+    "doge": {
+      "owners": [
+        "DBVxmQC82dCLh2WoGd4EBCPWS2VMLV13yd"
+      ]
     },
   },
   "routerprotocol": {
@@ -19429,6 +25323,60 @@ const configs = {
       ]
     },
   },
+  "sacra": {
+    "methodology": "We count the WFTM, USDC and wS on treasuty, reward pool and controller contracts",
+    "fantom": {
+      "token": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+      "owners": [
+        "0xE5365c31c08d6ee44fdd33394ba279b85557c449",
+        "0x146dd6E8f9076dfEE7bE0b115bb165d62874d110",
+        "0x8E629C4301871d2A07f76366FE421e86855DC690"
+      ]
+    },
+    "real": {
+      "token": "0xc518A88c67CECA8B3f24c4562CB71deeB2AF86B7",
+      "owners": [
+        "0x6ce857d3037e87465b003aCbA264DDF2Cec6D5E4",
+        "0xd0C1378c177E961D96c06b0E8F6E7841476C81Ef",
+        "0xb35E67FD20070C3d3dC5EEa29D62e95b707471cA"
+      ]
+    },
+    "sonic": {
+      "tvl": {
+        "token": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+        "owners": [
+          "0x75e1e98650c119c4E3dCE3070CE6A5397Ed70c6a",
+          "0x3bDbd2Ed1A214Ca4ba4421ddD7236ccA3EF088b6",
+          "0xda08F7DE9923acEe24CE292Ec2b20D45b1522Cb6"
+        ]
+      },
+      "staking": {
+        "token": "0x7AD5935EA295c4E743e4f2f5B4CDA951f41223c2",
+        "owners": [
+          "0x75e1e98650c119c4E3dCE3070CE6A5397Ed70c6a",
+          "0x3bDbd2Ed1A214Ca4ba4421ddD7236ccA3EF088b6",
+          "0xda08F7DE9923acEe24CE292Ec2b20D45b1522Cb6"
+        ]
+      }
+    },
+  },
+  "safedealswap": {
+    "methodology": "Counts the value of USDT and RuCoin tokens locked in SafeDealSwap P2P OTC contract on Polygon.",
+    "polygon": {
+      "tvl": {
+        "owner": "0xFc3860113b14F592257E325117b4b7a63464E480",
+        "tokens": [
+          "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xFc3860113b14F592257E325117b4b7a63464E480",
+          "0x4d870Ae52e61d4FB6e125f4380cC0c0F9f15A575"
+        ]
+      }
+    },
+  },
   "sanko-bridge": {
     "arbitrum": {
       "owners": [
@@ -19602,6 +25550,54 @@ const configs = {
       ]
     },
   },
+  "shadecash": {
+    "fantom": {
+      "tvl": {
+        "owners": [
+          "0x456d35432b3602984b3c7c2968AC335c972b6923",
+          "0x5cC87C08bec651055965cF0DAF84D059FA4B6DBb",
+          "0x25A829616F0db0F0E4cb7198961DAc11f050c14a",
+          "0xDD23aDF7945f453F81FF2C449ba98F18F4163d32",
+          "0x6456beB56e3751f0C116c3375dceCF255cC87d35",
+          "0x44C8916C3F7528294C072FbfF4C0388658124aa0",
+          "0x51C800793D9BB1767874bF25ceA0e6a465F0DD88",
+          "0x26EAb094e543C8FF49980FA2CD02B34644a71478",
+          "0x9bfBF2a241A1E10A2f5d821A5b1a43573CE4B30f",
+          "0x394Dc6010517ea39883614Bf5e5BCA634A052aa4",
+          "0x1A2D2c2C9777E0515C9b0823C9DEE4c291f7377c",
+          "0x589419b25531755F5905095621F4Add57CDf5269",
+          "0x87d220741Dac28705ed7683b66D66575B45D4603",
+          "0x36de99c72E15Fad1aafdf3e4EBc37B768cc7ECBE",
+          "0xD9979e2479AEa29751D31AE512a61297B98Fbbf4",
+          "0x2E519993AfE7fc81Fe9F723710CD30199E7742F4",
+          "0xE5fd5d3E4dD0c801a334814B20c34EAF029EAE63",
+          "0xac086A94d7B4e0102b2dB7a638F212b408C0dCc8",
+          "0xf17ed09FCB16abfF61ff869c5954E431a367c879",
+          "0x3Aa61EA2F4D744c770127F4e03804A1081A55E1b",
+          "0x51E5B89Ad5A78F13F705E50c87aa07Ce4E26Cf31",
+          "0xCC8f99Bfd1C330211fBa9C5fEe7BB3Fa2B9E8dFB"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+          "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
+          "0x3A3841f5fa9f2c283EA567d5Aeea3Af022dD2262"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x1719ab3C1518eB28d570a1E52980Dbc137B12e66",
+          "0x20aa395F3bcc4dc44a94215D129650533B3da0b3"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x1719ab3C1518eB28d570a1E52980Dbc137B12e66",
+          "0x3A3841f5fa9f2c283EA567d5Aeea3Af022dD2262"
+        ]
+      }
+    },
+  },
   "shape": {
     "ethereum": {
       "owners": [
@@ -19718,6 +25714,19 @@ const configs = {
       ]
     },
   },
+  "silencio": {
+    "peaq": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "__staking": [
+          "0x0Ac817b19b38df47118041d06BA2728d1492F726",
+          "0x5c3126bfb9a68a7021d461230127470b3824886b"
+        ]
+      }
+    },
+  },
   "simps": {
     "methodology": "We count the ETH on 0x2a7868fd6f3501841d6dab7f4be8a3f8d463b842",
     "base": {
@@ -19743,6 +25752,144 @@ const configs = {
         "0x514910771af9ca656af840dff83e8264ecf986ca",
         "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
         "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
+      ]
+    },
+  },
+  "snarklaunch": {
+    "methodology": "TVL for SNRK staking is computed by summing the balance of SNRK tokens held by the staking contract.",
+    "era": {
+      "staking": {
+        "owners": [
+          "0xEbA49A81501b036234578D10e78685ca8BbD2901"
+        ],
+        "tokens": [
+          "0x533b5F887383196C6bc642f83338a69596465307"
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    },
+  },
+  "snowswap": {
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xacd43e627e64355f1861cec6d3a6688b31a6f952",
+            "0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b"
+          ],
+          [
+            "0x597ad1e0c13bfe8025993d9e79c69e1c0233522e",
+            "0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b"
+          ],
+          [
+            "0x2f08119c6f07c006695e079aafc638b8789faf18",
+            "0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b"
+          ],
+          [
+            "0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a",
+            "0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b"
+          ],
+          [
+            "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c",
+            "0xbf7ccd6c446acfcc5df023043f2167b62e81899b"
+          ],
+          [
+            "0x2994529c0652d127b7842094103715ec5299bbed",
+            "0xbf7ccd6c446acfcc5df023043f2167b62e81899b"
+          ],
+          [
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "0x3820a21c6d99e57fb6a17ab3fbdbe22552af9bb0"
+          ],
+          [
+            "0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c",
+            "0x3820a21c6d99e57fb6a17ab3fbdbe22552af9bb0"
+          ],
+          [
+            "0x06325440d014e39736583c165c2963ba99faf14e",
+            "0x3820a21c6d99e57fb6a17ab3fbdbe22552af9bb0"
+          ],
+          [
+            "0xaa17a236f2badc98ddc0cf999abb47d47fc0a6cf",
+            "0x3820a21c6d99e57fb6a17ab3fbdbe22552af9bb0"
+          ],
+          [
+            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+            "0x8470281f5149eb282ce956d8c0e4f2ebbc0c21fc"
+          ],
+          [
+            "0xf0358e8c3cd5fa238a29301d0bea3d63a17bedbe",
+            "0x8470281f5149eb282ce956d8c0e4f2ebbc0c21fc"
+          ],
+          [
+            "0x053c80ea73dc6941f518a68e2fc52ac45bde7c9c",
+            "0x8470281f5149eb282ce956d8c0e4f2ebbc0c21fc"
+          ],
+          [
+            "0xab7fa2b2985bccfc13c6d86b1d5a17486ab1e04c",
+            "0x8470281f5149eb282ce956d8c0e4f2ebbc0c21fc"
+          ],
+          [
+            "0xda816459f1ab5631232fe5e97a05bbbb94970c95",
+            "0x668e76F1E74e6391ed3fe947E923878109647879"
+          ],
+          [
+            "0x5f18c75abdae578b483e5f43f12a39cf75b973a9",
+            "0x668e76F1E74e6391ed3fe947E923878109647879"
+          ],
+          [
+            "0x7da96a3891add058ada2e826306d812c638d87a7",
+            "0x668e76F1E74e6391ed3fe947E923878109647879"
+          ],
+          [
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "0x16BEa2e63aDAdE5984298D53A4d4d9c09e278192"
+          ],
+          [
+            "0x898bad2774eb97cf6b94605677f43b41871410b1",
+            "0x16BEa2e63aDAdE5984298D53A4d4d9c09e278192"
+          ],
+          [
+            "0xe95a203b1a91a908f9b9ce46459d101078c2c3cb",
+            "0x16BEa2e63aDAdE5984298D53A4d4d9c09e278192"
+          ],
+          [
+            "0xcbc1065255cbc3ab41a6868c22d1f1c573ab89fd",
+            "0x16BEa2e63aDAdE5984298D53A4d4d9c09e278192"
+          ],
+          [
+            "0x7ff566e1d69deff32a7b244ae7276b9f90e9d0f6",
+            "0xeF034645b9035C106acC04cB6460049D3c95F9eE"
+          ],
+          [
+            "0x5f18c75abdae578b483e5f43f12a39cf75b973a9",
+            "0xeF034645b9035C106acC04cB6460049D3c95F9eE"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x7d2c8B58032844F222e2c80219975805DcE1921c",
+          "0xfe9a29ab92522d14fc65880d817214261d8479ae"
+        ]
+      }
+    },
+    "polygon": {
+      "tokensAndOwners": [
+        [
+          "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+          "0x6852E7399C6cC73256Ca46A4921e1c7b2682D912"
+        ],
+        [
+          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+          "0x6852E7399C6cC73256Ca46A4921e1c7b2682D912"
+        ],
+        [
+          "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+          "0x6852E7399C6cC73256Ca46A4921e1c7b2682D912"
+        ]
       ]
     },
   },
@@ -19777,6 +25924,118 @@ const configs = {
       "owner": "5cv5tMwrCMAVbwAC5icUPB5XB4qQpsaf3KaGP7Ygdomc"
     },
   },
+  "sodex": {
+    "methodology": "TVL is calculated as the sum of all assets held in SoDex custody addresses across multiple chains. SOSO token holdings are tracked separately as staking.",
+    "timetravel": false,
+    "bitcoin": {
+      "owners": [
+        "bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju"
+      ]
+    },
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0x514910771af9ca656af840dff83e8264ecf986ca",
+          "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+          "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xCC7322A2f9f82251dA51584B1a89915dBc02185B"
+        ],
+        "tokens": [
+          "0x76a0e27618462bdac7a29104bdcfff4e6bfcea2d"
+        ]
+      }
+    },
+    "bsc": {
+      "owners": [
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000",
+        "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+      ]
+    },
+    "solana": {
+      "solOwners": [
+        "9RausimD22rJxJbYi56tbtxCSQw3hh5nXzYoxzZA5JrU"
+      ]
+    },
+    "ripple": {
+      "owners": [
+        "rpZYyFtPPrqQetwRKAPtcSXLC8F5Tzx7FQ"
+      ]
+    },
+    "doge": {
+      "owners": [
+        "D8Ptn3CJmNYzh9We5oP3wk1inAngPPZ7zC"
+      ]
+    },
+    "cardano": {
+      "owners": [
+        "Ae2tdPwUPEYxbppqSJw4y9X8hSZ4eJwBYaYKm8ZH3HnVKLRvAGtEbTyWbYQ"
+      ]
+    },
+    "litecoin": {
+      "owners": [
+        "LbrYhw79HFCkmArrUiAjTrczmYqB8VDHop"
+      ]
+    },
+    "base": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0x0000000000000000000000000000000000000000",
+              "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+            ],
+            "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+          ],
+          [
+            [
+              "0x9e6a46f294bb67c20f1d1e7afb0bbef614403b55",
+              "0x3d8f0ddb4bb9332Cb89dEC22d273d9be1a91530b"
+            ],
+            "0xCC7322A2f9f82251dA51584B1a89915dBc02185B"
+          ]
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xCC7322A2f9f82251dA51584B1a89915dBc02185B"
+        ],
+        "tokens": [
+          "0x624e2e7fdc8903165f64891672267ab0fcb98831"
+        ]
+      }
+    },
+    "arbitrum": {
+      "owners": [
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000",
+        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+      ]
+    },
+    "hyperliquid": {
+      "owners": [
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000",
+        "0x5555555555555555555555555555555555555555"
+      ]
+    },
+  },
   "solayer-susd": {
     "timetravel": false,
     "doublecounted": true,
@@ -19792,6 +26051,26 @@ const configs = {
           "FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG"
         ]
       ]
+    },
+  },
+  "solbank-finance": {
+    "solana": {
+      "tvl": {
+        "owners": [
+          "3Q3pE1izgCeAtTR23eufZy5vCEGtpWLBQcGD2HGd1cbU"
+        ],
+        "blacklistedTokens": [
+          "8twuNzMszqWeFbDErwtf4gw13E6MUS4Hsdx5mi3aqXAM"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "3Q3pE1izgCeAtTR23eufZy5vCEGtpWLBQcGD2HGd1cbU"
+        ],
+        "tokens": [
+          "8twuNzMszqWeFbDErwtf4gw13E6MUS4Hsdx5mi3aqXAM"
+        ]
+      }
     },
   },
   "solfarm": {
@@ -19916,6 +26195,28 @@ const configs = {
       ]
     },
   },
+  "spacewhale": {
+    "start": "2024-04-03",
+    "arbitrum": {
+      "tvl": {
+        "owners": [
+          "0xb7884D6bc7361EcbacAfAbBd949DE7D47B2a0e27"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xb7884D6bc7361EcbacAfAbBd949DE7D47B2a0e27"
+        ],
+        "tokens": [
+          "0xf5961a2441fC68E38300cd8ae8d6a172b12D7E7A"
+        ]
+      }
+    },
+  },
   "spark": {
     "fuel": {
       "owners": [
@@ -19948,6 +26249,23 @@ const configs = {
       ]
     },
   },
+  "sqd-dev": {
+    "start": "2024-03-26",
+    "arbitrum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x36e2b147db67e76ab67a4d07c293670ebefcae4e",
+          "0xb31a0d39d2c69ed4b28d96e12cbf52c5f9ac9a51"
+        ],
+        "tokens": [
+          "0x1337420dED5ADb9980CFc35f8f2B054ea86f8aB1"
+        ]
+      }
+    },
+  },
   "stab-protocol": {
     "methodology": "Calculates TVL using the amount of collateral locked to borrow STAB using CDPs, and amount of STAB and XRD locked in the protocol-native STAB/XRD pool.",
     "timetravel": false,
@@ -19961,6 +26279,57 @@ const configs = {
       ]
     },
   },
+  "stake1": {
+    "fantom": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+            "0x3d2fa78f5e1aa2e7f29c965d0e22b32b8d5f14a9"
+          ],
+          [
+            "0x74b23882a30290451A17c44f4F05243b6b58C76d",
+            "0xf9448f9a932474B5cAd9F05b86EA12376f2Fd770"
+          ],
+          [
+            "0x511D35c52a3C244E7b8bd92c0C297755FbD89212",
+            "0x1689D5C5866909569a98B35da6A24090e4931C17"
+          ],
+          [
+            "0x6c021ae822bea943b2e66552bde1d2696a53fbb7",
+            "0xA222fb9D2A811FAb3B334a5a9FA573C11fee73c1"
+          ],
+          [
+            "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+            "0x3d2fa78f5e1aa2e7f29c965d0e22b32b8d5f14a9"
+          ],
+          [
+            "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+            "0xf9448f9a932474B5cAd9F05b86EA12376f2Fd770"
+          ],
+          [
+            "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+            "0x1689D5C5866909569a98B35da6A24090e4931C17"
+          ],
+          [
+            "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+            "0xA222fb9D2A811FAb3B334a5a9FA573C11fee73c1"
+          ]
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          [
+            "0x56995c729296c634cA367F8F3e5E5dEFF30D4511"
+          ],
+          [
+            "0x629670EAA62952990dd5b0658Ab6c6296fE2111b",
+            "0x4bd9B32677821939937FaDaEb30858806578339c"
+          ]
+        ]
+      }
+    },
+  },
   "stakeease": {
     "ethereum": {
       "owner": "0x466B447D68112090ea46a98E15f22da44f87AF7F",
@@ -19971,6 +26340,51 @@ const configs = {
         "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",
         "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7"
       ]
+    },
+  },
+  "standcash": {
+    "misrepresentedTokens": true,
+    "methodology": "Counts liquidty on the Staking and Pool2 Only",
+    "ethereum": {
+      "staking": {
+        "owners": [
+          "0x05A27c63ADB54faee48DA03D7D10F04DFfF1d5aa",
+          "0x0F14a4880B7BC3Fc926499Df3AB32c72828eCF0E",
+          "0x7F28D5a90b3A0BE2e34accDEF255eC13cf695b1e"
+        ],
+        "tokens": [
+          "0x4c38d0e726b6c86f64c1b281348e725973542043"
+        ]
+      },
+      "pool2": {
+        "owners": [
+          "0xf9bb984980E8b503cd9f365101C16E071eC86166",
+          "0xfDA19204C625dd82B0066a18F218179778C14E56",
+          "0xeF185DF44a1a8e94B3E8CE2a7D1e88fD5f97DE90",
+          "0xeaE9402B0cDd6Ef6a7D8F511F03a655ED6b5f850",
+          "0xBD3316c31c48a3cD9A014a8315d05356c5723CF4",
+          "0x4E4c96b68Dd328eE3aaA4B7320Dd86E21D740332",
+          "0x82fb0cff19E2060e912805Fe3496bC878eef17C0",
+          "0x05A27c63ADB54faee48DA03D7D10F04DFfF1d5aa",
+          "0x0F14a4880B7BC3Fc926499Df3AB32c72828eCF0E"
+        ],
+        "tokens": [
+          "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "0x36F3FD68E7325a35EB768F1AedaAe9EA0689d723",
+          "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a",
+          "0xE95A203B1a91a908F9B9CE46459d101078c2c3cb",
+          "0xaCd8F2523a4613Eee78904354187c81Bb05ae2b8",
+          "0x841E63A5451e3db6879499d24cae6C6600956839",
+          "0x24A9CeD95BcEBDa453108E9cb1e1D3C21835B29C"
+        ],
+        "resolveLP": true
+      },
+      "tvl": {
+        "__empty": true
+      }
     },
   },
   "starbank": {
@@ -20497,6 +26911,109 @@ const configs = {
       ]
     },
   },
+  "starlay": {
+    "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
+    "astar": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720"
+            ],
+            "0xc0043Ad81De6DB53a604e42377290EcfD4Bc5fED"
+          ],
+          [
+            [
+              "0x6a2d262d56735dba19dd70682b39f6be9a931d98"
+            ],
+            "0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c"
+          ],
+          [
+            [
+              "0x6de33698e9e9b787e09d3bd7771ef63557e148bb"
+            ],
+            "0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c"
+          ],
+          [
+            [
+              "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283"
+            ],
+            "0x430D50963d9635bBef5a2fF27BD0bDDc26ed691F"
+          ],
+          [
+            [
+              "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e"
+            ],
+            "0xb7aB962c42A8Bb443e0362f58a5A43814c573FFb"
+          ],
+          [
+            [
+              "0x75364d4f779d0bd0facd9a218c67f87dd9aff3b4"
+            ],
+            "0x2308De041865503B3b24F5da4D1ab7308c4ff756"
+          ],
+          [
+            [
+              "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c"
+            ],
+            "0x61f5df7076D2BA75323129CC2724db3abDdC3073"
+          ],
+          [
+            [
+              "0xdd90e5e87a2081dcf0391920868ebc2ffb81a1af"
+            ],
+            "0xF49Ab32B1B13A50eEe2022347A31a69524E83671"
+          ],
+          [
+            [
+              "0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52"
+            ],
+            "0xd37991C23242439B0549c8328df5d83897D645AA"
+          ],
+          [
+            [
+              "0xad543f18cff85c77e140e3e5e3c3392f6ba9d5ca"
+            ],
+            "0x93E008010B17a48A140EEA4283040adD92eAC576"
+          ],
+          [
+            [
+              "0xffffffff000000000000000000000001000007c0"
+            ],
+            "0x659110D07923e2C3fCB9d3C9E66B0a1605e7ce71"
+          ],
+          [
+            [
+              "0xffffffff00000000000000010000000000000008"
+            ],
+            "0x468Ea96224896B345aA7878AE437DDC169854214"
+          ],
+          [
+            [
+              "0xffffffff00000000000000010000000000000001"
+            ],
+            "0x4aaD525895373ad3D8C4aF4743723436312F30e7"
+          ],
+          [
+            [
+              "0xe511ed88575c57767bafb72bfd10775413e3f2b0"
+            ],
+            "0xc1b06197a4dD1E644d9e58cB91be46CF011b13e8"
+          ]
+        ],
+        "permitFailure": true
+      },
+      "borrowed": {
+        "__empty": true
+      },
+      "staking": {
+        "__staking": [
+          "0xDf32D28c1BdF25c457E82797316d623C2fcB29C8",
+          "0xc4335b1b76fa6d52877b3046eca68f6e708a27dd"
+        ]
+      }
+    },
+  },
   "stars-league": {
     "chz": {
       "tokens": [
@@ -20584,6 +27101,109 @@ const configs = {
       ]
     },
   },
+  "strike-finance": {
+    "timetravel": false,
+    "cardano": {
+      "tvl": {
+        "owners": [
+          "addr1q8exp04r4at8y92el99c93qkzz33x8458wkyk4mvjpy5agg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qearjnc",
+          "addr1z8p79rpkcdz8x9d6tft0x0dx5mwuzac2sa4gm8cvkw5hcnq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qf2562q",
+          "addr1z9rxz4t39uhwtcxrwm8ud2asmkvpac3tr9m0eumqaa3mg7c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q0em5xz",
+          "addr1z8zhrsxq700zerc456yqf4zggcsu34p7frtxe93s3le9asc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qe4l4n0",
+          "addr1zy526793axy3a2h7t73gmwp4xqctev2at5rcfm60lurry0q6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qzdkz67",
+          "addr1z83ce45v53ehthr879q8qztuvxfewlyq88gk42x60du629g6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qc6qtn0",
+          "addr1zydg2ufp2dsuhdzgxntc9c8vvpec2zex3pnrda9skwkq00c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qr2as7p",
+          "addr1zx224zn5u4mz8g2ak2qp72nst9vp726l6fvhll0ke2pcrss6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qazr3c9",
+          "addr1zym7cc6d37vgh2g40ucmclczff4zmzudfql6pqk7vt2rh5g6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qy3jvzp",
+          "addr1z8ax5k9mutg07p2ngscu3chsauktmstq92z9de938j8nqac6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qtz0uq2",
+          "addr1z8dnpdmekd8s80w6wq77u3zffdmal6jdx6grpacjrcafzmq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qfx0ary",
+          "addr1z85jlcse9d7e0xgx40th0nx0shnf2rwye9rzqxpt0lxga7c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qysnxtz",
+          "addr1zxdptd9n5gvjc3a7jaca7czmcvyrlms7f442zja89fe90js6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q50yull",
+          "addr1zxcccpqvnrlv9q3hnlmdre2zc8t2edrg0gqy5xgvx8jdqtc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qqsdg7k",
+          "addr1z9c7e2vuzcdam2tmcqadvx0yaw42n90fr6gckalemdz862q6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q2dt5fh",
+          "addr1zyxynm92d5y6668vzklcdday9md2cxtqx89x5gacdvt6jng6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qhdu7vp",
+          "addr1zx6stx68v4ytq72kkkthz0gjpyy8mw6gnp0kz0guuyscptq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qdmft29",
+          "addr1zyrx3jfqukjvmntrqfmsgl73ac2ms5eg956hk8wpk8m0ywc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q8v9k09",
+          "addr1z8ap2s3xyn2f3r8yzemq78p3lvjclg9nr7v08f4dmscjhzg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qh0gl80",
+          "addr1z8mqkknc47z7n2hvcdjuwguq3rhyxyxc8qg8mm9sh68srrs6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q73wjww",
+          "addr1z85d25mkj326pft4xkn4uhpyqsdgfjpenh9u54e56e9h6uq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qg2a3au",
+          "addr1z9rvkhhajfp7r067kp0rzt8scc0ulcf96dluxezc7jmwg8g6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qldncf4",
+          "addr1z8atrjzeyx2f8zp9feuu55c0znaymg723k200p2h7s0ryhs6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qt7nv3x",
+          "addr1z845e9swxs7yrnar8ksqn7qk2n5txq575qhrxdd4yrqrulq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qx55aya",
+          "addr1z9mqz3z5px5u0zd5nl9lh95ecq8j42hf2jc65xm36c40hzs6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q7nwtuq",
+          "addr1z84xwfwy489hrjwsw7yzvgy2s0vd8vu7thszqaamwtj54qg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q9qq0cy",
+          "addr1z9wy7sp47sx8wkenzmv66hg8fja4p34tx29lt3z3p68732q6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qdedk3p",
+          "addr1zxqurljm4mt64mdgqpmal8kdu97eg7ghqy2gaqwmltk30xc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q2g5u4h",
+          "addr1z8xskdc57rdsk4laasaq4c259dqypm4g7zs903elh36fp7s6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qhnd4mf",
+          "addr1z97klsrjh54ffl6p42wnyf0deln85aefly4f4dypxf53nrq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qww7jed",
+          "addr1zxp5dzle0wuvev2f53jhrerkp362fa88y369jk2x87rgcmg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qh5p7z8",
+          "addr1z8eeyl2uk8vaft2fdcx4cg87rj4338w77h0maqravu7jdxg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q3gd8ru",
+          "addr1z875el9eet7uzng2tchmszq8uqzwd78jyuhqtzz2cp9dwhg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q3x2t94",
+          "addr1zydtnutsl2d4k5xgjgc0q3lggmv6ajjh2m7j75m5pcp3gcc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qq72qef",
+          "addr1zxy5pna82dl9635egps86pkdg97rd739cjhj47gzusravnc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2quw0832",
+          "addr1zxcksj9980xl5sc5gm8t8kgnd6g5fps7sgtuwmkgdxqr3as6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qxvsh96",
+          "addr1z9mus5dfcf3je223x8wgwjjexdfez34p4wnltdkd8kq9trc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qqguqfd",
+          "addr1z87d24qlgc7wgxs4j5g26lmwtpg7qxzn8gh6vcr2q8470dq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qyeu3hj",
+          "addr1zyr2j9vkxnz7mpacndth6da0p9qlgr654ae6facgwuhk6qg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qwnnzpy",
+          "addr1zx88ry3qfvgmayfxyrnsx6uafza35mxy7jcfahxn9ae0wks6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qr0dc4a",
+          "addr1zxq4d0kggxcqd80j5c703f0p22c8h9p37e8efxy0c3rfn5c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qe6erm7",
+          "addr1z8smz0nmpmpcl5256s2y8xphmmsmuu92jpjep0ty7mfwnag6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qdwnlcx",
+          "addr1z8klj8ds7lfjml0qcukmwvx93q0k38d9pr5mm37ds0v5ngs6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qqt9evz",
+          "addr1z8mrc508yclgcdknmpwxtn7cdr4xkjc0j07zwhrcwz2kfgc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q7q5rdv",
+          "addr1z88h8nyqpv2re8fqu25snvsuql6k3dl0lepxkj2yk43lqkg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qg8c6rd",
+          "addr1zx00elgfltfzukpd6vccxm63wq0p9r637kq7nn46c362rlc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qwpj3ag",
+          "addr1zyvc2gdctqrkq5gtwn4kyjr9p6x9avvfpczjym6ew7qgesg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q589p70",
+          "addr1zy0a3d4252yfwcn76c2p0cutsy23sh8azcw0dfgjvm478pc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q0hj8lg",
+          "addr1zyhvj5e89am62lkfk5ketqzkqt45nmr8m6lvff4vt85raps6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qlmp7eq",
+          "addr1z95jnfuk6vty45xrxpkcw63d0fsfcy2j9jngvq3gcqscxxg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qpwyev4",
+          "addr1zyugasaj3e2hwmhrrvcppgqh35g6gtz5xwt3psnsxmj2f7c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qx23q44",
+          "addr1zxup7xlepfpcmpkrqe0hq8ndr8gzcghcc9duu2smu9ezt6q6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qdha8dj",
+          "addr1z8jrpwqp8p4pn4yvdzwall76j3rx8x4khp8fev6jc36e8sg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q6untv0",
+          "addr1z94pkxfmny9ttnxusp5cdy0f20g4vq20klxcxxtf2h8u7tg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qa5wx0a",
+          "addr1z9tppmtvjgyxehr8thr2g3kac9t2ug7r3fxd62c0m708exq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qs9j4yv",
+          "addr1z8gklkh6quammvjzuv0dukl8a3w3s2w80euu4lszqzrzt5g6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qyr2lt6",
+          "addr1z9nsxjyw7xgfw5jtfxcw7fxucte0277ununa4evyxcw3evg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q4366ry",
+          "addr1zx0whlxaw4ksygvuljw8jxqlw906tlql06ern0gtvvzhh0c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qhlj6gf",
+          "addr1zyphu67uw64kxan3fzhxfpsaxtxnh34mgnlunh9u8hr6m2q6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q3yj746",
+          "addr1zy48lqwffvzkahcyrhj8982p3f7c002g098ly4zxzxefnlg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qst04fy",
+          "addr1zyg4c72wfhkudxfwkc9u3sn7nmclrp8kmd0rxhg3n0pjgkq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qwgllg9",
+          "addr1z9ryamhgnuz6lau86sqytte2gz5rlktv2yce05e0h3207qs6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qevgauu",
+          "addr1zxn9efv2f6w82hagxqtn62ju4m293tqvw0uhmdl64ch8uwc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qrnpky5",
+          "addr1z8uspy9gknra7edh2xccjuw4eufnyc4dv25aee00tlamwgq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qtt8cfu",
+          "addr1z8uztmj9hlv4pad69gsfjplyt335a7a4enn8nsm02p665qg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qx03ghn",
+          "addr1z9lwvuhy7z3v07lmc4e6jxnn59arc037wdgyrqknq3k0dkg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2ql6jg5z",
+          "addr1z98jwa3vatafm5r82r7kfvm2xzl5npc9muxmsu78zgnh3pc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q37krlw",
+          "addr1z9ux6y26vznnjuv6we9rj4yxml6wlqekyyd60pn73jnguxq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qtstwgr",
+          "addr1z9c2r63d6q3ka6fzrmla4k83t0jzmms5qsqkvf3my9e648c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q7en4gn",
+          "addr1zxskh8976jyeuhktuldy3zt96elqqs580sty32h3n2xae2q6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qr0ksr9",
+          "addr1z8e2gjhpsvj5v6r7l2henlk6pa06fpeuyr7qkskv649u46s6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qfta75z",
+          "addr1zx9jj9arquas0w3fs5ectynlaxcv0vnqps6ec0snewaxcmg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qd55n9c",
+          "addr1z9g7nsu87cca8gh76pp2a4nje5mpj95au05cuv8zkten7vg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q6527m0",
+          "addr1z9m87qxgcccrjwlrvkwcf0vpg2esf0fxz3dcfqd4ky2ctdg6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q3qgtju",
+          "addr1zya65yzc6mk4qdyma5u0jq5vkngkvh8w86nt0sxpeh4q6pc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q2lv2td",
+          "addr1z95f4elrql49evn4egme0rqqez2eatmgatwtaedqkzyz5gq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q7acw6m",
+          "addr1zxg07kw7ta4fzr5dwvxa0qstuqjunjxnkyvwygc5585mw5c6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qf9a0rp",
+          "addr1z8xtp84pcr9xm7xa3z3fyhjca7893duem67yesaazv0hzmc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qfaznua",
+          "addr1z9cpenmfdejxznh0khdfqfgcqwpdpzcj99c5zngavkzvqzq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q7tv57q",
+          "addr1zy5yh47wq2nnjf04jmyc2pea7jxsv2dzqhuzzkz2fzufwas6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qspjhxa",
+          "addr1zxwpt7nztfmxueum9x9d9wqaw7dtmnh2tvfvej73aufa7kq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qq8cpf0",
+          "addr1z8vqw8qeg3gz60mmhkx5wevakxly0qm0dn0r2da0evgn94q6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qjzrza7",
+          "addr1zyg6qcp9avh8mm089f7576kzjwkjgp4wtpzw260v9pe5qjc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2q5yq3gv",
+          "addr1zxfqfgce0xtmz8zjhp3l7a36vltdccj8yj0aphed5vsagsq6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qjsegc6",
+          "addr1zyg9vagaykmcvhestlncdvut4nftakyav6me9gglsscwqhs6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qskgeyl",
+          "addr1zx0pxr4sxglnrh6sh7ahx8e47knetf3saae8kjazwfrqk4g6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qnupxqj",
+          "addr1q8je99vq2ythj2xayfe0qchxs8cxd5hstzuzcnh94r7z2dc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qgtznsu",
+          "addr1z94tv2296rvdv2ywysankephl7wqnx3cuzyz3r66dd79azc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qy5mfj8"
+        ]
+      },
+      "staking": {
+        "owner": "addr1z9yh4zcqs4gh78ysvh8nqp40fsnxg49nn3h6x25az9k8tms6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qf3a7kj",
+        "tokens": [
+          "f13ac4d66b3ee19a6aa0f2a22298737bd907cc95121662fc971b5275535452494b45"
+        ]
+      }
+    },
+  },
   "subunit": {
     "methodology": "Calculates the TVL by summing the USDC balance held in the SubVault contract on Base.",
     "base": {
@@ -20598,6 +27218,94 @@ const configs = {
       "owner": "0x312e67b47A2A29AE200184949093D92369F80B53",
       "fetchCoValentTokens": true,
       "permitFailure": true
+    },
+  },
+  "sun": {
+    "tron": {
+      "tvl": {
+        "ownerTokens": [
+          [
+            [
+              "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+              "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
+              "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4"
+            ],
+            "TKcEU8ekq2ZoFzLSGFYCUY6aocJBX9X31b"
+          ],
+          [
+            [
+              "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+              "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+              "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4"
+            ],
+            "TKVsYedAY23WFchBniU7kcx1ybJnmRSbGt"
+          ],
+          [
+            [
+              "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+              "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+            ],
+            "TAUGwRhmCP518Bm4VBqv7hDun9fg8kYjC4"
+          ],
+          [
+            [
+              "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8"
+            ],
+            "TQx6CdLHqjwVmJ45ecRzodKfVumAsdoRXH"
+          ],
+          [
+            [
+              "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8"
+            ],
+            "TB6zgiG14iQkNxqU4mYe7cMiS5aCYfyidL"
+          ],
+          [
+            [
+              "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+              "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+            ],
+            "TNTfaTpkdd4AQDeqr8SGG7tgdkdjdhbP5c"
+          ],
+          [
+            [
+              "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
+              "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+            ],
+            "TExeaZuD5YPi747PN5yEwk3Ro9eT2jJfB6"
+          ],
+          [
+            [
+              "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4",
+              "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+            ],
+            "TS8d3ZrSxiGZkqhJqMzFKHEC1pjaowFMBJ"
+          ],
+          [
+            [
+              "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8"
+            ],
+            "TE7SB1v9vRbYRe5aJMWQWp9yfE2k9hnn3s"
+          ],
+          [
+            [
+              "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT"
+            ],
+            "TKBqNLyGJRQbpuMhaT49qG7adcxxmFaVxd"
+          ],
+          [
+            [
+              "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
+            ],
+            "TLssvTsY4YZeDPwemQvUzLdoqhFCbVxDGo"
+          ]
+        ]
+      },
+      "staking": {
+        "owner": "TXbA1feyCqWAfAQgXvN1ChTg82HpBT8QPb",
+        "tokens": [
+          "TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S"
+        ]
+      }
     },
   },
   "sundaeswap-v3": {
@@ -20665,6 +27373,83 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "superbots": {
+    "bsc": {
+      "tvl": {
+        "owners": [
+          "0x4558684869b1f814b4d8b177dcb0a2e10f4e007d",
+          "0xc645D32bb7D9592a268387755B2864FF146924f7",
+          "0x5b3da1932d68a1569de973731e87f0796af21d0a",
+          "0x99ef199afae20f4efb30f420c6c401fac3137e4d",
+          "0x1345a7cb4f00c844b9f466fe065a6ae2a2c68273",
+          "0x76651E8282739F47cfAaB65f10e4A9AC68EC3C7F",
+          "0x923c7C2bb7329372898ef0F820d2dCF010561D6b",
+          "0x6f073b79a7e59547cd3f0472606b1e349049a5e7",
+          "0x711D6C0f87f1Ddd8B2589f50a5b7E8F02BD61990"
+        ],
+        "tokens": [
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+          "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x2500C97d1eBD63275DdC3511c825c4d73335Cb77",
+          "0xbbeb90cfb6fafa1f69aa130b7341089abeef5811"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          "0x2500C97d1eBD63275DdC3511c825c4d73335Cb77",
+          "0x8d3ff27d2ad6a9556b7c4f82f4d602d20114bc90"
+        ]
+      }
+    },
+    "ethereum": {
+      "staking": {
+        "__staking": [
+          "0x6f87364176265cad6ffc70ad2a795630395a8c24",
+          "0x8564653879a18C560E7C0Ea0E084c516C62F5653"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          "0x6f87364176265cad6ffc70ad2a795630395a8c24",
+          "0x6a928D733606943559556F7eb22057C1964ce56a"
+        ]
+      }
+    },
+  },
+  "superfarm": {
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30",
+            "0x8e586D927acE36a3ef7bDDF9f899d2E385d5Fc9b"
+          ],
+          [
+            "0x557B933a7C2c45672B610F8954A3deB39a51A8Ca",
+            "0xb3EA98747440aDDC6A262735E71B5A5cB29edd80"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0xf35A92585CeEE7251388e14F268D9065F5206207",
+          "0xe53ec727dbdeb9e2d5456c3be40cff031ab40a55"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0xf35A92585CeEE7251388e14F268D9065F5206207",
+          "0x25647e01bd0967c1b9599fa3521939871d1d0888"
+        ]
+      }
     },
   },
   "supra-bridge": {
@@ -20891,6 +27676,48 @@ const configs = {
       ]
     },
   },
+  "sxbet": {
+    "sxr": {
+      "tvl": {
+        "owner": "0x9039A2F174Ca7AfF96C983CAfB6EAC356a87edE7",
+        "tokens": [
+          "0x3E96B0a25d51e3Cc89C557f152797c33B839968f",
+          "0x6629ce1cf35cc1329ebb4f63202f3f197b3f050b"
+        ]
+      },
+      "staking": {
+        "__staking": [
+          "0x2083eF16cc1749c98F101E41Dba9b9472D4C5702",
+          "0x3E96B0a25d51e3Cc89C557f152797c33B839968f"
+        ]
+      }
+    },
+  },
+  "sxr-bridge": {
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0xa104C0426e95a5538e89131DbB4163d230C35f86",
+          "0xB4968C66BECc8fb4f73b50354301c1aDb2Abaa91"
+        ],
+        "blacklistedTokens": [
+          "0xbe9f61555f50dd6167f2772e9cf7519790d96624",
+          "0x99fe3b1391503a1bc1788051347a1324bff41452"
+        ],
+        "fetchCoValentTokens": true
+      },
+      "staking": {
+        "owners": [
+          "0xa104C0426e95a5538e89131DbB4163d230C35f86",
+          "0xB4968C66BECc8fb4f73b50354301c1aDb2Abaa91"
+        ],
+        "tokens": [
+          "0xbe9f61555f50dd6167f2772e9cf7519790d96624",
+          "0x99fe3b1391503a1bc1788051347a1324bff41452"
+        ]
+      }
+    },
+  },
   "syde": {
     "methodology": "Counts Syde smartcontract balance as TVL.",
     "ton": {
@@ -21036,73 +27863,6 @@ const configs = {
       ]
     },
   },
-  "t3rn": {
-    "hallmarks": [],
-    "methodology": "t3rn TVL is the USD value of token balances in the bridge contracts and TRN tokens staked on Arbitrum.",
-    "ethereum": {
-      "owners": [
-        "0x86EB4faF1574B6Ad8dCF685907a60a5b89f27276"
-      ],
-      "tokens": [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-      ]
-    },
-    "bsc": {
-      "owners": [
-        "0x81D3E0341a3C7806B77433B7b339Ac6dCcaDA683"
-      ],
-      "tokens": [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
-      ]
-    },
-    "arbitrum": {
-      "owners": [
-        "0x3F305740E3f7650cA3EaD2597fEB785fa07d621F"
-      ],
-      "tokens": [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
-      ]
-    },
-    "optimism": {
-      "owners": [
-        "0xbf0C855e8A93930432D21dF08b3C534895650f7f"
-      ],
-      "tokens": [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"
-      ]
-    },
-    "linea": {
-      "owners": [
-        "0xE441B664929a374Ea23fD72A617b66377A1c33D4"
-      ],
-      "tokens": [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0x176211869cA2b568f2A7D4EE941E073a821EE1ff"
-      ]
-    },
-    "base": {
-      "owners": [
-        "0xF1D550eA864a29c277602fdA2683E48ff52614eC"
-      ],
-      "tokens": [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-      ]
-    },
-    "unichain": {
-      "owners": [
-        "0x7f99f7d79F04884cee4A86a3aB76Dca8B0e15491"
-      ],
-      "tokens": [
-        "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        "0x078D782b760474a361dDA0AF3839290b0EF57AD6"
-      ]
-    },
-  },
   "taiko-bridge": {
     "ethereum": {
       "owners": [
@@ -21112,12 +27872,36 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "tangent-protocol": {
+    "cardano": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "addr1qyglpmc5gq5gdgd5fznfwlwjdn3xkgyjkdpt6mdjkq8knaqpta0u8t4h8ljhzygdg9lsx2rg92darh9gny4wh0w4s9zsntv7aw"
+      }
+    },
+  },
   "tangible-ustb": {
     "ethereum": {
       "owner": "0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd",
       "tokens": [
         "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C"
       ]
+    },
+  },
+  "taoline": {
+    "timetravel": false,
+    "solana": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "SVeQXvXgvMgYegnyEfvJpMoqsRE37TCXFkcEKzWesKv",
+        "tokens": [
+          "7dLJnm2NzHPMwB7mJL7azhyMLqs4ZzKYkkhr3ob72Gwo"
+        ]
+      }
     },
   },
   "tbill": {
@@ -21152,6 +27936,48 @@ const configs = {
         "0xD31a59c85aE9D8edEFeC411D448f90841571b89c",
         "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+      ]
+    },
+  },
+  "teleswap": {
+    "methodology": "TVL is the sum of all BTC locked by users, collateral locked by Lockers, and TST delegated to Lockers.",
+    "bitcoin": {
+      "owners": [
+        "3BFxRmnhJJ5VfDF9U4GKT7cKnU4MedcqVm",
+        "bc1qhf3gp40fz8n62907fax79t9ee67h0kaxlcy7j9",
+        "bc1q5wnpn4k99wc587maaaa6eqnx27g4r6mduxg2s5"
+      ]
+    },
+    "ethereum": {
+      "staking": {
+        "owners": [
+          "0x93AD6C8B3a273E0B4aeeBd6CF03422C885217D3B"
+        ],
+        "tokens": [
+          "0x0828096494ad6252F0F853abFC5b6ec9dfe9fDAd"
+        ]
+      }
+    },
+    "bsquared": {
+      "__empty": true
+    },
+    "bob": {
+      "__empty": true
+    },
+    "polygon": {
+      "owners": [
+        "0xf5D6D369A7F4147F720AEAdd4C4f903aE8046166"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000"
+      ]
+    },
+    "bsc": {
+      "owners": [
+        "0x84F74e97ebab432CeE185d601290cE0A483987A5"
+      ],
+      "tokens": [
+        "0x0000000000000000000000000000000000000000"
       ]
     },
   },
@@ -21236,12 +28062,92 @@ const configs = {
       ]
     },
   },
+  "tidalfinance": {
+    "methodology": "We count liquidity of USDC Reserve deposited on the pool threw Seller contract; and the staking of native token",
+    "polygon": {
+      "staking": {
+        "__staking": [
+          "0x21edB57A75ee69BCe0Fe3D0EfC5674bcF1D5BF93",
+          "0xB41EC2c036f8a42DA384DDE6ADA79884F8b84b26"
+        ]
+      },
+      "tvl": {
+        "owner": "0xc73C6C3e80C28dBc55F65bBdC895E828bb98C72d",
+        "tokens": [
+          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+        ]
+      }
+    },
+  },
+  "tigris": {
+    "arbitrum": {
+      "staking": {
+        "__staking": [
+          "0x6E8BFBb31A46D0F5502426050Ea28b19F8E761f4",
+          "0x3A33473d7990a605a88ac72A78aD4EFC40a54ADB"
+        ]
+      },
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+            "0xe82fcefbDD034500B5862B4827CAE5c117f6b921"
+          ]
+        ]
+      }
+    },
+    "polygon": {
+      "staking": {
+        "__staking": [
+          "0xC6c32eD781450228dFadfa49A430d7868B110F44",
+          "0x7157Fe7533f2fc77498755Cc253d79046c746560"
+        ]
+      },
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            "0x3677415Dc23e49B7780ef46976F418F4a9d5031B"
+          ]
+        ]
+      }
+    },
+  },
   "time-fun": {
     "base": {
       "owner": "0x428aef7fb31e4e86162d62d4530a4dd7232d953d",
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "tokenfi": {
+    "methodology": "We count the FLOKI on 0xb8D2471E35eE033Db509e0456c8eFc4135f4EE43",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0xb8D2471E35eE033Db509e0456c8eFc4135f4EE43"
+        ],
+        "tokens": [
+          "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+        ]
+      }
+    },
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0xb8D2471E35eE033Db509e0456c8eFc4135f4EE43"
+        ],
+        "tokens": [
+          "0xfb5B838b6cfEEdC2873aB27866079AC55363D37E"
+        ]
+      }
     },
   },
   "tokenstore": {
@@ -21255,21 +28161,18 @@ const configs = {
       ]
     },
   },
-  "tomb": {
-    "methodology": "Pool2 deposits consist of TOMB/FTM and TSHARE/FTM LP tokens deposits while the staking TVL consists of the TSHARES tokens locked within the Masonry contract(0x8764de60236c5843d9faeb1b638fbce962773b67).",
-    "fantom": {
-      "tokens": [
-        "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
-        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
-        "0x321162cd933e2be498cd2267a90534a804051b11",
-        "0x74b23882a30290451A17c44f4F05243b6b58C76d",
-        "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
-        "0x8d7d3409881b51466b483b11ea1b8a03cded89ae",
-        "0x49c290ff692149a4e16611c694fded42c954ab7a",
-        "0x09e145a1d53c0045f41aeef25d8ff982ae74dd56"
-      ],
-      "owner": "0x072f35cfa85af2793348ccc0eaa0e16e898946a8"
+  "ton-locker": {
+    "ton": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "EQDtFpEwcFAEcRe5mLVh2N6C0x-_hJEM7W61_JLnSF74p4q2",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ],
+        "onlyWhitelistedTokens": true
+      }
     },
   },
   "ton4you": {
@@ -21619,6 +28522,49 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "unipower": {
+    "methodology": "Counts tvl of WETH deposited through ETH Prime Contract, also there are pool2 and staking part from different seccions. Polygon tvl consist of staked POWER and the POWER/USDC LP pool2",
+    "ethereum": {
+      "staking": {
+        "__staking": [
+          "0xBaB61589f963534460E2764A1C0d840B745A9140",
+          "0xF2f9A7e93f845b3ce154EfbeB64fB9346FCCE509"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          [
+            "0xC73bb871DBf66958242DeBA79E4dB19bc2934513",
+            "0x101210a79e3e0620bCAfb771bCddf1B5EA72584D"
+          ],
+          [
+            "0x49F9316EB22de90d9343C573fbD7Cc0B5ec6e19f"
+          ]
+        ]
+      },
+      "tvl": {
+        "owner": "0xe40e1531a4B56fB65571AD2ca43Dc0048a316a2D",
+        "token": "0x0000000000000000000000000000000000000000"
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "__staking": [
+          "0x0Ec74989E6f0014D269132267cd7c5B901303306",
+          "0x00D5149cDF7CEC8725bf50073c51c4fa58eCCa12"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          "0x0Ec74989E6f0014D269132267cd7c5B901303306",
+          "0x9af0c1eeb61dE5630899C224DB3D6f3F064da047"
+        ]
+      }
+    },
+  },
   "unirouter": {
     "bsquared": {
       "owners": [
@@ -21669,6 +28615,30 @@ const configs = {
       "tokens": [
         "0x0000000000000000000000000000000000000000"
       ]
+    },
+  },
+  "universe": {
+    "methodology": "TVL counts tokens that have been deposited to the yield farming vaults. Pool2 TVL counts SushiSwap LP tokens (USDC-XYZ) that have been deposited to the yield farm.",
+    "start": "2021-05-25",
+    "ethereum": {
+      "tvl": {
+        "owner": "0x2d615795a8bdb804541C69798F13331126BA0c09",
+        "tokens": [
+          "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+          "0x0391d2021f89dc339f60fff84546ea23e337750f",
+          "0xc00e94cb662c3520282e6f5717214004a7f26888",
+          "0x767fe9edc9e0df98e07454847909b5e959d7ca0e",
+          "0x514910771af9ca656af840dff83e8264ecf986ca",
+          "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+          "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x2d615795a8bdb804541C69798F13331126BA0c09",
+          "0xbbbdb106a806173d1eea1640961533ff3114d69a"
+        ]
+      }
     },
   },
   "univoucher": {
@@ -21780,6 +28750,24 @@ const configs = {
       ]
     },
   },
+  "urdex": {
+    "arbitrum": {
+      "tvl": {
+        "owner": "0xF67D3a53a110a764DCa7123b9f3FC5B404566577",
+        "tokens": [
+          "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+          "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          "0x235dB7AFE577A239150160ab7429bC3D6e25fdAa",
+          "0xA8eC0aa8fe4287E768Fd382845442Fa29F2886ef"
+        ]
+      }
+    },
+  },
   "usdd-io": {
     "tron": {
       "tokensAndOwners": [
@@ -21844,6 +28832,35 @@ const configs = {
       ]
     },
   },
+  "usual": {
+    "methodology": "TVL represents the value held by the protocol",
+    "doublecounted": true,
+    "ethereum": {
+      "staking": {
+        "__staking": [
+          "0x06B964d96f5dCF7Eae9d7C559B09EDCe244d4B8E",
+          "0xc4441c2be5d8fa8126822b9929ca0b81ea0de38e",
+          "0x2e7fC02bE94BC7f0cD69DcAB572F64bcC173cd81"
+        ]
+      },
+      "tvl": {
+        "tokens": [
+          "0x136471a34f6ef19fe571effc1ca711fdb8e49f2b",
+          "0x437cc33344a0B27A429f795ff6B469C72698B291",
+          "0xC139190F447e929f090Edeb554D95AbB8b18aC1C",
+          "0xe4880249745eAc5F1eD9d8F7DF844792D560e750"
+        ],
+        "owners": [
+          "0xc32e2a2F03d41768095e67b62C9c739f2C2Bc4aA",
+          "0xF3D913De4B23ddB9CfdFAF955BAC5634CbAE95F4",
+          "0xdd82875f0840AAD58a455A70B88eEd9F59ceC7c7",
+          "0x4Cbc25559DbBD1272EC5B64c7b5F48a2405e6470",
+          "0x58073531a2809744D1bF311D30FD76B27D662abB"
+        ],
+        "resolveUniV3": true
+      }
+    },
+  },
   "usual-eth0": {
     "methodology": "ETH0 is a synthetic Ethereum-based asset fully collateralized by Lido’s wrapped staked ETH (wstETH).",
     "ethereum": {
@@ -21895,7 +28912,6 @@ const configs = {
       ]
     ],
     "arbitrum": {
-      "chain": "arbitrum",
       "owner": "0x402A401B1944EBb5A3030F36Aa70d6b5794190c9",
       "tokens": [
         "0x0000000000000000000000000000000000000000",
@@ -22045,6 +29061,24 @@ const configs = {
       "owner": "0x72C8B3aA6eD2fF68022691ecD21AEb1517CfAEa6"
     },
   },
+  "vault-tech": {
+    "methodology": "Calculate the TVL of Vault-Tech staking protocol by getting the amount of $VAULT staked in the 3 pools",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x72f9244fe481761fa0e403e2614d487525f67375",
+          "0xf671d40a8011e7868c0a7e4ad2908bdc41c519cb",
+          "0xcD2d59d9597e782858483f3bC78FB7A9f47Df3ae"
+        ],
+        "tokens": [
+          "0x7f9b09f4717072cf4dc18b95d1b09e2b30c76790"
+        ]
+      }
+    },
+  },
   "vaultfire": {
     "methodology": "TVL is the total value of native tokens (ETH, AVAX, POL) staked in Vaultfire AI Partnership Bonds and AI Accountability Bonds across all supported chains.",
     "base": {
@@ -22144,6 +29178,31 @@ const configs = {
       ]
     },
   },
+  "velvet-capital-staking": {
+    "methodology": "Counts VELVET tokens locked in staking contracts",
+    "bsc": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x61e0e154a70bb0d949879522f5fc81ec8730da24",
+        "tokens": [
+          "0x8b194370825E37b33373e74A41009161808C1488"
+        ]
+      }
+    },
+    "base": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owner": "0x355A87d064775c5A388A34FD143e056F57AaF927",
+        "tokens": [
+          "0xbF927b841994731C573BDF09ceB0c6B0Aa887cDd"
+        ]
+      }
+    },
+  },
   "vertex": {
     "arbitrum": {
       "owners": [
@@ -22219,6 +29278,50 @@ const configs = {
         "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
         "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
       ]
+    },
+  },
+  "vidya": {
+    "methodology": "Counts the total number of tokens locked in staking contracts, game contracts and project treasury.",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0x4E053ac1F6F34A73F5Bbd876eFd20525EAcB5382",
+          "0xe4684AFE69bA238E3de17bbd0B1a64Ce7077da42",
+          "0x34317e2Da45FeC7c525aCa8dAbF22CbC877128a3",
+          "0x9680223F7069203E361f55fEFC89B7c1A952CDcc",
+          "0xf1261B8aD1a1c1856F0DE117Cd90BAc64b386285"
+        ],
+        "tokens": [
+          "0x3D3D35bb9bEC23b06Ca00fe472b50E7A4c692C30"
+        ]
+      },
+      "pool2": {
+        "owners": [
+          "0xD9BecdB8290077fAf79A2637a5f2FDf5033b2486"
+        ],
+        "tokens": [
+          "0xDA3706c9A099077e6BC389D1baf918565212A54D",
+          "0x507C7d56c69bEDC528c3AA00b018656D20605663"
+        ]
+      }
+    },
+  },
+  "vies-token": {
+    "start": 1751302800,
+    "cronos": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0xEDE0c6549AC5929bf54E893cD125B1d4553D86bb",
+          "0xae31BBB53d73EAED2D0412335F723052aA7390BA"
+        ],
+        "token": "0xB1D4e07659c91872dB927939f0BC6CD0747764BC"
+      }
     },
   },
   "vine": {
@@ -22370,6 +29473,24 @@ const configs = {
       "owner": "0x3bB94837A91E22A134053B9F38728E27055ec3d1"
     },
   },
+  "white-protocol": {
+    "misrepresentedTokens": true,
+    "op_bnb": {
+      "tvl": {
+        "owner": "0xefC170513C4026771279D453EF57cEEb66881929",
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      },
+      "pool2": {
+        "owner": "0xdB9320dDE030cEF08C615E7547cee98848Bd297e",
+        "tokens": [
+          "0x177f0bcEF458cb379581A9B8e67E02abfe4a3d08"
+        ],
+        "useDefaultCoreAssets": true
+      }
+    },
+  },
   "whiteheart": {
     "ethereum": {
       "tokensAndOwners": [
@@ -22409,6 +29530,67 @@ const configs = {
       ]
     },
   },
+  "wink": {
+    "methodology": "Tokens backing USDW is counted as tvl, and locked wink tokens are counted as staking.",
+    "hallmarks": [
+      [
+        "2025-01-04",
+        "WINK Finance Launch"
+      ]
+    ],
+    "polygon": {
+      "tvl": {
+        "owners": [
+          "0x7dA313eEeE31526022D2E92B0e3a6A0838Df2587",
+          "0x297df0036835b6bff81980b4d86c3aeecbacf543",
+          "0xb1502cbeffd253e3e695b8910e779cde2e2079ab"
+        ],
+        "resolveUniV3": true,
+        "blacklistedTokens": [
+          "0xab670FDfb0060BDC6508B84a309ff41b56CCAf3f"
+        ],
+        "tokens": [
+          "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
+        ]
+      },
+      "staking": {
+        "__empty": true
+      }
+    },
+  },
+  "wise-lending-v2": {
+    "arbitrum": {
+      "tvl": {
+        "owner": "0x9034a49587bD2c1Af27598E0f04F30Db66C87Ebf",
+        "tokens": [
+          "0x724dc807b04555b71ed48a6896b6F41593b8C637",
+          "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+          "0x5979D7b546E38E414F7E9822514be443A4800529",
+          "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+          "0x6ab707Aca953eDAeFBc4fD23bA73294241490620"
+        ]
+      },
+      "borrowed": {
+        "__empty": true
+      }
+    },
+    "ethereum": {
+      "tvl": {
+        "owner": "0x78190e4c7C7B2c2C3b0562F1f155a1FC2F5160CA",
+        "tokens": [
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+        ]
+      },
+      "borrowed": {
+        "__empty": true
+      }
+    },
+  },
   "wonton": {
     "methodology": "Counts all TON sitting in pre-bonding and high-load smart contact as the TVL. ",
     "timetravel": false,
@@ -22445,6 +29627,20 @@ const configs = {
       ]
     },
   },
+  "worldmobiletoken": {
+    "methodology": "Counts amount of WMT locked; converted by the price of ADA sitting in the orderbook.",
+    "timetravel": false,
+    "cardano": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "scripts": [
+          "addr1w82u502esm0zmv77t0csd6jrgr6wupy5zr7pdwdczpyerpgf6r666"
+        ]
+      }
+    },
+  },
   "wswap-bridge": {
     "methodology": "Bridge TVL counts collateral locked on source chain bridge contracts (BSC and Ethereum).",
     "misrepresentedTokens": true,
@@ -22464,6 +29660,46 @@ const configs = {
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
         "0xdac17f958d2ee523a2206206994597c13d831ec7"
       ]
+    },
+  },
+  "x2y2": {
+    "methodology": "TVL for X2Y2 consists of deposited NFTs",
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0xC28F7Ee92Cd6619e8eEC6A70923079fBAFb86196",
+          "0xFa4D5258804D7723eb6A934c11b1bd423bC31623",
+          "0xB81965DdFdDA3923f292a47A1be83ba3A36B5133"
+        ],
+        "resolveNFTs": true
+      },
+      "staking": {
+        "__staking": [
+          "0xb329e39ebefd16f40d38f07643652ce17ca5bac1",
+          "0x1e4ede388cbc9f4b5c79681b7f94d36a11abebc9"
+        ]
+      }
+    },
+  },
+  "xApp": {
+    "crossfi": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          [
+            "0x90b71b077BD5b7Ae47a19153Cd8E7BB5b8077E80",
+            "0x96500a433E0b67B3438cf01677E38c9EFDeF4a56"
+          ],
+          [
+            "0xae5BcC1Ef83CC3d3a8f69E9eB5380458eDbC1788",
+            "0xBA9826C84304118bd444EFC6980753aA8083b4A4"
+          ]
+        ],
+        "resolveLP": true,
+        "useDefaultCoreAssets": true
+      }
     },
   },
   "xAssets": {
@@ -22522,6 +29758,40 @@ const configs = {
       "tokens": [
         "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
       ]
+    },
+  },
+  "xfi-native-staking": {
+    "methodology": "TVL consists of the XFI tokens staked in the native staking contract on CrossFi chain.",
+    "crossfi": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "owners": [
+          "0xBe6A45407c8479107Eb08d302420eA6eCAd890C2"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000"
+        ]
+      }
+    },
+  },
+  "xlsd": {
+    "methodology": "TVL of Staked ETH & LSD tokens in the StakingPool contracts",
+    "arbitrum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "tokensAndOwners2": [
+          [
+            "0xf40F19CAFaAA25bF9B52134646c6E325E76E0e93"
+          ],
+          [
+            "0x61CeC27ba136347ddA0AEDBe29a9b8219C32fF04"
+          ]
+        ]
+      }
     },
   },
   "xmarket": {
@@ -34100,6 +41370,31 @@ const configs = {
       ]
     },
   },
+  "xsigma": {
+    "methodology": "Counts tvl of Stablecoins(USDC, DAI and USDT) deposited through SigThreePoolContract Contract",
+    "ethereum": {
+      "staking": {
+        "__staking": [
+          "0x98C32b59a0AC00Cd33750427b1A317eBcf84D0F7",
+          "0x7777777777697cfeecf846a76326da79cc606517"
+        ]
+      },
+      "pool2": {
+        "__pool2": [
+          "0x98C32b59a0AC00Cd33750427b1A317eBcf84D0F7",
+          "0x23b7e6932cb873b8696afba077c4a2486b1c862e"
+        ]
+      },
+      "tvl": {
+        "owner": "0x3333333ACdEdBbC9Ad7bda0876e60714195681c5",
+        "tokens": [
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        ]
+      }
+    },
+  },
   "xy-finance": {
     "ethereum": {
       "tokensAndOwners": [
@@ -34577,6 +41872,90 @@ const configs = {
       "fetchCoValentTokens": true
     },
   },
+  "yfdai": {
+    "ethereum": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            "0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577",
+            "0x4599cDa238Fb71573fd5A0076C199320e09BCfF0"
+          ],
+          [
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "0x290e5484601986667dC6cA72119f2B85260Ca92E"
+          ],
+          [
+            "0x6b175474e89094c44da98b954eedeac495271d0f",
+            "0x7e537E8B5028a32166F06C8664cdE9D608487428"
+          ]
+        ]
+      },
+      "staking": {
+        "__staking": [
+          [
+            "0x44d771D0C998f524ff39aB6Df64B72bce1d09566",
+            "0x75E9F410e8d1D7240b67ec6FE35FA37580b814d9",
+            "0x8D704D4107CBE5ebE8c0236C5506b30Bf8Bad305",
+            "0x26572bf2620108cb5006987e6348c07dc4e14a0f",
+            "0x175d6cbaeff93734ada4c5430815f2208a6b040c",
+            "0xc0c135D29ba6BB1Ca5F88571A0c45807C3015c64"
+          ],
+          "0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577"
+        ]
+      }
+    },
+  },
+  "yieldbricks": {
+    "timetravel": false,
+    "misrepresentedTokens": false,
+    "methodology": "\n        TVL includes all YBR tokens locked in YieldBricks staking pools on Arbitrum.\n        Pool2 covers LP tokens staked in the YieldBricks LP contracts.\n    ",
+    "arbitrum": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "__pool2": [
+          [
+            "0xb18e2e8B2f6C4f3f2e5afc1229d9d7654B0DdAA3"
+          ],
+          [
+            "0x11920f139a3121c2836e01551d43f95b3c31159c",
+            "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+          ],
+          "arbitrum"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x7436750e80bB956C6488A879D573cA417D6712A2",
+          "0x80EF7E080EfC299cd6a7Ed8341273d935252c896"
+        ],
+        "tokens": [
+          "0x11920f139a3121c2836e01551d43f95b3c31159c"
+        ]
+      }
+    },
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "__pool2": [
+          [
+            "0xe81940eCdEFc9464082B51ACE7ADeD83a1dC1EFc"
+          ],
+          [
+            "0x9d9535Dae62F5f12aB83F1183DCa1eAd244b0DB3",
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+          ],
+          "ethereum"
+        ]
+      },
+      "staking": {
+        "__empty": true
+      }
+    },
+  },
   "yieldcore": {
     "start": "2026-02-06",
     "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds. Funds may sit in the main YieldCore contract or be temporarily deployed in a Krystal vault to generate yield for bondholders. Both balances are summed to reflect true TVL.",
@@ -34643,6 +42022,54 @@ const configs = {
       ]
     },
   },
+  "zenfinance": {
+    "methodology": "TVL counts external tokens held in contracts.",
+    "hallmarks": [
+      [
+        "2026-02-03",
+        "ZenFinance announces closure"
+      ]
+    ],
+    "cronos": {
+      "tvl": {
+        "owners": [
+          "0x620B2367E630430C615ccF5CA02084c11995Fe25",
+          "0xD39e62C0FFb6653BDE0f8f456E9624BF64216126",
+          "0xEB401e50e30E770222bDeA6CA6938B237De1f3f9"
+        ],
+        "tokens": [
+          "0x0000000000000000000000000000000000000000",
+          "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
+          "0xc21223249ca28397b4b6541dffaecc539bff0c59",
+          "0x66e428c3f67a68878562e79a0234c1f83c208770",
+          "0xaF02D78F39C0002D14b95A3bE272DA02379AfF21",
+          "0xe731AE82887Ae35942C124dC6bC168995C9F2aB4",
+          "0x46e2b5423f6ff46a8a35861ec9daff26af77ab9a",
+          "0x055c517654d72A45B0d64Dc8733f8A38E27Fd49C",
+          "0xcCcCcCcCdbEC186DC426F8B5628AF94737dF0E60",
+          "0xcfe223d06b86568c24ffd17e8ac748dbac096b3b",
+          "0xBCfE5afF53fb269969725c12e5b9C3ab18B3B66c",
+          "0x898cD4E6F0a364956e28CB0B51f67a4A0f02589c",
+          "0x6b431B8a964BFcf28191b07c91189fF4403957D0",
+          "0x7492450cc8897a4e444Ad972eB1619251EF15C23",
+          "0x4d7c922D6C12CfbF5BC85F56c9ccB1F61f49bf61",
+          "0x3b41B27E74Dd366CE27cB389dc7877D4e1516d4d",
+          "0x288898a6057d2D4989c533E96Cb3bc30843c91D7",
+          "0x8C9E2bEf2962CE302ef578113eebEc62920B7e57"
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0x620B2367E630430C615ccF5CA02084c11995Fe25",
+          "0xD39e62C0FFb6653BDE0f8f456E9624BF64216126",
+          "0xEB401e50e30E770222bDeA6CA6938B237De1f3f9"
+        ],
+        "tokens": [
+          "0x41bc026dABe978bc2FAfeA1850456511ca4B01bc"
+        ]
+      }
+    },
+  },
   "zenydex": {
     "methodology": "TVL is the sum of WETH collateral deposits and USDC lending liquidity held in ZenyDex protocol contracts.",
     "base": {
@@ -34699,146 +42126,22 @@ const configs = {
       "resolveNFTs": true
     },
   },
-  "zkLink": {
-    "ethereum": {
-      "owners": [
-        "0x5fD9F73286b7E8683Bab45019C94553b93e015Cf",
-        "0xAd16eDCF7DEB7e90096A259c81269d811544B6B6"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",
-        "0xE46a5E19B19711332e33F33c2DB3eA143e86Bc10",
-        "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678",
-        "0x49446A0874197839D15395B908328a74ccc96Bc0",
-        "0xC6572019548dfeBA782bA5a2093C836626C7789A",
-        "0x9Dc7e196092DaC94f0c76CFB020b60FA75B97C5b",
-        "0x57F5E098CaD7A3D1Eed53991D4d66C45C9AF7812"
-      ],
-      "fetchCoValentTokens": true
-    },
-    "arbitrum": {
-      "owners": [
-        "0xFF73a1a1d27951A005eb23276dc99CB7F8d5420A",
-        "0xfB0Ad0B3C2605A7CA33d6badd0C685E11b8F5585"
-      ],
-      "tokens": [
-        "0x4186BFC76E2E237523CBC30FD220FE055156b41F",
-        "0x3082CC23568eA640225c2467653dB90e9250AaA0"
-      ],
-      "fetchCoValentTokens": true
-    },
-    "linea": {
-      "owners": [
-        "0x5Cb18b6e4e6F3b46Ce646b0f4704D53724C5Df05",
-        "0x62cE247f34dc316f93D3830e4Bf10959FCe630f8"
-      ],
-      "tokens": [
-        "0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4",
-        "0x2416092f143378750bb29b79eD961ab195CcEea5",
-        "0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F",
-        "0xA219439258ca9da29E9Cc4cE5596924745e12B93",
-        "0x4AF15ec2A0BD43Db75dd04E62FAA3B8EF36b00d5",
-        "0x176211869cA2b568f2A7D4EE941E073a821EE1ff"
-      ],
-      "fetchCoValentTokens": true
-    },
-    "era": {
-      "owners": [
-        "0xaB3DDB86072a35d74beD49AA0f9210098ebf2D08",
-        "0xaFe8C7Cf33eD0fee179DFF20ae174C660883273A"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0xBBeB516fb02a01611cBBE0453Fe3c580D7281011",
-        "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4",
-        "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C"
-      ],
-      "fetchCoValentTokens": true
-    },
-    "mantle": {
-      "owners": [
-        "0xD784d7128B46B60Ca7d8BdC17dCEC94917455657",
-        "0x62351b47e060c61868Ab7E05920Cb42bD9A5f2B2"
-      ],
-      "tokens": [
-        "0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8",
-        "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae",
-        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111",
-        "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
-        "0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2",
-        "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
-        "0x779f4E5fB773E17Bc8E809F4ef1aBb140861159a"
-      ],
-      "fetchCoValentTokens": false
-    },
-    "manta": {
-      "owners": [
-        "0xD784d7128B46B60Ca7d8BdC17dCEC94917455657",
-        "0x44a65dc12865A1e5249b45b4868f32b0E37168FF"
-      ],
-      "tokens": [
-        "0x0Dc808adcE2099A9F62AA87D9670745AbA741746",
-        "0xb73603c5d87fa094b7314c74ace2e64d165016fb",
-        "0xf417f5a458ec102b90352f697d6e2ac3a3d2851f",
-        "0x305E88d809c9DC03179554BFbf85Ac05Ce8F18d6",
-        "0x0000000000000000000000000000000000000000",
-        "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
-        "0xEc901DA9c68E90798BbBb74c11406A32A70652C3",
-        "0xbdAd407F77f44F7Da6684B416b1951ECa461FB07",
-        "0x34c7Ad65E4163306f8745996688b476914201cE0"
-      ],
-      "fetchCoValentTokens": false
-    },
-    "blast": {
-      "owners": [
-        "0x29BA92Fe724beD5c5EBfd0099F2F64a6DC5078FD",
-        "0x8Df0c2bA3916bF4789c50dEc5A79b2fc719F500b"
-      ],
-      "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0x2416092f143378750bb29b79eD961ab195CcEea5",
-        "0x038f1C6ED5FccF690A920a27b39366eeeF27eFCe",
-        "0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204",
-        "0xf782E172A14Ee1c85cD980C15375bA0E87957028"
-      ],
-      "fetchCoValentTokens": false
-    },
-    "base": {
-      "owners": [
-        "0xE473ce141b1416Fe526eb63Cf7433b7B8d7264Dd",
-        "0x80d12A78EfE7604F00ed07aB2f16F643301674D5"
-      ],
-      "tokens": [
-        "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"
-      ],
-      "fetchCoValentTokens": true
-    },
-    "optimism": {
-      "owners": [
-        "0x46C8D02E93d5a03899dFa7Cf8A40A07589A3fA1b",
-        "0x5Bd51296423A9079b931414C1De65e7057326EaA"
-      ],
-      "fetchCoValentTokens": true
-    },
-    "tron": {
-      "owners": [
-        "TXZFj3Eo7xLArr32SYea2GtWmG1BekdpDq"
-      ],
-      "tokens": [
-        "TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9"
-      ],
-      "fetchCoValentTokens": false
-    },
-    "merlin": {
-      "owners": [
-        "0xf5b90fE755Aa2e3CcC69d9548cbeB7b38c661D73"
-      ],
-      "tokens": [
-        "0xB880fd278198bd590252621d4CD071b1842E9Bcd",
-        "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71"
-      ],
-      "fetchCoValentTokens": false
+  "zinc": {
+    "timetravel": false,
+    "start": "2026-05-26",
+    "methodology": "TVL counts SOL held in Zinc stockpile and bonanza prize vaults. Staking counts ZINC deposited in the staking vault. Treasury and buyback vault balances are excluded.",
+    "solana": {
+      "tvl": {
+        "solOwners": [
+          "8RxMJD7BtdzxuZkmDqcxhR6gWvegLJ1GNf9NFrPkCmwf",
+          "DNJGqahXJfu8Fsg4HRS7bKWFLnSzU5fvt85fkake7JFY"
+        ]
+      },
+      "staking": {
+        "tokenAccounts": [
+          "4Ym9uvwrwdpiTKq874T8wSqzaFkh8AVazf255FKLt9MR"
+        ]
+      }
     },
   },
   "zkasino": {
@@ -35053,8 +42356,7 @@ const configs = {
         "0xca38607d85e8f6294dc10728669605e6664c2d70",
         "0x2f121cddca6d652f35e8b3e560f9760898888888",
         "0x777777779d229cdF3110e9de47943791c26300Ef"
-      ],
-      "chain": "base"
+      ]
     },
   },
   "zksync-lite": {
@@ -35120,4 +42422,14 @@ const configs = {
   },
 }
 
-module.exports = buildProtocolExports(configs, sumTokensExportFn)
+const allProtocols = {}
+for (const [name, cfg] of Object.entries(configs)) {
+  const out = {}
+  for (const [k, v] of Object.entries(cfg)) {
+    if (META.has(k)) { out[k] = v; continue }
+    if (isBucketMap(v)) { const b = {}; for (const [key, spec] of Object.entries(v)) b[key] = buildBucket(spec, k); out[k] = b }
+    else out[k] = { tvl: buildBucket(v, k) }
+  }
+  allProtocols[name] = out
+}
+module.exports = allProtocols
