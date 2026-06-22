@@ -95,6 +95,11 @@ const configs = {
     igra: {
       poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
     }
+  },
+  'velconix': {
+    megaeth: {
+      poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'],
+    },
   }
 }
 
