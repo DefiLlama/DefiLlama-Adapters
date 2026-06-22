@@ -16,6 +16,8 @@ const configs = {
                 '0xd36f53497507e948df9f277cf8c3ececb09a1c1d',
                 '0x604117f0c94561231060f56cd2ddd16245d434c5',
                 '0xad685fec2066d7f5436f5804882998ba79725706',
+                '0xdf8a0d3c90462c4c9b5a8697c119fa67cb84a874',
+                '0x5fe86b1adee4b18f6a8c55ea0bdbb55e2e445159'
             ],
         },
         flow: {
@@ -26,6 +28,12 @@ const configs = {
         plasma: {
             erc4626: [
                 '0x0a71624ab3e8101f78d95dfc81e0f1f31128ed7a',
+            ]
+        },
+        base: {
+            erc4626: [
+                '0x01a6ff6eb333c1393ef424f5894b18367f1499a8',
+                '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8'
             ]
         }
     }
