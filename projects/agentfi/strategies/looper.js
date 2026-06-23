@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const { nullAddress } = require("../../helper/unwrapLPs");
 
@@ -33,7 +34,7 @@ async function getTvlForLooperWithOrbit(agentAddresses, api) {
             const borrowBalance = borrowBalanceResult.output
             const supplyBalance = supplyBalanceResult.output
             const underlying = underlyingResult.output
-            const isEth = underlying === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+            const isEth = underlying === ADDRESSES.GAS_TOKEN_2
             const tokenToAdd = isEth ? nullAddress : underlying
             api.add(tokenToAdd, BigNumber(supplyBalance).minus(borrowBalance))
         }

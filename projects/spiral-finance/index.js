@@ -1,5 +1,11 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address target, address adapter, uint256 targetPoolId, uint256 drainModifier, uint256 totalShares, uint256 totalDeposits, uint256 entranceFee)",
+    "lockableToken": "function lockableToken(uint256 poolId) view returns (address)",
+    "token0": "address:token0",
+    "token1": "address:token1"
+  };
 const { unwrapUniswapLPs, nullAddress } = require("../helper/unwrapLPs");
 
 const spr = "0x8c739564345dfcb7e4c7e520b0e8fa142c358a78";

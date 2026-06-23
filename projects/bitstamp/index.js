@@ -1,7 +1,10 @@
 const sdk = require('@defillama/sdk')
 const { cexExports } = require("../helper/cex")
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
+
+const cexExportsObject = {}
 
 const config = {
   ripple: {
@@ -24,11 +27,12 @@ const config = {
 
 const chains = [
   'bitcoin', 'litecoin', 'ripple',
-  'ethereum', 'avax', 'solana', 'sui',  'xdc', 'near', 'cardano', 'algorand',
+  'ethereum', 'avax', 'solana', 'sui',  'xdc', 'near', 'cardano',
+  // 'algorand',
 ]
 
 chains.forEach(chain => {
-  module.exports[chain] = {
+  cexExportsObject[chain] = {
     tvl: async (...args) => {
       const data = await getAllData()
       const tvlFunc = cexExports({ [chain]: data[chain] })[chain].tvl
@@ -81,4 +85,16 @@ function getAllData() {
     })
   }
 }
+
+const withdrawalAddresses = [
+  '0x3262f13a39efaca789ae58390441c9ed76bc658a',
+  '0xf666814c2ae92ca0e06667f80dac1eb8a97e48ae',
+  '0x5c95a672e34b3252482ed9a215f2926d2887845d',
+  '0x88a4df73aac310484c60c4c0ac4904cab938c20b',
+]
+
+module.exports = mergeExports([
+  cexExportsObject,
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])
 

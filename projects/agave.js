@@ -1,5 +1,5 @@
 const { staking } = require("./helper/staking.js");
-const { aaveChainTvl } = require('./helper/aave.js');
+const { aaveExports } = require('./helper/aave.js');
 const sdk = require('@defillama/sdk');
 const methodologies = require("./helper/methodologies.js");
 
@@ -12,20 +12,17 @@ const protocolDataHelper = '0x24dCbd376Db23e4771375092344f5CbEA3541FC0'
 
 const addressesProviderRegistryXDAI_old = "0xa5E80AEAa020Ae41b1cBEe75dE7826297F7D803E"
 const protocolDataHelper_old = '0xa874f66342a04c24b213BF0715dFf18818D24014'
+const exportsV1 = aaveExports('', addressesProviderRegistryXDAI, undefined, [protocolDataHelper])
+const exportsV2 = aaveExports('', addressesProviderRegistryXDAI_old, undefined, [protocolDataHelper_old])
 
 module.exports = {
-  hallmarks: [
-    [1647302400, "Reentrancy attack"]
-  ],
+  // hallmarks: [
+  //   ['2022-03-15', "Reentrancy attack"]
+  // ],
   methodology: methodologies.lendingMarket,
   xdai: {
-    tvl: sdk.util.sumChainTvls([
-      aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr => `xdai:${addr}`, [protocolDataHelper], false),
-      aaveChainTvl("xdai", addressesProviderRegistryXDAI_old, addr => `xdai:${addr}`, [protocolDataHelper_old], false),
-    ]),
-    borrowed: sdk.util.sumChainTvls([
-      aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr => `xdai:${addr}`, [protocolDataHelper], true),
-    ]),
+    tvl: sdk.util.sumChainTvls([exportsV1.tvl, exportsV2.tvl,]),
+    borrowed: sdk.util.sumChainTvls([exportsV1.borrowed,]),
     staking: staking(agaveStakingContract, agaveTokenAddress)
   }
 }

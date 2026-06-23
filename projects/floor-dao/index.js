@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
-const sdk = require("@defillama/sdk");
 // https://docs.floor.xyz/fundamentals/treasury
 
 const WETH = ADDRESSES.ethereum.WETH
@@ -16,23 +15,20 @@ module.exports.methodology = 'Using ohmTvl for staking and treasury core TVL, an
 
 module.exports = {
   ethereum: {
-    tvl: async (_, block) => {
+    tvl: async (api) => {
       const vaults = [0, 24, 27, 298, 392,]
-      const stakingInfo = await sdk.api2.abi.multiCall({
+      const stakingInfo = await api.multiCall({
         target: NFTX_LP_STAKING,
         abi: abis.vaultStakingInfo,
         calls: vaults.map(i => ({ params: i})),
-        block,
       })
-      const stakingBalances = await sdk.api2.abi.multiCall({
+      const stakingBalances = await api.multiCall({
         target: NFTX_LP_STAKING,
         abi: abis.balanceOf,
         calls: vaults.map(i => ({ params: [i, treasury]})),
-        block,
       })
-      const balances = {}
-      stakingBalances.forEach((bal,i) => sdk.util.sumSingleBalance(balances,stakingInfo[i][0],bal))
-      return sumTokens2({ balances, block, owners: [treasury, floorTreasury2], tokens: [WETH, USDC], resolveLP: true, })
+      stakingBalances.forEach((bal,i) => api.add(stakingInfo[i][0],bal))
+      return sumTokens2({ api, owners: [treasury, floorTreasury2], tokens: [WETH, USDC], resolveLP: true, })
     },
     staking: sumTokensExport({owner: stakingAddress, tokens: [FLOOR]})
   }

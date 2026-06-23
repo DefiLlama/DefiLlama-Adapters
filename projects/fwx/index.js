@@ -6,6 +6,9 @@ module.exports = {
   },
   base: {
     tvl,
+  },
+  bsc: {
+    tvl,
   }
 }
 
@@ -15,12 +18,14 @@ const dexes = {
   ],
   base: [
     "0xaf5a41Ad65752B3CFA9c7F90a516a1f7b3ccCdeD" // perp
+  ],
+  bsc: [
+    "0x562a73AcfFcc13b349e3d55D105Ae1498C79702e" // perp
   ]
 }
 
 async function tvl(api) {
-
-  const { assets } = await getConfig('fwx/' + api.chain, "https://app.fwx.finance/api/v2/assets?chain_id=" + api.chainId)
+  const { assets } = await getConfig('fwx/' + api.chain, "https://analytics.fwx.finance/api/assets?chain_id=" + api.chainId)
 
   let tokensAndOwners = [];
   for (let i = 0; i < assets.length; i++) {

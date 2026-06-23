@@ -28,3 +28,7 @@ module.exports=Object.keys(chainContracts).reduce((all, chain)=> ({
         }
     }
 }), {})
+
+module.exports.hallmarks = [
+    ['2025-03-20', "Resupply Launch"]
+]

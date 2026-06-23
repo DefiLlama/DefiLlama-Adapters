@@ -1,28 +1,25 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { nullAddress, treasuryExports } = require("../helper/treasury");
+const { treasuryExports } = require("../helper/treasury");
+const axios = require('axios')
 
-const owners = ['0x8f456e525ed0115e22937c5c8afac061cc697f21']
+const evm_owners = ['0x8f456e525ed0115e22937c5c8afac061cc697f21']
+const btc_owners= ['bc1qe02p6kqe40g826zp3yfyzgs87c5az2v6wfvn30']
+const API_URL = 'https://api.hyperliquid.xyz/info'
 
-module.exports = treasuryExports({
-  ethereum: {
-    tokens: [
-      nullAddress,
-    ],
-    owners,
-    ownTokens: [],
-  },
-  mantle: {
-    tokens: [
-      ADDRESSES.mantle.mETH,
-      ADDRESSES.bob.FBTC
-    ],
-    owners,
-    ownTokens: [],
-  },
-  arbitrum: {
-    tokens: [
-    ],
-    owners,
-    ownTokens: [],
-  },
-})
+const tvl = async (api) => {
+  const { data } = await axios.post(API_URL, { "type": "userVaultEquities", user: evm_owners[0] })
+  data.forEach(({ equity }) => {
+    api.add(ADDRESSES.ethereum.USDC, +equity * 1e6, { skipChain: true })
+  })
+}
+
+module.exports = {
+  hyperliquid: { tvl },
+  ...treasuryExports({
+    isComplex: true,
+    complexOwners: evm_owners,
+    bitcoin: { owners: btc_owners },
+    ethereum: {  },
+    mantle: {  },
+  })
+}

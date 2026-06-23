@@ -1,5 +1,48 @@
 const { multiCall, sumTokens, } = require("../helper/chain/starknet");
-const { assetTokenAbi } = require("./abi");
+const assetToken = [
+  {
+    "name": "get_underlying_asset",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "_underlyingAsset",
+        "type": "felt"
+      }
+    ],
+    "stateMutability": "view",
+    "customType": "address"
+  },
+  {
+    "name": "rToken_underlying_asset",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "_underlyingAsset",
+        "type": "felt"
+      }
+    ],
+    "stateMutability": "view",
+    "customType": "address"
+  },
+  {
+    "name": "totalSupply",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "totalSupply",
+        "type": "Uint256"
+      }
+    ],
+    "stateMutability": "view"
+  }
+]
+
+
+const assetTokenAbi = {}
+assetToken.forEach(i => assetTokenAbi[i.name] = i)
 
 const supplyTokens = [
   "0x1320a9910e78afc18be65e4080b51ecc0ee5c0a8b6cc7ef4e685e02b50e57ef",
@@ -38,6 +81,6 @@ module.exports = {
     borrowed,
   },
   hallmarks: [
-    [1701066795, "Hashstack Mainnet launch"],
+    ['2023-11-27', "Hashstack Mainnet launch"],
   ]
 };

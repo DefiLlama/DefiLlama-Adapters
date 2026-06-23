@@ -9,7 +9,20 @@ const AladdinAFXSABI = require("./abis/AladdinAFXS.json");
 const AladdinCVXABI = require("./abis/AladdinCVX.json");
 const AladdinSdCRVABI = require("./abis/AladdinSdCRV.json");
 const AladdinRUSDABI = require("./abis/AladdinRUSD.json");
-const { farmConfig } = require("./config.js");
+const coins = {};
+const farmConfig = [
+  {
+    coins: [
+      coins.ctr,
+      coins.eth,
+    ],
+    addresses: {
+      gauge: '0x5BC3dD6E6b4E5DD811d558843DA6A1bfBB9c9dCa',
+      swap: '0xf2f12B364F614925aB8E2C8BFc606edB9282Ba09',
+      lpToken: '0x3f0e7916681452D23Cd36B1281457DA721F2E5dF',
+    }
+  }
+];
 
 const concentratorVault = "0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8";
 const concentratorAcrv = "0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884";
@@ -24,6 +37,10 @@ const arUSD4626Address = "0x07D1718fF05a8C53C8F05aDAEd57C0d672945f9a";
 const rUSDAddress = "0x65D72AA8DA931F047169112fcf34f52DbaAE7D18";
 const aFXNAddress = "0x00Bac667a4cCf9089aB1Db978238C555C4349545";
 const fxnAddress = ADDRESSES.ethereum.FXN;
+const fxSaveAddress = "0x7743e50F534a7f9F1791DdE7dCD89F7783Eefc39";
+const fxBASEAddress = "0x65C9A641afCEB9C0E6034e558A319488FA0FA3be";
+const asdPENDLEAddress = "0x606462126E4Bd5c4D153Fe09967e4C46C9c7FeCf";
+const sdPENDLEAddress = "0x5Ea630e00D6eE438d3deA1556A110359ACdc10A9";
 
 const concentratorNewVault = "0x3Cf54F3A1969be9916DAD548f3C084331C4450b5";
 const concentratorAfxsVault = "0xD6E3BB7b1D6Fa75A71d48CFB10096d59ABbf99E1";
@@ -36,16 +53,12 @@ const clevCVXCVXAddress = "0xF9078Fb962A7D13F55d40d49C8AA6472aBD1A5a6";
 const sdCRVAddress = "0xD1b5651E55D4CeeD36251c61c50C889B36F6abB5";
 const cvxAddress = ADDRESSES.ethereum.CVX;
 
-const chain = "ethereum";
-async function getBalancerLpTvl(balances, block) {
-  const ctrLpTotalSupply = (
-    await sdk.api.abi.call({
-      target: aladdinBalancerLPGauge,
-      block,
-      abi: "erc20:totalSupply",
-      params: [],
-    })
-  ).output;
+async function getBalancerLpTvl(balances, api) {
+  const ctrLpTotalSupply = await api.call({
+    target: aladdinBalancerLPGauge,
+    abi: "erc20:totalSupply",
+    params: [],
+  });
   sdk.util.sumSingleBalance(
     balances,
     usdtAddress,
@@ -53,42 +66,40 @@ async function getBalancerLpTvl(balances, block) {
   );
 }
 
-async function getFarmLpTvl(balances, block) {
+async function getFarmLpTvl(balances, api) {
   const farmData = farmConfig[0];
-  const ctrLpTotalSupply = (
-    await sdk.api.abi.call({
-      target: farmData.addresses.gauge,
-      block,
-      abi: "erc20:totalSupply",
-      params: [],
-    })
-  ).output;
+  const ctrLpTotalSupply = await api.call({
+    target: farmData.addresses.gauge,
+    abi: "erc20:totalSupply",
+    params: [],
+  });
   sdk.util.sumSingleBalance(
     balances,
     farmData.addresses.lpToken,
     ctrLpTotalSupply,
-    chain
+    api.chain
   );
 }
 
 async function tvl(api) {
-  const block = api.block;
   let balances = {};
   await Promise.all([
-    getBalancerLpTvl(balances, block),
-    getFarmLpTvl(balances, block),
-    getAFXSInfo(balances, block),
-    getAfrxETHInfo(balances, block),
-    getAbcCVXInfo(balances, block),
-    getAsdCRVInfo(balances, block),
-    getAladdinCVXInfo(balances, block),
-    getAladdinRUSDInfo(balances, block),
-    getAladdinFXNInfo(balances, block),
-    getVaultInfo("old", balances, block),
-    getVaultInfo("New", balances, block),
-    getVaultInfo("afxs", balances, block),
-    getVaultInfo("afrxETH", balances, block),
-    getVaultInfo("asdCRV", balances, block),
+    getBalancerLpTvl(balances, api),
+    getFarmLpTvl(balances, api),
+    getAFXSInfo(balances, api),
+    getAfrxETHInfo(balances, api),
+    getAbcCVXInfo(balances, api),
+    getAsdCRVInfo(balances, api),
+    getAladdinCVXInfo(balances, api),
+    getAladdinRUSDInfo(balances, api),
+    getAladdinFXNInfo(balances, api),
+    getFxSaveInfo(balances, api),
+    getAsdPENDLEInfo(balances, api),
+    getVaultInfo("old", balances, api),
+    getVaultInfo("New", balances, api),
+    getVaultInfo("afxs", balances, api),
+    getVaultInfo("afrxETH", balances, api),
+    getVaultInfo("asdCRV", balances, api),
     addACRVbalance(balances, api),
   ]);
   return balances;
@@ -107,7 +118,7 @@ async function addACRVbalance(balances, api) {
   );
 }
 
-async function getVaultInfo(type, balances, block) {
+async function getVaultInfo(type, balances, api) {
   let _target = concentratorVault;
   let _abi = AladdinConvexVaultABI.poolInfo;
   switch (type) {
@@ -129,9 +140,7 @@ async function getVaultInfo(type, balances, block) {
       _abi = AladdinConvexVaultABI.asdCRVPoolInfo;
       break;
   }
-  let poolInfo = await sdk.api2.abi.fetchList({
-    chain,
-    block,
+  let poolInfo = await api.fetchList({
     lengthAbi: abi.poolLength,
     itemAbi: _abi,
     target: _target,
@@ -142,148 +151,150 @@ async function getVaultInfo(type, balances, block) {
         balances,
         item.strategy.token,
         item.supply.totalUnderlying,
-        chain
+        api.chain
       );
     } else {
       sdk.util.sumSingleBalance(
         balances,
         item.lpToken,
         item.totalUnderlying,
-        chain
+        api.chain
       );
     }
   });
 }
 
-async function getAFXSInfo(balances, block) {
+async function getAFXSInfo(balances, api) {
   const cvxfxsCrvInfo = {
     lpToken: "0xF3A43307DcAFa93275993862Aae628fCB50dC768",
   };
-  const aFXSTotalUnderlying = (
-    await sdk.api.abi.call({
-      target: concentratorAFXS,
-      block,
-      abi: AladdinAFXSABI.totalAssets,
-    })
-  ).output;
+  const aFXSTotalUnderlying = await api.call({
+    target: concentratorAFXS,
+    abi: AladdinAFXSABI.totalAssets,
+  });
 
   sdk.util.sumSingleBalance(
     balances,
     cvxfxsCrvInfo.lpToken,
     aFXSTotalUnderlying,
-    chain
+    api.chain
   );
 }
 
-async function getAfrxETHInfo(balances, block) {
+async function getAfrxETHInfo(balances, api) {
   const ethFrxETHCrvInfo = {
     lpToken: "0xf43211935C781D5ca1a41d2041F397B8A7366C7A",
   };
-  const aFrxETHTotalUnderlying = (
-    await sdk.api.abi.call({
-      target: concentratorAFrxETH,
-      block,
-      abi: AladdinAFXSABI.totalAssets,
-    })
-  ).output;
+  const aFrxETHTotalUnderlying = await api.call({
+    target: concentratorAFrxETH,
+    abi: AladdinAFXSABI.totalAssets,
+  });
   sdk.util.sumSingleBalance(
     balances,
     ethFrxETHCrvInfo.lpToken,
     aFrxETHTotalUnderlying,
-    chain
+    api.chain
   );
 }
 
-async function getAbcCVXInfo(balances, block) {
-  const totalClevCVXAmount = (
-    await sdk.api.abi.call({
-      target: concentratorAbcCVXAddress,
-      block,
-      abi: AladdinCVXABI.totalDebtToken,
-    })
-  ).output;
-  const totalCurveLpTokenAmount = (
-    await sdk.api.abi.call({
-      target: concentratorAbcCVXAddress,
-      block,
-      abi: AladdinCVXABI.totalCurveLpToken,
-    })
-  ).output;
+async function getAbcCVXInfo(balances, api) {
+  const totalClevCVXAmount = await api.call({
+    target: concentratorAbcCVXAddress,
+    abi: AladdinCVXABI.totalDebtToken,
+  });
+  const totalCurveLpTokenAmount = await api.call({
+    target: concentratorAbcCVXAddress,
+    abi: AladdinCVXABI.totalCurveLpToken,
+  });
   sdk.util.sumSingleBalance(
     balances,
     clevCVXAddress,
     totalClevCVXAmount,
-    chain
+    api.chain
   );
   sdk.util.sumSingleBalance(
     balances,
     clevCVXCVXAddress,
     totalCurveLpTokenAmount,
-    chain
+    api.chain
   );
 }
 
-async function getAsdCRVInfo(balances, block) {
-  const asdCRVTotalUnderlying = (
-    await sdk.api.abi.call({
-      target: concentratorAsdCRVAddress,
-      block,
-      abi: AladdinSdCRVABI.totalAssets,
-    })
-  ).output;
+async function getAsdCRVInfo(balances, api) {
+  const asdCRVTotalUnderlying = await api.call({
+    target: concentratorAsdCRVAddress,
+    abi: AladdinSdCRVABI.totalAssets,
+  });
   sdk.util.sumSingleBalance(
     balances,
     sdCRVAddress,
     asdCRVTotalUnderlying,
-    chain
+    api.chain
   );
 }
 
-async function getAladdinCVXInfo(balances, block) {
-  const aladdinCVXTotalUnderlying = (
-    await sdk.api.abi.call({
-      target: aladdinCVXAddress,
-      block,
-      abi: AladdinAFXSABI.totalAssets,
-    })
-  ).output;
+async function getAladdinCVXInfo(balances, api) {
+  const aladdinCVXTotalUnderlying = await api.call({
+    target: aladdinCVXAddress,
+    abi: AladdinAFXSABI.totalAssets,
+  });
   sdk.util.sumSingleBalance(
     balances,
     cvxAddress,
     aladdinCVXTotalUnderlying,
-    chain
+    api.chain
   );
 }
 
-async function getAladdinRUSDInfo(balances, block) {
-  const aladdinRUSDTotalUnderlying = (
-    await sdk.api.abi.call({
-      target: arUSDAddress,
-      block,
-      abi: AladdinRUSDABI.getTotalAssets,
-    })
-  ).output;
+async function getAladdinRUSDInfo(balances, api) {
+  const aladdinRUSDTotalUnderlying = await api.call({
+    target: arUSDAddress,
+    abi: AladdinRUSDABI.getTotalAssets,
+  });
   sdk.util.sumSingleBalance(
     balances,
     rUSDAddress,
     aladdinRUSDTotalUnderlying,
-    chain
+    api.chain
   );
 }
 
-async function getAladdinFXNInfo(balances, block) {
-  const aladdinFXNTotalUnderlying = (
-    await sdk.api.abi.call({
-      target: aFXNAddress,
-      block,
-      abi: AladdinAFXSABI.totalAssets,
-    })
-  ).output;
+async function getAladdinFXNInfo(balances, api) {
+  const aladdinFXNTotalUnderlying = await api.call({
+    target: aFXNAddress,
+    abi: AladdinAFXSABI.totalAssets,
+  });
   sdk.util.sumSingleBalance(
     balances,
     fxnAddress,
     aladdinFXNTotalUnderlying,
-    chain
+    api.chain
+  );
+}
+
+async function getFxSaveInfo(balances, api) {
+  const fxSaveTotalUnderlying = await api.call({
+    target: fxSaveAddress,
+    abi: AladdinAFXSABI.totalAssets,
+  });
+  sdk.util.sumSingleBalance(
+    balances,
+    fxBASEAddress,
+    fxSaveTotalUnderlying,
+    api.chain
+  );
+}
+
+async function getAsdPENDLEInfo(balances, api) {
+  const asdPENDLETotalUnderlying = await api.call({
+    target: asdPENDLEAddress,
+    abi: AladdinAFXSABI.totalAssets,
+  });
+  sdk.util.sumSingleBalance(
+    balances,
+    sdPENDLEAddress,
+    asdPENDLETotalUnderlying,
+    api.chain
   );
 }
 

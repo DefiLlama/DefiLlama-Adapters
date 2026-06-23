@@ -12,7 +12,6 @@ async function tvl(api) {
     Object.values(contracts.cvxLPpools).map(async ({ poolAddress, holder, tokenAddress, alToken }) => {
       const lpTokenBalance = await api.call({ target: poolAddress, abi: "erc20:balanceOf", params: holder, })
       const supply = await api.call({ target: tokenAddress, abi: "erc20:totalSupply", })
-      // console.log({poolAddress, holder, tokenAddress, alToken, lpTokenBalance, supply, ratio: lpTokenBalance / supply})
       if (+supply === 0) return;
       const ratio = lpTokenBalance / supply
       const tokenBalances = await api.multiCall({ target: tokenAddress, abi: 'function balances(uint256) view returns (uint256)', calls: [0, 1] })
@@ -39,4 +38,7 @@ module.exports = {
   fantom: { tvl, },
   optimism: { tvl, },
   arbitrum: { tvl },
+  hallmarks: [
+    ['2026-04-02', "Migration to v3 started"],
+  ]
 }

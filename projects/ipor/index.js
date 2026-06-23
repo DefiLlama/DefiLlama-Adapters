@@ -1,4 +1,9 @@
-const { abi } = require("./abi");
+const abi = {
+  getAccruedBalance: "function getAccruedBalance() view returns (uint256 totalCollateralPayFixed, uint256 totalCollateralReceiveFixed, uint256 liquidityPool, uint256 vault)",
+  getAmmBalance: "function getAmmBalance(address asset) view returns (uint256 totalCollateralPayFixed, uint256 totalCollateralReceiveFixed, uint256 liquidityPool, uint256 vault)",
+  getBalancesForOpenSwap: " function getBalancesForOpenSwap(address asset) external view returns (uint256 totalCollateralPayFixed, uint256 totalNotionalPayFixed, uint256 totalCollateralReceiveFixed, uint256 totalNotionalReceiveFixed, uint256 liquidityPool)",
+  getAsset: "address:getAsset",
+};
 const { getConfig } = require('../helper/cache')
 
 const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/refs/heads/main/mainnet/addresses.json";
@@ -68,6 +73,10 @@ module.exports = {
     tvl: calculateTvlForV2
   },
   hallmarks:[
-    [1674648000, "Liquidity Mining Start"]
+    ["2022-08-16", "IPOR Protocol v1 Launch"],
+    ["2023-01-25", "Liquidity Mining Start"],
+    ["2023-03-11", "USDC Depeg DeFi Contagion"],
+    ["2023-05-08", "IPOR Protocol v2 Launch"],
+    ["2023-12-18", "IPOR's stETH Stake Rate Swap Launch"]
   ],
 };

@@ -5,7 +5,7 @@ const tvl = async (api) => {
   const { balances = [] } = await getCache('xrpl-dex', 'balances');
   if (balances.length < 9500) throw new Error('No balances found')
 
-  const tvl = await transformDexBalances({
+  const tvl = transformDexBalances({
     chain: 'ripple',
     data: balances
       .filter(i => i.token0Reserve && i.token1Reserve)

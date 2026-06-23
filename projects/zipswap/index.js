@@ -1,22 +1,20 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 const { transformDexBalances } = require('../helper/portedTokens')
 const uniswapAbi = require('../helper/abis/uniswap')
-const sdk = require('@defillama/sdk')
 
-async function opTvl(_, _b, {optimism: block}) {
-  const chain = 'optimism'
+async function opTvl(api) {
   const factory = '0x8BCeDD62DD46F1A76F8A1633d4f5B76e0CDa521E'
   const data = []
-  const length = await sdk.api2.abi.call({ abi: uniswapAbi.allPairsLength, target: factory, chain, block, })
+  const length = await api.call({ abi: uniswapAbi.allPairsLength, target: factory, })
   const pairCalls = []
-  for (let i = 0; i < length;i++) 
+  for (let i = 0; i < length; i++)
     if (i !== 67) pairCalls.push(i)
 
-  const calls = await sdk.api2.abi.multiCall({ block, chain, abi: uniswapAbi.allPairs, calls: pairCalls, target: factory })
-  const token0s = await sdk.api2.abi.multiCall({ abi: uniswapAbi.token0, chain, block, calls })
-  const token1s = await sdk.api2.abi.multiCall({ abi: uniswapAbi.token1, chain, block, calls })
-  const reserves = await sdk.api2.abi.multiCall({ abi: uniswapAbi.getReserves, chain, block, calls })
-  reserves.forEach(({ _reserve0, _reserve1}, i) => {
+  const calls = await api.multiCall({ abi: uniswapAbi.allPairs, calls: pairCalls, target: factory })
+  const token0s = await api.multiCall({ abi: uniswapAbi.token0, calls })
+  const token1s = await api.multiCall({ abi: uniswapAbi.token1, calls })
+  const reserves = await api.multiCall({ abi: uniswapAbi.getReserves, calls })
+  reserves.forEach(({ _reserve0, _reserve1 }, i) => {
     data.push({
       token0: token0s[i],
       token1: token1s[i],
@@ -24,7 +22,7 @@ async function opTvl(_, _b, {optimism: block}) {
       token0Bal: _reserve0,
     })
   })
-  return transformDexBalances({ chain, data, })
+  return transformDexBalances({ api, data, })
 }
 
 module.exports = {

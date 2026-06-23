@@ -1,4 +1,36 @@
-const { getLogs } = require('../helper/cache/getLogs');
+const { getLogs2 } = require('../helper/cache/getLogs');
+const idl = {
+  "address": "spicyTHtbmarmUxwFSHYpA8G4uP2nRNq38RReMpoZ9c",
+  "metadata": {"name": "wasabi_solana", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [{"name": "LpVault", "discriminator": [189, 45, 167, 23, 91, 118, 105, 190]}],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "LpVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "bump", "docs": ["Bump seed for the LpVault's PDA"], "type": "u8"},
+          {"name": "asset", "docs": ["The SPL Mint address of the token that sits in this vault"], "type": "pubkey"},
+          {"name": "vault", "docs": ["The SPL Token account that stores the unborrowed tokens"], "type": "pubkey"},
+          {"name": "shares_mint", "docs": ["The SPL Mint address that represents shares in the vault"], "type": "pubkey"},
+          {
+            "name": "total_assets",
+            "docs": ["Count of the total assets owned by the vault, including tokens that are currently borrowed"],
+            "type": "u64"
+          },
+          {"name": "max_borrow", "docs": ["Maximum amount that can be borrowed by admin"], "type": "u64"},
+          {"name": "total_borrowed", "docs": ["Total amount currently borrowed from the vault that is to be paid back by the admin"], "type": "u64"}
+        ]
+      }
+    }
+  ],
+  "constants": [{"name": "SEED", "type": "string", "value": "\"anchor\""}]
+};
+const { getProvider, sumTokens2: sumTokensSOL } = require('../helper/solana');
+const { Program } = require("@coral-xyz/anchor");
 
 const config = {
   ethereum: {
@@ -13,22 +45,65 @@ const config = {
       "WASABI_SHORT_POOL": "0x0301079DaBdC9A2c70b856B2C51ACa02bAc10c3a"
     }, fromBlock: 185200,
   },
+  base: {
+    pools: {
+      "WASABI_LONG_POOL": "0xbDaE5dF498A45C5f058E3A09afE9ba4da7b248aa",
+      "WASABI_SHORT_POOL": "0xA456c77d358C9c89f4DFB294fA2a47470b7dA37c"
+    }, fromBlock: 25309500,
+  },
+  berachain: {
+    pools: {
+      "WASABI_LONG_POOL": "0x0da575D3edd4E3ee1D904936F94Ec043c06Bb12B",
+      "WASABI_SHORT_POOL": "0x3EE6C6CdAa0073DE6Da00091329dE4390B0DF1EE"
+    }, fromBlock: 2249763,
+  },
 }
 
+const solanaTvl = async (api) => {
+  const provider = getProvider()
+  const program = new Program(idl, provider)
+  const vaults = await program.account.lpVault.all()
+  const tokenAccounts = vaults.map(v => v.account.vault.toString()) 
+  tokenAccounts.push("7JcsyK2AcJMx1V733R1As51DudggH7D38AHvbxapAhXd") 
 
-Object.keys(config).forEach(chain => {
-  let { pools, fromBlock, tokens = [], } = config[chain]
-  pools = Object.values(pools)
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const logs = (await Promise.all(pools.map(target => getLogs({
+  return sumTokensSOL({ api, tokenAccounts, })
+}
+
+const tvl = async (api) => {
+  const { pools, fromBlock, toBlock = await api.getBlock() - 100 } = config[api.chain]
+
+  const logs = await Promise.all(
+    Object.values(pools).map((pool) =>
+      getLogs2({
         api,
-        target,
+        chain: api.chain,
+        extraKey: '2',
+        target: pool,
         eventAbi: "event NewVault(address indexed pool, address indexed asset, address vault)",
         onlyArgs: true,
         fromBlock,
-      })))).flat();
-      return api.erc4626Sum({ calls: logs.map(log => log.vault), isOG4626: true, });
-    }
-  }
+        toBlock,
+        onlyUseExistingCache: true,
+      })
+    )
+  );
+
+  const vaults = [...new Set(logs.flat().map((log) => log[2]))];
+  const tokens  = await api.multiCall({  abi: 'address:asset', calls: vaults })
+  return api.sumTokens({ tokensAndOwners2: [tokens, vaults]})
+}
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl }
 })
+
+module.exports.solana = {
+  tvl: solanaTvl
+}
+module.exports.hallmarks=[
+  ['2024-02-29', "Deployed on Blast"],
+  // ['2024-12-01', "Deployed on Solana"], // has no impact on the TVL
+  // ['2025-01-20', "Deployed on Base"],
+  // ['2025-03-12', "Deployed on Berachain"]
+]
+module.exports.methodology="Counts the total value deposited in the vaults of the Wasabi protocol, including assets that have been loaned out to open long and short positions."

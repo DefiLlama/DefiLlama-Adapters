@@ -17,7 +17,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   const factory = config[chain]
-  module.exports[chain] = { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, }) }
+  module.exports[chain] = { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, blacklistedTokens: ['0x8f857af6ea31447bb502fe0e3f4e4340cdfcfc6c']}) }
 })
 
 module.exports.cronos.staking = staking(bankContract, frtnToken)

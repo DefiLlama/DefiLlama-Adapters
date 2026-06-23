@@ -1,9 +1,10 @@
-const { cachedGraphQuery } = require("../helper/cache");
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { request } = require('../helper/utils/graphql')
+const sdk = require('@defillama/sdk')
 
 const CONTANGO_PROXY = "0x6Cae28b3D09D8f8Fc74ccD496AC986FC84C0C24E";
 const CONTANGO_LENS_PROXY = "0xe03835Dfae2644F37049c1feF13E8ceD6b1Bb72a";
-const alchemyGraphUrl = (chain) => `https://subgraph.satsuma-prod.com/773bd6dfe1c6/egills-team/v2-${chain}/api`
+const goldskyGraphUrl = (chain) => `https://api.goldsky.com/api/public/project_cmgz86r3700015ep2fvxn0ipr/subgraphs/v2-${chain}/v0.0.24/gn`
+const PAGE_SIZE = 1000
 
 const excludedIds_arb = [
   "0x415242555344540000000000000000000bffffffff0000000000000000000623",
@@ -19,158 +20,211 @@ const config = {
   arbitrum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('arbitrum'),
+    graphUrl: goldskyGraphUrl('arbitrum'),
     excludedIds: excludedIds_arb
   },
   optimism: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('optimism'),
+    graphUrl: goldskyGraphUrl('optimism'),
   },
   ethereum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('mainnet'),
+    graphUrl: goldskyGraphUrl('mainnet'),
   },
   polygon: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('polygon'),
+    graphUrl: goldskyGraphUrl('polygon'),
   },
   xdai: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('gnosis'),
+    graphUrl: goldskyGraphUrl('gnosis'),
   },
   base: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('base'),
+    graphUrl: goldskyGraphUrl('base'),
   },
   avax: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('avalanche'),
+    graphUrl: goldskyGraphUrl('avalanche'),
   },
   bsc: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('bsc'),
+    graphUrl: goldskyGraphUrl('bsc'),
   },
   linea: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('linea'),
+    graphUrl: goldskyGraphUrl('linea'),
   },
   scroll: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl: alchemyGraphUrl('scroll'),
+    graphUrl: goldskyGraphUrl('scroll'),
   },
 };
 
+const abis = {
+  balances: "function balances(bytes32 positionId) view returns (uint256 collateral, uint256 debt)",
+};
+
+const graphQueries = {
+  position: `
+    query MyQuery($lastNumber: BigInt, $block: Int) {
+      positions(
+        block: {number: $block}
+        where: {and: [{number_gt: $lastNumber}, {quantity_not: "0"}]}
+        first: ${PAGE_SIZE}
+        orderBy: number
+        orderDirection: asc
+      ) {
+        id
+        number
+        instrument {
+          base {
+            id
+          }
+          quote {
+            id
+          }
+        }
+      }
+    }`,
+  asset: `
+    query MyQuery($lastId: String, $block: Int) {
+      assets(
+        block: {number: $block}
+        where: {id_gt: $lastId}
+        first: ${PAGE_SIZE}
+        orderBy: id
+        orderDirection: asc
+      ) {
+        id
+      }
+    }`,
+};
+
+async function queryGraphPage(graphUrl, query, variables, key) {
+  const data = await request(graphUrl, query, { variables });
+
+  if (!Array.isArray(data?.[key])) throw new Error(`Missing Contango subgraph ${key} response`)
+
+  return data[key]
+}
+
+async function queryPositions(graphUrl, block) {
+  let positions = []
+  let lastNumber = "0"
+
+  while (true) {
+    const page = await queryGraphPage(graphUrl, graphQueries.position, { lastNumber, block }, 'positions')
+    positions = positions.concat(page)
+    if (page.length < PAGE_SIZE) break
+    lastNumber = page[page.length - 1].number
+  }
+
+  return positions
+}
+
+async function queryAssets(graphUrl, block) {
+  let assets = []
+  let lastId = ""
+
+  while (true) {
+    const page = await queryGraphPage(graphUrl, graphQueries.asset, { lastId, block }, 'assets')
+    assets = assets.concat(page)
+    if (page.length < PAGE_SIZE) break
+    lastId = page[page.length - 1].id
+  }
+
+  return assets
+}
+
+function getPriceKey(api, token) {
+  return `${api.chain}:${token.toLowerCase()}`
+}
+
+function hasUsablePrice(priceData) {
+  return !!priceData?.price && priceData.decimals !== undefined && (!('confidence' in priceData) || priceData.confidence >= 0.5)
+}
+
+async function getPriceMap(api, tokens) {
+  const tokenKeys = [...new Set(tokens.map(token => getPriceKey(api, token)))]
+  if (!tokenKeys.length) return {}
+  return sdk.coins.getPrices(tokenKeys, api.timestamp ?? 'now').catch(() => ({}))
+}
+
+async function filterPositionsWithPricedCollateral(api, positions) {
+  const prices = await getPriceMap(api, positions.map(({ instrument: { base } }) => base.id))
+  if (!Object.keys(prices).length) return positions
+
+  const skippedPositions = []
+  const filteredPositions = positions.filter(({ id, instrument: { base } }) => {
+    const priceData = prices[getPriceKey(api, base.id)]
+    const keep = hasUsablePrice(priceData)
+    if (!keep) {
+      skippedPositions.push({id})
+    }
+    return keep
+  })
+
+  if (skippedPositions.length) {
+    console.log(`skipping ${skippedPositions.length} positions with unpriced collateral`)
+  }
+
+  return filteredPositions
+}
+
+const getPositionsTvl = async (api, lens, graphUrl, borrowed, block, excludedIds) => {
+  let positions = (await queryPositions(graphUrl, block)).filter(({ id }) => !excludedIds.includes(id))
+  positions = await filterPositionsWithPricedCollateral(api, positions)
+  const parts = positions
+    .map(({ id, instrument: { base, quote } }) => [id, [base.id, quote.id]]);
+
+  const calls = parts.map(([id]) => ({ target: lens, params: [id] }))
+  const balances = await api.multiCall({ calls, abi: abis.balances })
+
+  balances.forEach(([collateral, debt], i) => {
+    const [base, quote] = parts[i][1]
+    if (borrowed) api.add(quote, debt)
+    else {
+      api.add(quote, -debt);
+      api.add(base, collateral);
+    }
+  })
+}
+
+const getVaultTvl = async (api, contango, graphUrl, block) => {
+  const assets = await queryAssets(graphUrl, block)
+  const vault = await api.call({ abi: "address:vault", target: contango });
+  await api.sumTokens({ owner: vault, tokens: assets.map(({ id }) => id) });
+}
+
+const tvl = async (api) => {
+  const { contango, contango_lens, graphUrl, excludedIds = [] } = config[api.chain]
+  const block = await api.getBlock() - 3_000
+  await getPositionsTvl(api, contango_lens, graphUrl, false, block, excludedIds)
+  await getVaultTvl(api, contango, graphUrl, block)
+}
+
+const borrowed = async (api) => {
+  const { contango_lens, graphUrl, excludedIds = [] } = config[api.chain]
+  const block = await api.getBlock() - 3_000
+  await getPositionsTvl(api, contango_lens, graphUrl, true, block, excludedIds)
+}
+
 module.exports = {
-  hallmarks: [[1729036800, "Affected by the Radiant hack"]],
+  hallmarks: [['2024-10-16', "Affected by the Radiant hack"]],
   doublecounted: true,
   methodology: `Counts the tokens locked in the positions to be used as margin + user's tokens locked in the protocol's vault. Borrowed coins are discounted from the TVL, so only the position margins are counted. The reason behind this is that the protocol only added the user's margin to the underlying money market. Adding the borrowed coins to the TVL can be used as a proxy for the protocol's open interest.`,
 };
 
 Object.keys(config).forEach((chain) => {
-  const { contango, contango_lens, graphUrl, excludedIds = [] } = config[chain];
-  module.exports[chain] = {
-    tvl: async (api) => {
-      await Promise.all([
-        positionsTvl(api, contango_lens, graphUrl, false, excludedIds),
-        vaultTvl(api, contango, graphUrl),
-      ]);
-      return sumTokens2({ api })
-    },
-    borrowed: async (api) => {
-
-      await positionsTvl(api, contango_lens, graphUrl, true, excludedIds)
-      return sumTokens2({ api })
-    }
-  };
-});
-
-async function positionsTvl(
-  api,
-  contangoLens,
-  graphUrl,
-  borrowed,
-  excludedIds
-) {
-  const cacheKey = `contango-positions-${api.chain}`;
-  const positions = await cachedGraphQuery(cacheKey, graphUrl, graphQueries.position, {
-    api,
-    useBlock: true,
-    fetchById: true,
-    safeBlockLimit: 3000,
-  })
-
-  const parts = positions
-  .filter(({ id }) => !excludedIds.includes(id))
-  .map(({ id, instrument: { base, quote } }) => [id, [base.id, quote.id]]);
-
-  const balances = await api.multiCall({
-    target: contangoLens,
-    calls: parts.map(([id]) => id),
-    abi: abis.balances,
-  });
-
-  balances.forEach(([collateral, debt], i) => {
-    const [base, quote] = parts[i][1];
-    if (borrowed) {
-      api.add(quote, debt);
-    } else {
-      api.add(quote, -debt);
-      api.add(base, collateral);
-    }
-  });
-}
-
-async function vaultTvl(api, contango, graphUrl) {
-  const cacheKey = `contango-vaultAssets-${api.chain}`;
-  const assets = await cachedGraphQuery(cacheKey, graphUrl, graphQueries.asset, {
-    api,
-    useBlock: true,
-    fetchById: true,
-    safeBlockLimit: 3000,
-  })
-
-  const vault = await api.call({ abi: "address:vault", target: contango });
-
-  await api.sumTokens({ owner: vault, tokens: assets.map(({ id }) => id) });
-}
-
-const abis = {
-  balances:
-    "function balances(bytes32 positionId) view returns (uint256 collateral, uint256 debt)",
-};
-
-const graphQueries = {
-  position: `
-query MyQuery($lastId: ID, $block: Int) {
-  positions(
-    block: {number: $block}
-    where: {and: [{id_gt: $lastId}, {quantity_not: "0"}]}
-    first: 1000
-  ) {
-    id
-    instrument {
-      base {
-        id
-      }
-      quote {
-        id
-      }
-    }
-  }
-}`,
-  asset: `
-query MyQuery($lastId: ID, $block: Int) {
-  assets(block: {number: $block}, where: {id_gt: $lastId} first: 1000) {
-    id
-  }
-}`,
-};
+  module.exports[chain] = { tvl, borrowed }
+})

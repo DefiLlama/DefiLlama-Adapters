@@ -1,5 +1,0 @@
-{
-  "principal": "address:principal",
-  "totalPrincipalReceived": "uint256:totalPrincipalReceived",
-  "balanceOf": "uint256:balanceOf"
-}

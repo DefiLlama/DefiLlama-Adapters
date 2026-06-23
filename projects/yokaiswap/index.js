@@ -17,6 +17,6 @@ module.exports = {
     staking: sumTokensExport({ owner: '0xbf7b7295f84b4bd2de9d549d047e51c7917dc5e3', tokens: ['0x885fb612947ccF1C7611894Bd828D388b046fc24'], lps: ['0xbf7b7295f84b4bd2de9d549d047e51c7917dc5e3'], useDefaultCoreAssets: true })
   },
   hallmarks: [
-    [Math.floor(new Date('2022-08-26')/1e3), "Add godwoken v1 chain tvl"],
+    ['2022-08-26', "Add godwoken v1 chain tvl"],
   ],
 };

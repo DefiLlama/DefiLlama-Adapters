@@ -65,7 +65,7 @@ function isYV(symbol) {
 
 async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = undefined, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
     const poolInfo = await getPoolInfo(masterChef, block, chain, poolInfoAbi)
-    if (!transformAddress) transformAddress = await getChainTransform(chain)
+    if (!transformAddress) transformAddress = getChainTransform(chain)
     const [symbols, tokenBalances] = await getSymbolsAndBalances(masterChef, block, chain, poolInfo);
 
     const lpPositions = [];
@@ -147,7 +147,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
     let balanceResolve;
 
     async function getTvl(timestamp, ethBlock, {[chain]: block}) {
-        const transformAddress = await getChainTransform(chain);
+        const transformAddress = getChainTransform(chain);
 
         const poolInfo = await getPoolInfo(masterChef, block, chain, poolInfoAbi)
         const [symbols, tokenBalances] = await getSymbolsAndBalances(masterChef, block, chain, poolInfo);
@@ -295,7 +295,7 @@ const standardPoolInfoAbi = 'function poolInfo(uint256) view returns (address lp
 
 async function getUserMasterChefBalances({ balances = {}, masterChefAddress, userAddres, block, chain = 'ethereum', transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens= [], poolInfoABI = abi.poolInfo, getLPAddress = null }) {
     if (!transformAddress)
-        transformAddress = await getChainTransform(chain)
+        transformAddress = getChainTransform(chain)
 
     const tempBalances = {}
     const poolLength = (await sdk.api.abi.call({ abi: abi.poolLength, target: masterChefAddress, block, chain, })).output

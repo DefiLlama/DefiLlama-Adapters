@@ -1,61 +1,64 @@
-const { get } = require("../helper/http")
 const sdk = require('@defillama/sdk')
+const axios = require('axios')
 
-async function getPerpPools() {
-  const pools = []
-  let skip = 0
-  let data
-  const size = 100
-  const url = () => `https://api.carbon.network/carbon/perpspool/v1/pools/pool_info?pagination.limit=${size}&pagination.offset=${skip}`
-  do {
-    data = await get(url())
-    skip += size
-    pools.push(...data.pools)
-  } while (data.pools.length)
+const getPerpPools = async () => {
+  const pools = [];
+  const size = 100;
+
+  for (let skip = 0; ; skip += size) {
+    const api = `https://api.carbon.network/carbon/perpspool/v1/pools/pool_info?pagination.limit=${size}&pagination.offset=${skip}`
+    const { data } = await axios(api)
+    const currentPools = data.vaults || []
+    pools.push(...currentPools)
+    if (currentPools.length < size) break
+  }
+
   return pools
 }
 
-async function getPools() {
-  const pools = []
-  let skip = 0
-  let data
-  const size = 100
-  const url = () => `https://api.carbon.network/carbon/liquiditypool/v1/pools?pagination.limit=${size}&pagination.offset=${skip}`
-  do {
-    data = await get(url())
-    skip += size
-    pools.push(...data.pools)
-  } while (data.pools.length)
+const getPools = async () => {
+  const pools = [];
+  const size = 100;
+
+  for (let skip = 0; ; skip += size) {
+    const api = `https://api.carbon.network/carbon/liquiditypool/v1/pools?pagination.limit=${size}&pagination.offset=${skip}`
+    const { data } = await axios(api)
+    const currentPools = data.pools || []
+    pools.push(...currentPools)
+    if (currentPools.length < size) break
+  }
+
   return pools
 }
 
-async function getTokenInfo() {
-  const { result: { gecko } } = await get('https://api-insights.carbon.network/info/denom_gecko_map')
+const getTokenInfo = async () => {
+  const { data } = await axios('https://api-insights.carbon.network/info/denom_gecko_map')
+  const { gecko } = data.result
   const tokenMap = {}
-  let skip = 0
-  let data
   const size = 100
-  const url = () => `https://api.carbon.network/carbon/coin/v1/tokens?pagination.limit=${size}&pagination.offset=${skip}`
-  do {
-    data = await get(url())
-    skip += size
-    for (const token of data.tokens) {
+
+  for (let skip = 0; ; skip += size) {
+    const api = `https://api.carbon.network/carbon/coin/v1/tokens?pagination.limit=${size}&pagination.offset=${skip}`
+    const res = await axios(api)
+    const data = res.data
+    const tokens = data.tokens || []
+
+    for (const token of tokens) {
       const denom = token.denom
-      if (!gecko[denom]) continue;
-      token.geckoId = gecko[token.denom]
+      if (!gecko[denom]) continue
+      token.geckoId = gecko[denom]
       tokenMap[denom] = token
     }
-  } while (data.tokens.length)
+
+    if (tokens.length < size) break
+  }
+
   return tokenMap
 }
 
 async function tvl() {
   const balances = {}
-  const [tokenData, pools, perpPools] = await Promise.all([
-    getTokenInfo(),
-    getPools(),
-    getPerpPools(),
-  ])
+  const [tokenData, pools, perpPools] = await Promise.all([getTokenInfo(), getPools(), getPerpPools()])
   for (const { pool: { denom_a, amount_a, denom_b, amount_b } } of pools) {
     if (tokenData[denom_a]) {
       addBalance(denom_a, amount_a)
@@ -81,7 +84,5 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  carbon: {
-    tvl
-  }
+  carbon: { tvl }
 }

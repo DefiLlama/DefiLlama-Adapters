@@ -25,8 +25,8 @@ async function borrowed(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  hallmarks: [
-    [1674388800, "Smart Contract Exploit"]
-  ],
+  // hallmarks: [
+  //   ['2023-01-22', "Smart Contract Exploit"]
+  // ],
   icon: { tvl, borrowed }
 }

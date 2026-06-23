@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { getResources, } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
 
 let resourcesCache
 
@@ -16,8 +14,7 @@ module.exports = {
   methodology:
     "Counts the lamports in each coin container in the Aries contract account.",
   aptos: {
-    tvl: async () => {
-      const balances = {};
+    tvl: async (api) => {
       const data = await _getResources()
       const coinContainers = data.filter(reserveContrainerFilter)
         .map((i) => ({
@@ -26,13 +23,10 @@ module.exports = {
         }));
 
       coinContainers.forEach(({ lamports, tokenAddress }) => {
-        sdk.util.sumSingleBalance(balances, tokenAddress, lamports);
+        api.add(tokenAddress, lamports);
       });
-
-      return transformBalances("aptos", balances);
     },
-    borrowed: async () => {
-      const balances = {};
+    borrowed: async (api) => {
       const data = await _getResources()
       const coinContainers = data.filter(reserveContrainerFilter)
         .map((i) => ({
@@ -41,10 +35,8 @@ module.exports = {
         }));
 
       coinContainers.forEach(({ lamports, tokenAddress }) => {
-        sdk.util.sumSingleBalance(balances, tokenAddress, lamports);
+        api.add(tokenAddress, lamports);
       });
-
-      return transformBalances("aptos", balances);
     },
   },
 };

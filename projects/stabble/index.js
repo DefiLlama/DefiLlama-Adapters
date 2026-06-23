@@ -50,8 +50,14 @@ async function stableSwapTvl() {
 }
 
 module.exports = {
+  methodology: 'Value of the assets locked in Stabble Finance\'s weighted swap and stable swap vaults',
   timetravel: false,
   solana: { tvl: sdk.util.sumChainTvls([weightedSwapTvl, stableSwapTvl]) },
+  hallmarks: [
+    ['2024-06-28', "Mainnet launch"],
+    // ['2024-10-01', "JupiterExchange integration"],
+    ['2025-05-22', "Token launch"],
+  ],
 };
 
 function findVaultAuthorityAddress(vaultKey) {

@@ -1,7 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json')
-
-const _vaults = {
+const abi = {
+    "totalSupply": "uint256:totalSupply",
+    "getUnderlyingAssets": "function getUnderlyingAssets(uint256) view returns (uint256, uint256)",
+    "want": "function want() view returns (address, address)"
+  };const _vaults = {
   avax: [
     '0x37e0f0513ae3d3c4403e7b11c8a15b06c7cb1412', //USDC.e/USDC_C
     '0xb41506675a0977a34e8cec7da8c061d6753b5b03', //USDT/USDC_B

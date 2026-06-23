@@ -1,6 +1,3 @@
-const sdk = require('@defillama/sdk')
-const BigNumber = require('bignumber.js')
-
 const dashboard = '0x63d3b2d066c1247245B31252441B3B6744e5BeB1'
 const pools = [
     '0x2426F33359ef3BC6cb80104D3e2C81D81c790D6F',
@@ -16,29 +13,14 @@ const pools = [
     '0x989f69D2C64E53f93DBfb5cE1eC62294f915Bc0C'
 ]
 
-const ZERO = new BigNumber(0)
-const USDC = new BigNumber(10).pow(6)
-
-async function astar(timestamp, ethBlock, chainBlock) {
-    const block = chainBlock.astar
-    const total = (await sdk.api.abi.multiCall({
-        calls: pools.map( address => ({
-            target: dashboard,
-            params: address
-        })),
-        block,
-        abi: 'function tvlOfPool(address pool) view returns (uint256 tvl)',
-        chain: 'astar'
-    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-        
-    return {
-        'tether': total.dividedBy(USDC).toNumber()
-    }
+async function astar(api) {
+    const bals = await api.multiCall({ abi: 'function tvlOfPool(address pool) view returns (uint256 tvl)', calls: pools, target: dashboard })
+    api.addUSDValue(bals.map(i => i / 1e6).reduce((a, b) => a + b, 0))
 }
 
 module.exports = {
     misrepresentedTokens: true,
-    astar:{
+    astar: {
         tvl: astar
     },
 }

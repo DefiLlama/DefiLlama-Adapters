@@ -1,6 +1,0 @@
-{
-  "globalState": "function globalState() view returns (uint128 depositLimit, uint128 lockedAssets, uint32 cycleIndex, uint64 cycleStartTimestamp, uint64 fundingLockTimestamp, bool fundClosed)",
-  "cycleState": "function cycleState(uint32) view returns (uint128 totalFundValue, uint128 fundValueAfterRequests, uint128 requestedDeposits, uint128 convertedDeposits, uint128 requestedWithdrawals, uint128 convertedWithdrawals)",
-  "asset": "function asset() view returns (address assetTokenAddress)",
-  "latestAnswer": "function latestAnswer() view returns (int256)"
-}

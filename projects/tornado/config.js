@@ -121,4 +121,14 @@ module.exports = {
       ],
     },
   ],
+  ethereumclassic:  [
+    {
+      tokens: [nullAddress],
+      holders: [
+        "0x2f56d5aFC058B8734350B162EFEe75ee48f034e0", // 1
+        "0x59fCB629A23e8eD0a60A0188771E221042260118", // 10
+        "0x784B3a7a7981B959bd8d9D9e73c2013BE819Fbf2", // 100
+      ],
+    },
+  ],
 }

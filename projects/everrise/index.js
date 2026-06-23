@@ -1,14 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
-const http = require('../helper/http');
 const { getConfig } = require('../helper/cache')
-const BigNumber = require("bignumber.js");
-const { unwrapUniswapLPs, nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
+const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
 const getPairFactory = 'function getPair(address, address) view returns (address)'
 
-const zeroAddress = ADDRESSES.null
-const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
 const RESERVES = [
   // '0x78b939518f51b6da10afb3c3238Dd04014e00057',
   '0x3776B8C349BC9Af202E4D98Af163D59cA56d2fC5'];
@@ -92,7 +86,7 @@ const chainConfig = {
       }, // RISE-FTM
     ],
     reserveTokens: [
-      ADDRESSES.fantom.USDC, // USDC
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
       // TOKEN,
     ],
   },
@@ -141,41 +135,13 @@ Object.keys(chainConfig).forEach(chain => {
     }
   }
 
-  async function pool2(ts, _block, chainBlocks) {
-    let balances = {}
-    const block = chainBlocks[chain]
-    const transformAddress = await getChainTransform(chain)
+  async function pool2(api) {
     const { LPs } = chainConfig[chain]
-
-    let lpPositions = [];
-    let lpBalances = (
-      await sdk.api.abi.multiCall({
-        calls: LPs.map((p) => ({
-          target: p.pool,
-          params: p.owner,
-        })),
-        abi: "erc20:balanceOf",
-        block, chain,
-      })
-    ).output;
-    lpBalances.forEach((i) => {
-      lpPositions.push({
-        balance: i.output,
-        token: i.input.target,
-      });
-    });
-    await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
-    return balances
+    const tokensAndOwners = LPs.map((p) => [p.pool, p.owner])
+    return sumTokens2({ api, tokensAndOwners, resolveLP: true })
   }
 
   async function staking() {
-    const { chainId } = chainConfig[chain]
-    const stakedAmounts = await http.get(STAKE_HOLDING_API)
-    let stakedAmount = stakedAmounts.find(({ id }) => id === chainId)
-
-    return {
-      'everrise': stakedAmount ? stakedAmount.amount : 0
-    }
   }
 
   chainExports[chain] = {

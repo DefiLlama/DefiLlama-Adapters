@@ -19,7 +19,6 @@ const StakingQuery2 = `{
 
 async function tvl(api) {
   const { pairs } = await request("http://graph.xexchange.com/graphql", LiquidityQuery)
-  console.log(pairs.length)
   pairs.forEach(i => {
     if (i.lockedValueUSD > 1e8) {
       api.log(`Pair ${i.address} has ${i.lockedValueUSD} USD locked, ignoring it`)

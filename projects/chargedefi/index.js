@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
@@ -15,58 +13,11 @@ const chargeBUSDFarmStrategyAddress = "0xA1Be11eAB62283E9719021aCB49400F6d591815
 const staticBUSDFarmStrategyAddress = "0x53eE388f037876850D4fd60307FBA02e203A1C0e";
 
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  let lpPositions = [];
-  let transformAddress = i => `bsc:${i}`;
-
-  // Static-BUSD Boardroom TVL
-  const staticBUSDBoardroomBalance = sdk.api.erc20
-    .balanceOf({
-      target: staticBUSDLpAddress,
-      owner: staticBUSDBoardroomAddress,
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-  lpPositions.push({
-    token: staticBUSDLpAddress,
-    balance: (await staticBUSDBoardroomBalance).output,
-  });
-
-  // Charge Farms Static-BUSD TVL
-  const chargeFarmStaticBUSDBalance = sdk.api.erc20
-    .balanceOf({
-      target: staticBUSDLpAddress,
-      owner: staticBUSDFarmStrategyAddress,
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-  lpPositions.push({
-    token: staticBUSDLpAddress,
-    balance: (await chargeFarmStaticBUSDBalance).output,
-  });
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["bsc"],
-    "bsc",
-    transformAddress
-  );
-  return balances;
-}
-
 module.exports = {
   methodology: 'The TVL of Charge Defi is calculated using the Pancake LP token deposits (Static/BUSD and Charge/BUSD) in the farms, and the Charge & Static-BUSD deposits found in each Boardroom.',
   bsc: {
-    tvl,
-    pool2: pool2(
-      chargeBUSDFarmStrategyAddress,
-      [chargeBUSDLpAddress],
-      "bsc"
-    ),
+    tvl: () => ({}),
+    pool2: pool2(chargeBUSDFarmStrategyAddress, [chargeBUSDLpAddress],),
     staking: staking(chargeBoardroomAddress, chargeTokenAddress),
 
   },

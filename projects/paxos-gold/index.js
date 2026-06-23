@@ -6,6 +6,10 @@ module.exports = {
     tvl: async (api) => {
       const totalSupply = await api.call({target: PAXG, abi: 'erc20:totalSupply'})
       api.add(PAXG, totalSupply)
-    }
+    },
   }
 }
+
+module.exports.hallmarks = [
+  ['2024-08-23', "Transfer fee was set to 0"],
+]

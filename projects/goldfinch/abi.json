@@ -1,5 +1,0 @@
-{
-  "totalLoansOutstanding": "uint256:totalLoansOutstanding",
-  "pools": "function pools(address) view returns (uint256 totalMinted, uint256 totalPrincipalRedeemed, bool created)",
-  "assets": "uint256:assets"
-}

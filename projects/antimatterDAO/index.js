@@ -1,5 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "TVL": "uint256:TVL",
+    "allCalls": "function allCalls(uint256) view returns (address)",
+    "allPuts": "function allPuts(uint256) view returns (address)",
+    "underlying": "address:underlying",
+    "length": "uint256:length"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 
@@ -9,8 +15,8 @@ const dualInvestManagerAddress = "0x32275702f5A47Dcd89705c1ea4d47E99517b0e1a";
 const bscBTCContract = ADDRESSES.bsc.BTCB;
 const bscUSDTContract = ADDRESSES.bsc.USDT;
 const bscETHContract = ADDRESSES.bsc.ETH;
-const kavaUSDTContract = ADDRESSES.moonriver.USDT;
-const kavaBTCContract = ADDRESSES.moonriver.USDT;
+const kavaUSDTContract = "0xb44a9b6905af7c801311e8f4e76932ee959c663c";
+const kavaBTCContract = "0xb44a9b6905af7c801311e8f4e76932ee959c663c";
 const kavaDualinvertContract = "0x626B5c394542960faa9495e64E812d17D5B605F9";
 
 const factory = "0x90183C741CC13195884B6E332Aa0ac1F7c1E67Fa";

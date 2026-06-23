@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 
-const { stripTokenHeader, getFixBalancesSync, } = require('../portedTokens')
+const { stripTokenHeader, getFixBalances, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
 const { sumTokens2, } = require('../unwrapLPs')
 const { getUniqueAddresses, sliceIntoChunks, sleep, log } = require('../utils')
@@ -16,7 +16,7 @@ async function vestingHelper({
   tokens = getUniqueAddresses(tokens)
   blacklist = getUniqueAddresses(blacklist)
   tokens = tokens.filter(t => !blacklist.includes(t))
-  const chunkSize = chain === 'polygon' ? 250 : 2000  // polygon has a lower gas limit
+  const chunkSize = chain === 'polygon' ? 250 : 10000 // polygon has a lower gas limit
   const chunks = sliceIntoChunks(tokens, chunkSize)
   const finalBalances = {}
   for (let i = 0; i < chunks.length; i++) {
@@ -36,7 +36,7 @@ async function vestingHelper({
     Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
     if (i > 3 && i % 2 === 0) await sleep(1000)
   }
-  const fixBalances = getFixBalancesSync(chain)
+  const fixBalances = getFixBalances(chain)
   fixBalances(finalBalances)
   return finalBalances
 }

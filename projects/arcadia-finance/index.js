@@ -6,7 +6,7 @@ module.exports = {
   optimism: { tvl },
   ethereum: { tvl },
   start: '2023-06-10', // Jun 10 2023 10:00:00 GMT+0000
-  hallmarks: [
-    [Math.floor(new Date('2023-07-10')/1e3), 'Protocol was exploited.'],
-  ],
+  // hallmarks: [
+  //   ['2023-07-10', 'Protocol was exploited.'],
+  // ],
 }

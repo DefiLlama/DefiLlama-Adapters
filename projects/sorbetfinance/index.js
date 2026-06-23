@@ -14,8 +14,8 @@ module.exports = {
   methodology:
     "Counts TVL that's on all the Pools through G-UNI Factory Contract",
   hallmarks:[
-      [1632253540, "GUNI-DAIUSDC Added to Maker"],
-      [1643056020, "Maker GUNI Cap to 500M"],
+      ['2021-09-21', "GUNI-DAIUSDC Added to Maker"],
+      ['2022-01-24', "Maker GUNI Cap to 500M"],
   ],
 };
 

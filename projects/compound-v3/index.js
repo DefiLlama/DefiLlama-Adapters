@@ -47,4 +47,16 @@ module.exports = compoundV3Exports({
       '0x606174f62cd968d8e684c645080fa694c1D7786E', // USDe Market
     ],
   },
+  ronin:{
+    markets: [
+      '0x4006ed4097ee51c09a04c3b0951d28ccf19e6dfe', // WETH Market
+      '0xc0Afdbd1cEB621Ef576BA969ce9D4ceF78Dbc0c0' // RON Market
+    ]
+  },
+  unichain:{
+    markets: [
+      '0x2c7118c4C88B9841FCF839074c26Ae8f035f2921', // USDC Market
+      '0x6C987dDE50dB1dcDd32Cd4175778C2a291978E2a'  // WETH Market
+    ]
+  }
 })

@@ -104,13 +104,13 @@ function makeTvlFn(chain) {
   return async () => {
     // Define the URL for host_zone based on chainId
     const hostZoneUrl = chain.chainId === "dymension_1100-1"
-        ? "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakedym/host_zone"
-        : `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
+        ? "https://stride-walk-214t-api.polkachu.com//Stride-Labs/stride/stakedym/host_zone"
+        : `https://stride-walk-214t-api.polkachu.com//Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
 
     const [{ amount: assetBalances }, { host_zone: hostZone }] =
       await Promise.all([
         await get(
-          `https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply/by_denom?denom=st${chain.denom}`
+          `https://stride-walk-214t-api.polkachu.com//cosmos/bank/v1beta1/supply/by_denom?denom=st${chain.denom}`
         ),
         await get(hostZoneUrl),
       ]);

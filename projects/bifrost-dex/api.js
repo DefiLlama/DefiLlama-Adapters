@@ -1,6 +1,7 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
 const sdk = require('@defillama/sdk')
+const { getEnv } = require('../helper/env')
 
 // node test.js projects/bifrost-dex/api.js
 
@@ -36,12 +37,20 @@ function formatToken(token, type) {
       return "vGLMR";
     case `{"VToken2":"4"}`:
       return "vFIL";
+    case `{"VToken2":"8"}`:
+      return "vMANTA";
+    case `{"VToken2":"15"}`:
+      return "vETH";
     case `{"Token2":"4"}`:
       return "FIL";
+    case `{"Token2":"15"}`:
+      return "ETH";
     case `{"VToken2":"3"}`:
       return "vASTR";
     case `{"Token2":"3"}`:
       return "ASTR";
+    case `{"Token2":"8"}`:
+      return "MANTA";
     case `{"VToken":"BNC"}`:
       return "vBNC";
     case `{"VToken":"MOVR"}`:
@@ -82,6 +91,8 @@ function formatTokenAmount(amount, tokenSymbol) {
     case "vFIL":
     case "ASTR":
     case "vASTR":
+    case "MANTA":
+    case "vMANTA":
       decimals = 18;
       break;
   }
@@ -93,17 +104,19 @@ const tokenToCoingecko = {
   DOT: "polkadot",
   BNC: "bifrost-native-coin",
   KSM: "kusama",
+  ETH: "ethereum",
   MOVR: "moonriver",
   GLMR: "moonbeam",
   KUSD: "acala-dollar",
   ZLK: "zenlink-network-token",
   USDT: "tether",
   FIL: "filecoin",
-  ASTR: "astar"
+  ASTR: "astar",
+  MANTA: "manta"
 };
 
 async function tvl() {
-  const kusamaProvider = new WsProvider("wss://hk.bifrost-rpc.liebi.com/ws");
+  const kusamaProvider = new WsProvider(getEnv('BIFROST_K_RPC'));
   const kusamaApi = await ApiPromise.create(({ provider: kusamaProvider }));
 
   const totalLiquidity = {};
@@ -124,7 +137,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
 
       if (isVtoken) {
-        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool(currentToken === "BNC" ? { "native": currentToken } : { "token": currentToken });
+        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool( { "vToken": currentToken });
         const totalIssuance = await kusamaApi.query.tokens.totalIssuance({ "vToken": currentToken });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
@@ -137,7 +150,7 @@ async function tvl() {
     }
   }));
 
-  const polkadotProvider = new WsProvider("wss://hk.p.bifrost-rpc.liebi.com/ws");
+  const polkadotProvider = new WsProvider(getEnv('BIFROST_P_RPC'));
   const polkadotApi = await ApiPromise.create(({ provider: polkadotProvider }));
 
   const polkadotPools = await polkadotApi.query.zenlinkProtocol.pairStatuses.entries();
@@ -156,7 +169,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
 
       if (isVtoken) {
-        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "token2": poolTokens[0][0].toHuman()[1].VToken2 });
+        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "vToken2": poolTokens[0][0].toHuman()[1].VToken2 });
         const totalIssuance = await polkadotApi.query.tokens.totalIssuance({ "vToken2": poolTokens[0][0].toHuman()[1].VToken2 });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
@@ -185,7 +198,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
       currentToken = isVstoken ? currentToken.slice(2) : currentToken;
       if (isVtoken) {
-        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool(currentToken === "BNC" ? { "native": currentToken } : { "token": currentToken });
+        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool({ "vToken": currentToken });
         const totalIssuance = await kusamaApi.query.tokens.totalIssuance({ "vToken": currentToken });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
@@ -220,7 +233,7 @@ async function tvl() {
       currentToken = isVstoken ? currentToken.slice(2) : currentToken;
 
       if (isVtoken) {
-        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "token2": token.VToken2 });
+        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "vToken2": token.VToken2 });
         const totalIssuance = await polkadotApi.query.tokens.totalIssuance({ "vToken2": token.VToken2 });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }

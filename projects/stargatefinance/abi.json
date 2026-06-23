@@ -1,7 +1,0 @@
-{
-  "factory": "address:factory",
-  "allPoolsLength": "uint256:allPoolsLength",
-  "allPools": "function allPools(uint256) view returns (address)",
-  "pools": "function pools(uint256) view returns (address)",
-  "token": "address:token"
-}

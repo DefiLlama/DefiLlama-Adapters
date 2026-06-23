@@ -1,5 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address want, uint8 poolType, uint256 allocPoint, uint256 lastRewardTime, uint256 accHEROPerShare, address strat)",
-  "poolLength": "uint256:poolLength",
-  "symbol": "string:symbol"
-}

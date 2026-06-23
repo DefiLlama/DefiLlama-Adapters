@@ -9,12 +9,9 @@ const assetsInfos = async () => {
   const payload = { "type": "spotMetaAndAssetCtxs" }
   const { data } = await axios.post(API_URL, payload)
 
-  return data[0].tokens.map((token) => {
-    const ctxToken = data[1].find((item) => item.coin.replace("@", "") == token.index);
-    return { ...token, ...ctxToken };
-  });
+  const ctxByCoin = Object.fromEntries(data[1].map((ctx) => [ctx.coin, ctx]))
+  return data[0].universe.map((pair) => ({ ...pair, ...ctxByCoin[pair.name] }))
 }
-
 const nSigFigs = 2
 const getOrderbooks = async () => {
   const assets = await assetsInfos()
@@ -61,7 +58,7 @@ const getOrderbooks = async () => {
           ws.send(JSON.stringify(subscriptionMsg));
         });
       } else if(response.channel !== "subscriptionResponse"){
-        console.log(response)
+        // console.log(response)
       }
     });
 
@@ -73,7 +70,7 @@ const getOrderbooks = async () => {
     setTimeout(() => {
       ws.close();
       reject(new Error('WebSocket subscription timed out'));
-    }, 10000);
+    }, 30000);
   });
 }
 

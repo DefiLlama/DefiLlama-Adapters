@@ -12,6 +12,9 @@ const ports = {
   polygon: undefined,
   avax: undefined,
   bsc: undefined,
+  berachain: undefined,
+  fraxtal: '0x6BeEF9B5a6E4Dd9D74122d62f5ef52eE48281819',
+  swellchain: undefined
 }
 
 Object.keys(ports).forEach(chain => module.exports[chain] = { tvl: sumTokensExport({ owner: ports[chain] ?? defaultPort, fetchCoValentTokens: true }) })
@@ -26,13 +29,20 @@ const chainsWithoutCovalentSupport = {
       "0xE51EE9868C1f0d6cd968A8B8C8376Dc2991BFE44",
       "0x9fDbC3f8Abc05Fa8f3Ad3C17D2F806c1230c4564",
       "0x79bbF4508B1391af3A0F4B30bb5FC4aa9ab0E07C",
-      "0xE5DA20F15420aD15DE0fa650600aFc998bbE3955",
-      "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38"
+      ADDRESSES.sonic.STS,
+      ADDRESSES.sonic.wS
     ]) 
-  }
+  },
+  berachain: { tokens: [ADDRESSES.berachain.WBERA, ADDRESSES.berachain.WETH] },
+  fraxtal: { tokens: [ADDRESSES.fraxtal.FRAX, ADDRESSES.fraxtal.WFRAX, ADDRESSES.fraxtal.WETH] },
+  swellchain: { tokens: [ADDRESSES.swellchain.SWELL, ADDRESSES.swellchain.WETH] },
 }
 
 Object.keys(chainsWithoutCovalentSupport).forEach(chain => {
   const { tokens, port = defaultPort } = chainsWithoutCovalentSupport[chain]
   module.exports[chain] = { tvl: sumTokensExport({ owner: port, tokens })
-} })
+} }) 
+
+module.exports.hallmarks = [
+    ['2024-09-24', "Whitehack by team"],
+]

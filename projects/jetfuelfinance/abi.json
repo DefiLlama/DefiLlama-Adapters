@@ -1,6 +1,0 @@
-{
-  "token": "address:token",
-  "balance": "uint256:balance",
-  "underlying": "address:underlying",
-  "getCash": "uint256:getCash"
-}

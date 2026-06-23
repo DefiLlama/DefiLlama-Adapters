@@ -1,6 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const { abi } = require('./abi')
+const abi = {
+  allBuckets: 'function allBuckets() external view returns (address[])',
+  borrowedAsset: 'address:borrowedAsset',
+}
 
 const config = {
   polygon: {
@@ -44,7 +47,7 @@ const config = {
     aaveTokens: {
       [ADDRESSES.polygon.WETH_1]: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
       [ADDRESSES.polygon.WBTC]: "0x078f358208685046a11C85e8ad32895DED33A249",
-      [ADDRESSES.polygon.WMATIC_2]: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+      [ADDRESSES.polygon.WMATIC_2]: ADDRESSES.polygon.aPolWMATIC,
       [ADDRESSES.polygon.USDC]: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
       [ADDRESSES.polygon.USDT]: "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
     },
@@ -60,7 +63,7 @@ const config = {
       USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
       USDT: ADDRESSES.arbitrum.USDT,
       WETH: ADDRESSES.arbitrum.WETH,
-      ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      ETH: ADDRESSES.GAS_TOKEN_2,
       WBTC: ADDRESSES.arbitrum.WBTC,
       ARB: ADDRESSES.arbitrum.ARB,
       DAI: ADDRESSES.arbitrum.DAI,
@@ -86,8 +89,8 @@ const config = {
       AAVE: "0xba5DdD1f9d7F570dc94a51479a000E3BCE967196",
       WSTETH: ADDRESSES.arbitrum.WSTETH,
       RETH: "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
-      WEETH: "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
-      ETHFI: "0x7189fb5B6504bbfF6a852B13B7B82a3c118fDc27",
+      WEETH: ADDRESSES.arbitrum.weETH,
+      ETHFI: ADDRESSES.arbitrum.ETHFI,
       EZETH: ADDRESSES.optimism.ezETH,
       RSETH: ADDRESSES.berachain.rsETH,
       USDE: ADDRESSES.arbitrum.USDe,
@@ -116,7 +119,7 @@ const config = {
     traderBalanceVault: '0x156e2fC8e1906507412BEeEB6640Bf999a1Ea76b',
     defaultTokens: {
       WETH: ADDRESSES.ethereum.WETH,
-      ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      ETH: ADDRESSES.GAS_TOKEN_2,
       WBTC: ADDRESSES.ethereum.WBTC,
       USDC: ADDRESSES.ethereum.USDC,
       USDT: ADDRESSES.ethereum.USDT,
@@ -124,7 +127,7 @@ const config = {
       MATIC: ADDRESSES.ethereum.MATIC,
       LINK: ADDRESSES.ethereum.LINK,
       UNI: ADDRESSES.ethereum.UNI,
-      SOL: '0xD31a59c85aE9D8edEFeC411D448f90841571b89c',
+      SOL: ADDRESSES.ethereum.WSOL,
       MKR: ADDRESSES.ethereum.MKR,
       SNX: ADDRESSES.ethereum.SNX,
       AAVE: ADDRESSES.ethereum.AAVE,
@@ -132,7 +135,7 @@ const config = {
       CRV: ADDRESSES.ethereum.CRV,
       ['1INCH']: '0x111111111117dC0aa78b770fA6A738034120C302',
       EPMX: "0xA533f744B179F2431f5395978e391107DC76e103",
-      POL: "0x455e53cbb86018ac2b8092fdcd39d8444affc3f6",
+      POL: ADDRESSES.ethereum.POL,
       PAXG: "0x45804880de22913dafe09f4980848ece6ecbaf78",
       WSTETH: ADDRESSES.ethereum.WSTETH,
       RETH: ADDRESSES.ethereum.RETH,
@@ -140,7 +143,7 @@ const config = {
       WEETH: ADDRESSES.ethereum.WEETH,
       ETHFI: ADDRESSES.ethereum.ETHFI,
       LDO: ADDRESSES.ethereum.LIDO,
-      EZETH: "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
+      EZETH: ADDRESSES.linea.rzETH,
       RSETH: "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7",
       RSWETH: "0xfae103dc9cf190ed75350761e95403b7b8afa6c0",
       USDE: ADDRESSES.ethereum.USDe,

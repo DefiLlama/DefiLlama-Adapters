@@ -26,7 +26,7 @@ async function snakeGenesisTVL(api) {
 
 
 const pool2 = async (api) => {
-  let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x3af1dd7a2755201f8e2d6dcda1a61d9f54838f4f' })
+  let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x9F59398D0a397b2EEB8a6123a6c7295cB0b0062D' })
   let pools = await api.multiCall({ abi: 'address:stake', calls: gauges, permitFailure: true })
   const pools2 = []
   const gauges2 = []
@@ -44,7 +44,7 @@ const pool2 = async (api) => {
 module.exports = {
   methodology: "Pool2 deposits consist of SNAKE/S and GSNAKE/S LP tokens deposits while the staking TVL consists of the GSNAKEs tokens locked within the Masonry contract(0x5A5d34826ab31003F26F8A15e9B645803d85eA81).",
   hallmarks: [
-    [1739577600, 'Genesis Phase Ended']
+    ['2025-02-15', 'Genesis Phase Ended']
   ],
   sonic: {
     tvl: snakeGenesisTVL,

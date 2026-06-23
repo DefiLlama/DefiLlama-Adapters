@@ -3,7 +3,7 @@ const {ohmTvl} = require("../helper/ohm");
 
 const treasury = "0xFb445ce1CFE11B86505dD293f1bE438fFaa4fF8c";
 const treasuryTokens = [
-    ["0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3", false], // DAI
+    [ADDRESSES.bsc.DAI, false], // DAI
     [ADDRESSES.bsc.BUSD, false], // BUSD
     [ADDRESSES.bsc.WBNB, false], // WBNB
     ["0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", false], // CAKE

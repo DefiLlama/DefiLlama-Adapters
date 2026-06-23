@@ -11,6 +11,7 @@ const chainMapping = {
   DASH: "dash",
   ARB: "arbitrum",
   XRD: "radixdlt",
+  ZEC: "zcash"
 };
 
 const tokenGeckoMapping = {
@@ -40,6 +41,7 @@ const tokenGeckoMapping = {
   "ARB.WBTC": "wrapped-bitcoin",
   "ARB.WSTETH": "wrapped-steth",
   "XRD.XRD": "radix",
+  "ZEC.ZEC": "zcash"
 };
 
 const tokenToDecimalMapping = {
@@ -70,6 +72,7 @@ const tokenToDecimalMapping = {
   "ARB.WBTC": 8,
   "ARB.WSTETH": 18,
   "XRD.XRD": 8,
+  "ZEC.ZEC": 8,
 };
 
 async function tvl(api) {

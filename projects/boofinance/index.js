@@ -1,6 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "tokenList": "address[]:tokenList",
+    "tokenParameters": "function tokenParameters(address) view returns (address rewarder, address strategy, uint256 lastRewardTime, uint256 lastCumulativeReward, uint256 storedPrice, uint256 accZBOOFIPerShare, uint256 totalShares, uint256 totalTokens, uint128 multiplier, uint16 withdrawFeeBP)"
+  };
 const token0Abi = 'address:token0'
 const token1Abi = 'address:token1'
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -12,7 +15,7 @@ const stakingAddress = "0x67712c62d1DEAEbDeF7401E59a9E34422e2Ea87c";
 const hauntedHouse = "0xB178bD23876Dd9f8aA60E7FdB0A2209Fe2D7a9AB";
 
 const transform = {
-  "0x4f60a160d8c2dddaafe16fcc57566db84d674bd6": "harmony:" + ADDRESSES.harmony.JEWEL,
+  "0x4f60a160d8c2dddaafe16fcc57566db84d674bd6": "harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f",
   [ADDRESSES.avax.USDC]: "avax:" + ADDRESSES.avax.USDC_e
 }
 

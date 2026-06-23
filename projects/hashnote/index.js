@@ -1,21 +1,26 @@
 const { call } = require('../helper/chain/near')
 const { get } = require("../helper/http");
 
-const USYC = '0x136471a34f6ef19fE571EFFC1CA711fdb8E49f2b'
-
 const CONFIG = {
-  canto: '0xfb8255f0de21acebf490f1df6f0bdd48cc1df03b',
-  ethereum: USYC,
+  ethereum: '0x136471a34f6ef19fE571EFFC1CA711fdb8E49f2b',
+  bsc: "0x8D0fA28f221eB5735BC71d3a0Da67EE5bC821311",
   near: 'usyc.near',
   noble: 'uusyc'
 }
 
-const evmTvl = async (api, token) => {
+const USYC = CONFIG.ethereum
+
+const ethTvl = async (api, token) => {
   const supply = await api.call({ target: token, abi: 'erc20:totalSupply' })
   api.add(USYC, supply, { skipChain: true })
 }
 
-const nonEvmTvl = async (api, token) => {
+const bscTvl = async (api, token) => {
+  const supply = await api.call({ target: token, abi: 'erc20:totalSupply' })
+  api.add(USYC, supply, { skipChain: true })
+}
+
+const nearTvl = async (api, token) => {
   const supply = await call(token, 'ft_total_supply', {});
   api.add(USYC, supply, { skipChain: true });
 }
@@ -28,12 +33,14 @@ const nobleTvl = async (api, token) => {
 Object.entries(CONFIG).forEach(([chain, address]) => {
   module.exports[chain] = {
     tvl: async (api) => {
-      if (chain === 'near') {
-        return nonEvmTvl(api, address);
+      if (chain === 'bsc') {
+        return bscTvl(api, address);
+      } else if (chain === 'near') {
+        return nearTvl(api, address);
       } else if (chain === 'noble') {
         return nobleTvl(api, address);
       } else {
-        return evmTvl(api, address);
+        return ethTvl(api, address);
       }
     }
   };

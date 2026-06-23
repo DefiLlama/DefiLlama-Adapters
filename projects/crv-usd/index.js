@@ -37,3 +37,7 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports.hallmarks = [
+  ['2025-03-20', "Resupply Launch"]
+]

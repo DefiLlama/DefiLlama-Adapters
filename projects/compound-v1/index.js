@@ -1,4 +1,8 @@
-const v1abi = require('./v1Abi.json');
+const v1abi = {
+    "getCollateralMarketsLength": "uint256:getCollateralMarketsLength",
+    "markets": "function markets(address) view returns (bool isSupported, uint256 blockNumber, address interestRateModel, uint256 totalSupply, uint256 supplyRateMantissa, uint256 supplyIndex, uint256 totalBorrows, uint256 borrowRateMantissa, uint256 borrowIndex)",
+    "collateralMarkets": "function collateralMarkets(uint256) view returns (address)"
+  };
 
 const v1Contract = '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7'
 async function tvl(api) {

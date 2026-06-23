@@ -1,10 +1,11 @@
 const { get, } = require('../http')
 const { nullAddress } = require('../tokenMapping')
-const { getFixBalancesSync } = require('../portedTokens')
+const { getFixBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
 const chain = 'stacks'
 
-const STACKS_API = 'https://stacks-node-api.mainnet.stacks.co/extended/v1/address'
+// const STACKS_API = 'https://stacks-node-api.mainnet.stacks.co/extended/v1/address'
+const STACKS_API = 'https://api.hiro.so/extended/v1/address/'
 
 async function getStacksBalances(address) {
   const url = `${STACKS_API}/${address}/balances`
@@ -42,7 +43,7 @@ async function sumTokens({ owner, owners = [], tokens = [], balances = {}, black
   if (owner) owners = [owner]
 
   await Promise.all(owners.map(i => addTokens(i, { balances, tokens, blacklistedTokens, })))
-  const transform = getFixBalancesSync(chain)
+  const transform = getFixBalances(chain)
   return transform(balances)
 }
 

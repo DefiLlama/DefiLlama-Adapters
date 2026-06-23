@@ -112,7 +112,7 @@ const moveIbo = async (api, tvlType) => {
   }
 
   let bals = await Promise.all(acceptCoinArr.map(getCoinInfo));
-  if (tvlType === 'staking')
+  if (tvlType === 'staking' && iboInfo)
     api.add(MOVE, iboInfo.data.coin.value)
   api.addTokens(acceptCoinArr, bals)
 };
@@ -136,9 +136,6 @@ const staking = async (api) => {
 
 module.exports = {
   timetravel: false,
-  methodology:
-    "Counts the lamports for each coins in every pools of AptosLaunch.",
-  aptos: {
-    tvl, staking, pool2,
-  },
+  methodology: "Counts the lamports for each coins in every pools of AptosLaunch.",
+  aptos: { tvl, staking, pool2 },
 };

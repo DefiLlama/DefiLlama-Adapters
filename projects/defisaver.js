@@ -27,5 +27,5 @@ module.exports = {
   ethereum: { tvl },
   arbitrum: { tvl },
   optimism: { tvl },
-  base: { tvl },
+  base: { tvl: () => ({  }) },
 };

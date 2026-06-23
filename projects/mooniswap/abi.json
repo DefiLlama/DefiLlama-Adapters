@@ -1,5 +1,0 @@
-{
-  "getPool": "function allPools(uint256) view returns (address)",
-  "getAllPools": "address[]:getAllPools",
-  "getTokens": "address[]:getTokens"
-}

@@ -22,7 +22,7 @@ const stakingContracts_polygon = [
   "0xD013FFC6Ed3B2c773051a3b83E763dF782D7b31f",
 ];
 
-const GOVI_polygon = "0x43df9c0a1156c96cea98737b511ac89d0e2a1f46";
+const GOVI_polygon = ADDRESSES.polygon.GOVI;
 
 const stakingPool2Contract_polygon =
   "0x27792cDa195d07ffb36E94e253D67361661a16Dc";
@@ -35,7 +35,7 @@ const platformLiquidityContracts_polygon = [
 
 /*** Arbitrum Addresses ***/
 const stakingContract_arbitrum = "0xDb3e7deAb380B43189A7Bc291fa2AFeAA938dCc3";
-const GOVI_arbitrum = "0x07e49d5de43dda6162fa28d24d5935c151875283";
+const GOVI_arbitrum = ADDRESSES.arbitrum.GOVI;
 
 async function ethTvl(api) {
   const ethPlatforms = [

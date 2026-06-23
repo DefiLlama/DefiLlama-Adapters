@@ -13,7 +13,7 @@ const chainTvl = getUniTVL({ factory, useDefaultCoreAssets: true, })
 
 module.exports = {
   hallmarks: [
-    [1649376000, "STARS collateral Exploit"]
+    ['2022-04-08', "STARS collateral Exploit"]
   ],
   methodology,
   misrepresentedTokens: true,

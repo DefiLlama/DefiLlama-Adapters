@@ -1,53 +1,132 @@
 const { isWhitelistedToken } = require('../helper/streamingHelper')
-const { cachedGraphQuery } = require('../helper/cache')
+const { request } = require("graphql-request");
+const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require('../helper/solana');
+
+const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/53b7e25/v1/graphql';
+
+// Chains using Envio indexer.
+const CHAIN_IDS_ENVIO = {
+  abstract: 2741,
+  arbitrum: 42161,
+  avax: 43114,
+  base: 8453,
+  berachain: 80094,
+  blast: 81457,
+  bsc: 56,
+  chz: 88888,
+  core: 1116,
+  ethereum: 1,
+  formnetwork: 478,
+  xdai: 100,
+  hyperliquid: 999,
+  lightlink_phoenix: 1890,
+  linea: 59144,
+  mode: 34443,
+  morph: 2818,
+  optimism: 10,
+  polygon: 137,
+  scroll: 534352,
+  sonic: 146,
+  sophon: 50104,
+  sseed: 5330,
+  unichain: 130,
+  xdc: 50,
+  era: 324,
+  monad: 143,
+};
+
+// Chains that are not using the Envio indexer but using the Graph.
+const SUBGRAPH_ENDPOINTS = {
+  sei: 'AJU5rBfbuApuJpeZeaz6NYuYnnhAhEy4gFkqsSdAT6xb',
+  // iotex: '2P3sxwmcWBjMUv1C79Jh4h6VopBaBZeTocYWDUQqwWFV',
+};
 
 const config = {
-  arbitrum: { endpoints: ['8BnGPBojHycDxVo83LP468pUo4xDyCQbtTpHGZXR6SiB'], },
-  base: { endpoints: ['3pxjsW9rbDjmZpoQWzc5CAo4vzcyYE9YQyTghntmnb1K'], },
-  blast: { endpoints: ['BXoC2ToMZXnTmCjWftQRPh9zMyM7ysijMN54Nxzb2CEY'], },
-  avax: { endpoints: ['FdVwZuMV43yCb1nPmjnLQwmzS58wvKuLMPzcZ4UWgWAc'], },
-  era: { endpoints: ['GY2fGozmfZiZ3xF2MfevohLR4YGnyxGxAyxzi9zmU5bY'], },
-  bsc: { endpoints: ['BVyi15zcH5eUg5PPKfRDDesezMezh6cAkn8LPvh7MVAF'], },
-  ethereum: { endpoints: ['5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m'], },
-  linea: { endpoints: ['FoJnatzCZKyp9XjZyUBaw1juTb5ydnFvJvWUxS3oRCHZ'], },
-  mode: { endpoints: ['5ezGnVwNucVTW45WCb91VBiKBEdiqT4ceHDhh1KGigYG'], },
-  optimism: { endpoints: ['6e6Dvs1yDpsWDDREZRqxGi54SVdvTNzUdKpKJxniKVrp'], },
-  polygon: { endpoints: ['CsDNYv9XPUMP8vufuwDVKQrVhsxhzzRHezjLFFKZZbrx'], },
-  scroll: { endpoints: ['HVcngokCByfveLwguuafrBC34xB65Ne6tpGrXHmqDSrh'], },
-  xdai: { endpoints: ['EXhNLbhCbsewJPx4jx5tutNXpxwdgng2kmX1J7w1bFyu'], },
-	chz: { endpoints: ['HKvzAuGjrEiza11W48waJy5csbhKpkMLF688arwHhT5f'], },
-}
+  ...Object.fromEntries(Object.keys(CHAIN_IDS_ENVIO).map(k => [k, ENVIO_ENDPOINT])),
+  ...SUBGRAPH_ENDPOINTS
+};
 
+const envioPayload = `
+query getChainData($chainId: numeric!) {
+  Contract(where: { _and: { chainId: { _eq: $chainId } , category: {_eq:"lockup"}}}) { id address category }
+  Asset(where: { _and: { chainId: { _eq: $chainId }, lockupStreams_aggregate: { count: { predicate: { _gt:0 }}}}}) { id chainId symbol }
+}
+`
+
+const subgraphPayload = `
+{
+  contracts { id address category }
+  assets { id chainId symbol }
+}
+`
 
 async function getTokensConfig(api, isVesting) {
-  const ownerTokens = []
-  const { endpoints } = config[api.chain]
-  let i = 0
-  for (const endpoint of endpoints) {
-    i++
-    const { contracts, assets } = await cachedGraphQuery('sablier-v2/' + api.chain + '-' + i, endpoint, `{
-      contracts { id address category }
-      assets { id chainId symbol }
-    }`)
-    const owners = contracts.map(i => i.address)
-    let tokens = assets.map(i => i.id)
-    const symbols = assets.map(i => i.symbol)
-    // Filter vesting tokens
-    tokens = tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
-    owners.forEach(owner => ownerTokens.push([tokens, owner]))
-  }
+  const endpoint = config[api.chain];
+  if (!endpoint) return { ownerTokens: [] };
 
-  return { ownerTokens }
+  const isSubgraph = !!SUBGRAPH_ENDPOINTS[api.chain];
+  const result = isSubgraph
+    ? await request(sdk.graph.modifyEndpoint(endpoint), subgraphPayload)
+    : await request(ENVIO_ENDPOINT, envioPayload, { chainId: CHAIN_IDS_ENVIO[api.chain] });
+
+  if (!result || (!isSubgraph && !CHAIN_IDS_ENVIO[api.chain])) return { ownerTokens: [] };
+
+  const contracts = result.contracts || result.Contract || [];
+  const assets = result.assets || result.Asset || [];
+
+  const owners = contracts.map(i => i.address);
+
+  const tokens = assets
+    .filter(asset => isWhitelistedToken(asset.symbol, asset.id, isVesting))
+    .map(asset => asset.id.split('-')[2]);
+
+  const ownerTokens = owners.map(owner => [tokens, owner]);
+  return { ownerTokens };
 }
 
-async function tvl(api) {
-  return api.sumTokens(await getTokensConfig(api, false))
+const evmTvl = async (api) => api.sumTokens(await getTokensConfig(api, false));
+const vesting = async (api) => api.sumTokens(await getTokensConfig(api, true));
+
+const evm = Object.fromEntries(
+  Object.keys(config).map(chain => [chain, { tvl: evmTvl, vesting }])
+);
+
+evm.formnetwork = {
+  tvl: () => ({}),
+  vesting: () => ({}),
 }
 
-async function vesting(api) {
-  return api.sumTokens(await getTokensConfig(api, true))
+const GRAPH_ENDPOINT = 'https://graph.sablier.io/lockup-mainnet/subgraphs/name/sablier-lockup-solana-mainnet';
+
+const query = `{ streams { funderAta } }`;
+
+const BLACKLISTED_ACCOUNTS = new Set([
+  'jjJ7sjcbZ1C7FDFmykBfGK7Fo7AZ8UuKhcJKL5MYEwm',
+])
+
+async function solanaTvl() {
+  const result = await fetch(GRAPH_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
+  }).then(res => res.json());
+
+  if (!result.data) throw new Error(`Graph query failed: ${JSON.stringify(result)}`);
+
+  const tokenAccounts = result.data.streams
+    .map((s) => s.funderAta)
+    .filter((a) => a && !BLACKLISTED_ACCOUNTS.has(a));
+
+  return sumTokens2({ tokenAccounts, allowError: true });
 }
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl, vesting }
-})
+const solana = {
+  timetravel: false,
+  solana: { tvl: solanaTvl }
+};
+
+module.exports = {
+  ...evm,
+  ...solana
+};

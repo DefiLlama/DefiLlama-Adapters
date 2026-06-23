@@ -38,6 +38,9 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams, })
   return response.data
 }
 
+async function lookupApplicationsCreatedByAccount(accountId) {
+  return (await axiosObj.get(`/v2/accounts/${accountId}/created-applications`)).data
+}
 
 async function searchAccountsAll({ appId, limit = 1000, searchParams = {}, sumTokens = false, api }) {
   const accounts = []
@@ -221,6 +224,16 @@ async function lookupTransactionsByID(searchParams = {}) {
 
 const limitedGetAccountInfo = withLimiter(getAccountInfo)
 
+async function getApplicationBoxes({ appId, limit = 1000, nexttoken, }) {
+  const response = (await axiosObj.get(`/v2/applications/${appId}/boxes`, {
+    params: {
+      limit,
+      next: nexttoken,
+    }
+  }))
+  return response.data.boxes
+}
+
 module.exports = {
   tokens,
   getAssetInfo: withLimiter(getAssetInfo),
@@ -235,4 +248,6 @@ module.exports = {
   searchAccounts: withLimiter(searchAccounts),
   getAppGlobalState: getAppGlobalState,
   getPriceFromAlgoFiLP,
+  lookupApplicationsCreatedByAccount: withLimiter(lookupApplicationsCreatedByAccount),
+  getApplicationBoxes,
 }

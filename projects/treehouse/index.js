@@ -2,28 +2,26 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
-async function getInFlightLidoRedemptionNav(api) {
+async function getInFlightLidoRedemptionNav(api, strategies) {
   const unStEth = '0x889edc2edab5f40e902b864ad4d7ade8e412f9b1';
-  const strategy = '0x60d2D94aCB969CA54e781007eE89F04c1A2e5943';
-  const navHelper = '0xf22Ca896427677507a9EF99D30B261659775ff56';
+  const navUnStEth = '0x4c82F6829797A4174a082CE9FEE0B9BDDc1E5E39';
 
-  const requestIds = await api.call({
-    abi: "function getWithdrawalRequests(address _owner) external view returns (uint256[] memory requestsIds)",
-    target: unStEth,
-    chain: 'ethereum',
-    params: [strategy]
-  });
-
-
-  // NAV of lido in-flight redemptions in wstETH.
-  const nav = await api.call({
-    abi: 'function getLidoRedemptionsNav(uint[], address) external view returns (uint)',
-    target: navHelper,
-    chain: 'ethereum',
-    params: [requestIds, strategy]
+  // uint[][]
+  const requestIdsArr = await api.multiCall({
+    abi: "function getWithdrawalRequests(address) external view returns (uint256[])", calls: strategies.map(strategyAddress => ({ target: unStEth, params: strategyAddress }))
   })
 
-  api.add(ADDRESSES.ethereum.WSTETH, nav)
+  // skip further calls if no unStEth requests
+  if(requestIdsArr.flat().length == 0) return;
+
+  // uint[]
+  const navArr = await api.multiCall({
+    abi: "function nav(address, uint[]) external view returns (uint)", calls: requestIdsArr.map((requestIds, i) => ({ target: navUnStEth, params: [strategies[i], requestIds] }))
+  })
+
+  for (let i=0;i<navArr.length;i++) {
+    api.add(ADDRESSES.ethereum.WSTETH, navArr[i])
+  }
 }
 
 // count the value in the grow autovault and exclude the value of tETH in the vault to avoid double counting
@@ -75,18 +73,18 @@ async function addGrowAutovaultNav(api) {
 }
 
 
-async function tvl(api) {
+async function tvlEthereum(api) {
   await addGrowAutovaultNav(api)
 
   const vault = '0x551d155760ae96050439ad24ae98a96c765d761b'
   const tokens = await api.call({ abi: 'address[]:getAllowableAssets', target: vault })
   await api.sumTokens({ owner: vault, tokens })
 
-  await getInFlightLidoRedemptionNav(api)
-
   const storage = await api.call({ abi: 'address:strategyStorage', target: vault })
   const strategies = await api.fetchList({ lengthAbi: 'getStrategyCount', itemAbi: 'getStrategyAddress', target: storage })
-  return sumTokens2({
+  await getInFlightLidoRedemptionNav(api, strategies)
+
+  await sumTokens2({
     api, owners: strategies, fetchCoValentTokens: true, resolveUniV3: true, tokenConfig: {
       onlyWhitelisted: false,
     }
@@ -97,14 +95,38 @@ async function tvlMantle(api) {
   return api.sumTokens({ owner: '0x5E4ACCa7a9989007cD74aE4ed1b096c000779DCC', tokens: [ADDRESSES.mantle.cmETH] })
 }
 
+async function tvlAvalanche(api) {
+  const vault = '0x3fc60aAc1d843e4e181C7Ab727A4027cb1Ac99ED'
+  const tokens = await api.call({ abi: 'address[]:getAllowableAssets', target: vault, })
+  await api.sumTokens({ owner: vault, tokens })
+
+  const storage = await api.call({ abi: 'address:strategyStorage', target: vault })
+  const strategies = await api.fetchList({ lengthAbi: 'getStrategyCount', itemAbi: 'getStrategyAddress', target: storage })
+
+
+  const navRegistry = '0x950d8545BB4E58B61230D47314549Cae5bcedCc6'
+  const navArr = await api.multiCall({
+    abi: "function getStrategyNav(address,(bytes4,bytes)[]) external view returns (uint)", calls: strategies.map((e) => ({ target: navRegistry, params: [e, []]}))
+  })
+
+  for (let i=0;i<navArr.length;i++) {
+    api.add(ADDRESSES.avax.SAVAX, navArr[i])
+  }
+
+  return
+}
+
 module.exports = {
   methodology: 'Token balance in vault and strategy contracts',
   doublecounted: true,
   start: '2024-09-10', // Tuesday, September 10, 2024 12:00:00 AM,
   ethereum: {
-    tvl,
+    tvl: tvlEthereum,
   },
   mantle: {
     tvl: tvlMantle
+  },
+  avax: {
+    tvl: tvlAvalanche
   }
 }
