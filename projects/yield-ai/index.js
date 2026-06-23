@@ -3,28 +3,7 @@ const { function_view, getResource } = require("../helper/chain/aptos");
 const { GraphQLClient, gql } = require("graphql-request");
 const { sliceIntoChunks } = require("../helper/utils");
 const { PromisePool } = require("@supercharge/promise-pool");
-
-/**
- * Set YIELD_AI_TVL_DEBUG=1 for detailed vault/Moar/FA traces (console).
- * @defillama/sdk log() is a no-op unless LLAMA_DEBUG_MODE is set.
- */
-const VERBOSE =
-  process.env.YIELD_AI_TVL_DEBUG === "1" ||
-  process.env.YIELD_AI_TVL_DEBUG === "true";
-
-function logYieldAi(...args) {
-  if (!VERBOSE) return;
-  console.log("[yield-ai]", ...args);
-}
-
-function safeJsonSample(obj, maxLen = 800) {
-  try {
-    const s = JSON.stringify(obj);
-    return s.length > maxLen ? `${s.slice(0, maxLen)}…` : s;
-  } catch {
-    return String(obj);
-  }
-}
+const sdk = require('@defillama/sdk');
 
 const VAULT =
   "0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700";
@@ -45,7 +24,7 @@ const PAGE_SIZE = 50;
 const OWNER_BATCH_SIZE = 30;
 const COIN_BALANCE_CONCURRENCY = 10;
 const MOAR_LENS_CONCURRENCY = 8;
-const ECHELON_CONCURRENCY = 1;
+const ECHELON_CONCURRENCY = 10;
 const HYPERION_LP_CONCURRENCY = 8;
 
 /** Known Hyperion pools used by Yield AI safes (token_a/token_b = pool canonical order). */
@@ -142,13 +121,9 @@ async function retryAsync(fn, attempts = 6) {
 }
 
 async function getEchelonVaultResource(safe) {
-  try {
-    return await retryAsync(() =>
-      getResource(safe, ECHELON_VAULT_RESOURCE, "aptos")
-    );
-  } catch {
-    return null;
-  }
+  return await retryAsync(() =>
+    getResource(safe, ECHELON_VAULT_RESOURCE, "aptos")
+  );
 }
 
 /** Moar / views return metadata inner; keep 0xa-style APT shorthand as-is (lower case). */
@@ -297,16 +272,12 @@ async function resolveHyperionPoolAddress(pos) {
   const known = key ? HYPERION_POOL_BY_PAIR.get(key) : null;
   if (known?.poolAddress) return known.poolAddress;
 
-  try {
-    const poolAddr = await function_view({
-      functionStr: `${HYPERION_DEX}::pool_v3::liquidity_pool_address_safe`,
-      args: [pos.tokenA, pos.tokenB, String(pos.feeTier)],
-      chain: "aptos",
-    });
-    return normalizeAptosAddress(poolAddr);
-  } catch {
-    return null;
-  }
+  const poolAddr = await function_view({
+    functionStr: `${HYPERION_DEX}::pool_v3::liquidity_pool_address_safe`,
+    args: [pos.tokenA, pos.tokenB, String(pos.feeTier)],
+    chain: "aptos",
+  });
+  return normalizeAptosAddress(poolAddr);
 }
 
 const hyperionCurrentTickCache = new Map();
@@ -317,7 +288,7 @@ async function getHyperionPoolCurrentTick(poolAddress) {
   if (hyperionCurrentTickCache.has(pool)) {
     return hyperionCurrentTickCache.get(pool);
   }
-
+  
   const res = await function_view({
     functionStr: `${HYPERION_DEX}::pool_v3::current_tick_and_price`,
     args: [pool],
@@ -337,24 +308,20 @@ async function resolveHyperionPositionAmounts(pos) {
   if (hasLiveA || hasLiveB) return { amountA, amountB };
 
   if (pos.position) {
-    try {
-      const routerRes = await function_view({
-        functionStr: `${HYPERION_DEX}::router_v3::get_amount_by_liquidity`,
-        args: [pos.position],
-        chain: "aptos",
-      });
-      if (Array.isArray(routerRes)) {
-        amountA = toIntegerString(routerRes[0]);
-        amountB = toIntegerString(routerRes[1]);
-        if (
-          (amountA && amountA !== "0") ||
-          (amountB && amountB !== "0")
-        ) {
-          return { amountA, amountB };
-        }
+    const routerRes = await function_view({
+      functionStr: `${HYPERION_DEX}::router_v3::get_amount_by_liquidity`,
+      args: [pos.position],
+      chain: "aptos",
+    });
+    if (Array.isArray(routerRes)) {
+      amountA = toIntegerString(routerRes[0]);
+      amountB = toIntegerString(routerRes[1]);
+      if (
+        (amountA && amountA !== "0") ||
+        (amountB && amountB !== "0")
+      ) {
+        return { amountA, amountB };
       }
-    } catch {
-      // closed / missing position objects abort this view
     }
   }
 
@@ -375,10 +342,7 @@ async function fetchMoarPoolsCached() {
     functionStr: `${MOAR}::pool::get_all_pools`,
     chain: "aptos",
   });
-  if (!Array.isArray(pools)) {
-    logYieldAi("get_all_pools: unexpected shape", typeof pools);
-    return [];
-  }
+  if (!Array.isArray(pools)) return [];
   return pools.map((p, poolIndex) => ({
     poolIndex,
     underlyingInner: normalizeUnderlyingTokenId(p?.underlying_asset?.inner),
@@ -388,28 +352,16 @@ async function fetchMoarPoolsCached() {
 }
 
 /**
- * @returns {{ safeAddresses: string[], ownerAddresses: string[] }}
+ * @returns {{ safeAddresses: string[] }}
  */
-async function fetchExistingSafeAndOwnerAddresses() {
+async function fetchExistingSafes() {
   const totalRaw = await function_view({
     functionStr: `${VAULT}::vault::get_total_safes`,
     chain: "aptos",
   });
   const total = Math.max(0, Number(totalRaw) || 0);
-  logYieldAi(
-    "get_total_safes raw:",
-    safeJsonSample(totalRaw, 200),
-    "→ parsed total:",
-    total
-  );
 
   const safeOut = [];
-  const ownerOut = [];
-  let pages = 0;
-  let rawRowCount = 0;
-  let existsTrueCount = 0;
-  const sampleChainRows = [];
-
   for (let start = 0; start < total; start += PAGE_SIZE) {
     const limit = Math.min(PAGE_SIZE, total - start);
     const pageRaw = await function_view({
@@ -417,72 +369,33 @@ async function fetchExistingSafeAndOwnerAddresses() {
       args: [String(start), String(limit)],
       chain: "aptos",
     });
-    pages += 1;
-    if (VERBOSE && start === 0) {
-      logYieldAi(
-        "get_safes_range_info first page raw (truncated):",
-        safeJsonSample(pageRaw, 4000)
-      );
-    }
-    const unwrapped = unwrapVector(pageRaw);
-    if (VERBOSE && start === 0) {
-      logYieldAi(
-        "unwrapVector length:",
-        unwrapped.length,
-        "first entry type:",
-        unwrapped[0] == null
-          ? "null"
-          : Array.isArray(unwrapped[0])
-            ? "array"
-            : typeof unwrapped[0]
-      );
-    }
-    const rows = unwrapped.map(normalizeSafeRow);
-    rawRowCount += rows.length;
-
+    const rows = unwrapVector(pageRaw).map(normalizeSafeRow);
     for (const row of rows) {
-      if (sampleChainRows.length < 5) {
-        sampleChainRows.push({
-          safe_address: row.safe_address,
-          owner: row.owner,
-          paused: row.paused,
-          exists: row.exists,
-        });
-      }
       if (!truthyExists(row.exists)) continue;
-      existsTrueCount += 1;
       const s = normalizeAptosAddress(row.safe_address);
-      const o = normalizeAptosAddress(row.owner);
       if (s) safeOut.push(s);
-      if (o) ownerOut.push(o);
     }
-
-    logYieldAi(
-      `page start=${start} limit=${limit} normalizedRows=${rows.length} cumulative exists=true=${existsTrueCount}`
-    );
   }
 
-  const safeAddresses = [...new Set(safeOut)];
-  const ownerAddresses = [...new Set(ownerOut)];
-  logYieldAi(
-    "vault scan: pages=",
-    pages,
-    "rawRows=",
-    rawRowCount,
-    "exists=true=",
-    existsTrueCount,
-    "unique safes=",
-    safeAddresses.length,
-    "unique owners=",
-    ownerAddresses.length
-  );
-  logYieldAi("sample chain rows:", safeJsonSample(sampleChainRows, 1200));
-
-  return { safeAddresses, ownerAddresses };
+  return { safeAddresses: [...new Set(safeOut)] };
 }
 
 async function sumEchelonSafePositions(api, safeAddresses) {
   if (!safeAddresses.length) return { adds: 0, totalsByAsset: new Map() };
+
+  // Use vault_exists first so we only read the resource for safes with positions
+  const safesWithVault = [];
+  await PromisePool.withConcurrency(ECHELON_CONCURRENCY)
+    .for(safeAddresses)
+    .process(async (safe) => {
+      const res = await function_view({
+        functionStr: `${ECHELON}::lending::vault_exists`,
+        args: [safe],
+        chain: "aptos",
+      });
+      const exists = Array.isArray(res) ? res[0] : res;
+      if (exists === true || exists === "true") safesWithVault.push(safe);
+    });
 
   const marketMetadataCache = new Map();
   let adds = 0;
@@ -506,155 +419,62 @@ async function sumEchelonSafePositions(api, safeAddresses) {
   }
 
   await PromisePool.withConcurrency(ECHELON_CONCURRENCY)
-    .for(safeAddresses)
+    .for(safesWithVault)
     .process(async (safe) => {
-      try {
-        const vault = await retryAsync(() => getEchelonVaultResource(safe));
+        const vault = await getEchelonVaultResource(safe);
         const collaterals =
           vault?.data?.collaterals?.data || vault?.collaterals?.data || [];
 
-        for (const collateral of collaterals) {
-          const market = padAptosAddress(
-            normalizeObjectAddress(collateral?.key)
-          );
-          if (!market) continue;
+      for (const collateral of collaterals) {
+        const market = padAptosAddress(
+          normalizeObjectAddress(collateral?.key)
+        );
+        if (!market) continue;
 
-          const coins = await retryAsync(() =>
-            function_view({
-              functionStr: `${ECHELON}::lending::account_coins`,
-              args: [safe, market],
-              chain: "aptos",
-            })
-          );
-          const amount = toIntegerString(coins);
-          if (!amount || amount === "0") continue;
+        const coins = await retryAsync(() =>
+          function_view({
+            functionStr: `${ECHELON}::lending::account_coins`,
+            args: [safe, market],
+            chain: "aptos",
+          })
+        );
+        const amount = toIntegerString(coins);
+        if (!amount || amount === "0") continue;
 
-          const asset = await getMarketMetadata(market);
-          if (!asset) continue;
+        const asset = await getMarketMetadata(market);
+        if (!asset) continue;
 
-          adds += 1;
-          const prev = totalsByAsset.get(asset) || 0n;
-          totalsByAsset.set(asset, prev + BigInt(amount));
-          api.add(asset, amount);
-        }
-      } catch (e) {
-        logYieldAi("Echelon safe skipped:", safe, e?.message || e);
+        adds += 1;
+        const prev = totalsByAsset.get(asset) || 0n;
+        totalsByAsset.set(asset, prev + BigInt(amount));
+        api.add(asset, amount);
       }
     });
 
   return { adds, totalsByAsset };
 }
 
-async function indexerFaDiagnostics(graphQLClient, label, addresses) {
-  let rowsTotal = 0;
-  const sumByAsset = new Map();
-  let skippedNative = 0;
-  for (const batch of sliceIntoChunks(addresses, OWNER_BATCH_SIZE)) {
-    const { current_fungible_asset_balances: rows } = await graphQLClient.request(
-      FA_BALANCES_QUERY,
-      { addresses: batch }
-    );
-    const list = rows || [];
-    rowsTotal += list.length;
-    for (const row of list) {
-      if (isNativeAptFaRow(row.asset_type)) {
-        skippedNative += 1;
-        continue;
-      }
-      const amtStr = toIntegerString(row.amount);
-      if (!amtStr || amtStr === "0" || /^-/.test(amtStr)) continue;
-      const prev = sumByAsset.get(row.asset_type) || 0n;
-      sumByAsset.set(row.asset_type, prev + BigInt(amtStr));
-    }
-  }
-  const top = [...sumByAsset.entries()]
-    .sort((a, b) => (a[1] < b[1] ? 1 : a[1] > b[1] ? -1 : 0))
-    .slice(0, 10)
-    .map(([asset, sum]) => ({ asset, rawSum: sum.toString() }));
-  logYieldAi(
-    `[diagnostic] FA ${label}: rows=${rowsTotal} skippedNativeApt=${skippedNative} top=`,
-    safeJsonSample(top, 2000)
-  );
-  if (label.includes("user owner")) {
-    logYieldAi(
-      "[diagnostic] owner-wallet sums are not protocol-scoped (personal wallets)."
-    );
-  }
-}
-
 async function tvl(api) {
-  const { safeAddresses, ownerAddresses } = await fetchExistingSafeAndOwnerAddresses();
-  if (!safeAddresses.length) {
-    if (VERBOSE) logYieldAi("no safes after vault scan");
-    return;
-  }
+  const { safeAddresses } = await fetchExistingSafes();
+  if (!safeAddresses.length) return;
 
   const moarPools = await fetchMoarPoolsCached();
   const activeMoarPools = moarPools.filter((p) => !p.is_paused && p.underlyingInner);
-  logYieldAi(
-    "Moar pools cached:",
-    moarPools.length,
-    "active (not paused)=",
-    activeMoarPools.length,
-    safeJsonSample(
-      activeMoarPools.map((p) => ({
-        i: p.poolIndex,
-        u: p.underlyingInner,
-        n: p.name,
-      })),
-      2000
-    )
-  );
 
   const { adds: echelonAdds, totalsByAsset: echelonTotalsByAsset } =
     await sumEchelonSafePositions(api, safeAddresses);
 
-  logYieldAi(
-    "Echelon supply: non-zero cells=",
-    echelonAdds,
-    "by asset:",
-    safeJsonSample(
-      [...echelonTotalsByAsset.entries()].map(([a, s]) => ({
-        asset: a,
-        raw: s.toString(),
-      })),
-      2000
-    )
-  );
-
   const graphQLClient = new GraphQLClient(INDEXER_URL);
 
-  if (VERBOSE && ownerAddresses.length) {
-    await indexerFaDiagnostics(
-      graphQLClient,
-      "indexer owner=safe",
-      safeAddresses
-    );
-    await indexerFaDiagnostics(
-      graphQLClient,
-      "indexer owner=wallet",
-      ownerAddresses
-    );
-  }
-
-  let faBatchIndex = 0;
   const faTotalsByAsset = new Map();
 
   for (const batch of sliceIntoChunks(safeAddresses, OWNER_BATCH_SIZE)) {
-    faBatchIndex += 1;
-    logYieldAi(`FA batch ${faBatchIndex} size=${batch.length}`);
-
     const { current_fungible_asset_balances: rows } = await graphQLClient.request(
       FA_BALANCES_QUERY,
       { addresses: batch }
     );
 
     const list = rows || [];
-    logYieldAi(`FA batch ${faBatchIndex} indexer rows=${list.length}`);
-
-    if (VERBOSE && list.length) {
-      logYieldAi("FA sample:", safeJsonSample(list.slice(0, 3), 2500));
-    }
 
     for (const row of list) {
       if (isNativeAptFaRow(row.asset_type)) continue;
@@ -669,15 +489,6 @@ async function tvl(api) {
     }
   }
 
-  logYieldAi(
-    "FA done: batches=",
-    faBatchIndex,
-    "distinctAssets=",
-    faTotalsByAsset.size
-  );
-
-  let aptOctasTotal = 0n;
-
   await PromisePool.withConcurrency(COIN_BALANCE_CONCURRENCY)
     .for(safeAddresses)
     .process(async (addr) => {
@@ -689,11 +500,8 @@ async function tvl(api) {
       });
       const balStr = toIntegerString(bal);
       if (!balStr || balStr === "0") return;
-      aptOctasTotal += BigInt(balStr);
       api.add(APT, balStr);
     });
-
-  logYieldAi("APT CoinStore total octas (approx log):", aptOctasTotal.toString());
 
   let moarAdds = 0;
   const moarTotalsByAsset = new Map();
@@ -725,19 +533,6 @@ async function tvl(api) {
       api.add(tok, depositedStr);
     });
 
-  logYieldAi(
-    "Moar lens: non-zero deposit cells=",
-    moarAdds,
-    "by asset:",
-    safeJsonSample(
-      [...moarTotalsByAsset.entries()].map(([a, s]) => ({
-        asset: a,
-        raw: s.toString(),
-      })),
-      2000
-    )
-  );
-
   let hyperionAdds = 0;
   const hyperionTotalsByAsset = new Map();
 
@@ -752,15 +547,14 @@ async function tvl(api) {
         .then((res) => {
           const v = Array.isArray(res) ? res[0] : res;
           return v === true || v === "true" || v === 1 || v === "1";
-        })
-        .catch(() => false);
+        });
       if (!configExists) return;
 
       const positionsRaw = await function_view({
         functionStr: `${VAULT}::vault::get_hyperion_positions`,
         args: [safe],
         chain: "aptos",
-      }).catch(() => []);
+      });
 
       const positionAddresses = unwrapPositionAddresses(positionsRaw);
       if (!positionAddresses.length) return;
@@ -770,7 +564,7 @@ async function tvl(api) {
           functionStr: `${VAULT}::vault::get_hyperion_position`,
           args: [safe, positionAddr],
           chain: "aptos",
-        }).catch(() => null);
+        }).catch(()=>null);
 
         const pos = normalizeHyperionPosition(posRaw, positionAddr);
         if (!pos || pos.closed) continue;
@@ -793,39 +587,17 @@ async function tvl(api) {
       }
     });
 
-  logYieldAi(
-    "Hyperion LP: non-zero amount cells=",
-    hyperionAdds,
-    "by asset:",
-    safeJsonSample(
-      [...hyperionTotalsByAsset.entries()].map(([a, s]) => ({
-        asset: a,
-        raw: s.toString(),
-      })),
-      2000
-    )
+  sdk.log(
+    `Yield AI TVL: safes=${safeAddresses.length} | FA=${faTotalsByAsset.size} assets | ` +
+      `Echelon=${echelonAdds} cells/${echelonTotalsByAsset.size} assets | ` +
+      `Moar=${moarAdds} cells/${moarTotalsByAsset.size} assets | ` +
+      `Hyperion=${hyperionAdds} cells/${hyperionTotalsByAsset.size} assets`
   );
-
-  if (VERBOSE) {
-    logYieldAi(
-      "TVL build: safes=",
-      safeAddresses.length,
-      "FA asset kinds=",
-      faTotalsByAsset.size,
-      "Echelon asset kinds=",
-      echelonTotalsByAsset.size,
-      "Moar asset kinds=",
-      moarTotalsByAsset.size,
-      "Hyperion asset kinds=",
-      hyperionTotalsByAsset.size
-    );
-  }
 }
 
 module.exports = {
   timetravel: false,
   doublecounted: true,
   aptos: { tvl },
-  methodology:
-    "TVL sums (1) fungible-asset balances on each Yield AI vault safe object address (Aptos Labs indexer current_fungible_asset_balances, owner = safe), (2) native APT in 0x1 CoinStore per safe via 0x1::coin::balance<0x1::aptos_coin::AptosCoin> (FA rows for native APT are skipped to avoid double-count with CoinStore), (3) Echelon supply positions held by each safe: read on-chain from 0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba::lending::Vault collaterals, resolve supplied amounts with lending::account_coins per market, and map underlying FA metadata with lending::market_asset_metadata (includes USD1 and other supplied assets), (4) Moar Market supply-side deposits attributed to each safe: Moar pool list from 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::pool::get_all_pools (paused pools excluded), then per (pool index, safe) 0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07::lens::get_lp_shares_and_deposited_amount; the deposited underlying amount is response index 1, added using each pool's underlying_asset metadata address (APT pool uses 0xa), and (5) open Hyperion CLMM LP positions per safe via 0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700::vault::get_hyperion_positions / get_hyperion_position (token_a/token_b FA metadata addresses and amount_a/amount_b base units; closed positions excluded). When live amounts are zero, amounts are derived from 0x8b4a2c4bb53857c718a04c020b98f8c2e1f99a68b0f57389a8bf5434cd22e05c::router_v3::get_amount_by_liquidity or, if needed, from position liquidity plus tick range and the pool current tick from pool_v3::current_tick_and_price. Safes are enumerated with 0x333d1890e0aa3762bb256f5caeeb142431862628c63063801f44c152ef154700::vault get_total_safes / get_safes_range_info; only entries with exists true are included; paused safes remain included. Echelon, Moar, and Hyperion are also listed separately on DefiLlama; combined chain aggregates may double-count the same underlying assets. Decibel margin is excluded. Farming rewards are excluded. Data: Aptos fullnode view API (APTOS_RPC) and Aptos Labs indexer GraphQL for FA on safes.",
+  methodology: "Counts fungible-asset balances on Yield AI safe addresses (Aptos indexer), native APT via 0x1::coin::balance, Echelon supply positions held by safes, Moar Market deposits attributed to safes, and open Hyperion CLMM LP positions. Echelon, Moar, and Hyperion are also tracked as separate protocols (doublecounted: true).",
 };
