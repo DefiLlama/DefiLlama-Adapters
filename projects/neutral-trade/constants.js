@@ -72,12 +72,6 @@ const HYPERLIQUID_VAULTS = [
 
 const NT_VAULT_PROGRAM_ID = "BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU";
 
-// Voltr (acquired by Neutral Trade). TVL is sourced from Voltr's public API,
-// the same endpoint the Voltr frontend uses. Each vault's `tvl` field is the
-// raw token amount; we add it under the deposit token's mint and let DefiLlama
-// price it. The list endpoint only exposes the asset name, so this acts as an
-// allowlist mapping supported asset names to their Solana mints. Assets not
-// listed here are skipped (e.g. raSOL, which DefiLlama has no price feed for).
 const VOLTR_VAULTS_URL = "https://api.voltr.xyz/vaults";
 const VOLTR_ASSET_MINTS = {
   USDC: ADDRESSES.solana.USDC,
