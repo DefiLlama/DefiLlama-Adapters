@@ -20339,10 +20339,7 @@ const configs = {
         "0xbb2f33f73ccc2c74e3fb9bb8eb75241ac15337e0"
       ],
       "tokens": [
-        ADDRESSES.adi.WADI,
-        ADDRESSES.adi.USDC_e,
-        ADDRESSES.adi.DDSC,
-        ADDRESSES.adi.LINK,
+        ADDRESSES.null
       ]
     }
   },
