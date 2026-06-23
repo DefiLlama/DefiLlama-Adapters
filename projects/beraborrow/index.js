@@ -50,8 +50,8 @@ async function tvl(api) {
   const bbInfraWrappers = infraAssets.filter((a, i) => names[i] && names[i].startsWith('Beraborrow: '))
   const bbInfraWrapperUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: bbInfraWrappers })
   bbInfraWrapperUnderlyings.forEach((u, i) => tokensAndOwners.push([u, bbInfraWrappers[i]]))
-  const beraTokens = bbInfraWrappers.push(beraBorrowWberaToken)
-  return api.sumTokens({ tokensAndOwners, blacklistedTokens: beraTokens })
+  const blacklistedTokens = [...bbInfraWrappers, beraBorrowWberaToken]
+  return api.sumTokens({ tokensAndOwners, blacklistedTokens })
 }
 
 module.exports = {
