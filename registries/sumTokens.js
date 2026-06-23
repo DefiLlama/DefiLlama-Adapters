@@ -27051,6 +27051,11 @@ const configs = {
           "addr1zyg9vagaykmcvhestlncdvut4nftakyav6me9gglsscwqhs6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qskgeyl",
           "addr1zx0pxr4sxglnrh6sh7ahx8e47knetf3saae8kjazwfrqk4g6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qnupxqj",
           "addr1q8je99vq2ythj2xayfe0qchxs8cxd5hstzuzcnh94r7z2dc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qgtznsu",
+          "addr1z94tv2296rvdv2ywysankephl7wqnx3cuzyz3r66dd79azc6409492020k6xml8uvwn34wrexagjh5fsk5xk96jyxk2qy5mfj8",
+          "addr1q9mqsgrgdaq9aahjfcrc6f45sgmcut4gu3c774kqzawkjkhujht5h40l2yrm8e7r2vwr2g3tv64pzjgnxwsztwg0yu5s00jz00",
+          "addr1wy2gch9ua0700a3dg423wxcwx4p886m4ny5u3aqs66sluqcly9uud",
+          "addr1wxzar75lms9547xdz4slxk7r362rs4g4ccurl22g764akngjhjtzp",
+          "addr1w88zvhrrlqj6kl94mel769v348khd5w3jz3av33ksp8wgvss6msuw"
         ]
       },
       "staking": {
