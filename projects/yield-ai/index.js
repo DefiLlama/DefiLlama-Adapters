@@ -272,12 +272,14 @@ async function resolveHyperionPoolAddress(pos) {
   const known = key ? HYPERION_POOL_BY_PAIR.get(key) : null;
   if (known?.poolAddress) return known.poolAddress;
 
-  const poolAddr = await function_view({
+  // liquidity_pool_address_safe returns a (bool exists, address) tuple
+  const res = await function_view({
     functionStr: `${HYPERION_DEX}::pool_v3::liquidity_pool_address_safe`,
-    args: [pos.tokenA, pos.tokenB, String(pos.feeTier)],
+    args: [pos.tokenA, pos.tokenB, pos.feeTier],
     chain: "aptos",
   });
-  return normalizeAptosAddress(poolAddr);
+  const [exists, addr] = Array.isArray(res) ? res : [false, null];
+  return exists ? normalizeAptosAddress(addr) : null;
 }
 
 const hyperionCurrentTickCache = new Map();
