@@ -156,6 +156,23 @@ const FusionAbi = [
 const FusionAbiMap = {}
 FusionAbi.forEach(i => FusionAbiMap[i.name] = i)
 
+const YoloAbi = [
+  {
+    name: "get_vault_status",
+    type: "function",
+    inputs: [],
+    outputs: [
+      {
+        type: "(core::integer::u256, core::integer::u256, core::integer::u256, core::integer::u256, core::integer::u256, core::integer::u256, core::integer::u256, core::integer::u256)"
+      }
+    ],
+    state_mutability: "view"
+  },
+]
+
+const YoloAbiMap = {}
+YoloAbi.forEach(i => YoloAbiMap[i.name] = i)
+
 // returns tvl and token of the AutoCompounding strategies
 async function computeAutoCompoundingTVL(api) {
   // vaults under this catagory are retired so tvl balances are not considered
@@ -284,7 +301,32 @@ async function computeHyperVaultTVL(api) {
   })
 
   api.addTokens(hyperContracts.map(c => c.token), lstAssets)
-} 
+}
+
+async function computeYoloTVL(api) {
+  const yoloContracts = STRATEGIES.YoloVaults
+  const vaultStatuses = await multiCall({
+    calls: yoloContracts.map(c => c.address),
+    abi: YoloAbiMap.get_vault_status,
+  })
+
+  yoloContracts.forEach((c, i) => {
+    const status = vaultStatuses[i]
+    const remainingBase = status['2'] ?? status.remaining_base
+    const totalSecondTokens = status['3'] ?? status.total_second_tokens
+    api.addTokens(c.token1, remainingBase)
+    api.addTokens(c.token2, totalSecondTokens)
+  })
+}
+
+async function computeBoostedTVL(api) {
+  const boostedContracts = STRATEGIES.BoostedVaults
+  const totalAssets = await multiCall({
+    calls: boostedContracts.map(c => c.address),
+    abi: ERC4626AbiMap.total_assets,
+  })
+  api.addTokens(boostedContracts.map(c => c.token), totalAssets)
+}
 
 async function tvl(api) {
   await computeAutoCompoundingTVL(api);
@@ -295,6 +337,8 @@ async function tvl(api) {
   await computeEkuboBTCTvl(api);
   await computeEvergreenTVL(api);
   await computeHyperVaultTVL(api)
+  await computeYoloTVL(api);
+  await computeBoostedTVL(api);
 }
 
 module.exports = {
