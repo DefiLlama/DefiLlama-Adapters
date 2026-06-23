@@ -10,8 +10,6 @@ const songbird = (() => {
   const EXFI = ADDRESSES.songbird.EXFI;
   const SFIN = ADDRESSES.songbird.SFIN;
 
-  const chain = 'songbird'
-
   const LPs = {
     SGB_CAND_LP: '0x47C830E141234d029D953dF39B13d7728eB9f2d4',
     EXFI_CAND_LP: '0xB5BF334B8Cc30B8B13fc035d171D77A217aaB091',
@@ -29,7 +27,7 @@ const songbird = (() => {
 
   // farms which reward SFIN
   // [LP token address, farm address]
-  async function farmTvl(timestamp, ethblock, { [chain]: block }) {
+  async function farmTvl(api) {
     const tokens = [
       [WSGB, "0x6BA0F675EB2f169D15764D5cf10C4EF0e9e059f2"],
       [EXFI, "0xc9231AB30b2B39c1f7f79132D7a44bBF0F8144B0"],
@@ -63,11 +61,11 @@ const songbird = (() => {
       [EXFI, '0x645b0743A9899c1844b2036ffA443652737bc786'],
     ];
 
-    return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
+    return sumUnknownTokens({ api, tokensAndOwners: tokens, useDefaultCoreAssets: true, })
   }
 
   // farms where SFIN is one part of the pair
-  async function pool2(timestamp, ethblock, { [chain]: block }) {
+  async function pool2(api) {
     const tokens = [
       [LPs.EXFI_SFIN_LP, "0x0732f6B4aBE5dB2127E671E4B218d340b6af169c"],
       [LPs.EXFI_SFIN_LP, "0x3b343A6FC05B699F48CBe6FF127C0af8e2aA9EEE"],
@@ -85,7 +83,7 @@ const songbird = (() => {
       [LPs.EXFI_SFIN_LP, "0xBdeF97BEb0a9f949b3542E60E89e66C354D299Ae"],
       [LPs.SFIN_ExXDC_LP, "0x9E7d575014489B3557D3c53E837b772E7A1EB27c"],
     ]
-    return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
+    return sumUnknownTokens({ api, tokensAndOwners: tokens, useDefaultCoreAssets: true, })
   }
 
   return {
@@ -122,11 +120,9 @@ const flare = (() => {
     sFLR_APS_LP: '0xf06eeBF7A66C80760Bd8343A6BCe84c9D61879ee',
   }
 
-  const chain = 'flare'
-
   // farms which reward APS
   // [LP token address, farm address]
-  async function farmTvl(timestamp, ethblock, { [chain]: block }) {
+  async function farmTvl(api) {
     const tokens = [
       [LPs.WFLR_eUSDT_LP, "0x22beb4c7166DbAa0A33052A770C3b358cAbE9089"],
       [LPs.WFLR_APS_LP, "0x3DA590b357Cf17a413ec8db70FeB02119AfE707f"],
@@ -151,18 +147,18 @@ const flare = (() => {
       [LPs.sFLR_HLN_LP, "0xd06FFFb1908EAcC059d94cbA4004091dE4164e51"],
     ];
 
-    return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
+    return sumUnknownTokens({ api, tokensAndOwners: tokens, useDefaultCoreAssets: true, })
   }
 
   // farms where APS is one part of the pair
-  async function pool2(timestamp, ethblock, { [chain]: block }) {
+  async function pool2(api) {
     const tokens = [
       ['0xef24D5155818d4bD16AF0Cea1148A147eb620743', "0x3DA590b357Cf17a413ec8db70FeB02119AfE707f"],
       ['0x87E0E33558c8e8EAE3c1E9EB276e05574190b48a', "0x2de4bC38f012DC90478f570083d3Da45B05659A9"],
       [LPs.sFLR_APS_LP, '0xded2decC3028B700B8d124292868F195bb8F6467']
 
     ]
-    return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
+    return sumUnknownTokens({ api, tokensAndOwners: tokens, useDefaultCoreAssets: true, })
   }
 
   return {

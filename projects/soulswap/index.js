@@ -34,18 +34,17 @@ query get_coffinboxes($block: Int, $tokensSkip: Int) {
 `
 
 function underworldLending(chain, borrowed) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+  return async (api) => {
     // Retrieve coffin boxes tokens held in contract
     const boxTokens = []
-    const graphUrl = graphUrls[chain]
-    const block = chainBlocks[chain]
+    const block = api.block
     const transform = x => `${chain}:${x}`
 
     // Query graphql endpoint and add tokenAndOwner to list
     const { coffinBoxes } = await request(
-      graphUrl, 
-      coffinboxQuery, 
-      {block, tokensSkip: 0}
+      graphUrls[chain],
+      coffinboxQuery,
+      { block, tokensSkip: 0 }
     )
     coffinBoxes.forEach(async box => {
       boxTokens.push(...box.tokens.map(t => [t.id, box.id]))

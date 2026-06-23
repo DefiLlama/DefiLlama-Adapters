@@ -86,22 +86,9 @@ module.exports = {
     methodology: "PolkaEx Tvl Calculation",
     astar: {
         tvl: tvls.astar,
-        staking: async (timestamp, _ethBlock, chainBlocks) => {
-            const pkexStaking = await stakings(
-                STAKING_CONTRACTS.astar,
-                PKEX.astar,
-                "astar",
-                PKEX.ethereum
-            )(timestamp, _ethBlock, chainBlocks);
-
-            const dotStaking = await stakings(
-                STAKING_CONTRACTS.astar,
-                TOKENS.astar.DOT,
-                "astar"
-            )(timestamp, _ethBlock, chainBlocks);
-
-            const result = { ...pkexStaking, ...dotStaking };
-            return result;
+        staking: async (api) => {
+            await stakings(STAKING_CONTRACTS.astar, [PKEX.astar, TOKENS.astar.DOT])(api);
+            return api.getBalances();
         },
     },
     shiden: {

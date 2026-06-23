@@ -2,6 +2,7 @@ const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { sumTokensExport } = require('../projects/helper/sumTokens')
 const { staking: stakingFn } = require('../projects/helper/staking')
 const { pool2: pool2Fn } = require('../projects/helper/pool2')
+const data1 = require('./sumTokens/data1')
 
 // Registry for adapters whose TVL (and optional staking/pool2/borrowed buckets) are static sumTokens calls.
 // A chain's value is EITHER a plain sumTokens options object (=> treated as { tvl }),
@@ -42402,6 +42403,8 @@ const configs = {
     },
   },
 }
+
+Object.assign(configs, data1)
 
 const allProtocols = {}
 for (const [name, cfg] of Object.entries(configs)) {
