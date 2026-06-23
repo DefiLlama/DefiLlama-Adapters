@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NULL_ADDRESS = ADDRESSES.null
 
 const methodology = 'Counts assets managed by Panoptic V2 collateral trackers for all PanopticPool contracts deployed by the PanopticFactoryV3 and PanopticFactoryV4 contracts. CollateralTracker.totalAssets() includes tracked deposits, assets deployed into AMM positions, and unrealized interest, so no separate SFPM chunk/subgraph accounting is needed.'
 

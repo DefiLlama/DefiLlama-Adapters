@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
@@ -585,7 +586,7 @@ const uniV3Configs = {
     bsquared: {
       factory: '0x02eAFbE9dE030f69aF02B7D3F2f69B28016f3C83',
       fromBlock: 1,
-      blacklistedTokens: ['0x796e4d53067ff374b89b2ac101ce0c1f72ccaac2'],
+      blacklistedTokens: [ADDRESSES.bsquared.UBTC],
     },
   },
   'glyph-v4': {
@@ -845,7 +846,7 @@ const uniV3Configs = {
     scroll: {
       factory: '0x9367c561915f9D062aFE3b57B18e30dEC62b8488',
       fromBlock: 77008,
-      blacklistedTokens: ['0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f'],
+      blacklistedTokens: [ADDRESSES.linea.WETH],
     },
   },
   'methlab-xyz': {
@@ -1126,22 +1127,18 @@ const uniV3Configs = {
       fromBlock: 90593047,
     },
   },
-  'ramses-hl-cl': {
+  'ramses-cl-v2': {
     hyperliquid: {
       factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
       fromBlock: 18149975,
     },
-  },
-  'ramsesx-arb-cl': {
-    arbitrum: {
-      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
-      fromBlock: 420275312,
-    },
-  },
-  'ramsesx-poly-cl': {
     polygon: {
       factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
       fromBlock: 82177771,
+    },
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
     },
   },
   'reservoir-tools-v3': {
@@ -1160,7 +1157,7 @@ const uniV3Configs = {
     ink: {
       factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424',
       fromBlock: 1,
-      blacklistedTokens: ['0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'],
+      blacklistedTokens: [ADDRESSES.ethereum.WETH],
     },
   },
   'retro': {

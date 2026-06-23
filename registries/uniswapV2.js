@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { getUniTVL } = require('../projects/helper/unknownTokens')
 const { buildProtocolExports } = require('./utils')
 
@@ -2425,7 +2426,7 @@ const uniV2Configs = {
     dfk: { factory: '0x794C07912474351b3134E6D6B3B7b3b4A07cbAAa', staking: ["0x6E7185872BCDf3F7a6cBbE81356e50DAFFB002d2", "0x04b9dA42306B023f3572e106B11D82aAd9D32EBb", "dfk", "defi-kingdoms-crystal", 18] },
   },
   'currentx': {
-    _options: { coreAssets: ['0x4200000000000000000000000000000000000006'] },
+    _options: { coreAssets: [ADDRESSES.optimism.WETH_1] },
     megaeth: '0xC60940F182F7699522970517f6d753A560546937',
   },
   'dddx': {
@@ -2513,10 +2514,10 @@ const uniV2Configs = {
     canto: '0x116e8a41E8B0A5A87058AF110C0Ddd55a0ed82B7',
     linea: '0x4DDf0fa98B5f9Bd7Cb0645c25bA89A574fe9Be8c',
     shibarium: '0xd3Ea3BC1F5A3F881bD6cE9761cbA5A0833a5d737',
-    op_bnb: '0xa2899c776baaf9925d432f83c950d5054a6cf59c',
+    op_bnb: ADDRESSES.shibarium.BONE_4,
     base: { factory: '0x169C06b4cfB09bFD73A81e6f2Bb1eB514D75bB19', hasStablePools: true, stablePoolSymbol: 'sLS2' },
-    manta: '0xa2899c776baaf9925d432f83c950d5054a6cf59c',
-    scroll: '0xa2899c776baaf9925d432f83c950d5054a6cf59c',
+    manta: ADDRESSES.shibarium.BONE_4,
+    scroll: ADDRESSES.shibarium.BONE_4,
   },
   'leonicornswap': {
     bsc: { factory: '0xEB10f4Fe2A57383215646b4aC0Da70F8EDc69D4F', staking: ["0x72F8fE2489A4d480957d5dF9924166e7a8DDaBBf", ["0x2c8368f8F474Ed9aF49b87eAc77061BEb986c2f1", "0x27E873bee690C8E161813DE3566E9E18a64b0381"]] },
@@ -2528,7 +2529,7 @@ const uniV2Configs = {
     mantle: '0x5bef015ca9424a7c07b68490616a4c1f094bedec',
   },
   'mindgames': {
-    arbitrum: { factory: '0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0', staking: { owner: '0x35AfE95662fdf442762a11E4eD5172C81fBceF7e', tokens: ['0xb21Be1Caf592A5DC1e75e418704d1B6d50B0d083'], coreAssets: ['0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'], lps: ['0xf7305D209BFeCF40Bd53ccBdbe5303B3153d0660'] } },
+    arbitrum: { factory: '0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0', staking: { owner: '0x35AfE95662fdf442762a11E4eD5172C81fBceF7e', tokens: ['0xb21Be1Caf592A5DC1e75e418704d1B6d50B0d083'], coreAssets: [ADDRESSES.arbitrum.USDC], lps: ['0xf7305D209BFeCF40Bd53ccBdbe5303B3153d0660'] } },
   },
   'mistswap': {
     smartbch: { factory: '0x6008247F53395E7be698249770aa1D2bfE265Ca0', staking: ["0xC41C680c60309d4646379eD62020c534eB67b6f4", "0x5fA664f69c2A4A3ec94FaC3cBf7049BD9CA73129", "smartbch", "mistswap", 18] },
@@ -2635,16 +2636,10 @@ const uniV2Configs = {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
     arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"] },
   },
-  'ramses-hl-legacy': {
+  'ramses-legacy-v2': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
-  },
-  'ramsesx-arb-legacy': {
-    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
-  },
-  'ramsesx-poly-legacy': {
-    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
   },
   'sharkyswap': {
@@ -2669,9 +2664,9 @@ const uniV2Configs = {
     avax: '0xeeee1F1c93836B2CAf8B9E929cb978c35d46657E',
   },
   'soyfinance': {
-    callisto: { factory: '0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5', blacklistedTokens: ['0x9fae2529863bd691b4a7171bdfcf33c7ebb10a65'] },
+    callisto: { factory: '0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5', blacklistedTokens: [ADDRESSES.callisto.SOY] },
     ethereumclassic: '0x23675f1Ac7cce101Aff647B96d7201EfCf66E4b0',
-    bittorrent: '0xbf6c50889d3a620eb42c0f188b65ade90de958c4',
+    bittorrent: ADDRESSES.callisto.BUSDT,
     bsc: '0x23675f1Ac7cce101Aff647B96d7201EfCf66E4b0',
   },
   'starswap': {
@@ -2703,7 +2698,7 @@ const uniV2Configs = {
     oasis: { factory: '0x90a5e676EFBdeFeeeb015cd87484B712fd54C96A', staking: ["0xceF2f95f185D49bcd1c10DE7f23BEaCBaae6eD0f", "0x2736643C7fFFe186984f60a2d34b91b1b7398bF1"] },
   },
   'ultronSwap': {
-    ultron: { factory: '0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7', staking: { owner: '0xf26E50c26Ed51AbeC4078380Ed1F13440011F2A1', tokens: ['0x3a4f06431457de873b588846d139ec0d86275d54'] } },
+    ultron: { factory: '0xe1F0D4a5123Fd0834Be805d84520DFDCd8CF00b7', staking: { owner: '0xf26E50c26Ed51AbeC4078380Ed1F13440011F2A1', tokens: [ADDRESSES.ultron.wULX] } },
   },
   'unifi-protocol': {
     timetravel: false,
@@ -2748,7 +2743,7 @@ const uniV2Configs = {
     bsc: { factory: '0x3657952d7bA5A0A4799809b5B6fdfF9ec5B46293', staking: ["0xde866dD77b6DF6772e320dC92BFF0eDDC626C674", "0x0fEAdcC3824E7F3c12f40E324a60c23cA51627fc"] },
   },
   'warpx': {
-    _options: { fetchBalances: true, coreAssets: ['0x4200000000000000000000000000000000000006'] },
+    _options: { fetchBalances: true, coreAssets: [ADDRESSES.optimism.WETH_1] },
     megaeth: '0xB3Ae00A68F09E8b8a003B7669e2E84544cC4a385',
   },
   'whaleswap': {
@@ -2811,7 +2806,7 @@ const uniV2Configs = {
     monad: '0x0ff16867BcaC3C5fdc2dc73558e3F8e2ed89EEA2',
   },
   'zkevmswap': {
-    polygon_zkevm: '0x213c25900f365f1be338df478cd82bef7fd43f85',
+    polygon_zkevm: ADDRESSES.shibarium.BONE_1,
   },
   'bcswap': {
     bcypher: '0x927bf500361987b365f6d0ff38c1d45155f4975c',

@@ -282,6 +282,10 @@ const configs = {
   'gremlix': {
     arbitrum: ['0x973Ae12aC9078E9f9B1708C477A9670bB3fB0886','0xd519EF317Be061b310D3caA4565Fa1ef466c36C8'],
     methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.'
+  },
+  'xax': {
+    ethereum: ['0xc452B6D5bf3a7712A9AF9F70BF32f37A531ff220'],
+    methodology: 'Counts USDT backing the XAUSD ERC-4626 vault.'
   }
 }
 

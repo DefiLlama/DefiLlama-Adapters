@@ -5,11 +5,156 @@
 const { STRATEGIES }  = require("./utils")
 const { multiCall } = require("../helper/chain/starknet");
 const { call } = require("../helper/chain/starknet");
-const { EkuboAbiMap } = require('./ekubo');
-const { ERC4626AbiMap } = require('./erc4626');
 const { SINGLETONabiMap } = require('./singleton');
-const { endurABIMap } = require('./endur');
-const { FusionAbiMap } = require('./fusionAbi');
+
+const EkuboAbi = [
+    {
+        "name": "total_supply",
+        "type": "function",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+    },
+    {
+        "name": "convert_to_assets",
+        "type": "function",
+        "inputs": [
+          {
+            "name": "shares",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "(core::integer::u256, core::integer::u256, core::integer::u256)"
+          }
+        ],
+        "state_mutability": "view"
+      },
+]
+
+const EkuboAbiMap = {}
+EkuboAbi.forEach(i => EkuboAbiMap[i.name] = i)
+
+const ERC4626Abi = [
+  {
+    "name": "asset",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ],
+    "state_mutability": "view"
+  },
+  {
+    "name": "balanceOf",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "core::starknet::contract_address::ContractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "core::integer::u256"
+      }
+    ],
+    "state_mutability": "view",
+    "customInput": 'address',
+  },
+  {
+    "name": "total_assets",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "core::integer::u256"
+      }
+    ],
+    "state_mutability": "view"
+  },
+  {
+    "name": "preview_redeem",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "shares",
+        "type": "core::integer::u256"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "core::integer::u256"
+      }
+    ],
+    "state_mutability": "view"
+  },
+]
+
+const ERC4626AbiMap = {}
+ERC4626Abi.forEach(i => ERC4626AbiMap[i.name] = i)
+
+const Endur = [
+    {
+        "name": "preview_redeem",
+        "type": "function",
+        "inputs": [
+          {
+            "name": "shares",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+    },
+    {
+        "name": "convert_to_assets",
+        "type": "function",
+        "inputs": [
+          {
+            "name": "shares",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+  ]
+
+const endurABIMap = {}
+Endur.forEach(i => endurABIMap[i.name] = i)
+
+const FusionAbi = [
+    {
+        "type": "function",
+        "name": "total_assets",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+    },
+]
+
+const FusionAbiMap = {}
+FusionAbi.forEach(i => FusionAbiMap[i.name] = i)
 
 // returns tvl and token of the AutoCompounding strategies
 async function computeAutoCompoundingTVL(api) {
