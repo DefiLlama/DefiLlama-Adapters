@@ -1,20 +1,10 @@
-const { get } = require('../helper/http')
-const {toUSDTBalances} = require('../helper/balances')
-
-async function fetch(chainName) {
-    return 0
-    // const {tvlMap} = await get('https://app.earnmos.fi/defi-llama/tvl-map');
-
-    // return toUSDTBalances(tvlMap[chainName]);
-}
-
 module.exports = {
+    deadFrom: '2024-03-26',
     misrepresentedTokens: true,
-    timetravel: false,
     evmos: {
-        tvl: fetch.bind(null, 'evmos')
+        tvl: () => ({})
     },
     kava: {
-        tvl: fetch.bind(null, 'kava')
+        tvl: () => ({})
     }
 }
