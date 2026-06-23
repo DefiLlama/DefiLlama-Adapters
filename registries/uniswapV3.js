@@ -1126,22 +1126,18 @@ const uniV3Configs = {
       fromBlock: 90593047,
     },
   },
-  'ramses-hl-cl': {
+  'ramses-cl-v2': {
     hyperliquid: {
       factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
       fromBlock: 18149975,
     },
-  },
-  'ramsesx-arb-cl': {
-    arbitrum: {
-      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
-      fromBlock: 420275312,
-    },
-  },
-  'ramsesx-poly-cl': {
     polygon: {
       factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
       fromBlock: 82177771,
+    },
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
     },
   },
   'reservoir-tools-v3': {

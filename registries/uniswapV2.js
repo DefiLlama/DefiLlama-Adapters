@@ -2635,16 +2635,10 @@ const uniV2Configs = {
     _options: { hasStablePools: true, stablePoolSymbol: 'crAMM' },
     arbitrum: { factory: '0xAAA20D08e59F6561f242b08513D36266C5A29415', staking: ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"] },
   },
-  'ramses-hl-legacy': {
+  'ramses-legacy-v2': {
     _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
-  },
-  'ramsesx-arb-legacy': {
-    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
-  },
-  'ramsesx-poly-legacy': {
-    _options: { hasStablePools: true, stablePoolSymbol: 'cAMM' },
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
   },
   'sharkyswap': {
