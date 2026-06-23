@@ -20332,6 +20332,16 @@ const configs = {
         ADDRESSES.xdai.DAI_1
       ]
     },
+    "adi": {
+      "owners": [
+        "0x2CfF890f0378a11913B6129B2E97417a2c302680",
+        "0x233c5370CCfb3cD7409d9A3fb98ab94dE94Cb4Cd",
+        "0xbb2f33f73ccc2c74e3fb9bb8eb75241ac15337e0"
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    }
   },
   "neony": {
     "methodology": "TVL counts all SPL tokens and native SOL held in Neony treasury wallets on Solana.",
