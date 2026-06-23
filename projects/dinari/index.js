@@ -28,10 +28,14 @@ const config = {
 }
 
 const abi = "function getDShares() external view returns (address[] memory, address[] memory)"
+const USD_PLUS_DECIMALS = 1e6
 
 const tvl = async (api) => {
   const { factory, usdplus } = config[api.chain]
-  if (usdplus) api.add(usdplus, await api.call({ target: usdplus, abi: 'erc20:totalSupply'}))
+  if (usdplus) {
+    const supply = await api.call({ target: usdplus, abi: 'erc20:totalSupply'})
+    api.addCGToken('usd-coin', supply / USD_PLUS_DECIMALS)
+  }
   if (!factory) return
   const [tokens] = (await api.call({ target: factory, abi, permitFailure: true})) ?? []
   if (!tokens) return;
