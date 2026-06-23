@@ -540,6 +540,7 @@ async function tvl(api) {
 
   await PromisePool.withConcurrency(HYPERION_LP_CONCURRENCY)
     .for(safeAddresses)
+    .handleError((e) => { throw e; }) // throws on public rpcs instead of dropping hyperion tvl
     .process(async (safe) => {
       const configExists = await function_view({
         functionStr: `${VAULT}::vault::hyperion_lp_config_exists`,
