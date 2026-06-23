@@ -248,12 +248,6 @@ const uniV3Configs = {
       fromBlock: 18692575,
     },
   },
-  'test-univ3': {
-    ethereum: {
-      factory: '0xe777c3da43ec554ec845649323215afaa34d6c23',
-      fromBlock: 18692575,
-    },
-  },
   'bulbaswap-v3': {
     morph: {
       factory: '0xFf8578C2949148A6F19b7958aE86CAAb2779CDDD',

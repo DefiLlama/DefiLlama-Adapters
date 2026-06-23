@@ -100,11 +100,6 @@ const configs = {
     megaeth: {
       poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'],
     },
-  },
-  'test-aavev3': {
-    megaeth: {
-      poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'],
-    },
   }
 }
 

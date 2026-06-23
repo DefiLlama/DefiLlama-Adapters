@@ -180,11 +180,6 @@ const configs = {
       "owner": "0x597774837debe9f074453c04cea46b532759b28a"
     }
   },
-  "test-ft": {
-    "base": {
-      "owner": "0x597774837debe9f074453c04cea46b532759b28a"
-    }
-  },
   "tomo": {
     "linea": {
       "owner": "0x9e813d7661d7b56cbcd3f73e958039b208925ef8"
