@@ -27708,6 +27708,17 @@ const configs = {
       ]
     },
   },
+  "test-protocol": {
+    "methodology": "counts value of assets in the Treasury",
+    "start": "2023-03-04",
+    "ethereum": {
+      "owner": "0xa01D9bc8343016C7DDD39852e49890a8361B2884",
+      "tokens": [
+        ADDRESSES.ethereum.USDC,
+        "0x530824DA86689C9C17CdC2871Ff29B058345b44a"
+      ]
+    },
+  },
   "taiko-bridge": {
     "ethereum": {
       "owners": [
