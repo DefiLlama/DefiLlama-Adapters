@@ -21,7 +21,15 @@ const ACCOUNTABLE_VAULTS = {
 
 const MIDAS_VAULTS = {
   ethereum: [
+    '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
+    '0xb64C014307622eB15046C66fF71D04258F5963DC', // mevBTC
     '0x67E1F506B148d0Fc95a4E3fFb49068ceB6855c05'  // mROX
+  ],
+  plume_mainnet: [
+    '0x7d611dC23267F508DE90724731Dc88CA28Ef7473', // mMEV
+  ],
+  etlk: [
+    '0x5542F82389b76C23f5848268893234d8A63fd5c8', // mMEV
   ],
 };
 
@@ -39,6 +47,7 @@ const configs = {
       ],
       upshiftV2: [
         '0xc87DBBB8C67e4F19fCD2E297c05937567b2572Ce', // Upshift Earn ctUSD
+        '0xcd69123b3FBBfC666E1f6a501da27B564C00De54',
       ],
     },
     base: {
