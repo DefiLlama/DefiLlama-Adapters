@@ -26844,6 +26844,15 @@ const configs = {
       ]
     },
   },
+  "synthetix-v4": {
+    "ethereum": {
+      "owner": "0xD62595c3c23B690BAEE0935e107A209Cb1Dbd37B",
+      "tokens": [
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.WETH,
+      ]
+    },
+  },
   "synthex": {
     "methodology": "counts value of assets in the PoolC and PoolF",
     "arbitrum": {
