@@ -255,4 +255,12 @@ module.exports = {
       ]
     }
   },
+  "bridgekek": {
+    "ethereum": {
+      "owner": "0x53423b7bf445997e76ad94f820f0559e451a98e2",
+      "tokens": ["0x67954768E721FAD0f0f21E33e874497C73ED6a82"],
+      "logCalls": true
+    },
+    "kekchain": { "__empty": true }
+  },
 }

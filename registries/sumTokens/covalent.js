@@ -984,4 +984,119 @@ module.exports = {
       "fetchCoValentTokens": true
     },
   },
+  "smoothy": {
+    "ethereum": {
+      "owner": "0xe5859f4efc09027a9b718781dcb2c6910cac6e91",
+      "fetchCoValentTokens": true
+    },
+    "bsc": {
+      "owner": "0xe5859f4efc09027a9b718781dcb2c6910cac6e91",
+      "fetchCoValentTokens": true
+    }
+  },
+  "rehold": {
+    "hallmarks": [
+      ["2023-07-07", "ReHold V2 Launch"],
+      ["2023-07-19", "Ethereum Deployment"],
+      ["2023-08-01", "Limit Orders Launch"],
+      ["2023-10-30", "ReHold Swaps Launch"]
+    ],
+    "bsc": { "owner": "0xd476ce848c61650e3051f7571f3ae437fe9a32e0", "fetchCoValentTokens": true },
+    "polygon": { "owner": "0xd476ce848c61650e3051f7571f3ae437fe9a32e0", "fetchCoValentTokens": true },
+    "avax": { "owner": "0xd476ce848c61650e3051f7571f3ae437fe9a32e0", "fetchCoValentTokens": true },
+    "arbitrum": { "owner": "0xd476ce848c61650e3051f7571f3ae437fe9a32e0", "fetchCoValentTokens": true },
+    "optimism": { "owner": "0xd476ce848c61650e3051f7571f3ae437fe9a32e0", "fetchCoValentTokens": true },
+    "fantom": { "owner": "0xd476ce848c61650e3051f7571f3ae437fe9a32e0", "fetchCoValentTokens": true }
+  },
+  "loopring": {
+    "ethereum": {
+      "owners": [
+        "0x944644Ea989Ec64c2Ab9eF341D383cEf586A5777",
+        "0x674bdf20A0F284D710BC40872100128e2d66Bd3f"
+      ],
+      "fetchCoValentTokens": true
+    },
+    "taiko": {
+      "owners": ["0x3e71a41325e1d6B450307b6535EC48627ac4DaCC"],
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.taiko.USDC,
+        ADDRESSES.taiko.USDT,
+        ADDRESSES.taiko.DAI,
+        ADDRESSES.taiko.LRC,
+        ADDRESSES.taiko.TAIKO
+      ]
+    },
+    "base": {
+      "owners": ["0x732771F202ed19Ca8e1844d334e1df5641DC99Fe"],
+      "fetchCoValentTokens": true
+    }
+  },
+  "avax": {
+    "ethereum": {
+      "owner": "0x8EB8a3b98659Cce290402893d0123abb75E3ab28",
+      "fetchCoValentTokens": true
+    },
+    "bitcoin": { "__empty": true } // migrated to lombard
+  },
+  "railgun": {
+    "ethereum": {
+      "tvl": {
+        "owner": "0xFA7093CDD9EE6932B4eb2c9e1cde7CE00B1FA4b9",
+        "fetchCoValentTokens": true,
+        "blacklistedTokens": [
+          "0x2e14949ce0133ccfd4c0cbe707ba878015a7a40c",
+          "0xe76C6c83af64e4C60245D8C7dE953DF673a7A33D" // RAIL
+        ]
+      },
+      "staking": { "__staking": ["0xee6a649aa3766bd117e12c161726b693a1b2ee20", "0xe76C6c83af64e4C60245D8C7dE953DF673a7A33D"] }
+    },
+    "bsc": {
+      "owner": "0x590162bf4b50F6576a459B75309eE21D92178A10",
+      "fetchCoValentTokens": true,
+      "blacklistedTokens": [
+        "0x2e14949ce0133ccfd4c0cbe707ba878015a7a40c",
+        "0x3F847b01d4d498a293e3197B186356039eCd737F" // RAIL
+      ]
+    },
+    "polygon": {
+      "owner": "0x19B620929f97b7b990801496c3b361CA5dEf8C71",
+      "fetchCoValentTokens": true,
+      "blacklistedTokens": [
+        "0x2e14949ce0133ccfd4c0cbe707ba878015a7a40c",
+        "0x92A9C92C215092720C731c96D4Ff508c831a714f" // RAIL
+      ]
+    },
+    "arbitrum": {
+      "owner": "0xFA7093CDD9EE6932B4eb2c9e1cde7CE00B1FA4b9",
+      "fetchCoValentTokens": true,
+      "blacklistedTokens": ["0x2e14949ce0133ccfd4c0cbe707ba878015a7a40c"]
+    }
+  },
+  "epoch-island": {
+    "start": "2023-11-17",
+    "hallmarks": [
+      ["2023-11-17", "vEPOCH Launch"],
+      ["2024-01-03", "ITO Launch"]
+    ],
+    "ethereum": {
+      "tvl": { "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98", "fetchCoValentTokens": true, "blacklistedTokens": ["0x97D0CfEB4FdE54B430307c9482d6f79C761Fe9B6"] },
+      "pool2": { "__staking": ["0x731a2572b1cf56cfb804c74555715c8c8b5e980b", "0x82b8c7c6Fb62D09CfD004309c1F353FB1A926Edc"] }
+    },
+    "base": { "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98", "fetchCoValentTokens": true, "blacklistedTokens": ["0x287f0D88e29a3D7AEb4d0c10BAE5B902dB69B17D"] },
+    "arbitrum": { "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98", "fetchCoValentTokens": true, "blacklistedTokens": ["0x4939ac5c1855302891c5888634b2f65cc30b9155"] },
+    "optimism": { "owner": "0x44DE78EB54EE54C4151e62834D3B5a29005Bde98", "fetchCoValentTokens": true, "blacklistedTokens": ["0xd1cac46a9a77169C310c2C780A4267eE6CA884f5"] }
+  },
+  "unilend": {
+    "methodology": "We count liquidity on the Pools through UnilendFlashLoansCore Contract",
+    "ethereum": {
+      "tvl": { "owners": ["0x13A145D215182924c89F2aBc7D358DCc72F8F788"], "fetchCoValentTokens": true, "blacklistedTokens": ["0x0202Be363B8a4820f3F4DE7FaF5224fF05943AB1", "0x5b4cf2c120a9702225814e18543ee658c5f8631e"] },
+      "staking": { "__staking": ["0x13A145D215182924c89F2aBc7D358DCc72F8F788", "0x0202Be363B8a4820f3F4DE7FaF5224fF05943AB1"] }
+    },
+    "polygon": { "owners": ["0x13A145D215182924c89F2aBc7D358DCc72F8F788"], "fetchCoValentTokens": true, "blacklistedTokens": ["0x0202Be363B8a4820f3F4DE7FaF5224fF05943AB1", "0x5b4cf2c120a9702225814e18543ee658c5f8631e"] },
+    "bsc": {
+      "tvl": { "owners": ["0x13A145D215182924c89F2aBc7D358DCc72F8F788"], "fetchCoValentTokens": true, "blacklistedTokens": ["0x0202Be363B8a4820f3F4DE7FaF5224fF05943AB1", "0x5b4cf2c120a9702225814e18543ee658c5f8631e"] },
+      "staking": { "__staking": ["0x13A145D215182924c89F2aBc7D358DCc72F8F788", "0x2645d5f59D952ef2317C8e0AaA5A61c392cCd44d"] }
+    }
+  },
 }

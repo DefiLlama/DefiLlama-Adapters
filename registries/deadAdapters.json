@@ -223,6 +223,38 @@
     },
     "deadFrom": "2024-05-09"
   },
+  "nervenetwork": {
+    "misrepresentedTokens": true,
+    "nuls": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
+  "nerveswap": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL is computed by reading on-chain NVT balances of Nerveswap pools",
+    "nuls": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
+  "nuls": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL counts native chain staking and data is pulled from: \"https://public1.nuls.io/nuls/tvl\".",
+    "nuls": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
+  "pocm-staking": {
+    "doublecounted": true,
+    "timetravel": false,
+    "nuls": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
   "RavelinFinance": {
     "milkomeda": {
       "tvl": "_f",
