@@ -47,7 +47,7 @@ const configs = {
       ],
       upshiftV2: [
         '0xc87DBBB8C67e4F19fCD2E297c05937567b2572Ce', // Upshift Earn ctUSD
-        '0xcd69123b3FBBfC666E1f6a501da27B564C00De54',
+        '0xcd69123b3FBBfC666E1f6a501da27B564C00De54', // Upshift Tori
       ],
     },
     base: {
