@@ -286,6 +286,10 @@ const configs = {
   'xax': {
     ethereum: ['0xc452B6D5bf3a7712A9AF9F70BF32f37A531ff220'],
     methodology: 'Counts USDT backing the XAUSD ERC-4626 vault.'
+  },
+  'test-vault': {
+    ethereum: ['0xc452B6D5bf3a7712A9AF9F70BF32f37A531ff220'],
+    methodology: 'Counts USDT backing the XAUSD ERC-4626 vault.'
   }
 }
 
