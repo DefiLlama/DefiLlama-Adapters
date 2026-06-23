@@ -4,6 +4,34 @@ const { parser } = require("stream-json");
 const { pick } = require("stream-json/filters/Pick");
 const { streamArray } = require("stream-json/streamers/StreamArray");
 const sdk = require('@defillama/sdk');
+const { Client: ElasticClient } = require('@elastic/elasticsearch');
+
+async function writeBalancesToElastic(balances) {
+  const cfg = JSON.parse(process.env.ELASTICSEARCH_CONFIG || '{}')
+  if (!cfg.host) {
+    console.log('ELASTICSEARCH_CONFIG missing or invalid, skipping write')
+    return
+  }
+  const client = new ElasticClient({
+    node: cfg.host,
+    auth: { username: cfg.username, password: cfg.password },
+    requestTimeout: 60000,
+    maxRetries: 2,
+  })
+  const now = new Date()
+  const index = `custom-scripts-${now.getUTCFullYear()}-${now.getUTCMonth()}`
+  await client.index({
+    index,
+    body: {
+      metadata: { type: 'tvl' },
+      chain: 'ethereum',
+      project: 'ssv-network',
+      balances,
+      timestamp: Date.now(),
+    },
+  })
+  console.log(`Elastic write OK to ${index}`)
+}
 
 const BEACON_API_URL = "https://ethereum-beacon-api.publicnode.com/eth/v1/beacon/states/finalized/validators";
 
@@ -223,15 +251,13 @@ async function main() {
 
   console.log("SSV Network TVL:", balances);
 
-  await sdk.elastic.writeLog('custom-scripts', {
-    metadata: {
-      type: 'tvl',
-    },
-    chain: 'ethereum',
-    project: 'ssv-network',
-    balances,
-    timestamp: Math.floor(Date.now() / 1000),
-  });
+  console.log("Writing to Elastic via fresh client...");
+  try {
+    await writeBalancesToElastic(balances)
+  } catch (e) {
+    console.error("Elastic write FAILED:", e.message, e.stack);
+    throw e;
+  }
 }
 
 main().catch((err) => {
