@@ -1,4 +1,16 @@
 const { sumTokens2 } = require("./unwrapLPs")
+const abis = {
+  v1: {
+    getLBPairAtIndex: 'getLBPairAtIndex',
+    getTokenX: 'address:getTokenX',
+    getTokenY: 'address:getTokenY',
+  },
+  lb: {
+    getLBPairAtIndex: 'allLBPairs',
+    getTokenX: 'address:tokenX',
+    getTokenY: 'address:tokenY',
+  }
+}
 
 function joeV2Export(config) {
   const exports = {
@@ -7,24 +19,45 @@ function joeV2Export(config) {
 
   Object.keys(config).forEach(chain => {
     let factory = config[chain]
-    let blacklistedTokens = []
-    if (typeof factory !== 'string' && typeof factory.factory === 'string') {
-      blacklistedTokens = factory.blacklistedTokens || []
-      factory = factory.factory
+    let factories = []
+    if (typeof factory !== 'string') {
+      if (factory.factories)
+        factories = factory.factories
     }
+
+    const getFactoryTvl = async (api, factory) => {
+
+      let abi = abis.v1
+      let blacklistedTokens = []
+
+      if (typeof factory !== 'string') {
+        blacklistedTokens = factory.blacklistedTokens || []
+        if (factory.isLb) abi = abis.lb
+        factory = factory.factory
+      }
+
+      const pools = await api.fetchList({ target: factory, itemAbi: abi.getLBPairAtIndex, lengthAbi: 'getNumberOfLBPairs', })
+      const tokenA = await api.multiCall({ abi: abi.getTokenX, calls: pools, })
+      const tokenB = await api.multiCall({ abi: abi.getTokenY, calls: pools, })
+
+      const toa = []
+      tokenA.map((_, i) => {
+        toa.push([tokenA[i], pools[i]])
+        toa.push([tokenB[i], pools[i]])
+      })
+      return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens, permitFailure: true, })
+    }
+
 
     exports[chain] = {
       tvl: async (api) => {
-        const pools = await api.fetchList({ target: factory, itemAbi: 'getLBPairAtIndex', lengthAbi: 'getNumberOfLBPairs', })
-        const tokenA = await api.multiCall({ abi: 'address:getTokenX', calls: pools, })
-        const tokenB = await api.multiCall({ abi: 'address:getTokenY', calls: pools, })
-
-        const toa = []
-        tokenA.map((_, i) => {
-          toa.push([tokenA[i], pools[i]])
-          toa.push([tokenB[i], pools[i]])
-        })
-        return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens, permitFailure: true, })
+        if (Array.isArray(factories) && factories.length > 0) {
+          for (const f of factories) {
+            await getFactoryTvl(api, f)
+          }
+        } else {
+          await getFactoryTvl(api, factory)
+        }
       }
     }
   })

@@ -100,12 +100,40 @@
     },
     "deadFrom": "2024-04-03"
   },
+  "bagful": {
+    "doublecounted": true,
+    "linea": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2025-01-26",
+        "Rug Pull!"
+      ]
+    ]
+  },
+  "BankOfCronos": {
+    "methodology": "CDP collateral value + treasury mv",
+    "cronos": {
+      "tvl": "_f"
+    }
+  },
   "Caketomb": {
     "deadFrom": "2022-03-31",
     "bsc": {
       "tvl": "_f",
       "staking": "_f",
       "pool2": "_f"
+    }
+  },
+  "cheesedao": {
+    "harmony": {
+      "tvl": "_f"
+    }
+  },
+  "cryptomate": {
+    "stacks": {
+      "tvl": "_f"
     }
   },
   "CthulhuFinance": {
@@ -131,6 +159,29 @@
     },
     "deadFrom": "2025-07-01"
   },
+  "earnmos": {
+    "misrepresentedTokens": true,
+    "evmos": {
+      "tvl": "_f"
+    },
+    "kava": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2024-03-26"
+  },
+  "ecurve": {
+    "methodology": "eCurve TVL is achieved by making a call to its eCurve API.",
+    "misrepresentedTokens": true,
+    "eos": {
+      "tvl": "_f"
+    }
+  },
+  "fantom": {
+    "misrepresentedTokens": true,
+    "fantom": {
+      "tvl": "_f"
+    }
+  },
   "FirepotSwap": {
     "misrepresentedTokens": true,
     "methodology": "Uses factory(0xe63Cf585Dae8273A5e37AfF6da2f823FBf3Eb5BE) address to find and price Liquidity Pool pairs.",
@@ -153,6 +204,12 @@
     },
     "deadFrom": "2025-10-10"
   },
+  "hex": {
+    "ethereum": {
+      "staking": "_f",
+      "tvl": "_f"
+    }
+  },
   "Infernoswap": {
     "hallmarks": [
       [
@@ -171,6 +228,17 @@
       "tvl": "_f"
     },
     "deadFrom": "2024-01-20"
+  },
+  "jade-protocol": {
+    "ethereum": {
+      "tvl": "_f"
+    }
+  },
+  "kei-finance": {
+    "ethereum": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
   },
   "KyborgExchange": {
     "hallmarks": [
@@ -203,6 +271,26 @@
     },
     "deadFrom": "2025-06-09"
   },
+  "liquidswap": {
+    "methodology": "We are counting all the liquidity on their DEX as TVL, data is sourced from the subgraph at 'https://subgraph.liquidchain.net/subgraphs/name/liquid/exchange'",
+    "liquidchain": {
+      "tvl": "_f"
+    }
+  },
+  "LuckyFuture": {
+    "methodology": "Calculate sum of spot positions in vaults with unrealized profit and loss",
+    "doublecounted": true,
+    "timetravel": false,
+    "solana": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2026-04-01",
+        "Drift hack"
+      ]
+    ]
+  },
   "Magnate": {
     "base": {
       "tvl": "_f",
@@ -211,6 +299,25 @@
       "borrowed": "_f"
     },
     "deadFrom": "2023-08-25"
+  },
+  "marginly": {
+    "methodology": "Counts the number of base and quote tokens in every marginly pool",
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "blast": {
+      "tvl": "_f"
+    },
+    "ethereum": {
+      "tvl": "_f"
+    }
+  },
+  "mcs": {
+    "kava": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2025-01-01"
   },
   "MeowProtocol": {
     "ethereum": {
@@ -223,6 +330,71 @@
     },
     "deadFrom": "2024-05-09"
   },
+  "meowswap.fi": {
+    "methodology": "Data is retrieved from the api at https://api.meowswap.fi/",
+    "timetravel": false,
+    "cardano": {
+      "tvl": "_f"
+    }
+  },
+  "monarchpay": {
+    "kava": {
+      "tvl": "_f"
+    }
+  },
+  "mr-lightspeed": {
+    "methodology": "TVL counts ETH collateral locked in protocol-owned Uniswap v4 positions.",
+    "start": "2025-10-23",
+    "doublecounted": true,
+    "base": {
+      "tvl": "_f"
+    }
+  },
+  "nervenetwork": {
+    "misrepresentedTokens": true,
+    "nuls": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
+  "nerveswap": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL is computed by reading on-chain NVT balances of Nerveswap pools",
+    "nuls": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
+  "nileriver": {
+    "methodology": "Api is no longer reachable",
+    "timetravel": false,
+    "moonriver": {
+      "tvl": "_f"
+    }
+  },
+  "notiboy": {
+    "timetravel": false,
+    "algorand": {
+      "tvl": "_f"
+    }
+  },
+  "nuls": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL counts native chain staking and data is pulled from: \"https://public1.nuls.io/nuls/tvl\".",
+    "nuls": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
+  "pocm-staking": {
+    "doublecounted": true,
+    "timetravel": false,
+    "nuls": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-03-25"
+  },
   "RavelinFinance": {
     "milkomeda": {
       "tvl": "_f",
@@ -230,6 +402,30 @@
       "pool2": "_f"
     },
     "deadFrom": "2026-01-25"
+  },
+  "reverse": {
+    "harmony": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
+  "Revoluzion": {
+    "bsc": {
+      "tvl": "_f"
+    }
+  },
+  "sailingprotocol": {
+    "methodology": "The total supply of their circulating stocks is extracted from their stock token contracts.",
+    "misrepresentedTokens": true,
+    "timetravel": false,
+    "kava": {
+      "tvl": "_f"
+    }
+  },
+  "shiden-dapps-staking": {
+    "shiden": {
+      "tvl": "_f"
+    }
   },
   "Solily": {
     "hallmarks": [
@@ -245,11 +441,91 @@
     },
     "methodology": "website unreachable, twitter deleted"
   },
+  "stakehound": {
+    "ethereum": {
+      "tvl": "_f"
+    }
+  },
+  "sushiswap-kashi": {
+    "misrepresentedTokens": true,
+    "ethereum": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "polygon": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "bsc": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "avax": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f",
+      "borrowed": "_f"
+    }
+  },
+  "syncdex-finance": {
+    "era": {
+      "hallmarks": [
+        [
+          "2023-04-12",
+          "Rug Pull"
+        ]
+      ],
+      "tvl": "_f"
+    }
+  },
+  "synnax": {
+    "doublecounted": true,
+    "sei": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2026-01-15",
+        "The Synnax.fi application was closed"
+      ]
+    ]
+  },
+  "thorchain-lending": {
+    "timetravel": false,
+    "thorchain": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2021-07-19",
+        "Protocol paused"
+      ],
+      [
+        "2021-09-16",
+        "Protocol resumed"
+      ],
+      [
+        "2025-01-24",
+        "Protocol paused due to death spiral"
+      ],
+      [
+        "2025-02-03",
+        "Thorfi unwinds"
+      ]
+    ]
+  },
   "VeryLongSwap": {
     "astrzk": {
       "tvl": "_f"
     },
     "deadFrom": "2025-03-31"
+  },
+  "x7": {
+    "ethereum": {
+      "tvl": "_f"
+    }
   },
   "ZTLN": {
     "timetravel": false,

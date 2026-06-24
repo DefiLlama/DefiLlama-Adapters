@@ -6,9 +6,8 @@ const { log, sleep } = require("../utils");
 const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
+// https://wiki.f5nodes.com/quicksilver/endpoints/
 // https://proxy.atomscan.com/chains.json
-// https://cosmos-chain.directory/chains/cosmoshub
-// https://cosmos-chain.directory/chains
 // https://celestia.publicnode.com/
 // https://api.axelarscan.io/api/getTVL
 const endPoints = {
@@ -29,7 +28,7 @@ const endPoints = {
   cronos: "https://rest.mainnet.crypto.org",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
   stargaze: "https://rest.stargaze-apis.com",
-  quicksilver: "https://rest.cosmos.directory/quicksilver",
+  quicksilver: "https://quicksilver.api.m.anode.team",
   persistence: "https://rest.cosmos.directory/persistence",
   // secret: "https://rpc.ankr.com/http/scrt_cosmos",
   secret: "https://lcd-secret.keplr.app",
@@ -42,7 +41,7 @@ const endPoints = {
   // neutron: "https://rest-solara.neutron-1.neutron.org",
   neutron: "https://neutron-rest.publicnode.com",
   quasar: "https://quasar-api.polkachu.com",
-  gravitybridge: "https://gravity-api.polkachu.com",
+  gravitybridge: "https://gravitychain.io:1317/",
   // sei: "https://sei-api.polkachu.com",
   sei: "https://rest.sei-apis.com",
   // aura: "https://aura-api.polkachu.com/",

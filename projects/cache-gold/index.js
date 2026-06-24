@@ -1,4 +1,7 @@
-const abis = require('./abis.js')
+const abis = {
+  gramOz: "int256:getLatestPrice",
+  cacheGold: "uint256:totalCirculation",
+}
 const { toUSDTBalances } = require('../helper/balances');
 
   async function tvl(api) {

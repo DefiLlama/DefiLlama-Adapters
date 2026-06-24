@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js');
 const { getConnection, sumTokens2, getTokenAccountBalances } = require('../helper/solana');
 const { Program } = require('@project-serum/anchor');
@@ -22,7 +23,7 @@ const ETHENA_KVAULT_POSITIONS = [
     farmUserState: 'CXiSvtSZnqpYf9b4JqLA9NBNBeHnpDELfbbsX8avqj33', // ethena's stake in the kPYUSD receipt farm
     walletReceiptAccounts: ['35h4x1e9LjcHiyr7WeaCEVBPPjARdPCQHYZ5HQJyqtGV'], // unstaked PYUSD receipt held by ethena
     kTokenVault: '22qw3R6Cqt98Np8tVE7HXuDtpH3Yn6Ludmz7x5y3KVqR', // KVault's kPYUSD holding
-    underlying: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo', // PYUSD
+    underlying: ADDRESSES.solana.PYUSD, // PYUSD
   },
 ]
 
