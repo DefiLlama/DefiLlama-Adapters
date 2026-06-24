@@ -12187,6 +12187,18 @@ const configs = {
       ]
     },
   },
+  "crovia": {
+    "cronos": {
+      "tvl": {
+        "owners": [
+          "0xb396e08ceca0f1bea3c120b21dc2c9ed6e25d7d4"
+        ],
+        "tokens": [
+          ADDRESSES.null
+        ]
+      }
+    }
+  },
   "cryptoblades": {
     "bsc": {
       "tvl": {
