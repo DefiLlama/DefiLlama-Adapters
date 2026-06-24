@@ -37,6 +37,15 @@ const boringVaultsV0Ink = [
     startBlock: 29554306,
     baseAsset: ADDRESSES.ink.USDC,
   },
+  {
+    name: "Advanced Strategies BTC",
+    vault: "0x7Dee0120739b7ec048B469939EFB178ADbbB19B2",
+    accountant: "0x4Bb6C416a00561ad6657110b76552c42d55Ff1d6",
+    teller: "0x498b6baA9Fb4530570Ec06aEa343162DbF32604B",
+    lens: "0x90983EBF38E981AE38f7Da9e71804380e316A396",
+    startBlock: 38589053,
+    baseAsset: ADDRESSES.ink.KBTC,
+  },
 ];
 
 module.exports = {

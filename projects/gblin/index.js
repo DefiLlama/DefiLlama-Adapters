@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const GBLIN_VAULT = "0x38DcDB3A381677239BBc652aed9811F2f8496345";
+const GBLIN_VAULT = "0x36C81d7E1966310F305eA637e761Cf77F90852f0";
 
 async function tvl(api) {
   return api.sumTokens({
@@ -9,7 +9,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V5 Vault contract on Base.",
+  methodology: "TVL is calculated by summing the balances of WETH, cbBTC, and USDC strictly locked as backing collateral inside the GBLIN V6 Vault contract on Base.",
   base: {
     tvl
   }

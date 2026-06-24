@@ -11,14 +11,18 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   CRONOS_MULTICALL_CHUNK_SIZE: "10", // cronos reduced gas limit, this is a workaround to make multicall work
+  HEDERA_MULTICALL_CHUNK_SIZE: "50", // cronos reduced gas limit, this is a workaround to make multicall work
   KATANA_MULTICALL_CHUNK_SIZE: "50",
+  SEI_BLOCK_LOW: "150023881",
   STARKNET_RPC: 'https://rpc.starknet.lava.build/',
+  STARKNET_MULTICALL: '0x01a33330996310a1e3fa1df5b16c1e07f0491fdd20c441126e02613b948f0225',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
   SOON_RPC: "https://rpc.mainnet.soo.network/rpc",
   SOON_BASE_RPC: "https://rpc.soonbase.soo.network/rpc",
   SOON_BSC_RPC: "https://rpc.svmbnbmainnet.soo.network/rpc",
+  ASTAR_RPC: "https://astar.blockscout.com/api/eth-rpc",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://sui-rpc.publicnode.com',
@@ -28,6 +32,7 @@ const DEFAULTS = {
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FOGO_RPC: 'https://mainnet.fogo.io',
+  COOKIECHAIN_RPC: 'https://rpc.cookiescan.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
@@ -50,6 +55,7 @@ const DEFAULTS = {
   WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
   PHAROS_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",  // v3
+  ANUBI_RPC_MULTICALL: "0x2BaB36196519Ce9Cc31Bc4899FCBB8124A413b02",  // v3
 }
 
 const ENV_KEYS = [
@@ -72,6 +78,7 @@ const ENV_KEYS = [
   'DEBANK_API_KEY',
   'SMARDEX_SUBGRAPH_API_KEY',
   'ALLIUM_API_KEY',
+  'DUNE_API_KEYS',
   'TON_API_KEY',
   'FLOW_NON_EVM_RPC',
   'PROXY_AUTH',

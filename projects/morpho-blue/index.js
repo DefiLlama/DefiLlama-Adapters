@@ -1,7 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getMorphoVaults } = require("../helper/curators");
 
 const config = {
   ethereum: {
@@ -15,7 +17,7 @@ const config = {
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
-      
+
       // bad debt due to resolv hack
       "0xd9e34b1eed46d123ac1b69b224de1881dbc88798bc7b70f504920f62f58f28cc",
       "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33",
@@ -24,14 +26,19 @@ const config = {
       "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
 
       "0x0f9563442d64ab3bd3bcb27058db0b0d4046a4c46f0acd811dacae9551d2b129", // sdeUSD/USDC (91.5% LLTV) bad debt from sdeUSD exploit (Nov 2025)
+      "0x8eaf7b29f02ba8d8c1d7aeb587403dcb16e2e943e4e2f5f94b0963c2386406c9", // PAXG market
+      "0x11db9f2c7bda8c2af6a6a72db18aa5eb9290cb99cf75a3c0abacf1b84b8eaf77", // amphrETH market
+      "0x4b86442549b52826e0fc11770ec5154450cb3c5c14dc751a761d81dcfbe7a7b2", // RLP market
+      "0xbd1ad3b968f5f0552dbd8cf1989a62881407c5cccf9e49fb3657c8731caf0c1f", // deUSD market
     ],
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd', '0x46415998764c29ab2a25cbea6254146d50d22687', '0x5e331e9ae6e1a5d375f699811736527222a9db15', '0x2dc205f24bcb6b311e5cdf0745b0741648aebd3d', '0xadcdd085ad2887758255090589f72237bdd33d8a', '0xcb327b99ff831bf8223cced12b1338ff3aa322fa', '0xadcdd085ad2887758255090589f72237bdd33d8e'],
+    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd', '0x46415998764c29ab2a25cbea6254146d50d22687', '0x5e331e9ae6e1a5d375f699811736527222a9db15', '0x2dc205f24bcb6b311e5cdf0745b0741648aebd3d', '0xadcdd085ad2887758255090589f72237bdd33d8a', '0xcb327b99ff831bf8223cced12b1338ff3aa322fa', '0xadcdd085ad2887758255090589f72237bdd33d8e', '0x4bcaf180df5b13c0441fe41a66e9638a2a410c6d'], // HERMES token used to artificially inflate Morpho total deposit metric
     fromBlock: 13977148,
     blacklistedMarketIds: [
       '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
+      '0xe1986e80099257c65dd18091ec7e34752ae2336870a5649f20c450c9c4931fb8', // HERMES market
     ]
   },
   arbitrum: {
@@ -40,6 +47,8 @@ const config = {
     fromBlock: 296446593,
     blacklistedMarketIds: [
       "0xfdb8221edcae73f73485d55c30e706906114bc2ff4634870c5c57e8fb83eae6a", // K/USDC bad debt from Kinto exploit
+      "0x9e90aec7d768403dacc9dd0d8320307fda3f980eed4df43e3e52168a1c667709", // xUSD market
+      "0xc7670063349ac19dfa324ead7bd7da2985ae931e1b09fb0e31b62c6486b730bd", // RLP market
     ],
   },
   fraxtal: {
@@ -66,6 +75,9 @@ const config = {
   wc: {
     morphoBlue: "0xE741BC7c34758b4caE05062794E8Ae24978AF432",
     fromBlock: 9025669,
+    blacklistedMarketIds: [
+      "0x5a96ea60ddb8ece11b0dd1176f05bbc44ec92197ba206adb086db559146cc964", // sdeUSD market
+    ],
   },
   mode: {
     morphoBlue: "0xd85cE6BD68487E0AaFb0858FDE1Cd18c76840564",
@@ -190,6 +202,15 @@ const config = {
   klaytn: {
     morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
     fromBlock: 208021118,
+  },/* still in private mainnet
+  arc: {
+    morphoBlue: "0x34CD04070dD72b14E241112F6d83812Df5Af7fCD",
+    fromBlock: 1,
+  },
+  */
+  "0g": {
+    morphoBlue: "0x9CDD13a2212D94C4f12190cA30783B743E83C89e",
+    fromBlock: 7526486,
   },
 }
 
@@ -214,7 +235,7 @@ const getMarket = async (api) => {
   } else {
     logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, useIndexer })
   }
-  
+
   if (api.chain === 'sei') {
     const existingIds = new Set(logs.map(i => i.id.toLowerCase()))
     logs.push(...[
@@ -234,8 +255,30 @@ const getMarket = async (api) => {
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
+// exclude ethena deposits into markets where collateral is USDe
+const ethenaBlacklist = {
+  ethereum: {
+    wallets: ['0x2Bf5d9a2326Ad3C5Ef8208F91Af79C3ca1F0F67c'],
+    vaults: [
+      '0xBeEFC1CDAfc5b4a649b54D07AFc6bF0f75C6F4E2',   // USDtB vault
+    ],
+  }
+}
+
 const tvl = async (api) => {
   const { morphoBlue, blackList = [] } = config[api.chain]
+
+  // sometimes the tokens left in the vault and not allocated to any market yet, we need to query them separately
+  const morphoVaults = await getMorphoVaults(api, undefined, {
+    getAllVaults: true,
+    onlyUseExistingCache: api.chain === 'sei'
+  })
+  const vaultAssets = await api.multiCall({  abi: 'address:asset', calls: morphoVaults, permitFailure: true})
+
+  const vaultTaO = vaultAssets.map((asset, i) => ([asset, morphoVaults[i]]).filter(i => i[0]))
+  await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens: blackList, permitFailure: true })
+
+
   const markets = await getMarket(api)
   const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
   const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
@@ -246,7 +289,20 @@ const tvl = async (api) => {
     return wql == null || wql > 30 || wql < 0;
   });
   const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
-  
+
+  if (ethenaBlacklist[api.chain]) {
+    const { wallets = [], vaults = [] } = ethenaBlacklist[api.chain]
+    const balanceCalls = wallets.map((wallet) => vaults.map((vault) => ({ target: vault, params: wallet }))).flat()
+    const balances = await api.multiCall({ calls: balanceCalls, abi: 'erc20:balanceOf', permitFailure: true })
+    const assets = await api.multiCall({ calls: balanceCalls.map(c => c.target), abi: 'address:asset', permitFailure: true })
+    const assetBalances = await api.multiCall({ calls: balanceCalls.map((c, i) => ({ ...c, params: balances[i] })), abi: 'function convertToAssets(uint256) view returns (uint256)' })
+    assetBalances.forEach((balance, i) => {
+      const token = assets[i]
+      console.log(`Ethena blacklist - subtracting ${balance / 1e18} of ${token} from TVL`)
+      api.add(token, balance * -1)
+    })
+  }
+
   if (api.chain === 'stable' && tokens.includes(ADDRESSES.null))
     blackList.push(ADDRESSES.stable.USDT0)  // USDT0 and gas token on stable are the same thing
   return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList, permitFailure: true })
@@ -259,14 +315,40 @@ const borrowed = async (api) => {
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
   const blackListLower = blackList.map(b => b.toLowerCase())
 
+  const priceByAddr = await fetchPriceMap(api, marketInfos.flatMap(m => [m.collateralToken, m.loanToken]))
+  const chainHasPrices = Object.keys(priceByAddr).length > 0
+
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
     if (collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') return;
     if (blackListLower.includes(loanToken.toLowerCase())) return;
-    api.add(loanToken, data.totalBorrowAssets);
+
+    if (chainHasPrices && collateralToken && collateralToken.toLowerCase() !== nullAddress) {
+      if (!priceByAddr[collateralToken.toLowerCase()]) return;
+    }
+
+    let amount = BigInt(data.totalBorrowAssets || 0)
+    const supply = BigInt(data.totalSupplyAssets || 0)
+    if (amount > supply) amount = supply
+    api.add(loanToken, amount.toString());
   });
+}
+
+async function fetchPriceMap(api, addresses) {
+  const tokens = [...new Set(addresses.filter(a => a && a.toLowerCase() !== nullAddress).map(a => a.toLowerCase()))]
+  if (!tokens.length) return {}
+  const keys = tokens.map(t => `${api.chain}:${t}`)
+  const prices = await sdk.coins.getPrices(keys, 'now').catch(() => ({}))
+  const out = {}
+  Object.entries(prices).forEach(([k, v]) => {
+    if (!v || !v.price) return
+    const addr = k.split(':')[1]
+    if (addr) out[addr.toLowerCase()] = v
+  })
+  return out
 }
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl, borrowed }
 })
+

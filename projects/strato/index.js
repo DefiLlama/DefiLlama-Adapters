@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const RPC_URL          = 'https://noderpc.strato.nexus/rpc'
 const POOL_FACTORY     = '0x000000000000000000000000000000000000100a'
 const CDP_REGISTRY     = '0x0000000000000000000000000000000000001012'
@@ -17,7 +18,7 @@ async function enumerateArray(api, target, abi, max = 500) {
   for (let i = 0; i < max; i++) {
     let r
     try { r = await api.call({ target, abi, params: i }) } catch { break }
-    if (!r || r === '0x0000000000000000000000000000000000000000') break
+    if (!r || r === ADDRESSES.null) break
     const lc = r.toLowerCase()
     if (!seen.has(lc)) { seen.add(lc); out.push(lc) }
   }

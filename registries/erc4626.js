@@ -31,12 +31,6 @@ const configs = {
     arbitrum: ['0xd8dd54df1a7d2ea022b983756d8a481eea2a382a'],
     avax: ['0xbE6eB54D1e96CC59338BE9A281d840AcE82df095'],
   },
-  'kaia-superEarn': {
-    klaytn: [
-      '0x3B37DB3AC2a58f2daBA1a7d66d023937d61Fc95b',
-      '0x4E4654cE4Ca7ff0ba66a0A4a588A4bd55A6f9A33',
-    ],
-  },
   'k-bit': {
     methodology: "K-BIT Vault is a core component of the K-BIT ecosystem, enabling users to participate in the platform by depositing USDT and receiving KLP tokens in return.",
     klaytn: [
@@ -49,7 +43,11 @@ const configs = {
     ethereum: ['0x8DB2350D78aBc13f5673A411D4700BCF87864dDE'],
   },
   'snowbl-capital': {
-    base: ['0xd61bfc9ca1d0d2b03a3dd74e2ab81df8e5f606e8'],
+    base: [
+      '0x0e1a8354e10057092ecb7218b784c0c21710db91', // sUSD
+      '0xffa67bd20e656f1c7873525df81728e9d26c8ee2', // sETH
+      '0xf423393e84ca810e1955a7806d1cd84d18099809', // sBTC
+    ],
   },
   'return-finance': {
     doublecounted: true,
@@ -245,7 +243,7 @@ const configs = {
     ],
   },
   'tulpea': {
-    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy\'s (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
+    methodology: "Calls totalAssets() on the TulpeaYieldVault (ERC4626 + ERC-7540) on MegaETH, which sums idle USDT0 in the vault plus each registered strategy's (AvonStrategy, RealEstateStrategy) totalAssets(), tracked via totalDebt and updated on processReport().",
     start: '2026-04-09',
     megaeth: ['0xa21eAFee50DA331521B6Ec4Dd33dEd3F9E1bD2Ea']
   },
@@ -284,6 +282,10 @@ const configs = {
   'gremlix': {
     arbitrum: ['0x973Ae12aC9078E9f9B1708C477A9670bB3fB0886','0xd519EF317Be061b310D3caA4565Fa1ef466c36C8'],
     methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.'
+  },
+  'xax': {
+    ethereum: ['0xc452B6D5bf3a7712A9AF9F70BF32f37A531ff220'],
+    methodology: 'Counts USDT backing the XAUSD ERC-4626 vault.'
   }
 }
 

@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js')
 const { getConnection } = require('../helper/solana')
 
 const YOUSD = '0x0000000f2eB9f69274678c76222B35eEc7588a65'
 const ALCHEMIST_CS = '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23'
 const YVSOL_PROGRAM = 'yvSoLSBaLoqZ2yQttGbaYzHDXr9Bo9UdqtiRDiVaMxP'
-const WSOL = 'So11111111111111111111111111111111111111112'
+const WSOL = ADDRESSES.solana.SOL
 const ORACLE_VAULT_DATA_SEED = Buffer.from('yo_oracle_OracleVaultData')
 const VAULT_DATA_SEED = Buffer.from('yo_vault_VaultData')
 const ORACLE_PRICE_DENOMINATOR = 10n ** 9n

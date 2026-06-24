@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { eulerTokens } = require('../helper/tokenMapping')
 const { getLogs } = require('../helper/cache/getLogs')
 const BigNumber = require("bignumber.js");
 
@@ -90,7 +89,8 @@ const trancheConfig = {
 }
 
 async function tvl(api) {
-  const { v1 = [], v3 = [], safe = [], cdos = [], wrap4626 = [], credits = [] } = contracts[api.chain]
+  const { v1 = [], v3 = [], safe = [], cdos: cdosFromConfig = [], wrap4626 = [], credits = [] } = contracts[api.chain]
+  const cdos = [...cdosFromConfig]
   const balances = {}
   const ownerTokens = []
 
@@ -148,7 +148,7 @@ async function tvl(api) {
   })
 
   const trancheTokensMapping = {}
-  const blacklistedTokens = [...eulerTokens]
+  const blacklistedTokens = []
 
   const { factory, fromBlock } = trancheConfig[api.chain] ?? {}
   if (factory) {

@@ -151,7 +151,7 @@ const configs = {
   },
   'traderjoe-lend': {
     methodology: 'We count liquidity on the pairs and we get that information from the "traderjoe-xyz/exchange" subgraph. The staking portion of TVL includes the JoeTokens within the JoeBar contract.',
-    avax: { comptroller: '0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC', cether: '0xC22F01ddc8010Ee05574028528614634684EC29e',  isInsolvent: true },
+    avax: { comptroller: '0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC', cether: '0xC22F01ddc8010Ee05574028528614634684EC29e', isInsolvent: true },
   },
   'reactorfusion': {
     telos: { comptroller: '0x19646a04BfDcf3553Adc8fAAf8B16D76EC41E494', cether: '0x7d94D2F6f91ED5ED0104D89B3D263026D990Ac5f' },
@@ -198,7 +198,7 @@ const configs = {
     },
   },
   'qie-lend': {
-    qiev3: { comptroller: '0x69a31E3D361C69B37463aa67Ef93067dC760fBD4'},
+    qiev3: { comptroller: '0x69a31E3D361C69B37463aa67Ef93067dC760fBD4' },
   },
   // === Newly migrated adapters below ===
   'tropykus': {
@@ -457,7 +457,7 @@ const configs = {
       cether: '0xec0d3f28d37a3393cf09ee3ad446c485b6afdaa3',
       staking: [['0x4f2ED52bC4CbdE54e2b3547D3758474A21598D7c', '0x024510151204DeC56Cc4D54ed064f62efAC264d5', '0x2EacD2D7cF5Cba9dA031C0a9C5d7FDeDc056216C', '0x8c9886Aca8B6984c10F988078C5e1D91976dFD16', '0x63D21dBD5A30940C605d77882D065736e8fffC94'], '0x4576E6825B462b6916D2a41E187626E9090A92c6'],
     },
-    klaytn: { comptroller: '0x35dc04eE1D6E600C0d13B21FdfB5C83D022CEF25', cether: '0xacc72a0ca4e85f79876ed4c5e6ea29be1cd26c2e' },
+    klaytn: { comptroller: '0x35dc04eE1D6E600C0d13B21FdfB5C83D022CEF25', cether: '0xacc72a0ca4e85f79876ed4c5e6ea29be1cd26c2e', isInsolvent: true },
   },
   'onyx': {
     ethereum: {
@@ -525,6 +525,10 @@ const configs = {
       { comptroller: '0xd6980C52C20Fb106e54cC6c8AE04c089C3F6B9d6', cether: '0x48c42529c4c8e3d10060e04240e9ec6cd0eb1218', cetheEquivalent: ADDRESSES.wan.WWAN },
     ],
   },
+  'demeter': {
+    bsc: [{ comptroller: '0x3632E78219227b172F0aaF56F92FB08D87C94379', },],
+    heco: [{ comptroller: '0x3632E78219227b172F0aaF56F92FB08D87C94379', },],
+  },
   'midas-capital': {
     bsc: [
       { comptroller: '0x1851e32F34565cb95754310b031C5a2Fc0a8a905' },
@@ -568,8 +572,8 @@ const configs = {
     ],
   },
   'xpert': {
-    ink: [{ comptroller: '0x4f3b08B7FE4E14f728d084850A7B9CFF2E759Eb7'}],
-    base: [{ comptroller: '0xaE9dFbb5E3848AB056acA352D783d7e569EF83b3'}],
+    ink: [{ comptroller: '0x4f3b08B7FE4E14f728d084850A7B9CFF2E759Eb7' }],
+    base: [{ comptroller: '0xaE9dFbb5E3848AB056acA352D783d7e569EF83b3' }],
   }
 }
 

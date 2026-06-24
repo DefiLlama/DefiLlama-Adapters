@@ -4,6 +4,8 @@ const { call } = require('../helper/chain/near')
 const rNEAR = "lst.rhealab.near";
 const USDC = "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1";
 const USDT = "usdt.tether-token.near";
+const ZEC = "zec.omft.near"
+
 const VAULTS = [
   {
     contract_id: "near.meteor-vaults.near",
@@ -16,6 +18,10 @@ const VAULTS = [
   {
     contract_id: "usdt.meteor-vaults.near",
     asset: { FungibleToken: { contract_id: USDT } }
+  },
+  {
+    contract_id: "zec.meteor-vaults.near",
+    asset: { FungibleToken: { contract_id: ZEC } }
   }
 ]
 

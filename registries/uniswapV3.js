@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
@@ -8,6 +9,7 @@ const uniV3Configs = {
   'warpx-v3': { megaeth: { factory: '0xf67cF9d6FC433e97Ec39Ae4b7E4451B56B171C8a', fromBlock: 4630394 } },
   'sailfish-v3': { occ: { factory: '0x963A7f4eB46967A9fd3dFbabD354fC294FA2BF5C', fromBlock: 142495 } },
   'tradegpt': { '0g': { factory: '0x6F3945Ab27296D1D66D8EEb042ff1B4fb2E0CE70', fromBlock: 5711733 } },
+  'bond': { '0g': { factory: '0xBDDB3aCF0A90029a1e7ebC3F82C7D9391C429A75', fromBlock: 32738449 } },
   'ultrasolid-v3': { hyperliquid: { factory: '0xD883a0B7889475d362CEA8fDf588266a3da554A1', fromBlock: 10742640 } },
   'juiceswap': { citrea: { factory: '0xd809b1285aDd8eeaF1B1566Bf31B2B4C4Bba8e82', fromBlock: 2651539 } },
   'weero-v3': { klaytn: { factory: '0x6603E53b4Ae1AdB1755bAF62BcbF206f90874178', fromBlock: 186673202 } },
@@ -26,11 +28,9 @@ const uniV3Configs = {
     bsc: { factory: '0x30D9e1f894FBc7d2227Dd2a017F955d5586b1e14', fromBlock: 42363117, staking: ['0xb4d117f9c404652030f3d12f6de58172317a2eda', '0x701aca29ae0f5d24555f1e8a6cf007541291d110'] },
   },
   'basexfi': {
-    methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
     base: { factory: '0xdC323d16C451819890805737997F4Ede96b95e3e', fromBlock: 4159800 },
   },
   'basex': {
-    methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
   'mute-cl': {
@@ -46,16 +46,13 @@ const uniV3Configs = {
     sonic: { factory: '0x777fAca731b17E8847eBF175c94DbE9d81A8f630', fromBlock: 514659, permitFailure: true },
   },
   'prism-dex': {
-    methodology: 'Counts TVL from all Uniswap V3 pools deployed via the factory contract at 0x1adb8f973373505bb206e0e5d87af8fb1f5514ef',
     start: 7845865,
     megaeth: { factory: '0x1adb8f973373505bb206e0e5d87af8fb1f5514ef', fromBlock: 7845865 },
   },
   'superswap-v3': {
-    methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
     optimism: { factory: '0xe52a36Bb76e8f40e1117db5Ff14Bd1f7b058B720', fromBlock: 124982239 },
   },
   'summitx-finance': {
-    methodology: 'TVL is calculated by summing the token balances in all SummitX V3 pools on Camp Network using the standard Uniswap V3 helper functions for accurate pricing.',
     camp: { factory: '0xBa08235b05d06A8A27822faCF3BaBeF4f972BF7d', fromBlock: 1 },
   },
   'stationdex-v3': {
@@ -589,7 +586,7 @@ const uniV3Configs = {
     bsquared: {
       factory: '0x02eAFbE9dE030f69aF02B7D3F2f69B28016f3C83',
       fromBlock: 1,
-      blacklistedTokens: ['0x796e4d53067ff374b89b2ac101ce0c1f72ccaac2'],
+      blacklistedTokens: [ADDRESSES.bsquared.UBTC],
     },
   },
   'glyph-v4': {
@@ -849,7 +846,7 @@ const uniV3Configs = {
     scroll: {
       factory: '0x9367c561915f9D062aFE3b57B18e30dEC62b8488',
       fromBlock: 77008,
-      blacklistedTokens: ['0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f'],
+      blacklistedTokens: [ADDRESSES.linea.WETH],
     },
   },
   'methlab-xyz': {
@@ -1130,22 +1127,18 @@ const uniV3Configs = {
       fromBlock: 90593047,
     },
   },
-  'ramses-hl-cl': {
+  'ramses-cl-v2': {
     hyperliquid: {
       factory: '0x07E60782535752be279929e2DFfDd136Db2e6b45',
       fromBlock: 18149975,
     },
-  },
-  'ramsesx-arb-cl': {
-    arbitrum: {
-      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
-      fromBlock: 420275312,
-    },
-  },
-  'ramsesx-poly-cl': {
     polygon: {
       factory: '0x2Bef16A0081565E72100D73CBe19B1Bd2d802380',
       fromBlock: 82177771,
+    },
+    arbitrum: {
+      factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
+      fromBlock: 420275312,
     },
   },
   'reservoir-tools-v3': {
@@ -1164,7 +1157,7 @@ const uniV3Configs = {
     ink: {
       factory: '0x640887A9ba3A9C53Ed27D0F7e8246A4F933f3424',
       fromBlock: 1,
-      blacklistedTokens: ['0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'],
+      blacklistedTokens: [ADDRESSES.ethereum.WETH],
     },
   },
   'retro': {
@@ -1184,6 +1177,7 @@ const uniV3Configs = {
     hedera: {
       factory: '0x00000000000000000000000000000000003c3951',
       fromBlock: 55651154,
+      permitFailure: true,
     },
   },
   'scribe-v4': {
@@ -1635,7 +1629,6 @@ const uniV3Configs = {
     xdc: {
       factory: '0x30F317A9EC0f0D06d5de0f8D248Ec3506b7E4a8A',
       fromBlock: 59782067,
-      methodology: 'TVL accounts for the liquidity on all AMM pools taken from the factory contract',
       permitFailure: true,
     },
   },
@@ -1650,6 +1643,12 @@ const uniV3Configs = {
     scroll: {
       factory: '0x96a7F53f7636c93735bf85dE416A4Ace94B56Bd9',
       fromBlock: 810032,
+    },
+  },
+  'kayen-v3': {
+    chz: {
+      factory: '0x4bC8BDF50843Cc503E196Be4A9560134d358bb3C',
+      fromBlock: 32422500,
     },
   },
   'zendex': {
@@ -1712,11 +1711,9 @@ const uniV3Configs = {
     }
   },
   'phlox': {
-    methodology: 'TVL accounts for liquidity on all Uniswap V3-style pools created by the Phlox factory on LUKSO.',
     lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
   },
   'fluxflow-v3': {
-    methodology: 'TVL counts liquidity locked in FluxFlow V3 pools on Fluent. PoolCreated events are read from the factory and reserves of each pool are summed.',
     fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672}
   },
   'topaz-cl': {
@@ -1726,6 +1723,15 @@ const uniV3Configs = {
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2']
     }
+  },
+  'turbo': {
+    hyperliquid: { factory: '0xc72d2695A203696243Aa3EdD6CC98E43262E007E', fromBlock: 36463669 },
+  },
+  'kublerx-v3': {
+    bitkub: { factory: '0xD679d310008A2595B8d3DeB83bb93EB23F9b0942', fromBlock: 31936260 }
+  },
+  'intrinsic': {
+    rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
   }
 }
 

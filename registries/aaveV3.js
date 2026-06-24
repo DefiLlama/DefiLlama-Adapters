@@ -85,6 +85,21 @@ const configs = {
     fluent: {
       poolDatas: ['0xb6eEF266933382661827E36fE3f936396e80166E']
     }
+  },
+  'zona': {
+    pharos: {
+      poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
+    }
+  },
+  'kaskad': {
+    igra: {
+      poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
+    }
+  },
+  'velkonix': {
+    megaeth: {
+      poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'],
+    },
   }
 }
 
