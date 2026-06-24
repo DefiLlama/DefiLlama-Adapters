@@ -300,21 +300,6 @@
     },
     "deadFrom": "2023-08-25"
   },
-  "maia-dao": {
-    "metis": {
-      "tvl": "_f"
-    },
-    "hallmarks": [
-      [
-        "2024-08-20",
-        "V2 Launch"
-      ],
-      [
-        "2024-09-24",
-        "Whitehack by team"
-      ]
-    ]
-  },
   "marginly": {
     "methodology": "Counts the number of base and quote tokens in every marginly pool",
     "arbitrum": {

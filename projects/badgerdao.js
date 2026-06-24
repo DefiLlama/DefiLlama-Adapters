@@ -6,10 +6,10 @@ const chains = ["ethereum", "bsc", "arbitrum", "polygon", "fantom"]
 
 chains.forEach(chain => {
   let oChain = chain
-  if (chain === 'bsc')
-  oChain = 'binance-smart-chain'
   module.exports[chain] = {
     tvl: async (api) => {
+      if (chain === 'bsc')
+        return {}
       const data = await getConfig(`badgerdao/tvl/${chain}`, `https://api.badger.com/v2/vaults?chain=${oChain}&currency=usd`)
       const calls = data.map(i => i.vaultToken)
       return api.erc4626Sum({ calls, permitFailure: true, })

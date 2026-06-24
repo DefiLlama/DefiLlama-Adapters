@@ -6,6 +6,7 @@ const { log, sleep } = require("../utils");
 const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
+// https://wiki.f5nodes.com/quicksilver/endpoints/
 // https://proxy.atomscan.com/chains.json
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
@@ -29,7 +30,7 @@ const endPoints = {
   cronos: "https://rest.mainnet.crypto.org",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
   stargaze: "https://rest.stargaze-apis.com",
-  quicksilver: "https://rest.cosmos.directory/quicksilver",
+  quicksilver: "https://quicksilver.api.m.anode.team",
   persistence: "https://rest.cosmos.directory/persistence",
   // secret: "https://rpc.ankr.com/http/scrt_cosmos",
   secret: "https://lcd-secret.keplr.app",

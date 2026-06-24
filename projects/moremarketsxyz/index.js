@@ -97,6 +97,7 @@ async function getXrpBalance(account) {
 }
 
 async function getXrpPrimeBalance(api) {
+  return {}
   const res = await get(`${MORE_MARKETS_API}/vaults/xrp-prime`);
   
   if (res && res.tvl_base) {
