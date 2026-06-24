@@ -11,10 +11,10 @@ const supportedChains = [
     identifier: 'polygon'
   },
   {
-    name: 'Arbitrum',
-    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-arbitrum/prod/gn',
-    chainId: 42161,
-    identifier: 'arbitrum'
+    name: 'Binance',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-bsc-beta/prod/gn',
+    chainId: 56,
+    identifier: 'bsc'
   },
   {
     name: 'Optimism',
@@ -23,34 +23,28 @@ const supportedChains = [
     identifier: 'optimism'
   },
   {
-    name: 'Binance',
-    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GLDP56fPGDz3MtmhtfTkz5CxWiqiNLACVrsJ9RqQeL4U',
-    chainId: 56,
-    identifier: 'bsc'
+    name: 'Arbitrum',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-arbitrum/prod/gn',
+    chainId: 42161,
+    identifier: 'arbitrum'
   },
+  // {
+  //   name: 'Evmos',
+  //   subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
+  //   chainId: 9001,
+  //   identifier: 'evmos'
+  // },
+  // {
+  //   name: 'Thundercore',
+  //   subgraphEndpoint: 'https://subgraph.steer.finance/thundercore/subgraphs/name/steerprotocol/steer-thundercore',
+  //   chainId: 108,
+  //   identifier: 'thundercore'
+  // },
   {
-    name: 'Evmos',
-    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
-    chainId: 9001,
-    identifier: 'evmos'
-  },
-  {
-    name: 'Avalanche',
-    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
-    chainId: 43114,
-    identifier: 'avax'
-  },
-  {
-    name: 'Thundercore',
-    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-thundercore/1.0.0/gn',
-    chainId: 108,
-    identifier: 'thundercore'
-  },
-  {
-    name: 'Kava',
-    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-kava/prod/gn',
-    chainId: 2222,
-    identifier: 'kava'
+    name: 'Metis',
+    subgraphEndpoint: 'https://api.metis.0xgraph.xyz/api/public/b88b5696-b69d-46be-b212-5c55a9b1492f/subgraphs/steer-protocol-metis/prod/gn',
+    chainId: 1088,
+    identifier: 'metis'
   },
   {
     name: 'Base',
@@ -59,22 +53,10 @@ const supportedChains = [
     identifier: 'base'
   },
   {
-    name: 'Linea',
-    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-linea/prod/gn',
-    chainId: 59144,
-    identifier: 'linea'
-  },
-  {
-    name: 'Metis',
-    subgraphEndpoint: 'https://api.metis.0xgraph.xyz/api/public/b88b5696-b69d-46be-b212-5c55a9b1492f/subgraphs/steer-protocol-metis/prod/gn',
-    chainId: 1088,
-    identifier: 'metis'
-  },
-  {
-    name: 'Manta',
-    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-manta/prod/gn',
-    chainId: 169,
-    identifier: 'manta'
+    name: 'Avalanche',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
+    chainId: 43114,
+    identifier: 'avax'
   },
   {
     name: 'PolygonZKEVM',
@@ -83,16 +65,34 @@ const supportedChains = [
     identifier: 'polygon_zkevm'
   },
   {
+    name: 'Celo',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/BPaFHyfVrhv3pdjGodpQcWggAg1Bcrvc9SFc2t2BXeho',
+    chainId: 42220,
+    identifier: 'celo'
+  },
+  {
+    name: 'Kava',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-kava/prod/gn',
+    chainId: 2222,
+    identifier: 'kava'
+  },
+  {
+    name: 'Linea',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-linea/prod/gn',
+    chainId: 59144,
+    identifier: 'linea'
+  },
+  {
     name: 'Scroll',
     subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/822PfgbgBzC98Huwf37uxvF9YGZMA5nDeETpstkR55Sn',
     chainId: 534352,
     identifier: 'scroll'
   },
   {
-    name: 'Mantle',
-    subgraphEndpoint: 'https://subgraph-api.mantle.xyz/subgraphs/name/steerprotocol/steer-protocol-mantle',
-    chainId: 5000,
-    identifier: 'mantle'
+    name: 'Manta',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-manta/prod/gn',
+    chainId: 169,
+    identifier: 'manta'
   },
   {
     name: 'Astar',
@@ -107,6 +107,12 @@ const supportedChains = [
     identifier: 'fantom'
   },
   {
+    name: 'Mantle',
+    subgraphEndpoint: 'https://subgraph-api.mantle.xyz/subgraphs/name/steerprotocol/steer-protocol-mantle',
+    chainId: 5000,
+    identifier: 'mantle'
+  },
+  {
     name: 'Blast',
     subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-blast/prod/gn',
     chainId: 81457,
@@ -118,12 +124,6 @@ const supportedChains = [
     chainId: 34443,
     identifier: 'mode'
   },
-  // {
-  //   name: 'AstarzkEVM',
-  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
-  //   chainId: 3776,
-  //   identifier: 'astrzk'
-  // },
   {
     name: 'Telos',
     subgraphEndpoint: 'https://telos.api.ormilabs.com/api/public/39892398-bfdd-48ac-b776-77ad8a5b4b9e/subgraphs/steer-protocol-telos/prod/gn',
@@ -137,20 +137,20 @@ const supportedChains = [
     identifier: 'xlayer'
   },
   {
+    name: 'Taiko',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-taiko/prod/gn',
+    chainId: 167000,
+    identifier: 'taiko'
+  },
+  {
     name: 'Rootstock',
-    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/H3pANqbMVTiFCUXHjXYr2mHbXvn5my5o66Gxbwcg7Aqm',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_cm2k9xbkz4qg901vs51bm5uau/subgraphs/steer-protocol-rootstock/prod/gn',
     chainId: 30,
     identifier: 'rsk'
   },
   {
-    name: 'Celo',
-    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/BPaFHyfVrhv3pdjGodpQcWggAg1Bcrvc9SFc2t2BXeho',
-    chainId: 42220,
-    identifier: 'celo'
-  },
-  {
     name: 'ZklinkNova',
-    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-zklink-nova/1.0.1/gn',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_cmmz9rcn2gc0j01w36xbo3wcn/subgraphs/steer-protocol-zklink-nova/prod/gn',
     chainId: 810180,
     identifier: 'zklink'
   },
@@ -161,101 +161,88 @@ const supportedChains = [
     identifier: 'flare'
   },
   {
+    name: 'Filecoin',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_cmmz8w4e274al01vsa0wa7cj3/subgraphs/steer-protocol-filecoin/prod/gn',
+    chainId: 314,
+    identifier: 'filecoin'
+  },
+  {
     name: 'ApeChain',
     subgraphEndpoint: 'https://apeapi.0xgraph.xyz/api/public/4ea21b03-9850-4796-8068-ec71bbe022db/subgraphs/steer-protocol-apechain/prod/gn',
     chainId: 33139,
     identifier: 'apechain'
   },
-  // {
-  //   name: 'Bittorrent',
-  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-btt/1.1.1/gn',
-  //   chainId: 199,
-  //   identifier: 'bittorrent'
-  // },
-  {
-    name: 'Filecoin',
-    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-filecoin/prod/gn',
-    chainId: 314,
-    identifier: 'filecoin'
-  },
   {
     name: 'Zircuit',
-    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-zircuit/prod/gn',
-    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'},
+    subgraphEndpoint: 'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit?version=3',
     chainId: 48900,
     identifier: 'zircuit'
   },
   {
+    name: 'Moonbeam',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/4D2pLLQuGsAkdZAUgqxxnk4Mcu3aMjEV1HJ2F63kC7w6',
+    chainId: 1284,
+    identifier: 'moonbeam'
+  },
+  {
+    name: 'Sei',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/6uQm26z2NM2eV56sjZmVezUjBAC8jMx683B1cUencDwt',
+    chainId: 1329,
+    identifier: 'sei'
+  },
+  {
     name: 'Sonic',
-    subgraphEndpoint:  'https://api.0xgraph.xyz/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-sonic/prod/gn',
+    subgraphEndpoint: 'https://api.0xgraph.xyz/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-sonic/prod/gn',
     chainId: 146,
     identifier: 'sonic'
   },
   {
-    name: 'Moonbeam',
-    subgraphEndpoint:  'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/4D2pLLQuGsAkdZAUgqxxnk4Mcu3aMjEV1HJ2F63kC7w6',
-    chainId: 1284,
-    identifier: 'moonbeam'
-  },
-  // {
-  //   name: 'Sei',
-  //   subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clu1fg6ajhsho01x7ajld3f5a/subgraphs/dragonswap-v3-prod/1.0.5/gn',
-  //   chainId: 1329,
-  //   identifier: 'sei'
-  // },
-  {
-    name: 'Taiko',
-    subgraphEndpoint:  'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-taiko/prod/gn',
-    chainId: 167000,
-    identifier: 'taiko'
-  },
-  {
     name: 'Zetachain',
-    subgraphEndpoint:  'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/HFH41DyzAXxYmT5eszVWn2T7UxViMroPJ4XJV8vhDGNN',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/HFH41DyzAXxYmT5eszVWn2T7UxViMroPJ4XJV8vhDGNN',
     chainId: 7000,
     identifier: 'zeta'
   },
   {
+    name: 'Ethereum',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-mainnet/prod/gn',
+    chainId: 1,
+    identifier: 'ethereum'
+  },
+  {
     name: 'Soneium',
-    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-soneium/prod/gn',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/8gCrUHrVS9rHwvDPLTn4Wz6od68ULb7azYuQz25JjRK3',
     chainId: 1868,
     identifier: 'soneium'
   },
   {
     name: 'Bera',
-    subgraphEndpoint:  'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-bera/prod/gn',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-bera/prod/gn',
     chainId: 80094,
     identifier: 'berachain'
   },
   {
-    name: 'Ethereum',
-    subgraphEndpoint:  'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-mainnet/prod/gn',
-    chainId: 1,
-    identifier: 'ethereum'
-  },
-  {
-    name: 'Hemi',
-    subgraphEndpoint:  'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/2eACJtEGuELqN5roUiHG1jqmCpXt5aimcc8xZdvtMv4z',
-    chainId: 43111,
-    identifier: 'hemi'
-  },
-  {
     name: 'Unichain',
-    subgraphEndpoint:  'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/EoLK36f26Dr7maXyNKxJmEBJkoYVCMh1d4ENtT5hJgyB',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_cmnrgd4exaie801sa45a1609h/subgraphs/steer-protocol-unichain/prod/gn',
     chainId: 130,
     identifier: 'unichain'
   },
   {
+    name: 'Hemi',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/2eACJtEGuELqN5roUiHG1jqmCpXt5aimcc8xZdvtMv4z',
+    chainId: 43111,
+    identifier: 'hemi'
+  },
+  // {
+  //   name: 'Core',
+  //   subgraphEndpoint: 'https://thegraph.coredao.org/subgraphs/name/steer-protocol-core',
+  //   chainId: 1116,
+  //   identifier: 'core'
+  // },
+  {
     name: 'Katana',
-    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/D6CST1Az8c8KvMf8ktcEcWds89YVQxbKG6v8yo7FAzzM',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-katana/prod/gn',
     chainId: 747474,
     identifier: 'katana'
-  },
-  {
-    name: 'Saga',
-    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-saga-evm/prod/gn',
-    chainId: 5464,
-    identifier: 'saga'
   },
   {
     name: 'Ronin',
@@ -264,8 +251,14 @@ const supportedChains = [
     identifier: 'ronin'
   },
   {
+    name: 'Saga',
+    subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-saga/prod/gn',
+    chainId: 5464,
+    identifier: 'saga'
+  },
+  {
     name: 'Nibiru',
-    subgraphEndpoint: 'https://index-api.onfinality.io/sq/rakeshbhatt10/steer-protocol-nibiru',
+    subgraphEndpoint: 'https://app.sentio.xyz//api/v1/graphql/rakesh/steer-protocol-nibiru',
     chainId: 6900,
     identifier: 'nibiru'
   },
@@ -274,6 +267,12 @@ const supportedChains = [
     subgraphEndpoint: 'https://api.subgraph.ormilabs.com/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-hyperevm/prod/gn',
     chainId: 999,
     identifier: 'hyperliquid'
+  },
+  {
+    name: 'Bittensor',
+    subgraphEndpoint: 'https://subgraph.35-247-158-26.sslip.io/subgraphs/name/steer-subgraph',
+    chainId: 964,
+    identifier: 'bittensor_evm'
   }
 ]
 
