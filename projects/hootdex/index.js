@@ -1,46 +1,44 @@
-// DefiLlama TVL adapter for Hootdex (Pecu Novus Blockchain).
-const HOOTDEX_API = (process.env.HOOTDEX_API || "https://api.pecunovus.net")
-  .replace(/\/+$/, ""); // strip trailing slash so URL doesn't end up with "//"
-const ROUTE_PREFIX = "/api/v3/chain";
-const CHAIN = "pecu"; // Pecu Novus mainnet, Chain ID 27272727
-const USD_PEG_CGID = "tether";
-const FETCH_TIMEOUT_MS = 30_000;
+/**
+ * HootDEX / Pecu Novus — DeFiLlama TVL Adapter
+ *
+ */
 
-async function getJson(path) {
-  const url = `${HOOTDEX_API}${ROUTE_PREFIX}${path}`;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-  try {
-    const res = await fetch(url, {
-      headers: { accept: "application/json" },
-      signal: controller.signal,
-    });
-    if (!res.ok) throw new Error(`Hootdex API ${res.status} for ${path}`);
-    return await res.json();
-  } finally {
-    clearTimeout(timer);
-  }
-}
+const { getProvider } = require("@defillama/sdk");
+
+const CHAIN   = "pecu";
+const USD_PEG = "tether";
 
 async function tvl(api) {
-  const body = await getJson("/tvl");
-  const value = Number(body?.tvl);
-  if (!Number.isFinite(value) || value < 0) {
-    throw new Error(
-      `Hootdex /api/v3/chain/tvl returned invalid value: ${JSON.stringify(body)}`
-    );
+  const provider = getProvider(CHAIN);
+
+  const result = await provider.send("hootdex_getTokens", []);
+
+  const tokens = result?.data ?? result?.tokens ?? [];
+  if (!Array.isArray(tokens) || tokens.length === 0) {
+    throw new Error(`hootdex_getTokens returned no token data: ${JSON.stringify(result)}`);
   }
-  // Reported as USD value locked, pegged via tether (~$1).
-  api.addCGToken(USD_PEG_CGID, value);
+
+  const totalTvl = tokens.reduce((sum, token) => {
+    const v = Number(token?.tvl);
+    return sum + (Number.isFinite(v) && v > 0 ? v : 0);
+  }, 0);
+
+  if (totalTvl <= 0) {
+    throw new Error(`hootdex_getTokens: computed TVL is 0 — token tvl fields may be unpopulated`);
+  }
+
+  api.addCGToken(USD_PEG, totalTvl);
   return api.getBalances();
 }
 
 module.exports = {
   methodology:
-    "TVL is the sum of USD value locked across all Hootdex asset classes " +
-    "(synthetics — including PECU — stablecoins, derivatives and forex pools), " +
-    "as reported by the Hootdex /api/v3/chain/tvl endpoint. Balances settle off-chain " +
-    "on Pecu Novus (Chain ID 27272727) and are reported in USD.",
+    "TVL is the aggregate USD value locked across all HootDEX asset classes " +
+    "(synthetics, crypto-derivative pairs, wrapped tokens, stablecoins, " +
+    "project tokens, and holding tokens) as returned by the hootdex_getTokens " +
+    "JSON-RPC 2.0 method via the DeFiLlama SDK provider for the pecu chain " +
+    "(Chain ID 27272727). Balances are settled on the Pecu Novus ledger and " +
+    "reported in USD.",
   misrepresentedTokens: true,
   timetravel: false,
   [CHAIN]: { tvl },
