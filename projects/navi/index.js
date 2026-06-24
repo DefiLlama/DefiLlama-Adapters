@@ -1,11 +1,6 @@
 const sui = require("../helper/chain/sui")
 const { fetchURL } = require('../helper/utils')
 
-const blacklistedTokens = [
-  '0x8f2b5eb696ed88b71fea398d330bccfa52f6e2a5a8e1ac6180fcb25c6de42ebc::coin::COIN', // enzoBTC - no borrows & few depositors
-  '0xd1a91b46bd6d966b62686263609074ad16cfdffc63c31a4775870a2d54d20c6b::mbtc::MBTC', // mBTC - no borrows & few depositors
-]
-
 function getDecimalShifts(dynamicFields){
   return fetchURL(`https://coins.llama.fi/prices/current/${dynamicFields.map(c=>`sui:0x${c.fields.value.fields.coin_type}`).join(',')}`).then(r=>r.data.coins)
 }
@@ -27,8 +22,6 @@ async function borrow(api) {
       api.add(coin, amount)
     }
   })
-
-  blacklistedTokens.forEach(t => api.removeTokenBalance(t))
 }
 
 
@@ -48,8 +41,6 @@ async function tvl(api) {
       api.add(coin, amount)
     }
   })
-  
-  blacklistedTokens.forEach(t => api.removeTokenBalance(t))
 }
 
 
