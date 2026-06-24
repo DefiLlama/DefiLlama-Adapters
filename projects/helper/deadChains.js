@@ -29,4 +29,6 @@ module.exports =  [
   'ham', // block explorer and rpcs are dead: https://explorer.ham.fun/
   'onus', // block explorer and rpcs are dead (rug?): https://explorer.onuschain.io
   'planq', // block explorer and rpcs are dead: https://evm.planq.network & https://explorer.planq.network
+  'functionx', // sunset, migrating to Ethereum: https://medium.com/pundiai/pundi-aifx-omnilayer-sunsetting-migration-to-ethereum-begins-584f6ea70b27
+  'genesys', // shutdown 2026-03-01: https://x.com/GenesysChain/status/2024935948228985085
 ]
