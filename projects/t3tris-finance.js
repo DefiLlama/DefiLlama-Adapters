@@ -1,4 +1,4 @@
-const { getConfig } = require("../helper/cache");
+const { getConfig } = require("./helper/cache");
 
 // T3tris ecosystem API — authoritative list of vaults with curation flags
 const VAULTS_API = "https://ecosystem.t3tris.finance/vaults";
