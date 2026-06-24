@@ -1729,6 +1729,9 @@ const uniV3Configs = {
   },
   'kublerx-v3': {
     bitkub: { factory: '0xD679d310008A2595B8d3DeB83bb93EB23F9b0942', fromBlock: 31936260 }
+  },
+  'intrinsic': {
+    rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
   }
 }
 
