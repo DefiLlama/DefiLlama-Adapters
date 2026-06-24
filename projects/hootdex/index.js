@@ -1,14 +1,18 @@
 /**
  * HootDEX / Pecu Novus — DeFiLlama TVL Adapter
+ *
  */
 
+// RPC URL sourced from DeFiLlama's own providers.json — no hardcoded URL
 const CHAIN_PROVIDERS = require("@defillama/sdk/build/providers.json");
 const RPC_URL = CHAIN_PROVIDERS["pecu"]?.rpc?.[0];
 
 const CHAIN   = "pecu";
-const USD_PEG = "tether";
+const USD_PEG = "tether"; // TVL denominated in USD; peg via USDT CoinGecko ID
 
 if (!RPC_URL) throw new Error("pecu RPC not found in @defillama/sdk providers.json");
+
+// ── JSON-RPC 2.0 helper ───────────────────────────────────────────────────────
 
 async function rpcPost(method, params = []) {
   const controller = new AbortController();
@@ -32,23 +36,34 @@ async function rpcPost(method, params = []) {
 async function tvl(api) {
   const result = await rpcPost("hootdex_getTokens");
 
-  const tokens = result?.data ?? result?.tokens ?? [];
+  const tokens = Array.isArray(result)
+    ? result
+    : (result?.data ?? result?.tokens ?? []);
+
   if (!Array.isArray(tokens) || tokens.length === 0) {
-    throw new Error(`hootdex_getTokens returned no token data: ${JSON.stringify(result)}`);
+    throw new Error(
+      `hootdex_getTokens returned no token data: ${JSON.stringify(result)}`
+    );
   }
 
+  // Sum tvl across every token entry
   const totalTvl = tokens.reduce((sum, token) => {
     const v = Number(token?.tvl);
     return sum + (Number.isFinite(v) && v > 0 ? v : 0);
   }, 0);
 
   if (totalTvl <= 0) {
-    throw new Error(`hootdex_getTokens: computed TVL is 0 — token tvl fields may be unpopulated`);
+    throw new Error(
+      `hootdex_getTokens: computed TVL is 0 — token tvl fields may be unpopulated`
+    );
   }
 
+  // Report TVL in USD, pegged via tether (~$1)
   api.addCGToken(USD_PEG, totalTvl);
   return api.getBalances();
 }
+
+// ── Module export ─────────────────────────────────────────────────────────────
 
 module.exports = {
   methodology:
