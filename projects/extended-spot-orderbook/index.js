@@ -18,7 +18,7 @@ async function tvl(api) {
   const spotMarkets = markets.filter(m => m.type === 'SPOT' && m.active && m.status === 'ACTIVE')
 
   const tokens = spotMarkets.map(m => m.l2Config.syntheticId)
-  const decimals = await multiCall({ abi: decimalsAbi, calls: tokens.map(t => ({ target: t })) })
+  const decimals = await multiCall({ abi: decimalsAbi, calls: tokens })
 
   await Promise.all(spotMarkets.map(async (mkt, i) => {
     const { data: ob } = await get(`${API_URL}/info/markets/${mkt.name}/orderbook`)
