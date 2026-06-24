@@ -3,15 +3,35 @@
  *
  */
 
-const { getProvider } = require("@defillama/sdk");
+const CHAIN_PROVIDERS = require("@defillama/sdk/build/providers.json");
+const RPC_URL = CHAIN_PROVIDERS["pecu"]?.rpc?.[0];
 
 const CHAIN   = "pecu";
 const USD_PEG = "tether";
 
-async function tvl(api) {
-  const provider = getProvider(CHAIN);
+if (!RPC_URL) throw new Error("pecu RPC not found in @defillama/sdk providers.json");
 
-  const result = await provider.send("hootdex_getTokens", []);
+async function rpcPost(method, params = []) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30_000);
+  try {
+    const res = await fetch(RPC_URL, {
+      method:  "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body:    JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+      signal:  controller.signal,
+    });
+    if (!res.ok) throw new Error(`RPC HTTP ${res.status} on method ${method}`);
+    const json = await res.json();
+    if (json.error) throw new Error(`RPC error [${json.error.code}]: ${json.error.message}`);
+    return json.result;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function tvl(api) {
+  const result = await rpcPost("hootdex_getTokens");
 
   const tokens = result?.data ?? result?.tokens ?? [];
   if (!Array.isArray(tokens) || tokens.length === 0) {
