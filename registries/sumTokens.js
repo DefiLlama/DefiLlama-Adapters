@@ -22497,15 +22497,6 @@ const configs = {
       ]
     },
   },
-  "pondo": {
-    "timetravel": false,
-    "methodology": "TVL is the sum of all Aleo credits staked in the Pondo staking pool",
-    "aleo": {
-      "owners": [
-        "pondo_protocol.aleo"
-      ]
-    },
-  },
   "poofcash": {
     "methodology": "Poof uses wrapped Moola tokens to hold user balances. Calculate how many Moola tokens are in each of these wrapped tokens.",
     "celo": {
