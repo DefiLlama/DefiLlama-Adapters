@@ -271,11 +271,25 @@ const ADDRESSES = {
         address: "0xa6875Af7a45BEf941e484b59C149E5C1772DE643",
         fromBlock: 43289754,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x2aFEf28a8Ab57d2F5A5663Ef69351e9d3abf1779",
+        fromBlock: 47709827,
+      },
     ],
     VaultFactoryV2: [
       {
         address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF",
         fromBlock: 43289755,
+      },
+      {
+        address: "0x28e47A7d7E710d796DBAFd8081c052444deEcF10",
+        fromBlock: 44680222,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x34F7b52b0d33959C8351eF95F3523C89b6123C0b",
+        fromBlock: 47709826,
       },
     ],
     TermMax4626Factory: [
