@@ -11,8 +11,8 @@
  * prefers Crovia be listed fees-only, this file can be dropped — the fees adapter
  * still creates the protocol page.
  */
-const ADDRESSES = require('../helpers/coreAssets.json')
-const { sumTokens2 } = require('../helpers/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // CroviaStakingPool — rewardToken is native CRO (0x000..0); deployed 2026-05-14.
 const STAKING_POOL = '0xb396e08ceca0f1bea3c120b21dc2c9ed6e25d7d4'
