@@ -1,6 +1,5 @@
 /**
  * HootDEX / Pecu Novus — DeFiLlama TVL Adapter
- *
  */
 
 const CHAIN_PROVIDERS = require("@defillama/sdk/build/providers.json");
