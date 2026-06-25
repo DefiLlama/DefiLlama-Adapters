@@ -73,5 +73,6 @@ async function borrowed(api) {
 }
 
 module.exports = {
+  timetravel: false,
   solana: { tvl, borrowed },
 };
