@@ -53,6 +53,9 @@ const curatorExport = getCuratorExport({
       kaminoLendVaultAdmins: ['7fLxEftpppneavpueYgP2s7HhSGbWpj2jTCmAEwwqonY'],
       kaminoLendVaults: ['A2wsxhA7pF4B2UKVfXocb6TAAP9ipfPJam6oMKgDE5BK'],
     },
+    tempo: {
+      morphoVaultOwners: ['0x13DE0cEE0B83562CBfD46682e10FfA4E3c5090e1'],
+    }
   }
 })
 
