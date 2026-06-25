@@ -21,6 +21,16 @@ const coder = AbiCoder.defaultAbiCoder()
 const AGGREGATE3 =
   'function aggregate3((address target, bool allowFailure, bytes callData)[] calls) payable returns ((bool success, bytes returnData)[] returnData)'
 
+/**
+ * Compute LiquidBots TVL on Hyperliquid from on-chain data only.
+ *
+ * Enumerates every LqTrader account from the factory's `LqTraderCreated` events, reads
+ * each account's equity from the Hyperliquid `AccountMarginSummary` precompile (batched
+ * via Multicall3), and adds the positive total to `api` as USDC.
+ *
+ * @param {object} api - DefiLlama SDK chain api (provides getLogs, call and add).
+ * @returns {Promise<void>}
+ */
 async function tvl(api) {
   // 1) every LqTrader account, from factory creation events (on-chain enumeration)
   const logs = await getLogs({
