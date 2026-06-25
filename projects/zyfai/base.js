@@ -73,6 +73,11 @@ const BASE_YEARN_POOLS = {
     'True Yield Dollar': '0xb13CF163d916917d9cD6E836905cA5f12a1dEF4B',
 };
 
+const IPOR_POOLS = {
+    WETH: '0x17d0f109ee895bad0b68aa104aa72bd0b003ad8e',
+    'cbETH Looper': '0x5900c3b72458f12967dc1bef35b92d271f5cdbc1',
+};
+
 // const BASE_YO_PROTOCOL_POOLS = {
 //     yoEUR: '0x50c749aE210D3977ADC824AE11F3c7fd10c871e9',
 // };
@@ -92,6 +97,7 @@ const allPoolTokens = [
     ...Object.values(FLUID_POOL_ADDRESSES),
     ...Object.values(BASE_EULER_POOLS),
     ...Object.values(BASE_YEARN_POOLS),
+    ...Object.values(IPOR_POOLS),
     // ...Object.values(BASE_YO_PROTOCOL_POOLS),
     // ...Object.values(BASE_LAZY_SUMMER_POOLS),
     COMPOUND_TOKEN_ADDRESS,
