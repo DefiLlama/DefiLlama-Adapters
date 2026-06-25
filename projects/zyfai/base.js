@@ -31,6 +31,7 @@ const MORPHO_POOL_ADDRESSES = {
     'Steakhouse Prime EURC': '0xbeef009F28cCf367444a9F79096862920e025DC1',
     'Gauntlet EURC Core': '0x1c155be6bC51F2c37d472d4C2Eba7a637806e122',
     'Gauntlet EURC Balanced': '0x94Af495DE1F56Aa5576dEB17986bDCeE5Dd9778D',
+    'Moonwell Frontier cbBTC': '0x543257eF2161176D7C8cD90BA65C2d4CaEF5a796',
 };
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
@@ -59,8 +60,10 @@ const YIELDFI_BASE_POOLS = {
 };
 const BASE_EULER_POOLS = {
     'AlphaGrowth': '0x4C1aeda9B43EfcF1da1d1755b18802aAbe90f61E',
+    'AlphaGrowth WETH': '0x859160DB5841E5cfB8D3f144C6b3381A85A4b410',
     'Euler Base cbBTC': '0x882018411Bc4A020A879CEE183441fC9fa5D7f8B',
-    'Clearstar ETH Fusion': '0xdc4efb20ce286b421f6361734a2a006a1f24af8d'
+    'Clearstar ETH Fusion': '0xdc4efb20ce286b421f6361734a2a006a1f24af8d',
+    'AlphaGrowth cbETH': '0x358f25F82644eaBb441d0df4AF8746614fb9ea49',
 };
 
 const SUPERFORM_POOLS = {
@@ -76,6 +79,7 @@ const BASE_YEARN_POOLS = {
 const IPOR_POOLS = {
     WETH: '0x17d0f109ee895bad0b68aa104aa72bd0b003ad8e',
     'cbETH Looper': '0x5900c3b72458f12967dc1bef35b92d271f5cdbc1',
+    'TAU cbETH Dynamic Looping': '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
 };
 
 // const BASE_YO_PROTOCOL_POOLS = {
