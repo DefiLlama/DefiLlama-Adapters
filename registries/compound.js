@@ -443,6 +443,7 @@ const configs = {
       staking: ['0xe66E3A37C3274Ac24FE8590f7D84A2427194DC17', '0xa88594d404727625a9437c3f886c7643872296ae'],
     },
     optimism: { comptroller: '0xCa889f40aae37FFf165BccF69aeF1E82b5C511B9' },
+    ethereum: { comptroller: '0xdec80bB934397575594E91970b37baf65f5b21bE' },
   },
   'moonwell-apollo': {
     moonriver: {
