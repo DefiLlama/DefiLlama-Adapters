@@ -86,6 +86,15 @@ Object.keys(config).forEach(chain => {
   }
 })
 
+/**
+ * Discovers currently locked UniV4 position NFTs and resolves their pool keys.
+ *
+ * @param {object} params
+ * @param {object} params.api Chain API instance for the active adapter chain.
+ * @param {{ address: string, fromBlock: number }[]} params.lockers Locker contracts to scan.
+ * @param {string} params.nftAddress UniV4 position manager address for the chain.
+ * @returns {Promise<{ id: string, locker: string, poolKey: object }[]>} Positions still owned by their locker.
+ */
 async function getPositions({ api, lockers, nftAddress }) {
   const positions = await getPositionsFromLogs({ api, lockers, nftAddress })
 
@@ -115,6 +124,15 @@ async function getPositions({ api, lockers, nftAddress }) {
   return ownedPositions.filter(position => position.poolKey)
 }
 
+/**
+ * Reads LiquidityLocked logs and returns unique UniV4 token IDs per locker.
+ *
+ * @param {object} params
+ * @param {object} params.api Chain API instance for cached log reads.
+ * @param {{ address: string, fromBlock: number }[]} params.lockers Locker contracts to scan.
+ * @param {string} params.nftAddress Position manager address used to filter lock events.
+ * @returns {Promise<{ id: string, locker: string }[]>} Candidate locked positions keyed by locker and token ID.
+ */
 async function getPositionsFromLogs({ api, lockers, nftAddress }) {
   const positionsById = {}
   const logsByLocker = await Promise.all(lockers.map(async ({ address, fromBlock }) => {
@@ -133,6 +151,14 @@ async function getPositionsFromLogs({ api, lockers, nftAddress }) {
   return Object.values(positionsById)
 }
 
+/**
+ * Splits positions by whether their pool contains one or two core assets.
+ *
+ * @param {object} api Chain API instance used for chain-specific token normalization.
+ * @param {{ id: string, poolKey: { token0: string, token1: string } }[]} positions Resolved positions to classify.
+ * @param {string[]} whitelistedTokens Core asset addresses for the active chain.
+ * @returns {{ oneSidedPositionIds: string[], corePositionIds: string[] }} Position IDs grouped by token composition.
+ */
 function splitPositionsByCoreAssets(api, positions, whitelistedTokens) {
   const whitelist = new Set(whitelistedTokens)
   const oneSidedPositionIds = []
@@ -150,6 +176,18 @@ function splitPositionsByCoreAssets(api, positions, whitelistedTokens) {
   return { oneSidedPositionIds, corePositionIds }
 }
 
+/**
+ * Adds UniV4 position balances to the adapter, optionally doubling one-sided pools.
+ *
+ * @param {object} params
+ * @param {object} params.api Chain API instance receiving the resulting balances.
+ * @param {string} params.nftAddress UniV4 position manager address for the chain.
+ * @param {string[]} params.positionIds UniV4 NFT token IDs to value.
+ * @param {string[]} params.whitelistedTokens Core assets allowed during UniV4 resolution.
+ * @param {object} params.uniV4ExtraConfig Chain-specific UniV4 resolver configuration.
+ * @param {boolean} [params.double=false] Whether to double balances for one-sided positions.
+ * @returns {Promise<void>}
+ */
 async function addPositions({ api, nftAddress, positionIds, whitelistedTokens, uniV4ExtraConfig, double = false }) {
   if (!positionIds.length) return
 
