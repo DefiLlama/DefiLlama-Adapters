@@ -33,4 +33,8 @@ module.exports =  [
   'genesys', // shutdown 2026-03-01: https://x.com/GenesysChain/status/2024935948228985085
   'stargaze', // shutdown 2026-06-01: https://x.com/StargazeZone/status/2068094181617410185
   'fhe', // chain sunset 2026-06-01: https://x.com/mindnetwork_xyz/status/2046484856260141543
+  'winr', // chain sunset 2026-05-01 https://x.com/WINRProtocol/status/2047577896080834696
+  'dchainmainnet', // saga rollup torn down, RPC returns "default backend - 404"
+  'godwoken', // chain sunset 2026-01-06 https://sunset.forcebridge.com/announcement
+  'godwoken_v1', // chain sunset 2026-01-06 https://sunset.forcebridge.com/announcement
 ]

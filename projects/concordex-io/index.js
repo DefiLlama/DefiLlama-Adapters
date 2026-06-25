@@ -12,4 +12,5 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   concordium: { tvl },
+  deadFrom: '2024-12-24', // they have deprecated the dex product?
 }
