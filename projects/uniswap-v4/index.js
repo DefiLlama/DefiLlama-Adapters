@@ -10,7 +10,11 @@ const config = {
     '0x8d010bf9C26881788b4e6bf5Fd1bdC358c8F90b8', // DOT was hacked
     '0xb90b2a35c65dbc466b04240097ca756ad2005295', // BOBO is mispriced
     '0x5888641e3e6cbea6d84ba81edb217bd691d3be38', // BOBO is mispriced
-    '0x196c20da81fbc324ecdf55501e95ce9f0bd84d14' // DOT was hacked
+    '0x196c20da81fbc324ecdf55501e95ce9f0bd84d14', // DOT was hacked
+    '0xcf5104D094e3864CfCBDa43B82e1cEFD26A016eB', // H hacked 2026-06-08
+    '0x73a052500105205d34daf004eab301916da8190f', // ytUSD distressed
+    '0x83f798e925bcd4017eb265844fddabb448f1707d', // yUSDT distressed
+    '0xdf5e0e81dff6faf3a7e52ba697820c5e32d806a8', // yDAI+yUSDC+yUSDT+yTUSD distressed
   ] },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675, blacklistedTokens: [
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
@@ -34,7 +38,8 @@ const config = {
   avax: { factory: "0x06380c0e0912312b5150364b9dc4542ba0dbbc85", fromBlock: 56195376 },
   bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343', '0x8145eb83744aac883b68ae34060bebb5031d8f5c',
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
-    '0x7083609fce4d1d8dc0c979aab8c869ea2c873402' // DOT was hacked
+    '0x7083609fce4d1d8dc0c979aab8c869ea2c873402', // DOT was hacked
+    '0x44f161ae29361e332dea039dfa2f404e0bc5b5cc' // H hacked 2026-06-08
   ] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1 },
   monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895 },

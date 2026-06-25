@@ -13,11 +13,8 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
-  methodology: `
-The methodology for calculating TVL includes both the TON balance and tokens' balances
-data for each pool. The calculation is performed on the Parraton API side.
-  `.trim(),
-
+  methodology: `Value of tokens in the pool`,
+  deadFrom: '2025-06-27', // site down
   ton: {
     tvl,
   },

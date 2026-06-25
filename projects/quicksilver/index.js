@@ -17,6 +17,7 @@ const coinGeckoIds = {
   ppica: "picasso",
   uflix: "omniflix-network",
   inj: "injective",
+  uluna: "terra-luna-2",
 };
 
 async function tvl() {

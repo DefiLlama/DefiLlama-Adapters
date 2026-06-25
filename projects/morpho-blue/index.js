@@ -26,6 +26,10 @@ const config = {
       "0x1cfdc0154ae6b9f1887a8250f2582d55606e1a2008e65108fb83dd50a928593e",
 
       "0x0f9563442d64ab3bd3bcb27058db0b0d4046a4c46f0acd811dacae9551d2b129", // sdeUSD/USDC (91.5% LLTV) bad debt from sdeUSD exploit (Nov 2025)
+      "0x8eaf7b29f02ba8d8c1d7aeb587403dcb16e2e943e4e2f5f94b0963c2386406c9", // PAXG market
+      "0x11db9f2c7bda8c2af6a6a72db18aa5eb9290cb99cf75a3c0abacf1b84b8eaf77", // amphrETH market
+      "0x4b86442549b52826e0fc11770ec5154450cb3c5c14dc751a761d81dcfbe7a7b2", // RLP market
+      "0xbd1ad3b968f5f0552dbd8cf1989a62881407c5cccf9e49fb3657c8731caf0c1f", // deUSD market
     ],
   },
   base: {
@@ -34,6 +38,7 @@ const config = {
     fromBlock: 13977148,
     blacklistedMarketIds: [
       '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
+      '0xe1986e80099257c65dd18091ec7e34752ae2336870a5649f20c450c9c4931fb8', // HERMES market
     ]
   },
   arbitrum: {
@@ -42,6 +47,8 @@ const config = {
     fromBlock: 296446593,
     blacklistedMarketIds: [
       "0xfdb8221edcae73f73485d55c30e706906114bc2ff4634870c5c57e8fb83eae6a", // K/USDC bad debt from Kinto exploit
+      "0x9e90aec7d768403dacc9dd0d8320307fda3f980eed4df43e3e52168a1c667709", // xUSD market
+      "0xc7670063349ac19dfa324ead7bd7da2985ae931e1b09fb0e31b62c6486b730bd", // RLP market
     ],
   },
   fraxtal: {
@@ -68,6 +75,9 @@ const config = {
   wc: {
     morphoBlue: "0xE741BC7c34758b4caE05062794E8Ae24978AF432",
     fromBlock: 9025669,
+    blacklistedMarketIds: [
+      "0x5a96ea60ddb8ece11b0dd1176f05bbc44ec92197ba206adb086db559146cc964", // sdeUSD market
+    ],
   },
   mode: {
     morphoBlue: "0xd85cE6BD68487E0AaFb0858FDE1Cd18c76840564",
@@ -192,10 +202,15 @@ const config = {
   klaytn: {
     morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
     fromBlock: 208021118,
-  },
+  },/* still in private mainnet
   arc: {
     morphoBlue: "0x34CD04070dD72b14E241112F6d83812Df5Af7fCD",
     fromBlock: 1,
+  },
+  */
+  "0g": {
+    morphoBlue: "0x9CDD13a2212D94C4f12190cA30783B743E83C89e",
+    fromBlock: 7526486,
   },
 }
 

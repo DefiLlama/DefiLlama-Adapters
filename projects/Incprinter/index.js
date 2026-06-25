@@ -1,4 +1,3 @@
-const ADDRESSES = require("../helper/coreAssets.json");
 const { getLiquityTvl } = require("../helper/liquity.js");
 const { sumTokensExport } = require("../helper/unknownTokens.js");
 
@@ -26,8 +25,6 @@ module.exports = {
     staking: sumTokensExport({
       owner: STAKING_ADDRESS,
       tokens: [PRINT_ADDRESS],
-      lps,
-      useDefaultCoreAssets: true,
     }),
     pool2: sumTokensExport({
       owners: [INCD_FARMING_ADDRESS, PRINT_FARMING_ADDRESS],
