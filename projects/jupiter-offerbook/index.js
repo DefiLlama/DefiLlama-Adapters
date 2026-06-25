@@ -60,7 +60,7 @@ async function tvl(api) {
 
   // dedupe (a user's offers in the same mint share one escrow account) and tolerate
   // derived accounts that don't exist on-chain (closed vaults / never-funded escrows)
-  return sumTokens2({ api, tokenAccounts: [...new Set(tokenAccounts)] });
+  return sumTokens2({ api, tokenAccounts: [...new Set(tokenAccounts)], allowError: true });
 }
 
 async function borrowed(api) {
