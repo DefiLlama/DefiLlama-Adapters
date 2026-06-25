@@ -1,7 +1,7 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getCoreAssets } = require('../helper/tokenMapping')
 
-const lockIdScanLimit = 1000
+const lockIdScanLimit = 300
 const locksAbi = 'function locks(uint256) view returns (uint256 id, address owner, uint256 tokenId, tuple(address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) poolKey, uint256 amount, uint256 unlockTime, address collectAddress, bool isNFTized, uint256 collectFee)'
 
 const polygonUniV4Config = {
