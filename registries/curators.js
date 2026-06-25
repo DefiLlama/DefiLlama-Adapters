@@ -440,7 +440,7 @@ const configs = {
   "gami-labs": {
     config: {
       methodology:
-        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, and Gearbox.",
+        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, Gearbox, and Upshift.",
       blockchains: {
         ethereum: {
           erc4626: [
@@ -479,6 +479,12 @@ const configs = {
           silo: [
             "0x1F0570a081FeE0e4dF6eAC470f9d2D53CDEDa1c5", // Silo - Gami Silo USDC
             "0x0F78Ea587D8E2950319e0b467c665bD2CB73051B", // Silo - Gami Silo AVAX
+          ],
+        },
+        stellar: {
+          upshiftStellar: [
+            "CCL3WITWFFXIHV2I52ECV5DPIEOFSTU3PBPR53ILPLF2IP5KHECXRUTY", // Upshift - Gami earnUSDC
+            "CC6TRAPQD3NK7THUKWPV5SL2JHKQGNXZVB6S6MVYFSLRWAKEFUWZKZ7J", // Upshift - Gami earnXLM
           ],
         },
       },
