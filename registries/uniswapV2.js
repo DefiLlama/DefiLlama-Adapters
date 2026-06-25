@@ -54,6 +54,12 @@ const uniV2Configs = {
   'aceofbase': {
     base: '0x46C6706E81CAD3173773c1ffb5D84C9eb652d570',
   },
+  'agentscoin-dex': {
+    agentscoin: {
+      factory: '0x4Cd52B1E022Ef78B66862502cA4c000a15Adc06C',
+      coreAssets: ['0xF28A7ee0A7692D12C61210bA7477ff29e12d5BD8'],
+    },
+  },
   'adenafinance': {
     harmony: '0x44485473431fAF6EFA11D346d1057182d2A0A290',
   },
