@@ -34,6 +34,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  timetravel: false,
   methodology: 'TVL represents assets locked in limit orders on the Extended spot order book.',
   starknet: { tvl },
 }
