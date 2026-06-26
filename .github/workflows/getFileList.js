@@ -15,7 +15,7 @@ const fileSet = new Set();
     const diff = execSync(`git diff ${diffBase} -- ${file}`).toString()
     const lines = diff.split('\n').filter(l => l.startsWith('+') && !l.startsWith('+++'))
     for (const line of lines) {
-      const match = line.match(/['"]([a-zA-Z0-9][a-zA-Z0-9_-]+)['"]\s*:/)
+      const match = line.match(/^\+  ['"]([a-zA-Z0-9][a-zA-Z0-9_-]+)['"]\s*:/)
       if (match && protocolNames.has(match[1])) fileSet.add(match[1])
     }
   }
