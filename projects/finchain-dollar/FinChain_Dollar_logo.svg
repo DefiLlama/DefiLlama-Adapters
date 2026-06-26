@@ -1,0 +1,29 @@
+<svg viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600.000244" height="1600.000000" fill="none" customFrame="#000000">
+	<defs>
+		<linearGradient id="paint_linear_15" x1="-0.0725402832" x2="1403.9198" y1="-0.000244140625" y2="891.754761" gradientUnits="userSpaceOnUse">
+			<stop stop-color="rgb(255,242,214)" offset="0" stop-opacity="1" />
+			<stop stop-color="rgb(221.5,195,159)" offset="0.300000012" stop-opacity="1" />
+			<stop stop-color="rgb(188,148,104)" offset="1" stop-opacity="1" />
+		</linearGradient>
+		<linearGradient id="paint_linear_16" x1="614.727905" x2="2018.72034" y1="48.885498" y2="940.640442" gradientUnits="userSpaceOnUse">
+			<stop stop-color="rgb(255,242,214)" offset="0" stop-opacity="1" />
+			<stop stop-color="rgb(221.5,195,159)" offset="0.300000012" stop-opacity="1" />
+			<stop stop-color="rgb(188,148,104)" offset="1" stop-opacity="1" />
+		</linearGradient>
+	</defs>
+	<g id="组合 43">
+		<rect id="矩形 1" width="1600.000000" height="1600.000000" x="0.000000" y="0.000000" rx="800.000000" fill="rgb(255,249,237)" />
+		<g id="组合 41">
+			<g id="组合 35">
+				<g id="组合 36">
+					<g id="组合 37">
+						<g id="组合 38">
+							<path id="矢量 1" d="M655.32 739.999L520.001 739.999L480.001 859.998L668.24 859.998C711.12 859.998 746.4 893.838 748.28 936.678C756.6 1129.24 751.36 1319.36 656.04 1486.4C624.44 1542 556.441 1566 497.241 1541.6C206.001 1422.4 0.801634 1136 0.00158691 801.999C-0.79846 374.399 338.001 18.8 764.4 0C859.2 0 923.6 4.79998 985.2 20.8C762.84 192.52 730.48 419.079 735.2 658.199C736.08 703.039 700.2 739.999 655.32 739.999Z" fill="url(#paint_linear_15)" fill-rule="nonzero" />
+							<path id="矢量 2" d="M1600 797.999C1600.8 1225.2 1262 1581.2 835.6 1600C740.8 1600 676.401 1595.2 614.801 1579.2C836.8 1407.48 869.12 1180.92 864.4 941.798C863.52 896.918 899.4 859.998 944.24 859.998L1080 859.998L1120 739.999L931.36 739.999C888.48 739.999 853.2 706.159 851.32 663.319C842.96 470.759 848.2 280.639 943.56 113.6C975.56 57.9998 1043.56 33.9998 1102.76 58.3998C1394 177.6 1599.2 463.999 1600 797.999Z" fill="url(#paint_linear_16)" fill-rule="nonzero" />
+						</g>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>
