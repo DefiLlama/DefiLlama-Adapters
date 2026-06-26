@@ -6,7 +6,7 @@ const FACTORY_ABI = {
   getDeployedVaultCount: 'uint256:getDeployedVaultCount',
   getDeployedVaults: 'function getDeployedVaults(uint256,uint256) view returns (address[])',
 }
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ZERO_ADDRESS = ADDRESSES.null
 const CACHE_PROJECT = 'prodigy-fi'
 
 const config = {

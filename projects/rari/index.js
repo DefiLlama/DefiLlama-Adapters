@@ -1,5 +1,13 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi");
+const abi = {
+  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  "getPublicPools": "function getPublicPools() view returns (uint256[], tuple(string name, address creator, address comptroller, uint256 blockPosted, uint256 timestampPosted)[])",
+  "getPoolSummary": "function getPoolSummary(address comptroller) returns (uint256, uint256, address[], string[])",
+  "getRawFundBalancesAndPrices": "function getRawFundBalancesAndPrices() returns (string[], uint256[], uint8[][], uint256[][], uint256[])",
+  "getRawFundBalances": "function getRawFundBalances() returns (uint256, uint8[], uint256[])",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "totalStaked": "uint256:totalStaked"
+};
 const { compoundExports2 } = require('../helper/compound')
 const { pool2 } = require('../helper/pool2');
 const { sumTokens2 } = require("../helper/unwrapLPs");

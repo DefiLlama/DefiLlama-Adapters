@@ -4,10 +4,12 @@ const LENDING_CANISTER_ID = 'hyk4r-jqaaa-aaaar-qb4ca-cai'
 const BTC_POOL_CANISTER_ID = 'hkmli-faaaa-aaaar-qb4ba-cai'
 const USDT_POOL_CANISTER_ID = 'hnnn4-iyaaa-aaaar-qb4bq-cai'
 const USDC_POOL_CANISTER_ID = '6sna2-oiaaa-aaaar-qb66q-cai'
+const ICP_POOL_CANISTER_ID = 'r2pk3-4yaaa-aaaar-qb7zq-cai'
 const ALLOWED_POOL_CANISTERS = new Set([
   BTC_POOL_CANISTER_ID,
   USDT_POOL_CANISTER_ID,
   USDC_POOL_CANISTER_ID,
+  ICP_POOL_CANISTER_ID,
 ])
 const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER)
 
@@ -16,6 +18,7 @@ const ASSET_META = {
   SOL: { decimals: 9, coingeckoId: 'solana' },
   USDC: { decimals: 6, coingeckoId: 'usd-coin' },
   USDT: { decimals: 6, coingeckoId: 'tether' },
+  ICP: { decimals: 8, coingeckoId: 'internet-computer' },
 }
 
 const CANDID_LABELS = [
@@ -26,7 +29,7 @@ const CANDID_LABELS = [
   'protocol_liquidation_fee', 'treasury_supply_scaled', 'same_asset_borrowing_dust_threshold',
   'borrow_index', 'base_rate', 'frozen', 'liquidation_bonus', 'liquidation_threshold',
   'max_ltv', 'repay_grace_period', 'pending_service_fees', 'total_supply_at_last_sync',
-  'BTC', 'ETH', 'SOL', 'USDC', 'USDT', 'CkAsset', 'Unknown',
+  'BTC', 'ETH', 'SOL', 'USDC', 'USDT', 'ICP', 'CkAsset', 'Unknown',
 ]
 
 const LABEL_HASH_MAP = Object.fromEntries(

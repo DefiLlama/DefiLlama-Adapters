@@ -1,4 +1,7 @@
-const abi = require('./abi')
+const abi = {
+  allWhitelistedTokens: "function allWhitelistedTokens(uint256) view returns (address)",
+  allWhitelistedTokensLength: "uint256:allWhitelistedTokensLength",
+}
 const { staking } = require("../helper/staking");
 
 const polygonVault = "0x32848E2d3aeCFA7364595609FB050A301050A6B4";

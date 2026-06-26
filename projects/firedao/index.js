@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const abi = {
     "want": "address:want",
     "balanceOf": "uint256:balanceOf",
@@ -27,59 +26,43 @@ const strategiesContractsV2 = [
   "0x898fEbAba28b945dc432fcAa897FD9231a1FeD9d",
 ];
 
-async function calcTvl(balances, strategiesContracts, controller) {
-  const wants = (
-    await sdk.api.abi.multiCall({
-      abi: abi.want,
-      calls: strategiesContracts.map((strat) => ({
-        target: strat,
-      })),
-    })
-  ).output.map((token) => token.output);
+async function calcTvl(api, strategiesContracts, controller) {
+  const wants = await api.multiCall({
+    abi: abi.want,
+    calls: strategiesContracts,
+  });
 
-  const balanceStrategy = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balanceOf,
-      calls: strategiesContracts.map((strat) => ({
-        target: strat,
-      })),
-    })
-  ).output.map((bal) => bal.output);
+  const balanceStrategy = await api.multiCall({
+    abi: abi.balanceOf,
+    calls: strategiesContracts,
+  });
 
-  const vaults = (
-    await sdk.api.abi.multiCall({
-      abi: abi.vaults,
-      calls: wants.map((want) => ({
-        target: controller,
-        params: want,
-      })),
-    })
-  ).output.map((vault) => vault.output);
+  const vaults = await api.multiCall({
+    abi: abi.vaults,
+    calls: wants.map((want) => ({
+      target: controller,
+      params: want,
+    })),
+  });
 
-  const vaultBalance = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balance,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-    })
-  ).output.map((bal) => bal.output);
+  const vaultBalance = await api.multiCall({
+    abi: abi.balance,
+    calls: vaults,
+  });
 
   wants.forEach((token, idx) => {
-    sdk.util.sumSingleBalance(balances, token, balanceStrategy[idx]);
-    sdk.util.sumSingleBalance(balances, token, vaultBalance[idx]);
+    api.add(token, balanceStrategy[idx]);
+    api.add(token, vaultBalance[idx]);
   });
 }
 
-async function ethTvl() {
-  const balances = {};
-
+async function ethTvl(api) {
   /*** Version 1 ***/
-  await calcTvl(balances, strategiesContractsV1, controllerV1);
+  await calcTvl(api, strategiesContractsV1, controllerV1);
   /*** Version 2 ***/
-  await calcTvl(balances, strategiesContractsV2, controllerV2);
+  await calcTvl(api, strategiesContractsV2, controllerV2);
 
-  return balances;
+  return api.getBalances();
 }
 
 module.exports = {

@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const morphoAbi = require("../helper/abis/morpho.json");
+const { getExports } = require('../helper/heroku-api');
 
 const almProxy = {
   ethereum: '0x1601843c5E9bC251A3272907010AFa41Fa18347E',
@@ -111,6 +112,13 @@ async function tvl(api) {
 
   const allTokens = Object.values(tokenRecords).flat()
   api.add(allTokens, balances)
+
+  if (api.chain === 'ethereum') {
+    // track anchorage allocation
+    const tvl  = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
+    const anchorageBalance = await tvl(api)
+    api.addBalances(anchorageBalance)
+  }
 }
 
 Object.keys(CONFIG).forEach((chain) => {

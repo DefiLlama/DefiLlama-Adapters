@@ -10,5 +10,6 @@ async function tvl (api) {
   }
 
   module.exports = {
+    deadFrom: '2026-01-26', // website down, API returns 404
     ton: { tvl }
   };
