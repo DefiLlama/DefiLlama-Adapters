@@ -349,6 +349,14 @@ const configs = {
       ]
     },
   },
+  "flooor-fun": {
+    "base": {
+      "owner": "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
   "Hyperionx": {
     "methodology": "wUSDC will be equivalently converted into USDX, becoming part of Hyperion Exchange's TVL.",
     "zkfair": {
