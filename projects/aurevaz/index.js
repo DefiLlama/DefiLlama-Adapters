@@ -10,7 +10,6 @@ async function tvl(api) {
   const target = lockerAddresses[api.chain];
   const locks = await api.fetchList({ target, itemAbi: "function locks(uint256) view returns (address token, address owner, uint256 amount, uint256 claimed, uint256 lockDate, uint256 unlockDate, uint256 vestingStart, uint256 vestingDuration, bool isLP)", lengthAbi: "uint256:lockCount" });
 
-  const tokens = [];
   for (const lock of locks) {
     const remaining = BigInt(lock.amount) - BigInt(lock.claimed);
     if (remaining > 0n) {
@@ -18,7 +17,7 @@ async function tvl(api) {
     }
   }
 
-  return sumTokens2({ api });
+  return sumTokens2({ api, resolveLP: true });
 }
 
 const chains = ["polygon", "bsc", "arbitrum"];
