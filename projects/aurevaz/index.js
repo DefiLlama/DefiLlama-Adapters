@@ -42,5 +42,7 @@ module.exports = {
 };
 
 chains.forEach((chain) => {
-  module.exports[chain] = { tvl, staking, vesting };
+  module.exports[chain] = { tvl, vesting };
 });
+
+module.exports.polygon.staking = staking;
