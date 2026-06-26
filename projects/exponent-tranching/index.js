@@ -175,6 +175,7 @@ const idl = {
 const HIDDEN_TRANCHING_MARKET_ADDRESSES = new Set([
   'FkGQbWytiEnLbVDaBT85hyDxqKXmzHJ21GYpEpguSDSk',
 ])
+const TRANCHING_MARKET_DISCRIMINATOR = Buffer.from([119, 38, 120, 122, 60, 24, 58, 160])
 const GENERIC_SY_PROGRAM_ID = 'XP1BRLn8eCYSygrd8er5P4GKdzqKbC3DLoSsS5UYVZy'
 const SY_META_DISCRIMINATOR = Buffer.from([254, 147, 136, 16, 163, 203, 98, 93])
 const GENERIC_SY_META_YIELD_BEARING_MINT_OFFSET = 129
@@ -195,6 +196,10 @@ function getAltAddress(lookupTable, context) {
   const index = context?.altIndex
   if (index === undefined) return null
   return lookupTable?.state?.addresses?.[index] || null
+}
+
+function hasTranchingMarketDiscriminator(data) {
+  return data.length >= 8 && Buffer.from(data.subarray(0, 8)).equals(TRANCHING_MARKET_DISCRIMINATOR)
 }
 
 function readGenericSyMetaMintSy(data) {
@@ -264,7 +269,18 @@ async function getMarketTokenMints(markets) {
 }
 
 async function tvl(api) {
-  const vaults = await new Program(idl, getProvider()).account.exponentTranchingMarket.all()
+  const provider = getProvider()
+  const program = new Program(idl, provider)
+  const rawAccounts = await provider.connection.getProgramAccounts(program.programId, { commitment: "confirmed" })
+  const validAccounts = rawAccounts.filter(
+    ({ pubkey, account }) =>
+      !HIDDEN_TRANCHING_MARKET_ADDRESSES.has(pubkey.toBase58()) &&
+      hasTranchingMarketDiscriminator(account.data)
+  )
+  const vaults = validAccounts.map(({ pubkey, account }) => ({
+    pubkey,
+    account: program.coder.accounts.decode("exponentTranchingMarket", account.data),
+  }))
   const marketTokenMints = await getMarketTokenMints(vaults)
 
   for (const { account } of vaults) {
@@ -285,7 +301,7 @@ async function tvl(api) {
     const amount = scaleTranchingNavToTokenRaw(total)
     if (amount <= 0n) continue
 
-    api.add(token, amount)
+    api.add(token, amount.toString())
   }
 }
 
