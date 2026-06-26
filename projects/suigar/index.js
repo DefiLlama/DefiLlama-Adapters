@@ -43,6 +43,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   methodology:
     "TVL is the SweetHouse bankroll on Sui that backs Suigar's provably-fair casino payouts. For each supported coin (SUI, USDC) it sums, across the private, public, rakeback and whitelist liquidity pools of that coin's House, the on-hand balance plus the liquidity routed into yield venues (pipe debt).",
   sui: { tvl },
