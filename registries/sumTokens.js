@@ -12007,7 +12007,21 @@ const configs = {
     },
   },
   "credible-finance": {
-    "methodology": "TVL is calculated as all token balances held in Credible Finance's lending contract on 0G Chain, representing all deposits available for lending.",
+    "methodology": "TVL is calculated as all token balances held in Credible Finance's lending contract, representing all deposits available for lending.",
+    "solana": {
+      "owner": "4uhwwcipVRFczcCPCgZDkMgWaL8kGw7ht4k6HT3faw3g",
+      "tokens": [
+        "FxPk1scQjw34NSwm4JKz7sT2Bw781TqwFU9efZdrrLQU",
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "91u7wA938FMTHzAGtg6LcoysasfBkFQQmMCauLRSgHDL",
+        "5HxCAwuu4SX73gjVG7dP7hZKrSGhRydy6VJWgG1yhtBj",
+        "SNSG2yDc1QHxurjb5ZKUbc5pKLKAv18LLe3yFumxXod",
+        "GBcoT7TugeegPSCujzariSMMHc4cF8AxcfFTctAHZp5R",
+        "G7F8pVSQTkHsfh4ZZxttb5ZxNH9WpQiNAUn1aJn1SkoB",
+        "JDpHtDaf69SyKwDkkTGP5okRBRw1jfocMr4E7DgzXXBt",
+        "CYyQ1mwFthpFozHpc7xxguyrZ5vegFBKrg3uhsY3vXDf"
+      ]
+    },
     "0g": {
       "tokens": [
         "0x1f3aa82227281ca364bfb3d253b0f1af1da6473e",
