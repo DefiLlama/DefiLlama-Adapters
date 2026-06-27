@@ -1,9 +1,6 @@
 // BlackDoor — geo-anchored prediction markets on Arbitrum One
-// TVL = sum of USDC locked in all market liquidity pools (poolYes + poolNo)
+// TVL = actual USDC locked in each market contract (usdc.balanceOf(market))
 // Factory: 0x4FaCa0EA8Dd4fE6E703f001435A99263336a498E
-// Note: the factory deploys every contract — both binary markets and each
-// individual outcome sub-contract of multi-outcome markets — so iterating
-// factory.markets(i) captures the full TVL without extra recursion.
 
 const FACTORY = "0x4FaCa0EA8Dd4fE6E703f001435A99263336a498E";
 const USDC    = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"; // Arbitrum One native USDC
@@ -24,23 +21,23 @@ async function tvl(api) {
 
   const validMarkets = markets.filter(Boolean);
 
-  const [poolsYes, poolsNo] = await Promise.all([
-    api.multiCall({ abi: "uint256:poolYes", calls: validMarkets.map((m) => ({ target: m })), permitFailure: true }),
-    api.multiCall({ abi: "uint256:poolNo",  calls: validMarkets.map((m) => ({ target: m })), permitFailure: true }),
-  ]);
+  // Use actual USDC balance of each contract — not poolYes + poolNo which
+  // double-counts: the FPMM seeds both pools equal to `net` from a single deposit,
+  // so poolYes ≈ poolNo ≈ contract balance, making their sum ≈ 2× the real TVL.
+  const balances = await api.multiCall({
+    abi: "function balanceOf(address) view returns (uint256)",
+    calls: validMarkets.map((m) => ({ target: USDC, params: [m] })),
+    permitFailure: true,
+  });
 
-  poolsYes.forEach((v, i) => {
-    if (v) api.add(USDC, v);
-    if (poolsNo[i]) api.add(USDC, poolsNo[i]);
+  balances.forEach((bal) => {
+    if (bal) api.add(USDC, bal);
   });
 }
 
 module.exports = {
   arbitrum: { tvl },
   methodology:
-    "Sum of USDC (poolYes + poolNo) across all contracts deployed through the " +
-    "BlackDoor factory on Arbitrum One. The factory registers every deployed " +
-    "contract — binary markets and individual outcome sub-contracts of " +
-    "multi-outcome markets alike — so a single factory iteration captures the " +
-    "full protocol TVL.",
+    "Sum of USDC held in each BlackDoor PredictionMarket contract on Arbitrum One, " +
+    "measured as the actual token balance rather than internal pool accounting variables.",
 };
