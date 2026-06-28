@@ -1,14 +1,21 @@
 const { PublicKey } = require('@solana/web3.js')
 const { getConnection } = require('./solana')
 
+// Shared TVL/pricing helper for Cookie Chain protocols.
+//
 // On Cookie Chain only COOK (the wrapped native gas token) has an external price feed
 // (mapped to coingecko `cookie-2`). Every other token that lives on the chain has no
 // price source, so DefiLlama silently drops it from TVL - leaving pools showing only
-// their COOK side. This helper derives a price for those tokens from the on-chain DEX
-// pools and re-expresses each one as its COOK-equivalent, so both sides of every pool
+// their COOK side. This helper derives a price for those tokens from the chain's on-chain
+// DEX pools and re-expresses each one as its COOK-equivalent, so both sides of every pool
 // get counted. Conceptually this is the SVM analog of helper/cache/sumUnknownTokens
 // (price unknown tokens against a core asset from their LP pools); we hand-roll it here
 // because that helper only supports EVM (multiCall / getReserves).
+//
+// New protocols plug in by registering their pool programs in POOL_SOURCES (tagged with a
+// `protocol` id) and calling addCookiePoolTvl(api, '<their id>') from their adapter. The
+// COOK price graph is always built from ALL registered pools chain-wide, so every protocol
+// benefits from the chain's full liquidity when pricing tokens.
 const COOK = 'So11111111111111111111111111111111111111112'
 const Q64 = 2 ** 64
 // An indirect (non-COOK) hop is only trusted if it is backed by at least this much
@@ -20,13 +27,20 @@ const MIN_INDIRECT_COOK_RAW = 1e9
 // in helper/cache/sumUnknownTokens). The real COOK side is never capped.
 const RESTRICT_TOKEN_RATIO = 100
 
-// Pool account layouts, validated byte-for-byte against live accounts on rpc.cookiescan.io.
-// `sqrtPrice` is Meteora/Orca/Raydium style: (sqrtPrice / 2^64)^2 == tokenB_raw per tokenA_raw,
-// where tokenA is the vaultA side and tokenB the vaultB side. `null` => constant-product pool,
-// price is taken from the raw reserve ratio instead.
-// `kind`: 'amm' pools are real two-sided LPs => both sides are TVL. 'curve' pools are bonding
-// curves whose base (vaultA) side is just unsold mint supply, NOT deposited value => only the
-// quote (vaultB) side counts as TVL.
+// Registry of every protocol's pool programs. Add an entry here when onboarding a new
+// Cookie Chain dapp; account offsets must be validated byte-for-byte against live accounts.
+// Fields:
+//   protocol  - id matched by addCookiePoolTvl(api, protocol)
+//   kind      - 'amm': real two-sided LP, both sides count as TVL.
+//               'curve': bonding curve whose base (vaultA) side is unsold mint supply, NOT
+//               deposited value => only the quote (vaultB) side counts as TVL.
+//   dataSize  - account size filter (omit if pools share size with other account types)
+//   disc      - first 8 bytes (hex) to match when dataSize alone is ambiguous (optional)
+//   initFlag  - require data[0]==data[1]==1 to skip uninitialised accounts (optional)
+//   vaultA/B  - byte offset of each token vault pubkey
+//   sqrtPrice - byte offset of the u128 sqrt price; (sqrtPrice / 2^64)^2 == vaultB_raw per
+//               vaultA_raw (Meteora/Orca/Raydium convention). null => constant-product pool,
+//               price is taken from the raw reserve ratio instead.
 const POOL_SOURCES = [
   // CookieBox DAMM (Meteora Dynamic AMM v2 / cp_amm fork)
   { protocol: 'cookiebox', kind: 'amm', program: 'DAMMjDCEFTDkt7ywazZS8GoaLtjb3HaJo3pLbf64xrPY', dataSize: 1112, vaultA: 232, vaultB: 264, sqrtPrice: 456 },
@@ -74,9 +88,9 @@ async function getMultipleAccountInfo(connection, keys) {
   return out
 }
 
-// Scans every CookieBox / CookieSwap pool once, caches on the api object, and returns
-// { pools, cookRawPer } where cookRawPer[mint] is how many COOK base-units equal one
-// base-unit of `mint`. Pricing happens in two phases:
+// Scans every registered pool once, caches on the api object, and returns
+// { pools, cookRawPer, support } where cookRawPer[mint] is how many COOK base-units equal
+// one base-unit of `mint`. Pricing happens in two phases:
 //   A) DIRECT COOK pairs - each token priced from the pool holding the most COOK; these
 //      prices are authoritative and never overridden.
 //   B) INDIRECT tokens (no direct COOK pool) - priced by hopping through an already-priced
@@ -174,12 +188,12 @@ async function getCookieChainData(api) {
   return api._cookieChainData
 }
 
-// One-call TVL for a pool-based Cookie Chain protocol ('cookiebox' or 'cookieswap').
-// AMM pools contribute both sides; bonding-curve pools contribute only their quote side
-// (the base side is unsold mint supply, not deposited value). COOK is summed exactly;
-// every other token is valued through the derived price map and its TOTAL contribution is
-// capped at RESTRICT_TOKEN_RATIO x the COOK liquidity backing its price, so a thin or
-// manipulated pool cannot inflate TVL.
+// One-call TVL for a pool-based Cookie Chain protocol: pass the `protocol` id used in
+// POOL_SOURCES. AMM pools contribute both sides; bonding-curve pools contribute only their
+// quote side (the base side is unsold mint supply, not deposited value). COOK is summed
+// exactly; every other token is valued through the derived price map and its TOTAL
+// contribution is capped at RESTRICT_TOKEN_RATIO x the COOK liquidity backing its price,
+// so a thin or manipulated pool cannot inflate TVL.
 async function addCookiePoolTvl(api, protocol) {
   const { pools, cookRawPer, support } = await getCookieChainData(api)
   let cookRaw = 0n
