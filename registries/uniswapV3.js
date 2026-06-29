@@ -1732,6 +1732,9 @@ const uniV3Configs = {
   },
   'intrinsic': {
     rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
+  },
+  'hyperlynx-v3': {
+    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
   }
 }
 
