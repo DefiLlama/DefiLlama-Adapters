@@ -1,4 +1,5 @@
 const { getLogs2 } = require('../helper/cache/getLogs');
+const { getTokenSupplies } = require('../helper/solana');
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const nullAddress = ADDRESSES.null
@@ -153,7 +154,51 @@ const tvl = async (api) => {
   await api.erc4626Sum({ calls: uniqueVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
 }
 
-module.exports.methodology = `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`
+// The JAAA share class is also issued as an SPL token on Solana. The mint is
+// not independently priced, so its total supply is valued at the EVM JAAA share
+// price (same NAV per share; both tokens are 6 decimals). The assets backing
+// these Solana-issued shares already sit in the EVM vault and are therefore
+// counted in the Ethereum TVL above, so we subtract the same value from
+// Ethereum to attribute it to Solana without double counting.
+const JAAA_SOLANA_MINT = 'AAAJXeGjpKu7W3X4QTSU4pm1Wbj4G2LPcdg7A6xJLLyG'
+const JAAA_EVM = '0x5a0F93D040De44e78F251b03c43be9CF317Dcf64' // ethereum, 6 decimals
+
+const getJaaaSolanaSupply = async () => {
+  const supplies = await getTokenSupplies([JAAA_SOLANA_MINT])
+  return supplies[JAAA_SOLANA_MINT]
+}
+
+// getTokenSupplies reads the mint's live supply from the Solana RPC and is not
+// block/timestamp aware, unlike the EVM vault reads. To avoid subtracting today's
+// JAAA supply from historical Ethereum balances during backfill, the Solana
+// adjustment is applied only to live runs (the current UTC day). Historical points
+// keep all JAAA backing on Ethereum, where it was before the Solana mint launched
+// and where it remains unmeasurable historically.
+const startOfTodayUTC = () => {
+  const now = new Date()
+  return Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000)
+}
+const isHistorical = (api) => api.timestamp && api.timestamp < startOfTodayUTC()
+
+const solanaTvl = async (api) => {
+  if (isHistorical(api)) return
+  const supply = await getJaaaSolanaSupply()
+  if (supply) api.add(`ethereum:${JAAA_EVM}`, supply, { skipChain: true })
+}
+
+// Ethereum wraps the shared EVM tvl and removes the Solana-issued JAAA value,
+// whose backing is already reflected in the vault assets measured above.
+const ethereumTvl = async (api) => {
+  await tvl(api)
+  if (isHistorical(api)) return
+  const supply = await getJaaaSolanaSupply()
+  if (supply) api.add(JAAA_EVM, (-BigInt(supply)).toString())
+}
+
+module.exports.methodology = `TVL corresponds to the total USD value of tokens minted on Centrifuge. On EVM chains it is measured from the assets backing each share class vault. The JAAA share class is also issued on Solana; its SPL supply is valued at the EVM JAAA share price and shown on Solana, with the equivalent value subtracted from Ethereum to avoid double counting (its backing already sits in the EVM vault).`
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }
 })
+
+module.exports.ethereum = { tvl: ethereumTvl }
+module.exports.solana = { tvl: solanaTvl }
