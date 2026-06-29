@@ -1,21 +1,19 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-// USDT na Polygon (via coreAssets.json)
+// USDT (PoS) on Polygon
 const USDT = "0xc2132d05d31c914a87c6611c10748aeb04b58e8f";
 
-// Carteira custodiada Livara — onde o USDT dos pools fica retido
-const CUSTODIAN_WALLETS = [
-  "0x76fAFf4d166ec6d2A016EcB1f21dC289a4CE136F",
-];
+// LivaraPoolsEscrow contract — holds USDT for all open prediction pools
+const ESCROW_CONTRACT = "0xdC1359F9A5F80Feded5a7811e03148e773eAa2af";
 
 module.exports = {
   methodology:
-    "TVL is the total USDT held in Livara's custodial wallets on Polygon, " +
-    "representing funds locked in open prediction pools awaiting settlement.",
+    "TVL is the total USDT locked in the LivaraPoolsEscrow smart contract on Polygon, " +
+    "representing funds held across all open prediction pools awaiting settlement.",
 
   polygon: {
     tvl: sumTokensExport({
-      owners: CUSTODIAN_WALLETS,
+      owners: [ESCROW_CONTRACT],
       tokens: [USDT],
     }),
   },
