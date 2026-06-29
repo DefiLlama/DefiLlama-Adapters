@@ -17237,6 +17237,17 @@ const configs = {
       ]
     },
   },
+  "livara": {
+    "methodology": "TVL is the total USDT locked in the LivaraPoolsEscrow smart contract on Polygon, representing funds held across all open prediction pools awaiting settlement.",
+    "polygon": {
+      "tvl": {
+        "owner": "0xdC1359F9A5F80Feded5a7811e03148e773eAa2af",
+        "tokens": [
+          ADDRESSES.polygon.USDT
+        ]
+      }
+    }
+  },
   "lucky38": {
     "methodology": "TVL equals the USDC balance held in SharedTreasury — the single liquidity pool backing all six Lucky38 games.",
     "base": {
