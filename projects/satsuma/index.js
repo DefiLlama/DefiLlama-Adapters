@@ -12,27 +12,9 @@
 
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// Satsuma DEX on Citrea (Chain ID: 4114)
-// Requires the Satsuma coins adapter (defillama-server coins-pr/satsumaCitrea.ts) so
-// Citrea tokens are priced; without it TVL is ~$0. Pools/vaults: defillama-adapters/pools.js.
-const SATSUMA_DEX_POOL_ADDRESSES = [
-  '0xb22325fe6e033c6b7cefb7bc69c9650ffdc691f9',
-  '0x78de0ada441a6bfe092967bb40ce30d7c77aad2c',
-  '0x172d2ab563afdaace7247a6592ee1be62e791165',
-  '0x5d4b518984ae9778479ee2ea782b9925bbf17080',
-  '0x3560aa7a517b3e1fb6cddf225baf2febde3cb76c',
-  '0xaea5cf09209631b6a3a69d5798034e2efdbe2cc8',
-  '0x8f87f74d009e18b745fe6fb59d5859911a2c3db7',
-  '0xa82eee40f1c88d773c93771d5b1fac61db311945',
-  '0x28457e8dea5d0a136fb30079c6ee6f20bb3d52e0',
-  '0xc9319c34e709e6e9156f22e7287af3a373b6547c',
-  '0x42abc39798a5ce71bd8bd2a673dd17ada45977a5',
-  '0x298a4e0ec1af98066b79836ea99dcc2dd5437f67',
-  '0xea3fa2b0c8223b1367bdffcaa030e6a77c3c2ef0',
-  '0x9ad930b091e6b7173ee85636067245b0ceddee63',
-  '0x0557b48af1503d1a50f76a24938998a664fcf73f',
-];
-
+// Satsuma DEX pools are already tracked in DefiLlama's uniswapV3 registry.
+// This adapter only reports idle token balances held by the Satsuma ICHI vaults
+// so it does not double-count active pool liquidity.
 const ICHI_CITREA_VAULTS = [
   '0x8B759858f688A3e04411805f8954724f552b8061',
   '0x0b3E6074502301D4CF62F9748D38Ca781d95F944',
@@ -59,10 +41,10 @@ const ICHI_CITREA_VAULTS = [
 ];
 
 async function tvl(api) {
-  // Algebra liquidity is held by the pool contracts themselves, and ICHI vaults
-  // hold their two underlying tokens directly. Both expose token0()/token1(),
-  // so we resolve each holder's two tokens on-chain and sum the raw balances.
-  const owners = [...SATSUMA_DEX_POOL_ADDRESSES, ...ICHI_CITREA_VAULTS];
+  // ICHI vault positions are backed by Algebra pool liquidity, which DefiLlama
+  // already counts through registries/uniswapV3.js. We only add idle balances
+  // held directly by the vault contracts.
+  const owners = ICHI_CITREA_VAULTS;
 
   const [token0s, token1s] = await Promise.all([
     api.multiCall({ abi: 'address:token0', calls: owners }),
@@ -79,7 +61,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is calculated by summing token balances in Satsuma Algebra pools on Citrea plus idle balances held by Satsuma ICHI vaults. Token pricing is provided by the DefiLlama coins API.',
+  methodology: 'Satsuma Algebra pool liquidity is already tracked by DefiLlama’s uniswapV3 registry. This adapter adds only idle token balances held directly by Satsuma ICHI vault contracts on Citrea.',
   citrea: {
     tvl,
   },
