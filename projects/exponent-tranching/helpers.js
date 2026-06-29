@@ -52,17 +52,20 @@ async function getTranchingMarkets() {
   const program = new Program(idl, provider)
   const rawAccounts = await provider.connection.getProgramAccounts(program.programId, { commitment: "confirmed" })
 
-  return rawAccounts
-    .filter(
-      ({ pubkey, account }) =>
-        !HIDDEN_TRANCHING_MARKET_ADDRESSES.has(pubkey.toBase58()) &&
-        hasTranchingMarketDiscriminator(account.data)
-    )
-    .map(({ pubkey, account }) => ({
-      pubkey,
-      account: program.coder.accounts.decode("exponentTranchingMarket", account.data),
-    }))
-    .filter(({ account }) => !HIDDEN_TRANCHING_MARKET_ADDRESSES.has(account.selfAddress.toBase58()))
+  return rawAccounts.flatMap(({ pubkey, account }) => {
+    if (
+      HIDDEN_TRANCHING_MARKET_ADDRESSES.has(pubkey.toBase58()) ||
+      !hasTranchingMarketDiscriminator(account.data)
+    ) return []
+
+    try {
+      const decoded = program.coder.accounts.decode("exponentTranchingMarket", account.data)
+      if (HIDDEN_TRANCHING_MARKET_ADDRESSES.has(decoded.selfAddress.toBase58())) return []
+      return [{ pubkey, account: decoded }]
+    } catch {
+      return []
+    }
+  })
 }
 
 async function getTranchingMarketTokenMints(markets) {
