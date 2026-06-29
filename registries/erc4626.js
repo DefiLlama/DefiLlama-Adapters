@@ -286,6 +286,10 @@ const configs = {
   'xax': {
     ethereum: ['0xc452B6D5bf3a7712A9AF9F70BF32f37A531ff220'],
     methodology: 'Counts USDT backing the XAUSD ERC-4626 vault.'
+  },
+  'arcis': {
+    base: ['0x00325d9da832b38179ed2f0dabd4062d93e325a7'],
+    methodology: 'TVL is calculated as the total USDC held in the ArcisVault contract, including both reserve and deployed capital across yield strategies.'
   }
 }
 
