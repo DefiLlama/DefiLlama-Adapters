@@ -5,6 +5,7 @@ const { Program } = require("@coral-xyz/anchor");
 
 const { getConfig } = require('../helper/cache')
 const { getTranchingMarkets, getTranchingNavBySyMint } = require("../exponent-tranching/helpers")
+const NUMBER_DENOM = 1_000_000_000_000n
 const idl = {
   "address": "ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7",
   "metadata": {"name": "exponent_core", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
@@ -108,9 +109,9 @@ async function tvl(api) {
   const mintAccountMap = {}
   
   vaults.forEach(v => {
-    const rate = v.account.lastSeenSyExchangeRate[0][0].toString() / 1e12
+    const rate = BigInt(v.account.lastSeenSyExchangeRate[0][0].toString())
     if (rate > 0)
-      mintRateMap[v.account.mintSy.toString()] = v.account.lastSeenSyExchangeRate[0][0].toString() / 1e12
+      mintRateMap[v.account.mintSy.toString()] = rate
   })
 
   // Fetch mint accounts
@@ -134,17 +135,17 @@ async function tvl(api) {
 
     // Decode mint data
     const decodedMint = decodeAccount('mint', mintAccount);
-    const supply = decodedMint.supply;
+    const supply = BigInt(decodedMint.supply.toString());
 
     // As all of the Exponent wrapped tokens are yield bearing tokens, mutiply their supply by their redemption rate to get the base asset amount
-    const coreAmount = supply * mintRate;
-    const tranchingAmount = Number(tranchingNavBySyMint[mintSy] || 0n);
+    const coreAmount = supply * mintRate / NUMBER_DENOM;
+    const tranchingAmount = tranchingNavBySyMint[mintSy] || 0n;
     // Core counts total SY supply, including SY deposited into tranching markets.
     // Tranching NAV is already in raw accounting/base units, so subtract it without applying mintRate again.
-    const amount = Math.max(coreAmount - tranchingAmount, 0);
+    const amount = coreAmount > tranchingAmount ? coreAmount - tranchingAmount : 0n;
 
     // Add to balances using the base asset price * the converted amount of base tokens
-    api.add(mintUnderlying, amount);
+    api.add(mintUnderlying, amount.toString());
   }
 }
 
