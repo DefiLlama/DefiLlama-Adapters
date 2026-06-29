@@ -2855,6 +2855,9 @@ const uniV2Configs = {
   'brownfi-v3': {
     berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
     hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
+  },
+  'hyperlynx': {
+    hyperliquid: '0x11cD396F814Bd31eBa7969c1B27a7C347785951f',
   }
 }
 
