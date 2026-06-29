@@ -17241,7 +17241,7 @@ const configs = {
     "methodology": "TVL is the total USDT locked in the LivaraPoolsEscrow smart contract on Polygon, representing funds held across all open prediction pools awaiting settlement.",
     "polygon": {
       "tvl": {
-        "owner": "0xdC1359F9A5F80Feded5a7811e03148e773eAa2af",
+        "owner": "0x2883C739871CE6900Bf4b60Ecc979354613148e2",
         "tokens": [
           ADDRESSES.polygon.USDT
         ]
