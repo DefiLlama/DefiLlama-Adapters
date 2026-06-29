@@ -4,7 +4,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 const USDT = "0xc2132d05d31c914a87c6611c10748aeb04b58e8f";
 
 // LivaraPoolsEscrow contract — holds USDT for all open prediction pools
-const ESCROW_CONTRACT = "0xdC1359F9A5F80Feded5a7811e03148e773eAa2af";
+const ESCROW_CONTRACT = "0x2883C739871CE6900Bf4b60Ecc979354613148e2";
 
 module.exports = {
   methodology:
