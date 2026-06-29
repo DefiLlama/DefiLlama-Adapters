@@ -4,6 +4,7 @@ const { decodeAccount } = require("../helper/utils/solana/layout");
 const { Program } = require("@coral-xyz/anchor");
 
 const { getConfig } = require('../helper/cache')
+const { getTranchingMarkets, getTranchingNavBySyMint } = require("../exponent-tranching/helpers")
 const idl = {
   "address": "ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7",
   "metadata": {"name": "exponent_core", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
@@ -100,6 +101,8 @@ async function tvl(api) {
   
   const program = new Program(idl, provider)
   const vaults = await program.account.vault.all()
+  const tranchingMarkets = await getTranchingMarkets()
+  const tranchingNavBySyMint = getTranchingNavBySyMint(tranchingMarkets)
   
   const mintRateMap = {}
   const mintAccountMap = {}
@@ -134,7 +137,11 @@ async function tvl(api) {
     const supply = decodedMint.supply;
 
     // As all of the Exponent wrapped tokens are yield bearing tokens, mutiply their supply by their redemption rate to get the base asset amount
-    const amount = supply * mintRate;
+    const coreAmount = supply * mintRate;
+    const tranchingAmount = Number(tranchingNavBySyMint[mintSy] || 0n);
+    // Core counts total SY supply, including SY deposited into tranching markets.
+    // Tranching NAV is already in raw accounting/base units, so subtract it without applying mintRate again.
+    const amount = Math.max(coreAmount - tranchingAmount, 0);
 
     // Add to balances using the base asset price * the converted amount of base tokens
     api.add(mintUnderlying, amount);
@@ -143,6 +150,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "TVL is calculated by summing the total supply of each Exponent wrapped Yield bearing token and multiplying their base asset amount by the price of the underlying token",
+  methodology: "TVL is calculated by summing the total supply of each Exponent wrapped Yield bearing token, excluding SY liquidity deposited into Exponent Tranching markets, and multiplying the remaining base asset amount by the price of the underlying token",
   solana: { tvl },
 };
