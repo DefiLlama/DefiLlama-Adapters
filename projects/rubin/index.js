@@ -12,6 +12,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology:
     "Counts USDC collateral deposited on Rubin, measured as the total supply of the chain's USDC (uusdc) collateral denomination.",
   rubin: {
