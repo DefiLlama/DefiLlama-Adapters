@@ -25,6 +25,7 @@ module.exports = {
       "0x2fF5fc5b63f2bfCE5d6BB9Ea4d170cf1aa40693c",
       "0xBCB302A64ADB7f2C8697e17C1e948f5b058F0e49",
       "0xc906895C8833481571118F0C59877bFF6bE38aC1",
+      "0x4ac71ec43df19581d95eab5596c6fadc89170989",
     ],
   },
   bsc: {
@@ -34,6 +35,7 @@ module.exports = {
       "0x7354abb551e41bbd9fb32e2e79f44631349119b8",
       "0x9bb6a22da110c6c9bab745bcaf0ee142ee83af37",
       "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64",
+      "0x1c14fd8bb8a02bc3e3071ae45df9b4d2e00d8e25",
     ],
   },
   polygon: {
@@ -46,6 +48,7 @@ module.exports = {
     owners: [
       "TEPSrSYPDSQ7yXpMFPq91Fb1QEWpMkRGfn",
       "TB37WWozkkenGVYWD7Do2N5WT2CedqDktJ",
+      "TPfqBmcia5H9roCKoEbBLwaR1A8S246D3v",
     ],
   },
   arbitrum: {
@@ -91,6 +94,7 @@ module.exports = {
     owners: [
       "r3BFHL2EXZN4darZ7vH7BT7tP9tN7tyd6W",
       "rs2dgzYeqYqsk8bvkQR5YPyqsXYcA24MP2",
+      "rNkcYUTCpFUnLUB1TaP1s9n5ETPNkmnD3t",
     ],
   }
 }
