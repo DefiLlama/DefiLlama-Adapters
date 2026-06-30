@@ -41224,20 +41224,10 @@ const configs = {
     },
   },
   "zinc": {
-    "timetravel": false,
-    "start": "2026-05-26",
-    "methodology": "TVL counts SOL held in Zinc stockpile and bonanza prize vaults. Staking counts ZINC deposited in the staking vault. Treasury and buyback vault balances are excluded.",
+    "methodology": "ZINC does not report TVL.",
     "solana": {
       "tvl": {
-        "solOwners": [
-          "8RxMJD7BtdzxuZkmDqcxhR6gWvegLJ1GNf9NFrPkCmwf",
-          "DNJGqahXJfu8Fsg4HRS7bKWFLnSzU5fvt85fkake7JFY"
-        ]
-      },
-      "staking": {
-        "tokenAccounts": [
-          "4Ym9uvwrwdpiTKq874T8wSqzaFkh8AVazf255FKLt9MR"
-        ]
+        "__empty": true
       }
     },
   },
