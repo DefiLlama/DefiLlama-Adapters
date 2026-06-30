@@ -2862,7 +2862,16 @@ const uniV2Configs = {
   },
   'hyperlynx': {
     hyperliquid: '0x11cD396F814Bd31eBa7969c1B27a7C347785951f',
-  }
+  },
+  'aeon-protocol': {
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+    },
+    avax: '0x3ECf287990A2365d48C6681620393aC1cdF3D268',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
