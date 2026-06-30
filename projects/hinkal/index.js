@@ -8,7 +8,7 @@ const { ownersByChain } = require("./owners.js");
 
 const nullAddress = ADDRESSES.null;
 
-const getAllTokenBalances = async (tokenList, chain) => {
+const getAllTokenBalances = async (tokenList, chain, block) => {
   const owners = ownersByChain[chain];
 
   // One balanceOf call per (token, owner) pair.
@@ -21,6 +21,7 @@ const getAllTokenBalances = async (tokenList, chain) => {
       calls: balanceCalls,
       abi: "erc20:balanceOf",
       chain,
+      block,
       permitFailure: true,
     })
   ).output;
@@ -32,7 +33,7 @@ const getAllTokenBalances = async (tokenList, chain) => {
   // Native balance for every owner.
   const nativeBalances = await Promise.all(
     owners.map((owner) =>
-      sdk.api.eth.getBalance({ target: owner, chain }).then((r) => r.output)
+      sdk.api.eth.getBalance({ target: owner, chain, block }).then((r) => r.output)
     )
   );
 
@@ -48,7 +49,8 @@ const getAllTokenBalances = async (tokenList, chain) => {
 const tvl = async (_, _1, _2, { chain, api }) => {
   const tokenBalances = await getAllTokenBalances(
     registryTokensByChain[chain],
-    chain
+    chain,
+    api.block
   );
 
   const chainTokensWithUnderlyingAddresses =
