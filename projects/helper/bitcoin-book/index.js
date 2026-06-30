@@ -927,7 +927,7 @@ module.exports = {
     "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2",
   ],
   rosenBridge: ["bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t"],
-  rskBridge: ["3GQ87zLKyTygsRMZ1hfCHZSdBxujzKoCCU"],
+  rskBridge: ["3GX89qzyQVaJqUJjq5noZbLJEHuYDvVrHq"],
   silkroad: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
