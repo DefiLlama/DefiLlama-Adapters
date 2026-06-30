@@ -1,27 +1,30 @@
-const { get } = require("../../helper/http");
-const { VOLTR_VAULTS_URL, VOLTR_ASSET_MINTS } = require("../constants");
+const { createHash } = require("crypto");
+const { PublicKey } = require("@solana/web3.js");
+const { getConnection } = require("../../helper/solana");
+const { VOLTR_VAULT_PROGRAM_ID } = require("../constants");
+
+const VOLTR_VAULT_DISCRIMINATOR_B64 = createHash("sha256").update("account:Vault").digest().subarray(0, 8).toString("base64");
+const VOLTR_VAULT_ASSET_MINT_OFFSET = 104;
+const VOLTR_VAULT_ASSET_TOTAL_VALUE_OFFSET = 168;
+const PUBLIC_KEY_SIZE = 32;
+const U64_SIZE = 8;
+const VOLTR_VAULT_DATA_SLICE_LENGTH = VOLTR_VAULT_ASSET_TOTAL_VALUE_OFFSET + U64_SIZE;
 
 async function addTvl(api) {
-  let vaults;
-  try {
-    ({ vaults } = await get(VOLTR_VAULTS_URL));
-  } catch (e) {
-    console.log(`Voltr: failed to fetch vaults from ${VOLTR_VAULTS_URL}: ${e.message}`);
-    return;
-  }
-  if (!Array.isArray(vaults)) {
-    console.log(`Voltr: unexpected response from ${VOLTR_VAULTS_URL}, expected vaults array but got ${typeof vaults}`);
-    return;
-  }
-  for (const vault of vaults) {
-    const mint = VOLTR_ASSET_MINTS[vault.asset?.name];
-    if (!mint) {
-      // Only count assets in the allowlist (i.e. ones DefiLlama can price).
-      console.log(`Voltr: skipping unsupported asset ${vault.asset?.name} for vault ${vault.pubkey}`);
-      continue;
-    }
-    // `tvl` is the raw token amount; DefiLlama prices it by mint.
-    api.add(mint, vault.tvl);
+  const connection = getConnection();
+  const vaultAccounts = await connection.getProgramAccounts(new PublicKey(VOLTR_VAULT_PROGRAM_ID), {
+    filters: [
+      { memcmp: { offset: 0, bytes: VOLTR_VAULT_DISCRIMINATOR_B64, encoding: "base64" } },
+    ],
+    dataSlice: { offset: 0, length: VOLTR_VAULT_DATA_SLICE_LENGTH },
+  });
+
+  for (const { account } of vaultAccounts) {
+    const mint = new PublicKey(
+      account.data.slice(VOLTR_VAULT_ASSET_MINT_OFFSET, VOLTR_VAULT_ASSET_MINT_OFFSET + PUBLIC_KEY_SIZE)
+    ).toBase58();
+    const totalValue = account.data.readBigUInt64LE(VOLTR_VAULT_ASSET_TOTAL_VALUE_OFFSET);
+    if (totalValue > 0n) api.add(mint, totalValue.toString());
   }
 }
 

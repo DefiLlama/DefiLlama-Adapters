@@ -72,13 +72,7 @@ const HYPERLIQUID_VAULTS = [
 
 const NT_VAULT_PROGRAM_ID = "BUNDDh4P5XviMm1f3gCvnq2qKx6TGosAGnoUK12e7cXU";
 
-const VOLTR_VAULTS_URL = "https://api.voltr.xyz/vaults";
-const VOLTR_ASSET_MINTS = {
-  USDC: ADDRESSES.solana.USDC,
-  USDT: ADDRESSES.solana.USDT,
-  USDG: "2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH",
-  USDS: "USDSwr9ApdHk5bvJKMjzff41FfuX8bSxdKcR81vTwcA",
-};
+const VOLTR_VAULT_PROGRAM_ID = "vVoLTRjQmtFpiYoegx285Ze4gsLJ8ZxgFKVcuvmG1a8";
 
 module.exports = {
   START_TIMESTAMP,
@@ -89,6 +83,5 @@ module.exports = {
   KAMINO_VAULTS,
   HYPERLIQUID_VAULTS,
   NT_VAULT_PROGRAM_ID,
-  VOLTR_VAULTS_URL,
-  VOLTR_ASSET_MINTS,
+  VOLTR_VAULT_PROGRAM_ID,
 };
