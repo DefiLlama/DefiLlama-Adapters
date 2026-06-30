@@ -12,7 +12,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    methodology: 'Tracks AID total supply on ethereum.',
+    methodology: 'Tracks AID total supply on Ethereum, Arbitrum, Base, and BSC.',
     start: 1715490671,
     timetravel: true,
     misrepresentedTokens: true,
