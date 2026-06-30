@@ -2861,7 +2861,6 @@ const uniV2Configs = {
   },
   'aeon-protocol': {
     _options: {
-      fetchBalances: true,
       abis: {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: 'function allPools(uint256) view returns (address)',
