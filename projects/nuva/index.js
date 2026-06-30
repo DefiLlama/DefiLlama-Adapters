@@ -83,7 +83,7 @@ async function ethereumTvl(api) {
 }
 
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   misrepresentedTokens: true,
   start: '2026-04-27',
   methodology:
