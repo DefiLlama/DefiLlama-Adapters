@@ -371,6 +371,7 @@ const aaveConfigs = {
     xdai: {
       addressesProviderRegistry: '0xC6c4b123e731819AC5f7F9E0fe3A118e9b1227Cd',
       dataHelpers: ['0x11B45acC19656c6C52f93d8034912083AC7Dd756'],
+      v3: true,
     },
   },
   'realtmarkets': {
