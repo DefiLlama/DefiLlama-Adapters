@@ -4,22 +4,6 @@ const { ABI } = require("../helper/curators/configs");
 const sui = require("../helper/chain/sui");
 
 // ==============================================
-// HYPERBEAT MAPPINGS CONFIGURATION
-// ==============================================
-const HYPERBEAT_MAPPINGS = [
-  { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
-  { vault: '0xd8fc8f0b03eba61f64d08b0bef69d80916e5dda9', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
-  { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat lstHYPE -> WHYPE
-  { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
-  { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
-  { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat WHYPE -> WHYPE
-  { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
-  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
-  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
-    { vault: '0x057ced81348D57Aad579A672d521d7b4396E8a61', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
-];
-
-// ==============================================
 // EMBER MAPPINGS CONFIGURATION
 // ==============================================
 const EMBER_MAPPINGS = [
@@ -103,28 +87,10 @@ const TVL_HANDLERS = {
       calls: vaults,
       permitFailure: true
     });
-    
+
     for (let i = 0; i < vaults.length; i++) {
       if (!totalSupplies[i] || totalSupplies[i] === '0') continue;
-      
-      const mapping = HYPERBEAT_MAPPINGS.find(m =>
-          m.vault.toLowerCase() === vaults[i].toLowerCase()
-      );
-      
-      if (mapping) {
-        let amount = BigInt(totalSupplies[i]);
-        
-        if (mapping.isOneToOne && mapping.vaultDecimals && mapping.underlyingDecimals) {
-          const decimalDiff = mapping.vaultDecimals - mapping.underlyingDecimals;
-          if (decimalDiff > 0) {
-            amount = amount / (10n ** BigInt(decimalDiff));
-          }
-        }
-        
-        api.add(mapping.underlying, amount.toString());
-      } else {
-        api.add(vaults[i], totalSupplies[i]);
-      }
+      api.add(vaults[i], totalSupplies[i]);
     }
   },
 
@@ -193,13 +159,13 @@ const configs = {
       morpho: [
         '0xd63070114470f685b75b74d60eec7c1113d33a3d', // MEV Capital USDC
         '0x9a8bc3b04b7f3d87cfc09ba407dced575f2d61d8', // MEV Capital wETH
-        '0xd50da5f859811a91fd1876c9461fd39c23c747ad', // MEV Capital Resolv USR
-        '0x749794e985af5a9a384b9cee6d88dab4ce1576a1', // MEV Capital USD0
+       // '0xd50da5f859811a91fd1876c9461fd39c23c747ad', // MEV Capital Resolv USR Holds bad debt from resolv hack
+       // '0x749794e985af5a9a384b9cee6d88dab4ce1576a1', // MEV Capital USD0 Holds bad debt from resolv hack
         '0x2f1abb81ed86be95bcf8178ba62c8e72d6834775', // Pendle WBTC
         '0x98cf0b67da0f16e1f8f1a1d23ad8dc64c0c70e0b', // MEV Capital cbBTC
         '0x28d24d4380b26a1ef305ad8d8db258159e472f33', // USUAL Vault
         '0xd41830d88dfd08678b0b886e0122193d54b02acc', // MEV Capital PTs USDC
-        '0x1265a81d42d513df40d0031f8f2e1346954d665a', // MEV Capital Elixir USDC
+      //  '0x1265a81d42d513df40d0031f8f2e1346954d665a', // MEV Capital Elixir USDC Holds bad debt from elixir hack
         '0x5F7827FDeb7c20b443265Fc2F40845B715385Ff2', // MEV Capital EURCV
         '0x5422374B27757da72d5265cC745ea906E0446634', // MEV Capital USDCV
           '0xda4063ec62c3f3c1d2bdbf7dbfb2b2c906f8e8b2', // MORPHO USDT
@@ -226,31 +192,10 @@ const configs = {
         '0x3b512427ca6345e67101eccb78d9c8508714818c', // MEV Capital sfrxETH Vault
         '0x4e0554959a631b3d3938ffc158e0a7b2124af9c5', // MEV Capital wstETH Vault
       ],
-      euler: [
-        '0xe2d6a2a16ff6d3bbc4c90736a7e6f7cc3c9b8fa9', // wETH
-        '0xe3ea69f8661ffac04e269f99c14ba73e2bb10633', // ezETH
-        '0x6b6976aa97cd2473b388fa9b9eeb8cca4f5a77a4', // wstETH
-        '0xe00a44e1210bae0eaceeeaf202c349d4b16480fe', // pzETH
-        '0x2306e17c7198282985a95b1ce0f63820846d0290', // INWSTETHS
-        '0xb07bf05af5a13d357aa1220c661bb0fb791bedcb', // weETH
-        '0x463af6add7b5806cf0ea30ec30f2030bf4f05175', // rstETH
-        '0x0de3821015518a6179a51d27bc7ed4a0a3c45b52', // ETH+
-        '0x1334d0e5ca5855a803998fcc78548142bef36e3b', // wstETH (7d)
-        '0x01d1a1cd5955b2fefb167e8bc200a00bfada8977', // WOETH
-        '0x9426c7a40d5c9dd709cbc2894a7e6481f265b6bb', // rETH
-        '0xfc1b4e3d8291746ccdeb813805c8912bbe0a7316', // steakLRT
-        '0xc5ff8dde483903ffd2fbe5bf54a02b80f2bae7f7', // amphrETH
-        '0x9913790dd5d3d8389f682a15e4fa90a22891ff49', // rsETH
-        '0x6c37d34a895456aa29cabe0cacb60fc56309c7ac', // cbETH
-      ],
-      terminal: [
-        '0xa01227a26a7710bc75071286539e47adb6dea417', // Terminal tUSDe
-        '0xa1150cd4a014e06f5e0a6ec9453fe0208da5adab', // Terminal tWETH
-      ],
+      euler: [],
+      terminal: [],
       midas: [],
-      upshift: [
-        '0x5fde59415625401278c4d41c6befce3790eb357f', // The Treehouse Growth Vault
-      ],
+      upshift: [],
       termmax: [
         '0xdadeacc03a59639c0ece5ec4ff3bc0d9920a47ec', // Termmax wstETH Vault
       ],
@@ -286,7 +231,7 @@ const configs = {
     },
     arbitrum: {
       morpho: [
-          '0xa60643c90a542a95026c0f1dbdb0615ff42019cf', // Morpho USDC Cluster
+      // '0xa60643c90a542a95026c0f1dbdb0615ff42019cf', // Morpho USDC Cluster // Holds bad debt from stream finance hack
           '0x9B33073eB98A9a1eb408DedcD08616fE850b3f09', // Morpho WETH Cluster
           '0x6d57dAd0F1c4da0C1d5443AE8F7f8a50BDb9Cf75'  // Morpho USDT0 Cluster
       ]
@@ -297,73 +242,24 @@ const configs = {
     //     'EPC2N3AAv84P9TKsnDt2x41p6T7c5vTewBhQbh4RVx4r', // MEV CAPITAL USDC Prime
     //   ]
     // },
-    berachain: {
-      euler: [
-        '0xd538b6aef78e4bdde4fd4576e9e3a403704602bc', // HONEY
-        '0xad9e5e2647efb9137b6b8d688d4906fa51476870', // wBERA
-        '0x1371dd58ce95ecd624340f072f97212a2661a280', // USDC.e
-        '0x6d976915bd9de43de1a60c39e128e320dadda000', // wETH
-        '0x558b16e07b8558b2a54946ca973b7b20b86a8b87', // USDe
-        '0x3de0ca4af11108c94c9066a935ee67e53b7f9447', // sUSDe
-        '0x2cccd307bb616e5f896ab61cae09ef4e5e9fedb7', // rUSD
-        '0x413dfb1814a6b5fe4488c49f86e2a74d285ffd5b', // NECT
-        '0x34018ac9dc4b114036ca148aa18c8f75594e5e95', // WBERA (Blue Cluster)
-        '0x4eb3351066494852a03ffbbde40a9776380ce20d', // LBGT (Blue Cluster)
-        '0x91e1ec1e948f635c127dad41eae1af899399f15a', // BYUSD
-        '0x1dfb669df5e70d4238f2cc0a9ee3b1a21ff91bc0', // iBERA
-        '0xb758d6ec8111feb9b0ec758a61b7874e5821dffd', // wBTC
-        '0x85dba39b85218229a4c3b9b037d05cd6eb4cf05d', // beraETH (not in the api yet)
-        '0xb8064453b25a91d7a4e8b7e7883a817d5742de34', // srUSD
-        '0xbabf4ce18fbab547ad5939deff825f3e2f8d9402', // PT-sUSDE-25SEP2025
-        '0x826244d9db2a0f438c3190a0f393c13d41ad7a2e', // STONE
-      ],
-    },
+
     bsc: {
-      euler: [
-        '0xd98125a23faeb48180e33ca6eef8f128e07418d1', // USDC
-        '0x107a441c473517a37b03dcd8024c5b63e3cc13df', // wBNB
-        '0x777c95b204e2ed3906885ef09f4531882587b52c', // BTCB
-        '0xe54dffd36177975938a3873e522dee535adebe01', // USDT
-        '0x7593931d08e3baa750ca3cb6a0d0fde6acd65107', // slisBNB
-        '0x216f6d6c2ca15f83b656f3e9a8fcdf615dbc1710', // ETH
-        '0x0dd93eb321a768a274d21062067b52527abd4506', // lisUSD
-        '0xd6f4ee21c946071cf13d773e2ab1e31d44a27a54', // USDe
-        '0x088241d1c5c951c59fb66083b291b69e3cc27e8c', // sUSDe
-      ],
-      lista: [
-        '0x6402d64f035e18f9834591d3b994dfe41a0f162d', // MEV Capital USDT Vault
-      ]
+      euler: [],
+      lista: [      ]
     },
     hyperliquid: {
       hyperbeat: [
-        '0x5e105266db42f78fa814322bce7f388b4c2e61eb', // Hyperbeat USDT
-        '0xd8fc8f0b03eba61f64d08b0bef69d80916e5dda9', // Hyperbeat beHYPE (price not in the api yet)
-        '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', // Hyperbeat lstHYPE (price not in the api yet)
-        '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Hyperbeat USR (price not in the api yet)
-        '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
-        '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Hyperbeat WHYPE (price not in the api yet)
-        '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
-        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', // Hyperbeat dnHYPE (price not in the api yet)
-        '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', // Hyperbeat wVLP (price not in the api yet)
-          '0x057ced81348D57Aad579A672d521d7b4396E8a61', // Hyperbeat USDC (price not in the api yet)
-      ],
+ ],
         morpho: [
-            '0xdd1f54b1edc141f47ec5294ad5aa62243bfa6d59', // Morpho USR
-            '0xd2af7ca672453604c537ca9d6293b224b7744d7a', // Morpho USR2
+
             '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Morpho WHYPE
-            '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Morpho USR3
             '0x8e1650d3343023c527b6a6cc0c2551bb100fe22b', // Morpho UBTC
             '0x4851d4891321035729713d43be1f4bb883dffd34', // Morpho USDC
             '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8' // Morpho USDT0
         ]
     },
     sonic: {
-      euler: [
-        '0x90a804d316a06e00755444d56b9ef52e5c4f4d73', // wS
-        '0x6832f3090867449c058e1e3088e552e12ab18f9e', // stS
-        '0xb936137169d777fcb8b7cf02329620b78fccec0a', // PT-stS-29MAY2025 (bis)
-        '0xF71B17cCF362B6dcC1b6917A05820477cF7802A0', // PT-stS-18DEC2025
-      ],
+      euler: [ ],
       napier: [
         '0x0532d4f06ba9b159d0b456662cc488eefe2fe34f', // scETH
       ]
@@ -378,7 +274,6 @@ const configs = {
     sui: {
       ember: [
         "0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642", // ember ebtc
-        "0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505" // ember basis
       ]
     },
       polygon: {
@@ -447,7 +342,6 @@ adapterExport.hyperliquid.tvl = createChainTvlFunction(configs.blockchains.hyper
 adapterExport.bsc.tvl = createChainTvlFunction(configs.blockchains.bsc);
 adapterExport.unichain.tvl = createChainTvlFunction(configs.blockchains.unichain);
 adapterExport.plume.tvl = createChainTvlFunction(configs.blockchains.plume);
-adapterExport.berachain.tvl = createChainTvlFunction(configs.blockchains.berachain);
 adapterExport.sonic.tvl = createChainTvlFunction(configs.blockchains.sonic);
 adapterExport.avax.tvl = createChainTvlFunction(configs.blockchains.avax);
 adapterExport.sui.tvl = createChainTvlFunction(configs.blockchains.sui);
