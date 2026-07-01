@@ -779,6 +779,7 @@ module.exports = {
     "bc1qar3hvdpfqy388pkrp95ukewuxsr600wvyf0lxt",
     "bc1qfs5qwymqcwtdtwjkac4z5h99r6dp4wwvvcfxyr",
     "bc1qdt0dgff2u8y5pyj525k3qt9zdqyzy4kzznjrl8",
+    "3Qv1U918UVAbjii8RAX5msoifREmw3cVfL",
   ],
   mtGox: [
     "17Tf4bVQaCzwWrDWGRPC97RLCHnU4LY8Qr",
