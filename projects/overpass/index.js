@@ -103,7 +103,7 @@ function klendCollateralToUnderlying(collateralAmount, reserve) {
   const collateralSupply = reserve.collateralMintTotalSupply;
   const totalSupplySf = klendTotalSupplySf(reserve);
   if (collateralAmount === 0n) return 0n;
-  if (collateralSupply === 0n || totalSupplySf === 0n) return collateralAmount;
+  if (collateralSupply === 0n || totalSupplySf === 0n) return 0n;
   return (collateralAmount * totalSupplySf / collateralSupply) >> FRACTION_SHIFT;
 }
 
@@ -119,13 +119,13 @@ function decodeSaveReserve(data) {
 function saveCollateralToUnderlying(collateralAmount, reserve) {
   const collateralSupply = reserve.collateralMintTotalSupply;
   if (collateralAmount === 0n) return 0n;
-  if (collateralSupply === 0n) return collateralAmount;
+  if (collateralSupply === 0n) return 0n;
   const gross = reserve.availableAmount * WAD + reserve.borrowedAmountWads;
   const totalSupplyWad =
     gross > reserve.accumulatedProtocolFeesWads
       ? gross - reserve.accumulatedProtocolFeesWads
       : 0n;
-  if (totalSupplyWad === 0n) return collateralAmount;
+  if (totalSupplyWad === 0n) return 0n;
   return (collateralAmount * totalSupplyWad) / (collateralSupply * WAD);
 }
 
@@ -292,46 +292,41 @@ async function tvl(api) {
     kvaultReserves.set(address, decodeKlendReserve(data));
   }
 
-  let counted = 0;
   for (const wrapper of wrappers) {
-    const sourceData = firstPassAccounts.get(wrapper.sourcePool.toBase58());
-    if (!sourceData) continue;
-
     let backing = wrapper.freeUnderlyingHeld;
-    if (wrapper.protocol === PROTOCOL_KLEND) {
-      backing = addCap(backing, klendCollateralToUnderlying(wrapper.intermediateHeld, decodeKlendReserve(sourceData)));
-    } else if (wrapper.protocol === PROTOCOL_SAVE) {
-      backing = addCap(backing, saveCollateralToUnderlying(wrapper.intermediateHeld, decodeSaveReserve(sourceData)));
-    } else if (wrapper.protocol === PROTOCOL_KVAULT) {
-      const vault = kvaults.get(wrapper.sourcePool.toBase58());
-      if (!vault) continue;
-      backing = addCap(backing, kvaultUnderlyingForShares(vault, kvaultReserves, wrapper.intermediateHeld));
-    } else if (wrapper.protocol === PROTOCOL_MARGINFI) {
-      backing = addCap(backing, marginfiUnderlyingForShares(decodeMarginfiBank(sourceData), wrapper.intermediateHeld));
-    } else if (wrapper.protocol === PROTOCOL_LULO) {
-      const poolUserData = firstPassAccounts.get(wrapper.sourcePositionPda.toBase58());
-      const referrerData = firstPassAccounts.get(referrerPoolUser.toBase58());
-      if (!poolUserData || !referrerData) continue;
-      backing = addCap(
-        backing,
-        luloUnderlyingForLp(
-          decodeLuloPool(sourceData),
-          decodeLuloPoolUser(poolUserData),
-          decodeLuloRefBps(referrerData),
-          wrapper.intermediateHeld,
-        ),
-      );
-    } else {
-      continue;
+
+    const sourceData = firstPassAccounts.get(wrapper.sourcePool.toBase58());
+    if (sourceData) {
+      if (wrapper.protocol === PROTOCOL_KLEND) {
+        backing = addCap(backing, klendCollateralToUnderlying(wrapper.intermediateHeld, decodeKlendReserve(sourceData)));
+      } else if (wrapper.protocol === PROTOCOL_SAVE) {
+        backing = addCap(backing, saveCollateralToUnderlying(wrapper.intermediateHeld, decodeSaveReserve(sourceData)));
+      } else if (wrapper.protocol === PROTOCOL_KVAULT) {
+        const vault = kvaults.get(wrapper.sourcePool.toBase58());
+        if (vault) backing = addCap(backing, kvaultUnderlyingForShares(vault, kvaultReserves, wrapper.intermediateHeld));
+      } else if (wrapper.protocol === PROTOCOL_MARGINFI) {
+        backing = addCap(backing, marginfiUnderlyingForShares(decodeMarginfiBank(sourceData), wrapper.intermediateHeld));
+      } else if (wrapper.protocol === PROTOCOL_LULO) {
+        const poolUserData = firstPassAccounts.get(wrapper.sourcePositionPda.toBase58());
+        const referrerData = firstPassAccounts.get(referrerPoolUser.toBase58());
+        if (poolUserData && referrerData) {
+          backing = addCap(
+            backing,
+            luloUnderlyingForLp(
+              decodeLuloPool(sourceData),
+              decodeLuloPoolUser(poolUserData),
+              decodeLuloRefBps(referrerData),
+              wrapper.intermediateHeld,
+            ),
+          );
+        }
+      }
     }
 
     if (backing > 0n) {
       api.add(wrapper.underlyingMint.toBase58(), backing.toString());
-      counted += 1;
     }
   }
-
-  api.log(`Counted underlying backing for ${counted} active Overpass wrappers`);
 }
 
 module.exports = {
