@@ -17,15 +17,22 @@ const vaults = {
 // receipt tokens (jlUSDC / jlWSOL), which are priced by DefiLlama.
 const SOLANA_PROGRAM_ID = 'BPdfgbFKNQELh96XFqAZGBRfe3CJ6Ly1JJ4fmAVgWcU8'
 const VAULT_ACCOUNT_SIZE = 424 // distinguishes vault accounts from the config account
+const TOKEN_PROGRAM = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') // SPL Token
 
 async function solanaTvl(api) {
   const connection = getConnection()
-  const accounts = await connection.getProgramAccounts(new PublicKey(SOLANA_PROGRAM_ID), {
+  const vaultAccounts = await connection.getProgramAccounts(new PublicKey(SOLANA_PROGRAM_ID), {
     filters: [{ dataSize: VAULT_ACCOUNT_SIZE }],
     dataSlice: { offset: 0, length: 0 }, // only pubkeys are used, skip fetching account data
   })
-  const owners = accounts.map(a => a.pubkey.toString())
-  return sumTokens2({ api, owners })
+  // Resolve each vault PDA's token accounts and sum them as tokenAccounts. We avoid
+  // sumTokens2({ owners }) because that path batches getTokenAccountsByOwner into a
+  // single JSON-RPC POST, which public RPCs (incl. the CI default) reject.
+  const results = await Promise.all(
+    vaultAccounts.map(vault => connection.getParsedTokenAccountsByOwner(vault.pubkey, { programId: TOKEN_PROGRAM }))
+  )
+  const tokenAccounts = results.flatMap(res => res.value.map(ta => ta.pubkey.toString()))
+  return sumTokens2({ api, tokenAccounts })
 }
 
 module.exports = {
