@@ -22,6 +22,7 @@ async function solanaTvl(api) {
   const connection = getConnection()
   const accounts = await connection.getProgramAccounts(new PublicKey(SOLANA_PROGRAM_ID), {
     filters: [{ dataSize: VAULT_ACCOUNT_SIZE }],
+    dataSlice: { offset: 0, length: 0 }, // only pubkeys are used, skip fetching account data
   })
   const owners = accounts.map(a => a.pubkey.toString())
   return sumTokens2({ api, owners })
