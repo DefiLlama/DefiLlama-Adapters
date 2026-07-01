@@ -4,6 +4,22 @@ const { ABI } = require("../helper/curators/configs");
 const sui = require("../helper/chain/sui");
 
 // ==============================================
+// HYPERBEAT MAPPINGS CONFIGURATION
+// ==============================================
+const HYPERBEAT_MAPPINGS = [
+  { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
+  { vault: '0xd8fc8f0b03eba61f64d08b0bef69d80916e5dda9', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
+  { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat lstHYPE -> WHYPE
+  { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
+  { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
+  { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat WHYPE -> WHYPE
+  { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 },
+  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 },
+  { vault: '0x057ced81348D57Aad579A672d521d7b4396E8a61', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 },
+];
+
+// ==============================================
 // EMBER MAPPINGS CONFIGURATION
 // ==============================================
 const EMBER_MAPPINGS = [
@@ -90,7 +106,23 @@ const TVL_HANDLERS = {
 
     for (let i = 0; i < vaults.length; i++) {
       if (!totalSupplies[i] || totalSupplies[i] === '0') continue;
-      api.add(vaults[i], totalSupplies[i]);
+
+      const mapping = HYPERBEAT_MAPPINGS.find(m =>
+        m.vault.toLowerCase() === vaults[i].toLowerCase()
+      );
+
+      if (!mapping) continue;
+
+      let amount = BigInt(totalSupplies[i]);
+
+      if (mapping.isOneToOne && mapping.vaultDecimals && mapping.underlyingDecimals) {
+        const decimalDiff = mapping.vaultDecimals - mapping.underlyingDecimals;
+        if (decimalDiff > 0) {
+          amount = amount / (10n ** BigInt(decimalDiff));
+        }
+      }
+
+      api.add(mapping.underlying, amount.toString());
     }
   },
 
