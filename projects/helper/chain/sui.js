@@ -229,7 +229,9 @@ function wrapStruct(obj) {
 }
 
 function shortenTypeAddresses(type) {
-  return type.replace(/0x0*([0-9a-fA-F])/g, '0x$1')
+  return type
+    .replace(/0x0*([0-9a-fA-F])/g, '0x$1')
+    .replace(/0x([0-9a-fA-F]{63})(?![0-9a-fA-F])/g, '0x0$1')
 }
 
 function rewrapWithLayout(value, layout) {
@@ -300,7 +302,7 @@ async function queryEvents({ eventType, transform = i => i }) {
   return items.map(transform)
 }
 
-const OBJECTS_PER_QUERY = 5
+const OBJECTS_PER_QUERY = 50
 async function getObjects(objectIds, { sleep } = {}) {
   if (!objectIds.length) return []
   if (objectIds.length > OBJECTS_PER_QUERY) {
@@ -316,9 +318,9 @@ async function getObjects(objectIds, { sleep } = {}) {
     const out = await sdk.util.runInPromisePool({ items: chunks, concurrency: 20, processor: (chunk) => getObjects(chunk) })
     return out.flat()
   }
-  const aliases = objectIds.map((id, i) => `o${i}: object(address: "${id}") { asMoveObject { contents { json type { repr layout } } } }`).join('\n')
-  const { data } = await graphqlCall(`{ ${aliases} }`)
-  return objectIds.map((_, i) => formatObject(data[`o${i}`]?.asMoveObject?.contents))
+  const keys = objectIds.map((id) => `{ address: "${id}" }`).join(', ')
+  const { data } = await graphqlCall(`{ multiGetObjects(keys: [${keys}]) { asMoveObject { contents { json type { repr layout } } } } }`)
+  return data.multiGetObjects.map((o) => formatObject(o?.asMoveObject?.contents))
 }
 
 function bcsDynamicFieldName(idType, value) {
