@@ -245,13 +245,12 @@ const configs = {
 
     bsc: {
       euler: [],
-      lista: [      ]
+      lista: []
     },
     hyperliquid: {
       hyperbeat: [
  ],
         morpho: [
-
             '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Morpho WHYPE
             '0x8e1650d3343023c527b6a6cc0c2551bb100fe22b', // Morpho UBTC
             '0x4851d4891321035729713d43be1f4bb883dffd34', // Morpho USDC
@@ -259,7 +258,7 @@ const configs = {
         ]
     },
     sonic: {
-      euler: [ ],
+      euler: [],
       napier: [
         '0x0532d4f06ba9b159d0b456662cc488eefe2fe34f', // scETH
       ]
