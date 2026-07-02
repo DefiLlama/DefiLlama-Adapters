@@ -1,20 +1,29 @@
 const { lendingMarket } = require("../helper/methodologies");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
+
+const AUSD = '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a';
+const SHARED_MARGIN_VAULT = '0xB49781E8c39c75f413C1178f395bF68b0BEE8d00';
+const SHARED_ESCROW = '0xe400000df2f227133ff74c662c9e935439471d2e';
+const V3_VAULT_START = '2026-06-09';
 
 const config = {
   arbitrum: {
     start: '2026-03-19',
     // Keep the legacy Arbitrum escrow included so migrated history and any still-open
     // legacy positions continue to count after the new shared deployment went live
-    escrows: ['0x270f529f16A578AAD524B94e34f579a51E00611C', '0xe400000df2f227133ff74c662c9e935439471d2e'],
+    escrows: ['0x270f529f16A578AAD524B94e34f579a51E00611C', SHARED_ESCROW],
+    vaults: [{ vault: SHARED_MARGIN_VAULT, start: V3_VAULT_START, tokens: [ADDRESSES.arbitrum.USDC_CIRCLE] }],
   },
   base: {
     start: '2026-04-02',
-    escrows: ['0xe400000df2f227133ff74c662c9e935439471d2e'],
+    escrows: [SHARED_ESCROW],
+    vaults: [{ vault: SHARED_MARGIN_VAULT, start: V3_VAULT_START, tokens: [ADDRESSES.base.USDC] }],
   },
   ethereum: {
     start: '2026-04-02',
-    escrows: ['0xe400000df2f227133ff74c662c9e935439471d2e'],
+    escrows: [SHARED_ESCROW],
+    vaults: [{ vault: SHARED_MARGIN_VAULT, start: V3_VAULT_START, tokens: [AUSD] }],
   },
 };
 
@@ -22,7 +31,22 @@ const abis = {
   totalPositions: 'function totalPositions() view returns (uint128)',
   positions: 'function positions(uint128) view returns (address taker, address filler, address token, address loanToken, uint256 size, uint256 loanAmount, uint256 liqPrice)',
   totalDebt: 'function totalDebt(uint128) view returns (uint256)',
+  getTVOL: 'function getTVOL(address _token) view returns (uint256)',
+  balanceOf: 'erc20:balanceOf',
 };
+
+function isActive(api, start) {
+  return !api.timestamp || api.timestamp >= Date.parse(`${start}T00:00:00Z`) / 1000;
+}
+
+function toBigInt(value) {
+  if (value === undefined || value === null) return 0n;
+  return BigInt(value.toString());
+}
+
+function getActiveVaults(api) {
+  return (config[api.chain]?.vaults || []).filter(({ start }) => isActive(api, start));
+}
 
 async function getActivePositions(api) {
   const escrows = config[api.chain]?.escrows || [];
@@ -47,30 +71,68 @@ async function getActivePositions(api) {
   return allPositions;
 }
 
+async function addVaultTvl(api) {
+  const vaultCalls = getActiveVaults(api).flatMap(({ vault, tokens }) => tokens.map(token => ({ target: vault, params: [token] })));
+  if (!vaultCalls.length) return;
+
+  const tvls = await api.multiCall({ abi: abis.getTVOL, calls: vaultCalls, permitFailure: true });
+  tvls.forEach((amount, i) => {
+    const token = vaultCalls[i].params[0];
+    const value = toBigInt(amount);
+    if (value > 0n) api.add(token, value.toString());
+  });
+}
+
+async function addVaultBorrowed(api) {
+  const vaultPositions = getActiveVaults(api).flatMap(({ vault, tokens }) => tokens.map(token => ({ vault, token })));
+  if (!vaultPositions.length) return;
+
+  const [tvls, idleBalances] = await Promise.all([
+    api.multiCall({
+      abi: abis.getTVOL,
+      calls: vaultPositions.map(({ vault, token }) => ({ target: vault, params: [token] })),
+      permitFailure: true,
+    }),
+    api.multiCall({
+      abi: abis.balanceOf,
+      calls: vaultPositions.map(({ vault, token }) => ({ target: token, params: [vault] })),
+      permitFailure: true,
+    }),
+  ]);
+
+  vaultPositions.forEach(({ token }, i) => {
+    const borrowed = toBigInt(tvls[i]) - toBigInt(idleBalances[i]);
+    if (borrowed > 0n) api.add(token, borrowed.toString());
+  });
+}
+
 async function tvl(api) {
   const positions = await getActivePositions(api);
   const tokens = [...new Set(positions.map(p => p.token))];
   const owners = config[api.chain]?.escrows || [];
-  return sumTokens2({ api, tokens, owners });
+  await sumTokens2({ api, tokens, owners });
+  await addVaultTvl(api);
 }
 
 async function borrowed(api) {
   const positions = await getActivePositions(api);
-  if (!positions.length) return;
+  if (positions.length) {
+    const debts = await api.multiCall({
+      abi: abis.totalDebt,
+      calls: positions.map(p => ({ target: p.escrow, params: [p.positionId] })),
+      permitFailure: true,
+    });
 
-  const debts = await api.multiCall({
-    abi: abis.totalDebt,
-    calls: positions.map(p => ({ target: p.escrow, params: [p.positionId] })),
-    permitFailure: true,
-  });
+    positions.forEach((pos, i) => {
+      if (debts[i] && debts[i] !== '0') api.add(pos.loanToken, debts[i]);
+    });
+  }
 
-  positions.forEach((pos, i) => {
-    if (debts[i] && debts[i] !== '0') api.add(pos.loanToken, debts[i]);
-  });
+  await addVaultBorrowed(api);
 }
 
 module.exports = {
-  methodology: `${lendingMarket} Tristero TVL counts the base asset collateral locked in active margin escrows. Borrowed exports the outstanding debt of open margin positions in the loan token.`,
+  methodology: `${lendingMarket} Tristero TVL counts the base asset collateral locked in active margin escrows and v3 margin vault depositor value reported by getTVOL(). Borrowed exports outstanding legacy position debt plus v3 vault assets lent out, calculated as getTVOL() minus idle vault balance.`,
 };
 
 Object.keys(config).forEach((chain) => {
