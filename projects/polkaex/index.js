@@ -24,13 +24,13 @@ const TOKENS = {
         WASTAR: NATIVE_TOKENS.WASTAR,
     },
     shiden: {
-        // KAC: "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
+        // KAC: ADDRESSES.dogechain.QUICK,
         STND: ADDRESSES.shiden.STND,
         USDC: "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
         USDT: "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
         JPYC: "0x735abe48e8782948a37c7765ecb76b98cde97b0f",
-        BNB: "0x332730a4f6e03d9c55829435f10360e13cfa41ff",
-        BUSD: "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a",
+        BNB: '0x332730a4f6e03d9c55829435f10360e13cfa41ff',
+        BUSD: '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a',
         ETH: "0x765277eebeca2e31912c9946eae1021199b39c61",
         WSDN: NATIVE_TOKENS.WSDN
     },
@@ -86,22 +86,9 @@ module.exports = {
     methodology: "PolkaEx Tvl Calculation",
     astar: {
         tvl: tvls.astar,
-        staking: async (timestamp, _ethBlock, chainBlocks) => {
-            const pkexStaking = await stakings(
-                STAKING_CONTRACTS.astar,
-                PKEX.astar,
-                "astar",
-                PKEX.ethereum
-            )(timestamp, _ethBlock, chainBlocks);
-
-            const dotStaking = await stakings(
-                STAKING_CONTRACTS.astar,
-                TOKENS.astar.DOT,
-                "astar"
-            )(timestamp, _ethBlock, chainBlocks);
-
-            const result = { ...pkexStaking, ...dotStaking };
-            return result;
+        staking: async (api) => {
+            await stakings(STAKING_CONTRACTS.astar, [PKEX.astar, TOKENS.astar.DOT])(api);
+            return api.getBalances();
         },
     },
     shiden: {

@@ -306,6 +306,7 @@ module.exports = {
     "3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9",
     "bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34",
     "bc1pkldc3d64ceqshhznxuj78r6e0a3p7gtdrrue07zmcq54xzlyuu9sppvxk0",
+    "bc1q47zfy02qemw2eeqk673dsfcmwlqapsn420yde4",
   ],
   merlin: [
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
@@ -1158,6 +1159,12 @@ module.exports = {
     "1EovnsPsskU15rQhoJJiKpUxQzufryvpGm",
     "3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo",
     "3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh",
+  ],
+  circleBTC: [
+    '1JkKmG26nUBcPS99TsCVsReSXvLkEai4ca',
+    '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
+    '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
+    '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
   ],
 };
 

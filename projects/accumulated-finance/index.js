@@ -130,12 +130,10 @@ const transformedConfig = transformConfig(config);
 Object.entries(transformedConfig).forEach(([chain, configs]) => {
   module.exports[chain] = {
     tvl: async (api) => {
-      let totalSupply = 0;
-      for (const { LST, baseToken, token } of configs) {
-        const supply = await api.call({ abi: 'uint256:totalSupply', target: LST });
-        totalSupply += parseInt(supply, 10);
-        api.add(token ?? baseToken ?? ADDRESSES.null, supply, { skipChain: !!baseToken })
-      }
+      const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: configs.map(({ LST }) => LST) });
+      configs.forEach(({ baseToken, token }, i) => {
+        api.add(token ?? baseToken ?? ADDRESSES.null, supplies[i], { skipChain: !!baseToken })
+      })
       return sumTokens2({ api })
     },
   }

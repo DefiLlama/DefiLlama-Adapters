@@ -30,6 +30,7 @@ const config = {
       "0x11db9f2c7bda8c2af6a6a72db18aa5eb9290cb99cf75a3c0abacf1b84b8eaf77", // amphrETH market
       "0x4b86442549b52826e0fc11770ec5154450cb3c5c14dc751a761d81dcfbe7a7b2", // RLP market
       "0xbd1ad3b968f5f0552dbd8cf1989a62881407c5cccf9e49fb3657c8731caf0c1f", // deUSD market
+      "0xfd0d72a4f0469598b566b1bc5fe64835f828f90b1fb7d746148c086164cd4cc2", // AZND/USDC market, 0 liquidity and 1 borrower
     ],
   },
   base: {
@@ -202,11 +203,12 @@ const config = {
   klaytn: {
     morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
     fromBlock: 208021118,
-  },
+  },/* still in private mainnet
   arc: {
     morphoBlue: "0x34CD04070dD72b14E241112F6d83812Df5Af7fCD",
     fromBlock: 1,
   },
+  */
   "0g": {
     morphoBlue: "0x9CDD13a2212D94C4f12190cA30783B743E83C89e",
     fromBlock: 7526486,
