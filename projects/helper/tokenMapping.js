@@ -40,6 +40,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  robinhood: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'ethereum', decimals: 18 },
+  },
   inri: {
     '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {
       coingeckoId: 'tether',
