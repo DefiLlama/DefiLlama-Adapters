@@ -55,6 +55,7 @@ const CONFIG = {
     blacklist_lenders: ETHENA_BLACKLIST
   },
   xlayer: ['0x6C505C31714f14e8af2A03633EB2Cdfb4959138F'],
+  monad: ['0xB65A68B98274ef7D9a60E0C0747dD1BEc3D32fad']
 };
 
 module.exports = aaveV3Export(CONFIG)
