@@ -1,25 +1,22 @@
 const { getMultipleAccounts, decodeAccount } = require('../helper/solana')
 const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 const {
-  PROGRAM_LOCKER_CLMM,
-  getField,
-  toBase58,
   bnToNumber,
   getLockerTokenLocks,
   getUniqueAddresses,
 } = require('./utils')
 
+const PROGRAM_LOCKER_CLMM = 'UNCXrB8cZXnmtYM1aSo1Wx3pQaeSZYuF2jCTesXvECs'
+
 async function addClmmLocks(api) {
-  const locks = await getLockerTokenLocks(PROGRAM_LOCKER_CLMM, 'unicryptTokenLockClmm', api)
+  const locks = await getLockerTokenLocks(PROGRAM_LOCKER_CLMM, api, 'unicryptTokenLockClmm')
   if (!locks.length) return
 
   const positionIds = []
   const poolIds = []
   locks.forEach(({ account }) => {
-    const positionId = toBase58(getField(account, 'personalPositionNftId', 'personal_position_nft_id'))
-    const poolId = toBase58(getField(account, 'ammId', 'amm_id'))
-    if (positionId) positionIds.push(positionId)
-    if (poolId) poolIds.push(poolId)
+    positionIds.push(account.personalPositionNftId.toBase58())
+    poolIds.push(account.ammId.toBase58())
   })
 
   const uniquePositionIds = getUniqueAddresses(positionIds, 'solana')
@@ -34,7 +31,7 @@ async function addClmmLocks(api) {
   uniquePoolIds.forEach((poolId, i) => {
     const info = poolAccounts[i]
     if (!info) return
-    pools.set(toBase58(poolId), decodeAccount('raydiumCLMM', info))
+    pools.set(poolId, decodeAccount('raydiumCLMM', info))
   })
 
   uniquePositionIds.forEach((positionId, i) => {

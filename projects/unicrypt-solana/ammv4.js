@@ -1,21 +1,20 @@
 const { getMultipleAccounts, decodeAccount } = require('../helper/solana')
 const {
-  PROGRAM_LOCKER_NEW_AMM,
-  PROGRAM_LOCKER_AMM,
   deriveUncxVault,
-  getField,
-  toBase58,
   toBigInt,
   addProportionalReserves,
   getLockerTokenLocks,
   getUniqueAddresses,
 } = require('./utils')
 
+const PROGRAM_LOCKER_AMM = 'GsSCS3vPWrtJ5Y9aEVVT65fmrex5P5RGHXdZvsdbWgfo'
+const PROGRAM_LOCKER_NEW_AMM = 'UNCX77nZrA3TdAxMEggqG18xxpgiNGT6iqyynPwpoxN'
+
 async function addRaydiumAmmLocks({ api, programId }) {
-  const locks = await getLockerTokenLocks(programId, 'unicryptTokenLock', api)
+  const locks = await getLockerTokenLocks(programId, api)
   if (!locks.length) return
 
-  const poolIds = getUniqueAddresses(locks.map(({ account }) => toBase58(getField(account, 'ammId', 'amm_id'))).filter(Boolean), 'solana')
+  const poolIds = getUniqueAddresses(locks.map(({ account }) => account.ammId.toBase58()), 'solana')
   const uncxVaults = poolIds.map(poolId => deriveUncxVault(poolId, programId))
 
   const [poolInfos, lpVaultInfos] = await Promise.all([
@@ -97,13 +96,9 @@ async function addRaydiumAmmLocks({ api, programId }) {
 
 async function addAmmLocks(api) {
   await addRaydiumAmmLocks({ api, programId: PROGRAM_LOCKER_AMM })
-}
-
-async function addNewAmmLocks(api) {
   await addRaydiumAmmLocks({ api, programId: PROGRAM_LOCKER_NEW_AMM })
 }
 
 module.exports = {
   addAmmLocks,
-  addNewAmmLocks,
 }

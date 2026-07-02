@@ -2,14 +2,8 @@ const { PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
 const { getConnection, getMultipleAccounts, decodeAccount } = require('../helper/solana')
 const {
-  PROGRAM_METEORA_LOCKER,
-  PROGRAM_DLMM,
-  BIN_ARRAY_LB_PAIR_OFFSET,
   bnToNumber,
   toBigInt,
-  mulDiv,
-  recordDecodeFailure,
-  logDecodeFailures,
   getUniqueAddresses,
 } = require('./utils')
 const {
@@ -18,22 +12,16 @@ const {
 } = require('../helper/utils/solana/layouts/meteora-dlmm-layout')
 const { METEORA_TOKEN_LOCK_TAG, parseMeteoraTokenLock } = require('../helper/utils/solana/layouts/unicrypt-layout')
 
+const PROGRAM_METEORA_LOCKER = 'uNCXmCod5WAkjfkNJPMZ9WRKDNiwQnM778RVbP17a6U'
+const PROGRAM_DLMM = 'LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo'
+const BIN_ARRAY_LB_PAIR_OFFSET = 24
 const BIN_ARRAY_FETCH_CONCURRENCY = 5
 
-function parseBinArrayState(binArray) {
-  const bins = binArray.bins || []
-  const byBinId = new Map()
-  const base = bnToNumber(binArray.index) * 70
-  bins.forEach((bin, i) => {
-    byBinId.set(base + i, bin)
-  })
-  return byBinId
-}
-
-async function getDlmmBinArraysByPair(pairIds, api) {
+async function getDlmmBinsByPair(pairIds, api) {
   const connection = getConnection()
   const out = new Map()
-  const decodeFailures = { count: 0 }
+  let skipped = 0
+  let skipReason
 
   for (let i = 0; i < pairIds.length; i += BIN_ARRAY_FETCH_CONCURRENCY) {
     const chunk = pairIds.slice(i, i + BIN_ARRAY_FETCH_CONCURRENCY)
@@ -44,33 +32,24 @@ async function getDlmmBinArraysByPair(pairIds, api) {
           { memcmp: { offset: BIN_ARRAY_LB_PAIR_OFFSET, bytes: pairId } },
         ],
       })
-      const parsed = []
+      const binsById = new Map()
       for (const { account } of raw) {
         try {
-          parsed.push(decodeAccount('meteoraBinArray', account))
+          const binArray = decodeAccount('meteoraBinArray', account)
+          const base = bnToNumber(binArray.index) * 70
+          const bins = binArray.bins || []
+          bins.forEach((bin, idx) => binsById.set(base + idx, bin))
         } catch (e) {
-          recordDecodeFailure(decodeFailures, e)
+          skipped += 1
+          if (!skipReason) skipReason = e?.message || 'decode failed'
         }
       }
-      out.set(pairId, parsed)
+      out.set(pairId, binsById)
     }))
   }
 
-  logDecodeFailures(api, 'Meteora DLMM bin-array accounts', decodeFailures)
+  if (skipped) api?.log?.(`[unicrypt-solana] skipped ${skipped} Meteora DLMM bin-array accounts: ${skipReason}`)
   return out
-}
-
-function buildBinsByPair(binArraysByPair) {
-  const binsByPair = new Map()
-  binArraysByPair.forEach((arrays, pairId) => {
-    const binsById = new Map()
-    arrays.forEach((arr) => {
-      const map = parseBinArrayState(arr)
-      map.forEach((bin, binId) => binsById.set(binId, bin))
-    })
-    binsByPair.set(pairId, binsById)
-  })
-  return binsByPair
 }
 
 async function addMeteoraLocks(api) {
@@ -79,26 +58,27 @@ async function addMeteoraLocks(api) {
     filters: [{ memcmp: { offset: 0, bytes: bs58.encode(Buffer.from([METEORA_TOKEN_LOCK_TAG])) } }],
   })
   const locks = []
-  const lockDecodeFailures = { count: 0 }
+  let skippedLocks = 0
+  let skipReason
   lockerAccounts.forEach(({ account }) => {
     try {
       locks.push(parseMeteoraTokenLock(account))
     } catch (e) {
-      recordDecodeFailure(lockDecodeFailures, e)
+      skippedLocks += 1
+      if (!skipReason) skipReason = e?.message || 'decode failed'
     }
   })
-  logDecodeFailures(api, 'Meteora locker accounts', lockDecodeFailures)
+  if (skippedLocks) api?.log?.(`[unicrypt-solana] skipped ${skippedLocks} Meteora locker accounts: ${skipReason}`)
   if (!locks.length) return
 
   const positionIds = getUniqueAddresses(locks.map(i => i.positionKey), 'solana')
   const lbPairIds = getUniqueAddresses(locks.map(i => i.lbPair), 'solana')
 
-  const [positionsRaw, lbPairsRaw, binArraysByPair] = await Promise.all([
+  const [positionsRaw, lbPairsRaw, binsByPair] = await Promise.all([
     getMultipleAccounts([...positionIds]),
     getMultipleAccounts([...lbPairIds]),
-    getDlmmBinArraysByPair(lbPairIds, api),
+    getDlmmBinsByPair(lbPairIds, api),
   ])
-  const binsByPair = buildBinsByPair(binArraysByPair)
 
   const positions = new Map()
   positionIds.forEach((id, i) => {
@@ -144,8 +124,8 @@ async function addMeteoraLocks(api) {
       const binX = toBigInt(bin.amountX)
       const binY = toBigInt(bin.amountY)
 
-      amountX += mulDiv(share, binX, liqSupply)
-      amountY += mulDiv(share, binY, liqSupply)
+      amountX += (share * binX) / liqSupply
+      amountY += (share * binY) / liqSupply
     }
     if (amountX > 0n) api.add(lbPair.tokenXMint.toBase58(), amountX.toString())
     if (amountY > 0n) api.add(lbPair.tokenYMint.toBase58(), amountY.toString())
