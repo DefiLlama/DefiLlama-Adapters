@@ -24326,6 +24326,21 @@ const configs = {
       ]
     },
   },
+  "rubin": {
+    "methodology": "Counts USDC collateral deposited on Rubin through the ethereum and arbitrum bridges.",
+    "arbitrum": {
+      "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
+      "tokens": [
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+      ]
+    },
+    "ethereum": {
+      "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
+      "tokens": [
+        ADDRESSES.ethereum.USDC
+      ]
+    }
+  },
   "ruby-exchange-stable": {
     "europa": {
       "ownerTokens": [
