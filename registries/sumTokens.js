@@ -15884,6 +15884,15 @@ const configs = {
       ]
     },
   },
+  "hoodbets": {
+    "methodology": "TVL is the native ETH held by the HoodBets contract: open parimutuel betting pools plus settled winnings awaiting claim. Markets are settled permissionlessly against Chainlink stock price feeds.",
+    "robinhood": {
+      "owner": "0xA3cD4D80B48B272f14E233D266b1103900cb42fC",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    }
+  },
   "hope-money": {
     "methodology": "Tokens held in coinbase custody. Reserve info taken from: https://hope.money/gomboc.html",
     "doublecounted": true,
