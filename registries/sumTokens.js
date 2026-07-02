@@ -41439,6 +41439,11 @@ const configs = {
       ]
     },
   },
+  'robin-fun': {
+    robinhood: {
+      tokensAndOwners: [ [ADDRESSES.null, '0x653a69C1Fc844bf6596A322a05E07151E36F46f4']],
+    }
+  },
   "zkp2p": {
     "timetravel": false,
     "start": 1705770337,

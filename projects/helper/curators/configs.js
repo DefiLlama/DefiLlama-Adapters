@@ -231,6 +231,14 @@ const MorphoConfigs = {
       }
     ]
   },
+  robinhood: {
+    vaultFactoriesV2: [
+      {
+        address: '0x0FBad98595b0186dA120E41f77C102beb49f803c',
+        fromBlock: 286,
+      }
+    ]
+  },
 }
 
 const EulerConfigs = {

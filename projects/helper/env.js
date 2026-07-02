@@ -56,6 +56,8 @@ const DEFAULTS = {
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
   PHAROS_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",  // v3
   ANUBI_RPC_MULTICALL: "0x2BaB36196519Ce9Cc31Bc4899FCBB8124A413b02",  // v3
+  ROBINHOOD_RPC: 'https://robinhoodchain.blockscout.com/api/eth-rpc',
+  ROBINHOOD_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",  // v3
 }
 
 const ENV_KEYS = [
