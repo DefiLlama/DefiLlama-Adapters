@@ -71,18 +71,6 @@ async function getActivePositions(api) {
   return allPositions;
 }
 
-async function addVaultTvl(api) {
-  const vaultCalls = getActiveVaults(api).flatMap(({ vault, tokens }) => tokens.map(token => ({ target: vault, params: [token] })));
-  if (!vaultCalls.length) return;
-
-  const tvls = await api.multiCall({ abi: abis.getTVOL, calls: vaultCalls, permitFailure: true });
-  tvls.forEach((amount, i) => {
-    const token = vaultCalls[i].params[0];
-    const value = toBigInt(amount);
-    if (value > 0n) api.add(token, value.toString());
-  });
-}
-
 async function addVaultBorrowed(api) {
   const vaultPositions = getActiveVaults(api).flatMap(({ vault, tokens }) => tokens.map(token => ({ vault, token })));
   if (!vaultPositions.length) return;
@@ -110,8 +98,8 @@ async function tvl(api) {
   const positions = await getActivePositions(api);
   const tokens = [...new Set(positions.map(p => p.token))];
   const owners = config[api.chain]?.escrows || [];
-  await sumTokens2({ api, tokens, owners });
-  await addVaultTvl(api);
+  const tokensAndOwners = getActiveVaults(api).flatMap(({ vault, tokens }) => tokens.map(token => [token, vault]));
+  await sumTokens2({ api, tokens, owners, tokensAndOwners });
 }
 
 async function borrowed(api) {
@@ -132,7 +120,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: `${lendingMarket} Tristero TVL counts the base asset collateral locked in active margin escrows and v3 margin vault depositor value reported by getTVOL(). Borrowed exports outstanding legacy position debt plus v3 vault assets lent out, calculated as getTVOL() minus idle vault balance.`,
+  methodology: `${lendingMarket} Tristero TVL counts the base asset collateral locked in active margin escrows and v3 margin vault deposits. Borrowed exports outstanding legacy position debt plus v3 vault assets lent out, calculated as getTVOL() minus idle vault balance.`,
 };
 
 Object.keys(config).forEach((chain) => {
