@@ -1,5 +1,6 @@
 const { getCuratorExport } = require("../helper/curators")
 const { sumTokensDebank } = require("../helper/debank")
+const { sumTokens2 } = require("../helper/unwrapLPs")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
@@ -186,12 +187,18 @@ for (const chain of allChains) {
       const hasAleph = chainCfg?.alephVaults
       if (hasGearbox) await getGearboxV31Collateral(api, hasGearbox)
       if (hasAleph) await getAlephVaultTvl(api, hasAleph)
+        const owners = []
 
       // kpk Fund (OIV) TVL via DeBank
-      if (OIV_CHAINS.includes(chain)) await getDebankTvl(api, OIV_SAFES)
+      if (OIV_CHAINS.includes(chain)) owners.push(...OIV_SAFES)
+        // await getDebankTvl(api, OIV_SAFES)
 
       // Zodiac-managed Safe TVL via DeBank
-      if (ZODIAC_CHAINS.includes(chain)) await getDebankTvl(api, ZODIAC_MANAGED_SAFES)
+      if (ZODIAC_CHAINS.includes(chain)) owners.push(...ZODIAC_MANAGED_SAFES)
+        // await getDebankTvl(api, ZODIAC_MANAGED_SAFES)
+      return sumTokens2({ api, owners, fetchCoValentTokens: true, permitFailure: true, tokenConfig: {
+        onlyWhitelisted: false,
+      }, resolveUniV3: chain !== 'xdai', resolveLP: true, })
     }
   }
 }
