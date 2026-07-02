@@ -219,7 +219,7 @@ const config = {
   },
   megaeth: {
     morphoBlue: '0x18120312A7cf44DcfEc6dCe5632a431579ED9100',
-    fromBlock: 18755218,
+    fromBlock: 	18930057,
   },
 }
 
