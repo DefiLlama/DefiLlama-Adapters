@@ -216,7 +216,11 @@ const config = {
   robinhood: {
     morphoBlue: '0x9D53d5E3bd5E8d4Cbfa6DB1ca238AEA02E651010',
     fromBlock: 286,
-  }
+  },
+  megaeth: {
+    morphoBlue: '0x18120312A7cf44DcfEc6dCe5632a431579ED9100',
+    fromBlock: 	18930057,
+  },
 }
 
 const eventAbis = {
