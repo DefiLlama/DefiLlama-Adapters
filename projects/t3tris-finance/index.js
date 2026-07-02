@@ -31,7 +31,7 @@ async function tvl(api) {
   for (let i = 0; i < vaults.length; i++) {
     const g = grossTvls[i];
     const token = vaults[i].asset;
-    if (g) api.add(token, g.grossTvl);
+    if (g) api.add(token, g.grossTVL);
   }
 }
 
