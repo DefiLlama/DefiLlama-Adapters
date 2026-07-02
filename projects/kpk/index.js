@@ -196,7 +196,7 @@ for (const chain of allChains) {
       // Zodiac-managed Safe TVL via DeBank
       if (ZODIAC_CHAINS.includes(chain)) owners.push(...ZODIAC_MANAGED_SAFES)
         // await getDebankTvl(api, ZODIAC_MANAGED_SAFES)
-      return sumTokens2({ api, owners, fetchCoValentTokens: true, permitFailure: true, tokenConfig: {
+      return sumTokens2({ api, owners, fetchCoValentTokens: true, blacklistedTokens: getCuratedVaults(api.chain), permitFailure: true, tokenConfig: {
         onlyWhitelisted: false,
       }, resolveUniV3: chain !== 'xdai', resolveLP: true, })
     }
