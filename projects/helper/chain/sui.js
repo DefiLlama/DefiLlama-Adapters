@@ -285,23 +285,6 @@ async function fnSleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function queryEvents({ eventType, transform = i => i }) {
-  const items = []
-  let after = null
-  do {
-    const { data } = await graphqlCall(`query ($after: String) {
-      events(first: 50, after: $after, filter: { type: "${eventType}" }) {
-        pageInfo { hasNextPage endCursor }
-        nodes { contents { json } }
-      }
-    }`, { after })
-    const { pageInfo, nodes } = data.events
-    after = pageInfo.hasNextPage ? pageInfo.endCursor : null
-    items.push(...nodes.map(n => n.contents.json))
-  } while (after)
-  return items.map(transform)
-}
-
 const OBJECTS_PER_QUERY = 50
 async function getObjects(objectIds, { sleep } = {}) {
   if (!objectIds.length) return []
@@ -321,6 +304,40 @@ async function getObjects(objectIds, { sleep } = {}) {
   const keys = objectIds.map((id) => `{ address: "${id}" }`).join(', ')
   const { data } = await graphqlCall(`{ multiGetObjects(keys: [${keys}]) { asMoveObject { contents { json type { repr layout } } } } }`)
   return data.multiGetObjects.map((o) => formatObject(o?.asMoveObject?.contents))
+}
+
+async function getObjectsByType(type, { transform } = {}) {
+  const objects = []
+  let after = null
+  do {
+    const { data } = await graphqlCall(`query ($after: String) {
+      objects(first: 50, after: $after, filter: { type: "${type}" }) {
+        pageInfo { hasNextPage endCursor }
+        nodes { asMoveObject { contents { json type { repr layout } } } }
+      }
+    }`, { after })
+    const { pageInfo, nodes } = data.objects
+    objects.push(...nodes.map(n => formatObject(n.asMoveObject?.contents)))
+    after = pageInfo.hasNextPage ? pageInfo.endCursor : null
+  } while (after)
+  return transform ? objects.map(transform) : objects
+}
+
+async function queryEvents({ eventType, transform = i => i }) {
+  const items = []
+  let after = null
+  do {
+    const { data } = await graphqlCall(`query ($after: String) {
+      events(first: 50, after: $after, filter: { type: "${eventType}" }) {
+        pageInfo { hasNextPage endCursor }
+        nodes { contents { json } }
+      }
+    }`, { after })
+    const { pageInfo, nodes } = data.events
+    after = pageInfo.hasNextPage ? pageInfo.endCursor : null
+    items.push(...nodes.map(n => n.contents.json))
+  } while (after)
+  return items.map(transform)
 }
 
 function bcsDynamicFieldName(idType, value) {
@@ -498,6 +515,7 @@ async function getTokenSupply(token) {
 module.exports = {
   getObject,
   getObjects,
+  getObjectsByType,
   queryEvents,
   getDynamicFieldObject,
   getDynamicFieldObjects,
