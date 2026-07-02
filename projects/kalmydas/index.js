@@ -1,20 +1,45 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { staking } = require('../helper/staking')
 
-// Kal Mydas strategy vault pools deployed on Base mainnet (2026-05-01).
-// Each KalPool holds USDC and allocates a fraction to an off-chain operator
-// that routes positions through gTrade (Gains Network) on the XAU/USD pair.
+// Kal Mydas on Base mainnet.
+const KAL = '0xe99556D5594faf533fcB346A8a9B11259D29afA8'
+
+// KalSwap AMM liquidity pairs.
+const PAIRS = [
+      '0x3315E6E788E2B30aF8f4c35124695E60D510c31B', // KalSwap V2 KAL/USDC
+      '0xEA071fa5a8aD4dEa8c672569da366D7d90E5924d', // KalSwap KAL/WETH
+      '0x83c26f5C90B81adDf50845CCFCdcd02B819ADeB5', // KalSwap USDC/WETH
+    ]
+
+// KalPool strategy vaults V5_1_4 (deployed 2026-06-11). USDC held by the
+// vaults = user deposits + platform reserve. The slice temporarily allocated
+// to the on-chain operator (gTrade, max 20% of the reserve) leaves the
+// contracts while a position is open and returns on close, so TVL
+// fluctuates accordingly.
 const POOLS = [
-    '0xe1Cd26c4017cbb66A1Ad6BAc95C3CDE67C24FBE3', // HORIZON
-    '0x375CBbABC481Fb7bEb842D201E57A522e0FcF35B', // VALKYRIE
-    '0x77Cd662165434C0Ab60ded459221f818EF31B58c', // REVOLUTION
-    '0xd29Ef132b730802931FfBC7fAF0d5c0Ab12813c4', // TREASURY
-    '0x4ec08709EB7F2251C4C8bf4867C2C7B9CdFC12Fb', // ORION
-  ];
+      '0x96869F08F5B5C52664c9620269394eFF4efd065b', // HORIZON
+      '0x6dd6e7A6154293b22Dcd5d07d8f61F446646B15d', // VALKYRIE
+      '0x9A9990fdFf702f7aEd10f873eeD2baB60e493038', // REVOLUTION
+      '0x03FEC25393C38cC5DE1F2D2DB620b8478cAC4Ae0', // TREASURY
+      '0x55F8D85749EA9C374b3aBFaEF7B07429546F6A97', // ORION
+    ]
+
+// KAL staked: single-side KAL staking (LiquidityRewards V6_3, 10% APR cap)
+// and KAL locked in veKAL.
+const STAKING_CONTRACTS = [
+      '0xF392A8F1B6c85f607F988B44EcAE2B4d652585f5', // LiquidityRewards V6_3 (stakeKAL)
+      '0x58CfcB5A67Aac6255cA13771EbdCFF45bAd5d605', // veKAL locker
+    ]
 
 module.exports = {
-    methodology:
-          'TVL is the sum of USDC held by the five KalPool strategy vault contracts (HORIZON, VALKYRIE, REVOLUTION, TREASURY, ORION) on Base mainnet.',
-    base: {
-          tvl: (api) => api.sumTokens({ owners: POOLS, tokens: [ADDRESSES.base.USDC] }),
-    },
-};
+      methodology:
+              'TVL is the sum of tokens (USDC, WETH, KAL) held by the KalSwap liquidity pairs plus the USDC held by the five KalPool strategy vaults (deposits and platform reserve) on Base mainnet. USDC temporarily allocated to the on-chain operator (max 20% of each vault reserve) leaves the vaults while a trade is open and returns on close. KAL staked single-side and KAL locked in veKAL are reported under staking.',
+      base: {
+              tvl: (api) =>
+                        api.sumTokens({
+                                    owners: [...PAIRS, ...POOLS],
+                                    tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH, KAL],
+                        }),
+              staking: staking(STAKING_CONTRACTS, KAL),
+      },
+}
