@@ -1393,6 +1393,16 @@ const configs = {
       ]
     },
   },
+  "arrowpad": {
+    "methodology": "ETH held in the ArrowPad bonding-curve contract: funds raised by launched tokens that have not yet graduated to Uniswap.",
+    "robinhood": {
+      "owner": "0x5d2391cf88cd48bb6b9ec12b38bc8119562f9012",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.robinhood.WETH
+      ]
+    }
+  },
   "artcpaclub": {
     "timetravel": false,
     "elrond": {
