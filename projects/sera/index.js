@@ -1,4 +1,4 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
 const VAULT = '0xC7d4Fd2638e6630C8C61329878676b88A8A24D43'
 // Sera.sol, the orderbook contract that holds TRADER_ROLE on the Vault and manages the token whitelist
@@ -6,11 +6,10 @@ const SERA = '0xB5C50C5D5f038404F85970b7f5B7259C4AC0E198'
 const fromBlock = 24993377
 
 async function tvl(api) {
-  const logs = await getLogs({
+  const logs = await getLogs2({
     api,
     target: SERA,
     eventAbi: 'event WhitelistedTokenModified(address indexed token, bool isWhitelisted, uint256 minAmount)',
-    onlyArgs: true,
     fromBlock,
   })
   const whitelistStatus = {}
