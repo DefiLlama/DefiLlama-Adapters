@@ -1,3 +1,4 @@
+const { PublicKey } = require('@solana/web3.js');
 const { getConfig } = require('../helper/cache');
 const { getAssociatedTokenAddress, getTokenAccountBalances } = require('../helper/solana');
 const { sumTokens2 } = require('../helper/unwrapLPs');
@@ -34,10 +35,18 @@ function filterVaults(vaults, coreAssets, chain) {
     return { tvlVaults, vestingVaults };
 }
 
+function isValidSolanaAddress(addr) {
+    try { new PublicKey(addr); return true; }
+    catch { return false; }
+}
+
 async function sumVaults(api, vaults) {
     if (vaults.length === 0) return;
 
     if (api.chain === 'solana') {
+        // skip vaults whose addresses aren't valid base58 (proxy sometimes returns non-solana rows)
+        vaults = vaults.filter((vault) => isValidSolanaAddress(vault.token_address) && isValidSolanaAddress(vault.vesting_address));
+        if (vaults.length === 0) return;
         const ataAddresses = vaults.map((vault) =>
             getAssociatedTokenAddress(vault.token_address, vault.vesting_address)
         );
