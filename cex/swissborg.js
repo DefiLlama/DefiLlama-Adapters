@@ -255,5 +255,21 @@ module.exports = {
       '0x762DA64958BbF03bB206BF33C520a3846b6Cc93D',
     ]
   },
+  hyperliquid: {
+    owners: [
+      '0x28cC933fecf280E720299b1258e8680355D8841F',
+      '0xb5Bd7007e67910868cBCEf21557B33A6A9902795'
+    ],
+  },
+  sui: {
+    owners: [
+      '0xa343729bd517a75962674cbdb8887ba41989c257c759c8a16701ecf82cf07b9c'
+    ],
+  },
+  bittensor: {
+    owners: [
+      '5HAe1pePzBuPqsF6BpTGN8vCngvKKJaRZ2HkHwFmJgWgAzcf'
+    ],
+  },
   methodology: 'The list of wallets can be found at https://github.com/SwissBorg/pub. We also publish monthly our Proof of Liabilities at https://swissborg.com/proof-of-liabilities/audits. The total assets do not take into account the assets in DeFi.',
 }
