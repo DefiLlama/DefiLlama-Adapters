@@ -45,12 +45,18 @@ function addProportionalReserves({ api, mintA, mintB, lockedLp, reserveA, reserv
 
 async function getLockerTokenLocks(programId, api, layout = 'unicryptTokenLock', dataSize = TOKEN_LOCK_ACCOUNT_SIZES[layout]) {
   const connection = getConnection()
-  const accounts = await connection.getProgramAccounts(new PublicKey(programId), {
-    filters: [
-      ...(dataSize ? [{ dataSize }] : []),
-      { memcmp: { offset: 0, bytes: bs58.encode(TOKEN_LOCK_DISCRIMINATOR) } },
-    ],
-  })
+  let accounts
+  try {
+    accounts = await connection.getProgramAccounts(new PublicKey(programId), {
+      filters: [
+        ...(dataSize ? [{ dataSize }] : []),
+        { memcmp: { offset: 0, bytes: bs58.encode(TOKEN_LOCK_DISCRIMINATOR) } },
+      ],
+    })
+  } catch (e) {
+    api?.log?.(`[unicrypt-solana] failed to fetch ${layout} accounts for ${programId}: ${e?.message || e}`)
+    return []
+  }
   const out = []
   let skipped = 0
   let skipReason
