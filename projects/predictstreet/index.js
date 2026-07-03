@@ -28,12 +28,18 @@ const SELECTORS = {
   wcolOf: '0x40ece17a',      // wcolOf(bytes32)
 }
 
-// Batched read-only calls; returns one returnData hex (or null) per call, in order.
+// Batched read-only calls; throws on any failed/empty read — for TVL accounting
+// a bad call must fail the adapter, not silently count as a zero balance.
 async function aggregate3(api, calls, batchSize = 500) {
   const out = []
   for (let i = 0; i < calls.length; i += batchSize) {
-    const res = await api.call({ abi: AGGREGATE3_ABI, target: MULTICALL, params: [calls.slice(i, i + batchSize)] })
-    for (const r of res) out.push(r.success && r.returnData !== '0x' ? r.returnData : null)
+    const batch = calls.slice(i, i + batchSize)
+    const res = await api.call({ abi: AGGREGATE3_ABI, target: MULTICALL, params: [batch] })
+    for (let j = 0; j < res.length; j++) {
+      const r = res[j]
+      if (!r.success || r.returnData === '0x') throw new Error(`aggregate3 call failed at index ${i + j}`)
+      out.push(r.returnData)
+    }
   }
   return out
 }
@@ -47,7 +53,7 @@ async function tvl(api) {
   const created = await getLogs2({ api, target: VAULT_FACTORY, eventAbi: VAULT_CREATED, fromBlock: FROM_BLOCK, extraKey: 'VaultCreated' })
   const vaults = [...new Set(created.map(l => l.vault))]
   const ledgerData = SELECTORS.ledgerERC20 + encodeArg(USDC_E)
-  const ledgers = await aggregate3(api, vaults.map(v => [v, true, ledgerData]))
+  const ledgers = await aggregate3(api, vaults.map(v => [v, false, ledgerData]))
   for (const bal of ledgers) if (bal) api.add(USDC_E, BigInt(bal).toString())
 
   // (2) collateral locked in ConditionalTokens (binary markets)
@@ -56,9 +62,9 @@ async function tvl(api) {
 
   // (3) neg-risk collateral: USDC.e held by every market's WrappedCollateral clone
   const marketLogs = await getLogs2({ api, target: NEG_RISK_ADAPTER, eventAbi: MARKET_PREPARED, fromBlock: NEG_RISK_FROM_BLOCK, extraKey: 'MarketPrepared' })
-  const wcols = await aggregate3(api, marketLogs.map(l => [NEG_RISK_ADAPTER, true, SELECTORS.wcolOf + encodeArg(l.marketId)]))
+  const wcols = await aggregate3(api, marketLogs.map(l => [NEG_RISK_ADAPTER, false, SELECTORS.wcolOf + encodeArg(l.marketId)]))
   const clones = wcols.filter(a => a && BigInt(a) !== 0n).map(a => '0x' + a.slice(26))
-  const wcolBalances = await aggregate3(api, clones.map(c => [USDC_E, true, SELECTORS.balanceOf + encodeArg(c)]))
+  const wcolBalances = await aggregate3(api, clones.map(c => [USDC_E, false, SELECTORS.balanceOf + encodeArg(c)]))
   for (const bal of wcolBalances) if (bal) api.add(USDC_E, BigInt(bal).toString())
 
   // USDC.e is a brand-new-chain token DefiLlama can't auto-price; the adi entry in
