@@ -28461,6 +28461,18 @@ const configs = {
       ]
     },
   },
+  "vessel-finance": {
+    "methodology": "TVL is the sum of ETH, USDT, USDC and WBTC balances held in the Vessel Finance VaultProxy contract on Scroll.",
+    "scroll": {
+      "owner": "0x6126E927627b8d9eb9aDb9faadC47B76F94B6bA2",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.scroll.USDT,
+        ADDRESSES.scroll.USDC,
+        ADDRESSES.scroll.WBTC
+      ]
+    }
+  },
   "vidya": {
     "methodology": "Counts the total number of tokens locked in staking contracts, game contracts and project treasury.",
     "ethereum": {
