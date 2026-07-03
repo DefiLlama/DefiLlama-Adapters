@@ -1,17 +1,19 @@
 const { getMultipleAccounts, decodeAccount } = require('../helper/solana')
+const { getUniqueAddresses } = require('../helper/tokenMapping')
 const {
   deriveUncxVault,
   toBigInt,
   addProportionalReserves,
   getLockerTokenLocks,
-  getUniqueAddresses,
 } = require('./utils')
 
 const PROGRAM_LOCKER_AMM = 'GsSCS3vPWrtJ5Y9aEVVT65fmrex5P5RGHXdZvsdbWgfo'
 const PROGRAM_LOCKER_NEW_AMM = 'UNCX77nZrA3TdAxMEggqG18xxpgiNGT6iqyynPwpoxN'
+const TOKEN_LOCK_SIZE_AMM = 146
+const TOKEN_LOCK_SIZE_NEW_AMM = 196
 
-async function addRaydiumAmmLocks({ api, programId }) {
-  const locks = await getLockerTokenLocks(programId, api)
+async function addRaydiumAmmLocks({ api, programId, dataSize }) {
+  const locks = await getLockerTokenLocks(programId, api, 'unicryptTokenLock', dataSize)
   if (!locks.length) return
 
   const poolIds = getUniqueAddresses(locks.map(({ account }) => account.ammId.toBase58()), 'solana')
@@ -34,23 +36,31 @@ async function addRaydiumAmmLocks({ api, programId }) {
   const pools = new Map()
   const tokenAccounts = []
   const lpMints = []
+  let skipped = 0
+  let skipReason
 
   poolIds.forEach((poolId, i) => {
     const raw = poolInfos[i]
     const lpLocked = lpLockedByPool.get(poolId)
     if (!raw?.data || !lpLocked) return
-    const pool = decodeAccount('raydiumLPv4', raw)
-    pools.set(poolId, {
-      baseVault: pool.baseVault.toBase58(),
-      quoteVault: pool.quoteVault.toBase58(),
-      baseMint: pool.baseMint.toBase58(),
-      quoteMint: pool.quoteMint.toBase58(),
-      lpMint: pool.lpMint.toBase58(),
-      lpLocked,
-    })
-    tokenAccounts.push(pool.baseVault.toBase58(), pool.quoteVault.toBase58())
-    lpMints.push(pool.lpMint.toBase58())
+    try {
+      const pool = decodeAccount('raydiumLPv4', raw)
+      pools.set(poolId, {
+        baseVault: pool.baseVault.toBase58(),
+        quoteVault: pool.quoteVault.toBase58(),
+        baseMint: pool.baseMint.toBase58(),
+        quoteMint: pool.quoteMint.toBase58(),
+        lpMint: pool.lpMint.toBase58(),
+        lpLocked,
+      })
+      tokenAccounts.push(pool.baseVault.toBase58(), pool.quoteVault.toBase58())
+      lpMints.push(pool.lpMint.toBase58())
+    } catch (e) {
+      skipped += 1
+      if (!skipReason) skipReason = e?.message || 'decode failed'
+    }
   })
+  if (skipped) api?.log?.(`[unicrypt-solana] skipped ${skipped} Raydium AMM pool accounts: ${skipReason}`)
 
   if (!pools.size) return
 
@@ -95,8 +105,8 @@ async function addRaydiumAmmLocks({ api, programId }) {
 }
 
 async function addAmmLocks(api) {
-  await addRaydiumAmmLocks({ api, programId: PROGRAM_LOCKER_AMM })
-  await addRaydiumAmmLocks({ api, programId: PROGRAM_LOCKER_NEW_AMM })
+  await addRaydiumAmmLocks({ api, programId: PROGRAM_LOCKER_AMM, dataSize: TOKEN_LOCK_SIZE_AMM })
+  await addRaydiumAmmLocks({ api, programId: PROGRAM_LOCKER_NEW_AMM, dataSize: TOKEN_LOCK_SIZE_NEW_AMM })
 }
 
 module.exports = {

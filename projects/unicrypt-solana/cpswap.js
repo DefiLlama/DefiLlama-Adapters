@@ -1,16 +1,17 @@
 const { getMultipleAccounts, decodeAccount } = require('../helper/solana')
+const { getUniqueAddresses } = require('../helper/tokenMapping')
 const {
   deriveUncxVault,
   toBigInt,
   addProportionalReserves,
   getLockerTokenLocks,
-  getUniqueAddresses,
 } = require('./utils')
 
 const PROGRAM_LOCKER_CP_SWAP = 'UNCXdvMRxvz91g3HqFmpZ5NgmL77UH4QRM4NfeL4mQB'
+const TOKEN_LOCK_SIZE_CP_SWAP = 180
 
 async function addCpSwapLocks(api) {
-  const locks = await getLockerTokenLocks(PROGRAM_LOCKER_CP_SWAP, api)
+  const locks = await getLockerTokenLocks(PROGRAM_LOCKER_CP_SWAP, api, 'unicryptTokenLock', TOKEN_LOCK_SIZE_CP_SWAP)
   if (!locks.length) return
 
   const poolIds = getUniqueAddresses(locks.map(({ account }) => account.ammId.toBase58()), 'solana')

@@ -1,4 +1,4 @@
-const { struct, u8, u64, blob, publicKey } = require('./layout-base')
+const { struct, u8, u64, blob, publicKey, hasDiscriminator } = require('./layout-base')
 
 const TOKEN_LOCK_DISCRIMINATOR = Buffer.from([73, 228, 144, 241, 154, 44, 93, 238])
 const METEORA_TOKEN_LOCK_TAG = 3
@@ -47,7 +47,10 @@ const METEORA_TOKEN_LOCK_LAYOUT = struct([
   u8('bump'),
 ])
 
-const hasDiscriminator = (decoded, discriminator) => Buffer.from(decoded.discriminator).equals(discriminator)
+const TOKEN_LOCK_ACCOUNT_SIZES = {
+  unicryptTokenLock: UNICRYPT_TOKEN_LOCK_BASE_LAYOUT.span,
+  unicryptTokenLockClmm: UNICRYPT_TOKEN_LOCK_CLMM_LAYOUT.span,
+}
 const toBase58 = (value) => (value && typeof value.toBase58 === 'function' ? value.toBase58() : value)
 
 function parseUnicryptTokenLock(info) {
@@ -87,6 +90,7 @@ function parseMeteoraTokenLock(info) {
 
 module.exports = {
   TOKEN_LOCK_DISCRIMINATOR,
+  TOKEN_LOCK_ACCOUNT_SIZES,
   METEORA_TOKEN_LOCK_TAG,
   parseUnicryptTokenLock,
   parseUnicryptTokenLockClmm,

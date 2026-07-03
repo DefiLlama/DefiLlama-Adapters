@@ -1,10 +1,9 @@
-const { struct, u8, u64, u128, s32, blob, publicKey, seq } = require('./layout-base')
+const { struct, u8, u64, u128, s32, blob, publicKey, seq, hasDiscriminator } = require('./layout-base')
 
 const POSITION_V2_DISCRIMINATOR = Buffer.from([117, 176, 212, 199, 245, 180, 133, 182])
 const LB_PAIR_DISCRIMINATOR = Buffer.from([33, 11, 49, 98, 181, 101, 177, 13])
 const BIN_ARRAY_DISCRIMINATOR = Buffer.from([92, 142, 92, 220, 5, 148, 70, 181])
 const BINS_PER_ARRAY = 70
-const hasDiscriminator = (decoded, discriminator) => Buffer.from(decoded.discriminator).equals(discriminator)
 
 const DLMM_FEE_INFO_LAYOUT = struct([
   u128('feeXPerTokenComplete'),

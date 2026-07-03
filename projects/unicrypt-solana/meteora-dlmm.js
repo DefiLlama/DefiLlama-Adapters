@@ -1,10 +1,10 @@
 const { PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
 const { getConnection, getMultipleAccounts, decodeAccount } = require('../helper/solana')
+const { getUniqueAddresses } = require('../helper/tokenMapping')
 const {
   bnToNumber,
   toBigInt,
-  getUniqueAddresses,
 } = require('./utils')
 const {
   BIN_ARRAY_DISCRIMINATOR,

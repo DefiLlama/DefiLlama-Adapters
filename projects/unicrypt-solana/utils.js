@@ -1,8 +1,7 @@
 const { PublicKey } = require('@solana/web3.js')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes')
 const { getConnection, decodeAccount } = require('../helper/solana')
-const { getUniqueAddresses } = require('../helper/tokenMapping')
-const { TOKEN_LOCK_DISCRIMINATOR } = require('../helper/utils/solana/layouts/unicrypt-layout')
+const { TOKEN_LOCK_ACCOUNT_SIZES, TOKEN_LOCK_DISCRIMINATOR } = require('../helper/utils/solana/layouts/unicrypt-layout')
 
 const UNCX_LP_VAULT_SEED = Buffer.from('uncx_lp_vault')
 
@@ -44,10 +43,13 @@ function addProportionalReserves({ api, mintA, mintB, lockedLp, reserveA, reserv
   if (addB > 0n) api.add(mintB, addB.toString())
 }
 
-async function getLockerTokenLocks(programId, api, layout = 'unicryptTokenLock') {
+async function getLockerTokenLocks(programId, api, layout = 'unicryptTokenLock', dataSize = TOKEN_LOCK_ACCOUNT_SIZES[layout]) {
   const connection = getConnection()
   const accounts = await connection.getProgramAccounts(new PublicKey(programId), {
-    filters: [{ memcmp: { offset: 0, bytes: bs58.encode(TOKEN_LOCK_DISCRIMINATOR) } }],
+    filters: [
+      ...(dataSize ? [{ dataSize }] : []),
+      { memcmp: { offset: 0, bytes: bs58.encode(TOKEN_LOCK_DISCRIMINATOR) } },
+    ],
   })
   const out = []
   let skipped = 0
@@ -73,5 +75,4 @@ module.exports = {
   toBigInt,
   addProportionalReserves,
   getLockerTokenLocks,
-  getUniqueAddresses,
 }

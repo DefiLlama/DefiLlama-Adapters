@@ -1,9 +1,9 @@
 const { getMultipleAccounts, decodeAccount } = require('../helper/solana')
+const { getUniqueAddresses } = require('../helper/tokenMapping')
 const { addUniV3LikePosition } = require('../helper/unwrapLPs')
 const {
   bnToNumber,
   getLockerTokenLocks,
-  getUniqueAddresses,
 } = require('./utils')
 
 const PROGRAM_LOCKER_CLMM = 'UNCXrB8cZXnmtYM1aSo1Wx3pQaeSZYuF2jCTesXvECs'
