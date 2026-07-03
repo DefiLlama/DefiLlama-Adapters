@@ -27067,6 +27067,12 @@ const configs = {
       ]
     },
   },
+  "tensorplex": {
+    "methodology": "TVL counts all TAO in the bittensor reserve address: 5GtfvaMYH6hp78rG8mi7wJFxxQ9JwL23Qj9SUWDPYvT8uymL.",
+    "bittensor": {
+      "owner": "5GtfvaMYH6hp78rG8mi7wJFxxQ9JwL23Qj9SUWDPYvT8uymL",
+    }
+  },
   "terminal-fi-predeposit": {
     "ethereum": {
       "tokensAndOwners": [
