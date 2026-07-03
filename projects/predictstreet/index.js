@@ -7,61 +7,59 @@ const USDC_E = '0x9cb8142aebbcdc60af7c97af897a67a8f3ca71c2'
 const VAULT_FACTORY = '0xc16B8b190064451c2FeEb2e77c4B2aC4c7009552'
 const CONDITIONAL_TOKENS = '0xD28B8295Cd57F205e4d080Ff4c6d23C06a9EEe3a' // locks collateral backing open positions
 const NEG_RISK_ADAPTER = '0x29e58C3916d1fD235f3d1e7fCF640fd1fA8BDb1e'
+// ADI's multicall implements only aggregate3 (no tryAggregate), so the SDK's
+// automatic multiCall/sumTokens routing can't use it — we call aggregate3
+// directly as a plain contract call instead.
+const MULTICALL = '0x73df6E8F0D112D22bD672952323b43d6893AB6D2'
 const FROM_BLOCK = 32200            // VaultFactory deploy
 const NEG_RISK_FROM_BLOCK = 32196   // NegRiskAdapter deploy
 
+// One event per vault, used only to enumerate vaults — balances are read live
+// (this RPC caps getLogs responses, so dense event scans are unreliable).
+const VAULT_CREATED = 'event VaultCreated(uint64 seq, address indexed owner, address indexed vault)'
 // Neg-risk markets wrap USDC.e into a per-market WrappedCollateral clone — the raw
-// USDC.e sits in that clone, not in the adapter or ConditionalTokens. Enumerate
-// markets via MarketPrepared, resolve each clone via wcolOf, and sum its balance.
+// USDC.e sits in that clone, not in the adapter or ConditionalTokens.
 const MARKET_PREPARED = 'event MarketPrepared(uint64 seq, bytes32 indexed marketId, uint8 questionCount)'
 
-// Every VaultFactory event that mutates a vault's USDC.e ledger carries the absolute
-// post-op balance and a monotonic `seq`, so the latest event per vault gives its
-// current balance — no per-vault balanceOf needed.
-const LEDGER_EVENTS = [
-  // events carrying an explicit `token` → keep only USDC.e
-  { abi: 'event DepositedERC20(uint64 seq, address indexed vault, address indexed from, address indexed token, uint256 amount, uint256 ledgerAfter)', bal: 'ledgerAfter', token: 'token' },
-  { abi: 'event WithdrawnERC20(uint64 seq, address indexed vault, address indexed to, address indexed token, uint256 amount, uint256 ledgerAfter)', bal: 'ledgerAfter', token: 'token' },
-  { abi: 'event EmergencyExecuted(uint64 seq, address indexed vault, address indexed token, uint256 amount, uint256 ledgerAfter)', bal: 'ledgerAfter', token: 'token' },
-  { abi: 'event VaultERC20BalanceChanged(uint64 seq, address indexed vault, address indexed token, uint256 balanceAfter, bytes4 reason)', bal: 'balanceAfter', token: 'token' },
-  // collateral-only events (no token field) → always USDC.e
-  { abi: 'event PositionSplit(uint64 seq, address indexed vault, bytes32 indexed conditionId, uint256 amount, uint256 ledgerAfter)', bal: 'ledgerAfter' },
-  { abi: 'event PositionsMerged(uint64 seq, address indexed vault, bytes32 indexed conditionId, uint256 amount, uint256 ledgerAfter)', bal: 'ledgerAfter' },
-  { abi: 'event PositionRedeemed(uint64 seq, address indexed vault, bytes32 indexed conditionId, uint256 payout, uint256 ledgerAfter)', bal: 'ledgerAfter' },
-]
+const AGGREGATE3_ABI = 'function aggregate3((address target, bool allowFailure, bytes callData)[] calls) payable returns ((bool success, bytes returnData)[] returnData)'
+const SELECTORS = {
+  ledgerERC20: '0xd3cc7c57', // ledgerERC20(address)
+  balanceOf: '0x70a08231',   // balanceOf(address)
+  wcolOf: '0x40ece17a',      // wcolOf(bytes32)
+}
+
+// Batched read-only calls; returns one returnData hex (or null) per call, in order.
+async function aggregate3(api, calls, batchSize = 500) {
+  const out = []
+  for (let i = 0; i < calls.length; i += batchSize) {
+    const res = await api.call({ abi: AGGREGATE3_ABI, target: MULTICALL, params: [calls.slice(i, i + batchSize)] })
+    for (const r of res) out.push(r.success && r.returnData !== '0x' ? r.returnData : null)
+  }
+  return out
+}
+
+const encodeArg = (hex) => hex.replace(/^0x/, '').padStart(64, '0').toLowerCase()
 
 async function tvl(api) {
-  const latest = {} // vault => { seq, bal } — newest USDC.e ledger value per vault
+  // (1) idle USDC.e across all user vaults: enumerate vaults via VaultCreated,
+  // then read each vault's live internal USDC.e ledger. ledgerERC20 (not
+  // balanceOf) so stray direct transfers that no user deposited are excluded.
+  const created = await getLogs2({ api, target: VAULT_FACTORY, eventAbi: VAULT_CREATED, fromBlock: FROM_BLOCK, extraKey: 'VaultCreated' })
+  const vaults = [...new Set(created.map(l => l.vault))]
+  const ledgerData = SELECTORS.ledgerERC20 + encodeArg(USDC_E)
+  const ledgers = await aggregate3(api, vaults.map(v => [v, true, ledgerData]))
+  for (const bal of ledgers) if (bal) api.add(USDC_E, BigInt(bal).toString())
 
-  for (const ev of LEDGER_EVENTS) {
-    // distinct extraKey per event: getLogs caches by chain/target only, so without it
-    // the events would share one cache file and cross-contaminate.
-    const name = ev.abi.slice(6, ev.abi.indexOf('('))
-    const logs = await getLogs2({ api, target: VAULT_FACTORY, eventAbi: ev.abi, fromBlock: FROM_BLOCK, extraKey: name })
-    for (const log of logs) {
-      if (ev.token && log[ev.token].toLowerCase() !== USDC_E) continue
-      const seq = Number(log.seq)
-      if (!latest[log.vault] || seq > latest[log.vault].seq)
-        latest[log.vault] = { seq, bal: log[ev.bal] }
-    }
-  }
-
-  // idle USDC.e across all vaults
-  for (const { bal } of Object.values(latest)) api.add(USDC_E, bal)
-
-  // + collateral locked in ConditionalTokens (single read, no multicall)
+  // (2) collateral locked in ConditionalTokens (binary markets)
   const ct = await api.call({ abi: 'erc20:balanceOf', target: USDC_E, params: [CONDITIONAL_TOKENS] })
   api.add(USDC_E, ct)
 
-  // neg-risk collateral: sum USDC.e across every market's WrappedCollateral clone
-  // (single calls — ADI has no Multicall3 with tryAggregate)
+  // (3) neg-risk collateral: USDC.e held by every market's WrappedCollateral clone
   const marketLogs = await getLogs2({ api, target: NEG_RISK_ADAPTER, eventAbi: MARKET_PREPARED, fromBlock: NEG_RISK_FROM_BLOCK, extraKey: 'MarketPrepared' })
-  const wcols = await Promise.all(marketLogs.map(l =>
-    api.call({ abi: 'function wcolOf(bytes32) view returns (address)', target: NEG_RISK_ADAPTER, params: [l.marketId] })))
-  const clones = wcols.filter(a => a && BigInt(a) !== 0n)
-  const wcolBalances = await Promise.all(clones.map(c =>
-    api.call({ abi: 'erc20:balanceOf', target: USDC_E, params: [c] })))
-  for (const bal of wcolBalances) api.add(USDC_E, bal)
+  const wcols = await aggregate3(api, marketLogs.map(l => [NEG_RISK_ADAPTER, true, SELECTORS.wcolOf + encodeArg(l.marketId)]))
+  const clones = wcols.filter(a => a && BigInt(a) !== 0n).map(a => '0x' + a.slice(26))
+  const wcolBalances = await aggregate3(api, clones.map(c => [USDC_E, true, SELECTORS.balanceOf + encodeArg(c)]))
+  for (const bal of wcolBalances) if (bal) api.add(USDC_E, BigInt(bal).toString())
 
   // USDC.e is a brand-new-chain token DefiLlama can't auto-price; the adi entry in
   // tokenMapping.js maps it to usd-coin. Apply that transform to the balances.
@@ -70,10 +68,9 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is the USDC.e (bridged USDC) collateral held by PredictStreet: per-vault balances ' +
-    'reconstructed from VaultFactory events (each emits the absolute post-op ledger balance with a ' +
-    'monotonic seq; the latest event per vault is its current balance), plus collateral locked in ' +
-    'the ConditionalTokens contract, plus the USDC.e backing each neg-risk market (held in that ' +
-    "market's WrappedCollateral clone).",
+    'TVL is the USDC.e (bridged USDC) collateral held by PredictStreet: the live internal ' +
+    'USDC.e ledger of every user vault (vaults enumerated via VaultCreated events, balances ' +
+    'read on-chain in batches), plus collateral locked in the ConditionalTokens contract, plus ' +
+    "the USDC.e backing each neg-risk market (held in that market's WrappedCollateral clone).",
   adi: { tvl },
 }
