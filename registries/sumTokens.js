@@ -12006,32 +12006,6 @@ const configs = {
       ]
     },
   },
-  "credible-finance": {
-    "methodology": "TVL is calculated as all token balances held in Credible Finance's lending contract, representing all deposits available for lending.",
-    "solana": {
-      "owner": "4uhwwcipVRFczcCPCgZDkMgWaL8kGw7ht4k6HT3faw3g",
-      "tokens": [
-        "FxPk1scQjw34NSwm4JKz7sT2Bw781TqwFU9efZdrrLQU",
-        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-        "91u7wA938FMTHzAGtg6LcoysasfBkFQQmMCauLRSgHDL",
-        "5HxCAwuu4SX73gjVG7dP7hZKrSGhRydy6VJWgG1yhtBj",
-        "SNSG2yDc1QHxurjb5ZKUbc5pKLKAv18LLe3yFumxXod",
-        "GBcoT7TugeegPSCujzariSMMHc4cF8AxcfFTctAHZp5R",
-        "G7F8pVSQTkHsfh4ZZxttb5ZxNH9WpQiNAUn1aJn1SkoB",
-        "JDpHtDaf69SyKwDkkTGP5okRBRw1jfocMr4E7DgzXXBt",
-        "CYyQ1mwFthpFozHpc7xxguyrZ5vegFBKrg3uhsY3vXDf"
-      ]
-    },
-    "0g": {
-      "tokens": [
-        "0x1f3aa82227281ca364bfb3d253b0f1af1da6473e",
-        "0x9cc1d782e6dfe5936204c3295cb430e641dcf300",
-        ADDRESSES.sseed.oUSDT,
-        "0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c"
-      ],
-      "owner": "0x907F40d1D6649810E0C6C2Af5e0d42c7C10ad295"
-    },
-  },
   "crosschainbridge": {
     "ethereum": {
       "tvl": {
