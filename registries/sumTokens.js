@@ -26327,7 +26327,8 @@ const configs = {
           "addr1q9mqsgrgdaq9aahjfcrc6f45sgmcut4gu3c774kqzawkjkhujht5h40l2yrm8e7r2vwr2g3tv64pzjgnxwsztwg0yu5s00jz00",
           "addr1wy2gch9ua0700a3dg423wxcwx4p886m4ny5u3aqs66sluqcly9uud",
           "addr1wxzar75lms9547xdz4slxk7r362rs4g4ccurl22g764akngjhjtzp",
-          "addr1w88zvhrrlqj6kl94mel769v348khd5w3jz3av33ksp8wgvss6msuw"
+          "addr1w88zvhrrlqj6kl94mel769v348khd5w3jz3av33ksp8wgvss6msuw",
+          "addr1w9ygqdx9law3waqgm6eamf2xhxs5x83r0pfka928jmydkuc6ykls3"
         ]
       },
       "staking": {
