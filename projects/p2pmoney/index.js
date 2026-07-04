@@ -54,7 +54,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL = fondos bloqueados on-chain en el contrato de escrow P2PEscrow mientras hay operaciones peer-to-peer en curso (ordenes de venta abiertas con deposito y deals activos). Se lee getTotalLocked(token) por cada stablecoin soportada en cada red. No incluye fees ya cobrados por el protocolo, que se acumulan aparte y se retiran por el owner.",
+    "TVL = funds locked on-chain in the P2PEscrow contract while peer-to-peer trades are in progress (open sell orders with a deposit and active deals). Reads getTotalLocked(token) for each supported stablecoin on each chain. Excludes protocol fees already collected, which accrue separately and are withdrawn by the owner.",
   celo: { tvl },
   arbitrum: { tvl },
   polygon: { tvl },
