@@ -39,9 +39,13 @@ const CL_TOKENS = [
 ]
 
 // Trader Joe / LFJ Liquidity Book (DLMM) — enumerated directly from its own
-// factory via the shared joeV2Export helper.
+// factory via the shared joeV2Export helper. Our factory exposes the v1-style
+// getLBPairAtIndex/getNumberOfLBPairs/getTokenX/getTokenY (verified on-chain:
+// allLBPairs()/tokenX() both revert, getLBPairAtIndex()/getTokenX() don't) --
+// isLb:true selects the wrong ABI variant (allLBPairs/tokenX) and fails every
+// call, so it's deliberately omitted here to use the default v1 ABI instead.
 const DLMM_FACTORY = '0xd60Cf7876a1E7B8fcf963722A05039849fde5387'
-const dlmm = joeV2Export({ robinhood: { factory: DLMM_FACTORY, isLb: true } })
+const dlmm = joeV2Export({ robinhood: { factory: DLMM_FACTORY } })
 
 module.exports = {
   methodology: 'Counts tokens held directly by AEON Protocol pool contracts on Robinhood Chain across its three pool types: constant-product (vAMM) pools (enumerated from AeonFactoryRH plus a fixed set of pools migrated after the factory, listed explicitly), Algebra Integral concentrated-liquidity (CL) pools, and Trader Joe/LFJ Liquidity Book (DLMM) pools enumerated from their factory.',
