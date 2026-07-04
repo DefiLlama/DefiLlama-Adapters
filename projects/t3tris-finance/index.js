@@ -1,4 +1,4 @@
-const { getConfig } = require("./helper/cache");
+const { getConfig } = require("../helper/cache");
 
 // T3tris ecosystem API — authoritative list of vaults with curation flags
 const VAULTS_API = "https://ecosystem.t3tris.finance/vaults";
@@ -31,7 +31,7 @@ async function tvl(api) {
   for (let i = 0; i < vaults.length; i++) {
     const g = grossTvls[i];
     const token = vaults[i].asset;
-    if (g) api.add(token, g.grossTvl || g[3]);
+    if (g) api.add(token, g.grossTVL);
   }
 }
 

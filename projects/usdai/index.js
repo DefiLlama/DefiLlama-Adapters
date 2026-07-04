@@ -7,18 +7,23 @@ const abi = {
   "whitelistedTokens": "function whitelistedTokens() external view returns (address[] memory)",
   "loanRouterBalances": "function loanRouterBalances() external view returns (uint256, uint256, uint256)",
   "loanState": "function loanState(bytes32 loanTermsHash) external view returns (uint8, uint64, uint64, uint256)",
-  "baseYieldAccrued": "function baseYieldAccrued() external view returns (uint256)"
+  "loanStateV2": "function loanState(bytes32 loanTermsHash) external view returns (uint8, uint16, uint64, uint256)",
+  "baseYieldAccrued": "function baseYieldAccrued() external view returns (uint256)",
+  "escrowTimelockTotalDeposits": "function totalDeposits() external view returns (uint256)"
 };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { gql, request } = require("graphql-request");
 
 // Loan Router Subgraph API
 const LOAN_ROUTER_SUBGRAPH_API = 'https://api.goldsky.com/api/public/project_clzibgddg2epg01ze4lq55scx/subgraphs/loan_router_arbitrum/0.0.3/gn';
+const LOAN_ROUTER_SUBGRAPH_API_V2 = 'https://api.goldsky.com/api/public/project_cmgziqwja00105np2g1gy6stc/subgraphs/loan_router_v2_arbitrum/latest/gn';
 
 const USDAI_CONTRACT = "0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF";
 const STAKED_USDAI_CONTRACT = "0x0B2b2B2076d95dda7817e785989fE353fe955ef9";
 const QUEUED_DEPOSITOR_CONTRACT = "0x81cc0DEE5e599784CBB4862c605c7003B0aC5A53";
 const LOAN_ROUTER_CONTRACT = "0x0C2ED170F2bB1DF1a44292Ad621B577b3C9597D1";
+const LOAN_ROUTER_V2_CONTRACT = "0x1C2ED170de32846316784c4fd58A5e3C7563E12f";
+const ESCROW_TIMELOCK_CONTRACT = "0x1E710CC0b64E1D7572d35E43AD261587789B6438";
 const WRAPPED_M_CONTRACT = "0x437cc33344a0B27A429f795ff6B469C72698B291";
 const PYUSD = "0x46850aD61C2B7d64d08c9C754F45254596696984";
 const USDC = ADDRESSES.arbitrum.USDC_CIRCLE;
@@ -29,16 +34,20 @@ const LEGACY_POOL_1 = "0x0f62b8C58E1039F246d69bA2215ad5bF0D2Bb867";
 const LEGACY_POOL_2 = "0xcd9d510c4e2fe45e6ed4fe8a3a30eeef3830cc14";
 const LEGACY_POOLS = [LEGACY_POOL_1, LEGACY_POOL_2];
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
+const SUBGRAPH_PAGE_SIZE = 1000;
 const loanHashesQuery = gql`
-  query GetLoanHashes($timestampLte: String!) {
+  query GetLoanHashes($timestampLte: String!, $first: Int!, $lastId: String!) {
     loanRouterEvents(
-      where: { 
+      first: $first
+      where: {
         type: LoanOriginated,
-        timestamp_lte: $timestampLte
+        timestamp_lte: $timestampLte,
+        id_gt: $lastId
       }
-      orderBy: timestamp
-      orderDirection: desc
+      orderBy: id
+      orderDirection: asc
     ) {
+      id
       loanTermsHash
       timestamp
       loanOriginated {
@@ -50,6 +59,45 @@ const loanHashesQuery = gql`
     }
   }
 `;
+const migratedLoansQuery = gql`
+  query GetMigratedLoans($timestampLte: String!, $first: Int!, $lastId: String!) {
+    loanRouterEvents(
+      first: $first
+      where: {
+        type: LoanMigrated,
+        timestamp_lte: $timestampLte,
+        id_gt: $lastId
+      }
+      orderBy: id
+      orderDirection: asc
+    ) {
+      id
+      loanMigrated {
+        loanTermsHashV1
+        loanTermsHashV2
+      }
+    }
+  }
+`;
+
+// Page through loanRouterEvents until the full set is collected.
+// The subgraph caps a single response at 1000 rows, so we cursor on id
+// (id_gt) and loop until a short page signals the end of the data.
+async function fetchAllLoanRouterEvents(endpoint, query, timestamp) {
+  const allEvents = [];
+  let lastId = "";
+  while (true) {
+    const { loanRouterEvents } = await request(endpoint, query, {
+      timestampLte: String(timestamp),
+      first: SUBGRAPH_PAGE_SIZE,
+      lastId,
+    });
+    allEvents.push(...loanRouterEvents);
+    if (loanRouterEvents.length < SUBGRAPH_PAGE_SIZE) break;
+    lastId = loanRouterEvents[loanRouterEvents.length - 1].id;
+  }
+  return allEvents;
+}
 
 async function tvl(api) {
   // Get wrapped M tokens in USDai
@@ -106,7 +154,8 @@ async function tvl(api) {
   // Add claimable PYUSD 
   api.add(PYUSD, scaledClaimablePyusd);
 
-  // Get loan repayment balances in Staked USDai
+  // Get loan repayment balances in Staked USDai (except USDai)
+  // Should be phased out once all repayment balances are zeroed out
   await sumTokens2({
     api,
     owner: STAKED_USDAI_CONTRACT,
@@ -158,9 +207,7 @@ async function borrowed(api) {
   api.addTokens(tokens, poolsBorrowedValue);
 
   // Loan router borrowed
-  const { loanRouterEvents } = await request(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, {
-    timestampLte: String(api.timestamp),
-  });
+  let loanRouterEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, api.timestamp);
   const loanStates = await api.multiCall({
     abi: abi.loanState,
     target: LOAN_ROUTER_CONTRACT,
@@ -185,6 +232,52 @@ async function borrowed(api) {
     // Add the balance to the TVL
     api.add(currencyToken.id, unscaledBalance);
   });
+
+
+  // Loan router v2 borrowed (loans originated directly on v2)
+  loanRouterEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API_V2, loanHashesQuery, api.timestamp);
+  for (const event of loanRouterEvents) {
+    // Get the currency token
+    const { currencyToken } = event.loanOriginated;
+
+    // Get scaled balance
+    const [status, , , scaledBalance] = await api.call({ abi: abi.loanStateV2, target: LOAN_ROUTER_V2_CONTRACT, params: [event.loanTermsHash] });
+
+    // If the loan is inactive, continue
+    if (+status !== 1) continue;
+
+    // If the currency token has more than 18 decimals, continue
+    if (currencyToken.decimals > 18) continue;
+
+    // Scale down by the decimals of the currency token
+    const unscaledBalance = BigInt(scaledBalance) / BigInt(10 ** (18 - currencyToken.decimals));
+
+    // Add the balance to the TVL
+    api.add(currencyToken.id, unscaledBalance);
+  }
+
+  // Loan router v2 borrowed (loans originated on v1 and migrated to v2)
+  // Note: migrated loans are switched to USDai as the currency token
+  const migratedEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API_V2, migratedLoansQuery, api.timestamp);
+  for (const event of migratedEvents) {
+    const { loanTermsHashV2 } = event.loanMigrated;
+
+    // Get scaled balance from the v2 contract using the v2 loan terms hash
+    const [status, , , unscaledBalance] = await api.call({ abi: abi.loanStateV2, target: LOAN_ROUTER_V2_CONTRACT, params: [loanTermsHashV2] });
+
+    // If the loan is inactive, continue
+    if (+status !== 1) continue;
+
+    // Add the balance to the TVL
+    api.add(USDAI_CONTRACT, unscaledBalance);
+  }
+
+  // USDai borrowed out through escrow timelock
+  const escrowTimelockTotalDeposits = await api.call({
+    target: ESCROW_TIMELOCK_CONTRACT,
+    abi: abi.escrowTimelockTotalDeposits,
+  })
+  api.add(USDAI_CONTRACT, escrowTimelockTotalDeposits);
 }
 
 module.exports = {

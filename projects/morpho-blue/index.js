@@ -213,6 +213,14 @@ const config = {
     morphoBlue: "0x9CDD13a2212D94C4f12190cA30783B743E83C89e",
     fromBlock: 7526486,
   },
+  robinhood: {
+    morphoBlue: '0x9D53d5E3bd5E8d4Cbfa6DB1ca238AEA02E651010',
+    fromBlock: 286,
+  },
+  megaeth: {
+    morphoBlue: '0x18120312A7cf44DcfEc6dCe5632a431579ED9100',
+    fromBlock: 	18930057,
+  },
 }
 
 const eventAbis = {
@@ -274,7 +282,7 @@ const tvl = async (api) => {
     getAllVaults: true,
     onlyUseExistingCache: api.chain === 'sei'
   })
-  const vaultAssets = await api.multiCall({  abi: 'address:asset', calls: morphoVaults, permitFailure: true})
+  const vaultAssets = await api.multiCall({ abi: 'address:asset', calls: morphoVaults, permitFailure: true })
 
   const vaultTaO = vaultAssets.map((asset, i) => ([asset, morphoVaults[i]]).filter(i => i[0]))
   await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens: blackList, permitFailure: true })
