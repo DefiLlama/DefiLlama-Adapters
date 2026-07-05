@@ -71,10 +71,15 @@ module.exports = {
         vammTokensAndOwners.push([p.token1, p.pool])
       }
 
-      await sumTokens2({ api, tokensAndOwners: vammTokensAndOwners })
+      // permitFailure: true on both calls below -- a couple of the vAMM pools
+      // enumerated via the factory are pre-migration dust (see NEW_VAMM_POOLS
+      // comment above) and could revert or return stale data; without this,
+      // one bad pool/token call would zero out the whole adapter's TVL
+      // instead of just excluding that pool.
+      await sumTokens2({ api, tokensAndOwners: vammTokensAndOwners, permitFailure: true })
 
       // Algebra CL
-      await sumTokens2({ api, owners: CL_POOLS, tokens: CL_TOKENS })
+      await sumTokens2({ api, owners: CL_POOLS, tokens: CL_TOKENS, permitFailure: true })
 
       // DLMM
       await dlmm.robinhood.tvl(api)
