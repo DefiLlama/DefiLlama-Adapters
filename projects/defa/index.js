@@ -74,6 +74,18 @@ async function starknetTvl(api) {
 }
 
 // ============================================================
+// Ethereum — PSP / PayFi settlement liquidity
+// Short-cycle settlement liquidity in the DeFa PayFi layer (USDC).
+// ============================================================
+
+const DEFA_PAYFI_ADDRESS = "0x182D16434faa044B9216A490CF0955B04AE16904";
+const ETH_USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+
+async function ethereumTvl(api) {
+  return api.sumTokens({ owner: DEFA_PAYFI_ADDRESS, tokens: [ETH_USDC] });
+}
+
+// ============================================================
 // Export
 // ============================================================
 
@@ -81,8 +93,9 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
-    "TVL is the total active liquidity across invoice-backed pools, reported by on-chain Logger contracts on Stellar (Soroban), ZigChain (CosmWasm), and Starknet (Cairo).",
+    "TVL is DeFa's on-chain liquidity: active invoice-backed pool liquidity reported by on-chain Logger contracts on Stellar (Soroban), ZigChain (CosmWasm) and Starknet (Cairo), plus USDC settlement liquidity in the DeFa PSP/PayFi layer on Ethereum.",
   stellar: { tvl: stellarTvl },
   zigchain: { tvl: zigchainTvl },
   starknet: { tvl: starknetTvl },
+  ethereum: { tvl: ethereumTvl },
 };
