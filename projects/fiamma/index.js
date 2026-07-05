@@ -18,19 +18,21 @@ const EVM_FIABTC = {
 const APTOS_FIABTC = "0x75de592a7e62e6224d13763c392190fda8635ebb79c798a5e9dd0840102f3f93"
 
 const tvl = async (api) => {
-  let totalBtc = 0
-
-  for (const [chain, target] of Object.entries(EVM_FIABTC)) {
-    const supply = await new sdk.ChainApi({ chain }).call({ abi: "erc20:totalSupply", target })
-    totalBtc += supply / 1e8
-  }
+  // Read each destination chain at api.timestamp so historical/timetravel TVL is correct.
+  const supplies = await Promise.all(
+    Object.entries(EVM_FIABTC).map(([chain, target]) =>
+      new sdk.ChainApi({ chain, timestamp: api.timestamp }).call({ abi: "erc20:totalSupply", target })
+    )
+  )
+  let totalBtc = supplies.reduce((sum, supply) => sum + supply / 1e8, 0)
 
   const aptosSupply = await function_view({
     functionStr: "0x1::fungible_asset::supply",
     type_arguments: ["0x1::fungible_asset::Metadata"],
     args: [APTOS_FIABTC],
   })
-  totalBtc += Number(aptosSupply.vec[0]) / 1e8
+  const aptosAmount = aptosSupply && aptosSupply.vec && aptosSupply.vec.length ? Number(aptosSupply.vec[0]) : 0
+  totalBtc += aptosAmount / 1e8
 
   api.addCGToken("bitcoin", totalBtc)
 }
