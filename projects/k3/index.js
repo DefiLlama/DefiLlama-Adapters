@@ -77,7 +77,9 @@ const configs = {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
     },
     monad: {
-      eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
+      // The Euler vault owner 0x5D42...a6e1 was handed to K3 in the EulerDAO sunset
+      // and is counted from that date via eulerSunsetConfigs below; listing it here as
+      // well summed the same owner twice, double-counting monad TVL. Keep it only there.
       erc4626: [
         "0x1E4D67c666c2Ccf27A0aF980fE6c8e0f05aC8949",
         "0x502e4a0B61dEBA3015Eb9E51116B832003B22c2C",
