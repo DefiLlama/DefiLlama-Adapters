@@ -404,6 +404,19 @@ async function getCuratorTvlAccountableVault(api, vaults) {
   }
 }
 
+async function getCuratorTvlEtherfiVault(api, vaults) {
+  // for vaults that are plain access-controlled ERC20 receipt tokens minted 1:1 on deposit and
+  // burned on redeem (e.g. Midas-style tokenized funds like EtherFi's "Liquid Euro"/weEUR).
+  // There's no asset()/rate function - the token's own totalSupply() is the fund's AUM, and its
+  // own market price (already tracked by the coins API) converts it to USD.
+  if (!vaults || vaults.length === 0) return
+  const totalSupplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (!totalSupplies[i]) continue
+    api.add(vaults[i], totalSupplies[i])
+  }
+}
+
 async function getCuratorTvlAeraVault(api, vaults) {
   const assetRegistries = await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
   const existedVaults = []
@@ -618,6 +631,12 @@ async function getCuratorTvl(api, vaults) {
   // use convertToAssets(totalSupply()) instead
   if (vaults.accountableVaults) {
     await getCuratorTvlAccountableVault(api, vaults.accountableVaults)
+  }
+
+  // plain ERC20 receipt tokens whose totalSupply() is the fund's AUM, priced via their own
+  // market price (e.g. EtherFi's "Liquid Euro" weEUR)
+  if (vaults.etherfiVaults) {
+    await getCuratorTvlEtherfiVault(api, vaults.etherfiVaults)
   }
 
   return api.getBalances()

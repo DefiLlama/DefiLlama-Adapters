@@ -76,6 +76,11 @@ const configs = {
     arbitrum: {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
     },
+    optimism: {
+      etherfiVaults: [
+        "0xcC476B1a49bcDf5192561e87b6Fb8ea78aa28C13",
+      ],
+    },
     monad: {
       eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
       accountableVaults: [
