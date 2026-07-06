@@ -1,3 +1,10 @@
+const sdk = require('@defillama/sdk')
+
+const BF_BTC_RATIO_CONTRACT = '0xCdFb58c8C859Cb3F62ebe9Cf2767F9e036C7fb15'
+const BF_BTC_RATIO_CHAIN = 'ethereum'
+const BF_BTC_DECIMAL_FACTOR = 1e8
+const RATIO_PRECISION = 1e8
+
 const mapping = {
   btr: {
     bfBTC: '0xCdFb58c8C859Cb3F62ebe9Cf2767F9e036C7fb15',
@@ -21,12 +28,28 @@ const mapping = {
     bfBTC: '0x623F2774d9f27B59bc6b954544487532CE79d9DF',
   }
 }
+
+let ratioPromise
+function getBfbtcRatio() {
+  if (!ratioPromise) {
+    ratioPromise = sdk.api.abi.call({
+      chain: BF_BTC_RATIO_CHAIN,
+      target: BF_BTC_RATIO_CONTRACT,
+      abi: 'uint256:currentRatio',
+    }).then(({ output }) => output)
+  }
+  return ratioPromise
+}
+
 const exportObject = {}
 Object.keys(mapping).forEach(chain => {
   exportObject[chain] = {
     tvl: async (api) => {
-      const supply = await api.call({ abi: 'erc20:totalSupply', target: mapping[chain].bfBTC })
-      api.add(mapping[chain].bfBTC, supply)
+      const { bfBTC } = mapping[chain]
+      const supply = await api.call({ abi: 'erc20:totalSupply', target: bfBTC })
+      const ratio = await getBfbtcRatio()
+      const btcAmount = Number(supply) * RATIO_PRECISION / Number(ratio) / BF_BTC_DECIMAL_FACTOR
+      api.addCGToken('bitcoin', btcAmount)
     }
   }
 })
