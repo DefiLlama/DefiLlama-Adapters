@@ -1393,6 +1393,16 @@ const configs = {
       ]
     },
   },
+  "arrowpad": {
+    "methodology": "ETH held in the ArrowPad bonding-curve contract: funds raised by launched tokens that have not yet graduated to Uniswap.",
+    "robinhood": {
+      "owner": "0x5d2391cf88cd48bb6b9ec12b38bc8119562f9012",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.robinhood.WETH
+      ]
+    }
+  },
   "artcpaclub": {
     "timetravel": false,
     "elrond": {
@@ -27057,6 +27067,12 @@ const configs = {
       ]
     },
   },
+  "tensorplex": {
+    "methodology": "TVL counts all TAO in the bittensor reserve address: 5GtfvaMYH6hp78rG8mi7wJFxxQ9JwL23Qj9SUWDPYvT8uymL.",
+    "bittensor": {
+      "owner": "5GtfvaMYH6hp78rG8mi7wJFxxQ9JwL23Qj9SUWDPYvT8uymL",
+    }
+  },
   "terminal-fi-predeposit": {
     "ethereum": {
       "tokensAndOwners": [
@@ -28444,6 +28460,18 @@ const configs = {
         ADDRESSES.avax.WAVAX
       ]
     },
+  },
+  "vessel-finance": {
+    "methodology": "TVL is the sum of ETH, USDT, USDC and WBTC balances held in the Vessel Finance VaultProxy contract on Scroll.",
+    "scroll": {
+      "owner": "0x6126E927627b8d9eb9aDb9faadC47B76F94B6bA2",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.scroll.USDT,
+        ADDRESSES.scroll.USDC,
+        ADDRESSES.scroll.WBTC
+      ]
+    }
   },
   "vidya": {
     "methodology": "Counts the total number of tokens locked in staking contracts, game contracts and project treasury.",
@@ -41348,6 +41376,9 @@ const configs = {
   },
   "circle-gateway": {
     ethereum: { owner: '0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE', token: ADDRESSES.ethereum.USDC },
+  },
+  "robinhood-bridge": {
+    ethereum: { owner: '0xDf8755334ce7A73cCF6b581C02eA649AE3E864b3', token: ADDRESSES.null },
   },
   "zkex": {
     "polygon": {
