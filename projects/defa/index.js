@@ -1,6 +1,7 @@
 const { callSoroban } = require("../helper/chain/stellar");
 const { queryContract } = require("../helper/chain/cosmos");
 const { call } = require("../helper/chain/starknet");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // ============================================================
 // Stellar — Soroban TVL Logger (get_active_tvl)
@@ -79,10 +80,9 @@ async function starknetTvl(api) {
 // ============================================================
 
 const DEFA_PAYFI_ADDRESS = "0x182D16434faa044B9216A490CF0955B04AE16904";
-const ETH_USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 async function ethereumTvl(api) {
-  return api.sumTokens({ owner: DEFA_PAYFI_ADDRESS, tokens: [ETH_USDC] });
+  return api.sumTokens({ owner: DEFA_PAYFI_ADDRESS, tokens: [ADDRESSES.ethereum.USDC] });
 }
 
 // ============================================================
