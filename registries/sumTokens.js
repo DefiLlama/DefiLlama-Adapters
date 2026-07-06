@@ -18854,25 +18854,6 @@ const configs = {
       ]
     },
   },
-  "nadfun": {
-    "methodology": "Value of WMON and LVMON held in the Nad.fun bonding curve contracts",
-    "monad": {
-      "tokensAndOwners": [
-        [
-          ADDRESSES.monad.WMON,
-          "0xA7283d07812a02AFB7C09B60f8896bCEA3F90aCE"
-        ],
-        [
-          ADDRESSES.monad.WMON,
-          "0x9f3832732923252A21044F21eE6bd87F09514ae4"
-        ],
-        [
-          "0x91b81bfbe3A747230F0529Aa28d8b2Bc898E6D56",
-          "0x9f3832732923252A21044F21eE6bd87F09514ae4"
-        ]
-      ]
-    },
-  },
   "nado": {
     "ink": {
       "owners": [
