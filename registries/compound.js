@@ -134,7 +134,7 @@ const configs = {
   },
   'knightswap-lending': {
     methodology,
-    bsc: { comptroller: '0x4f92913b86d5e79593fa2e475a8232b22ef17ed1' },
+    bsc: { comptroller: '0x4f92913b86d5e79593fa2e475a8232b22ef17ed1', isInsolvent: true },
   },
   'apeswap-lending': {
     methodology,
