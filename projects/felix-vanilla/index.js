@@ -12,6 +12,8 @@ const tvl = async (api) => {
     "0x66c71204B70aE27BE6dC3eb41F9aF5868E68fDb6",
     "0x8A862fD6c12f9ad34C9c2ff45AB2b6712e8CEa27",
     "0x207ccaE51Ad2E1C240C4Ab4c94b670D438d2201C",
+    "0x808F72b6Ff632fba005C88b49C2a76AB01CAB545", // Felix USDC (Frontier)
+    "0x274f854b2042DB1aA4d6C6E45af73588BEd4Fc9D", // Felix USDH (Frontier)
   ];
 
   const assets = await api.multiCall({
