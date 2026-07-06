@@ -31,7 +31,7 @@ function checkBalanceHealth(balances, storedKey) {
   for (const [token, amount] of Object.entries(balances)) {
     const value = Number(amount)
     if (Number.isNaN(value)) {
-      nanTokens.push(token)
+      nanTokens.push(`${token} = ${amount}`)
     } else if (value < 0) {
       negativeTokens.push(`${token} = ${amount}`)
     }
