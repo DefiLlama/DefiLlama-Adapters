@@ -10,6 +10,7 @@ Object.keys(config).forEach((chain) => {
   const factories = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
+      throw new Error("Protocol is hacked, fix tvl calculation before re-enabling");
       const vaults = (await api.multiCall({ abi: "address[]:getActiveFleetCommanders", calls: factories, })).flat();
       return api.erc4626Sum2({ calls: vaults, });
     },
