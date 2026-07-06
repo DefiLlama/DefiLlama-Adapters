@@ -14631,6 +14631,18 @@ const configs = {
       "owner": "0xb18340bfe68c0b3a4fbd3a3ae2c014be94c16569b7f360cf53efe1b7023e545e"
     },
   },
+  "fluxpad": {
+    "alv": {
+      "owners": [
+        "0xCe025C574C6AD0f4F96B85D385Da2E31278E54D2",
+        "0x586af47cb950C6Cb9960aBAb3fC1437df177417C"
+      ],
+      "tokens": [
+        ADDRESSES.null,
+        "0x223Cb45fB37e9b927b0c1Fab58d4a1A819C0C4f6"
+      ]
+    },
+  },
   "fomo3d": {
     "methodology": "TVL includes a Fomo3D farm contracts",
     "ethereum": {
@@ -41376,6 +41388,9 @@ const configs = {
   },
   "circle-gateway": {
     ethereum: { owner: '0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE', token: ADDRESSES.ethereum.USDC },
+  },
+  "robinhood-bridge": {
+    ethereum: { owner: '0xDf8755334ce7A73cCF6b581C02eA649AE3E864b3', token: ADDRESSES.null },
   },
   "zkex": {
     "polygon": {
