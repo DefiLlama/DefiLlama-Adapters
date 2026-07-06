@@ -41377,6 +41377,9 @@ const configs = {
   "circle-gateway": {
     ethereum: { owner: '0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE', token: ADDRESSES.ethereum.USDC },
   },
+  "robinhood-bridge": {
+    ethereum: { owner: '0xDf8755334ce7A73cCF6b581C02eA649AE3E864b3', token: ADDRESSES.null },
+  },
   "zkex": {
     "polygon": {
       "tokens": [

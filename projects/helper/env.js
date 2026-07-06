@@ -10,9 +10,6 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
-  CRONOS_MULTICALL_CHUNK_SIZE: "10", // cronos reduced gas limit, this is a workaround to make multicall work
-  HEDERA_MULTICALL_CHUNK_SIZE: "50", // cronos reduced gas limit, this is a workaround to make multicall work
-  KATANA_MULTICALL_CHUNK_SIZE: "50",
   SEI_BLOCK_LOW: "150023881",
   STARKNET_RPC: 'https://rpc.starknet.lava.build/',
   STARKNET_MULTICALL: '0x01a33330996310a1e3fa1df5b16c1e07f0491fdd20c441126e02613b948f0225',
@@ -54,10 +51,7 @@ const DEFAULTS = {
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
-  PHAROS_RPC_MULTICALL: "0xca11bde05977b3631167028862be2a173976ca11",  // v3
-  ANUBI_RPC_MULTICALL: "0x2BaB36196519Ce9Cc31Bc4899FCBB8124A413b02",  // v3
   ROBINHOOD_RPC: 'https://robinhoodchain.blockscout.com/api/eth-rpc',
-  ROBINHOOD_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",  // v3
 }
 
 const ENV_KEYS = [
