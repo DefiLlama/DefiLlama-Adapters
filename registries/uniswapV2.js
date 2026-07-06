@@ -125,9 +125,8 @@ const uniV2Configs = {
   'areon-swap': {
     area: '0x4df039804873717bff7d03694fb941cf0469b79e',
   },
-  'artexswap_xyz': {
-    artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD',
-  },
+  'artexswap_xyz': { artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD', },
+  'sheriff-v2': { robinhood: '0x10F7D1eF77f58181484936170430DF13539C5162', },
   'astarexchange': {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
