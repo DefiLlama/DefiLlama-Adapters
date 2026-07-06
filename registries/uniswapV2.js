@@ -2872,6 +2872,9 @@ const uniV2Configs = {
     },
     avax: '0x3ECf287990A2365d48C6681620393aC1cdF3D268',
   },
+  'nadfun-v2': {
+    monad: '0xA25b13127e63ddae6d0b35570FF3D39dBD621001',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
