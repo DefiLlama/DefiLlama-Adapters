@@ -36,7 +36,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "Vaults are sourced from the T3tris ecosystem API; only verified, non-blacklisted vaults are counted. TVL = totalManagedAssets (assets deployed in strategies, per oracle NAV) + pendingDeposits (async deposit requests in yield-bearing depositSilo) + claimableRedeems (settled redemptions in yield-bearing redeemSilo), read on-chain per vault via getGrossTVL() and summed per underlying token.",
+  methodology: "Total value of assets held across all verified T3tris vaults, including assets deployed in strategies, pending deposits, and claimable redemptions.",
 };
 
 CHAINS.forEach((chain) => {
