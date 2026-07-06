@@ -1676,10 +1676,12 @@ const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoinc
   'enuls', 'kardia'
 ]
 
-unsupportedChains.forEach(chain => delete config[chain]);
-
 // export 0 to preserve historical tvl
 const deadChains = ['airdao', 'eos_evm', 'kroma']
+
+const allChains = [...unsupportedChains, ...deadChains];
+allChains.forEach(chain => delete config[chain]);
+
 const deadChainsExports = {};
 deadChains.forEach(chain => { deadChainsExports[chain] = { tvl: async () => ({}) }; });
 
