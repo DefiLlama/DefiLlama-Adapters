@@ -78,6 +78,9 @@ const configs = {
     },
     monad: {
       eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
+      accountableVaults: [
+        "0x0143C3eF3a76Ed825Fd5201953f65b52aCEfD799",
+      ],
       erc4626: [
         "0x1E4D67c666c2Ccf27A0aF980fE6c8e0f05aC8949",
         "0x502e4a0B61dEBA3015Eb9E51116B832003B22c2C",

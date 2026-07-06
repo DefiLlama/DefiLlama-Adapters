@@ -386,6 +386,24 @@ async function getCuratorTvlErc4626(api, vaults) {
   }
 }
 
+async function getCuratorTvlAccountableVault(api, vaults) {
+  // for vaults that look ERC-4626-like (asset()/totalSupply()/convertToAssets()) but whose
+  // totalAssets() is broken/unused (e.g. K3's private-credit "loan" vaults). Total value is
+  // derived from convertToAssets(totalSupply()) instead of calling totalAssets() directly.
+  if (!vaults || vaults.length === 0) return
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
+  const totalSupplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
+  const totalAssets = await api.multiCall({
+    abi: ABI.ERC4626.convertToAssets,
+    calls: vaults.map((vault, i) => ({ target: vault, params: [totalSupplies[i] || 0] })),
+    permitFailure: true,
+  })
+  for (let i = 0; i < vaults.length; i++) {
+    if (!assets[i] || !totalAssets[i]) continue
+    api.add(assets[i], totalAssets[i])
+  }
+}
+
 async function getCuratorTvlAeraVault(api, vaults) {
   const assetRegistries = await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
   const existedVaults = []
@@ -594,6 +612,12 @@ async function getCuratorTvl(api, vaults) {
   // nested 4626 vaults
   if (vaults.nestedVaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
+  }
+
+  // ERC-4626-like vaults with broken/unused totalAssets() (e.g. K3 private-credit vaults) -
+  // use convertToAssets(totalSupply()) instead
+  if (vaults.accountableVaults) {
+    await getCuratorTvlAccountableVault(api, vaults.accountableVaults)
   }
 
   return api.getBalances()
