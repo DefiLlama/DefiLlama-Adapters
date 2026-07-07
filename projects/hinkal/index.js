@@ -1,114 +1,38 @@
 const registryTokensByChain = require("./registryTokens.js");
 const registryTokensWithUnderlyingAddressesByChain = require("./registryTokensWithUnderlyingAddresses.js");
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokensExport: sumSolanaTokensExport } = require("../helper/solana.js");
+const { sumTokensExport } = require("../helper/sumTokens.js");
+
 const SHARED_OWNER = "0x25e5e82f5702A27C3466fE68f14abDbbAdFca826";
+const TRON_VAULT = "TKFUxULu53pSfDkSZwF85PFuKBw1K9axaw";
+const SOLANA_VAULT = "HrcpUS1oFVqeNVZxwHZP2fHSiXJWpv4DTN6qyQX4tAJa";
 
-const ownerByChain = {
-  ethereum: SHARED_OWNER,
-  arbitrum: SHARED_OWNER,
-  optimism: SHARED_OWNER,
-  polygon: SHARED_OWNER,
-  base: SHARED_OWNER,
-};
+const tvl = async (api) => {
+  const chain = api.chain;
+  const owners = [SHARED_OWNER];
+  const tokens = registryTokensByChain[chain];
+  const mapping = registryTokensWithUnderlyingAddressesByChain[chain] || {};
 
-const nullAddress = ADDRESSES.null;
-
-const nativeVolatileChains = ["blast"];
-
-const getAllTokenBalances = async (tokenList, chain) => {
-  let balanceCalls = tokenList.map((token) => ({
-    target: token,
-    params: nativeVolatileChains.includes(chain)
-      ? ownerByChain[chain].owner ?? ""
-      : ownerByChain[chain],
-  }));
-
-  if (nativeVolatileChains.includes(chain)) {
-    const volatileBalanceCalls = tokenList.map((token) => ({
-      target: token,
-      params: ownerByChain[chain].volatileOwner ?? "",
-    }));
-
-    balanceCalls = [...balanceCalls, ...volatileBalanceCalls];
-  }
-
-  const balances = (
-    await sdk.api.abi.multiCall({
-      calls: balanceCalls,
-      abi: "erc20:balanceOf",
-      chain,
-    })
-  ).output;
-
-  const tokenBalances = balances.map((bal) => {
-    const token = bal.input.target;
-    const tokenBalance = bal.output;
-
-    return {
-      balance: tokenBalance,
-      address: token,
-    };
-  });
-
-  const nativeTokenBalance = (
-    await sdk.api.eth.getBalance({
-      target: nativeVolatileChains.includes(chain)
-        ? ownerByChain[chain].volatileOwner ?? ""
-        : ownerByChain[chain],
-      chain,
-    })
-  ).output;
-
-  tokenBalances.push({
-    address: nullAddress,
-    balance: nativeTokenBalance,
-  });
-
-  return tokenBalances.filter((tokenBal) => Number(tokenBal.balance) > 0);
-};
-const { toUSDTBalances } = require("../helper/balances.js");
-
-const tvl = async (_, _1, _2, { chain, api }) => {
-  const tokenBalances = await getAllTokenBalances(
-    registryTokensByChain[chain],
-    chain
+  // ERC20 balances, remapping wrapped tokens to their priceable underlying.
+  const calls = tokens.flatMap((token) =>
+    owners.map((owner) => ({ target: token, params: owner }))
   );
-
-  const chainTokensWithUnderlyingAddresses =
-    registryTokensWithUnderlyingAddressesByChain[chain];
-
-  const mappedTokens = tokenBalances.map((token) => {
-    const tokenUnderlyingAddress = chainTokensWithUnderlyingAddresses
-      ? chainTokensWithUnderlyingAddresses[token.address]
-      : undefined;
-
-    return {
-      address: tokenUnderlyingAddress ? tokenUnderlyingAddress : token.address,
-      balance: token.balance,
-    };
+  const bals = await api.multiCall({ abi: "erc20:balanceOf", calls, permitFailure: true });
+  bals.forEach((bal, i) => {
+    if (bal && +bal > 0) api.add(mapping[calls[i].target] || calls[i].target, bal);
   });
 
-  return api.addTokens(
-    mappedTokens.map((token) => token.address),
-    mappedTokens.map((token) => token.balance)
-  );
+  // Native balance for the shielded pool; returns the full accumulated set.
+  return api.sumTokens({ owners, tokens: [ADDRESSES.null] });
 };
 
 module.exports = {
-  ethereum: {
-    tvl,
-  },
-  base: {
-    tvl,
-  },
-  arbitrum: {
-    tvl,
-  },
-  optimism: {
-    tvl,
-  },
-  polygon: {
-    tvl,
-  },
+  ethereum: { tvl },
+  base: { tvl },
+  arbitrum: { tvl },
+  optimism: { tvl },
+  polygon: { tvl },
+  tron: { tvl: sumTokensExport({ owners: [TRON_VAULT], tokens: [ADDRESSES.null, ...registryTokensByChain.tron] }) },
+  solana: { tvl: sumSolanaTokensExport({ solOwners: [SOLANA_VAULT], computeTokenAccount: true, allowError: true }) },
 };
