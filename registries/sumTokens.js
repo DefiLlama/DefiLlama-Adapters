@@ -26354,6 +26354,39 @@ const configs = {
       ]
     },
   },
+  "sukukfi": {
+    "methodology": "Sums the tokens held by SukukFi\'s duPRT (investment layer) and trUST (settlement layer) vaults on Berachain. This equals duPRT\'s grossAssetBalance (idle + pending + claimable + cancelled — everything not yet invested elsewhere) plus trUST\'s totalAssets (native settlement capital plus any duPRT-invested capital, since investing moves the underlying asset into the matching trUST vault).",
+    "berachain": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            ADDRESSES.berachain.USDC,
+            "0x1B610abd3dFA170fdC579c48da7007217c06149D"
+          ],
+          [
+            ADDRESSES.stable.USDT0,
+            '0x3d6D8D7e66594f3cFbbF2c65dcE305edCD325f7e'
+          ],
+          [
+            ADDRESSES.berachain.HONEY,
+            '0xdc9D7e60f3091029FA2479919325385a56F2A2F8'
+          ],
+          [
+            ADDRESSES.berachain.USDC,
+            '0x23953876A0f7c367B0Ae5E8b9cFb6b42E503F09b'
+          ],
+          [
+            ADDRESSES.stable.USDT0, 
+            '0x3ddECA146B3179367cC1d782889f938f449c9d21'
+          ],
+          [
+            ADDRESSES.berachain.HONEY, 
+            '0xC441d4c5F060f96bD7CD20d3D13Ecf957Ea308C7'
+          ]
+        ]
+      }
+    }
+  },
   "sun": {
     "tron": {
       "tvl": {
@@ -41041,6 +41074,8 @@ const configs = {
       }
     },
   },
+  // https://docs.meridian.xyz/protocol-reference/contracts
+  "meridian-predict": { robinhood: { owners: ['0x79cB914f3F336426E89FaB55A9488AB25770552D','0xE4cea507b19796362A5a28Fa7cb705A3F1866213','0x7E318ef37c3bC3d0cBA205Af2D1Fc9F9CeFEB5df'], token: ADDRESSES.robinhood.USDe} },
   "yieldbricks": {
     "timetravel": false,
     "misrepresentedTokens": false,

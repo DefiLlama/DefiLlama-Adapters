@@ -3429,7 +3429,7 @@ const configs = {
   'treasury/maker': {
     ethereum: {
       owners: ['0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB'],
-      ownTokens: ['0xc20059e0317de91738d13af027dfc4a50781b066', '0x56072c95faa701256059aa122697b133aded9279', ADDRESSES.ethereum.MKR]
+      ownTokens: ['0xc20059e0317de91738d13af027dfc4a50781b066', '0x56072c95faa701256059aa122697b133aded9279', ADDRESSES.ethereum.MKR, '0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406']
     },
     arbitrum: {
       owners: ['0x10e6593cdda8c58a1d0f14c5164b376352a55f2f'],
@@ -4928,6 +4928,12 @@ const configs = {
       ],
       owners: ['0x4f54cab19b61138e3c622a0bd671c687481ec030'],
       ownTokens: ['0x43aB8f7d2A8Dd4102cCEA6b438F6d747b1B9F034'],
+    },
+  },
+  'treasury/sentry-trading': {
+    robinhood: {
+      tokens: [nullAddress],
+      owners: ['0x8852BC7Ca269c276264b8Ad7869956C26304a740'],
     },
   },
   'treasury/sharplink-gaming': {

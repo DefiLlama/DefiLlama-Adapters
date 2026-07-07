@@ -15,6 +15,8 @@ const config = {
     '0x73a052500105205d34daf004eab301916da8190f', // ytUSD distressed
     '0x83f798e925bcd4017eb265844fddabb448f1707d', // yUSDT distressed
     '0xdf5e0e81dff6faf3a7e52ba697820c5e32d806a8', // yDAI+yUSDC+yUSDT+yTUSD distressed
+    '0xbdb37597c7e84d898a5536fbb6e4a5c2bcac640b', // BLOTIX mispriced ($45 vs circular SAFEMONEY pool) - ~$245M phantom TVL
+    '0xc4abeddacfa65e25d6c942861fb3bdc9c00eeb13', // SAFEMONEY mispriced (circular vs BLOTIX)
   ] },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675, blacklistedTokens: [
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
