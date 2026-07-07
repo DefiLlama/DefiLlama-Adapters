@@ -4930,6 +4930,12 @@ const configs = {
       ownTokens: ['0x43aB8f7d2A8Dd4102cCEA6b438F6d747b1B9F034'],
     },
   },
+  'treasury/sentry-trading': {
+    robinhood: {
+      tokens: [nullAddress],
+      owners: ['0x8852BC7Ca269c276264b8Ad7869956C26304a740'],
+    },
+  },
   'treasury/sharplink-gaming': {
     ethereum: {
       tokens: [
