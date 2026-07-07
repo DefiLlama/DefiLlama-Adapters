@@ -1,78 +1,30 @@
 const registryTokensByChain = require("./registryTokens.js");
 const registryTokensWithUnderlyingAddressesByChain = require("./registryTokensWithUnderlyingAddresses.js");
 const ADDRESSES = require("../helper/coreAssets.json");
-const sdk = require("@defillama/sdk");
 const { sumTokensExport: sumSolanaTokensExport } = require("../helper/solana.js");
 const { sumTokensExport } = require("../helper/sumTokens.js");
-const { ownersByChain } = require("./owners.js");
 
-const nullAddress = ADDRESSES.null;
+const SHARED_OWNER = "0x25e5e82f5702A27C3466fE68f14abDbbAdFca826";
+const TRON_VAULT = "TKFUxULu53pSfDkSZwF85PFuKBw1K9axaw";
+const SOLANA_VAULT = "HrcpUS1oFVqeNVZxwHZP2fHSiXJWpv4DTN6qyQX4tAJa";
 
-const getAllTokenBalances = async (tokenList, chain, block) => {
-  const owners = ownersByChain[chain];
+const tvl = async (api) => {
+  const chain = api.chain;
+  const owners = [SHARED_OWNER];
+  const tokens = registryTokensByChain[chain];
+  const mapping = registryTokensWithUnderlyingAddressesByChain[chain] || {};
 
-  // One balanceOf call per (token, owner) pair.
-  const balanceCalls = tokenList.flatMap((token) =>
+  // ERC20 balances, remapping wrapped tokens to their priceable underlying.
+  const calls = tokens.flatMap((token) =>
     owners.map((owner) => ({ target: token, params: owner }))
   );
-
-  const balances = (
-    await sdk.api.abi.multiCall({
-      calls: balanceCalls,
-      abi: "erc20:balanceOf",
-      chain,
-      block,
-      permitFailure: true,
-    })
-  ).output;
-
-  const tokenBalances = balances
-    .filter((bal) => bal.success && Number(bal.output) > 0)
-    .map((bal) => ({ address: bal.input.target, balance: bal.output }));
-
-  // Native balance for every owner.
-  const nativeBalances = await Promise.all(
-    owners.map((owner) =>
-      sdk.api.eth.getBalance({ target: owner, chain, block }).then((r) => r.output)
-    )
-  );
-
-  nativeBalances.forEach((balance) => {
-    if (Number(balance) > 0) tokenBalances.push({ address: nullAddress, balance });
+  const bals = await api.multiCall({ abi: "erc20:balanceOf", calls, permitFailure: true });
+  bals.forEach((bal, i) => {
+    if (bal && +bal > 0) api.add(mapping[calls[i].target] || calls[i].target, bal);
   });
 
-  return tokenBalances;
-};
-
-// EVM chains: shielded pool (SHARED_OWNER) + top public proxy wallets. Wrapped
-// tokens are mapped to their underlying address so they price correctly.
-const tvl = async (_, _1, _2, { chain, api }) => {
-  const tokenBalances = await getAllTokenBalances(
-    registryTokensByChain[chain],
-    chain,
-    api.block
-  );
-
-  const chainTokensWithUnderlyingAddresses =
-    registryTokensWithUnderlyingAddressesByChain[chain];
-
-  const mappedTokens = tokenBalances.map((token) => {
-    const tokenUnderlyingAddress = chainTokensWithUnderlyingAddresses
-      ? chainTokensWithUnderlyingAddresses[token.address]
-      : undefined;
-
-    return {
-      address: tokenUnderlyingAddress ? tokenUnderlyingAddress : token.address,
-      balance: token.balance,
-    };
-  });
-
-  api.addTokens(
-    mappedTokens.map((token) => token.address),
-    mappedTokens.map((token) => token.balance)
-  );
-
-  return api.getBalances();
+  // Native balance for the shielded pool; returns the full accumulated set.
+  return api.sumTokens({ owners, tokens: [ADDRESSES.null] });
 };
 
 module.exports = {
@@ -81,17 +33,6 @@ module.exports = {
   arbitrum: { tvl },
   optimism: { tvl },
   polygon: { tvl },
-  tron: {
-    tvl: sumTokensExport({
-      owners: ownersByChain.tron,
-      tokens: [nullAddress, ...registryTokensByChain.tron],
-    }),
-  },
-  solana: {
-    tvl: sumSolanaTokensExport({
-      solOwners: ownersByChain.solana,
-      computeTokenAccount: true,
-      allowError: true,
-    }),
-  },
+  tron: { tvl: sumTokensExport({ owners: [TRON_VAULT], tokens: [ADDRESSES.null, ...registryTokensByChain.tron] }) },
+  solana: { tvl: sumSolanaTokensExport({ solOwners: [SOLANA_VAULT], computeTokenAccount: true, allowError: true }) },
 };
