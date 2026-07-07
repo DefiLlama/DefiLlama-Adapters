@@ -404,9 +404,9 @@ async function getCuratorTvlAccountableVault(api, vaults) {
   }
 }
 
-async function getCuratorTvlEtherfiVault(api, vaults) {
-  // for vaults that are plain access-controlled ERC20 receipt tokens minted 1:1 on deposit and
-  // burned on redeem (e.g. Midas-style tokenized funds like EtherFi's "Liquid Euro"/weEUR).
+async function getCuratorTvlMidasToken(api, vaults) {
+  // for plain access-controlled ERC20 share tokens minted 1:1 on deposit and burned on redeem
+  // (e.g. Midas-style tokenized funds like EtherFi's "Liquid Euro"/weEUR).
   // There's no asset()/rate function - the token's own totalSupply() is the fund's AUM, and its
   // own market price (already tracked by the coins API) converts it to USD.
   if (!vaults || vaults.length === 0) return
@@ -633,10 +633,10 @@ async function getCuratorTvl(api, vaults) {
     await getCuratorTvlAccountableVault(api, vaults.accountableVaults)
   }
 
-  // plain ERC20 receipt tokens whose totalSupply() is the fund's AUM, priced via their own
+  // plain ERC20 share tokens whose totalSupply() is the fund's AUM, priced via their own
   // market price (e.g. EtherFi's "Liquid Euro" weEUR)
-  if (vaults.etherfiVaults) {
-    await getCuratorTvlEtherfiVault(api, vaults.etherfiVaults)
+  if (vaults.midasTokens) {
+    await getCuratorTvlMidasToken(api, vaults.midasTokens)
   }
 
   return api.getBalances()
