@@ -26360,27 +26360,27 @@ const configs = {
       "tvl": {
         "tokensAndOwners": [
           [
-            "0x549943e04f40284185054145c6E4e9568C1D3241",
+            ADDRESSES.berachain.USDC,
             "0x1B610abd3dFA170fdC579c48da7007217c06149D"
           ],
           [
-            '0x779Ded0c9e1022225f8E0630b35a9b54bE713736',
+            ADDRESSES.stable.USDT0,
             '0x3d6D8D7e66594f3cFbbF2c65dcE305edCD325f7e'
           ],
           [
-            '0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce',
+            ADDRESSES.berachain.HONEY,
             '0xdc9D7e60f3091029FA2479919325385a56F2A2F8'
           ],
           [
-            '0x549943e04f40284185054145c6E4e9568C1D3241',
+            ADDRESSES.berachain.USDC,
             '0x23953876A0f7c367B0Ae5E8b9cFb6b42E503F09b'
           ],
           [
-            '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', 
+            ADDRESSES.stable.USDT0, 
             '0x3ddECA146B3179367cC1d782889f938f449c9d21'
           ],
           [
-            '0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce', 
+            ADDRESSES.berachain.HONEY, 
             '0xC441d4c5F060f96bD7CD20d3D13Ecf957Ea308C7'
           ]
         ]
