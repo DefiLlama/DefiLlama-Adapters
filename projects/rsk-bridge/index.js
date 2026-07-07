@@ -1,16 +1,10 @@
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { sumTokens } = require("../helper/sumTokens");
 
 module.exports = {
   bitcoin: {
-    tvl: async (api) => {
-      return sumTokens({ 
-        chain: 'bitcoin',
-        owners: bitcoinAddressBook.rskBridge,
-        balances: api.getBalances(),
-      });
-    },
+    tvl: bitcoinAddressBook.getBTCExport('rskBridge')
+  
   },
   ethereum: {
     tvl: sumTokensExport({

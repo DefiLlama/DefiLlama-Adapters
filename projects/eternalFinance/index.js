@@ -70,7 +70,12 @@ function calculateLyfPoolTokens(lyfPools, api) {
         const pool = lyfPools[key];
         const { lpAmount, lpSupply, reserveX, reserveY, tokenX, tokenY } = pool;
 
+        /// @dev skip pools whose pancake reserves/supply weren't resolved (LP no longer exists) -> avoids NaN balances
+        if (lpSupply === undefined || reserveX === undefined || reserveY === undefined) return;
+
         const share = new BigNumber(lpAmount).div(lpSupply);
+        /// @dev skip empty/degenerate pools (lpSupply 0 -> share Infinity -> NaN balances)
+        if (!share.isFinite()) return;
         const balanceX = share.multipliedBy(pool.reserveX).toFixed(0);
         const balanceY = share.multipliedBy(pool.reserveY).toFixed(0);
         lyfPools[key] = {

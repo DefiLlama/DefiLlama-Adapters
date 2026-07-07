@@ -349,6 +349,15 @@ const configs = {
       ]
     },
   },
+  "flooor-fun": {
+    "methodology": "TVL is the native ETH held in the flooor.fun auction contract on Base, comprising the current highest bid locked in escrow (activebidAM) plus accumulated epoch pool rewards (poolAccrued). ETH exits the contract when sellToHighest() is called, distributing 99.5% to the NFT seller and 0.5% fee to the protocol.",
+    "base": {
+      "owner": "0xF6B2C2411a101Db46c8513dDAef10b11184c58fF",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+  },
   "Hyperionx": {
     "methodology": "wUSDC will be equivalently converted into USDX, becoming part of Hyperion Exchange's TVL.",
     "zkfair": {
@@ -1383,6 +1392,16 @@ const configs = {
         "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.usda-token::usda"
       ]
     },
+  },
+  "arrowpad": {
+    "methodology": "ETH held in the ArrowPad bonding-curve contract: funds raised by launched tokens that have not yet graduated to Uniswap.",
+    "robinhood": {
+      "owner": "0x5d2391cf88cd48bb6b9ec12b38bc8119562f9012",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.robinhood.WETH
+      ]
+    }
   },
   "artcpaclub": {
     "timetravel": false,
@@ -7081,6 +7100,12 @@ const configs = {
       "token": "0x5dF82810CB4B8f3e0Da3c031cCc9208ee9cF9500"
     },
   },
+  "circle-xreserve": {
+    "ethereum": {
+      "owner": "0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE",
+      "token": ADDRESSES.ethereum.USDC
+    }
+  },
   "citadao": {
     "ethereum": {
       "tvl": {
@@ -11991,18 +12016,6 @@ const configs = {
       ]
     },
   },
-  "credible-finance": {
-    "methodology": "TVL is calculated as all token balances held in Credible Finance's lending contract on 0G Chain, representing all deposits available for lending.",
-    "0g": {
-      "tokens": [
-        "0x1f3aa82227281ca364bfb3d253b0f1af1da6473e",
-        "0x9cc1d782e6dfe5936204c3295cb430e641dcf300",
-        ADDRESSES.sseed.oUSDT,
-        "0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c"
-      ],
-      "owner": "0x907F40d1D6649810E0C6C2Af5e0d42c7C10ad295"
-    },
-  },
   "crosschainbridge": {
     "ethereum": {
       "tvl": {
@@ -14618,6 +14631,18 @@ const configs = {
       "owner": "0xb18340bfe68c0b3a4fbd3a3ae2c014be94c16569b7f360cf53efe1b7023e545e"
     },
   },
+  "fluxpad": {
+    "alv": {
+      "owners": [
+        "0xCe025C574C6AD0f4F96B85D385Da2E31278E54D2",
+        "0x586af47cb950C6Cb9960aBAb3fC1437df177417C"
+      ],
+      "tokens": [
+        ADDRESSES.null,
+        "0x223Cb45fB37e9b927b0c1Fab58d4a1A819C0C4f6"
+      ]
+    },
+  },
   "fomo3d": {
     "methodology": "TVL includes a Fomo3D farm contracts",
     "ethereum": {
@@ -15854,6 +15879,15 @@ const configs = {
         "0x7470C48FBf23067F6F8Ef63f7D9B4A2aA5D0afEf"
       ]
     },
+  },
+  "hoodbets": {
+    "methodology": "TVL is the native ETH held by the HoodBets contract: open parimutuel betting pools plus settled winnings awaiting claim. Markets are settled permissionlessly against Chainlink stock price feeds.",
+    "robinhood": {
+      "owner": "0xA3cD4D80B48B272f14E233D266b1103900cb42fC",
+      "tokens": [
+        ADDRESSES.null
+      ]
+    }
   },
   "hope-money": {
     "methodology": "Tokens held in coinbase custody. Reserve info taken from: https://hope.money/gomboc.html",
@@ -17221,6 +17255,17 @@ const configs = {
         ADDRESSES.etlk.USDC
       ]
     },
+  },
+  "livara": {
+    "methodology": "TVL is the total USDT locked in the LivaraPoolsEscrow smart contract on Polygon, representing funds held across all open prediction pools awaiting settlement.",
+    "polygon": {
+      "tvl": {
+        "owner": "0x2883C739871CE6900Bf4b60Ecc979354613148e2",
+        "tokens": [
+          ADDRESSES.polygon.USDT
+        ]
+      }
+    }
   },
   "lucky38": {
     "methodology": "TVL equals the USDC balance held in SharedTreasury — the single liquidity pool backing all six Lucky38 games.",
@@ -24277,6 +24322,21 @@ const configs = {
       ]
     },
   },
+  "rubin": {
+    "methodology": "Counts USDC collateral deposited on Rubin through the ethereum and arbitrum bridges.",
+    "arbitrum": {
+      "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
+      "tokens": [
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+      ]
+    },
+    "ethereum": {
+      "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
+      "tokens": [
+        ADDRESSES.ethereum.USDC
+      ]
+    }
+  },
   "ruby-exchange-stable": {
     "europa": {
       "ownerTokens": [
@@ -26263,7 +26323,8 @@ const configs = {
           "addr1q9mqsgrgdaq9aahjfcrc6f45sgmcut4gu3c774kqzawkjkhujht5h40l2yrm8e7r2vwr2g3tv64pzjgnxwsztwg0yu5s00jz00",
           "addr1wy2gch9ua0700a3dg423wxcwx4p886m4ny5u3aqs66sluqcly9uud",
           "addr1wxzar75lms9547xdz4slxk7r362rs4g4ccurl22g764akngjhjtzp",
-          "addr1w88zvhrrlqj6kl94mel769v348khd5w3jz3av33ksp8wgvss6msuw"
+          "addr1w88zvhrrlqj6kl94mel769v348khd5w3jz3av33ksp8wgvss6msuw",
+          "addr1w9ygqdx9law3waqgm6eamf2xhxs5x83r0pfka928jmydkuc6ykls3"
         ]
       },
       "staking": {
@@ -26292,6 +26353,39 @@ const configs = {
         ADDRESSES.base.USDC
       ]
     },
+  },
+  "sukukfi": {
+    "methodology": "Sums the tokens held by SukukFi\'s duPRT (investment layer) and trUST (settlement layer) vaults on Berachain. This equals duPRT\'s grossAssetBalance (idle + pending + claimable + cancelled — everything not yet invested elsewhere) plus trUST\'s totalAssets (native settlement capital plus any duPRT-invested capital, since investing moves the underlying asset into the matching trUST vault).",
+    "berachain": {
+      "tvl": {
+        "tokensAndOwners": [
+          [
+            ADDRESSES.berachain.USDC,
+            "0x1B610abd3dFA170fdC579c48da7007217c06149D"
+          ],
+          [
+            ADDRESSES.stable.USDT0,
+            '0x3d6D8D7e66594f3cFbbF2c65dcE305edCD325f7e'
+          ],
+          [
+            ADDRESSES.berachain.HONEY,
+            '0xdc9D7e60f3091029FA2479919325385a56F2A2F8'
+          ],
+          [
+            ADDRESSES.berachain.USDC,
+            '0x23953876A0f7c367B0Ae5E8b9cFb6b42E503F09b'
+          ],
+          [
+            ADDRESSES.stable.USDT0, 
+            '0x3ddECA146B3179367cC1d782889f938f449c9d21'
+          ],
+          [
+            ADDRESSES.berachain.HONEY, 
+            '0xC441d4c5F060f96bD7CD20d3D13Ecf957Ea308C7'
+          ]
+        ]
+      }
+    }
   },
   "sun": {
     "tron": {
@@ -27017,6 +27111,12 @@ const configs = {
         ADDRESSES.ethereum.FRAX
       ]
     },
+  },
+  "tensorplex": {
+    "methodology": "TVL counts all TAO in the bittensor reserve address: 5GtfvaMYH6hp78rG8mi7wJFxxQ9JwL23Qj9SUWDPYvT8uymL.",
+    "bittensor": {
+      "owner": "5GtfvaMYH6hp78rG8mi7wJFxxQ9JwL23Qj9SUWDPYvT8uymL",
+    }
   },
   "terminal-fi-predeposit": {
     "ethereum": {
@@ -28405,6 +28505,18 @@ const configs = {
         ADDRESSES.avax.WAVAX
       ]
     },
+  },
+  "vessel-finance": {
+    "methodology": "TVL is the sum of ETH, USDT, USDC and WBTC balances held in the Vessel Finance VaultProxy contract on Scroll.",
+    "scroll": {
+      "owner": "0x6126E927627b8d9eb9aDb9faadC47B76F94B6bA2",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.scroll.USDT,
+        ADDRESSES.scroll.USDC,
+        ADDRESSES.scroll.WBTC
+      ]
+    }
   },
   "vidya": {
     "methodology": "Counts the total number of tokens locked in staking contracts, game contracts and project treasury.",
@@ -41307,6 +41419,12 @@ const configs = {
       "resolveUniV3": true
     },
   },
+  "circle-gateway": {
+    ethereum: { owner: '0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE', token: ADDRESSES.ethereum.USDC },
+  },
+  "robinhood-bridge": {
+    ethereum: { owner: '0xDf8755334ce7A73cCF6b581C02eA649AE3E864b3', token: ADDRESSES.null },
+  },
   "zkex": {
     "polygon": {
       "tokens": [
@@ -41395,6 +41513,11 @@ const configs = {
         "0x3c3f4b866f8c6f0d2c912fee36d5ad337a9aa98e"
       ]
     },
+  },
+  'robin-fun': {
+    robinhood: {
+      tokensAndOwners: [ [ADDRESSES.null, '0x653a69C1Fc844bf6596A322a05E07151E36F46f4']],
+    }
   },
   "zkp2p": {
     "timetravel": false,

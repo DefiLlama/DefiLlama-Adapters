@@ -7,6 +7,7 @@ const { getProvider, getConnection, } = require('../solana')
 const kvaultIdl = require('../../gauntlet/kvault-idl.json')
 const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
+const { callSoroban } = require('../chain/stellar')
 
 
 async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults = [] }) {
@@ -503,6 +504,19 @@ async function getCuratorTvl(api, vaults) {
 
     if (kaminoLendVaults.length > 0)
       await kaminoLendVaultTvl(api, { vaults: kaminoLendVaults })
+
+    return api.getBalances()
+  }
+
+  if (api.chain === 'stellar') {
+    // upshift.io Soroban vaults (OZ FungibleVault): total_assets() returns the
+    // underlying held, query_asset() returns the asset's Soroban contract address.
+    const upshiftVaults = vaults.upshiftStellar ?? []
+    for (const vault of upshiftVaults) {
+      const asset = await callSoroban(vault, 'query_asset')
+      const totalAssets = await callSoroban(vault, 'total_assets')
+      api.add(asset, totalAssets.toString())
+    }
 
     return api.getBalances()
   }

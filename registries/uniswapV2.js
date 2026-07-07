@@ -125,9 +125,8 @@ const uniV2Configs = {
   'areon-swap': {
     area: '0x4df039804873717bff7d03694fb941cf0469b79e',
   },
-  'artexswap_xyz': {
-    artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD',
-  },
+  'artexswap_xyz': { artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD', },
+  'sheriff-v2': { robinhood: '0x10F7D1eF77f58181484936170430DF13539C5162', },
   'astarexchange': {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
@@ -1618,6 +1617,10 @@ const uniV2Configs = {
   'rexdex': {
     wan: '0xCc2F30462ED1C47Dd7Fb75C81c7F4Cd721eB2A66',
   },
+  'rocketswap-anubis': {
+    methodology: 'TVL is calculated from RocketSwap AMM liquidity pools using the Uniswap V2 factory.',
+    anubi: '0xaf6F4e641C86A25518509BC840051A8652Af598A',
+  },
   'rocketswap-cc': {
     base: '0x1b8128c3a1b7d20053d10763ff02466ca7ff99fc',
   },
@@ -2855,7 +2858,15 @@ const uniV2Configs = {
   'brownfi-v3': {
     berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
     hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
-  }
+    arbitrum: '0xe49805412EDFDF4C458B297e7C1534588Fa3F1F0',
+    linea: '0xD9a702839510ee2859bCE697F51Aae49bF8949d7'
+  },
+  'hyperlynx': {
+    hyperliquid: '0x11cD396F814Bd31eBa7969c1B27a7C347785951f',
+  },
+  'nadfun-v2': {
+    monad: '0xA25b13127e63ddae6d0b35570FF3D39dBD621001',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

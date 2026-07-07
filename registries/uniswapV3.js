@@ -1085,7 +1085,7 @@ const uniV3Configs = {
       isAlgebra: true,
       permitFailure: true,
     },
-    dogechain: { tvl: () => ({ }) },
+    dogechain: { tvl: () => ({}) },
     polygon_zkevm: {
       factory: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
       fromBlock: 300,
@@ -1632,13 +1632,8 @@ const uniV3Configs = {
       permitFailure: true,
     },
   },
-  'xtrade': {
-    xlayer: {
-      factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172',
-      fromBlock: 813172,
-      isAlgebra: true,
-    },
-  },
+  'xtrade': { xlayer: { factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172', fromBlock: 813172, isAlgebra: true, }, },
+  'sheriff-v3': { robinhood: { factory: '0x21Fd9aB06cc927E66013e89b045c26b3eDE7bB20', fromBlock: 1, isAlgebra: true, }, },
   'zebra-v2': {
     scroll: {
       factory: '0x96a7F53f7636c93735bf85dE416A4Ace94B56Bd9',
@@ -1714,10 +1709,10 @@ const uniV3Configs = {
     lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
   },
   'fluxflow-v3': {
-    fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672}
+    fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672 }
   },
   'topaz-cl': {
-    bsc: { 
+    bsc: {
       factory: '0x73DC984D9490286E735548f61dfCCec67Af82ed9',
       fromBlock: 98756164,
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
@@ -1732,6 +1727,9 @@ const uniV3Configs = {
   },
   'intrinsic': {
     rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
+  },
+  'hyperlynx-v3': {
+    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
   }
 }
 

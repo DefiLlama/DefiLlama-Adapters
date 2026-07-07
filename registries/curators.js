@@ -279,6 +279,7 @@ const configs = {
             '0x17d0f109EE895bAD0b68AA104AA72bd0b003AD8E', // ETH Lending Optimizer IPOR Fusion
             '0x5900C3b72458F12967DC1bef35b92d271F5cDBc1', // cbETH Looper IPOR Fusion
             '0xD46a3C2D958d0a2cB098d48C48dC19FE3A710F37', // USDC Lending Optimizer IPOR Fusion
+            '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // wETH Metavault on Spectra
           ],
         },
         ethereum: {
@@ -440,7 +441,7 @@ const configs = {
   "gami-labs": {
     config: {
       methodology:
-        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, and Gearbox.",
+        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, Gearbox, and Upshift.",
       blockchains: {
         ethereum: {
           erc4626: [
@@ -479,6 +480,12 @@ const configs = {
           silo: [
             "0x1F0570a081FeE0e4dF6eAC470f9d2D53CDEDa1c5", // Silo - Gami Silo USDC
             "0x0F78Ea587D8E2950319e0b467c665bD2CB73051B", // Silo - Gami Silo AVAX
+          ],
+        },
+        stellar: {
+          upshiftStellar: [
+            "CCL3WITWFFXIHV2I52ECV5DPIEOFSTU3PBPR53ILPLF2IP5KHECXRUTY", // Upshift - Gami earnUSDC
+            "CC6TRAPQD3NK7THUKWPV5SL2JHKQGNXZVB6S6MVYFSLRWAKEFUWZKZ7J", // Upshift - Gami earnXLM
           ],
         },
       },

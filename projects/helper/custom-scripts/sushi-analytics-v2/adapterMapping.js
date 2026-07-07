@@ -94,7 +94,7 @@ module.exports = {
       'sunswap-v2': '/sunswap-v2/api',
       unicrypt: '/unicrypt/apiCache',
       deeplock: '/deeplock/apiCache',
-      pinksale: '/pinksale/apiCache',
+      pinksale: '/pinksale/index',
       'team-finance': '/team-finance/apiCache',
       // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
