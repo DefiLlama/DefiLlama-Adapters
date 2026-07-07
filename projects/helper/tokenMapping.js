@@ -46,6 +46,16 @@ const fixBalancesTokens = {
       decimals: 6,
     },
   },
+  dscs: {
+    '0x30656eb20d00b944405c88ef41f255105ecb4e82': {
+      coingeckoId: 'tether',
+      decimals: 18,
+    },
+    '0xaa95660febbee09ddee77a82cad2ce956f8979ab': {
+      coingeckoId: 'usd-coin',
+      decimals: 18,
+    },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
