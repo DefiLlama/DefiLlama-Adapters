@@ -20,6 +20,11 @@ async function addTvl(api) {
   });
 
   for (const { account } of vaultAccounts) {
+    if (account.data.length < VOLTR_VAULT_DATA_SLICE_LENGTH) {
+      console.log(`Voltr: skipping short vault account (${account.data.length} bytes)`);
+      continue;
+    }
+
     const mint = new PublicKey(
       account.data.slice(VOLTR_VAULT_ASSET_MINT_OFFSET, VOLTR_VAULT_ASSET_MINT_OFFSET + PUBLIC_KEY_SIZE)
     ).toBase58();
