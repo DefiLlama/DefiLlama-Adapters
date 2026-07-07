@@ -1,5 +1,6 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const BigNumber = require("bignumber.js");
 
 module.exports = {
   methodology: "Gets all the assets deposited by LPs in TownSquare Vault for PMMs to facilitate trades.",
@@ -12,51 +13,44 @@ const config = {
   },
 };
 
+async function getMarketTokens(api, vault, vaultFromBlock) {
+  // get all lps
+  const lpListedLogs = await getLogs({
+    api,
+    target: vault,
+    topic: "MarketListed(address)",
+    eventAbi:
+      "event MarketListed(address lpToken)",
+    onlyArgs: true,
+    fromBlock: vaultFromBlock,
+  });
+  const lps = lpListedLogs.map((i) => i.lpToken);
+
+  // get all underlying tokens
+  const tokens = await api.multiCall({ abi: 'address:underlying', calls: lps });
+
+  return { lps, tokens };
+}
+
 Object.keys(config).forEach((chain) => {
   // get vault and start block
   const { vault, vaultFromBlock } = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
-      // get all lps
-      const lpListedLogs = await getLogs({
-        api,
-        target: vault,
-        topic: "MarketListed(address)",
-        eventAbi:
-          "event MarketListed(address lpToken)",
-        onlyArgs: true,
-        fromBlock: vaultFromBlock,
-      });
-      const lps = lpListedLogs.map((i) => i.lpToken);
-
-      // get all underlying tokens
-      const tokens = await api.multiCall({ abi: 'address:underlying', calls: lps });
+      const { tokens } = await getMarketTokens(api, vault, vaultFromBlock);
 
       // use sumTokens2 to for cash balances in vault
-      return sumTokens2({ 
-        api, 
-        owner: vault, 
-        tokens 
+      return sumTokens2({
+        api,
+        owner: vault,
+        tokens
       });
     },
     borrowed: async (api) => {
-      // get all lps
-      const lpListedLogs = await getLogs({
-        api,
-        target: vault,
-        topic: "MarketListed(address)",
-        eventAbi:
-          "event MarketListed(address lpToken)",
-        onlyArgs: true,
-        fromBlock: vaultFromBlock,
-      });
-      const lps = lpListedLogs.map((i) => i.lpToken);
-
-      // get all underlying tokens
-      const tokens = await api.multiCall({ abi: 'address:underlying', calls: lps });
+      const { lps, tokens } = await getMarketTokens(api, vault, vaultFromBlock);
 
       // get total supplied
-      let v2Locked = await api.multiCall({ abi: 'address:totalUnderlying', calls: lps });
+      let v2Locked = await api.multiCall({ abi: 'uint256:totalUnderlying', calls: lps });
 
       // get cash balance by reading each token balanceOf from vault
       let cashBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(token => ({ target: token, params: [vault] })) });
@@ -64,18 +58,14 @@ Object.keys(config).forEach((chain) => {
       // merge tokens and their corresponding locked and cash values
       const tokenData = tokens.map((token, i) => ({
         token,
-        locked: parseInt(v2Locked[i]),
-        cash: parseInt(cashBalances[i])
+        locked: BigNumber(v2Locked[i]),
+        cash: BigNumber(cashBalances[i])
       }));
 
       // calculate borrowed amounts
       const borrowedBalances = {};
       tokenData.forEach(({ token, locked, cash }) => {
-        if (locked > cash) {
-          borrowedBalances[token] = locked - cash;
-        } else {
-          borrowedBalances[token] = 0;
-        }
+        borrowedBalances[token] = locked.gt(cash) ? locked.minus(cash).toFixed(0) : '0';
       });
 
       return borrowedBalances;
