@@ -672,12 +672,14 @@ async function addPoolTVL4(api, alphafiBucketPools, alphafiSlushPools){
 }
 
 async function tvl(api) {
-  await addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS);
-  await addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS);
-  await addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS);
-  await addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS, ALPHAFI_SLUSH_TVL_IDS);
-  await addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS);
-  await addPoolTVL(api, ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS);
+  await Promise.all([
+    addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS),
+    addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS),
+    addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS),
+    addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS, ALPHAFI_SLUSH_TVL_IDS),
+    addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS),
+    addPoolTVL(api, ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS)
+  ]);
 }
 async function pool2(api) {
 
