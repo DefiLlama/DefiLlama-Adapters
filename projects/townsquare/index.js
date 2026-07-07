@@ -65,7 +65,7 @@ async function borrowed({ api }) {
 
 
 module.exports = {
-    methodology:"Counts the total amount deposited in all pools",
+    methodology:"Counts the total amount deposited in all TownSquare Lending pools",
     monad: {
         tvl,
         borrowed
