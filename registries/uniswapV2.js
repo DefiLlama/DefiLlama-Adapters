@@ -2858,6 +2858,8 @@ const uniV2Configs = {
   'brownfi-v3': {
     berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
     hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
+    arbitrum: '0xe49805412EDFDF4C458B297e7C1534588Fa3F1F0',
+    linea: '0xD9a702839510ee2859bCE697F51Aae49bF8949d7'
   },
   'hyperlynx': {
     hyperliquid: '0x11cD396F814Bd31eBa7969c1B27a7C347785951f',
