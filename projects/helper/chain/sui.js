@@ -202,8 +202,8 @@ const graphEndpoint = () => getEnv('SUI_GRAPH_RPC')
 
 async function graphqlCall(query, variables = {}) {
   const { data, errors } = await http.post(graphEndpoint(), { query, variables })
-  if (errors?.length && !data) throw new Error(`[sui graphql] ${errors[0].message}`)
-  return { data, errors }
+  if (errors?.length || !data) throw new Error(`Failed to fetch sui data: ${errors?.[0]?.message ?? 'no data returned'}`)
+  return { data }
 }
 
 function normalizeFields(fields) {
@@ -317,7 +317,7 @@ async function getObjectsByType(type, { transform } = {}) {
       }
     }`, { after })
     const { pageInfo, nodes } = data.objects
-    objects.push(...nodes.map(n => formatObject(n.asMoveObject?.contents)))
+    objects.push(...nodes.map(n => formatObject(n.asMoveObject?.contents)).filter(Boolean))
     after = pageInfo.hasNextPage ? pageInfo.endCursor : null
   } while (after)
   return transform ? objects.map(transform) : objects
@@ -507,6 +507,7 @@ async function getTokenSupply(token) {
       decimals
     }
   }`)
+  if (!data.coinMetadata) throw new Error('Failed to fetch coin metadata for token: ' + token)
   const supply = data.coinMetadata.supply
   const decimals = data.coinMetadata.decimals ?? 0
   return { supply, decimals, normalized: supply / 10 ** decimals }
