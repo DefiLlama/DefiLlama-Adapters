@@ -16,6 +16,9 @@ const config = {
     citrea: {
         vaults: ["0x5bb0C725939cB825d1322A99a3FeB570097628c3", "0xc98Ef084d3911C8447DBbE4dDa18bC2c9bB0584e"],
     },
+    solana: {
+        tokens: [ADDRESSES.solana.SOL, ADDRESSES.solana.USDC, ADDRESSES.solana.USDT]
+    }
 }
 
 async function tvl(api) {
@@ -23,12 +26,14 @@ async function tvl(api) {
 }
 
 async function tvlSolana(api) {
-    // get the authority PDA from program ID using seed "authority"
-    const [authorityPda] = PublicKey.findProgramAddressSync(
-        [Buffer.from("vault")],
-        new PublicKey(ATOMIQ_PROGRAM_ID)
-    );
-    return sumTokens2({ api, owners: [authorityPda.toString()] });
+    // map to token accounts for all the relevant Solana tokens
+    const tokenAccounts = config.solana.tokens.map(token => {
+        return PublicKey.findProgramAddressSync(
+            [Buffer.from("vault"), new PublicKey(token).toBuffer()],
+            new PublicKey(ATOMIQ_PROGRAM_ID)
+        )[0].toString();
+    });
+    return sumTokens2({ api, tokenAccounts });
 }
 
 module.exports = {
