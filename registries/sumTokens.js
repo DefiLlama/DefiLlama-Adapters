@@ -41074,6 +41074,8 @@ const configs = {
       }
     },
   },
+  // https://docs.meridian.xyz/protocol-reference/contracts
+  "meridian-predict": { robinhood: { owners: ['0x79cB914f3F336426E89FaB55A9488AB25770552D','0xE4cea507b19796362A5a28Fa7cb705A3F1866213','0x7E318ef37c3bC3d0cBA205Af2D1Fc9F9CeFEB5df'], token: ADDRESSES.robinhood.USDe} },
   "yieldbricks": {
     "timetravel": false,
     "misrepresentedTokens": false,
