@@ -17,7 +17,7 @@ const config = {
         vaults: ["0x5bb0C725939cB825d1322A99a3FeB570097628c3", "0xc98Ef084d3911C8447DBbE4dDa18bC2c9bB0584e"],
     },
     solana: {
-        tokens: [ADDRESSES.solana.SOL, ADDRESSES.solana.USDC, ADDRESSES.solana.USDT]
+        tokens: [ADDRESSES.solana.SOL, ADDRESSES.solana.USDC]
     }
 }
 
