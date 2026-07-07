@@ -125,9 +125,8 @@ const uniV2Configs = {
   'areon-swap': {
     area: '0x4df039804873717bff7d03694fb941cf0469b79e',
   },
-  'artexswap_xyz': {
-    artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD',
-  },
+  'artexswap_xyz': { artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD', },
+  'sheriff-v2': { robinhood: '0x10F7D1eF77f58181484936170430DF13539C5162', },
   'astarexchange': {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
@@ -2859,18 +2858,14 @@ const uniV2Configs = {
   'brownfi-v3': {
     berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
     hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
+    arbitrum: '0xe49805412EDFDF4C458B297e7C1534588Fa3F1F0',
+    linea: '0xD9a702839510ee2859bCE697F51Aae49bF8949d7'
   },
   'hyperlynx': {
     hyperliquid: '0x11cD396F814Bd31eBa7969c1B27a7C347785951f',
   },
-  'aeon-protocol': {
-    _options: {
-      abis: {
-        allPairsLength: 'uint256:allPoolsLength',
-        allPairs: 'function allPools(uint256) view returns (address)',
-      },
-    },
-    avax: '0x3ECf287990A2365d48C6681620393aC1cdF3D268',
+  'nadfun-v2': {
+    monad: '0xA25b13127e63ddae6d0b35570FF3D39dBD621001',
   },
 }
 
