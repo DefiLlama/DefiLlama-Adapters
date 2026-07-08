@@ -38,4 +38,5 @@ module.exports =  [
   'godwoken', // chain sunset 2026-01-06 https://sunset.forcebridge.com/announcement
   'godwoken_v1', // chain sunset 2026-01-06 https://sunset.forcebridge.com/announcement
   'corn',
+  'eventum',
 ]
