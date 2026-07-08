@@ -7,10 +7,16 @@ module.exports = {
 };
 
 const config = {
-  monad: {
-    vault: "0x6B00868e2D1385b3804127827bBaB461d3E697E7",
-    vaultFromBlock: 85979242,
-  },
+  monad: [
+    {
+      vault: "0x6B00868e2D1385b3804127827bBaB461d3E697E7",
+      vaultFromBlock: 85979242,
+    },
+    {
+      vault: "0xcD1D2D602C3e7394515DaAe96e4FFe16DE71e5B4", //we are adding additional vaults where Native is also the whitelabeler and TownSquare is the protoco
+      vaultFromBlock: 70146973,
+    },
+  ],
 };
 
 async function getMarketTokens(api, vault, vaultFromBlock) {
@@ -33,40 +39,48 @@ async function getMarketTokens(api, vault, vaultFromBlock) {
 }
 
 Object.keys(config).forEach((chain) => {
-  // get vault and start block
-  const { vault, vaultFromBlock } = config[chain];
+  // get all vaults for this chain
+  const vaults = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
-      const { tokens } = await getMarketTokens(api, vault, vaultFromBlock);
+      for (const { vault, vaultFromBlock } of vaults) {
+        const { tokens } = await getMarketTokens(api, vault, vaultFromBlock);
 
-      // use sumTokens2 to for cash balances in vault
-      return sumTokens2({
-        api,
-        owner: vault,
-        tokens
-      });
+        // use sumTokens2 to for cash balances in vault
+        await sumTokens2({
+          api,
+          owner: vault,
+          tokens
+        });
+      }
+
+      return api.getBalances();
     },
     borrowed: async (api) => {
-      const { lps, tokens } = await getMarketTokens(api, vault, vaultFromBlock);
-
-      // get total supplied
-      let v2Locked = await api.multiCall({ abi: 'uint256:totalUnderlying', calls: lps });
-
-      // get cash balance by reading each token balanceOf from vault
-      let cashBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(token => ({ target: token, params: [vault] })) });
-
-      // merge tokens and their corresponding locked and cash values
-      const tokenData = tokens.map((token, i) => ({
-        token,
-        locked: BigNumber(v2Locked[i]),
-        cash: BigNumber(cashBalances[i])
-      }));
-
-      // calculate borrowed amounts
       const borrowedBalances = {};
-      tokenData.forEach(({ token, locked, cash }) => {
-        borrowedBalances[token] = locked.gt(cash) ? locked.minus(cash).toFixed(0) : '0';
-      });
+
+      for (const { vault, vaultFromBlock } of vaults) {
+        const { lps, tokens } = await getMarketTokens(api, vault, vaultFromBlock);
+
+        // get total supplied
+        let v2Locked = await api.multiCall({ abi: 'uint256:totalUnderlying', calls: lps });
+
+        // get cash balance by reading each token balanceOf from vault
+        let cashBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(token => ({ target: token, params: [vault] })) });
+
+        // merge tokens and their corresponding locked and cash values
+        const tokenData = tokens.map((token, i) => ({
+          token,
+          locked: BigNumber(v2Locked[i]),
+          cash: BigNumber(cashBalances[i])
+        }));
+
+        // calculate borrowed amounts, summing across vaults sharing the same token
+        tokenData.forEach(({ token, locked, cash }) => {
+          const borrowed = locked.gt(cash) ? locked.minus(cash) : BigNumber(0);
+          borrowedBalances[token] = BigNumber(borrowedBalances[token] || 0).plus(borrowed).toFixed(0);
+        });
+      }
 
       return borrowedBalances;
     },
