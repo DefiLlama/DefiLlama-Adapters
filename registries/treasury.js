@@ -1871,7 +1871,6 @@ const configs = {
     arbitrum: {
       tokens: [ADDRESSES.arbitrum.USDT],
       owners: [
-        '0x0a9591c64Fd9e8C1f9A81DB1B668a5f211b5735A',
         '0x16a4f9904e222D298Ac71aA3E3Bd5C19B902C595',
       ],
     },
