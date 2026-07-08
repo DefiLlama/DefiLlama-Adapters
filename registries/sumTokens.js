@@ -14240,6 +14240,17 @@ const configs = {
         "0x0a9591c64Fd9e8C1f9A81DB1B668a5f211b5735A"
       ]
     },
+    arbitrum: {
+      tokens: [ADDRESSES.arbitrum.USDT],
+      owners: [
+        "0xFF1968ae4F91efCCf4d5cef823EeCd46fbe114c3",
+        "0x4E682602EE3CF8550BC4fEe46F50cc0C0a41B116",
+        "0x071360b37F6Db934F857E6B33AD705fEee63Be14",
+        "0xf911C309B851Db55b97F4E2c7599a3733C2DAC69",
+        "0xB54D6207365a8CD40A90F880B2f61d931af7d6E8",
+        "0xDBB435e9ed5096006EAae14F99775D12cCa645D9"
+      ]
+    }
   },
   "exit10-fi": {
     "ethereum": {
