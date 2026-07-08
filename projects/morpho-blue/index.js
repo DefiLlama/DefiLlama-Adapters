@@ -271,7 +271,13 @@ const ethenaBlacklist = {
     vaults: [
       '0xBeEFC1CDAfc5b4a649b54D07AFc6bF0f75C6F4E2',   // USDtB vault
     ],
-  }
+  },
+  robinhood: {
+    wallets: ['0x2Bf5d9a2326Ad3C5Ef8208F91Af79C3ca1F0F67c'],
+    vaults: [
+      '0xbEeFF0fb1Dc19344A87b8479dAb60A2e16160737',   // USDG vault
+    ],
+  },
 }
 
 const tvl = async (api) => {
@@ -360,4 +366,3 @@ async function fetchPriceMap(api, addresses) {
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl, borrowed }
 })
-
