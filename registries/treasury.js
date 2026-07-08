@@ -1869,7 +1869,7 @@ const configs = {
   },
   'treasury/evedex': {
     arbitrum: {
-      tokens: [ADDRESSES.arbitrum.USDT],
+      tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
       owners: [
         '0x16a4f9904e222D298Ac71aA3E3Bd5C19B902C595',
       ],
