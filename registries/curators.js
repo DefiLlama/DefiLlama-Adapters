@@ -1141,6 +1141,17 @@ const configs = {
       }
     },
   },
+  "birch-hill": {
+    config: {
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xbCC5C59E64B0Ff3a3Ee5eAb74BE7c787A0a438F1',
+          ],
+        },
+      }
+    },
+  },
   "yearn-curating": {
     config: {
       methodology: 'Counts all assets that are deposited in all vaults curated by Yearn.',
