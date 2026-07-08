@@ -8,7 +8,7 @@ const tvl = (target) => async (api) => {
     target,
   });
 
-  api.addUSDValue(Number(BigInt(totalSupply) / 10n ** 12n) / 1e6);
+  api.add(target, totalSupply);
 }
 
 module.exports = {
