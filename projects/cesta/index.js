@@ -3,6 +3,7 @@ async function avax(timestamp, block) {
 }
 
 module.exports = {
+  deadFrom: '2023-10-01',
   avax: {
     tvl: avax,
   },

@@ -358,4 +358,166 @@ module.exports = {
       "tokens": [ADDRESSES.null]
     }
   },
+  "foom-cash": {
+    "ethereum": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "tokensAndOwners": [
+          ["0xd0D56273290D339aaF1417D9bfa1bb8cFe8A0933", "0x239AF915abcD0a5DCB8566e863088423831951f8"] // FOOM
+        ]
+      }
+    },
+    "base": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "tokensAndOwners": [
+          ["0x02300ac24838570012027e0a90d3feccef3c51d2", "0xdb203504ba1fea79164AF3CeFFBA88C59Ee8aAfD"] // FOOM
+        ]
+      }
+    }
+  },
+  "privcash": {
+    "kava": {
+      "tokensAndOwners": [
+        // KAVA: 100 / 1000 / 10000 / 100000 / 1000000
+        [ADDRESSES.null, "0xCDFfa16631d2b6E78fE9Da3B0454EbF0d2edfFf3"],
+        [ADDRESSES.null, "0xfe79e117875993da3c8332Be34B5F06A55c7d154"],
+        [ADDRESSES.null, "0x8Bbd79F1E28006D2e7a6B7B29aa46E236F4DFE07"],
+        [ADDRESSES.null, "0x29d9813881ADB448e9d94ae35a0015c996DB2d40"],
+        [ADDRESSES.null, "0xD58b5EB926F2Ae88372Bb23C6D432932c705C53F"],
+        // USDC: 10 / 100 / 1000 / 10000 / 100000
+        ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0xe4e992802314dbbd8BB9d050afae19ca1c45cB1A"],
+        ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0x8DFB4d1925cC8C7446AfA92f1cDd6c8be567Ae7C"],
+        ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0x00F5E31F0E33FBc23e723dCEd6C078fdD688D36a"],
+        ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0xCA0d7b385e9DC484C646C50F1BBA6B01CC60E361"],
+        ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0xc500DA72cCeA705aD5Ee3A4d77ABb1864DD30a4F"]
+      ]
+    }
+  },
+  "nsure": {
+    "start": "2021-04-22",
+    "ethereum": {
+      "tokensAndOwners": [
+        [ADDRESSES.ethereum.WETH, "0x1a66f065303299d78693f122c800Ab3dEbE9c966"], // stakePool
+        [ADDRESSES.ethereum.WETH, "0x702aff99b08e8891fc70811174701fb7407b4477"], // buyPool
+        [ADDRESSES.ethereum.WETH, "0x80e711b29e46d430ff1553eb2ada670e2a25593c"], // surplusPool
+        [ADDRESSES.ethereum.WETH, "0xfd0D28539aeD12477dcba1575eB40fca53969440"], // treasuryPool
+        ["0x20945ca1df56d237fd40036d47e866c7dccd2114", "0x1a66f065303299d78693f122c800Ab3dEbE9c966"],
+        [ADDRESSES.null, "0xa6b658Ce4b1CDb4E7d8f97dFFB549B8688CAFb84"]
+      ]
+    }
+  },
+  "mirrosset": {
+    "kava": {
+      "tokensAndOwners": [
+        ["0xfa9343c3897324496a05fc75abed6bac29f8a40f", "0x587Abb291379Ea84AcE583aB07A13109b9B3F347"], // USDC @ InsurancePool
+        [ADDRESSES.null, "0xA6d5df932FFE35810389e00D1A3a698a44A14E85"] // KAVA @ MortgagePool
+      ]
+    }
+  },
+  "obsdn": {
+    "methodology": "TVL is the total USDC deposited as collateral in the OBSDN contract.",
+    "monad": {
+      "tokensAndOwners": [
+        [ADDRESSES.monad.USDC, "0x90c3747cd4E6bC6FbebB1b3C54D99737590eBE45"]
+      ]
+    }
+  },
+  "pingu": {
+    "arbitrum": {
+      "tvl": {
+        "owners": ["0x7Cc41ee3Cba9a1D2C978c37A18A0d6b59c340224"],
+        "tokens": [ADDRESSES.null, ADDRESSES.arbitrum.USDC_CIRCLE]
+      },
+      "staking": {
+        "owners": ["0x7Cc41ee3Cba9a1D2C978c37A18A0d6b59c340224"],
+        "tokens": ["0x83E60B9F7f4DB5cDb0877659b1740E73c662c55B"] // PINGU
+      }
+    },
+    "monad": {
+      "tvl": {
+        "owners": ["0x576d51fB872065DC4Af6f83902fd4078eBCc2f03"],
+        "tokens": [ADDRESSES.null, ADDRESSES.monad.USDC]
+      },
+      "staking": {
+        "owners": ["0x576d51fB872065DC4Af6f83902fd4078eBCc2f03"],
+        "tokens": ["0xA2426cD97583939E79Cfc12aC6E9121e37D0904d"] // PINGU
+      }
+    }
+  },
+  "rsk-bridge": {
+    "bitcoin": { "__btcBook": "rskBridge" },
+    "ethereum": {
+      "owner": "0x12eD69359919Fc775bC2674860E8Fe2d2b6a7B5D",
+      "fetchCoValentTokens": true,
+      "logCalls": true
+    },
+    "rsk": {
+      "owner": "0x9d11937E2179dC5270Aa86A3f8143232D6DA0E69",
+      "tokens": [
+        "0x44fcd0854d745EfdeF4Cfe9868efE4d4EB51eCD6",
+        "0x70566D8541beaBe984c8BAbF8A816Ed908514Ba8",
+        "0xFF9EA341d9ea91CB7c54342354377f5104Fd403f",
+        "0x4991516DF6053121121274397A8C1DAD608bc95B",
+        "0x1BDa44fda023F2af8280a16FD1b01D1A493BA6c4",
+        "0x75c6e15702ebAcd51177154ff383DF9695E1B1DA",
+        "0x9C3a5F8d686fadE293c0Ce989A62a34408C4e307",
+        "0xe506F698B31a66049bD4653Ed934e7A07Cbc5549",
+        "0x14ADAE34beF7Ca957ce2DDe5AdD97EA050123827",
+        "0x73C08467E23F7DcB7DdbBc8d05041b74467A498A",
+        "0x83cf9a58d31d9014f02ebe282d10c25C28E7De15",
+        "0xB3D06103aF1A68026615e673D46047fAB77dB0Fa",
+        "0xE700691Da7B9851F2F35f8b8182C69C53ccad9DB",
+        "0xe0CFF8a40f540657c62EB4CAC34b915e5ed8d8FF",
+        "0x6B1a73d547F4009A26B8485b63D7015D248AD406",
+        "0x2aCc95758f8b5F583470bA265Eb685a8f45fC9D5"
+      ],
+      "logCalls": true,
+      "permitFailure": true
+    }
+  },
+  "northpole": {
+    "methodology": "The cumulative market value of each vault collateral is TVL",
+    "avax": {
+      "owner": "0xBBe7bF1c422eFBb5B2cB7a91A6f0AA7CdE86C1d3",
+      "tokens": [
+        ADDRESSES.avax.WETH_e,
+        ADDRESSES.avax.WBTC_e,
+        ADDRESSES.avax.WAVAX,
+        "0x321E7092a180BB43555132ec53AaA65a5bF84251"
+      ]
+    }
+  },
+  "standx": {
+    "start": "2025-03-14",
+    "methodology": "StandX TVL is calculated by aggregating the balances of bridged vault addresses on the respective chain. These vaults hold the underlying collateral for all DUSD bridged to the StandX ecosystem, representing the total value secured by the protocol.",
+    "bsc": {
+      "owners": [
+        "0x11b660397382AE3A83c4Ad80e2F791189b39e433",
+        "0x90bb5bdc6acd166237640c8707a694f1fc3aab84"
+      ],
+      "tokens": ["0xaf44A1E76F56eE12ADBB7ba8acD3CbD474888122"] // DUSD
+    },
+    "solana": {
+      "tokenAccounts": [
+        "5bGEXW6JkR3nHfFWdTYtr7AuVvgKEUF4MWcGW7wNza6M",
+        "3GzZn1Qyzc6xzCgDn83teJysBW2bMCsK6DcRNhksMNo4"
+      ]
+    }
+  },
+  "templar": {
+    "bsc": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "owners": [
+          "0xa1f61Ca61fe8655d2a204B518f6De964145a9324",
+          "0xffC7B93b53BC5F4732b414295E989684702D0eb5"
+        ],
+        "tokens": ["0x19e6BfC1A6e4B042Fb20531244D47E252445df01"] // TEM
+      }
+    },
+    "ethereum": { "tvl": { "__empty": true }, "staking": { "__empty": true } },
+    "moonriver": { "tvl": { "__empty": true }, "staking": { "__empty": true } },
+    "harmony": { "tvl": { "__empty": true }, "staking": { "__empty": true } }
+  },
 }

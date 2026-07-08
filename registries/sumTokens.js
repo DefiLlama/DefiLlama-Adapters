@@ -2,6 +2,7 @@ const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { sumTokensExport } = require('../projects/helper/sumTokens')
 const { staking: stakingFn } = require('../projects/helper/staking')
 const { pool2: pool2Fn } = require('../projects/helper/pool2')
+const { getBTCExport } = require('../projects/helper/bitcoin-book')
 const data1 = require('./sumTokens/data1')
 const covalent = require('./sumTokens/covalent')
 
@@ -9,7 +10,8 @@ const covalent = require('./sumTokens/covalent')
 // A chain's value is EITHER a plain sumTokens options object (=> treated as { tvl }),
 // OR a bucket map keyed by tvl/staking/pool2/borrowed where each value is:
 //   plain options object -> sumTokensExport(opts); { __staking:[args] } -> stakingFn(...);
-//   { __pool2:[args] } -> pool2Fn(...); { __empty:true } -> () => ({}).
+//   { __pool2:[args] } -> pool2Fn(...); { __empty:true } -> () => ({});
+//   { __btcBook: 'key' } -> getBTCExport('key') (pulls owners from the bitcoin address-book, static or dynamic).
 const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens"])
 const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting"])
 
@@ -17,6 +19,7 @@ function buildBucket(spec, chain) {
   if (spec.__empty) return () => ({})
   if (spec.__staking) return stakingFn(...spec.__staking)
   if (spec.__pool2) return pool2Fn(...spec.__pool2)
+  if (spec.__btcBook) return getBTCExport(spec.__btcBook)
   return sumTokensExport({ ...spec, chain })
 }
 function isBucketMap(v) {
