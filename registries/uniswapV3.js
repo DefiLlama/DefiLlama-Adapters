@@ -1730,6 +1730,9 @@ const uniV3Configs = {
   },
   'hyperlynx-v3': {
     hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+  },
+  'nutswap': {
+    dscs: { factory: '0x5fb86b37567Bd3D341d1a3B2d7F4b4C2Ce085991', fromBlock: 677165, permitFailure: true }
   }
 }
 
