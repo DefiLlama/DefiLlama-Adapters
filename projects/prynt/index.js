@@ -11,8 +11,7 @@
 //
 // -----------------------------------------------------------------------------------------------------
 const { getLogs } = require("../helper/cache/getLogs");
-
-const NULL = "0x0000000000000000000000000000000000000000"; // native ETH sentinel for sumTokens
+const { nullAddress } = require("../helper/sumTokens"); // canonical native-ETH sentinel for sumTokens
 
 const FACTORY = "0x5c0cdFA92C6645b6ee83e686598DbC29260F885d";
 const FROM_BLOCK = 4394643; // factory deployment block on Robinhood Chain
@@ -30,7 +29,7 @@ async function tvl(api) {
   });
   const curves = logs.map((l) => l.curve);
   // Native ETH held by each live curve. Migrated curves hold ~0, so they contribute nothing.
-  return api.sumTokens({ owners: curves, tokens: [NULL] });
+  return api.sumTokens({ owners: curves, tokens: [nullAddress] });
 }
 
 module.exports = {
