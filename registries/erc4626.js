@@ -286,6 +286,7 @@ const configs = {
   },
   'byzanlink': {
     hedera: ['0x6b8dfA6aa5f803a886Beb2492eF3307EC0Ee16FB'],
+    ethereum: ['0xA5cDEE01aA7A5E0620df5f27F26E552fdf7f5F20'],
     methodology: 'Total value of assets deposited in the Byzanlink vaults, read on-chain and valued in USD.'
   }
 }
