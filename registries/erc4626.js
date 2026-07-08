@@ -283,6 +283,11 @@ const configs = {
   'arcis': {
     base: ['0x00325d9da832b38179ed2f0dabd4062d93e325a7'],
     methodology: 'TVL is calculated as the total USDC held in the ArcisVault contract, including both reserve and deployed capital across yield strategies.'
+  },
+  'byzanlink': {
+    hedera: ['0x6b8dfA6aa5f803a886Beb2492eF3307EC0Ee16FB'],
+    ethereum: ['0xA5cDEE01aA7A5E0620df5f27F26E552fdf7f5F20'],
+    methodology: 'Total value of assets deposited in the Byzanlink vaults, read on-chain and valued in USD.'
   }
 }
 
