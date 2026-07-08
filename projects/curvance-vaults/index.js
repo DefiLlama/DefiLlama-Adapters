@@ -37,24 +37,26 @@ Object.keys(config).forEach(chain => {
     return uniqueMarkets.filter(m => !blcklistedMarkets.includes(String(m).toLowerCase()))
   }
 
-  async function getMarkets(api) {
+  async function getVaults(api) {
     const markets = await getListedMarkets(api)
-    const optimizerVaultMarkets = new Set((await getOptimizerVaultMarkets(api, markets)).map(m => String(m).toLowerCase()))
-    return markets.filter(m => !optimizerVaultMarkets.has(String(m).toLowerCase()))
+    const vaultMarkets = await getOptimizerVaultMarkets(api, markets)
+    const vaults = await api.multiCall({ abi: 'address:asset', calls: vaultMarkets })
+    return [...new Map(vaults.map(v => [String(v).toLowerCase(), v])).values()]
   }
 
   module.exports[chain] = {
     tvl: async (api) => {
-      const contracts = await getMarkets(api)
-      const tokens = await api.multiCall({ abi: 'address:asset', calls: contracts })
-      return sumTokens2({ api, tokensAndOwners2: [tokens, contracts] })
+      const vaults = await getVaults(api)
+      const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+      const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: vaults })
+      const balances = await api.multiCall({
+        abi: 'function convertToAssets(uint256 shares) view returns (uint256)',
+        calls: vaults.map((target, i) => ({ target, params: [supplies[i]] })),
+      })
+      api.add(tokens, balances)
+      return sumTokens2({ api })
     },
-    borrowed: async (api) => {
-      const contracts = await getMarkets(api)
-      const tokens = await api.multiCall({ abi: 'address:asset', calls: contracts })
-      const bals = await api.multiCall({ abi: 'uint256:marketOutstandingDebt', calls: contracts })
-      api.add(tokens, bals)
-      return sumTokens2({ api, })
-    }
   }
 })
+
+module.exports.doublecounted = true
