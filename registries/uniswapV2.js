@@ -1324,9 +1324,6 @@ const uniV2Configs = {
     ],
     ethereum: '0xa556E2d77060A42516C9A8002E9156d8d3c832CE',
   },
-  'noxa-fi': {
-    abstract: '0xE1e98623082f662BCA1009a05382758f86F133b3',
-  },
   'oaswap': {
     oasis: '0x84b11e8fb9a5dE10347eEA24c73d02B835505FDd',
   },

@@ -3,6 +3,162 @@ const ADDRESSES = require('../../projects/helper/coreAssets.json')
 // Additional sumTokens registry configs, split out of registries/sumTokens.js to keep that file manageable.
 // Same config shape as the `configs` object in sumTokens.js.
 module.exports = {
+  "parcl-v3": {
+    "timetravel": false,
+    "solana": { "tokenAccounts": ["Ai9AuTfGncuFxEknjZT4HU21Rkv98M1QyXpbW9Xct6LK"] }
+  },
+  "nirvana-v2": {
+    "timetravel": false,
+    "solana": { "tokenAccounts": ["FhTJEGXVwj4M6NQ1tPu9jgDZUXWQ9w2hP89ebZHwrJPS"] }
+  },
+  "bgsol": {
+    "timetravel": false,
+    "doublecounted": true,
+    "methodology": "Bitget Staked SOL (BGSOL) is a tokenized representation on your staked sSOL",
+    "solana": { "tokenAccounts": ["Ejg5vqsthntG8wJDijzgEWvdvhoAh8pzu4Q4r4MqsdkR"] }
+  },
+  "asol": {
+    "timetravel": false,
+    "methodology": "aSOL TVL is computed by looking at the token balances of the accounts holding the stake pool tokens backing the aSOL Crate. The token accounts come from https://asol.so/#/admin.",
+    "solana": {
+      "tokenAccounts": [
+        "4Bo98VrTYkHLbE9zoXx3tCD3qEDcGZFCZFksgyYPKdG9",
+        "7n1AmrpywC84MdALohPBipAx1SYhjpSLjYFb2EuTV9wm"
+      ]
+    }
+  },
+  "dflow-prediction-market": {
+    "solana": {
+      "tokenAccounts": [
+        "C6tLX41pT7ke9LtJ25cdhzPxVbngWD6KsDaEFTSC4SKE",
+        "82TCjUf5YjrbJro4XdEfeCokvpQrNUntD97Zjrip8knr"
+      ]
+    }
+  },
+  "bulk-trade": {
+    "timetravel": false,
+    "methodology": "Counts USDC deposited into the Bulk Trade Season 1 pre-deposits.",
+    "solana": { "tokenAccounts": ["HwdwwKH1tMXo7ggTKcA5cdQrpcgqSoVib2eQh3BiyEQL"] }
+  },
+  "stakenova": {
+    "methodology": "TVL represents all user-deposited SOL plus unclaimed USDC rewards. Calculated by reading vault token balances directly on-chain.",
+    "solana": {
+      "tokenAccounts": [
+        "7MBk8DXFnZCpKDiSwEMFwtyDNqxXMdUSgm52fQ3Chit4", // INF_VAULT
+        "HVpnjWTJCDvHL2pL2LeE5Y3mLEE4hP4MwpZpBvBLHQuA" // USDC_VAULT
+      ]
+    }
+  },
+  "pokeliquid": {
+    "timetravel": false,
+    "methodology": "TVL is the sum of USDC deposited in the liquidity pool, fee vault (which holds user margin collateral), and insurance fund.",
+    "solana": {
+      "tokenAccounts": [
+        "H1YCpzUXcoYFnek3Qc8VtekAe4gDTDNZZDVLwYuC9J1C", // LP Vault
+        "BFm4z6Z2H84GrpcKkydmE1qZVidwuj2sP3N3wTNZemJt", // Fee Vault
+        "266CZZpRb1PFDGQf4bNE5ASPVxAUkon6tv6BvRYpP7x9" // Insurance Fund
+      ]
+    }
+  },
+  "hylo": {
+    "timetravel": false,
+    "doublecounted": true,
+    "methodology": "TVL is calculated by summing all LSTs locked in Hylo protocol.",
+    "solana": {
+      "tokenAccounts": [
+        "2Y3TLkdGoJwbdizxqrZmQwNLYJyGKTgzC4tbetbkvQ43", // jitoSOL
+        "7VNBQCDKt4cxLWW51suV8a6VAYC4R66CfyySiYJek7Rj" // hyloSOL
+      ]
+    }
+  },
+  "katana": {
+    "timetravel": false,
+    "solana": {
+      "tokenAccounts": [
+        "8vyTqVVPmJfqFexRcMBGDAHoSCyZ52RC5sRVhYzbfU4j",
+        "7zJVLbx3DjjwkoD6eUGk4cgoBv2JR3RW67c3ff8URXYh",
+        "2CD9R7K7AjAswjTJDmdf9HyUZQztfck1B22h9WUJeTeh",
+        "377U1dX3mRd96BeoRkpmsJC67wnVDqTpi1u6dALkR9V5",
+        "DUrVECpx5EkVW12eWvpjR8Xk2AgNS3epqEQ6p63SujQb",
+        "6F5XPaeEiAwfmD5Rv9TAt4x7VhVaEU7qV9q6MSrvbozC",
+        "6sSZcCfPaeKfGnTRXX3Ybd97eqVnYg1TLfytwArfUVz",
+        "E2VKdRPvfMXBj3ePMbuZPRz1fwT7z7Gd9pnh8R3n25eW",
+        "AV3pjicfiJQoR96mGT9byQLbUAXL2Zi1a74wis9Ezh5S",
+        "5aJ5NzNmLfVLbqcbvYsW1e1GdEccrkFkLZwLWVLrmm4A",
+        "2sKjWWYcdBmUQbdHBJXKbJBwHB2G9JB7mRnLYuEtgRcp"
+      ]
+    }
+  },
+  "kyros": {
+    "timetravel": false,
+    "doublecounted": true,
+    "methodology": "The TVL is calculated by summing all restaked assets.",
+    "solana": {
+      "tvl": {
+        "tokenAccounts": [
+          "CRFtzwkekKorgdTRSdvsYeqL1vEuVvwGRvweuWCyaRt3", // jitoSOL @ kySOL Vault
+          "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd" // JTO @ kyJTO Vault
+        ]
+      },
+      "staking": {
+        "tokenAccounts": ["Ct8QS77TMFF98gvN1ZXrNjGqUmdkJQACi5Xi2sCTSC7D"] // KYROS @ kyKYROS Vault
+      }
+    }
+  },
+  "hubble": {
+    "timetravel": false,
+    "solana": {
+      "tvl": {
+        "owners": [
+          "HZYHFagpyCqXuQjrSCN2jWrMHTVHPf9VWP79UGyvo95L", // collateralVaultAuthority
+          "8WrqMitrgjzfqaPJ5PK6X3VT6B1Z8rDgQQny2aWwvJ8q" // psmVaultAuthority
+        ]
+      },
+      "staking": {
+        "tokensAndOwners": [
+          ["HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6", "GbjqYShCb3LeyXuxkjLBGcmrWakqePPpMoHraQJcTtJJ"]
+        ]
+      }
+    }
+  },
+  "boop-fun": {
+    "solana": {
+      "tvl": {
+        "tokensAndOwners": [
+          [ADDRESSES.solana.SOL, "GVVUi6DaocSEAp8ATnXFAPNF5irCWjCvmPCzoaGAf5eJ"]
+        ]
+      },
+      "staking": {
+        "tokenAccounts": ["BZgWzdxHqytYrn3EuvkozE1Hg38CD5ajjxBppRHuV1nQ"]
+      }
+    }
+  },
+  "death-fun": {
+    "start": 1748022475,
+    "methodology": "Death.fun TVL is the native ETH held in the Death.fun game contract, which serves as the house bankroll used to pay player cashouts. Direct bankroll deposits and owner withdrawals affect TVL because they change the contract balance, but they are treasury movements rather than game outcomes.",
+    "abstract": {
+      "owners": ["0x27EDd16eE56958fddCBA08947f12C43DDeC2B20C"],
+      "tokens": [ADDRESSES.null]
+    }
+  },
+  "meme-wallet": {
+    "methodology": "counts the TVL of tokens created by meme factory",
+    "start": "2024-12-10",
+    "wc": {
+      "owner": "0xda601604ecd1cb5f12e4522f1138d5419daf0ee0",
+      "tokens": [ADDRESSES.wc.WLD]
+    }
+  },
+  "tbtc": {
+    "timetravel": false,
+    "methodology": "BTC on btc chain",
+    "ethereum": { "__empty": true },
+    "bitcoin": { "__btcBook": "tBTC" }
+  },
+  "vishwa": {
+    "bitcoin": { "__btcBook": "vishwa" },
+    "sui": { "__empty": true }
+  },
   "deversifi": {
     "methodology": "Counts the tokens on 0x5d22045daceab03b158031ecb7d9d06fad24609b and on rhino.fi cross-chain swap smart-wallet contracts",
     "ethereum": {

@@ -331,6 +331,76 @@ const configs = {
       pool2: ['0xa18d290144C684349b1Cc4fC8501707cd7724f74', ['0x1203f76D98c103DFDa350C0b7F7323475Ee24aE3', '0x7939e155b222c804FCDd0d0297922BBEf6F64897']],
     },
   },
+  'akropolis': {
+    ethereum: {
+      staking: ['0x3501Ec11d205fa249f2C42f5470e137b529b35D0', '0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7'],
+    },
+  },
+  'orbs': {
+    ethereum: {
+      staking: ['0x01d59af68e2dcb44e04c50e05f62e7043f2656c3', '0xff56Cc6b1E6dEd347aA0B7676C85AB0B3D08B0FA'],
+    },
+  },
+  'looks-rare': {
+    methodology: 'TVL for LOOKS.RARE consists of the staking of LOOKS and pool2 of uni-v2 LOOKS-WETH.',
+    ethereum: {
+      staking: ['0x465a790b428268196865a3ae2648481ad7e0d3b1', '0xf4d2888d29D722226FafA5d9B24F9164c092421E'],
+      pool2: ['0x2a70e7f51f6cd40c3e9956aa964137668cbfadc5', '0xdc00ba87cc2d99468f7f34bc04cbf72e111a32f7'],
+    },
+  },
+  'thegraph': {
+    methodology: 'TVL counts GRT tokens deposited on the Staking contracts.',
+    start: '2023-06-25',
+    ethereum: {
+      staking: ['0xF55041E37E12cD407ad00CE2910B8269B01263b9', '0xc944E90C64B2c07662A292be6244BDf05Cda44a7'],
+    },
+    arbitrum: {
+      staking: ['0x00669A4CF01450B64E8A2A20E9b1FCB71E61eF03', '0x9623063377AD1B27544C965cCd7342f7EA7e88C7'],
+    },
+  },
+  'ethfi-stake': {
+    ethereum: {
+      staking: ['0x86B5780b606940Eb59A062aA85a07959518c0161', '0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB'],
+    },
+    arbitrum: {
+      staking: ['0x86B5780b606940Eb59A062aA85a07959518c0161', '0x7189fb5B6504bbfF6a852B13B7B82a3c118fDc27'],
+    },
+  },
+  'epns': {
+    methodology: 'TVL for PUSH consists of the staking of PUSH and pool2 of uni-v2 LP.',
+    ethereum: {
+      staking: ['0xb72ff1e675117bedeff05a7d0a472c3844cfec85', '0xf418588522d5dd018b425e472991e52ebbeeeeee'],
+      pool2: ['0xb72ff1e675117bedeff05a7d0a472c3844cfec85', '0xaf31fd9c3b0350424bf96e551d2d1264d8466205'],
+    },
+  },
+  'fees-wtf': {
+    methodology: 'TVL for fees.wtf consists of the staking of WTF and pool2 of uni-v2 WTF-WETH.',
+    ethereum: {
+      staking: ['0x0bf0e1678eaa36cd2d705cab3ce8020de443056c', '0xA68Dd8cB83097765263AdAD881Af6eeD479c4a33'],
+      pool2: ['0xf0c51dc9a85d00c1c1bebfbb2d1465a39f4702d8', '0xab293dce330b92aa52bc2a7cd3816edaa75f890b'],
+    },
+  },
+  'gracy-staking': {
+    ethereum: {
+      staking: [[
+        '0x76A2A3ebeCc73871cc24e4807C4cBA57D03b0b2c', '0xa0EE760C52b10d2A21E563526248CA389D9C47E6',
+        '0xAb6aD663b42c7031b52737cbcBF9f70cb88fD9FC', '0x4f1043ABb51648E817b8e62EcABc157F91E61c52',
+        '0x6e05d3a61f5026EEa67d0a82843d5E82eb3E2608', '0xE5ff1432DC7BE35CC73216A8cc468608398AD433',
+        '0x908c41C339DAAaC0be4440ba2CFbA4fFb0093a4A', '0x2D5D48c72222DDdAE37317aa03a6BC5a5734f028',
+      ], '0x7c95e7ad2b349dc2f82d0f1117a44b561fa2699a'],
+    },
+    base: {
+      staking: [['0xE63F62Ba055003aEDB394Dc3e7056fAF49bf97b1'], '0xc5449Fafc8711B6fa68192586c9Aa9302503b939'],
+    },
+  },
+  'heroes-of-mavia': {
+    ethereum: {
+      staking: ['0xF2f8D915a4F28Cdb52cbe8F56ecc0f8AE3def54A', '0x24fcFC492C1393274B6bcd568ac9e225BEc93584'],
+    },
+    base: {
+      staking: [['0x21890f88fc8A8b0142025935415017adA358C8C0', '0xecc312CBDC0884C41FE1579ea33686DdAcc90c42'], '0x24fcFC492C1393274B6bcd568ac9e225BEc93584'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)
