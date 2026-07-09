@@ -3,6 +3,18 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'noxa-fi-v3': {
+    megaeth: { factory: '0x1201EB5081eabc99b23DD952C1BFA5ea090d8779', fromBlock: 249856 },
+    monad: { factory: '0x35af92183701E54f751f8b0376da7F9b151bf5A5', fromBlock: 42804409 },
+    berachain: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 16694222 },
+    sonic: { factory: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4', fromBlock: 11885860 },
+    somnia: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 152175636 },
+    '0g': { factory: '0xCd0BB681056b6Fc96E86a4cE0A9644B39bC90a53', fromBlock: 32000000 },
+    plasma: { factory: '0xE7d4E64079FE467A21801B36Ccc6D9B3F66BD372', fromBlock: 1871468 },
+    stable: { factory: '0x8b051B804684A0914a62a22145206bE5AB022D8f', fromBlock: 10757086 },
+    katana: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 3425888 },
+    hyperliquid: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 10002856 },
+  },
   // --- previously consolidated ---
   'blasterswap-v3': { blast: { factory: '0x1A8027625C830aAC43aD82a3f7cD6D5fdCE89d78', fromBlock: 4308657 } },
   'comet-swap-v3': { astar: { factory: '0x2C1EEf5f87F4F3194FdAAfa20aE536b1bA49863b', fromBlock: 12168518 } },
