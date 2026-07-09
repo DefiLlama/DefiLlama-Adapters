@@ -76,7 +76,7 @@ const configs = {
     },
     monad: {
       accountableVaults: [
-        "0x0143C3eF3a76Ed825Fd5201953f65b52aCEfD799",
+        "0x77410132Fd468d67B820314d378bE1fDbfA2bAa4",
       ],
       erc4626: [
         "0x1E4D67c666c2Ccf27A0aF980fE6c8e0f05aC8949",

@@ -387,18 +387,17 @@ async function getCuratorTvlErc4626(api, vaults) {
 }
 
 async function getCuratorTvlAccountableVault(api, vaults) {
-  // for vaults that look ERC-4626-like (asset()/totalSupply()/convertToAssets()) but whose
-  // totalAssets() is broken/unused (e.g. K3's private-credit "loan" vaults). Total value is
-  // derived from convertToAssets(totalSupply()) instead of calling totalAssets() directly.
+  // these are proxy contracts (not themselves ERC-4626) whose implementation exposes a
+  // `vault()` view returning the address of the real ERC-4626 vault holding the funds
+  // (e.g. K3's private-credit "loan" vaults). Resolve that vault, then read its
+  // asset()/totalAssets() directly.
   if (!vaults || vaults.length === 0) return
-  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
-  const totalSupplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
-  const totalAssets = await api.multiCall({
-    abi: ABI.ERC4626.convertToAssets,
-    calls: vaults.map((vault, i) => ({ target: vault, params: [totalSupplies[i] || 0] })),
-    permitFailure: true,
-  })
-  for (let i = 0; i < vaults.length; i++) {
+  const underlyingVaults = await api.multiCall({ abi: ABI.accountable.vault, calls: vaults, permitFailure: true })
+  const resolvedVaults = underlyingVaults.filter(Boolean)
+  if (resolvedVaults.length === 0) return
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: resolvedVaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: resolvedVaults, permitFailure: true })
+  for (let i = 0; i < resolvedVaults.length; i++) {
     if (!assets[i] || !totalAssets[i]) continue
     api.add(assets[i], totalAssets[i])
   }
@@ -675,4 +674,5 @@ module.exports = {
   getCuratorExport,
   kaminoLendVaultTvl,
   getMorphoVaults,
+  getCuratorTvlAccountableVault,
 }
