@@ -22,7 +22,6 @@ const oft_tokens = {
 }
 
 async function tvl(api) {
-  const supplies = await oft_supplies(api)
   const config = await api.call({  abi: 'address:lrtConfig', target: DEPOSIT_POOL})
   const tokens = await api.call({  abi: 'address[]:getSupportedAssetList', target: config})
   const bals = await api.multiCall({  abi: 'function getTotalAssetDeposits(address) external view returns (uint256)', calls: tokens, target: DEPOSIT_POOL})
