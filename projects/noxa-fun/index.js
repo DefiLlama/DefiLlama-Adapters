@@ -9,16 +9,26 @@ const config = {
     nftManager: '0xcb6EaA4AF1c181016824BC76875F7B2E8e0e9C6A',
     whitelistedTokens: ['0x4200000000000000000000000000000000000006'], // WETH
   },
+  monad: {
+    locker: '0x2e98aC34869d951d228f6fc6970A9Dd4331368c0',
+    nftManager: '0xC3c0302438e2cE739021295BF31C856952ed1F45',
+    whitelistedTokens: ['0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A'], // WMON
+  },
+  stable: {
+    locker: '0xc28Eb9178c3779C207421d459A6E6a4A95A30022',
+    nftManager: '0x05Fb66d5abDBa99f5839A5F6801623Ae1c7eA1F9',
+    whitelistedTokens: ['0x817997Ca8394E26CCE3dE3A076a4889b27DbF9dE'], // WgUSDT
+  },
   intuition: {
     locker: '0x120Cc3b3559569b08Af048362D20f1a7e9758dAD',
     nftManager: '0x447bbA8E0151aC3De815D7f5d48c312e363b4b74',
     whitelistedTokens: ['0x81cFb09cb44f7184Ad934C09F82000701A4bF672'], // WTRUST
   },
-  arc: {
-    locker: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4',
-    nftManager: '0x39654a85a4c05127f5fd6ed22caec077a0fb1377',
-    whitelistedTokens: ['0x3600000000000000000000000000000000000000'], // USDC (arc has no wrapped native)
-  },
+  // arc: {
+  //   locker: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4',
+  //   nftManager: '0x39654a85a4c05127f5fd6ed22caec077a0fb1377',
+  //   whitelistedTokens: ['0x3600000000000000000000000000000000000000'], // USDC (arc has no wrapped native)
+  // },
   robinhood: {
     locker: '0x7F03effbd7ceB22A3f80Dd468f67eF27826acD85',
     nftManager: '0x73991a25c818bf1f1128deaab1492d45638de0d3',
@@ -33,15 +43,14 @@ const config = {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: 'TVL is the value of the pair-token (wrapped native / stable) side of the Uniswap V3 LP NFT positions locked in the NOXA Fun Launch Locker, doubled to estimate the full range-spread position value.',
+  methodology: 'TVL is the value of the base tokens(wrapped native / stable) in the locked LPs',
 }
 
 Object.keys(config).forEach(chain => {
   const { locker, nftManager, whitelistedTokens } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      await sumTokens2({ api, owners: [locker], resolveUniV3: true, uniV3WhitelistedTokens: whitelistedTokens, uniV3ExtraConfig: { nftAddress: nftManager } })
-      return api.getBalancesV2().clone(2).getBalances()
+      return sumTokens2({ api, owners: [locker], resolveUniV3: true, uniV3WhitelistedTokens: whitelistedTokens, uniV3ExtraConfig: { nftAddress: nftManager } })
     },
   }
 })
