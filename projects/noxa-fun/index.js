@@ -42,7 +42,6 @@ const config = {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: 'TVL is the value of the base tokens(wrapped native / stable) in the locked LPs',
 }
 
