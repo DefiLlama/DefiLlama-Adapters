@@ -276,7 +276,25 @@ const configs = {
     // },
 
     berachain: {
-      euler: []
+      euler: [
+        '0xd538b6aef78e4bdde4fd4576e9e3a403704602bc', // HONEY
+        '0xad9e5e2647efb9137b6b8d688d4906fa51476870', // wBERA
+        '0x1371dd58ce95ecd624340f072f97212a2661a280', // USDC.e
+        '0x6d976915bd9de43de1a60c39e128e320dadda000', // wETH
+        '0x558b16e07b8558b2a54946ca973b7b20b86a8b87', // USDe
+        '0x3de0ca4af11108c94c9066a935ee67e53b7f9447', // sUSDe
+        '0x2cccd307bb616e5f896ab61cae09ef4e5e9fedb7', // rUSD
+        '0x413dfb1814a6b5fe4488c49f86e2a74d285ffd5b', // NECT
+        '0x34018ac9dc4b114036ca148aa18c8f75594e5e95', // WBERA (Blue Cluster)
+        '0x4eb3351066494852a03ffbbde40a9776380ce20d', // LBGT (Blue Cluster)
+        '0x91e1ec1e948f635c127dad41eae1af899399f15a', // BYUSD
+        '0x1dfb669df5e70d4238f2cc0a9ee3b1a21ff91bc0', // iBERA
+        '0xb758d6ec8111feb9b0ec758a61b7874e5821dffd', // wBTC
+        '0x85dba39b85218229a4c3b9b037d05cd6eb4cf05d', // beraETH
+        '0xb8064453b25a91d7a4e8b7e7883a817d5742de34', // srUSD
+        '0xbabf4ce18fbab547ad5939deff825f3e2f8d9402', // PT-sUSDE-25SEP2025
+        // STONE (0x826244d9db2a0f438c3190a0f393c13d41ad7a2e) excluded -- totalAssets() returns 0, inactive
+      ]
     },
     bsc: {
       euler: [],
