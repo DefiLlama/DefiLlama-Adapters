@@ -275,6 +275,9 @@ const configs = {
     //   ]
     // },
 
+    berachain: {
+      euler: []
+    },
     bsc: {
       euler: [],
       lista: []
@@ -373,6 +376,7 @@ adapterExport.hyperliquid.tvl = createChainTvlFunction(configs.blockchains.hyper
 adapterExport.bsc.tvl = createChainTvlFunction(configs.blockchains.bsc);
 adapterExport.unichain.tvl = createChainTvlFunction(configs.blockchains.unichain);
 adapterExport.plume.tvl = createChainTvlFunction(configs.blockchains.plume);
+adapterExport.berachain.tvl = createChainTvlFunction(configs.blockchains.berachain);
 adapterExport.sonic.tvl = createChainTvlFunction(configs.blockchains.sonic);
 adapterExport.avax.tvl = createChainTvlFunction(configs.blockchains.avax);
 adapterExport.sui.tvl = createChainTvlFunction(configs.blockchains.sui);
