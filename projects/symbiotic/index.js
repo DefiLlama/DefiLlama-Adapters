@@ -3,6 +3,7 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 
 const BLACKLIST = new Set([
   '0x602c7941c6d3dc1c773591859948ed819cf6d151',
+  '0x5858B8Ecff0D1f37f6D02cFbc3ea8eb934eA82AC',
 ].map(a => a.toLowerCase()))
 
 async function tvl(api) {
