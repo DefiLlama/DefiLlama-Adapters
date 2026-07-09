@@ -10,6 +10,9 @@ const ABI = {
     balanceOf: 'function balanceOf(address account) view returns (uint256)',
     convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
   },
+  accountable : {
+    vault: 'address:vault',
+  },
   morphoV2: {
     liquidityAdapter: 'address:liquidityAdapter',
     adapters: 'function adapters(uint256) view returns (address)',
