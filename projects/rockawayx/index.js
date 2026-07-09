@@ -27,20 +27,6 @@ const UPSHIFT_USD_VAULTS = {
   ],
 };
 
-const MIDAS_VAULTS = {
-  ethereum: [
-    '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
-    '0xb64C014307622eB15046C66fF71D04258F5963DC', // mevBTC
-    '0x67E1F506B148d0Fc95a4E3fFb49068ceB6855c05'  // mROX
-  ],
-  plume_mainnet: [
-    '0x7d611dC23267F508DE90724731Dc88CA28Ef7473', // mMEV
-  ],
-  etlk: [
-    '0x5542F82389b76C23f5848268893234d8A63fd5c8', // mMEV
-  ],
-};
-
 const configs = {
   methodology: 'Count all assets deposited in all vaults curated by RockawayX.',
   blockchains: {
@@ -57,6 +43,11 @@ const configs = {
         '0xc87DBBB8C67e4F19fCD2E297c05937567b2572Ce', // Upshift Earn ctUSD
         '0xcd69123b3FBBfC666E1f6a501da27B564C00De54', // Upshift Tori
       ],
+      midasTokens: [
+        '0x030b69280892c888670EDCDCD8B69Fd8026A0BF3', // mMEV
+        '0xb64C014307622eB15046C66fF71D04258F5963DC', // mevBTC
+        '0x67E1F506B148d0Fc95a4E3fFb49068ceB6855c05'  // mROX
+      ],
     },
     base: {
       morpho: [
@@ -71,32 +62,20 @@ const configs = {
     solana: {
       kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP', '2TNCzzYJt3uHmpFpqeeJkza4pQUK9xoLa79DJH9AdgGA', 'HoffqVZUNGGpEAhE42E1DqNYSwJjCkorfgiBN6NpT2or'], // Kamino RWA USDC
     },
+    plume_mainnet: {
+      midasTokens: [
+        '0x7d611dC23267F508DE90724731Dc88CA28Ef7473', // mMEV
+      ]
+    },
+    etlk: {
+      midasTokens: [
+        '0x5542F82389b76C23f5848268893234d8A63fd5c8', // mMEV
+      ]
+    }
   }
 }
 
 const adapterExport = getCuratorExport(configs);
-
-async function midasTvl(api, vaults) {
-  const totalSupplies = await api.multiCall({
-    abi: 'uint256:totalSupply',
-    calls: vaults,
-    permitFailure: true
-  });
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
-    api.add(vaults[i], totalSupplies[i]);
-  }
-}
-
-for (const [chain, vaults] of Object.entries(MIDAS_VAULTS)) {
-  const baseTvl = adapterExport[chain]?.tvl;
-  adapterExport[chain] = {
-    tvl: async (api) => {
-      if (baseTvl) await baseTvl(api);
-      await midasTvl(api, vaults);
-    }
-  };
-}
 
 async function upshiftUsdTvl(api, vaults) {
   const assets = await api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: true });
