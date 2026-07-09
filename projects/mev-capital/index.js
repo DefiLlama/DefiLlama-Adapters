@@ -292,7 +292,7 @@ const configs = {
         '0xb758d6ec8111feb9b0ec758a61b7874e5821dffd', // wBTC
         '0x85dba39b85218229a4c3b9b037d05cd6eb4cf05d', // beraETH
         '0xb8064453b25a91d7a4e8b7e7883a817d5742de34', // srUSD
-        '0xbabf4ce18fbab547ad5939deff825f3e2f8d9402', // PT-sUSDE-25SEP2025
+        '0xbabf4ce18fbab547ad5939deff825f3e2f8d9402', // PT-sUSDE-25SEP2025 (matured, monitor totalAssets() for removal)
         // STONE (0x826244d9db2a0f438c3190a0f393c13d41ad7a2e) excluded -- totalAssets() returns 0, inactive
       ]
     },
