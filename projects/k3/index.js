@@ -46,13 +46,6 @@ const configs = {
         "0x2E28c94eE56Ac6d82600070300d86b3a14D5d71A",
       ],
     },
-    avax: {
-      eulerVaultOwners: [
-        "0xa4dC6C20475fDD05b248fbE51F572bD3154dd03B",
-        "0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B",
-      ],
-      erc4626: ["0x8fc260cd0a00cac30eb1f444b8f1511d71420af9"],
-    },
     bob: {
       eulerVaultOwners: ["0xDb81B93068B886172988A1A4Dd5A1523958a23f0"],
     },
@@ -76,7 +69,15 @@ const configs = {
     arbitrum: {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
     },
+    optimism: {
+      midasTokens: [
+        "0xcC476B1a49bcDf5192561e87b6Fb8ea78aa28C13",
+      ],
+    },
     monad: {
+      accountableVaults: [
+        "0x77410132Fd468d67B820314d378bE1fDbfA2bAa4",
+      ],
       erc4626: [
         "0x1E4D67c666c2Ccf27A0aF980fE6c8e0f05aC8949",
         "0x502e4a0B61dEBA3015Eb9E51116B832003B22c2C",
