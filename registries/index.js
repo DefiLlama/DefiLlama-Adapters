@@ -21,6 +21,7 @@ const adapterRoutes = [
   './curators.js',
   './sumTokens.js',
   './friend-tech.js',
+  './txBridge.js',
   '../cex/index.js',
 ]
 const allProtocols = {}
