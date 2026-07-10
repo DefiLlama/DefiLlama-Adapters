@@ -52,5 +52,7 @@ module.exports = {
   tac: { tvl },
   plasma: { tvl },
   avax: { tvl },
-  katana: { tvl }
+  katana: { tvl },
+  hyperliquid: { tvl },
+  robinhood: { tvl }
 };
