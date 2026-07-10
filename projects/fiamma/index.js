@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk")
-const { function_view } = require("../helper/chain/aptos")
+const { function_view, timestampToVersion } = require("../helper/chain/aptos")
 
 // Fiamma is a BitVM2 BTC bridge: BTC locked on Bitcoin mints FIABTC (8 decimals, 1:1)
 // on the destination chains. The BTC is held in per-deposit BitVM2 taproot addresses
@@ -26,12 +26,22 @@ const tvl = async (api) => {
   )
   let totalBtc = supplies.reduce((sum, supply) => sum + supply / 1e8, 0)
 
-  const aptosSupply = await function_view({
-    functionStr: "0x1::fungible_asset::supply",
-    type_arguments: ["0x1::fungible_asset::Metadata"],
-    args: [APTOS_FIABTC],
-  })
-  const aptosAmount = aptosSupply && aptosSupply.vec && aptosSupply.vec.length ? Number(aptosSupply.vec[0]) : 0
+  // For historical queries resolve the Aptos ledger version from the timestamp so the
+  // Aptos read matches the EVM ones; live runs read the latest state directly.
+  const isHistorical = api.timestamp && Date.now() / 1000 - api.timestamp > 2 * 3600
+  let aptosAmount = 0
+  try {
+    const aptosSupply = await function_view({
+      functionStr: "0x1::fungible_asset::supply",
+      type_arguments: ["0x1::fungible_asset::Metadata"],
+      args: [APTOS_FIABTC],
+      ledgerVersion: isHistorical ? await timestampToVersion(new Date(api.timestamp * 1000)) : undefined,
+    })
+    aptosAmount = aptosSupply && aptosSupply.vec && aptosSupply.vec.length ? Number(aptosSupply.vec[0]) : 0
+  } catch (e) {
+    // function_view throws for versions before FIABTC existed, meaning the supply was 0
+    if (!isHistorical) throw e
+  }
   totalBtc += aptosAmount / 1e8
 
   api.addCGToken("bitcoin", totalBtc)
