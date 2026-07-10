@@ -12,7 +12,7 @@ async function getUserStakingSummary(user) {
 
 async function getHypercoreStakedHype(user) {
   const { delegated, undelegated, totalPendingWithdrawal } = await getUserStakingSummary(user)
-  return BigInt(Math.round((delegated + undelegated - totalPendingWithdrawal) * 1e18))
+  return BigInt(Math.round((delegated + undelegated + totalPendingWithdrawal) * 1e18))
 }
 
 module.exports = { getUserStakingSummary, getHypercoreStakedHype }

@@ -34,11 +34,13 @@ const addressBook = {
   },
   ethereum: {
     usdc: ADDRESSES.ethereum.USDC,
+    usdo: "0x8238884Ec9668Ef77B90C6dfF4D1a9F4F4823BFe", // OpenEden's USDO - Tokenized T-bill
     aave_v3_usdc: "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c", // aEthUSDC
     morpho_vaults: [
-      "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", // kpk-usdc-prime
-      "0x56bfa6f53669B836D1E0Dfa5e99706b12c373ecf", // skymoney-usdc-risk-capital
-      "0x8c106EEDAd96553e64287A5A6839c3Cc78afA3D0", // gauntlet-usdc-prime
+      // "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", // kpk-usdc-prime - No longer in use
+      "0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6", // kpk-usdc-prime - V2 vault
+      "0x56bfa6f53669B836D1E0Dfa5e99706b12c373ecf", // skymoney-usdc-risk-capital - V2 vault
+      "0x8c106EEDAd96553e64287A5A6839c3Cc78afA3D0", // gauntlet-usdc-prime - V2 vault
     ],
     msv: "0x55bAe6690d46EA94D7F05DF7c80A85E322421fB6", // MultiStrategyVault (holds tokens besides usdc)
     reserves: [
@@ -76,8 +78,12 @@ async function tvl(api) {
   const addresses = addressBook[api.chain];
   // Most of the reserves can only have USDC
   const ownerTokens = addresses.reserves.map(i => [[normalize(addresses.usdc)], i.address])
-  // The MSV also has AAVE USDC
-  ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc)], addresses.msv]);
+  // The MSV also has AAVE USDC and OpenEden's USDO
+  if (api.chain === "ethereum" ) {
+    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc), normalize(addresses.usdo)], addresses.msv]);
+  } else {
+    ownerTokens.push([[normalize(addresses.usdc), normalize(addresses.aave_v3_usdc)], addresses.msv]);
+  }
 
   // Also Morpho vaults
   for (const vault of addresses.morpho_vaults) {

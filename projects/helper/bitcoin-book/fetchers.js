@@ -275,6 +275,16 @@ module.exports = {
     const  { data: { lockers } } = await getConfig('yala/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
     return lockers.filter(l => l.type === 'BTC').map(l => l.sourceAddress)
   },
+  rskBridge: async (api) => {
+    return getConfig('rsk-bridge', undefined, {
+      fetcher: async () => {
+        api = new sdk.ChainApi({ chain: 'rsk', timestamp: api.timestamp })
+        await api.getBlock()
+        const addr = await api.call({  abi: 'string:getFederationAddress', target:'0x0000000000000000000000000000000001000006' })
+        return [addr]
+      }
+    })
+  },
   zenrock: async () => {
     const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
     const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';

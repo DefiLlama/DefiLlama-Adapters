@@ -114,6 +114,10 @@ const configs = {
       ],
     },
     tempo: {
+      morpho: [
+        '0xC609656Ed9ef219c98C8e549bF729144F211f06E',
+        '0xe5235da8Ad839dd2A9De1f1069c89cA3575b5208',
+      ],
       morphoVaultOwners: [
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
@@ -121,10 +125,14 @@ const configs = {
       ],
     },
     stable: {
+      morpho: [
+        '0xb7Df8db22A5DBBFA9ebeb94b3910aec6a4f05c08',
+      ],
       morphoVaultOwners: [
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
         '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+        '0x1716D63E23BB205544540dc875Ca8bD4FFaF5bB2',
       ],
     },
     arbitrum: {

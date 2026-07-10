@@ -83,11 +83,6 @@ const configs = {
     methodology: "TVL represents the total amount of SOL staked in Adrastea's liquid staking pool",
     solana: '2XhsHdwf4ZDpp2JhpTqPovoVy3L2Atfp1XkLqFMwGP4Y',
   },
-  'solanahub-sol': {
-    doublecounted: true,
-    methodology: "SolanaHub Staked SOL (hubSOL) is a tokenized representation on your staked SOL + stake rewards",
-    solana: 'ECRqn7gaNASuvTyC5xfCUjehWZCSowMXstZiM5DNweyB',
-  },
   'pico-sol': {
     doublecounted: true,
     methodology: "Pico Staked SOL (picoSOL) is a tokenized representation on your staked SOL + stake rewards",
@@ -100,15 +95,8 @@ const configs = {
     ],
   },
   // getStakedSol adapters
-  'marinade-select': {
-    methodology: 'We sum the amount of SOL staked by account STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps',
-    solana: { type: 'staked', address: 'STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps' },
-  },
   'thevault': {
     solana: { type: 'staked', address: 'GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW' },
-  },
-  'marinade-native': {
-    solana: { type: 'staked', address: 'stWirqFCf2Uts1JBL1Jsd3r6VBWhgnpdPxCTe1MFjrq' },
   },
   'bnsol': {
     solana: { type: 'staked', address: '75NPzpxoh8sXGuSENFMREidq6FMzEx4g2AfcBEB6qjCV' },

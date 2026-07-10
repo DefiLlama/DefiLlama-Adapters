@@ -27,14 +27,14 @@ const tvl = async (api) => {
   return toUSDTBalances(usdTvl)
 }
 
-const tvlOnChain = getUniTVL({ factory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32', useDefaultCoreAssets: true, queryBatched: 5000, waitBetweenCalls: 1000,  })
+const tvlOnChain = getUniTVL({ factory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32', useDefaultCoreAssets: true, queryBatched: 5000, waitBetweenCalls: 1000, skipUnknownTokens: true, })
 
 module.exports = {
-  // isHeavyProtocol: true,
+  isHeavyProtocol: true,
   misrepresentedTokens: true,
   polygon: {
     staking: staking("0x958d208Cdf087843e9AD98d23823d32E17d723A1", ADDRESSES.polygon.QUICK),
-    tvl
+    tvl:tvlOnChain,
   },
   base: { tvl: getUniTVL({ factory: '0xEC6540261aaaE13F236A032d454dc9287E52e56A', useDefaultCoreAssets: true }) },
   // dogechain: {

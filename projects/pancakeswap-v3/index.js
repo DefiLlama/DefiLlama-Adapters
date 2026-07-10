@@ -54,5 +54,6 @@ module.exports = {
     ] },
     op_bnb: { factory, fromBlock: 1721753, permitFailure: true, },
     monad: { factory, fromBlock: 23058782, },
+    robinhood: { factory, fromBlock: 1, },
   })
 }

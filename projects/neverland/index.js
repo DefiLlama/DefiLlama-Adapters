@@ -1,19 +1,23 @@
 const { aaveV3Export } = require("../helper/aave");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-// Neverland Money - Aave V3-based lending protocol on Monad with vote-escrow tokenomics
+// Neverland - Aave V3-based lending protocol on Monad with vote-escrow tokenomics
 // Docs: https://docs.neverland.money
 
 const CONTRACTS = {
   monad: {
-    poolDataProvider: '0xfd0b6b6F736376F7B99ee989c749007c7757fDba',
+    // Aave V3 markets (differ only in listed reserves):
+    poolDataProviders: [
+      '0xfd0b6b6F736376F7B99ee989c749007c7757fDba', // canonical market (multi-reserve)
+      '0xeEb78818C026A3c1b82804627d101e27Ce5E60CB', // isolated market (AUSD + PT-AUSD tokens)
+    ],
     dust: '0xAD96C3dffCD6374294e2573A7fBBA96097CC8d7c',
     dustLock: '0xBB4738D05AD1b3Da57a4881baE62Ce9bb1eEeD6C',
   },
 };
 
 const aaveConfig = {
-  monad: [CONTRACTS.monad.poolDataProvider],
+  monad: CONTRACTS.monad.poolDataProviders,
 };
 
 const aaveExports = aaveV3Export(aaveConfig);

@@ -11,28 +11,17 @@ function getFileKey(project, chain) {
   return `${Bucket}/${getKey(project, chain)}`
 }
 
-function getLink(project, chain) {
-  return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
-}
-
 async function getCache(project, chain, { skipCompression } = {}) {
   const Key = getKey(project, chain)
   const fileKey = getFileKey(project, chain)
 
   try {
-    const json = await sdk.cache.readCache(fileKey, { skipCompression })
+    const json = await sdk.cache.readCache(fileKey, { skipCompression, readFromR2Cache: true })
     if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
   } catch (e) {
-    try {
-      const { data: json } = await axios.get(getLink(project, chain))
-      await sdk.cache.writeCache(fileKey, json)
-      return json
-    } catch (e) {
-      sdk.log('failed to fetch data from s3 bucket:', Key)
-      // sdk.log(e)
-      return {}
-    }
+    // sdk.log(e)
+    return {}
   }
 }
 
@@ -97,14 +86,14 @@ async function getConfig(project, endpoint, { fetcher } = {}) {
         const currentCache = await getCache(project, key)
         if (typeof currentCache !== 'string' && Object.keys(currentCache).length > 0) {
           sdk.log(project, 'fetched non-json config, but we have valid json cache, so we keep the old cache')
-          throw new Error('Fetched non-json config, but we have valid json cache, so we keep the old cache: '+ projects)
+          throw new Error('Fetched non-json config, but we have valid json cache, so we keep the old cache: ' + projects)
         }
       }
-      
+
       await _setCache(key, project, json)
       return json
-    
-    
+
+
     } catch (e) {
       // sdk.log(e)
       sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)

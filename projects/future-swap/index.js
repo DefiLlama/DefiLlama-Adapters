@@ -3,7 +3,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs")
 const { sumUnknownTokens } = require("../helper/unknownTokens")
 
 const FindoraStableCoins = {
-  BNB_BUSD: ADDRESSES.findora.BUSD_b,
+  BNB_BUSD: '0xe80eb4a234f718edc5b76bb442653827d20ebb2d',
   BNB_USDT: ADDRESSES.findora.USDT_b,
   ETHEREUM_USDC: ADDRESSES.findora.USDC_e,
   ETHEREUM_USDT: ADDRESSES.findora.USDT_e,

@@ -6,9 +6,8 @@ const { log, sleep } = require("../utils");
 const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
+// https://wiki.f5nodes.com/quicksilver/endpoints/
 // https://proxy.atomscan.com/chains.json
-// https://cosmos-chain.directory/chains/cosmoshub
-// https://cosmos-chain.directory/chains
 // https://celestia.publicnode.com/
 // https://api.axelarscan.io/api/getTVL
 const endPoints = {
@@ -17,7 +16,8 @@ const endPoints = {
   osmosis: "https://rest-osmosis.ecostake.com",
   // cosmos: "https://cosmoshub-lcd.stakely.io",
   cosmos: "https://cosmos-api.polkachu.com",
-  kujira: "https://kujira-rest.publicnode.com",
+  kujira: "https://rest.cosmos.directory/kujira",
+  // kujira: "https://kujira-api.publicnode.com",
   // comdex: "https://rest.comdex.one",
   comdex: "https://rest.cosmos.directory/comdex",
   terra: "https://terra-classic-lcd.publicnode.com",
@@ -28,7 +28,7 @@ const endPoints = {
   cronos: "https://rest.mainnet.crypto.org",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
   stargaze: "https://rest.stargaze-apis.com",
-  quicksilver: "https://rest.cosmos.directory/quicksilver",
+  quicksilver: "https://quicksilver.api.m.anode.team",
   persistence: "https://rest.cosmos.directory/persistence",
   // secret: "https://rpc.ankr.com/http/scrt_cosmos",
   secret: "https://lcd-secret.keplr.app",
@@ -41,7 +41,7 @@ const endPoints = {
   // neutron: "https://rest-solara.neutron-1.neutron.org",
   neutron: "https://neutron-rest.publicnode.com",
   quasar: "https://quasar-api.polkachu.com",
-  gravitybridge: "https://gravity-api.polkachu.com",
+  gravitybridge: "https://gravitychain.io:1317/",
   // sei: "https://sei-api.polkachu.com",
   sei: "https://rest.sei-apis.com",
   // aura: "https://aura-api.polkachu.com/",
@@ -115,25 +115,43 @@ async function query(url, block, chain) {
 }
 
 async function queryV1Beta1({ chain, paginationKey, block, url, api } = {}) {
-  if (api) {
-    chain = api.chain
-  }
+  if (api) chain = api.chain
   const subpath = chainSubpaths[chain] || "cosmos";
   let endpoint = `${getEndpoint(chain)}/${subpath}/${url}`;
   if (block !== undefined) {
-    endpoint += `?height=${block - (block % 100)}`;
+    endpoint += (endpoint.includes('?') ? '&' : '?') + `height=${block - (block % 100)}`
   }
   if (paginationKey) {
-    const paginationQueryParam = `pagination.key=${paginationKey}`;
-    if (block === undefined) {
-      endpoint += "?";
-    } else {
-      endpoint += "&";
-    }
-    endpoint += paginationQueryParam;
+    endpoint += (endpoint.includes('?') ? '&' : '?') + `pagination.key=${encodeURIComponent(paginationKey)}`
   }
   return get(endpoint)
 }
+
+async function queryV1Beta1V2({ chain, url, limit = 100, block, api, dataKey } = {}) {
+  if (api) chain = api.chain
+
+  const sep = url.includes('?') ? '&' : '?'
+  const pagedUrl = `${url}${sep}pagination.limit=${limit}`
+
+  let res = await queryV1Beta1({ chain, url: pagedUrl, block })
+
+  if (!dataKey) {
+    dataKey = Object.keys(res).find(k => k !== 'pagination' && Array.isArray(res[k]))
+    if (!dataKey) throw new Error(`queryV1Beta1V2: no array field in response. Keys: ${Object.keys(res).join(', ')}`)
+  }
+
+  let items = res[dataKey] || []
+  let paginationKey = res.pagination?.next_key
+  let safety = 0
+  while (paginationKey) {
+    if (++safety > 1000) throw new Error('queryV1Beta1V2: pagination exceeded 1000 pages')
+    res = await queryV1Beta1({ chain, url: pagedUrl, block, paginationKey })
+    items = items.concat(res[dataKey] || [])
+    paginationKey = res.pagination?.next_key
+  }
+  return items
+}
+
 
 async function getTokenBalance({ token, owner, block, chain }) {
   let denom = token.native_token?.denom;
@@ -365,6 +383,7 @@ module.exports = {
   unwrapLp,
   query,
   queryV1Beta1,
+  queryV1Beta1V2,
   queryContractStore,
   queryContract,
   queryManyContracts,

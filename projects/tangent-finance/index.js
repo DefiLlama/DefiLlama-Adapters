@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 // ----- Tangent core contracts on Ethereum mainnet -----
@@ -5,7 +6,7 @@ const MARKET_CREATOR = '0x214C8A1023B30032a2Eded109146658C6D6F2781'
 
 // MarketCreator was deployed at block 24634921 — slight safety margin for logs.
 const FROM_BLOCK = 24634900
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NULL_ADDRESS = ADDRESSES.null
 
 // All five market-template events share the shape (address proxy, string name).
 const MARKET_CREATED_EVENTS = [

@@ -14,6 +14,14 @@ const adapterRoutes = [
   './uniswapV3Graph.js',
   './balancer.js',
   './gmx.js',
+  './traderJoeV2.js',
+  './liquity.js',
+  './treasury.js',
+  './bitcoin.js',
+  './curators.js',
+  './sumTokens.js',
+  './friend-tech.js',
+  '../cex/index.js',
 ]
 const allProtocols = {}
 

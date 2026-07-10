@@ -78,7 +78,8 @@ const configs = {
   },
   'edel': {
     ethereum: {
-      poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501']
+      poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501'],
+      isInsolvent: true,
     }
   },
   'vena': {
@@ -90,6 +91,16 @@ const configs = {
     pharos: {
       poolDatas: ['0xA91424C666193C2b2fb684E25dEadf03B333f49A']
     }
+  },
+  'kaskad': {
+    igra: {
+      poolDatas: ['0xFEaD8E14e58ecF72B5cD585458f07523F173E2F4']
+    }
+  },
+  'velkonix': {
+    megaeth: {
+      poolDatas: ['0x6da56B769B42952CACA18D37Feda3015FDB2fE67'],
+    },
   }
 }
 

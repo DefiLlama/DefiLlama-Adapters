@@ -128,6 +128,9 @@ function validateHallmarks(hallmark) {
 (async () => {
 
   const moduleArg = process.argv[2].replace('/index.js', '').split('/').pop()
+  // registry keys can be namespaced (e.g. `treasury/gmx`); preserve the full
+  // key so a treasury entry isn't shadowed by a same-named protocol adapter.
+  const registryKey = process.argv[2].replace(/\.js$/, '').replace(/\/index$/, '').replace(/^projects\//, '')
 
   // throw error if module doesnt start with lowercase letters
   if (!/^[a-z]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
@@ -138,10 +141,11 @@ function validateHallmarks(hallmark) {
   try {
     module = require(passedFile)
   } catch (e) {
-    if (allProtocols[moduleArg]) {
-      module = allProtocols[moduleArg]
-      passedFile = `registry:${moduleArg}`
-      console.log(`Loaded module ${moduleArg} from registry`)
+    const registryName = allProtocols[registryKey] ? registryKey : moduleArg
+    if (allProtocols[registryName]) {
+      module = allProtocols[registryName]
+      passedFile = `registry:${registryName}`
+      console.log(`Loaded module ${registryName} from registry`)
     } else {
       console.error("Error loading module:", e)
       return handleError(e)

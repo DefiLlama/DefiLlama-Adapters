@@ -1390,14 +1390,14 @@ const config = {
       "aKCD8R97ifVNsVWTC2sbdbeqWG8ZGJaQcrwMBo3XvrmgR4N"
     ]
   },
-  "songbird": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  },
+  // "songbird": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "sora": {
     "owners": [
       "cnRnnKrqCX9TEZvCgVuiXbPbE1jmA3R55W6cLeKC43U8nVoma",
@@ -1458,14 +1458,14 @@ const config = {
       "gateioiotlos"
     ]
   },
-  "tenet": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  },
+  // "tenet": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "terra": {
     "owners": [
       "terra155svs6sgxe55rnvs6ghprtqu0mh69keh9h4dzr",
@@ -1669,15 +1669,24 @@ const config = {
   },
 };
 
+// remove chains w/o historical tvl
 const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'tara', 'zkfair',
   'vinu', 'rollux', 'syscoin', 'aelf', 'ailayer', 'heco', 'archway',
   'ton', // never had any tvl
-  'enuls'
+  'enuls', 'kardia'
 ]
 
-unsupportedChains.forEach(chain => delete config[chain]);
+// export 0 to preserve historical tvl
+const deadChains = ['airdao', 'eos_evm', 'kroma']
+
+const allChains = [...unsupportedChains, ...deadChains];
+allChains.forEach(chain => delete config[chain]);
+
+const deadChainsExports = {};
+deadChains.forEach(chain => { deadChainsExports[chain] = { tvl: async () => ({}) }; });
 
 module.exports = mergeExports([
   cexExports(config),
+  deadChainsExports,
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9'], sleepTime: 20_000, size: 200, proxy: true }) } },
 ]);

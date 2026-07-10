@@ -10,6 +10,9 @@ const ABI = {
     balanceOf: 'function balanceOf(address account) view returns (uint256)',
     convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
   },
+  accountable : {
+    vault: 'address:vault',
+  },
   morphoV2: {
     liquidityAdapter: 'address:liquidityAdapter',
     adapters: 'function adapters(uint256) view returns (address)',
@@ -62,6 +65,14 @@ const MorphoConfigs = {
       {
         address: '0xA1D94F746dEfa1928926b84fB2596c06926C0405',
         fromBlock: 23375073,
+      },
+    ],
+  },
+  arc: {
+    vaultFactoriesV2: [
+      {
+        address: '0x3b0eefaBfa22ec7CF2c73877ac16e78D76749f12',
+        fromBlock: 1,
       },
     ],
   },
@@ -220,6 +231,14 @@ const MorphoConfigs = {
       {
         address: '0x7fc35488803D49D00a94b206A223f7661898BE3a',
         fromBlock: 1506183,
+      }
+    ]
+  },
+  robinhood: {
+    vaultFactoriesV2: [
+      {
+        address: '0x0FBad98595b0186dA120E41f77C102beb49f803c',
+        fromBlock: 286,
       }
     ]
   },

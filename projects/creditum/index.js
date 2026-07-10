@@ -7,9 +7,9 @@ const lending = "0x04D2C91A8BDf61b11A526ABea2e2d8d778d4A534"
 async function tvl(api) {
   return api.sumTokens({
     owner: lending, tokens: [
-      ADDRESSES.fantom.USDC,
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
       ADDRESSES.fantom.WFTM,
-      ADDRESSES.fantom.DAI,
+      "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
       ADDRESSES.fantom.WBTC,
       "0x74b23882a30290451A17c44f4F05243b6b58C76d"
     ]

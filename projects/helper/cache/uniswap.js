@@ -20,7 +20,9 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   stablePoolSymbol = 'sAMM',
   permitFailure = false,
   skipUnknownTokens = false,
+  blacklistedPools = [],
 }) {
+  const blacklistedPoolsSet = new Set(blacklistedPools.map(i => i.toLowerCase()))
 
   let updateCache = false
 
@@ -144,6 +146,13 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (coreAssets) {
       const data = []
       reserves.forEach((dat, i) => {
+
+        const pool = cache.pairs[i].toLowerCase()
+
+        if (blacklistedPoolsSet.has(pool)) {
+          return
+        }
+
         if (!dat) return;
         const { _reserve0, _reserve1 } = dat
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {

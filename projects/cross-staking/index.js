@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { addCrossToken } = require('../helper/chain/cross');
 
 const STAKING_CONTRACT = '0x000000068122d9bB43B4BCF5497A10EdfA9F5E93';
-const CROSS_NATIVE_ADDRESS = '0x0000000000000000000000000000000000000000';
+const CROSS_NATIVE_ADDRESS = ADDRESSES.null;
 
 
 async function staking(api) {
