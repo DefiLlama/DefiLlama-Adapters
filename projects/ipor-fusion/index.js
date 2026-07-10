@@ -10,7 +10,9 @@ let totalVaultsProcessed = 0;
 async function tvl(api) {
   const config  = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
 
-  const chain = api.chain === "avax" ? 'avalanche' : api.chain;
+  let chain = api.chain;
+  if (chain === "avax") chain = 'avalanche';
+  else if (chain === "hyperliquid") chain = 'hyperevm';
 
   const chainConfig = config[chain];
   if (!chainConfig || !chainConfig.vaults) {
@@ -52,5 +54,7 @@ module.exports = {
   tac: { tvl },
   plasma: { tvl },
   avax: { tvl },
-  katana: { tvl }
+  katana: { tvl },
+  hyperliquid: { tvl },
+  robinhood: { tvl }
 };
