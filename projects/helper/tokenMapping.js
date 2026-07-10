@@ -40,6 +40,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  eden: {
+    [nullAddress]: { coingeckoId: 'celestia', decimals: 18 }, // native TIA
+    '0x00000000000000000000000000000000ce1e571a': { coingeckoId: 'celestia', decimals: 18 }, // WTIA
+  },
   inri: {
     '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {
       coingeckoId: 'tether',
