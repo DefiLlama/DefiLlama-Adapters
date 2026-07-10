@@ -14,7 +14,7 @@ async function getPairs(api) {
 async function tvl(api) {
   const pairs = await getPairs(api);
   const tokensAndOwners = pairs.map(d => [d.tokenAddress, d.confidentialTokenAddress]);
-  await sumTokens2({ api, tokensAndOwners, blacklistedTokens: [ZAMA_TOKEN] });
+  await sumTokens2({ api, tokensAndOwners });
 }
 
 async function staking(api) {
