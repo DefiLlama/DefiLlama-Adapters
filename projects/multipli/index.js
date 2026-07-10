@@ -2,12 +2,13 @@ const axios = require('axios')
 
 const API = "https://api.multipli.fi/multipli/v1/external-aggregator/defillama/tvl/"
 
-// API was reporting rwaUSDi total supply in balances
+// rwaUSDi is multipli's receipt token - never count it towards TVL
 const rwaUSDis = {
   ethereum: '0xa39986f96b80d04e8d7aeaaf47175f47c23fd0f4',
   base: '0xd74FB32112b1eF5b4C428Fead8dA8d85A0019009',
   monad: '0x650b616b46ff94000eb115926ab8393b90788d76',
-  arbitrum: '0xA39986F96B80d04e8d7AeAaF47175F47C23FD0f4'
+  arbitrum: '0xA39986F96B80d04e8d7AeAaF47175F47C23FD0f4',
+  pharos: '0xA39986F96B80d04e8d7AeAaF47175F47C23FD0f4',
 }
 
 
@@ -31,26 +32,31 @@ const vaults = {
   ],
 }
 
+let apiPayload
+const getApiPayload = () => {
+  if (!apiPayload) apiPayload = axios.get(API).then(({ data }) => data.payload)
+  return apiPayload
+}
+
 const tvl = async (api) => {
-  const { data } = await axios.get(API)
-  const balances = data.payload[api.chain] ?? {}
-
-  const skipped = new Set()
-  const blacklisted = rwaUSDis[api.chain]
-  if (blacklisted) skipped.add(`${api.chain}:${blacklisted.toLowerCase()}`)
-
-  const chainVaults = vaults[api.chain] ?? []
-  if (chainVaults.length) {
-    const assets = await api.multiCall({ abi: 'address:asset', calls: chainVaults })
-    const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: chainVaults })
-    assets.forEach((asset, i) => {
-      skipped.add(`${api.chain}:${asset.toLowerCase()}`) // prefer contract call over API balance
-      api.add(asset, totalAssets[i])
-    })
-  }
+  const balances = (await getApiPayload())[api.chain] ?? {}
+  const served = new Set(Object.keys(balances).map(key => key.toLowerCase()))
+  const blacklisted = `${api.chain}:${rwaUSDis[api.chain]}`.toLowerCase()
 
   Object.entries(balances).forEach(([key, balance]) => {
-    if (!skipped.has(key.toLowerCase())) api.addBalances({ [key]: balance })
+    if (key.toLowerCase() !== blacklisted) api.addBalances({ [key]: balance })
+  })
+
+  const chainVaults = vaults[api.chain] ?? []
+  if (!chainVaults.length) return api.getBalances()
+
+  const [assets, totalAssets] = await Promise.all([
+    api.multiCall({ abi: 'address:asset', calls: chainVaults }),
+    api.multiCall({ abi: 'uint256:totalAssets', calls: chainVaults }),
+  ])
+  assets.forEach((asset, i) => {
+    // API balances include funds held off-chain, so they take priority; vault contract calls cover only assets the API doesn't serve
+    if (!served.has(`${api.chain}:${asset.toLowerCase()}`)) api.add(asset, totalAssets[i])
   })
   return api.getBalances()
 }
