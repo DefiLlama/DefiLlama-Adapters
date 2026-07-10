@@ -103,7 +103,7 @@ async function customTvl(api) {
   return api.getBalances()
 }
 
-module.exports = { ...curatorExport }
+module.exports = { timetravel: false, ...curatorExport }
 
 for (const chain of Object.keys(customConfig)) {
   const curatorChain = curatorExport[chain]
