@@ -42,6 +42,7 @@ const config = {
 }
 
 module.exports = {
+  doublecounted: true,  // already counted as dex tvl
   methodology: 'TVL is the value of the base tokens(wrapped native / stable) in the locked LPs',
 }
 
