@@ -7207,6 +7207,15 @@ const configs = {
       }
     },
   },
+  'arcus-perp': {
+    robinhood: {
+      owner: '0x14b107cf534239c59571b066cb6497a321da897c', // bridge
+      tokens: [
+        '0x4FdBDaF4800fc28c22a967d23a343aCCE34315a4',
+        '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168',
+      ],
+    }
+  },
   "claimrush": {
     "methodology": "Pool2 = Aerodrome v2 vAMM WETH/CLAIM LP tokens custodied by LpStakingVault7D (7-day rolling staking position for active stakers) plus GenesisLPVault24M (24-month time-locked genesis seed liquidity). LP tokens are unwrapped into their underlying WETH and CLAIM reserves. Staking bucket = CLAIM principal locked in VeClaimNFT (voting-escrow NFT, max 1-year linear-decay locks) to receive a pro-rata share of ETH royalties from every Mine takeover.",
     "base": {
