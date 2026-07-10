@@ -33,6 +33,9 @@ async function getReserves() {
 
     // returned as <route><reserve0><reserve1> so we strip route prefix and decode both u256 values
     const bytes = Buffer.from(result.payload.slice(2), 'hex').subarray(ROUTE.length)
+    if (bytes.length < 64) {
+        throw new Error(`vara-rivrdex: unexpected payload length ${bytes.length} after route prefix`)
+    }
     return {
         reserve0: decodeU256LE(bytes.subarray(0, 32)),
         reserve1: decodeU256LE(bytes.subarray(32, 64)),
