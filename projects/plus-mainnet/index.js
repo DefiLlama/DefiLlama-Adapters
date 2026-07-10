@@ -1,8 +1,7 @@
 const axios = require("axios");
 const { toUSDTBalances } = require('../helper/balances');
 async function fetch() {
-  const response = await axios.get("https://plusmain.net/api/defillama/tvl");
-  // 단순 숫자가 아닌 USDT(달러) 단위임을 명시하여 리턴합니다.
+  const response = await axios.get("https://plusmain.net/api/defillama/tvl", { timeout: 10000 });
   return toUSDTBalances(response.data.tvl);
 }
 module.exports = {
