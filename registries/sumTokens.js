@@ -24559,6 +24559,34 @@ const configs = {
         ]
       ]
     },
+    "ethereum": {
+      "tokensAndOwners": [
+        [
+          ADDRESSES.ethereum.USDC,
+          "0xc01c9EF5de5862354adD9501a29e8765cFF01c32"
+        ],
+        [
+          ADDRESSES.ethereum.USDT,
+          "0xc01c9EF5de5862354adD9501a29e8765cFF01c32"
+        ],
+        [
+          ADDRESSES.ethereum.WETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.WSTETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.WBTC,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ]
+      ]
+    },
   },
   "ryze": {
     "arbitrum": {
