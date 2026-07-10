@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { getConfig } = require('../helper/cache')
 
 const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/refs/heads/main/mainnet/addresses.json";
@@ -7,26 +6,6 @@ const DEBUG_LOGGING = false; // Set to true to enable debug logs
 const debugLog = (...args) => DEBUG_LOGGING && console.log(...args);
 
 let totalVaultsProcessed = 0;
-
-// Logs the USD value each vault contributes. Enabled by setting DEBUG_LOGGING = true.
-async function logVaultUsdValues(api, chain, vaults, calls) {
-  const assets = await api.multiCall({ calls, abi: 'address:asset', permitFailure: true })
-  const totalAssets = await api.multiCall({ calls, abi: 'uint256:totalAssets', permitFailure: true })
-
-  const rows = await Promise.all(calls.map(async (vaultAddress, i) => {
-    let usd = 0
-    if (assets[i] && totalAssets[i])
-      usd = Number(await sdk.Balances.getUSDValue({ [`${chain}:${assets[i]}`]: totalAssets[i] }, api.timestamp)) || 0
-    return { name: vaults[i].name || 'Unknown', vault: vaultAddress, usd }
-  }))
-
-  rows.sort((a, b) => b.usd - a.usd)
-  console.log(`\n[Fusion (by IPOR)] Per-vault USD value on ${chain}:`)
-  rows.forEach(({ name, vault, usd }) => {
-    console.log(`  ${Math.round(usd).toLocaleString().padStart(15)} USD  ${vault}  ${name}`)
-  })
-  console.log(`  ${Math.round(rows.reduce((s, r) => s + r.usd, 0)).toLocaleString().padStart(15)} USD  TOTAL (${rows.length} vaults)\n`)
-}
 
 async function tvl(api) {
   const config  = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
@@ -47,16 +26,11 @@ async function tvl(api) {
   });
 
   totalVaultsProcessed += calls.length;
-
+  
   debugLog(`[Fusion (by IPOR)] Total vaults processed on ${chain}: ${calls.length}`);
   debugLog(`[Fusion (by IPOR)] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
-
-  if (DEBUG_LOGGING) {
-    await logVaultUsdValues(api, chain, chainConfig.vaults, calls)
-  }
-
-  // permitFailure so vaults not yet deployed at a historical block are skipped instead of throwing
-  return api.erc4626Sum2({ calls, permitFailure: true })
+  
+  return api.erc4626Sum2({ calls })
 }
 
 module.exports = {
