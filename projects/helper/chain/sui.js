@@ -272,9 +272,14 @@ function formatObject(obj) {
   return { type, fields: normalizeFields(obj.json), dataType: 'moveObject' }
 }
 
+function toAddr(id) {
+  if (typeof id === 'string' && id && !id.startsWith('0x') && /^[0-9a-fA-F]+$/.test(id)) return '0x' + id
+  return id
+}
+
 async function getObject(objectId) {
   const { data } = await graphqlCall(`{
-    object(address: "${objectId}") {
+    object(address: "${toAddr(objectId)}") {
       asMoveObject { contents { json type { repr layout } } }
     }
   }`)
@@ -301,7 +306,7 @@ async function getObjects(objectIds, { sleep } = {}) {
     const out = await sdk.util.runInPromisePool({ items: chunks, concurrency: 20, processor: (chunk) => getObjects(chunk) })
     return out.flat()
   }
-  const keys = objectIds.map((id) => `{ address: "${id}" }`).join(', ')
+  const keys = objectIds.map((id) => `{ address: "${toAddr(id)}" }`).join(', ')
   const { data } = await graphqlCall(`{ multiGetObjects(keys: [${keys}]) { asMoveObject { contents { json type { repr layout } } } } }`)
   return data.multiGetObjects.map((o) => formatObject(o?.asMoveObject?.contents))
 }
@@ -363,7 +368,7 @@ async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } 
   const bcs = bcsDynamicFieldName(idType, id)
   const sel = `contents { json type { repr layout } } value { __typename ... on MoveObject { contents { json type { repr layout } } } }`
   const { data } = await graphqlCall(`{
-    address(address: "${parent}") {
+    address(address: "${toAddr(parent)}") {
       dynamicField(name: { type: "${idType}", bcs: "${bcs}" }) { ${sel} }
       dynamicObjectField(name: { type: "${idType}", bcs: "${bcs}" }) { ${sel} }
     }
@@ -381,7 +386,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
     if (sleep) await fnSleep(sleep)
 
     const { data } = await graphqlCall(`query ($after: String) {
-      address(address: "${parent}") {
+      address(address: "${toAddr(parent)}") {
         dynamicFields(first: ${pageSize}, after: $after) {
           pageInfo { hasNextPage endCursor }
           nodes {

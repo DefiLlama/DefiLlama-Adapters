@@ -45,12 +45,7 @@ const watchCoinTypeNotConvert = [
 ];
 
 async function tvl(api) {
-  const marketIds = await sui.queryEvents({
-    eventType: `${nemoPackageId}::market_factory::MarketCreatedEvent`,
-    transform: i => i.market_id
-  });
-
-  const markets = await sui.getObjects(marketIds);
+  const markets = await sui.getObjectsByType(`${nemoPackageId}::market::MarketState`);
 
   for (const market of markets) {
     if (!market) continue;
@@ -78,14 +73,10 @@ async function getTvl(type, fields, api) {
 
   const txBlockBytes = await getExchangeRate(coinConfig);
 
-  const inspectionResult = await sui.call(
-    'sui_devInspectTransactionBlock',
-    ['0x0000000000000000000000000000000000000000000000000000000000000000',
-      Buffer.from(txBlockBytes).toString('base64')],
-    {withMetadata: true}
-  );
-
-  if (inspectionResult?.effects?.status?.status !== 'success') {
+  let inspectionResult;
+  try {
+    inspectionResult = await sui.devInspectTransactionBlock(txBlockBytes);
+  } catch (e) {
     return null;
   }
 
