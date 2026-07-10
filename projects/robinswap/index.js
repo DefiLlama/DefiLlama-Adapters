@@ -12,7 +12,6 @@ const v3 = uniV3Export({
   robinhood: {
     factory: V3_FACTORY,
     fromBlock: 6027468,
-    permitFailure: true,
   },
 })
 
