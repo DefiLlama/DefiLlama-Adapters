@@ -30,6 +30,7 @@ const config = {
       "0x11db9f2c7bda8c2af6a6a72db18aa5eb9290cb99cf75a3c0abacf1b84b8eaf77", // amphrETH market
       "0x4b86442549b52826e0fc11770ec5154450cb3c5c14dc751a761d81dcfbe7a7b2", // RLP market
       "0xbd1ad3b968f5f0552dbd8cf1989a62881407c5cccf9e49fb3657c8731caf0c1f", // deUSD market
+      "0xfd0d72a4f0469598b566b1bc5fe64835f828f90b1fb7d746148c086164cd4cc2", // AZND/USDC market, 0 liquidity and 1 borrower
     ],
   },
   base: {
@@ -202,10 +203,23 @@ const config = {
   klaytn: {
     morphoBlue: "0xa8beebdca34d83c697c302a0594f3c41f3994cd2",
     fromBlock: 208021118,
-  },
+  },/* still in private mainnet
   arc: {
     morphoBlue: "0x34CD04070dD72b14E241112F6d83812Df5Af7fCD",
     fromBlock: 1,
+  },
+  */
+  "0g": {
+    morphoBlue: "0x9CDD13a2212D94C4f12190cA30783B743E83C89e",
+    fromBlock: 7526486,
+  },
+  robinhood: {
+    morphoBlue: '0x9D53d5E3bd5E8d4Cbfa6DB1ca238AEA02E651010',
+    fromBlock: 286,
+  },
+  megaeth: {
+    morphoBlue: '0x18120312A7cf44DcfEc6dCe5632a431579ED9100',
+    fromBlock: 	18930057,
   },
 }
 
@@ -257,7 +271,13 @@ const ethenaBlacklist = {
     vaults: [
       '0xBeEFC1CDAfc5b4a649b54D07AFc6bF0f75C6F4E2',   // USDtB vault
     ],
-  }
+  },
+  robinhood: {
+    wallets: ['0x2Bf5d9a2326Ad3C5Ef8208F91Af79C3ca1F0F67c'],
+    vaults: [
+      '0xbEeFF0fb1Dc19344A87b8479dAb60A2e16160737',   // USDG vault
+    ],
+  },
 }
 
 const tvl = async (api) => {
@@ -268,7 +288,7 @@ const tvl = async (api) => {
     getAllVaults: true,
     onlyUseExistingCache: api.chain === 'sei'
   })
-  const vaultAssets = await api.multiCall({  abi: 'address:asset', calls: morphoVaults, permitFailure: true})
+  const vaultAssets = await api.multiCall({ abi: 'address:asset', calls: morphoVaults, permitFailure: true })
 
   const vaultTaO = vaultAssets.map((asset, i) => ([asset, morphoVaults[i]]).filter(i => i[0]))
   await sumTokens2({ api, tokensAndOwners: vaultTaO, blacklistedTokens: blackList, permitFailure: true })
@@ -346,4 +366,3 @@ async function fetchPriceMap(api, addresses) {
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl, borrowed }
 })
-

@@ -82,13 +82,14 @@ async function processRepricingVaults(api, vaults) {
  */
 async function processErc4626Vaults(api, vaults) {
   const [assets, totalAssets] = await Promise.all([
-    api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: false })
+    api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: true })
   ])
 
-  await Promise.all(vaults.map(async (_vault, i) => {
+  vaults.forEach((_vault, i) => {
+    if (!assets[i] || !totalAssets[i]) return
     api.addToken(assets[i], totalAssets[i])
-  }))
+  })
 }
 
 /**
@@ -97,13 +98,14 @@ async function processErc4626Vaults(api, vaults) {
  */
 async function processBalanceSheetVaults(api, vaults) {
   const [tokens, balanceSheet] = await Promise.all([
-    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
+    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: true })
   ])
 
   vaults.forEach((_vault, i) => {
     const vaultTokens = tokens[i]
     const vaultBalanceSheet = balanceSheet[i]
+    if (!vaultTokens || !vaultBalanceSheet) return
 
     vaultTokens.assetTokens.forEach((token, j) => {
       const assetAmount = vaultBalanceSheet.totalAssets[j];
@@ -124,11 +126,12 @@ async function processBalanceSheetVaults(api, vaults) {
  */
 async function processAutoStakingVaults(api, vaults) {
   const [stakingToken, totalSupply] = await Promise.all([
-    api.multiCall({ abi: 'function stakingToken() external view returns (address)', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'function totalSupply() external view returns (uint256)', calls: vaults, permitFailure: false })
+    api.multiCall({ abi: 'function stakingToken() external view returns (address)', calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: 'function totalSupply() external view returns (uint256)', calls: vaults, permitFailure: true })
   ])
 
   vaults.forEach((_vault, i) => {
+    if (!stakingToken[i] || !totalSupply[i]) return
     api.addToken(stakingToken[i], totalSupply[i])
   })
 }
@@ -170,13 +173,14 @@ async function borrowedLeveragedVaults(api, leveragedVaults) {
  */
 async function borrowedBalanceSheetVaults(api, vaults) {
   const [tokens, balanceSheet] = await Promise.all([
-    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: false }),
-    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: false })
+    api.multiCall({ abi: 'function tokens() external view returns (address[] memory assetTokens, address[] memory liabilityTokens)', calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: 'function balanceSheet() external view returns (uint256[] memory totalAssets, uint256[] memory totalLiabilities)', calls: vaults, permitFailure: true })
   ])
 
   vaults.forEach((_vault, i) => {
     const vaultTokens = tokens[i]
     const vaultBalanceSheet = balanceSheet[i]
+    if (!vaultTokens || !vaultBalanceSheet) return
 
     vaultTokens.liabilityTokens.forEach((token, j) => {
       const liabilityAmount = vaultBalanceSheet.totalLiabilities[j];

@@ -7,6 +7,7 @@ const { getProvider, getConnection, } = require('../solana')
 const kvaultIdl = require('../../gauntlet/kvault-idl.json')
 const { Program, BN } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
+const { callSoroban } = require('../chain/stellar')
 
 
 async function kaminoLendVaultTvl(api, { adminAddress, vaults, blacklistedVaults = [] }) {
@@ -385,6 +386,36 @@ async function getCuratorTvlErc4626(api, vaults) {
   }
 }
 
+async function getCuratorTvlAccountableVault(api, vaults) {
+  // these are proxy contracts (not themselves ERC-4626) whose implementation exposes a
+  // `vault()` view returning the address of the real ERC-4626 vault holding the funds
+  // (e.g. K3's private-credit "loan" vaults). Resolve that vault, then read its
+  // asset()/totalAssets() directly.
+  if (!vaults || vaults.length === 0) return
+  const underlyingVaults = await api.multiCall({ abi: ABI.accountable.vault, calls: vaults, permitFailure: true })
+  const resolvedVaults = underlyingVaults.filter(Boolean)
+  if (resolvedVaults.length === 0) return
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: resolvedVaults, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: resolvedVaults, permitFailure: true })
+  for (let i = 0; i < resolvedVaults.length; i++) {
+    if (!assets[i] || !totalAssets[i]) continue
+    api.add(assets[i], totalAssets[i])
+  }
+}
+
+async function getCuratorTvlMidasToken(api, vaults) {
+  // for plain access-controlled ERC20 share tokens minted 1:1 on deposit and burned on redeem
+  // (e.g. Midas-style tokenized funds like EtherFi's "Liquid Euro"/weEUR).
+  // There's no asset()/rate function - the token's own totalSupply() is the fund's AUM, and its
+  // own market price (already tracked by the coins API) converts it to USD.
+  if (!vaults || vaults.length === 0) return
+  const totalSupplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (!totalSupplies[i]) continue
+    api.add(vaults[i], totalSupplies[i])
+  }
+}
+
 async function getCuratorTvlAeraVault(api, vaults) {
   const assetRegistries = await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
   const existedVaults = []
@@ -507,6 +538,19 @@ async function getCuratorTvl(api, vaults) {
     return api.getBalances()
   }
 
+  if (api.chain === 'stellar') {
+    // upshift.io Soroban vaults (OZ FungibleVault): total_assets() returns the
+    // underlying held, query_asset() returns the asset's Soroban contract address.
+    const upshiftVaults = vaults.upshiftStellar ?? []
+    for (const vault of upshiftVaults) {
+      const asset = await callSoroban(vault, 'query_asset')
+      const totalAssets = await callSoroban(vault, 'total_assets')
+      api.add(asset, totalAssets.toString())
+    }
+
+    return api.getBalances()
+  }
+
   const allVaults = {
     morpho: vaults.morpho ? vaults.morpho : [],
     euler: vaults.euler ? vaults.euler : [],
@@ -582,6 +626,18 @@ async function getCuratorTvl(api, vaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
   }
 
+  // ERC-4626-like vaults with broken/unused totalAssets() (e.g. K3 private-credit vaults) -
+  // use convertToAssets(totalSupply()) instead
+  if (vaults.accountableVaults) {
+    await getCuratorTvlAccountableVault(api, vaults.accountableVaults)
+  }
+
+  // plain ERC20 share tokens whose totalSupply() is the fund's AUM, priced via their own
+  // market price (e.g. EtherFi's "Liquid Euro" weEUR)
+  if (vaults.midasTokens) {
+    await getCuratorTvlMidasToken(api, vaults.midasTokens)
+  }
+
   return api.getBalances()
 }
 
@@ -618,4 +674,5 @@ module.exports = {
   getCuratorExport,
   kaminoLendVaultTvl,
   getMorphoVaults,
+  getCuratorTvlAccountableVault,
 }

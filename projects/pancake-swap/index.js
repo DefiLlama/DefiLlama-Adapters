@@ -116,6 +116,7 @@ module.exports = {
   arbitrum: { ...defaultExport },
   base: defaultExport,
   monad: defaultExport,
+  robinhood: defaultExport,
 }
 
 // https://developer.pancakeswap.finance/contracts/syrup-pools

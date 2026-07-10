@@ -43,7 +43,11 @@ const configs = {
     ethereum: ['0x8DB2350D78aBc13f5673A411D4700BCF87864dDE'],
   },
   'snowbl-capital': {
-    base: ['0xd61bfc9ca1d0d2b03a3dd74e2ab81df8e5f606e8'],
+    base: [
+      '0x0e1a8354e10057092ecb7218b784c0c21710db91', // sUSD
+      '0xffa67bd20e656f1c7873525df81728e9d26c8ee2', // sETH
+      '0xf423393e84ca810e1955a7806d1cd84d18099809', // sBTC
+    ],
   },
   'return-finance': {
     doublecounted: true,
@@ -226,13 +230,6 @@ const configs = {
     methodology: "TVL reads total hub vault assets (USDC)",
     base: ['0xa593A9bBBc65be342FF610a01e96da2EB8539FF2']
   },
-  'ample': {
-    doublecounted: true,
-    arbitrum: ['0xd1be1f98991cf69355e468ad15b6d0b6429bcfcb'],
-    base: ['0x1688aeb3ec7b23a22e2418fdf5bccc67ecf39c0f'],
-    katana: ['0xe5092ab6b8b0c37b1bec12c606614706063d04e8'],
-    monad: ['0xE89d322b5822D828B8252D3087be8486cC2048Ef'],
-  },
   'arche-money': {
     'ethereum': [
       '0x33ffc177a7278ff84aab314a036bc7b799b7cc15', // arUSD
@@ -278,6 +275,103 @@ const configs = {
   'gremlix': {
     arbitrum: ['0x973Ae12aC9078E9f9B1708C477A9670bB3fB0886','0xd519EF317Be061b310D3caA4565Fa1ef466c36C8'],
     methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.'
+  },
+  'xax': {
+    ethereum: ['0xc452B6D5bf3a7712A9AF9F70BF32f37A531ff220'],
+    methodology: 'Counts USDT backing the XAUSD ERC-4626 vault.'
+  },
+  'arcis': {
+    base: ['0x00325d9da832b38179ed2f0dabd4062d93e325a7'],
+    methodology: 'TVL is calculated as the total USDC held in the ArcisVault contract, including both reserve and deployed capital across yield strategies.'
+  },
+  'byzanlink': {
+    hedera: ['0x6b8dfA6aa5f803a886Beb2492eF3307EC0Ee16FB'],
+    ethereum: ['0xA5cDEE01aA7A5E0620df5f27F26E552fdf7f5F20'],
+    methodology: 'Total value of assets deposited in the Byzanlink vaults, read on-chain and valued in USD.'
+  },
+  'crystalclear': {
+    methodology: "TVL is the sum of totalAssets() across all live CrystalClear ERC-4626 vaults on HyperEVM. Each vault holds USDC and trades perpetuals on Hyperliquid via a delegated agent.",
+    hyperliquid: [
+      '0x231f66c336512e897855420a2788B83e164C6Adf', // Onyx
+      '0x1b463561f264114F9D4db6FF9eE2771B33076B13', // Amber
+      '0xb44169e66C898FF70029f9CF2fdB9685d7bC99c6', // Ruby
+      '0x015A70185a80D8C8c034e3d360E25A14c7FB8cF0', // Moonstone
+      '0x1efAE1f600947cA5dc0E87AA18657f36c559A40b', // Emerald
+      '0x2D7ACD39B634B50Cd37883FE374E1f430e27Ea50', // Peridot
+      '0x6B88f2975B784531DB1159D37CFf9f1629e93fa8', // Sapphire
+      '0x89C08a6F468CA5AF65E7D48bC091E5c4025b42C2', // Opal
+    ],
+  },
+  'stashfun': {
+    methodology: "TVL is the sum of assets across all stash.fun ERC-4626 vaults on HyperEVM. Each vault holds USDC and trades perpetual futures (stocks, crypto, commodities, forex, indices) on Hyperliquid.",
+    hyperliquid: [
+      '0x8F6034Fe423f696DB08fB8C536B88D9B9389dE34', // Metals Vault
+      '0xfE937fED2219D06e2BAD986933ea96065D8BE177', // Energy Vault
+      '0xe626CFC0395719D59dA210270051a9A03C210bdd', // Broad Vault
+    ],
+  },
+  'acre': {
+    start: 1757707931,
+    doublecounted: true,
+    methodology: "TVL is calculated by calling totalAssets() on the acreBTC ERC-4626 vault, which returns the total tBTC backing all acreBTC shares.",
+    ethereum: ['0x19531C886339dd28b9923d903F6B235C45396ded'],
+  },
+  'protectorate': {
+    ethereum: ['0xaF53431488E871D103baA0280b6360998F0F9926'],
+  },
+  'hlp0': {
+    methodology: "TVL is calculated by summing the total assets of the HLP0 vault on Arbitrum. The HLP0 token is a LayerZero OFT, but the underlying assets are held in the Arbitrum vault.",
+    arbitrum: ['0x3D75F2BB8aBcDBd1e27443cB5CBCE8A668046C81'],
+  },
+  'rivera_money': {
+    doublecounted: true,
+    mantle: [
+      '0xfa944c1996efBF9FbFF1a378903F4AD82C172D72',
+      '0x945438ef559EFf400429DFb101e57a6299B5ceE2',
+      '0xA25d1843eedE1E1D0631b979da605606412e64f7',
+      '0xAa81F912D09Fd313Bbc1d5638632aB6bf59aB495',
+      '0x0DB2BA00bCcf4F5e20b950bF954CAdF768D158Aa',
+      '0x713C1300f82009162cC908dC9D82304A51F05A3E',
+      '0xDc63179CC57783493DD8a4Ffd7367DF489Ae93BF',
+      '0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA',
+      '0xCbb95e8a63cd37D09c2948A22c12632469fb0BC7',
+      '0x907a942ce79ca4Cf063d2e987024dc9E88C5ac98',
+      '0xB2b593Ab057e99edbAA33258b5613227F64c80C6',
+      '0x38B73D78c45b39B7658635fA753EfBE2d4077A33',
+      '0x0ca817970d1Bf8789CCB26aC0a6b69d02b6dF34e',
+      '0x16d6e3B2979C61D3fa399Cc7D65EFFaadd46682c',
+    ],
+    manta: [
+      '0x713C1300f82009162cC908dC9D82304A51F05A3E',
+      '0x0DB2BA00bCcf4F5e20b950bF954CAdF768D158Aa',
+      '0xDc63179CC57783493DD8a4Ffd7367DF489Ae93BF',
+      '0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA',
+      '0x45C3BB1a0f0827bF03C089842334B861474e7714',
+      '0x241d09eC72809C4C390BC81b81dEF4d1E0e88626',
+    ],
+    telos: [
+      '0x67e07BFfce318ADbA7b08618CBf4B8E271499197',
+      '0x70527810CB658FaDBe16845485fC79EC7722c860',
+      '0xA0dD02ef78570a4d93b7eE334EA9c593F7A0ebc4',
+      '0x4778CAAa0E52F0B58eAF5e947Ae81A0a10cDe707',
+    ],
+    arbitrum: ['0x8E99B66dE170b53b39D9B54f189a12D7c6AC0cd9'],
+    degen: [
+      '0xA95417805d18d00844c3C6FB7742577Cd263fE05',
+      '0x39dD79E8b1e74E8B514D7e133b3671435Ec3Da42',
+      '0xE45F416eE25844281edF2780247E28569303c7Cd',
+      '0xB9107C1Ad02bD2E20692499156F99411297d23F5',
+      '0x17A6b417249D92A2F3F7a88384c5Aa88D0d95A28',
+    ],
+    bsquared: [
+      '0xBC91a7a0eE37085af193C61747ecE693979Ec0C1',
+      '0xD57a87a9101d567C4139247CdF149b1DA4c8604A',
+    ],
+    polygon: ['0x67e07BFfce318ADbA7b08618CBf4B8E271499197'],
+    core: [
+      '0xBC91a7a0eE37085af193C61747ecE693979Ec0C1',
+      '0x018BeE125A17D456E6dacE22A66E8B9aF3c69449',
+    ],
   }
 }
 

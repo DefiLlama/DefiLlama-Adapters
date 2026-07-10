@@ -1,6 +1,11 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
+const BLACKLIST = new Set([
+  '0x602c7941c6d3dc1c773591859948ed819cf6d151',
+  '0x5858B8Ecff0D1f37f6D02cFbc3ea8eb934eA82AC',
+].map(a => a.toLowerCase()))
+
 async function tvl(api) {
   const owners = []
   const tokens = []
@@ -30,7 +35,7 @@ async function vaultsTvl(api, tokens, owners) {
     eventAbi: 'event AddEntity(address indexed entity)',
     fromBlock: 21580035,
   })
-  const VAULTS = logs.map((log) => log.entity)
+  const VAULTS = logs.map((log) => log.entity).filter(e => !BLACKLIST.has(e.toLowerCase()))
   const _tokens = await api.multiCall({ abi: 'address:collateral', calls: VAULTS })
   owners.push(...VAULTS)
   tokens.push(..._tokens)
@@ -38,7 +43,5 @@ async function vaultsTvl(api, tokens, owners) {
 
 module.exports = {
   start: '2024-06-11',
-  ethereum: {
-    tvl,
-  },
+  ethereum: { tvl },
 }

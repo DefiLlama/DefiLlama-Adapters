@@ -371,6 +371,7 @@ const aaveConfigs = {
     xdai: {
       addressesProviderRegistry: '0xC6c4b123e731819AC5f7F9E0fe3A118e9b1227Cd',
       dataHelpers: ['0x11B45acC19656c6C52f93d8034912083AC7Dd756'],
+      v3: true,
     },
   },
   'realtmarkets': {
@@ -533,18 +534,6 @@ const aaveConfigs = {
       isInsolvent: true,
       abis: {
         getAllATokens: "function getAllBTokens() view returns (tuple(string symbol, address tokenAddress)[])",
-      },
-    },
-  },
-  // NOTE: starlay's astar market is handled by the standalone projects/starlay adapter
-  // (its legacy Vyper registry reverts on current Astar state). Only acala remains here.
-  'starlay': {
-    methodology,
-    acala: {
-      addressesProviderRegistry: '0xA666dD28059deF0B45505c1f1a5f49fAd2e03c11',
-      isInsolvent: true,
-      abis: {
-        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])",
       },
     },
   },

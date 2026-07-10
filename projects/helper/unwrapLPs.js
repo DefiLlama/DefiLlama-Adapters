@@ -357,6 +357,9 @@ async function unwrapUniswapV3NFT({
   uniV3ExtraConfig = {},
   isAlgebra = false,
 }) {
+  if (!balances) balances = api.getBalances()
+
+
   const chain = api.chain
 
   const blacklistedPools = (uniV3ExtraConfig.blacklistedPools ?? []).map(i => i.toLowerCase())

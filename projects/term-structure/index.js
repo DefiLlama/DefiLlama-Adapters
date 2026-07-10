@@ -67,6 +67,11 @@ const ADDRESSES = {
         address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
         fromBlock: 385228046,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0xcaF2632BdB12Aa20b17f3E80CeAF9781b4aD4F38",
+        fromBlock: 452316723,
+      },
     ],
     VaultFactory: [
       {
@@ -78,6 +83,11 @@ const ADDRESSES = {
       {
         address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
         fromBlock: 385228046,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x85C5B725841bE392384aa7df599c00aE7516E4d3",
+        fromBlock: 452316743,
       },
     ],
     TermMax4626Factory: [
@@ -100,6 +110,17 @@ const ADDRESSES = {
         fromBlock: 67248948,
       },
       // End of TermMax Alpha
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x4a34b4cAaA6AD23B95d6ec6394472fbB857eB064",
+        fromBlock: 92440281,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0x22105089AFC8F35D55a9Efb19785fd350ADdd7C3",
+        fromBlock: 92440287,
+      },
+      // End of TermMax Alpha
     ],
     VaultFactory: [
       {
@@ -116,6 +137,17 @@ const ADDRESSES = {
       {
         address: "0xC63858D1eFa377f94392Ba5dEb521233Ec1548eb",
         fromBlock: 67251242,
+      },
+      // End of TermMax Alpha
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x310ec798C59894c0eC6ce5c18060f63a37592BC7",
+        fromBlock: 92440303,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0x34bF74BA2534fC80b52e8C8F2C6b2B9FBc01d3B8",
+        fromBlock: 92465857,
       },
       // End of TermMax Alpha
     ],
@@ -150,6 +182,11 @@ const ADDRESSES = {
         address: "0xc53ab74eeb5e818147eb6d06134d81d3ac810987",
         fromBlock: 23488600,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0xc1E9640F04B802Bbf0B02a4e9Fe394039AbE8B59",
+        fromBlock: 24876010,
+      },
     ],
     VaultFactory: [
       {
@@ -176,6 +213,11 @@ const ADDRESSES = {
         address: "0x5b8B26a6734B5eABDBe6C5A19580Ab2D0424f027",
         fromBlock: 23430000,
       },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x5Ad6a60C71AE49e0e6DDb1a4CdC9a1B2a3D5F7d0",
+        fromBlock: 24876015,
+      },
     ],
   },
   berachain: {
@@ -184,11 +226,21 @@ const ADDRESSES = {
         address: "0x4BC4F8f9B212B5a3F9f7Eeb35Ae1A91902670F7f",
         fromBlock: 11541952,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x2A15CC106bCa1Ee17a411d77A9C53eC3509d47C2",
+        fromBlock: 19569241,
+      },
     ],
     VaultFactoryV2: [
       {
         address: "0x65fC69DE62E11592E8Acf57a0c97535209090Ef1",
         fromBlock: 11541953,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0xd427EBAF1D269b397C454b22791b63534F1ae5B2",
+        fromBlock: 19569247,
       },
     ],
     TermMax4626Factory: [
@@ -215,11 +267,21 @@ const ADDRESSES = {
         address: "0x33931f3898EfB9A42B0D7CFfa9bb50A566A6b421",
         fromBlock: 28981154,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x5BA2d33fB50d08D7755787E729183FedD6a3F3e7",
+        fromBlock: 31495773,
+      },
     ],
     VaultFactoryV2: [
       {
         address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
         fromBlock: 28981154,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x3Ebb9e9C855Bd03b275167DD2418193E3b69C22f",
+        fromBlock: 31495780,
       },
     ],
     TermMax4626Factory: [
@@ -232,11 +294,21 @@ const ADDRESSES = {
         address: "0xFaD175CAf9B0Ac0EBca3B1816ec799884EB04B9c",
         fromBlock: 50664655,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x3d2C215DE72877c3611cD0A9D8d69f60f1a5dB93",
+        fromBlock: 57387356,
+      },
     ],
     VaultFactoryV2: [
       {
         address: "0x2e1c769A9BA8248C7c8128c2BEBa11331ebF98Aa",
         fromBlock: 50664655,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0xcA470095CC2D6aE6382c72bD235a2A5D7E80E1c1",
+        fromBlock: 57387362,
       },
     ],
     TermMax4626Factory: [
@@ -249,11 +321,31 @@ const ADDRESSES = {
         address: "0xa6875Af7a45BEf941e484b59C149E5C1772DE643",
         fromBlock: 43289754,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x08c50Bd46992d35694208eC3Cf1f1EDcE38f5fd1",
+        fromBlock: 44680217,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0x2aFEf28a8Ab57d2F5A5663Ef69351e9d3abf1779",
+        fromBlock: 47709827,
+      },
+      // End of TermMax Alpha
     ],
     VaultFactoryV2: [
       {
         address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF",
         fromBlock: 43289755,
+      },
+      {
+        address: "0x28e47A7d7E710d796DBAFd8081c052444deEcF10",
+        fromBlock: 44680222,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x34F7b52b0d33959C8351eF95F3523C89b6123C0b",
+        fromBlock: 47709826,
       },
     ],
     TermMax4626Factory: [

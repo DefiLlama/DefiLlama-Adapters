@@ -265,7 +265,7 @@ const ARBITRUM_REGISTRY_TOKENS = [
   ADDRESSES.arbitrum.WETH,
   ADDRESSES.arbitrum.WBTC,
   ADDRESSES.optimism.DAI,
-  ADDRESSES.arbitrum.MIM,
+  "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
   "0x7f90122BF0700F9E7e1F688fe926940E8839F353",
   ADDRESSES.arbitrum.FRAX,
   "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978",
@@ -979,6 +979,11 @@ const BLAST_REGISTRY_TOKENS = [
   ADDRESSES.blast.ezETH,
 ];
 
+const TRON_REGISTRY_TOKENS = [
+  "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", // USDT
+  "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", // USDC
+];
+
 const registryTokensByChain = {
   ethereum: ETHEREUM_REGISTRY_TOKENS,
   arbitrum: ARBITRUM_REGISTRY_TOKENS,
@@ -988,6 +993,7 @@ const registryTokensByChain = {
   bsc: BNB_REGISTRY_TOKENS,
   base: BASE_REGISTRY_TOKENS,
   blast: BLAST_REGISTRY_TOKENS,
+  tron: TRON_REGISTRY_TOKENS,
 };
 
 module.exports = registryTokensByChain;
