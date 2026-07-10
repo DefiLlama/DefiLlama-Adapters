@@ -61,7 +61,7 @@ Object.keys(config).forEach(chain => {
       // Add external application balances (everything except GRG)
       for (const { token, amount } of appBalances) {
         if (token.toLowerCase() === GRG_TOKEN_ADDRESS.toLowerCase()) continue
-        if (BigInt(amount) > 0n) api.add(token, amount)
+        if (BigInt(amount) !== 0n) api.add(token, amount)
       }
 
       // Add smart pool owned token balances (excluding GRG)
@@ -72,7 +72,7 @@ Object.keys(config).forEach(chain => {
 
       // Add GRG balances from external applications
       for (const { token, amount } of appBalances) {
-        if (token.toLowerCase() === GRG_TOKEN_ADDRESS.toLowerCase() && BigInt(amount) > 0n) {
+        if (token.toLowerCase() === GRG_TOKEN_ADDRESS.toLowerCase() && BigInt(amount) !== 0n) {
           api.add(GRG_TOKEN_ADDRESS, amount)
         }
       }
