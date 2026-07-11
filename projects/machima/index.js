@@ -38,7 +38,6 @@ module.exports = {
       return sumTokens2({
         api,
         ownerTokens: pools.map((p) => [p.tokens, p.pool]),
-        permitFailure: true,
       });
     },
   },
