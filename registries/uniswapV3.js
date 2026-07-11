@@ -1742,6 +1742,9 @@ const uniV3Configs = {
   },
   'hyperlynx-v3': {
     hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+  },
+  'machima': {
+    base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
   }
 }
 
