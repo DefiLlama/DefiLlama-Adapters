@@ -6,9 +6,19 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 // https://bot.fun | contracts: https://bot.fun/api/v1/chain
 const FACTORY = '0x279dc5E05d43644C6cd2F2813F306a320e785cdD'
 
+async function tvl(api) {
+  await sumTokensExport({ owner: FACTORY, tokens: [ADDRESSES.null] })(api)
+  const accruedRewards = await api.call({
+    target: FACTORY,
+    abi: 'uint256:totalAccruedUnclaimed',
+    permitFailure: true,
+  })
+  api.add('celestia', -Number(accruedRewards ?? 0) / 1e18, { skipChain: true })
+}
+
 module.exports = {
-  methodology: 'TVL is the native TIA held in the bot.fun factory contract, which holds the bonding curve reserves of every coin launched on the platform.',
+  methodology: 'TVL is the native TIA held in the bot.fun factory contract as bonding curve reserves, excluding accrued creator and referral rewards.',
   eden: {
-    tvl: sumTokensExport({ owner: FACTORY, tokens: [ADDRESSES.null] }),
+    tvl,
   },
 }
