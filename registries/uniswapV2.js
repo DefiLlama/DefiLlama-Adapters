@@ -2877,6 +2877,9 @@ const uniV2Configs = {
   'nadfun-v2': {
     monad: '0xA25b13127e63ddae6d0b35570FF3D39dBD621001',
   },
+  'robinswap': {
+    robinhood: '0xa95DA9b9fCef09A07F99444fE9304457d6ECdccA',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
