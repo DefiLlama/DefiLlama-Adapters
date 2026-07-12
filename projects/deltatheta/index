@@ -6,13 +6,13 @@ const factoryABI = {
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 // Delta.theta Factory Address (On all chains)
-const FACTORY_ADDRESS = '0x000000000092126dc1bcec881165f92169733106';
+const FACTORY_ADDRESS = '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE';
 
 // TVL function generator (for BSC & POLYGON chains)
 async function tvl(api) {
   let pairs = await api.fetchList({ lengthAbi: factoryABI.pairsLength, itemAbi: factoryABI.pairsList, target: FACTORY_ADDRESS })
-  pairs = pairs.filter(p => p.toLowerCase() !== '0xAa7BaDCC17a6F362292c0a1B03F5386C3522220A'.toLowerCase())
-  return sumTokens2({ api, owners: pairs, fetchCoValentTokens: true, blacklistedTokens: ['0x3a06212763caf64bf101daa4b0cebb0cd393fa1a'], permitFailure: true });
+  pairs = pairs.filter(p => p.toLowerCase() !== '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'.toLowerCase())
+  return sumTokens2({ api, owners: pairs, fetchCoValentTokens: true, blacklistedTokens: ['0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'], permitFailure: true });
 }
 
 module.exports = {
