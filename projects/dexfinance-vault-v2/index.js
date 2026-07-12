@@ -29,7 +29,7 @@ const CONFIG = {
   },
   robinhood: {
     factory: '0x9DD987CBbF591D5bd7c2f5083d9D81be3359122B',
-    start: 1783382400, // 2025-07-07
+    start: 1783382400, // 2026-07-07
   },
 };
 
