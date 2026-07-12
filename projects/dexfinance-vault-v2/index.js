@@ -27,6 +27,10 @@ const CONFIG = {
     factory: "0x061f8132b344cb2a32d3895eb3ebc2ff87455f79",
     start: 1771250400, // 2026-02-17
   },
+  robinhood: {
+    factory: '0x9DD987CBbF591D5bd7c2f5083d9D81be3359122B',
+    start: 1783382400, // 2025-07-07
+  },
 };
 
 const GDEX_TOKEN = "0x53Cb59D32a8d08fC6D3f81454f150946A028A44d";
@@ -153,6 +157,7 @@ module.exports = {
     ['2025-10-03', "Launch on BNB Chain"],
     ['2026-01-29', "Launch on Ethereum"],
     ['2026-02-17', "Launch on Arbitrum"],
+    ['2026-07-07', "Launch on Robinhood"],
   ],
   sonic:    { tvl },
   avax:     { tvl },
@@ -180,4 +185,5 @@ module.exports = {
     },
   },
   arbitrum: { tvl },
+  robinhood: { tvl },
 };
