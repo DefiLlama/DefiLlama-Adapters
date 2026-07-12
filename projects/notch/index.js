@@ -1,5 +1,5 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const { getConnection } = require('./helper/solana')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getConnection } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 
 // NOTCH (notch.fund): token launchpad on Solana. Every token trades on an
