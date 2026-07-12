@@ -6,6 +6,7 @@ const abi = {
 // Tenbin RWA tokens on Ethereum mainnet.
 // Each token is minted/redeemed against a real-world asset. Its USD value is
 // (on-chain total supply) x (Chainlink oracle price).
+// staked assets (e.g. stBRL, stGLD, stMXN) do not count towards TVL calculation
 const assets = [
   {
     // tBRL - Brazilian Real
