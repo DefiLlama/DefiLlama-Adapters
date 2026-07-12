@@ -24,44 +24,31 @@ async function addRaydiumAmmLocks({ api, programId, dataSize }) {
     getMultipleAccounts([...uncxVaults]),
   ])
 
-  const lpLockedByPool = new Map()
-  poolIds.forEach((poolId, i) => {
-    const info = lpVaultInfos[i]
-    if (!info) return
-    const vault = decodeAccount('tokenAccount', info)
-    const amount = toBigInt(vault.amount)
-    if (amount > 0n) lpLockedByPool.set(poolId, amount)
-  })
-
   const pools = new Map()
   const tokenAccounts = []
   const lpMints = []
-  let skipped = 0
-  let skipReason
 
   poolIds.forEach((poolId, i) => {
-    const raw = poolInfos[i]
-    const lpLocked = lpLockedByPool.get(poolId)
-    if (!raw?.data || !lpLocked) return
-    try {
-      const pool = decodeAccount('raydiumLPv4', raw)
-      pools.set(poolId, {
-        baseVault: pool.baseVault.toBase58(),
-        quoteVault: pool.quoteVault.toBase58(),
-        baseMint: pool.baseMint.toBase58(),
-        quoteMint: pool.quoteMint.toBase58(),
-        lpMint: pool.lpMint.toBase58(),
-        lpLocked,
-      })
-      tokenAccounts.push(pool.baseVault.toBase58(), pool.quoteVault.toBase58())
-      lpMints.push(pool.lpMint.toBase58())
-    } catch (e) {
-      skipped += 1
-      if (!skipReason) skipReason = e?.message || 'decode failed'
-    }
-  })
-  if (skipped) api?.log?.(`[unicrypt-solana] skipped ${skipped} Raydium AMM pool accounts: ${skipReason}`)
+    const vaultInfo = lpVaultInfos[i]
+    if (!vaultInfo) return
+    const lpLocked = toBigInt(decodeAccount('tokenAccount', vaultInfo).amount)
+    if (lpLocked <= 0n) return
 
+    const pool = decodeAccount('raydiumLPv4', poolInfos[i])
+    const baseVault = pool.baseVault.toBase58()
+    const quoteVault = pool.quoteVault.toBase58()
+    const lpMint = pool.lpMint.toBase58()
+    pools.set(poolId, {
+      baseVault,
+      quoteVault,
+      lpMint,
+      baseMint: pool.baseMint.toBase58(),
+      quoteMint: pool.quoteMint.toBase58(),
+      lpLocked,
+    })
+    tokenAccounts.push(baseVault, quoteVault)
+    lpMints.push(lpMint)
+  })
   if (!pools.size) return
 
   const uniqueVaults = getUniqueAddresses(tokenAccounts, 'solana')
@@ -72,26 +59,18 @@ async function addRaydiumAmmLocks({ api, programId, dataSize }) {
   ])
 
   const vaultAmounts = new Map()
-  uniqueVaults.forEach((vault, i) => {
-    const info = vaultInfos[i]
-    if (!info) return
-    const decoded = decodeAccount('tokenAccount', info)
-    vaultAmounts.set(vault, toBigInt(decoded.amount))
-  })
+  uniqueVaults.forEach((vault, i) => vaultAmounts.set(vault, toBigInt(decodeAccount('tokenAccount', vaultInfos[i]).amount)))
 
   const lpSupplies = new Map()
-  uniqueMints.forEach((mint, i) => {
-    const info = mintInfos[i]
-    if (!info) return
-    const decoded = decodeAccount('mint', info)
-    lpSupplies.set(mint, toBigInt(decoded.supply))
-  })
+  uniqueMints.forEach((mint, i) => lpSupplies.set(mint, toBigInt(decodeAccount('mint', mintInfos[i]).supply)))
 
   pools.forEach(({ baseVault, quoteVault, baseMint, quoteMint, lpMint, lpLocked }) => {
-    const reserveA = vaultAmounts.get(baseVault) ?? 0n
-    const reserveB = vaultAmounts.get(quoteVault) ?? 0n
-    const lpSupply = lpSupplies.get(lpMint) ?? 0n
-    if (reserveA === 0n && reserveB === 0n) return
+    const reserveA = vaultAmounts.get(baseVault)
+    const reserveB = vaultAmounts.get(quoteVault)
+    const lpSupply = lpSupplies.get(lpMint)
+    if (reserveA === undefined || reserveB === undefined || lpSupply === undefined)
+      throw new Error(`[unicrypt-solana] ${programId}: missing vault/mint state for pool lpMint=${lpMint}`)
+
     addProportionalReserves({
       api,
       mintA: baseMint,
@@ -102,6 +81,8 @@ async function addRaydiumAmmLocks({ api, programId, dataSize }) {
       lpSupply,
     })
   })
+
+  api.log(`[unicrypt-solana] ${programId}: valued ${pools.size} locked Raydium AMM pools`)
 }
 
 async function addAmmLocks(api) {
