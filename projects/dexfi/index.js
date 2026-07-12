@@ -130,4 +130,5 @@ module.exports = {
   ethereum: { tvl, start: CONFIG.ethereum.start },
   base:     { tvl, start: CONFIG.base.start, staking: staking(STAKING_CONTRACT, GDEX_TOKEN), pool2, },
   arbitrum: { tvl, start: CONFIG.arbitrum.start },
+  robinhood: { tvl, start: CONFIG.robinhood.start },
 };
