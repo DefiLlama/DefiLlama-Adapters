@@ -20,8 +20,6 @@ const BIN_ARRAY_FETCH_CONCURRENCY = 5
 async function getDlmmBinsByPair(pairIds, api) {
   const connection = getConnection()
   const out = new Map()
-  let skipped = 0
-  let skipReason
 
   for (let i = 0; i < pairIds.length; i += BIN_ARRAY_FETCH_CONCURRENCY) {
     const chunk = pairIds.slice(i, i + BIN_ARRAY_FETCH_CONCURRENCY)
@@ -34,21 +32,15 @@ async function getDlmmBinsByPair(pairIds, api) {
       })
       const binsById = new Map()
       for (const { account } of raw) {
-        try {
-          const binArray = decodeAccount('meteoraBinArray', account)
-          const base = bnToNumber(binArray.index) * 70
-          const bins = binArray.bins || []
-          bins.forEach((bin, idx) => binsById.set(base + idx, bin))
-        } catch (e) {
-          skipped += 1
-          if (!skipReason) skipReason = e?.message || 'decode failed'
-        }
+        const binArray = decodeAccount('meteoraBinArray', account)
+        const base = bnToNumber(binArray.index) * 70
+        const bins = binArray.bins || []
+        bins.forEach((bin, idx) => binsById.set(base + idx, bin))
       }
       out.set(pairId, binsById)
     }))
   }
 
-  if (skipped) api?.log?.(`[unicrypt-solana] skipped ${skipped} Meteora DLMM bin-array accounts: ${skipReason}`)
   return out
 }
 
@@ -57,18 +49,7 @@ async function addMeteoraLocks(api) {
   const lockerAccounts = await connection.getProgramAccounts(new PublicKey(PROGRAM_METEORA_LOCKER), {
     filters: [{ memcmp: { offset: 0, bytes: bs58.encode(Buffer.from([METEORA_TOKEN_LOCK_TAG])) } }],
   })
-  const locks = []
-  let skippedLocks = 0
-  let skipReason
-  lockerAccounts.forEach(({ account }) => {
-    try {
-      locks.push(parseMeteoraTokenLock(account))
-    } catch (e) {
-      skippedLocks += 1
-      if (!skipReason) skipReason = e?.message || 'decode failed'
-    }
-  })
-  if (skippedLocks) api?.log?.(`[unicrypt-solana] skipped ${skippedLocks} Meteora locker accounts: ${skipReason}`)
+  const locks = lockerAccounts.map(({ account }) => parseMeteoraTokenLock(account))
   if (!locks.length) return
 
   const positionIds = getUniqueAddresses(locks.map(i => i.positionKey), 'solana')
@@ -96,10 +77,11 @@ async function addMeteoraLocks(api) {
     lbPairs.set(id, decodeAccount('meteoraLbPair', raw))
   })
 
+  let skipped = 0
   for (const lock of locks) {
     const position = positions.get(lock.positionKey)
     const lbPair = lbPairs.get(lock.lbPair)
-    if (!position || !lbPair) continue
+    if (!position || !lbPair) { skipped++; continue }
 
     const lower = bnToNumber(position.lowerBinId)
     const upper = bnToNumber(position.upperBinId)
@@ -130,6 +112,8 @@ async function addMeteoraLocks(api) {
     if (amountX > 0n) api.add(lbPair.tokenXMint.toBase58(), amountX.toString())
     if (amountY > 0n) api.add(lbPair.tokenYMint.toBase58(), amountY.toString())
   }
+
+  if (skipped) api.log(`[unicrypt-solana] skipped ${skipped} Meteora locker accounts: closed/non-V2 position or missing pair`)
 }
 
 module.exports = {
