@@ -26,6 +26,16 @@ const LAUNCHPAD_DISC = "VgW83Wf4icd";
 // Byte offset of the `usdc_vault` Pubkey within LaunchpadState data (incl. 8-byte disc).
 const OFF_USDC_VAULT = 80;
 
+/**
+ * Keep TVL on Solana: the sum of refundable USDC held in each launch's own
+ * `usdc_vault` PDA. Enumerates every `LaunchpadState` account by its Anchor
+ * discriminator, reads the `usdc_vault` pubkey at byte offset 80, and aggregates
+ * those vaults' USDC balances. Raydium pool liquidity and burned LP are excluded
+ * (that value is Raydium's TVL and is non-withdrawable).
+ *
+ * @param {object} api - DeFiLlama @defillama/sdk ChainApi for the Solana chain.
+ * @returns {Promise<object>} Balances keyed by mint (USDC) for DeFiLlama to price.
+ */
 async function tvl(api) {
   const connection = getConnection();
 
