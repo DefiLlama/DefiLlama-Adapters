@@ -22,56 +22,43 @@ async function addCpSwapLocks(api) {
     getMultipleAccounts([...uncxVaults]),
   ])
 
-  const lpLockedByPool = new Map()
-  poolIds.forEach((poolId, i) => {
-    const info = lpVaultInfos[i]
-    if (!info) return
-    const vault = decodeAccount('tokenAccount', info)
-    const amount = toBigInt(vault.amount)
-    if (amount > 0n) lpLockedByPool.set(poolId, amount)
-  })
-
   const pools = new Map()
   const tokenVaultAccounts = []
-  let skipped = 0
-  let skipReason
-  poolIds.forEach((poolId, i) => {
-    const raw = poolInfos[i]
-    const lpLocked = lpLockedByPool.get(poolId)
-    if (!raw?.data || !lpLocked) return
-    try {
-      const pool = decodeAccount('raydiumCpSwapPoolState', raw)
-      const token0Vault = pool.token0Vault.toBase58()
-      const token1Vault = pool.token1Vault.toBase58()
-      const token0Mint = pool.token0Mint.toBase58()
-      const token1Mint = pool.token1Mint.toBase58()
-      const lpSupply = toBigInt(pool.lpSupply)
-      if (lpSupply <= 0n) return
-      pools.set(poolId, { token0Vault, token1Vault, token0Mint, token1Mint, lpSupply, lpLocked })
-      tokenVaultAccounts.push(token0Vault, token1Vault)
-    } catch (e) {
-      skipped += 1
-      if (!skipReason) skipReason = e?.message || 'decode failed'
-    }
-  })
-  if (skipped) api?.log?.(`[unicrypt-solana] skipped ${skipped} Raydium CP-Swap pool accounts: ${skipReason}`)
 
-  if (!pools.size || !tokenVaultAccounts.length) return
+  poolIds.forEach((poolId, i) => {
+    const vaultInfo = lpVaultInfos[i]
+    if (!vaultInfo) return
+    const lpLocked = toBigInt(decodeAccount('tokenAccount', vaultInfo).amount)
+    if (lpLocked <= 0n) return
+
+    const pool = decodeAccount('raydiumCpSwapPoolState', poolInfos[i])
+    const lpSupply = toBigInt(pool.lpSupply)
+    if (lpSupply <= 0n) return
+    const token0Vault = pool.token0Vault.toBase58()
+    const token1Vault = pool.token1Vault.toBase58()
+    pools.set(poolId, {
+      token0Vault,
+      token1Vault,
+      token0Mint: pool.token0Mint.toBase58(),
+      token1Mint: pool.token1Mint.toBase58(),
+      lpSupply,
+      lpLocked,
+    })
+    tokenVaultAccounts.push(token0Vault, token1Vault)
+  })
+  if (!pools.size) return
 
   const uniqueTokenVaults = getUniqueAddresses(tokenVaultAccounts, 'solana')
   const tokenVaultInfos = await getMultipleAccounts([...uniqueTokenVaults])
   const tokenVaultAmounts = new Map()
-  uniqueTokenVaults.forEach((vault, i) => {
-    const info = tokenVaultInfos[i]
-    if (!info) return
-    const decoded = decodeAccount('tokenAccount', info)
-    tokenVaultAmounts.set(vault, toBigInt(decoded.amount))
-  })
+  uniqueTokenVaults.forEach((vault, i) => tokenVaultAmounts.set(vault, toBigInt(decodeAccount('tokenAccount', tokenVaultInfos[i]).amount)))
 
   pools.forEach(({ token0Vault, token1Vault, token0Mint, token1Mint, lpSupply, lpLocked }) => {
-    const reserve0 = tokenVaultAmounts.get(token0Vault) ?? 0n
-    const reserve1 = tokenVaultAmounts.get(token1Vault) ?? 0n
-    if (reserve0 === 0n && reserve1 === 0n) return
+    const reserve0 = tokenVaultAmounts.get(token0Vault)
+    const reserve1 = tokenVaultAmounts.get(token1Vault)
+    if (reserve0 === undefined || reserve1 === undefined)
+      throw new Error(`[unicrypt-solana] ${PROGRAM_LOCKER_CP_SWAP}: missing token vault state for pool token0Mint=${token0Mint}`)
+
     addProportionalReserves({
       api,
       mintA: token0Mint,
@@ -82,6 +69,8 @@ async function addCpSwapLocks(api) {
       lpSupply,
     })
   })
+
+  api.log(`[unicrypt-solana] ${PROGRAM_LOCKER_CP_SWAP}: valued ${pools.size} locked Raydium CP-Swap pools`)
 }
 
 module.exports = {
