@@ -13,6 +13,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
+  doublecounted: true,
   methodology: 'TVL is computed fully onchain: AMM/CP-Swap locks are valued from live UNCX LP vault balances plus live pool reserves/supply, CLMM locks are decoded and unwrapped to underlying token amounts from Raydium position/pool state, and Meteora locks are decoded from locker TokenLock accounts and valued from DLMM Position/BinArray/LbPair state.',
   solana: { tvl },
 }
