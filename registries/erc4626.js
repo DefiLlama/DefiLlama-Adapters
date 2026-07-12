@@ -256,6 +256,7 @@ const configs = {
       vRPCQuarterlyVault: '0x94f7ebc6ae0819a4b4e231ae6ddaaf9bfd2a1a86',
       vRPCSemiYearlyVault: '0xee26bb0989691735c997dfdc49a4a607f75e190b',
       pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
+      apcVault: '0xd0428799fbc35557834d33121ba4472692c8908a',
     }),
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
   },
