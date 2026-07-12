@@ -1,4 +1,4 @@
-const { callSoroban, callSorobanWithContractArg, callSorobanWithU32Arg } = require('../helper/chain/stellar')
+const { callSoroban } = require('../helper/chain/stellar')
 
 const STAKING_CONTRACT = 'CC72BEVVKHQ57PB5FCKAZYRXCSR6DOQSTN46QR7RZMMM64YWNRPDS24S'
 const BLUB_TOKEN = 'CBMFDIRY5OKI4JJURXC4SMEQPWB4UUADIADJK4NA6CYBNOYK4W4TMLLF'
@@ -16,7 +16,7 @@ async function tvl(api) {
 
 // Staking: BLUB staked in the contract (priced as AQUA)
 async function staking(api) {
-  const blubBalance = await callSorobanWithContractArg(BLUB_TOKEN, 'balance', STAKING_CONTRACT)
+  const blubBalance = await callSoroban(BLUB_TOKEN, 'balance', [STAKING_CONTRACT])
   if (blubBalance > 0n) {
     api.add(AQUA_TOKEN, blubBalance)
   }
@@ -25,7 +25,7 @@ async function staking(api) {
 // Pool2: vault user LP deposits in the Aquarius BLUB-AQUA pool (excludes POL)
 async function pool2(api) {
   const [poolInfo, reserves, totalShares] = await Promise.all([
-    callSorobanWithU32Arg(STAKING_CONTRACT, 'get_pool_info', 0),
+    callSoroban(STAKING_CONTRACT, 'get_pool_info', [0]),
     callSoroban(AQUARIUS_POOL_0, 'get_reserves'),
     callSoroban(AQUARIUS_POOL_0, 'get_total_shares'),
   ])

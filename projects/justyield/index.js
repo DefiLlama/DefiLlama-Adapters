@@ -6,13 +6,13 @@ const tokenAPI = "address:want"
 
 module.exports = {
   [chain]: {
-    tvl: async (_, _b, { [chain]: block }) => {
+    tvl: async (api) => {
       const pools = await getConfig('justyield-arbitrum', 'https://raw.githubusercontent.com/JustYield-Finance/DogeCompounderApi/main/arbitrum_vaults.json');
       const vaults = [];
       for(var i = 0; i < pools.length; i++)
         vaults.push(pools[i].earnedTokenAddress);
       
-      return yieldHelper({ vaults, chain, block, tokenAPI, useDefaultCoreAssets: true, })
+      return yieldHelper({ vaults, api, tokenAPI, useDefaultCoreAssets: true, })
     }
   }
 }

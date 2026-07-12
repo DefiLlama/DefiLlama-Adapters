@@ -7,14 +7,16 @@ module.exports = {
         'astar-dapps-staking': '/astar-dapps-staking/api',
         'injective-orderbook': '/injective-orderbook/api',
         'lisa': '/lisa/api',
-        'chutes': '/chutes/api',
         'zest': '/zest/api',
+        'hermetica-hbtc': '/hermetica-hbtc/api',
       },
       {
+        'hermetica': '/hermetica/api',
         'bifrost-staking': '/bifrost-staking/api',
         'sora': '/sora/api',
         'bifrost-dex': '/bifrost-dex/api',
         'bifrost-liquid-crowdloan': '/bifrost-liquid-crowdloan/api',
+        'hatom-tao-bridge': '/hatom-tao-bridge/api',
       },
       // {
         // 'blend-pools': '/blend-pools/api.js',  // moved to rpc proxy
@@ -77,6 +79,7 @@ module.exports = {
     [{
       // 'quantumx-network': '/quantumx-network/index',
       'polkadot': '/treasury/polkadot-api',
+      'pcs-v2': '/pancake-swap/pcs-v2-onchain',
       'stackswap': '/stackswap/api',
       'velar-amm': '/velar-amm/api',
       'alexlab': '/alexlab/api',
@@ -91,7 +94,7 @@ module.exports = {
       'sunswap-v2': '/sunswap-v2/api',
       unicrypt: '/unicrypt/apiCache',
       deeplock: '/deeplock/apiCache',
-      pinksale: '/pinksale/apiCache',
+      pinksale: '/pinksale/index',
       'team-finance': '/team-finance/apiCache',
       // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',

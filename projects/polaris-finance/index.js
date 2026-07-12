@@ -3,7 +3,6 @@ const { onChainTvl } = require("../helper/balancer");
 
 const xpolar = "0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993";
 const xpolarRewardPool = "0x140e8a21d08cbb530929b012581a7c7e696145ef";
-const chain = "aurora";
 
 const sunrises = [
   "0xA452f676F109d34665877B7a7B203f2B445D7DE0", // polarSunrise
@@ -27,11 +26,12 @@ const singleStakeTokens = [
   "0x8200B4F47eDb608e36561495099a8caF3F806198", // TRIBOND
 ];
 
-const staking = async (_timestamp, _ethBlock, { [chain]: block }) => {
-  const tokensAndOwners = [];
-  sunrises.forEach((o) => tokensAndOwners.push([xpolar, o]));
-  singleStakeTokens.forEach((t) => tokensAndOwners.push([t, xpolarRewardPool]));
-  return sumTokens2({ chain, block, tokensAndOwners });
+const staking = async (api) => {
+  const tokensAndOwners = [
+    ...sunrises.map((o) => [xpolar, o]),
+    ...singleStakeTokens.map((t) => [t, xpolarRewardPool]),
+  ];
+  return sumTokens2({ api, tokensAndOwners });
 };
 
 module.exports = {

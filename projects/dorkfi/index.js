@@ -1,183 +1,238 @@
-const { getApplicationAddress } = require("../helper/chain/algorandUtils/address");
+/**
+ * DorkFi — DefiLlama TVL + Borrowed Adapter
+ *
+ * Chains: Algorand + Voi Network
+ * Pools:
+ *   Algorand: 3333688282 (Pool A), 3345940978 (Pool B)
+ *   Voi:      47139778   (Pool A), 47139781   (Pool B)
+ *
+ * Architecture:
+ *   1. Fetch live market data from DorkFi API (/market-data/{network})
+ *   2. For each market, look up the market app's on-chain account to identify
+ *      the underlying token (native coin or ASA balance, excluding the nToken).
+ *   3. Report raw token amounts via api.add() so DeFi Llama can price them.
+ *   4. ARC-200 token markets (WAD, UNIT on Voi) are hardcoded and valued via
+ *      api.addUSDValue() using DorkFi's on-chain price oracle.
+ *
+ * Borrows use the same logic with totalScaledBorrows × borrowIndex / 1e18.
+ */
+
 const axios = require("axios");
+const { getApplicationAddress } = require("../helper/chain/algorandUtils/address");
 
-const SCALE = BigInt("1000000000000000000"); // 1e18
+const SCALE    = BigInt("1000000000000000000"); // 1e18
+const API_BASE = "https://dorkfi-api.nautilus.sh";
+const NETWORK  = { algorand: "algorand-mainnet", voi: "voi-mainnet" };
 
-// ARC-4 MarketData tuple byte offsets (329 bytes total):
-// Field 10 – totalScaledBorrows (uint256) starts at byte 145
-// Field 12 – borrowIndex        (uint256) starts at byte 209
-const BORROWS_OFFSET = 145;
-const BORROW_IDX_OFFSET = 209;
-
-// Chain indexer URLs (same response format for both chains)
 const INDEXER_URL = {
   algorand: "https://mainnet-idx.algonode.cloud",
-  voi: "https://mainnet-idx.voi.nodely.dev",
+  voi:      "https://mainnet-idx.voi.nodely.dev",
 };
 
-// Pool app IDs per chain
-const POOL_IDS = {
-  algorand: [3207735602, 3212536201],
-  voi: [41760711, 44866061],
-};
+// ARC-200 market IDs on Voi: underlying tokens are not visible in account.assets.
+// These markets use DorkFi API's pre-computed USD value via api.addUSDValue().
+// Market IDs (app IDs) that hold ARC-200 tokens as underlying:
+//   420069   = UNIT (ARC-200 governance token)
+//   47138068 = WAD  (ARC-200 stablecoin)
+const ARC200_MARKET_IDS = new Set([420069, 47138068]);
 
-function readUint256(buf, offset) {
-  let v = 0n;
-  for (let i = 0; i < 32; i++) v = (v << 8n) | BigInt(buf[offset + i]);
-  return v;
+// ── API helpers ───────────────────────────────────────────────────────────────
+
+async function fetchMarketData(chain) {
+  const { data } = await axios.get(`${API_BASE}/market-data/${NETWORK[chain]}`, { timeout: 30000 });
+  if (!data.success) throw new Error(`DorkFi API error: market-data/${chain}`);
+  return data.data;
 }
 
-/** Generic indexer helper */
-async function indexerGet(chain, path, params) {
-  const { data } = await axios.get(`${INDEXER_URL[chain]}${path}`, { params });
-  return data;
+async function fetchAnalyticsTVL(chain) {
+  const { data } = await axios.get(`${API_BASE}/analytics/tvl/${NETWORK[chain]}`, { timeout: 30000 });
+  if (!data.success) throw new Error(`DorkFi API error: analytics/tvl/${chain}`);
+  const map = {};
+  for (const m of data.data.markets || []) {
+    map[`${m.appId}:${m.marketId}`] = m.tvl;
+  }
+  return map;
 }
 
 async function lookupAccount(chain, address) {
-  const data = await indexerGet(chain, `/v2/accounts/${address}`);
+  const { data } = await axios.get(
+    `${INDEXER_URL[chain]}/v2/accounts/${address}`,
+    { timeout: 45000 }
+  );
   return data.account;
 }
 
-async function getAppGlobalState(chain, appId) {
-  const data = await indexerGet(chain, `/v2/applications/${appId}`);
-  const results = {};
-  for (const x of data.application.params["global-state"]) {
-    const key = Buffer.from(x.key, "base64").toString("binary");
-    results[key] = x.value.uint;
-    if (x.value.type === 1)
-      results[key] = Buffer.from(x.value.bytes, "base64").toString("binary");
-  }
-  return results;
-}
-
-/** Read a market's ABI-encoded box from the pool contract via indexer. */
-async function readMarketBox(chain, poolAppId, marketAppId) {
-  const prefix = Buffer.from("markets");
-  const idBuf = Buffer.alloc(8);
-  idBuf.writeBigUInt64BE(BigInt(marketAppId));
-  const boxKey = Buffer.concat([prefix, idBuf]).toString("base64");
-  const data = await indexerGet(chain, `/v2/applications/${poolAppId}/box`, {
-    name: `b64:${boxKey}`,
-  });
-  return Buffer.from(data.value, "base64");
-}
+// ── Token identification ──────────────────────────────────────────────────────
 
 /**
- * Discover all market apps for a single pool via its created sToken apps.
- * Each sToken has a `token_id` pointing to the underlying market contract.
+ * Returns { kind: "native" | "asa" | "arc200", nativeNet?, asaId?, asaAmount? }
+ *
+ * - "native" : market holds meaningful native ALGO/VOI (real deposit balance)
+ * - "asa"    : market holds a non-nToken ASA with a real (non-sentinel) balance
+ * - "arc200" : underlying is ARC-200 or unknown — use USD value fallback
+ *
+ * Native detection uses a high threshold (5e9 microunits ≈ 5,000 ALGO/VOI)
+ * to distinguish real native deposits from mere operational min-balances.
+ * ARC-200 markets are explicitly listed in ARC200_MARKET_IDS.
  */
-async function discoverPoolMarkets(chain, poolId) {
-  const poolAddress = getApplicationAddress(poolId);
-  const account = await lookupAccount(chain, poolAddress);
-  const createdApps = account["created-apps"] || [];
-  const tokenAppIds = new Set();
+function identifyUnderlying(market, account) {
+  // ARC-200 markets are hardcoded — skip account inspection entirely
+  if (ARC200_MARKET_IDS.has(Number(market.marketId))) {
+    return { kind: "arc200" };
+  }
 
-  const states = await Promise.all(
-    createdApps.map((a) => getAppGlobalState(chain, a.id))
+  const nTokenId   = Number(market.ntokenId);
+  const minBalance = account["min-balance"] || 0;
+  const nativeNet  = Math.max(0, account.amount - minBalance);
+
+  // uint64 sentinel: near-max values indicate placeholder/nToken ASAs, not real balances
+  const UINT64_MAX  = BigInt("18446744073709551615");
+  const SENTINEL_LO = UINT64_MAX - BigInt(1_000_000);
+
+  const nonNToken = (account.assets || []).filter(
+    (a) => a["asset-id"] !== nTokenId && a.amount > 0
   );
-  for (const state of states) {
-    if (state.token_id) tokenAppIds.add(state.token_id);
+  const realAssets = nonNToken.filter(
+    (a) => BigInt(a.amount) < SENTINEL_LO
+  );
+
+  // Native market: nativeNet > 5,000 native coins (5e9 microunits) with no real ASAs.
+  // Threshold chosen to exceed all known operational min-balances (~121–1,760 VOI/ALGO)
+  // while being below real deposit balances (50K+ ALGO, 206M+ VOI).
+  if (nativeNet > 5_000_000_000 && realAssets.length === 0) {
+    return { kind: "native", nativeNet };
   }
-  return tokenAppIds;
+
+  // ASA market
+  if (realAssets.length > 0) {
+    realAssets.sort((a, b) => Number(BigInt(b.amount) - BigInt(a.amount)));
+    const top = realAssets[0];
+    return { kind: "asa", asaId: top["asset-id"], asaAmount: top.amount };
+  }
+
+  // ARC-200 / unknown
+  return { kind: "arc200" };
 }
 
-/** Discover all markets across all pools for a chain.  Returns Map<marketAppId, poolAppId>. */
-async function discoverAllMarkets(chain) {
-  const markets = new Map();
-  for (const poolId of POOL_IDS[chain]) {
-    const marketIds = await discoverPoolMarkets(chain, poolId);
-    for (const mid of marketIds) markets.set(mid, poolId);
+// ── Dedup (same market may appear under multiple pools) ───────────────────────
+
+function dedup(markets) {
+  const seen = new Map();
+  for (const m of markets) {
+    const key = `${m.appId}:${m.marketId}`;
+    if (!seen.has(key) || m.lastUpdated > seen.get(key).lastUpdated) {
+      seen.set(key, m);
+    }
   }
-  return markets;
+  return [...seen.values()];
 }
 
-/** Factory: create chain-specific TVL function */
+// ── Amount helpers ────────────────────────────────────────────────────────────
+
+function actualAmount(scaled, index) {
+  return BigInt(scaled) * BigInt(index) / SCALE;
+}
+
+// ── TVL factory ───────────────────────────────────────────────────────────────
+
 function makeTvl(chain) {
   return async function tvl(api) {
-    const markets = await discoverAllMarkets(chain);
-    const addresses = [...markets.keys()].map((id) => getApplicationAddress(id));
-    const accounts = await Promise.all(
-      addresses.map((addr) => lookupAccount(chain, addr))
+    const [markets, tvlMap] = await Promise.all([
+      fetchMarketData(chain),
+      fetchAnalyticsTVL(chain),
+    ]);
+
+    await Promise.all(
+      dedup(markets).map(async (market) => {
+        try {
+          const addr    = getApplicationAddress(market.marketId);
+          const account = await lookupAccount(chain, addr);
+          const token   = identifyUnderlying(market, account);
+
+          if (token.kind === "native") {
+            api.add("1", token.nativeNet);
+          } else if (token.kind === "asa") {
+            api.add(String(token.asaId), token.asaAmount);
+          } else {
+            // ARC-200 fallback — use DorkFi API's pre-computed USD value
+            const usd = tvlMap[`${market.appId}:${market.marketId}`] || 0;
+            if (usd > 0) api.addUSDValue(usd);
+          }
+        } catch (e) {
+          // Skip transient network errors; re-throw logic errors so CI catches regressions.
+          const status = e?.response?.status;
+          if (!status || status >= 500 || status === 404 || status === 429) {
+            console.error(`dorkfi: skipping market ${market.appId}:${market.marketId} — ${e.message}`);
+          } else {
+            throw e;
+          }
+        }
+      })
     );
-    for (const account of accounts) {
-      const netNative = Math.max(
-        0,
-        account.amount - (account["min-balance"] || 0)
-      );
-      if (netNative > 0) api.add("1", netNative);
-      for (const asset of account.assets || []) {
-        if (asset.amount > 0)
-          api.add(String(asset["asset-id"]), asset.amount);
-      }
-    }
   };
 }
 
-/**
- * Factory: create chain-specific borrowed function.
- *
- * Each market has a 329-byte ABI-encoded box in its pool contract keyed by
- * "markets" + uint64BE(marketAppId).  The MarketData tuple stores:
- *   totalScaledBorrows (uint256) at byte 145
- *   borrowIndex        (uint256) at byte 209
- *
- * Actual borrows = totalScaledBorrows × borrowIndex / 1e18
- */
+// ── Borrowed factory ──────────────────────────────────────────────────────────
+
 function makeBorrowed(chain) {
   return async function borrowed(api) {
-    const markets = await discoverAllMarkets(chain);
+    const markets = await fetchMarketData(chain);
 
-    for (const [marketAppId, poolAppId] of markets) {
-      // Only the box fetch may legitimately 404 (market not yet initialised).
-      // Keep all other logic outside the catch so errors from decoding or
-      // lookupAccount propagate instead of being silently swallowed.
-      let boxData;
-      try {
-        boxData = await readMarketBox(chain, poolAppId, marketAppId);
-      } catch (e) {
-        const status = e?.response?.status ?? e?.status;
-        if (status === 404) continue;
-        throw e;
-      }
-
-      const scaledBorrows = readUint256(boxData, BORROWS_OFFSET);
-      if (scaledBorrows === 0n) continue;
-
-      const borrowIndex = readUint256(boxData, BORROW_IDX_OFFSET);
-      const actualBorrows = (scaledBorrows * borrowIndex) / SCALE;
-      if (actualBorrows === 0n) continue;
-
-      // Identify underlying token from the market contract's account
-      const addr = getApplicationAddress(marketAppId);
-      const account = await lookupAccount(chain, addr);
-      const positiveAsset = (account.assets || []).find(
-        (a) => a.amount > 0
-      );
-      if (positiveAsset) {
-        api.add(
-          String(positiveAsset["asset-id"]),
-          actualBorrows.toString()
-        );
-      } else {
-        // Native token market (ALGO / VOI)
-        api.add("1", actualBorrows.toString());
-      }
+    // Borrow USD for ARC-200 markets: baseUnits × price / 1e30 = USD value
+    function borrowUsdFromPrice(borrowAmt, priceStr) {
+      const priceRaw = BigInt(priceStr || "0");
+      if (priceRaw === 0n || borrowAmt === 0n) return 0;
+      return Number(borrowAmt) * Number(priceRaw) / 1e30;
     }
+
+    await Promise.all(
+      dedup(markets).map(async (market) => {
+        const borrowAmt = actualAmount(market.totalScaledBorrows, market.borrowIndex);
+        if (borrowAmt === 0n) return;
+
+        try {
+          const addr    = getApplicationAddress(market.marketId);
+          const account = await lookupAccount(chain, addr);
+          const token   = identifyUnderlying(market, account);
+
+          if (token.kind === "native") {
+            api.add("1", borrowAmt.toString());
+          } else if (token.kind === "asa") {
+            api.add(String(token.asaId), borrowAmt.toString());
+          } else {
+            // ARC-200 fallback — compute borrow USD from API price oracle
+            const usd = borrowUsdFromPrice(borrowAmt, market.price);
+            if (usd > 0) api.addUSDValue(usd);
+          }
+        } catch (e) {
+          const status = e?.response?.status;
+          if (!status || status >= 500 || status === 404 || status === 429) {
+            console.error(`dorkfi: skipping borrow for market ${market.appId}:${market.marketId} — ${e.message}`);
+          } else {
+            throw e;
+          }
+        }
+      })
+    );
   };
 }
+
+// ── Exports ───────────────────────────────────────────────────────────────────
 
 module.exports = {
   timetravel: false,
   methodology:
-    "TVL counts all native tokens and ASAs deposited into DorkFi lending pools " +
-    "on Algorand and Voi. Borrowed amounts are read from pool contract market " +
-    "boxes (ABI-encoded MarketData).",
+    "TVL counts all assets deposited into DorkFi lending pools on Algorand and " +
+    "Voi Network. Native coins (ALGO/VOI) and ASAs are read from market contract " +
+    "accounts. ARC-200 token markets (WAD, UNIT on Voi) use DorkFi's on-chain " +
+    "price oracle via the DorkFi API. Borrowed reflects outstanding loans computed " +
+    "from totalScaledBorrows × borrowIndex / 1e18.",
   algorand: {
-    tvl: makeTvl("algorand"),
+    tvl:      makeTvl("algorand"),
     borrowed: makeBorrowed("algorand"),
   },
   voi: {
-    tvl: makeTvl("voi"),
+    tvl:      makeTvl("voi"),
     borrowed: makeBorrowed("voi"),
   },
 };

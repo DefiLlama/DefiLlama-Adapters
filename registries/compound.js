@@ -34,7 +34,7 @@ const configs = {
   },
   'rho-markets': {
     methodology,
-    scroll: { comptroller: '0x8a67AB98A291d1AEA2E1eB0a79ae4ab7f2D76041', cether: '0x639355f34Ca9935E0004e30bD77b9cE2ADA0E692' },
+    scroll: { comptroller: '0x8a67AB98A291d1AEA2E1eB0a79ae4ab7f2D76041', cether: '0x639355f34Ca9935E0004e30bD77b9cE2ADA0E692', isInsolvent: true },
   },
   'quantus': {
     methodology: "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
@@ -134,7 +134,7 @@ const configs = {
   },
   'knightswap-lending': {
     methodology,
-    bsc: { comptroller: '0x4f92913b86d5e79593fa2e475a8232b22ef17ed1' },
+    bsc: { comptroller: '0x4f92913b86d5e79593fa2e475a8232b22ef17ed1', isInsolvent: true },
   },
   'apeswap-lending': {
     methodology,
@@ -151,7 +151,7 @@ const configs = {
   },
   'traderjoe-lend': {
     methodology: 'We count liquidity on the pairs and we get that information from the "traderjoe-xyz/exchange" subgraph. The staking portion of TVL includes the JoeTokens within the JoeBar contract.',
-    avax: { comptroller: '0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC', cether: '0xC22F01ddc8010Ee05574028528614634684EC29e' },
+    avax: { comptroller: '0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC', cether: '0xC22F01ddc8010Ee05574028528614634684EC29e', isInsolvent: true },
   },
   'reactorfusion': {
     telos: { comptroller: '0x19646a04BfDcf3553Adc8fAAf8B16D76EC41E494', cether: '0x7d94D2F6f91ED5ED0104D89B3D263026D990Ac5f' },
@@ -198,7 +198,7 @@ const configs = {
     },
   },
   'qie-lend': {
-    qiev3: { comptroller: '0x69a31E3D361C69B37463aa67Ef93067dC760fBD4'},
+    qiev3: { comptroller: '0x69a31E3D361C69B37463aa67Ef93067dC760fBD4' },
   },
   // === Newly migrated adapters below ===
   'tropykus': {
@@ -245,7 +245,7 @@ const configs = {
     timetravel: false,
     start: '2020-09-08',
     ethereum: { comptroller: '0xbdC857eae1D15ad171E11af6FC3e99413Ed57Ec4' },
-    bsc: { comptroller: '0x589DE0F0Ccf905477646599bb3E5C622C84cC0BA', cether: '0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A', cetheEquivalent: ADDRESSES.bsc.WBNB },
+    bsc: { comptroller: '0x589DE0F0Ccf905477646599bb3E5C622C84cC0BA', cether: '0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A', cetheEquivalent: ADDRESSES.bsc.WBNB, isInsolvent: true },
     polygon: { comptroller: '0x20ca53e2395fa571798623f1cfbd11fe2c114c24' },
     arbitrum: { comptroller: '0xbadaC56c9aca307079e8B8FC699987AAc89813ee' },
     base: { comptroller: '0x94d31f92a7f85b51F0B628467B3E660BA3e8D799' },
@@ -400,13 +400,13 @@ const configs = {
   },
   'hundredfinance': {
     hallmarks: [['2023-04-15', 'Protocol hacked (oc Optimism)']],
-    ethereum: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0xfcd8570ad81e6c77b8d252bebeba62ed980bd64d' },
-    arbitrum: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0x8e15a22853a0a60a0fbb0d875055a8e66cff0235' },
-    fantom: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0xfCD8570AD81e6c77b8D252bEbEBA62ed980BD64D' },
-    harmony: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0xbb93c7f378b9b531216f9ad7b5748be189a55807' },
-    moonriver: { comptroller: '0x7d166777bd19a916c2edf5f1fc1ec138b37e7391', cether: '0xd6fcbccfc375c2c61d7ee2952b329dceba2d4e10' },
-    xdai: { comptroller: '0x6bb6ebCf3aC808E26545d59EA60F27A202cE8586', cether: '0x6edcb931168c9f7c20144f201537c0243b19dca4' },
-    polygon: { comptroller: '0xedba32185baf7fef9a26ca567bc4a6cbe426e499', cether: '0xEbd7f3349AbA8bB15b897e03D6c1a4Ba95B55e31' },
+    ethereum: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0xfcd8570ad81e6c77b8d252bebeba62ed980bd64d', isInsolvent: true },
+    arbitrum: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0x8e15a22853a0a60a0fbb0d875055a8e66cff0235', isInsolvent: true },
+    fantom: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0xfCD8570AD81e6c77b8D252bEbEBA62ed980BD64D', isInsolvent: true },
+    harmony: { comptroller: '0x0f390559f258eb8591c8e31cf0905e97cf36ace2', cether: '0xbb93c7f378b9b531216f9ad7b5748be189a55807', isInsolvent: true },
+    moonriver: { comptroller: '0x7d166777bd19a916c2edf5f1fc1ec138b37e7391', cether: '0xd6fcbccfc375c2c61d7ee2952b329dceba2d4e10', isInsolvent: true },
+    xdai: { comptroller: '0x6bb6ebCf3aC808E26545d59EA60F27A202cE8586', cether: '0x6edcb931168c9f7c20144f201537c0243b19dca4', isInsolvent: true },
+    polygon: { comptroller: '0xedba32185baf7fef9a26ca567bc4a6cbe426e499', cether: '0xEbd7f3349AbA8bB15b897e03D6c1a4Ba95B55e31', isInsolvent: true },
     optimism: { comptroller: '0x5a5755E1916F547D04eF43176d4cbe0de4503d5d', cether: '0x1A61A72F5Cf5e857f15ee502210b81f8B3a66263', isInsolvent: true },
   },
   'tender-finance': {
@@ -443,6 +443,7 @@ const configs = {
       staking: ['0xe66E3A37C3274Ac24FE8590f7D84A2427194DC17', '0xa88594d404727625a9437c3f886c7643872296ae'],
     },
     optimism: { comptroller: '0xCa889f40aae37FFf165BccF69aeF1E82b5C511B9' },
+    ethereum: { comptroller: '0xdec80bB934397575594E91970b37baf65f5b21bE' },
   },
   'moonwell-apollo': {
     moonriver: {
@@ -457,7 +458,7 @@ const configs = {
       cether: '0xec0d3f28d37a3393cf09ee3ad446c485b6afdaa3',
       staking: [['0x4f2ED52bC4CbdE54e2b3547D3758474A21598D7c', '0x024510151204DeC56Cc4D54ed064f62efAC264d5', '0x2EacD2D7cF5Cba9dA031C0a9C5d7FDeDc056216C', '0x8c9886Aca8B6984c10F988078C5e1D91976dFD16', '0x63D21dBD5A30940C605d77882D065736e8fffC94'], '0x4576E6825B462b6916D2a41E187626E9090A92c6'],
     },
-    klaytn: { comptroller: '0x35dc04eE1D6E600C0d13B21FdfB5C83D022CEF25', cether: '0xacc72a0ca4e85f79876ed4c5e6ea29be1cd26c2e' },
+    klaytn: { comptroller: '0x35dc04eE1D6E600C0d13B21FdfB5C83D022CEF25', cether: '0xacc72a0ca4e85f79876ed4c5e6ea29be1cd26c2e', isInsolvent: true },
   },
   'onyx': {
     ethereum: {
@@ -525,6 +526,10 @@ const configs = {
       { comptroller: '0xd6980C52C20Fb106e54cC6c8AE04c089C3F6B9d6', cether: '0x48c42529c4c8e3d10060e04240e9ec6cd0eb1218', cetheEquivalent: ADDRESSES.wan.WWAN },
     ],
   },
+  'demeter': {
+    bsc: [{ comptroller: '0x3632E78219227b172F0aaF56F92FB08D87C94379', },],
+    heco: [{ comptroller: '0x3632E78219227b172F0aaF56F92FB08D87C94379', },],
+  },
   'midas-capital': {
     bsc: [
       { comptroller: '0x1851e32F34565cb95754310b031C5a2Fc0a8a905' },
@@ -567,6 +572,10 @@ const configs = {
       { comptroller: '0xE550A886716241AFB7ee276e647207D7667e1E79' },
     ],
   },
+  'xpert': {
+    ink: [{ comptroller: '0x4f3b08B7FE4E14f728d084850A7B9CFF2E759Eb7' }],
+    base: [{ comptroller: '0xaE9dFbb5E3848AB056acA352D783d7e569EF83b3' }],
+  }
 }
 
 module.exports = buildProtocolExports(configs, compoundExportFn)

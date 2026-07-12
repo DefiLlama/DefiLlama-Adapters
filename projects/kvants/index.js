@@ -28,10 +28,10 @@ const ENZYME_VAULTS = [
 
 
 async function drift_vaults_tvl(api) {
-  await getDriftVaultTvl(
-    api,
-    DRIFT_VAULTS.map((vault) => vault.address)
-  );
+  // await getDriftVaultTvl(
+  //   api,
+  //   DRIFT_VAULTS.map((vault) => vault.address)
+  // );
 }
 
 async function enzymeTvl(api) {
@@ -53,6 +53,9 @@ async function enzymeTvl(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
   methodology: "The combined TVL of all vaults.",
   solana: { tvl: drift_vaults_tvl },
   base: { tvl: enzymeTvl },

@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { call, parseAddress } = require('../helper/chain/starknet')
+const { multiCall, parseAddress } = require('../helper/chain/starknet')
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
 
@@ -26,12 +26,11 @@ async function fetcher() {
 
 async function tvl(api) {
   const strategyData = await getConfig('nimbora-yield-aggregator', undefined, { fetcher })
-  for (let index = 0; index < strategyData.length; index++) {
-    const strategyInfo = strategyData[index];
+  const strategyTvls = await multiCall({ calls: strategyData.map(s => s.vault), abi: totalAssetsAbi })
+  strategyData.forEach((strategyInfo, index) => {
     const underlying = parseAddress(strategyInfo.underlying);
-    const strategyTvl = await call({ target: strategyInfo.vault, abi: totalAssetsAbi });
-    api.add(underlying, strategyTvl)
-  }
+    api.add(underlying, strategyTvls[index])
+  })
 }
 
 module.exports = {

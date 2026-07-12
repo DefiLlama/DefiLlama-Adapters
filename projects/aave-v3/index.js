@@ -4,6 +4,7 @@ const { aaveV3Export } = require("../helper/aave");
 // Ethena backing supply wallets to exclude from TVL
 const ETHENA_BLACKLIST = [
   { user: '0xb8734a14fbd4aa2d44e6aa830405ffc861ba313c' },
+  { user: '0x3feaa7483fcfba130e68b41369dd78ff30465459' },
 ]
 
 const CONFIG = {
@@ -46,16 +47,22 @@ const CONFIG = {
     ],
     blacklist_lenders: ETHENA_BLACKLIST,
   },
-  megaeth: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
+  megaeth: {
+    poolDatas: ['0x9588b453A4EE24a420830CB3302195cA7aA3b403'],
+    blacklist_lenders: ETHENA_BLACKLIST,
+  },
   mantle: {
     poolDatas: ['0x487c5c669D9eee6057C44973207101276cf73b68'],
     blacklist_lenders: ETHENA_BLACKLIST
   },
+  xlayer: ['0x6C505C31714f14e8af2A03633EB2Cdfb4959138F'],
+  monad: ['0xB65A68B98274ef7D9a60E0C0747dD1BEc3D32fad']
 };
 
 module.exports = aaveV3Export(CONFIG)
 
 module.exports.hallmarks = [
   ['2022-08-04', "Start OP Rewards"],
-  ['2022-04-20', "Start AVAX Rewards"]
+  ['2022-04-20', "Start AVAX Rewards"],
+  ['2026-04-18', "KelpDAO hack"],
 ]
