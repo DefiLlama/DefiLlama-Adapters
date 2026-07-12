@@ -45,34 +45,13 @@ function addProportionalReserves({ api, mintA, mintB, lockedLp, reserveA, reserv
 
 async function getLockerTokenLocks(programId, api, layout = 'unicryptTokenLock', dataSize = TOKEN_LOCK_ACCOUNT_SIZES[layout]) {
   const connection = getConnection()
-  let accounts
-  try {
-    accounts = await connection.getProgramAccounts(new PublicKey(programId), {
-      filters: [
-        ...(dataSize ? [{ dataSize }] : []),
-        { memcmp: { offset: 0, bytes: bs58.encode(TOKEN_LOCK_DISCRIMINATOR) } },
-      ],
-    })
-  } catch (e) {
-    api?.log?.(`[unicrypt-solana] failed to fetch ${layout} accounts for ${programId}: ${e?.message || e}`)
-    return []
-  }
-  const out = []
-  let skipped = 0
-  let skipReason
-  for (const item of accounts) {
-    const data = item.account?.data
-    if (!Buffer.isBuffer(data) || data.length < 8) continue
-    try {
-      const account = decodeAccount(layout, item.account)
-      out.push({ publicKey: item.pubkey, account })
-    } catch (e) {
-      skipped += 1
-      if (!skipReason) skipReason = e?.message || 'decode failed'
-    }
-  }
-  if (skipped) api?.log?.(`[unicrypt-solana] skipped ${skipped} ${layout} accounts for ${programId}: ${skipReason}`)
-  return out
+  const accounts = await connection.getProgramAccounts(new PublicKey(programId), {
+    filters: [
+      ...(dataSize ? [{ dataSize }] : []),
+      { memcmp: { offset: 0, bytes: bs58.encode(TOKEN_LOCK_DISCRIMINATOR) } },
+    ],
+  })
+  return accounts.map(item => ({ publicKey: item.pubkey, account: decodeAccount(layout, item.account) }))
 }
 
 module.exports = {
