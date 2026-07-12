@@ -1,0 +1,45 @@
+const { PublicKey } = require("@solana/web3.js");
+const { getConnection, sumTokens2 } = require("../helper/solana");
+
+const PROGRAM_ID = new PublicKey("ETVtC29T7ExxYyWSkpzKPxzrL3SRyrGPRhZe3FwXmFAo");
+
+// Anchor account discriminator for LaunchpadState (base58 of the first 8 bytes).
+const LAUNCHPAD_DISC = "VgW83Wf4icd";
+
+// Byte offset of the `usdc_vault` Pubkey within LaunchpadState data (incl. 8-byte disc).
+const OFF_USDC_VAULT = 80;
+
+async function tvl(api) {
+  const connection = getConnection();
+
+  const accounts = await connection.getProgramAccounts(PROGRAM_ID, {
+    filters: [{ memcmp: { offset: 0, bytes: LAUNCHPAD_DISC } }],
+    dataSlice: { offset: OFF_USDC_VAULT, length: 32 },
+  });
+
+  // Fundraising/Cancelled hold the full raise, HoldPeriod holds the ~10k refund reserve, Failed holds the
+  // refund pool, and Success has ~0 here (its reserve was paid out) — so no per-state filtering is needed
+  // and the Raydium pool is never double-counted.
+  const usdcVaults = [];
+  for (const { account } of accounts) {
+    const data = account.data;
+    if (data.length < 32) continue;
+    const vault = new PublicKey(data);
+    if (vault.equals(PublicKey.default)) continue; // vault not initialized yet
+    usdcVaults.push(vault.toString());
+  }
+
+  await sumTokens2({ api, tokenAccounts: usdcVaults });
+}
+
+module.exports = {
+  methodology:
+    "TVL is the total refundable USDC held in Keep's own per-launch program vaults " +
+    "(the usdc_vault PDA of each LaunchpadState account, enumerated via getProgramAccounts " +
+    "on the Keep program). It covers escrowed USDC in active raises, post-bootstrap refund " +
+    "reserves, cancelled-raise balances and failed-raise refund pools — all withdrawable by " +
+    "depositors. Liquidity Keep seeds into Raydium is excluded (that is Raydium's TVL), and " +
+    "Keep burns 100% of that LP, so it is not withdrawable and is never counted here.",
+  timetravel: false,
+  solana: { tvl },
+};
