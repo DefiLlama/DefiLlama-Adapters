@@ -15949,6 +15949,16 @@ const configs = {
       ]
     },
   },
+  "hoodpump": {
+    "methodology": "TVL is the WETH side of the Uniswap V3 liquidity positions locked in the HoodPump Liquidity Locker. Each HoodPump launch locks its LP NFT in the locker; only the WETH across those positions is counted (HoodPump-launched tokens are excluded). Liquidity lives in Uniswap V3 pools, so this is flagged doublecounted.",
+    "doublecounted": true,
+    "robinhood": {
+      "owner": "0x612D7f73CF0148E9a1b639e819D588b9fF915A9d",
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+      "uniV3ExtraConfig": { nftAddress: "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"}
+    }
+  },
   "hskhodlium": {
     "methodology": "TVL includes all native HSK tokens staked at the main contract on HashKey Chain. Token price is derived from its Ethereum-wrapped version.",
     "hsk": {
