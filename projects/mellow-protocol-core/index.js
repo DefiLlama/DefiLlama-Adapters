@@ -1,7 +1,6 @@
 const BigNumber = require('bignumber.js');
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache');
-
 const abi = {
   collect: 'function collect(address,address,(address,uint256,uint256)) view returns ((address,address,address[],uint8[],uint256[],(address,address,bool,bool,bool,uint256,uint256[])[],uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(address,address,uint256,uint256,uint256,uint256)[],(address,address,uint256,uint256,uint256,uint256)[],uint256,uint256))',
   shareManager: 'function shareManager() view returns (address)',
@@ -12,9 +11,7 @@ const abi = {
   balanceOf: 'function balanceOf(address) view returns (uint256)',
   asset: 'function asset() view returns (address)',
 }
-
 let _vaultsApiResponse
-
 const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsResults}) => {
   const shareManagerByVault = {}
   const coreVaultShareManagers = await api.multiCall({ calls: coreVaults.map(vault => vault.address), abi: abi.shareManager, permitFailure: true })
@@ -24,10 +21,8 @@ const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsRes
   for (let i = 0; i < dvvVaults.length; i++) {
     shareManagerByVault[dvvVaults[i].address] = dvvVaults[i].address
   }
-
   // Exclude double counting of shares from other vaults allocating to this vault (in subvaults)
   const subvaultsByVault = await api.fetchList({ lengthAbi: abi.subvaults, itemAbi: abi.subvaultAt, targets: coreVaults.map(vault => vault.address), groupedByInput: true })
-
   const vaultsOuterSubvaults = {}
   for (let i = 0; i < subvaultsByVault.length; i++) {
     const vault = coreVaults[i]
@@ -44,7 +39,6 @@ const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsRes
       vaultsOuterSubvaults[vault.address].push(...(subvaultsByVault[j] || []))
     }
   }
-
   const vaultBalances = await api.multiCall({
     calls: Object.entries(vaultsOuterSubvaults).flatMap(([vault, subvaults]) =>
       subvaults.map((subvault) => ({ target: shareManagerByVault[vault], params: [subvault] }))
@@ -52,9 +46,7 @@ const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsRes
     abi: abi.balanceOf,
     permitFailure: true,
   })
-
   const doubleCountedSharesByVault = {}
-
   let vaultBalanceIdx = 0
   for (const [vault, subvaults] of Object.entries(vaultsOuterSubvaults)) {
     for (const subvault of subvaults) {
@@ -69,7 +61,6 @@ const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsRes
       }
     }
   }
-
   coreVaultsResults.forEach((result) => {
     if (!result || !Array.isArray(result)) return
     const vaultAddress = result[0]
@@ -94,23 +85,33 @@ const getDoubleCountedShares = async ({api, coreVaults, dvvVaults, coreVaultsRes
       }
     }
   })
-
   return doubleCountedSharesByVault
 }
-
 const tvl = async (api) => {
   const chainId = Number(api.chainId)
   if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://api.mellow.finance/v1/vaults')
   const vaultsApiResponse = await _vaultsApiResponse;
+  const seenVaultAddresses = new Set()
+  const vaultsOnChain = vaultsApiResponse.filter(v => {
+    if (!v || Number(v.chain_id) !== chainId) return false
+    const addr = v.address && v.address.toLowerCase()
+    if (!addr || seenVaultAddresses.has(addr)) return false
+    seenVaultAddresses.add(addr)
+    return true
+  })
 
-  const vaultsOnChain = vaultsApiResponse.filter(v => v && Number(v.chain_id) === chainId)
-  const coreVaults = vaultsOnChain.filter(v => v.type === 'core-vault')
+  const coreVaults = vaultsOnChain.filter(v => v.type === 'core-vault' && Number(v.total_supply) > 0)
   const dvvVaults  = vaultsOnChain.filter(v => v.type === 'dvv-vault')
 
-  const coreVaultsResults = await api.multiCall({ calls: coreVaults.map((vault) => ({ target: vault.collector, params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]] })), abi: abi.collect, permitFailure: true })
-
+  // collect() fails in multiCall with >2 vaults on mezo
+  const coreVaultsResults = await Promise.all(coreVaults.map((vault) =>
+    api.call({
+      target: vault.collector,
+      abi: abi.collect,
+      params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]],
+    })
+  ))
   const doubleCountedSharesByVault = await getDoubleCountedShares({api, coreVaults, dvvVaults, coreVaultsResults})
-
   coreVaultsResults.forEach((result) => {
     if (!result || !Array.isArray(result)) return
     const vaultAddress = result[0]
@@ -125,11 +126,9 @@ const tvl = async (api) => {
     }
     api.add(baseAsset, totalBaseAsset.toFixed(0))
   })
-
   const dvvVaultsAssets = await api.multiCall({ calls: dvvVaults.map(vault => vault.address), abi: abi.asset, permitFailure: true })
   const dvvVaultsTotalAssets = await api.multiCall({ calls: dvvVaults.map(vault => vault.address), abi: abi.totalAssets, permitFailure: true })
   const dvvVaultsTotalSupply = await api.multiCall({ calls: dvvVaults.map(vault => vault.address), abi: abi.totalSupply, permitFailure: true })
-
   for (let i = 0; i < dvvVaults.length; i++) {
     const vaultAddress = dvvVaults[i].address
     const asset = dvvVaultsAssets[i]
@@ -144,11 +143,8 @@ const tvl = async (api) => {
     api.add(asset, totalAssets.toFixed(0))
   }
 }
-
 const chains = ['ethereum', 'monad', 'mezo', 'rsk']
-
 module.exports.doublecounted = true
-
 chains.forEach((chain) => {
   module.exports[chain] = { tvl }
 })
