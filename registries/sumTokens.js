@@ -2,6 +2,7 @@ const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { sumTokensExport } = require('../projects/helper/sumTokens')
 const { staking: stakingFn } = require('../projects/helper/staking')
 const { pool2: pool2Fn } = require('../projects/helper/pool2')
+const { getBTCExport } = require('../projects/helper/bitcoin-book')
 const data1 = require('./sumTokens/data1')
 const covalent = require('./sumTokens/covalent')
 
@@ -9,7 +10,8 @@ const covalent = require('./sumTokens/covalent')
 // A chain's value is EITHER a plain sumTokens options object (=> treated as { tvl }),
 // OR a bucket map keyed by tvl/staking/pool2/borrowed where each value is:
 //   plain options object -> sumTokensExport(opts); { __staking:[args] } -> stakingFn(...);
-//   { __pool2:[args] } -> pool2Fn(...); { __empty:true } -> () => ({}).
+//   { __pool2:[args] } -> pool2Fn(...); { __empty:true } -> () => ({});
+//   { __btcBook: 'key' } -> getBTCExport('key') (pulls owners from the bitcoin address-book, static or dynamic).
 const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens"])
 const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting"])
 
@@ -17,6 +19,7 @@ function buildBucket(spec, chain) {
   if (spec.__empty) return () => ({})
   if (spec.__staking) return stakingFn(...spec.__staking)
   if (spec.__pool2) return pool2Fn(...spec.__pool2)
+  if (spec.__btcBook) return getBTCExport(spec.__btcBook)
   return sumTokensExport({ ...spec, chain })
 }
 function isBucketMap(v) {
@@ -7204,6 +7207,15 @@ const configs = {
       }
     },
   },
+  'arcus-perp': {
+    robinhood: {
+      owner: '0x14b107cf534239c59571b066cb6497a321da897c', // bridge
+      tokens: [
+        '0x4FdBDaF4800fc28c22a967d23a343aCCE34315a4',
+        '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168',
+      ],
+    }
+  },
   "claimrush": {
     "methodology": "Pool2 = Aerodrome v2 vAMM WETH/CLAIM LP tokens custodied by LpStakingVault7D (7-day rolling staking position for active stakers) plus GenesisLPVault24M (24-month time-locked genesis seed liquidity). LP tokens are unwrapped into their underlying WETH and CLAIM reserves. Staking bucket = CLAIM principal locked in VeClaimNFT (voting-escrow NFT, max 1-year linear-decay locks) to receive a pro-rata share of ETH royalties from every Mine takeover.",
     "base": {
@@ -14237,6 +14249,17 @@ const configs = {
         "0x0a9591c64Fd9e8C1f9A81DB1B668a5f211b5735A"
       ]
     },
+    arbitrum: {
+      tokens: [ADDRESSES.arbitrum.USDT],
+      owners: [
+        "0xFF1968ae4F91efCCf4d5cef823EeCd46fbe114c3",
+        "0x4E682602EE3CF8550BC4fEe46F50cc0C0a41B116",
+        "0x071360b37F6Db934F857E6B33AD705fEee63Be14",
+        "0xf911C309B851Db55b97F4E2c7599a3733C2DAC69",
+        "0xB54D6207365a8CD40A90F880B2f61d931af7d6E8",
+        "0xDBB435e9ed5096006EAae14F99775D12cCa645D9"
+      ]
+    }
   },
   "exit10-fi": {
     "ethereum": {
@@ -20570,6 +20593,53 @@ const configs = {
       ]
     },
   },
+  "omnibazaar": {
+    "methodology": "Pool2: XOM/USDC AMM LP tokens staked in the LiquidityOverflowPool contract on each chain, resolved to underlying XOM + USDC reserves.",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          ["0x425DF6b845F24f96CBAf308B167A1a458102F648", "0x4F1CbE46d42e2F880aE1aE8c091c9BA365bC0B33"]
+        ],
+        "resolveLP": true
+      }
+    },
+    "base": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          ["0x8Bf4142F6C1B3F9938390658E1a73CC49139e336", "0xdB993473060739a523c5c3fdDCf8705BaF84a1DF"]
+        ],
+        "resolveLP": true
+      }
+    },
+    "arbitrum": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          ["0xb9b602d51e411cf9D65bD2CFF0528Fe8B8f484b2", "0x9D4C97BF6C8064D32e8Fa9DEC5364ff2dC01aB7f"]
+        ],
+        "resolveLP": true
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "__empty": true
+      },
+      "pool2": {
+        "tokensAndOwners": [
+          ["0x8Bf4142F6C1B3F9938390658E1a73CC49139e336", "0xdB993473060739a523c5c3fdDCf8705BaF84a1DF"]
+        ],
+        "resolveLP": true
+      }
+    },
+  },
   "onc": {
     "methodology": "Gets TVL inside the ONC Treasury.",
     "era": {
@@ -24495,6 +24565,34 @@ const configs = {
         [
           ADDRESSES.hyperliquid.bZEC,
           "0x24a44f1dc25540c62c1196FfC297dFC951C91aB4"
+        ]
+      ]
+    },
+    "ethereum": {
+      "tokensAndOwners": [
+        [
+          ADDRESSES.ethereum.USDC,
+          "0xc01c9EF5de5862354adD9501a29e8765cFF01c32"
+        ],
+        [
+          ADDRESSES.ethereum.USDT,
+          "0xc01c9EF5de5862354adD9501a29e8765cFF01c32"
+        ],
+        [
+          ADDRESSES.ethereum.WETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.WSTETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.WBTC,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
         ]
       ]
     },

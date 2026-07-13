@@ -4,6 +4,7 @@ const { aaveV3Export } = require("../helper/aave");
 // Ethena backing supply wallets to exclude from TVL
 const ETHENA_BLACKLIST = [
   { user: '0xb8734a14fbd4aa2d44e6aa830405ffc861ba313c' },
+  { user: '0x3feaa7483fcfba130e68b41369dd78ff30465459' },
 ]
 
 const CONFIG = {

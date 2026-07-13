@@ -315,6 +315,9 @@ const configs = {
           ],
         },
         monad: {
+          morphoVaultOwners: [
+            '0x829A13850b684A575C0580a83322890e19c5eFaa',
+          ],
           eulerVaultOwners: [
             '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
           ],
@@ -893,6 +896,7 @@ const configs = {
             '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
             '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
+            '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
           ],
         },
         polygon: {
@@ -1136,6 +1140,17 @@ const configs = {
           ],
           erc4626: [
             '0x3DD459dE96F9C28e3a343b831cbDC2B93c8C4855',
+          ],
+        },
+      }
+    },
+  },
+  "birch-hill": {
+    config: {
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xbCC5C59E64B0Ff3a3Ee5eAb74BE7c787A0a438F1',
           ],
         },
       }

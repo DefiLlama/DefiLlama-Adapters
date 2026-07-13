@@ -1872,6 +1872,10 @@ const configs = {
       tokens: [ADDRESSES.eventum.USDT],
       owners: ['0x77075c627e51145d54e4EDD54Afa169DA7ff8A17'],
     },
+    arbitrum: {
+      tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
+      owners: ['0x16a4f9904e222D298Ac71aA3E3Bd5C19B902C595'],
+    },
   },
   'treasury/evmos-dao': {
     evmos: {
@@ -4928,6 +4932,12 @@ const configs = {
       ],
       owners: ['0x4f54cab19b61138e3c622a0bd671c687481ec030'],
       ownTokens: ['0x43aB8f7d2A8Dd4102cCEA6b438F6d747b1B9F034'],
+    },
+  },
+  'treasury/sentry-trading': {
+    robinhood: {
+      tokens: [nullAddress],
+      owners: ['0x8852BC7Ca269c276264b8Ad7869956C26304a740'],
     },
   },
   'treasury/sharplink-gaming': {
