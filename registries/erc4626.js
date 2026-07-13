@@ -373,6 +373,9 @@ const configs = {
       '0xBC91a7a0eE37085af193C61747ecE693979Ec0C1',
       '0x018BeE125A17D456E6dacE22A66E8B9aF3c69449',
     ],
+  },
+  'primestaking-xyz': {
+    xdc: ['0xDc74c0DaED82ae94486DeeF22991d2F54173c734'],
   }
 }
 
