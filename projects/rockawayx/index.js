@@ -56,7 +56,12 @@ const configs = {
     },
     sei: {
       morpho: [
-        '0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06', // PYUSD0 
+        '0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06', // PYUSD0
+      ],
+    },
+    pharos: {
+      morpho: [
+        '0x047cd0a91e9b92ed979189a6c8a120bf280f02e5', // RockawayX USDC (roxUSDC)
       ],
     },
     solana: {
