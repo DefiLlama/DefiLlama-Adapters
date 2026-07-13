@@ -1,26 +1,18 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
+// This vault is curated by Native but whitelabeled/owned by TownSquare on monad,
+// so it is also tracked in projects/townsquare-vaults. Marked doublecounted here
+// to avoid inflating aggregate TVL sums across both adapters.
 module.exports = {
-  methodology: "Gets all the assets deposited by LPs in Native Credit Pool for PMMs to facilitate trades for Native Swap.",
+  doublecounted: true,
+  methodology: "Gets all the assets deposited by LPs in the Native-curated, TownSquare-owned Credit Pool on monad for PMMs to facilitate trades for Native Swap.",
 };
 
 const config = {
-  ethereum: {
-    vault: "0xe3D41d19564922C9952f692C5Dd0563030f5f2EF",
-    vaultFromBlock: 22173196,
-  },
-  bsc: {
-    vault: "0xBA8dB0CAf781cAc69b6acf6C848aC148264Cc05d",
-    vaultFromBlock: 47980948,
-  },
-  base: {
-    vault: "0x74a4Cd023e5AfB88369E3f22b02440F2614a1367",
-    vaultFromBlock: 32578350,
-  },
-  arbitrum: {
-    vault: "0xbA1cf8A63227b46575AF823BEB4d83D1025eff09",
-    vaultFromBlock: 355397381,
+  monad: {
+    vault: "0xcD1D2D602C3e7394515DaAe96e4FFe16DE71e5B4",
+    vaultFromBlock: 70146973,
   },
 };
 
@@ -45,10 +37,10 @@ Object.keys(config).forEach((chain) => {
       const tokens = await api.multiCall({ abi: 'address:underlying', calls: lps });
 
       // use sumTokens2 to for cash balances in vault
-      return sumTokens2({ 
-        api, 
-        owner: vault, 
-        tokens 
+      return sumTokens2({
+        api,
+        owner: vault,
+        tokens
       });
     },
     borrowed: async (api) => {
