@@ -221,6 +221,10 @@ const config = {
     morphoBlue: '0x18120312A7cf44DcfEc6dCe5632a431579ED9100',
     fromBlock: 	18930057,
   },
+  xdc: {
+    morphoBlue: "0xEa49B0fE898aF913A3826F9f462eE2cDcb854fD9",
+    fromBlock: 101757515,
+  },
 }
 
 const eventAbis = {
