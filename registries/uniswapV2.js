@@ -1035,6 +1035,9 @@ const uniV2Configs = {
   'kittypunch': {
     flow: '0x29372c22459a4e373851798bFd6808e71EA34A71',
   },
+  'frothswap': {
+    robinhood: '0x2B1b1FB977e1CD5f18F45571C64E373b1A73dD7f',
+  },
   'kittypunch-kona-v2': {
     abstract: '0x7c2e370CA0fCb60D8202b8C5b01f758bcAD41860',
   },
