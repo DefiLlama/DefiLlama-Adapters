@@ -10,6 +10,7 @@ const supportedChains = {
   "base": "production-multi-base",
   "ethereum": "production-multi-eth",
   "bsc": "production-multi-bsc",
+  "monad": "production-multi-mon",
 }
 
 function getTVL(env, contractName) {
