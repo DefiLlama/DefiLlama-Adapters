@@ -22,6 +22,18 @@ const config = {
     vault: "0xbA1cf8A63227b46575AF823BEB4d83D1025eff09",
     vaultFromBlock: 355397381,
   },
+  xlayer: {
+    vault: "0x4Df7557734B382EB542BEa6c74786D398DF4CC19",
+    vaultFromBlock: 59885325,
+  },
+  morph: {
+    vault: "0x4Df7557734B382EB542BEa6c74786D398DF4CC19",
+    vaultFromBlock: 23245775,
+  },
+  robinhood: {
+    vault: "0x57B8f68ef57Af2dB70BC9aAc891836661CA4cB51",
+    vaultFromBlock: 60423,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
