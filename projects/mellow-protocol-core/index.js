@@ -91,10 +91,6 @@ const tvl = async (api) => {
   const chainId = Number(api.chainId)
   if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://api.mellow.finance/v1/vaults')
   const vaultsApiResponse = await _vaultsApiResponse;
-  // Dedupe by address: Mellow's API can list the same vault twice (seen for
-  // mezo-stable-vault, once with base_token.symbol "USDC" and once "mUSDC").
-  // Without this, the duplicate silently overwrote/dropped the real entry
-  // downstream. See #20004.
   const seenVaultAddresses = new Set()
   const vaultsOnChain = vaultsApiResponse.filter(v => {
     if (!v || Number(v.chain_id) !== chainId) return false
@@ -103,16 +99,17 @@ const tvl = async (api) => {
     seenVaultAddresses.add(addr)
     return true
   })
-  const coreVaults = vaultsOnChain.filter(v => v.type === 'core-vault')
+
+  const coreVaults = vaultsOnChain.filter(v => v.type === 'core-vault' && Number(v.total_supply) > 0)
   const dvvVaults  = vaultsOnChain.filter(v => v.type === 'dvv-vault')
-  // Each collect() call is issued in its own multiCall (not combined into one
-  // batch) because collect()'s return type is a large nested tuple; batching
-  // 3+ of these together exceeds a Multicall3 aggregation limit and causes
-  // later calls in the batch to silently return null via permitFailure, even
-  // though the underlying contract call succeeds fine on its own (verified:
-  // alone = success, batched at position 3 = null). See #20004.
+
+  // collect() fails in multiCall with >2 vaults on mezo
   const coreVaultsResults = await Promise.all(coreVaults.map((vault) =>
-    api.multiCall({ calls: [{ target: vault.collector, params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]] }], abi: abi.collect, permitFailure: true }).then(r => r[0])
+    api.call({
+      target: vault.collector,
+      abi: abi.collect,
+      params: [ADDRESSES.null, vault.address, [vault.base_token.address, 0, 0]],
+    })
   ))
   const doubleCountedSharesByVault = await getDoubleCountedShares({api, coreVaults, dvvVaults, coreVaultsResults})
   coreVaultsResults.forEach((result) => {
