@@ -53,6 +53,7 @@ const DEFAULTS = {
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
   ROBINHOOD_RPC: 'https://robinhoodchain.blockscout.com/api/eth-rpc',
   ETHEREUMCLASSIC_RPC: 'https://etc.blockscout.com/api/eth-rpc',
+  FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
 }
 
 const ENV_KEYS = [
