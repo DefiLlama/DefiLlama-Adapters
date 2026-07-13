@@ -32,9 +32,12 @@ async function getAllVaults() {
 
   const vaults = {};
   vaultResults.forEach((res, i) => {
-    const fields = getObjectFields(res);
-    if (!fields) return; // skip missing objects instead of throwing
     const token = entries[i][0]; // helper getObjects preserves input order
+    const fields = getObjectFields(res);
+    // Throw rather than skip: a temporarily unreadable vault would silently
+    // undercount TVL, which is harder to detect than a failed run (the latter
+    // preserves the last known-good value).
+    if (!fields) throw new Error(`getAllVaults: could not read vault object for ${token} (${vaultObjectIds[i]})`);
     vaults[token] = {
       token,
       collateralBalance: fields.balance,

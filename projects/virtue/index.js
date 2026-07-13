@@ -8,19 +8,18 @@ const CERT_METADATA = '0x8c25ec843c12fbfddc7e25d66869f8639e20021758cac1a3db0f6de
 const VCERT_NATIVE_POOL = '0xb435fa61ee8d5473ab36de02c88756f8c74fcc031b4e3a2fe2a6647bb06b2872'
 const VCERT_METADATA = '0xb45b32d8d58c6499795036faa92b0561c6df089cdd4fc6ae8a0543981a698bf1'
 
-// IOTA-per-CERT rate = (staked + rewards) / supply; falls back to 1 on any anomaly
+// IOTA-per-CERT rate = (staked + rewards) / supply.
+// Let RPC/schema/data errors propagate: a failed run preserves the last
+// known-good TVL, which is preferable to silently misvaluing collateral.
 async function getIotaPerCert(nativePoolId, metadataId) {
-  try {
-    const nativePool = await iota.getObject(nativePoolId)
-    const metadata = await iota.getObject(metadataId)
-    const supply = Number(BigInt(metadata.fields.total_supply.fields.value))
-    const staked = Number(BigInt(nativePool.fields.total_staked))
-    const rewards = Number(BigInt(nativePool.fields.total_rewards ?? 0))
-    if (!supply || !(staked + rewards)) return 1
-    return (staked + rewards) / supply
-  } catch (e) {
-    return 1 // conservative 1:1 fallback rather than zeroing the adapter
-  }
+  const nativePool = await iota.getObject(nativePoolId)
+  const metadata = await iota.getObject(metadataId)
+  const supply = Number(BigInt(metadata.fields.total_supply.fields.value))
+  const staked = Number(BigInt(nativePool.fields.total_staked))
+  const rewards = Number(BigInt(nativePool.fields.total_rewards ?? 0))
+  if (!supply || !(staked + rewards))
+    throw new Error(`getIotaPerCert: invalid pool data (supply=${supply}, staked=${staked}, rewards=${rewards})`)
+  return (staked + rewards) / supply
 }
 
 async function tvl() {
