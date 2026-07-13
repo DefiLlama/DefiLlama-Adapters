@@ -47,6 +47,7 @@ module.exports = {
     ['2022-03-31', "Earn V1 Launch"],
     ['2022-06-16', "Earn V1 Shutdown"],
     ['2022-08-10', "Earn V2 Launch"],
+    ["2026-02-13", "winddown announced"],
   ],
   methodology: 'Using contract methods, TVL is pendingDeposits + totalFunds + premiumCollected and the asset is UNDERLYING or COLLATERAL (put vs call) ',
 }

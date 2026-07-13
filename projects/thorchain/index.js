@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, get } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 async function staking() {
-  var res = await get('https://midgard.ninerealms.com/v2/network')
+  var res = await get('https://gateway.liquify.com/chain/thorchain_midgard/v2/network')
   const { totalActiveBond, totalStandbyBond } = res.bondMetrics
   return {
     "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond)) / 1e8
@@ -24,6 +25,26 @@ const chainMapping = {
   XRP: 'ripple',
   TRON: 'tron',
   THOR: 'thorchain',
+  SOL: 'solana',
+}
+
+// native gas asset symbol per THORChain chain code (the chain prefix often differs
+// from the native asset, e.g. BSC.BNB / BASE.ETH / GAIA.ATOM / TRON.TRX)
+const nativeAsset = {
+  ETH: 'ETH',
+  BTC: 'BTC',
+  AVAX: 'AVAX',
+  BNB: 'BNB',
+  LTC: 'LTC',
+  BCH: 'BCH',
+  DOGE: 'DOGE',
+  GAIA: 'ATOM',
+  BASE: 'ETH',
+  BSC: 'BNB',
+  XRP: 'XRP',
+  TRON: 'TRX',
+  THOR: 'RUNE',
+  SOL: 'SOL',
 }
 
 const defillamaChainMapping = {
@@ -52,7 +73,7 @@ const tokenGeckoMapping = {
 const blacklistedPools = []
 
 async function tvl(api) {
-  const pools = await getCache('https://midgard.ninerealms.com/v2/pools')
+  const pools = await getCache('https://gateway.liquify.com/chain/thorchain_midgard/v2/pools')
   const aChain = api.chain
 
   const balances = {}
@@ -76,7 +97,7 @@ async function tvl(api) {
       if (address && address.length > 8) {
         address = address.toLowerCase()
         sdk.util.sumSingleBalance(balances, address, totalDepth, chain)
-      } else if (chainStr === baseToken) {
+      } else if (baseToken === nativeAsset[chainStr]) {
         sdk.util.sumSingleBalance(balances, nullAddress, totalDepth, chain)
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e8)
@@ -84,7 +105,7 @@ async function tvl(api) {
         sdk.log('skipped', pool, Number(totalDepth).toFixed(2))
       }
     } else {
-      if (chainStr === baseToken) {
+      if (baseToken === nativeAsset[chainStr]) {
         if (chain === 'bitcoincash') chain = 'bitcoin-cash'
         sdk.util.sumSingleBalance(balances, chain, totalDepth / 1e8)
       } else if (tokenGeckoMapping[pool]) {

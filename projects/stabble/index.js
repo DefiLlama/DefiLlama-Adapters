@@ -50,6 +50,7 @@ async function stableSwapTvl() {
 }
 
 module.exports = {
+  methodology: 'Value of the assets locked in Stabble Finance\'s weighted swap and stable swap vaults',
   timetravel: false,
   solana: { tvl: sdk.util.sumChainTvls([weightedSwapTvl, stableSwapTvl]) },
   hallmarks: [

@@ -1,7 +1,10 @@
 const { queryContract } = require('../helper/chain/cosmos');
 const BigNumber = require('bignumber.js');
 
-const redBank = 'zig1s3frrzltqaxvuzffvxg89uuad6nkcyqe3ucvrahynznaek3mhe4s75puyu';
+const redBanks = [
+  'zig1s3frrzltqaxvuzffvxg89uuad6nkcyqe3ucvrahynznaek3mhe4s75puyu', // Main market
+  'zig1smfzazs6eg86vz23p8t7dk3gr4nnwr5m40yae9cl2m7erx3rnm2sxecuyc', // BTC market
+];
 
 async function getMarkets(chain, redBank) {
   let startAfter = null;
@@ -25,8 +28,13 @@ async function getMarkets(chain, redBank) {
   return allMarkets;
 }
 
+async function getAllMarkets(chain) {
+  const results = await Promise.all(redBanks.map((rb) => getMarkets(chain, rb)));
+  return results.flat();
+}
+
 async function tvl(api) {
-  const markets = await getMarkets(api.chain, redBank);
+  const markets = await getAllMarkets(api.chain);
 
   markets.forEach(market => {
     const netAmount = BigNumber(market.collateral_total_amount).minus(market.debt_total_amount);
@@ -35,7 +43,7 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  const markets = await getMarkets(api.chain, redBank);
+  const markets = await getAllMarkets(api.chain);
 
   markets.forEach(market => {
     api.add(market.denom, market.debt_total_amount);
@@ -44,8 +52,8 @@ async function borrowed(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "Sum token balances by querying the total deposit amount for each asset from the market stats api.",
-  zigchain: { 
+  methodology: "Sum token balances by querying the total deposit amount for each asset across the Main and Solv red banks.",
+  zigchain: {
     tvl,
     borrowed
   },
@@ -53,4 +61,3 @@ module.exports = {
     ['2025-11-16', 'Launch on ZigChain'],
   ],
 };
-

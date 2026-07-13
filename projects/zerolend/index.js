@@ -35,7 +35,11 @@ const linea = {
   zeroLocker: "0x08D5FEA625B1dBf9Bae0b97437303a0374ee02F8",
 };
 
-const data = {};
+const data = {
+  hallmarks: [
+    ["2026-02-17", "winddown announced"],
+  ],
+};
 Object.keys(config).forEach((chain) => {
   const chainExports = config[chain].map((address) => aaveExports(chain, undefined, undefined, [address]))
   data[chain] = {
@@ -48,3 +52,6 @@ data.linea.staking = staking(linea.zeroLocker, linea.zero, "linea");
 data.linea.pool2 = pool2s([linea.zlpLocker], [linea.zeroEthNileLP], "linea"); // todo add the lynex and nile LPs from the treasury
 
 module.exports = data;
+
+const defunktChains = ['base', 'manta', 'zircuit']
+defunktChains.forEach(chain => module.exports[chain].borrowed = () => ({}))

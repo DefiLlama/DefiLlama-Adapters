@@ -10,34 +10,40 @@ let totalVaultsProcessed = 0;
 async function tvl(api) {
   const config  = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
 
-  const chain = api.chain === "avax" ? 'avalanche' : api.chain;
+  let chain = api.chain;
+  if (chain === "avax") chain = 'avalanche';
+  else if (chain === "hyperliquid") chain = 'hyperevm';
 
   const chainConfig = config[chain];
   if (!chainConfig || !chainConfig.vaults) {
-    debugLog(`[IPOR Fusion] No vaults found for chain: ${chain}`);
+    debugLog(`[Fusion (by IPOR)] No vaults found for chain: ${chain}`);
     return {};
   }
   
-  debugLog(`[IPOR Fusion] Processing ${chainConfig.vaults.length} vaults on ${chain}:`);
-  
-  const calls = chainConfig.vaults.map((vault, index) => {
-    debugLog(`  Vault ${index + 1}/${chainConfig.vaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
-    return vault.PlasmaVault;
-  });
+  // dedupe by PlasmaVault address
+  const seen = new Set();
+  const calls = [];
+  for (const vault of chainConfig.vaults) {
+    const key = vault.PlasmaVault.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    calls.push(vault.PlasmaVault);
+  }
 
   totalVaultsProcessed += calls.length;
-  
-  debugLog(`[IPOR Fusion] Total vaults processed on ${chain}: ${calls.length}`);
-  debugLog(`[IPOR Fusion] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
-  
-  return api.erc4626Sum2({ calls })
+
+  debugLog(`[Fusion (by IPOR)] Total vaults processed on ${chain}: ${calls.length}`);
+  debugLog(`[Fusion (by IPOR)] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
+
+  // permitFailure so vaults not yet deployed at a historical block are skipped instead of throwing
+  return api.erc4626Sum2({ calls, permitFailure: true })
 }
 
 module.exports = {
-  methodology: `Counts the tokens deposited into IPOR Fusion Vaults.`,
+  methodology: `Counts the tokens deposited into Fusion Vaults.`,
   hallmarks: [
-    ["2024-09-30", "IPOR Fusion Vaults Rollout"],
-    ["2025-10-24", "IPOR Fusion Points Program Launch"],
+    ["2024-09-30", "Fusion Vaults Rollout"],
+    ["2025-10-24", "Fusion Points Program Launch"],
     ["2025-11-04", "xUSD Depeg DeFi Contagion"]
   ],
   ethereum: { tvl },
@@ -47,5 +53,8 @@ module.exports = {
   ink: { tvl },
   tac: { tvl },
   plasma: { tvl },
-  avax: { tvl }
+  avax: { tvl },
+  katana: { tvl },
+  hyperliquid: { tvl },
+  robinhood: { tvl }
 };

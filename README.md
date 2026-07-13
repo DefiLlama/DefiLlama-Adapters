@@ -4,19 +4,23 @@ Follow [this guide](https://docs.llama.fi/submit-a-project) to create an adapter
 
 Also, don't hesitate to send a message on [our discord](https://discord.defillama.com/) if we're late to merge your PR.
 
-> If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters)
-> - If you would like to add a `liquidations` adapter, please refer to [this readme document](https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/liquidations) for details.
+> This repo is for **TVL** adapters.
+> For other metrics such as `volume`, `fees`, `revenue`, `aggregators`, `open-interest`, `active-users`, etc. submit the PR to [DefiLlama/dimension-adapters](https://github.com/DefiLlama/dimension-adapters).
 
 1. PLEASE PLEASE **enable "Allow edits by maintainers" while putting up the PR.**
 2. Once your adapter has been merged, it takes time to show on the UI. No need to notify us on Discord.
 3. TVL must be computed from blockchain data (reason: https://github.com/DefiLlama/DefiLlama-Adapters/discussions/432), if you have trouble with creating the adapter, please hop onto our discord, we are happy to assist you.
-4. **For updating listing info** It is a different repo, you can find your listing in this file: https://github.com/DefiLlama/defillama-server/blob/master/defi/src/protocols/data2.ts, you can  edit it there and put up a PR
-5. Do not edit/push `package-lock.json` file as part of your changes, we use lockfileVersion 2, and most use v1 and using that messes up our CI
+4. **For updating listing info** Please send a mail to metadata@defillama.com
+5. Do not edit/push `pnpm-lock.yaml` or `pnpm-workspace.yaml` files as part of your changes, that messes up our CI.
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ## Getting listed
 
 Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/pull_request_template.md when creating a PR.
+
+## Agent skill
+
+This repo includes an agent skill at `skills/adapter-author/` for AI-assisted DefiLlama TVL adapter authoring. It helps coding agents validate whether a request belongs in `DefiLlama-Adapters`, choose existing adapter patterns, implement TVL adapters in repo style, run `node test.js`, and prepare PR metadata. See `skills/adapter-author/SKILL.md` for usage.
 
 ## Work in progress
 

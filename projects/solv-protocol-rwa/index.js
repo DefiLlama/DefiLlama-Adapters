@@ -13,6 +13,7 @@ const { cachedGraphQuery } = require("../helper/cache");
 // The Graph
 const graphUrlList = {
   mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mentle-0xgraph/-/gn',
+  bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
 }
 
 const slotListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-rwa-slot.json';
@@ -99,6 +100,6 @@ async function getGraphData(timestamp, chain, api) {
   return data.poolOrderInfos;
 }
 // node test.js projects/solv-protocol-rwa
-['mantle'].forEach(chain => {
+['mantle', 'bsc'].forEach(chain => {
   module.exports[chain] = { tvl }
 })

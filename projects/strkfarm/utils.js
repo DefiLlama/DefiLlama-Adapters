@@ -79,23 +79,39 @@ const STRATEGIES = {
   }, {
     address: "0x5203a08b471e46bf33990ac83aff577bbe5a5d789e61de2c6531e3c4773d1c9",
     token1: ADDRESSES.starknet.USDT,
-    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
+    token2: ADDRESSES.starknet.USDC_CIRCLE,
   }, {
     address: "0x4d00c7423b3c0fae3640f6099ac97acbfd8708f099e09bfe3a7a6a680399228",
     token1: ADDRESSES.starknet.ETH,
-    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
+    token2: ADDRESSES.starknet.USDC_CIRCLE,
   }, {
     address: "0x4de22bd0a8eb4d0a18736e66dd36d20ba50bc106346bbfac3dbeaac1ab37ce1",
     token1: ADDRESSES.starknet.STRK,
-    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
+    token2: ADDRESSES.starknet.USDC_CIRCLE,
   }, {
     address: "0x76101c3b80af1103c9c6d541ca627f61b5ae7ae79d7fce96ccdf7bdb648450d",
     token1: ADDRESSES.starknet.WBTC,
-    token2: "0x033068F6539f8e6e6b131e6B2B814e6c34A5224bC66947c47DaB9dFeE93b35fb",
+    token2: ADDRESSES.starknet.USDC_CIRCLE,
+  }, {
+    address: "0x02dfe5af1665a7adf549008161c818eb18dcf89fc9518ab812294f2b691b2845",
+    token1: ADDRESSES.starknet.STRKBTC,
+    token2: ADDRESSES.starknet.USDC,
+  }, {
+    address: "0x04784e62a4847484528ba65f500b37a9347e88632e90d866e213f2c2651be828",
+    token1: ADDRESSES.starknet.STRKBTC,
+    token2: ADDRESSES.starknet.STRK,
+  }, {
+    address: "0x07118ecd7dece83462b0ac8302c682fb17c7e18b0be13d81867c5bf3f80933ef",
+    token1: ADDRESSES.starknet.STRKBTC,
+    token2: ADDRESSES.starknet.ETH,
+  }, {
+    address: "0x07e927222730899442b2438bfd6218ff8ac44bd7a3420646fca359b8392e42c1",
+    token1: ADDRESSES.starknet.STRKBTC,
+    token2: ADDRESSES.starknet.WBTC,
   }],
   "EkuboVaultsEndurBTC": [{
     address: "0x0785dc3dfc4e80ef2690a99512481e3ed3a5266180adda5a47e856245d68a4af",
-    token1: "0x04daa17763b286d1e59b97c283c0b8c949994c361e426a28f743c67bdfe9a32f", // tBTC
+    token1: ADDRESSES.starknet.tBTC, // tBTC
     token2: "0x043a35c1425a0125ef8c171f1a75c6f31ef8648edcc8324b55ce1917db3f9b91", // xtBTC
   }, {
     address: "0x002ea99b4971d3c277fa4a9b4beb7d4d7d169e683393a29eef263d5d57b4380a",
@@ -108,7 +124,11 @@ const STRATEGIES = {
   },{
     address: "0x0314c4653ab1aa01f5465773cb879f525d7e369a137bc3ae084761aee99a1712",
     token1: "0x036834a40984312f7f7de8d31e3f6305b325389eaeea5b1c0664b2fb936461a4", // LBTC
-    token2: "0x07dd3c80de9fcc5545f0cb83678826819c79619ed7992cc06ff81fc67cd2efe0", // xLBTC 
+    token2: "0x07dd3c80de9fcc5545f0cb83678826819c79619ed7992cc06ff81fc67cd2efe0", // xLBTC
+  }, {
+    address: "0x03d1d1932ef6882d4acf763dd0430f4abed3e2a9da28e028f1e2e8dd934b8bf7",
+    token1: ADDRESSES.starknet.STRKBTC,
+    token2: "0x047751b3532fabca89b0f2e35ca1cb45e5a7b11d5e3d3663dfa1f4406b45fd88", // xstrkBTC
   }],
   "EvergreenVaults": [{
     address: "0x7e6498cf6a1bfc7e6fc89f1831865e2dacb9756def4ec4b031a9138788a3b5e",
@@ -132,7 +152,7 @@ const STRATEGIES = {
     lst: ADDRESSES.starknet.XSTRK
   },{
     address: "0x0047d5f68477e5637ce0e56436c6b5eee5a354e6828995dae106b11a48679328",
-    token: "0x04daa17763b286d1e59b97c283c0b8c949994c361e426a28f743c67bdfe9a32f", // tBTC
+    token: ADDRESSES.starknet.tBTC, // tBTC
     lst: "0x043a35c1425a0125ef8c171f1a75c6f31ef8648edcc8324b55ce1917db3f9b91" // xtBTC
   }, {
     address: "0x02da9d0f96a46b453f55604313785dc866424240b1c6811d13bef594343db818",
@@ -143,10 +163,22 @@ const STRATEGIES = {
     token: "0x0593e034DdA23eea82d2bA9a30960ED42CF4A01502Cc2351Dc9B9881F9931a68", // solvBTC
     lst: "0x0580f3dC564a7B82f21d40d404b3842D490aE7205e6ac07B1b7Af2b4A5183dC9" // xsBTC
   }, {
-    address: "0x038e96a301428d204ab4553799aa386a0f14a5ef9b30a5830be1814e4fb8da1c",
+    address: "0x64cf24d4883fe569926419a0569ab34497c6956a1a308fa883257f7486d7030",
     token: "0x036834a40984312f7f7de8d31e3f6305b325389eaeea5b1c0664b2fb936461a4", // LBTC
     lst: "0x07dd3c80de9fcc5545f0cb83678826819c79619ed7992cc06ff81fc67cd2efe0" // xLBTC
-  }]
+  }],
+  "YoloVaults": [{
+    address: "0x018ccdff25a642e211f86ace35ba282ebdf342330319ead98cae37258bc9cce1",
+    token1: ADDRESSES.starknet.USDC,
+    token2: ADDRESSES.starknet.WBTC,
+  }],
+  "BoostedVaults": [{
+    address: "0x02490bd7fa730790e220b40a3cb7bec14ddf030e15c9813610aabbe391f781c4",
+    token: ADDRESSES.starknet.USDC, // USDC Boosted
+  }, {
+    address: "0x00a4c7c06313a3e06e408dd19a57e633d26cec5b9c4483223bca5d5b467f4ff6",
+    token: ADDRESSES.starknet.WBTC, // WBTC Boosted
+  }],
 }
 
 module.exports = {

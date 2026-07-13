@@ -11,19 +11,16 @@ const WBNBEquivalent = ADDRESSES.bsc.WBNB;
 
 const stakingChef = "0xbfcaB1627c4fB86A055DE4B8a56D46e625F51C0B";
 
-const stakingPools = async (_ts, _b, chainBlocks) => {
+const stakingPools = async (api) => {
   const balances = {};
-  let transformAddress = i => `bsc:${i}`;
-
   await addFundsInMasterChef(
     balances,
     stakingChef,
-    chainBlocks["bsc"],
-    "bsc",
-    transformAddress,
+    api.block,
+    api.chain,
+    i => `bsc:${i}`,
     abi.poolInfo
   );
-
   return balances;
 };
 
@@ -32,12 +29,9 @@ module.exports = {
     staking: stakingPools,
     ...compoundExports(comptroller,
       cBNB,
-      WBNBEquivalent)
+      WBNBEquivalent,
+      { isInsolvent: true })
   },
   methodology:
     "We count liquidity on the lending markets same as compound; and the Pools (LP Piars) through Chef Contract",
 };
-
-// NOTE: borrowed function zeroed out due to bad debt
-// The compoundExports helper would normally calculate borrowed amounts, but we override it to return empty object
-module.exports.bsc.borrowed = () => ({})

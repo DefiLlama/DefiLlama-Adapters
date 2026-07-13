@@ -1,5 +1,5 @@
-const { ABI } = require("../helper/curators/configs");
 const { getCuratorExport } = require("../helper/curators");
+const { mergeExports } = require("../helper/utils");
 
 const configs = {
   methodology:
@@ -13,12 +13,31 @@ const configs = {
         "0xc65433845ecD16688eda196497FA9130d6C47Bd8",
         "0x82f5104b23FF2FA54C2345F821dAc9369e9E0B26",
       ],
+      upshiftV2: [
+        "0xAEEb2fB279a5aA837367B9D2582F898a63b06ca1",
+        "0x0243755a22E37b835486fdAE9A839523ADABd336",
+      ],
       erc4626: [
         "0x50bd66d59911f5e086ec87ae43c811e0d059dd11",
         "0xf5503d3d4bd254c2c17690eed523bcb2935db6de",
         "0x866C6c6627303Be103814150fC0e886BE5D9ea83",
         "0xe1B4d34E8754600962Cd944B535180Bd758E6c2e",
         "0x3b3bDAA4462851621818D2CEBC835E077587147A",
+        "0x8f47D9D9d5A8202a5a37c4E41fbDd3146D88A579",
+        "0xD8b27CF359b7D15710a5BE299AF6e7Bf904984C2",
+        "0x056f3a2E41d2778D3a0c0714439c53af2987718E",
+        "0x313603FA690301b0CaeEf8069c065862f9162162",
+        "0x328646cdfBaD730432620d845B8F5A2f7D786C01",
+        "0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9",
+        "0x998D761eC1BAdaCeb064624cc3A1d37A46C88bA4",
+        "0xA28C23a459fF8773EB4dBe0e7250d93F79F1Fe2B",
+        "0xbC4B4AC47582c3E38Ce5940B80Da65401F4628f1",
+        "0xe846ca062aB869b66aE8DcD811973f628BA82eAf",
+        "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
+        "0x2daCa71Cb58285212Dc05D65Cfd4f59A82BC4cF6",
+        "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
+        "0xD5F9aFc441ca3f72B22d0B60d53e55b966c8dE64",
+        "0xe1Ce9AF672f8854845E5474400B6ddC7AE458a10",
       ],
     },
     bsc: {
@@ -26,13 +45,6 @@ const configs = {
         "0x5Bb012482Fa43c44a29168C6393657130FDF0506",
         "0x2E28c94eE56Ac6d82600070300d86b3a14D5d71A",
       ],
-    },
-    avax: {
-      eulerVaultOwners: [
-        "0xa4dC6C20475fDD05b248fbE51F572bD3154dd03B",
-        "0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B",
-      ],
-      erc4626: ["0x8fc260cd0a00cac30eb1f444b8f1511d71420af9"],
     },
     bob: {
       eulerVaultOwners: ["0xDb81B93068B886172988A1A4Dd5A1523958a23f0"],
@@ -57,49 +69,38 @@ const configs = {
     arbitrum: {
       eulerVaultOwners: ["0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C"],
     },
+    avax: {
+      eulerVaultOwners: [],
+    },
+    optimism: {
+      midasTokens: [
+        "0xcC476B1a49bcDf5192561e87b6Fb8ea78aa28C13",
+      ],
+    },
+    monad: {
+      accountableVaults: [
+        "0x77410132Fd468d67B820314d378bE1fDbfA2bAa4",
+      ],
+      eulerVaultOwners: [
+        "0x987C5739F3905FbA98eCCf4aceBc88730E0eE53D",
+        "0x5144b2B36EBdF0b06f62AcbCB180F016bC531232",
+      ],
+    },
   },
 };
 
-const adapter = getCuratorExport(configs);
 
-/**
- * Adds TVL for an ERC4626-like vault that doesn't implement totalAssets().
- * Assumes the vault still exposes `asset()` (standard ERC4626).
- */
-async function addCustom4626Tvl(api, vaultAddress) {
-  // 1) Resolve underlying asset token
-  const asset = await api.call({
-    target: vaultAddress,
-    abi: ABI.ERC4626.asset,
-    permitFailure: true,
-  });
+// EulerDAO sunset its dao curated markets and handed several vaults to K3.
+// Pre-sunset these vaults count under projects/euler-dao, from the sunset date
+// onward they are attributed to K3.
+// https://forum.euler.finance/t/sunsetting-of-dao-managed-market-and-vaults/1828
+const eulerSunsetConfigs = getCuratorExport({
+  start: "2026-05-06",
+  blockchains: {
+    monad: {
+      eulerVaultOwners: ["0x5D42F8aCd567810D57D60f90bB9C6d194207a6e1"],
+    },
+  },
+});
 
-  if (!asset) return;
-
-  // 2) Read total assets using the first ABI that works
-  const total = await api.call({
-    target: vaultAddress,
-    abi: "uint256:getTotalAssets",
-    permitFailure: true,
-  });
-
-  if (total == null) return;
-
-  // 3) Add to balances
-  api.add(asset, total);
-}
-
-// ----------------- override tvl -----------------
-
-const prevEthTvl = adapter.ethereum.tvl;
-
-adapter.ethereum.tvl = async (api) => {
-  // run normal curator aggregation first
-  await prevEthTvl(api);
-
-  // then add your custom vault
-  await addCustom4626Tvl(api, "0xAEEb2fB279a5aA837367B9D2582F898a63b06ca1");
-  await addCustom4626Tvl(api, "0x0243755a22E37b835486fdAE9A839523ADABd336");
-};
-
-module.exports = adapter;
+module.exports = mergeExports([getCuratorExport(configs), eulerSunsetConfigs]);

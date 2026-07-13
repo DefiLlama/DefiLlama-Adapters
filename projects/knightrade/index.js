@@ -83,7 +83,7 @@ async function tvlJupiter(api, jupiterVaults) {
   //  * Jupiter Earn
   // */
   /* 
-    added price support for jupiter earn tokens here: https://github.com/DefiLlama/defillama-server/commit/e496acfb4bec2f8da309da1d18b0f0f9e10cbc3f   
+    added price support for jupiter earn tokens
     */
 }
 
@@ -152,7 +152,7 @@ async function tvlSolana(api) {
     "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
   ]
 
-  await getDriftTvl(api, vaults);
+  // await getDriftTvl(api, vaults); // drift was hacked
   await tvlJupiter(api, vaults);
 
   // add wallet balance 
@@ -283,7 +283,10 @@ async function tvlEthereum(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: "Solana: Drift | Arbitrum: Aave, GMX | Ethereum: Aave",
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
+  methodology: "Solana: Jupiter | Arbitrum: Aave, GMX | Ethereum: Aave",
   solana: { tvl: tvlSolana },
   arbitrum: { tvl: tvlArbitrum },
   ethereum: { tvl: tvlEthereum },

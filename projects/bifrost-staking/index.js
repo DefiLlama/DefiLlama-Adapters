@@ -18,8 +18,8 @@ module.exports = {
 	ethereum: {
 		tvl: async () => {
 			const { bifrost } = getExports("bifrost-staking", ["bifrost"]);
-			const { eth } = await bifrost.tvl();
-			return { eth };
+			const tvl = await bifrost.tvl();
+			return { ethereum: tvl.ethereum };
 		},
 	},
 	astar: {

@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const { config, protocolPairs, tokens, stakingContracts,
   ethereumContractData, baseContractData, bscContractData, polygonContractData,
-  avalancheContractData, gnosisContractData, arbitrumContractData, } = require('./config')
+  avalancheContractData, gnosisContractData, arbitrumContractData, optimismContractData, } = require('./config')
 const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper, } = require("../helper/unknownTokens")
 const project = 'bulky/unicrypt'
@@ -99,6 +99,7 @@ module.exports = {
   },
   avax: { tvl: tvl(avalancheContractData) },
   arbitrum: { tvl: tvl(arbitrumContractData) },
+  optimism: { tvl: tvl(optimismContractData) },
   xdai: {
     tvl: tvl(gnosisContractData),
     pool2: pool2s([config.honeyswap.locker],
@@ -106,4 +107,3 @@ module.exports = {
       config.honeyswap.chain)
   },
 }
-

@@ -20,10 +20,10 @@ const comptrollerAddress = "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B";
 const bKeeperAddress = "0xeaE019ef845A4Ffdb8829210De5D30aC6FbB5371";
 const stabilityPoolAddress = "0x66017D22b0f8556afDd19FC67041899Eb65a21bb";
 
-const usdcFantom = ADDRESSES.fantom.USDC
+const usdcFantom = "0x04068da6c83afcfa0e13ba15a6696662335d5b75"
 const usdcArbitrum = ADDRESSES.arbitrum.USDC
 
-const daiFantom = ADDRESSES.fantom.DAI
+const daiFantom = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
 
 const usdtArbitrum = ADDRESSES.arbitrum.USDT
 

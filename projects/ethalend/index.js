@@ -10,7 +10,6 @@ const sdk = require('@defillama/sdk')
 
 const { gql, request } = require('graphql-request')
 const { default: BigNumber } = require('bignumber.js')
-const { getBlock } = require('../helper/http')
 
 /*
 const vaults = [
@@ -38,41 +37,62 @@ const globalDataQuery = gql`
   }
 `;
 
-async function polygonTvl(_, _block, cb) {
-  const block = await getBlock(_, 'polygon', cb)
-  return tvl('polygon', block, '137')
+// The ethalend.com vault config API and the polygon subgraph are no longer
+// reliably reachable. Fall back gracefully so on-chain balances are still
+// reported (via the cached config when available) instead of crashing.
+async function getVaultInfo() {
+  try {
+    const res = await getConfig('ethalend', "https://ethalend.com/vaults/vaultInfo")
+    return res.data ?? []
+  } catch (e) {
+    return []
+  }
 }
 
-async function avaxTvl(_, _block, cb) {
-  const block = await getBlock(_, 'avax', cb)
-  return tvl('avax', block, '43114')
+async function getLendingData(block) {
+  try {
+    const { globalDatas } = await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 500 })
+    return (globalDatas ?? []).filter(v => v.type === "lending")
+  } catch (e) {
+    return []
+  }
 }
 
-async function tvl(chain, block, chainId) {
+async function polygonTvl(api) {
+  return tvl(api, '137')
+}
+
+async function avaxTvl(api) {
+  return tvl(api, '43114')
+}
+
+async function tvl(api, chainId) {
+  const chain = api.chain
+  const block = api.block
   const balances = {}
   if (chain === 'polygon') {
-    const globalData = (await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 500 })).globalDatas
-    await Promise.all(globalData.filter(v => v.type === "lending").map(async v => {
+    const lendingData = await getLendingData(block)
+    lendingData.forEach(v => {
       if (v.address.toLowerCase() === ADDRESSES.GAS_TOKEN_2.toLowerCase()) {
         v.address = ADDRESSES.polygon.WMATIC_2
       }
-      const decimals = await sdk.api.erc20.decimals(v.address, chain)
-      sdk.util.sumSingleBalance(balances, chain + ':' + v.address, BigNumber(v.totalUnderlying).times(10 ** decimals.output).toFixed(0))
-    }))
+    })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: lendingData.map(v => v.address) })
+    lendingData.forEach((v, i) => {
+      sdk.util.sumSingleBalance(balances, chain + ':' + v.address, BigNumber(v.totalUnderlying).times(10 ** decimals[i]).toFixed(0))
+    })
   }
-  let vaults = (await getConfig('ethalend', "https://ethalend.com/vaults/vaultInfo")).data.filter(i => i.chainId === chainId).map(v => v.strategyAddress).filter(i => i)
+  let vaults = (await getVaultInfo()).filter(i => i.chainId === chainId).map(v => v.strategyAddress).filter(i => i)
   vaults = Array.from(new Set(vaults)) // remove duplicates
-  const [underlyings, totals] = await Promise.all([abi.underlying, abi.calcTotalValue].map(abi => sdk.api.abi.multiCall({
+  const [underlyings, totals] = await Promise.all([abi.underlying, abi.calcTotalValue].map(abi => api.multiCall({
     abi,
-    block,
-    chain,
     permitFailure: true,
-    calls: vaults.map(v => ({ target: v }))
+    calls: vaults,
   })))
   const lpPositions = []
   for (let i = 0; i < vaults.length; i++) {
-    const underlying = underlyings.output[i].output
-    const total = totals.output[i].output
+    const underlying = underlyings[i]
+    const total = totals[i]
     if (underlying === curvePool) {
       sdk.util.sumSingleBalance(balances, "polygon:0x2e1ad108ff1d8c782fcbbb89aad783ac49586756", total)
     } else {

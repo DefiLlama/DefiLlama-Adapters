@@ -2,7 +2,7 @@ const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { request } = require("graphql-request");
 const sdk = require("@defillama/sdk");
 
-const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/3b4ea6b/v1/graphql';
+const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/53b7e25/v1/graphql';
 
 // Chains using Envio endpoint
 const CHAIN_IDS_ENVIO = {
@@ -48,8 +48,8 @@ const config = {
 
 const envioPayload = `
 query getChainData($chainId: numeric!) {
-  Contract(where: { chainId: { _eq: $chainId } }) { id address category }
-  Asset(where: { chainId: { _eq: $chainId } }) { id chainId symbol }
+  Contract(where: { _and: { chainId: { _eq: $chainId } , category: {_eq:"flow"}}}) { id address category }
+  Asset(where: { _and: { chainId: { _eq: $chainId }, flowStreams_aggregate: { count: { predicate: { _gt:0 }}}}}) { id chainId symbol }
 }
 `
 const subgraphPayload = `

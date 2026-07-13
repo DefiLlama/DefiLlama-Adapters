@@ -17,7 +17,7 @@ async function solanaTvl(api) {
 
 module.exports = {
   ethereum: {
-    tvl: sumTokensExport({ owner: '0xAECCa546baFB16735b273702632C8Cbb83509d8F', tokens: ['0x50293DD8889B931EB3441d2664dce8396640B419', ADDRESSES.ethereum.USDC,] })
+    tvl: sumTokensExport({ owner: '0xAECCa546baFB16735b273702632C8Cbb83509d8F', tokens: ['0x50293DD8889B931EB3441d2664dce8396640B419', ADDRESSES.ethereum.USDC, '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c'] })
   },
   arbitrum: {
     tvl: sumTokensExport({ owner: '0xAECCa546baFB16735b273702632C8Cbb83509d8F', tokens: ['0xc26af85ede9cc25d449bcebef866bb85afd5d346',] })
