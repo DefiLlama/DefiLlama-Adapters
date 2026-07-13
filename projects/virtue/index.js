@@ -1,48 +1,59 @@
 const iota = require('../helper/chain/iota')
-const {getAllVaults} = require("./utils")
+const { getAllVaults } = require("./utils")
 
-const COIN_TYPES= {
-  IOTA: "0x2::iota::IOTA",
-  stIOTA:
-    "0x346778989a9f57480ec3fee15f2cd68409c73a62112d40a3efd13987997be68c::cert::CERT",
-  VUSD: "0xd3b63e603a78786facf65ff22e79701f3e824881a12fa3268d62a75530fe904f::vusd::VUSD",
-  iBTC: "0x387c459c5c947aac7404e53ba69541c5d64f3cf96f3bc515e7f8a067fb725b54::ibtc::IBTC"
-};
+// Swirl stIOTA (CERT) exchange-rate objects
+const CERT_NATIVE_POOL = '0x02d641d7b021b1cd7a2c361ac35b415ae8263be0641f9475ec32af4b9d8a8056'
+const CERT_METADATA = '0x8c25ec843c12fbfddc7e25d66869f8639e20021758cac1a3db0f6de3c9fda2ed'
+// vIOTA (vCERT) exchange-rate objects
+const VCERT_NATIVE_POOL = '0xb435fa61ee8d5473ab36de02c88756f8c74fcc031b4e3a2fe2a6647bb06b2872'
+const VCERT_METADATA = '0xb45b32d8d58c6499795036faa92b0561c6df089cdd4fc6ae8a0543981a698bf1'
 
-async function getStIOTARatio() {
-    const nativePool = await iota.getObject('0x02d641d7b021b1cd7a2c361ac35b415ae8263be0641f9475ec32af4b9d8a8056');
-    const stIOTAMetadata = await iota.getObject('0x8c25ec843c12fbfddc7e25d66869f8639e20021758cac1a3db0f6de3c9fda2ed');
-
-    const stIOTATotalSupply = BigInt(stIOTAMetadata.fields.total_supply.fields.value) / BigInt(10 ** 9)
-    const stIOTATotalStaked = BigInt(nativePool.fields.total_staked) / BigInt(10 ** 9)
-    const stIOTATotalRewards = BigInt(nativePool.fields.total_rewards) / BigInt(10 ** 9)
-    const tvl = stIOTATotalStaked + stIOTATotalRewards
-
-    return Number(stIOTATotalSupply) / Number(tvl)    
+// IOTA-per-CERT rate = (staked + rewards) / supply; falls back to 1 on any anomaly
+async function getIotaPerCert(nativePoolId, metadataId) {
+  try {
+    const nativePool = await iota.getObject(nativePoolId)
+    const metadata = await iota.getObject(metadataId)
+    const supply = Number(BigInt(metadata.fields.total_supply.fields.value))
+    const staked = Number(BigInt(nativePool.fields.total_staked))
+    const rewards = Number(BigInt(nativePool.fields.total_rewards ?? 0))
+    if (!supply || !(staked + rewards)) return 1
+    return (staked + rewards) / supply
+  } catch (e) {
+    return 1 // conservative 1:1 fallback rather than zeroing the adapter
+  }
 }
 
-async function tvl(api) {
-    const vaults = await getAllVaults()
-    const stIOTARatio = await getStIOTARatio()
-    Object.values(vaults).forEach(async (vault)=>{
-        const balanceAmount = Number(vault.collateralBalance)
-        const symbol = vault.token
-        if(symbol === 'IOTA'){
-            api.add(COIN_TYPES['IOTA'], balanceAmount)
-        }
-        if(symbol === 'stIOTA'){
-            api.add(COIN_TYPES['IOTA'], balanceAmount/stIOTARatio)
-        }
-        if(symbol === 'iBTC'){
-            api.add(COIN_TYPES['iBTC'], balanceAmount)
-        }
-    })
-}
+async function tvl() {
+  const vaults = await getAllVaults()
 
+  const human = (v) =>
+    v?.collateralBalance ? Number(v.collateralBalance) / 10 ** v.collateralDecimal : 0
+
+  let iotaTotal = human(vaults.IOTA)
+
+  if (human(vaults.stIOTA)) {
+    const rate = await getIotaPerCert(CERT_NATIVE_POOL, CERT_METADATA)
+    iotaTotal += human(vaults.stIOTA) * rate
+  }
+  if (human(vaults.vIOTA)) {
+    const rate = await getIotaPerCert(VCERT_NATIVE_POOL, VCERT_METADATA)
+    iotaTotal += human(vaults.vIOTA) * rate
+  }
+
+  const balances = { iota: iotaTotal }
+
+  // iBTC is BTC-pegged (Pyth BTC/USD feed in the protocol oracle config)
+  const ibtcAmount = human(vaults.iBTC)
+  if (ibtcAmount) balances.bitcoin = ibtcAmount
+
+  return balances
+}
 
 module.exports = {
-    timetravel: false,
-    iota: { 
-        tvl,
-    }
+  methodology:
+    "Sums collateral (IOTA, stIOTA, iBTC, vIOTA) held in Virtue CDP vault objects. LST collateral is converted to IOTA using the on-chain staking exchange rate; iBTC is priced as BTC.",
+  timetravel: false,
+  iota: {
+    tvl,
+  },
 }
