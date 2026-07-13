@@ -34,7 +34,10 @@ const vaults = {
 
 let apiPayload
 const getApiPayload = () => {
-  if (!apiPayload) apiPayload = axios.get(API).then(({ data }) => data.payload)
+  if (!apiPayload) apiPayload = axios.get(API).then(({ data }) => data.payload).catch((e) => {
+    apiPayload = undefined
+    throw e
+  })
   return apiPayload
 }
 
