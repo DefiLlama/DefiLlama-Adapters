@@ -2496,6 +2496,12 @@ const configs = {
       tokens: []
     },
   },
+  'treasury/hoodpump': {
+    robinhood: {
+      owners: ['0xdAD1d6a2AfF8f9285Fd9C552491538aEcb518888', '0x453D956057036bd9871D25B965795b883047481D'],
+      tokens: [ADDRESSES.robinhood.WETH, ADDRESSES.null]
+    },
+  },
   'treasury/hop': {
     arbitrum: {
       tokens: [
