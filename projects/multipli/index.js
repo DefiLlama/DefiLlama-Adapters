@@ -2,7 +2,7 @@ const axios = require('axios')
 
 const API = "https://api.multipli.fi/multipli/v1/external-aggregator/defillama/tvl/"
 
-// rwaUSDi is multipli's receipt token - never count it towards TVL
+// API was reporting rwaUSDi total supply in balances
 const rwaUSDis = {
   ethereum: '0xa39986f96b80d04e8d7aeaaf47175f47c23fd0f4',
   base: '0xd74FB32112b1eF5b4C428Fead8dA8d85A0019009',
@@ -55,7 +55,6 @@ const tvl = async (api) => {
     api.multiCall({ abi: 'uint256:totalAssets', calls: chainVaults }),
   ])
   assets.forEach((asset, i) => {
-    // API balances include funds held off-chain, so they take priority; vault contract calls cover only assets the API doesn't serve
     if (!served.has(`${api.chain}:${asset.toLowerCase()}`)) api.add(asset, totalAssets[i])
   })
   return api.getBalances()
