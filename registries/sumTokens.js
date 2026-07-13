@@ -25023,6 +25023,41 @@ const configs = {
       ]
     },
   },
+  "slvr": {
+    "methodology": "TVL sums the native ETH held by the SLVR game contracts on behalf of users: live round pots and carry pools plus unclaimed winner emissions (SlvrGridLottery), the accumulating jackpot (SlvrJackpot), pending veNFT staker rewards (SlvrVoteEscrowStaking), auto-commit user deposits (SlvrAutoCommit), locked winnings (SlvrClaimLocker) and undistributed growth-fund revenue (SlvrGrowthFund). Staking counts SLVR locked in game contracts and into withdrawable vote-escrow NFTs held by SlvrVoteEscrow. Pool2 counts SLVR/WETH LP staked in SlvrLiquidityStaking.",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0x284Eb4016305Fa7FbC162Fb68F27227271001c7f",
+          "0x24b723e2da172961f60cd6a4699654c89d4ac6cd",
+          "0xaF68598eBd245DC3cB92FF16E9Ba1814DD137200",
+          "0x314c8D5755468224AC60c36FB5494F0D7D5Abb3B",
+          "0x1399115FcF2a9C41e5080547A9214156A4Bf8a45",
+          "0x2fD3BE762eb9d8eE293dD923D8809Dbd3D653dd7",
+          "0x1a1633fdb2f19082099a6ad6c3d4f1ec6bce9729",
+        ],
+        "token": ADDRESSES.null
+      },
+      "staking": {
+        "owners": [
+          "0x284Eb4016305Fa7FbC162Fb68F27227271001c7f",
+          "0x24b723e2da172961f60cd6a4699654c89d4ac6cd",
+          "0xaF68598eBd245DC3cB92FF16E9Ba1814DD137200",
+          "0x314c8D5755468224AC60c36FB5494F0D7D5Abb3B",
+          "0x1399115FcF2a9C41e5080547A9214156A4Bf8a45",
+          "0x2fD3BE762eb9d8eE293dD923D8809Dbd3D653dd7",
+          "0x1a1633fdb2f19082099a6ad6c3d4f1ec6bce9729",
+          "0xd9b8FBD61033145c5496132153CE675756313B71"
+        ],
+        "token": "0x791229E3EbD6CFdC3D8157f48722684173C29aD9",
+      },
+      "pool2": {
+        "owner": "0x7D888f4Ca88Fc3578aEfc45C82482Bd66415DfeA",
+        "token": "0xe365b92239097Ed3322131411DbE15a5c4068eff",
+        "resolveLP": true
+      }
+    }
+  },
   "snarklaunch": {
     "methodology": "TVL for SNRK staking is computed by summing the balance of SNRK tokens held by the staking contract.",
     "era": {
