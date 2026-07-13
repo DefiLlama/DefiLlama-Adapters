@@ -373,7 +373,13 @@ const configs = {
       '0xBC91a7a0eE37085af193C61747ecE693979Ec0C1',
       '0x018BeE125A17D456E6dacE22A66E8B9aF3c69449',
     ],
-  }
+  },
+  "goblin": {
+    pharos: Object.values({
+      GoblinPrivateCreditI: '0xDb2eED363EF3B5d5bb043A3CE0cdca018Be2791f',
+    }),
+    methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
