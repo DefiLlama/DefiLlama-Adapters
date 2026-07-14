@@ -79,7 +79,7 @@ const configs = {
     },
     monad: {
       accountableVaults: [
-        "0x77410132Fd468d67B820314d378bE1fDbfA2bAa4",
+        "0x0143C3eF3a76Ed825Fd5201953f65b52aCEfD799",
       ],
       eulerVaultOwners: [
         "0x987C5739F3905FbA98eCCf4aceBc88730E0eE53D",
