@@ -387,40 +387,14 @@ async function getCuratorTvlErc4626(api, vaults) {
 }
 
 async function getCuratorTvlAccountableVault(api, vaults) {
-  // Accountable vaults come in two shapes:
-  // 1. loan-style proxies (not themselves ERC-4626) whose implementation exposes a
-  //    `vault()` view returning the address of the real ERC-4626 vault holding the
-  //    funds (e.g. K3's private-credit "loan" vaults). Resolve that vault, then read
-  //    its asset()/totalAssets() directly.
-  // 2. async-redeem share vaults with no `vault()` (e.g. Hyperithm's delta-neutral
-  //    vaults). Their totalAssets() only returns the idle balance, so NAV must be
-  //    read as convertToAssets(totalSupply()).
   if (!vaults || vaults.length === 0) return
-  const underlyingVaults = await api.multiCall({ abi: ABI.accountable.vault, calls: vaults, permitFailure: true })
 
-  const resolvedVaults = underlyingVaults.filter(Boolean)
-  if (resolvedVaults.length > 0) {
-    const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: resolvedVaults, permitFailure: true })
-    const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: resolvedVaults, permitFailure: true })
-    for (let i = 0; i < resolvedVaults.length; i++) {
-      if (!assets[i] || !totalAssets[i]) continue
-      api.add(assets[i], totalAssets[i])
-    }
-  }
-
-  const shareVaults = vaults.filter((_, i) => !underlyingVaults[i])
-  if (shareVaults.length > 0) {
-    const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: shareVaults, permitFailure: true })
-    const supplies = await api.multiCall({ abi: ABI.totalSupply, calls: shareVaults, permitFailure: true })
-    const navs = await api.multiCall({
-      abi: ABI.ERC4626.convertToAssets,
-      calls: shareVaults.map((vault, i) => ({ target: vault, params: supplies[i] || 0 })),
-      permitFailure: true,
-    })
-    for (let i = 0; i < shareVaults.length; i++) {
-      if (!assets[i] || !navs[i]) continue
-      api.add(assets[i], navs[i])
-    }
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
+  const supplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
+  const balances = await api.multiCall({ abi: ABI.ERC4626.convertToAssets, calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })), permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (!assets[i] || !balances[i]) continue
+    api.add(assets[i], balances[i])
   }
 }
 
@@ -647,8 +621,7 @@ async function getCuratorTvl(api, vaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
   }
 
-  // ERC-4626-like vaults with broken/unused totalAssets() (e.g. K3 private-credit vaults) -
-  // use convertToAssets(totalSupply()) instead
+  // accountable AsyncRedeemVaults - totalAssets() returns idle so use convertToAssets(totalSupply()) instead
   if (vaults.accountableVaults) {
     await getCuratorTvlAccountableVault(api, vaults.accountableVaults)
   }
