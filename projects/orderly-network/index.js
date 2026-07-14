@@ -18,12 +18,9 @@ const OWNER_MAP = {
   'mantle': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
   'sei': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
   'sonic': '0x816f722424B49Cf1275cc86DA9840Fbd5a6167e9',
-  'sty': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
-  'abstract': '0xE80F2396A266e898FBbD251b89CFE65B3e41fD18',
-  'morph': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
   'mode': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
   'berachain': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
-  'plume': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
+  'adi': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
   'solana': '2AoLiH5kVBG2ot1qKoh4ro8F95KQb7HEBbJmkxrwYBec',
 }
 
