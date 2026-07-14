@@ -115,6 +115,27 @@ async function zigchainTvl(api) {
   }
 }
 
+// ---------- ETHEREUM ----------
+
+// Nawa USDT Vault (UUPS proxy). A share-based USDT vault whose deposits are
+// deployed off-chain into a curated credit strategy; the on-chain contract
+// tracks the assets backing shares in `latestAum` (oracle-reported, USDT).
+const NAWA_USDT_VAULT = '0x6FE78B942C566fE2b8D0881cf3577C1B1511F204'
+const USDT = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+
+// TVL = assets backing live shares (latestAum) + assets committed to
+// burned-but-unfunded redemptions (pendingRedemptionAum) + funded payouts
+// still held for claim (totalClaimable). The three are disjoint, so their sum
+// is the total USDT value held on behalf of users across the redemption cycle.
+async function ethereumTvl(api) {
+  const [aum, pending, claimable] = await Promise.all([
+    api.call({ abi: 'uint256:latestAum', target: NAWA_USDT_VAULT }),
+    api.call({ abi: 'uint256:pendingRedemptionAum', target: NAWA_USDT_VAULT }),
+    api.call({ abi: 'uint256:totalClaimable', target: NAWA_USDT_VAULT }),
+  ])
+  api.add(USDT, (BigInt(aum) + BigInt(pending) + BigInt(claimable)).toString())
+}
+
 module.exports = {
   timetravel: false,            // ZigChain query is live-state only
   misrepresentedTokens: false,
@@ -125,11 +146,17 @@ module.exports = {
     'cross-chain private credit position), reported as USDC. ' +
     'Core: TVL is calculated by 1) unwrapping Bitflux LP tokens held by Nawa Solv Vault V2 to their underlying assets ' +
     '(e.g. SolvBTC.CORE, WBTC, SolvBTC.b) based on pool reserves and total supply, and 2) tracking dualCore token ' +
-    'holdings in the Core vault address.',
+    'holdings in the Core vault address. ' +
+    'Ethereum: TVL is the USDT held on behalf of users by the Nawa USDT Vault, taken as the sum of assets backing ' +
+    'live shares (latestAum), assets committed to pending redemptions (pendingRedemptionAum) and funded payouts ' +
+    'awaiting claim (totalClaimable), reported as USDT.',
   core: {
     tvl: coreTvl,
   },
   zigchain: {
     tvl: zigchainTvl,
+  },
+  ethereum: {
+    tvl: ethereumTvl,
   },
 };
