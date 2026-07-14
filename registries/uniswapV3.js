@@ -1748,6 +1748,9 @@ const uniV3Configs = {
   },
   'robinswap-v3': {
     robinhood: { factory: '0xea561e058313b96011e5070ca7d0f027a44e3748', fromBlock: 6027503 },
+  },
+  'hoodswap-v3': {
+    robinhood: { factory: '0x0Ec554F0BfF0Be6C99d1e95C8015bb0950f6A2C7', fromBlock: 6052562 },
   }
 }
 
