@@ -6,16 +6,19 @@
 // the curve's ETH balance drops to ~0 — so summing native balances counts only
 // pre-graduation reserves and never double-counts graduated liquidity.
 
+const { getLogs2 } = require("../helper/cache/getLogs");
+
 const FACTORY = "0x4B4a24aBbb7b92AFeb12D0Bca3C054fe1E7069E1"; // DumpFactory proxy
 const LAUNCHED_ABI =
   "event Launched(address indexed token, address indexed curve, address indexed creator, string name, string symbol, string metadata, uint256 firstBuyWei)";
 const START_BLOCK = 5025502; // DumpFactory deploy block
 
 async function tvl(api) {
-  const logs = await api.getLogs({
-    target: FACTORY,
-    fromBlock: START_BLOCK,
+  const logs = await getLogs2({
+    api,
+    factory: FACTORY,
     eventAbi: LAUNCHED_ABI,
+    fromBlock: START_BLOCK,
   });
   const owners = logs.map((l) => l.curve);
   return api.sumTokens({
