@@ -11,7 +11,6 @@ const rwaUSDis = {
   pharos: '0xA39986F96B80d04e8d7AeAaF47175F47C23FD0f4',
 }
 
-
 const vaults = {
   ethereum: [
     '0x133229E0AdFf22c6F1AD287D199ea09d35E4427B', // USDC
@@ -32,6 +31,12 @@ const vaults = {
   ],
 }
 
+// Users above $1M and institutional users are still on v1 (tracked by the API
+// payload); all other users are migrated to v2 vaults (tracked on-chain via
+// totalAssets). v1 only remains on ethereum and bsc, so on those chains both
+// sources are summed per token; on every other chain only vault values count.
+const v1Chains = new Set(['ethereum', 'bsc'])
+
 let apiPayload
 const getApiPayload = () => {
   if (!apiPayload) apiPayload = axios.get(API).then(({ data }) => data.payload).catch((e) => {
@@ -42,24 +47,29 @@ const getApiPayload = () => {
 }
 
 const tvl = async (api) => {
-  const balances = (await getApiPayload())[api.chain] ?? {}
-  const served = new Set(Object.keys(balances).map(key => key.toLowerCase()))
   const blacklisted = `${api.chain}:${rwaUSDis[api.chain]}`.toLowerCase()
 
-  Object.entries(balances).forEach(([key, balance]) => {
-    if (key.toLowerCase() !== blacklisted) api.addBalances({ [key]: balance })
-  })
-
+  // v2: on-chain vault balances
   const chainVaults = vaults[api.chain] ?? []
-  if (!chainVaults.length) return api.getBalances()
+  if (chainVaults.length) {
+    const [assets, totalAssets] = await Promise.all([
+      api.multiCall({ abi: 'address:asset', calls: chainVaults }),
+      api.multiCall({ abi: 'uint256:totalAssets', calls: chainVaults }),
+    ])
+    assets.forEach((asset, i) => {
+      if (`${api.chain}:${asset.toLowerCase()}` === blacklisted) return
+      api.add(asset, totalAssets[i])
+    })
+  }
 
-  const [assets, totalAssets] = await Promise.all([
-    api.multiCall({ abi: 'address:asset', calls: chainVaults }),
-    api.multiCall({ abi: 'uint256:totalAssets', calls: chainVaults }),
-  ])
-  assets.forEach((asset, i) => {
-    if (!served.has(`${api.chain}:${asset.toLowerCase()}`)) api.add(asset, totalAssets[i])
-  })
+  // v1: API payload, only counted on chains where v1 users remain
+  if (v1Chains.has(api.chain)) {
+    const balances = (await getApiPayload())[api.chain] ?? {}
+    Object.entries(balances).forEach(([key, balance]) => {
+      if (key.toLowerCase() !== blacklisted) api.addBalances({ [key]: balance })
+    })
+  }
+
   return api.getBalances()
 }
 
