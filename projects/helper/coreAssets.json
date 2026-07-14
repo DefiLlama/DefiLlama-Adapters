@@ -1640,6 +1640,9 @@
     "WAURA": "0xDE47A655a5d9904BD3F7e1A536D8323fBD99993A",
     "USDT": "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd"
   },
+  "axiome": {
+    "AXM": "uaxm"
+  },
   "shibarium": {
     "WETH": "0x8ed7d143ef452316ab1123d28ab302dc3b80d3ce",
     "BONE_0": "0xc76f4c819d820369fb2d7c1531ab3bb18e6fe8d8",

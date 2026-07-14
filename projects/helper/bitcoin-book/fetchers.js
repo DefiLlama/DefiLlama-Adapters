@@ -248,7 +248,7 @@ module.exports = {
   vishwa: async () => {
     const staticAddresses = await getConfig('vishwa', undefined, {
       fetcher: async () => {
-        const { data } = await axios.get('https://api.btcvc.vishwanetwork.xyz/btc/address')
+        const { data } = await axios.get('https://vault.vishwalab.com/vapi/btc/address')
         return data.data
       }
     })
