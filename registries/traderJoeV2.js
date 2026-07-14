@@ -77,6 +77,9 @@ const configs = {
   'metropolis-exchange-dlmm': {
     sonic: '0x39D966c1BaFe7D3F1F53dA4845805E15f7D6EE43',
   },
+  'hoodit': {
+    robinhood: '0x22602d966DeFd638ee94E97A92e2Eb0934c3fE1B',
+  },
 }
 
 module.exports = buildProtocolExports(configs, joeV2ExportFn)

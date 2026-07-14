@@ -58,7 +58,8 @@ async function getTokenBalance(token, address) {
 const SC_VAL = {
   BOOL: 0, VOID: 1, U32: 3, I32: 4, U64: 5, I64: 6,
   U128: 9, I128: 10, BYTES: 13, STRING: 14, SYMBOL: 15,
-  VEC: 16, MAP: 17, ADDRESS: 18
+  VEC: 16, MAP: 17, ADDRESS: 18,
+  CONTRACT_INSTANCE: 19, LEDGER_KEY_CONTRACT_INSTANCE: 20,
 }
 
 // SC_ADDRESS sub-type tags (used inside ScVal::Address values).
@@ -165,6 +166,25 @@ function _parseScVal(buf, offset) {
       }
       const addrBytes = Buffer.from(buf.slice(offset, offset + 32)); offset += 32
       return { value: _encodeStrKey(version, addrBytes), offset }
+    }
+    case SC_VAL.LEDGER_KEY_CONTRACT_INSTANCE: return { value: null, offset } // void body
+    case SC_VAL.CONTRACT_INSTANCE: {
+      // SCContractInstance { ContractExecutable executable; SCMap* storage; }
+      const execType = buf.readUInt32BE(offset); offset += 4
+      if (execType === 0) offset += 32 // CONTRACT_EXECUTABLE_WASM -> 32-byte hash (STELLAR_ASSET is void)
+      const present = buf.readUInt32BE(offset); offset += 4
+      const storage = {}
+      if (present) {
+        const len = buf.readUInt32BE(offset); offset += 4
+        for (let i = 0; i < len; i++) {
+          const k = _parseScVal(buf, offset); offset = k.offset
+          const v = _parseScVal(buf, offset); offset = v.offset
+          // #[contracttype] storage-key enums encode as Vec[Symbol(name), ...args]; key on the variant name
+          const name = Array.isArray(k.value) ? k.value[0] : k.value
+          storage[name] = v.value
+        }
+      }
+      return { value: { storage }, offset }
     }
     default: throw new Error(`Unsupported ScVal type: ${type}`)
   }
@@ -289,6 +309,37 @@ async function callSoroban(contractId, fnName, args = []) {
   return _parseScVal(Buffer.from(resultXdr, 'base64'), 0).value
 }
 
+/** Read a contract's instance storage via the Soroban RPC's `getLedgerEntries`
+ * @param {string} contractId  - Stellar contract address
+ * Serves as a "method to access your contract data which may not be available via events or simulateTransaction" (callSoroban): https://developers.stellar.org/docs/data/apis/rpc/api-reference/methods/getLedgerEntries
+*/
+async function getContractInstanceStorage(contractId) {
+  const contractBytes = decodeStrKey(contractId)
+
+  // LedgerKey::ContractData { contract, key: LedgerKeyContractInstance, durability: PERSISTENT }
+  const key = Buffer.alloc(48)
+  let o = 0
+  key.writeUInt32BE(6, o); o += 4                                     // LedgerEntryType.CONTRACT_DATA
+  key.writeUInt32BE(SC_ADDR.CONTRACT, o); o += 4                      // SCAddress -> CONTRACT
+  contractBytes.copy(key, o); o += 32                                 // contractId
+  key.writeUInt32BE(SC_VAL.LEDGER_KEY_CONTRACT_INSTANCE, o); o += 4   // key ScVal (void body)
+  key.writeUInt32BE(1, o); o += 4                                     // ContractDataDurability.PERSISTENT
+
+  const response = await post(SOROBAN_RPC_URL, {
+    jsonrpc: '2.0', id: 1,
+    method: 'getLedgerEntries',
+    params: { keys: [key.toString('base64')] }
+  })
+  if (response.error) throw new Error(`Soroban RPC error: ${JSON.stringify(response.error)}`)
+  const entryXdr = response?.result?.entries?.[0]?.xdr
+  if (!entryXdr) throw new Error(`No instance storage ledger entry for ${contractId}`)
+
+  // LedgerEntryData(CONTRACT_DATA): type(4) + ContractDataEntry{ ext(4), contract SCAddress(36),
+  // key SCVal(4, void), durability(4), val SCVal } -> val (the SCContractInstance) starts at 52
+  const buf = Buffer.from(entryXdr, 'base64')
+  return _parseScVal(buf, 52).value.storage
+}
+
 module.exports = {
   getAssetSupply,
   addUSDCBalance,
@@ -296,6 +347,7 @@ module.exports = {
   getTokenBalance,
   decodeStrKey,
   callSoroban,
+  getContractInstanceStorage,
   parseScVal: _parseScVal,
   SOROBAN_RPC_URL,
 }

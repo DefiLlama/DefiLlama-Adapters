@@ -279,6 +279,7 @@ const configs = {
             '0x17d0f109EE895bAD0b68AA104AA72bd0b003AD8E', // ETH Lending Optimizer IPOR Fusion
             '0x5900C3b72458F12967DC1bef35b92d271F5cDBc1', // cbETH Looper IPOR Fusion
             '0xD46a3C2D958d0a2cB098d48C48dC19FE3A710F37', // USDC Lending Optimizer IPOR Fusion
+            '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // wETH Metavault on Spectra
           ],
         },
         ethereum: {
@@ -314,6 +315,9 @@ const configs = {
           ],
         },
         monad: {
+          morphoVaultOwners: [
+            '0x829A13850b684A575C0580a83322890e19c5eFaa',
+          ],
           eulerVaultOwners: [
             '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
           ],
@@ -440,7 +444,7 @@ const configs = {
   "gami-labs": {
     config: {
       methodology:
-        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, and Gearbox.",
+        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, Gearbox, and Upshift.",
       blockchains: {
         ethereum: {
           erc4626: [
@@ -479,6 +483,12 @@ const configs = {
           silo: [
             "0x1F0570a081FeE0e4dF6eAC470f9d2D53CDEDa1c5", // Silo - Gami Silo USDC
             "0x0F78Ea587D8E2950319e0b467c665bD2CB73051B", // Silo - Gami Silo AVAX
+          ],
+        },
+        stellar: {
+          upshiftStellar: [
+            "CCL3WITWFFXIHV2I52ECV5DPIEOFSTU3PBPR53ILPLF2IP5KHECXRUTY", // Upshift - Gami earnUSDC
+            "CC6TRAPQD3NK7THUKWPV5SL2JHKQGNXZVB6S6MVYFSLRWAKEFUWZKZ7J", // Upshift - Gami earnXLM
           ],
         },
       },
@@ -886,6 +896,7 @@ const configs = {
             '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
             '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
+            '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
           ],
         },
         polygon: {
@@ -1129,6 +1140,17 @@ const configs = {
           ],
           erc4626: [
             '0x3DD459dE96F9C28e3a343b831cbDC2B93c8C4855',
+          ],
+        },
+      }
+    },
+  },
+  "birch-hill": {
+    config: {
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xbCC5C59E64B0Ff3a3Ee5eAb74BE7c787A0a438F1',
           ],
         },
       }

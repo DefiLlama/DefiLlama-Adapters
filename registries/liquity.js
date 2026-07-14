@@ -88,6 +88,9 @@ const configs = {
   'fluity': {
     bsc: '0xe041c4099C0d6dcfC52C56A556EE4289D2E4b7C5',
   },
+  'money-protocol': {
+    rsk: '0xb6A3E678219D9119Ae3B65AC501638b986b5038b',
+  },
   'hliquity': {
     start: '2024-06-05',
     methodology: 'Total deposits of HBAR for borrowed HCHF',
