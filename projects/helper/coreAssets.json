@@ -2789,5 +2789,9 @@
   "quai": {
     "WQUAI": "0x006c3e2aaae5db1bcd11a1a097ce572312eaddbb",
     "USDT": "0x0049f7cbca3556c2dfae62aafa7015f99de1b8f5"
+  },
+  "gensyn": {
+    "USDC": "0x5b32c997211621d55a89Cc5abAF1cC21F3A6ddF5",
+    "AI": "0x4e742319f6b0fec4afa504fc8ed3ceab0fb751a2"
   }
 }
