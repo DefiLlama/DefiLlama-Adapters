@@ -2883,6 +2883,9 @@ const uniV2Configs = {
   'robinswap': {
     robinhood: '0xa95DA9b9fCef09A07F99444fE9304457d6ECdccA',
   },
+   'hoodswap': {
+    robinhood: '0xE7206Ecac3A51afe7e6179182ad4130A26068dD1',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
