@@ -11,6 +11,7 @@ async function covalentGetTokens(address, api, {
   useCovalent = false,
   skipCacheRead = false,
   ignoreMissingChain = false,
+  onlyUseExistingCache = false,
 } = {}) {
   const chainId = api?.chainId
   const chain = api?.chain
@@ -33,7 +34,7 @@ async function covalentGetTokens(address, api, {
   const project = 'covalent-cache'
   const key = `${address}/${chain}`
   const cache = (await getCache(project, key)) ?? {}
-  if (!cache.timestamp || (cache.timestamp + THREE_DAYS) < timeNow) {
+  if (!cache.timestamp || ((cache.timestamp + THREE_DAYS) < timeNow && !onlyUseExistingCache)) {
     cache.data = await _covalentGetTokens()
     cache.timestamp = timeNow
     await setCache(project, key, cache)

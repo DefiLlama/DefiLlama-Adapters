@@ -4,6 +4,7 @@ const adapterRoutes = [
   './deadAdapters.json',
   './uniswapV3.js',
   './uniswapV2.js',
+  './uniswapV2Logs.js',
   './aaveV3.js',
   './aave.js',
   './compound.js',
