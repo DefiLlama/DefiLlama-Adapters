@@ -1,6 +1,6 @@
 const { call, toInt } = require("../helper/chain/icx");
 
-const ommLendingPoolDataProviderContract = 'cx5f9a6ca11b2b761a469965cedab40ada9e503cb5'
+const ommLendingPoolDataProviderContract = '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'
 
 async function tvl(api) {
 
