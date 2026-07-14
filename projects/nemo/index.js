@@ -80,7 +80,10 @@ async function getTvl(type, fields, api) {
     return null;
   }
 
-  const returnValues = inspectionResult.results[inspectionResult.results?.length - 1].returnValues;
+  const results = inspectionResult?.results;
+  if (!results?.length) return null;
+  const returnValues = results[results.length - 1].returnValues;
+  if (!returnValues || returnValues.length < 2) return null;
   const res1 = returnValues[0][0];
   const res2 = returnValues[1][0];
 
