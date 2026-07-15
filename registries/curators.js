@@ -10,28 +10,28 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
-            '0x23E6aecB76675462Ad8f2B31eC7C492060c2fAEF',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
           morpho: [
-            '0xb5e4576C2FAA16b0cC59D1A2f3366164844Ef9E0', // co-curator with tulip-capital
-            '0x1E2aAaDcF528b9cC08F43d4fd7db488cE89F5741', // co-curator with tulip-capital
-            '0x0bB2751a90fFF62e844b1521637DeD28F3f5046A', // co-curator with tulip-capital
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // co-curator with tulip-capital
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // co-curator with tulip-capital
+            '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE', // co-curator with tulip-capital
           ],
           turtleclub: [
-            '0xa853d8f5f253468495c5a92d54a3fe6cca2aa26b',
-            '0x7388d4b5c4cfc96c9105de913717ba7519178129',
-            '0xDe7CFf032D453Ce6B0a796043E75d380Df258812',
-            '0xAF87B90E8a3035905697E07Bb813d2d59D2b0951',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
         base: {
           morphoVaultOwners: [
-            '0x23E6aecB76675462Ad8f2B31eC7C492060c2fAEF',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
         unichain: {
           morphoVaultOwners: [
-            '0x59e608E4842162480591032f3c8b0aE55C98d104',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
       }
@@ -43,12 +43,12 @@ const configs = {
       blockchains: {
         arbitrum: {
           siloVaultOwners: [
-            '0x1B35727072435BB97FBe8cC378eb6973c98FaAb3',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
         sonic: {
           siloVaultOwners: [
-            '0x1B35727072435BB97FBe8cC378eb6973c98FaAb3',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
       }
@@ -60,7 +60,7 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
-            '0xEB4Af6fA3AFA08B10d593EC8fF87efB03BC04645',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
       }
@@ -72,18 +72,18 @@ const configs = {
       blockchains: {
         ethereum: {
           eulerVaultOwners: [
-            '0x0d8249DD621fB1c386A7A7A949504035Dd3436A3',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
         base: {
           eulerVaultOwners: [
-            '0xf3ED34523E35279a1deB2960c0aC46Be8E23a2f4'
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'
           ]
         },
         starknet: {
           vesu: [
-            '0x7bafdbd2939cc3f3526c587cb0092c0d9a93b07b9ced517873f7f6bf6c65563',
-            '0x27f2bb7fb0e232befc5aa865ee27ef82839d5fad3e6ec1de598d0fab438cb56',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE',
             '0x5c678347b60b99b72f245399ba27900b5fc126af11f6637c04a193d508dda26',
             '0x2906e07881acceff9e4ae4d9dacbcd4239217e5114001844529176e1f0982ec',
           ],
@@ -104,15 +104,15 @@ const configs = {
       blockchains: {
         base: {
           morpho: [
-            '0xa0E430870c4604CcfC7B38Ca7845B1FF653D0ff1',
-            '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
             '0x543257eF2161176D7C8cD90BA65C2d4CaEF5a796',
-            '0xf24608E0CCb972b0b0f4A6446a0BBf58c701a026',
-            '0xdbA76Bc542bb07538e046B40F2e8a215B409F7A8',
-            '0x89BeDBB1C4837444Da215A377275Ff96A84D6f53',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
             '0xbB2F06CeAE42CBcF5559Ed0713538c8892D977c9',
-            '0x5083b1387Ec3d4Ee6467B83890D98f1AF93F7c48',
-            '0x48a90E85be5C56b0A669985A12ee7C449fC79965',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
       }
@@ -170,7 +170,7 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
-            '0xb263237E30fe9be53d6F401FCC50dF125D60F01a',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
       }
@@ -182,14 +182,14 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
-            '0xf7D44D5a28d5AF27a7F9c8fc6eFe0129e554d7c4',
-            '0x2566f66f68ed438726AD904524FB306A03FdB80B',
-            // '0x17e7bB9fe7983947FdCf02c1E3d8e6C92C21da54', // Anthias is now curator for Moonwell's Morpho vaults
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            // '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // Anthias is now curator for Moonwell's Morpho vaults
           ],
         },
         base: {
           morphoVaultOwners: [
-            // '0x17e7bB9fe7983947FdCf02c1E3d8e6C92C21da54', // Anthias is now curator for Moonwell's Morpho vaults: https://x.com/MoonwellDeFi/status/1928491680031969510
+            // '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // Anthias is now curator for Moonwell's Morpho vaults: https://x.com/MoonwellDeFi/status/1928491680031969510
           ],
         },
       }
@@ -201,8 +201,8 @@ const configs = {
       blockchains: {
         btnx: {
           erc4626: [
-            '0x9dF5A760820b0C8d6667eDDfc07641E0D0095616',
-            '0xDF4C4A81e1b55F54E7f084e90b69817bA72821D6'
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'
           ],
           nestedVaults: [
             '0xEBda86CB77E9e328d42bbba9B50E998d3534937D'
@@ -210,20 +210,20 @@ const configs = {
         },
         scroll: {
           erc4626: [
-            '0xd39df22a3cd1C91B22d5E748Cc62b03eD3e8A8aD',
-            '0xec5906675a92e4113a39d719c5c65a62a0995d59'
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'
           ],
           nestedVaults: [
-            '0x8a23d825467860edb4ACA0909f29D0a6A8e3a0a7',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ]
         },
         arbitrum: {
           erc4626: [
-            '0xa47c5203d22ae173788a9d9be0f2beecc97f4df9',
-            '0xE3637cA4D1D6dD756dE0ecd527c40077029eCE6e',
-            '0x75E9d4FEa6c408097eE4F3C63359D0dc617AcB4F',
-            '0x567c1B5c2E58C66f84B80dff4C97b084B23B4E87',
-            '0x9cE8A73296704d4689586347eF6e2087c2128F45'
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'
           ],
         }
       },
@@ -236,7 +236,7 @@ const configs = {
       blockchains: {
         ethereum: {
           euler: [
-            '0xBc79C4DA0452152D2C329ADE328C79705a964CEE'
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'
           ],
         },
       },
@@ -248,14 +248,14 @@ const configs = {
       blockchains: {
         ethereum: {
           turtleclub_erc4626: [
-            '0x0d1862e73a1430A5FD3245B47859c1BEcD6f3A1D',
-            '0x2B11527e1fab84a5382D20efD198BF3d332f7E73',
-            '0x65939777a9dC5A370707bb6b44b1ad0BC9e2D8a4',
-            '0x34d16e4fB8757A88D986f9EfE2484F0badBF22C1',
-            '0x0982eB22086183bF10acd2991A2dBeD1e3B9Ac2A',
-            '0x76f31800eFdE39A5f98189447c7a514d974f4364',
-            '0xd72c3a44b51C8D6631C004ecf3A318b9D2c58F80',
-            '0x6945f516413cB2d7311297e8A39E7D004dEB5566',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
         },
       }
@@ -267,19 +267,19 @@ const configs = {
       blockchains: {
         base: {
           morphoVaultOwners: [
-            '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
           eulerVaultOwners: [
-            '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
-            '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ],
           erc4626: [
-            '0x1166250D1d6B5a1DBb73526257f6bb2Bbe235295', // yoUSD IPOR Fusion
-            '0xfd843a3D9329C91CA22c5daA994BeA762541F954', // yoETH IPOR Fusion
-            '0x17d0f109EE895bAD0b68AA104AA72bd0b003AD8E', // ETH Lending Optimizer IPOR Fusion
-            '0x5900C3b72458F12967DC1bef35b92d271F5cDBc1', // cbETH Looper IPOR Fusion
-            '0xD46a3C2D958d0a2cB098d48C48dC19FE3A710F37', // USDC Lending Optimizer IPOR Fusion
-            '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // wETH Metavault on Spectra
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // yoUSD IPOR Fusion
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // yoETH IPOR Fusion
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // ETH Lending Optimizer IPOR Fusion
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // cbETH Looper IPOR Fusion
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // USDC Lending Optimizer IPOR Fusion
+            '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // wETH Metavault on Spectra
           ],
         },
         ethereum: {
