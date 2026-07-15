@@ -272,7 +272,7 @@ module.exports = {
     })
   },
   teleswap: async () => {
-    const  { data: { lockers } } = await getConfig('yala/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
+    const  { data: { lockers } } = await getConfig('teleswap/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
     return lockers.filter(l => l.type === 'BTC').map(l => l.sourceAddress)
   },
   rskBridge: async (api) => {
