@@ -598,7 +598,7 @@ const configs = {
         },
         monad: {
           accountableVaults: [
-            '0x6385D7571B8ECD7733EFfB1Caf6760A237e29835'
+            '0x03ef37626BC7C7B3F6cEA4Bcbfeb7764B51E22fB'
           ]
         }
       }
