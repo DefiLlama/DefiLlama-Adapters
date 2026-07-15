@@ -29,9 +29,9 @@ const stabilityAbi = {
   };
 
 /* Genius staking contract*/
-const GENIUS_CONTRACT = "0x444444444444C1a66F394025Ac839A535246FCc8";
+const GENIUS_CONTRACT = "0x46531ea0E7cec64b14181d45F8C6798a1cE45da1";
 /* Genius stability pool / debt contract*/
-const STABILITY_POOL = "0xDCA692d433Fe291ef72c84652Af2fe04DA4B4444";
+const STABILITY_POOL = "0x3211d27a1A1B8E40C7974F6951935303e6e56DBE";
 
 /* Native currencies and ERC-20 tokens approved for collateral*/
 const STABILITY_POOL_COLLATERAL_ADDRESSES = {
