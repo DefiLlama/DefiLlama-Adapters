@@ -9,5 +9,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "TVL includes Base Genesis Node Staking, Ecosystem Treasury Liquidity, and Live User Deposits tracked via the official PLUS Hybrid DEX API.",
-  tvl: fetch
+  plus: {
+    tvl: fetch
+  }
 };
