@@ -1760,6 +1760,17 @@ const configs = {
       ]
     },
   },
+  "based-alpha": {
+    "methodology": "TVL is the ETH held by the Launchpad contract, which custodies every live bonding curve's reserves (plus accrued, unclaimed protocol/creator fees and any transient WETH from migrations). Liquidity that has graduated to Based DEX V3 pools is excluded and counted under the DEX.",
+    "start": "2026-07-15",
+    "robinhood": {
+      "owner": "0x5640c62fe43a64f9ae0811114874e95a819db744",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.robinhood.WETH
+      ]
+    },
+  },
   "based-v2": {
     "fantom": {
       "tvl": {
