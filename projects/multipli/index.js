@@ -47,7 +47,8 @@ const getApiPayload = () => {
 }
 
 const tvl = async (api) => {
-  const blacklisted = `${api.chain}:${rwaUSDis[api.chain]}`.toLowerCase()
+  const rwaUSDi = rwaUSDis[api.chain]
+  const blacklisted = rwaUSDi ? `${api.chain}:${rwaUSDi}`.toLowerCase() : undefined
 
   // v2: on-chain vault balances
   const chainVaults = vaults[api.chain] ?? []
