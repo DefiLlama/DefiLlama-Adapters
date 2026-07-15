@@ -278,7 +278,7 @@ module.exports = {
   rskBridge: async (api) => {
     return getConfig('rsk-bridge', undefined, {
       fetcher: async () => {
-        api = new sdk.ChainApi({ chain: 'rsk', timestamp: api.timestamp })
+        api = new sdk.ChainApi({ chain: 'rsk', timestamp: api?.timestamp })
         await api.getBlock()
         const addr = await api.call({  abi: 'string:getFederationAddress', target:'0x0000000000000000000000000000000001000006' })
         return [addr]
