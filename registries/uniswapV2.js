@@ -2886,6 +2886,9 @@ const uniV2Configs = {
   'swaphood': {
     robinhood: '0xE7206Ecac3A51afe7e6179182ad4130A26068dD1',
   },
+  'bitblocks-finance': {
+    bsc: '0x65b3cc7a7cb167221266fc93884717de2dbd074e',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
