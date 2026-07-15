@@ -33,6 +33,11 @@ const LOAN_TOKENS = [USDC, USDT, PYUSD];
 const LEGACY_POOL_1 = "0x0f62b8C58E1039F246d69bA2215ad5bF0D2Bb867";
 const LEGACY_POOL_2 = "0xcd9d510c4e2fe45e6ed4fe8a3a30eeef3830cc14";
 const LEGACY_POOLS = [LEGACY_POOL_1, LEGACY_POOL_2];
+// Loan terms hashes for loans on Loan Router V2 not captured by the v2 subgraph
+const UNCAPTURED_LOAN_ROUTER_V2_HASHES = [
+  "0x71e912bbbfbb3d266012f871c213cd79522c26c24703c7aaee64873b83e8d88c",
+  "0x81c8c9796cfa9e769b91bd4d84e8647dbae23e4227fe9cbc3fe2c20f38695aa2",
+];
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 const SUBGRAPH_PAGE_SIZE = 1000;
 const loanHashesQuery = gql`
@@ -264,6 +269,17 @@ async function borrowed(api) {
 
     // Get scaled balance from the v2 contract using the v2 loan terms hash
     const [status, , , unscaledBalance] = await api.call({ abi: abi.loanStateV2, target: LOAN_ROUTER_V2_CONTRACT, params: [loanTermsHashV2] });
+
+    // If the loan is inactive, continue
+    if (+status !== 1) continue;
+
+    // Add the balance to the TVL
+    api.add(USDAI_CONTRACT, unscaledBalance);
+  }
+
+  // Loan router v2 borrowed (hardcoded — not captured by the v2 subgraph)
+  for (const loanTermsHash of UNCAPTURED_LOAN_ROUTER_V2_HASHES) {
+    const [status, , , unscaledBalance] = await api.call({ abi: abi.loanStateV2, target: LOAN_ROUTER_V2_CONTRACT, params: [loanTermsHash] });
 
     // If the loan is inactive, continue
     if (+status !== 1) continue;
