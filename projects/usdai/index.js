@@ -242,6 +242,7 @@ async function borrowed(api) {
   // Loan router v2 borrowed (loans originated directly on v2)
   loanRouterEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API_V2, loanHashesQuery, api.timestamp);
   for (const event of loanRouterEvents) {
+    if (UNCAPTURED_LOAN_ROUTER_V2_HASHES.includes(event.loanTermsHash)) continue;
     // Get the currency token
     const { currencyToken } = event.loanOriginated;
 
@@ -266,7 +267,6 @@ async function borrowed(api) {
   const migratedEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API_V2, migratedLoansQuery, api.timestamp);
   for (const event of migratedEvents) {
     const { loanTermsHashV2 } = event.loanMigrated;
-    if (UNCAPTURED_LOAN_ROUTER_V2_HASHES.includes(loanTermsHashV2)) continue;
 
     // Get scaled balance from the v2 contract using the v2 loan terms hash
     const [status, , , unscaledBalance] = await api.call({ abi: abi.loanStateV2, target: LOAN_ROUTER_V2_CONTRACT, params: [loanTermsHashV2] });
