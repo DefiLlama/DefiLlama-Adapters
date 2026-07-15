@@ -357,7 +357,7 @@ function bcsDynamicFieldName(idType, value) {
   else if (idType === 'vector<u8>') {
     const b = Array.isArray(value) ? value.map(Number) : textToBytes(String(value))
     bytes = [...uleb128(b.length), ...b] // length-prefixed
-  } else if (idType.endsWith('::string::String') || idType.endsWith('::ascii::String')) {
+  } else if (idType.endsWith('::string::String') || idType.endsWith('::ascii::String') || idType.endsWith('::type_name::TypeName')) {
     const b = textToBytes(String(value))
     bytes = [...uleb128(b.length), ...b] // String == vector<u8> of utf8
   } else throw new Error(`[sui] unsupported dynamic field name type: ${idType}`)
