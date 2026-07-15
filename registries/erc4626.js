@@ -376,6 +376,10 @@ const configs = {
   },
   'primestaking-xyz': {
     xdc: ['0xDc74c0DaED82ae94486DeeF22991d2F54173c734'],
+  },
+  'y10k-capital': {
+    ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'],
+    sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'],
   }
 }
 
