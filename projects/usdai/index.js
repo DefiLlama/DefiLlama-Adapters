@@ -33,6 +33,11 @@ const LOAN_TOKENS = [USDC, USDT, PYUSD];
 const LEGACY_POOL_1 = "0x0f62b8C58E1039F246d69bA2215ad5bF0D2Bb867";
 const LEGACY_POOL_2 = "0xcd9d510c4e2fe45e6ed4fe8a3a30eeef3830cc14";
 const LEGACY_POOLS = [LEGACY_POOL_1, LEGACY_POOL_2];
+// Loan terms hashes for loans on Loan Router V2 not captured by the v2 subgraph
+const UNCAPTURED_LOAN_ROUTER_V2_HASHES = [
+  "0x71e912bbbfbb3d266012f871c213cd79522c26c24703c7aaee64873b83e8d88c",
+  "0x81c8c9796cfa9e769b91bd4d84e8647dbae23e4227fe9cbc3fe2c20f38695aa2",
+];
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 const SUBGRAPH_PAGE_SIZE = 1000;
 const loanHashesQuery = gql`
@@ -237,6 +242,7 @@ async function borrowed(api) {
   // Loan router v2 borrowed (loans originated directly on v2)
   loanRouterEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API_V2, loanHashesQuery, api.timestamp);
   for (const event of loanRouterEvents) {
+    if (UNCAPTURED_LOAN_ROUTER_V2_HASHES.includes(event.loanTermsHash)) continue;
     // Get the currency token
     const { currencyToken } = event.loanOriginated;
 
@@ -271,6 +277,23 @@ async function borrowed(api) {
     // Add the balance to the TVL
     api.add(USDAI_CONTRACT, unscaledBalance);
   }
+
+  // Loan router v2 borrowed (hardcoded — not captured by the v2 subgraph)
+  const uncapturedLoanStates = await api.multiCall({
+    abi: abi.loanStateV2,
+    target: LOAN_ROUTER_V2_CONTRACT,
+    calls: UNCAPTURED_LOAN_ROUTER_V2_HASHES.map((loanTermsHash) => ({ params: [loanTermsHash] })),
+  });
+  uncapturedLoanStates.forEach((loanState) => {
+    if (!loanState) return;
+    const [status, , , unscaledBalance] = loanState;
+
+    // If the loan is inactive, skip
+    if (+status !== 1) return;
+
+    // Add the balance to the TVL
+    api.add(USDAI_CONTRACT, unscaledBalance);
+  });
 
   // USDai borrowed out through escrow timelock
   const escrowTimelockTotalDeposits = await api.call({
