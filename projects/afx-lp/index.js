@@ -1,3 +1,4 @@
+// Uses AFX's public DefiLlama integration endpoint for LP Vault TVL.
 const { get } = require("../helper/http");
 
 const API_URL = "https://api.afx.xyz/info/integrations/defillama/lp/summary";
