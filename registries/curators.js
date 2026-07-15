@@ -596,6 +596,11 @@ const configs = {
             '0x517aBc7f49DFF75b57A88b9970eF35D6e4C3BD49',
           ],
         },
+        monad: {
+          accountableVaults: [
+            '0x6385D7571B8ECD7733EFfB1Caf6760A237e29835'
+          ]
+        }
       }
     },
   },
