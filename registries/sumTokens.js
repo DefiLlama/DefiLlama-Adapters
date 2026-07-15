@@ -15956,7 +15956,7 @@ const configs = {
       "owner": "0x612D7f73CF0148E9a1b639e819D588b9fF915A9d",
       "resolveUniV3": true,
       "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
-      "uniV3ExtraConfig": { nftAddress: "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"}
+      "uniV3ExtraConfig": { "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3" }
     }
   },
   "hoodz": {
@@ -41347,6 +41347,18 @@ const configs = {
         ]
       ]
     },
+  },
+  "ymym-meme": {
+    "methodology": "TVL is the value of WETH in the permanently locked Uniswap V3 LP positions.",
+    "doublecounted": true,
+    "robinhood": {
+      "owner": "0x624fb911D5c1F9004D9ac21f85Eea163922DDc7f",
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+      "uniV3ExtraConfig": {
+        "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
+      }
+    }
   },
   "zamm": {
     "methodology": "Sums raw wei balance of ETH in zAMM.",
