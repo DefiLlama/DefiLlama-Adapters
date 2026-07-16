@@ -2,8 +2,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js');
 const { decodeAccount } = require('../helper/solana')
 
-const SOLIDO_ADDRESS = "49Yi1TKkNyYjPAFdR9LBvoHcUjuPX4Df5T5yv39w2XTn";
-const RESERVE_ACCOUNT_ADDRESS = "3Kwv3pEAuoe4WevPB4rgMBTZndGDb53XT7qwQKnvHPfX";
+const SOLIDO_ADDRESS = "0x46531ea0E7cec64b14181d45F8C6798a1cE45da1";
+const RESERVE_ACCOUNT_ADDRESS = "0x3211d27a1A1B8E40C7974F6951935303e6e56DBE";
 
 async function retrieveValidatorsBalance(connection) {
   const accountInfo = await connection.getAccountInfo(new PublicKey(SOLIDO_ADDRESS));
@@ -40,7 +40,7 @@ async function eth(api) {
   })
 
   const pooledMatic = await api.call({
-    target: "0x9ee91F9f426fA633d227f7a9b000E28b9dfd8599",
+    target: "0x46531ea0E7cec64b14181d45F8C6798a1cE45da1",
     abi: "uint256:getTotalPooledMatic",
   })
 
@@ -54,7 +54,7 @@ async function ksm(api)  {
   const chain = "moonriver"
   const pooledCoin = await api.call({
     chain,
-    target: "0xffc7780c34b450d917d557e728f033033cb4fa8c",
+    target: "0x3211d27a1A1B8E40C7974F6951935303e6e56DBE",
     abi: "uint256:getTotalPooledKSM",
   })
 
