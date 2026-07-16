@@ -1,4 +1,4 @@
-const { queryV1Beta1, queryContract } = require('../helper/chain/cosmos.js');
+const { queryContract } = require('../helper/chain/cosmos.js');
 
 // node test.js projects/figure-markets-democratized-prime/index.js
 

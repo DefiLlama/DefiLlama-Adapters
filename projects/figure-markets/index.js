@@ -1,5 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { queryV1Beta1, queryV1Beta1V2 } = require('../helper/chain/cosmos.js');
+const { queryV1Beta1V2 } = require('../helper/chain/cosmos.js');
 
 const figureMarketsExchangeID = '1'
 
