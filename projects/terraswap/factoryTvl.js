@@ -55,7 +55,7 @@ const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentr
 
 function getFactoryTvl(factory, { blacklistedPairs = [], extraPairs = [] } = {}) {
   return async (api) => {
-    const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs, extraPairs })).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
+    const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs, extraPairs })).filter(pair => (pair.assets[0]?.balance && pair.assets[1]?.balance))
 
     const otherPairs = pairs.filter(isNotXYK)
     const xykPairs = pairs.filter(pair => !isNotXYK(pair))
