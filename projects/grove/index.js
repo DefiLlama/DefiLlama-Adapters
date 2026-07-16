@@ -1,20 +1,20 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const almProxy = {
-  ethereum: '0x491EDFB0B8b608044e227225C715981a30F3A44E',
-  base: '0x9B746dBC5269e1DF6e4193Bcb441C0FbBF1CeCEe',
-  avax: '0x7107DD8F56642327945294a18A4280C78e153644',
-  plume_mainnet: '0x1DB91ad50446a671e2231f77e00948E68876F812',
+  ethereum: '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+  base: '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE',
+  avax: '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE',
+  plume_mainnet: '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
 }
 
 const tokenConfigs = {
   ethereum: [
-    '0x8c213ee79581Ff4984583C6a801e5263418C4b86', // JTRSY (Janus Henderson via Centrifuge)
-    '0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041', // BUIDL-I (BlackRock via Securitize)
-    '0x5a0f93d040de44e78f251b03c43be9cf317dcf64', // JAAA (Janus Henderson via Centrifuge)
-    '0x51C2d74017390CbBd30550179A16A1c28F7210fc', // STAC (BNY Mellon via Securitize)
-    '0xFa82580c16A31D0c1bC632A36F82e83EfEF3Eec0', // aEthRLUSD (Aave Core)
-    '0xE3190143Eb552456F88464662f0c0C4aC67A77eB', // aHorRwaRLUSD (Aave Horizon)
+    '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE', // JTRSY (Janus Henderson via Centrifuge)
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // BUIDL-I (BlackRock via Securitize)
+    '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE', // JAAA (Janus Henderson via Centrifuge)
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // STAC (BNY Mellon via Securitize)
+    '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE', // aEthRLUSD (Aave Core)
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // aHorRwaRLUSD (Aave Horizon)
     ADDRESSES.mantle.AUSD, // AUSD (Agora)
     ADDRESSES.ethereum.USDC,
   ],
@@ -22,31 +22,31 @@ const tokenConfigs = {
     ADDRESSES.base.USDC,
   ],
   avax: [
-    '0x58f93d6b1ef2f44ec379cb975657c132cbed3b6b', // JAAA (Janus Henderson via Centrifuge on Avalanche)
-    '0x2C0aDFF8e114f3cA106051144353aC703D24B901', // GACLO-1 (Galaxy Arch CLO)
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // JAAA (Janus Henderson via Centrifuge on Avalanche)
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // GACLO-1 (Galaxy Arch CLO)
     ADDRESSES.avax.USDC,
   ],
   plume_mainnet: [
-    '0x9477724Bb54AD5417de8Baff29e59DF3fB4DA74f', // ACRDX (Apollo via Centrifuge on Plume)
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // ACRDX (Apollo via Centrifuge on Plume)
   ],
 }
 
 const morphoVaultConfigs = {
   ethereum: [
-    '0xBeefF08dF54897e7544aB01d0e86f013DA354111', // grove-bbqUSDC-V2
-    '0xBEEfF0d672ab7F5018dFB614c93981045D4aA98a', // grove-bbqAUSD-V2
-    '0xBEEf2B5FD3D94469b7782aeBe6364E6e6FB1B709', // grove-bbqUSDC
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // grove-bbqUSDC-V2
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // grove-bbqAUSD-V2
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // grove-bbqUSDC
   ],
   base: [
-    '0xBeEf2d50B428675a1921bC6bBF4bfb9D8cF1461A', // grove-bbqUSDC
-    '0xbeef0e0834849aCC03f0089F01f4F1Eeb06873C9', // steakUSDC-V2
+    '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1', // grove-bbqUSDC
+    '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE', // steakUSDC-V2
   ],
 }
 
 const curveConfigs = {
   ethereum: [
     {
-      address: '0xE79C1C7E24755574438A26D5e062Ad2626C04662', // CURVE AUSD/USDC
+      address: '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE', // CURVE AUSD/USDC
       coinIndices: [0, 1],
     },
   ],
@@ -64,7 +64,7 @@ async function tvl(api) {
 
   // Remove up to $50M GALCO seeded by Grove from TVL
   if (api.chain === 'avax') {
-    const GALCO = 'avax:0x2C0aDFF8e114f3cA106051144353aC703D24B901'
+    const GALCO = 'avax:0x46531ea0E7cec64b14181d45F8C6798a1cE45da1'
     const SEED_AMOUNT = 50_000_000e6
     const balances = api.getBalances()
     const galcoBal = Number(balances[GALCO] || 0)
