@@ -5,8 +5,8 @@ const { Program, } = require("@project-serum/anchor");
 
 async function tvl_V2() {
   const balances = {}
-  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
-  const sunnyProgramId = new PublicKey('SPQR4kT3q2oUKEJes2L6NNSBCiPW9SfuhkuqC9bp6Sx')
+  const quarryId = new PublicKey('0x3211d27a1A1B8E40C7974F6951935303e6e56DBE')
+  const sunnyProgramId = new PublicKey('0x46531ea0E7cec64b14181d45F8C6798a1cE45da1')
   const provider = getProvider()
   const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
   const sunnyIDL = await Program.fetchIdl(sunnyProgramId, provider)
@@ -23,7 +23,7 @@ async function tvl_V2() {
 
 async function tvl_V1() {
   const balances = {}
-  const sunnyProgramId = new PublicKey('SSFNHWYFdELMTkWNdaPaZQuVL4d2RY7ykjGmeGkmKXW')
+  const sunnyProgramId = new PublicKey('0x46531ea0E7cec64b14181d45F8C6798a1cE45da1')
   const provider = getProvider()
   const sunnyOldIDL = await Program.fetchIdl(sunnyProgramId, provider)
   const sunnyProgram = new Program(sunnyOldIDL, sunnyProgramId, provider)
