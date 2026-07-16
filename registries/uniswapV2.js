@@ -2889,6 +2889,12 @@ const uniV2Configs = {
   'bitblocks-finance': {
     bsc: '0x65b3cc7a7cb167221266fc93884717de2dbd074e',
   },
+  'catnip': {
+    robinhood: {
+      factory: '0x002EC9782d70f4e79396c58964D4691cA648FB49',
+      staking: ['0x5d00D31C9A464d51679A88d0F073401aA6Fc5d6B', '0xb06f3BE6d2b2D04e6e9276d99b3F134F5429934b'],
+    }
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
