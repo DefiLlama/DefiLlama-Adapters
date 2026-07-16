@@ -56,23 +56,23 @@ Object.keys(config).forEach(chain => {
 
 module.exports = mergeExports([
   {  // flash pool
-    ethereum: compoundExports2({ comptroller: '0x2F9fa63066cfA2d727F57ddf1991557bA86F12c9' }),
-    okexchain: compoundExports2({ comptroller: '0x66e212d287e547c2c93cfe50795543c025ca9ee3' }),
-    bsc: compoundExports2({ comptroller: '0x49620e9bfd117c7b05b4732980b05b7afee60a69' }),
-    ontology_evm: compoundExports2({ comptroller: '0x000A4d6b9E553a7f4bc1B8F94bB7Dd37BfF6d79b' }),
+    ethereum: compoundExports2({ comptroller: '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1' }),
+    okexchain: compoundExports2({ comptroller: '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE' }),
+    bsc: compoundExports2({ comptroller: '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1' }),
+    ontology_evm: compoundExports2({ comptroller: '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1' }),
   }, {  // p2p pool
     ethereum: {
       tvl: sumTokensExport({
-        owner: '0x091806040FD70B40bcDA5e01D00eAfad8D10AB56',
+        owner: '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE',
         tokens: [
           ADDRESSES.ethereum.DAI,
           ADDRESSES.ethereum.WETH,
-          '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',
-          '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
+          '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+          '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
           ADDRESSES.ethereum.USDT,
-          '0x70e36f6BF80a52b3B46b3aF8e106CC0ed743E8e4',
-          '0xc00e94Cb662C3520282E6f5717214004A7f26888',
-          '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5',
+          '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+          '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE',
+          '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE',
         ]
 
       })
@@ -80,7 +80,7 @@ module.exports = mergeExports([
   }, {  // nft pool
     ethereum: {
       tvl: sumTokensExport({
-        owner: '0x3c3e283353f4349f6424151583A8353E8F40F2B1',
+        owner: '0x3211d27a1A1B8E40C7974F6951935303e6e56DBE',
         tokens: [
           ADDRESSES.ethereum.WETH,
         ]
