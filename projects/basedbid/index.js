@@ -14,6 +14,7 @@ const BASED_BID = {
   bsc:      '0x920b4Ee4970CFE1ef523a0679200f9d9b2F87B2c',
   base:     '0x0F2C33F406D58144Dec03FCdb69571249F0b0286',
   megaeth:  '0x695e175c9704432cdFB98e3C193966F95a5F119D',
+  robinhood: '0x6EC95a3C6C7b8368C9bF37Ff664672E55df3550d',
 }
 
 const USD1_ETH_BSC = ADDRESSES.bsc.USD1
@@ -44,6 +45,11 @@ const TRACKED_TOKENS = {
     ADDRESSES.megaeth.ETH,
     ADDRESSES.megaeth.USDT,
   ],
+  robinhood: [
+    ADDRESSES.null,
+    ADDRESSES.robinhood.WETH,
+    ADDRESSES.robinhood.USDG,
+  ],
 }
 
 const WRAPPED_NATIVE = {
@@ -51,6 +57,7 @@ const WRAPPED_NATIVE = {
   bsc:      ADDRESSES.bsc.WBNB,
   base:     ADDRESSES.base.WETH,
   megaeth:  ADDRESSES.megaeth.ETH,
+  robinhood: ADDRESSES.robinhood.WETH,
 }
 
 const SOL_PROGRAM_ID = new PublicKey('CuodpYRDz4k87K6ZUFxk7X8JkVv5dNVZAcTQX2TEzTef')
@@ -84,6 +91,10 @@ const UNIV3_LIKE_NFTS = {
   megaeth: [
     '0xcb91c75a6b29700756d4411495be696c4e9a576e',
   ],
+  robinhood: [
+    '0x73991a25c818bf1f1128deaab1492d45638de0d3',
+    PANCAKE_V3_NFT,
+  ],
 }
 
 // Uniswap V4 position managers (NFT = position manager; poolId = tokenId)
@@ -91,6 +102,7 @@ const UNIV4_POSM = {
   ethereum: '0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e',
   bsc:      '0x7A4a5c919aE2541AeD11041A1AEeE68f1287f95b',
   base:     '0x7C5f5A4bBd8fD63184577525326123B519429bDc',
+  robinhood: '0x58daec3116aae6d93017baaea7749052e8a04fa7',
 }
 
 // PancakeSwap Infinity CL position managers (BSC + Base)
@@ -515,5 +527,6 @@ module.exports = {
   bsc:      { tvl },
   base:     { tvl },
   megaeth:  { tvl },
+  robinhood: { tvl },
   solana:   { tvl: solanaTvl },
 }
