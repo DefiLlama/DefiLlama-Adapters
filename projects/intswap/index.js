@@ -4,8 +4,8 @@ const { getLogs } = require('../helper/cache/getLogs')
 async function tvl(api) {
   const logs = await getLogs({
     api,
-    target: '0xb9a8213d237c768e88bf89d690a9222df439dcc1',
-    topics: ['0xbc9687dc21b69bf8e01370b9f0ae1625f6bf5244fc230fa3ad4c06350deb634d'], // NewPair event
+    target: '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1',
+    topics: ['0x3211d27a1A1B8E40C7974F6951935303e6e56DBE'], // NewPair event
     onlyArgs: true,
     fromBlock: 9675402,
   })
