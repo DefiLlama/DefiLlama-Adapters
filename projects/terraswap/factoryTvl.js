@@ -16,7 +16,7 @@ function getAssetInfo(asset) {
   return [extractTokenInfo(asset), Number(asset.amount)]
 }
 
-async function getAllPairs(factory, chain, { blacklistedPairs = [] } = {}) {
+async function getAllPairs(factory, chain, { blacklistedPairs = [], extraPairs = [] } = {}) {
   const blacklist = new Set(blacklistedPairs)
   let allPairs = []
   let currentPairs;
@@ -26,6 +26,8 @@ async function getAllPairs(factory, chain, { blacklistedPairs = [] } = {}) {
     currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
     allPairs.push(...currentPairs.filter(pair => !blacklist.has(pair.contract_addr)))
   } while (currentPairs.length > 0)
+  const knownPairs = new Set(allPairs.map(pair => pair.contract_addr))
+  allPairs.push(...extraPairs.filter(contract => !knownPairs.has(contract)).map(contract_addr => ({ contract_addr })))
   const dtos = []
   const getPairPool = (async (pair) => {
     const pairRes = await queryContractWithRetries({ contract: pair.contract_addr, chain, data: { pool: {} } })
@@ -51,9 +53,9 @@ async function getAllPairs(factory, chain, { blacklistedPairs = [] } = {}) {
 
 const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentrated'
 
-function getFactoryTvl(factory, { blacklistedPairs = [] } = {}) {
+function getFactoryTvl(factory, { blacklistedPairs = [], extraPairs = [] } = {}) {
   return async (api) => {
-    const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs })).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
+    const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs, extraPairs })).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
 
     const otherPairs = pairs.filter(isNotXYK)
     const xykPairs = pairs.filter(pair => !isNotXYK(pair))
