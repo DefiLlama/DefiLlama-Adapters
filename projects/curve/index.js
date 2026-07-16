@@ -61,7 +61,8 @@ const chains = [
   "plasma",
   "unichain",
   "stable",
-  "monad"
+  "monad",
+  "robinhood"
 ];
 const registryIds = {
   stableswap: 0,

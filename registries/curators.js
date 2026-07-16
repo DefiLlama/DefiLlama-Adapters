@@ -279,6 +279,7 @@ const configs = {
             '0x17d0f109EE895bAD0b68AA104AA72bd0b003AD8E', // ETH Lending Optimizer IPOR Fusion
             '0x5900C3b72458F12967DC1bef35b92d271F5cDBc1', // cbETH Looper IPOR Fusion
             '0xD46a3C2D958d0a2cB098d48C48dC19FE3A710F37', // USDC Lending Optimizer IPOR Fusion
+            '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // wETH Metavault on Spectra
           ],
         },
         ethereum: {
@@ -314,6 +315,9 @@ const configs = {
           ],
         },
         monad: {
+          morphoVaultOwners: [
+            '0x829A13850b684A575C0580a83322890e19c5eFaa',
+          ],
           eulerVaultOwners: [
             '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
           ],
@@ -386,6 +390,11 @@ const configs = {
   "feather": {
     config: {
       blockchains: {
+        ethereum: {
+          morpho: [
+            '0x9f3BEbF1159323f78E5c97Cc30f10907B71fCf8C', // Feather USDC vault
+          ],
+        },
         sei: {
           morpho: [
             '0x015F10a56e97e02437D294815D8e079e1903E41C',
@@ -592,6 +601,11 @@ const configs = {
             '0x517aBc7f49DFF75b57A88b9970eF35D6e4C3BD49',
           ],
         },
+        monad: {
+          accountableVaults: [
+            '0x03ef37626BC7C7B3F6cEA4Bcbfeb7764B51E22fB'
+          ]
+        }
       }
     },
   },
@@ -892,6 +906,7 @@ const configs = {
             '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
             '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
+            '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
           ],
         },
         polygon: {
@@ -1135,6 +1150,17 @@ const configs = {
           ],
           erc4626: [
             '0x3DD459dE96F9C28e3a343b831cbDC2B93c8C4855',
+          ],
+        },
+      }
+    },
+  },
+  "birch-hill": {
+    config: {
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xbCC5C59E64B0Ff3a3Ee5eAb74BE7c787A0a438F1',
           ],
         },
       }

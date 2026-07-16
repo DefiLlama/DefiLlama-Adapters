@@ -15,6 +15,18 @@ const bitcoinAddressBook = require('../projects/helper/bitcoin-book/index.js')
 // Adapters using ohmStaking/ohmTreasury, sumChainTvls, mergeExports, isComplex
 // with extra custom code, or any logic beyond a single treasuryExports() call
 // stay as individual files in projects/treasury/.
+const gmxOwners = [
+        '0x4bd1cdaab4254fc43ef6424653ca2375b4c94c0e',
+        '0xc6378ddf536410c14666dc59bc92b5ebc0f2f79e',
+        '0x0263ad94023a5df6d64f54bfef089f1fbf8a4ca0',
+        '0xea8a734db4c7ea50c32b5db8a0cb811707e8ace3',
+        '0xe1f7c5209938780625e354dc546e28397f6ce174',
+        '0x68863dde14303bced249ca8ec6af85d4694dea6a',
+        '0x0339740d92fb8baf73bab0e9eb9494bc0df1cafd',
+        '0x2c247a44928d66041d9f7b11a69d7a84d25207ba',
+        '0x0a2962120b11A4a36700C5De00D4980E58a2D1C0',
+        '0xe57fE47902A35Bc0d82C83e39610Af546E1D18B9',
+      ]
 
 const configs = {
   // ----- from batch00.js -----
@@ -1860,6 +1872,10 @@ const configs = {
       tokens: [ADDRESSES.eventum.USDT],
       owners: ['0x77075c627e51145d54e4EDD54Afa169DA7ff8A17'],
     },
+    arbitrum: {
+      tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
+      owners: ['0x16a4f9904e222D298Ac71aA3E3Bd5C19B902C595'],
+    },
   },
   'treasury/evmos-dao': {
     evmos: {
@@ -2260,6 +2276,22 @@ const configs = {
       owners: ["0x21539334f45Ac41Bd10789942b744a18a4775d6d"],
     },
   },
+  'treasury/gmx': {
+    ethereum: {
+      tokens: [nullAddress],
+      owners: gmxOwners,
+    },
+    arbitrum: {
+      tokens: [nullAddress],
+      owners:gmxOwners,
+      ownTokens: ['0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a'], // GMX
+    },
+    avax: {
+      tokens: [nullAddress],
+      owners: gmxOwners,
+      ownTokens: ['0x62edc0692BD897D2295872a9FFCac5425011c661'], // GMX
+    },
+  },
   'treasury/gitcoin': {
     ethereum: {
       tokens: [
@@ -2462,6 +2494,12 @@ const configs = {
         '0xbB1676046C36BCd2F6fD08d8f60672c7087d9aDF',
       ],
       tokens: []
+    },
+  },
+  'treasury/hoodpump': {
+    robinhood: {
+      owners: ['0xdAD1d6a2AfF8f9285Fd9C552491538aEcb518888', '0x453D956057036bd9871D25B965795b883047481D'],
+      tokens: [ADDRESSES.robinhood.WETH, ADDRESSES.null]
     },
   },
   'treasury/hop': {
@@ -3401,7 +3439,7 @@ const configs = {
   'treasury/maker': {
     ethereum: {
       owners: ['0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB'],
-      ownTokens: ['0xc20059e0317de91738d13af027dfc4a50781b066', '0x56072c95faa701256059aa122697b133aded9279', ADDRESSES.ethereum.MKR]
+      ownTokens: ['0xc20059e0317de91738d13af027dfc4a50781b066', '0x56072c95faa701256059aa122697b133aded9279', ADDRESSES.ethereum.MKR, '0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406']
     },
     arbitrum: {
       owners: ['0x10e6593cdda8c58a1d0f14c5164b376352a55f2f'],
@@ -4900,6 +4938,12 @@ const configs = {
       ],
       owners: ['0x4f54cab19b61138e3c622a0bd671c687481ec030'],
       ownTokens: ['0x43aB8f7d2A8Dd4102cCEA6b438F6d747b1B9F034'],
+    },
+  },
+  'treasury/sentry-trading': {
+    robinhood: {
+      tokens: [nullAddress],
+      owners: ['0x8852BC7Ca269c276264b8Ad7869956C26304a740'],
     },
   },
   'treasury/sharplink-gaming': {

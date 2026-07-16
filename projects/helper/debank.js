@@ -33,10 +33,7 @@ async function _fetchDebank(endpoint, owners, { isAll = true } = {}) {
   const key = _cacheKey(endpoint, owners, isAll)
   if (!_cache[key]) {
     const apiKey = getEnv('DEBANK_API_KEY')
-    if (!apiKey) {
-      _cache[key] = Promise.resolve(owners.map(() => []))
-      return _cache[key]
-    }
+    if (!apiKey) throw new Error('Missing DEBANK_API_KEY')
     const headers = { accept: 'application/json', AccessKey: apiKey }
     _cache[key] = Promise.all(
       owners.map(id =>
@@ -44,8 +41,9 @@ async function _fetchDebank(endpoint, owners, { isAll = true } = {}) {
           params: { id, is_all: isAll },
           headers,
         }).then(r => r.data).catch(e => {
-          console.log(`DeBank ${endpoint} failed for ${id}: ${e.response?.status || e.message}`)
-          return []
+          const status = e.response?.status
+          const detail = e.response?.data?.message || e.message
+          throw new Error(`DeBank ${endpoint} failed for ${id}: ${status || ''} ${detail}`.trim())
         })
       )
     )

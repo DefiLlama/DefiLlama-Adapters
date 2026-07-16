@@ -31,14 +31,15 @@ async function vaultsTvl(api, tokens, owners) {
     fromBlock: 21580035,
   })
   const VAULTS = logs.map((log) => log.entity)
-  const _tokens = await api.multiCall({ abi: 'address:collateral', calls: VAULTS })
+  const _collaterals = await api.multiCall({ abi: 'address:collateral', calls: VAULTS, permitFailure: true })
+  const newVaults = VAULTS.filter((_, i) => !_collaterals[i])
+  const _assets = await api.multiCall({ abi: 'address:asset', calls: newVaults })
+  const assetOf = Object.fromEntries(newVaults.map((v, i) => [v, _assets[i]]))
   owners.push(...VAULTS)
-  tokens.push(..._tokens)
+  tokens.push(..._collaterals.map((c, i) => c ?? assetOf[VAULTS[i]]))
 }
 
 module.exports = {
   start: '2024-06-11',
-  ethereum: {
-    tvl,
-  },
+  ethereum: { tvl },
 }

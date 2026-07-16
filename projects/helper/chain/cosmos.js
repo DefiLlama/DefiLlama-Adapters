@@ -81,6 +81,7 @@ const endPoints = {
   inertia: 'https://rest.inrt.fi',
   union: 'https://rest.union.build',
   zigchain: 'https://public-zigchain-lcd.numia.xyz',
+  axiome: 'http://api-docs.axiomeinfo.org:1317',
 };
 
 const chainSubpaths = {

@@ -125,9 +125,8 @@ const uniV2Configs = {
   'areon-swap': {
     area: '0x4df039804873717bff7d03694fb941cf0469b79e',
   },
-  'artexswap_xyz': {
-    artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD',
-  },
+  'artexswap_xyz': { artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD', },
+  'sheriff-v2': { robinhood: '0x10F7D1eF77f58181484936170430DF13539C5162', },
   'astarexchange': {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
@@ -1036,6 +1035,9 @@ const uniV2Configs = {
   'kittypunch': {
     flow: '0x29372c22459a4e373851798bFd6808e71EA34A71',
   },
+  'frothswap': {
+    robinhood: '0x2B1b1FB977e1CD5f18F45571C64E373b1A73dD7f',
+  },
   'kittypunch-kona-v2': {
     abstract: '0x7c2e370CA0fCb60D8202b8C5b01f758bcAD41860',
   },
@@ -1327,6 +1329,16 @@ const uniV2Configs = {
   },
   'noxa-fi': {
     abstract: '0xE1e98623082f662BCA1009a05382758f86F133b3',
+    megaeth: '0xd6a8198307a51Ae8d33695BDee2F82E48925B445',
+    monad: '0x8361060eD5F4E8789F1442FB4284eca9b4305985',
+    berachain: '0xec4a56061d86955d0df883efb2e5791d99ea71f2',
+    sonic: '0xfDE31CCAf95b8bF65a0D3805CD1668969787992c',
+    somnia: '0xeC4a56061d86955D0Df883efb2E5791d99Ea71f2',
+    '0g': '0xD9eC2db5f3D1b236843925949fe5bd8a3836FCcB',
+    plasma: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4',
+    stable: '0xf306fEdB206ac1Baff1dB8BB63A14151Cb72ee7B',
+    katana: '0xeC4a56061d86955D0Df883efb2E5791d99Ea71f2',
+    hyperliquid: '0xec4a56061d86955d0df883efb2e5791d99ea71f2',
   },
   'oaswap': {
     oasis: '0x84b11e8fb9a5dE10347eEA24c73d02B835505FDd',
@@ -1617,6 +1629,10 @@ const uniV2Configs = {
   },
   'rexdex': {
     wan: '0xCc2F30462ED1C47Dd7Fb75C81c7F4Cd721eB2A66',
+  },
+  'rocketswap-anubis': {
+    methodology: 'TVL is calculated from RocketSwap AMM liquidity pools using the Uniswap V2 factory.',
+    anubi: '0xaf6F4e641C86A25518509BC840051A8652Af598A',
   },
   'rocketswap-cc': {
     base: '0x1b8128c3a1b7d20053d10763ff02466ca7ff99fc',
@@ -2855,7 +2871,30 @@ const uniV2Configs = {
   'brownfi-v3': {
     berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
     hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
-  }
+    arbitrum: '0xe49805412EDFDF4C458B297e7C1534588Fa3F1F0',
+    linea: '0xD9a702839510ee2859bCE697F51Aae49bF8949d7'
+  },
+  'hyperlynx': {
+    hyperliquid: '0x11cD396F814Bd31eBa7969c1B27a7C347785951f',
+  },
+  'nadfun-v2': {
+    monad: '0xA25b13127e63ddae6d0b35570FF3D39dBD621001',
+  },
+  'robinswap': {
+    robinhood: '0xa95DA9b9fCef09A07F99444fE9304457d6ECdccA',
+  },
+  'swaphood': {
+    robinhood: '0xE7206Ecac3A51afe7e6179182ad4130A26068dD1',
+  },
+  'bitblocks-finance': {
+    bsc: '0x65b3cc7a7cb167221266fc93884717de2dbd074e',
+  },
+  'catnip': {
+    robinhood: {
+      factory: '0x002EC9782d70f4e79396c58964D4691cA648FB49',
+      staking: ['0x5d00D31C9A464d51679A88d0F073401aA6Fc5d6B', '0xb06f3BE6d2b2D04e6e9276d99b3F134F5429934b'],
+    }
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

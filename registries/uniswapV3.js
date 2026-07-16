@@ -3,6 +3,18 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'noxa-fi-v3': {
+    megaeth: { factory: '0x1201EB5081eabc99b23DD952C1BFA5ea090d8779', fromBlock: 249856 },
+    monad: { factory: '0x35af92183701E54f751f8b0376da7F9b151bf5A5', fromBlock: 42804409 },
+    berachain: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 16694222 },
+    sonic: { factory: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4', fromBlock: 11885860 },
+    somnia: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 152175636 },
+    '0g': { factory: '0xCd0BB681056b6Fc96E86a4cE0A9644B39bC90a53', fromBlock: 32000000 },
+    plasma: { factory: '0xE7d4E64079FE467A21801B36Ccc6D9B3F66BD372', fromBlock: 1871468 },
+    stable: { factory: '0x8b051B804684A0914a62a22145206bE5AB022D8f', fromBlock: 10757086 },
+    katana: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 3425888 },
+    hyperliquid: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 10002856 },
+  },
   // --- previously consolidated ---
   'blasterswap-v3': { blast: { factory: '0x1A8027625C830aAC43aD82a3f7cD6D5fdCE89d78', fromBlock: 4308657 } },
   'comet-swap-v3': { astar: { factory: '0x2C1EEf5f87F4F3194FdAAfa20aE536b1bA49863b', fromBlock: 12168518 } },
@@ -1085,7 +1097,7 @@ const uniV3Configs = {
       isAlgebra: true,
       permitFailure: true,
     },
-    dogechain: { tvl: () => ({ }) },
+    dogechain: { tvl: () => ({}) },
     polygon_zkevm: {
       factory: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57',
       fromBlock: 300,
@@ -1632,13 +1644,8 @@ const uniV3Configs = {
       permitFailure: true,
     },
   },
-  'xtrade': {
-    xlayer: {
-      factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172',
-      fromBlock: 813172,
-      isAlgebra: true,
-    },
-  },
+  'xtrade': { xlayer: { factory: '0x612D9EA08be59479B112D8d400C7F0A2E4aD4172', fromBlock: 813172, isAlgebra: true, }, },
+  'sheriff-v3': { robinhood: { factory: '0x21Fd9aB06cc927E66013e89b045c26b3eDE7bB20', fromBlock: 1, isAlgebra: true, }, },
   'zebra-v2': {
     scroll: {
       factory: '0x96a7F53f7636c93735bf85dE416A4Ace94B56Bd9',
@@ -1714,10 +1721,10 @@ const uniV3Configs = {
     lukso: { factory: '0xFce4C544f07E2ca758a179788fe56e6A2941E681', fromBlock: 7393687 },
   },
   'fluxflow-v3': {
-    fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672}
+    fluent: { factory: '0x69Be606be7Fd2d27C8f9821329c748c77d24FF4f', fromBlock: 2189672 }
   },
   'topaz-cl': {
-    bsc: { 
+    bsc: {
       factory: '0x73DC984D9490286E735548f61dfCCec67Af82ed9',
       fromBlock: 98756164,
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
@@ -1732,6 +1739,18 @@ const uniV3Configs = {
   },
   'intrinsic': {
     rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
+  },
+  'hyperlynx-v3': {
+    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+  },
+  'machima': {
+    base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
+  },
+  'robinswap-v3': {
+    robinhood: { factory: '0xea561e058313b96011e5070ca7d0f027a44e3748', fromBlock: 6027503 },
+  },
+  'swaphood-v3': {
+    robinhood: { factory: '0x0Ec554F0BfF0Be6C99d1e95C8015bb0950f6A2C7', fromBlock: 6052562 },
   }
 }
 

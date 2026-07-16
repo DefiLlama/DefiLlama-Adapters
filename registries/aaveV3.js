@@ -78,7 +78,8 @@ const configs = {
   },
   'edel': {
     ethereum: {
-      poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501']
+      poolDatas: ['0xf3A3F900151c092007FD495ABf3f0f6162A37501'],
+      isInsolvent: true,
     }
   },
   'vena': {
