@@ -17276,6 +17276,12 @@ const configs = {
         "0xA27EC0006e59f245217Ff08CD52A7E8b169E62D2"
       ]
     },
+    "robinhood": {
+      "owners": [
+        "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
+      ],
+      "fetchBlockscoutTokens": true
+    },
   },
   "linqai": {
     "ethereum": {

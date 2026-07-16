@@ -10,7 +10,7 @@ const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray, slee
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const uniV3ABI = require('./abis/uniV3.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
-const { covalentGetTokens, } = require("./token");
+const { covalentGetTokens, blockscoutGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
 const { tickToPrice } = require('./utils/tick');
 const { queryAllium } = require('./allium');
@@ -964,6 +964,7 @@ async function sumTokens2({
   resolveVlCVX = false,
   permitFailure = false,
   fetchCoValentTokens = false,
+  fetchBlockscoutTokens = false,
   tokenConfig = {
     // onlyWhitelisted
     // onlyUseExistingCache
@@ -1049,6 +1050,11 @@ group by
   if (fetchCoValentTokens && useCurrentBalances) {
     const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, tokenConfig))))
     cTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
+  }
+
+  if (fetchBlockscoutTokens) {
+    const bTokens = await Promise.all(owners.map(i => blockscoutGetTokens(i, api, tokenConfig)))
+    bTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
   }
 
   if (resolveNFTs) {
