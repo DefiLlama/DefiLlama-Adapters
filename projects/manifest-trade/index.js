@@ -1,7 +1,7 @@
 const { PublicKey } = require("@solana/web3.js");
 const { getConnection, sumTokens2, } = require("../helper/solana");
 
-const PROGRAM_ADDRESS = 'MNFSTqtC93rEfYHB6hF82sKdZpUDFWkViLByLd1k1Ms';
+const PROGRAM_ADDRESS = '0x46531ea0E7cec64b14181d45F8C6798a1cE45da1';
 const PROGRAM_ID = new PublicKey(PROGRAM_ADDRESS);
 function getVaultAddress(market, mint) {
   const [vaultAddress, _unusedBump] = PublicKey.findProgramAddressSync(
