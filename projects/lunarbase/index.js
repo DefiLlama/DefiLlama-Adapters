@@ -12,8 +12,8 @@ const CURVE_PMMS = {
 };
 
 async function tvl(api) {
-  const tokenXs = await api.multiCall({ abi: 'address:X', calls: CURVE_PMMS[api.chain], permitFailure: true });
-  const tokenYs = await api.multiCall({ abi: 'address:Y', calls: CURVE_PMMS[api.chain], permitFailure: true });
+  const tokenXs = await api.multiCall({ abi: 'address:X', calls: CURVE_PMMS[api.chain] });
+  const tokenYs = await api.multiCall({ abi: 'address:Y', calls: CURVE_PMMS[api.chain] });
   const ownerTokens = CURVE_PMMS[api.chain].map((pool, i) => [[tokenXs[i], tokenYs[i]].filter(Boolean), pool]).filter(([tokens]) => tokens.length);
   return api.sumTokens({ ownerTokens });
 }
