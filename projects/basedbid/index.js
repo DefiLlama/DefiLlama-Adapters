@@ -105,6 +105,10 @@ const UNIV4_POSM = {
   robinhood: '0x58daec3116aae6d93017baaea7749052e8a04fa7',
 }
 
+const UNIV4_STATE_VIEW = {
+  robinhood: '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b',
+}
+
 // PancakeSwap Infinity CL position managers (BSC + Base)
 const PCS_INFINITY_POSM = '0x55f4c8aba71a1e923edc303eb4feff14608cc226'
 
@@ -256,6 +260,7 @@ async function unwrapUniV4Positions(api, uniV4ByNft) {
       uniV4ExtraConfig: {
         nftAddress,
         positionIds,
+        stateViewer: UNIV4_STATE_VIEW[api.chain],
       },
     })
   }
