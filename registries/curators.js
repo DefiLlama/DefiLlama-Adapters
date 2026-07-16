@@ -364,6 +364,18 @@ const configs = {
       ],
     },
   },
+  "coinmerce-capital": {
+    config: {
+      methodology: 'Count all assets are deposited in all vaults curated by Coinmerce Capital.',
+      blockchains: {
+        hyperliquid: {
+          upshiftV2: [
+            '0xcfe06d2499aE635830D11859941e76354D5717CC', // co-curator with clearstar
+          ],
+        },
+      }
+    },
+  },
   "cozy-v3": {
     config: {
       methodology: "Count all assets deposited in Euler vaults curated by Cozy.",
