@@ -2398,6 +2398,23 @@ const configs = {
       }
     },
   },
+  "bluefun": {
+    "methodology": "Counts native assets held in BlueFun bonding-curve markets on Base and Robinhood Chain before graduation. Assets are withdrawn from a curve as it graduates into Uniswap v4, whose pool liquidity is counted by the DEX adapter instead.",
+    "base": {
+      "owners": [
+        '0xb503b0ef06ec10554f4d960e08869877a41498dd',
+        '0x7d42dd1435e9567C1edFb513C45c8eA82fe03a38',
+      ],
+      "token": ADDRESSES.null
+    },
+    "robinhood": {
+      "owners": [
+        '0x2d6d77652facbbcae05c0dc3aed792b94cd61fa8',
+        '0x2F46a783C1314e160d673F927464d85B7364D807',
+      ],
+      "token": ADDRESSES.null
+    },
+  },
   "blur": {
     "hallmarks": [
       [
