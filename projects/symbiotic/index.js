@@ -1,6 +1,8 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
+const VAULT_V2_VERSION = 3
+
 async function tvl(api) {
   const owners = []
   const tokens = []
@@ -31,12 +33,13 @@ async function vaultsTvl(api, tokens, owners) {
     fromBlock: 21580035,
   })
   const VAULTS = logs.map((log) => log.entity)
-  const _collaterals = await api.multiCall({ abi: 'address:collateral', calls: VAULTS, permitFailure: true })
-  const newVaults = VAULTS.filter((_, i) => !_collaterals[i])
-  const _assets = await api.multiCall({ abi: 'address:asset', calls: newVaults })
-  const assetOf = Object.fromEntries(newVaults.map((v, i) => [v, _assets[i]]))
-  owners.push(...VAULTS)
-  tokens.push(..._collaterals.map((c, i) => c ?? assetOf[VAULTS[i]]))
+  const versions = await api.multiCall({ abi: 'uint64:version', calls: VAULTS })
+  const v2Vaults = VAULTS.filter((_, i) => Number(versions[i]) >= VAULT_V2_VERSION)
+  const legacyVaults = VAULTS.filter((_, i) => Number(versions[i]) < VAULT_V2_VERSION)
+  const collaterals = await api.multiCall({ abi: 'address:collateral', calls: legacyVaults })
+  if (v2Vaults.length) await api.erc4626Sum2({ calls: v2Vaults })
+  owners.push(...legacyVaults)
+  tokens.push(...collaterals)
 }
 
 module.exports = {
