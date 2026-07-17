@@ -29,23 +29,32 @@ async function calculateSupply(api, config) {
 
   const totalSupply = asBigInt(value, `${api.chain}.totalSupply`)
   const seen = new Set()
-  let excluded = 0n
+  const holders = config.excludedHolders || []
 
-  for (const holder of config.excludedHolders || []) {
+  for (const holder of holders) {
     assertAddress(holder.address, `${api.chain}.excludedHolder`)
     if (!holder.role || !holder.evidence)
       throw new Error(`rwaUSDi: ${holder.address} lacks role/evidence`)
     const key = holder.address.toLowerCase()
     if (seen.has(key)) throw new Error(`rwaUSDi: duplicate ${holder.address}`)
     seen.add(key)
-    excluded += asBigInt(
-      await api.call({
+  }
+
+  let excluded = 0n
+  if (holders.length) {
+    const balances = await api.multiCall({
+      abi: BALANCE_OF,
+      calls: holders.map(holder => ({
         target: config.token,
-        abi: BALANCE_OF,
         params: [holder.address],
-      }),
-      `${api.chain}.${holder.address}.balance`
-    )
+      })),
+    })
+    holders.forEach((holder, i) => {
+      excluded += asBigInt(
+        balances[i],
+        `${api.chain}.${holder.address}.balance`
+      )
+    })
   }
 
   if (excluded > totalSupply)
