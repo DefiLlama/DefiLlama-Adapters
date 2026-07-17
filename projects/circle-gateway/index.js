@@ -16,9 +16,9 @@ async function ethereumTvl(api) {
   ])
   // the gateway wallet also custodies the USDC backing USDCx, which is tracked
   // under circle-xreserve - only count the remainder here
-  const xReserveCollateral = collateral.reduce((sum, balance) => sum + (balance ? Number(balance) : 0), 0)
-  const net = Number(walletBalance) - xReserveCollateral
-  if (net > 0) api.add(ADDRESSES.ethereum.USDC, net)
+  const xReserveCollateral = collateral.reduce((sum, balance) => sum + (balance ? BigInt(balance) : 0n), 0n)
+  const net = BigInt(walletBalance) - xReserveCollateral
+  if (net > 0n) api.add(ADDRESSES.ethereum.USDC, net.toString())
 }
 
 module.exports = {
