@@ -1,5 +1,24 @@
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const { getConfig } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { cachedGraphQuery } = require('../helper/cache')
+const { buildIncomingDebtByVault, subtractIncomingDebt } = require('./helpers')
+
+const kongEndpoint = 'https://kong.yearn.fi/api/gql'
+// Kong provides both the complete Yearn vault list and each allocator's debt by
+// strategy. The debt relationship is needed because summing every vault's
+// totalAssets would count capital once in the parent and again in a nested vault.
+// tvl.close is used only to discard empty vaults; balances come from on-chain
+// totalAssets calls below.
+const kongQuery = `
+  query YearnVaults {
+    vaults(yearn: true) {
+      address
+      chainId
+      tvl { close }
+      asset { address }
+      debts { strategy currentDebt }
+    }
+  }
+`
 
 const v1Vaults = [
   '0x597aD1e0c13Bfe8025993D9e79C69E1c0233522e',
@@ -39,31 +58,52 @@ const blacklist = [
   '0x123964EbE096A920dae00Fb795FFBfA0c9Ff4675',
   '0x39546945695DCb1c037C836925B355262f551f55',
   '0x58900d761Ae3765B75DDFc235c1536B527F25d8F',
+  // Katana pre-deposit vaults, which are part of the Katana bridge infrastructure.
+  '0x7B5A0182E400b241b317e781a4e9dEdFc1429822',
+  '0xF470EB50B4a60c9b069F7Fd6032532B8F5cC014d',
+  '0x48c03B6FfD0008460F8657Db1037C7e09dEedfcb',
+  '0xA5DaB32DbE68E6fa784e1e50e4f620a0477D3896',
+  '0x92C82f5F771F6A44CfA09357DD0575B81BF5F728',
+  '0xe1Ac97e2616Ad80f69f705ff007A4bbb3655544a',
+  '0xcc6a16Be713f6a714f68b0E1f4914fD3db15fBeF',
+  '0x77570CfEcf83bc6bB08E2cD9e8537aeA9F97eA2F',
   ...v1Vaults,
 ].map(i => i.toLowerCase())
 
 async function tvl(api) {
-  let data = await getConfig('yearn/v2-' + api.chain, `https://ydaemon.yearn.fi/vaults?highlight_multi_single&hideAlways=false&orderBy=featuringScore&orderDirection=desc&strategiesDetails=withDetails&strategiesCondition=inQueue&chainIDs=${api.chainId}&limit=2500`)
+  const { vaults: data } = await cachedGraphQuery('yearn/vaults', kongEndpoint, kongQuery)
 
   if (!Array.isArray(data))
     return;
 
-  let strategies = data.map(v => v.strategies ?? []).flat().map(v => v.address.toLowerCase())
-  let vaults = data.filter(i => +i.tvl.tvl > 0).map(v => v.address.toLowerCase()).filter(i => !blacklist.includes(i) && !strategies.includes(i))
-  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
-  const calls = []
-  const filteredBals = bals.filter((bal, i) => {
-    const hasBal = +bal > 0
-    if (hasBal) calls.push(vaults[i])
-    return hasBal
-  })
+  const vaults = data
+    .filter(vault => vault.chainId === api.chainId && +vault.tvl?.close > 0)
+    .filter(vault => !blacklist.includes(vault.address.toLowerCase()))
+  const calls = vaults.map(vault => vault.address)
+
+  // Build the deductions from Kong's parent -> strategy debts before reading
+  // balances. Each map entry is denominated in the destination vault's asset,
+  // so it can be subtracted directly from that vault's totalAssets result.
+  const incomingDebtByVault = buildIncomingDebtByVault(vaults)
+  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls })
+
+  // V2 vaults expose token(), while ERC-4626/V3 vaults expose asset(). Trying
+  // both lets the same loop cover both generations.
   const tokens = await api.multiCall({ abi: 'address:token', calls, permitFailure: true })
 
   const tokensAlt = await api.multiCall({ abi: 'address:asset', calls, permitFailure: true })
-  filteredBals.forEach((bal, i) => {
+  bals.forEach((bal, i) => {
     const token = tokens[i] || tokensAlt[i]
-    if (token) api.add(token, bal)
+    const incomingDebt = incomingDebtByVault.get(vaults[i].address.toLowerCase())
+
+    // Keep any capital supplied directly to the child vault, but remove the
+    // portion already included in one or more parent vaults.
+    const adjustedBalance = subtractIncomingDebt(bal, incomingDebt)
+    if (token && adjustedBalance > 0n) api.add(token, adjustedBalance)
   })
+
+  // V1 predates totalAssets/ERC-4626. It is excluded from the Kong loop through
+  // the blacklist and valued separately as totalSupply * pricePerShare.
   if (api.chain === 'ethereum') {
     const tokens = await api.multiCall({ abi: 'address:token', calls: v1Vaults })
     let bals = await api.multiCall({ abi: 'erc20:totalSupply', calls: v1Vaults })
@@ -71,6 +111,8 @@ async function tvl(api) {
     bals = bals.map((bal, i) => bal * ratio[i] / 1e18)
     api.addTokens(tokens, bals)
   }
+
+  // Resolve LP-like vault assets after all adjusted balances have been added.
   return sumTokens2({ api, resolveLP: api.chain !== 'ethereum' })
 }
 
