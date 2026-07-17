@@ -1,22 +1,11 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { cachedGraphQuery } = require('../helper/cache')
+const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
+const pLimit = require('p-limit')
 const { buildIncomingDebtByVault, subtractIncomingDebt } = require('./helpers')
 
-const kongEndpoint = 'https://kong.yearn.fi/api/gql'
-// Kong provides both the complete Yearn vault list and each allocator's debt by
-// strategy. The debt relationship is needed because summing every vault's
-// totalAssets would count capital once in the parent and again in a nested vault.
-// Balances and empty-vault filtering come from on-chain totalAssets calls below.
-const kongQuery = `
-  query YearnVaults {
-    vaults(yearn: true) {
-      address
-      chainId
-      asset { address }
-      debts { strategy currentDebt }
-    }
-  }
-`
+const kongEndpoint = 'https://kong.yearn.fi/api/rest'
+const snapshotLimit = pLimit(10)
 
 const v1Vaults = [
   '0x597aD1e0c13Bfe8025993D9e79C69E1c0233522e',
@@ -69,8 +58,13 @@ const blacklist = [
 ].map(i => i.toLowerCase())
 
 async function tvl(api) {
-  const response = await cachedGraphQuery('yearn/vaults', kongEndpoint, kongQuery)
-  const data = response?.vaults
+  // Kong is Yearn's maintained indexer, replacing yDaemon. Its REST list is
+  // chain-specific; balances and empty-vault filtering still come from on-chain
+  // totalAssets calls below.
+  const data = await getConfig(
+    `yearn/vaults-${api.chainId}`,
+    `${kongEndpoint}/list/vaults/${api.chainId}?origin=yearn`,
+  )
 
   if (!Array.isArray(data))
     throw new Error('Invalid Kong response: expected vaults array')
@@ -90,7 +84,20 @@ async function tvl(api) {
   const activeVaults = candidates
     .map((vault, i) => ({ vault, balance: candidateBals[i] }))
     .filter(({ balance }) => BigInt(balance ?? 0) > 0n)
-  const vaults = activeVaults.map(({ vault }) => vault)
+  // The REST list omits strategy debts, so load snapshots only for active
+  // vaults that have strategies. These relationships prevent capital allocated
+  // to another Yearn vault from being counted in both the parent and child.
+  const vaults = await Promise.all(activeVaults.map(async ({ vault }) => {
+    if (!vault.strategiesCount) return { ...vault, debts: [] }
+
+    const snapshot = await snapshotLimit(() => get(
+      `${kongEndpoint}/snapshot/${api.chainId}/${vault.address}`,
+    ))
+    if (!Array.isArray(snapshot?.debts))
+      throw new Error(`Invalid Kong snapshot for ${vault.address}: expected debts array`)
+
+    return { ...vault, debts: snapshot.debts }
+  }))
   const bals = activeVaults.map(({ balance }) => balance)
   const calls = vaults.map(vault => vault.address)
 
