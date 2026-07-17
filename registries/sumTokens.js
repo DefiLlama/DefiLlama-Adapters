@@ -7132,12 +7132,6 @@ const configs = {
       "token": "0x5dF82810CB4B8f3e0Da3c031cCc9208ee9cF9500"
     },
   },
-  "circle-xreserve": {
-    "ethereum": {
-      "owner": "0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE",
-      "token": ADDRESSES.ethereum.USDC
-    }
-  },
   "citadao": {
     "ethereum": {
       "tvl": {
@@ -41682,9 +41676,6 @@ const configs = {
       "owner": "0xFDBC53080AFb08d7a3A2420e902c8AeC05E4aE73",
       "resolveUniV3": true
     },
-  },
-  "circle-gateway": {
-    ethereum: { owner: '0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE', token: ADDRESSES.ethereum.USDC },
   },
   "robinhood-bridge": {
     ethereum: { owner: '0xDf8755334ce7A73cCF6b581C02eA649AE3E864b3', token: ADDRESSES.null },
