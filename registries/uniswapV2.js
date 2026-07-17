@@ -429,6 +429,14 @@ const uniV2Configs = {
   'coreswap': {
     core: '0x97814a1F542aFe7fd02de53926621b0D40e8Ad6C',
   },
+  'corgiswap': {
+    misrepresentedTokens: true,
+    methodology: 'TVL accounts for the liquidity on all AMM pools',
+    bsc: {
+      factory: '0x632F04bd6c9516246c2df373032ABb14159537cd',
+      staking: async () => ({}), // CORIS returning an incorrect staking value locked
+    },
+  },
   'crodex': {
     cronos: '0xe9c29cB475C0ADe80bE0319B74AD112F1e80058F',
   },
@@ -2198,6 +2206,9 @@ const uniV2Configs = {
   },
   'wakafinance': {
     fantom: '0xb2435253c71fca27be41206eb2793e44e1df6b6d',
+  },
+  'wanswap': {
+    wan: '0x1125C5F53C72eFd175753d427aA116B972Aa5537',
   },
   'weero-v2': {
     _options: {

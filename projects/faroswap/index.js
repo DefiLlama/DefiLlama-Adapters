@@ -16,6 +16,11 @@ Object.keys(config).forEach(chain => {
   const { dvmFactory, fromBlock, dspFactory, gspFactory, dppFactory, uniswapV2Factory, uniswapV3Factory, blacklistedTokens, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+      let blacklistedTokens = [
+        '0x4b01436d82dff601281f7ebdf44e73a47d77ee3d', // BTCVC - no liquidity outside the pool, washtraded
+        '0x79d154287ddc77e5c10127e68c2df1a942a330bb', // BTCVP - no liquidity outside the pool, washtraded
+        '0xa3b81aa35a2462c588639483ebe68a856cb32b0d',  // CFVP - no liquidity outside the pool, washtraded
+      ]
       const ownerTokens = []
       const funcs = [];
       const builder = async (factorys, event) => {
@@ -35,6 +40,7 @@ Object.keys(config).forEach(chain => {
       // Add Uniswap V2 pools
       if (uniswapV2Factory) {
         const pools = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: uniswapV2Factory })
+        blacklistedTokens = blacklistedTokens.concat(pools)
         const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
         const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
         for (let i = 0; i < pools.length; i++) {
@@ -47,7 +53,10 @@ Object.keys(config).forEach(chain => {
       async function addLogs(target, eventAbi) {
         if (!target) return;
 
-        const convert = i => ownerTokens.push([[i.baseToken, i.quoteToken], i.pool])
+        const convert = i => {
+          blacklistedTokens.push(i.pool)
+          ownerTokens.push([[i.baseToken, i.quoteToken], i.pool])
+        }
         let logs = await getLogs2({ api, target, eventAbi, fromBlock, });
         logs.forEach(convert)
       }

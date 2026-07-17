@@ -661,6 +661,19 @@ module.exports = {
       ]
     }
   },
+  "wrappedBNB": {
+    // deadFrom: "2024-12-12",  // migrated to bsc and alexar acting as the bridge now
+    "timetravel": false,
+    "methodology": "Counts the BNB held by the Kava BEP3 \"bnb\" deputy on BNB Beacon Chain, which backs the wrapped BNB minted on Kava.",
+    "bsc": { "owners": ["bnb1jh7uv2rm6339yue8k4mj9406k3509kr4wt5nxn"] }
+  },
+  "wrappedfi": {
+    "timetravel": false,
+    "methodology": "The TVL consists of the underlying capital held in custody.",
+    "ripple": { "owners": ["r4Pr9aBnqN84hbkmJo4HwUtLj63E5vGFyE"] },
+    "celo": { "tokensAndOwners": [[ADDRESSES.null, "0x84d9dcAc2f00F2Cd903E340b5241EB6e5c198572"]] },
+    "ethereum": { "tokensAndOwners": [[ADDRESSES.null, "0xD6873b9592AB601E6cE6a6A781799d54961942F3"]] }
+  },
   "templar": {
     "bsc": {
       "tvl": { "__empty": true },
