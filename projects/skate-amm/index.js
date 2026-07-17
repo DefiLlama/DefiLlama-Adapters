@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/solana')
 const { getObjects } = require("../helper/chain/sui");
@@ -42,23 +43,23 @@ const evm_config = {
 // same balancesAvailable() interface. token0/token1 are the chain-local reserves.
 const v2_evm_config = {
   ethereum: [
-    { pool: '0x1E0C3acCfD4c9A1731d3A0Cdb6b8afBD0f0c219c', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }, // QQQx/USDC
-    { pool: '0x00739d7b2ed5eD3B80d9e10ccBc2468ad1b9C2FD', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }, // NVDAx/USDC
+    { pool: '0x1E0C3acCfD4c9A1731d3A0Cdb6b8afBD0f0c219c', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: ADDRESSES.ethereum.USDC }, // QQQx/USDC
+    { pool: '0x00739d7b2ed5eD3B80d9e10ccBc2468ad1b9C2FD', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: ADDRESSES.ethereum.USDC }, // NVDAx/USDC
   ],
   arbitrum: [
-    { pool: '0x0433CCB013a590eA4231aAC9ddf05bb753c14127', token0: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', token1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9' }, // USDC/USDT
-    { pool: '0xcE61ABbf872C86e855D266D30251F741c1f24225', token0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', token1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' }, // WETH/USDC
-    { pool: '0xfE696c7Cf1FFac9BeDf558C6e610bD978b08619F', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' }, // QQQx/USDC
-    { pool: '0xe1e76F6E987219802fC6bAA61040DA40eE0Be16E', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' }, // NVDAx/USDC
+    { pool: '0x0433CCB013a590eA4231aAC9ddf05bb753c14127', token0: ADDRESSES.arbitrum.USDC_CIRCLE, token1: ADDRESSES.arbitrum.USDT }, // USDC/USDT
+    { pool: '0xcE61ABbf872C86e855D266D30251F741c1f24225', token0: ADDRESSES.arbitrum.WETH, token1: ADDRESSES.arbitrum.USDC_CIRCLE }, // WETH/USDC
+    { pool: '0xfE696c7Cf1FFac9BeDf558C6e610bD978b08619F', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: ADDRESSES.arbitrum.USDC_CIRCLE }, // QQQx/USDC
+    { pool: '0xe1e76F6E987219802fC6bAA61040DA40eE0Be16E', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: ADDRESSES.arbitrum.USDC_CIRCLE }, // NVDAx/USDC
   ],
   bsc: [
-    { pool: '0xf1418c3B237f44fB6A163f3a6e66D7A284154cCd', token0: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', token1: '0x55d398326f99059fF775485246999027B3197955' }, // USDC/USDT (18-dec)
-    { pool: '0x55dc9eDcEFb3D5c918f1E53668096D27F76e30c5', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d' }, // QQQx/USDC
-    { pool: '0x3493491b92C25c06d2E47EAE82Bd3251d313dD39', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d' }, // NVDAx/USDC
+    { pool: '0xf1418c3B237f44fB6A163f3a6e66D7A284154cCd', token0: ADDRESSES.bsc.USDC, token1: ADDRESSES.bsc.USDT }, // USDC/USDT (18-dec)
+    { pool: '0x55dc9eDcEFb3D5c918f1E53668096D27F76e30c5', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: ADDRESSES.bsc.USDC }, // QQQx/USDC
+    { pool: '0x3493491b92C25c06d2E47EAE82Bd3251d313dD39', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: ADDRESSES.bsc.USDC }, // NVDAx/USDC
   ],
   base: [
-    { pool: '0x2103EFCB4A3140F30c745e30Fb360816DC0Da415', token0: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', token1: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2' }, // USDC/USDT
-    { pool: '0x8781383f9e35402Afb2a6a301d35EDf77954d3e1', token0: '0x4200000000000000000000000000000000000006', token1: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }, // WETH/USDC
+    { pool: '0x2103EFCB4A3140F30c745e30Fb360816DC0Da415', token0: ADDRESSES.base.USDC, token1: ADDRESSES.base.USDT }, // USDC/USDT
+    { pool: '0x8781383f9e35402Afb2a6a301d35EDf77954d3e1', token0: ADDRESSES.optimism.WETH_1, token1: ADDRESSES.base.USDC }, // WETH/USDC
   ],
 }
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { buildProtocolExports } = require('./utils')
 
 function stakingOnlyExportFn(chainConfigs) {
@@ -391,10 +392,10 @@ const configs = {
   },
   'ethfi-stake': {
     ethereum: {
-      staking: ['0x86B5780b606940Eb59A062aA85a07959518c0161', '0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB'],
+      staking: ['0x86B5780b606940Eb59A062aA85a07959518c0161', ADDRESSES.ethereum.ETHFI],
     },
     arbitrum: {
-      staking: ['0x86B5780b606940Eb59A062aA85a07959518c0161', '0x7189fb5B6504bbfF6a852B13B7B82a3c118fDc27'],
+      staking: ['0x86B5780b606940Eb59A062aA85a07959518c0161', ADDRESSES.arbitrum.ETHFI],
     },
   },
   'epns': {
