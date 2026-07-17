@@ -6,14 +6,12 @@ const kongEndpoint = 'https://kong.yearn.fi/api/gql'
 // Kong provides both the complete Yearn vault list and each allocator's debt by
 // strategy. The debt relationship is needed because summing every vault's
 // totalAssets would count capital once in the parent and again in a nested vault.
-// tvl.close is used only to discard empty vaults; balances come from on-chain
-// totalAssets calls below.
+// Balances and empty-vault filtering come from on-chain totalAssets calls below.
 const kongQuery = `
   query YearnVaults {
     vaults(yearn: true) {
       address
       chainId
-      tvl { close }
       asset { address }
       debts { strategy currentDebt }
     }
@@ -71,21 +69,34 @@ const blacklist = [
 ].map(i => i.toLowerCase())
 
 async function tvl(api) {
-  const { vaults: data } = await cachedGraphQuery('yearn/vaults', kongEndpoint, kongQuery)
+  const response = await cachedGraphQuery('yearn/vaults', kongEndpoint, kongQuery)
+  const data = response?.vaults
 
   if (!Array.isArray(data))
-    return;
+    throw new Error('Invalid Kong response: expected vaults array')
 
-  const vaults = data
-    .filter(vault => vault.chainId === api.chainId && +vault.tvl?.close > 0)
+  const candidates = data
+    .filter(vault => vault.chainId === api.chainId)
     .filter(vault => !blacklist.includes(vault.address.toLowerCase()))
+  const candidateCalls = candidates.map(vault => vault.address)
+  const candidateBals = await api.multiCall({
+    abi: 'uint256:totalAssets',
+    calls: candidateCalls,
+    permitFailure: true,
+  })
+
+  // Kong's priced TVL can be zero when an underlying asset has no price. Read
+  // every candidate on-chain and discard only vaults with no assets.
+  const activeVaults = candidates
+    .map((vault, i) => ({ vault, balance: candidateBals[i] }))
+    .filter(({ balance }) => BigInt(balance ?? 0) > 0n)
+  const vaults = activeVaults.map(({ vault }) => vault)
+  const bals = activeVaults.map(({ balance }) => balance)
   const calls = vaults.map(vault => vault.address)
 
-  // Build the deductions from Kong's parent -> strategy debts before reading
-  // balances. Each map entry is denominated in the destination vault's asset,
-  // so it can be subtracted directly from that vault's totalAssets result.
+  // Each deduction is denominated in the destination vault's asset, so it can
+  // be subtracted directly from that vault's totalAssets result.
   const incomingDebtByVault = buildIncomingDebtByVault(vaults)
-  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls })
 
   // V2 vaults expose token(), while ERC-4626/V3 vaults expose asset(). Trying
   // both lets the same loop cover both generations.
