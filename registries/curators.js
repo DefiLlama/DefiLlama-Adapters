@@ -390,6 +390,11 @@ const configs = {
   "feather": {
     config: {
       blockchains: {
+        ethereum: {
+          morpho: [
+            '0x9f3BEbF1159323f78E5c97Cc30f10907B71fCf8C', // Feather USDC vault
+          ],
+        },
         sei: {
           morpho: [
             '0x015F10a56e97e02437D294815D8e079e1903E41C',
@@ -596,6 +601,11 @@ const configs = {
             '0x517aBc7f49DFF75b57A88b9970eF35D6e4C3BD49',
           ],
         },
+        monad: {
+          accountableVaults: [
+            '0x03ef37626BC7C7B3F6cEA4Bcbfeb7764B51E22fB'
+          ]
+        }
       }
     },
   },

@@ -248,7 +248,7 @@ module.exports = {
   vishwa: async () => {
     const staticAddresses = await getConfig('vishwa', undefined, {
       fetcher: async () => {
-        const { data } = await axios.get('https://api.btcvc.vishwanetwork.xyz/btc/address')
+        const { data } = await axios.get('https://vault.vishwalab.com/vapi/btc/address')
         return data.data
       }
     })
@@ -272,7 +272,7 @@ module.exports = {
     })
   },
   teleswap: async () => {
-    const  { data: { lockers } } = await getConfig('yala/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
+    const  { data: { lockers } } = await getConfig('teleswap/bitcoin', 'https://api.teleportdao.xyz/api/v1/teleswap/lockers/')
     return lockers.filter(l => l.type === 'BTC').map(l => l.sourceAddress)
   },
   rskBridge: async (api) => {

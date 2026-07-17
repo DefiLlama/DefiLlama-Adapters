@@ -1760,6 +1760,17 @@ const configs = {
       ]
     },
   },
+  "based-alpha": {
+    "methodology": "TVL is the ETH held by the Launchpad contract, which custodies every live bonding curve's reserves (plus accrued, unclaimed protocol/creator fees and any transient WETH from migrations). Liquidity that has graduated to Based DEX V3 pools is excluded and counted under the DEX.",
+    "start": "2026-07-15",
+    "robinhood": {
+      "owner": "0x5640c62fe43a64f9ae0811114874e95a819db744",
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.robinhood.WETH
+      ]
+    },
+  },
   "based-v2": {
     "fantom": {
       "tvl": {
@@ -2385,6 +2396,23 @@ const configs = {
           "0xa90298e5B1203A2DD0006A75EABE158989C406Fb"
         ]
       }
+    },
+  },
+  "bluefun": {
+    "methodology": "Counts native assets held in BlueFun bonding-curve markets on Base and Robinhood Chain before graduation. Assets are withdrawn from a curve as it graduates into Uniswap v4, whose pool liquidity is counted by the DEX adapter instead.",
+    "base": {
+      "owners": [
+        '0xb503b0ef06ec10554f4d960e08869877a41498dd',
+        '0x7d42dd1435e9567C1edFb513C45c8eA82fe03a38',
+      ],
+      "token": ADDRESSES.null
+    },
+    "robinhood": {
+      "owners": [
+        '0x2d6d77652facbbcae05c0dc3aed792b94cd61fa8',
+        '0x2F46a783C1314e160d673F927464d85B7364D807',
+      ],
+      "token": ADDRESSES.null
     },
   },
   "blur": {
@@ -15949,6 +15977,23 @@ const configs = {
       ]
     },
   },
+  "hoodpump": {
+    "methodology": "TVL is the WETH side of the Uniswap V3 liquidity positions locked in the HoodPump Liquidity Locker. Each HoodPump launch locks its LP NFT in the locker; only the WETH across those positions is counted (HoodPump-launched tokens are excluded). Liquidity lives in Uniswap V3 pools, so this is flagged doublecounted.",
+    "doublecounted": true,
+    "robinhood": {
+      "owner": "0x612D7f73CF0148E9a1b639e819D588b9fF915A9d",
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+      "uniV3ExtraConfig": { "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3" }
+    }
+  },
+  "hoodz": {
+    "methodology": "TVL is the ETH prize pool held by the HOODZ game contract on Robinhood Chain, awaiting automatic distribution to round winners. Players enter rounds with $HOODZ tokens; winners are paid in ETH directly from this contract.",
+    "robinhood": {
+      "owner": "0x2Ac493f86D1925c3f9C34Ce1875Bb16e3CfF960c",
+      "token": ADDRESSES.robinhood.WETH
+    }
+  },
   "hskhodlium": {
     "methodology": "TVL includes all native HSK tokens staked at the main contract on HashKey Chain. Token price is derived from its Ethereum-wrapped version.",
     "hsk": {
@@ -17230,6 +17275,12 @@ const configs = {
         "0x56072C95FAA701256059aa122697B133aDEd9279",
         "0xA27EC0006e59f245217Ff08CD52A7E8b169E62D2"
       ]
+    },
+    "robinhood": {
+      "owners": [
+        "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
+      ],
+      "fetchBlockscoutTokens": true
     },
   },
   "linqai": {
@@ -25006,6 +25057,41 @@ const configs = {
       ]
     },
   },
+  "slvr": {
+    "methodology": "TVL sums the native ETH held by the SLVR game contracts on behalf of users: live round pots and carry pools plus unclaimed winner emissions (SlvrGridLottery), the accumulating jackpot (SlvrJackpot), pending veNFT staker rewards (SlvrVoteEscrowStaking), auto-commit user deposits (SlvrAutoCommit), locked winnings (SlvrClaimLocker) and undistributed growth-fund revenue (SlvrGrowthFund). Staking counts SLVR locked in game contracts and into withdrawable vote-escrow NFTs held by SlvrVoteEscrow. Pool2 counts SLVR/WETH LP staked in SlvrLiquidityStaking.",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0x284Eb4016305Fa7FbC162Fb68F27227271001c7f",
+          "0x24b723e2da172961f60cd6a4699654c89d4ac6cd",
+          "0xaF68598eBd245DC3cB92FF16E9Ba1814DD137200",
+          "0x314c8D5755468224AC60c36FB5494F0D7D5Abb3B",
+          "0x1399115FcF2a9C41e5080547A9214156A4Bf8a45",
+          "0x2fD3BE762eb9d8eE293dD923D8809Dbd3D653dd7",
+          "0x1a1633fdb2f19082099a6ad6c3d4f1ec6bce9729",
+        ],
+        "token": ADDRESSES.null
+      },
+      "staking": {
+        "owners": [
+          "0x284Eb4016305Fa7FbC162Fb68F27227271001c7f",
+          "0x24b723e2da172961f60cd6a4699654c89d4ac6cd",
+          "0xaF68598eBd245DC3cB92FF16E9Ba1814DD137200",
+          "0x314c8D5755468224AC60c36FB5494F0D7D5Abb3B",
+          "0x1399115FcF2a9C41e5080547A9214156A4Bf8a45",
+          "0x2fD3BE762eb9d8eE293dD923D8809Dbd3D653dd7",
+          "0x1a1633fdb2f19082099a6ad6c3d4f1ec6bce9729",
+          "0xd9b8FBD61033145c5496132153CE675756313B71"
+        ],
+        "token": "0x791229E3EbD6CFdC3D8157f48722684173C29aD9",
+      },
+      "pool2": {
+        "owner": "0x7D888f4Ca88Fc3578aEfc45C82482Bd66415DfeA",
+        "token": "0xe365b92239097Ed3322131411DbE15a5c4068eff",
+        "resolveLP": true
+      }
+    }
+  },
   "snarklaunch": {
     "methodology": "TVL for SNRK staking is computed by summing the balance of SNRK tokens held by the staking contract.",
     "era": {
@@ -28834,6 +28920,44 @@ const configs = {
         ]
       ]
     },
+  },
+  "wikicious": {
+    "arbitrum": {
+      "tvl": {
+        "owners": [
+          "0x4533E181FdF5b0C66e0816992F38c23d57e42Df8",  
+          "0x723f653a3DEFC45FB934BBF81f1411883a977468", 
+          "0x9C63c27B8A73A990a2D89141622A639a2363b88A",
+          "0x5e73fa11c2Fa157dbE59E7B8F7f1b3101c5c6004",
+          "0x95F3Cf765b479478c44D0EE932f17444ADA6A9a1",
+          "0xf2cD47C16CCA38aC77e6ab344E04e7E97C400748",
+          "0x8897A8Ae133b0DD71ef6E28B1A8efB42f1Ef78d4",
+          "0x53b6A9bE66C68090c26d4BE74f6eB916578F3A0B",
+          "0x74635CFa33EEAe220367fF10C598e098a29e9246",
+          "0x9e09dF7E84aBf818882a259Ef897a55f25CE1163",
+          "0xE019e13abdd7160f8467D55E3e190022295dEdc1",
+          "0x42DB4776FFB45f2cc5663407e7953935f63fd40E",
+          "0x08FC8f870Df09A7265D1D06a7A95C41cEf98d9E6", 
+        ],
+        "tokens": [
+          ADDRESSES.arbitrum.USDC_CIRCLE,
+          ADDRESSES.arbitrum.WETH,
+          ADDRESSES.arbitrum.WBTC,
+          ADDRESSES.arbitrum.ARB,
+          ADDRESSES.arbitrum.USDT,
+          ADDRESSES.arbitrum.WSTETH,
+          '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
+        ]
+      },
+      "staking": {
+        "owners": [
+          "0xDD551D705fAbD4380D2C95F7345b671cE3310bd2",
+          "0x6ac54F360315E0B3Dae455ad371A06d154b410B2",
+          "0x016886FF6fdab890Dd03aE7a1D6535ef57f06F92",
+        ],
+        "token": "0xa681Bf6f0449ABc4E98DCa3468488Fe1b24FdD0F"
+      }
+    }
   },
   "windfall": {
     "methodology": "Counts the number of tokens in the Windfall contract.",
@@ -41257,6 +41381,18 @@ const configs = {
         ]
       ]
     },
+  },
+  "ymym-meme": {
+    "methodology": "TVL is the value of WETH in the permanently locked Uniswap V3 LP positions.",
+    "doublecounted": true,
+    "robinhood": {
+      "owner": "0x624fb911D5c1F9004D9ac21f85Eea163922DDc7f",
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+      "uniV3ExtraConfig": {
+        "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
+      }
+    }
   },
   "zamm": {
     "methodology": "Sums raw wei balance of ETH in zAMM.",

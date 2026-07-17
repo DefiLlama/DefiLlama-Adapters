@@ -256,6 +256,7 @@ const configs = {
       vRPCQuarterlyVault: '0x94f7ebc6ae0819a4b4e231ae6ddaaf9bfd2a1a86',
       vRPCSemiYearlyVault: '0xee26bb0989691735c997dfdc49a4a607f75e190b',
       pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
+      apcVault: '0xd0428799fbc35557834d33121ba4472692c8908a',
     }),
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
   },
@@ -372,6 +373,13 @@ const configs = {
       '0xBC91a7a0eE37085af193C61747ecE693979Ec0C1',
       '0x018BeE125A17D456E6dacE22A66E8B9aF3c69449',
     ],
+  },
+  'primestaking-xyz': {
+    xdc: ['0xDc74c0DaED82ae94486DeeF22991d2F54173c734'],
+  },
+  'y10k-capital': {
+    ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'],
+    sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'],
   }
 }
 

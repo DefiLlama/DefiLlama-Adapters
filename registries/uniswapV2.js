@@ -1035,6 +1035,9 @@ const uniV2Configs = {
   'kittypunch': {
     flow: '0x29372c22459a4e373851798bFd6808e71EA34A71',
   },
+  'frothswap': {
+    robinhood: '0x2B1b1FB977e1CD5f18F45571C64E373b1A73dD7f',
+  },
   'kittypunch-kona-v2': {
     abstract: '0x7c2e370CA0fCb60D8202b8C5b01f758bcAD41860',
   },
@@ -2876,6 +2879,21 @@ const uniV2Configs = {
   },
   'nadfun-v2': {
     monad: '0xA25b13127e63ddae6d0b35570FF3D39dBD621001',
+  },
+  'robinswap': {
+    robinhood: '0xa95DA9b9fCef09A07F99444fE9304457d6ECdccA',
+  },
+  'swaphood': {
+    robinhood: '0xE7206Ecac3A51afe7e6179182ad4130A26068dD1',
+  },
+  'bitblocks-finance': {
+    bsc: '0x65b3cc7a7cb167221266fc93884717de2dbd074e',
+  },
+  'catnip': {
+    robinhood: {
+      factory: '0x002EC9782d70f4e79396c58964D4691cA648FB49',
+      staking: ['0x5d00D31C9A464d51679A88d0F073401aA6Fc5d6B', '0xb06f3BE6d2b2D04e6e9276d99b3F134F5429934b'],
+    }
   },
 }
 

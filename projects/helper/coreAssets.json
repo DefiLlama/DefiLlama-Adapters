@@ -178,6 +178,7 @@
     "GOVI": "0x43df9c0a1156c96cea98737b511ac89d0e2a1f46",
     "DSC": "0x5D4E735784293a0A8D37761AD93C13A0DD35c7E7",
     "DGC": "0xf7E2D612F1A0ce09ce9fC6FC0b59C7fD5b75042F",
+    "PUSD": "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB",
     "aPolWMATIC": "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97"
   },
   "xdai": {
@@ -1640,6 +1641,9 @@
     "WAURA": "0xDE47A655a5d9904BD3F7e1A536D8323fBD99993A",
     "USDT": "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd"
   },
+  "axiome": {
+    "AXM": "uaxm"
+  },
   "shibarium": {
     "WETH": "0x8ed7d143ef452316ab1123d28ab302dc3b80d3ce",
     "BONE_0": "0xc76f4c819d820369fb2d7c1531ab3bb18e6fe8d8",
@@ -2782,6 +2786,14 @@
   },
   "intuition": {
     "WTRUST": "0x81cfb09cb44f7184ad934c09f82000701a4bf672"
+  },
+  "quai": {
+    "WQUAI": "0x006c3e2aaae5db1bcd11a1a097ce572312eaddbb",
+    "USDT": "0x0049f7cbca3556c2dfae62aafa7015f99de1b8f5"
+  },
+  "gensyn": {
+    "USDC": "0x5b32c997211621d55a89Cc5abAF1cC21F3A6ddF5",
+    "AI": "0x4e742319f6b0fec4afa504fc8ed3ceab0fb751a2"
   },
   "eden": {
     "WTIA": "0x00000000000000000000000000000000Ce1e571A"

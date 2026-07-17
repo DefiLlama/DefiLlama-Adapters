@@ -331,6 +331,7 @@ const aaveConfigs = {
       addressesProviderRegistry: '0xEcbDd440C7a929d7524784Af634dF9EB0747b9e7',
       dataHelpers: ['0x99e8269dDD5c7Af0F1B3973A591b47E8E001BCac'],
       v3: true,
+      isInsolvent: true,
     },
   },
   'sio2': {
