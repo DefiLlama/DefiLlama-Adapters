@@ -1,27 +1,22 @@
-const axios = require('axios')
-const API = "https://api.multipli.fi/multipli/v1/external-aggregator/defillama/tvl/"
+'use strict'
 
-// API was reporting rwaUSDi total supply in balances
-const rwaUSDis = {
-  ethereum: '0xa39986f96b80d04e8d7aeaaf47175f47c23fd0f4',
-  base: '0xd74FB32112b1eF5b4C428Fead8dA8d85A0019009',
-  monad: '0x650b616b46ff94000eb115926ab8393b90788d76',
-  arbitrum: '0xA39986F96B80d04e8d7AeAaF47175F47C23FD0f4'
-}
+const { chains } = require('./config')
+const { calculateTvl } = require('./accounting')
+const { getLegacyBalances } = require('./legacy-v1')
 
-const tvl = async (api) => {
-  const { data } = await axios.get(API)
-  const balances = data.payload[api.chain] ?? {}
-  const blacklisted = rwaUSDis[api.chain]?.toLowerCase()
-  if (blacklisted) {
-    const target = `${api.chain}:${blacklisted}`
-    for (const key of Object.keys(balances)) {
-      if (key.toLowerCase() === target) delete balances[key]
-    }
+for (const [chain, config] of Object.entries(chains)) {
+  module.exports[chain] = {
+    tvl: api => calculateTvl(api, config, getLegacyBalances),
   }
-  return balances
 }
 
-const chains = ['ethereum', 'bsc', 'avax', 'base', 'monad', 'arbitrum']
+// V1 is a current-state endpoint until the remaining cohort is migrated.
 module.exports.timetravel = false
-chains.forEach(chain => { module.exports[chain] = { tvl } })
+
+module.exports.methodology =
+  'TVL is the underlying assets (USDC, USDT, BTC variants) held in Multipli ' +
+  'V2 yield vaults, read on-chain via totalAssets(), plus legacy V1 user ' +
+  'balances on Ethereum and BNB Chain that have not yet migrated, reported ' +
+  'by the Multipli API. Nothing is counted twice: V1 and V2 balances never ' +
+  'overlap, vault share tokens (xTokens) are excluded, and rwaUSDi is ' +
+  'tracked separately under the Multipli rwaUSDi child protocol.'
