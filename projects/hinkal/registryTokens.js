@@ -980,8 +980,8 @@ const BLAST_REGISTRY_TOKENS = [
 ];
 
 const TRON_REGISTRY_TOKENS = [
-  "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", // USDT
-  "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", // USDC
+  ADDRESSES.tron.USDT, // USDT
+  ADDRESSES.tron.USDC, // USDC
 ];
 
 const registryTokensByChain = {

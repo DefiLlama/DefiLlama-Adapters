@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const { getUniTVL } = require('../helper/unknownTokens')
@@ -9,9 +10,9 @@ const DLMM_FACTORY = '0xd60Cf7876a1E7B8fcf963722A05039849fde5387'
 
 // New pools were deployed without factory so they're not discoverable via allPools()/allPoolsLength()
 const NEW_VAMM_POOLS = [
-  { pool: '0xD215650cb628113A64D938164Ee5CD72293F9ea6', token0: '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', token1: '0xd4c93eD1843606f92CccA078941f3d52A585982f' }, // AEON/ETH
-  { pool: '0x38be0a822326D51fdF37a9b44Cb6dcA49A59E288', token0: '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', token1: '0xd4c93eD1843606f92CccA078941f3d52A585982f' }, // AEON/USDG
-  { pool: '0x2732E1312e5Bba5729534E9d94D44c090b200F14', token0: '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', token1: '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168' }, // ETH/USDG
+  { pool: '0xD215650cb628113A64D938164Ee5CD72293F9ea6', token0: ADDRESSES.robinhood.WETH, token1: '0xd4c93eD1843606f92CccA078941f3d52A585982f' }, // AEON/ETH
+  { pool: '0x38be0a822326D51fdF37a9b44Cb6dcA49A59E288', token0: ADDRESSES.robinhood.USDG, token1: '0xd4c93eD1843606f92CccA078941f3d52A585982f' }, // AEON/USDG
+  { pool: '0x2732E1312e5Bba5729534E9d94D44c090b200F14', token0: ADDRESSES.robinhood.WETH, token1: ADDRESSES.robinhood.USDG }, // ETH/USDG
 ]
 const NEW_VAMM_TOKENS_AND_OWNERS = NEW_VAMM_POOLS.flatMap(p => [[p.token0, p.pool], [p.token1, p.pool]])
 
@@ -30,8 +31,8 @@ const CL_POOLS = [
 ]
 const CL_TOKENS = [
   '0xd4c93eD1843606f92CccA078941f3d52A585982f', // AEON
-  '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', // WETH
-  '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', // USDG
+  ADDRESSES.robinhood.WETH, // WETH
+  ADDRESSES.robinhood.USDG, // USDG
   '0xc6911796042b15d7Fa4F6CDe69e245DdCd3d9c31', // VIRTUAL (real Virtuals Protocol token, not issued by AEON)
   '0x56A98Db16Cf501b686c14BA00a5DeC02E87083FA', // ROBINFUN (real, independently-deployed token, not issued by AEON)
   '0x020bfC650A365f8BB26819deAAbF3E21291018b4', // CASHCAT (real, independently-deployed token, not issued by AEON)

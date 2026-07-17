@@ -7235,7 +7235,7 @@ const configs = {
       owner: '0x14b107cf534239c59571b066cb6497a321da897c', // bridge
       tokens: [
         '0x4FdBDaF4800fc28c22a967d23a343aCCE34315a4',
-        '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168',
+        ADDRESSES.robinhood.USDG,
       ],
     }
   },
@@ -26262,7 +26262,7 @@ const configs = {
         ADDRESSES.starknet.WBTC,
         ADDRESSES.starknet.tBTC,
         "0x0593e034dda23eea82d2ba9a30960ed42cf4a01502cc2351dc9b9881f9931a68",
-        "0x0787150e306e6eae6e3f79dea881770e8bbff2c1b8eb490f969669ee945b3135"
+        ADDRESSES.starknet.STRKBTC
       ]
     },
   },

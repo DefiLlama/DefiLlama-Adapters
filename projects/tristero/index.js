@@ -2,7 +2,7 @@ const { lendingMarket } = require("../helper/methodologies");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const AUSD = '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a';
+const AUSD = ADDRESSES.mantle.AUSD;
 const SHARED_MARGIN_VAULT = '0xB49781E8c39c75f413C1178f395bF68b0BEE8d00';
 const SHARED_ESCROW = '0xe400000df2f227133ff74c662c9e935439471d2e';
 const V3_VAULT_START = '2026-06-09';

@@ -2284,7 +2284,7 @@ const configs = {
     arbitrum: {
       tokens: [nullAddress],
       owners:gmxOwners,
-      ownTokens: ['0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a'], // GMX
+      ownTokens: [ADDRESSES.arbitrum.GMX], // GMX
     },
     avax: {
       tokens: [nullAddress],
