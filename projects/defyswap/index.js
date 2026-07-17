@@ -6,9 +6,10 @@ const masterchef = "0x53e986884c55c9AEDB7f003583f350EE789505D0";
 const dfy = "0x84b0b7718f8480a9eda3133fd385d7edf2b1d1c4";
 
 module.exports = {
+  deadFrom: '2022-05-22',
   misrepresentedTokens: true,
   echelon: {
-    tvl: () => ({}),
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
   },
   fantom: {
     tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),

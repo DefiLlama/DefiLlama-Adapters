@@ -4,6 +4,7 @@ const { staking: stakingFn } = require('../projects/helper/staking')
 const { pool2: pool2Fn } = require('../projects/helper/pool2')
 const { getBTCExport } = require('../projects/helper/bitcoin-book')
 const data1 = require('./sumTokens/data1')
+const data2 = require('./sumTokens/data2')
 const covalent = require('./sumTokens/covalent')
 
 // Registry for adapters whose TVL (and optional staking/pool2/borrowed buckets) are static sumTokens calls.
@@ -24712,6 +24713,33 @@ const configs = {
       }
     },
   },
+  "saffron": {
+    "misrepresentedTokens": true,
+    "methodology": "We count liquidity for Saffon V2 on the Pools (LP) through SaffronStakingV2 Contract",
+    "ethereum": {
+      "tvl": {
+        "__empty": true
+      },
+      "staking": {
+        "__staking": [
+          "0x4eB4C5911e931667fE1647428F38401aB1661763",
+          "0xb753428af26e81097e7fd17f40c88aaa3e04902c"
+        ]
+      },
+      "pool2": {
+        "__staking": [
+          [
+            "0x4eB4C5911e931667fE1647428F38401aB1661763"
+          ],
+          [
+            "0xC76225124F3CaAb07f609b1D147a31de43926cd6",
+            "0x23a9292830fc80db7f563edb28d2fe6fb47f8624",
+            "0x83887500cf852cb4af33d74c148c9c7c35f91620"
+          ]
+        ]
+      }
+    },
+  },
   "sapphiremine": {
     "polygon": {
       "owner": "0x7146854856E3f373675105556c7D964B329606be",
@@ -41817,7 +41845,7 @@ const configs = {
   },
 }
 
-Object.assign(configs, data1, covalent)
+Object.assign(configs, data1, data2, covalent)
 
 const allProtocols = {}
 for (const [name, cfg] of Object.entries(configs)) {
