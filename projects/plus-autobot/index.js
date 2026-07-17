@@ -2,7 +2,11 @@ const { fetchURL } = require("../helper/utils");
 
 async function fetch() {
   const response = await fetchURL("https://bot.plusmain.net/api/defillama/tvl");
-  return response.data.tvl;
+  
+  // 핵심 포인트: 단순 숫자가 아닌, tether(USDT 단위) 객체 형태로 반환해야 봇이 인식합니다!
+  return { 
+    tether: response.data.tvl 
+  };
 }
 
 module.exports = {
