@@ -26,5 +26,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'USDC collateral backing USDCx, read per destination domain from the xReserve contract via balanceOfNativeCollateral. The collateral is physically custodied in the shared Circle Gateway wallet, so this adapter is marked doublecounted and excluded from parent TVL.',
+  doublecounted: true,
   ethereum: { tvl },
 }
