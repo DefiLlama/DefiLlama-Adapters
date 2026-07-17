@@ -60,4 +60,139 @@ module.exports = {
       "tvl": { "owner": "0x5520385bFcf07Ec87C4c53A7d8d65595Dff69FA4", "tokens": [ADDRESSES.monad.WMON, ADDRESSES.monad.WETH, ADDRESSES.monad.USDC] }
     }
   },
+  "everclear": {
+    "methodology": "TVL counts all tokens held inside Everclear Spoke contracts (WETH, USDC, USDT, xPufETH).",
+    "ethereum": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","0xdac17f958d2ee523a2206206994597c13d831ec7","0xD7D2802f6b19843ac4DfE25022771FD83b5A7464"]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "owners": ["0x7189C59e245135696bFd2906b56607755F84F3fD","0x26CFF54f11608Cd3060408690803AB4a43f462f2"],
+        "tokens": ["0x7ceb23fd6bc0add59e62ac25578270cff1b9f619","0x3c499c542cef5e3811e1192ce70d8cc03d5c3359","0xc2132d05d31c914a87c6611c10748aeb04b58e8f"]
+      }
+    },
+    "bsc": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x2170ed0880ac9a755fd29b2688956bd959f933f8","0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d","0x55d398326f99059ff775485246999027b3197955"]
+      }
+    },
+    "avax": {
+      "tvl": {
+        "owners": ["0x9aA2Ecad5C77dfcB4f34893993f313ec4a370460","0x7EB63a646721de65eBa79ffe91c55DCE52b73c12"],
+        "tokens": ["0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab","0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e","0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7"]
+      }
+    },
+    "arbitrum": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x82af49447d8a07e3bd95bd0d56f35241523fbab1","0xaf88d065e77c8cC2239327C5EDb3A432268e5831","0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"]
+      }
+    },
+    "optimism": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x4200000000000000000000000000000000000006","0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85","0x94b008aa00579c1307b0ef2c499ad98a8ce58e58"]
+      }
+    },
+    "base": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x4200000000000000000000000000000000000006","0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2"]
+      }
+    },
+    "xdai": {
+      "tvl": {
+        "owners": ["0xe0F010e465f15dcD42098dF9b99F1038c11B3056","0xeFa6Ac3F931620fD0449eC8c619f2A14A0A78E99"],
+        "tokens": ["0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1","0x2a22f9c3b484c3629090feed35f17ff8f88f76f0","0x4ecaba5870353805a9f068101a40e0f32ed605c6"]
+      }
+    },
+    "unichain": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x4200000000000000000000000000000000000006","0x078D782b760474a361dDA0AF3839290b0EF57AD6","0x588CE4F028D8e7B53B687865d6A67b3A54C75518"]
+      }
+    },
+    "era": {
+      "tvl": {
+        "owners": ["0x7F5e085981C93C579c865554B9b723B058AaE4D3","0xbD82E5503461913a70566E66a454465a46F5C903"],
+        "tokens": ["0x5aea5775959fbc2557cc8789bc1bf90a239d9a91","0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4","0x493257fD37EDB34451f62EDf8D2a0C418852bA4C"]
+      }
+    },
+    "mantle": {
+      "tvl": {
+        "owners": ["0xe0F010e465f15dcD42098dF9b99F1038c11B3056","0xeFa6Ac3F931620fD0449eC8c619f2A14A0A78E99"],
+        "tokens": ["0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111","0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9"]
+      }
+    },
+    "apechain": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0xcF800F4948D16F23333508191B1B1591daF70438","0x6234E5ef39B12EFdFcbd99dd7F452F27F3fEAE3b"]
+      }
+    },
+    "scroll": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x5300000000000000000000000000000000000004","0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4","0xf55bec9cafdbe8730f096aa55dad6d22d44099df"]
+      }
+    },
+    "ink": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x4200000000000000000000000000000000000006","0x0200C29006150606B650577BBE7B6248F58470c1"]
+      }
+    },
+    "berachain": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590"]
+      }
+    },
+    "ronin": {
+      "tvl": {
+        "owners": ["0xdCA40903E271Cc76AECd62dF8d6c19f3Ac873E64","0x1FC1f47a6a7c61f53321643A14bEc044213AbF95"],
+        "tokens": ["0xc99a6a985ed2cac1ef41640596c5a5f9f4e19ef5","0x0b7007c13325c48911f73a2dad5fa5dcbf808adc"]
+      }
+    },
+    "mode": {
+      "tvl": {
+        "owners": ["0xeFa6Ac3F931620fD0449eC8c619f2A14A0A78E99","0xD1daF260951B8d350a4AeD5C80d74Fd7298C93F4"],
+        "tokens": ["0x4200000000000000000000000000000000000006","0xf0F161fDA2712DB8b566946122a5af183995e2eD","0xd988097fb8612cc24eeC14542bC03424c656005f"]
+      }
+    },
+    "zircuit": {
+      "tvl": {
+        "owners": ["0xD0E86F280D26Be67A672d1bFC9bB70500adA76fe","0x2Ec2b2CC1813941b638D3ADBA86A1af7F6488A9E"],
+        "tokens": ["0x9346A5043C590133FE900aec643D9622EDddBA57"]
+      }
+    },
+    "linea": {
+      "tvl": {
+        "owners": ["0xc24dC29774fD2c1c0c5FA31325Bb9cbC11D8b751","0xC1E5b7bE6c62948eeAb40523B33e5d0121ccae94"],
+        "tokens": ["0xA219439258ca9da29E9Cc4cE5596924745e12B93","0x176211869cA2b568f2A7D4EE941E073a821EE1ff","0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"]
+      }
+    },
+    "blast": {
+      "tvl": {
+        "owners": ["0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7","0x4e2bbbFb10058E0D248a78fe2F469562f4eDbe66"],
+        "tokens": ["0x4300000000000000000000000000000000000004"]
+      }
+    },
+    "taiko": {
+      "tvl": {
+        "owners": ["0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7","0x4e2bbbFb10058E0D248a78fe2F469562f4eDbe66"],
+        "tokens": ["0x2def195713cf4a606b49d07e520e22c17899a736","0x07d83526730c7438048D55A4fc0b850e2aaB6f0b","0xA51894664A773981C6C112C43ce576f315d5b1B6"]
+      }
+    },
+    "sonic": {
+      "tvl": {
+        "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816","0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
+        "tokens": ["0x309C92261178fA0CF748A855e90Ae73FDb79EBc7"]
+      }
+    },
+  },
 }

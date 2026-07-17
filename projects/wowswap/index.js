@@ -35,8 +35,3 @@ Object.keys(chains).forEach(chain => {
     staking: staking(xWOW, WOW)
   }
 })
-
-module.exports.heco.tvl = () => ({})
-module.exports.heco.staking = () => ({})
-// module.exports.kava.tvl = () => ({})
-// module.exports.kava.staking = () => ({})

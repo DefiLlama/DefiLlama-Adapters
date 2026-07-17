@@ -98,6 +98,38 @@ const configs = {
       staking: ['0x7DeD7f9D3dF541190F666FB6897483e46D54e948', '0x8d9fb713587174ee97e91866050c383b5cee6209'],
     },
   },
+  'xrune': {
+    methodology: 'TVL comes from the Staking Vaults and Launchpad Tiers',
+    ethereum: {
+      staking: [[
+        '0x93f5dc8bc383bb5381a67a67516a163d1e56012a',
+        '0x2a092e401507dD4877cCd0b4Ee70B769452DbB7a',
+        '0xc20434f595c32B5297A737Cb173382Dd2485C2cC',
+        '0x8ba0C510Da4507D1F5f73ff9E1FcD14Edc819EB2',
+        '0x817ba0ecafD58460bC215316a7831220BFF11C80',
+      ], '0x69fa0feE221AD11012BAb0FdB45d444D3D2Ce71c'],
+    },
+  },
+  'zeepr': {
+    arbitrum: {
+      staking: ['0xbb0390cf2586e9b0a4faadf720ae188d140e9fd5', '0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13'],
+    },
+    core: {
+      staking: ['0x60101E4388D1c2B389d78daC29d37Ee2DAc88e07', ['0x1281E326C6e4413A98DafBd0D174a4Ae07ff4223', ADDRESSES.core.WCORE]],
+    },
+    bsc: {
+      staking: ['0x096e9A8B7137bEBA3A043b800D3d227d5abB077a', '0x55CBAC75C1af769eB7FD37d27A5cb6437EB29abB'],
+    },
+    manta: {
+      staking: ['0x37D8A51d9621041d6b9276ea8a835553b31698c7', '0x0863C7BcdB6Cf6edd5dc4bbd181A8D555AedbfBd'],
+    },
+    polygon: {
+      staking: ['0xCb9A02B704640ffcf43D6a8DAe5096fc8a44021c', '0x49fdEA2192b04e54E6D1cB5E3B3b996BAA6f621F'],
+    },
+    zkfair: {
+      staking: ['0x37D8A51d9621041d6b9276ea8a835553b31698c7', '0x5d26DeA980716e4aBa19F5B73Eb3DCcE1889F042'],
+    },
+  },
   'velaspad': {
     velas: {
       staking: ['0xdb0422A1C78C2064Ce5Af1B75412294F5B6D7Edf', '0xa065e0858417dfc7abc6f2bd4d0185332475c180'],
