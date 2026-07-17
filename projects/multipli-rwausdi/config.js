@@ -24,4 +24,8 @@ module.exports = {
     token: '0xA39986F96B80d04e8d7AeAaF47175F47C23FD0f4',
     excludedHolders: [],
   },
+  pharos: {
+    token: '0xA39986F96B80d04e8d7AeAaF47175F47C23FD0f4',
+    excludedHolders: [],
+  },
 }
