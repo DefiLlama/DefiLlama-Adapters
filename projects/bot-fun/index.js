@@ -13,7 +13,7 @@ async function tvl(api) {
     abi: 'uint256:totalAccruedUnclaimed',
     permitFailure: true,
   })
-  api.add('celestia', -Number(accruedRewards ?? 0) / 1e18, { skipChain: true })
+  api.add(ADDRESSES.null, -(accruedRewards ?? 0))
 }
 
 module.exports = {
