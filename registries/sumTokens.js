@@ -7133,6 +7133,7 @@ const configs = {
     },
   },
   "circle-xreserve": {
+    "doublecounted": true,
     "ethereum": {
       "owner": "0x77777777Dcc4d5A8B6E418Fd04D8997ef11000eE",
       "token": ADDRESSES.ethereum.USDC
