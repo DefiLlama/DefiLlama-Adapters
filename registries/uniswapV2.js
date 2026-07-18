@@ -127,6 +127,18 @@ const uniV2Configs = {
   },
   'artexswap_xyz': { artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD', },
   'sheriff-v2': { robinhood: '0x10F7D1eF77f58181484936170430DF13539C5162', },
+  'up-v2': {
+    start: '2026-07-10',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      fetchBalances: true,
+      hasStablePools: true,
+    },
+    robinhood: '0xFA5429AEBa338BEa2BFcc1b9a889862Ee395bc28',
+  },
   'astarexchange': {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
