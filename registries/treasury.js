@@ -649,6 +649,24 @@ const configs = {
       tokens: [ADDRESSES.bsc.USDT],
     },
   },
+  'treasury/apyee': {
+    ethereum: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.ethereum.USDC],
+    },
+    base: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.base.USDC],
+    },
+    arbitrum: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
+    },
+    bsc: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.bsc.USDC],
+    },
+  },
   'treasury/aragon': {
     ethereum: {
       tokens: [
