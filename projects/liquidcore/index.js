@@ -1,16 +1,25 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const ROUTER = '0x625aC1D165c776121A52ff158e76e3544B4a0b8B'
-const ROUTER_FROM_BLOCK = 28736539
-const LEGACY_POOLS = [
-  '0xA7478A5ff7cB27A8008D6D90785db10223bc6087',
-  '0xD3994A6CF46cA91536376f89aCDadf92eD289a9F',
-]
+const chainConfig = {
+  hyperliquid: {
+    router: '0x625aC1D165c776121A52ff158e76e3544B4a0b8B',
+    fromBlock: 28736539,
+    legacyPools: [
+      '0xA7478A5ff7cB27A8008D6D90785db10223bc6087',
+      '0xD3994A6CF46cA91536376f89aCDadf92eD289a9F',
+    ],
+  },
+  robinhood: {
+    router: '0x322F277BfB7Ba9c196194ad18011377A0fF55Fb3',
+    fromBlock: 11400065
+  }
+}
 
 async function tvl(api) {
-  const pools = [...LEGACY_POOLS]
-  if (await api.getBlock() >= ROUTER_FROM_BLOCK) {
-    const registered = await api.call({ target: ROUTER, abi: 'address[]:getPools' })
+  const { router, legacyPools = [], fromBlock } = chainConfig[api.chain]
+  const pools = [...legacyPools]
+  if (await api.getBlock() >= fromBlock) {
+    const registered = await api.call({ target: router, abi: 'address[]:getPools' })
     for (const pool of registered)
       if (pool !== ADDRESSES.null && !pools.includes(pool)) pools.push(pool)
   }
@@ -28,6 +37,12 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Total value of all coins held in the LiquidCore pool contracts.',
-  start: '2025-11-09', // first LiquidCore pool (USD₮0/WHYPE) deployment
-  hyperliquid: { tvl },
+  hyperliquid: {
+    tvl,
+    start: '2025-11-09', // first LiquidCore pool (USD₮0/WHYPE) deployment
+  },
+  robinhood: {
+    tvl,
+    start: '2026-07-16',
+  },
 }
