@@ -1,13 +1,28 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const ROUTERS = {
-  hyperliquid: '0x625aC1D165c776121A52ff158e76e3544B4a0b8B',
-  robinhood: '0x322F277BfB7Ba9c196194ad18011377A0fF55Fb3',
+const chainConfig = {
+  hyperliquid: {
+    router: '0x625aC1D165c776121A52ff158e76e3544B4a0b8B',
+    fromBlock: 28736539,
+    legacyPools: [
+      '0xA7478A5ff7cB27A8008D6D90785db10223bc6087',
+      '0xD3994A6CF46cA91536376f89aCDadf92eD289a9F',
+    ],
+  },
+  robinhood: {
+    router: '0x322F277BfB7Ba9c196194ad18011377A0fF55Fb3',
+    fromBlock: 11400065
+  }
 }
 
 async function tvl(api) {
-  const pools = (await api.call({ target: ROUTERS[api.chain], abi: 'address[]:getPools' }))
-    .filter(pool => pool !== ADDRESSES.null)
+  const { router, legacyPools = [], fromBlock } = chainConfig[api.chain]
+  const pools = [...legacyPools]
+  if (await api.getBlock() >= fromBlock) {
+    const registered = await api.call({ target: router, abi: 'address[]:getPools' })
+    for (const pool of registered)
+      if (pool !== ADDRESSES.null && !pools.includes(pool)) pools.push(pool)
+  }
   const tokens = await api.multiCall({
     abi: 'function getTokens() view returns (address token0, address token1)',
     calls: pools,
@@ -28,6 +43,6 @@ module.exports = {
   },
   robinhood: {
     tvl,
-    start: '2026-07-14',
+    start: '2026-07-16',
   },
 }
