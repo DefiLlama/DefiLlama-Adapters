@@ -415,6 +415,11 @@ const configs = {
             '0x6Ba8f7039bC7d79c1959cB8E409Dff2ba05A133E',
           ],
         },
+        megaeth: {
+          morpho: [
+            '0x85fCb4604f25e17Ae4e1EAc202adba4F999d7FF5', // Feather MegaETH vault
+          ],
+        },
       }
     },
     _meta: {
