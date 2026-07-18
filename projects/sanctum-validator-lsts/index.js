@@ -50,6 +50,10 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  // Most of the SOL in these pools is already tracked under the individual LSTs that were
+  // deployed on the Sanctum programs (jupSOL, dSOL, bbSOL, hSOL, dfdvSOL, bonkSOL, hyloSOL,
+  // CDCSOL all have their own adapters), so this total overlaps with theirs.
+  doublecounted: true,
   methodology:
     "Uses GPA to fetch the total supply of deposited SOL into the various Sanctum LSTs",
   solana: {
