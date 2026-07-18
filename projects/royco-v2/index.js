@@ -183,23 +183,25 @@ const getStrategyNav = async (api) => {
     const tranches = [...seniorTranches, ...juniorTranches];
     if (!tranches.length) return 0n;
 
+    // These are de-duplication calls: a failed call must fail the whole refresh (DefiLlama then
+    // retries), never be silently skipped. Skipping would under-subtract the overlap and publish
+    // inflated, double-counted TVL — so no permitFailure here.
     let nav = 0n;
     for (const strategy of srRoyUsdcStrategies) {
         const shares = await api.multiCall({
             abi: 'erc20:balanceOf',
             calls: tranches.map(tranche => ({ target: tranche, params: [strategy] })),
-            permitFailure: true,
         });
 
         // balanceOf returns shares; convert only the non-zero positions to their USDC value (nav).
         const claimsCalls = tranches
             .map((tranche, i) => ({ target: tranche, params: [shares[i]] }))
-            .filter((_, i) => shares[i] && BigInt(shares[i]) > 0n);
+            .filter((_, i) => BigInt(shares[i]) > 0n);
         if (!claimsCalls.length) continue;
 
-        const claims = await api.multiCall({ abi: convertToAssetsAbi, calls: claimsCalls, permitFailure: true });
+        const claims = await api.multiCall({ abi: convertToAssetsAbi, calls: claimsCalls });
         claims.forEach(claim => {
-            if (claim) nav += BigInt(claim.nav);
+            nav += BigInt(claim.nav);
         });
     }
     return nav;
@@ -214,19 +216,20 @@ const addRoyWstEth = async (api) => {
     api.add(royWstEth.asset, totalAssets);
 
     // srRoyUSDC shares held by the vault's strategies, valued in USDC via srRoyUSDC.convertToAssets.
+    // No permitFailure: this is a de-duplication call, so a failed call must fail the refresh rather
+    // than skip the subtraction and leave the borrowed leg double-counted.
     const shares = await api.multiCall({
         abi: 'erc20:balanceOf',
         calls: royWstEth.strategies.map(strategy => ({ target: srRoyUsdc.address, params: [strategy] })),
-        permitFailure: true,
     });
     const assetCalls = royWstEth.strategies
         .map((_, i) => ({ target: srRoyUsdc.address, params: [shares[i]] }))
-        .filter((_, i) => shares[i] && BigInt(shares[i]) > 0n);
+        .filter((_, i) => BigInt(shares[i]) > 0n);
     if (!assetCalls.length) return;
 
-    const positions = await api.multiCall({ abi: srRoyUsdcConvertToAssetsAbi, calls: assetCalls, permitFailure: true });
+    const positions = await api.multiCall({ abi: srRoyUsdcConvertToAssetsAbi, calls: assetCalls });
     positions.forEach(usdc => {
-        if (usdc) api.add(srRoyUsdc.asset, -BigInt(usdc)); // remove the already-counted srRoyUSDC leg
+        api.add(srRoyUsdc.asset, -BigInt(usdc)); // remove the already-counted srRoyUSDC leg
     });
 };
 
