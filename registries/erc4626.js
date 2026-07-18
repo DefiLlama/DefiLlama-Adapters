@@ -380,6 +380,13 @@ const configs = {
   'y10k-capital': {
     ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'],
     sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'],
+  },
+  'apyee': {
+    methodology: "Sum of totalAssets() reported by each Apyee VaultV2 across supported chains — includes idle USDC plus assets currently deployed into whitelisted DeFi lending strategies (Aave V3, Compound V3, Morpho MetaMorpho, Fluid, Venus, Spark).",
+    ethereum: ['0xE46aac58214B963125a3A88541e1DBE56c4eD5f7'],
+    base: ['0xeA8FB89F44A1fa47E52354D44E7e6D4682C8529a','0x87922c630A980e431fb045A178e53F58d3f07F85'],
+    arbitrum: ['0x94f89d1E2825d40627CD2aE24Eba8590F675049C'],
+    bsc: ['0x27DB5a2B203D6bd3C9490E8EA4488B968675f5Bf'],
   }
 }
 
