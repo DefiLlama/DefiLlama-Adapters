@@ -3,7 +3,30 @@ const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+  "get_registry": "address:get_registry",
+  "pool_list": "function pool_list(uint256 arg0) view returns (address)",
+  "pool_count": "uint256:pool_count",
+  "get_id_info": "function get_id_info(uint256 arg0) view returns (address addr, bool is_active, uint256 version, uint256 last_modified, string description)",
+  "get_n_coins": {
+    "stableswap": "function get_n_coins(address _pool) view returns (uint256[2])",
+    "stableFactory": "function get_n_coins(address _pool) view returns (uint256)",
+    "crypto": "function get_n_coins(address _pool) view returns (uint256)",
+    "cryptoFactory": "function get_n_coins(address _pool) view returns (uint256)",
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])",
+    "CurveStableswapFactoryNG": "function get_n_coins(address _pool) view returns (uint256)"
+  },
+  "get_coins": {
+    "stableswap": "function get_coins(address _pool) view returns (address[8])",
+    "stableFactory": "function get_coins(address _pool) view returns (address[4])",
+    "crypto": "function get_coins(address _pool) view returns (address[8])",
+    "cryptoFactory": "function get_coins(address _pool) view returns (address[2])",
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])",
+    "CurveStableswapFactoryNG": "function get_coins(address _pool) view returns (address[])",
+    "CurveTwocryptoFactoryNG": "function get_coins(address _pool) view returns (address[2])",
+    "CurveTricryptoFactoryNG": "function get_coins(address _pool) view returns (address[3])"
+  }
+};
 const erc20Abi = require("../helper/abis/erc20.json");
 const contracts = require("./contracts.json");
 const { getLogs } = require('../helper/cache/getLogs')
@@ -37,7 +60,9 @@ const chains = [
   "etlk",
   "plasma",
   "unichain",
-  "monad"
+  "stable",
+  "monad",
+  "robinhood"
 ];
 const registryIds = {
   stableswap: 0,
@@ -45,7 +70,6 @@ const registryIds = {
   crypto: 5,
   cryptoFactory: 6
 };
-const decimalsCache = {}
 const nameCache = {}
 
 const blacklistedPools = {
@@ -63,14 +87,6 @@ const globalBlacklistedTokens = {
     '0xdbfefd2e8460a6ee4955a68582f85708baea60a3', // superOETHb
   ]
 }
-
-async function getDecimals(chain, token) {
-  token = token.toLowerCase()
-  const key = chain + '-' + token
-  if (!decimalsCache[key]) decimalsCache[key] = sdk.api.erc20.decimals(token, chain)
-  return decimalsCache[key]
-}
-
 
 const gasTokens = [
   ADDRESSES.GAS_TOKEN_2,
@@ -349,11 +365,11 @@ module.exports.harmony = {
 };
 
 module.exports.hallmarks = [
-  [1597446675, "CRV Launch"],
-  [1621213201, "Convex Launch"],
-  [1642374675, "MIM depeg"],
-  [1651881600, "UST depeg"],
-  [1654822801, "stETH depeg"],
-  [1667692800, "FTX collapse"],
-  // [1690715622, "Reentrancy hack"]
+  ['2020-08-14', "CRV Launch"],
+  ['2021-05-17', "Convex Launch"],
+  ['2022-01-16', "MIM depeg"],
+  ['2022-05-07', "UST depeg"],
+  ['2022-06-10', "stETH depeg"],
+  ['2022-11-06', "FTX collapse"],
+  // ['2023-07-30', "Reentrancy hack"]
 ];

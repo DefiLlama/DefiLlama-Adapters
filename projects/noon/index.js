@@ -55,6 +55,6 @@ module.exports = {
     tvl: tvl('tac'),
   },
   hallmarks: [
-    [1737979200, "Public Beta"]
+    ['2025-01-27', "Public Beta"]
   ]
 }

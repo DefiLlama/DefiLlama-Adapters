@@ -43,6 +43,8 @@ const tokenToCoingecko = {
 
 function formatToken(token) {
   switch (token) {
+    case 'BNC':
+      return "BNC";
     case '0':
       return "DOT";
     case '1':
@@ -53,6 +55,8 @@ function formatToken(token) {
       return "ASTR";
     case '8':
       return "MANTA";
+    case '15':
+      return "ETH";
     default :
       return null;
   }
@@ -74,12 +78,13 @@ async function tvl() {
   const polkadotTokenPool = await polkadotApi.query.vtokenMinting.tokenPool.entries();
 
   await Promise.all(kusamaTokenPool.map(async (pool) => {
-    const token=pool[0].toHuman()[0].Token||pool[0].toHuman()[0].Native
+    const token=pool[0].toHuman()[0].VToken||pool[0].toHuman()[0].Token2
+
     totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
   }));
 
   await Promise.all(polkadotTokenPool.map(async (pool) => {
-    const token=formatToken(pool[0].toHuman()[0].Token2)
+    const token=formatToken(pool[0].toHuman()[0].VToken2||pool[0].toHuman()[0].VToken)
     totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
   }));
 

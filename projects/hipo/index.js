@@ -4,8 +4,8 @@ module.exports = {
   timetravel: false,
   methodology: 'Actual amount of TON staked on Hipo',
   hallmarks: [
-    [1698685200, 'Hipo Launch'],
-    [1710821940, 'Hipo v2'],
+    ['2023-10-30', 'Hipo Launch'],
+    ['2024-03-19', 'Hipo v2'],
   ],
   ton: {
     tvl: async () => {

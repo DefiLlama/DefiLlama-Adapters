@@ -1,5 +1,18 @@
-const abi = require("./abi.json")
-const { pool2s } = require("../helper/pool2.js")
+const abi = {
+    "registry_futureVaultCount": "uint256:futureVaultCount",
+    "registry_getFutureVaultAt": "function getFutureVaultAt(uint256 _index) returns (address futureVault)",
+    "registry_getIBTAddress": "address:getIBTAddress",
+    "ammregistry_getFutureAMMPool": "function getFutureAMMPool(address _futureVaultAddress ) returns (address _futureAMMPoolAddress )",
+    "futurevault_STAKED_TOKEN": "address:STAKED_TOKEN",
+    "futurevault_getPTAddress": "address:getPTAddress",
+    "ammPool_getFYTAddress": "address:getFYTAddress",
+    "ammPool_getFutureAddress": "address:getFutureAddress",
+    "ammPool_getIBTAddress": "address:getIBTAddress",
+    "ammPool_getPTAddress": "address:getPTAddress",
+    "ammPool_getPoolTokenAddress": "address:getPoolTokenAddress",
+    "ammPool_getUnderlyingOfIBTAddress": "address:getUnderlyingOfIBTAddress",
+    "ammPool_getPairWithID_BAD_OUTPUT_ABI": "function getPairWithID(uint256 id) returns (address tokenAddress , uint256[2] weights , uint256[2] balances , bool liquidityIsInitialized )"
+  };const { pool2s } = require("../helper/pool2.js")
 
 // Same registry addresses for polygon and mainnet
 const registry = '0x72d15eae2cd729d8f2e41b1328311f3e275612b9'
@@ -32,6 +45,6 @@ module.exports = {
   },
   methodology: `Use the registry to retrieve futureVaults, and get for each vault the IBT which is the token that this vault holds - the user locked collateral`,
   hallmarks: [
-    [1677798000, "Announcement of V1 Retirement"]
+    ['2023-03-02', "Announcement of V1 Retirement"]
   ],
 }

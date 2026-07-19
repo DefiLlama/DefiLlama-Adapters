@@ -1,15 +1,18 @@
 const sui = require("../helper/chain/sui");
 
-const LIQUIDITY_POOL_0 = "0x98110aae0ffaf294259066380a2d35aba74e42860f1e87ee9c201f471eb3ba03";
+const LIQUIDITY_POOL = "0x9090a55fea75d0b135dfa53e6bbe234c0b0e9d0e0b21c615f32f0048bc35aca4";
 
 async function tvl(api) {
-  const pool = await sui.getObject(LIQUIDITY_POOL_0);
-
-  pool.fields.token_pools.forEach((pool) => {
-    const token = "0x" + pool.fields.token_type.fields.name;
-    api.add(token, pool.fields.state.fields.liquidity_amount);
+  const pools = await sui.getDynamicFieldObjects({
+    parent: LIQUIDITY_POOL,
   });
 
+  pools.forEach(({ fields }) => {
+    fields.token_pools.forEach((pool) => {
+      const token = "0x" + pool.fields.token_type.fields.name;
+      api.add(token, pool.fields.state.fields.liquidity_amount);
+    });
+  });
 }
 
 module.exports = {

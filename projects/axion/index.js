@@ -1,5 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json");
+const abi = {
+    "getStatFields": "function getStatFields() view returns (tuple(uint72 totalStakedAmount, uint72 sharesTotalSupply, uint72 _gap, uint40 lastStakeId))",
+    "balanceOf": "function balanceOf(address account) view returns (uint256)"
+  };
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 const AXION = "0x839F1a22A59eAAf26c85958712aB32F80FEA23d9";

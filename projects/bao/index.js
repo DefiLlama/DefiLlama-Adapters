@@ -1,7 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens, unwrapLPsAuto,  } = require('../helper/unwrapLPs')
-const abi = require('./abi.json')
-const erc20 = require('./../helper/abis/erc20.json')
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accBaoPerShare)",
+    "poolLength": "uint256:poolLength"
+  };const erc20 = require('./../helper/abis/erc20.json')
 
 const masterChef = '0xBD530a1c060DC600b951f16dc656E4EA451d1A2D'
 const xdaiMasterChef = '0xf712a82DD8e2Ac923299193e9d6dAEda2d5a32fd'

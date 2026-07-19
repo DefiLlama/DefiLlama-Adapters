@@ -1,16 +1,47 @@
 const sdk = require('@defillama/sdk')
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getUniqueAddresses } = require('../helper/tokenMapping')
 
 const activeTokensAbi = 'function getActiveTokens() view returns ((address[] activeTokens, address baseToken))'
 const tokenIdsAbi = 'function getUniV4TokenIds() view returns (uint256[])'
 const ownerOfAbi = 'function ownerOf(uint256 tokenId) view returns (address)'
+// rigoblock external positions ref: https://github.com/RigoBlock/v3-contracts/blob/5f6ff38e8d88d66e83d71523d3688c21174837c4/contracts/protocol/extensions/EApps.sol#L53
+const activeAppsAbi = 'function getActiveApplications() view returns (uint256)'
 
 const REGISTRY = '0x06767e8090bA5c4Eca89ED00C3A719909D503ED6' // same on all chains
 
+// Applications enum: https://github.com/RigoBlock/v3-contracts/tree/development/contracts/protocol/types/Applications.sol
+const GMX_APP_INDEX = 2
+const GMX_FLAG = 1 << GMX_APP_INDEX
+
+const GMX = {
+  arbitrum: { reader: '0xf60becbba223EEA9495Da3f606753867eC10d139', dataStore: '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8' },
+}
+const getAccountPositionsAbi = 'function getAccountPositions(address dataStore, address account, uint256 start, uint256 end) view returns (((address account, address market, address collateralToken) addresses, (uint256 sizeInUsd, uint256 sizeInTokens, uint256 collateralAmount, uint256 borrowingFactor, uint256 fundingFeeAmountPerSize, uint256 longTokenClaimableFundingAmountPerSize, uint256 shortTokenClaimableFundingAmountPerSize, uint256 increasedAtBlock, uint256 decreasedAtBlock) numbers, (bool isLong) flags)[])'
+
+async function addGmxPositions(api, gmxPools, blacklistedTokens = []) {
+  const gmx = GMX[api.chain]
+  if (!gmx || !gmxPools.length) return
+  const positionsByPool = await api.multiCall({
+    abi: getAccountPositionsAbi,
+    target: gmx.reader,
+    calls: gmxPools.map(pool => ({ params: [gmx.dataStore, pool, 0, 1000] })),
+    permitFailure: true,
+  })
+  const blacklist = new Set(blacklistedTokens.map(t => t.toLowerCase()))
+  for (const positions of positionsByPool) {
+    if (!positions) continue
+    for (const p of positions) {
+      const token = p.addresses.collateralToken
+      if (blacklist.has(token.toLowerCase())) continue
+      api.add(token, p.numbers.collateralAmount)
+    }
+  }
+}
+
 module.exports = {
-  methodology: `RigoBlock TVL on Ethereum, Arbitrum, Optimism, BSC, Base, and Unichain pulled from onchain data, including Uniswap V4 liquidity position balances (excluding GRG balances). Staking TVL includes staked GRG, plus GRG balances in Uniswap V4 liquidity positions, and GRG balances held by smart pool contracts.`,
+  methodology: `RigoBlock TVL on Ethereum, Arbitrum, Optimism, BSC, Base, and Unichain pulled from onchain data, including Uniswap V4 liquidity position balances and collateral held in GMX v2 positions, excluding GRG balances. Staking TVL includes staked GRG, plus GRG balances in Uniswap V4 liquidity positions, and GRG balances held by smart pool contracts.`,
 }
 
 const config = {
@@ -56,12 +87,13 @@ Object.keys(config).forEach(chain => {
   const { fromBlock, GRG_TOKEN_ADDRESSES, GRG_VAULT_ADDRESSES, UNISWAP_V4_POSM } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const { pools, tokens, uniV4Ids } = await getPoolInfo(api)
+      const { pools, tokens, uniV4Ids, gmxPools } = await getPoolInfo(api)
       await sumTokens2({ owner: UNISWAP_V4_POSM, tokens, api, blacklistedTokens: [GRG_TOKEN_ADDRESSES], resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids } })
+      await addGmxPositions(api, gmxPools, [GRG_TOKEN_ADDRESSES])
       return sumTokens2({ owners: pools, tokens, api, blacklistedTokens: [GRG_TOKEN_ADDRESSES] })
     },
     staking: async (api) => {
-      const { pools, uniV4Ids, UNISWAP_V4_POSM } = await getPoolInfo(api)
+      const { pools, uniV4Ids } = await getPoolInfo(api)
       // Add GRG balances from vaults
       const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools, target: GRG_VAULT_ADDRESSES })
       bals.forEach(i => api.add(GRG_TOKEN_ADDRESSES, i))
@@ -78,12 +110,11 @@ Object.keys(config).forEach(chain => {
 
     async function _getPoolInfo() {
       // Fetch pool addresses from registry logs
-      const registeredLogs = await getLogs({
+      const registeredLogs = await getLogs2({
         api,
         target: REGISTRY,
         fromBlock,
         topic: 'Registered(address,address,bytes32,bytes32,bytes32)',
-        onlyArgs: true,
         eventAbi: 'event Registered(address indexed group, address pool, bytes32 indexed name, bytes32 indexed symbol, bytes32 id)'
       })
       const pools = registeredLogs.map(i => i.pool)
@@ -100,12 +131,22 @@ Object.keys(config).forEach(chain => {
       const baseTokens = validTokenData.map(i => i.baseToken).filter(Boolean)
       const allTokens = [...tokens, ...baseTokens]
 
-      // Fetch Uniswap V4 position tokenIds for all pools
-      const tokenIdsData = await api.multiCall({
-        abi: tokenIdsAbi,
-        calls: pools,
-        permitFailure: true, // Allow pools without tokenIds
-      })
+      // Fetch Uniswap V4 position tokenIds and active application flags for all pools
+      const [tokenIdsData, activeApps] = await Promise.all([
+        api.multiCall({
+          abi: tokenIdsAbi,
+          calls: pools,
+          permitFailure: true, // Allow pools without tokenIds
+        }),
+        api.multiCall({
+          abi: activeAppsAbi,
+          calls: pools,
+          permitFailure: true, // Allow pools without getActiveApplications
+        }),
+      ])
+
+      // Pools that have GMX v2 positions active
+      const gmxPools = pools.filter((_, i) => activeApps[i] && (BigInt(activeApps[i]) & BigInt(GMX_FLAG)) !== 0n)
 
       // Prepare Uniswap V4 position IDs
       const uniV4Ids = []
@@ -127,8 +168,8 @@ Object.keys(config).forEach(chain => {
       }
 
       const uniqueTokens = getUniqueAddresses(allTokens)
-      sdk.log('chain: ', api.chain, 'pools: ', pools.length, 'tokens: ', uniqueTokens.length, 'valid uniV4 tokenIds: ', uniV4Ids.length, 'uniV4 pools: ', pools.filter((_, i) => tokenIdsData[i]?.length > 0).length)
-      return { pools, tokens: uniqueTokens, uniV4Ids }
+      sdk.log('chain: ', api.chain, 'pools: ', pools.length, 'tokens: ', uniqueTokens.length, 'valid uniV4 tokenIds: ', uniV4Ids.length, 'uniV4 pools: ', pools.filter((_, i) => tokenIdsData[i]?.length > 0).length, 'gmx pools: ', gmxPools.length)
+      return { pools, tokens: uniqueTokens, uniV4Ids, gmxPools }
     }
   }
 })

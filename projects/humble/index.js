@@ -1,15 +1,14 @@
-const { toUSDTBalances } = require('../helper/balances');
-const { get } = require('../helper/http');
+const { get } = require("../helper/http");
 
-async function tvl(){
-    const response = await get('https://free-api.vestige.fi/providers?currency=USD')
-    const data = response.find(p => p.id === 'H2')
-    return toUSDTBalances(data.tvl);
+async function tvl(api) {
+  const data = await get('https://humble-api.voi.nautilus.sh/pools/stats?sortBy=tvl')
+  let tvl = data.stats.reduce((sum, pool) => sum + Number(pool.tvl.usd), 0)
+  return api.addUSDValue(tvl)
 }
 
-module.exports = {
-    deadFrom: '2025-06-01',
-    timetravel: false,
-    misrepresentedTokens:true,
-    algorand:{ tvl }
+
+module.exports = {  
+  misrepresentedTokens: true,
+  voi: { tvl },
+  algorand: { tvl: () => {} }, // merged with pact-fi
 }

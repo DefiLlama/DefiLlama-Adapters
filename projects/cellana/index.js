@@ -1,63 +1,53 @@
-const { functionViewWithApiKey } = require("../helper/chain/aptos");
+const { function_view } = require("../helper/chain/aptos");
+const { sleep } = require("../helper/utils");
 const cellanaAddress = "0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1"
-const apiKey = "AG-D6FATNFSEBBKFTMMXVFRXKIDZWJJFFDPC"
+
+const MAX_RETRIES = 3;
+
+async function callWithRetry(fn) {
+  for (let i = 0; i <= MAX_RETRIES; i++) {
+    try { return await fn() } catch (e) {
+      if (i === MAX_RETRIES) throw e;
+      await sleep(200 * (i + 1));
+    }
+  }
+}
 
 async function _getPools() {
-  return functionViewWithApiKey({ functionStr: `${cellanaAddress}::liquidity_pool::all_pool_addresses`, type_arguments: [], args: [], apiKey: apiKey })
+  return function_view({ functionStr: `${cellanaAddress}::liquidity_pool::all_pool_addresses`, type_arguments: [], args: [] })
 }
 
 async function _getPoolReserves(poolAddress) {
-  return functionViewWithApiKey({ functionStr: `${cellanaAddress}::liquidity_pool::pool_reserves`, type_arguments: ['0x1::object::ObjectCore'], args: [poolAddress], apiKey: apiKey })
+  return function_view({ functionStr: `${cellanaAddress}::liquidity_pool::pool_reserves`, type_arguments: ['0x1::object::ObjectCore'], args: [poolAddress] })
 }
 
 async function _getTokenOfPool(poolAddress) {
-  return functionViewWithApiKey({ functionStr: `${cellanaAddress}::liquidity_pool::supported_token_strings`, type_arguments: [], args: [poolAddress], apiKey: apiKey })
+  return function_view({ functionStr: `${cellanaAddress}::liquidity_pool::supported_token_strings`, type_arguments: [], args: [poolAddress] })
 }
 
 
-async function _getTvl() {
+async function tvl(api) {
   const pools = (await _getPools())
-  const tokenTvlMap = new Map();
 
   for (const pool of pools) {
     const poolAddress = pool.inner
-    try {
-      const reserves = await _getPoolReserves(poolAddress);
-      const tokens = await _getTokenOfPool(poolAddress); 
+    const reserves = await callWithRetry(() => _getPoolReserves(poolAddress));
+    const tokens = await callWithRetry(() => _getTokenOfPool(poolAddress));
 
-      if (!reserves || !tokens || tokens.length < 2) {
-        console.warn(`Invalid data for pool ${poolAddress}`);
-        continue;
-      }
+    if (!reserves || !tokens || tokens.length < 2)
+      throw new Error(`Invalid data for pool ${poolAddress}`);
 
-      const reserveX = Number(reserves[0] || 0);
-      const reserveY = Number(reserves[1] || 0);
-
-      const tokenX = tokens[0];
-      const tokenY = tokens[1];
-
-      tokenTvlMap.set(tokenX, (tokenTvlMap.get(tokenX) || 0) + reserveX);
-      tokenTvlMap.set(tokenY, (tokenTvlMap.get(tokenY) || 0) + reserveY);
-
-    } catch (error) {
-      console.error(`Error processing pool ${poolAddress}:`, error);
-    }
+    api.add(tokens[0], reserves[0]);
+    api.add(tokens[1], reserves[1]);
+    await sleep(200);
   }
-  return tokenTvlMap
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    "Counts the lamports in each coin container in the Cellena contract account.",
+    "Counts the lamports in each coin container in the Cellana contract account.",
   aptos: {
-
-    tvl: async (api) => {
-      const tokenTvlMap = await _getTvl()
-      console.log(tokenTvlMap)
-      for (const [key, value] of tokenTvlMap) {
-        api.add(key, value)
-      }
-    }
+    tvl,
   }
 }

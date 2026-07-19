@@ -15,12 +15,10 @@ async function hypercoreHwhlpVaultTvl(api) {
     
     for (const eoa of MS_ALL) {
         await delay();
-        console.log(`Fetching vault data for ${eoa}`);
         datas.push(await post('https://api.hyperliquid.xyz/info', { 
             type: "userVaultEquities", 
             user: eoa 
         }));
-        console.log(`Fetched vault data for ${eoa}`);
     }
     
     const hlpVaults = datas.flatMap(data => 
@@ -42,12 +40,10 @@ async function hyperCoreSpotBalance(api) {
     
     for (const eoa of MS_ALL) {
         await delay();
-        console.log(`Fetching spot balance for ${eoa}`);
         datas.push(await post('https://api.hyperliquid.xyz/info', { 
             type: "spotClearinghouseState", 
             user: eoa 
         }));
-        console.log(`Fetched spot balance for ${eoa}`);
     }
     
     const balances = datas.flatMap(data => data.balances);
@@ -58,14 +54,12 @@ async function hyperCoreSpotBalance(api) {
         coinTotals[b.coin] += parseFloat(b.total);
     }
     
-    console.log(coinTotals);
     
     // Adding other core tokens
     const tokens = HYPER_CORE_TOKENS.map(t => t.address);
     const amounts = HYPER_CORE_TOKENS.map(t => 
         coinTotals[t.symbol] ? coinTotals[t.symbol] * 10 ** t.decimals : 0
     );
-    console.log('Adding tokens:', tokens, 'with amounts:', amounts);
     api.addTokens(tokens, amounts);
 
     // Adding USDC balance

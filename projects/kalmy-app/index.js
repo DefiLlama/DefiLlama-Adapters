@@ -1,4 +1,17 @@
-const abi = require("./abi.json");
+const abi = {
+    "vaultDebtVal": "uint256:vaultDebtVal",
+    "totalToken": "uint256:totalToken",
+    "reservePool": "uint256:reservePool",
+    "balanceOf": "function balanceOf(address account) view returns (uint256)",
+    "totalSupply": "uint256:totalSupply",
+    "totalETH": "uint256:totalETH",
+    "totalBEP20": "uint256:totalBEP20",
+    "lpToken": "address:lpToken",
+    "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)",
+    "pId": "uint256:pid",
+    "ausdTotalStablecoinIssued": "uint256:totalStablecoinIssued",
+    "xalpacaTotalSupply": "uint256:supply"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getConfig } = require("../helper/cache");
 const { nullAddress } = require("../helper/tokenMapping");

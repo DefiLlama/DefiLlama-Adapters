@@ -1,5 +1,12 @@
-const abi = require("./abi.json");
-const gatewayAbi = require("./gateway.abi.json");
+const abi = {
+    "abiGetActiveOrdersLength": "uint256:getActiveOrdersLength",
+    "abiGetOrderId": "function getActiveOrderId(uint256 index) view returns (uint256)",
+    "abiGetOrder": "function getOrder(uint256 orderId) view returns (uint8 orderType, address maker, address tokenIn, address tokenOut, uint256 amountInOffered, uint256 amountOutExpected, uint256 executorFee, uint256 totalEthDeposited, uint8 orderState, bool deflationary)"
+  };
+const gatewayAbi = {
+    "address": "0x64B17B166090B8F9BA19C13Bf8D5dA951b2d653D",
+    "abi": "function tokens(uint256) view returns (address tokenAddress, uint8 releaseMethod)"
+  };
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs');
 
 const UNITRADE_ORDERBOOK = "0xC1bF1B4929DA9303773eCEa5E251fDEc22cC6828";

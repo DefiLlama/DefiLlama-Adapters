@@ -1,5 +1,5 @@
 const { stakings } = require("../helper/staking");
-const { sumERC4626VaultsExport } = require("../helper/erc4626");
+const { sumERC4626VaultsExport2 } = require("../helper/erc4626");
 
 const UMAMI = "0x1622bf67e6e5747b81866fe0b85178a93c7f86e3";
 // UMAMI staking for protocol revenue in WETH
@@ -35,9 +35,9 @@ module.exports = {
   start: '2022-07-05', // UMAMI deployment block ts
   arbitrum: {
     staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI),
-    tvl: sumERC4626VaultsExport({ vaults: glpVaults.concat(gmVaultsArbitrum), isOG4626: true, permitFailure: true }),
+    tvl: sumERC4626VaultsExport2({ vaults: glpVaults.concat(gmVaultsArbitrum), permitFailure: true }),
   },
   avax: {
-    tvl: sumERC4626VaultsExport({ vaults:gmVaultsAvax, isOG4626: true, permitFailure: true }),
+    tvl: sumERC4626VaultsExport2({ vaults:gmVaultsAvax, permitFailure: true }),
   }
 }

@@ -11,10 +11,10 @@ const { addUniV3LikePosition } = require("./helper/unwrapLPs");
 // liquidity pools, addUniV3LikePosition is used.
 async function tvl(api) {
   // We need DefiTuna, DefiTuna AMM (aka Fusion) and Orca Whirlpool programs.
+  // fusion program tvl is calculated in defituna.js
   // AMMs are required to get current tick position only.
   const provider = getProvider(api.chain);
   const tunaProgram = new Program(tunaIDL, provider);
-  const fusionProgram = new Program(fusionIDL, provider);
   const orcaProgram = new Program(whirlpoolIDL, provider);
 
   // Requesting all open positions
@@ -23,27 +23,6 @@ async function tvl(api) {
     (pos) => Object.keys(pos.account.state)[0] === "normal"
   );
 
-  // Filtering only Fusion pools addresses
-  const fusionPoolsAddr = openPositions
-    .filter((pos) => Object.keys(pos.account.marketMaker)[0] === "fusion")
-    .map((pos) => pos.account.pool.toString());
-  // Getting unique addresses
-  const fusionPoolsAddrUnique = [...new Set(fusionPoolsAddr)].map(
-    (addr) => new PublicKey(addr)
-  );
-  // Requesting pool accounts
-  const fusionPools = await fusionProgram.account["fusionPool"].fetchMultiple(
-    fusionPoolsAddrUnique
-  );
-  // Creating map: address => pool state
-  const fusionPoolsMap = Object.fromEntries(
-    fusionPoolsAddrUnique.map((pubkey, i) => [
-      pubkey.toString(),
-      fusionPools[i],
-    ])
-  );
-
-  // Same for Orca
   const orcaPoolsAddr = openPositions
     .filter((pos) => Object.keys(pos.account.marketMaker)[0] === "orca")
     .map((pos) => pos.account.pool.toString());
@@ -62,12 +41,12 @@ async function tvl(api) {
     const pool = position.account.pool.toString();
 
     // Get current tick from pool account state
-    const tickCurrentIndex = Object.hasOwn(fusionPoolsMap, pool)
-      ? fusionPoolsMap[pool].tickCurrentIndex
-      : orcaPoolsMap[pool].tickCurrentIndex;
+    const tickCurrentIndex = Object.hasOwn(orcaPoolsMap, pool)
+      ? orcaPoolsMap[pool].tickCurrentIndex : undefined;
 
     // Add concentrated liquidity position to TVL
-    addUniV3LikePosition({
+    if(tickCurrentIndex!==undefined)
+      addUniV3LikePosition({
       api,
       tickLower: position.account.tickLowerIndex,
       tickUpper: position.account.tickUpperIndex,
@@ -85,7 +64,7 @@ module.exports = {
   methodology: "TVL is calculated by summing up the liquidity of all open positions.",
   start: "2024-11-29",
   hallmarks: [
-    [1753833600, 'TUNA token launched'],
+    ['2025-07-30', 'TUNA token launched'],
   ],
 };
 
@@ -313,58 +292,6 @@ const tunaIDL = {
       type: {
         kind: "enum",
         variants: [{ name: "Orca" }, { name: "Fusion" }],
-      },
-    },
-  ],
-};
-
-// DefiTuna AMM aka Fusion AMM IDL (FusionPool account only)
-const fusionIDL = {
-  address: "fUSioN9YKKSa3CUC2YUc4tPkHJ5Y6XW1yz8y6F7qWz9",
-  metadata: { name: "fusionamm", version: "1.0.11", spec: "0.1.0" },
-  instructions: [],
-  accounts: [
-    {
-      name: "FusionPool",
-      discriminator: [254, 204, 207, 98, 25, 181, 29, 67],
-    },
-  ],
-  errors: [],
-  types: [
-    {
-      name: "FusionPool",
-      type: {
-        kind: "struct",
-        fields: [
-          { name: "bump", type: { array: ["u8", 1] } },
-          { name: "version", type: "u16" },
-          { name: "token_mint_a", type: "pubkey" },
-          { name: "token_mint_b", type: "pubkey" },
-          { name: "token_vault_a", type: "pubkey" },
-          { name: "token_vault_b", type: "pubkey" },
-          { name: "tick_spacing", type: "u16" },
-          { name: "tick_spacing_seed", type: { array: ["u8", 2] } },
-          { name: "fee_rate", type: "u16" },
-          { name: "protocol_fee_rate", type: "u16" },
-          { name: "clp_reward_rate", type: "u16" },
-          { name: "order_protocol_fee_rate", type: "u16" },
-          { name: "liquidity", type: "u128" },
-          { name: "sqrt_price", type: "u128" },
-          { name: "tick_current_index", type: "i32" },
-          { name: "protocol_fee_owed_a", type: "u64" },
-          { name: "protocol_fee_owed_b", type: "u64" },
-          { name: "fee_growth_global_a", type: "u128" },
-          { name: "fee_growth_global_b", type: "u128" },
-          { name: "orders_total_amount_a", type: "u64" },
-          { name: "orders_total_amount_b", type: "u64" },
-          { name: "orders_filled_amount_a", type: "u64" },
-          { name: "orders_filled_amount_b", type: "u64" },
-          { name: "olp_fee_owed_a", type: "u64" },
-          { name: "olp_fee_owed_b", type: "u64" },
-          { name: "ma_sqrt_price", type: "u128" },
-          { name: "last_swap_timestamp", type: "u64" },
-          { name: "reserved", type: { array: ["u8", 116] } },
-        ],
       },
     },
   ],

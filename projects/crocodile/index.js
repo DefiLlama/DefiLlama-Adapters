@@ -51,7 +51,7 @@ const pool2 = async (api) => {
 module.exports = {
   methodology: "Pool2 deposits consist of CROC/S and GCROC/S LP tokens deposits while the staking TVL consists of the GCROCs tokens locked within the Masonry contract(0x08abd7Cb539AB7c6d46939381ff607d33d7c6962).",
   hallmarks: [
-    [1739577600, 'Genesis Phase Ended']
+    ['2025-02-15', 'Genesis Phase Ended']
   ],
   avax: {
     tvl: crocGenesisTVL,

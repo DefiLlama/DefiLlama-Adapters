@@ -1,9 +1,8 @@
 const {sliceIntoChunks} = require("../helper/utils");
-const http = require("../helper/http");
-const {endpoint, call} = require("../helper/chain/sui");
+const {call} = require("../helper/chain/sui");
 const BN = require("bn.js");
 const {MathUtil} = require("./math");
-const {TickMath} = require("./tickMath");
+const {tickIndexToSqrtPriceX64} = require("../helper/utils/tick");
 const BigNumber = require("bignumber.js");
 const sui = require("../helper/chain/sui");
 
@@ -72,8 +71,8 @@ async function getVaultTvlByAmountB(vault) {
   const amount = getCoinAmountFromLiquidity(
     liquidity,
     sqrtPrice,
-    TickMath.tickIndexToSqrtPriceX64(asIntN(BigInt(lowerBits))),
-    TickMath.tickIndexToSqrtPriceX64(asIntN(BigInt(upperBits)))
+    tickIndexToSqrtPriceX64(asIntN(BigInt(lowerBits))),
+    tickIndexToSqrtPriceX64(asIntN(BigInt(upperBits)))
   );
 
   return BigNumber(amount.coin_amount_a).times(

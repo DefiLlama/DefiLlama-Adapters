@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "getFarms": "address[]:getFarms",
+    "want": "address:want",
+    "stakedWant": "uint256:stakedWant"
+  };
 const { pool2 } = require("../helper/pool2");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 

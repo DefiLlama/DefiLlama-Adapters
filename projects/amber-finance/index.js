@@ -49,6 +49,6 @@ module.exports = {
     borrowed
    },
   hallmarks: [
-    [1756303200, 'Launch on Neutron'],
+    ['2025-08-27', 'Launch on Neutron'],
   ],
 };

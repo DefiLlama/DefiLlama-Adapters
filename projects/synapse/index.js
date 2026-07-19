@@ -43,5 +43,5 @@ module.exports.terra.tvl = async () => {
 	return sumTokensCosmos({ owner: 'terra1qwzdua7928ugklpytdzhua92gnkxp9z4vhelq8', chain: 'terra'})
 }
 module.exports.hallmarks = [
-        [1651881600, "UST depeg"],
+        ['2022-05-07', "UST depeg"],
       ]

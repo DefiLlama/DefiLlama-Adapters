@@ -1,5 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address want, uint256 weighing, uint256 lastRewardBlock, uint256 accPiTokenPerShare, address controller)",
-  "poolLength": "uint256:poolLength",
-  "balance": "function balance(uint256 _pid) view returns (uint256)"
-}

@@ -1,6 +1,18 @@
 const CORE_ASSETS = require("../helper/coreAssets.json");
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs, getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+
+/**
+ * bsquared uBTC/WBTC markets excluded: TVL inflated by minter-funded wallets
+ * and borrow-redeposit loops. All vault/GT deposits trace back to 2-3 uBTC minters:
+ *   0x1c8b1b0ec2c6f0Ef56c740BFD3A95af7cf5f8DC7 (minted 214 uBTC, funded 0x46d1 and 0xb5E0)
+ *   0x8Da30b68b1E11761e1307EB10564a39E01ae4480 (minted 108 uBTC, funded 0xAB34, 0x42Be, 0x3a59)
+ *   0x33aa8b84062583966a33edF235694AcdC6A138eA (minted 100 uBTC)
+ * Borrow-redeposit loop example (0x1c8b):
+ *   borrow 20 WBTC: 0x0bfd30c486a8cad719a73ad200fcbc38decbf2f404066f652b73f175f287b967
+ *   borrow 20 WBTC: 0xff07b8c6d21c947faf895ed00a78aaa8509fe2d207c4b35122d55e35567452e9
+ *   redeposit 40 WBTC: 0x054cf18d0029f27c8ce57c58a947ebd31bf2d557ee46fad62d081c8330c570b2
+ */
 
 const ABIS = {
   Market: {
@@ -34,17 +46,33 @@ const EVENTS = {
     VaultCreated:
       "event VaultCreated(address indexed vault, address indexed creator, (address admin,address curator,address guardian,uint256 timelock,address asset,address pool,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy) initialParams)",
   },
+  TermMax4626Factory: {
+    "StableERC4626For4626Created": "event StableERC4626For4626Created(address indexed caller, address indexed stableERC4626For4626)",
+    "StableERC4626ForAaveCreated": "event StableERC4626ForAaveCreated(address indexed caller, address indexed stableERC4626ForAave)",
+    "StableERC4626ForCustomizeCreated": "event StableERC4626ForCustomizeCreated(address indexed caller, address indexed stableERC4626ForCustomize)",
+    "VariableERC4626ForAaveCreated": "event VariableERC4626ForAaveCreated(address indexed caller, address indexed variableERC4626ForAave)"
+  }
 };
 
 const ADDRESSES = {
   // Term Structure
-  zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
   // TermMax
   arbitrum: {
     Factory: {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
       fromBlock: 322190000,
     },
+    FactoryV2: [
+      {
+        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
+        fromBlock: 385228046,
+      },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0xcaF2632BdB12Aa20b17f3E80CeAF9781b4aD4F38",
+        fromBlock: 452316723,
+      },
+    ],
     VaultFactory: [
       {
         address: "0x929CBcb8150aD59DB63c92A7dAEc07b30d38bA79",
@@ -56,10 +84,14 @@ const ADDRESSES = {
         address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
         fromBlock: 385228046,
       },
+      // TermMax V2.01 (same VaultCreated event signature)
       {
-        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
-        fromBlock: 385228046,
+        address: "0x85C5B725841bE392384aa7df599c00aE7516E4d3",
+        fromBlock: 452316743,
       },
+    ],
+    TermMax4626Factory: [
+      { address: "0xe306A0A5Ac675dab1CD77aA7873D241715aEB217", fromBlock: 385274993 },
     ],
   },
   bsc: {
@@ -67,11 +99,26 @@ const ADDRESSES = {
       address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
       fromBlock: 50519690,
     },
-    FactroryV2: [
+    FactoryV2: [
+      {
+        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
+        fromBlock: 63100000,
+      },
       // Start of TermMax Alpha
       {
         address: "0x96839e9B0482BfFA7e129Ce9FEEFCeb1e895fC2B",
         fromBlock: 67248948,
+      },
+      // End of TermMax Alpha
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x4a34b4cAaA6AD23B95d6ec6394472fbB857eB064",
+        fromBlock: 92440281,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0x22105089AFC8F35D55a9Efb19785fd350ADdd7C3",
+        fromBlock: 92440287,
       },
       // End of TermMax Alpha
     ],
@@ -86,23 +133,46 @@ const ADDRESSES = {
         address: "0x1401049368eD6AD8194f8bb7E41732c4620F170b",
         fromBlock: 63100000,
       },
-      {
-        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
-        fromBlock: 63100000,
-      },
       // Start of TermMax Alpha
       {
         address: "0xC63858D1eFa377f94392Ba5dEb521233Ec1548eb",
         fromBlock: 67251242,
       },
       // End of TermMax Alpha
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x310ec798C59894c0eC6ce5c18060f63a37592BC7",
+        fromBlock: 92440303,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0x34bF74BA2534fC80b52e8C8F2C6b2B9FBc01d3B8",
+        fromBlock: 92465857,
+      },
+      // End of TermMax Alpha
     ],
+    TermMax4626Factory: [
+      { address: "0x67dcDCc57208B574B05999AA3dFA57bfF2324129", fromBlock: 63208984 },
+      { address: "0xbe6f455123f6cdea1352d4510cCDe3D71D139ae7", fromBlock: 80402323 },
+    ],
+    // MarketV2Factory: [  // it is termMax market v2? https://github.com/DefiLlama/DefiLlama-Adapters/pull/17483 anyway, atm there is only testing with brBTC, excluding it for now
+    //   {
+    //     address: "0x529A60A7aCDBDdf3D71d8cAe72720716BC192106",
+    //     fromBlock: 71136348,
+    //   },
+    // ],
   },
   ethereum: {
+    zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
     Factory: {
       address: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
       fromBlock: 22174000,
     },
+    TermMax4626Factory: [
+      { address: "0xD594eb03a43b4974Aa7B32b5740cdeCe961151Fa", fromBlock: 23489745 },
+      { address: "0x3Cc88086C0a613970565C96F9a1b6BdAd61C5f14", fromBlock: 24790495 },
+      { address: "0x8ec01a807D088845e5176c20A129ebF9A0101dD5", fromBlock: 25004529 },
+    ],
     FactoryV2: [
       {
         address: "0x1c86801e8ad0726298383e30c2c1a844887a61bd",
@@ -111,6 +181,11 @@ const ADDRESSES = {
       {
         address: "0xc53ab74eeb5e818147eb6d06134d81d3ac810987",
         fromBlock: 23488600,
+      },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0xc1E9640F04B802Bbf0B02a4e9Fe394039AbE8B59",
+        fromBlock: 24876010,
       },
     ],
     VaultFactory: [
@@ -138,6 +213,11 @@ const ADDRESSES = {
         address: "0x5b8B26a6734B5eABDBe6C5A19580Ab2D0424f027",
         fromBlock: 23430000,
       },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x5Ad6a60C71AE49e0e6DDb1a4CdC9a1B2a3D5F7d0",
+        fromBlock: 24876015,
+      },
     ],
   },
   berachain: {
@@ -146,12 +226,25 @@ const ADDRESSES = {
         address: "0x4BC4F8f9B212B5a3F9f7Eeb35Ae1A91902670F7f",
         fromBlock: 11541952,
       },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x2A15CC106bCa1Ee17a411d77A9C53eC3509d47C2",
+        fromBlock: 19569241,
+      },
     ],
     VaultFactoryV2: [
       {
         address: "0x65fC69DE62E11592E8Acf57a0c97535209090Ef1",
         fromBlock: 11541953,
       },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0xd427EBAF1D269b397C454b22791b63534F1ae5B2",
+        fromBlock: 19569247,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0x3d2C215DE72877c3611cD0A9D8d69f60f1a5dB93", fromBlock: 12150722 },
     ],
   },
   hyperliquid: {
@@ -168,15 +261,115 @@ const ADDRESSES = {
       },
     ],
   },
+  bsquared: {
+    FactoryV2: [
+      {
+        address: "0x33931f3898EfB9A42B0D7CFfa9bb50A566A6b421",
+        fromBlock: 28981154,
+      },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x5BA2d33fB50d08D7755787E729183FedD6a3F3e7",
+        fromBlock: 31495773,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
+        fromBlock: 28981154,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x3Ebb9e9C855Bd03b275167DD2418193E3b69C22f",
+        fromBlock: 31495780,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 28981154 },
+    ],
+  },
+  xlayer: {
+    FactoryV2: [
+      {
+        address: "0xFaD175CAf9B0Ac0EBca3B1816ec799884EB04B9c",
+        fromBlock: 50664655,
+      },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x3d2C215DE72877c3611cD0A9D8d69f60f1a5dB93",
+        fromBlock: 57387356,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x2e1c769A9BA8248C7c8128c2BEBa11331ebF98Aa",
+        fromBlock: 50664655,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0xcA470095CC2D6aE6382c72bD235a2A5D7E80E1c1",
+        fromBlock: 57387362,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF", fromBlock: 50664655 },
+    ],
+  },
+  base: {
+    FactoryV2: [
+      {
+        address: "0xa6875Af7a45BEf941e484b59C149E5C1772DE643",
+        fromBlock: 43289754,
+      },
+      // TermMax V2.01 (same MarketCreated event signature)
+      {
+        address: "0x08c50Bd46992d35694208eC3Cf1f1EDcE38f5fd1",
+        fromBlock: 44680217,
+      },
+      // Start of TermMax Alpha
+      {
+        address: "0x2aFEf28a8Ab57d2F5A5663Ef69351e9d3abf1779",
+        fromBlock: 47709827,
+      },
+      // End of TermMax Alpha
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0xDA4aAF85Bb924B53DCc2DFFa9e1A9C2Ef97aCFDF",
+        fromBlock: 43289755,
+      },
+      {
+        address: "0x28e47A7d7E710d796DBAFd8081c052444deEcF10",
+        fromBlock: 44680222,
+      },
+      // TermMax V2.01 (same VaultCreated event signature)
+      {
+        address: "0x34F7b52b0d33959C8351eF95F3523C89b6123C0b",
+        fromBlock: 47709826,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 43289755 },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
   arbitrum: [
     "0x8531dC1606818A3bc3D26207a63641ac2F1f6Dc8", // misconfigured asset
   ],
-  ethereum: [],
+  ethereum: [
+    "0x5c16d84e998c661d9f6c7cc23e1144e4b7f39759",
+  ],
   bsc: [
     "0xe5E01B82904a49Ce5a670c1B7488C3f29433088a", // misconfigured asset
+  ],
+};
+
+// uBTC markets excluded: TVL inflated by minter-funded wallets and borrow-redeposit loops
+const MARKET_BLACKLIST = {
+  bsquared: [
+    "0x5022B6563f6bc9f0D47F407ba32B64e1f438213a", // uBTC/WBTC
   ],
 };
 
@@ -222,7 +415,8 @@ async function getTermMaxMarketOwnerTokens(api) {
   ]);
   const marketAddresses = []
     .concat(marketV1Addresses)
-    .concat(marketV2Addresses);
+    .concat(marketV2Addresses)
+    .filter(addr => !MARKET_BLACKLIST[api.chain]?.includes(addr));
   const tokens = await api.multiCall({
     abi: ABIS.Market.tokens,
     calls: marketAddresses,
@@ -304,11 +498,10 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
-    await Promise.all([
-      getTermMaxVaultAddresses(api),
-      getTermMaxVaultV1PlusAddresses(api),
-    ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses] = await Promise.all([
+    getTermMaxVaultAddresses(api),
+    getTermMaxVaultV1PlusAddresses(api),
+  ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
     .concat(vaultV1PlusAddresses)
@@ -323,21 +516,46 @@ async function getTermMaxVaultOwnerTokens(api) {
 
 async function recordVaultV2Assets(api) {
   const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
-  const [assets, totalAssets] = await Promise.all([
-    api.multiCall({
-      abi: ABIS.Vault.asset,
-      calls: vaultV2Addresses,
-    }),
-    api.multiCall({
-      abi: "uint256:totalAssets",
-      calls: vaultV2Addresses,
-    }),
-  ]);
-  for (let i = 0; i < vaultV2Addresses.length; i += 1) {
-    const asset = assets[i];
-    const totalAsset = totalAssets[i];
-    api.add(asset, totalAsset);
+
+  const assets = await api.multiCall({ abi: ABIS.Vault.asset, calls: vaultV2Addresses, })
+  /*
+    const tokensAndOwners = assets.map((asset, idx) => ({ target: asset, params: vaultV2Addresses[idx] }));
+     const assets1 = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaultV2Addresses, })
+    const tokens = await api.multiCall({ abi: 'string:symbol', calls: assets })
+    const tokenBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners })
+    const table = []
+  
+    vaultV2Addresses.forEach((vault, i) => {
+      let bal = assets1[i] / 1e18
+      let tokenBal = tokenBals[i] / 1e18
+      if (tokens[i].includes('USD')) {
+        bal = assets1[i] / 1e6
+        tokenBal = tokenBals[i] / 1e6
+      }
+      table.push({ vault, asset: assets[i], symbol: tokens[i], totalAssets: bal, tokenBalance: tokenBal, chain: api.chain })
+    })
+    console.table(table) 
+    */
+  // console.log('TermMax V2 Vaults found:', vaultV2Addresses, assets, tokens, api.chain);
+  await sumTokens2({ api, tokensAndOwners2: [assets, vaultV2Addresses] });
+}
+
+async function addTermMaxMarketV2Tvl(api) {
+  if (!ADDRESSES[api.chain].MarketV2Factory) return [];
+  const tokensAndOwners = [];
+  for (const factory of ADDRESSES[api.chain].MarketV2Factory) {
+    const factoryLogs = await getLogs({
+      api,
+      eventAbi: 'event MarketInitialized (address indexed collateral, address indexed underlying, uint64 maturity, address ft, address xt, address gt)',
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      onlyArgs: true,
+      extraKey: `termmax-market-v2-${api.chain}`,
+    });
+    factoryLogs.forEach(log => tokensAndOwners.push([log.collateral, log.gt]));
   }
+
+  await sumTokens2({ api, tokensAndOwners });
 }
 
 async function getTermMaxOwnerTokens(api) {
@@ -346,22 +564,28 @@ async function getTermMaxOwnerTokens(api) {
     getTermMaxVaultOwnerTokens(api),
   ]);
   await recordVaultV2Assets(api);
+  await addTermMaxMarketV2Tvl(api)
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
 
-async function getTermStructureOwnerTokens(api) {
+async function getTermStructureTvl(api) {
+
+  const zkTrueUpContractAddress = ADDRESSES[api.chain].zkTrueUpContractAddress;
+  if (!zkTrueUpContractAddress) return;
+
   const infoAbi =
     "function getAssetConfig(uint16 tokenId) external view returns (bool isStableCoin, bool isTsbToken, uint8 decimals, uint128 minDepositAmt, address token)";
   const tokenInfo = await api.fetchList({
     lengthAbi: "getTokenNum",
     itemAbi: infoAbi,
-    target: ADDRESSES.zkTrueUpContractAddress,
+    target: zkTrueUpContractAddress,
     startFrom: 1,
   });
   const tokens = tokenInfo.map((i) => i.token);
   tokens.push(CORE_ASSETS.ethereum.WETH);
-  return tokens.map((token) => [[token], ADDRESSES.zkTrueUpContractAddress]);
+
+  await sumTokens2({ api, tokens, owners: [zkTrueUpContractAddress] });
 }
 
 async function getTermMaxMarketBorrowed(api) {
@@ -413,54 +637,153 @@ async function getTermMaxMarketBorrowed(api) {
   }
 }
 
+async function getTermMaxV2MarketBorrowed(api) {
+  const marketAddresses = (await getTermMaxMarketV2Addresses(api)).filter(addr => !MARKET_BLACKLIST[api.chain]?.includes(addr));
+  const [tokens, configs] = await Promise.all([
+    api.multiCall({
+      abi: ABIS.Market.tokens,
+      calls: marketAddresses,
+    }),
+    api.multiCall({
+      abi: ABIS.Market.config,
+      calls: marketAddresses,
+    }),
+  ]);
+
+  const activeMarkets = [];
+  for (let i = 0; i < marketAddresses.length; i += 1) {
+    const marketAddress = marketAddresses[i];
+    const { maturity } = configs[i];
+    if (maturity <= api.timestamp) continue;
+
+    const { fixedToken, xToken, debt } = tokens[i];
+    activeMarkets.push({ marketAddress, fixedToken, xToken, debt });
+  }
+
+  const mintableERC20Array = Array.from(
+    new Set(
+      activeMarkets.flatMap(({ fixedToken, xToken }) => [fixedToken, xToken])
+    )
+  );
+  const totalSupplies = await api.multiCall({
+    abi: ABIS.MintableERC20.totalSupply,
+    calls: mintableERC20Array,
+  });
+  const tokenSupplyMap = new Map(
+    totalSupplies.map((supply, index) => [mintableERC20Array[index], supply])
+  );
+
+  for (const activeMarket of activeMarkets) {
+    const { fixedToken, xToken, debt } = activeMarket;
+
+    const ftSupply = tokenSupplyMap.get(fixedToken);
+    if (!ftSupply) continue;
+
+    const xtSupply = tokenSupplyMap.get(xToken);
+    if (!xtSupply) continue;
+
+    api.add(debt, ftSupply - xtSupply);
+  }
+}
+
+async function erc4626VaultsTvl(api) {
+  if (!ADDRESSES[api.chain].TermMax4626Factory) return;
+  const tokensAndOwners = [];
+  const stableERC4626For4626Vaults = [];
+  const aaveVaults = [];
+  const customizeVaults = [];
+
+  for (const factory of ADDRESSES[api.chain].TermMax4626Factory) {
+    let logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626For4626Created,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626For4626Created-20260206',
+    });
+    stableERC4626For4626Vaults.push(...logs.map(i => i.stableERC4626For4626));
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForAaveCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626ForAaveCreated-20260206',
+    });
+    aaveVaults.push(...logs.map(i => i.stableERC4626ForAave));
+
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.VariableERC4626ForAaveCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'VariableERC4626ForAaveCreated-20260206',
+    });
+    aaveVaults.push(...logs.map(i => i.variableERC4626ForAave));
+
+    logs = await getLogs2({
+      api,
+      eventAbi: EVENTS.TermMax4626Factory.StableERC4626ForCustomizeCreated,
+      fromBlock: factory.fromBlock,
+      target: factory.address,
+      extraKey: 'StableERC4626ForCustomizeCreated-20260429',
+    });
+    customizeVaults.push(...logs.map(i => i.stableERC4626ForCustomize));
+  }
+
+  const aTokens = await api.multiCall({ abi: 'address:aToken', calls: aaveVaults })
+  const aUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: aaveVaults })
+  aaveVaults.forEach((vault, i) => {
+    tokensAndOwners.push([aUnderlyings[i], vault])
+    tokensAndOwners.push([aTokens[i], vault])
+  })
+
+  const stableUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: stableERC4626For4626Vaults })
+  const thirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: stableERC4626For4626Vaults })  // morpho vaults?
+  stableERC4626For4626Vaults.forEach((vault, i) => {
+    tokensAndOwners.push([stableUnderlyings[i], vault])
+    tokensAndOwners.push([thirdPools[i], vault])
+  })
+
+  // StableERC4626ForCustomize: thirdPool may be either an ERC4626/ERC20 OR a
+  // Gnosis Safe. Probe totalSupply() to disambiguate — the Safe contract does
+  // not implement it. Safe-backed pools are excluded per DefiLlama methodology.
+  const customizeUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: customizeVaults })
+  const customizeThirdPools = await api.multiCall({ abi: 'address:thirdPool', calls: customizeVaults })
+  const thirdPoolSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: customizeThirdPools, permitFailure: true })
+  customizeVaults.forEach((vault, i) => {
+    if (thirdPoolSupplies[i] === null) return;
+    tokensAndOwners.push([customizeUnderlyings[i], vault]);
+    tokensAndOwners.push([customizeThirdPools[i], vault]);
+  })
+
+  await sumTokens2({ api, tokensAndOwners });
+}
+
 module.exports = {
   hallmarks: [
     [
-      Math.floor(new Date("2025-04-15") / 1000),
+      "2025-04-15",
       "Sunset Term Structure and launch TermMax",
     ],
   ],
-  // 1st batch deployment
-  arbitrum: {
-    borrowed: getTermMaxMarketBorrowed,
+}
+
+Object.keys(ADDRESSES).forEach(chain => {
+  module.exports[chain] = {
     tvl: async (api) => {
+      await erc4626VaultsTvl(api)
+      await getTermStructureTvl(api)
       const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
+      await sumTokens2({ api, ownerTokens })
+      if(api.chain == 'bsquared') api.removeTokenBalance(ADDRESSES.bsquared.UBTC) // uBTC - unproductive
     },
-  },
-  bsc: {
-    borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
-    },
-  },
-  ethereum: {
-    borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const [termStructureOwnerTokens, termMaxOwnerTokens] = await Promise.all([
-        getTermStructureOwnerTokens(api),
-        getTermMaxOwnerTokens(api),
+    borrowed: async (api) => {
+      await Promise.all([
+        getTermMaxMarketBorrowed(api),
+        getTermMaxV2MarketBorrowed(api),
       ]);
-      const ownerTokens = []
-        .concat(termStructureOwnerTokens)
-        .concat(termMaxOwnerTokens);
-      return sumTokens2({ api, ownerTokens });
     },
-  },
-  // 2nd batch deployment
-  berachain: {
-    borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
-    },
-  },
-  hyperliquid: {
-    borrowed: getTermMaxMarketBorrowed,
-    tvl: async (api) => {
-      const ownerTokens = await getTermMaxOwnerTokens(api);
-      return sumTokens2({ api, ownerTokens });
-    },
-  },
-};
+  }
+})

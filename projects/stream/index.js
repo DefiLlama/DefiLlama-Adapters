@@ -1,5 +1,9 @@
-const abi = require("./abi.js");
 const { getLogs2 } = require('../helper/cache/getLogs');
+
+const abi = {
+  totalSupply: "function totalSupply() view returns (uint256)",
+  asset: "function asset() view returns (address)",
+};
 
 const vaults = Object.values({
   STREAMUSD_WRAPPER_CONTRACT: "0x6eAf19b2FC24552925dB245F9Ff613157a7dbb4C",
@@ -68,8 +72,8 @@ module.exports = {
   methodology: "Calculates the TVL of all Stream vaults",
   start: 1739697390,
   hallmarks: [
-    [1740283200, "Stream V2 Launch"],
-    [1762214400, "Reported loss $93 million users fund"],
+    ['2025-02-23', "Stream V2 Launch"],
+    ['2025-11-04', "Reported loss $93 million users fund"],
   ],
   ethereum: {
     tvl,

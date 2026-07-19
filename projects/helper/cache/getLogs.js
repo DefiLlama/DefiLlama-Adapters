@@ -6,6 +6,8 @@ const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
+const problematicChainSet = new Set(['rbn',])
+
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
   api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, useIndexer }) {
@@ -22,7 +24,9 @@ async function getLogs({ target,
   const block = api.block
   const chain = api.chain ?? 'ethereum'
 
-  if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
+  if (problematicChainSet.has(chain)) onlyUseExistingCache = true
+
+  // if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
 
 
   if (!toBlock) toBlock = block
@@ -197,7 +201,7 @@ async function getLogs({ target,
   }
 }
 
-const indexerChains = new Set(['monad', 'base'])
+const indexerChains = new Set(['monad', 'base', 'unichain', 'bsc', 'xlayer', 'megaeth', 'bsc'])
 
 async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, useIndexer, ...rest }) {
 

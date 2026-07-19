@@ -1,17 +1,31 @@
+const { getEnv } = require('../env');
 const { post } = require('../http')
+const { sleep } = require('../utils')
 
+// https://eos.antelope.tools/endpoints
 const RPC_ENDPOINTS = {
-    'eos': 'https://eos.greymass.com',
+    'eos': 'https://mainnet.genereos.io',
+    // 'eos': 'https://eos-mainnet.gateway.tatum.io',
     'wax': 'https://wax.greymass.com',
     'telos': 'https://telos.greymass.com',
 }
 
 async function getEosBalance(account_name, chain = "eos") {
-    return post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name, })
+    await sleep(1000);
+    return post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name, }, {
+      headers: {
+        // 'x-api-key': getEnv('TATUM_PUBLIC_API_KEY'),
+      }
+    })
 }
 
 async function get_currency_balance(code, account, symbol, chain = "eos") {
-    const data = await post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_currency_balance`, { code, account, symbol })
+    await sleep(1000);
+    const data = await post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_currency_balance`, { code, account, symbol }, {
+      headers: {
+        // 'x-api-key': getEnv('TATUM_PUBLIC_API_KEY'),
+      }
+    })
     if (!data.length) return 0
     return Number(data[0].split(" ")[0]);
 }
@@ -38,7 +52,12 @@ function get_precision(symbol) {
 
 // native staked CPU/Net & REX should be counted as liquid balance
 async function get_staked(account_name, symbol, chain = "eos") {
-    const response = await post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name })
+    await sleep(1000);
+    const response = await post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name }, {
+      headers: {
+        // 'x-api-key': getEnv('TATUM_PUBLIC_API_KEY'),
+      }
+    })
     try {
         let refunding = 0;
         if(response.refund_request){

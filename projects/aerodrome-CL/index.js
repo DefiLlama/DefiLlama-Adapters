@@ -9,7 +9,8 @@ const export1 = {
       factory: '0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A', blacklistedTokens, fetchBalances: true, abis: {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: "function allPools(uint) view returns (address)",
-      }
+      },
+      permitFailure: true,
     })
   }
 }
@@ -20,7 +21,8 @@ const export2 = {
       factory: '0xaDe65c38CD4849aDBA595a4323a8C7DdfE89716a', blacklistedTokens, fetchBalances: true, abis: {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: "function allPools(uint) view returns (address)",
-      }
+      },
+      permitFailure: true,
     })
   }
 }

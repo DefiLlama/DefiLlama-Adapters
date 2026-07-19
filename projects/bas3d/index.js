@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "LPtoken": "address:LPtoken",
+    "balanceLPinSystem": "uint256:balanceLPinSystem",
+    "stakingToken": "address:stakingToken"
+  };
 const { sumTokensExport, sumUnknownTokens } = require('../helper/unknownTokens')
 
 const coreRewards = "0x3a7D3D2b49CAA7EF2C116C64711265eab0C755c0";

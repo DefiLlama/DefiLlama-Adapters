@@ -1,5 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accsYSLPerShare, address strat, bool isActive)",
-  "poolLength": "uint256:poolLength",
-  "symbol": "string:symbol"
-}

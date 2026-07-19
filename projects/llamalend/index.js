@@ -1,5 +1,7 @@
 const sdk = require('@defillama/sdk')
-const abi = require("./abi.json");
+const abi = {
+    "totalBorrowed": "uint256:totalBorrowed"
+  };
 const BigNumber = require("bignumber.js");
 const { getLogs } = require('../helper/cache/getLogs')
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')

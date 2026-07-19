@@ -33,7 +33,7 @@ module.exports = {
     staking: staking(veBaoAddress, baoAddress)
   },
   hallmarks: [
-    [1668898307, "baoV2 deployment"],
-    [1672272000, "baoV2 emission start"]
+    ['2022-11-19', "baoV2 deployment"],
+    ['2022-12-29', "baoV2 emission start"]
   ]
 };

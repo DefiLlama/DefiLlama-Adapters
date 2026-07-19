@@ -1,6 +1,6 @@
 
 
-const VAULT = '0x806Ea0e218d24410e24533fB68810440E3b618e1';
+const VAULT = '0x395ED11a7098Fc8654A064435495D1226eb046Be';
 
 async function tvl(api) {
  
@@ -16,7 +16,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'Base Chain Split4626 Vault(0x806E...) TVL Count.',
+    'Vault TVL Count.',
   base: {
     tvl,
   },

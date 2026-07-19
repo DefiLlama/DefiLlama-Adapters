@@ -1,5 +1,9 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
-const abi = require("../mooniswap/abi.json")
+const abi = {
+  "getPool": "function allPools(uint256) view returns (address)",
+  "getAllPools": "address[]:getAllPools",
+  "getTokens": "address[]:getTokens"
+};
 const { staking } = require('../helper/staking')
 
 const chainConfig = {

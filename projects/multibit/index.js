@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "pools": "function pools(uint256) view returns (address stakeToken, address rewardToken, uint256 totalReward, uint256 openAt, uint256 closeAt, uint256 lockTime, uint256 rewardReleased, uint256 rewardPerSecond, uint256 totalStakedAmount, uint256 accTokenPerShare, uint256 lastRewardTimestamp, bool paused)",
+    "poolLength": "uint256:poolLength"
+  };
 const sdk = require('@defillama/sdk');
 const { getConfig } = require('../helper/cache')
 const ADDRESSES = require('../helper/coreAssets.json')

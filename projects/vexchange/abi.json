@@ -1,8 +1,0 @@
-{
-  "balanceOf": "function balanceOf(address _owner) view returns (uint256 balance)",
-  "allPairsLength": "uint256:allPairsLength",
-  "allPairs": "function allPairs(uint256) view returns (address)",
-  "token0": "address:token0",
-  "token1": "address:token1",
-  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)"
-}

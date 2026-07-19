@@ -33,7 +33,7 @@ async function borrowed(api) {
 
 module.exports = {
   // hallmarks: [
-  //   [1670630400, "pvlGLP collateral exploit"]
+  //   ['2022-12-10', "pvlGLP collateral exploit"]
   // ],
   arbitrum: {
     tvl,

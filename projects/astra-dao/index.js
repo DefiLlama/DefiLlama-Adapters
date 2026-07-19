@@ -5,21 +5,11 @@ const ASTRA_STAKING_CONTRACT_ARBITRUM = '0x6fE79b531b2b1d5378631B3Ab33B0994E2973
 
 async function tvl(api) {
   const chain = api.chain
-  let gotError = false;
   const indexAddr = chain === 'ethereum' ? '0x17b9B197E422820b3e28629a2BB101949EE7D12B' : '0xFa3e6EC87941d4e29b1738F8F7f5C27B23Eb3f94';
   const stableCoin = await api.call({ abi: 'address:baseStableCoin', target: indexAddr });
-  let i = 0;
   const tokens = [stableCoin];
-  do {
-    try {
-      const _tokens = await api.call({ abi: 'function getIndexTokenDetails(uint256) view returns (address[])', target: indexAddr, params: i });
-      tokens.push(..._tokens);
-      i++;
-    } catch (e) {
-      // if (i === 0) throw e;
-      gotError = true;
-    }
-  } while (!gotError);
+  const _tokens = await api.fetchList({ itemAbi: 'function getIndexTokenDetails(uint256) view returns (address[])', target: indexAddr, itemCount: 10, permitFailure: true, excludeFailed: true, });
+  tokens.push(..._tokens.flat());
   return sumTokens2({ api, owner: indexAddr, tokens });
 }
 
