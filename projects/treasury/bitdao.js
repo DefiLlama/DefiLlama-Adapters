@@ -5,6 +5,8 @@ const { getConfig } = require('../helper/cache')
 
 const API_URL = 'https://api.mantle.xyz/api/v2/treasury/tokens';
 const MNT = '0x3c3a81e81dc49a522a592e7622a7e711c06bf354';
+// BitDAO's original token, which Mantle rebranded from and converted to MNT
+const BIT = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5';
 const USDe = ADDRESSES.ethereum.USDe;
 const COOK = '0x9f0c013016e8656bc256f948cd4b79ab25c7b94d'
 const ethenaFarm = '0x8707f238936c12c309bfc2b9959c35828acfc512';
@@ -19,7 +21,7 @@ const getEthenaFarmingBalance = async (api, wallet) => {
   return Number(stakedAmount) + Number(coolingDownAmount);
 };
 
-const getTvlData = async (api, key) => {
+const getTvlData = async (api, key, { skipOwnNative = false } = {}) => {
   const data = await getConfig('mantle-treasury', API_URL)
   const rawDatas = data.filter(({ chain }) => key === chain);
   const datas = rawDatas.map(({ id, walletAddress, amount }) => ({ id, walletAddress, amount }));
@@ -38,7 +40,9 @@ const getTvlData = async (api, key) => {
   for (const { owner, tokens } of wallets) {
     const eigenLayerToken = tokens.find(token => token.address === 'eigen-layer-eth');
     if (tokens.some(token => token.address === 'eth')) api.add(nullAddress, (await sdk.api.eth.getBalance({ target: owner })).output);
-    if (tokens.some(token => token.address === 'mnt')) api.add(MNT, (await sdk.api.eth.getBalance({ target: owner })).output, { skipChain: true });
+    // native MNT lives on Mantle, so the balance has to be read there and not on Ethereum.
+    // MNT is an own token, so it is only added on the ownTokens pass.
+    if (!skipOwnNative && tokens.some(token => token.address === 'mnt')) api.add(MNT, (await sdk.api.eth.getBalance({ target: owner, chain: api.chain })).output, { skipChain: true });
     if (tokens.some(token => token.address === 'ethena-farming-usde')) api.add(USDe, await getEthenaFarmingBalance(api, owner));
     if (eigenLayerToken) api.add(nullAddress, eigenLayerToken.amount * 10 ** 18);
 
@@ -56,17 +60,17 @@ module.exports = {
   ethereum: {
     tvl: sdk.util.sumChainTvls([async ({ api }) => {
       const { owners, tokens } = await getTvlData(api, 'eth')
-      return api.sumTokens({ owners, tokens, blacklistedTokens: [MNT] });
+      return api.sumTokens({ owners, tokens, blacklistedTokens: [MNT, BIT] });
     }]),
     ownTokens: async ({ api }) => {
       const { owners } = await getTvlData(api, 'eth')
-      return api.sumTokens({ ownerTokens: owners.map(owner => [[MNT], owner]) });
+      return api.sumTokens({ ownerTokens: owners.map(owner => [[MNT, BIT], owner]) });
     }
   },
   mantle: {
     tvl: async (api) => {
-      const { owners, tokens } = await getTvlData(api, 'mnt')
-      return api.sumTokens({ owners, tokens, blacklistedTokens: [COOK] }); 
+      const { owners, tokens } = await getTvlData(api, 'mnt', { skipOwnNative: true })
+      return api.sumTokens({ owners, tokens, blacklistedTokens: [COOK] });
     },
     ownTokens: async ({ api }) => {
       const { owners } = await getTvlData(api, 'mnt')
