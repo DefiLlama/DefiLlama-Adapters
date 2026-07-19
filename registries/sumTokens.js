@@ -1,10 +1,12 @@
 const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { sumTokensExport } = require('../projects/helper/sumTokens')
+const { sumTokensExport: sumUnknownTokensExport } = require('../projects/helper/unknownTokens')
 const { staking: stakingFn } = require('../projects/helper/staking')
 const { pool2: pool2Fn } = require('../projects/helper/pool2')
 const { getBTCExport } = require('../projects/helper/bitcoin-book')
 const data1 = require('./sumTokens/data1')
 const data2 = require('./sumTokens/data2')
+const data3 = require('./sumTokens/data3')
 const covalent = require('./sumTokens/covalent')
 
 // Registry for adapters whose TVL (and optional staking/pool2/borrowed buckets) are static sumTokens calls.
@@ -13,6 +15,9 @@ const covalent = require('./sumTokens/covalent')
 //   plain options object -> sumTokensExport(opts); { __staking:[args] } -> stakingFn(...);
 //   { __pool2:[args] } -> pool2Fn(...); { __empty:true } -> () => ({});
 //   { __btcBook: 'key' } -> getBTCExport('key') (pulls owners from the bitcoin address-book, static or dynamic).
+//   { __resolveUnknownTokenLP: true, ... } -> unknownTokens.sumTokensExport (resolves unknown-token LP
+//     pricing via core assets; use for buckets that rely on lps + useDefaultCoreAssets, e.g. migrated
+//     staking/pool2 with LP deposits). Distinct from sumTokens2's own `resolveLP` (known-LP unwrap).
 const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens"])
 const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting"])
 
@@ -21,7 +26,12 @@ function buildBucket(spec, chain) {
   if (spec.__staking) return stakingFn(...spec.__staking)
   if (spec.__pool2) return pool2Fn(...spec.__pool2)
   if (spec.__btcBook) return getBTCExport(spec.__btcBook)
-  return sumTokensExport({ ...spec, chain })
+  if (spec.__resolveUnknownTokenLP) {
+    const { __resolveUnknownTokenLP, ...opts } = spec
+    // spec-level chain (e.g. tokens held on a different chain than the protocol's key) wins over the folder key
+    return sumUnknownTokensExport({ chain, ...opts })
+  }
+  return sumTokensExport({ chain, ...spec })
 }
 function isBucketMap(v) {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return false
@@ -41881,7 +41891,7 @@ const configs = {
   },
 }
 
-Object.assign(configs, data1, data2, covalent)
+Object.assign(configs, data1, data2, data3, covalent)
 
 const allProtocols = {}
 for (const [name, cfg] of Object.entries(configs)) {

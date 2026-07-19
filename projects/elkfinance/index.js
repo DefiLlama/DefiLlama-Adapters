@@ -44,4 +44,3 @@ Object.keys(factories).forEach(chain => {
 module.exports.misrepresentedTokens = true;
 module.exports.timetravel = true
 
-module.exports.hoo.tvl = () => ({})
