@@ -14,6 +14,20 @@ const configs = {
   // Simple staking/pool2-only adapters
   // ============================================================
 
+  'csix': {
+    methodology: "Counts as TVL the CSIX deposited through Staking Contract",
+    hallmarks: [
+      ['2023-02-14', "Staking V1"],
+      ['2023-11-22', "Staking V2"],
+      ['2024-02-26', "Staking V3"],
+    ],
+    bsc: {
+      staking: {
+        owners: ['0xadc743298F6339Cd8ebC0Dc58D4E19C2065D6b4f', '0xA4f55D251b8fa8e0C291CC539F020c5Cbe4a9FA8', '0x7c7C76e4D47872A7B73FA15306A9Ebb673796dDc'],
+        tokens: ['0x04756126F044634C9a0f0E985e60c88a51ACC206'],
+      },
+    },
+  },
   '2omb-finance': {
     fantom: {
       staking: ['0x627A83B6f8743c89d58F17F994D3F7f69c32F461', '0xc54a1684fd1bef1f077a336e6be4bd9a3096a6ca'],
@@ -96,6 +110,18 @@ const configs = {
   'velhalla': {
     velas: {
       staking: ['0x7DeD7f9D3dF541190F666FB6897483e46D54e948', '0x8d9fb713587174ee97e91866050c383b5cee6209'],
+    },
+  },
+  'love': {
+    methodology: 'The liquidity on these three pools + the tokens staked on all three chains (PulseChain, Ethereum, and Binance Smart Chain)',
+    ethereum: {
+      staking: ['0xE639E9DC0E302f5dB025713009868c8adE4Ced26', '0xb55EE890426341FE45EE6dc788D2D93d25B59063'],
+    },
+    pulse: {
+      staking: ['0xDd91E607C919Db74e18C2845e4cfb22793c30b2f', '0xb55EE890426341FE45EE6dc788D2D93d25B59063'],
+    },
+    bsc: {
+      staking: ['0x1781e00780AfD93a03Bf5f9dED088a8578cE9B09', '0xb55EE890426341FE45EE6dc788D2D93d25B59063'],
     },
   },
   'xrune': {

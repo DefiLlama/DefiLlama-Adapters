@@ -111,6 +111,16 @@ const aaveConfigs = {
       dataHelpers: ['0x71B53fC437cCD988b1b89B1D4605c3c3d0C810ea'],
     },
   },
+  'ssap': {
+    clv: {
+      addressesProviderRegistry: '0x070CaAeac85CCaA7E8DCd88421904C2259Abed34',
+      dataHelpers: ['0x49617386d6aAaA6aE23c0E7799B5c4F79f33f1B1'],
+    },
+    oasis: {
+      addressesProviderRegistry: '0xBB4dfd53BA393DCD1AD1e30809C9527e9a00d522',
+      dataHelpers: ['0x2b8DD6DE52F20EfA309BC56454b7A929B7a1E66D'],
+    },
+  },
   'luckypeaches': {
     hemi: { dataHelpers: ['0x986b04d0a228b8cB81E236F9Add85e43758F21B2'] },
     hyperliquid: { dataHelpers: ['0x473f5e779b36DdC54f63107B255580Db049EFc5b'] },
