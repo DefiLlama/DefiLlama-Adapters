@@ -13,6 +13,8 @@ const WRAPPED_COOK = 'So11111111111111111111111111111111111111112' // native COO
 async function tvl(api) {
   const connection = getConnection(api.chain)
   const acc = await connection.getAccountInfo(STAKE_POOL)
+  if (!acc || acc.data.length < TOTAL_LAMPORTS_OFFSET + 8)
+    throw new Error('bakeyourstake: stake pool account missing or malformed')
   const totalLamports = acc.data.readBigUInt64LE(TOTAL_LAMPORTS_OFFSET)
   api.add(WRAPPED_COOK, totalLamports.toString())
 }
