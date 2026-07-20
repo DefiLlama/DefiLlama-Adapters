@@ -30,7 +30,25 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
       "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
       "0x9bbe47fe66b3580551aac3124cf9fc6560252b19",
-      "0xaaac1183d07c69f5befd22a06211690e953dca17"
+      "0xaaac1183d07c69f5befd22a06211690e953dca17",
+      "0xa2f10222b338c9ff3c953b129d1a49258f83f6c7",
+      "0xbcf03ce48091e6b820a7c33e166e5d0109d8e712",
+      "0x9f1daa35a4ef099c03744dfe3e67a39c4697ebe5",
+      "0xa10eca918c71806ac55083d8ac942d4674b0f9ef",
+      "0xb11c93f04bb7cc8d2d4aba47fcf73170bcea940d",
+      "0x68cdf5d77e75515edf7aa564d36fe3cbe751226e",
+      "0x37e1bf9ab62e523f358dafaca86151519f0a2f8d",
+      "0xe39ba3f5bcbf0ef7ed31a07e799b8d2010c885cf",
+      "0x444c55075086f531a1c02730f41c46b9bbb00a39",
+      "0x356b9e62b20f4666e914fb99a9f651e5574f2bf7",
+      "0x8cd6437feaeb1a3a0cd65a16de2ad26bff1f5e43",
+      "0x7793cd85c11a924478d358d49b05b37e91b5810f",
+      "0x2cc81b80a293408a89084c77a0983de0730f731a",
+      "0x7a3f9b7120386249528c93e5eb373b78e54d5ba9",
+      "0x287a66c7d9cba7504e90fa638911d74c4dc6a147",
+      "0x66bbafc7269f1a9e5b454445585275f2b4ead28e",
+      "0xd6a8047940a1f71df5f809919c10d9ba0a88786e",
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
     ]
   },
   "avax": {
@@ -39,6 +57,9 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xD793281182A0e3E023116004778F45c29fc14F19",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      "0xba7946e3aeffe2145e68cd227f113e0038d43d9b",
+      "0xb05ebe4b470c4fbc0a5f4a6293741c7985c6a016",
+      "0x20ddf011b00e6f134ae10bdb73146500a69c453e"
     ]
   },
   "arbitrum": {
@@ -50,7 +71,10 @@ const config = {
       "0x85faa6c1f2450b9caea300838981c2e6e120c35c",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
+      "0x44b28845422204c81bfe0687f0a987a444c14e67",
+      "0x45b48b43a410b6374a16176acef0b72d41a56996",
+      "0xc7adfda3aa8525fea8fed6a02134297ffaca3463"
     ]
   },
   "polygon": {
@@ -68,7 +92,8 @@ const config = {
       "0x0fc73ffb9a0ded685234428e103d26b3762df460",
       "0xa2df23519a6059dbc6f027f6cf8e59bdaecaf56f",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
+      "0xfb8072675ba65fa4157921ff1e522132a33eabb5"
     ]
   },
   "fantom": {
@@ -142,7 +167,9 @@ const config = {
       "DdzFFzCqrhseMuShaXzLDGDBa8jGEjdEjNc83jouqdqBQzk5R52MedutUq3QGdMPiauR5SjbttqdBjDA5g6rf3H6LjpvK3dFsf8yZ6qo",
       "DdzFFzCqrhtBatWqyFge4w6M6VLgNUwRHiXTAg3xfQCUdTcjJxSrPHVZJBsQprUEc5pRhgMWQaGciTssoZVwrSKmG1fneZ1AeCtLgs5Y",
       "addr1qyzppj9mh28q9d7x070j7aphnn6dx5lsh203zukzs7q68jqf08fcmxg8h9tvx8m529hjjnm9g3pt8vlkh95em7nup32sm78295",
-      "addr1q9lqxlvk2dk8sffhr56gc4c4lckpv56l4r7wwh474caywurve9ssnt966vmezsfsppfm5sxgu5sqxacp8t7kpjzp9yxqn24ckj"
+      "addr1q9lqxlvk2dk8sffhr56gc4c4lckpv56l4r7wwh474caywurve9ssnt966vmezsfsppfm5sxgu5sqxacp8t7kpjzp9yxqn24ckj",
+      "addr1q9lxym523pnns50dyymdv3n8vktyc0nkedr54c8d2prgxsumfyd8qtrg9yr4lqadjtczu6y94rtevjua36rv75v0qsnstezggc",
+      "addr1qyxuqrcjfyyz99yx4s307x33tu45944j607cywzvh3ykxw8c0cqknc77ed7uu7v465ufhkuu73ve6x7r9emq8vfkhxts23pyk4"
     ]
   },
   "solana": {
@@ -155,7 +182,9 @@ const config = {
       // "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
       // "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
       // "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
-      "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN"
+      "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN",
+      "AGrghB4tNEJhWsPoQ73We5KAvgp6q512BkBx6fqY4i4b",
+      "DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp"
     ]
   },
   "ripple": {
@@ -164,19 +193,22 @@ const config = {
       "rLzxZuZuAHM7k3FzfmhGkXVwScM4QSxoY7",
       "rNnWmrc1EtNRe5SEQEs9pFibcjhpvAiVKF",
       "rNu9U5sSouNoFunHp9e9trsLV6pvsSf54z",
-      "rhnS6iYGnrmh8NEgEKq3sBgF4FMLD9dHGf"
+      "rhnS6iYGnrmh8NEgEKq3sBgF4FMLD9dHGf",
+      "rHJ2fHJvW97WY5X7BTBpXKCaJut8yUPxjd"
     ]
   },
   "starknet": {
     "owners": [
       "0x00e91830f84747f37692127b20d4e4f9b96482b1007592fee1d7c0136ee60e6d",
-      "0x016dd5370bfa06e862508e8b81b8f676327b55404231bfb5b34c1df10ddd8963"
+      "0x016dd5370bfa06e862508e8b81b8f676327b55404231bfb5b34c1df10ddd8963",
+      "0x003cb9938085c5b9f15a02c46ec8eadfe9c418ba49290c02d77187fb0d5f142a"
     ]
   },
   "algorand": {
     "owners": [
       "BVMEUTF37WNEQ6GYCZISRFHGLEMOKT5OCPPTTJXVED6JBSXKF6YJJRZRI4",
       "7BL55CRKRASIQI263JQ5H5A4JJQFSHL7RWXMCKM6YDZAIJVEZQ76SXF2S4",
+      "4EHCQSBDXQDSR4MFASDP2TGNKVDCJEKA5FUCHLAJ7FVTANR42JISNPV6UU"
       // "YGR5VO4VWBTWPWZKXBPNBPUGCM5BLP7DVAH2AF6LXAZBM5QKQGAXY5IXII" // getting account not found error
     ]
   },
@@ -200,7 +232,8 @@ const config = {
       "LNyjBuigbWcHYQYbVKxk15u3Ux23QvEnS9",
       "LQFZFmkrmxuyL5TCjuVxngM4wRFdM2a9EW",
       "MQ4wXRL6etqkEPrLm4f1FKu2eXTM7EMgXo",
-      "LZZH8R24wpRVN9g2qM9Rh2BmfcTvThDtpE"
+      "LZZH8R24wpRVN9g2qM9Rh2BmfcTvThDtpE",
+      "LfTLSHKuxtXUW9KzGiQRu3wtwnwhVhuWge"
     ]
   },
   "manta": {
@@ -266,6 +299,11 @@ const config = {
       "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
+  "0g": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   "acala": {
     "owners": [
       "21B6SER8NUWRVZcNM8LjAkYoVvms1EN1sKCfxJgTtN7MWpWm",
@@ -312,6 +350,12 @@ const config = {
       // "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "aleo": {
+    "owners": [
+      "aleo1svz4av4u2fazqse02mkq9x26602hncucnp27ujuucha5c9a7j5qq2nklgu",
+      "aleo18lpsmdx0hzwhw6ejaad5j8hjngwddyn0ap8ws8cr0z7gls4k4s9qz5ww07"
+    ]
+  },
   "alephium": {
     "owners": [
       "17R6Ptkz9i1LhiKyMhnitUMkgFygGeeQUFZvRx6GgV8Fc",
@@ -330,6 +374,7 @@ const config = {
   "aptos": {
     "owners": [
       "0x0cf869189c785beaaad2f5c636ced4805aeae9cbf49070dc93aed2f16b99012a",
+      "0x664208180d23956463ab9bf0a8f2a8f095bca2e27ac9c60623a4e22e78456d3f"
       // address not found
       // "0x8b88f330e9ee14c6571d6707c48858bdd126d715c5df145eee58f4f4f6217898",
       // "0x107ffec1dd5c5faa26dbff442253ae9fc2cb026e3e9b55a6613c10cc90904a40"
@@ -377,6 +422,11 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+    ]
+  },
+  "babylon": {
+    "owners": [
+      "bbn155svs6sgxe55rnvs6ghprtqu0mh69keh5d7ul6"
     ]
   },
   "band": {
@@ -434,7 +484,8 @@ const config = {
       "14kmvhQrWrNEHbrSKBySj4qHGjemDtS3SF",
       "162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw",
       "3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M",
-      "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv"
+      "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
+      "1MEPB525tEHRFLdq6aR8d2t8jaaRQj2iWX"
     ]
   },
   /*
@@ -460,7 +511,8 @@ const config = {
       "5CNChyk2fnVgVSZDLAVVFb4QBTMGm6WfuQvseBG6hj8xWzKP",
       "5HgKqPsEz17fBVCvd5cgWbGbapBXCn48p8LHjjvAub2kvVyd",
       "5FsWP1GxpzT11xyFBojKpE75pzp54ESDA6BYbRMPJ2nsCZE5",
-      "5GSbmqT4LV2PA3TfxtakZySNkTZ1b3bqPRMo7UbBfZrp6d8k"
+      "5GSbmqT4LV2PA3TfxtakZySNkTZ1b3bqPRMo7UbBfZrp6d8k",
+      "5H9nqVMLfYWN6MiiCLrWjR1ADjR7V7FcBEenBY66NiHeKucE"
     ]
   },
   "bittorrent": {
@@ -547,7 +599,8 @@ const config = {
       "celestia155svs6sgxe55rnvs6ghprtqu0mh69kehje7a6w",
       "celestia1jm068whkhkxk48gx80ppm2m0nwy677pr85knnx",
       "celestia1xunyznpjmj9jv5e2zwngp2qrzmulr2ggfjswnm",
-      "celestia1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9skqgdq"
+      "celestia1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9skqgdq",
+      "celestia10v2gu0vvdeuv8pexnl98lmyva4cq8jkavlk9w4"
     ]
   },
   "celo": {
@@ -600,7 +653,13 @@ const config = {
     "owners": [
       "cfx:aasusb60hfktf87fx1jg8m4cnnhebrew92f4swayt0",
       "cfx:aase06fdw4cdrsrazhhzebshu9z2ds4zvu8j9zv3ad",
-      "cfx:aat80d5bu6rp5redv18g4yec8bv8ssheee8c9zur0a"
+      "cfx:aat80d5bu6rp5redv18g4yec8bv8ssheee8c9zur0a",
+      "cfx:aam0nuzv9bu14e68xb390bjcc3t6du0bn2tcy8rde0"
+    ]
+  },
+  "constellation": {
+    "owners": [
+      "DAG4TETUwraLYX1mYdC8ymUxxWsoNZPffUpDf4Ar"
     ]
   },
   "core": {
@@ -608,7 +667,8 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
     ]
   },
   "cosmos": {
@@ -666,7 +726,9 @@ const config = {
       "D8tsTxMVpGGWpc333my1Gpzt9sP4YQjoDx",
       "DAAhXpPfziaCcGweJMWE4RSucLcee7NcqL",
       "A8c3xNz2mqsDLFwv5KL5fpH12QEwDaoTXo",
-      "DKURQTetAa5ieMAUPo9gxmHcLXpwes8kH1"
+      "DKURQTetAa5ieMAUPo9gxmHcLXpwes8kH1",
+      "DBTkQXvbMHQM7fw2YcXrxzayCiaVkx641i",
+      "9y8WDTKcBrzKPuun9dsDsbnFrZ6SJCxSxc"
     ]
   },
   "dydx": {
@@ -833,7 +895,8 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
     ]
   },
   "flow": {
@@ -874,6 +937,12 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "gatelayer": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+    ]
+  },
   // "gochain": {
   //   "owners": [
   //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -888,7 +957,8 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0x246a2ecd9626f9eda55fffbff5216ed417a904f5",
       "0x840760aed6bbd878c46c5850d3af0a61afcd09c8",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "one1p5rs093e2te0hfva6phjksj6eeqtfyh7kashr4"
     ]
   },
   "heco": {
@@ -915,6 +985,12 @@ const config = {
   //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
   //   ]
   // },
+  "hsk": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+    ]
+  },
   "hydra": {
     "owners": [
       "HMaF9nmaCNua4vExqCTDb5iTfHYxdL6K8q",
@@ -926,7 +1002,8 @@ const config = {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xe12532a4cea82aac737a91b80be82d33eadb4c2b"
     ]
   },
   "icon": {
@@ -1154,7 +1231,9 @@ const config = {
     "owners": [
       "0d584a4cbbfd9a4878d816512894e65918e54fae13df39a6f520fc90caea2fb0",
       "f857de8a2a882488235eda61d3f41c4a60591d7f8daec1299ec0f20426a4cc3f",
-      "c1a3dabb95b06767db2ab85ed0be86133a15bfe3a80fa017cbb83216760a8181"
+      "c1a3dabb95b06767db2ab85ed0be86133a15bfe3a80fa017cbb83216760a8181",
+      "e10e284823bc0728f1850486fd4ccd5546249140e96823ac09f96b30363cd251",
+      "bc02e51d5f4c03611ef28d8fdbdba01b237f5a870fad7670d0a17a1a14934b97"
     ]
   },
   "neo": {
@@ -1170,7 +1249,8 @@ const config = {
     "owners": [
       "NTWC7Hh5VYMQ5K8YJbyCLbmJ4RhfQ1Ej64",
       "NY8VmiQ8if23Cr7Fe6xwXZ4a59JTVXHDCN",
-      "NcSZPD4ToU3v1C8NPK13hibCnZcPEqHD1a"
+      "NcSZPD4ToU3v1C8NPK13hibCnZcPEqHD1a",
+      "NKvKqGs9yPGct37ybza71DsgLSPAKn34ko"
     ]
   },
   "neon_evm": {
@@ -1270,6 +1350,12 @@ const config = {
       "waPau5WwZ2fbKrhe0L6GEzoVv-OoD6AXy7gyFnYKgYE"
     ]
   },
+  "peaq": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+    ]
+  },
   /*
   "persistence": {
     "owners": [
@@ -1280,6 +1366,14 @@ const config = {
     ]
   },
   */
+  "plasma": {
+    "owners": [
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0x603162847ead68a883f9595fe5981dfd1d545a53",
+      "0x4c6158236fe1ac71ca8c00b64864ad6d7eb0bfb4"
+    ]
+  },
   "pokt": {
     "owners": [
       "ab04976668dd739f34df43e912d20dc487ac85d2",
@@ -1307,6 +1401,11 @@ const config = {
     "owners": [
       "gatedeposit",
       "gateiocold"
+    ]
+  },
+  "qubic": {
+    "owners": [
+      "BYBYFUMBVLPUCANXEXTSKVMGFCJBMTLPPOFVPNSATABMWDGTMFXPLZLBCXJL"
     ]
   },
   "radixdlt": {
@@ -1365,6 +1464,11 @@ const config = {
       "RPcWwibXTyz1BMM58P9FWXTDDfZExE78SG"
     ]
   },
+  "saga": {
+    "owners": [
+      "saga155svs6sgxe55rnvs6ghprtqu0mh69kehaqkl89"
+    ]
+  },
   "secret": {
     "owners": [
       "secret155svs6sgxe55rnvs6ghprtqu0mh69kehpkmyal",
@@ -1388,6 +1492,11 @@ const config = {
       "bYvGgqKmEkmQKEm7P4oYFRsfrteAzksqKqRyT82mx2iWSZt",
       "Zk6pJF3cE67Eo15g7BSqtGMv3XC2T8xBHggq8ZFAPnpnpnY",
       "aKCD8R97ifVNsVWTC2sbdbeqWG8ZGJaQcrwMBo3XvrmgR4N"
+    ]
+  },
+  "somnia": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
     ]
   },
   // "songbird": {
@@ -1434,7 +1543,13 @@ const config = {
     "owners": [
       "0x62f36b79d7ea8ae189491854edd9318b29c75346792177b230a95f333ffa53ad",
       "0x7ce04f66dca33c786c7375f73c4f7459e16b8a80cbbdd055e3782b3e176fa3d3",
-      "0x019b848f4511b354c314a4e5c1a40dbc247fe5d29c6bcb3495badb01751d549a"
+      "0x019b848f4511b354c314a4e5c1a40dbc247fe5d29c6bcb3495badb01751d549a",
+      "0x6edd3be944aeaa90f86f95008b852308e5ab48dc6d2df756e92e11c1ec73b8c0"
+    ]
+  },
+  "supra": {
+    "owners": [
+      "0x0cf869189c785beaaad2f5c636ced4805aeae9cbf49070dc93aed2f16b99012a"
     ]
   },
   "syscoin": {
@@ -1490,7 +1605,8 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0x246a2ecd9626f9eda55fffbff5216ed417a904f5",
       "0x840760aed6bbd878c46c5850d3af0a61afcd09c8",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0x7793cd85c11a924478d358d49b05b37e91b5810f"
     ]
   },
   "thorchain": {
@@ -1611,7 +1727,8 @@ const config = {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "xpla": {
@@ -1620,6 +1737,11 @@ const config = {
       "xpla1jm068whkhkxk48gx80ppm2m0nwy677prgellzc",
       "xpla1xunyznpjmj9jv5e2zwngp2qrzmulr2ggxlezz9",
       "xpla1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9lmfyu7"
+    ]
+  },
+  "xpr": {
+    "owners": [
+      "gatedeposit"
     ]
   },
   "zeta": {
