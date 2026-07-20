@@ -2547,6 +2547,15 @@ const configs = {
       ]
     },
   },
+  "bot-fun": {
+    "methodology": "TVL is the native TIA held in the bot.fun factory contract as bonding curve reserves.",
+    "eden": {
+      "tvl": {
+        "owner": "0x279dc5E05d43644C6cd2F2813F306a320e785cdD",
+        "token": ADDRESSES.null
+      }
+    }
+  },
   "botto": {
     "ethereum": {
       "tvl": {
