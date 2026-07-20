@@ -1,17 +1,17 @@
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 
 /**
- * StonkBrokers — Anvil NFTFi market on Robinhood Chain.
+ * StonkBrokers — Anvil NFTFi market on Robinhood Chain (NftFi).
  *
- * TVL sources:
- *  1. $STONKBROKER locked in the TokenEscrowReserve (AMM + loan buckets)
- *  2. ETH + stock tokens held by StockBooster (pending dividend drops)
- *  3. ETH held by ProtocolFeeSink
- *  4. Inventory NFTs in the AMM vault + collateral NFTs in the loan vault,
- *     valued at the vault's ethNotionalPerNFT oracle/fallback
+ * TVL sources (all on-chain, Robinhood mainnet):
+ *  1. $STONKBROKER locked in TokenEscrowReserve (AMM inventory + loan float)
+ *  2. ETH + AAPL/AMZN/NVDA (+ WETH) held by StockBooster (pending Clock In drops)
+ *  3. ETH held by ProtocolFeeSink treasury
+ *  4. AMM vault inventory NFTs + loan-vault collateral NFTs, valued at
+ *     ethNotionalPerNFT (TWAP/fallback oracle)
  *
- * Spot Uniswap V4 ETH/STONKBROKER LP is intentionally excluded (already
- * counted under Uniswap).
+ * Spot Uniswap V4 ETH/$STONKBROKER LP is excluded (already counted under Uniswap).
+ * Activated broker TBA wallets are user-owned and excluded (not protocol-controlled).
  */
 const STONKBROKER = '0xe934e36A439C94017B64a3FecE66AF12099aBF50'
 const COLLECTION = '0x539CdD042c2f3d93EbC5BE7DfFf0c79F3B4fAbF0'
@@ -21,7 +21,6 @@ const LOAN_VAULT = '0xa7B9AC696B252B79568A5a01b2Fd02177EF23664'
 const STOCK_BOOSTER = '0x038a7F4E4E89448ad74e044337C9aC25C11e726B'
 const FEE_SINK = '0x16027b596e210c63f750E0bdD156f00bb2749868'
 
-// StockBooster dividend stocks (AAPL / AMZN / NVDA) + WETH dust
 const BOOSTER_TOKENS = [
   nullAddress,
   '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73', // WETH
@@ -31,7 +30,6 @@ const BOOSTER_TOKENS = [
 ]
 
 async function tvl(api) {
-  // Escrow holds the AMM + loan $STONKBROKER float; fee sinks hold ETH/stocks.
   await sumTokens2({
     api,
     tokensAndOwners: [
@@ -53,6 +51,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is $STONKBROKER locked in the Anvil NFTFi escrow, ETH/stock inventory in StockBooster and the protocol fee sink, plus AMM inventory and loan-collateral StonkBroker NFTs valued at ethNotionalPerNFT. Uniswap V4 spot LP is excluded to avoid double-counting.',
+    'TVL = $STONKBROKER locked in the Anvil NFTFi escrow (AMM + loan float) + ETH/stock inventory in StockBooster (pending dividend drops) + ETH in ProtocolFeeSink + AMM inventory and loan-collateral StonkBroker NFTs valued at ethNotionalPerNFT. Uniswap V4 spot LP excluded to avoid double-counting. Broker TBA wallets are user-owned and excluded.',
+  start: 1752710400, // 2026-07-17
   robinhood: { tvl },
 }
