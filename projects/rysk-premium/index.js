@@ -23,10 +23,7 @@ async function tvl(api) {
   const marginCalls = marginPools.flatMap(pool => uniqueCollaterals.map(token => ({ target: token, params: pool })))
 
   const calls = [...vaultCalls, ...marginCalls]
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls })
-  calls.forEach(({ target }, i) => {
-    api.add(target, balances[i])
-  })
+  await api.sumTokens({ tokensAndOwners: calls.map(c => [c.target, c.params]) })
 }
 
 module.exports = {
