@@ -122,7 +122,10 @@ const defaultTokens = {
     ADDRESSES.bsc.USD1, //USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
     '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
-    '0x1b66474c8eca3827f16202907f41f63785579716' // exchange token for weex, 
+    '0x1b66474c8eca3827f16202907f41f63785579716', // exchange token for weex, 
+    '0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3', //ondo
+    '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', //shib
+    '0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b' //funktoken
   ],
   tron: [
     nullAddress,
@@ -150,7 +153,13 @@ const defaultTokens = {
   solana: [
     ADDRESSES.solana.USDC, // USDC
     ADDRESSES.solana.USDT, // USDT
-    'gtBTCGWvSRYYoZpU9UZj6i3eUGUpgksXzzsbHk2K9So'
+    'gtBTCGWvSRYYoZpU9UZj6i3eUGUpgksXzzsbHk2K9So',
+    '9PR7nCP9DpcUotnDPVLUBUZKu5WAYkwrCUx9wDnSpump', // ban
+    '61V8vBaqAGMpgDQi4JcAwo1dmBGHsyhzodcPqnEVpump', //arc
+    'FeR8VBqNRSUD5NtXAj2n3j1dAHkZHfyDktKuLXD4pump', //jelyjely
+    'XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1', // CRCLX
+    '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump', //fartcoin
+
   ],
   bsc: [
     nullAddress,
@@ -193,6 +202,13 @@ const defaultTokens = {
     ADDRESSES.bsc.USD1, // USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
     '0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16',  //MYX
+    '0xcf3232b85b43bca90e51d38cc06cc8bb8c8a3e36', //beat
+    '0x208bf3e7da9639f1eaefa2de78c23396b0682025', // tag
+    '0x8b194370825e37b33373e74a41009161808c1488', // velvet
+    '0x0f0df6cb17ee5e883eddfef9153fc6036bdb4e37', // bas
+    '0x000ae314e2a2172a039b26378814c252734f556a', // aster
+    '0x92aa03137385f18539301349dcfc9ebc923ffb10', // skyai
+
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -279,7 +295,8 @@ const defaultTokens = {
     ADDRESSES.aptos.APT,
     ADDRESSES.aptos.USDC,
     ADDRESSES.aptos.USDT,
-    ADDRESSES.aptos.USDt
+    ADDRESSES.aptos.USDt,
+    '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US' // US
   ],
   mantle: [
     nullAddress,
