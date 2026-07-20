@@ -1760,6 +1760,9 @@ const uniV3Configs = {
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
     },
+  },
+  'parityswap-v3': {
+    robinhood: { factory: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA', fromBlock: 14320075 },
   }
 }
 

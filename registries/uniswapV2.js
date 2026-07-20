@@ -1488,6 +1488,9 @@ const uniV2Configs = {
     },
     monad: '0x6DBb0b5B201d02aD74B137617658543ecf800170',
   },
+  'parityswap-v2': {
+    robinhood: '0xaA5f8c18EF9be81ffED30c223F9CD0D012a2AdB9',
+  },
   'PattieSwap': {
     bsc: '0x71f6a913b317d2BF0Bf51Fd48d90e4cC6e62C4Dd',
   },
