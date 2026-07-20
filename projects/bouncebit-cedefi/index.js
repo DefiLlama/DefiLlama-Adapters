@@ -110,7 +110,7 @@ const promo = (() => {
       api.add(ADDRESSES.bsc.BTCB, BTCBStaked);
     }
 
-    if (!config[api.chain]?.pool) return api;
+    if (!config[api.chain]?.pool) return api.getBalances();
 
     const campaignCount = await api.call({
       abi: promoPoolCampaignCountAbi,
