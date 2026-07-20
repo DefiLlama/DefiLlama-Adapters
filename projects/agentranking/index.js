@@ -5,9 +5,6 @@
  *  - solana: SOL in Pump.fun bonding curves for AgentRanking launches
  *  - robinhood: WETH in Uniswap V3 pools for AgentRanking launches
  *
- * Copy this folder to DefiLlama/DefiLlama-Adapters/projects/agentranking/
- * then: node test.js projects/agentranking/index.js
- *
  * Branding: AgentRanking / Robinhood Chain only.
  */
 
@@ -18,8 +15,6 @@ const { getConfig } = require('../helper/cache')
 const EXPORT_URL = 'https://agentranking.io/api/public/defillama/launches'
 
 const ROBINHOOD_WETH = ADDRESSES.robinhood?.WETH || '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73'
-const ROBINHOOD_FACTORY = '0xaA8Af274bba2b9dE53119CB117C8AC6A39e6F5Aa'
-const ROBINHOOD_LP_LOCKER = '0x38daBB90C96eea7B90613ABbf019ABCe0808CF12'
 
 async function loadExport() {
   return getConfig('agentranking-launch-tvl', EXPORT_URL)
@@ -55,11 +50,4 @@ module.exports = {
   solana: { tvl: solanaTvl },
   // DefiLlama chain key (matches NOXA / coreAssets): "robinhood"
   robinhood: { tvl: robinhoodTvl },
-}
-
-module.exports._contracts = {
-  robinhoodFactory: ROBINHOOD_FACTORY,
-  robinhoodLpLocker: ROBINHOOD_LP_LOCKER,
-  robinhoodWeth: ROBINHOOD_WETH,
-  exportUrl: EXPORT_URL,
 }
