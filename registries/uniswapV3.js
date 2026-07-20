@@ -1763,6 +1763,9 @@ const uniV3Configs = {
   },
   'parityswap-v3': {
     robinhood: { factory: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA', fromBlock: 14320075 },
+  },
+  'giga-dex-cl': {
+    robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
   }
 }
 
