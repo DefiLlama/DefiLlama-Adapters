@@ -65,7 +65,7 @@ const config = {
     }, // SPKCC
     {
       contract: "CDT3KU6TQZNOHKNOHNAFFDQZDURVC3MSTL4ML7TUTZGNOPBZCLABP4FR",
-      target: "0xf695Df6c0f3bB45918A7A82e83348FC59517734",
+      target: "0xf695Df6c0f3bB45918A7A82e83348FC59517734E",
     }, // UKTBL
   ],
 };
