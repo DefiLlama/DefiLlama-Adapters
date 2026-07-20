@@ -1739,7 +1739,7 @@ const config = {
       "xpla1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9lmfyu7"
     ]
   },
-  "xpr": {
+  "proton": {
     "owners": [
       "gatedeposit"
     ]
