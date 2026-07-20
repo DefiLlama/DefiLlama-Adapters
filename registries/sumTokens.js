@@ -15470,6 +15470,16 @@ const configs = {
       ]
     },
   },
+  "h00d": {
+    "methodology": "Every token launched through H00D seeds a Uniswap V3 pool whose LP NFT is held by the H00D LaunchLocker. The adapter enumerates those locked positions on Robinhood Chain and values only their WETH principal; launched tokens and unclaimed trading fees are ignored. The same liquidity is part of Uniswap V3 TVL, hence doublecounted.",
+    "doublecounted": true,
+    "robinhood": {
+      "owner": "0xfdc4f4733a4485e1DC8dF0aDc8BEDfBAf2e23754",
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+      "uniV3ExtraConfig": { "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3" }
+    }
+  },
   "h2odata": {
     "ethereum": {
       "owner": "0x13288BD148160f76B37Bea93861cA61BAea120D1",
