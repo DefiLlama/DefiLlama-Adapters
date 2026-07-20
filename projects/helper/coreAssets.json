@@ -2794,5 +2794,8 @@
   "gensyn": {
     "USDC": "0x5b32c997211621d55a89Cc5abAF1cC21F3A6ddF5",
     "AI": "0x4e742319f6b0fec4afa504fc8ed3ceab0fb751a2"
+  },
+  "eden": {
+    "WTIA": "0x00000000000000000000000000000000Ce1e571A"
   }
 }
