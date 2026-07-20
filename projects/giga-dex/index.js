@@ -8,7 +8,7 @@ const CLASSIC_FACTORY = '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916' // Uniswap 
 const CL_FACTORY = '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B'      // PancakeSwap V3 fork (concentrated liquidity)
 
 const v3 = uniV3Export({
-  robinhood: { factory: CL_FACTORY, fromBlock: 1 },
+  robinhood: { factory: CL_FACTORY, fromBlock: 10357399 },
 })
 
 module.exports = {
