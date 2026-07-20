@@ -1760,6 +1760,9 @@ const uniV3Configs = {
       eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
       topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
     },
+  },
+  'giga-dex-cl': {
+    robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
   }
 }
 
