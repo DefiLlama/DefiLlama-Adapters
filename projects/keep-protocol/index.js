@@ -1,12 +1,12 @@
 const { PublicKey } = require("@solana/web3.js");
 const { getConnection, sumTokens2 } = require("../helper/solana");
+const ADDRESSES = require("../helper/coreAssets.json");
 
 const PROGRAM_ID = new PublicKey("ETVtC29T7ExxYyWSkpzKPxzrL3SRyrGPRhZe3FwXmFAo");
 
 // Robinhood Chain production deployment (2026-07-15). Each project is an
 // independent Launchpad clone that directly holds refundable Paxos USDG.
 const RH_FACTORY = "0x032EAfc08388283e94E44Fb0eA26A004D44ba40d";
-const RH_USDG = "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168";
 
 // Anchor account discriminator for LaunchpadState (base58 of the first 8 bytes).
 const LAUNCHPAD_DISC = "VgW83Wf4icd";
@@ -37,13 +37,6 @@ async function tvl(api) {
   await sumTokens2({ api, tokenAccounts: usdcVaults });
 }
 
-/**
- * Keep TVL on Robinhood Chain: enumerate every production Launchpad clone from
- * KeepFactoryV4 and sum the canonical USDG held directly by those clones.
- * Fundraising and cancelled launches hold refundable deposits; failure states
- * hold their refund pool. Uniswap V4 pool liquidity is excluded because it is
- * counted by Uniswap and is permanently locked after a successful launch.
- */
 async function robinhoodTvl(api) {
   const launchpads = await api.fetchList({
     target: RH_FACTORY,
@@ -51,7 +44,7 @@ async function robinhoodTvl(api) {
     itemAbi: "function launchpadOf(uint64) view returns (address)",
   });
 
-  await api.sumTokens({ owners: launchpads, tokens: [RH_USDG] });
+  await api.sumTokens({ owners: launchpads, tokens: [ADDRESSES.robinhood.USDG] });
 }
 
 module.exports = {
