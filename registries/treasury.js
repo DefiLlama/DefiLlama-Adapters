@@ -4889,6 +4889,48 @@ const configs = {
       owners: ['0xdb8f4c4c68e5e5eb501fee1adaa87ee767bcade7'],
     },
   },
+  'treasury/rubicon': {
+    ethereum: {
+      tokens: [nullAddress],
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14', // protocol fee EOA (same address on all 4 chains)
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4', // treasury Safe (2-of-3, same address + owners on all 4 chains)
+      ],
+      ownTokens: ['0x7483e83b481c69a93cb025395194e0dc4F32d9C4'], // RUBI (canonical L1 token)
+    },
+    optimism: {
+      tokens: [nullAddress],
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14',
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4',
+      ],
+    },
+    arbitrum: {
+      tokens: [nullAddress],
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14',
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4',
+      ],
+    },
+    base: {
+      tokens: [
+        nullAddress,
+        '0xd8eDF10E243e2A176789D2AD1CB47151e76e8865', // Aquila WETH/RUBI LP (accrued by fee collector)
+        '0xa883C11a3742f74F0b29750764146e8675306e24', // Aquila USDC/RUBI LP (accrued by fee collector)
+      ],
+      resolveLP: true, // Aquila (uniV2 fork) factory.feeTo() mints LP tokens to the fee collector
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14',
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4',
+        '0x1db5b42e760072bd981ae67435f73884aa659cba', // Aquila Base fee collector (accumulator, never forwards)
+      ],
+      ownTokens: ['0xb3836098d1e94EC651D74D053d4a0813316B2a2f'], // RUBI on Base (protocol listing token)
+      uniV3nftsAndOwners: [
+        ['0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1', '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4'], // canonical UniV3 NFPM
+        ['0xF75a94E360502618c838219f8954Ce8b7666b42F', '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4'], // Rubicon CLMM NFPM
+      ],
+    },
+  },
   'treasury/saddle': {
     arbitrum: {
       tokens: [
