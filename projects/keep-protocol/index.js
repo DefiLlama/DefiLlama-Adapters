@@ -1,7 +1,12 @@
 const { PublicKey } = require("@solana/web3.js");
 const { getConnection, sumTokens2 } = require("../helper/solana");
+const ADDRESSES = require("../helper/coreAssets.json");
 
 const PROGRAM_ID = new PublicKey("ETVtC29T7ExxYyWSkpzKPxzrL3SRyrGPRhZe3FwXmFAo");
+
+// Robinhood Chain production deployment (2026-07-15). Each project is an
+// independent Launchpad clone that directly holds refundable Paxos USDG.
+const RH_FACTORY = "0x032EAfc08388283e94E44Fb0eA26A004D44ba40d";
 
 // Anchor account discriminator for LaunchpadState (base58 of the first 8 bytes).
 const LAUNCHPAD_DISC = "VgW83Wf4icd";
@@ -32,14 +37,24 @@ async function tvl(api) {
   await sumTokens2({ api, tokenAccounts: usdcVaults });
 }
 
+async function robinhoodTvl(api) {
+  const launchpads = await api.fetchList({
+    target: RH_FACTORY,
+    lengthAbi: "uint64:nextProjectId",
+    itemAbi: "function launchpadOf(uint64) view returns (address)",
+  });
+
+  await api.sumTokens({ owners: launchpads, tokens: [ADDRESSES.robinhood.USDG] });
+}
+
 module.exports = {
   methodology:
-    "TVL is the total refundable USDC held in Keep's own per-launch program vaults " +
-    "(the usdc_vault PDA of each LaunchpadState account, enumerated via getProgramAccounts " +
-    "on the Keep program). It covers escrowed USDC in active raises, post-bootstrap refund " +
-    "reserves, cancelled-raise balances and failed-raise refund pools — all withdrawable by " +
-    "depositors. Liquidity Keep seeds into Raydium is excluded (that is Raydium's TVL), and " +
-    "Keep burns 100% of that LP, so it is not withdrawable and is never counted here.",
+    "TVL is the refundable stablecoin held in keep.coffee's own per-launch vaults/contracts: " +
+    "USDC vault PDAs on Solana and Paxos USDG held directly by Launchpad clones on Robinhood " +
+    "Chain. It covers active raises, post-bootstrap refund reserves, cancelled-raise balances " +
+    "and failed-raise refund pools. Liquidity seeded into Raydium or Uniswap V4 is excluded " +
+    "because it is counted by those protocols and is permanently locked after success.",
   timetravel: false,
   solana: { tvl },
+  robinhood: { tvl: robinhoodTvl },
 };
