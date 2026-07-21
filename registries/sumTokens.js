@@ -19,7 +19,7 @@ const covalent = require('./sumTokens/covalent')
 //     pricing via core assets; use for buckets that rely on lps + useDefaultCoreAssets, e.g. migrated
 //     staking/pool2 with LP deposits). Distinct from sumTokens2's own `resolveLP` (known-LP unwrap).
 const META = new Set(["methodology","start","timetravel","hallmarks","doublecounted","misrepresentedTokens"])
-const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting"])
+const BUCKET_KEYS = new Set(["tvl","staking","pool2","borrowed","vesting","ownTokens"])
 
 function buildBucket(spec, chain) {
   if (spec.__empty) return () => ({})
@@ -17323,6 +17323,15 @@ const configs = {
         "0xA27EC0006e59f245217Ff08CD52A7E8b169E62D2"
       ]
     },
+    "robinhood": {
+      "owners": [
+        "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
+      ],
+      "fetchBlockscoutTokens": true
+    },
+  },
+  "lighter-rh": {
+    "methodology": "Counts tokens deposited by users into the Lighter ZK rollup contract",
     "robinhood": {
       "owners": [
         "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
