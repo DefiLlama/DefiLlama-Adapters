@@ -54,6 +54,12 @@ const fixBalancesTokens = {
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
+  bitkub: {
+    // KUB-chain stablecoins are $1-pegged but have no CoinGecko price feed, so map them to the canonical priced ids
+    '0x7d984c24d2499d840eb3b7016077164e15e5faa6': { coingeckoId: 'tether', decimals: 18 }, // KUSDT (Bitkub-Peg USDT)
+    '0x21cdc3706b8c7b1836df0e533dd884069521350b': { coingeckoId: 'tether', decimals: 6 }, // USDT (Bridged Tether USD)
+    '0x31929a0fd776f971c5dd14bf03e1f9ff69d9c91c': { coingeckoId: 'usd-coin', decimals: 6 }, // USDC.e (Bridged USDC)
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
