@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const OETH = "0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3"
 const OS = "0xb1e25689D55734FD3ffFc939c4C3Eb52DFf8A794"
-const NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 // Multi-base ARM (upgraded AbstractARM) reads. Legacy ARMs revert on getBaseAssets().
 const baseAssetConfigsAbi = "function baseAssetConfigs(address asset) view returns (uint128 buyPrice, uint128 sellPrice, uint128 buyLiquidityRemaining, uint128 sellLiquidityRemaining, uint128 crossPrice, uint120 pendingRedeemAssets, bool peggedToLiquidityAsset, address adapter)"
@@ -30,7 +29,7 @@ const ARMS = {
   ],
 }
 
-const armsTvl = async (api) => {
+const tvl = async (api) => {
   const arms = ARMS[api.chain]
   // getBaseAssets() reverts on not-yet-upgraded ARMs -> null; a non-null array marks a multi-base ARM.
   const baseAssetsList = await api.multiCall({ abi: "address[]:getBaseAssets", calls: arms.map((a) => a.arm), permitFailure: true })
@@ -49,7 +48,7 @@ const armsTvl = async (api) => {
       // On-hand liquidity asset + every registered base asset (each priced natively by DefiLlama).
       tokensAndOwners.push([liquidityAsset, arm], ...baseAssets.map((b) => [b, arm]))
       // Lending-market position: value the ARM's ERC4626 shares in liquidity-asset terms.
-      if (activeMarket && activeMarket.toLowerCase() !== NULL_ADDRESS) {
+      if (activeMarket && activeMarket.toLowerCase() !== ADDRESSES.null) {
         const shares = await api.call({ abi: "erc20:balanceOf", target: activeMarket, params: [arm] })
         if (shares !== "0") {
           const marketAssets = await api.call({ abi: convertToAssetsAbi, target: activeMarket, params: [shares] })
@@ -73,6 +72,7 @@ const armsTvl = async (api) => {
 }
 
 module.exports = {
-  ethereum: { tvl: armsTvl },
-  sonic: { tvl: armsTvl },
+  misrepresentedTokens: true,
+  ethereum: { tvl },
+  sonic: { tvl },
 }
