@@ -32,11 +32,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology:
-    'Peeps TVL is ETH locked in active bonding curves plus WETH in locked Uniswap V3 LP positions held by the Peeps LP fee vault on Robinhood Chain. Launch tokens are not counted.',
-  doublecounted: true, // graduated LP is also counted under Uniswap V3 when that pool TVL is tracked
-  robinhood: {
-    tvl,
-    start: '2026-07-16',
-  },
+  methodology: 'Peeps TVL is ETH locked in active bonding curves plus WETH in locked Uniswap V3 LP positions held by the Peeps LP fee vault on Robinhood Chain. Launch tokens are not counted.',
+  start: '2026-07-16',
+  doublecounted: true,
+  robinhood: { tvl },
 }
