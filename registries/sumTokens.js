@@ -16006,6 +16006,14 @@ const configs = {
       ]
     },
   },
+  "hoodmint": {
+    "methodology": "TVL is the native ETH held by the HoodMintCurve singleton: the real ETH reserves backing every open bonding curve, plus trade fees accrued but not yet claimed by creators/protocol. Liquidity of graduated tokens sits in permanently locked Uniswap V3 positions and is counted under Uniswap V3, not here, to avoid double counting.",
+    "start": 1784648205,
+    "robinhood": {
+      "owner": "0x570e51c509a20C63C409A43Bc8d9e2aeA564B61b",
+      "token": ADDRESSES.null
+    }
+  },
   "hoodpump": {
     "methodology": "TVL is the WETH side of the Uniswap V3 liquidity positions locked in the HoodPump Liquidity Locker. Each HoodPump launch locks its LP NFT in the locker; only the WETH across those positions is counted (HoodPump-launched tokens are excluded). Liquidity lives in Uniswap V3 pools, so this is flagged doublecounted.",
     "doublecounted": true,
