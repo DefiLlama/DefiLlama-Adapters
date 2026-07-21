@@ -1,5 +1,4 @@
 const {sliceIntoChunks} = require("../helper/utils");
-const {call} = require("../helper/chain/sui");
 const BN = require("bn.js");
 const {MathUtil} = require("./math");
 const {tickIndexToSqrtPriceX64} = require("../helper/utils/tick");
@@ -7,17 +6,12 @@ const BigNumber = require("bignumber.js");
 const sui = require("../helper/chain/sui");
 
 async function getObjects(objectIds) {
-  if (objectIds.length > 9) {
-    const chunks = sliceIntoChunks(objectIds, 9)
-    const res = []
-    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
-    return res
+  const objects = []
+  for (const objectId of objectIds) {
+    const initial_shared_version = await sui.getInitialSharedVersion(objectId)
+    objects.push({ data: { objectId, owner: { Shared: { initial_shared_version } } } })
   }
-
-  const result = await call('sui_multiGetObjects', [objectIds, {
-    "showOwner": true,
-  }], { withMetadata: true })
-  return objectIds.map(i => result.find(j => j.data?.objectId === i))
+  return objects
 }
 
 function getCoinAmountFromLiquidity(
@@ -81,10 +75,8 @@ async function getVaultTvlByAmountB(vault) {
 }
 
 async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } = {}) {
-  return (await call('suix_getDynamicFieldObject', [parent, {
-    "type": idType,
-    "value": id
-  }]))
+  const obj = await sui.getDynamicFieldObject(parent, id, { idType })
+  return obj ? { content: obj } : null
 }
 
 module.exports = {
