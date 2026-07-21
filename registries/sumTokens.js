@@ -15470,6 +15470,16 @@ const configs = {
       ]
     },
   },
+  "h00d": {
+    "methodology": "Every token launched through H00D seeds a Uniswap V3 pool whose LP NFT is held by the H00D LaunchLocker. The adapter enumerates those locked positions on Robinhood Chain and values only their WETH principal; launched tokens and unclaimed trading fees are ignored. The same liquidity is part of Uniswap V3 TVL, hence doublecounted.",
+    "doublecounted": true,
+    "robinhood": {
+      "owner": "0xfdc4f4733a4485e1DC8dF0aDc8BEDfBAf2e23754",
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+      "uniV3ExtraConfig": { "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3" }
+    }
+  },
   "h2odata": {
     "ethereum": {
       "owner": "0x13288BD148160f76B37Bea93861cA61BAea120D1",
@@ -15995,6 +16005,14 @@ const configs = {
         ]
       ]
     },
+  },
+  "hoodmint": {
+    "methodology": "TVL is the native ETH held by the HoodMintCurve singleton: the real ETH reserves backing every open bonding curve, plus trade fees accrued but not yet claimed by creators/protocol. Liquidity of graduated tokens sits in permanently locked Uniswap V3 positions and is counted under Uniswap V3, not here, to avoid double counting.",
+    "start": 1784648205,
+    "robinhood": {
+      "owner": "0x570e51c509a20C63C409A43Bc8d9e2aeA564B61b",
+      "token": ADDRESSES.null
+    }
   },
   "hoodpump": {
     "methodology": "TVL is the WETH side of the Uniswap V3 liquidity positions locked in the HoodPump Liquidity Locker. Each HoodPump launch locks its LP NFT in the locker; only the WETH across those positions is counted (HoodPump-launched tokens are excluded). Liquidity lives in Uniswap V3 pools, so this is flagged doublecounted.",

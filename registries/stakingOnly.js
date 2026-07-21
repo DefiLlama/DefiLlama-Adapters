@@ -1286,6 +1286,12 @@ const configs = {
       staking: [["0x7f385F3d92501ba048B92F715D929Cbf15F98792","0xaA0856084Ea21541526307945231338adc809519","0x159eeaE61a592A157964f36e68407ED49a4AEf3c","0xeB700b4090e1eD4C9d34386f73b4E706C8fe334D","0x00A6e93E3ce5300e41E8ed25EBD69C328fD45E5a"],"0x5e7f472B9481C80101b22D0bA4ef4253Aa61daBc"],
     },
   },
+  "paperhands": {
+    "methodology": "TVL includes the total volume of PHANDS tokens locked in the official staking smart contract.",
+    "ethereum": {
+      staking: [["0x0f4e761F2DcFD509eccd18004b89e329D25903B7"], "0x11157da1fc6dcfd58b50ed79082183b2c6176245"]
+    }
+  },
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)
