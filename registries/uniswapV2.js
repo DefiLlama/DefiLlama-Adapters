@@ -1601,12 +1601,6 @@ const uniV2Configs = {
   'pulsex': {
     pulse: '0x1715a3E4A142d8b698131108995174F37aEBA10D',
   },
-  'pumex': {
-    _options: {
-      hasStablePools: true,
-    },
-    injective: '0x105A0A9c1D9e29e0D68B746538895c94468108d2',
-  },
   'punkswap': {
     op_bnb: '0x5640113EA7F369E6DAFbe54cBb1406E5BF153E90',
     scroll: '0x5640113EA7F369E6DAFbe54cBb1406E5BF153E90',
