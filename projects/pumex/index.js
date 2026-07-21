@@ -40,6 +40,7 @@ async function v4Tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the value of tokens locked in Pumex v2 liquidity pairs plus tokens held in the Pumex v4 concentrated liquidity Vault.',
+  timetravel: false,
   injective: {
     tvl: sdk.util.sumChainTvls([v2Tvl, v4Tvl]),
   },
