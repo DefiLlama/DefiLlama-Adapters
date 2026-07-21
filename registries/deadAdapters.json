@@ -999,6 +999,15 @@
       "staking": "_f"
     }
   },
+  "brainiac": {
+    "godwoken_v1": {
+      "tvl": "_f",
+      "borrowed": "_f",
+      "staking": "_f",
+      "pool2": "_f"
+    },
+    "deadFrom": "2026-07-17"
+  },
   "brewlabs": {
     "deadFrom": "2025-04-01",
     "timetravel": false,
@@ -1174,6 +1183,12 @@
       "tvl": "_f"
     }
   },
+  "cesta": {
+    "deadFrom": "2023-10-01",
+    "avax": {
+      "tvl": "_f"
+    }
+  },
   "chad-finance": {
     "methodology": "TVL includes all farms in MasterChef contract",
     "fantom": {
@@ -1311,6 +1326,14 @@
       "borrowed": "_f"
     }
   },
+  "concordex-io": {
+    "misrepresentedTokens": true,
+    "timetravel": false,
+    "concordium": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2024-12-24"
+  },
   "corgi": {
     "dogechain": {
       "tvl": "_f"
@@ -1375,6 +1398,15 @@
     "cronos": {
       "tvl": "_f",
       "borrowed": "_f"
+    }
+  },
+  "crouton": {
+    "misrepresentedTokens": true,
+    "timetravel": false,
+    "methodology": "Value of tokens in the pool",
+    "deadFrom": "2025-06-27",
+    "ton": {
+      "tvl": "_f"
     }
   },
   "crown-finance": {
@@ -1457,6 +1489,15 @@
       "tvl": "_f",
       "staking": "_f"
     }
+  },
+  "darumadao": {
+    "misrepresentedTokens": true,
+    "methodology": "Finds TVL by querying DRM contract for sDRM (Staked DRM) supply and the DRM price. TVL = sdrmSupply * drmPrice",
+    "godwoken": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "deadFrom": "2026-07-17"
   },
   "deepseadao": {
     "deadFrom": "2022-03-31",
@@ -1564,6 +1605,17 @@
     },
     "deadFrom": "2024-10-01"
   },
+  "defyswap": {
+    "deadFrom": "2022-05-22",
+    "misrepresentedTokens": true,
+    "echelon": {
+      "tvl": "_f"
+    },
+    "fantom": {
+      "tvl": "_f",
+      "staking": "_f"
+    }
+  },
   "degate": {
     "start": "2023-11-12",
     "deadFrom": "2026-01-08",
@@ -1624,6 +1676,15 @@
     "arbitrum": {
       "tvl": "_f"
     }
+  },
+  "dirac-finance": {
+    "timetravel": true,
+    "misrepresentedTokens": false,
+    "methodology": "counts the number of MINT tokens in the Club Bonding contract.",
+    "polygon_zkevm": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-17"
   },
   "dnadollar": {
     "misrepresentedTokens": true,
@@ -2371,6 +2432,13 @@
       "tvl": "_f"
     }
   },
+  "hadouken-fi-dex": {
+    "methodology": "sum of token value in vault excluding the hadouken wrapped tokens",
+    "godwoken_v1": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-17"
+  },
   "harbor-protocol": {
     "deadFrom": "2024-09-17",
     "comdex": {
@@ -2672,6 +2740,12 @@
       "tvl": "_f"
     },
     "deadFrom": "2023-02-03"
+  },
+  "justbet": {
+    "winr": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-17"
   },
   "kaddex": {
     "timetravel": false,
@@ -3191,6 +3265,13 @@
     },
     "deadFrom": "2023-03-09"
   },
+  "mango-farmers-club": {
+    "polygon_zkevm": {
+      "staking": "_f",
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-17"
+  },
   "mango-markets": {
     "timetravel": false,
     "solana": {
@@ -3247,6 +3328,12 @@
       "tvl": "_f"
     },
     "deadFrom": "2023-08-09"
+  },
+  "marginx": {
+    "functionx": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-17"
   },
   "market.xyz": {
     "deadFrom": "2023-10-22",
@@ -3554,6 +3641,13 @@
     "starknet": {
       "tvl": "_f"
     }
+  },
+  "neptune": {
+    "swellchain": {
+      "tvl": "_f"
+    },
+    "misrepresentedTokens": true,
+    "deadFrom": "2026-07-17"
   },
   "nervenetwork": {
     "misrepresentedTokens": true,
@@ -3958,6 +4052,13 @@
       "borrowed": "_f"
     }
   },
+  "palladium": {
+    "methodology": "Adds up the total value locked as collateral on the Palladium protocol",
+    "btnx": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-17"
+  },
   "palmaswap": {
     "misrepresentedTokens": true,
     "hallmarks": [
@@ -4074,6 +4175,14 @@
       "pool2": "_f"
     },
     "deadFrom": "2023-12-01"
+  },
+  "penumbra-dex": {
+    "misrepresentedTokens": true,
+    "timetravel": false,
+    "deadFrom": "2025-12-01",
+    "penumbra": {
+      "tvl": "_f"
+    }
   },
   "perseid-finance": {
     "misrepresentedTokens": true,
@@ -4205,6 +4314,12 @@
       "tvl": "_f"
     },
     "deadFrom": "2025-01-15"
+  },
+  "pixel-swap": {
+    "deadFrom": "2026-01-26",
+    "ton": {
+      "tvl": "_f"
+    }
   },
   "pizza": {
     "methodology": "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.. Pizza TVL is achieved by making a call to its Pizza API V2.",
@@ -4559,6 +4674,27 @@
       "borrowed": "_f"
     },
     "deadFrom": "2023-03-05"
+  },
+  "ramp": {
+    "hallmarks": [
+      [
+        "2022-08-25",
+        "Remove native assets from tvl"
+      ]
+    ],
+    "ethereum": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "polygon": {
+      "tvl": "_f"
+    },
+    "avax": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2025-01-24"
   },
   "rangers": {
     "misrepresentedTokens": true,
@@ -5035,6 +5171,22 @@
       "tvl": "_f"
     }
   },
+  "stablekoi": {
+    "godwoken": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "godwoken_v1": {
+      "tvl": "_f"
+    },
+    "hallmarks": [
+      [
+        "2022-08-26",
+        "Add godwoken v1 chain tvl"
+      ]
+    ],
+    "deadFrom": "2026-07-17"
+  },
   "stack": {
     "methodology": "TVL counts the collateral tokens that are deposited within the respective Stack vault",
     "real": {
@@ -5072,6 +5224,14 @@
       "staking": "_f"
     },
     "deadFrom": "2023-12-01"
+  },
+  "stargaze": {
+    "timetravel": false,
+    "methodology": "Queries the Stargaze GraphQL API for the USD value locked in marketplace bids.",
+    "stargaze": {
+      "tvl": "_f"
+    },
+    "deadFrom": "2026-07-17"
   },
   "starterra": {
     "methodology": "Project rebranded as GameSwift",
@@ -5218,6 +5378,31 @@
       "tvl": "_f",
       "borrowed": "_f"
     }
+  },
+  "sushiswap-trident": {
+    "polygon": {
+      "tvl": "_f"
+    },
+    "optimism": {
+      "tvl": "_f"
+    },
+    "metis": {
+      "tvl": "_f"
+    },
+    "bittorrent": {
+      "tvl": "_f"
+    },
+    "arbitrum": {
+      "tvl": "_f"
+    },
+    "bsc": {
+      "tvl": "_f"
+    },
+    "avax": {
+      "tvl": "_f"
+    },
+    "methodology": "TVL of Trident consist of tokens deployed into swapping pairs.",
+    "deadFrom": "2026-05-03"
   },
   "swing-dao": {
     "deadFrom": "2022-03-31",
@@ -5654,6 +5839,13 @@
     ],
     "deadFrom": "2023-04-09"
   },
+  "vaporfi": {
+    "avax": {
+      "tvl": "_f"
+    },
+    "methodology": "Counts liquidty on the Treasury trough Treasury Contract",
+    "deadFrom": "2023-01-25"
+  },
   "vaporwave": {
     "timetravel": false,
     "misrepresentedTokens": true,
@@ -5977,6 +6169,25 @@
       "tvl": "_f"
     }
   },
+  "yokaiswap": {
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "methodology": "Finds TotalLiquidityUSD using the YokaiSwap subgraph \"https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange\". Staking accounts for the YOK locked in MasterChef (0x62493bFa183bB6CcD4b4e856230CF72f68299469).",
+    "godwoken": {
+      "tvl": "_f"
+    },
+    "godwoken_v1": {
+      "tvl": "_f",
+      "staking": "_f"
+    },
+    "hallmarks": [
+      [
+        "2022-08-26",
+        "Add godwoken v1 chain tvl"
+      ]
+    ],
+    "deadFrom": "2026-07-17"
+  },
   "ysmart": {
     "kava": {
       "tvl": "_f"
@@ -6100,163 +6311,5 @@
     "zyx": {
       "tvl": "_f"
     }
-  },
-  "brainiac": {
-    "godwoken_v1": {
-      "tvl": "_f",
-      "borrowed": "_f",
-      "staking": "_f",
-      "pool2": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "cesta": {
-    "deadFrom": "2023-10-01",
-    "avax": {
-      "tvl": "_f"
-    }
-  },
-  "concordex-io": {
-    "misrepresentedTokens": true,
-    "timetravel": false,
-    "concordium": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2024-12-24"
-  },
-  "crouton": {
-    "misrepresentedTokens": true,
-    "timetravel": false,
-    "methodology": "Value of tokens in the pool",
-    "deadFrom": "2025-06-27",
-    "ton": {
-      "tvl": "_f"
-    }
-  },
-  "darumadao": {
-    "misrepresentedTokens": true,
-    "methodology": "Finds TVL by querying DRM contract for sDRM (Staked DRM) supply and the DRM price. TVL = sdrmSupply * drmPrice",
-    "godwoken": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "defyswap": {
-    "deadFrom": "2022-05-22",
-    "misrepresentedTokens": true,
-    "echelon": {
-      "tvl": "_f"
-    },
-    "fantom": {
-      "tvl": "_f",
-      "staking": "_f"
-    }
-  },
-  "dirac-finance": {
-    "timetravel": true,
-    "misrepresentedTokens": false,
-    "methodology": "counts the number of MINT tokens in the Club Bonding contract.",
-    "polygon_zkevm": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "hadouken-fi-dex": {
-    "methodology": "sum of token value in vault excluding the hadouken wrapped tokens",
-    "godwoken_v1": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "justbet": {
-    "winr": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "mango-farmers-club": {
-    "polygon_zkevm": {
-      "staking": "_f",
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "marginx": {
-    "functionx": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "neptune": {
-    "swellchain": {
-      "tvl": "_f"
-    },
-    "misrepresentedTokens": true,
-    "deadFrom": "2026-07-17"
-  },
-  "palladium": {
-    "methodology": "Adds up the total value locked as collateral on the Palladium protocol",
-    "btnx": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "penumbra-dex": {
-    "misrepresentedTokens": true,
-    "timetravel": false,
-    "deadFrom": "2025-12-01",
-    "penumbra": {
-      "tvl": "_f"
-    }
-  },
-  "pixel-swap": {
-    "deadFrom": "2026-01-26",
-    "ton": {
-      "tvl": "_f"
-    }
-  },
-  "stablekoi": {
-    "godwoken": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "godwoken_v1": {
-      "tvl": "_f"
-    },
-    "hallmarks": [
-      [
-        "2022-08-26",
-        "Add godwoken v1 chain tvl"
-      ]
-    ],
-    "deadFrom": "2026-07-17"
-  },
-  "stargaze": {
-    "timetravel": false,
-    "methodology": "Queries the Stargaze GraphQL API for the USD value locked in marketplace bids.",
-    "stargaze": {
-      "tvl": "_f"
-    },
-    "deadFrom": "2026-07-17"
-  },
-  "yokaiswap": {
-    "timetravel": false,
-    "misrepresentedTokens": true,
-    "methodology": "Finds TotalLiquidityUSD using the YokaiSwap subgraph \"https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange\". Staking accounts for the YOK locked in MasterChef (0x62493bFa183bB6CcD4b4e856230CF72f68299469).",
-    "godwoken": {
-      "tvl": "_f"
-    },
-    "godwoken_v1": {
-      "tvl": "_f",
-      "staking": "_f"
-    },
-    "hallmarks": [
-      [
-        "2022-08-26",
-        "Add godwoken v1 chain tvl"
-      ]
-    ],
-    "deadFrom": "2026-07-17"
   }
 }
