@@ -12,5 +12,6 @@ module.exports =  [
   'plume',
   'inevm',
   'hoo',
+  'nova',
   ...sdk.chainUtils.getDeadChains()
 ]

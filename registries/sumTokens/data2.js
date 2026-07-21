@@ -680,4 +680,358 @@ module.exports = {
       }
     }
   },
+  "free-protocol": {
+    "merlin": {
+      "tvl": {
+        "owners": ["0xA6E02b4445dB933FCD125a449448326d6505B189", "0x79af88101aB5589aB0f92a2bbAbe2bAe1c602806", "0xD5f051fF82D90D086B57842e6Aae8f2FAa80Cb1c", "0xE12382e046DB998DE89aF19Ca799CbB757106781"],
+        "tokens": [ADDRESSES.merlin.WBTC_1, "0xC5BD913eE3BEFD4721C609177F29a8770ACD7242", "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71"]
+      }
+    },
+    "ethereum": {
+      "tvl": {
+        "owners": ["0x1B5668Ca8edfC8AF5DcB9De014b4B08ed5d0615F", "0x3111653DB0e7094b111b8e435Df9193b62C2C576", "0xd6572c7cd671ecf75d920adcd200b00343959600", "0xa97Fe3E9c1d3Be7289030684eD32A6710d2d02bA", "0xeea3A032f381AB1E415e82Fe08ebeb20F513c42c"],
+        "tokens": [ADDRESSES.ethereum.USDC, "0x7122985656e38bdc0302db86685bb972b145bd3c", ADDRESSES.ethereum.USDT, "0x7122985656e38BDC0302Db86685bb972b145bD3C"]
+      }
+    },
+    "arbitrum": {
+      "tvl": {
+        "owners": ["0xC178AE294bC3623e6dfDF07C9ca79c6dB692f032", "0xBA43F3C8733b0515B5C23DFF46F47Af6EB46F85C"],
+        "tokens": [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE]
+      }
+    },
+    "manta": {
+      "tvl": { "owners": ["0x19727db22Cba70B1feE40337Aba69D83c6741caF"], "tokens": [ADDRESSES.berachain.STONE] }
+    },
+    "bsc": {
+      "tvl": {
+        "owners": ["0x40a25786937eCc0643e78ca40Df02Db4dff27bb0", "0xF8aeD4da2598d3dF878488F40D982d6EcC8B13Ad", "0xBA43F3C8733b0515B5C23DFF46F47Af6EB46F85C", "0x0A80028d73Faaee6e57484E3335BeFda0de7f455"],
+        "tokens": [ADDRESSES.ethereum.FDUSD, ADDRESSES.bsc.BTCB, ADDRESSES.ethereum.FDUSD, "0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7"]
+      }
+    },
+    "polygon": {
+      "tvl": {
+        "owners": ["0x7Ab202c0161357Ca4C8FD2E09AdFcD45F3aAfb41"],
+        "tokens": ["0x4f64a90409b8361cde7c3103e87e9c8511501c5a", "0x57912d26a5285bc5d614bbf4e9be0e42406ede54"]
+      }
+    },
+    "kroma": { "tvl": { "__empty": true } },
+    "hemi": {
+      "tvl": {
+        "owners": ["0x25aB3Efd52e6470681CE037cD546Dc60726948D3"],
+        "tokens": ["0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e", "0x9BFA177621119e64CecbEabE184ab9993E2ef727", "0xF9775085d726E782E83585033B58606f7731AB18", "0x93919784C523f39CACaa98Ee0a9d96c3F32b593e", ADDRESSES.goat.uBTC]
+      }
+    }
+  },
+  "gfs": {
+    "iotex": {
+      "tvl": { "__empty": true },
+      "pool2": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "tokensAndOwners": [["0x19f3cb6a4452532793d1605c8736d4a94f48752c", "0x1ba725d2ba56482f11fee3642f1c739d25018e4d"]]
+      }
+    }
+  },
+  "gft": {
+    "iotex": {
+      "tvl": { "__empty": true },
+      "pool2": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "tokensAndOwners": [
+          ["0x53bdd401a871bd0f84e94619edcc0c24489d4aab", "0xde5914a97cc5066751624f053d719f67a4d69383"],
+          ["0x5d0f4ca481fd725c9bc6b415c0ce5b3c3bd726cf", "0x4346a618c2e3fd4cfa821e91216eaf927bd46ddd"]
+        ]
+      }
+    }
+  },
+  "giveth": {
+    "methodology": "Counts GIV staked in all farms",
+    "ethereum": {
+      "tvl": { "__empty": true },
+      "staking": { "tokensAndOwners": [["0x900db999074d9277c5da2a43f252d74366230da0", "0x4B9EfAE862a1755F7CEcb021856D467E86976755"]] },
+      "pool2": {
+        "tokensAndOwners": [
+          ["0x900db999074d9277c5da2a43f252d74366230da0", "0xbeba1666c62c65e58770376de332891b09461eeb"],
+          ["0x900db999074d9277c5da2a43f252d74366230da0", "0xc3151A58d519B94E915f66B044De3E55F77c2dd9"],
+          ["0x900db999074d9277c5da2a43f252d74366230da0", "0x7819f1532c49388106f7762328c51ee70edd134c"]
+        ]
+      }
+    },
+    "xdai": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "owners": ["0x24F2d06446AF8D6E89fEbC205e7936a602a87b60"],
+        "tokens": ["0x4f4f9b8d5b4d0dc10506e5551b0513b61fd59e75"]
+      },
+      "pool2": {
+        "__resolveUnknownTokenLP": true,
+        "owners": ["0x08ea9f608656A4a775EF73f5B187a2F1AE2ae10e", "0x55FF0cef43F0DF88226E9D87D09fA036017F5586", "0xB7189A7Ea38FA31210A79fe282AEC5736Ad5fA57"],
+        "tokens": ["0x4f4f9b8d5b4d0dc10506e5551b0513b61fd59e75"]
+      }
+    }
+  },
+  "golden-otter-hub": {
+    "methodology": "TVL is calculated by checking the balances of GOLDEN_OTTER and OTTERVERSE tokens staked in their respective contracts, and valuing them using their LP pairs against WLD.",
+    "wc": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "tokensAndOwners": [
+          ["0x57268aFa4E496684611aAFB1E20D2116283C487e", "0xc631A1A2E53984b461556b030A532BB83Bf49aEb"],
+          ["0xBD179ad384a11Ac2162c0E808212ee3699D18447", "0x566c5441de4e952bc40aEE33004e42Da2Bc1e982"]
+        ],
+        "lps": ["0xccbbace82078705cab7f49b22fbdebfc3eb58840", "0x9704d4c477a865ca359605d701aeffa1c4553e81"]
+      }
+    }
+  },
+  "lns": {
+    "misrepresentedTokens": true,
+    "methodology": "LNS tokens locked in the staking contract are counted towards staking.",
+    "smartbch": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "owner": "0xBE7E034c86AC2a302f69ef3975e3D14820cC7660",
+        "tokens": ["0x35b3Ee79E1A7775cE0c11Bd8cd416630E07B0d6f"],
+        "lps": ["0x7f3F57C92681c9a132660c468f9cdff456fC3Fd7"]
+      }
+    }
+  },
+  "matstake": {
+    "methodology": "Sums the MAT token balance held by the LiquidStakingPool contract and all staking pools to represent total user deposits.",
+    "timetravel": true,
+    "matchain": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "owners": [
+          "0xa1843e71d1390d4A31469A53EeEfBB2f9AAe34ed", "0xff5eb1345aa5d4c948c227742fcd32157539e480", "0xfa38f584f561642ff0d1ab67b5a175798668a047",
+          "0xf9ff433f14f237ce6643257ca4cd5aec355eaee7", "0xeef37e218087bca2f4c3c6c4c50f3d3b51b2eb4d", "0xdd1904dcf7e0b6dff60bd9729f626b076999e18f",
+          "0xdb604be88482ce061fbc2595e619f967de1a7502", "0xd899cd3cafb1c9f6d585c36649592956d3df5ef9", "0xc3258af62e46b502700c34ed7c3128f99f0fc532",
+          "0xc021a95e3ad7d4e06745c4a12438a960c33859d7", "0xb4175a66e28f2c348959872b28af0d12f891201f", "0xa3be9646116f834d0f9f1a035fdad6862b5f0a2a",
+          "0x9c4c30d5cd29c6d24cf1a712d93b756cbf5071ba", "0x96b5f62604729ed5b7219f1b3f15a8359e0a86fb", "0x8aa82b86056af2dd5cdaab45eefe500c84d0af82",
+          "0x739110f0233b8598957af1321920787c13142910", "0x53f91b6ae02c8cdbc22565f7f7a158add6f1de6e", "0x4a47d64b074d730868623d89ec633d16adf53212",
+          "0x443d8318224c59c31987ea310033d0dc47a10d88", "0x256b02b26c67029b2881ab5d493cf8e5068d5fcc", "0x0de1a88dcf7fd12c54d9ac0807c990f26bd1c121",
+          "0x0b0381a2c4c3a537c614afe71334c9f387718922"
+        ],
+        "tokens": [ADDRESSES.matchain.MAT]
+      }
+    }
+  },
+  "mtgo": {
+    "iotex": {
+      "tvl": { "__empty": true },
+      "pool2": {
+        "__resolveUnknownTokenLP": true,
+        "tokensAndOwners": [["0x2a382b6d2dac1cba6e4820fd04e3c2c14e1aa7b2", "0x1781d2e9b4c7c0a3657411a64d2c1dfc50118772"]],
+        "lps": ["0x2a382b6d2dac1cba6e4820fd04e3c2c14e1aa7b2"]
+      }
+    }
+  },
+  "newthrone": {
+    "methodology": "THRO tokens in the Game contract, which represents the current balance of the game (total spent - total claimed).",
+    "base": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "owner": "0x61C3A357bc3ca51b80eCD36CB1Ae37e5465C6701",
+        "tokens": ["0x0f929C29dcE303F96b1d4104505F2e60eE795caC"],
+        "lps": ["0x3267afBDFA739D4039D03172A4a80e4bb91370b6"]
+      }
+    }
+  },
+  "papparico-finance": {
+    "cronos": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "owners": ["0x535503d5c23bCA9896383003A46A8AD6c9CB2fe2", "0xFc8d5d6B280BF5E8d8DB12d0fF8a0f7d1A6ECf78", "0x828CC5D75594e4d0D072566cC07F64E863A0d11E"],
+        "tokens": ["0x59BAfb7168972EcCA5e395F7dA88e71eCe47a260", "0x961105dD9bE34B64A27251d72B6D8F086847bc1c"],
+        "lps": ["0xb036145476Ad16782eC05C7EC340D7e3cE6D09b7", "0xA99F134FC1e922Bc78Aa78c5897ce1eeF925b179"]
+      },
+      "pool2": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "owners": ["0x3E35810A663c7eE28a0A6f6A0984146CbB163c6c", "0x2490AFBf1609119bB76E5e936f4ce4cBed815947"],
+        "tokens": ["0xb036145476Ad16782eC05C7EC340D7e3cE6D09b7", "0xA99F134FC1e922Bc78Aa78c5897ce1eeF925b179"]
+      }
+    }
+  },
+  "pizza-city": {
+    "methodology": "Pizza City is a gamified DeFi protocol on Base featuring Dutch auctions. TVL: PIZZA tokens staked for rewards and governance power (user-withdrawable). Note: Protocol-owned liquidity (~$33k locked Uniswap V3 LP) is not included as it cannot be withdrawn by users.",
+    "base": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "owner": "0x2166Ea481f03778c969667675dBD6A4FdAa9FE78",
+        "tokens": ["0x13b628fF6Db92070C0FBad79523240E0f5DeFb07"]
+      }
+    }
+  },
+  "ultronStakingHub": {
+    "misrepresentedTokens": true,
+    "ultron": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "owner": "0x60768787077a8411d8f626ce35333fa3f02be602",
+        "tokens": [ADDRESSES.ultron.wULX]
+      }
+    }
+  },
+  "unite-finance": {
+    "methodology": "Pool2 deposits consist of UNITE/ONE and USHARE/ONE LP tokens deposits while the staking TVL consists of the TSHARES tokens locked within the Boardroom contract(0x68BeEc29183464e2C80Aa9B362db8b0c0eB826bd).",
+    "harmony": {
+      "tvl": { "__empty": true },
+      "pool2": {
+        "resolveLP": true,
+        "owner": "0xe3F4E2936F0Ac4104Bd6a58bEbd29e49437710Fe",
+        "tokens": ["0xa0377f9fd3de5dfefec34ae4807e9f2b9c56d534", "0x6372d14d29f07173f4e51bb664a4342b4a4da9e8", "0xeE2208256800398424a45Fe9F135AD0b60DeAE0C", "0xe302A970E80094a3abB820Eda275FAC5848b5bdA"],
+        "abis": { "getReservesABI": "function getReserves() view returns (uint256 _reserve0, uint256 _reserve1)" }
+      },
+      "staking": { "__staking": ["0x68BeEc29183464e2C80Aa9B362db8b0c0eB826bd", "0xd0105cff72a89f6ff0bd47e1209bf4bdfb9dea8a"] }
+    }
+  },
+  "unore": {
+    "start": "2021-07-12",
+    "kava": { "tvl": { "__empty": true } },
+    "ethereum": {
+      "tvl": { "tokensAndOwners": [[ADDRESSES.null, "0x929F524473D7B86acc0ADD87B1874Bdf63Cf0Ab1"], [ADDRESSES.ethereum.USDT, "0x442e9fe958202Dc29d7018c1AA47479F2159D8a0"], [ADDRESSES.ethereum.USDC, "0xF37c0901662f39039AFBd3c2546e3141c091e014"]] },
+      "staking": { "tokens": ["0x474021845c4643113458ea4414bdb7fb74a01a77"], "owners": ["0x076E2A501FD0DA41E5A659aB664b2B6792B80Fa2", "0x8978d08bd89B9415eB08A4D52C1bDDf070F19fA2", "0x442e9fe958202Dc29d7018c1AA47479F2159D8a0", "0xF37c0901662f39039AFBd3c2546e3141c091e014", "0x929F524473D7B86acc0ADD87B1874Bdf63Cf0Ab1"] }
+    },
+    "bsc": {
+      "tvl": { "tokensAndOwners": [[ADDRESSES.bsc.USDC, "0xabb83630993984C54fd60650F5A592407C51e54b"]] },
+      "staking": { "tokens": ["0x474021845c4643113458ea4414bdb7fb74a01a77"], "owners": ["0xabb83630993984C54fd60650F5A592407C51e54b", "0xeF21cB3eE91EcB498146c43D56C2Ef9Bae6B7d53"] }
+    },
+    "rollux": {
+      "tvl": { "tokensAndOwners": [[ADDRESSES.optimism.WETH_1, "0x7393310FdC8ed40B35D2afD79848BC7166Ae0474"]] },
+      "staking": { "tokens": ["0x570baA32dB74279a50491E88D712C957F4C9E409"], "owners": ["0x8685C2b4D2024805a1FF6831Bc4cc8569457811D", "0x7393310FdC8ed40B35D2afD79848BC7166Ae0474"] }
+    }
+  },
+  "valerian": {
+    "misrepresentedTokens": true,
+    "methodology": "TVL is calculated by getting value of staked VAL using Arthswap DEX value of VAL.",
+    "astar": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "owner": "0x99a2278ab93Ee6F590a87D8F37a16EE8f53F97Cc",
+        "tokens": ["0xe1af4d744e2a66cd07c474bed167960be872fcd9"],
+        "lps": ["0x56Ce6643eDD621EcD904d9b6C9e88745A125AF6d"]
+      }
+    }
+  },
+  "banano": {
+    "methodology": "Pool2 TVL in Polygon and BSC LPs",
+    "polygon": {
+      "tvl": { "__empty": true },
+      "pool2": { "resolveLP": true, "owner": "0xefa4aED9Cf41A8A0FcdA4e88EfA2F60675bAeC9F", "tokens": ["0xb556feD3B348634a9A010374C406824Ae93F0CF8"] }
+    },
+    "bsc": {
+      "tvl": { "__empty": true },
+      "pool2": { "resolveLP": true, "owner": "0x1E30E12e82956540bf870A40FD1215fC083a3751", "tokens": ["0xe20B9e246db5a0d21BF9209E4858Bc9A3ff7A034", "0x6011c6BAe36F2a2457dC69Dc49068a1E8Ad832DD", "0x7898466CACf92dF4a4e77a3b4d0170960E43b896", "0x351A295AfBAB020Bc7eedcB7fd5A823c01A95Fda", "0x76B1aB2f84bE3C4a103ef1d2C2a74145414FFA49"] }
+    }
+  },
+  "treasury/dnadollar": {
+    "cronos": {
+      "tvl": { "__empty": true },
+      "ownTokens": { "owners": ["0x1420287565FD5Ebec8FbD720c17Cd911600449d3"], "tokens": ["0xcc57f84637b441127f2f74905b9d99821b47b20c"] }
+    }
+  },
+  "treasury/oceanus": {
+    "metis": {
+      "tvl": { "__empty": true },
+      "ownTokens": { "owners": ["0xF29EEC2563b1E6a1ed87ff7DDfB164474d1Ecb50"], "tokens": ["0x41607272ce6f2a42732ae382f00f8f9ce68d78f3"] }
+    }
+  },
+  "treasury/minswap": {
+    "cardano": {
+      "tvl": { "__empty": true },
+      "ownTokens": { "owners": ["addr1z9wdv59sq7zzy2l6gchq3247lz7ssfsxs45nj4njhwsp5uzj2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqzygnta", "addr1q8zntywq3fldecrqk4vl593sznvj7483ejcajnavvh2qpsvftaax5f3wasl5m49rtjw5pen938vr7863w0lfz94h0lfqldx3pu", "addr1qxymvaeg3306xyp6yk3mjdj7usp40x2e5cecsh75xw5tsczj2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqjx0th5", "addr1q9gxe8vx0kvv5g6gv4n5wmsxexjqsjftc599qqcp2vkmmwh7snv5yhw2qqvdev3c7wn6s3xhrnx25eg6zcqjxj9vrv2s0e38ze", "addr1qx54hjkagnc7zanqkfjearg8nk2w303pgdyl2qm4hs2x8saxg62nrp8kp2mukmrr4pfyt4fpdyjp7dx8jxffs4gf2xcsx6uj7a"] }
+    }
+  },
+  "treasury/wagmidao": {
+    "methodology": "Counts liquidity on the Farms through Factory Contract, and counts Treasury as it is determined by bonding of assets. Staking refers to the staked GMI tokens",
+    "harmony": { "tvl": { "__empty": true } }
+  },
+  "thorswap": {
+    "methodology": "TVL is the total amount of THOR tokens staked in VTHOR, UTHOR, and YTHOR staking contracts",
+    "ethereum": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "owners": ["0x815C23eCA83261b6Ec689b60Cc4a58b54BC24D8D", "0x34deff97889f3a6a483e3b9255cafcb9a6e03588", "0x8793CD69895C45b2d2474236b3Cb28FC5C764775"],
+        "tokens": ["0xa5f2211b9b8170f694421f2046281775e8468044"]
+      }
+    }
+  },
+  "themis-capital-ohm": {
+    "misrepresentedTokens": true,
+    "filecoin": {
+      "tvl": { "__empty": true },
+      "staking": {
+        "__resolveUnknownTokenLP": true,
+        "useDefaultCoreAssets": true,
+        "owner": "0xA8a3136111ca0b010C9FD5C2D6d7c71e4982606A",
+        "tokens": ["0x005E02A4A934142d8Dd476F192d0dD9c381b16b4"],
+        "lps": ["0x45680718F6BdB7Ec3A7dF7D61587aC7C3fB49d50"]
+      }
+    }
+  },
+  "streme": {
+    "methodology": "Staking tracks STREME tokens held in the primary staking/treasury contract on Base.",
+    "start": 26098345,
+    "base": {
+      "tvl": { "__empty": true },
+      "staking": { "owners": ["0x293A5d47f5D76244b715ce0D0e759E0227349486"], "tokens": ["0x3b3cd21242ba44e9865b066e5ef5d1cc1030cc58"] }
+    }
+  },
+  "scarabfinance": {
+    "fantom": {
+      "tvl": { "__empty": true },
+      "pool2": {
+        "__resolveUnknownTokenLP": true,
+        "owner": "0xc88690163b10521d5fB86c2ECB293261F7771525",
+        "tokens": ["0x78e70eF4eE5cc72FC25A8bDA4519c45594CcD8d4", "0x27228140d72a7186f70ed3052c3318f2d55c404d"]
+      },
+      "staking": { "__staking": ["0xD00F41d49900d6affd707EC6a30d1Bf7D4B7dE8F", "0x6ab5660f0B1f174CFA84e9977c15645e4848F5D6"] }
+    }
+  },
+  "satori": {
+    "methodology": "Counts Satori smartcontract balance as TVL..",
+    "polygon_zkevm": { "tvl": { "owners": ["0x62e724cB4d6C6C7317e2FADe4A03001Fe7856940", "0xA59a2365D555b24491B19A5093D3c99b119c2aBb"], "tokens": [ADDRESSES.astarzk.USDT, ADDRESSES.astarzk.MATIC] } },
+    "era": { "tvl": { "owners": ["0x0842b33529516abe86CA8EA771aC4c84FDd0eeE0", "0x48756b37Fd643bB40F669804730024F02900C476"], "tokens": [ADDRESSES.era.USDC, ADDRESSES.era.ZK] } },
+    "linea": { "tvl": { "owners": ["0xfb371E70eEB32f4054F40514924e77213ca18425", "0xF96116e124eB3F62Ddc6a9cfbdc58d7F8A37c50A"], "tokens": [ADDRESSES.linea.USDC, ADDRESSES.blast.ezETH] } },
+    "scroll": { "tvl": { "owners": ["0xfb371E70eEB32f4054F40514924e77213ca18425", "0xF96116e124eB3F62Ddc6a9cfbdc58d7F8A37c50A"], "tokens": [ADDRESSES.scroll.USDC] } },
+    "base": { "tvl": { "owners": ["0x668a9711b8d04362876dc5b6177ed362084d5aed", "0x5f075a6a11B2e25DF664Ce7419c274943017B595"], "tokens": [ADDRESSES.base.USDC, ADDRESSES.blast.ezETH, "0x23dA5F2d509cb43A59d43C108a43eDf34510eff1"] } },
+    "xlayer": { "tvl": { "owners": ["0x80DD5bC934122e56B9536a9F19F2Ea95a38E98c8", "0xf915391346Fad5a75F31CD00218BB1EFC13e01f2"], "tokens": [ADDRESSES.xlayer.USDC] } },
+    "arbitrum": { "tvl": { "owners": ["0x5aCCEb99De5cc07168C193396C1fdC3E3abEEED7", "0xAE9a83510cbB26c58595BA671f131e0A03Fe9A03"], "tokens": [ADDRESSES.arbitrum.USDC_CIRCLE] } },
+    "ton": { "tvl": { "owners": ["EQDrGCJ3V8cMw92Gg8Tf9nfq3piaT_iI3EkCGVF0OUG0vWEh"], "tokens": [ADDRESSES.ton.USDT] } },
+    "bsc": { "tvl": { "owners": ["0x3b6F3f7F0e3e8cCa7bC11dFA4a8567A6479Ece54", "0xD2F244164cd09e5cBb6360c4a17aAF976a34562a"], "tokens": [ADDRESSES.bsc.USDC, ADDRESSES.swellchain.stBTC] } },
+    "zircuit": { "tvl": { "owners": ["0x301A29D92B23750c481D6F2feAA01F872561A528", "0x8DdCb1F874e635E03f172cc02B4F57ae94Ae7BC0"], "tokens": ["0x3b952c8C9C44e8Fe201e2b26F6B2200203214cfF", ADDRESSES.zircuit.WETH] } },
+    "sty": { "tvl": { "owners": ["0x0848F4AE872545C901D3325AEFf09F0fa8952AfC", "0x133A54E116731c0CBE35EE41276D570e0730E92D"], "tokens": [ADDRESSES.flow.stgUSDC, "0x674843C06FF83502ddb4D37c2E09C01cdA38cbc8"] } },
+    "plume": { "tvl": { "__empty": true } },
+    "plume_mainnet": { "tvl": { "owners": ["0x04AE748272c3959A9904aeaD3cc00AAf476aa34D", "0x36Bd86676A05ABAaF30D57F65Ba463669E018F3e"], "tokens": [ADDRESSES.plume_mainnet.WPLUME, ADDRESSES.plume_mainnet.pUSD, ADDRESSES.plume_mainnet.USDC_e, ADDRESSES.plume_mainnet.USDT, "0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9", "0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c"] } },
+    "ethereum": { "tvl": { "owners": ["0x0857f8a6e41e1c71f4065daebfe7ddb825cbffde", "0xA394080628F175472Fee9eB316BD104fAB63FE40"], "tokens": [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.LBTC, ADDRESSES.swellchain.stBTC, "0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e", ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.cbETH, ADDRESSES.ethereum.EETH, ADDRESSES.ethereum.RETH, ADDRESSES.bsc.wBETH, "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7", "0xe95a203b1a91a908f9b9ce46459d101078c2c3cb", "0x09db87A538BD693E9d08544577d5cCfAA6373A48"] } }
+  },
+  "powerflow-bridge": {
+    "methodology": "Counts the tokens locked in the PowerFlow Bridge contracts.",
+    "titan": { "tvl": { "__empty": true } },
+    "ethereum": {
+      "tvl": {
+        "owner": "0x9Be9C79f1d8bC09c5b9A6c312e360227Ddb57230",
+        "tokens": [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT, ADDRESSES.null]
+      }
+    },
+    "solana": {
+      "tvl": {
+        "owner": "Cqv9L3HeevzDQipST26xNR5DBrcRRRqRsg4HTHA1wE9L",
+        "solOwners": ["Cqv9L3HeevzDQipST26xNR5DBrcRRRqRsg4HTHA1wE9L"]
+      }
+    }
+  },
 }
