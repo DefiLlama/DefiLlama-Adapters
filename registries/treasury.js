@@ -2514,10 +2514,16 @@ const configs = {
       tokens: []
     },
   },
+  'treasury/hoodmint': {
+    robinhood: {
+      owners: ['0x7C008EfE8428b473852DCCb9FeBa918d559878C2'],
+      tokens: [nullAddress]
+    },
+  },
   'treasury/hoodpump': {
     robinhood: {
       owners: ['0xdAD1d6a2AfF8f9285Fd9C552491538aEcb518888', '0x453D956057036bd9871D25B965795b883047481D'],
-      tokens: [ADDRESSES.robinhood.WETH, ADDRESSES.null]
+      tokens: [ADDRESSES.robinhood.WETH, nullAddress],
     },
   },
   'treasury/hop': {
@@ -4140,6 +4146,13 @@ const configs = {
         ADDRESSES.ethereum.WBTC,
       ],
       owners: ['0x0B70A2653B6E7BF44A3c80683E9bD9B90489F92A'],
+    },
+  },
+  'treasury/peeps': {
+    robinhood: {
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+      owners: ['0x364716c52a6e1EBF60B4e3dc6610dB1A1c852E7b'],
+      ownTokens: ['0xf202dE51BB42A0073948b0971707D14C54Ef5F44'],
     },
   },
   'treasury/pegasusfinance': {
