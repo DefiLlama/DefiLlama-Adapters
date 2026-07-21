@@ -626,6 +626,18 @@ const configs = {
       }
     },
   },
+  "poppie": {
+    config: {
+      methodology: 'Count all assets deposited in Euler vaults curated by Poppie.',
+      blockchains: {
+        bsc: {
+          eulerVaultOwners: [
+            '0xf4d92bC8006836132364B355DB9CfF204466ABc3',
+          ],
+        },
+      },
+    },
+  },
   "re7": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Re7 Labs.',
