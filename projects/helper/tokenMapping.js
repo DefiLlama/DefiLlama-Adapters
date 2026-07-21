@@ -40,14 +40,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  dungeon: {
-    'udgn': { coingeckoId: 'dragon-coin-2', decimals: 6 },
-    'ibc:489C406A3029B50486F991E468CB8A7D5F039757327A40B0684C530BFF96C543': { coingeckoId: 'usd-coin', decimals: 6 },
-    'ibc:C3988DBA4BA195F3514EA2E02497B9F66019CE53EFB96D4982CE95CA6A51BBCE': { coingeckoId: 'cosmos', decimals: 6 },
-    'ibc:295196BD505E32B9679BA0CFDB70B4FF2AADE80A3B73A2F234284D7A709844DA': { coingeckoId: 'atomone', decimals: 6 },
-    'ibc:B80E4B088852B8CE07A8E6A8A579B4945CC4ABD7B3AB8287E3A2E15805F8D521': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-    'factory:dungeon1wtzjvusmm6r370k0nfwtejywl4qklf7rmhf0ng43tdsqh70cljjqc7gh6q:wbtc': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-  },
   inri: {
     '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {
       coingeckoId: 'tether',
