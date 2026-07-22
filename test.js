@@ -132,9 +132,9 @@ function validateHallmarks(hallmark) {
   // key so a treasury entry isn't shadowed by a same-named protocol adapter.
   const registryKey = process.argv[2].replace(/\.js$/, '').replace(/\/index$/, '').replace(/^projects\//, '')
 
-  // throw error if module doesnt start with lowercase letters
-  if (!/^[a-z]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
-    throw new Error("Module name should start with a lowercase letter: " + moduleArg);
+  // throw error if module starts with an uppercase letter (digit prefixes are fine: 1inch, 0vix, 40acres, ...)
+  if (!/^[a-z0-9]/.test(moduleArg) && !process.env.LLAMA_RUN_LOCAL) {
+    throw new Error("Module name should not start with an uppercase letter: " + moduleArg);
   }
 
   let module = {};
