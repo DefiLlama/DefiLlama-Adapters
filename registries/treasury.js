@@ -5375,6 +5375,13 @@ const configs = {
       ],
     },
   },
+  'treasury/stonkbrokers': {
+    robinhood: {
+      owners: ['0x16027b596e210c63f750E0bdD156f00bb2749868'],
+      tokens: [nullAddress],
+      ownTokens: ['0xe934e36A439C94017B64a3FecE66AF12099aBF50']
+    }
+  },
   'treasury/stout': {
     sonic: {
       owners: ['0x12684d18BDBA8e31936f40aBcE1175366874114f',],
