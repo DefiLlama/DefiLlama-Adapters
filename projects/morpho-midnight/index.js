@@ -1,5 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
 const config = {
   base: {
@@ -19,7 +19,7 @@ const marketCreatedEvent = 'event MarketCreated((uint256 chainId,address midnigh
 
 async function getMarkets(api) {
   const { midnight, fromBlock, blacklistedMarketIds } = config[api.chain]
-  const logs = await getLogs({ api, target: midnight, eventAbi: marketCreatedEvent, fromBlock, onlyArgs: true, extraKey: 'morpho-midnight-markets' })
+  const logs = await getLogs2({ api, target: midnight, eventAbi: marketCreatedEvent, fromBlock })
   const skip = new Set(blacklistedMarketIds.map(id => id.toLowerCase()))
   return logs
     .filter(log => !skip.has(log.id_.toLowerCase()))
@@ -41,7 +41,6 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  timetravel: false,
   methodology: 'Every Midnight market is enumerated on-chain from MarketCreated events. TVL is the collateral held in the Midnight contract. Borrowed is outstanding debt read per-market from totalUnits.',
   base: { tvl, borrowed },
 }
