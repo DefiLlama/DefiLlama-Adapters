@@ -11,12 +11,6 @@ module.exports = {
     "timetravel": false,
     "solana": { "tokenAccounts": ["FhTJEGXVwj4M6NQ1tPu9jgDZUXWQ9w2hP89ebZHwrJPS"] }
   },
-  "bgsol": {
-    "timetravel": false,
-    "doublecounted": true,
-    "methodology": "Bitget Staked SOL (BGSOL) is a tokenized representation on your staked sSOL",
-    "solana": { "tokenAccounts": ["Ejg5vqsthntG8wJDijzgEWvdvhoAh8pzu4Q4r4MqsdkR"] }
-  },
   "asol": {
     "timetravel": false,
     "methodology": "aSOL TVL is computed by looking at the token balances of the accounts holding the stake pool tokens backing the aSOL Crate. The token accounts come from https://asol.so/#/admin.",
