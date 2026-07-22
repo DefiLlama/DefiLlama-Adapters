@@ -91,6 +91,30 @@ function minBigInt(...values) {
   return values.reduce((min, value) => (value < min ? value : min));
 }
 
+// ship() accepts arbitrary token addresses, so a maker can register a
+// strategy with a junk token whose balanceOf/allowance always reverts -
+// failing the whole refill on that would let anyone permanently break the
+// adapter. Such tokens are unpullable (safeTransferFrom would revert too),
+// so 0 is their correct contribution. Transient RPC failures, however, must
+// not silently undercount a refill: retry failed reads once and only treat
+// what still fails as junk.
+async function retryFailedReads(api, { abi, calls, results }) {
+  const failedIndexes = results
+    .map((value, index) => (value === null || value === undefined ? index : -1))
+    .filter((index) => index !== -1);
+  if (!failedIndexes.length) return;
+
+  const retried = await api.multiCall({
+    abi,
+    calls: failedIndexes.map((index) => calls[index]),
+    permitFailure: true,
+  });
+  retried.forEach((value, position) => {
+    if (value !== null && value !== undefined)
+      results[failedIndexes[position]] = value;
+  });
+}
+
 async function tvl(api) {
   // Every (maker, app, strategyHash, token) tuple ever registered appears in
   // Pushed logs: ship() emits one Pushed per strategy token, and push() only
@@ -155,25 +179,37 @@ async function tvl(api) {
     allowanceCalls.push({ key, target: token, params: [maker, registry] });
   }
   const walletPairList = [...walletPairs.values()];
+  const balanceOfCalls = walletPairList.map((i) => ({
+    target: i.token,
+    params: [i.maker],
+  }));
+  const allowanceCallParams = allowanceCalls.map((i) => ({
+    target: i.target,
+    params: i.params,
+  }));
 
   const [walletBalances, allowances] = await Promise.all([
     api.multiCall({
       abi: "erc20:balanceOf",
-      calls: walletPairList.map((i) => ({
-        target: i.token,
-        params: [i.maker],
-      })),
+      calls: balanceOfCalls,
       permitFailure: true,
     }),
     api.multiCall({
       abi: ALLOWANCE_ABI,
-      calls: allowanceCalls.map((i) => ({
-        target: i.target,
-        params: i.params,
-      })),
+      calls: allowanceCallParams,
       permitFailure: true,
     }),
   ]);
+  await retryFailedReads(api, {
+    abi: "erc20:balanceOf",
+    calls: balanceOfCalls,
+    results: walletBalances,
+  });
+  await retryFailedReads(api, {
+    abi: ALLOWANCE_ABI,
+    calls: allowanceCallParams,
+    results: allowances,
+  });
 
   // per (maker, token): registry capacity = min(allowance, virtual sum);
   // pullable = min(wallet balance, sum of registry capacities)
