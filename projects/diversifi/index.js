@@ -89,16 +89,18 @@ async function getVaultTokenAccounts() {
   return { tokenAccounts: [...tokenAccounts], blacklistedTokens: [...blacklistedTokens] }
 }
 
-// USDC-per-USD* (scaled 1e6) read live from the pool; falls back to 1:1 if unreadable or
-// out of a sane band, so TVL can never crash or blow up on a layout change.
+// USDC-per-USD* (scaled 1e6) read live from the pool. Fails loudly if the account is missing
+// or the rate is out of a sane band (e.g. a pool layout change) — we must NOT silently
+// substitute 1:1, which would misvalue USD* by its yield premium. Letting tvl() throw makes
+// DeFiLlama retain the last known-good TVL instead of publishing a wrong number.
 async function getUsdStarRate() {
-  try {
-    const connection = getConnection()
-    const info = await connection.getAccountInfo(new PublicKey(USD_STAR_POOL))
-    const rate6 = info.data.readBigUInt64LE(USD_STAR_RATE_OFFSET)
-    if (rate6 >= RATE_SCALE && rate6 < 2n * RATE_SCALE) return rate6
-  } catch (e) { /* fall through to 1:1 */ }
-  return RATE_SCALE
+  const connection = getConnection()
+  const info = await connection.getAccountInfo(new PublicKey(USD_STAR_POOL))
+  if (!info) throw new Error('DiversiFi: USD* pool account not found')
+  const rate6 = info.data.readBigUInt64LE(USD_STAR_RATE_OFFSET)
+  if (rate6 < RATE_SCALE || rate6 >= 2n * RATE_SCALE)
+    throw new Error(`DiversiFi: USD* rate ${rate6} out of expected band`)
+  return rate6
 }
 
 async function tvl(api) {
