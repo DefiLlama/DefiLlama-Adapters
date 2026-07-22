@@ -391,6 +391,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
           pageInfo { hasNextPage endCursor }
           nodes {
             address
+            name { json }
             contents { type { repr layout } json }
             value {
               __typename
@@ -414,6 +415,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
       }
       if (!objectId || addedIds.has(objectId) || !contents) continue
       const obj = formatObject(contents)
+      obj.name = n.name?.json // the dynamic-field key (e.g. a coin TypeName), which the value object may not carry
       if (!idFilter({ objectId, objectType: obj.type, name: obj.fields?.name })) continue
       addedIds.add(objectId)
       items.push(obj)
