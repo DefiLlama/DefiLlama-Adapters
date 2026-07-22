@@ -1,20 +1,12 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const config = {
-  celo: {
-    factory: '0xa431a0bD0978d872C720cD3E3277e31cd6026e90',
-    positionManager: '0x3d79EdAaBC0EaB6F08ED885C05Fc0B014290D95A',
-  },
-  arbitrum: {
-    // VaultFactoryArb — a fork of VaultFactory that derives token0/token1
-    // ordering from the pool itself instead of assuming Celo's order.
-    factory: '0x93590F9a18Ed444dD90ECBeCA094aa9367452472',
-    positionManager: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
-  },
+  celo: '0xa431a0bD0978d872C720cD3E3277e31cd6026e90',
+  arbitrum: '0x93590F9a18Ed444dD90ECBeCA094aa9367452472',
 };
 
 async function tvl(api) {
-    const { factory, positionManager } = config[api.chain];
+    const factory = config[api.chain];
 
     const vaults = await api.fetchList({ target: factory, lengthAbi: 'vaultCount', itemAbi: 'allVaults' });
     if (!vaults.length) return;
