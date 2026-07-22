@@ -1,5 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const { capOpenOfferRequests, getBorrowedByMarket, getOnchainTvlByToken, getOpenOfferRequests } = require('./helpers')
+const { getBorrowedByMarket, getOnchainTvlByToken } = require('./helpers')
 
 const MORPHO_API = process.env.MORPHO_MIDNIGHT_API ?? 'https://api.morpho.org'
 const MORPHO_API_VERSION = process.env.MORPHO_MIDNIGHT_API_VERSION ?? 'v0'
@@ -82,59 +82,11 @@ async function getListedMarkets(api) {
   const listed = new Map()
   for (const [id, market] of markets)
     if (listedIds.has(id)) listed.set(id, market)
-  return { markets: listed, listedIds }
-}
-
-async function mapInBatches(items, batchSize, callback) {
-  const output = []
-  for (let index = 0; index < items.length; index += batchSize)
-    output.push(...await Promise.all(items.slice(index, index + batchSize).map(callback)))
-  return output
-}
-
-async function getListedBooks(api, listedIds) {
-  const { chainId, midnight } = config[api.chain]
-  const ids = [...listedIds]
-  const books = []
-  // `/books` accepts at most 20 ids per call, so chunk to stay future-proof as the listing grows.
-  for (let index = 0; index < ids.length; index += 20) {
-    const chunk = ids.slice(index, index + 20)
-    books.push(...await paginate('/books', { chain_ids: String(chainId), ids: chunk.join(','), limit: '20' }))
-  }
-  return books.filter(book =>
-    book.chain_id === chainId && book.midnight.toLowerCase() === midnight.toLowerCase(),
-  )
-}
-
-async function addOpenOfferLiquidity(api, listedIds) {
-  const books = await getListedBooks(api, listedIds)
-  if (!books.length) return
-  const responses = await mapInBatches(books, 10, book =>
-    fetchJson(apiUrl(`/books/${book.market_id}/bids/takeable-offers`)),
-  )
-  const requests = getOpenOfferRequests(responses.flatMap(response => response.data))
-  if (!requests.length) return
-
-  const calls = requests.map(request => ({ target: request.loanToken, params: request.maker }))
-  const allowanceCalls = requests.map(request => ({
-    target: request.loanToken,
-    params: [request.maker, request.midnight],
-  }))
-  const [balances, allowances] = await Promise.all([
-    api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true }),
-    api.multiCall({
-      abi: 'function allowance(address owner,address spender) view returns (uint256)',
-      calls: allowanceCalls,
-      permitFailure: true,
-    }),
-  ])
-
-  for (const request of capOpenOfferRequests(requests, balances, allowances))
-    if (request.assets > 0n) api.add(request.loanToken, request.assets.toString())
+  return listed
 }
 
 async function tvl(api) {
-  const [{ markets, listedIds }, suppliedCollateral, withdrawnCollateral, liquidations, repays, withdrawals, claimedContinuousFees] = await Promise.all([
+  const [markets, suppliedCollateral, withdrawnCollateral, liquidations, repays, withdrawals, claimedContinuousFees] = await Promise.all([
     getListedMarkets(api),
     getEventLogs(api, 'supplyCollateral'),
     getEventLogs(api, 'withdrawCollateral'),
@@ -155,11 +107,10 @@ async function tvl(api) {
   })
   for (const [token, amount] of balances)
     if (amount > 0n) api.add(token, amount.toString())
-  await addOpenOfferLiquidity(api, listedIds)
 }
 
 async function borrowed(api) {
-  const [{ markets }, takes, repays, liquidations] = await Promise.all([
+  const [markets, takes, repays, liquidations] = await Promise.all([
     getListedMarkets(api),
     getEventLogs(api, 'take'),
     getEventLogs(api, 'repay'),
@@ -176,6 +127,6 @@ async function borrowed(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Scope is limited to markets currently flagged listed by the Morpho API trust layer; the same listed set gates both TVL and borrowed. TVL includes collateral deposited in Midnight, repaid loan liquidity not yet withdrawn, and executable callback-free lender bids returned by the Morpho API. Multi-Market Offer groups are counted once and total lender bids are capped by each maker loan-token balance and allowance. Borrowed is active face-value debt reconstructed from Take events net of repayments, liquidations, and realized bad debt. Matured markets remain included until their collateral and repaid liquidity are withdrawn.',
+  methodology: 'Scope is limited to markets currently flagged listed by the Morpho API trust layer; the same listed set gates both TVL and borrowed. TVL is value custodied by the Midnight contract, reconstructed purely from onchain events: collateral deposited in Midnight plus repaid loan liquidity not yet withdrawn. Borrowed is active face-value debt reconstructed from Take events net of repayments, liquidations, and realized bad debt. Matured markets remain included until their collateral and repaid liquidity are withdrawn.',
   base: { tvl, borrowed },
 }
