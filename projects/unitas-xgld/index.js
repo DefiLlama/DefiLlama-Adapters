@@ -38,7 +38,7 @@ async function tvl(api) {
 
 module.exports = {
     hallmarks: [
-        [1779195662, "unitas-xgld launch"]
+        ['2026-05-19', "unitas-xgld launch"]
     ],
     timetravel: false,
     bsc: {
