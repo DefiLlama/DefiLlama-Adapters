@@ -5380,6 +5380,12 @@ const configs = {
       ],
     },
   },
+  'treasury/stockworks': {
+    robinhood: {
+      owners: ['0x57024Aae99f709Bd399252767DDC6487Aa3881De'],
+      tokens: [nullAddress, '0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa'],
+    }
+  },
   'treasury/stonkbrokers': {
     robinhood: {
       owners: ['0x16027b596e210c63f750E0bdD156f00bb2749868'],
