@@ -26,6 +26,8 @@
  * empires deployed before that migration used a keccak salt with no marker and are not indexed.
  */
 
+const { getLogs2 } = require('../helper/cache/getLogs');
+
 const SPLITS_SMARTVAULT_FACTORY = '0x8E6Af8Ed94E87B4402D0272C5D6b0D47F0483e7C'; // same on Base + Arbitrum
 const EMPIRE_SALT_PREFIX = '656d70697265'; // "empire" ASCII, hex, no 0x
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'; // native gas token in DeFiLlama sumTokens
@@ -68,12 +70,11 @@ function saltToHex64(salt) {
 
 /** Collect Empire vault addresses (+ their base tokens) from the shared factory. */
 async function collectEmpireVaults(api, cfg) {
-  const logs = await api.getLogs({
+  const logs = await getLogs2({
+    api,
     target: SPLITS_SMARTVAULT_FACTORY,
     fromBlock: cfg.factoryFromBlock,
-    toBlock: await api.getBlock(),
     eventAbi: SMARTVAULT_CREATED_EVENT,
-    onlyArgs: true,
   });
 
   const vaults = [];
@@ -112,12 +113,11 @@ async function addVaultTvl(api, cfg) {
 /** Sum every token ever staked, read from the locker's live balance (nets out unstakes). */
 async function addStakingTvl(api, cfg) {
   if (!cfg.stakingLocker || /^0x0+$/.test(cfg.stakingLocker)) return;
-  const logs = await api.getLogs({
+  const logs = await getLogs2({
+    api,
     target: cfg.stakingLocker,
     fromBlock: cfg.lockerFromBlock,
-    toBlock: await api.getBlock(),
     eventAbi: STAKED_EVENT,
-    onlyArgs: true,
   });
   const tokens = [...new Set(logs.map((l) => l.token.toLowerCase()))];
   if (!tokens.length) return;
