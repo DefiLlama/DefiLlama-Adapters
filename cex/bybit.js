@@ -426,6 +426,8 @@ module.exports = {
       "UQDxXSIWbDH_Wa6BrV_lnoWB0xLxiLtTHGgl3pBPBssarV-i",
       "EQDpe7_gPnmOcdho13D9TzSVoqQYFsOlD9VvxwZjuinYM6VU",
       "EQAKN_kisBAua9xsLDmcD9rXqHXvRSaFvhTBsp2dU6Prp06k",
+      "EQDxXSIWbDH_Wa6BrV_lnoWB0xLxiLtTHGgl3pBPBssarQJn",
+      "EQB2YdWfvWulj7Q6PNGPNwe4JBUptDPeur15ojVR9cjBJQPO",
     ],
   },
   dydx: { owners: ["dydx10sdnqxvrwe3mhducn6plyewul84edgd47rfnfe"] },
