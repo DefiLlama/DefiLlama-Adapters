@@ -1136,6 +1136,19 @@ const configs = {
       },
     },
   },
+  "valos": {
+    config: {
+      methodology: 'Counts the AUSD managed by the Valos institutional private credit vault using convertToAssets(totalSupply()).',
+      start: '2026-02-13',
+      blockchains: {
+        monad: {
+          accountableVaults: [
+            '0x8d3F9f9Eb2f5E8B48EFBB4074440D1E2A34Bc365',
+          ],
+        },
+      },
+    },
+  },
   "varlamore-capital": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Varlamore Capital.',
