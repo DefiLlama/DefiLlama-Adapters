@@ -1388,6 +1388,11 @@ const configs = {
       staking: [["0x0f4e761F2DcFD509eccd18004b89e329D25903B7"], "0x11157da1fc6dcfd58b50ed79082183b2c6176245"]
     }
   },
+  "blazephoenix": {
+    "base": {
+      staking: [["0x3f60C7aa0c36a78D200405feBE143d2Cf3fA0c77"], "0x23113e72165a034265Ab8Bf2277CCB7a85Cb7483"]
+    }
+  },
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)
