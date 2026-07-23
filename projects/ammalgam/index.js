@@ -1,10 +1,6 @@
 const FACTORY = '0x1a411b0fd1f368d2f413a8cbb6aad425c923015b'
-const VAULTS = [
-  '0x8417430a31851ae0a36a854394227c5d86be8fc9', // USDC
-  '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH
-]
 
-async function tvl(api) {
+async function getPairData(api) {
   const pairs = await api.fetchList({
     target: FACTORY,
     lengthAbi: 'uint256:allPairsLength',
@@ -14,18 +10,32 @@ async function tvl(api) {
     abi: 'function underlyingTokens() view returns (address, address)',
     calls: pairs,
   })
+  return { pairs, underlyingTokens }
+}
+
+async function tvl(api) {
+  const { pairs, underlyingTokens } = await getPairData(api)
   const tokensAndOwners = pairs.flatMap((pair, i) =>
     underlyingTokens[i].map(token => [token, pair]))
+  return api.sumTokens({ tokensAndOwners })
+}
 
-  await api.sumTokens({ tokensAndOwners })
-  return api.erc4626Sum({
-    calls: VAULTS,
-    tokenAbi: 'address:asset',
-    balanceAbi: 'uint256:totalAssets',
+async function borrowed(api) {
+  const { pairs, underlyingTokens } = await getPairData(api)
+  // totalAssetsAndShares returns 6 token types: [depositL, depositX, depositY, borrowL, borrowX, borrowY]
+  // borrowX/borrowY (indices 4/5) are the borrowed amounts of the two underlying tokens.
+  const allAssets = await api.multiCall({
+    abi: 'function totalAssetsAndShares(bool withInterest) view returns (uint112[6] allAssets, uint112[6] allShares)',
+    calls: pairs.map(pair => ({ target: pair, params: [true] })),
+  })
+  pairs.forEach((_, i) => {
+    const [tokenX, tokenY] = underlyingTokens[i]
+    api.add(tokenX, allAssets[i].allAssets[4])
+    api.add(tokenY, allAssets[i].allAssets[5])
   })
 }
 
 module.exports = {
-  methodology: 'Counts the underlying token balances held by every pair created by the Ammalgam factory and the reported total assets of the Ammalgam USDC and WETH vaults. Assets borrowed out of the pairs are excluded from TVL.',
-  ethereum: { tvl },
+  methodology: 'TVL counts the underlying token balances held by every pair created by the Ammalgam factory. Borrowed counts the assets borrowed out of the pairs.',
+  ethereum: { tvl, borrowed },
 }

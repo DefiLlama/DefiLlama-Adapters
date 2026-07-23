@@ -387,7 +387,14 @@ const configs = {
     base: ['0xeA8FB89F44A1fa47E52354D44E7e6D4682C8529a','0x87922c630A980e431fb045A178e53F58d3f07F85'],
     arbitrum: ['0x94f89d1E2825d40627CD2aE24Eba8590F675049C'],
     bsc: ['0x27DB5a2B203D6bd3C9490E8EA4488B968675f5Bf'],
-  }
+  },
+  'ammalgam-vaults': {
+    methodology: 'Counts the reported total assets of the Ammalgam USDC and WETH ERC-4626 vaults.',
+    ethereum: [
+      '0x8417430a31851ae0a36a854394227c5d86be8fc9', // USDC
+      '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
