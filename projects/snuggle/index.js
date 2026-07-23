@@ -186,6 +186,10 @@ async function robinhoodTvl(api) {
   results.forEach((r, i) => {
     if (r.status === 'rejected') console.warn(`[snuggle] vault ${ROBINHOOD_VAULTS[i].vault} failed:`, r.reason?.message ?? r.reason)
   })
+  // If EVERY vault failed, rethrow so DefiLlama keeps the last known-good TVL
+  // instead of publishing an incomplete/zero value. allSettled still isolates a
+  // single vault's failure once there is more than one vault on the chain.
+  if (results.length && results.every(r => r.status === 'rejected')) throw results[0].reason
 }
 
 module.exports = {
