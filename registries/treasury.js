@@ -3009,7 +3009,7 @@ const configs = {
       owners: ['0xeCa31b3cbD0C65CC3Ea2DE2338693B74445B0c2C'],
     },
   },
-   'treasury/k2-lend': {
+  'treasury/k2-lend': {
     stellar: {
       owners: ['CCQ4J5VLQHM2ORP4K7GBVAJJPK5SGG23DH4RD7QEHAZDHTN7JNESNXKZ'],
     },
