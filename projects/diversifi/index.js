@@ -38,19 +38,6 @@ const BASE_MINTS = [
   'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // USDT
 ]
 
-// Perena USD* is a yield-BEARING stablecoin DeFiLlama does not price yet. It is NOT $1 — it
-// appreciates as yield accrues (≈$1.081 today). We convert the held USD* balance into its
-// USDC-equivalent using the pool's live on-chain virtual price, accurate today and self-
-// updating as the rate grows (no hardcoded price).
-//   USD* mint : star9agSpjiFe3M49B3RniVU4CMBBEK3Qnaqn3RGiFM (6 decimals)
-//   USDC mint : EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v (6 decimals)
-//   Pool state: sM6P4mh53CnG4faN4Fo3seY7wMSAiHdy8o6gKjwQF7A (Perena Numéraire seed / USD* mint auth)
-//   Rate field: u64 LE at byte 352 = USDC-per-USD* scaled 1e6 (e.g. 1081226 => 1.081226)
-const USD_STAR = 'solana:star9agSpjiFe3M49B3RniVU4CMBBEK3Qnaqn3RGiFM'
-const USDC_KEY = 'solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-const USD_STAR_POOL = 'sM6P4mh53CnG4faN4Fo3seY7wMSAiHdy8o6gKjwQF7A'
-const USD_STAR_RATE_OFFSET = 352
-const RATE_SCALE = 1000000n
 
 // minimal base58 encoder (avoid adding npm deps — DeFiLlama rejects extra packages)
 const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
@@ -89,43 +76,15 @@ async function getVaultTokenAccounts() {
   return { tokenAccounts: [...tokenAccounts], blacklistedTokens: [...blacklistedTokens] }
 }
 
-// USDC-per-USD* (scaled 1e6) read live from the pool. Fails loudly if the account is missing
-// or the rate is out of a sane band (e.g. a pool layout change) — we must NOT silently
-// substitute 1:1, which would misvalue USD* by its yield premium. Letting tvl() throw makes
-// DeFiLlama retain the last known-good TVL instead of publishing a wrong number.
-async function getUsdStarRate() {
-  const connection = getConnection()
-  const info = await connection.getAccountInfo(new PublicKey(USD_STAR_POOL))
-  if (!info) throw new Error('DiversiFi: USD* pool account not found')
-  const rate6 = info.data.readBigUInt64LE(USD_STAR_RATE_OFFSET)
-  if (rate6 < RATE_SCALE || rate6 >= 2n * RATE_SCALE)
-    throw new Error(`DiversiFi: USD* rate ${rate6} out of expected band`)
-  return rate6
-}
-
 async function tvl(api) {
   const { tokenAccounts, blacklistedTokens } = await getVaultTokenAccounts()
-  const balances = await sumTokens2({ api, tokenAccounts, blacklistedTokens, allowError: true })
-  // Convert held USD* into its USDC-equivalent at the live on-chain rate (both 6 decimals).
-  if (balances[USD_STAR]) {
-    const rate6 = await getUsdStarRate()
-    const usdcRaw = (BigInt(balances[USD_STAR]) * rate6 / RATE_SCALE).toString()
-    sdk.util.sumSingleBalance(balances, USDC_KEY, usdcRaw)
-    delete balances[USD_STAR]
-  }
-  return balances
+  return sumTokens2({ api, tokenAccounts, blacklistedTokens, allowError: true })
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    'TVL is the value of all underlying assets custodied in DiversiFi vault accounts on ' +
-    'Solana. Vaults are discovered on-chain from the DiversiFi program on every run, so ' +
-    'user-created vaults are included automatically. For each vault the constituent and ' +
-    'settlement token accounts (ATAs) are summed. Each vault’s own index-token mint is ' +
-    'blacklisted so vault-of-vault holdings are not double-counted. Perena USD* — a ' +
-    'yield-bearing stablecoin DeFiLlama does not yet price — is converted to its ' +
-    'USDC-equivalent using the pool’s live on-chain virtual price.',
+    'TVL is the value of all underlying assets custodied in DiversiFi vault accounts on Solana',
   // Closed-beta launch (first real TVL). Refine to the exact day if known.
   start: '2025-12-01',
   solana: {
