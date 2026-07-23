@@ -23315,7 +23315,17 @@ const configs = {
         "0x3d63825b0d8669307366e6c8202f656b9e91d368",
         "0xd262a4c7108c8139b2b189758e8d17c3dfc91a38",
         "0x0c03ce270b4826ec62e7dd007f0b716068639f7b",
-        "0x00000e7efa313f4e11bfff432471ed9423ac6b30"
+        "0x00000e7efa313f4e11bfff432471ed9423ac6b30",
+        ADDRESSES.base.cbBTC,
+        ADDRESSES.base.WBTC,
+        "0x78c31580c97101694c70022c83d570150c11e935",
+        "0x31c2c14134e6e3b7ef9478297f199331133fc2d8",
+        "0x5cda0e1ca4ce2af96315f7f8963c85399c172204",
+        "0x823ff7bbde2869aae73a6cd53e7f614442836757",
+        "0xff05e1bd696900dc6a52ca35ca61bb1024eda8e2",
+        "0x57f5fbd3de65dfc0bd3630f732969e5fb97e6d37",
+        "0xa4a2e2ca3fbfe21aed83471d28b6f65a233c6e00",
+        "0x3722264ab15a1dfce5a5af89e6547f7949a8aba3"
       ],
       "permitFailure": true
     },
@@ -23382,6 +23392,17 @@ const configs = {
         ADDRESSES.linea.WETH,
         ADDRESSES.linea.USDT,
         "0x4ea77a86d6e70ffe8bb947fc86d68a7f086f198a"
+      ],
+      "permitFailure": true
+    },
+    "matchain": {
+      "owners": [
+        "0x40312EDAB8fe65091354172ad79e9459f21094e2"
+      ],
+      "tokens": [
+        ADDRESSES.matchain.WBNB,
+        ADDRESSES.matchain.USDT,
+        ADDRESSES.matchain.MAT
       ],
       "permitFailure": true
     },
