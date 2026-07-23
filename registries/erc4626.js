@@ -395,6 +395,9 @@ const configs = {
       '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH
     ],
   },
+  'aihedge': {
+    ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400']
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
