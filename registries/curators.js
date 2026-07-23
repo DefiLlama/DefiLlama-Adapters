@@ -466,14 +466,13 @@ const configs = {
   "gami-labs": {
     config: {
       methodology:
-        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, Gearbox, and Upshift.",
+        "Count all assets deposited in all vaults curated by Gami Labs",
       blockchains: {
         ethereum: {
           erc4626: [
             // Lagoon
             "0xdae854d0896ad2fee335689a3f7b4a95fd1a3e46", // Lagoon - Gami USDC
             "0x33e1339567c183fbadcb43f72d11c47229d468ab", // Lagoon - Gami Stake DAO USDC
-            "0x414070fb9e64fd69160d75da57e75ba11f9f605a", // Lagoon - Gami WBTC
             "0x57e6824a8b15b709cefb4ccef644ba1349057e77", // Lagoon - xBTCY (cbBTC)
             "0x2a676c2744421b4fae65ce86b47adacb620047d4", // Lagoon - Gami hemiBTC
             "0x2031eceec018549a2c729cacd6c0bfc4be2524ed", // Lagoon - Gami ETH (WETH)
@@ -481,6 +480,15 @@ const configs = {
             "0x09252d2c4afca9b1479efdd39faa53de9ff23114", // Lagoon - Coinshift Leveraged USPC
             // Gearbox
             "0x683faf5bafd88d4c383ccaf3d61c26af2e164409", // Gearbox - Gami WBTC
+          ],
+          midas: [
+            // Midas - turtlePST (Turtle Huma PST Vault), co-curated with Turtle
+            { token: "0xc462f87f78abdd27b1e41c9ede862275d2c7f36b", feed: "0xbd5BaeD1424EC9EF76b7924bFB9342078f5817E6" },
+          ],
+        },
+        robinhoodchain: {
+          erc4626: [
+            "0xd5c6c79692715145098a65d1eb1f2a10c524f8e8", // T3tris - Gami WBTC
           ],
         },
         base: {
