@@ -29116,6 +29116,13 @@ const configs = {
       ]
     },
   },
+  "windfall-lotto": {
+    "methodology": "Counts DAI held by the Windfall Lotto smart contract on Polygon, including jackpot funds, rollovers, donations, and unclaimed prizes.",
+    "polygon": {
+      "owner": "0x9650D206c6e0093FBc1D623b2A1e03984D24d3f1",
+      "tokens": [ADDRESSES.polygon.DAI]
+    }
+  },
   "wink": {
     "methodology": "Tokens backing USDW is counted as tvl, and locked wink tokens are counted as staking.",
     "hallmarks": [
