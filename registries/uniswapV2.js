@@ -607,9 +607,8 @@ const uniV2Configs = {
   'duneswap': {
     oasis: '0x9dd422B52618f4eDD13E08c840f2b6835F3C0585',
   },
-  'dynastyswap-xyz': {
-    pulse: '0x7abcEc2e35505aF1720431A6c414067717342B1F',
-  },
+  'dynastyswap-xyz': { pulse: '0x7abcEc2e35505aF1720431A6c414067717342B1F', },
+  'diamond-fi': { bitkub: '0x6E906Dc4749642a456907deCB323A0065dC6F26E', },
   'dystopia': {
     _options: {
       hasStablePools: true,
@@ -2378,19 +2377,23 @@ const uniV2Configs = {
     nova: { factory: '0x9550b0c83AD5a58898cD4267987Af67e7E52bF55', staking: () => ({}) },
     fantom: {
       factory: '0x9550b0c83AD5a58898cD4267987Af67e7E52bF55',
-      staking: { __sumTokens: {
-        owners: ['0xe9749a786c77A89fd45dAd3A6Ad1022eEa897F97', '0x1eEAF2AC0fA5D608CC803014DB9A943a80Eaa8eB', '0xaaBaB0FB0840DFfFc93dbeed364FB46b1ffD92EE', '0x2A3605d98e26Ee6f682084d8E8018f71d867dcB3', '0x1bF49Db5Cb35575483dB2E630510fac8d8F177b9'],
-        tokens: [ADDRESSES.null, '0x69D17C151EF62421ec338a0c92ca1c1202A427EC', ADDRESSES.fantom.nUSD],
-        lps: ['0x00501ed66d67b1127809e54395f064e256b75b23'],
-      } },
+      staking: {
+        __sumTokens: {
+          owners: ['0xe9749a786c77A89fd45dAd3A6Ad1022eEa897F97', '0x1eEAF2AC0fA5D608CC803014DB9A943a80Eaa8eB', '0xaaBaB0FB0840DFfFc93dbeed364FB46b1ffD92EE', '0x2A3605d98e26Ee6f682084d8E8018f71d867dcB3', '0x1bF49Db5Cb35575483dB2E630510fac8d8F177b9'],
+          tokens: [ADDRESSES.null, '0x69D17C151EF62421ec338a0c92ca1c1202A427EC', ADDRESSES.fantom.nUSD],
+          lps: ['0x00501ed66d67b1127809e54395f064e256b75b23'],
+        }
+      },
     },
     ethereumclassic: {
       factory: '0x9fAEd210e14F95a15b89C0D09D1a55519aC2F26d',
-      staking: { __sumTokens: {
-        owners: ['0x3C7360A48Ceb3C985D611aA9D0de6d6d9Df96D09', '0x7d9c6eC5Cd1fC08b3a9B168dE6c988649270e1af', '0x5bD915b4DDfE26D9Ba8Ad795231D7B068ADdc03E', '0xb6B824D46B3Bd0698E5180bDb010a2C2bf012e1d'],
-        tokens: [ADDRESSES.null, '0x5D33f65Cc32CAB4065074E8fb1c08Df727e7F7cB', '0xab1E9D7551c1B161cedf96AeaC66b95bc5cCd7d4'],
-        lps: ['0x9599ceBf169A1F3503996CBf90deA38C515ddd54'],
-      } },
+      staking: {
+        __sumTokens: {
+          owners: ['0x3C7360A48Ceb3C985D611aA9D0de6d6d9Df96D09', '0x7d9c6eC5Cd1fC08b3a9B168dE6c988649270e1af', '0x5bD915b4DDfE26D9Ba8Ad795231D7B068ADdc03E', '0xb6B824D46B3Bd0698E5180bDb010a2C2bf012e1d'],
+          tokens: [ADDRESSES.null, '0x5D33f65Cc32CAB4065074E8fb1c08Df727e7F7cB', '0xab1E9D7551c1B161cedf96AeaC66b95bc5cCd7d4'],
+          lps: ['0x9599ceBf169A1F3503996CBf90deA38C515ddd54'],
+        }
+      },
     },
   },
   'GlyphExchange': {
