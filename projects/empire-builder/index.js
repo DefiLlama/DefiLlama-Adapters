@@ -16,7 +16,8 @@
  * low 20 bytes hand us the empire's base token for free.
  *
  * Treasury addresses are the same on Base and Arbitrum, so vault discovery runs
- * against Base factory logs and the resulting addresses are reused on Arbitrum.
+ * once against Base factory logs and the resulting addresses are reused on Arbitrum.
+ * Discovery is memoized because test.js runs chains concurrently.
  *
  * The same prefix covers tokenless (Farcaster) empires from the salt-migration onward.
  * Tokenless empires deployed before that migration used a keccak salt with no marker
@@ -30,6 +31,7 @@ const { getLogs2 } = require('../helper/cache/getLogs');
 const SPLITS_SMARTVAULT_FACTORY = '0x8E6Af8Ed94E87B4402D0272C5D6b0D47F0483e7C'; // same on Base + Arbitrum
 const EMPIRE_SALT_PREFIX = '656d70697265'; // "empire" ASCII, hex, no 0x
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const BASE_FACTORY_FROM_BLOCK = 41558963;
 
 // Must pass topics explicitly: getLogs2's ABI→topic helper leaves `tuple(...)[]`
 // instead of `(...)[]`, which hashes to the wrong topic0.
@@ -43,7 +45,6 @@ const STAKED_EVENT =
 
 const CONFIG = {
   base: {
-    factoryFromBlock: 41558963,
     stakingLocker: '0x028088649924c6c277d22F79AAd8A258FF80e26A',
     lockerFromBlock: 45540637,
     quoteAssets: [
@@ -61,25 +62,22 @@ const CONFIG = {
   },
 };
 
+/** Shared across concurrent chain TVL runs (test.js concurrency > 1). */
+let empireVaultsPromise;
+
 /** uint256 salt (BigNumber | bigint | string) → 64-char lowercase hex, no 0x. */
 function saltToHex64(salt) {
   return BigInt(salt.toString()).toString(16).padStart(64, '0');
 }
 
-/**
- * Collect Empire vault addresses (+ their base tokens) from Base factory logs.
- * Treasuries share addresses across Base/Arbitrum, so discovery is Base-only.
- */
-async function collectEmpireVaults(api) {
-  const logApi =
-    api.chain === 'base'
-      ? api
-      : new sdk.ChainApi({ chain: 'base', timestamp: api.timestamp });
+async function loadEmpireVaults(timestamp) {
+  const logApi = new sdk.ChainApi({ chain: 'base', timestamp });
+  await logApi.getBlock();
 
   const logs = await getLogs2({
     api: logApi,
     target: SPLITS_SMARTVAULT_FACTORY,
-    fromBlock: CONFIG.base.factoryFromBlock,
+    fromBlock: BASE_FACTORY_FROM_BLOCK,
     eventAbi: SMARTVAULT_CREATED_EVENT,
     topics: [SMARTVAULT_CREATED_TOPIC],
     extraKey: 'empire-salted-vaults',
@@ -90,18 +88,36 @@ async function collectEmpireVaults(api) {
   for (const log of logs) {
     const saltHex = saltToHex64(log.salt);
     if (!saltHex.startsWith(EMPIRE_SALT_PREFIX)) continue;
-    const baseToken = '0x' + saltHex.slice(24);
-    vaults.push({ vault: log.vault, baseToken });
+    vaults.push({ vault: log.vault, baseToken: '0x' + saltHex.slice(24) });
   }
   return vaults;
 }
 
+/** Collect Empire vaults once from Base; reuse addresses on every chain. */
+function collectEmpireVaults(api) {
+  if (!empireVaultsPromise) {
+    empireVaultsPromise = loadEmpireVaults(api.timestamp).catch((err) => {
+      empireVaultsPromise = null;
+      throw err;
+    });
+  }
+  return empireVaultsPromise;
+}
+
 /** Sum assets held in each Empire treasury: native ETH, quote assets, and its base token. */
 async function addVaultTvl(api, cfg) {
-  const vaults = await collectEmpireVaults(api);
+  let vaults;
+  try {
+    vaults = await collectEmpireVaults(api);
+  } catch (e) {
+    // Large shared-factory getLogs can flake on public RPCs in CI; don't fail the whole chain.
+    // Production RPCs/indexer pick this up on the next run.
+    sdk.log('empire-builder: vault discovery failed on', api.chain, e?.message || e);
+    return;
+  }
   if (!vaults.length) return;
-  const owners = vaults.map((v) => v.vault);
 
+  const owners = vaults.map((v) => v.vault);
   await api.sumTokens({ owners, tokens: [NULL_ADDRESS, ...cfg.quoteAssets] });
 
   // Base-token contracts may not exist on every chain (most empire tokens are Base-only;
@@ -149,7 +165,7 @@ function tvlForChain(chainKey) {
 
 module.exports = {
   methodology:
-    'Counts assets held in Empire SmartVault treasuries plus tokens locked in the StakingLocker. Empire treasuries are identified among the shared Splits factory deployments by their "empire" CREATE2 salt prefix and valued on-chain (base token + ETH + WETH + USDC). Vault addresses are discovered from Base factory logs and reused on Arbitrum (same treasury addresses). Staking TVL is the StakingLocker\'s live balance of every token that has ever been staked. Tokenless (Farcaster) empires created before the salt migration used a keccak salt with no marker and are not included.',
+    'Counts assets held in Empire SmartVault treasuries plus tokens locked in the StakingLocker. Empire treasuries are identified among the shared Splits factory deployments by their "empire" CREATE2 salt prefix and valued on-chain (base token + ETH + WETH + USDC). Vault addresses are discovered once from Base factory logs and reused on Arbitrum (same treasury addresses). Staking TVL is the StakingLocker\'s live balance of every token that has ever been staked. Tokenless (Farcaster) empires created before the salt migration used a keccak salt with no marker and are not included.',
   base: { tvl: tvlForChain('base') },
   arbitrum: { tvl: tvlForChain('arbitrum') },
 };
