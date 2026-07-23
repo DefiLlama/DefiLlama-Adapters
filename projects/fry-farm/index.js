@@ -1,4 +1,4 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const { sumTokens, getApplicationAddress, getAppGlobalState } = require('../helper/chain/algorand')
 
 // Fry Networks own/reward tokens — counted as staking, not TVL
@@ -15,8 +15,8 @@ async function getPools() {
 
   async function _getPools() {
     const [farming, staking] = await Promise.all([
-      get('https://fry.farm/api/farming/all'),
-      get('https://fry.farm/api/staking/all'),
+      getConfig('fry-farm/farming', 'https://fry.farm/api/farming/all'),
+      getConfig('fry-farm/staking', 'https://fry.farm/api/staking/all'),
     ])
     const pairMap = {}
     const ids = new Set()
@@ -28,12 +28,13 @@ async function getPools() {
     for (const p of staking.data ?? [])
       if (p.stakingContractId && p.chainId === 'algorand-mainnet') ids.add(+p.stakingContractId)
 
+    const states = await Promise.all([...ids].map(id => getAppGlobalState(id)))
     const pools = []
-    for (const id of ids) {
-      const state = await getAppGlobalState(id)
-      if (!state.stake_token) continue
+    ;[...ids].forEach((id, i) => {
+      const state = states[i]
+      if (!state.stake_token) return
       pools.push({ id, address: getApplicationAddress(id), stakeToken: String(state.stake_token), pair: pairMap[id] })
-    }
+    })
     return pools
   }
 }
