@@ -10,7 +10,6 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 // per-token TaxProcessor / Dividend clones, and optional market vaults receive
 // the native market bucket — all enumerated from factory events and counted.
 const FACTORY = '0x32a00Df7C511A882f3A7a18bcD69367880239726' // FACTORY_PROXY
-const WETH = '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73'
 const FROM_BLOCK = 12923899 // block of the first NewRHTokenCurveParams event
 
 const CURVE_EVENT = 'event NewRHTokenCurveParams(address indexed addr, address indexed bondingCurve, uint256 initialTokenSupply, uint256 virtualCollateralReservesInitial, uint256 virtualTokenReservesInitial, uint256 feeBPS, uint256 mcLowerLimit, uint256 mcUpperLimit, uint256 tokensMigrationThreshold, uint256 fixedMigrationFee, uint256 firstBuyFee, uint256 targetCollectionAmount, address collateralToken)'
@@ -29,7 +28,7 @@ async function tvl(api) {
   curveLogs.forEach((log) => tokensAndOwners.push([log.collateralToken, log.bondingCurve]))
   // Tax markets accrue tax in the quote token (WETH for native markets) on TaxProcessor/Dividend clones.
   taxLogs.forEach((log) => {
-    const quote = log.collateralToken === ADDRESSES.null ? WETH : log.collateralToken
+    const quote = log.collateralToken === ADDRESSES.null ? ADDRESSES.robinhood.WETH : log.collateralToken
     tokensAndOwners.push([quote, log.taxProcessor])
     if (log.dividendContract !== ADDRESSES.null) tokensAndOwners.push([quote, log.dividendContract])
   })
