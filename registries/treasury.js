@@ -1701,6 +1701,16 @@ const configs = {
       tokens: [nullAddress],
     },
   },
+  'treasury/empire-builder': {
+    base: {
+      owners: ['0xa22434c246217E2a1ea0Eab8e5a510eE3caF8b66'],
+      tokens: [nullAddress, ADDRESSES.base.WETH],
+    },
+    arbitrum: {
+      owners: ['0xa22434c246217E2a1ea0Eab8e5a510eE3caF8b66'],
+      tokens: [nullAddress, ADDRESSES.arbitrum.WETH],
+    },
+  },
   'treasury/empyreal': {
     arbitrum: {
       tokens: [
