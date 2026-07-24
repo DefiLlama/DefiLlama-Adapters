@@ -519,6 +519,22 @@ async function getNested4626Vaults(api, vaults) {
   }
 }
 
+async function getCuratorTvlMidas(api, entries) {
+  // Midas mTokens (e.g. turtlePST) are plain ERC20 shares, not ERC-4626. Each has a
+  // separate data feed exposing getDataInBase18() = USD price per share scaled to 1e18.
+  // USD value = totalSupply * pricePerShare.
+  const tokens = entries.map(e => e.token)
+  const feeds = entries.map(e => e.feed)
+  const supplies = await api.multiCall({ abi: ABI.totalSupply, calls: tokens })
+  const decimals = await api.multiCall({ abi: ABI.decimals, calls: tokens })
+  const prices = await api.multiCall({ abi: 'uint256:getDataInBase18', calls: feeds })
+  for (let i = 0; i < tokens.length; i++) {
+    const supply = Number(supplies[i]) / 10 ** Number(decimals[i])
+    const priceUsd = Number(prices[i]) / 1e18
+    api.addUSDValue(supply * priceUsd)
+  }
+}
+
 async function getCuratorTvl(api, vaults) {
 
   if (api.chain === 'solana') {
@@ -630,6 +646,11 @@ async function getCuratorTvl(api, vaults) {
   // market price (e.g. EtherFi's "Liquid Euro" weEUR)
   if (vaults.midasTokens) {
     await getCuratorTvlMidasToken(api, vaults.midasTokens)
+  }
+
+  // midas.app mTokens (priced via a getDataInBase18() data feed)
+  if (vaults.midas) {
+    await getCuratorTvlMidas(api, vaults.midas)
   }
 
   return api.getBalances()
