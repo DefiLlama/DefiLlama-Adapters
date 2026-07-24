@@ -1099,4 +1099,57 @@ module.exports = {
       "staking": { "__staking": ["0x13A145D215182924c89F2aBc7D358DCc72F8F788", "0x2645d5f59D952ef2317C8e0AaA5A61c392cCd44d"] }
     }
   },
+  "pwn": {
+    "misrepresentedTokens": true,
+    "methodology": "Sums up all the tokens deposited in the PWN Protocol. NFTs are resolved to their floor price using Chainlink price feeds. Note that NFTs are resolved only on Ethereum.",
+    "ethereum": {
+      "owners": ["0x45DB28b2d4878Ad124c037d4558AcF5Db3bBa6A5", "0xb98eFE56deCCeb1BeC9fAEeAF62500deb0953474", "0x19e3293196aee99BB3080f28B9D3b4ea7F232b8d", "0x50160ff9c19fbE2B5643449e1A321cAc15af2b2C", "0x57c88D78f6D08b5c88b4A3b7BbB0C1AA34c3280A", "0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797"],
+      "resolveNFTs": true,
+      "resolveArtBlocks": true
+    },
+    "polygon": {
+      "owners": ["0xaF0d978275a2e7e3109F8C6307Ffd281774C623E", "0xe52405604bF644349f57b36Ca6E85cf095faB8dA", "0x50160ff9c19fbE2B5643449e1A321cAc15af2b2C", "0x57c88D78f6D08b5c88b4A3b7BbB0C1AA34c3280A", "0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797"],
+      "fetchCoValentTokens": true
+    },
+    "cronos": {
+      "owners": ["0x973E09e96E64E4bf17e383a8A497Fb566284c707", "0x4188C513fd94B0458715287570c832d9560bc08a", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797"],
+      "fetchCoValentTokens": true,
+      "tokenConfig": { "ignoreMissingChain": true }
+    },
+    "base": {
+      "owners": ["0x6fD3f5439aB1C103599385929d5f4c19acdBd264", "0x4188C513fd94B0458715287570c832d9560bc08a", "0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797"],
+      "fetchCoValentTokens": true
+    },
+    "arbitrum": {
+      "owners": ["0x448E3D0a4BAa00FE511a03E7B27177AeDE6d9636", "0x57c88D78f6D08b5c88b4A3b7BbB0C1AA34c3280A", "0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797"],
+      "fetchCoValentTokens": true
+    },
+    "optimism": {
+      "owners": ["0x43Ffd9dF079451Fe7D16Ac2c51E13DF2a173B71E", "0x4188C513fd94B0458715287570c832d9560bc08a", "0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797"],
+      "fetchCoValentTokens": true
+    },
+    "bsc": {
+      "owners": ["0x4A75a527E97d853109aA6998a2B9E45a87A31e9f", "0x57c88D78f6D08b5c88b4A3b7BbB0C1AA34c3280A", "0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797"],
+      "fetchCoValentTokens": true
+    },
+    "linea": {
+      "owners": ["0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797", "0xbe13866797bbdE2646FFBb58F102FcA91EFC88F1"],
+      "fetchCoValentTokens": true
+    },
+    "xdai": {
+      "owners": ["0x9A93AE395F09C6F350E3306aec592763c517072e", "0x0773d5F2f7b3264a9Eb285F085aCCcC53d5aAa4F", "0x719A69d0dc67bd3Aa7648D4694081B3c87952797", "0x431131622e088Fb0F9828Ca05b62210fc9eDcC04"],
+      "fetchCoValentTokens": true
+    },
+    "unichain": {
+      "owners": ["0x322e86E6c813d77a904C5B4aa808a13E0AD4412f", "0x354869495Fd916ADAFc0626C3d60115240dc06f1"],
+      "fetchCoValentTokens": true,
+      "tokenConfig": { "ignoreMissingChain": true }
+    },
+    "wc": {
+      "owners": ["0x719A69d0dc67bd3Aa7648D4694081B3c87952797", "0xc0aCA216Aa936511b24Ff238F610B02bE54e10AD"],
+      "fetchCoValentTokens": true,
+      "tokenConfig": { "ignoreMissingChain": true }
+    },
+    "mantle": { "tvl": { "__empty": true } }
+  },
 }

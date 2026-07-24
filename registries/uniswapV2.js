@@ -127,6 +127,18 @@ const uniV2Configs = {
   },
   'artexswap_xyz': { artela: '0xa65f38efbE4b0b602C9FEBE887448263547aaeeD', },
   'sheriff-v2': { robinhood: '0x10F7D1eF77f58181484936170430DF13539C5162', },
+  'up-v2': {
+    start: '2026-07-10',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      fetchBalances: true,
+      hasStablePools: true,
+    },
+    robinhood: '0xFA5429AEBa338BEa2BFcc1b9a889862Ee395bc28',
+  },
   'astarexchange': {
     astar: '0x95f506E72777efCB3C54878bB4160b00Cd11cd84',
   },
@@ -429,6 +441,14 @@ const uniV2Configs = {
   'coreswap': {
     core: '0x97814a1F542aFe7fd02de53926621b0D40e8Ad6C',
   },
+  'corgiswap': {
+    misrepresentedTokens: true,
+    methodology: 'TVL accounts for the liquidity on all AMM pools',
+    bsc: {
+      factory: '0x632F04bd6c9516246c2df373032ABb14159537cd',
+      staking: async () => ({}), // CORIS returning an incorrect staking value locked
+    },
+  },
   'crodex': {
     cronos: '0xe9c29cB475C0ADe80bE0319B74AD112F1e80058F',
   },
@@ -467,6 +487,23 @@ const uniV2Configs = {
   'cypher-v2': {
     start: '2025-11-22',
     ethereum: '0xCc8e4C2998395E56D06D985ba791138Edf48a8d4',
+  },
+  'dackieswap-v2': {
+    misrepresentedTokens: true,
+    xlayer: '0x757cd583004400ee67e5cc3c7a60c6a62e3f6d30',
+    optimism: '0xaedc38bd52b0380b2af4980948925734fd54fbf4',
+    arbitrum: '0x507940c2469e6e3b33032f1d4ff8d123bdde2f5c',
+    blast: '0xf5190e64db4cbf7ee5e72b55cc5b2297e20264c2',
+    inevm: '0x507940c2469e6e3b33032f1d4ff8d123bdde2f5c',
+    mode: '0x757cd583004400ee67e5cc3c7a60c6a62e3f6d30',
+    base: {
+      factory: '0x591f122D1df761E616c13d265006fcbf4c6d6551',
+      staking: [['0xF6C5b5Df9Bcee40cd474CCd6373f99b56dBCF5E5'], '0x73326b4d0225c429bed050c11C4422d91470AaF4'],
+    },
+    linea: '0x9790713770039CeFcf4FAaf076E2846c9B7a4630',
+    wc: '0x757cD583004400ee67e5cC3c7A60C6a62E3F6d30',
+    ethereum: '0x3D237AC6D2f425D2E890Cc99198818cc1FA48870',
+    unichain: '0x507940c2469e6E3B33032F1d4FF8d123BDDe2f5C',
   },
   'daiko-dex': {
     deadFrom: '2024-06-07',
@@ -570,9 +607,8 @@ const uniV2Configs = {
   'duneswap': {
     oasis: '0x9dd422B52618f4eDD13E08c840f2b6835F3C0585',
   },
-  'dynastyswap-xyz': {
-    pulse: '0x7abcEc2e35505aF1720431A6c414067717342B1F',
-  },
+  'dynastyswap-xyz': { pulse: '0x7abcEc2e35505aF1720431A6c414067717342B1F', },
+  'diamond-fi': { bitkub: '0x6E906Dc4749642a456907deCB323A0065dC6F26E', },
   'dystopia': {
     _options: {
       hasStablePools: true,
@@ -1468,6 +1504,9 @@ const uniV2Configs = {
     },
     monad: '0x6DBb0b5B201d02aD74B137617658543ecf800170',
   },
+  'parityswap-v2': {
+    robinhood: '0xaA5f8c18EF9be81ffED30c223F9CD0D012a2AdB9',
+  },
   'PattieSwap': {
     bsc: '0x71f6a913b317d2BF0Bf51Fd48d90e4cC6e62C4Dd',
   },
@@ -1577,12 +1616,6 @@ const uniV2Configs = {
   },
   'pulsex': {
     pulse: '0x1715a3E4A142d8b698131108995174F37aEBA10D',
-  },
-  'pumex': {
-    _options: {
-      hasStablePools: true,
-    },
-    injective: '0x105A0A9c1D9e29e0D68B746538895c94468108d2',
   },
   'punkswap': {
     op_bnb: '0x5640113EA7F369E6DAFbe54cBb1406E5BF153E90',
@@ -2199,6 +2232,9 @@ const uniV2Configs = {
   'wakafinance': {
     fantom: '0xb2435253c71fca27be41206eb2793e44e1df6b6d',
   },
+  'wanswap': {
+    wan: '0x1125C5F53C72eFd175753d427aA116B972Aa5537',
+  },
   'weero-v2': {
     _options: {
       fromBlock: 184616686,
@@ -2330,6 +2366,36 @@ const uniV2Configs = {
   },
 
   // --- Migrated simple getUniTVL adapters ---
+  'mdex': {
+    misrepresentedTokens: true,
+    heco: '0xb0b670fc1F7724119963018DB0BfA86aDb22d941',
+    bsc: '0x3CD1C46068dAEa5Ebb0d3f55F6915B10648062B8',
+    bittorrent: '0x36117cc868139FA3AeD4067142C5EF3C121c6a72',
+  },
+  'fusion': {
+    methodology: `Fusion calculates all LPs across the different compatible chains to determine the TVL, and uses CoinGecko to determine the USD denomination. Staking is calculated separately using all staking contracts across the different networks, and CoinGecko to determine the USD denomination of the TVL. Visit https://fusion.novanetwork.io/ for more information or https://info.fusion.novanetwork.io/ for in-depth analytics (available exclusively on Nova Network).`,
+    nova: { factory: '0x9550b0c83AD5a58898cD4267987Af67e7E52bF55', staking: () => ({}) },
+    fantom: {
+      factory: '0x9550b0c83AD5a58898cD4267987Af67e7E52bF55',
+      staking: {
+        __sumTokens: {
+          owners: ['0xe9749a786c77A89fd45dAd3A6Ad1022eEa897F97', '0x1eEAF2AC0fA5D608CC803014DB9A943a80Eaa8eB', '0xaaBaB0FB0840DFfFc93dbeed364FB46b1ffD92EE', '0x2A3605d98e26Ee6f682084d8E8018f71d867dcB3', '0x1bF49Db5Cb35575483dB2E630510fac8d8F177b9'],
+          tokens: [ADDRESSES.null, '0x69D17C151EF62421ec338a0c92ca1c1202A427EC', ADDRESSES.fantom.nUSD],
+          lps: ['0x00501ed66d67b1127809e54395f064e256b75b23'],
+        }
+      },
+    },
+    ethereumclassic: {
+      factory: '0x9fAEd210e14F95a15b89C0D09D1a55519aC2F26d',
+      staking: {
+        __sumTokens: {
+          owners: ['0x3C7360A48Ceb3C985D611aA9D0de6d6d9Df96D09', '0x7d9c6eC5Cd1fC08b3a9B168dE6c988649270e1af', '0x5bD915b4DDfE26D9Ba8Ad795231D7B068ADdc03E', '0xb6B824D46B3Bd0698E5180bDb010a2C2bf012e1d'],
+          tokens: [ADDRESSES.null, '0x5D33f65Cc32CAB4065074E8fb1c08Df727e7F7cB', '0xab1E9D7551c1B161cedf96AeaC66b95bc5cCd7d4'],
+          lps: ['0x9599ceBf169A1F3503996CBf90deA38C515ddd54'],
+        }
+      },
+    },
+  },
   'GlyphExchange': {
     core: { factory: '0x3e723c7b6188e8ef638db9685af45c7cb66f77b9', staking: ["0x6bf16B2645b13db386ecE6038e1dEF76d95696fc", "0xb3A8F0f0da9ffC65318aA39E55079796093029AD"] },
   },
@@ -2895,6 +2961,136 @@ const uniV2Configs = {
       staking: ['0x5d00D31C9A464d51679A88d0F073401aA6Fc5d6B', '0xb06f3BE6d2b2D04e6e9276d99b3F134F5429934b'],
     }
   },
+  'alligator-exchange': {
+    avax: { factory: '0xD9362AA8E0405C93299C573036E7FB4ec3bE1240', staking: ['0x32A948F018870548bEd7e888Cd97a257b700D4c6', '0x43C812Ba28cb061b1Be7514145A15C9E18a27342'] },
+  },
+  'auraswap': {
+    polygon: { factory: '0x015DE3ec460869eb5ceAe4224Dc7112ac0a39303', staking: ['0x44Bb1a3E56Cb12b7B1a8E925f09A170e3646346d', '0x1b7805e2829fd7D194DCc3078a4199b13c77E467'] },
+  },
+  'auroraswap': {
+    aurora: { factory: '0xC5E1DaeC2ad401eBEBdd3E32516d90Ab251A3aA3', staking: ['0x35CC71888DBb9FfB777337324a4A60fdBAA19DDE', '0x12c87331f086c3C926248f964f8702C0842Fd77F'] },
+  },
+  'autoshark': {
+    bsc: { factory: '0xe759Dd4B9f99392Be64f1050a6A8018f73B53a13', staking: ['0x5D2112Ba0969EC66012380C1fb88F2A3D182Eb90', '0xdd97ab35e3c0820215bc85a395e13671d84ccba2'] },
+  },
+  'bakeryswap': {
+    bsc: { factory: '0x01bF7C66c6BD861915CdaaE475042d3c4BaE16A7', staking: ['0x6a8dbbfbb5a57d07d14e63e757fb80b4a7494f81', '0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5'] },
+  },
+  'butterswap': {
+    heco: { factory: '0x874D01CA682C9c26BA7E6D9f6F801d1a1fb49201', staking: ['0x89a3BfA840CF4C9022789CC60500Ec03df8C2935', '0xbf84214ea409A369774321727595F218889eD943'] },
+    bsc: { factory: '0x1Ba94C0851D96b2c0a01382Bf895B5b25361CcB2', staking: ['0xa49f4CF57eaFE0098D398DF3eD3A7dF10EAaBfAB', '0x5eF7814f4cB17b38408F1F641e4b5b61c5D023a8'] },
+  },
+  'degenhaus': {
+    fantom: { factory: '0xA01C3d760738c79e10334408aE59684Aa36B1131', staking: ['0x72A7A3770B4BC999026F3663F1534581E0c59f2a', '0xd948efcc99be419ca9bdace89b2bec31edf13adb'] },
+  },
+  'dinoexchange': {
+    bsc: { factory: '0x35E9455c410EacD6B4Dc1D0ca3144031f6251Dc2', staking: ['0x26CB55795Cff07Df3a1Fa9Ad0f51d6866a80943b', '0xf317932ee2c30fa5d0e14416775977801734812d'] },
+  },
+  'Equalizer': {
+    _options: {
+      hasStablePools: true,
+      stablePoolSymbol: 's-',
+    },
+    fantom: { factory: '0xc6366EFD0AF1d09171fe0EBF32c7943BB310832a', staking: ['0x8313f3551C4D3984FfbaDFb42f780D0c8763Ce94', '0x3Fd3A0c85B70754eFc07aC9Ac0cbBDCe664865A6'] },
+    sonic: '0xDDD9845Ba0D8f38d3045f804f67A1a8B9A528FcC',
+  },
+  'fuzzfinance': {
+    harmony: { factory: '0x5245d2136dc79Df222f00695C0c29d0c4d0E98A6', staking: ['0x847b46ed6c3df75e34a0496ef148b89bf5eb41b1', '0x984b969a8e82f5ce1121ceb03f96ff5bb3f71fee'] },
+  },
+  'hakuswap': {
+    avax: { factory: '0x2Db46fEB38C57a6621BCa4d97820e1fc1de40f41', staking: ['0xa95C238B5a72f481f6Abd50f951F01891130b441', '0x695Fa794d59106cEbd40ab5f5cA19F458c723829'] },
+  },
+  'hermes-protocol': {
+    _options: {
+      hasStablePools: true,
+    },
+    hallmarks: [
+      ['2022-10-19', 'Metis Grant'],
+      ['2024-08-14', 'V1 set to withdraw-only'],
+      ['2024-08-20', 'V2 Launch'],
+    ],
+    metis: '0x633a093C9e94f64500FC8fCBB48e90dd52F6668F',
+  },
+  'ionex-v1': {
+    _options: {
+      hasStablePools: true,
+    },
+    plasma: '0xbf05db69176E47Bf89A6b19F7492d50751D20452',
+  },
+  'jetswap': {
+    bsc: { factory: '0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5', staking: ['0x63d6EC1cDef04464287e2af710FFef9780B6f9F5', '0x0487b824c8261462f88940f97053e65bdb498446'] },
+    polygon: { factory: '0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7', staking: ['0x4e22399070aD5aD7f7BEb7d3A7b543e8EcBf1d85', '0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25'] },
+    fantom: { factory: '0xf6488205957f0b4497053d6422F49e27944eE3Dd', staking: ['0x9180583C1ab03587b545629dd60D2be0bf1DF4f2', '0x3D8f1ACCEe8e263F837138829B6C4517473d0688'] },
+  },
+  'kaco': {
+    bsc: { factory: '0xa5e48a6E56e164907263e901B98D9b11CCB46C47', staking: ['0x81b71D0bC2De38e37978E6701C342d0b7AA67D59', '0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB'] },
+    shiden: { factory: '0xcd8620889c1dA22ED228e6C00182177f9dAd16b7', staking: ['0x293A7824582C56B0842535f94F6E3841888168C8', '0xb12c13e66ade1f72f71834f2fc5082db8c091358'] },
+  },
+  'knightswap': {
+    bsc: { factory: '0xf0bc2E21a76513aa7CC2730C7A1D6deE0790751f', staking: ['0xE50cb76A71b0c52Ab091860cD61b9BA2FA407414', '0xd23811058eb6e7967d9a00dc3886e75610c4abba'] },
+    fantom: { factory: '0x7d82F56ea0820A9d42b01C3C28F1997721732218', staking: ['0xb02e3A4B5ebC315137753e24b6Eb6aEF7D602E40', '0x6cc0e0aedbbd3c35283e38668d959f6eb3034856'] },
+  },
+  'kronosdao': {
+    bsc: { factory: '0xcc045ebC2664Daf316aa0652E72237609EA6CB4f', staking: ['0x30e9f20414515116598D073F3EBA116c68A6f4aC', '0xbeC68a941feCC79E57762e258fd1490F29235D75'] },
+  },
+  'latte': {
+    bsc: { factory: '0x4DcE5Bdb81B8D5EdB66cA1b8b2616A8E0Dd5f807', staking: ['0xbCeE0d15a4402C9Cc894D52cc5E9982F60C463d6', ['0x8D78C2ff1fB4FBA08c7691Dfeac7bB425a91c81A', '0xa269A9942086f5F87930499dC8317ccC9dF2b6CB']] },
+  },
+  'levinswap': {
+    xdai: { factory: '0x965769C9CeA8A7667246058504dcdcDb1E2975A5', staking: ['0xafa57Fb9d8D63Ff8124E17c1495C73bc3a7678D0', '0x1698cD22278ef6E7c0DF45a8dEA72EDbeA9E42aa'] },
+  },
+  'neopin': {
+    klaytn: '0x1a1F14ec33BF8c2e66731f46D0A706e8025b43e9',
+    polygon: '0x1289ae78422b94414c1F827C534a1fE8E31E71Aa',
+    ethereum: '0x2D723f60ad8da76286B2aC120498A5EA6bAbC792',
+  },
+  'reddex': {
+    ethereum: '0xBC7D212939FBe696e514226F3FAfA3697B96Bf59',
+    bsc: '0x6D642253B6fD96d9D155279b57B8039675E49D8e',
+    rbn: { factory: '0x262E06314Af8f4EEd70dbd8C7EFe2a5De686C142', staking: [['0x634579156A20C50d0c3525233b1C39AAF500F867', '0x43A1dc107BBb06dF266278056055AE7Fc5bd2817', '0x5E8040e85D0E6363D798a43BEa939C026449946d'], ['0x0233971bd2de29e81029336c46997055df3b5282', '0x0000000000000000000000000000000000000000']] },
+  },
+  'Scale': {
+    _options: {
+      hasStablePools: true,
+    },
+    base: { factory: '0xEd8db60aCc29e14bC867a497D94ca6e3CeB5eC04', staking: ['0x28c9c71c776a1203000b56c0cca48bef1cd51c53', '0x54016a4848a38f257b6e96331f7404073fd9c32c'] },
+  },
+  'smxswap': {
+    cronos: '0x1Ed37E4323E429C3fBc28461c14A181CD20FC4E8',
+    bsc: '0x2C3408a4827DF0419DA2f53eAe92f338B4d314ec',
+    polygon: '0xDD4047F11c80f7831922904Ddb61E370E83D5fbb',
+  },
+  'solidly-v2': {
+    hallmarks: [
+      ['2023-03-10', 'USDC depeg (90% TVL in USDC-USDT)'],
+      ['2023-03-15', 'Solidly V2 sunset'],
+    ],
+    ethereum: { factory: '0x777de5Fe8117cAAA7B44f396E93a401Cf5c9D4d6', staking: ['0x77730ed992D286c53F3A0838232c3957dAeaaF73', '0x777172D858dC1599914a1C4c6c9fC48c99a60990'] },
+  },
+  'twindex': {
+    bsc: { factory: '0x4E66Fda7820c53C1a2F601F84918C375205Eac3E', staking: ['0x22A5C7376C76D2D7ddC88D314912217B20d6eEc0', '0x41171d5770c4c68686d1af042ada88a45b02f82b'] },
+  },
+  'vampireswap': {
+    fantom: { factory: '0xdf0a0a62995ae821d7a5cf88c4112c395fc41358', staking: ['0xa9d452E3CEA2b06d7DBE812A6C3ec81cf52334dD', '0x97058c0B5ff0E0E350e241EBc63b55906a9EADbc'] },
+  },
+  'viperswap': {
+    hallmarks: [
+      ['2022-06-23', 'Horizon bridge Hack $100m'],
+    ],
+    harmony: { factory: '0x7d02c116b98d0965ba7b642ace0183ad8b8d2196', staking: ['0xe064a68994e9380250cfee3e8c0e2ac5c0924548', '0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79'] },
+  },
+  'wagmidao': {
+    harmony: { factory: '0xfe33b03a49a1fcd095a8434dd625c2d2735e84b8', staking: [['0xaa2c3396cc6b3dc7b857e6bf1c30eb9717066366', '0xf046e84439813bb0a26fb26944001c7bb4490771'], '0x8750f5651af49950b5419928fecefca7c82141e3'] },
+  },
+  'wigoswap': {
+    fantom: { factory: '0xC831A5cBfb4aC2Da5ed5B194385DFD9bF5bFcBa7', staking: ['0xA1a938855735C0651A6CfE2E93a32A28A236d0E9', '0xE992bEAb6659BFF447893641A378FbbF031C5bD6'] },
+  },
+  'wraithswap': {
+    fantom: { factory: '0xCC738D2fDE18fe66773b84c8E6C869aB233766D1', staking: ['0x37b106f101a63D9d06e53140E52Eb6F8A3aC5bBc', '0x4cf098d3775bd78a4508a13e126798da5911b6cd'] },
+  },
+  'giga-dex': {
+    robinhood: '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916'
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

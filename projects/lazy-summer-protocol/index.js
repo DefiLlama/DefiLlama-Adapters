@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
@@ -42,7 +43,7 @@ const BLACKLISTED_TOKENS = {
   ],
 };
 
-const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
+const NULL_ADDRESS = ADDRESSES.null;
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = {

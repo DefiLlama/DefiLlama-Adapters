@@ -11,12 +11,6 @@ module.exports = {
     "timetravel": false,
     "solana": { "tokenAccounts": ["FhTJEGXVwj4M6NQ1tPu9jgDZUXWQ9w2hP89ebZHwrJPS"] }
   },
-  "bgsol": {
-    "timetravel": false,
-    "doublecounted": true,
-    "methodology": "Bitget Staked SOL (BGSOL) is a tokenized representation on your staked sSOL",
-    "solana": { "tokenAccounts": ["Ejg5vqsthntG8wJDijzgEWvdvhoAh8pzu4Q4r4MqsdkR"] }
-  },
   "asol": {
     "timetravel": false,
     "methodology": "aSOL TVL is computed by looking at the token balances of the accounts holding the stake pool tokens backing the aSOL Crate. The token accounts come from https://asol.so/#/admin.",
@@ -69,6 +63,19 @@ module.exports = {
         "2Y3TLkdGoJwbdizxqrZmQwNLYJyGKTgzC4tbetbkvQ43", // jitoSOL
         "7VNBQCDKt4cxLWW51suV8a6VAYC4R66CfyySiYJek7Rj" // hyloSOL
       ]
+    }
+  },
+  "arrowpad-fun": {
+    // ArrowPad.fun launchpad on Robinhood Chain: every launch seeds the full
+    // token supply as single-sided Uniswap V3 liquidity and the LP NFT is locked
+    // forever in the ArrowPadLocker (no withdrawal function).
+    "doublecounted": true,
+    "methodology": 'TVL is the WETH side of the permanently locked Uniswap V3 LP positions held by the ArrowPadLocker.',
+    "robinhood": {
+      owners: ['0xBa9C247041a7715591c7B48f20dFBa520a7d68E9'], // ArrowPadLocker
+      resolveUniV3: true,
+      uniV3WhitelistedTokens: [ADDRESSES.robinhood.WETH],
+      uniV3ExtraConfig: { nftAddress: '0x73991a25c818bf1f1128deaab1492d45638de0d3' },
     }
   },
   "katana": {
@@ -660,6 +667,19 @@ module.exports = {
         "3GzZn1Qyzc6xzCgDn83teJysBW2bMCsK6DcRNhksMNo4"
       ]
     }
+  },
+  "wrappedBNB": {
+    // deadFrom: "2024-12-12",  // migrated to bsc and alexar acting as the bridge now
+    "timetravel": false,
+    "methodology": "Counts the BNB held by the Kava BEP3 \"bnb\" deputy on BNB Beacon Chain, which backs the wrapped BNB minted on Kava.",
+    "bsc": { "owners": ["bnb1jh7uv2rm6339yue8k4mj9406k3509kr4wt5nxn"] }
+  },
+  "wrappedfi": {
+    "timetravel": false,
+    "methodology": "The TVL consists of the underlying capital held in custody.",
+    "ripple": { "owners": ["r4Pr9aBnqN84hbkmJo4HwUtLj63E5vGFyE"] },
+    "celo": { "tokensAndOwners": [[ADDRESSES.null, "0x84d9dcAc2f00F2Cd903E340b5241EB6e5c198572"]] },
+    "ethereum": { "tokensAndOwners": [[ADDRESSES.null, "0xD6873b9592AB601E6cE6a6A781799d54961942F3"]] }
   },
   "templar": {
     "bsc": {

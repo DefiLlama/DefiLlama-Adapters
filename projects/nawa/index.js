@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { queryContract } = require('../helper/chain/cosmos');
 const { transformBalances } = require('../helper/portedTokens');
@@ -121,7 +122,7 @@ async function zigchainTvl(api) {
 // deployed off-chain into a curated credit strategy; the on-chain contract
 // tracks the assets backing shares in `latestAum` (oracle-reported, USDT).
 const NAWA_USDT_VAULT = '0x6FE78B942C566fE2b8D0881cf3577C1B1511F204'
-const USDT = '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+const USDT = ADDRESSES.ethereum.USDT
 
 // TVL = assets backing live shares (latestAum) + assets committed to
 // burned-but-unfunded redemptions (pendingRedemptionAum) + funded payouts

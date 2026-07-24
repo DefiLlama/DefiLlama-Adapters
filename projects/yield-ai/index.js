@@ -35,14 +35,14 @@ const YIELD_AI_HYPERION_POOLS = [
     tokenA:
       "0x68844a0d7f2587e726ad0579f3d640865bb4162c08a4589eeda3f9689ec52a3d",
     tokenB:
-      "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b",
+      ADDRESSES.aptos.USDC_3,
     feeTier: 1,
   },
 ];
 
 const APT = ADDRESSES.aptos.APT;
 const COIN_BALANCE_FN = "0x1::coin::balance";
-const APT_TYPE_ARG = "0x1::aptos_coin::AptosCoin";
+const APT_TYPE_ARG = ADDRESSES.aptos.APT;
 
 const FA_BALANCES_QUERY = gql`
   query YieldAiFaBalances($addresses: [String!]!) {

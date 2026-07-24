@@ -12,7 +12,8 @@ const config = {
       "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
       ADDRESSES.base.USDC,
       ADDRESSES.optimism.WSTETH,
-      '0x84b78bc998e4b1a63f2cf9ebfe76c55fc96a5a9b'
+      '0x84b78bc998e4b1a63f2cf9ebfe76c55fc96a5a9b',
+      '0x52c66b5e7f8fde20843de900c5c8b4b0f23708a0' // AZND token used to artificially inflate Morpho total deposit metric
     ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
@@ -31,6 +32,7 @@ const config = {
       "0x4b86442549b52826e0fc11770ec5154450cb3c5c14dc751a761d81dcfbe7a7b2", // RLP market
       "0xbd1ad3b968f5f0552dbd8cf1989a62881407c5cccf9e49fb3657c8731caf0c1f", // deUSD market
       "0xfd0d72a4f0469598b566b1bc5fe64835f828f90b1fb7d746148c086164cd4cc2", // AZND/USDC market, 0 liquidity and 1 borrower
+      "0x23a7d0ff682b323363fb8ba58327ed87001f6306e09b7fd7413bbe4698e749c8", // msY/USDC market
     ],
   },
   base: {
@@ -174,6 +176,7 @@ const config = {
   },
   monad: {
     morphoBlue: "0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee",
+    blackList: ['0x4917a5ec9fcb5e10f47cbb197abe6ab63be81fe8'], // AZND token used to artificially inflate Morpho total deposit metric
     fromBlock: 31907457,
   },
   stable: {
@@ -219,12 +222,16 @@ const config = {
   },
   megaeth: {
     morphoBlue: '0x18120312A7cf44DcfEc6dCe5632a431579ED9100',
-    fromBlock: 	18930057,
+    fromBlock: 18930057,
   },
   xdc: {
     morphoBlue: "0xEa49B0fE898aF913A3826F9f462eE2cDcb854fD9",
     fromBlock: 101757515,
   },
+  pharos: {
+    morphoBlue: "0x18573fA18fd17dDfD790B4a5B5b2977aad3b4Efb",
+    fromBlock: 4202147,
+  }
 }
 
 const eventAbis = {

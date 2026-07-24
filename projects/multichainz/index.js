@@ -71,8 +71,6 @@ const borrowed = async (api) =>  {
 
 module.exports.methodology = "Counts the tokens locked in the multichainz pool contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. The TVL calculation includes all tokens held by the pool contract, and DefiLlama automatically subtracts borrowed amounts to show available liquidity."
 Object.entries(config).forEach(([chain, { deprecated, isStakingPool }]) => {
-  module.exports[chain] = deprecated
-    ? { tvl: () => ({}), borrowed: () => ({}) }
-    : isStakingPool ? {tvl} :  { tvl, borrowed }
+  module.exports[chain] = isStakingPool ? {tvl} :  { tvl, borrowed }
 })
 

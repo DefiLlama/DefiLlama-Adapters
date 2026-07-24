@@ -12,6 +12,7 @@ async function tvl() {
 }
 
 module.exports = {
+    deadFrom: '2025-09-19',
     avax:{
         tvl,
         staking
