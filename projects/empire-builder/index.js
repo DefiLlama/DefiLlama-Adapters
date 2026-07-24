@@ -17,9 +17,9 @@ const CONFIG = {
   },
   arbitrum: {
     stakingLocker: '0x2107412baA05470F159c025F688E97CBeADD34c0',
-    factoryFromBlock: 487300089,
+    factoryFromBlock: 430114944,
     lockerFromBlock: 459254798,
-    quoteAssets: [ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC],
+    quoteAssets: [ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC_CIRCLE],
   },
 };
 
@@ -62,7 +62,7 @@ async function staking(api) {
 
   const vaults = await getEmpireVaults(api);
   const ownerTokens = vaults.filter((v) => !quote.has(v.baseToken.toLowerCase())).map((v) => [[v.baseToken], v.vault]);
-  if (ownerTokens.length) await api.sumTokens({ ownerTokens, permitFailure: true });
+  if (ownerTokens.length) await api.sumTokens({ ownerTokens });
 
   const logs = await getLogs2({
     api,
@@ -72,7 +72,7 @@ async function staking(api) {
     extraKey: 'empire-staked-tokens',
   });
   const stakedTokens = [...new Set(logs.map((l) => l.token.toLowerCase()))].filter((t) => !quote.has(t));
-  if (stakedTokens.length) await api.sumTokens({ owner: cfg.stakingLocker, tokens: stakedTokens, permitFailure: true });
+  if (stakedTokens.length) await api.sumTokens({ owner: cfg.stakingLocker, tokens: stakedTokens });
 }
 
 module.exports = {
