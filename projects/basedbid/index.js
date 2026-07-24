@@ -14,6 +14,7 @@ const BASED_BID = {
   bsc:      '0x920b4Ee4970CFE1ef523a0679200f9d9b2F87B2c',
   base:     '0x0F2C33F406D58144Dec03FCdb69571249F0b0286',
   megaeth:  '0x695e175c9704432cdFB98e3C193966F95a5F119D',
+  robinhood: '0x6EC95a3C6C7b8368C9bF37Ff664672E55df3550d',
 }
 
 const USD1_ETH_BSC = ADDRESSES.bsc.USD1
@@ -44,6 +45,11 @@ const TRACKED_TOKENS = {
     ADDRESSES.megaeth.ETH,
     ADDRESSES.megaeth.USDT,
   ],
+  robinhood: [
+    ADDRESSES.null,
+    ADDRESSES.robinhood.WETH,
+    ADDRESSES.robinhood.USDG,
+  ],
 }
 
 const WRAPPED_NATIVE = {
@@ -51,6 +57,7 @@ const WRAPPED_NATIVE = {
   bsc:      ADDRESSES.bsc.WBNB,
   base:     ADDRESSES.base.WETH,
   megaeth:  ADDRESSES.megaeth.ETH,
+  robinhood: ADDRESSES.robinhood.WETH,
 }
 
 const SOL_PROGRAM_ID = new PublicKey('CuodpYRDz4k87K6ZUFxk7X8JkVv5dNVZAcTQX2TEzTef')
@@ -84,6 +91,10 @@ const UNIV3_LIKE_NFTS = {
   megaeth: [
     '0xcb91c75a6b29700756d4411495be696c4e9a576e',
   ],
+  robinhood: [
+    '0x73991a25c818bf1f1128deaab1492d45638de0d3',
+    PANCAKE_V3_NFT,
+  ],
 }
 
 // Uniswap V4 position managers (NFT = position manager; poolId = tokenId)
@@ -91,6 +102,11 @@ const UNIV4_POSM = {
   ethereum: '0xbD216513d74C8cf14cf4747E6AaA6420FF64ee9e',
   bsc:      '0x7A4a5c919aE2541AeD11041A1AEeE68f1287f95b',
   base:     '0x7C5f5A4bBd8fD63184577525326123B519429bDc',
+  robinhood: '0x58daec3116aae6d93017baaea7749052e8a04fa7',
+}
+
+const UNIV4_STATE_VIEW = {
+  robinhood: '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b',
 }
 
 // PancakeSwap Infinity CL position managers (BSC + Base)
@@ -244,6 +260,7 @@ async function unwrapUniV4Positions(api, uniV4ByNft) {
       uniV4ExtraConfig: {
         nftAddress,
         positionIds,
+        stateViewer: UNIV4_STATE_VIEW[api.chain],
       },
     })
   }
@@ -299,14 +316,7 @@ async function unwrapPancakeInfinityCL(api, positionIds) {
   })
 }
 
-async function tvl(api) {
-  const owner = BASED_BID[api.chain]
-
-  // Native coin + stablecoins held directly by based.bid.
-  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[api.chain] || [] })
-}
-
-async function pool2(api) {
+async function addEvmLpPositions(api) {
   const owner = BASED_BID[api.chain]
 
   // Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager).
@@ -319,6 +329,14 @@ async function pool2(api) {
   const { uniV4ByNft, pcsInfinityIds } = await collectV4PositionsFromContract(api)
   await unwrapUniV4Positions(api, uniV4ByNft)
   await unwrapPancakeInfinityCL(api, pcsInfinityIds)
+}
+
+async function tvl(api) {
+  const owner = BASED_BID[api.chain]
+
+  // Native coin + stablecoins held directly by based.bid.
+  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[api.chain] || [] })
+  await addEvmLpPositions(api)
 }
 
 function deriveMeteoraPositionPda(nftMint) {
@@ -500,13 +518,8 @@ async function solanaTvl(api) {
 
   await addTreasuryLockBalances(api, appStorage.treasury, appStorage.lock)
   addBondingCurveReserves(api, memeTokens)
-}
 
-async function solanaPool2(api) {
-  const provider = getProvider()
-  const program = new Program(idl, SOL_PROGRAM_ID, provider)
   const lockPdas = await program.account.lockPda.all()
-
   await addMeteoraPositions(api, lockPdas)
   await addRaydiumClmmPositions(api, lockPdas)
 }
@@ -514,10 +527,11 @@ async function solanaPool2(api) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: 'TVL: (1) native coin and USDT/USDC/USD1/wrapped-native balances at the based.bid contract (EVM) or treasury/lock accounts (Solana), plus (2) active bonding-curve collateral on Solana. pool2: meme coin/native Uniswap V3, Uniswap V4, PancakeSwap V3, and PancakeSwap Infinity CL positions owned by based.bid (EVM), plus Meteora DAMM v2 and Raydium CLMM positions controlled by based.bid lock PDAs (Solana).',
-  ethereum: { tvl, pool2 },
-  bsc:      { tvl, pool2 },
-  base:     { tvl, pool2 },
-  megaeth:  { tvl, pool2 },
-  solana:   { tvl: solanaTvl, pool2: solanaPool2 },
+  methodology: 'TVL includes (1) native coin and USDT/USDC/USD1/wrapped-native balances at the based.bid contract (EVM) or treasury/lock accounts (Solana), (2) active bonding-curve collateral on Solana, and (3) LP positions: Uniswap V3, Uniswap V4, PancakeSwap V3, and PancakeSwap Infinity CL positions owned by based.bid (EVM), plus Meteora DAMM v2 and Raydium CLMM positions controlled by based.bid lock PDAs (Solana).',
+  ethereum: { tvl },
+  bsc:      { tvl },
+  base:     { tvl },
+  megaeth:  { tvl },
+  robinhood: { tvl },
+  solana:   { tvl: solanaTvl },
 }
