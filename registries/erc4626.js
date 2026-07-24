@@ -398,6 +398,9 @@ const configs = {
   'aihedge': {
     ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400']
   },
+  'secured-finance-vaults': {
+    ethereum: ['0x7a6E3635694952dC00F6bA4d4AD1a7B892028789']
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
