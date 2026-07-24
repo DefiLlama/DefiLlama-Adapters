@@ -486,7 +486,7 @@ const configs = {
             { token: "0xc462f87f78abdd27b1e41c9ede862275d2c7f36b", feed: "0xbd5BaeD1424EC9EF76b7924bFB9342078f5817E6" },
           ],
         },
-        robinhoodchain: {
+        robinhood: {
           erc4626: [
             "0xd5c6c79692715145098a65d1eb1f2a10c524f8e8", // T3tris - Gami WBTC
           ],
