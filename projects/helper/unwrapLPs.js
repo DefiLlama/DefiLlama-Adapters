@@ -326,6 +326,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], api, own
         case 'flare': nftAddress = '0xD9770b1C7A6ccd33C75b5bcB1c0078f46bE46657'; break;
         case 'hyperliquid': nftAddress = '0x6eDA206207c09e5428F281761DdC0D300851fBC8'; break;
         case 'unichain': nftAddress = '0x943e6e07a7E8E791dAFC44083e54041D743C46E9'; break;
+        case 'stable': nftAddress = '0x3BdC3437405f7D801b6036532713fc1F179136a6'; break; // stableswap
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
