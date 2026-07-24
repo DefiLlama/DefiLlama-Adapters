@@ -78,6 +78,22 @@ module.exports = {
       uniV3ExtraConfig: { nftAddress: '0x73991a25c818bf1f1128deaab1492d45638de0d3' },
     }
   },
+  "prisma-pad": {
+    // Prismapad launchpad on Stable (chain id 988).
+    // v1 (bonding curve, legacy):
+    // https://stablescan.xyz/address/0xdcb881fc8b472eb7797687b237e6cb123c425ff7#code
+    // v2 (direct-to-DEX — every token launches straight into an official
+    // StableSwap (Uniswap v3) pool; the LP position is locked in the launchpad):
+    // https://stablescan.xyz/address/0xa96d9eadc4d6eed50fa408a33585c5f1df039db5#code
+    "doublecounted": true,
+    "methodology": 'TVL is the USDT0 side of Prismapad liquidity: the bonding-curve reserves held by the legacy v1 launchpad, plus the USDT0 in the locked v3 NFTs',
+    "stable": {
+      owners: ['0xdcb881fc8b472eb7797687b237e6cb123c425ff7', '0xa96d9eadc4d6eed50fa408a33585c5f1df039db5'],
+      resolveUniV3: true,
+      tokens: [ADDRESSES.stable.USDT0],
+      uniV3WhitelistedTokens: [ADDRESSES.stable.USDT0],
+    }
+  },
   "katana": {
     "timetravel": false,
     "solana": {
