@@ -75,6 +75,9 @@ const configs = {
   'bonk-sol': {
     solana: 'ArAQfbzsdotoKB5jJcZa3ajQrrPcWr2YQoDAEAiFxJAC',
   },
+  'bgsol': {
+    solana: '9qrFrE5qoZ3QfYZrZoeXFNRWfErpjzZKudCAoBTvgKjb',
+  },
   'jpool': {
     methodology: "JSOL total supply as it's equal to the SOL staked",
     solana: 'CtMyWsrUtAwXWiGr9WjHT5fC3p3fgV8cyGpLTo2LJzG1',

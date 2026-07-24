@@ -15,7 +15,7 @@ const owners = [
   "0x2071D1689D85De2b49004D257f99802A25BF4fe7"
 ];
 async function tvl(api) {
-  api.sumTokens({ owners, tokens: [ADDRESSES.avax.USDC] });
+  await api.sumTokens({ owners, tokens: [ADDRESSES.avax.USDC] });
   // get tokens staked in openTrade for each owner across each vault
   const calls = openTradeVaults.flatMap(vault =>
     owners.map(owner => ({ target: vault, params: owner }))

@@ -1,4 +1,8 @@
 const CONFIG = {
+  ethereum: [
+    '0x224e90591A2d63fb66E677D0561Ea4A6Ad1F098D', // yzCash
+    '0xC9854f2AF89d4d26837004d1e154Bd3C3C1009b1', // yzSyrup
+  ],
   plasma: [
     '0x6695c0f8706C5ACe3Bdf8995073179cCA47926dc', // yzUsd
     // '0xC8A8DF9B210243c55D31c73090F06787aD0A1Bf6', // syzUsd
@@ -15,7 +19,7 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  methodology: `Aggregate of idle yzUSD, yzPP and yzPrime`,
+  methodology: `Aggregate of idle yzUSD, yzPP, yzPrime, yzCash and yzSyrup`,
   misrepresentedTokens: true,
 }
 

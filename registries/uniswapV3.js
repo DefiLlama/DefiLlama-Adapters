@@ -1751,6 +1751,21 @@ const uniV3Configs = {
   },
   'swaphood-v3': {
     robinhood: { factory: '0x0Ec554F0BfF0Be6C99d1e95C8015bb0950f6A2C7', fromBlock: 6052562 },
+  },
+  'up-v3': {
+    start: '2026-07-10',
+    robinhood: {
+      factory: '0x1ac9dB4a2608ba45D6127B1737949b51Bb54B7F3',
+      fromBlock: 6184096,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
+  },
+  'parityswap-v3': {
+    robinhood: { factory: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA', fromBlock: 14320075 },
+  },
+  'giga-dex-cl': {
+    robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
   }
 }
 

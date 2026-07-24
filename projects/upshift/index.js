@@ -1,31 +1,3 @@
-const abi = [
-  {
-    "inputs": [],
-    "name": "getTotalAssets",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "asset",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
 const sui = require('../helper/chain/sui');
 const { callSoroban } = require('../helper/chain/stellar');
 const { getConfig } = require('../helper/cache');
@@ -102,8 +74,8 @@ async function getVaultsConfig() {
 
 // Custom function to handle v2 vaults with getTotalAssets
 async function sumV2Vaults(api, vaults) {
-  const assets = await api.multiCall({ abi: abi[1], calls: vaults })
-  const totalAssets = await api.multiCall({ abi: abi[0], calls: vaults })
+  const assets = await api.multiCall({ abi: "address:asset", calls: vaults })
+  const totalAssets = await api.multiCall({ abi: "uint256:getTotalAssets", calls: vaults })
   
   api.addTokens(assets, totalAssets)
 }

@@ -370,6 +370,7 @@ const VAULT_BLACKLIST = {
 const MARKET_BLACKLIST = {
   bsquared: [
     "0x5022B6563f6bc9f0D47F407ba32B64e1f438213a", // uBTC/WBTC
+    "0xe93c6B09E0F0D1D7aDa4d5a5248DDf3B7fCF3994", // uBTC/WBTC, same wash-loop family, was inflating borrowed only since UBTC is removed from tvl
   ],
 };
 

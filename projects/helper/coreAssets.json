@@ -750,6 +750,9 @@
     "USK": "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
     "FUZION": "factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn"
   },
+  "dungeon": {
+    "DGN": "udgn"
+  },
   "injective": {
     "INJ": "inj",
     "USDT": "factory/inj14ejqjyq8um4p3xfqj74yld5waqljf88f9eneuk/inj1q6zlut7gtkzknkk773jecujwsdkgq882akqksk",
@@ -2095,7 +2098,10 @@
     "WETN": "0x138dafbda0ccb3d8e39c19edb0510fc31b7c1c77"
   },
   "bitkub": {
-    "KKUB": "0x67ebd850304c70d983b2d1b93ea79c7cd6c3f6b5"
+    "KKUB": "0x67ebd850304c70d983b2d1b93ea79c7cd6c3f6b5",
+    "KUSDT": "0x7d984c24d2499d840eb3b7016077164e15e5faa6",
+    "USDT": "0x21cdc3706b8c7b1836df0e533dd884069521350b",
+    "USDC_E": "0x31929a0fd776f971c5dd14bf03e1f9ff69d9c91c"
   },
   "shape": {
     "WETH": "0x4200000000000000000000000000000000000006",
@@ -2794,5 +2800,8 @@
   "gensyn": {
     "USDC": "0x5b32c997211621d55a89Cc5abAF1cC21F3A6ddF5",
     "AI": "0x4e742319f6b0fec4afa504fc8ed3ceab0fb751a2"
+  },
+  "eden": {
+    "WTIA": "0x00000000000000000000000000000000Ce1e571A"
   }
 }

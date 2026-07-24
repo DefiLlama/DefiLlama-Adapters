@@ -1,4 +1,5 @@
-const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+const ADDRESSES = require('../helper/coreAssets.json')
+const USDC = ADDRESSES.ethereum.USDC
 const primeUSD = '0x7ea76108975ec0998b9bc2db04b4eca986400dd7'
 const priceOracle = '0x8cda03e2004c35e07963fb792c6b7511dabee369'
 

@@ -55,7 +55,9 @@ function treasuryExports(config) {
     }
 
     if (ownTokens.length > 0) {
-      const { solOwners, ...other } = config[chain];
+      // token auto-discovery must not run here: this bucket is meant to hold ownTokens
+      // only, and anything it finds is already counted in the tvl bucket above
+      const { solOwners, fetchCoValentTokens, tokenConfig, ...other } = config[chain];
       const opts = {
         ...other,
         owners: [...owners, ...ownTokenOwners],

@@ -19,14 +19,6 @@ const ACCOUNTABLE_VAULTS = {
   ],
 };
 
-// Upshift multiAssetVaults whose underlying asset is not yet priced (e.g. trUSD).
-// Count getTotalAssets() as USD value 1:1 until the asset gets a price feed.
-const UPSHIFT_USD_VAULTS = {
-  ethereum: [
-    '0xcd69123b3FBBfC666E1f6a501da27B564C00De54', // Upshift Tori (trUSD)
-  ],
-};
-
 const configs = {
   methodology: 'Count all assets deposited in all vaults curated by RockawayX.',
   blockchains: {
@@ -81,26 +73,6 @@ const configs = {
 }
 
 const adapterExport = getCuratorExport(configs);
-
-async function upshiftUsdTvl(api, vaults) {
-  const assets = await api.multiCall({ abi: 'address:asset', calls: vaults, permitFailure: true });
-  const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: assets, permitFailure: true });
-  const totalAssets = await api.multiCall({ abi: 'uint256:getTotalAssets', calls: vaults, permitFailure: true });
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalAssets[i] === null || totalAssets[i] === undefined) continue;
-    api.addUSDValue(Number(totalAssets[i]) / 10 ** Number(decimals[i] ?? 18));
-  }
-}
-
-for (const [chain, vaults] of Object.entries(UPSHIFT_USD_VAULTS)) {
-  const baseTvl = adapterExport[chain]?.tvl;
-  adapterExport[chain] = {
-    tvl: async (api) => {
-      if (baseTvl) await baseTvl(api);
-      await upshiftUsdTvl(api, vaults);
-    }
-  };
-}
 
 for (const [chain, vaults] of Object.entries(EMBER_VAULTS)) {
   const baseTvl = adapterExport[chain]?.tvl;
