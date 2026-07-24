@@ -1018,6 +1018,13 @@ module.exports = {
     "plume_mainnet": { "tvl": { "owners": ["0x04AE748272c3959A9904aeaD3cc00AAf476aa34D", "0x36Bd86676A05ABAaF30D57F65Ba463669E018F3e"], "tokens": [ADDRESSES.plume_mainnet.WPLUME, ADDRESSES.plume_mainnet.pUSD, ADDRESSES.plume_mainnet.USDC_e, ADDRESSES.plume_mainnet.USDT, "0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9", "0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c"] } },
     "ethereum": { "tvl": { "owners": ["0x0857f8a6e41e1c71f4065daebfe7ddb825cbffde", "0xA394080628F175472Fee9eB316BD104fAB63FE40"], "tokens": [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.LBTC, ADDRESSES.swellchain.stBTC, "0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e", ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.cbETH, ADDRESSES.ethereum.EETH, ADDRESSES.ethereum.RETH, ADDRESSES.bsc.wBETH, "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7", "0xe95a203b1a91a908f9b9ce46459d101078c2c3cb", "0x09db87A538BD693E9d08544577d5cCfAA6373A48"] } }
   },
+  "steel": {
+    "methodology": "tvl = native ETH held by the mine (auto-deploy escrow, pending winnings, motherlode). staking = STEEL locked in the veSTEEL staking contract",
+    "robinhood": {
+      "tvl": { "owner": "0xB089d11432F219495A4278acd6446B7Faefa2bA6", "tokens": [ADDRESSES.null] },
+      "staking": { "owner": "0xD5116ca699eD6CA186BC07f46B3c851D1A483aa2", "tokens": ["0x0AF77e27F535256965944E617a386570f5C0432a"] }
+    }
+  },
   "powerflow-bridge": {
     "methodology": "Counts the tokens locked in the PowerFlow Bridge contracts.",
     "titan": { "tvl": { "__empty": true } },
