@@ -1152,6 +1152,10 @@ const uniV3Configs = {
       factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
       fromBlock: 420275312,
     },
+    robinhood: {
+      factory: '0xE0c4ceb92d08CA985bB70fe0a22fEb121A9854A8',
+      fromBlock: 15761673,
+    },
   },
   'reservoir-tools-v3': {
     abstract: {

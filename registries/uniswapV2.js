@@ -2723,6 +2723,7 @@ const uniV2Configs = {
     hyperliquid: '0xd0a07E160511c40ccD5340e94660E9C9c01b0D27',
     arbitrum: '0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B',
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
+    robinhood: '0x43B2Bf9f33036a02fC7A00935571c2A6b0108e66',
   },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
