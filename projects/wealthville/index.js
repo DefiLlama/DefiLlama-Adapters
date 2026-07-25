@@ -1,5 +1,5 @@
 const { PublicKey } = require("@solana/web3.js");
-const { getConnection, sumTokens2, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } = require("../helper/solana");
+const { getConnection, sumTokens2, runInChunks, decodeAccount, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } = require("../helper/solana");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs");
 const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
@@ -27,34 +27,38 @@ const JUP_PERP_PROGRAM = new PublicKey("PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2q
 
 const POSITION_SEED = Buffer.from("position");
 const JUPITER_OWNER_SEED = Buffer.from("jupiter_owner");
+const BIN_ARRAY_SEED = Buffer.from("bin_array");
+const BINS_PER_ARRAY = 70;
 
 // Anchor discriminators (first 8 bytes of sha256("account:<Name>")).
 const DLMM_POSITION_V2_DISC = bs58.encode(Buffer.from([117, 176, 212, 199, 245, 180, 133, 182]));
-const DLMM_BIN_ARRAY_DISC = bs58.encode(Buffer.from([92, 142, 92, 220, 5, 148, 70, 181]));
 const JUP_POSITION_DISC = bs58.encode(Buffer.from([170, 188, 143, 228, 122, 64, 247, 208]));
 
-const readU128LE = (d, o) => d.readBigUInt64LE(o) + (d.readBigUInt64LE(o + 8) << 64n);
-const readI64LE = (d, o) => { const v = d.readBigUInt64LE(o); return v >= 0x8000000000000000n ? v - 0x10000000000000000n : v; };
-const chunk = (arr, n) => { const out = []; for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n)); return out; };
+// One RPC call at a time with a pause in between. The shared Solana endpoint this repo falls
+// back to throttles per method (getTokenAccountsByOwner and getProgramAccounts in particular),
+// so fanning these out with Promise.all trips its rate limit; account reads still go out
+// batched via getMultipleAccountsInfo below.
+const serially = (items, fn) => runInChunks(items, (c) => Promise.all(c.map(fn)), { chunkSize: 1, sleepTime: 1200 });
+const getMulti = (conn, keys) => runInChunks(keys, (c) => conn.getMultipleAccountsInfo(c), { sleepTime: 200 });
 
-async function getMulti(conn, keys) {
-  const out = [];
-  for (const c of chunk(keys, 100)) out.push(...await conn.getMultipleAccountsInfo(c));
-  return out;
-}
+// A single pass over the owners' SPL accounts yields both things we need from them: the
+// position-NFT receipts (balance exactly 1) that key the CLMM positions, and the funded token
+// accounts carrying idle balances. Scanning once avoids re-reading the same accounts per use.
+async function scanTokenAccounts(conn, owners) {
+  const queries = owners.flatMap((owner, ownerIndex) => [TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID].map((programId) => ({ owner, ownerIndex, programId })));
+  const results = await serially(queries, (q) => conn.getTokenAccountsByOwner(q.owner, { programId: q.programId }));
 
-// NFT position receipts (balance 1) held by `owner` across both token programs.
-async function getOwnerNftMints(conn, owner) {
-  const [t1, t2] = await Promise.all([
-    conn.getTokenAccountsByOwner(owner, { programId: TOKEN_PROGRAM_ID }),
-    conn.getTokenAccountsByOwner(owner, { programId: TOKEN_2022_PROGRAM_ID }),
-  ]);
-  const nfts = [];
-  for (const { account } of [...t1.value, ...t2.value]) {
-    const d = account.data;                 // raw SPL Account: mint[0..32], amount u64 @64
-    if (d.readBigUInt64LE(64) === 1n) nfts.push(new PublicKey(d.slice(0, 32)));
-  }
-  return nfts;
+  const nftMints = owners.map(() => []);
+  const tokenAccounts = [];
+  results.forEach((res, i) => {
+    for (const { pubkey, account } of res.value) {
+      const d = account.data;               // raw SPL Account: mint[0..32], amount u64 @64
+      const amount = d.readBigUInt64LE(64);
+      if (amount === 1n) nftMints[queries[i].ownerIndex].push(new PublicKey(d.slice(0, 32)));
+      else if (amount > 0n) tokenAccounts.push(pubkey.toBase58());
+    }
+  });
+  return { nftMints, tokenAccounts };
 }
 
 // Orca Whirlpool + Raydium CLMM: both key a personal position PDA by ["position", nftMint]
@@ -75,16 +79,17 @@ async function addClmmPositions(api, conn, nftMintsByOwner) {
   const positions = [];
   infos.forEach((info, i) => {
     if (!info) return;
-    const d = info.data;
     if (cands[i].dex === "orca" && info.owner.equals(WHIRLPOOL_PROGRAM)) {
       // Whirlpool Position: whirlpool[8..40], liquidity u128 @72, tickLower i32 @88, tickUpper i32 @92
+      const d = info.data;
       const pool = new PublicKey(d.slice(8, 40)).toBase58();
-      positions.push({ pool, liquidity: Number(readU128LE(d, 72)), tickLower: d.readInt32LE(88), tickUpper: d.readInt32LE(92) });
+      const liquidity = Number(d.readBigUInt64LE(72) + (d.readBigUInt64LE(80) << 64n));
+      positions.push({ pool, liquidity, tickLower: d.readInt32LE(88), tickUpper: d.readInt32LE(92) });
       poolSet.add(pool);
     } else if (cands[i].dex === "raydium" && info.owner.equals(RAYDIUM_CLMM_PROGRAM)) {
-      // Raydium PersonalPosition: poolId[41..73], tickLower i32 @73, tickUpper i32 @77, liquidity u128 @81
-      const pool = new PublicKey(d.slice(41, 73)).toBase58();
-      positions.push({ pool, liquidity: Number(readU128LE(d, 81)), tickLower: d.readInt32LE(73), tickUpper: d.readInt32LE(77) });
+      const p = decodeAccount("raydiumPositionInfo", info);
+      const pool = p.poolId.toBase58();
+      positions.push({ pool, liquidity: Number(p.liquidity.toString()), tickLower: p.tickLower, tickUpper: p.tickUpper });
       poolSet.add(pool);
     }
   });
@@ -96,13 +101,13 @@ async function addClmmPositions(api, conn, nftMintsByOwner) {
   poolKeys.forEach((k, i) => {
     const info = poolInfos[i];
     if (!info) return;
-    const d = info.data;
     if (info.owner.equals(WHIRLPOOL_PROGRAM)) {
       // Whirlpool: tickCurrentIndex i32 @81, tokenMintA[101..133], tokenMintB[181..213]
+      const d = info.data;
       pools[k] = { token0: new PublicKey(d.slice(101, 133)).toBase58(), token1: new PublicKey(d.slice(181, 213)).toBase58(), tick: d.readInt32LE(81) };
     } else {
-      // Raydium CLMM PoolState: mintA[73..105], mintB[105..137], tickCurrent i32 @269
-      pools[k] = { token0: new PublicKey(d.slice(73, 105)).toBase58(), token1: new PublicKey(d.slice(105, 137)).toBase58(), tick: d.readInt32LE(269) };
+      const s = decodeAccount("raydiumCLMM", info);
+      pools[k] = { token0: s.mintA.toBase58(), token1: s.mintB.toBase58(), tick: s.tickCurrent };
     }
   });
 
@@ -115,51 +120,63 @@ async function addClmmPositions(api, conn, nftMintsByOwner) {
 
 // Meteora DLMM: positions are program-owned accounts (owner pubkey at offset 40). A position
 // holds `liquidityShares` per bin over [lowerBinId, upperBinId]; the underlying token amount in
-// each bin is share * binReserve / binLiquiditySupply, read from the pool's on-chain BinArrays.
-async function addDlmmPositions(api, conn, owner) {
-  const posAccs = await conn.getProgramAccounts(DLMM_PROGRAM, {
+// each bin is share * binReserve / binLiquiditySupply, read from the pair's on-chain BinArrays.
+// A BinArray is a PDA of ["bin_array", lbPair, i64 index] covering BINS_PER_ARRAY bins, so the
+// arrays a position spans are derived rather than searched for, and every pair and array the
+// vaults touch is then read in one batched call.
+async function addDlmmPositions(api, conn, owners) {
+  const found = await serially(owners, (owner) => conn.getProgramAccounts(DLMM_PROGRAM, {
     filters: [{ memcmp: { offset: 0, bytes: DLMM_POSITION_V2_DISC } }, { memcmp: { offset: 40, bytes: owner.toBase58() } }],
-  });
-  for (const { account } of posAccs) {
-    const d = account.data;
-    // PositionV2: lbPair[8..40], liquidityShares u128[70] @72, lowerBinId i32 @7912, upperBinId i32 @7916
-    const lbPair = new PublicKey(d.slice(8, 40));
-    const lowerBinId = d.readInt32LE(7912);
-    const upperBinId = d.readInt32LE(7916);
+  }));
 
-    const [pairInfo, binAccs] = await Promise.all([
-      conn.getAccountInfo(lbPair),
-      conn.getProgramAccounts(DLMM_PROGRAM, {
-        filters: [{ memcmp: { offset: 0, bytes: DLMM_BIN_ARRAY_DISC } }, { memcmp: { offset: 24, bytes: lbPair.toBase58() } }],
-      }),
-    ]);
-    if (!pairInfo) continue;
-    // LbPair: tokenXMint[88..120], tokenYMint[120..152]
-    const tokenX = new PublicKey(pairInfo.data.slice(88, 120)).toBase58();
-    const tokenY = new PublicKey(pairInfo.data.slice(120, 152)).toBase58();
+  const positions = [];
+  const pairKeys = new Set(), binArrayKeys = new Set();
+  for (const { account } of found) {
+    const p = decodeAccount("meteoraPosition", account);
+    const lbPair = p.lbPair.toBase58();
+    const arrays = [];
+    for (let i = Math.floor(p.lowerBinId / BINS_PER_ARRAY); i <= Math.floor(p.upperBinId / BINS_PER_ARRAY); i++) {
+      const seed = Buffer.alloc(8);
+      seed.writeBigInt64LE(BigInt(i));
+      const key = PublicKey.findProgramAddressSync([BIN_ARRAY_SEED, p.lbPair.toBuffer(), seed], DLMM_PROGRAM)[0].toBase58();
+      arrays.push(key);
+      binArrayKeys.add(key);
+    }
+    pairKeys.add(lbPair);
+    positions.push({ position: p, lbPair, arrays });
+  }
+  if (!positions.length) return;
 
-    // BinArray: indexRaw i64 @8, bins[70] @56; each bin is 144 bytes: amountX u64 @0, amountY u64 @8, liquiditySupply u128 @32
+  const keys = [...pairKeys, ...binArrayKeys];
+  const infos = await getMulti(conn, keys.map((k) => new PublicKey(k)));
+  const accounts = {};
+  keys.forEach((k, i) => { if (infos[i]) accounts[k] = infos[i]; });
+
+  for (const { position, lbPair, arrays } of positions) {
+    if (!accounts[lbPair]) continue;
+    const pair = decodeAccount("meteoraLbPair", accounts[lbPair]);
+
     const bins = new Map();
-    for (const { account: ba } of binAccs) {
-      const bd = ba.data;
-      const base = Number(readI64LE(bd, 8)) * 70;
-      for (let i = 0; i < 70; i++) {
-        const off = 56 + i * 144;
-        bins.set(base + i, { amountX: bd.readBigUInt64LE(off), amountY: bd.readBigUInt64LE(off + 8), supply: readU128LE(bd, off + 32) });
-      }
+    for (const key of arrays) {
+      if (!accounts[key]) continue;
+      const binArray = decodeAccount("meteoraBinArray", accounts[key]);
+      const base = Number(binArray.index) * BINS_PER_ARRAY;
+      binArray.bins.forEach((bin, i) => bins.set(base + i, bin));
     }
 
     let amountX = 0n, amountY = 0n;
-    for (let binId = lowerBinId; binId <= upperBinId; binId++) {
-      const share = readU128LE(d, 72 + (binId - lowerBinId) * 16);
+    for (let binId = position.lowerBinId; binId <= position.upperBinId; binId++) {
+      const share = BigInt(position.liquidityShares[binId - position.lowerBinId].toString());
       if (share === 0n) continue;
       const bin = bins.get(binId);
-      if (!bin || bin.supply === 0n) continue;
-      amountX += (share * bin.amountX) / bin.supply;
-      amountY += (share * bin.amountY) / bin.supply;
+      if (!bin) continue;
+      const supply = BigInt(bin.liquiditySupply.toString());
+      if (supply === 0n) continue;
+      amountX += (share * BigInt(bin.amountX.toString())) / supply;
+      amountY += (share * BigInt(bin.amountY.toString())) / supply;
     }
-    if (amountX > 0n) api.add(tokenX, amountX.toString());
-    if (amountY > 0n) api.add(tokenY, amountY.toString());
+    if (amountX > 0n) api.add(pair.tokenXMint.toBase58(), amountX.toString());
+    if (amountY > 0n) api.add(pair.tokenYMint.toBase58(), amountY.toString());
   }
 }
 
@@ -167,11 +184,11 @@ async function addDlmmPositions(api, conn, owner) {
 // deployed collateral lives inside Jupiter's custody, recorded on the Position account as
 // `collateralUsd` (u64, 1e6 scale). Idle SOL/tokens in the jupiter_owner PDA are picked up by
 // sumTokens2 (its PDA is in the owners list); here we add the in-position collateral.
-async function addJupiterCollateral(api, conn, jupiterOwner) {
-  const posAccs = await conn.getProgramAccounts(JUP_PERP_PROGRAM, {
-    filters: [{ memcmp: { offset: 0, bytes: JUP_POSITION_DISC } }, { memcmp: { offset: 8, bytes: jupiterOwner.toBase58() } }],
-  });
-  for (const { account } of posAccs) {
+async function addJupiterCollateral(api, conn, jupiterOwners) {
+  const found = await serially(jupiterOwners, (owner) => conn.getProgramAccounts(JUP_PERP_PROGRAM, {
+    filters: [{ memcmp: { offset: 0, bytes: JUP_POSITION_DISC } }, { memcmp: { offset: 8, bytes: owner.toBase58() } }],
+  }));
+  for (const { account } of found) {
     const collateralUsd = Number(account.data.readBigUInt64LE(169)) / 1e6; // Position.collateralUsd
     if (collateralUsd > 0) api.addUSDValue(collateralUsd);
   }
@@ -185,22 +202,28 @@ async function tvl(api) {
     dataSlice: { offset: 0, length: 0 },
   });
   const vaults = vaultAccs.map((a) => a.pubkey);
-  const jupiterOwners = vaults.map((v) => PublicKey.findProgramAddressSync([JUPITER_OWNER_SEED, v.toBuffer()], SMART_VAULT_PROGRAM)[0]);
+
+  // The jupiter_owner PDA is created and funded the first time a vault opens a perp position,
+  // so the ones that were never initialised hold nothing and have no position to read.
+  const jupiterOwnerPdas = vaults.map((v) => PublicKey.findProgramAddressSync([JUPITER_OWNER_SEED, v.toBuffer()], SMART_VAULT_PROGRAM)[0]);
+  const jupiterOwnerInfos = await getMulti(conn, jupiterOwnerPdas);
+  const jupiterOwners = jupiterOwnerPdas.filter((_, i) => jupiterOwnerInfos[i]);
+
+  const owners = [...vaults, ...jupiterOwners];
+  const { nftMints, tokenAccounts } = await scanTokenAccounts(conn, owners);
 
   // (1) idle SPL + native SOL for every vault PDA and every jupiter_owner PDA (WSOL/USDC
   //     collateral sitting in the perp owner's ATAs, plus its native SOL, are counted here).
-  const owners = [...vaults, ...jupiterOwners].map((k) => k.toBase58());
-  await sumTokens2({ api, owners, solOwners: owners });
+  await sumTokens2({ api, tokenAccounts, solOwners: owners.map((k) => k.toBase58()) });
 
   // (2)+(3) Orca Whirlpool & Raydium CLMM positions, keyed off NFTs held by each vault PDA.
-  const nftMintsByOwner = await Promise.all(vaults.map((v) => getOwnerNftMints(conn, v)));
-  await addClmmPositions(api, conn, nftMintsByOwner);
+  await addClmmPositions(api, conn, nftMints.slice(0, vaults.length));
 
   // (4) Meteora DLMM positions owned by each vault PDA.
-  for (const v of vaults) await addDlmmPositions(api, conn, v);
+  await addDlmmPositions(api, conn, vaults);
 
   // (5) Jupiter Perpetuals in-position collateral for each jupiter_owner PDA.
-  for (const jo of jupiterOwners) await addJupiterCollateral(api, conn, jo);
+  await addJupiterCollateral(api, conn, jupiterOwners);
 }
 
 module.exports = {
