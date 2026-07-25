@@ -80,6 +80,9 @@ const configs = {
   'metropolis-exchange-dlmm': {
     sonic: '0x39D966c1BaFe7D3F1F53dA4845805E15f7D6EE43',
   },
+  'ramses-dlmm': {
+    robinhood: '0xdcD5F77697914E27f56FD263EF82923C8524AbAc',
+  },
   'hoodit': {
     robinhood: '0x22602d966DeFd638ee94E97A92e2Eb0934c3fE1B',
   },
