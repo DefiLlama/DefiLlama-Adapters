@@ -103,7 +103,7 @@ async function tvl() {
   // invented fresh. Pricing this raw balance still needs an answer from
   // DefiLlama on how to handle a native asset with no CoinGecko listing -
   // see NOTES.md.
-  balances['pecu:native'] = totalPecu;
+  balances['pecu'] = totalPecu;
 
   return balances;
 }
