@@ -113,7 +113,9 @@ async function getPecuPriceUsd() {
   }
 
   const pecuMarket = markets.find(
-    (m) => m?.marketId === 'pecu-usxm' || m?.base === 'PECU'
+    (m) =>
+      m?.marketId === 'pecu-usxm' ||
+      (m?.base === 'PECU' && m?.quote === 'USXM')
   );
   const price = Number(pecuMarket?.price);
   if (!pecuMarket || !Number.isFinite(price) || price <= 0) {
