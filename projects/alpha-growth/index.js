@@ -11,6 +11,9 @@ const configs = getCuratorExport({
     unichain: {
       eulerVaultOwners: ["0x8d9fF30f8ecBA197fE9492A0fD92310D75d352B9"],
     },
+    monad: {
+      eulerVaultOwners: ["0x36639EA17c35A4639eaE371391497Cb3D02d120a"],
+    }
   },
 });
 

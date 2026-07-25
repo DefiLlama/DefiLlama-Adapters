@@ -1,4 +1,5 @@
 const { request } = require('../helper/utils/graphql')
+const sdk = require('@defillama/sdk')
 
 const CONTANGO_PROXY = "0x6Cae28b3D09D8f8Fc74ccD496AC986FC84C0C24E";
 const CONTANGO_LENS_PROXY = "0xe03835Dfae2644F37049c1feF13E8ceD6b1Bb72a";
@@ -145,10 +146,45 @@ async function queryAssets(graphUrl, block) {
   return assets
 }
 
+function getPriceKey(api, token) {
+  return `${api.chain}:${token.toLowerCase()}`
+}
+
+function hasUsablePrice(priceData) {
+  return !!priceData?.price && priceData.decimals !== undefined && (!('confidence' in priceData) || priceData.confidence >= 0.5)
+}
+
+async function getPriceMap(api, tokens) {
+  const tokenKeys = [...new Set(tokens.map(token => getPriceKey(api, token)))]
+  if (!tokenKeys.length) return {}
+  return sdk.coins.getPrices(tokenKeys, api.timestamp ?? 'now').catch(() => ({}))
+}
+
+async function filterPositionsWithPricedCollateral(api, positions) {
+  const prices = await getPriceMap(api, positions.map(({ instrument: { base } }) => base.id))
+  if (!Object.keys(prices).length) return positions
+
+  const skippedPositions = []
+  const filteredPositions = positions.filter(({ id, instrument: { base } }) => {
+    const priceData = prices[getPriceKey(api, base.id)]
+    const keep = hasUsablePrice(priceData)
+    if (!keep) {
+      skippedPositions.push({id})
+    }
+    return keep
+  })
+
+  if (skippedPositions.length) {
+    console.log(`skipping ${skippedPositions.length} positions with unpriced collateral`)
+  }
+
+  return filteredPositions
+}
+
 const getPositionsTvl = async (api, lens, graphUrl, borrowed, block, excludedIds) => {
-  const positions = await queryPositions(graphUrl, block)
+  let positions = (await queryPositions(graphUrl, block)).filter(({ id }) => !excludedIds.includes(id))
+  positions = await filterPositionsWithPricedCollateral(api, positions)
   const parts = positions
-    .filter(({ id }) => !excludedIds.includes(id))
     .map(({ id, instrument: { base, quote } }) => [id, [base.id, quote.id]]);
 
   const calls = parts.map(([id]) => ({ target: lens, params: [id] }))

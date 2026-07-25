@@ -8,24 +8,26 @@ const abi = {
 }
 
 async function tvl(api) {
-  const { data: { list: products } } = await getConfig('lista/rwa', 'https://api.lista.org/api/rwa/product/list')
+  const { data: { list: allProducts } } = await getConfig('lista/rwa', 'https://api.lista.org/api/rwa/product/list')
 
-  // Separate Centrifuge and Dowsure products
-  const centrifugeProducts = products.filter(p => p.group === 'centrifuge')
-  const dowsureProducts = products.filter(p => p.group === 'dowsure')
+  // Backend returns mixed-chain products in one payload; filter to the chain being indexed.
+  const products = allProducts.filter(p => p.chain === api.chain)
 
-  // Handle Centrifuge products (existing logic)
-  if (centrifugeProducts.length > 0) {
-    const centrifugeContracts = centrifugeProducts.map(p => getAddress(p.contract))
-    const assets = await api.multiCall({ calls: centrifugeContracts, abi: abi.asset })
-    const totalAssets = await api.multiCall({ calls: centrifugeContracts, abi: abi.totalAssets })
+  // Pool-like products share the same accounting shape — Centrifuge's RWAEarnPool
+  // and XAUE's XAUTStaking both expose asset() + totalAssets() in underlying units.
+  const poolProducts = products.filter(p => p.group === 'centrifuge' || p.group === 'xaue')
+  if (poolProducts.length > 0) {
+    const poolContracts = poolProducts.map(p => getAddress(p.contract))
+    const assets = await api.multiCall({ calls: poolContracts, abi: abi.asset })
+    const totalAssets = await api.multiCall({ calls: poolContracts, abi: abi.totalAssets })
 
-    for (let i = 0; i < centrifugeContracts.length; i++) {
+    for (let i = 0; i < poolContracts.length; i++) {
       api.add(assets[i], totalAssets[i])
     }
   }
 
-  // Handle Dowsure products (new logic for getVaultInfo)
+  // Handle Dowsure products (getVaultInfo path)
+  const dowsureProducts = products.filter(p => p.group === 'dowsure')
   if (dowsureProducts.length > 0) {
     const dowsureContracts = dowsureProducts.map(p => getAddress(p.contract))
     const vaultInfos = await api.multiCall({ calls: dowsureContracts, abi: abi.getVaultInfo })
@@ -49,9 +51,11 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing the totalAssets of Centrifuge RWA products and totalDeposited from Dowsure vault products. For Dowsure multi-asset vaults, the entire TVL is attributed to the primary asset (first in metadata) since per-asset breakdown is not available on-chain.",
+  methodology: "TVL is calculated by summing totalAssets of pool-like RWA products (Centrifuge on BSC, slisXAUE/XAUTStaking on Ethereum) and totalDeposited from Dowsure vault products on BSC. For Dowsure multi-asset vaults, the entire TVL is attributed to the primary asset (first in metadata) since per-asset breakdown is not available on-chain.",
   bsc: {
     tvl,
   },
+  ethereum: {
+    tvl,
+  },
 }
-

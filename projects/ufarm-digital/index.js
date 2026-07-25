@@ -26,7 +26,7 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { ufarmCore, valueToken, fromBlock, endpoint } = config[chain]
+  const { endpoint, blacklistedTokens = [] } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const { data } = await getConfig('ufarm-digital/' + api.chain, endpoint)
@@ -40,7 +40,21 @@ Object.keys(config).forEach(chain => {
           .map(a => a.asset)
       ))];
 
-      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, owners, permitFailure: true })
+      const uniV4PositionIds = []
+      const uniV4Blacklist = []
+      data.forEach(({ assetAllocation = [] }) => {
+        assetAllocation.forEach(({ asset, tokenId, extraInfo }) => {
+          if (extraInfo?.project_id !== 'uniswap4' || !tokenId) return
+          uniV4PositionIds.push(tokenId)
+          if (asset) uniV4Blacklist.push(asset)
+        })
+      })
+
+      await sumTokens2({ api, ownerTokens, owners, resolveLP: true, resolveUniV3: true, unwrapAll: true, convexRewardPools, blacklistedTokens: [...blacklistedTokens, ...uniV4Blacklist], permitFailure: true })
+
+      if (uniV4PositionIds.length) {
+        await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4PositionIds }, blacklistedTokens: [...blacklistedTokens, ...uniV4Blacklist], permitFailure: true })
+      }
     }
   }
 })

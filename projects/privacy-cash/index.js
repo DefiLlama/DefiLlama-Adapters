@@ -20,4 +20,13 @@ module.exports = {
       tokens: [ADDRESSES.null, ADDRESSES.base.USDC],
     })
   },
+  ethereum: {
+    tvl: evmSumTokensExport({
+      owners: [
+        '0x77A10AE3E513c2D73D73eb52212c6918C8830dd0',
+        '0xC88F4dF2B6EdDd6B6Bdf95A0177f50C90Fa7527f',
+      ],
+      tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT],
+    })
+  },
 }

@@ -5,5 +5,5 @@ module.exports = {
     tvl: () => 0,
     staking: index.arbitrum.staking,
   },
-  deadFrom: '20213-01-30'
+  deadFrom: '2023-01-30'
 }

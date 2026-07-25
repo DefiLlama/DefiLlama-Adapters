@@ -33,7 +33,7 @@ module.exports = {
     timetravel: false,
     doublecounted: true,
     misrepresentedTokens: true,
-    methodology: 'TVL is calculated based on the total amount of collateral pledged to all lending pools.',
+    methodology: 'TVL represents excess lending supply that is not yet matched with borrowers',
     provenance: {
         tvl: (api) => getBalances(api, false),
         borrowed: (api) => getBalances(api, true),

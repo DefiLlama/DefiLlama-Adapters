@@ -1,38 +1,20 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
-
 /**
- * ARMSys — Automated Risk Management System
- * Uniswap v4 Hook with LVR (Loss-Versus-Rebalancing) protection
+ * ARMSys — Dynamic-Fee Hook for Uniswap v4 on Base
  *
- * Arbitrum: USDC/USDT pool with Aave V3 vault (90% Aave / 10% pool)
- * Base:     ETH/USDC pool
- *
- * TVL = aToken balances on hook (Aave deposits) + direct token balances on hook
- *
- * Note: Pool liquidity managed via PoolManager is tracked through the hook's
- * totalValue() view function. For the adapter we count token balances directly
- * held by the hook contracts, which includes aTokens (1:1 with underlying).
+ *   Base mainnet: ETH/USDC v4 pool, ARMSHookV3 (round-30, 2026-04-27).
+ *                 Regime-aware dynamic fees + retail/MEV segmentation
+ *                 via on-chain BNS-style volatility classifier.
  */
+const { uniV4HookExport } = require('../helper/uniswapV4');
 
-// --- Arbitrum addresses ---
-const ARB_A_USDC = '0x724dc807b04555b71ed48a6896b6F41593b8C637'; // Aave V3 aUSDC
-const ARB_A_USDT = '0x6ab707Aca953eDAeFBc4fD23bA73294241490620'; // Aave V3 aUSDT
+const HOOK = '0x7fB4846d3987476577319f112731BB04f45880C8'; // round-30
 
 module.exports = {
-  doublecounted: true, 
   methodology:
-    'TVL is calculated as the sum of Aave V3 aToken balances (representing deposited stablecoins earning yield) plus any tokens held directly by the hook contracts. The Arbitrum hook routes 90% of deposits to Aave V3 and keeps 10% in the Uniswap v4 pool for swap liquidity.',
-  arbitrum: {
-    tvl: sumTokensExport({
-      owner: '0x71a43681ab1C6572f9223b5a3493714d169FBac4', // ARB_HOOK
-      tokens: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT, ARB_A_USDC, ARB_A_USDT],
-    }),
-  },
+    'TVL is calculated from liquidity in ARMSys pools, which are hooks on Uniswap V4 PoolManager.',
+  doublecounted: true,
+  timetravel: false,
   base: {
-    tvl: sumTokensExport({
-      owner: '0x6Dc1ED78Ba7d10c7809337Eb075bf2eEDAE040C8', // BASE_HOOK
-      tokens: [ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDC],
-    }),
+    tvl: uniV4HookExport({hook: HOOK}),
   },
-}
+};

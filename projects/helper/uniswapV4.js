@@ -1,7 +1,8 @@
 const sdk = require('@defillama/sdk')
 
 const graphIds = {
-  base: 'Gqm2b5J85n1bhCyDMpGbtbVn4935EvvdyHdHrx3dibyj'
+  base: 'Gqm2b5J85n1bhCyDMpGbtbVn4935EvvdyHdHrx3dibyj',
+  ethereum: 'DiYPVdygkfjDWhbxGSqAQxwBKmfKnkWQojqeM2rkLb3G',
 }
 
 function uniV4HookExport({ hook }) {

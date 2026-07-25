@@ -6,16 +6,24 @@ const config = {
       {
         factory: '0xfb2Ab9f52804DB8Ed602B95Adf0996aeC55ad6Df',
         fromBlock: 6610800,
-      },
+      }, 
       {
         factory: '0x8f9949CF3B79bBc35842110892242737Ae11488F',
         fromBlock: 21922459,
+      },
+      {
+        factory: '0x6d420082D455BAb7B71EE3f00502882C27c77eB7',
+        fromBlock: 34814595,
       },
     ],
     vaultConfigs: [
       {
         factory: '0x0A3AA8f23c2125E91292b5F2b1F7b154a3FB1582',
         fromBlock: 7059590,
+      },
+      {
+        factory: '0x60910fc3021bf8B5EFb7dC5EFE0fa73Df907F9c5',
+        fromBlock: 34814649,
       },
     ],
   },

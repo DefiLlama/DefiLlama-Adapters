@@ -58,7 +58,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
   if (chain === 'oasis' && ['LPT', 'GLP'].includes(symbol)) return true
   if (chain === 'iotex' && ['MIMO-LP'].includes(symbol)) return true
-  if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
+  if (chain === 'base' && ['RCKT-V2', 'RUBI-AMM'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
   if (chain === 'fuse' && ['VLP'].includes(symbol)) return true
@@ -92,6 +92,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'shibarium' && ['SSLP', 'ChewyLP'].includes(symbol)) return true
   if (chain === 'omax' && ['OSWAP-V2'].includes(symbol)) return true
   if (chain === 'sonic' && symbol.endsWith(' spLP')) return true
+  if (chain === 'xdc' && ['XSP2'].includes(symbol)) return true // xspswap LP
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')

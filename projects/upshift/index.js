@@ -1,5 +1,5 @@
-const abi = require('./vaultsv2.json')
 const sui = require('../helper/chain/sui');
+const { callSoroban } = require('../helper/chain/stellar');
 const { getConfig } = require('../helper/cache');
 
 const vaultsApiEndpoint = "https://api.augustdigital.io/api/v1/tokenized_vault?status=active&load_subaccounts=false&load_snapshots=false";
@@ -24,6 +24,15 @@ const suiVaultsToInclude = [
   "0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642",
   "0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505",
   "0x30844745c8197fdaf9fe06c4ffeb73fe05c092ce0040674a3758dbfcb032a1f4",
+];
+
+// Stellar (Soroban) vaults — August/Gami tokenized vaults (OZ FungibleVault).
+// total_assets() = idle balance + strategy balances + deployed capital; and
+// query_asset() returns the underlying token's Soroban contract address, which
+// DefiLlama prices directly (the USDC/XLM SACs are already in coreAssets).
+const stellarVaultsToInclude = [
+  "CCL3WITWFFXIHV2I52ECV5DPIEOFSTU3PBPR53ILPLF2IP5KHECXRUTY", // Gami earnUSDC
+  "CC6TRAPQD3NK7THUKWPV5SL2JHKQGNXZVB6S6MVYFSLRWAKEFUWZKZ7J", // Gami earnXLM
 ];
 
 // V1 vault types (ERC4626 compatible)
@@ -65,8 +74,8 @@ async function getVaultsConfig() {
 
 // Custom function to handle v2 vaults with getTotalAssets
 async function sumV2Vaults(api, vaults) {
-  const assets = await api.multiCall({ abi: abi[1], calls: vaults })
-  const totalAssets = await api.multiCall({ abi: abi[0], calls: vaults })
+  const assets = await api.multiCall({ abi: "address:asset", calls: vaults })
+  const totalAssets = await api.multiCall({ abi: "uint256:getTotalAssets", calls: vaults })
   
   api.addTokens(assets, totalAssets)
 }
@@ -78,6 +87,14 @@ const suiVaultsTvl = async (api) => {
     const depositCoinType = vault.type.split('<')[1].split(',')[0].trim();
     const balance = vault.fields?.balance;
     if (balance) api.add(depositCoinType, balance);
+  }
+}
+
+const stellarVaultsTvl = async (api) => {
+  for (const vault of stellarVaultsToInclude) {
+    const asset = await callSoroban(vault, 'query_asset')
+    const totalAssets = await callSoroban(vault, 'total_assets')
+    api.add(asset, totalAssets.toString())
   }
 }
 
@@ -108,6 +125,9 @@ const supportedChains = Object.values(chainIdToName);
 
 module.exports = {
   doublecounted: true,
+  // Stellar/Sui paths read current on-chain state (Soroban simulateTransaction
+  // has no historical mode), so disable time-travel backfill for the adapter.
+  timetravel: false,
   methodology: "TVL is the sum of tokens deposited in erc4626 vaults",
 }
 
@@ -120,4 +140,8 @@ supportedChains.forEach(chain => {
 
 module.exports.sui = {
   tvl: suiVaultsTvl,
+}
+
+module.exports.stellar = {
+  tvl: stellarVaultsTvl,
 }

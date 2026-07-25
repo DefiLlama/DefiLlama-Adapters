@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConnection } = require('../helper/solana');
 const { PublicKey } = require("@solana/web3.js");
 
@@ -14,7 +15,7 @@ async function tvl(api) {
   
   const totalLamports = accounts.reduce((acc, { account }) => acc + account.lamports, 0);
   
-  api.add('So11111111111111111111111111111111111111112', totalLamports);
+  api.add(ADDRESSES.solana.SOL, totalLamports);
 }
 
 module.exports = {

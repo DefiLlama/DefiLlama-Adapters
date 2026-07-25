@@ -1,5 +1,5 @@
 const { getConfig } = require('../helper/cache')
-const { getProvider, sumTokens2 } = require('../helper/solana')
+const { getProvider, sumTokens2, getTokenAccountBalances } = require('../helper/solana')
 const { Program } = require("@coral-xyz/anchor");
 
 const LIQUIDITY_IDL_URL = "https://raw.githubusercontent.com/jup-ag/jupiter-lend/refs/heads/main/target/idl/liquidity.json";
@@ -22,10 +22,25 @@ async function getData() {
 }
 
 const EXCHANGE_PRICE_PRECISION = 1e12
-async function tvl() {
+// aTokens held by ethena's wallet, mapped to the underlying mint — subtracted since
+// these deposits are already counted in ethena's TVL
+const ETHENA_ATOKEN_ACCOUNTS = {
+  '6ZaKSZfYLUvbWqDmHKWWZ7wtUo8aMidvE6k8U2oMXvjf': '2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH', // jUSDG -> USDG
+}
+async function tvl(api) {
   const tokenReserves = await getData();
   const tokenAccounts = tokenReserves.map(i => i.vault.toBase58())
-  return sumTokens2({ tokenAccounts })
+  await sumTokens2({ api, tokenAccounts })
+  const reserveByMint = {}
+  tokenReserves.forEach(r => { reserveByMint[r.mint.toBase58()] = r })
+  const accounts = Object.keys(ETHENA_ATOKEN_ACCOUNTS)
+  const balances = await getTokenAccountBalances(accounts, { individual: true, allowError: true })
+  balances.forEach((b, i) => {
+    const underlyingMint = ETHENA_ATOKEN_ACCOUNTS[accounts[i]]
+    const reserve = reserveByMint[underlyingMint]
+    const underlying = +b.amount * (+reserve.supplyExchangePrice.toString()) / EXCHANGE_PRICE_PRECISION
+    api.add(underlyingMint, -underlying)
+  })
 }
 async function borrowed(api) {
   const tokenReserves = await getData()

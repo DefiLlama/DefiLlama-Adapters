@@ -1,9 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { sumTokens, sumTokens2, } = require("../helper/unwrapLPs")
-const { createIncrementArray } = require("../helper/utils")
-const sdk = require('@defillama/sdk');
+const { sumTokens2, } = require("../helper/unwrapLPs")
 const abi = {
     "stakingToken": "address:stakingToken",
     "operator": "address:operator",
@@ -32,7 +30,6 @@ const TEMPLE_DENDEND2 = '0xb0D978C8Be39C119922B99f483cD8C4092f0EA56';
 const FRAX_3CRV_CVX_POOL = '0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e';
 const FRAX_USDC_CVX_POOL = '0x963f487796d54d2f27ba6f3fbe91154ca103b199';
 const FRAX_USDC_FRAX4CVX_PROXY = '0xb9CcDA67dF9606615F43C1c9AAEbB539A3635e10';
-const chain = 'ethereum'
 
 const tokensAndOwners = [
   [FRAX, TEMPLE_DENDEND1],
@@ -42,45 +39,41 @@ const tokensAndOwners = [
   [CVX_FXS, templeTreasuryContract],
 ]
 
-async function treasuryTvl(ts, block) {
-  const balances = {}
-  await sumTokens(balances, tokensAndOwners, block, chain, undefined);
-  await getCvxPoolValue({ block, balances, pool: FRAX_3CRV_CVX_POOL, owner: templeTreasuryContract });
-  await getCvxProxyVaultValue({block, balances, pool: FRAX_USDC_CVX_POOL, vault: FRAX_USDC_FRAX4CVX_PROXY});
-  
-  const auraLockerDetails = await sdk.api.abi.call({target: auraLocker, params: [temepleGnosisAddress], abi: abi.balances, block, chain});
-  const lockedAuraBalance = auraLockerDetails.output.locked;
-  sdk.util.sumSingleBalance(balances, AURA, lockedAuraBalance);
-  await sumTokens2({ owner: temepleGnosisAddress, balances, block, resolveUniV3: true, })
+async function treasuryTvl(api) {
+  await sumTokens2({ api, tokensAndOwners });
+  await getCvxPoolValue({ api, pool: FRAX_3CRV_CVX_POOL, owner: templeTreasuryContract });
+  await getCvxProxyVaultValue({ api, pool: FRAX_USDC_CVX_POOL, vault: FRAX_USDC_FRAX4CVX_PROXY });
 
-  return sumTokens2({ balances, chain, owner: temepleGnosisAddress, tokens: [
+  const auraLockerDetails = await api.call({ target: auraLocker, params: [temepleGnosisAddress], abi: abi.balances });
+  api.add(AURA, auraLockerDetails.locked);
+  await sumTokens2({ api, owner: temepleGnosisAddress, resolveUniV3: true, })
+
+  return sumTokens2({ api, owner: temepleGnosisAddress, tokens: [
     '0x3835a58ca93cdb5f912519ad366826ac9a752510',
     '0xfb6b1c1a1ea5618b3cfc20f81a11a97e930fa46b',
     '0x173063a30e095313eee39411f07e95a8a806014e',
   ]})
 }
 
-async function getCvxPoolValue({ block, owner, pool, balances, chain }) {
-  const poolBalance = (await sdk.api.erc20.balanceOf({ target: pool, owner, block, chain, })).output
-  const stakingToken = (await sdk.api.abi.call({ target: pool, block, chain, abi: abi.stakingToken })).output
-  const operator = (await sdk.api.abi.call({ target: stakingToken, block, chain, abi: abi.operator })).output
+async function getCvxPoolValue({ api, owner, pool }) {
+  const poolBalance = await api.call({ target: pool, params: [owner], abi: 'erc20:balanceOf' })
+  const stakingToken = await api.call({ target: pool, abi: abi.stakingToken })
+  const operator = await api.call({ target: stakingToken, abi: abi.operator })
   await setPoolInfo(operator)
   const ourPoolInfo = poolInfos[operator].find(i => JSON.stringify(i).indexOf(stakingToken) > -1)
   const crvToken = ourPoolInfo.lptoken
-  balances[crvToken] = poolBalance
+  api.add(crvToken, poolBalance)
   async function setPoolInfo(operator) {
     if (poolInfos[operator])  return;
-    const poolLength = +(await sdk.api.abi.call({ target: operator, block, chain, abi: abi.poolLength })).output
-    const poolInfoArr = createIncrementArray(poolLength)
-    poolInfos[operator] = (await sdk.api.abi.multiCall({ target: operator, block, chain, abi: abi.poolInfo, calls: poolInfoArr.map(i => ({ params: [i] })) })).output.map(i => i.output)
+    poolInfos[operator] = await api.fetchList({ target: operator, lengthAbi: abi.poolLength, itemAbi: abi.poolInfo })
   }
 }
 
-async function getCvxProxyVaultValue({block, balances, pool, vault}) {
-  const stakingToken = (await sdk.api.abi.call({ target: pool, block, chain, abi: abi.stakingToken })).output
-  const unwrappedToken = (await sdk.api.abi.call({ target: stakingToken, block, chain, abi: abi.curveToken })).output
-  const lpTokenBalance = (await sdk.api.abi.call({ target: stakingToken, params: [vault], block, chain, abi: abi.totalBalanceOf })).output
-  sdk.util.sumSingleBalance(balances, unwrappedToken, lpTokenBalance);
+async function getCvxProxyVaultValue({ api, pool, vault }) {
+  const stakingToken = await api.call({ target: pool, abi: abi.stakingToken })
+  const unwrappedToken = await api.call({ target: stakingToken, abi: abi.curveToken })
+  const lpTokenBalance = await api.call({ target: stakingToken, params: [vault], abi: abi.totalBalanceOf })
+  api.add(unwrappedToken, lpTokenBalance);
 }
 
 module.exports = {
