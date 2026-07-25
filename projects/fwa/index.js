@@ -14,14 +14,6 @@ const EXIT_EVENTS = [
   'event NFTRelisted(uint256 indexed listingId, uint256 indexed newListingId, uint256 toDepositor)',
 ]
 
-// Cache only the deduped exited listing ids instead of the raw logs
-function customCacheFunction({ cache, logs }) {
-  if (!cache.logs) cache.logs = []
-  const ids = logs.map(log => Number(log.listingId))
-  cache.logs = [...new Set(cache.logs.concat(ids))]
-  return cache
-}
-
 // enum ListingStatus { None, Active, Allocated, Withdrawn, Settled, Staged }
 const BACKED_STATUSES = new Set([1, 2, 5])
 
@@ -29,11 +21,11 @@ async function tvl(api) {
   const [nextListingId, ...exitedIdLists] = await Promise.all([
     api.call({ target: FWA, abi: 'uint256:nextListingId' }),
     ...EXIT_EVENTS.map((eventAbi) => getLogs({
-      api, target: FWA, eventAbi, onlyArgs: true, fromBlock: DEPLOY_BLOCK, customCacheFunction,
+      api, target: FWA, eventAbi, onlyArgs: true, fromBlock: DEPLOY_BLOCK,
       extraKey: eventAbi.split('(')[0].replace('event ', ''),
     })),
   ])
-  const exitedIdSet = new Set(exitedIdLists.flat())
+  const exitedIdSet = new Set(exitedIdLists.flat().map(log => Number(log.listingId)))
 
   const liveIds = []
   for (let id = 1; id < +nextListingId; id++)
