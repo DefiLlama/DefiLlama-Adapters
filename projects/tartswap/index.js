@@ -1,7 +1,7 @@
 // TartSwap — DefiLlama adapter
 // Submit as: projects/tartswap/index.js in a fork of github.com/DefiLlama/DefiLlama-Adapters
 //
-// Contracts (BSC mainnet, verified on-chain 2026-07-26):
+// Contracts (BSC mainnet, verified on-chain 2026-07-25):
 //   TartStakingVault  0x20940d3573F1629F6c5226C2DDa2e9a28b364B33  (~$71k, 169 stakers)
 //   CREPE token       0xeb2B7d5691878627eff20492cA7c9a71228d931D  (9 decimals)
 //
