@@ -3,7 +3,17 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 
 // RavenhoodVault — permanently locked, protocol-owned RVH/WETH Uniswap V3 position
 const VAULT = '0x5e1485137E025bf7774F52DE4E33fa6E498f6ede'
-const UNISWAP_V3_NFT_MANAGER = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3'
+// DAO-held LP positions live across three CL position managers on Robinhood
+// Chain: Uniswap V3, UPDex (Slipstream/Aerodrome-style fork -- same NFT ABI
+// shape, resolves fine through the standard Uniswap V3 path), and Giga
+// (also Uniswap V3-shaped). Liquidity has been migrating from Uniswap to
+// UPDex/Giga over time, so all three are needed or positions silently drop
+// out of the treasury figure as they move.
+const NFT_MANAGERS = [
+  '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3', // Uniswap V3
+  '0x07F44c47743A2f36414A82b9F558ECFCf0EEdCEf', // UPDex
+  '0xA79F5775b0B49E51202c48DDF03F380FaA96f641', // Giga
+]
 // DAO treasury wallet — interim EOA (moving to a multisig). Holds plain
 // USDG/ETH plus DAO-owned Uniswap V3 LP positions pairing RVH against
 // tokenized stocks/blue chips (the "expansion liquidity" the burn engine
@@ -17,7 +27,7 @@ module.exports = {
       owners: [VAULT, DAO_WALLET],
       tokens: [ADDRESSES.robinhood.USDG, ADDRESSES.null],
       resolveUniV3: true,
-      uniV3ExtraConfig: { nftAddress: UNISWAP_V3_NFT_MANAGER },
+      uniV3ExtraConfig: { nftAddress: NFT_MANAGERS },
       blacklistedTokens: [RVH_TOKEN],
     }),
     // uniV3WhitelistedTokens (not blacklistedTokens) is required here: the DAO
@@ -29,7 +39,7 @@ module.exports = {
       owners: [VAULT, DAO_WALLET],
       tokens: [RVH_TOKEN],
       resolveUniV3: true,
-      uniV3ExtraConfig: { nftAddress: UNISWAP_V3_NFT_MANAGER },
+      uniV3ExtraConfig: { nftAddress: NFT_MANAGERS },
       uniV3WhitelistedTokens: [RVH_TOKEN],
     }),
   },
