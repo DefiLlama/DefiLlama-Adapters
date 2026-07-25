@@ -1,3 +1,11 @@
+/**
+ * DefiLlama TVL adapter for Hootdex / Pecu Novus (PECU).
+ *
+ * Destination: fork DefiLlama/DefiLlama-Adapters, add this file at
+ * projects/hootdex/index.js.
+ *
+ */
+
 const axios = require('axios');
 
 let CHAIN_PROVIDERS = {};
