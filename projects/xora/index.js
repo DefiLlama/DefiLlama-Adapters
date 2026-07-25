@@ -13,7 +13,8 @@ async function xrplRpc(body) {
   const res = await post(XRPL_RPC, body)
   const result = res?.result
   if (!result) throw new Error('XRPL RPC empty response')
-  if (result.error === 'actNotFound' || result.error === 'actMalformed') return { notFound: true, result }
+  if (result.error === 'actNotFound' || result.error === 'actMalformed')
+    return { notFound: true, result }
   if (result.error || result.status === 'error') {
     throw new Error(result.error_message || result.error || 'XRPL RPC error')
   }
@@ -21,20 +22,22 @@ async function xrplRpc(body) {
 }
 
 async function rippleTvl(api) {
-  // Native XRP treasury
-  const { result: info, notFound: xrpMissing } = await xrplRpc({
+  const { result: info, notFound } = await xrplRpc({
     method: 'account_info',
     params: [{ account: XRP_TREASURY, ledger_index: 'validated' }],
   })
-  if (xrpMissing) throw new Error('XRP treasury account not found')
+  if (notFound) throw new Error('XRP treasury account not found')
   const drops = info.account_data?.Balance
   if (drops == null) throw new Error('XRP treasury balance missing')
   const xrp = Number(drops) / 1e6
   if (!Number.isFinite(xrp) || xrp < 0) throw new Error('XRP treasury balance invalid')
   api.addCGToken('ripple', xrp)
+}
 
-  // BTC (XRPL currency code BTC) held in custody, peer-filtered to issuer
-  const { result: linesRes, notFound: btcMissing } = await xrplRpc({
+// BTC is an XRPL-issued currency held in custody; report under bitcoin chain as CG bitcoin
+// (same pattern as babylon / fiamma / ibtc adapters).
+async function bitcoinTvl(api) {
+  const { result: linesRes, notFound } = await xrplRpc({
     method: 'account_lines',
     params: [{
       account: BTC_CUSTODY,
@@ -42,7 +45,7 @@ async function rippleTvl(api) {
       ledger_index: 'validated',
     }],
   })
-  if (btcMissing) throw new Error('BTC custody account not found')
+  if (notFound) throw new Error('BTC custody account not found')
   const lines = linesRes.lines || []
   const btcLine = lines.find((l) => l.currency === 'BTC' && l.account === BTC_ISSUER)
   if (!btcLine) throw new Error('BTC trust line missing on custody')
@@ -53,10 +56,9 @@ async function rippleTvl(api) {
 
 module.exports = {
   methodology:
-    'Counts XRP in the XORA XRPL treasury, BTC held in XORA XRPL custody, and TRX in the XORA Tron treasury.',
-  ripple: {
-    tvl: rippleTvl,
-  },
+    'Counts XRP in the XORA XRPL treasury, BTC held in XORA XRPL custody (reported as Bitcoin), and TRX in the XORA Tron treasury.',
+  ripple: { tvl: rippleTvl },
+  bitcoin: { tvl: bitcoinTvl },
   tron: {
     tvl: sumTokensExport({
       owners: [TRX_TREASURY],
