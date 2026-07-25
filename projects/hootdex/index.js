@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 let CHAIN_PROVIDERS = {};
 try {
   CHAIN_PROVIDERS = require('@defillama/sdk/build/providers.json');
