@@ -8,13 +8,13 @@ async function hasEmptyBytecode(api, address) {
 
   if (typeof api.getBytecode === 'function') {
     const code = await api.getBytecode(target);
-    return !code || code === '0x';
+    return code === '0x';
   }
 
   const provider = api.provider ?? api.api?.provider;
   if (provider && typeof provider.getCode === 'function') {
     const code = await provider.getCode(target);
-    return !code || code === '0x';
+    return code === '0x';
   }
 
   return false;
