@@ -35,6 +35,16 @@ async function readStakingPoolBreakdown(api, poolAddress, woneAddress) {
   };
 }
 
+async function addNativeOneTvl(api, amount) {
+  if (amount <= 0n) return;
+  if (typeof api.addGasToken === 'function') {
+    api.addGasToken(amount);
+    return;
+  }
+  // Local verify shim without ChainApi.addGasToken
+  api.add('0x0000000000000000000000000000000000000000', amount);
+}
+
 /**
  * @param {object} api — DefiLlama ChainApi (or compatible shim)
  * @param {object} config — addresses.json contents
@@ -42,13 +52,12 @@ async function readStakingPoolBreakdown(api, poolAddress, woneAddress) {
  */
 async function addStakingPoolTvl(api, config, pools) {
   const wone = config.wone;
-  const nativeKey = config.nativePriceKey || 'coingecko:harmony';
 
   for (const entry of pools) {
     try {
       const { delegated, woneBal, nativeBal } = await readStakingPoolBreakdown(api, entry.pool, wone);
-      if (delegated > 0n) api.add(nativeKey, delegated);
-      if (nativeBal > 0n) api.add(nativeKey, nativeBal);
+      addNativeOneTvl(api, delegated);
+      addNativeOneTvl(api, nativeBal);
       if (woneBal > 0n) api.add(wone, woneBal);
     } catch (err) {
       if (await hasEmptyBytecode(api, entry.pool)) continue;
@@ -62,6 +71,7 @@ function allStakingPools(config) {
 }
 
 module.exports = {
+  addNativeOneTvl,
   readStakingPoolBreakdown,
   addStakingPoolTvl,
   allStakingPools,
