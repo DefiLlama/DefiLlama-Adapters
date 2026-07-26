@@ -4,6 +4,8 @@
  * Exchange-rate fallback uses cash + liquidation surplus only, not totalBorrows.
  */
 
+const { hasEmptyBytecode } = require('./poolBytecode');
+
 const INITIAL_EXCHANGE_RATE = BigInt(1e18);
 
 const mpoolAbi = {
@@ -15,17 +17,6 @@ const mpoolAbi = {
   totalBorrows: 'uint256:totalBorrows',
   liquidationSurplusToSuppliers: 'uint256:liquidationSurplusToSuppliers',
 };
-
-/** Retired / empty pool addresses — safe to skip. Real RPC/read errors must propagate. */
-function isMissingPoolBytecodeError(err) {
-  const msg = String(err?.message ?? err?.shortMessage ?? err).toLowerCase();
-  return (
-    msg.includes('returned no data') ||
-    msg.includes('could not decode') ||
-    msg.includes('is not a contract') ||
-    msg.includes('contract code is empty')
-  );
-}
 
 function computeExchangeRate(totalLiq, totalReserves, totalSupply, liquidationSurplus) {
   if (totalSupply === 0n) return INITIAL_EXCHANGE_RATE;
@@ -46,7 +37,7 @@ async function readMpoolSupply(api, poolAddress, burnAddress) {
     api.call({ target: poolAddress, abi: mpoolAbi.balanceOf, params: [burnAddress] }),
     api.call({ target: poolAddress, abi: mpoolAbi.totalLiquidity }),
     api.call({ target: poolAddress, abi: mpoolAbi.totalReserves }),
-    api.call({ target: poolAddress, abi: mpoolAbi.liquidationSurplusToSuppliers }).catch(() => 0n),
+    api.call({ target: poolAddress, abi: mpoolAbi.liquidationSurplusToSuppliers }),
   ]);
 
   const exchangeRate = computeExchangeRate(
@@ -85,7 +76,7 @@ async function addMpoolSupplyTvl(api, config, pools) {
         api.add(token.address, supplied);
       }
     } catch (err) {
-      if (isMissingPoolBytecodeError(err)) continue;
+      if (await hasEmptyBytecode(api, entry.pool)) continue;
       throw err;
     }
   }
@@ -106,7 +97,7 @@ async function addMpoolBorrowedTvl(api, config, pools) {
         api.add(token.address, borrowed);
       }
     } catch (err) {
-      if (isMissingPoolBytecodeError(err)) continue;
+      if (await hasEmptyBytecode(api, entry.pool)) continue;
       throw err;
     }
   }
@@ -118,7 +109,7 @@ function allMPools(config) {
 
 module.exports = {
   mpoolAbi,
-  isMissingPoolBytecodeError,
+  hasEmptyBytecode,
   computeExchangeRate,
   computeTotalSupplied,
   readMpoolSupply,

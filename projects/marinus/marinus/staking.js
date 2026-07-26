@@ -3,15 +3,7 @@
  * (totalDelegated + WONE balance + native ONE balance per pool).
  */
 
-function isMissingPoolBytecodeError(err) {
-  const msg = String(err?.message ?? err?.shortMessage ?? err).toLowerCase();
-  return (
-    msg.includes('returned no data') ||
-    msg.includes('could not decode') ||
-    msg.includes('is not a contract') ||
-    msg.includes('contract code is empty')
-  );
-}
+const { hasEmptyBytecode } = require('./poolBytecode');
 
 const stakingAbi = {
   totalDelegated: 'uint256:totalDelegated',
@@ -59,7 +51,7 @@ async function addStakingPoolTvl(api, config, pools) {
       if (nativeBal > 0n) api.add(nativeKey, nativeBal);
       if (woneBal > 0n) api.add(wone, woneBal);
     } catch (err) {
-      if (isMissingPoolBytecodeError(err)) continue;
+      if (await hasEmptyBytecode(api, entry.pool)) continue;
       throw err;
     }
   }
