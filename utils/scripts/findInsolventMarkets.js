@@ -154,14 +154,17 @@ function eachRegistryEntry(files, errors, visit) {
     collected.push(configs)
     return orig.call(this, configs, fn)
   }
-  for (const file of files) {
-    try {
-      require(`../../registries/${file}`)
-    } catch (e) {
-      errors.push(`registries/${file}.js failed to load: ${e.message}`)
+  try {
+    for (const file of files) {
+      try {
+        require(`../../registries/${file}`)
+      } catch (e) {
+        errors.push(`registries/${file}.js failed to load: ${e.message}`)
+      }
     }
+  } finally {
+    utils.buildProtocolExports = orig
   }
-  utils.buildProtocolExports = orig
 
   for (const configs of collected) {
     for (const [protocol, entry] of Object.entries(configs)) {
@@ -220,32 +223,34 @@ function purgeAdapterModules() {
 function discoverFromAdapters({ match, stripComments, patch, covered = () => false, missing }, errors) {
   const captured = []
   const restore = patch(captured)
-  purgeAdapterModules()
+  try {
+    purgeAdapterModules()
 
-  const files = fs.readdirSync(PROJECTS_ROOT, { recursive: true })
-    .filter(f => typeof f === 'string' && f.endsWith('.js') && !IS_HELPER.test(f))
-    .map(f => path.join(PROJECTS_ROOT, f))
+    const files = fs.readdirSync(PROJECTS_ROOT, { recursive: true })
+      .filter(f => typeof f === 'string' && f.endsWith('.js') && !IS_HELPER.test(f))
+      .map(f => path.join(PROJECTS_ROOT, f))
 
-  for (const file of files) {
-    let src
-    try { src = fs.readFileSync(file, 'utf8') } catch (e) { continue }
-    if (!match.test(stripComments ? src.replace(/^\s*\/\/.*$/gm, '') : src)) continue
-    const dir = path.basename(path.dirname(file))
-    const protocol = dir === 'projects' ? path.basename(file, '.js') : dir
-    loading.protocol = protocol
-    const before = captured.length
-    let mod = null
-    try { mod = require(file) } catch (e) { /* adapter load failures are non-fatal here */ }
-    const found = []
-    walkTaggedExports(mod, found)
-    for (const { target, chain } of found) if (chain && !target.chain) target.chain = chain
-    if (captured.length === before && !covered(protocol)) {
-      errors.push(`${path.relative(path.join(PROJECTS_ROOT, '..'), file)}: ${missing}`)
+    for (const file of files) {
+      let src
+      try { src = fs.readFileSync(file, 'utf8') } catch (e) { continue }
+      if (!match.test(stripComments ? src.replace(/^\s*\/\/.*$/gm, '') : src)) continue
+      const dir = path.basename(path.dirname(file))
+      const protocol = dir === 'projects' ? path.basename(file, '.js') : dir
+      loading.protocol = protocol
+      const before = captured.length
+      let mod = null
+      try { mod = require(file) } catch (e) { /* adapter load failures are non-fatal here */ }
+      const found = []
+      walkTaggedExports(mod, found)
+      for (const { target, chain } of found) if (chain && !target.chain) target.chain = chain
+      if (captured.length === before && !covered(protocol)) {
+        errors.push(`${path.relative(path.join(PROJECTS_ROOT, '..'), file)}: ${missing}`)
+      }
     }
+  } finally {
+    loading.protocol = null
+    restore()
   }
-
-  loading.protocol = null
-  restore()
   return captured
 }
 
