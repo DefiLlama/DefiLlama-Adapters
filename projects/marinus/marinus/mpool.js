@@ -1,5 +1,7 @@
 /**
- * MPool supply TVL — mirrors src/hooks/useHarmonyPoolData.ts (protocol totalSupplied).
+ * MPool supply TVL for DeFiLlama.
+ * Headline supply excludes outstanding loans (reported via addMpoolBorrowedTvl).
+ * Exchange-rate fallback uses cash + liquidation surplus only, not totalBorrows.
  */
 
 const INITIAL_EXCHANGE_RATE = BigInt(1e18);
@@ -14,11 +16,21 @@ const mpoolAbi = {
   liquidationSurplusToSuppliers: 'uint256:liquidationSurplusToSuppliers',
 };
 
-function computeExchangeRate(totalLiq, totalReserves, totalSupply, totalBorrows, liquidationSurplus) {
+/** Retired / empty pool addresses — safe to skip. Real RPC/read errors must propagate. */
+function isMissingPoolBytecodeError(err) {
+  const msg = String(err?.message ?? err?.shortMessage ?? err).toLowerCase();
+  return (
+    msg.includes('returned no data') ||
+    msg.includes('could not decode') ||
+    msg.includes('is not a contract') ||
+    msg.includes('contract code is empty')
+  );
+}
+
+function computeExchangeRate(totalLiq, totalReserves, totalSupply, liquidationSurplus) {
   if (totalSupply === 0n) return INITIAL_EXCHANGE_RATE;
   const baseSupplyValue = totalLiq > totalReserves ? totalLiq - totalReserves : 0n;
-  const borrowContribution = totalBorrows > totalLiq ? totalLiq : totalBorrows;
-  const totalUnderlying = baseSupplyValue + borrowContribution + liquidationSurplus;
+  const totalUnderlying = baseSupplyValue + liquidationSurplus;
   return (totalUnderlying * BigInt(1e18)) / totalSupply;
 }
 
@@ -29,39 +41,25 @@ function computeTotalSupplied({ totalSupply, burnBal, exchangeRate, totalLiquidi
 }
 
 async function readMpoolSupply(api, poolAddress, burnAddress) {
-  const [
-    totalSupply,
-    burnBal,
-    totalLiquidity,
-    totalReserves,
-    totalBorrows,
-    liquidationSurplus,
-  ] = await Promise.all([
+  const [totalSupply, burnBal, totalLiquidity, totalReserves, liquidationSurplus] = await Promise.all([
     api.call({ target: poolAddress, abi: mpoolAbi.totalSupply }),
     api.call({ target: poolAddress, abi: mpoolAbi.balanceOf, params: [burnAddress] }),
     api.call({ target: poolAddress, abi: mpoolAbi.totalLiquidity }),
     api.call({ target: poolAddress, abi: mpoolAbi.totalReserves }),
-    api.call({ target: poolAddress, abi: mpoolAbi.totalBorrows }),
     api.call({ target: poolAddress, abi: mpoolAbi.liquidationSurplusToSuppliers }).catch(() => 0n),
   ]);
 
-  let exchangeRate;
-  try {
-    exchangeRate = await api.call({ target: poolAddress, abi: mpoolAbi.exchangeRateStored });
-  } catch {
-    exchangeRate = computeExchangeRate(
-      BigInt(totalLiquidity),
-      BigInt(totalReserves),
-      BigInt(totalSupply),
-      BigInt(totalBorrows),
-      BigInt(liquidationSurplus ?? 0),
-    );
-  }
+  const exchangeRate = computeExchangeRate(
+    BigInt(totalLiquidity),
+    BigInt(totalReserves),
+    BigInt(totalSupply),
+    BigInt(liquidationSurplus ?? 0),
+  );
 
   return computeTotalSupplied({
     totalSupply: BigInt(totalSupply),
     burnBal: BigInt(burnBal),
-    exchangeRate: BigInt(exchangeRate),
+    exchangeRate,
     totalLiquidity: BigInt(totalLiquidity),
   });
 }
@@ -87,10 +85,8 @@ async function addMpoolSupplyTvl(api, config, pools) {
         api.add(token.address, supplied);
       }
     } catch (err) {
-      // Skip retired pools with no bytecode or RPC failures
-      if (process.env.DEFILLAMA_DEBUG) {
-        console.warn(`[mpool] skip ${entry.symbol} ${entry.pool}:`, err.message ?? err);
-      }
+      if (isMissingPoolBytecodeError(err)) continue;
+      throw err;
     }
   }
 }
@@ -109,8 +105,9 @@ async function addMpoolBorrowedTvl(api, config, pools) {
       if (borrowed > 0n) {
         api.add(token.address, borrowed);
       }
-    } catch {
-      /* skip */
+    } catch (err) {
+      if (isMissingPoolBytecodeError(err)) continue;
+      throw err;
     }
   }
 }
@@ -121,6 +118,7 @@ function allMPools(config) {
 
 module.exports = {
   mpoolAbi,
+  isMissingPoolBytecodeError,
   computeExchangeRate,
   computeTotalSupplied,
   readMpoolSupply,

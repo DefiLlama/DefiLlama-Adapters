@@ -1,7 +1,15 @@
 /**
- * Marinus Protocol � Harmony Finance TVL adapter.
- * TVL = MPool supply + staking pool backing; borrowed exported separately.
+ * Marinus Protocol — Harmony Finance TVL adapter for DefiLlama-Adapters.
+ *
+ * NOT connected to DeFiLlama from this repo. Copy this folder into
+ * https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/projects/marinus
+ * and open a PR when ready to list. Rename *.cjs → *.js in that repo (CJS).
+ *
+ * TVL methodology matches the Marinus frontend:
+ * - Lending: mPool total supplied (active mToken supply × exchange rate, minus burn address)
+ * - Staking: ValidatorStakingPool + StablecoinRewardStakingPool (delegated + WONE + native ONE)
  */
+
 const config = require('./marinus/addresses.json');
 const { addMpoolSupplyTvl, addMpoolBorrowedTvl, allMPools } = require('./marinus/mpool');
 const { addStakingPoolTvl, allStakingPools } = require('./marinus/staking');
