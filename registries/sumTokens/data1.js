@@ -714,4 +714,16 @@ module.exports = {
     "moonriver": { "tvl": { "__empty": true }, "staking": { "__empty": true } },
     "harmony": { "tvl": { "__empty": true }, "staking": { "__empty": true } }
   },
+  "linear": {
+    "methodology": "Counts LINA used to collateralize lUSD",
+    "bsc": {
+      "tvl": {
+        "tokensAndOwners": [
+          ["0x762539b45A1dCcE3D36d080F74d1AED37844b878", "0xcE2c94d40e289915d4401c3802D75f6cA5FEf57E"], // LINA @ LnCollateralSystem
+          [ADDRESSES.bsc.BUSD, "0x072F11c46146Ce636691d387BFbF8fD28e818EE8"] // bUSD @ vault
+        ]
+      },
+      "pool2": { "__pool2": ["0x12efdFF85f717ac1738CF50Be5f4Cdc916b0B8B1", "0x392f351fc02a3b74f7900de81a9aaac13ec28e95"] }
+    }
+  },
 }
