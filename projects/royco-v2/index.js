@@ -30,6 +30,10 @@ const { getLogs2 } = require("../helper/cache/getLogs");
 //   - (3) into (2): RoyWstEth's strategies park borrowed USDC in srRoyUSDC, which (2) already counts.
 //     Fixed in `addRoyWstEth`: we add (3)'s wstETH NAV and subtract that srRoyUSDC position
 //     (balanceOf -> convertToAssets, in USDC) back out of (2).
+// The position-holder addresses used for these subtractions are discovered ON-CHAIN, never
+// hardcoded: vault.getStrategies(), resolving each Makina CROSSCHAIN strategy to its machine's hub
+// caliber (getMakinaMachine().hubCaliber()) and leaving self-custody strategies as-is (see
+// resolveStrategies). So the adapter self-updates if a vault's strategies change.
 // Net effect: every deposit is counted once at its lowest layer, and NOTHING is counted twice.
 // =============================================================================================
 
@@ -72,14 +76,41 @@ const srRoyUsdc = {
     asset: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
 };
 
-// Accounts through which srRoyUSDC holds its positions inside Royco markets. Their tranche
-// positions are exactly the overlap between srRoyUSDC and the market TVL, so they are what gets
-// subtracted to avoid double-counting. Queried on every market chain; balanceOf simply returns 0
-// on chains where a given strategy holds nothing.
-const srRoyUsdcStrategies = [
-    "0x170ff06326ebb64bf609a848fc143143994af6c8", // multisig
-    "0x5476f4e23daa093ce6700e1026013c55f7af9083", // makina caliber
-];
+// The srRoyUSDC and RoyWstEth vaults route deposits through on-chain "strategy" contracts, and
+// whatever a strategy custodies inside a lower Royco layer is exactly the overlap we must
+// de-duplicate. We DISCOVER the current position-holding addresses on-chain (never hardcode them)
+// so the adapter self-updates if a vault's strategies change. The same resolved holder set is
+// queried on every market chain; balanceOf simply returns 0 where a holder holds nothing.
+//
+// A strategy's positions do NOT necessarily sit at the strategy contract itself:
+//   - CROSSCHAIN strategies are executed through a Makina hub-and-spoke machine, so their Royco
+//     positions are custodied by the machine's hub caliber -> getMakinaMachine().hubCaliber().
+//   - ATOMIC/ASYNC strategies self-custody, so the holder is the strategy address itself.
+// enum StrategyType { ATOMIC, ASYNC, CROSSCHAIN } (from the Royco strategy contracts).
+const STRATEGY_TYPE_CROSSCHAIN = 2;
+const getStrategiesAbi = "function getStrategies() view returns (address[])";
+const strategyTypeAbi = "function strategyType() view returns (uint8)";
+const getMakinaMachineAbi = "function getMakinaMachine() view returns (address)";
+const hubCaliberAbi = "function hubCaliber() view returns (address)";
+
+// Resolves a vault's current position-holding addresses on-chain (see the StrategyType note above).
+// These feed the de-duplication subtractions, so every call here is dedup-critical: NO
+// permitFailure — a failure must fail the whole refresh rather than silently drop a holder and
+// publish inflated, double-counted TVL.
+const resolveStrategies = async (api, vault) => {
+    const strategies = await api.call({ abi: getStrategiesAbi, target: vault });
+    if (!strategies.length) return [];
+
+    const types = await api.multiCall({ abi: strategyTypeAbi, calls: strategies });
+    const crosschain = strategies.filter((_, i) => Number(types[i]) === STRATEGY_TYPE_CROSSCHAIN);
+    const selfCustody = strategies.filter((_, i) => Number(types[i]) !== STRATEGY_TYPE_CROSSCHAIN);
+    if (!crosschain.length) return selfCustody;
+
+    // CROSSCHAIN => Makina: the real position-holder is the machine's hub caliber, not the strategy.
+    const machines = await api.multiCall({ abi: getMakinaMachineAbi, calls: crosschain });
+    const calibers = await api.multiCall({ abi: hubCaliberAbi, calls: machines });
+    return [...selfCustody, ...calibers];
+};
 
 // NAV_UNIT (18 decimals, USDC-denominated) -> USDC (6 decimals)
 const NAV_TO_USDC = 10n ** 12n;
@@ -92,10 +123,6 @@ const royWstEth = {
     chain: "ethereum",
     address: "0x41ce72e04d349eb957bdc373baa9c69207032c56",
     asset: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", // wstETH
-    strategies: [
-        "0xed45292eeac48324dabf7c76c2bd71b194a3f97d", // multisig
-        "0x3d8e2497497a3e29ad5391c08db2a1b3c32598c0", // makina caliber
-    ],
 };
 
 // srRoyUSDC is a standard ERC4626 vault (asset = USDC), so its convertToAssets(shares) returns a
@@ -159,6 +186,10 @@ const addSrRoyUsdc = async (api) => {
     // This full balance is Royco's own TVL; we only net out the already-counted market slice below.
     const totalDeposits = BigInt(await api.call({ abi: 'uint256:totalAssets', target: srRoyUsdc.address }));
 
+    // Discover srRoyUSDC's current position-holders once, on mainnet (api.chain === srRoyUsdc.chain
+    // here, and the vault lives there). The resolved set is reused on every market chain below.
+    const strategies = await resolveStrategies(api, srRoyUsdc.address);
+
     // The exact slice already counted by (1): the strategies' positions across every market chain,
     // summed as USDC (nav) and converted from NAV_UNIT (18 decimals) to USDC (6 decimals). This is
     // the in-Royco overlap we cancel out — subtracting it makes the two Royco sources mutually
@@ -166,7 +197,7 @@ const addSrRoyUsdc = async (api) => {
     let navInMarkets = 0n;
     for (const chain of Object.keys(config)) {
         const chainApi = chain === api.chain ? api : new sdk.ChainApi({ chain, timestamp: api.timestamp });
-        navInMarkets += await getStrategyNav(chainApi);
+        navInMarkets += await getStrategyNav(chainApi, strategies);
     }
     const depositsInMarkets = navInMarkets / NAV_TO_USDC;
 
@@ -174,11 +205,12 @@ const addSrRoyUsdc = async (api) => {
     api.add(srRoyUsdc.asset, totalDeposits - depositsInMarkets);
 };
 
-// Measures the exact value srRoyUSDC's strategies hold inside Royco markets on `api.chain`, summed
-// in NAV_UNIT (18-decimal, USDC-denominated) across all senior + junior tranches. This is the
-// amount tvl()'s tranche sums already count for these strategies; addSrRoyUsdc subtracts it, which
-// is what prevents srRoyUSDC and the markets from double-counting the same deposits.
-const getStrategyNav = async (api) => {
+// Measures the exact value the given `strategies` (srRoyUSDC's on-chain-resolved position-holders)
+// hold inside Royco markets on `api.chain`, summed in NAV_UNIT (18-decimal, USDC-denominated) across
+// all senior + junior tranches. This is the amount tvl()'s tranche sums already count for those
+// holders; addSrRoyUsdc subtracts it, which is what prevents srRoyUSDC and the markets from
+// double-counting the same deposits.
+const getStrategyNav = async (api, strategies) => {
     const { seniorTranches, juniorTranches } = await getTranches(api);
     const tranches = [...seniorTranches, ...juniorTranches];
     if (!tranches.length) return 0n;
@@ -187,7 +219,7 @@ const getStrategyNav = async (api) => {
     // retries), never be silently skipped. Skipping would under-subtract the overlap and publish
     // inflated, double-counted TVL — so no permitFailure here.
     let nav = 0n;
-    for (const strategy of srRoyUsdcStrategies) {
+    for (const strategy of strategies) {
         const shares = await api.multiCall({
             abi: 'erc20:balanceOf',
             calls: tranches.map(tranche => ({ target: tranche, params: [strategy] })),
@@ -215,14 +247,16 @@ const addRoyWstEth = async (api) => {
     const totalAssets = await api.call({ abi: 'uint256:totalAssets', target: royWstEth.address });
     api.add(royWstEth.asset, totalAssets);
 
-    // srRoyUSDC shares held by the vault's strategies, valued in USDC via srRoyUSDC.convertToAssets.
-    // No permitFailure: this is a de-duplication call, so a failed call must fail the refresh rather
-    // than skip the subtraction and leave the borrowed leg double-counted.
+    // Discover the vault's current position-holders on-chain (mainnet-only vault), then value the
+    // srRoyUSDC shares they hold in USDC via srRoyUSDC.convertToAssets. No permitFailure: these are
+    // de-duplication calls, so a failure must fail the refresh rather than skip the subtraction and
+    // leave the borrowed leg double-counted.
+    const strategies = await resolveStrategies(api, royWstEth.address);
     const shares = await api.multiCall({
         abi: 'erc20:balanceOf',
-        calls: royWstEth.strategies.map(strategy => ({ target: srRoyUsdc.address, params: [strategy] })),
+        calls: strategies.map(strategy => ({ target: srRoyUsdc.address, params: [strategy] })),
     });
-    const assetCalls = royWstEth.strategies
+    const assetCalls = strategies
         .map((_, i) => ({ target: srRoyUsdc.address, params: [shares[i]] }))
         .filter((_, i) => BigInt(shares[i]) > 0n);
     if (!assetCalls.length) return;
@@ -235,7 +269,7 @@ const addRoyWstEth = async (api) => {
 
 module.exports = {
     start: '2026-01-27', // first TVL: srRoyUsdc vault's first deposit (block 24328493), predates the markets
-    methodology: "Value is counted exactly once, with no double-counting. (1) Royco V2 market TVL is read from MarketDeployed events on each factory and summed as totalAssets() across senior and junior tranches on every chain - the single source of truth for value inside Royco markets. (2) The srRoyUSDC vault (mainnet) is a Royco-issued vault product whose deposits are Royco's own TVL - the same convention DefiLlama applies to curated-vault/aggregator products such as Yearn vaults, whose deposits count toward the issuing protocol even when forwarded to underlying venues. The vault allocates user USDC across Royco markets and other yield venues; the portion already sitting in Royco markets is measured on-chain (its strategies' tranche positions via balanceOf -> convertToAssets().nav, across all chains) and subtracted, so that slice is never counted twice within Royco. (3) The RoyWstEth vault (mainnet) is a Royco-issued wstETH vault whose strategies supply the wstETH as Morpho collateral, borrow stablecoins, swap to USDC and deposit it into srRoyUSDC; its wstETH NAV is added, and the srRoyUSDC position its strategies hold (already counted in (2)) is subtracted back out so the borrowed leg is not double-counted.",
+    methodology: "Value is counted exactly once, with no double-counting. (1) Royco V2 market TVL is read from MarketDeployed events on each factory and summed as totalAssets() across senior and junior tranches on every chain - the single source of truth for value inside Royco markets. (2) The srRoyUSDC vault (mainnet) is a Royco-issued vault product whose deposits are Royco's own TVL - the same convention DefiLlama applies to curated-vault/aggregator products such as Yearn vaults, whose deposits count toward the issuing protocol even when forwarded to underlying venues. The vault allocates user USDC across Royco markets and other yield venues; the portion already sitting in Royco markets is measured on-chain - the vault's strategies are discovered via getStrategies() (each Makina cross-chain strategy resolved to its machine's hub caliber via getMakinaMachine().hubCaliber(), self-custody strategies used as-is) and their tranche positions read via balanceOf -> convertToAssets().nav across all chains - then subtracted, so that slice is never counted twice within Royco. (3) The RoyWstEth vault (mainnet) is a Royco-issued wstETH vault whose strategies supply the wstETH as Morpho collateral, borrow stablecoins, swap to USDC and deposit it into srRoyUSDC; its wstETH NAV is added, and the srRoyUSDC position its strategies hold (strategies discovered on-chain the same way; already counted in (2)) is subtracted back out so the borrowed leg is not double-counted.",
     ethereum: { tvl },
     avax: { tvl },
     arbitrum: { tvl },
