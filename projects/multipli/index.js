@@ -36,7 +36,6 @@ async function tvl(api) {
   const assets = await api.multiCall({
     abi: 'address:asset',
     calls: vaults.map(({ vault }) => vault),
-    permitFailure: true,
   })
 
   const eligibleVaults = vaults.filter((vault, i) =>
