@@ -1,5 +1,9 @@
 
-const abi = require("./abi.js") 
+const abi = {
+  filetFVMAbi: "function minePoolMap(uint256) view returns (tuple(address tokenAddress, uint256 expireType, uint256 actionType, uint256 canSell, address[] minerList, uint256 stakingPrice, uint256 tokenRate, uint256 FILRate, uint256 tokenPrecision, uint256 miniPurchaseAmount, uint256 hasSoldOutToken) mPool, bool isEntity)",
+  filetBSCAbi: "function minePoolMap(uint256) view returns (tuple(address tokenInterface, address tokenAddress, uint256 expireType, uint256 actionType, tuple(uint256 canSell, uint256 canNotSell) maxMiningPower, address earlyRedeemFundAccount, address redeemFundAccount, address minerAccount, uint256 stakingPrice, uint256 tokenRate, uint256 FILRate, uint256 tokenPrecision, address recievePaymentAccount, uint256 miniPurchaseAmount, uint256 hasSoldOutToken, uint256 lockInterval, uint256[] poolThredhold, uint256[] serviceFeePercent) mPool, bool isEntity)",
+  FiletBSCCurrentAbi: "function minePoolMap(uint256) view returns (tuple(address tokenInterface, address tokenAddress, uint256 expireType, uint256 actionType, tuple(uint256 canSell, uint256 canNotSell) maxMiningPower, address earlyRedeemFundAccount, address redeemFundAccount, address profitFundAccount, address minerAccount, uint256 stakingPrice, uint256 tokenRate, uint256 FILRate, uint256 tokenPrecision, address recievePaymentAccount, uint256 miniPurchaseAmount, uint256 maxPurchaseAmount, uint256 hasSoldOutToken, uint256 lockInterval, uint256[] poolThredhold, uint256[] serviceFeePercent, uint256 lendhubExtraRatio) mPool, bool isEntity)",
+}
 const { fetchURL } = require('../helper/utils')
 
 

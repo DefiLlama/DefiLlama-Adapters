@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const morphoAbi = require("../helper/abis/morpho.json");
+const { getExports } = require('../helper/heroku-api');
 
 const almProxy = {
   ethereum: '0x1601843c5E9bC251A3272907010AFa41Fa18347E',
@@ -8,6 +9,8 @@ const almProxy = {
   optimism: '0x876664f0c9Ff24D1aa355Ce9f1680AE1A5bf36fB',
   unichain: '0x345E368fcCd62266B3f5F37C9a131FD1c39f5869',
   avax: '0xecE6B0E8a54c2f44e066fBb9234e7157B15b7FeC',
+  robinhood: '0xfD2fD4B046136B540A56C11c75ac679AE7d1dB24',
+  xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
 }
 
 const mainnetAllocatorToTokens = {
@@ -34,7 +37,8 @@ const mainnetAllocatorToTokens = {
     '0xe7dF13b8e3d6740fe17CBE928C7334243d86c92f', // spUSDT
     '0x377C3bd93f2a2984E1E7bE6A5C22c525eD4A4815', // spUSDC
     '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho Spark Blue Chip USDC Vault
-    '0xc7CDcFDEfC64631ED6799C95e3b110cd42F2bD22', // morpho Spark Blue Chip USDT Vault
+    '0xc7CDcFDEfC64631ED6799C95e3b110cd42F2bD22', // morpho Spark Blue Chip USDT Vault v1
+    '0xb0c424116172B55CbB6dD3136F5989F7959e5B91', // morpho Spark Blue Chip USDT Vault v2
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
@@ -55,7 +59,8 @@ const baseAllocatorToTokens = {
 
 const arbitrumAllocatorToTokens = {
   [almProxy.arbitrum]: [
-    ADDRESSES.arbitrum.USDC_CIRCLE
+    ADDRESSES.arbitrum.USDC_CIRCLE,
+    ADDRESSES.arbitrum.USDT,
   ],
   '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [
     ADDRESSES.arbitrum.USDC_CIRCLE
@@ -87,6 +92,18 @@ const avaxAllocatorToTokens = {
   ]
 }
 
+const robinhoodAllocatorToTokens = {
+  [almProxy.robinhood]: [
+    ADDRESSES.robinhood.USDG,
+  ]
+}
+
+const xlayerAllocatorToTokens = {
+  [almProxy.xlayer]: [
+    ADDRESSES.xlayer.USDT,
+  ]
+}
+
 const CONFIG = {
   ethereum: mainnetAllocatorToTokens,
   base: baseAllocatorToTokens,
@@ -94,6 +111,8 @@ const CONFIG = {
   optimism: optimismAllocatorToTokens,
   unichain: unichainAllocatorToTokens,
   avax: avaxAllocatorToTokens,
+  robinhood: robinhoodAllocatorToTokens,
+  xlayer: xlayerAllocatorToTokens,
 }
 
 async function tvl(api) {
@@ -110,6 +129,13 @@ async function tvl(api) {
 
   const allTokens = Object.values(tokenRecords).flat()
   api.add(allTokens, balances)
+
+  if (api.chain === 'ethereum') {
+    // track anchorage allocation
+    const tvl  = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
+    const anchorageBalance = await tvl(api)
+    api.addBalances(anchorageBalance)
+  }
 }
 
 Object.keys(CONFIG).forEach((chain) => {
@@ -134,6 +160,8 @@ const vaultConfigs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 // discards idle supply on aave like markets for USDS and DAI
@@ -281,6 +309,8 @@ const curveConfigs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 async function addCurveBalances(api) {
@@ -336,6 +366,8 @@ const erc4626Configs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 async function addVaultBalances(api) {

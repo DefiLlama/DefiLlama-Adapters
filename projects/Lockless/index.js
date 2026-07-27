@@ -14,6 +14,6 @@ async function tvl(api) {
 
 module.exports = {
   kava: { tvl },
-  echelon: { tvl: () => ({}), },
+  echelon: { tvl, },
   methodology: "Any & Each 1 SW-Token can only ever be minted by permanent locking of 1 Native token. Hence, the totalSupply() method is used to aggregate the amounts of underlying assets, with their prices fed by the DefiLlama SDK.",
 }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * Slender Protocol — TVL + Borrowed adapter
  *
@@ -21,9 +22,9 @@ const methodologies = require('../helper/methodologies')
 const POOL_ID = 'CCL2KTHYOVMNNOFDT7PEAHACUBYVFLRH2LYWVQB6IPMHHAVUBC7ZUUC2'
 
 const RESERVES = [
-  { symbol: 'XLM', sac: 'CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA' },
+  { symbol: 'XLM', sac: ADDRESSES.stellar.XLM },
   { symbol: 'XRP', sac: 'CAAV3AE3VKD2P4TY7LWTQMMJHIJ4WOCZ5ANCIJPC3NRSERKVXNHBU2W7' },
-  { symbol: 'USDC', sac: 'CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75' },
+  { symbol: 'USDC', sac: ADDRESSES.stellar.USDC },
 ]
 
 const COEFF_PRECISION = 1_000_000_000n

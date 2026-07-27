@@ -1,9 +1,7 @@
-const { getSolBalanceFromStakePool, getConnection } = require('../helper/solana')
+const { getConnection } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 
-// Voltr vault account layout:
-// offset 104: asset mint (pubkey, 32 bytes)
-// offset 168: totalValue (u64, 8 bytes)
+// Voltr vault account layout: asset mint at offset 104 (32 bytes), totalValue (u64 LE) at offset 168
 const EARN_VAULTS = [
   '3maCuTJVPteZ2dFA8dADxz2EbpJHfoAG5txYhXDs6gNQ', // USDC
   '663azFYEnHDTLGf4CEk8KpNTje8XxZVLnQwo9LjbSejy', // USD1
@@ -14,6 +12,8 @@ const EARN_VAULTS = [
 
 async function tvl(api) {
   const connection = getConnection()
+
+  // Hubra Earn (Voltr) vaults — read asset mint + totalValue from on-chain account data
   const accounts = await connection.getMultipleAccountsInfo(EARN_VAULTS.map(v => new PublicKey(v)))
   for (const account of accounts) {
     if (!account || account.data.length < 176) continue
@@ -24,6 +24,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the underlying stablecoins held in Hubra Earn vaults (Voltr), read directly from on-chain vault account data.',
+  methodology:  'TVL is the underlying stablecoins held in Hubra Earn vaults (Voltr), read directly from on-chain vault account data.',
   solana: { tvl },
 }

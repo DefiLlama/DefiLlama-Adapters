@@ -1,5 +1,30 @@
 const { staking } = require('../helper/staking')
-const contracts = require("./contracts.json");
+const contracts = {
+  "tokenHolders": {
+    "ethereum": {
+      "blacklistedTokens": [],
+      "owners": [
+        "0x4bfb33d65f4167ebe190145939479227e7bf2cb0"
+      ]
+    },
+    "fantom": {
+      "blacklistedTokens": [
+        "0x5C4FDfc5233f935f20D2aDbA572F770c2E377Ab0",
+        "0x74e23df9110aa9ea0b6ff2faee01e740ca1c642e"
+      ],
+      "owners": []
+    },
+    "bsc": {
+      "blacklistedTokens": [
+        "0xe98803E5cE78Cf8AAD43267d9852A4057423Cb1d",
+        "0x80d209227cf0a64e1fcbe62c7a80b8e691f0ef4d",
+        "0x1d6cbdc6b29c6afbae65444a1f65ba9252b8ca83",
+        "0x638eebe886b0e9e7c6929e69490064a6c94d204d"
+      ],
+      "owners": []
+    }
+  }
+};
 const { sumTokens2, unwrapLPsAuto } = require("../helper/unwrapLPs");
 const abi = {
     "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt, uint256 boostMultiplier)",

@@ -63,7 +63,7 @@ const tokenMapping = {
   'cardano.omft.near': { name: 'cardano', decimals: 6 },
   'doge.omft.near': { name: 'dogecoin', decimals: 8 },
   'ltc.omft.near': { name: 'litecoin', decimals: 8 },
-  'xrp.omft.near': { name: 'xrp', decimals: 6 },
+  'xrp.omft.near': { name: 'ripple', decimals: 6 },
 }
 
 function shouldRetry(error) {

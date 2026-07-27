@@ -59,6 +59,14 @@ const COMPOUND_POOLS = {
     wstETH: '0x2411802D8BEA09be0aF8fD8D08314a63e706b29C',
     USDT: '0x5C20B550819128074FD538Edf79791733ccEdd18',
   };
+
+
+  // Superform (Ethereum mainnet)
+  const SUPERFORM_POOLS = {
+    'Flagship WETH SuperVault': '0xa036823b9a24f63c32553367bf181ee04229c3ac', 
+    'Flagship USDC SuperVault': '0xf6ebea08a0dfd44825f67fa9963911c81be2a947',
+    'Flagship WBTC SuperVault': '0x8c365af7094eaac29314edee577b435892ca93a3'
+  };
   
   // Dolomite (Ethereum mainnet)
   const DOLOMITE_POOLS = {
@@ -100,6 +108,7 @@ const COMPOUND_POOLS = {
     ...Object.values(WASABI_POOLS),
     ...Object.values(YEARN_VAULTS),
     ...Object.values(YO_PROTOCOL_VAULTS),
+    ...Object.values(SUPERFORM_POOLS),
   ];
   
   module.exports = {

@@ -10,7 +10,9 @@ let totalVaultsProcessed = 0;
 async function tvl(api) {
   const config  = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
 
-  const chain = api.chain === "avax" ? 'avalanche' : api.chain;
+  let chain = api.chain;
+  if (chain === "avax") chain = 'avalanche';
+  else if (chain === "hyperliquid") chain = 'hyperevm';
 
   const chainConfig = config[chain];
   if (!chainConfig || !chainConfig.vaults) {
@@ -18,19 +20,23 @@ async function tvl(api) {
     return {};
   }
   
-  debugLog(`[Fusion (by IPOR)] Processing ${chainConfig.vaults.length} vaults on ${chain}:`);
-  
-  const calls = chainConfig.vaults.map((vault, index) => {
-    debugLog(`  Vault ${index + 1}/${chainConfig.vaults.length}: ${vault.PlasmaVault} (${vault.name || 'Unknown'})`);
-    return vault.PlasmaVault;
-  });
+  // dedupe by PlasmaVault address
+  const seen = new Set();
+  const calls = [];
+  for (const vault of chainConfig.vaults) {
+    const key = vault.PlasmaVault.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    calls.push(vault.PlasmaVault);
+  }
 
   totalVaultsProcessed += calls.length;
-  
+
   debugLog(`[Fusion (by IPOR)] Total vaults processed on ${chain}: ${calls.length}`);
   debugLog(`[Fusion (by IPOR)] GRAND TOTAL vaults processed across all chains so far: ${totalVaultsProcessed}`);
-  
-  return api.erc4626Sum2({ calls })
+
+  // permitFailure so vaults not yet deployed at a historical block are skipped instead of throwing
+  return api.erc4626Sum2({ calls, permitFailure: true })
 }
 
 module.exports = {
@@ -48,5 +54,7 @@ module.exports = {
   tac: { tvl },
   plasma: { tvl },
   avax: { tvl },
-  katana: { tvl }
+  katana: { tvl },
+  hyperliquid: { tvl },
+  robinhood: { tvl }
 };

@@ -41,13 +41,9 @@ module.exports = {
       getUniTVL({ factory: PUMP_FACTORY, useDefaultCoreAssets: true }), 
       getTridentTVL({ chain: CHAIN, factory:PUMP_V3 }),
     ]),
-    staking: sdk.util.sumChainTvls([
-      // If you later add KRILL/PEARL single-asset staking, append similar lines here.
-      staking([MASTERCHEFS[0]], [TOKENS.SHELL]),
-      staking([MASTERCHEFS[0]], [TOKENS.SBWPM]),
-      staking([MASTERCHEFS[0]], [TOKENS.SADOL]),
-      staking([MASTERCHEFS[1]], [TOKENS.KRILL]),
-      staking([MASTERCHEFS[2]], [TOKENS.PEARL]),
-    ])
+    staking: staking(
+      [MASTERCHEFS[0], MASTERCHEFS[1], MASTERCHEFS[2]], 
+      [TOKENS.SHELL, TOKENS.SBWPM, TOKENS.SADOL, TOKENS.KRILL, TOKENS.PEARL]
+    )
   },
 }

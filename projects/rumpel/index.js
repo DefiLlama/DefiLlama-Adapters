@@ -126,6 +126,7 @@ const TOKENS = {
   CBBTC: ADDRESSES.ethereum.cbBTC,
   POND: "0x57B946008913B82E4dF85f501cbAeD910e58D26C",
   SENA: "0x8bE3460A480c80728a8C4D7a5D5303c85ba7B3b9",
+  ENA: "0x57e114B691Db790C35207b2e685D4A43181e6061",
   // HyperEVM tokens
   HYPEREVM_WHYPE: ADDRESSES.hyperliquid.WHYPE,
   HYPEREVM_WSTHYPE: ADDRESSES.hyperliquid.wstHYPE,
@@ -224,7 +225,7 @@ async function tvl(api) {
       abi: "function position(bytes32,address) view returns (uint256,uint128,uint128 amount)",
       calls: owners.map((owner) => ({ params: [MORPHO_SUSDE_MARKET_ID, owner] })),
     });
-    api.add(TOKENS.USDE, positions.map(i => i.amount))
+    api.add(TOKENS.SUSDE, positions.map(i => i.amount))
   }
 
   async function handleFluidPositions() {
@@ -369,7 +370,7 @@ async function tvl(api) {
       { collateral: TOKENS.SYMBIOTIC_WBTC_COLLATERAL, underlying: TOKENS.WBTC },
       { collateral: TOKENS.SYMBIOTIC_RETH_COLLATERAL, underlying: ADDRESSES.ethereum.RETH },
       { collateral: TOKENS.SYMBIOTIC_CBETH_COLLATERAL, underlying: ADDRESSES.ethereum.cbETH },
-      { collateral: TOKENS.SYMBIOTIC_ENA_COLLATERAL, underlying: ADDRESSES.ethereum.ENA },
+      { collateral: TOKENS.SYMBIOTIC_ENA_COLLATERAL, underlying: TOKENS.ENA },
       { collateral: TOKENS.SYMBIOTIC_ETHFI_COLLATERAL, underlying: ADDRESSES.ethereum.ETHFI },
       { collateral: TOKENS.SYMBIOTIC_FXS_COLLATERAL, underlying: ADDRESSES.ethereum.FXS },
       { collateral: TOKENS.SYMBIOTIC_TBTC_COLLATERAL, underlying: ADDRESSES.ethereum.tBTC },
@@ -544,6 +545,7 @@ async function getOwners(api) {
 module.exports = {
   methodology:
     "Sums up the supported tokens in Rumpel Wallets + Deposits in the Rumpel Point Tokenization Vault",
+  doublecounted: true,
   start: DEPLOYMENT.RUMPEL_WALLET_FACTORY.timestamp,
   ethereum: {
     tvl,

@@ -33,15 +33,19 @@ const config = {
     uniNFT: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
     uniV4NFT: "0x3C3Ea4B57a46241e54610e5f022E5c45859A1017",
     slipNFT: "0x416b433906b1B72FA758e166e239c43d68dC6F29",
+    slipV3NFT: "0xf7f8ccce99Ca2896eC75D3A399D152dB96808399",
     wAeroNFT: "0x17B5826382e3a5257b829cF0546A08Bd77409270".toLowerCase(),
     sAeroNFT: "0x9f42361B7602Df1A8Ae28Bf63E6cb1883CD44C27".toLowerCase(),
     sSlipNFT: "0x1Dc7A0f5336F52724B650E39174cfcbbEdD67bF1".toLowerCase(),
+    sSlipV3NFT: "0xF6a87d944204bb5Fdb9CF5534c03c46895f78eCd".toLowerCase(),
     wsSlipNFT: "0xD74339e0F10fcE96894916B93E5Cc7dE89C98272".toLowerCase(),
+    wsSlipV3NFT: "0xC4D3d804ed64C1f78097799208D46b1db4252749".toLowerCase(),
     pools: [
       "0x803ea69c7e87D1d6C86adeB40CB636cC0E6B98E2", // wethPool
       "0x3ec4a293Fb906DD2Cd440c20dECB250DeF141dF1", // usdcPool
     ],
     resolveSlipstreamV2: false,
+    resolveSlipstreamV3: true,
   },
   unichain: {
     chainId: 130,

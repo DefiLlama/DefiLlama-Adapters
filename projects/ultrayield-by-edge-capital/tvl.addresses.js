@@ -23,6 +23,8 @@ const CONFIG = {
       '0x965ec3552427b8258bd0a0c7baa234618fc98d01', // Edge UltraYield USDT (Morpho, Ethereum)
       '0xfacaa225fcfcd8644a77f2cce833907537198ae9', // Resolv USR Ecosystem Vault
       '0x62efa7cacc11caa959a8f956ec4f683302397e5c', // YieldNest RWA
+      '0xc46efcc8e39c8f02425e367423871cd4633b7908', // UltraYield ETH
+      '0x36bdaefd92579da58bfe207e16dafa39835bbcb3', // Edge Credit Vault
     ],
     issuance: [
       '0xbb51e2a15a9158ebe2b0ceb8678511e063ab7a55', // Midas - mEDGE
@@ -108,6 +110,9 @@ const CONFIG = {
       '0x6b343f7b797f1488aa48c49d540690f2b2c89751', // Gearbox Monad USDC
       '0xc4173359087ce643235420b7bc610d9b0cf2b82d', // Gearbox Monad AUSD
       '0x164a35f31e4e0f6c45d500962a6978d2cbd5a16b', // Gearbox Monad USDT0
+    ],
+    issuance: [
+      '0x1c8ee940b654bfced403f2a44c1603d5be0f50fa', // Midas - mEDGE
     ],
   },
   optimism: {

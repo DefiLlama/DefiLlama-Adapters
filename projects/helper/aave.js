@@ -321,12 +321,14 @@ function aaveV3Export(config) {
 
     let blacklistedTokens = []
     let blacklistLenders = []
+    let isInsolvent = false
 
     if (typeof chainConfig === 'object' && !Array.isArray(chainConfig)) {
       poolDatas = chainConfig.poolDatas
       abis = chainConfig.abis || {}
       blacklistedTokens = chainConfig.blacklistedTokens || []
       blacklistLenders = chainConfig.blacklist_lenders || []
+      isInsolvent = chainConfig.isInsolvent || false
       Object.entries(abis).forEach(([k, v]) => abi[k] = v)
     }
 
@@ -401,7 +403,7 @@ function aaveV3Export(config) {
 
     exports[chain] = {
       tvl: (api) => fetchReserveData(api, poolDatas),
-      borrowed: (api) => fetchReserveData(api, poolDatas, true),
+      borrowed: isInsolvent ? async () => ({}) : (api) => fetchReserveData(api, poolDatas, true),
     }
   })
 

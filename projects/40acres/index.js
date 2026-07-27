@@ -1,18 +1,14 @@
 
-const { getVaultBalance, fortyAcresMapping, baseTokenMapping, veNftMapping, getBorrowed , getAvaxTvl,} = require("./helpers");
-const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
+const { getVaultBalance, getBorrowed, getAvaxTvl, getPortfolioVeNftTvl } = require("./helpers");
 
 
 async function getLockedVeNFTBalance(api) {
-  if(api.chain==='avax')
-    await getAvaxTvl(api);
-  else
-    await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[api.chain], veNft: veNftMapping[api.chain], owner:fortyAcresMapping[api.chain][0]});
+  if (api.chain === 'avax') await getAvaxTvl(api);
+  else await getPortfolioVeNftTvl(api);
 }
 
-
 async function tvl(api) {
-  await getLockedVeNFTBalance(api, fortyAcresMapping[api.chain]);
+  await getLockedVeNFTBalance(api);
   await getVaultBalance(api)
   return
 }
@@ -21,8 +17,6 @@ async function tvl(api) {
 async function borrowed(api) {
   await getBorrowed(api)
 }
-
-
 
 module.exports = {
   timetravel: true,

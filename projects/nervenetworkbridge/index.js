@@ -25,7 +25,7 @@ const getBridgeContract = {
   'optimism': { address :'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5' },
   'klaytn': { address :'0x3758aa66cad9f2606f1f501c9cb31b94b713a6d5' },
   'smartbch': { address :'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5', blackListedTokens: ['0x71df12b5a718e0110991bb641cb379077d9e8ef7'] },
-  'enuls': { address :'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5' },
+  // 'enuls': { address :'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5' },
   'kava': { address :'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5' },
   'ethpow': { address :'0x67b3757f20DBFa114b593dfdAc2b3097Aa42133E' },
   'rei': { address :'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5' },

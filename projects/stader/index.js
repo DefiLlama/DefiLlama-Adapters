@@ -9,19 +9,22 @@ async function getData() {
   return _res;
 }
 
-async function hbarTvl() {
-  const res = await get('https://universe.staderlabs.com/common/tvl', { headers })
-  return { "hedera-hashgraph": res.hedera.native };
+async function hbarTvl(api) {
+  const res = await getData()
+  if(!res.hedera || !res.hedera.native) throw new Error("Invalid hedera data")
+  api.add(nullAddress, res.hedera.native * 1e8)
 }
 
 async function maticTvl() {
   const res = await getData();
-  return { "matic-network": res.polygon.native };
+  if(!res.polygon || !res.polygon.native) throw new Error("Invalid polygon data")
+  api.add(nullAddress, res.polygon.native * 1e18)
 }
 
-async function bscTvl() {
+async function bscTvl(api) {
   const res = await getData();
-  return { binancecoin: res.bnb.native };
+  if(!res.bnb || !res.bnb.native) throw new Error("Invalid bsc data")
+  api.add(nullAddress, res.bnb.native * 1e18)
 }
 
 async function ethTvl(api) {
@@ -64,8 +67,9 @@ module.exports = {
         params: [sdBalance],
       });
 
+      // if(!res.polygon || !res.polygon.native) throw new Error("Invalid polygon data")
       const balances = {
-        "matic-network": res.polygon.native,
+        "polygon": res.polygon.native ?? 0, // temp fix until api error is resolved
         [nullAddress]:
           +SDToEth + +(await ethTvl(api)) + +nodeOperatorCount * 4 * 1e18, // 4 ETH per node operator
       };

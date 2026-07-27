@@ -27,9 +27,9 @@ module.exports = {
   // hallmarks: [
   //   ['2024-11-16',"Price Oracle Exploit"]
   // ],
-  sonic: aaveV2Export(sonic.POLTER_LENDINGPOOL_CONTRACT),
+  sonic: aaveV2Export(sonic.POLTER_LENDINGPOOL_CONTRACT, { isInsolvent: true }),
   fantom: aaveV2Export(fantom.POLTER_LENDINGPOOL_CONTRACT, { isInsolvent: true }),
-  base: aaveV2Export(base.POLTER_LENDINGPOOL_CONTRACT),  
+  base: aaveV2Export(base.POLTER_LENDINGPOOL_CONTRACT, { isInsolvent: true }),  
 }
 
 module.exports.sonic.staking = sumTokensExport({ owner: sonic.MULTIFEE_CONTRACT, tokens: [sonic.POLTER_CONTRACT], lps: [sonic.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })

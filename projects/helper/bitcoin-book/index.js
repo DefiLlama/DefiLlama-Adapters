@@ -10,7 +10,7 @@ const imports = [
 const { sumTokensExport } = require("../sumTokens.js");
 const fetchers = require("./fetchers.js");
 
-const p2pb2b = ["39BFtTzZjj6o2s7eewefFQxqM4617VmhEK"];
+const p2pb2b = ["bc1qsllhrk7w4e4kprc5qhqtqg9p6e83ektc2d7qma"];
 
 const ssiProtocol = ["1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM"];
 
@@ -38,7 +38,7 @@ function getBTCExport(key) {
 
   if (typeof value === "function")
     return async (api) => {
-      let owners = await value();
+      let owners = await value(api);
       return sumTokensExport({ owners })(api);
     };
 
@@ -306,6 +306,8 @@ module.exports = {
     "3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9",
     "bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34",
     "bc1pkldc3d64ceqshhznxuj78r6e0a3p7gtdrrue07zmcq54xzlyuu9sppvxk0",
+    "bc1q47zfy02qemw2eeqk673dsfcmwlqapsn420yde4",
+    'bc1pyz7l3u2wdhvdwgej0n6myhp6wzrr0qa3982l7zq5v3k5f6fxgmyqg5vkxu'
   ],
   merlin: [
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
@@ -778,6 +780,7 @@ module.exports = {
     "bc1qar3hvdpfqy388pkrp95ukewuxsr600wvyf0lxt",
     "bc1qfs5qwymqcwtdtwjkac4z5h99r6dp4wwvvcfxyr",
     "bc1qdt0dgff2u8y5pyj525k3qt9zdqyzy4kzznjrl8",
+    "3Qv1U918UVAbjii8RAX5msoifREmw3cVfL",
   ],
   mtGox: [
     "17Tf4bVQaCzwWrDWGRPC97RLCHnU4LY8Qr",
@@ -909,6 +912,11 @@ module.exports = {
     "bc1qcwk60napcfcljv6phg69gfyfmp3emsgdj9cn5v",
     "bc1q4rtnrtnu829eet3m27huh6ld7x0xczjxd5dg5r",
     "bc1q7vfv3h99vxwu300qej6x2qdfsn58kq6nc9hec6",
+    "bc1qaxrcxhhukne3mnk7jt60d7hgn9a2dqt0gmwh67",
+    "bc1qgu9sf2888glnm6xzfz0q503gpdn64u2swlj2qh",
+    "bc1qh24tm2d8ve8nvjx6uugm2mf28m2z5ytdjvk06v",
+    "bc1ql3fe2x2tpyl75hwn7xe0g42dsenaxvr6qvccdy",
+    "bc1qn54dfx4r8tf7ychn6fvas8tczkcq302gjfsrh4",
   ],
   probit: [
     "19EgVpboqNjortWyhJSDAGRvHDtduqiSfr",
@@ -921,7 +929,6 @@ module.exports = {
     "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2",
   ],
   rosenBridge: ["bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t"],
-  rskBridge: ["3GQ87zLKyTygsRMZ1hfCHZSdBxujzKoCCU"],
   silkroad: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
@@ -1153,6 +1160,12 @@ module.exports = {
     "1EovnsPsskU15rQhoJJiKpUxQzufryvpGm",
     "3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo",
     "3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh",
+  ],
+  circleBTC: [
+    '1JkKmG26nUBcPS99TsCVsReSXvLkEai4ca',
+    '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
+    '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
+    '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
   ],
 };
 

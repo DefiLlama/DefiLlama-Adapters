@@ -1,16 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { queryV1Beta1 } = require('../helper/chain/cosmos.js');
-
-const paginationLimit = 1000;
+const { queryV1Beta1, queryV1Beta1V2 } = require('../helper/chain/cosmos.js');
 
 const figureMarketsExchangeID = '1'
-
-const lockedTokensQuery = (nextKey) =>
-    `exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=${
-        paginationLimit
-    }${
-        nextKey ? `&pagination.key=${nextKey}` : ""
-    }`;
 
 const collateralizedAssets = [
     'pm.sale.pool.3dxq3fk9llvhrqqwhodiap', // YLDS HELOCs
@@ -18,22 +9,18 @@ const collateralizedAssets = [
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy' // YLDS HELOC+
 ]
 
-const getLockedTokens = async (key, api) => {
-    const nextTokens = await queryV1Beta1({
+const getLockedTokens = async (api) => {
+    const commitments = await queryV1Beta1V2({
         chain: 'provenance',
-        url: lockedTokensQuery(key)
+        url: `exchange/v1/market/${figureMarketsExchangeID}/commitments`,
+        limit: 1000,
     })
-    nextTokens.commitments.map((c) =>
-        c.amount.map((a) => {
+    for (const c of commitments) {
+        for (const a of c.amount) {
             if (!collateralizedAssets.includes(a.denom)) {
                 api.add(a.denom, a.amount)
             }
-        })
-    );
-    let nextKey = nextTokens.pagination.next_key;
-    if (nextKey) {
-        nextKey = nextKey.replace(/\+/g, "-").replace(/\//g, "_");
-        return getLockedTokens(nextKey, api);
+        }
     }
 };
 
@@ -68,7 +55,7 @@ const getPoolsCollateralValue = async (api) => {
 }
 
 const tvl = async (api) => {
-    await getLockedTokens(null, api)
+    await getLockedTokens(api)
     await getPoolsCollateralValue(api)
     return sumTokens2({ api })
 }
