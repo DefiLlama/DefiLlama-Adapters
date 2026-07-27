@@ -25,6 +25,7 @@ const OWNER_MAP = {
   'berachain': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
   'plume': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
   'solana': '2AoLiH5kVBG2ot1qKoh4ro8F95KQb7HEBbJmkxrwYBec',
+  'adi': '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
 }
 
 async function fetchTokenData(api) {

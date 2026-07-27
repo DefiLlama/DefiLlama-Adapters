@@ -23,7 +23,8 @@ const DEFAULTS = {
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://sui-rpc.publicnode.com',
-  SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
+  // SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
+  SUI_GRAPH_RPC: 'https://graphql.mainnet.sui.io/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
@@ -52,6 +53,8 @@ const DEFAULTS = {
   WHITELISTED_MORPH_RPC: 'https://explorer.morphl2.io/api/eth-rpc',
   BCYPHER_RPC: "https://mainapi.bchscan.io,https://datahub-asia01.bchscan.io,https://datahub-asia02.bchscan.io",
   ROBINHOOD_RPC: 'https://robinhoodchain.blockscout.com/api/eth-rpc',
+  ETHEREUMCLASSIC_RPC: 'https://etc.blockscout.com/api/eth-rpc',
+  FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
 }
 
 const ENV_KEYS = [

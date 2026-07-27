@@ -315,6 +315,9 @@ const configs = {
           ],
         },
         monad: {
+          morphoVaultOwners: [
+            '0x829A13850b684A575C0580a83322890e19c5eFaa',
+          ],
           eulerVaultOwners: [
             '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
           ],
@@ -361,6 +364,18 @@ const configs = {
       ],
     },
   },
+  "coinmerce-capital": {
+    config: {
+      methodology: 'Count all assets are deposited in all vaults curated by Coinmerce Capital.',
+      blockchains: {
+        hyperliquid: {
+          upshiftV2: [
+            '0xcfe06d2499aE635830D11859941e76354D5717CC', // co-curator with clearstar
+          ],
+        },
+      }
+    },
+  },
   "cozy-v3": {
     config: {
       methodology: "Count all assets deposited in Euler vaults curated by Cozy.",
@@ -387,6 +402,11 @@ const configs = {
   "feather": {
     config: {
       blockchains: {
+        ethereum: {
+          morpho: [
+            '0x9f3BEbF1159323f78E5c97Cc30f10907B71fCf8C', // Feather USDC vault
+          ],
+        },
         sei: {
           morpho: [
             '0x015F10a56e97e02437D294815D8e079e1903E41C',
@@ -405,6 +425,11 @@ const configs = {
         klaytn: {
           morphoVaultOwners: [
             '0x6Ba8f7039bC7d79c1959cB8E409Dff2ba05A133E',
+          ],
+        },
+        megaeth: {
+          morpho: [
+            '0x85fCb4604f25e17Ae4e1EAc202adba4F999d7FF5', // Feather MegaETH vault
           ],
         },
       }
@@ -593,7 +618,24 @@ const configs = {
             '0x517aBc7f49DFF75b57A88b9970eF35D6e4C3BD49',
           ],
         },
+        monad: {
+          accountableVaults: [
+            '0x03ef37626BC7C7B3F6cEA4Bcbfeb7764B51E22fB'
+          ]
+        }
       }
+    },
+  },
+  "poppie": {
+    config: {
+      methodology: 'Count all assets deposited in Euler vaults curated by Poppie.',
+      blockchains: {
+        bsc: {
+          eulerVaultOwners: [
+            '0xf4d92bC8006836132364B355DB9CfF204466ABc3',
+          ],
+        },
+      },
     },
   },
   "re7": {
@@ -893,6 +935,7 @@ const configs = {
             '0x0000aeB716a0DF7A9A1AAd119b772644Bc089dA8',
             '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
+            '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
           ],
         },
         polygon: {
@@ -1093,6 +1136,19 @@ const configs = {
       },
     },
   },
+  "valos": {
+    config: {
+      methodology: 'Counts the AUSD managed by the Valos institutional private credit vault using convertToAssets(totalSupply()).',
+      start: '2026-02-13',
+      blockchains: {
+        monad: {
+          accountableVaults: [
+            '0x8d3F9f9Eb2f5E8B48EFBB4074440D1E2A34Bc365',
+          ],
+        },
+      },
+    },
+  },
   "varlamore-capital": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Varlamore Capital.',
@@ -1136,6 +1192,17 @@ const configs = {
           ],
           erc4626: [
             '0x3DD459dE96F9C28e3a343b831cbDC2B93c8C4855',
+          ],
+        },
+      }
+    },
+  },
+  "birch-hill": {
+    config: {
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xbCC5C59E64B0Ff3a3Ee5eAb74BE7c787A0a438F1',
           ],
         },
       }

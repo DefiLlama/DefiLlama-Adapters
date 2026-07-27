@@ -3,6 +3,18 @@ const { uniV3Export } = require('../projects/helper/uniswapV3')
 const { buildProtocolExports } = require('./utils')
 
 const uniV3Configs = {
+  'noxa-fi-v3': {
+    megaeth: { factory: '0x1201EB5081eabc99b23DD952C1BFA5ea090d8779', fromBlock: 249856 },
+    monad: { factory: '0x35af92183701E54f751f8b0376da7F9b151bf5A5', fromBlock: 42804409 },
+    berachain: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 16694222 },
+    sonic: { factory: '0x630957Cf4582baDa8B583B5A9476a7108cFdE0A4', fromBlock: 11885860 },
+    somnia: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 152175636 },
+    '0g': { factory: '0xCd0BB681056b6Fc96E86a4cE0A9644B39bC90a53', fromBlock: 32000000 },
+    plasma: { factory: '0xE7d4E64079FE467A21801B36Ccc6D9B3F66BD372', fromBlock: 1871468 },
+    stable: { factory: '0x8b051B804684A0914a62a22145206bE5AB022D8f', fromBlock: 10757086 },
+    katana: { factory: '0x0742D64925E4C78cb1bAFfce2fA1dceBa8Cf133c', fromBlock: 3425888 },
+    hyperliquid: { factory: '0x0742d64925e4c78cb1baffce2fa1dceba8cf133c', fromBlock: 10002856 },
+  },
   // --- previously consolidated ---
   'blasterswap-v3': { blast: { factory: '0x1A8027625C830aAC43aD82a3f7cD6D5fdCE89d78', fromBlock: 4308657 } },
   'comet-swap-v3': { astar: { factory: '0x2C1EEf5f87F4F3194FdAAfa20aE536b1bA49863b', fromBlock: 12168518 } },
@@ -1140,6 +1152,10 @@ const uniV3Configs = {
       factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
       fromBlock: 420275312,
     },
+    robinhood: {
+      factory: '0xE0c4ceb92d08CA985bB70fe0a22fEb121A9854A8',
+      fromBlock: 15761673,
+    },
   },
   'reservoir-tools-v3': {
     abstract: {
@@ -1730,6 +1746,30 @@ const uniV3Configs = {
   },
   'hyperlynx-v3': {
     hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+  },
+  'machima': {
+    base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
+  },
+  'robinswap-v3': {
+    robinhood: { factory: '0xea561e058313b96011e5070ca7d0f027a44e3748', fromBlock: 6027503 },
+  },
+  'swaphood-v3': {
+    robinhood: { factory: '0x0Ec554F0BfF0Be6C99d1e95C8015bb0950f6A2C7', fromBlock: 6052562 },
+  },
+  'up-v3': {
+    start: '2026-07-10',
+    robinhood: {
+      factory: '0x1ac9dB4a2608ba45D6127B1737949b51Bb54B7F3',
+      fromBlock: 6184096,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
+  },
+  'parityswap-v3': {
+    robinhood: { factory: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA', fromBlock: 14320075 },
+  },
+  'giga-dex-cl': {
+    robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
   }
 }
 
