@@ -11941,15 +11941,6 @@ const configs = {
       }
     },
   },
-  "cookiechain-bridge": {
-    "methodology": "Tracks all COOK locked in the solana bridge.",
-    "solana": {
-      "owner": "DoYYCtcG2vfrE3HtxBBXiNVieMutvWBXsgbF3SKtYCyx",
-      "tokens": [
-        "36ZrtQoab5MhhySaP1YSTwUahSk6GRVUTtZ6cuVfm9e1"
-      ]
-    },
-  },
   "copump": {
     "core": {
       "owner": "0xbEF63121a00916d88c4558F2a92f7d931C67115B",
