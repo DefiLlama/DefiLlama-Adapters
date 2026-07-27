@@ -59,7 +59,63 @@ const CONFIG = {
   monad: ['0xB65A68B98274ef7D9a60E0C0747dD1BEc3D32fad']
 };
 
-module.exports = aaveV3Export(CONFIG)
+const aaveExports = aaveV3Export(CONFIG)
+
+// Mantle-specific supply calculation.
+// The default helper uses underlying.balanceOf(aTokenAddress), which under-reports
+// (or reverts for) several Mantle assets. For a correct deposit figure we read each
+// aToken's totalSupply() directly from the protocol data provider.
+const MANTLE_POOL_DATA = '0x487c5c669D9eee6057C44973207101276cf73b68'
+
+aaveExports.mantle.tvl = async (api) => {
+  const reserves = await api.call({
+    target: MANTLE_POOL_DATA,
+    abi: 'function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])',
+  })
+  const underlyingTokens = reserves.map((r) => r.tokenAddress)
+
+  const tokenAddresses = await api.multiCall({
+    calls: underlyingTokens,
+    target: MANTLE_POOL_DATA,
+    abi: 'function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)',
+  })
+  const aTokens = tokenAddresses.map((t) => t.aTokenAddress)
+
+  const supplies = await api.multiCall({
+    calls: aTokens,
+    abi: 'erc20:totalSupply',
+  })
+
+  underlyingTokens.forEach((token, i) => {
+    api.add(token, supplies[i])
+  })
+
+  // Mirror the default Ethena blacklist lender subtraction for Mantle.
+  if (ETHENA_BLACKLIST.length > 0) {
+    const blCalls = []
+    for (const entry of ETHENA_BLACKLIST) {
+      underlyingTokens.forEach((token) => {
+        blCalls.push({ target: MANTLE_POOL_DATA, params: [token, entry.user] })
+      })
+    }
+
+    const userData = await api.multiCall({
+      calls: blCalls,
+      abi: 'function getUserReserveData(address asset, address user) view returns (uint256 currentATokenBalance, uint256 currentStableDebt, uint256 currentVariableDebt, uint256 principalStableDebt, uint256 scaledVariableDebt, uint256 stableBorrowRate, uint256 liquidityRate, uint40 stableRateLastUpdated, bool usageAsCollateralEnabled)',
+    })
+
+    userData.forEach((data, i) => {
+      const token = blCalls[i].params[0]
+      if (+data.currentATokenBalance > 0) {
+        api.add(token, -data.currentATokenBalance)
+      }
+    })
+  }
+
+  return api.getBalances()
+}
+
+module.exports = aaveExports
 
 module.exports.hallmarks = [
   ['2022-08-04', "Start OP Rewards"],
