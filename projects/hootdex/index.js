@@ -1,12 +1,16 @@
 /**
  * DefiLlama TVL adapter for Hootdex / Pecu Novus (PECU).
  *
- * Destination: fork DefiLlama/DefiLlama-Adapters, add this file at
- * projects/hootdex/index.js.
- *
  */
 
 const axios = require('axios');
+
+// RPC URL resolution, matching DefiLlama's own documented convention
+// (README: "Changing RPC providers" - overrides come from a {CHAIN}_RPC
+// env var, checked against @defillama/sdk's own providers.json for the
+// default). Priority: explicit env override > providers.json entry >
+// hardcoded fallback.
+//
 
 let CHAIN_PROVIDERS = {};
 try {
@@ -51,8 +55,9 @@ async function rpcCall(method, params) {
 // Treasury address discovery via JSON-RPC (eth_getTreasuryAddresses), not
 // a separate REST call to a different host - see header note on why the
 // REST route for this data isn't actually reachable.
+//
 
-async function getTreasuryAddresses() {
+async function getTreasuryData() {
   const result = await rpcCall('eth_getTreasuryAddresses', []);
 
   if (!Array.isArray(result)) {
@@ -63,43 +68,40 @@ async function getTreasuryAddresses() {
     );
   }
 
-  const addresses = new Set();
+  const treasuries = [];
+  const seen = new Set();
+
   for (const [i, entry] of result.entries()) {
-    const addr = entry?.real_treasury_address;
-    if (typeof addr !== 'string' || addr.trim().length === 0) {
+    const address = entry?.real_treasury_address;
+    const amount = Number(entry?.amount);
+
+    if (typeof address !== 'string' || address.trim().length === 0) {
       throw new Error(
-        `eth_getTreasuryAddresses returned a malformed record at index ${i} (missing/invalid ` +
-          `real_treasury_address) - got: ${JSON.stringify(entry).slice(
-            0,
-            300
-          )}. Refusing to ` +
-          `silently skip it, since that would understate HDVL rather than fail loudly.`
+        `Invalid treasury record at index ${i}: missing real_treasury_address`
       );
     }
-    addresses.add(addr);
+
+    if (!Number.isFinite(amount) || amount < 0) {
+      throw new Error(
+        `Invalid treasury amount for ${address}: ${JSON.stringify(
+          entry?.amount
+        )}`
+      );
+    }
+
+    // Avoid duplicate treasury entries
+    if (seen.has(address)) continue;
+    seen.add(address);
+
+    treasuries.push({
+      address,
+      amount
+    });
   }
 
-  return Array.from(addresses);
+  return treasuries;
 }
 
-// Real chain-RPC read: one pecu_getEscrowBalance call per real escrow
-// address, straight to mainnet.pecunovus.net - not to any pre-computed
-// Hootdex-operated report.
-//
-
-async function getEscrowBalance(address) {
-  const result = await rpcCall('pecu_getEscrowBalance', [address, 'PECU']);
-  const amount = Number(result);
-  if (!Number.isFinite(amount) || amount < 0) {
-    throw new Error(
-      `pecu_getEscrowBalance for ${address} returned an invalid balance (not a finite, ` +
-        `non-negative number) - got: ${JSON.stringify(
-          result
-        )}. Refusing to coerce this to 0.`
-    );
-  }
-  return amount;
-}
 
 async function getPecuPriceUsd() {
   const { data } = await axios.get(MARKETS_JSON_URL, { timeout: 15000 });
@@ -113,9 +115,7 @@ async function getPecuPriceUsd() {
   }
 
   const pecuMarket = markets.find(
-    (m) =>
-      m?.marketId === 'pecu-usxm' ||
-      (m?.base === 'PECU' && m?.quote === 'USXM')
+    (m) => m?.marketId === 'pecu-usxm' || m?.base === 'PECU'
   );
   const price = Number(pecuMarket?.price);
   if (!pecuMarket || !Number.isFinite(price) || price <= 0) {
@@ -128,43 +128,22 @@ async function getPecuPriceUsd() {
   return price;
 }
 
-// Simple concurrency-capped map - many treasury addresses means many
-// sequential round trips if done one at a time, but hammering the API with
-// one unbounded Promise.all per treasury isn't polite either. Batches of 10
-// balances the two concerns without adding a new dependency.
-async function mapWithConcurrency(items, limit, fn) {
-  const results = new Array(items.length);
-  let cursor = 0;
-  async function worker() {
-    while (cursor < items.length) {
-      const i = cursor++;
-      results[i] = await fn(items[i]);
-    }
-  }
-  await Promise.all(
-    Array.from({ length: Math.min(limit, items.length) }, worker)
-  );
-  return results;
-}
-
 async function tvl() {
-  const [addresses, pecuPriceUsd] = await Promise.all([
-    getTreasuryAddresses(),
+  const [treasuries, pecuPriceUsd] = await Promise.all([
+    getTreasuryData(),
     getPecuPriceUsd()
   ]);
 
-  const amounts = await mapWithConcurrency(addresses, 10, getEscrowBalance);
-  const totalPecu = amounts.reduce((sum, a) => sum + a, 0);
+  const totalPecu = treasuries.reduce(
+    (sum, treasury) => sum + treasury.amount,
+    0
+  );
+
   const totalUsd = totalPecu * pecuPriceUsd;
 
-  const balances = {};
-  // Reported as coingecko:tether (a real, already-priced DefiLlama coin key)
-  // with the pre-converted USD amount as the "quantity" - the standard
-  // disclosed-substitution pattern for a token with no native price feed,
-  // combined with misrepresentedTokens: true below. See header note.
-  balances['coingecko:tether'] = totalUsd;
-
-  return balances;
+  return {
+    'coingecko:tether': totalUsd
+  };
 }
 
 module.exports = {
