@@ -92,7 +92,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    "TVL of Jupiter Lend's AMM (Fluid-analog Solana DEX). Enumerates every Dex account and keeps only smart-collateral pools (is_smart_collateral_enabled=1), matching Fluid's DexResolver.getDexCollateralReserves() which returns 0 for smart-debt-only pools. For each pool, both token supply claims on the shared Liquidity Layer are read via the UserSupplyPosition PDA and priced at the reserve's current supply_exchange_price. This is functionally identical to Fluid's token0RealReserves/token1RealReserves (contracts/protocols/dex/poolT1/coreModule/helpers/coreHelpers.sol#_getLiquidityCollateral). Marked doublecounted because this liquidity is already counted in Jupiter Lend's parent TVL.",
+    "TVL of Jupiter Lend's AMM. Enumerates every Dex account in the DEX program and keeps only smart-collateral pools (is_smart_collateral_enabled=1). For each pool, both token supply claims on the shared Liquidity Layer are read via the UserSupplyPosition PDA and priced at the reserve's current supply_exchange_price. Smart-debt pools are excluded because their liquidity flows through the parent Jupiter Lend TVL via the shared liquidity layer. Marked doublecounted because this liquidity is already counted in Jupiter Lend's parent TVL.",
   doublecounted: true,
   solana: { tvl },
 }
