@@ -55,8 +55,9 @@ async function bitcoinTvl(api) {
 }
 
 module.exports = {
+  timetravel: false,
   methodology:
-    'Counts XRP in the XORA XRPL treasury, BTC held in XORA XRPL custody (reported as Bitcoin), and TRX in the XORA Tron treasury.',
+    'Counts XRP, BTC, and TRX held in the XORA treasury.',
   ripple: { tvl: rippleTvl },
   bitcoin: { tvl: bitcoinTvl },
   tron: {
