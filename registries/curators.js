@@ -481,9 +481,8 @@ const configs = {
             // Gearbox
             "0x683faf5bafd88d4c383ccaf3d61c26af2e164409", // Gearbox - Gami WBTC
           ],
-          midas: [
-            // Midas - turtlePST (Turtle Huma PST Vault), co-curated with Turtle
-            { token: "0xc462f87f78abdd27b1e41c9ede862275d2c7f36b", feed: "0xbd5BaeD1424EC9EF76b7924bFB9342078f5817E6" },
+          midasTokens: [
+            "0xc462f87f78abdd27b1e41c9ede862275d2c7f36b", // Midas - Turtle Huma PST Vault
           ],
         },
         robinhood: {
