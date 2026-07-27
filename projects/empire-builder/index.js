@@ -62,7 +62,7 @@ async function staking(api) {
 
   const vaults = await getEmpireVaults(api);
   const ownerTokens = vaults.filter((v) => !quote.has(v.baseToken.toLowerCase())).map((v) => [[v.baseToken], v.vault]);
-  if (ownerTokens.length) await api.sumTokens({ ownerTokens });
+  if (ownerTokens.length) await api.sumTokens({ ownerTokens, permitFailure: true });
 
   const logs = await getLogs2({
     api,
@@ -72,7 +72,7 @@ async function staking(api) {
     extraKey: 'empire-staked-tokens',
   });
   const stakedTokens = [...new Set(logs.map((l) => l.token.toLowerCase()))].filter((t) => !quote.has(t));
-  if (stakedTokens.length) await api.sumTokens({ owner: cfg.stakingLocker, tokens: stakedTokens });
+  if (stakedTokens.length) await api.sumTokens({ owner: cfg.stakingLocker, tokens: stakedTokens, permitFailure: true });
 }
 
 module.exports = {
