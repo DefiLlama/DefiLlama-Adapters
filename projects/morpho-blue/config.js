@@ -1,9 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-
-// Single source of truth for Morpho Blue deployments per chain.
-// Consumed by ./index.js (the TVL adapter) and by
-// utils/scripts/genInsolventBlacklist.js (the bad-debt detector), so keep the
-// shape stable: { morphoBlue, fromBlock, blackList?, blacklistedMarketIds?, ... }.
 const config = {
   ethereum: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
