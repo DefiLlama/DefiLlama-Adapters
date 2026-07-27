@@ -27757,19 +27757,19 @@ const configs = {
           "0x9694ea20de96D5E46C8FE1E7975D7a2C7C79Bf2c"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0x144120Ef18d4223Ab3f4695653a5755C23FBF469"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0xc978f195C838d3344f74DDBA84235130B3091847"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0xeD4a38cC990a6E5D817C9d89677c886994803d38"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0xAc04FDbADd7CF8d4BaD0F957d37e3fd0c093A9B6"
         ],
         [
