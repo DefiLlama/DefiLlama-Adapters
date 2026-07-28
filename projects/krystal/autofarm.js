@@ -133,7 +133,7 @@ async function getPositionIds(api, { nftIdFetcher, owners }) {
     abi: 'erc20:balanceOf',
     target: nftIdFetcher,
     calls: owners,
-    permitFailure: true,
+    permitFailure: false,
   })
 
   const calls = []
@@ -150,7 +150,7 @@ async function getPositionIds(api, { nftIdFetcher, owners }) {
     abi: abis.tokenOfOwnerByIndex,
     target: nftIdFetcher,
     calls,
-    permitFailure: true,
+    permitFailure: false,
   })
 
   return tokenIds
@@ -166,7 +166,7 @@ async function addPositions(api, { nfpm, nftIdFetcher = nfpm, owners, kind, vaul
 
   // Attribute each position's pair back to the vault that owns it, so the idle-balance pass below
   // only has to check the tokens a vault actually deals in rather than a chain-wide token list.
-  const positions = await api.multiCall({ abi: abis.positions[kind], target: nfpm, calls: tokenIds, permitFailure: true })
+  const positions = await api.multiCall({ abi: abis.positions[kind], target: nfpm, calls: tokenIds, permitFailure: false })
   positions.forEach((position, i) => {
     if (!position) return
     const tokens = vaultTokens[positionIds[i].owner]
