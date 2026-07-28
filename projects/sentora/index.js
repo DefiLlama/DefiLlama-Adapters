@@ -1,4 +1,5 @@
 const { getCuratorExport } = require("../helper/curators");
+const { getContractInstanceStorage } = require("../helper/chain/stellar");
 
 const customConfig = {
   ethereum: {
@@ -10,7 +11,14 @@ const customConfig = {
       '0x3cc0d33b1aeac3d23ea89214b3ac5b4607032167', // Upshift vault BTC
       '0xd0271e199f886ff943859579465498b18ecf1e9d', // Upshift vault ETH
     ]
-  }
+  },
+   stellar: {
+      stellarVaults: [
+        'CA54LVHMAY7HGLMVPN4W72XJB4OGKVZBZX26FWN6JD4P3HJFWQUQEHJO', // XLM vault
+        'CAHEWHOPPDBQYFMAOLDOXXGUX2BCR7EXP4CWYCRY3NEAJB35YPZMMJFF', // USDC vault
+        'CAQRAXBU6G4AAX4BZ7R4WLB62TSVAQFS5ZXJDVXRLAU2NZ2ZTGU5QOYB', // PYUSD vault
+      ]
+    }
 }
 
 const abis = {
@@ -76,6 +84,13 @@ const handlers = {
   async upshift(api, vaults) {
     await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:getTotalAssets' });
   },
+
+  async stellarVaults(api, vaults) {
+    for (const vault of vaults) {
+      const { DepositAsset, TotalPrincipal } = await getContractInstanceStorage(vault)
+      if (DepositAsset && TotalPrincipal) api.add(DepositAsset, TotalPrincipal.toString())
+    }
+  }
 }
 
 async function customTvl(api) {
@@ -88,7 +103,7 @@ async function customTvl(api) {
   return api.getBalances()
 }
 
-module.exports = { ...curatorExport }
+module.exports = { timetravel: false, ...curatorExport }
 
 for (const chain of Object.keys(customConfig)) {
   const curatorChain = curatorExport[chain]

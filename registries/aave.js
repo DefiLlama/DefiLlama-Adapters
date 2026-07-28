@@ -111,6 +111,16 @@ const aaveConfigs = {
       dataHelpers: ['0x71B53fC437cCD988b1b89B1D4605c3c3d0C810ea'],
     },
   },
+  'ssap': {
+    clv: {
+      addressesProviderRegistry: '0x070CaAeac85CCaA7E8DCd88421904C2259Abed34',
+      dataHelpers: ['0x49617386d6aAaA6aE23c0E7799B5c4F79f33f1B1'],
+    },
+    oasis: {
+      addressesProviderRegistry: '0xBB4dfd53BA393DCD1AD1e30809C9527e9a00d522',
+      dataHelpers: ['0x2b8DD6DE52F20EfA309BC56454b7A929B7a1E66D'],
+    },
+  },
   'luckypeaches': {
     hemi: { dataHelpers: ['0x986b04d0a228b8cB81E236F9Add85e43758F21B2'] },
     hyperliquid: { dataHelpers: ['0x473f5e779b36DdC54f63107B255580Db049EFc5b'] },
@@ -184,6 +194,39 @@ const aaveConfigs = {
       dataHelpers: ['0x2a002054A06546bB5a264D57A81347e23Af91D18'],
       v3: true,
     },
+  },
+  'zerolend': {
+    hallmarks: [
+      ["2026-02-17", "winddown announced"],
+    ],
+    // borrowed marked insolvent on every chain (protocol winddown) => borrowed excluded from TVL
+    era: { dataHelpers: ['0xB73550bC1393207960A385fC8b34790e5133175E'], isInsolvent: true },
+    manta: { dataHelpers: ['0x67f93d36792c49a4493652B91ad4bD59f428AD15'], isInsolvent: true },
+    blast: { dataHelpers: ['0xc6DF4ddDBFaCb866e78Dcc01b813A41C15A08C10'], isInsolvent: true },
+    hemi: { dataHelpers: ['0x9698FdF843cbe4531610aC231B0047d9FFc13bC6'], isInsolvent: true },
+    base: { dataHelpers: ['0xA754b2f1535287957933db6e2AEE2b2FE6f38588'], isInsolvent: true },
+    linea: {
+      dataHelpers: [
+        '0x67f93d36792c49a4493652B91ad4bD59f428AD15', // main linea market
+        '0x9aFB91a3cfB9aBc8Cbc8429aB57b6593FE36E173', // croak linea market
+        '0xEe9ec60657B714E3FAC5255a5443AC5EC7Ba5bB0', // foxy linea market
+      ],
+      isInsolvent: true,
+      staking: ['0x08D5FEA625B1dBf9Bae0b97437303a0374ee02F8', '0x78354f8DcCB269a615A7e0a24f9B0718FDC3C7A7'], // zeroLocker, zero
+      pool2: [['0x8bb8b092f3f872a887f377f73719c665dd20ab06'], ['0x0040f36784dda0821e74ba67f86e084d70d67a3a']], // zlpLocker, zeroEthNileLP
+    },
+    xlayer: { dataHelpers: ['0x97e59722318F1324008484ACA9C343863792cBf6'], isInsolvent: true },
+    zircuit: { dataHelpers: ['0xA754b2f1535287957933db6e2AEE2b2FE6f38588'], isInsolvent: true },
+    ethereum: {
+      dataHelpers: [
+        '0x47223D4eA966a93b2cC96FFB4D42c22651FADFcf', // ethereum lrt market
+        '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611', // bitcoin lrt market
+        '0x298ECDcb0369Aef75cBbdA3e46a224Cfe622E287', // stablecoin rwa market
+      ],
+      isInsolvent: true,
+    },
+    corn: { dataHelpers: ['0x2f7e54ff5d45f77bFfa11f2aee67bD7621Eb8a93'], isInsolvent: true },
+    abstract: { dataHelpers: ['0x8EEAE4dD40EBee7Bb6471c47d4d867539CF53ccF'], isInsolvent: true },
   },
   // --- newly migrated aaveExports protocols ---
   'palomino-finance': {
@@ -331,6 +374,7 @@ const aaveConfigs = {
       addressesProviderRegistry: '0xEcbDd440C7a929d7524784Af634dF9EB0747b9e7',
       dataHelpers: ['0x99e8269dDD5c7Af0F1B3973A591b47E8E001BCac'],
       v3: true,
+      isInsolvent: true,
     },
   },
   'sio2': {

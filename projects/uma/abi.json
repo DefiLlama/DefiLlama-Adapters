@@ -1,6 +1,0 @@
-{
-  "collateralCurrency": "address:collateralCurrency",
-  "collateralToken": "address:collateralToken",
-  "l1Token": "address:l1Token",
-  "balanceOf": "uint256:balanceOf"
-}

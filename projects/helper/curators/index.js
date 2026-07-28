@@ -386,6 +386,31 @@ async function getCuratorTvlErc4626(api, vaults) {
   }
 }
 
+async function getCuratorTvlAccountableVault(api, vaults) {
+  if (!vaults || vaults.length === 0) return
+
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
+  const supplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
+  const balances = await api.multiCall({ abi: ABI.ERC4626.convertToAssets, calls: vaults.map((vault, i) => ({ target: vault, params: [supplies[i] || 0] })), permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (!assets[i] || !balances[i]) continue
+    api.add(assets[i], balances[i])
+  }
+}
+
+async function getCuratorTvlMidasToken(api, vaults) {
+  // for plain access-controlled ERC20 share tokens minted 1:1 on deposit and burned on redeem
+  // (e.g. Midas-style tokenized funds like EtherFi's "Liquid Euro"/weEUR).
+  // There's no asset()/rate function - the token's own totalSupply() is the fund's AUM, and its
+  // own market price (already tracked by the coins API) converts it to USD.
+  if (!vaults || vaults.length === 0) return
+  const totalSupplies = await api.multiCall({ abi: ABI.totalSupply, calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    if (!totalSupplies[i]) continue
+    api.add(vaults[i], totalSupplies[i])
+  }
+}
+
 async function getCuratorTvlAeraVault(api, vaults) {
   const assetRegistries = await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
   const existedVaults = []
@@ -596,6 +621,17 @@ async function getCuratorTvl(api, vaults) {
     await getNested4626Vaults(api, vaults.nestedVaults)
   }
 
+  // accountable AsyncRedeemVaults - totalAssets() returns idle so use convertToAssets(totalSupply()) instead
+  if (vaults.accountableVaults) {
+    await getCuratorTvlAccountableVault(api, vaults.accountableVaults)
+  }
+
+  // plain ERC20 share tokens whose totalSupply() is the fund's AUM, priced via their own
+  // market price (e.g. EtherFi's "Liquid Euro" weEUR)
+  if (vaults.midasTokens) {
+    await getCuratorTvlMidasToken(api, vaults.midasTokens)
+  }
+
   return api.getBalances()
 }
 
@@ -632,4 +668,5 @@ module.exports = {
   getCuratorExport,
   kaminoLendVaultTvl,
   getMorphoVaults,
+  getCuratorTvlAccountableVault,
 }
