@@ -1,5 +1,5 @@
-const { sumTokens } = require("./helper/sumTokens");
-const bitcoinAddressBook = require("./helper/bitcoin-book/index.js");
+const { sumTokens } = require("../helper/sumTokens");
+const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 
 // SUBFROST is a decentralized custodian on Bitcoin L1. It issues frBTC, a synthetic
 // bitcoin pegged 1:1 to BTC, against BTC held by a FROST signer set. frBTC is issued
