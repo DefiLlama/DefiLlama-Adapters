@@ -24,33 +24,6 @@ const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { allProtocols } = require('./registries')
 
-function checkBalanceHealth(balances, storedKey) {
-  const nanTokens = []
-  const negativeTokens = []
-
-  for (const [token, amount] of Object.entries(balances)) {
-    const value = Number(amount)
-    if (Number.isNaN(value)) {
-      nanTokens.push(`${token} = ${amount}`)
-    } else if (value < 0) {
-      negativeTokens.push(`${token} = ${amount}`)
-    }
-  }
-
-  if (nanTokens.length > 0 || negativeTokens.length > 0) {
-    console.warn(`\n⚠  Balance health warning [${storedKey}]:`)
-    if (nanTokens.length > 0) {
-      console.warn(`   NaN balances (${nanTokens.length}):`)
-      nanTokens.forEach(t => console.warn(`     - ${t}`))
-    }
-    if (negativeTokens.length > 0) {
-      console.warn(`   Negative balances (${negativeTokens.length}):`)
-      negativeTokens.forEach(t => console.warn(`     - ${t}`))
-    }
-    console.warn()
-  }
-}
-
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
@@ -85,7 +58,6 @@ async function getTvl(
 
   let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
   if (tvlBalances === undefined) tvlBalances = api.getBalances()
-  checkBalanceHealth(tvlBalances, storedKey)
   const tvlResults = await computeTVL(tvlBalances, unixTimestamp);
   await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
   usdTvls[storedKey] = tvlResults.usdTvl;
@@ -231,6 +203,7 @@ function validateHallmarks(hallmark) {
   const tokensBalances = {};
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
+  const failedKeys = [];
 
   let tvlPromises = Object.entries(module).map(([chain, value]) => {
     if (typeof value !== "object" || value === null) {
@@ -247,7 +220,13 @@ function validateHallmarks(hallmark) {
       }
 
       return async () => {
-        await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
+        try {
+          await getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances, usdTokenBalances, tvlFunction, storedKey,);
+        } catch (e) {
+          failedKeys.push({ storedKey, error: e && e.message ? e.message : String(e) })
+          console.error(`Error pulling TVL for ${storedKey}:`, e)
+          return;
+        }
         let keyToAddChainBalances = tvlType;
         if (tvlType === "tvl")
           keyToAddChainBalances = "tvl";
@@ -279,6 +258,13 @@ function validateHallmarks(hallmark) {
     }
   });
   if (usdTvls.tvl === undefined) {
+    if (failedKeys.length) {
+      console.error(`\n------ FAILED (${failedKeys.length}) ------`)
+      failedKeys.forEach(({ storedKey, error }) => console.error(storedKey.padEnd(25, " "), error))
+      throw new Error(
+        "Protocol doesn't have total tvl, all the tvl functions above failed to run"
+      );
+    }
     throw new Error(
       "Protocol doesn't have total tvl, make sure to export a tvl key either on the main object or in one of the chains"
     );
@@ -312,6 +298,12 @@ function validateHallmarks(hallmark) {
     }
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
+
+  if (failedKeys.length) {
+    console.error(`------ FAILED (${failedKeys.length}) ------`)
+    failedKeys.forEach(({ storedKey, error }) => console.error(storedKey.padEnd(25, " "), error))
+    console.error("\nNote: total TVL above excludes the failed chains/components listed here.\n")
+  }
 
   await preExit()
   process.exit(0);
