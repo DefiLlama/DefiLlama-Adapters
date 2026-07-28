@@ -401,6 +401,14 @@ const configs = {
   'secured-finance-vaults': {
     ethereum: ['0x7a6E3635694952dC00F6bA4d4AD1a7B892028789']
   },
+  'atoma': {
+    methodology: "TVL is the sum of totalAssets() across both Atoma ERC-4626 vaults on Arbitrum. Deposited USDC is held idle in the vault or deployed as margin/equity on perpetual exchanges (Extended, Nado, Lighter, XYZ) via an operator-controlled trading account; totalAssets is updated on-chain roughly hourly to reflect off-chain venue equity plus idle USDC.",
+    start: '2026-05-05',
+    arbitrum: [
+      '0xCC56410e1a136aF0eCEb7241c6aE394F4d8b581c', // Vault 1 - Extended x Nado
+      '0x1C788E14d8e5B446e3F71B5142e2edaBcAB36da1', // Vault 2 - Lighter x XYZ
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

@@ -2676,6 +2676,27 @@ const configs = {
       ]
     },
   },
+  "bowstop": {
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0x7323e2B2B9cafdceE28DD57Eaf7357F0D19d8e57",
+          "0x3230b8F6fF97366E9ccD3BDaD5F57C6Def569D10",
+          "0xDD4799dfB8E345734ec8e801eCDBaF551360C3e7",
+          "0xc4BC321B0a9059D413c77E2306905166Fe3F83ea",
+        ],
+        "tokens": [ADDRESSES.null]
+      },
+      "staking": {
+        "owners": ["0xD3287B613FdB7a735221C7851c37475C22583621"],
+        "tokens": ["0x507B757cf2157f6357DC385b8096d7daFAefDaAA"]
+      },
+      "pool2": {
+        "owners": ["0x807C8fA32F44D4d38865a76443d4D1D49A5F3BA1"],
+        "tokens": ["0x0555921631F8A2f3b900178b2F02D70353396F7F"]
+      },
+    },
+  },
   "bracket-fi": {
     "ethereum": {
       "owner": "0x9b9d7297C3374DaFA2A609d47C79904e467970Bc",
@@ -11941,15 +11962,6 @@ const configs = {
       }
     },
   },
-  "cookiechain-bridge": {
-    "methodology": "Tracks all COOK locked in the solana bridge.",
-    "solana": {
-      "owner": "DoYYCtcG2vfrE3HtxBBXiNVieMutvWBXsgbF3SKtYCyx",
-      "tokens": [
-        "36ZrtQoab5MhhySaP1YSTwUahSk6GRVUTtZ6cuVfm9e1"
-      ]
-    },
-  },
   "copump": {
     "core": {
       "owner": "0xbEF63121a00916d88c4558F2a92f7d931C67115B",
@@ -16805,6 +16817,13 @@ const configs = {
     "blast": {
       "owner": "0xd97cbc833643dc458849d5b96dea100f13b08402",
       "resolveUniV3": true
+    },
+  },
+  "katana-perps": {
+    "methodology": "TVL counts the USDC (Vault Bridge USDC) held in the Katana Perps contract on the Katana chain.",
+    "katana": {
+      "owner": "0x23317197cf82a14d7b7a671c23b94d39f6a2fa22",
+      "tokens": [ADDRESSES.katana.VB_USDC]
     },
   },
   "kavafc": {
@@ -27757,19 +27776,19 @@ const configs = {
           "0x9694ea20de96D5E46C8FE1E7975D7a2C7C79Bf2c"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0x144120Ef18d4223Ab3f4695653a5755C23FBF469"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0xc978f195C838d3344f74DDBA84235130B3091847"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0xeD4a38cC990a6E5D817C9d89677c886994803d38"
         ],
         [
-          ADDRESSES.wemix.WEMIX_,
+          "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
           "0xAc04FDbADd7CF8d4BaD0F957d37e3fd0c093A9B6"
         ],
         [
