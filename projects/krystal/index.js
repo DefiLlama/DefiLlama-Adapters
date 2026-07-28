@@ -1,9 +1,10 @@
-const { tvl: solanaTvl } = require("./solana.js");
-const evmTvl = require("./evm.js");
+const autofarm = require("./autofarm.js");
 
-module.exports = {
-  solana: { tvl: solanaTvl },
-  ...evmTvl,
-  isHeavyProtocol: true,
-  methodology: "Sum of all positions' value and tokens in every vaults",
-};
+Object.keys(autofarm.config).forEach(chain => {
+  module.exports[chain] = { tvl: autofarm.tvl };
+});
+
+module.exports.isHeavyProtocol = true;
+module.exports.methodology =
+  "Sum of the liquidity positions and token balances held in every Auto-Farm Vault, each a " +
+  "single-owner vault where an AI Agent farms any pool or pair on the owner's behalf.";
