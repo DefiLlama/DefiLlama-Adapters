@@ -21,6 +21,12 @@ const FACTORIES = {
     ],
 }
 
+const EXTRA_VAULTS = {
+    monad: [
+        '0x23b148d8f389C5821739381f1FF87bB7e1162566',
+    ],
+}
+
 const abis = {
     strategyProxies: 'function strategyProxies(uint256) view returns (address)',
     strategyVaults: 'function strategyVaults(address) view returns (address)',
@@ -61,6 +67,9 @@ async function getVaults(api) {
             })
         }
     }
+
+    for (const vault of (EXTRA_VAULTS[api.chain] || []))
+        vaults.add(vault.toLowerCase())
 
     return Array.from(vaults)
 }
