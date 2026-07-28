@@ -17451,11 +17451,13 @@ const configs = {
     },
   },
   "luna": {
+    "methodology": "TVL counts the ETH held by the two game contracts: LunaGame (active round deposits, unclaimed ETH winnings, the Motherlode jackpot) and EclipseGame (the current prize pot and unclaimed dividends), plus ETH in the staking contract. Staking counts LUNA locked in timed staking positions and in the game contracts.",
     "robinhood": {
       "tvl": {
         "owners": [
           "0xd1b6D26FD47B2Fad620DfD4c522Fc03590DeF4ff",
           "0x6103b8C107217Dc4da94F977487a02Bd75940f4f",
+          "0x5705e86776e220A0f256a7Ea8A9EA80672Dd141F",
         ],
         "tokens": [ADDRESSES.null]
       },
