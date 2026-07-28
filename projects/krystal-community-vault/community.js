@@ -39,8 +39,8 @@ async function tvl(api) {
   if (!vaults.length) return
 
   const [vaultTokens, vaultBalances] = await Promise.all([
-    api.multiCall({ abi: abis.getTokens, calls: vaults, permitFailure: true }),
-    api.multiCall({ abi: abis.getTotalBalances, calls: vaults, permitFailure: true }),
+    api.multiCall({ abi: abis.getTokens, calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: abis.getTotalBalances, calls: vaults, permitFailure: false }),
   ])
 
   vaultTokens.forEach((tokens, i) => {
