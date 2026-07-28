@@ -409,6 +409,15 @@ const configs = {
       '0x1C788E14d8e5B446e3F71B5142e2edaBcAB36da1', // Vault 2 - Lighter x XYZ
     ],
   },
+  'yieldfy': {
+    doublecounted: true,
+    methodology: "TVL is the sum of totalAssets() across the Yieldfy ERC-4626 USDG vaults on Robinhood Chain. This counts USDG sitting idle in a vault plus USDG the optimizer has routed into an external venue (Morpho, Steakhouse), which a raw balance check would miss. Marked doublecounted because deployed USDG is also counted by those underlying venues.",
+    start: '2026-07-19',
+    robinhood: [
+      '0x4a32cf41315DA5cDe593C56df35D7beFA40Cc01a', // Beta-1 — live
+      '0x8f55eF1cd2B62197742c3E985DB1Cd0f63622e9F', // Beta-0 — retired 2026-07-22, still holds dust
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
