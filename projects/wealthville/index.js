@@ -1,5 +1,5 @@
 const { PublicKey } = require("@solana/web3.js");
-const { getConnection, sumTokens2, runInChunks, decodeAccount, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } = require("../helper/solana");
+const { getConnection, sumTokens2, getMultipleAccounts, decodeAccount, TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } = require("../helper/solana");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs");
 const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
@@ -34,19 +34,12 @@ const BINS_PER_ARRAY = 70;
 const DLMM_POSITION_V2_DISC = bs58.encode(Buffer.from([117, 176, 212, 199, 245, 180, 133, 182]));
 const JUP_POSITION_DISC = bs58.encode(Buffer.from([170, 188, 143, 228, 122, 64, 247, 208]));
 
-// One RPC call at a time with a pause in between. The shared Solana endpoint this repo falls
-// back to throttles per method (getTokenAccountsByOwner and getProgramAccounts in particular),
-// so fanning these out with Promise.all trips its rate limit; account reads still go out
-// batched via getMultipleAccountsInfo below.
-const serially = (items, fn) => runInChunks(items, (c) => Promise.all(c.map(fn)), { chunkSize: 1, sleepTime: 1200 });
-const getMulti = (conn, keys) => runInChunks(keys, (c) => conn.getMultipleAccountsInfo(c), { sleepTime: 200 });
-
 // A single pass over the owners' SPL accounts yields both things we need from them: the
 // position-NFT receipts (balance exactly 1) that key the CLMM positions, and the funded token
 // accounts carrying idle balances. Scanning once avoids re-reading the same accounts per use.
 async function scanTokenAccounts(conn, owners) {
   const queries = owners.flatMap((owner, ownerIndex) => [TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID].map((programId) => ({ owner, ownerIndex, programId })));
-  const results = await serially(queries, (q) => conn.getTokenAccountsByOwner(q.owner, { programId: q.programId }));
+  const results = await Promise.all(queries.map((q) => conn.getTokenAccountsByOwner(q.owner, { programId: q.programId })));
 
   const nftMints = owners.map(() => []);
   const tokenAccounts = [];
@@ -73,7 +66,7 @@ async function addClmmPositions(api, conn, nftMintsByOwner) {
     }
   }
   if (!cands.length) return;
-  const infos = await getMulti(conn, cands.map((c) => c.key));
+  const infos = await getMultipleAccounts(cands.map((c) => c.key));
 
   const poolSet = new Set();
   const positions = [];
@@ -96,7 +89,7 @@ async function addClmmPositions(api, conn, nftMintsByOwner) {
   if (!positions.length) return;
 
   const poolKeys = [...poolSet];
-  const poolInfos = await getMulti(conn, poolKeys.map((k) => new PublicKey(k)));
+  const poolInfos = await getMultipleAccounts(poolKeys.map((k) => new PublicKey(k)));
   const pools = {};
   poolKeys.forEach((k, i) => {
     const info = poolInfos[i];
@@ -125,9 +118,9 @@ async function addClmmPositions(api, conn, nftMintsByOwner) {
 // arrays a position spans are derived rather than searched for, and every pair and array the
 // vaults touch is then read in one batched call.
 async function addDlmmPositions(api, conn, owners) {
-  const found = await serially(owners, (owner) => conn.getProgramAccounts(DLMM_PROGRAM, {
+  const found = (await Promise.all(owners.map((owner) => conn.getProgramAccounts(DLMM_PROGRAM, {
     filters: [{ memcmp: { offset: 0, bytes: DLMM_POSITION_V2_DISC } }, { memcmp: { offset: 40, bytes: owner.toBase58() } }],
-  }));
+  })))).flat();
 
   const positions = [];
   const pairKeys = new Set(), binArrayKeys = new Set();
@@ -148,7 +141,7 @@ async function addDlmmPositions(api, conn, owners) {
   if (!positions.length) return;
 
   const keys = [...pairKeys, ...binArrayKeys];
-  const infos = await getMulti(conn, keys.map((k) => new PublicKey(k)));
+  const infos = await getMultipleAccounts(keys.map((k) => new PublicKey(k)));
   const accounts = {};
   keys.forEach((k, i) => { if (infos[i]) accounts[k] = infos[i]; });
 
@@ -185,9 +178,9 @@ async function addDlmmPositions(api, conn, owners) {
 // `collateralUsd` (u64, 1e6 scale). Idle SOL/tokens in the jupiter_owner PDA are picked up by
 // sumTokens2 (its PDA is in the owners list); here we add the in-position collateral.
 async function addJupiterCollateral(api, conn, jupiterOwners) {
-  const found = await serially(jupiterOwners, (owner) => conn.getProgramAccounts(JUP_PERP_PROGRAM, {
+  const found = (await Promise.all(jupiterOwners.map((owner) => conn.getProgramAccounts(JUP_PERP_PROGRAM, {
     filters: [{ memcmp: { offset: 0, bytes: JUP_POSITION_DISC } }, { memcmp: { offset: 8, bytes: owner.toBase58() } }],
-  }));
+  })))).flat();
   for (const { account } of found) {
     const collateralUsd = Number(account.data.readBigUInt64LE(169)) / 1e6; // Position.collateralUsd
     if (collateralUsd > 0) api.addUSDValue(collateralUsd);
@@ -206,7 +199,7 @@ async function tvl(api) {
   // The jupiter_owner PDA is created and funded the first time a vault opens a perp position,
   // so the ones that were never initialised hold nothing and have no position to read.
   const jupiterOwnerPdas = vaults.map((v) => PublicKey.findProgramAddressSync([JUPITER_OWNER_SEED, v.toBuffer()], SMART_VAULT_PROGRAM)[0]);
-  const jupiterOwnerInfos = await getMulti(conn, jupiterOwnerPdas);
+  const jupiterOwnerInfos = await getMultipleAccounts(jupiterOwnerPdas);
   const jupiterOwners = jupiterOwnerPdas.filter((_, i) => jupiterOwnerInfos[i]);
 
   const owners = [...vaults, ...jupiterOwners];
