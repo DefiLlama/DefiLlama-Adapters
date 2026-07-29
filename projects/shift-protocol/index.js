@@ -1,4 +1,7 @@
 const config = {
+  ethereum: [
+    "0xF4761cC51DC4532b064b7E0Bf0883bcA3F84375e", // v2 vault (shiftEUR)
+  ],
   base: [
     "0xaf69Bf9ea9E0166498c0502aF5B5945980Ed1E0E",
     "0x4cE3ec1b7B4FFb33A0B70c64a0560A3F341AA2E1",
@@ -19,8 +22,15 @@ Object.keys(config).forEach(chain => {
   const tokens = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const supply = await api.multiCall({ abi: 'erc20:totalSupply', calls: tokens })
-      api.add(tokens, supply)
+      const supply = await api.multiCall({ abi: 'erc20:totalSupply', calls: tokens, permitFailure: true })
+      api.add(tokens.filter((_, i) => supply[i] !== null), supply.filter(i => i !== null))
+
+      // v2 vaults are not the share token themselves, it is deployed as a separate contract
+      const v2Vaults = tokens.filter((_, i) => supply[i] === null)
+      if (!v2Vaults.length) return
+      const shares = await api.multiCall({ abi: 'address:share', calls: v2Vaults })
+      const shareSupply = await api.multiCall({ abi: 'erc20:totalSupply', calls: shares })
+      api.add(shares, shareSupply)
     }
   }
 })
