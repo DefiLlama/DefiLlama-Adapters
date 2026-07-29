@@ -1167,7 +1167,7 @@ module.exports = {
     '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
     '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
   ],
-  subfrost = [
+  subfrost: [
     // The FROST signer set's taproot output keys that hold the BTC backing frBTC.
     // Alkanes custody derived from Bitcoin L1 by reading [32:0] opcode 103 (GET_SIGNER) on any metashrew/alkanes node
     // for the signer's 32-byte internal pubkey, with standard BIP341-tweak (no script tree).
