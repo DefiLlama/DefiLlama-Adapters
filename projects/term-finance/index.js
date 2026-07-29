@@ -10,10 +10,11 @@ const graphs = {
     "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-base/latest/gn",
   plasma:
     "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-plasma/latest/gn",
+  arbitrum:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-arbitrum/latest/gn",
+  // bsc has no repo/auction deployments (vaults-only chain)
   // bsc:
   //   "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-bnb/latest/gn",
-  // arbitrum:
-  //   "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-arbitrum/latest/gn",
 };
 
 const query = `
