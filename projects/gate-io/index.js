@@ -49,7 +49,8 @@ const config = {
       "0x66bbafc7269f1a9e5b454445585275f2b4ead28e",
       "0xd6a8047940a1f71df5f809919c10d9ba0a88786e",
       "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0",
-      "0x76bbb8D5dbedde9cB34882c9588DFa9dEF00B8bc"
+      "0x76bbb8D5dbedde9cB34882c9588DFa9dEF00B8bc",
+      "0xccc5eeebe15291620be733997af60735618548d7"
     ]
   },
   "avax": {
@@ -1811,5 +1812,5 @@ deadChains.forEach(chain => { deadChainsExports[chain] = { tvl: async () => ({})
 module.exports = mergeExports([
   cexExports(config),
   deadChainsExports,
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9'], sleepTime: 20_000, size: 200, proxy: true }) } },
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9','0xD6A8047940a1F71df5f809919c10D9Ba0A88786e','0xB04B2B81f65baCc8f29F411A1344f78Bff7A36A2'], sleepTime: 20_000, size: 200, proxy: true }) } },
 ]);
