@@ -406,7 +406,7 @@ const configs = {
     start: '2026-05-05',
     arbitrum: [
       '0xCC56410e1a136aF0eCEb7241c6aE394F4d8b581c', // Vault 1 - Extended x Nado
-      //'0x1C788E14d8e5B446e3F71B5142e2edaBcAB36da1', // Vault 2 - Lighter x XYZ
+      '0x1C788E14d8e5B446e3F71B5142e2edaBcAB36da1', // Vault 2 - Lighter x XYZ
     ],
   },
   'yieldfy': {
