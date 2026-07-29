@@ -1408,6 +1408,9 @@ const configs = {
       tokens: [
         nullAddress,
         ADDRESSES.ethereum.CRVUSD,
+        '0xcf62F905562626CfcDD2261162a51fd02Fc9c5b6', // sfrxUSD
+        '0xb45ad160634c528Cc3D2926d9807104FA3157305', // sDOLA
+        '0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab', // COW
       ],
     },
   },
