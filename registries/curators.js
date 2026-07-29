@@ -1040,6 +1040,25 @@ const configs = {
       }
     },
   },
+  "term-finance-parity": {
+    config: {
+      methodology: 'Counts all assets deposited in the Parity vaults on Morpho, curated by Term Finance.',
+      start: '2026-04-23',
+      blockchains: {
+        // Parity vaults: pcUSDC, pcETH, pcHYUSDC
+        ethereum: {
+          morphoVaultOwners: [
+            '0xbfFcAdCd5549cC378693108BcD4435776A6fa795',
+          ],
+        },
+        arbitrum: {
+          morphoVaultOwners: [
+            '0xbfFcAdCd5549cC378693108BcD4435776A6fa795',
+          ],
+        },
+      }
+    },
+  },
   "trinity-protocol": {
     config: {
       methodology: 'Tracks USDC in the Trinity Protocol MetaMorpho vault on Morpho Blue.',
