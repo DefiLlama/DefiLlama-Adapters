@@ -36,11 +36,13 @@ const ARMS = {
 
 const tvl = async (api) => {
   const arms = ARMS[api.chain]
-  // getBaseAssets() reverts on not-yet-upgraded ARMs -> null; a non-null array marks a multi-base ARM.
-  // activeMarket() exists on both generations; permitFailure keeps a missing function from failing the run.
+  // getBaseAssets() legitimately reverts on not-yet-upgraded (legacy) ARMs -> null; a non-null array
+  // marks a multi-base ARM. permitFailure exists only to distinguish that legacy case, resolved per
+  // ARM below. activeMarket() exists on every ARM generation, so a failed read there is operational:
+  // let it throw and fail the refresh rather than silently dropping the market balance from TVL.
   const [baseAssetsList, activeMarkets] = await Promise.all([
     api.multiCall({ abi: "address[]:getBaseAssets", calls: arms.map((a) => a.arm), permitFailure: true }),
-    api.multiCall({ abi: "address:activeMarket", calls: arms.map((a) => a.arm), permitFailure: true }),
+    api.multiCall({ abi: "address:activeMarket", calls: arms.map((a) => a.arm) }),
   ])
 
   const tokensAndOwners = []
@@ -59,10 +61,15 @@ const tvl = async (api) => {
       const configs = await api.multiCall({ abi: baseAssetConfigsAbi, target: arm, calls: baseAssets.map((b) => ({ params: [b] })) })
       configs.forEach((cfg) => api.add(liquidityAsset, cfg.pendingRedeemAssets))
     } else if (legacyOutstanding) {
-      // Legacy single-base ARM: outstanding protocol withdrawal is denominated in the base asset.
+      // Legacy single-base ARM: getBaseAssets() reverts pre-upgrade, so a null result is expected
+      // here. Outstanding protocol withdrawal is denominated in the base asset.
       const outstanding = await api.call({ abi: legacyOutstanding, target: arm })
       api.add(base, outstanding)
       tokensAndOwners.push([liquidity, arm], [base, arm])
+    } else {
+      // Multi-asset ARM with no single-base fallback: a null getBaseAssets() can only be a failed read,
+      // not the legacy signal, so fail the refresh instead of silently dropping this ARM's balances.
+      throw new Error(`originarm: getBaseAssets() returned no result for multi-asset ARM ${arm}`)
     }
 
     // Active lending-market position (both ARM generations). The operator moves funds in and out of
