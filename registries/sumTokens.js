@@ -16060,6 +16060,18 @@ const configs = {
       "token": ADDRESSES.null
     },
   },
+  "hypefuel": {
+    "methodology": "Counts the native HYPE and USDC held by the HypeFuel contract. HYPE is the inventory sold to users, and USDC is proceeds from fills awaiting the next rebalance back into HYPE.",
+    "hyperliquid": {
+      "owners": [
+        "0x42b06b1d9a07Fc3925C518dbf9475E7cA80DC8DF"
+      ],
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.hyperliquid.USDC
+      ]
+    },
+  },
   "hypepool": {
     "methodology": "TVL counts all HYPE locked in the HypePool prize pool contract on HyperEVM.",
     "hyperliquid": {
