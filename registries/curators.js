@@ -236,7 +236,9 @@ const configs = {
       blockchains: {
         ethereum: {
           euler: [
-            '0xBc79C4DA0452152D2C329ADE328C79705a964CEE'
+            '0xBc79C4DA0452152D2C329ADE328C79705a964CEE',
+            '0x61332fE07Ee0faa8a087ba00f43d581871441139',
+            '0x6876374E4AC054bfCA389109570Ae15b4d25e279',
           ],
         },
       },
