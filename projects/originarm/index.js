@@ -7,11 +7,12 @@ const OS = "0xb1e25689D55734FD3ffFc939c4C3Eb52DFf8A794"
 const baseAssetConfigsAbi = "function baseAssetConfigs(address asset) view returns (uint128 buyPrice, uint128 sellPrice, uint128 buyLiquidityRemaining, uint128 sellLiquidityRemaining, uint128 crossPrice, uint120 pendingRedeemAssets, bool peggedToLiquidityAsset, address adapter)"
 const convertToAssetsAbi = "function convertToAssets(uint256 shares) view returns (uint256 assets)"
 
-// Every Origin ARM. Each is either still on its original single-base implementation (a
-// protocol-specific withdrawal queue) or upgraded to the multi-base AbstractARM
-// (getBaseAssets / baseAssetConfigs). Which one is detected at runtime per ARM, so the rollout
-// can proceed without touching this adapter. `liquidity`/`base`/`legacyOutstanding` are only
-// used on the legacy path; the multi-base path reads liquidityAsset() and getBaseAssets() live.
+// Every Origin ARM. Older ARMs launched with a single base asset (a protocol-specific withdrawal
+// queue); newer ones are born multi-asset on the AbstractARM (getBaseAssets / baseAssetConfigs), and
+// single-base ARMs are being upgraded to it too. Which shape an ARM has is detected at runtime, so
+// the rollout needs no adapter change. `base`/`legacyOutstanding` only apply to the legacy path; the
+// multi-base path reads liquidityAsset() and getBaseAssets() live. Multi-asset ARMs set only
+// `liquidity` (used to value the lending market before getBaseAssets resolves).
 const ARMS = {
   ethereum: [
     // Lido ARM
@@ -22,6 +23,10 @@ const ARMS = {
     { arm: "0xfB0A3CF9B019BFd8827443d131b235B3E0FC58d2", liquidity: ADDRESSES.ethereum.WETH, base: ADDRESSES.ethereum.EETH, legacyOutstanding: "uint256:etherfiWithdrawalQueueAmount" },
     // Ethena ARM
     { arm: "0xCEDa2d856238aA0D12f6329de20B9115f07C366d", liquidity: ADDRESSES.ethereum.USDe, base: ADDRESSES.ethereum.sUSDe, legacyOutstanding: "uint256:liquidityAmountInCooldown" },
+    // Multi-asset WETH ARM (bases: stETH/wstETH/eETH/weETH)
+    { arm: "0x68025a4615407993a680102b08a23a61d11c657c", liquidity: ADDRESSES.ethereum.WETH },
+    // Multi-asset USDC ARM (bases: PYUSD/USDG)
+    { arm: "0x9e3a7026e5767f2d7ff5e83b0ed011005f45a170", liquidity: ADDRESSES.ethereum.USDC },
   ],
   sonic: [
     // OS ARM
@@ -32,39 +37,43 @@ const ARMS = {
 const tvl = async (api) => {
   const arms = ARMS[api.chain]
   // getBaseAssets() reverts on not-yet-upgraded ARMs -> null; a non-null array marks a multi-base ARM.
-  const baseAssetsList = await api.multiCall({ abi: "address[]:getBaseAssets", calls: arms.map((a) => a.arm), permitFailure: true })
+  // activeMarket() exists on both generations; permitFailure keeps a missing function from failing the run.
+  const [baseAssetsList, activeMarkets] = await Promise.all([
+    api.multiCall({ abi: "address[]:getBaseAssets", calls: arms.map((a) => a.arm), permitFailure: true }),
+    api.multiCall({ abi: "address:activeMarket", calls: arms.map((a) => a.arm), permitFailure: true }),
+  ])
 
   const tokensAndOwners = []
   await Promise.all(arms.map(async ({ arm, liquidity, base, legacyOutstanding }, i) => {
     const baseAssets = baseAssetsList[i]
+    // Liquidity asset the ARM's market position and redemptions are denominated in. Read live on the
+    // multi-base path, hardcoded on the legacy path.
+    let liquidityAsset = liquidity
 
     if (baseAssets) {
-      // Multi-base ARM. Everything is valued in liquidity-asset terms, mirroring the contract's
-      // _availableAssets(): idle liquidity + on-hand base assets + lending market + pending redemptions.
-      const [liquidityAsset, activeMarket] = await Promise.all([
-        api.call({ abi: "address:liquidityAsset", target: arm }),
-        api.call({ abi: "address:activeMarket", target: arm }),
-      ])
-      // On-hand liquidity asset + every registered base asset (each priced natively by DefiLlama).
+      // Multi-base ARM: idle liquidity asset + every registered base asset + per-base pending
+      // redemptions. pendingRedeemAssets is already liquidity-denominated (assets expected back from
+      // the adapter), so add it as the liquidity asset rather than the base asset.
+      liquidityAsset = await api.call({ abi: "address:liquidityAsset", target: arm })
       tokensAndOwners.push([liquidityAsset, arm], ...baseAssets.map((b) => [b, arm]))
-      // Lending-market position: value the ARM's ERC4626 shares in liquidity-asset terms.
-      if (activeMarket && activeMarket.toLowerCase() !== ADDRESSES.null) {
-        const shares = await api.call({ abi: "erc20:balanceOf", target: activeMarket, params: [arm] })
-        if (shares !== "0") {
-          const marketAssets = await api.call({ abi: convertToAssetsAbi, target: activeMarket, params: [shares] })
-          api.add(liquidityAsset, marketAssets)
-        }
-      }
-      // Pending protocol redemptions per base asset (adapter withdrawal queues). pendingRedeemAssets
-      // is already liquidity-denominated (the assets expected back from the adapter), so add it as the
-      // liquidity asset rather than the base asset.
       const configs = await api.multiCall({ abi: baseAssetConfigsAbi, target: arm, calls: baseAssets.map((b) => ({ params: [b] })) })
       configs.forEach((cfg) => api.add(liquidityAsset, cfg.pendingRedeemAssets))
-    } else {
+    } else if (legacyOutstanding) {
       // Legacy single-base ARM: outstanding protocol withdrawal is denominated in the base asset.
       const outstanding = await api.call({ abi: legacyOutstanding, target: arm })
       api.add(base, outstanding)
       tokensAndOwners.push([liquidity, arm], [base, arm])
+    }
+
+    // Active lending-market position (both ARM generations). The operator moves funds in and out of
+    // the market over time, so value the ARM's ERC4626 market shares live, in liquidity-asset terms.
+    const activeMarket = activeMarkets[i]
+    if (activeMarket && activeMarket.toLowerCase() !== ADDRESSES.null) {
+      const shares = await api.call({ abi: "erc20:balanceOf", target: activeMarket, params: [arm] })
+      if (shares !== "0") {
+        const marketAssets = await api.call({ abi: convertToAssetsAbi, target: activeMarket, params: [shares] })
+        api.add(liquidityAsset, marketAssets)
+      }
     }
   }))
 
