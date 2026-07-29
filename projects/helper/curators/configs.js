@@ -250,6 +250,14 @@ const MorphoConfigs = {
       }
     ]
   },
+  megaeth: {
+    vaultFactoriesV2: [
+      {
+        address: '0xf133FA5A78C398B31Cc4a180E6Ae84111D6DCF5B',
+        fromBlock: 16409067,
+      }
+    ]
+  },
 }
 
 const EulerConfigs = {
