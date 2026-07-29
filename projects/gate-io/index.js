@@ -51,7 +51,9 @@ const config = {
       "0x66bbafc7269f1a9e5b454445585275f2b4ead28e",
       "0xd6a8047940a1f71df5f809919c10d9ba0a88786e",
       "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0",
-      "0x76bbb8D5dbedde9cB34882c9588DFa9dEF00B8bc"
+      "0x76bbb8D5dbedde9cB34882c9588DFa9dEF00B8bc",
+      "0xccc5eeebe15291620be733997af60735618548d7",
+      "0xba622437b70d86EADd6F2f5fB7A5124270c35705",
     ]
   },
   "avax": {
