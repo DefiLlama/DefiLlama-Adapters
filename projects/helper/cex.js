@@ -1,8 +1,8 @@
-const ADDRESSES = require("./coreAssets.json");
-const { nullAddress } = require("./unwrapLPs");
-const { sumTokensExport } = require("../helper/sumTokens");
-const sdk = require("@defillama/sdk");
-const { getCEXTokensOnBinanceOnChain } = require("./utils/cex");
+const ADDRESSES = require('./coreAssets.json')
+const { nullAddress } = require('./unwrapLPs')
+const { sumTokensExport } = require('../helper/sumTokens')
+const sdk = require('@defillama/sdk')
+const { getCEXTokensOnBinanceOnChain } = require('./utils/cex')
 
 const defaultTokens = {
   ethereum: [
