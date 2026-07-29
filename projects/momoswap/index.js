@@ -55,7 +55,11 @@ async function tvl(api) {
     vaults.push(pool.paymentVault)
   }
   if (vaults.length) {
-    const balances = await getTokenAccountBalances(vaults, { chain: api.chain, allowError: true })
+    // No `allowError`: every vault pubkey comes out of a live `Pool` account and the program never
+    // closes a `payment_vault` (its only `close` is on `Session`, and it makes no `CloseAccount` CPI),
+    // so a missing or undecodable vault means a bad RPC response or a struct-layout drift that broke
+    // `parsePool` — both of which must fail loudly rather than silently under-report TVL.
+    const balances = await getTokenAccountBalances(vaults, { chain: api.chain })
     for (const [mint, amount] of Object.entries(balances)) api.add(mint, amount)
   }
 }
