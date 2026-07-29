@@ -956,6 +956,13 @@ const configs = {
             '0xBEEf0F82E269760429BE6255Fa00821b7e4b592A', // Steakhouse Prime
           ],
         },
+        robinhood: {
+          morpho: [
+            '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG
+            '0xbEeFF0fb1Dc19344A87b8479dAb60A2e16160737', // Ethena x Steakhouse USDG
+            '0xBEEff039907422219Fb367e525954DDC092854d9', // Grove x Steakhouse USDG
+          ],
+        },
         solana: {
           kaminoLendVaultAdmins: [
             '9ceRgz579BcfWogs3RE11FKNQaWW7Lmtnev3MXspxUjF',
