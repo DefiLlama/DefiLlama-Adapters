@@ -16,24 +16,38 @@ const GET_TOTALS_ABI =
 // Loan.btcVaultAddress. We fetch the live address set and sum the actual UTXO balances
 // on Bitcoin L1 (per PR #20190: track BTC via the custody addresses, compute TVL on-chain).
 const INDEXER = 'https://indexer.surge.build/v1/graphql'
+const INDEXER_TIMEOUT = 15000
+const VAULTS_QUERY = `query ($limit: Int!, $offset: Int!) {
+  Loan(
+    where: { chainId: { _eq: 8453 } }
+    limit: $limit
+    offset: $offset
+    order_by: { nftId: asc }
+  ) { btcVaultAddress }
+}`
 
 async function getVaultAddresses() {
   const owners = []
   const seen = new Set()
   const pageSize = 1000
-  let offset = 0
+  const maxPages = 100 // safety bound (~100k loans) so a misbehaving API cannot loop forever
   // Paginate; the vault set grows one address per loan.
-  for (;;) {
-    const query = `query ($limit: Int!, $offset: Int!) {
-      Loan(
-        where: { chainId: { _eq: 8453 } }
-        limit: $limit
-        offset: $offset
-        order_by: { nftId: asc }
-      ) { btcVaultAddress }
-    }`
-    const res = await post(INDEXER, { query, variables: { limit: pageSize, offset } })
-    const rows = (res && res.data && res.data.Loan) || []
+  for (let page = 0; page < maxPages; page++) {
+    const res = await post(
+      INDEXER,
+      { query: VAULTS_QUERY, variables: { limit: pageSize, offset: page * pageSize } },
+      { timeout: INDEXER_TIMEOUT },
+    )
+    // Fail closed: a GraphQL error comes back HTTP 200 with res.errors, and a bad
+    // response has no Loan array. Neither is "zero vaults" (which would silently
+    // report 0 TVL), so throw and let DefiLlama keep the last good value.
+    if (res && res.errors) {
+      throw new Error(`Surge indexer GraphQL error: ${JSON.stringify(res.errors).slice(0, 300)}`)
+    }
+    const rows = res && res.data && res.data.Loan
+    if (!Array.isArray(rows)) {
+      throw new Error('Surge indexer returned no Loan array')
+    }
     for (const r of rows) {
       const addr = r.btcVaultAddress
       if (addr && !seen.has(addr)) {
@@ -41,10 +55,9 @@ async function getVaultAddresses() {
         owners.push(addr)
       }
     }
-    if (rows.length < pageSize) break
-    offset += pageSize
+    if (rows.length < pageSize) return owners
   }
-  return owners
+  throw new Error('Surge indexer pagination exceeded safety bound')
 }
 
 // TVL: native BTC held on-chain across every per-loan Taproot vault address.
