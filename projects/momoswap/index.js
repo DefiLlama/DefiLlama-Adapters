@@ -60,6 +60,10 @@ async function tvl(api) {
     // so a missing or undecodable vault means a bad RPC response or a struct-layout drift that broke
     // `parsePool` — both of which must fail loudly rather than silently under-report TVL.
     const balances = await getTokenAccountBalances(vaults, { chain: api.chain })
+    // Every vault necessarily holds the same mint, so this loop yields a single entry: the singleton
+    // `config` PDA (seeds ["config"], `init`-once, and `payment_mint` is never touched by
+    // `update_config`) pins `create_pool`'s payment_mint via `address = config.payment_mint`, and the
+    // payment_vault is `init`ed with `token::mint = payment_mint`. Today that mint is wrapped COOK.
     for (const [mint, amount] of Object.entries(balances)) api.add(mint, amount)
   }
 }
