@@ -726,4 +726,8 @@ module.exports = {
       "pool2": { "__pool2": ["0x12efdFF85f717ac1738CF50Be5f4Cdc916b0B8B1", "0x392f351fc02a3b74f7900de81a9aaac13ec28e95"] }
     }
   },
+  "pascal": {
+    "methodology": "TVL is the USDC collateral held in Pascal's vault token account on Solana.",
+    "solana": { "tokenAccounts": ["5vRGRcwN4iYaiQdso1vgWbTDFYbS8GQNUDRMMKE2ycZS"] }
+  },
 }
