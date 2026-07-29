@@ -352,6 +352,23 @@ const ADDRESSES = {
       { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 43289755 },
     ],
   },
+  robinhood: {
+    FactoryV2: [
+      {
+        address: "0x03c4FCF963E5FBC0dC5851d2340624E70492acb9",
+        fromBlock: 21550658,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x276C0E52508d94ff2D4106b1559c8c4Bc3a75dec",
+        fromBlock: 21550718,
+      },
+    ],
+    TermMax4626Factory: [
+      { address: "0xa50929A67daF9Ff3567e2Bb3411204A134f72546", fromBlock: 21550753 },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
