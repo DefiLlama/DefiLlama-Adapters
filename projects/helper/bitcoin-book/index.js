@@ -18,20 +18,6 @@ const bitomato = ["bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9"];
 
 const lbank = ["1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn"];
 
-// SUBFROST frBTC custody. Neither address is an arbitrary constant: each is the
-// taproot output key of the FROST signer set that holds the BTC backing frBTC.
-// The Alkanes one can be re-derived from Bitcoin L1 at any time: the frBTC alkane
-// [32:0] returns the signer's 32-byte internal pubkey from opcode 103 (GET_SIGNER),
-// and the address is the standard BIP341 tweak of that key (no script tree).
-// Any metashrew/alkanes node can answer it, e.g. https://mainnet.subfrost.io/v4/subfrost
-//   {"method":"alkanes_simulate","params":[{"target":{"block":"32","tx":"0"},
-//    "inputs":["103"],"alkanes":[],"transaction":"0x","block":"0x","height":<tip>,
-//    "txindex":0,"vout":0}]}
-const subfrost = [
-  "bc1p5lushqjk7kxpqa87ppwn0dealucyqa6t40ppdkhpqm3grcpqvw9s3wdsx7", // Alkanes
-  "bc1pxn3gr0hy70exhdqjzawtuygppzdrk3mer3wlaa2gzkmruk3rrt4qga2qaj", // BRC2.0
-];
-
 const stacksSBTC = [
   // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
   "bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc",
@@ -1175,12 +1161,18 @@ module.exports = {
     "3AHghpZ5GAU7rjTXHv4Xmfe6BLavJxnzbo",
     "3Pr9uMzcEtmmCLShywSrsHq6Xqy9taEdXh",
   ],
-  subfrost,
   circleBTC: [
     '1JkKmG26nUBcPS99TsCVsReSXvLkEai4ca',
     '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
     '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
     '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
+  ],
+  subfrost = [
+    // The FROST signer set's taproot output keys that hold the BTC backing frBTC.
+    // Alkanes custody derived from Bitcoin L1 by reading [32:0] opcode 103 (GET_SIGNER) on any metashrew/alkanes node
+    // for the signer's 32-byte internal pubkey, with standard BIP341-tweak (no script tree).
+    "bc1p5lushqjk7kxpqa87ppwn0dealucyqa6t40ppdkhpqm3grcpqvw9s3wdsx7", // Alkanes
+    "bc1pxn3gr0hy70exhdqjzawtuygppzdrk3mer3wlaa2gzkmruk3rrt4qga2qaj", // BRC2.0
   ],
 };
 
