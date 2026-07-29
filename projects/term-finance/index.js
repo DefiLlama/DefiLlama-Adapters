@@ -31,6 +31,23 @@ query poolQuery($lastId: ID) {
   }
 }`
 
+// The TermRepoLocker also holds purchase tokens: lender offers locked during a
+// live auction, and repaid loans awaiting lender redemption after maturity.
+const repoQuery = `
+query repoQuery($lastId: ID) {
+  termRepos(
+    first: 1000,
+    where: {
+      id_gt: $lastId,
+      delisted: false,
+    }
+  ) {
+    id
+    termRepoLocker
+    purchaseToken
+  }
+}`
+
 const borrowedQuery = `
 query borrowedQuery($lastId: ID, $block: Int) {
   termRepoExposures(
@@ -78,7 +95,7 @@ const graphStartBlock = {
 }
 
 module.exports = {
-  methodology: `Counts the collateral tokens locked in Term Finance's term repos and purchase tokens locked in Term Finance's vaults.`,
+  methodology: `Counts tokens held by Term Finance's term repo lockers: collateral backing open loans, plus purchase tokens locked as auction offers or repaid and awaiting lender redemption.`,
   // hallmarks: [['2020-05-04', "TermFinance Launch"]],
 };
 
@@ -88,7 +105,10 @@ Object.keys(graphs).forEach(chain => {
     tvl: async (api) => {
       // Auctions/Repos TVL
       const data = await cachedGraphQuery(`term-finance-${chain}`, host, query, { fetchById: true })
-      return sumTokens2({ api, tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker]), permitFailure: true })
+      const repos = await cachedGraphQuery(`term-finance-repos-${chain}`, host, repoQuery, { fetchById: true })
+      const tokensAndOwners = data.map(i => [i.collateralToken, i.term.termRepoLocker])
+      repos.filter(i => i.termRepoLocker).forEach(i => tokensAndOwners.push([i.purchaseToken, i.termRepoLocker]))
+      return sumTokens2({ api, tokensAndOwners, permitFailure: true })
     },
     borrowed: async (api) => {
       let data
