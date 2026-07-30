@@ -21,27 +21,12 @@ const OFFSET_VAULT_A = 74
 const OFFSET_VAULT_B = 106
 const OFFSET_IS_INITIALIZED = 414
 
-// Only the quote side of each pool is counted. Every pool pairs a freshly
-// launched token against one of these, and the launch token has no market
-// outside its own pool, so including its vault would assign value to supply
-// that cannot be sold anywhere else.
 const QUOTE_MINTS = new Set([
   ADDRESSES.solana.SOL,
   ADDRESSES.solana.USDC,
   ADDRESSES.solana.USDT,
 ])
 
-/**
- * Sums the quote-asset balances held in YeetAMM pool vaults.
- *
- * Pools are discovered by their Anchor discriminator, and balances are read
- * from the vault token accounts rather than from the pool's bookkept reserve
- * fields, because pools also store virtual reserves that shape the bonding
- * curve price while holding no assets.
- *
- * @param {object} api DefiLlama chain api
- * @returns {Promise<object>} balances keyed by token
- */
 async function tvl(api) {
   const connection = getConnection()
   const accounts = await connection.getProgramAccounts(new PublicKey(PROGRAM_ID), {
@@ -51,8 +36,7 @@ async function tvl(api) {
   const tokenAccounts = []
   for (const { account } of accounts) {
     const data = account.data
-    // Skip pools whose accounts exist but were never fully set up; their vaults
-    // are empty and may not be valid token accounts yet.
+    // Skip uninitialized pools; their vaults are empty and may not be valid token accounts yet.
     if (data.length <= OFFSET_IS_INITIALIZED || data[OFFSET_IS_INITIALIZED] !== 1) continue
 
     const readPubkey = (offset) => new PublicKey(data.subarray(offset, offset + 32)).toString()
@@ -69,6 +53,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    'TVL is the quote-asset balance of the vaults owned by the YeetAMM program (yeetaecvxpd7DFzZAYTEYracRt1WYJ7DfMVjEeEt2Cp), covering both bonding-curve pools and graduated AMM pools, which share the same vaults. Pool accounts are discovered on-chain by their Anchor discriminator, and balances are read directly from the vault token accounts rather than from the pool\'s bookkept reserve fields. Pools also store virtual reserves, which the program uses to shape the bonding curve price but which hold no assets; reading the vaults excludes those structurally. Only the quote side of each pool is counted, so freshly launched tokens — which have no market outside their own pool — are not assigned value.',
+    'TVL is the quote-asset (SOL/USDC/USDT) balance held in the YeetAMM program vaults, covering both bonding-curve and graduated AMM pools (which share the same vaults). Only the quote side of each pool is counted, so freshly launched tokens — which have no market outside their own pool — are not assigned value.',
   solana: { tvl },
 }
