@@ -15,17 +15,20 @@ const NAV_API =
   'https://api.obligate.com/platform/etracker/token/3cef0789-88b8-4374-b818-73f9fed942af'
 
 async function tvl(api) {
-  const otfy = await get(NAV_API)
+  const otfy = await get(NAV_API, { timeout: 30000 })
   if (!otfy || otfy.symbol !== 'oTFY') throw new Error('Unexpected Obligate eTracker API response for oTFY')
 
-  // Fail loudly if the eTracker is reissued, rather than misreporting TVL.
+  // Fail loudly if the eTracker is reissued or redenominated, rather than misreporting TVL.
   if (otfy.contract !== OTFY_MINT)
     throw new Error(`oTFY mint changed: API reports ${otfy.contract}, adapter uses ${OTFY_MINT}`)
   if (Number(otfy.decimals) !== OTFY_DECIMALS)
     throw new Error(`oTFY decimals changed: API reports ${otfy.decimals}, adapter uses ${OTFY_DECIMALS}`)
+  if (otfy.currency !== 'USDC')
+    throw new Error(`oTFY NAV currency changed: API reports ${otfy.currency}, adapter assumes USDC`)
 
   const nav = Number(otfy.valuation) // USDC per token, treated 1:1 with USD
-  if (!nav) throw new Error(`Invalid oTFY NAV from Obligate API: ${otfy.valuation}`)
+  if (!Number.isFinite(nav) || nav <= 0)
+    throw new Error(`Invalid oTFY NAV from Obligate API: ${otfy.valuation}`)
 
   const supplies = await getTokenSupplies([OTFY_MINT])
   const rawSupply = supplies[OTFY_MINT]
