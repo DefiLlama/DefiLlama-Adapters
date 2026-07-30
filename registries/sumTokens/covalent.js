@@ -294,17 +294,6 @@ module.exports = {
       "permitFailure": true
     },
   },
-  "ekubo-evm": {
-    "ethereum": {
-      "owners": [
-        "0xe0e0e08a6a4b9dc7bd67bcb7aade5cf48157d444"
-      ],
-      "fetchCoValentTokens": true,
-      "tokenConfig": {
-        "onlyWhitelisted": false
-      }
-    },
-  },
   "enibridge": {
     "methodology": "TVL is calculated by summing the total value of all tokens locked in the protocol’s smart contracts on the source chains.",
     "ethereum": {

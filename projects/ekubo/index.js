@@ -13,7 +13,7 @@ const config = {
   ethereum: { 
     owners: ['0xe0e0e08a6a4b9dc7bd67bcb7aade5cf48157d444', '0x00000000000014aA86C5d3c41765bb24e11bd701'],
     blacklistedTokens: []
-  }
+  },
 }
 
 Object.keys(config).forEach(chain => {
@@ -30,6 +30,13 @@ module.exports = {
   },
   ethereum: {
     tvl: ethTvl
+  },
+  robinhood: {
+    tvl: sumTokensExport({ 
+    owners: ['0x00000000000014aA86C5d3c41765bb24e11bd701'],
+    blacklistedTokens: [],
+    fetchBlockscoutTokens: true,
+  })
   },
   isHeavyProtocol: true,
 }
