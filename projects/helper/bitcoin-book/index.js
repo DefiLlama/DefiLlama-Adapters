@@ -1174,6 +1174,10 @@ module.exports = {
     "bc1p5lushqjk7kxpqa87ppwn0dealucyqa6t40ppdkhpqm3grcpqvw9s3wdsx7", // Alkanes
     "bc1pxn3gr0hy70exhdqjzawtuygppzdrk3mer3wlaa2gzkmruk3rrt4qga2qaj", // BRC2.0
   ],
+  webot: [
+    "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
+    "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
+  ],
 };
 
 imports.forEach(([key, file]) => {
