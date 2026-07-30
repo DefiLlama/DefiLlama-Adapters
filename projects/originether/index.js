@@ -14,10 +14,6 @@ const ethTvl = async (api) => {
   const isCompoundingStrategy = (await api.multiCall({  abi: 'address:BEACON_PROOFS', calls: strategies, permitFailure: true})).map(i => !!i)
   const nativeStrategies = strategies.filter((_, i) => isNativeStrategy[i] || isCompoundingStrategy[i])
 
-  // vault balance
-  const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.ethereum.WETH, params: vault })
-  api.add(ADDRESSES.ethereum.WETH, vaultBalance)
-
   // add native & compounding staking strategies
   for(const nativeStrategy of nativeStrategies) {
     const stakingBalance = await api.call({ abi: abi.checkBalance, target: nativeStrategy, params: ADDRESSES.ethereum.WETH })
