@@ -49,6 +49,9 @@ const COMPOUND_POOLS = {
     'Steakhouse Prime Instant USDT': '0xbeef003C68896c7D2c3c60d363e8d71a49Ab2bf9',
     'Sky.money USDT Risk Capital': '0x2bD3A43863c07B6A01581FADa0E1614ca5DF0E3d',
     'Steakhouse High Yield Instant USDT': '0xbeeff07d991C04CD640DE9F15C08ba59c4FEDEb7',
+    'kpk EURC Yield V2': '0xa877D5bb0274dcCbA8556154A30E1Ca4021a275f',
+    'Steakhouse Prime EURC': '0xbeef003E31546C7210687f1A7b40d096BE83ec58',
+    'Gauntlet EURC Core V2': '0x842A84Df61DbE701c5dAE345F3f8E64aF727E48C',
   };
 
   // Fluid (Ethereum mainnet)
