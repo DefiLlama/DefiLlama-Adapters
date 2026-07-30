@@ -10,13 +10,11 @@ const ethTvl = async (api) => {
   const vault = "0x39254033945aa2e4809cc2977e7087bee48bd7ab";
   const strategies = await api.call({ abi: 'function getAllStrategies() view returns (address[])', target: vault })
   const isNativeStrategy = (await api.multiCall({  abi: 'uint256:activeDepositedValidators', calls: strategies, permitFailure: true})).map(i => !!i)
-  const nativeStrategies = strategies.filter((_, i) => isNativeStrategy[i])
+  // compounding staking strategies don't have activeDepositedValidators(), detect them via their BEACON_PROOFS getter
+  const isCompoundingStrategy = (await api.multiCall({  abi: 'address:BEACON_PROOFS', calls: strategies, permitFailure: true})).map(i => !!i)
+  const nativeStrategies = strategies.filter((_, i) => isNativeStrategy[i] || isCompoundingStrategy[i])
 
-  // vault balance
-  const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.ethereum.WETH, params: vault })
-  api.add(ADDRESSES.ethereum.WETH, vaultBalance)
-
-  // add native strategies
+  // add native & compounding staking strategies
   for(const nativeStrategy of nativeStrategies) {
     const stakingBalance = await api.call({ abi: abi.checkBalance, target: nativeStrategy, params: ADDRESSES.ethereum.WETH })
     api.add(ADDRESSES.ethereum.WETH, stakingBalance)
