@@ -1,12 +1,17 @@
-// Agua — aguaUSDCgc ("Agua USDC Global Carry"), an ERC-4626 USDC vault.
-// TVL = the USDC deposited by users into the vault (totalAssets / NAV).
+// Agua — an onchain capital allocator. Deposits into the aguaUSDCgc
+// ("Agua USDC Global Carry") ERC-4626 vault are allocated into leveraged
+// looping strategies across external lending markets (Aave, Morpho, Euler,
+// Kamino, …). TVL = the USDC deposited into the vault (totalAssets / NAV).
 const vaults = {
   ethereum: ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f'],
 }
 
 module.exports = {
+  // Deposits are allocated into external lending markets that DefiLlama
+  // already tracks, so this TVL overlaps with those protocols.
+  doublecounted: true,
   methodology:
-    'Counts the USDC deposited into the aguaUSDCgc ERC-4626 vault, read as the vault\'s totalAssets() (net asset value) on each chain.',
+    'TVL is the sum of assets deposited into Agua\'s ERC-4626 vault(s), read from each vault\'s totalAssets() (net asset value) and denominated in the underlying asset (USDC).',
 }
 
 Object.keys(vaults).forEach((chain) => {
