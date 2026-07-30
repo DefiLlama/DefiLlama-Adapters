@@ -270,6 +270,7 @@ const configs = {
         base: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0x829A13850b684A575C0580a83322890e19c5eFaa',
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
