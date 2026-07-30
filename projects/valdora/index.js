@@ -59,6 +59,6 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
-  methodology: "TVL is the staker contract's funds_raised plus the on-chain AUM of each vault returned by the Valdora vaults API.",
+  methodology: "Total USD value of assets held in Valdora smart contracts, including ZIG deposited into Valdora liquid staking and assets deposited across active Valdora Vault contracts. Receipt tokens such as stZIG and vault tokens are excluded to avoid double-counting.",
   zigchain: { tvl },
 };

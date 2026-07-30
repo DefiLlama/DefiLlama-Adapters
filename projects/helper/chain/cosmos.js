@@ -64,6 +64,7 @@ const endPoints = {
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
+  dungeon: 'https://api.dungeongames.io',
   carbon: 'https://api.carbon.network',
   evmos: 'https://evmos-api.polkachu.com',
   regen: 'https://rest-regen.ecostake.com',
@@ -81,6 +82,7 @@ const endPoints = {
   inertia: 'https://rest.inrt.fi',
   union: 'https://rest.union.build',
   zigchain: 'https://public-zigchain-lcd.numia.xyz',
+  axiome: 'http://api-docs.axiomeinfo.org:1317',
 };
 
 const chainSubpaths = {

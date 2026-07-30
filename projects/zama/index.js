@@ -26,6 +26,7 @@ async function staking(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology: "TVL: total public ERC-20 reserves backing confidential wrappers from the on-chain registry, matching aggregate TVS (excluding ZAMA). Staking: ZAMA held in the cZAMA wrapper, plus the KMS and Coprocessor ProtocolStaking pool contracts.",
   ethereum: { tvl, staking },
 };

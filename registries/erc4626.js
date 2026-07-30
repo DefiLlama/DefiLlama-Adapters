@@ -202,10 +202,15 @@ const configs = {
   'zensats': {
     doublecounted: true,
     methodology: "TVL is the total assets held in ZenSats ERC4626 vaults, measured via totalAssets().",
+    hallmarks: [
+      ['2026-06-13', 'V2 launch — StakeDao Llamaloan Strategy vaults (WBTC/wstETH)'],
+    ],
     ethereum: [
       "0x617A6877f0a55D1eF2B64b5861A2bB5Fe6FEB739",
       "0xbaEc8343B610A5ee7Ca2c5b93507AC7def98E2B1",
       "0x7d5281D590Fb0647aDc7d8494a2c8Fb8C2B23cBD",
+      "0x18E2F4F2E6565187fce73ECC707579E5F7933f74", // ZenjiWbtcLlamaUsdtStakeDao (V2 - StakeDao Llamaloan Strategy)
+      "0x23F189dE34EED95f6303CfF1C77f7676F211Dd2c", // ZenjiWstEthLlamaUsdtStakeDao (V2 - StakeDao Llamaloan Strategy)
     ],
   },
   'loopfi-site': {
@@ -284,11 +289,6 @@ const configs = {
   'arcis': {
     base: ['0x00325d9da832b38179ed2f0dabd4062d93e325a7'],
     methodology: 'TVL is calculated as the total USDC held in the ArcisVault contract, including both reserve and deployed capital across yield strategies.'
-  },
-  'byzanlink': {
-    hedera: ['0x6b8dfA6aa5f803a886Beb2492eF3307EC0Ee16FB'],
-    ethereum: ['0xA5cDEE01aA7A5E0620df5f27F26E552fdf7f5F20'],
-    methodology: 'Total value of assets deposited in the Byzanlink vaults, read on-chain and valued in USD.'
   },
   'crystalclear': {
     methodology: "TVL is the sum of totalAssets() across all live CrystalClear ERC-4626 vaults on HyperEVM. Each vault holds USDC and trades perpetuals on Hyperliquid via a delegated agent.",
@@ -376,7 +376,48 @@ const configs = {
   },
   'primestaking-xyz': {
     xdc: ['0xDc74c0DaED82ae94486DeeF22991d2F54173c734'],
-  }
+  },
+  'y10k-capital': {
+    ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'],
+    sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'],
+  },
+  'apyee': {
+    methodology: "Sum of totalAssets() reported by each Apyee VaultV2 across supported chains — includes idle USDC plus assets currently deployed into whitelisted DeFi lending strategies (Aave V3, Compound V3, Morpho MetaMorpho, Fluid, Venus, Spark).",
+    ethereum: ['0xE46aac58214B963125a3A88541e1DBE56c4eD5f7'],
+    base: ['0xeA8FB89F44A1fa47E52354D44E7e6D4682C8529a','0x87922c630A980e431fb045A178e53F58d3f07F85'],
+    arbitrum: ['0x94f89d1E2825d40627CD2aE24Eba8590F675049C'],
+    bsc: ['0x27DB5a2B203D6bd3C9490E8EA4488B968675f5Bf'],
+  },
+  'ammalgam-vaults': {
+    methodology: 'Counts the reported total assets of the Ammalgam USDC and WETH ERC-4626 vaults.',
+    ethereum: [
+      '0x8417430a31851ae0a36a854394227c5d86be8fc9', // USDC
+      '0xbb211be8664128e30c6adcd5998eca9592be272f', // WETH
+    ],
+  },
+  'aihedge': {
+    ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400']
+  },
+  'secured-finance-vaults': {
+    ethereum: ['0x7a6E3635694952dC00F6bA4d4AD1a7B892028789']
+  },
+  'atoma': {
+    methodology: "TVL is the sum of totalAssets() across both Atoma ERC-4626 vaults on Arbitrum. Deposited USDC is held idle in the vault or deployed as margin/equity on perpetual exchanges (Extended, Nado, Lighter, XYZ) via an operator-controlled trading account; totalAssets is updated on-chain roughly hourly to reflect off-chain venue equity plus idle USDC.",
+    start: '2026-05-05',
+    arbitrum: [
+      '0xCC56410e1a136aF0eCEb7241c6aE394F4d8b581c', // Vault 1 - Extended x Nado
+      '0x1C788E14d8e5B446e3F71B5142e2edaBcAB36da1', // Vault 2 - Lighter x XYZ
+    ],
+  },
+  'yieldfy': {
+    doublecounted: true,
+    methodology: "TVL is the sum of totalAssets() across the Yieldfy ERC-4626 USDG vaults on Robinhood Chain. This counts USDG sitting idle in a vault plus USDG the optimizer has routed into an external venue (Morpho, Steakhouse), which a raw balance check would miss. Marked doublecounted because deployed USDG is also counted by those underlying venues.",
+    start: '2026-07-19',
+    robinhood: [
+      '0x4a32cf41315DA5cDe593C56df35D7beFA40Cc01a', // Beta-1 — live
+      '0x8f55eF1cd2B62197742c3E985DB1Cd0f63622e9F', // Beta-0 — retired 2026-07-22, still holds dust
+    ],
+  },
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)
