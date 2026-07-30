@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const abiCellarV0815 = {
   "asset": "address:asset",
   "totalAssets": "uint256:totalAssets",
@@ -117,8 +119,61 @@ const {
 
 const blacklistCellars = ['0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e', '0x5195222f69c5821f8095ec565e71e18ab6a2298f', '0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A', '0x1dffb366b5c5A37A12af2C127F31e8e0ED86BDbe']
 
+// These legacy Cellars are unwound into their base assets, but totalAssets()
+// reverts because a zero/dust nested position depends on a stale oracle.
+const oracleFailureCellars = [
+  '0xb5b29320d2dde5ba5bafa1ebcd270052070483ec', // Real Yield ETH
+  '0x4068bdd217a45f8f668ef19f1e3a1f043e4c4934', // Real Yield LINK
+  '0x0274a704a6d9129f90a62ddc6f6024b33ecdad36', // Real Yield BTC
+  '0x6c51041a91c91c86f3f08a72cb4d3f67f1208897', // ETH Trend Growth
+  '0xc7372ab5dd315606db799246e8aa112405abaeff', // Turbo stETH (stETH Deposit)
+]
+const oracleFailureCellarSet = new Set(oracleFailureCellars)
+
+async function splitOracleFailureCellars(api, cellars) {
+  const candidates = cellars.filter(cellar => oracleFailureCellarSet.has(cellar.toLowerCase()))
+  const totalAssets = await api.multiCall({
+    abi: 'uint256:totalAssets',
+    calls: candidates,
+    permitFailure: true,
+  })
+  const fallbackSet = new Set(candidates
+    .filter((_, i) => totalAssets[i] == null)
+    .map(cellar => cellar.toLowerCase()))
+
+  return {
+    healthy: cellars.filter(cellar => !fallbackSet.has(cellar.toLowerCase())),
+    fallback: cellars.filter(cellar => fallbackSet.has(cellar.toLowerCase())),
+  }
+}
+
+async function sumDirectV2CellarAssets(api, cellars) {
+  const assets = await api.multiCall({
+    abi: 'function getPositionAssets() view returns (address[])',
+    calls: cellars,
+  })
+  return api.sumTokens({ ownerTokens: cellars.map((cellar, i) => [assets[i], cellar]) })
+}
+
+async function sumDirectV2p5CellarAssets(api, cellars) {
+  const assets = await api.multiCall({ abi: 'address:asset', calls: cellars })
+  return api.sumTokens({
+    ownerTokens: cellars.map((cellar, i) => [[assets[i], ADDRESSES.ethereum.WETH], cellar]),
+  })
+}
+
 async function ethereum_tvl(api) {
   const block = await api.getBlock();
+  const activeV2Cellars = filterActiveCellars(cellarsV2, block)
+  const activeV2p5Cellars = filterActiveCellars(cellarsV2p5, block)
+  const [v2Cellars, v2p5Cellars] = await Promise.all([
+    splitOracleFailureCellars(api, activeV2Cellars),
+    splitOracleFailureCellars(api, activeV2p5Cellars),
+  ])
+  const fallbackSet = new Set(v2Cellars.fallback
+    .concat(v2p5Cellars.fallback)
+    .map(cellar => cellar.toLowerCase()))
+
   // Sum TVL for all v0.8.15 Cellars
   await v0815.sumTvl({
     api,
@@ -133,15 +188,23 @@ async function ethereum_tvl(api) {
 
   await v2.sumTvl({
     api,
-    cellars: filterActiveCellars(cellarsV2, block),
+    cellars: v2Cellars.healthy,
     ownersToDedupe: cellarsV2.concat(cellarsV2p5),
   });
+
+  // Count the fully unwound Cellars from their direct base-asset balances.
+  // Their remaining nested Sommelier shares stay included in the underlying
+  // Cellars below by excluding these owners from the share de-duplication.
+  await sumDirectV2CellarAssets(api, v2Cellars.fallback)
+  await sumDirectV2p5CellarAssets(api, v2p5Cellars.fallback)
 
   // no change in sumTvl implementation from v2 to v2.5
   await v2.sumTvl({
     api,
-    cellars: filterActiveCellars(cellarsV2p5, block),
-    ownersToDedupe: cellarsV2.concat(cellarsV2p5),
+    cellars: v2p5Cellars.healthy,
+    ownersToDedupe: cellarsV2
+      .concat(cellarsV2p5)
+      .filter(({ id }) => !fallbackSet.has(id.toLowerCase()))
   });
 }
 
