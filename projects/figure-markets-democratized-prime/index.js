@@ -1,5 +1,7 @@
 const { queryContract } = require('../helper/chain/cosmos.js');
 
+// node test.js projects/figure-markets-democratized-prime/index.js
+
 const demoPrimeContracts = [
     "pb1gqw3m5ftuu0hdcj646ppgmrp7ual3kkjj2wq6usqsfe0ntfmsc7s8fh70c", // AUTO
     "pb1lgdznp6dyljdq40xvcknkzcgelh2es0udwnx9rzn7c5q55435l3sx6v5a6", // Home Equity
