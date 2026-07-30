@@ -3,6 +3,7 @@ const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { cosmosStaked, suiStaked, aptosStaked, nearStaked, bittensorStaked, confluxStaked, cardanoStaked, algorandStaked, starknetStaked, aleoStaked, neo3Staked } = require("../helper/stakingHelper");
 const { sumTokens2: solanaSumTokens } = require("../helper/solana");
+const { unwrapDolomiteDeposits } = require("../helper/unwrapLPs.js");
 
 const config = {
   "ethereum": {
@@ -1964,6 +1965,10 @@ const gateEarnTvl = {
   ethereum: {
     tvl: earnTvl(async (api) => {
       await stakedEthTvl(api)
+      await unwrapDolomiteDeposits({ api, owners: [
+        '0x37E1BF9Ab62E523f358daFacA86151519F0a2f8D',
+        '0xe39BA3F5BCbF0eF7ED31A07e799B8D2010c885CF',
+      ], })
       await api.sumTokens(earnReceiptTokens.ethereum)
     }),
   },
@@ -1991,4 +1996,3 @@ Object.entries(earnReceiptTokens).forEach(([chain, args]) => {
 })
 
 module.exports = mergeExports([cexExports(config), gateEarnTvl]);
-
