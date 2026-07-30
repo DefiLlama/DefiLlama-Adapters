@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { staking } = require('../helper/staking')
 const { sumUnknownTokens } = require('../helper/unknownTokens')
 const { nullAddress } = require('../helper/tokenMapping')
@@ -41,7 +42,11 @@ async function tvl(api) {
   })
   // permanently locked liquidity: the LP minted at seeding is burned to the dead
   // address; count exactly the amount from each presale's LiquiditySeeded event
-  const seedLogs = await Promise.all(seeded.map(i => getLogs2({ api, target: i.presaleManager, eventAbi: liquiditySeededAbi, fromBlock: deployBlock })))
+  const seedLogs = await sdk.util.runInPromisePool({
+    items: seeded,
+    concurrency: 10,
+    processor: (launch) => getLogs2({ api, target: launch.presaleManager, eventAbi: liquiditySeededAbi, fromBlock: deployBlock }),
+  })
   seedLogs.forEach((logs, i) => logs.forEach(log => api.add(seeded[i].pair, log.lpTokens)))
   return sumUnknownTokens({ api, ownerTokens, resolveLP: true, useDefaultCoreAssets: true })
 }
