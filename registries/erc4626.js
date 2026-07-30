@@ -278,6 +278,11 @@ const configs = {
   'gremlix': {
     arbitrum: ['0x973Ae12aC9078E9f9B1708C477A9670bB3fB0886','0xd519EF317Be061b310D3caA4565Fa1ef466c36C8'],
     methodology: 'TVL is the sum of total assets across all Gremlix ERC-4626 vaults.'
+  },
+  'agua': {
+    doublecounted: true,
+    methodology: 'TVL is the sum of assets deposited into Agua\'s ERC-4626 vault(s), read via totalAssets() (net asset value) and denominated in the underlying asset (USDC). Deposits are allocated into external lending markets (Aave, Morpho, Euler, ...) already tracked by DefiLlama, so this TVL is double-counted.',
+    ethereum: ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f'],
   }
 }
 
