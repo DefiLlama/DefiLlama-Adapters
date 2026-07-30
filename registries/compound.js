@@ -399,9 +399,9 @@ const configs = {
     unichain: { comptroller: '0xe22af1e6b78318e1Fe1053Edbd7209b8Fc62c4Fe' },
   },
   'zenolend': {
-    apechain: { comptroller: '0xc2C583093Af9241E17B2Ec51844154468D21bF6F' },
-    unichain: { comptroller: '0x086036b34689709cFAe75dfC453846b744bD8dcA' },
-    soneium: { comptroller: '0x5075A7E2B018f352220874718E3f5Bd38C6DFD5D' },
+    apechain: { comptroller: '0xc2C583093Af9241E17B2Ec51844154468D21bF6F', isInsolvent: true },
+    unichain: { comptroller: '0x086036b34689709cFAe75dfC453846b744bD8dcA', isInsolvent: true },
+    soneium: { comptroller: '0x5075A7E2B018f352220874718E3f5Bd38C6DFD5D', isInsolvent: true },
     sty: { comptroller: '0x5075A7E2B018f352220874718E3f5Bd38C6DFD5D' },
     hemi: { comptroller: '0xc2C583093Af9241E17B2Ec51844154468D21bF6F' },
   },
