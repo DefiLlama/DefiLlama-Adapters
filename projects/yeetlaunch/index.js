@@ -1,4 +1,5 @@
 const { PublicKey } = require('@solana/web3.js')
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConnection, sumTokens2 } = require('../helper/solana')
 
 // YeetAMM — bonding curve and AMM in a single Solana program. A pool starts in
@@ -14,10 +15,33 @@ const POOL_DISCRIMINATOR = 'hQrXeCntzbV'
 
 // Byte offsets into the Pool account. These sit below 545 bytes and have not
 // moved across struct versions, since newer fields were appended.
+const OFFSET_MINT_A = 10
+const OFFSET_MINT_B = 42
 const OFFSET_VAULT_A = 74
 const OFFSET_VAULT_B = 106
 const OFFSET_IS_INITIALIZED = 414
 
+// Only the quote side of each pool is counted. Every pool pairs a freshly
+// launched token against one of these, and the launch token has no market
+// outside its own pool, so including its vault would assign value to supply
+// that cannot be sold anywhere else.
+const QUOTE_MINTS = new Set([
+  ADDRESSES.solana.SOL,
+  ADDRESSES.solana.USDC,
+  ADDRESSES.solana.USDT,
+])
+
+/**
+ * Sums the quote-asset balances held in YeetAMM pool vaults.
+ *
+ * Pools are discovered by their Anchor discriminator, and balances are read
+ * from the vault token accounts rather than from the pool's bookkept reserve
+ * fields, because pools also store virtual reserves that shape the bonding
+ * curve price while holding no assets.
+ *
+ * @param {object} api DefiLlama chain api
+ * @returns {Promise<object>} balances keyed by token
+ */
 async function tvl(api) {
   const connection = getConnection()
   const accounts = await connection.getProgramAccounts(new PublicKey(PROGRAM_ID), {
@@ -30,20 +54,21 @@ async function tvl(api) {
     // Skip pools whose accounts exist but were never fully set up; their vaults
     // are empty and may not be valid token accounts yet.
     if (data.length <= OFFSET_IS_INITIALIZED || data[OFFSET_IS_INITIALIZED] !== 1) continue
-    tokenAccounts.push(new PublicKey(data.subarray(OFFSET_VAULT_A, OFFSET_VAULT_A + 32)).toString())
-    tokenAccounts.push(new PublicKey(data.subarray(OFFSET_VAULT_B, OFFSET_VAULT_B + 32)).toString())
+
+    const readPubkey = (offset) => new PublicKey(data.subarray(offset, offset + 32)).toString()
+    const sides = [[OFFSET_MINT_A, OFFSET_VAULT_A], [OFFSET_MINT_B, OFFSET_VAULT_B]]
+    for (const [mintOffset, vaultOffset] of sides) {
+      if (!QUOTE_MINTS.has(readPubkey(mintOffset))) continue
+      tokenAccounts.push(readPubkey(vaultOffset))
+    }
   }
 
-  // Balances come from the vaults themselves, never from the pool's bookkept
-  // reserve fields. Pools also carry virtual reserves used only to shape the
-  // bonding curve price; those are not assets and must not be counted. Reading
-  // the vaults excludes them structurally rather than by subtraction.
-  return sumTokens2({ api, tokenAccounts, onlyTrustedTokens: true })
+  return sumTokens2({ api, tokenAccounts })
 }
 
 module.exports = {
   timetravel: false,
   methodology:
-    'TVL is the balance of the SOL-side and token-side vaults owned by the YeetAMM program (yeetaecvxpd7DFzZAYTEYracRt1WYJ7DfMVjEeEt2Cp), covering both bonding-curve pools and graduated AMM pools. Pool accounts are discovered on-chain by their Anchor discriminator and vault balances are read directly from the token accounts. Virtual reserves, which the program stores to shape the bonding curve price but which hold no assets, are excluded. Newly launched tokens with no external market are not counted, as only trusted/priced tokens contribute.',
+    'TVL is the quote-asset balance of the vaults owned by the YeetAMM program (yeetaecvxpd7DFzZAYTEYracRt1WYJ7DfMVjEeEt2Cp), covering both bonding-curve pools and graduated AMM pools, which share the same vaults. Pool accounts are discovered on-chain by their Anchor discriminator, and balances are read directly from the vault token accounts rather than from the pool\'s bookkept reserve fields. Pools also store virtual reserves, which the program uses to shape the bonding curve price but which hold no assets; reading the vaults excludes those structurally. Only the quote side of each pool is counted, so freshly launched tokens — which have no market outside their own pool — are not assigned value.',
   solana: { tvl },
 }
