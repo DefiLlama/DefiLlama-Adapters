@@ -76,6 +76,7 @@ const configs = {
   "toobit": require('./toobit.js'),
   "tothemoon": require('./tothemoon.js'),
   "valr-cex": require('./valr-cex.js'),
+  "webot": require('./webot.js'),
   "weex-cex": require('./weex-cex.js'),
   "woo-cex": require('./woo-cex.js'),
   "zoomex-cex": require('./zoomex-cex.js'),
