@@ -3,6 +3,9 @@ const { addCreditPoolTvl, addCreditPoolBorrowed } = require("../native-lend/help
 module.exports = {
   methodology: "Gets all the assets deposited by LPs in TownSquare Vault for PMMs to facilitate trades.",
 };
+const blacklistedTokens = [
+  '0xD7aCB868F97F8286D5d3A0Fd5Ef112a8a72eCD90', // enzoBTC
+]
 
 const config = {
   monad: [
@@ -25,6 +28,7 @@ Object.keys(config).forEach((chain) => {
       for (const { vault, vaultFromBlock } of vaults) {
         await addCreditPoolTvl(api, vault, vaultFromBlock);
       }
+      blacklistedTokens.forEach(t => api.removeTokenBalance(t))
     },
     borrowed: async (api) => {
       for (const { vault, vaultFromBlock } of vaults) {
