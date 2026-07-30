@@ -22,6 +22,10 @@ async function tvl(api) {
   const tokens = await api.fetchList({ lengthAbi: 'uint256:launchCount', itemAbi: 'function allLaunches(uint256) view returns (address)', target: factory })
   if (!tokens.length) return api.getBalances()
   const launches = await api.multiCall({ abi: launchInfoAbi, calls: tokens, target: factory })
+  // WETH contributed to presales sits in each launch's PresaleManager until
+  // liquidity seeding moves it to the pair (or refunds return it)
+  const raiseToken = await api.call({ abi: 'address:RAISE_TOKEN', target: factory })
+  await api.sumTokens({ owners: launches.map(i => i.presaleManager), tokens: [raiseToken] })
   const lpStakings = launches.map(i => i.lpStaking)
   // the staked token is the launch token/WETH Uniswap v2 pair; zero address until liquidity is seeded
   const lpTokens = await api.multiCall({ abi: 'address:lpToken', calls: lpStakings })
@@ -36,7 +40,7 @@ module.exports = {
   misrepresentedTokens: true,
   doublecounted: true, // staked LP is canonical Uniswap v2 pair liquidity, also counted in the uniswap listing
   start: '2026-07-18',
-  methodology: 'Counts Uniswap v2 LP tokens from Boardwalk token launches that are staked in each launch\'s LPStaking contract, valued from pair reserves. Staked BWLK on Ethereum is counted under staking.',
+  methodology: 'Counts WETH contributed to active presales (held by each launch\'s PresaleManager) and Uniswap v2 LP tokens from Boardwalk token launches that are staked in each launch\'s LPStaking contract, valued from pair reserves. Staked BWLK on Ethereum is counted under staking.',
 }
 
 Object.keys(config).forEach(chain => {
