@@ -173,6 +173,9 @@ async function ethereum_tvl(api) {
   const fallbackSet = new Set(v2Cellars.fallback
     .concat(v2p5Cellars.fallback)
     .map(cellar => cellar.toLowerCase()))
+  const ownersToDedupe = cellarsV2
+    .concat(cellarsV2p5)
+    .filter(({ id }) => !fallbackSet.has(id.toLowerCase()))
 
   // Sum TVL for all v0.8.15 Cellars
   await v0815.sumTvl({
@@ -189,7 +192,7 @@ async function ethereum_tvl(api) {
   await v2.sumTvl({
     api,
     cellars: v2Cellars.healthy,
-    ownersToDedupe: cellarsV2.concat(cellarsV2p5),
+    ownersToDedupe,
   });
 
   // Count the fully unwound Cellars from their direct base-asset balances.
@@ -202,9 +205,7 @@ async function ethereum_tvl(api) {
   await v2.sumTvl({
     api,
     cellars: v2p5Cellars.healthy,
-    ownersToDedupe: cellarsV2
-      .concat(cellarsV2p5)
-      .filter(({ id }) => !fallbackSet.has(id.toLowerCase()))
+    ownersToDedupe,
   });
 }
 
