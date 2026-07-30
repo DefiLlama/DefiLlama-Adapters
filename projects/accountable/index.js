@@ -19,6 +19,11 @@ const FACTORIES = {
         '0x2f5CAc28cf80D465d7C8D67a49c8e36710a4B83B',
         '0x9f1EB2be7b6a7e611c270bbdb0A3358786769518', // yield factory
     ],
+    robinhood: [
+        '0x017273Eeb06Ee9f863020269417DB9559FD94173',
+        '0x474B612F970491801743BF0e4B9153620FC36096',
+        '0xA4d6a4aD35fc632aEE1dC48A2aEc2aaa37B51F9f', // yield factory
+    ],
 }
 
 const EXTRA_VAULTS = {
@@ -111,6 +116,10 @@ module.exports = {
         borrowed: tvl(true)
     },
     citrea: {
+        tvl: tvl(false),
+        borrowed: tvl(true)
+    },
+    robinhood: {
         tvl: tvl(false),
         borrowed: tvl(true)
     },
