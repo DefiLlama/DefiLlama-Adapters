@@ -307,21 +307,23 @@ const supportedChains = [
 ]
 
 const query = `
-  query getVaults {
+  query getVaults($lastId: ID) {
     vaults(
       first: 1000
       orderBy: id
       orderDirection: asc
+      where: { id_gt: $lastId }
     ) { id beaconName token0 token1 token0Balance token1Balance }
   }
 `
 
 const OFFLINE_SUBGRAPH_QUERY = `
-  query getVaults {
+  query getVaults($lastId: ID) {
     vaults(
       first: 1000
       orderBy: id
       orderDirection: asc
+      where: { id_gt: $lastId }
     ) { id beaconName token0 token1 token0Balance token1Balance }
   }
 `
@@ -412,8 +414,9 @@ supportedChains.forEach(chain => {
       const usesOfflineSubgraph = chain.subgraphEndpoint.startsWith(OFFLINE_SUBGRAPH_URL_PREFIX)
       const data = await cachedGraphQuery(`steer-v4/${chain.identifier}`, chain.subgraphEndpoint, usesOfflineSubgraph ? OFFLINE_SUBGRAPH_QUERY : query, {
         headers: chain.headers,
+        fetchById: true,
       })
-      // The array fallback supports a cache entry produced by the previous paginated query.
+      // The object fallback supports a cache entry produced by the previous unpaginated query.
       const vaultData = Array.isArray(data) ? data : data.vaults
       if (!Array.isArray(vaultData)) throw new Error(`Could not fetch vaults for ${api.chain}`)
       const v4Vaults = vaultData.filter(({ beaconName }) => UNISWAP_V4_BEACON_NAMES.has(beaconName))
