@@ -47,8 +47,10 @@ async function tvl(api) {
   MARKETS.forEach((market, i) => {
     if (!market.exclusive) return
     const p = params[i]
-    if (!p || !p.collateralToken) return
-    if (p.collateralToken.toLowerCase() !== market.collateral.toLowerCase()) return
+    if (!p?.collateralToken ||
+      p.collateralToken.toLowerCase() !== market.collateral.toLowerCase()) {
+      throw new Error(`Invalid Sharewoods Morpho market configuration: ${market.id}`)
+    }
     tokens.push(market.collateral)
   })
 
