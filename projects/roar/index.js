@@ -30,6 +30,6 @@ async function staking(api) {
 
 module.exports = {
   methodology: 'TVL counts only user-owned WETH liabilities: active-round escrow and unclaimed settlement rewards in the Game, plus prepaid automated-mining escrow in the canonical AutoMiner. Pending admin settlement, Treasury assets, and Giga LP liquidity are excluded. Staking counts the Game reward liability (unclaimed round rewards and the Motherlode) plus all ROAR held by the Staking contract as staked principal, earned rewards, and unvested rewards.',
-  start: '2026-07-30',
+  start: 1785423000, // after the canonical AutoMiner deployment
   robinhood: { tvl, staking },
 }
