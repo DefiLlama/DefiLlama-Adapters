@@ -596,6 +596,18 @@ const configs = {
       }
     },
   },
+  "meridian-perps": {
+    config: {
+      methodology: 'Count all assets deposited in the Meridian perps LP vault.',
+      blockchains: {
+        robinhood: {
+          accountableVaults: [
+            '0x24b84023c8e4Da635be228C380C09bfE5271BF9d', // Meridian LP vault
+          ],
+        },
+      },
+    },
+  },
   "muscadine": {
     config: {
       methodology: 'Counts all assets deposited in Muscadine Morpho vaults on Base.',
