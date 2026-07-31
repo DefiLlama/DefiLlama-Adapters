@@ -225,6 +225,10 @@ const config = {
   pharos: {
     morphoBlue: "0x18573fA18fd17dDfD790B4a5B5b2977aad3b4Efb",
     fromBlock: 4202147,
+  },
+  morph: {
+    morphoBlue: "0xAd10d07901Dc3195c3cb5e78E061F4EA8D9B4905",
+    fromBlock: 23180020,
   }
 }
 
