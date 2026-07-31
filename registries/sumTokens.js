@@ -18124,6 +18124,26 @@ const configs = {
       },
     }
   },
+  "roar": {
+    "start": "2026-07-30",
+    "methodology": "TVL is WETH held by the active Game and canonical AutoMiner, covering player deployments, unclaimed settlement rewards, and prepaid automated-mining balances. Staking counts ROAR held by the Game as unclaimed round rewards and the Motherlode, plus ROAR held by the Staking contract as staked principal and vesting rewards. Treasury assets and Giga LP liquidity are excluded.",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0xB9E308C0de769aB61089Ef47231f0ff92AE8BF69",
+          "0x451e9b91447bE0abeebD3110b8c372988383f72C"
+        ],
+        "tokens": [ADDRESSES.robinhood.WETH]
+      },
+      "staking": {
+        "owners": [
+          "0xB9E308C0de769aB61089Ef47231f0ff92AE8BF69",
+          "0xAB9E06E60AafE34257315c12717e0b9E5bFa7631"
+        ],
+        "tokens": ["0xf1d3e39cc61Aedd53dc40d8AFFf6aA1dD51875D0"]
+      },
+    }
+  },
   "mining-tycoon": {
     "timetravel": false,
     "methodology": "TVL counts SOL locked in the mining vault. Staking counts the protocol's own GPU tokens locked in the GPU vault. Mining Tycoon is a dual-currency mining pool where users buy mining power with SOL or GPU tokens and earn proportional rewards from both vaults.",
