@@ -54,7 +54,6 @@ const config = {
       "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0",
       "0x76bbb8D5dbedde9cB34882c9588DFa9dEF00B8bc",
       "0xccc5eeebe15291620be733997af60735618548d7",
-      "0xba622437b70d86EADd6F2f5fB7A5124270c35705",
     ]
   },
   "avax": {
@@ -1904,14 +1903,18 @@ const earnReceiptTokens = {
       '0x444c55075086f531a1c02730f41c46b9bbb00a39',
       '0x356b9e62b20f4666e914fb99a9f651e5574f2bf7',
       '0x8cd6437feaeb1a3a0cd65a16de2ad26bff1f5e43',
+      '0xC453E33Ae2d465d36fEA462BfE810cD6ab408916',
+      "0xba622437b70d86EADd6F2f5fB7A5124270c35705",
     ],
     tokens: [
       '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aEthUSDT (Aave v3)
       '0x4da27a545c0c5b758a6ba100e3a049001de870f5', // stkAAVE
+      '0xBc65ad17c5C0a2A4D159fa5a503f4992c7B545FE', // sUSDC 
       '0xe2e7a17dFf93280dec073C995595155283e3C372', // spUSDT  (Spark savings USDT)
       '0x23f5E9c35820f4baB695Ac1F19c203cC3f8e1e11', // skyMoneyUsdtSavings
       '0xE1753F2e00940cC31213dd92013cF019DFE4ca1d', // sGHO   (Aave savings GHO)
       '0xC02aB1A5eaA8d1B114EF786D9bde108cD4364359', // spUSDS (Spark savings USDS)
+      '0xe7df13b8e3d6740fe17cbe928c7334243d86c92f', // spUSDT
     ],
   },
   arbitrum: {
