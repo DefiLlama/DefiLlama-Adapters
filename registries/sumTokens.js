@@ -26563,17 +26563,41 @@ const configs = {
     },
   },
   "stonkbrokers": {
-    "methodology": "TVL is the sum of tokens held by the StockBooster contract. Staking tracks STONKBROKER tokens in the escrow contract.",
+    // Broker Box production machines (2026-07-31) hold seed stock + ETH bankroll.
+    // StockBooster holds Clock In dividend inventory. Deed TBA vaults are not
+    // enumerated here (need per-tokenId TBA discovery).
+    "methodology": "TVL is ETH + stock-token inventory locked in Broker Box gacha machines, plus tokens held by StockBooster. Staking tracks STONKBROKER tokens in the escrow contract.",
     "robinhood": {
       "tvl": {
-        "owner": "0x038a7F4E4E89448ad74e044337C9aC25C11e726B",
-        "tokens": [
-          ADDRESSES.null,
-          ADDRESSES.robinhood.WETH,
-          "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9",
-          "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
-          "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC",
-        ]
+        "ownerTokens": [
+          // StockBooster — Clock In fee sink / stock inventory
+          [
+            [
+              ADDRESSES.null,
+              ADDRESSES.robinhood.WETH,
+              "0x1b0E319c6A659F002271B69dB8A7df2F911c153E", // GME
+              "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", // AAPL
+              "0x12f190a9F9d7D37a250758b26824B97CE941bF54", // AMZN
+              "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", // NVDA
+              "0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3", // GOOGL
+              "0xe93237C50D904957Cf27E7B1133b510C669c2e74", // MSFT
+              "0x411eFb0E7f985935DAec3D4C3ebaEa0d0AD7D89f", // SLV
+              "0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa", // SPCX
+              "0xa30FA36Db767ad9eD3f7a60fC79526fB4d56D344", // USO
+            ],
+            "0x038a7F4E4E89448ad74e044337C9aC25C11e726B",
+          ],
+          // Broker Box gacha machines — each: native ETH bankroll + its stock tape
+          [[ADDRESSES.null, "0x1b0E319c6A659F002271B69dB8A7df2F911c153E"], "0x8F1836209C42d4F6B6caA782c055eE13F8aC95b0"], // GME
+          [[ADDRESSES.null, "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9"], "0xF9bc0777C087Af0fe7214dE8A5360bE6a71D0D44"], // AAPL
+          [[ADDRESSES.null, "0x12f190a9F9d7D37a250758b26824B97CE941bF54"], "0x2829b754784352dd2BeFfa5Eb26d5B499315b715"], // AMZN
+          [[ADDRESSES.null, "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"], "0xc5e3E9C2a835Ec9319Fd8C1d516fD4323c5758A0"], // NVDA
+          [[ADDRESSES.null, "0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3"], "0xFF20b4b8E08beAA4064E3ca4CC5a2E40AcaC072f"], // GOOGL
+          [[ADDRESSES.null, "0xe93237C50D904957Cf27E7B1133b510C669c2e74"], "0xfC253E0062eEf614E20E0726e5f6FF7559c35402"], // MSFT
+          [[ADDRESSES.null, "0x411eFb0E7f985935DAec3D4C3ebaEa0d0AD7D89f"], "0x9d2c3355502be065975ad47EF5A902f02c772504"], // SLV
+          [[ADDRESSES.null, "0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa"], "0xf58979D35C3F0Ff6A6F7EDd909fE8a95a2894609"], // SPCX
+          [[ADDRESSES.null, "0xa30FA36Db767ad9eD3f7a60fC79526fB4d56D344"], "0x5B1282B6Ad40b3DC294404A2b33FF7657B66c33c"], // USO
+        ],
       },
       "staking": {
         "owner": "0x799AE26fA515ceF145e8bC8636F7fFF87B05Cf62",
