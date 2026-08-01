@@ -1821,9 +1821,9 @@ unsupportedChains.forEach(chain => delete config[chain]);
 const earnStakers = {
   celestia: ['celestia10v2gu0vvdeuv8pexnl98lmyva4cq8jkavlk9w4'],
   cosmos: ['cosmos10v2gu0vvdeuv8pexnl98lmyva4cq8jkaa4845c'],
-  injective: ['inj10v2gu0vvdeuv8pexnl98lmyva4cq8jkahus3xq'],
+  injective: ['inj10v2gu0vvdeuv8pexnl98lmyva4cq8jkahus3xq', 'inj18njk2lz5q7juryvzgyly2qxetuwqadxzpvmuhj'],
   dydx: ['dydx10v2gu0vvdeuv8pexnl98lmyva4cq8jka5vf350'],
-  sui: ['0x6edd3be944aeaa90f86f95008b852308e5ab48dc6d2df756e92e11c1ec73b8c0'],
+  sui: ['0x6edd3be944aeaa90f86f95008b852308e5ab48dc6d2df756e92e11c1ec73b8c0', '0xf15b7dbce9f19b0efb66d08aeb9bf840e0bb96d75021c941b9b417b5034560aa'],
 }
 
 /**
@@ -1844,7 +1844,7 @@ const earnOnlyOwners = {
     'addr1q9lqxlvk2dk8sffhr56gc4c4lckpv56l4r7wwh474caywurve9ssnt966vmezsfsppfm5sxgu5sqxacp8t7kpjzp9yxqn24ckj',
     'addr1qyxuqrcjfyyz99yx4s307x33tu45944j607cywzvh3ykxw8c0cqknc77ed7uu7v465ufhkuu73ve6x7r9emq8vfkhxts23pyk4',
   ],
-  algorand: ['4EHCQSBDXQDSR4MFASDP2TGNKVDCJEKA5FUCHLAJ7FVTANR42JISNPV6UU'],
+  algorand: ['4EHCQSBDXQDSR4MFASDP2TGNKVDCJEKA5FUCHLAJ7FVTANR42JISNPV6UU', 'XQBOKHK7JQBWCHXSRWH5XW5ADMRX6WUHB6WXM4GQUF5BUFETJOLX7AMJRI'],
   solana: ['DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp'],
 }
 
@@ -1858,15 +1858,27 @@ Object.entries(earnOnlyOwners).forEach(([chain, owners]) => {
 
 // delegation pools have to be named explicitly - a delegator's stake is stored
 // per-pool, there is no "list my pools" view on chain
-const aptosDelegators = [{
-  owner: '0x664208180d23956463ab9bf0a8f2a8f095bca2e27ac9c60623a4e22e78456d3f',
-  pools: ['0xdb5247f859ce63dbe8940cf8773be722a60dcc594a8be9aca4b76abceb251b8e'],
-}]
+const aptosDelegators = [
+  {
+    owner: '0x664208180d23956463ab9bf0a8f2a8f095bca2e27ac9c60623a4e22e78456d3f',
+    pools: ['0xdb5247f859ce63dbe8940cf8773be722a60dcc594a8be9aca4b76abceb251b8e'],
+  },
+  {
+    owner: '0x4c3badbfdfe003ab15c753efd24f32866c13451d468983c17cbb0d77e880b792',
+    pools: ['0xdb5247f859ce63dbe8940cf8773be722a60dcc594a8be9aca4b76abceb251b8e'],
+  },
+]
 
-const nearDelegators = [{
-  owner: 'e10e284823bc0728f1850486fd4ccd5546249140e96823ac09f96b30363cd251',
-  pools: ['gtnode-0.poolv1.near'],
-}]
+const nearDelegators = [
+  {
+    owner: 'e10e284823bc0728f1850486fd4ccd5546249140e96823ac09f96b30363cd251',
+    pools: ['gtnode-0.poolv1.near'],
+  },
+  {
+    owner: 'bc02e51d5f4c03611ef28d8fdbdba01b237f5a870fad7670d0a17a1a14934b97',
+    pools: ['gtnode-0.poolv1.near'],
+  },
+]
 
 // bittensor coldkey as a 32-byte pubkey (SS58 5H9nqVMLfYWN6MiiCLrWjR1ADjR7V7FcBEenBY66NiHeKucE)
 const bittensorColdkeys = ['e10e284823bc0728f1850486fd4ccd5546249140e96823ac09f96b30363cd251']
