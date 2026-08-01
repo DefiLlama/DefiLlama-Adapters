@@ -654,6 +654,7 @@ module.exports = {
     "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
     "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
     "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
+    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh"
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
