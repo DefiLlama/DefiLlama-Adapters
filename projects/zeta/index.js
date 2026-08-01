@@ -15,7 +15,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const legacyZetaGroupAddrs = [
     new PublicKey("CoGhjFdyqzMFr5xVgznuBjULvoFbFtNN4bCdQzRArNK2"),
     new PublicKey("5XC7JWvLGGds4tjaawgY8FwMdotUb5rrEUmxcmyp5ZiW"),

@@ -1,5 +1,0 @@
-{
-  "collateralContract": "address:collateralContract",
-  "getAllPairAddresses": "address[]:getAllPairAddresses",
-  "totalCollateral": "uint256:totalCollateral"
-}

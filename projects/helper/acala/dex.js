@@ -1,21 +1,31 @@
 
-const { getAPI, addTokenBalance } = require('./api')
+const { getAPI, } = require('./api')
+const { transformDexBalances } = require('../portedTokens')
+const { getCoreAssets } = require('../tokenMapping')
+
 
 async function dex(chain) {
   const api = await getAPI(chain)
   const data = await api.query.dex.liquidityPool.entries();
-  const balances = {}
 
-  const promises = []
+  const coreAssets = getCoreAssets(chain)
+  const dexData = []
 
-  for (let i = 0; i < data.length; i++) {
-    const [token, amount] = data[i];
-    promises.push(addTokenBalance({ balances, chain, amount: amount[0], tokenArg: token.args[0][0], }))
-    promises.push(addTokenBalance({ balances, chain, amount: amount[1], tokenArg: token.args[0][1], }))
+  const getTokenName = tokenJson => {
+    tokenJson = tokenJson.toJSON()
+    if (tokenJson.token && coreAssets.includes(tokenJson.token.toLowerCase())) return tokenJson.token
+    return chain + ':' + JSON.stringify(tokenJson).replace(/(\{|\}|\s|")/g, '')
   }
+  data.forEach(([token, amount]) => {
+    dexData.push({
+      token0: getTokenName(token.args[0][0]),
+      token0Bal: +amount[0],
+      token1: getTokenName(token.args[0][1]),
+      token1Bal: +amount[1],
+    })
+  })
 
-  await Promise.all(promises)
-  return balances
+  return transformDexBalances({ chain, data: dexData })
 }
 
 module.exports = {

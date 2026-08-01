@@ -1,0 +1,60 @@
+{
+  "address": "BUNDeH5A4c47bcEoAjBhN3sCjLgYnRsmt9ibMztqVkC9",
+  "metadata": {"name": "ntbundle", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [
+    {"name": "Bundle", "discriminator": [15, 82, 167, 230, 37, 214, 82, 80]},
+    {"name": "OracleData", "discriminator": [26, 131, 25, 110, 6, 141, 10, 37]}
+  ],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "Bundle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "name", "type": {"array": ["u8", 32]}},
+          {"name": "manager", "type": "pubkey"},
+          {"name": "keeper", "type": "pubkey"},
+          {"name": "treasury_account", "type": "pubkey"},
+          {"name": "allocated_receivers", "type": {"vec": "pubkey"}},
+          {"name": "bundle_underlying_balance", "type": "u64"},
+          {"name": "max_deposit_amount", "type": "u64"},
+          {"name": "min_deposit_amount", "type": "u64"},
+          {"name": "withdrawal_delay", "type": "u64"},
+          {"name": "performance_fee", "type": "u32"},
+          {"name": "management_fee_bps", "type": "u32"},
+          {"name": "deposit_fee", "type": "u32"},
+          {"name": "withdrawal_fee", "type": "u32"},
+          {"name": "manager_pfee_shares", "type": "u128"},
+          {"name": "current_allocation_bps", "type": "u32"},
+          {"name": "oracle_buffer", "type": "u64"},
+          {"name": "oracle_update_time_limit", "type": "i64"},
+          {"name": "oracle_max_age", "type": "i64"},
+          {"name": "total_shares", "type": "u128"},
+          {"name": "asset_precision", "type": "u64"},
+          {"name": "asset_address", "type": "pubkey"},
+          {"name": "asset_decimals", "type": "u8"},
+          {"name": "withdrawal_t_min", "type": "i64"},
+          {"name": "withdrawal_t_max", "type": "i64"},
+          {"name": "withdrawal_curve", "type": "f32"},
+          {"name": "permissionned", "type": "bool"},
+          {"name": "manager_mfee_shares", "type": "u128"},
+          {"name": "padding", "type": {"array": ["u8", 239]}}
+        ]
+      }
+    },
+    {
+      "name": "OracleData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "average_external_equity", "type": "u64"},
+          {"name": "last_update_time", "type": "i64"},
+          {"name": "padding", "type": {"array": ["u8", 64]}}
+        ]
+      }
+    }
+  ]
+}

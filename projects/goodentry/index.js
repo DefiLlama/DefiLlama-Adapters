@@ -13,7 +13,7 @@ const token1Abi = "function TOKEN1() view returns (address token, uint8 decimals
 const vaultReservesAbi = "function getReserves() view returns (uint baseAmount, uint quoteAmount, uint valueX8)";
 const factory = "0xddec418c1a825ac09ad83cc1a28a2c5bcd746050"
 
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
   // GoodEntry v1
   const addressesProviders = await api.call({ target: addressesProviderRegistry, abi: abi["getAddressesProvidersList"], })
   const validAddressesProviders = addressesProviders.filter((ap) => ap != ADDRESSES.null)
@@ -61,7 +61,7 @@ module.exports = {
   methodology:
     "For GoodEntry v1, counts the tokens locked in the Aave lending pool fork. For v2, calls a dedicated getReserves() function on the vault.",
   hallmarks: [
-    [1701376109, "V2 Launch"]
+    ['2023-11-30', "V2 Launch"]
   ],
   arbitrum: { tvl, }
 };

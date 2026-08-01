@@ -1,13 +1,20 @@
-const abis = require("./abis");
+const abis = {
+  artGobblers: {
+    gooBalance: "function gooBalance(address user) view returns (uint256)",
+  },
+  goober: {
+    reserves: "function getReserves() view returns (uint256 _gooReserve, uint256 _gobblerReserve, uint32 _blockTimestampLast)",
+  },
+};
 
 module.exports = {
-  start: 1668410449,
+  start: '2022-11-14',
   methodology:
     "Counts GOO balance of the vault then sums it with the total multiplier reserve based on the vaults pricing of a multiplier in GOO",
 }
 
 module.exports["ethereum"] = {
-  tvl: async (_, block, _1, { api }) => {
+  tvl: async (api) => {
     const gooberReserves = await api.call({
       target: "0x2275d4937b6bFd3c75823744d3EfBf6c3a8dE473",
       abi: abis.goober.reserves,

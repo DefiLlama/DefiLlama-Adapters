@@ -4,7 +4,7 @@ const { getUniqueAddresses, } = require('../helper/tokenMapping');
 module.exports = {
   misrepresentedTokens: true,
   radixdlt: {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       const data = await queryAddresses({
         addresses: ["component_rdx1cpmh7lyg0hx6efv5q79lv6rqxdqpuh27y99nzm0jpwu2u44ne243ws"]

@@ -1,7 +1,3 @@
-const sdk = require('@defillama/sdk')
-const { transformBalances } = require('../helper/portedTokens')
-const chain = 'klaytn'
-
 const SCNR = {
   address: "0x8888888888885b073f3c81258c27e83db228d5f3",
   staking: "0x7c59930d1613ca2813e5793da72b324712f6899d",
@@ -12,44 +8,36 @@ const SCNR = {
 
 const WKLAY = "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74";
 
-async function getTokenPrice(block) {
-  const [scnrLPBal, klayLPBal] = await sdk.api2.abi.multiCall({
+async function getTokenPrice(api) {
+  const [scnrLPBal, klayLPBal] = await api.multiCall({
     abi: 'erc20:balanceOf',
     calls: [[SCNR.address, SCNR.LPs.KLAY],[WKLAY, SCNR.LPs.KLAY]].map(([target, params]) => ({ target, params, })),
-    chain, block,
   })
   return klayLPBal/scnrLPBal
 }
 
-async function staking(_, _b, {klaytn: block}) {
-  const scnrBal = await sdk.api2.abi.call({
+async function staking(api) {
+  const scnrBal = await api.call({
     abi: 'erc20:balanceOf',
     target: SCNR.address,
     params: SCNR.staking,
-    chain, block,
   })
   
-  const balances = {}
-  sdk.util.sumSingleBalance(balances,WKLAY,scnrBal * await getTokenPrice(block))
-  return transformBalances(chain, balances)
+  api.add(WKLAY,scnrBal * await getTokenPrice(api))
 }
 
-async function pool2(_, _b, {klaytn: block}) {
-  const [klayLPBal, lpBalance] = await sdk.api2.abi.multiCall({
+async function pool2(api) {
+  const [klayLPBal, lpBalance] = await api.multiCall({
     abi: 'erc20:balanceOf',
     calls: [[WKLAY, SCNR.LPs.KLAY],[SCNR.LPs.KLAY, SCNR.staking]].map(([target, params]) => ({ target, params, })),
-    chain, block,
   })
 
-  const supply = await sdk.api2.abi.call({
+  const supply = await api.call({
     target: SCNR.LPs.KLAY,
     abi: 'erc20:totalSupply',
-    chain, block,
   })
 
-  const balances = {}
-  sdk.util.sumSingleBalance(balances,WKLAY,2*klayLPBal * lpBalance/supply)
-  return transformBalances(chain, balances)
+  api.add(WKLAY,2*klayLPBal * lpBalance/supply)
 }
 
 

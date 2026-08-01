@@ -4,7 +4,7 @@ const { nullAddress } = require("../helper/tokenMapping")
 const sdk = require('@defillama/sdk')
 const { sliceIntoChunks, sleep } = require("../helper/utils")
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const factory = '0xcE393b11872EE5020828e443f6Ec9DE58CD8b6c5'
   const logs = await getLogs({
     api,
@@ -15,7 +15,7 @@ async function tvl(_, _b, _cb, { api, }) {
     fromBlock: 13154136,
   })
   const calls = logs.map(i => ({ target: i.token, params: i.exchange })).filter(i => i.target.toLowerCase() !== '0xcE393b11872EE5020828e443f6Ec9DE58CD8b6c5'.toLowerCase())
-  const allToken1Res = await api.multiCall({ abi: 'erc20:balanceOf', calls })
+  const allToken1Res = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true })
   const tokenFilter = (_, i) => allToken1Res[i] && +allToken1Res[i] > 0
   const token1s = calls.map(i => i.target).filter(tokenFilter)
   const exchanges = calls.map(i => i.params).filter(tokenFilter)

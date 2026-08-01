@@ -1,4 +1,7 @@
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accOlivePerShare)",
+    "poolLength": "uint256:poolLength"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const CHEFS = {
@@ -14,7 +17,7 @@ module.exports = {
 Object.keys(CHEFS).forEach(chain => {
   const chef = CHEFS[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const lp = await api.fetchList({
         lengthAbi: abi.poolLength,
         itemAbi: abi.poolInfo,

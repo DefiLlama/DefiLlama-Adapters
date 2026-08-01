@@ -1,4 +1,8 @@
-const abi = require("./abi.json");
+const abi = {
+    "LPtoken": "address:LPtoken",
+    "balanceLPinSystem": "uint256:balanceLPinSystem",
+    "stakingToken": "address:stakingToken"
+  };
 const { sumTokensExport, sumUnknownTokens } = require('../helper/unknownTokens')
 
 const coreRewards = "0x3a7D3D2b49CAA7EF2C116C64711265eab0C755c0";
@@ -17,14 +21,14 @@ const vaults = [
 ];
 
 /*** Staking of native token BAS3D and BAS3D/ETH LP TVL Portion ***/
-const pool2 = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const pool2 = async (api) => {
   const staking_lpToken = await api.call({ abi: abi.stakingToken, target: coreRewards, })
   return sumUnknownTokens({ api, tokens: [staking_lpToken], owners: [coreRewards, ethRewards], useDefaultCoreAssets: true })
 };
 
 
 /*** vaults TVL portion ***/
-const bas3dTVL = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const bas3dTVL = async (api) => {
   const tokens = await api.multiCall({  abi: abi.LPtoken, calls: vaults})
   const bals = await api.multiCall({  abi: abi.balanceLPinSystem, calls: vaults})
   api.addTokens(tokens, bals)

@@ -7,7 +7,7 @@ const LUX = "0x6671e20b83ba463f270c8c75dae57e3cc246cb2b"
 module.exports=ohmTvl(
     treasury,
     [
-        [ADDRESSES.fantom.DAI, false],
+        ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", false],
         [ADDRESSES.fantom.WFTM, false],
         ["0x46729c2AeeabE7774a0E710867df80a6E19Ef851", true],
         ["0x951BBB838e49F7081072895947735b0892cCcbCD", true]
@@ -16,7 +16,7 @@ module.exports=ohmTvl(
     "0xf3F0BCFd430085e198466cdCA4Db8C2Af47f0802",
     LUX,
     (addr) => {
-        if (addr.toLowerCase() === ADDRESSES.fantom.DAI) {
+        if (addr.toLowerCase() === "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e") {
           return ADDRESSES.ethereum.DAI;
         }
         return `fantom:${addr}`;

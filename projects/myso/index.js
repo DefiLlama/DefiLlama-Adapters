@@ -47,7 +47,8 @@ const getPools = async (chainId) => {
   return data.pools.map((pool) => pool.poolAddress);
 };
 
-async function tvl(_, _b, _cb, { api, chain }) {
+async function tvl(api) {
+  const { chain } = api
   const chainId = mapChainToChainId[chain];
   let pools
   try {
@@ -72,6 +73,6 @@ async function tvl(_, _b, _cb, { api, chain }) {
 
 module.exports = {
   ethereum: { tvl },
-  arbitrum: { tvl },
+  arbitrum: { tvl: () => ({ }) },
   methodology: "token held as collateral + liquidity left to be borrowed",
 };

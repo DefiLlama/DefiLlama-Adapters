@@ -16,7 +16,7 @@ const abi = {
 }
 
 
-async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
+async function borrowed(api) {
     // V3
     const v3TokenState = await api.call({ abi: abi.v3.getTokenState, target: v3Address, })
     api.add(WETH_CONTRACT, v3TokenState[0].totalNormalBorrowed)

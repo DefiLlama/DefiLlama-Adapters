@@ -4,14 +4,14 @@ function getExports(config, exportsObj) {
   Object.keys(config).forEach(chain => {
     const pit = config[chain]
     exportsObj[chain] = {
-      tvl: async (_, _b, _cb, { api, }) => {
+      tvl: async (api) => {
         const { lendingTokens, projectTokens, bTokens } = await getConfig(api)
         const ownerTokens = bTokens.map((v, i) => [[lendingTokens[i]], v])
         ownerTokens.push([lendingTokens, pit])
         ownerTokens.push([projectTokens, pit])
         return api.sumTokens({ ownerTokens })
       },
-      borrowed: async (_, _b, _cb, { api, }) => {
+      borrowed: async (api) => {
         const { lendingTokens, bTokens } = await getConfig(api)
         const bals = await api.multiCall({ abi: 'uint256:totalBorrows', calls: bTokens })
         api.addTokens(lendingTokens, bals)

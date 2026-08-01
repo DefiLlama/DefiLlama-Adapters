@@ -1,169 +1,270 @@
+const axios = require('axios')
+axios.defaults.headers.common['User-Agent'] = 'DefiLlama-Nolus-Adapter/1.0 (https://defillama.com)'
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
+const { sleep } = require('../helper/utils')
 
-const chain = 'nolus'
-const _6Zeros = 1000000
-const _8Zeros = 100000000
-const _18Zeros = 1000000000000000000
+// Admin contract that holds a registry of all active protocols
+const ADMIN_CONTRACT = 'nolus1gurgpv8savnfw66lckwzn4zk7fp394lpe667dhu7aw48u40lj6jsqxf8nd'
 
-// Osmosis
-const osmosisLeaserAddr = 'nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f'
-const osmosisOracleAddr = 'nolus1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgsv3wzl4'
-const osmosisLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
+// batch config for lease queries
+const BATCH = { size: 30, pauseMs: 300, jitterMs: 120, maxRetries: 2 }
+const sleepMs = (n) => new Promise(r => setTimeout(r, n))
 
-// Neutron (Astroport)
-const neutronLeaserAddr = 'nolus1et45v5gepxs44jxewfxah0hk4wqmw34m8pm4alf44ucxvj895kas5yrxd8'
-const neutronOracleAddr = 'nolus1jew4l5nq7m3xhkqzy8j7cc99083m5j8d9w004ayyv8xl3yv4h0dql2dd4e'
-const neutronLppAddr = 'nolus1qqcr7exupnymvg6m63eqwu8pd4n5x6r5t3pyyxdy7r97rcgajmhqy3gn94'
+// CoinGecko IDs for known tickers
+const COINGECKO_IDS = {
+  'USDC': 'usd-coin',
+  'USDC_NOBLE': 'usd-coin',
+  'ALL_BTC': 'osmosis-allbtc',
+  'ALL_SOL': 'osmosis-allsol',
+  'AKT': 'akash-network',
+  'ATOM': 'cosmos',
+  'OSMO': 'osmosis',
+}
+
+// Protocols to skip for lease TVL queries (e.g., broken smart query)
+// LPP TVL is still counted for these protocols
+const SKIP_LEASE_QUERIES = ['OSMOSIS-OSMOSIS-USDC_AXELAR']
+
+/**
+ * Fetches all active protocol names from the admin contract
+ */
+async function getProtocolNames() {
+  const result = await queryContract({
+    contract: ADMIN_CONTRACT,
+    chain: 'nolus',
+    data: { protocols: {} }
+  })
+  return result || []
+}
+
+/**
+ * Fetches protocol details (contracts) for a given protocol name
+ */
+async function getProtocolDetails(protocolName) {
+  const result = await queryContract({
+    contract: ADMIN_CONTRACT,
+    chain: 'nolus',
+    data: { protocol: protocolName }
+  })
+  return result
+}
+
+/**
+ * Fetches all protocols with their contract addresses
+ */
+async function getAllProtocols() {
+  const protocolNames = await getProtocolNames()
+  const protocols = []
+
+  for (const name of protocolNames) {
+    await sleep(200) // Rate limiting
+    const details = await getProtocolDetails(name)
+    if (details && details.contracts) {
+      protocols.push({
+        name,
+        network: details.network,
+        dex: details.dex,
+        leaser: details.contracts.leaser,
+        lpp: details.contracts.lpp,
+        oracle: details.contracts.oracle,
+      })
+    }
+  }
+
+  return protocols
+}
+
+/**
+ * Gets the LPN ticker from an LPP contract
+ */
+async function getLpnTicker(lppAddr) {
+  const result = await queryContract({
+    contract: lppAddr,
+    chain: 'nolus',
+    data: { lpn: [] }
+  })
+  return result
+}
+
+/**
+ * Gets currency info (including decimals) from oracle
+ */
+async function getCurrencyInfo(oracleAddr, ticker) {
+  const currencies = await queryContract({
+    contract: oracleAddr,
+    chain: 'nolus',
+    data: { currencies: {} }
+  })
+
+  if (!Array.isArray(currencies)) return null
+
+  return currencies.find(c => c && c.ticker === ticker)
+}
 
 async function getLeaseCodeId(leaserAddress) {
   const leaserContract = await queryContract({
     contract: leaserAddress,
-    chain: chain,
+    chain: 'nolus',
     data: { config: {} }
   })
-
-  const leaseCodeId = leaserContract?.config?.lease_code_id
-  if (!leaseCodeId) {
-    return 0
-  }
-
-  return leaseCodeId
+  const leaseCodeId = leaserContract?.config?.lease_code
+  return leaseCodeId ?? null
 }
 
 async function getLeaseContracts(leaseCodeId) {
-  return await queryContracts({
-    chain: chain,
-    codeId: leaseCodeId,
-  })
+  return await queryContracts({ chain: 'nolus', codeId: leaseCodeId })
 }
 
-async function getLeases(leaseAddresses) {
-  return await queryManyContracts({
-    contracts: leaseAddresses,
-    chain: chain,
-    data: {}
-  })
-}
+async function getLeasesThrottled(leaseAddresses) {
+  const results = new Array(leaseAddresses.length).fill(null)
 
-async function getPrices(oracleAddr) {
-  const oracle = await queryContract({
-    contract: oracleAddr,
-    chain: chain,
-    data: { prices: {} }
-  })
+  for (let i = 0; i < leaseAddresses.length; i += BATCH.size) {
+    const start = i
+    const end = Math.min(i + BATCH.size, leaseAddresses.length)
+    const chunk = leaseAddresses.slice(start, end)
 
-  const prices = {}
-  oracle.prices.forEach(p => {
-    let price = 0
-    switch (p.amount.ticker) {
-      case "WBTC":
-      case "CRO":
-        price = (p.amount_quote.amount / (p.amount.amount / _8Zeros)) / _6Zeros
+    let ok = false
+    for (let attempt = 0; attempt <= BATCH.maxRetries; attempt++) {
+      try {
+        const res = await queryManyContracts({
+          contracts: chunk,
+          chain: 'nolus',
+          data: { state: {} },
+          permitFailure: true,
+        })
+        for (let j = 0; j < chunk.length; j++) {
+          results[start + j] = (res && res[j] !== undefined) ? res[j] : null
+        }
+        ok = true
         break
-      case "WETH":
-      case "EVMOS":
-      case "INJ":
-      case "DYDX":
-        price = (p.amount_quote.amount / (p.amount.amount / _18Zeros)) / _6Zeros
-        break
-      default:
-        price = p.amount_quote.amount / p.amount.amount
-        break
-    }
-    prices[p.amount.ticker] = price
-  })
-
-  return prices
-}
-
-async function getLppTvl(lppAddresses) {
-  const lpps = await queryManyContracts({
-    contracts: lppAddresses,
-    chain: chain,
-    data: { "lpp_balance": [] }
-  })
-
-  let totalLpp = 0
-  lpps.forEach(v => {
-    totalLpp += Number(v.balance.amount)
-  })
-
-  return totalLpp / _6Zeros
-}
-
-function sumAssests(leases) {
-  let assets = {}
-  leases.forEach(v => {
-    if (v.opened) {
-      const ticker = v.opened.amount.ticker
-      const amount = BigInt(v.opened.amount.amount)
-
-      if (ticker in assets) {
-        assets[ticker] += amount
-      } else {
-        assets[ticker] = amount
+      } catch (e) {
+        if (attempt === BATCH.maxRetries) {
+          throw new Error(`[states] batch ${start}-${end} failed after ${attempt + 1} attempts: ${e?.message || e}`)
+        }
+        await sleepMs(300 * (attempt + 1) + Math.floor(Math.random() * 200))
       }
     }
-  })
-  return assets
-}
 
-function getAssetsTvl(assets, prices) {
-  let totalTvl = 0
-  for (const ticker in assets) {
-    if (Object.hasOwnProperty.call(assets, ticker)) {
-      let amount = 0
-      switch (ticker) {
-        case "WBTC":
-        case "CRO":
-          amount = Number(assets[ticker]) / _8Zeros
-          break
-        case "WETH":
-        case "EVMOS":
-        case "INJ":
-        case "DYDX":
-          amount = Number(assets[ticker]) / _18Zeros
-          break
-        default:
-          amount = Number(assets[ticker]) / _6Zeros
-          break
-      }
-      totalTvl += amount * prices[ticker]
+    if (ok && end < leaseAddresses.length) {
+      const pause = BATCH.pauseMs + Math.floor(Math.random() * BATCH.jitterMs)
+      await sleepMs(pause)
     }
   }
-  return totalTvl
+
+  // End-to-end invariant: no missing states
+  const missing = results.reduce((n, v) => n + (v == null ? 1 : 0), 0)
+  if (missing > 0) {
+    // HARD FAIL - better to error than publish partial TVL
+    throw new Error(`[states] incomplete data: missing ${missing} of ${results.length}`)
+  }
+
+  return results
 }
 
-async function tvl(leaserAddr, oracleAddr) {
-  const leaseCodeId = await getLeaseCodeId(leaserAddr)
-  const leaseContracts = await getLeaseContracts(leaseCodeId)
-  const leases = await getLeases(leaseContracts)
-  const assets = sumAssests(leases)
-  const prices = await getPrices(oracleAddr)
-  return getAssetsTvl(assets, prices)
+/**
+ * Gets LPP TVL for a protocol, with decimals fetched from oracle
+ * Only counts the available balance (not borrowed), since borrowed funds
+ * are represented in the lease positions on Osmosis/Neutron
+ */
+async function getProtocolLppTvl(protocol) {
+  // Get LPN ticker
+  const ticker = await getLpnTicker(protocol.lpp)
+  if (!ticker) return { ticker: null, amount: 0 }
+
+  // Get currency info for decimals
+  const currencyInfo = await getCurrencyInfo(protocol.oracle, ticker)
+  if (!currencyInfo || currencyInfo.decimal_digits == null) {
+    throw new Error(`[oracle] missing currency info for ${ticker} (${protocol.name})`)
+  }
+  const decimals = currencyInfo.decimal_digits
+
+  // Get LPP balance (available assets in the pool)
+  const lppBalance = await queryContract({
+    contract: protocol.lpp,
+    chain: 'nolus',
+    data: { lpp_balance: [] }
+  })
+
+  const amount = Number(lppBalance?.balance?.amount || 0) / Math.pow(10, decimals)
+
+  return { ticker, amount, dexSymbol: currencyInfo?.dex_symbol }
+}
+
+function sumAssets(api, leases, currencies) {
+  if (!Array.isArray(leases)) return
+  leases.forEach(v => {
+    if (!v || !v.opened || !v.opened.amount) return
+    const ticker = v.opened.amount.ticker
+    const amount = parseInt(v.opened.amount.amount, 10)
+    if (!Number.isFinite(amount)) return
+
+    const currencyData = currencies.find(n => n && n.ticker === ticker)
+    if (!currencyData || !currencyData.dex_symbol) return
+
+    api.add(currencyData.dex_symbol, amount)
+  })
+}
+
+async function fetchLeaseTvl(api, protocols) {
+  for (const p of protocols) {
+    // Skip protocols with malfunctioning leases (if any)
+    if (SKIP_LEASE_QUERIES.includes(p.name)) continue
+
+    await sleep(2000)
+    const oracleData = await queryContract({
+      contract: p.oracle,
+      chain: 'nolus',
+      data: { currencies: {} }
+    })
+    const leaseCodeId = await getLeaseCodeId(p.leaser)
+    if (!leaseCodeId) {
+      console.warn(`[leaser] missing lease_code for ${p.name}`)
+      continue
+    }
+    const leaseContracts = await getLeaseContracts(leaseCodeId)
+    const leases = await getLeasesThrottled(leaseContracts)
+    sumAssets(api, leases, oracleData)
+  }
 }
 
 module.exports = {
-  methodology: "The combined total of lending pool assets and the current market value of active leases",
+  methodology: 'The combined total of lending pool assets and the current market value of active margin positions',
   nolus: {
     tvl: async () => {
-      return {
-        'axlusdc': await getLppTvl([osmosisLppAddr, neutronLppAddr])
+      const protocols = await getAllProtocols()
+
+      // Group LPP TVL by CoinGecko ID
+      const tvlByCoingeckoId = {}
+
+      for (const protocol of protocols) {
+        await sleep(300)
+        const { ticker, amount } = await getProtocolLppTvl(protocol)
+        if (!ticker || amount === 0) continue
+
+        const coingeckoId = COINGECKO_IDS[ticker]
+        if (!coingeckoId) {
+          console.warn(`Unknown ticker: ${ticker} for protocol ${protocol.name}`)
+          continue
+        }
+
+        tvlByCoingeckoId[coingeckoId] = (tvlByCoingeckoId[coingeckoId] || 0) + amount
       }
+
+      return tvlByCoingeckoId
     }
   },
   neutron: {
-    tvl: async () => {
-      return {
-        'axlusdc': await tvl(neutronLeaserAddr, neutronOracleAddr)
-      }
+    tvl: async (api) => {
+      const protocols = await getAllProtocols()
+      const neutronProtocols = protocols.filter(p => p.network === 'Neutron')
+      return await fetchLeaseTvl(api, neutronProtocols)
     }
   },
   osmosis: {
-    tvl: async () => {
-      return {
-        'axlusdc': await tvl(osmosisLeaserAddr, osmosisOracleAddr)
-      }
+    tvl: async (api) => {
+      const protocols = await getAllProtocols()
+      const osmosisProtocols = protocols.filter(p => p.network === 'Osmosis')
+      return await fetchLeaseTvl(api, osmosisProtocols)
     }
   }
 }

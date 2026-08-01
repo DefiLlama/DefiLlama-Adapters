@@ -11,10 +11,12 @@ const uniPool = '0x82c427adfdf2d245ec51d8046b41c4ee87f0d29c';
 
 module.exports = {
   ethereum: {
-    tvl: async (timestamp, block, _, { api })=> {
+    doublecounted: true,
+    tvl: async (api)=> {
       let balances = {};
+      const { block } = api
   
-      if(block >= START_BLOCK) {
+      if(!block || block >= START_BLOCK) {
   
         return sumTokens2({ api, tokensAndOwners: [
           [ETH, controller],
@@ -26,8 +28,8 @@ module.exports = {
     }
   },
   hallmarks: [
-    [1643053740, "Crab v1 launch"],
-    [1659055140, "Crab v2 launch"],
-    [1671221995, "Zen Bull launch"]
+    ['2022-01-24', "Crab v1 launch"],
+    ['2022-07-29', "Crab v2 launch"],
+    ['2022-12-16', "Zen Bull launch"]
   ]
 };

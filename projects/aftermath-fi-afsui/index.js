@@ -14,9 +14,7 @@ async function suiTVL() {
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: "Counts the total number of SUI tokens held in Aftermath's afSUI contract.",
+            methodology: "Counts the total number of SUI tokens held in Aftermath's afSUI contract.",
     sui: {
         tvl: suiTVL,
     }

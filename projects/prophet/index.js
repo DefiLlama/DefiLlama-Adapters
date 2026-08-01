@@ -25,8 +25,7 @@ async function totalTvl(timestamp) {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Prophet protocol.",
     obyte: {

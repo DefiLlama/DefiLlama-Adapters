@@ -9,7 +9,7 @@ const factoriesAddresses = [
   "0xcC5d905b9c2c8C9329Eb4e25dc086369D6C7777C"
 ]
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   let contracts = await Promise.all(
     factoriesAddresses.map(i => api.fetchList({
       target: i,

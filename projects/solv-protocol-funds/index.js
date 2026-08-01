@@ -1,82 +1,200 @@
-const abi = require("./abi.json");
+const abi = {
+    "concrete": "address:concrete",
+    "slotTotalValue": "function slotTotalValue(uint256 slot_) view returns (uint256)",
+    "slotBaseInfo": "function slotBaseInfo(uint256 slot_) view returns (tuple(address issuer, address currency, uint64 valueDate, uint64 maturity, uint64 createTime, bool transferable, bool isValid))",
+    "decimals": "uint8:decimals",
+    "balanceOf": "function balanceOf(address _owner) view returns (uint256 balance)",
+    "getSubscribeNav": "function getSubscribeNav(bytes32 poolId_, uint256 time_) view returns (uint256 nav_, uint256 navTime_)",
+    "tokenOfOwnerByIndex": "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
+    "liquidities": "function liquidities(uint256) view returns (int24, int24, uint128, uint256, uint256, uint256, uint256, uint128)",
+    "poolMetas": "function poolMetas(uint128) view returns (address, address, uint24)",
+    "pool": "function pool(address tokenX, address tokenY, uint24 fee) view returns (address)",
+    "state": "function state() view returns (uint160 sqrtPriceX96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint256 liquidity, uint256 liquidityX)",
+    "stakedAmountsAbi": "function stakedAmounts(address) external view returns (uint256)",
+    "stakedMlpAmount": "function stakedMlpAmount(address account) view returns (uint256)",
+    "symbol": "string:symbol",
+    "totalSupply": "function totalSupply() view returns (uint256)"
+  };
 const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
-const { getAmounts } = require("./iziswap")
+function point2PoolPriceUndecimalSqrt(point) {
+    return (1.0001 ** point) ** 0.5;
+}
+
+function _getAmountY(
+    liquidity,
+    sqrtPriceL,
+    sqrtPriceR,
+    sqrtRate,
+    upper,
+) {
+    const numerator = sqrtPriceR - sqrtPriceL;
+    const denominator = sqrtRate - 1;
+    const ratio = numerator / denominator
+    return liquidity * ratio
+}
+
+function _liquidity2AmountYAtPoint(
+    liquidity,
+    sqrtPrice,
+    upper
+) {
+    const amountY = liquidity * sqrtPrice
+    return amountY
+}
+
+function _getAmountX(
+    liquidity,
+    leftPt,
+    rightPt,
+    sqrtPriceR,
+    sqrtRate,
+    upper,
+) {
+    const sqrtPricePrPc = Math.pow(sqrtRate, rightPt - leftPt + 1);
+    const sqrtPricePrPd = Math.pow(sqrtRate, rightPt + 1);
+
+    const numerator = sqrtPricePrPc - sqrtRate;
+    const denominator = sqrtPricePrPd - sqrtPriceR;
+    const ratio = numerator / denominator
+    return liquidity * ratio
+}
+
+function _liquidity2AmountXAtPoint(
+    liquidity,
+    sqrtPrice,
+    upper
+) {
+    return liquidity / sqrtPrice
+}
+
+function getAmounts(
+    stateInfo,
+    liquidity
+) {
+    let amountX = 0;
+    let amountY = 0;
+    const liquid = liquidity[2];
+    const sqrtRate = Math.sqrt(1.0001);
+    const leftPtNum = Number(liquidity[0]);
+    const rightPtNum = Number(liquidity[1]);// compute amountY without currentPt
+    if (leftPtNum < stateInfo.currentPoint) {
+        const rightPt = Math.min(stateInfo.currentPoint, rightPtNum);
+        const sqrtPriceR = point2PoolPriceUndecimalSqrt(rightPt);
+        const sqrtPriceL = point2PoolPriceUndecimalSqrt(leftPtNum);
+        amountY = _getAmountY(liquid, sqrtPriceL, sqrtPriceR, sqrtRate, false);
+    }
+
+    // compute amountX without currentPt
+    if (rightPtNum > stateInfo.currentPoint + 1) {
+        const leftPt = Math.max(stateInfo.currentPoint + 1, leftPtNum);
+        const sqrtPriceR = point2PoolPriceUndecimalSqrt(rightPtNum);
+        amountX = _getAmountX(liquid, leftPt, rightPtNum, sqrtPriceR, sqrtRate, false);
+    }
+
+    // compute amountX and amountY on currentPt
+    if (leftPtNum <= stateInfo.currentPoint && rightPtNum > stateInfo.currentPoint) {
+        const liquidityValue = liquidity[2]
+        const maxLiquidityYAtCurrentPt = stateInfo.liquidity - stateInfo.liquidityX
+        const liquidityYAtCurrentPt = liquidityValue > maxLiquidityYAtCurrentPt ? maxLiquidityYAtCurrentPt : liquidityValue;
+        const liquidityXAtCurrentPt = liquidityValue - liquidityYAtCurrentPt
+        const currentSqrtPrice = point2PoolPriceUndecimalSqrt(stateInfo.currentPoint);
+        amountX = amountX+ _liquidity2AmountXAtPoint(liquidityXAtCurrentPt, currentSqrtPrice, false)
+        amountY = amountY+ _liquidity2AmountYAtPoint(liquidityYAtCurrentPt, currentSqrtPrice, false)
+    }
+
+    return { amountY, amountX };
+}
+const { sumTokens2: sumTokens2Solana, getTokenSupplies } = require('../helper/solana')
 
 // The Graph
 const graphUrlList = {
   ethereum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-prod/version/latest',
-  bsc: 'https://api.thegraph.com/subgraphs/name/slov-payable/solv-v3-earn-factory',
+  bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
   arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
-  mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
+  mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mentle-0xgraph/-/gn',
+  merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin',
 }
 
-const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-protocol-rwa-slot/main/slot.json';
+const slotListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-rwa-slot.json';
 
-const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
+const addressUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-funds.json';
 
-async function borrowed(ts) {
-  const { api } = arguments[3];
-  const network = api.chain;
-
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
-  let gm = address[api.chain]["gm"];
-
-  const graphData = await getGraphData(ts, network, api);
-  if (graphData.pools.length > 0) {
-    const poolLists = graphData.pools;
-    var pools = poolLists.filter((value) => {
-      return gm == undefined || gm["depositAddress"].indexOf(value.vault) == -1;
-    });
-    const poolConcretes = await concrete(pools, api);
-    const nav = await api.multiCall({
-      abi: abi.getSubscribeNav,
-      calls: pools.map((index) => ({
-        target: index.navOracle,
-        params: [index.poolId, ts]
-      })),
-    })
-
-    const poolTotalValues = await api.multiCall({
-      abi: abi.slotTotalValue,
-      calls: pools.map((index) => ({
-        target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
-      })),
-    })
-
-    const poolBaseInfos = await api.multiCall({
-      abi: abi.slotBaseInfo,
-      calls: pools.map((index) => ({
-        target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
-      })),
-    })
-
-    const poolDecimalList = await api.multiCall({
-      abi: abi.decimals,
-      calls: poolBaseInfos.map(i => i[1]),
-    })
-
-    for (let i = 0; i < poolTotalValues.length; i++) {
-      const decimals = poolDecimalList[i];
-      const balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
-      api.add(poolBaseInfos[i][1], balance)
-    }
-  }
-  return api.getBalances()
+const solvTokens = {
+  ethereum: [
+    '0x7A56E1C57C7475CCf742a1832B028F0456652F97',
+  ],
+  bsc: [
+    '0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7',
+  ],
+  arbitrum: [
+    '0x3647c54c4c2C65bC7a2D63c0Da2809B399DBBDC0',
+  ]
 }
 
-async function tvl(ts, _, _1, { api }) {
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
+async function tvl(api) {
+  const address = (await getConfig('solv-protocol/funds', addressUrl));
+  const graphData = await getGraphData(api.timestamp, api.chain, api);
 
   await gm(api, address);
   await mux(api, address);
+  await klp(api, address);
+  await iziswap(api, address);
+  await derivativeToken(api, address);
+  await vaultBalance(api, address, graphData);
+  await otherDeposit(api, address);
+  await ceffuBalance(api, address, graphData);
+  await lpV3PositionsBalance(api, address);
+  await aaveSupplyBalance(api, address);
+  await solanaTvl(api, address);
+  await tokenSupply(api, address);
+  await solanaTokenSupply(api, address);
+
+  (solvTokens[api.chain] ?? []).forEach(token => {
+    api.removeTokenBalance(token)
+  })
+}
+
+const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
+async function getSolvBTCVAddresses(api) {
+  let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
+
+  const blacklisted = {}
+  if (!solvbtc[api.chain] || !solvbtc[api.chain]["otherDeposit"]) {
+    return blacklisted
+  }
+  let otherDeposit = solvbtc[api.chain]["otherDeposit"];
+  for (const deposit of otherDeposit["depositAddress"]) {
+    for (const tokenAddress of otherDeposit["tokens"]) {
+      const key = `${tokenAddress}-${deposit}`.toLowerCase()
+      blacklisted[key] = true
+    }
+  }
+  return blacklisted
+}
+
+async function otherDeposit(api, address) {
+  if (!address[api.chain] || !address[api.chain]["otherDeposit"]) {
+    return;
+  }
+  let otherDeposit = address[api.chain]["otherDeposit"];
+
+  let tokens = []
+  for (const deposit of otherDeposit["depositAddress"]) {
+    for (const tokenAddress of otherDeposit["tokens"]) {
+      tokens.push({ tokenAddress, deposit })
+    }
+  }
+
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.tokenAddress, i.deposit]), permitFailure: true });
 }
 
 async function gm(api, address) {
+  if (!address[api.chain] || !address[api.chain]["gm"]) {
+    return;
+  }
   let gm = address[api.chain]["gm"];
 
   let tokens = []
@@ -90,6 +208,9 @@ async function gm(api, address) {
 }
 
 async function mux(api, address) {
+  if (!address[api.chain] || !address[api.chain]["mux"]) {
+    return;
+  }
   let mux = address[api.chain]["mux"];
 
   const amount = await api.call({ abi: abi.stakedMlpAmount, target: mux.pool, params: mux.account });
@@ -97,18 +218,10 @@ async function mux(api, address) {
   api.add(mux.lp, amount)
 }
 
-
-async function mantleTvl(ts, _, _1, { api }) {
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
-
-  await klp(api, address);
-  await iziswap(api, address);
-  await lendle(api, address);
-
-  return api.getBalances();
-}
-
 async function klp(api, address) {
+  if (!address[api.chain] || !address[api.chain]["klp"]) {
+    return;
+  }
   let klp = address[api.chain]["klp"];
 
   const stakedAmounts = await api.multiCall({
@@ -125,6 +238,9 @@ async function klp(api, address) {
 }
 
 async function iziswap(api, address) {
+  if (!address[api.chain] || !address[api.chain]["iziswap"]) {
+    return;
+  }
   let iziswapData = address[api.chain]["iziswap"];
 
   const iziswap = iziswapData.liquidityManager;
@@ -188,8 +304,8 @@ async function liquidity(api, iziswap, owner) {
 
   tokenList.forEach((token, index) => {
     const amounts = getAmounts(state[index], liquidities[index])
-    api.add(token[0], amounts.amountX)
-    api.add(token[1], amounts.amountY)
+    api.add(token[0], amounts.amountX);
+    api.add(token[1], amounts.amountY);
   })
 }
 
@@ -216,19 +332,229 @@ async function concrete(slots, api) {
   return concretes;
 }
 
-async function lendle(api, address) {
-  let lendleData = address[api.chain]["lendle"];
+async function derivativeToken(api, address) {
+  if (!address[api.chain] || !address[api.chain]["derivativeData"]) {
+    return;
+  }
+  let derivativeTokenData = address[api.chain]["derivativeData"];
 
-  const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
+  const balance = await api.call({ abi: abi.balanceOf, target: derivativeTokenData.derivativeToken, params: derivativeTokenData.account.userAddress });
 
-  api.add(lendleData.account.ethAddress, balance)
+  api.add(derivativeTokenData.account.underlyingToken, balance)
 }
 
+async function vaultBalance(api, address, graphData) {
+  const network = api.chain;
+
+  let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
+  if (graphData.pools.length > 0) {
+    const poolLists = graphData.pools;
+
+    const poolConcretes = await concrete(poolLists, api);
+
+    const poolBaseInfos = await api.multiCall({
+      permitFailure: true,
+      abi: abi.slotBaseInfo,
+      calls: poolLists.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot],
+      })),
+    })
+
+    let vaultAddress = [];
+    for (const key in poolLists) {
+      if (poolBaseInfos[key] && solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
+        vaultAddress.push(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`);
+      }
+    }
+
+    let vaults = {};
+    const blacklistedOwners = address[network].blacklistedOwners || [];
+    for (const key in poolLists) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && blacklistedOwners.indexOf(poolLists[key]["vault"].toLowerCase()) == -1 && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
+        vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
+      }
+    }
+    const tokens = Object.values(vaults).map(([token]) => token)
+
+    const symbols = await api.multiCall({ abi: abi.symbol, calls: tokens, })
+    const blacklisted = await getSolvBTCVAddresses(api)
+    const blacklistedTokens = tokens.filter((token, i) => symbols[i].toLowerCase().includes('solvbtc'))
+    const tokensAndOwners = Object.values(vaults).filter(([token, owner]) => {
+      const key = `${token}-${owner}`.toLowerCase()
+      return !blacklisted[key] && !blacklistedTokens.includes(token)
+    })
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens, })
+  }
+}
+
+async function ceffuBalance(api, address, graphData) {
+  if (!address[api.chain] || !address[api.chain]["ceffu"]) {
+    return;
+  }
+  let ceffuData = address[api.chain]["ceffu"];
+
+  let pools = [];
+  for (const graph of graphData.pools) {
+    if (graph['openFundShareSlot'] == ceffuData['slot']) {
+      pools.push(graph)
+    }
+  }
+  if (pools.length > 0) {
+    const poolConcretes = await concrete(pools, api);
+    const nav = await api.multiCall({
+      abi: abi.getSubscribeNav,
+      calls: pools.map((index) => ({
+        target: index.navOracle,
+        params: [index.poolId, api.timestamp * 1000]
+      })),
+    })
+
+    const poolTotalValues = await api.multiCall({
+      abi: abi.slotTotalValue,
+      calls: pools.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
+
+    const poolBaseInfos = await api.multiCall({
+      abi: abi.slotBaseInfo,
+      calls: pools.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
+
+    const poolDecimalList = await api.multiCall({
+      abi: abi.decimals,
+      calls: poolBaseInfos.map(i => i[1]),
+    })
+
+    let vaults = {};
+    for (const key in pools) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && pools[key]["vault"]) {
+        vaults[`${pools[key]["vault"].toLowerCase()}-${poolBaseInfos[key][1].toLowerCase()}`] = [poolBaseInfos[key][1], pools[key]["vault"]]
+      }
+    }
+
+    const balances = await api.multiCall({
+      abi: abi.balanceOf,
+      calls: Object.values(vaults).map((index) => ({
+        target: index[0],
+        params: [index[1]]
+      })),
+    })
+
+    let vaultbalances = {};
+    for (let i = 0; i < Object.keys(vaults).length; i++) {
+      vaultbalances[Object.keys(vaults)[i]] = balances[i];
+    }
+
+    for (let i = 0; i < poolTotalValues.length; i++) {
+      const decimals = poolDecimalList[i];
+      let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
+      if (pools[i]['vault'] && poolBaseInfos[i][1] && vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]) {
+        balance = BigNumber(balance).minus(vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]).toNumber();
+        vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`] = undefined
+      }
+
+      if (ceffuData["ceffus"]) {
+        let ceffus = [];
+        for (const deposit of ceffuData["ceffus"]["depositAddress"]) {
+          for (const tokenAddress of ceffuData["ceffus"]["tokens"]) {
+            ceffus.push({ tokenAddress, deposit })
+          }
+        }
+
+        const balances = await api.multiCall({
+          abi: abi.balanceOf,
+          calls: Object.values(ceffus).map((index) => ({
+            target: index["tokenAddress"],
+            params: [index["deposit"]]
+          })),
+        })
+        for (const balanceOf of balances) {
+          balance = BigNumber(balance).minus(balanceOf).toNumber();
+        }
+      }
+
+      if (balance > 0) {
+        api.add(poolBaseInfos[i][1], balance)
+      }
+    }
+  }
+}
+
+async function lpV3PositionsBalance(api, address) {
+  if (!address[api.chain] || !address[api.chain]["lpV3Positions"]) {
+    return;
+  }
+  let lpV3PositionsData = address[api.chain]["lpV3Positions"];
+  await sumTokens2({ api, uniV3nftsAndOwners: lpV3PositionsData["lpV3nftsAndOwners"], blacklistedTokens: lpV3PositionsData["blacklistedTokens"] ?? [], resolveLP: true, })
+}
+
+async function aaveSupplyBalance(api, address) {
+  if (!address[api.chain] || !address[api.chain]["aaves"]) {
+    return;
+  }
+  let aavesData = address[api.chain]["aaves"];
+
+  const allCalls = [];
+  for (let i = 0; i < aavesData.length; i++) {
+    const aaveAddress = aavesData[i];
+    allCalls.push(...Object.values(aaveAddress["aaveAddress"]).map((index) => ({
+      target: index[0],
+      params: [index[1]]
+    })));
+  }
+  const balances = await api.multiCall({
+    abi: abi.balanceOf,
+    calls: allCalls,
+  });
+
+  for (let i = 0; i < balances.length; i++) {
+    const balance = balances[i];
+    const aaveAddress = aavesData[Math.floor(i / Object.values(aavesData[i % aavesData.length]["aaveAddress"]).length)];
+    api.add(aaveAddress["assetAddress"], balance);
+  }
+}
+
+async function solanaTvl(api, address) {
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaOwners"]) return;
+  const owners = address[api.chain]["solanaOwners"];
+  return sumTokens2Solana({ api, owners });
+}
+
+async function tokenSupply(api, address) {
+  if (!address[api.chain] || !address[api.chain]["tokenSupply"]) {
+    return;
+  }
+  let tokenSupplyData = address[api.chain]["tokenSupply"];
+
+  const totalSupplys = await api.multiCall({
+    abi: abi.totalSupply,
+    calls: tokenSupplyData.map((address) => ({
+      target: address,
+    })),
+  });
+
+
+  for (let i = 0; i < tokenSupplyData.length; i++) {
+    api.add(tokenSupplyData[i], totalSupplys[i]);
+  }
+}
+
+async function solanaTokenSupply(api, address) {
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaTokens"]) return;
+  const tokens = address[api.chain]["solanaTokens"];
+  return getTokenSupplies(tokens, { api });
+}
 
 async function getGraphData(timestamp, chain, api) {
   let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
 
-  const slotDataQuery = `query BondSlotInfos {
+  const slotDataQuery = `query PoolOrderInfos {
             poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
@@ -238,7 +564,11 @@ async function getGraphData(timestamp, chain, api) {
               openFundShareSlot
           }
         }`;
-  const data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, }));
+
+  let data;
+  if (graphUrlList[chain]) {
+    data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, }));
+  }
 
   let poolList = [];
   if (data != undefined && data.poolOrderInfos != undefined) {
@@ -249,14 +579,11 @@ async function getGraphData(timestamp, chain, api) {
     pools: poolList
   };
 }
+
+
 // node test.js projects/solv-protocol-funds
-module.exports = {
-  arbitrum: {
-    tvl,
-    borrowed: borrowed,
-  },
-  mantle: {
-    tvl: mantleTvl,
-    borrowed: borrowed,
+['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'solana', 'soneium'].forEach(chain => {
+  module.exports[chain] = {
+    tvl
   }
-};
+})

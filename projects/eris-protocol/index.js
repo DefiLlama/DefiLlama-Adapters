@@ -55,7 +55,7 @@ const config = {
         "lion-dao",
     },
     tassets: [
-      {
+      /* {
         contract:
           "terra1j35ta0llaxcf55auv2cjqau5a7aee6g8fz7md7my7005cvh23jfsaw83dy",
         exchangeRate:
@@ -68,7 +68,7 @@ const config = {
         exchangeRate:
           "migaloo1mf6ptkssddfmxvhdx0ech0k03ktp6kf9yk59renau2gvht3nq2gqdhts4u",
         origChain: "migaloo",
-      },
+      }, */
     ],
     daos: [
       {
@@ -171,6 +171,10 @@ const config = {
   chihuahua: {
     coinGeckoId: "chihuahua-token",
     hub: "chihuahua1nktfhalzvtx82kyn4dh6l8htcl0prfpnu380a39zj52nzu3j467qqg23ry",
+  },
+  nibiru: {
+    coinGeckoId: "nibiru",
+    hub: "nibi1udqqx30cw8nwjxtl4l28ym9hhrp933zlq8dqxfjzcdhvl8y24zcqpzmh8m",
   },
 };
 
@@ -399,7 +403,6 @@ async function productsTvl(chain) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
   methodology: "Liquid Staking and Arbitrage Protocol",
   terra2: { tvl: () => productsTvl("terra2") },
   terra: { tvl: () => productsTvl("terra") },
@@ -412,4 +415,5 @@ module.exports = {
   chihuahua: { tvl: () => productsTvl("chihuahua") },
   archway: { tvl: () => productsTvl("archway") },
   sei: { tvl: () => productsTvl("sei") },
+  nibiru: { tvl: () => productsTvl("nibiru") },
 };

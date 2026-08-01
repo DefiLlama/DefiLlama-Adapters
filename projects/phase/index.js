@@ -1,4 +1,11 @@
-const config = require("./config");
+const config = {
+  base: {
+    cash: "0xbe92452bb46485AF3308e6d77786bFBE3557808d",
+    bond: "0x443f102Ea65613d91365E1F5c37C21Ed2144023A",
+    factory: '0xd3382599f6fe88bac72dfe23590644314146aa88',
+    fromBlock: 4925577,
+  },
+};
 const { staking } = require('../helper/staking')
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -14,7 +21,7 @@ async function getVaults(api) {
   return logs.map(i => i.created)
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const vaults = await getVaults(api)
   const assets = await api.multiCall({ abi: 'address:asset', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:collectiveCollateral', calls: vaults })
@@ -22,7 +29,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   return api.getBalances()
 }
 
-async function borrowed(timestamp, block, chainBlocks, { api }) {
+async function borrowed(api) {
   const vaults = await getVaults(api)
   const assets = vaults.map(_ => config[api.chain].cash)
   const bals = await api.multiCall({ abi: 'uint256:collectiveDebt', calls: vaults })

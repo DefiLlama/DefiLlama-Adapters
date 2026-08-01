@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const addressZero = ADDRESSES.null;
-const ethAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+const ethAddress = ADDRESSES.GAS_TOKEN_2;
 const wethAddress = ADDRESSES.ethereum.WETH;
 const bentCVXAddress = "0x9E0441E084F5dB0606565737158aa6Ab6B970fE0";
 const CVXAddress = ADDRESSES.ethereum.CVX;
@@ -11,7 +11,7 @@ const daiAddress = ADDRESSES.ethereum.DAI;
 const weBent = "0x04637d61F538911929ff96E755B589C014fD9ce2";
 
 const bentPools = {
-  BentPoolBentCvxCvx: "0xf083FBa98dED0f9C970e5a418500bad08D8b9732",
+  // BentPoolBentCvxCvx: "0xf083FBa98dED0f9C970e5a418500bad08D8b9732",
   BentPoolTriCrypto2: "0xb5a69B26920E1A430b1405Bc75a455d687328D67",
   BentPoolMIM: "0x397DD120bF0e6d0f2Af2e12f29d57Fb1A58c041c",
   BentPoolFrax: "0xD714e4cB809759ECf37067cfF56feCA887E3C168",

@@ -1,10 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { sumTokens, sumTokens2, } = require("../helper/unwrapLPs")
-const { createIncrementArray } = require("../helper/utils")
-const sdk = require('@defillama/sdk');
-const abi = require("./abi.json");
+const { sumTokens2, } = require("../helper/unwrapLPs")
+const abi = {
+    "stakingToken": "address:stakingToken",
+    "operator": "address:operator",
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+    "totalBalanceOf": "function totalBalanceOf(address _account) view returns (uint256)",
+    "curveToken": "address:curveToken",
+    "balances": "function balances(address) view returns (uint112 locked, uint32 nextUnlockIndex)"
+  };
 const poolInfos = {}
 
 const templeStakingContract = "0xEc3C1aBDAb15EbC069ec5e320EaACf716eDfC011";
@@ -16,7 +22,7 @@ const auraLocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC';
 
 const templeTreasuryContract = "0x5c8898f8e0f9468d4a677887bc03ee2659321012";
 const FRAX = ADDRESSES.ethereum.FRAX;
-const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
+const FXS = ADDRESSES.ethereum.FXS;
 const CVX_FXS = ADDRESSES.ethereum.cvxFXS;
 const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'
 const TEMPLE_DENDEND1 = '0x8A5058100E60e8F7C42305eb505B12785bbA3BcA';
@@ -24,7 +30,6 @@ const TEMPLE_DENDEND2 = '0xb0D978C8Be39C119922B99f483cD8C4092f0EA56';
 const FRAX_3CRV_CVX_POOL = '0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e';
 const FRAX_USDC_CVX_POOL = '0x963f487796d54d2f27ba6f3fbe91154ca103b199';
 const FRAX_USDC_FRAX4CVX_PROXY = '0xb9CcDA67dF9606615F43C1c9AAEbB539A3635e10';
-const chain = 'ethereum'
 
 const tokensAndOwners = [
   [FRAX, TEMPLE_DENDEND1],
@@ -34,45 +39,41 @@ const tokensAndOwners = [
   [CVX_FXS, templeTreasuryContract],
 ]
 
-async function treasuryTvl(ts, block) {
-  const balances = {}
-  await sumTokens(balances, tokensAndOwners, block, chain, undefined);
-  await getCvxPoolValue({ block, balances, pool: FRAX_3CRV_CVX_POOL, owner: templeTreasuryContract });
-  await getCvxProxyVaultValue({block, balances, pool: FRAX_USDC_CVX_POOL, vault: FRAX_USDC_FRAX4CVX_PROXY});
-  
-  const auraLockerDetails = await sdk.api.abi.call({target: auraLocker, params: [temepleGnosisAddress], abi: abi.balances, block, chain});
-  const lockedAuraBalance = auraLockerDetails.output.locked;
-  sdk.util.sumSingleBalance(balances, AURA, lockedAuraBalance);
-  await sumTokens2({ owner: temepleGnosisAddress, balances, block, resolveUniV3: true, })
+async function treasuryTvl(api) {
+  await sumTokens2({ api, tokensAndOwners });
+  await getCvxPoolValue({ api, pool: FRAX_3CRV_CVX_POOL, owner: templeTreasuryContract });
+  await getCvxProxyVaultValue({ api, pool: FRAX_USDC_CVX_POOL, vault: FRAX_USDC_FRAX4CVX_PROXY });
 
-  return sumTokens2({ balances, chain, owner: temepleGnosisAddress, tokens: [
+  const auraLockerDetails = await api.call({ target: auraLocker, params: [temepleGnosisAddress], abi: abi.balances });
+  api.add(AURA, auraLockerDetails.locked);
+  await sumTokens2({ api, owner: temepleGnosisAddress, resolveUniV3: true, })
+
+  return sumTokens2({ api, owner: temepleGnosisAddress, tokens: [
     '0x3835a58ca93cdb5f912519ad366826ac9a752510',
     '0xfb6b1c1a1ea5618b3cfc20f81a11a97e930fa46b',
     '0x173063a30e095313eee39411f07e95a8a806014e',
   ]})
 }
 
-async function getCvxPoolValue({ block, owner, pool, balances, chain }) {
-  const poolBalance = (await sdk.api.erc20.balanceOf({ target: pool, owner, block, chain, })).output
-  const stakingToken = (await sdk.api.abi.call({ target: pool, block, chain, abi: abi.stakingToken })).output
-  const operator = (await sdk.api.abi.call({ target: stakingToken, block, chain, abi: abi.operator })).output
+async function getCvxPoolValue({ api, owner, pool }) {
+  const poolBalance = await api.call({ target: pool, params: [owner], abi: 'erc20:balanceOf' })
+  const stakingToken = await api.call({ target: pool, abi: abi.stakingToken })
+  const operator = await api.call({ target: stakingToken, abi: abi.operator })
   await setPoolInfo(operator)
   const ourPoolInfo = poolInfos[operator].find(i => JSON.stringify(i).indexOf(stakingToken) > -1)
   const crvToken = ourPoolInfo.lptoken
-  balances[crvToken] = poolBalance
+  api.add(crvToken, poolBalance)
   async function setPoolInfo(operator) {
     if (poolInfos[operator])  return;
-    const poolLength = +(await sdk.api.abi.call({ target: operator, block, chain, abi: abi.poolLength })).output
-    const poolInfoArr = createIncrementArray(poolLength)
-    poolInfos[operator] = (await sdk.api.abi.multiCall({ target: operator, block, chain, abi: abi.poolInfo, calls: poolInfoArr.map(i => ({ params: [i] })) })).output.map(i => i.output)
+    poolInfos[operator] = await api.fetchList({ target: operator, lengthAbi: abi.poolLength, itemAbi: abi.poolInfo })
   }
 }
 
-async function getCvxProxyVaultValue({block, balances, pool, vault}) {
-  const stakingToken = (await sdk.api.abi.call({ target: pool, block, chain, abi: abi.stakingToken })).output
-  const unwrappedToken = (await sdk.api.abi.call({ target: stakingToken, block, chain, abi: abi.curveToken })).output
-  const lpTokenBalance = (await sdk.api.abi.call({ target: stakingToken, params: [vault], block, chain, abi: abi.totalBalanceOf })).output
-  sdk.util.sumSingleBalance(balances, unwrappedToken, lpTokenBalance);
+async function getCvxProxyVaultValue({ api, pool, vault }) {
+  const stakingToken = await api.call({ target: pool, abi: abi.stakingToken })
+  const unwrappedToken = await api.call({ target: stakingToken, abi: abi.curveToken })
+  const lpTokenBalance = await api.call({ target: stakingToken, params: [vault], abi: abi.totalBalanceOf })
+  api.add(unwrappedToken, lpTokenBalance);
 }
 
 module.exports = {
@@ -85,7 +86,7 @@ module.exports = {
   },
   methodology:
     "Counts TVL through TempleTreasury contract, locked LP in Convex and Aura",
-  hallmarks:[
-      [1665457200, "Exploit $2M"],
-    ], 
+  // hallmarks:[
+  //     ['2022-10-11', "Exploit $2M"],
+  //   ], 
 };

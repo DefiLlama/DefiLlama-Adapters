@@ -1,12 +1,11 @@
-const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/http')
+const sdk = require('@defillama/sdk')
 
 const graphUrls = {
-  ethereum: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard',
-  xdai: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard-xdai',
+  ethereum: 'ECENsJRfqi6Mwj6kF9diShPzFKkgyyo79aSCkSwAShHL',
+  xdai: 'Ck26N16xgimEuuuNSJqYVWBKcWSwPmkk36BWZGtfx1ox',
 }
 
-const totalStakedQuery = gql`
+const totalStakedQuery = `
 query($block: Int) {
   klerosCounters(block: { number: $block }) {
     tokenStaked
@@ -15,29 +14,23 @@ query($block: Int) {
 `
 
 function getStakedTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
+  return async (api) => {
+    const block = await api.getBlock()
 
-    const graphUrl = graphUrls[chain]
-    const block = await getBlock(timestamp, chain, chainBlocks)
-
-    const { klerosCounters } = await request(
-      graphUrl,
+    const { klerosCounters } = await sdk.graph.request(
+      graphUrls[chain],
       totalStakedQuery,
-      { block: block - 500 }
+      { variables: { block: block - 500 }}
     )
 
-    balances.kleros = klerosCounters[0].tokenStaked / (10 ** 18);
-
-    return balances;
+    return { kleros: klerosCounters[0].tokenStaked / (10 ** 18) }
   }
 }
 
 
 module.exports = {
   methodology: "Counts PNK staked in courts",
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: () => ({}),
     staking: getStakedTvl('ethereum')
   },

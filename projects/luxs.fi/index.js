@@ -7,7 +7,7 @@ const facades = {
   optimism: "0x285cAee14514f30bB178FB56c985e43A47d68E75",
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const vaults = await api.call({
     abi: "function getVaults() external view returns (address[] memory)",
     target: facades[api.chain],

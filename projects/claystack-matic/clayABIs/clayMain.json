@@ -1,3 +1,0 @@
-{
-    "funds": "function funds() view returns (uint256 currentDeposit, uint256 stakedDeposit, uint256 accruedFees)" 
-}

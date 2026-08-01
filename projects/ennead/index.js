@@ -1,7 +1,13 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { sumTokensExport } = require('../helper/unknownTokens')
 const { staking, } = require("../helper/staking");
-const lensAbi = require("./ramsesLens.json");
+const lensAbi = {
+    "allPools": "function allPools() view returns (address[])",
+    "gaugeForPool": "function gaugeForPool(address) view returns (address)",
+    "allActivePools": "function allActivePools() view returns (address[])",
+    "allGauges": "function allGauges() view returns (address[])",
+    "allStakingPositionsOf": "function allStakingPositionsOf(address) view returns (tuple(address gauge, uint256 balance, uint256 derivedBalance, tuple(address token, uint256 earned)[] userRewards)[] rewardsData)"
+  };
 
 // Ramses contracts
 const ramsesLens = '0xAAA68f40515bCcd8e407EBB4dBdF5046D105621e';
@@ -20,7 +26,7 @@ const neadSnekLp = '0x82360748aC3D7045812c6783f355b41193d3492E';
 const snekView = '0xe99eadc22747c95c658f41a02F1c6C2CcAefA757';
 const booster = '0xe99ead683Dcf1eF0C7F6612be5098BC5fDF4998d';
 
-async function arbiTvl(timestamp, block, chainBlocks, { api }) {
+async function arbiTvl(api) {
     let poolsAddresses = await api.call({ target: ramsesLens, abi: lensAbi.allPools, })
     let gauges = await api.multiCall({ target: ramsesLens, calls: poolsAddresses, abi: lensAbi.gaugeForPool, })
     poolsAddresses = poolsAddresses.filter((_, i) => gauges[i] !== nullAddress)
@@ -30,7 +36,7 @@ async function arbiTvl(timestamp, block, chainBlocks, { api }) {
     await sumTokens2({ api, uniV3nftsAndOwners: [[nfpManager, neadNfpDepositor],], resolveLP: true, })
 }
 
-async function avaxTvl(timestamp, block, chainBlocks, { api }) {
+async function avaxTvl(api) {
     const poolsAddresses = await api.call({ target: snekView, abi: lensAbi.allActivePools, })
     const gauges = await api.call({ target: snekView, abi: lensAbi.allGauges, })
     const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: gauges.map(i => ({ target: i, params: booster}))})

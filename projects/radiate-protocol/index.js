@@ -1,6 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const vault = '0xC6dC7749781F7Ba1e9424704B2904f2F94D3eb63'
   const dlp = await api.call({  abi: 'address:dlp', target: vault})
   const masterchef = await api.call({  abi: 'address:mfd', target: vault})

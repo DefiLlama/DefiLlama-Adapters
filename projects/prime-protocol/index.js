@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk');
+const sdk = require("@defillama/sdk");
 const { sumTokens2, } = require('../helper/unwrapLPs');
 const { cachedGraphQuery } = require('../helper/cache');
 
@@ -17,7 +17,7 @@ const PRIME_SATELLITE_NETWORKS = {
   //   filecoin: 314
 };
 
-const primeSubgraphUrl = 'https://api.thegraph.com/subgraphs/name/prime-protocol/liquidity-incentives';
+const primeSubgraphUrl = sdk.graph.modifyEndpoint('6LrvPGTZeMZfEQh4p9DvDBBv4G8cjhLs4v3mdiUycERp');
 
 const primeMarketsQuery = `{
     markets { address chainId }
@@ -96,7 +96,7 @@ async function getMarketsForCurrentNetwork(api) {
   return markets;
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const moonbeamApi = new sdk.ChainApi({ chain: PRIME_MASTER_NETWORK });
 
   const markets = await getMarketsForCurrentNetwork(api);
@@ -117,7 +117,7 @@ async function borrowed(_, _1, _2, { api }) {
   })
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const markets = await getMarketsForCurrentNetwork(api);
 
   return sumTokens2({ api, tokensAndOwners: markets.map(market => [market.pTokenUnderlyingAddress, market.pTokenMarketAddress]) })

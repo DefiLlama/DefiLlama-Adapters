@@ -1,5 +1,9 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
-const abi = require("../mooniswap/abi.json")
+const abi = {
+  "getPool": "function allPools(uint256) view returns (address)",
+  "getAllPools": "address[]:getAllPools",
+  "getTokens": "address[]:getTokens"
+};
 const { staking } = require('../helper/staking')
 
 const chainConfig = {
@@ -23,7 +27,7 @@ module.exports = {
 Object.keys(chainConfig).forEach(chain => {
   const { factory } = chainConfig[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const pools = await api.call({ target: factory, abi: abi.getAllPools, })
       const tokens = await api.multiCall({ calls: pools, abi: abi.getTokens, })
       return sumTokens2({ api, ownerTokens: pools.map((v, i) => [tokens[i], v]) })

@@ -8,7 +8,7 @@ function maverickTVL(config) {
   Object.keys(config).forEach((chain) => {
     const { factories } = config[chain];
     exports[chain] = {
-      tvl: async (_, _b, _cb, { api }) => {
+      tvl: async (api) => {
         let logs = [];
         for (let k = 0; k < factories.length; k++) {
           logs.push(
@@ -29,6 +29,7 @@ function maverickTVL(config) {
         return sumTokens2({
           api,
           ownerTokens: logs.map((i) => [[i.tokenA, i.tokenB], i.poolAddress]),
+          permitFailure: true,
         });
       },
     };

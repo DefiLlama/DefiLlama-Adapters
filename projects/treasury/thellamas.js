@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 const { mergeExports } = require('../helper/utils');
-const { genericUnwrapCvxRewardPool } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const Treasury = "0x73eb240a06f0e0747c698a219462059be6aaccc8";
 
@@ -23,11 +23,8 @@ module.exports = mergeExports([treasuryExports({
   },
 }), {
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
-      const lockedCVXBal = await api.call({  abi: 'erc20:balanceOf', target: ADDRESSES.ethereum.vlCVX, params: Treasury })
-      api.add(ADDRESSES.ethereum.CVX, lockedCVXBal)
-      await genericUnwrapCvxRewardPool({ api, owner: Treasury, pool: '0x39D78f11b246ea4A1f68573c3A5B64E83Cff2cAe'})
-      return api.getBalances()
+    tvl: async (api) => {
+      return sumTokens2({ api, owner: Treasury, tokens: ['0x39D78f11b246ea4A1f68573c3A5B64E83Cff2cAe', ADDRESSES.ethereum.vlCVX]})
     }
   }
 }])

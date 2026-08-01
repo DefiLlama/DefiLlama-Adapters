@@ -1,6 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { sumTokensExport } = require('../helper/unwrapLPs')
-const abi = require("./abi.json");
+const abi = {
+    "tokenByIndex": "function tokenByIndex(uint256 index) view returns (uint256)",
+    "tokenIds": "function tokenIds(uint256 index) view returns (uint256)",
+    "monitors": "function monitors(uint256 index) view returns (address)",
+    "orders": "function orders(uint256 tokenId) view returns (address owner, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 processed, uint256 tokensOwed0, uint256 tokensOwed1)"
+  };
 
 const contracts = {
   optimism: {
@@ -44,7 +49,7 @@ module.exports = {
 Object.keys(contracts).forEach(chain => {
   const {KROM, position} = contracts[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       if (chain === 'optimism') return opTvl(api, position)
       const orderIds = []
       const monitors = await api.fetchList({  lengthAbi: 'uint256:monitorsLength', target: position, itemAbi: abi.monitors })

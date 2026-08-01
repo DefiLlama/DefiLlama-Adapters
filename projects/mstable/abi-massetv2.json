@@ -1,3 +1,0 @@
-{
-  "getBassets": "function getBassets() view returns (tuple(address addr, address integrator, bool hasTxFee, uint8 status)[] personal, tuple(uint128 ratio, uint128 vaultBalance)[] data)"
-}

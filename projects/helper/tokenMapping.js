@@ -1,4 +1,5 @@
 let coreAssets = require('./coreAssets.json')
+const { svmChains } = require('./svmChainConfig')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
 
@@ -16,8 +17,14 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
+
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'provenance', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band', 'axiome',
+  'celestia', 'dydx', 'dungeon', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion', 'zigchain'
+]
+const caseSensitiveChains = [...ibcChains, ...svmChains, 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', 'aleo',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash', 'qubic', 'constellation', 'supra',
+]
 
 const transformTokens = {
   // Sample Code
@@ -25,7 +32,6 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
-
 }
 const ibcMappings = {
   // Sample Code
@@ -34,31 +40,32 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  // Sample Code
+  inri: {
+    '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {
+      coingeckoId: 'tether',
+      decimals: 6,
+    },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  bitcoin: {
-    BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
-    MUBI: { coingeckoId: 'multibit', decimals: 0 },
+  provenance: {
+    'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
+    'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
+    'pm.pool.asset.1y3flutqcyuf8duew1vj2g': { coingeckoId: 'usd-coin', decimals: 0 },
   },
-  btn: {
-    '0x8148b71232162ea7a0b1c8bfe2b8f023934bfb58': { coingeckoId: 'bitnet', decimals: 18 },
-  },
-  omax: { 
-    '0x373e4b4E4D328927bc398A9B50e0082C6f91B7bb': { coingeckoId: 'omax-token', decimals: 18 },
-  },
-  kujira: {
-    'factory:kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t:ufuzn': { coingeckoId: 'fuzion', decimals: 6 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
-function getUniqueAddresses(addresses, chain) {
+function getUniqueAddresses(addresses, chain = 'ethereum') {
+
   const toLowerCase = !caseSensitiveChains.includes(chain)
   const set = new Set()
-  addresses.forEach(i => set.add(toLowerCase ? i.toLowerCase() : i))
+  addresses.forEach(i => {
+    if (typeof i !== 'string') i = i.toString()
+    set.add(toLowerCase ? i.toLowerCase() : i)
+  })
   return [...set]
 }
 
@@ -86,12 +93,12 @@ function getCoreAssets(chain = 'ethereum') {
   ].flat()
   let addresses = getUniqueAddresses(tokens, chain)
   if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc.map(i => 'ibc/' + i))
-  if (anyswapTokenBlacklist[chain]) addresses = addresses.filter(i => !anyswapTokenBlacklist[chain].includes(i))
   return addresses
 }
 
 function normalizeAddress(address, chain, extractChain = false) {
   if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
+  if (chain === 'sei' && address?.startsWith('0x')) return address.toLowerCase()
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }
@@ -101,108 +108,6 @@ function stripTokenHeader(token, chain) {
   token = normalizeAddress(token, chain);
   if (chain && !token.startsWith(chain)) return token;
   return token.indexOf(":") > -1 ? token.split(":").slice(1).join(':') : token;
-}
-
-const eulerTokens = [
-  "0x1b808f49add4b8c6b5117d9681cf7312fcf0dc1d",
-  "0xe025e3ca2be02316033184551d4d3aa22024d9dc",
-  "0xeb91861f8a4e1c12333f42dce8fb0ecdc28da716",
-  "0x4d19f33948b99800b6113ff3e83bec9b537c85d2",
-  "0x5484451a88a35cd0878a1be177435ca8a0e4054e",
-  "0x64ad6d2472de5ddd3801fb4027c96c3ee7a7ee82",
-  // 4626 wrapped eTokens
-  "0x60897720aa966452e8706e74296b018990aec527",
-  "0x3c66B18F67CA6C1A71F829E2F6a0c987f97462d0",
-  "0x4169Df1B7820702f566cc10938DA51F6F597d264",
-  "0xbd1bd5c956684f7eb79da40f582cbe1373a1d593",
-]
-
-const anyswapTokenBlacklist = {
-  ethereum: [ADDRESSES.ethereum.FTM],
-  fantom: [
-    ADDRESSES.fantom.anyUSDC,
-    ADDRESSES.fantom.fUSDT,
-    ADDRESSES.fantom.USDC,
-    ADDRESSES.fantom.fUSDT,
-    ADDRESSES.fantom.DAI,
-    ADDRESSES.fantom.MIM,
-    ADDRESSES.fantom.nICE
-  ],
-  harmony: [ADDRESSES.harmony.AVAX],
-  kcc: [
-    ADDRESSES.moonriver.USDC,
-    ADDRESSES.moonriver.ETH,
-    ADDRESSES.kcc.DAI,
-    ADDRESSES.kcc.WBTC
-  ],
-  moonriver: [
-    ADDRESSES.moonriver.USDT,
-    ADDRESSES.moonriver.USDC,
-    ADDRESSES.moonriver.ETH
-  ],
-  arbitrum: [ADDRESSES.arbitrum.MIM],
-  shiden: [
-    ADDRESSES.telos.ETH,
-    ADDRESSES.telos.USDC,
-    ADDRESSES.shiden.JPYC,
-    ADDRESSES.shiden.ETH,
-    ADDRESSES.dogechain.BUSD,
-    ADDRESSES.shiden.BUSD
-  ],
-  telos: [
-    ADDRESSES.telos.ETH,
-    ADDRESSES.telos.WBTC,
-    ADDRESSES.telos.USDC,
-    ADDRESSES.telos.USDT
-  ],
-  syscoin: [
-    ADDRESSES.syscoin.USDC,
-    ADDRESSES.syscoin.ETH,
-    ADDRESSES.syscoin.USDT
-  ],
-  boba: [ADDRESSES.boba.BUSD],
-  velas: [
-    ADDRESSES.moonriver.ETH,
-    ADDRESSES.moonriver.USDC
-  ],
-  dogechain: [
-    ADDRESSES.moonriver.USDT,
-    ADDRESSES.dogechain.BUSD,
-    ADDRESSES.dogechain.MATIC
-  ],
-  kava: [
-    ADDRESSES.telos.ETH,
-    ADDRESSES.moonriver.USDT,
-    ADDRESSES.telos.USDC,
-    ADDRESSES.shiden.ETH,
-    ADDRESSES.syscoin.ETH,
-    ADDRESSES.moonriver.USDC,
-    ADDRESSES.dogechain.BUSD
-  ],
-  step: [
-    ADDRESSES.moonriver.USDC,
-    ADDRESSES.telos.ETH,
-    ADDRESSES.telos.USDC,
-    ADDRESSES.telos.USDT
-  ],
-  godwoken_v1: [
-    ADDRESSES.moonriver.USDC,
-    ADDRESSES.shiden.ETH,
-    ADDRESSES.telos.ETH,
-    ADDRESSES.moonriver.USDT
-  ],
-  milkomeda_a1: [ADDRESSES.telos.ETH],
-  wemix: [
-    ADDRESSES.boba.BUSD,
-    ADDRESSES.shiden.ETH,
-    ADDRESSES.moonriver.USDC
-  ],
-  eos_evm: [
-    ADDRESSES.syscoin.USDT,
-    ADDRESSES.shiden.ETH,
-    ADDRESSES.telos.ETH,
-    ADDRESSES.telos.USDT
-  ]
 }
 
 module.exports = {
@@ -215,5 +120,4 @@ module.exports = {
   ibcChains,
   stripTokenHeader,
   getUniqueAddresses,
-  eulerTokens,
 }

@@ -1,7 +1,0 @@
-{
-  "underlying": "address:underlying",
-  "tranche": "address:tranche",
-  "valueSupplied": "uint256:valueSupplied",
-  "getPoolId": "function getPoolId() view returns (bytes32)",
-  "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)"
-}

@@ -1,6 +1,28 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { cachedGraphQuery } = require('../helper/cache')
 
+async function marionetteTvl(api) {
+  const owners = ["0x60443fd265b4a4D51DFE2569569D45DBde393B14", "0x6045648cF69285fC2018Ca8F3ee8844d5e05Ee5d"]; //marionette adapters
+
+  return sumTokens2({
+    api,
+    owners,
+    solidlyVeNfts: [
+      {
+        isAltAbi: true,
+        baseToken: "0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11",
+        veNft: "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D"
+      }, // veTHENA
+    ],
+    permitFailure: true,
+  });
+}
+
+const marionette = {
+  methodology: `Sums veTokens deposited on Hidden Hand Marionette Adapters.`,
+  bsc: { tvl: marionetteTvl },
+};
+
 const protocol_contracts = {
   ethereum: {
     v1: {
@@ -62,7 +84,7 @@ async function getTokens(chain, version) {
   return addresses;
 }
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   const { chain } = api
   const ownerTokens = []
 
@@ -77,8 +99,9 @@ async function tvl(ts, block, _, { api }) {
 }
 
 module.exports = {
-  methodology: `Sums bribe tokens deposited on Hidden Hand Reward Distributors, Bribe Vaults and Harvester contracts.`,
+  methodology: `Sums bribe tokens deposited on Hidden Hand Reward Distributors, Bribe Vaults and Harvester contracts and veTHE deposited in Marionette.`,
   ethereum: { tvl },
   optimism: { tvl },
   arbitrum: { tvl },
+  bsc: marionette.bsc,
 };

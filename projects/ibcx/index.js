@@ -11,8 +11,7 @@ const contractAddresses = [
     "osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm",
 ]
 
-async function tvl() {
-    const { api } = arguments[3]
+async function tvl(api) {
     for (const contractAddress of contractAddresses) {
         const contractBalances = (await get(`${endPoints.osmosis}/cosmos/bank/v1beta1/balances/${contractAddress}`)).balances
         for (const coin of contractBalances) {

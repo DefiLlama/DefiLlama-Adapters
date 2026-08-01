@@ -1,6 +1,6 @@
 const sui = require("../helper/chain/sui");
 
-async function tvl(_timestamp, _block, _chainBlocks, { api }) {
+async function tvl(api) {
   const poolFactoryConfig = '0xc294552b2765353bcafa7c359cd28fd6bc237662e5db8f09877558d81669170c';
   const parent = await sui.getObject(poolFactoryConfig);
   const poolFields = await sui.getDynamicFieldObjects({

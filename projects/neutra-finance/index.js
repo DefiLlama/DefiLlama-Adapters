@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const nGlpVaults = "0x6Bfa4F1DfAfeb9c37E4E8d436E1d0C5973E47e25";
   const nUSDCVault = "0x2a958665bC9A1680135241133569C7014230Cb21";
 

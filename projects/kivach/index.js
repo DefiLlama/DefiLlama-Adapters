@@ -54,8 +54,7 @@ async function totalTvl() {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of all undistributed donations received through Kivach.",
     obyte: {

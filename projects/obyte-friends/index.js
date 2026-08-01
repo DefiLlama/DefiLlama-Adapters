@@ -1,0 +1,73 @@
+/*
+ * Obyte Friends — Make 1% a day by making friends every day and spreading the word 
+ * about Obyte’s unstoppable, censorship-resistant tech
+ * @see https://friends.obyte.org
+ */
+const {
+    getBalances,
+    fetchOswapExchangeRates,
+    getAaStateVars,
+    getDecimalsByAsset,
+    executeGetter
+} = require('../helper/chain/obyte')
+
+const FRIENDS_AA_ADDRESS = 'FRDOT24PXLEY4BRGC7WPMSKXUWUFMUMG'
+const GBYTE_DECIMALS = 9;
+const GBYTE_ASSET = 'base';
+
+async function totalTvl() {
+    const [rate, balances, frdAsset] = await Promise.all([
+        fetchOswapExchangeRates(),
+        getBalances([FRIENDS_AA_ADDRESS]).then(res => res[FRIENDS_AA_ADDRESS]),
+        getAaStateVars(FRIENDS_AA_ADDRESS, 'constants').then(vars => vars?.constants?.asset)
+    ]);
+
+    let totalTvl = 0;
+
+    for (const [asset, balance] of Object.entries(balances)) {
+        if (asset === frdAsset) continue;
+        if (asset === GBYTE_ASSET) continue;
+
+        const decimals = await getDecimalsByAsset(asset);
+        const tokenPrice = rate[`${asset}_USD`] || 0;
+
+        if (rate) {
+            totalTvl += (balance.total / 10 ** decimals) * tokenPrice
+        }
+    }
+
+    const gbyteBalance = balances[GBYTE_ASSET]?.total || 0; // base asset is GBYTE
+
+    return { tether: totalTvl, byteball: (gbyteBalance / 10 ** GBYTE_DECIMALS) };
+}
+
+async function totalStaking() {
+    const [
+        depositedSupply,
+        rate,
+        constants
+    ] = await Promise.all([
+        executeGetter(FRIENDS_AA_ADDRESS, 'get_deposited_supply', []),
+        fetchOswapExchangeRates(),
+        getAaStateVars(FRIENDS_AA_ADDRESS, 'constants').then(vars => vars?.constants)
+    ]);
+
+    const decimals = await getDecimalsByAsset(constants.asset);
+
+    const price = rate[`${constants.asset}_USD`] ?? 0;
+
+    const staked = price * (depositedSupply / 10 ** decimals);
+
+    return { tether: staked }
+}
+
+module.exports = {
+    timetravel: false,
+    misrepresentedTokens: true,
+    methodology:
+        "The TVL is the total USD-value of funds locked in the agent of the Obyte Friends platform.",
+    obyte: {
+        tvl: totalTvl,
+        staking: totalStaking,
+    }
+}

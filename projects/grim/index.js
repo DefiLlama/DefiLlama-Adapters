@@ -4,7 +4,7 @@ const config = require('./config.json')
 Object.keys(config).forEach(chain => {
   const pools = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = await api.multiCall({  abi: 'address:want', calls: pools})      
       const bals = await api.multiCall({  abi: 'uint256:balance', calls: pools})      
       api.addTokens(tokens, bals)

@@ -1,4 +1,0 @@
-{
-    "gauge": "function gauge() view returns (address gauge)",
-    "streamer": "function streamer() view returns (address streamer)"
-}

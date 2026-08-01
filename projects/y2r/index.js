@@ -20,7 +20,7 @@ const vaultAddresses = {
   vFlowUSDT: '0xE1b05d4f2A61c32B3deAD4fc6BA0f07d595a4f8B',
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const vaults = Object.values(vaultAddresses)
   const tokens = await api.multiCall({  abi: abis.want, calls: vaults})
   const bals = await api.multiCall({  abi: abis.balance, calls:vaults })

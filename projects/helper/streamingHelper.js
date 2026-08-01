@@ -1,4 +1,5 @@
 const ADDRESSES = require('./coreAssets.json')
+const { getUniqueAddresses } = require('./tokenMapping')
 let stableTokens = ['USDC', 'USDT', 'DAI', 'WETH', 'WFTM', 'WGLMR', 'WBNB', 'WAVAX', 'JCHF', 'JEUR', 'WBTC', 'AGDAI', 'JPYC',
   'MIMATIC', 'WXDAI', 'EURS', 'JGBP', 'CNT', 'USD+', 'AMUSDC', 'RAI', 'SLP', 'SDAM3CRV', 'AMDAI', 'TUSD', 'RAI', 'UNI-V2', 'SLP', 'ScUSDC',
   'cUSDC', 'iDAI', 'FTM', 'yUSDC', 'cDAI', 'MATIC', 'UST', 'stETH', 'USD', 'mUSD', 'iUSDC', 'aDAI', 'AGEUR', 'BCT', 'WMATIC', 
@@ -9,8 +10,12 @@ function isStableToken(symbol = '', address = '') {
   return stableTokenAddresses.includes(address.toLowerCase()) || stableTokens.includes(symbol.toUpperCase())
 }
 
-async function getWhitelistedTokens({ api, tokens, isVesting }) {
-  const symbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true})
+async function getWhitelistedTokens({ api, tokens, isVesting  }) {
+  tokens = getUniqueAddresses(tokens, api.chain)
+  let symbols = []
+  if (!['solana', 'sui', 'aptos'].includes(api.chain)) {
+    symbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true})
+  }
   tokens = tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
   return tokens
 }
@@ -26,7 +31,6 @@ const stableTokenAddresses = [
 
   // metis
   ADDRESSES.metis.m_USDC,
-  ADDRESSES.metis.BUSD,
 
   // avax
   ADDRESSES.avax.DAI,
@@ -40,9 +44,9 @@ const stableTokenAddresses = [
   '0x91f8490eC27cbB1b2FaEdd29c2eC23011d7355FB',
 
   // fantom
-  ADDRESSES.fantom.DAI,
+  "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
   '0x6Fc9383486c163fA48becdEC79d6058f984f62cA',
-  ADDRESSES.fantom.USDC,
+  "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
   ADDRESSES.fantom.WFTM,
 
   // ethereum
@@ -62,7 +66,7 @@ const stableTokenAddresses = [
   '0x4198A31A98dB56b48AEBa6103F7C23679B9794F3',
 
   // bsc
-  '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
+  ADDRESSES.bsc.DAI,
   ADDRESSES.bsc.BUSD,
   ADDRESSES.bsc.USDT,
   ADDRESSES.bsc.USDC,
@@ -85,6 +89,24 @@ const stableTokenAddresses = [
   ADDRESSES.meter.BUSD_bsc,
   ADDRESSES.meter.USDT_eth,
   '0x687A6294D0D6d63e751A059bf1ca68E4AE7B13E2',
+
+  ADDRESSES.solana.SOL,
+  ADDRESSES.solana.USDC,
+  ADDRESSES.solana.USDT,
+
+  ADDRESSES.sui.SUI,
+  ADDRESSES.sui.USDC,
+  ADDRESSES.sui.WETH,
+  ADDRESSES.sui.USDT,
+
+  ADDRESSES.aptos.APT,
+  ADDRESSES.aptos.USDC,
+  ADDRESSES.aptos.USDC_1,
+  ADDRESSES.aptos.USDC_2,
+  ADDRESSES.aptos.USDT,
+  ADDRESSES.aptos.USDT_2,
+
+
 ].map(i => i.toLowerCase())
 
 module.exports = {

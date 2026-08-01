@@ -1,5 +1,12 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+    "pool": "function pool() view returns (address)",
+    "tickLower": "function tickLower() view returns (int24)",
+    "tickUpper": "function tickUpper() view returns (int24)",
+    "getReserves": "function getReserves(tuple(address pool, int24 tickLower, int24 tickUpper) key) view returns (uint112 reserve0, uint112 reserve1)"
+  };
 const { staking } = require("../helper/staking");
 const { unwrapBalancerToken } = require('../helper/unwrapLPs')
 
@@ -13,7 +20,7 @@ const addresses = {
   lens: "0xb73f303472c4fd4ff3b9f59ce0f9b13e47fbfd19",
 };
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   // Compute TVL of lps
   let pools = await api.fetchList({ target: LIQUIS_BOOSTER, itemAbi: abi.poolInfo, lengthAbi: abi.poolLength, })
   const liqPools = pools.map(pool => pool.token);
@@ -40,8 +47,8 @@ async function tvl(_, block, _1, { api }) {
   })
 
   // Compute veLIT locked value
-  const { output: veLitTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veLIT, block })
-  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veLIT, owner: addresses.voterProxy, block })
+  const { output: veLitTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veLIT, block: api.block })
+  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veLIT, owner: addresses.voterProxy, block: api.block })
   const ratio = veBalance / veLitTotalSupply
   const bal = await unwrapBalancerToken({ api, balancerToken: addresses.lit80weth20, owner: addresses.veLIT, })
   Object.entries(bal).forEach(([token, value]) => {

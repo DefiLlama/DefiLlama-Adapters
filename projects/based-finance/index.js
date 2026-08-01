@@ -10,8 +10,8 @@ const treasuryAddress = "0xa0e0f462d66de459711bc721ce1fdcc3d9405831";
 // Token Addresses
 const basedTokenAddress = "0x8d7d3409881b51466b483b11ea1b8a03cded89ae";
 const bshareTokenAddress = "0x49c290ff692149a4e16611c694fded42c954ab7a";
-const usdcAddress = ADDRESSES.fantom.USDC;
-const usdtAddress = ADDRESSES.fantom.fUSDT;
+const usdcAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
+const usdtAddress = "0x049d68029688eabf473097a2fc38ef61633a3c7a";
 const maiAddress = "0xfB98B335551a418cD0737375a2ea0ded62Ea213b";
 const wftmAddress = ADDRESSES.fantom.WFTM;
 
@@ -22,8 +22,8 @@ const treasuryTokens = [
   wftmAddress,
 ];
 
-async function treasury(_, _b, { fantom: block }) {
-  return sumTokens2({ owner: treasuryAddress, tokens: treasuryTokens, block, chain, })
+async function treasury(api) {
+  return sumTokens2({ owner: treasuryAddress, tokens: treasuryTokens, api })
 }
 
 module.exports = {
@@ -33,11 +33,11 @@ module.exports = {
              factory: '0x407C47E3FDB7952Ee53aa232B5f28566A024A759',
              useDefaultCoreAssets: true,
            }),
-    staking: staking(acropolisAddress, bshareTokenAddress, "fantom"),
+    staking: staking(acropolisAddress, bshareTokenAddress),
     treasury
   },
 };
 
 module.exports.hallmarks = [
-  [Math.floor(new Date('2022-09-30')/1e3), 'Added Based V2'],
+  ['2022-09-30', 'Added Based V2'],
 ]

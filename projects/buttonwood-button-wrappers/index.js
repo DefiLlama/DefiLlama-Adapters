@@ -1,4 +1,11 @@
-const abi = require('./abi.json');
+const abi = {
+    "trancheFactory": "address:trancheFactory",
+    "collateralToken": "function collateralToken() external view returns (address)",
+    "tranches": "function tranches(uint256 i) external view returns (address token, uint256 ratio)",
+    "instanceCount": "function instanceCount() external view returns (uint256 count)",
+    "instanceAt": "function instanceAt(uint256 index) external view returns (address instance)",
+    "underlying": "function underlying() external view returns (address)"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
@@ -24,12 +31,18 @@ const config = {
     ],
     fromBlock: 3839432
   },
+  arbitrum: {
+    buttonTokenFactories: [
+      "0x06fe30a0a8e2ec5c8a9c9643f32aca8db909227f",
+    ],
+    fromBlock: 185321020
+  }
 }
 
 Object.keys(config).forEach(chain => {
   const { buttonTokenFactories, unbuttonTokenFactories } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       // Collecting all the wrapper tokens
       const calls = [];

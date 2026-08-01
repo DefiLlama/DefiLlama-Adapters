@@ -64,7 +64,10 @@ const chains = {
 
 let chainData
 async function getChainData() {
-  if (!chainData) chainData = getConfig('anyswap-config', 'https://netapi.anyswap.net/bridge/v2/info').then(i => i.bridgeList.filter(j => j.amount > 0))
+  if (!chainData) chainData = getConfig('anyswap-config-v1', 'broken').then(i => {
+    return i.bridgeList.filter(j => j.amount > 0)
+  })
+
   return chainData
 }
 
@@ -76,7 +79,7 @@ const EXECUTOR = '0x2A038e100F8B85DF21e4d44121bdBfE0c288A869'
 const NEW_ADDR = '0x1eed63efba5f81d95bfe37d82c8e736b974f477b'
 
 function fetchChain(chain) {
-  return async (_, _1, _2, { api }) => {
+  return async (api) => {
     const data = await getChainData()
     const protocolsInChain = chain === null ? data : data.filter(p => p.srcChainId.toString() === chain.toString())
     const tokensAndOwners = []
@@ -100,7 +103,7 @@ function fetchChain(chain) {
       }
     })
 
-    return sumTokens({ api, tokensAndOwners, blacklistedTokens })
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens })
   }
 }
 
@@ -119,9 +122,8 @@ module.exports = {
   ...chainTvls,
   // fetch: fetchChain(null),
   hallmarks: [
-    [1651881600, "UST depeg"],
-    [1689202800,"Access to Wallets Lost"]
+    ['2022-05-07', "UST depeg"],
+    // ['2023-07-12',"Access to Wallets Lost"]
   ],
+  // deadFrom: '2023-07-12',  // project was abandoned
 }
-
-module.exports.clv.tvl = () => ({})

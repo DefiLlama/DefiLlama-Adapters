@@ -9,7 +9,7 @@ const stakingContracts = [
 ]
 const bass = '0x1F23B787053802108fED5B67CF703f0778AEBaD8'
 
-async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const tokensAndOwners  = await api.call({
     target: asssets,
     abi: "function getAssets() view returns (address[][])",
@@ -19,7 +19,7 @@ async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
 
 module.exports = {
   hallmarks: [
-    [1698969600,"Rug Pull"]
+    ['2023-11-03',"Rug Pull"]
   ],
   base: {
     tvl,

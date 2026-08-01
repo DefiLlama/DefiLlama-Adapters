@@ -1,8 +1,10 @@
 const REVA_CHEF = "0xd7550285532f1642511b16Df858546F2593d638B";
-const REVA_CHEF_ABI = require("./RevaChef.json");
+const REVA_CHEF_ABI = {
+    "tokens": "function tokens(address) view returns (uint256 totalPrincipal, uint256 tvlBusd, uint256 lastRewardBlock, uint256 accRevaPerToken, bool rewardsEnabled)"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-async function tvl(timestamp, _, _1, { api }) {
+async function tvl(api) {
   const tokens = await api.fetchList({  lengthAbi: 'uint256:getSupportedTokensCount', itemAbi: 'function supportedTokens(uint256) view returns (address)', target: REVA_CHEF})
   const bals = await api.multiCall({  abi: REVA_CHEF_ABI.tokens, calls: tokens, target: REVA_CHEF})
   api.addTokens(tokens, bals.map(i => i.totalPrincipal))
@@ -10,7 +12,7 @@ async function tvl(timestamp, _, _1, { api }) {
 }
 
 module.exports = {
-  start: 1634150000,        // 13th of October, 2021
+  start: '2021-10-13',        // 13th of October, 2021
 	bsc: {
 		tvl,
   },

@@ -1,9 +1,45 @@
 const { sumUnknownTokens, sumTokensExport } = require('../helper/unknownTokens')
-const abi = require('./abi.js')
+const lpLockerCount = 'function lpLockerCount() view returns (uint40)'
+const tokenLockerCount = 'function tokenLockerCount() view returns (uint40)'
+
+const getLpLockData = `function getLpLockData(uint40 id_) view returns
+(
+    bool isLpToken,
+    uint40 id,
+    address contractAddress,
+    address lockOwner,
+    address token,
+    address createdBy,
+    uint40 createdAt,
+    uint40 blockTime,
+    uint40 unlockTime,
+    uint256 balance,
+    uint256 totalSupply
+)`
+const getTokenLockData = `function getTokenLockData(uint40 id_) view returns
+(
+    bool isLpToken,
+    uint40 id,
+    address contractAddress,
+    address lockOwner,
+    address token,
+    address createdBy,
+    uint40 createdAt,
+    uint40 blockTime,
+    uint40 unlockTime,
+    uint256 balance,
+    uint256 totalSupply
+)`
+
+const abi = {
+    lpLockerCount,
+    tokenLockerCount,
+    getLpLockData,
+    getTokenLockData,
+}
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 17996063,
   methodology: `Counts liquidity in lp lock contracts`,
 }
 
@@ -15,7 +51,7 @@ Object.keys(config).forEach(chain => {
   const { lockerManagerV1, stakingContract, stakingToken, lps } = config[chain]
   module.exports[chain] = { tvl, }
 
-  async function tvl(_, _b, _cb, { api, }) {
+  async function tvl(api) {
     const lpInfos = await api.fetchList({  lengthAbi: abi.lpLockerCount, itemAbi: abi.getLpLockData, target: lockerManagerV1, })
     const tokensAndOwners = [lpInfos].flat().filter(i => i.isLpToken).map(l => [l.token, l.contractAddress])
     return sumUnknownTokens({ api, tokensAndOwners, useDefaultCoreAssets: true, resolveLP: true, onlyLPs: true, })

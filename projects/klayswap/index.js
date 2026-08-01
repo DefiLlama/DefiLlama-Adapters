@@ -7,7 +7,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const singlePoolFactory = '0xD1890D8F02F4C63553658ba49C53A82eb84009e6'
 
-async function singlePoolTvl(_, _b, _cb, { api, }) {
+async function singlePoolTvl(api) {
   const pools = await api.fetchList({ lengthAbi: 'uint8:getPoolCount', itemAbi: 'function getPoolAddressByIndex(uint idx) public view returns (address)', target: singlePoolFactory })
   const tokens = await api.multiCall({ abi: 'address:token', calls: pools })
   const toa = tokens.map((val, i) => ([val, pools[i]]))

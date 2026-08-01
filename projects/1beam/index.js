@@ -1,4 +1,7 @@
-const Abis = require('./abi.json');
+const Abis = {
+    "getTokenBalances": "uint256[]:getTokenBalances",
+    "getTokens": "address[]:getTokens"
+  };
 
 const Contracts = {
   moonbeam: {
@@ -9,7 +12,7 @@ const Contracts = {
   }
 }
 
-const moonbeamTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const moonbeamTvl = async (api) => {
   const pools = Object.values(Contracts.moonbeam.pools)
   const tokens = await api.multiCall({  abi: Abis.getTokens, calls: pools })
   const bals = await api.multiCall({  abi: Abis.getTokenBalances, calls: pools })

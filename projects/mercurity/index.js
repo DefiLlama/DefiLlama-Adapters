@@ -1,4 +1,6 @@
-const abi = require("./abi.json");
+const abi = {
+    "getCurrentTokens": "address[]:getCurrentTokens"
+  };
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -7,7 +9,7 @@ const pool_factoryV2 = "0xCD21ef2220596cba4A7DaE59b5eeeA6dB7859df7";
 
 const toAddr = (d) => "0x" + d.substr(26);
 
-const calc = async (balances, block, factory, api) => {
+const calc = async (balances, factory, api) => {
   const START_BLOCK = 11259517; // 11971199 -> start block for Factory Pool V2
   const events = (
     await getLogs({
@@ -28,14 +30,14 @@ const calc = async (balances, block, factory, api) => {
   return sumTokens2({ api, tokensAndOwners, balances })
 };
 
-const ethTvl = async (_, ethBlock, _1, { api }) => {
+const ethTvl = async (api) => {
   const balances = {};
 
   await Promise.all([
     /*** Pool V1 TVL Portion ***/
-    calc(balances, ethBlock, pool_factoryV1, api),
+    calc(balances, pool_factoryV1, api),
     /*** Pool V2 TVL Portion ***/
-    calc(balances, ethBlock, pool_factoryV2, api),
+    calc(balances, pool_factoryV2, api),
   ])
 
   return balances;

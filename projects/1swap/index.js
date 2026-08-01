@@ -1,4 +1,7 @@
-const abiMoonriver = require('./abi-moonriver.json');
+const abiMoonriver = {
+    "getTokenBalances": "uint256[]:getTokenBalances",
+    "getTokens": "address[]:getTokens"
+  };
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const Contracts = {
@@ -16,13 +19,11 @@ const Contracts = {
 };
 
 
-const tvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const tvl = async (api) => {
   const ownerTokens = []
-  const poolTvl = async (pool) => {
-    ownerTokens.push([await api.call({ target: pool, abi: abiMoonriver.getTokens, }), pool])
-  };
   const pools = Object.values(Contracts.moonriver.pools)
-  await Promise.all(pools.map(poolTvl))
+  const tokens = await api.multiCall({  abi: abiMoonriver.getTokens, calls: pools})
+  pools.forEach((pool, i) => ownerTokens.push([tokens[i], pool]))
   return sumTokens2({ api, ownerTokens, blacklistedTokens: pools})
 };
 

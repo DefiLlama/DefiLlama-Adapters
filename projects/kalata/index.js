@@ -7,7 +7,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const kala = '0x32299c93960bb583a43c2220dc89152391a610c5'
 const masterchef = '0x565bCba3eA730ac6987edE126B29DCf499fccEA1'
 
-async function tvl(time, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   return sumTokens2({
     api, ownerTokens: [
       [[ADDRESSES.bsc.BUSD], '0x2d067575BE1f719f0b0865D357e67925B6f461C5'], // BUSD mint
@@ -27,6 +27,6 @@ async function tvl(time, ethBlock, chainBlocks, { api }) {
 module.exports = {
   bsc: {
     tvl: sdk.util.sumChainTvls([getUniTVL({ factory: '0xa265535863305ce0a2a8ec330c2cec972aca3004', useDefaultCoreAssets: true, }), tvl]),
-    staking: staking(masterchef, kala, 'bsc'),
+    staking: staking(masterchef, kala),
   }
 }

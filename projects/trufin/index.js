@@ -1,10 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json')
-
-const TRUSTAKE_CONTRACT_ADDR = "0xcfab8530ccf1f9936daede537d6ebbc75289006d"
+const abi = {
+    "totalShares": "uint256:totalShares",
+    "sharePrice": "uint256:sharePrice",
+    "getDust": "uint256:getDust"
+  };const TRUSTAKE_CONTRACT_ADDR = "0xcfab8530ccf1f9936daede537d6ebbc75289006d"
 const MATIC_TOKEN_ADDR = ADDRESSES.ethereum.MATIC
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const totalShares = (await api.call({ abi: abi.totalShares, target: TRUSTAKE_CONTRACT_ADDR, }))
   const sharePrice = (await api.call({ abi: abi.sharePrice, target: TRUSTAKE_CONTRACT_ADDR, }))
   const dust = (await api.call({ abi: abi.getDust, target: TRUSTAKE_CONTRACT_ADDR, }))
@@ -13,7 +15,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 }
 
 module.exports = {
-  methodology: `Counts the TVL of MATIC tokens in TruFin's TruStake vault.`,
+  methodology: `Counts the TVL of MATIC tokens in TruFin's Legacy vaults.`,
   ethereum: {
     tvl
   }

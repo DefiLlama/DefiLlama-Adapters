@@ -40,7 +40,6 @@ module.exports={
     methodology: "Data is retrieved from the api at https://fai.bfly.finance",
     misrepresentedTokens: true,
     timetravel: false,
-    incentivized: true,
     starcoin: {
         tvl,
     }

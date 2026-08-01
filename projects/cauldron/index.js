@@ -5,28 +5,29 @@
 
 const axios = require("axios");
 
-async function tvl(timestamp) {
-  const { data } = await axios.get(`http://rostrum.cauldron.quest:8000/cauldron/tvl/${timestamp}`);
+async function tvl({ timestamp }) {
+  const { data } = await axios.get(`https://indexer.riften.net/cauldron/tvl/${timestamp}`);
 
-  // Every token pair is matched with BCH. We collect total value locked on the BCH side of the contract.
-    const total_sats = data.reduce((acc, token_pair) => {
-        return acc + BigInt(token_pair.satoshis)
-    }, BigInt(0));
+  // Every token pair is matched with BCH. We collect the BCH side and multiply by 2 to account for both sides of the pool.
+  const total_sats = data.reduce((acc, token_pair) => {
+    return acc + BigInt(token_pair.satoshis)
+  }, BigInt(0));
 
   // TODO: Map tokens to CoinGecko identifiers.
   // Currently, no tokens on the Bitcoin Cash are on CoinGecko.
 
   return {
-    'bitcoin-cash': Number(total_sats / 100000000n),
+    'bitcoin-cash': Number(total_sats) * 2 / 1e8,
   }
 }
 
 module.exports = {
-  methodology: "Scrape the blockchain and filter for spent transaction outputs that match the cauldron contract's redeem script. Check if the transaction has an output with a locking script that matches the redeem script in the input. A match on locking script means the funds are still locked in the DEX contract. Aggregate the value of funds in contract utxos.",
-  start: 1688198180,
+  methodology: "Query the Riftenlabs indexer for pool BCH balances across all active Cauldron pool UTXOs. Cauldron pools are AMMs paired with BCH; the BCH side is doubled to account for both sides of the pool.",
+  start: '2023-07-01',
+  misrepresentedTokens: true,
   bitcoincash: { tvl },
   hallmarks: [
-    [1688198180, "First cauldron contract deployed (SOCK)"],
-    [1693230446, "Cauldron opens trading for any token"],
+    ['2023-07-01', "First cauldron contract deployed (SOCK)"],
+    ['2023-08-28', "Cauldron opens trading for any token"],
   ]
 };

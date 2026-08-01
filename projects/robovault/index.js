@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 
 module.exports = {
   hallmarks: [
-    [1674820800, "Vaults Pause"]
+    ['2023-01-27', "Vaults Pause"]
   ],
   methodology: 'TVL counts deposits made to the Robo-Vault vaults. Data is pulled from the Robo-Vault API:"https://api.robo-vault.com/vault".',
 }
@@ -31,7 +31,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { vaults } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
       const tokens = await api.multiCall({ abi: 'address:token', calls: vaults })

@@ -112,22 +112,22 @@ const moveIbo = async (api, tvlType) => {
   }
 
   let bals = await Promise.all(acceptCoinArr.map(getCoinInfo));
-  if (tvlType === 'staking')
+  if (tvlType === 'staking' && iboInfo)
     api.add(MOVE, iboInfo.data.coin.value)
   api.addTokens(acceptCoinArr, bals)
 };
 
-const tvl = async (_, _1, _2, { api }) => {
+const tvl = async (api) => {
   await moveIbo(api, 'tvl');
   return api.getBalances()
 };
-const pool2 = async (_, _1, _2, { api }) => {
+const pool2 = async (api) => {
   await moveIbo(api, 'pool2');
   await cakeLPsltStaking(api);
   return api.getBalances()
 };
 
-const staking = async (_, _1, _2, { api }) => {
+const staking = async (api) => {
   await moveIbo(api, 'staking');
   await moveStaking(api);
   await altLockBond(api)
@@ -136,9 +136,6 @@ const staking = async (_, _1, _2, { api }) => {
 
 module.exports = {
   timetravel: false,
-  methodology:
-    "Counts the lamports for each coins in every pools of AptosLaunch.",
-  aptos: {
-    tvl, staking, pool2,
-  },
+  methodology: "Counts the lamports for each coins in every pools of AptosLaunch.",
+  aptos: { tvl, staking, pool2 },
 };

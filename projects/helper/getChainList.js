@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-
+/* 
 const projectsFolder = path.join(__dirname, '..')
 
 const files = fs.readdirSync(projectsFolder, { withFileTypes: true })
@@ -93,3 +93,8 @@ function checkFileExistsSync(filepath) {
   }
   return flag;
 }
+ */
+
+const chainNames = require('./chains.json')
+chainNames.sort()
+fs.writeFileSync(path.join(__dirname, './chains.json'), JSON.stringify(chainNames, null, 2))

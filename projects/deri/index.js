@@ -1,5 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi");
+const abi = {
+  "getLengths": "function getLengths() view returns (uint256, uint256)",
+  "getBToken": "function getBToken(uint256 bTokenId) view returns (tuple(address bTokenAddress, address swapperAddress, address oracleAddress, uint256 decimals, int256 discount, int256 liquidity, int256 pnl, int256 cumulativePnl))",
+  "v3Liquidity": "int256:liquidity"
+};
 
 async function perpetualPool(api, pool) {
   const res = await api.call({ target: pool, abi: abi.getLengths, });
@@ -43,7 +47,7 @@ async function v3Pool(api, pool, bToken) {
 Object.keys(config).forEach(chain => {
   const contracts = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokensAndOwners = []
       for (let { pool, bTokenSymbol, v3, lite } of Object.values(contracts)) {
         if (lite)

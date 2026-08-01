@@ -5,12 +5,13 @@ const config = {
 }
 
 module.exports.hallmarks = [
-  [1698883200,"PRISMA token launch"]
+  ['2023-11-02',"PRISMA token launch"],
+  // ['2024-03-28',"Prisma Exploit"]
 ],
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       const logs = await getLogs({
         api,

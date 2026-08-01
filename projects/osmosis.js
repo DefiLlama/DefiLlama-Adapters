@@ -7,7 +7,7 @@ Object.values(ADDRESSES.ibc).forEach(i => coreAssets.add('ibc/' + i))
 
 const chain = 'osmosis'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   // // https://api-osmosis.imperator.co/pools/v2/all?low_liquidity=true
   // https://lcd.osmosis.zone/osmosis/gamm/v1beta1/pools?pagination.limit=100&pagination.count_total=true
   const owners = []

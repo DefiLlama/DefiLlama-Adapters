@@ -1,5 +1,0 @@
-{
-  "getVaultList": "address[]:getVaultList",
-  "balanceState": "function balanceState() view returns (uint256 totalCashBalance, uint256 totalLoanBalance, uint256 totalAdminFeeBalance, uint256 totalWithdrawalBalance)",
-  "currencyToken": "address:currencyToken"
-}

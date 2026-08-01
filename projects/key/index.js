@@ -17,7 +17,7 @@ function getMarketPrice(api, fromBlock) {
       topic: 'TakeOrder(address,uint256,address,address,address,uint256,uint256,uint256,bool,uint256)',
       eventAbi: 'event TakeOrder(address indexed account, uint256 indexed orderId, address indexed maker, address token, address currency, uint256 price, uint256 amount, uint256 filled, bool bidAsk, uint256 timestamp)',
       onlyArgs: true,
-      skipCache: true,
+      skipCache: true,  // legit use case for skipping cache to get fresh data
       fromBlock,
     })
 
@@ -50,8 +50,8 @@ async function getGmxPrice(slot0) {
   return 1 / gmxPriceInEth
 }
 
-async function tvl(timestamp, _, chainBlocks, { api }) {
-  const fromBlock = await getBlock(timestamp - (48 * 60 * 60), 'arbitrum', chainBlocks)
+async function tvl(api) {
+  const fromBlock = await getBlock(api.timestamp - (48 * 60 * 60), 'arbitrum', {})
 
   const slot0 = await api.call({
     abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',

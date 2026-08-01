@@ -10,7 +10,7 @@ const OPTIMISM_VAULT = "0x446c264ed8888dad27f5452094d2ceadb1e038ea";
 
 module.exports = {
   hallmarks: [
-    [1661337600, "SPL Vault Migration (V2 Expansion)"],
+    ['2022-08-24', "SPL Vault Migration (V2 Expansion)"],
   ],
   timetravel: false,
   methodology:

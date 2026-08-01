@@ -8,7 +8,7 @@ const WETH_ADDRESS = ADDRESSES.ethereum.WETH;
 const AGI_ETH_LP_ADDRESS = "0x498c00E1ccC2AFFf80F6Cc6144EAEB95c46cc3B5";
 const AGI_ETH_STAKING_POOL = "0xC8187048f7Ab0db0774b674fEf3f4F4285A01bF4";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: FACTORY_CONTRACT,

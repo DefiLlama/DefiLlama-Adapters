@@ -22,7 +22,7 @@ const strategyQuery = `query Strategy {  strategy(    where: {chain_id: {_eq: 42
 Object.keys(config).forEach(chain => {
   const { endpoint, factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       await getStraegyTvl2()
       const { pools } = await cachedGraphQuery('stellaxyz/lending-pool/' + api.chain, endpoint, query)
       const lendingContracts = pools.map(i => i.poolAddress)

@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
-const { sumTokens, sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
 
 const stakingContract = "0x7eb5af418f199ea47494023c3a8b83a210f8846f";
 const stakingContract_APX = "0x6bE863e01E17A226c945e3629D0D9Cb6E52Ce90E";
@@ -55,21 +55,21 @@ const ALPTokens = [
   TOKEN_CAKE,
 ]
 
-async function bscTVL(timestamp, _block, { bsc: block }) {
+async function bscTVL(api) {
   const toa = [
     ...TreasureTokens.map((t) => [t, treasureContract]),
     ...TreasureTokens.map((t) => [t, treasureContractV2]),
     ...ALPTokens.map((t) => [t, ALPContract]),
   ]
-  return sumTokens({}, toa, block, "bsc");
+  return api.sumTokens({ tokensAndOwners: toa });
 }
 
 module.exports = {
-  start: 1640100600, // 12/21/2021 @ 15:30pm (UTC)
+  start: '2021-12-21', // 12/21/2021 @ 15:30pm (UTC)
   bsc: {
     tvl: bscTVL,
-    staking: stakings([stakingContract_APX, daoContract], TOKEN_APX, "bsc"),
-    pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2], "bsc"),
+    staking: stakings([stakingContract_APX, daoContract], TOKEN_APX),
+    pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2]),
   },
   ethereum: {
     tvl: sumTokensExport({

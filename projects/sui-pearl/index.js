@@ -2,24 +2,21 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { default: BigNumber } = require("bignumber.js");
 const sui = require("../helper/chain/sui");
 
-async function suiTVL() {
-  const { api } = arguments[3];
+async function suiTVL(api) {
 
   //get list pool flowx
   const listPoolFlowX = (
     await sui.getDynamicFieldObjects({
       parent:
         "0xd15e209f5a250d6055c264975fee57ec09bf9d6acdda3b5f866f76023d1563e6",
+      sleep: 1000,
     })
   ).map((i) => i.fields.value.fields);
 
   //get list pool after match
-  const afterMathPools = await sui.queryEvents({
-    eventType:
-      "0xefe170ec0be4d762196bedecd7a065816576198a6527c99282a2551aaa7da38c::events::CreatedPoolEvent",
-    transform: (i) => i.pool_id,
-  });
-  const afterMathData = await sui.getObjects(afterMathPools);
+  const afterMathData = await sui.getObjectsByType(
+    "0xefe170ec0be4d762196bedecd7a065816576198a6527c99282a2551aaa7da38c::pool::Pool"
+  );
 
   //get list pool suipearl
   const poolDynamicField = await sui.getDynamicFieldObjects({

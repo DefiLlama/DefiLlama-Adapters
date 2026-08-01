@@ -1,8 +1,7 @@
 const { getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const provider = getProvider()
   const program = new Program(idl, 'RBN2XNc6JQU6ewFp9TyPq6WznsvNuumzSJkor1nJFcz', provider)
   const vaults = await program.account.vault.all()

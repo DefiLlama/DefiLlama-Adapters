@@ -2,7 +2,7 @@ const { getLogs } = require('./helper/cache/getLogs')
 const { sumTokens2 } = require('./helper/unwrapLPs')
 const { isArtBlocks } = require('./helper/nft')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const factory = '0x85aa7f78bdb2de8f3e0c0010d99ad5853ffcfc63'
   const logs = await getLogs({
     api,
@@ -30,7 +30,7 @@ async function tvl(_, _b, _cb, { api, }) {
     ]
   })
 }
-async function tvlLPDA(_, _b, _cb, { api, }) {
+async function tvlLPDA(api) {
   const factory = '0x32e8ab1e243d8d912a5ae937635e07e7e451d2ae'
   const logs = await getLogs({
     api,

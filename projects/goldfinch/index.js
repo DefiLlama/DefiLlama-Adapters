@@ -1,7 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
-const abi = require("./abi.json");
+const abi = {
+  "totalLoansOutstanding": "uint256:totalLoansOutstanding",
+  "pools": "function pools(address) view returns (uint256 totalMinted, uint256 totalPrincipalRedeemed, bool created)",
+  "assets": "uint256:assets"
+};
 const BigNumber = require("bignumber.js");
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -22,6 +26,7 @@ const getTranchedPoolAddresses = async (api) => {
       api,
       fromBlock: V2_START,
       topic: "PoolCreated(address,address)",
+      onlyUseExistingCache: true,
     });
     return logs.map((l) => "0x" + l.topics[1].substr(26));
   }
@@ -31,18 +36,9 @@ const getTranchedPoolAddresses = async (api) => {
  * This metric represents DeFiLlama's "base" definition of Total Value Locked. It includes
  * only USDC balances in the protocol (that is, in the `SeniorPool` and in all `TranchedPool`s).
  */
-const tvl = async (timestamp, ethBlock, _, { api, }) => {
-  const balances = {};
-
+const tvl = async (api) => {
   const tranchedPoolAddresses = await getTranchedPoolAddresses(api);
-
-  await sumTokens(
-    balances,
-    [seniorPoolAddress, ...tranchedPoolAddresses].map((pool) => [USDC, pool]),
-    ethBlock
-  );
-
-  return balances;
+  return api.sumTokens({ tokens: [USDC], owners: [seniorPoolAddress, ...tranchedPoolAddresses] })
 };
 
 /**
@@ -58,7 +54,14 @@ const tvl = async (timestamp, ethBlock, _, { api, }) => {
  * Only the `SeniorPool` has a writedown mechanic -- which is reflected in this metric (via 
  * `SeniorPool.assets()`).
  */
-const borrowed = async (_, ethBlock, _1, { api }) => {
+const borrowed = async (api) => {
+
+  if (api.timestamp * 1000 > new Date('2026-06-01')) {
+    // protocol is insolvant/ winding down: https://gov.goldfinch.finance/t/gip-87-maintenance-mode-of-goldfinch-operations-and-wind-down-goldfinch-prime/2202
+    return {}
+  }
+
+  const ethBlock = api.block
   const _seniorPoolUsdcBalances = {};
   await sumTokens(
     _seniorPoolUsdcBalances,
@@ -72,7 +75,7 @@ const borrowed = async (_, ethBlock, _1, { api }) => {
   const tranchedPoolAddresses = await getTranchedPoolAddresses(api);
 
   const poolStats = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: tranchedPoolAddresses.map((tranchedPoolAddress) => ({
         target: poolTokensAddress,
         params: tranchedPoolAddress,
@@ -80,32 +83,32 @@ const borrowed = async (_, ethBlock, _1, { api }) => {
       abi: abi.pools,
       ethBlock,
     })
-  ).output;
+  );
 
   const totalInvested = await poolStats.reduce((sum, thisPoolStats) => {
     return sum
-      .plus(new BigNumber(thisPoolStats.output.totalMinted))
-      .minus(new BigNumber(thisPoolStats.output.totalPrincipalRedeemed));
+      .plus(new BigNumber(thisPoolStats.totalMinted))
+      .minus(new BigNumber(thisPoolStats.totalPrincipalRedeemed));
   }, new BigNumber(0));
 
   const seniorAssets = new BigNumber(
     (
-      await sdk.api.abi.call({
+      await api.call({
         abi: abi.assets,
         target: seniorPoolAddress,
         ethBlock,
       })
-    ).output
+    )
   );
 
   const seniorLoansOutstanding = new BigNumber(
     (
-      await sdk.api.abi.call({
+      await api.call({
         abi: abi.totalLoansOutstanding,
         target: seniorPoolAddress,
         ethBlock,
       })
-    ).output
+    )
   );
 
   // `totalInvested` reflects the senior pool's investments. So we subtract out
@@ -133,7 +136,6 @@ const borrowed = async (_, ethBlock, _1, { api }) => {
 };
 
 module.exports = {
-  timetravel: true,
   misrepresentedTokens: true,
   ethereum: {
     tvl,

@@ -1,4 +1,0 @@
-{
-  "assetToken1": "function assetToken1() view returns (address)",
-  "estimatedValueIntoken1": "function estimatedValueInToken1() view returns (uint256 value1)"
-}

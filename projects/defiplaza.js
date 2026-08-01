@@ -1,22 +1,22 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('./helper/cache');
 
 const { sumTokens, queryAddresses } = require('./helper/chain/radixdlt');
 const { getConfig } = require('./helper/cache');
 const { get } = require('./helper/http');
-const sdk = require('@defillama/sdk');
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defiplaza';
+const graphUrl = sdk.graph.modifyEndpoint('4z9FBF12CrfoQJhAkWicqzY2fKYN9QRmuzSsizVXhjKa');
 
 module.exports = {
    ethereum: {
-      tvl: async (timestamp, block, _, { api }) => {
+      tvl: async (api) => {
          const { pools } = await cachedGraphQuery('defiplaza-ethereum', graphUrl, '{  pools {    id    tokens {      id    }  }}');
          const ownerTokens = pools.map((pool) => [pool.tokens.map((token) => token.id), pool.id]);
          return api.sumTokens({ ownerTokens });
       },
    },
    radixdlt: {
-      tvl: async (_, _1, _2, { api }) => {
+      tvl: async (api) => {
          const pools = await getConfig('defiplaza-radixdlt', null, {
             fetcher: async () => {
                let items = [];

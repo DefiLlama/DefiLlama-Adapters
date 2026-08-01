@@ -1,5 +1,34 @@
 const { multiCall } = require("../helper/chain/starknet");
-const { assetTokenAbi } = require("./abi");
+const assetToken = [
+  {
+    "name": "underlyingAsset",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "_underlyingAsset",
+        "type": "felt"
+      }
+    ],
+    "stateMutability": "view",
+    "customType": "address"
+  },
+  {
+    "name": "totalSupply",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "totalSupply",
+        "type": "Uint256"
+      }
+    ],
+    "stateMutability": "view"
+  }
+]
+
+const assetTokenAbi = {}
+assetToken.forEach(i => assetTokenAbi[i.name] = i)
 
 const supplyTokens = [
   // WBTC
@@ -42,7 +71,7 @@ function* chunks(arr, n) {
   }
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const supplied = await multiCall({
     calls: supplyTokens,
     abi: assetTokenAbi.totalSupply,
@@ -62,7 +91,7 @@ async function tvl(_, _1, _2, { api }) {
   api.addTokens(underlyings, data);
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const borrowed = await multiCall({
     calls: debtTokens,
     abi: assetTokenAbi.totalSupply,

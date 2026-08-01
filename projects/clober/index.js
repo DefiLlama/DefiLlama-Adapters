@@ -1,4 +1,9 @@
-const abi = require("./abi.json");
+const abi = {
+    "nonce": "uint256:nonce",
+    "market": "address:market",
+    "baseToken": "address:baseToken",
+    "quoteToken": "address:quoteToken"
+  };
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -31,7 +36,7 @@ async function fetchTokenAddressesV1_1(api, chainId){
     })
 }
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
     const chainId = await api.getChainId()
     let tokenAddresses = [...await fetchTokenAddressesV1_0(api, chainId), ...await fetchTokenAddressesV1_1(api, chainId)]
     tokenAddresses = tokenAddresses.flat()

@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { getResource, getTableData, } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
 
 let data
 
@@ -23,8 +22,8 @@ async function getData() {
       borrowed: {},
     }
     coinInfos.forEach((data, i) => {
-      sdk.util.sumSingleBalance(balances.tvl, coins[i], data.supply_pool.total_value - data.borrow_pool.total_value)
-      sdk.util.sumSingleBalance(balances.borrowed, coins[i], data.borrow_pool.total_value)
+      sdk.util.sumSingleBalance(balances.tvl, coins[i], data.supply_pool.total_value - data.borrow_pool.total_value, 'aptos')
+      sdk.util.sumSingleBalance(balances.borrowed, coins[i], data.borrow_pool.total_value, 'aptos')
     })
 
     return balances
@@ -39,11 +38,11 @@ module.exports = {
   aptos: {
     tvl: async () => {
       const data = await getData()
-      return transformBalances('aptos', data.tvl)
+      return data.tvl
     },
     borrowed: async () => {
       const data = await getData()
-      return transformBalances('aptos', data.borrowed)
+      return data.borrowed
     },
   },
 };

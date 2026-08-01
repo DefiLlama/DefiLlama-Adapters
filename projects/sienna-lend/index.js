@@ -1,5 +1,6 @@
 const { queryContract, } = require('../helper/chain/secret')
-const { PromisePool } = require('@supercharge/promise-pool')
+const { PromisePool } = require('@supercharge/promise-pool');
+const { sleep } = require('../helper/utils');
 
 const LEND_OVERSEER_CONTRACT = "secret1pf88n9hm64mn58aw48jxfs2fsvzr07svnrrdlv";
 
@@ -30,7 +31,7 @@ async function getLendMarkets() {
 
     const data = []
 
-    const { errors } = await PromisePool.withConcurrency(5)
+    const { errors } = await PromisePool.withConcurrency(3)
       .for(markets)
       .process(async (addr) => {
 
@@ -40,6 +41,7 @@ async function getLendMarkets() {
         // const { token_info: { decimals }} = await queryContract({ contract: address, data: { token_info: {} } })
         const scale = exchange_rate
         data.push({ address, total_borrows: total_borrows * scale, total_supply: total_supply * scale })
+        await sleep(1000)
       })
 
     if (errors && errors.length)
@@ -50,7 +52,7 @@ async function getLendMarkets() {
 
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = await getLendMarkets()
   data.forEach(i => {
     api.add(i.address, i.total_supply - i.total_borrows)
@@ -59,7 +61,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return api.getBalances()
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const data = await getLendMarkets()
   data.forEach(i => {
     api.add(i.address, i.total_borrows)
@@ -69,7 +71,7 @@ async function borrowed(_, _b, _cb, { api, }) {
   return api.getBalances()
 }
 
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
   const SIENNA_SINGLE_SIDED_POOLS = [
     { address: "secret1ja57vrpqusx99rgvxacvej3vhzhh4rhlkdkd7w", version: 1 },
     { address: "secret109g22wm3q3nfys0v6uh7lqg68cn6244n2he4t6", version: 2 },

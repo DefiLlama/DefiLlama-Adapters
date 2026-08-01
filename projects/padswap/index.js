@@ -17,12 +17,12 @@ const PADSWAP_MOONBEAM_FACTORY_ADDRESS =
 
 module.exports = {
   hallmarks: [
-    [1659312000,"Nomad Bridge Exploit"],
+    ['2022-08-01',"Nomad Bridge Exploit"],
   ],
   methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/ and https://movr-info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
   misrepresentedTokens: true,
   bsc: {
-    tvl: getUniTVL({ chain: 'bsc', factory: PADSWAP_BSC_FACTORY_ADDRESS, useDefaultCoreAssets: true, blacklistedTokens: ['0xcdb943908de5ee37998a53f23467017d1a307e60'], }), 
+    tvl: getUniTVL({ factory: PADSWAP_BSC_FACTORY_ADDRESS, useDefaultCoreAssets: true, blacklistedTokens: ['0xcdb943908de5ee37998a53f23467017d1a307e60'], }), 
     staking: stakings(
       [
         TOAD_FARM_ADDRESS,
@@ -34,9 +34,9 @@ module.exports = {
     ),
   },
   moonriver: {
-    tvl: getUniTVL({ chain: 'moonriver', factory: PADSWAP_MOONRIVER_FACTORY_ADDRESS, useDefaultCoreAssets: true, }), 
+    tvl: getUniTVL({ factory: PADSWAP_MOONRIVER_FACTORY_ADDRESS, useDefaultCoreAssets: true, }), 
   },
   moonbeam: {
-    tvl: getUniTVL({ chain: 'moonbeam', factory: PADSWAP_MOONBEAM_FACTORY_ADDRESS, useDefaultCoreAssets: true, }),
+    tvl: getUniTVL({ factory: PADSWAP_MOONBEAM_FACTORY_ADDRESS, useDefaultCoreAssets: true, }),
   }
 };

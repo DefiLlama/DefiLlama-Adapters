@@ -1,3 +1,0 @@
-{
-  "getGlobalStatistics": "function getGlobalStatistics() view returns (uint256, uint256)"
-}

@@ -1,5 +1,0 @@
-{
-  "poolLength": "uint256:poolLength",
-  "wantLockedTotal": "uint256:wantLockedTotal",
-  "poolInfo": "function poolInfo(uint256) view returns (address want, uint256 allocPoint, uint256 lastRewardTime, address strategy, uint256 earlyWithdrawFee, uint256 earlyWithdrawTime)"
-}

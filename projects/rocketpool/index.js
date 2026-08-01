@@ -1,156 +1,77 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk")
-const abi = require('./abi.json')
 
-const rocketMinipoolManager = '0x6293B8abC1F36aFB22406Be5f96D893072A8cF3a'
-const rocketVault = '0x3bDC69C4E5e13E52A65f5583c23EFB9636b469d6'
-const rocketNodeStaking_contract = '0x3019227b2b8493e45Bf5d25302139c9a2713BF15'
+const ETH = ADDRESSES.null
+const RPL = '0xd33526068d116ce69f19a9ee46f0bd304f21a51f'
 
-const weth = ADDRESSES.ethereum.WETH
-const rpl = '0xd33526068d116ce69f19a9ee46f0bd304f21a51f'
+// Rocket Pool Saturn contract addresses (resolved from RocketStorage 0x1d8f8f00cfa6758d7bE78336684788Fb0ee0Fa46)
+const contracts = {
+  rocketTokenRETH:       ADDRESSES.ethereum.RETH,
+  rocketDepositPool:     '0xCE15294273CFb9D9b628F4D61636623decDF4fdC',
+  rocketMinipoolManager: '0xe54B8C641fd96dE5D6747f47C19964c6b824D62C',
+  rocketNodeManager:     '0xcf2d76A7499d3acB5A22ce83c027651e8d76e250',
+  rocketMegapoolFactory: '0xD5bffeaa9f373B9C367132772FAA0b88e3F0E38b',
+  rocketNodeStaking:     '0xedFc7DCaE43fF954577a2875a9D805874490eE3E',
+}
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  // Get ETH staked for rETH, which is given by users and Node Operators
-  // Also get RPL staked by Node Operators to spin up a node
+const abi = {
+  depositPoolGetBalance:   'function getBalance() view returns (uint256)',
+  getStakingMinipoolCount: 'function getStakingMinipoolCount() view returns (uint256)',
+  getTotalStakedRPL:       'function getTotalStakedRPL() view returns (uint256)',
+  getNodeCount:            'function getNodeCount() view returns (uint256)',
+  getNodeAt:               'function getNodeAt(uint256) view returns (address)',
+  getMegapoolDeployed:     'function getMegapoolDeployed(address) view returns (bool)',
+  getExpectedAddress:      'function getExpectedAddress(address) view returns (address)',
+  getActiveValidatorCount: 'function getActiveValidatorCount() view returns (uint32)',
+  getUserQueuedCapital:    'function getUserQueuedCapital() view returns (uint256)',
+  getNodeQueuedBond:       'function getNodeQueuedBond() view returns (uint256)',
+}
 
-  // Get minipool count per status
-  let offset = 0
-  const limit = 400, statusesCount = 5
-  let minipool_count_per_status = new Array(statusesCount).fill(0);
-  while (true) {  // eslint-disable-line
-    const {output: activeMinipoolCount} = await sdk.api.abi.call({ 
-      target: rocketMinipoolManager,
-      params: [offset, limit],
-      abi: abi['rocketMinipoolManager.getMinipoolCountPerStatus'],
-      block: ethBlock,
-      chain: 'ethereum'
-    })
-    const activeMinipoolCount_arr = [...Array(statusesCount).keys()].map(i => activeMinipoolCount[i.toString()])
-    minipool_count_per_status = minipool_count_per_status.map((sum, idx) => sum + parseInt(activeMinipoolCount[idx]))
-    if (activeMinipoolCount_arr.reduce((a, b)=> a + parseInt(b), 0) < limit) { break; }
-    offset += limit
-  }
+// Idle ETH: rETH withdrawal reserve + deposit pool awaiting staking
+const addIdleEth = async (api) => {
+  await api.sumTokens({ tokens: [ETH], owners: [contracts.rocketTokenRETH] })
+  const depositPoolBal = await api.call({ target: contracts.rocketDepositPool, abi: abi.depositPoolGetBalance })
+  api.add(ETH, depositPoolBal)
+}
+
+// Staked ETH in legacy minipools (32 ETH each)
+const addLegacyMinipoolEth = async (api) => {
+  const count = await api.call({ target: contracts.rocketMinipoolManager, abi: abi.getStakingMinipoolCount })
+  api.add(ETH, Number(count) * 32 * 1e18)
+}
+
+// Staked ETH in megapools
+const addMegapoolEth = async (api) => {
+  const nodes = await api.fetchList({ target: contracts.rocketNodeManager, lengthAbi: abi.getNodeCount, itemAbi: abi.getNodeAt })
+  const deployed = await api.multiCall({ target: contracts.rocketMegapoolFactory, abi: abi.getMegapoolDeployed, calls: nodes.map(n => ({ params: [n] })) })
+  const deployedNodes = nodes.filter((_, i) => deployed[i])
+  if (deployedNodes.length === 0) return
+
+  const megapools = await api.multiCall({ target: contracts.rocketMegapoolFactory, abi: abi.getExpectedAddress, calls: deployedNodes.map(n => ({ params: [n] })) })
   
-  // Get ETH and RPL balance of multiple rocketpool contracts as well as RPL staked
-  const [
-    {output: rocketDepositPoolBalance}, 
-    {output: rocketTokenRETHBalance}, 
-    {output: totalRPLStake}, 
-    {output: rocketDAONodeTrustedActions_rplBalance}, 
-    {output: rocketAuctionManager_rplBalance}
-  ] = await Promise.all([ 
-    sdk.api.abi.call({
-      target: rocketVault,
-      params: ['rocketDepositPool'],
-      abi: abi['rocketVault.balanceOf'],
-      block: ethBlock,
-      chain: 'ethereum'
-    }), 
-    sdk.api.abi.call({
-      target: rocketVault,
-      params: ['rocketTokenRETH'],
-      abi: abi['rocketVault.balanceOf'],
-      block: ethBlock,
-      chain: 'ethereum'
-    }), 
-    sdk.api.abi.call({
-      target: rocketNodeStaking_contract,
-      abi: abi['rocketNodeStaking.getTotalRPLStake'],
-      block: ethBlock,
-      chain: 'ethereum'
-    }), 
-    sdk.api.abi.call({ 
-      target: rocketVault,
-      params: ['rocketDAONodeTrustedActions', rpl],
-      abi: abi['rocketVault.balanceOfToken'],
-      block: ethBlock,
-      chain: 'ethereum'
-    }), 
-    sdk.api.abi.call({ 
-      target: rocketVault,
-      params: ['rocketAuctionManager', rpl],
-      abi: abi['rocketVault.balanceOfToken'],
-      block: ethBlock,
-      chain: 'ethereum'
-    }), 
+  const [activeCounts, userQueued, nodeQueued] = await Promise.all([
+    api.multiCall({ calls: megapools, abi: abi.getActiveValidatorCount }),
+    api.multiCall({ calls: megapools, abi: abi.getUserQueuedCapital }),
+    api.multiCall({ calls: megapools, abi: abi.getNodeQueuedBond }),
   ])
 
-  // ETH staked in Rocketpool pools
-  const unmatched_minipools = minipool_count_per_status[0] * 16 // Unmatched minipools
-  const pending_minipools = minipool_count_per_status[1] * 32 // Pending minipools (matched but not staking yet)
-  const staking_minipools = minipool_count_per_status[2] * 32 // Staking minipools
-  const withdrawable_minipools = minipool_count_per_status[3] * 32 // Withdrawable minipools
-  // Deposit pool balance
-  // rocketDepositPool_balance = solidity.to_float(rp.call("rocketDepositPool.getBalance"))
-  // rETH collateral from withdrawn minipools
-  // rETH_collateral_from_withdrawn_minipools = solidity.to_float(w3.eth.getBalance(rp.get_address_by_name("rocketTokenRETH")))
+  megapools.forEach((_, i) => {
+    const staked = Number(activeCounts[i]) * 32 * 1e18 - Number(userQueued[i]) - Number(nodeQueued[i])
+    if (staked > 0) api.add(ETH, staked)
+  })
+}
 
-  const ETH_TVL = staking_minipools
-          + pending_minipools
-          + unmatched_minipools
-          + withdrawable_minipools
-          + parseFloat(rocketDepositPoolBalance) / 1e18
-          + parseFloat(rocketTokenRETHBalance) / 1e18
+const tvl = async (api) => {
+  await addIdleEth(api)
+  await addLegacyMinipoolEth(api)
+  await addMegapoolEth(api)
+}
 
-  // RPL staked
-  // rpl_tvl += "rocketNodeStaking.getTotalRPLStake")) // RPL staked by Node Operators
-  // rpl_tvl += solidity.to_float(rp.call("rocketVault.balanceOfToken", "rocketDAONodeTrustedActions", rpl)) // RPL bonded by the oDAO
-  // rpl_tvl += solidity.to_float(rp.call("rocketVault.balanceOfToken", "rocketAuctionManager", rpl)) // slashed RPL that hasn't been auctioned off yet
-  const RPL_tvl = parseFloat(totalRPLStake) + parseFloat(rocketDAONodeTrustedActions_rplBalance) + parseFloat(rocketAuctionManager_rplBalance)
-
-// pending_minipools: ${pending_minipools}
-// unmatched_minipools: ${unmatched_minipools}
-// withdrawable_minipools: ${withdrawable_minipools}
-// rocketDepositPoolBalance: ${rocketDepositPoolBalance / 1e18}
-// rocketTokenRETHBalance: ${rocketTokenRETHBalance / 1e18}
-// = ETH_TVL: ${ETH_TVL}\n
-// rocketNodeStaking.getTotalRPLStake: ${totalRPLStake/1e18}
-// rocketDAONodeTrustedActions_rplBalance: ${rocketDAONodeTrustedActions_rplBalance/1e18}
-// rocketAuctionManager_rplBalance: ${rocketAuctionManager_rplBalance/1e18}
-// = RPL_tvl: ${RPL_tvl/1e18}\n`) 
-
-  const balances = {
-    [weth]: ETH_TVL * 1e18, 
-    [rpl]: RPL_tvl
-  }
-  return balances
+const staking = async (api) => {
+  const totalRPL = await api.call({ target: contracts.rocketNodeStaking, abi: abi.getTotalStakedRPL })
+  api.add(RPL, totalRPL)
 }
 
 module.exports = {
-  methodology: "Rocketpool TVL is ethereum staked by the users and node operators - collateral provided against rETH - staked on beacon chain 32 * activeMinipoolCount + RPL staked by Node Operators to operate a node.",
-  ethereum: {
-    tvl,
-  },
+  methodology: 'TVL = idle ETH (rETH reserve + deposit pool) + staked ETH',
+  ethereum: { tvl, staking },
 }
-
-/*
-New Rocketpool TVL computation from tvl bot
-minipool_count_per_status = call mulitple times rp.call("rocketMinipoolManager.getMinipoolCountPerStatus", offset, limit)
-
-# staking minipools
-eth_tvl += minipool_count_per_status[2] * 32
-# pending minipools (matched but not staking yet)
-eth_tvl += minipool_count_per_status[1] * 32
-# unmatched minipools
-eth_tvl += minipool_count_per_status[0] * 16
-# withdrawable minipools
-eth_tvl += minipool_count_per_status[3] * 32
-# deposit pool balance
-eth_tvl += solidity.to_float(rp.call("rocketDepositPool.getBalance"))
-# rETH collateral from withdrawn minipools
-eth_tvl += solidity.to_float(w3.eth.getBalance(rp.get_address_by_name("rocketTokenRETH")))
-
-# staked RPL
-rpl_tvl += solidity.to_float(rp.call("rocketNodeStaking.getTotalRPLStake")))
-# RPL bonded by the oDAO
-rpl_tvl += solidity.to_float(rp.call("rocketVault.balanceOfToken", "rocketDAONodeTrustedActions", rpl_address))
-# slashed RPL that hasn't been auctioned off yet
-rpl_tvl += solidity.to_float(rp.call("rocketVault.balanceOfToken", "rocketAuctionManager", rpl_address))
-
-// rocketDAONodeTrustedActions is RPL bonded by the oDAO Member. Rocketpool team considers them users, as they are independent entities. These Bonds can be slashed if the oDAO Member miss behaves. rocketAuctionManager is slashed RPL that hasn't been sold by the protocol yet. They consider it TVL because its RPL that will be sold for ETH and kept as additional rETH collateral
-
-
-Previous incomplete simpler TVL: 
- - ETH locked in the deposit contract, which would be 32 * rocketMinipoolManager.getActiveMinipoolCount 
- - RPL locked by Node Operators rocketNodeStaking.getTotalRPLStake
-*/

@@ -27,7 +27,7 @@ const config = {
 module.exports = {
   doublecounted: true,
   hallmarks: [
-    [1674475200,"$oLIT Rewards Start"]
+    ['2023-01-23',"$oLIT Rewards Start"]
   ],
 };
 
@@ -37,7 +37,7 @@ const eventAbi = 'event NewBunni (address indexed  token, bytes32 indexed  bunni
 Object.keys(config).forEach(chain => {
   const { lens, fromBlock, factory } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       const logs = await getLogs({
         api,

@@ -1,9 +1,13 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+  "depositId": "uint256:depositId",
+  "lockedToken": "function lockedToken(uint256) view returns (address tokenAddress, address withdrawalAddress, uint256 tokenAmount, uint256 unlockTime, bool withdrawn)",
+  "symbol": "string:symbol"
+};
 const { pool2s } = require("../helper/pool2");
 const { getUniqueAddresses } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache")
-const { vestingHelper,  } = require("../helper/unknownTokens")
+const { vestingHelper, } = require("../helper/unknownTokens")
 
 const project = 'bulky/deeplock'
 
@@ -102,7 +106,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    pool2: pool2s(stakingPool2Contracts, lpAddresses, "bsc"),
+    pool2: pool2s(stakingPool2Contracts, lpAddresses),
     tvl: bscTvl,
   },
   methodology:

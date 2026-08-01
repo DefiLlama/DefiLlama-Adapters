@@ -1,9 +1,20 @@
-const { cachedGraphQuery } = require('../helper/cache')
-const { getLogs } = require('../helper/cache/getLogs')
+const { cachedGraphQuery, graphFetchById } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const graphs = {
   ethereum:
-    "https://graph-node.mainnet.termfinance.io/subgraphs/name/term-finance-mainnet",
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-mainnet/latest/gn",
+  avax:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-avalanche/latest/gn",
+  base:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-base/latest/gn",
+  plasma:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-plasma/latest/gn",
+  arbitrum:
+    "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-arbitrum/latest/gn",
+  // bsc has no repo/auction deployments (vaults-only chain)
+  // bsc:
+  //   "https://api.subgraph.ormilabs.com/api/public/05e9a4e2-103b-4163-a81e-3b1b038d0055/subgraphs/term-finance-bnb/latest/gn",
 };
 
 const query = `
@@ -15,63 +26,103 @@ query poolQuery($lastId: ID) {
       term_: { delisted: false }
     }
   ) {
+    id
     term { termRepoLocker }
     collateralToken
   }
 }`
 
-const borrowedQuery = `
-query auctionsQuery($lastId: ID) {
-  termAuctions(
+// The TermRepoLocker also holds purchase tokens: lender offers locked during a
+// live auction, and repaid loans awaiting lender redemption after maturity.
+const repoQuery = `
+query repoQuery($lastId: ID) {
+  termRepos(
     first: 1000,
     where: {
       id_gt: $lastId,
+      delisted: false,
     }
   ) {
     id
-    auction
-    term {
-      purchaseToken
-    }
+    termRepoLocker
+    purchaseToken
   }
 }`
 
-const startBlock = 16380765;
-const emitters = {
-  "ethereum": [
-    "0x9D6a563cf79d47f32cE46CD7b1fb926eCd0f6160",  // 0.2.4
-    "0xf268E547BC77719734e83d0649ffbC25a8Ff4DB3",  // 0.4.1
-    "0xc60e0f5cD9EE7ACd22dB42F7f56A67611ab6429F",  // 0.6.0
-  ],
-};
+const borrowedQuery = `
+query borrowedQuery($lastId: ID, $block: Int) {
+  termRepoExposures(
+    where: {
+      repoExposure_gt: 0,
+      id_gt: $lastId,
+    },
+    first: 1000,
+    block: {
+      number: $block
+    }
+  ) {
+    id
+    term {
+      purchaseToken
+    }
+    repoExposure
+  }
+}`
+
+const borrowedQueryHeadBlock = `
+query borrowedQuery($lastId: ID) {
+  termRepoExposures(
+    where: {
+      repoExposure_gt: 0,
+      id_gt: $lastId,
+    },
+    first: 1000
+  ) {
+    id
+    term {
+      purchaseToken
+    }
+    repoExposure
+  }
+}`
+
+const graphStartBlock = {
+  ethereum: 5240462,
+  avax: 43162227,
+  base: 30797402,
+  plasma: 1390659,
+  bsc: 54505207,
+  arbitrum: 359134348,
+}
 
 module.exports = {
-  methodology: `Counts the collateral tokens locked in Term Finance's term repos.`,
-  // hallmarks: [[1588610042, "TermFinance Launch"]],
+  methodology: `Counts tokens held by Term Finance's term repo lockers: collateral backing open loans, plus purchase tokens locked as auction offers or repaid and awaiting lender redemption.`,
+  // hallmarks: [['2020-05-04', "TermFinance Launch"]],
 };
 
 Object.keys(graphs).forEach(chain => {
   const host = graphs[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
+      // Auctions/Repos TVL
       const data = await cachedGraphQuery(`term-finance-${chain}`, host, query, { fetchById: true })
-      return api.sumTokens( { tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker])})
+      const repos = await cachedGraphQuery(`term-finance-repos-${chain}`, host, repoQuery, { fetchById: true })
+      const tokensAndOwners = data.map(i => [i.collateralToken, i.term.termRepoLocker])
+      repos.filter(i => i.termRepoLocker).forEach(i => tokensAndOwners.push([i.purchaseToken, i.termRepoLocker]))
+      return sumTokens2({ api, tokensAndOwners, permitFailure: true })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
-      const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
+    borrowed: async (api) => {
+      let data
+      if (!api.block) {
+        data = await graphFetchById({ endpoint: host, query: borrowedQueryHeadBlock, api, useBlock: false })
+      } else if (api.block >= graphStartBlock[chain]) {
+        data = await graphFetchById({ endpoint: host, query: borrowedQuery, api, useBlock: true, params: { block: api.block } })
+      } else {
+        data = []
+      }
 
-      for (const eventEmitter of emitters[chain] ?? []) {
-        const logs = await getLogs({
-          api,
-          target: eventEmitter,
-          eventAbi: 'event BidAssigned(bytes32 termAuctionId, bytes32 id, uint256 amount)',
-          onlyArgs: true,
-          fromBlock: startBlock,
-        })
-        for (const { termAuctionId, amount } of logs) {
-          const { term: { purchaseToken } } = data.find(i => i.id === termAuctionId)
-          api.add(purchaseToken, amount)
-        }
+      for (const { term: { purchaseToken }, repoExposure } of data) {
+        api.add(purchaseToken, repoExposure)
       }
 
       return api.getBalances()

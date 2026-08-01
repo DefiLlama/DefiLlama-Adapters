@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
-  async function tvl(_, _b, _cb, { api, }) {
+  async function tvl(api) {
     const { factories } = config[api.chain]
     const pools = []
     await Promise.all(factories.map(async (factory) => {
@@ -41,7 +41,7 @@ function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
     })
   }
 
-  async function borrowed(_, _b, _cb, { api, }) {
+  async function borrowed(api) {
     const { factories } = config[api.chain]
     const balances = {}
     const borrowables = []
@@ -69,9 +69,23 @@ function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
       calls: borrowables
     })
 
+    // think these have lot of bad debt
+    const blacklistedBorrowables = new Set([
+      '0x5990Ddc40b63D90d3B783207069F5b9A8b661C1C',
+      '0xec51a9f0dc97563147fb89176047283b9ae4cca9',
+      '0x93e3AF1734fB1BfeCfcB07Ea574438f84C8f0f5E',
+      '0xfCF859324183DDBa27d3eAB78206eed1499511a5', 
+    ].map(a => a.toLowerCase()))
+
+    const blacklistedTokens = new Set([
+      '0xC5e2B037D30a390e62180970B3aa4E91868764cD', // Tarot
+      '0xb7C2ddB1EBAc1056231ef22c1b0A13988537a274', // Tarot
+      '0xfb98b335551a418cd0737375a2ea0ded62ea213b',// Lot of MAI pools have bad debt, ignoring it
+    ].map(a => a.toLowerCase()))
+
     underlyings.forEach((v, i) => {
-      // Lot of MAI pools have bad debt, ignoring it
-      if (v.toLowerCase() !== '0xfb98b335551a418cd0737375a2ea0ded62ea213b') {
+
+      if (!blacklistedTokens.has(v.toLowerCase()) && !blacklistedBorrowables.has(borrowables[i].toLowerCase())) {
         sdk.util.sumSingleBalance(balances, v, borrowed[i], api.chain)
       }
     })

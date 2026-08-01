@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = await tvlV1(api)
   return tvlV2(api, balances)
 }
@@ -47,7 +47,7 @@ async function tvlV2(api, balances = {}) {
   return sumTokens2({ balances, tokensAndOwners: collateralTokens.map((t, i) => ([t, leveragePools[i]])), api })
 }
 
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
   const stk = await api.call({
     target: "0x1e93b54AC156Ac2FC9714B91Fa10f1b65e2daFD9",
     abi: "uint256:totalStaked"
@@ -60,12 +60,11 @@ async function staking(_, _b, _cb, { api, }) {
 
 module.exports = {
   doublecounted: true,
-  start: 6965653,
   avax: {
     tvl,
     staking
   },
-  hallmarks: [
-    [Math.floor(new Date('2022-12-24') / 1e3), 'Both v1 & v2 exploited'],
-  ],
+  // hallmarks: [
+  //   ['2022-12-24', 'Both v1 & v2 exploited'],
+  // ],
 };

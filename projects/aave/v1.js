@@ -17,7 +17,7 @@ async function getV1Assets(lendingPoolCore, block, chain) {
     return reserves
 }
 
-const ethReplacement = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+const ethReplacement = ADDRESSES.GAS_TOKEN_2
 
 async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block, chain, eth) {
     const reserves = await getV1Assets(lendingPoolCore, block, chain);
@@ -39,7 +39,7 @@ async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block, chain,
 }
 
 async function depositMultiMarketV1Tvl(balances, lendingPoolCore, block, chain, eth) {
-    const reserves = (await getV1Assets(lendingPoolCore, block, chain)).filter(reserve => reserve !== ethReplacement);
+    const reserves = (await getV1Assets(lendingPoolCore, block, chain)).filter(reserve => reserve.toLowerCase() !== ethReplacement.toLowerCase());
 
     sdk.util.sumSingleBalance(balances, eth, (await sdk.api.eth.getBalance({ target: lendingPoolCore, block, chain })).output)
 

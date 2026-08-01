@@ -1,27 +1,62 @@
-const { ibcChains, getUniqueAddresses} = require('./tokenMapping')
+const { ibcChains, getUniqueAddresses } = require('./tokenMapping')
 const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
+const { svmChains, svmChainsSet, } = require('./svmChainConfig')
 const sdk = require('@defillama/sdk')
+const { RateLimiter } = require("limiter");
+
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const helpers = {
   "eos": require("./chain/eos"),
   "ton": require("./chain/ton"),
   "ergo": require("./chain/ergo"),
   "elrond": require("./chain/elrond"),
-  "cardano":require("./chain/cardano"),
-  "algorand":require("./chain/algorand"),
-  "cosmos":require("./chain/cosmos"),
-  "solana":require("./solana"),
-  "aptos":require("./chain/aptos"),
-  "tezos":require("./chain/tezos"),
-  "zilliqa":require("./chain/zilliqa"),
-  "near":require("./chain/near"),
-  "bitcoin":require("./chain/bitcoin"),
-  "litecoin":require("./chain/litecoin"),
-  "polkadot":require("./chain/polkadot"),
-  "hedera":require("./chain/hbar"),
-  "stacks":require("./chain/stacks"),
-  "starknet":require("./chain/starknet"),
+  "cardano": require("./chain/cardano"),
+  "algorand": require("./chain/algorand"),
+  "cosmos": require("./chain/cosmos"),
+  "solana": require("./solana"),
+  "aptos": require("./chain/aptos"),
+  "sui": require("./chain/sui"),
+  "tezos": require("./chain/tezos"),
+  "zilliqa": require("./chain/zilliqa"),
+  "near": require("./chain/near"),
+  "bitcoin": require("./chain/bitcoin"),
+  "litecoin": require("./chain/litecoin"),
+  "dash": require("./chain/dash"),
+  "polkadot": require("./chain/polkadot"),
+  "acala": require("./chain/acala"),
+  "bifrost": require("./chain/bifrost"),
+  "aelf": require("./chain/aelf"),
+  "aeternity": require("./chain/aeternity"),
+  "alephium": require("./chain/alephium"),
+  "hedera": require("./chain/hbar"),
+  "stacks": require("./chain/stacks"),
+  "starknet": require("./chain/starknet"),
+  "brc20": require("./chain/brc20"),
+  "doge": require("./chain/doge"),
+  "bittensor": require("./chain/bittensor"),
+  "fuel": require("./chain/fuel"),
+  "radixdlt": require("./chain/radixdlt"),
+  "stellar": require("./chain/stellar"),
+  "aleo": require("./chain/aleo"),
+  "qubic": require("./chain/qubic"),
+  "constellation": require("./chain/constellation"),
+  "supra": require("./chain/supra"),
+}
+
+svmChains.forEach(chain => {
+  helpers[chain] = helpers.solana
+})
+
+
+// some chains support both evm & non-evm, this is to handle if address provided is not evm
+const altEVMHelper = {
+  "astar": require("./chain/astar"),
+  "evmos": helpers.cosmos,
 }
 
 const geckoMapping = {
@@ -43,24 +78,35 @@ async function getBalance(chain, account) {
 }
 
 function sumTokensExport(options) {
-  return async (_, _b, _cb, { api }) => sumTokens(
+  return async (api) => sumTokens(
     { ...api, api, ...options }
   )
 }
 
 async function sumTokens(options) {
-  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, api } = options 
+  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, api } = options
   if (api && !specialChains.includes(chain)) {
     chain = api.chain
   }
+  if (chain === 'bsc' && (owners[0] ?? '').startsWith('bnb')) chain = 'bep2'
 
   if (token) tokens = [token]
   if (owner) owners = [owner]
+  const evmAddressExceptions = new Set(['tron', 'xdc'])
+  const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
+  const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
 
-  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain))
+  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
+    if (nonEvmOwnerFound) throw new Error('chain handler missing: ' + chain)
     return sumTokensEVM(options)
+  }
 
-  owners = getUniqueAddresses(owners, chain)
+
+  if (!isAltEvm)
+    owners = getUniqueAddresses(owners, chain)
+  else
+    owners = [...new Set(owners)] // retain case sensitivity
+
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   if (!['eos'].includes(chain))
     tokens = getUniqueAddresses(tokens, chain).filter(t => !blacklistedTokens.includes(t))
@@ -68,7 +114,7 @@ async function sumTokens(options) {
   if (!tokensAndOwners.length) {
     if (!owners.length && owner)
       owners = [owner]
-    
+
     tokensAndOwners = tokens.map(t => owners.map(o => ([t, o]))).flat()
   }
 
@@ -76,26 +122,38 @@ async function sumTokens(options) {
   options.owners = owners
   options.tokens = tokens
   options.blacklistedTokens = blacklistedTokens
-  let helper = helpers[chain]
+  let helper = helpers[chain] || altEVMHelper[chain]
 
-  if (ibcChains.includes(chain)) helper = helpers.cosmos
+  if (ibcChains.includes(chain) && nonEvmOwnerFound) helper = helpers.cosmos
 
-  if(helper) {
-    switch(chain) {
-      case 'cardano':
-      case 'solana': return helper.sumTokens2(options)
+  if (helper) {
+
+    if (svmChainsSet.has(chain)) {
+      return helper.sumTokens2(options)
+    }
+
+    switch (chain) {
+      case 'cardano': return helper.sumTokens2(options);
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;
     }
 
-    return helper.sumTokens(options)
+    const balances = await helper.sumTokens(options)
+
+    if (chain === 'bitcoin' && options.includeBRC20) {
+      options.balances = balances
+      return helpers.brc20.sumTokens(options)
+    }
+    return balances
+
   } else if (!specialChains.includes(chain)) {
+    if (ibcChains.includes(chain)) return sumTokensEVM(options)
     throw new Error('chain handler missing!!!')
   }
 
   const geckoId = geckoMapping[chain]
   const balanceArray = await Promise.all(owners.map(i => getBalance(chain, i)))
-  sdk.util.sumSingleBalance(balances,geckoId,balanceArray.reduce((a, i) => a + +i, 0))
+  sdk.util.sumSingleBalance(balances, geckoId, balanceArray.reduce((a, i) => a + +i, 0))
   return balances
 
   function getUniqueToA(toa, chain) {
@@ -104,14 +162,54 @@ async function sumTokens(options) {
   }
 }
 
-async function getRippleBalance(account) {
+// limit it to 3 calls every 5 seconds
+const rippleApiLimiter = new RateLimiter({ tokensPerInterval: 3, interval: 5_000 });
+const rippleApiWithLimiter = (fn, tokensToRemove = 1) => async (...args) => {
+  await rippleApiLimiter.removeTokens(tokensToRemove);
+  return fn(...args);
+}
+
+const getRippleBalance = rippleApiWithLimiter(_getRippleBalance)
+
+async function _getRippleBalance(account) {
   const body = { "method": "account_info", "params": [{ account }] }
+  await sleep(500);
   const res = await post('https://s1.ripple.com:51234', body)
+  if (res.result.error === 'actNotFound' || res.result.error === 'actMalformed') return 0
   return res.result.account_data.Balance / 1e6
+}
+
+async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
+
+  if (Array.isArray(whitelistedTokens) && whitelistedTokens.length)
+    whitelistedTokens = new Set(whitelistedTokens.map(i => i.toLowerCase()))
+  const body = {
+    "method": "account_lines",
+    "params": [{
+      account,
+      ledger_index: "validated"
+    }]
+  }
+  await sleep(500);
+  const res = await post('https://s1.ripple.com:51234', body)
+  if (res.result.error === 'actNotFound') return {}
+
+
+  // Add token balances
+  if (res.result.lines) {
+    res.result.lines.forEach(line => {
+      const tokenKey = `${line.currency}.${line.account}`
+      if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
+      api.add(tokenKey, parseFloat(line.balance))
+    })
+  }
+
+  return api.getBalances()
 }
 
 module.exports = {
   nullAddress,
   sumTokensExport,
   sumTokens,
+  addRippleTokenBalance,
 }

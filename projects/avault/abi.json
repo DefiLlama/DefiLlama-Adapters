@@ -1,7 +1,0 @@
-{
-  "wantAddress": "address:wantAddress",
-  "wantLockedTotal": "uint256:wantLockedTotal",
-  "name": "string:name",
-  "token0": "address:token0",
-  "token1": "address:token1"
-}

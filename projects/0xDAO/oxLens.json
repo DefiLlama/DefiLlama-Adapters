@@ -1,4 +1,0 @@
-{
-  "oxPoolsAddresses": "address[]:oxPoolsAddresses",
-  "oxPoolsData": "function oxPoolsData(address[] _oxPoolsAddresses) view returns (tuple(address id, address stakingAddress, uint256 stakedTotalSupply, uint256 totalSupply, tuple(address id, string symbol, bool stable, address token0Address, address token1Address, address gaugeAddress, address bribeAddress, address[] bribeTokensAddresses, address fees, uint256 totalSupply) poolData)[])"
-}

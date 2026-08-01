@@ -1,7 +1,7 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { nullAddress } = require("../helper/tokenMapping");
 
-async function tvl(timestamp, blockHeight, _2, { api }) {
+async function tvl(api) {
   const batonFactory = "0xEB8D09235255b37fBC810df41Fa879225c04639a";
 
   // get all the farms from the factory
@@ -16,9 +16,9 @@ async function tvl(timestamp, blockHeight, _2, { api }) {
   });
 
   // filter any farms where the reward token is not fractional nfts or the underlying pair is not paired with eth
-  let filteredLogs = logs.filter(i => i.farmType === 2)
+  let filteredLogs = logs.filter(i => Number(i.farmType || i[6]) === 2)
   const baseTokens = await api.multiCall({ abi: 'address:baseToken', calls: filteredLogs.map(i => i.pairAddress) })
-  const filteredFarms = filteredLogs.filter((i, idx) => baseTokens[idx] = nullAddress)
+  const filteredFarms = filteredLogs.filter((i, idx) => baseTokens[idx] === nullAddress)
 
   const farms = filteredFarms.map(i => i.farmAddress)
   const pairs = filteredFarms.map(i => i.pairAddress)
@@ -36,7 +36,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "Sums the total staked in baton farms and the total amount of tokens deposited as yield farming rewards.",
-  start: 17411300,
   ethereum: {
     tvl
   }

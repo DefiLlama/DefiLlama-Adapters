@@ -4,7 +4,7 @@ const sdk = require("@defillama/sdk");
 
 module.exports = {
   ethereum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const balances = {};
 
       const addressMap = address[api.chain];
@@ -57,6 +57,37 @@ module.exports = {
 
       nftBalance.forEach((d, i) => {
         sdk.util.sumSingleBalance(balances, nftList[i], d, api.chain);
+      });
+
+      return balances;
+    },
+  },
+  apechain: {
+    tvl: async (api) => {
+      const balances = {};
+
+      const addressMap = address[api.chain];
+
+      const nftList = [addressMap.BAYC, addressMap.MAYC, addressMap.BAKC];
+
+      const [apeCoinBalance, nftBalance] = await Promise.all([
+        api.call({
+          abi: abi.BendCoinPool.totalAssets,
+          target: addressMap.BendCoinPool,
+        }),
+        api.multiCall({
+          abi: abi.ERC721.balanceOf,
+          calls: nftList.map((nft) => ({
+            target: nft,
+            params: [addressMap.NftVault],
+          })),
+        }),
+      ]);
+
+      sdk.util.sumSingleBalance(balances, addressMap.WAPE, apeCoinBalance, api.chain)
+
+      nftBalance.forEach((d, i) => {
+        sdk.util.sumSingleBalance(balances, nftList[i], d, api.ethereum);
       });
 
       return balances;

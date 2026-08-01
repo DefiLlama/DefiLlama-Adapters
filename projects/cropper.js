@@ -1,11 +1,9 @@
-const { getTokenBalance, getConnection, exportDexTVL, } = require("./helper/solana");
+const { getConnection, exportDexTVL, sumTokens2, } = require("./helper/solana");
 const { PublicKey } = require('@solana/web3.js')
 const DEX_PROGRAM_ID = 'CTMAxxk34HjKWxQ3QLZK1HpaLXmBveao3ESePXbiyfzh'
 
 async function fetchStaking() {
-  return {
-    cropperfinance: await getTokenBalance('DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz', '5mEH7a7abQwUEXqfusVepc3z9cHVQg8uhqTXdq47J91o')
-  };
+  return sumTokens2({ owners: ['5mEH7a7abQwUEXqfusVepc3z9cHVQg8uhqTXdq47J91o'] });
 }
 
 async function getTokenAccounts() {
@@ -35,4 +33,4 @@ module.exports = {
     tvl: exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts),
     staking: fetchStaking
   }
-};  // node test.js projects/cropper.js
+}
