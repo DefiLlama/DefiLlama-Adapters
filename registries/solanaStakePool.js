@@ -107,6 +107,10 @@ const configs = {
   'blazestake': {
     solana: { type: 'staked', address: '6WecYymEARvjG5ZyqkrVQ6YkhPfujNzWpSPwNKXHCbV2' },
   },
+  'raiku-staked-sol': {
+    methodology: "TVL is the total amount of SOL staked in the Raiku rkuSOL stake pool.",
+    solana: 'ERhozr6u9drmAANXGRNP1oh3quSqPKEwioKH5b8v9Kkt',
+  },
 }
 
 module.exports = buildProtocolExports(configs, solanaStakePoolExportFn)
