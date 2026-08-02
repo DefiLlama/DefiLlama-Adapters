@@ -127,7 +127,3 @@ module.exports = {
   ],
   // deadFrom: '2023-07-12',  // project was abandoned
 }
-
-module.exports.clv.tvl = () => ({})
-module.exports.fusion.tvl = () => ({})
-module.exports.kardia.tvl = () => ({})

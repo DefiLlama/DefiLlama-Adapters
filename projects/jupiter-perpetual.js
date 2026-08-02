@@ -42,7 +42,7 @@ module.exports = {
   hallmarks: [
     ['2024-01-29',"launch jup exchange"]
   ],
-  timetravel: false,
+  timetravel: true,
   methodology:
     "TVL sums each Custody's tokenAccount SPL balance (LP liquidity plus trader collateral held in the same custody token account) plus Custody.totalStakedAmountLamports (the SOL custody's natively-staked portion held in Solana stake accounts). Borrowed is Custody.debt/1e9 per asset — USDC lent out to JLP-loan borrowers, fully collateralized by JLP, reported separately.",
   solana: {

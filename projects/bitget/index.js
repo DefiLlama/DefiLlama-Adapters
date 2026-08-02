@@ -89,6 +89,7 @@ const config = {
       "0xec96bbbe895301710a89a06546264ebb4f0cc546",
       "0x95ccca6d1859ae5670c2213940c96dcb2e177fcb",
       "0x26209d9f0dc3ac0129c3fb1badabfeb9ee728c66",
+      "0xadfffc33cdc9970349cbcea3d73ec343d6ed116d",
     ],
     blacklistedTokens: [
       "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
@@ -204,6 +205,12 @@ const config = {
       "4S8C1yrRZmJYPzCqzEVjZYf6qCYWFoF7hWLRzssTCotX",
       "7TWnq4WeYcwQWBCwKeEX2Q9xqVtthPGkB7adNvueuVuh",
       "EPxGiguU5j5tKFnMQpzMrzczEQ5NRtLWrpG9fADvtadX",
+      "8ZPaybdHeNwpoxmU1ALcbLoE3eK443Jq4emk82VCscag",
+    ],
+  },
+  doge: {
+    owners: [
+      'DTHZron9cR6WstH6VcdsVZwSbVDEnFKkGQ',
     ],
   },
   metis: {

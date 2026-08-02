@@ -8,7 +8,7 @@
 
 2. Once your adapter has been merged, it takes time to show on the UI. If more than 24 hours have passed, please let us know in Discord.
 3. Sorry, We no longer accept fetch adapter for new projects, we prefer the tvl to computed from blockchain data, if you have trouble with creating a the adapter, please hop onto our discord, we are happy to assist you.
-4. **For updating listing info** It is a different repo, you can find your listing in [this file](https://github.com/DefiLlama/defillama-server/blob/master/defi/src/protocols/data2.ts), you can edit it there and put up a PR
+4. **For updating listing info** Please send a mail to metadata@defillama.com
 5. Please do not add new npm dependencies, do not edit/push `pnpm-lock.yaml` file as part of your changes
 
 ---

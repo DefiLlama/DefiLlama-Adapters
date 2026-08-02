@@ -49,6 +49,7 @@ const COMPOUND_POOLS = {
     'Steakhouse Prime Instant USDT': '0xbeef003C68896c7D2c3c60d363e8d71a49Ab2bf9',
     'Sky.money USDT Risk Capital': '0x2bD3A43863c07B6A01581FADa0E1614ca5DF0E3d',
     'Steakhouse High Yield Instant USDT': '0xbeeff07d991C04CD640DE9F15C08ba59c4FEDEb7',
+    'Gauntlet EURC Core V2': '0x842A84Df61DbE701c5dAE345F3f8E64aF727E48C',
   };
 
   // Fluid (Ethereum mainnet)
@@ -58,6 +59,14 @@ const COMPOUND_POOLS = {
     'WETH - Leveraged': '0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78',
     wstETH: '0x2411802D8BEA09be0aF8fD8D08314a63e706b29C',
     USDT: '0x5C20B550819128074FD538Edf79791733ccEdd18',
+  };
+
+
+  // Superform (Ethereum mainnet)
+  const SUPERFORM_POOLS = {
+    'Flagship WETH SuperVault': '0xa036823b9a24f63c32553367bf181ee04229c3ac', 
+    'Flagship USDC SuperVault': '0xf6ebea08a0dfd44825f67fa9963911c81be2a947',
+    'Flagship WBTC SuperVault': '0x8c365af7094eaac29314edee577b435892ca93a3'
   };
   
   // Dolomite (Ethereum mainnet)
@@ -100,6 +109,7 @@ const COMPOUND_POOLS = {
     ...Object.values(WASABI_POOLS),
     ...Object.values(YEARN_VAULTS),
     ...Object.values(YO_PROTOCOL_VAULTS),
+    ...Object.values(SUPERFORM_POOLS),
   ];
   
   module.exports = {

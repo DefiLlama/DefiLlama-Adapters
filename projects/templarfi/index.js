@@ -11,7 +11,7 @@ const CALL_TIMEOUT_MS = 30000
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
-// These are proxy oracles, adapters and deleted test markets
+// These are proxy oracles, gov proxies, adapters, price feeds and deleted test markets
 const CONTRACTS_TO_SKIP = new Set([
   'liqtest-ixlm-ixlmusdc.v1.tmplr.near',
   'proxy-oracle-ixlmcetes-ixlmusdc.v1.tmplr.near',
@@ -24,7 +24,24 @@ const CONTRACTS_TO_SKIP = new Set([
   'proxy-oracle-ixrp-ixlmusdc.v1.tmplr.near',
   'proxy-oracle-izec-ixlmusdc.v1.tmplr.near',
   'proxy-oracle-linear-usdt.v1.tmplr.near',
-  'proxy-oracle-stnear-usdt.v1.tmplr.near'
+  'proxy-oracle-stnear-usdt.v1.tmplr.near',
+  'proxy-oracle-ixlm-ixlmusdc-1.v1.tmplr.near',
+  'proxy-oracle-iethhemibtc-iethusdc.v1.tmplr.near',
+  'proxy-oracle-iethwbtc-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-ibtc-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-ixlmcetes-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-ixlmustry-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-iethhemibtc-iethusdc.v1.tmplr.near',
+  'proxy-gov-iada-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-ixlm-ixlmusdc-1.v1.tmplr.near',
+  'proxy-gov-ixrp-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-izec-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-iethwbtc-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-linear-usdt.v1.tmplr.near',
+  'proxy-gov-stnear-usdt.v1.tmplr.near',
+  'proxy-gov-idoge-ixlmusdc.v1.tmplr.near',
+  'proxy-gov-iltc-ixlmusdc.v1.tmplr.near',
+  'pyth-lazer.v1.tmplr.near',
 ]);
 
 const FAST_FAIL_PATTERNS = ['does not exist', 'Buffer', 'Received undefined']

@@ -1,5 +1,9 @@
-const abi = require("./abi.js");
 const { getLogs2 } = require('../helper/cache/getLogs');
+
+const abi = {
+  totalSupply: "function totalSupply() view returns (uint256)",
+  asset: "function asset() view returns (address)",
+};
 
 const vaults = Object.values({
   STREAMUSD_WRAPPER_CONTRACT: "0x6eAf19b2FC24552925dB245F9Ff613157a7dbb4C",

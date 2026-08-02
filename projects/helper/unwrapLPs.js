@@ -10,7 +10,7 @@ const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray, slee
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const uniV3ABI = require('./abis/uniV3.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
-const { covalentGetTokens, } = require("./token");
+const { covalentGetTokens, blockscoutGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
 const { tickToPrice } = require('./utils/tick');
 const { queryAllium } = require('./allium');
@@ -326,6 +326,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], api, own
         case 'flare': nftAddress = '0xD9770b1C7A6ccd33C75b5bcB1c0078f46bE46657'; break;
         case 'hyperliquid': nftAddress = '0x6eDA206207c09e5428F281761DdC0D300851fBC8'; break;
         case 'unichain': nftAddress = '0x943e6e07a7E8E791dAFC44083e54041D743C46E9'; break;
+        case 'stable': nftAddress = '0x3BdC3437405f7D801b6036532713fc1F179136a6'; break; // stableswap
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
@@ -357,6 +358,9 @@ async function unwrapUniswapV3NFT({
   uniV3ExtraConfig = {},
   isAlgebra = false,
 }) {
+  if (!balances) balances = api.getBalances()
+
+
   const chain = api.chain
 
   const blacklistedPools = (uniV3ExtraConfig.blacklistedPools ?? []).map(i => i.toLowerCase())
@@ -961,8 +965,10 @@ async function sumTokens2({
   resolveVlCVX = false,
   permitFailure = false,
   fetchCoValentTokens = false,
+  fetchBlockscoutTokens = false,
   tokenConfig = {
     // onlyWhitelisted
+    // onlyUseExistingCache
   },
   sumChunkSize = undefined,
   uniV3ExtraConfig = {
@@ -1045,6 +1051,11 @@ group by
   if (fetchCoValentTokens && useCurrentBalances) {
     const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, tokenConfig))))
     cTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
+  }
+
+  if (fetchBlockscoutTokens) {
+    const bTokens = await Promise.all(owners.map(i => blockscoutGetTokens(i, api, tokenConfig)))
+    bTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
   }
 
   if (resolveNFTs) {
@@ -1346,8 +1357,43 @@ async function unwrapStakewiseDeposits({ api, owners = [], vault = '0xAC0F906E43
   assets.forEach(a => api.add(nullAddress, a))
 }
 
+const DOLOMITE_MARGIN = {
+  ethereum: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  arbitrum: '0x6Bd780E7fDf01D77e4d475c821f1e7AE05409072',
+  berachain: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  mantle: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  polygon_zkevm: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  xlayer: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+}
+
+const DOLOMITE_GET_ACCOUNT_BALANCES_ABI = 'function getAccountBalances((address owner, uint256 number) account) view returns (uint256[], address[], (bool sign, uint128 value)[], (bool sign, uint256 value)[])'
+
+// unwraps dolomite deposits, pass either `accounts` (list of [owner, accountNumber]) or `owner`/`owners` with a shared `accountNumber`
+async function unwrapDolomiteDeposits({ api, accounts = [], owner, owners = [], accountNumber = 0, dolomiteMargin, onlyPositive = true, }) {
+  const margin = dolomiteMargin ?? DOLOMITE_MARGIN[api.chain]
+  if (!margin) throw new Error('unwrapDolomiteDeposits: missing dolomiteMargin for chain ' + api.chain)
+  if (owner) owners = [...owners, owner]
+  accounts = [...accounts, ...owners.map(i => [i, accountNumber])]
+
+  const res = await api.multiCall({
+    abi: DOLOMITE_GET_ACCOUNT_BALANCES_ABI,
+    target: margin,
+    calls: accounts.map(([owner, number]) => ({ params: [[owner, number]] })),
+  })
+
+  res.forEach(({ [1]: tokens, [3]: weis }) => {
+    tokens.forEach((token, i) => {
+      const { sign, value } = weis[i]
+      if (onlyPositive && !sign) return  // negative balance = borrow
+      api.add(token, sign ? value : -value)
+    })
+  })
+  return api.getBalances()
+}
+
 module.exports = {
   PANCAKE_NFT_ADDRESS,
+  unwrapDolomiteDeposits,
   unwrapUniswapLPs,
   unwrapSlipstreamNFT,
   unwrapUniswapV3NFT,

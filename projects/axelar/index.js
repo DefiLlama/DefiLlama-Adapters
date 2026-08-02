@@ -10,7 +10,7 @@ const chainMapping = {
   bsc: 'binance'
 };
 
-const blackListChains = ['comdex', 'crescent'];
+const blackListChains = ['comdex', 'crescent', 'evmos', 'kujira', 'migaloo' ];
 const chainListSupply = [
   'agoric', 
   'archway', 
@@ -102,7 +102,3 @@ module.exports.timetravel = false;
 module.exports.ripple = {
   tvl: sumTokensExport({ owner: 'rfmS3zqrQrka8wVyhXifEeyTwe8AMz2Yhw'})
 }
-
-// dead chain
-module.exports.migaloo = { tvl: () => {} };
-module.exports.kujira = { tvl: () => {} };

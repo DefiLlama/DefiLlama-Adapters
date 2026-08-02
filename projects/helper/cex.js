@@ -122,7 +122,38 @@ const defaultTokens = {
     ADDRESSES.bsc.USD1, //USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
     '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
-    '0x1b66474c8eca3827f16202907f41f63785579716' // exchange token for weex, 
+    '0x1b66474c8eca3827f16202907f41f63785579716', // exchange token for weex, 
+    '0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3', //ondo
+    '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', //shib
+    '0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b', //funktoken
+    '0x8947da500Eb47F82df21143D0C01A29862a8C3c5', //thales
+    '0xA2120b9e674d3fC3875f415A7DF52e382F141225', //ATA
+    '0x430ef9263e76dae63c84292c3409d61c598e9682', //pyr
+    '0xac57de9c1a09fec648e93eb98875b212db0d460b', //babydoge
+    '0xd2ba23de8a19316a638dc1e7a9adda1d74233368', //quick
+    '0x455e53cbb86018ac2b8092fdcd39d8444affc3f6', //pol
+    '0x1ffEFD8036409Cb6d652bd610DE465933b226917', //ever
+    '0x163f8c2467924be0ae7b5347228cabf260318753', //wld
+    '0xf230b790E05390FC8295F4d3F60332c93BEd42e2', //trx
+    '0xb3999F658C0391d94A37f7FF328F3feC942BcADC', // HFT
+    '0xac51066d7bec65dc4589368da368b212745d63e8', // ALICE
+    '0x3429d03c6F7521AeC737a0BBF2E5ddcef2C3Ae31', // PIXEL
+    '0x467719aD09025FcC6cF6F8311755809d45a5E5f3', //WAXL
+    '0xaaa9214f675316182eaa21c85f0ca99160cc3aaa', //QANX
+    '0x7448c7456a97769f6cd04f1e83a4a23ccdc46abd', //MAV
+    '0x14778860e937f509e651192a90589de711fb88a9', //CYBER
+    '0x137dDB47Ee24EaA998a535Ab00378d6BFa84F893', //RDNT
+    '0xb50721bcf8d664c30412cfbc6cf7a15145234ad1', //ARB
+    '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F', //SNX
+    '0x6985884C4392D348587B19cb9eAAf157F13271cd', //ZRO
+    '0x44ff8620b8ca30902395a7bd3f2407e1a091bf73', //VIRTUAL
+    '0x6e15a54b5ecac17e58dadeddbe8506a7560252f9', //F
+    '0x4dc26fc5854e7648a064a4abd590bbe71724c277', //ANIME
+    '0xe6bfd33f52d82ccb5b37e16d3dd81f9ffdabb195', //SXT
+    '0x868fced65edbf0056c4163515dd840e9f287a4c3', //SIGN
+    '0x000000fa00b200406de700041cfc6b19bbfb4d13', //TOWNS
+    '0x8408d45b61f5823298f19a09b53b7339c0280489', //ALLO
+    '0x031de51f3e8016514bd0963d0b2ab825a591db9a', //ESP
   ],
   tron: [
     nullAddress,
@@ -132,6 +163,7 @@ const defaultTokens = {
     ADDRESSES.tron.TUSD,
     'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
     'TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6', // HTX
+    'TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc', //USD1
   ],
   polygon: [
     nullAddress,
@@ -150,7 +182,15 @@ const defaultTokens = {
   solana: [
     ADDRESSES.solana.USDC, // USDC
     ADDRESSES.solana.USDT, // USDT
-    'gtBTCGWvSRYYoZpU9UZj6i3eUGUpgksXzzsbHk2K9So'
+    'gtBTCGWvSRYYoZpU9UZj6i3eUGUpgksXzzsbHk2K9So',
+    '9PR7nCP9DpcUotnDPVLUBUZKu5WAYkwrCUx9wDnSpump', // ban
+    '61V8vBaqAGMpgDQi4JcAwo1dmBGHsyhzodcPqnEVpump', //arc
+    'FeR8VBqNRSUD5NtXAj2n3j1dAHkZHfyDktKuLXD4pump', //jelyjely
+    'XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1', // CRCLX
+    '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump', //fartcoin
+    '9zNQRsGLjNKwCUU5Gq5LR8beUCPzQMVMqKAi3SSZh54u', //FDUSD
+    'USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB', //USD1
+    'WLFinEv6ypjkczcS83FZqFpgFZYwQXutRbxGe7oC16g', //WLFI
   ],
   bsc: [
     nullAddress,
@@ -193,6 +233,23 @@ const defaultTokens = {
     ADDRESSES.bsc.USD1, // USD1
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',  //GTBTC
     '0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16',  //MYX
+    '0xcf3232b85b43bca90e51d38cc06cc8bb8c8a3e36', //beat
+    '0x208bf3e7da9639f1eaefa2de78c23396b0682025', // tag
+    '0x8b194370825e37b33373e74a41009161808c1488', // velvet
+    '0x0f0df6cb17ee5e883eddfef9153fc6036bdb4e37', // bas
+    '0x000ae314e2a2172a039b26378814c252734f556a', // aster
+    '0x92aa03137385f18539301349dcfc9ebc923ffb10', // skyai
+    '0x4bfaa776991e85e5f8b1255461cbbd216cfc714f', //HOME
+    '0x111111111117dc0aa78b770fa6a738034120c302', //1INCH
+    '0x8b1f4432f943c465a973fedc6d7aa50fc96f1f65', //WAXL
+    '0x7324c7C0d95CEBC73eEa7E85CbAac0dBdf88a05b', //XCN
+    '0x14778860E937f509e651192a90589dE711Fb88a9', //CYBER
+    '0xf7DE7E8A6bd59ED41a4b5fe50278b3B7f31384dF', //RDNT
+    '0xc9ccbd76c2353e593cc975f13295e8289d04d3bb', // F
+    '0x59264f02d301281f3393e1385c0aefd446eb0f00', // PARTI
+    '0x868fced65edbf0056c4163515dd840e9f287a4c3', //SIGN
+    '0x47474747477b199288bf72a1d702f7fe0fb1deea', //WLFI
+    '0xcce5f304fd043d6a4e8ccb5376a4a4fb583b98d5', //ALLO
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -238,7 +295,8 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.linea.USDT, //bridge usdt
     ADDRESSES.linea.USDC, //usdc bridge
-    ADDRESSES.linea.DAI //dai bridge
+    ADDRESSES.linea.DAI, //dai bridge
+    '0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f', // WAXL
   ],
   flare: [
     nullAddress,
@@ -251,18 +309,14 @@ const defaultTokens = {
   ],
   moonbeam: [
     nullAddress,
-    ADDRESSES.telos.USDT, //usdt
     "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
   ],
   moonriver: [
     nullAddress,
-    ADDRESSES.moonriver.USDT, //usdt
   ],
   kava: [
     nullAddress,
-    ADDRESSES.kava.USDT,
     ADDRESSES.kava.USDt,
-    ADDRESSES.kava.USDC
   ],
   cronos: [
     nullAddress,
@@ -283,7 +337,8 @@ const defaultTokens = {
     ADDRESSES.aptos.APT,
     ADDRESSES.aptos.USDC,
     ADDRESSES.aptos.USDT,
-    ADDRESSES.aptos.USDt
+    ADDRESSES.aptos.USDt,
+    '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US' // US
   ],
   mantle: [
     nullAddress,
@@ -324,10 +379,26 @@ const defaultTokens = {
 }
 
 function cexExports(config) {
+  // bitcoin can be passed as a key string (or { key }) that is looked up in the
+  // bitcoin addressbook and converted to the appropriate export, e.g. bitcoin: 'korbit'
+  let btcExport
+  if (config.bitcoin !== undefined) {
+    const btcKey = typeof config.bitcoin === 'string'
+      ? config.bitcoin
+      : (config.bitcoin && typeof config.bitcoin.key === 'string' ? config.bitcoin.key : undefined)
+    if (btcKey) {
+      const { getBTCExport } = require('./bitcoin-book/index.js')
+      btcExport = getBTCExport(btcKey)
+      config = { ...config }
+      delete config.bitcoin
+    }
+  }
+
   const chains = Object.keys(config).filter(i => i !== 'bep2')
   const exportObj = {
     timetravel: false,
   }
+  if (btcExport) exportObj.bitcoin = { tvl: btcExport }
   chains.forEach(chain => {
     let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = config[chain]
 

@@ -1,6 +1,12 @@
 const ethers = require('ethers')
+const { PublicKey } = require('@solana/web3.js')
+const { Program } = require('@project-serum/anchor')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
+const { getProvider, getConnection, decodeAccount, getAssociatedTokenAddress } = require('../helper/solana')
+const { getUniqueAddresses } = require('../helper/tokenMapping')
+const { sliceIntoChunks } = require('../helper/utils')
+const idl = require('./idl.json')
 
 // based.bid contract addresses on each supported chain
 const BASED_BID = {
@@ -46,6 +52,19 @@ const WRAPPED_NATIVE = {
   base:     ADDRESSES.base.WETH,
   megaeth:  ADDRESSES.megaeth.ETH,
 }
+
+const SOL_PROGRAM_ID = new PublicKey('CuodpYRDz4k87K6ZUFxk7X8JkVv5dNVZAcTQX2TEzTef')
+const SOL_APP_STORAGE = new PublicKey('VNRAfUMxvfeirwB1spXd78qGev5h2z8wWBd3Kay19ns')
+const METEORA_DAMM_V2 = new PublicKey('cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG')
+const RAYDIUM_CLMM = new PublicKey('CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK')
+const SOL_USD1 = 'USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB'
+const METEORA_DEX = 1
+
+const TRACKED_TOKENS_SOL = [
+  ADDRESSES.solana.SOL,
+  ADDRESSES.solana.USDC,
+  SOL_USD1,
+]
 
 const PANCAKE_V3_NFT = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
 
@@ -281,30 +300,224 @@ async function unwrapPancakeInfinityCL(api, positionIds) {
 }
 
 async function tvl(api) {
-  const chain = api.chain
-  const owner = BASED_BID[chain]
+  const owner = BASED_BID[api.chain]
 
-  // 1. Native coin + stablecoins held directly by based.bid.
-  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[chain] || [] })
+  // Native coin + stablecoins held directly by based.bid.
+  await sumTokens2({ api, owner, tokens: TRACKED_TOKENS[api.chain] || [] })
+}
 
-  // 2. Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager).
-  for (const nftAddress of UNIV3_LIKE_NFTS[chain] || []) {
+async function pool2(api) {
+  const owner = BASED_BID[api.chain]
+
+  // Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager).
+  for (const nftAddress of UNIV3_LIKE_NFTS[api.chain] || []) {
     await sumTokens2({ api, owner, uniV3ExtraConfig: { nftAddress } })
   }
 
-  // 3. Uniswap V4 + PancakeSwap Infinity CL — position managers and tokenIds
-  //    come from the based.bid registry (meme + flash launch pools).
+  // Uniswap V4 + PancakeSwap Infinity CL — position managers and tokenIds
+  // come from the based.bid registry (meme + flash launch pools).
   const { uniV4ByNft, pcsInfinityIds } = await collectV4PositionsFromContract(api)
   await unwrapUniV4Positions(api, uniV4ByNft)
   await unwrapPancakeInfinityCL(api, pcsInfinityIds)
 }
 
+function deriveMeteoraPositionPda(nftMint) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('position'), new PublicKey(nftMint).toBuffer()],
+    METEORA_DAMM_V2,
+  )[0]
+}
+
+function readPubkey(data, offset) {
+  return new PublicKey(data.subarray(offset, offset + 32))
+}
+
+function readU128LE(data, offset) {
+  return BigInt(`0x${data.subarray(offset, offset + 16).reverse().toString('hex')}`)
+}
+
+function readU64LE(data, offset) {
+  return BigInt(data.readBigUInt64LE(offset))
+}
+
+function decodeMeteoraPosition(data) {
+  if (data.length < 200) return null
+  const pool = readPubkey(data, 8)
+  const unlocked = readU128LE(data, 152)
+  const vested = readU128LE(data, 168)
+  const permanent = readU128LE(data, 184)
+  const liquidity = unlocked + vested + permanent
+  if (liquidity <= 0n) return null
+  return { pool, liquidity }
+}
+
+function decodeMeteoraPool(data) {
+  if (data.length < 696) return null
+  const tokenAMint = readPubkey(data, 168)
+  const tokenBMint = readPubkey(data, 200)
+  const poolLiquidity = readU128LE(data, 360)
+  const tokenAAmount = readU64LE(data, 680)
+  const tokenBAmount = readU64LE(data, 688)
+  if (poolLiquidity <= 0n) return null
+  return { tokenAMint, tokenBMint, poolLiquidity, tokenAAmount, tokenBAmount }
+}
+
+function allocateShare(amount, shareNum, shareDen) {
+  if (shareDen <= 0n || amount <= 0n) return 0n
+  return (amount * shareNum) / shareDen
+}
+
+async function addMeteoraPositions(api, lockPdas) {
+  const meteoraLocks = lockPdas.filter((l) => Number(l.account.dex) === METEORA_DEX && l.account.feeNftMint)
+  if (!meteoraLocks.length) return
+
+  const connection = getConnection()
+  const positionPdas = meteoraLocks.map((l) => deriveMeteoraPositionPda(l.account.feeNftMint))
+  const positions = await connection.getMultipleAccountsInfo(positionPdas)
+
+  const poolIds = []
+  const decodedPositions = []
+  positions.forEach((acc, i) => {
+    if (!acc?.data) return
+    const pos = decodeMeteoraPosition(acc.data)
+    if (!pos) return
+    decodedPositions.push(pos)
+    poolIds.push(pos.pool)
+  })
+  if (!decodedPositions.length) return
+
+  const poolAccounts = await connection.getMultipleAccountsInfo(poolIds)
+  poolAccounts.forEach((acc, i) => {
+    if (!acc?.data) return
+    const pool = decodeMeteoraPool(acc.data)
+    const pos = decodedPositions[i]
+    if (!pool || !pos) return
+
+    const shareNum = pos.liquidity
+    const shareDen = pool.poolLiquidity
+    const amountA = allocateShare(pool.tokenAAmount, shareNum, shareDen)
+    const amountB = allocateShare(pool.tokenBAmount, shareNum, shareDen)
+    if (amountA > 0n) api.add(pool.tokenAMint.toBase58(), amountA.toString())
+    if (amountB > 0n) api.add(pool.tokenBMint.toBase58(), amountB.toString())
+  })
+}
+
+function getClmmPositionPda(nftMint) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('position'), nftMint.toBuffer()],
+    RAYDIUM_CLMM,
+  )[0]
+}
+
+async function addRaydiumClmmPositions(api, lockPdas) {
+  const nftMints = lockPdas
+    .filter((l) => Number(l.account.dex) !== METEORA_DEX && l.account.feeNftMint)
+    .map((l) => l.account.feeNftMint)
+
+  if (!nftMints.length) return
+
+  const connection = getConnection()
+  const positionPdas = nftMints.map((mint) => getClmmPositionPda(mint))
+  const positions = []
+  const pools = new Map()
+
+  for (const chunk of sliceIntoChunks(positionPdas, 50)) {
+    const accounts = await connection.getMultipleAccountsInfo(chunk)
+    accounts.forEach((account) => {
+      if (!account || account.owner.toBase58() !== RAYDIUM_CLMM.toBase58()) return
+      positions.push(decodeAccount('raydiumPositionInfo', account))
+    })
+  }
+
+  if (!positions.length) return
+
+  const poolIds = getUniqueAddresses(positions.map((p) => p.poolId.toBase58()), 'solana')
+  for (const chunk of sliceIntoChunks(poolIds, 50)) {
+    const poolAccounts = await connection.getMultipleAccountsInfo(chunk.map((i) => new PublicKey(i)))
+    chunk.forEach((poolId, i) => {
+      const poolAccount = poolAccounts[i]
+      if (!poolAccount) return
+      pools.set(poolId, decodeAccount('raydiumCLMM', poolAccount))
+    })
+  }
+
+  positions.forEach((position) => {
+    const poolInfo = pools.get(position.poolId.toBase58())
+    if (!poolInfo) return
+    addUniV3LikePosition({
+      api,
+      token0: poolInfo.mintA.toBase58(),
+      token1: poolInfo.mintB.toBase58(),
+      liquidity: position.liquidity.toNumber(),
+      tickLower: position.tickLower,
+      tickUpper: position.tickUpper,
+      tick: poolInfo.tickCurrent,
+    })
+  })
+}
+
+async function addTreasuryLockBalances(api, treasury, lock) {
+  const connection = getConnection()
+  const owners = [treasury, lock]
+  const splMints = TRACKED_TOKENS_SOL.filter((m) => m !== ADDRESSES.solana.SOL)
+
+  for (const owner of owners) {
+    const lamports = await connection.getBalance(new PublicKey(owner))
+    if (lamports > 0) api.add(ADDRESSES.solana.SOL, lamports)
+  }
+
+  const atas = owners.flatMap((owner) =>
+    splMints.map((mint) => new PublicKey(getAssociatedTokenAddress(mint, owner))),
+  )
+  const accounts = await connection.getMultipleAccountsInfo(atas)
+  accounts.forEach((acc) => {
+    if (!acc) return
+    const { mint, amount } = decodeAccount('tokenAccount', acc)
+    if (+amount > 0) api.add(mint.toBase58(), amount.toString())
+  })
+}
+
+function addBondingCurveReserves(api, memeTokens) {
+  memeTokens.forEach(({ account }) => {
+    if (account.isListed || account.isCancelled) return
+
+    const raised = BigInt(account.virtualReserveSol) - BigInt(account.initialVirtualReserveSol)
+    if (raised <= 0n) return
+
+    const baseMint = account.initialData.baseTokenForPair.toBase58()
+    api.add(baseMint, raised.toString())
+  })
+}
+
+async function solanaTvl(api) {
+  const provider = getProvider()
+  const program = new Program(idl, SOL_PROGRAM_ID, provider)
+
+  const [appStorage, memeTokens] = await Promise.all([
+    program.account.appStorage.fetch(SOL_APP_STORAGE),
+    program.account.memeTokenData.all()
+  ])
+
+  await addTreasuryLockBalances(api, appStorage.treasury, appStorage.lock)
+  addBondingCurveReserves(api, memeTokens)
+}
+
+async function solanaPool2(api) {
+  const provider = getProvider()
+  const program = new Program(idl, SOL_PROGRAM_ID, provider)
+  const lockPdas = await program.account.lockPda.all()
+
+  await addMeteoraPositions(api, lockPdas)
+  await addRaydiumClmmPositions(api, lockPdas)
+}
+
 module.exports = {
+  timetravel: false,
   doublecounted: true,
-  methodology:
-    'TVL is the sum of (1) native coin and USDT/USDC/USD1/wrapped-native balances held by the based.bid contract, plus (2) liquidity in Uniswap V3 and PancakeSwap V3 positions owned by based.bid, plus (3) Uniswap V4 and PancakeSwap Infinity CL positions registered on the based.bid contract and currently owned by based.bid. LP liquidity may also be counted in the underlying DEX TVL.',
-  ethereum: { tvl },
-  bsc:      { tvl },
-  base:     { tvl },
-  megaeth:  { tvl },
+  methodology: 'TVL: (1) native coin and USDT/USDC/USD1/wrapped-native balances at the based.bid contract (EVM) or treasury/lock accounts (Solana), plus (2) active bonding-curve collateral on Solana. pool2: meme coin/native Uniswap V3, Uniswap V4, PancakeSwap V3, and PancakeSwap Infinity CL positions owned by based.bid (EVM), plus Meteora DAMM v2 and Raydium CLMM positions controlled by based.bid lock PDAs (Solana).',
+  ethereum: { tvl, pool2 },
+  bsc:      { tvl, pool2 },
+  base:     { tvl, pool2 },
+  megaeth:  { tvl, pool2 },
+  solana:   { tvl: solanaTvl, pool2: solanaPool2 },
 }

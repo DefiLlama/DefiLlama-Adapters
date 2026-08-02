@@ -3,7 +3,8 @@ const { sumTokensDebank } = require("../helper/debank")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
-const PORTFOLIO_SAFE="0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b"
+const ETH_ALPHA_SAFE = "0x99b9F5F24205Cb88E33b1CC72008f644Fc23768b" // ETH Alpha Fund Portfolio Safe
+const USD_ALPHA_SAFE = "0x38F6a1B46144fAEe6a6D9F79D8dE264C18e23848" // USD Alpha Fund Portfolio Safe
 
 const GearboxCompressorABI = {
   // returns credit managers associated with the given legacy (market) configurators
@@ -36,6 +37,7 @@ const configs = {
         "0x0c6aec603d48eBf1cECc7b247a2c3DA08b398DC1", //Morpho v1 EURC Yield
         "0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8", //Morpho v1 ETH Prime
         "0x4Ef53d2cAa51C447fdFEEedee8F07FD1962C9ee6", //Morpho v2 USDC Prime
+        "0x1a1985F50352b58090eb36425AfdFacbaC7806F4", //Morpho v2 USDC Prime Core
         "0xa877D5bb0274dcCbA8556154A30E1Ca4021a275f", //Morpho v2 EURC Yield
         "0xbb50a5341368751024ddf33385ba8cf61fe65ff9", //Morpho v2 ETH Prime
         "0x5dbf760b4fd0cDdDe0366b33aEb338b2A6d77725", //Morpho v2 ETH Yield
@@ -48,7 +50,8 @@ const configs = {
 
       // Other ERC-4626 vaults (non-Morpho)
       erc4626: [
-        "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245", //kpk RWA Euler USDC Earn
+        "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245", //kpk USDC Prime RWA (Euler Earn)
+        "0xB6D6D89ad4b4D61C15a293e28b74f77F6817fF48", //kpk ETH Yield Term (Euler Earn)
         "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
         "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
       ],
@@ -138,7 +141,7 @@ async function getAlephVaultTvl(api, vaults) {
 }
 
 // ---- kpk Fund (OIV) TVL via DeBank ----
-const OIV_SAFES = [PORTFOLIO_SAFE]
+const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE]
 const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
 
 // ---- Zodiac-managed Safes (Institutional vertical) TVL via DeBank ----

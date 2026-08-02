@@ -83,7 +83,7 @@ async function tvlJupiter(api, jupiterVaults) {
   //  * Jupiter Earn
   // */
   /* 
-    added price support for jupiter earn tokens here: https://github.com/DefiLlama/defillama-server/commit/e496acfb4bec2f8da309da1d18b0f0f9e10cbc3f   
+    added price support for jupiter earn tokens
     */
 }
 

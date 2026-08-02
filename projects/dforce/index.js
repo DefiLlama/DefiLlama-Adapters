@@ -133,29 +133,23 @@ const USXs = {
   "conflux": "0x422a86f57b6b6F1e557d406331c25EEeD075E7aA"
 };
 
-async function getDFStakingValue(block) {
+async function getDFStakingValue(api) {
   // Mainnet DF
   const DF = "0x431ad2ff6a9C365805eBaD47Ee021148d6f7DBe0";
 
-  const { output: stakingExchangeRate } = await sdk.api.abi.call({
-    block,
+  const stakingExchangeRate = await api.call({
     target: dfStakingPools,
     abi: abi["getCurrentExchangeRate"],
-    chain: "ethereum"
   });
 
-  const { output: stakingTotalSupply } = await sdk.api.abi.call({
-    block,
+  const stakingTotalSupply = await api.call({
     target: dfStakingPools,
     abi: abi["totalSupply"],
-    chain: "ethereum"
   });
 
-  const lockedDF = BigNumber(stakingExchangeRate.toString()).times(BigNumber(stakingTotalSupply.toString())).div(BASE);
+  const lockedDF = BigNumber(stakingExchangeRate.toString()).times(BigNumber(stakingTotalSupply.toString())).div(BASE).toFixed(0);
 
-  return {
-    [DF]: lockedDF
-  };
+  api.add(DF, lockedDF);
 }
 
 async function getTVLOfdToken(api) {
@@ -201,8 +195,9 @@ function chainTvl(chain) {
   };
 }
 
-async function staking(timestamp, ethBlock, chainBlocks) {
-  return getDFStakingValue(ethBlock);
+async function staking(api) {
+  await getDFStakingValue(api);
+  return api.getBalances();
 }
 
 const chains = ['ethereum', "bsc", "arbitrum", "optimism", "polygon", "avax", "kava", "conflux"]

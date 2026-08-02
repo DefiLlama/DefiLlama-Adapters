@@ -37,6 +37,7 @@ const blacklistedTokens_default = [
 const whitelistedTokens = {
   solana: [
     ...(Object.values(ADDRESSES.solana)),
+    '72puLt71H93Z9CzHuBRTwFpL4TG3WZUhnoCC7p8gxigu', // USDGO 
   ]
 }
 

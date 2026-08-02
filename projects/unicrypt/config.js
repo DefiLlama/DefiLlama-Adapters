@@ -147,6 +147,20 @@ const ethereumContractData = [
     pool2: [protocolPairs.uncx_WETH],
     isMixedTokenContract: true,
     factory: config.pol.factory
+  },
+  {
+    chain: 'ethereum',
+    contract: '0x59d7d55ddc58494fbbbca29904f108ece82ac7fb',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  },
+  {
+    chain: 'ethereum',
+    contract: '0xd94848bf2aa46409e5fa44c5959677c2aabcbe98',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
   }
 ]
 
@@ -164,6 +178,18 @@ const baseContractData = [
     getNumLockedTokensABI: getNumLockedTokens,
     getLockedTokenAtIndexABI: getLockedTokenAtIndex,
     factory: config.sushiswapV2_base.factory
+  },
+  {
+    chain: 'base',
+    contract: '0x30e522dedffe3e3d11cd53e27d18cd4f016ed870',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+  },
+  {
+    chain: 'base',
+    contract: '0xc84b661e91c578b56790aa8bc241f7ef890e8e57',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
   },
 ]
 
@@ -215,6 +241,27 @@ const bscContractData = [
     getLockedTokenAtIndexABI: getLockedTokenAtIndex,
     pool2: [protocolPairs.uncx_BNB],
     factory: config.babydogeswap.factory
+  },
+  {
+    chain: 'bsc',
+    contract: '0x1398221f7ed0b64a1107d21036256b179b418f7a',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  },
+  {
+    chain: 'bsc',
+    contract: '0x3dd1e6c7f905322136e5df5ecf638059877e0a20',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  },
+  {
+    chain: 'bsc',
+    contract: '0x7229247bd5cf29fa9b0764aa1568732be024084b',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
   }
 ]
 
@@ -227,6 +274,18 @@ const polygonContractData = [
     getLockedTokenAtIndexABI: getLockedTokenAtIndex,
     factory: config.quickswap.factory
   },
+  {
+    chain: 'polygon',
+    contract: '0x1f241ef7e9ecdda8862256fc769fe7ec9240d94c',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+  },
+  {
+    chain: 'polygon',
+    contract: '0x939d71ade0bf94d3f8cf578413bf2a2f248bf58b',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+  },
 ]
 
 
@@ -237,6 +296,18 @@ const avalancheContractData = [
     getNumLockedTokensABI: getNumLockedTokens,
     getLockedTokenAtIndexABI: getLockedTokenAtIndex,
     factory: config.traderjoe.factory
+  },
+  {
+    chain: 'avax',
+    contract: '0xb2b13b648e956b42b1d8c5b2476d87b9cbf48076',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+  },
+  {
+    chain: 'avax',
+    contract: '0x07dd74c2df2bc4eb04cf8edb2f695aa79ba590eb',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
   },
   
 ] 
@@ -259,8 +330,39 @@ const arbitrumContractData = [
     getNumLockedTokensABI: getNumLockedTokens,
     getLockedTokenAtIndexABI: getLockedTokenAtIndex,
     pool2: [],
+  },
+  {
+    chain: 'arbitrum',
+    contract: '0x4d19c218cd2de3261e77e3a4ed80feca8cb4cba6',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  },
+  {
+    chain: 'arbitrum',
+    contract: '0x63f4b2c082b1e0bba38874567e053800379bf8d7',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  },
+  {
+    chain: 'arbitrum',
+    contract: '0xa71182392faaa9a123a9e8120e79515117f05be4',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
   }
 
+]
+
+const optimismContractData = [
+  {
+    chain: 'optimism',
+    contract: '0x5923c3911d9424f7725cad33ed176a6b885484d6',
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  }
 ]
 
 
@@ -272,6 +374,7 @@ module.exports = {
   avalancheContractData,
   gnosisContractData,
   arbitrumContractData,
+  optimismContractData,
   governanceTokens,
   stakingContracts,
   protocolPairs,

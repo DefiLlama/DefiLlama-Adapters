@@ -75,6 +75,9 @@ const configs = {
   'bonk-sol': {
     solana: 'ArAQfbzsdotoKB5jJcZa3ajQrrPcWr2YQoDAEAiFxJAC',
   },
+  'bgsol': {
+    solana: '9qrFrE5qoZ3QfYZrZoeXFNRWfErpjzZKudCAoBTvgKjb',
+  },
   'jpool': {
     methodology: "JSOL total supply as it's equal to the SOL staked",
     solana: 'CtMyWsrUtAwXWiGr9WjHT5fC3p3fgV8cyGpLTo2LJzG1',
@@ -95,10 +98,6 @@ const configs = {
     ],
   },
   // getStakedSol adapters
-  'marinade-select': {
-    methodology: 'We sum the amount of SOL staked by account STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps',
-    solana: { type: 'staked', address: 'STNi1NHDUi6Hvibvonawgze8fM83PFLeJhuGMEXyGps' },
-  },
   'thevault': {
     solana: { type: 'staked', address: 'GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW' },
   },

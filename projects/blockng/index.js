@@ -18,16 +18,16 @@ const coreAssets = [
   ADDRESSES.smartbch.bcUSDT,  // BlockNG pegged USDT
 ]
 
-const masterchefTvl = async (timestamp, ethBlock, { [chain]: block }) => {
+const masterchefTvl = async (api) => {
   const toa = [
     [ADDRESSES.null, '0x896a8ddb5B870E431893EDa869feAA5C64f85978'], // BCH
     [ADDRESSES.smartbch.DAIQUIRI, '0x82112e12533A101cf442ee57899249C719dc3D4c'], // DAIQUIRI
   ]
 
-  return sumUnknownTokens({ chain, block, useDefaultCoreAssets: true, tokensAndOwners: toa, });
+  return sumUnknownTokens({ api, useDefaultCoreAssets: true, tokensAndOwners: toa, });
 }
 
-const pool2 = async (timestamp, ethBlock, { [chain]: block }) => {
+const pool2 = async (api) => {
   const toa = [
     ['0x88b2522b9f9121b3e19a28971a85d34d88e4acc6', '0xe49717403eEa8c9Fa03610Bd9E6df96Ac5066298'], // lawETP-LAW@BEN
     ['0x1d5a7bea34ee984d54af6ff355a1cb54c29eb546', '0xb7Ac725E59860051f77397C14dd8D30d9cb825e6'], // lawUsdfLawLpMist
@@ -36,7 +36,7 @@ const pool2 = async (timestamp, ethBlock, { [chain]: block }) => {
     ['0xd55a9a41666108d10d31baeeea5d6cdf3be6c5dd', '0xCee23c02B819e4B9b6E34753e3c0C7f21c4bC398'], // LAW-BCH@BEN
   ]
 
-  return sumUnknownTokens({ chain, block, useDefaultCoreAssets: true, tokensAndOwners: toa, });
+  return sumUnknownTokens({ api, useDefaultCoreAssets: true, tokensAndOwners: toa, });
 }
 
 
@@ -77,18 +77,9 @@ const civilBeams = async (api) => {
     target: AGG,
     params: [VOTER, LAW, 1, beamCount],
   })
-  const gaugeMapping = {}
-  for (let i = 0; i < allbeamInfo.length; i++) {
-    let { dexFactory, gaugeAddress, lpTokenAddress, } = allbeamInfo[i]
-    dexFactory = dexFactory.toLowerCase()
-    gaugeAddress = gaugeAddress.toLowerCase()
-    lpTokenAddress = lpTokenAddress.toLowerCase()
-    if (dexFactory !== lawswapFactory)
-      gaugeMapping[gaugeAddress] = lpTokenAddress
-  }
-
-  const toa = []
-  Object.entries(gaugeMapping).forEach(([owner, token]) => toa.push([token, owner]))
+  const toa = allbeamInfo
+    .filter(({ dexFactory }) => dexFactory.toLowerCase() !== lawswapFactory)
+    .map(({ lpTokenAddress, gaugeAddress }) => [lpTokenAddress, gaugeAddress])
 
   return sumUnknownTokens({ api, coreAssets, tokensAndOwners: toa, });
 }

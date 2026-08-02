@@ -1,5 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi");
+const abi = {
+  "getLengths": "function getLengths() view returns (uint256, uint256)",
+  "getBToken": "function getBToken(uint256 bTokenId) view returns (tuple(address bTokenAddress, address swapperAddress, address oracleAddress, uint256 decimals, int256 discount, int256 liquidity, int256 pnl, int256 cumulativePnl))",
+  "v3Liquidity": "int256:liquidity"
+};
 
 async function perpetualPool(api, pool) {
   const res = await api.call({ target: pool, abi: abi.getLengths, });
