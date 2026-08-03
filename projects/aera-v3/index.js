@@ -51,7 +51,6 @@ const contracts = {
     },
   };
 const { getLogs } = require('../helper/cache/getLogs')
-const { getFixBalances } = require('../helper/portedTokens')
 
 async function getMultiDepositorVaults(api) {
     const vaults = [];
@@ -107,8 +106,6 @@ async function tvl(api) {
 
         api.add(numeraireToken, numeraireBalance);
     }));
-
-    return getFixBalances(api.chain)(api.getBalances());
 }
 
 module.exports = {
