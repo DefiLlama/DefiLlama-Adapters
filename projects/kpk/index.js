@@ -1,5 +1,7 @@
+const ADDRESSES = require("../helper/coreAssets.json")
 const { getCuratorExport } = require("../helper/curators")
 const { sumTokensDebank } = require("../helper/debank")
+const { unwrapBalancerToken } = require("../helper/unwrapLPs")
 
 // ---- Minimal ABIs / constants from Gearbox v3.1 adapter ----
 const DEFILLAMA_COMPRESSOR_V310 = "0x81cb9eA2d59414Ab13ec0567EFB09767Ddbe897a"
@@ -140,37 +142,224 @@ async function getAlephVaultTvl(api, vaults) {
   }
 }
 
-// ---- kpk Fund (OIV) TVL via DeBank ----
+// ---- kpk Fund (OIV) safes ----
 const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE]
 const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
 
-// ---- Zodiac-managed Safes (Institutional vertical) TVL via DeBank ----
-// Safes owned by external institutions but actively managed by kpk via Zodiac Roles Modifier.
 const ZODIAC_MANAGED_SAFES = [
-  '0x4F2083f5fBede34C2714aFfb3105539775f7FE64', // ENS Endowment Fund
-  '0x616dE58c011F8736fa20c7Ae5352F7f6FB9F0669', // CoW Main Treasury
-  '0x7F8987D6A8bee31bD7bE80E877732579E2582a28', // CoW Defense Fund
-  '0x9009B4411D0e1171cc042b77D7701f46B737Fdb9', // CoW Validator Safe
-  '0x4D1D9D7741740A3E2ffC5507aC643DbA5e81cAe5', // Arbitrum DAO
-  '0x8e53D04644E9ab0412a8c6bd228C84da7664cFE3', // Nexus Mutual
+  '0x4F2083f5fBede34C2714aFfb3105539775f7FE64', // ENS Endowment Fund (eth)
+  '0x616dE58c011F8736fa20c7Ae5352F7f6FB9F0669', // CoW Main Treasury (eth/gnosis/arb/base/polygon)
+  '0x7F8987D6A8bee31bD7bE80E877732579E2582a28', // CoW Defense Fund (eth/gnosis)
+  '0x9009B4411D0e1171cc042b77D7701f46B737Fdb9', // CoW Validator Safe (gnosis)
+  '0x3E2897E71E504B0510Bed7983579280b32ac1CA5', // CoW wallet (eth)
+  '0x523732d31b4432bcdd4baad108f7ebe54ad478b0', // CoW wallet (38M COW) (eth)
+  '0x4D1D9D7741740A3E2ffC5507aC643DbA5e81cAe5', // Arbitrum DAO (arb)
+  '0x8e53D04644E9ab0412a8c6bd228C84da7664cFE3', // Nexus Mutual (eth)
 ]
-const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc', 'polygon']
+const ZODIAC_CHAINS = ['ethereum', 'xdai', 'arbitrum', 'base', 'polygon']
 
-// Returns all kpk curated vaults to use as blacklistedPools in DeBank calls to avoid
-// double counting positions already captured by the curator export's totalAssets()
+// (A) Blacklist the kpk curated vaults — already counted by getCuratorExport's
+// totalAssets(). Safe deposits into these must NOT be recounted here.
 function getCuratedVaults(chain) {
   const cfg = configs.blockchains[chain]
   if (!cfg) return []
   return [...(cfg.morpho || []), ...(cfg.erc4626 || []), ...(cfg.alephVaults || [])]
 }
 
-async function getDebankTvl(api, safes) {
-  await sumTokensDebank(api, safes, { includeWalletTokens: true, blacklistedPools: getCuratedVaults(api.chain) })
+// held directly, added via sumTokens
+const PROTOCOL_TOKENS = {
+  ethereum: [
+    // --- LSD / LRT (ERC20) ---
+    '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84', // stETH
+    '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', // wstETH
+    '0xae78736Cd615f374D3085123A210448E74Fc6393', // rETH
+    '0xA35b1B31Ce002FBF2058D22F30f95D405200A15b', // ETHx
+    '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb', // ankrETH
+    '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', // weETH
+    '0x35fA164735182de50811E8e2E824cFb9B6118ac2', // eETH
+    '0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38', // osETH
+    // --- staked stables (ERC20 / ERC4626) ---
+    '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', // sUSDe (Ethena)
+    '0x1202F5C7b4B9E47a1A484E8B270be34dbbC75055', // stUSR (Resolv)
+    '0x004626A008B1aCdC4c74ab51644093b155e59A23', // stEUR (Angle)
+    '0x83F20F44975D03b1b09e64809B757c47f942BEeA', // sDAI (Maker DSR)
+    '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD', // sUSDS (Sky SSR)
+    '0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d', // stkGHO (Aave Staked GHO)
+    '0xBc65ad17c5C0a2A4D159fa5a503f4992c7B545FE', // Spark USDC Vault
+    '0xdA89af5bF2eb0B225d787aBfA9095610f2E79e7D', // Upshift Resolv USR Maxi
+    '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a', // Pendle PT-USDe-25SEP2025
+    // --- LP / BPT / CoW-AMM (resolveLP) ---
+    '0x05ff47AFADa98a98982113758878F9A8B9FddA0a', // weETH/rETH
+    '0x06966b4Ae338CE20f283086914388133F27D1d3e', // 50wstETH/25WBTC/25SOL (CoW AMM)
+    '0x1e19cf2d73a72ef1332c882f20534b6519be0276', // rETH/WETH
+    '0x32296969ef14eb0c6d29669c550d4a0449130230', // wstETH/WETH
+    '0x41503C9D499ddbd1dCdf818a1b05e9774203Bf46', // wstETH/bb-a-WETH
+    '0x6fF0531EE19272675b3c7d30401A5b2b2C7b0c67', // COW/WETH (CoW AMM)
+    '0x75eB3D7976f0bf848F4Bc22a7563fA50BD73c504', // wstETH/SOL (CoW AMM)
+    '0x85B2b559bC2D21104C4DEFdd6EFcA8A20343361D', // GHO/USDT/USDC (BalancerV3)
+    '0x909d829C549e1f1B04adB939D8a641A256f5fe11', // USDC/WETH (CoW AMM)
+    '0x92762b42a06dcdddc5b7362cfb01e631c4d44b40', // COW/GNO
+    '0x93d199263632a4EF4Bb438F1feB99e57b4b5f0BD', // wstETH/WETH v2
+    '0x9bd702E05B9c97E4A4a3E47Df1e0fe7A0C26d2F1', // COW/wstETH (CoW AMM)
+    '0xDACf5Fa19b1f720111609043ac67A9818262850c', // osETH/WETH
+    '0xa13a9247ea42d743238089903570127dda72fe44', // bb-a-USD
+    '0xbF5e1e2a89312Bc792aFEe22d6bEBdd46Bd1Eae2', // COW/WETH (CoW AMM)
+    '0xc9D5204e7c04A1be300B33E3979479bE75132AC5', // USDC/WETH (CoW AMM)
+    '0xde8c195aa41c11a0c4787372defbbddaa31306d2', // COW/WETH
+    '0xf08D4dEa369C456d26a3168ff0024B904F2d8b91', // USDC/WETH (CoW AMM)
+    '0xf25a3b5A965c59f88873Da93FC2a244B00616Be4', // WBTC/wstETH (CoW AMM)
+    '0xf4c0dd9b82da36c07605df83c8a416f11724d88b', // GNO/WETH
+    '0xfebb0bbf162e64fb9d0dfe186e517d84c395f016', // bb-a-USD v3
+    '0xd321300ef77067D4A868F117d37706EB81368E98', // COW/WETH ReClamm (BalancerV3)
+    '0x06325440D014e39736583c165C2963BA99fAf14E', // Curve stETH/ETH
+    '0xBa3436Fd341F2C8A928452Db3C5A3670d1d5Cc73', // Curve EURA/EURC
+    // --- wallet core + gov ---
+    ADDRESSES.ethereum.WETH,
+    ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDT,
+    ADDRESSES.ethereum.DAI,
+    ADDRESSES.ethereum.WBTC,
+    '0xDEf1CA1fb7FBcDC777520aa7f396b4E015F497aB', // COW
+    '0x6810e776880C02933D47DB1b9fc05908e5386b96', // GNO
+    '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72', // ENS
+    '0x0d438F3b5175Bebc262bF23753C1E53d03432bDE', // wNXM
+  ],
+  xdai: [
+    '0x6C76971f98945AE98dD7d4DFcA8711ebea946eA6', // wstETH (gnosis)
+    '0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445', // sGNO
+    '0xaf204776c7245bF4147c2612BF6e5972Ee483701', // sDAI (Gnosis Savings)
+    '0x4683e340a8049261057D5aB1b29C8d840E75695e', // Balancer wstETH/GNO
+    '0xFEdb19Ec000d38d92Af4B21436870F115db22725', // Balancer bb-ag-USD
+    '0xbAd20c15A773bf03ab973302F61FAbceA5101f0A', // Balancer wstETH/WETH
+    '0x0CA1C1eC4EBf3CC67a9f545fF90a3795b318cA4a', // Curve EURe/WXDAI/USDC/USDT
+    ADDRESSES.xdai.WXDAI,
+    '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb', // GNO (gnosis)
+  ],
+  arbitrum: [
+    '0x10Cab08D1490a56bDa21A191C20771fcB5453F54', // UniV2 COW/WETH
+    '0x940098b108fB7D0a7E374f6eDED7760787464609', // Spark USDC Vault
+    ADDRESSES.arbitrum.WETH,
+    ADDRESSES.arbitrum.USDC_CIRCLE,
+  ],
+  base: [
+    '0x155e0971A2392c446be02373A4F4c8dC4266f015', // Aerodrome WETH/COW
+    '0xFf028c1eC4559d3Aa2B0859AA582925B5Cc28069', // BalancerV3 COW/WETH ReClamm
+    '0x6b2F4eD81Cb5DaAE4aBA9b85D64C00dD3E4605E2', // UniV2 COW/WETH
+    ADDRESSES.base.WETH,
+    ADDRESSES.base.USDC,
+  ],
+  polygon: [
+    ADDRESSES.polygon.WETH,
+    ADDRESSES.polygon.USDC_CIRCLE,
+  ],
+}
+
+async function getSafesTvl(api) {
+  const tokens = PROTOCOL_TOKENS[api.chain]
+  if (!tokens || !tokens.length) return
+  await api.sumTokens({
+    owners: ZODIAC_MANAGED_SAFES,
+    tokens,
+    resolveLP: true,
+    blacklistedTokens: getCuratedVaults(api.chain),
+  })
+}
+
+// Aave v3
+const AAVE_V3_POOLS = {
+  ethereum: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
+  arbitrum: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+  xdai: '0xb50201558B00496A145fE76f7424749556E326D8',
+  base: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5',
+  polygon: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+}
+const AAVE_ACCOUNT_DATA_ABI = 'function getUserAccountData(address user) view returns (uint256 totalCollateralBase, uint256 totalDebtBase, uint256 availableBorrowsBase, uint256 currentLiquidationThreshold, uint256 ltv, uint256 healthFactor)'
+
+async function getAaveV3Tvl(api) {
+  const pool = AAVE_V3_POOLS[api.chain]
+  if (!pool) return
+  const data = await api.multiCall({ target: pool, abi: AAVE_ACCOUNT_DATA_ABI, calls: ZODIAC_MANAGED_SAFES, permitFailure: true })
+  let netUsd = 0
+  for (const d of data) {
+    if (!d) continue
+    const net = (Number(d.totalCollateralBase) - Number(d.totalDebtBase)) / 1e8
+    if (net > 0) netUsd += net
+  }
+  if (netUsd > 0) api.addUSDValue(netUsd)
+}
+
+// StakewiseV3 
+const STAKEWISE_V3_VAULTS = {
+  ethereum: [{ vault: '0xAC0F906E433d58FA868F936E8A43230473652885', asset: ADDRESSES.ethereum.WETH }], // Genesis Vault - ETH
+  xdai: [{ vault: '0x4b4406Ed8659D03423490D8b62a1639206dA0A7a', asset: ADDRESSES.xdai.GNO }],          // Genesis Vault - GNO
+}
+async function getStakewiseV3Tvl(api) {
+  const vaults = STAKEWISE_V3_VAULTS[api.chain]
+  if (!vaults) return
+  for (const { vault, asset } of vaults) {
+    const shares = await api.multiCall({ target: vault, abi: 'function getShares(address) view returns (uint256)', calls: ZODIAC_MANAGED_SAFES, permitFailure: true })
+    let total = 0n
+    for (const s of shares) if (s) total += BigInt(s)
+    if (total === 0n) continue
+    const assets = await api.call({ target: vault, abi: 'function convertToAssets(uint256) view returns (uint256)', params: [total.toString()] })
+    api.add(asset, assets)
+  }
+}
+
+// CompoundV3
+const COMETS = {
+  ethereum: [
+    '0xc3d688B66703497DAA19211EEdff47f25384cdc3', // cUSDCv3
+    '0xA17581A9E3356d9A858b789D68B4d866e593aE94', // cWETHv3
+    '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840', // cUSDTv3
+  ],
+  arbitrum: ['0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf'], // cUSDCv3
+}
+async function getCompoundV3Tvl(api) {
+  const comets = COMETS[api.chain]
+  if (!comets) return
+  for (const comet of comets) {
+    const base = await api.call({ target: comet, abi: 'address:baseToken' })
+    const bals = await api.multiCall({ target: comet, abi: 'erc20:balanceOf', calls: ZODIAC_MANAGED_SAFES, permitFailure: true })
+    for (const b of bals) if (b && b !== '0') api.add(base, b)
+  }
+}
+
+// Aura
+const AURA_BOOSTER = {
+  ethereum: '0xA57b8d98dAE62B26Ec3bcC4a365338157060B234',
+  xdai: '0x98Ef32edd24e2c92525E59afc4475C1242a30184',
+}
+const AURA_POOL_INFO_ABI = 'function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)'
+
+async function unwrapAura(api, rewardPool, owner) {
+  const [supply, staked, bpt] = await api.batchCall([
+    { abi: 'erc20:totalSupply', target: rewardPool },
+    { abi: 'erc20:balanceOf', target: rewardPool, params: owner },
+    { abi: 'address:asset', target: rewardPool },
+  ])
+  if (!staked || +staked === 0) return
+  const vault = await api.call({ abi: 'address:getVault', target: bpt })
+  await unwrapBalancerToken({ api, balancerToken: bpt, owner: vault, isV2: true, extraRatio: Number(staked) / Number(supply) })
+}
+
+async function getAuraTvl(api) {
+  const booster = AURA_BOOSTER[api.chain]
+  if (!booster) return
+  const bpts = new Set((PROTOCOL_TOKENS[api.chain] || []).map((a) => a.toLowerCase()))
+  const len = await api.call({ target: booster, abi: 'function poolLength() view returns (uint256)' })
+  const infos = await api.multiCall({ target: booster, abi: AURA_POOL_INFO_ABI, calls: Array.from({ length: Number(len) }, (_, i) => i) })
+  const rewardPools = infos.filter((i) => i && bpts.has(i.lptoken.toLowerCase())).map((i) => i.crvRewards)
+  for (const rp of rewardPools) {
+    for (const owner of ZODIAC_MANAGED_SAFES) {
+      try { await unwrapAura(api, rp, owner) } catch (e) { /* skip V3/exotic pools that don't unwrap */ }
+    }
+  }
 }
 
 // ---- Combined TVL export per chain ----
 
-const allChains = [...new Set([...Object.keys(configs.blockchains), ...OIV_CHAINS, ...ZODIAC_CHAINS])]
+const allChains = [...new Set([...Object.keys(configs.blockchains), ...ZODIAC_CHAINS])]
 const exportObjects = getCuratorExport(configs)
 
 for (const chain of allChains) {
@@ -187,11 +376,14 @@ for (const chain of allChains) {
       if (hasGearbox) await getGearboxV31Collateral(api, hasGearbox)
       if (hasAleph) await getAlephVaultTvl(api, hasAleph)
 
-      // kpk Fund (OIV) TVL via DeBank
-      if (OIV_CHAINS.includes(chain)) await getDebankTvl(api, OIV_SAFES)
-
-      // Zodiac-managed Safe TVL via DeBank
-      if (ZODIAC_CHAINS.includes(chain)) await getDebankTvl(api, ZODIAC_MANAGED_SAFES)
+      // Zodiac-managed Safe TVL
+      if (ZODIAC_CHAINS.includes(chain)) {
+        await getSafesTvl(api)
+        await getAaveV3Tvl(api)
+        await getStakewiseV3Tvl(api)
+        await getCompoundV3Tvl(api)
+        await getAuraTvl(api)
+      }
     }
   }
 }
