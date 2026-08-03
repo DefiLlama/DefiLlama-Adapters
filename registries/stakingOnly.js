@@ -1393,6 +1393,12 @@ const configs = {
       staking: [["0x3f60C7aa0c36a78D200405feBE143d2Cf3fA0c77"], "0x23113e72165a034265Ab8Bf2277CCB7a85Cb7483"]
     }
   },
+  "tartswap": {
+    "methodology": "Staking counts CREPE deposited in the TartStakingVault contract (single-token, reward-streaming vault funded by protocol swap fees).",
+    "bsc": {
+      staking: [["0x20940d3573F1629F6c5226C2DDa2e9a28b364B33"], "0xeb2B7d5691878627eff20492cA7c9a71228d931D"]
+    }
+  },
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)

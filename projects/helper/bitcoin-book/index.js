@@ -654,6 +654,7 @@ module.exports = {
     "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
     "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
     "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
+    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh"
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
@@ -1166,6 +1167,17 @@ module.exports = {
     '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
     '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
     '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
+  ],
+  subfrost: [
+    // The FROST signer set's taproot output keys that hold the BTC backing frBTC.
+    // Alkanes custody derived from Bitcoin L1 by reading [32:0] opcode 103 (GET_SIGNER) on any metashrew/alkanes node
+    // for the signer's 32-byte internal pubkey, with standard BIP341-tweak (no script tree).
+    "bc1p5lushqjk7kxpqa87ppwn0dealucyqa6t40ppdkhpqm3grcpqvw9s3wdsx7", // Alkanes
+    "bc1pxn3gr0hy70exhdqjzawtuygppzdrk3mer3wlaa2gzkmruk3rrt4qga2qaj", // BRC2.0
+  ],
+  webot: [
+    "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
+    "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
   ],
 };
 

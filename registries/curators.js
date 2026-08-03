@@ -236,7 +236,9 @@ const configs = {
       blockchains: {
         ethereum: {
           euler: [
-            '0xBc79C4DA0452152D2C329ADE328C79705a964CEE'
+            '0xBc79C4DA0452152D2C329ADE328C79705a964CEE',
+            '0x61332fE07Ee0faa8a087ba00f43d581871441139',
+            '0x6876374E4AC054bfCA389109570Ae15b4d25e279',
           ],
         },
       },
@@ -268,6 +270,7 @@ const configs = {
         base: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0x829A13850b684A575C0580a83322890e19c5eFaa',
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
@@ -466,14 +469,13 @@ const configs = {
   "gami-labs": {
     config: {
       methodology:
-        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, Gearbox, and Upshift.",
+        "Count all assets deposited in all vaults curated by Gami Labs",
       blockchains: {
         ethereum: {
           erc4626: [
             // Lagoon
             "0xdae854d0896ad2fee335689a3f7b4a95fd1a3e46", // Lagoon - Gami USDC
             "0x33e1339567c183fbadcb43f72d11c47229d468ab", // Lagoon - Gami Stake DAO USDC
-            "0x414070fb9e64fd69160d75da57e75ba11f9f605a", // Lagoon - Gami WBTC
             "0x57e6824a8b15b709cefb4ccef644ba1349057e77", // Lagoon - xBTCY (cbBTC)
             "0x2a676c2744421b4fae65ce86b47adacb620047d4", // Lagoon - Gami hemiBTC
             "0x2031eceec018549a2c729cacd6c0bfc4be2524ed", // Lagoon - Gami ETH (WETH)
@@ -481,6 +483,14 @@ const configs = {
             "0x09252d2c4afca9b1479efdd39faa53de9ff23114", // Lagoon - Coinshift Leveraged USPC
             // Gearbox
             "0x683faf5bafd88d4c383ccaf3d61c26af2e164409", // Gearbox - Gami WBTC
+          ],
+          midasTokens: [
+            "0xc462f87f78abdd27b1e41c9ede862275d2c7f36b", // Midas - Turtle Huma PST Vault
+          ],
+        },
+        robinhood: {
+          erc4626: [
+            "0xd5c6c79692715145098a65d1eb1f2a10c524f8e8", // T3tris - Gami WBTC
           ],
         },
         base: {
@@ -947,6 +957,14 @@ const configs = {
             '0xBEEf0F82E269760429BE6255Fa00821b7e4b592A', // Steakhouse Prime
           ],
         },
+        robinhood: {
+          morpho: [
+            '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG
+            '0xbEeFF0fb1Dc19344A87b8479dAb60A2e16160737', // Ethena x Steakhouse USDG
+            '0xBEEff039907422219Fb367e525954DDC092854d9', // Grove x Steakhouse USDG
+            '0xbeEfFF136E3684273e6aA75A1669B784B373A4FD', // Steakhouse Turbo USDG
+          ],
+        },
         solana: {
           kaminoLendVaultAdmins: [
             '9ceRgz579BcfWogs3RE11FKNQaWW7Lmtnev3MXspxUjF',
@@ -1028,6 +1046,25 @@ const configs = {
             '0x7d07BFdd01422D7b655B333157eB551B9712dCd8',
           ],
         }
+      }
+    },
+  },
+  "term-finance-parity": {
+    config: {
+      methodology: 'Counts all assets deposited in the Parity vaults on Morpho, curated by Term Finance.',
+      start: '2026-04-23',
+      blockchains: {
+        // Parity vaults: pcUSDC, pcETH, pcHYUSDC
+        ethereum: {
+          morphoVaultOwners: [
+            '0xbfFcAdCd5549cC378693108BcD4435776A6fa795',
+          ],
+        },
+        arbitrum: {
+          morphoVaultOwners: [
+            '0xbfFcAdCd5549cC378693108BcD4435776A6fa795',
+          ],
+        },
       }
     },
   },

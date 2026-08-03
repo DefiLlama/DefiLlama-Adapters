@@ -2676,6 +2676,27 @@ const configs = {
       ]
     },
   },
+  "bowstop": {
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0x7323e2B2B9cafdceE28DD57Eaf7357F0D19d8e57",
+          "0x3230b8F6fF97366E9ccD3BDaD5F57C6Def569D10",
+          "0xDD4799dfB8E345734ec8e801eCDBaF551360C3e7",
+          "0xc4BC321B0a9059D413c77E2306905166Fe3F83ea",
+        ],
+        "tokens": [ADDRESSES.null]
+      },
+      "staking": {
+        "owners": ["0xD3287B613FdB7a735221C7851c37475C22583621"],
+        "tokens": ["0x507B757cf2157f6357DC385b8096d7daFAefDaAA"]
+      },
+      "pool2": {
+        "owners": ["0x807C8fA32F44D4d38865a76443d4D1D49A5F3BA1"],
+        "tokens": ["0x0555921631F8A2f3b900178b2F02D70353396F7F"]
+      },
+    },
+  },
   "bracket-fi": {
     "ethereum": {
       "owner": "0x9b9d7297C3374DaFA2A609d47C79904e467970Bc",
@@ -11941,15 +11962,6 @@ const configs = {
       }
     },
   },
-  "cookiechain-bridge": {
-    "methodology": "Tracks all COOK locked in the solana bridge.",
-    "solana": {
-      "owner": "DoYYCtcG2vfrE3HtxBBXiNVieMutvWBXsgbF3SKtYCyx",
-      "tokens": [
-        "36ZrtQoab5MhhySaP1YSTwUahSk6GRVUTtZ6cuVfm9e1"
-      ]
-    },
-  },
   "copump": {
     "core": {
       "owner": "0xbEF63121a00916d88c4558F2a92f7d931C67115B",
@@ -16048,6 +16060,18 @@ const configs = {
       "token": ADDRESSES.null
     },
   },
+  "hypefuel": {
+    "methodology": "Counts the native HYPE and USDC held by the HypeFuel contract. HYPE is the inventory sold to users, and USDC is proceeds from fills awaiting the next rebalance back into HYPE.",
+    "hyperliquid": {
+      "owners": [
+        "0x42b06b1d9a07Fc3925C518dbf9475E7cA80DC8DF"
+      ],
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.hyperliquid.USDC
+      ]
+    },
+  },
   "hypepool": {
     "methodology": "TVL counts all HYPE locked in the HypePool prize pool contract on HyperEVM.",
     "hyperliquid": {
@@ -16807,6 +16831,13 @@ const configs = {
       "resolveUniV3": true
     },
   },
+  "katana-perps": {
+    "methodology": "TVL counts the USDC (Vault Bridge USDC) held in the Katana Perps contract on the Katana chain.",
+    "katana": {
+      "owner": "0x23317197cf82a14d7b7a671c23b94d39f6a2fa22",
+      "tokens": [ADDRESSES.katana.VB_USDC]
+    },
+  },
   "kavafc": {
     "kava": {
       "staking": {
@@ -17430,6 +17461,27 @@ const configs = {
         ]
       }
     },
+  },
+  "luna": {
+    "methodology": "TVL counts the ETH held by the two game contracts: LunaGame (active round deposits, unclaimed ETH winnings, the Motherlode jackpot) and EclipseGame (the current prize pot and unclaimed dividends), plus ETH in the staking contract. Staking counts LUNA locked in timed staking positions and in the game contracts.",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0xd1b6D26FD47B2Fad620DfD4c522Fc03590DeF4ff",
+          "0x6103b8C107217Dc4da94F977487a02Bd75940f4f",
+          "0x5705e86776e220A0f256a7Ea8A9EA80672Dd141F",
+        ],
+        "tokens": [ADDRESSES.null]
+      },
+      "staking": {
+        "owners": [
+          "0xd1b6D26FD47B2Fad620DfD4c522Fc03590DeF4ff",
+          "0x6103b8C107217Dc4da94F977487a02Bd75940f4f",
+          "0x5705e86776e220A0f256a7Ea8A9EA80672Dd141F",
+        ],
+        "tokens": ["0xa6bd7d0dC2d3F4C0BABE6Ab06CCD5f090Ffc8089"]
+      },
+    }
   },
   "lunafi": {
     "polygon": {

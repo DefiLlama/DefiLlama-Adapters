@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 
-const POOL = '0x7DC86Ed3AE69cEB124494A5B5c10D0F335BD8bbE';
-const COLLATERAL = '0x393A475a11ca04f29a185Cd31562110A9fa15fD8';
+const POOL = '0xFCCC86B1759CF6bD37F420C225F5e74EB6F664CE';
+const COLLATERAL = '0x97855B5E8F454a0953470Fe13E99E331c7193a72';
 
 const abi = {
   poolToken: 'address:poolToken',
