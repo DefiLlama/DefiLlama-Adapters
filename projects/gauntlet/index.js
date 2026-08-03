@@ -1,6 +1,8 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
 const axios = require('axios');
-// const aeraV3 = require('../aera-v3')  // excluded till we find a way to exclude deposits from aera-v3 into other gauntlet curated vaults
+// aeraV3.ethereum/base excluded till we find a way to exclude deposits from aera-v3 into other gauntlet curated vaults
+// aeraV3.morph is safe to include directly: Gauntlet is the only curator on that factory (prod + staging vaults)
+const aeraV3 = require('../aera-v3')
 const coreAssets = require('../helper/coreAssets.json')
 
 const configs = {
@@ -157,6 +159,11 @@ const configs = {
         '0x6d6783c146f2b0b2774c1725297f1845dc502525', // Lista USDT Vault
       ],
     },
+    morph: {
+      morpho: [
+        '0x9131eb40bd0bdce73c72755f1bb2cf39a9453341', // Gauntlet USDC Morpho vault
+      ],
+    },
   }
 }
 
@@ -308,10 +315,16 @@ async function combinedBaseTvl(api) {
 
 async function combinedBscTvl(api) {
   const LISTA_START = 1777303000 // 2026-04-27, listing date for BSC Lista (Moolah) vaults
-  
+
   if (api.timestamp < LISTA_START) return;
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.bsc?.tvl) await curatorExport.bsc.tvl(api);
+}
+
+async function combinedMorphTvl(api) {
+  const curatorExport = getCuratorExport(configs);
+  if (curatorExport.morph?.tvl) await curatorExport.morph.tvl(api);
+  await aeraV3.morph.tvl(api);
 }
 
 module.exports = {
@@ -320,6 +333,7 @@ module.exports = {
   ethereum: { tvl: combinedEthereumTvl },
   base: { tvl: combinedBaseTvl },
   bsc: { tvl: combinedBscTvl },
+  morph: { tvl: combinedMorphTvl },
   timetravel: false,
   hallmarks: [
     ["2026-03-22", "Resolve USR hack"],

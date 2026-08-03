@@ -39,8 +39,19 @@ const contracts = {
         topics: [topics.SingleDepositorVault_VaultCreated]
       },
     },
+    morph: {
+      // factory deployed at a different address than ethereum/base
+      fromBlock: 24054994,
+      multiDepositorVaultFactory: {
+        address: '0xA735FaF51AE8BD0637b8468828dC83E2C24A8E60',
+        fromBlock: 24054994,
+        eventAbi: eventAbis.MultiDepositorVault_VaultCreated,
+        topics: [topics.MultiDepositorVault_VaultCreated]
+      },
+    },
   };
 const { getLogs } = require('../helper/cache/getLogs')
+const { getFixBalances } = require('../helper/portedTokens')
 
 async function getMultiDepositorVaults(api) {
     const vaults = [];
@@ -96,6 +107,8 @@ async function tvl(api) {
 
         api.add(numeraireToken, numeraireBalance);
     }));
+
+    return getFixBalances(api.chain)(api.getBalances());
 }
 
 module.exports = {
@@ -103,4 +116,5 @@ module.exports = {
   start: 1748414859,
   base: { tvl },
   ethereum: { tvl },
+  morph: { tvl },
 };
