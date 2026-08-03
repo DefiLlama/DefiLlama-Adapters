@@ -128,8 +128,13 @@ const GET_MEME_TOKEN_DATA_ABI =
   'function getMemeTokenData(address memeToken) view returns (tuple(address memeOwner, uint256 volumn, uint256 virtualReserveETH, uint256 virtualReserveToken, uint256 initialVirtualReserveETH, uint256 initialVirtualReserveToken, uint256 virtualReserveETHHardcap, uint256 virtualReserveETHSoftcap, bytes32 subBoard, bytes32 keyForXSale, uint8 package, bool isXSale, bool isListed, bool isCancelled, bool isTaxToken, uint8 _padding, tuple(address baseTokenForPair, uint256 liquidityForHardcap, uint256 liquidityForSoftcap, uint256 marketCap, uint256 maxAllocationPerUser, uint256 maxAllocationPerWhitelistedUser, bytes32 whitelistMerkleRoot, uint24 buyReferralFeePer, uint24 sellMemeTokenOwnerFeePer, uint24 buyMemeTokenOwnerFeePer, uint24 finalizeFeePer, uint24 delayTradeTime, uint40 startTime, uint40 endTime, bool isWhitelist, uint48 _padding, tuple(address routerOrPositionManager, uint256 poolId, uint24 fee, int24 tickSpacing, uint24 per, bool isLPBurn, uint8 _padding)[] dex, string metaData) initialData, tuple(uint24 buyFee, uint24 sellFee) fee, uint256 tokenVersion))'
 const GET_FLASH_TOKEN_COUNT_ABI = 'function getTokenCountForFlashLaunchV4() view returns (uint256)'
 const GET_FLASH_TOKEN_ABI = 'function getTokenForFlashLaunchV4(uint256 index) view returns (address token)'
+const V4_HOOK_DATA_TUPLE =
+  'tuple(bool hasV4Hook, tuple(uint16 liquidityFeeBps, uint16 buybackFeeBps, uint16 rewardFeeBps, address[] customWallets, uint16[] customWalletBps) hookFeeDistributionConfig, uint256 feeThreshold, address rewardToken, tuple(address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) rewardPoolKey, uint8 feeKind, uint24 staticPoolFeeBpsBuy, uint24 staticPoolFeeBpsSell, uint24 hookFeeBpsBuy, uint24 hookFeeBpsSell, tuple(uint24 minBaseFeeBpsBuy, uint24 minBaseFeeBpsSell, uint24 maxBaseFeeBpsBuy, uint24 maxBaseFeeBpsSell, uint32 baseFeeFactorBuy, uint32 baseFeeFactorSell, uint24 defaultBaseFeeBpsBuy, uint24 defaultBaseFeeBpsSell, uint32 surgeDecayPeriodSeconds, uint32 surgeMultiplierPpm, bool perSwapMode, uint32 capAutoTuneStepPpm, uint32 capAutoTuneIntervalSeconds) dynamicFeeConfig, tuple(uint16[] buyFeesBps, uint16[] sellFeesBps, uint256[] buyFeeTierAmountLevels, uint256[] sellFeeTierAmountLevels) tieredFeeConfig, uint48 protectPeriod, uint256 maxBuyPerOrigin, bool isAntiSandwich, uint32 cooldownSeconds, uint24 penaltyFeeBps, tuple(uint32 volumeIntervalSeconds, uint256[] volumeLevels, uint16[] volumeMultiplierBps) volumeConfig)'
 const GET_FLASH_POOL_DATA_ABI =
-  'function getFlashLaunchV4PoolData(address tokenAddress) view returns (tuple(address owner, bool isTokenBurn, uint8 _padding1, address baseToken, uint8 _padding2, bytes32 subBoard, string metaData, address positionManager, uint8 _padding3, uint256 poolId, address hooks, tuple(bool hasV4Hook, tuple(uint16 liquidityFeeBps, uint16 buybackFeeBps, uint16 rewardFeeBps, address[] customWallets, uint16[] customWalletBps) hookFeeDistributionConfig, uint256 feeThreshold, address rewardToken, tuple(address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) rewardPoolKey, uint8 feeKind, uint24 staticPoolFeeBpsBuy, uint24 staticPoolFeeBpsSell, uint24 hookFeeBpsBuy, uint24 hookFeeBpsSell, tuple(uint24 minBaseFeeBpsBuy, uint24 minBaseFeeBpsSell, uint24 maxBaseFeeBpsBuy, uint24 maxBaseFeeBpsSell, uint32 baseFeeFactorBuy, uint32 baseFeeFactorSell, uint24 defaultBaseFeeBpsBuy, uint24 defaultBaseFeeBpsSell, uint32 surgeDecayPeriodSeconds, uint32 surgeMultiplierPpm, bool perSwapMode, uint32 capAutoTuneStepPpm, uint32 capAutoTuneIntervalSeconds) dynamicFeeConfig, tuple(uint16[] buyFeesBps, uint16[] sellFeesBps, uint256[] buyFeeTierAmountLevels, uint256[] sellFeeTierAmountLevels) tieredFeeConfig, uint48 protectPeriod, uint256 maxBuyPerOrigin, bool isAntiSandwich, uint32 cooldownSeconds, uint24 penaltyFeeBps, tuple(uint32 volumeIntervalSeconds, uint256[] volumeLevels, uint16[] volumeMultiplierBps) volumeConfig) v4HookData))'
+  `function getFlashLaunchV4PoolData(address tokenAddress) view returns (tuple(address owner, bool isTokenBurn, uint8 _padding1, address baseToken, uint8 _padding2, bytes32 subBoard, string metaData, address positionManager, uint8 _padding3, uint256 poolId, address hooks, ${V4_HOOK_DATA_TUPLE} v4HookData))`
+const GET_LIQUIDITY_V4_LIST_ABI = 'function getLiquidityV4List() view returns (address[] tokens)'
+const GET_LIQUIDITY_V4_POOL_DATA_ABI =
+  `function getLiquidityV4Pooldata(address token) view returns (tuple(address owner, bool isTokenBurn, address baseToken, bytes32 subBoard, string metaData, address positionManager, uint256 poolId, address hooks, ${V4_HOOK_DATA_TUPLE} v4HookData, tuple(bool isWhitelist, uint256 maxBuyPerOrigin) whitelistOption) poolData)`
 
 const PCS_INFINITY_POSITIONS_ABI =
   'function positions(uint256) view returns ((address currency0, address currency1, address hooks, address poolManager, uint24 fee, bytes32 parameters) poolKey, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, address subscriber)'
@@ -235,6 +240,27 @@ async function collectV4PositionsFromContract(api) {
       permitFailure: true,
     })
     poolDataList.forEach((poolData) => {
+      if (!poolData) return
+      registerPosition(ctx, chain, poolData.positionManager, poolData.poolId)
+    })
+  }
+
+  // User-provided liquidity V4 pools (LiquidityV4Facet / OwnerLiquidityV4Facet).
+  // The facet is not yet cut into the diamond on every chain, so tolerate a
+  // missing selector ("Diamond: Function does not exist").
+  const liquidityV4Tokens = await api.call({
+    target: basedBid,
+    abi: GET_LIQUIDITY_V4_LIST_ABI,
+  }).catch(() => []) || []
+
+  if (liquidityV4Tokens.length) {
+    const liquidityV4PoolDataList = await api.multiCall({
+      target: basedBid,
+      abi: GET_LIQUIDITY_V4_POOL_DATA_ABI,
+      calls: liquidityV4Tokens,
+      permitFailure: true,
+    })
+    liquidityV4PoolDataList.forEach((poolData) => {
       if (!poolData) return
       registerPosition(ctx, chain, poolData.positionManager, poolData.poolId)
     })
