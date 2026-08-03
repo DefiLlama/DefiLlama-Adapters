@@ -13,5 +13,5 @@ async function tvl(api) {
 
 module.exports = {
   bitcoin: { tvl },
-  methodology: `Total value of all BTC held by the transparent and verifiable SUBFROST signing group. Covers both frBTC deployments: Alkanes and BRC2.0. frBTC minted against these deposits is not counted separately, so nothing is double counted.`,
+  methodology: `Total value of all BTC and stablecoins held by the transparent and verifiable SUBFROST signing group. Covers both frBTC deployments: Alkanes and BRC2.0.`,
 };
