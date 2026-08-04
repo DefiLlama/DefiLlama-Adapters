@@ -23552,6 +23552,12 @@ const configs = {
       }
     },
   },
+  "reed": {
+    "cardano": {
+      "owner": "script163jxg6ejex04jpsu9jc3dlw7u2we4u60zmlle6wdenvfga0pw26",
+      "tokens": [ADDRESSES.null]
+    }
+  },
   "reflexer": {
     "start": "2021-02-17",
     "ethereum": {

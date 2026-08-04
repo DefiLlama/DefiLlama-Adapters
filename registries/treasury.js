@@ -1104,6 +1104,17 @@ const configs = {
       ownTokens: ['BLZEEuZUBVqFhj8adcCFPJvPVCiCyVmh3hkJMrU8KuJA'],
     },
   },
+  'treasury/boardwalk': {
+    ethereum: {
+      owner: '0x366624d894920e3abE1F231f67a02a1861Ff1CA3',
+      tokens: [ADDRESSES.ethereum.WETH],
+      ownTokens: ['0xF9a352b7C7B62a852e5C8A64A455246Dd9596461'],
+    },
+    base: {
+      owner: '0x366624d894920e3abE1F231f67a02a1861Ff1CA3',
+      tokens: [ADDRESSES.base.WETH, ADDRESSES.base.USDC]
+    }
+  },
   'treasury/bonsai': {
     arbitrum: {
       tokens: [
