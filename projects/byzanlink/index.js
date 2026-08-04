@@ -22,10 +22,11 @@ module.exports = {
 
       const [liq] = await getTokenAccountBalances([pool.poolLiquidityVault], { individual: true })
 
-      const backing = big(pool.reportedNav)
-        + big(pool.inflowSinceLastNavUpdate)
-        - big(pool.outflowSinceLastNavUpdate)
-        + big(liq.amount)
+        // Pool::exchange_rate backing: real_assets() plus repaid liquidity awaiting redemption
+        const backing = big(pool.reportedNav)
+          + big(pool.inflowSinceLastNavUpdate)
+          - big(pool.outflowSinceLastNavUpdate)
+          + big(liq.amount)
 
       const allocated = big(sharesAllocation) * backing / big(pool.totalSharesIssued)
 
