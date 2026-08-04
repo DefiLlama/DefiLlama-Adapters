@@ -1,28 +1,102 @@
-const axios = require("axios");
 const ADDRESSES = require("../helper/coreAssets.json");
-const BigNumber = require("bignumber.js");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/solana");
 
-// IOTrader is an Orderly Network builder (broker_id: iotrader).
-// User collateral is deposited into Orderly vault contracts shared across chains:
-// https://orderly.network/docs/build-on-omnichain/addresses
-// Per-builder TVL cannot be split on-chain from the shared vault, so it is
-// attributed via Orderly's public balance stats API (same pattern as projects/clob).
-const BROKER_ID = "iotrader";
+const VAULT = "0x816f722424B49Cf1275cc86DA9840Fbd5a6167e9";
+const ABSTRACT_VAULT = "0xE80F2396A266e898FBbD251b89CFE65B3e41fD18";
+const SOLANA_VAULT = "2AoLiH5kVBG2ot1qKoh4ro8F95KQb7HEBbJmkxrwYBec";
 
-async function tvl(api) {
-  const { data } = await axios.get(
-    `https://api.orderly.org/v1/public/balance/stats?broker_id=${BROKER_ID}`
-  );
-  // Orderly reports holdings in USD/USDC units; convert to USDC base units (6 decimals)
-  const amount = new BigNumber(data.data.total_holding).times(1e6).toFixed(0);
-  api.add(ADDRESSES.arbitrum.USDC_CIRCLE, amount);
-}
-
-module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
-  doublecounted: true,
-  methodology:
-    "TVL is IOTrader user holdings deposited into Orderly Network vault contracts across all supported chains, attributed via Orderly broker_id=iotrader (GET /v1/public/balance/stats). Marked doublecounted because the same vault balances are already tracked by the orderly-network adapter.",
-  arbitrum: { tvl },
+const config = {
+  ethereum: {
+    owners: [VAULT],
+    tokens: [
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.USDT,
+      ADDRESSES.ethereum.WBTC,
+      "0x4274cd7277c7bb0806bd5fe84b9adae466a8da0a", // YUSD
+      "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d", // USD1
+    ],
+  },
+  bsc: {
+    owners: [VAULT],
+    tokens: [
+      ADDRESSES.bsc.USDC,
+      ADDRESSES.bsc.USDT,
+      "0xAB3dBcD9B096C3fF76275038bf58eAC10D22C61f", // YUSD
+      ADDRESSES.bsc.USD1,
+    ],
+  },
+  arbitrum: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT],
+  },
+  optimism: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.optimism.USDC_CIRCLE],
+  },
+  base: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.base.USDC],
+  },
+  mantle: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.mantle.USDC],
+  },
+  avax: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.avax.USDC],
+  },
+  polygon: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.polygon.USDC_CIRCLE, ADDRESSES.polygon.USDT],
+  },
+  sei: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.sei.USDC_Circle],
+  },
+  sonic: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.sonic.USDC_e],
+  },
+  berachain: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.berachain.USDC],
+  },
+  mode: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.mode.USDC],
+  },
+  morph: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.morph.USDC, ADDRESSES.morph.USDT],
+  },
+  sty: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.sty.USDC_e],
+  },
+  adi: {
+    owners: [VAULT],
+    tokens: [ADDRESSES.adi.USDC_e],
+  },
+  abstract: {
+    owners: [ABSTRACT_VAULT],
+    tokens: [ADDRESSES.abstract.USDC, ADDRESSES.abstract.USDT],
+  },
 };
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl: sumTokensExport(config[chain]) };
+});
+
+module.exports.solana = {
+  tvl: (api) =>
+    sumTokens2({
+      api,
+      owner: SOLANA_VAULT,
+      tokens: [ADDRESSES.solana.USDC, ADDRESSES.solana.USDT],
+    }),
+};
+
+module.exports.doublecounted = true;
+module.exports.methodology =
+  "TVL is the balance of collateral tokens held in IOTrader vault contracts across all supported chains.";
