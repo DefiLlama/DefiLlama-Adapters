@@ -1,5 +1,3 @@
-const { timetravel } = require("../deliswap");
-
 const VAULT = '0x79A86A652B6DeC1E7F5727C9aA1C02E1C8Af6E78';
 const COLLATERALS = [
   '0xb88339CB7199b77E23DB6E890353E22632Ba630f',
@@ -19,7 +17,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'TVL is user collateral (USDC, USDT, WHYPE, kHYPE) deposited into Delpho, read via the vault\'s totalCollateral view which aggregates buffer, allocated, and executor-deployed amounts across HyperLend and Morpho. USDV (minted debt) and sUSDV (staked USDV) are excluded to avoid double-counting.',
-  start: 1783010460,
+  start: 1783010460, 
   timetravel: true,
   hyperliquid: { tvl },
 };
