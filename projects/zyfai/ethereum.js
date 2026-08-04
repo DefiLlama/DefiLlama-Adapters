@@ -50,6 +50,10 @@ const COMPOUND_POOLS = {
     'Sky.money USDT Risk Capital': '0x2bD3A43863c07B6A01581FADa0E1614ca5DF0E3d',
     'Steakhouse High Yield Instant USDT': '0xbeeff07d991C04CD640DE9F15C08ba59c4FEDEb7',
     'Gauntlet EURC Core V2': '0x842A84Df61DbE701c5dAE345F3f8E64aF727E48C',
+    'Wintermute USDC Prime': '0x5dc53a23AdC9f2Bed98de6F59F7F309a7c71FF2B',
+    'SwissBorg Morpho USDC': '0x4Ff4186188f8406917293A9e01A1ca16d3cf9E59',
+    'KPK USDC Prime Core': '0x1a1985F50352b58090eb36425AfdFacbaC7806F4',
+    'Yearn USDC': '0x68Aea7b82Df6CcdF76235D46445Ed83f85F845A3',
   };
 
   // Fluid (Ethereum mainnet)
