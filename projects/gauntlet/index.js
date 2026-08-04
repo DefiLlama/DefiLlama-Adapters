@@ -1,8 +1,6 @@
 const { getCuratorExport, kaminoLendVaultTvl } = require("../helper/curators");
 const axios = require('axios');
-// aeraV3.ethereum/base excluded till we find a way to exclude deposits from aera-v3 into other gauntlet curated vaults
-// aeraV3.morph is safe to include directly: Gauntlet is the only curator on that factory (prod + staging vaults)
-const aeraV3 = require('../aera-v3')
+// const aeraV3 = require('../aera-v3')  // excluded till we find a way to exclude deposits from aera-v3 into other gauntlet curated vaults
 const coreAssets = require('../helper/coreAssets.json')
 
 const configs = {
@@ -324,7 +322,7 @@ async function combinedBscTvl(api) {
 async function combinedMorphTvl(api) {
   const curatorExport = getCuratorExport(configs);
   if (curatorExport.morph?.tvl) await curatorExport.morph.tvl(api);
-  await aeraV3.morph.tvl(api);
+  // await aeraV3.morph.tvl(api);
 }
 
 module.exports = {
