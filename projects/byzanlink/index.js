@@ -17,10 +17,14 @@ module.exports = {
       const vault = await vaultProgram.account.vaultState.fetch('96k5AKfdHMW6URrn3Qwn4wp3gN4S2GupK27dPxtt3vfw') // Credible PayFi Vault
 
       const [{ pool: poolKey, sharesAllocation }] = vault.vaultAllocationStrategy
-      const payfiProgram = prog(require('./payfi-vault-idl.json'), 'B9wHQVTeCkZ8KM8nZTBfHQyfQhJvuihhHa9SdWo4x77U') // PayFi pool program
-      const pool = await payfiProgram.account.pool.fetch(poolKey)
+      const shares = big(sharesAllocation)
+      let allocated = 0n
 
-      const [liq] = await getTokenAccountBalances([pool.poolLiquidityVault], { individual: true })
+      // an unallocated slot leaves the pool unset, so there is nothing to fetch or value
+      if (shares > 0n) {
+        const payfiProgram = prog(require('./payfi-vault-idl.json'), 'B9wHQVTeCkZ8KM8nZTBfHQyfQhJvuihhHa9SdWo4x77U') // PayFi pool program
+        const pool = await payfiProgram.account.pool.fetch(poolKey)
+        const [liq] = await getTokenAccountBalances([pool.poolLiquidityVault], { individual: true })
 
         // Pool::exchange_rate backing: real_assets() plus repaid liquidity awaiting redemption
         const backing = big(pool.reportedNav)
@@ -28,7 +32,8 @@ module.exports = {
           - big(pool.outflowSinceLastNavUpdate)
           + big(liq.amount)
 
-      const allocated = big(sharesAllocation) * backing / big(pool.totalSharesIssued)
+        allocated = shares * backing / big(pool.totalSharesIssued)
+      }
 
       api.add(vault.tokenMint.toString(), (big(vault.tokenAvailable) + allocated).toString())
     },
