@@ -601,11 +601,8 @@ const configs = {
       methodology: 'Counts all assets deposited in all vaults curated by Muscadine.',
       blockchains: {
         base: {
-          morpho: [
-            '0x89712980cb434ef5ae4ab29349419eb976b0b496', // USDC Prime
-            '0xd6dcad2f7da91fbb27bda471540d9770c97a5a43', // WETH Prime
-            '0x99dcd0d75822ba398f13b2a8852b07c7e137ec70', // cbBTC Prime
-            '0x314fD07319ef645bA7D548915CCd91F4788A1839', // USDC Frontier
+          morphoVaultOwners: [
+            '0xf35B121bA32cBeaA27716abEfFb6B65a55f9B333', // V2 Prime USDC, WETH, cbBTC, Frontier USDC.
           ],
         },
       }
