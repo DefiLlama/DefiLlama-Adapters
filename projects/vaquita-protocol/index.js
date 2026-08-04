@@ -72,6 +72,9 @@ async function stellarTvl(api) {
 }
 
 module.exports = {
+  // Soroban reads go through simulateTransaction, which only sees the current
+  // ledger, so historical runs would report today's Stellar balances.
+  timetravel: false,
   base: { tvl },
   stellar: { tvl: stellarTvl },
   methodology: 'On Base, TVL is the aToken balance held by each MSV (MultiStrategyVault) contract for each supported asset. On Stellar, TVL is the total assets managed by the Vaquita-deployed DeFindex vault (fetch_total_managed_funds, covering both idle and strategy-invested amounts), plus the idle deposit token balance held by the Vaquita pool contract to back the fixed-yield reward pool.',
