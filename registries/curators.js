@@ -1024,7 +1024,15 @@ const configs = {
         base: {
           erc4626: [
             '0x01a6ff6eb333c1393ef424f5894b18367f1499a8',
-            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8'
+            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
+            '0x19ba57ba620a94d57b0d408d5eadb94bcdb8c69c',
+            '0x4cff826ed74ecf74374f691fe454c2c847645f75',
+            '0x0c755ef12fa9fa3e857fa2464cfc52deb4878265',
+            '0x7f1f605e755c06d428a80db3d473fc46a14ee2cb',
+            '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
+            '0xbe49dd45d9d28f2380cbee3e57a8243e736e4552',
+            '0x79505efad14d289c84a71c28369b944ada25b131',
+            '0x31744e44d6af88225c1dbefbe5df8308faea641b'
           ]
         }
       }
