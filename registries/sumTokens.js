@@ -1062,6 +1062,14 @@ const configs = {
         "0x1CE0c2827e2eF14D5C4f29a091d735A204794041"
       ]
     },
+    "tron": {
+      "owners": [
+        "TJYY1X7sNrSSowKhcsGECDXqfQBBwaTcg8"
+      ],
+      "tokens": [
+        ADDRESSES.tron.USDT
+      ]
+    },
   },
   "anome": {
     "bsc": {
