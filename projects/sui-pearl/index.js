@@ -14,12 +14,9 @@ async function suiTVL(api) {
   ).map((i) => i.fields.value.fields);
 
   //get list pool after match
-  const afterMathPools = await sui.queryEvents({
-    eventType:
-      "0xefe170ec0be4d762196bedecd7a065816576198a6527c99282a2551aaa7da38c::events::CreatedPoolEvent",
-    transform: (i) => i.pool_id,
-  });
-  const afterMathData = await sui.getObjects(afterMathPools);
+  const afterMathData = await sui.getObjectsByType(
+    "0xefe170ec0be4d762196bedecd7a065816576198a6527c99282a2551aaa7da38c::pool::Pool"
+  );
 
   //get list pool suipearl
   const poolDynamicField = await sui.getDynamicFieldObjects({

@@ -1,6 +1,42 @@
 const { Program } = require("@project-serum/anchor");
 const { getProvider, getMultipleAccounts, } = require("../helper/solana");
-const partialIdl = require("./partialIdl");
+const partialIdl = {
+  accounts: [
+    {
+      "name": "pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feeAuthority",
+            "docs": [
+              "The authority authorized to set fees"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "lpMint",
+            "docs": [
+              "The pool's lp token mint"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "incomingStake",
+            "docs": [
+              "The last known value of total number of lamports in stake accounts",
+              "owned by the pool that have not been reclaimed yet.",
+              "The total SOL owned by a pool accounted for can be calculated by taking",
+              "incoming_stake + pool_sol_reserves.lamports"
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+  ],
+  instructions: [],
+};
 
 const PROGRAM_ADDR = "unpXTU2Ndrc7WWNyEhQWe4udTzSibLPi25SXv2xbCHQ";
 const POOL_ADDR = "FypPtwbY3FUfzJUtXHSyVRokVKG2jKtH29FmK4ebxRSd";

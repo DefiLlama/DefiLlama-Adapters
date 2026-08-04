@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * Durianfun — meme-token launchpad on KUB Chain (chainId 96).
  *
@@ -79,7 +80,7 @@ const FACTORY_V467 = "0x0480017E51dC813a0fad8aA73EAb2f8476ac0e8F";
 
 // KKUB (wrapped native KUB) — the V4.6.7 KUBLERX-graduated side holds
 // KUB wrapped as KKUB. Summed alongside native KUB (see header).
-const KKUB = "0x67eBD850304c70d983B2d1b93ea79c7CD6c3F6b5";
+const KKUB = ADDRESSES.bitkub.KKUB;
 
 const FACTORY_V45_BLOCK = 30_999_992;
 const FACTORY_V42_BLOCK = 30_990_140;

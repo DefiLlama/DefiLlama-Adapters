@@ -178,6 +178,7 @@
     "GOVI": "0x43df9c0a1156c96cea98737b511ac89d0e2a1f46",
     "DSC": "0x5D4E735784293a0A8D37761AD93C13A0DD35c7E7",
     "DGC": "0xf7E2D612F1A0ce09ce9fC6FC0b59C7fD5b75042F",
+    "PUSD": "0xC011a7E12a19f7B1f670d46F03B03f3342E82DFB",
     "aPolWMATIC": "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97"
   },
   "xdai": {
@@ -749,6 +750,9 @@
     "USK": "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
     "FUZION": "factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn"
   },
+  "dungeon": {
+    "DGN": "udgn"
+  },
   "injective": {
     "INJ": "inj",
     "USDT": "factory/inj14ejqjyq8um4p3xfqj74yld5waqljf88f9eneuk/inj1q6zlut7gtkzknkk773jecujwsdkgq882akqksk",
@@ -878,6 +882,7 @@
     "zWETH": "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WETH",
     "USDt": "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b",
     "USDC_3": "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b",
+    "USD1": "0x05fabd1b12e39967a3c24e91b7b8f67719a6dacee74f3c8b9fb7d93e855437d2",
     "MOON": "0xd71e041f0d9c871e68604699aa109ead5643ced548f9d216ddb89702968e5458::moon_coin::MoonCoin",
     "CELL": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12",
     "stApt": "0x111ae3e5bc816a5e63c2da97d0aa3886519e0cd5e4b046659fa35796bd11542a::stapt_token::StakedApt",
@@ -1244,8 +1249,7 @@
     "OMAX": "0x373e4b4E4D328927bc398A9B50e0082C6f91B7bb"
   },
   "wemix": {
-    "WWEMIX": "0x7d72b22a74a216af4a002a1095c8c707d6ec1c5f",
-    "WEMIX_": "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1"
+    "WWEMIX": "0x7d72b22a74a216af4a002a1095c8c707d6ec1c5f"
   },
   "tlchain": {
     "WTLC": "0x422b6cdf97c750a0edcddc39c88f25379e59e96e"
@@ -1350,6 +1354,7 @@
     "BROTHER": "0x03b405a98c9e795d427fe82cdeeeed803f221b52471e3a757574a2b4180793ee",
     "XSTRK": "0x028d709c875c0ceac3dce7065bec5328186dc89fe254527084d1689910954b0a",
     "SSTRK": "0x0356f304b154d29d2a8fe22f1cb9107a9b564a733cf6b4cc47fd121ac1af90c9",
+    "STRKBTC": "0x0787150e306e6eae6e3f79dea881770e8bbff2c1b8eb490f969669ee945b3135",
     "EKUBO": "0x075afe6402ad5a5c20dd25e10ec3b3986acaa647b77e4ae24b0cbc9a54a27a87",
     "tBTC": "0x04daa17763b286d1e59b97c283C0b8C949994C361e426A28F743c67bDfE9a32f"
   },
@@ -1637,6 +1642,9 @@
     "AURA": "uaura",
     "WAURA": "0xDE47A655a5d9904BD3F7e1A536D8323fBD99993A",
     "USDT": "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd"
+  },
+  "axiome": {
+    "AXM": "uaxm"
   },
   "shibarium": {
     "WETH": "0x8ed7d143ef452316ab1123d28ab302dc3b80d3ce",
@@ -2089,7 +2097,10 @@
     "WETN": "0x138dafbda0ccb3d8e39c19edb0510fc31b7c1c77"
   },
   "bitkub": {
-    "KKUB": "0x67ebd850304c70d983b2d1b93ea79c7cd6c3f6b5"
+    "KKUB": "0x67ebd850304c70d983b2d1b93ea79c7cd6c3f6b5",
+    "KUSDT": "0x7d984c24d2499d840eb3b7016077164e15e5faa6",
+    "USDT": "0x21cdc3706b8c7b1836df0e533dd884069521350b",
+    "USDC_E": "0x31929a0fd776f971c5dd14bf03e1f9ff69d9c91c"
   },
   "shape": {
     "WETH": "0x4200000000000000000000000000000000000006",
@@ -2747,6 +2758,11 @@
     "QUSDC": "0x3F43DA82eC9A4f5285F10FaF1F26EcA7319E5DA5",
     "WQIE": "0x0087904D95BEe9E5F24dc8852804b547981A9139"
   },
+  "robinhood": {
+    "WETH": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
+    "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+    "USDG": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"
+  },
   "tempo": {
     "pathUSD": "0x20c0000000000000000000000000000000000000",
     "USDC_E": "0x20c000000000000000000000b9537d11c60e8b50",
@@ -2766,5 +2782,25 @@
   },
   "arc": {
     "USDC": "0x3600000000000000000000000000000000000000"
+  },
+  "adi": {
+    "WADI": "0xBa7A1DA3d3C9F9bE5A1A56d25014932C9166D09C",
+    "USDC_e": "0x9cb8142aEBBcdc60AF7c97Af897A67A8f3CA71C2",
+    "LINK": "0x76a443768A5e3B8d1AED0105FC250877841Deb40",
+    "DDSC": "0x1211f0cfe66739433c1330e21f4951B80E813479"
+  },
+  "intuition": {
+    "WTRUST": "0x81cfb09cb44f7184ad934c09f82000701a4bf672"
+  },
+  "quai": {
+    "WQUAI": "0x006c3e2aaae5db1bcd11a1a097ce572312eaddbb",
+    "USDT": "0x0049f7cbca3556c2dfae62aafa7015f99de1b8f5"
+  },
+  "gensyn": {
+    "USDC": "0x5b32c997211621d55a89Cc5abAF1cC21F3A6ddF5",
+    "AI": "0x4e742319f6b0fec4afa504fc8ed3ceab0fb751a2"
+  },
+  "eden": {
+    "WTIA": "0x00000000000000000000000000000000Ce1e571A"
   }
 }

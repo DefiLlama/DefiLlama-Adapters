@@ -15,6 +15,18 @@ const bitcoinAddressBook = require('../projects/helper/bitcoin-book/index.js')
 // Adapters using ohmStaking/ohmTreasury, sumChainTvls, mergeExports, isComplex
 // with extra custom code, or any logic beyond a single treasuryExports() call
 // stay as individual files in projects/treasury/.
+const gmxOwners = [
+        '0x4bd1cdaab4254fc43ef6424653ca2375b4c94c0e',
+        '0xc6378ddf536410c14666dc59bc92b5ebc0f2f79e',
+        '0x0263ad94023a5df6d64f54bfef089f1fbf8a4ca0',
+        '0xea8a734db4c7ea50c32b5db8a0cb811707e8ace3',
+        '0xe1f7c5209938780625e354dc546e28397f6ce174',
+        '0x68863dde14303bced249ca8ec6af85d4694dea6a',
+        '0x0339740d92fb8baf73bab0e9eb9494bc0df1cafd',
+        '0x2c247a44928d66041d9f7b11a69d7a84d25207ba',
+        '0x0a2962120b11A4a36700C5De00D4980E58a2D1C0',
+        '0xe57fE47902A35Bc0d82C83e39610Af546E1D18B9',
+      ]
 
 const configs = {
   // ----- from batch00.js -----
@@ -635,6 +647,24 @@ const configs = {
       owners: ['0x60ede4402a34762d608ad9ba7bd3797f5bfe544c'],
       ownTokens: ['0x78f5d389f5cdccfc41594abab4b0ed02f31398b3'],
       tokens: [ADDRESSES.bsc.USDT],
+    },
+  },
+  'treasury/apyee': {
+    ethereum: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.ethereum.USDC],
+    },
+    base: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.base.USDC],
+    },
+    arbitrum: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
+    },
+    bsc: {
+      owners: ['0xEC4d3B6a39D61B85dF61cCb35CE693517992A98e'],
+      tokens: [ADDRESSES.bsc.USDC],
     },
   },
   'treasury/aragon': {
@@ -1378,6 +1408,9 @@ const configs = {
       tokens: [
         nullAddress,
         ADDRESSES.ethereum.CRVUSD,
+        '0xcf62F905562626CfcDD2261162a51fd02Fc9c5b6', // sfrxUSD
+        '0xb45ad160634c528Cc3D2926d9807104FA3157305', // sDOLA
+        '0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab', // COW
       ],
     },
   },
@@ -1671,6 +1704,16 @@ const configs = {
       tokens: [nullAddress],
     },
   },
+  'treasury/empire-builder': {
+    base: {
+      owners: ['0xa22434c246217E2a1ea0Eab8e5a510eE3caF8b66'],
+      tokens: [nullAddress, ADDRESSES.base.WETH],
+    },
+    arbitrum: {
+      owners: ['0xa22434c246217E2a1ea0Eab8e5a510eE3caF8b66'],
+      tokens: [nullAddress, ADDRESSES.arbitrum.WETH],
+    },
+  },
   'treasury/empyreal': {
     arbitrum: {
       tokens: [
@@ -1859,6 +1902,10 @@ const configs = {
     eventum: {
       tokens: [ADDRESSES.eventum.USDT],
       owners: ['0x77075c627e51145d54e4EDD54Afa169DA7ff8A17'],
+    },
+    arbitrum: {
+      tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
+      owners: ['0x16a4f9904e222D298Ac71aA3E3Bd5C19B902C595'],
     },
   },
   'treasury/evmos-dao': {
@@ -2260,6 +2307,22 @@ const configs = {
       owners: ["0x21539334f45Ac41Bd10789942b744a18a4775d6d"],
     },
   },
+  'treasury/gmx': {
+    ethereum: {
+      tokens: [nullAddress],
+      owners: gmxOwners,
+    },
+    arbitrum: {
+      tokens: [nullAddress],
+      owners:gmxOwners,
+      ownTokens: [ADDRESSES.arbitrum.GMX], // GMX
+    },
+    avax: {
+      tokens: [nullAddress],
+      owners: gmxOwners,
+      ownTokens: ['0x62edc0692BD897D2295872a9FFCac5425011c661'], // GMX
+    },
+  },
   'treasury/gitcoin': {
     ethereum: {
       tokens: [
@@ -2462,6 +2525,18 @@ const configs = {
         '0xbB1676046C36BCd2F6fD08d8f60672c7087d9aDF',
       ],
       tokens: []
+    },
+  },
+  'treasury/hoodmint': {
+    robinhood: {
+      owners: ['0x7C008EfE8428b473852DCCb9FeBa918d559878C2'],
+      tokens: [nullAddress]
+    },
+  },
+  'treasury/hoodpump': {
+    robinhood: {
+      owners: ['0xdAD1d6a2AfF8f9285Fd9C552491538aEcb518888', '0x453D956057036bd9871D25B965795b883047481D'],
+      tokens: [ADDRESSES.robinhood.WETH, nullAddress],
     },
   },
   'treasury/hop': {
@@ -2947,6 +3022,11 @@ const configs = {
       owners: ['0xeCa31b3cbD0C65CC3Ea2DE2338693B74445B0c2C'],
     },
   },
+  'treasury/k2-lend': {
+    stellar: {
+      owners: ['CCQ4J5VLQHM2ORP4K7GBVAJJPK5SGG23DH4RD7QEHAZDHTN7JNESNXKZ'],
+    },
+  },
   'treasury/k9finance': {
     ethereum: {
       tokens: [nullAddress],
@@ -3401,7 +3481,7 @@ const configs = {
   'treasury/maker': {
     ethereum: {
       owners: ['0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB'],
-      ownTokens: ['0xc20059e0317de91738d13af027dfc4a50781b066', '0x56072c95faa701256059aa122697b133aded9279', ADDRESSES.ethereum.MKR]
+      ownTokens: ['0xc20059e0317de91738d13af027dfc4a50781b066', '0x56072c95faa701256059aa122697b133aded9279', ADDRESSES.ethereum.MKR, '0xB30FE1Cf884B48a22a50D22a9282004F2c5E9406']
     },
     arbitrum: {
       owners: ['0x10e6593cdda8c58a1d0f14c5164b376352a55f2f'],
@@ -4084,6 +4164,13 @@ const configs = {
         ADDRESSES.ethereum.WBTC,
       ],
       owners: ['0x0B70A2653B6E7BF44A3c80683E9bD9B90489F92A'],
+    },
+  },
+  'treasury/peeps': {
+    robinhood: {
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+      owners: ['0x364716c52a6e1EBF60B4e3dc6610dB1A1c852E7b'],
+      ownTokens: ['0xf202dE51BB42A0073948b0971707D14C54Ef5F44'],
     },
   },
   'treasury/pegasusfinance': {
@@ -4833,6 +4920,48 @@ const configs = {
       owners: ['0xdb8f4c4c68e5e5eb501fee1adaa87ee767bcade7'],
     },
   },
+  'treasury/rubicon': {
+    ethereum: {
+      tokens: [nullAddress],
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14', // protocol fee EOA (same address on all 4 chains)
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4', // treasury Safe (2-of-3, same address + owners on all 4 chains)
+      ],
+      ownTokens: ['0x7483e83b481c69a93cb025395194e0dc4F32d9C4'], // RUBI (canonical L1 token)
+    },
+    optimism: {
+      tokens: [nullAddress],
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14',
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4',
+      ],
+    },
+    arbitrum: {
+      tokens: [nullAddress],
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14',
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4',
+      ],
+    },
+    base: {
+      tokens: [
+        nullAddress,
+        '0xd8eDF10E243e2A176789D2AD1CB47151e76e8865', // Aquila WETH/RUBI LP (accrued by fee collector)
+        '0xa883C11a3742f74F0b29750764146e8675306e24', // Aquila USDC/RUBI LP (accrued by fee collector)
+      ],
+      resolveLP: true, // Aquila (uniV2 fork) factory.feeTo() mints LP tokens to the fee collector
+      owners: [
+        '0x752748deaf25cf58b60d4c4209d7f200aee4ef14',
+        '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4',
+        '0x1db5b42e760072bd981ae67435f73884aa659cba', // Aquila Base fee collector (accumulator, never forwards)
+      ],
+      ownTokens: ['0xb3836098d1e94EC651D74D053d4a0813316B2a2f'], // RUBI on Base (protocol listing token)
+      uniV3nftsAndOwners: [
+        ['0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1', '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4'], // canonical UniV3 NFPM
+        ['0xF75a94E360502618c838219f8954Ce8b7666b42F', '0x8c1ACB63a021BD8c990744C07bc53A3Ec3C03af4'], // Rubicon CLMM NFPM
+      ],
+    },
+  },
   'treasury/saddle': {
     arbitrum: {
       tokens: [
@@ -4900,6 +5029,12 @@ const configs = {
       ],
       owners: ['0x4f54cab19b61138e3c622a0bd671c687481ec030'],
       ownTokens: ['0x43aB8f7d2A8Dd4102cCEA6b438F6d747b1B9F034'],
+    },
+  },
+  'treasury/sentry-trading': {
+    robinhood: {
+      tokens: [nullAddress],
+      owners: ['0x8852BC7Ca269c276264b8Ad7869956C26304a740'],
     },
   },
   'treasury/sharplink-gaming': {
@@ -5257,6 +5392,19 @@ const configs = {
         nullAddress,
       ],
     },
+  },
+  'treasury/stockworks': {
+    robinhood: {
+      owners: ['0x57024Aae99f709Bd399252767DDC6487Aa3881De'],
+      tokens: [nullAddress, '0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa'],
+    }
+  },
+  'treasury/stonkbrokers': {
+    robinhood: {
+      owners: ['0x16027b596e210c63f750E0bdD156f00bb2749868'],
+      tokens: [nullAddress],
+      ownTokens: ['0xe934e36A439C94017B64a3FecE66AF12099aBF50']
+    }
   },
   'treasury/stout': {
     sonic: {

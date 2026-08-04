@@ -40,6 +40,7 @@ async function getBackingSolValue(api) {
  * @param {Object} api - DefiLlama API context (optional)
  */
 async function tvl(api) {
+  throw new Error('Temporarily disabled to investigate spike in tvl ($100k -> $140M)')
   await getBackingSolValue(api)
 }
 

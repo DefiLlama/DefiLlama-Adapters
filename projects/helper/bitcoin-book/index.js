@@ -38,7 +38,7 @@ function getBTCExport(key) {
 
   if (typeof value === "function")
     return async (api) => {
-      let owners = await value();
+      let owners = await value(api);
       return sumTokensExport({ owners })(api);
     };
 
@@ -306,6 +306,8 @@ module.exports = {
     "3Gi3oLSASNzYLck4wNVRHzrYJGWwo7zdh9",
     "bc1pckv9jvpnwgw67p02jfuxxcr0ycmlyk5xaj7atwsfu08u87t5srvqannw34",
     "bc1pkldc3d64ceqshhznxuj78r6e0a3p7gtdrrue07zmcq54xzlyuu9sppvxk0",
+    "bc1q47zfy02qemw2eeqk673dsfcmwlqapsn420yde4",
+    'bc1pyz7l3u2wdhvdwgej0n6myhp6wzrr0qa3982l7zq5v3k5f6fxgmyqg5vkxu'
   ],
   merlin: [
     "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
@@ -652,6 +654,7 @@ module.exports = {
     "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
     "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
     "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
+    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh"
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
@@ -778,6 +781,7 @@ module.exports = {
     "bc1qar3hvdpfqy388pkrp95ukewuxsr600wvyf0lxt",
     "bc1qfs5qwymqcwtdtwjkac4z5h99r6dp4wwvvcfxyr",
     "bc1qdt0dgff2u8y5pyj525k3qt9zdqyzy4kzznjrl8",
+    "3Qv1U918UVAbjii8RAX5msoifREmw3cVfL",
   ],
   mtGox: [
     "17Tf4bVQaCzwWrDWGRPC97RLCHnU4LY8Qr",
@@ -926,7 +930,6 @@ module.exports = {
     "bc1ql49ydapnjafl5t2cp9zqpjwe6pdgmxy98859v2",
   ],
   rosenBridge: ["bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t"],
-  rskBridge: ["3GQ87zLKyTygsRMZ1hfCHZSdBxujzKoCCU"],
   silkroad: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
@@ -1164,6 +1167,17 @@ module.exports = {
     '1KVBNjpYfJvASdzeTAwqNbe9WecpKyugM3',
     '1HkJ6hcN4h4PtUYHiSi1hrUEUKQJmedM6z',
     '1FXxhAa9yKCG8WgCTrbSsdGKuC6QzN3Gq9',
+  ],
+  subfrost: [
+    // The FROST signer set's taproot output keys that hold the BTC backing frBTC.
+    // Alkanes custody derived from Bitcoin L1 by reading [32:0] opcode 103 (GET_SIGNER) on any metashrew/alkanes node
+    // for the signer's 32-byte internal pubkey, with standard BIP341-tweak (no script tree).
+    "bc1p5lushqjk7kxpqa87ppwn0dealucyqa6t40ppdkhpqm3grcpqvw9s3wdsx7", // Alkanes
+    "bc1pxn3gr0hy70exhdqjzawtuygppzdrk3mer3wlaa2gzkmruk3rrt4qga2qaj", // BRC2.0
+  ],
+  webot: [
+    "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
+    "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
   ],
 };
 

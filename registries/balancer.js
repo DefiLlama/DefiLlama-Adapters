@@ -1,3 +1,4 @@
+const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { onChainTvl, v3Tvl, v1Tvl } = require('../projects/helper/balancer')
 const { buildProtocolExports } = require('./utils')
 
@@ -43,7 +44,7 @@ function balancerExportFn(chainConfigs, options = {}) {
 // Shared blacklisted tokens for Balancer V2 main deployment
 const balancerV2Blacklist = [
   "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F",
-  "0x57ab1e02fee23774580c119740129eac7081e9d3", // sUSD_OLD
+  ADDRESSES.ethereum.sUSD_OLD, // sUSD_OLD
   "0x00f109f744B5C918b13d4e6a834887Eb7d651535", "0x645F7dd67479663EE7a42feFEC2E55A857cb1833", "0x4922a015c4407F87432B179bb209e125432E4a2A",
   "0xdA16D6F08F20249376d01a09FEBbAd395a246b2C", "0x9be4f6a2558f88A82b46947e3703528919CE6414", "0xa7fd7d83e2d63f093b71c5f3b84c27cff66a7802",
   "0xacfbe6979d58b55a681875fc9adad0da4a37a51b", "0xd6d9bc8e2b894b5c73833947abdb5031cc7a4894",
@@ -133,7 +134,9 @@ const configs = {
   'balancer-v3': {
     _options: { helperType: 'v3' },
     xdai: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 37360338 },
-    ethereum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 21332121 },
+    ethereum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 21332121, blacklistedTokens: [
+      '0x8399c8fc273bd165c346af74a02e65f10e4fd78f', // vgUSDC
+    ] },
     arbitrum: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 297810187 },
     base: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 25343854 },
     optimism: { vault: '0xbA1333333333a1BA1108E8412f11850A5C319bA9', fromBlock: 133969439 },
@@ -161,7 +164,7 @@ const configs = {
     _options: { helperType: 'v1' },
     ethereum: { factory: '0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd', fromBlock: 9562480, blacklistedTokens: [
       "0xC011A72400E58ecD99Ee497CF89E3775d4bd732F",
-      "0x57ab1e02fee23774580c119740129eac7081e9d3",
+      ADDRESSES.ethereum.sUSD_OLD,
       "0x00f109f744B5C918b13d4e6a834887Eb7d651535", "0x645F7dd67479663EE7a42feFEC2E55A857cb1833", "0x4922a015c4407F87432B179bb209e125432E4a2A",
       "0xdA16D6F08F20249376d01a09FEBbAd395a246b2C", "0x9be4f6a2558f88A82b46947e3703528919CE6414",
     ]},

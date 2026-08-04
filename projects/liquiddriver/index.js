@@ -68,20 +68,16 @@ const shadowChefAddresses = [
   "0xD354908d297ce9a348b417d2e0F561EE7D11de5E", // wsHEC/FTM
 ];
 
-const masterchefTvl = async (_ts, ethBlock, chainBlocks) => {
+const masterchefTvl = async (api) => {
   const balances = {};
-
-  const transformAddress = i => `fantom:${i}`;
-
   await addFundsInMasterChef(
     balances,
     MASTERCHEF,
-    chainBlocks.fantom,
-    "fantom",
-    transformAddress,
+    api.block,
+    api.chain,
+    i => `fantom:${i}`,
     abi.poolInfo
   );
-
   return balances;
 };
 

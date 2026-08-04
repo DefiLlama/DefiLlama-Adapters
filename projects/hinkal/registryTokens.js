@@ -979,6 +979,11 @@ const BLAST_REGISTRY_TOKENS = [
   ADDRESSES.blast.ezETH,
 ];
 
+const TRON_REGISTRY_TOKENS = [
+  ADDRESSES.tron.USDT, // USDT
+  ADDRESSES.tron.USDC, // USDC
+];
+
 const registryTokensByChain = {
   ethereum: ETHEREUM_REGISTRY_TOKENS,
   arbitrum: ARBITRUM_REGISTRY_TOKENS,
@@ -988,6 +993,7 @@ const registryTokensByChain = {
   bsc: BNB_REGISTRY_TOKENS,
   base: BASE_REGISTRY_TOKENS,
   blast: BLAST_REGISTRY_TOKENS,
+  tron: TRON_REGISTRY_TOKENS,
 };
 
 module.exports = registryTokensByChain;
