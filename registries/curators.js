@@ -391,7 +391,7 @@ const configs = {
   },
   "edge-capital": {
     config: {
-      methodology: 'Counts all assets deposited in vaults curated by Muscadine.',
+      methodology: 'Counts all assets deposited in vaults curated by Edge-Capital.',
       blockchains: {
         tac: {
           eulerVaultOwners: [
@@ -598,19 +598,11 @@ const configs = {
   },
   "muscadine": {
     config: {
-      methodology: 'Counts all assets deposited in Muscadine Morpho vaults on Base.',
+      methodology: 'Counts all assets deposited in all vaults curated by Muscadine.',
       blockchains: {
         base: {
-          morpho: [
-            // V1 Vaults
-            '0xf7e26Fa48A568b8b0038e104DfD8ABdf0f99074F', // Muscadine USDC Vault
-            '0xAeCc8113a7bD0CFAF7000EA7A31afFD4691ff3E9', // Muscadine cbBTC Vault
-            '0x21e0d366272798da3A977FEBA699FCB91959d120', // Muscadine WETH Vault
-            // V2 Vaults
-            '0x89712980cb434ef5ae4ab29349419eb976b0b496', // Muscadine USDC Prime
-            '0xd6dcad2f7da91fbb27bda471540d9770c97a5a43', // Muscadine WETH Prime
-            '0x99dcd0d75822ba398f13b2a8852b07c7e137ec70', // Muscadine cbBTC Prime
-            '0x314fD07319ef645bA7D548915CCd91F4788A1839', // Muscadine USDC Frontier
+          morphoVaultOwners: [
+            '0xf35B121bA32cBeaA27716abEfFb6B65a55f9B333', // V2 Prime USDC, WETH, cbBTC, Frontier USDC.
           ],
         },
       }
