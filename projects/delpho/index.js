@@ -23,7 +23,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'TVL is user collateral deposited into Delpho, read via the vault\'s totalCollateral view which aggregates buffer, allocated, and executor-deployed amounts. Supported collateral tokens are enumerated from the Delpho config provider (getAllSupportedTokens). USDV (minted debt) and sUSDV (staked USDV) are excluded to avoid double-counting.',
-  start: 1783010460,
+  start: 1783364520,
   timetravel: true,
   hyperliquid: { tvl },
 };
