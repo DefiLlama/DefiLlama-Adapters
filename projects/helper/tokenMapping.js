@@ -46,10 +46,6 @@ const fixBalancesTokens = {
       decimals: 6,
     },
   },
-  morph: {
-    // BGBTC (Bitget Wrapped BTC): coingecko only lists the ethereum deployment, so the morph address has no price
-    '0x31011317764e097b28d159a8145b92bfa453f606': { coingeckoId: 'bitget-wrapped-btc', decimals: 8 },
-  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
