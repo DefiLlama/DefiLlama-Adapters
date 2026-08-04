@@ -14338,7 +14338,7 @@ const configs = {
     },
   },
   "ezmanager": {
-    "methodology": "TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, Ethereum, BSC, and Hyperliquid.",
+    "methodology": "TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, Ethereum, BSC, Hyperliquid, and Robinhood.",
     "doublecounted": true,
     "base": {
       "owner": "0x61c36AFF32Be348a3D1FE1E2B4745048f652770F",
@@ -14362,6 +14362,13 @@ const configs = {
       "resolveUniV3": true,
       "uniV3ExtraConfig": {
         "nftAddress": "0xead19ae861c29bbb2101e834922b2feee69b9091"
+      }
+    },
+    "robinhood": {
+      "owner": "0xEc6A12eb5593F450fc238Dd269fCff3DE8166098",
+      "resolveUniV3": true,
+      "uniV3ExtraConfig": {
+        "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
       }
     },
   },
