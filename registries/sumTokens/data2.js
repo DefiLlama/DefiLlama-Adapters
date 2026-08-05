@@ -1046,5 +1046,10 @@ module.exports = {
     "ethereum": {
       "tvl": { owner: '0xb276f62db0ce8ca2ca5bc522695be604521eac1c', "resolveNFTs": true, tokens: [ADDRESSES.null], }
     },
+  },
+  "subfrost": {
+    "methodology": "Total value of the collateral held by the transparent and verifiable SUBFROST signing group. On bitcoin, all BTC backing frBTC across both deployments, Alkanes and BRC2.0. On ethereum, the USDC and USDT held in the frUSD vault. The frBTC and frUSD minted against these deposits are not counted separately, so nothing is double counted.",
+    "bitcoin": { "tvl": { "__btcBook": "subfrost" } },
+    "ethereum": { "owner": "0x95779e7e1c943042255b8a78273fe6de4823cf06", "tokens": [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT]}
   }
 }
