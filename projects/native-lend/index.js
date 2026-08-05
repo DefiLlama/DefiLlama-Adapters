@@ -21,9 +21,6 @@ const config = {
     vault: "0xbA1cf8A63227b46575AF823BEB4d83D1025eff09",
     vaultFromBlock: 355397381,
   },
-<<<<<<< HEAD
-  // monad vault moved to projects/native-lend-monad (doublecounted with projects/townsquare-vaults)
-=======
   xlayer: {
     vault: "0x4Df7557734B382EB542BEa6c74786D398DF4CC19",
     vaultFromBlock: 59885325,
@@ -36,7 +33,6 @@ const config = {
     vault: "0x57B8f68ef57Af2dB70BC9aAc891836661CA4cB51",
     vaultFromBlock: 60423, 
   },
->>>>>>> 490d05945e4a006f55c20d975f939e556d9d650a
 };
 
 Object.keys(config).forEach((chain) => {
