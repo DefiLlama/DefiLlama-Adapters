@@ -6104,7 +6104,7 @@ const configs = {
       owners: ["0x0d189fd8d46e43b2f13390de95d4f8e185eb3914"],
     },
   },
-  'treasury/wildcard-game': {
+  'treasury/wildcard-games': {
     robinhood: {
       tokens: [
         ADDRESSES.robinhood.USDG,
