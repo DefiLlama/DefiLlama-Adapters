@@ -1,3 +1,4 @@
+const { ChainApi } = require("@defillama/sdk")
 const { getCuratorExport } = require("../helper/curators")
 const { sumTokensDebank } = require("../helper/debank")
 
@@ -46,14 +47,23 @@ const configs = {
         "0x9178eBE0691593184c1D785a864B62a326cc3509", //Morpho v1 USDC Yield
         "0xdaD4e51d64c3B65A9d27aD9F3185B09449712065", //Morpho v1 USDT Prime
         "0x870F0BF29A25A40E7CC087cD5C53e70C11F2C8A8", //Morpho v2 USDT Prime
+        "0xb5ce3CA2C774b72955C25875022FdD91f7a7B938", //Morpho v2 wARS Yield
+        "0x6251482812cE95d11b3E447FE6888b1a1bE66C25", //Morpho v2 EURe Yield
+        "0x7a72bcD2c3F7F7e4D6679170a0625bAB15D7DDa1", //Morpho v2 USDC Yield RWA
       ],
 
       // Other ERC-4626 vaults (non-Morpho)
       erc4626: [
         "0x2B47c128b35DDDcB66Ce2FA5B33c95314a7de245", //kpk USDC Prime RWA (Euler Earn)
+        "0x8BcD746976885b5832bAD07B4921E3f2dD1D3703", //kpk USDC RWA Liquidity (Symbiotic v2 Liquid Lane)
         "0xB6D6D89ad4b4D61C15a293e28b74f77F6817fF48", //kpk ETH Yield Term (Euler Earn)
         "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
         "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
+      ],
+
+      // Upshift multiAssetVault: non-ERC4626, exposes asset() + getTotalAssets()
+      upshiftV2: [
+        "0x00E95754322D15aB8765961c6Ac5682B9282F54F", //kpk Upshift lsETH
       ],
 
       // Aleph vaults use underlyingToken() instead of asset(), so they
@@ -161,11 +171,26 @@ const ZODIAC_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism', 'bsc'
 function getCuratedVaults(chain) {
   const cfg = configs.blockchains[chain]
   if (!cfg) return []
-  return [...(cfg.morpho || []), ...(cfg.erc4626 || []), ...(cfg.alephVaults || [])]
+  return [...(cfg.morpho || []), ...(cfg.erc4626 || []), ...(cfg.alephVaults || []), ...(cfg.upshiftV2 || [])]
 }
 
+// DeBank requires an API key, which is not available in CI. Without this guard a
+// missing key throws out of every chain's tvl(), which also discards the on-chain
+// curated-vault balances that need no API key at all.
+//
+// sumTokensDebank adds protocol positions before it fetches wallet tokens, so it
+// runs against a scratch api here and is merged into the real one only once both
+// requests have succeeded. A mid-way failure therefore contributes nothing rather
+// than a partial DeBank result.
 async function getDebankTvl(api, safes) {
-  await sumTokensDebank(api, safes, { includeWalletTokens: true, blacklistedPools: getCuratedVaults(api.chain) })
+  const scratch = new ChainApi({ chain: api.chain, block: api.block })
+  try {
+    await sumTokensDebank(scratch, safes, { includeWalletTokens: true, blacklistedPools: getCuratedVaults(api.chain) })
+  } catch (e) {
+    console.warn(`kpk: skipping DeBank positions on ${api.chain}: ${e.message}`)
+    return
+  }
+  api.addBalances(scratch.getBalances())
 }
 
 // ---- Combined TVL export per chain ----
