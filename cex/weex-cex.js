@@ -20,12 +20,25 @@ module.exports = {
       "0x5875d9b0bba20e3b393aad0c61e2e2d78c375db1",
       '0x3425c58b988ebac68b1e7712b152615beaa84bae',
       '0x725c2bedfe9185c24faf9965f5ec3f7677d6fcff',
-      '0x93D0391D7B28ab1E01DF29e49793795dEa01aE16'
+      '0x93D0391D7B28ab1E01DF29e49793795dEa01aE16',
+      "0x047223b0f9429f865c3a1f1fa1302ee02b44c15f",
+      "0x6f1b82592ff57173cc5308a34da428a53f79a982",
+      "0xb2c9d546b7390ce0ac9d1b6a1f5cacd4bfae6905",
+      "0xcb251e4cac6276afd3f498810d52574420a716ab",
+      "0xcb560b760b8b8421f10b9f5bde1e3b6b59ca9523",
+      "0xE7a5D64930fEC23cb04fd98Eb1f15e94E9c011C5",
+      "0xe8288e668E5Da525999234a0b9b1271793cAB7eA",
+      "0xfBb0099Dfb0cb61A74D009960b05C8e2713afbCe",
     ],
   },
   bitcoin: 'weex',
   base: {
-    owners: ["0x7bceb96a8757114d79c7dcd6b52c460202f17d13"],
+    owners: [
+      "0x7bceb96a8757114d79c7dcd6b52c460202f17d13",
+      "0x25c3e0c938bbe5bead14f939893814dfceee39fe",
+      "0x481386ee5f994c940d9b8b077a86eebcaa6ebd33",
+      "0x4885a6809e330cf33f16f0e13b3c96e01af11804",
+    ],
   },
   avax: {
     owners: [
@@ -33,6 +46,9 @@ module.exports = {
       "0xb860db9d581bd95835c5512433ef86225aaced1f",
       "0xf7e5861c18f8d98108bbdc546c94709f6e3e2bc4",
       "0x218c4e05de957791d77c51585f2e1dcc5b60eab8",
+      "0x79206994b2670a391d3bb8dea584283230534ab2",
+      "0x908e9c3adc523b762b6c8cfe412d4e2287396c15",
+      "0xfBb0099Dfb0cb61A74D009960b05C8e2713afbCe",
     ],
   },
   bsc: {
@@ -46,12 +62,16 @@ module.exports = {
       "0xe5b33a9cf71c7ef0d6404cb2e98a99edb576c086",
       "0xa0e8C61d1B378c0eC4cFFED9382e5b7fE37a9860",
       "0x7E88F5EaAB80549358ace2daaD5B367F8E037489",
+      "0x0908a40eb8dc56b76065a549824b5fa777ef1ed7",
+      "0xcb251e4cac6276afd3f498810d52574420a716ab",
+      "0xfBb0099Dfb0cb61A74D009960b05C8e2713afbCe",
     ],
   },
   polygon: {
     owners: [
       "0xc3b77c3f5a733986558c91e0faf95f1659b1b9b6",
       "0x41b8ce8fce54a418d4a523205a6cc50f0c5beff8",
+      "0x091ae4113d0cdfa7877bda4064bd1d19662170fc",
     ],
   },
   arbitrum: {
@@ -62,6 +82,8 @@ module.exports = {
       "0x7e6e3c507933b586ef02272ab27ce3df10b18018",
       "0x35ed1fa92851a5dca476e546a23d81ede969b7fd",
       "0x871084a0df5d315361db995db241811857a41770",
+      "0xa404eae7fc5d979f1d9ee86f35f56a81099089c0",
+      "0xfBb0099Dfb0cb61A74D009960b05C8e2713afbCe",
     ],
   },
   optimism: {
@@ -72,6 +94,8 @@ module.exports = {
       "0x5f77b0df59e5e4277ac298def75ee7196626836d",
       "0x058cd9be394a5990663ab90e862dea0cfea6cbe0",
       "0xc3b77c3f5a733986558c91e0faf95f1659b1b9b6",
+      "0x6aa90197641200028223b3be484384326bc98e0d",
+      "0x91aced7400825a44ab03c8435249f4d30fd107b5",
     ],
   },
   tron: {
@@ -86,6 +110,9 @@ module.exports = {
       "TFhpaJmxgwBxyMRozTdRbGYQsdYLng9SDU",
       "TXUmtHbZLygwZeEb1zRx8h9GEuj95upAD6",
       "TPoyMWhuo6ybDjtqQcox6E83uGPDDRpaGK",
+      "TBd1XAZMHfXVnweYLpmce3vGcFJGTwLiK3",
+      "THkXrwGJecYhSwJDSzCbT1tC5bTMszYZng",
+      "TSAybL8fkjQ38azNhufhWYxEeDomTy7ttv",
     ],
   },
   solana: {
@@ -93,6 +120,11 @@ module.exports = {
       "eKfAkykrMPx2CqhcbywnbTkpGAyfkppNvXQ2VPNiQWL",
       "Dw4JrqHdzh489rkQqf5RaATpyLBSJABwBb2C3PAYDQgX",
       "BCGzwLX1MmAosKrfMH1NauCSB6pej7uojeuNZrZCR9BL",
+      "73BCsWDxqNbXgnjHKqZPtN5buGpzF4SNGf4ueP44D4v2",
+      "GzeZm4Lwf2x9JPvtcDiguCJS8Vk59cxii9qs7zk7ETC5",
+      "HptqceDZkTdBuErSag8pjmGb9ScozyT9nZiRWPniSDCi",
+      "J45pev29PWconn1NQoZ33W6W2UwKp2UvgGUZR7RcAHru",
+      "J6MWKx6vp8zWAmxRd2bPJts5u1rdgDiCqkA29hTpe5jm",
     ],
   },
   ton: {
@@ -101,6 +133,23 @@ module.exports = {
       "EQCnYwCum_kGC9LtZ_cF3UqZlElCvYMZ_k1U3iToOQfonqvK",
       "UQAZw2qHn-DgS3AQcN0iTGld0ekISufl6u6P71Hf66iV7Ri6",
       "EQAQ5H-njGMGAI49lJH1Xb1KKV-I7Z1-Xzr9xM19pkS-AW6p",
+      "UQBgCKgDyeB6uZy86ff3f8Q8TuqdsbwK2CXudVFMlH1bdUP4",
+    ],
+  },
+  era: {
+    owners: ["0x8cabce167f3d55038dbed58db03f531de0fe761a"],
+  },
+  aptos: {
+    owners: [
+      "0xd5d32b6bea07b02f39d07842858dfeec4d54baa1b014665829ce4598d8e7ed90",
+    ],
+  },
+  plasma: {
+    owners: [
+      "0x0a64948e3bbf047eb0d7be1fcb41ccc3b69ec8ae",
+      "0x6f1b82592ff57173cc5308a34da428a53f79a982",
+      "0xd65ebe6c18e19229a7b9cd6ceff281428f840490",
     ],
   },
 }
+
