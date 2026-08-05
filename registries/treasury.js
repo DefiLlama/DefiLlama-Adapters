@@ -6104,6 +6104,14 @@ const configs = {
       owners: ["0x0d189fd8d46e43b2f13390de95d4f8e185eb3914"],
     },
   },
+  'treasury/wildcard-games': {
+    robinhood: {
+      tokens: [
+        ADDRESSES.robinhood.USDG,
+      ],
+      owners: ["0x1b3bb8790b47855bDE2f43A56b6aa3E44E1F60AE"],
+    },
+  },
   'treasury/woofi': {
     avax: {
       tokens: [
