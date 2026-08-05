@@ -4057,6 +4057,14 @@ const configs = {
       owners: ['0x61e807038ae880d964a15a57c8cc74a634bccc26'],
     },
   },
+  'treasury/openlaunch': {
+    stable: {
+      tokens: [
+        nullAddress,
+      ],
+      owners: ['0x1870F0B2521773c3621BCa5244E950900c38cc2C'],
+    },
+  },
   'treasury/openxswap': {
     optimism: {
       tokens: [
