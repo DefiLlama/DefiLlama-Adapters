@@ -38,7 +38,6 @@ async function v4Tvl(api) {
 
 module.exports = {
   methodology: 'TVL is the value of tokens locked in Orvex v2 liquidity pairs (Solidly-fork PairFactoryUpgradeable) plus tokens held in the Orvex v4 concentrated liquidity Vault.',
-  timetravel: false,
   robinhood: {
     tvl: sdk.util.sumChainTvls([v2Tvl, v4Tvl]),
   },
