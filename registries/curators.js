@@ -881,7 +881,12 @@ const configs = {
             '0xBEEFFFC57A26fD8D3b693Ba025ead597DbECEBfe', // USDC High Yield Term
             '0xBEEf3f3A04e28895f3D5163d910474901981183D', // 3F Ecosystem Vault
             '0xBeefF08dF54897e7544aB01d0e86f013DA354111', // Steakhouse Prime
-            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Steakhouse High Yield
+            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC
+            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC
+            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Waterline Reservoir USDC
+            '0xAb5955EB671d150527f8E61A42B703832F86616C', // M1 USDC
+            '0xbeEFF75262b2eC16a3C62a807F02EE7627654931', // Waterline InfiniFi USDC
+            '0x7d4741ba166B21cf3168A9A0ea71388531C52FF7', // Tenbin USDC
             '0x6f48cE6380693808682E43140E3Eeb877a096Aa1', // USDC T-Prime Instant
             '0xBEEFFF4716a49418D69c251cab8759bB107e57C8', // USDC Turbo
             '0xBEEFFFDE1CABD3d8A3cd4fd5e04DbA51B9D4Ac39', // XAUT Turbo
