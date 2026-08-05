@@ -1,23 +1,10 @@
 const { sumTokensExport } = require('../helper/sumTokens')
-const { getTokensMinted, getAssets } = require("../helper/chain/cardano/blockfrost");
+const { getTokensMinted } = require("../helper/chain/cardano/blockfrost");
 
 const cBTC = "4190b2941d9be04acc69c39739bd5acc66d60ccab480d8e20bc87e3763425443"
 
-// holds 10.1k cBTC minted 2026-08-04
-const UNBACKED_MINT_ADDRESSES = [
-  "addr1qypuy75x8hfvxy27t35ren9shh9nyv8wuz39hz95ffen2v867ejhnsmmcpccmmttah2jcluxspmrrnsqwdkm7f0wqv8srtjkn3",
-  "addr1w99tz7huen9td2svkzar054wymckga4z7vhraeldllkpdcsfrxn64",
-  "addr1w99tz7hungv6furtdl3zn72sree86wtghlcr4jc637r2eagr7ycqd"
-]
-
-
 async function tvl(){
-  const minted = await getTokensMinted(cBTC)
-  const balances = (await Promise.all(UNBACKED_MINT_ADDRESSES.map(addr => getAssets(addr)))).flat()
-  const excluded = balances
-    .filter(a => a.unit === cBTC)
-    .reduce((sum, a) => sum + Number(a.quantity), 0)
-  return { bitcoin : (minted - excluded) / 100_000_000 }
+  return { bitcoin : (await getTokensMinted(cBTC)/100_000_000) }
 }
 
 module.exports = {
