@@ -33,7 +33,7 @@ async function v4Tvl(api) {
     tokens.add(String(log.currency1).toLowerCase())
   })
 
-  return sumTokens2({ api, tokens: Array.from(tokens), owner: V4_VAULT, permitFailure: true })
+  return sumTokens2({ api, tokens: Array.from(tokens), owner: V4_VAULT })
 }
 
 module.exports = {
