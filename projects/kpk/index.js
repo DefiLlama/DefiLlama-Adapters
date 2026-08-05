@@ -1,4 +1,3 @@
-const { ChainApi } = require("@defillama/sdk")
 const { getCuratorExport } = require("../helper/curators")
 const { sumTokensDebank } = require("../helper/debank")
 
@@ -174,23 +173,8 @@ function getCuratedVaults(chain) {
   return [...(cfg.morpho || []), ...(cfg.erc4626 || []), ...(cfg.alephVaults || []), ...(cfg.upshiftV2 || [])]
 }
 
-// DeBank requires an API key, which is not available in CI. Without this guard a
-// missing key throws out of every chain's tvl(), which also discards the on-chain
-// curated-vault balances that need no API key at all.
-//
-// sumTokensDebank adds protocol positions before it fetches wallet tokens, so it
-// runs against a scratch api here and is merged into the real one only once both
-// requests have succeeded. A mid-way failure therefore contributes nothing rather
-// than a partial DeBank result.
 async function getDebankTvl(api, safes) {
-  const scratch = new ChainApi({ chain: api.chain, block: api.block })
-  try {
-    await sumTokensDebank(scratch, safes, { includeWalletTokens: true, blacklistedPools: getCuratedVaults(api.chain) })
-  } catch (e) {
-    console.warn(`kpk: skipping DeBank positions on ${api.chain}: ${e.message}`)
-    return
-  }
-  api.addBalances(scratch.getBalances())
+  await sumTokensDebank(api, safes, { includeWalletTokens: true, blacklistedPools: getCuratedVaults(api.chain) })
 }
 
 // ---- Combined TVL export per chain ----
