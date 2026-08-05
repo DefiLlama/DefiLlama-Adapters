@@ -8,8 +8,20 @@ const LBTC = ADDRESSES.etlk.LBTC
 
 // ── Add new BoringVault tokens here ──────────────────────────────────────────
 // Unwrapped to underlying base asset in tvlEthExtras.
+// `asset` optionally overrides the accountant base asset (same price magnitude,
+// used when the vault reports a different-but-equivalent BTC unit of account).
 const BORING_VAULTS_ETH = [
-  '0x75231079973c23e9eb6180fa3d2fc21334565ab5',  // Turtle Club (katanaLBTCv)
+  { token: '0x75231079973c23e9eb6180fa3d2fc21334565ab5' },                                 // Turtle Club (katanaLBTCv) -> accountant base
+  // Sentora Lombard Vault (sLBTC): LBTC deposits are deployed into a SupervisedLoanPositionManager
+  // (0x6cad5fcb29d98c4968a79ea7db286c5986389009) that currently holds the backing as LBTC.
+  // The accountant's base asset is WBTC (pricing unit only), so count the position as LBTC.
+  { token: '0x13cc1b39cb259ba10cd174eae42012e698ed7c51', asset: ADDRESSES.ethereum.LBTC },
+]
+
+// ── Add new pricePerShare vault tokens here ───────────────────────────────────
+// ERC4626-style shares valued as asset() * pricePerShare(); unwrapped in tvlEthExtras.
+const PPS_VAULTS_ETH = [
+  '0xf14f678d9c05798ba61652a950a05d74ad2e0a6c',  // Bitcoin Onchain Credit Strategy (BTCoc) -> BTC.b
 ]
 
 // ── Add new Curve pools here ──────────────────────────────────────────────────
@@ -63,7 +75,8 @@ async function unwrapCurvePoolShare({ api, pool, holder, coinCount }) {
 
 // Unwraps a BoringVault share token to its underlying base asset via the
 // Vault → Hook → Accountant → (base, rate) architecture.
-async function unwrapBoringVault(api, vaultToken, holder) {
+// `assetOverride` replaces the accountant base asset when set (equivalent BTC unit).
+async function unwrapBoringVault(api, vaultToken, holder, assetOverride) {
   const shareBalance = await api.call({
     target: vaultToken, abi: 'erc20:balanceOf', params: [holder], permitFailure: true,
   })
@@ -88,7 +101,30 @@ async function unwrapBoringVault(api, vaultToken, holder) {
 
   const amount = BigInt(shareBalance) * BigInt(rate) / scale
   if (amount <= 0n) return
-  api.add(baseAsset, amount)
+  api.add(assetOverride || baseAsset, amount)
+}
+
+// Unwraps an ERC4626-style share token via asset() * pricePerShare().
+async function unwrapPpsVault(api, vaultToken, holder) {
+  const shareBalance = await api.call({
+    target: vaultToken, abi: 'erc20:balanceOf', params: [holder], permitFailure: true,
+  })
+  if (!shareBalance || shareBalance === '0') return
+
+  const [asset, pricePerShare, decimals] = await Promise.all([
+    api.call({ target: vaultToken, abi: 'address:asset', permitFailure: true }),
+    api.call({ target: vaultToken, abi: 'function pricePerShare() view returns (uint256)', permitFailure: true }),
+    api.call({ target: vaultToken, abi: 'erc20:decimals', permitFailure: true }),
+  ])
+  if (!asset || !pricePerShare || decimals === undefined || decimals === null) return
+
+  const scale = 10n ** BigInt(decimals)
+  if (scale === 0n) return
+
+  // pricePerShare is asset units per one whole share (10^decimals shares)
+  const amount = BigInt(shareBalance) * BigInt(pricePerShare) / scale
+  if (amount <= 0n) return
+  api.add(asset, amount)
 }
 
 // ─── Per-chain extra TVL hooks ────────────────────────────────────────────────
@@ -100,8 +136,13 @@ async function tvlEthExtras(api) {
   }
 
   // 2. Unwrap BoringVault shares (add new vaults to BORING_VAULTS_ETH above)
-  for (const vault of BORING_VAULTS_ETH) {
-    await unwrapBoringVault(api, vault, LBTCV)
+  for (const { token, asset } of BORING_VAULTS_ETH) {
+    await unwrapBoringVault(api, token, LBTCV, asset)
+  }
+
+  // 3. Unwrap pricePerShare vault shares (add new vaults to PPS_VAULTS_ETH above)
+  for (const vault of PPS_VAULTS_ETH) {
+    await unwrapPpsVault(api, vault, LBTCV)
   }
 
   await sumTokens2({ api, owner: LBTCV, resolveUniV4: true, })
