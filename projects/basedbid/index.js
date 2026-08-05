@@ -13,7 +13,6 @@ const BASED_BID = {
   ethereum: '0x3cb3D9E659653de02D8e3Aecd4963Ba1Ae429682',
   bsc:      '0x920b4Ee4970CFE1ef523a0679200f9d9b2F87B2c',
   base:     '0x0F2C33F406D58144Dec03FCdb69571249F0b0286',
-  megaeth:  '0x695e175c9704432cdFB98e3C193966F95a5F119D',
   robinhood: '0x6EC95a3C6C7b8368C9bF37Ff664672E55df3550d',
 }
 
@@ -40,11 +39,6 @@ const TRACKED_TOKENS = {
     ADDRESSES.base.USDT,
     ADDRESSES.base.USDC,
   ],
-  megaeth: [
-    ADDRESSES.null,
-    ADDRESSES.megaeth.ETH,
-    ADDRESSES.megaeth.USDT,
-  ],
   robinhood: [
     ADDRESSES.null,
     ADDRESSES.robinhood.WETH,
@@ -56,7 +50,6 @@ const WRAPPED_NATIVE = {
   ethereum: ADDRESSES.ethereum.WETH,
   bsc:      ADDRESSES.bsc.WBNB,
   base:     ADDRESSES.base.WETH,
-  megaeth:  ADDRESSES.megaeth.ETH,
   robinhood: ADDRESSES.robinhood.WETH,
 }
 
@@ -87,9 +80,6 @@ const UNIV3_LIKE_NFTS = {
   base: [
     '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1',
     PANCAKE_V3_NFT,
-  ],
-  megaeth: [
-    '0xcb91c75a6b29700756d4411495be696c4e9a576e',
   ],
   robinhood: [
     '0x73991a25c818bf1f1128deaab1492d45638de0d3',
@@ -557,7 +547,6 @@ module.exports = {
   ethereum: { tvl },
   bsc:      { tvl },
   base:     { tvl },
-  megaeth:  { tvl },
   robinhood: { tvl },
   solana:   { tvl: solanaTvl },
 }
