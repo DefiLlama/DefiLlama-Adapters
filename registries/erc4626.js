@@ -202,10 +202,15 @@ const configs = {
   'zensats': {
     doublecounted: true,
     methodology: "TVL is the total assets held in ZenSats ERC4626 vaults, measured via totalAssets().",
+    hallmarks: [
+      ['2026-06-13', 'V2 launch — StakeDao Llamaloan Strategy vaults (WBTC/wstETH)'],
+    ],
     ethereum: [
       "0x617A6877f0a55D1eF2B64b5861A2bB5Fe6FEB739",
       "0xbaEc8343B610A5ee7Ca2c5b93507AC7def98E2B1",
       "0x7d5281D590Fb0647aDc7d8494a2c8Fb8C2B23cBD",
+      "0x18E2F4F2E6565187fce73ECC707579E5F7933f74", // ZenjiWbtcLlamaUsdtStakeDao (V2 - StakeDao Llamaloan Strategy)
+      "0x23F189dE34EED95f6303CfF1C77f7676F211Dd2c", // ZenjiWstEthLlamaUsdtStakeDao (V2 - StakeDao Llamaloan Strategy)
     ],
   },
   'loopfi-site': {
@@ -409,6 +414,20 @@ const configs = {
       '0x1C788E14d8e5B446e3F71B5142e2edaBcAB36da1', // Vault 2 - Lighter x XYZ
     ],
   },
+  'yieldfy': {
+    doublecounted: true,
+    methodology: "TVL is the sum of totalAssets() across the Yieldfy ERC-4626 USDG vaults on Robinhood Chain. This counts USDG sitting idle in a vault plus USDG the optimizer has routed into an external venue (Morpho, Steakhouse), which a raw balance check would miss. Marked doublecounted because deployed USDG is also counted by those underlying venues.",
+    start: '2026-07-19',
+    robinhood: [
+      '0x4a32cf41315DA5cDe593C56df35D7beFA40Cc01a', // Beta-1 — live
+      '0x8f55eF1cd2B62197742c3E985DB1Cd0f63622e9F', // Beta-0 — retired 2026-07-22, still holds dust
+    ],
+  },
+  'agua': {
+    doublecounted: true,
+    methodology: 'TVL is the sum of assets deposited into Agua\'s ERC-4626 vault(s), read via totalAssets() (net asset value) and denominated in the underlying asset (USDC). Deposits are allocated into external lending markets (Aave, Morpho, Euler, ...) already tracked by DefiLlama, so this TVL is double-counted.',
+    ethereum: ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f'],
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

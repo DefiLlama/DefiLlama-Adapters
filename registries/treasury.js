@@ -1104,6 +1104,17 @@ const configs = {
       ownTokens: ['BLZEEuZUBVqFhj8adcCFPJvPVCiCyVmh3hkJMrU8KuJA'],
     },
   },
+  'treasury/boardwalk': {
+    ethereum: {
+      owner: '0x366624d894920e3abE1F231f67a02a1861Ff1CA3',
+      tokens: [ADDRESSES.ethereum.WETH],
+      ownTokens: ['0xF9a352b7C7B62a852e5C8A64A455246Dd9596461'],
+    },
+    base: {
+      owner: '0x366624d894920e3abE1F231f67a02a1861Ff1CA3',
+      tokens: [ADDRESSES.base.WETH, ADDRESSES.base.USDC]
+    }
+  },
   'treasury/bonsai': {
     arbitrum: {
       tokens: [
@@ -1408,6 +1419,9 @@ const configs = {
       tokens: [
         nullAddress,
         ADDRESSES.ethereum.CRVUSD,
+        '0xcf62F905562626CfcDD2261162a51fd02Fc9c5b6', // sfrxUSD
+        '0xb45ad160634c528Cc3D2926d9807104FA3157305', // sDOLA
+        '0xdef1ca1fb7fbcdc777520aa7f396b4e015f497ab', // COW
       ],
     },
   },
@@ -6088,6 +6102,14 @@ const configs = {
         nullAddress,
       ],
       owners: ["0x0d189fd8d46e43b2f13390de95d4f8e185eb3914"],
+    },
+  },
+  'treasury/wildcard-games': {
+    robinhood: {
+      tokens: [
+        ADDRESSES.robinhood.USDG,
+      ],
+      owners: ["0x1b3bb8790b47855bDE2f43A56b6aa3E44E1F60AE"],
     },
   },
   'treasury/woofi': {

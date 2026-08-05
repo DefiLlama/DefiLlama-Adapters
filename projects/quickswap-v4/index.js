@@ -23,6 +23,11 @@ module.exports = uniV3Export({
     isAlgebra: true,
     fromBlock: 40341077,
   },
+  polygon: {
+    factory: '0x134c1dBE4860A9cAaf89002574fFe814772D9904',
+    isAlgebra: true,
+    fromBlock: 85606804,
+  },
 /*   mantra: {
     factory: '0x10253594A832f967994b44f33411940533302ACb',
     isAlgebra: true,

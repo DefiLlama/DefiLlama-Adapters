@@ -11,10 +11,16 @@ const stellarMarkets = [
   { vault: 'CD3WN3PLW63HFZXE56OTRLMBV46WG54TFPGRL4RDQ43HQTTWVB4RPO3G', underlying: ADDRESSES.stellar.EURC },
 ]
 
-// Underlying sitting in the vault, i.e. the Soroban equivalent of Compound's getCash().
+// Unborrowed underlying owned by the vault, i.e. the Soroban equivalent of Compound's getCash().
+//
+// This must be read from the vault's own ledger rather than from the SAC balance of the vault
+// address: each ReceiptVault forwards idle underlying into a DeFindex "boosted" vault for extra
+// yield, so the underlying it owns is (SAC balance held directly) + (value of the DeFindex shares
+// it holds). get_available_liquidity() returns that sum. Reading balance(underlying, vault) sees
+// only the un-swept remainder and understates every market by roughly an order of magnitude.
 async function stellarTvl(api) {
   await Promise.all(stellarMarkets.map(async ({ vault, underlying }) => {
-    const cash = await callSoroban(underlying, 'balance', [vault])
+    const cash = await callSoroban(vault, 'get_available_liquidity')
     api.add(underlying, cash.toString())
   }))
 }
@@ -27,7 +33,7 @@ async function stellarBorrowed(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is the underlying held by the protocol: on BSC and Monad the cash of every Peridot market listed on the comptroller, on Stellar the underlying balance custodied by each Soroban ReceiptVault. Outstanding debt is reported separately as borrowed.',
+  methodology: 'TVL is the underlying held by the protocol: on BSC and Monad the cash of every Peridot market listed on the comptroller, on Stellar the available liquidity of each Soroban ReceiptVault (underlying held directly plus underlying the vault has forwarded into its DeFindex boosted vault). Outstanding debt is reported separately as borrowed.',
   bsc: compoundExports2({ comptroller: '0x6fC0c15531CB5901ac72aB3CFCd9dF6E99552e14' }),
   monad: compoundExports2({ comptroller: '0x6D208789f0a978aF789A3C8Ba515749598940716', blacklistedMarkets: ['0xf8255935e62aa000c89de46a97d2f00bfff147e7'], cether: '0x2FB2861402A22244464435773dd1C6951735CdF7' }),
   stellar: { tvl: stellarTvl, borrowed: stellarBorrowed },

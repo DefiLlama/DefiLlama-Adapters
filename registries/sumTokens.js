@@ -1062,6 +1062,14 @@ const configs = {
         "0x1CE0c2827e2eF14D5C4f29a091d735A204794041"
       ]
     },
+    "tron": {
+      "owners": [
+        "TJYY1X7sNrSSowKhcsGECDXqfQBBwaTcg8"
+      ],
+      "tokens": [
+        ADDRESSES.tron.USDT
+      ]
+    },
   },
   "anome": {
     "bsc": {
@@ -14330,7 +14338,7 @@ const configs = {
     },
   },
   "ezmanager": {
-    "methodology": "TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, Ethereum, BSC, and Hyperliquid.",
+    "methodology": "TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, Ethereum, BSC, Hyperliquid, and Robinhood.",
     "doublecounted": true,
     "base": {
       "owner": "0x61c36AFF32Be348a3D1FE1E2B4745048f652770F",
@@ -14354,6 +14362,13 @@ const configs = {
       "resolveUniV3": true,
       "uniV3ExtraConfig": {
         "nftAddress": "0xead19ae861c29bbb2101e834922b2feee69b9091"
+      }
+    },
+    "robinhood": {
+      "owner": "0xEc6A12eb5593F450fc238Dd269fCff3DE8166098",
+      "resolveUniV3": true,
+      "uniV3ExtraConfig": {
+        "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
       }
     },
   },
@@ -16060,6 +16075,18 @@ const configs = {
       "token": ADDRESSES.null
     },
   },
+  "hypefuel": {
+    "methodology": "Counts the native HYPE and USDC held by the HypeFuel contract. HYPE is the inventory sold to users, and USDC is proceeds from fills awaiting the next rebalance back into HYPE.",
+    "hyperliquid": {
+      "owners": [
+        "0x42b06b1d9a07Fc3925C518dbf9475E7cA80DC8DF"
+      ],
+      "tokens": [
+        ADDRESSES.null,
+        ADDRESSES.hyperliquid.USDC
+      ]
+    },
+  },
   "hypepool": {
     "methodology": "TVL counts all HYPE locked in the HypePool prize pool contract on HyperEVM.",
     "hyperliquid": {
@@ -17449,6 +17476,27 @@ const configs = {
         ]
       }
     },
+  },
+  "luna": {
+    "methodology": "TVL counts the ETH held by the two game contracts: LunaGame (active round deposits, unclaimed ETH winnings, the Motherlode jackpot) and EclipseGame (the current prize pot and unclaimed dividends), plus ETH in the staking contract. Staking counts LUNA locked in timed staking positions and in the game contracts.",
+    "robinhood": {
+      "tvl": {
+        "owners": [
+          "0xd1b6D26FD47B2Fad620DfD4c522Fc03590DeF4ff",
+          "0x6103b8C107217Dc4da94F977487a02Bd75940f4f",
+          "0x5705e86776e220A0f256a7Ea8A9EA80672Dd141F",
+        ],
+        "tokens": [ADDRESSES.null]
+      },
+      "staking": {
+        "owners": [
+          "0xd1b6D26FD47B2Fad620DfD4c522Fc03590DeF4ff",
+          "0x6103b8C107217Dc4da94F977487a02Bd75940f4f",
+          "0x5705e86776e220A0f256a7Ea8A9EA80672Dd141F",
+        ],
+        "tokens": ["0xa6bd7d0dC2d3F4C0BABE6Ab06CCD5f090Ffc8089"]
+      },
+    }
   },
   "lunafi": {
     "polygon": {
@@ -23503,6 +23551,12 @@ const configs = {
         ]
       }
     },
+  },
+  "reed": {
+    "cardano": {
+      "owner": "script163jxg6ejex04jpsu9jc3dlw7u2we4u60zmlle6wdenvfga0pw26",
+      "tokens": [ADDRESSES.null]
+    }
   },
   "reflexer": {
     "start": "2021-02-17",
