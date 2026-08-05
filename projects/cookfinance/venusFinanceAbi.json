@@ -1,4 +1,0 @@
-{
-  "underlying": "address:underlying",
-  "exchangeRateStored": "uint256:exchangeRateStored"
-}
