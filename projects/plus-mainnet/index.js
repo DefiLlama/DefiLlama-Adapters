@@ -28,9 +28,5 @@ module.exports = {
   ethereum: {
     tvl,
     staking,
-  },
-  plus_mainnet: {
-    tvl,
-    staking,
   }
 };
