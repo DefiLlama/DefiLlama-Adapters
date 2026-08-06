@@ -75,10 +75,7 @@ async function unwrapBoringVault(api, vaultToken, holder, assetOverride) {
     api.call({ target: accountant, abi: 'uint8:decimals' }),
   ])
 
-  const decimalsBI = BigInt(decimals)
-  const scale = 10n ** decimalsBI
-  if (scale === 0n) return
-
+  const scale = 10n ** BigInt(decimals)
   const amount = BigInt(shareBalance) * BigInt(rate) / scale
   if (amount <= 0n) return
   api.add(assetOverride || baseAsset, amount)
@@ -95,10 +92,8 @@ async function unwrapPpsVault(api, vaultToken, holder) {
     api.call({ target: vaultToken, abi: 'erc20:decimals' }),
   ])
 
-  const scale = 10n ** BigInt(decimals)
-  if (scale === 0n) return
-
   // pricePerShare = asset units per 10^decimals shares
+  const scale = 10n ** BigInt(decimals)
   const amount = BigInt(shareBalance) * BigInt(pricePerShare) / scale
   if (amount <= 0n) return
   api.add(asset, amount)
