@@ -571,5 +571,6 @@ module.exports = {
   bsc:      { tvl },
   base:     { tvl },
   robinhood: { tvl },
+  megaeth: { tvl: () => ({}) },
   solana:   { tvl: solanaTvl },
 }
