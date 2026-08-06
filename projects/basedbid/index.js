@@ -59,6 +59,7 @@ const METEORA_DAMM_V2 = new PublicKey('cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1s
 const RAYDIUM_CLMM = new PublicKey('CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK')
 const SOL_USD1 = 'USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB'
 const METEORA_DEX = 1
+const SOL_EMPTY_ACCOUNT = '11111111111111111111111111111111'
 
 const TRACKED_TOKENS_SOL = [
   ADDRESSES.solana.SOL,
@@ -235,13 +236,10 @@ async function collectV4PositionsFromContract(api) {
     })
   }
 
-  // User-provided liquidity V4 pools (LiquidityV4Facet / OwnerLiquidityV4Facet).
-  // The facet is not yet cut into the diamond on every chain, so tolerate a
-  // missing selector ("Diamond: Function does not exist").
   const liquidityV4Tokens = await api.call({
     target: basedBid,
     abi: GET_LIQUIDITY_V4_LIST_ABI,
-  }).catch(() => []) || []
+  }) || []
 
   if (liquidityV4Tokens.length) {
     const liquidityV4PoolDataList = await api.multiCall({
@@ -278,6 +276,7 @@ async function unwrapUniV4Positions(api, uniV4ByNft) {
         positionIds,
         stateViewer: UNIV4_STATE_VIEW[api.chain],
       },
+      uniV3WhitelistedTokens: TRACKED_TOKENS[api.chain],
     })
   }
 }
@@ -314,22 +313,32 @@ async function unwrapPancakeInfinityCL(api, positionIds) {
   })
 
   const wrappedNative = WRAPPED_NATIVE[api.chain]
+  const allow = new Set(TRACKED_TOKENS[api.chain].map(lc))
+  const memeSides = new Set()
 
   validIdx.forEach((i, j) => {
     const pos = positions[i]
     const slot = slot0[j]
     if (!pos || !slot || !pos.liquidity || pos.liquidity == 0) return
 
+    const token0 = pos.poolKey.currency0 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency0
+    const token1 = pos.poolKey.currency1 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency1
+
     addUniV3LikePosition({
       api,
-      token0: pos.poolKey.currency0 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency0,
-      token1: pos.poolKey.currency1 === ADDRESSES.null ? wrappedNative : pos.poolKey.currency1,
+      token0,
+      token1,
       liquidity: pos.liquidity,
       tickLower: Number(pos.tickLower),
       tickUpper: Number(pos.tickUpper),
       tick: Number(slot.tick),
     })
+
+    if (!allow.has(lc(token0))) memeSides.add(lc(token0))
+    if (!allow.has(lc(token1))) memeSides.add(lc(token1))
   })
+
+  memeSides.forEach((token) => api.removeTokenBalance(token))
 }
 
 async function addEvmLpPositions(api) {
@@ -337,7 +346,7 @@ async function addEvmLpPositions(api) {
 
   // Uniswap V3 + PancakeSwap V3 LP NFTs (ERC721Enumerable on the NFT manager).
   for (const nftAddress of UNIV3_LIKE_NFTS[api.chain] || []) {
-    await sumTokens2({ api, owner, uniV3ExtraConfig: { nftAddress } })
+    await sumTokens2({ api, owner, uniV3ExtraConfig: { nftAddress }, uniV3WhitelistedTokens: TRACKED_TOKENS[api.chain] })
   }
 
   // Uniswap V4 + PancakeSwap Infinity CL — position managers and tokenIds
@@ -420,6 +429,8 @@ async function addMeteoraPositions(api, lockPdas) {
   })
   if (!decodedPositions.length) return
 
+  const allow = new Set(TRACKED_TOKENS_SOL)
+
   const poolAccounts = await connection.getMultipleAccountsInfo(poolIds)
   poolAccounts.forEach((acc, i) => {
     if (!acc?.data) return
@@ -431,8 +442,10 @@ async function addMeteoraPositions(api, lockPdas) {
     const shareDen = pool.poolLiquidity
     const amountA = allocateShare(pool.tokenAAmount, shareNum, shareDen)
     const amountB = allocateShare(pool.tokenBAmount, shareNum, shareDen)
-    if (amountA > 0n) api.add(pool.tokenAMint.toBase58(), amountA.toString())
-    if (amountB > 0n) api.add(pool.tokenBMint.toBase58(), amountB.toString())
+    const mintA = pool.tokenAMint.toBase58()
+    const mintB = pool.tokenBMint.toBase58()
+    if (amountA > 0n && allow.has(mintA)) api.add(mintA, amountA.toString())
+    if (amountB > 0n && allow.has(mintB)) api.add(mintB, amountB.toString())
   })
 }
 
@@ -475,19 +488,28 @@ async function addRaydiumClmmPositions(api, lockPdas) {
     })
   }
 
+  const allow = new Set(TRACKED_TOKENS_SOL)
+  const memeMints = new Set()
+
   positions.forEach((position) => {
     const poolInfo = pools.get(position.poolId.toBase58())
     if (!poolInfo) return
+    const token0 = poolInfo.mintA.toBase58()
+    const token1 = poolInfo.mintB.toBase58()
     addUniV3LikePosition({
       api,
-      token0: poolInfo.mintA.toBase58(),
-      token1: poolInfo.mintB.toBase58(),
+      token0,
+      token1,
       liquidity: position.liquidity.toNumber(),
       tickLower: position.tickLower,
       tickUpper: position.tickUpper,
       tick: poolInfo.tickCurrent,
     })
+    if (!allow.has(token0)) memeMints.add(token0)
+    if (!allow.has(token1)) memeMints.add(token1)
   })
+
+  memeMints.forEach((mint) => api.removeTokenBalance(mint))
 }
 
 async function addTreasuryLockBalances(api, treasury, lock) {
@@ -519,6 +541,7 @@ function addBondingCurveReserves(api, memeTokens) {
     if (raised <= 0n) return
 
     const baseMint = account.initialData.baseTokenForPair.toBase58()
+    if (baseMint === SOL_EMPTY_ACCOUNT) return
     api.add(baseMint, raised.toString())
   })
 }
