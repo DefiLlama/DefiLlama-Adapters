@@ -1,7 +1,7 @@
 const WRAPPERS = [
-  '0x98F6529DF7BF5088DB795CA1590c51d81b2175CA',
-  '0xfa2c898Aa1a41DE6EE334C187983DD3875354fc4',
-  '0x9AEE2D78Eb7F6781Aeb7247bB764784C1048C881',
+  '0x6fc2670a0e3ecFfAc27c66009530f16BC07cd2Cc', // dyield Prime — d$P
+  '0x80729552cb813d95d54474c0E7e9E5ed8F5A8D89', // dyield High  — d$H
+  '0xB7E50801E30cB5eF02b95D1bbc8363bc260197FF', // dyield Ultra — d$U
 ]
 async function tvl(api) {
   const assets = await api.multiCall({ abi: 'address:asset', calls: WRAPPERS })
@@ -13,5 +13,5 @@ module.exports = {
   start: 1785811569,
   base: { tvl },
   doublecounted: true,
-  hallmarks: [[1785811569, 'Wrappers deployed on Base']],
+  hallmarks: [['2026-08-05', 'Wrappers deployed on Base']],
 }
