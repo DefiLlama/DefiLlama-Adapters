@@ -23,6 +23,7 @@ const stacksSBTC = [
   "bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc",
   "bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy",
   "bc1p6ys2ervatu00766eeqfmverzegg9fkprn3xjn0ppn70h53qu5vus3yzl0x",
+  "bc1pgg0us9y5skfpatq0nhxt7khhk8qxv0zgle36r6yxnql6dvyaafqsahn043",
 ];
 
 const magpie = [
