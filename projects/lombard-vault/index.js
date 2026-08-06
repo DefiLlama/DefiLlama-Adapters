@@ -106,17 +106,19 @@ async function unwrapBoringVault(api, vaultToken, holder, assetOverride) {
 
 // Unwraps an ERC4626-style share token via asset() * pricePerShare().
 async function unwrapPpsVault(api, vaultToken, holder) {
+  // No permitFailure: these are hardcoded vaults, so a failing read means the
+  // config broke. Failing loudly keeps the last known-good TVL instead of
+  // silently dropping the whole position.
   const shareBalance = await api.call({
-    target: vaultToken, abi: 'erc20:balanceOf', params: [holder], permitFailure: true,
+    target: vaultToken, abi: 'erc20:balanceOf', params: [holder],
   })
   if (!shareBalance || shareBalance === '0') return
 
   const [asset, pricePerShare, decimals] = await Promise.all([
-    api.call({ target: vaultToken, abi: 'address:asset', permitFailure: true }),
-    api.call({ target: vaultToken, abi: 'function pricePerShare() view returns (uint256)', permitFailure: true }),
-    api.call({ target: vaultToken, abi: 'erc20:decimals', permitFailure: true }),
+    api.call({ target: vaultToken, abi: 'address:asset' }),
+    api.call({ target: vaultToken, abi: 'function pricePerShare() view returns (uint256)' }),
+    api.call({ target: vaultToken, abi: 'erc20:decimals' }),
   ])
-  if (!asset || !pricePerShare || decimals === undefined || decimals === null) return
 
   const scale = 10n ** BigInt(decimals)
   if (scale === 0n) return
