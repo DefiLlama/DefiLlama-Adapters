@@ -1,7 +1,3 @@
-const { get } = require('../helper/http')
-
-const WISE = '0x66a0f676479Cee1d7373f3DC2e2952778BfF5bd6'
-
 const vaults = {
   ethereum: {
     wtnUSDC: '0x7e1EFF4301defc24936470B30bd1c686D2a295dc',
@@ -36,27 +32,10 @@ async function tvl(api) {
   api.add(chainVaults.USDT, supplies[1])
 }
 
-async function staking(api) {
-  if (api.chain !== 'ethereum') return
-
-  const [totalStaked] = await api.call({
-    target: WISE,
-    abi: 'function globals() view returns (uint256 totalStaked, uint256, uint256, uint256, uint256, uint256)',
-  })
-  api.add(WISE, totalStaked)
-}
-
-async function pool2(api) {
-  if (api.chain !== 'ethereum') return
-
-  const { tvlLiquidity } = await get('https://data.wisetoken.com/wise/globals/tvl')
-  api.addUSDValue(tvlLiquidity)
-}
-
 module.exports = {
   misrepresentedTokens: true,
-  methodology: 'RWA TVL = totalSupply of wtnUSDC + wtnUSDT receipt tokens (1:1 with deposited stables). Principal is forwarded to World Mobile for AirNodes; vaults only hold claimable interest. Staking TVL = totalStaked from the globals() function on the WISE token contract. Liquidity TVL = tvlLiquidity from WISE\'s public globals/tvl API, representing WISE/ETH Uniswap liquidity.',
-  ethereum: { tvl, staking, pool2 },
+  methodology: 'RWA TVL = totalSupply of wtnUSDC + wtnUSDT receipt tokens (1:1 with deposited stables). Principal is forwarded to World Mobile for AirNodes; vaults only hold claimable interest.',
+  ethereum: { tvl },
   arbitrum: { tvl },
   base: { tvl },
 }
