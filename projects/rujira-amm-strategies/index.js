@@ -2,14 +2,14 @@ const {
   addDecimal,
   addScaled,
   addToApi,
-} = require('../rujira/balances')
+} = require('../helper/rujira/balances')
 const {
   getFinConfig,
   getFinRanges,
   semverAtLeast,
-} = require('../rujira/fin')
-const { getBruneBacking } = require('../rujira/helper')
-const { getBlock, getContracts } = require('../rujira/query')
+} = require('../helper/rujira/fin')
+const { getBruneBacking } = require('../helper/rujira/helper')
+const { getBlock, getContracts } = require('../helper/rujira/query')
 
 const CCL_ACTIVATION_BLOCK = 24_991_560
 const EXCLUDED_DENOMS = new Set(['x/brune', 'thor.auto', 'thor.xusk'])

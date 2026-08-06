@@ -1,8 +1,12 @@
 const { queryAllContractState, queryContract, queryRawContractState } = require('./query')
 
 function semverAtLeast(version, minimum) {
-  const left = version.split('.').map(Number)
-  const right = minimum.split('.').map(Number)
+  const parseVersion = (value) => String(value).split('.').map((part) => {
+    const match = part.match(/\d+/)
+    return match ? Number.parseInt(match[0], 10) : 0
+  })
+  const left = parseVersion(version)
+  const right = parseVersion(minimum)
   for (let i = 0; i < 3; i++) {
     if ((left[i] || 0) > (right[i] || 0)) return true
     if ((left[i] || 0) < (right[i] || 0)) return false
@@ -38,8 +42,14 @@ async function getCurrentFinRanges(address, height) {
         { ranges: { owner: null, cursor, limit: 30 } },
         height,
       )
+      if (!Array.isArray(response.ranges))
+        throw new Error(`Invalid FIN ranges response for ${address} at ${height}`)
       ranges.push(...response.ranges)
-      cursor = response.ranges.length === 30 ? response.ranges.at(-1).idx : null
+      if (response.ranges.length < 30) break
+      const nextCursor = response.ranges.at(-1)?.idx
+      if (nextCursor == null || nextCursor === cursor)
+        throw new Error(`FIN range pagination did not advance for ${address} at ${height}`)
+      cursor = nextCursor
     } while (cursor !== null)
     return ranges
   } catch (error) {
@@ -73,21 +83,29 @@ async function getCurrentFinOrders(address, height) {
 function legacyOracleOrderOwners(models) {
   const owners = new Set()
   for (const { key } of models) {
-    if (!key || key.length < 10) continue
-    const namespaceLength = key.readUInt16BE(0)
-    if (key.subarray(2, 2 + namespaceLength).toString() !== 'orders') continue
+    if (!Buffer.isBuffer(key)) continue
+    let offset = 0
+    const readUint16 = () => {
+      if (offset + 2 > key.length) return null
+      const value = key.readUInt16BE(offset)
+      offset += 2
+      return value
+    }
+    const readBytes = (length) => {
+      if (length == null || offset + length > key.length) return null
+      const value = key.subarray(offset, offset + length)
+      offset += length
+      return value
+    }
 
-    let offset = 2 + namespaceLength
-    const ownerLength = key.readUInt16BE(offset)
-    offset += 2
-    const owner = key.subarray(offset, offset + ownerLength).toString()
-    offset += ownerLength
-
-    const sideLength = key.readUInt16BE(offset)
-    offset += 2 + sideLength
-    const priceTypeLength = key.readUInt16BE(offset)
-    offset += 2
-    if (priceTypeLength === 1 && key[offset] === 1) owners.add(owner)
+    const namespace = readBytes(readUint16())
+    if (!namespace || namespace.toString() !== 'orders') continue
+    const owner = readBytes(readUint16())
+    if (!owner) continue
+    if (!readBytes(readUint16())) continue
+    const priceType = readUint16()
+    if (priceType !== 1 || offset >= key.length) continue
+    if (key[offset] === 1) owners.add(owner.toString())
   }
   return owners
 }

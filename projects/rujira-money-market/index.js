@@ -1,16 +1,16 @@
 const {
   addRaw,
   addToApi,
-} = require('../rujira/balances')
-const { semverAtLeast } = require('../rujira/fin')
-const { getCreditAccounts } = require('../rujira/helper')
+} = require('../helper/rujira/balances')
+const { semverAtLeast } = require('../helper/rujira/fin')
+const { getCreditAccounts } = require('../helper/rujira/helper')
 const {
   getBlock,
   getContracts,
   queryContract,
   queryContractInfo,
   queryRawContractState,
-} = require('../rujira/query')
+} = require('../helper/rujira/query')
 
 const vaultBalanceCache = new Map()
 

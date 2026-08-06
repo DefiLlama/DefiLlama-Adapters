@@ -1,9 +1,9 @@
 const {
   addScaled,
   addToApi,
-} = require('../rujira/balances')
-const { getBruneBacking } = require('../rujira/helper')
-const { getBlock, getContracts } = require('../rujira/query')
+} = require('../helper/rujira/balances')
+const { getBruneBacking } = require('../helper/rujira/helper')
+const { getBlock, getContracts } = require('../helper/rujira/query')
 
 async function tvl(api) {
   const height = await getBlock(api)

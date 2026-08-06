@@ -1,4 +1,4 @@
-const { get } = require('../helper/http')
+const { get } = require('../http')
 
 const THORCHAIN_API = 'https://gateway.liquify.com/chain/thorchain_api'
 const THORCHAIN_RPC = 'https://gateway.liquify.com/chain/thorchain_rpc'

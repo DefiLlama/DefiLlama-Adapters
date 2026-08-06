@@ -23,7 +23,9 @@ const DENOM_TO_COINGECKO = {
 }
 
 function parseDecimal(value) {
-  const [whole, fraction = ''] = String(value).split('.')
+  const parts = String(value).split('.')
+  if (parts.length > 2) throw new Error(`Invalid CosmWasm decimal: ${value}`)
+  const [whole, fraction = ''] = parts
   if (!/^\d+$/.test(whole) || !/^\d*$/.test(fraction) || fraction.length > DECIMAL_PLACES)
     throw new Error(`Invalid CosmWasm decimal: ${value}`)
   return BigInt(whole) * DECIMAL_SCALE + BigInt(fraction.padEnd(DECIMAL_PLACES, '0') || '0')
