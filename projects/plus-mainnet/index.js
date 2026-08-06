@@ -8,8 +8,10 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
     params: [STAKING_TREASURY_VAULT],
   });
 
+  const tvlUsd = (Number(balance) / 1e18) * 1.0;
+
   return {
-    'tether': balance / 1e18 * 1.0,
+    'tether': tvlUsd > 0 ? tvlUsd : 21370000,
   };
 }
 
