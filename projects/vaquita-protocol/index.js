@@ -1,10 +1,5 @@
 const { callSoroban, getContractInstanceStorage } = require('../helper/chain/stellar');
 
-// The Base deployment was shut down on 2026-08-06 and no longer holds user
-// funds, so it is no longer counted. Past TVL for Base stays in the historical
-// data; only new snapshots are Stellar-only.
-const BASE_SHUTDOWN = '2026-08-06';
-
 // Vaquita fixed-yield pool on Stellar mainnet. User principal is routed into a
 // Vaquita-deployed and Vaquita-managed DeFindex vault; the reward pool that
 // backs the fixed yield sits in the pool contract as idle deposit token.
@@ -31,7 +26,7 @@ module.exports = {
   // Soroban reads go through simulateTransaction, which only sees the current
   // ledger, so historical runs would report today's Stellar balances.
   timetravel: false,
-  hallmarks: [[BASE_SHUTDOWN, 'Base deployment shut down, Stellar only']],
+  base: { tvl: () => ({} ) },
   stellar: { tvl: stellarTvl },
   methodology: 'On Stellar, TVL is the total assets managed by the Vaquita-deployed DeFindex vault (fetch_total_managed_funds, covering both idle and strategy-invested amounts), plus the idle deposit token balance held by the Vaquita pool contract to back the fixed-yield reward pool. The Base deployment was shut down on 2026-08-06 and is no longer counted.',
 };
