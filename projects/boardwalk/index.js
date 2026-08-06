@@ -5,12 +5,13 @@ const { sumUnknownTokens, nullAddress } = require('../helper/unknownTokens')
 // Staked BWLK is held by the staked-BWLK tracker (sBWLK).
 const BWLK = '0xF9a352b7C7B62a852e5C8A64A455246Dd9596461'
 const STAKED_BWLK_TRACKER = '0x3961F92c26724C9d61CED679540F35794d90c576'
+const DEAD = '0x000000000000000000000000000000000000dEaD'
 
 const config = {
-    ethereum: '0xfAEdbA0E97D5DCD7A29fB6778D7e17b1be35c0b8',
-    base: '0x4F7af6f968C30be6FC196Cd5eed68032022AB067',
-    arbitrum: '0xe64A71A60D552B56579D8edeB13E86bD6222F882',
-    robinhood: '0x177dbEDd02cEe010b80a0A3F284c9FD9F67D8a9e',
+  ethereum: '0xfAEdbA0E97D5DCD7A29fB6778D7e17b1be35c0b8',
+  base: '0x4F7af6f968C30be6FC196Cd5eed68032022AB067',
+  arbitrum: '0xe64A71A60D552B56579D8edeB13E86bD6222F882',
+  robinhood: '0x177dbEDd02cEe010b80a0A3F284c9FD9F67D8a9e',
 }
 
 const launchInfoAbi = 'function launches(address) view returns (address token, address feeDistributor, address presaleManager, address vestingStream, address lpStaking, address issuer, uint8 path, uint32 createdAt)'
@@ -31,15 +32,18 @@ async function tvl(api) {
   lpTokens.forEach((lp, i) => {
     if (lp === nullAddress) return
     ownerTokens.push([[lp], lpStakings[i]])
+    ownerTokens.push([[lp], DEAD])
   })
-  return sumUnknownTokens({ api, ownerTokens, resolveLP: true, useDefaultCoreAssets: true })
+
+  const memeTokens = launches.map(l => l.token).filter(Boolean)
+  return sumUnknownTokens({ api, ownerTokens, resolveLP: true, useDefaultCoreAssets: true, blacklist: memeTokens })
 }
 
 module.exports = {
   misrepresentedTokens: true,
-  doublecounted: true, // staked LP is canonical Uniswap v2 pair liquidity, also counted in the uniswap listing
+  doublecounted: true, // LP is canonical Uniswap v2 pair liquidity, also counted in the uniswap listing
   start: '2026-07-18',
-  methodology: 'Counts WETH contributed to active presales (held by each launch\'s PresaleManager) and Uniswap v2 LP tokens staked in each launch\'s LPStaking contract, valued from pair reserves. Staked BWLK on Ethereum is counted under staking.',
+  methodology: 'Counts WETH contributed to active presales (held by each launch\'s PresaleManager), plus the WETH side of the Uniswap v2 LP staked in each launch\'s LPStaking contract and the permanently-locked seed LP burned to the dead address at graduation. Only the WETH side of each pair is counted; the launch-token side is self-priced and excluded. Staked BWLK on Ethereum is counted under staking.',
 }
 
 Object.keys(config).forEach(chain => {
