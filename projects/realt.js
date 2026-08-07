@@ -1,39 +1,53 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const { get } = require('./helper/http')
+const sdk = require('@defillama/sdk')
+const { request, gql } = require('graphql-request')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-// Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
-// See https://api.realt.community/ for reference
+const SUBGRAPH = sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/FPPoFB7S2dcCNrRyjM5QbaMwKqRZPdbTg8ysBrwXd4SP')
+
+const TOKENS_QUERY = gql`
+  query ($last: String!) {
+    tokens(first: 1000, where: { id_gt: $last, totalSupply_gt: "0" }, orderBy: id, orderDirection: asc) {
+      id
+      address
+      oracle { address }
+    }
+  }
+`
+
+async function getRealTokens() {
+  const out = []
+  let last = ''
+  while (true) {
+    const { tokens } = await request(SUBGRAPH, TOKENS_QUERY, { last })
+    out.push(...tokens)
+    if (tokens.length < 1000) break
+    last = tokens[tokens.length - 1].id
+  }
+  return out.filter(t => t.oracle && t.oracle.address)
+}
+
 async function xdaiTvl(api) {
-  let realt_tokens = await get('https://api.realtoken.community/v1/token')
+  const tokens = await getRealTokens()
+  const addresses = tokens.map(t => t.address)
+  const oracles = tokens.map(t => t.oracle.address)
 
-  // Filter out deprecated contracts
-  realt_tokens = realt_tokens.filter(t => !t['fullName'].startsWith('OLD-')).filter(t => t.xDaiContract && +t.tokenPrice)
+  const [supplies, decimals, prices] = await Promise.all([
+    api.multiCall({ abi: 'erc20:totalSupply', calls: addresses }),
+    api.multiCall({ abi: 'erc20:decimals', calls: addresses }),
+    api.multiCall({ abi: 'int256:latestAnswer', calls: oracles }),
+  ])
 
-  const tokenSupplies_xdai = await api.multiCall({ calls: realt_tokens.map(t => t.xDaiContract), abi: 'erc20:totalSupply', })
-  tokenSupplies_xdai.map((supply, i) => api.add(ADDRESSES.xdai.USDC, supply/1e18 * realt_tokens[i]['tokenPrice'] * 1e6 ))
+  tokens.forEach((_, i) => {
+    const price = Number(prices[i] || 0) / 1e8
+    const supply = Number(supplies[i] || 0) / 10 ** Number(decimals[i] || 18)
+    if (price > 0 && supply > 0) api.add(ADDRESSES.xdai.USDC, supply * price)
+  })
 }
 
 module.exports = {
-  methodology: `TVL for RealT consists of the accumulation of all properties prices, each being tokenSupply * tokenPrice where tokenPrice is given by community API`,
+  misrepresentedTokens: true,
+  methodology: `Enumerates the full RealToken property-token catalog from the RealTokens Gnosis subgraph and values each one as totalSupply * on-chain oracle price. Every RealToken has a dedicated Chainlink-style price feed (latestAnswer, 8 decimals) that RealT updates from its off-chain property valuations.`,
   xdai: {
-    tvl: xdaiTvl
+    tvl: xdaiTvl,
   },
 }
-
-
-/*
-A token looks like below as returned by community API
-{
-  fullName	"19191 Bradford Ave, Detroit, MI 48205"
-  shortName	"19191 Bradford"
-  symbol	"REALTOKEN-S-19191-BRADFORD-AVE-DETROIT-MI"
-  tokenPrice	54.04
-  currency	"USD"
-  ethereumContract	"0x584967356bad1499c10a8695522983F2fB7d88F3"
-  xDaiContract	"0x584967356bad1499c10a8695522983F2fB7d88F3"
-  lastUpdate	
-  date	"2021-10-17 20:00:01.000000"
-  timezone_type	3
-  timezone	"UTC"
-}
-*/
