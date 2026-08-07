@@ -1,7 +1,8 @@
 const sdk = require('@defillama/sdk')
+const ADDRESSES = require('./helper/coreAssets.json')
 const { request, gql } = require('graphql-request')
-const ADDRESSES = require('../helper/coreAssets.json')
 
+// Subgraph from https://github.com/RealToken-Community/dashboard-v2/blob/master/src/repositories/subgraphs/clients.ts
 const SUBGRAPH = sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/FPPoFB7S2dcCNrRyjM5QbaMwKqRZPdbTg8ysBrwXd4SP')
 
 const TOKENS_QUERY = gql`
@@ -40,7 +41,7 @@ async function xdaiTvl(api) {
   tokens.forEach((_, i) => {
     const price = Number(prices[i] || 0) / 1e8
     const supply = Number(supplies[i] || 0) / 10 ** Number(decimals[i] || 18)
-    if (price > 0 && supply > 0) api.add(ADDRESSES.xdai.USDC, supply * price)
+    if (price > 0 && supply > 0) api.add(ADDRESSES.xdai.USDC, supply * price * 1e6)
   })
 }
 
