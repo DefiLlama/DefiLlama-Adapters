@@ -1,7 +1,7 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { get } = require("../helper/http");
-const { getCache, setCache } = require("../helper/cache");
+const { getConfig } = require("../helper/cache");
 
 const CoveredCallStrategiesAbi = "function strategies(uint256) view returns (address underlying, uint128 maxDeposits, uint128 minDeposits, uint128 startTime, uint128 tenor, uint128 minStrike, uint128 subscribeEndTime, uint256 totalDeposits, uint128 tokenRewardsPerDeposit)";
 const whaleMatchTotalSubscriptionsAbi = "function totalSubscriptions(address) view returns (uint256)";
@@ -24,15 +24,14 @@ const CONFIG = {
 async function loadContracts(api) {
   const url = `https://api.myso.finance/chainIds/${api.chainId}/contracts`;
 
-  const data = await get(url, { responseType: "json", decompress: true, validateStatus: () => true });
-  
-  if (data && data.contracts && data.contracts.length) {
-    await setCache("myso-v2", api.chain, data.contracts);
-    return data.contracts;
-  }
-
-  const cached = await getCache("myso-v2", api.chain);
-  return (cached && cached.length) ? cached : [];
+  const contracts = await getConfig('myso-v2/' + api.chain, undefined, {
+    fetcher: async () => {
+      const data = await get(url, { responseType: "json", decompress: true, validateStatus: () => true });
+      if (!data || !data.contracts || !data.contracts.length) throw new Error('Failed to fetch myso-v2 contracts');
+      return data.contracts;
+    }
+  });
+  return Array.isArray(contracts) ? contracts : [];
 }
 
 async function getBlitzMatchBalances(api, contracts, fromBlock) {
