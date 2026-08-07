@@ -39,7 +39,7 @@ Object.keys(config).forEach((chain) => {
       const logs = await getLogs2({ api, target: HOOK, eventAbi, fromBlock: config[chain] })
       const tokens = [nullAddress]
       logs.forEach((log) => tokens.push(log.main, log.secondary))
-      return sumTokens2({ api, owner: HOOK, tokens, permitFailure: true })
+      return sumTokens2({ api, owner: HOOK, tokens })
     },
   }
 })
