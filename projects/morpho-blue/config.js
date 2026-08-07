@@ -36,6 +36,8 @@ const config = {
     blacklistedMarketIds: [
       '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
       '0xe1986e80099257c65dd18091ec7e34752ae2336870a5649f20c450c9c4931fb8', // HERMES market
+      '0xa4ec527128b425ee3fcb7f60eca37677b63b3d003345ec2a72ef6a2e72da53fc', // RSS/USDC (77% LLTV) market, single supplier looping against self-issued RSS collateral
+      '0x41c08085ddcfd1dc1c5eb82d7dc031593d1a1a831958380e8b60469c45bf7d88', // RSS/USDC (77% LLTV) market, single supplier looping against self-issued RSS collateral
     ]
   },
   arbitrum: {
