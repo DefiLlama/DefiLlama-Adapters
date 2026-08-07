@@ -9,7 +9,7 @@ const { fetchURL } = require('../helper/utils')
 
 const BigNumber = require("bignumber.js")
 const { nullAddress } = require("../helper/tokenMapping");
-const { get } = require("../helper/http");
+const { getConfig } = require("../helper/cache");
 
 //bsc staking con
 const filetStakingCon_BSC = "0x9c821defD3BBb07C5c786C3bB039051364Fa6F39";
@@ -32,7 +32,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
 const getMinersList = async () => {
-  const resp = await get(minerList)
+  const resp = await getConfig('filet/miner-list', minerList)
   return resp.data.map(({minerId}) => {
 
       let bytes = Buffer.alloc(20);

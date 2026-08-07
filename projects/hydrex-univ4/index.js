@@ -1,9 +1,9 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 const STRATEGIES_URL = 'https://api.hydrex.fi/strategies'
 
 async function getStrategies() {
-  const data = await get(STRATEGIES_URL)
+  const data = await getConfig('hydrex-univ4', STRATEGIES_URL)
   
   const univ4Pools = data
     .filter(strategy => strategy.liquidityType === 'uniV4')
