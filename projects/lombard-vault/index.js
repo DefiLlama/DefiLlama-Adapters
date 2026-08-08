@@ -7,9 +7,17 @@ const SONIC_VAULT = '0x309f25d839a2fe225e80210e110C99150Db98AAF'  // vault (Soni
 const LBTC = ADDRESSES.etlk.LBTC
 
 // ── Add new BoringVault tokens here ──────────────────────────────────────────
-// Unwrapped to underlying base asset in tvlEthExtras.
+// `asset` overrides the accountant base asset (equivalent BTC unit).
 const BORING_VAULTS_ETH = [
-  '0x75231079973c23e9eb6180fa3d2fc21334565ab5',  // Turtle Club (katanaLBTCv)
+  { token: '0x75231079973c23e9eb6180fa3d2fc21334565ab5' },  // Turtle Club (katanaLBTCv) -> accountant base
+  // Sentora (sLBTC): backing sits as LBTC in SupervisedLoanPositionManager
+  // 0x6cad5fcb29d98c4968a79ea7db286c5986389009; accountant base WBTC is pricing unit only.
+  { token: '0x13cc1b39cb259ba10cd174eae42012e698ed7c51', asset: ADDRESSES.ethereum.LBTC },
+]
+
+// ── Add new pricePerShare vault tokens here ───────────────────────────────────
+const PPS_VAULTS_ETH = [
+  '0xf14f678d9c05798ba61652a950a05d74ad2e0a6c',  // Bitcoin Onchain Credit Strategy (BTCoc) -> BTC.b
 ]
 
 // ── Add new Curve pools here ──────────────────────────────────────────────────
@@ -22,20 +30,15 @@ const CURVE_POOLS_CORN = [
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+// No `permitFailure` anywhere: pools/vaults are hardcoded, so a failed read must
+// throw (keeps last known-good TVL) rather than silently omit the position.
 
-// Unwraps a single Curve StableSwap-NG pool LP share held by `holder`.
-// Works for both eth (where base scanner already discovered the LP token) and
-// chains without auto-discovery (Corn): removeTokenBalance is a no-op when the
-// token isn't in balances yet.
+// Curve StableSwap-NG LP share held by `holder` -> underlying coins.
 async function unwrapCurvePoolShare({ api, pool, holder, coinCount }) {
-  const lpBalance = await api.call({
-    target: pool, abi: 'erc20:balanceOf', params: [holder], permitFailure: true,
-  })
+  const lpBalance = await api.call({ target: pool, abi: 'erc20:balanceOf', params: [holder] })
   if (!lpBalance || lpBalance === '0') return
 
-  const totalSupply = await api.call({
-    target: pool, abi: 'erc20:totalSupply', permitFailure: true,
-  })
+  const totalSupply = await api.call({ target: pool, abi: 'erc20:totalSupply' })
   if (!totalSupply || totalSupply === '0') return
 
   api.removeTokenBalance(pool)  // no-op if not present
@@ -45,70 +48,79 @@ async function unwrapCurvePoolShare({ api, pool, holder, coinCount }) {
 
   for (let i = 0; i < coinCount; i++) {
     const token = await api.call({
-      target: pool, abi: 'function coins(uint256) view returns (address)',
-      params: [i], permitFailure: true,
+      target: pool, abi: 'function coins(uint256) view returns (address)', params: [i],
     })
     if (!token || token.toLowerCase() === ADDRESSES.null.toLowerCase()) break
 
     const poolBal = await api.call({
-      target: pool, abi: 'function balances(uint256) view returns (uint256)',
-      params: [i], permitFailure: true,
+      target: pool, abi: 'function balances(uint256) view returns (uint256)', params: [i],
     })
-    if (!poolBal) continue
 
     const amount = BigInt(poolBal) * lpBI / supplyBI
     if (amount > 0n) api.add(token, amount)
   }
 }
 
-// Unwraps a BoringVault share token to its underlying base asset via the
-// Vault → Hook → Accountant → (base, rate) architecture.
-async function unwrapBoringVault(api, vaultToken, holder) {
-  const shareBalance = await api.call({
-    target: vaultToken, abi: 'erc20:balanceOf', params: [holder], permitFailure: true,
-  })
+// BoringVault shares -> base asset, via Vault -> Hook -> Accountant -> (base, rate).
+async function unwrapBoringVault(api, vaultToken, holder, assetOverride) {
+  const shareBalance = await api.call({ target: vaultToken, abi: 'erc20:balanceOf', params: [holder] })
   if (!shareBalance || shareBalance === '0') return
 
-  const hook = await api.call({ target: vaultToken, abi: 'address:hook', permitFailure: true })
-  if (!hook) return
-
-  const accountant = await api.call({ target: hook, abi: 'address:accountant', permitFailure: true })
-  if (!accountant) return
+  const hook = await api.call({ target: vaultToken, abi: 'address:hook' })
+  const accountant = await api.call({ target: hook, abi: 'address:accountant' })
 
   const [baseAsset, rate, decimals] = await Promise.all([
-    api.call({ target: accountant, abi: 'address:base', permitFailure: true }),
-    api.call({ target: accountant, abi: 'uint256:getRate', permitFailure: true }),
-    api.call({ target: accountant, abi: 'uint8:decimals', permitFailure: true }),
+    api.call({ target: accountant, abi: 'address:base' }),
+    api.call({ target: accountant, abi: 'uint256:getRate' }),
+    api.call({ target: accountant, abi: 'uint8:decimals' }),
   ])
-  if (!baseAsset || !rate || decimals === undefined || decimals === null) return
 
-  const decimalsBI = BigInt(decimals)
-  const scale = 10n ** decimalsBI
-  if (scale === 0n) return
-
+  const scale = 10n ** BigInt(decimals)
   const amount = BigInt(shareBalance) * BigInt(rate) / scale
   if (amount <= 0n) return
-  api.add(baseAsset, amount)
+  api.add(assetOverride || baseAsset, amount)
+}
+
+// ERC4626-style shares -> asset() * pricePerShare().
+async function unwrapPpsVault(api, vaultToken, holder) {
+  const shareBalance = await api.call({ target: vaultToken, abi: 'erc20:balanceOf', params: [holder] })
+  if (!shareBalance || shareBalance === '0') return
+
+  const [asset, pricePerShare, decimals] = await Promise.all([
+    api.call({ target: vaultToken, abi: 'address:asset' }),
+    api.call({ target: vaultToken, abi: 'function pricePerShare() view returns (uint256)' }),
+    api.call({ target: vaultToken, abi: 'erc20:decimals' }),
+  ])
+
+  // pricePerShare = asset units per 10^decimals shares
+  const scale = 10n ** BigInt(decimals)
+  const amount = BigInt(shareBalance) * BigInt(pricePerShare) / scale
+  if (amount <= 0n) return
+  api.add(asset, amount)
 }
 
 // ─── Per-chain extra TVL hooks ────────────────────────────────────────────────
 
 async function tvlEthExtras(api) {
-  // 1. Unwrap Curve LP pools (add new pools to CURVE_POOLS_ETH above)
+  // Curve LP pools
   for (const { pool, coinCount } of CURVE_POOLS_ETH) {
     await unwrapCurvePoolShare({ api, pool, holder: LBTCV, coinCount })
   }
 
-  // 2. Unwrap BoringVault shares (add new vaults to BORING_VAULTS_ETH above)
-  for (const vault of BORING_VAULTS_ETH) {
-    await unwrapBoringVault(api, vault, LBTCV)
+  // BoringVault shares
+  for (const { token, asset } of BORING_VAULTS_ETH) {
+    await unwrapBoringVault(api, token, LBTCV, asset)
+  }
+
+  // pricePerShare vault shares
+  for (const vault of PPS_VAULTS_ETH) {
+    await unwrapPpsVault(api, vault, LBTCV)
   }
 
   await sumTokens2({ api, owner: LBTCV, resolveUniV4: true, })
 }
 
 async function tvlCornExtras(api) {
-  // Curve pools on Corn (add new pools to CURVE_POOLS_CORN above)
   for (const { pool, coinCount } of CURVE_POOLS_CORN) {
     await unwrapCurvePoolShare({ api, pool, holder: LBTCV, coinCount })
   }
