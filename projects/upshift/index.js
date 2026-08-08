@@ -1,4 +1,6 @@
+const { PublicKey } = require('@solana/web3.js');
 const sui = require('../helper/chain/sui');
+const { getMultipleAccounts } = require('../helper/solana');
 const { callSoroban } = require('../helper/chain/stellar');
 const { getConfig } = require('../helper/cache');
 
@@ -15,8 +17,29 @@ const chainIdToName = {
   14: 'flare',
   31612: "mezo",
   57073: "ink",
-  25363: "fluent"
+  25363: "fluent",
+  4114: "citrea"
 };
+
+// Solana vaults are not in chainIdToName: they are Anchor accounts, not EVM
+// contracts, and are read via the program below rather than erc4626Sum.
+const SOLANA_CHAIN_ID = -1;
+const SOLANA_VAULT_PROGRAM = 'up12bytoZBmwofqsySf2uqKQ7zpfeKiAWwfvqzJjtRt';
+
+// VaultState layout: 8-byte Anchor discriminator, 5 pubkeys, u32 withdrawal_fee,
+// then local_aum and deployed_aum. total assets = local + deployed, mirroring
+// ERC4626 totalAssets (idle balance plus capital deployed to strategies).
+const VAULT_STATE_DISCRIMINATOR = Buffer.from([228, 196, 82, 165, 98, 210, 235, 152]);
+const DEPOSIT_MINT_OFFSET = 8 + 32 * 3;
+const LOCAL_AUM_OFFSET = 8 + 32 * 5 + 4;
+const DEPLOYED_AUM_OFFSET = LOCAL_AUM_OFFSET + 8;
+
+// USDx has no entry in DefiLlama's price feed, so the Axis Origin pre-deposit
+// vault (~$67M) is currently valued at zero. It is a $1-denominated accounting
+// unit, so map it onto USDT and rescale 18 -> 6 decimals.
+const USDX = '0xa1fa7777974312f7d801a8880714a218f76233f8';
+const USDT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+const USDX_DECIMAL_SCALE = 10n ** 12n;
 
 const suiVaultsToInclude = [
   "0x94c2826b24e44f710c5f80e3ed7ce898258d7008e3a643c894d90d276924d4b9",
@@ -76,8 +99,36 @@ async function getVaultsConfig() {
 async function sumV2Vaults(api, vaults) {
   const assets = await api.multiCall({ abi: "address:asset", calls: vaults })
   const totalAssets = await api.multiCall({ abi: "uint256:getTotalAssets", calls: vaults })
-  
+
+  for (let i = 0; i < assets.length; i++) {
+    if (assets[i].toLowerCase() !== USDX) continue
+    assets[i] = USDT
+    totalAssets[i] = (BigInt(totalAssets[i]) / USDX_DECIMAL_SCALE).toString()
+  }
+
   api.addTokens(assets, totalAssets)
+}
+
+// Solana vaults expose their balances through the VaultState account rather than
+// an ERC4626 interface, so they are decoded directly instead of via multiCall.
+const solanaVaultsTvl = async (api) => {
+  const vaults = await getConfig('upshift/vaults', vaultsApiEndpoint);
+  const addresses = vaults
+    .filter(v => v.status === 'active' && v.chain === SOLANA_CHAIN_ID)
+    .map(v => v.address);
+  if (!addresses.length) return;
+
+  const accounts = await getMultipleAccounts(addresses);
+  for (const account of accounts) {
+    if (!account?.data) continue;
+    const data = account.data;
+    if (!VAULT_STATE_DISCRIMINATOR.equals(data.subarray(0, 8))) continue;
+    if (account.owner?.toString() !== SOLANA_VAULT_PROGRAM) continue;
+
+    const mint = new PublicKey(data.subarray(DEPOSIT_MINT_OFFSET, DEPOSIT_MINT_OFFSET + 32)).toString();
+    const total = data.readBigUInt64LE(LOCAL_AUM_OFFSET) + data.readBigUInt64LE(DEPLOYED_AUM_OFFSET);
+    if (total > 0n) api.add(mint, total.toString());
+  }
 }
 
 const suiVaultsTvl = async (api) => {
@@ -144,4 +195,8 @@ module.exports.sui = {
 
 module.exports.stellar = {
   tvl: stellarVaultsTvl,
+}
+
+module.exports.solana = {
+  tvl: solanaVaultsTvl,
 }
