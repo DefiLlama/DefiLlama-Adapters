@@ -1,0 +1,58 @@
+{
+  "reviewed": [
+    {
+      "address": "0x1ddd6e5ea766511cc0f348dc8d17578a821b680f",
+      "projects": [
+        "bouncebit-cedefi",
+        "bouncebit-premium"
+      ],
+      "reason": "bouncebit-cedefi inlines bouncebit-premium's owners (see the 'inlined from ./premium' block), but projects/bouncebit-premium/index.js is not registered as a live listing: no protocol on api.llama.fi/protocols has that module, the closest is BounceBit Prime at bouncebit-prime/index.js. Nothing is double counted today. Revisit if bouncebit-premium is ever listed.",
+      "reviewedOn": "2026-08-02"
+    },
+    {
+      "address": "0x426cd147ff93f31bb18f1acd19dab9c32d934131",
+      "projects": [
+        "bouncebit-cedefi",
+        "bouncebit-premium"
+      ],
+      "reason": "bouncebit-cedefi inlines bouncebit-premium's owners (see the 'inlined from ./premium' block), but projects/bouncebit-premium/index.js is not registered as a live listing: no protocol on api.llama.fi/protocols has that module, the closest is BounceBit Prime at bouncebit-prime/index.js. Nothing is double counted today. Revisit if bouncebit-premium is ever listed.",
+      "reviewedOn": "2026-08-02"
+    },
+    {
+      "address": "0x55a55e8b08b091bd0529bf1af05b69ff5291867d",
+      "projects": [
+        "bouncebit-cedefi",
+        "bouncebit-premium"
+      ],
+      "reason": "bouncebit-cedefi inlines bouncebit-premium's owners (see the 'inlined from ./premium' block), but projects/bouncebit-premium/index.js is not registered as a live listing: no protocol on api.llama.fi/protocols has that module, the closest is BounceBit Prime at bouncebit-prime/index.js. Nothing is double counted today. Revisit if bouncebit-premium is ever listed.",
+      "reviewedOn": "2026-08-02"
+    },
+    {
+      "address": "0xa2b283e4dbdfea5461c36a59e3b94b3ef2883085",
+      "projects": [
+        "bouncebit-cedefi",
+        "bouncebit-premium"
+      ],
+      "reason": "bouncebit-cedefi inlines bouncebit-premium's owners (see the 'inlined from ./premium' block), but projects/bouncebit-premium/index.js is not registered as a live listing: no protocol on api.llama.fi/protocols has that module, the closest is BounceBit Prime at bouncebit-prime/index.js. Nothing is double counted today. Revisit if bouncebit-premium is ever listed.",
+      "reviewedOn": "2026-08-02"
+    },
+    {
+      "address": "0xd4def93a10ada7e14cadc6920b6cde01148d1813",
+      "projects": [
+        "bouncebit-cedefi",
+        "bouncebit-premium"
+      ],
+      "reason": "bouncebit-cedefi inlines bouncebit-premium's owners (see the 'inlined from ./premium' block), but projects/bouncebit-premium/index.js is not registered as a live listing: no protocol on api.llama.fi/protocols has that module, the closest is BounceBit Prime at bouncebit-prime/index.js. Nothing is double counted today. Revisit if bouncebit-premium is ever listed.",
+      "reviewedOn": "2026-08-02"
+    },
+    {
+      "address": "0xdafd8591402c5e57dca4b1b9e481c08548a2442e",
+      "projects": [
+        "bouncebit-cedefi",
+        "bouncebit-premium"
+      ],
+      "reason": "bouncebit-cedefi inlines bouncebit-premium's owners (see the 'inlined from ./premium' block), but projects/bouncebit-premium/index.js is not registered as a live listing: no protocol on api.llama.fi/protocols has that module, the closest is BounceBit Prime at bouncebit-prime/index.js. Nothing is double counted today. Revisit if bouncebit-premium is ever listed.",
+      "reviewedOn": "2026-08-02"
+    }
+  ]
+}
