@@ -1,6 +1,8 @@
 module.exports = {
   ethereum: {
     owners: [
+      "0x8981F1d81aD46e50E534F90941BD5d6Ba1416Cf1", //IN hot
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
       "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
       "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
       "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
@@ -453,6 +455,8 @@ module.exports = {
   },
   bitcoin: {
     owners: [
+      "bc1qzl6tysx7pruypuuw0h5sfw4jryfqzad4yzpyuw", //IN hot
+      "bc1qq5r706plcc7kgk3skqk4avpxc06sz9gmerhjec", //IN warm
       "bc1qndz4wtssws2gle09wdmfn7evlr2424wa358pk3", // hot
       "bc1qu5keasldcnc8ce4x36r3053d3qyp3zgjmu2965", // hot - consolidation
       "bc1q6lkckg5zcjytjvjre447q52y684gl2jp8eel9r", // cold -  user
@@ -670,6 +674,8 @@ module.exports = {
   },
   solana: {
     owners: [
+      "43WpML1F2U52TCZ8BPW16TcnTq4ZfFNCFDkhrB9voNMT", //IN hot
+      "4yaYAnqJQ8cQ5Xx4oieNgxD954EGFiAHcJfRiWUaZUmt", //IN warm
       "CmtxExQVhPKJ6z2FDpHWNVXFBhwywcXNjYB8WzpZGLKx", // hot
       "DyWrQZXx6EzjZ9b845Pm8awiDBgMuPtX1jHAgXD6w7Sw", // hot - consolidation
       "45R4S2Hc62tRRbgZhkgPC4fdn5f3h5Zj7oCA93yA5En6", // cold -  user
@@ -726,6 +732,8 @@ module.exports = {
   },
   avax: {
     owners: [
+      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
       "0x015a41879503c69d8556605c0526B9b5B59f9A2F", // hot
       "0xb078257c5Be10792eF922418AF0605E05d4a75a3", // hot - consolidation
       "0x2588a4500be528dD2e840dde05a29C0Dd3A11602", // cold -  user
@@ -737,6 +745,8 @@ module.exports = {
   },
   tron: {
     owners: [
+      "TNjNZcwroFs1JKRPrPbVQuucbeNHU1BXJ4", //IN hot
+      "TTNztbcmzpATyc5wfuJRFm2LgKLkPcEmuP", //IN warm
       "TSjEMi9JjSJJCsDHHuUe9s63vHLNDTPLNc", // hot
       "TPDNKLR5723RkgcPBbAndTEicfYHwpxjgE", // hot - consolidation
       "TDMehmFFaohohtGJRKEsLq41Q6C91kT7DD", // cold -  user
@@ -780,6 +790,7 @@ module.exports = {
   },
   polygon: {
     owners: [
+        "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
         "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
         "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
         "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
@@ -790,6 +801,7 @@ module.exports = {
   },
   scroll: {
     owners: [
+        "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
         "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
         "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
         "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
@@ -798,6 +810,7 @@ module.exports = {
   },
   litecoin: {
     owners: [
+        "ltc1qxvtf9a282gpp8vl3lsgrsarysrlc8r5m0q7w4n", //IN hot
         "ltc1q32k8z0glde0chd3wv0dc8ljnpl92ds8s2dlcc5", // hot
         "ltc1qw6q7h9aghdp5d3w9wx6748hk4zvntt9aq40ngw", // hot - consolidation
         "ltc1qf6zmte4muck3lyllpmu4q9h4e44r89777ry39z", // cold -  user
@@ -815,6 +828,7 @@ module.exports = {
   // },
   ton: {
     owners: [
+        "UQBmMf7ztTfITUJhnT6E3rA_qYNnvXqFG8zZ6z270PZQ-XAD", //IN hot
         "UQDn0QGegL3Y3ZvzDNcnFEx2YWJJ-T-wYBybMPy3Vcqbd4Nw", // hot
         "UQANrP4Du0abVt_zC9YuE-xizl4l99BrAqa5VP5Lz8OI5i4u", // hot - consolidation
         "UQCKucr3154bhH_3ZAeoeZTFnBnZjDMpi_IwDLwhE06wQVTI", // cold -  user
@@ -827,6 +841,8 @@ module.exports = {
   },
   doge: {
     owners: [
+      "DB1zr87B2A6TUtwWjp3dUjUypejrmHqGH5", // IN hot
+      "DPeRfkGa3BbUdeivchhjHDx76pyZ5HfrNq", //IN warm
       "D6WMft6zfERAYorB3ftcJjhTintgeVAGhw", // hot
       "D63Ge381QBcsaf7qwuxBh5rttgRFdnxMcv", // hot - consolidation
       "DLBYdQkDyVWAcXxfkrXNPL9yE1gtKdKHbe", // cold -  user
@@ -837,6 +853,8 @@ module.exports = {
   },
   ripple: {
     owners: [
+      "rE57dGTrhPjKV8RwpL4U57qSLYbedz1dNS", //IN hot
+      "rhSUC45YLKoz5uy5A4VtCwXAz9d7rQMgAZ", //IN warm
       "rnHYKxdnPFwHMc9wpARskAgJnYY1x6JZhu", // hot withdrawal
       "rfZS4yRkqTfaMKiFyUTsiF1TQ6dd67sAnK", // hot deposit
       "rhqxpAugGuwp6tYxy5jRmjc73468bSaaKS", // hot withdrawal - consolidation
@@ -851,6 +869,8 @@ module.exports = {
   },
   bsc: {
     owners: [
+      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
       "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
       "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
       "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
@@ -869,14 +889,45 @@ module.exports = {
   },
   injective: {
     owners: [
+      "inj13j9lw3qs47jh9845wr3w4fl44mvcepmyjqq4aa", //IN hot
       "inj1accjy08x47jhng07vy24v5ugh6axak286rpkfd", // hot
       "inj1qfpajnc0ngtkng4uztxusrwzt0k5xg0ag0s6sf", // hot - consolidation
       "inj1jm7qwm6ykhesgh3wz65gtncyj2sl0j9ln842sq", // cold -  user
       "inj1xl77fmp2fgvrmh5vmet52tfdumg5tqw05vlexp", // cold - house
     ],
   },
+  cardano: {
+    owners: [
+      "addr1qx3c3m0c48pk66qhv8rxwexr4h0yxa0y4uzjuy9pwzvul7tg8j5jpxu3w839gmzqwhpv8ms3zm8xwvmuqnyx44q3vfeqfa0vt7", //IN hot
+    ],
+  },
+  base: {
+    owners: [
+      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
+    ],
+  },
+  plasma: {
+    owners: [
+      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
+    ],
+  },
+  hyperliquid: {
+    owners: [
+      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
+    ],
+  },
+  sui: {
+    owners: [
+      "0x21e98fe7f8d5b297712ceb75b7783e0179e41c7f1d7af689c9612d9564a02a3a", //IN hot
+      "0xe36760568b59153310815a6dfb89de3332fbad148f976fb02deccba735c5dc5a", //IN warm
+    ],
+  },
   stellar: {
     owners: [
+      "GBTLH7JQLCGSVPUNXYO3CTT3J576H2V2L5MU7KFDEYXXSSYYQ2RMAJPG", //IN hot
       "GAPFP3YN7BONOIUI47ROEMJ7ADQJN4EGHW6F2E25E4XZBF7OX24DHN77", // hot
       "GD6GEAG62FNBYUNOJGH2LAYOCC7RQLNSKA4VKIWXB5NJT6H7QT4OFDFO", // hot - consolidation
       "GAMHTYZE22J242FRVE7V56ULLQ7YGR7XCBHAUJLHU7AHZJQJAANIG72E", // cold -  user
