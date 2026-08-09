@@ -33,6 +33,7 @@ const VAULT_STATE_DISCRIMINATOR = Buffer.from([228, 196, 82, 165, 98, 210, 235, 
 const DEPOSIT_MINT_OFFSET = 8 + 32 * 3;
 const LOCAL_AUM_OFFSET = 8 + 32 * 5 + 4;
 const DEPLOYED_AUM_OFFSET = LOCAL_AUM_OFFSET + 8;
+const MIN_VAULT_STATE_LEN = DEPLOYED_AUM_OFFSET + 8;
 
 // USDx has no entry in DefiLlama's price feed, so the Axis Origin pre-deposit
 // vault (~$67M) is currently valued at zero. It is a $1-denominated accounting
@@ -124,6 +125,9 @@ const solanaVaultsTvl = async (api) => {
     const data = account.data;
     if (!VAULT_STATE_DISCRIMINATOR.equals(data.subarray(0, 8))) continue;
     if (account.owner?.toString() !== SOLANA_VAULT_PROGRAM) continue;
+    // A truncated account would make readBigUInt64LE throw and take the whole
+    // chain's TVL to zero, so skip it rather than trusting the discriminator alone.
+    if (data.length < MIN_VAULT_STATE_LEN) continue;
 
     const mint = new PublicKey(data.subarray(DEPOSIT_MINT_OFFSET, DEPOSIT_MINT_OFFSET + 32)).toString();
     const total = data.readBigUInt64LE(LOCAL_AUM_OFFSET) + data.readBigUInt64LE(DEPLOYED_AUM_OFFSET);
