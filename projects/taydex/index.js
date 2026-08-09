@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const TAYDEX_MARKET = '0x3ade22Fa1EF5ac75437A3734D91bA588E54875dd'
-const BASE_USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
 
 async function tvl(api) {
   return api.sumTokens({
     owner: TAYDEX_MARKET,
-    tokens: [BASE_USDC],
+    tokens: [ADDRESSES.base.USDC],
   })
 }
 
