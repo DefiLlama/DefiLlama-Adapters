@@ -16,6 +16,8 @@ async function tvl(api) {
     const deposited = Number(asset.deposited)
     if (!Number.isFinite(deposited) || deposited < 0)
       throw new Error(`temple: invalid deposited amount for ${asset.symbol}`)
+    
+    if (feed.amountsAreScaled !== true) throw new Error('temple: CCTools feed amounts are not scaled')
 
     api.addCGToken(asset.coingeckoId, deposited)
   }
