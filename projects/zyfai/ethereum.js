@@ -54,6 +54,7 @@ const COMPOUND_POOLS = {
     'SwissBorg Morpho USDC': '0x4Ff4186188f8406917293A9e01A1ca16d3cf9E59',
     'KPK USDC Prime Core': '0x1a1985F50352b58090eb36425AfdFacbaC7806F4',
     'Yearn USDC': '0x68Aea7b82Df6CcdF76235D46445Ed83f85F845A3',
+    'KPK ETH Yield V2': '0x5dbf760b4fd0cDdDe0366b33aEb338b2A6d77725',
   };
 
   // Fluid (Ethereum mainnet)
