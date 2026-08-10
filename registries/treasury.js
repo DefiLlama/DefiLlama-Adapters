@@ -6091,6 +6091,22 @@ const configs = {
       ],
     },
   },
+  'treasury/waddle-club': {
+    megaeth: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.megaeth.USDm
+      ],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
+    },
+    robinhood: {
+      tokens: [
+        nullAddress,
+      ],
+      ownTokens: ["0xd3af6612119362d31d7a6c93ad5e6d01443c855d"],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
+    },
+  },
   'treasury/wagmi': {
     ethereum: {
       tokens: [
