@@ -27437,6 +27437,7 @@ const configs = {
     },
   },
   "taydex": {
+    "methodology": "Counts native Base USDC held by the verified TayDex market contract as liquidity locked across TayDex prediction markets. Trading volume, wallet balances, and fees already transferred out of the contract are not included.",
     "base": {
       "owner": "0x3ade22Fa1EF5ac75437A3734D91bA588E54875dd",
       "token": ADDRESSES.base.USDC
