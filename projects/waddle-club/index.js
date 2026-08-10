@@ -1,30 +1,11 @@
-const { unwrapUniswapV3NFT } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getLogs2 } = require("../helper/cache/getLogs");
 
-/**
- * Waddle Club Staking - liquidity mining for Uniswap V3 style positions.
- *
- * TVL is what the staker contracts custody, which is two things:
- *
- *   1. LP NFTs. Staking transfers the position NFT to the staker, so the
- *      protocol holds it. The underlying pair sits in the pool contract, not
- *      the staker, so a token balance read returns zero: the positions have to
- *      be unwrapped from liquidity and tick bounds against the pool's current
- *      tick. Positions parked outside the live range are single sided and a
- *      50/50 assumption would misprice them.
- *   2. Reward tokens. Incentives are funded up front and the unclaimed balance
- *      sits in the staker until stakers claim or the refundee pulls it back.
- *
- * Reward tokens are discovered from IncentiveCreated rather than hardcoded, so
- * a new program with a new reward token needs no adapter change. Note refundee
- * is NOT indexed on this event, verified against the deployed logs.
- *
- * Expect this to be flagged doublecounted, as Convex and Aura are: the same LP
- * value is already counted under the DEX.
- */
+const INCENTIVE_CREATED = "event IncentiveCreated(address indexed rewardToken, address indexed pool, uint256 startTime, uint256 endTime, address refundee, uint256 reward)";
 
-const INCENTIVE_CREATED =
-  "event IncentiveCreated(address indexed rewardToken, address indexed pool, uint256 startTime, uint256 endTime, address refundee, uint256 reward)";
+const OWN_TOKENS = {
+  robinhood: ['0xd3af6612119362d31d7a6c93ad5e6d01443c855d'], // HONK
+};
 
 /**
  * One entry per venue, where a venue is one DEX deployment on one chain.
@@ -58,35 +39,43 @@ const config = {
 };
 
 async function tvl(api) {
-  for (const venue of config[api.chain]) {
+  const venues = config[api.chain];
+
+  // reward tokens in each staker
+  const ownerTokens = [];
+  for (const venue of venues) {
     const logs = await getLogs2({
       api,
       target: venue.staker,
       eventAbi: INCENTIVE_CREATED,
       fromBlock: venue.fromBlock,
     });
-
-    // Unclaimed reward tokens sitting in the staker.
     const rewardTokens = [...new Set(logs.map((log) => log.rewardToken))];
-    if (rewardTokens.length) {
-      await api.sumTokens({ owner: venue.staker, tokens: rewardTokens });
-    }
+    if (rewardTokens.length) ownerTokens.push([rewardTokens, venue.staker]);
+  }
 
-    // Staked positions. Unwrapped, not balance-read - see the note above.
-    await unwrapUniswapV3NFT({
-      api,
-      owner: venue.staker,
-      nftAddress: venue.nft,
-    });
+  return sumTokens2({
+    api,
+    ownerTokens,
+    uniV3nftsAndOwners: venues.map((venue) => [venue.nft, venue.staker]),
+    blacklistedTokens: OWN_TOKENS[api.chain] ?? [],
+  });
+}
+
+async function staking(api) {
+  const ownTokens = OWN_TOKENS[api.chain];
+  if (!ownTokens?.length) return;
+  for (const venue of config[api.chain]) {
+    await api.sumTokens({ owner: venue.staker, tokens: ownTokens });
   }
 }
 
 module.exports = {
   methodology:
-    "Counts assets custodied by the Waddle Club staker contracts: the Uniswap V3 style LP NFTs staked into incentive programs, unwrapped to their underlying tokens at the pool's current tick, plus reward tokens funded into incentives and not yet claimed or refunded. Reward tokens are discovered from IncentiveCreated events. LP value is also counted by the underlying DEX, so this is double counted at the chain level.",
+    "tvl is the assets the Waddle Club stakers custody: the staked Uniswap V3 style LP NFTs unwrapped to their underlying tokens at the pool's current tick, plus reward tokens funded into incentives and not yet claimed or refunded (discovered from IncentiveCreated events). LP value is also counted by the underlying DEX, so tvl is double counted at the chain level.",
   doublecounted: true,
   // First staker deployment (Kumbaya on MegaETH, block 3520323).
   start: "2025-12-21",
-  megaeth: { tvl },
-  robinhood: { tvl },
+  megaeth: { tvl, staking },
+  robinhood: { tvl, staking },
 };
