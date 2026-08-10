@@ -24793,6 +24793,14 @@ const configs = {
           "0xc01c9EF5de5862354adD9501a29e8765cFF01c32"
         ],
         [
+          ADDRESSES.ethereum.USDC,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.USDT,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
           ADDRESSES.ethereum.WETH,
           "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
         ],
@@ -24802,6 +24810,14 @@ const configs = {
         ],
         [
           ADDRESSES.ethereum.WBTC,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.WEETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.RETH,
           "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
         ],
         [
