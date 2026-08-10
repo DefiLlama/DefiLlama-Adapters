@@ -1,18 +1,21 @@
 module.exports = {
   ethereum: {
     owners: [
-      "0x8981F1d81aD46e50E534F90941BD5d6Ba1416Cf1", //IN hot
-      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
-      "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
-      "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
-      "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
-      "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // cold - house
-      "0xd40b8684fc619f44fd9901a472d749818c981dbe", // HK house-cold
-      "0x50de1986cf5befe0c8ee74d6df6dffe842dc2632", // client-cold
-      "0x9bDcDE4AE9aa06e1F8ee153735F232b666d5C877", // hot
+      "0x8981F1d81aD46e50E534F90941BD5d6Ba1416Cf1", //1
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //1
+      "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // 2
+      "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // 2
+      "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // 2
+      "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // 2
+      "0xd40b8684fc619f44fd9901a472d749818c981dbe", // 3
+      "0x50de1986cf5befe0c8ee74d6df6dffe842dc2632", // 3
+      "0x9bDcDE4AE9aa06e1F8ee153735F232b666d5C877", // 3
       "0x8caa6e12882ead0de48253f5bdebc6eb432c9c3b",
+      "0xe2b4480decb63f995217b7590781cb79c5a54fc7",
       "0xf56c25ac3e0d870ced0488ad6441c690a78d92a4",
       "0xc40ee62572bea96088338cd0df9f45b78419ca02",
+      "0x84c2c6951e2d6745f7d92e36825b9a09b753b0b6",
+      "0xf4bf9ebbb2d2164941e67b73ff059e715c349511",
       "0x5930d2cb21fc778d1d36f4cdc3c5df31ece52bfc",
       "0x2b0530c9330b68fdbc1459f043094629d758d146",
       "0xd458216d778fbab58c4488dcf07d294a1f3c39b4",
@@ -20,18 +23,22 @@ module.exports = {
       "0xaec98f7c8941643032ccb70da93d10332e18a44e",
       "0x663a4ab954d2621e7205721ba635bb832ad9cc75",
       "0x06c5f8189e889d7ca436de8e91bb55811a7b1243",
+      "0x3a3fcef5ea57f6a75182b1592e6aab49341c4a68",
       "0x494b308c632f20150c20ac736fe876fdab43b73d",
       "0x239bfd27ef6ba4ccc10d3f938c9110a3902e567d",
       "0xcadc10557f30dad259ae73a1ab1873d9f3b53e9b",
       "0x8c07329857346f0f9fb36c5426ce78886f22ee3c",
       "0x762e01d3150a9bd2c8d97b6e82adff5876aa8843",
+      "0xb17f5702e196d3e8372d9a7898f41dcdfbb4f575",
       "0xb1424a7edba2ef045a8dd75c4235ac1b7e0ae2d7",
+      "0x3e5e75837918fd92c5848ec03325cb761addf1f9",
       "0x8e1090f515428b7c9f7e88c8989e44426d7e71e9",
       "0x884fc0240ad1a7b62cfaf127c68543ba2cc2418e",
       "0xe7c469b0107cd510a04680acec9ba6d7c1f9df6d",
       "0x9c3378a0da7364ae2724b9631a7eea1f819d3990",
       "0x1d5e94c693d4ca6ab87bee98434397bfdb5bcdb1",
       "0x035826c7821f79c84edcfac76c881e406f4cd100",
+      "0xacb14f60712e31429b7edd3a91d6c4cfa38b6262",
       "0xba04b08d317dd17c57010d093b40cce986be4c9f",
       "0xb18c3cbd1ffa2311f335443a50588e1eb1cbc0d7",
       "0x08e7199b58f95e7b4125e062df126c84bc3e0c29",
@@ -61,6 +68,7 @@ module.exports = {
       "0x56a68968083ca9774c230f3e8e8d47ad3065b185",
       "0x9c7b90b4c21ef17a6f7abee4c674a3c0b6334e45",
       "0x3e06f199b2971c722392a6fa160a51d08ecf3de5",
+      "0xb9440f1f6417dd958f511f74bfa2ed8964a49dbe",
       "0x327ed4a818b5aa31c9ac400bf56f170ec04f3f7c",
       "0xadb5aefa5cd79ebed5685047c2ce2ab63cf6e413",
       "0x390a8d911d1a97b9bc224649132ade820be4f007",
@@ -70,6 +78,7 @@ module.exports = {
       "0x84955b668efffdc127c34d0ee8c0a38060049566",
       "0xf73d40ee6ae1ac62ba7a60b6f08e386d65d4f92c",
       "0xdd0ff78a7b47842f9743e8d0f9a7601955ea5f02",
+      "0xa10b34472cf5c87ff64529a040bd407748ebcee9",
       "0xa8e1f90b3c378de8ea748c0c3522f0710cbce289",
       "0x24465096da3a60c0b60942c1871c1a5f4890045a",
       "0xfaceb60cc38e56447a855c9e302f346f4d4aa538",
@@ -80,6 +89,7 @@ module.exports = {
       "0xf376c74ecb53e9debecdc2f3890d303870126d73",
       "0xcce7126777a248bdd0dd6d7171a58b431c52f02b",
       "0x8627890ccbadba4800753ba130e110c86522f2a8",
+      "0x59d4580cc07d969972993bd912901015d9259a5a",
       "0x3d77fb07462be3835dc6c1658851ebb8ed67a8cc",
       "0xe7cfe7bfcb8a008d33391a36852162a601e7d2f5",
       "0x9e290d4061373b58e5c4727b7233dd558d109bfc",
@@ -88,12 +98,15 @@ module.exports = {
       "0xe0272600bfb73accc9869e09b9869aaadb0dd786",
       "0x3f9603e87938a4c1c7dfd5cc045ffa945634eb79",
       "0x70112253f25691287cf76e58d0017c74407a74ad",
+      "0x3fe29da5df41666e223d5833460844ff77aba075",
+      "0xac5b18d0c540ea7cfc07d75e3190fe89ca92b6d8",
       "0xcc8c88d2cbe9b9dc9fa5247fee5f5dde9083e72b",
       "0x0fad0066f0fea30d94f1a4b24cb10f58ed070906",
       "0x7e78af0e6df5425f93d606071a35213c17cc83a8",
       "0x7c0bf050abd8f7437a60dbfba56df2a912b39b48",
       "0x3086f4d04edbc7ba595188d64f7721bb5df12bd5",
       "0x29eb3c831270dde1eb2fdf9c9221cc699105a636",
+      "0x6258012fc27fda13f9ae1a71a9bec7d2d5878f8c",
       "0x3977f757f8f1b2a7101a75d32118c416f9f52c10",
       "0x38aeae1371fe2a4ff776484f959b29e0ddc4c91a",
       "0x8dd4538c6647a83e138ecb2f73207facbdde8da7",
@@ -104,6 +117,7 @@ module.exports = {
       "0xbc1bd330c44a849df8f2e4d5c7d33d0892e14534",
       "0xfd917696e306463d0aa0f83e380247ea7af96cc0",
       "0xd300991159aaca18e3e565b5823974976dc94ba3",
+      "0x0856c44958ffdcb1dbd4f61e2b26b80d509d09a3",
       "0xd5fabc9810e7ed093a76bad6b348ae56593e9087",
       "0x0e985c561167c531aa7a6a7f267780856a6c4843",
       "0xa8680a82f69a8bfeffde6bb29c10b81b0d96d64b",
@@ -432,7 +446,9 @@ module.exports = {
       "0xab25cad501ba339d876d4c3ad0f0a3457a98f7df",
       "0x4f8fd058439f7456e8b25c1a457fcb25c1003990",
       "0xb3cc3cefb38cb6745221b4f44a171ce5fc1fc5d7",
+      "0x8040b0334e8be7a4b3285d761b2432836fab6a75",
       "0x25bd0f9d107431eb9bb6c79dda31c2462248c123",
+      "0x45dead1c7657744a7c98c626c2b0ce216031f550",
       "0xe2a45aa78ccabff8e6e1758639c575011a2f3334",
       "0x7c16e4537db13af0ba3afcd89a244b58032d905e",
       "0x528b1aa2f0d8cb916d6a0612055001efad1b190e",
@@ -444,26 +460,30 @@ module.exports = {
       "0x24bd4145d932cb76c2007bb9e6f4e52a54ad8a26",
       "0xa1f2e6dc9719cf870eea8ed56a7896ab22afe4c5",
       "0xaceb4bd4e215c5c4e2f9dbe2db6d38b0622d3cca",
+      "0x419c675a5ed2987ed9afba2c9c082b3b99a12b5b",
       "0xa9347dbd3188ea41b24ace2df5d7ea549469d734",
       "0x9de9aed34e139c7562253148ee9bddd5d2bb1a20",
+      "0xf59f9eb43ca6296fc81f5708435dd410a7397c83",
+      "0x215184a7dd804cf2709278ede4d0e801b84328ea",
       "0xe15e8c6e7a6a520fe81d0a7f1207554dd00b20f1",
       "0xd62dd1444f25746378315090733149fc6c94d2ef",
       "0xbf3c6b49e3851ff36b1e78307fee33d2af3b5517",
+      "0x47ac7e561cde372245974079e99713588fbefaff",
       "0xe6f04c80783f25b52ffee7947784a1fcefb5f21c",
       "0x35114f1dce056a7f9cf92235d1b7f6f2bb4e612f",
     ],
   },
   bitcoin: {
     owners: [
-      "bc1qzl6tysx7pruypuuw0h5sfw4jryfqzad4yzpyuw", //IN hot
-      "bc1qq5r706plcc7kgk3skqk4avpxc06sz9gmerhjec", //IN warm
-      "bc1qndz4wtssws2gle09wdmfn7evlr2424wa358pk3", // hot
-      "bc1qu5keasldcnc8ce4x36r3053d3qyp3zgjmu2965", // hot - consolidation
-      "bc1q6lkckg5zcjytjvjre447q52y684gl2jp8eel9r", // cold -  user
-      "bc1q3gswjz6c8mdl5ulukk69dept4p93ascm96wzwc", // cold - house
-      "31m4rGmokAqWKb3R8ZvNJ2sjyFBtrRwh4Q", // HK house-cold
-      "358mMRwcxuCSkKheuVWaXHJBGKrXo3f6JW", // client-cold
-      "bc1qdacv6qamaw39awqrn64sae9zadel03kv85s89a", // hot
+      "bc1qzl6tysx7pruypuuw0h5sfw4jryfqzad4yzpyuw", // 1
+      "bc1qq5r706plcc7kgk3skqk4avpxc06sz9gmerhjec", // 1
+      "bc1qndz4wtssws2gle09wdmfn7evlr2424wa358pk3", // 2
+      "bc1qu5keasldcnc8ce4x36r3053d3qyp3zgjmu2965", // 2
+      "bc1q6lkckg5zcjytjvjre447q52y684gl2jp8eel9r", // 2
+      "bc1q3gswjz6c8mdl5ulukk69dept4p93ascm96wzwc", // 2
+      "31m4rGmokAqWKb3R8ZvNJ2sjyFBtrRwh4Q", // 3
+      "358mMRwcxuCSkKheuVWaXHJBGKrXo3f6JW", // 3
+      "bc1qdacv6qamaw39awqrn64sae9zadel03kv85s89a", // 3
       "35e9UeNq38gyPjmZtywSwZVAWp9mhMfgFY",
       "3CgKvCkfD4iANLhARfvW2duNgTRNiVRbk9",
       "3HEEbEXz5sBUSbzqjnLYBFAjTrgfb3yBVL",
@@ -492,6 +512,7 @@ module.exports = {
       "3CYxNY2EVzCgjwVBk4tZKHgmoCYD2AD9Ej",
       "32y34z6z1zH2U6H6WZ1tPKuRMCpYdcEGNH",
       "3M8zz3L3agT67sERQ1WH7QxjrrGj9Mn9Wm",
+      "3Mchf6jWkSnrwy78zC4FWb4EWqwuUwq1Pr",
       "39VepCZcwpSyB6sKNoZtoN2a8MpX7Gtxpm",
       "3N9TNmHXnE9jcSh93Fap1zXxr2T5WiZ5pU",
       "3Pu5ggMFdxpv6Gbjat3QAHBsAEBxvWH6kV",
@@ -513,9 +534,11 @@ module.exports = {
       "3QW8FFtW6Bcv4786BtpMNHV2R5a7KuDnUq",
       "3Dxtd5eNeSJcK3eS86LXjf1pavSdzwMRTV",
       "36Rn5jY2sb6xbGxJxkHPhf126WoUx1JSPG",
+      "3582rveNJJuPe1QP5tp3ST3dS985CCBN4D",
       "31iBm5secmMm6Gt1yRU9NnUxUmoozJsdye",
       "3Jgio2BLTKiLANXbp7vaniCt8NoKH8EeyN",
       "3LZDcR5bxPQTcM2UgVEvuqtJ2fmVT9kxmr",
+      "3D3XxFfTSfxJXJeP4TBkR4JPZg4qrExE54",
       "3K9qxEyy3DPBC5ysPUaEGMb3nj5nBN4vbR",
       "3H6PgTRP1zC4XXAkpUeE8LWYdpR6qnsmYV",
       "32xQPepgohhaqDYmfygHmBLG92TgGvxjXr",
@@ -660,10 +683,14 @@ module.exports = {
       "37Efqh6AxZY7THdm7uSmCLfqho3s1HEihy",
       "3FH9Qpb3nVbE3g3zfinPvmTT5kk1oPbiLJ",
       "3KQEcE3F93VoJCYWXdfAJvNcQQtm8hEcFr",
+      "3A1k94CDnvwYKcH7K5CTpmSMGSDSvcrXBX",
       "3MBNYs6HLc6QwDXL26hCeoXogwSRpuSgbA",
+      "3QAqFFTyXoZMMAYuHfHvDfspjgEmvCnpzS",
+      "3HVHtAwkDoevcPuouLgg35WQhELzN3Nx6T",
       "32RX9tqdvWYfviBvKgA3nV2hA74pAK6hBs",
       "31oVJQcDAnDLXo83G8ea32xoZaokYAeV3M",
       "3BqDvfSNGmBJvEzXmKZnvBPvW6ritaLN6s",
+      "3A8GQUXcEWNezUbSg26XQaC9yktUTQmptL",
       "3A9rk9F5feJGzGbX76xbbyArRsTETxFFEw",
       "3KMAjdbhyJRskRkn9Zgti7RexRQNeXsEHe",
       "3GvHfX1ZrN5QNa73UuQHXHwmTvP9uaL6HS",
@@ -674,15 +701,21 @@ module.exports = {
   },
   solana: {
     owners: [
-      "43WpML1F2U52TCZ8BPW16TcnTq4ZfFNCFDkhrB9voNMT", //IN hot
-      "4yaYAnqJQ8cQ5Xx4oieNgxD954EGFiAHcJfRiWUaZUmt", //IN warm
-      "CmtxExQVhPKJ6z2FDpHWNVXFBhwywcXNjYB8WzpZGLKx", // hot
-      "DyWrQZXx6EzjZ9b845Pm8awiDBgMuPtX1jHAgXD6w7Sw", // hot - consolidation
-      "45R4S2Hc62tRRbgZhkgPC4fdn5f3h5Zj7oCA93yA5En6", // cold -  user
-      "BwLnmeQErGN8TsvMFr2ywWhX6qAL74w1FMo5Z18qRzWD", // cold - house
-      "DhEoMEppzLPdxNuZsqSpDQWcHX4K7cqeAnFJPNQjeoq", // HK house-cold
-      "94i35mzdbAHW9v6ikG8aD9dAVDQMtrorpB54yerZotpj", // client-cold
-      "DxXPPT3KangbWHjj6pUvoStyEbvp6yxiFA1cwcPZy9wK", // hot
+      "43WpML1F2U52TCZ8BPW16TcnTq4ZfFNCFDkhrB9voNMT", // 1
+      "4yaYAnqJQ8cQ5Xx4oieNgxD954EGFiAHcJfRiWUaZUmt", // 1
+      "CmtxExQVhPKJ6z2FDpHWNVXFBhwywcXNjYB8WzpZGLKx", // 2
+      "DyWrQZXx6EzjZ9b845Pm8awiDBgMuPtX1jHAgXD6w7Sw", // 2
+      "45R4S2Hc62tRRbgZhkgPC4fdn5f3h5Zj7oCA93yA5En6", // 2
+      "BwLnmeQErGN8TsvMFr2ywWhX6qAL74w1FMo5Z18qRzWD", // 2
+      "DhEoMEppzLPdxNuZsqSpDQWcHX4K7cqeAnFJPNQjeoq", // 3
+      "94i35mzdbAHW9v6ikG8aD9dAVDQMtrorpB54yerZotpj", // 3
+      "DxXPPT3KangbWHjj6pUvoStyEbvp6yxiFA1cwcPZy9wK", // 3
+      "3btHFvErK81JkhNQxzkYRDagYrGaERHvhn41pGiVjWHk",
+      "GZGTiGshYWH7nhDfB5BYzCkB25xPf45MnkuaMPzpHTpo",
+      "6RkdU9NMjp4FCfA9Yy8gXganZTs1sZSJhJtHGP99gCdc",
+      "3NqPc7oSD7uKNzPMyFZ1GsBioWrdgr6LnrUUNY8KMbyG",
+      "DKJvTnvz28mnsDm1Mp5AVW2RwHcC2hpDweNrNGUysNdm",
+      "89qRDdrUhjz2YVYsoMM4odsyPVkJBdJZjuA4gfJ1dh8v",
       "Bok48fKSkBVt77H7TetKzFUvC2AyrpZpd3Mir96N9F3f",
       "8rqJq7CnyHumGgKhyHjeMdQKfZwS2ANSWRR9tMfZQ4EQ",
       "EGV8No6tg421dAyncWQqQGMHWjMFn6ZbR29g8uJcrNmL",
@@ -732,35 +765,37 @@ module.exports = {
   },
   avax: {
     owners: [
-      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
-      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
-      "0x015a41879503c69d8556605c0526B9b5B59f9A2F", // hot
-      "0xb078257c5Be10792eF922418AF0605E05d4a75a3", // hot - consolidation
-      "0x2588a4500be528dD2e840dde05a29C0Dd3A11602", // cold -  user
-      "0xDDDC6B2C8eEF13D8ab5189C8Ee14467072AE3d69", // cold - house
-      "0x7DC9F557E98e0a54d1F4eCa09898a2f339cCa064", // HK house-cold
-      "0x483882580304223Ec7C14fE831bd637626D4b077", // client-cold
+      "0x4F09195FC56cf088671E0737B440be770715b18C", // 1
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", // 1
+      "0x015a41879503c69d8556605c0526B9b5B59f9A2F", // 2
+      "0xb078257c5Be10792eF922418AF0605E05d4a75a3", // 2
+      "0x2588a4500be528dD2e840dde05a29C0Dd3A11602", // 2
+      "0xDDDC6B2C8eEF13D8ab5189C8Ee14467072AE3d69", // 2
+      "0x7DC9F557E98e0a54d1F4eCa09898a2f339cCa064", // 3
+      "0x483882580304223Ec7C14fE831bd637626D4b077", // 3
       "0x4CB0a2D8C715F5D9066c4e668a83341a1e745dF2",
     ],
   },
   tron: {
     owners: [
-      "TNjNZcwroFs1JKRPrPbVQuucbeNHU1BXJ4", //IN hot
-      "TTNztbcmzpATyc5wfuJRFm2LgKLkPcEmuP", //IN warm
-      "TSjEMi9JjSJJCsDHHuUe9s63vHLNDTPLNc", // hot
-      "TPDNKLR5723RkgcPBbAndTEicfYHwpxjgE", // hot - consolidation
-      "TDMehmFFaohohtGJRKEsLq41Q6C91kT7DD", // cold -  user
-      "TKLRWZ4PKZayHCAQsitJhLau4bXMyUJxhW", // cold - house
-      "TKFhkvMpvPNqYFtWjTAP3n5R7NgcGJwzSo", // HK house-cold
-      "TSA1Qox7hSfBdAc9JcYNtewoZeD4fukbNM", // client-cold
+      "TNjNZcwroFs1JKRPrPbVQuucbeNHU1BXJ4", // 1
+      "TTNztbcmzpATyc5wfuJRFm2LgKLkPcEmuP", // 1
+      "TSjEMi9JjSJJCsDHHuUe9s63vHLNDTPLNc", // 2
+      "TPDNKLR5723RkgcPBbAndTEicfYHwpxjgE", // 2
+      "TDMehmFFaohohtGJRKEsLq41Q6C91kT7DD", // 2
+      "TKLRWZ4PKZayHCAQsitJhLau4bXMyUJxhW", // 2
+      "TKFhkvMpvPNqYFtWjTAP3n5R7NgcGJwzSo", // 3
+      "TSA1Qox7hSfBdAc9JcYNtewoZeD4fukbNM", // 3
       "TPVrZvorpTwA9j9ZYvYKXLEeJdSAboKD4Z",
       "TA5gT7kFLTYSgrTQgsCah6jfCz75xX17ce",
       "TYFhHoGfVfRH6HP7B5w6uoUZ85P9SenNu8",
       "TJzygEinLhWvNe1yMoBDsVgMvCLg1oos1Y",
+      "TGTZ5eSy3ePPAMV1wfoTFjme7WHBHWNQrg",
       "TSMtgLhYvQsDvFVxFg2c5HXaNavinoUSm3",
       "TTV4qWasDMjBnZjsj3eZpwoxXErLy8F391",
       "TNJqJAoSG14zeuMPg2vdpETjVBLBKQphKy",
       "TPim5V7XTmr8ydywj8jR21EHEW5RAG9MB4",
+      "TE4es9Z1YLf2haL45NddUQma8BV4VwLuah",
       "TD6gBRfnghT1CkQsp3qmnKpgUsZNi6dJAP",
       "TUwwqx9GwG7AsVG8imVMi7W5bSsrEdWcBi",
       "TJzRUDXMjoSaMSFiHxJ8CApcahTfdMv2h4",
@@ -771,52 +806,66 @@ module.exports = {
       "TE3jnZPccdFxa6vZUYsGKcCDyR53QrhzA6",
       "TFpDPqVMUSpZGVzQACiVHoCxRE9LsFjAd6",
       "TVTr1LFMefzeT2wsvE6ZyJYQ8hm48jk8iR",
+      "THuS7EDCqPAFQt6EJ7RogxdhG5BrBp3PgW",
+      "TSdNZbmAdAGtTeoa3cjDZzDfEmgUpzF6MC",
       "TE7tSqii9umQJfAfnmNjm3Xmr81SGnEDMx",
       "TDW9X5VGtuKYCSBWTdy1WEUaGwH6HYBGej",
       "TYK8Ss4wRZJRAFpdZZETsNMdSLnTh7iwBK",
       "TN77fvWmELWiAwy5icJRytC9YQrbPiSdet",
       "TSJnWoiJVodNYUK6nWhKKJQcK4MNdoRvGf",
       "TE6NAd4WwB7eJsnjckqtiPjgVJYXsTiyXu",
+      "TJekGf9YgcgYwiehy4c4QUTQjAodj4nnXA",
       "TE45xaVGLPYmm4z168xDDpzRhc1487rwzJ",
       "TE6EwmAHQqFFtD5Y6rrmCiTNp24bDS4TsY",
+      "TDW2Pn6bWscvE8Hzr4B5441gG54fYA7fA3",
+      "TPi1boKQuEzWGGkNc9acQA7GV4ZUNWWEbc",
+      "TSngxgXisvihA9krZ7cuLRbGzjG9rXkiNy",
       "TSapJX1hL3ZW7Si4YuvffsKQwG9eqvh3C2",
       "TSGDfFB5f8jqRGCtx1eu6q3wQrSA8GDHJ1",
+      "TLongszDreSszgLwdK1uaW2LHYUTwjMJeo",
       "TCE5PTbaXUrgDLkzRBeaRGkQjaCRnvFELi",
+      "TJRaYRcaHfeFKnCVts966GkLCXM4TFfq5U",
+      "TXtS3Y9iyWBqGJx97hZGrU8zMfcERU4Ppu",
       "TENAXWmVKkPHmqgWqQ2FRzanQ2pWCeFB3E",
+      "TUZ7bL5BHFprnPu3DR7ys6eG8sd2ZFVXiq",
       "TKV6agddpm3he4afnqWAe68teUnXEzdd55",
+      "TG6pAt5HAopqm1Qn9wg5pBxxrJuaqz1Rgs",
+      "TVPE3nbK7UwynTWjKytJFJHnVHX6cuMMDZ",
+      "TDxNWtcJivumH1um8ReMgbATY63cFmtVAw",
       "THycZNfkhfHUMM2stDFCnhgPEE5CbdTz9S",
       "TWmXZZXfCXBa6vy6tKb1LAoMXbvhntHQjk",
     ],
   },
   polygon: {
     owners: [
-        "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
-        "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
-        "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
-        "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
-        "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // cold - house
-        "0xAE1863c69Ffbda4Ca2B4CDe0F7B48C8Ea363DC54", // HK house-cold
-        "0xd8559F0c83Abe87155A298DD17c7C21F26a27CA2", // client-cold
+        "0x4F09195FC56cf088671E0737B440be770715b18C", // 1
+        "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // 2
+        "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // 2
+        "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // 2
+        "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // 2
+        "0xAE1863c69Ffbda4Ca2B4CDe0F7B48C8Ea363DC54", // 3
+        "0xd8559F0c83Abe87155A298DD17c7C21F26a27CA2", // 3
+        "0x4B91bf14D2e54b628b0B578823B6abE82A5b5AE4",
     ],
   },
   scroll: {
     owners: [
-        "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
-        "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
-        "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
-        "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
-        "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // cold - house
+        "0x4F09195FC56cf088671E0737B440be770715b18C", // 1
+        "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // 2
+        "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // 2
+        "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // 2
+        "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // 2
     ],
   },
   litecoin: {
     owners: [
-        "ltc1qxvtf9a282gpp8vl3lsgrsarysrlc8r5m0q7w4n", //IN hot
-        "ltc1q32k8z0glde0chd3wv0dc8ljnpl92ds8s2dlcc5", // hot
-        "ltc1qw6q7h9aghdp5d3w9wx6748hk4zvntt9aq40ngw", // hot - consolidation
-        "ltc1qf6zmte4muck3lyllpmu4q9h4e44r89777ry39z", // cold -  user
-        "ltc1qwtf3grvr3t40axqgtxufk4sa66s3680749qlsl", // cold - house
-        "MDUM7BPVDDTssV3D6hnKS35uu45zcUJUG9", // belwo HK house-cold
-        "MQ9mZJu3X7m4CpMkvHia2nMRvY2q25kBA6", // client-cold
+        "ltc1qxvtf9a282gpp8vl3lsgrsarysrlc8r5m0q7w4n", // 1
+        "ltc1q32k8z0glde0chd3wv0dc8ljnpl92ds8s2dlcc5", // 2
+        "ltc1qw6q7h9aghdp5d3w9wx6748hk4zvntt9aq40ngw", // 2
+        "ltc1qf6zmte4muck3lyllpmu4q9h4e44r89777ry39z", // 2
+        "ltc1qwtf3grvr3t40axqgtxufk4sa66s3680749qlsl", // 2
+        "MDUM7BPVDDTssV3D6hnKS35uu45zcUJUG9", // 3
+        "MQ9mZJu3X7m4CpMkvHia2nMRvY2q25kBA6", // 3
     ],
   },
   // defillama does not support bitcoincash at the moment
@@ -828,110 +877,112 @@ module.exports = {
   // },
   ton: {
     owners: [
-        "UQBmMf7ztTfITUJhnT6E3rA_qYNnvXqFG8zZ6z270PZQ-XAD", //IN hot
-        "UQDn0QGegL3Y3ZvzDNcnFEx2YWJJ-T-wYBybMPy3Vcqbd4Nw", // hot
-        "UQANrP4Du0abVt_zC9YuE-xizl4l99BrAqa5VP5Lz8OI5i4u", // hot - consolidation
-        "UQCKucr3154bhH_3ZAeoeZTFnBnZjDMpi_IwDLwhE06wQVTI", // cold -  user
-        "UQCeGI1w9wzP5atD_hUyA4cQN35QzItoHIc2JTEFT_3ZfEDV", // cold - house
-        "UQD8mH9bP464QWAzcQl-e0XUepHKuSwLSLDcQs1VUWCe0Swb", // HK house-cold
-        "UQAw5IqcVhCHv4hF4fSq_WB6vuuMulb86tyTiYMpmDqtetGy", // client-cold
-        "UQDnIJG5NJJSjC6J731SdGBibQpfdVJk-jIg0YKV5fQL2VYA", // house 
-        "UQCx-UiLc0hr8mO1BHi3JFRtgwLQrZjWYGN_5--1hde66ejh", // client 
+        "UQBmMf7ztTfITUJhnT6E3rA_qYNnvXqFG8zZ6z270PZQ-XAD", // 1
+        "UQDn0QGegL3Y3ZvzDNcnFEx2YWJJ-T-wYBybMPy3Vcqbd4Nw", // 2
+        "UQANrP4Du0abVt_zC9YuE-xizl4l99BrAqa5VP5Lz8OI5i4u", // 2
+        "UQCKucr3154bhH_3ZAeoeZTFnBnZjDMpi_IwDLwhE06wQVTI", // 2
+        "UQCeGI1w9wzP5atD_hUyA4cQN35QzItoHIc2JTEFT_3ZfEDV", // 2
+        "UQD8mH9bP464QWAzcQl-e0XUepHKuSwLSLDcQs1VUWCe0Swb", // 3
+        "UQAw5IqcVhCHv4hF4fSq_WB6vuuMulb86tyTiYMpmDqtetGy", // 3
+        "UQDnIJG5NJJSjC6J731SdGBibQpfdVJk-jIg0YKV5fQL2VYA", // 3
+        "UQCx-UiLc0hr8mO1BHi3JFRtgwLQrZjWYGN_5--1hde66ejh", // 3
     ],
   },
   doge: {
     owners: [
-      "DB1zr87B2A6TUtwWjp3dUjUypejrmHqGH5", // IN hot
-      "DPeRfkGa3BbUdeivchhjHDx76pyZ5HfrNq", //IN warm
-      "D6WMft6zfERAYorB3ftcJjhTintgeVAGhw", // hot
-      "D63Ge381QBcsaf7qwuxBh5rttgRFdnxMcv", // hot - consolidation
-      "DLBYdQkDyVWAcXxfkrXNPL9yE1gtKdKHbe", // cold -  user
-      "DDXgUo6rPcJ5i3k1VmPAd1wWijmwfSPYEE", // cold - house
-      "DKSTo3dqY6GiTcx54mAQFEBitAWMmmtimF", // HK house-cold
-      "D6BgG9CDJ3Xa43EsAeT5969bcitv5KtmwT", // client-cold 
+      "DB1zr87B2A6TUtwWjp3dUjUypejrmHqGH5", // 1
+      "DPeRfkGa3BbUdeivchhjHDx76pyZ5HfrNq", // 1
+      "D6WMft6zfERAYorB3ftcJjhTintgeVAGhw", // 2
+      "D63Ge381QBcsaf7qwuxBh5rttgRFdnxMcv", // 2
+      "DLBYdQkDyVWAcXxfkrXNPL9yE1gtKdKHbe", // 2
+      "DDXgUo6rPcJ5i3k1VmPAd1wWijmwfSPYEE", // 2
+      "DKSTo3dqY6GiTcx54mAQFEBitAWMmmtimF", // 3
+      "D6BgG9CDJ3Xa43EsAeT5969bcitv5KtmwT", // 3
     ],
   },
   ripple: {
     owners: [
-      "rE57dGTrhPjKV8RwpL4U57qSLYbedz1dNS", //IN hot
-      "rhSUC45YLKoz5uy5A4VtCwXAz9d7rQMgAZ", //IN warm
-      "rnHYKxdnPFwHMc9wpARskAgJnYY1x6JZhu", // hot withdrawal
-      "rfZS4yRkqTfaMKiFyUTsiF1TQ6dd67sAnK", // hot deposit
-      "rhqxpAugGuwp6tYxy5jRmjc73468bSaaKS", // hot withdrawal - consolidation
-      "rLPZ9JwjGQmuymo7NxUzf7eKFZCXhic7VW", // hot deposit - consolidation
-      "rwW6g6iqyZHjmLiPdnwgYFBgeepQ4wbw73", // cold -  user
-      "rHThQZRKbj4d5mbdKmzRukMBkkVSZsYxeR", // cold - house
-      "r3GC3nruKu5KFj3xhZFZ59eDi1FFCgUMPy",  // HK house-cold
-      "r95CVf2nDKeyK8UPqNZTXefX4Wk8tqU4cQ",  // client-cold 
-      "rDrcx9dkWuATH2TnViuez1wqJj5qnVNBKB",  // house 
-      "rfPUpapHE9snBTMoCaP5KXS9GPY824fdWA",  // client
+      "rE57dGTrhPjKV8RwpL4U57qSLYbedz1dNS", // 1
+      "rhSUC45YLKoz5uy5A4VtCwXAz9d7rQMgAZ", // 1
+      "rnHYKxdnPFwHMc9wpARskAgJnYY1x6JZhu", // 2
+      "rfZS4yRkqTfaMKiFyUTsiF1TQ6dd67sAnK", // 2
+      "rhqxpAugGuwp6tYxy5jRmjc73468bSaaKS", // 2
+      "rLPZ9JwjGQmuymo7NxUzf7eKFZCXhic7VW", // 2
+      "rwW6g6iqyZHjmLiPdnwgYFBgeepQ4wbw73", // 2
+      "rHThQZRKbj4d5mbdKmzRukMBkkVSZsYxeR", // 2
+      "r3GC3nruKu5KFj3xhZFZ59eDi1FFCgUMPy",  // 3
+      "r95CVf2nDKeyK8UPqNZTXefX4Wk8tqU4cQ",  // 3
+      "rDrcx9dkWuATH2TnViuez1wqJj5qnVNBKB",  // 3
+      "rfPUpapHE9snBTMoCaP5KXS9GPY824fdWA",  // 3
     ],
   },
   bsc: {
     owners: [
-      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
-      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
-      "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // hot
-      "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // hot - consolidation
-      "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // cold - user
-      "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // cold - house
-      "0x1bfc0Ad0f2fb12Fb772711d3399885c7432Ffa6b", // HK house-cold
-      "0x8506769D93208A2004c4a51E30c901f6064e4aE3", // client-cold
+      "0x4F09195FC56cf088671E0737B440be770715b18C", // 1
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //1
+      "0x1368487BccEE27421c5b4a90A437Dbb8e8ea11CE", // 2
+      "0xa853b3a5308f98926aa89821843f8299cc02eFC6", // 2
+      "0x19C8eD6602Ce31a51f2C9c28bD923847739f6175", // 2
+      "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // 2
+      "0x1bfc0Ad0f2fb12Fb772711d3399885c7432Ffa6b", // 3
+      "0x8506769D93208A2004c4a51E30c901f6064e4aE3", // 3
       "0x033a0D2ba4cf9Ce2B4808771D23CE686AB19E7AA",
     ],
   },
   sei: {
     owners: [
-      "0xDA613CA1432FCeEcD2DB9BdBf96F8D8726E42fCB", // house-cold
-      "0x4ecD4F080ab38A2C5543e795E171feCf5B7d5FD9", // client-cold
+      "0xDA613CA1432FCeEcD2DB9BdBf96F8D8726E42fCB", // 2
+      "0x4ecD4F080ab38A2C5543e795E171feCf5B7d5FD9", // 2
       "0xEB81e7891FE4961fb9786ab4b9b1E754e07dF0A7",
+      "0xEB81e7891FE4961fb9786ab4b9b1E754e07dF0A7",
+      "0xBea0D25Fc5235dAC442a0Da7418FC966AeEb3589",
     ],
   },
   injective: {
     owners: [
-      "inj13j9lw3qs47jh9845wr3w4fl44mvcepmyjqq4aa", //IN hot
-      "inj1accjy08x47jhng07vy24v5ugh6axak286rpkfd", // hot
-      "inj1qfpajnc0ngtkng4uztxusrwzt0k5xg0ag0s6sf", // hot - consolidation
-      "inj1jm7qwm6ykhesgh3wz65gtncyj2sl0j9ln842sq", // cold -  user
-      "inj1xl77fmp2fgvrmh5vmet52tfdumg5tqw05vlexp", // cold - house
+      "inj13j9lw3qs47jh9845wr3w4fl44mvcepmyjqq4aa", // 1
+      "inj1accjy08x47jhng07vy24v5ugh6axak286rpkfd", // 2
+      "inj1qfpajnc0ngtkng4uztxusrwzt0k5xg0ag0s6sf", // 2
+      "inj1jm7qwm6ykhesgh3wz65gtncyj2sl0j9ln842sq", // 2
+      "inj1xl77fmp2fgvrmh5vmet52tfdumg5tqw05vlexp", // 2
     ],
   },
   cardano: {
     owners: [
-      "addr1qx3c3m0c48pk66qhv8rxwexr4h0yxa0y4uzjuy9pwzvul7tg8j5jpxu3w839gmzqwhpv8ms3zm8xwvmuqnyx44q3vfeqfa0vt7", //IN hot
+      "addr1qx3c3m0c48pk66qhv8rxwexr4h0yxa0y4uzjuy9pwzvul7tg8j5jpxu3w839gmzqwhpv8ms3zm8xwvmuqnyx44q3vfeqfa0vt7", // 1
     ],
   },
   base: {
     owners: [
-      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
-      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
+      "0x4F09195FC56cf088671E0737B440be770715b18C", // 1
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", // 1
     ],
   },
   plasma: {
     owners: [
-      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
-      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
+      "0x4F09195FC56cf088671E0737B440be770715b18C", // 1
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", // 1
     ],
   },
   hyperliquid: {
     owners: [
-      "0x4F09195FC56cf088671E0737B440be770715b18C", //IN hot
-      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", //IN warm
+      "0x4F09195FC56cf088671E0737B440be770715b18C", // 1
+      "0x1E3CbDd1B0EC8B643Ce7538ce1bF5EC7fC01f989", // 1
     ],
   },
   sui: {
     owners: [
-      "0x21e98fe7f8d5b297712ceb75b7783e0179e41c7f1d7af689c9612d9564a02a3a", //IN hot
-      "0xe36760568b59153310815a6dfb89de3332fbad148f976fb02deccba735c5dc5a", //IN warm
+      "0x21e98fe7f8d5b297712ceb75b7783e0179e41c7f1d7af689c9612d9564a02a3a", // 1
+      "0xe36760568b59153310815a6dfb89de3332fbad148f976fb02deccba735c5dc5a", // 1
     ],
   },
   stellar: {
     owners: [
-      "GBTLH7JQLCGSVPUNXYO3CTT3J576H2V2L5MU7KFDEYXXSSYYQ2RMAJPG", //IN hot
-      "GAPFP3YN7BONOIUI47ROEMJ7ADQJN4EGHW6F2E25E4XZBF7OX24DHN77", // hot
-      "GD6GEAG62FNBYUNOJGH2LAYOCC7RQLNSKA4VKIWXB5NJT6H7QT4OFDFO", // hot - consolidation
-      "GAMHTYZE22J242FRVE7V56ULLQ7YGR7XCBHAUJLHU7AHZJQJAANIG72E", // cold -  user
-      "GA4453WXKVNGBGGQOWC6NC27SYMDP7QJVVZ6LBZFG6Q57N7PUYXVLZYL", // cold - house
+      "GBTLH7JQLCGSVPUNXYO3CTT3J576H2V2L5MU7KFDEYXXSSYYQ2RMAJPG", // 1
+      "GAPFP3YN7BONOIUI47ROEMJ7ADQJN4EGHW6F2E25E4XZBF7OX24DHN77", // 2
+      "GD6GEAG62FNBYUNOJGH2LAYOCC7RQLNSKA4VKIWXB5NJT6H7QT4OFDFO", // 2
+      "GAMHTYZE22J242FRVE7V56ULLQ7YGR7XCBHAUJLHU7AHZJQJAANIG72E", // 2
+      "GA4453WXKVNGBGGQOWC6NC27SYMDP7QJVVZ6LBZFG6Q57N7PUYXVLZYL", // 2
     ],
   }
 }
