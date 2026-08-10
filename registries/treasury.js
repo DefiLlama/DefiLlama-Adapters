@@ -4629,6 +4629,12 @@ const configs = {
       ownTokens: ['0x25118290e6a5f4139381d072181157035864099d'],
     },
   },
+  'treasury/raisehood': {
+    robinhood: {
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+      owner: '0x0a39701e5D5BB5A6146aEEba66638297D0947f04'
+    }
+  },
   'treasury/rarible': {
     ethereum: {
       tokens: [
