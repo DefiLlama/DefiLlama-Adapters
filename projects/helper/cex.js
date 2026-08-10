@@ -154,6 +154,15 @@ const defaultTokens = {
     '0x000000fa00b200406de700041cfc6b19bbfb4d13', //TOWNS
     '0x8408d45b61f5823298f19a09b53b7339c0280489', //ALLO
     '0x031de51f3e8016514bd0963d0b2ab825a591db9a', //ESP
+    '0x68749665FF8D2d112Fa859AA293F07A622782F38', //XAUT (Tether Gold)
+    '0xe76c5b78f93909d34404e9eb4c1f19e7582a5de1', //H (Humanity Protocol)
+    '0x57e114B691Db790C35207b2e685D4A43181e6061', //ENA (Ethena)
+    '0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85', //FET (Artificial Superintelligence Alliance)
+    '0x7420B4b9a0110cdC71fB720908340C03F9Bc03EC', //JASMY
+    '0x808507121b80c02388fad14726482e061b8da827', //PENDLE
+    '0xcccccccccc33d538dbc2ee4feab0a7a1ff4e8a94', //CFG (Centrifuge)
+    '0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb', //ETHFI (ether.fi)
+    '0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f', //GHO (Aave stablecoin)
   ],
   tron: [
     nullAddress,
@@ -164,6 +173,7 @@ const defaultTokens = {
     'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
     'TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6', // HTX
     'TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc', //USD1
+    'TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz', //USDD
   ],
   polygon: [
     nullAddress,
@@ -177,6 +187,7 @@ const defaultTokens = {
     '0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e', //xen
     '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', //ALGB
     '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f', //voxel
+    '0xa3f751662e282e83ec3cbc387d225ca56dd63d3a', //APEPE (Ape Pepe)
   ],
   algorand: [],
   solana: [
@@ -191,6 +202,13 @@ const defaultTokens = {
     '9zNQRsGLjNKwCUU5Gq5LR8beUCPzQMVMqKAi3SSZh54u', //FDUSD
     'USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB', //USD1
     'WLFinEv6ypjkczcS83FZqFpgFZYwQXutRbxGe7oC16g', //WLFI
+    '6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN', //TRUMP (OFFICIAL TRUMP)
+    '2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH', //USDG (Global Dollar)
+    'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn', //PUMP (pump.fun)
+    'XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB', //TSLAX (Tesla xStock)
+    'rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof', //RENDER
+    'Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk', //USELESS
+    '4eDf52YYzL6i6gbZ6FXqrLUPXbtP61f1gPSFM66M4XHe', //SOON
   ],
   bsc: [
     nullAddress,
@@ -250,6 +268,13 @@ const defaultTokens = {
     '0x868fced65edbf0056c4163515dd840e9f287a4c3', //SIGN
     '0x47474747477b199288bf72a1d702f7fe0fb1deea', //WLFI
     '0xcce5f304fd043d6a4e8ccb5376a4a4fb583b98d5', //ALLO
+    '0x6bdcce4a559076e37755a78ce0c06214e59e4444', //B (Bubblemaps)
+    '0x7ec43cf65f1663f820427c62a5780b8f2e25593a', //LAB (LABUBU)
+    '0xd955c9ba56fb1ab30e34766e252a97ccce3d31a6', //XPIN (XPIN Network)
+    '0x2c3a8ee94ddd97244a93bc48298f97d2c412f7db', //AKE (Akedo Games)
+    '0x0a8d6c86e1bce73fe4d0bd531e1a567306836ea5', //COAI (ChainOpera AI)
+    '0xb9e1fd5a02d3a33b25a14d661414e6ed6954a721', //SOON
+    '0x3d4f0513e8a29669b960f9dbca61861548a9a760', //BANANAS31 (Banana For Scale)
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -271,6 +296,7 @@ const defaultTokens = {
   base: [
     nullAddress,
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',
+    '0xacfe6019ed1a7dc6f7b508c02d1b04ec88cc21bf', //VVV (Venice Token)
   ],
   avax: [
     nullAddress,
@@ -317,6 +343,7 @@ const defaultTokens = {
   kava: [
     nullAddress,
     ADDRESSES.kava.USDt,
+    '0x919C1c267BC06a7039e03fcc2eF738525769109c', //USDT (kava EVM)
   ],
   cronos: [
     nullAddress,
@@ -338,7 +365,8 @@ const defaultTokens = {
     ADDRESSES.aptos.USDC,
     ADDRESSES.aptos.USDT,
     ADDRESSES.aptos.USDt,
-    '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US' // US
+    '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US', // US
+    '0x05fabd1b12e39967a3c24e91b7b8f67719a6dacee74f3c8b9fb7d93e855437d2', // USD1
   ],
   mantle: [
     nullAddress,
@@ -375,6 +403,14 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.plasma.USDT0,
     ADDRESSES.plasma.WXPL,
+  ],
+  wc: [
+    nullAddress,
+    '0x2cfc85d8e48f8eab294be644d9e25c3030863003', //WLD (World Chain)
+  ],
+  abstract: [
+    nullAddress,
+    '0x12d3e796d1f625eb6131aeb670bcd210bbb0f903', //GUSD (Gate stablecoin)
   ],
 }
 
