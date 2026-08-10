@@ -24813,6 +24813,14 @@ const configs = {
           "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
         ],
         [
+          ADDRESSES.ethereum.WEETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.RETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
           "0x68749665FF8D2d112Fa859AA293F07A622782F38",
           "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
         ]
