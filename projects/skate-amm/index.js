@@ -103,3 +103,10 @@ const suiTvl = async (api) => {
 Object.keys(sui_config).forEach((chain) => {
   module.exports[chain] = { tvl: suiTvl }
 })
+
+// export to preserve historical tvl
+const retiredChains = ['hyperliquid', 'monad', 'eclipse', 'tempo', 'megaeth', 'mantle', 'plume_mainnet', '0g']
+
+retiredChains.forEach((chain) => {
+  module.exports[chain] = { tvl: async () => ({}) }
+})
