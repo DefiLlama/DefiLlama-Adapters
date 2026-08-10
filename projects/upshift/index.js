@@ -35,13 +35,6 @@ const LOCAL_AUM_OFFSET = 8 + 32 * 5 + 4;
 const DEPLOYED_AUM_OFFSET = LOCAL_AUM_OFFSET + 8;
 const MIN_VAULT_STATE_LEN = DEPLOYED_AUM_OFFSET + 8;
 
-// USDx has no entry in DefiLlama's price feed, so the Axis Origin pre-deposit
-// vault (~$67M) is currently valued at zero. It is a $1-denominated accounting
-// unit, so map it onto USDT and rescale 18 -> 6 decimals.
-const USDX = '0xa1fa7777974312f7d801a8880714a218f76233f8';
-const USDT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
-const USDX_DECIMAL_SCALE = 10n ** 12n;
-
 const suiVaultsToInclude = [
   "0x94c2826b24e44f710c5f80e3ed7ce898258d7008e3a643c894d90d276924d4b9",
   "0xfaf4d0ec9b76147c926c0c8b2aba39ea21ec991500c1e3e53b60d447b0e5f655",
@@ -100,12 +93,6 @@ async function getVaultsConfig() {
 async function sumV2Vaults(api, vaults) {
   const assets = await api.multiCall({ abi: "address:asset", calls: vaults })
   const totalAssets = await api.multiCall({ abi: "uint256:getTotalAssets", calls: vaults })
-
-  for (let i = 0; i < assets.length; i++) {
-    if (assets[i].toLowerCase() !== USDX) continue
-    assets[i] = USDT
-    totalAssets[i] = (BigInt(totalAssets[i]) / USDX_DECIMAL_SCALE).toString()
-  }
 
   api.addTokens(assets, totalAssets)
 }
