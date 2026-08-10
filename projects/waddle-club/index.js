@@ -76,6 +76,6 @@ module.exports = {
   doublecounted: true,
   // First staker deployment (Kumbaya on MegaETH, block 3520323).
   start: "2025-12-21",
-  megaeth: { tvl, staking },
+  megaeth: { tvl },
   robinhood: { tvl, staking },
 };
