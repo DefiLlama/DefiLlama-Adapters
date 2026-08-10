@@ -107,7 +107,11 @@ function sanitizeChainBalances(chain, rawBalances, v1Config, blockedAssets) {
         `Multipli V1: unapproved ${chain} asset ${address}; update registry first`
       )
 
+    // `0xabc` and `ethereum:0xabc` normalize to the same key; overwriting one
+    // with the other would make TVL depend on payload property order.
     const key = `${chain}:${normalizedAddress}`
+    if (Object.prototype.hasOwnProperty.call(result, key))
+      throw new Error(`Multipli V1: duplicate balance key ${key}`)
     result[key] = normalizeInteger(rawValue, key)
   }
 
