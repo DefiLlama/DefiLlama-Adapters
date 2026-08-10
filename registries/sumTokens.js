@@ -1062,6 +1062,14 @@ const configs = {
         "0x1CE0c2827e2eF14D5C4f29a091d735A204794041"
       ]
     },
+    "tron": {
+      "owners": [
+        "TJYY1X7sNrSSowKhcsGECDXqfQBBwaTcg8"
+      ],
+      "tokens": [
+        ADDRESSES.tron.USDT
+      ]
+    },
   },
   "anome": {
     "bsc": {
@@ -14330,7 +14338,7 @@ const configs = {
     },
   },
   "ezmanager": {
-    "methodology": "TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, Ethereum, BSC, and Hyperliquid.",
+    "methodology": "TVL is the sum of token amounts for all currently active positions registered in EZManager CLCore across Base, Arbitrum, Ethereum, BSC, Hyperliquid, and Robinhood.",
     "doublecounted": true,
     "base": {
       "owner": "0x61c36AFF32Be348a3D1FE1E2B4745048f652770F",
@@ -14354,6 +14362,13 @@ const configs = {
       "resolveUniV3": true,
       "uniV3ExtraConfig": {
         "nftAddress": "0xead19ae861c29bbb2101e834922b2feee69b9091"
+      }
+    },
+    "robinhood": {
+      "owner": "0xEc6A12eb5593F450fc238Dd269fCff3DE8166098",
+      "resolveUniV3": true,
+      "uniV3ExtraConfig": {
+        "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
       }
     },
   },
@@ -23537,6 +23552,12 @@ const configs = {
       }
     },
   },
+  "reed": {
+    "cardano": {
+      "owner": "script163jxg6ejex04jpsu9jc3dlw7u2we4u60zmlle6wdenvfga0pw26",
+      "tokens": [ADDRESSES.null]
+    }
+  },
   "reflexer": {
     "start": "2021-02-17",
     "ethereum": {
@@ -28715,6 +28736,13 @@ const configs = {
         ADDRESSES.null
       ]
     },
+  },
+  "vaultmintcurve": {
+    "methodology": "TVL is the DAI held in the VaultMintCurve contract backing the bonding curve.",
+    "ethereum": {
+      "owner": "0x6981021fe4A69b14488b9f9f86d06c17297a8fBF",
+      "tokens": [ADDRESSES.ethereum.DAI]
+    }
   },
   "veax": {
     "timetravel": false,

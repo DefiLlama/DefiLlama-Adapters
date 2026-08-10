@@ -1104,6 +1104,17 @@ const configs = {
       ownTokens: ['BLZEEuZUBVqFhj8adcCFPJvPVCiCyVmh3hkJMrU8KuJA'],
     },
   },
+  'treasury/boardwalk': {
+    ethereum: {
+      owner: '0x366624d894920e3abE1F231f67a02a1861Ff1CA3',
+      tokens: [ADDRESSES.ethereum.WETH],
+      ownTokens: ['0xF9a352b7C7B62a852e5C8A64A455246Dd9596461'],
+    },
+    base: {
+      owner: '0x366624d894920e3abE1F231f67a02a1861Ff1CA3',
+      tokens: [ADDRESSES.base.WETH, ADDRESSES.base.USDC]
+    }
+  },
   'treasury/bonsai': {
     arbitrum: {
       tokens: [
@@ -4046,6 +4057,14 @@ const configs = {
       owners: ['0x61e807038ae880d964a15a57c8cc74a634bccc26'],
     },
   },
+  'treasury/openlaunch': {
+    stable: {
+      tokens: [
+        nullAddress,
+      ],
+      owners: ['0x1870F0B2521773c3621BCa5244E950900c38cc2C'],
+    },
+  },
   'treasury/openxswap': {
     optimism: {
       tokens: [
@@ -5393,12 +5412,6 @@ const configs = {
       ],
     },
   },
-  'treasury/stockworks': {
-    robinhood: {
-      owners: ['0x57024Aae99f709Bd399252767DDC6487Aa3881De'],
-      tokens: [nullAddress, '0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa'],
-    }
-  },
   'treasury/stonkbrokers': {
     robinhood: {
       owners: ['0x16027b596e210c63f750E0bdD156f00bb2749868'],
@@ -6091,6 +6104,14 @@ const configs = {
         nullAddress,
       ],
       owners: ["0x0d189fd8d46e43b2f13390de95d4f8e185eb3914"],
+    },
+  },
+  'treasury/wildcard-games': {
+    robinhood: {
+      tokens: [
+        ADDRESSES.robinhood.USDG,
+      ],
+      owners: ["0x1b3bb8790b47855bDE2f43A56b6aa3E44E1F60AE"],
     },
   },
   'treasury/woofi': {

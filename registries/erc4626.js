@@ -290,11 +290,6 @@ const configs = {
     base: ['0x00325d9da832b38179ed2f0dabd4062d93e325a7'],
     methodology: 'TVL is calculated as the total USDC held in the ArcisVault contract, including both reserve and deployed capital across yield strategies.'
   },
-  'byzanlink': {
-    hedera: ['0x6b8dfA6aa5f803a886Beb2492eF3307EC0Ee16FB'],
-    ethereum: ['0xA5cDEE01aA7A5E0620df5f27F26E552fdf7f5F20'],
-    methodology: 'Total value of assets deposited in the Byzanlink vaults, read on-chain and valued in USD.'
-  },
   'crystalclear': {
     methodology: "TVL is the sum of totalAssets() across all live CrystalClear ERC-4626 vaults on HyperEVM. Each vault holds USDC and trades perpetuals on Hyperliquid via a delegated agent.",
     hyperliquid: [
@@ -427,6 +422,15 @@ const configs = {
     doublecounted: true,
     methodology: 'TVL is the sum of assets deposited into Agua\'s ERC-4626 vault(s), read via totalAssets() (net asset value) and denominated in the underlying asset (USDC). Deposits are allocated into external lending markets (Aave, Morpho, Euler, ...) already tracked by DefiLlama, so this TVL is double-counted.',
     ethereum: ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f'],
+  },
+  'dyield': {
+    doublecounted: true,
+    methodology: 'Sum of totalAssets() across the three dyield wrapper vaults on Base. Double counted with Morpho.',
+    base: [
+      '0x6fc2670a0e3ecFfAc27c66009530f16BC07cd2Cc', // dyield Prime — d$P
+      '0x80729552cb813d95d54474c0E7e9E5ed8F5A8D89', // dyield High  — d$H
+      '0xB7E50801E30cB5eF02b95D1bbc8363bc260197FF', // dyield Ultra — d$U
+    ],
   }
 }
 
