@@ -1,9 +1,17 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+// AvaLove — TVL adapter (DefiLlama-Adapters)  path: projects/avalove/index.js
+//
+// TVL  = house liquidity in EVERY game pool, in ANY token EXCEPT the protocol's
+//        own token AVLO (creator/ecosystem tokens like NEWZ, THROBBIN, plus core
+//        assets all count here).
+// Staking = AVLO house liquidity (the protocol's own token — reported separately
+//        per DefiLlama's own-token rule, but still visible on the page).
+//
+// All 200+ pool contracts are enumerated on-chain from the per-game V3 factories
+// via getTotalGames()/getGames(); nothing is hard-coded per pool.
 
 const GAME_INFO_ABI = "function getGames(uint256 start, uint256 end) view returns ((address gameAddress, address owner, address creator, address token, string tokenLogoUrl, string betName, uint256 createdAt)[])";
 const TOTAL_GAMES_ABI = "function getTotalGames() view returns (uint256)";
 
-// Per-game V3 factories. Addresses are public on-chain deployments.
 const FACTORIES = {
   avax: [
     "0x001AfbeEdd4524f46f697356E19c83136f67DB9E", // roulette
@@ -33,40 +41,43 @@ const FACTORIES = {
   ],
 };
 
+// Protocol's own token (excluded from TVL, reported as staking).
+const AVLO = {
+  avax: "0x54eeeb249e3ae445f21eb006debb33efa2b4b3bb",
+  robinhood: "0x7e37298e240c1e644f6f9f96b6a3aa6c5aea9885",
+};
+
 const PAGE = 1000; // pools per getGames call
 
 async function getGameTokensAndOwners(api) {
-  const factories = FACTORIES[api.chain] || []
-  if (!factories.length) return []
-  const totals = await api.multiCall({ abi: TOTAL_GAMES_ABI, calls: factories })
+  const factories = FACTORIES[api.chain] || [];
+  if (!factories.length) return [];
+  const totals = await api.multiCall({ abi: TOTAL_GAMES_ABI, calls: factories });
   const calls = factories.flatMap((target, i) => {
-    const total = Number(totals[i] || 0)
+    const total = Number(totals[i] || 0);
     return Array.from({ length: Math.ceil(total / PAGE) }, (_, k) => ({
       target, params: [k * PAGE, Math.min((k + 1) * PAGE, total)],
-    }))
-  })
-  const pages = await api.multiCall({ abi: GAME_INFO_ABI, calls })
-  return pages.filter(Boolean).flatMap(games => games.filter(g => g.token).map(g => [g.token, g.gameAddress]))
+    }));
+  });
+  const pages = await api.multiCall({ abi: GAME_INFO_ABI, calls });
+  return pages.filter(Boolean).flatMap((games) => games.filter((g) => g.token).map((g) => [g.token, g.gameAddress]));
 }
 
-// filter by core assets so launchpad tokens can be exported separately as staking
-const coreSet = (chain) => new Set([ADDRESSES.null, ...Object.values(ADDRESSES[chain] || {})].map(a => a.toLowerCase()))
-
 async function tvl(api) {
-  const tao = await getGameTokensAndOwners(api)
-  const core = coreSet(api.chain)
-  return api.sumTokens({ tokensAndOwners: tao.filter(([t]) => core.has(t.toLowerCase())) })
+  const tao = await getGameTokensAndOwners(api);
+  const own = AVLO[api.chain];
+  return api.sumTokens({ tokensAndOwners: tao.filter(([t]) => t.toLowerCase() !== own) });
 }
 
 async function staking(api) {
-  const tao = await getGameTokensAndOwners(api)
-  const core = coreSet(api.chain)
-  return api.sumTokens({ tokensAndOwners: tao.filter(([t]) => !core.has(t.toLowerCase())) })
+  const tao = await getGameTokensAndOwners(api);
+  const own = AVLO[api.chain];
+  return api.sumTokens({ tokensAndOwners: tao.filter(([t]) => t.toLowerCase() === own) });
 }
 
-
 module.exports = {
-  methodology: "TVL is the total value of tokens staked as house liquidity across every game pool deployed through the AvaLove factories on each chain. For each per-game factory the adapter enumerates all deployed pool contracts via getGames() and sums the balance of each pool's staking token held by its game contract. Player bets and payouts flow through these same pools, so their token balances represent the protocol's live liquidity.",
+  methodology:
+    "TVL is the house liquidity staked across every game pool deployed through the AvaLove per-game factories on each chain. The adapter enumerates all pool contracts via getGames() and sums the balance of each pool's staking token held by its game contract. Pools denominated in the protocol's own token (AVLO) are reported separately as staking; all other tokens (ecosystem/creator tokens and core assets) count as TVL.",
   avax: { tvl, staking },
   robinhood: { tvl, staking },
 };
