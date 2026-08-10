@@ -90,6 +90,11 @@ const configs = {
       '0x36213ca1483869c5616be738Bf8da7C9B34Ace8d',
     ],
   },
+  'earngrid': {
+    methodology: 'Automated USDC yield vault on Base — aggregates MetaMorpho strategies. TVL via totalAssets().',
+    doublecounted: true,
+    base: ['0x6eca76891504fc2362ac0e6fd5998dfff44e8fe1'],
+  },
   'eva': {
     ethereum: [
       '0x741bD193B6b40f8703d2e116FD1965421f290F58', // USDC vault
