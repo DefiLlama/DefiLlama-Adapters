@@ -4,28 +4,18 @@ const abi = {
   getPoolsLength: "function getPoolsLength() view returns (uint256)",
   getPoolAt: "function getPoolAt(uint256 index) view returns (address)",
   getTokens: "function getTokens() view returns (address tokenX, address tokenY)",
-  getBalances: "function getBalances() view returns (uint256 totalX, uint256 totalY)",
 };
 
 async function tvl(api) {
-  const length = await api.call({ target: FACTORY, abi: abi.getPoolsLength });
-  const pools = await api.multiCall({
-    target: FACTORY,
-    abi: abi.getPoolAt,
-    calls: [...Array(Number(length)).keys()],
-  });
+  const pools = await api.fetchList({ lengthAbi: abi.getPoolsLength, itemAbi: abi.getPoolAt, target: FACTORY });
   const tokens = await api.multiCall({ abi: abi.getTokens, calls: pools });
-  const balances = await api.multiCall({ abi: abi.getBalances, calls: pools });
-  tokens.forEach(({ tokenX, tokenY }, i) => {
-    api.add(tokenX, balances[i].totalX);
-    api.add(tokenY, balances[i].totalY);
-  });
-  return api.getBalances();
+
+  await api.sumTokens({ tokens: tokens.flatMap(({ tokenX, tokenY }) => [tokenX, tokenY]), owners: pools });
 }
 
 module.exports = {
   methodology:
-    "Sum of tokenX + tokenY held by every POE OraclePool (getBalances), pools enumerated from the POE Factory registry (getPoolsLength / getPoolAt).",
+    "Sum of tokens held by each pool, enumerated from the POE Factory registry (getPoolsLength / getPoolAt).",
   start: '2026-05-07',
   monad: { tvl },
 };
