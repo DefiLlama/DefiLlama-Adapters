@@ -17,7 +17,7 @@ const blacklistedVaults = [
 
 async function suiTvl(api) {
   const vaults = (
-    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v2/vaults`)
+    await getConfig('ember-protocol/vaults', `https://vaults.api.prod.ember.so/api/v2/vaults`)
   );
   for (const vault of Object.values(vaults)) {
 
@@ -38,7 +38,7 @@ async function suiTvl(api) {
 
 async function evmTvl(api, chainIdentifier) {
   const vaults = (
-    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v2/vaults`)
+    await getConfig('ember-protocol/vaults', `https://vaults.api.prod.ember.so/api/v2/vaults`)
   );
   const vaultAddresses = []
   for (const vault of Object.values(vaults)) {
