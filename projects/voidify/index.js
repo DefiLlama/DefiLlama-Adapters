@@ -12,7 +12,7 @@ const RELAYER_COLLATERAL_ACCOUNT_DISCRIMINATOR_B58 = 'VKkHcGo512B'
 
 const addFourFixedPools = sumTokensExport({
   solOwners: [CLASSIC_SOL_TREASURY, NOVA_SOL_TREASURY],
-  tokenAccounts: [NOVA_USDC_TREASURY, NOVA_VOID_TREASURY],
+  tokenAccounts: [NOVA_USDC_TREASURY],
 })
 
 function deriveUserVoidTvlVaults(userVoidAccounts) {
@@ -50,25 +50,25 @@ function deriveRelayerCollateralVaults(relayerCollateralAccounts) {
 }
 
 async function staking(api) {
+  await addUserVoidTvl(api)
   const relayerCollateralAccounts = await getConnection().getProgramAccounts(CORE_PROGRAM, {
     dataSlice: { offset: 8, length: 32 },
     filters: [{ memcmp: { offset: 0, bytes: RELAYER_COLLATERAL_ACCOUNT_DISCRIMINATOR_B58 } }],
   })
   return sumTokens2({
     api,
-    tokenAccounts: deriveRelayerCollateralVaults(relayerCollateralAccounts),
+    tokenAccounts: [NOVA_VOID_TREASURY, ...deriveRelayerCollateralVaults(relayerCollateralAccounts)],
   })
 }
 
 async function tvl(api) {
   await addFourFixedPools(api)
-  await addUserVoidTvl(api)
   return api.getBalances()
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL includes user-withdrawable SOL, USDC, and VOID across Voidify. Relayer VOID collateral is reported in the staking bucket. Protocol-owned assets, governance balances, reward vaults, and unclaimed protocol fees are excluded.',
+  methodology: 'TVL includes user-withdrawable SOL and USDC across Voidify. Withdrawable VOID across Voidify and Relayer VOID collateral is reported in the staking bucket. Protocol-owned assets, governance balances, reward vaults, and unclaimed protocol fees are excluded.',
   solana: {
     tvl,
     staking,
