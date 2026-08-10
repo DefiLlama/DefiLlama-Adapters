@@ -27436,6 +27436,12 @@ const configs = {
       }
     },
   },
+  "taydex": {
+    "base": {
+      "owner": "0x3ade22Fa1EF5ac75437A3734D91bA588E54875dd",
+      "token": ADDRESSES.base.USDC
+    },
+  },
   "tbill": {
     "theta": {
       "owner": ADDRESSES.theta.WTFUEL,
