@@ -18,5 +18,4 @@ module.exports.methodology =
   'V2 yield vaults, read on-chain via totalAssets(), plus legacy V1 user ' +
   'balances on Ethereum and BNB Chain that have not yet migrated, reported ' +
   'by the Multipli API. Nothing is counted twice: V1 and V2 balances never ' +
-  'overlap, vault share tokens (xTokens) are excluded, and rwaUSDi is ' +
-  'tracked separately under the Multipli rwaUSDi child protocol.'
+  'overlap, and  vault share tokens (xTokens) are excluded.

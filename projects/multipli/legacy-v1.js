@@ -1,5 +1,8 @@
 'use strict'
 
+// The KYB V1 cohort's balances sit in off-chain custody and cannot be read
+// on-chain. This endpoint reports only the funds that have not migrated to
+// the V2 vaults, so what it returns never overlaps the on-chain V2 figures.
 const API = 'https://api.multipli.fi/4626/main/vaults/v1/defillama/tvl-non-migrated/'
 
 let payloadPromise
@@ -31,6 +34,28 @@ function addressSet(addresses, label) {
   )
 }
 
+function hasFunds(balances) {
+  if (!isPlainObject(balances)) return false
+  return Object.values(balances).some(
+    value => /^\d+$/.test(String(value)) && BigInt(String(value)) > 0n
+  )
+}
+
+// Only chains with v1.enabled are queried, so a chain that starts reporting
+// non-migrated funds without a registry entry would drop out of TVL unnoticed.
+function assertChainsCovered(payload) {
+  // Lazy require avoids a load-order dependency between the two modules.
+  const { chains } = require('./config')
+  for (const [chain, balances] of Object.entries(payload)) {
+    if (!hasFunds(balances)) continue
+    const v1 = chains[chain] && chains[chain].v1
+    if (!v1 || !v1.enabled)
+      throw new Error(
+        `Multipli V1: ${chain} reports non-migrated funds but is not enabled; update registry first`
+      )
+  }
+}
+
 async function fetchPayload() {
   if (!payloadPromise) {
     // Lazy require keeps the validation helpers independently testable.
@@ -46,6 +71,7 @@ async function fetchPayload() {
           !isPlainObject(data.payload.tvl_data)
         )
           throw new Error('Multipli V1: malformed API response')
+        assertChainsCovered(data.payload.tvl_data)
         return data.payload.tvl_data
       })
       .catch(error => {
@@ -104,6 +130,7 @@ function resetCacheForTests() {
 
 module.exports = {
   API,
+  assertChainsCovered,
   getLegacyBalances,
   normalizeInteger,
   resetCacheForTests,

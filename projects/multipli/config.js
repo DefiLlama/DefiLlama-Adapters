@@ -23,6 +23,8 @@ const TOKENS = {
   },
 }
 
+// blockedAssets are tokens that must never land in this adapter's TVL:
+// rwaUSDi is a separate product and is not counted as Multipli TVL.
 const chains = {
   ethereum: {
     v2Vaults: [
