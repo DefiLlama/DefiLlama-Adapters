@@ -33,6 +33,31 @@ const FACTORIES = {
   ],
 };
 
+// Protocol-level $AVLO staking (ProtocolYield). Separate system from per-game
+// house liquidity: users stake native AVLO to earn a share of treasury fees.
+const PROTOCOL_YIELD = {
+  avax: "0x5C0A35ABCBAb5b6F45d5e122ecAbe0d2678513E5",
+  robinhood: "0x3ae963eD481f95BcF4bd69aD9E6390f84bc68C04",
+};
+
+const AVLO = {
+  avax: "0x54eEeB249E3AE445f21eb006DEbB33eFa2B4b3Bb",
+  robinhood: "0x7e37298e240c1E644F6F9F96b6A3AA6C5aea9885",
+};
+
+// AVLO has no direct DefiLlama price. Its only on-chain market is a Uniswap v4
+// pool AVLO/ARENA on Avalanche; ARENA *is* priced by DefiLlama. So on Avalanche
+// we read the pool's on-chain mid price (v4 StateView.getSlot0 -> sqrtPriceX96)
+// and account the AVLO balances as their ARENA-equivalent, which DefiLlama then
+// prices. Pure on-chain read — no external price fetch.
+const V4_STATEVIEW = "0xc3c9e198c735a4b97e3e683f391ccbdd60b69286"; // Uniswap v4 StateView (Avalanche)
+const AVLO_ARENA_POOL_ID = "0x18f3b5331e528e9a37200708c6c5f4de1b33536c0a0c9ad7856ebab7f37a84a9";
+const ARENA_AVAX = "0xB8d7710f7d8349A506b75dD184F05777c82dAd0C";
+const SLOT0_ABI = "function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)";
+// currency0 = AVLO (0x54..) < currency1 = ARENA (0xB8..); both 18 decimals, so
+// ARENA-per-AVLO = sqrtPriceX96^2 / 2^192 and no decimal scaling is needed.
+const Q192 = 2n ** 192n;
+
 const PAGE = 1000; // pools per getGames call
 
 async function getGameTokensAndOwners(api) {
@@ -61,12 +86,40 @@ async function tvl(api) {
 async function staking(api) {
   const tao = await getGameTokensAndOwners(api)
   const core = coreSet(api.chain)
-  return api.sumTokens({ tokensAndOwners: tao.filter(([t]) => !core.has(t.toLowerCase())) })
+  const avlo = (AVLO[api.chain] || "").toLowerCase()
+
+  // Non-core game-pool tokens EXCEPT AVLO → priced normally by DefiLlama.
+  const others = tao.filter(([t]) => !core.has(t.toLowerCase()) && t.toLowerCase() !== avlo)
+  await api.sumTokens({ tokensAndOwners: others })
+
+  // AVLO owners = every AVLO house-liquidity pool + the ProtocolYield contract.
+  const avloOwners = tao.filter(([t]) => t.toLowerCase() === avlo).map(([, owner]) => owner)
+  if (PROTOCOL_YIELD[api.chain]) avloOwners.push(PROTOCOL_YIELD[api.chain])
+
+  if (avloOwners.length) {
+    if (api.chain === 'avax') {
+      // Sum AVLO across all owners, convert to ARENA-equivalent via the v4 mid price.
+      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: avloOwners.map(o => ({ target: AVLO.avax, params: [o] })) })
+      let total = 0n
+      for (const b of bals) total += BigInt(b || 0)
+      if (total > 0n) {
+        const slot0 = await api.call({ target: V4_STATEVIEW, abi: SLOT0_ABI, params: [AVLO_ARENA_POOL_ID] })
+        const sqrt = BigInt(slot0.sqrtPriceX96 ?? slot0[0])
+        const arenaEquivalent = (total * sqrt * sqrt) / Q192
+        api.add(ARENA_AVAX, arenaEquivalent) // priced as ARENA by DefiLlama
+      }
+    } else {
+      // Other chains have no local ARENA pool; count raw AVLO (priced once AVLO
+      // gets a DefiLlama price on that chain, otherwise $0).
+      await api.sumTokens({ tokensAndOwners: avloOwners.map(o => [avlo, o]) })
+    }
+  }
+
+  return api.getBalances()
 }
 
-
 module.exports = {
-  methodology: "TVL is the total value of tokens staked as house liquidity across every game pool deployed through the AvaLove factories on each chain. For each per-game factory the adapter enumerates all deployed pool contracts via getGames() and sums the balance of each pool's staking token held by its game contract. Player bets and payouts flow through these same pools, so their token balances represent the protocol's live liquidity.",
+  methodology: "TVL is the total value of tokens staked as house liquidity across every game pool deployed through the AvaLove factories on each chain, plus protocol-level $AVLO staked in the ProtocolYield contract. Pools are enumerated via each factory's getGames(). AVLO has no direct DefiLlama price, so on Avalanche its balances are accounted as their ARENA-equivalent using the on-chain Uniswap v4 AVLO/ARENA mid price (StateView.getSlot0); ARENA is priced by DefiLlama.",
   avax: { tvl, staking },
   robinhood: { tvl, staking },
 };
