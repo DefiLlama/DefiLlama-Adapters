@@ -1,4 +1,5 @@
 const { sumTokens2, getConnection } = require('../helper/solana');
+const { sleep } = require('../helper/utils');
 const { PublicKey } = require('@solana/web3.js');
 
 const CLOB_PROGRAM = 'strataZWURmW6bzMWpkLCAFxNFrQXCNSE9cSmBmdPgP'; // Stratabook CLOB (orderbook) program
@@ -38,17 +39,17 @@ async function tvl() {
   for (const { pubkey } of vaultPdAs) {
     // Vault ATAs may live under either the legacy SPL Token program or
     // Token-2022 (if a market mint is a Token-2022 token), so query both.
-    const [legacy, token2022] = await Promise.all([
-      connection.getTokenAccountsByOwner(pubkey, {
-        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
-      }),
-      connection.getTokenAccountsByOwner(pubkey, {
-        programId: new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),
-      }),
-    ]);
+    // Sequential + small delay keeps the shared DefiLlama RPC happy.
+    const legacy = await connection.getTokenAccountsByOwner(pubkey, {
+      programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+    });
+    const token2022 = await connection.getTokenAccountsByOwner(pubkey, {
+      programId: new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),
+    });
     tokenAccounts.push(
       ...[...legacy.value, ...token2022.value].map(({ pubkey: p }) => p)
     );
+    await sleep(150);
   }
 
   return sumTokens2({ tokenAccounts });
