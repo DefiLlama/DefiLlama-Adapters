@@ -177,10 +177,14 @@ async function findBlock(timestamp) {
   const status = (await getWithRetry(`${THORCHAIN_RPC}/status`)).result.sync_info
   const latest = Number(status.latest_block_height)
   const latestTimestamp = Math.floor(Date.parse(status.latest_block_time) / 1000)
-  if (!timestamp || timestamp >= latestTimestamp) return latest
+  if (!timestamp || timestamp >= latestTimestamp - 600) return latest
 
   // THORChain's post-hard-fork chain begins here; every Rujira deployment is later.
-  let low = 4_786_560
+  let low = Math.max(4_786_560, Number(status.earliest_block_height) || 4_786_560)
+  const earliestTime = Math.floor(Date.parse(
+    (await getWithRetry(`${THORCHAIN_RPC}/block?height=${low}`)).result.block.header.time) / 1000)
+  if (timestamp < earliestTime) throw new Error(`block for timestamp ${timestamp} predates earliest retained block ${low}`)
+  
   let high = latest
   while (low < high) {
     const middle = Math.ceil((low + high) / 2)
