@@ -412,6 +412,13 @@ const defaultTokens = {
     nullAddress,
     '0x12d3e796d1f625eb6131aeb670bcd210bbb0f903', //GUSD (Gate stablecoin)
   ],
+  xlayer: [
+    nullAddress,
+    '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', //USDG 
+    '0xB6CEceAB302E2E4948951eE7843FC24E92933061', //USDC
+    '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', //USD₮0
+    '0x87b4a8176B3Df6b71e26CC095edcAf4Db07506B4', //PAYPAL USD
+  ],
 }
 
 function cexExports(config) {
