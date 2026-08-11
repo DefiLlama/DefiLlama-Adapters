@@ -1,12 +1,7 @@
-const { ethers } = require('ethers')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
-// Sentry Launch Factory (sentry.trading): a token launchpad on Robinhood
-// Chain and Ink. Every launch seeds a pool paired against a base asset
-// (WETH, or a tokenized stock on Robinhood) and permanently locks the LP.
-//
 // TVL is the liquidity held in those launch pools. Two generations exist
 // and both are live, so both are counted:
 //
@@ -20,14 +15,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 //        launches). Pool balances therefore cannot be read directly, so
 //        each position's reserves are derived from its liquidity, tick
 //        range, and the pool's current price.
-
-// Only the base side of each pair counts toward TVL, matching the
-// methodology this adapter already shipped with. A launch token's only
-// market is the pool being measured, so counting it would value the
-// liquidity using a price derived from that same liquidity. Base assets
-// (WETH, and the tokenized stocks used as pair assets) have independent
-// price discovery.
-const COUNT_LAUNCH_TOKEN_SIDE = false
 
 const CONFIG = {
   robinhood: {
@@ -56,38 +43,15 @@ const CONFIG = {
 
 const ABI = {
   poolInitialized: 'event PoolInitialized(address indexed pool, address indexed token)',
-  tokenDeployedV4:
-    'event TokenDeployed(address indexed token, string name, string symbol, address indexed creator, bytes32 indexed poolId)',
-  launches:
-    'function launches(address) view returns (address baseToken, address creator, address hook, int24 tickLower, int24 tickUpper)',
-  getSlot0:
-    'function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)',
-  getPositionLiquidity:
-    'function getPositionLiquidity(bytes32 poolId, bytes32 positionId) view returns (uint128 liquidity)',
+  tokenDeployedV4: 'event TokenDeployed(address indexed token, string name, string symbol, address indexed creator, bytes32 indexed poolId)',
+  launches: 'function launches(address) view returns (address baseToken, address creator, address hook, int24 tickLower, int24 tickUpper)',
+  getSlot0: 'function getSlot0(bytes32 poolId) view returns (uint160 sqrtPriceX96, int24 tick, uint24 protocolFee, uint24 lpFee)',
+  getPositionInfo: 'function getPositionInfo(bytes32 poolId, address owner, int24 tickLower, int24 tickUpper, bytes32 salt) view returns (uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128)',
 }
 
-/** v4 position key: keccak256(owner, tickLower, tickUpper, salt). Sentry
- *  always mints with a zero salt, so only the owner varies — the factory
- *  for launches predating vault custody, the vault for everything since. */
-function positionId(owner, tickLower, tickUpper) {
-  return ethers.solidityPackedKeccak256(
-    ['address', 'int24', 'int24', 'bytes32'],
-    [owner, tickLower, tickUpper, ethers.ZeroHash],
-  )
-}
-
-/** A thin api proxy that swallows adds for one token, so the shared
- *  position math can stay untouched. */
-function wrapSkip(api, skipToken) {
-  const skip = skipToken.toLowerCase()
-  return {
-    ...api,
-    add: (token, amount) => {
-      if (String(token).toLowerCase() === skip) return
-      api.add(token, amount)
-    },
-  }
-}
+// Sentry mints v4 liquidity with a zero salt, so a position's key is just
+// (owner, tickLower, tickUpper); getPositionInfo hashes it on-chain.
+const ZERO_SALT = '0x' + '0'.repeat(64)
 
 async function v3Tvl(api, config) {
   const ownerTokens = []
@@ -99,7 +63,7 @@ async function v3Tvl(api, config) {
       fromBlock,
     })
     for (const log of logs) {
-      ownerTokens.push([COUNT_LAUNCH_TOKEN_SIDE ? [log.token, config.weth] : [config.weth], log.pool])
+      ownerTokens.push([[config.weth], log.pool])
     }
   }
   if (ownerTokens.length) await sumTokens2({ api, ownerTokens })
@@ -132,7 +96,7 @@ async function v4Tvl(api, config) {
   const live = []
   launches.forEach((l, i) => {
     const d = info[i]
-    if (!d || !d.baseToken || d.baseToken === ethers.ZeroAddress) return
+    if (!d || !d.baseToken || d.baseToken === ADDRESSES.null) return
     live.push({ ...l, baseToken: d.baseToken, tickLower: Number(d.tickLower), tickUpper: Number(d.tickUpper) })
   })
   if (!live.length) return
@@ -145,22 +109,17 @@ async function v4Tvl(api, config) {
     permitFailure: true,
   })
 
-  // 4. Position liquidity. Custody is the vault for current launches and
-  //    the factory for older ones, so both keys are probed and whichever
-  //    holds the position wins. Reading the position directly (rather
-  //    than the pool's active liquidity) keeps the value correct when
-  //    price has drifted outside the launch range.
-  const vaultCalls = live.map((l) => ({
+  // 4. Position liquidity. Custody is the vault for current launches and the
+  //    factory for older ones, so both owners are probed (a launch sits in one;
+  //    the other reads 0). Sentry mints with a zero salt, so getPositionInfo
+  //    derives the position key from (owner, ticks) on-chain.
+  const ownerCalls = (owner) => live.map((l) => ({
     target: config.stateView,
-    params: [l.poolId, positionId(config.vault, l.tickLower, l.tickUpper)],
-  }))
-  const factoryCalls = live.map((l) => ({
-    target: config.stateView,
-    params: [l.poolId, positionId(l.factory, l.tickLower, l.tickUpper)],
+    params: [l.poolId, owner(l), l.tickLower, l.tickUpper, ZERO_SALT],
   }))
   const [vaultLiq, factoryLiq] = await Promise.all([
-    api.multiCall({ abi: ABI.getPositionLiquidity, calls: vaultCalls, permitFailure: true }),
-    api.multiCall({ abi: ABI.getPositionLiquidity, calls: factoryCalls, permitFailure: true }),
+    api.multiCall({ abi: ABI.getPositionInfo, calls: ownerCalls(() => config.vault), permitFailure: true }),
+    api.multiCall({ abi: ABI.getPositionInfo, calls: ownerCalls((l) => l.factory), permitFailure: true }),
   ])
 
   // 5. Derive reserves. v4 orders currencies by address, exactly as v3 does.
@@ -168,19 +127,15 @@ async function v4Tvl(api, config) {
     const s = slot0[i]
     if (!s || !s.sqrtPriceX96 || s.sqrtPriceX96 === '0') return
 
-    const liquidity = Number(vaultLiq[i] || 0) + Number(factoryLiq[i] || 0)
+    const liquidity = Number(vaultLiq[i]?.liquidity || 0) + Number(factoryLiq[i]?.liquidity || 0)
     if (!liquidity) return
 
     const tokenIsCurrency0 = l.token.toLowerCase() < l.baseToken.toLowerCase()
     const [token0, token1] = tokenIsCurrency0 ? [l.token, l.baseToken] : [l.baseToken, l.token]
 
-    // The launch token is dropped by zeroing its address out of the pair,
-    // so the base side is still derived from the real position rather
-    // than being approximated.
-    const skip = COUNT_LAUNCH_TOKEN_SIDE ? null : l.token
-
+    // Add full position then drop the launch token's side
     addUniV3LikePosition({
-      api: skip ? wrapSkip(api, skip) : api,
+      api,
       token0,
       token1,
       liquidity,
@@ -188,22 +143,20 @@ async function v4Tvl(api, config) {
       tickUpper: l.tickUpper,
       tick: Number(s.tick),
     })
+    api.removeTokenBalance(l.token)
   })
 }
 
-function chainTvl(chain) {
-  const config = CONFIG[chain]
-  return async (api) => {
-    await v3Tvl(api, config)
-    await v4Tvl(api, config)
-    return api.getBalances()
-  }
+async function tvl(api) {
+  const config = CONFIG[api.chain]
+  await v3Tvl(api, config)
+  await v4Tvl(api, config)
 }
 
 module.exports = {
-  methodology:
-    "TVL is the base-asset liquidity held in the pools created by the Sentry Launch Factory, across both live generations, on Robinhood Chain and Ink. v3 launches hold liquidity in a Uniswap V3 pool contract whose LP NFT is permanently locked in the factory, so the WETH balance of each pool is counted directly. v4 launches have no per-pool contract: funds sit in the Uniswap V4 PoolManager singleton and the position is owned by the factory or by the immutable SentryLPVault, so each position's base-asset reserve is derived from its liquidity, tick range and the pool's current price. Both WETH-paired and tokenized-stock-paired launches are included. The launched token's own side of the pair is excluded, since its only market is the pool being measured.",
+  methodology: "TVL is the base-asset liquidity held in the pools created by the Sentry Launch Factory, across both live generations, on Robinhood Chain and Ink. v3 launches hold liquidity in a Uniswap V3 pool contract whose LP NFT is permanently locked in the factory, so the WETH balance of each pool is counted directly. v4 launches have no per-pool contract: funds sit in the Uniswap V4 PoolManager singleton and the position is owned by the factory or by the immutable SentryLPVault, so each position's base-asset reserve is derived from its liquidity, tick range and the pool's current price. Both WETH-paired and tokenized-stock-paired launches are included. The launched token's own side of the pair is excluded, since its only market is the pool being measured.",
+  doublecounted: true,
   start: '2026-07-02',
-  robinhood: { tvl: chainTvl('robinhood') },
-  ink: { tvl: chainTvl('ink') },
+  robinhood: { tvl },
+  ink: { tvl },
 }
