@@ -36,10 +36,19 @@ async function tvl() {
     filters: [{ dataSize: 24 }],
   });
   for (const { pubkey } of vaultPdAs) {
-    const { value: tokenAccountsOfVault } = await connection.getTokenAccountsByOwner(pubkey, {
-      programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
-    });
-    tokenAccounts.push(...tokenAccountsOfVault.map(({ pubkey: p }) => p));
+    // Vault ATAs may live under either the legacy SPL Token program or
+    // Token-2022 (if a market mint is a Token-2022 token), so query both.
+    const [legacy, token2022] = await Promise.all([
+      connection.getTokenAccountsByOwner(pubkey, {
+        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+      }),
+      connection.getTokenAccountsByOwner(pubkey, {
+        programId: new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),
+      }),
+    ]);
+    tokenAccounts.push(
+      ...[...legacy.value, ...token2022.value].map(({ pubkey: p }) => p)
+    );
   }
 
   return sumTokens2({ tokenAccounts });
