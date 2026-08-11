@@ -33,8 +33,8 @@ async function buildSpokeConfig() {
     const name = chainIdToName[entry.chain.chainId];
     if (!name) continue;
     const owner = entry.addresses?.assetManager;
-    if (!owner) continue;
     const tokens = [...new Set(Object.values(entry.supportedTokens || {}).map((t) => t.address))];
+    if (!owner || !tokens.length) continue;
     byChain[name] = { owner, tokens };
   }
   return byChain;
@@ -42,7 +42,7 @@ async function buildSpokeConfig() {
 
 async function tvl(api) {
   const cfg = (await getSpokeConfig())[api.chain];
-  if (!cfg) return {};
+  if (!cfg) throw new Error(`sodax: no spoke config for ${api.chain}`);
   return sumTokens2({ api, owner: cfg.owner, tokens: cfg.tokens });
 }
 
