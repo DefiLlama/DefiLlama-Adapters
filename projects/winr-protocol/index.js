@@ -10,7 +10,7 @@ const WINR_ESCROW = '0xD75a51364440dAF83B78B9888D2b8F28eaC0D280'
 
 module.exports = {
   methodology:
-    'TVL is the total value of WINR held in the protocol bankroll vault and escrow contract on Arbitrum. The bankroll holds liquidity provider funds backing all JustBet gameplay; the escrow holds user balances, settled on-chain via merkle roots. Game logic and accounting run off-chain, so these contracts hold the entirety of on-chain protocol value.',
+    'TVL is the tracked Arbitrum value of WINR held in the protocol bankroll vault and escrow contract. The bankroll holds liquidity provider funds backing all JustBet gameplay; the escrow holds user balances, settled on-chain via merkle roots. Prior-generation USDC contracts and the separate staking contract are excluded from this export.',
   arbitrum: {
     tvl: sumTokensExport({
       owners: [WINR_BANKROLL, WINR_ESCROW],
