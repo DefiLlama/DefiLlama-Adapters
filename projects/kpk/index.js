@@ -146,14 +146,21 @@ async function getAlephVaultTvl(api, vaults) {
 const OIV_SAFES = [ETH_ALPHA_SAFE, USD_ALPHA_SAFE]
 const OIV_CHAINS = ['ethereum', 'arbitrum', 'base', 'xdai', 'optimism']
 
-const ZODIAC_MANAGED_SAFES = [
+// Zodiac-managed institutional safes — each gated to its kpk mandate window (see TIME_GATED_ENTITIES)
+const ENS_SAFES = [
   '0x4F2083f5fBede34C2714aFfb3105539775f7FE64', // ENS Endowment Fund (eth)
+]
+const COW_SAFES = [
   '0x616dE58c011F8736fa20c7Ae5352F7f6FB9F0669', // CoW Main Treasury (eth/gnosis/arb/base/polygon)
   '0x7F8987D6A8bee31bD7bE80E877732579E2582a28', // CoW Defense Fund (eth/gnosis)
   '0x9009B4411D0e1171cc042b77D7701f46B737Fdb9', // CoW Validator Safe (gnosis)
   '0x3E2897E71E504B0510Bed7983579280b32ac1CA5', // CoW wallet (eth)
   '0x523732d31b4432bcdd4baad108f7ebe54ad478b0', // CoW wallet (38M COW) (eth)
+]
+const ARBITRUM_SAFES = [
   '0x4D1D9D7741740A3E2ffC5507aC643DbA5e81cAe5', // Arbitrum DAO (arb)
+]
+const NEXUS_SAFES = [
   '0x8e53D04644E9ab0412a8c6bd228C84da7664cFE3', // Nexus Mutual (eth)
 ]
 
@@ -344,15 +351,20 @@ const AAVE_DAO_TOKENS = {
 
 const TIME_GATED_ENTITIES = {
   aave:       { safes: AAVE_DAO_SAFES,    tokens: AAVE_DAO_TOKENS,    start: '2023-12-01', end: '2025-07-31' },
-  gnosisdao:  { safes: GNOSIS_DAO_SAFES,  tokens: GNOSIS_DAO_TOKENS,  start: '2021-01-01', end: '2025-11-30' },
+  gnosisdao:  { safes: GNOSIS_DAO_SAFES,  tokens: GNOSIS_DAO_TOKENS,  start: '2022-01-01', end: '2025-11-30' },
   safegnosis: { safes: SAFE_GNOSIS_SAFES, tokens: SAFE_GNOSIS_TOKENS, start: '2024-04-01', end: '2025-10-31' },
+  ens:        { safes: ENS_SAFES,         tokens: {},                 start: '2023-03-01' },
+  cow:        { safes: COW_SAFES,         tokens: {},                 start: '2023-02-01' },
+  arbitrum:   { safes: ARBITRUM_SAFES,    tokens: {},                 start: '2024-02-01', end: '2026-04-30' },
+  nexus:      { safes: NEXUS_SAFES,       tokens: {},                 start: '2024-11-01' },
+  gnosisdao:  { safes: GNOSIS_DAO_SAFES,  tokens: GNOSIS_DAO_TOKENS,  start: '2022-01-01', end: '2025-11-30' },
 }
 const toTs = d => Math.floor(new Date(d).getTime() / 1000)
-const isEntityActive = (cfg, ts) => ts >= toTs(cfg.start) && ts <= toTs(cfg.end)
+const isEntityActive = (cfg, ts) => ts >= toTs(cfg.start) && (!cfg.end || ts <= toTs(cfg.end))
 
 function activeSafes(api) {
   const ts = api.timestamp || Math.floor(Date.now() / 1000)
-  const safes = [...ZODIAC_MANAGED_SAFES]
+  const safes = []
   for (const cfg of Object.values(TIME_GATED_ENTITIES)) if (isEntityActive(cfg, ts)) safes.push(...cfg.safes)
   return safes
 }
@@ -420,6 +432,8 @@ const UNIV3_NFT = {
 async function getUniV3Tvl(api, owners) {
   const nftAddress = UNIV3_NFT[api.chain]
   if (!nftAddress) return
+  const factory = await api.call({ target: nftAddress, abi: 'address:factory', permitFailure: true })
+  if (!factory) return // position manager not deployed yet at this (historical) block
   await sumTokens2({ api, owners: owners || activeSafes(api), resolveUniV3: true, uniV3ExtraConfig: { nftAddress } })
 }
 
@@ -456,6 +470,48 @@ async function getSafeLockedTvl(api) {
   if (locked > 0n) api.add(SAFE_TOKEN, locked.toString())
 }
 
+const MAKER = {
+  cdpManager: '0x5ef30b9986345249bc32d8928B7ee64DE9435E39',
+  vat: '0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B',
+  proxyRegistry: '0x4678f0a6958e4D2Bc4F1BAF7Bc52E8F3564f3fE4',
+  ilkRegistry: '0x5a464C28D19848f44199D003BeF5ecc87d090F87',
+}
+const ILK_INFO_ABI = 'function info(bytes32) view returns (string name, string symbol, uint256 class, uint256 dec, address gem, address pip, address join, address xlip)'
+async function getMakerCdpTvl(api) {
+  if (api.chain !== 'ethereum') return
+  const safes = activeSafes(api)
+  if (!safes.length) return
+  const proxies = await api.multiCall({ target: MAKER.proxyRegistry, abi: 'function proxies(address) view returns (address)', calls: safes })
+  const guys = safes.concat(proxies.filter((p) => p && !/^0x0+$/.test(p)))
+  // discover each owner's CDPs via the manager
+  const firsts = await api.multiCall({ target: MAKER.cdpManager, abi: 'function first(address) view returns (uint256)', calls: guys })
+  const cdps = []
+  for (const f of firsts) {
+    let cdp = f
+    while (cdp && cdp !== '0') {
+      cdps.push(cdp)
+      const l = await api.call({ target: MAKER.cdpManager, abi: 'function list(uint256) view returns (uint256 prev, uint256 next)', params: [cdp] })
+      cdp = l.next
+    }
+  }
+  if (!cdps.length) return
+  const ilks = await api.multiCall({ target: MAKER.cdpManager, abi: 'function ilks(uint256) view returns (bytes32)', calls: cdps })
+  const urns = await api.multiCall({ target: MAKER.cdpManager, abi: 'function urns(uint256) view returns (address)', calls: cdps })
+  const pos = await api.multiCall({ target: MAKER.vat, abi: 'function urns(bytes32, address) view returns (uint256 ink, uint256 art)', calls: cdps.map((_, i) => ({ params: [ilks[i], urns[i]] })) })
+  const ilkState = await api.multiCall({ target: MAKER.vat, abi: 'function ilks(bytes32) view returns (uint256 Art, uint256 rate, uint256 spot, uint256 line, uint256 dust)', calls: ilks.map((ilk) => ({ params: [ilk] })) })
+  const info = await api.multiCall({ target: MAKER.ilkRegistry, abi: ILK_INFO_ABI, calls: ilks.map((ilk) => ({ params: [ilk] })) })
+  for (let i = 0; i < cdps.length; i++) {
+    const ink = BigInt(pos[i].ink)
+    if (ink === 0n) continue
+    const dec = Number(info[i].dec)
+    // vat stores ink as wad (1e18) -> back to gem native decimals
+    api.add(info[i].gem, (dec === 18 ? ink : (ink * 10n ** BigInt(dec)) / 10n ** 18n).toString())
+    // net out DAI debt = art * rate / 1e27
+    const debt = (BigInt(pos[i].art) * BigInt(ilkState[i].rate)) / 10n ** 27n
+    if (debt > 0n) api.add(ADDRESSES.ethereum.DAI, (-debt).toString())
+  }
+}
+
 const AURA_BOOSTER = {
   ethereum: '0xA57b8d98dAE62B26Ec3bcC4a365338157060B234',
   xdai: '0x98Ef32edd24e2c92525E59afc4475C1242a30184',
@@ -466,8 +522,9 @@ async function getAuraTvl(api) {
   const booster = AURA_BOOSTER[api.chain]
   if (!booster) return
   const bpts = new Set(activeTokens(api).map((a) => a.toLowerCase()))
-  const len = await api.call({ target: booster, abi: 'function poolLength() view returns (uint256)' })
-  const infos = await api.multiCall({ target: booster, abi: AURA_POOL_INFO_ABI, calls: Array.from({ length: Number(len) }, (_, i) => i) })
+  const len = await api.call({ target: booster, abi: 'function poolLength() view returns (uint256)', permitFailure: true })
+  if (!len) return // Booster not deployed yet at this (historical) block
+  const infos = await api.multiCall({ target: booster, abi: AURA_POOL_INFO_ABI, calls: Array.from({ length: Number(len) }, (_, i) => i), permitFailure: true })
   const pools = infos.filter((i) => i && bpts.has(i.lptoken.toLowerCase()))
   const calls = []
   for (const p of pools) for (const owner of activeSafes(api)) calls.push({ bpt: p.lptoken, target: p.crvRewards, params: [owner] })
@@ -536,6 +593,7 @@ for (const chain of allChains) {
         await getNexusStakedNXM(api)
         await getUniV3Tvl(api)
         await getSafeLockedTvl(api)
+        await getMakerCdpTvl(api)
       }
     }
   }
