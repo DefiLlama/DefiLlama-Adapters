@@ -90,7 +90,6 @@ async function v4Tvl(api, config) {
   const info = await api.multiCall({
     abi: ABI.launches,
     calls: launches.map((l) => ({ target: l.factory, params: [l.token] })),
-    permitFailure: true,
   })
 
   const live = []
@@ -106,7 +105,6 @@ async function v4Tvl(api, config) {
     abi: ABI.getSlot0,
     target: config.stateView,
     calls: live.map((l) => ({ params: [l.poolId] })),
-    permitFailure: true,
   })
 
   // 4. Position liquidity. Custody is the vault for current launches and the
@@ -118,8 +116,8 @@ async function v4Tvl(api, config) {
     params: [l.poolId, owner(l), l.tickLower, l.tickUpper, ZERO_SALT],
   }))
   const [vaultLiq, factoryLiq] = await Promise.all([
-    api.multiCall({ abi: ABI.getPositionInfo, calls: ownerCalls(() => config.vault), permitFailure: true }),
-    api.multiCall({ abi: ABI.getPositionInfo, calls: ownerCalls((l) => l.factory), permitFailure: true }),
+    api.multiCall({ abi: ABI.getPositionInfo, calls: ownerCalls(() => config.vault) }),
+    api.multiCall({ abi: ABI.getPositionInfo, calls: ownerCalls((l) => l.factory) }),
   ])
 
   // 5. Derive reserves. v4 orders currencies by address, exactly as v3 does.
