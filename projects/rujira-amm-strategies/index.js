@@ -1,6 +1,5 @@
 const {
   addDecimal,
-  addScaled,
   addToApi,
 } = require('../helper/rujira/balances')
 const {
@@ -8,7 +7,6 @@ const {
   getFinRanges,
   semverAtLeast,
 } = require('../helper/rujira/fin')
-const { getBruneBacking } = require('../helper/rujira/helper')
 const { getBlock, getContracts } = require('../helper/rujira/query')
 
 const CCL_ACTIVATION_BLOCK = 24_991_560
@@ -44,35 +42,16 @@ async function addCclRanges(height, balances) {
   )
 }
 
-async function addBruneMarketMaker(height, balances) {
-  if (height < CCL_ACTIVATION_BLOCK) return
-
-  const contracts = await getContracts(height, 'rujira-brune')
-  for (const { address } of contracts) {
-    const { liquid, bonded, minted, pendingRevenue } = await getBruneBacking(address, height)
-
-    // This mirrors rujira-brune's quote_liquidity calculation. Pending
-    // revenue and any surplus backing are not available to FIN bid quotes.
-    const surplus = liquid + bonded > minted ? liquid + bonded - minted : 0n
-    const unavailable = pendingRevenue > surplus ? pendingRevenue : surplus
-    const quoteLiquidity = liquid > unavailable ? liquid - unavailable : 0n
-    addScaled(balances, 'rune', quoteLiquidity)
-  }
-}
-
 async function tvl(api) {
   const height = await getBlock(api)
   const balances = {}
 
-  await Promise.all([
-    addCclRanges(height, balances),
-    addBruneMarketMaker(height, balances),
-  ])
+  await addCclRanges(height, balances)
   addToApi(api, balances)
 }
 
 module.exports = {
   methodology:
-    'Counts user-owned FIN CCL range principal plus separately accrued, unclaimed fees, together with the liquid RUNE that the bRUNE contract makes available to the bRUNE/RUNE FIN market. Virtual bRUNE minted on demand, ordinary FIN orders, unrelated market makers, and x/brune, AUTO, and xUSK range-token components are excluded.',
+    'Counts user-owned FIN CCL range principal plus separately accrued, unclaimed fees. The bRUNE contract\'s RUNE liquidity is excluded here because it is already counted by the bRUNE adapter (rujira-brune); ordinary FIN orders, unrelated market makers, and x/brune, AUTO, and xUSK range-token components are also excluded.',
   thorchain: { tvl },
 }
