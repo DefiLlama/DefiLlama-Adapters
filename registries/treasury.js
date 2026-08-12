@@ -4629,6 +4629,12 @@ const configs = {
       ownTokens: ['0x25118290e6a5f4139381d072181157035864099d'],
     },
   },
+  'treasury/raisehood': {
+    robinhood: {
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+      owner: '0x0a39701e5D5BB5A6146aEEba66638297D0947f04'
+    }
+  },
   'treasury/rarible': {
     ethereum: {
       tokens: [
@@ -6083,6 +6089,22 @@ const configs = {
         ADDRESSES.arbitrum.WETH, // WETH
         "0x39ff5098081FBE1ab241c31Fe0a9974FE9891d04", // voltGNS
       ],
+    },
+  },
+  'treasury/waddle-club': {
+    megaeth: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.megaeth.USDm
+      ],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
+    },
+    robinhood: {
+      tokens: [
+        nullAddress,
+      ],
+      ownTokens: ["0xd3af6612119362d31d7a6c93ad5e6d01443c855d"],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
     },
   },
   'treasury/wagmi': {

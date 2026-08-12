@@ -165,6 +165,7 @@ module.exports = {
   getBorrowed,
   aaveV2Export,
   aaveV3Export,
+  aaveV4Export,
 }
 
 async function getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, api, v3 }) {
@@ -407,6 +408,57 @@ function aaveV3Export(config) {
     }
   })
 
+
+  return exports
+}
+
+function aaveV4Export(config) {
+  const abi = {
+    getAssetUnderlyingAndDecimals: "function getAssetUnderlyingAndDecimals(uint256) view returns (address, uint8)",
+    getAssetTotalOwed: "function getAssetTotalOwed(uint256) view returns (uint256)",
+    getAssetCount: "uint256:getAssetCount",
+  }
+
+  const exports = {
+    methodology: methodologies.lendingMarket,
+  }
+
+  Object.keys(config).forEach(chain => {
+    let chainConfig = config[chain]
+    let hubs = Array.isArray(chainConfig) ? chainConfig : chainConfig.hubs
+    if (typeof chainConfig === 'string') hubs = [chainConfig]
+    if (!hubs || !hubs.length) throw new Error(`No hubs for ${chain} in aaveV4Export`)
+
+    const isInsolvent = chainConfig.isInsolvent || false
+    const blacklistedTokens = chainConfig.blacklistedTokens || []
+
+    async function getHubAssets(api) {
+      const assetCounts = await api.multiCall({ abi: abi.getAssetCount, calls: hubs })
+      const calls = hubs.flatMap((hub, i) => Array.from({ length: assetCounts[i] }, (_, assetId) => ({ target: hub, params: [assetId] })))
+      const assets = await api.multiCall({ abi: abi.getAssetUnderlyingAndDecimals, calls })
+      return assets.map(([underlying], i) => ({ underlying, hub: calls[i].target, assetId: calls[i].params[0] }))
+    }
+
+    async function tvl(api) {
+      const hubAssets = await getHubAssets(api)
+      return sumTokens2({ api, tokensAndOwners: hubAssets.map(({ underlying, hub }) => [underlying, hub]), blacklistedTokens })
+    }
+
+    async function borrowed(api) {
+      const hubAssets = await getHubAssets(api)
+      const owed = await api.multiCall({
+        abi: abi.getAssetTotalOwed,
+        calls: hubAssets.map(({ hub, assetId }) => ({ target: hub, params: [assetId] })),
+      })
+      owed.forEach((amount, i) => api.add(hubAssets[i].underlying, amount))
+      return sumTokens2({ api, blacklistedTokens })
+    }
+
+    exports[chain] = {
+      tvl,
+      borrowed: isInsolvent ? async () => ({}) : borrowed,
+    }
+  })
 
   return exports
 }
