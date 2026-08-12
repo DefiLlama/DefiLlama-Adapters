@@ -245,6 +245,7 @@ const treasuries = [
 
 let CHAIN_PROVIDERS = {};
 
+
 try {
   CHAIN_PROVIDERS = require('@defillama/sdk/build/providers.json');
 } catch (e) {
@@ -262,27 +263,80 @@ const PECU_RPC_URL =
 
 let rpcId = 0;
 
-async function rpcCall(method, params) {
-  const { data } = await axios.post(
-    PECU_RPC_URL,
-    {
-      jsonrpc: '2.0',
-      id: ++rpcId,
-      method,
-      params,
-    },
-    {
-      timeout: 15000,
-    }
-  );
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  if (data?.error) {
-    throw new Error(
-      `${method} RPC error ${data.error.code}: ${data.error.message}`
-    );
+async function rpcCall(method, params, retries = 3) {
+  let lastError;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const { data } = await axios.post(
+        PECU_RPC_URL,
+        {
+          jsonrpc: '2.0',
+          id: ++rpcId,
+          method,
+          params,
+        },
+        {
+          timeout: 15000,
+        }
+      );
+
+      if (data?.error) {
+        throw new Error(
+          `${method} RPC error ${data.error.code}: ${data.error.message}`
+        );
+      }
+
+      return data?.result;
+    } catch (error) {
+      lastError = error;
+
+      const status = error.response?.status;
+
+      const retryable =
+        status === 429 ||
+        status === 500 ||
+        status === 502 ||
+        status === 503 ||
+        status === 504 ||
+        error.code === 'ECONNRESET' ||
+        error.code === 'ETIMEDOUT' ||
+        error.code === 'ECONNABORTED';
+
+      if (!retryable || attempt >= retries) {
+        throw error;
+      }
+
+      const retryAfter = Number(
+        error.response?.headers?.['retry-after']
+      );
+
+      const backoff = Math.min(
+        2000 * 2 ** attempt,
+        15000
+      );
+
+      const delay =
+        Number.isFinite(retryAfter) && retryAfter > 0
+          ? Math.min(retryAfter * 1000, 15000)
+          : backoff;
+
+      console.warn(
+        `[hootdex] ${method} RPC request failed ` +
+        `(status=${status ?? error.code ?? 'unknown'}). ` +
+        `Retrying in ${delay}ms ` +
+        `(attempt ${attempt + 1}/${retries})`
+      );
+
+      await sleep(delay);
+    }
   }
 
-  return data?.result;
+  throw lastError;
 }
 
 
@@ -331,9 +385,15 @@ async function getPecuPriceUsd() {
 }
 
 async function getPecuBalance(treasuryAddress) {
-  const result = await rpcCall('pecu_getBalance', [treasuryAddress]);
+  const result = await rpcCall(
+    'pecu_getBalance',
+    [treasuryAddress]
+  );
 
-  if (typeof result !== 'string' || !result.startsWith('0x')) {
+  if (
+    typeof result !== 'string' ||
+    !result.startsWith('0x')
+  ) {
     throw new Error(
       `Invalid balance returned for ${treasuryAddress}: ${JSON.stringify(result)}`
     );
@@ -347,23 +407,59 @@ async function getPecuBalance(treasuryAddress) {
 async function tvl() {
   const pecuPriceUsd = await getPecuPriceUsd();
 
-  const balances = await Promise.all(
-    treasuries.map(async (treasury) => {
-      const amount = await getPecuBalance(treasury);
+  // Keep RPC pressure low.
+  // The Pecu Novus endpoint can return 502 when too many
+  // pecu_getBalance requests are sent concurrently.
+  const CONCURRENCY = 3;
 
-      return {
-        address: treasury,
-        amount,
-      };
-    })
+  console.log(
+    `[hootdex] fetching PECU balances for ${treasuries.length} treasuries`
   );
 
-  const totalPecu = balances.reduce(
-    (sum, treasury) => sum + treasury.amount,
-    0
+  console.log(
+    `[hootdex] PECU/USD price: ${pecuPriceUsd}`
   );
+
+  let totalPecu = 0;
+
+  for (let i = 0; i < treasuries.length; i += CONCURRENCY) {
+    const batch = treasuries.slice(
+      i,
+      i + CONCURRENCY
+    );
+
+    const balances = await Promise.all(
+      batch.map(async (treasury) => {
+        const amount = await getPecuBalance(treasury);
+
+        return {
+          address: treasury,
+          amount,
+        };
+      })
+    );
+
+    for (const balance of balances) {
+      totalPecu += balance.amount;
+    }
+
+    console.log(
+      `[hootdex] processed ${Math.min(
+        i + CONCURRENCY,
+        treasuries.length
+      )}/${treasuries.length} treasuries`
+    );
+  }
 
   const totalUsd = totalPecu * pecuPriceUsd;
+
+  console.log(
+    `[hootdex] total PECU: ${totalPecu}`
+  );
+
+  console.log(
+    `[hootdex] total USD: ${totalUsd}`
+  );
 
   return {
     'coingecko:tether': totalUsd,
