@@ -5719,6 +5719,36 @@ const configs = {
       ownTokens: ["0xa0b93B9e90aB887E53F9FB8728c009746e989B53"],
     },
   },
+  'treasury/thesauros': {
+    arbitrum: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.arbitrum.USDC_CIRCLE
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    base: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.base.USDC
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    monad: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.monad.USDC
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    plasma: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.plasma.USDT0
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+  },
   'treasury/tokemak': {
     ethereum: {
       tokens: [
