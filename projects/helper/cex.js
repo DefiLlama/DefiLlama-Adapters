@@ -463,13 +463,17 @@ function cexExports(config) {
     if (chain === 'ton') options.onlyWhitelistedTokens = true
     if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
     exportObj[chain] = { tvl: async (api) => {
+      // supports dynamic owners lists passed as a function
+      const owners = typeof options.owners === 'function' ? await options.owners(api) : options.owners
+      let tokens = options.tokens
       const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
       if (binanceTokensOnChain.length) {
         console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
-        if (!options.tokens) options.tokens = []
-        options.tokens.push(...binanceTokensOnChain)
+        tokens = [...(options.tokens ?? []), ...binanceTokensOnChain]
       }
-      return sumTokensExport(options)(api)
+      const runtimeOptions = { ...options, owners, tokens }
+      if (chain === 'solana') runtimeOptions.solOwners = owners
+      return sumTokensExport(runtimeOptions)(api)
     } }
   })
   if (config.bep2) {
