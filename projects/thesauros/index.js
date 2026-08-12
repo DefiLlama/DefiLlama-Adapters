@@ -19,6 +19,7 @@ const config = {
 };
 
 module.exports = {
+  doublecounted: true,
   methodology: "TVL displays the total amount of assets stored in the Thesauros vaults. The balance of each vault is calculated by summing the deposits held across its yield providers.",
   start: '2025-09-19',
   hallmarks: [
