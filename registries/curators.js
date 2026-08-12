@@ -236,7 +236,9 @@ const configs = {
       blockchains: {
         ethereum: {
           euler: [
-            '0xBc79C4DA0452152D2C329ADE328C79705a964CEE'
+            '0xBc79C4DA0452152D2C329ADE328C79705a964CEE',
+            '0x61332fE07Ee0faa8a087ba00f43d581871441139',
+            '0x6876374E4AC054bfCA389109570Ae15b4d25e279',
           ],
         },
       },
@@ -268,6 +270,7 @@ const configs = {
         base: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0x829A13850b684A575C0580a83322890e19c5eFaa',
           ],
           eulerVaultOwners: [
             '0xb3CF59A5f12cA319861376C5e63Eef4790a42B44',
@@ -388,7 +391,7 @@ const configs = {
   },
   "edge-capital": {
     config: {
-      methodology: 'Counts all assets deposited in vaults curated by Muscadine.',
+      methodology: 'Counts all assets deposited in vaults curated by Edge-Capital.',
       blockchains: {
         tac: {
           eulerVaultOwners: [
@@ -466,14 +469,13 @@ const configs = {
   "gami-labs": {
     config: {
       methodology:
-        "Count all assets deposited in all vaults curated by Gami Labs across Lagoon, Spectra, Silo, Gearbox, and Upshift.",
+        "Count all assets deposited in all vaults curated by Gami Labs",
       blockchains: {
         ethereum: {
           erc4626: [
             // Lagoon
             "0xdae854d0896ad2fee335689a3f7b4a95fd1a3e46", // Lagoon - Gami USDC
             "0x33e1339567c183fbadcb43f72d11c47229d468ab", // Lagoon - Gami Stake DAO USDC
-            "0x414070fb9e64fd69160d75da57e75ba11f9f605a", // Lagoon - Gami WBTC
             "0x57e6824a8b15b709cefb4ccef644ba1349057e77", // Lagoon - xBTCY (cbBTC)
             "0x2a676c2744421b4fae65ce86b47adacb620047d4", // Lagoon - Gami hemiBTC
             "0x2031eceec018549a2c729cacd6c0bfc4be2524ed", // Lagoon - Gami ETH (WETH)
@@ -481,6 +483,14 @@ const configs = {
             "0x09252d2c4afca9b1479efdd39faa53de9ff23114", // Lagoon - Coinshift Leveraged USPC
             // Gearbox
             "0x683faf5bafd88d4c383ccaf3d61c26af2e164409", // Gearbox - Gami WBTC
+          ],
+          midasTokens: [
+            "0xc462f87f78abdd27b1e41c9ede862275d2c7f36b", // Midas - Turtle Huma PST Vault
+          ],
+        },
+        robinhood: {
+          erc4626: [
+            "0xd5c6c79692715145098a65d1eb1f2a10c524f8e8", // T3tris - Gami WBTC
           ],
         },
         base: {
@@ -586,21 +596,25 @@ const configs = {
       }
     },
   },
+  "meridian-perps": {
+    config: {
+      methodology: 'Count all assets deposited in the Meridian perps LP vault.',
+      blockchains: {
+        robinhood: {
+          accountableVaults: [
+            '0x24b84023c8e4Da635be228C380C09bfE5271BF9d', // Meridian LP vault
+          ],
+        },
+      },
+    },
+  },
   "muscadine": {
     config: {
-      methodology: 'Counts all assets deposited in Muscadine Morpho vaults on Base.',
+      methodology: 'Counts all assets deposited in all vaults curated by Muscadine.',
       blockchains: {
         base: {
-          morpho: [
-            // V1 Vaults
-            '0xf7e26Fa48A568b8b0038e104DfD8ABdf0f99074F', // Muscadine USDC Vault
-            '0xAeCc8113a7bD0CFAF7000EA7A31afFD4691ff3E9', // Muscadine cbBTC Vault
-            '0x21e0d366272798da3A977FEBA699FCB91959d120', // Muscadine WETH Vault
-            // V2 Vaults
-            '0x89712980cb434ef5ae4ab29349419eb976b0b496', // Muscadine USDC Prime
-            '0xd6dcad2f7da91fbb27bda471540d9770c97a5a43', // Muscadine WETH Prime
-            '0x99dcd0d75822ba398f13b2a8852b07c7e137ec70', // Muscadine cbBTC Prime
-            '0x314fD07319ef645bA7D548915CCd91F4788A1839', // Muscadine USDC Frontier
+          morphoVaultOwners: [
+            '0xf35B121bA32cBeaA27716abEfFb6B65a55f9B333', // V2 Prime USDC, WETH, cbBTC, Frontier USDC.
           ],
         },
       }
@@ -867,7 +881,12 @@ const configs = {
             '0xBEEFFFC57A26fD8D3b693Ba025ead597DbECEBfe', // USDC High Yield Term
             '0xBEEf3f3A04e28895f3D5163d910474901981183D', // 3F Ecosystem Vault
             '0xBeefF08dF54897e7544aB01d0e86f013DA354111', // Steakhouse Prime
-            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Steakhouse High Yield
+            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC
+            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC
+            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Waterline Reservoir USDC
+            '0xAb5955EB671d150527f8E61A42B703832F86616C', // M1 USDC
+            '0xbeEFF75262b2eC16a3C62a807F02EE7627654931', // Waterline InfiniFi USDC
+            '0x7d4741ba166B21cf3168A9A0ea71388531C52FF7', // Tenbin USDC
             '0x6f48cE6380693808682E43140E3Eeb877a096Aa1', // USDC T-Prime Instant
             '0xBEEFFF4716a49418D69c251cab8759bB107e57C8', // USDC Turbo
             '0xBEEFFFDE1CABD3d8A3cd4fd5e04DbA51B9D4Ac39', // XAUT Turbo
@@ -936,6 +955,7 @@ const configs = {
             '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
             '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
+            '0x96632d28Ac99A3edAb5F7B223a88d8fAf9004178', // Ethena x Steakhouse mUSD
           ],
         },
         polygon: {
@@ -945,6 +965,14 @@ const configs = {
           ],
           morpho: [
             '0xBEEf0F82E269760429BE6255Fa00821b7e4b592A', // Steakhouse Prime
+          ],
+        },
+        robinhood: {
+          morpho: [
+            '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG
+            '0xbEeFF0fb1Dc19344A87b8479dAb60A2e16160737', // Ethena x Steakhouse USDG
+            '0xBEEff039907422219Fb367e525954DDC092854d9', // Grove x Steakhouse USDG
+            '0xbeEfFF136E3684273e6aA75A1669B784B373A4FD', // Steakhouse Turbo USDG
           ],
         },
         solana: {
@@ -1006,7 +1034,15 @@ const configs = {
         base: {
           erc4626: [
             '0x01a6ff6eb333c1393ef424f5894b18367f1499a8',
-            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8'
+            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
+            '0x19ba57ba620a94d57b0d408d5eadb94bcdb8c69c',
+            '0x4cff826ed74ecf74374f691fe454c2c847645f75',
+            '0x0c755ef12fa9fa3e857fa2464cfc52deb4878265',
+            '0x7f1f605e755c06d428a80db3d473fc46a14ee2cb',
+            '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
+            '0xbe49dd45d9d28f2380cbee3e57a8243e736e4552',
+            '0x79505efad14d289c84a71c28369b944ada25b131',
+            '0x31744e44d6af88225c1dbefbe5df8308faea641b'
           ]
         }
       }
@@ -1028,6 +1064,25 @@ const configs = {
             '0x7d07BFdd01422D7b655B333157eB551B9712dCd8',
           ],
         }
+      }
+    },
+  },
+  "term-finance-parity": {
+    config: {
+      methodology: 'Counts all assets deposited in the Parity vaults on Morpho, curated by Term Finance.',
+      start: '2026-04-23',
+      blockchains: {
+        // Parity vaults: pcUSDC, pcETH, pcHYUSDC
+        ethereum: {
+          morphoVaultOwners: [
+            '0xbfFcAdCd5549cC378693108BcD4435776A6fa795',
+          ],
+        },
+        arbitrum: {
+          morphoVaultOwners: [
+            '0xbfFcAdCd5549cC378693108BcD4435776A6fa795',
+          ],
+        },
       }
     },
   },

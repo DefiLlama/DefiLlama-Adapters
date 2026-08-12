@@ -78,7 +78,7 @@ const configs = {
   'abstract': { ethereum: { chainId: 2741 } },
   'cronos-zk': { ethereum: { chainId: 388 } },
   'zkcandy': { ethereum: { chainId: 320 } },
-  'grvt-io': { ethereum: { chainId: 325, extraTvl: grvtVaultTvl } },
+  'grvt-io': { ethereum: { chainId: 325, blacklistedTokens: ['0xAD29F2723fcdBcF665F210F25E06f97477e417cF'], extraTvl: grvtVaultTvl } },
   'lens': { ethereum: { chainId: 232 } },
   'openzk': { ethereum: { chainId: 1345 } },
   'treasure': { ethereum: { chainId: 61166 } },

@@ -1357,8 +1357,43 @@ async function unwrapStakewiseDeposits({ api, owners = [], vault = '0xAC0F906E43
   assets.forEach(a => api.add(nullAddress, a))
 }
 
+const DOLOMITE_MARGIN = {
+  ethereum: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  arbitrum: '0x6Bd780E7fDf01D77e4d475c821f1e7AE05409072',
+  berachain: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  mantle: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  polygon_zkevm: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+  xlayer: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D',
+}
+
+const DOLOMITE_GET_ACCOUNT_BALANCES_ABI = 'function getAccountBalances((address owner, uint256 number) account) view returns (uint256[], address[], (bool sign, uint128 value)[], (bool sign, uint256 value)[])'
+
+// unwraps dolomite deposits, pass either `accounts` (list of [owner, accountNumber]) or `owner`/`owners` with a shared `accountNumber`
+async function unwrapDolomiteDeposits({ api, accounts = [], owner, owners = [], accountNumber = 0, dolomiteMargin, onlyPositive = true, }) {
+  const margin = dolomiteMargin ?? DOLOMITE_MARGIN[api.chain]
+  if (!margin) throw new Error('unwrapDolomiteDeposits: missing dolomiteMargin for chain ' + api.chain)
+  if (owner) owners = [...owners, owner]
+  accounts = [...accounts, ...owners.map(i => [i, accountNumber])]
+
+  const res = await api.multiCall({
+    abi: DOLOMITE_GET_ACCOUNT_BALANCES_ABI,
+    target: margin,
+    calls: accounts.map(([owner, number]) => ({ params: [[owner, number]] })),
+  })
+
+  res.forEach(({ [1]: tokens, [3]: weis }) => {
+    tokens.forEach((token, i) => {
+      const { sign, value } = weis[i]
+      if (onlyPositive && !sign) return  // negative balance = borrow
+      api.add(token, sign ? value : -value)
+    })
+  })
+  return api.getBalances()
+}
+
 module.exports = {
   PANCAKE_NFT_ADDRESS,
+  unwrapDolomiteDeposits,
   unwrapUniswapLPs,
   unwrapSlipstreamNFT,
   unwrapUniswapV3NFT,

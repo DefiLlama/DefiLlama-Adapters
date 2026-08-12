@@ -45,6 +45,9 @@ const uniV3Configs = {
   'basex': {
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
+  'betterswap-v3': {
+    vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
+  },
   'mute-cl': {
     era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523 },
   },
@@ -1770,6 +1773,15 @@ const uniV3Configs = {
   },
   'giga-dex-cl': {
     robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
+  },
+  'alandale': {
+    start: '2026-08-04',
+    methodology: 'Value of the tokens locked in the concentrated liquidity pools.',
+    robinhood: {
+      factory: '0x16494A80E08Bcb9285D87b67149d7b01774D82F8',
+      fromBlock: 27941500,
+      isAlgebra: true,
+    },
   }
 }
 

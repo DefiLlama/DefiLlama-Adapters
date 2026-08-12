@@ -38,6 +38,7 @@ const endPoints = {
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
+  akash: "https://rest.cosmos.directory/akash",
   // neutron: "https://rest-solara.neutron-1.neutron.org",
   neutron: "https://neutron-rest.publicnode.com",
   quasar: "https://quasar-api.polkachu.com",
