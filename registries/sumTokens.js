@@ -26589,6 +26589,7 @@ const configs = {
       "tvl": {
         "owner": "0xFc96CF67eCC55bE4AdABc3AecBe6Ad6349f11223",
         "resolveUniV3": true,
+        "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
         "uniV3ExtraConfig": {
           "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
         }
