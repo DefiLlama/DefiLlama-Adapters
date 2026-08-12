@@ -173,13 +173,12 @@ async function rpcCall(method, params) {
   return data?.result;
 }
 
+
 /**
- * Get the current PECU/USD price directly from Pecu Novus.
+ * Get the PECU balance for a treasury.
  *
- * pecu_getPrice returns a hex-encoded uint256 with 18 decimals.
- *
- * Example:
- *   "0x15cfa424ea9c92600000"
+ * pecu_getBalance returns a hex-encoded uint256.
+ * PECU uses 18 decimals.
  */
 async function getPecuPriceUsd() {
   const result = await rpcCall('pecu_getPrice', []);
@@ -190,23 +189,35 @@ async function getPecuPriceUsd() {
     );
   }
 
-  if (typeof result.answer !== 'string' || !result.answer.startsWith('0x')) {
+  if (
+    typeof result.price !== 'string' ||
+    !result.price.startsWith('0x')
+  ) {
     throw new Error(
-      `Invalid PECU price answer: ${JSON.stringify(result)}`
+      `Invalid PECU price value: ${JSON.stringify(result.price)}`
     );
   }
 
-  const rawPrice = BigInt(result.answer);
+  const decimals = Number(result.decimals);
 
-  return Number(rawPrice) / 10 ** 18;
+  if (!Number.isInteger(decimals) || decimals < 0) {
+    throw new Error(
+      `Invalid PECU price decimals: ${JSON.stringify(result.decimals)}`
+    );
+  }
+
+  const rawPrice = BigInt(result.price);
+  const priceUsd = Number(rawPrice) / 10 ** decimals;
+
+  if (!Number.isFinite(priceUsd) || priceUsd <= 0) {
+    throw new Error(
+      `Invalid PECU/USD price: ${priceUsd}`
+    );
+  }
+
+  return priceUsd;
 }
 
-/**
- * Get the PECU balance for a treasury.
- *
- * pecu_getBalance returns a hex-encoded uint256.
- * PECU uses 18 decimals.
- */
 async function getPecuBalance(treasuryAddress) {
   const result = await rpcCall('pecu_getBalance', [treasuryAddress]);
 
@@ -222,29 +233,16 @@ async function getPecuBalance(treasuryAddress) {
 }
 
 async function tvl() {
-  // Price is obtained directly from the Pecu Novus RPC.
   const pecuPriceUsd = await getPecuPriceUsd();
 
   const balances = await Promise.all(
     treasuries.map(async (treasury) => {
-      try {
-        const amount = await getPecuBalance(treasury);
+      const amount = await getPecuBalance(treasury);
 
-        return {
-          address: treasury,
-          amount,
-        };
-      } catch (error) {
-        console.error(
-          `[hootdex adapter] Failed to get PECU balance for ${treasury}:`,
-          error.message
-        );
-
-        return {
-          address: treasury,
-          amount: 0,
-        };
-      }
+      return {
+        address: treasury,
+        amount,
+      };
     })
   );
 
