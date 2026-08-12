@@ -33,6 +33,20 @@ const FACTORIES = {
   ],
 };
 
+// Protocol-level $AVLO staking (ProtocolYield). Separate system from the per-game
+// house liquidity above: users stake the native AVLO token to earn a share of
+// treasury fees. Counted under `staking` as the protocol's own token.
+const PROTOCOL_YIELD = {
+  avax: {
+    contract: "0x5C0A35ABCBAb5b6F45d5e122ecAbe0d2678513E5",
+    avlo: "0x54eEeB249E3AE445f21eb006DEbB33eFa2B4b3Bb",
+  },
+  robinhood: {
+    contract: "0x3ae963eD481f95BcF4bd69aD9E6390f84bc68C04",
+    avlo: "0x7e37298e240c1E644F6F9F96b6A3AA6C5aea9885",
+  },
+};
+
 const PAGE = 1000; // pools per getGames call
 
 async function getGameTokensAndOwners(api) {
@@ -61,12 +75,17 @@ async function tvl(api) {
 async function staking(api) {
   const tao = await getGameTokensAndOwners(api)
   const core = coreSet(api.chain)
-  return api.sumTokens({ tokensAndOwners: tao.filter(([t]) => !core.has(t.toLowerCase())) })
+  // Non-core game-pool tokens (launchpad tokens used as house liquidity)...
+  const gameStaking = tao.filter(([t]) => !core.has(t.toLowerCase()))
+  // ...plus protocol-level AVLO staked in the ProtocolYield contract.
+  const py = PROTOCOL_YIELD[api.chain]
+  if (py) gameStaking.push([py.avlo, py.contract])
+  return api.sumTokens({ tokensAndOwners: gameStaking })
 }
 
 
 module.exports = {
-  methodology: "TVL is the total value of tokens staked as house liquidity across every game pool deployed through the AvaLove factories on each chain. For each per-game factory the adapter enumerates all deployed pool contracts via getGames() and sums the balance of each pool's staking token held by its game contract. Player bets and payouts flow through these same pools, so their token balances represent the protocol's live liquidity.",
+  methodology: "TVL is the total value of tokens staked as house liquidity across every game pool deployed through the AvaLove factories on each chain. For each per-game factory the adapter enumerates all deployed pool contracts via getGames() and sums the balance of each pool's staking token held by its game contract. Staking additionally counts protocol-level $AVLO staked in the ProtocolYield contract. Player bets and payouts flow through these same pools, so their token balances represent the protocol's live liquidity.",
   avax: { tvl, staking },
   robinhood: { tvl, staking },
 };
