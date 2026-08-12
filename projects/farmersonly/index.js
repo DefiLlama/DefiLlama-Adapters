@@ -1,5 +1,9 @@
 const { getUniTVL, sumUnknownTokens } = require('../helper/unknownTokens')
-const abi = require('./abi')
+const abi = {
+  poolLength: "uint256:poolLength",
+  poolInfo: "function poolInfo(uint256) view returns (address want, address strat)",
+  wantLockedTotal: "uint256:wantLockedTotal",
+}
 const { stakings } = require('../helper/staking')
 const sdk = require('@defillama/sdk')
 

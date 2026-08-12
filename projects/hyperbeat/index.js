@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumERC4626VaultsExport } = require('../helper/erc4626');
+const { sumERC4626VaultsExport2 } = require('../helper/erc4626');
 
 const liquidHypeStrategist = "0x83a80e5b64086197c01cbb123df2aea79a149c1d"
 const oracle = "0x1ceab703956e24b18a0af6b272e0bf3f499aca0f"
@@ -19,28 +19,35 @@ const config = {
     '0x182b318A8F1c7C92a7884e469442a610B0e69ed2': ADDRESSES.hyperliquid.WHYPE, // Re7 HYPE
     '0x92B518e1cD76dD70D3E20624AEdd7D107F332Cff': ADDRESSES.hyperliquid.WHYPE, // Hyperithm HYPE
     '0x264a06Fd7A7C9E0Bfe75163b475E2A3cc1856578': ADDRESSES.hyperliquid.WHYPE, // Gauntlet HYPE
-    '0x08C00F8279dFF5B0CB5a04d349E7d79708Ceadf3': '0xb88339cb7199b77e23db6e890353e22632ba630f', // Gauntlet USDC
-    '0x4851D4891321035729713D43bE1F4bb883Dffd34': '0xb88339cb7199b77e23db6e890353e22632ba630f', // MEV USDC
+    '0x08C00F8279dFF5B0CB5a04d349E7d79708Ceadf3': ADDRESSES.hyperliquid.USDC, // Gauntlet USDC
+    '0x4851D4891321035729713D43bE1F4bb883Dffd34': ADDRESSES.hyperliquid.USDC, // MEV USDC
   },
   standaloneVaults: {
-    '0x5e105266db42f78fa814322bce7f388b4c2e61eb': ADDRESSES.corn.USDT0, // USDT0
-    '0x6EB6724D8D3D4FF9E24d872E8c38403169dC05f8': '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', // xAUT
-    '0x81e064d0eB539de7c3170EDF38C1A42CBd752A76': ADDRESSES.hyperliquid.WHYPE, // lstHYPE
     '0x441794D6a8F9A3739F5D4E98a728937b33489D29': ADDRESSES.hyperliquid.WHYPE, // liquidHYPE
     '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42': ADDRESSES.corn.USDT0, // wVLP
-    '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29': ADDRESSES.corn.USDT0, // dnHYPE
-    '0x8858A307a85982c2B3CB2AcE1720237f2f09c39B': ADDRESSES.corn.USDT0, // dnPUMP
     // '0xd8FC8F0b03eBA61F64D08B0bef69d80916E5DdA9': ADDRESSES.hyperliquid.WHYPE, // beHYPE → lst adapter
-    '0x057ced81348D57Aad579A672d521d7b4396E8a61': '0xb88339CB7199b77E23DB6E890353E22632Ba630f', //hbUSDC
-    '0x4Cc221cf1444333510a634CE0D8209D2D11B9bbA': ADDRESSES.corn.USDT0, // nLP
   }
 }
+
+// Vaults priced via their getRate() oracle (share -> underlying exchange rate, 8 decimals),
+// which captures accrued yield instead of assuming shares = underlying.
+// lstHYPE/hbUSDT/hbUSDC have 18-decimal shares; nLP has 6.
+const rateVaults = [
+  { vault: '0x81e064d0eB539de7c3170EDF38C1A42CBd752A76', rate: '0x5eD0eC0b0643dAB621Dc814C8D058e161b9b884b', underlying: ADDRESSES.hyperliquid.WHYPE, shareDecimals: 18, underlyingDecimals: 18 }, // lstHYPE
+  { vault: '0x5e105266db42f78FA814322Bce7f388B4C2e61eb', rate: '0x3636a26ec1d512c5eCff42F7Adaa5cE7964C6579', underlying: ADDRESSES.corn.USDT0, shareDecimals: 18, underlyingDecimals: 6 }, // hbUSDT
+  { vault: '0x057ced81348D57Aad579A672d521d7b4396E8a61', rate: '0xe0995A641d454c149E6C808BAA37Cb2B38763316', underlying: ADDRESSES.hyperliquid.USDC, shareDecimals: 18, underlyingDecimals: 6 }, // hbUSDC
+  { vault: '0x4Cc221cf1444333510a634CE0D8209D2D11B9bbA', rate: '0xC23cdFe493bB5E69bedfCF6E710f508710ac668B', underlying: ADDRESSES.corn.USDT0, shareDecimals: 6, underlyingDecimals: 6 }, // nLP
+  { vault: '0x9065E3153B1393Bb5f76520cdc1e08E49eb04B03', rate: '0x5362454e5648C6Ac7F03969E8a62CFc61F99b9D6', underlying: ADDRESSES.hyperliquid.USDC, shareDecimals: 6, underlyingDecimals: 6 }, // masterUSD
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', rate: '0x5100Aee934F0EE05FA78B03114a068Da18aFEd8D', underlying: ADDRESSES.corn.USDT0, shareDecimals: 18, underlyingDecimals: 6 }, // dnHYPE
+  { vault: '0x8858A307a85982c2B3CB2AcE1720237f2f09c39B', rate: '0x58F6138DB540D0f5bfB24Fd9b17db54694a92ea6', underlying: ADDRESSES.corn.USDT0, shareDecimals: 18, underlyingDecimals: 6 }, // dnPUMP
+  { vault: '0x6EB6724D8D3D4FF9E24d872E8c38403169dC05f8', rate: '0x988E3E2C26840F2cAe2c5fB55fAeb5e59CE1A597', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', shareDecimals: 18, underlyingDecimals: 6 }, // hbXAUt
+]
 
 const sixDecimalTokens = [
   ADDRESSES.corn.USDT0, // USDT0
   '0x9ab96a4668456896d45c301bc3a15cee76aa7b8d', // rUSDC
   '0xf4d9235269a96aadafc9adae454a0618ebe37949', // xAUT
-  '0xb88339cb7199b77e23db6e890353e22632ba630f', // USDC
+  ADDRESSES.hyperliquid.USDC, // USDC
 ]
 
 const unwrapBeHype = async (api, underlying, supply) => {
@@ -75,7 +82,17 @@ const tvl = async (api) => {
     api.add(underlying, scaled)
   }
 
-  return sumERC4626VaultsExport({ vaults: ['0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', '0xc061d38903b99aC12713B550C2CB44B221674F94'], isOG4626: true })(api) 
+  // Vaults that expose a getRate() oracle: value = supply * rate / 1e8, scaled to underlying decimals.
+  const [rateSupplies, rates] = await Promise.all([
+    api.multiCall({ calls: rateVaults.map(v => v.vault), abi: 'erc20:totalSupply' }),
+    api.multiCall({ calls: rateVaults.map(v => v.rate), abi: 'uint256:getRate' }),
+  ])
+  rateVaults.forEach((v, i) => {
+    const underlyingAmount = rateSupplies[i] * rates[i] / 1e8 * 10 ** (v.underlyingDecimals - v.shareDecimals)
+    api.add(v.underlying, underlyingAmount)
+  })
+
+  return sumERC4626VaultsExport2({ vaults: ['0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', '0xc061d38903b99aC12713B550C2CB44B221674F94'] })(api)
 }
 
 module.exports = {

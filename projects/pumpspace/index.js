@@ -21,6 +21,10 @@ const MASTERCHEFS = [
 // --- TOKENS (project/local wrappers + protocol tokens) ---
 const TOKENS = {
   SHELL: '0xaD4CB79293322c07973ee83Aed5DF66A53214dc6',
+  SBWPM: '0x6c960648d5F16f9e12895C28655cc6Dd73B660f7',
+  SADOL: '0x6214D13725d458890a8EF39ECB2578BdfCd82170',
+  KRILL: '0x4ED0A710a825B9FcD59384335836b18C75A34270',
+  PEARL: '0x08c4b51e6Ca9Eb89C255F0a5ab8aFD721420e447',
 }
 
 
@@ -37,9 +41,9 @@ module.exports = {
       getUniTVL({ factory: PUMP_FACTORY, useDefaultCoreAssets: true }), 
       getTridentTVL({ chain: CHAIN, factory:PUMP_V3 }),
     ]),
-    staking: sdk.util.sumChainTvls([
-      // If you later add KRILL/PEARL single-asset staking, append similar lines here.
-      staking([MASTERCHEFS[0]], [TOKENS.SHELL]),
-    ])
+    staking: staking(
+      [MASTERCHEFS[0], MASTERCHEFS[1], MASTERCHEFS[2]], 
+      [TOKENS.SHELL, TOKENS.SBWPM, TOKENS.SADOL, TOKENS.KRILL, TOKENS.PEARL]
+    )
   },
 }

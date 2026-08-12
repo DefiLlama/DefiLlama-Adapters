@@ -1,9 +1,9 @@
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
-const { getConnection, sumTokens2, readBigUInt64LE, } = require("../helper/solana");
+const { getConnection, sumTokens2, readBigUInt64LE, getMultipleAccounts, } = require("../helper/solana");
 
 
-async function tvl() {
+async function getTokenAccounts() {
   const connection = getConnection();
   const dualProgramID = new PublicKey("DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki");
   let programAccounts = await connection.getProgramAccounts(dualProgramID, {
@@ -24,10 +24,17 @@ async function tvl() {
     }]
   });
 
-  const soTokenAccounts = stakingOptionsAccounts
-    .map(i => parseSoState(i.account.data))
-    .map(i => [i.vault, i.reverseVault])
-    .flat()
+  const parsedSo = stakingOptionsAccounts.map(i => parseSoState(i.account.data));
+  const reverseVaults = parsedSo.map(i => i.reverseVault);
+  const reverseVaultsInfo = await getMultipleAccounts(reverseVaults);
+
+  const soTokenAccounts = [];
+  for (let i = 0; i < parsedSo.length; i++) {
+    soTokenAccounts.push(parsedSo[i].vault);
+    if (reverseVaultsInfo[i] !== null) {
+      soTokenAccounts.push(parsedSo[i].reverseVault);
+    }
+  }
 
   const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
   let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
@@ -38,49 +45,17 @@ async function tvl() {
   const gsoTokenAccounts = gsoAccounts
     .map(i => gsoVault(i.pubkey))
 
-  const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
+  return dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
+}
 
+async function tvl() {
+  const tokenAccounts = await getTokenAccounts();
   const DUAL = 'DUALa4FC2yREwZ59PHeu1un4wis36vHRv5hWVBmzykCJ'
   return sumTokens2({ tokenAccounts, allowError: true,  blacklistedTokens: [DUAL]})
 }
 
 async function staking() {
-  const connection = getConnection();
-  const dualProgramID = new PublicKey("DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki");
-  let programAccounts = await connection.getProgramAccounts(dualProgramID, {
-    filters: [{
-      dataSize: 260
-    }]
-  });
-
-  const dipTokenAccounts = programAccounts
-    .map(i => parseDipState(i.account.data))
-    .map(i => [i.vaultSpl, i.vaultUsdc])
-    .flat()
-
-  const stakingOptionsProgramID = new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7");
-  let stakingOptionsAccounts = await connection.getProgramAccounts(stakingOptionsProgramID, {
-    filters: [{
-      dataSize: 1150
-    }]
-  });
-
-  const soTokenAccounts = stakingOptionsAccounts
-    .map(i => parseSoState(i.account.data))
-    .map(i => [i.vault, i.reverseVault])
-    .flat()
-
-  const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
-  let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
-    filters: [{
-      dataSize: 1000
-    }]
-  });
-  const gsoTokenAccounts = gsoAccounts
-    .map(i => gsoVault(i.pubkey))
-
-  const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
-
+  const tokenAccounts = await getTokenAccounts();
   return sumTokens2({ tokenAccounts, allowError: true, })
 }
 

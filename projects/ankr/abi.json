@@ -1,3 +1,0 @@
-{
-  "getProviderBalance": "function getProviderBalance(address provider) view returns (uint128 balance, uint128 totalCap)"
-}

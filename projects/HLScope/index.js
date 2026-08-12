@@ -11,13 +11,9 @@ const CONFIG = {
 }
 
 const tvl = async (api) => {
-    try {
-        const tokens = CONFIG[api.chain];
-        const supplies = await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' });
-        api.add(tokens, supplies);
-    } catch (error) {
-        console.error(`Error in ${api.chain}:`, error);
-    }
+    const tokens = CONFIG[api.chain];
+    const supplies = await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' });
+    api.add(tokens, supplies);
 }
 
 Object.keys(CONFIG).forEach((chain) => {

@@ -1,101 +1,77 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 
 const ETH = ADDRESSES.null
 const RPL = '0xd33526068d116ce69f19a9ee46f0bd304f21a51f'
-const rocketNodeManager = '0x2b52479F6ea009907e46fc43e91064D1b92Fdc86'
-const rocketVault = '0x3bDC69C4E5e13E52A65f5583c23EFB9636b469d6'
-const rocketRewardsPool = '0xEE4d2A71cF479e0D3d0c3c2C923dbfEB57E73111'
-const trustedNodeManager = '0xb8e783882b11Ff4f6Cef3C501EA0f4b960152cc9'
-const rocketNodeStaking = '0xF18Dc176C10Ff6D8b5A17974126D43301F8EEB95'
-const backfill_node_first_block = 21060563
+
+// Rocket Pool Saturn contract addresses (resolved from RocketStorage 0x1d8f8f00cfa6758d7bE78336684788Fb0ee0Fa46)
+const contracts = {
+  rocketTokenRETH:       ADDRESSES.ethereum.RETH,
+  rocketDepositPool:     '0xCE15294273CFb9D9b628F4D61636623decDF4fdC',
+  rocketMinipoolManager: '0xe54B8C641fd96dE5D6747f47C19964c6b824D62C',
+  rocketNodeManager:     '0xcf2d76A7499d3acB5A22ce83c027651e8d76e250',
+  rocketMegapoolFactory: '0xD5bffeaa9f373B9C367132772FAA0b88e3F0E38b',
+  rocketNodeStaking:     '0xedFc7DCaE43fF954577a2875a9D805874490eE3E',
+}
 
 const abi = {
-  getNodeCount: "function getNodeCount() view returns (uint256)",
-  getNodeAddresses: "function getNodeAddresses(uint256 _offset, uint256 _limit) view returns (address[])",
-  getNodeDetails: "function getNodeDetails(address _nodeAddress) view returns ((bool exists, uint256 registrationTime, string timezoneLocation, bool feeDistributorInitialised, address feeDistributorAddress, uint256 rewardNetwork, uint256 rplStake, uint256 effectiveRPLStake, uint256 minimumRPLStake, uint256 maximumRPLStake, uint256 ethMatched, uint256 ethMatchedLimit, uint256 minipoolCount, uint256 balanceETH, uint256 balanceRETH, uint256 balanceRPL, uint256 balanceOldRPL, uint256 depositCreditBalance, uint256 distributorBalanceUserETH, uint256 distributorBalanceNodeETH, address withdrawalAddress, address pendingWithdrawalAddress, bool smoothingPoolRegistrationState, uint256 smoothingPoolRegistrationChanged, address nodeAddress))",
-  getPendingETHRewards: "function getPendingETHRewards() view returns (uint256)",
-  balanceOf: "function balanceOf(string _networkContractName) view returns (uint256)",
-  balanceOfToken: "function balanceOfToken(string _networkContractName, address _tokenAddress) view returns (uint256)",
-  getMemberAt: "function getMemberAt(uint256 _index) view returns (address)",
-  getMemberCount: "function getMemberCount() view returns (uint256)",
-  getMemberRPLBondAmount: "function getMemberRPLBondAmount(address _nodeAddress) view returns (uint256)",
-  getNodeETHProvided: "function getNodeETHProvided(address _nodeAddress) view returns (uint256)",
-};
+  depositPoolGetBalance:   'function getBalance() view returns (uint256)',
+  getStakingMinipoolCount: 'function getStakingMinipoolCount() view returns (uint256)',
+  getTotalStakedRPL:       'function getTotalStakedRPL() view returns (uint256)',
+  getNodeCount:            'function getNodeCount() view returns (uint256)',
+  getNodeAt:               'function getNodeAt(uint256) view returns (address)',
+  getMegapoolDeployed:     'function getMegapoolDeployed(address) view returns (bool)',
+  getExpectedAddress:      'function getExpectedAddress(address) view returns (address)',
+  getActiveValidatorCount: 'function getActiveValidatorCount() view returns (uint32)',
+  getUserQueuedCapital:    'function getUserQueuedCapital() view returns (uint256)',
+  getNodeQueuedBond:       'function getNodeQueuedBond() view returns (uint256)',
+}
 
-const nodeBalances = async (api) => {
-  /**
-   Small hack for backfilling: the following code uses a recent contract deployed just 180 days ago. It allows retrieving all the nodeAddresses,
-   even those prior to this date. If the backfill api's timestamp is earlier than the contract's creation date, we use the creation date as the limit
-   to continue making calls. We'll then apply a filter to exclude nodeAddresses with registrationTime > api.timestamp
-  */
+// Idle ETH: rETH withdrawal reserve + deposit pool awaiting staking
+const addIdleEth = async (api) => {
+  await api.sumTokens({ tokens: [ETH], owners: [contracts.rocketTokenRETH] })
+  const depositPoolBal = await api.call({ target: contracts.rocketDepositPool, abi: abi.depositPoolGetBalance })
+  api.add(ETH, depositPoolBal)
+}
 
-  const block = await api.getBlock() < backfill_node_first_block ? backfill_node_first_block : await api.getBlock()
-  const nodeApi = new sdk.ChainApi({ chain: api.chain, block })
-  const nodeLength = await nodeApi.call({ target: rocketNodeManager, abi: abi.getNodeCount })
-  const addresses = await nodeApi.call({ target: rocketNodeManager, abi: abi.getNodeAddresses, params: [0, nodeLength] });
+// Staked ETH in legacy minipools (32 ETH each)
+const addLegacyMinipoolEth = async (api) => {
+  const count = await api.call({ target: contracts.rocketMinipoolManager, abi: abi.getStakingMinipoolCount })
+  api.add(ETH, Number(count) * 32 * 1e18)
+}
 
-  const batchSize = 100;
-  const batchedAddresses = [];
-  for (let i = 0; i < addresses.length; i += batchSize) {
-    batchedAddresses.push(addresses.slice(i, i + batchSize));
-  }
+// Staked ETH in megapools
+const addMegapoolEth = async (api) => {
+  const nodes = await api.fetchList({ target: contracts.rocketNodeManager, lengthAbi: abi.getNodeCount, itemAbi: abi.getNodeAt })
+  const deployed = await api.multiCall({ target: contracts.rocketMegapoolFactory, abi: abi.getMegapoolDeployed, calls: nodes.map(n => ({ params: [n] })) })
+  const deployedNodes = nodes.filter((_, i) => deployed[i])
+  if (deployedNodes.length === 0) return
 
-  const results = [];
-  for (const batch of batchedAddresses) {
-    const details = await nodeApi.multiCall({ calls: batch.map((address) => ({ target: rocketNodeManager, params: [address] })), abi: abi.getNodeDetails, permitFailure: true });
-    const ethProvided = await nodeApi.multiCall({ calls: batch.map((address) => ({ target: rocketNodeStaking, params: [address] })), abi: abi.getNodeETHProvided, permitFailure: true });
+  const megapools = await api.multiCall({ target: contracts.rocketMegapoolFactory, abi: abi.getExpectedAddress, calls: deployedNodes.map(n => ({ params: [n] })) })
   
-    const filteredResults = [];
-    if (details) {
-      for (let i = 0; i < details.length; i++) {
-        const detail = details[i];
-        if (detail && detail.exists && detail.registrationTime <= api.timestamp) {
-          filteredResults.push({
-            detail,
-            ethProvided: ethProvided[i] || 0,
-          });
-        }
-      }
-    }
-  
-    results.push({
-      details: filteredResults.map((result) => result.detail),
-      ethProvided: filteredResults.map((result) => result.ethProvided),
-    });
-  }
-  
-  const flattenedDetails = results.flatMap((result) => result.details);
-  const flattenedEthProvided = results.flatMap((result) => result.ethProvided);
+  const [activeCounts, userQueued, nodeQueued] = await Promise.all([
+    api.multiCall({ calls: megapools, abi: abi.getActiveValidatorCount }),
+    api.multiCall({ calls: megapools, abi: abi.getUserQueuedCapital }),
+    api.multiCall({ calls: megapools, abi: abi.getNodeQueuedBond }),
+  ])
 
-  const { minipoolCount, ethMatched, nodeEthProvided} = flattenedDetails.reduce(
-    (acc, curr, index) => {
-      if (!curr) return acc;
-      acc.minipoolCount += Number(curr.minipoolCount) || 0;
-      acc.ethMatched += Number(curr.ethMatched) || 0;
-      acc.nodeEthProvided += Number(flattenedEthProvided[index]) || 0;
-      return acc;
-    },
-    { minipoolCount: 0, ethMatched: 0, nodeEthProvided: 0}
-  );
-
-  api.add(ETH, [ethMatched, nodeEthProvided])
+  megapools.forEach((_, i) => {
+    const staked = Number(activeCounts[i]) * 32 * 1e18 - Number(userQueued[i]) - Number(nodeQueued[i])
+    if (staked > 0) api.add(ETH, staked)
+  })
 }
 
 const tvl = async (api) => {
-  await nodeBalances(api)
-  const depositPoolBalance = await api.call({ target: rocketVault, abi: abi.balanceOf, params: ['rocketDepositPool'] })
-  api.add(ETH, depositPoolBalance)
+  await addIdleEth(api)
+  await addLegacyMinipoolEth(api)
+  await addMegapoolEth(api)
 }
 
 const staking = async (api) => {
-  const trustedNodes = await api.fetchList({ target: trustedNodeManager, lengthAbi: abi.getMemberCount, itemAbi: abi.getMemberAt  })
-  api.add(RPL, await api.multiCall({ calls: trustedNodes.map((node) => ({ target: trustedNodeManager, params: [node] })), abi: abi.getMemberRPLBondAmount }))
-  return api.sumTokens({ owner: rocketVault, tokens: [RPL] })
+  const totalRPL = await api.call({ target: contracts.rocketNodeStaking, abi: abi.getTotalStakedRPL })
+  api.add(RPL, totalRPL)
 }
 
 module.exports = {
-  start: 1633046400,
-  methodology: 'TVL represents the total ETH from the minipools',
-  ethereum: { tvl, staking }
+  methodology: 'TVL = idle ETH (rETH reserve + deposit pool) + staked ETH',
+  ethereum: { tvl, staking },
 }

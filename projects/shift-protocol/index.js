@@ -1,73 +1,34 @@
-const sdk = require('@defillama/sdk');
-const { formatUnits } = require('ethers');
-const contractsByChain = require('./config');
-
-function getChainTvlFunction(chain) {
-  return async (_timestamp, _ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain];
-    let totalTvl = 0;
-
-    const addresses = contractsByChain[chain] || [];
-    for (const address of addresses) {
-      // totalSupply using standard ERC20 short ABI
-      const totalSupply = await sdk.api.abi.call({
-        target: address,
-        abi: 'erc20:totalSupply',
-        block,
-        chain,
-      });
-
-      if (!totalSupply || !totalSupply.output) {
-        console.warn(`totalSupply() missing for ${address} on ${chain}`);
-        continue;
-      }
-
-      // decimals using standard ERC20 short ABI (fallback to 18 if fails)
-      const decRes = await sdk.api.abi.call({
-        target: address,
-        abi: 'erc20:decimals',
-        block,
-        chain,
-      });
-      
-      const decimals = decRes && decRes.output ? Number(decRes.output) : 18;
-      if (!decRes || !decRes.output) {
-        console.warn(`decimals() missing for ${address} on ${chain}, defaulting to 18`);
-      }
-
-      // getSharePrice() - custom function, format with 6 decimals
-      const spRes = await sdk.api.abi.call({
-        target: address,
-        abi: 'function getSharePrice() view returns (uint256)',
-        block,
-        chain,
-      });
-
-      let sharePrice = 0;
-      if (spRes && spRes.output) {
-        sharePrice = Number(formatUnits(spRes.output, 6));
-      } else {
-        console.warn(`getSharePrice() missing for ${address} on ${chain}, using 0`);
-      }
-
-      const supplyHuman = Number(formatUnits(totalSupply.output, decimals));
-      const tvlForAddress = supplyHuman * sharePrice;
-      totalTvl += tvlForAddress;
-    }
-
-    return {
-      usd: totalTvl,
-    };
-  };
+const config = {
+  ethereum: {
+    v2: [
+      "0xF4761cC51DC4532b064b7E0Bf0883bcA3F84375e", // shiftEUR
+    ],
+  },
+  base: {
+    v1: [
+      "0xaf69Bf9ea9E0166498c0502aF5B5945980Ed1E0E", // Shift Paradex Liquid Token
+      "0x4cE3ec1b7B4FFb33A0B70c64a0560A3F341AA2E1", // Shift Extended Basis USD
+    ]
+  }, 
+  arbitrum: {
+    v1: [
+      "0x956bdd9C18B786b082fd50C52722d254f0CB6964", // Shift Lighter LLP Wrapper
+      "0x6d7C897cD8B402690C07e7263C9f59B3777ae3c2", // Shift GRVT Hybrid Vault
+      "0x7174f0bD02664BebDB6Aa79a99fAF949570A10bd", // Shift Hibachi Basis USD
+    ]
+  }, 
 }
 
-const adapter = {
-  methodology:
-    'TVL is calculated by summing total supply of shares distributed to depositors and multiplied by their share price (comprehensive of profit and loss). Aggregated across configured contracts.',
+module.exports = {
+  methodology: 'TVL for v1 vaults is calculated by summing total supply of shares distributed to depositors and multiplied by their share price (comprehensive of profit and loss). v2 vaults are ERC-4626 compliant so they use totalAssets().',
 };
 
-for (const chain of Object.keys(contractsByChain)) {
-  adapter[chain] = { tvl: getChainTvlFunction(chain) };
-}
-
-module.exports = adapter;
+Object.keys(config).forEach(chain => {
+  const { v1 = [], v2 = [] } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      if (v1.length) api.add(v1, await api.multiCall({ abi: 'erc20:totalSupply', calls: v1 }))
+      if (v2.length) await api.erc4626Sum2({ calls: v2 })
+    },
+  }
+})

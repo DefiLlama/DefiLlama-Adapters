@@ -3,8 +3,7 @@ const miscreant = require("miscreant");
 const curve25519 = require("curve25519-js");
 const { get } = require('../http')
 
-// const crypto = require('node:crypto')  // -- can be used for node v16 and above
-// const hkdf = require("js-crypto-hkdf") // -- needed for node v14 and below
+const crypto = require('node:crypto')
 const toBase64 = str => Buffer.from(str).toString('base64')
 const fromBase64 = str => Buffer.from(str, 'base64')
 
@@ -34,20 +33,18 @@ class EnigmaUtils {
   async getConsensusIoPubKey() {
     if (this.consensusIoPubKey) return this.consensusIoPubKey
     if (!this.getKey) {
-      this.getKey = get(this.apiUrl + "/reg/tx-key")
+      this.getKey = get(this.apiUrl + "/registration/v1beta1/registration-key")
     }
 
-    const { result: { TxKey }, } = await this.getKey
-    this.consensusIoPubKey = fromBase64(TxKey);
+    const { key } = await this.getKey
+    const keyData = JSON.parse(Buffer.from(key, 'base64').toString())
+    this.consensusIoPubKey = fromBase64(keyData.io_exch_key.bytes);
     return this.consensusIoPubKey;
   }
   async getTxEncryptionKey(nonce) {
-    // const consensusIoPubKey = await this.getConsensusIoPubKey();
-    // const txEncryptionIkm = curve25519.sharedKey(this.privkey, consensusIoPubKey);
-    // const txEncryptionKey = crypto.hkdfSync("sha256", Uint8Array.from([...txEncryptionIkm, ...nonce]), hkdfSalt, '', 32)
-    // const { key: txEncryptionKey } = await hkdf.compute(Uint8Array.from([...txEncryptionIkm, ...nonce]), "SHA-256", 32, "", hkdfSalt)
-    // console.log(txEncryptionKey, 'txEncryptionKey', new Uint8Array(txEncryptionKey))
-    const txEncryptionKey = fakeKey
+    const consensusIoPubKey = await this.getConsensusIoPubKey();
+    const txEncryptionIkm = curve25519.sharedKey(this.privkey, consensusIoPubKey);
+    const txEncryptionKey = crypto.hkdfSync("sha256", Uint8Array.from([...txEncryptionIkm, ...nonce]), hkdfSalt, '', 32)
     return new Uint8Array(txEncryptionKey)
   }
   async encrypt(contractCodeHash, msg) {
@@ -115,5 +112,3 @@ EnigmaUtils.fromBase64 = fromBase64
 EnigmaUtils.toBase64 = toBase64
 
 module.exports = EnigmaUtils
-
-const fakeKey = new Uint8Array([248, 24, 153, 160, 20, 71, 22, 226, 185, 239, 57, 17, 11, 65, 67, 231, 36, 199, 102, 223, 164, 45, 133, 137, 223, 33, 119, 169, 155, 169, 194, 224]).buffer

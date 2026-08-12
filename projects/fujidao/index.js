@@ -1,109 +1,172 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const {sumTokens} = require('../helper/unwrapLPs');
-const abi = require('./abi.json');
-const sdk = require('@defillama/sdk');
+const abi = {
+    "totalSupply": "function totalSupply(uint256 _assetID) view returns (uint256)"
+}
 const { default: BigNumber } = require('bignumber.js');
-const {ethereumContracts} = require('./ethereum');
-const {fantomContracts} = require('./fantom');
-const {polygonContracts} = require('./polygon');
-const {arbitrumContracts} = require('./arbitrum');
-const {optimismContracts} = require('./optimism');
 
-// const weth = ADDRESSES.ethereum.WETH;
-// const wbtc = ADDRESSES.ethereum.WBTC;
-// const ftm = ADDRESSES.ethereum.FTM;
-// const matic = ADDRESSES.ethereum.MATIC;
-// const usdc= ADDRESSES.ethereum.USDC;
+// The provided address should be the FujiERC1155 contract that returns
+// totalSupply() for token `ids` indicated.
+const ethereumContracts = {
+  weth: [
+    {
+      name: "MainnetF1155Core_VaultsETH",
+      address: "0x1Cf24e4eC41DA581bEe223E1affEBB62a5A95484",
+      ids: [0, 2, 4],
+    },
+    {
+      name: "MainnetF1155Fuse_VaultsETH",
+      address: "0xa2d62f8b02225fbFA1cf8bF206C8106bDF4c692b",
+      ids: [0, 2],
+    },
+  ],
+};
 
-const marketsupply = async (contract, block, chain) => {
-    return await sdk.api.abi.multiCall(
+const fantomContracts = {
+  fantom: [
+    {
+      name: "FantomF1155Core_VaultsFTM",
+      address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
+      ids: [0, 2],
+    },
+  ],
+  wbtc: [
+    {
+      name: "FantomF1155Core_VaultsWBTC",
+      address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
+      ids: [4],
+    },
+  ],
+  weth: [
+    {
+      name: "FantomF1155Core_VaultsWETH",
+      address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
+      ids: [6,8],
+    },
+  ],
+};
+
+const polygonContracts = {
+  matic: [{
+    name: "PolygonF1155Core_VaultsMATIC",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [0, 2],
+  }],
+  wbtc: [{
+    name: "PolygonF1155Core_VaultsWBTC",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [4, 6],
+  }],
+  weth: [{
+    name: "PolygonF1155Core_VaultsWETH",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [8, 10],
+  }],
+  usdc: [{
+    name: "PolygonF1155Core_VaultsUSDC",
+    address: "0x03BD587Fe413D59A20F32Fc75f31bDE1dD1CD6c9",
+    ids: [16, 18],
+  }],
+};
+
+const arbitrumContracts = {
+  weth: [{
+    name: "ArbitrumF1155Core_VaultsWETH",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [0, 2],
+  }],
+  usdc: [{
+    name: "ArbitrumF1155Core_VaultsUSDC",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [4],
+  }],
+};
+
+const optimismContracts = {
+  weth: [{
+    name: "optimismF1155Core_VaultsWETH",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [0],
+  }],
+  usdc: [{
+    name: "optimismF1155Core_VaultsUSDC",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
+    ids: [2],
+  }],
+};
+
+const marketsupply = async (contract, api) => {
+    return await api.multiCall(
         {
             abi: abi.totalSupply,
-            calls: (contract.ids).map( id => ({
-                target:(contract.address),
+            calls: (contract.ids).map(id => ({
+                target: (contract.address),
                 params: [id]
             })),
-            block,
-            chain
         }
     );
 }
 
-const allMarketSupplies = async (contracts, block, chain) => {
+const allMarketSupplies = async (contracts, api) => {
     let allMarkets;
     for (let index = 0; index < contracts.length; index++) {
         if (!allMarkets) {
-            allMarkets = await marketsupply(contracts[index], block, chain);
+            allMarkets = await marketsupply(contracts[index], api);
         } else {
-            let temp = allMarkets.output;
-            let response = await marketsupply(contracts[index], block, chain);
-            response = response.output;
-            allMarkets.output = temp.concat(response);
-        } 
+            let temp = allMarkets;
+            let response = await marketsupply(contracts[index], api);
+            response = response;
+            allMarkets = temp.concat(response);
+        }
     }
-    return allMarkets.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0);
+    return allMarkets.reduce((t, v) => t.plus(v), BigNumber(0)).toFixed(0);
 }
 
-async function eth(_timestamp, block){
-    const supplies = await allMarketSupplies(ethereumContracts.weth, block, "ethereum");
-
-    return {
-        [`ethereum:${ADDRESSES.ethereum.WETH}`]: supplies
-    }
+async function eth(api) {
+    const supplies = await allMarketSupplies(ethereumContracts.weth, api)
+    api.add(ADDRESSES.ethereum.WETH, supplies)
 }
 
-async function fantom(_timestamp, ethBlock, chainBlocks){
-    const ftmSupplies = await allMarketSupplies(fantomContracts.fantom, chainBlocks.fantom, "fantom");
-    const wbtcSupplies = await allMarketSupplies(fantomContracts.wbtc, chainBlocks.fantom, "fantom");
-    const wethSupplies = await allMarketSupplies(fantomContracts.weth, chainBlocks.fantom, "fantom");
-
-    return {
-        [`fantom:${ADDRESSES.fantom.WFTM}`]: ftmSupplies,
-        [`fantom:${ADDRESSES.fantom.WBTC}`]: wbtcSupplies,
-        [`fantom:${ADDRESSES.fantom.WETH}`]: wethSupplies,
-    }
+async function fantom(api) {
+    const ftmSupplies = await allMarketSupplies(fantomContracts.fantom, api);
+    const wbtcSupplies = await allMarketSupplies(fantomContracts.wbtc, api);
+    const wethSupplies = await allMarketSupplies(fantomContracts.weth, api);
+    api.add(ADDRESSES.fantom.WFTM, ftmSupplies)
+    api.add(ADDRESSES.fantom.WBTC, wbtcSupplies)
+    api.add(ADDRESSES.fantom.WETH, wethSupplies)
 }
 
-async function polygon(_timestamp, ethBlock, chainBlocks){
-    const maticSupplies = await allMarketSupplies(polygonContracts.matic, chainBlocks.polygon, "polygon");
-    const wbtcSupplies = await allMarketSupplies(polygonContracts.wbtc, chainBlocks.polygon, "polygon");
-    const wethSupplies = await allMarketSupplies(polygonContracts.weth, chainBlocks.polygon, "polygon");
-    const usdcSupplies = await allMarketSupplies(polygonContracts.usdc, chainBlocks.polygon, "polygon");
-    console.log(maticSupplies, wbtcSupplies, wethSupplies, usdcSupplies)
-    return {
-        [`polygon:${ADDRESSES.polygon.WMATIC_2}`]: maticSupplies,
-        [`polygon:${ADDRESSES.polygon.WBTC}`]: wbtcSupplies,
-        [`polygon:${ADDRESSES.polygon.WETH_1}`]: wethSupplies,
-        [`polygon:${ADDRESSES.polygon.USDC_CIRCLE}`]: usdcSupplies,
-    }
+async function polygon(api) {
+    const maticSupplies = await allMarketSupplies(polygonContracts.matic, api);
+    const wbtcSupplies = await allMarketSupplies(polygonContracts.wbtc, api);
+    const wethSupplies = await allMarketSupplies(polygonContracts.weth, api);
+    const usdcSupplies = await allMarketSupplies(polygonContracts.usdc, api);
+
+    api.add(ADDRESSES.polygon.WMATIC_2, maticSupplies)
+    api.add(ADDRESSES.polygon.WBTC, wbtcSupplies)
+    api.add(ADDRESSES.polygon.WETH_1, wethSupplies)
+    api.add(ADDRESSES.polygon.USDC_CIRCLE, usdcSupplies)
 }
 
-async function arbitrum(_timestamp, ethBlock, chainBlocks){
-    const wethSupplies = await allMarketSupplies(arbitrumContracts.weth, chainBlocks.arbirtum, "arbitrum");
-    const usdcSupplies = await allMarketSupplies(arbitrumContracts.usdc, chainBlocks.arbirtum, "arbitrum");
-
-    return {
-        [`arbitrum:${ADDRESSES.arbitrum.WETH}`]: wethSupplies,
-        [`arbitrum:${ADDRESSES.arbitrum.USDC_CIRCLE}`]: usdcSupplies,
-    }
+async function arbitrum(api) {
+    const wethSupplies = await allMarketSupplies(arbitrumContracts.weth, api);
+    const usdcSupplies = await allMarketSupplies(arbitrumContracts.usdc, api);
+    api.add(ADDRESSES.arbitrum.WETH, wethSupplies)
+    api.add(ADDRESSES.arbitrum.USDC_CIRCLE, usdcSupplies)
 }
 
-async function optimism(_timestamp, ethBlock, chainBlocks){
-    const wethSupplies = await allMarketSupplies(optimismContracts.weth, chainBlocks.optimism, "optimism");
-    const usdcSupplies = await allMarketSupplies(optimismContracts.usdc, chainBlocks.optimism, "optimism");
-    return {
-        [`optimism:${ADDRESSES.optimism.WETH}`]: wethSupplies,
-        [`optimism:${ADDRESSES.optimism.USDC_CIRCLE}`]: usdcSupplies,
-    }
+async function optimism(api) {
+    const wethSupplies = await allMarketSupplies(optimismContracts.weth, api);
+    const usdcSupplies = await allMarketSupplies(optimismContracts.usdc, api);
+    api.add(ADDRESSES.optimism.WETH, wethSupplies)
+    api.add(ADDRESSES.optimism.USDC_CIRCLE, usdcSupplies)
 }
 
 module.exports = {
-    timetravel: false,
     methodology: "Counts on-chain balance of receipt tokens in F1155 contracts for all vaults.",
-    ethereum:{
-        tvl:eth
+    ethereum: {
+        tvl: eth
     },
-    fantom:{
+    fantom: {
         tvl: fantom
     },
     polygon: {

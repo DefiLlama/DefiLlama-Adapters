@@ -1,5 +1,5 @@
 module.exports = {
-  "version": "0.1.0",
+  "version": "0.1.7",
   "name": "marginfi",
   "instructions": [],
   "accounts": [
@@ -69,7 +69,12 @@ module.exports = {
           {"name": "ignore1", "type": {"array": ["u8", 6]}},
           {"name": "borrowLimit", "type": "u64"},
           {"name": "riskTier", "type": {"defined": "RiskTier"}},
-          {"name": "padding", "type": {"array": ["u8", 55]}}
+          // New fields mapped from on-chain layout: asset_tag and config_flags
+          // These reuse bytes that were previously part of padding.
+          {"name": "assetTag", "type": "u8"},
+          {"name": "configFlags", "type": "u8"},
+          // Remaining padding bytes after carving out assetTag + configFlags
+          {"name": "padding", "type": {"array": ["u8", 53]}}
         ]
       }
     },

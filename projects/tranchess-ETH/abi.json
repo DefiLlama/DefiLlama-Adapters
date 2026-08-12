@@ -1,4 +1,0 @@
-{
-    "tokenUnderlying": "address:tokenUnderlying",
-    "getTotalUnderlying": "uint256:getTotalUnderlying"
-}

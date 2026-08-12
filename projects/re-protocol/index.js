@@ -1,72 +1,62 @@
-const { get } = require('../helper/http');
+const sdk = require('@defillama/sdk');
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// Supported chains
-const chains = ["ethereum", "avax", "arbitrum", "base"];
-
-// Token addresses per chain
-const contracts = {
+const config = {
   ethereum: {
-    reUSD: "0x5086bf358635B81D8C47C66d1C8b9E567Db70c72",
-    reUSDe: "0xdDC0f880ff6e4e22E4B74632fBb43Ce4DF6cCC5a"
+    owners: [
+      '0x295f67fdb21255a3db82964445628a706fbe689e', // reUSD custodial wallet
+      '0xd4374008c88321Eb2e59ABD311156C44B25831e9', // reUSDe custodial wallet
+      '0x9eA38e09F41A9DE53972a68268BA0Dcc6d2fAdf8', // redemptions wallet
+      '0x5C454f5526e41fBE917b63475CD8CA7E4631B147', // redemption contract
+      '0x4691C475bE804Fa85f91c2D6D0aDf03114de3093', // reUSD contract
+      '0xE1886BE2bA8B2496c2044a77516F63a734193082', // reUSDe contract
+    ],
+    tokens: [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.sUSDe, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDe, ADDRESSES.ethereum.USDS],
   },
   avax: {
-    reUSD: "0x180aF87b47Bf272B2df59dccf2D76a6eaFa625Bf",
-    latestAnswerContract: "0xc79a363a3f849d8b3F6A1932f748eA9d4fB2f607"
+    owners: [
+      '0x295F67Fdb21255A3Db82964445628a706FBe689E', // reUSD custodial wallet
+      '0x4F1ff9b995472B27A6BAfEc967986F35Bf1aDaE4', // redemptions wallet
+      '0xe13292F97E38da0C64398De5E0bFc95180DE9d23', // redemptions contract
+      '0xb22a8533e6cd81598f82514a42F0B3161745fbe1', // reUSD contract
+    ],
+    tokens: [ADDRESSES.avax.USDC, ADDRESSES.avax.USDe, ADDRESSES.avax.sUSDe, ADDRESSES.avax.USDt],
   },
   arbitrum: {
-    reUSD: "0x76cE01F0Ef25AA66cC5F1E546a005e4A63B25609"
+    owners: [
+      '0x295F67Fdb21255A3Db82964445628a706FBe689E', // reUSD custodial wallet
+      '0xfB602cb83c9c15b4cc49340dc9aD7a8C23754BB0', // redemptions wallet
+      '0xfd4016Ea13ca8acc04A11a99702dF076A4d3B852', // redemptions contract
+      '0x802eDbB1Ec20548A4388ABC337E4011718eb0291', // reUSD contract
+    ],
+    tokens: [ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDe, ADDRESSES.arbitrum.sUSDe, ADDRESSES.arbitrum.USDT],
   },
   base: {
-    reUSD: "0x7D214438D0F27AfCcC23B3d1e1a53906aCE5CFEa"
-  }
-};
+    owners: [
+      '0x295F67Fdb21255A3Db82964445628a706FBe689E', // reUSD custodial wallet
+      '0x19aff1C007397Bdb7f82BdA18151C28AB4335896', // redemptions wallet
+      '0x9AB62AebAbE738AB233C447eEdCE88D1D0a61FE3', // redemptions contract
+      '0x7D214438D0F27AfCcC23B3d1e1a53906aCE5CFEa', // reUSD contract
+    ],
+    tokens: [ADDRESSES.base.USDC, ADDRESSES.base.USDe, ADDRESSES.base.sUSDe, ADDRESSES.base.USDT],
+  },
+}
 
 async function tvl(api) {
-  const config = contracts[api.chain];
-  
-  // Handle reUSD token (all chains)
-  if (config.reUSD) {
-    const reUSDSupply = await api.call({
-      abi: 'erc20:totalSupply',
-      target: config.reUSD
-    });
-    api.add(config.reUSD, reUSDSupply);
-  }
-  
-  // Handle reUSDe token (Ethereum only)
-  if (config.reUSDe) {
-    const reUSDeSupply = await api.call({
-      abi: 'erc20:totalSupply',
-      target: config.reUSDe
-    });
-    api.add(config.reUSDe, reUSDeSupply);
-  }
-  
-  // Handle Avalanche oracle reserves
-  if (config.latestAnswerContract) {
-    const latestAnswer = await api.call({
-      abi: 'function latestAnswer() view returns (int256)',
-      target: config.latestAnswerContract
-    });
-    api.addUSDValue(Number(latestAnswer) / 1e8);
-  }
-  
-  // Handle premium receivables (Ethereum only, global attribution)
   if (api.chain === 'ethereum') {
-    try {
-      const response = await get('https://api.re.xyz/tvl/premium-receivables');
-      api.addUSDValue(response.amount);
-    } catch (e) {
-      console.log('Premium receivables API failed:', e.message);
-    }
+    const avaxApi = new sdk.ChainApi({ chain: 'avax', timestamp: api.timestamp })
+    await avaxApi.getBlock()
+    const offChainData = await avaxApi.call({ abi: 'int256:latestAnswer', target: '0xc79a363a3f849d8b3F6A1932f748eA9d4fB2f607' })
+    api.add(ADDRESSES.ethereum.USDC, offChainData / 100)
   }
+  const { owners, tokens } = config[api.chain]
+  return sumTokens2({ api, owners, tokens: [ADDRESSES.null, ...tokens] })
 }
 
 module.exports = {
-  methodology: 'Counts total supply of reUSD and reUSDe tokens across Ethereum, Avalanche, Arbitrum, and Base, plus additional reserves from Avalanche oracle and insurance premium receivables via secure API. These represent user deposits in Re Protocol insurance capital layers. reUSD offers principal-protected fixed yield (~6-9% APY) while reUSDe provides variable yield exposure to reinsurance risks (~16-25% APY).',
-  misrepresentedTokens: true, // Due to API usage for premium receivables
-  start: 1680307200, // April 1, 2023 - approximate protocol launch
-};
+  methodology: 'Value of the tokens in the custodian wallets + value of the tokens in redemption reserves + off-chain assets tracked via oracle (tracked as USDC)',
+  start: 1737488963, // reUSD Deployment time (https://etherscan.io/tx/0x3094948b3dbe89f4824217e37b8667fbb4d89e18b0b426a453fe7377095c26ea)
+}
 
-// Export TVL function for each supported chain
-chains.forEach(chain => module.exports[chain] = { tvl });
+Object.keys(config).forEach(chain => { module.exports[chain] = { tvl } })

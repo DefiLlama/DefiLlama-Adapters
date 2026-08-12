@@ -1,5 +1,11 @@
-const abi = require('./abi.json')
-const { staking } = require('../helper/staking');
+const abi = {
+    "getRoleMemberCount": "function getRoleMemberCount(bytes32 role) view returns (uint256)",
+    "getRoleMember": "function getRoleMember(bytes32 role, uint256 index) view returns (address)",
+    "calculateTotals": "function calculateTotals() view returns (uint256 total0, uint256 total1, uint128 mL, uint128 rL)",
+    "token0": "address:token0",
+    "token1": "address:token1",
+    "balanceOf": "function balanceOf(address account) view returns (uint256)"
+  };const { staking } = require('../helper/staking');
 
 const oldRegistry = "0x3228f22d98d81A859aCC9890c3874FfF864a8Bd4";
 const newRegistry = "0x18bf8A3eE39Be5730189A0C88D90f744e3c55B20";

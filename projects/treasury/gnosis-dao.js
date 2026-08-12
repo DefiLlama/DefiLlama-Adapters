@@ -7,6 +7,7 @@ const treasury = "0x4971DD016127F390a3EF6b956Ff944d0E2e1e462";
 const treasury1 = "0x0DA0C3e52C977Ed3cBc641fF02DD271c3ED55aFe";
 const treasury2 = "0x849D52316331967b6fF1198e5E32A0eB168D039d";
 const treasury3 = "0xBc79855178842FDBA0c353494895DEEf509E26bB";
+const treasury4 = "0x1676D23711186076Fa74aa53511dDa750A1F0D9A";
 const GNO = ADDRESSES.ethereum.GNO;
 
 const treasurygnosis = "0x458cd345b4c05e8df39d0a07220feb4ec19f5e6f"
@@ -57,6 +58,9 @@ module.exports = treasuryExports({
       '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',//ENS
       '0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d',//PNK
       ADDRESSES.ethereum.WSTETH,
+      '0xae78736Cd615f374D3085123A210448E74Fc6393',//rETH
+      '0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38',//osETH
+      '0xCA30c93B02514f86d5C86a6e375E3A330B435Fb5',//bIB01
       '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF',//AURA
       '0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf',//GEN
       '0x255Aa6DF07540Cb5d3d297f0D0D4D84cb52bc8e6',//RDN
@@ -74,7 +78,7 @@ module.exports = treasuryExports({
       "0x9c39809dec7f95f5e0713634a4d0701329b3b4d2", // debt variableDebtWBTC
       "0xa13a9247ea42d743238089903570127dda72fe44",
     ],
-    owners: [treasury, treasury1, treasury2, treasury3,],
+    owners: [treasury, treasury1, treasury2, treasury3, treasury4,],
     ownTokens: [GNO],
     resolveUniV3: true,
   },

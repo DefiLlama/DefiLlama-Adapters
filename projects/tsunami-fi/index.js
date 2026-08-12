@@ -30,5 +30,5 @@ module.exports = {
         tvl: gmxExports({ vault: mantleVault }),
     },
     aptos: { tvl },
-    hallmarks: [[1704994608, "Tsunami Aptos sunsetting"]],
+    hallmarks: [['2024-01-11', "Tsunami Aptos sunsetting"]],
 };

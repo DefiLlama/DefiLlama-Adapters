@@ -6,16 +6,7 @@ const PACKAGE_ID = '0x29ba7f7bc53e776f27a6d1289555ded2f407b4b1a799224f06b26addbc
 const WAL_TYPE = ADDRESSES.sui.WAL;
 
 const tvl = async (api) => {
-  const newLSTEvents = await sui.queryEvents({
-    eventType: `${PACKAGE_ID}::blizzard_event_wrapper::BlizzardEvent<${PACKAGE_ID}::blizzard_events::NewLST>`
-  });
-
-   const statesIds = newLSTEvents.map(
-    (event) => event.pos0.inner_state
-  );
-  
-   
-  const states = await sui.getObjects(statesIds);
+  const states = await sui.getObjectsByType(`${PACKAGE_ID}::blizzard_inner_protocol::BlizzardStateV1`);
 
   states.forEach(state => {
   api.add(WAL_TYPE, state.fields.total_wal_value);   

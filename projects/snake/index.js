@@ -44,7 +44,7 @@ const pool2 = async (api) => {
 module.exports = {
   methodology: "Pool2 deposits consist of SNAKE/S and GSNAKE/S LP tokens deposits while the staking TVL consists of the GSNAKEs tokens locked within the Masonry contract(0x5A5d34826ab31003F26F8A15e9B645803d85eA81).",
   hallmarks: [
-    [1739577600, 'Genesis Phase Ended']
+    ['2025-02-15', 'Genesis Phase Ended']
   ],
   sonic: {
     tvl: snakeGenesisTVL,

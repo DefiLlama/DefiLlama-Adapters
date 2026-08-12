@@ -1,7 +1,11 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
+const sdk = require('@defillama/sdk')
 
 module.exports = {
-  methodology: `TVL is supply balance minus borrows the euler contract.`,
+  methodology: `TVL is supply balance minus borrows the euler contract. Borrowed excludes vaults whose underlying or whose accepted collateral vaults' underlyings have no price in coins.llama.fi (treated as worthless/insolvent).`,
+  hallmarks: [
+    ['2025-11-04', "Stream finance rug"],
+  ],
 }
 
 const config = {
@@ -20,6 +24,21 @@ const config = {
   plasma: { factory: '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3', },
   mantle: { factory: '0x47Aaf2f062aa1D55AFa602f5C9597588f71E2d76', },
   monad: { factory: '0xba4Dd672062dE8FeeDb665DD4410658864483f1E', },
+  hyperliquid: { factory: '0xcF5552580fD364cdBBFcB5Ae345f75674c59273A', },
+}
+
+async function fetchPriceMap(api, addresses) {
+  const tokens = [...new Set(addresses.filter(Boolean).map(a => a.toLowerCase()))]
+  if (!tokens.length) return {}
+  const keys = tokens.map(t => `${api.chain}:${t}`)
+  const prices = await sdk.coins.getPrices(keys, 'now').catch(() => ({}))
+  const out = {}
+  Object.entries(prices).forEach(([k, v]) => {
+    if (!v || !v.price) return
+    const addr = k.split(':')[1]
+    if (addr) out[addr.toLowerCase()] = v
+  })
+  return out
 }
 
 Object.keys(config).forEach(chain => {
@@ -39,7 +58,37 @@ Object.keys(config).forEach(chain => {
     borrowed: async (api) => {
       const { vaults, tokens } = await getVaults(api)
       const borrows = await api.multiCall({ abi: 'uint256:totalBorrows', calls: vaults })
-      api.add(tokens, borrows)
+      const ltvLists = await api.multiCall({ abi: 'address[]:LTVList', calls: vaults, permitFailure: true })
+
+      const collatVaults = [...new Set(ltvLists.flat().filter(Boolean))]
+      const collatAssets = collatVaults.length
+        ? await api.multiCall({ abi: 'address:asset', calls: collatVaults, permitFailure: true })
+        : []
+      const collatVaultToAsset = {}
+      collatVaults.forEach((v, i) => { if (collatAssets[i]) collatVaultToAsset[v.toLowerCase()] = collatAssets[i] })
+
+      const priceTargets = [...tokens, ...Object.values(collatVaultToAsset)]
+      const priceByAddr = await fetchPriceMap(api, priceTargets)
+      const chainHasPrices = Object.keys(priceByAddr).length > 0
+
+      vaults.forEach((_, i) => {
+        const token = tokens[i]
+        const borrow = borrows[i]
+        if (!token || !borrow || BigInt(borrow) === 0n) return
+
+        if (chainHasPrices) {
+          if (!priceByAddr[token.toLowerCase()]) return
+          const ltvList = ltvLists[i] || []
+          if (ltvList.length) {
+            const anyPriced = ltvList.some(cv => {
+              const u = collatVaultToAsset[cv.toLowerCase()]
+              return u && priceByAddr[u.toLowerCase()]
+            })
+            if (!anyPriced) return
+          }
+        }
+        api.add(token, borrow)
+      })
     },
   }
 })

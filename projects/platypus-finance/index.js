@@ -30,6 +30,6 @@ module.exports = {
   hallmarks: [
     // ['2023-02-17', 'Protocol was hacked for $8.5m'],
     ['2023-10-12', 'Protocol was hacked for $2m'],
-    [1716811215,"Acquired by Stable Jack"]
+    ['2024-05-27',"Acquired by Stable Jack"]
   ],
 };

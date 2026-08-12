@@ -1,6 +1,0 @@
-{
-  "allPools": "function allPools(uint256) view returns (address)",
-  "allPoolsLength": "uint256:allPoolsLength",
-  "token": "address:token",
-  "reserve": "uint256:reserve"
-}

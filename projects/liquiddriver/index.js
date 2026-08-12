@@ -1,6 +1,20 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accLqdrPerShare, uint16 depositFeeBP)",
+    "poolLength": "uint256:poolLength",
+    "balanceOf": "uint256:balanceOf",
+    "lpToken": "function lpToken(uint256) view returns (address)",
+    "strategies": "function strategies(uint256) view returns (address)",
+    "get_virtual_price": "uint256:get_virtual_price",
+    "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)",
+    "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+    "totalSupply": "uint256:totalSupply",
+    "exchangeRateStored": "uint256:exchangeRateStored",
+    "shadowLpToken": "address:lpToken",
+    "shadowStrategy": "address:strategy",
+    "getVirtualSupply": "uint256:getVirtualSupply"
+  };
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
@@ -10,7 +24,7 @@ const BigNumber = require("bignumber.js");
 const MASTERCHEF = "0x742474dae70fa2ab063ab786b1fbe5704e861a0c";
 const MINICHEF = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
 const BSCMINICHEF = "0xD46db083De31c64AF3F680f139A31fF37bac004f";
-const usdcTokenAddress = ADDRESSES.fantom.USDC;
+const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const wftmTokenAddress = ADDRESSES.fantom.WFTM;
 const beethovenVaultAddress = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
 
@@ -54,20 +68,16 @@ const shadowChefAddresses = [
   "0xD354908d297ce9a348b417d2e0F561EE7D11de5E", // wsHEC/FTM
 ];
 
-const masterchefTvl = async (_ts, ethBlock, chainBlocks) => {
+const masterchefTvl = async (api) => {
   const balances = {};
-
-  const transformAddress = i => `fantom:${i}`;
-
   await addFundsInMasterChef(
     balances,
     MASTERCHEF,
-    chainBlocks.fantom,
-    "fantom",
-    transformAddress,
+    api.block,
+    api.chain,
+    i => `fantom:${i}`,
     abi.poolInfo
   );
-
   return balances;
 };
 

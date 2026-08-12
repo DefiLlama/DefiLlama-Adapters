@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { gmxExports } = require("../helper/gmx");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 module.exports = {

@@ -1,6 +1,11 @@
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 const { mergeExports, getStakedEthTVL } = require("../helper/utils");
+const { cosmosStaked, suiStaked, aptosStaked, nearStaked, bittensorStaked, confluxStaked, cardanoStaked, algorandStaked, starknetStaked, aleoStaked, neo3Staked } = require("../helper/stakingHelper");
+const { sumTokens2: solanaSumTokens } = require("../helper/solana");
+const { unwrapDolomiteDeposits } = require("../helper/unwrapLPs.js");
+const { addHypercoreSpotBalances } = require("../helper/chain/hyperliquid.js");
+const { sumTokens: cosmosSumTokens } = require("../helper/chain/cosmos.js");
 
 const config = {
   "ethereum": {
@@ -30,7 +35,27 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
       "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
       "0x9bbe47fe66b3580551aac3124cf9fc6560252b19",
-      "0xaaac1183d07c69f5befd22a06211690e953dca17"
+      "0xaaac1183d07c69f5befd22a06211690e953dca17",
+      "0xa2f10222b338c9ff3c953b129d1a49258f83f6c7",
+      "0xbcf03ce48091e6b820a7c33e166e5d0109d8e712",
+      "0x9f1daa35a4ef099c03744dfe3e67a39c4697ebe5",
+      "0xa10eca918c71806ac55083d8ac942d4674b0f9ef",
+      "0xb11c93f04bb7cc8d2d4aba47fcf73170bcea940d",
+      "0x68cdf5d77e75515edf7aa564d36fe3cbe751226e",
+      "0x37e1bf9ab62e523f358dafaca86151519f0a2f8d",
+      "0xe39ba3f5bcbf0ef7ed31a07e799b8d2010c885cf",
+      "0x444c55075086f531a1c02730f41c46b9bbb00a39",
+      "0x356b9e62b20f4666e914fb99a9f651e5574f2bf7",
+      "0x8cd6437feaeb1a3a0cd65a16de2ad26bff1f5e43",
+      "0x7793cd85c11a924478d358d49b05b37e91b5810f",
+      "0x2cc81b80a293408a89084c77a0983de0730f731a",
+      "0x7a3f9b7120386249528c93e5eb373b78e54d5ba9",
+      "0x287a66c7d9cba7504e90fa638911d74c4dc6a147",
+      "0x66bbafc7269f1a9e5b454445585275f2b4ead28e",
+      "0xd6a8047940a1f71df5f809919c10d9ba0a88786e",
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0",
+      "0x76bbb8D5dbedde9cB34882c9588DFa9dEF00B8bc",
+      "0xccc5eeebe15291620be733997af60735618548d7",
     ]
   },
   "avax": {
@@ -39,6 +64,9 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xD793281182A0e3E023116004778F45c29fc14F19",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      "0xba7946e3aeffe2145e68cd227f113e0038d43d9b",
+      "0xb05ebe4b470c4fbc0a5f4a6293741c7985c6a016",
+      "0x20ddf011b00e6f134ae10bdb73146500a69c453e"
     ]
   },
   "arbitrum": {
@@ -50,7 +78,10 @@ const config = {
       "0x85faa6c1f2450b9caea300838981c2e6e120c35c",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
+      "0x44b28845422204c81bfe0687f0a987a444c14e67",
+      "0x45b48b43a410b6374a16176acef0b72d41a56996",
+      "0xc7adfda3aa8525fea8fed6a02134297ffaca3463"
     ]
   },
   "polygon": {
@@ -68,7 +99,8 @@ const config = {
       "0x0fc73ffb9a0ded685234428e103d26b3762df460",
       "0xa2df23519a6059dbc6f027f6cf8e59bdaecaf56f",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
+      "0xfb8072675ba65fa4157921ff1e522132a33eabb5"
     ]
   },
   "fantom": {
@@ -142,7 +174,9 @@ const config = {
       "DdzFFzCqrhseMuShaXzLDGDBa8jGEjdEjNc83jouqdqBQzk5R52MedutUq3QGdMPiauR5SjbttqdBjDA5g6rf3H6LjpvK3dFsf8yZ6qo",
       "DdzFFzCqrhtBatWqyFge4w6M6VLgNUwRHiXTAg3xfQCUdTcjJxSrPHVZJBsQprUEc5pRhgMWQaGciTssoZVwrSKmG1fneZ1AeCtLgs5Y",
       "addr1qyzppj9mh28q9d7x070j7aphnn6dx5lsh203zukzs7q68jqf08fcmxg8h9tvx8m529hjjnm9g3pt8vlkh95em7nup32sm78295",
-      "addr1q9lqxlvk2dk8sffhr56gc4c4lckpv56l4r7wwh474caywurve9ssnt966vmezsfsppfm5sxgu5sqxacp8t7kpjzp9yxqn24ckj"
+      "addr1q9lqxlvk2dk8sffhr56gc4c4lckpv56l4r7wwh474caywurve9ssnt966vmezsfsppfm5sxgu5sqxacp8t7kpjzp9yxqn24ckj",
+      "addr1q9lxym523pnns50dyymdv3n8vktyc0nkedr54c8d2prgxsumfyd8qtrg9yr4lqadjtczu6y94rtevjua36rv75v0qsnstezggc",
+      "addr1qyxuqrcjfyyz99yx4s307x33tu45944j607cywzvh3ykxw8c0cqknc77ed7uu7v465ufhkuu73ve6x7r9emq8vfkhxts23pyk4"
     ]
   },
   "solana": {
@@ -155,7 +189,9 @@ const config = {
       // "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
       // "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
       // "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
-      "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN"
+      "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN",
+      "AGrghB4tNEJhWsPoQ73We5KAvgp6q512BkBx6fqY4i4b",
+      "DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp"
     ]
   },
   "ripple": {
@@ -164,19 +200,22 @@ const config = {
       "rLzxZuZuAHM7k3FzfmhGkXVwScM4QSxoY7",
       "rNnWmrc1EtNRe5SEQEs9pFibcjhpvAiVKF",
       "rNu9U5sSouNoFunHp9e9trsLV6pvsSf54z",
-      "rhnS6iYGnrmh8NEgEKq3sBgF4FMLD9dHGf"
+      "rhnS6iYGnrmh8NEgEKq3sBgF4FMLD9dHGf",
+      "rHJ2fHJvW97WY5X7BTBpXKCaJut8yUPxjd"
     ]
   },
   "starknet": {
     "owners": [
       "0x00e91830f84747f37692127b20d4e4f9b96482b1007592fee1d7c0136ee60e6d",
-      "0x016dd5370bfa06e862508e8b81b8f676327b55404231bfb5b34c1df10ddd8963"
+      "0x016dd5370bfa06e862508e8b81b8f676327b55404231bfb5b34c1df10ddd8963",
+      "0x003cb9938085c5b9f15a02c46ec8eadfe9c418ba49290c02d77187fb0d5f142a"
     ]
   },
   "algorand": {
     "owners": [
       "BVMEUTF37WNEQ6GYCZISRFHGLEMOKT5OCPPTTJXVED6JBSXKF6YJJRZRI4",
       "7BL55CRKRASIQI263JQ5H5A4JJQFSHL7RWXMCKM6YDZAIJVEZQ76SXF2S4",
+      "4EHCQSBDXQDSR4MFASDP2TGNKVDCJEKA5FUCHLAJ7FVTANR42JISNPV6UU"
       // "YGR5VO4VWBTWPWZKXBPNBPUGCM5BLP7DVAH2AF6LXAZBM5QKQGAXY5IXII" // getting account not found error
     ]
   },
@@ -200,7 +239,8 @@ const config = {
       "LNyjBuigbWcHYQYbVKxk15u3Ux23QvEnS9",
       "LQFZFmkrmxuyL5TCjuVxngM4wRFdM2a9EW",
       "MQ4wXRL6etqkEPrLm4f1FKu2eXTM7EMgXo",
-      "LZZH8R24wpRVN9g2qM9Rh2BmfcTvThDtpE"
+      "LZZH8R24wpRVN9g2qM9Rh2BmfcTvThDtpE",
+      "LfTLSHKuxtXUW9KzGiQRu3wtwnwhVhuWge"
     ]
   },
   "manta": {
@@ -221,15 +261,22 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  // Pi mainnet is a Stellar fork and reuses the G... address format, but only this
+  // one of gate's stellar-shaped addresses exists on Pi - the rest are stellar-only
+  "pi": {
+    "owners": [
+      "GBC6NRTTQLRCABQHIR5J4R4YDJWFWRAO4ZRQIM2SVI5GSIZ2HZ42RINW"
+    ]
+  },
   "polkadot": {
     "owners": [
-      "1JVrK16XZm9vyZjHoYVPjtZ35LvTQ4oyufMoUFTFpAUhath",
-      "16ccyj8JqnP8d2DSaifgek6kSSBAu5cGtd4mu2uXTg4H6mSU",
-      "14ooXLY2gmiUTVym9SnKxNwEgcoikXzMEav2kiLjr7pPPHPR",
-      "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ",
-      "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
-      "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
-      "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2"
+      // "1JVrK16XZm9vyZjHoYVPjtZ35LvTQ4oyufMoUFTFpAUhath",
+      // "16ccyj8JqnP8d2DSaifgek6kSSBAu5cGtd4mu2uXTg4H6mSU",
+      // "14ooXLY2gmiUTVym9SnKxNwEgcoikXzMEav2kiLjr7pPPHPR",
+      // "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ",
+      // "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
+      // "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
+      // "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2"
     ]
   },
   "scroll": {
@@ -264,6 +311,17 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
       "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
+    ]
+  },
+  "0g": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
+  "abstract": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "acala": {
@@ -312,6 +370,19 @@ const config = {
       // "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "akash": {
+    "owners": [
+      "akash1xunyznpjmj9jv5e2zwngp2qrzmulr2gg4rvesv",
+      "akash155svs6sgxe55rnvs6ghprtqu0mh69kehwgz2ee",
+      "akash1jm068whkhkxk48gx80ppm2m0nwy677prm92ys3"
+    ]
+  },
+  "aleo": {
+    "owners": [
+      "aleo1svz4av4u2fazqse02mkq9x26602hncucnp27ujuucha5c9a7j5qq2nklgu",
+      "aleo18lpsmdx0hzwhw6ejaad5j8hjngwddyn0ap8ws8cr0z7gls4k4s9qz5ww07"
+    ]
+  },
   "alephium": {
     "owners": [
       "17R6Ptkz9i1LhiKyMhnitUMkgFygGeeQUFZvRx6GgV8Fc",
@@ -330,6 +401,7 @@ const config = {
   "aptos": {
     "owners": [
       "0x0cf869189c785beaaad2f5c636ced4805aeae9cbf49070dc93aed2f16b99012a",
+      "0x664208180d23956463ab9bf0a8f2a8f095bca2e27ac9c60623a4e22e78456d3f"
       // address not found
       // "0x8b88f330e9ee14c6571d6707c48858bdd126d715c5df145eee58f4f4f6217898",
       // "0x107ffec1dd5c5faa26dbff442253ae9fc2cb026e3e9b55a6613c10cc90904a40"
@@ -354,6 +426,11 @@ const config = {
   //     "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
   //   ]
   // },
+  "arweave": {
+    "owners": [
+      "_m4ftvKoEnbB7toHVBkuZWXYRK0j1mmgyHsug2ayffY"
+    ]
+  },
   "astar": {
     "owners": [
       "WEo9Gi7T28niGb3pTwcHFDgGW4PjKDQvcS1stTxa68v73nQ",
@@ -377,6 +454,11 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+    ]
+  },
+  "babylon": {
+    "owners": [
+      "bbn155svs6sgxe55rnvs6ghprtqu0mh69keh5d7ul6"
     ]
   },
   "band": {
@@ -425,6 +507,13 @@ const config = {
       "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv"
     ]
   },
+  "bsv": {
+    "owners": [
+      "162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw",
+      "1EkkGXR7dTbZbrKFKoe6YEP4gj4GzMeKvw",
+      "1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9"
+    ]
+  },
   "bitcoincash": {
     "owners": [
       "1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9",
@@ -434,7 +523,8 @@ const config = {
       "14kmvhQrWrNEHbrSKBySj4qHGjemDtS3SF",
       "162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw",
       "3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M",
-      "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv"
+      "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
+      "1MEPB525tEHRFLdq6aR8d2t8jaaRQj2iWX"
     ]
   },
   /*
@@ -460,7 +550,8 @@ const config = {
       "5CNChyk2fnVgVSZDLAVVFb4QBTMGm6WfuQvseBG6hj8xWzKP",
       "5HgKqPsEz17fBVCvd5cgWbGbapBXCn48p8LHjjvAub2kvVyd",
       "5FsWP1GxpzT11xyFBojKpE75pzp54ESDA6BYbRMPJ2nsCZE5",
-      "5GSbmqT4LV2PA3TfxtakZySNkTZ1b3bqPRMo7UbBfZrp6d8k"
+      "5GSbmqT4LV2PA3TfxtakZySNkTZ1b3bqPRMo7UbBfZrp6d8k",
+      "5H9nqVMLfYWN6MiiCLrWjR1ADjR7V7FcBEenBY66NiHeKucE"
     ]
   },
   "bittorrent": {
@@ -547,7 +638,8 @@ const config = {
       "celestia155svs6sgxe55rnvs6ghprtqu0mh69kehje7a6w",
       "celestia1jm068whkhkxk48gx80ppm2m0nwy677pr85knnx",
       "celestia1xunyznpjmj9jv5e2zwngp2qrzmulr2ggfjswnm",
-      "celestia1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9skqgdq"
+      "celestia1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9skqgdq",
+      "celestia10v2gu0vvdeuv8pexnl98lmyva4cq8jkavlk9w4"
     ]
   },
   "celo": {
@@ -600,7 +692,13 @@ const config = {
     "owners": [
       "cfx:aasusb60hfktf87fx1jg8m4cnnhebrew92f4swayt0",
       "cfx:aase06fdw4cdrsrazhhzebshu9z2ds4zvu8j9zv3ad",
-      "cfx:aat80d5bu6rp5redv18g4yec8bv8ssheee8c9zur0a"
+      "cfx:aat80d5bu6rp5redv18g4yec8bv8ssheee8c9zur0a",
+      "cfx:aam0nuzv9bu14e68xb390bjcc3t6du0bn2tcy8rde0"
+    ]
+  },
+  "constellation": {
+    "owners": [
+      "DAG4TETUwraLYX1mYdC8ymUxxWsoNZPffUpDf4Ar"
     ]
   },
   "core": {
@@ -608,7 +706,8 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
     ]
   },
   "cosmos": {
@@ -666,7 +765,9 @@ const config = {
       "D8tsTxMVpGGWpc333my1Gpzt9sP4YQjoDx",
       "DAAhXpPfziaCcGweJMWE4RSucLcee7NcqL",
       "A8c3xNz2mqsDLFwv5KL5fpH12QEwDaoTXo",
-      "DKURQTetAa5ieMAUPo9gxmHcLXpwes8kH1"
+      "DKURQTetAa5ieMAUPo9gxmHcLXpwes8kH1",
+      "DBTkQXvbMHQM7fw2YcXrxzayCiaVkx641i",
+      "9y8WDTKcBrzKPuun9dsDsbnFrZ6SJCxSxc"
     ]
   },
   "dydx": {
@@ -833,7 +934,8 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
     ]
   },
   "flow": {
@@ -874,21 +976,33 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "gochain": {
+  "gatelayer": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
+  // "gochain": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "harmony": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0x246a2ecd9626f9eda55fffbff5216ed417a904f5",
       "0x840760aed6bbd878c46c5850d3af0a61afcd09c8",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "one1p5rs093e2te0hfva6phjksj6eeqtfyh7kashr4"
+    ]
+  },
+  "hedera": {
+    "owners": [
+      "0.0.29000"
     ]
   },
   "heco": {
@@ -907,12 +1021,18 @@ const config = {
       "hJKa3eyGAfGw94YePmgC7kMpETyCUtGQ1xChnV85By388Z6px"
     ]
   },
-  "hpb": {
+  // "hpb": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
+  "hsk": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "hydra": {
@@ -926,7 +1046,9 @@ const config = {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xe12532a4cea82aac737a91b80be82d33eadb4c2b",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "icon": {
@@ -1005,14 +1127,17 @@ const config = {
       "sgAz73MGbHfr3huAnfwjLPvmxh1ipC8ySXLCEiwvVeEXeBn"
     ]
   },
+  // kava runs a cosmos chain alongside its EVM; sumTokens routes a whole chain to
+  // one helper, so only the EVM side is counted here (the kava1... addresses would
+  // send every owner, including these, down the cosmos path and error out)
   "kava": {
     "owners": [
-      "kava155svs6sgxe55rnvs6ghprtqu0mh69kehlxmsky",
-      "kava1jm068whkhkxk48gx80ppm2m0nwy677pr2tn7lv",
-      "kava1hpcfdtv84srdq7n9a7mhnnmd3jwuda97n3fcu4",
-      "kava19yhugy8qzps8rur4mnp6tnz8w6nh7qrqu7l49x",
-      "kava1xunyznpjmj9jv5e2zwngp2qrzmulr2ggyd4rl3",
-      "kava1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9af99p2"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
+  "kaspa": {
+    "owners": [
+      "kaspa:qrelgny7sr3vahq69yykxx36m65gvmhryxrlwngfzgu8xkdslum2yxjp3ap8m"
     ]
   },
   "kintsugi": {
@@ -1127,6 +1252,18 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  // memecore, the EVM chain behind the "M" holdings
+  "m": {
+    "owners": [
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
+  "monad": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   "moonbeam": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1143,18 +1280,20 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "naka": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  },
+  // "naka": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "near": {
     "owners": [
       "0d584a4cbbfd9a4878d816512894e65918e54fae13df39a6f520fc90caea2fb0",
       "f857de8a2a882488235eda61d3f41c4a60591d7f8daec1299ec0f20426a4cc3f",
-      "c1a3dabb95b06767db2ab85ed0be86133a15bfe3a80fa017cbb83216760a8181"
+      "c1a3dabb95b06767db2ab85ed0be86133a15bfe3a80fa017cbb83216760a8181",
+      "e10e284823bc0728f1850486fd4ccd5546249140e96823ac09f96b30363cd251",
+      "bc02e51d5f4c03611ef28d8fdbdba01b237f5a870fad7670d0a17a1a14934b97"
     ]
   },
   "neo": {
@@ -1170,7 +1309,8 @@ const config = {
     "owners": [
       "NTWC7Hh5VYMQ5K8YJbyCLbmJ4RhfQ1Ej64",
       "NY8VmiQ8if23Cr7Fe6xwXZ4a59JTVXHDCN",
-      "NcSZPD4ToU3v1C8NPK13hibCnZcPEqHD1a"
+      "NcSZPD4ToU3v1C8NPK13hibCnZcPEqHD1a",
+      "NKvKqGs9yPGct37ybza71DsgLSPAKn34ko"
     ]
   },
   "neon_evm": {
@@ -1270,6 +1410,12 @@ const config = {
       "waPau5WwZ2fbKrhe0L6GEzoVv-OoD6AXy7gyFnYKgYE"
     ]
   },
+  "peaq": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+    ]
+  },
   /*
   "persistence": {
     "owners": [
@@ -1280,6 +1426,14 @@ const config = {
     ]
   },
   */
+  "plasma": {
+    "owners": [
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0x603162847ead68a883f9595fe5981dfd1d545a53",
+      "0x4c6158236fe1ac71ca8c00b64864ad6d7eb0bfb4"
+    ]
+  },
   "pokt": {
     "owners": [
       "ab04976668dd739f34df43e912d20dc487ac85d2",
@@ -1307,6 +1461,11 @@ const config = {
     "owners": [
       "gatedeposit",
       "gateiocold"
+    ]
+  },
+  "qubic": {
+    "owners": [
+      "BYBYFUMBVLPUCANXEXTSKVMGFCJBMTLPPOFVPNSATABMWDGTMFXPLZLBCXJL"
     ]
   },
   "radixdlt": {
@@ -1365,6 +1524,11 @@ const config = {
       "RPcWwibXTyz1BMM58P9FWXTDDfZExE78SG"
     ]
   },
+  "saga": {
+    "owners": [
+      "saga155svs6sgxe55rnvs6ghprtqu0mh69kehaqkl89"
+    ]
+  },
   "secret": {
     "owners": [
       "secret155svs6sgxe55rnvs6ghprtqu0mh69kehpkmyal",
@@ -1390,14 +1554,19 @@ const config = {
       "aKCD8R97ifVNsVWTC2sbdbeqWG8ZGJaQcrwMBo3XvrmgR4N"
     ]
   },
-  "songbird": {
+  "somnia": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
     ]
   },
+  // "songbird": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "sora": {
     "owners": [
       "cnRnnKrqCX9TEZvCgVuiXbPbE1jmA3R55W6cLeKC43U8nVoma",
@@ -1434,7 +1603,13 @@ const config = {
     "owners": [
       "0x62f36b79d7ea8ae189491854edd9318b29c75346792177b230a95f333ffa53ad",
       "0x7ce04f66dca33c786c7375f73c4f7459e16b8a80cbbdd055e3782b3e176fa3d3",
-      "0x019b848f4511b354c314a4e5c1a40dbc247fe5d29c6bcb3495badb01751d549a"
+      "0x019b848f4511b354c314a4e5c1a40dbc247fe5d29c6bcb3495badb01751d549a",
+      "0x6edd3be944aeaa90f86f95008b852308e5ab48dc6d2df756e92e11c1ec73b8c0"
+    ]
+  },
+  "supra": {
+    "owners": [
+      "0x0cf869189c785beaaad2f5c636ced4805aeae9cbf49070dc93aed2f16b99012a"
     ]
   },
   "syscoin": {
@@ -1458,14 +1633,14 @@ const config = {
       "gateioiotlos"
     ]
   },
-  "tenet": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  },
+  // "tenet": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "terra": {
     "owners": [
       "terra155svs6sgxe55rnvs6ghprtqu0mh69keh9h4dzr",
@@ -1490,7 +1665,8 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0x246a2ecd9626f9eda55fffbff5216ed417a904f5",
       "0x840760aed6bbd878c46c5850d3af0a61afcd09c8",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0x7793cd85c11a924478d358d49b05b37e91b5810f"
     ]
   },
   "thorchain": {
@@ -1579,6 +1755,12 @@ const config = {
       "vite_f262f48ec1097880c83aa079dfb0baef5e68c4ff6c0b807b0a"
     ]
   },
+  "wc": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+    ]
+  },
   "waves": {
     "owners": [
       "3P7LZSuVDv5pQS7NSCE1LyGCbQihzk1fQ2r",
@@ -1611,7 +1793,8 @@ const config = {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "xpla": {
@@ -1620,6 +1803,11 @@ const config = {
       "xpla1jm068whkhkxk48gx80ppm2m0nwy677prgellzc",
       "xpla1xunyznpjmj9jv5e2zwngp2qrzmulr2ggxlezz9",
       "xpla1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9lmfyu7"
+    ]
+  },
+  "proton": {
+    "owners": [
+      "gatedeposit"
     ]
   },
   "zeta": {
@@ -1669,14 +1857,237 @@ const config = {
   },
 };
 
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'tara', 'zkfair',
-  'vinu', 'rollux', 'syscoin', 'aelf', 'ailayer', 'heco', 'archway',
+// remove chains w/o historical tvl
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'icp', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
+  'vinu', 'rollux', 'aelf', 'ailayer', 'archway',
   'ton', // never had any tvl
 ]
 
 unsupportedChains.forEach(chain => delete config[chain]);
 
-module.exports = mergeExports([
-  cexExports(config),
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9'], sleepTime: 20_000, size: 200, proxy: true }) } },
-]);
+/**
+ * Gate Earn: reserves put to work rather than sitting liquid in the hot wallets.
+ *
+ * Two kinds of holdings, both invisible to the plain balance lookups above:
+ *  - L1 native staking (delegated/bonded stake) - pulled via stakingHelper.
+ *  - yield-bearing receipt tokens (Aave aTokens, Compound cTokens, Spark/Sky
+ *    savings wrappers) - the underlying is in the protocol, so the CEX token
+ *    list only sees the receipt if it is listed explicitly.
+ *
+ * Chains where staking does NOT move the balance out of the account (cardano,
+ * algorand) are deliberately absent: cexExports already counts those in full,
+ * so adding them here would double-count.
+ */
+const earnStakers = {
+  celestia: ['celestia10v2gu0vvdeuv8pexnl98lmyva4cq8jkavlk9w4'],
+  cosmos: ['cosmos10v2gu0vvdeuv8pexnl98lmyva4cq8jkaa4845c'],
+  injective: ['inj10v2gu0vvdeuv8pexnl98lmyva4cq8jkahus3xq', 'inj18njk2lz5q7juryvzgyly2qxetuwqadxzpvmuhj'],
+  dydx: ['dydx10v2gu0vvdeuv8pexnl98lmyva4cq8jka5vf350'],
+  sui: ['0x6edd3be944aeaa90f86f95008b852308e5ab48dc6d2df756e92e11c1ec73b8c0', '0xf15b7dbce9f19b0efb66d08aeb9bf840e0bb96d75021c941b9b417b5034560aa'],
+}
+
+/**
+ * Earn addresses whose *whole* balance is reported by the earn exports below, so
+ * cexExports must not look at them too.
+ *
+ * These are chains where staking leaves the tokens in the account (aleo, neo3,
+ * cardano, algorand, starknet) or where the position is a receipt/LST the earn
+ * side prices directly (solana gtSOL). Listing an address here removes it from
+ * the plain-balance config, which keeps the earn export the single source of
+ * truth instead of both sides counting the same tokens.
+ */
+const earnOnlyOwners = {
+  starknet: ['0x003cb9938085c5b9f15a02c46ec8eadfe9c418ba49290c02d77187fb0d5f142a'],
+  aleo: ['aleo18lpsmdx0hzwhw6ejaad5j8hjngwddyn0ap8ws8cr0z7gls4k4s9qz5ww07'],
+  neo3: ['NKvKqGs9yPGct37ybza71DsgLSPAKn34ko'],
+  cardano: [
+    'addr1q9lqxlvk2dk8sffhr56gc4c4lckpv56l4r7wwh474caywurve9ssnt966vmezsfsppfm5sxgu5sqxacp8t7kpjzp9yxqn24ckj',
+    'addr1qyxuqrcjfyyz99yx4s307x33tu45944j607cywzvh3ykxw8c0cqknc77ed7uu7v465ufhkuu73ve6x7r9emq8vfkhxts23pyk4',
+  ],
+  algorand: ['4EHCQSBDXQDSR4MFASDP2TGNKVDCJEKA5FUCHLAJ7FVTANR42JISNPV6UU', 'XQBOKHK7JQBWCHXSRWH5XW5ADMRX6WUHB6WXM4GQUF5BUFETJOLX7AMJRI'],
+  solana: ['DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp'],
+}
+
+Object.entries(earnOnlyOwners).forEach(([chain, owners]) => {
+  const cfg = config[chain]
+  if (!cfg?.owners) return
+  const drop = new Set(owners.map(i => i.toLowerCase()))
+  cfg.owners = cfg.owners.filter(owner => !drop.has(owner.toLowerCase()))
+  if (!cfg.owners.length) delete config[chain]
+})
+
+// delegation pools have to be named explicitly - a delegator's stake is stored
+// per-pool, there is no "list my pools" view on chain
+const aptosDelegators = [
+  {
+    owner: '0x664208180d23956463ab9bf0a8f2a8f095bca2e27ac9c60623a4e22e78456d3f',
+    pools: ['0xdb5247f859ce63dbe8940cf8773be722a60dcc594a8be9aca4b76abceb251b8e'],
+  },
+  {
+    owner: '0x4c3badbfdfe003ab15c753efd24f32866c13451d468983c17cbb0d77e880b792',
+    pools: ['0xdb5247f859ce63dbe8940cf8773be722a60dcc594a8be9aca4b76abceb251b8e'],
+  },
+]
+
+const nearDelegators = [
+  {
+    owner: 'e10e284823bc0728f1850486fd4ccd5546249140e96823ac09f96b30363cd251',
+    pools: ['gtnode-0.poolv1.near'],
+  },
+  {
+    owner: 'bc02e51d5f4c03611ef28d8fdbdba01b237f5a870fad7670d0a17a1a14934b97',
+    pools: ['gtnode-0.poolv1.near'],
+  },
+]
+
+// bittensor coldkey as a 32-byte pubkey (SS58 5H9nqVMLfYWN6MiiCLrWjR1ADjR7V7FcBEenBY66NiHeKucE)
+const bittensorColdkeys = ['e10e284823bc0728f1850486fd4ccd5546249140e96823ac09f96b30363cd251']
+
+// conflux stakes into a separate staking-balance slot, so the cex config's plain
+// balance lookup misses it entirely
+const confluxStakers = ['cfx:aam0nuzv9bu14e68xb390bjcc3t6du0bn2tcy8rde0']
+
+// Gate stakes SOL through its own liquid-staking token rather than native stake
+// accounts, so the position shows up as a gtSOL balance.
+const solanaLsts = {
+  owners: ['DevD35PrcsJfg9CwpypmrD7GsYMRQpZQx6rfeSbkVtFp'],
+  tokens: ['gateMurAxe4YFoUR6J63gXGKtkbTfdkMdLjZrCmThFP'], // gtSOL
+}
+
+// HyperCore spot balances sit off the EVM, so the hyperliquid entry in `config`
+// (a plain EVM balance lookup) never sees them
+const hypercoreSpotOwners = ['0x0d0707963952f2fba59dd06f2b425ace40b492fe']
+
+// kava's cosmos-side owners, counted by the earn export rather than `config.kava`
+const kavaCosmosOwners = [
+  'kava155svs6sgxe55rnvs6ghprtqu0mh69kehlxmsky',
+  'kava1jm068whkhkxk48gx80ppm2m0nwy677pr2tn7lv',
+  'kava1hpcfdtv84srdq7n9a7mhnnmd3jwuda97n3fcu4',
+  'kava19yhugy8qzps8rur4mnp6tnz8w6nh7qrqu7l49x',
+  'kava1xunyznpjmj9jv5e2zwngp2qrzmulr2ggyd4rl3',
+  'kava1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9af99p2',
+]
+
+// receipt tokens per chain, discovered by enumerating the earn addresses' holdings
+const earnReceiptTokens = {
+  ethereum: {
+    owners: [
+      '0xa10eca918c71806ac55083d8ac942d4674b0f9ef',
+      '0xb11c93f04bb7cc8d2d4aba47fcf73170bcea940d',
+      '0x68cdf5d77e75515edf7aa564d36fe3cbe751226e',
+      '0x444c55075086f531a1c02730f41c46b9bbb00a39',
+      '0x356b9e62b20f4666e914fb99a9f651e5574f2bf7',
+      '0x8cd6437feaeb1a3a0cd65a16de2ad26bff1f5e43',
+      '0xC453E33Ae2d465d36fEA462BfE810cD6ab408916',
+      "0xba622437b70d86EADd6F2f5fB7A5124270c35705",
+    ],
+    tokens: [
+      '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aEthUSDT (Aave v3)
+      '0x4da27a545c0c5b758a6ba100e3a049001de870f5', // stkAAVE
+      '0xBc65ad17c5C0a2A4D159fa5a503f4992c7B545FE', // sUSDC 
+      '0xe2e7a17dFf93280dec073C995595155283e3C372', // spUSDT  (Spark savings USDT)
+      '0x23f5E9c35820f4baB695Ac1F19c203cC3f8e1e11', // skyMoneyUsdtSavings
+      '0xE1753F2e00940cC31213dd92013cF019DFE4ca1d', // sGHO   (Aave savings GHO)
+      '0xC02aB1A5eaA8d1B114EF786D9bde108cD4364359', // spUSDS (Spark savings USDS)
+      '0xe7df13b8e3d6740fe17cbe928c7334243d86c92f', // spUSDT
+    ],
+  },
+  arbitrum: {
+    owners: [
+      '0xc7adfda3aa8525fea8fed6a02134297ffaca3463',
+      '0x44b28845422204c81bfe0687f0a987a444c14e67',
+      '0x45b48b43a410b6374a16176acef0b72d41a56996',
+    ],
+    tokens: [
+      '0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07', // cUSDTv3 (Compound v3)
+      '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf', // cUSDCv3 (Compound v3)
+      '0x724dc807b04555b71ed48a6896b6F41593b8C637', // aArbUSDC (Aave v3)
+    ],
+  },
+  avax: {
+    owners: [
+      '0xba7946e3aeffe2145e68cd227f113e0038d43d9b',
+      '0xb05ebe4b470c4fbc0a5f4a6293741c7985c6a016',
+      '0x20ddf011b00e6f134ae10bdb73146500a69c453e',
+    ],
+    tokens: [
+      '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // aAvaUSDT (Aave v3)
+      '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aAvaUSDC (Aave v3)
+      '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d', // spUSDC   (Spark savings USDC)
+    ],
+  },
+  plasma: {
+    owners: [
+      '0x603162847ead68a883f9595fe5981dfd1d545a53',
+      '0x4c6158236fe1ac71ca8c00b64864ad6d7eb0bfb4',
+    ],
+    tokens: [
+      '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', // USDT0
+      '0x6100e367285b01f48d07953803a2d8dca5d19873', // WXPL
+      '0x5d72a9d9a9510cd8cbdba12ac62593a58930a948', // aPlaUSDT0 (Aave v3)
+    ],
+  },
+}
+
+// receipt-token owners are handled by the earn exports, so drop them from the plain
+// balance config - otherwise both sides count the same addresses
+Object.entries(earnReceiptTokens).forEach(([chain, { owners }]) => {
+  const cfg = config[chain]
+  if (!cfg?.owners) return
+  const drop = new Set(owners.map(i => i.toLowerCase()))
+  cfg.owners = cfg.owners.filter(owner => !drop.has(owner.toLowerCase()))
+  if (!cfg.owners.length) delete config[chain]
+})
+
+const stakedEthTvl = getStakedEthTVL({ withdrawalAddresses: [
+  '0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9',
+  '0xD6A8047940a1F71df5f809919c10D9Ba0A88786e',
+  '0xB04B2B81f65baCc8f29F411A1344f78Bff7A36A2',
+], sleepTime: 20_000, size: 200, proxy: true })
+
+// mergeExports sums the *returned* balances, so every tvl has to hand them back
+const earnTvl = fn => async (api) => {
+  await fn(api)
+  return api.getBalances()
+}
+
+const gateEarnTvl = {
+  ethereum: {
+    tvl: earnTvl(async (api) => {
+      await stakedEthTvl(api)
+      await unwrapDolomiteDeposits({ api, owners: [
+        '0x37E1BF9Ab62E523f358daFacA86151519F0a2f8D',
+        '0xe39BA3F5BCbF0eF7ED31A07e799B8D2010c885CF',
+      ], })
+      await api.sumTokens(earnReceiptTokens.ethereum)
+    }),
+  },
+  aptos: { tvl: earnTvl(api => aptosStaked(api, aptosDelegators)) },
+  sui: { tvl: earnTvl(api => suiStaked(api, earnStakers.sui)) },
+  near: { tvl: earnTvl(api => nearStaked(api, nearDelegators)) },
+  bittensor: { tvl: earnTvl(api => bittensorStaked(api, bittensorColdkeys)) },
+  conflux: { tvl: earnTvl(api => confluxStaked(api, confluxStakers)) },
+  solana: { tvl: earnTvl(api => solanaSumTokens({ api, ...solanaLsts })) },
+  cardano: { tvl: earnTvl(api => cardanoStaked(api, earnOnlyOwners.cardano)) },
+  algorand: { tvl: earnTvl(api => algorandStaked(api, earnOnlyOwners.algorand)) },
+  starknet: { tvl: earnTvl(api => starknetStaked(api, earnOnlyOwners.starknet)) },
+  aleo: { tvl: earnTvl(api => aleoStaked(api, earnOnlyOwners.aleo)) },
+  neo3: { tvl: earnTvl(api => neo3Staked(api, earnOnlyOwners.neo3)) },
+  hyperliquid: { tvl: earnTvl(api => addHypercoreSpotBalances({ api, owners: hypercoreSpotOwners })) },
+  // kava runs a cosmos chain alongside its EVM. sumTokens picks one helper per
+  // chain, so config.kava can only carry the 0x owners - the kava1... ones are
+  // summed here instead and mergeExports adds the two together.
+  kava: { tvl: earnTvl(api => cosmosSumTokens({ api, owners: kavaCosmosOwners, chain: 'kava' })) },
+}
+
+Object.entries(earnStakers).forEach(([chain, owners]) => {
+  if (chain === 'sui') return // sui staking uses its own rpc method, set above
+  gateEarnTvl[chain] = { tvl: earnTvl(api => cosmosStaked(api, owners)) }
+})
+
+Object.entries(earnReceiptTokens).forEach(([chain, args]) => {
+  if (chain === 'ethereum') return // merged with the beacon-chain staking above
+  gateEarnTvl[chain] = { tvl: earnTvl(api => api.sumTokens(args)) }
+})
+
+module.exports = mergeExports([cexExports(config), gateEarnTvl]);

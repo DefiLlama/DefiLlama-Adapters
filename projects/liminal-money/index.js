@@ -70,6 +70,7 @@ const tvl = async (api) => {
   if (!record) return;
 
   await addTokenizdData(api);
+  if (Object.keys(api.getBalances()).length === 0) throw new Error("Missing tokenized data");
 
   const { spotUsdc, perpUsdc, assetBreakdown } = record.breakdown
   api.addCGToken('usd-coin', spotUsdc+perpUsdc)

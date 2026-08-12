@@ -58,8 +58,8 @@ const vaultsGraphStartBlock = {
 }
 
 module.exports = {
-  methodology: `Counts deposits in Term Strategy Vaults allocated to other protocols.`,
-  // hallmarks: [[1588610042, "TermFinance Launch"]],
+  methodology: `Counts the liquid balance of Term Strategy Vaults: idle assets plus reserves parked in third party ERC4626 vaults. Capital deployed into Term repo tokens is left out here to avoid double counting, it is tracked by the term-finance adapter as locked purchase tokens and borrowed.`,
+  // hallmarks: [['2020-05-04', "TermFinance Launch"]],
 };
 
 Object.keys(vaultsGraphs).forEach(chain => {

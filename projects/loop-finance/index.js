@@ -48,6 +48,6 @@ module.exports = {
   terra: { tvl: sdk.util.sumChainTvls([getFactoryTvl(queries.factory0), getFactoryTvl(queries.factory1)]) },
   juno: { tvl: TS.getFactoryTvl('juno1p4dmvjtdf3qw9394k7zl65eg8g5ehzvdxnvm9hd3ju7a7aslrmdqaspeak') },
   hallmarks: [
-    [1651881600, "UST depeg"],
+    ['2022-05-07', "UST depeg"],
   ]
 };

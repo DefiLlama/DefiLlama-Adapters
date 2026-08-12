@@ -1,8 +1,10 @@
 
 const { GraphQLClient, } = require('graphql-request')
 const { transformBalances } = require('../portedTokens')
-const { fuel: { query }} = require('./rpcProxy')
-const client = new GraphQLClient('https://mainnet.fuel.network/v1/graphql')
+const { fuel: { query } } = require('./rpcProxy')
+const { getEnv } = require('../env')
+const { sleep } = require('../utils')
+const client = new GraphQLClient(getEnv('FUEL_CUSTOM_RPC'))
 
 async function sumTokens({ api, owner, owners, token, tokens = [], tokensAndOwners = [] }) {
   if (token)
@@ -36,16 +38,22 @@ async function sumTokens({ api, owner, owners, token, tokens = [], tokensAndOwne
 }
 
 async function addAllTokenBalances({ api, owners = [] }) {
+  const chunkSize = 20;
 
-  for (const owner of owners) {
-    const query = `contractBalances(
-        filter: { contract: "${owner}" }, first: 1000
-      ) { nodes { assetId amount } }`
+  for (let i = 0; i < owners.length; i += chunkSize) {
+    const chunk = owners.slice(i, i + chunkSize);
+    const query = chunk.map((o, idx) => `q${idx}: contractBalances(
+        filter: { contract: "${o}" }, first: 1000
+        ) { nodes { assetId amount } }`).join('\n');
 
     const results = await client.request(`{${query}}`)
-    results.contractBalances.nodes.forEach(node => {
-      api.add(node.assetId, node.amount);
+    Object.values(results).forEach(result => {
+      result.nodes.forEach(node => {
+        api.add(node.assetId, node.amount);
+      })
     })
+    await sleep(2000) // avoid hitting rate limits
+    api.log(`fuel: Processed ${Math.min(i + chunkSize, owners.length)}/${owners.length} owners...`)
   }
 }
 

@@ -1,13 +1,14 @@
 const { getLogs } = require("../helper/cache/getLogs");
+const { getUniqueAddresses } = require("../helper/utils");
 
 const config = {
   arbitrum: {
-    vaults:  [
-        "0x99CD0b8b32B15922f0754Fddc21323b5278c5261", // Yield Algo Trading
+    vaults: [
+      "0x99CD0b8b32B15922f0754Fddc21323b5278c5261", // Yield Algo Trading
     ],
     optinProxyFactory: {
       address: "0x9De724B0efEe0FbA07FE21a16B9Bf9bBb5204Fb4",
-      fromBlock: 358686643 
+      fromBlock: 358686643
     },
     beaconFactory: {
       address: "0x58a7729125acA9e5E9C687018E66bfDd5b2D4490",
@@ -15,9 +16,9 @@ const config = {
     },
   },
   avax: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0xC094C224ce0406BC338E00837B96aD2e265F7287",
-      fromBlock:  65620725
+      fromBlock: 65620725
     },
     beaconFactory: {
       address: "0x5E231C6D030a5c0f51Fa7D0F891d3f50A928C685",
@@ -26,11 +27,11 @@ const config = {
   },
   base: {
     vaults: [
-        "0xFCE2064B4221C54651B21c868064a23695E78f09", // 722Capital-ETH
-        "0x8092cA384D44260ea4feaf7457B629B8DC6f88F0", // DeTrade Core USDC
-        "0xB09F761Cb13baCa8eC087Ac476647361b6314F98", // 722Capital-USDC
-      ],
-    optinProxyFactory:{
+      "0xFCE2064B4221C54651B21c868064a23695E78f09", // 722Capital-ETH
+      "0x8092cA384D44260ea4feaf7457B629B8DC6f88F0", // DeTrade Core USDC
+      "0xB09F761Cb13baCa8eC087Ac476647361b6314F98", // 722Capital-USDC
+    ],
+    optinProxyFactory: {
       address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
       fromBlock: 32988756
     },
@@ -41,7 +42,7 @@ const config = {
   },
   berachain: {
     vaults: [],
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0x245d1C095a0fFa6f1Af0f7Df81818DeFc9Cfc69D",
       fromBlock: 7858746
     },
@@ -63,7 +64,7 @@ const config = {
         "0x8245FD9Ae99A482dFe76576dd4298f799c041D61", // Usual Invested USD0++ in USCC & USTB
         "0xaf87b90e8a3035905697e07bb813d2d59d2b0951", // Usual Invested USD0++ in TAC
       ],
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0x8D6f5479B14348186faE9BC7E636e947c260f9B1",
       fromBlock: 22940919
     },
@@ -72,10 +73,15 @@ const config = {
       fromBlock: 22218451
     },
   },
-  
+  hyperliquid: {
+    optinProxyFactory: {
+      address: "0x90beB507A1BA7D64633540cbce615B574224CD84",
+      fromBlock: 12973305,
+    },
+  },
   katana: {
     vaults: [],
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0xC094C224ce0406BC338E00837B96aD2e265F7287",
       fromBlock: 6025911
     },
@@ -85,13 +91,13 @@ const config = {
     },
   },
   linea: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0x8D6f5479B14348186faE9BC7E636e947c260f9B1",
       fromBlock: 23119208
     },
   },
-  mantle:{
-    optinProxyFactory:{
+  mantle: {
+    optinProxyFactory: {
       address: "0xc094c224ce0406bc338e00837b96ad2e265f7287",
       fromBlock: 82320704
     },
@@ -101,35 +107,36 @@ const config = {
     },
   },
   optimism: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0xA8E0684887b9475f8942DF6a89bEBa5B25219632",
       fromBlock: 141662524
     },
   },
   plasma: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0xF838E8Bd649fc6fBC48D44E9D87273c0519C45c9",
       fromBlock: 2236159
     },
   },
   polygon: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0x0C0E287f6e4de685f4b44A5282A3ad4A29D05a91",
       fromBlock: 76939871
     },
   },
   sonic: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
       fromBlock: 38968917
     },
     beaconFactory: {
-      address: "0x8846189A4E46997Dd30Fd9e8bE48C1fA1B846920",
+      address: "0x99CD0b8b32B15922f0754Fddc21323b5278c5261",
       fromBlock: 21645993,
     }
   },
+
   tac: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0x66Ab87A9282dF99E38C148114F815a9C073ECA8D",
       fromBlock: 2334460
     },
@@ -137,17 +144,23 @@ const config = {
       address: "0x3e39E287B4c94aC18831A63E5a6183Aa42cd85c3",
       fromBlock: 1817048,
     },
+    // use this vualt list if failed to get vault list from factory logs
+    fallbackVaults: [
+      '0x279385c180f5d01c4a4bdff040f17b8957304762', // Noon USN
+      '0xc218333954e5f6add5f9460396c2181039cce67b', // Usual Invested USD0++
+      '0x85af3c2755f17ba26d7326e8069bf10719441068', // pufETH TAC
+    ]
   },
   monad: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0xcCdC4d06cA12A29C47D5d105fED59a6D07E9cf70",
       fromBlock: 36249718
     },
   },
-  
+
   unichain: {
     vaults: [],
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
       fromBlock: 22021431
     },
@@ -157,7 +170,7 @@ const config = {
     },
   },
   wc: {
-    optinProxyFactory:{
+    optinProxyFactory: {
       address: "0xC094C224ce0406BC338E00837B96aD2e265F7287",
       fromBlock: 16717424
     },
@@ -168,37 +181,52 @@ const config = {
   },
 };
 
-const vaultsBlacklist = [
+const vaultsBlacklist = new Set([
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship, on Eth mainnet
   "0xd6DaBAf70977a867Fa884844FC5DCb21DE81c498", // vault tac 9s. but on TAC chain
   "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets 
-]
+  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
+  "0xb114b5a99652a6f6e1e9c13da0a544dc634007b5", // hyperliquid (hyperevm)
+  "0x17488aed11845d92f1f113e8df51f497465d715c", // base test vault with fake totalAssets
+].map(i => i.toLowerCase()))
 
 function keepVault(vault, vaultBlacklist) {
-  return  vaultBlacklist.indexOf(vault) == -1;
+  return !vaultBlacklist.has(vault.toLowerCase())
 }
 
 Object.keys(config).forEach((chain) => {
-  let {vaults, beaconFactory, optinProxyFactory} = config[chain];
-  if (!vaults) vaults = [];
-  module.exports[chain] = { 
-    tvl: async (api) =>  {
-      let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock});
-      let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock});
-      beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
-      optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
+  let { vaults, beaconFactory, optinProxyFactory } = config[chain];
 
-      return await api.erc4626Sum2({
-        calls: [...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults],
-      })
+  module.exports[chain] = {
+    tvl: async (api) => {
+      if (config[chain].fallbackVaults) {
+        try {
+          const beaconFactoryVaults = await getBeaconFactoryVaults({ api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock });
+          const optinProxyFactoryVaults = await getOptinProxyFactoryVaults({ api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock });
+          vaults = [...beaconFactoryVaults, ...optinProxyFactoryVaults]
+        } catch (e) {
+          vaults = config[chain].fallbackVaults;
+        }
+      } else {
+        if (!vaults) vaults = [];
+        let beaconFactoryVaults = await getBeaconFactoryVaults({ api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock });
+        let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({ api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock });
+        beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
+        optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
+        vaults = [...vaults, ...beaconFactoryVaults, ...optinProxyFactoryVaults]
+      }
+
+      vaults = getUniqueAddresses(vaults)
+      return await api.erc4626Sum2({ calls: vaults })
     }
-}}
+  }
+}
 )
 
 
 
 const BeaconProxyDeployed = "0xfa8e336138457120a1572efbe25f72698abd5cca1c9be0bce42ad406ff350a2b";
-async function getBeaconFactoryVaults({api, factory, fromBlock})  {
+async function getBeaconFactoryVaults({ api, factory, fromBlock }) {
   if (!api || !factory || !fromBlock) return [];
   const logs = await getLogs({
     api,
@@ -207,14 +235,14 @@ async function getBeaconFactoryVaults({api, factory, fromBlock})  {
     eventAbi: "event BeaconProxyDeployed(address proxy, address deployer)",
     onlyArgs: true,
     fromBlock: fromBlock,
-  
+
 
   });
   if (!logs) return [];
   return logs.map((vault) => vault.proxy);
 }
 const ProxyDeployed = "0x8b5fd0eb1f997b4ecac1f234109294d6ace2519fc7abeab9f315fef38e2eb1dc";
-async function getOptinProxyFactoryVaults({api, factory, fromBlock})  {
+async function getOptinProxyFactoryVaults({ api, factory, fromBlock }) {
   if (!api || !factory || !fromBlock) return [];
   const logs = await getLogs({
     api,

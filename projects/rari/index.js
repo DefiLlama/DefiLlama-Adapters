@@ -1,5 +1,13 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi");
+const abi = {
+  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  "getPublicPools": "function getPublicPools() view returns (uint256[], tuple(string name, address creator, address comptroller, uint256 blockPosted, uint256 timestampPosted)[])",
+  "getPoolSummary": "function getPoolSummary(address comptroller) returns (uint256, uint256, address[], string[])",
+  "getRawFundBalancesAndPrices": "function getRawFundBalancesAndPrices() returns (string[], uint256[], uint8[][], uint256[][], uint256[])",
+  "getRawFundBalances": "function getRawFundBalances() returns (uint256, uint8[], uint256[])",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "totalStaked": "uint256:totalStaked"
+};
 const { compoundExports2 } = require('../helper/compound')
 const { pool2 } = require('../helper/pool2');
 const { sumTokens2 } = require("../helper/unwrapLPs");
@@ -50,14 +58,13 @@ module.exports = {
     tvl,
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
   },
-  arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716' }),
+  arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', isInsolvent: true }),
   hallmarks: [
-    // [1651276800, "FEI hack"],
-    [1649548800, "ICHI sell-off"],
-    // [1620432000, "First Rari hack"],
-    [1654905600, "Bhavnani's announcement"]
+    // ['2022-04-30', "FEI hack"],
+    ['2022-04-10', "ICHI sell-off"],
+    // ['2021-05-08', "First Rari hack"],
+    ['2022-06-11', "Bhavnani's announcement"]
   ]
 }
 
-module.exports.arbitrum.borrowed = () => ({})
 module.exports.ethereum.borrowed = () => ({})

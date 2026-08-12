@@ -36,7 +36,7 @@ const abi = "function getDepositBalance(address user, address vault) view return
 module.exports = {
   methodology: "TVL displays the total amount of assets stored in the Thesauros vaults. The balance is calculated by querying the active provider for each vault's deposit balance.",
   start: '2025-09-19',
-  hallmarks: [[1758283200, "Protocol launch"]],
+  hallmarks: [['2025-09-19', "Protocol launch"]],
 };
 
 Object.keys(config).forEach((chain) => {

@@ -3,7 +3,7 @@ const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
 const {COIN_CONFIG} = require("./coinConfig.js");
 
-const {desU64, desU128} = require("./bytes");
+const {fromU64: desU64, fromU128: desU128} = require("../helper/chain/sui");
 const {getExchangeRate} = require("./price");
 const {MMT_TYPE_CONFIG} = require("./coinConfig");
 const {getVaultTvlByAmountB, getDynamicFieldObject} = require("./util");
@@ -45,12 +45,7 @@ const watchCoinTypeNotConvert = [
 ];
 
 async function tvl(api) {
-  const marketIds = await sui.queryEvents({
-    eventType: `${nemoPackageId}::market_factory::MarketCreatedEvent`,
-    transform: i => i.market_id
-  });
-
-  const markets = await sui.getObjects(marketIds);
+  const markets = await sui.getObjectsByType(`${nemoPackageId}::market::MarketState`);
 
   for (const market of markets) {
     if (!market) continue;
@@ -78,18 +73,17 @@ async function getTvl(type, fields, api) {
 
   const txBlockBytes = await getExchangeRate(coinConfig);
 
-  const inspectionResult = await sui.call(
-    'sui_devInspectTransactionBlock',
-    ['0x0000000000000000000000000000000000000000000000000000000000000000',
-      Buffer.from(txBlockBytes).toString('base64')],
-    {withMetadata: true}
-  );
-
-  if (inspectionResult?.effects?.status?.status !== 'success') {
+  let inspectionResult;
+  try {
+    inspectionResult = await sui.devInspectTransactionBlock(txBlockBytes);
+  } catch (e) {
     return null;
   }
 
-  const returnValues = inspectionResult.results[inspectionResult.results?.length - 1].returnValues;
+  const results = inspectionResult?.results;
+  if (!results?.length) return null;
+  const returnValues = results[results.length - 1].returnValues;
+  if (!returnValues || returnValues.length < 2) return null;
   const res1 = returnValues[0][0];
   const res2 = returnValues[1][0];
 
@@ -118,11 +112,11 @@ async function getTvl(type, fields, api) {
     let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
 
     if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.toNumber()}, marketId: ${fields.id.id}`);
+      // console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.toNumber()}, marketId: ${fields.id.id}`);
       api.add(tokens, syBalance.toNumber());
     } else {
       let underlyingBalance = syBalance.multipliedBy(rate2);
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${underlyingBalance.toNumber()}, marketId: ${fields.id.id}, rate1: ${rate1}, rate2: ${rate2}`);
+      // console.log(`coinType: ${coinConfig.coinType}, syBalance: ${underlyingBalance.toNumber()}, marketId: ${fields.id.id}, rate1: ${rate1}, rate2: ${rate2}`);
       api.add(coinConfig.underlyingCoinType, underlyingBalance.toNumber());
     }
   }

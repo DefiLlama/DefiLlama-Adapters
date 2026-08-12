@@ -7,7 +7,45 @@ const { staking } = require('../helper/staking');
 const near = require('../helper/chain/near');
 const { default: BigNumber } = require('bignumber.js');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
-const ripple = require('./ripple');
+const {post} = require("../helper/http");
+const {PromisePool} = require("@supercharge/promise-pool");
+
+const endpoint = 'https://s1.ripple.com:51234';
+
+async function sumTokens({ tokens = [], owners = [], balances = {} }) {
+    const { errors } = await PromisePool.withConcurrency(5)
+        .for(owners)
+        .process(async owner => {
+            await getTokenBalances(tokens, owner, { balances })
+        })
+
+    if (errors && errors.length)
+        throw errors[0]
+
+    return balances
+}
+
+async function getTokenBalances(tokens, account, { balances = {} } = {}) {
+    const body =  {
+        method: 'account_lines',
+        params: [{ account, ledger_index: 'validated' }]
+    };
+    const res = await post(endpoint, body);
+
+    const lines = res?.result?.lines;
+    if (!lines) return balances;
+    for (const line of lines) {
+        const token = tokens.find((t) => line.currency === t.currency && line.account === t.issuer);
+        if (token === undefined) continue;
+        const balance = BigNumber(line.balance).toFixed(0);
+        sdk.util.sumSingleBalance(balances, token.name, balance);
+    }
+    return balances;
+}
+const ripple = {
+    getTokenBalances,
+    sumTokens,
+};
 const NATIVE_ADDRESS = nullAddress;
 
 const data = {
@@ -208,8 +246,8 @@ function getStakingFunction(chain) {
     return staking(stakingData.contractAddress, stakingData.abrAddress, chain, "allbridge", stakingData.decimals);
 }
 
-async function solanaTvl() {
-    return solana.sumTokens2({ tokenAccounts: solanaData.tokens.map(i => i.tokenAccount)})
+async function solanaTvl() {    
+    return solana.sumTokens2({ tokenAccounts: solanaData.tokens.map(i => i.tokenAccount), allowError: true}) // Skip closed TAs
 }
 
 async function solanaStaking() {
@@ -262,7 +300,7 @@ module.exports={
         tvl: rippleTvl,
     },
     hallmarks:[
-        [1651881600, "UST depeg"],
+        ['2022-05-07', "UST depeg"],
       ],
 }
 

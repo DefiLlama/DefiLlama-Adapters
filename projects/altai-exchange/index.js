@@ -29,6 +29,6 @@ module.exports = {
   start: 1730287364,
   bsc: { tvl },
   hallmarks: [
-    [1730287364, "Altai Exchange Mainnet Launch"]
+    ['2024-10-30', "Altai Exchange Mainnet Launch"]
   ]
 };

@@ -1,9 +1,0 @@
-{
-  "stakingToken": "address:stakingToken",
-  "operator": "address:operator",
-  "poolLength": "uint256:poolLength",
-  "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
-  "totalBalanceOf": "function totalBalanceOf(address _account) view returns (uint256)",
-  "curveToken": "address:curveToken",
-  "balances": "function balances(address) view returns (uint112 locked, uint32 nextUnlockIndex)"
-}

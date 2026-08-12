@@ -1,4 +1,9 @@
-const abi = require('./abi.json');
+const abi = {
+    "trancheFactory": "address:trancheFactory",
+    "collateralToken": "function collateralToken() external view returns (address)",
+    "tranches": "function tranches(uint256 i) external view returns (address token, uint256 ratio)",
+    "trancheCount": "function trancheCount() external view returns (uint256 count)"
+  };
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 

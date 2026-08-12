@@ -19,7 +19,7 @@ async function bscTvl(api) {
 
 module.exports = {
     hallmarks: [
-        [1747670400, "solana unitas launch"]
+        ['2025-05-19', "solana unitas launch"]
     ],
     timetravel: false,
     methodology: "Currently, tvl is composed of minted USDu",

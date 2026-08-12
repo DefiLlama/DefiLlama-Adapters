@@ -1,26 +1,39 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const DONUT_ADDRESS = "0xAE4a37d554C6D6F3E398546d8566B25052e0169C";
-const MINER_ADDRESS = "0xF69614F4Ee8D4D3879dd53d5A039eB3114C794F6";
-const MULTICALL_ADDRESS = "0x7a85CA4b4E15df2a7b927Fa56edb050d2399B34c";
+// DONUT/WETH LP token
 const LP_ADDRESS = "0xD1DbB2E56533C55C3A637D13C53aeEf65c5D5703";
-const WETH_ADDRESS = "0x4200000000000000000000000000000000000006";
+// Auction contract - reads paymentReceiver dynamically
+const AUCTION_ADDRESS = "0xC23E316705Feef0922F0651488264db90133ED38";
+// Original burn address - always track this even if paymentReceiver changes
+const DEAD_ADDRESS = "0x000000000000000000000000000000000000dEaD";
+
+async function pool2(api) {
+  // Read current paymentReceiver from Auction contract
+  const paymentReceiver = await api.call({
+    abi: "address:paymentReceiver",
+    target: AUCTION_ADDRESS,
+  });
+
+  // Track LP at both dead address AND current paymentReceiver
+  // This ensures we count all LP ever burned, even if paymentReceiver changes
+  const owners = [DEAD_ADDRESS];
+  if (paymentReceiver.toLowerCase() !== DEAD_ADDRESS.toLowerCase()) {
+    owners.push(paymentReceiver);
+  }
+
+  await sumTokens2({
+    api,
+    owners,
+    tokens: [LP_ADDRESS],
+    resolveLP: true,
+  });
+}
 
 module.exports = {
   methodology:
-    "TVL is the sum of tokens in the Miner, Multicall, and LP contracts. Staking TVL counts the tokens locked in the Miner and Multicall contracts. Pool2 TVL counts the tokens in the Liquidity Pool.",
+    "Pool2 tracks the value of permanently burned DONUT/WETH LP tokens at the dead address plus the current Auction paymentReceiver.",
   base: {
-    tvl: sumTokensExport({
-      owners: [MINER_ADDRESS, MULTICALL_ADDRESS, LP_ADDRESS],
-      tokens: [WETH_ADDRESS],
-    }),
-    staking: sumTokensExport({
-      owners: [MINER_ADDRESS, MULTICALL_ADDRESS],
-      tokens: [DONUT_ADDRESS],
-    }),
-    pool2: sumTokensExport({
-      owner: LP_ADDRESS,
-      tokens: [WETH_ADDRESS, DONUT_ADDRESS],
-    }),
+    tvl: () => ({}),
+    pool2,
   },
 };

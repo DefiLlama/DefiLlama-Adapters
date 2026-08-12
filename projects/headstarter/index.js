@@ -26,7 +26,7 @@ const ENTITIES = [
     ],
   },
   {
-    token: ADDRESSES.hedera.HLQT,
+    token: '0x00000000000000000000000000000000005c9f70', // HLQT
     contracts: [
       "0x00000000000000000000000000000000005cb45b",
       "0x00000000000000000000000000000000005cb45f",
@@ -59,19 +59,18 @@ const staking = async (api) => {
     target: STAKING_CONTRACT
   });
   
-  let totalStaked = 0;
-  
   // Query each pool to get totalDeposit
-  for (let i = 0; i < poolCounter; i++) {
-    const poolInfo = await api.call({
-      abi: 'function getPoolInfo(uint256) view returns (uint256 rate, uint256 totalDeposit, uint256 startDate, uint256 endDate, uint256 lockPeriodInDays, uint256 hardCap, uint256 lastUpdateTime, uint256 rewardBalance, uint256 penaltyRate)',
-      target: STAKING_CONTRACT,
-      params: [i]
-    });
-    
+  const poolInfos = await api.multiCall({
+    abi: 'function getPoolInfo(uint256) view returns (uint256 rate, uint256 totalDeposit, uint256 startDate, uint256 endDate, uint256 lockPeriodInDays, uint256 hardCap, uint256 lastUpdateTime, uint256 rewardBalance, uint256 penaltyRate)',
+    target: STAKING_CONTRACT,
+    calls: [...Array(Number(poolCounter)).keys()],
+  });
+
+  let totalStaked = 0;
+  for (const poolInfo of poolInfos) {
     totalStaked += Number(poolInfo.totalDeposit);
   }
-  
+
   // Add the totalStaked HST tokens to the result
   api.add(HST, totalStaked);
   

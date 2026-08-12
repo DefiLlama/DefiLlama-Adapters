@@ -192,12 +192,7 @@ function convertUnderlyingAssets(coin) {
   if (coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
   // sSBUSDT
   if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
-  // xBTC
-  if(coin === xBTC_ADDRESS) return ADDRESSES.sui.xBTC
-  // mUSD
-  if(coin === mUSD_ADDRESS) return ADDRESSES.sui.mUSD
-  // tBTC
-  if(coin === TBTC_ADDRESS) return ADDRESSES.sui.TBTC
+  
   return coin
 }
 

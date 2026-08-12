@@ -1,0 +1,420 @@
+{
+  "version": "0.1.0",
+  "name": "gempad_solana_meme_protocol",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "AppStorage",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "reentrancyGuardStatus",
+            "type": "u64"
+          },
+          {
+            "name": "treasury",
+            "type": "publicKey"
+          },
+          {
+            "name": "lock",
+            "type": "publicKey"
+          },
+          {
+            "name": "mainRouter",
+            "type": "publicKey"
+          },
+          {
+            "name": "fee",
+            "type": {
+              "vec": {
+                "defined": "Fee"
+              }
+            }
+          },
+          {
+            "name": "isPaused",
+            "type": "bool"
+          },
+          {
+            "name": "subBoardFee",
+            "type": {
+              "defined": "SubBoardFee"
+            }
+          },
+          {
+            "name": "finalizeTriggerSolFeeAmount",
+            "docs": [
+              "Trigger fee paid to finalize signer (Raydium `finalize` path)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "finalizeDammV2TriggerSolFeeAmount",
+            "docs": [
+              "Trigger fee paid to finalize signer (Meteora DAMM v2 `finalize_damm_v2` path)."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemeTokenData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "seed",
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "package",
+            "type": "u8"
+          },
+          {
+            "name": "subBoard",
+            "type": "publicKey"
+          },
+          {
+            "name": "memeOwner",
+            "type": "publicKey"
+          },
+          {
+            "name": "volumn",
+            "type": "u64"
+          },
+          {
+            "name": "virtualReserveSol",
+            "type": "u64"
+          },
+          {
+            "name": "virtualReserveToken",
+            "type": "u64"
+          },
+          {
+            "name": "initialVirtualReserveSol",
+            "type": "u64"
+          },
+          {
+            "name": "initialVirtualReserveToken",
+            "type": "u64"
+          },
+          {
+            "name": "virtualReserveSolHardcap",
+            "type": "u64"
+          },
+          {
+            "name": "virtualReserveSolSoftcap",
+            "type": "u64"
+          },
+          {
+            "name": "isXSale",
+            "type": "bool"
+          },
+          {
+            "name": "keyForXsale",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "isListed",
+            "type": "bool"
+          },
+          {
+            "name": "isCancelled",
+            "type": "bool"
+          },
+          {
+            "name": "isRaydiumV5Compatible",
+            "type": "bool"
+          },
+          {
+            "name": "initialData",
+            "type": {
+              "defined": "InitialMemeTokenData"
+            }
+          },
+          {
+            "name": "fee",
+            "type": {
+              "defined": "Fee"
+            }
+          },
+          {
+            "name": "isTransferrable",
+            "type": "bool"
+          },
+          {
+            "name": "isBurnAndEarn",
+            "type": "bool"
+          },
+          {
+            "name": "router",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LockPda",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "seed",
+            "type": "string"
+          },
+          {
+            "name": "lockId",
+            "type": "u32"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeNftMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "subBoardPda",
+            "type": "publicKey"
+          },
+          {
+            "name": "isFlash",
+            "type": "bool"
+          },
+          {
+            "name": "dex",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "Dex",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "fee",
+            "type": "u32"
+          },
+          {
+            "name": "per",
+            "type": "u32"
+          },
+          {
+            "name": "lpAmount",
+            "type": "u64"
+          },
+          {
+            "name": "isLpBurn",
+            "type": "bool"
+          },
+          {
+            "name": "lpLockUp",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listingFee",
+            "type": "u64"
+          },
+          {
+            "name": "listingReferralFee",
+            "type": "u64"
+          },
+          {
+            "name": "buyFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "sellFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "finalizeFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "tradingFeeAfterLaunchPer",
+            "type": "u32"
+          },
+          {
+            "name": "flashLaunchFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                16
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitialMemeTokenData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "baseTokenForPair",
+            "type": "publicKey"
+          },
+          {
+            "name": "buyReferralFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "sellMemeTokenOwnerFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "buyMemeTokenOwnerFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "liquidityForHardcap",
+            "type": "u64"
+          },
+          {
+            "name": "liquidityForSoftcap",
+            "type": "u64"
+          },
+          {
+            "name": "isWhitelist",
+            "type": "bool"
+          },
+          {
+            "name": "marketCap",
+            "type": "u64"
+          },
+          {
+            "name": "startTime",
+            "type": "u64"
+          },
+          {
+            "name": "endTime",
+            "type": "u64"
+          },
+          {
+            "name": "maxAllocationPerUser",
+            "type": "u64"
+          },
+          {
+            "name": "whitelistMerkleRoot",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "maxAllocationPerWhitelistedUser",
+            "type": "u64"
+          },
+          {
+            "name": "dex",
+            "type": {
+              "defined": "Dex"
+            }
+          },
+          {
+            "name": "metaData",
+            "type": "string"
+          },
+          {
+            "name": "finalizeFeePer",
+            "type": "u32"
+          },
+          {
+            "name": "delayTradeTime",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SubBoardFee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "subBoardCreationFee",
+            "type": "u64"
+          },
+          {
+            "name": "listingFeePerForOwner",
+            "type": "u32"
+          },
+          {
+            "name": "tradingFeePerForOwner",
+            "type": "u32"
+          },
+          {
+            "name": "finalizeFeePerForOwner",
+            "type": "u32"
+          },
+          {
+            "name": "tradingFeeAfterLaunchPerForOwner",
+            "type": "u32"
+          },
+          {
+            "name": "flashLaunchFeePerForOwner",
+            "type": "u32"
+          }
+        ]
+      }
+    }
+  ]
+}

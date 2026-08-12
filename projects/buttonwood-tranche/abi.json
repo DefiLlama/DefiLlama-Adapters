@@ -1,6 +1,0 @@
-{
-  "trancheFactory": "address:trancheFactory",
-  "collateralToken": "function collateralToken() external view returns (address)",
-  "tranches": "function tranches(uint256 i) external view returns (address token, uint256 ratio)",
-  "trancheCount": "function trancheCount() external view returns (uint256 count)"
-}

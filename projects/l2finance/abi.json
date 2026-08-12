@@ -1,4 +1,0 @@
-{
-  "supplyToken": "address:supplyToken",
-  "syncBalance": "uint256:syncBalance"
-}

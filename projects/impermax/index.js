@@ -187,3 +187,11 @@ const blacklistedPools = {
 module.exports = {}
 
 impermaxHelper(module.exports, config, blacklistedPools)
+
+// NOTE: borrowed functions zeroed out due to bad debt
+// The impermaxHelper would normally calculate borrowed amounts, but we override them to return empty objects
+Object.keys(config).forEach(chain => {
+  if (module.exports[chain] && module.exports[chain].borrowed) {
+    module.exports[chain].borrowed = () => ({})
+  }
+})
