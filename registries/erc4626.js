@@ -429,6 +429,7 @@ const configs = {
     doublecounted: true,
     methodology: 'TVL is the sum of assets deposited into Agua\'s ERC-4626 vault(s), read via totalAssets() (net asset value) and denominated in the underlying asset (USDC). Deposits are allocated into external lending markets (Aave, Morpho, Euler, ...) already tracked by DefiLlama, so this TVL is double-counted.',
     ethereum: ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f'],
+    monad: ['0x2ABc42250154752273a4560e875c858623F83ecC'],
   },
   'dyield': {
     doublecounted: true,
