@@ -26600,17 +26600,15 @@ const configs = {
     },
   },
   "stonkbrokers": {
-    "methodology": "TVL is the sum of tokens held by the StockBooster contract. Staking tracks STONKBROKER tokens in the escrow contract.",
+    "methodology": "TVL is the liquidity locked in the Safety Deposit Box locker (Uniswap V3 position NFTs escrowed permanently or on long vests). Staking tracks STONKBROKER tokens in the escrow contract. The previous TVL owner (StockBooster fee collector) was retired on 2026-08-04 and only holds transient fee dust between sweeps.",
     "robinhood": {
       "tvl": {
-        "owner": "0x038a7F4E4E89448ad74e044337C9aC25C11e726B",
-        "tokens": [
-          ADDRESSES.null,
-          ADDRESSES.robinhood.WETH,
-          "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9",
-          "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
-          "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC",
-        ]
+        "owner": "0xFc96CF67eCC55bE4AdABc3AecBe6Ad6349f11223",
+        "resolveUniV3": true,
+        "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+        "uniV3ExtraConfig": {
+          "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
+        }
       },
       "staking": {
         "owner": "0x799AE26fA515ceF145e8bC8636F7fFF87B05Cf62",
