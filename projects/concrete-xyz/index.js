@@ -18,7 +18,10 @@ const excludeVaults = [
 const tvl = async (api) => {
   const chainId = api.chainId
   const data = await getConfig('concrete-xyz/vaults', URL)
-  const vaults = Object.values(data[chainId]).map(v => v.address).filter(a => a && !excludeVaults.includes(String(a).toLowerCase()))
+  // exclude test vaults and vaults with no tvl (onchain totalAssets() may be stale)
+  const vaults = Object.values(data[chainId])
+    .filter(v => v.address && Number(v.tvl) > 0 && !excludeVaults.includes(v.address.toLowerCase()))
+    .map(v => v.address)
 
   const assets = await api.multiCall({ calls: vaults, abi: abis.asset })
   // there is a weird bug when totalAssets return 0, we get an error, maybe because total shares is 0?
