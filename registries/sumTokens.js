@@ -29130,6 +29130,13 @@ const configs = {
       ]
     },
   },
+  "wambo-fun": {
+    "methodology": "TVL is the native ETH held by the RaceBook contract: live race stakes, unclaimed winnings and refunds, accrued rake and the pot rolling into the next race.",
+    "robinhood": {
+      "owner": "0x6a8196b02d94e96366ace6f494fc46eae3c35e31",
+      "tokens": [ADDRESSES.null]
+    }
+  },
   "wenmarkets": {
     "methodology": "We count the MATIC on 0x3bB94837A91E22A134053B9F38728E27055ec3d1",
     "polygon": {
