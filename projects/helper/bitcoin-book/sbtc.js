@@ -1,14 +1,8 @@
 // sBTC's bitcoin reserve sits in a single key-path-only P2TR output controlled by the
-// signer set's aggregate key. That key rotates, and the reserve address rotates with it,
-// so a hardcoded address list goes stale on every rotation: the three addresses that were
-// in the book before August 2026 now hold dust between them while the entire peg sits at a
-// fourth one. Each rotation dropped this protocol's reported TVL from ~$160m to ~$0 until
-// someone noticed and opened a PR with the new address.
-//
-// The current aggregate key is published on Stacks by the sBTC registry contract, so derive
-// the reserve address from it instead. The signers' wallet is a key-path-only taproot
-// output, i.e. output key = BIP341 tweak of the aggregate key with an empty merkle root,
-// which is what taprootAddress() below computes.
+// signer set's aggregate key. The current aggregate key is published on Stacks by the 
+// sBTC registry contract, so derive the reserve address from it instead. The signers' 
+// wallet is a key-path-only taproot output, i.e. output key = BIP341 tweak of the aggregate 
+// key with an empty merkle root, which is what taprootAddress() below computes.
 
 const axios = require('axios')
 const crypto = require('crypto')
@@ -140,6 +134,8 @@ async function getAggregatePubkey() {
   const { data } = await axios.post(`${STACKS_API}/${deployer}/${contract}/get-current-aggregate-pubkey`, {
     sender: deployer,
     arguments: [],
+    }, {
+    timeout: 30000,
   })
   if (data.okay !== true) throw new Error(`sbtc: registry read failed: ${data.cause}`)
   // Clarity buffer: 0x02, a four byte big endian length, then the bytes themselves.
