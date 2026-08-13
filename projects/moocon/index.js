@@ -57,6 +57,6 @@ module.exports = {
 	timetravel: false,
 	doublecounted: true,
 	methodology:
-		"TVL is the value of Jupiter Lend tokens held by Moocon vault PDAs, representing deposited principal and accrued yield.",
+		"TVL is assets deposited in Moocon vaults and supplied to the underlying yield source.",
 	solana: { tvl },
 };
