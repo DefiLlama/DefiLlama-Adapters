@@ -15266,6 +15266,15 @@ const configs = {
       ]
     },
   },
+  "gilder": {
+    "methodology": "TVL is the USDC deposited by users and held in the per-user Safe Vault on Base (the 80% principal of each 3-year Term Deposit). USDC held in the protocol-owned Distribution Reserve and Market Treasury is excluded from this TVL calculation, as it is protocol working capital rather than user deposits. Position NFTs are excluded because they are claims on the Safe Vault, not distinct value. The GILD token is excluded: its only market is a single Base DEX pool whose liquidity is currently too thin to support a reliable on-chain price.",
+    "base": {
+      "owner": "0x9b937b72172c0706b51984a09992bB8007771E67",
+      "tokens": [
+        ADDRESSES.base.USDC
+      ]
+    },
+  },
   "glorb": {
     "methodology": "TVL is ETH locked in Snatch prize pot and jackpot, plus ETH in Mines jackpot and operational pools. Staking tracks GLORB held in Mines emission and jackpot pools.",
     "start": 1738368000,
@@ -16655,6 +16664,13 @@ const configs = {
         ]
       ]
     },
+  },
+  "junoswap-launchpad": {
+    "methodology": "Sums native currency held by the bonding-curve contract.",
+    "bitkub": {
+      "owner": "0x65F6EC30A9E70822721585f6Bba15c40c2F8ab4e",
+      "tokens": [ADDRESSES.null]
+    }
   },
   "jupiter-prediction": {
     "solana": {

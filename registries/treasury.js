@@ -2334,6 +2334,16 @@ const configs = {
       ownTokens: ['0x62edc0692BD897D2295872a9FFCac5425011c661'], // GMX
     },
   },
+  'treasury/gilder': {
+    base: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.base.USDC
+      ],
+      owners: ["0x9e2cE9510a89dEAc71898fd0a86D84214c20607B", "0xAa199c5605c221574d9738aDa3d04CEEA493E658"],
+      ownTokens: ["0xA6C3b8Dcb7C31132Dcef64eF099f68B731db1e73"],
+    },
+  },
   'treasury/gitcoin': {
     ethereum: {
       tokens: [
