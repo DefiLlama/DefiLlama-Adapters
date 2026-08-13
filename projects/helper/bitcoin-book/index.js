@@ -18,13 +18,9 @@ const bitomato = ["bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9"];
 
 const lbank = ["1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn"];
 
-const stacksSBTC = [
-  // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
-  "bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc",
-  "bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy",
-  "bc1p6ys2ervatu00766eeqfmverzegg9fkprn3xjn0ppn70h53qu5vus3yzl0x",
-  "bc1pgg0us9y5skfpatq0nhxt7khhk8qxv0zgle36r6yxnql6dvyaafqsahn043",
-];
+// Derived from the signer set's current aggregate key on Stacks, because the reserve
+// address rotates whenever that key does. See ./sbtc.js.
+const { stacksSBTC } = require("./sbtc.js");
 
 const magpie = [
   "1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF",
