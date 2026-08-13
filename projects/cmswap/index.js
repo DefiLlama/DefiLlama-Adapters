@@ -24,6 +24,15 @@ const dex = uniV3Export(Object.fromEntries(
 
 async function stakingTvl(api) {
     const cfg = config[api.chain]
+    
+    const stakerLogs = await getLogs2({
+      api,
+      target: cfg.v3Staker,
+      eventAbi: 'event IncentiveCreated(address indexed rewardToken, address indexed pool, uint256 startTime, uint256 endTime, address refundee, uint256 reward)',
+      fromBlock: cfg.v3StakerFromBlock,
+    })
+    const stakerTokens = [...new Set(stakerLogs.map(l => l.rewardToken))]
+    if (!stakerTokens.length) return
 
     // exclude launchpad tokens from tvl
     let blacklistedTokens = []
@@ -36,15 +45,6 @@ async function stakingTvl(api) {
         })
         blacklistedTokens = [...new Set(logs.map(l => l.tokenAddr))]
     }
-    
-    const stakerLogs = await getLogs2({
-      api,
-      target: cfg.v3Staker,
-      eventAbi: 'event IncentiveCreated(address indexed rewardToken, address indexed pool, uint256 startTime, uint256 endTime, address refundee, uint256 reward)',
-      fromBlock: cfg.v3StakerFromBlock,
-    })
-    const stakerTokens = [...new Set(stakerLogs.map(l => l.rewardToken))]
-    if (!stakerTokens.length) return
 
     await api.sumTokens({ owner: cfg.v3Staker, tokens: stakerTokens, blacklistedTokens })
 }
