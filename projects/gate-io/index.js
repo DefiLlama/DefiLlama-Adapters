@@ -1338,13 +1338,13 @@ const config = {
       "nibi1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9ke4p77"
     ]
   },
-  "nuls": {
-    "owners": [
-      "NULSd6Hge2GxNKwYRxxvnQynMK2gKt5YAVANR",
-      "NULSd6Hgd9SJyzE6cmFmPQQ6VcpcQPLvbM4K2",
-      "NULSd6HgdY5zjfxhHhQMyGnJmxZREDxr8Zhh1"
-    ]
-  },
+  // "nuls": {
+  //   "owners": [
+  //     "NULSd6Hge2GxNKwYRxxvnQynMK2gKt5YAVANR",
+  //     "NULSd6Hgd9SJyzE6cmFmPQQ6VcpcQPLvbM4K2",
+  //     "NULSd6HgdY5zjfxhHhQMyGnJmxZREDxr8Zhh1"
+  //   ]
+  // },
   "oas": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
