@@ -3050,6 +3050,12 @@ const configs = {
       ownTokens: ["0x91fbB2503AC69702061f1AC6885759Fc853e6EaE"]
     },
   },
+  'treasury/kayen-finance': {
+    chz: {
+      tokens: [nullAddress],
+      owners: ['0xCf271d12C2d1a757829F5F216a564017D60886F0']
+    }
+  },
   'treasury/keeperdao': {
     ethereum: {
       tokens: [
