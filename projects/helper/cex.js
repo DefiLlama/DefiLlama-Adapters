@@ -124,14 +124,14 @@ const defaultTokens = {
     '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
     '0x1b66474c8eca3827f16202907f41f63785579716', // exchange token for weex, 
     '0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3', //ondo
-    '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', //shib
+    ADDRESSES.ethereum.INU, //shib
     '0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b', //funktoken
     '0x8947da500Eb47F82df21143D0C01A29862a8C3c5', //thales
     '0xA2120b9e674d3fC3875f415A7DF52e382F141225', //ATA
     '0x430ef9263e76dae63c84292c3409d61c598e9682', //pyr
     '0xac57de9c1a09fec648e93eb98875b212db0d460b', //babydoge
     '0xd2ba23de8a19316a638dc1e7a9adda1d74233368', //quick
-    '0x455e53cbb86018ac2b8092fdcd39d8444affc3f6', //pol
+    ADDRESSES.ethereum.POL, //pol
     '0x1ffEFD8036409Cb6d652bd610DE465933b226917', //ever
     '0x163f8c2467924be0ae7b5347228cabf260318753', //wld
     '0xf230b790E05390FC8295F4d3F60332c93BEd42e2', //trx
@@ -144,7 +144,7 @@ const defaultTokens = {
     '0x14778860e937f509e651192a90589de711fb88a9', //CYBER
     '0x137dDB47Ee24EaA998a535Ab00378d6BFa84F893', //RDNT
     '0xb50721bcf8d664c30412cfbc6cf7a15145234ad1', //ARB
-    '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F', //SNX
+    ADDRESSES.ethereum.SNX, //SNX
     '0x6985884C4392D348587B19cb9eAAf157F13271cd', //ZRO
     '0x44ff8620b8ca30902395a7bd3f2407e1a091bf73', //VIRTUAL
     '0x6e15a54b5ecac17e58dadeddbe8506a7560252f9', //F
@@ -161,7 +161,7 @@ const defaultTokens = {
     '0x7420B4b9a0110cdC71fB720908340C03F9Bc03EC', //JASMY
     '0x808507121b80c02388fad14726482e061b8da827', //PENDLE
     '0xcccccccccc33d538dbc2ee4feab0a7a1ff4e8a94', //CFG (Centrifuge)
-    '0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb', //ETHFI (ether.fi)
+    ADDRESSES.ethereum.ETHFI, //ETHFI (ether.fi)
     '0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f', //GHO (Aave stablecoin)
   ],
   tron: [
@@ -204,7 +204,7 @@ const defaultTokens = {
     'WLFinEv6ypjkczcS83FZqFpgFZYwQXutRbxGe7oC16g', //WLFI
     '6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN', //TRUMP (OFFICIAL TRUMP)
     '2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH', //USDG (Global Dollar)
-    'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn', //PUMP (pump.fun)
+    ADDRESSES.solana.PUMP, //PUMP (pump.fun)
     'XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB', //TSLAX (Tesla xStock)
     'rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof', //RENDER
     'Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk', //USELESS
@@ -343,7 +343,7 @@ const defaultTokens = {
   kava: [
     nullAddress,
     ADDRESSES.kava.USDt,
-    '0x919C1c267BC06a7039e03fcc2eF738525769109c', //USDT (kava EVM)
+    ADDRESSES.kava.USDt, //USDT (kava EVM)
   ],
   cronos: [
     nullAddress,
@@ -366,7 +366,7 @@ const defaultTokens = {
     ADDRESSES.aptos.USDT,
     ADDRESSES.aptos.USDt,
     '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US', // US
-    '0x05fabd1b12e39967a3c24e91b7b8f67719a6dacee74f3c8b9fb7d93e855437d2', // USD1
+    ADDRESSES.aptos.USD1, // USD1
   ],
   mantle: [
     nullAddress,
@@ -406,7 +406,7 @@ const defaultTokens = {
   ],
   wc: [
     nullAddress,
-    '0x2cfc85d8e48f8eab294be644d9e25c3030863003', //WLD (World Chain)
+    ADDRESSES.wc.WLD, //WLD (World Chain)
   ],
   abstract: [
     nullAddress,
@@ -416,7 +416,7 @@ const defaultTokens = {
     nullAddress,
     '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', //USDG 
     '0xB6CEceAB302E2E4948951eE7843FC24E92933061', //USDC
-    '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', //USD₮0
+    ADDRESSES.stable.USDT0, //USD₮0
     '0x87b4a8176B3Df6b71e26CC095edcAf4Db07506B4', //PAYPAL USD
   ],
 }

@@ -16105,7 +16105,7 @@ const configs = {
       "owner": "0x669abe85f96a9e3b34723f7be9bc6f250abc0cc1",
       "tokens": [
         ADDRESSES.ethereum.USDC,
-        "0xe343167631d89B6Ffc58B88d6b7fB0228795491D"
+        ADDRESSES.ethereum.USDG
       ]
     },
     "hyperliquid": {

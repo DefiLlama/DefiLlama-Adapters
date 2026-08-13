@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js')
 const { getConnection } = require('../helper/solana')
 
@@ -8,7 +9,7 @@ const { getConnection } = require('../helper/solana')
 // u64 sits at offset 258 (after accountType + 8 pubkeys + withdrawBumpSeed).
 const STAKE_POOL = new PublicKey('GxbNKNYdtNXQkhDkpHdLDAMX64GxaECgANqdfp6cUGH4')
 const TOTAL_LAMPORTS_OFFSET = 258
-const WRAPPED_COOK = 'So11111111111111111111111111111111111111112' // native COOK
+const WRAPPED_COOK = ADDRESSES.solana.SOL // native COOK
 
 async function tvl(api) {
   const connection = getConnection(api.chain)

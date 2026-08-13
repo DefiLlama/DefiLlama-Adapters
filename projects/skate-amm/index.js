@@ -9,7 +9,7 @@ const evm_config = {
   ethereum: [
     { pool: '0x1E0C3acCfD4c9A1731d3A0Cdb6b8afBD0f0c219c', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: ADDRESSES.ethereum.USDC }, // QQQx/USDC
     { pool: '0x00739d7b2ed5eD3B80d9e10ccBc2468ad1b9C2FD', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: ADDRESSES.ethereum.USDC }, // NVDAx/USDC
-    { pool: '0x70B0B74b52De2948F2FE69f9788F17C9C4B917d8', token0: ADDRESSES.ethereum.WETH, token1: '0xe343167631d89B6Ffc58B88d6b7fB0228795491D' }, // WETH/USDG
+    { pool: '0x70B0B74b52De2948F2FE69f9788F17C9C4B917d8', token0: ADDRESSES.ethereum.WETH, token1: ADDRESSES.ethereum.USDG }, // WETH/USDG
     { pool: '0xA0B9cc50c460ddE28321C34fCD7161434655A38F', token0: '0x056B269Eb1f75477a8666ae8C7fE01b64dD55eCc', token1: ADDRESSES.ethereum.USDC }, // USD3/USDC
   ],
   arbitrum: [

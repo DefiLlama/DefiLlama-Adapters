@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js')
 const { getConnection, getAssociatedTokenAddress, sumTokens2 } = require('../helper/solana')
 
@@ -6,7 +7,7 @@ const { getConnection, getAssociatedTokenAddress, sumTokens2 } = require('../hel
 // the exchange program's vaults.
 const EXCHANGE_PROGRAM = new PublicKey('HYEXCHtHkBagdStcJCp3xbbb9B7sdMdWXFNj6mdsG4hn')
 
-const USDC = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+const USDC = ADDRESSES.solana.USDC
 
 // Account layouts from the on-chain IDL (hylo_exchange v2.0.5). Each collateral
 // type gets its own account, whose fixed size we filter on, and each stores its

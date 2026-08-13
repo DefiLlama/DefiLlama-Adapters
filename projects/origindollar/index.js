@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = {
     "getAllAssets": "address[]:getAllAssets",
     "checkBalance": "function checkBalance(address _asset) view returns (uint256 balance)",
@@ -7,7 +8,7 @@ const { staking } = require("../helper/staking");
 
 const vault = "0xE75D77B1865Ae93c7eaa3040B038D7aA7BC02F70";
 const OUSD = "0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86";
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ZERO_ADDRESS = ADDRESSES.null;
 
 // Curve AMO strategies mint OUSD to pair against the vault's stablecoin inside the pool, and their
 // checkBalance() reports the strategy's whole LP position -- both sides. That leaves the vault

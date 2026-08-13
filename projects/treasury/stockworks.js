@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // StockWorks (SPCXSTR) — Robinhood Chain.
@@ -13,7 +14,7 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 // controller's own position getters and convert liquidity to token amounts.
 const CONTROLLER = "0x37bBFeD61d9A8C3743D3E7318e635c37c9abdf8e"; // SpcxQuoteController
 const SPCX = "0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa";
-const USDG = "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168";
+const USDG = ADDRESSES.robinhood.USDG;
 
 // SPCXSTR itself is the protocol's own token and is deliberately NOT counted.
 

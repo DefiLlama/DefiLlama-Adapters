@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 const { mergeExports, getStakedEthTVL } = require("../helper/utils");
@@ -2022,8 +2023,8 @@ const earnReceiptTokens = {
       '0x4c6158236fe1ac71ca8c00b64864ad6d7eb0bfb4',
     ],
     tokens: [
-      '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', // USDT0
-      '0x6100e367285b01f48d07953803a2d8dca5d19873', // WXPL
+      ADDRESSES.corn.USDT0, // USDT0
+      ADDRESSES.plasma.WXPL, // WXPL
       '0x5d72a9d9a9510cd8cbdba12ac62593a58930a948', // aPlaUSDT0 (Aave v3)
     ],
   },

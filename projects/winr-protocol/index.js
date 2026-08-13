@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
-const WINR = '0xD77B108d4f6cefaa0Cae9506A934e825BEccA46E'
+const WINR = ADDRESSES.winr.WINR
 
 // Bankroll vault - liquidity provider funds backing gameplay
 const WINR_BANKROLL = '0x5eD22F7693fea5A0B45dB31771aa94E941b6df8a'

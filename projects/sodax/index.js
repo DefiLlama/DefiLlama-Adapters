@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getConfig } = require('../helper/cache');
 
@@ -51,10 +52,10 @@ async function tvl(api) {
 // is already counted on the spoke AssetManager, so counting the hub wrapper too
 // would double count.
 const sonicHubVaults = [
-  [['0x29219dd400f2Bf60E5a23d13Be72B486D4038894'], '0xAbbb91c0617090F0028BDC27597Cd0D038F3A833'], // sodaUSDC -> USDC
-  [['0x6047828dc181963ba44974801FF68e538dA5eaF9'], '0xbDf1F453FCB61424011BBDDCB96cFDB30f3Fe876'], // sodaUSDT -> USDT
+  [[ADDRESSES.sonic.USDC_e], '0xAbbb91c0617090F0028BDC27597Cd0D038F3A833'], // sodaUSDC -> USDC
+  [[ADDRESSES.sonic.USDT], '0xbDf1F453FCB61424011BBDDCB96cFDB30f3Fe876'], // sodaUSDT -> USDT
   [['0x50c42dEAcD8Fc9773493ED674b675bE577f2634b'], '0x4effB5813271699683C25c734F4daBc45B363709'], // sodaETH  -> WETH
-  [['0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38'], '0x62ecc3Eeb80a162c57624B3fF80313FE69f5203e'], // sodaS    -> wS
+  [[ADDRESSES.sonic.wS], '0x62ecc3Eeb80a162c57624B3fF80313FE69f5203e'], // sodaS    -> wS
 ];
 
 async function sonicTvl(api) {
