@@ -248,7 +248,6 @@ module.exports = {
   vishwa: async () => {
     const staticAddresses = await getConfig('vishwa', undefined, {
       fetcher: async () => {
-        throw new Error("temp break until api is fixed (falls back to cache)")
         const { data } = await axios.get('https://vault.vishwalab.com/vapi/btc/address')
         return data.data
       }
