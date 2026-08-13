@@ -435,9 +435,9 @@ const configs = {
     doublecounted: true,
     methodology: 'Sum of totalAssets() across the three dyield wrapper vaults on Base. Double counted with Morpho.',
     base: [
-      '0x6fc2670a0e3ecFfAc27c66009530f16BC07cd2Cc', // dyield Prime — d$P
-      '0x80729552cb813d95d54474c0E7e9E5ed8F5A8D89', // dyield High  — d$H
-      '0xB7E50801E30cB5eF02b95D1bbc8363bc260197FF', // dyield Ultra — d$U
+      '0xc7792360347D5f868bd82F38fDC8D4BA59c986d9', // dyield Prime — d$P
+      '0x0463A5e9f71ff654040c3207e47864aeFcd4f609', // dyield High  — d$H
+      '0xCeAba2465d51FF0Ce00c9136dA8e7965a2B0aB79', // dyield Ultra — d$U
     ],
   }
 }
