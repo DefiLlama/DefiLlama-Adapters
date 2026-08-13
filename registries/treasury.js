@@ -4629,6 +4629,12 @@ const configs = {
       ownTokens: ['0x25118290e6a5f4139381d072181157035864099d'],
     },
   },
+  'treasury/raisehood': {
+    robinhood: {
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+      owner: '0x0a39701e5D5BB5A6146aEEba66638297D0947f04'
+    }
+  },
   'treasury/rarible': {
     ethereum: {
       tokens: [
@@ -5412,12 +5418,6 @@ const configs = {
       ],
     },
   },
-  'treasury/stockworks': {
-    robinhood: {
-      owners: ['0x57024Aae99f709Bd399252767DDC6487Aa3881De'],
-      tokens: [nullAddress, '0x4a0E65A3EcceC6dBe60AE065F2e7bb85Fae35eEa'],
-    }
-  },
   'treasury/stonkbrokers': {
     robinhood: {
       owners: ['0x16027b596e210c63f750E0bdD156f00bb2749868'],
@@ -5717,6 +5717,36 @@ const configs = {
       ],
       owners: ["0xf0A13763a2102A6EA036078C602F154A2a5eEc7A"],
       ownTokens: ["0xa0b93B9e90aB887E53F9FB8728c009746e989B53"],
+    },
+  },
+  'treasury/thesauros': {
+    arbitrum: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.arbitrum.USDC_CIRCLE
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    base: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.base.USDC
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    monad: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.monad.USDC
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    plasma: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.plasma.USDT0
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
     },
   },
   'treasury/tokemak': {
@@ -6089,6 +6119,22 @@ const configs = {
         ADDRESSES.arbitrum.WETH, // WETH
         "0x39ff5098081FBE1ab241c31Fe0a9974FE9891d04", // voltGNS
       ],
+    },
+  },
+  'treasury/waddle-club': {
+    megaeth: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.megaeth.USDm
+      ],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
+    },
+    robinhood: {
+      tokens: [
+        nullAddress,
+      ],
+      ownTokens: ["0xd3af6612119362d31d7a6c93ad5e6d01443c855d"],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
     },
   },
   'treasury/wagmi': {

@@ -11,7 +11,8 @@ const rwaUSDis = {
 
 const tvl = async (api) => {
   const { data } = await axios.get(API)
-  const balances = data.payload[api.chain] ?? {}
+  const payload = data.payload?.tvl_data ?? data.payload ?? {}
+  const balances = payload[api.chain] ?? {}
   const blacklisted = rwaUSDis[api.chain]?.toLowerCase()
   if (blacklisted) {
     const target = `${api.chain}:${blacklisted}`

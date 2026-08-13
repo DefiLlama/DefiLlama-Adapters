@@ -3095,6 +3095,13 @@ const uniV2Configs = {
   'kolswap': {
     robinhood: '0xdB2Ec80E55527b5D858b54173083139679f5DE6f',
     bsc: '0x6af79510599dE74E5922A2771b29160dA8b7b4c1'
+  },
+  'alandale-v2': {
+    start: '2026-08-04',
+    _options: {
+      hasStablePools: true,
+    },
+    robinhood: '0xe0799417eff30A12249b8c30941BC2d7c52A0339',
   }
 }
 

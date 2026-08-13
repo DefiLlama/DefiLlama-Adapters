@@ -33,11 +33,6 @@ const LOAN_TOKENS = [USDC, USDT, PYUSD];
 const LEGACY_POOL_1 = "0x0f62b8C58E1039F246d69bA2215ad5bF0D2Bb867";
 const LEGACY_POOL_2 = "0xcd9d510c4e2fe45e6ed4fe8a3a30eeef3830cc14";
 const LEGACY_POOLS = [LEGACY_POOL_1, LEGACY_POOL_2];
-// Loan terms hashes for loans on Loan Router V2 not captured by the v2 subgraph
-const UNCAPTURED_LOAN_ROUTER_V2_HASHES = [
-  "0x71e912bbbfbb3d266012f871c213cd79522c26c24703c7aaee64873b83e8d88c",
-  "0x81c8c9796cfa9e769b91bd4d84e8647dbae23e4227fe9cbc3fe2c20f38695aa2",
-];
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 const SUBGRAPH_PAGE_SIZE = 1000;
 const loanHashesQuery = gql`
@@ -64,44 +59,47 @@ const loanHashesQuery = gql`
     }
   }
 `;
-const migratedLoansQuery = gql`
-  query GetMigratedLoans($timestampLte: String!, $first: Int!, $lastId: String!) {
-    loanRouterEvents(
+// The v2 subgraph tracks a loan entity keyed by loan terms hash, so one query
+// covers every loan whether it was originated on v2, migrated from v1, or
+// opened by a refinance. A refinance closes the old loan and opens a new one
+// under a new hash, so reading the loan entity keeps up with refinance chains.
+// Deliberately unfiltered: the entity carries a current status, but a loan that
+// is closed today may have been active at the block being valued. The on-chain
+// loan state read at that block decides what counts, so this only has to supply
+// every hash that has ever existed.
+const v2LoansQuery = gql`
+  query GetV2Loans($first: Int!, $lastId: String!) {
+    loans(
       first: $first
       where: {
-        type: LoanMigrated,
-        timestamp_lte: $timestampLte,
         id_gt: $lastId
       }
       orderBy: id
       orderDirection: asc
     ) {
       id
-      loanMigrated {
-        loanTermsHashV1
-        loanTermsHashV2
-      }
+      currencyToken
     }
   }
 `;
 
-// Page through loanRouterEvents until the full set is collected.
+// Page through a subgraph collection until the full set is collected.
 // The subgraph caps a single response at 1000 rows, so we cursor on id
 // (id_gt) and loop until a short page signals the end of the data.
-async function fetchAllLoanRouterEvents(endpoint, query, timestamp) {
-  const allEvents = [];
+// Pass a timestamp only for collections that expose a timestamp field.
+async function fetchAllSubgraphRows(endpoint, query, collection, timestamp) {
+  const allRows = [];
   let lastId = "";
   while (true) {
-    const { loanRouterEvents } = await request(endpoint, query, {
-      timestampLte: String(timestamp),
-      first: SUBGRAPH_PAGE_SIZE,
-      lastId,
-    });
-    allEvents.push(...loanRouterEvents);
-    if (loanRouterEvents.length < SUBGRAPH_PAGE_SIZE) break;
-    lastId = loanRouterEvents[loanRouterEvents.length - 1].id;
+    const variables = { first: SUBGRAPH_PAGE_SIZE, lastId };
+    if (timestamp !== undefined) variables.timestampLte = String(timestamp);
+    const response = await request(endpoint, query, variables);
+    const rows = response[collection];
+    allRows.push(...rows);
+    if (rows.length < SUBGRAPH_PAGE_SIZE) break;
+    lastId = rows[rows.length - 1].id;
   }
-  return allEvents;
+  return allRows;
 }
 
 async function tvl(api) {
@@ -212,7 +210,7 @@ async function borrowed(api) {
   api.addTokens(tokens, poolsBorrowedValue);
 
   // Loan router borrowed
-  let loanRouterEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, api.timestamp);
+  const loanRouterEvents = await fetchAllSubgraphRows(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, "loanRouterEvents", api.timestamp);
   const loanStates = await api.multiCall({
     abi: abi.loanState,
     target: LOAN_ROUTER_CONTRACT,
@@ -239,60 +237,46 @@ async function borrowed(api) {
   });
 
 
-  // Loan router v2 borrowed (loans originated directly on v2)
-  loanRouterEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API_V2, loanHashesQuery, api.timestamp);
-  for (const event of loanRouterEvents) {
-    if (UNCAPTURED_LOAN_ROUTER_V2_HASHES.includes(event.loanTermsHash)) continue;
-    // Get the currency token
-    const { currencyToken } = event.loanOriginated;
+  // Loan router v2 borrowed (originated on v2, migrated from v1, or refinanced)
+  const v2Loans = await fetchAllSubgraphRows(LOAN_ROUTER_SUBGRAPH_API_V2, v2LoansQuery, "loans");
 
-    // Get scaled balance
-    const [status, , , scaledBalance] = await api.call({ abi: abi.loanStateV2, target: LOAN_ROUTER_V2_CONTRACT, params: [event.loanTermsHash] });
+  // The loan entity carries the currency token address but not its decimals
+  const v2CurrencyTokens = [...new Set(v2Loans.map((loan) => loan.currencyToken))];
+  const v2TokenDecimals = await api.multiCall({
+    abi: "erc20:decimals",
+    calls: v2CurrencyTokens.map((token) => ({ target: token })),
+    permitFailure: true,
+  });
+  const v2DecimalsMap = {};
+  v2CurrencyTokens.forEach((token, index) => {
+    v2DecimalsMap[token] = v2TokenDecimals[index];
+  });
 
-    // If the loan is inactive, continue
-    if (+status !== 1) continue;
-
-    // If the currency token has more than 18 decimals, continue
-    if (currencyToken.decimals > 18) continue;
-
-    // Scale down by the decimals of the currency token
-    const unscaledBalance = BigInt(scaledBalance) / BigInt(10 ** (18 - currencyToken.decimals));
-
-    // Add the balance to the TVL
-    api.add(currencyToken.id, unscaledBalance);
-  }
-
-  // Loan router v2 borrowed (loans originated on v1 and migrated to v2)
-  // Note: migrated loans are switched to USDai as the currency token
-  const migratedEvents = await fetchAllLoanRouterEvents(LOAN_ROUTER_SUBGRAPH_API_V2, migratedLoansQuery, api.timestamp);
-  for (const event of migratedEvents) {
-    const { loanTermsHashV2 } = event.loanMigrated;
-
-    // Get scaled balance from the v2 contract using the v2 loan terms hash
-    const [status, , , unscaledBalance] = await api.call({ abi: abi.loanStateV2, target: LOAN_ROUTER_V2_CONTRACT, params: [loanTermsHashV2] });
-
-    // If the loan is inactive, continue
-    if (+status !== 1) continue;
-
-    // Add the balance to the TVL
-    api.add(USDAI_CONTRACT, unscaledBalance);
-  }
-
-  // Loan router v2 borrowed (hardcoded — not captured by the v2 subgraph)
-  const uncapturedLoanStates = await api.multiCall({
+  // Every loan hash is checked against the loan state at the block being valued,
+  // which is what makes historical runs correct in both directions: loans that
+  // did not exist yet report status 0, and loans closed since then report their
+  // status at that block rather than their status today.
+  const v2LoanStates = await api.multiCall({
     abi: abi.loanStateV2,
     target: LOAN_ROUTER_V2_CONTRACT,
-    calls: UNCAPTURED_LOAN_ROUTER_V2_HASHES.map((loanTermsHash) => ({ params: [loanTermsHash] })),
+    calls: v2Loans.map((loan) => ({ params: [loan.id] })),
   });
-  uncapturedLoanStates.forEach((loanState) => {
-    if (!loanState) return;
-    const [status, , , unscaledBalance] = loanState;
+  v2Loans.forEach((loan, i) => {
+    // Get scaled balance
+    const [status, , , scaledBalance] = v2LoanStates[i];
 
-    // If the loan is inactive, skip
+    // If the loan is inactive, continue
     if (+status !== 1) return;
 
+    // If the currency token decimals are unknown or above 18, continue
+    const decimals = v2DecimalsMap[loan.currencyToken];
+    if (decimals == null || decimals > 18) return;
+
+    // Scale down by the decimals of the currency token
+    const unscaledBalance = BigInt(scaledBalance) / BigInt(10 ** (18 - decimals));
+
     // Add the balance to the TVL
-    api.add(USDAI_CONTRACT, unscaledBalance);
+    api.add(loan.currencyToken, unscaledBalance);
   });
 
   // USDai borrowed out through escrow timelock

@@ -90,6 +90,11 @@ const configs = {
       '0x36213ca1483869c5616be738Bf8da7C9B34Ace8d',
     ],
   },
+  'earngrid': {
+    methodology: 'Automated USDC yield vault on Base — aggregates MetaMorpho strategies. TVL via totalAssets().',
+    doublecounted: true,
+    base: ['0x8694D7D44309665D51Cb5002fceC0454f1c233dE'],
+  },
   'eva': {
     ethereum: [
       '0x741bD193B6b40f8703d2e116FD1965421f290F58', // USDC vault
@@ -290,11 +295,6 @@ const configs = {
     base: ['0x00325d9da832b38179ed2f0dabd4062d93e325a7'],
     methodology: 'TVL is calculated as the total USDC held in the ArcisVault contract, including both reserve and deployed capital across yield strategies.'
   },
-  'byzanlink': {
-    hedera: ['0x6b8dfA6aa5f803a886Beb2492eF3307EC0Ee16FB'],
-    ethereum: ['0xA5cDEE01aA7A5E0620df5f27F26E552fdf7f5F20'],
-    methodology: 'Total value of assets deposited in the Byzanlink vaults, read on-chain and valued in USD.'
-  },
   'crystalclear': {
     methodology: "TVL is the sum of totalAssets() across all live CrystalClear ERC-4626 vaults on HyperEVM. Each vault holds USDC and trades perpetuals on Hyperliquid via a delegated agent.",
     hyperliquid: [
@@ -383,8 +383,10 @@ const configs = {
     xdc: ['0xDc74c0DaED82ae94486DeeF22991d2F54173c734'],
   },
   'y10k-capital': {
-    ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'],
-    sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'],
+    methodology: 'Sum of assets deposited in Y10k Capital vaults. Marked as double counted: risk operations on these vaults are run by RockawayX, and both vaults are already counted under projects/rockawayx (ethereum eY10K, sei PYUSD0).',
+    doublecounted: true,
+    ethereum: ['0x953972ea0C1703c58F09FB6fD2477Fdcf0FEe074'], // eY10K - also in rockawayx EMBER_VAULTS
+    sei: ['0x6137dcfdd3c83fe2922b1cba4105d2e92b327a06'], // PYUSD0 - also in rockawayx sei.morpho
   },
   'apyee': {
     methodology: "Sum of totalAssets() reported by each Apyee VaultV2 across supported chains — includes idle USDC plus assets currently deployed into whitelisted DeFi lending strategies (Aave V3, Compound V3, Morpho MetaMorpho, Fluid, Venus, Spark).",
@@ -427,6 +429,16 @@ const configs = {
     doublecounted: true,
     methodology: 'TVL is the sum of assets deposited into Agua\'s ERC-4626 vault(s), read via totalAssets() (net asset value) and denominated in the underlying asset (USDC). Deposits are allocated into external lending markets (Aave, Morpho, Euler, ...) already tracked by DefiLlama, so this TVL is double-counted.',
     ethereum: ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f'],
+    monad: ['0x2ABc42250154752273a4560e875c858623F83ecC'],
+  },
+  'dyield': {
+    doublecounted: true,
+    methodology: 'Sum of totalAssets() across the three dyield wrapper vaults on Base. Double counted with Morpho.',
+    base: [
+      '0x6fc2670a0e3ecFfAc27c66009530f16BC07cd2Cc', // dyield Prime — d$P
+      '0x80729552cb813d95d54474c0E7e9E5ed8F5A8D89', // dyield High  — d$H
+      '0xB7E50801E30cB5eF02b95D1bbc8363bc260197FF', // dyield Ultra — d$U
+    ],
   }
 }
 
