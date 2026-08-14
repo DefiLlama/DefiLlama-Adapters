@@ -13,7 +13,7 @@ const USD_CURRENCIES = new Set(['USD', 'USDC', 'USDT'])
 
 async function getTokens() {
   const { tokens } = await getConfig('tokeshare', TOKENS_API)
-  return tokens
+  return tokens.filter((token) => !token.isRWA)
 }
 
 function usdPrice(token) {
@@ -77,7 +77,7 @@ const evmChains = Object.fromEntries(
 
 module.exports = {
   methodology:
-    'Tokens backed by collateral held onchain are counted as the balance of that collateral, held by the token contract itself. Real world assets held offchain are counted as the total supply of each token onchain multiplied by its unit price.',
+    'Tokens backed by collateral held onchain are counted as the balance of that collateral, held by the token contract itself.',
   stellar: { tvl: stellarTvl },
   ...evmChains,
   timetravel: false
