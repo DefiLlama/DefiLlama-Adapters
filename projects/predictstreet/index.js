@@ -24,7 +24,7 @@ async function tvl(api) {
 
   const owners = [CONDITIONAL_TOKENS].concat(vaults, clones)
   // sum idle USDC.e in all vaults, ConditionalTokens, and neg-risk WrappedCollateral clones
-  await api.sumTokens({ owners, tokens: ['0x9cb8142aEBBcdc60AF7c97Af897A67A8f3CA71C2'] }) // USDC.e
+  await api.sumTokens({ owners, tokens: [ADDRESSES.adi.USDC_e] }) // USDC.e
 }
 
 module.exports = {

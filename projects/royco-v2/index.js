@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { getLogs2 } = require("../helper/cache/getLogs");
 
@@ -39,7 +40,7 @@ const convertToAssetsAbi = "function convertToAssets(uint256 _shares) view retur
 const srRoyUsdc = {
     chain: "ethereum",
     address: "0xcd9f5907f92818bc06c9ad70217f089e190d2a32",
-    asset: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+    asset: ADDRESSES.ethereum.USDC, // USDC
 };
 
 // A vault routes deposits through on-chain "strategy" contracts; whatever a strategy holds inside a
@@ -73,7 +74,7 @@ const NAV_TO_USDC = 10n ** 12n;
 const royWstEth = {
     chain: "ethereum",
     address: "0x41ce72e04d349eb957bdc373baa9c69207032c56",
-    asset: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", // wstETH
+    asset: ADDRESSES.ethereum.WSTETH, // wstETH
 };
 
 // srRoyUSDC is a standard ERC4626 (asset = USDC), so convertToAssets returns a plain USDC amount —
