@@ -80,4 +80,5 @@ module.exports = {
     'Tokens backed by collateral held onchain are counted as the balance of that collateral, held by the token contract itself. Real world assets held offchain are counted as the total supply of each token onchain multiplied by its unit price.',
   stellar: { tvl: stellarTvl },
   ...evmChains,
+  timetravel: false
 }
