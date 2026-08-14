@@ -15,6 +15,7 @@ const trwaUSD = {
     robinhood:"0x1f5575b690bbb049FC50933A66F52eFA81904978",
     arbitrum:"0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098",
     pharos:"0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"
+    
   };
   
   const TOKENS = { trwaUSD, trwaUSDi };
