@@ -1772,6 +1772,13 @@ const uniV3Configs = {
       fromBlock: 27941500,
       isAlgebra: true,
     },
+  },
+  'brownfi-clamm': {
+    hemi: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 4904397,
+      isAlgebra: true,
+    },
   }
 }
 
