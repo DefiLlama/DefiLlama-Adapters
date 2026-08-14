@@ -115,7 +115,11 @@ async function tvl(api) {
       spacing: Number(log[TICK_SPACING]),
       base: poolSlot(log[ID]),
     }))
-  if (!pools.length) return
+  /* The hook has had pools since the block this scan starts from, so an
+   * empty result is a broken read, not an empty protocol. Returning here
+   * would publish a TVL of zero over the last good value; throwing fails
+   * the run and leaves that value standing. */
+  if (!pools.length) throw new Error('what-the-hook: no pools found for the hook — log fetch likely truncated or failed')
 
   // slot0 carries the price; a pool that never got one is uninitialised
   const slot0s = await api.multiCall({
@@ -127,7 +131,9 @@ async function tvl(api) {
     const sqrtP = BigInt(raw) & MASK_160
     if (sqrtP > 0n) live.push({ ...pools[i], sqrtP, ticks: [], nets: {} })
   })
-  if (!live.length) return
+  // same reasoning: every one of these pools has traded, so none of them
+  // can honestly report no price
+  if (!live.length) throw new Error('what-the-hook: no initialised pools among ' + pools.length + ' — storage read likely failed')
 
   // every word of every pool's tick bitmap, in one flat call
   const words = []
