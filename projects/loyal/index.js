@@ -3,10 +3,7 @@ const { getConfig } = require('../helper/cache')
 const { getConnection, runInChunks } = require('../helper/solana')
 const ADDRESSES = require('../helper/coreAssets.json')
 
-// Preview while PR is open; switch to https://stats.askloyal.com/api/earn/vaults after merge
-const VAULTS_API =
-  process.env.VAULTS_API ||
-  'https://loyal-dashboard-git-vercel-preview-pr-614-loyal-team.vercel.app/api/earn/vaults'
+const VAULTS_API = 'https://stats.askloyal.com/api/earn/vaults'
 
 const KLEND_PROGRAM_ID = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD')
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -24,16 +21,9 @@ const SAFE_MARKETS = [
   'BJnbcRHqvppTyGesLzWASGKnmnF1wq9jZu6ExrjT7wvF', // Ethena
 ]
 
-// Not in /api/earn/vaults (that query is user_yield_positions only).
-// Loyal treasury autonomous vault — same vanilla klend path as Earn.
-// Source: apps/admin/.../autonomous-vault-data.ts MANIFEST.vault
-const EXTRA_VAULTS = [
-  'F7zuL14omw4JJfS1cvsWXVb3wh48dvsonMJgoc9tYu3e',
-]
-
 const OBLIGATION_TAG = 0
 const OBLIGATION_ID = 0
-const RPC_SLEEP_MS = Number(process.env.LOYAL_RPC_SLEEP_MS || 600)
+const RPC_SLEEP_MS = 300
 
 // Obligation layout (matches @loyal-labs/smart-account-vaults)
 const DEPOSITS_OFFSET = 96
@@ -152,27 +142,14 @@ function tokenAccountAmount(data) {
 async function tvl(api) {
   const connection = getConnection()
 
-  const data = await getConfig('loyal/vaults', undefined, {
-    fetcher: async () => {
-      const res = await fetch(VAULTS_API, {
-        headers: process.env.VERCEL_PREVIEW_COOKIE
-          ? { Cookie: process.env.VERCEL_PREVIEW_COOKIE }
-          : {},
-      })
-      if (!res.ok) throw new Error(`Loyal vaults API HTTP ${res.status}`)
-      return res.json()
-    },
-  })
-
-  const apiOwners = Array.isArray(data) ? data : data.vaults || []
-  const extra = EXTRA_VAULTS.filter((v) => !apiOwners.includes(v))
-  const owners = apiOwners.concat(extra)
-  console.log(
-    `[Loyal] vaults from API: ${apiOwners.length} (count field: ${data.count ?? 'n/a'}; updatedAt: ${data.updatedAt ?? 'n/a'}) + extra ${extra.length}`,
+  const data = await getConfig('loyal/vaults', VAULTS_API)
+  const owners = Array.isArray(data) ? data : data.vaults || []
+  api.log(
+    `[Loyal] vaults from API: ${owners.length} (count field: ${data.count ?? 'n/a'}; updatedAt: ${data.updatedAt ?? 'n/a'})`,
   )
 
   if (!owners.length) {
-    console.log('[Loyal] empty vault list — check VERCEL_PREVIEW_COOKIE / VAULTS_API')
+    api.log('[Loyal] empty vault list from', VAULTS_API)
     return {}
   }
 
@@ -183,7 +160,7 @@ async function tvl(api) {
       obligationPubkeys.push(deriveVanillaObligation(owner, market))
     }
   }
-  console.log(
+  api.log(
     `[Loyal] obligation PDAs: ${obligationPubkeys.length} (${owners.length} × ${SAFE_MARKETS.length})`,
   )
 
@@ -209,9 +186,9 @@ async function tvl(api) {
     }
   }
 
-  console.log(`[Loyal] accounts with data: ${accountsWithData}`)
-  console.log(`[Loyal] active collateral slots: ${depositSlots}`)
-  console.log(`[Loyal] unique reserves: ${collateralByReserve.size}`)
+  api.log(`[Loyal] accounts with data: ${accountsWithData}`)
+  api.log(`[Loyal] active collateral slots: ${depositSlots}`)
+  api.log(`[Loyal] unique reserves: ${collateralByReserve.size}`)
 
   let usdcFromObligations = 0n
   let skippedNonUsdcReserves = 0
@@ -263,15 +240,15 @@ async function tvl(api) {
   const totalUsdc = usdcFromObligations + usdcIdle
   api.add(USDC_MINT, totalUsdc.toString())
 
-  console.log(
+  api.log(
     `[Loyal] USDC from obligations: $${(Number(usdcFromObligations) / 1e6).toFixed(2)}`,
   )
-  console.log(
+  api.log(
     `[Loyal] idle USDC on vaults: $${(Number(usdcIdle) / 1e6).toFixed(2)} (${idleAccounts} ATAs)`,
   )
-  console.log(`[Loyal] total USDC TVL: $${(Number(totalUsdc) / 1e6).toFixed(2)}`)
+  api.log(`[Loyal] total USDC TVL: $${(Number(totalUsdc) / 1e6).toFixed(2)}`)
   if (skippedNonUsdcReserves) {
-    console.log(
+    api.log(
       `[Loyal] skipped ${skippedNonUsdcReserves} non-USDC reserve(s) (multi-mint not counted yet)`,
     )
   }
@@ -281,7 +258,9 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true, // deployed into already-listed Kamino Lend
+  isHeavyProtocol: true,
   methodology:
-    'TVL is on-chain USDC in Loyal Earn Squads vaults plus the Loyal treasury autonomous vault: redeemable USDC from Kamino Lend vanilla obligations across RiskBasket.Safe markets (Main, Figure, Maple, OnRe, Ethena), converting collateral shares with each reserve exchange rate (same method as Loyal earn holdings), plus idle USDC in vault ATAs. User vaults come from /api/earn/vaults; the treasury vault is not in that user-position list and is included explicitly. Non-USDC stables omitted until Earn multi-mint is generally enabled.',
+    'TVL is on-chain USDC in Loyal Earn Squads vaults, including the treasury autonomous vault listed by the public stats API (intentional: runway will sit in that vault as the autonomous-treasury product). Counts redeemable USDC from Kamino Lend vanilla obligations across RiskBasket.Safe markets (Main, Figure, Maple, OnRe, Ethena), converting collateral shares with each reserve exchange rate (same method as Loyal earn holdings), plus idle USDC in vault ATAs. Vault addresses come from https://stats.askloyal.com/api/earn/vaults. Overlaps Kamino Lend TVL, so this adapter is marked doublecounted. Non-USDC stables omitted until Earn multi-mint is generally enabled.',
   solana: { tvl },
 }
