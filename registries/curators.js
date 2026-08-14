@@ -814,6 +814,19 @@ const configs = {
       }
     },
   },
+  "sharewoods": {
+    config: {
+      methodology: 'Count all assets are deposited in all vaults curated by Sharewoods.',
+      blockchains: {
+        robinhood: {
+          morpho: [
+            '0x5FE15021a7C0Ff4A9965b400E474f616451BA128', // Sharewoods RWA USDG
+            '0xf8f8654A26bfe134ee290d0b6a749Ba45F03a104', // Sharewoods Classic USDG
+          ],
+        },
+      }
+    },
+  },
   "singularv": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by singularV.',
