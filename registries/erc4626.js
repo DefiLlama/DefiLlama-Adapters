@@ -439,6 +439,11 @@ const configs = {
       '0x0463A5e9f71ff654040c3207e47864aeFcd4f609', // dyield High  — d$H
       '0xCeAba2465d51FF0Ce00c9136dA8e7965a2B0aB79', // dyield Ultra — d$U
     ],
+  },
+  'aumo': {
+    doublecounted: true,
+    methodology: 'TVL is the total USDT0 under management in the AumoPool ERC-4626 vault on X Layer, read from totalAssets() (idle buffer plus principal deployed across allowlisted venues).',
+    xlayer: ['0x8a98A4A868e5FBAc05B9d1dC0742BD008354114F']
   }
 }
 
