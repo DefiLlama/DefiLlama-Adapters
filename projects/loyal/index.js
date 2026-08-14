@@ -126,7 +126,9 @@ function collateralToRedeemableLiquidity(collateralAmountRaw, snapshot) {
     snapshot.collateralSupplyRaw === 0n ||
     snapshot.totalLiquiditySupplyScaled === 0n
   ) {
-    return collateralAmountRaw
+    throw new Error(
+      `[Loyal] inconsistent Kamino reserve snapshot: collateralSupply=${snapshot.collateralSupplyRaw}, liquiditySupplyScaled=${snapshot.totalLiquiditySupplyScaled}`,
+    )
   }
   return (
     (collateralAmountRaw * snapshot.totalLiquiditySupplyScaled) /
@@ -139,6 +141,14 @@ function tokenAccountAmount(data) {
   return Buffer.from(data).readBigUInt64LE(64)
 }
 
+function fetchAccounts(connection, pubkeys) {
+  return runInChunks(
+    pubkeys,
+    (chunk) => connection.getMultipleAccountsInfo(chunk),
+    { chunkSize: 99, sleepTime: RPC_SLEEP_MS },
+  )
+}
+
 async function tvl(api) {
   const connection = getConnection()
 
@@ -149,8 +159,7 @@ async function tvl(api) {
   )
 
   if (!owners.length) {
-    api.log('[Loyal] empty vault list from', VAULTS_API)
-    return {}
+    throw new Error(`[Loyal] empty vault list from ${VAULTS_API}`)
   }
 
   // --- Kamino vanilla obligations (Safe markets) ---
@@ -164,11 +173,7 @@ async function tvl(api) {
     `[Loyal] obligation PDAs: ${obligationPubkeys.length} (${owners.length} × ${SAFE_MARKETS.length})`,
   )
 
-  const accountInfos = await runInChunks(
-    obligationPubkeys,
-    (chunk) => connection.getMultipleAccountsInfo(chunk),
-    { chunkSize: 99, sleepTime: RPC_SLEEP_MS },
-  )
+  const accountInfos = await fetchAccounts(connection, obligationPubkeys)
 
   const collateralByReserve = new Map()
   let accountsWithData = 0
@@ -195,11 +200,7 @@ async function tvl(api) {
 
   if (collateralByReserve.size) {
     const reserveKeys = [...collateralByReserve.keys()].map((r) => new PublicKey(r))
-    const reserveInfos = await runInChunks(
-      reserveKeys,
-      (chunk) => connection.getMultipleAccountsInfo(chunk),
-      { chunkSize: 99, sleepTime: RPC_SLEEP_MS },
-    )
+    const reserveInfos = await fetchAccounts(connection, reserveKeys)
 
     for (let i = 0; i < reserveKeys.length; i++) {
       const reserveId = reserveKeys[i].toBase58()
@@ -222,11 +223,7 @@ async function tvl(api) {
 
   // --- Idle USDC sitting on vault ATAs (included in Loyal admin AUM) ---
   const usdcAtas = owners.map((o) => getAssociatedTokenAddress(USDC_MINT, o))
-  const ataInfos = await runInChunks(
-    usdcAtas,
-    (chunk) => connection.getMultipleAccountsInfo(chunk),
-    { chunkSize: 99, sleepTime: RPC_SLEEP_MS },
-  )
+  const ataInfos = await fetchAccounts(connection, usdcAtas)
   let usdcIdle = 0n
   let idleAccounts = 0
   for (const info of ataInfos) {
