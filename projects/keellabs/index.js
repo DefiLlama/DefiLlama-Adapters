@@ -12,7 +12,8 @@ const config = {
       '0x3031B1661Bb584bBA566D74Ba0c86Ab6f525AF07',   // VaultNext
       '0xAd7f3B6C7D16e19A3284BE0cE14578296feA471A',   // VaultRecover
       '0xF41AA2bb58952F490E2DFe437d50489Ac3c6A4bC',   // VaultClaim
-      '0x3e682FEC310d297cB109AC0b1Fe53F4EB0C8a5F8',   // Keel v2 — deployed 2026-08-05
+      '0x3e682FEC310d297cB109AC0b1Fe53F4EB0C8a5F8',   // Keellabs v2 — deployed 2026-08-05
+      '0x61C6dEc573505125EBc2b7e569250262b8dF33bC',   // fresh factory — deployed 2026-08-09
     ],
     npm: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
   },
@@ -22,7 +23,8 @@ const config = {
       '0xAc17cF95525796F81587c47Bb78d4ce7a187e5C7',   // VaultNext (costBasis1 sincronizado) — desplegada 2026-08-03
       '0x62fC42AA2Aa1F8743d97daBeD925E70E04682a1c',   // VaultRecover
       '0x3031B1661Bb584bBA566D74Ba0c86Ab6f525AF07',   // VaultClaim
-      '0x7c32443061e54681ebc9f8581E4fc2867A2D6384',   // Keel v2 — deployed 2026-08-05
+      '0x7c32443061e54681ebc9f8581E4fc2867A2D6384',   // Keellabs v2 — deployed 2026-08-05
+      '0x2fA41b881d194628160d7f95f10442Dc6BC5e06F',   // fresh factory — deployed 2026-08-09
     ],
     npm: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3',
   },
@@ -33,7 +35,8 @@ const config = {
       '0xF4263810321f03C01abA727De0210c4BFB13fdB8',   // VaultNext
       '0x811e2843c2a55b70D9C867988D69E624c35dAF4C',   // VaultRecover
       '0x609B9A1c089cb29a38bf19901a39259493997AB4',   // VaultClaim
-      '0x1E2c70bbEB3A156443B6ECBa23105FedD74a71a8',   // Keel v2 — deployed 2026-08-05
+      '0x1E2c70bbEB3A156443B6ECBa23105FedD74a71a8',   // Keellabs v2 — deployed 2026-08-05
+      '0xb2AA23f1664dB2AC87816ad69a2C19f217F57fc4',   // fresh factory — deployed 2026-08-09
     ],
     // PRJX's position manager, not the chain's default Uniswap deployment.
     npm: '0xeaD19AE861c29bBb2101E834922B2FEee69B9091',
