@@ -10,18 +10,20 @@ async function farms(api) {
     abi: 'function getAllFarms() view returns (address[])'
   })
 
+  if (!farms.length) return {}
+
   const lpTokens = await api.multiCall({
     abi: 'address:lpToken',
     calls: farms
   })
 
-  const balances = await api.multiCall({
-    abi: 'uint256:totalStaked',
-    calls: farms
-  })
-
   const tokensAndOwners = lpTokens.map((lp, i) => [lp, farms[i]])
-  return sumTokens2({ api, tokensAndOwners })
+
+  return sumTokens2({
+    api,
+    tokensAndOwners,
+    resolveLP: true
+  })
 }
 
 module.exports = {
@@ -31,6 +33,6 @@ module.exports = {
       factory: DEX_FACTORY,
       useDefaultCoreAssets: true,
     }),
-    staking: farms,   // this will show as "Staking" TVL on DefiLlama
+    staking: farms,
   }
 }
