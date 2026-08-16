@@ -3,6 +3,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const ITP_VAULT_ADDRRESS= '0x23371aEEaF8718955C93aEC726b3CAFC772B9E37'
 const ITP_ON_OPTIMISM = "0x0a7B751FcDBBAA8BB988B9217ad5Fb5cfe7bf7A0";
+const STSATO_ON_ETHEREUM = '0xdeE7f7A032326148E65EC3068F1c9b29E26B75b3'
+const SATO_ON_ETHEREUM = '0x829f4B62EEBE12Af653b4dD4fFc480966F7d7f09'
 const VELO_PRICE_ORACLE = "0x395942C2049604a314d39F370Dfb8D87AAC89e16";
 const WETH_TOKEN_ADDRESS = ADDRESSES.optimism.WETH_1;
 const VELO_TOKEN_ADDRESS = "0x3c8b650257cfb5f272f799f5e2b4e65093a11a05";
@@ -67,8 +69,19 @@ const getAutoCompounderTVL = async (api) => {
   return sumTokens2({ api, resolveLP: true });
 }
 
+const getStsatoTVL = async (api) => {
+  const backing = await api.call({ target: STSATO_ON_ETHEREUM, abi: 'uint256:getBacking' })
+  api.add(SATO_ON_ETHEREUM, backing)
+}
+
 module.exports = {
-  methodology: "Tracks ITP staking vault TVL using VELO price oracle, and auto-compounder vault TVL by unwrapping LP tokens held in 6 vault contracts. Auto-compounders automatically compound VELO rewards back into LP positions.",
+  methodology: "Tracks ITP staking vault TVL using VELO price oracle, Velodrome auto-compounder vault TVL by unwrapping LP tokens held in 6 vault contracts, and stSATO TVL on Ethereum from on-chain SATO backing via getBacking(). stSATO is TVL-only and not counted as protocol fee revenue.",
+  hallmarks: [
+    [1747938551, 'stSATO launch (Ethereum)'],
+  ],
+  ethereum: {
+    tvl: getStsatoTVL,
+  },
   optimism: {
     tvl: getAutoCompounderTVL,
     staking: getStakedTVL
