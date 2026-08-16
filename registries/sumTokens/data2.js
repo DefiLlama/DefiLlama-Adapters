@@ -1048,8 +1048,12 @@ module.exports = {
     },
   },
   "subfrost": {
-    "methodology": "Total value of the collateral held by the transparent and verifiable SUBFROST signing group. On bitcoin, all BTC backing frBTC across both deployments, Alkanes and BRC2.0. On ethereum, the USDC and USDT held in the frUSD vault. The frBTC and frUSD minted against these deposits are not counted separately, so nothing is double counted.",
+    "methodology": "Total value of the collateral held by the transparent and verifiable SUBFROST signing group. On bitcoin, all BTC backing frBTC across both deployments, Alkanes and BRC2.0. On ethereum, the collateral backing frUSD: the USDC and USDT held in the frUSD vault, plus the Curve 3pool (3CRV) position the vault deploys its stablecoins into. The frBTC and frUSD minted against these deposits are not counted separately, so nothing is double counted.",
     "bitcoin": { "tvl": { "__btcBook": "subfrost" } },
-    "ethereum": { "owner": "0x95779e7e1c943042255b8a78273fe6de4823cf06", "tokens": [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT]}
+    "ethereum": { "tokensAndOwners": [
+      [ADDRESSES.ethereum.USDC, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
+      [ADDRESSES.ethereum.USDT, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
+      ["0x6c3f90f043a72fa612cbac8115ee7e52bde6e490", "0x5c5d66c82e2c634074661c3e7427668737c70100"],
+    ]}
   }
 }
