@@ -935,6 +935,18 @@ const uniV2Configs = {
     },
     hyperliquid: '0x2fd54310cE91919c2F328e7C9028A854De40673E',
   },
+  'icarus-v2': {
+    start: '2026-01-23',
+    methodology: 'Value of the tokens locked in the classic stable and volatile liquidity pools.',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      hasStablePools: true,
+    },
+    rise: '0xEe10C6a0f158bFEeef3d48Dc0D26130Cf6115615',
+  },
   'iceswap': {
     base: '0x79b8F15a3bEEcd5014B748499Ec89692665ea368',
   },
