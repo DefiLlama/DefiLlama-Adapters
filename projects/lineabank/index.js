@@ -16,7 +16,6 @@ const v2Config = {
   mint: '0x0f225d10dd29D4703D42C5E93440F828bf04D150',
   taiko: '0x803a61d82BaD2743bE35Be5dC6DEA0CccE82C056',
   bsc: '0x8eFdD7396b83Cd53ae7555224A30c41b1A100ffA',
-  morph: '0xD48c646CF9B011D97E31770873985ADD8ed7371c',
   rsk: '0xc30991623fb2a63E6e1B59A29987E1EEE57447bF',
   hemi: '0x16B3A05f1adaCa8F028AAd7C5B0475cC512a0619',
 }
@@ -25,7 +24,6 @@ const insolvantChains = {
   mode: true,
   scroll: true,
   bsquared: true,
-  morph: true,
   linea: true,
   manta: true,
   zklink: true,
