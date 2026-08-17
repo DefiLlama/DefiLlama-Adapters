@@ -1,6 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// EVM Authority Clusters & Executive Builder Nodes
 const EVM_OWNERS = [
   "0xf3e726642f6384cb3d0ca14f426403bae888bf96",
   "0x2e8601bfb4bd0f31a60e1b93945cfb7d6c2f17c5",
@@ -25,39 +24,27 @@ const EVM_OWNERS = [
   "0x3e42d550ac249d2077f888838e15a5bf185054fd"
 ];
 
-// Solana Infrastructure Endpoints
 const SOLANA_OWNERS = [
   "Eq9MkY3jhFsjGQ4RjUjrFjGUD34qyN2iBhqFLzZEDydQ",
   "EZqGfTKusnWaZoFqfKqZbwwcM9oZFE5tuc2EpuseFKkk"
 ];
 
 async function tvl(api) {
-  const chain = api.chain;
-  if (chain === 'solana') {
+  if (api.chain === 'solana') {
     return sumTokens2({ chain: 'solana', owners: SOLANA_OWNERS });
   }
   return sumTokens2({ api, owners: EVM_OWNERS });
-}
-
-// Fees (placeholder)
-async function fees(api) {
-  return {};
-}
-
-// Volume (placeholder)
-async function volume(api) {
-  return {};
 }
 
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: "TVL is calculated by summing native gas tokens (ETH, SOL, BNB, POL) and synthetic contract assets ($1USD, USDC, USDT) across 21 EVM executive authority clusters and 2 Solana sovereign settlement endpoints.",
-  ethereum: { tvl, fees, volume },
-  arbitrum: { tvl, fees, volume },
-  optimism: { tvl, fees, volume },
-  polygon: { tvl, fees, volume },
-  bsc: { tvl, fees, volume },
-  base: { tvl, fees, volume },
-  solana: { tvl, fees, volume }
+  ethereum: { tvl },
+  arbitrum: { tvl },
+  optimism: { tvl },
+  polygon: { tvl },
+  bsc: { tvl },
+  base: { tvl },
+  solana: { tvl }
 };
