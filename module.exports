@@ -1,0 +1,27 @@
+// Minimal adapter stub for dollar1usd-protocol.
+// Replace fetch() with your real implementation.
+
+module.exports = {
+  // Set timetravel according to whether your adapter supports historical queries
+  timetravel: false,
+
+  // Optional: earliest timestamp your adapter supports (seconds)
+  start: async () => 0,
+
+  // Main fetch function expected by the test harness
+  fetch: async (timestamp, block, chainBlocks) => {
+    // Return a simple object matching adapter expectations.
+    // Typically this should return an object with TVL or token balances, e.g. { 'ethereum': 123 }
+    // For now return an empty TVL to avoid runtime errors; implement actual logic here.
+    return {
+      totalValueLocked: 0
+    };
+  },
+
+  // Optional metadata
+  meta: {
+    name: 'Layer Infinite ($1USD Protocol)',
+    website: 'https://dollar1usd.com',
+    description: 'Cross-chain intent execution and liquidity protocol.'
+  }
+};
