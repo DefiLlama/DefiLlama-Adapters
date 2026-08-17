@@ -80,7 +80,7 @@ async function sonicStaking(api) {
 
 module.exports = {
   methodology:
-    'TVL sums assets custodied by the SODAX AssetManager on each supported spoke chain plus the Sonic-native assets held in the hub-side sodaX vault tokens (sodaUSDC, sodaUSDT, sodaETH, sodaS). Per-chain AssetManager addresses and supported-token sets are pulled live from the SODAX spoke config API. Money-market supplied collateral is not counted separately because it is the same wrapped representation of assets already locked on spoke AssetManagers. Solver inventory is external and excluded. Staked SODA is reported under staking as the xSODA vault totalAssets (the SDK-canonical "totalStaked" figure). Non-EVM spokes (Solana, Bitcoin, Stellar, Sui, ICON, NEAR, Stacks, Injective) will be added in a follow-up.',
+    'TVL sums assets custodied by the SODAX AssetManager on each supported blockchain network plus the Sonic-native assets held in the hub-side sodaVariants (sodaUSDC, sodaUSDT, sodaETH, sodaS). Per-network AssetManager addresses and supported-token sets are pulled live from the SODAX spoke config API. Money-market supplied collateral is not counted separately because it is the same wrapped representation of assets already locked on the AssetManagers. Independent solver inventory is external and excluded. Staked SODA is reported under staking as the xSODA vault totalAssets (the SDK-canonical "totalStaked" figure). SODAX is live on 21 blockchain networks total; this adapter currently covers the 12 EVM networks. Non-EVM networks (Solana, Bitcoin, Stellar, Sui, ICON, NEAR, Stacks, Injective) and Redbelly will be added in follow-up PRs.',
 };
 
 Object.values(chainIdToName).forEach((chain) => {
