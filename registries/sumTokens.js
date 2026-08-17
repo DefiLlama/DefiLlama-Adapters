@@ -15266,6 +15266,15 @@ const configs = {
       ]
     },
   },
+  "gilder": {
+    "methodology": "TVL is the USDC deposited by users and held in the per-user Safe Vault on Base (the 80% principal of each 3-year Term Deposit). USDC held in the protocol-owned Distribution Reserve and Market Treasury is excluded from this TVL calculation, as it is protocol working capital rather than user deposits. Position NFTs are excluded because they are claims on the Safe Vault, not distinct value. The GILD token is excluded: its only market is a single Base DEX pool whose liquidity is currently too thin to support a reliable on-chain price.",
+    "base": {
+      "owner": "0x9b937b72172c0706b51984a09992bB8007771E67",
+      "tokens": [
+        ADDRESSES.base.USDC
+      ]
+    },
+  },
   "glorb": {
     "methodology": "TVL is ETH locked in Snatch prize pot and jackpot, plus ETH in Mines jackpot and operational pools. Staking tracks GLORB held in Mines emission and jackpot pools.",
     "start": 1738368000,
@@ -16105,7 +16114,7 @@ const configs = {
       "owner": "0x669abe85f96a9e3b34723f7be9bc6f250abc0cc1",
       "tokens": [
         ADDRESSES.ethereum.USDC,
-        "0xe343167631d89B6Ffc58B88d6b7fB0228795491D"
+        ADDRESSES.ethereum.USDG
       ]
     },
     "hyperliquid": {
@@ -16655,6 +16664,13 @@ const configs = {
         ]
       ]
     },
+  },
+  "junoswap-launchpad": {
+    "methodology": "Sums native currency held by the bonding-curve contract.",
+    "bitkub": {
+      "owner": "0x65F6EC30A9E70822721585f6Bba15c40c2F8ab4e",
+      "tokens": [ADDRESSES.null]
+    }
   },
   "jupiter-prediction": {
     "solana": {
@@ -24793,6 +24809,14 @@ const configs = {
           "0xc01c9EF5de5862354adD9501a29e8765cFF01c32"
         ],
         [
+          ADDRESSES.ethereum.USDC,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.USDT,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
           ADDRESSES.ethereum.WETH,
           "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
         ],
@@ -24802,6 +24826,14 @@ const configs = {
         ],
         [
           ADDRESSES.ethereum.WBTC,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.WEETH,
+          "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
+        ],
+        [
+          ADDRESSES.ethereum.RETH,
           "0x684404F2AEBAD87a6803F13741B1d638Bfe2C671"
         ],
         [
@@ -26584,17 +26616,15 @@ const configs = {
     },
   },
   "stonkbrokers": {
-    "methodology": "TVL is the sum of tokens held by the StockBooster contract. Staking tracks STONKBROKER tokens in the escrow contract.",
+    "methodology": "TVL is the liquidity locked in the Safety Deposit Box locker (Uniswap V3 position NFTs escrowed permanently or on long vests). Staking tracks STONKBROKER tokens in the escrow contract. The previous TVL owner (StockBooster fee collector) was retired on 2026-08-04 and only holds transient fee dust between sweeps.",
     "robinhood": {
       "tvl": {
-        "owner": "0x038a7F4E4E89448ad74e044337C9aC25C11e726B",
-        "tokens": [
-          ADDRESSES.null,
-          ADDRESSES.robinhood.WETH,
-          "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9",
-          "0x12f190a9F9d7D37a250758b26824B97CE941bF54",
-          "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC",
-        ]
+        "owner": "0xFc96CF67eCC55bE4AdABc3AecBe6Ad6349f11223",
+        "resolveUniV3": true,
+        "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
+        "uniV3ExtraConfig": {
+          "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
+        }
       },
       "staking": {
         "owner": "0x799AE26fA515ceF145e8bC8636F7fFF87B05Cf62",
@@ -27167,6 +27197,23 @@ const configs = {
       ]
     },
   },
+  "swinghook": {
+    "methodology": "TVL counts ETH held by the ETH Settlement Vault, Holder Vault, and FeeKeep. Staked Swing is reported separately. The protocol-native Swing settlement reserve and the official Uniswap v4 pool are excluded.",
+    "ethereum": {
+      "tvl": {
+        "owners": [
+          "0xa22aB327373EF932239FF0AEC7E0BB746eD00Da2",
+          "0x2e6970112417dd28341976Cb5E1Fc479dd5d2F58",
+          "0x538177Ab16B34Ff5ce95BebFdeA5f0A2A16313D3"
+        ],
+        "tokens": [ADDRESSES.null]
+      }, 
+      "staking": {
+        "owners": ["0x2e6970112417dd28341976Cb5E1Fc479dd5d2F58"],
+        "tokens": ["0x89Cf5C1b3bc04ea54795B37A85258F1dfC9c31dF"]
+      }
+    }
+  },
   "switcheofinance": {
     "ethereum": {
       "owners": [
@@ -27418,6 +27465,13 @@ const configs = {
           "7dLJnm2NzHPMwB7mJL7azhyMLqs4ZzKYkkhr3ob72Gwo"
         ]
       }
+    },
+  },
+  "taydex": {
+    "methodology": "Counts native Base USDC held by the verified TayDex market contract as liquidity locked across TayDex prediction markets. Trading volume, wallet balances, and fees already transferred out of the contract are not included.",
+    "base": {
+      "owner": "0x3ade22Fa1EF5ac75437A3734D91bA588E54875dd",
+      "token": ADDRESSES.base.USDC
     },
   },
   "tbill": {
@@ -29091,6 +29145,13 @@ const configs = {
         "0xBc7f67fA9C72f9fcCf917cBCEe2a50dEb031462A"
       ]
     },
+  },
+  "wambo-fun": {
+    "methodology": "TVL is the native ETH held by the RaceBook contract: live race stakes, unclaimed winnings and refunds, accrued rake and the pot rolling into the next race.",
+    "robinhood": {
+      "owner": "0x6a8196b02d94e96366ace6f494fc46eae3c35e31",
+      "tokens": [ADDRESSES.null]
+    }
   },
   "wenmarkets": {
     "methodology": "We count the MATIC on 0x3bB94837A91E22A134053B9F38728E27055ec3d1",

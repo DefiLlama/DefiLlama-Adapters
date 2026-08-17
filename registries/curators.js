@@ -159,6 +159,7 @@ const configs = {
           morpho: [
             '0x5dc53a23AdC9f2Bed98de6F59F7F309a7c71FF2B',
             '0xA2EAaD0D586cF9FD73bb2c09cF6A7E3e187D68cd',
+            '0x55C1B6e461a6334B567bAF0FEb5D728715446f05',
           ],
         },
       },
@@ -808,6 +809,19 @@ const configs = {
         swellchain: {
           euler: [
             '0xc5976e0356f0A3Ce8307fF08C88bB05933F88761',
+          ],
+        },
+      }
+    },
+  },
+  "sharewoods": {
+    config: {
+      methodology: 'Count all assets are deposited in all vaults curated by Sharewoods.',
+      blockchains: {
+        robinhood: {
+          morpho: [
+            '0x5FE15021a7C0Ff4A9965b400E474f616451BA128', // Sharewoods RWA USDG
+            '0xf8f8654A26bfe134ee290d0b6a749Ba45F03a104', // Sharewoods Classic USDG
           ],
         },
       }

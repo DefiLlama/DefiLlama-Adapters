@@ -2334,6 +2334,16 @@ const configs = {
       ownTokens: ['0x62edc0692BD897D2295872a9FFCac5425011c661'], // GMX
     },
   },
+  'treasury/gilder': {
+    base: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.base.USDC
+      ],
+      owners: ["0x9e2cE9510a89dEAc71898fd0a86D84214c20607B", "0xAa199c5605c221574d9738aDa3d04CEEA493E658"],
+      ownTokens: ["0xA6C3b8Dcb7C31132Dcef64eF099f68B731db1e73"],
+    },
+  },
   'treasury/gitcoin': {
     ethereum: {
       tokens: [
@@ -3049,6 +3059,12 @@ const configs = {
       owners: ['0x5C3d21D406226F17a06510F1CB9157BD9e751416'],
       ownTokens: ["0x91fbB2503AC69702061f1AC6885759Fc853e6EaE"]
     },
+  },
+  'treasury/kayen-finance': {
+    chz: {
+      tokens: [nullAddress],
+      owners: ['0xCf271d12C2d1a757829F5F216a564017D60886F0']
+    }
   },
   'treasury/keeperdao': {
     ethereum: {
@@ -4629,6 +4645,12 @@ const configs = {
       ownTokens: ['0x25118290e6a5f4139381d072181157035864099d'],
     },
   },
+  'treasury/raisehood': {
+    robinhood: {
+      tokens: [nullAddress, ADDRESSES.robinhood.WETH],
+      owner: '0x0a39701e5D5BB5A6146aEEba66638297D0947f04'
+    }
+  },
   'treasury/rarible': {
     ethereum: {
       tokens: [
@@ -5713,6 +5735,36 @@ const configs = {
       ownTokens: ["0xa0b93B9e90aB887E53F9FB8728c009746e989B53"],
     },
   },
+  'treasury/thesauros': {
+    arbitrum: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.arbitrum.USDC_CIRCLE
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    base: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.base.USDC
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    monad: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.monad.USDC
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+    plasma: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.plasma.USDT0
+      ],
+      owners: ["0xafa9ed53c33bbd8de300481ce150db3d35738f9d", "0x8f8657e8F0DAbB784698da517F2C8a28B614118b", "0x18f95046711EfACA7428aEbb92EfB148673b8230"],
+    },
+  },
   'treasury/tokemak': {
     ethereum: {
       tokens: [
@@ -6083,6 +6135,22 @@ const configs = {
         ADDRESSES.arbitrum.WETH, // WETH
         "0x39ff5098081FBE1ab241c31Fe0a9974FE9891d04", // voltGNS
       ],
+    },
+  },
+  'treasury/waddle-club': {
+    megaeth: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.megaeth.USDm
+      ],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
+    },
+    robinhood: {
+      tokens: [
+        nullAddress,
+      ],
+      ownTokens: ["0xd3af6612119362d31d7a6c93ad5e6d01443c855d"],
+      owners: ["0xfE88793e8332F5CD3C5Cc370d6dAa680167C6453"],
     },
   },
   'treasury/wagmi': {

@@ -27,7 +27,7 @@ pipeline {
                         pnpm --version
                         
                         echo "=== Installing root dependencies ==="
-                        pnpm install --frozen-lockfile || pnpm install
+                        pnpm install --frozen-lockfile --ignore-scripts
                     '''
                 }
             }
@@ -39,7 +39,7 @@ pipeline {
                     dir("${env.WORKSPACE}/projects/helper/custom-scripts/sushi-analytics-v2") {
                         sh '''
                             echo "=== Installing sushi analytics dependencies ==="
-                            pnpm install --frozen-lockfile || pnpm install
+                            pnpm install --frozen-lockfile --ignore-scripts
                         '''
                     }
                 }

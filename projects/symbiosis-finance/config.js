@@ -532,6 +532,15 @@ module.exports = {
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
+    },
+    {
+      name: 'stable',
+      tokens: [
+        '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USDT0
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
     }
   ]
 }

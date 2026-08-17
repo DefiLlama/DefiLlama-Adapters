@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require('@solana/web3.js')
 const { getConnection, sumTokens2 } = require('../helper/solana')
 
@@ -25,7 +26,7 @@ const HYPERLANE_PDA = '88q7zoKctwAQRsoTxkMJy95sNE3tntuyEhSrhvR1eZwq'
 const COOKIECHAIN_HYPERLANE_PDA = 'CL2JoQ5jdTpRNKshWhaTihuooT4qrKdLUiPsqKj3yAKz'
 // Native COOK is priced under the wrapped mint address (Solana fork -> same address
 // as wrapped SOL), 9dp.
-const COOKIECHAIN_COOK = 'So11111111111111111111111111111111111111112'
+const COOKIECHAIN_COOK = ADDRESSES.solana.SOL
 
 async function solanaTvl(api) {
   return sumTokens2({
