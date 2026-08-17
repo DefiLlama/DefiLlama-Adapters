@@ -13,11 +13,15 @@ const tvl = async (api) => {
   const { data } = await axios.get(API)
   const payload = data.payload?.tvl_data ?? data.payload ?? {}
   const balances = payload[api.chain] ?? {}
+  // The payload is keyed by bare token addresses, so the chain-prefixed key this
+  // used to build ("ethereum:0xa39986f9...") could never match "0xa39986f9..."
+  // and the filter was a no-op. Match the bare address, and keep tolerating a
+  // chain-prefixed key in case the shape changes again.
   const blacklisted = rwaUSDis[api.chain]?.toLowerCase()
   if (blacklisted) {
-    const target = `${api.chain}:${blacklisted}`
     for (const key of Object.keys(balances)) {
-      if (key.toLowerCase() === target) delete balances[key]
+      const address = key.toLowerCase().split(':').pop()
+      if (address === blacklisted) delete balances[key]
     }
   }
   return balances
