@@ -1037,12 +1037,6 @@ module.exports = {
     "bc1q0gw7fexuwthyf9wwzrjn4h0flj5veflwgzdxx0727gt9upfk0cfqfjv42k",
     "bc1qfpk3fj2u9kaw8qq96snm72dws5hyxxym5tf8tn",
   ],
-  coinbaseltc: [
-    "LTbMyvoyfSuQNqG5cGihin6BCbiZay11rU",
-    "LVeXnSCw2ci7qq2EGcNwjZqhQ73KrJHNJE",
-    "ltc1qhac8t52gdh8fzeft4ygzxn05nluwwecjrzel99",
-    "LP3k3DmN21xmCay3b5yReLKQKvViCnDPhi",
-  ],
   prosper: [
     "bc1qcrdvx3dvq35kawsp02033pwla244rr6hptg982", //https://app.prosper-fi.com/stats#dao-treasury
   ],
