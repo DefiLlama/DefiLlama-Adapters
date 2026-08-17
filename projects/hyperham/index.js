@@ -14,8 +14,10 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
              blacklisted out of this bucket — it is protocol inventory, not a reserve.
              Both assets in this bucket are core assets, so tvl does not depend on wHAM
              having a price feed.
-  ownTokens  HAM and wHAM held by the multisig. Protocol inventory, reported separately
-             so it is never counted as backing for itself.
+  ownTokens  HAM and wHAM held by the multisig, plus the wHAM leg of protocol-owned
+             liquidity. Protocol inventory, reported separately so it is never counted as
+             backing for itself. The LP has two legs and both are treasury-owned — counting
+             only the WHYPE one would drop real inventory from the report.
   borrowed   WHYPE lent by the Cooler desk and still outstanding. Those tokens have left
              the multisig and sit with borrowers, so they are reported here instead of in
              tvl — the same treatment Olympus gives Cooler Loans debt.
@@ -32,19 +34,22 @@ const OWN_TOKENS = [HAM, WHAM]
 
 // The protocol-owned Ramses position is a Solidly-style pair whose symbol
 // ("Volatile - WHYPE/wHAM") does not match the repo's isLP heuristic, so `resolveLP` leaves
-// it as an unpriced LP token. It is unwrapped explicitly here. Only the WHYPE side is added:
-// the wHAM side is the protocol's own token and belongs in ownTokens, not in TVL.
-const addProtocolOwnedLiquidity = async (api) => {
+// it as an unpriced LP token. It is unwrapped explicitly here instead. Both legs are
+// returned and each goes to the bucket it belongs in: WHYPE to tvl, wHAM to ownTokens.
+const getProtocolOwnedLiquidity = async (api) => {
   const [balance, supply, reserves, token0] = await Promise.all([
     api.call({ target: RAMSES_WHYPE_WHAM, abi: 'erc20:balanceOf', params: [TREASURY] }),
     api.call({ target: RAMSES_WHYPE_WHAM, abi: 'uint256:totalSupply' }),
     api.call({ target: RAMSES_WHYPE_WHAM, abi: 'function getReserves() view returns (uint256 reserve0, uint256 reserve1, uint256 blockTimestampLast)' }),
     api.call({ target: RAMSES_WHYPE_WHAM, abi: 'address:token0' }),
   ])
-  if (!+supply || !+balance) return
+  if (!+supply || !+balance) return null
   const isToken0 = token0.toLowerCase() === WHYPE.toLowerCase()
-  const whypeReserve = isToken0 ? reserves.reserve0 : reserves.reserve1
-  api.add(WHYPE, (BigInt(whypeReserve) * BigInt(balance)) / BigInt(supply))
+  const share = (reserve) => (BigInt(reserve) * BigInt(balance)) / BigInt(supply)
+  return {
+    whype: share(isToken0 ? reserves.reserve0 : reserves.reserve1),
+    wham: share(isToken0 ? reserves.reserve1 : reserves.reserve0),
+  }
 }
 
 const tvl = async (api) => {
@@ -54,14 +59,21 @@ const tvl = async (api) => {
     tokens: [WHYPE, ADDRESSES.null],
     blacklistedTokens: OWN_TOKENS,
   })
-  await addProtocolOwnedLiquidity(api)
+  const pol = await getProtocolOwnedLiquidity(api)
+  // Lowercase: sumTokens2 writes lowercased keys, and api.add does not normalize — a
+  // checksummed address here would create a second balance entry for the same token.
+  if (pol) api.add(WHYPE.toLowerCase(), pol.whype)
 }
 
-const ownTokens = async (api) => sumTokens2({
-  api,
-  owners: [TREASURY],
-  tokens: OWN_TOKENS,
-})
+const ownTokens = async (api) => {
+  await sumTokens2({
+    api,
+    owners: [TREASURY],
+    tokens: OWN_TOKENS,
+  })
+  const pol = await getProtocolOwnedLiquidity(api)
+  if (pol) api.add(WHAM.toLowerCase(), pol.wham)
+}
 
 const borrowed = async (api) => {
   const receivables = await api.call({ target: COOLER_VAULT, abi: 'uint256:reserveReceivables' })
