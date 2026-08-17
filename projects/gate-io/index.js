@@ -384,6 +384,12 @@ const config = {
       "aleo18lpsmdx0hzwhw6ejaad5j8hjngwddyn0ap8ws8cr0z7gls4k4s9qz5ww07"
     ]
   },
+  "allora": {
+    "owners": [
+      "allo155svs6sgxe55rnvs6ghprtqu0mh69kehdq4wh6",
+      "allo1xunyznpjmj9jv5e2zwngp2qrzmulr2ggktma70"
+    ]
+  },
   "alephium": {
     "owners": [
       "17R6Ptkz9i1LhiKyMhnitUMkgFygGeeQUFZvRx6GgV8Fc",
@@ -1218,6 +1224,11 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "mantra": {
+    "owners": [
+      "mantra155svs6sgxe55rnvs6ghprtqu0mh69kehgc9fre"
+    ]
+  },
   "merlin": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1854,6 +1865,11 @@ const config = {
       "0x85faa6c1f2450b9caea300838981c2e6e120c35c",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+    ]
+  },
+  "zigchain": {
+    "owners": [
+      "zig155svs6sgxe55rnvs6ghprtqu0mh69kehze2lzt"
     ]
   },
 };

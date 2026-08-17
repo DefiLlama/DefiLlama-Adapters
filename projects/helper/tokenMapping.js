@@ -19,7 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'provenance', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
-  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band', 'axiome',
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band', 'axiome', 'allora',
   'celestia', 'dydx', 'dungeon', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion', 'zigchain',
   'akash'
 ]
@@ -45,6 +45,15 @@ const fixBalancesTokens = {
   // memecore's gas token is not priced under m:0x0 by the coins service yet
   m: {
     [nullAddress]: { coingeckoId: 'memecore', decimals: 18 },
+  },
+  // allora's native denom is not priced under allora:uallo by the coins service yet
+  allora: {
+    uallo: { coingeckoId: 'allora', decimals: 18 },
+  },
+  // mantrachain's amantra is not priced under mantra:amantra by the coins service
+  // yet - note this is the MANTRA token, not OM (which lives under uom)
+  mantra: {
+    amantra: { coingeckoId: 'mantra', decimals: 18 },
   },
   inri: {
     '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {

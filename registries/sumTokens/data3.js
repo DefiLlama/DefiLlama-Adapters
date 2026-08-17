@@ -873,4 +873,10 @@ module.exports = {
       "pool2": { "owners": ["0x58351236275E6f378BB2211B9fd623fd6E5e9D17","0x9B937aB45Bab1e8CC4590eCF55dC5577caF89dE1"], "tokens": ["0x0e537bb44eb6064D12326fF2543d918e9b9a5482"] },
     },
   },
+  "dicemoon": {
+    methodology: 'USDC held by the DiceMoonTables escrow contract on Base: buy-ins of games in progress and winnings not yet claimed. The operator never takes custody - stakes go wallet -> escrow -> winners.',
+    "base": {
+      "tvl": { "owners": ["0x0bc585e3c8c47EE507C873eC994b14fC7883793d"], "tokens": [ADDRESSES.base.USDC] },
+    },
+  }
 }
