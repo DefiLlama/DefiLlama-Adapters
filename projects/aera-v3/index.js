@@ -31,12 +31,16 @@ const factories = {
 
 async function getMultiDepositorVaults(api) {
   const factory = factories[api.chain]
+  // Some Base RPCs trail the indexed head by a few blocks. Keep the factory
+  // log query behind the reported head so provider failover remains reliable.
+  const toBlock = api.chain === 'base' ? (await api.getBlock()) - 10 : undefined
   const logs = await getLogs({
     api,
     target: factory.address,
     topics: [vaultCreatedTopic],
     eventAbi: vaultCreatedEvent,
     fromBlock: factory.fromBlock,
+    toBlock,
     onlyArgs: true,
   })
 
