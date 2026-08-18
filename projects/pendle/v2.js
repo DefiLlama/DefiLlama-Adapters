@@ -191,6 +191,13 @@ const config = {
         fromBlock: 75588954
       }, // v6
     ],
+  },
+  xlayer: {
+    factories: [{
+        factory: "0x544BF81c855AE84c1e8b65d5E38770898D01EeE2",
+        fromBlock: 66872567
+      }, // v6
+    ],
   }
 };
 

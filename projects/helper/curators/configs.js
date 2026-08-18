@@ -242,6 +242,30 @@ const MorphoConfigs = {
       }
     ]
   },
+  pharos: {
+    vaultFactoriesV2: [
+      {
+        address: '0x8e01ed1e1a41029b3137fce9aa880c0a54827498',
+        fromBlock: 4240410,
+      }
+    ]
+  },
+  megaeth: {
+    vaultFactoriesV2: [
+      {
+        address: '0xf133FA5A78C398B31Cc4a180E6Ae84111D6DCF5B',
+        fromBlock: 16409067,
+      }
+    ]
+  },
+  morph: {
+    vaultFactoriesV2: [
+      {
+        address: '0x7D8BF8B276f967F7539c9e91E1a85a33fefE612B',
+        fromBlock: 23180183,
+      }
+    ]
+  },
 }
 
 const EulerConfigs = {

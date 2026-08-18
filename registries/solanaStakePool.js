@@ -36,6 +36,9 @@ const configs = {
   'bybitSOL': {
     solana: '2aMLkB5p5gVvCwKkdSo5eZAL1WwhZbxezQr1wxiynRhq',
   },
+  'gateSOL': {
+    solana: '31Mwyr8Qof3LjB7Nn8fuWk6HcGVJCTYFYU3bAmW9fcL1',
+  },
   'starke-sol': {
     solana: '6LXCxeyQZqdAL4yLCtgATFYF6dcayWvsiwjtBFYVfb1N',
   },
@@ -74,6 +77,9 @@ const configs = {
   },
   'bonk-sol': {
     solana: 'ArAQfbzsdotoKB5jJcZa3ajQrrPcWr2YQoDAEAiFxJAC',
+  },
+  'bgsol': {
+    solana: '9qrFrE5qoZ3QfYZrZoeXFNRWfErpjzZKudCAoBTvgKjb',
   },
   'jpool': {
     methodology: "JSOL total supply as it's equal to the SOL staked",

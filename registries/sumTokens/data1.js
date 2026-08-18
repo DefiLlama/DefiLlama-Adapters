@@ -11,12 +11,6 @@ module.exports = {
     "timetravel": false,
     "solana": { "tokenAccounts": ["FhTJEGXVwj4M6NQ1tPu9jgDZUXWQ9w2hP89ebZHwrJPS"] }
   },
-  "bgsol": {
-    "timetravel": false,
-    "doublecounted": true,
-    "methodology": "Bitget Staked SOL (BGSOL) is a tokenized representation on your staked sSOL",
-    "solana": { "tokenAccounts": ["Ejg5vqsthntG8wJDijzgEWvdvhoAh8pzu4Q4r4MqsdkR"] }
-  },
   "asol": {
     "timetravel": false,
     "methodology": "aSOL TVL is computed by looking at the token balances of the accounts holding the stake pool tokens backing the aSOL Crate. The token accounts come from https://asol.so/#/admin.",
@@ -60,15 +54,35 @@ module.exports = {
       ]
     }
   },
-  "hylo": {
-    "timetravel": false,
+  "arrowpad-fun": {
+    // ArrowPad.fun launchpad on Robinhood Chain: every launch seeds the full
+    // token supply as single-sided Uniswap V3 liquidity and the LP NFT is locked
+    // forever in the ArrowPadLocker (no withdrawal function).
     "doublecounted": true,
-    "methodology": "TVL is calculated by summing all LSTs locked in Hylo protocol.",
-    "solana": {
-      "tokenAccounts": [
-        "2Y3TLkdGoJwbdizxqrZmQwNLYJyGKTgzC4tbetbkvQ43", // jitoSOL
-        "7VNBQCDKt4cxLWW51suV8a6VAYC4R66CfyySiYJek7Rj" // hyloSOL
-      ]
+    "methodology": 'TVL is the WETH side of the permanently locked Uniswap V3 LP positions held by the ArrowPadLocker.',
+    "robinhood": {
+      owners: ['0xBa9C247041a7715591c7B48f20dFBa520a7d68E9'], // ArrowPadLocker
+      resolveUniV3: true,
+      uniV3WhitelistedTokens: [ADDRESSES.robinhood.WETH],
+      uniV3ExtraConfig: { nftAddress: '0x73991a25c818bf1f1128deaab1492d45638de0d3' },
+    }
+  },
+  "prisma-pad": {
+    // Prismapad launchpad on Stable (chain id 988).
+    // v1 (bonding curve, legacy):
+    // https://stablescan.xyz/address/0xdcb881fc8b472eb7797687b237e6cb123c425ff7#code
+    // v2 / v3 (direct-to-DEX — every token launches straight into an official
+    // StableSwap (Uniswap v3) pool; the LP position is locked in the launchpad).
+    // v3 supersedes v2 for new launches; v2 stays live for its existing tokens:
+    // https://stablescan.xyz/address/0xa96d9eadc4d6eed50fa408a33585c5f1df039db5#code
+    // https://stablescan.xyz/address/0x7c1628681c18884a1a90977fdae034282892c842#code
+    "doublecounted": true,
+    "methodology": 'TVL is the USDT0 side of Prismapad liquidity: the bonding-curve reserves held by the legacy v1 launchpad, plus the USDT0 in the locked v3 NFTs',
+    "stable": {
+      owners: ['0xdcb881fc8b472eb7797687b237e6cb123c425ff7', '0xa96d9eadc4d6eed50fa408a33585c5f1df039db5', '0x7c1628681c18884a1a90977fdae034282892c842'],
+      resolveUniV3: true,
+      tokens: [ADDRESSES.stable.USDT0],
+      uniV3WhitelistedTokens: [ADDRESSES.stable.USDT0],
     }
   },
   "katana": {
@@ -661,6 +675,19 @@ module.exports = {
       ]
     }
   },
+  "wrappedBNB": {
+    // deadFrom: "2024-12-12",  // migrated to bsc and alexar acting as the bridge now
+    "timetravel": false,
+    "methodology": "Counts the BNB held by the Kava BEP3 \"bnb\" deputy on BNB Beacon Chain, which backs the wrapped BNB minted on Kava.",
+    "bsc": { "owners": ["bnb1jh7uv2rm6339yue8k4mj9406k3509kr4wt5nxn"] }
+  },
+  "wrappedfi": {
+    "timetravel": false,
+    "methodology": "The TVL consists of the underlying capital held in custody.",
+    "ripple": { "owners": ["r4Pr9aBnqN84hbkmJo4HwUtLj63E5vGFyE"] },
+    "celo": { "tokensAndOwners": [[ADDRESSES.null, "0x84d9dcAc2f00F2Cd903E340b5241EB6e5c198572"]] },
+    "ethereum": { "tokensAndOwners": [[ADDRESSES.null, "0xD6873b9592AB601E6cE6a6A781799d54961942F3"]] }
+  },
   "templar": {
     "bsc": {
       "tvl": { "__empty": true },
@@ -675,5 +702,28 @@ module.exports = {
     "ethereum": { "tvl": { "__empty": true }, "staking": { "__empty": true } },
     "moonriver": { "tvl": { "__empty": true }, "staking": { "__empty": true } },
     "harmony": { "tvl": { "__empty": true }, "staking": { "__empty": true } }
+  },
+  "linear": {
+    "methodology": "Counts LINA used to collateralize lUSD",
+    "bsc": {
+      "tvl": {
+        "tokensAndOwners": [
+          ["0x762539b45A1dCcE3D36d080F74d1AED37844b878", "0xcE2c94d40e289915d4401c3802D75f6cA5FEf57E"], // LINA @ LnCollateralSystem
+          [ADDRESSES.bsc.BUSD, "0x072F11c46146Ce636691d387BFbF8fD28e818EE8"] // bUSD @ vault
+        ]
+      },
+      "pool2": { "__pool2": ["0x12efdFF85f717ac1738CF50Be5f4Cdc916b0B8B1", "0x392f351fc02a3b74f7900de81a9aaac13ec28e95"] }
+    }
+  },
+  "pascal": {
+    "methodology": "TVL is the USDC collateral held in Pascal's vault token account on Solana.",
+    "solana": { "tokenAccounts": ["5vRGRcwN4iYaiQdso1vgWbTDFYbS8GQNUDRMMKE2ycZS"] }
+  },
+  "n1-exchange-bridge": {
+    "methodology": "Counts the USDC held in the N1 Exchange bridge custody wallet on Solana.",
+    "solana": {
+      "owners": ["2ds4b3zrkgZ9FU8vNBSpT1UzACnmfYtjGsazPRzsbCCz"],
+      "tokens": [ADDRESSES.solana.USDC]
+    }
   },
 }

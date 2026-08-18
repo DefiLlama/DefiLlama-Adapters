@@ -45,6 +45,9 @@ const uniV3Configs = {
   'basex': {
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
+  'betterswap-v3': {
+    vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
+  },
   'mute-cl': {
     era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523 },
   },
@@ -320,16 +323,6 @@ const uniV3Configs = {
     mantle: {
       factory: '0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42',
       fromBlock: 34710765,
-    },
-  },
-  'cmswap': {
-    jbc: {
-      factory: '0x5835f123bDF137864263bf204Cf4450aAD1Ba3a7',
-      fromBlock: 4990175,
-    },
-    bitkub: {
-      factory: '0x090C6E5fF29251B1eF9EC31605Bdd13351eA316C',
-      fromBlock: 25033350,
     },
   },
   'corexswap': {
@@ -1152,6 +1145,10 @@ const uniV3Configs = {
       factory: '0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b',
       fromBlock: 420275312,
     },
+    robinhood: {
+      factory: '0xE0c4ceb92d08CA985bB70fe0a22fEb121A9854A8',
+      fromBlock: 15761673,
+    },
   },
   'reservoir-tools-v3': {
     abstract: {
@@ -1742,6 +1739,46 @@ const uniV3Configs = {
   },
   'hyperlynx-v3': {
     hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+  },
+  'machima': {
+    base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
+  },
+  'robinswap-v3': {
+    robinhood: { factory: '0xea561e058313b96011e5070ca7d0f027a44e3748', fromBlock: 6027503 },
+  },
+  'swaphood-v3': {
+    robinhood: { factory: '0x0Ec554F0BfF0Be6C99d1e95C8015bb0950f6A2C7', fromBlock: 6052562 },
+  },
+  'up-v3': {
+    start: '2026-07-10',
+    robinhood: {
+      factory: '0x1ac9dB4a2608ba45D6127B1737949b51Bb54B7F3',
+      fromBlock: 6184096,
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      topics: ['0xab0d57f0df537bb25e80245ef7748fa62353808c54d6e528a9dd20887aed9ac2'],
+    },
+  },
+  'parityswap-v3': {
+    robinhood: { factory: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA', fromBlock: 14320075 },
+  },
+  'giga-dex-cl': {
+    robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
+  },
+  'alandale': {
+    start: '2026-08-04',
+    methodology: 'Value of the tokens locked in the concentrated liquidity pools.',
+    robinhood: {
+      factory: '0x16494A80E08Bcb9285D87b67149d7b01774D82F8',
+      fromBlock: 27941500,
+      isAlgebra: true,
+    },
+  },
+  'brownfi-clamm': {
+    hemi: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 4904397,
+      isAlgebra: true,
+    },
   }
 }
 

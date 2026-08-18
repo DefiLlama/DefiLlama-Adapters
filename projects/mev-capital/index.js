@@ -203,6 +203,9 @@ const configs = {
           '0xda4063ec62c3f3c1d2bdbf7dbfb2b2c906f8e8b2', // MORPHO USDT
           '0xc0a14627d6a23f70c809777ced873238581c1032', // MORPHO USD0
           '0x8e3c0a68f8065dc666065f16cf902596a60d540e', // MORPHO WBTC
+        '0x34eCe536d2ae03192B06c0A67030D1Faf4c0Ba43', // MEV Capital sgfEURCV
+        '0x5593bf07cB1aDa24462EF23240c530441BBAd3e8', // MEV Capital sgfUSDCV
+        '0x1c530D6de70c05A81bF1670157b9d928e9699089', // MEV Capital MCwBTC
       ],
       mellow: [
         '0x5fd13359ba15a84b76f7f87568309040176167cd', // Amphor Restaked ETH

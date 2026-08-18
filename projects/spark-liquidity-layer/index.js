@@ -9,6 +9,8 @@ const almProxy = {
   optimism: '0x876664f0c9Ff24D1aa355Ce9f1680AE1A5bf36fB',
   unichain: '0x345E368fcCd62266B3f5F37C9a131FD1c39f5869',
   avax: '0xecE6B0E8a54c2f44e066fBb9234e7157B15b7FeC',
+  robinhood: '0xfD2fD4B046136B540A56C11c75ac679AE7d1dB24',
+  xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
 }
 
 const mainnetAllocatorToTokens = {
@@ -57,7 +59,8 @@ const baseAllocatorToTokens = {
 
 const arbitrumAllocatorToTokens = {
   [almProxy.arbitrum]: [
-    ADDRESSES.arbitrum.USDC_CIRCLE
+    ADDRESSES.arbitrum.USDC_CIRCLE,
+    ADDRESSES.arbitrum.USDT,
   ],
   '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [
     ADDRESSES.arbitrum.USDC_CIRCLE
@@ -89,6 +92,18 @@ const avaxAllocatorToTokens = {
   ]
 }
 
+const robinhoodAllocatorToTokens = {
+  [almProxy.robinhood]: [
+    ADDRESSES.robinhood.USDG,
+  ]
+}
+
+const xlayerAllocatorToTokens = {
+  [almProxy.xlayer]: [
+    ADDRESSES.xlayer.USDT,
+  ]
+}
+
 const CONFIG = {
   ethereum: mainnetAllocatorToTokens,
   base: baseAllocatorToTokens,
@@ -96,6 +111,8 @@ const CONFIG = {
   optimism: optimismAllocatorToTokens,
   unichain: unichainAllocatorToTokens,
   avax: avaxAllocatorToTokens,
+  robinhood: robinhoodAllocatorToTokens,
+  xlayer: xlayerAllocatorToTokens,
 }
 
 async function tvl(api) {
@@ -143,6 +160,8 @@ const vaultConfigs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 // discards idle supply on aave like markets for USDS and DAI
@@ -290,6 +309,8 @@ const curveConfigs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 async function addCurveBalances(api) {
@@ -345,6 +366,8 @@ const erc4626Configs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 async function addVaultBalances(api) {

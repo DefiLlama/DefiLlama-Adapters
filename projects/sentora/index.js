@@ -75,7 +75,7 @@ const handlers = {
 
   async upshift(api, vaults) {
     await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:getTotalAssets' });
-  },
+  }
 }
 
 async function customTvl(api) {
@@ -88,7 +88,7 @@ async function customTvl(api) {
   return api.getBalances()
 }
 
-module.exports = { ...curatorExport }
+module.exports = { timetravel: false, ...curatorExport }
 
 for (const chain of Object.keys(customConfig)) {
   const curatorChain = curatorExport[chain]
