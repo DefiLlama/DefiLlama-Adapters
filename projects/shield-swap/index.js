@@ -3,6 +3,7 @@ const axios = require('axios')
 const PROVABLE_API = 'https://api.provable.com/v2/mainnet'
 const SHIELD_SWAP = 'shield_swap.aleo'
 const MAX_ATTEMPTS = 5
+const MAX_RETRY_DELAY_MS = 5_000
 const MAX_U128 = (1n << 128n) - 1n
 const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER)
 
@@ -21,11 +22,29 @@ function isRetryable(error) {
   return !status || status === 429 || status >= 500
 }
 
-function retryDelay(error, attempt) {
+function parseRetryAfter(value, now) {
+  if (value == null) return null
+  const normalized = String(value).trim()
+  if (/^\d+$/.test(normalized)) {
+    const delay = Number(normalized) * 1_000
+    return Number.isFinite(delay) ? delay : null
+  }
+  const retryAt = Date.parse(normalized)
+  if (!Number.isFinite(retryAt)) return null
+  const delay = retryAt - now
+  return delay >= 0 ? delay : null
+}
+
+function retryDelay(error, attempt, now = Date.now()) {
   const retryAfter = error.response?.headers?.['retry-after']
-  const retryAfterMs = Number(retryAfter) * 1_000
-  if (retryAfter && Number.isFinite(retryAfterMs)) return Math.min(retryAfterMs, 5_000)
-  return Math.min(300 * 2 ** attempt, 5_000)
+  const retryAfterMs = parseRetryAfter(retryAfter, now)
+  if (retryAfterMs != null) {
+    if (retryAfterMs > MAX_RETRY_DELAY_MS) {
+      throw new Error(`Retry-After exceeds ${MAX_RETRY_DELAY_MS}ms`)
+    }
+    return retryAfterMs
+  }
+  return Math.min(300 * 2 ** attempt, MAX_RETRY_DELAY_MS)
 }
 
 async function getProgramBalance(program) {
