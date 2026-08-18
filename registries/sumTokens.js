@@ -26615,23 +26615,6 @@ const configs = {
       ]
     },
   },
-  "stonkbrokers": {
-    "methodology": "TVL is the liquidity locked in the Safety Deposit Box locker (Uniswap V3 position NFTs escrowed permanently or on long vests). Staking tracks STONKBROKER tokens in the escrow contract. The previous TVL owner (StockBooster fee collector) was retired on 2026-08-04 and only holds transient fee dust between sweeps.",
-    "robinhood": {
-      "tvl": {
-        "owner": "0xFc96CF67eCC55bE4AdABc3AecBe6Ad6349f11223",
-        "resolveUniV3": true,
-        "uniV3WhitelistedTokens": [ADDRESSES.robinhood.WETH],
-        "uniV3ExtraConfig": {
-          "nftAddress": "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3"
-        }
-      },
-      "staking": {
-        "owner": "0x799AE26fA515ceF145e8bC8636F7fFF87B05Cf62",
-        "tokens": ["0xe934e36A439C94017B64a3FecE66AF12099aBF50"]
-      }
-    }
-  },
   "stormtrade": {
     "timetravel": false,
     "methodology": "Total amount of jUSDT locked in the StormTrade vault (EQDynReiCeK8xlKRbYArpp4jyzZuF6-tYfhFM0O5ulOs5H0L)",
