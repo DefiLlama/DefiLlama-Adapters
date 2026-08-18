@@ -1,5 +1,6 @@
 const { ethers } = require('ethers')
 const { getLogs } = require('../helper/cache/getLogs')
+const { getVaultValue } = require('./vaultValue')
 
 const BGBTC = '0x31011317764e097b28d159a8145b92bfa453f606'
 const WBTC = 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
@@ -45,33 +46,6 @@ async function getMultiDepositorVaults(api) {
   })
 
   return logs.map(log => log.vault)
-}
-
-async function getLegacyVaultValue(api, vault, feeCalculator) {
-  const [totalSupply, decimals, vaultState] = await Promise.all([
-    api.call({ abi: 'uint256:totalSupply', target: vault }),
-    api.call({ abi: 'uint8:decimals', target: vault }),
-    api.call({
-      abi: 'function getVaultState(address vault) external view returns ((bool paused, uint8 maxPriceAge, uint16 minUpdateIntervalMinutes, uint16 maxPriceToleranceRatio, uint16 minPriceToleranceRatio, uint8 maxUpdateDelayDays, uint32 timestamp, uint24 accrualLag, uint128 unitPrice, uint128 highestPrice, uint128 lastTotalSupply))',
-      target: feeCalculator,
-      params: [vault],
-    }),
-  ])
-
-  return (BigInt(totalSupply) * BigInt(vaultState[8]) / (10n ** BigInt(decimals))).toString()
-}
-
-async function getVaultValue(api, vault, feeCalculator) {
-  // V2 calculators expose the vault value directly and use a different state
-  // layout. Older calculators require the legacy totalSupply * unitPrice path.
-  const value = await api.call({
-    abi: 'function getVaultValueAtLastUpdate(address vault) view returns (uint256)',
-    target: feeCalculator,
-    params: [vault],
-  }).catch(() => null)
-
-  if (value !== null) return value
-  return getLegacyVaultValue(api, vault, feeCalculator)
 }
 
 async function tvl(api) {
