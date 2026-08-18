@@ -4,6 +4,7 @@ const PROVABLE_API = 'https://api.provable.com/v2/mainnet'
 const SHIELD_SWAP = 'shield_swap.aleo'
 const MAX_ATTEMPTS = 5
 const MAX_U128 = (1n << 128n) - 1n
+const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER)
 
 const TOKENS = [
   { program: 'shield_swap_arc20_credits.aleo', coingeckoId: 'aleo', decimals: 6 },
@@ -35,7 +36,6 @@ async function getProgramBalance(program) {
       const { data } = await axios.get(url, { timeout: 10_000 })
       return data
     } catch (error) {
-      if (error.response?.status === 404) return null
       if (!isRetryable(error) || attempt === MAX_ATTEMPTS - 1) throw error
       await sleep(retryDelay(error, attempt))
     }
@@ -55,11 +55,21 @@ function parseU128(value, program) {
   return balance
 }
 
+function toTokenAmount(balance, decimals, program) {
+  const divisor = 10n ** BigInt(decimals)
+  const whole = balance / divisor
+  const remainder = balance % divisor
+  if (whole > MAX_SAFE_BIGINT) {
+    throw new Error(`Token amount exceeds JS safe integer range for ${program}`)
+  }
+  return Number(whole) + Number(remainder) / 10 ** decimals
+}
+
 async function tvl(api) {
   for (const { program, coingeckoId, decimals } of TOKENS) {
     const rawBalance = await getProgramBalance(program)
     const balance = parseU128(rawBalance, program)
-    api.addCGToken(coingeckoId, Number(balance) / 10 ** decimals)
+    api.addCGToken(coingeckoId, toTokenAmount(balance, decimals, program))
   }
 }
 
