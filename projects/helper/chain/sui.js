@@ -244,6 +244,11 @@ function rewrapWithLayout(value, layout) {
     return Array.isArray(value) ? value.map(v => rewrapWithLayout(v, layout.vector)) : value
   if (layout.struct) {
     const { type, fields } = layout.struct
+    // graphql flattens Option<T> to the inner value (or null), it does not return the `vec` wrapper the layout declares
+    if (/^0x0*1::option::Option</.test(type)) {
+      if (value === null || value === undefined) return null
+      return rewrapWithLayout(value, fields[0]?.layout?.vector)
+    }
     if (type.endsWith('::object::UID')) return { id: (value && typeof value === 'object') ? value.id : value }
     if (type.endsWith('::object::ID') || type.endsWith('::string::String') || type.endsWith('::ascii::String'))
       return (value && typeof value === 'object') ? Object.values(value)[0] : value
