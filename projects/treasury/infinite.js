@@ -1,5 +1,4 @@
 const { treasuryExports } = require("../helper/treasury");
-const { mergeExports } = require("../helper/utils");
 
 const TREASURY = "0xb5dB6e5a301E595B76F40319896a8dbDc277CEfB"
 const owners = [TREASURY, "0x1E2cD0E5905AFB73a67c497D82be271Cc65302Eb"]
@@ -33,16 +32,20 @@ async function relayerTvl(api) {
   // Convert DAO acITP share balances into underlying LP balances so autocompounding
   // growth is reflected in treasury balances.
   for (const { vault, lp } of AUTO_COMPOUNDER_VAULTS) {
-    const [daoShares, totalShares, vaultLpBalance] = await api.batchCall([
+    const [rawDaoShares, rawTotalShares, rawVaultLpBalance] = await api.batchCall([
       { target: vault, abi: 'erc20:balanceOf', params: TREASURY },
       { target: vault, abi: 'erc20:totalSupply' },
       { target: vault, abi: 'uint256:balance' },
     ])
-    if (!totalShares || !daoShares || !vaultLpBalance) continue
+    const daoShares = BigInt(rawDaoShares || 0)
+    const totalShares = BigInt(rawTotalShares || 0)
+    const vaultLpBalance = BigInt(rawVaultLpBalance || 0)
+    if (totalShares === 0n || daoShares === 0n || vaultLpBalance === 0n) continue
+
     const daoLpBalance = daoShares * vaultLpBalance / totalShares
-    if (!daoLpBalance) continue
+    if (daoLpBalance === 0n) continue
     api.removeTokenBalance(vault)
-    api.add(lp, daoLpBalance)
+    api.add(lp, daoLpBalance.toString())
   }
 
   // Count only DAO-owned relayer position, not aggregate user deposits in the relayer.
@@ -74,10 +77,16 @@ const config = {}
 const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'base']
 chains.forEach(chain => { config[chain] = { owners, resolveLP: true, ownTokens: [DHT[chain]] } })
 
-const dhedgeExport = {}
-Object.keys(DHEDGE_FACTORY).forEach(chain => { dhedgeExport[chain] = { tvl: dhedgeTvl } })
+const exportObj = treasuryExports(config)
+Object.keys(DHEDGE_FACTORY).forEach(chain => {
+  const baseTvl = exportObj[chain].tvl
+  exportObj[chain].tvl = async (api) => {
+    await baseTvl(api)
+    await dhedgeTvl(api)
+    if (chain === 'optimism') await relayerTvl(api)
+    return api.getBalances()
+  }
+})
 
-module.exports = {
-  ...mergeExports([treasuryExports(config), dhedgeExport, { optimism: { tvl: relayerTvl } }]),
-  methodology: "Tracks Infinite Trading treasury holdings across multiple chains including token balances in multisig wallets and the treasury's share of dHEDGE vaults it manages.",
-}
+module.exports = exportObj
+module.exports.methodology = "Tracks Infinite Trading treasury holdings across multiple chains including token balances in multisig wallets, DAO-only relayer and auto-compounder LP exposure on Optimism, and the treasury's share of dHEDGE vaults it manages."
