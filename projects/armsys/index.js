@@ -78,11 +78,12 @@ function positionToAmounts(liquidity, tickLower, tickUpper, tick, sqrtPriceX96) 
   const sqrtPU = tickToSqrtPriceX96(tickUpper);
   if (tick < tickLower)
     return { amount0: (L * Q96 * (sqrtPU - sqrtPL)) / (sqrtPU * sqrtPL), amount1: 0n };
-  if (tick > tickUpper)
+  if (tick >= tickUpper)
     return { amount0: 0n, amount1: (L * (sqrtPU - sqrtPL)) / Q96 };
+  const sqrtP = sqrtPriceX96 < sqrtPL ? sqrtPL : (sqrtPriceX96 > sqrtPU ? sqrtPU : sqrtPriceX96);
   return {
-    amount0: (L * Q96 * (sqrtPU - sqrtPriceX96)) / (sqrtPU * sqrtPriceX96),
-    amount1: (L * (sqrtPriceX96 - sqrtPL)) / Q96,
+    amount0: (L * Q96 * (sqrtPU - sqrtP)) / (sqrtPU * sqrtP),
+    amount1: (L * (sqrtP - sqrtPL)) / Q96,
   };
 }
 
@@ -117,22 +118,20 @@ async function robinhoodTvl(api) {
 
     let amount0 = 0n;
     let amount1 = 0n;
-    for (const tokenId of tokenIds) {
-      let info, liquidity;
-      try {
-        info = await api.call({
-          target: RH_POSITION_MANAGER,
-          abi: 'function getPoolAndPositionInfo(uint256) view returns ((address,address,uint24,int24,address), uint256)',
-          params: tokenId,
-        });
-        liquidity = await api.call({
-          target: RH_POSITION_MANAGER,
-          abi: 'function getPositionLiquidity(uint256) view returns (uint128)',
-          params: tokenId,
-        });
-      } catch (_) {
-        continue;
-      }
+    const calls = [...tokenIds];
+    const infos = await api.multiCall({
+      target: RH_POSITION_MANAGER,
+      abi: 'function getPoolAndPositionInfo(uint256) view returns ((address,address,uint24,int24,address), uint256)',
+      calls,
+    });
+    const liquidities = await api.multiCall({
+      target: RH_POSITION_MANAGER,
+      abi: 'function getPositionLiquidity(uint256) view returns (uint128)',
+      calls,
+    });
+    for (let i = 0; i < calls.length; i++) {
+      const info = infos[i];
+      const liquidity = liquidities[i];
       if (!liquidity || liquidity === '0') continue;
       // Defensive: the position must belong to our hook.
       if ((info[0][4] || '').toLowerCase() !== RH_HOOK.toLowerCase()) continue;
