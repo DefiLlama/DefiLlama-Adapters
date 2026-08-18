@@ -1,7 +1,12 @@
-const { ethers } = require('ethers')
-
 const getVaultValueAbi = 'function getVaultValueAtLastUpdate(address vault) view returns (uint256)'
-const getVaultValueSelector = ethers.id('getVaultValueAtLastUpdate(address)').slice(2, 10)
+const versionAbi = 'string:version'
+
+function isSelectorUnavailable(error) {
+  const message = String(error?.message ?? error).toLowerCase()
+  return message.includes('execution reverted')
+    || message.includes('call reverted')
+    || message.includes('missing revert data')
+}
 
 async function getLegacyVaultValue(api, vault, feeCalculator) {
   const [totalSupply, decimals, vaultState] = await Promise.all([
@@ -18,12 +23,14 @@ async function getLegacyVaultValue(api, vault, feeCalculator) {
 }
 
 async function getVaultValue(api, vault, feeCalculator) {
-  // Aera calculators are direct deployments, so the runtime selector reliably
-  // distinguishes V2 from legacy without swallowing RPC or contract failures.
-  const bytecode = await api.provider.getCode(feeCalculator, api.block)
-  const supportsV2Getter = bytecode.toLowerCase().includes(getVaultValueSelector)
-
-  if (!supportsV2Getter) return getLegacyVaultValue(api, vault, feeCalculator)
+  // V2 calculators expose a non-reverting version getter. Its on-chain revert
+  // confirms a legacy calculator; transport and other failures must propagate.
+  try {
+    await api.call({ abi: versionAbi, target: feeCalculator })
+  } catch (error) {
+    if (!isSelectorUnavailable(error)) throw error
+    return getLegacyVaultValue(api, vault, feeCalculator)
+  }
 
   return api.call({
     abi: getVaultValueAbi,
@@ -32,4 +39,4 @@ async function getVaultValue(api, vault, feeCalculator) {
   })
 }
 
-module.exports = { getVaultValue, getVaultValueAbi, getVaultValueSelector }
+module.exports = { getVaultValue, getVaultValueAbi, versionAbi }
