@@ -17717,6 +17717,16 @@ const configs = {
       ]
     },
   },
+  "magpie-capital": {
+    "methodology": "TVL is the SOL lending liquidity held in Magpie's on-chain pool vaults (wSOL token accounts owned by the V1, V3 and V4 lending-pool PDAs). Collateral locked against active loans is not counted.",
+    "solana": {
+      "tokenAccounts": [
+        "5CYVDEqnLknmtyKkFEvpr5XnEJRzieXm1G5hSvYFG2Ko",
+        "s2M7st6DEepiuKhX3ouJM7mUsr8aDMJNm8UQh82KrVb",
+        "7vfpVHc2ndPYw9dToiag2ARoUZ75BjLLuzsEfSjMtD1w",
+      ],
+    }
+  },
   "mahaxyz": {
     "ethereum": {
       "pool2": {
