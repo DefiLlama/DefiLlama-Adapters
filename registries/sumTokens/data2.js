@@ -375,6 +375,10 @@ module.exports = {
     "ethereum": { "__empty": true },
     "bitcoin": { "tvl": { "__btcBook": "imbtc" } }
   },
+  "bitget-bgBTC": {
+    "methodology": "BTC deposits in custody that were used to mint bgBTC",
+    "bitcoin": { "tvl": { "__btcBook": "bitget-bgBTC" } }
+  },
   "mobox": {
     "bsc": {
       "tvl": { "__empty": true },
