@@ -443,7 +443,6 @@ module.exports = {
     "3NnoMUQnURz29QLJcvQ5Xy6ztgJ4TYmqY3",
     "33orXrdG44b7uexFP7Yxdqy1m3FirNtdTE",
   ],
-  'bitget-bgBTC': ["19pFLWW3CwjZujRWpVEMdguBMZEqPuj5nA",],
   bitmake: [
     // wallet provide by a bitmake team
     "3F12ncAyx4VkfpvnS7ZxdpggFx4p9RKfVe",
@@ -1120,6 +1119,7 @@ module.exports = {
   bitgetBtc: [
     "bc1pvwjkr0724ckucdvrtxjzml9ka7jnzzjaejvwfnn8a2avvpnljthseg2a0e",
     "bc1pxw4gtelg3lkmatdjmjxsp2kx22t44wyk0snkszhvw4prpygz8ajqaw03fs",
+    "19pFLWW3CwjZujRWpVEMdguBMZEqPuj5nA",
   ],
   magicEden: ["3P4WqXDbSLRhzo2H6MT6YFbvBKBDPLbVtQ"],
   gateBtc: [
