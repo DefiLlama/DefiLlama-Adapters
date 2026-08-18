@@ -11,6 +11,11 @@ const { ethers } = require('ethers')
  * singleton, so no pool has a contract of its own whose token balances
  * could simply be read.
  *
+ * Pools are found at the hook, which emits PoolRegistered for each one it
+ * takes on. Reading the PoolManager's whole Initialize history and keeping
+ * the 45 that name this hook meant fetching 153,720 logs to use 45 of them;
+ * both routes were compared on-chain and return the same 45 pool ids.
+ *
  * Cross-checked three ways. Against Dexscreener on the two pools it lists:
  * $454,153 vs $454,604 and $398,979 vs $399,431, 0.1% apart. Against the
  * singleton itself: the hook's pools account for 99.9% of all the WTH held
@@ -23,7 +28,14 @@ const POOL_MANAGER = '0x8366a39CC670B4001A1121B8F6A443A643e40951'
 const HOOK = '0xc52fc52698479e42f0da9a8a75296ec3871454c0'
 const FROM_BLOCK = 27190942 // hook deployment
 
-const eventAbi = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'
+/* The hook announces every pool that registers with it, so the pools are
+ * discovered at the hook rather than by reading every Initialize the
+ * PoolManager has ever emitted and discarding almost all of it: 45 logs
+ * instead of 153,720. Initialize is still read, but only for those 45 ids
+ * — it is the one place the pair's two currencies are on chain, since a
+ * v4 PoolKey is hashed into the id and never stored. */
+const registeredAbi = 'event PoolRegistered(address indexed token, bytes32 indexed poolId, uint24 fee, int24 tickSpacing)'
+const initializeAbi = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'
 const extsloadAbi = 'function extsload(bytes32 slot) view returns (bytes32)'
 
 /* v4-core StateLibrary: _pools lives at slot 6, and within a Pool.State
@@ -93,33 +105,49 @@ function reserves({ sqrtP, ticks, nets }) {
 }
 
 async function tvl(api) {
-  /* skipCache because the cached path caps out: this PoolManager has over
-   * 120k Initialize events even from the hook's own deployment block, and a
-   * truncated set silently drops pools rather than failing. */
-  const logs = await getLogs2({
-    api, factory: POOL_MANAGER, eventAbi, fromBlock: FROM_BLOCK,
-    extraKey: 'wth-hook', skipCache: true,
+  // every pool that runs the hook, announced by the hook itself
+  const registered = await getLogs2({
+    api, target: HOOK, eventAbi: registeredAbi, fromBlock: FROM_BLOCK,
+    extraKey: 'wth-registered',
   })
 
   /* Read positionally. A fresh call hands back ethers Result objects that
-   * also answer to log.hooks, but a cached one has been through JSON and
+   * also answer to log.poolId, but a cached one has been through JSON and
    * comes back a bare array — the names are gone and every named lookup is
    * silently undefined, which reads as "this hook has no pools". */
-  const ID = 0, CURRENCY0 = 1, CURRENCY1 = 2, TICK_SPACING = 4, HOOKS = 5
-  const pools = logs
-    .filter((log) => String(log[HOOKS]).toLowerCase() === HOOK)
-    .map((log) => ({
-      id: log[ID],
-      token0: log[CURRENCY0],
-      token1: log[CURRENCY1],
-      spacing: Number(log[TICK_SPACING]),
-      base: poolSlot(log[ID]),
-    }))
+  const POOL_ID = 1, REG_TICK_SPACING = 3
+  const spacingById = {}
+  for (const log of registered) spacingById[String(log[POOL_ID]).toLowerCase()] = Number(log[REG_TICK_SPACING])
+  const ids = Object.keys(spacingById)
+
   /* The hook has had pools since the block this scan starts from, so an
    * empty result is a broken read, not an empty protocol. Returning here
    * would publish a TVL of zero over the last good value; throwing fails
    * the run and leaves that value standing. */
-  if (!pools.length) throw new Error('what-the-hook: no pools found for the hook — log fetch likely truncated or failed')
+  if (!ids.length) throw new Error('what-the-hook: the hook reports no registered pools — log fetch likely failed')
+
+  /* The two currencies live only in Initialize, because a v4 PoolKey is
+   * hashed into the id and never stored. Asking for them by id keeps this
+   * to one log per pool instead of the whole history of the singleton. */
+  const initialize = await getLogs2({
+    api, target: POOL_MANAGER, eventAbi: initializeAbi, fromBlock: FROM_BLOCK,
+    topics: [ethers.id('Initialize(bytes32,address,address,uint24,int24,address,uint160,int24)'), ids],
+    onlyArgs: false, extraKey: 'wth-init-by-id',
+  })
+  const ID = 0, CURRENCY0 = 1, CURRENCY1 = 2
+  const pools = initialize.map((log) => {
+    const args = log.args ?? log
+    const id = String(args[ID])
+    return {
+      id,
+      token0: args[CURRENCY0],
+      token1: args[CURRENCY1],
+      spacing: spacingById[id.toLowerCase()],
+      base: poolSlot(id),
+    }
+  })
+  if (pools.length !== ids.length)
+    throw new Error(`what-the-hook: ${ids.length} pools registered but ${pools.length} Initialize logs found`)
 
   // slot0 carries the price; a pool that never got one is uninitialised
   const slot0s = await api.multiCall({
