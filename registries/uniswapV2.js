@@ -3102,6 +3102,9 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     robinhood: '0xe0799417eff30A12249b8c30941BC2d7c52A0339',
+  },
+  'qomx': {
+    bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785'
   }
 }
 

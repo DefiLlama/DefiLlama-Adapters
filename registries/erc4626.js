@@ -444,6 +444,17 @@ const configs = {
     doublecounted: true,
     methodology: 'TVL is the total USDT0 under management in the AumoPool ERC-4626 vault on X Layer, read from totalAssets() (idle buffer plus principal deployed across allowlisted venues).',
     xlayer: ['0x8a98A4A868e5FBAc05B9d1dC0742BD008354114F']
+  },
+  'townsquare-rwa-vaults': {
+    methodology: "TVL is the total assets of the rwa vault tokens (trwaUSD, trwaUSDi).",
+    ethereum: ["0x3FE52A92DC3F902D53b2139f95CedA8FeDfe1C18", "0xF2ADf2Bc428284ad59376b836b7f27eaA8Ac44ed"],
+    base: ["0x27B1E0FC9eeBFcA90d7BDe3958723fa0aB937CFA", "0xFbB5e8B7109252FA1d2B208a96Dfd508BFAb023C"],
+    xlayer: ["0x1f5575b690bbb049FC50933A66F52eFA81904978", "0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"],
+    robinhood: ["0x5B8dC679EDAE1Ad507c433EF55d5B4bA620F1919", "0x1f5575b690bbb049FC50933A66F52eFA81904978"],
+    ink: ["0x1f5575b690bbb049FC50933A66F52eFA81904978"],
+    monad: ["0x50AF964d81c18ed885dBf741cDc3366239a3cC10", "0x73F0c2ed71b5c750Cf4900220F901B732EA71Ff0"],
+    arbitrum: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"],
+    pharos: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"]
   }
 }
 
