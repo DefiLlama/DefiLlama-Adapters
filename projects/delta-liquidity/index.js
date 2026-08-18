@@ -1,5 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { nullAddress } = require('../helper/tokenMapping')
+const { getLogs } = require('../helper/cache/getLogs')
 
 // Delta v3 (live stack)
 const VAULT_FACTORY = '0x68EDc4948F60D21c4a7Dcbb8Ed4500cE6D0b153c'
@@ -12,8 +13,11 @@ const FARM_FACTORY_V2 = '0xc6F0E707574Fce5Da8B125edD9529DbAF985e62A'
 
 // Chain infra
 const NPM = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3' // UniswapV3 NonfungiblePositionManager
+const V4_POSM = '0x58daec3116aae6D93017bAAea7749052E8a04fA7' // UniswapV4 PositionManager
+const V4_STATE_VIEW = '0xF3334192D15450CdD385c8B70e03f9A6bD9E673b'
 const WETH = '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73'
 const DELTA = '0xe8ffd7e24187F72afB08d75B1bb13088A989a791'
+const LADDER_DEPLOY_BLOCK = 29958000
 
 async function tvl(api) {
   // Delta vaults (each vault custodies one Uniswap v3 position NFT)
@@ -35,7 +39,8 @@ async function tvl(api) {
 
   const owners = [LADDER_MANAGER, ROUTER_V3, ROUTER_V2, ...vaults, ...farmsV2]
 
-  return sumTokens2({
+  // Uniswap v3 positions + ERC20/native balances + legacy LP
+  await sumTokens2({
     api,
     owners,
     tokens: [nullAddress, WETH, DELTA, ...lpTokens],
@@ -43,11 +48,42 @@ async function tvl(api) {
     resolveLP: true,
     uniV3ExtraConfig: { nftAddress: NPM },
   })
+
+  // Uniswap v4 positions managed by the ladder manager.
+  // No v4 subgraph on this chain, so position ids are enumerated from the
+  // manager's own events, minus closed positions.
+  const openedV4 = await getLogs({
+    api,
+    target: LADDER_MANAGER,
+    eventAbi: 'event ManagedOpenV4(address indexed owner, bytes32 indexed poolId, uint256[] tokenIds)',
+    onlyArgs: true,
+    fromBlock: LADDER_DEPLOY_BLOCK,
+  })
+  const closed = await getLogs({
+    api,
+    target: LADDER_MANAGER,
+    eventAbi: 'event PositionClosed(address indexed owner, uint8 version, uint256 tokenId, uint256 principal0, uint256 principal1)',
+    onlyArgs: true,
+    fromBlock: LADDER_DEPLOY_BLOCK,
+  })
+  const closedV4 = new Set(closed.filter(i => Number(i.version) === 4).map(i => i.tokenId.toString()))
+  const positionIds = openedV4
+    .flatMap(i => i.tokenIds.map(j => j.toString()))
+    .filter(id => !closedV4.has(id))
+
+  if (positionIds.length)
+    await sumTokens2({
+      api,
+      resolveUniV4: true,
+      uniV4ExtraConfig: { nftAddress: V4_POSM, stateViewer: V4_STATE_VIEW, positionIds },
+    })
+
+  return api.getBalances()
 }
 
 module.exports = {
   methodology:
-    'TVL counts assets custodied by Delta contracts on Robinhood Chain: Uniswap v3 position NFTs held by Delta vaults and by the ladder manager (unwrapped to underlying token amounts via the position manager), liquidity-depth budgets (WETH and paired tokens) held by the liquidity routers, and Uniswap v2 LP tokens staked in legacy Delta farms (unwrapped to underlying reserves). Vault share tokens and farm receipt tokens are excluded to avoid double counting. User-custodied ladder positions (where the user retains the NFT) are not counted.',
+    'TVL counts assets custodied by Delta contracts on Robinhood Chain: Uniswap v3 and v4 position NFTs held by Delta vaults and the ladder manager (unwrapped to underlying token amounts; v4 positions enumerated from the manager\'s open/close events since the chain has no v4 subgraph), liquidity-depth budgets (WETH and paired tokens) held by the liquidity routers, and Uniswap v2 LP tokens staked in legacy Delta farms (unwrapped to underlying reserves). Vault share tokens and farm receipt tokens are excluded to avoid double counting. User-custodied positions are not counted.',
   doublecounted: true, // liquidity sits inside Uniswap pools, which DefiLlama counts under Uniswap
   robinhood: { tvl },
 }
