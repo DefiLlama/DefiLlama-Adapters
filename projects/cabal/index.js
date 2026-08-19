@@ -57,6 +57,11 @@ async function xslpTvl(api) {
 module.exports = {
   timetravel: false,
   methodology: 'TVL is calculated as the sum of: INIT token stakes (sxINIT vault), USDC-INIT LP token stakes (cbl LP vault) on Initia, iUSD holdings across the Cabal iUSD and Delta Neutral INIT EVM vaults on the cabal-1 L2, and the xSLP predeposit vault on the strat-1 L2, converted to its underlying iUSD value (xSLP supply x strat-share ratio x share price).',
+  hallmarks: [
+    ['2026-03-15', 'iUSD vault launch'],
+    ['2026-04-01', 'xSLP vault launch'],
+    ['2026-04-02', 'Delta Neutral INIT (dnINIT) vault launch'],
+  ],
   initia: { tvl },
   cabal: { tvl: async (api) => api.erc4626Sum2({ calls: CABAL_VAULTS }) },
   strat: { tvl: xslpTvl },
