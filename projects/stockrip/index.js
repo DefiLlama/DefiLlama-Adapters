@@ -46,10 +46,10 @@ async function tvl(api) {
       throw new Error(`StockRip: found ${mine.length} ${collection} held by core, balanceOf says ${held[collection]}`)
 
     const [accounts, manifests] = await Promise.all([
-      api.multiCall({ abi: TBA_OF, target: collection, calls: mine }),
-      api.multiCall({ abi: MANIFEST_OF, target: collection, calls: mine }),
+      api.multiCall({ abi: TBA_OF, target: collection, calls: mine, permitFailure: true }),
+      api.multiCall({ abi: MANIFEST_OF, target: collection, calls: mine, permitFailure: true }),
     ])
-    ownerTokens.push(...accounts.map((account, j) => [manifests[j], account]))
+    ownerTokens.push(...accounts.map((account, j) => [manifests[j], account]).filter(([manifest, account]) => manifest && account))
   }
 
   return api.sumTokens({ ownerTokens })
