@@ -1,9 +1,9 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const LP_LOCKER = '0xBf05b1d5E356f3219D0086A4e09c969ADbe2e7d0'
 const POSITION_MANAGER = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'
-const WETH = '0x4200000000000000000000000000000000000006'
 const START_BLOCK = 43_000_832
 
 const TOKEN_REWARD_ADDED_EVENT =
@@ -46,7 +46,7 @@ const tvl = async (api) => {
     resolveUniV4: true,
     uniV4ExtraConfig: {
       positionIds: lockedPositionIds,
-      whitelistedTokens: [WETH],
+      whitelistedTokens: [ADDRESSES.base.WETH],
     },
   })
 }
@@ -54,9 +54,7 @@ const tvl = async (api) => {
 module.exports = {
   methodology:
     'Counts the WETH side of Uniswap V4 liquidity positions created by the Bonker factory and permanently held by the Bonker LP locker. Positions are enumerated on-chain from TokenRewardAdded events, and launchpad-minted tokens are excluded to avoid circular pricing.',
-  start: 1772755200,
+  start: '2026-03-06',
   doublecounted: true,
-  base: {
-    tvl,
-  },
+  base: { tvl },
 }
