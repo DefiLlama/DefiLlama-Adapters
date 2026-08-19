@@ -101,6 +101,7 @@ module.exports = {
       blum: '/blum/api',
       'yodeswap': '/yodeswap/api',
       'dogeswap-org': '/dogeswap-org/api',
+      'o2': '/o2/api',
 
       // breaks often
       // 'equilibrium': '/equilibrium/api',
