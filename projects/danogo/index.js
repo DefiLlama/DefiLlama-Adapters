@@ -120,7 +120,7 @@ function mergeObjectsWithSum(target, ...sources) {
 
 const fetch = async () => {
   const smartContracts = await fetchSmartContractAddresses();
-  
+
   const smartContractsUtxos = await Promise.all(smartContracts.map((address) => {
     return fetchSmartContractUTXOs(address)
   }));
@@ -134,8 +134,10 @@ const fetch = async () => {
     })
   });
 
-  const totalAssetsValues = await fetchAssetValue(assetInfos);
-  totalValueLocked += totalAssetsValues;
+  // backing/pricing behind those quotes could not be verified, so only
+  // the ADA locked in the contracts is counted 
+  // const totalAssetsValues = await fetchAssetValue(assetInfos);
+  // totalValueLocked += totalAssetsValues;
 
   return { cardano: totalValueLocked };
 }
@@ -147,4 +149,3 @@ module.exports = {
     tvl: fetch
   },
 }
-  
