@@ -1,9 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const { cosmosStaked, suiStaked, aptosStaked, nearStaked, bittensorStaked, confluxStaked, cardanoStaked, algorandStaked, starknetStaked, aleoStaked, neo3Staked } = require("../helper/stakingHelper");
 const { sumTokens2: solanaSumTokens } = require("../helper/solana");
 const { unwrapDolomiteDeposits } = require("../helper/unwrapLPs.js");
+const { addHypercoreSpotBalances } = require("../helper/chain/hyperliquid.js");
+const { sumTokens: cosmosSumTokens } = require("../helper/chain/cosmos.js");
 
 const config = {
   "ethereum": {
@@ -259,15 +262,22 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  // Pi mainnet is a Stellar fork and reuses the G... address format, but only this
+  // one of gate's stellar-shaped addresses exists on Pi - the rest are stellar-only
+  "pi": {
+    "owners": [
+      "GBC6NRTTQLRCABQHIR5J4R4YDJWFWRAO4ZRQIM2SVI5GSIZ2HZ42RINW"
+    ]
+  },
   "polkadot": {
     "owners": [
-      "1JVrK16XZm9vyZjHoYVPjtZ35LvTQ4oyufMoUFTFpAUhath",
-      "16ccyj8JqnP8d2DSaifgek6kSSBAu5cGtd4mu2uXTg4H6mSU",
-      "14ooXLY2gmiUTVym9SnKxNwEgcoikXzMEav2kiLjr7pPPHPR",
-      "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ",
-      "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
-      "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
-      "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2"
+      // "1JVrK16XZm9vyZjHoYVPjtZ35LvTQ4oyufMoUFTFpAUhath",
+      // "16ccyj8JqnP8d2DSaifgek6kSSBAu5cGtd4mu2uXTg4H6mSU",
+      // "14ooXLY2gmiUTVym9SnKxNwEgcoikXzMEav2kiLjr7pPPHPR",
+      // "1665ypcQXKmqXtjE9yuWsZqK5MQmBQokFjPGLq5SvoKAWBjQ",
+      // "123tA7zfH9XdqHX5v9W4mB4VfmrjE95yJvdvMbpWv5V851rX",
+      // "15NtvAi8CGHrbaUBvXdki8GXc5YfHM9yTv6HGmaYDetLH2ob",
+      // "15dZTKqG6YZiQNiisMZP1DT4J6J9bmEEC4Bkz24nMC1ccRe2"
     ]
   },
   "scroll": {
@@ -307,6 +317,12 @@ const config = {
   "0g": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
+  "abstract": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "acala": {
@@ -355,10 +371,23 @@ const config = {
       // "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "akash": {
+    "owners": [
+      "akash1xunyznpjmj9jv5e2zwngp2qrzmulr2gg4rvesv",
+      "akash155svs6sgxe55rnvs6ghprtqu0mh69kehwgz2ee",
+      "akash1jm068whkhkxk48gx80ppm2m0nwy677prm92ys3"
+    ]
+  },
   "aleo": {
     "owners": [
       "aleo1svz4av4u2fazqse02mkq9x26602hncucnp27ujuucha5c9a7j5qq2nklgu",
       "aleo18lpsmdx0hzwhw6ejaad5j8hjngwddyn0ap8ws8cr0z7gls4k4s9qz5ww07"
+    ]
+  },
+  "allora": {
+    "owners": [
+      "allo155svs6sgxe55rnvs6ghprtqu0mh69kehdq4wh6",
+      "allo1xunyznpjmj9jv5e2zwngp2qrzmulr2ggktma70"
     ]
   },
   "alephium": {
@@ -404,6 +433,11 @@ const config = {
   //     "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
   //   ]
   // },
+  "arweave": {
+    "owners": [
+      "_m4ftvKoEnbB7toHVBkuZWXYRK0j1mmgyHsug2ayffY"
+    ]
+  },
   "astar": {
     "owners": [
       "WEo9Gi7T28niGb3pTwcHFDgGW4PjKDQvcS1stTxa68v73nQ",
@@ -478,6 +512,13 @@ const config = {
       "162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw",
       "3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M",
       "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv"
+    ]
+  },
+  "bsv": {
+    "owners": [
+      "162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw",
+      "1EkkGXR7dTbZbrKFKoe6YEP4gj4GzMeKvw",
+      "1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9"
     ]
   },
   "bitcoincash": {
@@ -913,10 +954,10 @@ const config = {
   },
   "ftn": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      // "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      // "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+      // "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      // "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
   "fuel": {
@@ -966,6 +1007,11 @@ const config = {
       "one1p5rs093e2te0hfva6phjksj6eeqtfyh7kashr4"
     ]
   },
+  "hedera": {
+    "owners": [
+      "0.0.29000"
+    ]
+  },
   "heco": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1008,7 +1054,8 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xe12532a4cea82aac737a91b80be82d33eadb4c2b"
+      "0xe12532a4cea82aac737a91b80be82d33eadb4c2b",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
     ]
   },
   "icon": {
@@ -1087,14 +1134,17 @@ const config = {
       "sgAz73MGbHfr3huAnfwjLPvmxh1ipC8ySXLCEiwvVeEXeBn"
     ]
   },
+  // kava runs a cosmos chain alongside its EVM; sumTokens routes a whole chain to
+  // one helper, so only the EVM side is counted here (the kava1... addresses would
+  // send every owner, including these, down the cosmos path and error out)
   "kava": {
     "owners": [
-      "kava155svs6sgxe55rnvs6ghprtqu0mh69kehlxmsky",
-      "kava1jm068whkhkxk48gx80ppm2m0nwy677pr2tn7lv",
-      "kava1hpcfdtv84srdq7n9a7mhnnmd3jwuda97n3fcu4",
-      "kava19yhugy8qzps8rur4mnp6tnz8w6nh7qrqu7l49x",
-      "kava1xunyznpjmj9jv5e2zwngp2qrzmulr2ggyd4rl3",
-      "kava1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9af99p2"
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
+  "kaspa": {
+    "owners": [
+      "kaspa:qrelgny7sr3vahq69yykxx36m65gvmhryxrlwngfzgu8xkdslum2yxjp3ap8m"
     ]
   },
   "kintsugi": {
@@ -1174,6 +1224,11 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "mantra": {
+    "owners": [
+      "mantra155svs6sgxe55rnvs6ghprtqu0mh69kehgc9fre"
+    ]
+  },
   "merlin": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1207,6 +1262,18 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+    ]
+  },
+  // memecore, the EVM chain behind the "M" holdings
+  "m": {
+    "owners": [
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
+  "monad": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
     ]
   },
   "moonbeam": {
@@ -1282,13 +1349,13 @@ const config = {
       "nibi1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9ke4p77"
     ]
   },
-  "nuls": {
-    "owners": [
-      "NULSd6Hge2GxNKwYRxxvnQynMK2gKt5YAVANR",
-      "NULSd6Hgd9SJyzE6cmFmPQQ6VcpcQPLvbM4K2",
-      "NULSd6HgdY5zjfxhHhQMyGnJmxZREDxr8Zhh1"
-    ]
-  },
+  // "nuls": {
+  //   "owners": [
+  //     "NULSd6Hge2GxNKwYRxxvnQynMK2gKt5YAVANR",
+  //     "NULSd6Hgd9SJyzE6cmFmPQQ6VcpcQPLvbM4K2",
+  //     "NULSd6HgdY5zjfxhHhQMyGnJmxZREDxr8Zhh1"
+  //   ]
+  // },
   "oas": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1445,10 +1512,10 @@ const config = {
   },
   "ronin": {
     "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      // "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      // "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+      // "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+      // "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
   "rsk": {
@@ -1700,6 +1767,12 @@ const config = {
       "vite_f262f48ec1097880c83aa079dfb0baef5e68c4ff6c0b807b0a"
     ]
   },
+  "wc": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+    ]
+  },
   "waves": {
     "owners": [
       "3P7LZSuVDv5pQS7NSCE1LyGCbQihzk1fQ2r",
@@ -1794,10 +1867,15 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  "zigchain": {
+    "owners": [
+      "zig155svs6sgxe55rnvs6ghprtqu0mh69kehze2lzt"
+    ]
+  },
 };
 
 // remove chains w/o historical tvl
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'icp', 'interlay', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'icp', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
   'vinu', 'rollux', 'aelf', 'ailayer', 'archway',
   'ton', // never had any tvl
 ]
@@ -1893,6 +1971,20 @@ const solanaLsts = {
   tokens: ['gateMurAxe4YFoUR6J63gXGKtkbTfdkMdLjZrCmThFP'], // gtSOL
 }
 
+// HyperCore spot balances sit off the EVM, so the hyperliquid entry in `config`
+// (a plain EVM balance lookup) never sees them
+const hypercoreSpotOwners = ['0x0d0707963952f2fba59dd06f2b425ace40b492fe']
+
+// kava's cosmos-side owners, counted by the earn export rather than `config.kava`
+const kavaCosmosOwners = [
+  'kava155svs6sgxe55rnvs6ghprtqu0mh69kehlxmsky',
+  'kava1jm068whkhkxk48gx80ppm2m0nwy677pr2tn7lv',
+  'kava1hpcfdtv84srdq7n9a7mhnnmd3jwuda97n3fcu4',
+  'kava19yhugy8qzps8rur4mnp6tnz8w6nh7qrqu7l49x',
+  'kava1xunyznpjmj9jv5e2zwngp2qrzmulr2ggyd4rl3',
+  'kava1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9af99p2',
+]
+
 // receipt tokens per chain, discovered by enumerating the earn addresses' holdings
 const earnReceiptTokens = {
   ethereum: {
@@ -1947,8 +2039,8 @@ const earnReceiptTokens = {
       '0x4c6158236fe1ac71ca8c00b64864ad6d7eb0bfb4',
     ],
     tokens: [
-      '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', // USDT0
-      '0x6100e367285b01f48d07953803a2d8dca5d19873', // WXPL
+      ADDRESSES.corn.USDT0, // USDT0
+      ADDRESSES.plasma.WXPL, // WXPL
       '0x5d72a9d9a9510cd8cbdba12ac62593a58930a948', // aPlaUSDT0 (Aave v3)
     ],
   },
@@ -1998,6 +2090,11 @@ const gateEarnTvl = {
   starknet: { tvl: earnTvl(api => starknetStaked(api, earnOnlyOwners.starknet)) },
   aleo: { tvl: earnTvl(api => aleoStaked(api, earnOnlyOwners.aleo)) },
   neo3: { tvl: earnTvl(api => neo3Staked(api, earnOnlyOwners.neo3)) },
+  hyperliquid: { tvl: earnTvl(api => addHypercoreSpotBalances({ api, owners: hypercoreSpotOwners })) },
+  // kava runs a cosmos chain alongside its EVM. sumTokens picks one helper per
+  // chain, so config.kava can only carry the 0x owners - the kava1... ones are
+  // summed here instead and mergeExports adds the two together.
+  kava: { tvl: earnTvl(api => cosmosSumTokens({ api, owners: kavaCosmosOwners, chain: 'kava' })) },
 }
 
 Object.entries(earnStakers).forEach(([chain, owners]) => {

@@ -54,17 +54,6 @@ module.exports = {
       ]
     }
   },
-  "hylo": {
-    "timetravel": false,
-    "doublecounted": true,
-    "methodology": "TVL is calculated by summing all LSTs locked in Hylo protocol.",
-    "solana": {
-      "tokenAccounts": [
-        "2Y3TLkdGoJwbdizxqrZmQwNLYJyGKTgzC4tbetbkvQ43", // jitoSOL
-        "7VNBQCDKt4cxLWW51suV8a6VAYC4R66CfyySiYJek7Rj" // hyloSOL
-      ]
-    }
-  },
   "arrowpad-fun": {
     // ArrowPad.fun launchpad on Robinhood Chain: every launch seeds the full
     // token supply as single-sided Uniswap V3 liquidity and the LP NFT is locked
@@ -729,5 +718,12 @@ module.exports = {
   "pascal": {
     "methodology": "TVL is the USDC collateral held in Pascal's vault token account on Solana.",
     "solana": { "tokenAccounts": ["5vRGRcwN4iYaiQdso1vgWbTDFYbS8GQNUDRMMKE2ycZS"] }
+  },
+  "n1-exchange-bridge": {
+    "methodology": "Counts the USDC held in the N1 Exchange bridge custody wallet on Solana.",
+    "solana": {
+      "owners": ["2ds4b3zrkgZ9FU8vNBSpT1UzACnmfYtjGsazPRzsbCCz"],
+      "tokens": [ADDRESSES.solana.USDC]
+    }
   },
 }

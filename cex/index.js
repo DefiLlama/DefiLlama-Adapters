@@ -57,6 +57,7 @@ const configs = {
   "mt-gox": require('./mt-gox.js'),
   "nbx": require('./nbx.js'),
   "nexo-cex": require('./nexo-cex.js'),
+  "niza": require('./niza.js'),
   "nonkyc": require('./nonkyc.js'),
   "okcoin": require('./okcoin.js'),
   "orangex-cex": require('./orangex-cex.js'),

@@ -7,7 +7,16 @@ module.exports = {
   solana: {
     tvl: sumTokensExport({
       owners: ['2vV7xhCMWRrcLiwGoTaTRgvx98ku98TRJKPXhsS8jvBV'],
-      tokens: [ADDRESSES.solana.USDC, ADDRESSES.solana.USDT, 'A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS', 'oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp', 'sTorERYB6xAZ1SSbwpK3zoK2EEwbBrc7TZAzg1uCGiH'],
+      tokens: [
+        ADDRESSES.solana.USDC,
+        ADDRESSES.solana.USDT,
+        'A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS', // ZEC
+        'oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp', // ORE
+        'sTorERYB6xAZ1SSbwpK3zoK2EEwbBrc7TZAzg1uCGiH', // legacy STORE
+        'storenSbvkfzircixnaosc5CbzNZVrHJ6S3EKrS1yqR', // STORE
+        '9BEcn9aPEmhSPbPQeFGjidRiEKki46fVQDyPpSQXPA2D', // jlUSDC
+        '2uQsyo1fXXQkDtcpXnLofWy88PxcvnfH2L8FPSE62FVU', // jlwSOL
+      ],
       solOwners: ['4AV2Qzp3N4c9RfzyEbNZs2wqWfW4EwKnnxFAZCndvfGh']
     })
   },
@@ -27,6 +36,21 @@ module.exports = {
         '0xC88F4dF2B6EdDd6B6Bdf95A0177f50C90Fa7527f',
       ],
       tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT],
+    })
+  },
+  bsc: {
+    tvl: evmSumTokensExport({
+      owners: [
+        '0x22D8509E7AF58b1EaFB311f8F76E81dC3a391F77',
+        '0x9926A40B0879b36F9586c4285f0fae597bd56313',
+      ],
+      tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT],
+    })
+  },
+  robinhood: {
+    tvl: evmSumTokensExport({
+      owners: ['0xEC5266c9e44631e1ba22FD6377C38130c1F3B738'],
+      tokens: [ADDRESSES.null],
     })
   },
 }
