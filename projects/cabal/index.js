@@ -50,8 +50,13 @@ async function xslpTvl(api) {
     fetchView(STRAT_VIEW_URL, STRAT_VAULT_ADDRESS, 'vault', 'get_share_price', [iusdArg]),
     get(`${STRAT_SUPPLY_URL}?denom=${xslpDenom}`),
   ])
-  const rawIusdAmount = toNum(supply?.amount?.amount) * toNum(stratShareRatio) * toNum(sharePrice)
-  api.add(STRAT_I_USD_METADATA, rawIusdAmount)
+  const supplyAmount = toNum(supply?.amount?.amount)
+  const shareRatio = toNum(stratShareRatio)
+  const sharePriceAmount = toNum(sharePrice)
+  if (![supplyAmount, shareRatio, sharePriceAmount].every(Number.isFinite)) {
+    throw new Error('Invalid Strat xSLP TVL response')
+  }
+  api.add(STRAT_I_USD_METADATA, supplyAmount * shareRatio * sharePriceAmount)
 }
 
 module.exports = {
