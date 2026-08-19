@@ -43,36 +43,6 @@ pipelineJob('tvl-custom-scripts/metadao') {
     }
 }
 
-// fuel Job
-pipelineJob('tvl-custom-scripts/fuel') {
-    displayName('Fuel TVL')
-    description('Calculates Fuel TVL')
-
-    // Keep last 21 builds
-    logRotator {
-        numToKeep(21)
-    }
-
-    // Build triggers - run every 8 hours
-    triggers {
-        cron('0 */8 * * *')
-    }
-
-    definition {
-        cpsScm {
-            scm {
-                git {
-                    remote {
-                        url(repoUrl)
-                    }
-                    branches('main')
-                }
-            }
-            scriptPath("${customScriptsPath}/fuel/jfile")
-        }
-    }
-}
-
 // sushi v2 Job - hourly adapters
 pipelineJob('tvl-custom-scripts/sushi-analytics-v2-hourly') {
     displayName('Sushi Analytics V2 TVL (hourly)')
@@ -85,7 +55,7 @@ pipelineJob('tvl-custom-scripts/sushi-analytics-v2-hourly') {
 
     // Build triggers - run every hour
     triggers {
-        cron('31 * * * *')
+        cron('H * * * *')
     }
 
     parameters {
@@ -119,7 +89,7 @@ pipelineJob('tvl-custom-scripts/sushi-analytics-v2-heavy') {
 
     // Build triggers - run every 8 hours
     triggers {
-        cron('13 */8 * * *')
+        cron('H */6 * * *')
     }
 
     parameters {
@@ -153,7 +123,7 @@ pipelineJob('tvl-custom-scripts/pcs-v2') {
 
     // Build triggers - run every 8 hours
     triggers {
-        cron('0 */8 * * *')
+        cron('H */8 * * *')
     }
 
     parameters {
