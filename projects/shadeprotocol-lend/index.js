@@ -18,6 +18,7 @@ async function borrowed(api) {
 
 
 module.exports = {
+  deadFrom: '2026-08-08',
   misrepresentedTokens: true,
   secret: {
     tvl,

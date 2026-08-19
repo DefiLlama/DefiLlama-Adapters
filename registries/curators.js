@@ -159,6 +159,7 @@ const configs = {
           morpho: [
             '0x5dc53a23AdC9f2Bed98de6F59F7F309a7c71FF2B',
             '0xA2EAaD0D586cF9FD73bb2c09cF6A7E3e187D68cd',
+            '0x55C1B6e461a6334B567bAF0FEb5D728715446f05',
           ],
         },
       },
@@ -391,7 +392,7 @@ const configs = {
   },
   "edge-capital": {
     config: {
-      methodology: 'Counts all assets deposited in vaults curated by Muscadine.',
+      methodology: 'Counts all assets deposited in vaults curated by Edge-Capital.',
       blockchains: {
         tac: {
           eulerVaultOwners: [
@@ -596,21 +597,25 @@ const configs = {
       }
     },
   },
+  "meridian-perps": {
+    config: {
+      methodology: 'Count all assets deposited in the Meridian perps LP vault.',
+      blockchains: {
+        robinhood: {
+          accountableVaults: [
+            '0x24b84023c8e4Da635be228C380C09bfE5271BF9d', // Meridian LP vault
+          ],
+        },
+      },
+    },
+  },
   "muscadine": {
     config: {
-      methodology: 'Counts all assets deposited in Muscadine Morpho vaults on Base.',
+      methodology: 'Counts all assets deposited in all vaults curated by Muscadine.',
       blockchains: {
         base: {
-          morpho: [
-            // V1 Vaults
-            '0xf7e26Fa48A568b8b0038e104DfD8ABdf0f99074F', // Muscadine USDC Vault
-            '0xAeCc8113a7bD0CFAF7000EA7A31afFD4691ff3E9', // Muscadine cbBTC Vault
-            '0x21e0d366272798da3A977FEBA699FCB91959d120', // Muscadine WETH Vault
-            // V2 Vaults
-            '0x89712980cb434ef5ae4ab29349419eb976b0b496', // Muscadine USDC Prime
-            '0xd6dcad2f7da91fbb27bda471540d9770c97a5a43', // Muscadine WETH Prime
-            '0x99dcd0d75822ba398f13b2a8852b07c7e137ec70', // Muscadine cbBTC Prime
-            '0x314fD07319ef645bA7D548915CCd91F4788A1839', // Muscadine USDC Frontier
+          morphoVaultOwners: [
+            '0xf35B121bA32cBeaA27716abEfFb6B65a55f9B333', // V2 Prime USDC, WETH, cbBTC, Frontier USDC.
           ],
         },
       }
@@ -809,6 +814,19 @@ const configs = {
       }
     },
   },
+  "sharewoods": {
+    config: {
+      methodology: 'Count all assets are deposited in all vaults curated by Sharewoods.',
+      blockchains: {
+        robinhood: {
+          morpho: [
+            '0x5FE15021a7C0Ff4A9965b400E474f616451BA128', // Sharewoods RWA USDG
+            '0xf8f8654A26bfe134ee290d0b6a749Ba45F03a104', // Sharewoods Classic USDG
+          ],
+        },
+      }
+    },
+  },
   "singularv": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by singularV.',
@@ -877,7 +895,12 @@ const configs = {
             '0xBEEFFFC57A26fD8D3b693Ba025ead597DbECEBfe', // USDC High Yield Term
             '0xBEEf3f3A04e28895f3D5163d910474901981183D', // 3F Ecosystem Vault
             '0xBeefF08dF54897e7544aB01d0e86f013DA354111', // Steakhouse Prime
-            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Steakhouse High Yield
+            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC
+            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC
+            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Waterline Reservoir USDC
+            '0xAb5955EB671d150527f8E61A42B703832F86616C', // M1 USDC
+            '0xbeEFF75262b2eC16a3C62a807F02EE7627654931', // Waterline InfiniFi USDC
+            '0x7d4741ba166B21cf3168A9A0ea71388531C52FF7', // Tenbin USDC
             '0x6f48cE6380693808682E43140E3Eeb877a096Aa1', // USDC T-Prime Instant
             '0xBEEFFF4716a49418D69c251cab8759bB107e57C8', // USDC Turbo
             '0xBEEFFFDE1CABD3d8A3cd4fd5e04DbA51B9D4Ac39', // XAUT Turbo
@@ -946,6 +969,7 @@ const configs = {
             '0xd546dc0db55c28860176147b2d0fefcc533ecf08',
             '0x2b1D7d0CE2816C83c9bABe48b2FB545488139DCD',
             '0x706931c18022d7Af5a76350545B93aBFB54B62FC',
+            '0x96632d28Ac99A3edAb5F7B223a88d8fAf9004178', // Ethena x Steakhouse mUSD
           ],
         },
         polygon: {
@@ -1024,7 +1048,15 @@ const configs = {
         base: {
           erc4626: [
             '0x01a6ff6eb333c1393ef424f5894b18367f1499a8',
-            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8'
+            '0xe883426b4fc84a7f5cc86415cabbef43e73a4cc8',
+            '0x19ba57ba620a94d57b0d408d5eadb94bcdb8c69c',
+            '0x4cff826ed74ecf74374f691fe454c2c847645f75',
+            '0x0c755ef12fa9fa3e857fa2464cfc52deb4878265',
+            '0x7f1f605e755c06d428a80db3d473fc46a14ee2cb',
+            '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
+            '0xbe49dd45d9d28f2380cbee3e57a8243e736e4552',
+            '0x79505efad14d289c84a71c28369b944ada25b131',
+            '0x31744e44d6af88225c1dbefbe5df8308faea641b'
           ]
         }
       }

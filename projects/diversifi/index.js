@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // DiversiFi — DeFiLlama TVL adapter
 // Target file location in the PR: projects/diversifi/index.js
 //
@@ -34,8 +35,8 @@ const EMPTY_MINT = '11111111111111111111111111111111' // all-zero pubkey = unuse
 // Settlement currencies held outside the mint slots (empirically only USDC today; USDT
 // kept as cheap insurance — a non-existent ATA is simply skipped via allowError).
 const BASE_MINTS = [
-  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
-  'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // USDT
+  ADDRESSES.solana.USDC, // USDC
+  ADDRESSES.solana.USDT, // USDT
 ]
 
 

@@ -258,6 +258,14 @@ const MorphoConfigs = {
       }
     ]
   },
+  morph: {
+    vaultFactoriesV2: [
+      {
+        address: '0x7D8BF8B276f967F7539c9e91E1a85a33fefE612B',
+        fromBlock: 23180183,
+      }
+    ]
+  },
 }
 
 const EulerConfigs = {

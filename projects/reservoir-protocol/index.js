@@ -105,6 +105,8 @@ const config = {
       [ADDRESSES.ethereum.USDS, '0x0b578e123e3725a15F6FCbd43ADf314EaA667c04'], // USDS
       // --- Uniswap v4 ---
       [ADDRESSES.ethereum.USDT, '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // Uniswap USDe/USDT LP (USDT side)
+      // --- Agua ---
+      ['0xa98b4a70e17e55045cde4972b95bc2e8cec22a0f', '0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'], // aguaUSDCgc (Agua Global Carry Vault)
     ],
   },
   plasma: {
@@ -193,6 +195,14 @@ const config = {
       ['0x88e0994E8130EF72bf614CBBcF722839B167c8d1', '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181'], // cAUSD (Curvance)
       ['0x32841A8511D5c2c5b253f45668780B99139e476D', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // grove-bbqAUSD (Morpho Grove x Steakhouse)
       ['0xbeeffb65df79baac701307c9605b7ab207355fdb', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // bbqUSD1 (Steakhouse High Yield USD1)
+      ['0x9891178A1178E4C740Fa61Fd6e30A9D92D897590', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cUSDC-savUSD (Curvance USDC)
+      ['0x207340d15f4e3c63ae610429f34b87c73a5d55e5', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cUSDC-agua (Curvance USDC)
+      ['0x4586face17B0e3D4d51EcABb4B4EBC2354b61b0D', '0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'], // aMonGHO (Aave GHO on Monad)
+    ]
+  },
+  pharos: {
+    tokensAndOwners: [
+      ['0x047cD0a91E9B92ED979189a6C8A120bf280f02E5', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // mmUSDC (Morpho Rockaway USDC)
     ]
   },
   hyperliquid: {

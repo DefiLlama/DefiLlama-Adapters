@@ -41,6 +41,9 @@ const configs = {
         '0xb64C014307622eB15046C66fF71D04258F5963DC', // mevBTC
         '0x67E1F506B148d0Fc95a4E3fFb49068ceB6855c05'  // mROX
       ],
+      erc4626: [
+        '0x6f576e5192a14f259f7fe7347ecf63b255d7f7d1', // Term Finance - RockawayX Tori USDC (tsvRockXToriUSDC)
+      ],
     },
     base: {
       morpho: [
