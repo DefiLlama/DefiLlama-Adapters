@@ -16079,6 +16079,7 @@ const configs = {
   },
   "hrusd": {
     "methodology": "TVL counts the USDC reserve held on-chain by the HRUSD Peg Stability Module and the USDC side of the Uniswap V3 HRUSD/USDC liquidity positions escrowed in the two V3LPStakingRewards contracts. The remainder of the HRUSD backing is custodied on a centralised exchange and is deliberately not counted here.",
+    "doublecounted": true,
     "base": {
       "owners": [
         '0xe5545fd5e48425663Bf207183a868Eb0A1d2b9ee',
@@ -41066,7 +41067,8 @@ const configs = {
     },
   },
   "xona-agent": {
-    "methodology": "Tracks XONA tokens in the staking contracts.",
+    "methodology": "Tracks XONA tokens in the Streamflow staking contracts.",
+    "doublecounted": true,
     "solana": {
       "staking": {
         "tokenAccounts": [
