@@ -1,9 +1,12 @@
-const { getLogs2 } = require('../helper/cache/getLogs')
+const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const FACTORY = '0xeF72cbCcF4A807DfA1fbecd61DdB488fF8a05fa3'
 const ALM_VAULT_FACTORY = '0x8d8535C8842Aa541fcB3F6CC436e1b3A816a3a0e'
 const FACTORY_FROM_BLOCK = 26521466
+// PulseChain RPC providers can silently truncate wide eth_getLogs ranges.
+// The SDK still uses its cache/indexer first and applies this only on fallback.
+const MAX_LOG_BLOCK_RANGE = 100_000
 
 const STANDARD_POOL_CREATED = 'event Pool(address indexed token0, address indexed token1, address pool)'
 const CUSTOM_POOL_CREATED = 'event CustomPool(address indexed deployer, address indexed token0, address indexed token1, address pool)'
@@ -11,38 +14,23 @@ const ALM_VAULT_CREATED =
   'event ALMVaultCreated(address indexed sender, address almVault, address tokenA, bool allowTokenA, address tokenB, bool allowTokenB, uint256 count)'
 
 async function tvl(api) {
+  const toBlock = await api.getBlock()
+  const getFactoryLogs = (target, eventAbi) =>
+    sdk.getEventLogs({
+      chain: api.chain,
+      target,
+      fromBlock: FACTORY_FROM_BLOCK,
+      toBlock,
+      eventAbi,
+      onlyArgs: true,
+      cacheInCloud: true,
+      maxBlockRange: MAX_LOG_BLOCK_RANGE,
+    })
+
   const [standardPools, customPools, almVaults] = await Promise.all([
-    getLogs2({
-      api,
-      target: FACTORY,
-      fromBlock: FACTORY_FROM_BLOCK,
-      eventAbi: STANDARD_POOL_CREATED,
-      onlyArgs: true,
-      // PulseChain RPC log providers can return incomplete wide-range results.
-      // Prefer DefiLlama's indexed path, while retaining the canonical cache.
-      useIndexer: true,
-      // Both event types come from the same factory, so they need distinct
-      // cache keys to prevent one decoded event set from shadowing the other.
-      extraKey: 'standard-pools',
-    }),
-    getLogs2({
-      api,
-      target: FACTORY,
-      fromBlock: FACTORY_FROM_BLOCK,
-      eventAbi: CUSTOM_POOL_CREATED,
-      onlyArgs: true,
-      useIndexer: true,
-      extraKey: 'custom-pools',
-    }),
-    getLogs2({
-      api,
-      target: ALM_VAULT_FACTORY,
-      fromBlock: FACTORY_FROM_BLOCK,
-      eventAbi: ALM_VAULT_CREATED,
-      onlyArgs: true,
-      useIndexer: true,
-      extraKey: 'alm-vaults',
-    }),
+    getFactoryLogs(FACTORY, STANDARD_POOL_CREATED),
+    getFactoryLogs(FACTORY, CUSTOM_POOL_CREATED),
+    getFactoryLogs(ALM_VAULT_FACTORY, ALM_VAULT_CREATED),
   ])
 
   const owners = new Map()
