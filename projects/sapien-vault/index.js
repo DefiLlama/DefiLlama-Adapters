@@ -7,6 +7,7 @@ module.exports = {
     'TVL is SAPIEN held by the Base ERC-4626 Sapien PoQ Vault, measured on-chain via totalAssets(). Protocol-owned SAPIEN in RewardsController is excluded.',
   start: '2026-04-07',
   base: {
-    tvl: sumERC4626VaultsExport2({ vaults: [VAULT] }),
+    tvl: () => ({}),
+    staking: sumERC4626VaultsExport2({ vaults: [VAULT] }),
   },
 }
