@@ -1,5 +1,6 @@
 const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2: sumSolanaTokens } = require('../helper/solana')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const METADATA_URL = 'https://metadata.layerzero-api.com/v1/metadata'
@@ -7,20 +8,33 @@ const METADATA_URL = 'https://metadata.layerzero-api.com/v1/metadata'
 const NATIVES = [ADDRESSES.metis.Metis]
 
 const CHAIN_MAP = {
-  avax:          'avalanche',
-  berachain:     'bera',
-  plume_mainnet: 'plumephoenix',
-  xdai:          'gnosis',
-  rsk:           'rootstock',
-  swellchain:    'swell',
-  era:           'zksync',
-  wc:            'worldchain',
-  op_bnb:        'opbnb',
-  core:          'coredao',
-  '0g':          'og',
-  apechain:      'ape',
-  cronos:        'cronosevm',
-  polygon_zkevm: 'zkevm',
+  '0g':              'og',
+  ap3x:              'apexfusionnexus',
+  apechain:          'ape',
+  avax:              'avalanche',
+  berachain:         'bera',
+  bittensor_evm:     'subtensorevm',
+  chz:               'chiliz',
+  core:              'coredao',
+  cronos:            'cronosevm',
+  era:               'zksync',
+  etlk:              'etherlink',
+  irys_mainnet_beta: 'irys',
+  kiteai:            'kite',
+  lightlink_phoenix: 'lightlink',
+  op_bnb:            'opbnb',
+  plume_mainnet:     'plumephoenix',
+  polygon_zkevm:     'zkevm',
+  rbn:               'redbelly',
+  rls:               'rayls',
+  rsk:               'rootstock',
+  sty:               'story',
+  swellchain:        'swell',
+  tomochain:         'tomo',
+  vana:              'islander',
+  vfl:               'zkverify',
+  wc:                'worldchain',
+  xdai:              'gnosis',
 }
 
 // Escrows holding a LayerZero-minted wrapper instead of original collateral — their backing is
@@ -39,19 +53,23 @@ const WRAPPER_ESCROWS = new Set([
   'hyperliquid:0x904861a24f30ec96ea7cfc3be9ea4b476d237e98', // USDT0.s
 ])
 
-async function tvl(api) {
-  const meta = await getConfig('layer-zero/metadata', METADATA_URL)
-  const tokens = meta[CHAIN_MAP[api.chain] || api.chain]?.tokens || {}
-
-  const proxies = []
-  for (const info of Object.values(tokens)) {
+function getEscrows(meta, chain) {
+  const tokens = meta[CHAIN_MAP[chain] || chain]?.tokens || {}
+  const escrows = []
+  for (const [token, info] of Object.entries(tokens)) {
     if (!info.proxyAddresses) continue
     for (const proxy of info.proxyAddresses) {
       if (typeof proxy !== 'string' || proxy.length !== 42) continue
-      if (WRAPPER_ESCROWS.has(`${api.chain}:${proxy.toLowerCase()}`)) continue
-      proxies.push(proxy)
+      if (WRAPPER_ESCROWS.has(`${chain}:${proxy.toLowerCase()}`)) continue
+      escrows.push({ proxy, declared: info.erc20TokenAddress || token })
     }
   }
+  return escrows
+}
+
+async function tvl(api) {
+  const meta = await getConfig('layer-zero/metadata', METADATA_URL)
+  const proxies = getEscrows(meta, api.chain).map(i => i.proxy)
   if (!proxies.length) return {}
 
   const resolved = new Map()
@@ -75,6 +93,27 @@ async function tvl(api) {
   await sumTokens2({ api, tokensAndOwners })
 }
 
+async function tronTvl(api) {
+  const meta = await getConfig('layer-zero/metadata', METADATA_URL)
+  const tokensAndOwners = [], nativeEscrows = []
+  for (const { proxy, declared } of getEscrows(meta, api.chain)) {
+    if (declared === ADDRESSES.null) nativeEscrows.push(proxy)
+    else tokensAndOwners.push([declared, proxy])
+  }
+
+  if (tokensAndOwners.length) await sumTokens2({ api, tokensAndOwners })
+  for (const proxy of nativeEscrows)
+    api.add(ADDRESSES.null, (await api.provider.getBalance(proxy)).toString())
+}
+
+async function solanaTvl(api) {
+  const meta = await getConfig('layer-zero/metadata', METADATA_URL)
+  const tokenAccounts = Object.values(meta.solana?.tokens || {})
+    .map(i => i.escrowTokenAddress)
+    .filter(i => typeof i === 'string')
+  if (tokenAccounts.length) await sumSolanaTokens({ api, tokenAccounts: [...new Set(tokenAccounts)] })
+}
+
 const chains = [
   'ethereum', 'bsc', 'base', 'arbitrum', 'hyperliquid', 'polygon', 'avax',
   'optimism', 'berachain', 'plasma', 'hemi', 'rsk', 'ink', 'katana',
@@ -87,10 +126,15 @@ const chains = [
   'moonriver', 'conflux', 'lisk', 'megaeth', 'harmony',
   'apechain', 'degen', 'somnia', 'telos', 'robinhood', 'moonbeam', 'cronos',
   'polygon_zkevm', 'zora', 'sophon', 'xpla', 'ethereal', 'sanko', 'core', '0g',
+  'gensyn', 'chz', 'vana', 'rbn', 'sty', 'bittensor_evm', 'irys_mainnet_beta',
+  'vfl', 'etlk', 'codex', 'kiteai', 'lightlink_phoenix', 'tomochain', 'ap3x',
+  'rls',
 ]
 
 module.exports = {
   methodology: 'Counts assets escrowed in LayerZero OFT Adapter / ProxyOFT lockboxes on each chain, discovered from the LayerZero metadata API. Pure mint-and-burn OFTs hold no collateral and are not counted. Destination-chain escrows that hold a LayerZero-minted wrapper are excluded, since the collateral backing them is already counted at its canonical lockbox, escrows holding natively-issued assets are counted even where the metadata annotates them as pegged to another chain.',
+  tron: { tvl: tronTvl },
+  solana: { tvl: solanaTvl },
 }
 
 chains.forEach(chain => {
