@@ -16182,15 +16182,19 @@ const configs = {
     },
   },
   "hypersurface": {
-    "methodology": "TVL includes tokens in MarginPool, HedgedPool, and Hedger contracts. LP positions held by the Hedger are unwrapped to their underlying tokens.",
+    "methodology": "TVL includes tokens in MarginPool, HedgedPool, and Hedger contracts of every collateral pool (USDT0-collateral and USDC-collateral on HyperEVM, USDC-collateral on Base). LP positions held by the Hedger are unwrapped to their underlying tokens.",
     "hyperliquid": {
       "owners": [
         "0x7D2e4b4d7ba55C423F5CCe194ae8194eFD1C6e35",
         "0x0095aCDD705Cfcc11eAfFb6c19A28C0153ad196F",
-        "0xa8c9403BDf554C047Ad91a448DDb24208Ab5313c"
+        "0xa8c9403BDf554C047Ad91a448DDb24208Ab5313c",
+        "0x7FfD5706C916499676D707f3ec3F0c9b928E7A95",
+        "0xe0F9cA7FD12E31F5d720A93d04722d6DFbAD59e7",
+        "0x220f86b641ec63f4832CC30a663Bb26b15259Ee2"
       ],
       "tokens": [
-        ADDRESSES.corn.USDT0,
+        ADDRESSES.hyperliquid.USDT0,
+        ADDRESSES.hyperliquid.USDC,
         "0xbe6727b535545c67d5caa73dea54865b92cf7907",
         "0x9fdbda0a5e284c32744d2f17ee5c74b284993463",
         ADDRESSES.hyperliquid.WHYPE,
