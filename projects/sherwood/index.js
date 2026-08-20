@@ -24,7 +24,7 @@ async function tvl(api) {
   tokens.add(ADDRESSES.null) // native ETH
   tokens.add(ADDRESSES.robinhood.USDG.toLowerCase())
 
-  return api.sumTokens({ owner: VAULT, tokens: [...tokens] })
+  return api.sumTokens({ owner: VAULT, tokens: [...tokens], permitFailure: true })
 }
 
 module.exports = {

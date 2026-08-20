@@ -124,8 +124,45 @@ const defaultTokens = {
     '0xdA5e1988097297dCdc1f90D4dFE7909e847CBeF6',  //WLFI
     '0x1b66474c8eca3827f16202907f41f63785579716', // exchange token for weex, 
     '0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3', //ondo
-    '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', //shib
-    '0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b' //funktoken
+    ADDRESSES.ethereum.INU, //shib
+    '0x419D0d8BdD9aF5e606Ae2232ed285Aff190E711b', //funktoken
+    '0x8947da500Eb47F82df21143D0C01A29862a8C3c5', //thales
+    '0xA2120b9e674d3fC3875f415A7DF52e382F141225', //ATA
+    '0x430ef9263e76dae63c84292c3409d61c598e9682', //pyr
+    '0xac57de9c1a09fec648e93eb98875b212db0d460b', //babydoge
+    '0xd2ba23de8a19316a638dc1e7a9adda1d74233368', //quick
+    ADDRESSES.ethereum.POL, //pol
+    '0x1ffEFD8036409Cb6d652bd610DE465933b226917', //ever
+    '0x163f8c2467924be0ae7b5347228cabf260318753', //wld
+    '0xf230b790E05390FC8295F4d3F60332c93BEd42e2', //trx
+    '0xb3999F658C0391d94A37f7FF328F3feC942BcADC', // HFT
+    '0xac51066d7bec65dc4589368da368b212745d63e8', // ALICE
+    '0x3429d03c6F7521AeC737a0BBF2E5ddcef2C3Ae31', // PIXEL
+    '0x467719aD09025FcC6cF6F8311755809d45a5E5f3', //WAXL
+    '0xaaa9214f675316182eaa21c85f0ca99160cc3aaa', //QANX
+    '0x7448c7456a97769f6cd04f1e83a4a23ccdc46abd', //MAV
+    '0x14778860e937f509e651192a90589de711fb88a9', //CYBER
+    '0x137dDB47Ee24EaA998a535Ab00378d6BFa84F893', //RDNT
+    '0xb50721bcf8d664c30412cfbc6cf7a15145234ad1', //ARB
+    ADDRESSES.ethereum.SNX, //SNX
+    '0x6985884C4392D348587B19cb9eAAf157F13271cd', //ZRO
+    '0x44ff8620b8ca30902395a7bd3f2407e1a091bf73', //VIRTUAL
+    '0x6e15a54b5ecac17e58dadeddbe8506a7560252f9', //F
+    '0x4dc26fc5854e7648a064a4abd590bbe71724c277', //ANIME
+    '0xe6bfd33f52d82ccb5b37e16d3dd81f9ffdabb195', //SXT
+    '0x868fced65edbf0056c4163515dd840e9f287a4c3', //SIGN
+    '0x000000fa00b200406de700041cfc6b19bbfb4d13', //TOWNS
+    '0x8408d45b61f5823298f19a09b53b7339c0280489', //ALLO
+    '0x031de51f3e8016514bd0963d0b2ab825a591db9a', //ESP
+    '0x68749665FF8D2d112Fa859AA293F07A622782F38', //XAUT (Tether Gold)
+    '0xe76c5b78f93909d34404e9eb4c1f19e7582a5de1', //H (Humanity Protocol)
+    '0x57e114B691Db790C35207b2e685D4A43181e6061', //ENA (Ethena)
+    '0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85', //FET (Artificial Superintelligence Alliance)
+    '0x7420B4b9a0110cdC71fB720908340C03F9Bc03EC', //JASMY
+    '0x808507121b80c02388fad14726482e061b8da827', //PENDLE
+    '0xcccccccccc33d538dbc2ee4feab0a7a1ff4e8a94', //CFG (Centrifuge)
+    ADDRESSES.ethereum.ETHFI, //ETHFI (ether.fi)
+    '0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f', //GHO (Aave stablecoin)
   ],
   tron: [
     nullAddress,
@@ -135,6 +172,8 @@ const defaultTokens = {
     ADDRESSES.tron.TUSD,
     'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
     'TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6', // HTX
+    'TPFqcBAaaUMCSVRCqPaQ9QnzKhmuoLR6Rc', //USD1
+    'TXDk8mbtRbXeYuMNS83CfKPaYYT8XWv9Hz', //USDD
   ],
   polygon: [
     nullAddress,
@@ -148,6 +187,7 @@ const defaultTokens = {
     '0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e', //xen
     '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', //ALGB
     '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f', //voxel
+    '0xa3f751662e282e83ec3cbc387d225ca56dd63d3a', //APEPE (Ape Pepe)
   ],
   algorand: [],
   solana: [
@@ -159,7 +199,16 @@ const defaultTokens = {
     'FeR8VBqNRSUD5NtXAj2n3j1dAHkZHfyDktKuLXD4pump', //jelyjely
     'XsueG8BtpquVJX9LVLLEGuViXUungE6WmK5YZ3p3bd1', // CRCLX
     '9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump', //fartcoin
-
+    '9zNQRsGLjNKwCUU5Gq5LR8beUCPzQMVMqKAi3SSZh54u', //FDUSD
+    'USD1ttGY1N17NEEHLmELoaybftRBUSErhqYiQzvEmuB', //USD1
+    'WLFinEv6ypjkczcS83FZqFpgFZYwQXutRbxGe7oC16g', //WLFI
+    '6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN', //TRUMP (OFFICIAL TRUMP)
+    '2u1tszSeqZ3qBWF3uNGPFc8TzMk2tdiwknnRMWGWjGWH', //USDG (Global Dollar)
+    ADDRESSES.solana.PUMP, //PUMP (pump.fun)
+    'XsDoVfqeBukxuZHWhdvWHBhgEHjGNst4MLodqsJHzoB', //TSLAX (Tesla xStock)
+    'rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof', //RENDER
+    'Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk', //USELESS
+    '4eDf52YYzL6i6gbZ6FXqrLUPXbtP61f1gPSFM66M4XHe', //SOON
   ],
   bsc: [
     nullAddress,
@@ -208,7 +257,24 @@ const defaultTokens = {
     '0x0f0df6cb17ee5e883eddfef9153fc6036bdb4e37', // bas
     '0x000ae314e2a2172a039b26378814c252734f556a', // aster
     '0x92aa03137385f18539301349dcfc9ebc923ffb10', // skyai
-
+    '0x4bfaa776991e85e5f8b1255461cbbd216cfc714f', //HOME
+    '0x111111111117dc0aa78b770fa6a738034120c302', //1INCH
+    '0x8b1f4432f943c465a973fedc6d7aa50fc96f1f65', //WAXL
+    '0x7324c7C0d95CEBC73eEa7E85CbAac0dBdf88a05b', //XCN
+    '0x14778860E937f509e651192a90589dE711Fb88a9', //CYBER
+    '0xf7DE7E8A6bd59ED41a4b5fe50278b3B7f31384dF', //RDNT
+    '0xc9ccbd76c2353e593cc975f13295e8289d04d3bb', // F
+    '0x59264f02d301281f3393e1385c0aefd446eb0f00', // PARTI
+    '0x868fced65edbf0056c4163515dd840e9f287a4c3', //SIGN
+    '0x47474747477b199288bf72a1d702f7fe0fb1deea', //WLFI
+    '0xcce5f304fd043d6a4e8ccb5376a4a4fb583b98d5', //ALLO
+    '0x6bdcce4a559076e37755a78ce0c06214e59e4444', //B (Bubblemaps)
+    '0x7ec43cf65f1663f820427c62a5780b8f2e25593a', //LAB (LABUBU)
+    '0xd955c9ba56fb1ab30e34766e252a97ccce3d31a6', //XPIN (XPIN Network)
+    '0x2c3a8ee94ddd97244a93bc48298f97d2c412f7db', //AKE (Akedo Games)
+    '0x0a8d6c86e1bce73fe4d0bd531e1a567306836ea5', //COAI (ChainOpera AI)
+    '0xb9e1fd5a02d3a33b25a14d661414e6ed6954a721', //SOON
+    '0x3d4f0513e8a29669b960f9dbca61861548a9a760', //BANANAS31 (Banana For Scale)
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -230,6 +296,7 @@ const defaultTokens = {
   base: [
     nullAddress,
     '0xc2d09cf86b9ff43cb29ef8ddca57a4eb4410d5f3',
+    '0xacfe6019ed1a7dc6f7b508c02d1b04ec88cc21bf', //VVV (Venice Token)
   ],
   avax: [
     nullAddress,
@@ -254,7 +321,8 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.linea.USDT, //bridge usdt
     ADDRESSES.linea.USDC, //usdc bridge
-    ADDRESSES.linea.DAI //dai bridge
+    ADDRESSES.linea.DAI, //dai bridge
+    '0x23ee2343B892b1BB63503a4FAbc840E0e2C6810f', // WAXL
   ],
   flare: [
     nullAddress,
@@ -275,6 +343,7 @@ const defaultTokens = {
   kava: [
     nullAddress,
     ADDRESSES.kava.USDt,
+    ADDRESSES.kava.USDt, //USDT (kava EVM)
   ],
   cronos: [
     nullAddress,
@@ -296,7 +365,8 @@ const defaultTokens = {
     ADDRESSES.aptos.USDC,
     ADDRESSES.aptos.USDT,
     ADDRESSES.aptos.USDt,
-    '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US' // US
+    '0xee962a61432231c2ede6946515beb02290cb516ad087bb06a731e922b2a5f57a::us::US', // US
+    ADDRESSES.aptos.USD1, // USD1
   ],
   mantle: [
     nullAddress,
@@ -333,6 +403,21 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.plasma.USDT0,
     ADDRESSES.plasma.WXPL,
+  ],
+  wc: [
+    nullAddress,
+    ADDRESSES.wc.WLD, //WLD (World Chain)
+  ],
+  abstract: [
+    nullAddress,
+    '0x12d3e796d1f625eb6131aeb670bcd210bbb0f903', //GUSD (Gate stablecoin)
+  ],
+  xlayer: [
+    nullAddress,
+    '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8', //USDG 
+    '0xB6CEceAB302E2E4948951eE7843FC24E92933061', //USDC
+    ADDRESSES.stable.USDT0, //USD₮0
+    '0x87b4a8176B3Df6b71e26CC095edcAf4Db07506B4', //PAYPAL USD
   ],
 }
 
@@ -378,13 +463,17 @@ function cexExports(config) {
     if (chain === 'ton') options.onlyWhitelistedTokens = true
     if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
     exportObj[chain] = { tvl: async (api) => {
+      // supports dynamic owners lists passed as a function
+      const owners = typeof options.owners === 'function' ? await options.owners(api) : options.owners
+      let tokens = options.tokens
       const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
       if (binanceTokensOnChain.length) {
         console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
-        if (!options.tokens) options.tokens = []
-        options.tokens.push(...binanceTokensOnChain)
+        tokens = [...(options.tokens ?? []), ...binanceTokensOnChain]
       }
-      return sumTokensExport(options)(api)
+      const runtimeOptions = { ...options, owners, tokens }
+      if (chain === 'solana') runtimeOptions.solOwners = owners
+      return sumTokensExport(runtimeOptions)(api)
     } }
   })
   if (config.bep2) {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { stakings } = require("../helper/staking");
@@ -307,21 +308,23 @@ const supportedChains = [
 ]
 
 const query = `
-  query getVaults {
+  query getVaults($lastId: ID) {
     vaults(
       first: 1000
       orderBy: id
       orderDirection: asc
+      where: { id_gt: $lastId }
     ) { id beaconName token0 token1 token0Balance token1Balance }
   }
 `
 
 const OFFLINE_SUBGRAPH_QUERY = `
-  query getVaults {
+  query getVaults($lastId: ID) {
     vaults(
       first: 1000
       orderBy: id
       orderDirection: asc
+      where: { id_gt: $lastId }
     ) { id beaconName token0 token1 token0Balance token1Balance }
   }
 `
@@ -403,7 +406,7 @@ function addBalances(api, balances, token0s, token1s, [balance0, balance1], fall
 function getV4MetadataToken(metadata, index) {
   if (typeof metadata !== 'string' || !/^0x[\da-f]{128,}$/i.test(metadata)) return
   const token = `0x${metadata.slice(2 + index * 64 + 24, 2 + (index + 1) * 64)}`
-  return token === '0x0000000000000000000000000000000000000000' ? undefined : token
+  return token === ADDRESSES.null ? undefined : token
 }
 
 supportedChains.forEach(chain => {
@@ -412,8 +415,9 @@ supportedChains.forEach(chain => {
       const usesOfflineSubgraph = chain.subgraphEndpoint.startsWith(OFFLINE_SUBGRAPH_URL_PREFIX)
       const data = await cachedGraphQuery(`steer-v4/${chain.identifier}`, chain.subgraphEndpoint, usesOfflineSubgraph ? OFFLINE_SUBGRAPH_QUERY : query, {
         headers: chain.headers,
+        fetchById: true,
       })
-      // The array fallback supports a cache entry produced by the previous paginated query.
+      // The object fallback supports a cache entry produced by the previous unpaginated query.
       const vaultData = Array.isArray(data) ? data : data.vaults
       if (!Array.isArray(vaultData)) throw new Error(`Could not fetch vaults for ${api.chain}`)
       const v4Vaults = vaultData.filter(({ beaconName }) => UNISWAP_V4_BEACON_NAMES.has(beaconName))

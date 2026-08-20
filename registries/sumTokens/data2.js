@@ -6,54 +6,54 @@ module.exports = {
   "interport-finance": {
     "methodology": "Interport TVL is calculated by summing the USDT and USDC balance of the vaults contracts, ITP token balance in the ITP Revenue Share contract and LP token balance in the LP Revenue Share contract.",
     "ethereum": {
-      "tvl": { "tokensAndOwners": [["0xdAC17F958D2ee523a2206206994597C13D831ec7", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] },
+      "tvl": { "tokensAndOwners": [[ADDRESSES.ethereum.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.ethereum.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] },
       "staking": { "__staking": ["0x5DC6796Adc2420BD0f48e05f70f34B30F2AaD313", "0x2b1D36f5B61AdDAf7DA7ebbd11B35FD8cfb0DE31"] },
       "pool2": { "__staking": ["0x646De66c9A08abF0976869DE259E4B12D06F66ac", "0x4db2C7dd361379134140ffb9D85248e8498008E4"] }
     },
     "avax": {
-      "tvl": { "tokensAndOwners": [["0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.avax.USDt, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.avax.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "bsc": {
-      "tvl": { "tokensAndOwners": [["0x55d398326f99059fF775485246999027B3197955", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.bsc.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.bsc.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "fantom": {
-      "tvl": { "tokensAndOwners": [["0xcc1b99dDAc1a33c201a742A1851662E87BC7f22C", "0xd0Adc0cdE959616666c4691985df91C60ca3C0F7"], ["0x28a92dde19D9989F39A49905d7C9C2FAc7799bDf", "0xb6AB8EeFAE1a2c22Ca6338E143cb7dE544800c6e"]] }
+      "tvl": { "tokensAndOwners": [["0xcc1b99dDAc1a33c201a742A1851662E87BC7f22C", "0xd0Adc0cdE959616666c4691985df91C60ca3C0F7"], [ADDRESSES.fantom.USDC_L0, "0xb6AB8EeFAE1a2c22Ca6338E143cb7dE544800c6e"]] }
     },
     "arbitrum": {
-      "tvl": { "tokensAndOwners": [["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.arbitrum.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.arbitrum.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "polygon": {
-      "tvl": { "tokensAndOwners": [["0xc2132D05D31c914a87C6611C10748AEb04B58e8F", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.polygon.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.polygon.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "polygon_zkevm": {
-      "tvl": { "tokensAndOwners": [["0x1E4a5963aBFD975d8c9021ce480b42188849D41d", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.astarzk.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.astarzk.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "base": {
-      "tvl": { "tokensAndOwners": [["0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.base.USDbC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "era": {
-      "tvl": { "tokensAndOwners": [["0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4", "0xc724832c5ed81599aE3E4EBC0eC4f87A285B5838"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.era.USDC, "0xc724832c5ed81599aE3E4EBC0eC4f87A285B5838"]] }
     },
     "optimism": {
-      "tvl": { "tokensAndOwners": [["0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0x7F5c764cBc14f9669B88837ca1490cCa17c31607", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.optimism.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.optimism.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "linea": {
-      "tvl": { "tokensAndOwners": [["0xA219439258ca9da29E9Cc4cE5596924745e12B93", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0x176211869cA2b568f2A7D4EE941E073a821EE1ff", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.linea.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.linea.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "op_bnb": {
-      "tvl": { "tokensAndOwners": [["0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.op_bnb.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"]] }
     },
     "scroll": {
-      "tvl": { "tokensAndOwners": [["0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.scroll.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.scroll.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "manta": {
-      "tvl": { "tokensAndOwners": [["0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f", "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], ["0xb73603C5d87fA094B7314C74ACE2e64D165016fb", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.manta.USDT, "0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8"], [ADDRESSES.manta.USDC, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "blast": {
-      "tvl": { "tokensAndOwners": [["0x4300000000000000000000000000000000000003", "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.blast.USDB, "0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F"]] }
     },
     "zklink": {
-      "tvl": { "tokensAndOwners": [["0x2F8A25ac62179B31D62D7F80884AE57464699059", "0xd9eF111006F7477aC6E70dD2B782D8A901f6Ff5b"], ["0x1a1A3b2ff016332e866787B311fcB63928464509", "0x22E7c5d443400eef48F58acdEC67986373cf6c74"]] }
+      "tvl": { "tokensAndOwners": [[ADDRESSES.zklink.USDT, "0xd9eF111006F7477aC6E70dD2B782D8A901f6Ff5b"], [ADDRESSES.zklink.USDC, "0x22E7c5d443400eef48F58acdEC67986373cf6c74"]] }
     },
   },
   "tonbridge": {
@@ -186,103 +186,103 @@ module.exports = {
     "ethereum": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "0xdac17f958d2ee523a2206206994597c13d831ec7", "0xD7D2802f6b19843ac4DfE25022771FD83b5A7464"]
+        "tokens": [ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT, "0xD7D2802f6b19843ac4DfE25022771FD83b5A7464"]
       }
     },
     "polygon": {
       "tvl": {
         "owners": ["0x7189C59e245135696bFd2906b56607755F84F3fD", "0x26CFF54f11608Cd3060408690803AB4a43f462f2"],
-        "tokens": ["0x7ceb23fd6bc0add59e62ac25578270cff1b9f619", "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359", "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"]
+        "tokens": [ADDRESSES.polygon.WETH_1, ADDRESSES.polygon.USDC_CIRCLE, ADDRESSES.polygon.USDT]
       }
     },
     "bsc": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x2170ed0880ac9a755fd29b2688956bd959f933f8", "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", "0x55d398326f99059ff775485246999027b3197955"]
+        "tokens": [ADDRESSES.bsc.ETH, ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT]
       }
     },
     "avax": {
       "tvl": {
         "owners": ["0x9aA2Ecad5C77dfcB4f34893993f313ec4a370460", "0x7EB63a646721de65eBa79ffe91c55DCE52b73c12"],
-        "tokens": ["0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab", "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e", "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7"]
+        "tokens": [ADDRESSES.avax.WETH_e, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt]
       }
     },
     "arbitrum": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x82af49447d8a07e3bd95bd0d56f35241523fbab1", "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"]
+        "tokens": [ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT]
       }
     },
     "optimism": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x4200000000000000000000000000000000000006", "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58"]
+        "tokens": [ADDRESSES.optimism.WETH_1, ADDRESSES.optimism.USDC_CIRCLE, ADDRESSES.optimism.USDT]
       }
     },
     "base": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x4200000000000000000000000000000000000006", "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2"]
+        "tokens": [ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDC, ADDRESSES.base.USDT]
       }
     },
     "xdai": {
       "tvl": {
         "owners": ["0xe0F010e465f15dcD42098dF9b99F1038c11B3056", "0xeFa6Ac3F931620fD0449eC8c619f2A14A0A78E99"],
-        "tokens": ["0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1", "0x2a22f9c3b484c3629090feed35f17ff8f88f76f0", "0x4ecaba5870353805a9f068101a40e0f32ed605c6"]
+        "tokens": [ADDRESSES.xdai.WETH, "0x2a22f9c3b484c3629090feed35f17ff8f88f76f0", ADDRESSES.xdai.USDT]
       }
     },
     "unichain": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x4200000000000000000000000000000000000006", "0x078D782b760474a361dDA0AF3839290b0EF57AD6", "0x588CE4F028D8e7B53B687865d6A67b3A54C75518"]
+        "tokens": [ADDRESSES.optimism.WETH_1, ADDRESSES.unichain.USDC, "0x588CE4F028D8e7B53B687865d6A67b3A54C75518"]
       }
     },
     "era": {
       "tvl": {
         "owners": ["0x7F5e085981C93C579c865554B9b723B058AaE4D3", "0xbD82E5503461913a70566E66a454465a46F5C903"],
-        "tokens": ["0x5aea5775959fbc2557cc8789bc1bf90a239d9a91", "0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4", "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C"]
+        "tokens": [ADDRESSES.era.WETH, "0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4", ADDRESSES.era.USDT]
       }
     },
     "mantle": {
       "tvl": {
         "owners": ["0xe0F010e465f15dcD42098dF9b99F1038c11B3056", "0xeFa6Ac3F931620fD0449eC8c619f2A14A0A78E99"],
-        "tokens": ["0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111", "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9"]
+        "tokens": [ADDRESSES.mantle.WETH, ADDRESSES.mantle.USDC]
       }
     },
     "apechain": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0xcF800F4948D16F23333508191B1B1591daF70438", "0x6234E5ef39B12EFdFcbd99dd7F452F27F3fEAE3b"]
+        "tokens": [ADDRESSES.apechain.ApeETH, "0x6234E5ef39B12EFdFcbd99dd7F452F27F3fEAE3b"]
       }
     },
     "scroll": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x5300000000000000000000000000000000000004", "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4", "0xf55bec9cafdbe8730f096aa55dad6d22d44099df"]
+        "tokens": [ADDRESSES.scroll.WETH, ADDRESSES.scroll.USDC, ADDRESSES.scroll.USDT]
       }
     },
     "ink": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x4200000000000000000000000000000000000006", "0x0200C29006150606B650577BBE7B6248F58470c1"]
+        "tokens": [ADDRESSES.optimism.WETH_1, ADDRESSES.ink.USDT0]
       }
     },
     "berachain": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590"]
+        "tokens": [ADDRESSES.fuse.WETH_3]
       }
     },
     "ronin": {
       "tvl": {
         "owners": ["0xdCA40903E271Cc76AECd62dF8d6c19f3Ac873E64", "0x1FC1f47a6a7c61f53321643A14bEc044213AbF95"],
-        "tokens": ["0xc99a6a985ed2cac1ef41640596c5a5f9f4e19ef5", "0x0b7007c13325c48911f73a2dad5fa5dcbf808adc"]
+        "tokens": [ADDRESSES.ronin.WETH, ADDRESSES.ronin.USDC]
       }
     },
     "mode": {
       "tvl": {
         "owners": ["0xeFa6Ac3F931620fD0449eC8c619f2A14A0A78E99", "0xD1daF260951B8d350a4AeD5C80d74Fd7298C93F4"],
-        "tokens": ["0x4200000000000000000000000000000000000006", "0xf0F161fDA2712DB8b566946122a5af183995e2eD", "0xd988097fb8612cc24eeC14542bC03424c656005f"]
+        "tokens": [ADDRESSES.optimism.WETH_1, ADDRESSES.mode.USDT, ADDRESSES.mode.USDC]
       }
     },
     "zircuit": {
@@ -294,25 +294,25 @@ module.exports = {
     "linea": {
       "tvl": {
         "owners": ["0xc24dC29774fD2c1c0c5FA31325Bb9cbC11D8b751", "0xC1E5b7bE6c62948eeAb40523B33e5d0121ccae94"],
-        "tokens": ["0xA219439258ca9da29E9Cc4cE5596924745e12B93", "0x176211869cA2b568f2A7D4EE941E073a821EE1ff", "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"]
+        "tokens": [ADDRESSES.linea.USDT, ADDRESSES.linea.USDC, ADDRESSES.linea.WETH]
       }
     },
     "blast": {
       "tvl": {
         "owners": ["0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7", "0x4e2bbbFb10058E0D248a78fe2F469562f4eDbe66"],
-        "tokens": ["0x4300000000000000000000000000000000000004"]
+        "tokens": [ADDRESSES.blast.WETH]
       }
     },
     "taiko": {
       "tvl": {
         "owners": ["0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7", "0x4e2bbbFb10058E0D248a78fe2F469562f4eDbe66"],
-        "tokens": ["0x2def195713cf4a606b49d07e520e22c17899a736", "0x07d83526730c7438048D55A4fc0b850e2aaB6f0b", "0xA51894664A773981C6C112C43ce576f315d5b1B6"]
+        "tokens": [ADDRESSES.taiko.USDT, ADDRESSES.taiko.USDC, ADDRESSES.taiko.WETH]
       }
     },
     "sonic": {
       "tvl": {
         "owners": ["0xa05A3380889115bf313f1Db9d5f335157Be4D816", "0x9ADA72CCbAfe94248aFaDE6B604D1bEAacc899A7"],
-        "tokens": ["0x309C92261178fA0CF748A855e90Ae73FDb79EBc7"]
+        "tokens": [ADDRESSES.sonic.WETH]
       }
     },
   },
@@ -646,11 +646,11 @@ module.exports = {
         "tokensAndOwners": [
           ["0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55", "0x05E7ACeD3b7727f9129E6d302B488cd8a1e0C817"],
           ["0x32Eb7902D4134bf98A28b963D26de779AF92A212", "0xd74c61ca8917Be73377D74A007E6f002c25Efb4e"],
-          ["0x5979D7b546E38E414F7E9822514be443A4800529", "0x475a5a712B741b9Ab992E6Af0B9E5adEE3d1851B"],
-          ["0x912CE59144191C1204E64559FE8253a0e49E6548", "0xDF3d96299275E2Fb40124b8Ad9d270acFDcc6148"],
+          [ADDRESSES.arbitrum.WSTETH, "0x475a5a712B741b9Ab992E6Af0B9E5adEE3d1851B"],
+          [ADDRESSES.arbitrum.ARB, "0xDF3d96299275E2Fb40124b8Ad9d270acFDcc6148"],
           ["0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55", "0x10FD85ec522C245a63239b9FC64434F58520bd1f"],
           ["0x32Eb7902D4134bf98A28b963D26de779AF92A212", "0xCdaACF37726Bf1017821b5169e22EB34734B28A8"],
-          ["0x5979D7b546E38E414F7E9822514be443A4800529", "0xFca61E79F38a7a82c62f469f55A9df54CB8dF678"],
+          [ADDRESSES.arbitrum.WSTETH, "0xFca61E79F38a7a82c62f469f55A9df54CB8dF678"],
           ["0x7f90122BF0700F9E7e1F688fe926940E8839F353", "0xf71b2B6fE3c1d94863e751d6B455f750E714163C"],
           ["0x7f90122BF0700F9E7e1F688fe926940E8839F353", "0xb4ec6B4eC9e42A42B0b8cdD3D6df8867546Cf11d"],
           ["0x7f90122BF0700F9E7e1F688fe926940E8839F353", "0x32449DF9c617C59f576dfC461D03f261F617aD5a"]
@@ -1046,5 +1046,22 @@ module.exports = {
     "ethereum": {
       "tvl": { owner: '0xb276f62db0ce8ca2ca5bc522695be604521eac1c', "resolveNFTs": true, tokens: [ADDRESSES.null], }
     },
+  },
+  "subfrost": {
+    "methodology": "Total value of the collateral held by the transparent and verifiable SUBFROST signing group. On bitcoin, all BTC backing frBTC across both deployments, Alkanes and BRC2.0. On ethereum, the collateral backing frUSD: the USDC and USDT held in the frUSD vault, plus the Curve 3pool position the vault deploys its stablecoins into. The frBTC and frUSD minted against these deposits are not counted separately. Note that the 3CRV portion is also part of Curve's own TVL.",
+    "bitcoin": { "tvl": { "__btcBook": "subfrost" } },
+    "ethereum": { "tokensAndOwners": [
+      // frUSD vault
+      [ADDRESSES.ethereum.USDC, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
+      [ADDRESSES.ethereum.USDT, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
+      // 3CRV held by the vault's 3pool strategy (pool() -> 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7)
+      ["0x6c3f90f043a72fa612cbac8115ee7e52bde6e490", "0x5c5d66c82e2c634074661c3e7427668737c70100"],
+    ]}
+  },
+  "fake-wallstreet": {
+    methodology: "Value of the Tokenized Stocks on the Pool",
+    "robinhood": {
+      "tvl": { owner: '0xf2B967494BbdD37cDfbE585E3b84B85461C7Da37', fetchBlockscoutTokens: true, blacklistedTokens: [ADDRESSES.null] }
+    }
   }
 }

@@ -68,7 +68,7 @@ module.exports = {
 
       },
       {
-        'newbitcoin': '/newbitcoin/index',
+        // 'newbitcoin': '/newbitcoin/index', // is dead
         'nemoswap': '/nemoswap/index',
         'stackingdao': '/stackingdao/api',
         'stacks': '/stacks/api',
@@ -101,6 +101,7 @@ module.exports = {
       blum: '/blum/api',
       'yodeswap': '/yodeswap/api',
       'dogeswap-org': '/dogeswap-org/api',
+      'o2': '/o2/api',
 
       // breaks often
       // 'equilibrium': '/equilibrium/api',

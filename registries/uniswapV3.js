@@ -45,6 +45,9 @@ const uniV3Configs = {
   'basex': {
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
+  'betterswap-v3': {
+    vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
+  },
   'mute-cl': {
     era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523 },
   },
@@ -320,16 +323,6 @@ const uniV3Configs = {
     mantle: {
       factory: '0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42',
       fromBlock: 34710765,
-    },
-  },
-  'cmswap': {
-    jbc: {
-      factory: '0x5835f123bDF137864263bf204Cf4450aAD1Ba3a7',
-      fromBlock: 4990175,
-    },
-    bitkub: {
-      factory: '0x090C6E5fF29251B1eF9EC31605Bdd13351eA316C',
-      fromBlock: 25033350,
     },
   },
   'corexswap': {
@@ -947,6 +940,7 @@ const uniV3Configs = {
       factory: '0xF77Bd082c627aA54591cF2f2EaA811fd1AB3b1F3',
       fromBlock: 17877130,
       isAlgebra: true,
+      blacklistedTokens: ['0x9d0e8f5b25384c7310cb8c6ae32c8fbeb645d083'],
       blacklistedOwners: ['0xbAd2fB864FBD3f8b9bCC81512D7C8Ee1Aa0a8D6C'],
     },
   },
@@ -1770,6 +1764,22 @@ const uniV3Configs = {
   },
   'giga-dex-cl': {
     robinhood: { factory: '0xEce6eCd61177336ea6Fb9b17937AC439D85EE20B', fromBlock: 10357399 }
+  },
+  'alandale': {
+    start: '2026-08-04',
+    methodology: 'Value of the tokens locked in the concentrated liquidity pools.',
+    robinhood: {
+      factory: '0x16494A80E08Bcb9285D87b67149d7b01774D82F8',
+      fromBlock: 27941500,
+      isAlgebra: true,
+    },
+  },
+  'brownfi-clamm': {
+    hemi: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 4904397,
+      isAlgebra: true,
+    },
   }
 }
 
