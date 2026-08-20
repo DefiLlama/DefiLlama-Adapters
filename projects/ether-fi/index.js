@@ -1,13 +1,8 @@
-const { nullAddress } = require("../helper/unwrapLPs");
 const ADDRESSES = require('../helper/coreAssets.json');
 const sdk = require('@defillama/sdk');
+const { staking } = require('../helper/staking');
 
-function staking(contract, token) {
-  return async (api) => {
-    const totalSupply = await api.call({ target: contract, abi: 'erc20:totalSupply' });
-    api.add(token, totalSupply);
-  };
-}
+const sETHFI = '0x86B5780b606940Eb59A062aA85a07959518c0161'
 
 const WBTC = {
   ethereum: ADDRESSES.ethereum.WBTC,
@@ -95,7 +90,6 @@ async function ebtc_staking(timestamp) {
 
 module.exports = {
   doublecounted: true,
-
   ethereum: {
     staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", ADDRESSES.ethereum.ETHFI),
 
@@ -131,7 +125,7 @@ module.exports = {
       });
 
       return {
-        [nullAddress]: etherfiEthTvl.toString(),
+        [ADDRESSES.null]: etherfiEthTvl.toString(),
         [ADDRESSES.ethereum.USDC]: (BigInt(eusd.output) / 10n ** 12n).toString(),
         [LBTC.ethereum]: lbtc_held.toString(),
         [WBTC.ethereum]: wbtc_held.toString(),
@@ -139,12 +133,16 @@ module.exports = {
       };
     }
   },
-
   arbitrum: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", ADDRESSES.arbitrum.ETHFI)
+    staking: staking(sETHFI, ADDRESSES.arbitrum.ETHFI)
   },
-
   base: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", ADDRESSES.arbitrum.ETHFI)
+    staking: staking(sETHFI, ADDRESSES.base.ETHFI)
+  },
+  optimism: {
+    staking: staking(sETHFI, ADDRESSES.optimism.ETHFI)
+  },
+  scroll: {
+    staking: staking(sETHFI, ADDRESSES.scroll.ETHFI)
   }
 };
