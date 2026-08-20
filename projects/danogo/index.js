@@ -1,9 +1,12 @@
-const { fetchURL, postURL } = require('../helper/utils');
+const { fetchURL } = require('../helper/utils');
+const { post } = require('../helper/http');
 
 const DANOGO_GATEWAY_ENDPOINT = 'https://danogo-gateway.tekoapis.com/api/v1'
 const KUPO_ENDPOINT = 'https://kupo.tekoapis.com/matches'
 const DECODED_PREFIX_LENGTH = 2;
 const ADA_TO_LOVELACE = 1000000;
+// asset valuation must not hang the adapter forever if the gateway stops responding
+const REQUEST_TIMEOUT = 30000;
 
 // Bech32 character set
 const ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
@@ -83,8 +86,8 @@ const fetchSmartContractUTXOs = async (address) => {
 const fetchAssetValue = async (assetsInfo) => {
   const assetIds = Object.keys(assetsInfo)
   let totalAssetsValue = 0;
-  const gatewayResponse = await postURL(`${DANOGO_GATEWAY_ENDPOINT}/cardano-asset-value`, { assetIds: assetIds});
-  gatewayResponse.data.data.assetValues.forEach((asset) => {
+  const gatewayResponse = await post(`${DANOGO_GATEWAY_ENDPOINT}/cardano-asset-value`, { assetIds }, { timeout: REQUEST_TIMEOUT });
+  gatewayResponse.data.assetValues.forEach((asset) => {
     let priceInLovelace = BigInt(0);
     if (asset.adaValue && BigInt(asset.adaValue) !== BigInt(0)) {
       priceInLovelace = BigInt(asset.adaValue) * BigInt(assetsInfo[asset.assetId]);
