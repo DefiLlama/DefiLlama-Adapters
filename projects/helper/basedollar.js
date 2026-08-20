@@ -1,4 +1,4 @@
-const { nullAddress, sumTokens2 } = require('./unwrapLPs')
+const { sumTokens2 } = require('./unwrapLPs')
 
 // Accepts either a single collateral registry address (with config in the 2nd arg),
 // or an array of registry configs: [{ collateralRegistry, abis? }, ...] / [address, ...]
@@ -18,8 +18,14 @@ function getBaseDollarTvl(collateralRegistries, config = {}) {
 
       // Aero LP collateral is staked outside the pool contracts, so use the pools'
       // internal collateral accounting rather than their ERC-20 balances.
-      api.add(tokens.concat(tokens), activePoolBalances.concat(defaultPoolBalances))
-      await sumTokens2({ api, resolveLP: true })
+      const balances = {}
+      tokens.forEach((token, i) => {
+        const key = `${api.chain}:${token.toLowerCase()}`
+        const poolBalance = BigInt(activePoolBalances[i]) + BigInt(defaultPoolBalances[i])
+        balances[key] = (BigInt(balances[key] ?? 0) + poolBalance).toString()
+      })
+      await sumTokens2({ api, balances, tokens, resolveLP: true })
+      api.addBalances(balances)
     }
     return api.getBalances()
   }
