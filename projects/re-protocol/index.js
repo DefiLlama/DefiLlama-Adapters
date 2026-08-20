@@ -1,6 +1,15 @@
 const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { getTokenSupplies } = require('../helper/solana');
+
+const REUSD_ETHEREUM = '0x5086bf358635B81D8C47C66d1C8b9E567Db70c72'
+const REUSD_SOLANA = '2uxaYT1fVrp6Fg2BrxQcyKSW91hefM6dG9krpbeDiirT'
+
+async function getSolanaReUSDSupply() {
+  const supplies = await getTokenSupplies([REUSD_SOLANA])
+  return +supplies[REUSD_SOLANA]
+}
 
 const config = {
   ethereum: {
@@ -49,14 +58,22 @@ async function tvl(api) {
     await avaxApi.getBlock()
     const offChainData = await avaxApi.call({ abi: 'int256:latestAnswer', target: '0xc79a363a3f849d8b3F6A1932f748eA9d4fB2f607' })
     api.add(ADDRESSES.ethereum.USDC, offChainData / 100)
+    const solanaSupply = await getSolanaReUSDSupply()
+    api.add(`ethereum:${REUSD_ETHEREUM}`, -solanaSupply * 1e9, { skipChain: true })
   }
   const { owners, tokens } = config[api.chain]
   return sumTokens2({ api, owners, tokens: [ADDRESSES.null, ...tokens] })
 }
 
+async function solanaTvl(api) {
+  const solanaSupply = await getSolanaReUSDSupply()
+  api.add(`ethereum:${REUSD_ETHEREUM}`, solanaSupply * 1e9, { skipChain: true })
+}
+
 module.exports = {
   methodology: 'Value of the tokens in the custodian wallets + value of the tokens in redemption reserves + off-chain assets tracked via oracle (tracked as USDC)',
   start: 1737488963, // reUSD Deployment time (https://etherscan.io/tx/0x3094948b3dbe89f4824217e37b8667fbb4d89e18b0b426a453fe7377095c26ea)
+  solana: { tvl: solanaTvl },
 }
 
 Object.keys(config).forEach(chain => { module.exports[chain] = { tvl } })
