@@ -66,10 +66,11 @@ async function tvl(api) {
       }),
     ]);
 
-    tokensAndOwners.push(
-      [token0, pair],
-      [token1, pair]
-    );
+    if (token0 && token0 !== '0x0000000000000000000000000000000000000000')
+      tokensAndOwners.push([token0.toLowerCase(), pair.toLowerCase()]);
+
+    if (token1 && token1 !== '0x0000000000000000000000000000000000000000')
+      tokensAndOwners.push([token1.toLowerCase(), pair.toLowerCase()]);
   }
 
   return sumTokens2({
