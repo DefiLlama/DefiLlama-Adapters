@@ -8,7 +8,7 @@ const REUSD_SOLANA = '2uxaYT1fVrp6Fg2BrxQcyKSW91hefM6dG9krpbeDiirT'
 
 async function getSolanaReUSDSupply() {
   const supplies = await getTokenSupplies([REUSD_SOLANA])
-  return +supplies[REUSD_SOLANA]
+  return BigInt(supplies[REUSD_SOLANA]) * 10n ** 9n // scale 9-decimal SPL supply to 18-decimal reUSD
 }
 
 const config = {
@@ -59,7 +59,7 @@ async function tvl(api) {
     const offChainData = await avaxApi.call({ abi: 'int256:latestAnswer', target: '0xc79a363a3f849d8b3F6A1932f748eA9d4fB2f607' })
     api.add(ADDRESSES.ethereum.USDC, offChainData / 100)
     const solanaSupply = await getSolanaReUSDSupply()
-    api.add(`ethereum:${REUSD_ETHEREUM}`, -solanaSupply * 1e9, { skipChain: true })
+    api.add(`ethereum:${REUSD_ETHEREUM}`, (-solanaSupply).toString(), { skipChain: true })
   }
   const { owners, tokens } = config[api.chain]
   return sumTokens2({ api, owners, tokens: [ADDRESSES.null, ...tokens] })
@@ -67,7 +67,7 @@ async function tvl(api) {
 
 async function solanaTvl(api) {
   const solanaSupply = await getSolanaReUSDSupply()
-  api.add(`ethereum:${REUSD_ETHEREUM}`, solanaSupply * 1e9, { skipChain: true })
+  api.add(`ethereum:${REUSD_ETHEREUM}`, solanaSupply.toString(), { skipChain: true })
 }
 
 module.exports = {
