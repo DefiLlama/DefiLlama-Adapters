@@ -134,10 +134,8 @@ const fetch = async () => {
     })
   });
 
-  // backing/pricing behind those quotes could not be verified, so only
-  // the ADA locked in the contracts is counted 
-  // const totalAssetsValues = await fetchAssetValue(assetInfos);
-  // totalValueLocked += totalAssetsValues;
+  const totalAssetsValues = await fetchAssetValue(assetInfos);
+  totalValueLocked += totalAssetsValues;
 
   return { cardano: totalValueLocked };
 }
