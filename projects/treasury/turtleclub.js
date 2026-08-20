@@ -1,4 +1,4 @@
-const { tokens, treasuryMultisigs, treasuryNFTs, defaultTokens, tokenMappingERC20, tokenMapping } = require('../TurtleClub/assets');
+const { tokens, treasuryMultisigs, treasuryNFTs, defaultTokens, tokenMappingERC20, tokenMapping } = require('../turtleclub/assets');
 const { ankrChainMapping } = require('../helper/token');
 const { sumTokens2, unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 const SOLIDLY_VE_NFT_ABI = require('../helper/abis/solidlyVeNft.json');
