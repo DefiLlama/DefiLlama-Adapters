@@ -44,11 +44,35 @@ function chunkArray(arr, size) {
   return res;
 }
 
+function normalizeToBigInt(value) {
+  // Accepts BigInt, number, numeric string, or objects with toString()
+  if (typeof value === 'bigint') return value;
+  if (typeof value === 'number') {
+    // numbers may be floating — take integer part
+    return BigInt(Math.floor(value));
+  }
+  let s;
+  try {
+    s = (value && typeof value.toString === 'function') ? value.toString() : String(value);
+  } catch (e) {
+    return BigInt(0);
+  }
+  // If it's a plain integer string
+  if (/^\d+$/.test(s)) return BigInt(s);
+  // If decimal string like '123.456', take integer part before '.' — safer than guessing decimals
+  const intPart = s.split('.')[0];
+  if (/^\d+$/.test(intPart)) return BigInt(intPart);
+  // Fallback: attempt Number -> BigInt
+  const num = Number(s || '0');
+  if (Number.isFinite(num)) return BigInt(Math.floor(num));
+  return BigInt(0);
+}
+
 async function mergeBalances(target, source) {
-  // both target and source are plain objects mapping token -> amount (string)
-  for (const [token, amount] of Object.entries(source)) {
-    const a = BigInt(target[token] || '0');
-    const b = BigInt(amount || '0');
+  // both target and source are maps token -> amount (various formats)
+  for (const [token, amount] of Object.entries(source || {})) {
+    const a = normalizeToBigInt(target[token] || '0');
+    const b = normalizeToBigInt(amount || '0');
     target[token] = (a + b).toString();
   }
 }
