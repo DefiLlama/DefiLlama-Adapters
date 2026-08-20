@@ -48,8 +48,10 @@ async function tvl(api) {
     calls: Array.from({ length: pairCount }, (_, i) => ({ params: [i] })),
   });
 
-  const token0s = await api.multiCall({ abi: pairToken0Abi, calls: pairs });
-  const token1s = await api.multiCall({ abi: pairToken1Abi, calls: pairs });
+  const [token0s, token1s] = await Promise.all([
+    api.multiCall({ abi: pairToken0Abi, calls: pairs }),
+    api.multiCall({ abi: pairToken1Abi, calls: pairs }),
+  ]);
 
   const tokensAndOwners = [];
 
