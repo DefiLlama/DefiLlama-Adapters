@@ -3,9 +3,14 @@ const ADDRESSES = require('../helper/coreAssets.json')
 // UTY is XSY's dollar unit and TVL is its circulating supply.
 //
 // It is booked at its peg rather than through the token, because the UTY price
-// feed stopped on 2026-08-04 and coins.llama.fi now returns an empty `coins`
-// object for it. An unpriced token contributes nothing, so `api.add` published a
-// flat $0 from 08-05 onwards against a live 20.99M supply.
+// feed published its last quote on 2026-08-04 and coins.llama.fi has returned an
+// empty `coins` object for it since. An unpriced token contributes nothing, so
+// `api.add` published a flat $0 from 2026-08-05 onwards against a live 20.99M
+// supply.
+//
+// `addUSDValue` books this through `coingecko:tether`, so it follows USDT's quote
+// rather than a hardcoded 1.0. That quote has held 0.9988 to 0.9997 over the last
+// 30 days, which is the same order as UTY's own band below.
 //
 // The peg is the assumption here and it is stated rather than hidden: every one of
 // the 88 quotes the feed did publish, 2026-04-23 through 2026-08-04, sat between
