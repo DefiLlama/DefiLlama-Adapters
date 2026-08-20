@@ -990,10 +990,6 @@ async function sumTokens2({
   sumChunkSleep,
 }) {
 
-  if (fetchCoValentTokens && owners.length > 11) {
-    throw new Error('fetchCoValentTokens option is not recommended for more than 10 owners due to rate limits')
-  }
-
   if (api) {
     chain = api.chain ?? chain
     block = api.block ?? block
@@ -1005,6 +1001,11 @@ async function sumTokens2({
   if (!api) {
     api = new sdk.ChainApi({ chain, block })
   }
+
+  if (owner) owners.push(owner)
+  if (token) tokens.push(token)
+  tokens = getUniqueAddresses(tokens, chain)
+  owners = getUniqueAddresses(owners, chain)
 
   const useCurrentBalances = !api?.timestamp || api?.timestamp > (Date.now() / 1e3 - 3600)  // if timestamp field is missing or within the last hour, we use current balances
 
@@ -1026,10 +1027,6 @@ group by
     tokens = tokens.concat(alltokens.map(t => t.token_address)).concat([ADDRESSES.null])
   }
 
-  if (owner) owners.push(owner)
-  if (token) tokens.push(token)
-  tokens = getUniqueAddresses(tokens, chain)
-  owners = getUniqueAddresses(owners, chain)
   if (owners.length) {
     for (const token of tokens) {
       for (const owner of owners) {
@@ -1048,9 +1045,12 @@ group by
     vlCVXBals.forEach((v) => sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.vlCVX, v, chain))
   }
 
+  // Batch Ankr/Covalent discovery (previously threw when owners.length > 11)
   if (fetchCoValentTokens && useCurrentBalances) {
-    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, tokenConfig))))
-    cTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
+    for (const chunk of sliceIntoChunks(owners, 10)) {
+      const cTokens = await Promise.all(chunk.map(i => covalentGetTokens(i, api, tokenConfig)))
+      cTokens.forEach((toks, i) => ownerTokens.push([toks, chunk[i]]))
+    }
   }
 
   if (fetchBlockscoutTokens) {
