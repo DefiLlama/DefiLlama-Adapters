@@ -64,6 +64,16 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  chz: {
+    // Bridged USDC (ChainPort), the stablecoin every Chiliz DEX quotes against.
+    // The coins service has no price for it, so pools holding it read as zero.
+    '0xa37936f56249965d407e39347528a1a91eb1cbef': { coingeckoId: 'usd-coin', decimals: 6 },
+    // stCHZ, the liquid staking token for native CHZ. It is not listed on
+    // CoinGecko, so it is valued as the CHZ backing it. That is conservative by
+    // the staking exchange rate (1.021 CHZ per stCHZ at the time of writing)
+    // rather than counting the position as worthless, which is what happens today.
+    '0xbf4ca6f798b2e342e36dc2ec80667b58cf480787': { coingeckoId: 'chiliz', decimals: 18 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
