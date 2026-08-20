@@ -55,6 +55,7 @@ const DEFAULTS = {
   ROBINHOOD_RPC: 'https://robinhoodchain.blockscout.com/api/eth-rpc',
   ETHEREUMCLASSIC_RPC: 'https://etc.blockscout.com/api/eth-rpc',
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
+  OZO_RPC: 'https://node1.ozonechain.io',
 }
 
 const ENV_KEYS = [

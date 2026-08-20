@@ -42,29 +42,21 @@ async function tvl(api) {
     })
   );
 
-  const pairs = await Promise.all(
-    Array.from({ length: pairCount }, (_, i) =>
-      api.call({
-        target: FACTORY,
-        abi: allPairsAbi,
-        params: [i],
-      })
-    )
-  );
+  const pairs = await api.multiCall({
+    target: FACTORY,
+    abi: allPairsAbi,
+    calls: Array.from({ length: pairCount }, (_, i) => ({ params: [i] })),
+  });
+
+  const token0s = await api.multiCall({ abi: pairToken0Abi, calls: pairs });
+  const token1s = await api.multiCall({ abi: pairToken1Abi, calls: pairs });
 
   const tokensAndOwners = [];
 
-  for (const pair of pairs) {
-    const [token0, token1] = await Promise.all([
-      api.call({
-        target: pair,
-        abi: pairToken0Abi,
-      }),
-      api.call({
-        target: pair,
-        abi: pairToken1Abi,
-      }),
-    ]);
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i];
+    const token0 = token0s[i];
+    const token1 = token1s[i];
 
     if (token0 && token0 !== '0x0000000000000000000000000000000000000000')
       tokensAndOwners.push([token0.toLowerCase(), pair.toLowerCase()]);
