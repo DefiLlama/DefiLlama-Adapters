@@ -3,6 +3,7 @@ module.exports = {
     owners: [
       "0x76B0aB5067B3be922ef4698390Ca8bd5812A5080",
       "0x6Fe39F2831caF58529779EFDB73341Aa64df50Ab",
+      "0x431CA183bD6c2fd4a160ac28363D1719f3F12779",
     ],
   },
   ripple: {
@@ -22,6 +23,7 @@ module.exports = {
       "TAS4yce3Jh5Rrk94SrViMq9mER3NXkqUXi",
       "TVUuCWs6mUVvMrB527mVspe6nfh4nUdDWR",
       "TFmCzjvmDN3Juk5VbLPctbZ3gx2ziK8ui4",
+      "TGxnRqZTkpVk53djTt4ptzTagJe5t7c4jV",
     ],
   },
   arbitrum: {
