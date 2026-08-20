@@ -5,6 +5,7 @@
  */
 
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { sumTokens2: solanaSumTokens2 } = require('../helper/solana');
 
 // EVM Authority Clusters & Executive Builder Nodes
 const EVM_OWNERS = [
@@ -39,16 +40,19 @@ const SOLANA_OWNERS = [
 
 async function tvl(api) {
   const chain = api.chain;
-  
+
   if (chain === 'solana') {
-    return sumTokens2({ 
-      chain: 'solana',
-      owners: SOLANA_OWNERS,
-      solOwners: SOLANA_OWNERS
-    });
+    // Use the Solana-specific helper so historical queries, SPL-token and native SOL
+    // balances are preserved (solana helper expects `api` and `solOwners`).
+    return solanaSumTokens2({ api, solOwners: SOLANA_OWNERS });
   }
 
   // Multi-chain EVM Treasury & Intent Vault Tracking
+  // NOTE: unwrapLPs.sumTokens2 may require explicit tokens/tokensAndOwners to
+  // construct token-owner pairs. If you observe empty EVM TVL, consider passing
+  // `tokens` or partitioning owners for a discovery helper (fetchCoValentTokens
+  // has an 11-owner limit), or implementing a loop that aggregates multiple
+  // sumTokens2 calls across owner batches.
   return sumTokens2({
     api,
     owners: EVM_OWNERS,
