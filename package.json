@@ -53,5 +53,10 @@
   "description": "",
   "devDependencies": {
     "eslint": "^9.38.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "form-data": "4.0.6"
+    }
   }
 }
