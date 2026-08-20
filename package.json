@@ -53,5 +53,10 @@
   "description": "",
   "devDependencies": {
     "eslint": "^9.38.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "fast-xml-parser": "5.7.0"
+    }
   }
 }
