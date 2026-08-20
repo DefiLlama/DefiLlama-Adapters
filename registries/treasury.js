@@ -3422,6 +3422,13 @@ const configs = {
       owners: ['0x5d45A213B2B6259F0b3c116a8907B56AB5E22095'],
     },
   },
+  'treasury/loyal': {
+    solana: {
+      owners: ['F7zuL14omw4JJfS1cvsWXVb3wh48dvsonMJgoc9tYu3e'],
+      tokens: [nullAddress, ADDRESSES.solana.USDC],
+      ownTokens: ['LYLikzBQtpa9ZgVrJsqYGQpR3cC1WMJrBHaXGrQmeta'],
+    },
+  },
   'treasury/lsdx-finance': {
     ethereum: {
       tokens: [
