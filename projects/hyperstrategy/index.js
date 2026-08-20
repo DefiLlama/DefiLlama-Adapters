@@ -63,6 +63,5 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "Counts the protocol-owned treasury across HyperStrategy's treasury wallets: HYPE and liquid-staked HYPE, stablecoins and other assets held on HyperEVM, concentrated-liquidity LP positions on HyperSwap, PRJX and Uniswap V3, plus HYPE held or staked on HyperCore. HSTR (the protocol's own token) is excluded.",
   hyperliquid: { tvl },
 }
