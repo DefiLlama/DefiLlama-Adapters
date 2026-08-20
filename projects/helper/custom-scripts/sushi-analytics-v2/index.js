@@ -55,7 +55,14 @@ async function updateProject({ tvlFunction, project, chain, tvlKey }) {
 async function main() {
   const adapterKey = process.env.RUN_ONLY
   let items = []
-  const allAdapterGroups = [...hourlyRun, ...bulky].flat()
+  const runGroup = process.env.RUN_GROUP // 'hourly' | 'bulky' | undefined (run all)
+  let selectedGroups
+  switch (runGroup) {
+    case 'hourly': selectedGroups = hourlyRun; break;
+    case 'bulky': selectedGroups = bulky; break;
+    default: selectedGroups = [...hourlyRun, ...bulky];
+  }
+  const allAdapterGroups = selectedGroups.flat()
 
 
   allAdapterGroups.flat().forEach(group => {

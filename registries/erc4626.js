@@ -455,6 +455,10 @@ const configs = {
     monad: ["0x50AF964d81c18ed885dBf741cDc3366239a3cC10", "0x73F0c2ed71b5c750Cf4900220F901B732EA71Ff0"],
     arbitrum: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"],
     pharos: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"]
+  },
+  'syntetika': {
+    methodology: "TVL is the net asset value of the Syntetika strategy vaults, read on-chain as totalAssets() - the outstanding supply of vault share tokens valued at the independently attested NAV per share - and denominated in the vault deposit asset (cbBTC).",
+    base: ["0x9C2dCDbDB3F0A0F628D1112bBCABD9AE75353df3"]
   }
 }
 

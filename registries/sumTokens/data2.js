@@ -1057,5 +1057,11 @@ module.exports = {
       // 3CRV held by the vault's 3pool strategy (pool() -> 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7)
       ["0x6c3f90f043a72fa612cbac8115ee7e52bde6e490", "0x5c5d66c82e2c634074661c3e7427668737c70100"],
     ]}
+  },
+  "fake-wallstreet": {
+    methodology: "Value of the Tokenized Stocks on the Pool",
+    "robinhood": {
+      "tvl": { owner: '0xf2B967494BbdD37cDfbE585E3b84B85461C7Da37', fetchBlockscoutTokens: true, blacklistedTokens: [ADDRESSES.null] }
+    }
   }
 }

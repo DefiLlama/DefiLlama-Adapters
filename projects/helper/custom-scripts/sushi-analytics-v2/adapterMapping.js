@@ -68,7 +68,7 @@ module.exports = {
 
       },
       {
-        'newbitcoin': '/newbitcoin/index',
+        // 'newbitcoin': '/newbitcoin/index', // is dead
         'nemoswap': '/nemoswap/index',
         'stackingdao': '/stackingdao/api',
         'stacks': '/stacks/api',

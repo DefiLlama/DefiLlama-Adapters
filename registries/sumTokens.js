@@ -16077,6 +16077,20 @@ const configs = {
       "token": ADDRESSES.robinhood.WETH
     }
   },
+  "hrusd": {
+    "methodology": "TVL counts the USDC reserve held on-chain by the HRUSD Peg Stability Module and the USDC side of the Uniswap V3 HRUSD/USDC liquidity positions escrowed in the two V3LPStakingRewards contracts. The remainder of the HRUSD backing is custodied on a centralised exchange and is deliberately not counted here.",
+    "doublecounted": true,
+    "base": {
+      "owners": [
+        '0xe5545fd5e48425663Bf207183a868Eb0A1d2b9ee',
+        '0xb72f376ae7732a76F1C18e0547553A616a33a2bd',
+        '0xA61C08DeC414416E55de7b4510bA8Ef25C89886a'
+      ],
+      "tokens": [ADDRESSES.base.USDC],
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.base.USDC],
+    }
+  },
   "hskhodlium": {
     "methodology": "TVL includes all native HSK tokens staked at the main contract on HashKey Chain. Token price is derived from its Ethereum-wrapped version.",
     "hsk": {
@@ -41051,6 +41065,23 @@ const configs = {
         ]
       ]
     },
+  },
+  "xona-agent": {
+    "methodology": "Tracks XONA tokens in the Streamflow staking contracts.",
+    "doublecounted": true,
+    "solana": {
+      "staking": {
+        "tokenAccounts": [
+          'Ci3CwCoZoSuKAD1h7AcfnnSR32gE5rBw1jgysGpqXZAv',
+          'EJU9GprW3U4DpxzhEKNtSnBK4gsGCg7RD9sdH8Nej8Kh',
+          'FatAxEievkavRn7EEuyLkgk6NMEUFpigRxpeyHatYyMD',
+          '9xRfz54N76qfRGcyBk8ZBvKbbD6pYs9dXfUPvM8CgDms',
+        ] 
+      },
+      "tvl": {
+        "__empty": true
+      }
+    }
   },
   "xora": {
     "methodology": "Sums the XRP balance held in the XORA treasury account rhbErkS2d4H82tRbdGyFkhhc4LNtjKaC3o on the XRP Ledger. The treasury is a single shared custody wallet; user deposits route to it via destination tags. Per-user accounting is internal to XORA; the on-chain balance is the canonical TVL.",
