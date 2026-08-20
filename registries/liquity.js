@@ -1,5 +1,6 @@
 const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { getLiquityTvl, getLiquityV2Tvl } = require('../projects/helper/liquity')
+const { getBaseDollarTvl } = require('../projects/helper/basedollar')
 const { buildProtocolExports } = require('./utils')
 
 // Chain config forms:
@@ -9,13 +10,14 @@ const { buildProtocolExports } = require('./utils')
 //   - null / {} : empty TVL chain (returns {})
 // staking / pool2 (array params) are handled by buildProtocolExports
 //
-// _options.helperType: 'v2' switches to getLiquityV2Tvl. For v2, chain config is:
+// _options.helperType: 'v2' or 'basedollar' selects the corresponding V2/Base Dollar helper. Chain config is:
 //   - string: collateral registry address
 //   - [address, ...] : multiple collateral registries summed
 //   - { collateralRegistries: [...], abis? } / { collateralRegistry, abis? }
 //   - null / {} : empty TVL chain
 function liquityExportFn(chainConfigs, options = {}) {
   if (options.helperType === 'v2') return liquityV2ExportFn(chainConfigs)
+  if (options.helperType === 'basedollar') return baseDollarExportFn(chainConfigs)
   const result = {}
   Object.entries(chainConfigs).forEach(([chain, config]) => {
     if (config === null || config === undefined) {
@@ -58,6 +60,29 @@ function liquityV2ExportFn(chainConfigs) {
       return
     }
     result[chain] = { tvl: getLiquityV2Tvl(registries, { abis }) }
+  })
+  return result
+}
+
+
+function baseDollarExportFn(chainConfigs) {
+  const result = {}
+  Object.entries(chainConfigs).forEach(([chain, config]) => {
+    if (config === null || config === undefined) {
+      result[chain] = { tvl: () => ({}) }
+      return
+    }
+    if (typeof config === 'string' || Array.isArray(config)) {
+      result[chain] = { tvl: getBaseDollarTvl(config) }
+      return
+    }
+    const { collateralRegistry, collateralRegistries, abis } = config
+    const registries = collateralRegistries ?? collateralRegistry
+    if (!registries) {
+      result[chain] = { tvl: () => ({}) }
+      return
+    }
+    result[chain] = { tvl: getBaseDollarTvl(registries, { abis }) }
   })
   return result
 }
@@ -187,6 +212,10 @@ const configs = {
   'asymmetry-usdaf': {
     _options: { helperType: 'v2' },
     ethereum: ['0xCFf0DcAb01563e5324ef9D0AdB0677d9C167d791', '0x33D68055Cd54061991B2e98b9ab326fFCE4d60Fe'],
+  },
+  'base-dollar': {
+    _options: { helperType: 'basedollar' },
+    base: '0x7551ebfc8340b7f91874942be9c653733d4fb04f',
   },
   'defi-dollar-cdp': {
     _options: { helperType: 'v2' },
