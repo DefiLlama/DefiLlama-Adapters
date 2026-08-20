@@ -38,6 +38,21 @@ const SOLANA_OWNERS = [
   "EZqGfTKusnWaZoFqfKqZbwwcM9oZFE5tuc2EpuseFKkk"
 ];
 
+function chunkArray(arr, size) {
+  const res = [];
+  for (let i = 0; i < arr.length; i += size) res.push(arr.slice(i, i + size));
+  return res;
+}
+
+async function mergeBalances(target, source) {
+  // both target and source are plain objects mapping token -> amount (string)
+  for (const [token, amount] of Object.entries(source)) {
+    const a = BigInt(target[token] || '0');
+    const b = BigInt(amount || '0');
+    target[token] = (a + b).toString();
+  }
+}
+
 async function tvl(api) {
   const chain = api.chain;
 
@@ -48,16 +63,25 @@ async function tvl(api) {
   }
 
   // Multi-chain EVM Treasury & Intent Vault Tracking
-  // NOTE: unwrapLPs.sumTokens2 may require explicit tokens/tokensAndOwners to
-  // construct token-owner pairs. If you observe empty EVM TVL, consider passing
-  // `tokens` or partitioning owners for a discovery helper (fetchCoValentTokens
-  // has an 11-owner limit), or implementing a loop that aggregates multiple
-  // sumTokens2 calls across owner batches.
-  return sumTokens2({
-    api,
-    owners: EVM_OWNERS,
-    fetchCoingeckoData: true,
-  });
+  // Problem: fetchCoValentTokens (discovery) rejects >11 owners. To be robust and
+  // keep TVL coverage while keeping changes minimal (fast approval), split owners
+  // into batches of <=11 and aggregate results.
+  const OWNER_BATCH_SIZE = 11;
+  const ownerBatches = chunkArray(EVM_OWNERS, OWNER_BATCH_SIZE);
+
+  if (ownerBatches.length === 1) {
+    // single batch: call directly with discovery
+    return sumTokens2({ api, owners: EVM_OWNERS, fetchCoValentTokens: true });
+  }
+
+  const combined = {};
+  for (const batch of ownerBatches) {
+    const res = await sumTokens2({ api, owners: batch, fetchCoValentTokens: true });
+    // sumTokens2 may return an object of balances. Merge into combined.
+    await mergeBalances(combined, res);
+  }
+
+  return combined;
 }
 
 module.exports = {
