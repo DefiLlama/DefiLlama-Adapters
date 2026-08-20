@@ -26,6 +26,5 @@ function getBaseDollarTvl(collateralRegistries, config = {}) {
 }
 
 module.exports = {
-  getLiquityTvl,
-  getLiquityV2Tvl: getBaseDollarTvl,
+  getBaseDollarTvl,
 };
