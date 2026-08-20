@@ -1,4 +1,4 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const FACTORY = '0xeF72cbCcF4A807DfA1fbecd61DdB488fF8a05fa3'
@@ -12,30 +12,36 @@ const ALM_VAULT_CREATED =
 
 async function tvl(api) {
   const [standardPools, customPools, almVaults] = await Promise.all([
-    getLogs({
+    getLogs2({
       api,
       target: FACTORY,
       fromBlock: FACTORY_FROM_BLOCK,
       eventAbi: STANDARD_POOL_CREATED,
       onlyArgs: true,
+      // PulseChain RPC log providers can return incomplete wide-range results.
+      // Prefer DefiLlama's indexed path, while retaining the canonical cache.
+      useIndexer: true,
       // Both event types come from the same factory, so they need distinct
       // cache keys to prevent one decoded event set from shadowing the other.
       extraKey: 'standard-pools',
     }),
-    getLogs({
+    getLogs2({
       api,
       target: FACTORY,
       fromBlock: FACTORY_FROM_BLOCK,
       eventAbi: CUSTOM_POOL_CREATED,
       onlyArgs: true,
+      useIndexer: true,
       extraKey: 'custom-pools',
     }),
-    getLogs({
+    getLogs2({
       api,
       target: ALM_VAULT_FACTORY,
       fromBlock: FACTORY_FROM_BLOCK,
       eventAbi: ALM_VAULT_CREATED,
       onlyArgs: true,
+      useIndexer: true,
+      extraKey: 'alm-vaults',
     }),
   ])
 
