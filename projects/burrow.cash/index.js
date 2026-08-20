@@ -1,4 +1,4 @@
-const { call, sumSingleBalance, sumTokens } = require('../helper/chain/near')
+const { call, sumSingleBalance, sumTokens, convertThinFeeds } = require('../helper/chain/near')
 const { default: BigNumber } = require("bignumber.js")
 const BURROW_CONTRACT = 'contract.main.burrow.near'
 
@@ -18,7 +18,7 @@ function tvl(borrowed = false) {
       sumSingleBalance(balances, token, adjustedAmount);
     });
 
-    return balances;
+    return convertThinFeeds(balances);
   }
 }
 

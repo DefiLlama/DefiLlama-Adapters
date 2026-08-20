@@ -66,6 +66,45 @@ const tokenMapping = {
   'xrp.omft.near': { name: 'ripple', decimals: 6 },
 }
 
+// Tokens whose own price feed is too sparse to depend on. LiNEAR is quoted on only
+// 12 of the last 20 days, and on a day with no quote the entire balance silently
+// disappears from TVL instead of erroring, so the published series flaps. Each entry
+// is converted to a base asset at the issuing contract's own on-chain exchange rate,
+// and the base asset is quoted every day.
+//
+// Keyed by the balance key sumSingleBalance produces (the tokenMapping name), so the
+// conversion works whether the balance arrived through sumTokens/addTokenBalances or
+// through a direct sumSingleBalance call.
+const thinFeedTokens = {
+  'linear-protocol': {
+    contract: ADDRESSES.near.LINA,
+    base: 'coingecko:near',
+    method: 'ft_price',      // value of 1 LiNEAR in yoctoNEAR
+    rateDecimals: 24,
+  },
+}
+
+const rateCache = {}
+
+async function getConversionRate({ contract, method, rateDecimals }) {
+  if (!rateCache[contract])
+    rateCache[contract] = call(contract, method, {}).then(i => Number(i) / 10 ** rateDecimals)
+  return rateCache[contract]
+}
+
+// Re-denominate any thin-feed token already accumulated in `balances`. Idempotent:
+// the key is removed once converted, so calling it twice is a no-op.
+async function convertThinFeeds(balances = {}) {
+  for (const [key, config] of Object.entries(thinFeedTokens)) {
+    const amount = balances[key]
+    if (!amount) continue
+    const rate = await getConversionRate(config)
+    delete balances[key]
+    sdk.util.sumSingleBalance(balances, config.base, Number(amount) * rate)
+  }
+  return balances
+}
+
 function shouldRetry(error) {
   if (!error.response) return true;
   const retriable = [400, 429, 500, 504];
@@ -141,7 +180,7 @@ async function addTokenBalances(tokens, account, balances = {}) {
     items: tokens,
     processor: token => addAsset(token, account, balances),
   })
-  return balances
+  return convertThinFeeds(balances)
 }
 
 async function addAsset(token, account, balances = {}) {
@@ -179,11 +218,12 @@ async function sumTokens({ balances = {}, owners = [], tokens = []}) {
   })
   const nearBalance = bals.reduce((a,i) => a + (i.amount/1e24), 0)
   sdk.util.sumSingleBalance(balances,'coingecko:near',nearBalance)
-  return balances
+  return convertThinFeeds(balances)
 }
 
 module.exports = {
   view_account,
+  convertThinFeeds,
   call,
   addTokenBalances,
   getTokenBalance,
