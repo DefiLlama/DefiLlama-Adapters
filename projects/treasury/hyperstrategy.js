@@ -61,7 +61,18 @@ async function tvl(api) {
   }
 }
 
+async function ownTokens(api) {
+  await sumTokens2({
+    api,
+    owners: TREASURY,
+    tokens: [HSTR],
+    resolveUniV3: true,
+    uniV3ExtraConfig: { nftAddress: V3_POSITION_MANAGERS },
+    uniV3WhitelistedTokens: [HSTR],
+  })
+}
+
 module.exports = {
   timetravel: false,
-  hyperliquid: { tvl },
+  hyperliquid: { tvl, ownTokens },
 }
