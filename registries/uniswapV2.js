@@ -3106,6 +3106,29 @@ const uniV2Configs = {
   },
   'qomx': {    bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785'  },
   'lobsterswap': {    ozone: '0x89687777012E7FF91a6ecDDDc0aebAb38BbC098A'  },
+  'icarus-v2': {
+    start: '2026-01-23',
+    methodology: 'Value of the tokens locked in the classic stable and volatile liquidity pools.',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      hasStablePools: true,
+    },
+    rise: '0xEe10C6a0f158bFEeef3d48Dc0D26130Cf6115615',
+  },
+  'icarus-cl': {
+    start: '2026-01-26',
+    rise: '0x6f7DA11c13Ba09A153dA06d376044e5859Db607B',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      fetchBalances: true,
+    },
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
