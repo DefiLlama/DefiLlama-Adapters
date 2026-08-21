@@ -3,6 +3,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const CORE = '0x00000000000014aa86c5d3c41765bb24e11bd701'
 const VE33 = '0xD18685A514E59b06d59824e16Db07e73345d9953'
 const VE33_POSITIONS = '0xda38ac72ce7220c4dd7719d114ef94edadb8f068'
+const STONX = '0x570c5aa79c798e7a418412cc8399ae5bcce570c5'
 
 // Ve33 was deployed at block 18,269,246. The first position managed by
 // Ve33Positions was updated at block 23,649,680.
@@ -13,13 +14,16 @@ const POOL_INITIALIZED_EVENT =
   'event PoolInitialized(bytes32 poolId, (address token0, address token1, bytes32 config) poolKey, int32 tick, uint96 sqrtRatio)'
 const POSITION_UPDATED_EVENT =
   'event PositionUpdated(address locker, bytes32 poolId, bytes32 positionId, int128 liquidityDelta, bytes32 balanceUpdate, bytes32 stateAfter)'
+const STAKE_CHANGED_EVENT = 'event StakeChanged(address owner, bytes32 stakeId, int256 delta)'
 const GET_POSITION_LIQUIDITY =
   'function getPositionLiquidity(uint256, (address,address,bytes32), int32, int32) view returns (uint128 liquidity, uint128 principal0, uint128 principal1)'
 
+/** Extracts the extension address from a packed Ekubo PoolConfig. */
 function getExtension(config) {
   return config.slice(0, 42).toLowerCase()
 }
 
+/** Decodes a Ve33Positions NFT id and signed tick bounds from a Core position id. */
 function decodePositionId(positionId) {
   const value = BigInt(positionId)
   let tickLower = Number((value >> 32n) & 0xffffffffn)
@@ -35,6 +39,7 @@ function decodePositionId(positionId) {
   }
 }
 
+/** Returns the current token principal in every active STONX Ve33 LP position. */
 async function tvl(api) {
   const poolLogs = await getLogs({
     api,
@@ -104,10 +109,24 @@ async function tvl(api) {
   }
 }
 
+/** Returns the net STONX locked in Ve33 stakes. */
+async function staking(api) {
+  const stakeLogs = await getLogs({
+    api,
+    target: VE33,
+    eventAbi: STAKE_CHANGED_EVENT,
+    fromBlock: DEPLOYMENT_BLOCK,
+    extraKey: 'stonx-stakes',
+  })
+
+  const staked = stakeLogs.reduce((total, { args }) => total + BigInt(args.delta), 0n)
+  api.add(STONX, staked)
+}
+
 module.exports = {
   methodology:
-    'TVL is the current token principal in every active STONX Ve33 liquidity position on Ekubo. Active positions are reconstructed from Ekubo Core events, then their token amounts are read from the canonical Ve33Positions manager. Core swap fees and veSTONX staking are excluded.',
+    'TVL is the current token principal in every active STONX Ve33 liquidity position on Ekubo. Active positions are reconstructed from Ekubo Core events, then their token amounts are read from the canonical Ve33Positions manager. Core swap fees and claimable STONX rewards are excluded. Locked STONX is reported separately under staking based on net StakeChanged events.',
   doublecounted: true,
   timetravel: false,
-  robinhood: { tvl },
+  robinhood: { tvl, staking },
 }
