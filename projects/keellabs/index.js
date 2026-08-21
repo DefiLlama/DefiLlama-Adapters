@@ -33,8 +33,6 @@ const config = {
   hyperliquid: {
     factories: [
       '0x9d1B8796FB080e07aa26F26765f12e2012DD0d26',
-      '0x52dc92C7e3FdbD4fff7892dFc9DC7bc1d7a01ecf',
-      '0xF4263810321f03C01abA727De0210c4BFB13fdB8',   // VaultNext
       '0x811e2843c2a55b70D9C867988D69E624c35dAF4C',   // VaultRecover
       '0x609B9A1c089cb29a38bf19901a39259493997AB4',   // VaultClaim
       '0x1E2c70bbEB3A156443B6ECBa23105FedD74a71a8',   // Keellabs v2 — deployed 2026-08-05
@@ -43,6 +41,15 @@ const config = {
     ],
     // PRJX's position manager, not the chain's default Uniswap deployment.
     npm: '0xeaD19AE861c29bBb2101E834922B2FEee69B9091',
+  },
+  bsc: {
+    // BNB Chain, launched 2026-08-18 on PancakeSwap V3. The factory address had been mistakenly
+    // listed under `hyperliquid` (where it reads nothing), so BNB TVL was going uncounted.
+    factories: [
+      '0x52dc92C7e3FdbD4fff7892dFc9DC7bc1d7a01ecf',   // multi-vault factory — deployed 2026-08-18
+    ],
+    // PancakeSwap V3's position manager, not the chain's default Uniswap deployment.
+    npm: '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364',
   },
 }
 
@@ -80,4 +87,5 @@ module.exports = {
   arbitrum: { tvl },
   robinhood: { tvl },
   hyperliquid: { tvl },
+  bsc: { tvl },
 }
