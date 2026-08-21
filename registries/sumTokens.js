@@ -12073,7 +12073,7 @@ const configs = {
       }
     },
   },
-  "covenant": {
+  "covenant-protocol": {
     "methodology": "Tracks CVNT tokens in the Streamflow staking contracts.",
     "doublecounted": true,
     "solana": {
