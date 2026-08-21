@@ -1,10 +1,31 @@
+/**
+ * Drake Exchange — DefiLlama TVL adapter (Monad)
+ *
+ * Fully on-chain perpetual DEX. TVL is AUSD collateral sitting in:
+ *   1. The liquidity vault (AMM backstop / LP capital)
+ *   2. Isolated and cross-margin Portfolio contracts, discovered from
+ *      PortfolioFactory.PortfolioCreated logs (not a hardcoded list)
+ *
+ * Open interest, fees, and volume are out of scope; those belong in
+ * DefiLlama/dimension-adapters.
+ */
 const { getLogs2 } = require('../helper/cache/getLogs')
 
+/** Collateral token counted as TVL. */
 const AUSD = '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a';
+/** Liquidity vault that holds AUSD used as AMM backstop. */
 const VAULT = '0x8379c32A965a7Bac7289893AA3861f01dD470049';
+/** Factory that emits PortfolioCreated for every margin portfolio. */
 const PORTFOLIO_FACTORY = '0x991D0F1E44E590FDbCe15CfF13AAa69c8287B7f3';
+/** First factory block; required by getLogs2 so historical log scans are bounded. */
 const FROM_BLOCK = 86147070;
 
+/**
+ * Sums on-chain AUSD balances of the liquidity vault and every portfolio
+ * created by the factory.
+ *
+ * @param {object} api DefiLlama sdk chain api (`api.chain` is monad)
+ */
 async function tvl(api) {
     const vaultBal = await api.call({
         abi: 'erc20:balanceOf',
