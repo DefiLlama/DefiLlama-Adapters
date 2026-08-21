@@ -15,15 +15,14 @@ const KEYS = new Set(['factory', 'comptroller', 'masterchef', 'vault', 'registry
 // Keys that identify an owner/wallet (cex + sumTokens)
 const OWNER_KEYS = new Set(['owner', 'owners', 'solOwners', 'tokenAccounts']);
 
-// metadata keys to ignore
+// Metadata keys to ignore
 const META = new Set(['methodology', 'start', 'timetravel', 'hallmarks', 'doublecounted', 'misrepresentedTokens']);
 
 const IGNORED = new Set([
   '0x7C10a3b7EcD42dd7D79C0b9d58dDB812f92B574A' // DogeShrek rebranded to ChewySwap and was listed again; we cant fix by backfilling since dogechain's RPC fails on the necessary historical queries
 ].map(a => a.toLowerCase()));
 
-// Owner-collision allow-list, keyed by protocol: owners known to be legitimately shared.
-// e.g. { 'some-cex': ['0xabc...'], 'some-other': ['solanaAddr...'] }
+// e.g. { 'some-cex': ['0xabc...'], ... }
 const IGNORED_OWNERS = {};
 
 // Based on defillama-server/defi/src/utils/discord.ts
@@ -103,13 +102,7 @@ function findContractDuplicates() {
   const duplicates = {};
 
   for (const { name, fullPath } of registryFiles) {
-    let configs;
-    try {
-      configs = loadRawConfigs(fullPath);
-    } catch {
-      console.warn(`Skipping ${name} (could not load)`);
-      continue;
-    }
+    const configs = loadRawConfigs(fullPath);
     if (!configs || typeof configs !== 'object') continue;
 
     const addressMap = {};
@@ -136,7 +129,7 @@ function findContractDuplicates() {
   return duplicates;
 }
 
-// Find owners listed under more than one protocol within a registry (cex or sumTokens).
+// Find owners listed under more than one protocol within a registry (cex or sumTokens)
 function findOwnerDuplicates(rawConfigs) {
   if (!rawConfigs || typeof rawConfigs !== 'object') return {};
 
@@ -162,15 +155,6 @@ function findOwnerDuplicates(rawConfigs) {
   return duplicates;
 }
 
-function ownerDuplicatesFor(filePath, label) {
-  try {
-    return findOwnerDuplicates(loadRawConfigs(filePath));
-  } catch (e) {
-    console.warn(`Skipping ${label} owner check (could not load): ${e.message}`);
-    return {};
-  }
-}
-
 function formatSection(title, duplicates) {
   const entries = Object.entries(duplicates);
   if (!entries.length) return null;
@@ -181,8 +165,8 @@ function formatSection(title, duplicates) {
 
 async function run() {
   const contractDups = findContractDuplicates();
-  const cexOwnerDups = ownerDuplicatesFor(CEX_INDEX, 'cex');
-  const sumTokensOwnerDups = ownerDuplicatesFor(SUMTOKENS_INDEX, 'sumTokens');
+  const cexOwnerDups = findOwnerDuplicates(loadRawConfigs(CEX_INDEX));
+  const sumTokensOwnerDups = findOwnerDuplicates(loadRawConfigs(SUMTOKENS_INDEX));
 
   const sections = [
     formatSection('Registry tracked-contract duplicates', contractDups),

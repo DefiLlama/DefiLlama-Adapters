@@ -77,7 +77,6 @@ const configs = {
         "0xb03eDB668008459B3c6D948ab5Ab305581DbF69c",
         "0x3d79007ba1a68de986eb641a3c24d58a0c69587e",
         "0xF884B1bC1d91Cdf824e7f35D61EdfdB042c28C83",
-        "0xAd8E5cEb7D77e10403Be8430717c515273c31b8d",
         "0x16572Dc0f727C7E3012baD8dbE6B2CE1Cdc31670",
         "0xD888d549B511CE54efFa084f33744a59D452C729",
         "0x2c02f34e06f75380844F928b0CBAb1265338Ae27"
@@ -145,7 +144,6 @@ const configs = {
         "0xd3D3a295bE556Cf8cef2a7FF4cda23D22c4627E8",
         "0x909C1c195FC0a31758C7169B321B707C9F44886B",
         "0xF7b7775f6D31eC2d14984f1cA3e736F5FB896DA2",
-        "0xAd8E5cEb7D77e10403Be8430717c515273c31b8d",
         "0x74E7Fd0b532f88cf8cC50922F7a8f51e3F320Fa7",
         "0xA1195F0d9B010F86633E1553F1286d74F80eF52B"
       ]
@@ -656,14 +654,10 @@ const configs = {
         "0x76d90b0f8150797d9eb4ce91bca2829f494c3766",
         "0x8332086fa910f6e72e9793778d91b6f9ef2d719d",
         "0xa63811cd3abdbc0bd0f668a9eb98b97a96ead95f",
-        "0x9b9B873F2Bf299B0E8C5b2E8Ff220Dc5cb4330E1",
         "0xFBcE3974014022853136989149787df66D54E623",
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9",
         "0x2355969e0692D41bCbB5e695513C0cF4Ae6059C2",
         "0x0733E99402D268D4475A8F5E45987Db04bA66181",
         "0xd83Daa277d9DAD1f34aDE22002806251f04f4a28",
-        "0x748577Ce82346C61e9d6e52628Eda8dFaB3241b3",
-        "0xaDc7cf570DDf2Ff99C723F946c7F5A5D34cF868C"
       ]
     },
     bitcoin: "coin8",
@@ -671,19 +665,16 @@ const configs = {
       owners: [
         "0x3465136aa1ab5fd78bae06a91c280157532c62b8",
         "0xebb54920eda335dfcde8a904f8293bcb5ac64aff",
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9"
       ]
     },
     bsc: {
       owners: [
         "0x8f3d8dde9f2687d93640ecede2a91b1dc3404bd6",
         "0xef01a7711d046af41597c308369b9c8d5873ae96",
-        "0x9b9B873F2Bf299B0E8C5b2E8Ff220Dc5cb4330E1",
         "0xF4271F1c5ABa50B9c18d229311FD22C4Cc7B70b6",
         "0xa089b8de0eA45db84CCadE5751EE165A88F90b4F",
         "0xFBcE3974014022853136989149787df66D54E623",
         "0xC349541773D5eCa27D36E9bD95094920f4B7A536",
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9"
       ]
     },
     solana: {
@@ -699,17 +690,14 @@ const configs = {
     },
     polygon: {
       owners: [
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9"
       ]
     },
     avax: {
       owners: [
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9"
       ]
     },
     tron: {
       owners: [
-        "TWGV42YRYpK1rfMHZCYYxhK1fZDbTNrqzz",
         "TZD1mbbNqnffBRSr8zEjWo6L37vk3nxhvT",
         "TFjKKNBqrsjRhmPnimyArxTuPxq5HkG9T7"
       ]
@@ -793,19 +781,13 @@ const configs = {
   'coinstore': {
     ethereum: {
       owners: [
-        "0x9b9B873F2Bf299B0E8C5b2E8Ff220Dc5cb4330E1",
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9",
-        "0x748577Ce82346C61e9d6e52628Eda8dFaB3241b3",
         "0xf2067abfab8bc621211935431519d41825d2f344",
-        "0xaDc7cf570DDf2Ff99C723F946c7F5A5D34cF868C"
       ]
     },
     bsc: {
       owners: [
-        "0x9b9B873F2Bf299B0E8C5b2E8Ff220Dc5cb4330E1",
         "0xa089b8de0eA45db84CCadE5751EE165A88F90b4F",
         "0x20664cacdcfeb318c8e145a03c75e34bc2cc4a3b",
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9",
         "0x6148f792622c3B85F04f87E8a09474a591E71C5f",
         "0xC349541773D5eCa27D36E9bD95094920f4B7A536",
         "0x40C847f59600286cFEE8d6De6640E967a7824d57"
@@ -813,18 +795,15 @@ const configs = {
     },
     arbitrum: {
       owners: [
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9",
         "0x2a6e62f040a7f0b830847da101539a7eef7bb040"
       ]
     },
     optimism: {
       owners: [
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9"
       ]
     },
     polygon: {
       owners: [
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9",
         "0x65e1615efc11c63e15c00ac4447c56af294135a9"
       ]
     },
@@ -835,7 +814,6 @@ const configs = {
     },
     base: {
       owners: [
-        "0x66AAD5CA93438D565909De0bF444b45e543d98E9"
       ]
     },
     bitcoin: {
@@ -852,10 +830,8 @@ const configs = {
     },
     tron: {
       owners: [
-        "TWGV42YRYpK1rfMHZCYYxhK1fZDbTNrqzz",
         "TBhbX5S51L1C34wBExL9efV5YfTE5NAFi1",
         "TJa4jS3qsAa2je4ksDP9BD7NzsffuWfRQK",
-        "TM7rxykbNRuFd2iZ1zVH4P8xrpSCduw9vD"
       ]
     }
   },
