@@ -3104,9 +3104,8 @@ const uniV2Configs = {
     },
     robinhood: '0xe0799417eff30A12249b8c30941BC2d7c52A0339',
   },
-  'qomx': {
-    bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785'
-  }
+  'qomx': {    bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785'  },
+  'lobsterswap': {    ozone: '0x89687777012E7FF91a6ecDDDc0aebAb38BbC098A'  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
