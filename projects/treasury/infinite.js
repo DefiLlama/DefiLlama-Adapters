@@ -1,4 +1,5 @@
 const { treasuryExports } = require("../helper/treasury");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const TREASURY = "0xb5dB6e5a301E595B76F40319896a8dbDc277CEfB"
 const owners = [TREASURY, "0x1E2cD0E5905AFB73a67c497D82be271Cc65302Eb"]
@@ -51,7 +52,7 @@ async function relayerTvl(api) {
   // Count only DAO-owned relayer position, not aggregate user deposits in the relayer.
   const daoShares = await api.call({ target: VELODROME_RELAYER, abi: 'erc20:balanceOf', params: [TREASURY] })
   api.add(ITP_VELO_LP, daoShares)
-  return api.getBalances()
+  return sumTokens2({ api, resolveLP: true })
 }
 
 async function dhedgeTvl(api) {
