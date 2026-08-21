@@ -672,9 +672,7 @@ const configs = {
         "0x8f3d8dde9f2687d93640ecede2a91b1dc3404bd6",
         "0xef01a7711d046af41597c308369b9c8d5873ae96",
         "0xF4271F1c5ABa50B9c18d229311FD22C4Cc7B70b6",
-        "0xa089b8de0eA45db84CCadE5751EE165A88F90b4F",
         "0xFBcE3974014022853136989149787df66D54E623",
-        "0xC349541773D5eCa27D36E9bD95094920f4B7A536",
       ]
     },
     solana: {
@@ -786,10 +784,8 @@ const configs = {
     },
     bsc: {
       owners: [
-        "0xa089b8de0eA45db84CCadE5751EE165A88F90b4F",
         "0x20664cacdcfeb318c8e145a03c75e34bc2cc4a3b",
         "0x6148f792622c3B85F04f87E8a09474a591E71C5f",
-        "0xC349541773D5eCa27D36E9bD95094920f4B7A536",
         "0x40C847f59600286cFEE8d6De6640E967a7824d57"
       ]
     },
