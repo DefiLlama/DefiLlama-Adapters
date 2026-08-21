@@ -12,6 +12,12 @@ const BORING_VAULTS_ETH = [
   '0x75231079973c23e9eb6180fa3d2fc21334565ab5',  // Turtle Club (katanaLBTCv)
 ]
 
+// ── Unpriced BTC-denominated tokens held on Ethereum ─────────────────────────
+// Neither has a price feed on ethereum, so their balances are dropped from TVL.
+// Both are 8-decimal BTC wrappers and are converted to cbBTC in tvlEthExtras.
+const BTCOC_ETH = '0xf14f678d9c05798ba61652a950a05d74ad2e0a6c'  // Bitcoin Onchain Credit Strategy (vault share)
+const BTC_B_ETH = '0xB0F70C0bD6FD87dbEb7C10dC692a2a6106817072'  // BTC.b
+
 // ── Add new Curve pools here ──────────────────────────────────────────────────
 const CURVE_POOLS_ETH = [
   { pool: '0x2f3bc4c27a4437aeca13de0e37cdf1028f3706f0', coinCount: 2 },
@@ -91,6 +97,37 @@ async function unwrapBoringVault(api, vaultToken, holder) {
   api.add(baseAsset, amount)
 }
 
+// Converts the Ethereum BTC positions that have no price feed into cbBTC.
+// BTCoc is a vault share, so it is converted at its on-chain pricePerShare;
+// BTC.b is a plain BTC wrapper and converts one to one. All three tokens use
+// 8 decimals.
+async function convertUnpricedBtcEth(api) {
+  const cbBTC = ADDRESSES.ethereum.cbBTC
+  const balances = api.getBalances()
+
+  // balance keys keep whatever casing the source used, so one token can be held
+  // under both its checksummed and its lowercase address
+  const totalBalance = (token) => {
+    const suffix = `:${token.toLowerCase()}`
+    return Object.keys(balances)
+      .filter((key) => key.toLowerCase().endsWith(suffix))
+      .reduce((sum, key) => sum + Number(balances[key]), 0)
+  }
+
+  const btcocBalance = totalBalance(BTCOC_ETH)
+  if (btcocBalance > 0) {
+    const pricePerShare = await api.call({ target: BTCOC_ETH, abi: 'uint256:pricePerShare' })
+    api.removeTokenBalance(BTCOC_ETH)
+    api.add(cbBTC, btcocBalance * (Number(pricePerShare) / 1e8))
+  }
+
+  const btcbBalance = totalBalance(BTC_B_ETH)
+  if (btcbBalance > 0) {
+    api.removeTokenBalance(BTC_B_ETH)
+    api.add(cbBTC, btcbBalance)
+  }
+}
+
 // ─── Per-chain extra TVL hooks ────────────────────────────────────────────────
 
 async function tvlEthExtras(api) {
@@ -105,6 +142,9 @@ async function tvlEthExtras(api) {
   }
 
   await sumTokens2({ api, owner: LBTCV, resolveUniV4: true, })
+
+  // 3. Convert BTC positions that have no ethereum price feed
+  await convertUnpricedBtcEth(api)
 }
 
 async function tvlCornExtras(api) {
