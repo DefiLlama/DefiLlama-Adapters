@@ -2461,4 +2461,6 @@ for (const [name, rawConfig] of Object.entries(configs)) {
   allProtocols[name] = Object.assign(cexExports(config), meta)
 }
 
+// expose the configs for the duplicate-owner checker
+Object.defineProperty(allProtocols, '_rawConfigs', { value: configs, enumerable: false })
 module.exports = allProtocols
