@@ -12073,6 +12073,23 @@ const configs = {
       }
     },
   },
+  "covenant-protocol": {
+    "methodology": "Tracks CVNT tokens in the Streamflow staking contracts.",
+    "doublecounted": true,
+    "solana": {
+      "staking": {
+        "tokenAccounts": [
+          '5Fg449W8E7EnLfC7Sgn4zCwSmFXP1YbpVEnVQ3WKEwuC',
+          '12zg2Eu2HM2X39ZCoVbQRA6t6xP3Fmz21WskfzbCCsK6',
+          '9fEQ4ow9WM4XkSZiNrEPDgy1rt73WgUJvnKsLWQR1Qus',
+          '4TtDoALukroBBRbibXknqsDkpo3ak1pN5i52LtjgmDyk',
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    }
+  },
   "crackandstack": {
     "methodology": "Crack & Stack TVL is the backed value of the Lanterns NFT.",
     "taiko": {
@@ -20970,6 +20987,23 @@ const configs = {
         ADDRESSES.bsc.USDT
       ]
     },
+  },
+  "open-vecta": {
+    "methodology": "Tracks VECTA tokens in the Streamflow staking contracts.",
+    "doublecounted": true,
+    "solana": {
+      "staking": {
+        "tokenAccounts": [
+          'HB3TJsPBcSn8LJ7h3SeR2cKsZNRpZftZ1bGAto83JXsd',
+          'DWhcx3Q6fmeEFufdSyBxws9S4yk9h737x2WhkG1iLpK1',
+          '9noqjg9tLXhZd5Gvxc2MFFtoyxiNHuR1DyHog3teXsAT',
+          'EVyKtMBBdzuxcRm7z6xDncKvgRnawtbaqMjPpSpX4cVy',
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    }
   },
   "optinyan": {
     "optimism": {
