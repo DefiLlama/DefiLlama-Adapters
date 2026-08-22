@@ -1,11 +1,6 @@
-const axios = require('axios')
+const { getProgramMappingValue } = require('../helper/chain/aleo')
 
-const PROVABLE_API = 'https://api.provable.com/v2/mainnet'
 const SHIELD_SWAP = 'shield_swap.aleo'
-const MAX_ATTEMPTS = 5
-const MAX_RETRY_DELAY_MS = 5_000
-const MAX_U128 = (1n << 128n) - 1n
-const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER)
 
 const TOKENS = [
   { program: 'shield_swap_arc20_credits.aleo', coingeckoId: 'aleo', decimals: 6 },
@@ -15,80 +10,23 @@ const TOKENS = [
   { program: 'shield_swap_arc20_wrapped_usdcx.aleo', coingeckoId: 'usd-coin', decimals: 6 },
 ]
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+const toBigInt = (v) => (v ? BigInt(String(v).replace(/u\d+$/, '')) : 0n)
 
-function isRetryable(error) {
-  const status = error.response?.status
-  return !status || status === 429 || status >= 500
-}
-
-function parseRetryAfter(value, now) {
-  if (value == null) return null
-  const normalized = String(value).trim()
-  if (/^\d+$/.test(normalized)) {
-    const delay = Number(normalized) * 1_000
-    return Number.isFinite(delay) ? delay : null
-  }
-  const retryAt = Date.parse(normalized)
-  if (!Number.isFinite(retryAt)) return null
-  const delay = retryAt - now
-  return delay >= 0 ? delay : null
-}
-
-function retryDelay(error, attempt, now = Date.now()) {
-  const retryAfter = error.response?.headers?.['retry-after']
-  const retryAfterMs = parseRetryAfter(retryAfter, now)
-  if (retryAfterMs != null) {
-    if (retryAfterMs > MAX_RETRY_DELAY_MS) {
-      throw new Error(`Retry-After exceeds ${MAX_RETRY_DELAY_MS}ms`)
-    }
-    return retryAfterMs
-  }
-  return Math.min(300 * 2 ** attempt, MAX_RETRY_DELAY_MS)
-}
-
-async function getProgramBalance(program) {
-  const url = `${PROVABLE_API}/program/${program}/mapping/balances/${SHIELD_SWAP}`
-
-  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+async function getBalance(program, retries = 5) {
+  for (let attempt = 0; ; attempt++) {
     try {
-      const { data } = await axios.get(url, { timeout: 10_000 })
-      return data
-    } catch (error) {
-      if (!isRetryable(error) || attempt === MAX_ATTEMPTS - 1) throw error
-      await sleep(retryDelay(error, attempt))
+      return await getProgramMappingValue(program, 'balances', SHIELD_SWAP)
+    } catch (e) {
+      if (attempt >= retries - 1) throw e
+      await new Promise((r) => setTimeout(r, 300 * 2 ** attempt))
     }
   }
-}
-
-function parseU128(value, program) {
-  if (value == null) return 0n
-  if (typeof value !== 'string' || !/^\d+u128$/.test(value)) {
-    throw new Error(`Invalid u128 balance for ${program}: ${JSON.stringify(value)}`)
-  }
-
-  const balance = BigInt(value.slice(0, -4))
-  if (balance > MAX_U128) {
-    throw new Error(`u128 balance out of range for ${program}: ${value}`)
-  }
-  return balance
-}
-
-function toTokenAmount(balance, decimals, program) {
-  const divisor = 10n ** BigInt(decimals)
-  const whole = balance / divisor
-  const remainder = balance % divisor
-  if (whole > MAX_SAFE_BIGINT) {
-    throw new Error(`Token amount exceeds JS safe integer range for ${program}`)
-  }
-  return Number(whole) + Number(remainder) / 10 ** decimals
 }
 
 async function tvl(api) {
   for (const { program, coingeckoId, decimals } of TOKENS) {
-    const rawBalance = await getProgramBalance(program)
-    const balance = parseU128(rawBalance, program)
-    api.addCGToken(coingeckoId, toTokenAmount(balance, decimals, program))
+    const balance = toBigInt(await getBalance(program))
+    api.addCGToken(coingeckoId, Number(balance) / 10 ** decimals)
   }
 }
 
@@ -96,6 +34,6 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
-    'TVL is the aggregate balance held by shield_swap.aleo in Shield Swap\'s verified ALEO, ETH, SOL, WBTC, and USDCx token programs, read directly from Aleo chain state through the Provable API. It includes pool capital, accrued fees, and funds awaiting claims.',
+    'TVL is the aggregate balance held by shield_swap.aleo in Shield Swap\'s verified ALEO, ETH, SOL, WBTC, and USDCx token programs, read directly from Aleo chain state. It includes pool capital, accrued fees, and funds awaiting claims.',
   aleo: { tvl },
 }
