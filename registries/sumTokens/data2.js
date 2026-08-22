@@ -689,7 +689,7 @@ module.exports = {
     },
     "ethereum": {
       "tvl": {
-        "owners": ["0x1B5668Ca8edfC8AF5DcB9De014b4B08ed5d0615F", "0x3111653DB0e7094b111b8e435Df9193b62C2C576", "0xd6572c7cd671ecf75d920adcd200b00343959600", "0xa97Fe3E9c1d3Be7289030684eD32A6710d2d02bA", "0xeea3A032f381AB1E415e82Fe08ebeb20F513c42c"],
+        "owners": ["0x1B5668Ca8edfC8AF5DcB9De014b4B08ed5d0615F", "0x3111653DB0e7094b111b8e435Df9193b62C2C576", "0xa97Fe3E9c1d3Be7289030684eD32A6710d2d02bA", "0xeea3A032f381AB1E415e82Fe08ebeb20F513c42c"],
         "tokens": [ADDRESSES.ethereum.USDC, "0x7122985656e38bdc0302db86685bb972b145bd3c", ADDRESSES.ethereum.USDT, "0x7122985656e38BDC0302Db86685bb972b145bD3C"]
       }
     },
@@ -698,9 +698,6 @@ module.exports = {
         "owners": ["0xC178AE294bC3623e6dfDF07C9ca79c6dB692f032", "0xBA43F3C8733b0515B5C23DFF46F47Af6EB46F85C"],
         "tokens": [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE]
       }
-    },
-    "manta": {
-      "tvl": { "owners": ["0x19727db22Cba70B1feE40337Aba69D83c6741caF"], "tokens": [ADDRESSES.berachain.STONE] }
     },
     "bsc": {
       "tvl": {

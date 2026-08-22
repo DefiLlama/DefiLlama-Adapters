@@ -95,7 +95,7 @@ module.exports = {
       unicrypt: '/unicrypt/apiCache',
       deeplock: '/deeplock/apiCache',
       pinksale: '/pinksale/index',
-      'team-finance': '/team-finance/apiCache',
+      'team-finance': '/team-finance/api',
       // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
       blum: '/blum/api',

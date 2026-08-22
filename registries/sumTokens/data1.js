@@ -726,4 +726,9 @@ module.exports = {
       "tokens": [ADDRESSES.solana.USDC]
     }
   },
+  "satrush": {
+    "timetravel": false,
+    "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault.",
+    "solana": { "tokenAccounts": ["2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9"] }
+  },
 }
