@@ -788,6 +788,12 @@ const uniV3Configs = {
       blacklistedOwners: ['0x24619368bad314d1635a54027c5231b9b83c4a7e', '0xe9703de93406cc31441a57ce5d08272ed545d32b'],
     },
   },
+  'krown-dex': {
+    krown: {
+      factory: '0x10ba7a9b45267caf016028cd398e68a19632bed2',
+      fromBlock: 50555,
+    },
+  },
   'kuraswap-cl': {
     sei: {
       factory: '0xd0c54c480fD00DDa4DF1BbE041A6881f2F09111e',
