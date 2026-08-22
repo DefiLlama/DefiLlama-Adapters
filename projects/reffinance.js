@@ -1,5 +1,5 @@
 const { default: BigNumber } = require('bignumber.js')
-const { call, sumSingleBalance, } = require('./helper/chain/near')
+const { call, sumSingleBalance, convertThinFeeds, } = require('./helper/chain/near')
 
 const PROJECT_CONTRACT = 'v2.ref-finance.near'
 const PROJECT_DCL_CONTRACT = 'dclv2.ref-labs.near'
@@ -32,7 +32,7 @@ async function tvl() {
     poolIndex += 500
   } while (poolIndex < numberOfPools)
 
-  return balances
+  return convertThinFeeds(balances)
 }
 
 
