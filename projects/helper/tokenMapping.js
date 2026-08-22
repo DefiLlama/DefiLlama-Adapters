@@ -42,11 +42,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  krown: {
-    '0x59973ae98d340ca0577ed92502402e82e987ba2e': { coingeckoId: 'krown-bridged-usdt-krown', decimals: 6 },
-    '0x6f9ec4f83ef69b923fa1dc00189e591728df0ac0': { coingeckoId: 'krown-bridged-eth-krown', decimals: 18 },
-    '0x9189d145d1d8e612c4c48bbd1af5a50cbee63d7d': { coingeckoId: 'wrapped-krown', decimals: 18 },
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
