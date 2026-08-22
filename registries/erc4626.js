@@ -458,6 +458,7 @@ const configs = {
   },
   'syntetika': {
     methodology: "TVL is the net asset value of the Syntetika strategy vaults, read on-chain as totalAssets() - the outstanding supply of vault share tokens valued at the independently attested NAV per share - and denominated in the vault deposit asset (cbBTC).",
+    doublecounted: true,
     base: ["0x9C2dCDbDB3F0A0F628D1112bBCABD9AE75353df3"]
   }
 }
