@@ -87,8 +87,12 @@ const thinFeedTokens = {
 const rateCache = {}
 
 async function getConversionRate({ contract, method, rateDecimals }) {
+  // A rejected lookup must not be cached, or the first failure blocks every retry
+  // for the life of the process.
   if (!rateCache[contract])
-    rateCache[contract] = call(contract, method, {}).then(i => Number(i) / 10 ** rateDecimals)
+    rateCache[contract] = call(contract, method, {})
+      .then(i => Number(i) / 10 ** rateDecimals)
+      .catch(e => { delete rateCache[contract]; throw e })
   return rateCache[contract]
 }
 
@@ -98,8 +102,12 @@ async function convertThinFeeds(balances = {}) {
   for (const [key, config] of Object.entries(thinFeedTokens)) {
     const amount = balances[key]
     if (!amount) continue
-    const rate = await getConversionRate(config)
+    // Claim the balance before the first await. sumTokens aggregates several owners
+    // concurrently into one balances object, so reading the amount and only deleting
+    // the key after awaiting the rate would let two callers convert the same balance
+    // and book it twice.
     delete balances[key]
+    const rate = await getConversionRate(config)
     sdk.util.sumSingleBalance(balances, config.base, Number(amount) * rate)
   }
   return balances
