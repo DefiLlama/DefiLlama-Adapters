@@ -21,6 +21,6 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
-  methodology: 'TVL = ownerless (unclaimed) share of ETH in the WISE/ETH Uniswap LP',
+  methodology: 'TVL = ownerless (LP tokens burned) share of ETH in the WISE/ETH Uniswap LP',
   ethereum: { tvl }
 };
