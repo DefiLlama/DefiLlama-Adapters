@@ -56,9 +56,9 @@ const tokens = {
         stETH: ADDRESSES.ethereum.STETH,
         cbBTC: ADDRESSES.ethereum.cbBTC,
         FBTC: ADDRESSES.mantle.FBTC,
-        tsSwellRswETH: '0xd4c9AA3FFDDc3EeE1d624849872EA3Eae2529972', // TODO not priced properly
+        tsSwellRswETH: '0xd4c9AA3FFDDc3EeE1d624849872EA3Eae2529972', // TODO multi-asset Tempest vault share; cannot map 1:1
         aEthUSDC: '0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c',
-        eUSDC_2: '0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9',
+        eUSDC_2: '0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9', // priced directly by the coins service
         gtUSDC: '0xdd0f28e19C1780eb6396170735D45153D261490d',
     },
     arbitrum: {
@@ -101,7 +101,7 @@ const tokens = {
         ETH: ADDRESSES.null,
         WETH: ADDRESSES.linea.WETH,
         ZERO: '0x78354f8DcCB269a615A7e0a24f9B0718FDC3C7A7',
-        oLYNX: '0x63349ba5e1f71252ecd56e8f950d1a518b400b60',
+        oLYNX: '0x63349ba5e1f71252ecd56e8f950d1a518b400b60', // option token; exercising requires payment, so it is not 1:1 LYNX
         LYNX: '0x1a51b19CE03dbE0Cb44C1528E34a7EDD7771E9Af',
         NILE: '0xAAAac83751090C6ea42379626435f805DDF54DC8',
         CAKE: '0x0D1E753a25eBda689453309112904807625bEFBe',
@@ -110,7 +110,8 @@ const tokens = {
         CROAK: '0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF',
         REX33: '0xe4eeb461ad1e4ef8b8ef71a33694ccd84af051c4',
         xREX: '0xc93b315971a4f260875103f5da84cb1e30f366cc',
-        z0weETH: '0x77E305B4D4D3b9DA4e82Cefd564F5b948366A44b', // TODO all ZeroLend not priced properly
+        // ZeroLend aTokens are priced as their underlyings via transformTokens
+        z0weETH: '0x77E305B4D4D3b9DA4e82Cefd564F5b948366A44b',
         z0WETH: '0xB4FFEf15daf4C02787bC5332580b838cE39805f5',
         z0ezETH: '0x0684FC172a0B8e6A65cF4684eDb2082272fe9050',
         z0rsETH: '0x8d8b70a576113FEEdd7E3810cE61f5E243B01264',
@@ -137,7 +138,7 @@ const tokens = {
     },
     swellchain: {
         SWELL: ADDRESSES.swellchain.SWELL,
-        tsSwellETH: '0x7fE118Bee84900fAED30dAb9ecFbeAD633392f05', // TODO not priced properly
+        tsSwellETH: '0x7fE118Bee84900fAED30dAb9ecFbeAD633392f05', // TODO multi-asset Tempest vault share; cannot map 1:1
     },
     blast: {
         HYPER: '0xEC73284E4EC9bcea1A7DDDf489eAA324C3F7dd31',
@@ -165,19 +166,13 @@ const tokenMappingERC20 = {
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
         // { token: tokens.ethereum.tsSwellRswETH, use: ADDRESSES.null },
-        { token: tokens.ethereum.eUSDC_2, use: tokens.ethereum.USDC },
     ],
     linea: [
-        { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
         { token: tokens.linea.xREX, coingeckoId: "etherex", decimals: 18 },
-        // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
+        // ZeroLend aTokens are mapped globally to their actual underlyings.
     ],
     swellchain: [
-        // { token: tokens.swellchain.tsSwellETH, use: ADDRESSES.null }, // TODO not priced properly
+        // Tempest vault shares require multi-asset valuation; they are not 1:1 with ETH.
     ],
 };
 

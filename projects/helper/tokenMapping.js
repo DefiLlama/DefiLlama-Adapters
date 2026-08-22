@@ -34,6 +34,15 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+
+  linea: {
+    // ZeroLend aTokens are rebasing tokens denominated 1:1 in their underlyings.
+    '0xb4ffef15daf4c02787bc5332580b838ce39805f5': `linea:${ADDRESSES.linea.WETH}`, // z0ETH
+    '0x77e305b4d4d3b9da4e82cefd564f5b948366a44b': 'linea:0x1Bf74C010E6320bab11e2e5A532b5AC15e0b8aA6', // z0weETH → weETH
+    '0x0684fc172a0b8e6a65cf4684edb2082272fe9050': 'linea:0x2416092f143378750bb29b79eD961ab195CcEea5', // z0ezETH → ezETH
+    '0x8d8b70a576113feedd7e3810ce61f5e243b01264': 'linea:0xD2671165570f41BBB3B0097893300b6EB6101E6C', // z0rsETH → wrsETH
+    '0x508c39cd02736535d5cb85f3925218e5e0e8f07a': `linea:${ADDRESSES.linea.USDT}`, // z0USDT
+  },
 }
 const ibcMappings = {
   // Sample Code
