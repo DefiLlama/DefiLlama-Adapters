@@ -11,8 +11,8 @@ const SWITCH_USDC_POOL = '0x066589f69c4016C75883612a50aEc76c4887ac38'
 const SWITCH_WPLS_POOL = '0x829f3d4aBAfa6920648188750A8e36220F137B67'
 const USDC_WPLS_POOL = '0xb0753197dcBd873c8E8131f3D691C3135C3D8d66'
 const FACTORY_FROM_BLOCK = 26521466
-// PulseChain RPC providers can silently truncate wide eth_getLogs ranges.
-// The SDK still uses its cache/indexer first and applies this only on fallback.
+// The shared cloud cache can claim complete coverage while omitting PulseChain
+// logs. Use the SDK's local cache and bound every RPC fallback range instead.
 const MAX_LOG_BLOCK_RANGE = 100_000
 const TWAP_WINDOW = 60 * 60
 const MAX_ORACLE_AGE = 6 * 60 * 60
@@ -102,7 +102,7 @@ async function getSwitchUsdcRatio(api) {
     throw new Error('insufficient SWITCH-side oracle liquidity')
   }
 
-  // Algebra ticks quote raw token1 units per raw token0 unit. The direct pool
+  // Pool ticks quote raw token1 units per raw token0 unit. The direct pool
   // therefore needs inversion, while the two-hop quote divides the two WPLS
   // legs to produce raw USDC units per raw SWITCH unit.
   const directRatio = new Decimal(1).div(direct.ratio1Per0)
@@ -125,7 +125,6 @@ async function tvl(api) {
       toBlock,
       eventAbi,
       onlyArgs: true,
-      cacheInCloud: true,
       maxBlockRange: MAX_LOG_BLOCK_RANGE,
     })
 
@@ -150,25 +149,26 @@ async function tvl(api) {
   const switchOwners = ownerEntries
     .filter(({ token0, token1 }) => lower(token0) === lower(SWITCH) || lower(token1) === lower(SWITCH))
     .map(({ owner }) => ({ target: SWITCH, params: owner }))
-  const switchBalances = switchOwners.length
-    ? await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: switchOwners,
-        permitFailure: true,
-      })
-    : []
+  const [switchBalances] = await Promise.all([
+    switchOwners.length
+      ? api.multiCall({
+          abi: 'erc20:balanceOf',
+          calls: switchOwners,
+          permitFailure: true,
+        })
+      : Promise.resolve([]),
+    sumTokens2({
+      api,
+      ownerTokens: ownerEntries.map(({ token0, token1, owner }) => [[token0, token1], owner]),
+      // SWITCH has no DefiLlama coin price yet. It is handled once below so it
+      // cannot be double counted if the shared price service later adds it.
+      blacklistedTokens: [SWITCH],
+      // Standard pool creation is permissionless. Isolate non-compliant or
+      // reverting ERC-20 balanceOf calls so one hostile pool cannot break TVL.
+      permitFailure: true,
+    }),
+  ])
   const totalSwitch = switchBalances.reduce((total, balance) => total + BigInt(balance || 0), 0n)
-
-  await sumTokens2({
-    api,
-    ownerTokens: ownerEntries.map(({ token0, token1, owner }) => [[token0, token1], owner]),
-    // SWITCH has no DefiLlama coin price yet. It is handled once below so it
-    // cannot be double counted if the shared price service later adds it.
-    blacklistedTokens: [SWITCH],
-    // Standard pool creation is permissionless. Isolate non-compliant or
-    // reverting ERC-20 balanceOf calls so one hostile pool cannot break TVL.
-    permitFailure: true,
-  })
 
   if (totalSwitch !== 0n) {
     try {
