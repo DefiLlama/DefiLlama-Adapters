@@ -24773,6 +24773,16 @@ const configs = {
       "owner": "0x8002f2e86302ef9421558d0ae25a68cdfdbec5d27915cc2db49eded220799ecc"
     },
   },
+  "rwaperps-bridge": {
+    "methodology": "Amount of USDC and USDG tokens held on the RWA Perps.xyz vault address.",
+    "xlayer": {
+      "owner": "0x816f722424B49Cf1275cc86DA9840Fbd5a6167e9",
+      "tokens": [
+        "0xb6ceceab302e2e4948951ee7843fc24e92933061", // USDC
+        "0x4ae46a509F6b1D9056937BA4500cb143933D2dc8" // USDG
+      ]
+    },
+  },
   "rysk-v12": {
     "hyperliquid": {
       "tokensAndOwners": [
