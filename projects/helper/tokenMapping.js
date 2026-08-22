@@ -42,6 +42,12 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  // WZIL is wrapped native ZIL, 1:1. Its own feed is quoted on 11 of the last 20
+  // days and a missing day drops the whole balance out of TVL rather than erroring,
+  // which makes every zilliqa DEX flap. ZIL is quoted every day.
+  zilliqa: {
+    [ADDRESSES.zilliqa.WZIL]: { coingeckoId: 'zilliqa', decimals: 18 },
+  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
