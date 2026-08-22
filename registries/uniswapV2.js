@@ -197,6 +197,9 @@ const uniV2Configs = {
   'BBQSwap': {
     ham: '0x7304e5751973113fA7c4FFf677871B926258f27e',
   },
+  'bdex-v2': {
+    bot: '0x117115f3B72C8d1989178089A67D0C26f8EE0AA3',
+  },
   'beam-swap': {
     beam: '0x662b526FB70EBB508962f3f61c9F735f687C8fA5',
   },

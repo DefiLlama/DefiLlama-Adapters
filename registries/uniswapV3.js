@@ -45,6 +45,12 @@ const uniV3Configs = {
   'basex': {
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
+  'bdex-v3': {
+    bot: {
+      factory: '0x1C51c173323ec11BB4e3C4fD2314c225Dc4b5419',
+      fromBlock: 143372,
+    },
+  },
   'betterswap-v3': {
     vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
   },
