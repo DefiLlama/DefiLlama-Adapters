@@ -80,8 +80,9 @@ async function tvl(api) {
     todo.forEach((p, i) => { if (res[i]) resolved.set(p, res[i]) })
   }
 
-  if (!resolved.size) {
-    const message = `layer-zero: ${api.chain} resolved 0 of ${proxies.length} proxies - RPC failure or changed adapter interface`
+  const unresolved = proxies.filter(proxy => !resolved.has(proxy))
+  if (unresolved.length) {
+    const message = `layer-zero: ${api.chain} failed to resolve ${unresolved.length} of ${proxies.length} proxies (${unresolved.slice(0, 3).join(', ')}${unresolved.length > 3 ? ', ...' : ''}) - RPC failure or changed adapter interface`
     console.error(message)
     throw new Error(message)
   }
@@ -89,7 +90,6 @@ async function tvl(api) {
   const tokensAndOwners = []
   for (const proxy of proxies) {
     let underlying = resolved.get(proxy)
-    if (!underlying) continue
     if (NATIVES.includes(underlying.toLowerCase())) underlying = ADDRESSES.null
     tokensAndOwners.push([underlying, proxy])
   }
