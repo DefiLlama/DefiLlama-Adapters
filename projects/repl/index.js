@@ -65,6 +65,6 @@ module.exports = {
     }
   },
   deadFrom: '2026-08-23',
-  hallmarks: [[1787443200, 'Project sunset']],
+  hallmarks: [['2026-08-23', 'Project sunset']],
 };
 
