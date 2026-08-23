@@ -117,12 +117,7 @@ const configs = {
   },
   "3fmutual": {
     "ethereum": {
-      "owners": [
-        "0x66be1bc6C6aF47900BBD4F3711801bE6C2c6CB32"
-      ],
-      "tokens": [
-        ADDRESSES.null
-      ]
+      "__empty": true
     },
   },
   "AIDApp": {
@@ -18057,10 +18052,7 @@ const configs = {
   },
   "metavault-bo": {
     "polygon": {
-      "owner": "0x6fd5b386d8bed29b3b62c0856250cdd849b3564d",
-      "tokens": [
-        ADDRESSES.polygon.USDC
-      ]
+      "__empty": true
     },
   },
   "metera-protocol": {
@@ -28285,13 +28277,7 @@ const configs = {
   },
   "unirouter": {
     "bsquared": {
-      "owners": [
-        "0xd5B5f1CA0fa5636ac54b0a0007BA374A1513346e",
-        "0xe677F4B6104726D76DeBc681d7a862CE269aA8F3"
-      ],
-      "tokens": [
-        ADDRESSES.null
-      ]
+      "__empty": true
     },
   },
   "unit-btc": {
