@@ -80,7 +80,11 @@ async function tvl(api) {
     todo.forEach((p, i) => { if (res[i]) resolved.set(p, res[i]) })
   }
 
-  if (!resolved.size) console.error(`layer-zero: ${api.chain} resolved 0 of ${proxies.length} proxies, reporting $0`)
+  if (!resolved.size) {
+    const message = `layer-zero: ${api.chain} resolved 0 of ${proxies.length} proxies - RPC failure or changed adapter interface`
+    console.error(message)
+    throw new Error(message)
+  }
 
   const tokensAndOwners = []
   for (const proxy of proxies) {
@@ -125,7 +129,7 @@ const chains = [
   'kava', 'bob', 'flow', 'canto', 'wc', 'hedera', 'op_bnb', 'goat',
   'moonriver', 'conflux', 'lisk', 'megaeth', 'harmony',
   'apechain', 'degen', 'somnia', 'telos', 'robinhood', 'moonbeam', 'cronos',
-  'polygon_zkevm', 'zora', 'sophon', 'xpla', 'ethereal', 'sanko', 'core', '0g',
+  'polygon_zkevm', 'zora', 'sophon', 'xpla', 'ethereal', 'core', '0g',
   'gensyn', 'chz', 'vana', 'rbn', 'sty', 'bittensor_evm', 'irys_mainnet_beta',
   'vfl', 'etlk', 'codex', 'kiteai', 'lightlink_phoenix', 'tomochain', 'ap3x',
   'rls',
