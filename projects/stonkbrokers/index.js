@@ -36,7 +36,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology:
-    'TVL is the liquidity permanently locked in the Safety Deposit Box lockers: Uniswap V3 position NFTs escrowed in the V3 box, plus up. DEX (Slipstream) positions escrowed in the up. box — including every Safe Launch pad graduation pool, whose full raise + LP tax reserve is locked forever at bond. Only the WETH side of each position is counted (meme-token legs stay unpriced). Staking tracks STONKBROKER tokens in the escrow contract.',
+    'TVL is the liquidity permanently locked in the Safety Deposit Box lockers: Uniswap V3 position NFTs escrowed in the V3 box, plus up. DEX (Slipstream) positions escrowed in the up. box — including every Stonklauncher / Safe Launch graduation pool across the V1 ETH pad, V1 quoted lanes, V2 lanes, and r2 pads (raise + LP tax reserve locked forever at bond; V2 Uniswap-v3 venue bonds land in the V3 box). Only the WETH side of each position is counted (meme-token legs stay unpriced). Staking tracks STONKBROKER tokens in the escrow contract.',
   doublecounted: true,
   robinhood: {
     tvl,
