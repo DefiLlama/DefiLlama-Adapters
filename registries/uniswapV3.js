@@ -813,6 +813,13 @@ const uniV3Configs = {
       blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'],
     },
   },
+  'liberty-swap': {
+    start: '2026-05-25',
+    pulse: {
+      factory: '0x796fcbDC956b85797EFe21145Aa97599B7FB36a6',
+      fromBlock: 26620000,
+    },
+  },
   'linehub-v3': {
     linea: {
       factory: '0x6c379d538f2f7cb642851e154a8e572d63238df4',
