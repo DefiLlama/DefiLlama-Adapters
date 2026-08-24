@@ -2415,6 +2415,7 @@ const fileConfigs = [
   'swissborg',
   'tothemoon',
   'weex-cex',
+  'websea',
 ]
 
 // keys that are protocol metadata rather than chain configs
