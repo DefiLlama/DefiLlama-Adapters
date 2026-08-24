@@ -940,6 +940,15 @@ const uniV3Configs = {
       fromBlock: 74340484,
     },
   },
+  'morpheus': {
+    start: '2026-08-13',
+    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain.',
+    robinhood: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 35371149,
+      isAlgebra: true,
+    },
+  },
   'naka-dex': {
     naka: {
       factory: '0xf6632D6fF6fc71DAf1fA96AbAd1bC269bD507dF8',
