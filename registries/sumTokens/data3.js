@@ -879,5 +879,11 @@ module.exports = {
     "base": {
       "tvl": { "owners": ["0x0bc585e3c8c47EE507C873eC994b14fC7883793d"], "tokens": [ADDRESSES.base.USDC] },
     },
+  },
+  "astro-fun": {
+    methodology: "Counts the USDG held by the Astro BankrollVault on Robinhood Chain: the liquidity provided by LPs to the bankroll (ERC-4626 ASTROLP), the players\' withdrawable balances, and the stakes wagered in the round currently in play.",
+    "robinhood": {
+      "tvl": { "owners": ["0x58D2f2D46af20C357885d540A9c02fDD791Ee1CF"], "tokens": [ADDRESSES.robinhood.USDG] },
+    },
   }
 }
