@@ -29,7 +29,7 @@ async function tvl(api) {
   const tokens = logs.map((log) => log.tokenAddress)
   if (!tokens.length) return {}
 
-  const vaults = await api.multiCall({ abi: 'address:lpVault', calls: tokens, permitFailure: true })
+  const vaults = await api.multiCall({ abi: 'address:lpVault', calls: tokens })
   const owners = [...new Set(vaults.filter((vault) => vault && vault !== ADDRESSES.null))]
   if (!owners.length) return {}
 
