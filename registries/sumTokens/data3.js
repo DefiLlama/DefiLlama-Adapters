@@ -880,12 +880,6 @@ module.exports = {
       "tvl": { "owners": ["0x0bc585e3c8c47EE507C873eC994b14fC7883793d"], "tokens": [ADDRESSES.base.USDC] },
     },
   },
-  "fermiswap": {
-    methodology: "TVL is the value of WETH, USDT, USDC, cbBTC, and WBTC held in FermiSwap's inventory vault.",
-    "ethereum": {
-      "tvl": { "owners": ["0xb1076fE3AB5e28005C7c323Bac5AC06a680d452e"], "tokens": [ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.cbBTC, ADDRESSES.ethereum.WBTC] },
-    },
-  },
   "astro-fun": {
     methodology: "Counts the USDG held by the Astro BankrollVault on Robinhood Chain: the liquidity provided by LPs to the bankroll (ERC-4626 ASTROLP), the players\' withdrawable balances, and the stakes wagered in the round currently in play.",
     "robinhood": {
