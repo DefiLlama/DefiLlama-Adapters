@@ -1172,6 +1172,10 @@ module.exports = {
     "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
     "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
   ],
+  websea: [
+    "39u712JCmQ1GfqWQtKdQHTyQA9pv2qNnGm",
+    "bc1q730a2njpypegll9ef6566vmdpakuf8t2au70dk",
+  ],
 };
 
 imports.forEach(([key, file]) => {
