@@ -885,5 +885,12 @@ module.exports = {
     "robinhood": {
       "tvl": { "owners": ["0x58D2f2D46af20C357885d540A9c02fDD791Ee1CF"], "tokens": [ADDRESSES.robinhood.USDG] },
     },
+  },
+  "deepstate": {
+    methodology: "TVL is the value of USDG, NVDA, and DEEP held by the Deepstate router as collateral for resting orders or as matched proceeds awaiting maker claims.",
+    "robinhood": {
+      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"] },
+      "staking": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": ["0x1DA24f6Bb623b9d1aFEae3F3146659A2662D6d27"] },
+    }
   }
 }
