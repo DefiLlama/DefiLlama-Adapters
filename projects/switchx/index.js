@@ -13,7 +13,7 @@ const USDC_WPLS_POOL = '0xb0753197dcBd873c8E8131f3D691C3135C3D8d66'
 const FACTORY_FROM_BLOCK = 26521466
 // The shared cloud cache can claim complete coverage while omitting PulseChain
 // logs. Use the SDK's local cache and bound every RPC fallback range instead.
-const MAX_LOG_BLOCK_RANGE = 100_000
+const MAX_LOG_BLOCK_RANGE = 99_979
 const TWAP_WINDOW = 60 * 60
 const MAX_ORACLE_AGE = 6 * 60 * 60
 const MAX_TIMESTAMP_SKEW = 5 * 60
