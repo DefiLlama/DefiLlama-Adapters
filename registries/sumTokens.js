@@ -12073,6 +12073,23 @@ const configs = {
       }
     },
   },
+  "covenant-protocol": {
+    "methodology": "Tracks CVNT tokens in the Streamflow staking contracts.",
+    "doublecounted": true,
+    "solana": {
+      "staking": {
+        "tokenAccounts": [
+          '5Fg449W8E7EnLfC7Sgn4zCwSmFXP1YbpVEnVQ3WKEwuC',
+          '12zg2Eu2HM2X39ZCoVbQRA6t6xP3Fmz21WskfzbCCsK6',
+          '9fEQ4ow9WM4XkSZiNrEPDgy1rt73WgUJvnKsLWQR1Qus',
+          '4TtDoALukroBBRbibXknqsDkpo3ak1pN5i52LtjgmDyk',
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    }
+  },
   "crackandstack": {
     "methodology": "Crack & Stack TVL is the backed value of the Lanterns NFT.",
     "taiko": {
@@ -16077,6 +16094,20 @@ const configs = {
       "token": ADDRESSES.robinhood.WETH
     }
   },
+  "hrusd": {
+    "methodology": "TVL counts the USDC reserve held on-chain by the HRUSD Peg Stability Module and the USDC side of the Uniswap V3 HRUSD/USDC liquidity positions escrowed in the two V3LPStakingRewards contracts. The remainder of the HRUSD backing is custodied on a centralised exchange and is deliberately not counted here.",
+    "doublecounted": true,
+    "base": {
+      "owners": [
+        '0xe5545fd5e48425663Bf207183a868Eb0A1d2b9ee',
+        '0xb72f376ae7732a76F1C18e0547553A616a33a2bd',
+        '0xA61C08DeC414416E55de7b4510bA8Ef25C89886a'
+      ],
+      "tokens": [ADDRESSES.base.USDC],
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [ADDRESSES.base.USDC],
+    }
+  },
   "hskhodlium": {
     "methodology": "TVL includes all native HSK tokens staked at the main contract on HashKey Chain. Token price is derived from its Ethereum-wrapped version.",
     "hsk": {
@@ -16168,15 +16199,19 @@ const configs = {
     },
   },
   "hypersurface": {
-    "methodology": "TVL includes tokens in MarginPool, HedgedPool, and Hedger contracts. LP positions held by the Hedger are unwrapped to their underlying tokens.",
+    "methodology": "TVL includes tokens in MarginPool, HedgedPool, and Hedger contracts of every collateral pool (USDT0-collateral and USDC-collateral on HyperEVM, USDC-collateral on Base). LP positions held by the Hedger are unwrapped to their underlying tokens.",
     "hyperliquid": {
       "owners": [
         "0x7D2e4b4d7ba55C423F5CCe194ae8194eFD1C6e35",
         "0x0095aCDD705Cfcc11eAfFb6c19A28C0153ad196F",
-        "0xa8c9403BDf554C047Ad91a448DDb24208Ab5313c"
+        "0xa8c9403BDf554C047Ad91a448DDb24208Ab5313c",
+        "0x7FfD5706C916499676D707f3ec3F0c9b928E7A95",
+        "0xe0F9cA7FD12E31F5d720A93d04722d6DFbAD59e7",
+        "0x220f86b641ec63f4832CC30a663Bb26b15259Ee2"
       ],
       "tokens": [
-        ADDRESSES.corn.USDT0,
+        ADDRESSES.hyperliquid.USDT0,
+        ADDRESSES.hyperliquid.USDC,
         "0xbe6727b535545c67d5caa73dea54865b92cf7907",
         "0x9fdbda0a5e284c32744d2f17ee5c74b284993463",
         ADDRESSES.hyperliquid.WHYPE,
@@ -17385,12 +17420,12 @@ const configs = {
         "0xA27EC0006e59f245217Ff08CD52A7E8b169E62D2"
       ]
     },
-    "robinhood": {
-      "owners": [
-        "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
-      ],
-      "fetchBlockscoutTokens": true
-    },
+    // "robinhood": {
+    //   "owners": [
+    //     "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
+    //   ],
+    //   "fetchBlockscoutTokens": true
+    // },
   },
   "lighter-rh": {
     "methodology": "Counts tokens deposited by users into the Lighter ZK rollup contract",
@@ -17779,16 +17814,6 @@ const configs = {
     },
   },
   "manta-cedefi-stake": {
-    "manta": {
-      "owner": "0x1B9bcc6644CC9b5e1F89aBaAb66904F5a562d4a1",
-      "tokens": [
-        "0x1468177DbCb2a772F3d182d2F1358d442B553089",
-        "0xACCBC418a994a27a75644d8d591afC22FaBA594e",
-        "0x649d4524897cE85A864DC2a2D5A11Adb3044f44a"
-      ]
-    },
-  },
-  "manta-myield": {
     "manta": {
       "owner": "0x1B9bcc6644CC9b5e1F89aBaAb66904F5a562d4a1",
       "tokens": [
@@ -20952,6 +20977,23 @@ const configs = {
         ADDRESSES.bsc.USDT
       ]
     },
+  },
+  "open-vecta": {
+    "methodology": "Tracks VECTA tokens in the Streamflow staking contracts.",
+    "doublecounted": true,
+    "solana": {
+      "staking": {
+        "tokenAccounts": [
+          'HB3TJsPBcSn8LJ7h3SeR2cKsZNRpZftZ1bGAto83JXsd',
+          'DWhcx3Q6fmeEFufdSyBxws9S4yk9h737x2WhkG1iLpK1',
+          '9noqjg9tLXhZd5Gvxc2MFFtoyxiNHuR1DyHog3teXsAT',
+          'EVyKtMBBdzuxcRm7z6xDncKvgRnawtbaqMjPpSpX4cVy',
+        ]
+      },
+      "tvl": {
+        "__empty": true
+      }
+    }
   },
   "optinyan": {
     "optimism": {
@@ -24729,6 +24771,16 @@ const configs = {
     "timetravel": false,
     "fuel": {
       "owner": "0x8002f2e86302ef9421558d0ae25a68cdfdbec5d27915cc2db49eded220799ecc"
+    },
+  },
+  "rwaperps-bridge": {
+    "methodology": "Amount of USDC and USDG tokens held on the RWA Perps.xyz vault address.",
+    "xlayer": {
+      "owner": "0x816f722424B49Cf1275cc86DA9840Fbd5a6167e9",
+      "tokens": [
+        "0xb6ceceab302e2e4948951ee7843fc24e92933061", // USDC
+        "0x4ae46a509F6b1D9056937BA4500cb143933D2dc8" // USDG
+      ]
     },
   },
   "rysk-v12": {
@@ -41052,6 +41104,23 @@ const configs = {
       ]
     },
   },
+  "xona-agent": {
+    "methodology": "Tracks XONA tokens in the Streamflow staking contracts.",
+    "doublecounted": true,
+    "solana": {
+      "staking": {
+        "tokenAccounts": [
+          'Ci3CwCoZoSuKAD1h7AcfnnSR32gE5rBw1jgysGpqXZAv',
+          'EJU9GprW3U4DpxzhEKNtSnBK4gsGCg7RD9sdH8Nej8Kh',
+          'FatAxEievkavRn7EEuyLkgk6NMEUFpigRxpeyHatYyMD',
+          '9xRfz54N76qfRGcyBk8ZBvKbbD6pYs9dXfUPvM8CgDms',
+        ] 
+      },
+      "tvl": {
+        "__empty": true
+      }
+    }
+  },
   "xora": {
     "methodology": "Sums the XRP balance held in the XORA treasury account rhbErkS2d4H82tRbdGyFkhhc4LNtjKaC3o on the XRP Ledger. The treasury is a single shared custody wallet; user deposits route to it via destination tags. Per-user accounting is internal to XORA; the on-chain balance is the canonical TVL.",
     "start": 1772841600,
@@ -42106,4 +42175,6 @@ for (const [name, cfg] of Object.entries(configs)) {
   }
   allProtocols[name] = out
 }
+// expose the configs for the duplicate-owner checker
+Object.defineProperty(allProtocols, '_rawConfigs', { value: configs, enumerable: false })
 module.exports = allProtocols

@@ -9,13 +9,19 @@ const sdk = require('@defillama/sdk')
 // Maps adapter chain names to their @defillama/sdk providerListJSON key when the two differ.
 // Most chains match directly; add an entry here only for known mismatches.
 const blockscoutChainAlias = {
-  robinhood: 'robinhoodchain',
+}
+
+// Static chain -> blockscout base url overrides, checked before providerListJSON.
+// Use for chains missing from (or wrong in) the sdk provider list.
+const blockscoutStaticUrls = {
+  robinhood: 'https://robinhoodchain.blockscout.com',
 }
 
 // Resolve a chain's blockscout explorer base url (without trailing slash) from @defillama/sdk's
 // providerListJSON, so token auto-discovery works for any blockscout-backed chain without a
 // per-chain config. Returns undefined when the chain has no blockscout explorer registered.
 function getBlockscoutUrl(chain, chainId) {
+  if (blockscoutStaticUrls[chain]) return blockscoutStaticUrls[chain].replace(/\/+$/, '')
   const providers = sdk.providerListJSON ?? {}
   // 1. direct key match / known alias  2. fall back to matching by chainId
   let entry = providers[chain] ?? providers[blockscoutChainAlias[chain]]

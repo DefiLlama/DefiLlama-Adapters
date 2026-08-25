@@ -512,10 +512,15 @@ async function getNested4626Vaults(api, vaults) {
   const vaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
   const nestedVaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaultAsset, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
+  const convertedAssets = await api.multiCall({
+    abi: ABI.ERC4626.convertToAssets,
+    calls: vaultAsset.map((target, i) => ({ target, params: [totalAssets[i]] })),
+    permitFailure: true,
+  })
   for (let i = 0; i < vaults.length; i++) {
-    const resolvedAsset = nestedVaultAsset[i] || vaultAsset[i]
-    if (!resolvedAsset) continue
-    api.add(resolvedAsset, totalAssets[i])
+    const asset = nestedVaultAsset[i] || vaultAsset[i]
+    const amount = nestedVaultAsset[i] ? convertedAssets[i] : totalAssets[i]
+    if (asset && amount) api.add(asset, amount)
   }
 }
 

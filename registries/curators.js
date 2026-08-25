@@ -436,6 +436,12 @@ const configs = {
             '0x85fCb4604f25e17Ae4e1EAc202adba4F999d7FF5', // Feather MegaETH vault
           ],
         },
+        polygon: {
+          morpho: [
+            '0x902Af532d51D4983DBf9B8E29d1f01E430B24435', // Feather BRZ vault
+            '0x922c843349e3Bd9e4C3572171DfCa5e08836151F', // Feather frxUSD vault
+          ],
+        },
       }
     },
     _meta: {

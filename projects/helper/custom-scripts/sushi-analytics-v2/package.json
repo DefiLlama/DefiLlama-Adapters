@@ -21,6 +21,7 @@
     "@stacks/transactions": "^7.0.0",
     "@stellar/stellar-sdk": "^13.3.0",
     "@supercharge/promise-pool": "^3.2.0",
+    "fuels": "^0.103.0",
     "request": "^2.88.2"
   },
   "engines": {

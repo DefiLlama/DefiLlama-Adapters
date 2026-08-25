@@ -457,6 +457,7 @@ module.exports = {
     "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37",
     "3D7pZri6kLqXDQMbf5G8De39K36eBaNKBG",
     "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5",
+    "bc1qdg5fr2zq0w0r8l3hggm25uhdc7rjqs5r0az508",
   ],
   bitvenus: [
     //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
@@ -1170,6 +1171,10 @@ module.exports = {
   webot: [
     "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
     "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
+  ],
+  websea: [
+    "39u712JCmQ1GfqWQtKdQHTyQA9pv2qNnGm",
+    "bc1q730a2njpypegll9ef6566vmdpakuf8t2au70dk",
   ],
 };
 

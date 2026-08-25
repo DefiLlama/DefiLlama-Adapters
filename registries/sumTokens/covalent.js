@@ -409,18 +409,6 @@ module.exports = {
       ]
     },
   },
-  "hemi-locked": {
-    "ethereum": {
-      "owners": [
-        "0x5eaa10F99e7e6D177eF9F74E519E319aa49f191e",
-        "0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e"
-      ],
-      "fetchCoValentTokens": true,
-      "blacklistedTokens": [
-        "0xeb964a1a6fab73b8c72a0d15c7337fa4804f484d"
-      ]
-    },
-  },
   "immutable-zkevm": {
     "ethereum": {
       "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
@@ -516,12 +504,6 @@ module.exports = {
     },
   },
   "metis": {
-    "ethereum": {
-      "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
-      "fetchCoValentTokens": true
-    },
-  },
-  "metisBridge": {
     "ethereum": {
       "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
       "fetchCoValentTokens": true
@@ -658,13 +640,6 @@ module.exports = {
     "ethereum": {
       "owner": "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe",
       "fetchCoValentTokens": true
-    },
-  },
-  "pulsechain": {
-    "ethereum": {
-      "owner": "0x1715a3E4A142d8b698131108995174F37aEBA10D",
-      "fetchCoValentTokens": true,
-      "permitFailure": true
     },
   },
   "pulsechain-bridge": {

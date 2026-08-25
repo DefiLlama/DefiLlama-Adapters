@@ -1817,11 +1817,6 @@ const config = {
       "xpla1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn9lmfyu7"
     ]
   },
-  "proton": {
-    "owners": [
-      "gatedeposit"
-    ]
-  },
   "zeta": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",

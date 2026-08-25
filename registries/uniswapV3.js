@@ -45,6 +45,12 @@ const uniV3Configs = {
   'basex': {
     base: { factory: '0x38015d05f4fec8afe15d7cc0386a126574e8077b', fromBlock: 3152527 },
   },
+  'bdex-v3': {
+    bot: {
+      factory: '0x1C51c173323ec11BB4e3C4fD2314c225Dc4b5419',
+      fromBlock: 143372,
+    },
+  },
   'betterswap-v3': {
     vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
   },
@@ -788,6 +794,12 @@ const uniV3Configs = {
       blacklistedOwners: ['0x24619368bad314d1635a54027c5231b9b83c4a7e', '0xe9703de93406cc31441a57ce5d08272ed545d32b'],
     },
   },
+  'krown-dex': {
+    krown: {
+      factory: '0x10ba7a9b45267caf016028cd398e68a19632bed2',
+      fromBlock: 50555,
+    },
+  },
   'kuraswap-cl': {
     sei: {
       factory: '0xd0c54c480fD00DDa4DF1BbE041A6881f2F09111e',
@@ -799,6 +811,13 @@ const uniV3Configs = {
       factory: '0x40059A6F242C3de0E639693973004921B04D96AD',
       fromBlock: 592235,
       blacklistedTokens: ['0x1d25eeeee9b61fe86cff35b0855a0c5ac20a5feb'],
+    },
+  },
+  'liberty-swap': {
+    start: '2026-05-25',
+    pulse: {
+      factory: '0x796fcbDC956b85797EFe21145Aa97599B7FB36a6',
+      fromBlock: 26620000,
     },
   },
   'linehub-v3': {
@@ -928,6 +947,15 @@ const uniV3Configs = {
       fromBlock: 74340484,
     },
   },
+  'morpheus': {
+    start: '2026-08-13',
+    methodology: 'Counts tokens locked in Algebra Integral concentrated liquidity pools created by the Morpheus factory on Robinhood Chain.',
+    robinhood: {
+      factory: '0x10253594A832f967994b44f33411940533302ACb',
+      fromBlock: 35371149,
+      isAlgebra: true,
+    },
+  },
   'naka-dex': {
     naka: {
       factory: '0xf6632D6fF6fc71DAf1fA96AbAd1bC269bD507dF8',
@@ -940,6 +968,7 @@ const uniV3Configs = {
       factory: '0xF77Bd082c627aA54591cF2f2EaA811fd1AB3b1F3',
       fromBlock: 17877130,
       isAlgebra: true,
+      blacklistedTokens: ['0x9d0e8f5b25384c7310cb8c6ae32c8fbeb645d083'],
       blacklistedOwners: ['0xbAd2fB864FBD3f8b9bCC81512D7C8Ee1Aa0a8D6C'],
     },
   },
