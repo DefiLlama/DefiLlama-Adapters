@@ -127,6 +127,5 @@ module.exports = {
   methodology:
     'TVL is the current token principal in every active STONX Ve33 liquidity position on Ekubo. Active positions are reconstructed from Ekubo Core events, then their token amounts are read from the canonical Ve33Positions manager. Core swap fees and claimable STONX rewards are excluded. Locked STONX is reported separately under staking based on net StakeChanged events.',
   doublecounted: true,
-  timetravel: false,
   robinhood: { tvl, staking },
 }
