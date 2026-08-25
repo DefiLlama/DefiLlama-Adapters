@@ -54,7 +54,8 @@ async function stVaultEther(api) {
   const externalEther = await api.call({ target: ethContract, abi: "uint256:getExternalEther" })
 
   // subtracting externalEther is required, it is already inside getTotalPooledEther()
-  return totalValues.reduce((sum, value) => sum + BigInt(value), 0n) - BigInt(externalEther)
+  const uncounted = totalValues.reduce((sum, value) => sum + BigInt(value), 0n) - BigInt(externalEther)
+  return uncounted > 0n ? uncounted : 0n
 }
 
 async function eth(api) {
@@ -129,6 +130,9 @@ module.exports = {
   },
   ethereum: {
     tvl: eth
+  },
+  terra: {
+    tvl: () => ({}),
   },
   moonriver:{
     tvl: ksm
