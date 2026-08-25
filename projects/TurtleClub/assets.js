@@ -165,16 +165,9 @@ const tokenMappingERC20 = {
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
         // { token: tokens.ethereum.tsSwellRswETH, use: ADDRESSES.null },
-        { token: tokens.ethereum.eUSDC_2, use: tokens.ethereum.USDC },
     ],
     linea: [
-        { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
         { token: tokens.linea.xREX, coingeckoId: "etherex", decimals: 18 },
-        // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
-        // { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
     ],
     swellchain: [
         // { token: tokens.swellchain.tsSwellETH, use: ADDRESSES.null }, // TODO not priced properly
