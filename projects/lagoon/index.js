@@ -40,6 +40,12 @@ const config = {
       fromBlock: 29100401
     },
   },
+  bsc: {
+    optinProxyFactory: {
+      address: "0x3f680ab9e51eeed9381de5275f4995611ff884d5",
+      fromBlock: 56083879
+    },
+  },
   berachain: {
     vaults: [],
     optinProxyFactory: {
@@ -71,6 +77,18 @@ const config = {
     beaconFactory: {
       address: "0x09C8803f7Dc251f9FaAE5f56E3B91f8A6d0b70ee",
       fromBlock: 22218451
+    },
+  },
+  flare: {
+    optinProxyFactory: {
+      address: "0x70274c69ef1fa492506394d982391c6f3008e785",
+      fromBlock: 67163254
+    },
+  },
+  hemi: {
+    optinProxyFactory: {
+      address: "0xb457e9c025a8af99e32b03668e34f80d20a71d2c",
+      fromBlock: 4091219
     },
   },
   hyperliquid: {
@@ -122,6 +140,12 @@ const config = {
     optinProxyFactory: {
       address: "0x0C0E287f6e4de685f4b44A5282A3ad4A29D05a91",
       fromBlock: 76939871
+    },
+  },
+  rls: {
+    optinProxyFactory: {
+      address: "0xfa032de1214fd89b465c306bf46f778318bde357",
+      fromBlock: 960000
     },
   },
   sonic: {
