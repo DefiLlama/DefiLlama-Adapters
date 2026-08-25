@@ -51,7 +51,10 @@ async function getVaultContext() {
       ]));
 
       return { vaults, pricedCoins, pricing };
-    })();
+    })().catch(error => {
+      vaultContextPromise = undefined;
+      throw error;
+    });
   }
 
   return vaultContextPromise;
@@ -95,11 +98,14 @@ async function tvl_solana(api) {
   const mints = vaults.map(vault => vault.solana.mintAddress);
   const supplies = await getTokenSupplies(mints);
 
-  vaults.forEach((vault, index) => {
+  vaults.forEach(vault => {
+    const supply = supplies[vault.solana.mintAddress];
+    if (supply === undefined) return;
+
     addVaultTvl(
       api,
       vault,
-      supplies[vault.solana.mintAddress],
+      supply,
       vault.solana.decimals,
       context
     );
