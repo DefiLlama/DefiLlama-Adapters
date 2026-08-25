@@ -22234,6 +22234,21 @@ const configs = {
       "token": ADDRESSES.corn.USDT0
     },
   },
+  "perpme": {
+    "methodology": "TVL is the quote side (HYPE, USDC, USD₮0 or PURR) of the Uniswap V3 liquidity positions locked in the PerpMe locker. Every launch mints its whole supply as a single-sided PRJX position and sends the LP NFT to the locker, which has no function to decrease liquidity or move the position. PerpMe-launched coins are excluded: each one's only market is the very pool being measured. Liquidity lives in PRJX (Uniswap V3) pools, so this is flagged doublecounted.",
+    "doublecounted": true,
+    "hyperliquid": {
+      "owner": "0x07c4f2dBBfaf75afC4c947e6bFEa13fEa8Eb267F",
+      "resolveUniV3": true,
+      "uniV3WhitelistedTokens": [
+        ADDRESSES.hyperliquid.WHYPE,
+        ADDRESSES.hyperliquid.USDC,
+        ADDRESSES.hyperliquid.USDT0,
+        "0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E"
+      ],
+      "uniV3ExtraConfig": { "nftAddress": "0xeaD19AE861c29bBb2101E834922B2FEee69B9091" }
+    }
+  },
   "perpl": {
     "methodology": "TVL is the total AUSD collateral deposited in the Perpl Exchange contract.",
     "monad": {
