@@ -38,14 +38,14 @@ const VAULT_HUB_START_BLOCK = 23933041;
 async function stVaultEther(api) {
   if (api.block < VAULT_HUB_START_BLOCK) return 0n
 
-  const vaultsCount = await api.call({ target: VAULT_HUB, abi: "uint256:vaultsCount" })
-  if (!Number(vaultsCount)) return 0n
-
-  const vaults = await api.multiCall({
+  const vaults = await api.fetchList({
+    lengthAbi: "uint256:vaultsCount",
+    itemAbi: "function vaultByIndex(uint256) view returns (address)",
     target: VAULT_HUB,
-    abi: "function vaultByIndex(uint256) view returns (address)",
-    calls: [...Array(Number(vaultsCount))].map((_, i) => ({ params: [i + 1] })),
+    startFromOne: true,
   })
+  if (!vaults.length) return 0n
+  
   const totalValues = await api.multiCall({
     target: VAULT_HUB,
     abi: "function totalValue(address) view returns (uint256)",
