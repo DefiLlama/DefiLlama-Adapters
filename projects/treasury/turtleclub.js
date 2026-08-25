@@ -1,5 +1,4 @@
 const { tokens, treasuryMultisigs, treasuryNFTs, defaultTokens, tokenMappingERC20, tokenMapping } = require('../TurtleClub/assets');
-const { ankrChainMapping } = require('../helper/token');
 const { sumTokens2, unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 const SOLIDLY_VE_NFT_ABI = require('../helper/abis/solidlyVeNft.json');
 const { createIncrementArray } = require('../helper/utils');
@@ -37,16 +36,8 @@ function turtleTreasuryExports(config, treasuryNFTs) {
     for (const chain of chains) {
         // From treasuryExports
         const tvlConfig = { permitFailure: true, ...config[chain] };
-        if (config[chain].fetchCoValentTokens !== false) {
-            if (ankrChainMapping[chain]) {
-                tvlConfig.fetchCoValentTokens = true;
-                const { tokenConfig } = config[chain];
-                if (!tokenConfig) {
-                    tvlConfig.tokenConfig = { onlyWhitelisted: false, };
-                }
-            } else if (defaultTokens[chain]) {
-                tvlConfig.tokens = [tvlConfig.tokens, defaultTokens[chain]].flat();
-            }
+        if (defaultTokens[chain]) {
+            tvlConfig.tokens = [tvlConfig.tokens, defaultTokens[chain]].flat();
         }
 
         const tvl = async (api) => {
