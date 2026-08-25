@@ -43,8 +43,12 @@ const config = {
   bsc: {
     optinProxyFactory: {
       address: "0x3f680ab9e51eeed9381de5275f4995611ff884d5",
-      fromBlock: 56083879
+      fromBlock: 106552832 // day before the first vault deployment, factory logs are empty before
     },
+    // use this vault list if failed to get vault list from factory logs
+    fallbackVaults: [
+      "0x236582bb8e6b5d382e346d2ee80e1a7273d4cd4a", // SPY ETF
+    ],
   },
   berachain: {
     vaults: [],
