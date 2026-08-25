@@ -786,6 +786,12 @@ const uniV3Configs = {
       blacklistedTokens: [],
     },
   },
+  'kittypunch-kona-v3': {
+    abstract: {
+      factory: '0xfeD3612D6865ca46F080f19fc34AA8Cac0C92cF6',
+      fromBlock: 64955000,
+    },
+  },
   'kodiak-v3': {
     berachain: {
       factory: '0xD84CBf0B02636E7f53dB9E5e45A616E05d710990',
