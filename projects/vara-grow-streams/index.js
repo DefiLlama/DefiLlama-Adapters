@@ -41,10 +41,10 @@ async function rpc(method, params) {
   return response.result
 }
 
-async function getSpendableNative(addresses) {
-  const at = await rpc('chain_getFinalizedHead', [])
+async function getSpendableNative(addresses, at) {
+  const blockHash = at ?? await rpc('chain_getFinalizedHead', [])
   const keys = addresses.map(accountStorageKey)
-  const result = await rpc('state_queryStorageAt', [keys, at])
+  const result = await rpc('state_queryStorageAt', [keys, blockHash])
   const values = new Map(keys.map(key => [key, null]))
 
   for (const changeSet of result || [])
@@ -64,10 +64,12 @@ async function getSpendableNative(addresses) {
   })
 }
 
-async function getTotalSupply(program, service) {
+async function getTotalSupply(program, service, at) {
   const prefix = route(service, 'TotalSupply')
   const payload = `0x${prefix.toString('hex')}`
-  const result = await rpc('gear_calculateReplyForHandle', [ZERO_ACCOUNT, program, payload, GAS_LIMIT, 0])
+  const params = [ZERO_ACCOUNT, program, payload, GAS_LIMIT, 0]
+  if (at) params.push(at)
+  const result = await rpc('gear_calculateReplyForHandle', params)
 
   if (!result || !result.payload || result.payload === '0x' || !result.code || !result.code.Success)
     throw new Error(`vara-grow-streams: failed to read TotalSupply from ${program}: ${JSON.stringify(result && result.code)}`)
@@ -80,10 +82,11 @@ async function getTotalSupply(program, service) {
 }
 
 async function tvl(api) {
+  const at = await rpc('chain_getFinalizedHead', [])
   const [[vaultNative, wvaraNative, gvaraNative], wvaraSupply, gvaraSupply] = await Promise.all([
-    getSpendableNative([TOKEN_VAULT, WVARA, GVARA]),
-    getTotalSupply(WVARA, 'Vft'),
-    getTotalSupply(GVARA, 'SuperTokenService'),
+    getSpendableNative([TOKEN_VAULT, WVARA, GVARA], at),
+    getTotalSupply(WVARA, 'Vft', at),
+    getTotalSupply(GVARA, 'SuperTokenService', at),
   ])
 
   // Wrapper token balances are claims on these same reserves, so counting both
