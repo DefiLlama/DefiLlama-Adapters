@@ -18,7 +18,6 @@ async function almVaultTvl(api) {
   return sumTokens2({
     api,
     ownerTokens: vaults.map(({ almVault, tokenA, tokenB }) => [[tokenA, tokenB], almVault]),
-    permitFailure: true,
   })
 }
 
