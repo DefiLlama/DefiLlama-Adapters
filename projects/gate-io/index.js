@@ -481,6 +481,11 @@ const config = {
       "11d33ef5b07f977a51dc3aad64c49abf56c759c0059a468926b82a133a15b39d7bc"
     ]
   },
+  "berachain": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   "bifrost": {
     "owners": [
       "c2TQGFWqK1WsKzWizpdf9V6uzCgnVqw7Yz9Va7G2wjQPHTY",
@@ -717,6 +722,11 @@ const config = {
       "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
     ]
   },
+  "coti": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   "cosmos": {
     "owners": [
       "cosmos155svs6sgxe55rnvs6ghprtqu0mh69kehrn0dqr",
@@ -847,7 +857,8 @@ const config = {
     "owners": [
       "gateiowallet",
       "ha2tanbqg4ge",
-      "eos32signhw1"
+      "eos32signhw1",
+      "g4ydgmjug4ge"
     ]
   },
   "eos_evm": {
@@ -922,6 +933,12 @@ const config = {
       "evmos1ll4s7cv8rtxmfqudl3k4pqhsv0nn3eppwgmrq9"
     ]
   },
+  "fetchhub": {
+    "owners": [
+      "fetch155svs6sgxe55rnvs6ghprtqu0mh69kehswxfz5",
+      "fetch1xunyznpjmj9jv5e2zwngp2qrzmulr2ggt9g6tp"
+    ]
+  },
   "filecoin": {
     "owners": [
       "f1d7mq36vf6osdhcd32i6k3wyb223mdjlxnafnala",
@@ -943,6 +960,11 @@ const config = {
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
       "0xcf6f5ec73942314c3ec864202b40dcbb1f9477a0"
+    ]
+  },
+  "fogo": {
+    "owners": [
+      "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w"
     ]
   },
   "flow": {
@@ -987,6 +1009,11 @@ const config = {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071"
+    ]
+  },
+  "gravity": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
     ]
   },
   // "gochain": {
@@ -1229,6 +1256,11 @@ const config = {
       "mantra155svs6sgxe55rnvs6ghprtqu0mh69kehgc9fre"
     ]
   },
+  "megaeth": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   "merlin": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1446,6 +1478,11 @@ const config = {
       "0x4c6158236fe1ac71ca8c00b64864ad6d7eb0bfb4"
     ]
   },
+  "plume_mainnet": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   "pokt": {
     "owners": [
       "ab04976668dd739f34df43e912d20dc487ac85d2",
@@ -1571,6 +1608,11 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
     ]
   },
+  "sonic": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   // "songbird": {
   //   "owners": [
   //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -1595,6 +1637,11 @@ const config = {
       "358661YBt5nPikZU3BEEG9b2XnQYP1kPEjAuaSSZUkn5uMJq"
     ]
   },
+  "stable": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
+    ]
+  },
   "starcoin": {
     "owners": [
       "0x5aeae9cbf49070dc93aed2f16b99012a",
@@ -1617,6 +1664,12 @@ const config = {
       "0x7ce04f66dca33c786c7375f73c4f7459e16b8a80cbbdd055e3782b3e176fa3d3",
       "0x019b848f4511b354c314a4e5c1a40dbc247fe5d29c6bcb3495badb01751d549a",
       "0x6edd3be944aeaa90f86f95008b852308e5ab48dc6d2df756e92e11c1ec73b8c0"
+    ]
+  },
+  // story protocol, the chain behind the "IP"/DATA holdings
+  "sty": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
     ]
   },
   "supra": {
@@ -1712,7 +1765,8 @@ const config = {
     "owners": [
       "0:3addd84bf73267312a477049fd9b8db761bf39c585c150f8e6f9451347af2b6c",
       "0:09c592c5b17a555c1ace781f38303e5a115978f57cf22773b280d14028e7dd92",
-      "0:16ea6a34f0d704b6fac9b7592e003f6f28ae5d1a8a6ba9d1650e4dd30ab8eada"
+      "0:16ea6a34f0d704b6fac9b7592e003f6f28ae5d1a8a6ba9d1650e4dd30ab8eada",
+      "EQAbhMWosoxeoXTJi9Tlw09MEjPVvdJe9j0nC6K6ro0d1oL-"
     ]
   },
   "umee": {
@@ -1791,6 +1845,11 @@ const config = {
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+    ]
+  },
+  "xai": {
+    "owners": [
+      "0x0d0707963952f2fba59dd06f2b425ace40b492fe"
     ]
   },
   "xdc": {
@@ -1872,7 +1931,6 @@ const config = {
 // remove chains w/o historical tvl
 const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'icon', 'icp', 'interlay', 'karura', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'zkfair', 'acala', 'harmony',
   'vinu', 'rollux', 'aelf', 'ailayer', 'archway',
-  'ton', // never had any tvl
 ]
 
 unsupportedChains.forEach(chain => delete config[chain]);
@@ -2090,6 +2148,9 @@ const gateEarnTvl = {
   // chain, so config.kava can only carry the 0x owners - the kava1... ones are
   // summed here instead and mergeExports adds the two together.
   kava: { tvl: earnTvl(api => cosmosSumTokens({ api, owners: kavaCosmosOwners, chain: 'kava' })) },
+  // same split as kava: config.sei carries the cosmos-side sei1... owners, so the
+  // EVM-side native SEI held by the hot wallet is summed here
+  sei: { tvl: earnTvl(api => api.sumTokens({ owners: ['0x0d0707963952f2fba59dd06f2b425ace40b492fe'], tokens: [ADDRESSES.null] })) },
 }
 
 Object.entries(earnStakers).forEach(([chain, owners]) => {
@@ -2103,3 +2164,17 @@ Object.entries(earnReceiptTokens).forEach(([chain, args]) => {
 })
 
 module.exports = mergeExports([cexExports(config), gateEarnTvl]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+

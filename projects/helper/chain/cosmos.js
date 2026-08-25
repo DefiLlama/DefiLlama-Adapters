@@ -68,6 +68,7 @@ const endPoints = {
   dungeon: 'https://api.dungeongames.io',
   carbon: 'https://api.carbon.network',
   evmos: 'https://evmos-api.polkachu.com',
+  fetchhub: 'https://rest-fetchhub.fetch.ai',
   regen: 'https://rest-regen.ecostake.com',
   // sommelier: 'https://sommelier-rpc.polkachu.com',
   sommelier: 'https://rest.cosmos.directory/sommelier',
