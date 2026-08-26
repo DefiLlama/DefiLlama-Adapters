@@ -157,7 +157,7 @@ const tvl = async (api) => {
 
 module.exports = {
   methodology:
-    "TVL is the onchain supply of every Anchored token valued at its onchain reference price. Tokenized stocks and ETFs are enumerated from Anchored's token factory on each chain and priced with the StockOracle contract, which publishes one price per underlying ticker. Tokenized funds are enumerated from the fund controller on Ethereum and valued at the latest NAV per share published to the onchain nav registry. Every token is backed 1:1 by the underlying share or fund interest held in regulated custody, and reserves are attested independently at https://accountable.anchored.finance.",
+    'TVL = sum of (tokenized stock supply x oracle price) + sum of (fund share supply x latest NAV per share). Stocks and ETFs are enumerated per chain from the AncTokenFactory registry and valued with StockOracle.latestPrice, keyed by keccak256 of the uppercase underlying ticker. Funds are enumerated from AncFundController on Ethereum and valued at the latest NAV per share published to AncFundNavRecord. Nothing is hardcoded and no Anchored API is called: both the asset list and the prices come from contract reads, so newly issued assets are picked up without an adapter change. Every token is backed 1:1 by the underlying share or fund interest held in regulated custody, and reserves are attested independently at https://accountable.anchored.finance.',
   ethereum: { tvl },
   monad: { tvl },
   base: { tvl },
