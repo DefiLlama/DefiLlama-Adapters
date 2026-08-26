@@ -18,17 +18,24 @@ async function tvl(api) {
 }
 
 async function staking(api) {
-  const locked = await api.call({
-    target: VAULT,
-    abi: 'uint256:accountedLockedTokens',
-  })
+  const [locked, sacrificed] = await Promise.all([
+    api.call({
+      target: VAULT,
+      abi: 'uint256:accountedLockedTokens',
+    }),
+    api.call({
+      target: VAULT,
+      abi: 'uint256:totalSacrificed',
+    }),
+  ])
 
   api.add(OIX, locked)
+  api.add(OIX, sacrificed)
 }
 
 module.exports = {
   methodology:
-    'TVL counts native ETH held in CaveWatch Hunt, Motherlode, Lucky Vein and Auto Hunt contracts. Recoverable OIX locked in the OIX Vault is reported as staking. Permanently sacrificed OIX, OIX release inventory, treasury balances, Vault reward ETH and game-held OIX are excluded.',
+    'TVL counts native ETH held in CaveWatch Hunt, Motherlode, Lucky Vein and Auto Hunt contracts. Recoverable OIX locked in the OIX Vault and permanently sacrificed OIX that remains economically committed to the Vault and continues receiving Vault reward weight are reported as staking. Sacrificed OIX is non-withdrawable and represents a permanent Vault position. OIX release inventory, treasury balances, Vault reward ETH and game-held OIX are excluded.',
   robinhood: {
     tvl,
     staking,
