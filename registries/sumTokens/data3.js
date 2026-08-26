@@ -898,5 +898,11 @@ module.exports = {
     "base": {
       "tvl": { "owners": ["0xAF0Bf8593dC6CA973DF2132731B0F9B5F974FA9F", "0xa1bf9bb17C283CF17F01516f78f3127D2C84C79d"], "tokens": [ADDRESSES.base.USDC] },
     }
+  },
+  "usdr": {
+    "methodology": "TVL is the $M balance held by the USDR extension contract on RISE Chain, which is the collateral backing every minted USDR.",
+    "rise": {
+      "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
+    }
   }
 }
