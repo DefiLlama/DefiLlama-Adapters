@@ -892,5 +892,11 @@ module.exports = {
       "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"] },
       "staking": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": ["0x1DA24f6Bb623b9d1aFEae3F3146659A2662D6d27", "0xbfb7b3Ff3D498a559b946B836d26F0E168f273D5"] },
     }
+  },
+  "alfaclub": {
+    "methodology": "USDC held by FriendKey (bonding-curve reserves that pay sellers) and FriendPool (trading-fund USDC not yet bridged out). Excludes staked keys and funds already dispatched to Hyperliquid or Polymarket.",
+    "base": {
+      "tvl": { "owners": ["0xAF0Bf8593dC6CA973DF2132731B0F9B5F974FA9F", "0xa1bf9bb17C283CF17F01516f78f3127D2C84C79d"], "tokens": [ADDRESSES.base.USDC] },
+    }
   }
 }
