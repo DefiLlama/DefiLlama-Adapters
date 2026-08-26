@@ -6,7 +6,17 @@ const FIRST_REAL_VENTURE_ID = 7
 
 const VENTURE_BY_ID =
   'function ventureById(uint256) view returns (tuple(uint256 id, address venture, string name, uint256 createdAt))'
+const VENTURE_TOKEN_BY_ID = 'function ventureTokenById(uint256) view returns (address)'
 
+/**
+ * Enumerates real venture treasuries from the hub.
+ *
+ * Venture ids are 1-based and never reused, so slicing off the leading test
+ * deployments by id needs no maintenance as new ventures are created.
+ *
+ * @param {object} api - DefiLlama chain api
+ * @returns {Promise<{ids: number[], ventures: string[]}>} venture ids and treasury addresses
+ */
 async function getVentures(api) {
   const count = await api.call({ target: HUB, abi: 'uint256:ventureCount' })
   const ids = []
@@ -16,23 +26,35 @@ async function getVentures(api) {
   return { ids, ventures: infos.map(v => v.venture) }
 }
 
+/**
+ * Raised capital held by the venture treasuries, in each venture's money token.
+ *
+ * No overlap with the protocol adapter: auction bids are escrowed in the launch
+ * contract pre-settlement and only reach the treasury afterwards.
+ *
+ * @param {object} api - DefiLlama chain api
+ * @returns {Promise<object>} token balances
+ */
+async function tvl(api) {
+  const { ventures } = await getVentures(api)
+  if (!ventures.length) return api.getBalances()
+  const moneyTokens = await api.multiCall({ abi: 'address:moneyToken', calls: ventures })
+  return sumTokens2({ api, tokensAndOwners: ventures.map((v, i) => [moneyTokens[i], v]) })
+}
+
+/**
+ * Each venture's own token held by its treasury, reported separately from TVL.
+ *
+ * @param {object} api - DefiLlama chain api
+ * @returns {Promise<object>} token balances
+ */
+async function ownTokens(api) {
+  const { ids, ventures } = await getVentures(api)
+  if (!ventures.length) return api.getBalances()
+  const tokens = await api.multiCall({ target: HUB, abi: VENTURE_TOKEN_BY_ID, calls: ids })
+  return sumTokens2({ api, tokensAndOwners: ventures.map((v, i) => [tokens[i], v]) })
+}
+
 module.exports = {
-  base: {
-    // Raised capital held by the venture treasuries, in each venture's money token.
-    tvl: async (api) => {
-      const { ventures } = await getVentures(api)
-      if (!ventures.length) return api.getBalances()
-      const moneyTokens = await api.multiCall({ abi: 'address:moneyToken', calls: ventures })
-      return sumTokens2({ api, tokensAndOwners: ventures.map((v, i) => [moneyTokens[i], v]) })
-    },
-    // Each venture's own token held by its treasury.
-    ownTokens: async (api) => {
-      const { ids, ventures } = await getVentures(api)
-      if (!ventures.length) return api.getBalances()
-      const tokens = await api.multiCall({
-        target: HUB, abi: 'function ventureTokenById(uint256) view returns (address)', calls: ids,
-      })
-      return sumTokens2({ api, tokensAndOwners: ventures.map((v, i) => [tokens[i], v]) })
-    },
-  },
+  base: { tvl, ownTokens },
 }
