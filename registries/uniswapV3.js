@@ -1814,7 +1814,11 @@ const uniV3Configs = {
       fromBlock: 4904397,
       isAlgebra: true,
     },
-  }
+  },
+  'helios-v3': {
+    start: '2026-05-31',
+    rise: { factory: '0xbF30bD8567628Dc4E120b7536d051EaFaA3fD0fa', fromBlock: 12557099 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
