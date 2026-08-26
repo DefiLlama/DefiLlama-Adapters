@@ -26834,7 +26834,7 @@ const configs = {
     },
   },
   "sukukfi": {
-    "methodology": "Sums the tokens held by SukukFi\'s duPRT (investment layer) and trUST (settlement layer) vaults on Berachain. This equals duPRT\'s grossAssetBalance (idle + pending + claimable + cancelled — everything not yet invested elsewhere) plus trUST\'s totalAssets (native settlement capital plus any duPRT-invested capital, since investing moves the underlying asset into the matching trUST vault).",
+    "methodology": "Sums the tokens held by SukukFi's duPRT (investment layer) and trUST (settlement layer) vaults on Berachain. This equals duPRT's grossAssetBalance (idle + pending + claimable + cancelled — everything not yet invested elsewhere) plus trUST's totalAssets (native settlement capital plus any duPRT-invested capital, since investing moves the underlying asset into the matching trUST vault).",
     "berachain": {
       "tvl": {
         "tokensAndOwners": [
