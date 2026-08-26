@@ -55,6 +55,19 @@ const config = {
       ADDRESSES.berachain.USDC,
     ],
   },
+  hyperliquid: {
+    factory: '0x400516840d0E975A566B1E275aaB58Df9b7C278d',
+    collateralPools: [
+      '0xf2d3A7B4e093A9529a92888f3A6841f5cA5c2a02',
+      '0xD7423A77de707351A47F8fa270c0a3AbA32a90bE',
+    ],
+    tokens: [
+      ADDRESSES.hyperliquid.USDC,
+      ADDRESSES.hyperliquid.WHYPE,
+      '0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463',
+      '0xBe6727B535545C67d5cAa73dEa54865B92CF7907',
+    ],
+  },
 }
 
 /**
