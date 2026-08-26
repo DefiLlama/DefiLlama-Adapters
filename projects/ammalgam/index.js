@@ -28,18 +28,28 @@ async function tvl(api) {
 
 async function borrowed(api) {
   const { pairs, underlyingTokens } = await getPairData(api)
+
+ // totalAssetsAndShares(true) reverts on pairs with no liquidity so we filter first
+  const baseAssets = await api.multiCall({
+    abi: 'function totalAssetsAndShares(bool withInterest) view returns (uint112[6] allAssets, uint112[6] allShares)',
+    calls: pairs.map(pair => ({ target: pair, params: [false] })),
+  })
+  const nonZeroPairs = pairs
+    .map((pair, i) => ({ pair, tokenX: underlyingTokens[i][0], tokenY: underlyingTokens[i][1] }))
+    .filter((_, i) => BigInt(baseAssets[i].allAssets[DEPOSIT_L]) > 0n)
+
   const [allAssets, reserves] = await Promise.all([
     api.multiCall({
       abi: 'function totalAssetsAndShares(bool withInterest) view returns (uint112[6] allAssets, uint112[6] allShares)',
-      calls: pairs.map(pair => ({ target: pair, params: [true] })),
+      calls: nonZeroPairs.map(({ pair }) => ({ target: pair, params: [true] })),
     }),
     api.multiCall({
       abi: 'function getReserves() view returns (uint112 reserveXAssets, uint112 reserveYAssets, uint32 lastTimestamp)',
-      calls: pairs,
+      calls: nonZeroPairs.map(({ pair }) => pair),
     })
   ])
-  pairs.forEach((_, i) => {
-    const [tokenX, tokenY] = underlyingTokens[i]
+
+  nonZeroPairs.forEach(({ tokenX, tokenY }, i) => {
     const assets = allAssets[i].allAssets
     const reserveXAssets = BigInt(reserves[i].reserveXAssets ?? reserves[i][0])
     const reserveYAssets = BigInt(reserves[i].reserveYAssets ?? reserves[i][1])
