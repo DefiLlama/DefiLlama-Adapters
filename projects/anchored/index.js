@@ -28,10 +28,9 @@ const PRICE_CHAIN = 'arbitrum'
 const PRICE_DECIMALS = 8
 const NAV_DECIMALS = 6
 
-// fundConfigs is indexed by a 1-based fundId with no length getter, and nav
-// records are a gapless 1-based sequence, so both are probed in windows until
-// the first miss.
-const FUND_ID_SCAN = 32
+// The nav registry keeps its record counter private, so its gapless 1-based
+// sequence is probed in windows until the first miss. Funds need no such scan:
+// the controller exposes its own counter.
 const NAV_SCAN_WINDOW = 100
 
 const abi = {
@@ -39,6 +38,7 @@ const abi = {
   tokenAtIndex: 'function tokenAtIndex(uint16 index) view returns (address)',
   latestPrice:
     'function latestPrice(bytes32 priceId) view returns ((int128 price, int128 bestBid, int128 bestAsk, uint64 feedUpdateTimestamp, uint64 publishedAt, uint80 roundId, uint8 session))',
+  nextFundId: 'function nextFundId() view returns (uint16)',
   fundConfigs:
     'function fundConfigs(uint16 fundId) view returns ((uint16 index, uint16 feeBps, address shareToken, uint64 subscriptionWindow, uint64 currentRedemptionSchedule, uint64 nextRedemptionSchedule, uint32 minSubscriptionUsd))',
   getNavRecord:
@@ -88,11 +88,15 @@ async function addStocks(api) {
 }
 
 async function addFunds(api) {
+  // Fund ids are handed out from a 1-based counter, so the registry is exactly
+  // 1..nextFundId-1 with no gaps and no scanning.
+  const nextFundId = Number(await api.call({ target: FUND_CONTROLLER, abi: abi.nextFundId }))
+  if (nextFundId < 2) return
+
   const configs = await api.multiCall({
     target: FUND_CONTROLLER,
     abi: abi.fundConfigs,
-    calls: [...Array(FUND_ID_SCAN).keys()].map((i) => i + 1),
-    permitFailure: true,
+    calls: [...Array(nextFundId - 1).keys()].map((i) => i + 1),
   })
 
   const shareTokens = {}
