@@ -23,6 +23,13 @@ const STOCK_TOKENS = [
   '0x6330d8c3178a418788df01a47479c0ce7ccf450b', // COIN
 ]
 
+/**
+ * Treasury TVL: liquid USDG in the Treasury contract, USDG deployed to the
+ * Morpho Steakhouse vault (shares converted to assets), the USDG leg of the
+ * protocol-owned NET/USDG v2 pool, and tokenized equities held in the RWA
+ * Sleeve. NET (own token) is removed at the end.
+ * @param {import('@defillama/sdk').ChainApi} api
+ */
 async function tvl(api) {
   // Liquid USDG + POL (LP resolved to underlying; the NET leg is dropped
   // below as own-token) + RWA Sleeve equities.
