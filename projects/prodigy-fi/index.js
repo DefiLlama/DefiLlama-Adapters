@@ -119,7 +119,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL counts the trading-pair tokens held in Prodigy.Fi collateral pools, plus tokens held directly by self-collateralised vaults, on Ethereum, Base, and Berachain.',
+  methodology: 'TVL counts the trading-pair tokens held in Prodigy.Fi collateral pools, plus tokens held directly by self-collateralised vaults, on Ethereum, Base, Berachain, and Hyperliquid.',
 }
 
 Object.keys(config).forEach(chain => {
