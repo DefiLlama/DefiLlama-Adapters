@@ -4,8 +4,21 @@ const { PublicKey } = require('@solana/web3.js')
 
 // EVM: ERC-4626 vaults (totalAssets of the underlying asset)
 const vaults = {
-  arbitrum: ['0xd1be1f98991cf69355e468ad15b6d0b6429bcfcb'],
-  base: ['0x1688aeb3ec7b23a22e2418fdf5bccc67ecf39c0f'],
+  ethereum: [
+    '0x8D823AC5045474c845c8714b495D75b5ccB77D00', // XAUt
+  ],
+  arbitrum: [
+    '0xd1be1f98991cf69355e468ad15b6d0b6429bcfcb', // USDC
+    '0xFf2492aab4967C6209a1bF54C677d456Ce5FE220', // WETH
+    '0x54a93a1399169877050efa784f9e533bb3bc170c', // XAUt0
+  ],
+  base: [
+    '0x1688aeb3ec7b23a22e2418fdf5bccc67ecf39c0f', // USDC
+    '0xfd95E1085C14e4D719C27931dB4FD409F6638b2b', // NVDAC
+    '0x22799e6Fbb46E991130D2B6532eC7e0B369b8fE0', // METAC
+    '0x250Cf54B4A245b19c91759647804CA33fC37cbA6', // AAPLC
+    '0x6a7f3259c1a339503A417D7367DE27F483737007', // GOOGLC
+  ],
   katana: ['0xe5092ab6b8b0c37b1bec12c606614706063d04e8'],
   monad: ['0xE89d322b5822D828B8252D3087be8486cC2048Ef'],
   hyperliquid: ['0x00a7ab758367da6a3909b75bd30ccc68e8755809'],
