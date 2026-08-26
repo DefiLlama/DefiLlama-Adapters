@@ -1,11 +1,10 @@
-const { ethers } = require('ethers')
-const { getLogs } = require('../helper/cache/getLogs')
-const { getVaultValue } = require('./vaultValue')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
-const BGBTC = '0x31011317764e097b28d159a8145b92bfa453f606'
-const WBTC = 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
-const vaultCreatedTopic = ethers.id('VaultCreated(address,address,address,(string,string),(address,address,address),address,string)')
 const vaultCreatedEvent = 'event VaultCreated(address indexed vault, address indexed owner, address hooks, (string name, string symbol) erc20Params, (address feeCalculator, address feeToken, address feeRecipient) feeVaultParams, address beforeTransferHook, string description)'
+
+const versionAbi = 'string:version'
+const getVaultValueAbi = 'function getVaultValueAtLastUpdate(address vault) view returns (uint256)'
+const vaultStateAbi = 'function getVaultState(address vault) external view returns ((bool paused, uint8 maxPriceAge, uint16 minUpdateIntervalMinutes, uint16 maxPriceToleranceRatio, uint16 minPriceToleranceRatio, uint8 maxUpdateDelayDays, uint32 timestamp, uint24 accrualLag, uint128 unitPrice, uint128 highestPrice, uint128 lastTotalSupply))'
 
 const factories = {
   ethereum: {
@@ -35,14 +34,12 @@ async function getMultiDepositorVaults(api) {
   // Some Base RPCs trail the indexed head by a few blocks. Keep the factory
   // log query behind the reported head so provider failover remains reliable.
   const toBlock = api.chain === 'base' ? (await api.getBlock()) - 10 : undefined
-  const logs = await getLogs({
+  const logs = await getLogs2({
     api,
     target: factory.address,
-    topics: [vaultCreatedTopic],
     eventAbi: vaultCreatedEvent,
     fromBlock: factory.fromBlock,
     toBlock,
-    onlyArgs: true,
   })
 
   return logs.map(log => log.vault)
@@ -50,27 +47,34 @@ async function getMultiDepositorVaults(api) {
 
 async function tvl(api) {
   const vaults = await getMultiDepositorVaults(api)
+  if (!vaults.length) return
 
-  await Promise.all(vaults.map(async vault => {
-    const feeCalculator = await api.call({ abi: 'address:feeCalculator', target: vault })
-    const [numeraireToken, value] = await Promise.all([
-      api.call({ abi: 'address:NUMERAIRE', target: feeCalculator }),
-      getVaultValue(api, vault, feeCalculator),
-    ])
+  const feeCalculators = await api.multiCall({ abi: 'address:feeCalculator', calls: vaults })
+  const numeraires = await api.multiCall({ abi: 'address:NUMERAIRE', calls: feeCalculators })
 
-    // bgBTC and WBTC both use 8 decimals. The Morph bgBTC address is not
-    // currently priced by the DefiLlama coins service, so use WBTC's BTC price.
-    if (api.chain === 'morph' && numeraireToken.toLowerCase() === BGBTC) {
-      api.addTokenVannila(WBTC, value)
-    } else {
-      api.add(numeraireToken, value)
-    }
-  }))
+  const versions = await api.multiCall({ abi: versionAbi, calls: feeCalculators, permitFailure: true })
+  const current = [], legacy = []
+  versions.forEach((v, i) => (v == null ? legacy : current).push(i))
+
+  // Current calculators report the last-updated net asset value directly.
+  const currentValues = await api.multiCall({ abi: getVaultValueAbi, calls: current.map(i => ({ target: feeCalculators[i], params: [vaults[i]] })) })
+  current.forEach((i, j) => api.add(numeraires[i], currentValues[j]))
+
+  // Legacy calculators: NAV = totalSupply * unitPrice / 10**decimals
+  const [supplies, decimals, states] = await Promise.all([
+    api.multiCall({ abi: 'uint256:totalSupply', calls: legacy.map(i => vaults[i]) }),
+    api.multiCall({ abi: 'uint8:decimals', calls: legacy.map(i => vaults[i]) }),
+    api.multiCall({ abi: vaultStateAbi, calls: legacy.map(i => ({ target: feeCalculators[i], params: [vaults[i]] })) }),
+  ])
+  legacy.forEach((i, j) => {
+    const value = BigInt(supplies[j]) * BigInt(states[j].unitPrice) / (10n ** BigInt(decimals[j]))
+    api.add(numeraires[i], value.toString())
+  })
 }
 
 module.exports = {
   methodology: 'Counts the last reported net asset value of all Aera V3 multi-depositor vaults created by the protocol factories.',
-  start: 1748414859,
+  start: '2025-05-28',
   ethereum: { tvl },
   base: { tvl },
   morph: { tvl },
