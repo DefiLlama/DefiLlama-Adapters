@@ -3131,7 +3131,11 @@ const uniV2Configs = {
       },
       fetchBalances: true,
     },
-  }
+  },
+  'helios-v2': {
+    start: '2026-05-31',
+    rise: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

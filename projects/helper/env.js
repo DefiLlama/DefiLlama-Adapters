@@ -55,6 +55,7 @@ const DEFAULTS = {
   ROBINHOOD_RPC: 'https://robinhoodchain.blockscout.com/api/eth-rpc',
   ETHEREUMCLASSIC_RPC: 'https://etc.blockscout.com/api/eth-rpc',
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
+  RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
 }
 
 const ENV_KEYS = [
