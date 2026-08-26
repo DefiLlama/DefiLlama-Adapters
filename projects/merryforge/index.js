@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumUnknownTokens } = require('../helper/unknownTokens')
 
 const LAUNCH_FACTORY = '0x3b5e8FE8d61B00b35e021275c96F754424b1B9A8'
 const GRADUATION_ROUTER = '0x2a8F21ACa57873479CB0E73cd7D0dB22274B51A8'
@@ -34,12 +35,22 @@ async function tvl(api) {
 
   await sumTokens2({ api, owners, tokens: QUOTES })
 
-  if (pools.length) await sumTokens2({ api, owner: LIQUIDITY_LOCKER, tokens: pools, resolveLP: true })
+  if (pools.length) {
+    const tokensAndOwners = pools.map((lp) => [lp, LIQUIDITY_LOCKER])
+    await sumUnknownTokens({
+      api,
+      tokensAndOwners,
+      useDefaultCoreAssets: true,
+      resolveLP: true,
+    })
+  }
+
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
-    'MerryForge TVL is raise-asset inventory in bonding curves, USDG in CreatorBondVault, and locked UniV2 LP (LiquidityLocker) from graduated launches. Excludes launch-token inventory, secondary pools, and fee revenue (FeeVault + protocolTreasury, tracked separately as treasury).',
+    'MerryForge TVL is raise-asset inventory in bonding curves, USDG in CreatorBondVault, and the full economic value of permanently locked locked UniV2 LP (LiquidityLocker) from graduated launches. Excludes launch-token inventory, secondary pools, and fee revenue (FeeVault + protocolTreasury, tracked separately as treasury).',
   start: START_BLOCK,
   robinhood: { tvl },
 }
