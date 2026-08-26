@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const morphoAbi = require("../helper/abis/morpho.json");
-const { getExports } = require('../helper/heroku-api');
+const morphoAbi = require('../helper/abis/morpho.json')
+const { getExports } = require('../helper/heroku-api')
 
 const almProxy = {
   ethereum: '0x1601843c5E9bC251A3272907010AFa41Fa18347E',
@@ -11,6 +11,19 @@ const almProxy = {
   avax: '0xecE6B0E8a54c2f44e066fBb9234e7157B15b7FeC',
   robinhood: '0xfD2fD4B046136B540A56C11c75ac679AE7d1dB24',
   xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
+}
+
+const sparkSavings = {
+  ethereum: {
+    usdt: '0xe2e7a17dFf93280dec073C995595155283e3C372',
+    usdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d',
+    pyusd: '0x80128DbB9f07b93DDE62A6daeadb69ED14a7D354',
+    eth: '0xfE6eb3b609a7C8352A241f7F3A21CEA4e9209B8f',
+  },
+  avax: { usdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d' },
+  arbitrum: { usdt: '0x45d91340B3B7B96985A72b5c678F7D9e8D664b62' },
+  robinhood: { usdg: '0xde770c84FE66E063336b31737cFE9790f18c4087' },
+  xlayer: { usdt: '0xc358c90D32375721Cb3924320Fdc2F8B694347Ca' },
 }
 
 const mainnetAllocatorToTokens = {
@@ -42,7 +55,11 @@ const mainnetAllocatorToTokens = {
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
-  ]
+  ],
+  [sparkSavings.ethereum.usdt]: [ADDRESSES.ethereum.USDT],
+  [sparkSavings.ethereum.usdc]: [ADDRESSES.ethereum.USDC],
+  [sparkSavings.ethereum.pyusd]: ['0x6c3ea9036406852006290770BEdFcAbA0e23A0e8'],
+  [sparkSavings.ethereum.eth]: [ADDRESSES.ethereum.WETH],
 }
 
 const baseAllocatorToTokens = {
@@ -52,56 +69,41 @@ const baseAllocatorToTokens = {
     '0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB', // aBasUSDC
     ADDRESSES.base.USDC, // idle USDC
   ],
-  '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [
-    ADDRESSES.base.USDC,
-  ]
+  '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [ADDRESSES.base.USDC],
 }
 
 const arbitrumAllocatorToTokens = {
-  [almProxy.arbitrum]: [
-    ADDRESSES.arbitrum.USDC_CIRCLE,
-    ADDRESSES.arbitrum.USDT,
-  ],
-  '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [
-    ADDRESSES.arbitrum.USDC_CIRCLE
-  ]
+  [almProxy.arbitrum]: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT],
+  '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [ADDRESSES.arbitrum.USDC_CIRCLE],
+  [sparkSavings.arbitrum.usdt]: [ADDRESSES.arbitrum.USDT],
 }
 
 const optimismAllocatorToTokens = {
-  [almProxy.optimism]: [
-    ADDRESSES.optimism.USDC_CIRCLE,
-  ],
-  '0xe0F9978b907853F354d79188A3dEfbD41978af62': [
-    ADDRESSES.optimism.USDC_CIRCLE
-  ]
+  [almProxy.optimism]: [ADDRESSES.optimism.USDC_CIRCLE],
+  '0xe0F9978b907853F354d79188A3dEfbD41978af62': [ADDRESSES.optimism.USDC_CIRCLE],
 }
 
 const unichainAllocatorToTokens = {
-  [almProxy.unichain]: [
-    ADDRESSES.unichain.USDC,
-  ],
-  '0x7b42Ed932f26509465F7cE3FAF76FfCe1275312f': [
-    ADDRESSES.unichain.USDC
-  ]
+  [almProxy.unichain]: [ADDRESSES.unichain.USDC],
+  '0x7b42Ed932f26509465F7cE3FAF76FfCe1275312f': [ADDRESSES.unichain.USDC],
 }
 
 const avaxAllocatorToTokens = {
   [almProxy.avax]: [
     ADDRESSES.avax.USDC,
     '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aave aUSDC
-  ]
+  ],
+  [sparkSavings.avax.usdc]: [ADDRESSES.avax.USDC],
 }
 
 const robinhoodAllocatorToTokens = {
-  [almProxy.robinhood]: [
-    ADDRESSES.robinhood.USDG,
-  ]
+  [almProxy.robinhood]: [ADDRESSES.robinhood.USDG],
+  [sparkSavings.robinhood.usdg]: [ADDRESSES.robinhood.USDG],
 }
 
 const xlayerAllocatorToTokens = {
-  [almProxy.xlayer]: [
-    ADDRESSES.xlayer.USDT,
-  ]
+  [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
+  [sparkSavings.xlayer.usdt]: [ADDRESSES.xlayer.USDT],
 }
 
 const CONFIG = {
@@ -132,7 +134,7 @@ async function tvl(api) {
 
   if (api.chain === 'ethereum') {
     // track anchorage allocation
-    const tvl  = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
+    const tvl = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
     const anchorageBalance = await tvl(api)
     api.addBalances(anchorageBalance)
   }
@@ -218,8 +220,8 @@ const morphoVaultConfigs = {
         allocator: almProxy.ethereum,
         address: '0xe41a0583334f0dc4E023Acd0bFef3667F6FE0597',
         idleMarketId: '0x02e723fdfc0c26779c2c06bbf783e2f4d6aebd03cedc1806981b742f1a644105',
-      }
-    ]
+      },
+    ],
   },
 }
 
