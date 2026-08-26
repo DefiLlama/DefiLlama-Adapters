@@ -16,16 +16,9 @@ const TOTAL_ASSETS = 'function totalAssets() view returns (uint256 ventureAssets
  * Venture ids are 1-based and never reused, so slicing off the leading test
  * deployments by id needs no maintenance as new ventures are created.
  *
- * @param {object} api - DefiLlama chain api
- * @returns {Promise<string[]>} venture treasury addresses
  */
 async function getVentures(api) {
-  const count = await api.call({ target: HUB, abi: 'uint256:ventureCount' })
-  const ids = []
-  for (let id = FIRST_REAL_VENTURE_ID; id <= +count; id++) ids.push(id)
-  if (!ids.length) return []
-  const infos = await api.multiCall({ target: HUB, abi: VENTURE_BY_ID, calls: ids })
-  return infos.map(v => v.venture)
+  return api.fetchList({ lengthAbi: 'ventureCount', itemAbi: VENTURE_BY_ID, target: HUB, field: 'venture', startFrom: FIRST_REAL_VENTURE_ID, startFromOne: true, })
 }
 
 /**
@@ -36,46 +29,37 @@ async function getVentures(api) {
  * on loan to live decision markets, which a pool-only reading would drop for the
  * duration of each market.
  *
- * @param {object} api - DefiLlama chain api
- * @returns {Promise<object>} token balances
  */
 async function tvl(api) {
   const ventures = await getVentures(api)
   if (!ventures.length) return api.getBalances()
 
   const lbps = await api.multiCall({ abi: 'address:lbp', calls: ventures })
-  const [auctions, currencies] = await Promise.all([
-    api.multiCall({ abi: 'address:initializer', calls: lbps }),
-    api.multiCall({ abi: 'address:currency', calls: lbps }),
-  ])
+  const auctions = await api.multiCall({ abi: 'address:initializer', calls: lbps })
+  const currencies = await api.multiCall({ abi: 'address:currency', calls: lbps })
+
   const tokensAndOwners = []
   lbps.forEach((lbp, i) => {
-    for (const owner of [lbp, auctions[i]])
-      if (owner && owner !== nullAddress) tokensAndOwners.push([currencies[i], owner])
+    tokensAndOwners.push([currencies[i], auctions[i]])
+    tokensAndOwners.push([currencies[i], lbp])
   })
-  await sumTokens2({ api, tokensAndOwners })
 
-  const vaults = (
-    await api.multiCall({ target: HUB, abi: VENTURE_VAULT, calls: ventures })
-  ).filter(v => v && v !== nullAddress)
-  if (vaults.length) {
-    const [assets, ventureTokens, moneyTokens] = await Promise.all([
-      api.multiCall({ abi: TOTAL_ASSETS, calls: vaults }),
-      api.multiCall({ abi: 'address:ventureToken', calls: vaults }),
-      api.multiCall({ abi: 'address:moneyToken', calls: vaults }),
-    ])
-    vaults.forEach((_, i) => {
-      api.add(ventureTokens[i], assets[i].ventureAssets)
-      api.add(moneyTokens[i], assets[i].moneyAssets)
-    })
-  }
+  await sumTokens2({ api, tokensAndOwners, blacklistedOwners: [nullAddress] })
 
-  return api.getBalances()
+  const vaults = (await api.multiCall({ target: HUB, abi: VENTURE_VAULT, calls: ventures })).filter(v => v && v !== nullAddress)
+
+  const assets = await api.multiCall({ abi: TOTAL_ASSETS, calls: vaults })
+  const ventureTokens = await api.multiCall({ abi: 'address:ventureToken', calls: vaults })
+  const moneyTokens = await api.multiCall({ abi: 'address:moneyToken', calls: vaults })
+
+  api.add(ventureTokens, assets.map(a => a.ventureAssets))
+  api.add(moneyTokens, assets.map(a => a.moneyAssets))
+
 }
 
 module.exports = {
   methodology:
     'Bids escrowed in each Umia launch (the launch contract and its Uniswap Continuous Clearing Auction, in the launch currency), plus the canonical spot liquidity held by each venture SpotLiquidityVault -- its Uniswap v4 pool reserves, idle balances, and amounts on loan to live decision markets. The vault is the pool\'s only permitted liquidity operator, so it holds 100% of canonical liquidity. Launches are enumerated from the Umia hub; venture treasuries are tracked separately as a treasury adapter.',
-  start: 1787694409,
+  start: '2026-08-25',
   base: { tvl },
 }

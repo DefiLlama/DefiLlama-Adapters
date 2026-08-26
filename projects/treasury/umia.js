@@ -9,50 +9,24 @@ const VENTURE_BY_ID =
 const VENTURE_TOKEN_BY_ID = 'function ventureTokenById(uint256) view returns (address)'
 
 /**
- * Enumerates real venture treasuries from the hub.
- *
- * Venture ids are 1-based and never reused, so slicing off the leading test
- * deployments by id needs no maintenance as new ventures are created.
- *
- * @param {object} api - DefiLlama chain api
- * @returns {Promise<{ids: number[], ventures: string[]}>} venture ids and treasury addresses
- */
-async function getVentures(api) {
-  const count = await api.call({ target: HUB, abi: 'uint256:ventureCount' })
-  const ids = []
-  for (let id = FIRST_REAL_VENTURE_ID; id <= +count; id++) ids.push(id)
-  if (!ids.length) return { ids, ventures: [] }
-  const infos = await api.multiCall({ target: HUB, abi: VENTURE_BY_ID, calls: ids })
-  return { ids, ventures: infos.map(v => v.venture) }
-}
-
-/**
  * Raised capital held by the venture treasuries, in each venture's money token.
  *
  * No overlap with the protocol adapter: auction bids are escrowed in the launch
  * contract pre-settlement and only reach the treasury afterwards.
- *
- * @param {object} api - DefiLlama chain api
- * @returns {Promise<object>} token balances
  */
 async function tvl(api) {
-  const { ventures } = await getVentures(api)
-  if (!ventures.length) return api.getBalances()
-  const moneyTokens = await api.multiCall({ abi: 'address:moneyToken', calls: ventures })
-  return sumTokens2({ api, tokensAndOwners: ventures.map((v, i) => [moneyTokens[i], v]) })
+  const ventures = await api.fetchList({ lengthAbi: 'ventureCount', itemAbi: VENTURE_BY_ID, target: HUB, field: 'venture', startFrom: FIRST_REAL_VENTURE_ID, startFromOne: true, })
+  const moneyTokens = await api.multiCall({ abi: 'address:moneyToken', calls: ventures, })
+  return api.sumTokens({ tokensAndOwners2: [moneyTokens, ventures] })
 }
 
 /**
  * Each venture's own token held by its treasury, reported separately from TVL.
- *
- * @param {object} api - DefiLlama chain api
- * @returns {Promise<object>} token balances
  */
 async function ownTokens(api) {
-  const { ids, ventures } = await getVentures(api)
-  if (!ventures.length) return api.getBalances()
-  const tokens = await api.multiCall({ target: HUB, abi: VENTURE_TOKEN_BY_ID, calls: ids })
-  return sumTokens2({ api, tokensAndOwners: ventures.map((v, i) => [tokens[i], v]) })
+  const ventures = await api.fetchList({ lengthAbi: 'ventureCount', itemAbi: VENTURE_BY_ID, target: HUB, field: 'venture', startFrom: FIRST_REAL_VENTURE_ID, startFromOne: true, })
+  const tokens = await api.fetchList({ lengthAbi: 'ventureCount', itemAbi: VENTURE_TOKEN_BY_ID, target: HUB, startFrom: FIRST_REAL_VENTURE_ID, startFromOne: true, })
+  return api.sumTokens({ tokensAndOwners2: [tokens, ventures] })
 }
 
 module.exports = {
