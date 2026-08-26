@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 
 const sdk = require('@defillama/sdk')
 const http = require('../http')
@@ -291,7 +292,7 @@ async function fnSleep(ms) {
 }
 
 const OBJECTS_PER_QUERY = 50
-async function getObjects(objectIds, { sleep } = {}) {
+async function getObjects(objectIds, { sleep, skipLayout = false } = {}) {
   if (!objectIds.length) return []
   if (objectIds.length > OBJECTS_PER_QUERY) {
     const chunks = sliceIntoChunks(objectIds, OBJECTS_PER_QUERY)
@@ -299,15 +300,16 @@ async function getObjects(objectIds, { sleep } = {}) {
       const res = []
       for (const chunk of chunks) {
         if (res.length) await fnSleep(sleep)
-        res.push(...(await getObjects(chunk)))
+        res.push(...(await getObjects(chunk, { skipLayout })))
       }
       return res
     }
-    const out = await sdk.util.runInPromisePool({ items: chunks, concurrency: 20, processor: (chunk) => getObjects(chunk) })
+    const out = await sdk.util.runInPromisePool({ items: chunks, concurrency: 20, processor: (chunk) => getObjects(chunk, { skipLayout }) })
     return out.flat()
   }
   const keys = objectIds.map((id) => `{ address: "${toAddr(id)}" }`).join(', ')
-  const { data } = await graphqlCall(`{ multiGetObjects(keys: [${keys}]) { asMoveObject { contents { json type { repr layout } } } } }`)
+  const typeSel = skipLayout ? 'type { repr }' : 'type { repr layout }'
+  const { data } = await graphqlCall(`{ multiGetObjects(keys: [${keys}]) { asMoveObject { contents { json ${typeSel} } } } }`)
   return data.multiGetObjects.map((o) => formatObject(o?.asMoveObject?.contents))
 }
 
@@ -379,8 +381,12 @@ async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } 
   return formatObject(df.contents)
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep }) {
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep, skipLayout = false, onPage }) {
   const pageSize = Math.min(Number(limit) || 48, 50)
+  // skipLayout drops the layout blob (~3.5x the json payload); only safe when the caller reads plain fields,
+  // since Option/TypeName/UID/ID/String rewrapping needs the layout. With onPage, items are handed over per
+  // page instead of being accumulated, so the return value is empty.
+  const typeSel = skipLayout ? 'type { repr }' : 'type { repr layout }'
   let after = cursor
   do {
     if (sleep) await fnSleep(sleep)
@@ -392,10 +398,10 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
           nodes {
             address
             name { json }
-            contents { type { repr layout } json }
+            contents { ${typeSel} json }
             value {
               __typename
-              ... on MoveObject { address contents { type { repr layout } json } }
+              ... on MoveObject { address contents { ${typeSel} json } }
             }
           }
         }
@@ -404,6 +410,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
     const df = data.address?.dynamicFields
     if (!df) throw new Error(`[sui] dynamicFields not available for ${parent} (endpoint may not index this object — needs a full-coverage provider)`)
     sdk.log('[sui] fetched dynamic fields', df.nodes.length, df.pageInfo.hasNextPage)
+    const pageItems = []
     for (const n of df.nodes) {
       let objectId, contents
       if (n.value?.__typename === 'MoveObject' && n.value.contents) {
@@ -418,8 +425,10 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
       obj.name = n.name?.json // the dynamic-field key (e.g. a coin TypeName), which the value object may not carry
       if (!idFilter({ objectId, objectType: obj.type, name: obj.fields?.name })) continue
       addedIds.add(objectId)
-      items.push(obj)
+      if (onPage) pageItems.push(obj)
+      else items.push(obj)
     }
+    if (onPage) await onPage(pageItems) // let callers start downstream reads while paging continues
     after = df.pageInfo.hasNextPage ? df.pageInfo.endCursor : null
   } while (after)
   return items

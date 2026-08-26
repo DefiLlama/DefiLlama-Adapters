@@ -68,7 +68,7 @@ module.exports = {
 
       },
       {
-        'newbitcoin': '/newbitcoin/index',
+        // 'newbitcoin': '/newbitcoin/index', // is dead
         'nemoswap': '/nemoswap/index',
         'stackingdao': '/stackingdao/api',
         'stacks': '/stacks/api',
@@ -95,12 +95,13 @@ module.exports = {
       unicrypt: '/unicrypt/apiCache',
       deeplock: '/deeplock/apiCache',
       pinksale: '/pinksale/index',
-      'team-finance': '/team-finance/apiCache',
+      'team-finance': '/team-finance/api',
       // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
       blum: '/blum/api',
       'yodeswap': '/yodeswap/api',
       'dogeswap-org': '/dogeswap-org/api',
+      'o2': '/o2/api',
 
       // breaks often
       // 'equilibrium': '/equilibrium/api',

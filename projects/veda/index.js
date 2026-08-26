@@ -315,6 +315,18 @@ const boringVaultsV0Optimism = [
   },
 ];
 
+const boringVaultsV0Monad = [
+  {
+    name: "MetaMask Money Account",
+    vault: "0x1C8a336051D2024E318A229d01F9F6CF96efD316",
+    accountant: "0x98A45D90E81849a5743241d3ff765F9Fd788206a",
+    teller: "0xB30755C750E0A7E5BeD3dDAf0D9948Cf2b1CDc87",
+    lens: "0xa3b5f71AB29BA99B9750327575Dcc456CadC550b",
+    startBlock: 77253176,
+    baseAsset: "0xacA92E438df0B2401fF60dA7E4337B687a2435DA",
+  },
+]
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
@@ -332,4 +344,5 @@ module.exports = {
   ["plasma"]: { tvl: (api) => chainTvl(api, boringVaultsV0Plasma) },
   ["ink"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ink) },
   ["optimism"]: { tvl: (api) => chainTvl(api, boringVaultsV0Optimism) },
+  ["monad"]: { tvl: (api) => chainTvl(api, boringVaultsV0Monad) },
 };

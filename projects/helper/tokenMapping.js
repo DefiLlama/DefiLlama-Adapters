@@ -19,11 +19,13 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'provenance', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
-  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band', 'axiome',
-  'celestia', 'dydx', 'dungeon', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion', 'zigchain'
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band', 'axiome', 'allora',
+  'celestia', 'dydx', 'dungeon', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion', 'zigchain',
+  'akash', 'fetchhub'
 ]
 const caseSensitiveChains = [...ibcChains, ...svmChains, 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', 'aleo',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus', 'dash', 'qubic', 'constellation', 'supra',
+  'kaspa', 'bsv', 'arweave', 'pi',
 ]
 
 const transformTokens = {
@@ -40,15 +42,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  inri: {
-    '0x116b2ff23e062a52e2c0ea12df7e2638b62fa0fc': {
-      coingeckoId: 'tether',
-      decimals: 6,
-    },
-  },
-  ozone: {
-    // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },

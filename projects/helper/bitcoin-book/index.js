@@ -18,12 +18,9 @@ const bitomato = ["bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9"];
 
 const lbank = ["1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn"];
 
-const stacksSBTC = [
-  // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
-  "bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc",
-  "bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy",
-  "bc1p6ys2ervatu00766eeqfmverzegg9fkprn3xjn0ppn70h53qu5vus3yzl0x",
-];
+// Derived from the signer set's current aggregate key on Stacks, because the reserve
+// address rotates whenever that key does. See ./sbtc.js.
+const { stacksSBTC } = require("./sbtc.js");
 
 const magpie = [
   "1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF",
@@ -460,6 +457,7 @@ module.exports = {
     "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37",
     "3D7pZri6kLqXDQMbf5G8De39K36eBaNKBG",
     "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5",
+    "bc1qdg5fr2zq0w0r8l3hggm25uhdc7rjqs5r0az508",
   ],
   bitvenus: [
     //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
@@ -621,13 +619,6 @@ module.exports = {
     "3NbdrezMzAVVfXv5MTQJn4hWqKhYCTCJoB",
     "34VXKa5upLWVYMXmgid6bFM4BaQXHxSUoL",
   ],
-  mtGoxEntities: [
-    // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
-    "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
-    "bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp",
-    "bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs",
-    "bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg",
-  ],
   silkroadFBIEntities: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
     "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
@@ -654,6 +645,7 @@ module.exports = {
     "1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG",
     "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv",
     "1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR",
+    "16G1xYBbiNG78LSuZdMqp6tux5xvVp9Wxh"
   ],
   hashkey: [
     "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
@@ -1128,6 +1120,7 @@ module.exports = {
   bitgetBtc: [
     "bc1pvwjkr0724ckucdvrtxjzml9ka7jnzzjaejvwfnn8a2avvpnljthseg2a0e",
     "bc1pxw4gtelg3lkmatdjmjxsp2kx22t44wyk0snkszhvw4prpygz8ajqaw03fs",
+    "19pFLWW3CwjZujRWpVEMdguBMZEqPuj5nA",
   ],
   magicEden: ["3P4WqXDbSLRhzo2H6MT6YFbvBKBDPLbVtQ"],
   gateBtc: [
@@ -1150,6 +1143,7 @@ module.exports = {
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
     "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",
     "bc1qeg5xn5plttr7w045apm92yx08c2swc6yw2vtj7",
+    "3MPcH8RakXZBD39ggF556qMn6NGh9K274r",
   ],
   bydfi: [
     "bc1qan8q94rc3hl2jfc0vn8vtfsen0r6e58q80dqf0",
@@ -1177,6 +1171,10 @@ module.exports = {
   webot: [
     "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
     "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
+  ],
+  websea: [
+    "39u712JCmQ1GfqWQtKdQHTyQA9pv2qNnGm",
+    "bc1q730a2njpypegll9ef6566vmdpakuf8t2au70dk",
   ],
 };
 
