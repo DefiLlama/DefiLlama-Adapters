@@ -608,6 +608,9 @@ const configs = {
   'xpert': {
     ink: [{ comptroller: '0x4f3b08B7FE4E14f728d084850A7B9CFF2E759Eb7' }],
     base: [{ comptroller: '0xaE9dFbb5E3848AB056acA352D783d7e569EF83b3' }],
+  },
+  'kyros-finance': {
+    robinhood: [{ comptroller: '0x5f3Da5a8bCF26011e95CA2D03aFc6E0C54D4F0c9', cether: '0x73940Df7412C3c04aF3975BE26652B467BAE65A3' }],
   }
 }
 

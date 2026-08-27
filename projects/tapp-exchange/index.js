@@ -37,6 +37,7 @@ async function getPairedCoin(address) {
 module.exports = {
   methodology:
     "Measures the total liquidity across all pools on TAPP Exchange.",
+  deadFrom: '2026-05-31',
   timetravel: false,
   aptos: {
     tvl: async (api) => {

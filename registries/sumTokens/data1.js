@@ -111,7 +111,8 @@ module.exports = {
       "tvl": {
         "tokenAccounts": [
           "CRFtzwkekKorgdTRSdvsYeqL1vEuVvwGRvweuWCyaRt3", // jitoSOL @ kySOL Vault
-          "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd" // JTO @ kyJTO Vault
+          "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd", // JTO @ kyJTO Vault
+          "HmozbbPg927xtj6Z4oMUBUBSGKA2fDRmUFqWfJFEidbC" // kySOL @ Drip
         ]
       },
       "staking": {
@@ -725,5 +726,10 @@ module.exports = {
       "owners": ["2ds4b3zrkgZ9FU8vNBSpT1UzACnmfYtjGsazPRzsbCCz"],
       "tokens": [ADDRESSES.solana.USDC]
     }
+  },
+  "satrush": {
+    "timetravel": false,
+    "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault.",
+    "solana": { "tokenAccounts": ["2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9"] }
   },
 }

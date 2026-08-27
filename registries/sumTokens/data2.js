@@ -689,7 +689,7 @@ module.exports = {
     },
     "ethereum": {
       "tvl": {
-        "owners": ["0x1B5668Ca8edfC8AF5DcB9De014b4B08ed5d0615F", "0x3111653DB0e7094b111b8e435Df9193b62C2C576", "0xd6572c7cd671ecf75d920adcd200b00343959600", "0xa97Fe3E9c1d3Be7289030684eD32A6710d2d02bA", "0xeea3A032f381AB1E415e82Fe08ebeb20F513c42c"],
+        "owners": ["0x1B5668Ca8edfC8AF5DcB9De014b4B08ed5d0615F", "0x3111653DB0e7094b111b8e435Df9193b62C2C576", "0xa97Fe3E9c1d3Be7289030684eD32A6710d2d02bA", "0xeea3A032f381AB1E415e82Fe08ebeb20F513c42c"],
         "tokens": [ADDRESSES.ethereum.USDC, "0x7122985656e38bdc0302db86685bb972b145bd3c", ADDRESSES.ethereum.USDT, "0x7122985656e38BDC0302Db86685bb972b145bD3C"]
       }
     },
@@ -698,9 +698,6 @@ module.exports = {
         "owners": ["0xC178AE294bC3623e6dfDF07C9ca79c6dB692f032", "0xBA43F3C8733b0515B5C23DFF46F47Af6EB46F85C"],
         "tokens": [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE]
       }
-    },
-    "manta": {
-      "tvl": { "owners": ["0x19727db22Cba70B1feE40337Aba69D83c6741caF"], "tokens": [ADDRESSES.berachain.STONE] }
     },
     "bsc": {
       "tvl": {
@@ -1050,12 +1047,26 @@ module.exports = {
   "subfrost": {
     "methodology": "Total value of the collateral held by the transparent and verifiable SUBFROST signing group. On bitcoin, all BTC backing frBTC across both deployments, Alkanes and BRC2.0. On ethereum, the collateral backing frUSD: the USDC and USDT held in the frUSD vault, plus the Curve 3pool position the vault deploys its stablecoins into. The frBTC and frUSD minted against these deposits are not counted separately. Note that the 3CRV portion is also part of Curve's own TVL.",
     "bitcoin": { "tvl": { "__btcBook": "subfrost" } },
-    "ethereum": { "tokensAndOwners": [
-      // frUSD vault
-      [ADDRESSES.ethereum.USDC, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
-      [ADDRESSES.ethereum.USDT, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
-      // 3CRV held by the vault's 3pool strategy (pool() -> 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7)
-      ["0x6c3f90f043a72fa612cbac8115ee7e52bde6e490", "0x5c5d66c82e2c634074661c3e7427668737c70100"],
-    ]}
+    "ethereum": {
+      "tokensAndOwners": [
+        // frUSD vault
+        [ADDRESSES.ethereum.USDC, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
+        [ADDRESSES.ethereum.USDT, "0x95779e7e1c943042255b8a78273fe6de4823cf06"],
+        // 3CRV held by the vault's 3pool strategy (pool() -> 0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7)
+        ["0x6c3f90f043a72fa612cbac8115ee7e52bde6e490", "0x5c5d66c82e2c634074661c3e7427668737c70100"],
+      ]
+    }
+  },
+  "fake-wallstreet": {
+    methodology: "Value of the Tokenized Stocks on the Pool",
+    "robinhood": {
+      "tvl": { owner: '0xf2B967494BbdD37cDfbE585E3b84B85461C7Da37', fetchBlockscoutTokens: true, blacklistedTokens: [ADDRESSES.null] }
+    }
+  },
+  "xo-bridge": {
+    methodology: "Counts the tokens locked in the XO Bridge contracts.",
+    "base": {
+      "tvl": { owner: '0x54716A535c3B5616e3f0d4D5005Fc4bB660cDF5F', tokens: [ADDRESSES.base.USDC] },
+    },
   }
 }
