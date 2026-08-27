@@ -51,5 +51,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "TVL is the sum of the latest settled total asset value of all vaults registered by ElfomoFi's Base VaultsManager contracts, read on-chain in each vault's reference token.",
+  doublecounted: true,
   base: { tvl },
 }
