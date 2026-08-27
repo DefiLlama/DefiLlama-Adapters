@@ -21,29 +21,11 @@ const factories = {
     polygon: { erc20: '0x1f172F881eBa06Aa7a991651780527C173783Cf6', erc721: '0x8B7f874D15c25BeCC4F7c1906b3677533fe60A6e' },
 };
 
-// Test/spam pools that Ajna itself excludes (see arb-ajna-ui pool-blacklist). Lowercased.
-const blacklistedPools = {
-    ethereum: [
-        '0x618742a3b5a371f3b808af4a860d1ecbab3a2c11',
-        '0x1126e9df5909bc1a45f524e977f1911bc3b01161',
-    ],
-    base: [
-        '0xf44ed07f91be6a46296084d4951a27015c58ff32',
-        '0xdeac8a9a7026a4d17df81d4c03cb2ad059383e7c',
-        '0x8948e6a77a70afb07a84f769605a3f4a8d4ee7ef',
-        '0x0800d4d5bfe01423828b37ffed553d6700eed426',
-        '0xda5cc6f3ee0c9b80b2e4df9a34de7c4c81067c46',
-        '0x9917ef067cec3866c8dbaa5a25b752747452b370',
-    ],
-};
-
 async function getPools(chain, api) {
     const { erc20, erc721 } = factories[chain];
     // permitFailure so a single unreachable/reverting factory can't fail the chain
     const lists = await api.multiCall({ abi: 'address[]:getDeployedPoolsList', calls: [erc20, erc721], permitFailure: true });
-    const blacklist = new Set(blacklistedPools[chain] || []);
-    const keep = pools => (pools || []).filter(p => !blacklist.has(p.toLowerCase()));
-    return { erc20Pools: keep(lists[0]), erc721Pools: keep(lists[1]) };
+    return { erc20Pools: lists[0] || [], erc721Pools: lists[1] || [] };
 }
 
 async function getTvl(chain, api) {
@@ -90,5 +72,5 @@ module.exports = Object.keys(factories).reduce((acc, chain) => {
     return acc;
 }, {
     misrepresentedTokens: true,
-    methodology: "TVL = collateral + available quote liquidity across all Ajna ERC20 and ERC721 pools (net of borrows). Borrowed = pool debtInfo. Ajna's blacklisted test/spam pools are excluded; NFT-pool collateral is not priced.",
+    methodology: "TVL = collateral + available quote liquidity across all Ajna ERC20 and ERC721 pools (net of borrows). Borrowed = pool debtInfo. NFT-pool collateral is not priced.",
 });
