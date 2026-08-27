@@ -69,3 +69,6 @@ Object.keys(config).forEach(chain => {
     tvl: sumERC4626VaultsExport2({ vaults })
   }
 })
+
+// kept in to preserve historical staking data
+module.exports['arbitrum'].staking = () => ({})
