@@ -133,7 +133,7 @@ module.exports = {
     tvl: composeChainTVL(
       sumTokensExport({
         owners: [LBTCV],
-        tokens: [ADDRESSES.ethereum.WBTC, ADDRESSES.ethereum.LBTC, ADDRESSES.ethereum.cbBTC],
+        tokens: [ADDRESSES.ethereum.WBTC, ADDRESSES.ethereum.LBTC, ADDRESSES.ethereum.cbBTC, '0x13cc1b39cb259ba10cd174eae42012e698ed7c51', '0xf14f678d9c05798ba61652a950a05d74ad2e0a6c'],
         resolveUniV3: true,
       }),
       [tvlEthExtras]

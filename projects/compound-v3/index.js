@@ -8,6 +8,7 @@ module.exports = compoundV3Exports({
       '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840', // USDT Market
       '0x3D0bb1ccaB520A66e607822fC55BC921738fAFE3', // wstETH Market
       '0x5D409e56D886231aDAf00c8775665AD0f9897b56', // USDS Market
+      '0xe85Dc543813B8c2CFEaAc371517b925a166a9293', // WBTC Market
     ],
   },
   arbitrum: {
@@ -30,6 +31,7 @@ module.exports = compoundV3Exports({
       '0x46e6b214b524310239732D51387075E0e70970bf', // ETH Market
       '0xb125E6687d4313864e53df431d5425969c15Eb2F', // USDC Market
       '0x784efeB622244d2348d4F2522f8860B96fbEcE89', // AERO Market
+      '0x2c776041CCFe903071AF44aa147368a9c8EEA518', // USDS Market
     ],
   },
   scroll: {
@@ -57,6 +59,12 @@ module.exports = compoundV3Exports({
     markets: [
       '0x2c7118c4C88B9841FCF839074c26Ae8f035f2921', // USDC Market
       '0x6C987dDE50dB1dcDd32Cd4175778C2a291978E2a'  // WETH Market
+    ]
+  },
+  linea:{
+    markets: [
+      '0x8D38A3d6B3c3B7d96D6536DA7Eef94A9d7dbC991', // USDC Market
+      '0x60F2058379716A64a7A5d29219397e79bC552194', // WETH Market
     ]
   }
 })

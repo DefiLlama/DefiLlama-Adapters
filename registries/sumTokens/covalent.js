@@ -409,18 +409,6 @@ module.exports = {
       ]
     },
   },
-  "hemi-locked": {
-    "ethereum": {
-      "owners": [
-        "0x5eaa10F99e7e6D177eF9F74E519E319aa49f191e",
-        "0x39a0005415256B9863aFE2d55Edcf75ECc3A4D7e"
-      ],
-      "fetchCoValentTokens": true,
-      "blacklistedTokens": [
-        "0xeb964a1a6fab73b8c72a0d15c7337fa4804f484d"
-      ]
-    },
-  },
   "immutable-zkevm": {
     "ethereum": {
       "owner": "0xBa5E35E26Ae59c7aea6F029B68c6460De2d13eB6",
@@ -521,12 +509,6 @@ module.exports = {
       "fetchCoValentTokens": true
     },
   },
-  "metisBridge": {
-    "ethereum": {
-      "owner": "0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b",
-      "fetchCoValentTokens": true
-    },
-  },
   "mint-chain": {
     "ethereum": {
       "owners": [
@@ -587,6 +569,54 @@ module.exports = {
         "0x1B33B8499EB6D681CDcF19c79dF8A3Dec9c652C3"
       ],
       "fetchCoValentTokens": true
+    },
+  },
+  "omni-bridge": {
+    // https://github.com/Near-One/omni-bridge
+    "timetravel": false,
+    "methodology": "Tokens locked in the Omni Bridge locker contracts: ERC20/native tokens in the lockers on Ethereum, Base and Arbitrum, SPL vaults on Solana, and NEAR-native tokens locked in omni.bridge.near. Bridged representations (omft/factory.bridge.near mints) are excluded to avoid double counting.",
+    "ethereum": {
+      "owner": "0xe00c629aFaCCb0510995A2B95560E446A24c85B9",
+      "tokens": [ADDRESSES.null],
+      "fetchCoValentTokens": true
+    },
+    "base": {
+      "owner": "0xd025b38762B4A4E36F0Cde483b86CB13ea00D989",
+      "tokens": [ADDRESSES.null],
+      "fetchCoValentTokens": true
+    },
+    "arbitrum": {
+      "owner": "0xd025b38762B4A4E36F0Cde483b86CB13ea00D989",
+      "tokens": [ADDRESSES.null],
+      "fetchCoValentTokens": true
+    },
+    "polygon": {
+      "owner": "0xd025b38762B4A4E36F0Cde483b86CB13ea00D989",
+      "tokens": [ADDRESSES.null],
+      "fetchCoValentTokens": true
+    },
+    "bsc": {
+      "owner": "0x073C8a225c8Cf9d3f9157F5C1a1DbE02407f5720",
+      "tokens": [ADDRESSES.null],
+      "fetchCoValentTokens": true
+    },
+    "solana": {
+      // token vaults are owned by the bridge program's "authority" PDA, native SOL sits in the "sol_vault" PDA
+      "owners": ["FvULawNPGBbuwYus74ECaQoV1oH9Tk6XPN7VPN51NYds"],
+      "solOwners": ["6tckHFBpiJ8YgYN8FUskvtvTpXQZ55g5LHeo1kvELoDQ"]
+    },
+    "near": {
+      "owners": ["omni.bridge.near"],
+      "tokens": [
+        "wrap.near",
+        "edge-fast.near",
+        "token.0xshitzu.near",
+        "token.publicailab.near",
+        "cfi.consumer-fi.near",
+        "token.rhealab.near",
+        "jlu-1018.meme-cooking.near",
+        "purge-558.meme-cooking.near"
+      ]
     },
   },
   "orderly": {
@@ -658,13 +688,6 @@ module.exports = {
     "ethereum": {
       "owner": "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe",
       "fetchCoValentTokens": true
-    },
-  },
-  "pulsechain": {
-    "ethereum": {
-      "owner": "0x1715a3E4A142d8b698131108995174F37aEBA10D",
-      "fetchCoValentTokens": true,
-      "permitFailure": true
     },
   },
   "pulsechain-bridge": {

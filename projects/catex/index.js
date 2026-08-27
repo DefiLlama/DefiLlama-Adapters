@@ -1,9 +1,9 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 const STRATEGIES_URL = 'https://raw.githubusercontent.com/Lynexfi/lynex-lists/main/strategies/main.json'
 
 async function getCatexPools(chainId) {
-  const data = await get(STRATEGIES_URL)
+  const data = await getConfig('catex', STRATEGIES_URL)
   const strategies = data[chainId] || []
   return strategies
     .filter(strategy => strategy.variant === 'uniV4')

@@ -1393,6 +1393,13 @@ const configs = {
       staking: [["0x3f60C7aa0c36a78D200405feBE143d2Cf3fA0c77"], "0x23113e72165a034265Ab8Bf2277CCB7a85Cb7483"]
     }
   },
+  "netnet": {
+    "methodology": "NET staked in the NetNet staking contract",
+    "start": "2026-07-16",
+    "robinhood": {
+      staking: ['0xB078cc304A0B264C5F3680DC0488954ACcd02E87', '0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'],
+    },
+  },
   "tartswap": {
     "methodology": "Staking counts CREPE deposited in the TartStakingVault contract (single-token, reward-streaming vault funded by protocol swap fees).",
     "bsc": {

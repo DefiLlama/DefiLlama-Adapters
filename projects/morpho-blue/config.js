@@ -36,11 +36,17 @@ const config = {
     blacklistedMarketIds: [
       '0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89', // bad debt due to resolv hack
       '0xe1986e80099257c65dd18091ec7e34752ae2336870a5649f20c450c9c4931fb8', // HERMES market
+      '0xa4ec527128b425ee3fcb7f60eca37677b63b3d003345ec2a72ef6a2e72da53fc', // RSS/USDC (77% LLTV) market, single supplier looping against self-issued RSS collateral
+      '0x41c08085ddcfd1dc1c5eb82d7dc031593d1a1a831958380e8b60469c45bf7d88', // RSS/USDC (77% LLTV) market, single supplier looping against self-issued RSS collateral
     ]
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
-    blackList: ["0xf8b3fa720a9cd8abeed5a81f11f80cd8f93e6b57", "0x010700ab046dd8e92b0e3587842080df36364ed3"], // K token inflated by Kinto exploit
+    blackList: [
+      "0xf8b3fa720a9cd8abeed5a81f11f80cd8f93e6b57",
+      "0x010700ab046dd8e92b0e3587842080df36364ed3", // K token inflated by Kinto exploit
+      '0x57587e47a0af9d1bb93c0d4b3df671b053ab4366', // GLVT token - verify backing
+    ],
     fromBlock: 296446593,
     blacklistedMarketIds: [
       "0xfdb8221edcae73f73485d55c30e706906114bc2ff4634870c5c57e8fb83eae6a", // K/USDC bad debt from Kinto exploit

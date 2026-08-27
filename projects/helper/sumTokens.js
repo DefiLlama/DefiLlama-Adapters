@@ -27,6 +27,10 @@ const helpers = {
   "bitcoin": require("./chain/bitcoin"),
   "litecoin": require("./chain/litecoin"),
   "dash": require("./chain/dash"),
+  "kaspa": require("./chain/kaspa"),
+  "bsv": require("./chain/bsv"),
+  "arweave": require("./chain/arweave"),
+  "pi": require("./chain/pi"),
   "polkadot": require("./chain/polkadot"),
   "acala": require("./chain/acala"),
   "bifrost": require("./chain/bifrost"),
@@ -152,8 +156,14 @@ async function sumTokens(options) {
   }
 
   const geckoId = geckoMapping[chain]
+  if (api) balances = api.getBalances() // write native + token balances into the same object
   const balanceArray = await Promise.all(owners.map(i => getBalance(chain, i)))
   sdk.util.sumSingleBalance(balances, geckoId, balanceArray.reduce((a, i) => a + +i, 0))
+  // issued currencies (trustlines) - counted only when a whitelist is passed
+  const rippleTokens = chain === 'ripple' ? tokens.filter(t => t !== nullAddress) : []
+  if (api && rippleTokens.length)
+    for (const owner of owners)
+      await addRippleTokenBalance({ account: owner, api, whitelistedTokens: rippleTokens })
   return balances
 
   function getUniqueToA(toa, chain) {
@@ -200,11 +210,18 @@ async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
     res.result.lines.forEach(line => {
       const tokenKey = `${line.currency}.${line.account}`
       if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
-      api.add(tokenKey, parseFloat(line.balance))
+      // account_lines amounts are human-readable; scale tokens whose coins-server entry expects raw units
+      const decimals = rippleTokenDecimals[tokenKey.toLowerCase()] ?? 0
+      api.add(tokenKey, parseFloat(line.balance) * 10 ** decimals)
     })
   }
 
   return api.getBalances()
+}
+
+// coins-server decimals for issued currencies that aren't stored as 0
+const rippleTokenDecimals = {
+  '524c555344000000000000000000000000000000.rmxckbedwqr76quhesumdegf4b9xj8m5de': 6, // RLUSD
 }
 
 module.exports = {

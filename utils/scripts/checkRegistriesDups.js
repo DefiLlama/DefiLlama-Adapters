@@ -5,14 +5,25 @@ const axios = require('axios');
 const { getEnv } = require('../../projects/helper/env');
 
 const REGISTRY_DIR = path.join(__dirname, '../../registries');
+const CEX_INDEX = path.join(__dirname, '../../cex/index.js');
+const SUMTOKENS_INDEX = path.join(__dirname, '../../registries/sumTokens.js');
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$|^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
 // Keys that identify a tracked contract
 const KEYS = new Set(['factory', 'comptroller', 'masterchef', 'vault', 'registry', 'address']);
 
+// Keys that identify an owner/wallet (cex + sumTokens)
+const OWNER_KEYS = new Set(['owner', 'owners', 'solOwners', 'tokenAccounts']);
+
+// Metadata keys to ignore
+const META = new Set(['methodology', 'start', 'timetravel', 'hallmarks', 'doublecounted', 'misrepresentedTokens']);
+
 const IGNORED = new Set([
   '0x7C10a3b7EcD42dd7D79C0b9d58dDB812f92B574A' // DogeShrek rebranded to ChewySwap and was listed again; we cant fix by backfilling since dogechain's RPC fails on the necessary historical queries
 ].map(a => a.toLowerCase()));
+
+// e.g. { 'some-cex': ['0xabc...'], ... }
+const IGNORED_OWNERS = {};
 
 // Based on defillama-server/defi/src/utils/discord.ts
 async function sendDiscord(message, formatted = true) {
@@ -57,34 +68,41 @@ function extractTrackedAddresses(chainConfig, found = new Set()) {
   return found;
 }
 
+function collectOwnerAddrs(value, found) {
+  if (typeof value === 'string') addIfAddress(value, found);
+  else if (Array.isArray(value)) value.forEach(v => collectOwnerAddrs(v, found));
+  // functions (dynamic owner lists) and objects are ignored for now
+}
+
+// Pull owner addresses from a chain config, they can sit at the chain level
+// or nested inside a tvl/staking/pool2/
+function extractOwners(node, found = new Set()) {
+  if (!node || typeof node !== 'object') return found;
+  if (Array.isArray(node)) { node.forEach(item => extractOwners(item, found)); return found; }
+  for (const [key, value] of Object.entries(node)) {
+    if (OWNER_KEYS.has(key)) collectOwnerAddrs(value, found);
+    else if (key === 'tokensAndOwners' && Array.isArray(value)) {
+      for (const pair of value) if (Array.isArray(pair)) addIfAddress(pair[1], found);
+    } else if (value && typeof value === 'object') {
+      extractOwners(value, found);
+    }
+  }
+  return found;
+}
+
 function loadRawConfigs(filePath) {
   return require(filePath)._rawConfigs;
 }
 
-function formatDuplicates(duplicates) {
-  const entries = Object.entries(duplicates);
-  if (!entries.length) return null;
-  const lines = [`Found ${entries.length} duplicate registry entries:`, ''];
-  for (const [key, protocols] of entries) lines.push(`${key}\n  → ${protocols}`);
-  return lines.join('\n');
-}
-
-async function run() {
+function findContractDuplicates() {
   const registryFiles = fs.readdirSync(REGISTRY_DIR)
-    .filter(f => f.endsWith('.js') && f !== 'index.js' && f !== 'utils.js')
+    .filter(f => f.endsWith('.js') && !['index.js', 'utils.js', 'sumTokens.js'].includes(f))
     .map(f => ({ name: f, fullPath: path.join(REGISTRY_DIR, f) }));
 
   const duplicates = {};
 
   for (const { name, fullPath } of registryFiles) {
-    let configs;
-    try {
-      configs = loadRawConfigs(fullPath);
-    } catch {
-      console.warn(`Skipping ${name} (could not load)`);
-      continue;
-    }
-
+    const configs = loadRawConfigs(fullPath);
     if (!configs || typeof configs !== 'object') continue;
 
     const addressMap = {};
@@ -108,11 +126,62 @@ async function run() {
     }
   }
 
-  console.table(Object.entries(duplicates));
+  return duplicates;
+}
 
-  const message = formatDuplicates(duplicates);
-  if (message) await sendDiscord(message);
-  else console.log('No duplicate registry entries found.');
+// Find owners listed under more than one protocol within a registry (cex or sumTokens)
+function findOwnerDuplicates(rawConfigs) {
+  if (!rawConfigs || typeof rawConfigs !== 'object') return {};
+
+  const ownerMap = {}; // `${chain}:${owner}` -> [protocols]
+  for (const [protocol, config] of Object.entries(rawConfigs)) {
+    if (!config || typeof config !== 'object') continue;
+    const ignoredForProto = new Set((IGNORED_OWNERS[protocol] || []).map(a => a.toLowerCase()));
+    for (const [chain, chainConfig] of Object.entries(config)) {
+      if (META.has(chain)) continue;
+      for (const owner of extractOwners(chainConfig)) {
+        if (ignoredForProto.has(owner)) continue;
+        const key = `${chain}:${owner}`;
+        if (!ownerMap[key]) ownerMap[key] = [];
+        if (!ownerMap[key].includes(protocol)) ownerMap[key].push(protocol);
+      }
+    }
+  }
+
+  const duplicates = {};
+  for (const [key, protocols] of Object.entries(ownerMap)) {
+    if (protocols.length > 1) duplicates[key] = protocols.join(', ');
+  }
+  return duplicates;
+}
+
+function formatSection(title, duplicates) {
+  const entries = Object.entries(duplicates);
+  if (!entries.length) return null;
+  const lines = [`${title} (${entries.length}):`, ''];
+  for (const [key, protocols] of entries) lines.push(`${key}\n  -> ${protocols}`);
+  return lines.join('\n');
+}
+
+async function run() {
+  const contractDups = findContractDuplicates();
+  const cexOwnerDups = findOwnerDuplicates(loadRawConfigs(CEX_INDEX));
+  const sumTokensOwnerDups = findOwnerDuplicates(loadRawConfigs(SUMTOKENS_INDEX));
+
+  const sections = [
+    formatSection('Registry tracked-contract duplicates', contractDups),
+    formatSection('CEX owner duplicates', cexOwnerDups),
+    formatSection('sumTokens owner duplicates', sumTokensOwnerDups),
+  ].filter(Boolean);
+
+  if (!sections.length) {
+    console.log('No duplicate registry entries found.');
+    return;
+  }
+
+  const message = sections.join('\n\n');
+  console.log(message);
+  await sendDiscord(message);
 }
 
 run().catch(async (e) => {
