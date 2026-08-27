@@ -41,7 +41,9 @@ const configs = {
                 '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
                 '0xbe49dd45d9d28f2380cbee3e57a8243e736e4552',
                 '0x79505efad14d289c84a71c28369b944ada25b131',
-                '0x31744e44d6af88225c1dbefbe5df8308faea641b'
+                '0x31744e44d6af88225c1dbefbe5df8308faea641b',
+                '0xCd19f18884bf388b866D05cDd1ae351133821F01',
+                '0x01DBDB9748ECf71B1fFbb62f5cB41318531bA362'
             ]
         }
     }
