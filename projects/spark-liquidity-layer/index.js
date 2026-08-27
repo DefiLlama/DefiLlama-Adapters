@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const morphoAbi = require('../helper/abis/morpho.json')
 const { getExports } = require('../helper/heroku-api')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const almProxy = {
   ethereum: '0x1601843c5E9bC251A3272907010AFa41Fa18347E',
@@ -127,6 +128,7 @@ async function tvl(api) {
   await addMorphoBalances(api)
   await addEthenaUnstakeBalance(api)
   await addCurveBalances(api)
+  await addUniswapV4Balances(api)
   await addVaultBalances(api)
 
   const allTokens = Object.values(tokenRecords).flat()
@@ -357,6 +359,18 @@ async function addCurveBalances(api) {
   )
 
   api.add(tokens, balances)
+}
+
+async function addUniswapV4Balances(api) {
+  if (api.chain !== 'ethereum') {
+    return
+  }
+
+  await sumTokens2({
+    api,
+    owner: almProxy.ethereum,
+    resolveUniV4: true,
+  })
 }
 
 const erc4626Configs = {
