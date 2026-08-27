@@ -31,7 +31,8 @@ const pools = [
 const tvl = async (api) => {
   for (const pool of pools) {
     const { data } = await axios.get(`https://api.stellar.expert/explorer/public/contract/${pool}/value`)
-    api.addUSDValue(data.total / 1e7)
+    if (typeof data.total !== 'number') throw new Error(`no usd total returned for pool ${pool}`)
+    api.addUSDValue(data.total) // stellar.expert returns `total` already in USD
   }
 }
 
