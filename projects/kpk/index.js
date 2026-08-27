@@ -255,9 +255,11 @@ const PROTOCOL_TOKENS = {
     '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // Fluid fUSDC
     '0x5C20B550819128074FD538Edf79791733ccEdd18', // Fluid fUSDT
     '0x6A29A46E21C730DcA1d8b23d637c101cec605C5B', // Fluid fGHO
-    '0xc3d688B66703497DAA19211EEdff47f25384cdc3', // CompoundV3 cUSDCv3 (balanceOf = supply, priced)
+    '0xc3d688B66703497DAA19211EEdff47f25384cdc3', // CompoundV3 cUSDCv3
     '0xA17581A9E3356d9A858b789D68B4d866e593aE94', // CompoundV3 cWETHv3
     '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840', // CompoundV3 cUSDTv3
+    '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', // CompoundV2 cDAI (ENS supply)
+    '0x39AA39c021dfbaE8faC545936693aC917d5E7563', // CompoundV2 cUSDC (ENS supply)
     // --- LP / BPT / CoW-AMM (resolveLP) ---
     '0x05ff47AFADa98a98982113758878F9A8B9FddA0a', // weETH/rETH
     '0x06966b4Ae338CE20f283086914388133F27D1d3e', // 50wstETH/25WBTC/25SOL (CoW AMM)
@@ -373,10 +375,11 @@ function activeTokens(api) {
 }
 
 async function getSafesTvl(api) {
-  const tokens = activeTokens(api)
-  if (!tokens.length) return
+  const owners = activeSafes(api)
+  if (!owners.length) return
+  const tokens = [...activeTokens(api), ADDRESSES.null]
   await api.sumTokens({
-    owners: activeSafes(api),
+    owners,
     tokens,
     resolveLP: true,
     blacklistedTokens: getCuratedVaults(api.chain),
@@ -402,6 +405,7 @@ const AAVE_V2_POOLS = {
   ethereum: '0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9',
   avax: '0x4F01AeD16D97E3aB5ab2B501154DC9bb0F1A5A2C',
   polygon: '0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf',
+  xdai: '0x5E15d5E33d318dCEd84Bfe3F4EACe07909bE6d9c', // Agave (v2 fork) 
 }
 const AAVE_RESERVE_DATA_ABI = 'function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))'
 const AAVE_V2_RESERVE_DATA_ABI = 'function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))'
@@ -612,6 +616,9 @@ for (const chain of allChains) {
   const curatorTvl = exportObjects[chain]?.tvl
   exportObjects[chain] = {
     tvl: async (api) => {
+      // skip base chain before genesis block june 15 2023
+      if (chain === 'base' && api.timestamp < 1686800000) return
+
       // Curated vault deposits (Morpho, Euler, etc.) via getCuratorExport
       if (curatorTvl) await curatorTvl(api)
 
