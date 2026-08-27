@@ -9,36 +9,36 @@ module.exports = {
       "0x14dC2b6E3bD3407718fA6320397D93897791b15E", // 2
       "0xd40b8684fc619f44fd9901a472d749818c981dbe", // 3
       "0x50de1986cf5befe0c8ee74d6df6dffe842dc2632", // 3
-      "0x9bDcDE4AE9aa06e1F8ee153735F232b666d5C877", // 3
-      "0x8caa6e12882ead0de48253f5bdebc6eb432c9c3b",
+      // "0x9bDcDE4AE9aa06e1F8ee153735F232b666d5C877", // 3 // disabled 2026-08-27: holds $8.5k (<$10k)
+      // "0x8caa6e12882ead0de48253f5bdebc6eb432c9c3b", // disabled 2026-08-27: holds $0 (<$10k)
       "0xe2b4480decb63f995217b7590781cb79c5a54fc7",
       "0xf56c25ac3e0d870ced0488ad6441c690a78d92a4",
       "0xc40ee62572bea96088338cd0df9f45b78419ca02",
-      "0x84c2c6951e2d6745f7d92e36825b9a09b753b0b6",
-      "0xf4bf9ebbb2d2164941e67b73ff059e715c349511",
+      // "0x84c2c6951e2d6745f7d92e36825b9a09b753b0b6", // disabled 2026-08-27: holds $5 (<$10k)
+      // "0xf4bf9ebbb2d2164941e67b73ff059e715c349511", // disabled 2026-08-27: holds $30 (<$10k)
       "0x5930d2cb21fc778d1d36f4cdc3c5df31ece52bfc",
-      "0x2b0530c9330b68fdbc1459f043094629d758d146",
+      // "0x2b0530c9330b68fdbc1459f043094629d758d146", // disabled 2026-08-27: holds $0 (<$10k)
       "0xd458216d778fbab58c4488dcf07d294a1f3c39b4",
       "0x2cd6517de144d9dfa4742f680d40bb78722f2d33",
       "0xaec98f7c8941643032ccb70da93d10332e18a44e",
-      "0x663a4ab954d2621e7205721ba635bb832ad9cc75",
+      // "0x663a4ab954d2621e7205721ba635bb832ad9cc75", // disabled 2026-08-27: holds $0 (<$10k)
       "0x06c5f8189e889d7ca436de8e91bb55811a7b1243",
       "0x3a3fcef5ea57f6a75182b1592e6aab49341c4a68",
       "0x494b308c632f20150c20ac736fe876fdab43b73d",
       "0x239bfd27ef6ba4ccc10d3f938c9110a3902e567d",
       "0xcadc10557f30dad259ae73a1ab1873d9f3b53e9b",
-      "0x8c07329857346f0f9fb36c5426ce78886f22ee3c",
+      // "0x8c07329857346f0f9fb36c5426ce78886f22ee3c", // disabled 2026-08-27: holds $0 (<$10k)
       "0x762e01d3150a9bd2c8d97b6e82adff5876aa8843",
-      "0xb17f5702e196d3e8372d9a7898f41dcdfbb4f575",
-      "0xb1424a7edba2ef045a8dd75c4235ac1b7e0ae2d7",
-      "0x3e5e75837918fd92c5848ec03325cb761addf1f9",
+      // "0xb17f5702e196d3e8372d9a7898f41dcdfbb4f575", // disabled 2026-08-27: holds $0 (<$10k)
+      // "0xb1424a7edba2ef045a8dd75c4235ac1b7e0ae2d7", // disabled 2026-08-27: holds $202 (<$10k)
+      // "0x3e5e75837918fd92c5848ec03325cb761addf1f9", // disabled 2026-08-27: holds $6 (<$10k)
       "0x8e1090f515428b7c9f7e88c8989e44426d7e71e9",
       "0x884fc0240ad1a7b62cfaf127c68543ba2cc2418e",
       "0xe7c469b0107cd510a04680acec9ba6d7c1f9df6d",
       "0x9c3378a0da7364ae2724b9631a7eea1f819d3990",
       "0x1d5e94c693d4ca6ab87bee98434397bfdb5bcdb1",
       "0x035826c7821f79c84edcfac76c881e406f4cd100",
-      "0xacb14f60712e31429b7edd3a91d6c4cfa38b6262",
+      // "0xacb14f60712e31429b7edd3a91d6c4cfa38b6262", // disabled 2026-08-27: holds $6 (<$10k)
       "0xba04b08d317dd17c57010d093b40cce986be4c9f",
       "0xb18c3cbd1ffa2311f335443a50588e1eb1cbc0d7",
       "0x08e7199b58f95e7b4125e062df126c84bc3e0c29",
@@ -68,7 +68,7 @@ module.exports = {
       "0x56a68968083ca9774c230f3e8e8d47ad3065b185",
       "0x9c7b90b4c21ef17a6f7abee4c674a3c0b6334e45",
       "0x3e06f199b2971c722392a6fa160a51d08ecf3de5",
-      "0xb9440f1f6417dd958f511f74bfa2ed8964a49dbe",
+      // "0xb9440f1f6417dd958f511f74bfa2ed8964a49dbe", // disabled 2026-08-27: holds $11 (<$10k)
       "0x327ed4a818b5aa31c9ac400bf56f170ec04f3f7c",
       "0xadb5aefa5cd79ebed5685047c2ce2ab63cf6e413",
       "0x390a8d911d1a97b9bc224649132ade820be4f007",
@@ -99,7 +99,7 @@ module.exports = {
       "0x3f9603e87938a4c1c7dfd5cc045ffa945634eb79",
       "0x70112253f25691287cf76e58d0017c74407a74ad",
       "0x3fe29da5df41666e223d5833460844ff77aba075",
-      "0xac5b18d0c540ea7cfc07d75e3190fe89ca92b6d8",
+      // "0xac5b18d0c540ea7cfc07d75e3190fe89ca92b6d8", // disabled 2026-08-27: holds $24 (<$10k)
       "0xcc8c88d2cbe9b9dc9fa5247fee5f5dde9083e72b",
       "0x0fad0066f0fea30d94f1a4b24cb10f58ed070906",
       "0x7e78af0e6df5425f93d606071a35213c17cc83a8",
@@ -120,10 +120,10 @@ module.exports = {
       "0x0856c44958ffdcb1dbd4f61e2b26b80d509d09a3",
       "0xd5fabc9810e7ed093a76bad6b348ae56593e9087",
       "0x0e985c561167c531aa7a6a7f267780856a6c4843",
-      "0xa8680a82f69a8bfeffde6bb29c10b81b0d96d64b",
+      // "0xa8680a82f69a8bfeffde6bb29c10b81b0d96d64b", // disabled 2026-08-27: holds $19 (<$10k)
       "0x194fe1914eb943e700af07e10a1b2b9223902fcf",
       "0x0bf95fd481fefc639ed6d867a7a18ada458d5630",
-      "0xf147295d8834593532cc6a2cae5c855ea2a676b0",
+      // "0xf147295d8834593532cc6a2cae5c855ea2a676b0", // disabled 2026-08-27: holds $6 (<$10k)
       "0x35dd748335c7cc152302992d86aeb97293d100fd",
       "0xc8576e53a225bd715ee836f99d389820ae926881",
       "0x400391c5012f586fb567165fa48390e4125d758c",
@@ -140,19 +140,19 @@ module.exports = {
       "0x76161a7b9c8109655a21a42bad938c0e67c12ad0",
       "0xa4b31659d424c93ba7567721b30992cdea72c70a",
       "0x3c1318d91c060ee8c673396ad03c14383530a6e8",
-      "0x0b2afd5b7a604b1372737888dc56bf5c7a213754",
+      // "0x0b2afd5b7a604b1372737888dc56bf5c7a213754", // disabled 2026-08-27: holds $5.2k (<$10k)
       "0x8a6680e3412f410b4f7b32812dfc2b528525ec00",
       "0x2615ec9d5b6f5b73789feb22f05c5ddd5c5abcc8",
       "0xfeace12c4ecf09efd02b8e21d02e4329466ef19f",
       "0x028ac7371e20afe22e5d426ac10ea1a89587c284",
       "0x35738af3befb41854490910deebbffb7db1a8575",
-      "0xa17e7d9511a7d7c93bb3daf5cd164498d11e0bb9",
+      // "0xa17e7d9511a7d7c93bb3daf5cd164498d11e0bb9", // disabled 2026-08-27: holds $6 (<$10k)
       "0x382bbccd25e1b69a0fc6a8d3da9903128e28a3fe",
       "0x3756cbf65ab763be75983e8e399a4f0b548e720b",
       "0x01b8b19295cf797922acf0036ff5f964d1ca69ef",
-      "0xd3d2604e7c849a16c99373a45cc1c5fdd0e80d3c",
-      "0x3254de933b7b15dcb9ae4bcb2412fe58c27b3731",
-      "0x00f690a0ea0aee2ba5f679dcd1361d700697b2aa",
+      // "0xd3d2604e7c849a16c99373a45cc1c5fdd0e80d3c", // disabled 2026-08-27: holds $85 (<$10k)
+      // "0x3254de933b7b15dcb9ae4bcb2412fe58c27b3731", // disabled 2026-08-27: holds $1.6k (<$10k)
+      // "0x00f690a0ea0aee2ba5f679dcd1361d700697b2aa", // disabled 2026-08-27: holds $48 (<$10k)
       "0x26901badbfbd4094ad313eb054140eec6e8c9ae5",
       "0x46f95276410243e5c3efd1005b78b08e90a183a8",
       "0xe81c1d610862ccf8a9aae0ee81d1d8fae1ce4998",
@@ -160,34 +160,34 @@ module.exports = {
       "0x7199322bc5f46b12ca37e029bc3eb31239ab4f1a",
       "0x2281c5ae8d66b0df302239c2a70c70ef6ab858e8",
       "0xee1b9c6be803406159c652f4837bb3a98791b1a4",
-      "0x46863ae958afa72ca27425a72f19cbc57ed22a20",
-      "0x41c9503ceacde97c5a7e95278a18bcad3c2a7b52",
+      // "0x46863ae958afa72ca27425a72f19cbc57ed22a20", // disabled 2026-08-27: holds $130 (<$10k)
+      // "0x41c9503ceacde97c5a7e95278a18bcad3c2a7b52", // disabled 2026-08-27: holds $94 (<$10k)
       "0xd0445dd54480838408b306f6f151d74d36cfd7b5",
       "0x9240e650ede4e657bb3b042892179a03232b85a1",
       "0xaa937699cc3d1c3237a3fa9017b80d9754ad7320",
       "0xc1079fb4418922bd5a67539c11824caf196b58ff",
       "0x0fb81f2187ad8a9aef480deef2d96a765352f33c",
       "0xc6ba299136f2dc541eb4fdfc890a772e7c28eb93",
-      "0x62a3407da35179fbc3ec7e32a8fa78a8428d8952",
+      // "0x62a3407da35179fbc3ec7e32a8fa78a8428d8952", // disabled 2026-08-27: holds $6 (<$10k)
       "0xa77a8c60bcdafa7a33123c7575895471cd551d80",
       "0x61733e8035de15d8de6ced45667691e3909ba9cc",
       "0x1ba91ca89bb84ae32526256a0f14ab2c24e0e63b",
       "0xeee2424bc64659e6b012d855a73c82bc1f4ffd25",
-      "0x9a7cc23ee5053bfc39371b57f0850118bc4cd180",
-      "0xd0ea5db219e080a339dd09cf0b9a7369bc0fa5a4",
-      "0x5a7c0e74eb20b5ddd6a13b014e8922253eca8f47",
+      // "0x9a7cc23ee5053bfc39371b57f0850118bc4cd180", // disabled 2026-08-27: holds $11 (<$10k)
+      // "0xd0ea5db219e080a339dd09cf0b9a7369bc0fa5a4", // disabled 2026-08-27: holds $1.3k (<$10k)
+      // "0x5a7c0e74eb20b5ddd6a13b014e8922253eca8f47", // disabled 2026-08-27: holds $49 (<$10k)
       "0x1759368842994588340d10414809e3fe234412ac",
       "0x8637fea6fdb59f0f9beb01b95bac14ce4f495cc2",
       "0x9cdd514d2fab61d3ea11aa2cd926a534f25ea862",
       "0xfe3a6bb7ecb279940f06e9aa45c1245b27b26170",
       "0x1c90c2ec4dd315f89095c0a6ab7834d93c320322",
       "0x2162119931221e4e02b4789a012d5ad3ad966f1d",
-      "0x19a5006020e655d33a3492c4de8aa6c4507e0b84",
+      // "0x19a5006020e655d33a3492c4de8aa6c4507e0b84", // disabled 2026-08-27: holds $7 (<$10k)
       "0x35ea9bb7b2717e99f9c82ce3993bcd44a1457008",
-      "0x5ec7d93bea8699935aa078013ade0cf6e40c39a8",
+      // "0x5ec7d93bea8699935aa078013ade0cf6e40c39a8", // disabled 2026-08-27: holds $1.0k (<$10k)
       "0xb7483e891dc2096be6b6ff9b131e28190e524a89",
       "0xb2be74d0462d0bb0422b4a55dccf1767b4b9b9d3",
-      "0xc550321fd40987237e63c70b99466bad3e7fe6c1",
+      // "0xc550321fd40987237e63c70b99466bad3e7fe6c1", // disabled 2026-08-27: holds $2 (<$10k)
       "0x9dc301576f2209a95ecbb16c14c9daf40a6fed1d",
       "0xe4910ab5647ecf2e0e608b162eaaf50c1b8e5678",
       "0x38480eba998a882878e0a11d6742854b0dd140f6",
@@ -196,7 +196,7 @@ module.exports = {
       "0x696fdf8b29c519b247925c46ba91b7712aa27a55",
       "0xbf0f05f2ca0acf86b70d9fda576128c32288672f",
       "0xf7606dfb8d9cbf925c4345cbfa046c87a8ffc949",
-      "0xf83b853ba13717606835bff4f0ba540be0a3790a",
+      // "0xf83b853ba13717606835bff4f0ba540be0a3790a", // disabled 2026-08-27: holds $6 (<$10k)
       "0x97083a5961f34fd042ce2383195e5fdea998060d",
       "0xabc481015748e8ef56fe246fcd3b139ab2662c20",
       "0xa84c2b35dde5d22b7ca509e76d6178ae33cb718d",
@@ -204,37 +204,37 @@ module.exports = {
       "0x76ad4c8d480f8969795c8ce0cb67161890480b85",
       "0x49fcdf30d10e198f0d79287fcd06812787db2ffa",
       "0x1d9425b4e2234bb8821cd2145c3f5ca20a47ad8b",
-      "0x2da7645b413c054c3bea075d6eb343f3d5b23628",
+      // "0x2da7645b413c054c3bea075d6eb343f3d5b23628", // disabled 2026-08-27: holds $2 (<$10k)
       "0x3d59e01719a8d401faf7e6827789e7192422dca0",
       "0x96f79eb9bb29460c13633cc3a811e7b3ca09f62f",
-      "0x7dbee788ebf565cf92b96aac300e9b3b8dc50420",
+      // "0x7dbee788ebf565cf92b96aac300e9b3b8dc50420", // disabled 2026-08-27: holds $6 (<$10k)
       "0x645ca2647827d50bb9dd470b17791fd9ccefcf64",
-      "0x36ec1290b822922a0275a9b11e7c94f156f9d9c7",
+      // "0x36ec1290b822922a0275a9b11e7c94f156f9d9c7", // disabled 2026-08-27: holds $6 (<$10k)
       "0x7eb8f9f16cd23ed66e249bdf939647fbaaadbd1d",
-      "0x07aa658a35e0246c174c9f172ef3b56f112e4b35",
+      // "0x07aa658a35e0246c174c9f172ef3b56f112e4b35", // disabled 2026-08-27: holds $65 (<$10k)
       "0x97e5810ee1e8d84adaf68b0363f7c44cbc23a8ba",
-      "0x4032edec12c9b997ec1e7e3bf998366d2311f527",
+      // "0x4032edec12c9b997ec1e7e3bf998366d2311f527", // disabled 2026-08-27: holds $16 (<$10k)
       "0x662dedaecf50eb07c1c8110b01856f28deae5c0e",
       "0x0e2d9465694411f3855461169eb5aebcc06a647f",
       "0x05d20f26826c7d85fee7039bb06fd432d9873fa9",
-      "0x8f9609b12d918a39dfa816e583b5d7006ad11125",
-      "0xefd9679b7c55c6fe97ca2bf55993c1878ca27d7a",
-      "0x06e8ec46a1892de32307a3f729b9a9f231e5b43f",
-      "0x25027e37c68c5e255dfb96145b46169b34bc9060",
-      "0x93270f39a3406bd97946211ad9270e474ebc4123",
+      // "0x8f9609b12d918a39dfa816e583b5d7006ad11125", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0xefd9679b7c55c6fe97ca2bf55993c1878ca27d7a", // disabled 2026-08-27: holds $5.6k (<$10k)
+      // "0x06e8ec46a1892de32307a3f729b9a9f231e5b43f", // disabled 2026-08-27: holds $2.9k (<$10k)
+      // "0x25027e37c68c5e255dfb96145b46169b34bc9060", // disabled 2026-08-27: holds $2.5k (<$10k)
+      // "0x93270f39a3406bd97946211ad9270e474ebc4123", // disabled 2026-08-27: holds $6 (<$10k)
       "0x2b2975bf2eab904aa08546d86f5096b0e5fb3f12",
       "0x276987e37e320c79d17428a7868d4c5d6532d9e1",
       "0x1ce50ed18cbf67850a3fb6634deaebffb50d679d",
       "0x3935efc51bf53fa1f6afc7de14a43b5eb1073b86",
-      "0x227541a74fd13d30aea8b2ee3fba4571c53d5e40",
-      "0xb91eefbb5e1f59d8f99854621edcbe75383ec2c1",
-      "0x7b877cd40a371124b01f11cf22fe7c771b86ef73",
-      "0x32375b03da733720fc4e004138746859f7f8ed81",
+      // "0x227541a74fd13d30aea8b2ee3fba4571c53d5e40", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0xb91eefbb5e1f59d8f99854621edcbe75383ec2c1", // disabled 2026-08-27: holds $16 (<$10k)
+      // "0x7b877cd40a371124b01f11cf22fe7c771b86ef73", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x32375b03da733720fc4e004138746859f7f8ed81", // disabled 2026-08-27: holds $74 (<$10k)
       "0x2e9d022cdfe1fe4ee331fb40d9776b4ced11965f",
       "0xf6f6a1824a19da097beb09d8dcf51aec923b1a86",
       "0x4f2b1948c39e99f5f7d38c2c032c10dcd0ace585",
-      "0xa28011f90ffce48588c6e61386271578c705f654",
-      "0xc92e47c252d1f5a2150ff616974804b888cd9cd1",
+      // "0xa28011f90ffce48588c6e61386271578c705f654", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0xc92e47c252d1f5a2150ff616974804b888cd9cd1", // disabled 2026-08-27: holds $49 (<$10k)
       "0xeb23e2cacc9b2b9f3ed812ad946b523852f6e1f9",
       "0x80b36a9c5ed3a6e356bd0bd871d107f57293a67d",
       "0x24addc243c787e419a3b3e43aeacfb65974a2d90",
@@ -249,14 +249,14 @@ module.exports = {
       "0xc561b51025eb1c6cbb93b523f24afb74d9d3180b",
       "0x426c90bc5815b781f8f8cc76652a2198697bd9d7",
       "0x9fa45442ca4bddcd013f9bdcdcfd66d5ff6e9f79",
-      "0x6f61975cb98ca348b82792968a8420bef3935268",
-      "0x1876205fc7286833d3cbc30e633528116509de6f",
+      // "0x6f61975cb98ca348b82792968a8420bef3935268", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x1876205fc7286833d3cbc30e633528116509de6f", // disabled 2026-08-27: holds $6 (<$10k)
       "0x2ab48426092a154e5bf6e8210fbfac137e55ea2f",
       "0x69391edd8a83b7df81fe9c1f9978447a72c368da",
-      "0x5225f8c6bdcf4370e62d97d6f9520062619f1cf8",
-      "0xb1ed60c7f43b7d87d1dd26b392aea714f8f84227",
-      "0x99c849a75c94be15465ee373a17294ccecd8ab84",
-      "0xc239fc5fdbb4da97750c687d6e5be5d28f869a2b",
+      // "0x5225f8c6bdcf4370e62d97d6f9520062619f1cf8", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0xb1ed60c7f43b7d87d1dd26b392aea714f8f84227", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x99c849a75c94be15465ee373a17294ccecd8ab84", // disabled 2026-08-27: holds $24 (<$10k)
+      // "0xc239fc5fdbb4da97750c687d6e5be5d28f869a2b", // disabled 2026-08-27: holds $6 (<$10k)
       "0xfe939972fa7c9363cb106bacae9b3011315f384c",
       "0xbe5448dd2cac932586b058b114e1b750299e07cb",
       "0x035ec2dee558607bed7c32b79438875a7510c80b",
@@ -264,19 +264,19 @@ module.exports = {
       "0xa78e14c77da1399a512b19627818f86accd732ae",
       "0x76302d07fd1283c9c788e060fad7f7486f32f40c",
       "0x4593f9c530f04afa16292a162eb482c864c42160",
-      "0xc524c7fe89a74b52e42efdd3e16b51bc1d1a3bba",
+      // "0xc524c7fe89a74b52e42efdd3e16b51bc1d1a3bba", // disabled 2026-08-27: holds $6 (<$10k)
       "0x92450e2e16a92a2a2b732c5fb4a771ca00a39ec8",
-      "0x44cb5be7d67e1a6923fda5eeb81c9d0d192e0e02",
-      "0xb9d12a25f349af07e73082ac2cf0e8d6a023309b",
+      // "0x44cb5be7d67e1a6923fda5eeb81c9d0d192e0e02", // disabled 2026-08-27: holds $75 (<$10k)
+      // "0xb9d12a25f349af07e73082ac2cf0e8d6a023309b", // disabled 2026-08-27: holds $68 (<$10k)
       "0xb6c8f7427ad21d629b772d03907f00bf25ce848b",
       "0x49b2034b74cf5624a3c46d0874be6614dc1bd37c",
-      "0xabd65042691fe8a71d487f58f791f2be5c419314",
+      // "0xabd65042691fe8a71d487f58f791f2be5c419314", // disabled 2026-08-27: holds $23 (<$10k)
       "0x14dda602c8458810a288039ccf59e0d13bcd0614",
       "0x1871418fa15c21c11f762fd07d1b51a7c45ad20d",
       "0x0fc5539d60c2e02aa945b03c64ded6bf4e35a108",
       "0xe61693231838a87a7d3cf3d684d4489cb6d2fafd",
       "0x34b8f0af0e4f910d5f58f96493d1827c335f539e",
-      "0xad7236fa8ea1b589f542463236d1e64b87e0e4fd",
+      // "0xad7236fa8ea1b589f542463236d1e64b87e0e4fd", // disabled 2026-08-27: holds $4 (<$10k)
       "0xc4026675eee9227f3aa992e08465e0224737b81f",
       "0x016f14c212bde7a8c7b3c544f0cc1d2b639ca1f0",
       "0xa36056854f5b31cbe7b0d01754153d8bf861b670",
@@ -286,8 +286,8 @@ module.exports = {
       "0x323b10348fba702ca75a67bb6fd3952e306a4f68",
       "0x7a728b667cf5f76cf8993ed2baf2e5dcae9421ee",
       "0x7449378e3f84cb45d473965084385722744cbb01",
-      "0x9e6599158e6475215ac8ff530aa294f50c04c748",
-      "0xe4e962f1062f5cac5a0a5ae0efde82e85f564e69",
+      // "0x9e6599158e6475215ac8ff530aa294f50c04c748", // disabled 2026-08-27: holds $24 (<$10k)
+      // "0xe4e962f1062f5cac5a0a5ae0efde82e85f564e69", // disabled 2026-08-27: holds $6 (<$10k)
       "0x1c8f9981c83bc0a8e495875e6a654484ba4f9e89",
       "0x1e854bbe5690690ae056236ba4db38cdb4450976",
       "0x27b7f94d389a218f238a3068bec927a19c70fe7f",
@@ -299,9 +299,9 @@ module.exports = {
       "0x1fdc9cfb80be2b97aeb746a487d5af6f106f9ac8",
       "0x159acb0676146a3653884c490095395004e796fb",
       "0xc5123aa04455e9df84a29456cc4485dcdc329cbb",
-      "0x651d8fc366a2f11e6726e913f8972d56389a2a0c",
+      // "0x651d8fc366a2f11e6726e913f8972d56389a2a0c", // disabled 2026-08-27: holds $6 (<$10k)
       "0xaa992b65eaf2e4de0b1bc9d59a78227b3e4b6ed0",
-      "0x7003c71036d5b8f46d07bfc30e9b1ce5418fa165",
+      // "0x7003c71036d5b8f46d07bfc30e9b1ce5418fa165", // disabled 2026-08-27: holds $44 (<$10k)
       "0x0b2fcc5d76444cfcb80d92234bee6a5a1a8794ec",
       "0x7f10151d0b01d3348c0be034900e18274bb17ac2",
       "0x4225593eae0a06ab66e686b6a123b4e20c45787b",
@@ -309,38 +309,38 @@ module.exports = {
       "0xd67cc95d6afa0407824ba1bf10d2694050536391",
       "0xf051b66e30a87bfb0d0aa3e64a18e87d8b65564e",
       "0xcd53e8b98c64d85cd344c2d2793810db48a0fab3",
-      "0xe6150ff77cc7ff35951440924a0bf494e998c85c",
-      "0x06a8bef8988634eab93de54b8f8dc87b48c8f06b",
-      "0x9c807b9d1295052a70dfab4ed16805a50e70cc4b",
-      "0x562721233d76980abb2b2924ff5d0489c0916c38",
+      // "0xe6150ff77cc7ff35951440924a0bf494e998c85c", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x06a8bef8988634eab93de54b8f8dc87b48c8f06b", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x9c807b9d1295052a70dfab4ed16805a50e70cc4b", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x562721233d76980abb2b2924ff5d0489c0916c38", // disabled 2026-08-27: holds $6 (<$10k)
       "0x63f26901ab71ae63c7b84bc310ce0dfca1da180a",
-      "0xa9303481b928cfab76f8ec58fab9203cf59858b2",
+      // "0xa9303481b928cfab76f8ec58fab9203cf59858b2", // disabled 2026-08-27: holds $62 (<$10k)
       "0x7a8d9cd62e1f698ef6e72948fe621f383ccee5bc",
       "0xf933500d4300b2a0b106d733aaac292abd1bb503",
       "0x976935fdb232ad4733753e2be9828c649a2147fd",
       "0x817fca59b6c73f3160413383f3d9d199df3cf43e",
-      "0xb5a0b71faac6478b6a64f5be7193cea87a6b04b6",
+      // "0xb5a0b71faac6478b6a64f5be7193cea87a6b04b6", // disabled 2026-08-27: holds $6 (<$10k)
       "0x46228b1b8dee6924f0d5690ef780ce50e4efbf63",
       "0x708a265943804e02582e94122528bab710878f7f",
       "0x37cea75c0684c1b7a5696826f12d38383b6efe99",
       "0xc23c76d6dbf7c875dc1b8de952cc16cdf146fb6d",
       "0xf2fa9bd07208f0cd916a70ac1c875fe978e99ed8",
-      "0x81ae0b2e38fca2edc548470df5ba2296352ee0ea",
-      "0xb290264d38d39f7e6d6527128532071d88a5f7f6",
+      // "0x81ae0b2e38fca2edc548470df5ba2296352ee0ea", // disabled 2026-08-27: holds $22 (<$10k)
+      // "0xb290264d38d39f7e6d6527128532071d88a5f7f6", // disabled 2026-08-27: holds $5.1k (<$10k)
       "0xd5abb346da8c1e06834c6c3d356d2507ecdb01fd",
       "0xae311305a32171f1f601720342e0ad2ecaf67d9a",
-      "0xd01c5b6eef5e0751265927ef2ff7f53f697935ea",
-      "0x1d9bfe3f40ced82b24a80926e0efa8358c4f4724",
-      "0xf045b513b4a706da570ef20727760ada3870a1b9",
+      // "0xd01c5b6eef5e0751265927ef2ff7f53f697935ea", // disabled 2026-08-27: holds $35 (<$10k)
+      // "0x1d9bfe3f40ced82b24a80926e0efa8358c4f4724", // disabled 2026-08-27: holds $45 (<$10k)
+      // "0xf045b513b4a706da570ef20727760ada3870a1b9", // disabled 2026-08-27: holds $6 (<$10k)
       "0x22c076e5128967d025074644287c10954ec179a3",
       "0x15d1285a1c01aa7c69781e886b334d887835770b",
       "0xe80e835c953373bf3a8687db3477e0b4b6e7bac2",
       "0x9238ac1b2cd7058a637f2f920f76bd14037e4f89",
       "0xed820585c0a6c84f2f0fa83713d0f9baa498eac4",
       "0x160a057a9e08afcd2fc3b318c3f26c7e32c50c23",
-      "0x77ea89ce34a7accb1ed994ee5efbafe74ecef473",
+      // "0x77ea89ce34a7accb1ed994ee5efbafe74ecef473", // disabled 2026-08-27: holds $6 (<$10k)
       "0xa6cef719337587e4557694915ccac21b81904fb6",
-      "0xbb69f77d60806ee86f35558069dadea4af2398a2",
+      // "0xbb69f77d60806ee86f35558069dadea4af2398a2", // disabled 2026-08-27: holds $2.5k (<$10k)
       "0xd65fbe9e41b67b962eaad5f2442901a16879db86",
       "0xdc369b75d53bb2956f38241184f4bd0635a11128",
       "0xed99136a087643cf0a31c26d476adffbbe16b885",
@@ -348,21 +348,21 @@ module.exports = {
       "0x517b8751f286683739745fede126193bf8a80ed8",
       "0x53790bcdeac0d0d5832f3b4115a86c16441c1378",
       "0x875e865d610ce6e8d2eaacbfc21f932ab9c8f9a0",
-      "0x68d2871ec1ad14544bc3b8d6eec3c0ee57264a35",
-      "0xbc3517a4989e3016ad68516de43e8a30e04c9f96",
+      // "0x68d2871ec1ad14544bc3b8d6eec3c0ee57264a35", // disabled 2026-08-27: holds $2 (<$10k)
+      // "0xbc3517a4989e3016ad68516de43e8a30e04c9f96", // disabled 2026-08-27: holds $49 (<$10k)
       "0x109c6b7ad92f6464088eebbe13dab8b70103b2b2",
-      "0x23bafddae751c4c9307db0e0063f841d17ce0d65",
+      // "0x23bafddae751c4c9307db0e0063f841d17ce0d65", // disabled 2026-08-27: holds $58 (<$10k)
       "0x78f5f712cad7050bd8344a7ecf2029135f4fac35",
       "0xa9c0e3f534850a9853aa0c088ccce0b0b3b0f4a6",
-      "0x8707d05929d76d7ae3edb55d69c1424a57524e30",
+      // "0x8707d05929d76d7ae3edb55d69c1424a57524e30", // disabled 2026-08-27: holds $83 (<$10k)
       "0x4699f5c806e73009f387d7f0ee3555bfdd805e0d",
       "0x21cc7e2c3a3bc34de831dd017fda6120c8d8206a",
       "0x438ff9defabc34958d68bc3755aaad9213dc6e93",
       "0x7b4559f6829052bff44047c5b4e1fd0d3a716b5f",
       "0x64f3c7f6b2568fdbc4c0ff9515afa1a180f3c2a1",
       "0xa5778e72d1bf0a69f8ab5fac991050851927ba1f",
-      "0x1133553f8358874e865cf72e9a52daaf26028dad",
-      "0x92d91a6246a5d6018b9296df57f11e7f33370847",
+      // "0x1133553f8358874e865cf72e9a52daaf26028dad", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x92d91a6246a5d6018b9296df57f11e7f33370847", // disabled 2026-08-27: holds $2 (<$10k)
       "0xf343b5c935ce17d5e7a473732c14cf1088043738",
       "0xc0c171e23e0fb8f73ffa7cd96cc6060338c11cdc",
       "0xbfbb422d8e0952c2f426f8d8dc60acc9799a7c95",
@@ -372,16 +372,16 @@ module.exports = {
       "0xe44c6758340466de75ce4f3fe9bd251e1c4969cb",
       "0x7cac15e2cfe05e8dc8a739c2d92397b3920e2567",
       "0x112f76f34d9c1ac3a1a88097b4fac232327fa2ed",
-      "0x3a2f1d9f805bb78ced69d98ad8e118d776c31f51",
-      "0xb0f45e8cd293a7326231a8b3b3f5eb4f06b91b68",
+      // "0x3a2f1d9f805bb78ced69d98ad8e118d776c31f51", // disabled 2026-08-27: holds $87 (<$10k)
+      // "0xb0f45e8cd293a7326231a8b3b3f5eb4f06b91b68", // disabled 2026-08-27: holds $6 (<$10k)
       "0xdd11b2aa3f6533ef242c3f352114a13d3e9c0a51",
-      "0xe99b45347ccb1912bebac38f09ebf01d6295f668",
+      // "0xe99b45347ccb1912bebac38f09ebf01d6295f668", // disabled 2026-08-27: holds $6 (<$10k)
       "0x948f965d581e33182593af9fbcd71e39d215c11f",
       "0x75e93f3c72d3bcd55579f4896991be48f0717bab",
       "0x83c62f31d35cfe007888e77913207d1e89d09d6b",
       "0x91054819e7a9b713d8c4285bf0e973af6ff21352",
       "0x4a997b52bb9cc25790dc131902fe5e1ee301e829",
-      "0x804f21bdd365ea5759732764d9b89e36e18badfa",
+      // "0x804f21bdd365ea5759732764d9b89e36e18badfa", // disabled 2026-08-27: holds $448 (<$10k)
       "0x6f65c66f606ba809f3a3b0b4dca3714b35a262f1",
       "0x213d8a27bfb997e9682b37ba4531e3562220c86f",
       "0x8932929e863fd189c3e873be9012a10f38012968",
@@ -391,16 +391,16 @@ module.exports = {
       "0x71b2581389b7d06774c31beafea1a60d78adcd9d",
       "0x2d785cfde84bed9aa1707a68f30c252f3c8cf396",
       "0x94e650b3a3d6c517552323657e4024fb4d103e0b",
-      "0x731c201b0fb68ce549838175a5ffe01ed3622a2e",
+      // "0x731c201b0fb68ce549838175a5ffe01ed3622a2e", // disabled 2026-08-27: holds $6 (<$10k)
       "0x3cecbcb0daec0bf63b90b0a5ba27603b34694ab3",
       "0x1f272f40be7943576e4c1c025d5ca9b5bb29965a",
       "0x71d1441614e8559c8993145b2da08afc4b009117",
       "0xd0c8f7c0e9514f4be4d95a1721463b8e386cac33",
-      "0x08980f38feb950d42096b53bf813ca5ffa6dcc07",
+      // "0x08980f38feb950d42096b53bf813ca5ffa6dcc07", // disabled 2026-08-27: holds $7.5k (<$10k)
       "0x257dd2186ae4fcc30832a89f7fcae358e1d2a836",
-      "0x03086d30203cf33c827a04dff4ea6b1189066601",
+      // "0x03086d30203cf33c827a04dff4ea6b1189066601", // disabled 2026-08-27: holds $6 (<$10k)
       "0x161655fd689927936faa4d2018a2a0c78c4c7bc6",
-      "0x53f87798210a03aabd844a416edfef9f28396899",
+      // "0x53f87798210a03aabd844a416edfef9f28396899", // disabled 2026-08-27: holds $11 (<$10k)
       "0x6f7c297f7a9def2f0068ea1c6798b6a4f1352c08",
       "0x7d3b9f80e86335d7ec0e0c2573d106329698a335",
       "0x4a581b4c48d41701bfd07950f6e4e922473cd590",
@@ -409,16 +409,16 @@ module.exports = {
       "0xd2c3d79a3decce036b70eb666f19ffb7079041d6",
       "0x7496322e10e5efd6a42cc827df882edcf81eb230",
       "0x6dbc7e771e76a24709e6da608c0581892363a21e",
-      "0xd0b30e3b07372b777b90d2fa53fe5ac5b4dbf694",
+      // "0xd0b30e3b07372b777b90d2fa53fe5ac5b4dbf694", // disabled 2026-08-27: holds $44 (<$10k)
       "0x686c35cbf6299cb09049ece4c6a1578a59ecc8af",
-      "0xe07dbba31b4b88ecf640f05ad55aca6f1852de01",
+      // "0xe07dbba31b4b88ecf640f05ad55aca6f1852de01", // disabled 2026-08-27: holds $21 (<$10k)
       "0x26b48f8203a4f214d828510a5d5f2de48e242532",
-      "0x2cac222c6c59a21b0c1294f548fa881efbd1d046",
+      // "0x2cac222c6c59a21b0c1294f548fa881efbd1d046", // disabled 2026-08-27: holds $6 (<$10k)
       "0xa88a60cca4a87eb247f0820edc8a388c18df2407",
       "0xa7738c21ade0841d5a4229e2488a5b7f7a6b3e3e",
       "0xc8ee5d11adfd0e9d104662611a696f4c61f87d49",
       "0x84f8e8047645eb7fb342e71d6688ed759585fea5",
-      "0xf17f60098176c9bf66b6fd724765ef8fd21c8f82",
+      // "0xf17f60098176c9bf66b6fd724765ef8fd21c8f82", // disabled 2026-08-27: holds $31 (<$10k)
       "0xb5ea0d1f31b7202fa24d30a9343fa18da58858d7",
       "0x0ddfde5aadd3c037bbf223e332f3d292cc42fa99",
       "0xf830f14e48146a1fa609377b88bc73e5ed537767",
@@ -427,28 +427,28 @@ module.exports = {
       "0xcd2b51543b79dbcdd30c8768018911b102647008",
       "0xe81fc019681b0f3426a413a8ef22727df9794024",
       "0x84cce256e91152d4beefc5f7b1164f7361f73c81",
-      "0x150abc561ff27a50cabd722b19a064852b0bc38c",
+      // "0x150abc561ff27a50cabd722b19a064852b0bc38c", // disabled 2026-08-27: holds $6 (<$10k)
       "0x70bf5a604a75b0cd010cdbe59511a1df64d08fa3",
       "0x97a4ca366c9b5af3c3bc70c941ca5f01b8b1c2a2",
       "0x829a9e60d1a3e45a134e40559ebca1480de82ba2",
-      "0xa69184c33088e6157677cebfbf984226def09993",
+      // "0xa69184c33088e6157677cebfbf984226def09993", // disabled 2026-08-27: holds $6 (<$10k)
       "0xdc8efefe752711c48bfc060eeec6d4e331b99574",
       "0xcdcd05375d25d4ab860d3e872c1a885eb2f59c47",
-      "0x7f2fc994b219b540f7b88422e6865757c06ac52e",
+      // "0x7f2fc994b219b540f7b88422e6865757c06ac52e", // disabled 2026-08-27: holds $16 (<$10k)
       "0x19d33db48de46270bb256cda1e384115510e6360",
-      "0x7b724b17697b64dd54da52274114aaf3dd40a159",
+      // "0x7b724b17697b64dd54da52274114aaf3dd40a159", // disabled 2026-08-27: holds $6 (<$10k)
       "0x6099248cc9cb22ccb37b8428e3410c1f1334c4b7",
-      "0x214c6f55df15f53c549305043288ee3da1ae1b42",
-      "0xa3b7ccaf36184f63ca9d3a98aba7970df81e5424",
-      "0x46e435df56f0292f1cfdabe28f8bc7a505281357",
-      "0x50f7c1d7c95ef134d730ad4486f553d28df3f4fc",
-      "0xb0ec690d888deb405391c2e03b4077bdf9189cd6",
+      // "0x214c6f55df15f53c549305043288ee3da1ae1b42", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0xa3b7ccaf36184f63ca9d3a98aba7970df81e5424", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x46e435df56f0292f1cfdabe28f8bc7a505281357", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x50f7c1d7c95ef134d730ad4486f553d28df3f4fc", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0xb0ec690d888deb405391c2e03b4077bdf9189cd6", // disabled 2026-08-27: holds $6 (<$10k)
       "0xab25cad501ba339d876d4c3ad0f0a3457a98f7df",
       "0x4f8fd058439f7456e8b25c1a457fcb25c1003990",
-      "0xb3cc3cefb38cb6745221b4f44a171ce5fc1fc5d7",
-      "0x8040b0334e8be7a4b3285d761b2432836fab6a75",
-      "0x25bd0f9d107431eb9bb6c79dda31c2462248c123",
-      "0x45dead1c7657744a7c98c626c2b0ce216031f550",
+      // "0xb3cc3cefb38cb6745221b4f44a171ce5fc1fc5d7", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x8040b0334e8be7a4b3285d761b2432836fab6a75", // disabled 2026-08-27: holds $22 (<$10k)
+      // "0x25bd0f9d107431eb9bb6c79dda31c2462248c123", // disabled 2026-08-27: holds $6 (<$10k)
+      // "0x45dead1c7657744a7c98c626c2b0ce216031f550", // disabled 2026-08-27: holds $6 (<$10k)
       "0xe2a45aa78ccabff8e6e1758639c575011a2f3334",
       "0x7c16e4537db13af0ba3afcd89a244b58032d905e",
       "0x528b1aa2f0d8cb916d6a0612055001efad1b190e",
@@ -457,15 +457,15 @@ module.exports = {
       "0xfff6502ea167a8d9228a8bec24aac01ed91433cf",
       "0xdc0cd6184c4374960743ef0fad70e6eeda8282fc",
       "0x81e0aca8100978c9affbb35add3b1886d5aa6bc0",
-      "0x24bd4145d932cb76c2007bb9e6f4e52a54ad8a26",
+      // "0x24bd4145d932cb76c2007bb9e6f4e52a54ad8a26", // disabled 2026-08-27: holds $6 (<$10k)
       "0xa1f2e6dc9719cf870eea8ed56a7896ab22afe4c5",
       "0xaceb4bd4e215c5c4e2f9dbe2db6d38b0622d3cca",
-      "0x419c675a5ed2987ed9afba2c9c082b3b99a12b5b",
-      "0xa9347dbd3188ea41b24ace2df5d7ea549469d734",
+      // "0x419c675a5ed2987ed9afba2c9c082b3b99a12b5b", // disabled 2026-08-27: holds $23 (<$10k)
+      // "0xa9347dbd3188ea41b24ace2df5d7ea549469d734", // disabled 2026-08-27: holds $6 (<$10k)
       "0x9de9aed34e139c7562253148ee9bddd5d2bb1a20",
-      "0xf59f9eb43ca6296fc81f5708435dd410a7397c83",
+      // "0xf59f9eb43ca6296fc81f5708435dd410a7397c83", // disabled 2026-08-27: holds $6 (<$10k)
       "0x215184a7dd804cf2709278ede4d0e801b84328ea",
-      "0xe15e8c6e7a6a520fe81d0a7f1207554dd00b20f1",
+      // "0xe15e8c6e7a6a520fe81d0a7f1207554dd00b20f1", // disabled 2026-08-27: holds $11 (<$10k)
       "0xd62dd1444f25746378315090733149fc6c94d2ef",
       "0xbf3c6b49e3851ff36b1e78307fee33d2af3b5517",
       "0x47ac7e561cde372245974079e99713588fbefaff",
@@ -478,7 +478,7 @@ module.exports = {
       "bc1qzl6tysx7pruypuuw0h5sfw4jryfqzad4yzpyuw", // 1
       "bc1qq5r706plcc7kgk3skqk4avpxc06sz9gmerhjec", // 1
       "bc1qndz4wtssws2gle09wdmfn7evlr2424wa358pk3", // 2
-      "bc1qu5keasldcnc8ce4x36r3053d3qyp3zgjmu2965", // 2
+      // "bc1qu5keasldcnc8ce4x36r3053d3qyp3zgjmu2965", // 2 // disabled 2026-08-27: holds $2.0k (<$10k)
       "bc1q6lkckg5zcjytjvjre447q52y684gl2jp8eel9r", // 2
       "bc1q3gswjz6c8mdl5ulukk69dept4p93ascm96wzwc", // 2
       "31m4rGmokAqWKb3R8ZvNJ2sjyFBtrRwh4Q", // 3
@@ -520,14 +520,14 @@ module.exports = {
       "39ctrY8ZpMvzXP3EBYPByiJJpfsX9uKDXW",
       "37ZVYHXA9A3CpfeyctojcjrZXLbSkgqky5",
       "38pd3Mhm9YX67aiVemeBHQN3WcrQ3Ng8m4",
-      "3KvL73PSVcPcJBzQM6mcj62Yudq4hTiaVz",
+      // "3KvL73PSVcPcJBzQM6mcj62Yudq4hTiaVz", // disabled 2026-08-27: holds $56 (<$10k)
       "3DbD44p1gTPuFzBPZaWpAD785nQmVLEMMV",
       "3CNN8tMWWDJPdTYKAf6EoHRhgjMm6rQtvd",
       "366uk71kHHFpSU63QNg6AktYeotiKSRgWi",
       "3KCrmwsX9UmECsacQuVRLknvuWNSjwztPf",
       "3E4uu5hkqpCpztCWajPiZSkc2LonxGQ7Er",
       "3PYbMP6C43saW2sSGr8JtgVBLTKW1rSMdX",
-      "34kKTsgAzLx6fYvwv8vN9p7uwr6eihvnwh",
+      // "34kKTsgAzLx6fYvwv8vN9p7uwr6eihvnwh", // disabled 2026-08-27: holds $93 (<$10k)
       "3LH8PZ4y8jnEf42j774MNiW3GuFQo7cpxh",
       "3BhFYX7X1GWg4DHD1mAEEQ6g6byhYFdPVd",
       "3KTcnkrzriidfMkSht846n8S8KXqUZM9za",
@@ -602,7 +602,7 @@ module.exports = {
       "36mpLYWjEFPcMXqf1D48MZtehiapK8Mn6x",
       "3HpGtWtq1yBNNHveYozhH3D51wgtiXwtS3",
       "3BrJZpd5MgGTeSHJagcgB52dybf1oqtcro",
-      "3KaJvTUiXPfBcixrTEviTfHRY3VozewNkx",
+      // "3KaJvTUiXPfBcixrTEviTfHRY3VozewNkx", // disabled 2026-08-27: holds $1.2k (<$10k)
       "33wWvutkN1TgWNjgtCbxX76YStSaZuTrVz",
       "3HYGFh5tMuDkjHgzbkBBEUvhHaB9MCykQz",
       "3BH19txrRDvDvAB1x6HwURcwGxEVeLdHxG",
@@ -704,16 +704,16 @@ module.exports = {
       "43WpML1F2U52TCZ8BPW16TcnTq4ZfFNCFDkhrB9voNMT", // 1
       "4yaYAnqJQ8cQ5Xx4oieNgxD954EGFiAHcJfRiWUaZUmt", // 1
       "CmtxExQVhPKJ6z2FDpHWNVXFBhwywcXNjYB8WzpZGLKx", // 2
-      "DyWrQZXx6EzjZ9b845Pm8awiDBgMuPtX1jHAgXD6w7Sw", // 2
+      // "DyWrQZXx6EzjZ9b845Pm8awiDBgMuPtX1jHAgXD6w7Sw", // 2 // disabled 2026-08-27: holds $4.7k (<$10k)
       "45R4S2Hc62tRRbgZhkgPC4fdn5f3h5Zj7oCA93yA5En6", // 2
       "BwLnmeQErGN8TsvMFr2ywWhX6qAL74w1FMo5Z18qRzWD", // 2
-      "DhEoMEppzLPdxNuZsqSpDQWcHX4K7cqeAnFJPNQjeoq", // 3
+      // "DhEoMEppzLPdxNuZsqSpDQWcHX4K7cqeAnFJPNQjeoq", // 3 // disabled 2026-08-27: holds $6.3k (<$10k)
       "94i35mzdbAHW9v6ikG8aD9dAVDQMtrorpB54yerZotpj", // 3
-      "DxXPPT3KangbWHjj6pUvoStyEbvp6yxiFA1cwcPZy9wK", // 3
-      "3btHFvErK81JkhNQxzkYRDagYrGaERHvhn41pGiVjWHk",
+      // "DxXPPT3KangbWHjj6pUvoStyEbvp6yxiFA1cwcPZy9wK", // 3 // disabled 2026-08-27: holds $8.7k (<$10k)
+      // "3btHFvErK81JkhNQxzkYRDagYrGaERHvhn41pGiVjWHk", // disabled 2026-08-27: holds $1 (<$10k)
       "GZGTiGshYWH7nhDfB5BYzCkB25xPf45MnkuaMPzpHTpo",
-      "6RkdU9NMjp4FCfA9Yy8gXganZTs1sZSJhJtHGP99gCdc",
-      "3NqPc7oSD7uKNzPMyFZ1GsBioWrdgr6LnrUUNY8KMbyG",
+      // "6RkdU9NMjp4FCfA9Yy8gXganZTs1sZSJhJtHGP99gCdc", // disabled 2026-08-27: holds $0 (<$10k)
+      // "3NqPc7oSD7uKNzPMyFZ1GsBioWrdgr6LnrUUNY8KMbyG", // disabled 2026-08-27: holds $0 (<$10k)
       "DKJvTnvz28mnsDm1Mp5AVW2RwHcC2hpDweNrNGUysNdm",
       "89qRDdrUhjz2YVYsoMM4odsyPVkJBdJZjuA4gfJ1dh8v",
       "Bok48fKSkBVt77H7TetKzFUvC2AyrpZpd3Mir96N9F3f",
@@ -727,13 +727,13 @@ module.exports = {
       "A62Fez8UskWqa4jcCjPQYZqW3R5agoy83HsyDzEm2Lkj",
       "AHJGEENuv3iLd4nM21MKp7aMW9SXLFZ7RKTe4i8qGtiX",
       "2b9nM3utPDiENJDjv98P9bvYBrEsZNnP4KSWQgnLdHKF",
-      "8xiyV2VAyY3DA7ENVkssLDomMdvn2H8HHZxLx7byxwBe",
+      // "8xiyV2VAyY3DA7ENVkssLDomMdvn2H8HHZxLx7byxwBe", // disabled 2026-08-27: holds $389 (<$10k)
       "5QoeUAukKKZsTL8QzSyTGigmr2ZigqKV3x6fnTCe2cur",
       "AuC5YDZsXt1DXUx4HLzvaFh4KAUL9zhvuXGPVdHvDSmk",
-      "6aQFcgooAr4zD5PLc8BVaigr5QXjGqSZZoz8Wb2wREBG",
+      // "6aQFcgooAr4zD5PLc8BVaigr5QXjGqSZZoz8Wb2wREBG", // disabled 2026-08-27: holds $1 (<$10k)
       "2Mnthkn8sakezX3C9Bu7M9bfgPDvXA57F2TZ7TJminec",
       "7FsaShq44W4jbPr46f9rwygHpJNY4Ex4BECQ2p4yikzu",
-      "CgcKu1FsXHfMxD4xTRastV3Rw5hpcwKmvVRpREgvehgz",
+      // "CgcKu1FsXHfMxD4xTRastV3Rw5hpcwKmvVRpREgvehgz", // disabled 2026-08-27: holds $472 (<$10k)
       "4qZF67thYxeW48HLNrj6xJL1thyg4QZbY35H3R3YpJdh",
       "6HKbxTBVYKsGZCEfwEjoUMCmQr7KDT7HF5SpvSXeHk1T",
       "B9H29n73B57cG3UVW8PJgmEZyZmBEMmvzV8g3BXTNwZn",
@@ -742,22 +742,22 @@ module.exports = {
       "EnvF6ZvLsZXqvssRW4mSdDXdVN92Dgt8hhQ3nHGjaA37",
       "7AMAPsyGHyJfi8AXwZcCzxzuGwWz5BkKg2K9NTPrCVKM",
       "E7mFLKaeKddVoRDEGzHXjiFdq2kdJZqoRXMVUo4Y6Hfh",
-      "7q6M4EgwMQcLkqoTPC5zqbgSc43LS4KayCUFippmwsmy",
+      // "7q6M4EgwMQcLkqoTPC5zqbgSc43LS4KayCUFippmwsmy", // disabled 2026-08-27: holds $5 (<$10k)
       "87tk8mkvoju3DJSL9qbN1fjq9MT6Fv8iYsp5sAzV6XP6",
-      "EVdnJyYZVzFFuxXr5vSFTQqxjh6D1Vdz2exFhgHL7y2Z",
+      // "EVdnJyYZVzFFuxXr5vSFTQqxjh6D1Vdz2exFhgHL7y2Z", // disabled 2026-08-27: holds $1 (<$10k)
       "5rDJPjJdMoSdNMJzgDBbFqDhnjwEShzh6VGdyysMpDKn",
       "CmqTqGTAVgn8K3yaDz3WaKJRgABWoLPZGNwUsW4doUye",
       "3HeTbCPUEsihUNicDJJbU9uiVMaHasuUvgJ2FFxLTwxR",
-      "9SYBgJFyJpHVBM2uDJoSS6egztKiwCoRazdAxHX1gEcJ",
+      // "9SYBgJFyJpHVBM2uDJoSS6egztKiwCoRazdAxHX1gEcJ", // disabled 2026-08-27: holds $15 (<$10k)
       "2NDryinNawGtsFRGV2H856v92qMZAExpYngxHuRxmp8F",
       "GJuB5tcbytHm3GirpC7kR27JzcFhpyLEtEProipm7ZQs",
       "BuBLPYxGYzf5hfMKRKnpnBRvsw1HiVAkcHYkjAjmy1ef",
-      "BXDpbSsz9G4q7byqdnXX1pR28v9hq1ATeDicbpcViuE4",
-      "5WAXhyLYeB2A3JuqVqEGoUoXdScnD2JYsXB2tNxxxTaz",
-      "95vTeDZN4grNAhhNEj227K18Tc1EkK3AUMibs3GPQdRB",
+      // "BXDpbSsz9G4q7byqdnXX1pR28v9hq1ATeDicbpcViuE4", // disabled 2026-08-27: holds $1 (<$10k)
+      // "5WAXhyLYeB2A3JuqVqEGoUoXdScnD2JYsXB2tNxxxTaz", // disabled 2026-08-27: holds $9.5k (<$10k)
+      // "95vTeDZN4grNAhhNEj227K18Tc1EkK3AUMibs3GPQdRB", // disabled 2026-08-27: holds $1 (<$10k)
       "BTH922eXrTKQTzAp7vpUJaBEesuCQWKvuCc8fgCghNGL",
-      "AfGPnG2TGUea4bW7gAmdMcMr6Lw4W8cyDAxmC5Aq8dhj",
-      "8GevsG6gHbs1y121tmTMfRSq79bCVDtemwFivtSF3WSs",
+      // "AfGPnG2TGUea4bW7gAmdMcMr6Lw4W8cyDAxmC5Aq8dhj", // disabled 2026-08-27: holds $5 (<$10k)
+      // "8GevsG6gHbs1y121tmTMfRSq79bCVDtemwFivtSF3WSs", // disabled 2026-08-27: holds $1 (<$10k)
     ],
     blacklistedTokens: [
       '72puLt71H93Z9CzHuBRTwFpL4TG3WZUhnoCC7p8gxigu', // USDGO - own token
@@ -786,54 +786,54 @@ module.exports = {
       "TKLRWZ4PKZayHCAQsitJhLau4bXMyUJxhW", // 2
       "TKFhkvMpvPNqYFtWjTAP3n5R7NgcGJwzSo", // 3
       "TSA1Qox7hSfBdAc9JcYNtewoZeD4fukbNM", // 3
-      "TPVrZvorpTwA9j9ZYvYKXLEeJdSAboKD4Z",
-      "TA5gT7kFLTYSgrTQgsCah6jfCz75xX17ce",
-      "TYFhHoGfVfRH6HP7B5w6uoUZ85P9SenNu8",
-      "TJzygEinLhWvNe1yMoBDsVgMvCLg1oos1Y",
+      // "TPVrZvorpTwA9j9ZYvYKXLEeJdSAboKD4Z", // disabled 2026-08-27: holds $84 (<$10k)
+      // "TA5gT7kFLTYSgrTQgsCah6jfCz75xX17ce", // disabled 2026-08-27: holds $8.4k (<$10k)
+      // "TYFhHoGfVfRH6HP7B5w6uoUZ85P9SenNu8", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TJzygEinLhWvNe1yMoBDsVgMvCLg1oos1Y", // disabled 2026-08-27: holds $5.1k (<$10k)
       "TGTZ5eSy3ePPAMV1wfoTFjme7WHBHWNQrg",
       "TSMtgLhYvQsDvFVxFg2c5HXaNavinoUSm3",
-      "TTV4qWasDMjBnZjsj3eZpwoxXErLy8F391",
-      "TNJqJAoSG14zeuMPg2vdpETjVBLBKQphKy",
+      // "TTV4qWasDMjBnZjsj3eZpwoxXErLy8F391", // disabled 2026-08-27: holds $80 (<$10k)
+      // "TNJqJAoSG14zeuMPg2vdpETjVBLBKQphKy", // disabled 2026-08-27: holds $28 (<$10k)
       "TPim5V7XTmr8ydywj8jR21EHEW5RAG9MB4",
       "TE4es9Z1YLf2haL45NddUQma8BV4VwLuah",
-      "TD6gBRfnghT1CkQsp3qmnKpgUsZNi6dJAP",
+      // "TD6gBRfnghT1CkQsp3qmnKpgUsZNi6dJAP", // disabled 2026-08-27: holds $82 (<$10k)
       "TUwwqx9GwG7AsVG8imVMi7W5bSsrEdWcBi",
-      "TJzRUDXMjoSaMSFiHxJ8CApcahTfdMv2h4",
-      "TTiKsAVYeQiBkuUmUyFTwVAQj6UUNj9qNR",
+      // "TJzRUDXMjoSaMSFiHxJ8CApcahTfdMv2h4", // disabled 2026-08-27: holds $9.8k (<$10k)
+      // "TTiKsAVYeQiBkuUmUyFTwVAQj6UUNj9qNR", // disabled 2026-08-27: holds $13 (<$10k)
       "TXU9g3ydaboacJHLWxzXgfC8e6yTs3SLpd",
-      "TDSj3QQJZ4g4CenAQrb3xazaYNPm9eDnRz",
-      "TW6iXYPqFD1RZs69Z7d6CgAoX1LAY2z3P4",
+      // "TDSj3QQJZ4g4CenAQrb3xazaYNPm9eDnRz", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TW6iXYPqFD1RZs69Z7d6CgAoX1LAY2z3P4", // disabled 2026-08-27: holds $62 (<$10k)
       "TE3jnZPccdFxa6vZUYsGKcCDyR53QrhzA6",
       "TFpDPqVMUSpZGVzQACiVHoCxRE9LsFjAd6",
       "TVTr1LFMefzeT2wsvE6ZyJYQ8hm48jk8iR",
-      "THuS7EDCqPAFQt6EJ7RogxdhG5BrBp3PgW",
-      "TSdNZbmAdAGtTeoa3cjDZzDfEmgUpzF6MC",
-      "TE7tSqii9umQJfAfnmNjm3Xmr81SGnEDMx",
-      "TDW9X5VGtuKYCSBWTdy1WEUaGwH6HYBGej",
-      "TYK8Ss4wRZJRAFpdZZETsNMdSLnTh7iwBK",
-      "TN77fvWmELWiAwy5icJRytC9YQrbPiSdet",
-      "TSJnWoiJVodNYUK6nWhKKJQcK4MNdoRvGf",
-      "TE6NAd4WwB7eJsnjckqtiPjgVJYXsTiyXu",
-      "TJekGf9YgcgYwiehy4c4QUTQjAodj4nnXA",
-      "TE45xaVGLPYmm4z168xDDpzRhc1487rwzJ",
-      "TE6EwmAHQqFFtD5Y6rrmCiTNp24bDS4TsY",
+      // "THuS7EDCqPAFQt6EJ7RogxdhG5BrBp3PgW", // disabled 2026-08-27: holds $42 (<$10k)
+      // "TSdNZbmAdAGtTeoa3cjDZzDfEmgUpzF6MC", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TE7tSqii9umQJfAfnmNjm3Xmr81SGnEDMx", // disabled 2026-08-27: holds $28 (<$10k)
+      // "TDW9X5VGtuKYCSBWTdy1WEUaGwH6HYBGej", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TYK8Ss4wRZJRAFpdZZETsNMdSLnTh7iwBK", // disabled 2026-08-27: holds $15 (<$10k)
+      // "TN77fvWmELWiAwy5icJRytC9YQrbPiSdet", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TSJnWoiJVodNYUK6nWhKKJQcK4MNdoRvGf", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TE6NAd4WwB7eJsnjckqtiPjgVJYXsTiyXu", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TJekGf9YgcgYwiehy4c4QUTQjAodj4nnXA", // disabled 2026-08-27: holds $14 (<$10k)
+      // "TE45xaVGLPYmm4z168xDDpzRhc1487rwzJ", // disabled 2026-08-27: holds $29 (<$10k)
+      // "TE6EwmAHQqFFtD5Y6rrmCiTNp24bDS4TsY", // disabled 2026-08-27: holds $13 (<$10k)
       "TDW2Pn6bWscvE8Hzr4B5441gG54fYA7fA3",
       "TPi1boKQuEzWGGkNc9acQA7GV4ZUNWWEbc",
       "TSngxgXisvihA9krZ7cuLRbGzjG9rXkiNy",
-      "TSapJX1hL3ZW7Si4YuvffsKQwG9eqvh3C2",
-      "TSGDfFB5f8jqRGCtx1eu6q3wQrSA8GDHJ1",
+      // "TSapJX1hL3ZW7Si4YuvffsKQwG9eqvh3C2", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TSGDfFB5f8jqRGCtx1eu6q3wQrSA8GDHJ1", // disabled 2026-08-27: holds $13 (<$10k)
       "TLongszDreSszgLwdK1uaW2LHYUTwjMJeo",
       "TCE5PTbaXUrgDLkzRBeaRGkQjaCRnvFELi",
       "TJRaYRcaHfeFKnCVts966GkLCXM4TFfq5U",
-      "TXtS3Y9iyWBqGJx97hZGrU8zMfcERU4Ppu",
+      // "TXtS3Y9iyWBqGJx97hZGrU8zMfcERU4Ppu", // disabled 2026-08-27: holds $13 (<$10k)
       "TENAXWmVKkPHmqgWqQ2FRzanQ2pWCeFB3E",
-      "TUZ7bL5BHFprnPu3DR7ys6eG8sd2ZFVXiq",
-      "TKV6agddpm3he4afnqWAe68teUnXEzdd55",
-      "TG6pAt5HAopqm1Qn9wg5pBxxrJuaqz1Rgs",
+      // "TUZ7bL5BHFprnPu3DR7ys6eG8sd2ZFVXiq", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TKV6agddpm3he4afnqWAe68teUnXEzdd55", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TG6pAt5HAopqm1Qn9wg5pBxxrJuaqz1Rgs", // disabled 2026-08-27: holds $13 (<$10k)
       "TVPE3nbK7UwynTWjKytJFJHnVHX6cuMMDZ",
       "TDxNWtcJivumH1um8ReMgbATY63cFmtVAw",
-      "THycZNfkhfHUMM2stDFCnhgPEE5CbdTz9S",
-      "TWmXZZXfCXBa6vy6tKb1LAoMXbvhntHQjk",
+      // "THycZNfkhfHUMM2stDFCnhgPEE5CbdTz9S", // disabled 2026-08-27: holds $13 (<$10k)
+      // "TWmXZZXfCXBa6vy6tKb1LAoMXbvhntHQjk", // disabled 2026-08-27: holds $13 (<$10k)
     ],
   },
   polygon: {
@@ -903,16 +903,16 @@ module.exports = {
   ripple: {
     owners: [
       "rE57dGTrhPjKV8RwpL4U57qSLYbedz1dNS", // 1
-      "rhSUC45YLKoz5uy5A4VtCwXAz9d7rQMgAZ", // 1
-      "rnHYKxdnPFwHMc9wpARskAgJnYY1x6JZhu", // 2
-      "rfZS4yRkqTfaMKiFyUTsiF1TQ6dd67sAnK", // 2
-      "rhqxpAugGuwp6tYxy5jRmjc73468bSaaKS", // 2
-      "rLPZ9JwjGQmuymo7NxUzf7eKFZCXhic7VW", // 2
+      // "rhSUC45YLKoz5uy5A4VtCwXAz9d7rQMgAZ", // 1 // disabled 2026-08-27: holds $1 (<$10k)
+      // "rnHYKxdnPFwHMc9wpARskAgJnYY1x6JZhu", // 2 // disabled 2026-08-27: holds $8.4k (<$10k)
+      // "rfZS4yRkqTfaMKiFyUTsiF1TQ6dd67sAnK", // 2 // disabled 2026-08-27: holds $3 (<$10k)
+      // "rhqxpAugGuwp6tYxy5jRmjc73468bSaaKS", // 2 // disabled 2026-08-27: holds $38 (<$10k)
+      // "rLPZ9JwjGQmuymo7NxUzf7eKFZCXhic7VW", // 2 // disabled 2026-08-27: holds $3 (<$10k)
       "rwW6g6iqyZHjmLiPdnwgYFBgeepQ4wbw73", // 2
-      "rHThQZRKbj4d5mbdKmzRukMBkkVSZsYxeR", // 2
-      "r3GC3nruKu5KFj3xhZFZ59eDi1FFCgUMPy",  // 3
+      // "rHThQZRKbj4d5mbdKmzRukMBkkVSZsYxeR", // 2 // disabled 2026-08-27: holds $3.8k (<$10k)
+      // "r3GC3nruKu5KFj3xhZFZ59eDi1FFCgUMPy",  // 3 // disabled 2026-08-27: holds $281 (<$10k)
       "r95CVf2nDKeyK8UPqNZTXefX4Wk8tqU4cQ",  // 3
-      "rDrcx9dkWuATH2TnViuez1wqJj5qnVNBKB",  // 3
+      // "rDrcx9dkWuATH2TnViuez1wqJj5qnVNBKB",  // 3 // disabled 2026-08-27: holds $1.1k (<$10k)
       "rfPUpapHE9snBTMoCaP5KXS9GPY824fdWA",  // 3
     ],
   },
