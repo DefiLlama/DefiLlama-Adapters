@@ -16,18 +16,15 @@ async function tvl(api) {
       abi: "function whitelistedTokens() view returns (address[])",
     });
 
-    // 2. Fetch withdrawable balances (Treasury idle + Vault strategies) for each token
+    // 2. Fetch withdrawable balances (Treasury idle + Vault strategies) strictly
     const withdrawableBalances = await api.multiCall({
       target: treasury,
       abi: "function withdrawable(address) view returns (uint256)",
       calls: tokens,
-      permitFailure: true,
     });
 
     tokens.forEach((token, i) => {
-      if (withdrawableBalances[i]) {
-        api.add(token, withdrawableBalances[i]);
-      }
+      api.add(token, withdrawableBalances[i]);
     });
   }
 }
