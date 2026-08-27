@@ -62,18 +62,25 @@ async function sonicTvl(api) {
   return sumTokens2({ api, ownerTokens: sonicHubVaults });
 }
 
-// Sonic-only: SODA held by xSODA and stSoda staking contracts.
+// Sonic-only: staked SODA.
+// SODAX staking uses a two-level vault: user deposits SODA -> receives stSoda
+// (1:1 liquid staking token) -> stSoda is auto-deposited into the xSoda ERC-4626
+// vault (`asset() = stSoda`, `totalAssets()` = total stSoda under management,
+// which equals total SODA staked). Neither contract holds SODA directly, so
+// a naive `balanceOf(SODA)` on either address returns 0. Use the vault's
+// `totalAssets()` to get the true staked amount (matches the SDK's
+// `getStakedSodaAmount` -> `totalStaked` field).
 const SODA_SONIC = '0x7c7d53EEcda37a87ce0D5bf8E0b24512A48dC963';
 const XSODA = '0xADC6561Cc8FC31767B4917CCc97F510D411378d9';
-const STSODA = '0x4333B324102d00392038ca92537DfbB8CB0DAc68';
 
 async function sonicStaking(api) {
-  return sumTokens2({ api, owners: [XSODA, STSODA], tokens: [SODA_SONIC] });
+  const totalStaked = await api.call({ target: XSODA, abi: 'uint256:totalAssets' });
+  api.add(SODA_SONIC, totalStaked);
 }
 
 module.exports = {
   methodology:
-    'TVL sums assets custodied by the SODAX AssetManager on each supported spoke chain plus the Sonic-native assets held in the hub-side sodaX vault tokens (sodaUSDC, sodaUSDT, sodaETH, sodaS). Per-chain AssetManager addresses and supported-token sets are pulled live from the SODAX spoke config API. Money-market supplied collateral is not counted separately because it is the same wrapped representation of assets already locked on spoke AssetManagers. Solver inventory is external and excluded. Staked SODA (xSODA + stSoda) is reported under staking rather than TVL. Non-EVM spokes (Solana, Bitcoin, Stellar, Sui, ICON, NEAR, Stacks, Injective) will be added in a follow-up.',
+    'TVL sums assets custodied by the SODAX AssetManager on each supported blockchain network plus the Sonic-native assets held in the hub-side sodaVariants (sodaUSDC, sodaUSDT, sodaETH, sodaS). Per-network AssetManager addresses and supported-token sets are pulled live from the SODAX spoke config API. Money-market supplied collateral is not counted separately because it is the same wrapped representation of assets already locked on the AssetManagers. Independent solver inventory is external and excluded. Staked SODA is reported under staking as the xSODA vault totalAssets (the SDK-canonical "totalStaked" figure). SODAX is live on 21 blockchain networks total; this adapter currently covers the 12 EVM networks. Non-EVM networks (Solana, Bitcoin, Stellar, Sui, ICON, NEAR, Stacks, Injective) and Redbelly will be added in follow-up PRs.',
 };
 
 Object.values(chainIdToName).forEach((chain) => {

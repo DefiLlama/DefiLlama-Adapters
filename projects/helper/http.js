@@ -109,7 +109,7 @@ async function proxiedFetch(url) {
   const authInfo = getEnv('PROXY_AUTH')
   if (!authInfo) return get(url)
 
-  const [host, username, password] = authInfo.split(':')
+  const [host, username, password, port = 8001] = authInfo.split(':')
 
   const client = axios.create({
     httpsAgent: new https.Agent({
@@ -121,7 +121,7 @@ async function proxiedFetch(url) {
       proxy: {
         protocol: "https",
         host,
-        port: 8000,
+        port: parseInt(port),
         auth: { username, password },
       },
     })

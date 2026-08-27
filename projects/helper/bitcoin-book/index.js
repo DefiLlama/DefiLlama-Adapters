@@ -457,6 +457,7 @@ module.exports = {
     "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37",
     "3D7pZri6kLqXDQMbf5G8De39K36eBaNKBG",
     "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5",
+    "bc1qdg5fr2zq0w0r8l3hggm25uhdc7rjqs5r0az508",
   ],
   bitvenus: [
     //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
@@ -617,13 +618,6 @@ module.exports = {
     "3PjNaSeP8GzLjGeu51JR19Q2Lu8W2Te9oc",
     "3NbdrezMzAVVfXv5MTQJn4hWqKhYCTCJoB",
     "34VXKa5upLWVYMXmgid6bFM4BaQXHxSUoL",
-  ],
-  mtGoxEntities: [
-    // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
-    "bc1qa5wkgaew2dkv56kfvj49j0av5nml45x9ek9hz6",
-    "bc1qmxjefnuy06v345v6vhwpwt05dztztmx4g3y7wp",
-    "bc1qf2yvj48mzkj7uf8lc2a9sa7w983qe256l5c8fs",
-    "bc1qe7nk2nlnjewghgw4sgm0r89zkjzsurda7z4rdg",
   ],
   silkroadFBIEntities: [
     // https://www.reddit.com/r/CryptoCurrency/comments/li1fw7/btc_silkroad_stash_seized_nov_2020_by_the_feds/
@@ -1126,6 +1120,7 @@ module.exports = {
   bitgetBtc: [
     "bc1pvwjkr0724ckucdvrtxjzml9ka7jnzzjaejvwfnn8a2avvpnljthseg2a0e",
     "bc1pxw4gtelg3lkmatdjmjxsp2kx22t44wyk0snkszhvw4prpygz8ajqaw03fs",
+    "19pFLWW3CwjZujRWpVEMdguBMZEqPuj5nA",
   ],
   magicEden: ["3P4WqXDbSLRhzo2H6MT6YFbvBKBDPLbVtQ"],
   gateBtc: [
@@ -1176,6 +1171,10 @@ module.exports = {
   webot: [
     "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
     "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
+  ],
+  websea: [
+    "39u712JCmQ1GfqWQtKdQHTyQA9pv2qNnGm",
+    "bc1q730a2njpypegll9ef6566vmdpakuf8t2au70dk",
   ],
 };
 

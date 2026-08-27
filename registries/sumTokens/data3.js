@@ -739,9 +739,10 @@ module.exports = {
     },
   },
   "veil": {
+    "methodology": "TVL counts assets held in Veil Cash privacy pools on Base, including the active WETH and USDC pools and the V13 multi-asset pool. Legacy pool addresses are retained solely for historical TVL. VEIL staking is reported separately.",
     "base": {
-      "tvl": { "tokensAndOwners": [[ADDRESSES.null,"0x6c206B5389de4e5a23FdF13BF38104CE8Dd2eD5f"],[ADDRESSES.null,"0xC53510D6F535Ba0943b1007f082Af3410fBeA4F7"],[ADDRESSES.null,"0x844bB2917dD363Be5567f9587151c2aAa2E345D2"],[ADDRESSES.null,"0xD3560eF60Dd06E27b699372c3da1b741c80B7D90"],[ADDRESSES.null,"0x9cCdFf5f69d93F4Fcd6bE81FeB7f79649cb6319b"],[ADDRESSES.base.USDC,"0xA4dB5eC5d0a2ee01CcD8D6e2e53224CF4E81A9b3"],[ADDRESSES.optimism.WETH_1,"0x293dcda114533ff8f477271c5ca517209ffdeee7"]] },
-      "staking": { "owners": ["0x3225b5a7c842cC227C773636F5C574443C62bb86"], "tokens": ["0x767A739D1A152639e9Ea1D8c1BD55FDC5B217D7f"] },
+      "tvl": { "tokensAndOwners": [[ADDRESSES.null,"0x6c206B5389de4e5a23FdF13BF38104CE8Dd2eD5f"],[ADDRESSES.null,"0xC53510D6F535Ba0943b1007f082Af3410fBeA4F7"],[ADDRESSES.null,"0x844bB2917dD363Be5567f9587151c2aAa2E345D2"],[ADDRESSES.null,"0xD3560eF60Dd06E27b699372c3da1b741c80B7D90"],[ADDRESSES.null,"0x9cCdFf5f69d93F4Fcd6bE81FeB7f79649cb6319b"],[ADDRESSES.base.USDC,"0xA4dB5eC5d0a2ee01CcD8D6e2e53224CF4E81A9b3"],[ADDRESSES.optimism.WETH_1,"0x293dcda114533ff8f477271c5ca517209ffdeee7"],[ADDRESSES.base.USDC,"0x5c50d58E49C59d112680c187De2Bf989d2a91242"],[ADDRESSES.base.cbBTC,"0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0x940181a94A35A4569E4529A3CDfB74e38FD98631","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0x22aF33FE49fD1Fa80c7149773dDe5890D3c76F3b","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"],["0xacfE6019Ed1A7Dc6f7B508C02d1b04ec88cC21bf","0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"]] },
+      "staking": { "owners": ["0x3225b5a7c842cC227C773636F5C574443C62bb86", "0xe995948AF4bD6FAB2a6Fb5627FD4f7Db5d9E9171"], "tokens": ["0x767A739D1A152639e9Ea1D8c1BD55FDC5B217D7f"] },
     },
   },
   "stipend": {
@@ -873,4 +874,35 @@ module.exports = {
       "pool2": { "owners": ["0x58351236275E6f378BB2211B9fd623fd6E5e9D17","0x9B937aB45Bab1e8CC4590eCF55dC5577caF89dE1"], "tokens": ["0x0e537bb44eb6064D12326fF2543d918e9b9a5482"] },
     },
   },
+  "dicemoon": {
+    methodology: 'USDC held by the DiceMoonTables escrow contract on Base: buy-ins of games in progress and winnings not yet claimed. The operator never takes custody - stakes go wallet -> escrow -> winners.',
+    "base": {
+      "tvl": { "owners": ["0x0bc585e3c8c47EE507C873eC994b14fC7883793d"], "tokens": [ADDRESSES.base.USDC] },
+    },
+  },
+  "astro-fun": {
+    methodology: "Counts the USDG held by the Astro BankrollVault on Robinhood Chain: the liquidity provided by LPs to the bankroll (ERC-4626 ASTROLP), the players\' withdrawable balances, and the stakes wagered in the round currently in play.",
+    "robinhood": {
+      "tvl": { "owners": ["0x58D2f2D46af20C357885d540A9c02fDD791Ee1CF"], "tokens": [ADDRESSES.robinhood.USDG] },
+    },
+  },
+  "deepstate": {
+    methodology: "TVL is the value of USDG, NVDA, and DEEP held by the Deepstate router as collateral for resting orders or as matched proceeds awaiting maker claims.",
+    "robinhood": {
+      "tvl": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": [ADDRESSES.robinhood.USDG, "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC"] },
+      "staking": { "owners": ["0x6cf19308C22FC82ea620Fa0B3E94948d20f27B96"], "tokens": ["0x1DA24f6Bb623b9d1aFEae3F3146659A2662D6d27", "0xbfb7b3Ff3D498a559b946B836d26F0E168f273D5"] },
+    }
+  },
+  "alfaclub": {
+    "methodology": "USDC held by FriendKey (bonding-curve reserves that pay sellers) and FriendPool (trading-fund USDC not yet bridged out). Excludes staked keys and funds already dispatched to Hyperliquid or Polymarket.",
+    "base": {
+      "tvl": { "owners": ["0xAF0Bf8593dC6CA973DF2132731B0F9B5F974FA9F", "0xa1bf9bb17C283CF17F01516f78f3127D2C84C79d"], "tokens": [ADDRESSES.base.USDC] },
+    }
+  },
+  "usdr": {
+    "methodology": "TVL is the $M balance held by the USDR extension contract on RISE Chain, which is the collateral backing every minted USDR.",
+    "rise": {
+      "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
+    }
+  }
 }

@@ -197,6 +197,9 @@ const uniV2Configs = {
   'BBQSwap': {
     ham: '0x7304e5751973113fA7c4FFf677871B926258f27e',
   },
+  'bdex-v2': {
+    bot: '0x117115f3B72C8d1989178089A67D0C26f8EE0AA3',
+  },
   'beam-swap': {
     beam: '0x662b526FB70EBB508962f3f61c9F735f687C8fA5',
   },
@@ -2939,7 +2942,8 @@ const uniV2Configs = {
     berachain: '0x6Ccf36d3EaE84b2eB608704070B90f4419BBcD28',
     hyperliquid: '0x6A4Bd89709b67eC846F02cF9E95A0dd2Fb515720',
     arbitrum: '0xe49805412EDFDF4C458B297e7C1534588Fa3F1F0',
-    linea: '0xD9a702839510ee2859bCE697F51Aae49bF8949d7'
+    linea: '0xD9a702839510ee2859bCE697F51Aae49bF8949d7',
+    robinhood: '0x831880Bd3b331249DF63bacC6e21495e5e8f1eAA'
   },
   'hyperlynx': {
     hyperliquid: '0x11cD396F814Bd31eBa7969c1B27a7C347785951f',
@@ -3102,7 +3106,36 @@ const uniV2Configs = {
       hasStablePools: true,
     },
     robinhood: '0xe0799417eff30A12249b8c30941BC2d7c52A0339',
-  }
+  },
+  'qomx': {    bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785'  },
+  'lobsterswap': {    ozone: '0x89687777012E7FF91a6ecDDDc0aebAb38BbC098A'  },
+  'icarus-v2': {
+    start: '2026-01-23',
+    methodology: 'Value of the tokens locked in the classic stable and volatile liquidity pools.',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      hasStablePools: true,
+    },
+    rise: '0xEe10C6a0f158bFEeef3d48Dc0D26130Cf6115615',
+  },
+  'icarus-cl': {
+    start: '2026-01-26',
+    rise: '0x6f7DA11c13Ba09A153dA06d376044e5859Db607B',
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      fetchBalances: true,
+    },
+  },
+  'helios-v2': {
+    start: '2026-05-31',
+    rise: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

@@ -41,7 +41,9 @@ const config = {
   bsc: { factory: "0x28e2ea090877bf75740558f6bfb36a5ffee9e9df", fromBlock: 45970610, blacklistedTokens: ['0xb4357054c3dA8D46eD642383F03139aC7f090343', '0x8145eb83744aac883b68ae34060bebb5031d8f5c',
     '0x8d010bf9c26881788b4e6bf5fd1bdc358c8f90b8', // DOT was hacked
     '0x7083609fce4d1d8dc0c979aab8c869ea2c873402', // DOT was hacked
-    '0x44f161ae29361e332dea039dfa2f404e0bc5b5cc' // H hacked 2026-06-08
+    '0x44f161ae29361e332dea039dfa2f404e0bc5b5cc', // H hacked 2026-06-08
+    '0xac531eb26ca1d21b85126de8fb87e80e09002dcf', // fake SAND mispriced on BSC (~$5.6B phantom TVL)
+
   ] },
   unichain: { factory: "0x1F98400000000000000000000000000000000004", fromBlock: 1 },
   monad: { factory: "0x188d586ddcf52439676ca21a244753fa19f9ea8e", fromBlock: 29255895 },
