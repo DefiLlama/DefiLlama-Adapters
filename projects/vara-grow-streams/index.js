@@ -64,41 +64,15 @@ async function getSpendableNative(addresses, at) {
   })
 }
 
-async function getTotalSupply(program, service, at) {
-  const prefix = route(service, 'TotalSupply')
-  const payload = `0x${prefix.toString('hex')}`
-  const params = [ZERO_ACCOUNT, program, payload, GAS_LIMIT, 0]
-  if (at) params.push(at)
-  const result = await rpc('gear_calculateReplyForHandle', params)
-
-  if (!result || !result.payload || result.payload === '0x' || !result.code || !result.code.Success)
-    throw new Error(`vara-grow-streams: failed to read TotalSupply from ${program}: ${JSON.stringify(result && result.code)}`)
-
-  const bytes = Buffer.from(result.payload.slice(2), 'hex')
-  if (bytes.length < prefix.length + 16 || !bytes.subarray(0, prefix.length).equals(prefix))
-    throw new Error(`vara-grow-streams: malformed TotalSupply response from ${program}`)
-
-  return u128LE(bytes, prefix.length)
-}
-
 async function tvl(api) {
   const at = await rpc('chain_getFinalizedHead', [])
-  const [[vaultNative, wvaraNative, gvaraNative], wvaraSupply, gvaraSupply] = await Promise.all([
-    getSpendableNative([TOKEN_VAULT, WVARA, GVARA], at),
-    getTotalSupply(WVARA, 'Vft', at),
-    getTotalSupply(GVARA, 'SuperTokenService', at),
-  ])
-
-  // Wrapper token balances are claims on these same reserves, so counting both
-  // the VFT balances and their native backing would double-count the TVL.
-  const wvaraBacking = wvaraNative < wvaraSupply ? wvaraNative : wvaraSupply
-  const gvaraBacking = gvaraNative < gvaraSupply ? gvaraNative : gvaraSupply
-  const total = vaultNative + wvaraBacking + gvaraBacking
+  const [vaultNative, wvaraNative, gvaraNative] = await getSpendableNative([TOKEN_VAULT, WVARA, GVARA], at)
+  const total = vaultNative + wvaraNative + gvaraNative
 
   api.addCGToken('vara-network', Number(total) / VARA_DECIMALS)
 }
 
 module.exports = {
-  methodology: 'Counts spendable native VARA held by the GrowStreams token vault plus the native collateral backing the wVARA and gVARA wrappers. Wrapper backing is capped at each token total supply, and wrapper-token balances are excluded to prevent double counting. Mandatory Vara program existential deposits and unbacked/excess operational balances are not counted.',
+  methodology: 'GrowStreams deploys and owns the token vault and its wVARA and gVARA wrapper programs. TVL is the combined spendable native VARA held by all three: the vault balance plus the native VARA backing wVARA and gVARA tokens.',
   vara: { tvl },
 }
