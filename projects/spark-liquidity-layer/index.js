@@ -14,19 +14,6 @@ const almProxy = {
   xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
 }
 
-const sparkSavings = {
-  ethereum: {
-    usdt: '0xe2e7a17dFf93280dec073C995595155283e3C372',
-    usdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d',
-    pyusd: '0x80128DbB9f07b93DDE62A6daeadb69ED14a7D354',
-    eth: '0xfE6eb3b609a7C8352A241f7F3A21CEA4e9209B8f',
-  },
-  avax: { usdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d' },
-  arbitrum: { usdt: '0x45d91340B3B7B96985A72b5c678F7D9e8D664b62' },
-  robinhood: { usdg: '0xde770c84FE66E063336b31737cFE9790f18c4087' },
-  xlayer: { usdt: '0xc358c90D32375721Cb3924320Fdc2F8B694347Ca' },
-}
-
 const mainnetAllocatorToTokens = {
   '0xAfA2DD8a0594B2B24B59de405Da9338C4Ce23437': [
     '0x4DEDf26112B3Ec8eC46e7E31EA5e123490B05B8B', // spDai
@@ -57,10 +44,6 @@ const mainnetAllocatorToTokens = {
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
   ],
-  [sparkSavings.ethereum.usdt]: [ADDRESSES.ethereum.USDT],
-  [sparkSavings.ethereum.usdc]: [ADDRESSES.ethereum.USDC],
-  [sparkSavings.ethereum.pyusd]: ['0x6c3ea9036406852006290770BEdFcAbA0e23A0e8'],
-  [sparkSavings.ethereum.eth]: [ADDRESSES.ethereum.WETH],
 }
 
 const baseAllocatorToTokens = {
@@ -76,7 +59,6 @@ const baseAllocatorToTokens = {
 const arbitrumAllocatorToTokens = {
   [almProxy.arbitrum]: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT],
   '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [ADDRESSES.arbitrum.USDC_CIRCLE],
-  [sparkSavings.arbitrum.usdt]: [ADDRESSES.arbitrum.USDT],
 }
 
 const optimismAllocatorToTokens = {
@@ -94,17 +76,14 @@ const avaxAllocatorToTokens = {
     ADDRESSES.avax.USDC,
     '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aave aUSDC
   ],
-  [sparkSavings.avax.usdc]: [ADDRESSES.avax.USDC],
 }
 
 const robinhoodAllocatorToTokens = {
   [almProxy.robinhood]: [ADDRESSES.robinhood.USDG],
-  [sparkSavings.robinhood.usdg]: [ADDRESSES.robinhood.USDG],
 }
 
 const xlayerAllocatorToTokens = {
   [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
-  [sparkSavings.xlayer.usdt]: [ADDRESSES.xlayer.USDT],
 }
 
 const CONFIG = {
