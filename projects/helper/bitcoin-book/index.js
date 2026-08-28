@@ -5,8 +5,6 @@ const imports = [
   ["okex", "./okex.js"],
   ["chakra", "./chakra.js"],
   ["bitkub", "./bitkub-cex.js"],
-  ["coinbasebtc", "./coinbase-btc.js"],
-  ["coinbaseltc", "./coinbase-ltc.js"],
 ];
 const { sumTokensExport } = require("../sumTokens.js");
 const fetchers = require("./fetchers.js");
