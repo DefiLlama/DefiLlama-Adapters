@@ -3,6 +3,7 @@ const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { nullAddress } = require('../projects/helper/treasury')
 const { nullAddress: tokenMappingNullAddress } = require('../projects/helper/tokenMapping')
 const bitcoinAddressBook = require('../projects/helper/bitcoin-book/index.js')
+const { robinhood } = require('../projects/merryforge/index.js')
 
 // Treasury registry.
 //
@@ -1270,6 +1271,13 @@ const configs = {
     solana: {
       owners: ['GPJyF8fTgKKPykRW1XSrXiEXdJTJLHnhUqdDyyek66Z'],
       ownTokens: [],
+    },
+  },
+  'treasury/coinbarrel': {
+    robinhood: {
+      owners: ['0x2FE3C1cc641B2463CEE2857Ac520E111fbE11fDF'],
+      ownTokens: ['0x26E82171eb01204eE114e2B8C34Be035B8bc029E'],
+      tokens: [nullAddress, ADDRESSES.robinhood.USDG, '0x322F0929c4625eD5bAd873c95208D54E1c003b2d']
     },
   },
   'treasury/comdex': {
