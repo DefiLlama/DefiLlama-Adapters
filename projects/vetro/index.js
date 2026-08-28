@@ -29,20 +29,8 @@ async function tvl(api) {
   }
 }
 
-async function staking(api) {
-  return api.sumTokens({
-    tokensAndOwners: [
-      [VUSD, SVUSD_VAULT],
-      [VETBTC, SVETBTC_VAULT],
-    ],
-  });
-}
-
 module.exports = {
-  methodology:
-    "TVL dynamically discovers whitelisted collateral tokens from Vetro Treasuries and queries their total withdrawable balances (combining treasury idle funds and vault yield strategy allocations). Staking tracks VUSD and vetBTC locked in sVUSD and svetBTC vaults.",
-  ethereum: {
-    tvl,
-    staking,
-  },
+  methodology: "TVL dynamically discovers whitelisted collateral tokens from Vetro Treasuries and queries their total withdrawable balances (combining treasury idle funds and vault yield strategy allocations).",
+  doublecounted: true,
+  ethereum: { tvl },
 };
