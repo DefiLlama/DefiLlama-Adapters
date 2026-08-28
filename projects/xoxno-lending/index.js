@@ -5,14 +5,26 @@ const EXPORT_URL = 'https://api.xoxno.com/integrations/lending/stellar'
 // Required by api.xoxno.com — this is the agreed User-Agent for API access.
 const HEADERS = { 'User-Agent': 'dune-analytics' }
 
+const TIMEOUT_MS = 10000
+
 let marketsPromise
 
-// One fetch shared by tvl and borrowed.
+// One fetch shared by tvl and borrowed. A rejection clears the cache so the
+// next call retries instead of replaying the failure for the process lifetime.
 function getHubMarkets() {
   if (!marketsPromise) {
-    marketsPromise = get(EXPORT_URL, { headers: HEADERS }).then((data) =>
-      Array.isArray(data.hubMarkets) ? data.hubMarkets : []
-    )
+    marketsPromise = get(EXPORT_URL, { headers: HEADERS, timeout: TIMEOUT_MS })
+      .then((data) => {
+        // Fail closed: a malformed payload must not be read as an empty market
+        // set, which would publish zero TVL as if it were real.
+        if (!Array.isArray(data.hubMarkets))
+          throw new Error('xoxno-lending: export has no hubMarkets array')
+        return data.hubMarkets
+      })
+      .catch((e) => {
+        marketsPromise = undefined
+        throw e
+      })
   }
   return marketsPromise
 }
