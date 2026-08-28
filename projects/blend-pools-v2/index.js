@@ -5,15 +5,21 @@ const BACKSTOP_ID = "CAQQR5SWBXKIGZKPBZDH3KM5GQ5GUTPKB7JAFCINLZBC5WXPJKRG3IM7";
 
 // Blend V2 pools.
 //
-// The backstop's reward_zone() is the only on-chain enumeration of pools, but
-// it lists the pools currently eligible for BLND emissions, not the pools that
-// hold funds. Governance can empty or rotate it while every pool still
-// custodies user deposits, so TVL must not be derived from it alone. Pools are
-// listed explicitly here and unioned with the reward zone, so a new pool is
-// picked up automatically and an empty zone cannot zero the protocol.
+// The backstop's reward_zone() is the only on-chain enumeration, but it lists
+// the pools currently eligible for BLND emissions, not the pools that hold
+// funds. Eligibility depends on a backstop threshold priced through the Comet
+// BLND-USDC pool, and while that price reads zero no pool clears the threshold,
+// so the zone empties even though every pool still custodies user deposits.
+//
+// Blend's own UI carries this same list for the same reason, see
+// blend-ui/src/components/markets/MarketsList.tsx ("pools don't meet threshold
+// due to comet bug"). Unioned with the reward zone so a newly added pool is
+// still picked up automatically once emissions are working again.
 const POOLS = [
   "CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD", // Fixed V2
   "CCCCIQSDILITHMM7PBSLVDT5MISSY7R26MNZXCX4H7J5JQ5FPIYOGYFS", // YieldBlox V2
+  "CDMAVJPFXPADND3YRL4BSM3AKZWCTFMX27GLLXCML3PD62HEQS5FPVAI",
+  "CC4HHXPKR3FIXUQEC53MAK2IVWD6APAEBBXP5XCIW5FISN6PQOAC6UXG",
 ];
 
 // b_rate / d_rate are 12-decimal fixed point, so shares * rate / 1e12 gives the
