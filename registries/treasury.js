@@ -3,7 +3,6 @@ const ADDRESSES = require('../projects/helper/coreAssets.json')
 const { nullAddress } = require('../projects/helper/treasury')
 const { nullAddress: tokenMappingNullAddress } = require('../projects/helper/tokenMapping')
 const bitcoinAddressBook = require('../projects/helper/bitcoin-book/index.js')
-const { robinhood } = require('../projects/merryforge/index.js')
 
 // Treasury registry.
 //
