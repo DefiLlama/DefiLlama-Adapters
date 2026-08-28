@@ -1272,6 +1272,13 @@ const configs = {
       ownTokens: [],
     },
   },
+  'treasury/coinbarrel': {
+    robinhood: {
+      owners: ['0x2FE3C1cc641B2463CEE2857Ac520E111fbE11fDF'],
+      ownTokens: ['0x26E82171eb01204eE114e2B8C34Be035B8bc029E'],
+      tokens: [nullAddress, ADDRESSES.robinhood.USDG, '0x322F0929c4625eD5bAd873c95208D54E1c003b2d']
+    },
+  },
   'treasury/comdex': {
     bsc: {
       owners: [
