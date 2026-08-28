@@ -17,8 +17,6 @@ const MORPHO = '0xD5D960E8C380B724a48AC59E2DfF1b2CB4a1eAee'
 // MurkPool proxy deploy tx 0x57ae0b90f1d8dc587524ccf1ab2d9d70c757cccb3f6566ef7c92939d8153d6f8
 const POOL_START_BLOCK = 96149579
 
-const ZERO_BYTES32 = '0x' + '0'.repeat(64)
-
 const eventAbis = {
   depositPending: 'event DepositPending(bytes32[] commitments, bytes32[] noteHashes, address indexed depositor, address[] tokens, uint256[] amounts, uint8[] kinds, uint256[] tokenIds)',
   withdraw: 'event Withdraw(address indexed recipient, address indexed token, uint256 amount, uint8 kind, uint256 tokenId)',
@@ -31,7 +29,6 @@ const eventAbis = {
 const abis = {
   asset: 'address:asset',
   loanToken: 'address:loanToken',
-  marketId: 'bytes32:marketId',
   convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
   ownerOf: 'function ownerOf(uint256 tokenId) view returns (address)',
   // morpho.json has idToMarketParams and market but no position(bytes32,address)
@@ -71,20 +68,6 @@ async function getAssets(api) {
   const vaults = getUniqueAddresses([...aaveVaults, ...connectorVaults].map(i => i.vault), api.chain)
   const marketTokens = getUniqueAddresses(createdMarketTokens.map(i => i.marketToken), api.chain)
 
-  // A receipt token can also reach the pool as a plain deposit that bypasses the connector, so probe
-  // whatever the factories did not already account for. Most of these calls revert - the pool
-  // accepts any ERC20, so the residual set is mostly ordinary tokens.
-  const known = new Set([...vaults, ...marketTokens])
-  const residual = erc20s.filter(i => !known.has(i))
-  const [assets, marketIds] = await Promise.all([
-    api.multiCall({ abi: abis.asset, calls: residual, permitFailure: true }),
-    api.multiCall({ abi: abis.marketId, calls: residual, permitFailure: true }),
-  ])
-  residual.forEach((token, i) => {
-    if (marketIds[i] && marketIds[i] !== ZERO_BYTES32) marketTokens.push(token)
-    else if (assets[i] && assets[i] !== ADDRESSES.null) vaults.push(token)
-  })
-
   return { erc20s, vaults, marketTokens }
 }
 
@@ -94,30 +77,27 @@ async function getAssets(api) {
 // share balance 1:1 as the asset would ignore the exchange rate instead.
 async function unwrapShares(api, shares, assetAbi) {
   if (!shares.length) return
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', permitFailure: true, calls: shares.map(target => ({ target, params: POOL })) })
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: shares.map(target => ({ target, params: POOL })) })
   const held = shares.filter((_, i) => balances[i] > 0)
   const heldBalances = balances.filter(i => i > 0)
   if (!held.length) return
 
   const [underlyings, amounts] = await Promise.all([
-    api.multiCall({ abi: assetAbi, calls: held, permitFailure: true }),
-    api.multiCall({ abi: abis.convertToAssets, permitFailure: true, calls: held.map((target, i) => ({ target, params: heldBalances[i] })) }),
+    api.multiCall({ abi: assetAbi, calls: held}),
+    api.multiCall({ abi: abis.convertToAssets, calls: held.map((target, i) => ({ target, params: heldBalances[i] })) }),
   ])
   held.forEach((_, i) => {
     if (underlyings[i] && amounts[i]) api.add(underlyings[i], amounts[i])
   })
 }
 
-// The position NFT is never burned, and MurkMorphoPosition.execute() lets the private owner withdraw
-// it from Murk to go public while its Morpho collateral stays put. Morpho state alone is therefore
-// necessary but not sufficient - only positions the pool still owns belong in Murk's TVL.
 async function getPositions(api) {
   const created = await logsFrom(api, POSITION_FACTORY, eventAbis.positionCreated, 'position-created')
   if (!created.length) return []
 
   const positions = created.map(i => ({ position: i.position, marketId: i.marketId }))
   const owners = await api.multiCall({
-    target: BORROW_CONNECTOR, abi: abis.ownerOf, permitFailure: true,
+    target: BORROW_CONNECTOR, abi: abis.ownerOf,
     calls: positions.map(i => BigInt(i.position).toString()), // tokenId == uint256(uint160(position))
   })
   const held = positions.filter((_, i) => owners[i] && owners[i].toLowerCase() === POOL.toLowerCase())
@@ -135,50 +115,58 @@ function toAssetsUp(shares, totalAssets, totalShares) {
   return (numerator + denominator - 1n) / denominator
 }
 
+// Morpho debt per position
+async function positionDebt(api, positions) {
+  const withDebt = positions.filter(i => BigInt(i.borrowShares) > 0n)
+  if (!withDebt.length) return []
+  const marketIds = withDebt.map(i => i.marketId)
+  const [params, markets] = await Promise.all([
+    api.multiCall({ target: MORPHO, abi: morphoAbi.morphoBlueFunctions.idToMarketParams, calls: marketIds }),
+    api.multiCall({ target: MORPHO, abi: morphoAbi.morphoBlueFunctions.market, calls: marketIds }),
+  ])
+  return withDebt.map((i, idx) => ({
+    loanToken: params[idx].loanToken,
+    assets: toAssetsUp(i.borrowShares, markets[idx].totalBorrowAssets, markets[idx].totalBorrowShares),
+  }))
+}
+
 async function tvl(api) {
   const { erc20s, vaults, marketTokens } = await getAssets(api)
 
   await unwrapShares(api, vaults, abis.asset)
   await unwrapShares(api, marketTokens, abis.loanToken)
 
-  const positions = (await getPositions(api)).filter(i => BigInt(i.collateral) > 0n)
-  if (positions.length) {
-    const params = await api.multiCall({ target: MORPHO, abi: morphoAbi.morphoBlueFunctions.idToMarketParams, calls: positions.map(i => i.marketId) })
-    positions.forEach((i, idx) => api.add(params[idx].collateralToken, i.collateral))
+  const positions = await getPositions(api)
+
+  const collateral = positions.filter(i => BigInt(i.collateral) > 0n)
+  if (collateral.length) {
+    const params = await api.multiCall({ target: MORPHO, abi: morphoAbi.morphoBlueFunctions.idToMarketParams, calls: collateral.map(i => i.marketId) })
+    collateral.forEach((i, idx) => api.add(params[idx].collateralToken, i.collateral))
   }
 
   // Receipt tokens necessarily pass through pool.deposit(), so they are in the deposit universe as
   // well as in their own bucket - blacklisting them here is what stops the double count.
-  // permitFailure covers tokens that stopped answering balanceOf after they were deposited.
-  return sumTokens2({ api, owner: POOL, tokens: erc20s, blacklistedTokens: [...vaults, ...marketTokens], permitFailure: true })
+  await sumTokens2({ api, owner: POOL, tokens: erc20s, blacklistedTokens: [...vaults, ...marketTokens] })
+
+  const debts = await positionDebt(api, positions)
+  debts.forEach(d => api.add(d.loanToken, (-d.assets).toString()))
 }
 
 async function borrowed(api) {
-  const positions = (await getPositions(api)).filter(i => BigInt(i.borrowShares) > 0n)
-  if (!positions.length) return
-
-  const marketIds = positions.map(i => i.marketId)
-  const [params, markets] = await Promise.all([
-    api.multiCall({ target: MORPHO, abi: morphoAbi.morphoBlueFunctions.idToMarketParams, calls: marketIds }),
-    api.multiCall({ target: MORPHO, abi: morphoAbi.morphoBlueFunctions.market, calls: marketIds }),
-  ])
-  positions.forEach((i, idx) => {
-    const assets = toAssetsUp(i.borrowShares, markets[idx].totalBorrowAssets, markets[idx].totalBorrowShares)
-    api.add(params[idx].loanToken, assets.toString())
-  })
+  const debts = await positionDebt(api, await getPositions(api))
+  debts.forEach(d => api.add(d.loanToken, d.assets.toString()))
 }
 
-const methodology = `TVL is the value of the assets custodied by the MurkPool shielded pool on Monad (0x851DA49CA836d318977De6A0bD999b8A5CDAFBAa).
-Murk is a privacy layer: users deposit ERC20s into the pool and transfer, withdraw, swap, lend or borrow them privately, so every shielded asset sits as a plain token balance held by the pool.
-Deposits are permissionless and there is no on-chain token allowlist, so the asset set is replayed from the pool's DepositPending and Withdraw logs. A raw token transfer into the pool emits no event and is not counted.
-Receipt tokens the pool holds are unwrapped to their underlying rather than counted as themselves: Murk Aave V3 vault shares and Morpho Vault V2 shares via the ERC4626 exchange rate on the pool's own share balance, and MurkMorphoMarketToken shares via the market token's convertToAssets. Those addresses are excluded from the plain token sum so nothing is counted twice.
-Morpho borrow positions are held as ERC721 clones; a position counts only while the pool still owns its NFT, and contributes its Morpho collateral to tvl.
-Because the ERC4626 shares and the Morpho collateral are also counted by the aave-v3, morpho-blue and Morpho curator vault adapters, this part of Murk's TVL double counts against those protocols. Plain shielded ERC20s, which do not, are expected to dominate.
-Borrowed is reported separately and gross, following the Aave/Euler convention: the pool custodies both the collateral and the borrow proceeds, so debt is not netted out of tvl.
-The pool has no payable path and never holds native MON. ERC721 notes are excluded - no floor price feed exists for them.`
+const methodology = 'TVL is the value of the assets custodied by the MurkPool shielded pool. ' +
+'Deposits are permissionless and there is no on-chain token allowlist, so the asset set is built from DepositPending and Withdraw logs. ' +
+'Receipt tokens the pool holds are unwrapped to their underlying rather than counted as themselves: Murk Aave V3 vault shares, Morpho Vault V2, and MurkMorphoMarketToken shares via the ERC4626 exchange rate. Those addresses are excluded from the plain token sum so nothing is counted twice. ' +
+'Morpho borrow positions are held as ERC721 clones; a position counts only while the pool still owns its NFT, and contributes its Morpho collateral to tvl. ' +
+'Murk re-shields its borrow proceeds back into the pool, so the outstanding debt is netted out of tvl to avoid double counting; borrowed is reported separately.'
 
 module.exports = {
   methodology,
+  doublecounted: true,
+  misrepresentedTokens: true,
   start: '2026-08-15', // block 96149579
   monad: { tvl, borrowed },
 }
