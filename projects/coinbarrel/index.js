@@ -2,32 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-// Coinbarrel (https://coinbarrel.com) is a token launchpad on Robinhood Chain (4663).
-//
-// A launch is one transaction: the launcher initializes a Uniswap V4 pool that
-// carries the Coinbarrel hook, mints the whole token supply as a single-sided
-// position, and sends that PositionManager NFT straight into an ownerless,
-// non-upgradeable custody contract with no transfer, approve, withdraw or
-// decrease-liquidity path. Traders buying into the pool leave quote asset (ETH
-// or USDG) inside those positions, and nobody, Coinbarrel included, can take it
-// out again. That locked quote-side balance is what this adapter counts.
-//
-// Enumeration is on-chain: every NFT the custody holds arrived through an
-// ERC-721 Transfer on the Uniswap V4 PositionManager with `to == custody`
-// (mints on launch, plus the migrations that moved the legacy Advanced-hook
-// positions into the same custody). Ownership is re-verified with ownerOf.
-//
-// Launched tokens themselves are excluded (whitelist of quote assets only) to
-// avoid circular pricing. Third-party liquidity in the same pools belongs to
-// its own LPs and is left to the Uniswap V4 listing.
-//
-// Legacy "Simple" launches (July 2026, before the V4 hook generation) sit on
-// Uniswap V3 with the same permanent-custody design; their NFTs are enumerated
-// directly from the V3 NonfungiblePositionManager.
-//
-// Addresses: https://coinbarrel.com/integrations/robinhood/deployments.json
-// Docs:      https://docs.coinbarrel.com/protocol/liquidity-custody
-
 const config = {
   robinhood: {
     v4: {
@@ -106,7 +80,6 @@ module.exports = {
   doublecounted: true, // positions live in Uniswap V4 / V3 pools counted by the Uniswap listings
   hallmarks: [
     ['2026-07-28', 'Hook V5 generation live (unified launcher on Uniswap V4)'],
-    ['2026-08-01', 'Flat 1% platform fee model'],
   ],
   robinhood: { tvl },
 }
