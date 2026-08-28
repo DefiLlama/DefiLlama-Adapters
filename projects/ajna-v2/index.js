@@ -72,5 +72,5 @@ module.exports = Object.keys(factories).reduce((acc, chain) => {
     return acc;
 }, {
     misrepresentedTokens: true,
-    methodology: "TVL = collateral + available quote liquidity across all Ajna ERC20 and ERC721 pools (net of borrows). Borrowed = pool debtInfo. NFT-pool collateral is not priced.",
+    methodology: "TVL = collateral + quote-token balances held across all Ajna ERC20 and ERC721 pools (deposits net of borrows, including escrowed liquidation bonds and unclaimed reserves). Borrowed = pool debtInfo. NFT-pool collateral is not priced.",
 });
