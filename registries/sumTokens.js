@@ -10364,16 +10364,6 @@ const configs = {
       ]
     },
   },
-  "coinbase-doge": {
-    "methodology": "DOGE collateral backing CBDOGE https://www.coinbase.com/en-nl/cbdoge/proof-of-reserves",
-    "doge": {
-      "owners": [
-        "DLuceb7v8vHknepvYRTzz5bSMUAqax8vTN",
-        "DCqkF26vcqG1FGJiB7L73jyTDeFkjeEPvJ",
-        "DNhLqkURqaQDW4f4J9wxtVzRw1XxhkjZ6m"
-      ]
-    },
-  },
   "coindrip": {
     "timetravel": false,
     "elrond": {
