@@ -1,5 +1,4 @@
-const { queryContract, queryContractWithRetries } = require('../helper/chain/cosmos')
-const { PromisePool } = require('@supercharge/promise-pool')
+const { queryContract, queryManyContracts } = require('../helper/chain/cosmos')
 
 // Columbus-5 factory. Same pin as https://gitlab.com/PlasticDigits/cl8y-dex-terraclassic
 const FACTORY = 'terra1ejpgvv7g3hj0u6fpcnxhflqp84g0w3cnaskqkg5733ygwlmf963sfchsea'
@@ -37,18 +36,11 @@ async function tvl(api) {
   const pairs = await getAllPairs()
   const poolContracts = pairs.map((p) => p.contract_addr).filter(Boolean)
 
-  const { errors } = await PromisePool
-    .withConcurrency(10)
-    .for(poolContracts)
-    .process(async (pool) => {
-      const result = await queryContractWithRetries({ contract: pool, chain: 'terra', data: { pool: {} } })
-      for (const asset of result?.assets ?? []) {
-        addAsset(api, asset.info || {}, asset.amount)
-      }
-    })
-
-  if (errors.length > poolContracts.length / 2) {
-    throw new Error(`cl8y-dex TVL: ${errors.length}/${poolContracts.length} pool queries failed`)
+  const pools = await queryManyContracts({ contracts: poolContracts, chain: 'terra', data: { pool: {} } })
+  for (const pool of pools) {
+    for (const asset of pool?.assets ?? []) {
+      addAsset(api, asset.info || {}, asset.amount)
+    }
   }
 }
 
