@@ -1,8 +1,8 @@
 const { sumUnknownTokens } = require('./helper/unknownTokens');
 
 module.exports.hallmarks=[
-  [1618966800, "Venus incident"],
-  [1634778000, "Emissions end"],
+  ['2021-04-21', "Venus incident"],
+  ['2021-10-21', "Emissions end"],
 ]
 
 const config = {
@@ -36,7 +36,8 @@ Object.keys(config).forEach(chain => {
       const tokens = data.map(i => i.want)
       const bals = await api.multiCall({  abi: 'uint256:wantLockedTotal', calls: data.map(i => i.strat), permitFailure: true, })
       bals.forEach((v, i) => v && api.add(tokens[i], v))
-      return sumUnknownTokens({ api, resolveLP: true, useDefaultCoreAssets: true, })
+      await sumUnknownTokens({ api, resolveLP: true, useDefaultCoreAssets: true, })
+      api.removeTokenBalance('0xf859bf77cbe8699013d6dbc7c2b926aaf307f830')  // bsc - BRY has bad token price
     }
   }
 })

@@ -38,8 +38,6 @@ const configs = {
   sonic: {
     eulerVaultOwners: multisigs,
     euler: [
-      '0x8c7a2c0729afb927da27d4c9aa172bc5a5fb12bb',
-      '0x9ccf74e64922d8a48b87aa4200b7c27b2b1d860a',
     ],
   }
 }
@@ -54,3 +52,7 @@ module.exports = {
   sonic: tvl('sonic'),
   berachain: tvl('berachain')
 }
+
+module.exports.hallmarks = [
+  ["2026-03-09", "Exclude vaults with bad debt on sonic"],
+]

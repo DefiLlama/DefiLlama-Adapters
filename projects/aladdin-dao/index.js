@@ -1,5 +1,8 @@
-const sdk = require("@defillama/sdk");
-const vaultABI = require('./abis/Vault.json')
+const { sumTokens2 } = require("../helper/unwrapLPs")
+
+const vaultABI = {
+  "balance": "uint256:balance"
+}
 
 
 const tokenMaster = '0xfF4446E9dF1c8281CE1d42610c3bC0342f93E4d7'
@@ -18,45 +21,34 @@ const pools = [aldcrvRenWBTC, aldsETH, ald3CRV, aldSLPETHWBTC, unilpALDETH, unil
 const aldVaults = [aldcrvRenWBTC, aldsETH, ald3CRV, aldSLPETHWBTC]
 const aldVaultUnderlyingTokens = [crvRenWBTC, SETH, threeCRV, ];
 
-async function tvl(timestamp, block, _, api) {
-  let balances = {}
-  const lockedTokens = await sdk.api.abi.multiCall({
+async function tvl(api) {
+  const lockedTokens = await api.multiCall({
     abi: 'erc20:balanceOf',
     calls: pools.map(p => ({
       target: p,
       params: tokenMaster
     })),
-    block
   });
 
   // whether it's in vaults or in staking, it belongs to aladdin's tvl
-  const aldUnderlyingTokenBalances = (await sdk.api.abi.multiCall({
-    abi: vaultABI['balance'],
-    calls: aldVaults.map(p => ({
-      target: p,
-      params: [],
-    })),
-    block
-  })).output.map(x => x.output);
+  const aldUnderlyingTokenBalances = await api.multiCall({    abi: vaultABI['balance'],    calls: aldVaults,  })
 
-  const lpPositions = [];
   const crvBalances = [];
 
-  lockedTokens.output.forEach((call, index) => {
+  lockedTokens.forEach((call, index) => {
     const token = pools[index];
-    const balance= call.output;
+    const balance= call;
     if (index === 4 || index === 5) {
-      lpPositions.push({balance, token})
+      api.add(token, balance)
     } else if (index === 0 || index == 1 || index == 2 ) {
       crvBalances.push(aldUnderlyingTokenBalances[index])
     } else if (index === 3) {
-      lpPositions.push({balance: aldUnderlyingTokenBalances[index], token: slpETHWBTC})
+      api.add(slpETHWBTC, aldUnderlyingTokenBalances[index])
     }
   })
 
-  lpPositions.forEach(({balance, token}) => sdk.util.sumSingleBalance(balances,token,balance, api.chain))
-  aldVaultUnderlyingTokens.forEach((token, i) => sdk.util.sumSingleBalance(balances,token,crvBalances[i], api.chain))
-  return balances
+  api.add(aldVaultUnderlyingTokens, crvBalances)
+  return sumTokens2({ api, resolveLP: true, })
 }
 
 

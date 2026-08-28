@@ -1,62 +1,76 @@
-const BASELINE_CONTRACT = "0x14eB8d9b6e19842B5930030B18c50B0391561f27";
-const BASELINE_CONTRACT_V2 = "0x1a49351bdB4BE48C0009b661765D01ed58E8C2d8";
-const CREDT_CONTRACT = "0x158d9270F7931d0eB48Efd72E62c0E9fFfE0E67b";
+const { getLogs2 } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
+
+const RELAY = '0xc81fd894c0ace037d133af4886550ac8133568e8'
+const B_ADDRESS = '0x9fDbDE76236998Dc2836FE67A9954eDE456A1D63'
+
+const POOL_CREATED_EVENT = 'event PoolCreated(address bTokenAddress,address reserveAddress,address creator,address feeRecipient,uint256 creatorFeePct,uint256 initialActivePrice,uint256 initialBlvPrice,uint256 totalReserves,uint256 totalBTokens,uint256 totalCollateral,uint256 totalDebt,bytes32 poolId)'
+
+const config = {
+  ethereum: {
+    relay: RELAY,
+    fromBlock: 24920863,
+  },
+  base: {
+    relay: RELAY,
+    fromBlock: 45070267,
+  },
+}
 
 async function tvl(api) {
-  //floor, anchor, discovery
-  const positions = [0, 1, 2];
-
-  //return position info from baseline contract
-  const position = await api.multiCall({ target: BASELINE_CONTRACT, calls: positions, abi: abi.getPosition, });
-  //return managed positions from baseline contract
-  const baselinePositionBalances = await api.multiCall({ target: BASELINE_CONTRACT, calls: position.map(i => ({ params: [i], })), abi: abi.getBalancesForPosition, });
-  //sum the reserve balances
-  api.addGasToken(baselinePositionBalances.map(i => i.reserves));
-
-  //baseline V2 Positions
-  const v2Positions = await api.multiCall({ target: BASELINE_CONTRACT_V2, calls: positions, abi: v2Abi.getPosition });
-  //account for collateral now locked in protocol from borrowing activity
-
-  api.addGasToken(v2Positions.map(i => i.reserves));
+  const { relay, fromBlock } = config[api.chain]
+  const pools = await getLogs2({ api, target: relay, fromBlock, eventAbi: POOL_CREATED_EVENT })
+  const reserves = [...new Set(pools.map(p => p.reserveAddress))]
+  return api.sumTokens({ owner: relay, tokens: reserves })
 }
 
 async function borrowed(api) {
-  const lentReserves = await api.call({ abi: abi.totalLentReserves, target: BASELINE_CONTRACT, });
-  const lentReservesV2 = await api.call({ abi: credtAbi.totalCreditIssues, target: CREDT_CONTRACT });
-  api.addGasToken(lentReserves)
-  api.addGasToken(lentReservesV2)
+  const { relay, fromBlock } = config[api.chain]
+
+  const pools = await getLogs2({
+    api,
+    target: relay,
+    fromBlock,
+    eventAbi: POOL_CREATED_EVENT,
+  })
+  const amounts = await api.multiCall({
+    target: relay,
+    abi: `function totalDebt(address) view returns (uint256)`,
+    calls: pools.map(i => i.bTokenAddress),
+  })
+
+  pools.forEach((pool, i) => api.add(pool.reserveAddress, amounts[i]))
 }
 
 async function staking(api) {
-  const v2CollateralLocked = await api.call({ target: CREDT_CONTRACT, abi: credtAbi.totalCollateralized });
-  api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);  // collateral deposited into protocol by EOA in exchange for a loan
+  const { relay } = config[api.chain]
+  const amount = await api.call({
+    target: relay,
+    abi: 'function totalStaked(address) view returns (uint256)',
+    params: [B_ADDRESS],
+  })
+
+  api.add(B_ADDRESS, amount)
 }
 
 module.exports = {
-  hallmarks: [
-    [1714251306, "self-whitehack"]
-  ],
-  doublecounted: true,
-  blast: {
+  ethereum: {
     tvl,
     borrowed,
     staking,
   },
-};
-
-const abi = {
-  totalLentReserves: "function totalLentReserves() view returns (uint256)",
-  getPosition:
-    "function getPosition(uint8) view returns (tuple(uint8, int24, int24))",
-  getBalancesForPosition:
-    "function getBalancesForPosition(tuple(uint8,int24,int24)) view returns (uint256 reserves, uint256 bAsset)",
-};
-
-const v2Abi = {
-  getPosition: "function getPosition(uint8) view returns (tuple(uint128 liquidity, uint160 sqrtPriceL, uint160 sqrtPriceU, uint256 bAssets, uint256 reserves, uint256 capacity))",
-}
-
-const credtAbi = {
-  totalCreditIssues: "function totalCreditIssued() view returns (uint256)",
-  totalCollateralized: "function totalCollateralized() view returns (uint256)",
+  base: {
+    tvl,
+    borrowed,
+  },
+  blast: {
+    tvl: () => ({}),
+    borrowed: () => ({}),
+    staking: () => ({}),
+  },
+  methodology: 'TVL counts reserve assets held as liquidity in Baseline Mercury pools. Borrowed counts reserve assets lent from those pools to borrowers and is reported separately. Staking counts staked $B, which is the platform\'s token.',
+  hallmarks: [
+    ['2024-04-27', 'self-whitehack'],
+    ['2026-04-21', 'Mercury launch'],
+  ],
 }

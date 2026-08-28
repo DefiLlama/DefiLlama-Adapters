@@ -57,10 +57,10 @@ async function tvl(api) {
     calls: [LENDING_POOL_USDB, PRO.lendingPool.usdb, LENDING_POOL_WETH, PRO.lendingPool.weth],
   });
 
-  api.add(ADDRESSES.blast.USDB, tokens[0]);
-  api.add(ADDRESSES.blast.USDB, tokens[1]);
-  api.add(ADDRESSES.blast.WETH, tokens[2]);
-  api.add(ADDRESSES.blast.WETH, tokens[3]);
+  // api.add(ADDRESSES.blast.USDB, tokens[0]);
+  // api.add(ADDRESSES.blast.USDB, tokens[1]);
+  // api.add(ADDRESSES.blast.WETH, tokens[2]);
+  // api.add(ADDRESSES.blast.WETH, tokens[3]);
 
   await sumTokens2({
     api,

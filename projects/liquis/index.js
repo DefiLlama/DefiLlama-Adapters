@@ -1,5 +1,12 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+    "poolLength": "uint256:poolLength",
+    "poolInfo": "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+    "pool": "function pool() view returns (address)",
+    "tickLower": "function tickLower() view returns (int24)",
+    "tickUpper": "function tickUpper() view returns (int24)",
+    "getReserves": "function getReserves(tuple(address pool, int24 tickLower, int24 tickUpper) key) view returns (uint112 reserve0, uint112 reserve1)"
+  };
 const { staking } = require("../helper/staking");
 const { unwrapBalancerToken } = require('../helper/unwrapLPs')
 

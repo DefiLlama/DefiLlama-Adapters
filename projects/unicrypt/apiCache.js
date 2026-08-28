@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const { config, protocolPairs, tokens, stakingContracts,
   ethereumContractData, baseContractData, bscContractData, polygonContractData,
-  avalancheContractData, gnosisContractData, arbitrumContractData, } = require('./config')
+  avalancheContractData, gnosisContractData, arbitrumContractData, optimismContractData, robinhoodContractData, } = require('./config')
 const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper, } = require("../helper/unknownTokens")
 const project = 'bulky/unicrypt'
@@ -33,7 +33,7 @@ function tvl(contracts) {
         cCache.lastTotalDepositId = +size
 
         const tokens = await api.multiCall({ abi: entry.getLockedTokenAtIndexABI, calls, permitFailure: true })
-        tokens.forEach(({ token } = {}) =>  token  && cCache.tokens.push(token))
+        tokens.forEach(token => token && cCache.tokens.push(token))
         cCache.tokens = getUniqueAddresses(cCache.tokens.filter(i => i))
       })
     )
@@ -99,6 +99,8 @@ module.exports = {
   },
   avax: { tvl: tvl(avalancheContractData) },
   arbitrum: { tvl: tvl(arbitrumContractData) },
+  optimism: { tvl: tvl(optimismContractData) },
+  robinhood: { tvl: tvl(robinhoodContractData) },
   xdai: {
     tvl: tvl(gnosisContractData),
     pool2: pool2s([config.honeyswap.locker],
@@ -106,4 +108,3 @@ module.exports = {
       config.honeyswap.chain)
   },
 }
-

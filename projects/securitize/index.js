@@ -10,6 +10,7 @@ const CONFIG = {
   avax: ['0x53fc82f14f009009b440a706e31c9021e1196a2f'],     // BUIDL
   optimism: ['0xa1cdab15bba75a80df4089cafba013e376957cf5'], // BUIDL
   arbitrum: ['0xa6525ae43edcd03dc08e775774dcabd3bb925872'], // BUIDL
+  bsc: ['0x2d5bdc96d9c8aabbdb38c9a27398513e7e5ef84f'], // BNB
 }
 
 const tvl = async (api) => {

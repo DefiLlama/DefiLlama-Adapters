@@ -1,7 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const abi = require('./abi.json')
-const { getLogs } = require('../helper/cache/getLogs')
+const abi = {
+    "asset": "address:asset",
+    "convertToAssets": "function convertToAssets(uint256 shares) view returns (uint256)"
+  };const { getLogs } = require('../helper/cache/getLogs')
 
 const factory = '0xbd16088611054fce04711aa9509d1d86e04dce2c'
 const wl_stETH_token = '0xf9a98a9452485ed55cd3ce5260c2b71c9807b11a'

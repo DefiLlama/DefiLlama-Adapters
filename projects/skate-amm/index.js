@@ -1,45 +1,55 @@
-const { getLogs2 } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/solana')
 const { getObjects } = require("../helper/chain/sui");
 
+// Skate AMM periphery pools (kernel on MegaETH). The v1 deployment was retired
+// once its liquidity was fully withdrawn — every v1-only chain reported $0 TVL —
+// so it is no longer tracked. token0/token1 are the chain-local reserves.
 const evm_config = {
-  ethereum: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
-  bsc: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 },
-  base: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 29522359 },
-  arbitrum: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 },
-  hyperliquid: { kernelEventEmitter: '0x5a428F12a55d6E0ABa77Eb5B340f2ff95dE01BF5', fromBlock: 4470476 },
-  plume_mainnet: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
-  mantle: { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
-  "0g": { kernelEventEmitter: '0xFBD495862410c549f200Ce224Ad3D02a0bAe260D', fromBlock: 5961960 },
+  ethereum: [
+    { pool: '0x1E0C3acCfD4c9A1731d3A0Cdb6b8afBD0f0c219c', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: ADDRESSES.ethereum.USDC }, // QQQx/USDC
+    { pool: '0x00739d7b2ed5eD3B80d9e10ccBc2468ad1b9C2FD', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: ADDRESSES.ethereum.USDC }, // NVDAx/USDC
+    { pool: '0x70B0B74b52De2948F2FE69f9788F17C9C4B917d8', token0: ADDRESSES.ethereum.WETH, token1: ADDRESSES.ethereum.USDG }, // WETH/USDG
+    { pool: '0xA0B9cc50c460ddE28321C34fCD7161434655A38F', token0: '0x056B269Eb1f75477a8666ae8C7fE01b64dD55eCc', token1: ADDRESSES.ethereum.USDC }, // USD3/USDC
+  ],
+  arbitrum: [
+    { pool: '0x0433CCB013a590eA4231aAC9ddf05bb753c14127', token0: ADDRESSES.arbitrum.USDC_CIRCLE, token1: ADDRESSES.arbitrum.USDT }, // USDC/USDT
+    { pool: '0xcE61ABbf872C86e855D266D30251F741c1f24225', token0: ADDRESSES.arbitrum.WETH, token1: ADDRESSES.arbitrum.USDC_CIRCLE }, // WETH/USDC
+    { pool: '0xfE696c7Cf1FFac9BeDf558C6e610bD978b08619F', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: ADDRESSES.arbitrum.USDC_CIRCLE }, // QQQx/USDC
+    { pool: '0xe1e76F6E987219802fC6bAA61040DA40eE0Be16E', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: ADDRESSES.arbitrum.USDC_CIRCLE }, // NVDAx/USDC
+  ],
+  bsc: [
+    { pool: '0xf1418c3B237f44fB6A163f3a6e66D7A284154cCd', token0: ADDRESSES.bsc.USDC, token1: ADDRESSES.bsc.USDT }, // USDC/USDT (18-dec)
+    { pool: '0x55dc9eDcEFb3D5c918f1E53668096D27F76e30c5', token0: '0xa753a7395cae905cd615da0b82a53e0560f250af', token1: ADDRESSES.bsc.USDC }, // QQQx/USDC
+    { pool: '0x3493491b92C25c06d2E47EAE82Bd3251d313dD39', token0: '0xc845b2894dBddd03858fd2D643B4eF725fE0849d', token1: ADDRESSES.bsc.USDC }, // NVDAx/USDC
+  ],
+  base: [
+    { pool: '0x2103EFCB4A3140F30c745e30Fb360816DC0Da415', token0: ADDRESSES.base.USDC, token1: ADDRESSES.base.USDT }, // USDC/USDT
+    { pool: '0x8781383f9e35402Afb2a6a301d35EDf77954d3e1', token0: ADDRESSES.optimism.WETH_1, token1: ADDRESSES.base.USDC }, // WETH/USDC
+  ],
+  robinhood: [
+    { pool: '0x84e35a36da4C0185fe6BB07940b1e58f66441B79', token0: ADDRESSES.robinhood.WETH, token1: ADDRESSES.robinhood.USDG }, // WETH/USDG
+  ],
 }
 
+// Pool vaults (pool-token PDAs)
 const svm_config = {
-  eclipse: [
-    'BvNLQCQKxq5A7AQUsMdUqRhwXwmnYy7bkpVU67QrakJ8', // tETH/WETH (WETH)
-    '8VSpqv9eAtxew8hbGjN3bWoyHCog9gFEcW42URVNpTH', // tETH/WETH (tETH)
-
-    'ECSRM9wkFyABH55vYGoR2kjSNm3tGEFp1cT3htBWmngd', // tUSD/USDC (USDC)
-    '6uoWjgNs8h7VYNmdrdHmXjty8Y8GrMjTxGcmb3EuDoM8', // tUSD/USDC (tUSD)
-
-  ],
   solana: [
-    '5XCdmwR7K2sZAxbWbkqhohnJ6X7v9ZtbuNrzrr19yHgp', // USDT/USDC (USDT)
-    'FL34362VBFeMRqoRuFm3SiFwS2TAXBWhk6C2CBnjbG3E', // USDT/USDC (USDC)
-
-    '6Fv84LR6nWFYeWRJAehHF3KXRi1RWQRQkGn3eLK3QMxb', // SOL/USDC (SOL)
-    '8NGoaasGcpa8h1JjLY598UCrmxpqgpuWVJtm9F5k3sid', // SOL/USDC (USDC)
-
-    'JBfR8XHYRF52WzTqyB14gkNVWtpPr9DUqzfuxASGLmby', // SKATE/USDC (SKATE)
-    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb' // SKATE/USDC (USDC)
+    'BihGfVYmaT4KpiHiBLwH2ad9Q2ybYVHS2Bd3hQtzg486', // USDC/USDT (USDC)
+    '3DW4k4ims6dFB2cXBk5m1uAfh1zowuj9CzBbF4jm1FRh', // USDC/USDT (USDT)
+    'AB6BBRPRt8ZNSsAp4jmwd5BD3Z7uqjkbjXvWrBpsuA4L', // QQQx/USDC (QQQx)
+    'zpAgwiY7Rk2GZ3VHyAx3ZuCCDE8PhkyhPELJEPnV3Th', // QQQx/USDC (USDC)
+    'DsdoQzMUBHe2Q2w4zwSbWzcqMWvSms1XcfiepJKkDHUb', // NVDAx/USDC (NVDAx)
+    '7DmHWD8vbYgqSZoF1sVPJ9BtPzZrHtRBSoduC3Sz9XiK', // NVDAx/USDC (USDC)
+    '2tALBRHF2SQMUTK599hYexLj45Zmj743sdZvqgQsD8dk', // WETH/USDG (WETH)
+    '4RASDtxgEb7tJFP4yze2cjuzS8X2QfmWZsRgku5H9CHK', // WETH/USDG (USDG)
   ]
 }
 
 const sui_config = {
-  sui: ['0x6ab1e3d7c02dff309504d53fa06302cb66ce50f576432c369afe07c164c0a853']
-}
-
-const eventAbis = {
-  pool_created: "event PoolCreated(address kernelPool, address pool, address token0, address token1, uint24 fee)",
+  sui: [
+    '0xc014f7cb0a2604fb887d09165242828e6fe913f30d7ae2bea80199caed5ccbcb' // USDC/USDT
+  ]
 }
 
 const abis = {
@@ -53,13 +63,12 @@ module.exports = {
 }
 
 const evmTvl = async (api) => {
-  const { kernelEventEmitter, fromBlock } = evm_config[api.chain]
-  const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true })
-  const balances = await api.multiCall({ calls: logs.map(([_, pool]) => ({ target: pool })), abi: abis.balances_available })
-  logs.forEach(([_, __, token0, token1], i) => {
+  const pools = evm_config[api.chain]
+  const balances = await api.multiCall({ calls: pools.map((p) => ({ target: p.pool })), abi: abis.balances_available })
+  pools.forEach((p, i) => {
     const { amount0, amount1 } = balances[i]
-    api.add(token0, amount0)
-    api.add(token1, amount1)
+    api.add(p.token0, amount0)
+    api.add(p.token1, amount1)
   })
 }
 
@@ -93,4 +102,11 @@ const suiTvl = async (api) => {
 
 Object.keys(sui_config).forEach((chain) => {
   module.exports[chain] = { tvl: suiTvl }
+})
+
+// export to preserve historical tvl
+const retiredChains = ['hyperliquid', 'monad', 'eclipse', 'tempo', 'megaeth', 'mantle', 'plume_mainnet', '0g']
+
+retiredChains.forEach((chain) => {
+  module.exports[chain] = { tvl: async () => ({}) }
 })

@@ -3,17 +3,23 @@ const { generateAtvExport } = require('../helper/atv-helper');
 
 // Configuration for all Aarna ATV vaults across chains
 const AARNA_CONFIG = {
-  methodology: 'TVL is calculated using direct on-chain storage contract queries via calculatePoolInUsd function for each âtv vault. This includes âtv802 (quant AI), âtv808 (asymmetric alpha), and âtv111 (multi layer yield) vaults deployed across Ethereum, Arbitrum, and Sonic chains.',
+  methodology: `TVL: Total value of all coins held in the smart contracts of the protocol
+  Fees: 1% deposit and 10% profit sharing (whereever applicable) fees from the vaults`,
   
   // Vault addresses by chain and type
   vaults: {
     ethereum: {
       'ATV-802': "0xb68e430c56ed9e548e864a68a60f9d41f993b32c",
       'ATV-808': "0x60697825812ecC1Fff07f41E2d3f5cf314674Fa6", 
-      'ATV-111': "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba"
+      'ATV-111': "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba",
+      'ATVPTMAX': "0xb9C1344105FaA4681bc7FFd68c5c526DA61F2AE8"
     },
     arbitrum: {
       'ATV-111': "0xe1a6bda42fbafae38607598386a1050613c1a64b"
+    },
+    base: {
+      'ATV-101': "0x9dC3F0f25d793bee5eec75Da3058b0c919F71166",
+      'ATV-111': "0xB56aA0Cbee33C4b6b281027ebAa7697aad42a853",
     },
     sonic: {
       'ATV-111': "0x1cb934e1f5acdb5b805c609a2c5a09aa8489f124"
@@ -29,6 +35,10 @@ const AARNA_CONFIG = {
     },
     arbitrum: {
       'ATV-111': "0x4700bd9cc7232f243945b4a55834ab84563e4e9d"
+    },
+    base: {
+      'ATV-101': "0x6469D15333e7d6a8bDad18a18c251706570bc318",
+      'ATV-111': "0x6469D15333e7d6a8bDad18a18c251706570bc318",
     },
     sonic: {
       'ATV-111': "0x13da4847c80732cab3341f459a094e042af98691"
@@ -48,6 +58,10 @@ const AARNA_CONFIG = {
       ADDRESSES.arbitrum.USDC_CIRCLE, // USDC on Arbitrum
       ADDRESSES.arbitrum.USDC, // USDC.e on Arbitrum
     ],
+    base: [
+      ADDRESSES.base.USDC,
+      ADDRESSES.base.cbBTC,
+    ],
     sonic: [
       ADDRESSES.sonic.USDC_e, // usdc address on sonic
       "0x3F5EA53d1160177445B1898afbB16da111182418", // pendle lp token on sonic
@@ -55,7 +69,7 @@ const AARNA_CONFIG = {
   },
 
   // Multi-chain deployment
-  chains: ['ethereum', 'arbitrum', 'sonic']
+  chains: ['ethereum', 'arbitrum', 'base', 'sonic']
 };
 
 // Export the generated configuration

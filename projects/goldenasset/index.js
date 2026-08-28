@@ -17,7 +17,7 @@ module.exports = {
       });
 
       // 2. Fetch the historical price
-      const url = `https://api.goldenasset.org/prices/gem?adjustTo=2024-12-03`;
+      const url = `https://api.gemswap.org/prices/gem?adjustTo=2024-12-03`;
       const response = await fetchURL(url);
       const { price: currentPrice, history } = response.data;
 

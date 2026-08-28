@@ -8,7 +8,7 @@ const ZD = "0x98051143830fa99848E7059E97AcB03B3cc62403";
 
 const ZD_USDT_POOL = "0x4cb107576c7f3d59e3355ce760af5cbc36cf5e0d";
 module.exports.hallmarks=[
-  [1641254400,"Rug Pull"]
+  ['2022-01-04',"Rug Pull"]
 ],
 module.exports = ohmTvl(treasuryAddress, [
   [USDT, false],

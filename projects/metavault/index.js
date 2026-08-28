@@ -1,7 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const readerAbi = require("./reader.json");
-const mvlpManagerAbi = require("./mvlpManager.json");
+const readerAbi = {
+    "getTokenBalancesWithSupplies": "function getTokenBalancesWithSupplies(address _account, address[] _tokens) view returns (uint256[])"
+  };
+const mvlpManagerAbi = {
+    "getAums": "uint256[]:getAums"
+  };
 const { staking } = require("../helper/staking");
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
@@ -42,7 +46,7 @@ async function polygon(api) {
 
 module.exports = {
   hallmarks: [
-    [1676592000, "Launch on Arbitrum"]
+    ['2023-02-17', "Launch on Arbitrum"]
   ],
   misrepresentedTokens: true,
   arbitrum: {

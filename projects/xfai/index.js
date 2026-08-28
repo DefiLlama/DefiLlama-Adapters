@@ -9,7 +9,7 @@ module.exports = {
       const pools = await api.fetchList({  lengthAbi: "uint256:allPoolsLength", itemAbi: "function allPools(uint256) external view returns (address)", target: FACTORY_ADDRESS})
       const tokens = await api.multiCall({  abi: 'address:poolToken', calls: pools})
       const ownerTokens = pools.map((v, i) => [[tokens[i], ADDRESSES.linea.WETH], v])
-      return api.sumTokens({ ownerTokens})
+      return api.sumTokens({ ownerTokens, blacklistedTokens: ['0x1e1f509963a6d33e169d9497b11c7dbfe73b7f13', '0xb79dd08ea68a908a97220c76d19a6aa9cbde4376'] })
     },
   },
 };

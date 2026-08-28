@@ -1,6 +1,13 @@
 const { getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const abi = require("./abis.json");
+const abi = {
+    "instanceCount": "function instanceCount() external view returns (uint256 count)",
+    "instanceAt": "function instanceAt(uint256 index) external view returns (address instance)",
+    "getGeyserData": "function getGeyserData() external view returns ((address stakingToken, address rewardToken, address rewardPool, (uint256 floor, uint256 ceiling, uint256 time) rewardScaling, uint256 rewardSharesOutstanding, uint256 totalStake, uint256 totalStakeUnits, uint256 lastUpdate, (uint256 duration, uint256 start, uint256 shares)[] rewardSchedules) geyser)",
+    "underlying": "function underlying() external view returns (address)",
+    "UNDERLYING_ASSET_ADDRESS": "function UNDERLYING_ASSET_ADDRESS() external view returns (address)",
+    "totalUnderlying": "function totalUnderlying() external view returns (uint256)"
+  };
 const { mergeExports } = require("../helper/utils");
 
 const SEAMLESS_GOVERNOR_SHORT_TIMELOCK = "0x639d2dD24304aC2e6A691d8c1cFf4a2665925fee";

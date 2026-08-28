@@ -126,18 +126,18 @@ async function call({ target, abi, params = [], rawStack = false, }) {
   return stack
 }
 
-async function addJettonBalances({ api, jettonAddress, addresses }) {
+async function addJettonBalances({ api, jettonAddress, addresses, chunkSize = 399, sleepMs = 3000, forceSleep = false }) {
   api.log('Fetching Jetton balances', { jettonAddress, addresses: addresses.length })
-  const chunks = sliceIntoChunks(addresses, 399)
+  const chunks = sliceIntoChunks(addresses, chunkSize)
   let i = 0
   for (const chunk of chunks) {
-    api.log('Fetching Jetton balances', { jettonAddress, chunk: i++, chunks: chunks.length })
+    // api.log('Fetching Jetton balances', { jettonAddress, chunk: i++, chunks: chunks.length })
     const { jetton_wallets } = await get('https://toncenter.com/api/v3/jetton/wallets?owner_address=' + encodeURIComponent(chunk.join(',')) + '&jetton_address=' + encodeURIComponent(jettonAddress) + '&include_boc=false' + (key ? `&api_key=${key}` : ''))
     jetton_wallets.forEach(({ balance }) => {
       api.add(jettonAddress, balance)
     })
-    if (addresses.length > 199) {
-      await sleep(3000)
+    if (addresses.length > 199 || forceSleep) {
+      await sleep(sleepMs)
     }
   }
 }

@@ -4,7 +4,6 @@ const LOAN_TOKEN_CONTRACT = 'loan.token';
 const STAKING_CONTRACT = 'lock.token';
 
 const { post } = require('../helper/http')
-const sdk = require('@defillama/sdk')
 
 const tokenMapping = {
   'xtokens:XBTC': 'bitcoin',
@@ -13,6 +12,7 @@ const tokenMapping = {
   'xtokens:XXRP': 'ripple',
   'eosio.token:XPR': 'proton',
   'xtokens:XMT': 'metal',
+  'xmd.token:XMD': 'metal-dollar',
   'xtokens:XUSDC': 'usd-coin',
   'xtokens:XDOGE': 'dogecoin',
   'xtokens:XUSDT': 'tether',
@@ -44,8 +44,9 @@ async function fetchMarkets() {
   return res.rows || []
 }
 
-async function fetchLiquidity(tokenContract, symbol) {
+async function fetchLiquidity(tokenContract, symbol, reserves) {
   // available liquidity (cash) held by lending.loan for a given token
+  // TVL = account balance - reserves (reserves are not available for lending)
   const res = await post(`${API_ENDPOINT}/v1/chain/get_table_rows`, {
     code: tokenContract,
     scope: LENDING_CONTRACT,
@@ -55,14 +56,15 @@ async function fetchLiquidity(tokenContract, symbol) {
   })
   const rows = res.rows || []
   const tokenBalance = rows.find(b => parseAsset(b.balance).symbol === symbol)
-  return tokenBalance ? parseAsset(tokenBalance.balance).amount : 0
+  const accountBalance = tokenBalance ? parseAsset(tokenBalance.balance).amount : 0
+  const reserveAmount = parseAsset(reserves?.quantity).amount || 0
+  return accountBalance - reserveAmount
 }
 
 // ----------------------------
 // TVL = only available liquidity (cash)
 // ----------------------------
-async function tvl() {
-  const balances = {}
+async function tvl(api) {
   const markets = await fetchMarkets()
 
   const promises = markets.map(async (market) => {
@@ -72,19 +74,18 @@ async function tvl() {
     const cgkId = tokenMapping[internalId]
     if (!cgkId) return
 
-    const cashAvailable = await fetchLiquidity(tokenContract, symbol)
-    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, cashAvailable)
+    const cashAvailable = await fetchLiquidity(tokenContract, symbol, market.total_reserves)
+    api.addCGToken(cgkId, cashAvailable)
   })
 
   await Promise.all(promises)
-  return balances
+  return api.getBalances()
 }
 
 // ----------------------------
 // Borrowed = total variable + stable borrows
 // ----------------------------
-async function borrowed() {
-  const balances = {}
+async function borrowed(api) {
   const markets = await fetchMarkets()
 
   markets.forEach(market => {
@@ -98,10 +99,10 @@ async function borrowed() {
     const cgkId = tokenMapping[internalId]
     if (!cgkId) return
 
-    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, totalBorrows)
+    api.addCGToken(cgkId, totalBorrows)
   })
 
-  return balances
+  return api.getBalances()
 }
 
 async function getTotalStaking(api) {

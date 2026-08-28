@@ -1,10 +1,15 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require("./abi.json")
-
-const config = {
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCakePerShare)",
+    "poolLength": "uint256:poolLength",
+    "symbol": "string:symbol",
+    "reserveToken": "address:reserveToken",
+    "totalReserve": "uint256:totalReserve",
+    "state": "function state() view returns (address _masterChef, uint256 _pid, address _rewardToken, address _routingToken, address _reserveToken, address _treasury, address _collector, address _exchange, uint256 _minimalGulpFactor, uint256 _forceGulpRatio, uint256 _performanceFee, bool _emergencyMode)"
+  };const config = {
   bsc: {
     autoGem: "0xE02CE329281664A5d2BC0006342DC84f6c384663",
-    DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+    DAI: ADDRESSES.bsc.DAI,
     pools: [
       "0x13e7a6691fe00de975cf27868386f4ae9aed3cdc",
       "0xc2e8c3c427e0a5baaf512a013516aecb65bd75cb",
@@ -12,7 +17,7 @@ const config = {
     singlePSM: ADDRESSES.bsc.BUSD,
   },
   fantom: {
-    DAI: ADDRESSES.fantom.DAI,
+    DAI: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
     pools: [
       "0x30463d33735677b4e70f956e3dd61c6e94d70dfe",
       "0xaebd31E9FFcB222feE947f22369257cEcf1F96CA",

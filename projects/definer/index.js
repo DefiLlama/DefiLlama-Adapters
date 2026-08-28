@@ -1,4 +1,15 @@
-const abi = require("./abi.json");
+const abi = {
+    "global:tokenInfoRegistry": "address:tokenInfoRegistry",
+    "global:bank": "address:bank",
+    "tokenRegistry:getTokens": "address[]:getTokens",
+    "tokenRegistry:getCToken": "function getCToken(address _token) view returns (address)",
+    "bank:getPoolAmount": "function getPoolAmount(address _token) view returns (uint256)",
+    "bank:getTokenState": "function getTokenState(address _token) view returns (uint256 deposits, uint256 loans, uint256 collateral)",
+    "bank:getCapitalUtilizationRatio": "function getCapitalUtilizationRatio(address _token) view returns (uint256)",
+    "bank:getCapitalCompoundRatio": "function getCapitalCompoundRatio(address _token) view returns (uint256)",
+    "ctoken:supplyRatePerBlock": "uint256:supplyRatePerBlock",
+    "ctoken:borrowRatePerBlock": "uint256:borrowRatePerBlock"
+  };
 const config = {
   ethereum: {
     DEPLOY_BLOCK: 10819469,

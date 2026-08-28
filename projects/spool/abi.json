@@ -1,6 +1,0 @@
-{
-  "spoolController_getAllStrategies": "address[]:getAllStrategies",
-  "masterSpool_getUnderlying": "function getUnderlying(address strat) view returns (uint128)",
-  "masterSpool_getStratUnderlying": "function getStratUnderlying(address strat) returns (uint128)",
-  "strategy_underlying": "address:underlying"
-}

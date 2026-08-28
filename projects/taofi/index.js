@@ -20,7 +20,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'counts the number of USDC/sTAO tokens of the uni v3 pool.',
-  bittensor_evm_mainnet: {
+  bittensor_evm: {
     tvl,
   }
 }; 

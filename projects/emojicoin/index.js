@@ -6,17 +6,13 @@ async function getAllMarkets(ledgerVersion) {
   // If called with a ledger version too early, an error will be thrown by function_view.
   // If that is the case, return 0 as it means the package wasn't deployed yet and the
   // TVL is then 0.
-  try {
-    const registry = await function_view({
-      functionStr: "0xface729284ae5729100b3a9ad7f7cc025ea09739cd6e7252aff0beb53619cafe::emojicoin_dot_fun::registry_view",
-      args: [],
-      type_arguments: [],
-      ledgerVersion,
-    })
-    return registry.total_quote_locked.value;
-  } catch {
-    return 0;
-  }
+  const registry = await function_view({
+    functionStr: "0xface729284ae5729100b3a9ad7f7cc025ea09739cd6e7252aff0beb53619cafe::emojicoin_dot_fun::registry_view",
+    args: [],
+    type_arguments: [],
+    ledgerVersion,
+  })
+  return registry.total_quote_locked.value;
 }
 
 // Date at which the contract was deployed.

@@ -10,7 +10,7 @@ const chainMapping = {
   bsc: 'binance'
 };
 
-const blackListChains = ['comdex', 'crescent'];
+const blackListChains = ['comdex', 'crescent', 'evmos', 'kujira', 'migaloo' ];
 const chainListSupply = [
   'agoric', 
   'archway', 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking')
@@ -18,8 +19,8 @@ const OCR = "0x7720e6eEe8EF2457d4e1C38D6A9295967b2a89ec";
 const OCR_Cycle = "0x12E46E69623350aB3AE6D52CAb86a152A078Ad6F";
 
 // Token Addresses
-const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const USDC = ADDRESSES.ethereum.USDC;
+const USDT = ADDRESSES.ethereum.USDT;
 const FRX_USD = "0xCAcd6fd266aF91b8AeD52aCCc382b4e165586E29";
 const M0 = "0x437cc33344a0B27A429f795ff6B469C72698B291";
 const aUSDC = "0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c";

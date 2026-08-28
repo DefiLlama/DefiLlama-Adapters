@@ -128,6 +128,8 @@ function option(layout, property) {
   return new OptionLayout(layout, property);
 }
 
+const hasDiscriminator = (decoded, discriminator) => Buffer.from(decoded.discriminator).equals(discriminator)
+
 module.exports = {
-  struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, BufferLayout, option,
+  struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, BufferLayout, option, hasDiscriminator,
 }

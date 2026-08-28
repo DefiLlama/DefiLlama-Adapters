@@ -21,8 +21,10 @@ const deployedAccount = new PublicKey("6riP1W6R3qzUPWYwLGtXEC23aTqmyAEdDtXzhntJq
 const multisigAccount = new PublicKey("DkPYEECBc28iute8vWvAuAU4xiM91Sht59p7FHZbmNQv");
 const pendingUnstakeAccount = new PublicKey("HTnwdgfXrA6gZRiQsnfxLKbvdcqnxdbuC2FJsmCCVMw9");
 const usdcAddress = new PublicKey(ADDRESSES.solana.USDC);
+const wsolAddress = new PublicKey(ADDRESSES.solana.SOL);
 const iscAddress = new PublicKey("J9BcrQfX4p9D1bvLzRNCbMDv8f44a9LFdeqNE4Yk2WMD");
 const usdcPoolAccount = new PublicKey("9m3wEeK3v5yyqDGMnDiDRR3FjCwZjRVB4n92pieGtTbP");
+const wsolPoolAccount = new PublicKey("56RRjFaSEMVop9Mt8uEqWjNAqU4qt1XJYWCMiQbCVG2A");
 const iscPoolAccount = new PublicKey("CrsxVEF7YNGAk9QwwbB2vuesUWoDopfgFAhA9apoCJ2z");
 
 function getPositionFilters() {
@@ -71,6 +73,7 @@ async function tvl(api) {
     balances: api.getBalances(),
     tokenAccounts: [
       getAssociatedTokenAddress(usdcAddress, usdcPoolAccount),
+      getAssociatedTokenAddress(wsolAddress, wsolPoolAccount),
       getAssociatedTokenAddress(iscAddress, iscPoolAccount),
     ],
     solOwners: [

@@ -10,6 +10,8 @@ const treasuryBase = "0x4095f3c4bF6D6505Bd32cFFE0918863Ebb6b2Df2";
 const treasuryBinanceSmartChain = "0xbf694bDFF7d4A0311863765e1f79A5C4f185e7d1";
 const treasuryArbitrum = "0xd09cab631f02C8D8cE7009b3aA228bdF4aAC67BD";
 const treasuryPolygon = "0x4095f3c4bF6D6505Bd32cFFE0918863Ebb6b2Df2";
+const treasurySei = "0x4095f3c4bF6D6505Bd32cFFE0918863Ebb6b2Df2";
+const treasuryMonad = "0x4095f3c4bF6D6505Bd32cFFE0918863Ebb6b2Df2";
 
 module.exports = treasuryExports({
     algorand: {
@@ -35,6 +37,7 @@ module.exports = treasuryExports({
             ...HubPools.ethereum.map(pool => pool.poolAddress),
             ...HubPools.polygon.map(pool => pool.poolAddress),
             ...HubPools.sei.map(pool => pool.poolAddress),
+            ...HubPools.monad.map(pool => pool.poolAddress),
         ],
         owners: [treasuryAvalanche],
         ownTokens: [],
@@ -66,7 +69,12 @@ module.exports = treasuryExports({
     },
     sei: {
         tokens: HubPools.sei.map(pool => pool.tokenAddress),
-        owners: [HubPools.sei[0].chainPoolAddress],
+        owners: [treasurySei],
+        ownTokens: [],
+    },
+    monad: {
+        tokens: HubPools.monad.map(pool => pool.tokenAddress),
+        owners: [treasuryMonad],
         ownTokens: [],
     }
 })

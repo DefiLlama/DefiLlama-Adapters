@@ -73,6 +73,12 @@ async function tvl(api) {
   const tokens = data.map(stock => stock.p[chainKey]).filter(Boolean)
   const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: tokens })
   api.add(tokens, supplies)
+  const mintedBalance = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(t => ({ target: t, params: '0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD' }))})
+  tokens.forEach((token, i) => {
+    if (mintedBalance[i] && mintedBalance[i] !== '0') {
+      api.add(token, mintedBalance[i] * -1) // exclude pre-minted tokens
+    }
+  })
 }
 
 

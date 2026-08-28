@@ -3,14 +3,15 @@ const { sumTokens2, nullAddress, } = require('./unwrapLPs')
 const methodologies = require('./methodologies');
 
 // returns [{cToken, underlying}]
-async function getMarkets(comptroller, api, cether, cetheEquivalent = nullAddress, blacklist = [], abis = {}) {
+async function getMarkets(comptroller, api, cether, cetheEquivalent = nullAddress, blacklist = [], abis = {}, { blacklistedMarkets = [], } = {}) {
 
   if (cether) {
     if (!Array.isArray(cether)) cether = [cether]
     cether = new Set(cether.map(i => i.toLowerCase()))
   }
   const blacklistSet = new Set([...blacklist].map(i => i.toLowerCase()))
-  const cTokens = (await api.call({ abi: abis.getAllMarkets, target: comptroller })).map(i => i.toLowerCase())
+  let cTokens = (await api.call({ abi: abis.getAllMarkets, target: comptroller })).map(i => i.toLowerCase())
+  cTokens = cTokens.filter(cToken => !blacklistedMarkets.includes(cToken))
   const underlyings = await api.multiCall({ abi: abi.underlying, calls: cTokens, permitFailure: true })
 
   const markets = []
@@ -24,10 +25,13 @@ async function getMarkets(comptroller, api, cether, cetheEquivalent = nullAddres
   return markets;
 }
 
-function _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, borrowed = false, { blacklistedTokens = [], abis = {}, } = {}) {
+function _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, borrowed = false, { blacklistedTokens = [], abis = {}, blacklistedMarkets = [], isInsolvent = false } = {}) {
   abis = { ...abi, ...abis }
+
+  if (borrowed && isInsolvent) return async () => ({})
+
   return async (api) => {
-    let markets = await getMarkets(comptroller, api, cether, cetheEquivalent, blacklistedTokens, abis)
+    let markets = await getMarkets(comptroller, api, cether, cetheEquivalent, blacklistedTokens, abis, { blacklistedMarkets })
     const cTokens = markets.map(market => market.cToken)
     const tokens = markets.map(market => market.underlying)
     if (!borrowed)
@@ -42,15 +46,15 @@ function _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, borrowed = fals
   }
 }
 
-function compoundExports(comptroller, cether, cetheEquivalent = nullAddress, { blacklistedTokens = [], abis = {}, } = {}) {
+function compoundExports(comptroller, cether, cetheEquivalent = nullAddress, { blacklistedTokens = [], abis = {}, blacklistedMarkets = [], isInsolvent = false } = {}) {
   return {
-    tvl: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, false, { blacklistedTokens, abis, }),
-    borrowed: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, true, { blacklistedTokens, abis, })
+    tvl: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, false, { blacklistedTokens, abis, blacklistedMarkets, }),
+    borrowed: _getCompoundV2Tvl(comptroller, cether, cetheEquivalent, true, { blacklistedTokens, abis, blacklistedMarkets, isInsolvent })
   }
 }
 
-function compoundExports2({ comptroller, cether, cetheEquivalent = nullAddress, blacklistedTokens = [], abis = {}, }) {
-  return compoundExports(comptroller, cether, cetheEquivalent, { blacklistedTokens, abis, })
+function compoundExports2({ comptroller, cether, cetheEquivalent = nullAddress, blacklistedTokens = [], abis = {}, blacklistedMarkets = [], isInsolvent = false }) {
+  return compoundExports(comptroller, cether, cetheEquivalent, { blacklistedTokens, abis, blacklistedMarkets, isInsolvent })
 }
 
 module.exports = {

@@ -1,11 +1,37 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
-const { addFraxVaultToTVL } = require("./fraxVault");
+const sdk = require('@defillama/sdk');
+
+const getVaultsAbi = 'address[]:getRegisteredAddresses';
+const getAssetAbi = 'address:asset';
+const getStrategyAbi = 'address:strategy';
+const getTotalSupplyAbi = 'uint256:totalSupply';
+const convertToAssetsAbi = 'function convertToAssets(uint256) view returns (uint256)';
+
+
+async function addFraxVaultToTVL(balances, api) {
+    const vaultAddresses = await api.call({ target: "0x25172C73958064f9ABc757ffc63EB859D7dc2219", abi: getVaultsAbi });
+    const assets = await api.multiCall({ abi: getAssetAbi, calls: vaultAddresses, });
+    const totalSupply = await api.multiCall({ abi: getTotalSupplyAbi, calls: vaultAddresses, });
+    const strategies = await api.multiCall({ abi: getStrategyAbi, calls: vaultAddresses, });
+
+    const totalAssets = [];
+    for (let i = 0; i < vaultAddresses.length; i++) {
+        // if the vault has no strategy: 1 share = 1 asset
+        if (strategies[i] === ADDRESSES.null) {
+            totalAssets.push(totalSupply[i]);
+        } else {
+            const assets = await api.call({ target: strategies[i], abi: convertToAssetsAbi, params: [totalSupply[i]] })
+            totalAssets.push(assets);
+        }
+    }
+    assets.forEach((v, i) => sdk.util.sumSingleBalance(balances, v, totalAssets[i], api.chain))
+}
 const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const blacklists = {
-  ethereum: ['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb', '0x77e88cA17A6D384DCBB13747F6767F30e3753e63'],
+  ethereum: ['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb', '0x77e88cA17A6D384DCBB13747F6767F30e3753e63', '0xdB06a9D79f5Ff660f611234c963c255E03Cb5554'],
   base: ['0x023577b99e8A59ac18454161EecD840Bd648D782'],
 }
 
@@ -23,8 +49,8 @@ const fraxLockVaultsNotRegistered = [
 ];
 
 const hemiBTCVaults = [
-  "0x748973D83d499019840880f61B32F1f83B46f1A5",
-  "0x0b8E088a35879f30a4d63F686B10adAD9cB3DBE1"
+  // "0x748973D83d499019840880f61B32F1f83B46f1A5",
+  // "0x0b8E088a35879f30a4d63F686B10adAD9cB3DBE1"
 ]
 
 const abis = {
@@ -43,10 +69,10 @@ const getArbTvl = async (balances, api, vaults) => {
   const fraxLockVaults = await api.call({ target: "0x25172C73958064f9ABc757ffc63EB859D7dc2219", abi: abis.getRegisteredAddresses });
   const allFraxs = fraxLockVaults.concat(fraxLockVaultsNotRegistered)
   const filteredVaults = vaults.filter((address) => !allFraxs.includes(address))
-  const assets = await api.multiCall({ abi: abis.asset, calls: filteredVaults });
-  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: filteredVaults });
+  const assets = await api.multiCall({ abi: abis.asset, calls: filteredVaults, permitFailure: true });
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: filteredVaults, permitFailure: true });
   await addFraxVaultToTVL(balances, api);
-  api.add(assets, totalAssets)
+  api.add(assets.map(i => i || ADDRESSES.null), totalAssets.map(i => i || 0))
   return balances
 }
 
@@ -60,9 +86,9 @@ const tvl = async (api) => {
   if (chain === 'hemi') return getHemiTvl(api)
   if (chain === 'arbitrum') return getArbTvl(balances, api, vaults)
 
-  const assets = await api.multiCall({ abi: abis.asset, calls: vaults })
+  const assets = await api.multiCall({ abi: abis.asset, calls: vaults, permitFailure: true })
   const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults, permitFailure: true })
-  api.add(assets, totalAssets.map(i => i || 0))
+  api.add(assets.map(i => i || ADDRESSES.null), totalAssets.map(i => i || 0))
   return sumTokens2({ api, resolveLP: true })
 }
 

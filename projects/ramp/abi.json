@@ -1,4 +1,0 @@
-{
-  "getPoolBalance": "function getPoolBalance(address _token) view returns (uint256)",
-  "getPoolAmount": "function getPoolAmount(address _token) view returns (uint256)"
-}

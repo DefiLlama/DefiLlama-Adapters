@@ -120,7 +120,7 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = []
       if (tokens) ownerTokens.push([tokens, owner])
       await addCoinfg(id, ownerTokens)
-      return sumTokens2({ api, ownerTokens })
+      return sumTokens2({ api, ownerTokens, permitFailure: true })
     }
   }
 })

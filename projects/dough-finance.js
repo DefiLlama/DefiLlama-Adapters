@@ -16,7 +16,7 @@ async function getVaults(api) {
 
 module.exports = {
     // hallmarks: [
-    //     [1720742400, "Protocol Exploit"]
+    //     ['2024-07-12', "Protocol Exploit"]
     // ],
     ethereum: {
         tvl: async (api) => {

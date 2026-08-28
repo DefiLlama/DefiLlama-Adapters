@@ -28,7 +28,7 @@ async function tvl() {
 // TODO: Find a dynamic way to obtain this mapping
 const TOKEN_MINT_TO_TOKEN2022_MINT = {
   [ADDRESSES.solana.SOL]: ADDRESSES.solana.SOL,
-  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': 'GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn',
+  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': ADDRESSES.eclipse.ETH_2,
   '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': ADDRESSES.eclipse.WIF,
   '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': ADDRESSES.eclipse.SOL,
   'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': ADDRESSES.eclipse.USDC,
@@ -60,8 +60,8 @@ module.exports = {
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
   hallmarks: [
-    [1635940800, "SLND launch"],
-    [1667826000, "FTX collapse, SOL whale liquidated"],
+    ['2021-11-03', "SLND launch"],
+    ['2022-11-07', "FTX collapse, SOL whale liquidated"],
   ],
 };
 

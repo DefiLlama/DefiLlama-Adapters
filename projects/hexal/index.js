@@ -8,7 +8,7 @@ const treasuryTokens = [
     [ADDRESSES.bsc.BUSD, false],
     [ADDRESSES.bsc.USDC, false],
     ["0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", false],
-    ["0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3", false],
+    [ADDRESSES.bsc.DAI, false],
     [ADDRESSES.bsc.USDT, false],
     [ADDRESSES.bsc.WBNB, false],
     ["0xc94364d0ffd3c015689f55e167ac359eb93c617e", true]

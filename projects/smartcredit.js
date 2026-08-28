@@ -1,65 +1,55 @@
 const ADDRESSES = require('./helper/coreAssets.json')
-const { cachedGraphQuery } = require('./helper/cache')
 const { getLogs } = require('./helper/cache/getLogs')
 
-const endPoint = 'https://d2c7awq32ho327.cloudfront.net/graphql'
 const SMART_CREDIT = '0x72e9D9038cE484EE986FEa183f8d8Df93f9aDA13'.toLowerCase()
 const factory = '0x31ba589072278D82207212702De9A1C2B9D42c28'
 const fromBlock = 14575305
 const factoryAbi = {
   "FixedIncomeFundCreationComplete": "event FixedIncomeFundCreationComplete(address indexed fixedIncomeFund, bytes32 indexed salt)",
   "LoanContractCreated": "event LoanContractCreated(address indexed creditLine, address indexed borrower, bytes32 salt, bytes32 _type)",
-  "createCreditLine": "function createCreditLine(bytes32 _type, bytes32 _salt) returns (address _creditLine)",
-  "createNFTLoan": "function createNFTLoan(bytes32 _type, bytes32 _salt, tuple(address assetAddress, uint256 loanAmount, uint256 loanTerm, uint256 interestRate, address collateralAddress, uint256 collateralId) _loanRequest) returns (address _loanContract)",
-  "createFixedIncomeFund": "function createFixedIncomeFund(bytes32 _type, bytes32 _salt, uint256[4] _ratios) returns (address _fixedIncomeFund)",
-  "investFixedIncomeFundToCompound": "function investFixedIncomeFundToCompound(address[] _fixedIncomeFunds)"
-}
-
-const loanAbi = {
-  "getLoanData": "function getLoanData(bytes32 _loanId) view returns (bytes32 loanId, uint256 currentCollateralAmount, uint256 loanEnded, uint256 outstandingAmount)",
 }
 
 const fixedIncomeAbi = {
-  "getCurrencyAddress": "address:getCurrencyAddress",
   "getCompoundAddress": "address:getCompoundAddress",
-  "fixedIncomeFundBalance": "uint256:fixedIncomeFundBalance"
+  "fixedIncomeFundBalance": "uint256:fixedIncomeFundBalance",
+  "getFixedIncomeFundDetails": "function getFixedIncomeFundDetails() external view returns(address owner, address currency, uint256 balance, uint256 invested, uint256[4] memory buckets)"
 }
 
+// Supported tokens (hardcoded for efficiency - verified from protocol docs)
+const collateralTokens = [
+  ADDRESSES.null, // ETH (null address)
+  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.USDT, // USDT
+  ADDRESSES.ethereum.STETH,  // stETH
+  ADDRESSES.ethereum.DAI,  // DAI 
+  "0x221657776846890989a759ba2973e427dff5c9bb",  // REP
+  ADDRESSES.ethereum.LINK,  // LINK
+  ADDRESSES.ethereum.BAT   // BAT
+]
+const underlyingTokens = [
+  ADDRESSES.null, // ETH
+  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.USDT, // USDT
+  ADDRESSES.ethereum.DAI  // DAI 
+]
 
-const transformNull = i => i.toLowerCase() === ADDRESSES.GAS_TOKEN_2.toLowerCase() ? ADDRESSES.null : i
 
-async function staking(api) {
-  let { loanRequests } = await cachedGraphQuery('smart-credit', endPoint, `{
-    loanRequests {
-      id,
-      contractAddress,
-      loanStatus,
-      liquidationStatus,
-      underlying { ethAddress },
-      collateral { ethAddress }
-    }
-  }`)
-  loanRequests = loanRequests.filter(i => i)
-  const ownerTokens = loanRequests.map(i => [[i.underlying.ethAddress, i.collateral.ethAddress].map(transformNull), i.contractAddress])
-  return api.sumTokens({ ownerTokens, whitelistedTokens: [SMART_CREDIT] })
-}
-
-module.exports = {
-  timetravel: false,
-  ethereum: {
-    tvl,
-    staking,
-    borrowed,
-  }
-}
-
+/**
+ * TVL: Sum of assets in Fixed Income Funds + collateral in Loan contracts
+ * - Fixed Income: underlying tokens deposited by lenders
+ * - Loans: collateral tokens deposited by borrowers
+ */
 async function tvl(api) {
   await fixedIncomeTvl(api)
-  await loanTvl(api)
+  await collateralTvl(api)
   return api.getBalances()
 }
 
-
+/**
+ * Fixed Income TVL: Underlying tokens deposited in Fixed Income Funds by lenders
+ * Excludes SMARTCREDIT protocol token to avoid double-counting with staking
+ * @param {Object} api - DefiLlama SDK api instance
+ */
 async function fixedIncomeTvl(api) {
   const logs = await getLogs({
     api,
@@ -70,44 +60,81 @@ async function fixedIncomeTvl(api) {
     extraKey: 'fixedIncomeFund',
   })
   const pools = logs.map(l => l.fixedIncomeFund)
-  const tokens = (await api.multiCall({ abi: fixedIncomeAbi.getCurrencyAddress, calls: pools })).map(transformNull)
-
-  await api.sumTokens({ tokensAndOwners2: [tokens, pools], blacklistedTokens: [SMART_CREDIT] })
+  await api.sumTokens({ tokens: underlyingTokens, owners: pools, blacklistedTokens: [SMART_CREDIT] })
 }
 
-async function loanTvl(api) {
-  let { loanRequests } = await cachedGraphQuery('smart-credit', endPoint, `{
-    loanRequests {
-      id,
-      contractAddress,
-      loanStatus,
-      liquidationStatus,
-      underlying { ethAddress },
-      collateral { ethAddress }
-    }
-  }`)
-  loanRequests = loanRequests.filter(i => i)
-  const ownerTokens = loanRequests.map(i => [[i.underlying.ethAddress, i.collateral.ethAddress].map(transformNull), i.contractAddress])
-  return api.sumTokens({ ownerTokens, blacklistedTokens: [SMART_CREDIT] })
+/**
+ * Collateral TVL: Collateral tokens in active loan contracts (creditlines)
+ * Borrowers deposit collateral which stays locked until loans are repaid/liquidated
+ * @param {Object} api - DefiLlama SDK api instance
+ */
+async function collateralTvl(api) {
+  const logs = await getLogs({
+    api,
+    target: factory,
+    eventAbi: factoryAbi.LoanContractCreated,
+    onlyArgs: true,
+    fromBlock,
+    extraKey: 'creditLine',
+  })
+  const pools = logs.map(l => l.creditLine.toLowerCase())
+  await api.sumTokens({ tokens: collateralTokens, owners: pools })
 }
 
+
+
+/**
+ * Borrowed: Total outstanding loan principal across all Fixed Income Funds
+ * All borrows originate from Fixed Income Funds → invested amount = total borrowed
+ * Excludes SMARTCREDIT token loans (protocol-internal operations)
+ * @param {Object} api - DefiLlama SDK api instance
+ * @returns {Object} Balances object with borrowed amounts by token
+ */
 async function borrowed(api) {
-  let { loanRequests } = await cachedGraphQuery('smart-credit', endPoint, `{
-    loanRequests {
-      id,
-      contractAddress,
-      loanStatus,
-      liquidationStatus,
-      underlying { ethAddress },
-      collateral { ethAddress }
-    }
-  }`)
-  loanRequests = loanRequests.filter(i => i)
-  const calls = loanRequests.map(i => ({ target: i.contractAddress, params: [i.id] }))
-  const loanInfos = await api.multiCall({  abi: loanAbi.getLoanData, calls})
-  loanInfos.forEach((i, idx) => {
-    if (i.outstandingAmount === '0') return
-    api.add(loanRequests[idx].underlying.ethAddress, i.outstandingAmount)
+  const logs = await getLogs({
+    api,
+    target: factory,
+    eventAbi: factoryAbi.FixedIncomeFundCreationComplete,
+    onlyArgs: true,
+    fromBlock,
+    extraKey: 'fixedIncomeFund',
+  })
+
+  const pools = logs.map(l => l.fixedIncomeFund)
+  const poolInfos = await api.multiCall({ abi: fixedIncomeAbi.getFixedIncomeFundDetails, calls: pools })
+  
+  poolInfos.forEach((i, idx) => {
+    if (i.currency.toLowerCase() === SMART_CREDIT) return
+    const token = i.currency === ADDRESSES.GAS_TOKEN_2 ? [ADDRESSES.null]: i.currency;
+    api.add(token, i.invested)
   })
   return api.getBalances()
+}
+
+
+/**
+ * Staking: SMARTCREDIT protocol tokens staked in Fixed Income Funds
+ * @param {Object} api - DefiLlama SDK api instance
+ */
+async function staking(api) {
+  const logs = await getLogs({
+    api,
+    target: factory,
+    eventAbi: factoryAbi.FixedIncomeFundCreationComplete,
+    onlyArgs: true,
+    fromBlock,
+    extraKey: 'fixedIncomeFund',
+  })
+  const pools = logs.map(l => l.fixedIncomeFund)
+  return api.sumTokens({ owners: pools, tokens: [SMART_CREDIT] })
+}
+
+
+module.exports = {
+  timetravel: false,
+  ethereum: {
+    tvl,
+    staking,
+    borrowed,
+  }
 }

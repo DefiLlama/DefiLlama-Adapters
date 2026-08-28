@@ -172,12 +172,12 @@ const HYPE_REGISTRY = {
     ["0x1E86A593E55215957C4755f1BE19a229AF3286f6", 1723870], // Uniswap
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 1723870], // Sushiswap
   ],
-  nibiru: [
-    ["0x2A078554094f5e342B69E5b6D3665507283EfBa1", 1723870], // Uniswap
-  ],
-  sei: [
-    ["0x6c509511672f3cDC0440C219169e4367425870a8", 1723870], // Yaka
-  ],
+  // nibiru: [
+  //   ["0x2A078554094f5e342B69E5b6D3665507283EfBa1", 1723870], // Uniswap
+  // ],
+  // sei: [
+  //   ["0x6c509511672f3cDC0440C219169e4367425870a8", 1723870], // Yaka
+  // ],
   berachain: [
     ["0x116deEa9F1Dd174E08Ed3287180Ec16840d1B0c3", 1723870], // Bulla
   ],

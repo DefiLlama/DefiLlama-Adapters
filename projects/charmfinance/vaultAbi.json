@@ -1,5 +1,0 @@
-{
-  "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
-  "token0": "address:token0",
-  "token1": "address:token1"
-}

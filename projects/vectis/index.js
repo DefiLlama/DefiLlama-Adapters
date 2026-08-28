@@ -1,4 +1,4 @@
-const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey, DRIFT_VAULT_PROGRAM_ID, VOLTR_PROGRAM_ID } = require("./spotMarkets");
+const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey, DRIFT_VAULT_PROGRAM_ID, VOLTR_PROGRAM_ID, CUSTOM_PROGRAM_ID } = require("./spotMarkets");
 const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses, fetchPositionAddresses} = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
 const { getMultipleAccounts, getProvider, getAssociatedTokenAddress, sumTokens2} = require('../helper/solana');
@@ -12,6 +12,9 @@ const { post } = require('../helper/http');
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    ["2026-04-01", "Drift hack"]
+  ],
   doublecounted: true,
   methodology: "Calculate sum of spot positions in vaults with unrealized profit and loss",
   solana: {
@@ -36,74 +39,18 @@ module.exports = {
  * 
  */
 async function tvl(api) {
-
-  const vaultAddresses = await fetchVaultAddresses();
-  const driftVaultAddresses = vaultAddresses.filter(vault => vault.programId === DRIFT_VAULT_PROGRAM_ID.toBase58());
+  const [vaultAddresses, positionAddresses] = await Promise.all([
+    fetchVaultAddresses(), 
+    fetchPositionAddresses()
+  ]);
   const voltrVaultAddresses = vaultAddresses.filter(vault => vault.programId === VOLTR_PROGRAM_ID.toBase58());
 
-  const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
-
-  // Get all vault accounts first
-  const accounts = await getMultipleAccounts(vaultUserAddresses)
-  const deserializedData = accounts.filter((accountInfo) => !!accountInfo).map(deserializeUserPositions)
-
-  // Collect unique market indices upfront
-  const allSpotIndices = new Set()
-  const allPerpIndices = new Set()
-  
-  deserializedData.forEach(({ spotPositions, perpPositions }) => {
-    spotPositions?.forEach(pos => allSpotIndices.add(pos.market_index))
-    perpPositions?.forEach(pos => allPerpIndices.add(pos.market_index))
-  })
-
-  // Batch fetch 
-  const allKeys = [
-    ...[...allSpotIndices].map(index => getVaultPublicKey('spot_market', index)),
-    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index)),
-  ]
-  
-  const allAccounts = await getMultipleAccounts(allKeys)
-  
-  // Create lookup maps
-  const spotAccountMap = {}
-  const perpAccountMap = {}
-  
-  let offset = 0
-  ;[...allSpotIndices].forEach((index, i) => {
-    spotAccountMap[index] = allAccounts[i]
-    offset = i + 1
-  })
-  ;[...allPerpIndices].forEach((index, i) => {
-    perpAccountMap[index] = allAccounts[i + offset]
-  })
-
-  // Process positions using the cached account data
-  for (const { spotPositions, perpPositions } of deserializedData) {
-    if (spotPositions?.length) {
-      spotPositions.forEach(position => {
-        const tokenMint = getTokenMintFromMarketIndex(position.market_index)
-        const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index])
-        api.add(tokenMint, adjustedBalance)
-      })
-    }
-
-    if (perpPositions?.length) {
-      perpPositions.map(position => {
-        const baseTokenMint = getPerpTokenMintFromMarketIndex(position.market_index)
-        const { baseBalance, quoteBalance } = processPerpPosition(position)
-        api.add(baseTokenMint, baseBalance)
-
-        const quoteTokenMint = getTokenMintFromMarketIndex(0)
-        api.add(quoteTokenMint, quoteBalance)
-
-        const { cumulativeFundingRateLong, cumulativeFundingRateShort } = getPerpMarketFundingRates(perpAccountMap[position.market_index])
-        const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort
-        const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6)
-        const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6))
-        api.add(quoteTokenMint, fundingRatePnl)
-      })
-    }
-  }
+  // Drift vaults disabled - drift was hacked
+  // const driftUserAddresses = positionAddresses.drift ?? []
+  // const driftVaultAddresses = vaultAddresses.filter(vault => [DRIFT_VAULT_PROGRAM_ID.toBase58(), CUSTOM_PROGRAM_ID.toBase58()].includes(vault.programId) );
+  // const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
+  // const accounts = await getMultipleAccounts([...vaultUserAddresses, ...driftUserAddresses])
+  // ... drift position processing removed ...
 
   // Voltr vaults
   const provider = getProvider();
@@ -117,8 +64,6 @@ async function tvl(api) {
   })
 
   // HyperLoop Prime A
-  const positionAddresses = await fetchPositionAddresses();
-
   const idl = await ProgramSerum.fetchIdl(JUP_PERP_PROGRAM_ID, provider);
   const program = new ProgramSerum(idl, JUP_PERP_PROGRAM_ID, provider);
   const jupiterAccounts = await program.account["borrowPosition"].fetchMultiple(

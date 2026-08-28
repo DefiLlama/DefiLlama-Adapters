@@ -99,10 +99,13 @@ const uniV3Config = {
   sonic: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 1, }, //this one
   hemi: { factory: '0xCdBCd51a5E8728E0AF4895ce5771b7d17fF71959', fromBlock: 507517, },
   katana: { factory: "0x203e8740894c8955cB8950759876d7E7E45E04c1", fromBlock: 1858973, },
+  robinhood: { factory: "0xE51960f1B45f1C9FB6D166E6a884F866fC70433B", fromBlock: 6292626, },
 }
 
 Object.values(uniV3Config).forEach(i => i.permitFailure = true) // allow failure for all chains
 
+delete uniV3Config.islm
+module.exports.islm = { tvl: () => ({  }) }
 module.exports = uniV3Export(uniV3Config);
 
 const config = {
@@ -131,17 +134,17 @@ Object.keys(config).forEach(chain => {
   }
 })
 
-const config1 = {
-  islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
-}
+// const config1 = {
+//   islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
+// }
 
-Object.keys(config1).forEach(chain => {
-  const { endpoint } = config1[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const pools = await getConfig('sushiswap-v3/' + chain, endpoint)
-      const ownerTokens = pools.map(i => [[i.token0.id.split(':')[1], i.token1.id.split(':')[1]], i.id.split(':')[1]])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, })
-    }
-  }
-})
+// Object.keys(config1).forEach(chain => {
+//   const { endpoint } = config1[chain]
+//   module.exports[chain] = {
+//     tvl: async (api) => {
+//       const pools = await getConfig('sushiswap-v3/' + chain, endpoint)
+//       const ownerTokens = pools.map(i => [[i.token0.id.split(':')[1], i.token1.id.split(':')[1]], i.id.split(':')[1]])
+//       return sumTokens2({ api, ownerTokens, permitFailure: true, })
+//     }
+//   }
+// })

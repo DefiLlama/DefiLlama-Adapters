@@ -1,4 +1,0 @@
-{
-  "getAccountPositions": "function getAccountPositions(address dataStore, address account, uint256 start, uint256 end) view returns (((address account, address market, address collateralToken) addresses, (uint256 sizeInUsd, uint256 sizeInTokens, uint256 collateralAmount, uint256 borrowingFactor, uint256 fundingFeeAmountPerSize, uint256 longTokenClaimableFundingAmountPerSize, uint256 shortTokenClaimableFundingAmountPerSize, uint256 increasedAtBlock, uint256 decreasedAtBlock) numbers, (bool isLong) flags)[])",
-  "getMarkets": "function getMarkets(address dataStore, uint256 start, uint256 end) view returns ((address marketToken, address indexToken, address longToken, address shortToken)[])"
-}

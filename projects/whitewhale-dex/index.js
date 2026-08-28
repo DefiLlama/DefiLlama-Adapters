@@ -16,8 +16,8 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "Liquidity on the DEX",
   hallmarks: [
-    [1651881600, "UST depeg"],
-    [1676300400,"Migaloo Chain Launch"]
+    ['2022-05-07', "UST depeg"],
+    ['2023-02-13',"Migaloo Chain Launch"]
   ]
 }
 

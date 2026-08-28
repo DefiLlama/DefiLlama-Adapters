@@ -1,25 +1,22 @@
-const { getConfig } = require("../helper/cache")
-
+const ADDRESSES = require('../helper/coreAssets.json')
 const WHLP_VAULT = '0x1359b05241cA5076c9F59605214f4F84114c0dE8'
-const CHAIN_ID_STR = '999'
+const WHLP_ACCOUNTANT = '0x470bd109A24f608590d85fc1f5a4B6e625E8bDfF'
+const USDT0 = ADDRESSES.corn.USDT0
+
+const totalSupplyAbi = 'function totalSupply() view returns (uint256)'
+const exchangeRateAbi = 'function getRate() view returns (uint256)'
+
 
 const tvl = async (api) => {
-  const data = await getConfig(
-    'whlp-tokens',
-    `https://backend.nucleusearn.io/v1/vaults/underlying_strategies?vault_address=${WHLP_VAULT}&chain_id=${CHAIN_ID_STR}`
-  )
-  const strat = data?.[CHAIN_ID_STR]
-  if (!strat) return
+  const [whlpTotalSupply, whlpExchangeRate,] = await Promise.all([
+    api.call({ target: WHLP_VAULT, abi: totalSupplyAbi }),
+    api.call({ target: WHLP_ACCOUNTANT, abi: exchangeRateAbi, }),
+  ])
 
-  let totalUsd = 0
-  for (const pos of Object.values(strat)) totalUsd += Number(pos.valueInBase || 0)
+  const whlpTotalValueInUsdt0 = whlpTotalSupply * whlpExchangeRate / 1e6
 
-  const priceData = await fetch(`https://coins.llama.fi/prices/current/hyperliquid:${WHLP_VAULT}`).then(r => r.json())
-  const whlpPrice = priceData?.coins?.[`hyperliquid:${WHLP_VAULT}`]?.price
-  if (!whlpPrice || whlpPrice <= 0) return
+  api.add(USDT0, whlpTotalValueInUsdt0)
 
-  const whlpAmount = BigInt(Math.round((totalUsd / whlpPrice) * 1e6))
-  api.add(WHLP_VAULT, whlpAmount)
 }
 
 module.exports = {

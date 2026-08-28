@@ -1,3 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accMatrixPerShare, uint16 depositFeeBP, uint256 harvestInterval)"
-}

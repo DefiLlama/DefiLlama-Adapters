@@ -137,5 +137,3 @@ function getTVLTotal(args) {
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl: getTVLTotal(config[chain]) }
 })
-
-module.exports.dexit.tvl = () => ({})

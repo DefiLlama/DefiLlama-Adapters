@@ -48,7 +48,7 @@ module.exports = {
   ethereum: { tvl },
   doublecounted: true,
   hallmarks: [
-    [1714953600, "Genesis Merges with InceptionLRT"],
-    [1734530420, "Amphor Labs Merges with InceptionLRT"]
+    ['2024-05-06', "Genesis Merges with InceptionLRT"],
+    ['2024-12-18', "Amphor Labs Merges with InceptionLRT"]
   ],
 }

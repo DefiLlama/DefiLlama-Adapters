@@ -1,4 +1,4 @@
-const wildCreditABI = require('../wildcredit/abi.json');
+const uniV3ABI = require('../helper/abis/uniV3.json');
 
 const config = {
   arbitrum: { strategy: '0xB4E291f443f51D80186dd3EE0Af7F4a4E6e90804', veToken: '0xAAA343032aA79eE9a6897Dab03bef967c3289a06', token: '0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418' },
@@ -15,7 +15,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       const nftPositions = await api.call({ abi: 'erc20:balanceOf', target: veToken, params: strategy })
       const positionIds = await api.multiCall({
-        abi: wildCreditABI.tokenOfOwnerByIndex, target: veToken,
+        abi: uniV3ABI.tokenOfOwnerByIndex, target: veToken,
         calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [strategy, index] }))
       })
       const locked = await api.multiCall({ abi: 'function locked(uint256) view returns (uint256 amount, uint256 end)', calls: positionIds, target: veToken })

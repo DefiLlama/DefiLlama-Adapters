@@ -1,3 +1,8 @@
+// Block time varies per chain (10k blocks is ~42min on arbitrum but ~33h on ethereum),
+// so we look back a fixed ~30min instead
+const BLOCK_TIME = { ethereum: 12, arbitrum: 0.25, optimism: 2 }; // seconds/block
+const LOOKBACK_SECONDS = 1800;
+
 async function tvl(api) {
   const block = await api.getBlock();
   const chainId = api.chainId;
@@ -9,7 +14,8 @@ async function tvl(api) {
   //
   // By getting subscription data from the first package you can calculate balances for each position using `get${protocol_name_here}AccountBalances` method from the second package
 
-  const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=${block - 10000}`);
+  const queryBlock = block - Math.floor(LOOKBACK_SECONDS / (BLOCK_TIME[api.chain] ?? 12));
+  const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=${queryBlock}`);
   const data = await response.json();
 
   if (response.status !== 200)
@@ -22,10 +28,10 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
-  timetravel: false, // because we do block - 10k, remove that to refill
+  timetravel: false, // because we do latest block - 30 minutes, remove that to refill
   methodology: 'TVL accounts for all assets deposited into the automated strategies.',
   ethereum: { tvl },
   arbitrum: { tvl },
   optimism: { tvl },
-  base: { tvl },
+  base: { tvl: () => ({  }) },
 };

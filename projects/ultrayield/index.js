@@ -9,7 +9,19 @@ const ABI = {
     },
 }
 
-const { CONFIG } = require('./tvl.addresses.js');
+const CONFIG = {
+  ethereum: {
+    erc4626: [
+      '0x8ecc0b419dfe3ae197bc96f2a03636b5e1be91db', // Kelp sbUSD Vault
+      '0x472425cc95be779126afa4aa17980210d299914f', // UltraYield BTC
+      '0x546329a16dcedc46e93f7b03a65f49a84700bca1', // UltraYield USD
+      '0xaa3cb36be406e6cf208d218fd214e0f1a71e957d', // LoopedBTC
+      '0xfacaa225fcfcd8644a77f2cce833907537198ae9', // Resolv USR Ecosystem Vault
+      '0xc46efcc8e39c8f02425e367423871cd4633b7908', // UltraYield ETH
+      '0x36bdaefd92579da58bfe207e16dafa39835bbcb3', // Edge Credit Vault
+    ],
+  },
+};
 
 // ---------------------------- TVL: ERC-4626 ---------------------------------
 async function getErc4626TVL(api, vaults) {

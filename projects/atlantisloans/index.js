@@ -30,6 +30,7 @@ module.exports = {
     "0xbc46Dc817ce983CfD1B36cBc599031aCBEc2FDfe",
     ADDRESSES.dogechain.WWDOGE
   ),
+  deadFrom: '2023-04-01',
   hallmarks: [
     ['2023-04-01', 'Team stops all comms, stole funds (?)'],
     // ['2023-06-10', 'Governance Attack'],

@@ -1,0 +1,14 @@
+{
+  "name": "metadao",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@meteora-ag/cp-amm-sdk": "^1.3.2"
+  }
+}
