@@ -17,6 +17,13 @@ const configs = {
             '0x1E2aAaDcF528b9cC08F43d4fd7db488cE89F5741', // co-curator with tulip-capital
             '0x0bB2751a90fFF62e844b1521637DeD28F3f5046A', // co-curator with tulip-capital
           ],
+          erc4626: [
+            '0x03D1eC0D01b659b89a87eAbb56e4AF5Cb6e14BFc', // Lagoon: 9Summits Flagship USDC
+            '0x07ed467acD4ffd13023046968b0859781cb90D9B', // Lagoon: 9Summits Flagship ETH
+            '0xD0C4C9386F7509c44987F43136BE7d4349Ccddc9', // Lagoon: 9Summits Flagship EURC
+            '0x7f35dEa44a192764aa50d50e5f0eCE1d5a8b0e45', // Lagoon: Flint USD
+            '0xB09F761Cb13baCa8eC087Ac476647361b6314F98', // Lagoon: Flagship cbBTC, co-curated with Tulipa Capital
+          ],
           turtleclub: [
             '0xa853d8f5f253468495c5a92d54a3fe6cca2aa26b',
             '0x7388d4b5c4cfc96c9105de913717ba7519178129',
@@ -32,6 +39,12 @@ const configs = {
         unichain: {
           morphoVaultOwners: [
             '0x59e608E4842162480591032f3c8b0aE55C98d104',
+          ],
+        },
+        avax: {
+          erc4626: [
+            '0x3048925B3EA5A8C12eeCCcb8810F5F7544dB54af', // Lagoon: Turtle Avalanche USDC
+            '0x4aF3aBE954259fb70b97C57EBD7Ac1eb822028Ef', // Euler Earn: 9Summits USDC
           ],
         },
       }
