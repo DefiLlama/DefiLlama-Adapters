@@ -46,6 +46,6 @@ const borrowed = async (api) => addRaw(api, 'borrowedRaw')
 
 module.exports = {
   timetravel: false,
-  methodology: `${methodologies.lendingMarket}. TVL is pool cash and borrowed is outstanding debt, both per hub in raw base units so DefiLlama prices them. Balances come from the protocol's event-sourced integration API: the pool's reserve views take a HubAssetKey struct that callSoroban cannot encode, and sumTokens resolves classic G-accounts while the pool is a C-contract.`,
+  methodology: `${methodologies.lendingMarket} Outstanding debt is reported separately as borrowed.`,
   stellar: { tvl, borrowed },
 }
