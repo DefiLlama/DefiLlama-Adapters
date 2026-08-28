@@ -82,6 +82,7 @@ const uniV3Config = {
   '0g': { factory: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D', fromBlock: 6673868 },
   megaeth: { factory: '0x3a5f0cd7d62452b7f899b2a5758bfa57be0de478', fromBlock: 7009646 },
   robinhood: { factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', fromBlock: 8930 },
+  stable: { factory: '0x88F0a512eF09175D456bc9547f914f48C013E4aA', fromBlock: 3442899 },
 }
 
 Object.keys(uniV3Config).forEach(chain => {
