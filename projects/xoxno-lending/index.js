@@ -2,13 +2,15 @@ const { get } = require('../helper/http')
 const methodologies = require('../helper/methodologies')
 
 const EXPORT_URL = 'https://api.xoxno.com/integrations/lending/stellar'
+// Required by api.xoxno.com — this is the agreed User-Agent for API access.
+const HEADERS = { 'User-Agent': 'dune-analytics' }
 
 let marketsPromise
 
 // One fetch shared by tvl and borrowed.
 function getHubMarkets() {
   if (!marketsPromise) {
-    marketsPromise = get(EXPORT_URL).then((data) =>
+    marketsPromise = get(EXPORT_URL, { headers: HEADERS }).then((data) =>
       Array.isArray(data.hubMarkets) ? data.hubMarkets : []
     )
   }
