@@ -7,6 +7,13 @@ const FACTORY = 'terra1veqa6znu8lfdmz9kp9v047chfmn84q5k3pacme75gl8ywmplk92q6xnq2
 // Counting them would double-count the same assets already sitting in AMM pools.
 const EXCLUDED_PAIR_TYPES = new Set(['token_bonding', 'converter'])
 
+// 1:1 CW20 wraps. Price as the native denom so AMM balances count in TVL
+// before CoinGecko lists CWLUNC/CWUSTC. Wrap contracts themselves stay excluded.
+const PRICE_AS_NATIVE = {
+  terra10fusc7487y4ju2v5uavkauf3jdpxx9h8sc7wsqdqg4rne8t4qyrq8385q6: 'uluna', // CWLUNC
+  terra1uncwzdhxdktqpx4rj6mkuhl0ekv0raua0058rr7zgnapm9najyyqgtpf6h: 'uusd',  // CWUSTC
+}
+
 function pairTypeKey(pairType) {
   if (!pairType) return ''
   if (typeof pairType === 'string') return pairType.toLowerCase()
@@ -20,6 +27,17 @@ function pairTypeKey(pairType) {
 
 function isAmmPair(pair) {
   return !EXCLUDED_PAIR_TYPES.has(pairTypeKey(pair.pair_type))
+}
+
+function addAsset(api, info, amount) {
+  if (info.native_token) {
+    api.add(info.native_token.denom, amount)
+    return
+  }
+  if (info.token) {
+    const addr = info.token.contract_addr
+    api.add(PRICE_AS_NATIVE[addr] || addr, amount)
+  }
 }
 
 async function getAllPairs() {
@@ -46,8 +64,7 @@ async function tvl(api) {
       for (const asset of result?.assets ?? []) {
         const { info, amount } = asset
         if (!amount || amount === '0') continue
-        if (info.native_token) api.add(info.native_token.denom, amount)
-        else if (info.token) api.add(info.token.contract_addr, amount)
+        addAsset(api, info, amount)
       }
     })
 
@@ -58,6 +75,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is the sum of assets in WESO DeFi AMM liquidity pools listed by the factory on Terra Classic. Wrap/unwrap (token_bonding and converter) contracts are excluded to avoid double-counting CWLUNC and CWUSTC backing.',
+  methodology: 'TVL is the sum of assets in WESO DeFi AMM liquidity pools listed by the factory on Terra Classic. Wrap/unwrap (token_bonding and converter) contracts are excluded to avoid double-counting CWLUNC and CWUSTC backing. CWLUNC and CWUSTC balances inside AMM pools are priced as native LUNC and USTC (1:1 wraps).',
   terra: { tvl },
 }
