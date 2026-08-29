@@ -7,7 +7,6 @@ const morphoAbi = require('../helper/abis/morpho.json')
 // Chain 143 (Monad mainnet). Every shielded asset is custodied by the MurkPool proxy itself; the
 // connectors are single-transaction pass-throughs and hold nothing.
 const POOL = '0x851DA49CA836d318977De6A0bD999b8A5CDAFBAa'
-const AAVE_VAULT_FACTORY = '0x8fA4Ab28f3Ec70247B6C098d665C5F20f83B3533'
 const ERC4626_CONNECTOR = '0x49E7B7E73eF26b65fc882069744086b412aa887C'
 const MARKET_TOKEN_FACTORY = '0x1fcbFC3D5f1E0E82953C45D0213bB6D753566813'
 const POSITION_FACTORY = '0xf01923921c7a7fEf6C43a0C366F191722518E97F'
@@ -19,8 +18,6 @@ const POOL_START_BLOCK = 96149579
 
 const eventAbis = {
   depositPending: 'event DepositPending(bytes32[] commitments, bytes32[] noteHashes, address indexed depositor, address[] tokens, uint256[] amounts, uint8[] kinds, uint256[] tokenIds)',
-  withdraw: 'event Withdraw(address indexed recipient, address indexed token, uint256 amount, uint8 kind, uint256 tokenId)',
-  vaultCreatedAndSeeded: 'event VaultCreatedAndSeeded(address indexed vault, address indexed asset, address indexed seedReceiver, address owner, uint256 seedAssets, uint256 seedShares)',
   erc4626Deposit: 'event ERC4626Deposit(address indexed vault, address indexed asset, uint256 assets, uint256 shares)',
   marketTokenCreated: 'event MarketTokenCreated(bytes32 indexed marketId, address indexed marketToken, address indexed loanToken)',
   positionCreated: 'event PositionCreated(bytes32 indexed marketId, address indexed position, bytes32 indexed salt, bytes32 positionOwnerBlindedHash)',
@@ -44,11 +41,15 @@ const logsFrom = (api, target, eventAbi, extraKey) =>
 // set is discovered by log replay. Every connector re-shields its output through pool.deposit(), so
 // DepositPending sees swap outputs, vault shares, market tokens and borrow proceeds alike. A raw
 // ERC20 transfer into the pool emits nothing and is therefore correctly ignored.
+//
+// DepositPending alone is the whole universe, so two other logs are deliberately not replayed:
+// Withdraw, because a token can only leave the pool if it was shielded first and its token set is
+// therefore a strict subset; and MurkAaveVaultFactory's VaultCreatedAndSeeded, because the seed
+// shares are minted to 0xdEaD as dead shares, never to the pool, so a Murk Aave vault can only ever
+// reach the pool as an ordinary deposit.
 async function getAssets(api) {
-  const [deposits, withdrawals, aaveVaults, connectorVaults, createdMarketTokens] = await Promise.all([
+  const [deposits, connectorVaults, createdMarketTokens] = await Promise.all([
     logsFrom(api, POOL, eventAbis.depositPending, 'deposit-pending'),
-    logsFrom(api, POOL, eventAbis.withdraw, 'withdraw'),
-    logsFrom(api, AAVE_VAULT_FACTORY, eventAbis.vaultCreatedAndSeeded, 'aave-vault-created'),
     logsFrom(api, ERC4626_CONNECTOR, eventAbis.erc4626Deposit, 'erc4626-deposit'),
     logsFrom(api, MARKET_TOKEN_FACTORY, eventAbis.marketTokenCreated, 'market-token-created'),
   ])
@@ -61,11 +62,14 @@ async function getAssets(api) {
     const kinds = [...log.kinds]
     tokens.forEach((token, i) => { if (Number(kinds[i]) === 0) seen.push(token) })
   })
-  withdrawals.forEach(log => { if (Number(log.kind) === 0) seen.push(log.token) })
 
   // The pool has no receive()/payable path and never holds native MON.
   const erc20s = getUniqueAddresses(seen, api.chain).filter(i => i !== ADDRESSES.null)
-  const vaults = getUniqueAddresses([...aaveVaults, ...connectorVaults].map(i => i.vault), api.chain)
+
+  // ERC4626Deposit and MarketTokenCreated do not widen that universe - every vault share and market
+  // token they name is re-shielded and so already appears above. What they do is classify it, so
+  // Murk's own connector and factory are the sole authority on which held tokens are receipt tokens.
+  const vaults = getUniqueAddresses(connectorVaults.map(i => i.vault), api.chain)
   const marketTokens = getUniqueAddresses(createdMarketTokens.map(i => i.marketToken), api.chain)
 
   return { erc20s, vaults, marketTokens }
@@ -158,7 +162,7 @@ async function borrowed(api) {
 }
 
 const methodology = 'TVL is the value of the assets custodied by the MurkPool shielded pool. ' +
-'Deposits are permissionless and there is no on-chain token allowlist, so the asset set is built from DepositPending and Withdraw logs. ' +
+'Deposits are permissionless and there is no on-chain token allowlist, so the asset set is built from the DepositPending log, which every connector also routes its output through. ' +
 'Receipt tokens the pool holds are unwrapped to their underlying rather than counted as themselves: Murk Aave V3 vault shares, Morpho Vault V2, and MurkMorphoMarketToken shares via the ERC4626 exchange rate. Those addresses are excluded from the plain token sum so nothing is counted twice. ' +
 'Morpho borrow positions are held as ERC721 clones; a position counts only while the pool still owns its NFT, and contributes its Morpho collateral to tvl. ' +
 'Murk re-shields its borrow proceeds back into the pool, so the outstanding debt is netted out of tvl to avoid double counting; borrowed is reported separately.'
