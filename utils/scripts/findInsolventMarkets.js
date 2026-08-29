@@ -26,6 +26,31 @@
  * --chain and --protocol to narrow, --min-usd, --no-write, --print, --fresh. Thresholds
  * live in each family's DEFAULTS.
  *
+ * `firstSeen` records when each entry was first flagged, beside the buckets rather than inside
+ * them so entry values stay strings. An entry with no date predates the tracking, and
+ * firstSeen.trackingSince marks that boundary. --fresh restamps everything, because a rebuild
+ * has no prior to carry from - it clears history as well as stale entries.
+ *
+ * --backfill-firstseen digs the real onset of the morpho vault entries out of chain history
+ * instead of stamping them with the run. Opt-in, fills only missing dates, safe to re-run.
+ *
+ * READ `firstSeen` AS "the earliest point we can show this entry was or became misvalued", not
+ * as an exact start of wrong data. Four things produce it, and only the first is exact:
+ *
+ *   lostAssets onset   the vault booked a realized loss totalAssets still counts -> exact
+ *   market onset       the MARKET's accounting turned fictional. Equals the start of wrong data
+ *                      only if the vault already held it; a vault that deposited afterwards
+ *                      carries a date earlier than its own damage
+ *   position onset     the vault first supplied that market, used where the market carries only
+ *                      an oracle signal and has no on-chain scalar to bisect. Equals the start
+ *                      only if the market was already bad
+ *   the run itself     no backfill, so this is when the detector noticed - an UPPER bound, the
+ *                      one case where the truth is earlier rather than later
+ *
+ * The first three are lower bounds and the fourth an upper bound, so a "became bad after X"
+ * filter over-includes rather than misses. `max(market onset, position onset)` would be the
+ * exact quantity for the middle two; it is deliberately not computed.
+ *
  * Adapters read what this writes, without re-scanning:
  *   const { getCache } = require('../helper/cache')
  *   const { insolvent, stuck } = await getCache('insolvent-markets', 'aave')
@@ -58,6 +83,7 @@ const FLAGS = {
   '--no-write': ['noWrite', 'bool'],
   '--print': ['print', 'bool'],
   '--fresh': ['fresh', 'bool'],
+  '--backfill-firstseen': ['backfillFirstSeen', 'bool'],
 }
 
 function parseArgs(argv) {
@@ -312,7 +338,30 @@ function normalizePrior(prior, buckets) {
       }
     }
   }
+  normalizeFirstSeen(prior, buckets)
   return prior
+}
+
+// `firstSeen` sits beside the buckets rather than inside them, so entry values stay strings for
+// anyone already reading them. A date that isn't a number is dropped rather than carried: the
+// stamping below treats "no recorded date" as "predates tracking", which is the safe reading.
+function normalizeFirstSeen(prior, buckets) {
+  const seen = prior.firstSeen && typeof prior.firstSeen === 'object' ? prior.firstSeen : {}
+  const out = {}
+  if (typeof seen.trackingSince === 'number') out.trackingSince = seen.trackingSince
+  for (const b of buckets) {
+    if (!seen[b] || typeof seen[b] !== 'object') continue
+    for (const [chain, entries] of Object.entries(seen[b])) {
+      if (!entries || typeof entries !== 'object') continue
+      for (const [key, ts] of Object.entries(entries)) {
+        if (typeof ts !== 'number' || !Number.isFinite(ts)) continue
+        if (!out[b]) out[b] = {}
+        if (!out[b][chain]) out[b][chain] = {}
+        out[b][chain][key] = ts
+      }
+    }
+  }
+  prior.firstSeen = out
 }
 
 async function loadPrior(family, buckets, opts) {
@@ -345,9 +394,21 @@ function mergeBuckets({ prior, run, buckets, monotonic, refreshReasons, wasReRea
     delta.retired[b] = {}
   }
   const at = (bucket, chain, key) => ((bucket || {})[chain] || {})[key]
+  const now = nowSec()
+  const seen = {}
+  const setSeen = (b, chain, key, ts) => {
+    if (!seen[b]) seen[b] = {}
+    if (!seen[b][chain]) seen[b][chain] = {}
+    seen[b][chain][key] = ts
+  }
   const put = (b, chain, key, reason) => {
     if (!state[b][chain]) state[b][chain] = {}
     state[b][chain][key] = reason
+    const was = at((prior.firstSeen || {})[b], chain, key)
+    // a recorded date is carried untouched; an entry absent from prior is new this run. Anything
+    // else predates tracking, and leaving it undated rather than stamping it today is the point
+    if (typeof was === 'number') setSeen(b, chain, key, was)
+    else if (!at(prior[b], chain, key)) setSeen(b, chain, key, now)
   }
   const push = (map, chain, key) => {
     if (!map[chain]) map[chain] = []
@@ -394,7 +455,10 @@ function mergeBuckets({ prior, run, buckets, monotonic, refreshReasons, wasReRea
       put(b, chain, key, reason)
     })
   }
-  return { state, delta }
+  state.firstSeen = { trackingSince: (prior.firstSeen || {}).trackingSince || now, ...seen }
+  // `stampedAt` lets a caller tell a date this run invented from one carried out of the store -
+  // the date archaeology may replace the former and must never touch the latter
+  return { state, delta, stampedAt: now }
 }
 
 const countBucket = (bucket) => Object.values(bucket || {}).reduce((n, entries) => n + Object.keys(entries).length, 0)
@@ -429,7 +493,7 @@ async function publish({ name, cache, buckets, monotonic, state, delta, adapterE
   for (const b of buckets) {
     doc[`new${capitalize(b)}`] = dropEmptyChains(delta.added[b])
     if (b === 'insolvent') doc.promotedFromStuck = dropEmptyChains(delta.promoted)
-    if (b === 'stuck') doc.clearedStuck = dropEmptyChains(delta.retired[b])
+    if (!monotonic.includes(b)) doc[`cleared${capitalize(b)}`] = dropEmptyChains(delta.retired[b])
   }
   doc.errors = errors
   return doc
@@ -1513,6 +1577,12 @@ const COMPOUND = (() => {
 // Ids paste into `blacklistedMarketIds` in projects/morpho-blue/config.js; the extra
 // `tokens` bucket into that chain's `blackList`.
 //
+// The `vaults` bucket is for a different reader. A curated vault is valued at totalAssets()
+// (projects/helper/curators), which counts its supply position in every market it allocates to -
+// so a position in a market proven insolvent here inflates it, and no market id can reach that
+// because the curator adapters only ever see the vault address. The ids get resolved back to the
+// vaults holding them, per chain, and only for chains that carry an insolvent id.
+//
 // Markets are isolated and blacklisted one id at a time, so unlike aave, proven bad debt
 // flags on its own and the utilization gate applies only to the FROZEN tier;
 // proportionality comes from --gap-bps instead.
@@ -1527,21 +1597,40 @@ const COMPOUND = (() => {
 // not a verdict, and it is what this list replaces - so the list ends up a superset.
 const MORPHO = (() => {
   const CACHE = 'morpho-blue' // the published file has always had this name
-  const BUCKETS = ['insolvent', 'stuck', 'tokens']
+  const BUCKETS = ['insolvent', 'stuck', 'tokens', 'vaults']
   const MONOTONIC = ['insolvent', 'tokens']
 
   const ABI = {
     idToMarketParams: 'function idToMarketParams(bytes32 id) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)',
     market: 'function market(bytes32 id) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)',
+    position: 'function position(bytes32 id, address user) view returns (uint256 supplyShares, uint128 borrowShares, uint128 collateral)',
     oraclePrice: 'function price() view returns (uint256)',
     createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)',
   }
 
+  const VAULT_ABI = {
+    liquidityAdapter: 'address:liquidityAdapter', 
+    adapters: 'function adapters(uint256) view returns (address)',
+    adaptersLength: 'uint256:adaptersLength',
+    morphoVaultV1: 'address:morphoVaultV1',
+    withdrawQueueLength: 'uint256:withdrawQueueLength',
+    withdrawQueue: 'function withdrawQueue(uint256) view returns (bytes32)',
+    asset: 'address:asset',
+    totalAssets: 'uint256:totalAssets',
+    lostAssets: 'uint256:lostAssets',
+    balanceOf: 'function balanceOf(address account) view returns (uint256)',
+    convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
+    name: 'string:name',
+  }
+
   const VIRTUAL_SHARES = 1000000n
+  const MAX_ADAPTERS = 64 
+  const MAX_QUEUE = 128
 
   const DEFAULTS = {
     minUsd: 10000, gapBps: 50, oracleMult: 5, supplyMult: 1.5, interestMult: 10,
     util: 0.999, dustUsd: 1000, staleDays: 30, frozenUsd: 500000,
+    vaultShareBps: 500,
     cluster: 5, concurrency: 4, retries: 2,
   }
 
@@ -1656,7 +1745,7 @@ const MORPHO = (() => {
       const price = priceMap[t]
       return [t, {
         symbol: symbols[i] || null,
-        decimals: decimals[i] != null ? Number(decimals[i]) : (price && price.decimals != null ? Number(price.decimals) : null),
+        decimals: price && price.decimals != null ? Number(price.decimals) : (decimals[i] != null ? Number(decimals[i]) : null),
         totalSupply: totalSupplies[i] != null ? BigInt(totalSupplies[i]) : null,
         held: held[i] != null ? BigInt(held[i]) : null,
         price: price && price.price != null ? price.price : null,
@@ -1668,6 +1757,10 @@ const MORPHO = (() => {
       return (Number(amount) / 10 ** t.decimals) * t.price
     }
     const label = (token) => (tok.get(token) || {}).symbol || token
+    result.state = {
+      morphoBlue, tok, usd,
+      byId: new Map(rows.map(r => [r.id, { supply: r.supply, shares: r.shares, loanToken: r.loanToken }])),
+    }
 
     // what suppliers of that loan token can actually claim out of the shared balance
     const idleByToken = new Map()
@@ -1829,7 +1922,7 @@ const MORPHO = (() => {
     if (m.custodyShare >= minGap && big(m.custodyGapUsd)) {
       signals.push(`custody gap ${fmtSize(m.custodyGapUsd, m.custodyGapRaw)} on ${m.loanSymbol} (${fmtPct(m.custodyShare)} of idle liquidity)`)
     }
-    if (m.debtVsLoanSupply != null && m.debtVsLoanSupply >= opts.supplyMult) {
+    if (exitless && m.debtVsLoanSupply != null && m.debtVsLoanSupply >= opts.supplyMult) {
       signals.push(`unrepayable (${fmtMult(m.debtVsLoanSupply)} loan token supply)`)
     }
 
@@ -1875,9 +1968,10 @@ const MORPHO = (() => {
   const tagged = (why, reason) => why ? `${HANDLED_TAG}: ${why}] ${reason}` : reason
 
   function buildOutput(results, errors, opts) {
-    const out = { insolvent: {}, stuck: {}, tokens: {} }
+    const out = { insolvent: {}, stuck: {}, tokens: {}, vaults: {}, vaultSignals: {} }
     const clean = new Set()
     const adapterFlagged = new Set()
+    const insolventIds = new Set()
     const put = (bucket, chain, key, reason) => {
       if (!out[bucket][chain]) out[bucket][chain] = {}
       out[bucket][chain][key] = reason
@@ -1893,9 +1987,10 @@ const MORPHO = (() => {
 
       const flagged = []
       for (const m of r.markets) {
-        if (m.knownInsolvent) continue
+        if (m.knownInsolvent) { insolventIds.add(`${r.chain}|${m.id}`); continue }
         const c = classify(m, opts)
         if (!c) { clean.add(`${r.chain}|${m.id}`); continue }
+        if (c.verdict === 'INSOLVENT') insolventIds.add(`${r.chain}|${m.id}`)
         flagged.push({ m, c })
       }
 
@@ -1924,7 +2019,436 @@ const MORPHO = (() => {
     }
     out.clean = clean
     out.adapterFlagged = adapterFlagged
+    out.insolventIds = insolventIds
     return out
+  }
+
+  async function mapAdapters(api, vaults) {
+    const adapterOwner = new Map()
+    const v1Of = new Map()
+    const v2Set = new Set()
+
+    const liquidity = await api.multiCall({ abi: VAULT_ABI.liquidityAdapter, calls: vaults, permitFailure: true })
+    const v2 = []
+    vaults.forEach((vault, i) => {
+      if (!isAddress(liquidity[i]) || lc(liquidity[i]) === NULL_ADDRESS) return // v1 answers nothing
+      v2.push({ vault, liquidityAdapter: lc(liquidity[i]) })
+      v2Set.add(vault)
+    })
+    if (!v2.length) return { adapterOwner, v1Of, v2Set }
+
+    for (const v of v2) adapterOwner.set(v.liquidityAdapter, v.vault) // not always in adapters()
+
+    // the whole list where the length reads, else adapters(0) alone - curators' fallback
+    const lengths = await api.multiCall({ abi: VAULT_ABI.adaptersLength, calls: v2.map(v => v.vault), permitFailure: true })
+    const slots = []
+    v2.forEach((v, i) => {
+      const count = lengths[i] == null ? 1 : Math.min(Number(lengths[i]), MAX_ADAPTERS)
+      for (let k = 0; k < count; k++) slots.push({ vault: v.vault, k })
+    })
+    const found = slots.length
+      ? await api.multiCall({ abi: VAULT_ABI.adapters, calls: slots.map(s => ({ target: s.vault, params: [s.k] })), permitFailure: true })
+      : []
+    slots.forEach((s, i) => {
+      if (!isAddress(found[i]) || lc(found[i]) === NULL_ADDRESS) return
+      adapterOwner.set(lc(found[i]), s.vault)
+    })
+
+    const adapters = [...adapterOwner.keys()]
+    const wrapped = await api.multiCall({ abi: VAULT_ABI.morphoVaultV1, calls: adapters, permitFailure: true })
+    adapters.forEach((a, i) => {
+      if (isAddress(wrapped[i]) && lc(wrapped[i]) !== NULL_ADDRESS) v1Of.set(a, lc(wrapped[i]))
+    })
+    return { adapterOwner, v1Of, v2Set }
+  }
+
+  async function readQueues(api, vaults) {
+    const queueOf = new Map()
+    const unverified = new Set()
+    if (!vaults.length) return { queueOf, unverified }
+
+    const lengths = await api.multiCall({ abi: VAULT_ABI.withdrawQueueLength, calls: vaults, permitFailure: true })
+    const slots = []
+    vaults.forEach((vault, i) => {
+      if (lengths[i] == null) { unverified.add(vault); return }
+      queueOf.set(vault, new Set())
+      for (let k = 0; k < Math.min(Number(lengths[i]), MAX_QUEUE); k++) slots.push({ vault, k })
+    })
+    const ids = slots.length
+      ? await api.multiCall({ abi: VAULT_ABI.withdrawQueue, calls: slots.map(s => ({ target: s.vault, params: [s.k] })), permitFailure: true })
+      : []
+    slots.forEach((s, i) => {
+      if (ids[i] == null) { unverified.add(s.vault); return } // a partial queue would read as a drop
+      queueOf.get(s.vault).add(lc(ids[i]))
+    })
+    for (const vault of unverified) queueOf.delete(vault)
+    return { queueOf, unverified }
+  }
+
+  async function gradeVaults(r, badIds, fresh, opts) {
+    const { getMorphoVaults } = require('../../projects/helper/curators')
+    const { chain, state } = r
+    const api = new sdk.ChainApi({ chain })
+
+    const vaults = [...new Set((await getMorphoVaults(api, undefined, {
+      getAllVaults: true,
+      onlyUseExistingCache: chain === 'sei',
+    })).filter(isAddress).map(lc))]
+    if (!vaults.length) return 0 // no vault factory configured for this chain
+
+    const { adapterOwner, v1Of, v2Set } = await mapAdapters(api, vaults)
+    const holders = [...vaults, ...adapterOwner.keys()]
+
+    let positions = []
+    if (badIds.length) {
+      positions = await api.multiCall({
+        target: state.morphoBlue, abi: ABI.position, permitFailure: true,
+        calls: badIds.flatMap(id => holders.map(h => ({ params: [id, h] }))),
+      })
+      // an all-null read is a multicall that flaked, not a chain where nobody is exposed; retiring
+      // every stored vault on the strength of it would clear the cache for the wrong reason
+      if (!positions.some(p => p != null)) throw new Error('position() answered for no holder at all')
+    }
+
+    const exposure = new Map() // vault -> { usd, ids }
+    const bump = (vault, usd, ids) => {
+      if (!(usd > 0)) return
+      if (!exposure.has(vault)) exposure.set(vault, { usd: 0, ids: new Set() })
+      const e = exposure.get(vault)
+      e.usd += usd
+      for (const id of ids) e.ids.add(id)
+    }
+
+    const held = []
+    badIds.forEach((id, i) => {
+      const m = state.byId.get(id)
+      holders.forEach((holder, j) => {
+        const p = positions[i * holders.length + j]
+        if (!p) return
+        const shares = BigInt(p.supplyShares)
+        if (shares === 0n) return
+        held.push({ holder, id, token: m.loanToken, assets: shares * (m.supply + 1n) / (m.shares + VIRTUAL_SHARES) })
+      })
+    })
+
+    const { queueOf, unverified } = await readQueues(
+      api, [...new Set(held.map(h => h.holder))].filter(h => !v2Set.has(h) && !adapterOwner.has(h)))
+
+    for (const h of held) {
+      if (unverified.has(h.holder)) continue
+      const queue = queueOf.get(h.holder)
+      if (queue && !queue.has(h.id)) continue // dropped from the queue - already out of totalAssets
+      bump(adapterOwner.get(h.holder) || h.holder, state.usd(h.assets, h.token), [h.id])
+    }
+
+    const totals = new Map() // vault -> { asset, usd }
+    const readTotals = async (list) => {
+      const need = [...new Set(list)].filter(v => !totals.has(v))
+      if (!need.length) return
+      const [assets, amounts, lost] = await Promise.all([
+        api.multiCall({ abi: VAULT_ABI.asset, calls: need, permitFailure: true }),
+        api.multiCall({ abi: VAULT_ABI.totalAssets, calls: need, permitFailure: true }),
+        api.multiCall({ abi: VAULT_ABI.lostAssets, calls: need, permitFailure: true }),
+      ])
+      const unpriced = [...new Set(assets.filter(isAddress).map(lc))].filter(a => !state.tok.has(a))
+      if (unpriced.length) {
+        const [decimals, prices] = await Promise.all([
+          api.multiCall({ abi: 'erc20:decimals', calls: unpriced, permitFailure: true }),
+          getPriceMap(chain, unpriced),
+        ])
+        unpriced.forEach((token, i) => {
+          const price = prices[token]
+          state.tok.set(token, {
+            symbol: null, totalSupply: null, held: null,
+            decimals: price && price.decimals != null ? Number(price.decimals) : (decimals[i] != null ? Number(decimals[i]) : null),
+            price: price && price.price != null ? price.price : null,
+          })
+        })
+      }
+      need.forEach((vault, i) => {
+        if (!isAddress(assets[i]) || amounts[i] == null) return
+        const asset = lc(assets[i])
+        totals.set(vault, {
+          asset,
+          usd: state.usd(BigInt(amounts[i]), asset),
+          lostUsd: lost[i] == null ? null : state.usd(BigInt(lost[i]), asset),
+        })
+      })
+    }
+
+    await readTotals(vaults)
+
+    const inherited = new Map()
+    const inherit = (vault, usd, v1) => {
+      if (!(usd > 0)) return
+      if (!inherited.has(vault)) inherited.set(vault, { usd: 0, from: new Set() })
+      const e = inherited.get(vault)
+      e.usd += usd
+      e.from.add(v1)
+    }
+    const wrappers = [...v1Of].filter(([, v1]) => {
+      const t = totals.get(v1)
+      return t && (exposure.has(v1) || t.lostUsd > 0)
+    })
+    if (wrappers.length) {
+      const shares = await api.multiCall({
+        abi: VAULT_ABI.balanceOf, permitFailure: true,
+        calls: wrappers.map(([adapter, v1]) => ({ target: v1, params: [adapter] })),
+      })
+      const claims = await api.multiCall({
+        abi: VAULT_ABI.convertToAssets, permitFailure: true,
+        calls: wrappers.map(([, v1], i) => ({ target: v1, params: [shares[i] || 0] })),
+      })
+      wrappers.forEach(([adapter, v1], i) => {
+        const owner = adapterOwner.get(adapter)
+        const total = totals.get(v1)
+        if (!owner || claims[i] == null || !(total.usd > 0)) return
+        const claimUsd = state.usd(BigInt(claims[i]), total.asset)
+        if (!(claimUsd > 0)) return
+        const pos = exposure.get(v1)
+        const bad = (pos ? pos.usd : 0) + (total.lostUsd > 0 ? total.lostUsd : 0)
+        inherit(owner, bad * Math.min(1, claimUsd / total.usd), v1)
+      })
+    }
+
+    const gate = opts.vaultShareBps / 10000
+    const flagged = []
+    for (const vault of vaults) {
+      const total = totals.get(vault)
+      if (!total || !(total.usd > 0)) continue 
+      const e = exposure.get(vault)
+      const inh = inherited.get(vault)
+      const posUsd = e ? e.usd : 0
+      const lostUsd = total.lostUsd > 0 ? total.lostUsd : 0
+      const inhUsd = inh ? inh.usd : 0
+      const raw = posUsd + lostUsd + inhUsd
+      if (raw <= 0) continue
+      const share = Math.min(1, raw / total.usd)
+      const usd = Math.min(raw, total.usd)
+      if (usd >= opts.minUsd && share >= gate) {
+        flagged.push({ vault, usd, share, lostUsd, posUsd, inhUsd, ids: e ? [...e.ids] : [], wraps: inh ? [...inh.from] : [] })
+      }
+    }
+
+    const names = flagged.length
+      ? await api.multiCall({ abi: VAULT_ABI.name, calls: flagged.map(f => f.vault), permitFailure: true })
+      : []
+    flagged.forEach((f, i) => {
+      if (!fresh.vaults[chain]) fresh.vaults[chain] = {}
+      // what the date backfill needs, kept as data rather than parsed back out of the reason
+      if (!fresh.vaultSignals[chain]) fresh.vaultSignals[chain] = {}
+      fresh.vaultSignals[chain][f.vault] = {
+        lost: f.lostUsd > 0, ids: f.ids, wraps: f.wraps, morphoBlue: state.morphoBlue,
+      }
+      const parts = []
+      const multi = [f.lostUsd, f.posUsd, f.inhUsd].filter(x => x > 0).length > 1
+      const amt = (x) => multi ? `${fmtUsd(x)} ` : ''
+      if (f.lostUsd > 0) parts.push(`${amt(f.lostUsd)}lostAssets (bad debt already realized, still counted)`)
+      if (f.posUsd > 0) {
+        parts.push(`${amt(f.posUsd)}supplied into ${f.ids.length} insolvent market${f.ids.length === 1 ? '' : 's'} (${f.ids.map(id => `${id.slice(0, 10)}…`).join(', ')})`)
+      }
+      if (f.inhUsd > 0) {
+        parts.push(`${amt(f.inhUsd)}inherited through its adapter from ${f.wraps.length} overstated vault${f.wraps.length === 1 ? '' : 's'} it wraps (${f.wraps.map(v => `${v.slice(0, 10)}…`).join(', ')})`)
+      }
+      const bound = f.posUsd > 0 || f.inhUsd > 0 ? 'up to ' : ''
+      const total = f.lostUsd + f.posUsd + f.inhUsd
+      const capped = total > f.usd ? `, capped at totalAssets from ${fmtUsd(total)}` : ''
+      fresh.vaults[chain][f.vault] = `${(names[i] || '').trim() || f.vault}: ${bound}${fmtUsd(f.usd)} (${fmtPct(f.share)} of totalAssets${capped}) — ${parts.join(' + ')}`
+    })
+
+    const isFlagged = new Set(flagged.map(f => f.vault))
+    for (const vault of vaults) {
+      if (!isFlagged.has(vault) && !unverified.has(vault)) fresh.clean.add(`${chain}|${vault}`)
+    }
+    return vaults.length
+  }
+
+  // ---- date archaeology --------------------------------------------------------------------
+  // Everything above reads current state. These three read history, which is why they are opt-in
+  // and run once: a vault discovered later is stamped with its discovery date like anything else.
+
+  // First block where `test` starts holding and never stops. `test` answers null where the node
+  // cannot serve that block, and public archives rarely reach Blue's 2023 deployment - so the
+  // usable floor is discovered by doubling back from the head rather than assumed. A null in the
+  // middle of the bisection aborts: converging on an archive boundary would invent a date.
+  async function firstBlockWhere(floor, hi, test) {
+    const atHi = await test(hi)
+    if (atHi == null) return { error: 'head read failed' }
+    if (!atHi) return { error: 'condition does not hold now, so there is no onset to find' }
+
+    let lo = null, step = 100000, deepestTrue = hi
+    while (hi - step > floor) {
+      const probe = hi - step
+      const v = await test(probe)
+      if (v === false) { lo = probe; break }
+      if (v == null) break
+      deepestTrue = probe
+      step *= 2
+    }
+    if (lo == null && (await test(floor)) === false) lo = floor
+    if (lo == null) return { error: `already true at block ${deepestTrue}, as far back as this node serves` }
+
+    hi = deepestTrue // the onset is at or before the deepest block that still tested true
+    while (hi - lo > 1) {
+      const mid = Math.floor((lo + hi) / 2)
+      const v = await test(mid)
+      if (v == null) return { error: `no state at block ${mid} - archive coverage is incomplete` }
+      if (v) hi = mid; else lo = mid
+    }
+    return { block: hi }
+  }
+
+  async function readAt(chain, block, call) {
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await new sdk.ChainApi({ chain, block }).call(call)
+      } catch (e) {
+        if (attempt >= 2) return null
+        await new Promise(r => setTimeout(r, 400 * (attempt + 1)))
+      }
+    }
+  }
+
+  const lostAssetsOnset = (chain, vault) => (block) =>
+    readAt(chain, block, { target: vault, abi: VAULT_ABI.lostAssets })
+      .then(v => v == null ? null : BigInt(v) > 0n)
+
+  const marketOnset = (chain, morphoBlue, id, interestMult) => (block) =>
+    readAt(chain, block, { target: morphoBlue, abi: ABI.market, params: [id] }).then(m => {
+      if (!m) return null
+      const shares = BigInt(m.totalSupplyShares)
+      if (shares === 0n) return false
+      const r = Number(BigInt(m.totalSupplyAssets)) * Number(VIRTUAL_SHARES) / Number(shares)
+      return r < 1 || r >= interestMult
+    })
+
+  const positionOnset = (chain, morphoBlue, id, vault) => (block) =>
+    readAt(chain, block, { target: morphoBlue, abi: ABI.position, params: [id, vault] })
+      .then(p => p == null ? null : BigInt(p.supplyShares) > 0n)
+
+  async function backfillVaultDates(merged, fresh, opts, errors, io, stampedAt) {
+    const { config } = require('../../projects/morpho-blue/config')
+    const seen = merged.firstSeen
+    const targets = []
+    for (const [chain, entries] of Object.entries(merged.vaults || {})) {
+      for (const vault of Object.keys(entries)) {
+        const had = ((seen.vaults || {})[chain] || {})[vault]
+        if (had != null && had !== stampedAt) continue
+        const sig = (fresh.vaultSignals[chain] || {})[vault]
+        if (!sig) continue
+        targets.push({ chain, vault, sig })
+      }
+    }
+    if (!targets.length) return
+
+    const heads = {}
+    const marketCache = new Map()
+    let dug = 0, approx = 0
+
+    const results = await mapLimit(targets, opts.concurrency, async ({ chain, vault, sig }) => {
+      const cfg = config[chain]
+      if (!cfg) return null
+      const lo = cfg.fromBlock
+      try {
+        if (heads[chain] == null) heads[chain] = await new sdk.ChainApi({ chain }).getBlock()
+        const hi = heads[chain]
+        const found = []
+
+        if (sig.lost) {
+          const r = await firstBlockWhere(lo, hi, lostAssetsOnset(chain, vault))
+          if (r.block) found.push({ block: r.block, exact: true })
+          else errors.push(`morpho · ${chain}: ${vault} lostAssets onset not datable - ${r.error}`)
+        }
+        for (const id of sig.ids) {
+          const key = `${chain}|${id}`
+          if (!marketCache.has(key)) {
+            marketCache.set(key, firstBlockWhere(lo, hi, marketOnset(chain, sig.morphoBlue, id, opts.interestMult)))
+          }
+          const r = await marketCache.get(key)
+          if (r.block) { found.push({ block: r.block, exact: true }); continue }
+          const p = await firstBlockWhere(lo, hi, positionOnset(chain, sig.morphoBlue, id, vault))
+          if (p.block) found.push({ block: p.block, exact: false })
+          else errors.push(`morpho · ${chain}: ${vault} vs ${id.slice(0, 10)}… not datable - ${r.error}`)
+        }
+        if (!found.length) return null
+        // the vault went bad when the first of its reasons did
+        const best = found.reduce((a, b) => b.block < a.block ? b : a)
+        return { chain, vault, ...best }
+      } catch (e) {
+        errors.push(`morpho · ${chain}: ${vault} date search failed - ${rpcMessage(e)}`)
+        return null
+      }
+    })
+
+    const stamps = results.filter(Boolean)
+    const times = {}
+    for (const { chain, block } of stamps) {
+      if (!times[chain]) times[chain] = {}
+      if (times[chain][block] == null) {
+        const b = await new sdk.ChainApi({ chain }).provider.getBlock(block).catch(() => null)
+        times[chain][block] = b ? Number(b.timestamp) : null
+      }
+    }
+    const dated = new Set()
+    for (const { chain, vault, block, exact } of stamps) {
+      const ts = times[chain][block]
+      if (ts == null) continue
+      if (!seen.vaults) seen.vaults = {}
+      if (!seen.vaults[chain]) seen.vaults[chain] = {}
+      seen.vaults[chain][vault] = ts
+      dated.add(`${chain}|${vault}`)
+      exact ? dug++ : approx++
+    }
+
+    let inheritedDates = 0
+    for (const { chain, vault, sig } of targets) {
+      if (dated.has(`${chain}|${vault}`) || !(sig.wraps || []).length) continue
+      const from = sig.wraps.map(v1 => ((seen.vaults || {})[chain] || {})[v1]).filter(t => typeof t === 'number')
+      if (!from.length) continue
+      if (!seen.vaults[chain]) seen.vaults[chain] = {}
+      seen.vaults[chain][vault] = Math.min(...from)
+      dated.add(`${chain}|${vault}`)
+      inheritedDates++
+    }
+
+    let undated = 0
+    for (const { chain, vault } of targets) {
+      if (dated.has(`${chain}|${vault}`)) continue
+      if (((seen.vaults || {})[chain] || {})[vault] !== stampedAt) continue
+      delete seen.vaults[chain][vault]
+      if (!Object.keys(seen.vaults[chain]).length) delete seen.vaults[chain]
+      undated++
+    }
+
+    io.note(`morpho: backfilled ${dug + approx + inheritedDates} vault dates from chain history` +
+      (approx ? `, ${approx} dated by deposit rather than damage (oracle-only market)` : '') +
+      (inheritedDates ? `, ${inheritedDates} taken from the vault they wrap` : '') +
+      (undated ? `; ${undated} left undated - history does not reach their onset` : ''))
+  }
+
+  async function resolveVaults(results, fresh, opts, errors, io) {
+    const targets = []
+    for (const r of results) {
+      if (!r || !r.state) continue
+      const prefix = `${r.chain}|`
+      const badIds = [...fresh.insolventIds]
+        .filter(k => k.startsWith(prefix)).map(k => k.slice(prefix.length))
+        .filter(id => r.state.byId.has(id))
+      targets.push({ r, badIds })
+    }
+    if (!targets.length) return
+
+    const counts = await mapLimit(targets, opts.concurrency, async ({ r, badIds }) => {
+      try {
+        return await gradeVaults(r, badIds, fresh, opts)
+      } catch (e) {
+        errors.push(`morpho · ${r.chain}: vault exposure not resolved - ${rpcMessage(e)}`)
+        return 0
+      }
+    })
+    const scanned = counts.reduce((n, c) => n + (c || 0), 0)
+    const withIds = targets.filter(t => t.badIds.length).length
+    io.note(`morpho: ${scanned} vaults checked on ${targets.length} chain(s), ${withIds} of them also against insolvent markets`)
   }
 
   async function run(opts, io) {
@@ -1956,11 +2480,13 @@ const MORPHO = (() => {
     io.note(`morpho: ${targets.length} deployments, ${enumerated} markets enumerated, ${scanned} with supply or debt scanned`)
 
     const fresh = buildOutput(results, errors, opts)
-    const { state: merged, delta } = mergeBuckets({
+    await resolveVaults(results, fresh, opts, errors, io)
+    const { state: merged, delta, stampedAt } = mergeBuckets({
       prior, run: fresh, buckets: BUCKETS, monotonic: MONOTONIC,
       refreshReasons: false, // re-deriving the numbers is the work this cache exists to avoid
       wasReRead: (chain, key) => fresh.clean.has(`${chain}|${key}`),
     })
+    if (opts.backfillFirstSeen) await backfillVaultDates(merged, fresh, opts, errors, io, stampedAt)
     const state = { updatedAt: nowSec(), ...merged, errors }
 
     return publish({
