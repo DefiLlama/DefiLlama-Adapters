@@ -967,7 +967,8 @@ const configs = {
           morphoVaultOwners: [
             '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
             '0xe6FC2a011153DD5a230725a9F0c89a9c81aB4887',
-          ],
+            '0x627e54a84134Ffb3C8ee85A5A675CD50C2dB239B', // Morpho V2
+       ],
         },
         monad: {
           morphoVaultOwners: [
