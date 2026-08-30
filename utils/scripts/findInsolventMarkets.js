@@ -4,6 +4,7 @@
  *   aave      Aave v2 / v3 forks       per POOL        -> insolvent-markets/aave
  *   compound  Compound v2 / Comet      per COMPTROLLER -> insolvent-markets/compound
  *   morpho    Morpho Blue              per MARKET ID   -> insolvent-markets/morpho-blue
+ *                                      (+ per VAULT, and cross-checked against Morpho's own api)
  *
  * Read from current chain state only - no borrower enumeration, no log scans. The one
  * exception is Morpho market enumeration, which has no on-chain list and comes from the
@@ -25,6 +26,24 @@
  * Positional args pick the families: aave | compound | morpho | all. The rest is FLAGS -
  * --chain and --protocol to narrow, --min-usd, --no-write, --print, --fresh. Thresholds
  * live in each family's DEFAULTS.
+ *
+ * MORPHO ONLY, and only for the chains blue-api.morpho.org covers: every finding is cross-checked
+ * against Morpho's own api, which produces two more fields beside the buckets (same place, and for
+ * the same reason, as `firstSeen`). Both are keyed kind -> chain -> key -> reason, so neither ever
+ * mixes 32-byte market ids with 20-byte vault addresses:
+ *
+ *   disputed     ours, contradicted by the curator - the api lists the market/vault, reports no RED
+ *                warning and no bad debt. Recomputed every run, and the ONE thing that can take an
+ *                entry back out of the append-only `insolvent`. A veto needs a positive answer: if
+ *                the api is unreachable or the chain uncovered, nothing moves and yesterday's call
+ *                is carried, so an outage cannot flip the list back and forth
+ *   apiFlagged   theirs, missing from ours - live bad debt the api sees that no bucket holds. A
+ *                REVIEW QUEUE, never an exclusion list: an entry reaches `insolvent` only once our
+ *                own on-chain signals prove it
+ *
+ * --verify-api re-grades what is already stored against the api alone - no rpc, no market
+ * enumeration, ~12 requests, seconds. This is what retires a false positive already in the store;
+ * it refuses --fresh, which would hand it an empty list to re-grade.
  *
  * `firstSeen` records when each entry was first flagged, beside the buckets rather than inside
  * them so entry values stay strings. An entry with no date predates the tracking, and
@@ -84,6 +103,7 @@ const FLAGS = {
   '--print': ['print', 'bool'],
   '--fresh': ['fresh', 'bool'],
   '--backfill-firstseen': ['backfillFirstSeen', 'bool'],
+  '--verify-api': ['verifyApi', 'bool'],
 }
 
 function parseArgs(argv) {
@@ -364,6 +384,39 @@ function normalizeFirstSeen(prior, buckets) {
   prior.firstSeen = out
 }
 
+const API_KINDS = ['markets', 'vaults']
+
+function normalizeApiLayer(prior) {
+  const isMap = (v) => !!v && typeof v === 'object' && !Array.isArray(v)
+  for (const field of ['disputed', 'apiFlagged']) {
+    const raw = isMap(prior[field]) ? prior[field] : {}
+    const out = {}
+    for (const kind of API_KINDS) {
+      out[kind] = {}
+      if (!isMap(raw[kind])) continue
+      for (const [chain, entries] of Object.entries(raw[kind])) {
+        if (!isMap(entries)) continue
+        const clean = {}
+        for (const [key, reason] of Object.entries(entries)) {
+          if (typeof reason === 'string') clean[lc(key)] = reason
+        }
+        if (Object.keys(clean).length) out[kind][chain] = clean
+      }
+    }
+    prior[field] = out
+  }
+  if (typeof prior.apiCheckedAt !== 'number' || !Number.isFinite(prior.apiCheckedAt)) delete prior.apiCheckedAt
+  return prior
+}
+
+const emptyDelta = (buckets) => ({
+  added: Object.fromEntries(buckets.map(b => [b, {}])),
+  refreshed: Object.fromEntries(buckets.map(b => [b, []])),
+  quiet: Object.fromEntries(buckets.map(b => [b, []])),
+  retired: Object.fromEntries(buckets.map(b => [b, {}])),
+  promoted: {},
+})
+
 async function loadPrior(family, buckets, opts) {
   const blank = () => Object.fromEntries(buckets.map(b => [b, {}]))
   if (opts.fresh) return blank()
@@ -471,11 +524,17 @@ const dropEmptyChains = (obj, filter = (entries) => entries) => Object.fromEntri
 
 const capitalize = (s) => s[0].toUpperCase() + s.slice(1)
 
-async function publish({ name, cache, buckets, monotonic, state, delta, adapterExcluded, errors, opts, io }) {
+async function publish({ name, cache, buckets, monotonic, state, delta, adapterExcluded, errors, opts, io, apiLayer }) {
   const counts = buckets.map(b => monotonic.includes(b)
     ? `${b} ${countBucket(state[b])} (+${countAdded(delta.added[b])} new, ${delta.refreshed[b].length} re-proven)`
     : `${b} ${countBucket(state[b])} (+${countAdded(delta.added[b])}/-${countRetired(delta.retired[b])})`)
   io.note(`${name}: ${counts.join(', ')}`)
+  if (apiLayer) {
+    const size = (layer) => API_KINDS.map(k => `${countBucket(layer[k])} ${k}`).join(' + ')
+    io.note(`${name}: disputed ${size(apiLayer.disputed)} (api contradicts our finding), ` +
+      `apiFlagged ${size(apiLayer.apiFlagged)} (api sees damage we don't)` +
+      (apiLayer.stale ? ' - CARRIED FORWARD, api not reached this run' : ''))
+  }
   if (delta.quiet.insolvent.length) {
     io.note(`${name}: insolvent but no signal on this run's read (kept, use --fresh to clear): ${delta.quiet.insolvent.join(', ')}`)
   }
@@ -494,6 +553,14 @@ async function publish({ name, cache, buckets, monotonic, state, delta, adapterE
     doc[`new${capitalize(b)}`] = dropEmptyChains(delta.added[b])
     if (b === 'insolvent') doc.promotedFromStuck = dropEmptyChains(delta.promoted)
     if (!monotonic.includes(b)) doc[`cleared${capitalize(b)}`] = dropEmptyChains(delta.retired[b])
+  }
+  if (apiLayer) {
+    const shown = (layer) => Object.fromEntries(API_KINDS.map(k => [k, dropEmptyChains(layer[k])]))
+    doc.totals.disputed = API_KINDS.reduce((n, k) => n + countBucket(apiLayer.disputed[k]), 0)
+    doc.totals.apiFlagged = API_KINDS.reduce((n, k) => n + countBucket(apiLayer.apiFlagged[k]), 0)
+    doc.disputed = shown(apiLayer.disputed)
+    doc.apiFlagged = shown(apiLayer.apiFlagged)
+    doc.apiStale = !!apiLayer.stale
   }
   doc.errors = errors
   return doc
@@ -2451,11 +2518,205 @@ const MORPHO = (() => {
     io.note(`morpho: ${scanned} vaults checked on ${targets.length} chain(s), ${withIds} of them also against insolvent markets`)
   }
 
+  // ---- morpho's own api: a second opinion, in both directions
+  const API_URL = 'https://blue-api.morpho.org/graphql'
+  const API_PAGE = 1000
+  const API_MIN_USD = 1000
+  const VETO_MARKET = '[api: listed, no RED warnings, $0 badDebt]'
+  const VETO_VAULT = '[api: listed, no RED warnings]'
+  const VETO_CASCADE = '[api: every market behind it disputed]'
+
+  // `warnings`, `badDebt` and `listed` ride along as field selections, so nothing is ever looked up
+  // per market or per vault - the whole layer is 12 requests covering every chain at once.
+  const API_Q = {
+    chains: '{ chains { id } }',
+    markets: `query($c:[Int!],$skip:Int!,$first:Int!){ markets(first:$first, skip:$skip, where:{chainId_in:$c}){
+      pageInfo{countTotal} items{ marketId chain{id} listed loanAsset{symbol} collateralAsset{symbol}
+      warnings{type level} badDebt{usd} realizedBadDebt{usd} state{supplyAssetsUsd} } } }`,
+    vaults: `query($c:[Int!],$skip:Int!,$first:Int!){ vaults(first:$first, skip:$skip, where:{chainId_in:$c}){
+      pageInfo{countTotal} items{ address chain{id} name listed warnings{type level} state{totalAssetsUsd} } } }`,
+    vaultV2s: `query($c:[Int!],$skip:Int!,$first:Int!){ vaultV2s(first:$first, skip:$skip, where:{chainId_in:$c}){
+      pageInfo{countTotal} items{ address chain{id} name listed warnings{type level} totalAssetsUsd } } }`,
+  }
+
+  const redTypes = (row) => (row.warnings || []).filter(w => w.level === 'RED').map(w => w.type)
+  const usdOf = (x) => (x && typeof x.usd === 'number') ? x.usd : 0
+
+  // Both predicates are deliberately strict about RED. The only RED types seen on listed entries are
+  // cosmetic (deposit_disabled, invalid_name, invalid_symbol), so strictness can only ever WITHHOLD
+  // a veto - it can never fire one wrongly, which is the direction that matters.
+  const contradictsMarket = (m) => m.listed === true && !redTypes(m).length
+    && usdOf(m.badDebt) === 0 && usdOf(m.realizedBadDebt) === 0
+  const contradictsVault = (v) => v.listed === true && !redTypes(v).length // vaults carry no badDebt
+
+  // A realized write-off on a market that no longer holds anything is not a live overstatement, so
+  // the queue wants unrealized bad debt sitting on supply that is still there.
+  const queuesMarket = (m) => usdOf(m.badDebt) > API_MIN_USD && !!m.state && m.state.supplyAssetsUsd > API_MIN_USD
+  const queuesVault = (v) => (v.warnings || []).some(w => /^bad_debt_/.test(w.type)) && v.totalAssetsUsd > API_MIN_USD
+
+  async function apiPage(query, ids, pick) {
+    const { graphQuery } = require('../../projects/helper/http')
+    const rows = []
+    for (let skip = 0; ; skip += API_PAGE) {
+      const node = pick(await graphQuery(API_URL, query, { c: ids, skip, first: API_PAGE }))
+      rows.push(...node.items)
+      if (!node.items.length || rows.length >= node.pageInfo.countTotal) return rows
+    }
+  }
+
+  async function fetchSnapshot(chains, errors, io) {
+    const { graphQuery } = require('../../projects/helper/http')
+    const providers = require('@defillama/sdk/build/providers.json')
+    const wanted = []
+    for (const chain of chains) {
+      const id = providers[chain] && providers[chain].chainId
+      if (typeof id === 'number') wanted.push([chain, id])
+    }
+    if (!wanted.length) return null
+    try {
+      const live = new Set((await graphQuery(API_URL, API_Q.chains)).chains.map(c => c.id))
+      const covered = wanted.filter(([, id]) => live.has(id))
+      if (!covered.length) return null
+      const ids = covered.map(([, id]) => id)
+      const nameOf = new Map(covered.map(([chain, id]) => [id, chain]))
+      const [markets, v1, v2] = await Promise.all([
+        apiPage(API_Q.markets, ids, r => r.markets),
+        apiPage(API_Q.vaults, ids, r => r.vaults),
+        apiPage(API_Q.vaultV2s, ids, r => r.vaultV2s),
+      ])
+      const vaults = [
+        ...v1.map(v => ({ ...v, version: 'v1', totalAssetsUsd: v.state && v.state.totalAssetsUsd })),
+        ...v2.map(v => ({ ...v, version: 'v2' })), // v2 vaults are absent from `vaults` entirely
+      ]
+      const snap = { covered: new Set(covered.map(([chain]) => chain)), markets: new Map(), vaults: new Map() }
+      for (const m of markets) {
+        const chain = nameOf.get(m.chain.id)
+        if (chain) snap.markets.set(`${chain}|${lc(m.marketId)}`, m)
+      }
+      for (const v of vaults) {
+        const chain = nameOf.get(v.chain.id)
+        if (chain) snap.vaults.set(`${chain}|${lc(v.address)}`, v)
+      }
+      const skipped = wanted.length - covered.length
+      io.note(`morpho: api snapshot - ${markets.length} markets, ${vaults.length} vaults over ${covered.length} chain(s)` +
+        (skipped ? `, ${skipped} chain(s) the api does not cover left ungraded` : ''))
+      return snap
+    } catch (e) {
+      errors.push(`morpho · api: snapshot not fetched - ${e.message}`)
+      return null
+    }
+  }
+
+  function queueMarketReason(m) {
+    const pair = `${(m.collateralAsset && m.collateralAsset.symbol) || '?'}/${(m.loanAsset && m.loanAsset.symbol) || '?'}`
+    const supply = m.state.supplyAssetsUsd
+    const share = supply > 0 ? ` (${fmtPct(usdOf(m.badDebt) / supply)} of ${fmtUsd(supply)} supply)` : ''
+    return `${pair} — badDebt ${fmtUsd(usdOf(m.badDebt))}${share} [${redTypes(m).join(', ')}]`
+  }
+
+  const queueVaultReason = (v) =>
+    `${(v.name || v.address).trim()} (${v.version}) — ${fmtUsd(v.totalAssetsUsd)} totalAssets [${redTypes(v).join(', ')}]`
+
+  function pruneDelta(delta, bucket, chain, key) {
+    const added = (delta.added[bucket] || {})[chain]
+    if (added) {
+      delete added[key]
+      if (!Object.keys(added).length) delete delta.added[bucket][chain]
+    }
+    const tag = `${chain}|${key}`
+    for (const list of ['refreshed', 'quiet']) {
+      if (Array.isArray(delta[list][bucket])) delta[list][bucket] = delta[list][bucket].filter(k => k !== tag)
+    }
+    if (Array.isArray((delta.promoted || {})[chain])) delta.promoted[chain] = delta.promoted[chain].filter(k => k !== key)
+  }
+
+  function applyApiLayer({ merged, prior, delta, snapshot, vaultSignals, io }) {
+    if (!snapshot) {
+      io.note('morpho: api not reached - carrying the stored disputed/apiFlagged forward, nothing vetoed')
+      return { disputed: prior.disputed, apiFlagged: prior.apiFlagged, checkedAt: prior.apiCheckedAt, stale: true }
+    }
+    const disputed = { markets: {}, vaults: {} }
+    const sweep = (bucket, grade) => {
+      for (const [chain, entries] of Object.entries(merged[bucket] || {})) {
+        if (!snapshot.covered.has(chain)) continue
+        for (const key of Object.keys(entries)) {
+          const verdict = grade(chain, key, entries[key])
+          if (!verdict) continue
+          if (!disputed[verdict.kind][chain]) disputed[verdict.kind][chain] = {}
+          disputed[verdict.kind][chain][key] = verdict.text
+          delete entries[key]
+          pruneDelta(delta, bucket, chain, key)
+        }
+        if (!Object.keys(entries).length) delete merged[bucket][chain]
+      }
+    }
+    const vetoMarket = (chain, key, reason) => {
+      const row = snapshot.markets.get(`${chain}|${key}`)
+      return row && contradictsMarket(row) ? { kind: 'markets', text: `${VETO_MARKET} ${reason}` } : null
+    }
+    sweep('insolvent', vetoMarket)
+    sweep('stuck', vetoMarket)
+    sweep('vaults', (chain, key, reason) => {
+      const row = snapshot.vaults.get(`${chain}|${key}`)
+      return row && contradictsVault(row) ? { kind: 'vaults', text: `${VETO_VAULT} ${reason}` } : null
+    })
+
+    if (vaultSignals) {
+      sweep('vaults', (chain, key, reason) => {
+        const sig = (vaultSignals[chain] || {})[key]
+        if (!sig || sig.lost) return null
+        const ids = sig.ids || [], wraps = sig.wraps || []
+        if (!ids.length && !wraps.length) return null
+        const goneId = (id) => !!(disputed.markets[chain] || {})[id]
+        const goneVault = (v) => !!(disputed.vaults[chain] || {})[v]
+        return ids.every(goneId) && wraps.every(goneVault) ? { kind: 'vaults', text: `${VETO_CASCADE} ${reason}` } : null
+      })
+    }
+
+    const held = new Set()
+    for (const b of ['insolvent', 'stuck', 'vaults']) {
+      for (const [chain, entries] of Object.entries(merged[b] || {})) {
+        for (const key of Object.keys(entries)) held.add(`${chain}|${key}`)
+      }
+    }
+    for (const kind of API_KINDS) {
+      for (const [chain, entries] of Object.entries(disputed[kind])) {
+        for (const key of Object.keys(entries)) held.add(`${chain}|${key}`)
+      }
+    }
+    const apiFlagged = { markets: {}, vaults: {} }
+    const queue = (kind, mapKey, reason) => {
+      const cut = mapKey.indexOf('|')
+      const chain = mapKey.slice(0, cut), key = mapKey.slice(cut + 1)
+      if (!apiFlagged[kind][chain]) apiFlagged[kind][chain] = {}
+      apiFlagged[kind][chain][key] = reason
+    }
+    for (const [mapKey, m] of snapshot.markets) {
+      if (!held.has(mapKey) && queuesMarket(m)) queue('markets', mapKey, queueMarketReason(m))
+    }
+    for (const [mapKey, v] of snapshot.vaults) {
+      if (!held.has(mapKey) && queuesVault(v)) queue('vaults', mapKey, queueVaultReason(v))
+    }
+    return { disputed, apiFlagged, checkedAt: nowSec(), stale: false }
+  }
+
+  const stateOf = (merged, api, errors) => ({
+    updatedAt: nowSec(),
+    ...(api.checkedAt ? { apiCheckedAt: api.checkedAt } : {}),
+    ...merged,
+    disputed: api.disputed,
+    apiFlagged: api.apiFlagged,
+    errors,
+  })
+
   async function run(opts, io) {
     const errors = []
     guardFresh(opts, 'morpho')
+    if (opts.verifyApi && opts.fresh) {
+      throw new Error('morpho: --verify-api re-grades the stored list, and --fresh would hand it an empty one')
+    }
 
-    const prior = await loadPrior(CACHE, BUCKETS, opts)
+    const prior = normalizeApiLayer(await loadPrior(CACHE, BUCKETS, opts))
     const known = (chain) => new Set(Object.keys(prior.insolvent[chain] || {}))
 
     const { config } = require('../../projects/morpho-blue/config')
@@ -2469,6 +2730,20 @@ const MORPHO = (() => {
       targets.push({ chain: t.chain, cfg: t, knownInsolvent: known(t.chain) })
     }
     if (!targets.length) throw new Error(`no Morpho Blue deployment for chain(s): ${opts.chains.join(', ')}`)
+    const chains = targets.map(t => t.chain)
+
+    if (opts.verifyApi) {
+      const snapshot = await fetchSnapshot(chains, errors, io)
+      const merged = Object.fromEntries(BUCKETS.map(b => [b, prior[b]]))
+      merged.firstSeen = prior.firstSeen || {}
+      const delta = emptyDelta(BUCKETS)
+      const apiLayer = applyApiLayer({ merged, prior, delta, snapshot, vaultSignals: null, io })
+      return publish({
+        name: 'morpho', cache: CACHE, buckets: BUCKETS, monotonic: MONOTONIC,
+        state: stateOf(merged, apiLayer, errors), delta, errors, opts, io,
+        adapterExcluded: new Set(), apiLayer,
+      })
+    }
 
     const results = await runScans({
       targets, opts, scan: scanChain,
@@ -2487,11 +2762,13 @@ const MORPHO = (() => {
       wasReRead: (chain, key) => fresh.clean.has(`${chain}|${key}`),
     })
     if (opts.backfillFirstSeen) await backfillVaultDates(merged, fresh, opts, errors, io, stampedAt)
-    const state = { updatedAt: nowSec(), ...merged, errors }
+    const snapshot = await fetchSnapshot(chains, errors, io)
+    const apiLayer = applyApiLayer({ merged, prior, delta, snapshot, vaultSignals: fresh.vaultSignals, io })
 
     return publish({
       name: 'morpho', cache: CACHE, buckets: BUCKETS, monotonic: MONOTONIC,
-      state, delta, errors, opts, io, adapterExcluded: fresh.adapterFlagged,
+      state: stateOf(merged, apiLayer, errors), delta, errors, opts, io,
+      adapterExcluded: fresh.adapterFlagged, apiLayer,
     })
   }
 
