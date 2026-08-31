@@ -10364,16 +10364,6 @@ const configs = {
       ]
     },
   },
-  "coinbase-doge": {
-    "methodology": "DOGE collateral backing CBDOGE https://www.coinbase.com/en-nl/cbdoge/proof-of-reserves",
-    "doge": {
-      "owners": [
-        "DLuceb7v8vHknepvYRTzz5bSMUAqax8vTN",
-        "DCqkF26vcqG1FGJiB7L73jyTDeFkjeEPvJ",
-        "DNhLqkURqaQDW4f4J9wxtVzRw1XxhkjZ6m"
-      ]
-    },
-  },
   "coindrip": {
     "timetravel": false,
     "elrond": {
@@ -28678,110 +28668,32 @@ const configs = {
   "vanilla": {
     "ethereum": {
       "tokens": [
-        {
-          "symbol": "WBTC",
-          "address": ADDRESSES.ethereum.WBTC
-        },
-        {
-          "symbol": "UNI",
-          "address": ADDRESSES.ethereum.UNI
-        },
-        {
-          "symbol": "LINK",
-          "address": ADDRESSES.ethereum.LINK
-        },
-        {
-          "symbol": "CEL",
-          "address": "0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d"
-        },
-        {
-          "symbol": "PERP",
-          "address": "0xbc396689893d065f41bc2c6ecbee5e0085233447"
-        },
-        {
-          "symbol": "MKR",
-          "address": ADDRESSES.ethereum.MKR
-        },
-        {
-          "symbol": "SHIB",
-          "address": ADDRESSES.ethereum.INU
-        },
-        {
-          "symbol": "TRIBE",
-          "address": "0xc7283b66eb1eb5fb86327f08e1b5816b0720212b"
-        },
-        {
-          "symbol": "MATIC",
-          "address": ADDRESSES.ethereum.MATIC
-        },
-        {
-          "symbol": "WOOFY",
-          "address": "0xd0660cd418a64a1d44e9214ad8e459324d8157f1"
-        },
-        {
-          "symbol": "GTC",
-          "address": "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f"
-        },
-        {
-          "symbol": "AUDIO",
-          "address": "0x18aaa7115705e8be94bffebde57af9bfc265b998"
-        },
-        {
-          "symbol": "YFI",
-          "address": ADDRESSES.ethereum.YFI
-        },
-        {
-          "symbol": "RPL",
-          "address": "0xb4efd85c19999d84251304bda99e90b92300bd93"
-        },
-        {
-          "symbol": "AAVE",
-          "address": ADDRESSES.ethereum.AAVE
-        },
-        {
-          "symbol": "DPI",
-          "address": "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b"
-        },
-        {
-          "symbol": "QUICK",
-          "address": "0x6c28aef8977c9b773996d0e8376d2ee379446f2f"
-        },
-        {
-          "symbol": "SUSHI",
-          "address": ADDRESSES.ethereum.SUSHI
-        },
-        {
-          "symbol": "SNX",
-          "address": ADDRESSES.ethereum.SNX
-        },
-        {
-          "symbol": "HOT",
-          "address": "0x6c6ee5e31d828de241282b9606c8e98ea48526e2"
-        },
-        {
-          "symbol": "wNXM",
-          "address": "0x0d438f3b5175bebc262bf23753c1e53d03432bde"
-        },
-        {
-          "symbol": "GLM",
-          "address": "0x7dd9c5cba05e151c895fde1cf355c9a1d5da6429"
-        },
-        {
-          "symbol": "OCEAN",
-          "address": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48"
-        },
-        {
-          "symbol": "BNT",
-          "address": "0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c"
-        },
-        {
-          "symbol": "COMP",
-          "address": "0xc00e94cb662c3520282e6f5717214004a7f26888"
-        },
-        {
-          "symbol": "1INCH",
-          "address": "0x111111111117dc0aa78b770fa6a738034120c302"
-        }
+        ADDRESSES.ethereum.WBTC,
+        ADDRESSES.ethereum.UNI,
+        ADDRESSES.ethereum.LINK,
+        "0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d",
+        "0xbc396689893d065f41bc2c6ecbee5e0085233447",
+        ADDRESSES.ethereum.MKR,
+        ADDRESSES.ethereum.INU,
+        "0xc7283b66eb1eb5fb86327f08e1b5816b0720212b",
+        ADDRESSES.ethereum.MATIC,
+        "0xd0660cd418a64a1d44e9214ad8e459324d8157f1",
+        "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+        "0x18aaa7115705e8be94bffebde57af9bfc265b998",
+        ADDRESSES.ethereum.YFI,
+        "0xb4efd85c19999d84251304bda99e90b92300bd93",
+        ADDRESSES.ethereum.AAVE,
+        "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b",
+        "0x6c28aef8977c9b773996d0e8376d2ee379446f2f",
+        ADDRESSES.ethereum.SUSHI,
+        ADDRESSES.ethereum.SNX,
+        "0x6c6ee5e31d828de241282b9606c8e98ea48526e2",
+        "0x0d438f3b5175bebc262bf23753c1e53d03432bde",
+        "0x7dd9c5cba05e151c895fde1cf355c9a1d5da6429",
+        "0x967da4048cd07ab37855c090aaf366e4ce1b9f48",
+        "0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c",
+        "0xc00e94cb662c3520282e6f5717214004a7f26888",
+        "0x111111111117dc0aa78b770fa6a738034120c302",
       ],
       "owner": "0x72C8B3aA6eD2fF68022691ecD21AEb1517CfAEa6"
     },
