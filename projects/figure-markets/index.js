@@ -33,6 +33,6 @@ const tvl = async (api) => {
 module.exports = {
     timetravel: true,
     misrepresentedTokens: true,
-    methodology: "Figure Markets TVL is the sum of all tokens locked within the Figure Markets protocol contract.",
+    methodology: "Figure Markets TVL is the sum of tokens committed to the Figure Markets exchange, excluding USD.TRADING and collateralized pool assets.",
     provenance: { tvl },
 }
