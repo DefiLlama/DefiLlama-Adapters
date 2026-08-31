@@ -65,13 +65,6 @@ const v3LiquidityAbi =
 
 const Q192 = 1n << 192n;
 
-// event Initialize topic0 / event PoolCreated topic0, fixed by the event
-// signatures above. Computed once instead of re-deriving it per call.
-const v4InitializeTopic0 = "0xdd466e674ea557f56295e2d0218a125ea4b4f0f6f3307b95f85e6110838d6438";
-const v3PoolCreatedTopic0 = "0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118";
-
-const addressTopic = (addr) => "0x" + addr.toLowerCase().replace("0x", "").padStart(64, "0");
-
 // ---------------------------------------------------------
 // Determine which tokens the DefiLlama Coins API already has
 // a live price for.
@@ -132,59 +125,48 @@ async function getDefiLlamaPricedTokens(tokens, timestamp) {
 }
 
 // ---------------------------------------------------------
-// Find candidate pools
-//
-// Targeted, topic-filtered log queries for this ONE token, not
-// a scan of every pool the chain has ever seen. Scanning
-// the whole V3 factory / V4 PoolManager history unfiltered is
-// what made an earlier version of this file hang a local run
-// (this chain has thousands of pools from launchpad activity);
-// filtering by the token's own address in the topic list keeps
-// each lookup to a handful of results regardless of chain size.
+// Fetch each contract's full pool-creation history exactly
+// once per run, memoized. getLogs2 does not make a per-token
+// topic filter cheaper (it fetches and caches a target's
+// complete event history regardless of the topics passed in,
+// the same way DefiLlama's own official projects/uniswap-v4
+// and projects/uniswap adapters already scan these exact two
+// contracts on this chain). Fetching once and filtering the
+// in-memory result for every unpriced token, instead of
+// re-querying per token, avoids paying that cost more than
+// once per run.
 // ---------------------------------------------------------
 
-async function findPoolCandidates(api, token, toBlock) {
+let poolsPromise;
+
+function loadPools(api, toBlock) {
+  if (!poolsPromise) {
+    poolsPromise = Promise.all([
+      getLogs2({
+        api,
+        target: V4_POOL_MANAGER,
+        eventAbi: v4InitializeAbi,
+        fromBlock: V4_FROM_BLOCK,
+        toBlock,
+      }),
+      getLogs2({
+        api,
+        target: V3_FACTORY,
+        eventAbi: v3PoolCreatedAbi,
+        fromBlock: V3_FROM_BLOCK,
+        toBlock,
+      }),
+    ]).then(([v4, v3]) => ({ v4, v3 }));
+  }
+
+  return poolsPromise;
+}
+
+function findPoolCandidates(pools, token) {
   token = token.toLowerCase();
-  const tokenTopic = addressTopic(token);
-
-  const [v4AsCurrency0, v4AsCurrency1, v3AsToken0, v3AsToken1] = await Promise.all([
-    getLogs2({
-      api,
-      target: V4_POOL_MANAGER,
-      eventAbi: v4InitializeAbi,
-      fromBlock: V4_FROM_BLOCK,
-      toBlock,
-      topics: [v4InitializeTopic0, null, tokenTopic, null],
-    }),
-    getLogs2({
-      api,
-      target: V4_POOL_MANAGER,
-      eventAbi: v4InitializeAbi,
-      fromBlock: V4_FROM_BLOCK,
-      toBlock,
-      topics: [v4InitializeTopic0, null, null, tokenTopic],
-    }),
-    getLogs2({
-      api,
-      target: V3_FACTORY,
-      eventAbi: v3PoolCreatedAbi,
-      fromBlock: V3_FROM_BLOCK,
-      toBlock,
-      topics: [v3PoolCreatedTopic0, tokenTopic, null, null],
-    }),
-    getLogs2({
-      api,
-      target: V3_FACTORY,
-      eventAbi: v3PoolCreatedAbi,
-      fromBlock: V3_FROM_BLOCK,
-      toBlock,
-      topics: [v3PoolCreatedTopic0, null, tokenTopic, null],
-    }),
-  ]);
-
   const candidates = [];
 
-  for (const log of [...v4AsCurrency0, ...v4AsCurrency1]) {
+  for (const log of pools.v4) {
     if (!log?.currency0 || !log?.currency1 || !log?.id) continue;
 
     const token0 = log.currency0.toLowerCase();
@@ -204,7 +186,7 @@ async function findPoolCandidates(api, token, toBlock) {
     });
   }
 
-  for (const log of [...v3AsToken0, ...v3AsToken1]) {
+  for (const log of pools.v3) {
     if (!log?.token0 || !log?.token1 || !log?.pool) continue;
 
     const token0 = log.token0.toLowerCase();
@@ -224,14 +206,7 @@ async function findPoolCandidates(api, token, toBlock) {
     });
   }
 
-  // de-dupe (a pool can in principle surface from both direction queries)
-  const seen = new Set();
-  return candidates.filter((c) => {
-    const key = c.version === 4 ? `4-${c.poolId}` : `3-${c.pool}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  return candidates;
 }
 
 // ---------------------------------------------------------
@@ -269,8 +244,8 @@ async function getPoolLiquidity(api, pool) {
 // NOT a manipulation-proof oracle (no TWAP or depth check).
 // ---------------------------------------------------------
 
-async function findBestPool(api, token, toBlock) {
-  const candidates = await findPoolCandidates(api, token, toBlock);
+async function findBestPool(api, pools, token) {
+  const candidates = findPoolCandidates(pools, token);
 
   if (!candidates.length) return null;
 
@@ -468,6 +443,7 @@ async function tvl(api) {
   }
 
   const toBlock = await api.getBlock();
+  const pools = await loadPools(api, toBlock);
 
   for (const token of unpricedTokens) {
     // Sum actual balances only in vaults that declared
@@ -498,7 +474,7 @@ async function tvl(api) {
 
     // Find a usable pool quoted against a trusted asset.
 
-    const pool = await findBestPool(api, token, toBlock);
+    const pool = await findBestPool(api, pools, token);
 
     if (!pool) {
       console.log(
