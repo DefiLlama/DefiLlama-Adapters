@@ -1,4 +1,4 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 
 const FACTORY = '0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e'
 const fromBlock = 27000000
@@ -10,9 +10,10 @@ const PoolGraduated = 'event PoolGraduated(address indexed token, uint256 positi
 
 async function tvl(api) {
   const [launches, graduations] = await Promise.all([
-    getLogs({ api, target: FACTORY, eventAbi: TokenLaunched, onlyArgs: true, fromBlock }),
-    getLogs({ api, target: FACTORY, eventAbi: PoolGraduated, onlyArgs: true, fromBlock }),
+    getLogs2({ api, target: FACTORY, eventAbi: TokenLaunched, fromBlock, extraKey: 'launched' }),
+    getLogs2({ api, target: FACTORY, eventAbi: PoolGraduated, fromBlock, extraKey: 'graduated'}), 
   ])
+
   const graduated = new Set(graduations.map(i => i.token.toLowerCase()))
   // Each active (non-graduated) curve holds its pairToken (native ETH for most coins, or another
   // approved quote token) as the bonding-curve reserve. A graduated coin's reserve has moved into a
