@@ -15,21 +15,17 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 //     good. Counted as the ETH leg of those positions; the coin leg is the launched
 //     token's own unsold supply and is not counted. This liquidity is also in the
 //     uniswap-v4 adapter's TVL on this chain, hence `doublecounted`.
-// staking:
-//   - Coins deposited in Frontier's ERC-4626 StakingVaults (one per coin, deployed by
-//     the StakingVaultFactory), including deposits sitting in a vault's cooldown holder
-//     while a withdrawal matures. The WETH a vault holds is rewards, not deposits.
+//
+// Frontier's ERC-4626 StakingVaults are excluded as the staked assets are launched tokens
 const V1_FACTORY = '0x3cbC9395046607C083B383DC3588A3e8308dFf54'
 const V1_FROM_BLOCK = 23650298 // first v1 CoinDeployed
 const V12_FACTORY = '0xe3A826C056e578c240D362BF4C2fa53E5c0c17a5'
 const V12_FROM_BLOCK = 36671438 // v1.2 deploy block
 const HARVESTER = '0x2F33cb57fAa8bF1EB52ea18D90B0dc2f8cc2Db1f'
 const POSITION_MANAGER = '0x58daec3116aae6d93017baaea7749052e8a04fa7' // Uniswap V4 posm
-const STAKING_VAULT_FACTORY = '0xFB443f5c6Ba35334a1AB2Fc12d4b877fc2A8d6A9'
 
 const V1_COIN_DEPLOYED_EVENT = 'event CoinDeployed(address indexed creator, address indexed token, address factory, address lp, string name, string symbol, string description, string image, uint256 initialSupply, uint256 maxSupply, uint256 initialETHReserves, uint256 initialPrice, uint256 initialMarketCap, uint256 targetETH)'
 const V12_COIN_DEPLOYED_EVENT = 'event CoinDeployed(address indexed creator, address indexed token, address factory, address lp, string name, string symbol, string description, string image, uint256 initialSupply, uint256 maxSupply, uint256 initialETHReserves, uint256 initialPrice, uint256 initialMarketCap, uint256 targetETH, bool indexed directSeed)'
-const VAULT_DEPLOYED_EVENT = 'event VaultDeployed(address indexed asset, address indexed vault, uint256 cooldownDuration)'
 const NFT_TRANSFER_EVENT = 'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
 const NFT_TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 const asTopic = (address) => '0x' + address.slice(2).toLowerCase().padStart(64, '0')
@@ -86,29 +82,11 @@ async function tvl(api) {
   })
 }
 
-/**
- * Coins deposited in Frontier's ERC-4626 StakingVaults (one per coin,
- * enumerated from VaultDeployed), including deposits parked in each vault's
- * cooldown holder while a withdrawal matures. The WETH a vault holds is
- * rewards, not deposits, and is not counted.
- * @param {object} api - DefiLlama chain api for the block being measured
- */
-async function staking(api) {
-  const vaults = await getLogs2({ api, factory: STAKING_VAULT_FACTORY, eventAbi: VAULT_DEPLOYED_EVENT, fromBlock: V12_FROM_BLOCK })
-  if (!vaults.length) return
-  const cooldownHolders = await api.multiCall({ abi: 'address:cooldownHolder', calls: vaults.map((log) => log.vault) })
-  const tokensAndOwners = vaults.flatMap((log, i) => [
-    [log.asset, log.vault],
-    [log.asset, cooldownHolders[i]],
-  ])
-  return api.sumTokens({ tokensAndOwners })
-}
-
 module.exports = {
   methodology:
-    'TVL is the native ETH held by un-graduated Frontier bonding-curve tokens on Robinhood Chain (v1 and v1.2 factories, enumerated from CoinDeployed; each token custodies what its curve raises until it fills and seeds its Uniswap V4 pool), plus the ETH leg of the permanently locked Uniswap V4 seed positions held by the Harvester (v1.2; the coin leg is the launched token itself and is not counted). Staking is the coins deposited in Frontier\'s ERC-4626 StakingVaults, including deposits in cooldown. Launched tokens are not counted anywhere.',
+    'TVL is the native ETH held by un-graduated Frontier bonding-curve tokens on Robinhood Chain (v1 and v1.2 factories, enumerated from CoinDeployed; each token custodies what its curve raises until it fills and seeds its Uniswap V4 pool), plus the ETH leg of the permanently locked Uniswap V4 seed positions held by the Harvester (v1.2; the coin leg is the launched token itself and is not counted). Launched tokens are not counted anywhere, including the coins staked in Frontier\'s vaults, since their ETH backing is already counted here.',
   start: '2026-07-30',
   // The locked seed positions are Uniswap V4 liquidity, already in uniswap-v4's TVL on this chain.
   doublecounted: true,
-  robinhood: { tvl, staking },
+  robinhood: { tvl },
 }
