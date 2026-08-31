@@ -712,6 +712,12 @@ const configs = {
         base: {
           morphoVaultOwners: [
             '0xD8B0F4e54a8dac04E0A57392f5A630cEdb99C940',
+            '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c', // Re7 USDC V2 initial owner
+          ],
+        },
+        optimism: {
+          morphoVaultOwners: [
+            '0xf86199f0D9F126CB548f4bc1756b6833121E132C', // Re7 WETH V2 initial owner
           ],
         },
         sonic: {

@@ -191,6 +191,12 @@ const MorphoConfigs = {
         fromBlock: 130770189,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6128b680b277Bf4Df80DFE9D8c55A498660870ef',
+        fromBlock: 142122059,
+      },
+    ],
   },
   hemi: {
     vaultFactories: [
