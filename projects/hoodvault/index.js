@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getLogs2 } = require("../helper/cache/getLogs");
 
 const NFT = "0x9482b1B0D96A3F7ABA14b9C433F7032FEe11d649";
 
@@ -147,36 +148,36 @@ async function findPoolCandidates(api, token, toBlock) {
   const tokenTopic = addressTopic(token);
 
   const [v4AsCurrency0, v4AsCurrency1, v3AsToken0, v3AsToken1] = await Promise.all([
-    api.getLogs({
+    getLogs2({
+      api,
       target: V4_POOL_MANAGER,
       eventAbi: v4InitializeAbi,
       fromBlock: V4_FROM_BLOCK,
       toBlock,
-      onlyArgs: true,
       topics: [v4InitializeTopic0, null, tokenTopic, null],
     }),
-    api.getLogs({
+    getLogs2({
+      api,
       target: V4_POOL_MANAGER,
       eventAbi: v4InitializeAbi,
       fromBlock: V4_FROM_BLOCK,
       toBlock,
-      onlyArgs: true,
       topics: [v4InitializeTopic0, null, null, tokenTopic],
     }),
-    api.getLogs({
+    getLogs2({
+      api,
       target: V3_FACTORY,
       eventAbi: v3PoolCreatedAbi,
       fromBlock: V3_FROM_BLOCK,
       toBlock,
-      onlyArgs: true,
       topics: [v3PoolCreatedTopic0, tokenTopic, null, null],
     }),
-    api.getLogs({
+    getLogs2({
+      api,
       target: V3_FACTORY,
       eventAbi: v3PoolCreatedAbi,
       fromBlock: V3_FROM_BLOCK,
       toBlock,
-      onlyArgs: true,
       topics: [v3PoolCreatedTopic0, null, tokenTopic, null],
     }),
   ]);
