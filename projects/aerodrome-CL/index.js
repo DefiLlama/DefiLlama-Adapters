@@ -27,4 +27,28 @@ const export2 = {
   }
 }
 
-module.exports = mergeExports([export1, export2])
+const export3 = {
+  base: {
+    tvl: getUniTVL({
+      factory: '0x9592CD9B267748cbfBDe90Ac9F7DF3c437A6d51B', blacklistedTokens, fetchBalances: true, abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: "function allPools(uint) view returns (address)",
+      },
+      permitFailure: true,
+    })
+  }
+}
+
+const export4 = {
+  base: {
+    tvl: getUniTVL({
+      factory: '0xf8f2eB4940CFE7d13603DDDD87f123820Fc061Ef', blacklistedTokens, fetchBalances: true, abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: "function allPools(uint) view returns (address)",
+      },
+      permitFailure: true,
+    })
+  }
+}
+
+module.exports = mergeExports([export1, export2, export3, export4])

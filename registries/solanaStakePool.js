@@ -100,6 +100,14 @@ const configs = {
       'hy1o2kiYu9rUDFqHJSqwJH4j5ZkM23tBJsaEmqkP9sT',
     ],
   },
+  'phase-delegation': {
+    methodology: "Total SOL staked in the Phase Delegation stake pool, read on chain from the SPL stake pool account's totalLamports",
+    solana: 'aero2ePURjuEgLKTzcUmF6RypBncBGd7pMUYCoSsVJ6',
+  },
+  'phase-yield': {
+    methodology: "Total SOL staked in the Phase Stake pool, read on chain from the stake pool account's totalLamports",
+    solana: 'phasejkG1akKgqkLvfWzWY17evnH6mSWznnUspmpyeG',
+  },
   // getStakedSol adapters
   'thevault': {
     solana: { type: 'staked', address: 'GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW' },

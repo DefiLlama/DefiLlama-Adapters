@@ -436,6 +436,12 @@ const configs = {
             '0x85fCb4604f25e17Ae4e1EAc202adba4F999d7FF5', // Feather MegaETH vault
           ],
         },
+        polygon: {
+          morpho: [
+            '0x902Af532d51D4983DBf9B8E29d1f01E430B24435', // Feather BRZ vault
+            '0x922c843349e3Bd9e4C3572171DfCa5e08836151F', // Feather frxUSD vault
+          ],
+        },
       }
     },
     _meta: {
@@ -1056,7 +1062,9 @@ const configs = {
             '0xfb132f4c6d9dcf4f80483ea7d96c5a5dccfcfe83',
             '0xbe49dd45d9d28f2380cbee3e57a8243e736e4552',
             '0x79505efad14d289c84a71c28369b944ada25b131',
-            '0x31744e44d6af88225c1dbefbe5df8308faea641b'
+            '0x31744e44d6af88225c1dbefbe5df8308faea641b',
+            '0xCd19f18884bf388b866D05cDd1ae351133821F01',
+            '0x01DBDB9748ECf71B1fFbb62f5cB41318531bA362'
           ]
         }
       }

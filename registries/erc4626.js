@@ -267,6 +267,7 @@ const configs = {
       vRPCSemiYearlyVault: '0xee26bb0989691735c997dfdc49a4a607f75e190b',
       pCreditVault: '0x39976f3Ef143a5824d4E4c28c204d556113dCF7f',
       apcVault: '0xd0428799fbc35557834d33121ba4472692c8908a',
+      hybVault: '0x6Ce4bc043398Ac40392d1E063328048072b2075d',
     }),
     methodology: "TVL represents the total value of assets held within the vault. Each vault token is minted using USDC and appreciates in line with the performance of the underlying asset.",
   },
@@ -455,6 +456,11 @@ const configs = {
     monad: ["0x50AF964d81c18ed885dBf741cDc3366239a3cC10", "0x73F0c2ed71b5c750Cf4900220F901B732EA71Ff0"],
     arbitrum: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"],
     pharos: ["0xa7bE6b8F61C392F7e2483F8D2B6efd430EDaF098"]
+  },
+  'syntetika': {
+    methodology: "TVL is the net asset value of the Syntetika strategy vaults, read on-chain as totalAssets() - the outstanding supply of vault share tokens valued at the independently attested NAV per share - and denominated in the vault deposit asset (cbBTC).",
+    doublecounted: true,
+    base: ["0x9C2dCDbDB3F0A0F628D1112bBCABD9AE75353df3"]
   }
 }
 

@@ -365,4 +365,18 @@ module.exports = {
       }
     });
   },
+  coinbasebtc: async () => {
+    const { reserveAddresses = [] } = await getConfig(
+      'coinbase-cbbtc-proof-of-reserves',
+      'https://www.coinbase.com/cbbtc/proof-of-reserves.json'
+    )
+    return reserveAddresses.map(r => r.address).filter(Boolean)
+  },
+  coinbaseltc: async () => {
+    const { reserveAddresses = [] } = await getConfig(
+      'coinbase-cbltc-proof-of-reserves',
+      'https://www.coinbase.com/cbltc/proof-of-reserves.json'
+    )
+    return reserveAddresses.map(r => r.address).filter(Boolean)
+  },
 }

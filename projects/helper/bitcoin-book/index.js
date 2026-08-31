@@ -5,7 +5,6 @@ const imports = [
   ["okex", "./okex.js"],
   ["chakra", "./chakra.js"],
   ["bitkub", "./bitkub-cex.js"],
-  ["coinbasebtc", "./coinbase-btc.js"],
 ];
 const { sumTokensExport } = require("../sumTokens.js");
 const fetchers = require("./fetchers.js");
@@ -457,6 +456,7 @@ module.exports = {
     "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37",
     "3D7pZri6kLqXDQMbf5G8De39K36eBaNKBG",
     "bc1qhx6x3c3nhyh4d2fsujjcaatc27xslyg6zju8p5",
+    "bc1qdg5fr2zq0w0r8l3hggm25uhdc7rjqs5r0az508",
   ],
   bitvenus: [
     //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
@@ -1030,12 +1030,6 @@ module.exports = {
     "bc1q0gw7fexuwthyf9wwzrjn4h0flj5veflwgzdxx0727gt9upfk0cfqfjv42k",
     "bc1qfpk3fj2u9kaw8qq96snm72dws5hyxxym5tf8tn",
   ],
-  coinbaseltc: [
-    "LTbMyvoyfSuQNqG5cGihin6BCbiZay11rU",
-    "LVeXnSCw2ci7qq2EGcNwjZqhQ73KrJHNJE",
-    "ltc1qhac8t52gdh8fzeft4ygzxn05nluwwecjrzel99",
-    "LP3k3DmN21xmCay3b5yReLKQKvViCnDPhi",
-  ],
   prosper: [
     "bc1qcrdvx3dvq35kawsp02033pwla244rr6hptg982", //https://app.prosper-fi.com/stats#dao-treasury
   ],
@@ -1170,6 +1164,10 @@ module.exports = {
   webot: [
     "bc1q8f6kmd5wpfudv8qqfs5j9pd6gq2r59fstne5uk",
     "bc1pnsukqkp3ymq5wndkcaptc7awsyr60pyuq4jnttgp468yllsje73q9mjzz6",
+  ],
+  websea: [
+    "39u712JCmQ1GfqWQtKdQHTyQA9pv2qNnGm",
+    "bc1q730a2njpypegll9ef6566vmdpakuf8t2au70dk",
   ],
 };
 

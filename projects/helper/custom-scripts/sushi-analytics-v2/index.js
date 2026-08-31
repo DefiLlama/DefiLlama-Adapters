@@ -11,6 +11,7 @@ const isRefillMode = process.env.REFILL_MODE === 'true'
 const adaptersDir = '../../../'
 const { bulky, hourlyRun } = require('./adapterMapping')
 const { readFromElastic, writeToElastic, time, getTimeString, } = require('./cache')
+const deadChains = new Set(require('../../deadChains'))
 const sdk = require("@defillama/sdk");
 const { PromisePool } = require('@supercharge/promise-pool')
 
@@ -55,7 +56,14 @@ async function updateProject({ tvlFunction, project, chain, tvlKey }) {
 async function main() {
   const adapterKey = process.env.RUN_ONLY
   let items = []
-  const allAdapterGroups = [...hourlyRun, ...bulky].flat()
+  const runGroup = process.env.RUN_GROUP // 'hourly' | 'bulky' | undefined (run all)
+  let selectedGroups
+  switch (runGroup) {
+    case 'hourly': selectedGroups = hourlyRun; break;
+    case 'bulky': selectedGroups = bulky; break;
+    default: selectedGroups = [...hourlyRun, ...bulky];
+  }
+  const allAdapterGroups = selectedGroups.flat()
 
 
   allAdapterGroups.flat().forEach(group => {
@@ -67,6 +75,10 @@ async function main() {
 
         Object.entries(projectModule).forEach(([chain, exports]) => {
           if (typeof exports !== 'object' || !exports || Array.isArray(exports)) return;
+          if (deadChains.has(chain)) {
+            log('[skipped]', name, chain, 'chain is dead')
+            return;
+          }
           Object.entries(exports).forEach(([exportKey, exported]) => {
             if (typeof exported === 'function') {
               items.push({ project: name, chain, tvlKey: `${chain}-${exportKey}`, tvlFunction: exported })
