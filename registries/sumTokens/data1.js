@@ -732,4 +732,10 @@ module.exports = {
     "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault.",
     "solana": { "tokenAccounts": ["2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9"] }
   },
+  "tessera-v": {
+    "methodology": "TVL is the value of SPL and Token-2022 balances held in Tessera V vaults controlled by its Solana authority account.",
+    "solana": {
+      "owner": "8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF"
+    }
+  },
 }
