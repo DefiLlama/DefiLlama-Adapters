@@ -41616,13 +41616,15 @@ const configs = {
   },
   "yieldcore": {
     "start": "2026-02-06",
-    "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds. Funds may sit in the main YieldCore contract or be temporarily deployed in a Krystal vault to generate yield for bondholders. Both balances are summed to reflect true TVL.",
+    "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds & Krystal vault",
     "bsc": {
       "tokens": [
         ADDRESSES.bsc.USDT
       ],
       "owners": [
         "0x2375Fcc2a256425228aA94d7100093230761639e",
+        "0x6D6CDf89Cc565A04f0Ba99A1Dc13d43d0d005E4E", // v4.3.1
+        "0x903407687486b3ae60746622D06b2eD3D75EaCAb", // v4.3.2
         "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7"
       ]
     },
