@@ -676,6 +676,19 @@ const configs = {
       },
     },
   },
+  "presto": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Presto.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x21d7f2430E33054151AC3963aCBD4813e78cB3C9', // Presto USDC Prime initial owner
+            '0xb41437827266a20aB30bf457A81561f7b5e1bE6D', // Presto USDC Forte initial owner
+          ],
+        },
+      },
+    },
+  },
   "re7": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Re7 Labs.',
