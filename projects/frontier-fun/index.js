@@ -34,6 +34,14 @@ const NFT_TRANSFER_EVENT = 'event Transfer(address indexed from, address indexed
 const NFT_TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 const asTopic = (address) => '0x' + address.slice(2).toLowerCase().padStart(64, '0')
 
+/**
+ * Native ETH custodied by un-graduated bonding-curve tokens (v1 + v1.2
+ * factories, enumerated from CoinDeployed; direct-seed launches never hold
+ * ETH), plus the ETH leg of the permanently locked Uniswap V4 seed positions
+ * held by the Harvester. The coin leg of those positions is the launched
+ * token's own unsold supply and is not counted.
+ * @param {object} api - DefiLlama chain api for the block being measured
+ */
 async function tvl(api) {
   const [v1Launches, v12Launches, positionTransfers] = await Promise.all([
     getLogs2({ api, factory: V1_FACTORY, eventAbi: V1_COIN_DEPLOYED_EVENT, fromBlock: V1_FROM_BLOCK }),
@@ -78,6 +86,13 @@ async function tvl(api) {
   })
 }
 
+/**
+ * Coins deposited in Frontier's ERC-4626 StakingVaults (one per coin,
+ * enumerated from VaultDeployed), including deposits parked in each vault's
+ * cooldown holder while a withdrawal matures. The WETH a vault holds is
+ * rewards, not deposits, and is not counted.
+ * @param {object} api - DefiLlama chain api for the block being measured
+ */
 async function staking(api) {
   const vaults = await getLogs2({ api, factory: STAKING_VAULT_FACTORY, eventAbi: VAULT_DEPLOYED_EVENT, fromBlock: V12_FROM_BLOCK })
   if (!vaults.length) return
