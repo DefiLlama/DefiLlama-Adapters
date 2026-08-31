@@ -4,6 +4,7 @@ const { queryV1Beta1V2 } = require('../helper/chain/cosmos.js');
 const figureMarketsExchangeID = '1'
 
 const collateralizedAssets = [
+    // Institutional USD.TRADING balance: https://api.provenance.io/cosmos/bank/v1beta1/balances/pb100ay24eh6t8mm87j9jkt7hg0daxyzzunjpwejcejcchqmcsq3haqfjzfnl/by_denom?denom=uusd.trading
     'uusd.trading',
     'pm.sale.pool.3dxq3fk9llvhrqqwhodiap', // YLDS HELOCs
     'pm.pool.asset.1y3flutqcyuf8duew1vj2g', // YLDS CBLs
