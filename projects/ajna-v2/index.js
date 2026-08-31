@@ -22,7 +22,7 @@ async function getTvl(poolFactory, api) {
     const collaterals = await api.multiCall({ abi: 'address:collateralAddress', calls: pools });
     const borrows = await api.multiCall({ abi: 'address:quoteTokenAddress', calls: pools });
     const ownerTokens = pools.map((v, i) => [[collaterals[i], borrows[i]], v]);
-    return sumTokens2({ ownerTokens, api });
+    return sumTokens2({ ownerTokens, api, permitFailure: true });
 }
 
 async function getBorrowed(poolFactory, api) {
@@ -30,9 +30,7 @@ async function getBorrowed(poolFactory, api) {
     const debts = await api.multiCall({ abi: 'function debtInfo() external view returns (uint256, uint256, uint256, uint256)', calls: pools });
     const borrows = await api.multiCall({ abi: 'address:quoteTokenAddress', calls: pools });
     const borrowScale = await api.multiCall({ abi: 'uint:quoteTokenScale', calls: pools });
-    const balances = {};
-    pools.forEach((v, i) => sdk.util.sumSingleBalance(balances, borrows[i], debts[i][0]/borrowScale[i]));
-    return balances;
+    pools.forEach((v, i) => api.add(borrows[i], debts[i][0]/borrowScale[i]));
 }
 
 module.exports.methodology = "We are not tracking this tokens: bfBTC and msBTC"
@@ -43,4 +41,4 @@ module.exports = Object.keys(poolFactories).reduce((acc, chain) => {
         borrowed: (api) => getBorrowed(poolFactories[chain], api)
     };
     return acc;
-}, { misrepresentedTokens: true });
+}, {});
