@@ -3096,6 +3096,7 @@ const uniV2Configs = {
   'giga-dex': {
     robinhood: '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916'
   },
+  'seleman-dex': { seleman: '0xdaa2723F57789BbE8d1F682Dc292D7E1D8aa3ab8' },
   'kolswap': {
     robinhood: '0xdB2Ec80E55527b5D858b54173083139679f5DE6f',
     bsc: '0x6af79510599dE74E5922A2771b29160dA8b7b4c1'
