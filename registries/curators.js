@@ -313,6 +313,8 @@ const configs = {
         katana: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0x829A13850b684A575C0580a83322890e19c5eFaa', // Morpho V2 Core USDC
+            '0x8c5FDDE03DFd6AC0D3d492321974f2Ff573DE1bd', // Morpho V2 Core USDT
           ],
           erc4626: [
             '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // vbUSDC Metavault on Spectra
