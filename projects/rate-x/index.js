@@ -1,33 +1,23 @@
-const { getConnection, runInChunks } = require("../helper/solana");
+const { sumTokens2, getConnection, runInChunks } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 
-const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 // Published by RateX; lists the vault token accounts of every market.
 const LOOKUP_TABLE = new PublicKey("eP8LuPmLaF1wavSbaB4gbDAZ8vENqfWCL5KaJ2BRVyV");
-const SLEEP_TIME = 200;
-
-const parsedTokenAccount = (account) => {
-  if (!account || !account.owner.equals(TOKEN_PROGRAM_ID)) return null;
-  if (account.data?.parsed?.type !== "account") return null;
-  const info = account.data.parsed.info;
-  return info?.owner && info?.mint ? info : null;
-};
 
 /*
  * The lookup table is a snapshot, not a live view: a vault token account opened after the table was last
  * extended is never counted. For the ONyc market that is most of the balance, 5 of its 7 accounts are
  * listed and the two that are missing hold the larger amounts.
  *
- * So read the table for the (vault authority, mint) pairs it sanctions, then take those pairs' token
- * accounts live. A market's new account is counted as soon as it is funded, while the set of assets that
- * count stays exactly the one the table already defines.
- *
- * The restriction to sanctioned pairs is what makes this safe. Summing every token account of a vault
- * authority instead pulls in whatever else has been sent to it, and today that would add 19.9M units of a
- * pump.fun mint that no vault ever held, alongside RateX's own synthetic tokens, whose u64::MAX supplies
- * would dwarf the real collateral.
+ * So read the table for the (vault authority, mint) pairs it sanctions, then sum those pairs' token
+ * accounts live (sumTokens2 queries getTokenAccountsByOwner per [mint, owner] pair). A market's new
+ * account is counted as soon as it is funded, while the set of assets that count stays exactly the one
+ * the table already defines. Restricting to sanctioned pairs keeps out unrelated airdropped mints and
+ * RateX's own u64::MAX-supply synthetic tokens held by the same vault authorities.
  */
-async function getSanctionedVaultPairs(connection) {
+async function solanaTvl(api) {
+  const connection = getConnection();
   const lookupTable = (await connection.getAddressLookupTable(LOOKUP_TABLE)).value;
   if (!lookupTable) throw new Error("RateX lookup table not found");
 
@@ -36,52 +26,20 @@ async function getSanctionedVaultPairs(connection) {
   const accounts = await runInChunks(
     listed,
     (chunk) => connection.getMultipleParsedAccounts(chunk).then(({ value }) => value),
-    { sleepTime: SLEEP_TIME }
+    { sleepTime: 200 }
   );
 
-  const authorities = new Set();
-  const pairs = new Set();
-  accounts.forEach((account) => {
-    const info = parsedTokenAccount(account);
-    if (!info) return;
-    authorities.add(info.owner);
-    pairs.add(`${info.owner}:${info.mint}`);
-  });
+  const tokensAndOwners = accounts
+    .filter((account) => account?.owner?.toBase58() === TOKEN_PROGRAM_ID && account.data?.parsed?.type === "account")
+    .map(({ data }) => [data.parsed.info.mint, data.parsed.info.owner])
+    .filter(([mint, owner]) => mint && owner);
 
-  if (pairs.size === 0) throw new Error("RateX lookup table held no vault token accounts");
-  return { authorities: [...authorities], pairs };
-}
-
-async function solanaTvl(api) {
-  const connection = getConnection();
-  const { authorities, pairs } = await getSanctionedVaultPairs(connection);
-
-  // One request per authority, run a few at a time so the adapter stays inside RPC rate limits.
-  const holdings = await runInChunks(
-    authorities,
-    (chunk) => Promise.all(chunk.map((authority) => connection
-      .getParsedTokenAccountsByOwner(new PublicKey(authority), { programId: TOKEN_PROGRAM_ID })
-      .then(({ value }) => value.map(({ account }) => account.data.parsed.info)))),
-    { chunkSize: 5, sleepTime: SLEEP_TIME }
-  );
-
-  holdings.flat().forEach((info) => {
-    if (!pairs.has(`${info.owner}:${info.mint}`)) return;
-    api.add(info.mint, info.tokenAmount.amount);
-  });
-
-  return api.getBalances();
+  if (!tokensAndOwners.length) throw new Error("RateX lookup table held no vault token accounts");
+  return sumTokens2({ api, tokensAndOwners });
 }
 
 async function bscTvl(api) {
-  const balance = await api.call({
-    target: "0x77c9b49a58325131D08F9dC120388f20c57c2572",
-    abi: 'erc20:balanceOf',
-    params: ["0xEDBcdD0A45Fd8EBa749fFc10205c65CeA54336D5"],
-  });
-
-  api.add("0x77c9b49a58325131D08F9dC120388f20c57c2572", balance);
-  return api.getBalances();
+  return api.sumTokens({ tokensAndOwners: [["0x77c9b49a58325131D08F9dC120388f20c57c2572", "0xEDBcdD0A45Fd8EBa749fFc10205c65CeA54336D5"]] })
 }
 
 module.exports = {
