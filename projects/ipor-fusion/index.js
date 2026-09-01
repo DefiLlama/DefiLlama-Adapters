@@ -23,7 +23,6 @@ module.exports = {
   base: { tvl },
   unichain: { tvl },
   ink: { tvl },
-  tac: { tvl },
   plasma: { tvl },
   avax: { tvl },
   katana: { tvl },
@@ -32,4 +31,3 @@ module.exports = {
   monad: { tvl },
   flare: { tvl }
 };
-
