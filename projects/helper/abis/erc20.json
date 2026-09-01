@@ -1,0 +1,5 @@
+{
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "symbol": "string:symbol",
+  "name": "string:name"
+}

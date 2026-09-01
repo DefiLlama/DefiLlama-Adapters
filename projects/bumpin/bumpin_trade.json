@@ -1,0 +1,490 @@
+{
+  "address": "bumpinX5wdLt59DBR3eetmV6xB2W3rNGxMoTSc58ah2",
+  "metadata": {
+    "name": "bumpin_trade",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Pool",
+      "discriminator": [
+        241,
+        154,
+        109,
+        4,
+        17,
+        177,
+        109,
+        188
+      ]
+    },
+    {
+      "name": "TokenVault",
+      "discriminator": [
+        121,
+        7,
+        84,
+        254,
+        151,
+        228,
+        43,
+        144
+      ]
+    },
+    {
+      "name": "TradeToken",
+      "discriminator": [
+        228,
+        70,
+        239,
+        205,
+        241,
+        218,
+        48,
+        76
+      ]
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "TokenVault",
+      "serialization": "bytemuckunsafe",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault_index",
+            "type": "u16"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                14
+              ]
+            }
+          },
+          {
+            "name": "mint_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "total",
+            "type": "u128"
+          },
+          {
+            "name": "total_borrowed",
+            "type": "u128"
+          },
+          {
+            "name": "total_fee",
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TradeToken",
+      "serialization": "bytemuckunsafe",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_liability",
+            "type": "u128"
+          },
+          {
+            "name": "total_amount",
+            "type": "u128"
+          },
+          {
+            "name": "feed_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "discount",
+            "type": "u32"
+          },
+          {
+            "name": "liquidation_factor",
+            "type": "u32"
+          },
+          {
+            "name": "index",
+            "type": "u16"
+          },
+          {
+            "name": "decimals",
+            "type": "u16"
+          },
+          {
+            "name": "oracle_source",
+            "type": {
+              "defined": {
+                "name": "OracleSource"
+              }
+            }
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "reserve_padding",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pool",
+      "serialization": "bytemuckunsafe",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "pnl",
+            "type": "i128"
+          },
+          {
+            "name": "apr",
+            "type": "u128"
+          },
+          {
+            "name": "insurance_fund_amount",
+            "type": "u128"
+          },
+          {
+            "name": "insurance_unsettle_fund_amount",
+            "type": "u128"
+          },
+          {
+            "name": "balance",
+            "type": {
+              "defined": {
+                "name": "PoolBalance"
+              }
+            }
+          },
+          {
+            "name": "borrowing_fee",
+            "type": {
+              "defined": {
+                "name": "BorrowingFee"
+              }
+            }
+          },
+          {
+            "name": "fee_reward",
+            "type": {
+              "defined": {
+                "name": "FeeReward"
+              }
+            }
+          },
+          {
+            "name": "referrer_fee_reward",
+            "type": {
+              "defined": {
+                "name": "FeeReward"
+              }
+            }
+          },
+          {
+            "name": "config",
+            "type": {
+              "defined": {
+                "name": "PoolConfig"
+              }
+            }
+          },
+          {
+            "name": "pool_vault_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "launcher_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u16"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "PoolStatus"
+              }
+            }
+          },
+          {
+            "name": "stable",
+            "type": "bool"
+          },
+          {
+            "name": "market_number",
+            "type": "u16"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          },
+          {
+            "name": "reserve_padding",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolBalance",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "settle_funding_fee",
+            "type": "i128"
+          },
+          {
+            "name": "amount",
+            "type": "u128"
+          },
+          {
+            "name": "hold_amount",
+            "type": "u128"
+          },
+          {
+            "name": "un_settle_amount",
+            "type": "u128"
+          },
+          {
+            "name": "loss_amount",
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolConfig",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "minimum_stake_amount",
+            "type": "u128"
+          },
+          {
+            "name": "minimum_un_stake_amount",
+            "type": "u128"
+          },
+          {
+            "name": "pool_liquidity_limit",
+            "type": "u128"
+          },
+          {
+            "name": "borrowing_interest_rate",
+            "type": "u128"
+          },
+          {
+            "name": "stake_fee_rate",
+            "type": "u32"
+          },
+          {
+            "name": "un_stake_fee_rate",
+            "type": "u32"
+          },
+          {
+            "name": "un_settle_mint_ratio_limit",
+            "type": "u32"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "NORMAL"
+          },
+          {
+            "name": "StakePaused"
+          },
+          {
+            "name": "UnStakePaused"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BorrowingFee",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "total_borrowing_fee",
+            "type": "u128"
+          },
+          {
+            "name": "total_realized_borrowing_fee",
+            "type": "u128"
+          },
+          {
+            "name": "cumulative_borrowing_fee_per_token",
+            "type": "u128"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeeReward",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fee_amount",
+            "docs": [
+              "Fees generated from staking, redeeming, and position operations (such as increasing or decreasing positions).",
+              "Used in isolated margin mode (since fees are actually transferred each time they are generated).",
+              "See: [`fee_processor::collect_long_open_position_fee`]"
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "un_settle_fee_amount",
+            "docs": [
+              "Accounting for fees generated from cross-margin position operations."
+            ],
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleSource",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ShadowStorm"
+          },
+          {
+            "name": "Pyth"
+          },
+          {
+            "name": "LST"
+          }
+        ]
+      }
+    }
+  ]
+}

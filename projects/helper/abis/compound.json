@@ -1,0 +1,12 @@
+{
+  "markets": "function markets(address) view returns (bool isSupported, uint256 blockNumber, address interestRateModel, uint256 totalSupply, uint256 supplyRateMantissa, uint256 supplyIndex, uint256 totalBorrows, uint256 borrowRateMantissa, uint256 borrowIndex)",
+  "totalBorrows": "uint256:totalBorrows",
+  "borrowRatePerBlock": "uint256:borrowRatePerBlock",
+  "supplyRatePerBlock": "uint256:supplyRatePerBlock",
+  "underlying": "address:underlying",
+  "getCash": "uint256:getCash",
+  "isCToken": "boolean:isCToken",
+  "getAllMarkets": "address[]:getAllMarkets",
+  "getUnderlyingPrice": "function getUnderlyingPrice(address _pToken) view returns (uint256)",
+  "oracle": "address:oracle"
+}

@@ -1,0 +1,23 @@
+{
+  "cToken": {
+    "underlying": "address:underlying"
+  },
+  "morphoLens": {
+    "getAllMarkets": "address[]:getAllMarkets",
+    "getTotalMarketSupply": "function getTotalMarketSupply(address _poolTokenAddress) view returns (uint256 p2pSupplyAmount, uint256 poolSupplyAmount)",
+    "getTotalMarketBorrow": "function getTotalMarketBorrow(address _poolTokenAddress) view returns (uint256 p2pBorrowAmount, uint256 poolBorrowAmount)"
+  },
+  "morphoAaveV3": {
+    "marketsCreated": "address[]:marketsCreated",
+    "market": "function market(address underlying) returns (tuple( tuple(uint128 poolIndex, uint128 p2pIndex) supply, tuple(uint128 poolIndex, uint128 p2pIndex) borrow) indexes, tuple( tuple(uint256 scaledDelta, uint256 scaledP2PTotal) supply, tuple(uint256 scaledDelta, uint256 scaledP2PTotal) borrow) deltas, address underlying, tuple( bool isP2PDisabled, bool isSupplyPaused, bool isSupplyCollateralPaused, bool isBorrowPaused, bool isWithdrawPaused, bool isWithdrawCollateralPaused, bool isRepayPaused, bool isLiquidateCollateralPaused, bool isLiquidateBorrowPaused, bool isDeprecated) pauseStatues, bool isCollateral,  address variableDebtToken, uint32 lastUpdateTimestamp, uint16 reserveFactor, uint16 p2pIndexCursor, address aToken, address stableDebtToken, uint256 idleSupply)"
+  },
+  "morphoBlueFunctions": {
+    "underlying": "address:underlying",
+    "idToMarketParams": "function idToMarketParams(bytes32 Id) returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)",
+    "market": "function market(bytes32 input) returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)"
+  },
+  "metaMorphoFunctions": {
+    "withdrawQueueLength": "function withdrawQueueLength() view returns (uint256)"
+  },
+  "pool": {}
+}

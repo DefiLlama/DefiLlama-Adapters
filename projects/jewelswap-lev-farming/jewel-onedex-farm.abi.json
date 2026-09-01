@@ -1,0 +1,115 @@
+{
+    "buildInfo": {
+    },
+    "name": "JewelOnedexFarm",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "viewFarms",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "List<FarmContext>"
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "FarmContext": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "farm_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "dex_swap_pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "dex_farm_pool_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "min_deposit_base_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "min_deposit_base_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "min_compound_rewards_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "fee_percent",
+                    "type": "u64"
+                },
+                {
+                    "name": "first_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "second_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "lp_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "rewards_token_id",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "pending_first_token_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "pending_second_token_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "farm_share",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "lp_token_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "current_rewards_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "farm_yearly_reward_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "lp_token_supply",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "first_token_reserve",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "second_token_reserve",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "opened_position_count",
+                    "type": "u32"
+                }
+            ]
+        }
+
+    }
+}

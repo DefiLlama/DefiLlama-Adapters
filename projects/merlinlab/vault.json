@@ -1,0 +1,4 @@
+{
+  "stakingToken": "address:stakingToken",
+  "pid": "uint256:pid"
+}

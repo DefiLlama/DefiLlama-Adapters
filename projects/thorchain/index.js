@@ -1,0 +1,134 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getCache, get } = require('../helper/http')
+const sdk = require('@defillama/sdk')
+const { nullAddress } = require('../helper/tokenMapping')
+
+async function staking() {
+  var res = await get('https://gateway.liquify.com/chain/thorchain_midgard/v2/network')
+  const { totalActiveBond, totalStandbyBond } = res.bondMetrics
+  return {
+    "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond)) / 1e8
+  }
+}
+
+const chainMapping = {
+  ETH: 'ethereum',
+  BTC: 'bitcoin',
+  AVAX: 'avax',
+  BNB: 'bsc',
+  LTC: 'litecoin',
+  BCH: 'bitcoin-cash',
+  DOGE: 'dogecoin',
+  GAIA: 'cosmos',
+  BASE: 'base',
+  BSC: 'bsc',
+  XRP: 'ripple',
+  TRON: 'tron',
+  THOR: 'thorchain',
+  SOL: 'solana',
+}
+
+// native gas asset symbol per THORChain chain code (the chain prefix often differs
+// from the native asset, e.g. BSC.BNB / BASE.ETH / GAIA.ATOM / TRON.TRX)
+const nativeAsset = {
+  ETH: 'ETH',
+  BTC: 'BTC',
+  AVAX: 'AVAX',
+  BNB: 'BNB',
+  LTC: 'LTC',
+  BCH: 'BCH',
+  DOGE: 'DOGE',
+  GAIA: 'ATOM',
+  BASE: 'ETH',
+  BSC: 'BNB',
+  XRP: 'XRP',
+  TRON: 'TRX',
+  THOR: 'RUNE',
+  SOL: 'SOL',
+}
+
+const defillamaChainMapping = {
+  'bitcoin-cash': 'bitcoincash',
+  'dogecoin': 'doge',
+}
+
+function getDChain(chain) {
+  return defillamaChainMapping[chainMapping[chain]] || chainMapping[chain]
+}
+
+const tokenGeckoMapping = {
+  'BNB.TWT-8C2': 'trust-wallet-token',
+  'BNB.BUSD-BD1': 'binance-usd',
+  'GAIA.ATOM': 'cosmos',
+  'BNB.BTCB-1DE': 'bitcoin-bep2',
+  'BNB.AVA-645': 'concierge-io',
+  'BNB.ETH-1C9': 'ethereum',
+  'THOR.RUJI': 'rujira',
+  'THOR.TCY': 'tcy',
+  'TRON.TRX': 'tron',
+  'TRON.USDT-TR7NHQJEKQXGTCI8Q8ZY4PL8OTSZGJLJ6T': 'tether'
+}
+
+
+const blacklistedPools = []
+
+async function tvl(api) {
+  const pools = await getCache('https://gateway.liquify.com/chain/thorchain_midgard/v2/pools')
+  const aChain = api.chain
+
+  const balances = {}
+  await Promise.all(pools.map(addPool))
+  return balances
+
+  async function addPool({ asset: pool, assetDepth: totalDepth, nativeDecimal, runeDepth }) {
+    if (blacklistedPools.includes(pool)) return;
+    if (aChain === 'thorchain') {
+      sdk.util.sumSingleBalance(balances, 'thorchain', runeDepth/1e8)
+    }
+    if (+totalDepth < 1) return;
+    let [chainStr, token] = pool.split('.')
+    let chain = chainMapping[chainStr]
+    const dChain = getDChain(chainStr)
+    if (dChain !== aChain) return;
+
+    let [baseToken, address] = token.split('-')
+    if (['ethereum', 'bsc', 'avax', 'base'].includes(chain)) {
+      totalDepth = totalDepth * (10 ** (+nativeDecimal - 8))
+      if (address && address.length > 8) {
+        address = address.toLowerCase()
+        sdk.util.sumSingleBalance(balances, address, totalDepth, chain)
+      } else if (baseToken === nativeAsset[chainStr]) {
+        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth, chain)
+      } else if (tokenGeckoMapping[pool]) {
+        sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e8)
+      } else {
+        sdk.log('skipped', pool, Number(totalDepth).toFixed(2))
+      }
+    } else {
+      if (baseToken === nativeAsset[chainStr]) {
+        if (chain === 'bitcoincash') chain = 'bitcoin-cash'
+        sdk.util.sumSingleBalance(balances, chain, totalDepth / 1e8)
+      } else if (tokenGeckoMapping[pool]) {
+        sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e8)
+      } else {
+        sdk.log('skipped', pool, totalDepth)
+      }
+    }
+  }
+}
+
+module.exports = {
+  hallmarks: [
+    // ['2021-07-19', "Protocol paused"],
+    ['2021-09-16', "Protocol resumed"],
+  ],
+  timetravel: false,
+  thorchain: {
+    tvl,
+    staking
+  },
+}
+
+Object.keys(chainMapping).map(getDChain).forEach(chain => {
+  module.exports[chain] = {tvl }
+})

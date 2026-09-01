@@ -1,0 +1,5 @@
+{
+  "poolLength": "uint256:poolLength",
+  "registeredToken": "function registeredToken(uint256) view returns (address)",
+  "tokenToPoolInfo": "function tokenToPoolInfo(address) view returns (address stakingToken, address receiptToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accCakepiePerShare, uint256 totalStaked, address rewarder, bool isActive)"
+}

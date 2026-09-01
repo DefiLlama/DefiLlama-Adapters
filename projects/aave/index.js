@@ -1,0 +1,100 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk');
+const aaveAbi = require('../helper/abis/aave.json');
+const { getV2Reserves, getTvl, getBorrowed, aaveChainTvl } = require('../helper/aave');
+const { staking } = require('../helper/staking');
+const { unwrapBalancerToken } = require('../helper/unwrapLPs');
+const methodologies = require('../helper/methodologies');
+
+async function ammMarket(api, borrowed) {
+  const lendingPool = "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB"
+  const reservesList = (await api.call({
+    target: lendingPool,
+    abi: aaveAbi.getReservesList,
+  }))
+  const reservesData = await api.multiCall({
+    abi: aaveAbi.getAMMReserveData,
+    target: lendingPool,
+    calls: reservesList,
+  })
+  const [balanceOfTokens, symbols] = await Promise.all([
+    api.multiCall({
+      abi: "erc20:balanceOf",
+      calls: reservesData.map((r, idx) => ({ target: reservesList[idx], params: r.aTokenAddress })),
+    }),
+    api.multiCall({ abi: "erc20:symbol", calls: reservesList, }),
+  ]);
+
+  if (borrowed) {
+    const [supplyStabledebt, supplyVariableDebt] = await Promise.all(["stableDebtTokenAddress", "variableDebtTokenAddress"].map(prop =>
+      api.multiCall({
+        abi: "erc20:totalSupply",
+        calls: reservesData.map((r, idx) => r[prop]),
+      })
+    ));
+    supplyStabledebt.map((ssd, i) => {
+      balanceOfTokens[i] = Number(BigInt(ssd) + BigInt(supplyVariableDebt[i]))
+    })
+  }
+
+  api.addTokens(reservesList, balanceOfTokens)
+}
+
+
+const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
+
+function ethereum(borrowed) {
+  return async (api) => {
+    const balances = api.getBalances()
+
+    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(api, addressesProviderRegistryETH)
+    if (borrowed) {
+      await getBorrowed(balances, api.block, "ethereum", v2ReserveTokens, dataHelper);
+    } else {
+      await getTvl(balances, api.block, 'ethereum', v2Atokens, v2ReserveTokens);
+    }
+    await ammMarket(api, borrowed)
+
+    return balances;
+  }
+}
+
+const aaveTokenAddress = ADDRESSES.ethereum.AAVE;
+
+async function stakingBalancerTvl(api) {
+  return unwrapBalancerToken({ api, owner: '0xa1116930326d21fb917d5a27f1e9943a9595fb47', balancerToken: '0x41a08648c3766f9f9d85598ff102a08f4ef84f84', isV2: false, })
+}
+
+const aaveStakingContract = "0x4da27a545c0c5b758a6ba100e3a049001de870f5";
+
+function v2(chain, v2Registry) {
+  const section = borrowed => sdk.util.sumChainTvls([
+    aaveChainTvl(chain, v2Registry, undefined, undefined, borrowed),
+  ])
+  return {
+    tvl: section(false),
+    borrowed: section(true)
+  }
+}
+
+module.exports = {
+  methodology: methodologies.lendingMarket,
+  ethereum: {
+    staking: staking(aaveStakingContract, aaveTokenAddress),
+    pool2: stakingBalancerTvl,
+    tvl: ethereum(false),
+    borrowed: ethereum(true),
+  },
+  avax: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
+  polygon: v2("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
+  hallmarks: [
+    //['2021-04-14', "Start MATIC V2 Rewards"],
+    ['2021-04-26', "Start Ethereum V2 Rewards"],
+    ['2021-10-04', "Start AVAX V2 Rewards"],
+    ['2021-10-27', "Potential xSUSHI attack found"],
+    ['2022-05-07', "UST depeg"],
+    ['2022-06-10', "stETH depeg"],
+    ['2026-04-18', "KelpDAO hack"],
+  ],
+};
+// node test.js projects/aave/index.js

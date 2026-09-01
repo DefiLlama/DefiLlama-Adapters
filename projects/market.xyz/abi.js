@@ -1,0 +1,1 @@
+module.exports = 'function getPublicPoolsWithData() returns (uint256[], tuple(string name, address creator, address comptroller, uint256 blockPosted, uint256 timestampPosted)[], uint256[], uint256[], address[][], string[][], bool[])';

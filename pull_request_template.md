@@ -1,0 +1,55 @@
+**NOTE**
+
+#### Please enable "Allow edits by maintainers" while putting up the PR.
+
+---
+
+1. If you would like to add a `volume/fees/revenue` adapter please submit the PR [here](https://github.com/DefiLlama/dimension-adapters).
+
+2. Once your adapter has been merged, it takes time to show on the UI. If more than 24 hours have passed, please let us know in Discord.
+3. Sorry, We no longer accept fetch adapter for new projects, we prefer the tvl to computed from blockchain data, if you have trouble with creating a the adapter, please hop onto our discord, we are happy to assist you.
+4. **For updating listing info** Please send a mail to metadata@defillama.com
+5. Please do not add new npm dependencies, do not edit/push `pnpm-lock.yaml` file as part of your changes
+
+---
+## (Needs to be filled only for new listings)
+
+##### Name (to be shown on DefiLlama):
+
+##### Twitter Link:
+
+##### List of audit links if any:
+
+##### Website Link:
+
+##### Logo (High resolution, will be shown with rounded borders):
+
+##### Current TVL:
+
+##### Treasury Addresses (if the protocol has treasury)
+
+##### Chain:
+
+##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
+
+##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
+
+##### Short Description (to be shown on DefiLlama):
+
+##### Token address and ticker if any:
+
+##### Category (full list at https://defillama.com/categories) \*Please choose only one:
+
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
+
+##### Implementation Details: Briefly describe how the oracle is integrated into your project:
+
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+
+##### forkedFrom (Does your project originate from another project):
+
+##### methodology (what is being counted as tvl, how is tvl being calculated):
+
+##### Github org/user (Optional, if your code is open source, we can track activity):
+
+##### Does this project have a referral program?

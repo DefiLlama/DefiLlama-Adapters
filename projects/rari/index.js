@@ -1,0 +1,70 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+const abi = {
+  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  "getPublicPools": "function getPublicPools() view returns (uint256[], tuple(string name, address creator, address comptroller, uint256 blockPosted, uint256 timestampPosted)[])",
+  "getPoolSummary": "function getPoolSummary(address comptroller) returns (uint256, uint256, address[], string[])",
+  "getRawFundBalancesAndPrices": "function getRawFundBalancesAndPrices() returns (string[], uint256[], uint8[][], uint256[][], uint256[])",
+  "getRawFundBalances": "function getRawFundBalances() returns (uint256, uint8[], uint256[])",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "totalStaked": "uint256:totalStaked"
+};
+const { compoundExports2 } = require('../helper/compound')
+const { pool2 } = require('../helper/pool2');
+const { sumTokens2 } = require("../helper/unwrapLPs");
+
+const earnDAIPoolControllerAddressesIncludingLegacy = [
+  '0x7C332FeA58056D1EF6aB2B2016ce4900773DC399',
+]
+const earnStablePoolAddressesIncludingLegacy = [
+  '0x4a785fa6fcd2e0845a24847beb7bddd26f996d4d',
+]
+const fusePoolDirectoryAddress = '0x835482FE0532f169024d5E9410199369aAD5C77E'
+const rariGovernanceTokenUniswapDistributorAddress = '0x1FA69a416bCF8572577d3949b742fBB0a9CD98c7'
+const RGTETHSushiLPTokenAddress = '0x18a797c7c70c1bf22fdee1c09062aba709cacf04'
+
+const tokenMapWithKeysAsSymbol = {
+  'DAI': ADDRESSES.ethereum.DAI,
+  'USDC': ADDRESSES.ethereum.USDC,
+  'USDT': ADDRESSES.ethereum.USDT,
+  'TUSD': ADDRESSES.ethereum.TUSD,
+  'BUSD': ADDRESSES.ethereum.BUSD,
+  'SUSD': ADDRESSES.ethereum.sUSD,
+  'MUSD': '0xe2f2a5c287993345a840db3b0845fbc70f5935a5'
+}
+
+
+async function tvl(api) {
+  // Earn yield pool
+  const earnYieldProxyAddress = ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8'].concat(earnDAIPoolControllerAddressesIncludingLegacy).concat(earnStablePoolAddressesIncludingLegacy)
+  const fundManagers = await api.multiCall({  abi: 'address:rariFundManager', calls: earnYieldProxyAddress, permitFailure: true })
+  const controllers = await api.multiCall({  abi: 'address:rariFundController', calls: fundManagers})
+  await api.sumTokens({ owners: controllers, tokens: Object.values(tokenMapWithKeysAsSymbol) })
+
+  await fuseTvl(api)
+}
+
+async function fuseTvl(api) {
+
+  const [_, pools] = (await api.call({ target: fusePoolDirectoryAddress, abi: abi['getPublicPools'] }))
+  const markets = (await api.multiCall({ abi: 'address[]:getAllMarkets', calls: pools.map(i => i.comptroller) })).flat()
+  const tokens = await api.multiCall({ abi: 'address:underlying', calls: markets })
+  return sumTokens2({api , tokensAndOwners2: [tokens, markets]})
+}
+
+module.exports = {
+  doublecounted: true,
+  start: '2020-08-01',        // July 14, 2020
+  ethereum: {
+    tvl,
+    pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
+  },
+  arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', isInsolvent: true }),
+  hallmarks: [
+    // ['2022-04-30', "FEI hack"],
+    ['2022-04-10', "ICHI sell-off"],
+    // ['2021-05-08', "First Rari hack"],
+    ['2022-06-11', "Bhavnani's announcement"]
+  ]
+}
+
+module.exports.ethereum.borrowed = () => ({})

@@ -1,0 +1,18 @@
+{
+  "getTotalDebt": "function getTotalDebt(address asset) view returns (uint256)",
+  "getReservesList": "address[]:getReservesList",
+  "getAMMReserveData": "function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
+  "getCurrentTokens": "address[]:getCurrentTokens",
+  "getReserveData": "function getReserveData(address _reserve) view returns (uint256 totalLiquidity, uint256 availableLiquidity, uint256 totalBorrowsStable, uint256 totalBorrowsVariable, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 utilizationRate, uint256 liquidityIndex, uint256 variableBorrowIndex, address aTokenAddress, uint40 lastUpdateTimestamp)",
+  "getReserveConfigurationData": "function getReserveConfigurationData(address _reserve) view returns (uint256 ltv, uint256 liquidationThreshold, uint256 liquidationBonus, address interestRateStrategyAddress, bool usageAsCollateralEnabled, bool borrowingEnabled, bool stableBorrowRateEnabled, bool isActive)",
+  "getReserves": "address[]:getReserves",
+  "getAddressesProvidersList": "address[]:getAddressesProvidersList",
+  "getAddress": "function getAddress(bytes32 id) view returns (address)",
+  "getAllATokens": "function getAllATokens() view returns (tuple(string symbol, address tokenAddress)[])",
+  "getUnderlying": "address:UNDERLYING_ASSET_ADDRESS",
+  "getReserveDataV2": "function getReserveData(address asset) view returns (uint256 availableLiquidity, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+  "getBPool": "address:bPool",
+  "getHelperReserveData": "function getReserveData(address asset) view returns (uint256 availableLiquidity, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+  "getReserveTotalBorrows": "function getReserveTotalBorrows(address _reserve) view returns (uint256)",
+  "getReserveDataV3": "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))"
+}

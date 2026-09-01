@@ -1,0 +1,631 @@
+{
+  "version": "3.0.0",
+  "name": "cypher",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "CacheAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "authority", "docs": ["the authority of the cache"], "type": "publicKey"},
+          {
+            "name": "caches",
+            "docs": [
+              "the price caches, we have enough space here for more oracle maps than ever needed",
+              "assuming that oracle products accounts actually get reused"
+            ],
+            "type": {"array": [{"defined": "Cache"}, 512]}
+          }
+        ]
+      }
+    },
+    {
+      "name": "Clearing",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "bumpSeed", "type": {"array": ["u8", 1]}},
+          {"name": "clearingType", "docs": ["the type of the clearing"], "type": {"defined": "ClearingType"}},
+          {"name": "padding1", "type": {"array": ["u8", 6]}},
+          {"name": "clearingNumberSeed", "type": {"array": ["u8", 1]}},
+          {"name": "padding2", "type": {"array": ["u8", 7]}},
+          {"name": "authority", "docs": ["the clearing's authority"], "type": "publicKey"},
+          {"name": "feeMint", "docs": ["the mint of the token used to calculate fee tiers"], "type": "publicKey"},
+          {"name": "padding3", "type": {"array": ["u64", 4]}},
+          {"name": "feeTiers", "docs": ["the fee tiers"], "type": {"array": [{"defined": "FeeTier"}, 10]}},
+          {"name": "config", "docs": ["the config of the clearing"], "type": {"defined": "ClearingConfig"}}
+        ]
+      }
+    },
+    {
+      "name": "Whitelist",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "clearing", "docs": ["the corresponding clearing"], "type": "publicKey"},
+          {"name": "authority", "docs": ["the clearing's authority"], "type": "publicKey"},
+          {"name": "accountOwner", "docs": ["the account owner"], "type": "publicKey"},
+          {"name": "account", "docs": ["the actual cypher account"], "type": "publicKey"},
+          {
+            "name": "status",
+            "docs": [
+              "whitelist status",
+              "i.e, when a whitelist status is revoked, the authority of the clearing should be able",
+              "to suspend a cypher account"
+            ],
+            "type": {"defined": "WhitelistStatus"}
+          },
+          {"name": "padding1", "type": {"array": ["u8", 7]}}
+        ]
+      }
+    },
+    {
+      "name": "FuturesMarket",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "inner",
+            "docs": ["the inner structure which contains all relevant agnostic orderbook related public keys and fields"],
+            "type": {"defined": "AgnosticMarket"}
+          },
+          {"name": "idoAuthority", "docs": ["the ido authority of the market, if applicable"], "type": "publicKey"},
+          {"name": "underlyingMint", "docs": ["the mint of the underlying token this derivative market may physically deliver"], "type": "publicKey"},
+          {"name": "padding1", "type": {"array": ["u64", 8]}},
+          {
+            "name": "tokenSupply",
+            "docs": [
+              "the supply of the derivative token",
+              "i.e in the case of a market being for physical delivery of the underlying asset",
+              "the token supply should be equal to the amount of tokens available for delivery"
+            ],
+            "type": "u64"
+          },
+          {"name": "activatesAt", "docs": ["timestamp at which the market becomes active"], "type": "u64"},
+          {"name": "expiresAt", "docs": ["timestamp at which the market expires"], "type": "u64"},
+          {"name": "positionsCount", "docs": ["number of open positions in this market"], "type": "u64"},
+          {"name": "marketPrice", "docs": ["the twap price"], "type": "i128"},
+          {"name": "totalBorrows", "docs": ["the total amount of borrows of the derivative"], "type": "u64"},
+          {"name": "totalPurchased", "docs": ["the total amount of purchased tokens in the case of a pre-ido market"], "type": "u64"},
+          {"name": "padding2", "type": {"array": ["u64", 2]}},
+          {
+            "name": "totalRaised",
+            "docs": ["the total amount of quote token that is available for the pre-ido token project's team to be collected"],
+            "type": "i128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PerpetualMarket",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "inner",
+            "docs": ["the inner structure which contains all relevant agnostic orderbook related public keys and fields"],
+            "type": {"defined": "AgnosticMarket"}
+          },
+          {"name": "longFunding", "docs": ["the long funding"], "type": "i128"},
+          {"name": "shortFunding", "docs": ["the short funding"], "type": "i128"},
+          {"name": "lastFundingUpdate", "docs": ["the timestamp of the last funding update"], "type": "u64"},
+          {"name": "impactQuantity", "docs": ["the impact quantity used when getting bids and asks to calculate book mid price"], "type": "u64"},
+          {"name": "padding1", "type": {"array": ["u64", 10]}},
+          {"name": "minFunding", "docs": ["the minimum funding rate for this market, in percentage"], "type": "i8"},
+          {"name": "maxFunding", "docs": ["the maximum funding rate for this market, in percentage"], "type": "i8"},
+          {"name": "padding2", "type": {"array": ["u8", 6]}}
+        ]
+      }
+    },
+    {
+      "name": "OracleProducts",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "productsType", "docs": ["the products type"], "type": {"defined": "ProductsType"}},
+          {"name": "padding", "type": {"array": ["u8", 7]}},
+          {
+            "name": "symbol",
+            "docs": [
+              "the symbol of the underlying token that this oracle products account is responsible for",
+              "",
+              "this is used as a PDA for the oracle products account to more easily derive this account and see if it exists so it is properly reused"
+            ],
+            "type": {"array": ["u8", 32]}
+          },
+          {"name": "maxConfidenceInterval", "docs": ["the maximum confidence interval for the oracle price"], "type": "f64"},
+          {"name": "futuresMarket", "docs": ["the futures market associated with this oracle products account"], "type": "publicKey"},
+          {"name": "perpMarket", "docs": ["the perp market associated with this oracle products account"], "type": "publicKey"},
+          {"name": "tokenMint", "docs": ["the token mint associated with this oracle products account"], "type": "publicKey"},
+          {"name": "products", "docs": ["the product accounts"], "type": {"vec": {"array": ["u8", 32]}}},
+          {"name": "weights", "docs": ["the weights of the products"], "type": {"vec": "u16"}}
+        ]
+      }
+    },
+    {
+      "name": "OracleStub",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "symbol", "docs": ["the symbol of the underlying token that this oracle stub provides a feed for"], "type": {"array": ["u8", 32]}},
+          {"name": "price", "docs": ["The oracle price"], "type": "i128"}
+        ]
+      }
+    },
+    {
+      "name": "OrdersAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "orderCount", "docs": ["number of orders"], "type": "u8"},
+          {"name": "padding", "type": {"array": ["u8", 7]}},
+          {"name": "authority", "docs": ["the account's authority"], "type": "publicKey"},
+          {"name": "market", "docs": ["the account's authority"], "type": "publicKey"},
+          {"name": "masterAccount", "docs": ["the master account pubkey"], "type": "publicKey"},
+          {"name": "makerBaseVolume", "docs": ["the accumulated maker base token volume"], "type": "u64"},
+          {"name": "makerQuoteVolume", "docs": ["the accumulated maker quote token volume"], "type": "u64"},
+          {"name": "takerBaseVolume", "docs": ["the accumulated taker base token volume"], "type": "u64"},
+          {"name": "takerQuoteVolume", "docs": ["the accumulated taker quote token volume"], "type": "u64"},
+          {"name": "baseTokenFree", "docs": ["the amount of base token free"], "type": {"array": ["u64", 24]}},
+          {"name": "baseTokenLocked", "docs": ["the amount of base token locked"], "type": {"array": ["u64", 24]}},
+          {"name": "quoteTokenFree", "docs": ["the amount of quote token free"], "type": {"array": ["u64", 24]}},
+          {"name": "quoteTokenLocked", "docs": ["the amount of quote token locked in orders"], "type": {"array": ["u64", 24]}},
+          {"name": "openOrders", "docs": ["the open orders in this account"], "type": {"array": [{"defined": "OpenOrder"}, 128]}}
+        ]
+      }
+    },
+    {
+      "name": "PoolNode",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "cacheIndex", "docs": ["the index of the cache for the pool that this node belongs to"], "type": "u16"},
+          {"name": "vaultSignerSeed", "docs": ["the bump seed"], "type": {"array": ["u8", 1]}},
+          {"name": "nodeNumber", "docs": ["the number of the node, also used as a seed for the pool node pda"], "type": "u8"},
+          {"name": "operatingStatus", "type": {"defined": "OperatingStatus"}},
+          {"name": "padding1", "type": {"array": ["u8", 11]}},
+          {"name": "selfAddress", "docs": ["the pool node's address, used as a seed for the vault signer"], "type": "publicKey"},
+          {"name": "authority", "docs": ["the authority over this account"], "type": "publicKey"},
+          {"name": "cache", "docs": ["the cache account"], "type": "publicKey"},
+          {"name": "pool", "docs": ["the pool this node belongs to"], "type": "publicKey"},
+          {"name": "tokenMint", "docs": ["the node's token mint"], "type": "publicKey"},
+          {"name": "tokenVault", "docs": ["the node's token vault"], "type": "publicKey"},
+          {"name": "vaultSigner", "docs": ["the node's vault signer"], "type": "publicKey"},
+          {"name": "deposits", "docs": ["the amount of deposits"], "type": "i128"},
+          {"name": "borrows", "docs": ["the amount of borrows"], "type": "i128"},
+          {"name": "accumBorrows", "docs": ["accumulated borrows"], "type": "i128"},
+          {"name": "accumRepays", "docs": ["accumulated repays"], "type": "i128"},
+          {"name": "protocolFees", "docs": ["protocol fees accumulated so far"], "type": "u64"},
+          {"name": "padding2", "type": {"array": ["u64", 1]}}
+        ]
+      }
+    },
+    {
+      "name": "Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "bumpSeed", "docs": ["the bump seed"], "type": {"array": ["u8", 1]}},
+          {"name": "operatingStatus", "docs": ["the pool's operating status"], "type": {"defined": "OperatingStatus"}},
+          {"name": "padding1", "type": {"array": ["u8", 14]}},
+          {"name": "poolName", "docs": ["the name of the pool, which is also used as a seed"], "type": {"array": ["u8", 32]}},
+          {"name": "config", "docs": ["the pool config"], "type": {"defined": "PoolConfig"}},
+          {"name": "authority", "docs": ["the authority over this account"], "type": "publicKey"},
+          {"name": "tokenMint", "docs": ["the address of the token mint this pool represents"], "type": "publicKey"},
+          {"name": "padding2", "type": {"array": ["u64", 4]}},
+          {"name": "oracleProducts", "docs": ["the oracle products account"], "type": "publicKey"},
+          {"name": "dexMarket", "docs": ["the dex market for this pool"], "type": "publicKey"},
+          {"name": "cache", "docs": ["the price cache account"], "type": "publicKey"},
+          {"name": "padding3", "type": {"array": ["u64", 8]}},
+          {"name": "deposits", "docs": ["the amount of deposits across all nodes"], "type": "i128"},
+          {"name": "borrows", "docs": ["the amount of borrows across all nodes"], "type": "i128"},
+          {"name": "depositIndex", "docs": ["the deposit index"], "type": "i128"},
+          {"name": "borrowIndex", "docs": ["the borrow index"], "type": "i128"},
+          {"name": "accumDepositInterestPayment", "docs": ["accumulated deposit interest payments denominated in quote currency"], "type": "i128"},
+          {"name": "accumBorrowInterestPayment", "docs": ["accumulated borrow interest payments denominated in quote currency"], "type": "i128"},
+          {"name": "indexUpdatedAt", "docs": ["timestamp of the last index update"], "type": "u64"},
+          {"name": "protocolFees", "docs": ["protocol fees accumulated so far"], "type": "u64"},
+          {"name": "insuranceFund", "docs": ["the insurance fund for this pool"], "type": "u64"},
+          {"name": "padding4", "type": {"array": ["u64", 12]}},
+          {"name": "nodes", "type": {"array": [{"defined": "NodeInfo"}, 24]}}
+        ]
+      }
+    },
+    {
+      "name": "PriceHistory",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "market", "docs": ["market this price history is for"], "type": "publicKey"},
+          {"name": "data", "docs": ["array of price infos."], "type": {"array": [{"defined": "PriceWithTs"}, 14400]}},
+          {"name": "config", "type": {"defined": "PriceHistoryConfig"}},
+          {"name": "longerHead", "docs": ["head of prices for longer time horizon."], "type": "u16"},
+          {"name": "shorterHead", "docs": ["head of prices for shorter time horizon."], "type": "u16"},
+          {"name": "tail", "docs": ["tail of prices(most recently added price)."], "type": "u16"},
+          {"name": "padding1", "type": "u16"},
+          {"name": "padding2", "type": {"array": ["u64", 8]}}
+        ]
+      }
+    },
+    {
+      "name": "CypherAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "bumpSeed", "docs": ["the bump seed"], "type": {"array": ["u8", 1]}},
+          {"name": "accountNumberSeed", "docs": ["the account number seed"], "type": {"array": ["u8", 1]}},
+          {"name": "accountType", "docs": ["the account type"], "type": {"defined": "AccountType"}},
+          {"name": "feeTier", "docs": ["the fee tier of this account"], "type": "u8"},
+          {"name": "padding", "type": {"array": ["u8", 12]}},
+          {"name": "clearing", "docs": ["the clearing this account belongs to"], "type": "publicKey"},
+          {"name": "authority", "docs": ["the account's authority, should match sub accounts authority"], "type": "publicKey"},
+          {"name": "delegate", "docs": ["the account's delegate"], "type": "publicKey"},
+          {"name": "subAccountCaches", "docs": ["the sub account cache"], "type": {"array": [{"defined": "SubAccountCache"}, 24]}},
+          {"name": "updatedAt", "docs": ["slot of the last account update"], "type": "u64"},
+          {"name": "padding2", "type": {"array": ["u8", 8]}}
+        ]
+      }
+    },
+    {
+      "name": "CypherSubAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "bumpSeed", "docs": ["the bump seed"], "type": {"array": ["u8", 1]}},
+          {"name": "accountNumberSeed", "docs": ["the account number seed"], "type": {"array": ["u8", 1]}},
+          {"name": "marginingType", "docs": ["the margining type of this account"], "type": {"defined": "SubAccountMargining"}},
+          {"name": "padding", "type": {"array": ["u8", 13]}},
+          {"name": "accountAlias", "docs": ["the alias of the account"], "type": {"array": ["u8", 32]}},
+          {"name": "clearing", "docs": ["the associated clearing"], "type": "publicKey"},
+          {"name": "masterAccount", "docs": ["the master account"], "type": "publicKey"},
+          {"name": "authority", "docs": ["the authority"], "type": "publicKey"},
+          {"name": "delegate", "docs": ["the delegate"], "type": "publicKey"},
+          {"name": "updatedAt", "docs": ["the slot of the last update of this account"], "type": "u64"},
+          {"name": "claimableRewards", "docs": ["the amount of claimable liquidity mining rewards"], "type": "u64"},
+          {"name": "padding2", "type": {"array": ["u64", 7]}},
+          {"name": "padding3", "type": {"array": ["u8", 8]}},
+          {"name": "positions", "docs": ["the positions of this sub account"], "type": {"array": [{"defined": "PositionSlot"}, 24]}}
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "Cache",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "oracleProducts", "docs": ["the oracle products account that is used to derive this price feed"], "type": "publicKey"},
+          {"name": "oraclePrice", "docs": ["the latest price"], "type": "i128"},
+          {"name": "marketPrice", "docs": ["the twap price for the futures market"], "type": "i128"},
+          {"name": "updatedAt", "docs": ["the slot at which this cache was last updated"], "type": "u64"},
+          {"name": "padding1", "type": {"array": ["u8", 8]}},
+          {"name": "depositIndex", "docs": ["the deposit index of the spot token"], "type": "i128"},
+          {"name": "borrowIndex", "docs": ["the borrow index of the spot token"], "type": "i128"},
+          {"name": "spotInitAssetWeight", "docs": ["the init asset weight of the spot token"], "type": "u8"},
+          {"name": "spotMaintAssetWeight", "docs": ["the maint asset weight of the spot token"], "type": "u8"},
+          {"name": "spotInitLiabWeight", "docs": ["the init liab weight of the spot token"], "type": "u8"},
+          {"name": "spotMaintLiabWeight", "docs": ["the maint liab weight of the spot token"], "type": "u8"},
+          {"name": "futuresInitAssetWeight", "docs": ["the init asset weight of the futures position"], "type": "u8"},
+          {"name": "futuresMaintAssetWeight", "docs": ["the maint asset weight of the futures position"], "type": "u8"},
+          {"name": "futuresInitLiabWeight", "docs": ["the init liab weight of the futures position"], "type": "u8"},
+          {"name": "futuresMaintLiabWeight", "docs": ["the maint liab weight of the futures position"], "type": "u8"},
+          {"name": "perpInitAssetWeight", "docs": ["the init asset weight of the perp position"], "type": "u8"},
+          {"name": "perpMaintAssetWeight", "docs": ["the maint asset weight of the perp position"], "type": "u8"},
+          {"name": "perpInitLiabWeight", "docs": ["the init liab weight of the perp position"], "type": "u8"},
+          {"name": "perpMaintLiabWeight", "docs": ["the maint liab weight of the perp position"], "type": "u8"},
+          {"name": "decimals", "docs": ["the decimals of the spl token traded on the spot market and available for deposit"], "type": "u8"},
+          {"name": "futuresDecimals", "docs": ["the decimals of derivative asset for futures markets"], "type": "u8"},
+          {"name": "perpDecimals", "docs": ["the decimals of derivative asset for perpetual markets"], "type": "u8"},
+          {"name": "padding2", "type": {"array": ["u8", 1]}}
+        ]
+      }
+    },
+    {"name": "ClearingType", "type": {"kind": "enum", "variants": [{"name": "Public"}, {"name": "Private"}]}},
+    {
+      "name": "FeeTier",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "balance", "docs": ["the balance necessary"], "type": "u64"},
+          {
+            "name": "makerBps",
+            "docs": ["the maker fee in bps", "i.e, this value should be zero whenever the maker rebate is supposed to be positive"],
+            "type": "u8"
+          },
+          {"name": "takerBps", "docs": ["the taker fee in bps"], "type": "u8"},
+          {
+            "name": "rebateBps",
+            "docs": ["the maker rebate in bps", "i.e this value should only be positive whenever the maker rate itself is zero"],
+            "type": "u8"
+          },
+          {"name": "tier", "docs": ["the tier identifier, should start at 1"], "type": "u8"},
+          {"name": "padding1", "type": {"array": ["u8", 4]}}
+        ]
+      }
+    },
+    {
+      "name": "ClearingConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "maintMargin", "docs": ["the maintenance margin"], "type": "u8"},
+          {"name": "initMargin", "docs": ["the initialization margin"], "type": "u8"},
+          {"name": "targetMargin", "docs": ["the target margin used by liquidators"], "type": "u8"},
+          {"name": "liqLiqorFee", "docs": ["the liquidation fee bonus for the liquidator"], "type": "u8"},
+          {"name": "liqInsuranceFee", "docs": ["the liquidation fee for the insurance fund"], "type": "u8"},
+          {"name": "padding1", "type": {"array": ["u8", 3]}}
+        ]
+      }
+    },
+    {"name": "WhitelistStatus", "type": {"kind": "enum", "variants": [{"name": "Pending"}, {"name": "Active"}, {"name": "Revoked"}]}},
+    {
+      "name": "AgnosticMarket",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "config", "docs": ["the config of the market"], "type": {"defined": "MarketConfig"}},
+          {"name": "marketName", "docs": ["the name of the market, which is also used as a seed"], "type": {"array": ["u8", 32]}},
+          {"name": "orderbook", "docs": ["the order book for this market"], "type": "publicKey"},
+          {"name": "bids", "docs": ["the bids account for this market"], "type": "publicKey"},
+          {"name": "asks", "docs": ["the asks account for this market"], "type": "publicKey"},
+          {"name": "eventQueue", "docs": ["the asks account for this market"], "type": "publicKey"},
+          {"name": "authority", "docs": ["the authority of the market"], "type": "publicKey"},
+          {"name": "priceHistory", "docs": ["the price history account for on-chain twap"], "type": "publicKey"},
+          {"name": "oracleProducts", "docs": ["the oracle products account"], "type": "publicKey"},
+          {"name": "padding1", "type": {"array": ["u64", 8]}},
+          {"name": "cache", "docs": ["the cache account"], "type": "publicKey"},
+          {"name": "quotePool", "docs": ["the quote pool"], "type": "publicKey"},
+          {"name": "padding2", "type": {"array": ["u64", 8]}},
+          {"name": "padding3", "type": {"array": ["u64", 2]}},
+          {"name": "baseVolume", "docs": ["the market's total historical volume in base token"], "type": "u64"},
+          {"name": "quoteVolume", "docs": ["the market's total historical volume in quote token"], "type": "u64"},
+          {"name": "liquidityMiningInfo", "docs": ["the current liquidity mining parameters"], "type": {"defined": "LiquidityMiningInfo"}},
+          {"name": "minBaseOrderSize", "docs": ["the market's minimum allowed order size in base token amount"], "type": "u64"},
+          {"name": "tickSize", "docs": ["the tick size of the market"], "type": "u64"},
+          {"name": "baseMultiplier", "docs": ["the base currency multiplier"], "type": "u64"},
+          {"name": "quoteMultiplier", "docs": ["the quote currency multiplier"], "type": "u64"},
+          {"name": "protocolFees", "docs": ["the currently accumulated trading fees"], "type": "u64"},
+          {"name": "insuranceFund", "docs": ["the curently accumulated insurance fund for this market"], "type": "u64"},
+          {"name": "maxBaseOrderSize", "docs": ["the maximum order base size for non-postOnly orders"], "type": "u64"},
+          {"name": "maxQuoteOrderSize", "docs": ["the maximum order quote size for non-postOnly orders"], "type": "u64"},
+          {"name": "padding4", "type": {"array": ["u64", 8]}}
+        ]
+      }
+    },
+    {
+      "name": "MarketConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "signerSeeds", "docs": ["the signer seeds for this account"], "type": {"array": ["u8", 1]}},
+          {"name": "marketType", "docs": ["the type of this market"], "type": {"defined": "MarketType"}},
+          {
+            "name": "settlementType",
+            "docs": ["the type of delivery for this market in case it is a futures market"],
+            "type": {"defined": "SettlementType"}
+          },
+          {
+            "name": "isActive",
+            "docs": [
+              "whether the market is active",
+              "i.e, in the case of a market being for physical delivery of the underlying asset",
+              "the market cannot become active until the vault of the underlying asset being delivered has",
+              "a balance equivalent to the token supply of the derivative asset"
+            ],
+            "type": "bool"
+          },
+          {"name": "cacheIndex", "docs": ["the cache index for this market"], "type": "u16"},
+          {"name": "initAssetWeight", "docs": ["the init asset weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "initLiabWeight", "docs": ["the init liability weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "maintAssetWeight", "docs": ["the maint asset weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "maintLiabWeight", "docs": ["the maint liability weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "decimals", "docs": ["the decimals used for the target oracle price of this pool's asset"], "type": "u8"},
+          {"name": "operatingStatus", "docs": ["the operating status of the market"], "type": {"defined": "OperatingStatus"}},
+          {"name": "padding", "type": {"array": ["u8", 4]}}
+        ]
+      }
+    },
+    {
+      "name": "MarketType",
+      "docs": ["market types"],
+      "type": {
+        "kind": "enum",
+        "variants": [{"name": "Default"}, {"name": "PairFuture"}, {"name": "PerpetualFuture"}, {"name": "PreIDO"}, {"name": "IndexFuture"}]
+      }
+    },
+    {
+      "name": "SettlementType",
+      "docs": ["settlement types for futures markets"],
+      "type": {"kind": "enum", "variants": [{"name": "CashSettled"}, {"name": "PhysicalDelivery"}]}
+    },
+    {
+      "name": "OperatingStatus",
+      "type": {"kind": "enum", "variants": [{"name": "Active"}, {"name": "ReduceOnly"}, {"name": "CancelOnly"}, {"name": "Halted"}]}
+    },
+    {
+      "name": "LiquidityMiningInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "tokenMint", "docs": ["the token mint of the token being used for rewards"], "type": "publicKey"},
+          {"name": "rate", "docs": ["the rate that is used to convert liquidity points to the LM reward token"], "type": "i128"},
+          {"name": "maxDepthBps", "docs": ["max depth on the book in bps"], "type": "i128"},
+          {"name": "periodStart", "docs": ["timestamp of the start of the liquidity mining incentive period"], "type": "u64"},
+          {"name": "targetPeriodLength", "docs": ["target time length for a liquidity mining period"], "type": "u64"},
+          {"name": "tokensLeft", "docs": ["tokens left for this period."], "type": "u64"},
+          {"name": "tokensPerPeriod", "docs": ["total amount of tokens allocated for a given period"], "type": "u64"},
+          {"name": "minRateAdj", "docs": ["the minimum rate adjustment"], "type": "u64"},
+          {"name": "maxRateAdj", "docs": ["the maximum rate adjusment"], "type": "u64"},
+          {"name": "sizeCutoff", "docs": ["the size cut off for rewards"], "type": "u64"},
+          {"name": "tokenDecimals", "docs": ["the decimals of the token being rewarded"], "type": "u8"},
+          {"name": "padding1", "type": {"array": ["u8", 7]}}
+        ]
+      }
+    },
+    {"name": "ProductsType", "type": {"kind": "enum", "variants": [{"name": "Stub"}, {"name": "Pyth"}, {"name": "Switchboard"}]}},
+    {
+      "name": "OpenOrder",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "side", "docs": ["the side of the order"], "type": {"defined": "Side"}},
+          {"name": "subAccountIdx", "docs": ["the sub account idx"], "type": "u8"},
+          {"name": "orderType", "docs": ["the type of the order"], "type": {"defined": "DerivativeOrderType"}},
+          {"name": "padding", "type": {"array": ["u8", 5]}},
+          {"name": "timestamp", "docs": ["the timestamp that the order was posted"], "type": "u64"},
+          {"name": "clientOrderId", "docs": ["the client's order id"], "type": "u64"},
+          {"name": "orderId", "docs": ["the order id after being posted on the book"], "type": "u128"}
+        ]
+      }
+    },
+    {"name": "Side", "type": {"kind": "enum", "variants": [{"name": "Bid"}, {"name": "Ask"}]}},
+    {
+      "name": "DerivativeOrderType",
+      "type": {"kind": "enum", "variants": [{"name": "Limit"}, {"name": "ImmediateOrCancel"}, {"name": "FillOrKill"}, {"name": "PostOnly"}]}
+    },
+    {
+      "name": "PoolConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "optimalUtil", "docs": ["optimal utilization ratio for this token"], "type": "u16"},
+          {"name": "optimalApr", "docs": ["optimal apr for this token"], "type": "u16"},
+          {"name": "maxApr", "docs": ["maximum apr for this token"], "type": "u16"},
+          {"name": "cacheIndex", "docs": ["the index of this pool in the cache"], "type": "u16"},
+          {"name": "decimals", "docs": ["the decimals of the spl token mint associated with the pool"], "type": "u8"},
+          {"name": "initAssetWeight", "docs": ["the init asset weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "initLiabWeight", "docs": ["the init liability weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "maintAssetWeight", "docs": ["the maint asset weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "maintLiabWeight", "docs": ["the maint liability weight of the pool's positions for margin calculations"], "type": "u8"},
+          {"name": "padding2", "type": {"array": ["u8", 3]}},
+          {"name": "padding3", "type": {"array": ["u64", 2]}}
+        ]
+      }
+    },
+    {
+      "name": "NodeInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "poolNode", "docs": ["the node's pubkey"], "type": "publicKey"},
+          {"name": "nodeVault", "docs": ["the node's vault pubkey"], "type": "publicKey"},
+          {"name": "deposits", "docs": ["the deposits in the node"], "type": "i128"},
+          {"name": "borrows", "docs": ["the borrows in the node"], "type": "i128"},
+          {"name": "padding", "type": {"array": ["u64", 4]}}
+        ]
+      }
+    },
+    {"name": "PriceWithTs", "type": {"kind": "struct", "fields": [{"name": "price", "type": "i128"}, {"name": "timestamp", "type": "u64"}]}},
+    {
+      "name": "PriceHistoryConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "longerTimeHorizon", "type": "u64"},
+          {"name": "shorterTimeHorizon", "type": "u64"},
+          {"name": "priceCollectionTick", "type": "u64"}
+        ]
+      }
+    },
+    {"name": "AccountType", "type": {"kind": "enum", "variants": [{"name": "Regular"}, {"name": "Whitelisted"}]}},
+    {
+      "name": "SubAccountCache",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "assetsValue", "docs": ["the value of the assets of this account"], "type": "i128"},
+          {"name": "liabilitiesValue", "docs": ["the value of the liabilities of this account"], "type": "i128"},
+          {"name": "cRatio", "docs": ["the margin c-ratio of this sub account"], "type": "i128"},
+          {"name": "updatedAt", "docs": ["slot of the last cache update"], "type": "u64"},
+          {"name": "margining", "docs": ["the sub account margining"], "type": {"defined": "SubAccountMargining"}},
+          {"name": "padding", "type": {"array": ["u8", 7]}},
+          {"name": "subAccount", "docs": ["the sub account"], "type": "publicKey"},
+          {"name": "padding2", "type": {"array": ["u64", 4]}}
+        ]
+      }
+    },
+    {"name": "SubAccountMargining", "type": {"kind": "enum", "variants": [{"name": "Cross"}, {"name": "Isolated"}]}},
+    {
+      "name": "PositionSlot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "spot", "docs": ["the spot position"], "type": {"defined": "SpotPosition"}},
+          {"name": "derivative", "docs": ["the derivative position"], "type": {"defined": "DerivativePosition"}}
+        ]
+      }
+    },
+    {
+      "name": "SpotPosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "tokenMint", "docs": ["the token mint that this position pertains to"], "type": "publicKey"},
+          {
+            "name": "position",
+            "docs": [
+              "the position denominated in the base token",
+              "if this value is negative then the outstanding position is a short, otherwise it's a long"
+            ],
+            "type": "i128"
+          },
+          {"name": "openOrdersCache", "docs": ["the open orders cache"], "type": {"defined": "OpenOrdersCache"}},
+          {"name": "cacheIndex", "docs": ["the index of this position in the cache"], "type": "u16"},
+          {"name": "padding", "type": {"array": ["u8", 6]}}
+        ]
+      }
+    },
+    {
+      "name": "OpenOrdersCache",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "coinTotal",
+            "docs": ["total amount of native base tokens in the open orders account, includes locked and free tokens"],
+            "type": "u64"
+          },
+          {"name": "coinFree", "docs": ["amount of free native base tokens in the open orders account"], "type": "u64"},
+          {
+            "name": "pcTotal",
+            "docs": ["total amount of native quote tokens in the open orders account, includes locked and free tokens"],
+            "type": "u64"
+          },
+          {"name": "pcFree", "docs": ["amount of free native quote tokens in the open orders account"], "type": "u64"},
+          {"name": "referrerRebatesAccrued", "docs": ["the amount of referrer rebates accrued, in native quote token"], "type": "u64"}
+        ]
+      }
+    },
+    {
+      "name": "DerivativePosition",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "market", "docs": ["the public key of the market that this position pertains to"], "type": "publicKey"},
+          {
+            "name": "basePosition",
+            "docs": [
+              "the position denominated in the base token",
+              "if this value is negative then the outstanding position is a short, otherwise it's a long"
+            ],
+            "type": "i128"
+          },
+          {"name": "openOrdersCache", "docs": ["the open orders cache"], "type": {"defined": "OpenOrdersCache"}},
+          {"name": "longFundingSettled", "docs": ["the long funding that has been settled for this position"], "type": "i128"},
+          {"name": "shortFundingSettled", "docs": ["the short funding that has been settled for this position"], "type": "i128"},
+          {"name": "cacheIndex", "docs": ["the index of this position in the cache"], "type": "u16"},
+          {
+            "name": "marketType",
+            "docs": ["the type of market of this position", "", "this is necessary in order to fetch the appropriate weights"],
+            "type": {"defined": "MarketType"}
+          },
+          {"name": "padding", "type": {"array": ["u8", 5]}}
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}

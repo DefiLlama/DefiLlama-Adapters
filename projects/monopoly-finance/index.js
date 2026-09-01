@@ -1,0 +1,46 @@
+const { staking } = require("../helper/staking");
+const abi = {
+    "poolInfo": "function poolInfo(uint256) view returns (address lpToken, address strategy, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accEarningPerShare, uint256 totalShares, uint256 lpPerShare, uint16 depositFeeBP, uint16 withdrawFeeBP, bool isWithdrawFee)",
+    "poolLength": "uint256:poolLength",
+    "totalSupply": "uint256:totalSupply",
+    "getReserves": "function getReserves() view returns (uint256 _reserve0, uint256 _reserve1)",
+    "getAssets": "function getAssets() view returns (address[] assets)",
+    "token0": "address:token0",
+    "token1": "address:token1",
+    "getTotalAmounts": "function getTotalAmounts() view returns (uint256 totalAmount0, uint256 totalAmount1)"
+  };
+const { unwrapLPsAuto } = require("../helper/unwrapLPs");
+const chef = "0x2900f5E68cD57b712806f60096514A4D3F772E9D";
+const poly = "0x34772C4D12F288368Aa35AE7bc527A6B2b3e8906".toLowerCase();
+const ACC_POLY_PRECISION = 1e18;
+
+async function getTokensInMasterChef(api) {
+  const poolInfo = await api.fetchList({
+    lengthAbi: abi.poolLength,
+    itemAbi: abi.poolInfo,
+    target: chef,
+  });
+
+  poolInfo.forEach((pool) => {
+    let { lpToken, totalShares, lpPerShare } = pool;
+    lpToken = lpToken.toLowerCase();
+    if (lpToken === poly) {
+      return;
+    }
+    let bals = (totalShares * lpPerShare) / ACC_POLY_PRECISION;
+    api.add(lpToken, bals);
+  });
+  await unwrapLPsAuto({
+    api,
+    lpAddresses: poolInfo.map((p) => p.lpToken),
+    block: api.block,
+  });
+}
+module.exports = {
+  methodology:
+    "TVL includes all farms in MasterChef contract, as well as staking pools.",
+  arbitrum: {
+    tvl: getTokensInMasterChef,
+    staking: staking("0xF30489AdB76745BFb201023403B5E1bCcb216354", poly),
+  },
+};

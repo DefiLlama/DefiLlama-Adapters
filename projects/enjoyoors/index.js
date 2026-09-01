@@ -1,0 +1,20 @@
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getConfig } = require('../helper/cache')
+
+async function tvl(api, vaultAddress, enjoyoorsChainId) {
+  const { items } = await getConfig(`enjoyoors/${enjoyoorsChainId}`, `https://api.enjoyoors.xyz/v1/tokens?chain=${enjoyoorsChainId}&offset=0&limit=10000`);
+  const listedTokens = items.map(i => i.address);
+
+  return sumTokens2({ api, owner: vaultAddress, tokens: listedTokens });
+}
+
+module.exports = {
+  deadFrom: '2026-05-20', // project shut down: site and api.enjoyoors.xyz now redirect to eqlab.io
+  methodology: 'The TVL reflects the total value of all tokens deposited in the Enjoyoors vault contract.',
+  ethereum: {
+    tvl: async (api) => tvl(api, '0x59660cb83da31EC23F9d992C11f80Fc527046409', 1),
+  },
+  monad: {
+    tvl: async (api) => tvl(api, '0x6B5E332387e8beC98C52F10A72952B17176B4f1b', 11),
+  }
+}; 

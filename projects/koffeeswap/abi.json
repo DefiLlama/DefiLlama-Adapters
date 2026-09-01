@@ -1,0 +1,6 @@
+{
+  "stakingToken": "address:stakingToken",
+  "token0": "address:token0",
+  "token1": "address:token1",
+  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)"
+}
