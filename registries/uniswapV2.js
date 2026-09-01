@@ -2728,6 +2728,17 @@ const uniV2Configs = {
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
     robinhood: '0x43B2Bf9f33036a02fC7A00935571c2A6b0108e66',
   },
+  'raphael': {
+    misrepresentedTokens: true,
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      hasStablePools: true,
+    },
+    robinhood: '0x1A6745F84099Fa7E84D1f3B34c23482865194bd1',
+  },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
   },
