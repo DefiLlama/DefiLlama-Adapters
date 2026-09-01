@@ -28,6 +28,7 @@ module.exports = {
       "0xE7a5D64930fEC23cb04fd98Eb1f15e94E9c011C5",
       "0xe8288e668E5Da525999234a0b9b1271793cAB7eA",
       "0xfBb0099Dfb0cb61A74D009960b05C8e2713afbCe",
+      "0xE7C395AA2465d19c92a7AC7eA6d309d800a8556C",
       '0x93D0391D7B28ab1E01DF29e49793795dEa01aE16'
     ],
   },
@@ -65,6 +66,7 @@ module.exports = {
       "0x0908a40eb8dc56b76065a549824b5fa777ef1ed7",
       "0xcb251e4cac6276afd3f498810d52574420a716ab",
       "0xfBb0099Dfb0cb61A74D009960b05C8e2713afbCe",
+      "0xE7C395AA2465d19c92a7AC7eA6d309d800a8556C",
     ],
   },
   polygon: {
@@ -150,5 +152,11 @@ module.exports = {
       "0x6f1b82592ff57173cc5308a34da428a53f79a982",
       "0xd65ebe6c18e19229a7b9cd6ceff281428f840490",
     ],
+  },
+  xlayer: {
+    owners: ["0x9b078572bb3c087cb78356efed8c1ef02fc2534f"],
+  },
+  op_bnb: {
+    owners: ["0x1a715fddeef8cea02b5bcc451fc8913fe2781698"],
   },
 }
