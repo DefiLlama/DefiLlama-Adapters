@@ -1,8 +1,8 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { queryV1Beta1V2 } = require('../helper/chain/cosmos.js');
 const { get } = require('../helper/http');
 
 const figureMarketsExchangeID = '1'
+const provenanceApi = 'https://api.provenance.io'
 const provenanceRpc = 'https://rpc.provenance.io'
 
 const collateralizedAssets = [
@@ -34,14 +34,25 @@ const getBlockAtTimestamp = async (timestamp) => {
     return low.height
 }
 
+const getCommitments = async (block) => {
+    const commitments = []
+    const options = block ? { headers: { 'x-cosmos-block-height': block } } : {}
+    let paginationKey
+
+    do {
+        let url = `${provenanceApi}/provenance/exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=1000`
+        if (paginationKey) url += `&pagination.key=${encodeURIComponent(paginationKey)}`
+        const response = await get(url, options)
+        commitments.push(...response.commitments)
+        paginationKey = response.pagination?.next_key
+    } while (paginationKey)
+
+    return commitments
+}
+
 const getLockedTokens = async (api) => {
     const block = api.block ?? (api.timestamp < Date.now() / 1000 - 3600 ? await getBlockAtTimestamp(api.timestamp) : undefined)
-    const commitments = await queryV1Beta1V2({
-        chain: 'provenance',
-        url: `exchange/v1/market/${figureMarketsExchangeID}/commitments`,
-        limit: 1000,
-        block,
-    })
+    const commitments = await getCommitments(block)
     for (const c of commitments) {
         for (const a of c.amount) {
             if (!collateralizedAssets.includes(a.denom)) {
