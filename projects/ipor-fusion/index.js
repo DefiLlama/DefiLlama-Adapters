@@ -56,5 +56,6 @@ module.exports = {
   avax: { tvl },
   katana: { tvl },
   hyperliquid: { tvl },
-  robinhood: { tvl }
+  robinhood: { tvl },
+  monad: { tvl }
 };
