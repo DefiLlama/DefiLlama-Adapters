@@ -483,6 +483,18 @@ const configs = {
       }
     },
   },
+  "flowdesk": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults created by Flowdesk\'s verified initial deployment owner.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x415ca88b148CD7a3bbAd61788A9b90F2a788EEc7',
+          ],
+        },
+      }
+    },
+  },
   "galaxy": {
     config: {
       methodology: "TVL is calculated by summing the assets deposited in all Morpho vaults curated by Galaxy on each supported chain.",
