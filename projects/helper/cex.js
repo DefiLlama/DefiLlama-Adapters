@@ -522,7 +522,7 @@ function cexExports(config) {
         console.log(`Adding ${binanceTokensOnChain.length} Binance tokens on ${chain} to the token list.`)
         tokens = [...(options.tokens ?? []), ...binanceTokensOnChain]
       }
-      const runtimeOptions = { ...options, owners, tokens }
+      const runtimeOptions = { ...options, owners, tokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
       if (chain === 'solana') runtimeOptions.solOwners = owners
       return sumTokensExport(runtimeOptions)(api)
     } }
