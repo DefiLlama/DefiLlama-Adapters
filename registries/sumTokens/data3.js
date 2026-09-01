@@ -904,5 +904,11 @@ module.exports = {
     "rise": {
       "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
     }
+  },
+  "veiledhood": {
+    "methodology": "TVL is the sum of USDG and WETH balances held by VeiledHood's Veiledhood and VeilSwap vault contracts on Robinhood Chain, read directly on-chain. Per-user balances are tracked off-chain via a Merkle-committed ledger, but the vault's aggregate token balances are public and require no private state to compute.",
+    "robinhood": {
+      "tvl": { "owners": ["0x8Ae2D8A767c3d59219556b83d4e8385514b6d72B", "0xa4B90fb94B2bBdf1D66A8191E883D0F57BbC6D0b"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH] },
+    }
   }
 }

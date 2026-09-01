@@ -17,6 +17,13 @@ const configs = {
             '0x1E2aAaDcF528b9cC08F43d4fd7db488cE89F5741', // co-curator with tulip-capital
             '0x0bB2751a90fFF62e844b1521637DeD28F3f5046A', // co-curator with tulip-capital
           ],
+          erc4626: [
+            '0x03D1eC0D01b659b89a87eAbb56e4AF5Cb6e14BFc', // Lagoon: 9Summits Flagship USDC
+            '0x07ed467acD4ffd13023046968b0859781cb90D9B', // Lagoon: 9Summits Flagship ETH
+            '0xD0C4C9386F7509c44987F43136BE7d4349Ccddc9', // Lagoon: 9Summits Flagship EURC
+            '0x7f35dEa44a192764aa50d50e5f0eCE1d5a8b0e45', // Lagoon: Flint USD
+            '0xB09F761Cb13baCa8eC087Ac476647361b6314F98', // Lagoon: Flagship cbBTC, co-curated with Tulipa Capital
+          ],
           turtleclub: [
             '0xa853d8f5f253468495c5a92d54a3fe6cca2aa26b',
             '0x7388d4b5c4cfc96c9105de913717ba7519178129',
@@ -32,6 +39,12 @@ const configs = {
         unichain: {
           morphoVaultOwners: [
             '0x59e608E4842162480591032f3c8b0aE55C98d104',
+          ],
+        },
+        avax: {
+          erc4626: [
+            '0x3048925B3EA5A8C12eeCCcb8810F5F7544dB54af', // Lagoon: Turtle Avalanche USDC
+            '0x4aF3aBE954259fb70b97C57EBD7Ac1eb822028Ef', // Euler Earn: 9Summits USDC
           ],
         },
       }
@@ -160,6 +173,8 @@ const configs = {
             '0x5dc53a23AdC9f2Bed98de6F59F7F309a7c71FF2B',
             '0xA2EAaD0D586cF9FD73bb2c09cF6A7E3e187D68cd',
             '0x55C1B6e461a6334B567bAF0FEb5D728715446f05',
+            '0xBf29043164660C60A2a72Cd15FFe2304e87B6838',
+            '0x500aE64100D7DbDb640531085C2F5d40cDC8930D',
           ],
         },
       },
@@ -313,6 +328,8 @@ const configs = {
         katana: {
           morphoVaultOwners: [
             '0x30988479C2E6a03E7fB65138b94762D41a733458',
+            '0x829A13850b684A575C0580a83322890e19c5eFaa', // Morpho V2 Core USDC
+            '0x8c5FDDE03DFd6AC0D3d492321974f2Ff573DE1bd', // Morpho V2 Core USDT
           ],
           erc4626: [
             '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // vbUSDC Metavault on Spectra
@@ -659,6 +676,19 @@ const configs = {
       },
     },
   },
+  "presto": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Presto.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x21d7f2430E33054151AC3963aCBD4813e78cB3C9', // Presto USDC Prime initial owner
+            '0xb41437827266a20aB30bf457A81561f7b5e1bE6D', // Presto USDC Forte initial owner
+          ],
+        },
+      },
+    },
+  },
   "re7": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Re7 Labs.',
@@ -695,6 +725,12 @@ const configs = {
         base: {
           morphoVaultOwners: [
             '0xD8B0F4e54a8dac04E0A57392f5A630cEdb99C940',
+            '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c', // Re7 USDC V2 initial owner
+          ],
+        },
+        optimism: {
+          morphoVaultOwners: [
+            '0xf86199f0D9F126CB548f4bc1756b6833121E132C', // Re7 WETH V2 initial owner
           ],
         },
         sonic: {
