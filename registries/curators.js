@@ -602,6 +602,18 @@ const configs = {
       }
     },
   },
+  "keyrock": {
+    config: {
+      methodology: 'Counts all assets deposited in the Morpho vaults curated by Keyrock.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0xbA75546ACD56b3a9142f94F179b03970eE4283Fd', // initial owner — Keyrock V1/V2 vaults
+          ],
+        },
+      }
+    },
+  },
   "keyring": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Keyring Network.',
