@@ -164,6 +164,18 @@ const configs = {
       }
     },
   },
+  "architect": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults created by Architect\'s verified initial deployment owner.',
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xC2f4848Adc95Adb16Cc79a3365814cB08439ee28',
+          ],
+        },
+      }
+    },
+  },
   "armitage": {
     config: {
       methodology: 'Counts all assets that are deposited in all vaults curated by Armitage.',
