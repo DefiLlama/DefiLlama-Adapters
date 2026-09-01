@@ -35,6 +35,16 @@ const LEGACY_POOL_2 = "0xcd9d510c4e2fe45e6ed4fe8a3a30eeef3830cc14";
 const LEGACY_POOLS = [LEGACY_POOL_1, LEGACY_POOL_2];
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 const SUBGRAPH_PAGE_SIZE = 1000;
+// First on-chain activity of each part that arrived after the adapter. A contract
+// answers no read before it exists, and each part held nothing before its first
+// event, so a run before these times skips the part instead of failing on it.
+const USDAI_BASE_YIELD_START = 1770060295; // 2026-02-02, USDai gained baseYieldAccrued
+const LOAN_ROUTER_V2_START = 1782512387; // 2026-06-26, first loan router v2 event
+const ESCROW_TIMELOCK_START = 1783708935; // 2026-07-10, first escrow timelock deposit
+// A Staked USDai proxy upgrade repointed claimableBaseYield at the PYUSD base
+// yield. From this block it returns the same number as USDai.baseYieldAccrued,
+// so reading both counts the base yield twice.
+const STAKED_USDAI_UPGRADE = 1777473180; // 2026-04-29, block 457604192
 const loanHashesQuery = gql`
   query GetLoanHashes($timestampLte: String!, $first: Int!, $lastId: String!) {
     loanRouterEvents(
@@ -102,7 +112,8 @@ async function fetchAllSubgraphRows(endpoint, query, collection, timestamp) {
   return allRows;
 }
 
-async function tvl(api) {
+// Reserve assets: the tokens the protocol contracts hold plus accrued base yield
+async function reserves(api) {
   // Get wrapped M tokens in USDai
   const wrappedMBalanceInUsdai = await api.call({
     target: WRAPPED_M_CONTRACT,
@@ -133,29 +144,44 @@ async function tvl(api) {
   // Add wrapped M balance in Staked USDai
   api.add(WRAPPED_M_CONTRACT, wrappedMBalanceInStakedUsdai);
 
-  // Claimable wrapped M tokens (to be phased out)
-  try {
-    const claimableWrappedM = await api.call({
-      target: STAKED_USDAI_CONTRACT,
-      abi: abi.claimableBaseYield // return value is scaled up by 10^12
-    });
-    const scaledClaimableWrappedM = BigInt(claimableWrappedM) / (10n ** 12n); // scale down by 10^12 to match wrapped M decimals
+  // Claimable wrapped M tokens. Read this only before STAKED_USDAI_UPGRADE. From
+  // that block the same call returns the PYUSD base yield, which the read below
+  // already counts as PYUSD.
+  if (api.timestamp < STAKED_USDAI_UPGRADE) {
+    try {
+      const claimableWrappedM = await api.call({
+        target: STAKED_USDAI_CONTRACT,
+        abi: abi.claimableBaseYield // return value is scaled up by 10^12
+      });
+      const scaledClaimableWrappedM = BigInt(claimableWrappedM) / (10n ** 12n); // scale down by 10^12 to match wrapped M decimals
 
-    // Add claimable wrapped M tokens
-    api.add(WRAPPED_M_CONTRACT, scaledClaimableWrappedM)
-  } catch (error) {
-    console.error(error);
+      // Add claimable wrapped M tokens
+      api.add(WRAPPED_M_CONTRACT, scaledClaimableWrappedM)
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  // Claimable PYUSD (scaled down by 10^12 to match the decimals of the PYUSD token)
-  const claimablePyusd = await api.call({
-    target: USDAI_CONTRACT,
-    abi: abi.baseYieldAccrued,
-  });
-  const scaledClaimablePyusd = BigInt(claimablePyusd) / BigInt(10 ** 12);
+  // Claimable PYUSD (scaled down by 10^12 to match the decimals of the PYUSD token).
+  // PYUSD became the base token on 2026-02-02 and the USDai contract gained this
+  // function on the same upgrade, so the call reverts for an earlier block. The
+  // timestamp guard skips the months where it always reverts. The catch covers the
+  // upgrade block itself, because a timestamp maps to a block only approximately.
+  // This term is a small part of TVL, so losing it beats losing the whole figure.
+  if (api.timestamp >= USDAI_BASE_YIELD_START) {
+    try {
+      const claimablePyusd = await api.call({
+        target: USDAI_CONTRACT,
+        abi: abi.baseYieldAccrued,
+      });
+      const scaledClaimablePyusd = BigInt(claimablePyusd) / BigInt(10 ** 12);
 
-  // Add claimable PYUSD 
-  api.add(PYUSD, scaledClaimablePyusd);
+      // Add claimable PYUSD
+      api.add(PYUSD, scaledClaimablePyusd);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   // Get loan repayment balances in Staked USDai (except USDai)
   // Should be phased out once all repayment balances are zeroed out
@@ -175,8 +201,8 @@ async function tvl(api) {
   })
 }
 
-async function borrowed(api) {
-  // Legacy pools
+// Illiquid value in the legacy pools
+async function legacyPoolBorrowed(api) {
   const tokens = await api.multiCall({ abi: abi.currencyToken, calls: LEGACY_POOLS, permitFailure: true });
   const tokenDecimals = await api.multiCall({
     abi: "erc20:decimals",
@@ -207,9 +233,15 @@ async function borrowed(api) {
       return partialSum + scaledValue;
     }, 0);
   });
-  api.addTokens(tokens, poolsBorrowedValue);
+  // A pool that does not exist yet reports a null currency token. Skip it, because
+  // api.addTokens passes the token straight to a string method and throws on null.
+  tokens.forEach((token, index) => {
+    if (token) api.add(token, poolsBorrowedValue[index]);
+  });
+}
 
-  // Loan router borrowed
+// Loans open on the loan router
+async function loanRouterBorrowed(api) {
   const loanRouterEvents = await fetchAllSubgraphRows(LOAN_ROUTER_SUBGRAPH_API, loanHashesQuery, "loanRouterEvents", api.timestamp);
   const loanStates = await api.multiCall({
     abi: abi.loanState,
@@ -235,9 +267,14 @@ async function borrowed(api) {
     // Add the balance to the TVL
     api.add(currencyToken.id, unscaledBalance);
   });
+}
 
+// Loans open on loan router v2 (originated on v2, migrated from v1, or refinanced).
+// The router did not exist before LOAN_ROUTER_V2_START and loanState reverts for an
+// earlier block. No loan was open then, so the skip keeps the same value.
+async function loanRouterV2Borrowed(api) {
+  if (api.timestamp < LOAN_ROUTER_V2_START) return;
 
-  // Loan router v2 borrowed (originated on v2, migrated from v1, or refinanced)
   const v2Loans = await fetchAllSubgraphRows(LOAN_ROUTER_SUBGRAPH_API_V2, v2LoansQuery, "loans");
 
   // The loan entity carries the currency token address but not its decimals
@@ -278,8 +315,14 @@ async function borrowed(api) {
     // Add the balance to the TVL
     api.add(loan.currencyToken, unscaledBalance);
   });
+}
 
-  // USDai borrowed out through escrow timelock
+// USDai borrowed out through escrow timelock. The contract did not exist before
+// ESCROW_TIMELOCK_START, and totalDeposits reads zero until the first deposit, so
+// a run before that time adds nothing.
+async function escrowTimelockBorrowed(api) {
+  if (api.timestamp < ESCROW_TIMELOCK_START) return;
+
   const escrowTimelockTotalDeposits = await api.call({
     target: ESCROW_TIMELOCK_CONTRACT,
     abi: abi.escrowTimelockTotalDeposits,
@@ -287,13 +330,22 @@ async function borrowed(api) {
   api.add(USDAI_CONTRACT, escrowTimelockTotalDeposits);
 }
 
+// TVL is the reserve assets plus the loan book. One function reports both parts so
+// the chart shows a single series.
+async function tvl(api) {
+  await reserves(api);
+  await legacyPoolBorrowed(api);
+  await loanRouterBorrowed(api);
+  await loanRouterV2Borrowed(api);
+  await escrowTimelockBorrowed(api);
+}
+
 module.exports = {
   arbitrum: {
     tvl,
-    borrowed,
   },
   methodology:
-    "TVL is calculated by summing the value of tokens held by the protocol and outstanding claimable yield.",
+    "TVL is calculated by summing the value of tokens held by the protocol, outstanding loan principals and outstanding claimable yield.",
   hallmarks: [
     ["2025-09-12", "Deposit Caps raised to $250M"],
     ["2025-09-26", "Deposit Caps raised to $500M"]
