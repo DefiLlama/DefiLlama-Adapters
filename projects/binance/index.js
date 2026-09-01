@@ -98,7 +98,7 @@ function buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens) {
   if (!blacklistedTokens) blacklistedTokens = []
   if (wrappedTokens && wrappedTokens.length) blacklistedTokens.push(...wrappedTokens)
 
-  const options = { ...base, owners, tokens, chain, blacklistedTokens }
+  const options = { ...base, owners, tokens, chain, blacklistedTokens, permitFailure: true } // while filling historical data, some tokens may not exist on the chain yet, so we permit failure
 
   if (binanceTokensOnChain && binanceTokensOnChain.length) {
     if (!options.tokens) options.tokens = []
