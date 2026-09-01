@@ -182,13 +182,19 @@ const configs = {
   },
   "avantgarde": {
     config: {
-      methodology: 'Count all assets are deposited in all vaults curated by Avantgarde.',
+      methodology: 'Counts all assets deposited in all vaults curated by Avantgarde.',
       blockchains: {
         ethereum: {
           morphoVaultOwners: [
             '0xb263237E30fe9be53d6F401FCC50dF125D60F01a',
+            '0xc714F33c2527BF61749C06eA0389EC957D8153D4',
           ],
         },
+        base: {
+          morphoVaultOwners: [
+            '0x80C6c6438a438Ad3B3736a02B47793D6f854f2bF',
+           ],
+         },
       }
     },
   },
@@ -472,6 +478,18 @@ const configs = {
         ethereum: {
           morphoVaultOwners: [
             '0xF92971B4D9e6257CF562400ed81d2986F28a8c26',
+          ],
+        },
+      }
+    },
+  },
+  "flowdesk": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults created by Flowdesk\'s verified initial deployment owner.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x415ca88b148CD7a3bbAd61788A9b90F2a788EEc7',
           ],
         },
       }

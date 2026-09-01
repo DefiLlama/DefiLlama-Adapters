@@ -1068,5 +1068,25 @@ module.exports = {
     "base": {
       "tvl": { owner: '0x54716A535c3B5616e3f0d4D5005Fc4bB660cDF5F', tokens: [ADDRESSES.base.USDC] },
     },
+  },
+  "float": {
+    methodology: "Counts the stake tokens (BANK, FLOAT and their ETH sLPs) held in the multiplier pools; old pool phases still holding TVL are included.",
+    "ethereum": {
+      "tokensAndOwners": [
+        ["0x24A6A37576377F63f194Caa5F518a60f45b42921", "0x52eadaFf8E3d816CE205691D1D703e08d369F576"],
+        ["0xb05097849BCA421A3f51B249BA6CCa4aF4b97cb9", "0x432573cf5b10eb9A160624ca2725199DC1b56e3e"],
+        // BANK/ETH sLP
+        ["0x938625591ADb4e865b882377e2c965F9f9b85E34", "0x726FF99C3f2aa0B0debadE809D2Ac75C5DfA3736"],
+        // FLOAT/ETH sLP
+        ["0x481DdaF90C59d91F3e480E6793122E62612CA5A9", "0xE73cf1bBC792c796826f9E57263483fd3DD38d50"],
+        // BANK-ETH sLPPhase2Pool
+        ["0x938625591ADb4e865b882377e2c965F9f9b85E34", "0xd04F4759A2cc28A5AE33287534CAA4dfcE90B9C3"],
+        // BANK-ETH sLPPhase4Pool
+        ["0x938625591ADb4e865b882377e2c965F9f9b85E34", "0x08D7e47Beb0470fc683bbdE7d836c5dcd48754F2"],
+        // FLOAT-ETH sLPPhase4Pool
+        ["0x481DdaF90C59d91F3e480E6793122E62612CA5A9", "0xCD817491872bdB33e0D21589bd92DbfF43387CA4"],
+      ],
+      "resolveLP": true
+    }
   }
 }
