@@ -180,6 +180,23 @@ const configs = {
       },
     },
   },
+  "august-digital": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by August Digital.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x2a155ed454Dc5861a755F9C6bc7334a23B80cdAF', // initial owner — August Digital
+          ],
+        },
+        monad: {
+          morphoVaultOwners: [
+            '0x2a155ed454Dc5861a755F9C6bc7334a23B80cdAF', // initial owner — August Digital
+          ],
+        },
+      },
+    },
+  },
   "avantgarde": {
     config: {
       methodology: 'Counts all assets deposited in all vaults curated by Avantgarde.',
