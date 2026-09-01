@@ -26,6 +26,7 @@ const mainnetAllocatorToTokens = {
     ADDRESSES.ethereum.USDe,
     ADDRESSES.ethereum.USDT,
     ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDG,
     '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
     '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // aEthUSDS
@@ -42,6 +43,7 @@ const mainnetAllocatorToTokens = {
     '0xb0c424116172B55CbB6dD3136F5989F7959e5B91', // morpho Spark Blue Chip USDT Vault v2
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
+    '0x8292bb45bf1ee4d140127049757c2e0ff06317ed', // rlUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
   ],
 }
