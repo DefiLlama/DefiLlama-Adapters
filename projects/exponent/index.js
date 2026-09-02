@@ -5,6 +5,7 @@ const { Program } = require("@coral-xyz/anchor");
 
 const { getConfig } = require('../helper/cache')
 const { fetchURL } = require('../helper/utils')
+const sdk = require('@defillama/sdk')
 
 // A Generic SY mint wraps a yield-bearing token one for one, and the SY program
 // records which token that is. Attributing to it rather than to the market's base
@@ -19,9 +20,25 @@ const SY_META_YIELD_BEARING_MINT_OFFSET = 129
 const SY_META_MIN_LENGTH = SY_META_YIELD_BEARING_MINT_OFFSET + 32
 
 // Reads the SY program's own metadata accounts, so a market added later is picked
-// up without touching this file.
+// up without touching this file. Every failure here is swallowed for the same reason
+// the price lookup's is: this call only improves attribution, so an RPC that refuses
+// getProgramAccounts must cost that improvement and never the TVL. An empty map sends
+// every market down the base-asset path, which is exactly the pre-change behaviour.
 async function getGenericSyYieldBearingMints(connection) {
-  const accounts = await connection.getProgramAccounts(new PublicKey(GENERIC_SY_PROGRAM_ID))
+  try {
+    return await readGenericSyYieldBearingMints(connection)
+  } catch (e) {
+    sdk.log('exponent: could not read Generic SY metadata, falling back to base-asset attribution', e.message)
+    return {}
+  }
+}
+
+async function readGenericSyYieldBearingMints(connection) {
+  // dataSlice keeps the response to the two pubkeys this needs rather than every
+  // byte of every account the program owns.
+  const accounts = await connection.getProgramAccounts(new PublicKey(GENERIC_SY_PROGRAM_ID), {
+    dataSlice: { offset: 0, length: SY_META_MIN_LENGTH },
+  })
 
   const map = {}
   accounts.forEach(({ account }) => {
@@ -42,18 +59,27 @@ async function getGenericSyYieldBearingMints(connection) {
 // do not today). Repointing one of those would drop its market to zero, so the base
 // asset stays the fallback. Asking the price service beats hardcoding the list: a
 // mint that gets a price later starts attributing correctly on its own, and one that
-// loses its price falls back instead of vanishing, neither needing a change here.
+// loses its price falls back instead of vanishing, neither needing a change here. A
+// lookup that fails outright is treated the same way, so the service being down
+// costs attribution quality and never the TVL itself.
 async function getPricedMints(mints) {
   if (mints.length === 0) return new Set()
   const priced = new Set()
   for (let i = 0; i < mints.length; i += 50) {
     const batch = mints.slice(i, i + 50)
-    const { data } = await fetchURL(
-      `https://coins.llama.fi/prices/current/${batch.map(m => `solana:${m}`).join(',')}`
-    )
-    batch.forEach(mint => {
-      if (data?.coins?.[`solana:${mint}`]?.price > 0) priced.add(mint)
-    })
+    try {
+      const { data } = await fetchURL(
+        `https://coins.llama.fi/prices/current/${batch.map(m => `solana:${m}`).join(',')}`
+      )
+      batch.forEach(mint => {
+        if (data?.coins?.[`solana:${mint}`]?.price > 0) priced.add(mint)
+      })
+    } catch (e) {
+      // A failed lookup must degrade to the previous behaviour, not to zero TVL:
+      // letting this throw would abort the whole run over a transient price-service
+      // error. Leaving the batch out of the set sends it down the base-asset path.
+      sdk.log('exponent: price lookup failed, falling back to base-asset attribution', e.message)
+    }
   }
   return priced
 }
