@@ -4421,6 +4421,12 @@ const configs = {
       owners: ['D3T38wVYstKhkSLXdYACGor5fGWBiuqWu9VjDp2XoPDB'],
     },
   },
+  'treasury/popcorncine': {
+    bsc: {
+      owners: ['0x24a2d2503ed27418d7e5b21b617d4bc03aec55e1'],
+      tokens: [ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, nullAddress],
+    },
+  },
   'treasury/premia': {
     arbitrum: {
       tokens: [
