@@ -8,7 +8,7 @@ async function GetDailyHistory() {
 
   data.forEach((row) => {
     if (!row.capacity_total) return;
-    dayHistory[row.day] = row.capacity_total;
+    dayHistory[row.day] = +row.capacity_total;
   });
 }
 
@@ -38,8 +38,11 @@ async function getFromTxStat() {
 }
 
 async function getChannelCapacity(timestamp) {
-  const day = new Date(timestamp * 1000).toISOString().slice(0, 10)
-  return dayHistory[day]
+  // walk back a few days so a lagging source still yields its freshest value
+  for (let i = 0; i < 5; i++) {
+    const day = new Date((timestamp - i * 86400) * 1000).toISOString().slice(0, 10)
+    if (dayHistory[day] != null) return dayHistory[day]
+  }
 }
 
 async function tvl({ timestamp }) {
@@ -50,7 +53,9 @@ async function tvl({ timestamp }) {
   if (getCurrentTVL) {
     channelCapacity = await get1MLCapacity()
   } else {
-    await GetDailyHistory1();
+    // bitcoinvisuals first so mempool.space wins on overlapping days; tolerate either source being down
+    await GetDailyHistory().catch((e) => console.error(e));
+    await GetDailyHistory1().catch((e) => console.error(e));
     channelCapacity = await getChannelCapacity(timestamp - 86400)
   }
 
