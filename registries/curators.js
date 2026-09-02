@@ -53,7 +53,7 @@ const configs = {
   "sharpbyte-capital": {
     config: {
       methodology: 'Counts assets deposited in the SharpByte USDT Prime Morpho V2 vault.',
-      start: '2026-07-03'
+      start: '2026-07-03',
       blockchains: {
         ethereum: {
           morpho: [
