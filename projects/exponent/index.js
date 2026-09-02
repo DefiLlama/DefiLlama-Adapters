@@ -4,6 +4,59 @@ const { decodeAccount } = require("../helper/utils/solana/layout");
 const { Program } = require("@coral-xyz/anchor");
 
 const { getConfig } = require('../helper/cache')
+const { fetchURL } = require('../helper/utils')
+
+// A Generic SY mint wraps a yield-bearing token one for one, and the SY program
+// records which token that is. Attributing to it rather than to the market's base
+// asset is what lets an asset with its own price show up under its own name: the
+// ONyc market, for example, is booked under USDe today, so ~$44M of ONyc PT is
+// reported as a stablecoin. projects/exponent-tranching already reads the same
+// field for the same reason.
+const GENERIC_SY_PROGRAM_ID = 'XP1BRLn8eCYSygrd8er5P4GKdzqKbC3DLoSsS5UYVZy'
+const SY_META_DISCRIMINATOR = Buffer.from([254, 147, 136, 16, 163, 203, 98, 93])
+const SY_META_MINT_SY_OFFSET = 8
+const SY_META_YIELD_BEARING_MINT_OFFSET = 129
+const SY_META_MIN_LENGTH = SY_META_YIELD_BEARING_MINT_OFFSET + 32
+
+// Reads the SY program's own metadata accounts, so a market added later is picked
+// up without touching this file.
+async function getGenericSyYieldBearingMints(connection) {
+  const accounts = await connection.getProgramAccounts(new PublicKey(GENERIC_SY_PROGRAM_ID))
+
+  const map = {}
+  accounts.forEach(({ account }) => {
+    const { data } = account
+    if (data.length < SY_META_MIN_LENGTH) return
+    if (!Buffer.from(data.subarray(0, 8)).equals(SY_META_DISCRIMINATOR)) return
+    const mintSy = new PublicKey(data.subarray(SY_META_MINT_SY_OFFSET, SY_META_MINT_SY_OFFSET + 32))
+    const yieldBearingMint = new PublicKey(data.subarray(
+      SY_META_YIELD_BEARING_MINT_OFFSET,
+      SY_META_YIELD_BEARING_MINT_OFFSET + 32,
+    ))
+    map[mintSy.toBase58()] = yieldBearingMint.toBase58()
+  })
+  return map
+}
+
+// Not every yield-bearing mint has a price (Carrot and Reflect USDC+ are two that
+// do not today). Repointing one of those would drop its market to zero, so the base
+// asset stays the fallback. Asking the price service beats hardcoding the list: a
+// mint that gets a price later starts attributing correctly on its own, and one that
+// loses its price falls back instead of vanishing, neither needing a change here.
+async function getPricedMints(mints) {
+  if (mints.length === 0) return new Set()
+  const priced = new Set()
+  for (let i = 0; i < mints.length; i += 50) {
+    const batch = mints.slice(i, i + 50)
+    const { data } = await fetchURL(
+      `https://coins.llama.fi/prices/current/${batch.map(m => `solana:${m}`).join(',')}`
+    )
+    batch.forEach(mint => {
+      if (data?.coins?.[`solana:${mint}`]?.price > 0) priced.add(mint)
+    })
+  }
+  return priced
+}
 const idl = {
   "address": "ExponentnaRg3CQbW6dqQNZKXp7gtZ9DGMp1cwC4HAS7",
   "metadata": {"name": "exponent_core", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
@@ -121,7 +174,11 @@ async function tvl(api) {
   
   // Fetch Exponent wrapped mints from Exponent API
   const { data: mints } = await getConfig('exponent', 'https://web-api.exponent.finance/api/lyt-growth/standard-yield-tokens');
-  
+
+  const yieldBearingMints = await getGenericSyYieldBearingMints(connection)
+  const pricedYieldBearingMints = await getPricedMints([...new Set(
+    mints.map(({ mintSy }) => yieldBearingMints[mintSy]).filter(Boolean)
+  )])
 
   for (let i = 0; i < mints.length; i++) {
     const { mintSy, mintUnderlying} = mints[i]
@@ -133,6 +190,16 @@ async function tvl(api) {
     const decodedMint = decodeAccount('mint', mintAccount);
     const supply = decodedMint.supply;
 
+    const yieldBearingMint = yieldBearingMints[mintSy]
+    if (yieldBearingMint && pricedYieldBearingMints.has(yieldBearingMint)) {
+      // The SY wraps its yield-bearing token one for one, so the supply IS the
+      // amount held, and no rate is applied: mintRate is a price ratio against the
+      // base asset, and using it here would apply the yield-bearing token's premium
+      // a second time on top of its own price.
+      api.add(yieldBearingMint, supply);
+      continue;
+    }
+
     // As all of the Exponent wrapped tokens are yield bearing tokens, mutiply their supply by their redemption rate to get the base asset amount
     const amount = supply * mintRate;
 
@@ -143,6 +210,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: "TVL is calculated by summing the total supply of each Exponent wrapped Yield bearing token and multiplying their base asset amount by the price of the underlying token",
+  methodology: "TVL is the total supply of each Exponent wrapped yield-bearing token. Generic SY markets are attributed to the yield-bearing mint the SY program records on-chain, which the SY wraps one for one. A market whose yield-bearing mint has no price falls back to the market's base asset, valued as supply times the SY exchange rate.",
   solana: { tvl },
 };
