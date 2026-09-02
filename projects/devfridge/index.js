@@ -24,20 +24,19 @@ function decodeLock(data) {
   };
 }
 
+let _locks;
 async function getActiveLocks() {
+  if (!_locks) _locks = _getActiveLocks();
+  return _locks;
+}
+
+async function _getActiveLocks() {
   const connection = getConnection();
 
   const accounts = await connection.getProgramAccounts(PROGRAM_ID, {
-    filters: [
-      { dataSize: LOCK_DATA_SIZE },
-      {
-        memcmp: {
-          offset: 0,
-          bytes: LOCK_DISCRIMINATOR.toString("base64"),
-          encoding: "base64",
-        },
-      },
-    ],
+    // discriminator is checked in decodeLock — the base64 memcmp filter is
+    // silently ignored/mismatched by some RPCs and returns zero accounts
+    filters: [{ dataSize: LOCK_DATA_SIZE }],
   });
 
   const now = Math.floor(Date.now() / 1000);
@@ -48,7 +47,7 @@ async function getActiveLocks() {
     .filter((lock) => lock.unlockAt > now);
 }
 
-async function tvl(api) {
+async function vesting(api) {
   const locks = await getActiveLocks();
 
   for (const lock of locks) {
@@ -69,9 +68,10 @@ async function staking(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "TVL is the value of circulating Token-2022 assets deposited by users into active DevFridge program-controlled timelock vaults on Solana. Only locks whose unlock_at timestamp is still in the future are counted. DevFridge's own PASTA token is reported separately under staking.",
+    "DevFridge is a token locker: user-locked Token-2022 assets in active program-controlled timelock vaults on Solana are counted as vesting. DevFridge's own PASTA token is reported separately under staking. TVL is zero by design.",
   solana: {
-    tvl,
+    tvl: () => ({}),
+    vesting,
     staking,
   },
 };
