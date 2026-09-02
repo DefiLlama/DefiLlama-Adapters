@@ -246,6 +246,19 @@ const configs = {
       }
     },
   },
+  "bizantine-labs": {
+    config: {
+      methodology: 'TVL is the sum of totalAssets() reported by the bizUSDT0 and bizFXRP Superform vaults curated by Bizantine Labs. ',
+      blockchains: {
+        flare: {
+          erc4626: [
+            '0xb7c1c8f7191c7d76b5c6650a6fb20f6f8027bf0d', // bizUSDT0
+            '0x34f90dfa0f1b2f691ee3a3a87954f8d282193c16', // bizFXRP
+          ],
+        },
+      },
+    },
+  },
   "blend": {
     config: {
       methodology: 'Count all assets are deposited in all vaults allocated by Blend Protocol.',
