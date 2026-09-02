@@ -3106,11 +3106,10 @@ const uniV2Configs = {
   'wraithswap': {
     fantom: { factory: '0xCC738D2fDE18fe66773b84c8E6C869aB233766D1', staking: ['0x37b106f101a63D9d06e53140E52Eb6F8A3aC5bBc', '0x4cf098d3775bd78a4508a13e126798da5911b6cd'] },
   },
+  'giga-dex': { robinhood: '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916' },
+  'daily-dex': { dly: '0x11c0d58d7D9B01e4B07013d3476F7b913803E875' },
   'ladyswap': {
     lady: { factory: '0x224531f8130A7F639444E17e1D43966dB1dEa431', staking: ['0x09022c3e699B4DdCc9eDf52c9545F33783eB9F43', '0x8635dE218E5d4faC62432d6bfB20E199aeDe366F'] },
-  },
-  'giga-dex': {
-    robinhood: '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916'
   },
   'kolswap': {
     robinhood: '0xdB2Ec80E55527b5D858b54173083139679f5DE6f',
@@ -3123,8 +3122,8 @@ const uniV2Configs = {
     },
     robinhood: '0xe0799417eff30A12249b8c30941BC2d7c52A0339',
   },
-  'qomx': {    bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785'  },
-  'lobsterswap': {    ozone: '0x89687777012E7FF91a6ecDDDc0aebAb38BbC098A'  },
+  'qomx': { bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785' },
+  'lobsterswap': { ozone: '0x89687777012E7FF91a6ecDDDc0aebAb38BbC098A' },
   'icarus-v2': {
     start: '2026-01-23',
     methodology: 'Value of the tokens locked in the classic stable and volatile liquidity pools.',
