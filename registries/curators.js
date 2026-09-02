@@ -623,6 +623,19 @@ const configs = {
       },
     },
   },
+  "gamma-research": {
+    config: {
+      methodology: 'TVL is the AUSD managed by the earnAUSD vault curated by Gamma Research, measured on Monad through the vault\'s getTotalAssets() value.',
+      start: '2025-11-24',
+      blockchains: {
+        monad: {
+          upshiftV2: [
+            '0x36eDbF0C834591BFdfCaC0Ef9605528c75c406aA', // Upshift earnAUSD
+          ],
+        },
+      },
+    },
+  },
   "hakutora": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Hakutora.',
