@@ -41,9 +41,7 @@ module.exports = {
     'TVL counts USDT0 supplied to the LodestarPool plus collateral (FXRP, sFLR, stXRP) locked in the ' +
     'LodestarLoanBook and its first-loss reserve buffer. Borrowed is the outstanding USDT0 loaned to ' +
     'borrowers (pool.principalOut), reported separately from TVL.',
-  // Mainnet deploy block, so the historical backfill starts where the contracts start rather than
-  // walking the whole chain and reporting zeros for every block before genesis.
-  start: 68517390,
+  start: "2026-08-29",
   flare: {
     tvl: sumTokensExport({ owners: [POOL, BOOK], tokens }),
     borrowed,
