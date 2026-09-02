@@ -21,8 +21,9 @@
  *   node utils/scripts/kpkTreasuryIR.js --from=2026-01-01 --to=2026-08-01 --step=1mo
  *   node utils/scripts/kpkTreasuryIR.js --from=2026-01-01 --to=2026-08-01 --out=kpk.csv
  *
- * cache (--cache) - fill whatever the stored history is missing:
+ * cache (--cache) - THE scheduled job: fill the stored history AND snapshot DeBank:
  *   node utils/scripts/kpkTreasuryIR.js --cache            # every gap in the last 365 days
+ *   node utils/scripts/kpkTreasuryIR.js --cache --no-debank # RPC backfill only, no snapshot
  *   node utils/scripts/kpkTreasuryIR.js --cache --status   # report coverage, run nothing
  *   node utils/scripts/kpkTreasuryIR.js --cache --limit=10 # chip away at a backfill
  *   node utils/scripts/kpkTreasuryIR.js --cache --refill=2026-08-29
@@ -33,8 +34,10 @@
  *   node utils/scripts/kpkTreasuryIR.js --debank --shape=report --pretty
  *   node utils/scripts/kpkTreasuryIR.js --debank --in=debank.json --shape=report
  *
- * report (--report) - the chart and today's positions as one document:
+ * report (--report) - the chart and the stored positions as one document. A pure read
+ * of what --cache wrote: it calls nothing unless you ask it to.
  *   node utils/scripts/kpkTreasuryIR.js --report --out=kpk.json   # last 365 days + now
+ *   node utils/scripts/kpkTreasuryIR.js --report --live           # fetch DeBank now instead
  *   node utils/scripts/kpkTreasuryIR.js --report --rpc-only       # no DeBank point on the chart
  *   node utils/scripts/kpkTreasuryIR.js --report --in=debank.json # reuse a saved fetch
  *
@@ -174,6 +177,9 @@
  *   --chunk=<n>        dates per child process, default 20
  *   --no-lock          skip the single-instance lock (see below); only safe if you
  *                      know no other cache run is in flight
+ *   --no-debank        fill RPC dates only, take no snapshot. The snapshot is the
+ *                      half that cannot be caught up later, so reach for this only
+ *                      when DeBank itself is the thing that is broken.
  *
  * DeBank options (with --debank or --report):
  *   --list             print the resolved address roster and exit, calling nothing
@@ -199,6 +205,9 @@
  *
  * Report options (with --report):
  *   --from / --to      chart window, defaulting to the same rolling 365 days as --cache
+ *   --live             fetch DeBank now instead of reading the snapshot --cache stored.
+ *                      For an ad-hoc look between cache runs; the result is NOT written
+ *                      back, only --cache owns the positions key.
  *   --rpc-only         leave the chart RPC-sourced; do not use DeBank's point at all
  *                      (the DeBank report is still there, in `positions`)
  *
@@ -1795,6 +1804,17 @@ const WINDOW_DAYS = 365
 const BREAKDOWN_VERSION = 3 // 3: `curated` block; un-gated token lists; LP unwrap; sGHO/spUSDC/Pancake/StakeWise/Sablier/RWI coverage
 
 const STORE_KEY = "tvl-adapter-cache/cache/kpk-treasury-ir/daily.json"
+
+// DeBank positions live under their own key, latest-only, overwritten every cache
+// run. Deliberately NOT per-date and NOT inside STORE_KEY: a snapshot is ~156KB
+// against ~2.5KB for a day's RPC record, so a year of them in the daily store would
+// be a ~57MB object - and STORE_KEY is rewritten whole every time a fill run stores
+// a single date.
+//
+// Know what that trades away. DeBank has no historical endpoint, so each overwrite
+// is final: once this key moves on, yesterday's position detail is not recoverable
+// from here or from anywhere else. Only the rolled-up daily record outlives it.
+const POSITIONS_KEY = "tvl-adapter-cache/cache/kpk-treasury-ir/positions.json"
 const HAS_R2 = Boolean(process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY)
 
 function asDate(value, label) {
@@ -1845,6 +1865,33 @@ async function saveStore(ownDates) {
   const written = await sdk.cache.writeCache(STORE_KEY, store)
   if (!written) throw new Error(`${STORE_KEY} not written - writeCache rejected the payload`)
   return { bytes: written.length, total: Object.keys(store.dates).length }
+}
+
+// ---- positions store ----
+
+async function loadPositions() {
+  // readCache resolves an absent key to {} rather than throwing, so an empty object
+  // means "no snapshot yet" - not "a snapshot that happens to hold nothing". Checking
+  // for the positions array rather than truthiness is what keeps those two apart.
+  const stored = await sdk.cache.readCache(POSITIONS_KEY, { readFromR2Cache: true }).catch(() => null)
+  return stored && typeof stored === "object" && Array.isArray(stored.positions) ? stored : null
+}
+
+async function savePositions(document) {
+  const written = await sdk.cache.writeCache(POSITIONS_KEY, document)
+  if (!written) throw new Error(`${POSITIONS_KEY} not written - writeCache rejected the payload`)
+  return written.length
+}
+
+// A daily job leaves the snapshot under 24h old. Past this it means the run that
+// should have refreshed it did not, and every consumer is quietly reporting an old
+// treasury - so --status and --report both say so out loud rather than serving it
+// as though it were current.
+const STALE_POSITIONS_HOURS = 36
+
+function positionsAge(document) {
+  const asOf = Date.parse(document && document.asOf)
+  return Number.isFinite(asOf) ? (Date.now() - asOf) / 3600000 : null
 }
 
 // ---- single-instance lock ----
@@ -1963,7 +2010,71 @@ function runDates(dates, extraArgs) {
   })
 }
 
+// The scheduled job, both halves in one run: fill whatever RPC dates are missing,
+// then take the DeBank snapshot. These used to be two commands and therefore two
+// cron entries, which is one too many for a pair that has to stay in step.
+//
+// Order matters. RPC goes first because it is the half that CAN be caught up later:
+// if the process dies partway, a missed snapshot costs less than a missed backfill.
+// And the snapshot runs even when there was no gap to fill, because "nothing to
+// fill" is the steady state of a daily job - that is precisely the run that still
+// owes a fresh snapshot.
 async function fillCache() {
+  // A dump is a moment that has already passed. Writing one to the shared key would
+  // hand every --report consumer a stale treasury with nothing to mark it stale, so
+  // --in is a smoke-test input here and never a source for the stored snapshot.
+  if (typeof flags.in === "string" && !flags["no-write"])
+    throw new Error("--cache --in=<file> would store a snapshot built from a saved dump. Add --no-write to smoke-test, or drop --in to fetch live.")
+
+  await fillRpcGaps()
+
+  if (flags.status) return reportPositionsStatus()
+  if (flags.dry) return console.error("--dry: DeBank snapshot not taken")
+  if (flags["no-debank"]) return console.error("--no-debank: snapshot skipped, positions left as they were")
+
+  // The snapshot is a whole-object put like the daily store, and in the steady state
+  // - "nothing to fill", which is most days - fillRpcGaps returns before it ever
+  // reaches its own acquireLock. Take the lock here so the whole job is
+  // single-instance, not just the half that happens to have dates to run.
+  // acquireLock is not re-entrant (wx against our own file would read us as a live
+  // holder and throw), hence the lockHeld check rather than a bare call. Skipped
+  // under --no-write: a smoke test protects nothing, and taking the lock would let
+  // one fail a real run that started alongside it.
+  if (!lockHeld && !flags["no-write"]) acquireLock()
+
+  await capturePositions()
+}
+
+// The DeBank half: one live read of the roster, rolled up exactly as
+// --debank --shape=report rolls it up, written to POSITIONS_KEY for --report to
+// render. A failure here throws rather than warning - the RPC dates are already
+// persisted incrementally, so the non-zero exit reports the snapshot alone.
+async function capturePositions() {
+  flags.wallet = true // a client breakdown that omits idle tokens is wrong
+
+  const document = buildReport(await debankRecords({ stream: false }), labels())
+  printReport(document) // runs checkReport, and sets a non-zero exit on a broken invariant
+
+  if (flags["no-write"]) return console.error("--no-write: snapshot not persisted")
+
+  const bytes = await savePositions(document)
+  console.error(`snapshot stored: ${document.totals.positions} position(s), ${usd(document.tvl)}, ${bytes}B -> ${POSITIONS_KEY}`)
+  if (!HAS_R2) console.error("  R2 credentials absent - the snapshot landed in the local sdk cache only")
+}
+
+// --status covers both halves, so one command answers "is the daily job healthy".
+async function reportPositionsStatus() {
+  const stored = await loadPositions()
+  if (!stored) return console.error(`positions ${POSITIONS_KEY} -> nothing stored yet`)
+
+  const hours = positionsAge(stored)
+  const age = hours === null ? "no asOf" : `${hours.toFixed(1)}h old`
+  console.error(`positions ${POSITIONS_KEY} -> ${stored.date}, ${age}, ${stored.totals.positions} position(s), ${usd(stored.tvl)}`)
+  if (hours !== null && hours > STALE_POSITIONS_HOURS)
+    console.error(`  STALE: older than ${STALE_POSITIONS_HOURS}h - the cache run that should have refreshed it did not`)
+}
+
+async function fillRpcGaps() {
   const to = asDate(flags.to || today(), "--to")
   const from = asDate(flags.from || addDays(to, -(WINDOW_DAYS - 1)), "--from")
   if (from > to) throw new Error(`--from (${from}) is after --to (${to})`)
@@ -2780,6 +2891,35 @@ function chartPointFromReport(document) {
   }
 }
 
+// --report renders the snapshot --cache took; it does not call DeBank itself. That
+// is the whole point of folding the two jobs together: the document can be rebuilt
+// as often as you like off one scheduled fetch, and every rebuild says the same
+// thing rather than drifting with whenever it happened to run.
+//
+// --live and --in still resolve on the spot, for an ad-hoc look between cache runs.
+// Neither is written back - only --cache owns POSITIONS_KEY, so an ad-hoc report can
+// never quietly become the stored snapshot everything else reads.
+async function reportPositions() {
+  if (flags.live && typeof flags.in === "string") throw new Error("--live and --in are two different sources; pick one")
+
+  if (flags.live || typeof flags.in === "string") {
+    const document = buildReport(await debankRecords({ stream: false }), labels())
+    const source = flags.live ? "live DeBank fetch (--live)" : `reshaped from ${flags.in}`
+    console.error(`positions: ${source}, ${document.date} - not written back to ${POSITIONS_KEY}`)
+    return document
+  }
+
+  const stored = await loadPositions()
+  if (!stored)
+    throw new Error(`no positions stored in ${POSITIONS_KEY} - run --cache to take a snapshot, or --live to fetch one now`)
+
+  const hours = positionsAge(stored)
+  console.error(`positions: ${stored.date} from ${POSITIONS_KEY}${hours === null ? "" : `, ${hours.toFixed(1)}h old`}`)
+  if (hours !== null && hours > STALE_POSITIONS_HOURS)
+    console.error(`  STALE: older than ${STALE_POSITIONS_HOURS}h - --cache has not run since. --live fetches a fresh one.`)
+  return stored
+}
+
 async function reportMode() {
   if (flags.shape) throw new Error("--shape does not apply to --report (the document shape is fixed)")
   flags.wallet = true // a client breakdown that omits idle tokens is wrong
@@ -2800,7 +2940,7 @@ async function reportMode() {
   if (flat.length)
     console.error(`  ${flat.length} date(s) carry no breakdown (replayed with narrowed --dims): ${flat.slice(0, 6).join(", ")}${flat.length > 6 ? ` ... +${flat.length - 6}` : ""}`)
 
-  const positions = buildReport(await debankRecords({ stream: false }), labels())
+  const positions = await reportPositions()
   printReport(positions)
 
   const point = chartPointFromReport(positions)
