@@ -2978,10 +2978,31 @@ async function reportMode() {
   // newest point reads high by the seam above and revises down when the cache run for
   // that date takes over - it is provisional in both senses. --rpc-only opts out.
   const inWindow = point.date >= from && point.date <= to
+
+  // The DeBank point owns the latest day only if it IS the latest day, and that is no
+  // longer automatic. It used to be a live fetch, so its date was always today and
+  // always at or past the newest stored record; it is now whatever the last cache run
+  // snapshotted, which a --no-debank run or a failed DeBank half can leave behind the
+  // store.
+  //
+  // Splicing a lagging point in would be wrong twice over: it would overwrite a
+  // perfectly good same-date RPC record with a staler reading, AND leave newer RPC
+  // points after it - so the seam's ~+1.8% bias would show up as a fake down-tick
+  // into the following day rather than as the up-tick at the end of the series that
+  // consumers are told to expect. An RPC point in the middle of an RPC series is the
+  // one thing this chart must not mix.
+  const newestRpc = chart.reduce((latest, record) => (record.date > latest ? record.date : latest), "")
+  const lags = Boolean(newestRpc) && point.date < newestRpc
+
   let provisional = null
   if (flags["rpc-only"]) console.error(`--rpc-only: chart left RPC-sourced, DeBank's ${point.date} point not used`)
   else if (!inWindow)
     console.error(`  DeBank reads ${point.date}, outside ${from}..${to} - point not used (its report is still in .positions)`)
+  else if (lags)
+    console.error(
+      `  DeBank reads ${point.date}, behind the newest RPC record ${newestRpc} - point not used, the chart stays RPC-sourced.\n` +
+        `    The stored snapshot is stale: run --cache to refresh it, or --live for a fresh fetch. Its report is still in .positions.`
+    )
   else {
     const existing = chart.findIndex((record) => record.date === point.date)
     if (existing >= 0) {
