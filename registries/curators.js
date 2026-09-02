@@ -50,6 +50,19 @@ const configs = {
       }
     },
   },
+  "sharpbyte-capital": {
+    config: {
+      methodology: 'Counts assets deposited in the SharpByte USDT Prime Morpho V2 vault.',
+      start: '2026-07-03',
+      blockchains: {
+        ethereum: {
+          morpho: [
+            '0x65a6334c0e2b5f7640c2A6b9ce615e162b1E909B',
+          ],
+        },
+      }
+    },
+  },
   "Greenhouse-Finance": {
     config: {
       methodology: 'Count all assets deposited in Greenhouse curated vaults.',
