@@ -24,6 +24,9 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'zero-swap': {
+    robinhood: '0xc802A440559cEE8A66E2023403d34Be9084A720e',
+  },
   '1pulse': {
     pulse: '0x17C335D22456c798D5A3D021583eDAcbD4Ef6444',
   },
