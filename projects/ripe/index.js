@@ -135,6 +135,17 @@ const isAddress = address => /^0x[0-9a-fA-F]{40}$/.test(address)
 const normalize = address => address.toLowerCase()
 const uniqueAddresses = addresses => [...new Map(addresses.map(address => [normalize(address), address])).values()]
 
+/**
+ * Resolves a RipeHq registry id to its contract address at the queried block.
+ * Returns undefined when the id was not yet registered (RipeHq answers the zero address);
+ * throws on a malformed response or a failed reverse-id check so a wrong registry read
+ * cannot silently shrink TVL.
+ * @param {object} api sdk ChainApi pinned to the queried block
+ * @param {string} chain key into `config`
+ * @param {number} regId RipeHq registry id to resolve
+ * @param {string} label human-readable name used in error messages
+ * @returns {Promise<string|undefined>} the registered address, or undefined if unregistered
+ */
 async function getRegistryAddress(api, chain, regId, label) {
   const { ripeHq } = config[chain]
   const address = await api.call({ target: ripeHq, abi: 'function getAddr(uint256 regId) view returns (address)', params: [regId] })
@@ -148,6 +159,14 @@ async function getRegistryAddress(api, chain, regId, label) {
   return address
 }
 
+/**
+ * Collects every Endaoment address that may hold swept collateral: all addresses recorded in
+ * the AddressUpdateConfirmed log history for the sweep-Endaoment registry id, unioned with the
+ * registry's answer at the queried block.
+ * @param {object} api sdk ChainApi pinned to the queried block
+ * @param {string} chain key into `config`
+ * @returns {Promise<string[]>} deduplicated owner addresses (empty before deployment)
+ */
 async function getEndaomentOwners(api, chain) {
   const { ripeHq, sweepEndaoment } = config[chain]
   const regId = RIPE_REGISTRY_IDS.sweepEndaoment
@@ -173,6 +192,17 @@ async function getEndaomentOwners(api, chain) {
   return uniqueAddresses([...historicalEndaoments, ...(currentEndaoment ? [currentEndaoment] : [])])
 }
 
+/**
+ * Fetches and validates Ripe's asset and address metadata, then derives the inputs for TVL
+ * summation: token/owner pairs for every vaultId > 2 collateral (gated to tokens already
+ * deployed at `block`), the blacklist (protocol-minted GREEN/sGREEN, stability-pool assets,
+ * wrapper shares, and any policy exclusions), and the stability pool address. Throws on any
+ * malformed or inconsistent API response rather than under-counting.
+ * @param {string} chain key into `config`
+ * @param {string[]} endaomentOwners result of getEndaomentOwners
+ * @param {number} block block being measured
+ * @returns {Promise<{blacklistedTokens: string[], stabilityPoolAddress: string, tokensAndOwners: string[][]}>}
+ */
 async function getTvlData(chain, endaomentOwners, block) {
   const chainConfig = config[chain]
   const [assetsResponse, addressesResponse] = await Promise.all([
@@ -235,6 +265,12 @@ async function getTvlData(chain, endaomentOwners, block) {
   return { blacklistedTokens, stabilityPoolAddress, tokensAndOwners: [...pairs.values()] }
 }
 
+/**
+ * Reads each wrapper's share balance for its owner and keeps only the non-zero holdings.
+ * @param {object} api sdk ChainApi pinned to the queried block
+ * @param {{wrapper: string, underlying: string, owner: string}[]} holdings wrapper/owner pairs to read
+ * @returns {Promise<object[]>} the held entries, each annotated with its `shares` balance
+ */
 async function getHeldERC4626Shares(api, holdings) {
   if (!holdings.length) return []
   const shareBalances = await api.multiCall({
@@ -247,6 +283,13 @@ async function getHeldERC4626Shares(api, holdings) {
     .filter(({ shares }) => BigInt(shares) > 0n)
 }
 
+/**
+ * Sums the balances already recorded on `api` for `token`, matching both bare addresses and
+ * chain-prefixed keys, so the unwrap invariant can compare before and after a credit.
+ * @param {object} api sdk ChainApi whose balance sheet is inspected
+ * @param {string} token token address in any casing
+ * @returns {bigint} the currently recorded balance
+ */
 function getApiTokenBalance(api, token) {
   const normalizedToken = normalize(token)
   return Object.entries(api.getBalances())
@@ -254,6 +297,16 @@ function getApiTokenBalance(api, token) {
     .reduce((sum, [, balance]) => sum + BigInt(balance), 0n)
 }
 
+/**
+ * Converts held ERC-4626 shares to underlying assets and credits them to `api`. Verifies each
+ * wrapper's on-chain asset() matches the configured underlying, skips blacklisted underlyings,
+ * and asserts every credit actually raised the recorded balance — a broken unwrap throws
+ * instead of silently dropping collateral.
+ * @param {object} api sdk ChainApi to credit
+ * @param {object[]} heldShares output of getHeldERC4626Shares
+ * @param {string[]} blacklistedTokens underlyings that must not be credited
+ * @returns {Promise<Set<string>>} normalized wrapper addresses whose underlying was added
+ */
 async function unwrapERC4626Shares(api, heldShares, blacklistedTokens) {
   if (!heldShares.length) return new Set()
 
@@ -286,6 +339,16 @@ async function unwrapERC4626Shares(api, heldShares, blacklistedTokens) {
   return addedWrappers
 }
 
+/**
+ * Credits the external (non-GREEN) leg of each configured Curve pool pro-rata to the LP share
+ * the owners hold: heldShares / totalSupply of the pool's balance at the configured coin index.
+ * Verifies the coin at that index matches the configured underlying and throws on held shares
+ * against zero supply rather than returning a plausible wrong number.
+ * @param {object} api sdk ChainApi to credit
+ * @param {{pool: string, underlying: string, coinIndex: number, fromBlock: number}[]} legs configured legs
+ * @param {string[]} owners addresses whose LP balances count
+ * @param {number} block block being measured, for the per-leg deployment gate
+ */
 async function addCurveLpExternalLegs(api, legs, owners, block) {
   const activeLegs = legs.filter(({ fromBlock }) => block >= fromBlock)
   if (!activeLegs.length) return
@@ -334,6 +397,13 @@ async function addCurveLpExternalLegs(api, legs, owners, block) {
   })
 }
 
+/**
+ * Builds the tvl handler for `chain`: resolves Endaoment owners, validates API metadata,
+ * unwraps held ERC-4626 wrapper shares to their underlying, credits Curve external legs, and
+ * sums the remaining token/owner pairs through sumTokens2 with the blacklist applied.
+ * @param {string} chain key into `config`
+ * @returns {function} async (api, block) handler in DefiLlama adapter form
+ */
 function tvl(chain) {
   return async (api, block) => {
     const { curveLpExternalLegs, erc4626Wrappers } = config[chain]
@@ -371,6 +441,13 @@ function tvl(chain) {
   }
 }
 
+/**
+ * Builds the pool2 handler for `chain`: RIPE-paired LP tokens held by the governance vault and
+ * every Endaoment owner, reserve-unwrapped via resolveLP so LP value derives from constituent
+ * marks instead of unknown-token LP pricing.
+ * @param {string} chain key into `config`
+ * @returns {function} async (api, block) handler in DefiLlama adapter form
+ */
 function pool2Tvl(chain) {
   const { govVault, pool2Tokens } = config[chain]
 
@@ -386,6 +463,12 @@ function pool2Tvl(chain) {
   }
 }
 
+/**
+ * Builds the borrowed handler for `chain`: reports the Ledger's outstanding GREEN debt as a
+ * USD value, or leaves balances untouched when the Ledger is not yet registered.
+ * @param {string} chain key into `config`
+ * @returns {function} async (api) handler in DefiLlama adapter form
+ */
 function borrowed(chain) {
   return async (api) => {
     const ledger = await getRegistryAddress(api, chain, RIPE_REGISTRY_IDS.ledger, 'Ledger')
@@ -399,6 +482,13 @@ function borrowed(chain) {
   }
 }
 
+/**
+ * Wraps a section handler so blocks before `fromBlock` return empty balances instead of
+ * calling contracts that do not exist yet.
+ * @param {number} fromBlock first block at which the protocol exists on this chain
+ * @param {function} fn async (api, block) handler to gate
+ * @returns {function} async (api) handler in DefiLlama adapter form
+ */
 function afterDeployment(fromBlock, fn) {
   return async (api) => {
     const block = await api.getBlock()
@@ -407,6 +497,12 @@ function afterDeployment(fromBlock, fn) {
   }
 }
 
+/**
+ * Assembles the per-chain export: tvl, pool2, staking (RIPE in the governance vault) and
+ * borrowed, each gated behind the chain's deployment block.
+ * @param {string} chain key into `config`
+ * @returns {object} DefiLlama chain export section
+ */
 function chainExports(chain) {
   const { fromBlock, govVault, ripeToken, start } = config[chain]
 
