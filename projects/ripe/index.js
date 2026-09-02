@@ -1,74 +1,32 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getConfig } = require('../helper/cache');
-const { getLogs2 } = require('../helper/cache/getLogs');
 const { staking } = require('../helper/staking')
 
 const RIPE_REGISTRY_IDS = {
   ledger: 4,
+  priceDesk: 7,
+  // Points at the Endaoment holding swept collateral. Resolved at the queried block, which is
+  // also correct for backfills.
   sweepEndaoment: 14,
-  // Endaoment Funds is a protocol reserve, not user deposits. RegId 21 belongs in Ripe's
-  // separate DefiLlama Treasury submission and is deliberately never added to TVL owners.
-  // Robinhood block 43,341,995 logged 84d0... -> 0fC5... -> 84d0... within one transaction;
-  // block-final registry state is unaffected, and this id is not consumed by the TVL adapter.
-  excludedEndaomentFundsTreasury: 21,
-}
-const ADDRESS_UPDATE_CONFIRMED_EVENT = 'event AddressUpdateConfirmed(uint256 regId, string description, address indexed newAddr, address indexed prevAddr, uint256 version, string registry)'
-
-// Named policy set so its treatment and disclosure switch together, with the evidence explicit.
-// At block 52,163,750, the four marks totalled $3,862,477.21. Moto's counter-reserve ceiling
-// was $7,473.09 (516.85x), while Luna's constant-product exit floor was $435.78 (8,863.37x).
-// Ripe's own PriceDesk marks every token below at zero; each has ltv=0 and liqThreshold=0
-// on-chain, so they back none of the 7,686.70 GREEN outstanding.
-const PRICED_VAULT4_MEMECOINS_BY_CHAIN = {
-  robinhood: {
-    PONS: '0x39dbed3a2bd333467115de45665cc57f813c4571', // $2,164,402.43 booked / $712.22 exit — 3,038.95x
-    CASHCAT: '0x020bfc650a365f8bb26819deaabf3e21291018b4', // $1,220,668.77 booked / $6,462.80 exit — 188.88x
-    Index: '0x56910d4409f3a0c78c64dd8d0545ff0705389870', // $288,752.81 booked / $285.63 exit — 1,010.93x
-    STONKBROKER: '0xe934e36a439c94017b64a3fece66af12099abf50', // $188,653.21 booked / $12.44 exit — 15,165.05x
-  },
 }
 
 const config = {
   base: {
-    assetsCacheKey: 'ripe-assets-base',
-    assetsUrl: 'https://api.ripe.finance/api/ripe/assets?chain=base',
-    addressesCacheKey: 'ripe-addresses-base',
-    addressesUrl: 'https://api.ripe.finance/api/chains/addresses?chain=base',
     start: 1754006400,
     fromBlock: 32_085_883,
-    sweepEndaoment: { fromBlock: 32_086_527 },
+    // Underscore vault shares held as Ripe collateral: ERC-4626 wrappers with no price feed,
+    // unwrapped to their underlying instead of being silently dropped by sumTokens2.
     erc4626Wrappers: [
-      {
-        wrapper: '0x99e65176f7fa8743e3fbaef277d1da448e361367', // undyUSDC
-        underlying: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', // USDC
-        fromBlock: 45_410_174,
-      },
-      {
-        wrapper: '0x02981db1a99a14912b204437e7a2e02679b57668', // undyETH
-        underlying: '0x4200000000000000000000000000000000000006', // WETH
-        fromBlock: 38_023_392,
-      },
-      {
-        wrapper: '0x3fb0fc9d3ddd543ad1b748ed2286a022f4638493', // undyBTC
-        underlying: '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf', // cbBTC
-        fromBlock: 38_023_397,
-      },
-      {
-        wrapper: '0x1cb8dab80f19fc5aca06c2552aecd79015008ea8', // undyEURC
-        underlying: '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42', // EURC
-        fromBlock: 38_023_408,
-      },
-      {
-        wrapper: '0x96f1a7ce331f40afe866f3b707c223e377661087', // undyAERO
-        underlying: '0x940181a94a35a4569e4529a3cdfb74e38fd98631', // AERO
-        fromBlock: 38_023_403,
-      },
+      { wrapper: '0x99e65176f7fa8743e3fbaef277d1da448e361367', underlying: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' }, // undyUSDC -> USDC
+      { wrapper: '0x02981db1a99a14912b204437e7a2e02679b57668', underlying: '0x4200000000000000000000000000000000000006' }, // undyETH -> WETH
+      { wrapper: '0x3fb0fc9d3ddd543ad1b748ed2286a022f4638493', underlying: '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf' }, // undyBTC -> cbBTC
+      { wrapper: '0x1cb8dab80f19fc5aca06c2552aecd79015008ea8', underlying: '0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42' }, // undyEURC -> EURC
+      { wrapper: '0x96f1a7ce331f40afe866f3b707c223e377661087', underlying: '0x940181a94a35a4569e4529a3cdfb74e38fd98631' }, // undyAERO -> AERO
     ],
     curveLpExternalLegs: [{
       pool: '0xd6c283655b42fa0eb2685f7ab819784f071459dc', // GREEN/USDC
       underlying: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', // USDC
       coinIndex: 0,
-      fromBlock: 32_086_681,
     }],
     ripeToken: '0x2A0a59d6B975828e781EcaC125dBA40d7ee5dDC0',
     pool2Tokens: [
@@ -79,37 +37,8 @@ const config = {
     govVault: '0xe42b3dC546527EB70D741B185Dc57226cA01839D',
   },
   robinhood: {
-    assetsCacheKey: 'ripe-assets-robinhood',
-    assetsUrl: 'https://api.ripe.finance/api/ripe/assets?chain=robinhood',
-    addressesCacheKey: 'ripe-addresses-robinhood',
-    addressesUrl: 'https://api.ripe.finance/api/chains/addresses?chain=robinhood',
     start: 1785871180,
     fromBlock: 27_870_288,
-    sweepEndaoment: { fromBlock: 27_895_191 },
-    // Deployment gates only, not policy exclusions: the live endpoint includes these assets when
-    // backfilling blocks before their contracts existed.
-    historicalTokenFromBlocks: {
-      '0x85a574f2ff0795685f58d1d7b0d4b51f148ac489': 36_772_684, // PRINTER
-      '0x5a86828efd322bfb16d93cfed16ee9bc14940d7f': 35_489_899, // QUOTRON
-    },
-    excludePricedVault4Memecoins: false, // Flip only this boolean to change treatment and disclosure.
-    memecoinMethodologies: {
-      include: [
-        "TVL is third-party collateral deposited in Ripe's vaults, valued at coins.llama.fi marks.",
-        "On Robinhood this includes a 0%-LTV vault of locally-issued memecoins that cannot be borrowed against and that Ripe's own PriceDesk assigns no value. At block 52,163,750 those four tokens were marked at $3,862,477.21, 94.26% of Robinhood TVL; their combined counter-reserves give a $7,473.09 theoretical exit-liquidity ceiling, while a constant-product simulation gives a $435.78 exit-liquidity floor.",
-        "Underscore vault shares held as Ripe collateral are unwrapped to their ERC-4626 underlying; sNET is excluded because it has no observable backing or conversion rate. GREEN, sGREEN and Curve GREEN legs, including GREEN/sGREEN stability-pool deposits, are excluded as protocol-minted, following projects/helper/liquity.js and projects/flux-protocol; only the pools' USDC/USDG legs count.",
-        "RIPE and GREEN are priced from pools Ripe itself owns. coins.llama.fi publishes one bit-identical CCIP-bridged RIPE mark for both chains from Robinhood RIPE/NVDA 0x9b8537be, whose governance vault and multisig hold 99.8628% of LP; across all RIPE pools genuinely third-party counter-assets total about $2,900 against roughly $4.46M of RIPE booked in staking. The RIPE mark is 20-30 minutes stale by construction, and Ripe's Robinhood PriceDesk returns 0 from a monitoring-only source. GREEN marks come from the 99.99636%-Ripe-owned Base and 99.9952%-Ripe-owned Robinhood Curve pools; they hold about $315k USDC and $365k USDG and absorb about $200k GREEN below 0.4% slippage, but that depth is Ripe's withdrawable capital.",
-        'Staking is RIPE in the governance vault at that market mark; pool2 reserve-unwraps RIPE-paired LPs at constituent marks; borrowed is outstanding GREEN debt from Ledger.totalDebt() at $1 face value.',
-      ].join(' '),
-      exclude: [
-        "TVL is third-party collateral deposited in Ripe's vaults, valued at coins.llama.fi marks.",
-        "Collateral in Ripe's 0%-LTV vaults is excluded where Ripe's own PriceDesk assigns it no value, it cannot be borrowed against, and its aggregate on-chain exit liquidity is under 1% of its quoted mark. On Robinhood this excludes four coins.llama.fi-priced tokens marked at $3,862,477.21 at block 52,163,750; their combined counter-reserves give a $7,473.09 theoretical exit-liquidity ceiling, while a constant-product simulation gives a $435.78 exit-liquidity floor. This follows DefiLlama's published Unproductive Assets guidance (https://docs.llama.fi/list-your-project/what-to-include-as-tvl) and matches exclusion patterns in projects/uniswap-v4, projects/faroswap, projects/morpho-blue and projects/aqua-network.",
-        "Underscore vault shares held as Ripe collateral are unwrapped to their ERC-4626 underlying; sNET is excluded because it has no observable backing or conversion rate. GREEN, sGREEN and Curve GREEN legs, including GREEN/sGREEN stability-pool deposits, are excluded as protocol-minted, following projects/helper/liquity.js and projects/flux-protocol; only the pools' USDC/USDG legs count.",
-        "RIPE and GREEN are priced from pools Ripe itself owns. coins.llama.fi publishes one bit-identical CCIP-bridged RIPE mark for both chains from Robinhood RIPE/NVDA 0x9b8537be, whose governance vault and multisig hold 99.8628% of LP; across all RIPE pools genuinely third-party counter-assets total about $2,900 against roughly $4.46M of RIPE booked in staking. The RIPE mark is 20-30 minutes stale by construction, and Ripe's Robinhood PriceDesk returns 0 from a monitoring-only source. GREEN marks come from the 99.99636%-Ripe-owned Base and 99.9952%-Ripe-owned Robinhood Curve pools; they hold about $315k USDC and $365k USDG and absorb about $200k GREEN below 0.4% slippage, but that depth is Ripe's withdrawable capital.",
-        'Staking is RIPE in the governance vault at that market mark; pool2 reserve-unwraps RIPE-paired LPs at constituent marks; borrowed is outstanding GREEN debt from Ledger.totalDebt() at $1 face value.',
-      ].join(' '),
-    },
-    pricedVault4Memecoins: PRICED_VAULT4_MEMECOINS_BY_CHAIN.robinhood,
     erc4626Wrappers: [],
     unbackedWrappers: [
       '0xb773ec2c326b7f98a5a83fc098825492f020a4c7', // sNET: no observable backing or conversion rate
@@ -118,7 +47,6 @@ const config = {
       pool: '0x2fd13b49f970e8c6d89283056c1c6281214b7eb6', // GREEN/USDG
       underlying: '0x5fc5360d0400a0fd4f2af552add042d716f1d168', // USDG
       coinIndex: 0,
-      fromBlock: 27_897_801,
     }],
     ripeToken: '0x4d3f37a965b21ab4122e92dd41d2693e742c883b',
     pool2Tokens: [
@@ -135,319 +63,162 @@ const isAddress = address => /^0x[0-9a-fA-F]{40}$/.test(address)
 const normalize = address => address.toLowerCase()
 const uniqueAddresses = addresses => [...new Map(addresses.map(address => [normalize(address), address])).values()]
 
-/**
- * Resolves a RipeHq registry id to its contract address at the queried block.
- * Returns undefined when the id was not yet registered (RipeHq answers the zero address);
- * throws on a malformed response or a failed reverse-id check so a wrong registry read
- * cannot silently shrink TVL.
- * @param {object} api sdk ChainApi pinned to the queried block
- * @param {string} chain key into `config`
- * @param {number} regId RipeHq registry id to resolve
- * @param {string} label human-readable name used in error messages
- * @returns {Promise<string|undefined>} the registered address, or undefined if unregistered
- */
+// Resolves a RipeHq registry id at the queried block; zero address means not yet registered.
 async function getRegistryAddress(api, chain, regId, label) {
-  const { ripeHq } = config[chain]
-  const address = await api.call({ target: ripeHq, abi: 'function getAddr(uint256 regId) view returns (address)', params: [regId] })
+  const address = await api.call({ target: config[chain].ripeHq, abi: 'function getAddr(uint256 regId) view returns (address)', params: [regId] })
   if (!isAddress(address)) throw new Error(`Invalid ${label} returned by RipeHq for ${chain}: ${address}`)
-  // A successful zero response means this registry id was not registered at the queried block.
-  // RPC errors still propagate, so unavailable history cannot silently shrink TVL.
   if (normalize(address) === nullAddress) return
-
-  const reverseId = await api.call({ target: ripeHq, abi: 'function getRegId(address addr) view returns (uint256)', params: [address] })
-  if (BigInt(reverseId) !== BigInt(regId)) throw new Error(`Invalid ${label} registry id for ${chain}: ${reverseId}`)
   return address
 }
 
-/**
- * Collects every Endaoment address that may hold swept collateral: all addresses recorded in
- * the AddressUpdateConfirmed log history for the sweep-Endaoment registry id, unioned with the
- * registry's answer at the queried block.
- * @param {object} api sdk ChainApi pinned to the queried block
- * @param {string} chain key into `config`
- * @returns {Promise<string[]>} deduplicated owner addresses (empty before deployment)
- */
 async function getEndaomentOwners(api, chain) {
-  const { ripeHq, sweepEndaoment } = config[chain]
-  const regId = RIPE_REGISTRY_IDS.sweepEndaoment
-  const [currentEndaoment, updates] = await Promise.all([
-    getRegistryAddress(api, chain, regId, 'Endaoment'),
-    api.block < sweepEndaoment.fromBlock ? [] : getLogs2({
-      api,
-      target: ripeHq,
-      fromBlock: sweepEndaoment.fromBlock,
-      eventAbi: ADDRESS_UPDATE_CONFIRMED_EVENT,
-      extraKey: 'sweep-endaoment-address-history',
-    }),
-  ])
-  const historicalEndaoments = updates
-    .filter(({ regId: updatedRegId }) => BigInt(updatedRegId) === BigInt(regId))
-    .flatMap(({ newAddr, prevAddr }) => [newAddr, prevAddr])
-    .filter(address => normalize(address) !== nullAddress)
-  if (historicalEndaoments.some(address => !isAddress(address)))
-    throw new Error(`Invalid historical Endaoment returned by RipeHq for ${chain}`)
-
-  // Registry updates and asset sweeps are separate transactions. Unioning every on-chain version
-  // with the block-specific result covers the interval where an old Endaoment still has custody.
-  return uniqueAddresses([...historicalEndaoments, ...(currentEndaoment ? [currentEndaoment] : [])])
+  const endaoment = await getRegistryAddress(api, chain, RIPE_REGISTRY_IDS.sweepEndaoment, 'Endaoment')
+  return endaoment ? [endaoment] : []
 }
 
-/**
- * Fetches and validates Ripe's asset and address metadata, then derives the inputs for TVL
- * summation: token/owner pairs for every vaultId > 2 collateral (gated to tokens already
- * deployed at `block`), the blacklist (protocol-minted GREEN/sGREEN, stability-pool assets,
- * wrapper shares, and any policy exclusions), and the stability pool address. Throws on any
- * malformed or inconsistent API response rather than under-counting.
- * @param {string} chain key into `config`
- * @param {string[]} endaomentOwners result of getEndaomentOwners
- * @param {number} block block being measured
- * @returns {Promise<{blacklistedTokens: string[], stabilityPoolAddress: string, tokensAndOwners: string[][]}>}
- */
-async function getTvlData(chain, endaomentOwners, block) {
+// Fetches Ripe's asset/address metadata and derives the TVL inputs: [token, owner] pairs for
+// vaultId > 2 collateral, per-token LTV, and the blacklist. Throws on malformed responses
+// rather than under-counting.
+async function getTvlData(chain, endaomentOwners) {
   const chainConfig = config[chain]
   const [assetsResponse, addressesResponse] = await Promise.all([
-    getConfig(chainConfig.assetsCacheKey, chainConfig.assetsUrl),
-    getConfig(chainConfig.addressesCacheKey, chainConfig.addressesUrl),
+    getConfig(`ripe-assets-${chain}`, `https://api.ripe.finance/api/ripe/assets?chain=${chain}`),
+    getConfig(`ripe-addresses-${chain}`, `https://api.ripe.finance/api/chains/addresses?chain=${chain}`),
   ])
   if (!Array.isArray(assetsResponse?.result)) throw new Error(`Invalid Ripe asset response for ${chain}`)
-  if (addressesResponse?.chain !== chain || typeof addressesResponse?.addresses !== 'object')
-    throw new Error(`Invalid Ripe address response for ${chain}`)
+  const addresses = addressesResponse?.addresses
+  if (![addresses?.GreenToken, addresses?.SavingsGreen, addresses?.StabilityPool].every(isAddress))
+    throw new Error(`Invalid Ripe registry address for ${chain}`)
 
   const assets = assetsResponse.result
-  const addresses = addressesResponse.addresses
-  if (assets.some(({ tokenAddress, vaultId }) => !isAddress(tokenAddress) || !Number.isInteger(Number(vaultId))))
-    throw new Error(`Invalid Ripe asset metadata for ${chain}`)
-  if (![addresses.GreenToken, addresses.SavingsGreen, addresses.RipeHq, addresses.StabilityPool].every(isAddress))
-    throw new Error(`Invalid Ripe registry address for ${chain}`)
-  if (normalize(addresses.RipeHq) !== normalize(chainConfig.ripeHq))
-    throw new Error(`Unexpected RipeHq returned by address API for ${chain}`)
-
-  const stabilityPoolAssets = assets.filter(({ vaultId }) => Number(vaultId) === 1)
-  const stabilityPoolAddress = stabilityPoolAssets[0]?.vaultAddress
-  if (!isAddress(stabilityPoolAddress) || normalize(stabilityPoolAddress) !== normalize(addresses.StabilityPool))
-    throw new Error(`Missing Ripe stability pool for ${chain}`)
-  if (stabilityPoolAssets.some(({ vaultAddress }) => !isAddress(vaultAddress) || normalize(vaultAddress) !== normalize(stabilityPoolAddress)))
-    throw new Error(`Inconsistent Ripe stability pool for ${chain}`)
-
-  const historicalTokenFromBlocks = chainConfig.historicalTokenFromBlocks ?? {}
-  const nonSpAssets = assets.filter(({ tokenAddress, vaultId }) =>
-    Number(vaultId) > 2 && block >= (historicalTokenFromBlocks[normalize(tokenAddress)] ?? chainConfig.fromBlock))
-  if (nonSpAssets.some(({ tokenAddress, vaultAddress, shouldTransferToEndaoment }) =>
-    !isAddress(tokenAddress) || !isAddress(vaultAddress) || typeof shouldTransferToEndaoment !== 'boolean'))
+  const stabilityPoolAddress = addresses.StabilityPool
+  const nonSpAssets = assets.filter(({ vaultId }) => Number(vaultId) > 2)
+  if (nonSpAssets.some(({ tokenAddress, vaultAddress, ltv }) =>
+    !isAddress(tokenAddress) || !isAddress(vaultAddress) || !/^\d+$/.test(String(ltv))))
     throw new Error(`Invalid Ripe collateral metadata for ${chain}`)
-  if (nonSpAssets.some(({ vaultAddress }) => normalize(vaultAddress) === normalize(stabilityPoolAddress)))
-    throw new Error(`Ripe stability pool appears in vaultId > 2 set for ${chain}`)
 
+  // The highest LTV across a token's vault entries decides whether it is borrowable at all.
+  const tokenLtv = new Map()
   const pairs = new Map()
-  for (const { tokenAddress, vaultAddress, shouldTransferToEndaoment } of nonSpAssets) {
-    // AuctionHouse currently sends liquidation proceeds to excluded Endaoment Funds and credits
-    // stability-pool users via claimableBalances. This extra owner read is retained only as cheap
-    // insurance against a future routing change; no current collateral path into the pool was found.
+  for (const { tokenAddress, vaultAddress, shouldTransferToEndaoment, ltv } of nonSpAssets) {
+    const key = normalize(tokenAddress)
+    if (BigInt(ltv) > (tokenLtv.get(key) ?? -1n)) tokenLtv.set(key, BigInt(ltv))
     const owners = [vaultAddress, stabilityPoolAddress]
     if (shouldTransferToEndaoment === true) owners.push(...endaomentOwners)
     for (const owner of owners)
-      pairs.set(`${normalize(tokenAddress)}:${normalize(owner)}`, [tokenAddress, owner])
+      pairs.set(`${key}:${normalize(owner)}`, [tokenAddress, owner])
   }
 
-  const configuredExclusions = [
-    ...chainConfig.erc4626Wrappers.map(({ wrapper }) => wrapper),
-    ...(chainConfig.unbackedWrappers ?? []),
-    ...(chainConfig.excludePricedVault4Memecoins ? Object.values(chainConfig.pricedVault4Memecoins) : []),
-  ]
   const blacklistedTokens = uniqueAddresses([
     addresses.GreenToken,
     addresses.SavingsGreen,
-    ...assets.filter(({ vaultId }) => Number(vaultId) <= 1).map(({ tokenAddress }) => tokenAddress),
-    ...configuredExclusions,
+    ...assets.filter(({ vaultId }) => Number(vaultId) <= 1).map(({ tokenAddress }) => tokenAddress).filter(isAddress),
+    ...chainConfig.erc4626Wrappers.map(({ wrapper }) => wrapper),
+    ...(chainConfig.unbackedWrappers ?? []),
   ])
-  if (blacklistedTokens.some(address => !isAddress(address))) throw new Error(`Invalid Ripe blacklist for ${chain}`)
-
-  return { blacklistedTokens, stabilityPoolAddress, tokensAndOwners: [...pairs.values()] }
+  return { blacklistedTokens, stabilityPoolAddress, tokenLtv, tokensAndOwners: [...pairs.values()] }
 }
 
-/**
- * Reads each wrapper's share balance for its owner and keeps only the non-zero holdings.
- * @param {object} api sdk ChainApi pinned to the queried block
- * @param {{wrapper: string, underlying: string, owner: string}[]} holdings wrapper/owner pairs to read
- * @returns {Promise<object[]>} the held entries, each annotated with its `shares` balance
- */
-async function getHeldERC4626Shares(api, holdings) {
-  if (!holdings.length) return []
+// Drops collateral that Ripe itself treats as unproductive at the queried block: tokens whose
+// highest LTV is zero AND whose on-chain PriceDesk mark is zero cannot be borrowed against and
+// back no GREEN debt, so external marks (often derived from dust pools) would book value the
+// protocol itself does not recognize. Fully dynamic: if Ripe later prices an asset or enables
+// borrowing against it, it counts again, and future assets in the same shape are auto-excluded.
+async function excludeUnproductiveTokens(api, chain, pairs, tokenLtv) {
+  const zeroLtvTokens = uniqueAddresses(pairs.map(([token]) => token))
+    .filter(token => (tokenLtv.get(normalize(token)) ?? 0n) === 0n)
+  if (!zeroLtvTokens.length) return pairs
+
+  const priceDesk = await getRegistryAddress(api, chain, RIPE_REGISTRY_IDS.priceDesk, 'PriceDesk')
+  if (!priceDesk) return pairs
+  // A revert for an asset PriceDesk does not know is the same signal as a zero mark.
+  const prices = await api.multiCall({
+    abi: 'function getPrice(address) view returns (uint256)',
+    calls: zeroLtvTokens.map(token => ({ target: priceDesk, params: [token] })),
+    permitFailure: true,
+  })
+  const excluded = new Set(zeroLtvTokens
+    .filter((_, i) => prices[i] == null || BigInt(prices[i]) === 0n)
+    .map(normalize))
+  return pairs.filter(([token]) => !excluded.has(normalize(token)))
+}
+
+// Follows Murk's third-party-share pattern: unwrap only Ripe's share balance via
+// balanceOf -> convertToAssets, never totalAssets(), which would credit Ripe with the
+// wrapper's entire vault book.
+async function unwrapERC4626Shares(api, holdings) {
+  if (!holdings.length) return
+  // permitFailure: a failed read means the wrapper is not deployed at this block, i.e. no shares.
   const shareBalances = await api.multiCall({
     abi: 'erc20:balanceOf',
     calls: holdings.map(({ wrapper, owner }) => ({ target: wrapper, params: [owner] })),
-    permitFailure: false,
+    permitFailure: true,
   })
-  return holdings
+  const held = holdings
     .map((holding, i) => ({ ...holding, shares: shareBalances[i] }))
-    .filter(({ shares }) => BigInt(shares) > 0n)
-}
+    .filter(({ shares }) => shares != null && BigInt(shares) > 0n)
+  if (!held.length) return
 
-/**
- * Sums the balances already recorded on `api` for `token`, matching both bare addresses and
- * chain-prefixed keys, so the unwrap invariant can compare before and after a credit.
- * @param {object} api sdk ChainApi whose balance sheet is inspected
- * @param {string} token token address in any casing
- * @returns {bigint} the currently recorded balance
- */
-function getApiTokenBalance(api, token) {
-  const normalizedToken = normalize(token)
-  return Object.entries(api.getBalances())
-    .filter(([key]) => normalize(key) === normalizedToken || normalize(key).endsWith(`:${normalizedToken}`))
-    .reduce((sum, [, balance]) => sum + BigInt(balance), 0n)
-}
-
-/**
- * Converts held ERC-4626 shares to underlying assets and credits them to `api`. Verifies each
- * wrapper's on-chain asset() matches the configured underlying, skips blacklisted underlyings,
- * and asserts every credit actually raised the recorded balance — a broken unwrap throws
- * instead of silently dropping collateral.
- * @param {object} api sdk ChainApi to credit
- * @param {object[]} heldShares output of getHeldERC4626Shares
- * @param {string[]} blacklistedTokens underlyings that must not be credited
- * @returns {Promise<Set<string>>} normalized wrapper addresses whose underlying was added
- */
-async function unwrapERC4626Shares(api, heldShares, blacklistedTokens) {
-  if (!heldShares.length) return new Set()
-
-  const underlyingTokens = await api.multiCall({
-    abi: 'address:asset',
-    calls: heldShares.map(({ wrapper }) => wrapper),
-    permitFailure: false,
-  })
-  heldShares.forEach(({ wrapper, underlying }, i) => {
+  const underlyingTokens = await api.multiCall({ abi: 'address:asset', calls: held.map(({ wrapper }) => wrapper) })
+  held.forEach(({ wrapper, underlying }, i) => {
     if (normalize(underlyingTokens[i]) !== normalize(underlying))
-      throw new Error(`Unexpected ERC-4626 underlying for ${wrapper}: expected ${underlying}, got ${underlyingTokens[i]}`)
+      throw new Error(`Unexpected ERC-4626 underlying for ${wrapper}: got ${underlyingTokens[i]}`)
   })
-
   const underlyingBalances = await api.multiCall({
     abi: 'function convertToAssets(uint256 shares) view returns (uint256 assets)',
-    calls: heldShares.map(({ wrapper, shares }) => ({ target: wrapper, params: [shares] })),
-    permitFailure: false,
+    calls: held.map(({ wrapper, shares }) => ({ target: wrapper, params: [shares] })),
   })
-  const blacklist = new Set(blacklistedTokens.map(normalize))
-  const included = heldShares.map(({ wrapper, underlying }, i) => ({ wrapper, underlying, balance: underlyingBalances[i] }))
-    .filter(({ underlying, balance }) => !blacklist.has(normalize(underlying)) && BigInt(balance) > 0n)
-  const balancesBefore = included.map(({ underlying }) => getApiTokenBalance(api, underlying))
-  api.addTokens(included.map(({ underlying }) => underlying), included.map(({ balance }) => balance))
-  const addedWrappers = new Set()
-  included.forEach(({ wrapper, underlying }, i) => {
-    if (getApiTokenBalance(api, underlying) <= balancesBefore[i])
-      throw new Error(`ERC-4626 wrapper ${wrapper} has non-zero shares but no underlying was added`)
-    addedWrappers.add(normalize(wrapper))
-  })
-  return addedWrappers
+  api.addTokens(held.map(({ underlying }) => underlying), underlyingBalances)
 }
 
-/**
- * Credits the external (non-GREEN) leg of each configured Curve pool pro-rata to the LP share
- * the owners hold: heldShares / totalSupply of the pool's balance at the configured coin index.
- * Verifies the coin at that index matches the configured underlying and throws on held shares
- * against zero supply rather than returning a plausible wrong number.
- * @param {object} api sdk ChainApi to credit
- * @param {{pool: string, underlying: string, coinIndex: number, fromBlock: number}[]} legs configured legs
- * @param {string[]} owners addresses whose LP balances count
- * @param {number} block block being measured, for the per-leg deployment gate
- */
-async function addCurveLpExternalLegs(api, legs, owners, block) {
-  const activeLegs = legs.filter(({ fromBlock }) => block >= fromBlock)
-  if (!activeLegs.length) return
-
+// Credits the external (non-GREEN) leg of each configured Curve pool pro-rata to the LP share
+// the owners hold. The GREEN leg is protocol-minted and excluded.
+async function addCurveLpExternalLegs(api, legs, owners) {
   const uniqueOwners = uniqueAddresses(owners)
-  const holdings = activeLegs.flatMap((leg, legIndex) =>
-    uniqueOwners.map(owner => ({ leg, legIndex, owner })))
-  const lpBalances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: holdings.map(({ leg, owner }) => ({ target: leg.pool, params: [owner] })),
-    permitFailure: false,
-  })
-  const heldByLeg = activeLegs.map(() => 0n)
-  holdings.forEach(({ legIndex }, i) => { heldByLeg[legIndex] += BigInt(lpBalances[i]) })
-  const heldLegs = activeLegs
-    .map((leg, i) => ({ ...leg, heldShares: heldByLeg[i] }))
-    .filter(({ heldShares }) => heldShares > 0n)
-  if (!heldLegs.length) return
-
-  const underlyingTokens = await api.multiCall({
-    abi: 'function coins(uint256 index) view returns (address)',
-    calls: heldLegs.map(({ pool, coinIndex }) => ({ target: pool, params: [coinIndex] })),
-    permitFailure: false,
-  })
-  heldLegs.forEach(({ pool, underlying }, i) => {
-    if (normalize(underlyingTokens[i]) !== normalize(underlying))
-      throw new Error(`Unexpected Curve external leg for ${pool}: expected ${underlying}, got ${underlyingTokens[i]}`)
-  })
-
-  const [totalSupplies, poolBalances] = await Promise.all([
-    api.multiCall({
-      abi: 'erc20:totalSupply',
-      calls: heldLegs.map(({ pool }) => pool),
-      permitFailure: false,
-    }),
-    api.multiCall({
-      abi: 'function balances(uint256 index) view returns (uint256)',
-      calls: heldLegs.map(({ pool, coinIndex }) => ({ target: pool, params: [coinIndex] })),
-      permitFailure: false,
-    }),
-  ])
-  heldLegs.forEach(({ heldShares, pool, underlying }, i) => {
-    const totalSupply = BigInt(totalSupplies[i])
-    if (totalSupply === 0n) throw new Error(`Curve pool has held shares but zero supply: ${pool}`)
-    api.add(underlying, (BigInt(poolBalances[i]) * heldShares / totalSupply).toString())
-  })
-}
-
-/**
- * Builds the tvl handler for `chain`: resolves Endaoment owners, validates API metadata,
- * unwraps held ERC-4626 wrapper shares to their underlying, credits Curve external legs, and
- * sums the remaining token/owner pairs through sumTokens2 with the blacklist applied.
- * @param {string} chain key into `config`
- * @returns {function} async (api, block) handler in DefiLlama adapter form
- */
-function tvl(chain) {
-  return async (api, block) => {
-    const { curveLpExternalLegs, erc4626Wrappers } = config[chain]
-    const endaomentOwners = await getEndaomentOwners(api, chain)
-    const { blacklistedTokens, stabilityPoolAddress, tokensAndOwners } = await getTvlData(chain, endaomentOwners, block)
-    const wrappers = new Map(erc4626Wrappers.map(wrapper => [normalize(wrapper.wrapper), wrapper]))
-    const blacklist = new Set(blacklistedTokens.map(normalize))
-    erc4626Wrappers.forEach(({ wrapper }) => {
-      if (!blacklist.has(normalize(wrapper))) throw new Error(`ERC-4626 wrapper missing from ${chain} blacklist: ${wrapper}`)
+  for (const { pool, underlying, coinIndex } of legs) {
+    // permitFailure: a failed read means the pool is not deployed at this block, i.e. no shares.
+    const lpBalances = await api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: uniqueOwners.map(owner => ({ target: pool, params: [owner] })),
+      permitFailure: true,
     })
+    const heldShares = lpBalances.reduce((sum, balance) => sum + BigInt(balance ?? 0), 0n)
+    if (heldShares === 0n) continue
 
-    // Follow Murk's third-party-share pattern: unwrap only Ripe's balance, never totalAssets().
-    // The wrappers stay blacklisted from sumTokens2 but still enter this unwrap path; reversing that
-    // distinction silently drops their underlying. It also prevents raw shares and assets both counting
-    // if the share tokens receive prices later.
-    const wrapperHoldings = tokensAndOwners.flatMap(([token, owner]) => {
-      const wrapper = wrappers.get(normalize(token))
-      return wrapper && block >= wrapper.fromBlock ? [{ ...wrapper, owner }] : []
-    })
-    const plainPairs = tokensAndOwners.filter(([token]) => !wrappers.has(normalize(token)))
-
-    const heldWrapperShares = await getHeldERC4626Shares(api, wrapperHoldings)
-    const addedWrappers = await unwrapERC4626Shares(api, heldWrapperShares, blacklistedTokens)
-    heldWrapperShares.forEach(({ wrapper }) => {
-      if (!addedWrappers?.has(normalize(wrapper)))
-        throw new Error(`ERC-4626 wrapper ${wrapper} has non-zero shares but no underlying was added`)
-    })
-    await addCurveLpExternalLegs(api, curveLpExternalLegs, [stabilityPoolAddress, ...endaomentOwners], block)
-
-    return sumTokens2({
-      api,
-      tokensAndOwners: plainPairs,
-      blacklistedTokens,
-    });
+    const [coin, totalSupply, poolBalance] = await Promise.all([
+      api.call({ abi: 'function coins(uint256) view returns (address)', target: pool, params: [coinIndex] }),
+      api.call({ abi: 'erc20:totalSupply', target: pool }),
+      api.call({ abi: 'function balances(uint256) view returns (uint256)', target: pool, params: [coinIndex] }),
+    ])
+    if (normalize(coin) !== normalize(underlying))
+      throw new Error(`Unexpected Curve external leg for ${pool}: got ${coin}`)
+    api.add(underlying, (BigInt(poolBalance) * heldShares / BigInt(totalSupply)).toString())
   }
 }
 
-/**
- * Builds the pool2 handler for `chain`: RIPE-paired LP tokens held by the governance vault and
- * every Endaoment owner, reserve-unwrapped via resolveLP so LP value derives from constituent
- * marks instead of unknown-token LP pricing.
- * @param {string} chain key into `config`
- * @returns {function} async (api, block) handler in DefiLlama adapter form
- */
+function tvl(chain) {
+  return async (api) => {
+    const { curveLpExternalLegs, erc4626Wrappers } = config[chain]
+    const endaomentOwners = await getEndaomentOwners(api, chain)
+    const { blacklistedTokens, stabilityPoolAddress, tokenLtv, tokensAndOwners } = await getTvlData(chain, endaomentOwners)
+
+    // Wrapper shares stay blacklisted from sumTokens2 (no price feed, and no double count if
+    // they get one later) but enter the unwrap path instead of being dropped.
+    const wrappers = new Map(erc4626Wrappers.map(wrapper => [normalize(wrapper.wrapper), wrapper]))
+    const wrapperHoldings = tokensAndOwners.flatMap(([token, owner]) => {
+      const wrapper = wrappers.get(normalize(token))
+      return wrapper ? [{ ...wrapper, owner }] : []
+    })
+    const plainPairs = await excludeUnproductiveTokens(
+      api, chain, tokensAndOwners.filter(([token]) => !wrappers.has(normalize(token))), tokenLtv)
+
+    await unwrapERC4626Shares(api, wrapperHoldings)
+    await addCurveLpExternalLegs(api, curveLpExternalLegs, [stabilityPoolAddress, ...endaomentOwners])
+
+    return sumTokens2({ api, tokensAndOwners: plainPairs, blacklistedTokens })
+  }
+}
+
 function pool2Tvl(chain) {
   const { govVault, pool2Tokens } = config[chain]
 
@@ -457,18 +228,11 @@ function pool2Tvl(chain) {
       .map(({ token }) => token)
     if (!activeTokens.length) return api.getBalances()
 
-    const endaomentOwners = await getEndaomentOwners(api, chain)
-    const owners = [govVault, ...endaomentOwners]
+    const owners = [govVault, ...await getEndaomentOwners(api, chain)]
     return sumTokens2({ api, owners, tokens: activeTokens, resolveLP: true })
   }
 }
 
-/**
- * Builds the borrowed handler for `chain`: reports the Ledger's outstanding GREEN debt as a
- * USD value, or leaves balances untouched when the Ledger is not yet registered.
- * @param {string} chain key into `config`
- * @returns {function} async (api) handler in DefiLlama adapter form
- */
 function borrowed(chain) {
   return async (api) => {
     const ledger = await getRegistryAddress(api, chain, RIPE_REGISTRY_IDS.ledger, 'Ledger')
@@ -477,18 +241,12 @@ function borrowed(chain) {
 
     // GREEN debt is denominated in Ripe's $1 unit of account. DefiLlama reports CDP stablecoin
     // liabilities at face value; this is accounting treatment, not a price inferred from Ripe pools.
-    const debtInMicroDollars = BigInt(totalDebt) / 10n ** 12n
-    api.addUSDValue(Number(debtInMicroDollars) / 1e6)
+    api.addUSDValue(Number(BigInt(totalDebt) / 10n ** 12n) / 1e6)
   }
 }
 
-/**
- * Wraps a section handler so blocks before `fromBlock` return empty balances instead of
- * calling contracts that do not exist yet.
- * @param {number} fromBlock first block at which the protocol exists on this chain
- * @param {function} fn async (api, block) handler to gate
- * @returns {function} async (api) handler in DefiLlama adapter form
- */
+// Blocks before the chain's deployment return empty balances instead of calling
+// contracts that do not exist yet.
 function afterDeployment(fromBlock, fn) {
   return async (api) => {
     const block = await api.getBlock()
@@ -497,12 +255,6 @@ function afterDeployment(fromBlock, fn) {
   }
 }
 
-/**
- * Assembles the per-chain export: tvl, pool2, staking (RIPE in the governance vault) and
- * borrowed, each gated behind the chain's deployment block.
- * @param {string} chain key into `config`
- * @returns {object} DefiLlama chain export section
- */
 function chainExports(chain) {
   const { fromBlock, govVault, ripeToken, start } = config[chain]
 
@@ -515,11 +267,18 @@ function chainExports(chain) {
   }
 }
 
-const memecoinPolicy = config.robinhood.excludePricedVault4Memecoins ? 'exclude' : 'include'
-
 module.exports = {
-  methodology: config.robinhood.memecoinMethodologies[memecoinPolicy],
-  misrepresentedTokens: false,
+  methodology:
+    "TVL is third-party collateral deposited in Ripe's vaults. " +
+    'Collateral the protocol itself treats as unproductive is excluded dynamically: any asset whose ' +
+    "on-chain PriceDesk mark is zero and whose LTV is zero (it cannot be borrowed against and backs no " +
+    'GREEN debt) does not count. Underscore vault shares held as ' +
+    'collateral are unwrapped to their ERC-4626 underlying. GREEN, sGREEN and the GREEN legs of the ' +
+    "protocol's Curve pools (including stability-pool deposits) are excluded as protocol-minted, " +
+    'following the Liquity treatment; only the external USDC/USDG legs count. Staking is RIPE held in ' +
+    'the governance vault at market marks — note RIPE and GREEN are priced from pools Ripe itself ' +
+    'predominantly owns. Pool2 unwraps RIPE-paired LPs to constituent reserves. Borrowed is ' +
+    "outstanding GREEN debt from the Ledger at $1 face value.",
   base: chainExports('base'),
   robinhood: chainExports('robinhood'),
 };
