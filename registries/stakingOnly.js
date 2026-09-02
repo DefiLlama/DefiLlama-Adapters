@@ -1400,12 +1400,7 @@ const configs = {
       staking: ['0xB078cc304A0B264C5F3680DC0488954ACcd02E87', '0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'],
     },
   },
-  "tartswap": {
-    "methodology": "Staking counts CREPE deposited in the TartStakingVault contract (single-token, reward-streaming vault funded by protocol swap fees).",
-    "bsc": {
-      staking: [["0x20940d3573F1629F6c5226C2DDa2e9a28b364B33"], "0xeb2B7d5691878627eff20492cA7c9a71228d931D"]
-    }
-  },
+  // "tartswap" moved to projects/tartswap/index.js (custom adapter: OTC/games tvl + CREPE/TART staking + farm pool2)
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)

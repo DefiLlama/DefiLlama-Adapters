@@ -137,7 +137,9 @@ async function addOtcEscrow(api) {
   }
   if (!escrowedTokens.size) return
 
-  return sumTokens2({ api, owner: OTC_DESK, tokens: [...escrowedTokens] })
+  // permitFailure: a maker can escrow any BEP-20, so one non-standard token must not
+  // abort the whole TVL read - a failed balance read contributes zero instead.
+  return sumTokens2({ api, owner: OTC_DESK, tokens: [...escrowedTokens], permitFailure: true })
 }
 
 /**
