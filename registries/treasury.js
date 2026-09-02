@@ -5718,6 +5718,26 @@ const configs = {
       resolveUniV3: true,
     },
   },
+  'treasury/termix': {
+    // Protocol fee recipient — receives the 2% protocol fee from the escrow and
+    // campaign-vault contracts on both chains.
+    bsc: {
+      owners: ["0x1095deD95CB6e81C01204F7A94950dd559195E42"],
+      fetchCoValentTokens: false,
+      tokens: [
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.USDT,
+      ],
+    },
+    base: {
+      owners: ["0x1095deD95CB6e81C01204F7A94950dd559195E42"],
+      fetchCoValentTokens: false,
+      tokens: [
+        ADDRESSES.base.USDC,
+        ADDRESSES.base.USDT,
+      ],
+    },
+  },
   'treasury/thales': {
     ethereum: {
       tokens: [
