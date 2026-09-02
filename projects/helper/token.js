@@ -56,7 +56,13 @@ async function blockscoutGetTokens(address, api, { onlyUseExistingCache = false 
 
   async function _blockscoutGetTokens() {
     const tokens = [ADDRESSES.null]
-    const items = await get(`${baseUrl}/api/v2/addresses/${address}/token-balances`)
+    // Some blockscout instances (e.g. robinhood) sit behind a WAF that 403s non-browser user agents
+    const items = await get(`${baseUrl}/api/v2/addresses/${address}/token-balances`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+      }
+    })
     if (Array.isArray(items)) {
       items
         .filter(i => i?.token?.type === 'ERC-20' && +i.value > 0 && i.token.address_hash)
