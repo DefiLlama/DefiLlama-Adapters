@@ -2,10 +2,14 @@ const { getConfig } = require('../helper/cache')
 const { getUniqueAddresses } = require('../helper/utils')
 
 async function tvl(api) {
-  const { vaults = [] } = await getConfig('ipor/fusion-vaults', 'https://api.ipor.io/v2/fusion/vaults')
+  const config = await getConfig('ipor/fusion-vaults', 'https://api.ipor.io/v2/fusion/vaults')
+  // guard against a malformed API response: missing/null vault list or records without a string address
+  const vaults = Array.isArray(config.vaults) ? config.vaults : []
 
   // dedupe by address - the API can list the same vault twice
-  const calls = getUniqueAddresses(vaults.filter(v => v.chainId === api.chainId).map(v => v.address))
+  const calls = getUniqueAddresses(vaults
+    .filter(v => v && typeof v.address === 'string' && v.chainId === api.chainId)
+    .map(v => v.address))
 
   // permitFailure so vaults not yet deployed at a historical block are skipped instead of throwing
   return api.erc4626Sum2({ calls, permitFailure: true })
