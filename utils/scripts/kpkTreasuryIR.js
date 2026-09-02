@@ -1952,6 +1952,7 @@ function staleReason(holder) {
 
 function acquireLock() {
   if (flags["no-lock"]) return console.error("  --no-lock: running without the single-instance lock")
+  if (lockHeld) return
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       // wx fails if the file exists; the create-or-fail is atomic on both win32 and posix
