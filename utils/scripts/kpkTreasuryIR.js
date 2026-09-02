@@ -21,7 +21,8 @@
  *   node utils/scripts/kpkTreasuryIR.js --from=2026-01-01 --to=2026-08-01 --step=1mo
  *   node utils/scripts/kpkTreasuryIR.js --from=2026-01-01 --to=2026-08-01 --out=kpk.csv
  *
- * cache (--cache) - THE scheduled job: fill the stored history AND snapshot DeBank:
+ * cache (--cache) - THE scheduled job: fill the stored history, snapshot DeBank, and
+ * stand DeBank's reading in as the latest day:
  *   node utils/scripts/kpkTreasuryIR.js --cache            # every gap in the last 365 days
  *   node utils/scripts/kpkTreasuryIR.js --cache --no-debank # RPC backfill only, no snapshot
  *   node utils/scripts/kpkTreasuryIR.js --cache --status   # report coverage, run nothing
@@ -46,6 +47,20 @@
  * So the first run backfills the year and every later run does just the day that
  * appeared since - a daily job converges to one date per run. Each date is persisted
  * as it lands, so an interrupted backfill resumes from the first still-missing date.
+ *
+ * The store is therefore NOT a homogeneous RPC series, and consumers have to know it.
+ * A cache run also writes DeBank's rolled-up reading in as the LATEST day, tagged
+ * `source: "debank"` and `provisional: true`, because an RPC record is a 00:00:00 UTC
+ * snapshot that can be most of a day stale where DeBank is now. The next run replaces
+ * it with the real RPC record for that date, so each date ends up replayed exactly
+ * once, one day after the fact.
+ *
+ * The price is a seam at the end of the series. Ex-curated, DeBank runs 1.4-2.0% ABOVE
+ * the on-chain figure per client, so the delta INTO the provisional point is a source
+ * artefact rather than a treasury move, and it revises DOWN when RPC takes the date
+ * over. Anything computing a return or an APY off consecutive dates must drop records
+ * with `provisional: true` - every other record in the store is RPC, with no
+ * `source` field at all.
  *
  * A cache run therefore shows up as two or more processes: one parent that reads the
  * store and persists, and a child per chunk of dates that does the actual work. That
@@ -113,8 +128,10 @@
  *   { generatedAt, window: { from, to, dates, gaps, sources, provisional, seam },
  *     chart: [ <record>, ... ], positions: <debank report> }
  *
- * `chart` is the cached daily history, one record per stored date in the window, each
- * tagged `source: "rpc"`. Unless --rpc-only, today's DeBank read takes the latest day
+ * `chart` is the cached daily history, one record per stored date in the window. Each
+ * carries the source it was stored with - `source: "rpc"` for a replayed date, and
+ * `source: "debank"` for the latest day when a cache run stood DeBank in for it.
+ * Unless --rpc-only, the DeBank read takes the latest day
  * as one more point in the same shape - tagged `source: "debank"`, `provisional: true`,
  * curated positions filtered out so it means what the RPC records mean - REPLACING a
  * same-date RPC record rather than deferring to it. An RPC record is a 00:00:00 UTC
@@ -177,9 +194,10 @@
  *   --chunk=<n>        dates per child process, default 20
  *   --no-lock          skip the single-instance lock (see below); only safe if you
  *                      know no other cache run is in flight
- *   --no-debank        fill RPC dates only, take no snapshot. The snapshot is the
- *                      half that cannot be caught up later, so reach for this only
- *                      when DeBank itself is the thing that is broken.
+ *   --no-debank        fill RPC dates only: no snapshot, and no provisional record
+ *                      for today - today gets its ordinary 00:00 UTC RPC record
+ *                      instead. The snapshot is the half that cannot be caught up
+ *                      later, so reach for this only when DeBank is what is broken.
  *
  * DeBank options (with --debank or --report):
  *   --list             print the resolved address roster and exit, calling nothing
@@ -1814,6 +1832,10 @@ const STORE_KEY = "tvl-adapter-cache/cache/kpk-treasury-ir/daily.json"
 // Know what that trades away. DeBank has no historical endpoint, so each overwrite
 // is final: once this key moves on, yesterday's position detail is not recoverable
 // from here or from anywhere else. Only the rolled-up daily record outlives it.
+//
+// What DOES outlive it is the rolled-up point a cache run writes into STORE_KEY for
+// the latest day - see capturePositions(). That is the only trace of a given day's
+// DeBank reading that survives the next run, and only in aggregate.
 const POSITIONS_KEY = "tvl-adapter-cache/cache/kpk-treasury-ir/positions.json"
 const HAS_R2 = Boolean(process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY)
 
@@ -2026,23 +2048,39 @@ async function fillCache() {
   if (typeof flags.in === "string" && !flags["no-write"])
     throw new Error("--cache --in=<file> would store a snapshot built from a saved dump. Add --no-write to smoke-test, or drop --in to fetch live.")
 
+  if (flags.status) {
+    await fillRpcGaps()
+    return reportPositionsStatus()
+  }
+
+  // Both halves write STORE_KEY, so one lock covers the run. --dry touches nothing
+  // and --no-write has nothing to protect, so neither takes it - and a smoke test
+  // holding the lock could fail a real run that started alongside it.
+  if (!flags.dry && !flags["no-write"]) acquireLock()
+
+  // DeBank goes FIRST, and not because it matters more - because it is the cheap half
+  // (~20 API calls, against minutes of replay per RPC date). Failing fast on it is
+  // what makes the fallback work: a snapshot that lands writes today's provisional
+  // record, so the RPC fill below skips today and picks it up tomorrow; one that does
+  // not leaves today an ordinary gap, and the same run fills it by RPC instead. So a
+  // DeBank outage costs freshness on the latest day, never the day itself.
+  let snapshotError = null
+  if (flags["no-debank"]) console.error("--no-debank: snapshot skipped, positions left as they were")
+  else if (flags.dry) console.error("--dry: DeBank snapshot not taken; today shown below as a gap")
+  else
+    try {
+      await capturePositions()
+    } catch (e) {
+      snapshotError = e
+      console.error(`\nDeBank snapshot FAILED: ${e.message}`)
+      console.error("  carrying on with the RPC fill - today becomes an ordinary gap, one day less fresh")
+    }
+
   await fillRpcGaps()
 
-  if (flags.status) return reportPositionsStatus()
-  if (flags.dry) return console.error("--dry: DeBank snapshot not taken")
-  if (flags["no-debank"]) return console.error("--no-debank: snapshot skipped, positions left as they were")
-
-  // The snapshot is a whole-object put like the daily store, and in the steady state
-  // - "nothing to fill", which is most days - fillRpcGaps returns before it ever
-  // reaches its own acquireLock. Take the lock here so the whole job is
-  // single-instance, not just the half that happens to have dates to run.
-  // acquireLock is not re-entrant (wx against our own file would read us as a live
-  // holder and throw), hence the lockHeld check rather than a bare call. Skipped
-  // under --no-write: a smoke test protects nothing, and taking the lock would let
-  // one fail a real run that started alongside it.
-  if (!lockHeld && !flags["no-write"]) acquireLock()
-
-  await capturePositions()
+  // The RPC dates are already persisted, so the snapshot failure is reported on its
+  // own rather than being buried under a green exit.
+  if (snapshotError) throw snapshotError
 }
 
 // The DeBank half: one live read of the roster, rolled up exactly as
@@ -2060,6 +2098,26 @@ async function capturePositions() {
   const bytes = await savePositions(document)
   console.error(`snapshot stored: ${document.totals.positions} position(s), ${usd(document.tvl)}, ${bytes}B -> ${POSITIONS_KEY}`)
   if (!HAS_R2) console.error("  R2 credentials absent - the snapshot landed in the local sdk cache only")
+
+  // The rolled-up point goes into the daily store as well, because nothing here runs
+  // --report: if the freshest reading only ever lived under POSITIONS_KEY, no consumer
+  // of the daily history would ever see it. It takes today's slot as an explicitly
+  // provisional record and the next run replaces it with the real RPC one.
+  //
+  // Stored only for TODAY. A snapshot reading any other date is either a clock problem
+  // or a replayed dump, and neither belongs in a slot the RPC fill will then skip.
+  const currentDate = today()
+  if (document.date !== currentDate) {
+    console.error(`  snapshot reads ${document.date}, not ${currentDate} - not stored as a daily record`)
+    return
+  }
+
+  const point = chartPointFromReport(document)
+  const { bytes: storeBytes, total } = await saveStore({ [currentDate]: point })
+  console.error(
+    `  ${currentDate} stored from DeBank: ${usd(point.tvl)} ex-curated, provisional - ` +
+      `store now ${total} date(s), ${storeBytes}B`
+  )
 }
 
 // --status covers both halves, so one command answers "is the daily job healthy".
@@ -2089,7 +2147,26 @@ async function fillRpcGaps() {
   const store = await loadStore()
   const window = datesBetween(from, to)
   const refill = new Set(flags.refill && flags.refill !== true ? String(flags.refill).split(",").map((d) => asDate(d, "--refill")) : [])
-  const stale = window.filter((date) => store.dates[date] && (store.dates[date].v || 0) !== BREAKDOWN_VERSION)
+
+  // A provisional record is DeBank standing in for what was, at the time, the latest
+  // day. It reads ~+1.8% high by the seam and was never meant to persist, so once it
+  // is no longer the latest day the real RPC record has to take it over: it counts as
+  // something to RUN, not as something already stored. Today's own provisional record
+  // is left alone - it is doing exactly the job it was written for.
+  //
+  // This is also what keeps the steady state at one replay per date: capturePositions
+  // wrote today before we got here, so today is neither gap nor refill, and tomorrow's
+  // run is the one that replays it.
+  const currentDate = today()
+  const superseded = window.filter((date) => store.dates[date] && store.dates[date].provisional && date < currentDate)
+  for (const date of superseded) refill.add(date)
+
+  // Version staleness is a question about the RPC breakdown, and a provisional record
+  // was not built by it - it carries no `v` and would otherwise show up as stale for
+  // a reason that does not apply. It is already being refilled above.
+  const stale = window.filter(
+    (date) => store.dates[date] && !store.dates[date].provisional && (store.dates[date].v || 0) !== BREAKDOWN_VERSION
+  )
   if (flags["refill-stale"]) for (const date of stale) refill.add(date)
 
   // An explicitly asked-for refill goes to the front: `missing` used to be plain
@@ -2107,6 +2184,8 @@ async function fillRpcGaps() {
 
   console.error(`store ${STORE_KEY} -> ${Object.keys(store.dates).length} date(s) held, version ${store.version || "?"} (current ${BREAKDOWN_VERSION})`)
   console.error(`window ${from} .. ${to}: ${window.length} day(s), ${cached} cached, ${missing.length} to run${refills.length ? ` (${refills.length} refill first, ${gaps.length} gap)` : ""}${stale.length ? `, ${stale.length} stale` : ""}`)
+  if (superseded.length)
+    console.error(`  ${superseded.length} provisional DeBank record(s) to replace with RPC: ${superseded.join(", ")}`)
   if (stale.length && !flags["refill-stale"])
     console.error(`  stale (older breakdown version, kept as-is): ${stale.slice(0, 8).join(", ")}${stale.length > 8 ? ` ... +${stale.length - 8}` : ""}`)
   if (!HAS_R2) console.error("  R2 credentials absent - writes land in the local sdk cache only, nothing reaches R2")
@@ -2930,7 +3009,10 @@ async function reportMode() {
 
   const store = await loadStore()
   const window = datesBetween(from, to)
-  const chart = window.filter((date) => store.dates[date]).map((date) => ({ ...store.dates[date], source: "rpc" }))
+  // `source: "rpc"` FIRST so a stored record's own source wins. The daily store now
+  // holds DeBank's provisional point for the latest day, and stamping that "rpc" would
+  // hide the one field every consumer is told to filter on.
+  const chart = window.filter((date) => store.dates[date]).map((date) => ({ source: "rpc", ...store.dates[date] }))
   const gaps = window.length - chart.length
   console.error(`chart ${from} .. ${to}: ${chart.length}/${window.length} date(s) from ${STORE_KEY}${gaps ? `, ${gaps} gap(s)` : ""}`)
   if (!chart.length) console.error("  no stored dates in the window - run --cache first, or the chart is DeBank's point alone")
@@ -2951,8 +3033,12 @@ async function reportMode() {
   // a hypothetical: on 2026-08-31 the same-date gap was +1.42% while the one-day-back
   // gap read -0.07%, because a real -1.5% day happened to cancel it. So prefer the
   // same-date record when the cache has one, and label the fallback for what it is.
-  const sameDate = chart.find((record) => record.date === point.date)
-  const against = sameDate || [...chart].reverse().find((record) => record.date !== point.date)
+  // Only an RPC record measures the seam. The store's latest-day record may itself be
+  // DeBank's now, and comparing DeBank against DeBank would report a 0% gap that means
+  // nothing at all.
+  const rpcRecords = chart.filter((record) => record.source === "rpc")
+  const sameDate = rpcRecords.find((record) => record.date === point.date)
+  const against = sameDate || [...rpcRecords].reverse().find((record) => record.date !== point.date)
   const gapDays = against ? Math.round((Date.parse(`${point.date}T00:00:00Z`) - Date.parse(`${against.date}T00:00:00Z`)) / 86400000) : null
   const seam = against
     ? {
@@ -2991,8 +3077,8 @@ async function reportMode() {
   // into the following day rather than as the up-tick at the end of the series that
   // consumers are told to expect. An RPC point in the middle of an RPC series is the
   // one thing this chart must not mix.
-  const newestRpc = chart.reduce((latest, record) => (record.date > latest ? record.date : latest), "")
-  const lags = Boolean(newestRpc) && point.date < newestRpc
+  const newestStored = chart.reduce((latest, record) => (record.date > latest ? record.date : latest), "")
+  const lags = Boolean(newestStored) && point.date < newestStored
 
   let provisional = null
   if (flags["rpc-only"]) console.error(`--rpc-only: chart left RPC-sourced, DeBank's ${point.date} point not used`)
@@ -3000,14 +3086,19 @@ async function reportMode() {
     console.error(`  DeBank reads ${point.date}, outside ${from}..${to} - point not used (its report is still in .positions)`)
   else if (lags)
     console.error(
-      `  DeBank reads ${point.date}, behind the newest RPC record ${newestRpc} - point not used, the chart stays RPC-sourced.\n` +
+      `  DeBank reads ${point.date}, behind the newest stored record ${newestStored} - point not used, the chart keeps what the store has.\n` +
         `    The stored snapshot is stale: run --cache to refresh it, or --live for a fresh fetch. Its report is still in .positions.`
     )
   else {
     const existing = chart.findIndex((record) => record.date === point.date)
     if (existing >= 0) {
+      // Not necessarily an RPC record any more: a cache run may already have put its
+      // own provisional point in this slot, and sameDate would be undefined for it.
+      const replaced = chart[existing]
       chart[existing] = point
-      console.error(`  ${point.date} taken from DeBank: ${usd(point.tvl)} ex-curated, replacing the RPC record's ${usd(sameDate.tvl)} (provisional)`)
+      console.error(
+        `  ${point.date} taken from DeBank: ${usd(point.tvl)} ex-curated, replacing the ${replaced.source} record's ${usd(replaced.tvl)} (provisional)`
+      )
     } else {
       chart.push(point)
       console.error(`  ${point.date} appended from DeBank: ${usd(point.tvl)} ex-curated, provisional`)
