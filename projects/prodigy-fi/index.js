@@ -1,12 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getCache, setCache } = require('../helper/cache')
+const { getCache } = require('../helper/cache')
 
-const FACTORY_ABI = {
-  getDeployedVaultCount: 'uint256:getDeployedVaultCount',
-  getDeployedVaults: 'function getDeployedVaults(uint256,uint256) view returns (address[])',
-}
-const ZERO_ADDRESS = ADDRESSES.null
 const CACHE_PROJECT = 'prodigy-fi'
 
 const config = {
@@ -55,40 +50,32 @@ const config = {
       ADDRESSES.berachain.USDC,
     ],
   },
+  hyperliquid: {
+    factory: '0x400516840d0E975A566B1E275aaB58Df9b7C278d',
+    collateralPools: [
+      '0xf2d3A7B4e093A9529a92888f3A6841f5cA5c2a02',
+      '0xD7423A77de707351A47F8fa270c0a3AbA32a90bE',
+    ],
+    tokens: [
+      ADDRESSES.hyperliquid.USDC,
+      ADDRESSES.hyperliquid.WHYPE,
+      '0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463',
+      '0xBe6727B535545C67d5cAa73dEa54865B92CF7907',
+    ],
+  },
 }
 
 /**
  * Returns the cached list of Prodigy.Fi vaults that hold collateral directly
- * (i.e. `collateralPool()` returns the zero address), incrementally scanning
- * newly deployed vaults from the factory since the previous run.
+ * (i.e. `collateralPool()` returns the zero address). v1 is sunset, so no new
+ * vaults can be deployed and the cache is final - no factory scanning needed.
  *
  * @param {object} api - DefiLlama ChainApi bound to the current chain.
- * @param {string} factory - Factory contract address for this chain.
  * @returns {Promise<string[]>} Addresses of self-collateralised vaults.
  */
-async function getSelfCollateralisedVaults(api, factory) {
+async function getSelfCollateralisedVaults(api) {
   const cache = (await getCache(CACHE_PROJECT, api.chain)) || {}
-  const selfCollateralised = cache.selfCollateralised || []
-  const scanned = cache.scanned || 0
-
-  const total = Number(await api.call({ target: factory, abi: FACTORY_ABI.getDeployedVaultCount }))
-  if (scanned >= total) return selfCollateralised
-
-  const fetchChunk = 200
-  const pageCalls = []
-  for (let i = scanned; i < total; i += fetchChunk) {
-    pageCalls.push({ target: factory, params: [i, Math.min(fetchChunk, total - i)] })
-  }
-  const pages = await api.multiCall({ abi: FACTORY_ABI.getDeployedVaults, calls: pageCalls })
-  const newVaults = pages.flat()
-
-  const collateralPools = await api.multiCall({ abi: 'address:collateralPool', calls: newVaults, permitFailure: true })
-  collateralPools.forEach((cp, i) => {
-    if (cp === ZERO_ADDRESS) selfCollateralised.push(newVaults[i])
-  })
-
-  await setCache(CACHE_PROJECT, api.chain, { selfCollateralised, scanned: total })
-  return selfCollateralised
+  return cache.selfCollateralised || []
 }
 
 /**
@@ -100,13 +87,13 @@ async function getSelfCollateralisedVaults(api, factory) {
  * @returns {Promise<object>} Balance map produced by `sumTokens2`.
  */
 async function tvl(api) {
-  const { factory, collateralPools, tokens } = config[api.chain]
-  const selfCollateralisedVaults = await getSelfCollateralisedVaults(api, factory)
+  const { collateralPools, tokens } = config[api.chain]
+  const selfCollateralisedVaults = await getSelfCollateralisedVaults(api)
   return sumTokens2({ api, tokens, owners: collateralPools.concat(selfCollateralisedVaults) })
 }
 
 module.exports = {
-  methodology: 'TVL counts the trading-pair tokens held in Prodigy.Fi collateral pools, plus tokens held directly by self-collateralised vaults, on Ethereum, Base, and Berachain.',
+  methodology: 'TVL counts the trading-pair tokens held in Prodigy.Fi collateral pools, plus tokens held directly by self-collateralised vaults, on Ethereum, Base, Berachain, and Hyperliquid.',
 }
 
 Object.keys(config).forEach(chain => {

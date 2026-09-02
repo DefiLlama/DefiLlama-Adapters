@@ -1,6 +1,5 @@
 const { get, post } = require('../http')
 const { transformBalances } = require('../portedTokens')
-const { stellar } = require('./rpcProxy')
 const base32 = require('hi-base32')
 
 const SOROBAN_RPC_URL = 'https://soroban-rpc.creit.tech/'
@@ -45,11 +44,11 @@ async function sumTokens(config) {
 /**
  * Read the "balance" function of a token for a given address
  * @param {string} token
- * @param {string} address 
+ * @param {string} address
  * @returns {Promise<bigint>}
  */
 async function getTokenBalance(token, address) {
-  return stellar.getTokenBalance({ token, address })
+  return callSoroban(token, 'balance', [address])
 }
 
 // Helpers for interacting with Soroban smart contracts via RPC without using @stellar/stellar-sdk.

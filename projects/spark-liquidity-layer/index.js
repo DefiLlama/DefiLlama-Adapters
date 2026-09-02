@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const morphoAbi = require("../helper/abis/morpho.json");
-const { getExports } = require('../helper/heroku-api');
+const morphoAbi = require('../helper/abis/morpho.json')
+const { getExports } = require('../helper/heroku-api')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const almProxy = {
   ethereum: '0x1601843c5E9bC251A3272907010AFa41Fa18347E',
@@ -25,6 +26,7 @@ const mainnetAllocatorToTokens = {
     ADDRESSES.ethereum.USDe,
     ADDRESSES.ethereum.USDT,
     ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDG,
     '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
     '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // aEthUSDS
@@ -41,8 +43,9 @@ const mainnetAllocatorToTokens = {
     '0xb0c424116172B55CbB6dD3136F5989F7959e5B91', // morpho Spark Blue Chip USDT Vault v2
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
+    '0x8292bb45bf1ee4d140127049757c2e0ff06317ed', // rlUSD
     '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
-  ]
+  ],
 }
 
 const baseAllocatorToTokens = {
@@ -52,56 +55,37 @@ const baseAllocatorToTokens = {
     '0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB', // aBasUSDC
     ADDRESSES.base.USDC, // idle USDC
   ],
-  '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [
-    ADDRESSES.base.USDC,
-  ]
+  '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [ADDRESSES.base.USDC],
 }
 
 const arbitrumAllocatorToTokens = {
-  [almProxy.arbitrum]: [
-    ADDRESSES.arbitrum.USDC_CIRCLE,
-    ADDRESSES.arbitrum.USDT,
-  ],
-  '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [
-    ADDRESSES.arbitrum.USDC_CIRCLE
-  ]
+  [almProxy.arbitrum]: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT],
+  '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [ADDRESSES.arbitrum.USDC_CIRCLE],
 }
 
 const optimismAllocatorToTokens = {
-  [almProxy.optimism]: [
-    ADDRESSES.optimism.USDC_CIRCLE,
-  ],
-  '0xe0F9978b907853F354d79188A3dEfbD41978af62': [
-    ADDRESSES.optimism.USDC_CIRCLE
-  ]
+  [almProxy.optimism]: [ADDRESSES.optimism.USDC_CIRCLE],
+  '0xe0F9978b907853F354d79188A3dEfbD41978af62': [ADDRESSES.optimism.USDC_CIRCLE],
 }
 
 const unichainAllocatorToTokens = {
-  [almProxy.unichain]: [
-    ADDRESSES.unichain.USDC,
-  ],
-  '0x7b42Ed932f26509465F7cE3FAF76FfCe1275312f': [
-    ADDRESSES.unichain.USDC
-  ]
+  [almProxy.unichain]: [ADDRESSES.unichain.USDC],
+  '0x7b42Ed932f26509465F7cE3FAF76FfCe1275312f': [ADDRESSES.unichain.USDC],
 }
 
 const avaxAllocatorToTokens = {
   [almProxy.avax]: [
     ADDRESSES.avax.USDC,
     '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aave aUSDC
-  ]
+  ],
 }
 
 const robinhoodAllocatorToTokens = {
-  [almProxy.robinhood]: [
-    ADDRESSES.robinhood.USDG,
-  ]
+  [almProxy.robinhood]: [ADDRESSES.robinhood.USDG],
 }
 
 const xlayerAllocatorToTokens = {
-  [almProxy.xlayer]: [
-    ADDRESSES.xlayer.USDT,
-  ]
+  [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
 }
 
 const CONFIG = {
@@ -125,6 +109,7 @@ async function tvl(api) {
   await addMorphoBalances(api)
   await addEthenaUnstakeBalance(api)
   await addCurveBalances(api)
+  await addUniswapV4Balances(api)
   await addVaultBalances(api)
 
   const allTokens = Object.values(tokenRecords).flat()
@@ -132,7 +117,7 @@ async function tvl(api) {
 
   if (api.chain === 'ethereum') {
     // track anchorage allocation
-    const tvl  = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
+    const tvl = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
     const anchorageBalance = await tvl(api)
     api.addBalances(anchorageBalance)
   }
@@ -218,8 +203,8 @@ const morphoVaultConfigs = {
         allocator: almProxy.ethereum,
         address: '0xe41a0583334f0dc4E023Acd0bFef3667F6FE0597',
         idleMarketId: '0x02e723fdfc0c26779c2c06bbf783e2f4d6aebd03cedc1806981b742f1a644105',
-      }
-    ]
+      },
+    ],
   },
 }
 
@@ -355,6 +340,18 @@ async function addCurveBalances(api) {
   )
 
   api.add(tokens, balances)
+}
+
+async function addUniswapV4Balances(api) {
+  if (api.chain !== 'ethereum') {
+    return
+  }
+
+  await sumTokens2({
+    api,
+    owner: almProxy.ethereum,
+    resolveUniV4: true,
+  })
 }
 
 const erc4626Configs = {

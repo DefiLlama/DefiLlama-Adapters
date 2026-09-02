@@ -24,6 +24,9 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'zero-swap': {
+    robinhood: '0xc802A440559cEE8A66E2023403d34Be9084A720e',
+  },
   '1pulse': {
     pulse: '0x17C335D22456c798D5A3D021583eDAcbD4Ef6444',
   },
@@ -1658,7 +1661,6 @@ const uniV2Configs = {
   'reservoir-tools-v2': {
     abstract: '0x566d7510dEE58360a64C9827257cF6D0Dc43985E',
     zero_network: '0x1B4427e212475B12e62f0f142b8AfEf3BC18B559',
-    ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
   },
   'revoswap': {
     xlayer: '0xa38498983e7b31DE851e36090bc9D1D8fB96BE5E',
@@ -2728,6 +2730,17 @@ const uniV2Configs = {
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
     robinhood: '0x43B2Bf9f33036a02fC7A00935571c2A6b0108e66',
   },
+  'raphael': {
+    misrepresentedTokens: true,
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      hasStablePools: true,
+    },
+    robinhood: '0x1A6745F84099Fa7E84D1f3B34c23482865194bd1',
+  },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
   },
@@ -3095,6 +3108,9 @@ const uniV2Configs = {
   },
   'giga-dex': { robinhood: '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916' },
   'daily-dex': { dly: '0x11c0d58d7D9B01e4B07013d3476F7b913803E875' },
+  'ladyswap': {
+    lady: { factory: '0x224531f8130A7F639444E17e1D43966dB1dEa431', staking: ['0x09022c3e699B4DdCc9eDf52c9545F33783eB9F43', '0x8635dE218E5d4faC62432d6bfB20E199aeDe366F'] },
+  },
   'kolswap': {
     robinhood: '0xdB2Ec80E55527b5D858b54173083139679f5DE6f',
     bsc: '0x6af79510599dE74E5922A2771b29160dA8b7b4c1'
@@ -3130,7 +3146,11 @@ const uniV2Configs = {
       },
       fetchBalances: true,
     },
-  }
+  },
+  'helios-v2': {
+    start: '2026-05-31',
+    rise: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

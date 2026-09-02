@@ -1272,6 +1272,13 @@ const configs = {
       ownTokens: [],
     },
   },
+  'treasury/coinbarrel': {
+    robinhood: {
+      owners: ['0x2FE3C1cc641B2463CEE2857Ac520E111fbE11fDF'],
+      ownTokens: ['0x26E82171eb01204eE114e2B8C34Be035B8bc029E'],
+      tokens: [nullAddress, ADDRESSES.robinhood.USDG, '0x322F0929c4625eD5bAd873c95208D54E1c003b2d']
+    },
+  },
   'treasury/comdex': {
     bsc: {
       owners: [
@@ -3803,7 +3810,8 @@ const configs = {
         "0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF",//AURA
         "0x1846c6cbe0d433e152fa358e5ff27968e18bce7c",// BPT 80PRL-20WETH
         "0x9B3a8f7CEC208e247d97dEE13313690977e24459",
-        "0x0d45b129dc868963025Db79A9074EA9c9e32Cae4"
+        "0x0d45b129dc868963025Db79A9074EA9c9e32Cae4",//sUSDp v1
+        "0xd3a452B305C8285c0Dd7b8537665c734d3D279eF"//sUSDp v2
       ],
       owners: ["0x25Fc7ffa8f9da3582a36633d04804F0004706F9b", "0x3De64eed7A43C40E33dc837dec1119DcA0a677b4"],
       ownTokens: ["0x6c0aeceeDc55c9d55d8B99216a670D85330941c3", "0x90b831fa3bebf58e9744a14d638e25b4ee06f9bc"]
@@ -3980,6 +3988,30 @@ const configs = {
       owners: ['0x808ca06eec8d8645386be4293a7f4428d4994f5b'],
       ownTokens: ['0x57f12fe6a4e5fe819eec699fadf9db2d06606bb4'],
       resolveUniV3: true,
+    },
+  },
+  'treasury/netnet': {
+    // OlympusDAO-v1-style reserve protocol on Robinhood Chain: Treasury
+    // contract (USDG, Morpho Steakhouse vault, NET/USDG POL) and the RWA
+    // Sleeve Safe (tokenized equities)
+    robinhood: {
+      owners: [
+        '0x04822Ea321A0DEE6F40656172F29312104855d66', // Treasury
+        '0x498752D5fa0600CBd613074C151Abe15B3FeC7CB', // RWA Sleeve
+      ],
+      tokens: [
+        ADDRESSES.robinhood.USDG,
+        '0x59F95461E68e0c77605299791E1449f175165B54', // NET/USDG POL
+        '0xBeEff033F34C046626B8D0A041844C5d1A5409dd', // Steakhouse USDG (ERC-4626)
+        '0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec', // NVDA
+        '0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea', // SPCX
+        '0xaf3d76f1834a1d425780943c99ea8a608f8a93f9', // AAPL
+        '0xe93237c50d904957cf27e7b1133b510c669c2e74', // MSFT
+        '0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3', // GOOGL
+        '0x6330d8c3178a418788df01a47479c0ce7ccf450b', // COIN
+      ],
+      ownTokens: ['0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'], // NET
+      resolveLP: true,
     },
   },
   'treasury/neutra-finance': {
@@ -5684,6 +5716,26 @@ const configs = {
       ownTokens: ["0xA36FDBBAE3c9d55a1d67EE5821d53B50B63A1aB9"],
       resolveLP: true,
       resolveUniV3: true,
+    },
+  },
+  'treasury/termix': {
+    // Protocol fee recipient — receives the 2% protocol fee from the escrow and
+    // campaign-vault contracts on both chains.
+    bsc: {
+      owners: ["0x1095deD95CB6e81C01204F7A94950dd559195E42"],
+      fetchCoValentTokens: false,
+      tokens: [
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.USDT,
+      ],
+    },
+    base: {
+      owners: ["0x1095deD95CB6e81C01204F7A94950dd559195E42"],
+      fetchCoValentTokens: false,
+      tokens: [
+        ADDRESSES.base.USDC,
+        ADDRESSES.base.USDT,
+      ],
     },
   },
   'treasury/thales': {

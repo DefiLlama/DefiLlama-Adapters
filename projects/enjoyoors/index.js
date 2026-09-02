@@ -9,6 +9,7 @@ async function tvl(api, vaultAddress, enjoyoorsChainId) {
 }
 
 module.exports = {
+  deadFrom: '2026-05-20', // project shut down: site and api.enjoyoors.xyz now redirect to eqlab.io
   methodology: 'The TVL reflects the total value of all tokens deposited in the Enjoyoors vault contract.',
   ethereum: {
     tvl: async (api) => tvl(api, '0x59660cb83da31EC23F9d992C11f80Fc527046409', 1),

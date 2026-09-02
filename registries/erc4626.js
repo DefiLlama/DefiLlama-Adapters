@@ -461,6 +461,10 @@ const configs = {
     methodology: "TVL is the net asset value of the Syntetika strategy vaults, read on-chain as totalAssets() - the outstanding supply of vault share tokens valued at the independently attested NAV per share - and denominated in the vault deposit asset (cbBTC).",
     doublecounted: true,
     base: ["0x9C2dCDbDB3F0A0F628D1112bBCABD9AE75353df3"]
+  },
+  'southpole': {
+    methodology: "TVL counts the USDC deposited into the SouthPole USDC vault (a standard ERC-4626 vault) on Arbitrum.",
+    arbitrum: ['0xeA59d9343FF0d70470DD6709cfCD5Bc735d9aDBC']
   }
 }
 

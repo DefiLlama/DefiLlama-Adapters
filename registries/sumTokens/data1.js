@@ -111,7 +111,8 @@ module.exports = {
       "tvl": {
         "tokenAccounts": [
           "CRFtzwkekKorgdTRSdvsYeqL1vEuVvwGRvweuWCyaRt3", // jitoSOL @ kySOL Vault
-          "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd" // JTO @ kyJTO Vault
+          "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd", // JTO @ kyJTO Vault
+          "HmozbbPg927xtj6Z4oMUBUBSGKA2fDRmUFqWfJFEidbC" // kySOL @ Drip
         ]
       },
       "staking": {
@@ -730,5 +731,11 @@ module.exports = {
     "timetravel": false,
     "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault.",
     "solana": { "tokenAccounts": ["2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9"] }
+  },
+  "tessera-v": {
+    "methodology": "TVL is the value of SPL and Token-2022 balances held in Tessera V vaults controlled by its Solana authority account.",
+    "solana": {
+      "owner": "8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF"
+    }
   },
 }

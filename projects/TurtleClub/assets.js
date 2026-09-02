@@ -174,6 +174,14 @@ const tokenMappingERC20 = {
     ],
 };
 
+const TURTLE = '0x66fd8de541c0594b4dccdfc13bf3a390e50d3afd';
+
+const ownTokens = {
+    ethereum: [
+        TURTLE,
+    ],
+};
+
 const treasuryNFTs = {
     avax: [
         { name: 'PHAR', veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.avax.PHAR, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // Pharaoh Exchange - vePHAR
@@ -239,6 +247,7 @@ module.exports = {
     treasuryMultisigs,
     tokenMapping,
     tokenMappingERC20,
+    ownTokens,
     treasuryNFTs,
     turtleVaults,
 };

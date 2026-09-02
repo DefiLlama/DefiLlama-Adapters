@@ -155,6 +155,12 @@ const MorphoConfigs = {
         fromBlock: 2741420,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xFcb8b57E56787bB29e130Fca67f3c5a1232975D1',
+        fromBlock: 13096629,
+      },
+    ],
   },
   plume_mainnet: {
     vaultFactories: [
@@ -183,6 +189,12 @@ const MorphoConfigs = {
       {
         address: '0x3Bb6A6A0Bc85b367EFE0A5bAc81c5E52C892839a',
         fromBlock: 130770189,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6128b680b277Bf4Df80DFE9D8c55A498660870ef',
+        fromBlock: 142122059,
       },
     ],
   },
