@@ -55,7 +55,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  doublecounted: true,
-  methodology: "Reflect Tranches TVL is the underlying tokens held by the live tranche pools on the RLP program (JrXLmS6aYJNJDVxdAfjNJE5wikT8ubf3TA9iL2JA9Av). A pool is live when its protected_vault resolves to a real Reflect Proxy Program (pRoxYU64BSjv8HbhENna8a7LVCrkzzNrnvbYuTwas8C) ProxyState, which excludes placeholder pools. Junior = the underlying assets held in each RLP pool's per-asset token accounts. Senior = the underlying held by the backstopped proxy vault. Those same deposits are also counted by the underlying yield sources, so TVL is marked doublecounted.",
+  methodology: "Reflect Tranches TVL is the underlying tokens held by the live tranche pools on the RLP program. A pool is live when its protected_vault resolves to a real Reflect Proxy Program ProxyState, which excludes placeholder pools. Junior = the underlying assets held in each RLP pool's per-asset token accounts. Senior = the underlying held by the backstopped proxy vault.",
   solana: { tvl },
 };
