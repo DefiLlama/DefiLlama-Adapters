@@ -81,8 +81,14 @@ for (const [network, chain] of Object.entries(binanceToDefillama)) {
 }
 
 const perChainConfig = {
-  ethereum: { blacklistedTokens: [ADDRESSES.ethereum.BNB] },
-  bsc: { blacklistedTokens: [ADDRESSES.bsc.TUSD] },
+  ethereum: { blacklistedTokens: [
+    ADDRESSES.ethereum.BNB,
+    '0xa2e3356610840701bdf5611a53974510ae27e2e1', // wBETH, we are already counting staked ETH via withdrawal addresses, so we don't want to double count it
+  ] },
+  bsc: { blacklistedTokens: [
+    ADDRESSES.bsc.TUSD,
+    '0xa2e3356610840701bdf5611a53974510ae27e2e1', // wBETH
+  ] },
   solana: { blacklistedTokens: ['7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY', 'CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt'] },
 }
 
