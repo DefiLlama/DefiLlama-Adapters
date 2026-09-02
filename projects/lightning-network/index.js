@@ -1,25 +1,27 @@
 const { get } = require("../helper/http");
 
-const dayHistory = {};
-
 async function GetDailyHistory() {
   let data = await get('https://bitcoinvisuals.com/static/data/data_daily.csv');
   data = parseCSV(data);
 
+  const dayHistory = {};
   data.forEach((row) => {
     if (!row.capacity_total) return;
     dayHistory[row.day] = +row.capacity_total;
   });
+  return dayHistory;
 }
 
 async function GetDailyHistory1() {
   let data = await get('https://mempool.space/api/v1/lightning/statistics/all');
 
+  const dayHistory = {};
   data.forEach((row) => {
     if (!row.total_capacity) return;
     const day = new Date(row.added * 1000).toISOString().slice(0, 10);
     dayHistory[day] = row.total_capacity / 1e8
   });
+  return dayHistory;
 }
 
 async function get1MLCapacity() {
@@ -37,7 +39,7 @@ async function getFromTxStat() {
   return data.results[0].series[0].values.pop()[1]
 }
 
-async function getChannelCapacity(timestamp) {
+function getChannelCapacity(dayHistory, timestamp) {
   // walk back a few days so a lagging source still yields its freshest value
   for (let i = 0; i < 5; i++) {
     const day = new Date((timestamp - i * 86400) * 1000).toISOString().slice(0, 10)
@@ -53,10 +55,11 @@ async function tvl({ timestamp }) {
   if (getCurrentTVL) {
     channelCapacity = await get1MLCapacity()
   } else {
-    // bitcoinvisuals first so mempool.space wins on overlapping days; tolerate either source being down
-    await GetDailyHistory().catch((e) => console.error(e));
-    await GetDailyHistory1().catch((e) => console.error(e));
-    channelCapacity = await getChannelCapacity(timestamp - 86400)
+    // bitcoinvisuals first so mempool.space wins on overlapping days; tolerate one source being down
+    const sources = await Promise.allSettled([GetDailyHistory(), GetDailyHistory1()]);
+    sources.filter(s => s.status === 'rejected').forEach(s => console.error(s.reason));
+    const dayHistory = Object.assign({}, ...sources.map(s => s.value ?? {}));
+    channelCapacity = getChannelCapacity(dayHistory, timestamp - 86400)
   }
 
   // if none of our scrape targets worked then throw an error
