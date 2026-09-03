@@ -1,14 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
+const UTY_VAULT = '0xBA515304d8153c4b162dC79f867E152DF9c127eb'
+
 async function tvl(api) {
-  const totalSupply = await api.call({
-    abi: 'erc20:totalSupply',
-    target: ADDRESSES.avax.UTY,
+  const totalAssets = await api.call({
+    abi: 'uint256:totalAssets',
+    target: UTY_VAULT,
   })
-  api.add(ADDRESSES.avax.UTY, totalSupply)
+
+  api.add(ADDRESSES.base.USDC, totalAssets)
 }
 
 module.exports = {
-  start: 58017291, // block when UTY contract was deployed
-  avax: { tvl },
+  base: { tvl },
 }
