@@ -153,7 +153,15 @@ async function marketState(api) {
 
 async function tvl(api) {
   const [{ params, data }, collateral] = await Promise.all([marketState(api), collateralByMarket(api)])
-  const oraclePrices = await api.multiCall({ abi: ORACLE_PRICE_ABI, calls: params.map((p) => p.oracle), permitFailure: true })
+  // Only the markets whose collateral DefiLlama cannot price need an oracle read.
+  const needsOracle = params
+    .map((p, i) => (oraclePricedCollateral.has(p.collateralToken.toLowerCase()) ? i : -1))
+    .filter((i) => i >= 0)
+  const fetched = needsOracle.length
+    ? await api.multiCall({ abi: ORACLE_PRICE_ABI, calls: needsOracle.map((i) => params[i].oracle), permitFailure: true })
+    : []
+  const oraclePrices = []
+  needsOracle.forEach((marketIndex, n) => { oraclePrices[marketIndex] = fetched[n] })
 
   markets.forEach((id, i) => {
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
