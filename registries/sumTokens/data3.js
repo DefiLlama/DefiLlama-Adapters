@@ -30,7 +30,7 @@ module.exports = {
   "pred": {
     "methodology": "USDC held in ConditionalTokens contracts and NegRisk WrappedCollateral contracts (latest and legacy deployments).",
     "base": {
-      "tvl": { "owners": ["0x76c175e7ad7f794e2478345ee50d8290088a797d","0x4e9608d5cf77f22b2d5543b6c65a8c5417e8122c","0xc7e015b63d8226444a028c57fcaa1d30bfc3178c","0xa291d33e4670ab6bcd2c631231396ef12e138380","0xc83c5cca746d213d9cf63fe668e7eb8dee35314b","0xb365835f194e383354367572d0eb9d2dce46b693"], "tokens": [ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0x03C6c6fbdc0c719Dc878fCe24deBaBC31B2B4a27" ,"0x76c175e7ad7f794e2478345ee50d8290088a797d","0x4e9608d5cf77f22b2d5543b6c65a8c5417e8122c","0xc7e015b63d8226444a028c57fcaa1d30bfc3178c","0xa291d33e4670ab6bcd2c631231396ef12e138380","0xc83c5cca746d213d9cf63fe668e7eb8dee35314b","0xb365835f194e383354367572d0eb9d2dce46b693"], "tokens": [ADDRESSES.base.USDC] },
     },
   },
   "ethos-network": {
