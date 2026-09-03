@@ -14,8 +14,9 @@ async function tvl(api) {
       if (vault.vaultAddress === '0x0000000000000000000000000000000000000000') break;
       vaultInfos.push(vault);
       index++;
-    } catch {
-      break;
+    } catch (error) {
+      throw error;
+    }
     }
   }
   
