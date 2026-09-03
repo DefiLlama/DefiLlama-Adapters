@@ -253,7 +253,7 @@ module.exports = {
     'Fee and treasury contracts (GameFeeSplitter, TartFeeDistributor, TartFeeConverter, TartFeeCollector, treasury and reserve wallets) are protocol revenue and are excluded.',
   // Earliest TartSwap contract in this adapter: TartStakingVault, deployed
   // 2026-06-29T15:33:46Z on BSC mainnet.
-  start: 1782747226,
+  start: "2026-06-30",
   hallmarks: [['2026-08-31', 'TART token listed on PancakeSwap']],
   bsc: {
     tvl,
