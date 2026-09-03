@@ -67,6 +67,8 @@ module.exports = {
       api.addGasToken(totalSupply)
       return sumTokens2({ api })
     }
-  }
+  },
+  deadFrom: '2026-08-23',
+  hallmarks: [['2026-08-23', 'Project sunset']],
 };
 
