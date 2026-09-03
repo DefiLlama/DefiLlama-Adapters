@@ -174,6 +174,23 @@ function ventureStaking(id) {
 }
 
 /**
+ * A venture's whole TVL module, so a new venture is one line naming its id and
+ * the date its spot pool went live.
+ */
+function venture(id, { start, hallmarks } = {}) {
+  return {
+    methodology:
+      "Canonical spot liquidity held by the venture's SpotLiquidityVault -- its Uniswap v4 pool reserves, idle balances and any amount on loan to a live decision market -- plus the vault's own share of swap fees the pool has not paid out yet, plus the real money users have escrowed in the venture's live decision market through `split`. Counted in the venture's money token only: the venture token is the platform's own, which DefiLlama keeps out of TVL. The vault is the pool's only permitted liquidity operator by design, so it holds 100% of canonical liquidity. Staking is the venture token staked to open a decision market.",
+    start,
+    hallmarks,
+    base: {
+      tvl: ventureTvl(id),
+      staking: ventureStaking(id),
+    },
+  }
+}
+
+/**
  * Raised capital held by venture treasuries, in each venture's money token.
  *
  * No overlap with the launch adapter: auction bids are escrowed in the launch
@@ -205,6 +222,7 @@ module.exports = {
   FIRST_REAL_VENTURE_ID,
   PROTOCOL_VENTURE_ID,
   launchpadTvl,
+  venture,
   ventureTvl,
   ventureStaking,
   treasuryTvl,
