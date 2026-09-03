@@ -59,11 +59,17 @@ const PAYOUT_ASSETS = [
 
 module.exports = {
   methodology:
-    "TVL = ETH held by the Treasury (accumulated fees awaiting the next asset buy) plus tokenized-equity and crypto balances held by the Distributor awaiting payout to holders. Locked LP is excluded to avoid double counting Uniswap v4 pool liquidity.",
+    "TVL = native ETH held by the Treasury (accumulated fees awaiting the next asset buy) and by the SeriesCRevenueSeat (card revenue awaiting claims), plus tokenized-equity and crypto balances held by the Distributor awaiting payout and by the v2 basket vaults as backing for outstanding bucket-share tokens. Locked LP is excluded to avoid double counting Uniswap v4 pool liquidity.",
   [chain]: {
     tvl: sumTokensExport({
-      owners: [TREASURY, DISTRIBUTOR, ...V2_VAULTS, SERIES_C_SEAT],
-      tokens: [ADDRESSES.null, ...PAYOUT_ASSETS], // null = native ETH
+      // explicit pairs, not an owners x tokens product: native ETH only
+      // where ETH actually accrues, payout assets only where they are held
+      tokensAndOwners: [
+        [ADDRESSES.null, TREASURY],
+        [ADDRESSES.null, SERIES_C_SEAT],
+        ...PAYOUT_ASSETS.map((t) => [t, DISTRIBUTOR]),
+        ...V2_VAULTS.flatMap((v) => PAYOUT_ASSETS.map((t) => [t, v])),
+      ],
     }),
   },
 };
