@@ -17,7 +17,6 @@ async function tvl(api) {
     } catch (error) {
       throw error;
     }
-    }
   }
   
   if (vaultInfos.length === 0) return;
