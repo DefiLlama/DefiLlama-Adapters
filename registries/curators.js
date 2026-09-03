@@ -997,6 +997,18 @@ const configs = {
       }
     },
   },
+  "solon": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Solon.',
+      blockchains: {
+        robinhood: {
+          morpho: [
+            '0xCBB61788fB5A1969C93A222B1a12E4D1A50c6d99', // Solon USDG Vault
+          ],
+        },
+      }
+    },
+  },
   "steakhouse": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Steakhouse Financial.',
