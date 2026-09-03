@@ -2224,6 +2224,9 @@ const uniV2Configs = {
     cronos: '0x45523BD2aB7E563E3a0F286be1F766e77546d579',
   },
   'vvs-finance': {
+    _options: {
+      permitFailure: true,
+    },
     cronos: '0x3b44b2a187a7b3824131f8db5a74194d0a42fc15',
   },
   'wagyuswap': {
