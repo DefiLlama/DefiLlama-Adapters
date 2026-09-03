@@ -330,10 +330,8 @@ async function escrowTimelockBorrowed(api) {
   api.add(USDAI_CONTRACT, escrowTimelockTotalDeposits);
 }
 
-// TVL is the reserve assets plus the loan book. One function reports both parts so
-// the chart shows a single series.
-async function tvl(api) {
-  await reserves(api);
+// Outstanding loan principal, reported separately from tvl.
+async function borrowed(api) {
   await legacyPoolBorrowed(api);
   await loanRouterBorrowed(api);
   await loanRouterV2Borrowed(api);
@@ -342,10 +340,11 @@ async function tvl(api) {
 
 module.exports = {
   arbitrum: {
-    tvl,
+    tvl: reserves,
+    borrowed,
   },
   methodology:
-    "TVL is calculated by summing the value of tokens held by the protocol, outstanding loan principals and outstanding claimable yield.",
+    "TVL is calculated by summing the value of tokens held by the protocol and outstanding claimable yield. Outstanding loan principals are reported separately as borrowed.",
   hallmarks: [
     ["2025-09-12", "Deposit Caps raised to $250M"],
     ["2025-09-26", "Deposit Caps raised to $500M"]
