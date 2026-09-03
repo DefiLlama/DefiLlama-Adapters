@@ -19,22 +19,29 @@ async function tvl(api) {
   const stxTarget = block >= STX_V2_CUTOVER
     ? `${D}.stx-reserve-v2`
     : `${D}.reserve-v1`
-  const stxAbi = block >= STX_V2_CUTOVER ? 'get-total-stx' : 'get-total-stx'
 
-  const stxReserve = await call({
-    target: stxTarget,
-    abi: stxAbi,
-    block,
-  })
-  api.add('blockstack', stxReserve.value)
+  try {
+    const stxReserve = await call({
+      target: stxTarget,
+      abi: 'get-total-stx',
+      block,
+    })
+    api.add('blockstack', stxReserve.value)
+  } catch (e) {
+    console.error('stackingdao: stx reserve read failed:', e.message)
+  }
 
   // sBTC backing: stbtc-reserve deployed at block 8666589
   if (block >= STBTC_START) {
-    const sbtcReserve = await call({
-      target: `${D}.stbtc-reserve`,
-      abi: 'get-total-sbtc',
-      block,
-    })
-    api.add('sBTC', sbtcReserve.value)
+    try {
+      const sbtcReserve = await call({
+        target: `${D}.stbtc-reserve`,
+        abi: 'get-total-sbtc',
+        block,
+      })
+      api.add('sBTC', sbtcReserve.value)
+    } catch (e) {
+      console.error('stackingdao: stbtc reserve read failed:', e.message)
+    }
   }
 }
