@@ -61,6 +61,7 @@ const chains = {
   plasma: 9745,
   mode: 34443,
   arbitrum: 42161,
+  robinhood:4663,
   celo: 42220,
   oasis: 42262,
   avax: 43114,
