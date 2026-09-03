@@ -192,6 +192,13 @@ const config = {
       }, // v6
     ],
   },
+  robinhood: {
+    factories: [{
+        factory: "0x544BF81c855AE84c1e8b65d5E38770898D01EeE2",
+        fromBlock: 52515580
+      }, // v6
+    ],
+  },
   xlayer: {
     factories: [{
         factory: "0x544BF81c855AE84c1e8b65d5E38770898D01EeE2",
