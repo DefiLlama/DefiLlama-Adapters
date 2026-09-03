@@ -1,9 +1,12 @@
+const { ethers } = require('ethers')
 const { sumTokens2 } = require('./unwrapLPs')
 const { nullAddress } = require('./tokenMapping')
 
 const HUB = '0x120dbCDd58Bb787309573e29159fE6D37A1983F6'
 const MARKET_CORE = '0x55975E430Cc54C63dff03B1E6d27Be574Ce229F6'
 const MARKET_STAKE = '0x1819093Ec7376384A659e1c4976CDbc52F5564b9'
+// Uniswap v4 lens on Base, for fees a pool still owes the vault
+const STATE_VIEW = '0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71'
 
 // Ventures 1-6 are test deployments that predate the first real launch.
 const FIRST_REAL_VENTURE_ID = 7
@@ -18,6 +21,18 @@ const VENTURE_MONEY_TOKEN_BY_ID = 'function ventureMoneyTokenById(uint256) view 
 const VENTURE_VAULT = 'function ventureLiquidityVault(address) view returns (address)'
 const TOTAL_ASSETS = 'function totalAssets() view returns (uint256 ventureAssets, uint256 moneyAssets)'
 const ACTIVE_MARKET_BY_VENTURE = 'function activeMarketByVenture(uint256) view returns (uint256)'
+const POOL_KEY =
+  'function getPoolKey() view returns ((address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks))'
+const POSITION_INFO =
+  'function getPositionInfo(bytes32 poolId, address owner, int24 tickLower, int24 tickUpper, bytes32 salt) view returns (uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128)'
+const FEE_GROWTH_INSIDE =
+  'function getFeeGrowthInside(bytes32 poolId, int24 tickLower, int24 tickUpper) view returns (uint256 feeGrowthInside0X128, uint256 feeGrowthInside1X128)'
+const SPOT_PROTOCOL_CUT_BPS = 'function spotProtocolFeeCutBps() view returns (uint16)'
+
+const Q128 = 2n ** 128n
+const UINT256 = 2n ** 256n
+const MAX_BPS = 10000n
+const ZERO_SALT = `0x${'00'.repeat(32)}`
 const MARKET_SETTLEMENT_STATE =
   'function marketSettlementState(uint256) view returns (uint256 realVenture, uint256 realMoney, uint256 lpTokenId, uint256 ventureRemoved, uint256 moneyRemoved, uint128 liquidityRemoved)'
 
@@ -95,6 +110,7 @@ function ventureTvl(id) {
 
     const { moneyAssets } = await api.call({ target: vault, abi: TOTAL_ASSETS })
     api.add(moneyToken, moneyAssets)
+    api.add(moneyToken, await uncollectedVaultFees(api, vault, moneyToken))
 
     const marketId = await api.call({ target: MARKET_CORE, abi: ACTIVE_MARKET_BY_VENTURE, params: [id] })
     if (marketId && marketId !== '0') {
@@ -104,6 +120,49 @@ function ventureTvl(id) {
 
     return api.getBalances()
   }
+}
+
+/**
+ * The vault's own share of swap fees the pool still owes it.
+ *
+ * Uniswap v4 holds earned fees in the position's `feeGrowthInside` accumulator
+ * until something pokes the position, and only then does the vault's balance
+ * (and so `totalAssets()`) see them. Left out, TVL would drift further below the
+ * vault's real claim the longer nobody pokes, then jump. Only the LP share is
+ * counted: crystallizing immediately skims the protocol's cut to the fee
+ * recipient, so that part is revenue in transit rather than value the vault
+ * holds, and counting it would make TVL fall when the skim happens.
+ */
+async function uncollectedVaultFees(api, vault, moneyToken) {
+  const [poolKey, tickLower, tickUpper] = await Promise.all([
+    api.call({ target: vault, abi: POOL_KEY }),
+    api.call({ target: vault, abi: 'int24:tickLower' }),
+    api.call({ target: vault, abi: 'int24:tickUpper' }),
+  ])
+  // PoolIdLibrary.toId() hashes the five 32-byte PoolKey slots; the vault caches
+  // the result in an immutable with no getter.
+  const poolId = ethers.keccak256(
+    ethers.AbiCoder.defaultAbiCoder().encode(
+      ['address', 'address', 'uint24', 'int24', 'address'],
+      [poolKey.currency0, poolKey.currency1, poolKey.fee, poolKey.tickSpacing, poolKey.hooks]
+    )
+  )
+
+  const [position, current, cutBps] = await Promise.all([
+    api.call({ target: STATE_VIEW, abi: POSITION_INFO, params: [poolId, vault, tickLower, tickUpper, ZERO_SALT] }),
+    api.call({ target: STATE_VIEW, abi: FEE_GROWTH_INSIDE, params: [poolId, tickLower, tickUpper] }),
+    api.call({ target: HUB, abi: SPOT_PROTOCOL_CUT_BPS }),
+  ])
+
+  const liquidity = BigInt(position.liquidity)
+  if (!liquidity) return 0
+
+  const moneyIsCurrency0 = poolKey.currency0.toLowerCase() === moneyToken.toLowerCase()
+  const last = BigInt(moneyIsCurrency0 ? position.feeGrowthInside0LastX128 : position.feeGrowthInside1LastX128)
+  const now = BigInt(moneyIsCurrency0 ? current.feeGrowthInside0X128 : current.feeGrowthInside1X128)
+  // v4 accumulates fee growth with wrapping arithmetic, so the delta is mod 2^256
+  const owed = ((now - last + UINT256) % UINT256) * liquidity / Q128
+  return (owed * (MAX_BPS - BigInt(cutBps))) / MAX_BPS
 }
 
 /** Venture tokens staked to open a decision market. Own-token, so never `tvl`. */
