@@ -1,11 +1,12 @@
 const { getLogs2 } = require("../helper/cache/getLogs")
 const abi = require("../helper/abis/morpho.json")
+const { nullAddress } = require("../helper/tokenMapping")
 
 // Longbow creates and curates its own isolated markets on the Robinhood Chain Morpho Blue
-// deployment. That deployment is shared with other curators — Longbow is 55 of ~148 markets — so
-// the singleton's token balances cannot be attributed by a token union the way a sole-curator
-// deployment can. The markets are enumerated instead, the same shape compound-blue uses on
-// Polygon, and each one is attributed from its own state.
+// deployment. That deployment is shared with other curators — these 54 markets are a subset of the
+// ~148 on it — so the singleton's token balances cannot be attributed by a token union the way a
+// sole-curator deployment can. The markets are enumerated instead and each is attributed from its
+// own state, which is closer to felix-vanilla's market-level shape than to a curator-vault sum.
 //
 // tvl per market = (totalSupplyAssets - totalBorrowAssets) + collateral
 //   the first term is the loan-asset cash still held by the singleton for that market, which is
@@ -97,15 +98,37 @@ async function collateralByMarket(api) {
     net[key] = (net[key] || 0n) + delta
   }
 
+  // getLogs keys its cache on chain/target, so three events against one singleton would share a
+  // single entry and hand each sweep the wrong event's logs on a warm run. Each needs its own
+  // extraKey — the same split 246Club uses when replaying these exact events.
+  // toBlock is held back from the head because the cache is append-only: a log reorged out at the
+  // tip would otherwise be cached permanently. helper/curators does the same.
+  const safeBlock = (await api.getBlock()) - 200
+  const sweep = async (eventAbi, extraKey) => {
+    const args = { api, target: MORPHO, eventAbi, fromBlock: FROM_BLOCK, toBlock: safeBlock, onlyArgs: true, extraKey }
+    try {
+      return await getLogs2(args)
+    } catch (e) {
+      // A failed sweep would otherwise drop the whole collateral leg and report the protocol at a
+      // fraction of its size. Fall back to whatever is already cached, as morpho-blue does.
+      return getLogs2({ ...args, onlyUseExistingCache: true })
+    }
+  }
+
   const [supplied, withdrawn, liquidated] = await Promise.all([
-    getLogs2({ api, target: MORPHO, eventAbi: eventAbis.supplyCollateral, fromBlock: FROM_BLOCK, onlyArgs: true }),
-    getLogs2({ api, target: MORPHO, eventAbi: eventAbis.withdrawCollateral, fromBlock: FROM_BLOCK, onlyArgs: true }),
-    getLogs2({ api, target: MORPHO, eventAbi: eventAbis.liquidate, fromBlock: FROM_BLOCK, onlyArgs: true }),
+    sweep(eventAbis.supplyCollateral, 'longbow-supplyCollateral'),
+    sweep(eventAbis.withdrawCollateral, 'longbow-withdrawCollateral'),
+    sweep(eventAbis.liquidate, 'longbow-liquidate'),
   ])
 
   supplied.forEach((i) => apply(i.id, BigInt(i.assets)))
   withdrawn.forEach((i) => apply(i.id, -BigInt(i.assets)))
   liquidated.forEach((i) => apply(i.id, -BigInt(i.seizedAssets)))
+
+  // Collateral only moves through those three events, so a negative net means a log was dropped or
+  // double counted. Fail loudly rather than silently contributing zero.
+  for (const [id, amount] of Object.entries(net))
+    if (amount < 0n) throw new Error(`longbow: negative collateral replayed for market ${id}`)
 
   return net
 }
@@ -124,12 +147,12 @@ async function tvl(api) {
   markets.forEach((id, i) => {
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
     const borrowedAssets = BigInt(data[i].totalBorrowAssets || 0)
-    // Interest accrues on the borrow side between touches, so a stale market can report slightly
-    // more borrowed than supplied. Floor at zero rather than subtract from another market.
+    // Morpho accrues interest to both sides by the same amount and enforces
+    // totalBorrowAssets <= totalSupplyAssets, so this cannot go negative. Defensive floor only.
     if (supplied > borrowedAssets) api.add(params[i].loanToken, supplied - borrowedAssets)
 
     const held = collateral[id.toLowerCase()] || 0n
-    if (held > 0n) api.add(params[i].collateralToken, held)
+    if (held > 0n && params[i].collateralToken !== nullAddress) api.add(params[i].collateralToken, held)
   })
 }
 
@@ -145,7 +168,8 @@ async function borrowed(api) {
 
 module.exports = {
   doublecounted: true,
+  start: '2026-07-10',
   methodology:
-    "Counts the isolated Morpho markets Longbow curates on Robinhood Chain. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Longbow vault deposits are supplied into these same markets, so they are counted once here rather than added again. Marked double counted because Morpho Blue reports the same markets.",
+    "Counts the isolated Morpho markets Longbow curates on Robinhood Chain. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Attribution is market-level and deliberate: all supply and collateral in a Longbow-created market is counted, including deposits routed through third-party vaults, because the market is the product. Longbow's own vault deposits are supplied into these same markets, so they are counted once here rather than added again. Marked double counted because Morpho Blue reports the same markets.",
   robinhood: { tvl, borrowed },
 }
