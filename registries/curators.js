@@ -1432,6 +1432,23 @@ const configs = {
       }
     },
   },
+  "waterline": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Waterline.',
+      blockchains: {
+        ethereum: {
+          morpho: [
+            '0xBEeFF047C03714965a54b671A37C18beF6b96210', // Waterline Reservoir USDC (V2)
+            '0xAb5955EB671d150527f8E61A42B703832F86616C', // M1 USDC (V2)
+            '0xbeEFF75262b2eC16a3C62a807F02EE7627654931', // Waterline InfiniFi USDC (V2)
+            '0x7d4741ba166B21cf3168A9A0ea71388531C52FF7', // Tenbin USDC (V2)
+            '0xbeEF346d7099865208Ff331e4f648f4154DDAa05', // Waterline Reservoir USDC (V1)
+            '0xBEeF1f5Bd88285E5B239B6AAcb991d38ccA23Ac9', // Waterline infiniFi USDC (V1)
+          ],
+        },
+      },
+    },
+  },
   "yearn-curating": {
     config: {
       methodology: 'Counts all assets that are deposited in all vaults curated by Yearn.',
