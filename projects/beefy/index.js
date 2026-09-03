@@ -125,6 +125,7 @@ const beefyChainNameMapping = {
   'one': 'harmony',
   'harmony': 'harmony',
   'megaeth': 'megaeth',
+  'robinhood': 'robinhood',
 };
 
 async function fetchVaultData() {
