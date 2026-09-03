@@ -22,6 +22,18 @@ const { nullAddress } = require("../helper/tokenMapping")
 const MORPHO = "0x9D53d5E3bd5E8d4Cbfa6DB1ca238AEA02E651010"
 const FROM_BLOCK = 286
 
+// Collateral DefiLlama has no price for. Both trade outside the Uniswap V3 pools its price service
+// reads on this chain, so they resolve to $0 and their markets would report as empty. Each market's
+// Morpho oracle prices its own collateral in loan-token units — the same quantity Morpho's LTV and
+// liquidation math use — so those two are converted and contributed as the loan asset instead.
+const oraclePricedCollateral = new Set([
+  '0x63c12667638f2ae6fc6ae09b43d98ec84a8586ea', // wsNET
+  '0x2e8c31162b855a2ffa90f6f8634643ad6f111e18', // AI
+])
+
+const ORACLE_PRICE_ABI = 'uint256:price'
+const ORACLE_SCALE = 10n ** 36n
+
 const eventAbis = {
   supplyCollateral: "event SupplyCollateral(bytes32 indexed id, address indexed caller, address indexed onBehalf, uint256 assets)",
   withdrawCollateral: "event WithdrawCollateral(bytes32 indexed id, address caller, address indexed onBehalf, address indexed receiver, uint256 assets)",
@@ -141,6 +153,7 @@ async function marketState(api) {
 
 async function tvl(api) {
   const [{ params, data }, collateral] = await Promise.all([marketState(api), collateralByMarket(api)])
+  const oraclePrices = await api.multiCall({ abi: ORACLE_PRICE_ABI, calls: params.map((p) => p.oracle), permitFailure: true })
 
   markets.forEach((id, i) => {
     const supplied = BigInt(data[i].totalSupplyAssets || 0)
@@ -150,7 +163,14 @@ async function tvl(api) {
     if (supplied > borrowedAssets) api.add(params[i].loanToken, supplied - borrowedAssets)
 
     const held = collateral[id.toLowerCase()] || 0n
-    if (held > 0n && params[i].collateralToken !== nullAddress) api.add(params[i].collateralToken, held)
+    if (held <= 0n || params[i].collateralToken === nullAddress) return
+    if (!oraclePricedCollateral.has(params[i].collateralToken.toLowerCase())) {
+      api.add(params[i].collateralToken, held)
+      return
+    }
+    // price() is scaled 1e36 + loanDecimals - collateralDecimals, so this lands in loan-token units.
+    const price = oraclePrices[i]
+    if (price) api.add(params[i].loanToken, (held * BigInt(price)) / ORACLE_SCALE)
   })
 }
 
@@ -166,8 +186,9 @@ async function borrowed(api) {
 
 module.exports = {
   doublecounted: true,
+  misrepresentedTokens: true,
   start: '2026-07-10',
   methodology:
-    "Counts the isolated Morpho markets Longbow curates on Robinhood Chain. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Attribution is market-level and deliberate: all supply and collateral in a Longbow-created market is counted, including deposits routed through third-party vaults, because the market is the product. Longbow's own vault deposits are supplied into these same markets, so they are counted once here rather than added again. Marked double counted because Morpho Blue reports the same markets.",
+    "Counts the isolated Morpho markets Longbow curates on Robinhood Chain. For each market, TVL is the loan assets still held by Morpho for that market (supplied minus borrowed) plus the borrower collateral posted against it; outstanding debt is reported separately under borrowed. Attribution is market-level and deliberate: all supply and collateral in a Longbow-created market is counted, including deposits routed through third-party vaults, because the market is the product. Longbow's own vault deposits are supplied into these same markets, so they are counted once here rather than added again. Collateral that DefiLlama has no price for is valued at its market's Morpho oracle and contributed as the loan asset, which is the same valuation Morpho's own liquidation math uses. Marked double counted because Morpho Blue reports the same markets.",
   robinhood: { tvl, borrowed },
 }
