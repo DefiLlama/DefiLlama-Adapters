@@ -1,47 +1,61 @@
-const { getLogs } = require('../helper/cache/getLogs');
-
-const VAULT_MANAGER_ADDRESS = "0xafe480f375ebd13df703ef50b429357d29d162ee";
-const START_BLOCK = 472227568;
-
-const DEPOSITED_EVENT_ABI = "event Deposited(address indexed user, uint256 indexed index, uint256 amount)";
+const VAULT_MANAGER_ADDRESS = "0xaFE480f375EBd13dF703ef50b429357d29D162Ee";
 
 async function tvl(api) {
-  const depositEvents = await getLogs({
-    api,
-    target: VAULT_MANAGER_ADDRESS,
-    eventAbi: DEPOSITED_EVENT_ABI,
-    fromBlock: START_BLOCK,
-    onlyArgs: true,
-  });
-
-  const depositsByVault = new Map();
+  const vaultInfos = [];
+  let index = 1;
   
-  for (const event of depositEvents) {
-    const vaultIndex = Number(event.index);
-    const amount = BigInt(event.amount);
-    const current = depositsByVault.get(vaultIndex) || 0n;
-    depositsByVault.set(vaultIndex, current + amount);
+  while (true) {
+    try {
+      const vault = await api.call({
+        target: VAULT_MANAGER_ADDRESS,
+        abi: 'function vaults(uint256) view returns (tuple(address shareToken, address assetToken, address vaultAddress, string name, uint256 depositOpenAt, uint256 depositCloseAt, uint256 withdrawOpenAt))',
+        params: [index]
+      });
+      if (vault.vaultAddress === '0x0000000000000000000000000000000000000000') break;
+      vaultInfos.push(vault);
+      index++;
+    } catch {
+      break;
+    }
   }
-
-  const vaultIndices = Array.from(depositsByVault.keys());
-
-  if (vaultIndices.length === 0) {
-    return;
+  
+  if (vaultInfos.length === 0) return;
+  
+  const now = api.timestamp;
+  
+  const preWithdrawalVaults = [];
+  const withdrawalVaults = [];
+  
+  vaultInfos.forEach(vault => {
+    if (now < vault.withdrawOpenAt) {
+      preWithdrawalVaults.push(vault);
+    } else {
+      withdrawalVaults.push(vault);
+    }
+  });
+  
+  if (preWithdrawalVaults.length > 0) {
+    const supplies = await api.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: preWithdrawalVaults.map(v => v.shareToken)
+    });
+    preWithdrawalVaults.forEach((vault, i) => {
+      api.add(vault.assetToken, supplies[i]);
+    });
   }
-
-  const vaultInfos = await api.multiCall({
-    abi: 'function vaults(uint256) view returns (tuple(address shareToken, address assetToken, address vaultAddress, string name, uint256 depositOpenAt, uint256 depositCloseAt, uint256 withdrawOpenAt))',
-    calls: vaultIndices,
-    target: VAULT_MANAGER_ADDRESS,
-  });
-
-  vaultIndices.forEach((vaultIndex, idx) => {
-    const vaultInfo = vaultInfos[idx];
-    const assetToken = vaultInfo.assetToken;
-    const depositedAmount = depositsByVault.get(vaultIndex);
-    
-    api.add(assetToken, depositedAmount.toString());
-  });
+  
+  if (withdrawalVaults.length > 0) {
+    const balances = await api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: withdrawalVaults.map(v => ({
+        target: v.assetToken,
+        params: [v.vaultAddress]
+      }))
+    });
+    withdrawalVaults.forEach((vault, i) => {
+      api.add(vault.assetToken, balances[i]);
+    });
+  }
 }
 
 module.exports = {
