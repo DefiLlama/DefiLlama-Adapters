@@ -779,6 +779,23 @@ const configs = {
       }
     },
   },
+  "pangolins": {
+    config: {
+      methodology: 'TVL is the sum of underlying assets deposited in Pangolins-curated ERC-4626 vaults on Morpho and Lista.',
+      blockchains: {
+        base: {
+          morphoVaultOwners: [
+            '0xB8108fA53B7228D8bfC84712Ba3B870c78Ab7c2E', // initial owner — Pangolins USDC
+          ],
+        },
+        bsc: {
+          erc4626: [
+            '0xEB4F6FFB1038E1cCa701e7d53083B37ec5b6Ba33', // Pangolins USDT by Lista
+          ],
+        },
+      }
+    },
+  },
   "poppie": {
     config: {
       methodology: 'Count all assets deposited in Euler vaults curated by Poppie.',
