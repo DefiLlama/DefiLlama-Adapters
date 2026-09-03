@@ -3,7 +3,7 @@ const abi = require("../helper/abis/morpho.json")
 const { nullAddress } = require("../helper/tokenMapping")
 
 // Longbow creates and curates its own isolated markets on the Robinhood Chain Morpho Blue
-// deployment. That deployment is shared with other curators — these 54 markets are a subset of the
+// deployment. That deployment is shared with other curators — these 55 markets are a subset of the
 // ~148 on it — so the singleton's token balances cannot be attributed by a token union the way a
 // sole-curator deployment can. The markets are enumerated instead and each is attributed from its
 // own state, which is closer to felix-vanilla's market-level shape than to a curator-vault sum.
@@ -28,9 +28,6 @@ const eventAbis = {
   liquidate: "event Liquidate(bytes32 indexed id, address indexed caller, address indexed borrower, uint256 repaidAssets, uint256 repaidShares, uint256 seizedAssets, uint256 badDebtAssets, uint256 badDebtShares)",
 }
 
-// WSNET-NN is deliberately absent: that market belongs to NetNet, not Longbow. Longbow lists it
-// as a partner market on its own frontend, but its supply and collateral are NetNet users' assets,
-// so counting them here would attribute another protocol's book to this one.
 const markets = [
   '0x7c820d6a09502d63be80bb8025ec479d29d7c06e70f8df65a92aaeed23a366e2', // ETH
   '0x66306c087add8907752320b309934abcc354d21626de8115c79df49d9c214edc', // NVDA
@@ -84,6 +81,7 @@ const markets = [
   '0x46eea143d473cdb8587505f8886dad452037f285f7729a7763e8c233c63b2e8e', // RIVN
   '0x8338aed363a309039b2f271a83558831e7e445f2d13c6e72c576ec0b8a969415', // RBLX
   '0xf47c7a7a1ff6c7444e6fcfa20a71f439e4525f4f9640fe6ba5c080f6f2a9d33f', // WSNET
+  '0xaa586d26a6fe62d9c0f0948fede6e2130500ac7a655587447e2d4a37e6330589', // WSNET-NN
   '0x4e92b336ecad6c842be20ae2ae27b28b3cf5ced6c5388a808167c03a8d75fdf8', // SPY-WETH
   '0x141c2b1d2bbecf7f8a76563307d7e5bf586457e873c3d97c4bb1502e57b77952', // NVDA-WETH
 ]
