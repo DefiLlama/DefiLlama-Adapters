@@ -43,6 +43,7 @@ function getTVLFunction(chain) {
 
 module.exports = {
   methodology: "All tokens locked in Allbridge Core pool contracts.",
+  deadFrom: "2026-08-31", // deprecated in favor of ccip, x-reserves, and lz
   timetravel: false,
   stellar: { tvl: stellarTvl },
 }
