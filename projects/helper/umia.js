@@ -21,6 +21,8 @@ const VENTURE_MONEY_TOKEN_BY_ID = 'function ventureMoneyTokenById(uint256) view 
 const VENTURE_VAULT = 'function ventureLiquidityVault(address) view returns (address)'
 const TOTAL_ASSETS = 'function totalAssets() view returns (uint256 ventureAssets, uint256 moneyAssets)'
 const ACTIVE_MARKET_BY_VENTURE = 'function activeMarketByVenture(uint256) view returns (uint256)'
+const MARKET_SETTLEMENT_STATE =
+  'function marketSettlementState(uint256) view returns (uint256 realVenture, uint256 realMoney, uint256 lpTokenId, uint256 ventureRemoved, uint256 moneyRemoved, uint128 liquidityRemoved)'
 const POOL_KEY =
   'function getPoolKey() view returns ((address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks))'
 const POSITION_INFO =
@@ -33,44 +35,56 @@ const Q128 = 2n ** 128n
 const UINT256 = 2n ** 256n
 const MAX_BPS = 10000n
 const ZERO_SALT = `0x${'00'.repeat(32)}`
-const MARKET_SETTLEMENT_STATE =
-  'function marketSettlementState(uint256) view returns (uint256 realVenture, uint256 realMoney, uint256 lpTokenId, uint256 ventureRemoved, uint256 moneyRemoved, uint128 liquidityRemoved)'
 
 const isSet = i => i && i !== nullAddress
 
 /**
  * Venture ids are 1-based and never reused, so slicing off the leading test
  * deployments by id needs no maintenance as new ventures are created.
+ *
+ * Every id is bounded by `ventureCount` at the block being read, a single
+ * requested id included: the hub reverts on an id it has not created yet, which
+ * would fail the whole adapter when DefiLlama backfills a date before the
+ * venture existed.
  */
 async function ventureIds(api, { from = FIRST_REAL_VENTURE_ID, only } = {}) {
-  if (only !== undefined) return [only]
   const count = Number(await api.call({ target: HUB, abi: 'uint256:ventureCount' }))
+  if (only !== undefined) return only <= count ? [only] : []
   const ids = []
   for (let id = from; id <= count; id++) ids.push(id)
   return ids
 }
 
-async function resolveVentures(api, ids) {
-  if (!ids.length) return { ids, ventures: [], tokens: [], moneyTokens: [], vaults: [] }
+/**
+ * Each field has its own resolver, so a caller never inherits the cost or the
+ * failure surface of a call it does not read.
+ */
+async function ventureAddresses(api, ids) {
+  if (!ids.length) return []
   const infos = await api.multiCall({ target: HUB, abi: VENTURE_BY_ID, calls: ids })
-  const ventures = infos.map(i => i.venture)
-  const [tokens, moneyTokens, vaults] = await Promise.all([
-    api.multiCall({ target: HUB, abi: VENTURE_TOKEN_BY_ID, calls: ids }),
-    api.multiCall({ target: HUB, abi: VENTURE_MONEY_TOKEN_BY_ID, calls: ids }),
-    api.multiCall({ target: HUB, abi: VENTURE_VAULT, calls: ventures }),
-  ])
-  return { ids, ventures, tokens, moneyTokens, vaults }
+  return infos.map(i => i.venture)
 }
 
+const ventureTokens = (api, ids) =>
+  ids.length ? api.multiCall({ target: HUB, abi: VENTURE_TOKEN_BY_ID, calls: ids }) : []
+
+const ventureMoneyTokens = (api, ids) =>
+  ids.length ? api.multiCall({ target: HUB, abi: VENTURE_MONEY_TOKEN_BY_ID, calls: ids }) : []
+
+const ventureVaults = (api, ventures) =>
+  ventures.length ? api.multiCall({ target: HUB, abi: VENTURE_VAULT, calls: ventures }) : []
+
 /**
- * Bids escrowed in every launch that has not settled yet, in the launch currency.
+ * The launch currency held by every launch contract and its clearing auction.
  *
- * Tokens on sale are the venture's own and are not counted, the same way a
- * protocol's own token is kept out of TVL elsewhere.
+ * While an auction runs this is the escrowed bids. Once it settles the proceeds
+ * have moved on and what is left is the unspent change still owed to bidders who
+ * have not exited, withdrawable by them at any time and so still locked user
+ * money. Tokens on sale are the venture's own and are never counted, the same
+ * way a protocol's own token is kept out of TVL elsewhere.
  */
 async function launchpadTvl(api) {
-  const ids = await ventureIds(api)
-  const { ventures } = await resolveVentures(api, ids)
+  const ventures = await ventureAddresses(api, await ventureIds(api))
   if (!ventures.length) return api.getBalances()
 
   const lbps = await api.multiCall({ abi: 'address:lbp', calls: ventures, permitFailure: true })
@@ -78,12 +92,13 @@ async function launchpadTvl(api) {
   if (!liveLbps.length) return api.getBalances()
 
   const [currencies, auctions] = await Promise.all([
-    api.multiCall({ abi: 'address:currency', calls: liveLbps }),
+    api.multiCall({ abi: 'address:currency', calls: liveLbps, permitFailure: true }),
     api.multiCall({ abi: 'address:initializer', calls: liveLbps, permitFailure: true }),
   ])
 
   const tokensAndOwners = []
   liveLbps.forEach((lbp, i) => {
+    if (!isSet(currencies[i])) return
     tokensAndOwners.push([currencies[i], lbp])
     if (isSet(auctions[i])) tokensAndOwners.push([currencies[i], auctions[i]])
   })
@@ -103,10 +118,14 @@ async function launchpadTvl(api) {
  */
 function ventureTvl(id) {
   return async api => {
-    const { moneyTokens, vaults } = await resolveVentures(api, [id])
+    const ids = await ventureIds(api, { only: id })
+    const [moneyTokens, ventures] = await Promise.all([
+      ventureMoneyTokens(api, ids),
+      ventureAddresses(api, ids),
+    ])
     const [moneyToken] = moneyTokens
-    const [vault] = vaults
-    if (!isSet(vault)) return api.getBalances()
+    const [vault] = await ventureVaults(api, ventures)
+    if (!isSet(vault) || !isSet(moneyToken)) return api.getBalances()
 
     const { moneyAssets } = await api.call({ target: vault, abi: TOTAL_ASSETS })
     api.add(moneyToken, moneyAssets)
@@ -132,13 +151,18 @@ function ventureTvl(id) {
  * counted: crystallizing immediately skims the protocol's cut to the fee
  * recipient, so that part is revenue in transit rather than value the vault
  * holds, and counting it would make TVL fall when the skim happens.
+ *
+ * Reads 0 rather than throwing when the lens cannot be reached, so the venture
+ * still reports the liquidity `totalAssets()` already returned.
  */
 async function uncollectedVaultFees(api, vault, moneyToken) {
   const [poolKey, tickLower, tickUpper] = await Promise.all([
-    api.call({ target: vault, abi: POOL_KEY }),
-    api.call({ target: vault, abi: 'int24:tickLower' }),
-    api.call({ target: vault, abi: 'int24:tickUpper' }),
+    api.call({ target: vault, abi: POOL_KEY, permitFailure: true }),
+    api.call({ target: vault, abi: 'int24:tickLower', permitFailure: true }),
+    api.call({ target: vault, abi: 'int24:tickUpper', permitFailure: true }),
   ])
+  if (!poolKey || tickLower === null || tickUpper === null) return 0
+
   // PoolIdLibrary.toId() hashes the five 32-byte PoolKey slots; the vault caches
   // the result in an immutable with no getter.
   const poolId = ethers.keccak256(
@@ -149,10 +173,16 @@ async function uncollectedVaultFees(api, vault, moneyToken) {
   )
 
   const [position, current, cutBps] = await Promise.all([
-    api.call({ target: STATE_VIEW, abi: POSITION_INFO, params: [poolId, vault, tickLower, tickUpper, ZERO_SALT] }),
-    api.call({ target: STATE_VIEW, abi: FEE_GROWTH_INSIDE, params: [poolId, tickLower, tickUpper] }),
-    api.call({ target: HUB, abi: SPOT_PROTOCOL_CUT_BPS }),
+    api.call({
+      target: STATE_VIEW,
+      abi: POSITION_INFO,
+      params: [poolId, vault, tickLower, tickUpper, ZERO_SALT],
+      permitFailure: true,
+    }),
+    api.call({ target: STATE_VIEW, abi: FEE_GROWTH_INSIDE, params: [poolId, tickLower, tickUpper], permitFailure: true }),
+    api.call({ target: HUB, abi: SPOT_PROTOCOL_CUT_BPS, permitFailure: true }),
   ])
+  if (!position || !current || cutBps === null) return 0
 
   const liquidity = BigInt(position.liquidity)
   if (!liquidity) return 0
@@ -168,7 +198,8 @@ async function uncollectedVaultFees(api, vault, moneyToken) {
 /** Venture tokens staked to open a decision market. Own-token, so never `tvl`. */
 function ventureStaking(id) {
   return async api => {
-    const { tokens } = await resolveVentures(api, [id])
+    const tokens = (await ventureTokens(api, await ventureIds(api, { only: id }))).filter(isSet)
+    if (!tokens.length) return api.getBalances()
     return sumTokens2({ api, tokens, owners: [MARKET_STAKE] })
   }
 }
@@ -196,20 +227,20 @@ function venture(id, { start, hallmarks } = {}) {
  * No overlap with the launch adapter: auction bids are escrowed in the launch
  * contract pre-settlement and only reach the treasury afterwards.
  */
-function treasuryTvl({ from, only } = {}) {
+function treasuryTvl(scope = {}) {
   return async api => {
-    const ids = await ventureIds(api, { from, only })
-    const { ventures, moneyTokens } = await resolveVentures(api, ids)
+    const ids = await ventureIds(api, scope)
+    const [ventures, moneyTokens] = await Promise.all([ventureAddresses(api, ids), ventureMoneyTokens(api, ids)])
     if (!ventures.length) return api.getBalances()
     return api.sumTokens({ tokensAndOwners2: [moneyTokens, ventures] })
   }
 }
 
 /** Each venture's own token held by its treasury, reported separately from TVL. */
-function treasuryOwnTokens({ from, only } = {}) {
+function treasuryOwnTokens(scope = {}) {
   return async api => {
-    const ids = await ventureIds(api, { from, only })
-    const { ventures, tokens } = await resolveVentures(api, ids)
+    const ids = await ventureIds(api, scope)
+    const [ventures, tokens] = await Promise.all([ventureAddresses(api, ids), ventureTokens(api, ids)])
     if (!ventures.length) return api.getBalances()
     return api.sumTokens({ tokensAndOwners2: [tokens, ventures] })
   }
