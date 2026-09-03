@@ -920,5 +920,11 @@ module.exports = {
     "base": {
       "tvl": { "owners": ["0xc3d963E0856A2c2d6F75C83C1355f680fd8F9f10", "0xFf3f7038c4919A420B30D7B3533cb386D5898189", "0x8320448539DcafdE9C26B4F538504BB180DE55B3", "0xeEf5672208EcE3Ba6B32f1FEC3c3802A6D2DBA8a", "0x97d14D248d956148a34E4fe636CDdBa8BB80E551", "0x911d5c2a20dDA9bE9daE53fE3AD9183e5b583D7f"], "tokens": [ADDRESSES.base.USDC, ADDRESSES.base.USDT] }
     }
+  },
+  "openstock": {
+    "methodology": "Sums the settlement-stablecoin (USDT0) balance held directly by each OpenStock pre-IPO vault contract on Mantle.",
+    "mantle": {
+      "tvl": { "owners": ["0x41D4C067b82DA8357Dfc38e3f24F6033368aF4bb"], "tokens": ["0x779Ded0c9e1022225f8E0630b35a9b54bE713736"]}
+    }
   }
 }
