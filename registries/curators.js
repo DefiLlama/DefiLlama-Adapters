@@ -50,6 +50,23 @@ const configs = {
       }
     },
   },
+  "bitwise": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Bitwise.',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0x3585f2427b5D2746472A49406321b71799402a7d',
+          ],
+        },
+        base: {
+          morphoVaultOwners: [
+            '0x510F3b6621D9eA392d4F7632d02aBCf8ba92Bd6F',
+          ],
+        },
+      }
+    },
+  },
   "sharpbyte-capital": {
     config: {
       methodology: 'Counts assets deposited in the SharpByte USDT Prime Morpho V2 vault.',
