@@ -904,5 +904,21 @@ module.exports = {
     "rise": {
       "tvl": { "owners": ["0x62b7f5A5Be488ea58f660C5aff465647213Bc6e9"], "tokens": ["0x866A2BF4E572CbcF37D5071A7a58503Bfb36be1b"] },
     }
+  },
+  "veiledhood": {
+    "methodology": "TVL is the sum of USDG and WETH balances held by VeiledHood's Veiledhood and VeilSwap vault contracts on Robinhood Chain, read directly on-chain. Per-user balances are tracked off-chain via a Merkle-committed ledger, but the vault's aggregate token balances are public and require no private state to compute.",
+    "robinhood": {
+      "tvl": { "owners": ["0x8Ae2D8A767c3d59219556b83d4e8385514b6d72B", "0xa4B90fb94B2bBdf1D66A8191E883D0F57BbC6D0b"], "tokens": [ADDRESSES.robinhood.USDG, ADDRESSES.robinhood.WETH] },
+    }
+  },
+  "termix": {
+    "methodology": "TVL is USDC and USDT held across the escrow (funded jobs not yet settled), staking (provider stakes) and campaign-vault contracts on BSC and Base.",
+    "start": "2026-07-02",
+    "bsc": {
+      "tvl": { "owners": ["0x6A52ba4C84b348FaEAe13dDC7A97b4F6af23913C", "0xCE02f987D8b8AF694E13C8a843Db9c77caBF544c", "0x0Bd066f5113e6B8336b06F8Aa3EF90D37F7e65FC", "0x1DcafFB7275fa2650d480a4F939A0C0D5874750B", "0x5BaE7834B32a4b357F65dd20248068993466D294", "0x16261F2BCbE8Ee47065C5ecB4be32c1571289809"], "tokens": [ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT] }
+    },
+    "base": {
+      "tvl": { "owners": ["0xc3d963E0856A2c2d6F75C83C1355f680fd8F9f10", "0xFf3f7038c4919A420B30D7B3533cb386D5898189", "0x8320448539DcafdE9C26B4F538504BB180DE55B3", "0xeEf5672208EcE3Ba6B32f1FEC3c3802A6D2DBA8a", "0x97d14D248d956148a34E4fe636CDdBa8BB80E551", "0x911d5c2a20dDA9bE9daE53fE3AD9183e5b583D7f"], "tokens": [ADDRESSES.base.USDC, ADDRESSES.base.USDT] }
+    }
   }
 }

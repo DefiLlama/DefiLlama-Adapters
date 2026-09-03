@@ -27,6 +27,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  methodology: 'LBTC is a yield-bearing Bitcoin asset, 1:1 backed by native bitcoin. TVL counts the native BTC in Lombard deposit addresses, capped at the LBTC staking vault base balance reported by the Lombard ledger, plus the LFBTC balance that stands in for the BTC deposit addresses excluded from the address book.',
   doublecounted: true,
   timetravel: false,
   isHeavyProtocol: true,

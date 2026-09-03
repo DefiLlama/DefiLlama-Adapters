@@ -504,6 +504,10 @@ const configs = {
       '0x7d71f0849a180a192dd2014230ce07c6635805b1',
     ],
   },
+  'southpole': {
+    methodology: "TVL counts the USDC deposited into the SouthPole USDC vault (a standard ERC-4626 vault) on Arbitrum.",
+    arbitrum: ['0xeA59d9343FF0d70470DD6709cfCD5Bc735d9aDBC']
+  }
 }
 
 module.exports = buildProtocolExports(configs, erc4626ExportFn)

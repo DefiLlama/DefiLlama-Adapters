@@ -24,6 +24,9 @@ function uniV2ExportFn(chainConfigs, options = {}) {
 }
 
 const uniV2Configs = {
+  'zero-swap': {
+    robinhood: '0xc802A440559cEE8A66E2023403d34Be9084A720e',
+  },
   '1pulse': {
     pulse: '0x17C335D22456c798D5A3D021583eDAcbD4Ef6444',
   },
@@ -1658,7 +1661,6 @@ const uniV2Configs = {
   'reservoir-tools-v2': {
     abstract: '0x566d7510dEE58360a64C9827257cF6D0Dc43985E',
     zero_network: '0x1B4427e212475B12e62f0f142b8AfEf3BC18B559',
-    ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
   },
   'revoswap': {
     xlayer: '0xa38498983e7b31DE851e36090bc9D1D8fB96BE5E',
@@ -2222,6 +2224,9 @@ const uniV2Configs = {
     cronos: '0x45523BD2aB7E563E3a0F286be1F766e77546d579',
   },
   'vvs-finance': {
+    _options: {
+      permitFailure: true,
+    },
     cronos: '0x3b44b2a187a7b3824131f8db5a74194d0a42fc15',
   },
   'wagyuswap': {
@@ -2728,6 +2733,17 @@ const uniV2Configs = {
     polygon: '0xA87c8308722237F6442Ef4762B7287afB84fB191',
     robinhood: '0x43B2Bf9f33036a02fC7A00935571c2A6b0108e66',
   },
+  'raphael': {
+    misrepresentedTokens: true,
+    _options: {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      hasStablePools: true,
+    },
+    robinhood: '0x1A6745F84099Fa7E84D1f3B34c23482865194bd1',
+  },
   'sharkyswap': {
     arbitrum: { factory: '0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C', staking: ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"] },
   },
@@ -3093,8 +3109,10 @@ const uniV2Configs = {
   'wraithswap': {
     fantom: { factory: '0xCC738D2fDE18fe66773b84c8E6C869aB233766D1', staking: ['0x37b106f101a63D9d06e53140E52Eb6F8A3aC5bBc', '0x4cf098d3775bd78a4508a13e126798da5911b6cd'] },
   },
-  'giga-dex': {
-    robinhood: '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916'
+  'giga-dex': { robinhood: '0x6Fdf38f92eAd1adFc04B73aaa947ab254f6c0916' },
+  'daily-dex': { dly: '0x11c0d58d7D9B01e4B07013d3476F7b913803E875' },
+  'ladyswap': {
+    lady: { factory: '0x224531f8130A7F639444E17e1D43966dB1dEa431', staking: ['0x09022c3e699B4DdCc9eDf52c9545F33783eB9F43', '0x8635dE218E5d4faC62432d6bfB20E199aeDe366F'] },
   },
   'kolswap': {
     robinhood: '0xdB2Ec80E55527b5D858b54173083139679f5DE6f',
@@ -3107,8 +3125,8 @@ const uniV2Configs = {
     },
     robinhood: '0xe0799417eff30A12249b8c30941BC2d7c52A0339',
   },
-  'qomx': {    bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785'  },
-  'lobsterswap': {    ozone: '0x89687777012E7FF91a6ecDDDc0aebAb38BbC098A'  },
+  'qomx': { bsc: '0x356037CbC77B3A2B36E0484d96DF0De247e66785' },
+  'lobsterswap': { ozone: '0x89687777012E7FF91a6ecDDDc0aebAb38BbC098A' },
   'icarus-v2': {
     start: '2026-01-23',
     methodology: 'Value of the tokens locked in the classic stable and volatile liquidity pools.',

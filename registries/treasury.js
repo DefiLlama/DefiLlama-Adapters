@@ -4421,6 +4421,12 @@ const configs = {
       owners: ['D3T38wVYstKhkSLXdYACGor5fGWBiuqWu9VjDp2XoPDB'],
     },
   },
+  'treasury/popcorncine': {
+    bsc: {
+      owners: ['0x24a2d2503ed27418d7e5b21b617d4bc03aec55e1'],
+      tokens: [ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, nullAddress],
+    },
+  },
   'treasury/premia': {
     arbitrum: {
       tokens: [
@@ -5716,6 +5722,26 @@ const configs = {
       ownTokens: ["0xA36FDBBAE3c9d55a1d67EE5821d53B50B63A1aB9"],
       resolveLP: true,
       resolveUniV3: true,
+    },
+  },
+  'treasury/termix': {
+    // Protocol fee recipient — receives the 2% protocol fee from the escrow and
+    // campaign-vault contracts on both chains.
+    bsc: {
+      owners: ["0x1095deD95CB6e81C01204F7A94950dd559195E42"],
+      fetchCoValentTokens: false,
+      tokens: [
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.USDT,
+      ],
+    },
+    base: {
+      owners: ["0x1095deD95CB6e81C01204F7A94950dd559195E42"],
+      fetchCoValentTokens: false,
+      tokens: [
+        ADDRESSES.base.USDC,
+        ADDRESSES.base.USDT,
+      ],
     },
   },
   'treasury/thales': {
