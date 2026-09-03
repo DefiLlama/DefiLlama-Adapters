@@ -13,4 +13,5 @@ async function tvl(api) {
 
 module.exports = {
   base: { tvl },
+  avax: { tvl: () => ({})}
 }
