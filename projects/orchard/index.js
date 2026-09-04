@@ -6,7 +6,7 @@ const ORCHARD_V1 = '0xEbB8b167c0992cFdc497A995a8Cf7167acAA0A1A'
 const ORCHARD_V2 = '0x86510b3df745C67a993A66CB08720Ed158d44549' // live since 2026-09-03; v1 stays open for claims
 const SEED_STAKING = '0xd5d5f5Dff96E53fc6337b4aCf549d61b12882F2b'
 
-const GAMES = [ORCHARD_V1, ORCHARD_V2]
+const ORCHARD_V2_START = 1788476509 // v2 deployment
 
 // Orchard is a 5x5 plot game played in AAPL. Two versions of the game contract run side by side.
 //
@@ -23,20 +23,23 @@ const GAMES = [ORCHARD_V1, ORCHARD_V2]
 // subtracted. The staking contract, shared by both versions, holds the staker rake already
 // flushed to it, also in AAPL.
 async function tvl(api) {
+  const v2Live = api.timestamp >= ORCHARD_V2_START
+  const games = v2Live ? [ORCHARD_V1, ORCHARD_V2] : [ORCHARD_V1]
+
   const [held, treasury, admin, stakerRewards] = await Promise.all([
-    api.multiCall({ abi: 'erc20:balanceOf', target: AAPL, calls: GAMES }),
-    api.multiCall({ abi: 'uint256:treasuryAccrued', calls: GAMES }),
-    api.multiCall({ abi: 'uint256:adminAccrued', calls: GAMES }),
+    api.multiCall({ abi: 'erc20:balanceOf', target: AAPL, calls: games }),
+    api.multiCall({ abi: 'uint256:treasuryAccrued', calls: games }),
+    api.multiCall({ abi: 'uint256:adminAccrued', calls: games }),
     api.call({ abi: 'erc20:balanceOf', target: AAPL, params: SEED_STAKING }),
   ])
   let userOwned = BigInt(stakerRewards)
-  GAMES.forEach((_, i) => {
+  games.forEach((_, i) => {
     userOwned += BigInt(held[i]) - BigInt(treasury[i]) - BigInt(admin[i])
   })
   api.add(AAPL, userOwned.toString())
 
   // ETH planted on the open v2 round and ETH deposited by players, still waiting for the seal swap
-  await api.sumTokens({ owner: ORCHARD_V2, tokens: [ADDRESSES.null] })
+  if (v2Live) await api.sumTokens({ owner: ORCHARD_V2, tokens: [ADDRESSES.null] })
 }
 
 // SEED staked for a share of the game's rake
