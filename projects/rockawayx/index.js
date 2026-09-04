@@ -1,5 +1,32 @@
 const { getCuratorExport } = require("../helper/curators");
 const { sumERC4626Vaults } = require("../helper/erc4626");
+const { PublicKey } = require("@solana/web3.js");
+const { Program } = require("@project-serum/anchor");
+const { getConnection } = require("../helper/solana");
+
+const KAMINO_LEND_PROGRAM_ID = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
+const KAMINO_VAULT_PROGRAM_ID = new PublicKey('KvauGMspG5k6rtzrqqn7WNn3oZdyKqLKwK2XWQ8FLjd');
+
+const KAMINO_VAULTS = [
+  'DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP', // RWA USDC
+  '2TNCzzYJt3uHmpFpqeeJkza4pQUK9xoLa79DJH9AdgGA', // Marinade USD
+  'HoffqVZUNGGpEAhE42E1DqNYSwJjCkorfgiBN6NpT2or', // RockawayX SOL
+];
+
+// Reserves of the Kamino markets curated by RockawayX
+const KAMINO_RESERVES = [
+  // Obligate market
+  '6nk5K3PiV3EHtW4LLFhfMc1uR4kNwEfibvTdWqxCm6WF',
+  'Au2Cg9CNNTX1KfzVhNnpi1ouHX74CwMMBvmSchmqS5ZW',
+  // Huma market
+  '4QKFoFDzNFnvfkzVazABbCEfMwd3y1pZqUVzmpnkCphj',
+  '9XbExNmevn7jzNzbX3kAzxKq83mdYP5ZN4xcYpLUVHGU',
+  'DzgYbR8HFQKf8YLCJ6M3E6ricB1xWAiNGZ2TB7X2KDHz',
+  // Raiku market
+  'J7idSfhvLqdkSmbMvhHMXBAhZMJVxEtzqXo45JB9HZrP',
+  '7272BNf9uoivyX5h8B7799yoxSfF4WDuzcP7HDwSPLqN', // PT-rkuSOL, no price feed: counted as zero
+  'EMyn5A2HhvYhojiibR3znk5QyafRVnK4oZ725XYzzf2s',
+];
 
 const EMBER_VAULTS = {
   ethereum: [
@@ -20,7 +47,7 @@ const ACCOUNTABLE_VAULTS = {
 };
 
 const configs = {
-  methodology: 'Count all assets deposited in all vaults curated by RockawayX.',
+  methodology: 'Count all assets deposited in all vaults curated by RockawayX, plus the liquidity available in the reserves of the Kamino lending markets curated by RockawayX, net of the share of those reserves supplied by RockawayX kVaults.',
   blockchains: {
     ethereum: {
       morpho: [
@@ -65,7 +92,7 @@ const configs = {
       ],
     },
     solana: {
-      kaminoLendVaults: ['DWSXb18xZApz29vnQpgR2m6MynCT7PznaXt7Ut7M7KaP', '2TNCzzYJt3uHmpFpqeeJkza4pQUK9xoLa79DJH9AdgGA', 'HoffqVZUNGGpEAhE42E1DqNYSwJjCkorfgiBN6NpT2or'], // Kamino RWA USDC
+      kaminoLendVaults: KAMINO_VAULTS,
     },
     plume_mainnet: {
       midasTokens: [
@@ -118,6 +145,44 @@ for (const [chain, vaults] of Object.entries(ACCOUNTABLE_VAULTS)) {
     tvl: async (api) => {
       if (baseTvl) await baseTvl(api);
       await accountableTvl(api, vaults);
+    }
+  };
+}
+
+// Available liquidity of the reserves of the Kamino markets we curate. The share of a reserve
+// supplied by our own kVaults is already counted through kaminoLendVaults, so it is netted out.
+async function kaminoReserveTvl(api) {
+  const connection = getConnection();
+  const provider = { connection, publicKey: PublicKey.unique() };
+  const lendProgram = new Program(require('../kamino-lending/kamino-lending-idl.json'), KAMINO_LEND_PROGRAM_ID, provider);
+  const vaultProgram = new Program(require('../gauntlet/kvault-idl.json'), KAMINO_VAULT_PROGRAM_ID, provider);
+
+  const vaultStates = await vaultProgram.account.vaultState.fetchMultiple(KAMINO_VAULTS.map(i => new PublicKey(i)));
+  const ownCTokens = {};
+  vaultStates.filter(i => i).forEach(state => {
+    state.vaultAllocationStrategy.forEach(({ reserve, ctokenAllocation }) => {
+      const key = reserve.toString();
+      ownCTokens[key] = (ownCTokens[key] ?? 0n) + BigInt(ctokenAllocation.toString());
+    });
+  });
+
+  const reserves = await lendProgram.account.reserve.fetchMultiple(KAMINO_RESERVES.map(i => new PublicKey(i)));
+  reserves.forEach((reserve, i) => {
+    if (!reserve) return;
+    const available = BigInt(reserve.liquidity.availableAmount.toString());
+    const cTokenSupply = BigInt(reserve.collateral.mintTotalSupply.toString());
+    const own = ownCTokens[KAMINO_RESERVES[i]] ?? 0n;
+    const externalShare = cTokenSupply > 0n ? available - (available * own) / cTokenSupply : available;
+    if (externalShare > 0n) api.add(reserve.liquidity.mintPubkey.toString(), externalShare.toString());
+  });
+}
+
+{
+  const baseTvl = adapterExport.solana?.tvl;
+  adapterExport.solana = {
+    tvl: async (api) => {
+      if (baseTvl) await baseTvl(api);
+      await kaminoReserveTvl(api);
     }
   };
 }
