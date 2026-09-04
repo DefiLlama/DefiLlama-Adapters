@@ -193,6 +193,8 @@ const config = {
   monad: {
     tokensAndOwners: [
       ['0x88e0994E8130EF72bf614CBBcF722839B167c8d1', '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181'], // cAUSD (Curvance)
+      ['0x88e0994E8130EF72bf614CBBcF722839B167c8d1', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cAUSD (Curvance)
+      ['0xD1BFEA1728ffe98F515f26082fACfcc3341691D4', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cAUSD (Curvance, second vault)
       ['0x32841A8511D5c2c5b253f45668780B99139e476D', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // grove-bbqAUSD (Morpho Grove x Steakhouse)
       ['0xbeeffb65df79baac701307c9605b7ab207355fdb', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // bbqUSD1 (Steakhouse High Yield USD1)
       ['0x9891178A1178E4C740Fa61Fd6e30A9D92D897590', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cUSDC-savUSD (Curvance USDC)
@@ -201,7 +203,8 @@ const config = {
     ]
   },
   pharos: {
-    tokensAndOwners: [
+    // mmUSDC share token has no price feed, so it is unwrapped to USDC via convertToAssets
+    erc4626TokensAndOwners: [
       ['0x047cD0a91E9B92ED979189a6C8A120bf280f02E5', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // mmUSDC (Morpho Rockaway USDC)
     ]
   },
@@ -221,10 +224,17 @@ const config = {
       ['0xC609656Ed9ef219c98C8e549bF729144F211f06E', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // pathUSD (Gauntlet)
     ]
   },
+  sei: {
+    // ERC-4626 vaults whose share token has no price feed: unwrapped to the
+    // underlying asset via convertToAssets instead of priced directly
+    erc4626TokensAndOwners: [
+      ['0x50715ae180ff0ea799dc8ab635c2d876e528bfe8', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // featherPYUSD0 (Feather - PYUSD0)
+    ]
+  },
 }
 
 const tvl = async (api) => {
-  const { funds = [], tokensAndOwners, blacklistedTokens } = config[api.chain]
+  const { funds = [], tokensAndOwners = [], blacklistedTokens, erc4626TokensAndOwners = [] } = config[api.chain]
 
   // Get underlying tokens and balances from funds
   const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
@@ -233,6 +243,14 @@ const tvl = async (api) => {
 
   // Adjust balances and add
   api.add(tokens, bals.map((v, i) => v * 10 ** (decimals[i] - 18)))
+
+  // Unpriced ERC-4626 shares: convert share balance to underlying assets
+  if (erc4626TokensAndOwners.length) {
+    const shares = await api.multiCall({ abi: 'erc20:balanceOf', calls: erc4626TokensAndOwners.map(([t, o]) => ({ target: t, params: o })) })
+    const assets = await api.multiCall({ abi: 'address:asset', calls: erc4626TokensAndOwners.map(i => i[0]) })
+    const assetBals = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: erc4626TokensAndOwners.map(([t], i) => ({ target: t, params: shares[i] })) })
+    api.add(assets, assetBals)
+  }
 
   // Add regular token balances
   await api.sumTokens({ tokensAndOwners, blacklistedTokens })
@@ -247,7 +265,8 @@ module.exports.solana = {
     allowError: true,
     tokensAndOwners: [
       ['3b8X44fLF9ooXaUm3hhSgjpmVs6rZZ3pPoGnGahc3Uu7', 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // PRIME (Hastra)
-      [ADDRESSES.solana.PYUSD, 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // kV-PYUSD (Kamino - Sentora)
+      [ADDRESSES.solana.PYUSD, 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // PYUSD
+      ['2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo', 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // kV-PYUSD (Kamino - Sentora PYUSD)
     ]
   })
 }
