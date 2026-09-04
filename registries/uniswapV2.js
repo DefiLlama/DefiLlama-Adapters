@@ -3114,6 +3114,7 @@ const uniV2Configs = {
   'ladyswap': {
     lady: { factory: '0x224531f8130A7F639444E17e1D43966dB1dEa431', staking: ['0x09022c3e699B4DdCc9eDf52c9545F33783eB9F43', '0x8635dE218E5d4faC62432d6bfB20E199aeDe366F'] },
   },
+  'seleman-dex': { seleman: '0x5fD1138b4C75B953fbC58B154fC6D8806BAEcAaf' },
   'kolswap': {
     robinhood: '0xdB2Ec80E55527b5D858b54173083139679f5DE6f',
     bsc: '0x6af79510599dE74E5922A2771b29160dA8b7b4c1'
