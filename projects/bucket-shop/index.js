@@ -27,7 +27,7 @@ const V2_VAULTS = [
   "0x465BB16d3d56Fb87f65638Cbc93C76C70Bd8A09F", // bCHIPS
   "0xbe98fc594685ede92a364e0bd45cc09840c961bf", // bDEGEN
   "0xa69f33df17bcf3a3260a11a27fc2250b9efc6d1e", // bMKT
-  "0x1c8ab21a4d6cdbbc88cd08d866b3599093d04782", // bCRYPTO
+  "0x86d4b4a88ef887c853dc27244bb60724ca7c8cab", // bCRYPTO
 ];
 const SERIES_C_SEAT = "0x95f3918c586b477b9ff401ce6658ff7437a9dca5"; // holds ETH for card revenue seats
 
