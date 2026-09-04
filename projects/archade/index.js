@@ -47,6 +47,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is the SOL held as quote reserve inside every active bonding curve launched through Archade. Each coin launched on Archade trades on its own bonding curve: buyers deposit SOL into the curve and sellers withdraw from it, so the curve reserve is the value locked. Curves that have migrated to a DEX pool are excluded because their liquidity has left the curve. Trading fees accrued to Archade, creators and partners are not counted.',
+  methodology: 'SOL held in the bonding curves of coins launched through Archade. Curves that have graduated to a DEX pool are excluded.',
   solana: { tvl },
 }
