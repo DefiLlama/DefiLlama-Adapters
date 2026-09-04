@@ -1043,6 +1043,23 @@ const configs = {
       }
     },
   },
+  "stake-dao-curator": {
+    config: {
+      methodology: 'Counts all assets deposited in Morpho vaults curated by Stake DAO.',
+      start: '2025-11-04',
+      blockchains: {
+        ethereum: {
+          morphoVaultOwners: [
+            '0xB0552b6860CE5C0202976Db056b5e3Cc4f9CC765', // Stake DAO governance : frxUSD v1/v2
+          ],
+          morpho: [
+            '0x13AA4f80AD5F06cE4f1A3a3cA58C37059F0EE4c5', // Stake DAO USDC v1
+            '0x8EDCC305E633d29BFB383872e79401c506cE9E6f', // Stake DAO USDC v2
+          ],
+        },
+      },
+    },
+  },
   "steakhouse": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Steakhouse Financial.',
