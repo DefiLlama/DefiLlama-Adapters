@@ -3076,7 +3076,7 @@ const configs = {
     },
   },
   "brokex": {
-    "methodology": "TVL is computed by summing the balance of USDC locked in the BrokexVault contract.",
+    "methodology": "TVL is computed by summing the balance of USDC locked in the BrokexVault contracts.",
     "start": 1780443809,
     "pharos": {
       "owner": "0x589178934112DbBa96C17384079206a21B4F20DA",
@@ -3084,6 +3084,12 @@ const configs = {
         ADDRESSES.pharos.USDC
       ]
     },
+    "base": {
+      "owner": "0xB36e1eDF743352D67E8B24C0A8BD8fc2c229EB4e",
+      "tokens": [
+        ADDRESSES.base.USDC
+      ]
+    }
   },
   "brrr": {
     "methodology": "Sum contract token balance",
@@ -24676,7 +24682,7 @@ const configs = {
     },
   },
   "rubin": {
-    "methodology": "Counts USDC collateral deposited on Rubin through the ethereum and arbitrum bridges.",
+    "methodology": "Counts USDC collateral deposited on Rubin through the ethereum, arbitrum and polygon bridges.",
     "arbitrum": {
       "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
       "tokens": [
@@ -24687,6 +24693,12 @@ const configs = {
       "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
       "tokens": [
         ADDRESSES.ethereum.USDC
+      ]
+    },
+    "polygon": {
+      "owner": "0x902c48Ee25529Ac2C67F45B1Dfdf5E322798fCA2",
+      "tokens": [
+        ADDRESSES.polygon.USDC_CIRCLE
       ]
     }
   },
@@ -25341,41 +25353,6 @@ const configs = {
         ADDRESSES.ethereum.MKR
       ]
     },
-  },
-  "slvr": {
-    "methodology": "TVL sums the native ETH held by the SLVR game contracts on behalf of users: live round pots and carry pools plus unclaimed winner emissions (SlvrGridLottery), the accumulating jackpot (SlvrJackpot), pending veNFT staker rewards (SlvrVoteEscrowStaking), auto-commit user deposits (SlvrAutoCommit), locked winnings (SlvrClaimLocker) and undistributed growth-fund revenue (SlvrGrowthFund). Staking counts SLVR locked in game contracts and into withdrawable vote-escrow NFTs held by SlvrVoteEscrow. Pool2 counts SLVR/WETH LP staked in SlvrLiquidityStaking.",
-    "robinhood": {
-      "tvl": {
-        "owners": [
-          "0x284Eb4016305Fa7FbC162Fb68F27227271001c7f",
-          "0x24b723e2da172961f60cd6a4699654c89d4ac6cd",
-          "0xaF68598eBd245DC3cB92FF16E9Ba1814DD137200",
-          "0x314c8D5755468224AC60c36FB5494F0D7D5Abb3B",
-          "0x1399115FcF2a9C41e5080547A9214156A4Bf8a45",
-          "0x2fD3BE762eb9d8eE293dD923D8809Dbd3D653dd7",
-          "0x1a1633fdb2f19082099a6ad6c3d4f1ec6bce9729",
-        ],
-        "token": ADDRESSES.null
-      },
-      "staking": {
-        "owners": [
-          "0x284Eb4016305Fa7FbC162Fb68F27227271001c7f",
-          "0x24b723e2da172961f60cd6a4699654c89d4ac6cd",
-          "0xaF68598eBd245DC3cB92FF16E9Ba1814DD137200",
-          "0x314c8D5755468224AC60c36FB5494F0D7D5Abb3B",
-          "0x1399115FcF2a9C41e5080547A9214156A4Bf8a45",
-          "0x2fD3BE762eb9d8eE293dD923D8809Dbd3D653dd7",
-          "0x1a1633fdb2f19082099a6ad6c3d4f1ec6bce9729",
-          "0xd9b8FBD61033145c5496132153CE675756313B71"
-        ],
-        "token": "0x791229E3EbD6CFdC3D8157f48722684173C29aD9",
-      },
-      "pool2": {
-        "owner": "0x7D888f4Ca88Fc3578aEfc45C82482Bd66415DfeA",
-        "token": "0xe365b92239097Ed3322131411DbE15a5c4068eff",
-        "resolveLP": true
-      }
-    }
   },
   "snarklaunch": {
     "methodology": "TVL for SNRK staking is computed by summing the balance of SNRK tokens held by the staking contract.",
@@ -41616,13 +41593,15 @@ const configs = {
   },
   "yieldcore": {
     "start": "2026-02-06",
-    "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds. Funds may sit in the main YieldCore contract or be temporarily deployed in a Krystal vault to generate yield for bondholders. Both balances are summed to reflect true TVL.",
+    "methodology": "TVL is calculated as the total USDT deposited by users into YieldCore bonds & Krystal vault",
     "bsc": {
       "tokens": [
         ADDRESSES.bsc.USDT
       ],
       "owners": [
         "0x2375Fcc2a256425228aA94d7100093230761639e",
+        "0x6D6CDf89Cc565A04f0Ba99A1Dc13d43d0d005E4E", // v4.3.1
+        "0x903407687486b3ae60746622D06b2eD3D75EaCAb", // v4.3.2
         "0xeE9dd48b2Aa7Ab67534c6Da5E1cD261263d46ef7"
       ]
     },

@@ -166,9 +166,9 @@ const configs = {
     }
   },
   'nara': {
-    methodology: 'TVL is the total NARA locked in NARAEngineV2. Users lock NARA for a chosen duration and earn NARA + ETH rewards every 15-minute epoch.',
+    methodology: 'Total NARA locked in NARAEngineV4 on Base. Users lock NARA for a chosen duration to participate in protocol consensus and earn rewards every 15-minute epoch.',
     base: {
-      staking: { owners: ['0x62250aEE40F37e2eb2cd300E5a429d7096C8868F'], tokens: ['0xE444de61752bD13D1D37Ee59c31ef4e489bd727C']}
+      staking: { owners: ['0x98ab6406D6B548F37dEF7110961bb45A399e5aFC'], tokens: ['0xB6333F5D4cEd8dffA80F3F13697D6aA3BB3f19c1']}
     }
   },
   'venice-protocol': {
@@ -1399,12 +1399,6 @@ const configs = {
     "robinhood": {
       staking: ['0xB078cc304A0B264C5F3680DC0488954ACcd02E87', '0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'],
     },
-  },
-  "tartswap": {
-    "methodology": "Staking counts CREPE deposited in the TartStakingVault contract (single-token, reward-streaming vault funded by protocol swap fees).",
-    "bsc": {
-      staking: [["0x20940d3573F1629F6c5226C2DDa2e9a28b364B33"], "0xeb2B7d5691878627eff20492cA7c9a71228d931D"]
-    }
   },
 }
 

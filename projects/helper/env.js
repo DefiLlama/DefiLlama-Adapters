@@ -47,6 +47,7 @@ const DEFAULTS = {
   PROPTECH_RPC: "https://mainnet.ptekcoin.com",
   FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
   RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
+  LADY_RPC_MULTICALL: '0x36b580266BD2B9581B805BF99D0Db92FbC9CAa56', // v2
 }
 
 const ENV_KEYS = [

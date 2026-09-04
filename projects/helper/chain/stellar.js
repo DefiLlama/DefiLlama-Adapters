@@ -192,7 +192,35 @@ function _parseScVal(buf, offset) {
 // Size per tagged ScVal; derived from RFC-4506 (4.1, 4.3, 4.4) and Stellar-contract.x:
 // https://github.com/stellar/stellar-xdr/blob/main/Stellar-contract.x
 const TAGGED_SIZE = {
-  bool: 8, u32: 8, i32: 8, u64: 12, i64: 12, u128: 20, i128: 20, address: 40,
+  bool: 8, u32: 8, i32: 8, u64: 12, i64: 12, u128: 20, i128: 20, address: 40, account: 44,
+}
+
+// XDR pads opaque/string data to a 4-byte boundary (RFC-4506 4.11).
+function _padLen(n) { return n + ((4 - (n % 4)) % 4) }
+
+function _taggedSize(type, value) {
+  const fixed = TAGGED_SIZE[type]
+  if (fixed != null) return fixed
+  if (type === 'map') {
+    // tag + presence flag + entry count, then a symbol key and value per entry
+    let size = 12
+    for (const [key, entry] of Object.entries(value)) {
+      size += 8 + _padLen(Buffer.byteLength(key, 'ascii')) // SCV_SYMBOL
+      size += _taggedSize(entry.type, entry.value)
+    }
+    return size
+  }
+  throw new Error(`Unsupported tagged ScVal type: '${type}'`)
+}
+
+function _writeSymbol(buf, o, name) {
+  const bytes = Buffer.from(name, 'ascii')
+  buf.writeUInt32BE(SC_VAL.SYMBOL, o); o += 4
+  buf.writeUInt32BE(bytes.length, o); o += 4
+  bytes.copy(buf, o); o += bytes.length
+  const pad = _padLen(bytes.length) - bytes.length
+  buf.fill(0, o, o + pad)
+  return o + pad
 }
 
 // Encodes an XDR int (i32/u32, i64/u64, i128/u128) into buf
@@ -238,6 +266,27 @@ function _writeTaggedArg(buf, o, type, v) {
       buf.writeUInt32BE(SC_ADDR.CONTRACT, o); o += 4
       decodeStrKey(v).copy(buf, o); return o + 32
     }
+    case 'account': {
+      if (typeof v !== 'string' || !v.startsWith('G')) throw new Error(`account expects G-address string, got ${v}`)
+      buf.writeUInt32BE(SC_VAL.ADDRESS, o); o += 4
+      buf.writeUInt32BE(SC_ADDR.ACCOUNT, o); o += 4
+      buf.writeUInt32BE(0, o); o += 4 // PublicKey.KEY_TYPE_ED25519
+      decodeStrKey(v).copy(buf, o); return o + 32
+    }
+    // A #[contracttype] struct arrives as SCV_MAP keyed by field-name symbols.
+    case 'map': {
+      if (!v || typeof v !== 'object') throw new Error(`map expects an object, got ${typeof v}`)
+      // The host requires map keys in ascending order.
+      const entries = Object.entries(v).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      buf.writeUInt32BE(SC_VAL.MAP, o); o += 4
+      buf.writeUInt32BE(1, o); o += 4        // optional *SCMap: present
+      buf.writeUInt32BE(entries.length, o); o += 4
+      for (const [key, entry] of entries) {
+        o = _writeSymbol(buf, o, key)
+        o = _writeTaggedArg(buf, o, entry.type, entry.value)
+      }
+      return o
+    }
     default: throw new Error(`Unsupported ScVal type: '${type}'`)
   }
 }
@@ -248,6 +297,9 @@ function _writeTaggedArg(buf, o, type, v) {
  * @param {string} fnName      - Contract function name
  * @param {Array}  args        - Function args. Defaults string to ADDRESS and number to U32
  * For other arg types, pass an object like: { type: 'u128', value: 100n } or { type: 'bool', value: true }
+ * For a #[contracttype] struct arg, pass { type: 'map', value: { field: { type, value }, ... } }
+ *   e.g. HubAssetKey { hub_id: u32, asset: Address } ->
+ *        { type: 'map', value: { hub_id: { type: 'u32', value: 1 }, asset: { type: 'address', value: 'C...' } } }
  */
 async function callSoroban(contractId, fnName, args = []) {
   const contractBytes = decodeStrKey(contractId)
@@ -257,16 +309,14 @@ async function callSoroban(contractId, fnName, args = []) {
   // to U32. Tagged { type, value } objects pass through unchanged.
   const normalizedArgs = args.map(arg => {
     if (arg && typeof arg === 'object' && 'type' in arg) return [arg.type, arg.value]
-    if (typeof arg === 'string')                         return ['address', arg]
+    if (typeof arg === 'string')                         return [arg.startsWith('G') ? 'account' : 'address', arg]
     if (typeof arg === 'number')                         return ['u32', arg]
     throw new Error(`Unsupported arg type: ${typeof arg}`)
   })
 
   let argsSize = 0
-  for (const [type] of normalizedArgs) {
-    const size = TAGGED_SIZE[type]
-    if (size == null) throw new Error(`Unsupported tagged ScVal type: '${type}'`)
-    argsSize += size
+  for (const [type, value] of normalizedArgs) {
+    argsSize += _taggedSize(type, value)
   }
 
   // TransactionV1Envelope: https://github.com/stellar/stellar-xdr/blob/main/Stellar-transaction.x#L1010

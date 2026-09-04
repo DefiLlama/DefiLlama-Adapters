@@ -25,6 +25,7 @@ const config = {
   xlayer: '0xdf38f24fe153761634be942f9d859f3dba857e95',
   tempo: '0xf9ec577a4e45b5278bb7cf60fcbc20c3acaef68f',
   robinhood: '0x8bcEaA40B9AcdfAedF85AdF4FF01F5Ad6517937f',
+  ink: '0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04',
 }
 
 Object.keys(config).forEach(chain => {
