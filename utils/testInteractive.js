@@ -169,7 +169,10 @@ async function runListMode(state) {
           const list = input
             ? fuzzy.filter(input, state.choices, { extract: (c) => c.name }).map((r) => r.original)
             : state.choices
-          return list.map((c) => ({ name: c.name, value: c.value }))
+          const results = list.map((c) => ({ name: c.name, value: c.value }))
+          if (input && !list.some((c) => c.value === input))
+            results.push({ name: `[custom] ${input}`, value: input })
+          return results
         },
       },
     ])
