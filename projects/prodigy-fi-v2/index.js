@@ -11,10 +11,10 @@ const CACHE_PROJECT = 'prodigy-fi-2'
 
 const config = {
   ethereum: {
-    positionManager: '0xAC2a612C49f29e26858Df1a53f7623180bcc3753',
+    positionManager: '0x50aB3FE7d089c4F0dD8096aAeA9578f8E7B18AF7',
     collateralPools: [
-      '0x18D87BB647cf70065e9Eb286957AD7681f4373d7',
-      '0xb2d5c91F1e71078672F55C63ac0BBC3A9B1b3889',
+      '0x864cd49392a4348b5da5337623d994151610D0a3',
+      '0xe1303B2514755A72da4AcA9B917d96F16c842c80',
     ],
     tokens: [
       ADDRESSES.ethereum.WBTC,
@@ -23,10 +23,10 @@ const config = {
     ],
   },
   hyperliquid: {
-    positionManager: '0x400516840d0E975A566B1E275aaB58Df9b7C278d',
+    positionManager: '0x50aB3FE7d089c4F0dD8096aAeA9578f8E7B18AF7',
     collateralPools: [
-      '0xf2d3A7B4e093A9529a92888f3A6841f5cA5c2a02',
-      '0xD7423A77de707351A47F8fa270c0a3AbA32a90bE',
+      '0x864cd49392a4348b5da5337623d994151610D0a3',
+      '0xe1303B2514755A72da4AcA9B917d96F16c842c80',
     ],
     tokens: [
       ADDRESSES.hyperliquid.USDC,
@@ -36,10 +36,10 @@ const config = {
     ],
   },
   base: {
-    positionManager: '0xFE198B51cfb1F96b56c63fe323a934BEAAA3b281',
+    positionManager: '0x50aB3FE7d089c4F0dD8096aAeA9578f8E7B18AF7',
     collateralPools: [
-      '0x4999b48c62D45708809Ea8a04516aA09BA3459d5',
-      '0x2e1E454D9Ad7528ab668Fc919db3958e988f6485',
+      '0x864cd49392a4348b5da5337623d994151610D0a3',
+      '0xe1303B2514755A72da4AcA9B917d96F16c842c80',
     ],
     tokens: [
       ADDRESSES.base.WETH,
@@ -56,10 +56,10 @@ const config = {
     ],
   },
   berachain: {
-    positionManager: '0x29ca87b2f744127606ada4564da8219be6498ca1',
+    positionManager: '0x50aB3FE7d089c4F0dD8096aAeA9578f8E7B18AF7',
     collateralPools: [
-      '0x5d53e5BC2ed68BB19f16D2D525039bAB2eC1f4c1',
-      '0x999A87E0148eA3023b7AeFDB0D7d7D21781704a2',
+      '0x864cd49392a4348b5da5337623d994151610D0a3',
+      '0xe1303B2514755A72da4AcA9B917d96F16c842c80',
     ],
     tokens: [
       ADDRESSES.berachain.WBTC,
