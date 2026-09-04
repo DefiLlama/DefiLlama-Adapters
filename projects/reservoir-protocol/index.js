@@ -193,10 +193,13 @@ const config = {
   monad: {
     tokensAndOwners: [
       ['0x88e0994E8130EF72bf614CBBcF722839B167c8d1', '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181'], // cAUSD (Curvance)
+      ['0x88e0994E8130EF72bf614CBBcF722839B167c8d1', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cAUSD (Curvance)
+      ['0xD1BFEA1728ffe98F515f26082fACfcc3341691D4', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cAUSD (Curvance, second vault)
       ['0x32841A8511D5c2c5b253f45668780B99139e476D', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // grove-bbqAUSD (Morpho Grove x Steakhouse)
       ['0xbeeffb65df79baac701307c9605b7ab207355fdb', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // bbqUSD1 (Steakhouse High Yield USD1)
       ['0x9891178A1178E4C740Fa61Fd6e30A9D92D897590', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cUSDC-savUSD (Curvance USDC)
       ['0x207340d15f4e3c63ae610429f34b87c73a5d55e5', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cUSDC-agua (Curvance USDC)
+      ['0x7f779f7F5316F6164dC5a25422A5ee51504B284A', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // cUSDC (Curvance USDC, third vault)
       ['0x4586face17B0e3D4d51EcABb4B4EBC2354b61b0D', '0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'], // aMonGHO (Aave GHO on Monad)
     ]
   },
@@ -221,10 +224,15 @@ const config = {
       ['0xC609656Ed9ef219c98C8e549bF729144F211f06E', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // pathUSD (Gauntlet)
     ]
   },
+  sei: {
+    tokensAndOwners: [
+      ['0x50715ae180ff0ea799dc8ab635c2d876e528bfe8', '0x289C204B35859bFb924B9C0759A4FE80f610671c'], // featherPYUSD0 (Feather - PYUSD0)
+    ]
+  },
 }
 
 const tvl = async (api) => {
-  const { funds = [], tokensAndOwners, blacklistedTokens } = config[api.chain]
+  const { funds = [], tokensAndOwners = [], blacklistedTokens } = config[api.chain]
 
   // Get underlying tokens and balances from funds
   const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
@@ -247,7 +255,8 @@ module.exports.solana = {
     allowError: true,
     tokensAndOwners: [
       ['3b8X44fLF9ooXaUm3hhSgjpmVs6rZZ3pPoGnGahc3Uu7', 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // PRIME (Hastra)
-      [ADDRESSES.solana.PYUSD, 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // kV-PYUSD (Kamino - Sentora)
+      [ADDRESSES.solana.PYUSD, 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // PYUSD
+      ['2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo', 'FWKPQGz7RtFa5yY4moKJS4x6bhBeAFpqjuNRxLJJ8Fon'], // kV-PYUSD (Kamino - Sentora PYUSD)
     ]
   })
 }
