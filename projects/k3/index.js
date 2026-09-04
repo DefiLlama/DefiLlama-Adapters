@@ -18,6 +18,9 @@ const configs = {
         "0x0243755a22E37b835486fdAE9A839523ADABd336",
       ],
       erc4626: [
+        "0x3B4802FDb0E5d74aA37d58FD77d63e93d4f9A4AF", // Euler Earn: K3 Capital Earn USDC
+        "0x84fcb0eb9d7ab4EdFd26CCa8AD20AaB4c5aD49CD", // Euler Earn: K3 Capital Earn WETH
+        "0xb072b2779F1EF1A6A9D2d5fAa1766F341B92aB3a", // Euler Earn: K3 Capital Earn USDT
         "0x50bd66d59911f5e086ec87ae43c811e0d059dd11",
         "0xf5503d3d4bd254c2c17690eed523bcb2935db6de",
         "0x866C6c6627303Be103814150fC0e886BE5D9ea83",
@@ -45,6 +48,11 @@ const configs = {
         "0x5Bb012482Fa43c44a29168C6393657130FDF0506",
         "0x2E28c94eE56Ac6d82600070300d86b3a14D5d71A",
       ],
+      erc4626: [
+        "0x5685fed1008ec25Be9f40E12685c38031Be2d4dD", // Euler Earn: K3 bStocks USDT Lending
+        "0xD98b0B1281E06f2f5036B6B1ef1eaAD3304Daa52", // Euler Earn: K3 Capital USDT Earn Vault
+        "0x27Ec22e4DcB70F7FfE1F6bb89e3284529492c05E", // Euler Earn: K3 Capital USD1
+      ],
     },
     bob: {
       eulerVaultOwners: ["0xDb81B93068B886172988A1A4Dd5A1523958a23f0"],
@@ -55,6 +63,8 @@ const configs = {
     plasma: {
       eulerVaultOwners: ["0x060DB084bF41872861f175d83f3cb1B5566dfEA3"],
       erc4626: [
+        "0xe818ad0D20D504C55601b9d5e0E137314414dec4", // Euler Earn: K3 Capital USDT0 Vault
+        "0xf5C972B760dBa38Bf57Ddb2912244F856E4F6812", // Euler Earn: K3 USDe Earn Vault
         "0x539b2ee4f3a04f33d53c0813f77e65148963f72b",
         "0xAADEA03f6D6F198Bdc9229bD8113aceD19031773",
         "0x767d33217e7d2670695FfE2a104548B780f4F5d8",
@@ -80,6 +90,12 @@ const configs = {
     monad: {
       accountableVaults: [
         "0x0143C3eF3a76Ed825Fd5201953f65b52aCEfD799",
+      ],
+      erc4626: [
+        "0x2C803c8C3C57b9D4A9abA011615561315c2b6aC1", // Euler Earn: K3 Capital Earn WETH
+        "0x598035A2E984993229f6FA4C8C3eCf6c52aD51b5", // Euler Earn: K3 Capital Earn AUSD
+        "0x9D42b0D57e88771B365e30c0A589Fcdbeca8828c", // Euler Earn: K3 Capital Earn WMON
+        "0xA981f053C118FE4dB0e1aEBA192AAD20Ec7F7801", // Euler Earn: K3 Capital Earn USDC
       ],
       eulerVaultOwners: [
         "0x987C5739F3905FbA98eCCf4aceBc88730E0eE53D",
