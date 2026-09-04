@@ -157,18 +157,23 @@ async function kaminoReserveTvl(api) {
   const lendProgram = new Program(require('../kamino-lending/kamino-lending-idl.json'), KAMINO_LEND_PROGRAM_ID, provider);
   const vaultProgram = new Program(require('../gauntlet/kvault-idl.json'), KAMINO_VAULT_PROGRAM_ID, provider);
 
-  const vaultStates = await vaultProgram.account.vaultState.fetchMultiple(KAMINO_VAULTS.map(i => new PublicKey(i)));
+  // single request so vault allocations and reserve balances come from the same slot
+  const keys = [...KAMINO_VAULTS, ...KAMINO_RESERVES].map(i => new PublicKey(i));
+  const accounts = await connection.getMultipleAccountsInfo(keys);
+
   const ownCTokens = {};
-  vaultStates.filter(i => i).forEach(state => {
+  accounts.slice(0, KAMINO_VAULTS.length).forEach(account => {
+    if (!account) return;
+    const state = vaultProgram.coder.accounts.decode('VaultState', account.data);
     state.vaultAllocationStrategy.forEach(({ reserve, ctokenAllocation }) => {
       const key = reserve.toString();
       ownCTokens[key] = (ownCTokens[key] ?? 0n) + BigInt(ctokenAllocation.toString());
     });
   });
 
-  const reserves = await lendProgram.account.reserve.fetchMultiple(KAMINO_RESERVES.map(i => new PublicKey(i)));
-  reserves.forEach((reserve, i) => {
-    if (!reserve) return;
+  accounts.slice(KAMINO_VAULTS.length).forEach((account, i) => {
+    if (!account) return;
+    const reserve = lendProgram.coder.accounts.decode('Reserve', account.data);
     const available = BigInt(reserve.liquidity.availableAmount.toString());
     const cTokenSupply = BigInt(reserve.collateral.mintTotalSupply.toString());
     const own = ownCTokens[KAMINO_RESERVES[i]] ?? 0n;
@@ -176,6 +181,7 @@ async function kaminoReserveTvl(api) {
     if (externalShare > 0n) api.add(reserve.liquidity.mintPubkey.toString(), externalShare.toString());
   });
 }
+
 
 {
   const baseTvl = adapterExport.solana?.tvl;
