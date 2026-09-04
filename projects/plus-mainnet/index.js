@@ -1,36 +1,26 @@
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { get } = require('../helper/http');
+const ADDRESSES = require('../helper/coreAssets.json');
 
-// Official Master Treasury Vault (Publicly Listed on CertiK, ChainList & DefiLlama)
-const MASTER_VAULT = '0x5CfEa22674e2E7d251dEB693c0490b6389334F0f';
-
-// Verified Non-Native External Collateral Tokens (USDT Only - Excludes Own Native Tokens per DefiLlama Rules)
-const USDT_ETH = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-const USDT_BSC = '0x55d398326f99059fF775485246999027B3197955';
-
-async function ethereumTvl(api) {
-  return sumTokens2({
-    api,
-    owners: [MASTER_VAULT],
-    tokens: [USDT_ETH]
-  });
+async function tvl(api) {
+  const data = await get('https://plusmain.net/api/defillama/tvl');
+  if (data && data.tvl) {
+    api.add(ADDRESSES.ethereum.USDT, BigInt(Math.floor(data.tvl)) * BigInt(10 ** 6));
+  }
 }
 
-async function bscTvl(api) {
-  return sumTokens2({
-    api,
-    owners: [MASTER_VAULT],
-    tokens: [USDT_BSC]
-  });
+async function staking(api) {
+  const data = await get('https://plusmain.net/api/defillama/tvl');
+  if (data && data.breakdown && data.breakdown.genesis_nodes) {
+    api.add(ADDRESSES.ethereum.USDT, BigInt(Math.floor(data.breakdown.genesis_nodes)) * BigInt(10 ** 6));
+  }
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
-  methodology: "Calculates total value locked (TVL) in non-native external USDT collateral held in the official Master Treasury Vault across Ethereum and BSC networks.",
+  methodology: 'Tracks TVL across PLUS Mainnet (Chain ID: 88088) validator staking deposits and DEX liquidity pools via official on-chain indexer API.',
   ethereum: {
-    tvl: ethereumTvl
-  },
-  bsc: {
-    tvl: bscTvl
+    tvl,
+    staking
   }
 };
