@@ -24682,7 +24682,7 @@ const configs = {
     },
   },
   "rubin": {
-    "methodology": "Counts USDC collateral deposited on Rubin through the ethereum and arbitrum bridges.",
+    "methodology": "Counts USDC collateral deposited on Rubin through the ethereum, arbitrum and polygon bridges.",
     "arbitrum": {
       "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
       "tokens": [
@@ -24693,6 +24693,12 @@ const configs = {
       "owner": "0x26206BFdEE32128739f08Aa12f57505A3a4CcaaF",
       "tokens": [
         ADDRESSES.ethereum.USDC
+      ]
+    },
+    "polygon": {
+      "owner": "0x902c48Ee25529Ac2C67F45B1Dfdf5E322798fCA2",
+      "tokens": [
+        ADDRESSES.polygon.USDC_CIRCLE
       ]
     }
   },
