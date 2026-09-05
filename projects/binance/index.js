@@ -141,15 +141,8 @@ const tvl = async (api) => {
   const evmChains = ['ethereum', 'bsc', 'celo', 'chz', 'polygon', 'arbitrum', 'optimism', 'avax', 'fantom', 'base', 'era', 'manta', 'ronin', 'op_bnb', 'scroll', 'sonic', 'plasma']
   const isEvm = evmChains.includes(chain)
 
-  const lockInfoAddresses = []
   const wrappedTokens = []
   lockInfoData.tokens.forEach(token => {
-    (token.lockInfo || []).forEach(li => {
-      if (!networks.includes(li.network.toUpperCase())) return
-      if (!li.address || /^[A-Z0-9]+-[A-Z0-9]+$/i.test(li.address)) return
-      if (isEvm && (!/^0x[0-9a-fA-F]{40}$/.test(li.address))) return
-      lockInfoAddresses.push(li.address)
-    });
     (token.wrapInfo || []).forEach(wi => {
       if (!networks.includes(wi.network.toUpperCase())) return
       if (!wi.address || /^[A-Z0-9]+-[A-Z0-9]+$/i.test(wi.address)) return
@@ -158,7 +151,7 @@ const tvl = async (api) => {
     })
   })
 
-  const owners = [...new Set([...contracts, ...lockInfoAddresses])]
+  const owners = [...new Set(contracts)]
 
   const binanceTokensOnChain = await getCEXTokensOnBinanceOnChain(chain)
   const options = buildConfig(chain, owners, binanceTokensOnChain, wrappedTokens)
@@ -173,7 +166,7 @@ chains.forEach((chain) => { chainExports[chain] = { tvl } })
 const ethStakedExport = { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } }
 
 module.exports = mergeExports([chainExports, ethStakedExport])
-module.exports.methodology = 'All assets in wallets mentioned in Binance PoR api & wallets holding backing of binance pegged tokens are included in the tvl. We are not counting the Binance Recovery Fund wallet. On Ethereum, we also include staked ETH tracked via known withdrawal addresses.'
+module.exports.methodology = 'All assets in wallets mentioned in Binance PoR api are included in the tvl. Wallets holding the backing of Binance-Peg tokens are NOT included here - they back peg-token holders on other chains rather than exchange customer deposits, and are tracked separately (see projects/binance-peg-backing). We are not counting the Binance Recovery Fund wallet. On Ethereum, we also include staked ETH tracked via known withdrawal addresses.'
 
 module.exports.bitcoin = { tvl: bitcoinTvl }
 
