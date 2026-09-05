@@ -62,6 +62,7 @@
  */
 
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getTokenPrices } = require('../helper/unknownTokens')
 
 // -- tokens -------------------------------------------------------------------
 // TartSwap's own ecosystem tokens, both 9 decimals (verified on-chain):
@@ -75,6 +76,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const CREPE = '0xeb2B7d5691878627eff20492cA7c9a71228d931D'
 const TART = '0x7AB8d02CBb51Ff7223fDe700eAaa2a91Bf750314'
 const OWN_TOKENS = new Set([CREPE.toLowerCase(), TART.toLowerCase()])
+/** PancakeSwap V2 TART/WBNB pair — the only market TART has, and its price source here. */
+const TART_WBNB_PAIR = '0x30000a407FabeBe29439F8E437050512fF6661bE'
 
 // -- TartSwap contracts (all verified on BscScan, all chainId 56) --------------
 const OTC_DESK = '0x22E6B727286c02C5251682b1A1a65FdE71296Add' // P2P escrow desk
@@ -206,7 +209,21 @@ async function staking(api) {
     api.add(pool.stakeToken, pool.totalStaked)
   }
 
-  return api.getBalances()
+  return priceOwnTokens(api)
+}
+
+// TART has no CoinGecko listing, so the price feed does not know it and its
+// balances would count as $0 (the live listing showed exactly that: only the
+// CREPE vault appeared under staking). Price it from its own PancakeSwap
+// TART/WBNB pair instead: the unknown-token helper turns TART balances into
+// the WBNB they are worth at the pool's reserve ratio, capped at 10x the
+// pool's own value so a thin pool can never inflate the figure. CREPE is on
+// CoinGecko and is left untouched.
+async function priceOwnTokens(api) {
+  const { updateBalances } = await getTokenPrices({ api, lps: [TART_WBNB_PAIR], allLps: true, useDefaultCoreAssets: true })
+  const balances = api.getBalances()
+  await updateBalances(balances)
+  return balances
 }
 
 // -----------------------------------------------------------------------------
@@ -231,7 +248,7 @@ async function pool2(api) {
   const farmLps = farmPools.filter(isFundedLp).map((pool) => pool.stakeToken)
   const stakingLps = stakingPools.filter(isFundedLp).map((pool) => pool.stakeToken)
 
-  return sumTokens2({
+  await sumTokens2({
     api,
     ownerTokens: [
       [farmLps, LP_FARM],
@@ -239,6 +256,8 @@ async function pool2(api) {
     ],
     resolveLP: true,
   })
+  // The unwrapped TART half of the TART/WBNB LP needs the same pool-based price.
+  return priceOwnTokens(api)
 }
 
 module.exports = {
@@ -253,7 +272,7 @@ module.exports = {
     'Fee and treasury contracts (GameFeeSplitter, TartFeeDistributor, TartFeeConverter, TartFeeCollector, treasury and reserve wallets) are protocol revenue and are excluded.',
   // Earliest TartSwap contract in this adapter: TartStakingVault, deployed
   // 2026-06-29T15:33:46Z on BSC mainnet.
-  start: "2026-06-30",
+  start: 1782747226,
   hallmarks: [['2026-08-31', 'TART token listed on PancakeSwap']],
   bsc: {
     tvl,
