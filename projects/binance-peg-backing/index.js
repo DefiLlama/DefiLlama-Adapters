@@ -9,10 +9,13 @@ const { getConfig } = require('../helper/cache')
 // Binance CEX entry. Same endpoint the CEX adapter uses for its wrapped-token blacklist.
 const LOCK_INFO_ENDPOINT = "https://www.binance.com/bapi/tokencanal/v2/tokencanal/lockinfo"
 
-// BTC is deliberately excluded: the backing for Binance-Peg BTC is already tracked
-// by DefiLlama as its own Bridge entry ("Binance Bitcoin"), so including it here
-// would double count. (It also has to stay out of the generic path because Base58
-// P2SH addresses are case-sensitive and the shared owner-dedupe lowercases them.)
+// BTC is deliberately excluded, for two independent reasons:
+//  1. the backing for Binance-Peg BTC is already tracked as its own Bridge entry
+//     ("Binance Bitcoin"), so including it here would double count;
+//  2. the lockinfo endpoint returns the BTC wallet lowercased
+//     ("3lyjfcfhpxyjremsask2jkn69lweykzexb"), which fails Base58Check and 404s on
+//     explorers. The correct-case address is already in helper/bitcoin-book as
+//     `binance2`, which is what projects/binance uses for the bitcoin chain.
 const binanceToDefillama = {
   ETH: 'ethereum',
   BEP20: 'bsc',
