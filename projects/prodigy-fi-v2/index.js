@@ -7,7 +7,7 @@ const positionManager_ABI = {
   getDeployedVaults: 'function getDeployedVaults(uint256,uint256) view returns (address[])',
 }
 const ZERO_ADDRESS = ADDRESSES.null
-const CACHE_PROJECT = 'prodigy-fi-2'
+const CACHE_PROJECT = 'prodigy-v2'
 
 const config = {
   ethereum: {
