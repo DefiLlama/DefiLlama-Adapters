@@ -3155,6 +3155,19 @@ const uniV2Configs = {
     start: '2026-05-31',
     rise: '0xd479E71C45aEB1E846A7B549c346D62fE77B39bA',
   },
+  'ilyris': {
+    start: '2026-08-31',
+    _options: {
+      fetchBalances: true,
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+        token0: 'address:tokenX',
+        token1: 'address:tokenY',
+      },
+    },
+    robinhood: '0x3Bf76F2E41Ac7996c822455f4c78fa2026465C4D',
+  },
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)
