@@ -52,12 +52,17 @@ async function getLockAddresses(chain) {
   const networks = chainToNetworks[chain]
   const isEvm = evmChains.includes(chain)
   const lockInfoData = await getConfig('binance-peg-backing/lock-info', LOCK_INFO_ENDPOINT)
+  // getConfig falls back to the cached config when the endpoint is unavailable, and an
+  // adapter on its first run has no cache to fall back to - so the shape is not guaranteed.
+  const tokens = Array.isArray(lockInfoData?.tokens) ? lockInfoData.tokens : []
 
   const addresses = []
-  lockInfoData.tokens.forEach(token => {
-    (token.lockInfo || []).forEach(li => {
+  tokens.forEach(token => {
+    const locks = Array.isArray(token?.lockInfo) ? token.lockInfo : []
+    locks.forEach(li => {
+      if (typeof li?.network !== 'string' || typeof li?.address !== 'string') return
       if (!networks.includes(li.network.toUpperCase())) return
-      if (!li.address || /^[A-Z0-9]+-[A-Z0-9]+$/i.test(li.address)) return
+      if (/^[A-Z0-9]+-[A-Z0-9]+$/i.test(li.address)) return
       if (isEvm && (!/^0x[0-9a-fA-F]{40}$/.test(li.address))) return
       addresses.push(li.address)
     })
