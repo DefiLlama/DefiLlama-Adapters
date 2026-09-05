@@ -377,6 +377,8 @@ const configs = {
             '0x5900C3b72458F12967DC1bef35b92d271F5cDBc1', // cbETH Looper IPOR Fusion
             '0xD46a3C2D958d0a2cB098d48C48dC19FE3A710F37', // USDC Lending Optimizer IPOR Fusion
             '0xc2dEC6328d9EF1eF2ee85901f9C1a8db8DD1C9C1', // wETH Metavault on Spectra
+            '0x8bF41Ad2b816F7c220b22F4BCD63fC2A35Ab4247', // Euler Earn: Clearstar Earn USDC
+            '0x6370c6445073b8df18368e3E11Bfecf0cEd13b01', // Euler Earn: Clearstar ETH Fusion
           ],
         },
         ethereum: {
@@ -387,6 +389,7 @@ const configs = {
           erc4626: [
             '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
             '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23', // IPOR Fusion yoGOLD
+            '0x32Cf8bd02A916c3cf1E4Ccb9c7A00D4a3f96BfDF', // Euler Earn: Clearstar Continuum USDC
           ],
           upshiftV2: [
             '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
@@ -420,6 +423,10 @@ const configs = {
           eulerVaultOwners: [
             '0x6539519E69343535a2aF6583D9BAE3AD74c6A293',
           ],
+          erc4626: [
+            '0xE1BcA19baA63894D374578320551633320436523', // Euler Earn: Clearstar Earn USDC
+            '0xb58915867D28759dcD12e5e6610F72a9eDF4758F', // Euler Earn: Clearstar Earn AUSD
+          ],
         },
         arbitrum: {
           morphoVaultOwners: [
@@ -434,6 +441,13 @@ const configs = {
         hyperliquid: {
           eulerVaultOwners: [
             '0x6539519E69343535a2aF6583D9BAE3AD74c6A293' // HypurrFi / Euler HyperEVM vaults
+          ],
+          erc4626: [
+            '0xF868A2B30854FE13e26F7AB7a92609cCb6b9c0e1', // Euler Earn: Clearstar Earn USDC
+            '0xe8b10461ea0b04FF30F4cBfc3E93957Cac00DEd4', // Euler Earn: Clearstar Earn HYPE
+            '0x6dd448d5cb73DC96788d5BE605DD3C5c83864a36', // Euler Earn: Clearstar Earn USDT0
+            '0xF38eA9DE758a8F6be08B6E65bc0Ff2f3e3aB741b', // Euler Earn: Clearstar Earn USDH
+            '0xEbbb1e5Dd7E9C4DCa7B7fD4442571cAE5Fb37629', // Euler Earn: Clearstar Earn USDG0
           ],
         },
         starknet: {
