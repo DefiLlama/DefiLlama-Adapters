@@ -31,6 +31,11 @@ const abi = {
   tokenY: 'address:tokenY',
 }
 
+/**
+ * Read pool token balances without calling factories before their deployment.
+ * @param {import('@defillama/sdk').ChainApi} api Snapshot-bound Base RPC client.
+ * @returns {Promise<object>} Underlying token balances for DefiLlama pricing.
+ */
 async function tvl(api) {
   const tokensAndOwners = []
   const block = await api.getBlock()
