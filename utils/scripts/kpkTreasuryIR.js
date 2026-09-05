@@ -47,6 +47,19 @@
  * appeared since - a daily job converges to one date per run. Each date is persisted
  * as it lands, so an interrupted backfill resumes from the first still-missing date.
  *
+ * It keeps TWO R2 stores filled that way, off one replay per date, over two windows:
+ *
+ *   daily.json           the day's rollups (RECORD SHAPE below), from the first
+ *                        mandate in TIME_GATED_ENTITIES (2022-01-01) to today
+ *   legs/<YYYY-MM>.json  the positions those rollups were summed from, one document
+ *                        per month, trailing 365 days only
+ *
+ * A date is re-run when EITHER of the two owes something, and only what was missing is
+ * written. So legs backfilled onto a day that already has a record leave that record
+ * exactly as it was, and a date older than the legs window keeps its record and never
+ * grows legs. Dates owing legs run before the older record-only gaps, so a backfill
+ * reaches the trailing year first and fills the deep history behind it.
+ *
  * The store is a HOMOGENEOUS RPC series and stays one: every record is the adapter
  * run at 00:00:00 UTC on its date, and nothing else is ever written there. The DeBank
  * half of a cache run writes its own key (positions), never a day in the history.
@@ -85,6 +98,22 @@
  * Safes' holdings of kpk-curated vaults (Morpho / Euler / Gearbox / Aleph): real
  * client assets, but assets whose TVL is already reported by the vault itself, so
  * adding them to the adapter total would count the same deposit twice.
+ *
+ * A replay record also carries `legs` - the same money before it was rolled up, one
+ * row per (attributed component, token):
+ *
+ *   { chain, client, protocol, part, pool?, token, symbol, denom, amount, usd, curated? }
+ *
+ * They are what the rollups above cannot answer, because a rate is a property of a
+ * POSITION and no sum of chain / protocol / client totals can be taken back apart into
+ * one. `pool` carries the contract that produced the balance where the component
+ * unwrapped to an underlying (a Stakewise or curated vault, the DSR); everywhere else
+ * `token` is the receipt token itself, which is already the identity. `denom` is the
+ * leaf symbol classified, NOT the record's denomination split - that one resolves LP
+ * tokens to their constituents, a leg is one token as it was held.
+ *
+ * The cache job strips `legs` off the record before storing the day and writes it to
+ * legs/<YYYY-MM>.json instead, so daily.json keeps its ~2.5KB/day shape.
  *
  * DEBANK REPORT SHAPE (--debank --shape=report, and `positions` in --report)
  *
@@ -177,7 +206,8 @@
  *
  * Cache options (with --cache):
  *   --to=<date>        window end, default today (UTC)
- *   --from=<date>      window start, default WINDOW_DAYS (365) days before --to
+ *   --from=<date>      record window start, default the first mandate (2022-01-01);
+ *                      legs are always the trailing 365 days, whatever this says
  *   --limit=<n>        stop after n dates; the rest stay missing for the next run
  *   --refill=<list>    re-run these dates even though they are already stored
  *   --refill-stale     re-run entries written by an older breakdown version
@@ -866,8 +896,8 @@ const STAKEWISE_V3_VAULTS = {
     { vault: '0x2Cd404D9d75436e7d6DDbCcc2fB9cF7C06941bF1', asset: ADDRESSES.xdai.GNO }, // CoW validator vault - GNO
   ],
 }
-async function getStakewiseV3Tvl(api, owners) {
-  const vaults = STAKEWISE_V3_VAULTS[api.chain]
+async function getStakewiseV3Tvl(api, owners, vaults) {
+  vaults = vaults || STAKEWISE_V3_VAULTS[api.chain]
   if (!vaults) return
   owners = owners || activeSafes(api)
   for (const { vault, asset } of vaults) {
@@ -1102,17 +1132,16 @@ const CLIENT_LABELS = {
   dydx: 'dYdX',
 }
 
-// Zodiac stack, run once per mandate so balances carry a client attribution
+// Zodiac stack, run once per mandate so balances carry a client attribution.
 const ZODIAC_PARTS = [
   { protocol: 'Aave', id: 'Aave v3', fn: getAaveV3Tvl },
   { protocol: 'Aave', id: 'Aave v2', fn: getAaveV2Tvl },
   { protocol: 'Spark', fn: getSparkTvl },
-  { protocol: 'Stakewise', fn: getStakewiseV3Tvl },
   { protocol: 'Aura', fn: getAuraTvl },
   { protocol: 'Nexus Mutual', fn: getNexusStakedNXM },
   { protocol: 'Uniswap', fn: getUniV3Tvl },
   { protocol: 'Safe', fn: getSafeLockedTvl }, // locked SAFE, the only real Safe-protocol position
-  { protocol: 'Maker', id: 'Maker DSR', fn: getMakerDsrTvl },
+  { protocol: 'Maker', id: 'Maker DSR', pool: DSR_MANAGER, fn: getMakerDsrTvl },
   { protocol: 'Maker', id: 'Maker CDP', fn: getMakerCdpTvl },
   { protocol: 'StakeDAO', fn: getStakeDaoGaugeTvl },
   { protocol: 'Sablier', fn: getSablierTvl },
@@ -1129,19 +1158,24 @@ function holdingsParts(chain, timestamp) {
   }))
 }
 
-// The curated-vault delta, one part per issuing protocol so it reports as Morpho /
-// Euler / Gearbox / Aleph rather than one lump. Opt-in (see getComponents): these
-// parts sit OUTSIDE the adapter total, so including them by default would break the
-// invariant that components sum to the merged tvl.
+function stakewiseParts(chain) {
+  return (STAKEWISE_V3_VAULTS[chain] || []).map((entry) => ({
+    protocol: 'Stakewise',
+    id: `Stakewise ${entry.vault}`,
+    pool: entry.vault,
+    fn: (api, safes) => getStakewiseV3Tvl(api, safes, [entry]),
+  }))
+}
+
+// Opt-in (see getComponents): these parts sit OUTSIDE the adapter total, so including
+// them by default would break the invariant that components sum to the merged tvl.
 function curatedParts(chain) {
-  const byProtocol = {}
-  for (const [address, protocol] of Object.entries(CURATED_VAULTS[chain] || {}))
-    (byProtocol[protocol] = byProtocol[protocol] || []).push(address)
-  return Object.entries(byProtocol).map(([protocol, vaults]) => ({
+  return Object.entries(CURATED_VAULTS[chain] || {}).map(([vault, protocol]) => ({
     protocol,
-    id: `${protocol} curated`,
+    id: `${protocol} ${vault}`,
+    pool: vault,
     curated: true,
-    fn: (api, safes) => getCuratedVaultTvl(api, safes, vaults),
+    fn: (api, safes) => getCuratedVaultTvl(api, safes, [vault]),
   }))
 }
 
@@ -1161,11 +1195,13 @@ function getComponents(chain, timestamp, { byClient = true, curated = false } = 
 
   const parts = []
   for (const mandate of mandates)
-    for (const part of [...holdingsParts(chain, timestamp), ...ZODIAC_PARTS, ...(curated ? curatedParts(chain) : [])])
+    for (const part of [...holdingsParts(chain, timestamp), ...stakewiseParts(chain), ...ZODIAC_PARTS, ...(curated ? curatedParts(chain) : [])])
       parts.push({
         chain,
         protocol: part.protocol,
         client: mandate.client,
+        part: part.id || part.protocol,
+        ...(part.pool ? { pool: part.pool.toLowerCase() } : {}),
         ...(part.curated ? { curated: true } : {}),
         // `id` keeps same-protocol parts (Aave v2/v3) distinct in the unit key
         key: [chain, part.id || part.protocol, mandate.client].filter(Boolean).join(' / '),
@@ -1228,6 +1264,7 @@ const DIMS = (() => {
 })()
 
 const WANT_TOKENS = !flags["no-tokens"] && String(flags.tokens) !== "false"
+const WANT_LEGS = DIMS.components && !flags["no-legs"]
 
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
 
@@ -1310,17 +1347,44 @@ async function resolveBlocks(chains, timestamp) {
 
 // price each unit through its own Balances; the SDK caches prices per timestamp
 // process-wide, so N units at one date still cost one fetch per distinct token
+const genesisTs = {}
+async function firstBlockTimestamp(chain) {
+  if (!(chain in genesisTs))
+    genesisTs[chain] = await sdk.getProvider(chain).getBlock(1).then((block) => (block ? Number(block.timestamp) : null)).catch(() => null)
+  return genesisTs[chain]
+}
+
 async function priceUnit({ chain, timestamp, block, key, run }) {
   const api = new sdk.ChainApi({ chain, block, timestamp, storedKey: key })
   api.api = api
   const balances = await run(api)
-  let priced = api
-  if (balances !== undefined) {
-    priced = new sdk.Balances({ chain, timestamp })
-    priced.addBalances(balances)
-  }
+
+  const priced = new sdk.Balances({ chain, timestamp })
+  priced.addBalances(balances === undefined ? api.getBalances() : balances)
   const raw = priced.getBalances()
-  return { ...(await priced.getUSDJSONs()), raw }
+  return { ...(await priced.getUSDJSONs(WANT_LEGS ? DEBUG_OPTS : undefined)), raw }
+}
+
+function legsOf(unit, debugData) {
+  const legs = []
+  for (const row of (debugData || {}).tokenData || []) {
+    const value = round(row.value)
+    if (!value) continue // sub-cent dust: nothing downstream can act on it
+    legs.push({
+      chain: unit.chain,
+      ...(unit.client ? { client: unit.client } : {}),
+      protocol: unit.protocol,
+      part: unit.part,
+      ...(unit.pool ? { pool: unit.pool } : {}),
+      token: lower(stripChain(row.token)),
+      symbol: row.symbol,
+      denom: classifyLeaf(row.symbol),
+      amount: Number((Number(row.balance) / 10 ** (row.decimals || 0)).toPrecision(8)),
+      usd: value,
+      ...(unit.curated ? { curated: true } : {}),
+    })
+  }
+  return legs
 }
 
 async function runAt(adapter, tasks, chains, timestamp) {
@@ -1329,12 +1393,21 @@ async function runAt(adapter, tasks, chains, timestamp) {
   const chainBlocks = await resolveBlocks(chains, timestamp)
 
   const failed = {}
+  const noBlock = []
+  for (const chain of chains.filter((chain) => !chainBlocks[chain])) {
+    const genesis = await firstBlockTimestamp(chain)
+    if (genesis !== null && timestamp < genesis) noBlock.push(chain)
+    else failed[chain] = `no block at ${timestamp}${genesis === null ? "" : ` (genesis ${new Date(genesis * 1000).toISOString().slice(0, 10)})`}`
+  }
+  if (noBlock.length) console.error(`  pre-genesis at this date, skipped: ${noBlock.join(", ")}`)
+  const live = chains.filter((chain) => chainBlocks[chain])
 
   // Two parallel sets of accumulators. `main` is the adapter total, which excludes
   // kpk curated vault shares; `curated` is exactly those shares, reported as a delta
   // so a consumer can present the with-double-counting figure as one addition.
   // Curated units never touch `main`, so record.tvl stays comparable to every date
   // already in the store and --verify (components == merged tvl) still holds.
+  const legs = []
   const newAcc = () => ({ values: {}, tokens: {}, breakdown: {}, rawByChain: {} })
   const main = newAcc()
   const curated = newAcc()
@@ -1347,9 +1420,9 @@ async function runAt(adapter, tasks, chains, timestamp) {
   // units are either the merged per-chain tvl fns, or the adapter's attributed
   // components when a breakdown beyond `chain` was asked for
   const units = DIMS.components
-    ? chains.flatMap((chain) => adapter.components(chain, timestamp, { byClient: DIMS.has("client"), curated: true })
+    ? live.flatMap((chain) => adapter.components(chain, timestamp, { byClient: DIMS.has("client"), curated: true })
       .map((part) => ({ ...part, timestamp, block: chainBlocks[chain] })))
-    : tasks.map((task) => ({
+    : tasks.filter((task) => chainBlocks[task.chain]).map((task) => ({
       ...task, timestamp, block: chainBlocks[task.chain],
       run: (api) => task.fn(api, chainBlocks.ethereum, chainBlocks, api),
     }))
@@ -1357,7 +1430,7 @@ async function runAt(adapter, tasks, chains, timestamp) {
   // the merged path runs the adapter's own tvl fns, which have no curated component
   // by design, so the delta comes in as one extra unit per chain that has such vaults
   if (!DIMS.components)
-    for (const chain of chains) {
+    for (const chain of live) {
       if (!getCuratedVaults(chain).length) continue
       units.push({
         chain, curated: true, key: `${chain}-curated`, timestamp, block: chainBlocks[chain],
@@ -1375,7 +1448,8 @@ async function runAt(adapter, tasks, chains, timestamp) {
     processor: async (unit) => {
       try {
         const acc = unit.curated ? curated : main
-        const { usdTvl, usdTokenBalances, raw } = await priceUnit(unit)
+        const { usdTvl, usdTokenBalances, debugData, raw } = await priceUnit(unit)
+        if (WANT_LEGS) legs.push(...legsOf(unit, debugData))
         acc.values[unit.chain] = round((acc.values[unit.chain] || 0) + usdTvl)
         if (DIMS.has("denom")) {
           acc.rawByChain[unit.chain] = acc.rawByChain[unit.chain] || {}
@@ -1432,14 +1506,17 @@ async function runAt(adapter, tasks, chains, timestamp) {
   }
 
   const record = { date: iso.slice(0, 10), timestamp, ...asBlock(main) }
+  if (noBlock.length) record.noBlock = noBlock
   if (Object.keys(failed).length) record.failed = sortKeys(failed)
   record.curated = asBlock(curated)
+  if (WANT_LEGS && legs.length) record.legs = legs.sort((a, b) => b.usd - a.usd)
 
   for (const [dim, segments] of Object.entries(record.breakdown || {})) {
     const top = Object.entries(segments).sort((a, b) => b[1] - a[1]).filter(([, usd]) => usd)
     console.error(`  by ${dim}: ${top.map(([name, usd]) => `${name} ${sdk.humanizeNumber(usd)}`).join(", ") || "(nothing)"}`)
   }
   console.error(`  curated vaults (excluded from tvl): ${sdk.humanizeNumber(record.curated.tvl)}${record.curated.breakdown ? ` [${Object.entries(record.curated.breakdown.protocol || {}).filter(([, usd]) => usd).map(([name, usd]) => `${name} ${sdk.humanizeNumber(usd)}`).join(", ") || "nothing"}]` : ""}`)
+  if (WANT_LEGS) console.error(`  ${legs.length} leg(s) across ${new Set(legs.map((leg) => `${leg.chain}|${leg.part}`)).size} attributed part(s)`)
   console.error(`[${iso}] total ${sdk.humanizeNumber(record.tvl)} without / ${sdk.humanizeNumber(record.tvl + record.curated.tvl)} with double counting${record.failed ? ` (${Object.keys(failed).length} unit(s) failed, excluded)` : ""}`)
   if (flags.verify) await verify(record, tasks, chainBlocks, timestamp)
   console.error("")
@@ -1600,7 +1677,11 @@ const DENOMS = [
   { name: "BTC", match: (symbol) => /btc$/i.test(symbol) || /^w?btc$/i.test(symbol) },
   { name: "ETH", match: (symbol) => !NOT_ETH.test(symbol) && (/eth$/i.test(symbol) || /^eth[0-9x]?$/i.test(symbol)) },
   { name: "EUR", match: (symbol) => /^eur/i.test(symbol) || /eur[a-z]?$/i.test(symbol) },
-  { name: "USD", match: (symbol) => !NOT_USD.test(symbol) && (/usd/i.test(symbol) || /^(w?xdai|s?dai|gho|frax|mkusd)$/i.test(symbol)) },
+  // `gho$` rather than an exact `gho`: sGHO / fGHO / aEthGHO are GHO positions. It
+  // is the leaf classifier that needs it - a leg (see legsOf) classifies the receipt
+  // token as it was held, where by the time the denomination split below classifies
+  // anything it has already unwrapped those to GHO itself.
+  { name: "USD", match: (symbol) => !NOT_USD.test(symbol) && (/usd/i.test(symbol) || /gho$/i.test(symbol) || /^(w?xdai|s?dai|frax|mkusd)$/i.test(symbol)) },
 ]
 
 // leaves that aren't a recognised denomination keep their own symbol (GNO stays GNO),
@@ -1805,13 +1886,23 @@ async function valueConstituents(api, children) {
 // ============================================================================
 // Cache mode: keep the daily history in R2 filled
 // ============================================================================
-// The chart wants a rolling year, so the default window is the WINDOW_DAYS days
-// ending at --to (today unless given) rather than a fixed start date - a daily job
-// keeps the last year filled without anyone editing a constant. Dates that roll out
-// of the window stay in the store; the window only decides what gets (re-)run.
-// To reach further back, pass --from: the adapter itself runs from each entity's own
-// start in TIME_GATED_ENTITIES (2022 onwards), not from here.
+// TWO windows, because the two stores are read for different things.
+//
+// The daily record is the whole series - the client asked for the mandates from the
+// beginning, so the default start is the first mandate rather than a rolling window,
+// and a daily job converges on the full history instead of on one year of it. Derived
+// from the roster so it cannot drift from the adapter: whatever the earliest
+// TIME_GATED_ENTITIES start is (2022-01-01 today), that is where the store begins.
+//
+// Legs are the trailing WINDOW_DAYS days and nothing more. They are ~8x the bytes of
+// a record and answer a question that is only ever asked about the recent book (what
+// each position earned over the trailing year), so paying for them back to 2022 would
+// be ~30MB to serve a query nobody makes. A date older than that keeps its record and
+// simply never grows legs.
+//
+// WINDOW_DAYS is also the report chart's window, which is the same rolling year.
 const WINDOW_DAYS = 365
+const HISTORY_START = Object.values(TIME_GATED_ENTITIES).map((entity) => entity.start).sort()[0]
 
 // Bump when a change to the adapter alters what the breakdown means (a protocol or
 // client relabel, a component entering or leaving the total). Stored entries carry
@@ -1827,15 +1918,17 @@ const STORE_KEY = "tvl-adapter-cache/cache/kpk-treasury-ir/daily.json"
 // be a ~57MB object - and STORE_KEY is rewritten whole every time a fill run stores
 // a single date.
 //
-// Know what that trades away. DeBank has no historical endpoint, so each overwrite
-// is final: once this key moves on, yesterday's reading is not recoverable from here
-// or from anywhere else, in detail or in aggregate. Nothing of it survives in
-// STORE_KEY either - the daily history is RPC-only by design, see capturePositions().
-//
-// That is the accepted cost of keeping one series one thing. If a day's DeBank reading
-// ever needs to outlive its run, it wants a per-date key of its own, NOT a slot in the
-// daily store.
+// Know what that trades away. DeBank has no historical endpoint, so a reading that is
+// not written down when it is taken cannot be rebuilt afterwards, here or anywhere
+// else, in detail or in aggregate. So the same document is ALSO archived under a
+// per-date key - that archive is the only thing a past day's positions can ever come
+// from - and this key goes on being the latest-only view. Neither of them survives in
+// STORE_KEY: the daily history is RPC-only by design, see capturePositions().
 const POSITIONS_KEY = "tvl-adapter-cache/cache/kpk-treasury-ir/positions.json"
+const positionsArchiveKey = (date) => `tvl-adapter-cache/cache/kpk-treasury-ir/positions/${date}.json`
+
+const LEGS_VERSION = 1
+const legsKey = (month) => `tvl-adapter-cache/cache/kpk-treasury-ir/legs/${month}.json`
 const HAS_R2 = Boolean(process.env.R2_ENDPOINT && process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY)
 
 function asDate(value, label) {
@@ -1850,6 +1943,7 @@ const addDays = (date, days) => {
   return d.toISOString().slice(0, 10)
 }
 const nextDay = (date) => addDays(date, 1)
+const monthOf = (date) => date.slice(0, 7)
 
 function datesBetween(from, to) {
   const dates = []
@@ -1888,6 +1982,30 @@ async function saveStore(ownDates) {
   return { bytes: written.length, total: Object.keys(store.dates).length }
 }
 
+// ---- legs store ----
+
+async function loadLegsMonth(month) {
+  const stored = await sdk.cache.readCache(legsKey(month), { readFromR2Cache: true }).catch(() => null)
+  const doc = stored && typeof stored === "object" ? stored : {}
+  if (!doc.dates || typeof doc.dates !== "object") doc.dates = {}
+  doc.month = month
+  return doc
+}
+
+const loadLegs = async (months) => new Map(await Promise.all(months.map(async (month) => [month, await loadLegsMonth(month)])))
+
+// Read-then-merge, for the same reason saveStore does it: a month is one object under
+// one key, so a write is a whole-object put, and only the dates THIS run computed may
+// win over the copy that is up there now.
+async function saveLegs(month, ownDates) {
+  const doc = await loadLegsMonth(month)
+  doc.dates = sortKeys({ ...doc.dates, ...ownDates })
+  doc.updatedAt = Math.floor(Date.now() / 1000)
+  const written = await sdk.cache.writeCache(legsKey(month), doc)
+  if (!written) throw new Error(`${legsKey(month)} not written - writeCache rejected the payload`)
+  return { bytes: written.length, dates: Object.keys(doc.dates).length }
+}
+
 // ---- positions store ----
 
 async function loadPositions() {
@@ -1895,6 +2013,11 @@ async function loadPositions() {
   // means "no snapshot yet" - not "a snapshot that happens to hold nothing". Checking
   // for the positions array rather than truthiness is what keeps those two apart.
   const stored = await sdk.cache.readCache(POSITIONS_KEY, { readFromR2Cache: true }).catch(() => null)
+  return stored && typeof stored === "object" && Array.isArray(stored.positions) ? stored : null
+}
+
+const loadPositionsArchive = async (date) => {
+  const stored = await sdk.cache.readCache(positionsArchiveKey(date), { readFromR2Cache: true }).catch(() => null)
   return stored && typeof stored === "object" && Array.isArray(stored.positions) ? stored : null
 }
 
@@ -1940,14 +2063,17 @@ function lockHolder() {
 function staleReason(holder) {
   if (!holder || !holder.pid) return "unreadable lock file"
   const age = Date.now() - (holder.startedAt || 0)
-  if (age > LOCK_MAX_AGE_MS) return `held for ${(age / 3600000).toFixed(1)}h, past the ${LOCK_MAX_AGE_MS / 3600000}h limit`
-  if (holder.host !== os.hostname()) return null // another machine: cannot probe it, assume alive
-  try {
-    process.kill(holder.pid, 0) // signal 0 only tests for existence
-    return null
-  } catch (e) {
-    return e.code === "EPERM" ? null : `pid ${holder.pid} is gone`
+  if (holder.host === os.hostname()) {
+    try {
+      process.kill(holder.pid, 0) // signal 0 only tests for existence
+      return null
+    } catch (e) {
+      if (e.code === "EPERM") return null
+      return `pid ${holder.pid} is gone`
+    }
   }
+  if (age > LOCK_MAX_AGE_MS) return `held for ${(age / 3600000).toFixed(1)}h on ${holder.host}, past the ${LOCK_MAX_AGE_MS / 3600000}h limit`
+  return null // another machine, still inside the limit: cannot probe it, assume alive
 }
 
 function acquireLock() {
@@ -2108,6 +2234,11 @@ async function capturePositions() {
 
   const bytes = await savePositions(document)
   console.error(`snapshot stored: ${document.totals.positions} position(s), ${usd(document.tvl)}, ${bytes}B -> ${POSITIONS_KEY}`)
+
+  const archive = positionsArchiveKey(document.date)
+  const archived = await sdk.cache.writeCache(archive, document)
+  if (!archived) throw new Error(`${archive} not written - writeCache rejected the payload`)
+  console.error(`  archived ${archived.length}B -> ${archive}`)
   if (!HAS_R2) console.error("  R2 credentials absent - the snapshot landed in the local sdk cache only")
 }
 
@@ -2119,12 +2250,16 @@ async function reportPositionsStatus() {
   const hours = positionsAge(stored)
   const age = hours === null ? "no asOf" : `${hours.toFixed(1)}h old`
   console.error(`positions ${POSITIONS_KEY} -> ${stored.date}, ${age}, ${stored.totals.positions} position(s), ${usd(stored.tvl)}`)
+  const probe = await Promise.all([addDays(today(), -1), today()].map(async (date) => `${date} ${(await loadPositionsArchive(date)) ? "yes" : "NO"}`))
+  console.error(`  per-date archive ${positionsArchiveKey("<YYYY-MM-DD>")}: ${probe.join(", ")}`)
 }
 
 async function fillRpcGaps() {
   const to = asDate(flags.to || today(), "--to")
-  const from = asDate(flags.from || addDays(to, -(WINDOW_DAYS - 1)), "--from")
+  const from = asDate(flags.from || HISTORY_START, "--from")
   if (from > to) throw new Error(`--from (${from}) is after --to (${to})`)
+  // legs never reach further back than the trailing year, whatever --from says
+  const legsFrom = [from, addDays(to, -(WINDOW_DAYS - 1))].sort().pop()
 
   // Refused rather than forwarded: a narrowed run would write dates the rest of the
   // store cannot be compared against, stamped with the current version so nothing
@@ -2132,13 +2267,21 @@ async function fillRpcGaps() {
   if (flags.dims) throw new Error("--dims cannot narrow a --cache run: every stored date needs the full breakdown. Use replay mode for a fast one-off.")
   if (flags["no-tokens"] || String(flags.tokens) === "false")
     throw new Error("--no-tokens cannot narrow a --cache run: every stored date needs the token rollup. Use replay mode for a fast one-off.")
+  if (flags["no-legs"])
+    throw new Error("--no-legs cannot narrow a --cache run: the legs of a date come out of the same replay that fills it. Use replay mode for a fast one-off.")
 
   const store = await loadStore()
   const window = datesBetween(from, to)
+  const legsWindow = window.filter((date) => date >= legsFrom)
+  const months = [...new Set(legsWindow.map(monthOf))]
+  const legs = await loadLegs(months)
+  const legsOn = (date) => (legs.get(monthOf(date)) || { dates: {} }).dates[date]
+
   const refill = new Set(flags.refill && flags.refill !== true ? String(flags.refill).split(",").map((d) => asDate(d, "--refill")) : [])
+  const refillStale = Boolean(flags["refill-stale"])
 
   // Every stored record is RPC-built at 00:00:00 UTC, so staleness is a question about
-  // the RPC breakdown version alone: a date written under an older BREAKDOWN_VERSION
+  // the version alone: a date written under an older BREAKDOWN_VERSION / LEGS_VERSION
   // means something the current one does not, and --refill-stale re-runs exactly those.
   //
   // A record carrying `source` counts as stale too. Nothing writes one any more -
@@ -2146,19 +2289,31 @@ async function fillRpcGaps() {
   // DeBank's reading in for the latest day would otherwise keep that reading forever:
   // it is not a gap, so a plain run walks past it. Calling it stale puts it in
   // --status and lets --refill-stale replace it with the on-chain record for the date.
-  const stale = window.filter((date) => {
+  const staleRecord = (date) => {
     const record = store.dates[date]
     return Boolean(record) && (Boolean(record.source) || (record.v || 0) !== BREAKDOWN_VERSION)
-  })
-  if (flags["refill-stale"]) for (const date of stale) refill.add(date)
+  }
+  const staleLegs = (date) => {
+    const entry = legsOn(date)
+    return Boolean(entry) && (entry.v || 0) !== LEGS_VERSION
+  }
+  const stale = window.filter((date) => staleRecord(date) || staleLegs(date))
 
-  // An explicitly asked-for refill goes to the front: `missing` used to be plain
-  // chronological, so with a backlog `--refill=X --limit=1` spent the limit on the
-  // oldest gap and never touched X. Gaps keep their chronological order behind it.
-  const refills = window.filter((date) => store.dates[date] && refill.has(date))
-  const gaps = window.filter((date) => !store.dates[date])
-  const missing = [...refills, ...gaps]
+  const needRecord = new Set(window.filter((date) => !store.dates[date] || refill.has(date) || (refillStale && staleRecord(date))))
+  const needLegs = new Set(legsWindow.filter((date) => !legsOn(date) || refill.has(date) || (refillStale && staleLegs(date))))
+
+  // Three tiers, because with a full-history backfill queued behind it a plain
+  // chronological order would reach the trailing year days later:
+  //   1. an explicit --refill, so `--refill=X --limit=1` spends the limit on X
+  //   2. dates owing legs - the trailing year, which is what every consumer reads
+  //   3. the rest of the history, oldest first
+  const todo = window.filter((date) => needRecord.has(date) || needLegs.has(date))
+  const tier = (date) => (refill.has(date) ? 0 : needLegs.has(date) ? 1 : 2)
+  const missing = [0, 1, 2].flatMap((rank) => todo.filter((date) => tier(date) === rank))
+
+  const held = [...legs.values()].reduce((sum, doc) => sum + Object.keys(doc.dates).length, 0)
   const cached = window.filter((date) => store.dates[date]).length
+  const legsCached = legsWindow.filter((date) => legsOn(date)).length
 
   // a refill outside the window would otherwise be dropped without a word
   const outside = [...refill].filter((date) => date < from || date > to).sort()
@@ -2166,20 +2321,27 @@ async function fillRpcGaps() {
     console.error(`  --refill ignored, outside ${from}..${to}: ${outside.join(", ")}`)
 
   console.error(`store ${STORE_KEY} -> ${Object.keys(store.dates).length} date(s) held, version ${store.version || "?"} (current ${BREAKDOWN_VERSION})`)
-  console.error(`window ${from} .. ${to}: ${window.length} day(s), ${cached} cached, ${missing.length} to run${refills.length ? ` (${refills.length} refill first, ${gaps.length} gap)` : ""}${stale.length ? `, ${stale.length} stale` : ""}`)
-  if (stale.length && !flags["refill-stale"])
-    console.error(`  stale (older breakdown version, kept as-is): ${stale.slice(0, 8).join(", ")}${stale.length > 8 ? ` ... +${stale.length - 8}` : ""}`)
+  console.error(`legs  ${legsKey("<YYYY-MM>")} -> ${held} date(s) held in the ${months.length} month(s) of the legs window, version ${LEGS_VERSION}`)
+  console.error(`record window ${from} .. ${to}: ${window.length} day(s), ${cached} cached, ${needRecord.size} to run`)
+  console.error(`legs   window ${legsFrom} .. ${to}: ${legsWindow.length} day(s), ${legsCached} cached, ${needLegs.size} to run`)
+  console.error(`${missing.length} date(s) to replay${stale.length ? `, ${stale.length} stale` : ""}`)
+  if (stale.length && !refillStale)
+    console.error(`  stale (older version, kept as-is): ${stale.slice(0, 8).join(", ")}${stale.length > 8 ? ` ... +${stale.length - 8}` : ""}`)
   if (!HAS_R2) console.error("  R2 credentials absent - writes land in the local sdk cache only, nothing reaches R2")
 
-  if (flags.status) return
+  if (flags.status)
+    return console.error(`  legs by month: ${months.map((month) => {
+      const days = legsWindow.filter((date) => monthOf(date) === month)
+      return `${month} ${days.filter(legsOn).length}/${days.length}`
+    }).join(", ")}`)
   if (!missing.length) return console.error("nothing to fill")
 
   const limit = flags.limit ? Number(flags.limit) : missing.length
   if (!Number.isFinite(limit) || limit < 1) throw new Error(`Invalid --limit: ${flags.limit}`)
-  const todo = missing.slice(0, limit)
-  if (todo.length < missing.length) console.error(`  --limit=${limit}: running ${todo.length}, leaving ${missing.length - todo.length} for a later run`)
+  const dates = missing.slice(0, limit)
+  if (dates.length < missing.length) console.error(`  --limit=${limit}: running ${dates.length}, leaving ${missing.length - dates.length} for a later run`)
 
-  if (flags.dry) return console.error(`would run: ${todo.join(", ")}`)
+  if (flags.dry) return console.error(`would run: ${dates.join(", ")}`)
 
   acquireLock()
 
@@ -2187,16 +2349,21 @@ async function fillRpcGaps() {
   for (const key of ["concurrency"]) if (flags[key]) extraArgs.push(`--${key}=${flags[key]}`)
 
   const chunkSize = Number(flags.chunk) || 20
-  let stored = 0
+  let storedRecords = 0
+  let storedLegs = 0
   const skipped = []
   const startedAt = Date.now()
   const ownDates = {} // only what this run computed, so saveStore never replays a stale snapshot
+  const ownLegs = {}  // the same, per month, for saveLegs
 
-  for (let i = 0; i < todo.length; i += chunkSize) {
-    const chunk = todo.slice(i, i + chunkSize)
-    console.error(`\n=== dates ${i + 1}-${i + chunk.length} of ${todo.length}: ${chunk[0]} .. ${chunk[chunk.length - 1]} ===`)
+  for (let i = 0; i < dates.length; i += chunkSize) {
+    const chunk = dates.slice(i, i + chunkSize)
+    console.error(`\n=== dates ${i + 1}-${i + chunk.length} of ${dates.length}: ${chunk[0]} .. ${chunk[chunk.length - 1]} ===`)
     const records = await runDates(chunk, extraArgs)
     for (const record of records) {
+      const rows = record.legs || []
+      delete record.legs
+
       const incomplete = recordIncomplete(record)
       if (incomplete) {
         skipped.push(`${record.date} (${incomplete})`)
@@ -2209,18 +2376,38 @@ async function fillRpcGaps() {
         console.error(`  ${record.date} NOT stored: ${problem} - leaving the gap for a later run`)
         continue
       }
-      ownDates[record.date] = { ...record, v: BREAKDOWN_VERSION }
-      store.dates[record.date] = ownDates[record.date]
-      stored++
-      if (!flags["no-write"]) {
-        const { bytes, total } = await saveStore(ownDates)
-        console.error(`  ${record.date} stored (${sdk.humanizeNumber(record.tvl)}), cache now ${total} date(s), ${bytes}B`)
+
+      const wrote = []
+      if (needRecord.has(record.date)) {
+        ownDates[record.date] = { ...record, v: BREAKDOWN_VERSION }
+        store.dates[record.date] = ownDates[record.date]
+        storedRecords++
+        if (!flags["no-write"]) {
+          const { bytes, total } = await saveStore(ownDates)
+          wrote.push(`record ${bytes}B, ${total} date(s) held`)
+        }
       }
+      if (needLegs.has(record.date)) {
+        if (!rows.length) {
+          skipped.push(`${record.date} (no legs)`)
+          console.error(`  ${record.date} legs NOT stored: the replay produced none - leaving the gap for a later run`)
+        } else {
+          const month = monthOf(record.date)
+          ownLegs[month] = { ...ownLegs[month], [record.date]: { v: LEGS_VERSION, legs: rows } }
+          storedLegs++
+          if (!flags["no-write"]) {
+            const { bytes, dates: days } = await saveLegs(month, ownLegs[month])
+            wrote.push(`${rows.length} leg(s), ${month} ${bytes}B, ${days} day(s) held`)
+          }
+        }
+      }
+      console.error(`  ${record.date} ${flags["no-write"] ? "computed" : "stored"} (${sdk.humanizeNumber(record.tvl)})${wrote.length ? `: ${wrote.join("; ")}` : ""}`)
     }
   }
 
   const mins = (Date.now() - startedAt) / 60000
-  console.error(`\nfilled ${stored}/${todo.length} date(s) in ${mins.toFixed(1)} min${stored ? ` (${(mins / stored).toFixed(1)} min/date)` : ""}`)
+  const filled = new Set([...Object.keys(ownDates), ...Object.values(ownLegs).flatMap((month) => Object.keys(month))]).size
+  console.error(`\nfilled ${filled}/${dates.length} date(s) in ${mins.toFixed(1)} min${filled ? ` (${(mins / filled).toFixed(1)} min/date)` : ""}: ${storedRecords} record(s), ${storedLegs} legs day(s)`)
   if (skipped.length) console.error(`skipped ${skipped.length}: ${skipped.join(", ")}`)
   if (flags["no-write"]) console.error("--no-write: nothing was persisted")
   else console.error(`wrote to ${HAS_R2 ? "R2 + local cache" : "local cache only (no R2 credentials)"}`)
