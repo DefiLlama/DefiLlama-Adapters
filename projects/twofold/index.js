@@ -4,8 +4,12 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 // Twofold runs DualPool (Uniswap v4 hook) pools on Robinhood Chain. Every pool is
 // listed in the Registry; the hook holds each pool's two-sided reserves itself
 // (raw ERC-20, ERC-6909 claims in the PoolManager, and USDG parked in ERC4626
-// vaults), so TVL is the sum of hook.getReserves over every active listing.
-const REGISTRY = "0x1b66DD14C9281A18E696dbdb40cFB5070842c0C2";
+// vaults), so TVL is the sum of hook.getReserves over every listing.
+// Two stacks are live: the 2026-09 stack takes every new deposit, the 2026-08
+// stack stays withdrawable and several of its keys still hold depositors, so
+// both Registries are read. Reserves are counted whether or not a key is still
+// flagged active: an inactive key with shares outstanding still holds funds.
+const REGISTRIES = ["0xdF1a23B1A7507Cc3B270DfA78FDD9ddA7bC36325", "0x1b66DD14C9281A18E696dbdb40cFB5070842c0C2"];
 const TWO = "0x2A4a33A2163D005d8E7f1D9aC08d14c98db288d5";
 const STAKING_VAULT_V2 = "0x06E463fDa4BEb4aA096142E673240aB9719fB3A9";
 const TWO_STAKING_USDG = "0x9CF18bB1dD9AfBF75B579Cc0C473B2975c16E9e3";
@@ -48,14 +52,15 @@ function resolveKey(listing) {
 }
 
 async function tvl(api) {
-  const ids = await api.call({ target: REGISTRY, abi: abi.allPoolIds });
-  const listings = await api.multiCall({ target: REGISTRY, abi: abi.getPool, calls: ids });
   const calls = [];
-  for (const listing of listings) {
-    if (!listing.active) continue;
-    const key = resolveKey(listing);
-    if (!key) throw new Error("tickSpacing not recoverable for pool " + listing.poolId);
-    calls.push({ target: listing.hook, params: [key] });
+  for (const registry of REGISTRIES) {
+    const ids = await api.call({ target: registry, abi: abi.allPoolIds });
+    const listings = await api.multiCall({ target: registry, abi: abi.getPool, calls: ids });
+    for (const listing of listings) {
+      const key = resolveKey(listing);
+      if (!key) throw new Error("tickSpacing not recoverable for pool " + listing.poolId);
+      calls.push({ target: listing.hook, params: [key] });
+    }
   }
   const reserves = await api.multiCall({ abi: abi.getReserves, calls });
   reserves.forEach(({ token0, token1 }, i) => {
@@ -78,7 +83,7 @@ async function stakingTvl(api) {
 
 module.exports = {
   methodology:
-    "TVL is the two-sided reserves of every active Twofold DualPool pool, read from the hook (getReserves) for each pool listed in the Twofold Registry, plus the permanently locked TWO/WETH genesis position in Uniswap v4. Staking is totalStaked TWO in the two staking vaults (StakingVaultV2 and TwoStakingUSDG) plus the TWO held by the vTWO governance wrapper; undistributed reward balances are excluded. Marked doublecounted because the hook keeps its reserves as ERC-6909 claims in the Uniswap v4 PoolManager and as deposits in the Steakhouse USDG vaults (Morpho), and the genesis position sits in a Uniswap v4 pool, all of which are counted by those listings.",
+    "TVL is the two-sided reserves of every Twofold DualPool pool, read from the hook (getReserves) for each pool listed in either Twofold Registry (the 2026-09 stack and the 2026-08 stack, both live), plus the permanently locked TWO/WETH genesis position in Uniswap v4. Staking is totalStaked TWO in the two staking vaults (StakingVaultV2 and TwoStakingUSDG) plus the TWO held by the vTWO governance wrapper; undistributed reward balances are excluded. Marked doublecounted because the hook keeps its reserves as ERC-6909 claims in the Uniswap v4 PoolManager and as deposits in the Steakhouse USDG vaults (Morpho), and the genesis position sits in a Uniswap v4 pool, all of which are counted by those listings.",
   doublecounted: true,
   start: "2026-08-28",
   robinhood: {
