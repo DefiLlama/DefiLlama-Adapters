@@ -172,7 +172,7 @@ const config = {
       ['0x8D66Ff1845b1baCC6E87D867CA4680d05A349cA8', '0xE94fc572b5E5Abe38F326F7DeDfe4f0Df9851d2A'], // S*USDC OP
     ]
   },
-  plume: {
+  plume_mainnet: {
     tokensAndOwners: [
       ['0xc0Df5784f28046D11813356919B869dDA5815B16', '0x98Cb8fD0D8b6bf104Fa2B5BAB91fd4B0fcC43A47'], // Re7pUSD
     ]
