@@ -1090,6 +1090,7 @@ const configs = {
             '0xec0Caa2CbAe100CEAaC91A665157377603a6B766', // v2 USDT/ETH/AUSD
           ],
           morpho: [
+            '0xbEEF00A59B577423653A1526c7009bdE103F542B', // Steakhouse Confidential Prime USDC
             '0x6cbF3Eed95976D226FFB0bEb09550A9407f47b60', // Steakhouse High Yield ETH
             '0xbeef003E31546C7210687f1A7b40d096BE83ec58', // Steakhouse Prime EURC
             '0xbeef009FF4FB1727297BF2526806F4A73E4b99aD', // Steakhouse Prime frxUSD
