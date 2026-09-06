@@ -324,6 +324,19 @@ const configs = {
       // deadFrom: 'xxx', // https://github.com/DefiLlama/DefiLlama-Adapters/pull/18409 - shifting focus to tradfi rails
     },
   },
+  "capital-1212": {
+    config: {
+      methodology: 'Sum settled underlying assets in the 1212 Stable and Alpha funds on Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xbb30c3b6046debcbe941281218d18dec8ecebeb5', // 1212.Stable
+            '0xc35ce0c1acfc448d18ddacbf641b09f2a18e1958', // 1212.Alpha
+          ],
+        },
+      },
+    },
+  },
   "cassa": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Cassa.',
