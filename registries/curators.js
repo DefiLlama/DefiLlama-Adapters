@@ -387,6 +387,7 @@ const configs = {
           erc4626: [
             '0xdd5eff0756db08bad0ff16b66f88f506e7318894', // YieldFi yPrism
             '0x87428d886F43068A44d7bDEeF106D3c42E1d6f23', // IPOR Fusion yoGOLD
+            '0x32Cf8bd02A916c3cf1E4Ccb9c7A00D4a3f96BfDF', // Euler Earn: Clearstar Continuum USDC
           ],
           upshiftV2: [
             '0x18EE038C114a07f4B08b420fb1E4149a4F357249', // Upshift Wildcat USD
