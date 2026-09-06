@@ -760,6 +760,20 @@ const configs = {
       },
     },
   },
+  "mt-pelerin": {
+    config: {
+      methodology: 'Sum settled underlying assets in the Mt Pelerin USD, ETH and BTC strategy pools on Lagoon. Brokerage volume and company equity are not TVL.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x28663161f9fa2963eb6102b88a741e195e974df6', // USD
+            '0xb118de4917f4bac5c3a453ea8de915a7cd84891c', // ETH
+            '0xbc6a48b30405cc1660627d8dfb3872505f14bca0', // BTC
+          ],
+        },
+      },
+    },
+  },
   "muscadine": {
     config: {
       methodology: 'Counts all assets deposited in all vaults curated by Muscadine.',
