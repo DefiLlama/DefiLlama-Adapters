@@ -31,7 +31,7 @@ module.exports = {
   },
   "bulk-trade": {
     "timetravel": false,
-    "methodology": "Counts USDC deposited into the Bulk Trade Season 1 pre-deposits.",
+    "methodology": "Counts USDC held in BULK's Solana mainnet custody vault, which backs collateral deposited for trading and margin.",
     "solana": { "tokenAccounts": ["HwdwwKH1tMXo7ggTKcA5cdQrpcgqSoVib2eQh3BiyEQL"] }
   },
   "stakenova": {
