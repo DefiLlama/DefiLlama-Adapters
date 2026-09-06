@@ -101,6 +101,12 @@ const MorphoConfigs = {
         fromBlock: 66931118,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xC11a53eE9B1eCc7a068D8e40F8F17926584F97Cf',
+        fromBlock: 77371907,
+      },
+    ],
   },
   monad: {
     vaultFactories: [
@@ -123,6 +129,12 @@ const MorphoConfigs = {
         fromBlock: 9025733,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0x6846EA318B6B987Ee6b28eBFd87c3409F1d13108',
+        fromBlock: 20253005,
+      },
+    ],
   },
   corn: {
     vaultFactories: [
@@ -139,12 +151,24 @@ const MorphoConfigs = {
         fromBlock: 9316789,
       },
     ],
+    vaultFactoriesV2: [
+      {
+        address: '0xC9b34c108014B44e5a189A830e7e04c56704a0c9',
+        fromBlock: 29092109,
+      },
+    ],
   },
   hyperliquid: {
     vaultFactories: [
       {
         address: '0xec051b19d654C48c357dC974376DeB6272f24e53',
         fromBlock: 1988677,
+      },
+    ],
+    vaultFactoriesV2: [
+      {
+        address: '0xD7217E5687FF1071356C780b5fe4803D9D967da7',
+        fromBlock: 14188393,
       },
     ],
   },
@@ -244,7 +268,13 @@ const MorphoConfigs = {
         address: '0x7fc35488803D49D00a94b206A223f7661898BE3a',
         fromBlock: 1506183,
       }
-    ]
+    ],
+    vaultFactories: [
+      {
+        address: '0xb4ae5673c48621189E2bEfBA96F31912032DD1AE',
+        fromBlock: 1504774,
+      },
+    ],
   },
   robinhood: {
     vaultFactoriesV2: [
