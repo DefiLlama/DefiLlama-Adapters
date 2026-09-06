@@ -762,7 +762,7 @@ const configs = {
   },
   "mt-pelerin": {
     config: {
-      methodology: 'Sum settled underlying assets in the Mt Pelerin USD, ETH and BTC strategy pools on Lagoon. Brokerage volume and company equity are not TVL.',
+      methodology: 'Sum settled underlying assets in the Mt Pelerin USD, ETH and BTC strategy pools on Lagoon.',
       blockchains: {
         ethereum: {
           erc4626: [
