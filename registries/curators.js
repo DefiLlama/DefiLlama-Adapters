@@ -688,6 +688,18 @@ const configs = {
       }
     },
   },
+  "jpeg-trading": {
+    config: {
+      methodology: 'Counts assets deposited in the Euler Earn vault curated by JPEG Trading.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x018b86A893F57a632F90c4A8308353Ac938adc01', // Euler Earn: JPEG Trading x Tenbin RWAs
+          ],
+        },
+      }
+    },
+  },
   "keyrock": {
     config: {
       methodology: 'Counts all assets deposited in the Morpho vaults curated by Keyrock.',
