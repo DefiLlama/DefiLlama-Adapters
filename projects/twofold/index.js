@@ -9,16 +9,24 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 // stack stays withdrawable and several of its keys still hold depositors, so
 // both Registries are read. Reserves are counted whether or not a key is still
 // flagged active: an inactive key with shares outstanding still holds funds.
-const REGISTRIES = ["0xdF1a23B1A7507Cc3B270DfA78FDD9ddA7bC36325", "0x1b66DD14C9281A18E696dbdb40cFB5070842c0C2"];
+// Each address carries the block it was deployed at; a call against an earlier
+// historical block would revert on empty code, so the adapter skips a contract
+// until it exists. The 2026-08 Registry is the oldest and sets `start`.
+const REGISTRIES = [
+  { address: "0xdF1a23B1A7507Cc3B270DfA78FDD9ddA7bC36325", since: 55150006 }, // 2026-09 stack
+  { address: "0x1b66DD14C9281A18E696dbdb40cFB5070842c0C2", since: 48552281 }, // 2026-08 stack
+];
 const TWO = "0x2A4a33A2163D005d8E7f1D9aC08d14c98db288d5";
-const STAKING_VAULT_V2 = "0x06E463fDa4BEb4aA096142E673240aB9719fB3A9";
-const TWO_STAKING_USDG = "0x9CF18bB1dD9AfBF75B579Cc0C473B2975c16E9e3";
+const STAKING_VAULTS = [
+  { address: "0x06E463fDa4BEb4aA096142E673240aB9719fB3A9", since: 48681565 }, // StakingVaultV2
+  { address: "0x9CF18bB1dD9AfBF75B579Cc0C473B2975c16E9e3", since: 53460154 }, // TwoStakingUSDG
+];
 // vTWO is the 1:1 governance wrapper; the TWO it holds is locked for voting.
-const VTWO = "0x5c02401e945d86FB7109EC77F358498D6DA05950";
+const VTWO = { address: "0x5c02401e945d86FB7109EC77F358498D6DA05950", since: 51363143 };
 // TWO is priced by CoinGecko (id twofold); its Robinhood Chain address is not in
 // the coins service, so every TWO balance is re-keyed to the CoinGecko id.
 const TWO_CG_ID = "twofold";
-const POSITION_LOCKER = "0x485690D46e344127aa2EB45D8d9BAcbb5856D58b";
+const POSITION_LOCKER = { address: "0x485690D46e344127aa2EB45D8d9BAcbb5856D58b", since: 51487354 };
 const GENESIS_POSITION_ID = 1076283;
 
 // The Registry stores fee but not tickSpacing; the key is recovered by matching
@@ -34,12 +42,20 @@ const abi = {
   getReserves: "function getReserves(tuple(address currency0, address currency1, uint24 fee, int24 tickSpacing, address hooks) key) view returns (uint256 token0, uint256 token1)",
 };
 
+async function live(api, contract) {
+  return (await api.getBlock()) >= contract.since;
+}
+
+// api.add keeps the address as given while sumTokens2 lowercases it, so TWO can
+// sit under two keys; both are summed before the balance is re-keyed.
 function priceTwoViaCoinGecko(api) {
-  const key = Object.keys(api.getBalances()).find((k) => k.toLowerCase() === ("robinhood:" + TWO).toLowerCase());
-  if (!key) return;
-  const raw = api.getBalances()[key];
+  const balances = api.getBalances();
+  const twoKey = ("robinhood:" + TWO).toLowerCase();
+  const keys = Object.keys(balances).filter((k) => k.toLowerCase() === twoKey);
+  if (!keys.length) return;
+  const raw = keys.reduce((sum, k) => sum + BigInt(balances[k]), 0n);
   api.removeTokenBalance(TWO);
-  api.addCGToken(TWO_CG_ID, Number(raw) / 1e18);
+  api.addCGToken(TWO_CG_ID, Number(ethers.formatUnits(raw, 18)));
 }
 
 function resolveKey(listing) {
@@ -54,15 +70,16 @@ function resolveKey(listing) {
 async function tvl(api) {
   const calls = [];
   for (const registry of REGISTRIES) {
-    const ids = await api.call({ target: registry, abi: abi.allPoolIds });
-    const listings = await api.multiCall({ target: registry, abi: abi.getPool, calls: ids });
+    if (!(await live(api, registry))) continue;
+    const ids = await api.call({ target: registry.address, abi: abi.allPoolIds });
+    const listings = await api.multiCall({ target: registry.address, abi: abi.getPool, calls: ids });
     for (const listing of listings) {
       const key = resolveKey(listing);
       if (!key) throw new Error("tickSpacing not recoverable for pool " + listing.poolId);
       calls.push({ target: listing.hook, params: [key] });
     }
   }
-  const reserves = await api.multiCall({ abi: abi.getReserves, calls });
+  const reserves = calls.length ? await api.multiCall({ abi: abi.getReserves, calls }) : [];
   reserves.forEach(({ token0, token1 }, i) => {
     api.add(calls[i].params[0][0], token0);
     api.add(calls[i].params[0][1], token1);
@@ -70,14 +87,17 @@ async function tvl(api) {
 
   // The genesis TWO/WETH launch position (Uniswap v4 NFT) is permanently held by
   // PositionLocker, which has no transfer, decrease or burn path.
-  await sumTokens2({ api, owner: POSITION_LOCKER, resolveUniV4: true, uniV4ExtraConfig: { positionIds: [GENESIS_POSITION_ID] } });
+  if (await live(api, POSITION_LOCKER))
+    await sumTokens2({ api, owner: POSITION_LOCKER.address, resolveUniV4: true, uniV4ExtraConfig: { positionIds: [GENESIS_POSITION_ID] } });
   priceTwoViaCoinGecko(api);
 }
 
 async function stakingTvl(api) {
-  const staked = await api.multiCall({ abi: abi.totalStaked, calls: [STAKING_VAULT_V2, TWO_STAKING_USDG] });
+  const vaults = [];
+  for (const vault of STAKING_VAULTS) if (await live(api, vault)) vaults.push(vault.address);
+  const staked = vaults.length ? await api.multiCall({ abi: abi.totalStaked, calls: vaults }) : [];
   staked.forEach((amount) => api.add(TWO, amount));
-  await sumTokens2({ api, owner: VTWO, tokens: [TWO] });
+  if (await live(api, VTWO)) await sumTokens2({ api, owner: VTWO.address, tokens: [TWO] });
   priceTwoViaCoinGecko(api);
 }
 
