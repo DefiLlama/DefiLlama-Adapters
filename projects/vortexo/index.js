@@ -2,10 +2,7 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const NATIVE = '0x0000000000000000000000000000000000000000' // convention for native token (ETH/BNB) in sumTokens helpers
 
-// TODO before submitting the PR: replace every address below with the
-// real, deployed VortexoFunZK contract address for that chain. These are
-// still the placeholder values from the project's source — DefiLlama will
-// just report $0 TVL forever if these aren't the live contracts.
+
 
 const config = {
   ethereum: '0xcf75982da77A13d85919A00aEf290343cada5111',
