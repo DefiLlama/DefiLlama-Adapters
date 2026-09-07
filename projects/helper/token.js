@@ -76,7 +76,8 @@ async function blockscoutGetTokens(address, api, { onlyUseExistingCache = false,
     })
     if (!Array.isArray(items)) return
     for (const i of items) {
-      const addr = i?.token?.address_hash?.toLowerCase()
+      const addr = (i?.token?.address_hash ?? i?.token?.address)?.toLowerCase() // older blockscout versions use `address`
+
       if (!addr) continue // malformed row: no address to key on, nothing usable downstream
       const prev = cache.tokens[addr]
       cache.tokens[addr] = {
@@ -111,7 +112,7 @@ async function covalentGetTokens(address, api, options = {}) {
   if (!chainId) throw new Error('Missing chain to chain id mapping:' + api.chain)
   if (!address) throw new Error('Missing adddress')
 
-    if (!ankrChainMapping[chain] && blockscoutStaticUrls[chain])
+  if (!ankrChainMapping[chain] && blockscoutStaticUrls[chain])
     return blockscoutGetTokens(address, api, options)
 
   if (['mantle', 'blast'].includes(chain)) useCovalent = true
