@@ -926,5 +926,11 @@ module.exports = {
     "mantle": {
       "tvl": { "owners": ["0x41D4C067b82DA8357Dfc38e3f24F6033368aF4bb"], "tokens": ["0x779Ded0c9e1022225f8E0630b35a9b54bE713736"]}
     }
+  },
+  "true-dex": {
+    "methodology": 'USDC deposited as perpetuals trading collateral, read from the verifier custody token account on Solana.',
+    "solana": {
+      "tvl": { "tokenAccounts": ["A5GTSUyjFSfsQWwRESSa1UtxciFY6g6guBvM12Tee1ag"], "tokens": [ADDRESSES.solana.USDC]}
+    }
   }
 }
