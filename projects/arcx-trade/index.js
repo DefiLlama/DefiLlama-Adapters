@@ -1,5 +1,6 @@
 const axios = require('axios')
 const { hash } = require('starknet')
+const BigNumber = require('bignumber.js')
 
 const CONFIGURED_STARKNET_RPC = process.env.STARKNET_RPC
 const STARKNET_RPC = !CONFIGURED_STARKNET_RPC || CONFIGURED_STARKNET_RPC.includes('rpc.starknet.lava.build')
@@ -8,7 +9,8 @@ const STARKNET_RPC = !CONFIGURED_STARKNET_RPC || CONFIGURED_STARKNET_RPC.include
 const REGISTRY = '0x37ad81bcfa789e849216f5ea973c6ac22b5c9cdb05c29e9d5667252440d8300'
 const REGISTRY_DEPLOYMENT_BLOCK = 10474202
 const START = 1780637758 // 2026-06-05 05:35:58 UTC, first non-zero ArcX TVL
-const ETHEREUM_LZ_EID = 30101
+// Source chains identify prices only; all balance reads and TVL attribution are Starknet.
+const PRICE_CHAIN_BY_LZ_EID = { 30101: 'ethereum' }
 
 const VTOKEN_ADDED = hash.getSelectorFromName('VTokenAdded')
 const OMNICHAIN_VTOKEN_ADDED = hash.getSelectorFromName('OmnichainVTokenAdded')
@@ -114,7 +116,6 @@ async function fetchRegistryEvents() {
       block: event.block_number,
       vToken: normalizeFelt(event.keys[1]),
       asset: normalizeEvmAddress(event.keys[3]),
-      adapter: normalizeEvmAddress(event.data[0]),
       lzEid: Number(BigInt(event.data[2])),
     }
   })
@@ -130,10 +131,37 @@ async function starknetTvl(api) {
   if (block === null) return
 
   const events = await getRegistryEvents()
-  const vaults = events.filter(({ type, block: eventBlock }) =>
-    type === 'legacy' && eventBlock <= block)
+  const vaults = events.filter(({ block: eventBlock }) => eventBlock <= block)
+  const omnichainVaults = vaults.filter(({ type }) => type === 'omnichain')
+  const priceTokens = omnichainVaults.map(({ lzEid, asset }) => {
+    const chain = PRICE_CHAIN_BY_LZ_EID[lzEid]
+    if (!chain) throw new Error(`Missing price-chain mapping for LayerZero endpoint ${lzEid}`)
+    return `${chain}:${asset}`
+  })
 
-  const balances = await Promise.all(vaults.map(async ({ vToken }) => {
+  // Price-service metadata converts Starknet units to source-token units without EVM calls.
+  // USD prices themselves are applied by DefiLlama at the requested timestamp.
+  const tokenMetadata = {}
+  for (let i = 0; i < priceTokens.length; i += 20) {
+    const { data } = await axios.get(`https://coins.llama.fi/prices/current/${priceTokens.slice(i, i + 20).join(',')}`)
+    Object.assign(tokenMetadata, data.coins)
+  }
+
+  const balances = await Promise.all(vaults.map(async ({ type, vToken, lzEid, asset }) => {
+    if (type === 'omnichain') {
+      const priceToken = `${PRICE_CHAIN_BY_LZ_EID[lzEid]}:${asset}`
+      const sourceDecimals = tokenMetadata[priceToken]?.decimals
+      if (!Number.isInteger(sourceDecimals)) throw new Error(`Missing token decimals for ${priceToken}`)
+
+      const [supplyResult, decimalsResult] = await Promise.all([
+        starknetCall(vToken, 'total_supply', block),
+        starknetCall(vToken, 'decimals', block),
+      ])
+      const decimals = Number(BigInt(decimalsResult[0]))
+      const amount = BigNumber(parseUint256(supplyResult).toString()).shiftedBy(sourceDecimals - decimals).toFixed()
+      return { asset: priceToken, amount, skipChain: true }
+    }
+
     const [assetResult, totalAssetsResult] = await Promise.all([
       starknetCall(vToken, 'asset', block),
       starknetCall(vToken, 'total_assets', block),
@@ -145,32 +173,13 @@ async function starknetTvl(api) {
     }
   }))
 
-  balances.forEach(({ asset, amount }) => api.add(asset, amount))
-}
-
-async function ethereumTvl(api) {
-  const starknetBlock = await getBlockAtOrBefore(api.timestamp)
-  if (starknetBlock === null) return
-
-  const events = await getRegistryEvents()
-  const vaults = events.filter(({ type, block, lzEid }) =>
-    type === 'omnichain' && block <= starknetBlock && lzEid === ETHEREUM_LZ_EID)
-
-  if (!vaults.length) return
-
-  const availableBacking = await api.multiCall({
-    abi: 'uint256:availableBacking',
-    calls: vaults.map(({ adapter }) => adapter),
-  })
-
-  vaults.forEach(({ asset }, index) => api.add(asset, availableBacking[index]))
+  balances.forEach(({ asset, amount, skipChain = false }) => api.add(asset, amount, { skipChain }))
 }
 
 module.exports = {
   start: START,
   timetravel: true,
   doublecounted: true,
-  methodology: 'Discovers ArcX vaults from VTokenAdded and OmnichainVTokenAdded events emitted by the ArcX Registry. For legacy Starknet vaults, TVL is each vToken total_assets balance denominated in its underlying asset. For omnichain Ethereum vaults, TVL is the source-chain asset held as availableBacking by each registered OFT adapter. ST, EPT, and destination-chain vToken supplies are excluded because they are derivative claims on those same assets. Legacy vault capital is deployed through Wildcat, so this TVL is marked as double-counted with Wildcat.',
+  methodology: 'Discovers vaults from the ArcX Registry on Starknet. Legacy vaults contribute total_assets in their underlying token. Omnichain vaults contribute their Starknet total_supply, normalized by token decimals and valued as 1:1 claims on the registered source asset using DefiLlama prices. All TVL is attributed to Starknet. Source-chain backing and transfers in flight are not measured; ST and EPT are excluded to avoid counting the same capital twice. Legacy capital is deployed through Wildcat, so the adapter is marked doublecounted.',
   starknet: { tvl: starknetTvl },
-  ethereum: { tvl: ethereumTvl },
 }
