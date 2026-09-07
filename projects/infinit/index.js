@@ -3,7 +3,7 @@ const VAULT_MANAGER_ADDRESS = "0xaFE480f375EBd13dF703ef50b429357d29D162Ee";
 async function tvl(api) {
   const vaultInfos = [];
   let index = 1;
-  
+
   while (true) {
     try {
       const vault = await api.call({
@@ -18,14 +18,14 @@ async function tvl(api) {
       throw error;
     }
   }
-  
+
   if (vaultInfos.length === 0) return;
-  
+
   const now = api.timestamp;
-  
+
   const preWithdrawalVaults = [];
   const withdrawalVaults = [];
-  
+
   vaultInfos.forEach(vault => {
     if (now < vault.withdrawOpenAt) {
       preWithdrawalVaults.push(vault);
@@ -33,7 +33,10 @@ async function tvl(api) {
       withdrawalVaults.push(vault);
     }
   });
-  
+
+  // Before the withdrawal period opens, it equals the share token totalSupply. Shares are minted 1:1 with asset-token deposits, so the supply represents committed capital(during trading, assets sit in Hyperliquid/DEX trading wallets).
+  // Once the withdrawal period opens, it equals the actual asset-token balance held by the vault contract, including trading PnL.
+
   if (preWithdrawalVaults.length > 0) {
     const supplies = await api.multiCall({
       abi: 'erc20:totalSupply',
@@ -43,7 +46,7 @@ async function tvl(api) {
       api.add(vault.assetToken, supplies[i]);
     });
   }
-  
+
   if (withdrawalVaults.length > 0) {
     const balances = await api.multiCall({
       abi: 'erc20:balanceOf',
@@ -62,4 +65,6 @@ module.exports = {
   arbitrum: {
     tvl,
   },
+  misrepresentedTokens: true,
+  methodology: "TVL is calculated per vault based on its lifecycle stage. Before the withdrawal period opens, it equals the share token totalSupply. Shares are minted 1:1 with asset-token deposits, so the supply represents committed capital (during trading, assets sit in Hyperliquid/DEX trading wallets). Once the withdrawal period opens, it equals the actual asset-token balance held by the vault contract, including trading PnL."
 };
