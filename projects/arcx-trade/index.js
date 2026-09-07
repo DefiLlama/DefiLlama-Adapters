@@ -16,7 +16,6 @@ const VTOKEN_ADDED = hash.getSelectorFromName('VTokenAdded')
 const OMNICHAIN_VTOKEN_ADDED = hash.getSelectorFromName('OmnichainVTokenAdded')
 
 let requestId = 0
-let registryEventsPromise
 const timestampBlockPromises = new Map()
 
 async function rpc(method, params) {
@@ -121,16 +120,12 @@ async function fetchRegistryEvents() {
   })
 }
 
-function getRegistryEvents() {
-  if (!registryEventsPromise) registryEventsPromise = fetchRegistryEvents()
-  return registryEventsPromise
-}
-
 async function starknetTvl(api) {
   const block = api.block ?? await getBlockAtOrBefore(api.timestamp)
   if (block === null) return
 
-  const events = await getRegistryEvents()
+  // Refresh for each execution so a reused process discovers newly registered vaults.
+  const events = await fetchRegistryEvents()
   const vaults = events.filter(({ block: eventBlock }) => eventBlock <= block)
   const omnichainVaults = vaults.filter(({ type }) => type === 'omnichain')
   const priceTokens = omnichainVaults.map(({ lzEid, asset }) => {
