@@ -927,6 +927,13 @@ module.exports = {
       "tvl": { "owners": ["0x41D4C067b82DA8357Dfc38e3f24F6033368aF4bb"], "tokens": ["0x779Ded0c9e1022225f8E0630b35a9b54bE713736"]}
     }
   },
+  "jetbit": {
+    "methodology": "USDT locked in the Jetbit Vault (trader collateral), Pool (LP capital) and Reserve (insured slice of LP deposits) on BNB Smart Chain.",
+    "start": "2026-04-30",
+    "bsc": {
+      "tvl": { "owners": ["0x991e3e0A16D729a0872CA7A3B58EF31A19A64C7E", "0x075A553CC4E1F3EE70B21E1472E1c85c73d53B2C", "0x0bE292625D6d3b073BeBC40bd6F234095a2bb548"], "tokens": [ADDRESSES.bsc.USDT] },
+    }
+  },
   "true-dex": {
     "methodology": 'USDC deposited as perpetuals trading collateral, read from the verifier custody token account on Solana.',
     "solana": {

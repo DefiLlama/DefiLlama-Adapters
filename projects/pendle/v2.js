@@ -281,22 +281,17 @@ Object.keys(config).forEach((chain) => {
 
       yieldTokens.forEach((yieldToken, i) => {
         const totalSupply = supply[i];
-        if (yieldTokenBals[i] === "0" && totalSupply !== "0") {
-          api.add(
-            yieldToken.toLowerCase(),
-            totalSupply
-          );
-        } else {
-          if (unscaledInfo[yieldToken.toLowerCase()]) {
-            const {
-              rawAsset,
-              rawDecimals
-            } = unscaledInfo[yieldToken.toLowerCase()];
-            yieldTokenBals[i] = (yieldTokenBals[i] * (10 ** rawDecimals) / (10 ** 18));
-            yieldToken = rawAsset;
-          }
-          api.add(yieldToken.toLowerCase(), yieldTokenBals[i])
+        let balance = yieldTokenBals[i];
+        if (balance === "0" && totalSupply !== "0") balance = totalSupply;
+        if (unscaledInfo[yieldToken.toLowerCase()]) {
+          const {
+            rawAsset,
+            rawDecimals
+          } = unscaledInfo[yieldToken.toLowerCase()];
+          balance = (balance * (10 ** rawDecimals) / (10 ** 18));
+          yieldToken = rawAsset;
         }
+        api.add(yieldToken.toLowerCase(), balance)
       });
 
       let balances = api.getBalances();

@@ -324,6 +324,19 @@ const configs = {
       // deadFrom: 'xxx', // https://github.com/DefiLlama/DefiLlama-Adapters/pull/18409 - shifting focus to tradfi rails
     },
   },
+  "capital-1212": {
+    config: {
+      methodology: 'Sum settled underlying assets in the 1212 Stable and Alpha funds on Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xbb30c3b6046debcbe941281218d18dec8ecebeb5', // 1212.Stable
+            '0xc35ce0c1acfc448d18ddacbf641b09f2a18e1958', // 1212.Alpha
+          ],
+        },
+      },
+    },
+  },
   "cassa": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Cassa.',
@@ -574,6 +587,9 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
+          morpho: [
+            '0xd95fE7adF5075fad9D6Bf853E0f9Fe53369E8D96', // Galaxy USDC Enhanced; deployed by a different initial owner
+          ],
         },
         base: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
@@ -1090,6 +1106,7 @@ const configs = {
             '0xec0Caa2CbAe100CEAaC91A665157377603a6B766', // v2 USDT/ETH/AUSD
           ],
           morpho: [
+            '0xbEEF00A59B577423653A1526c7009bdE103F542B', // Steakhouse Confidential Prime USDC
             '0x6cbF3Eed95976D226FFB0bEb09550A9407f47b60', // Steakhouse High Yield ETH
             '0xbeef003E31546C7210687f1A7b40d096BE83ec58', // Steakhouse Prime EURC
             '0xbeef009FF4FB1727297BF2526806F4A73E4b99aD', // Steakhouse Prime frxUSD
