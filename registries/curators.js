@@ -574,6 +574,9 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
+          morpho: [
+            '0xd95fE7adF5075fad9D6Bf853E0f9Fe53369E8D96', // Galaxy USDC Enhanced; deployed by a different initial owner
+          ],
         },
         base: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
