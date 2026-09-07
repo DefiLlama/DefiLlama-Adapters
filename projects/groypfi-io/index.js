@@ -1,6 +1,4 @@
 /**
- * GroypFi — TVL adapter (DefiLlama/DefiLlama-Adapters -> projects/groypfi-io/index.js)
- *
  * TVL = protocol-owned liquidity on DeDust.io (CPMM v2 pools).
  *
  * DeDust CPMM v2 does NOT use LP jettons: each liquidity provider owns a
@@ -19,15 +17,11 @@
  * Owner wallets:
  *   UQClgkR0eLgWAR0tZh8YbQyDqa-Jn5wUP1XHPLDB6RmAPySF
  *   UQDu4AiT__JKuqT0Znje0RoXIQMPcj4uIGYZme3UK4hFlE_Q
- *
- * Website: https://groypfi.io
- * Contact: zeuraph7@gmail.com
- */
+ */ 
 
 const { get } = require("../helper/http");
 
 const TON_API = "https://tonapi.io/v2";
-const TON_CG_ID = "coingecko:the-open-network";
 
 // GroypFi liquidity-owning wallets (raw form) -> DeDust CPMM v2 pools they LP into.
 //   0:a582...803f = UQClgkR0eLgWAR0tZh8YbQyDqa-Jn5wUP1XHPLDB6RmAPySF
@@ -163,8 +157,7 @@ async function tvl(api) {
       const reserveY = BigInt(d.reserve_y || "0");
 
       if (reserveX > 0n) {
-        const tonAmount = Number((reserveX * liquidity) / total) / 1e9;
-        api.add(TON_CG_ID, tonAmount, { skipChain: true });
+        api.addGasToken(((reserveX * liquidity) / total).toString());
       }
       if (reserveY > 0n && d.asset_y) {
         api.add(`ton:${d.asset_y}`, ((reserveY * liquidity) / total).toString());
@@ -177,7 +170,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
   doublecounted: true,
   methodology:
     "TVL counts GroypFi's protocol-owned liquidity on DeDust.io CPMM v2 pools. For each protocol wallet and each pool it provides liquidity to (static list), the wallet's Position contract liquidity is read on-chain and converted into a pro-rata share of the pool's reserves, priced in USD.",
