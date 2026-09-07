@@ -9,6 +9,8 @@ const REGISTRY = "0x1b66DD14C9281A18E696dbdb40cFB5070842c0C2";
 const TWO = "0x2A4a33A2163D005d8E7f1D9aC08d14c98db288d5";
 const STAKING_VAULT_V2 = "0x06E463fDa4BEb4aA096142E673240aB9719fB3A9";
 const TWO_STAKING_USDG = "0x9CF18bB1dD9AfBF75B579Cc0C473B2975c16E9e3";
+// vTWO is the 1:1 governance wrapper; the TWO it holds is locked for voting.
+const VTWO = "0x5c02401e945d86FB7109EC77F358498D6DA05950";
 const POSITION_LOCKER = "0x485690D46e344127aa2EB45D8d9BAcbb5856D58b";
 const GENESIS_POSITION_ID = 1076283;
 
@@ -52,17 +54,18 @@ async function tvl(api) {
 
   // The genesis TWO/WETH launch position (Uniswap v4 NFT) is permanently held by
   // PositionLocker, which has no transfer, decrease or burn path.
-  return sumTokens2({ api, owner: POSITION_LOCKER, resolveUniV4: true, uniV4ExtraConfig: { positionIds: [GENESIS_POSITION_ID] } });
+  await sumTokens2({ api, owner: POSITION_LOCKER, resolveUniV4: true, uniV4ExtraConfig: { positionIds: [GENESIS_POSITION_ID] } });
 }
 
 async function stakingTvl(api) {
   const staked = await api.multiCall({ abi: abi.totalStaked, calls: [STAKING_VAULT_V2, TWO_STAKING_USDG] });
   staked.forEach((amount) => api.add(TWO, amount));
+  await sumTokens2({ api, owner: VTWO, tokens: [TWO] });
 }
 
 module.exports = {
   methodology:
-    "TVL is the two-sided reserves of every active Twofold DualPool pool, read from the hook (getReserves) for each pool listed in the Twofold Registry, plus the permanently locked TWO/WETH genesis position in Uniswap v4. Staking is totalStaked TWO in the two staking vaults (StakingVaultV2 and TwoStakingUSDG); undistributed reward balances are excluded. Marked doublecounted because the hook keeps its reserves as ERC-6909 claims in the Uniswap v4 PoolManager and as deposits in the Steakhouse USDG vaults (Morpho), and the genesis position sits in a Uniswap v4 pool, all of which are counted by those listings.",
+    "TVL is the two-sided reserves of every active Twofold DualPool pool, read from the hook (getReserves) for each pool listed in the Twofold Registry, plus the permanently locked TWO/WETH genesis position in Uniswap v4. Staking is totalStaked TWO in the two staking vaults (StakingVaultV2 and TwoStakingUSDG) plus the TWO held by the vTWO governance wrapper; undistributed reward balances are excluded. Marked doublecounted because the hook keeps its reserves as ERC-6909 claims in the Uniswap v4 PoolManager and as deposits in the Steakhouse USDG vaults (Morpho), and the genesis position sits in a Uniswap v4 pool, all of which are counted by those listings.",
   doublecounted: true,
   start: "2026-08-28",
   robinhood: {
