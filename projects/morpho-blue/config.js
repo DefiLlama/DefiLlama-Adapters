@@ -232,6 +232,34 @@ const config = {
     morphoBlue: "0x18573fA18fd17dDfD790B4a5B5b2977aad3b4Efb",
     fromBlock: 4202147,
   },
+  avax: {
+    morphoBlue: "0x895383274303AA19fe978AFB4Ac55C7f094f982C",
+    fromBlock: 75313888,
+  },
+  camp: {
+    morphoBlue: "0xea4f2979D7A99B40404b447Cf71c008e3805760F",
+    fromBlock: 2410315,
+  },
+  cronos: {
+    morphoBlue: "0xDF9a1DC07e5dEe5ccCCaBeC35e446C70fAF7434e",
+    fromBlock: 38459435,
+  },
+  eden: {
+    morphoBlue: "0xF050a2BB0468FF23cF2964AC182196C94D6815C3",
+    fromBlock: 53363569,
+  },
+  gensyn: {
+    morphoBlue: "0x8c45B34999883FF4B47cD3be095D585682cd9227",
+    fromBlock: 7520470,
+  },
+  plasma: {
+    morphoBlue: "0x2fF74A46536f5c67ef5A42FD5B4e2Ed8A2cee249",
+    fromBlock: 2919883,
+  },
+  rise: {
+    morphoBlue: "0x363D2Ba422Db2552752f2EB10b419f0Eb5defD31",
+    fromBlock: 6149533,
+  },
   morph: {
     morphoBlue: "0xAd10d07901Dc3195c3cb5e78E061F4EA8D9B4905",
     fromBlock: 23180020,
