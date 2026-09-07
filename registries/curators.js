@@ -778,7 +778,7 @@ const configs = {
   },
   "monarq": {
     config: {
-      methodology: 'Count FXRP managed by the Monarq XRP Yield Vault through its on-chain getTotalAssets value. .',
+      methodology: 'Count FXRP managed by the Monarq XRP Yield Vault through its on-chain getTotalAssets value.',
       blockchains: {
         flare: {
           upshiftV2: ['0x2439D4bb753A0f3777d4C9011AFacc475ba6B951'],
