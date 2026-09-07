@@ -1060,7 +1060,7 @@ module.exports = {
   "fake-wallstreet": {
     methodology: "Value of the Tokenized Stocks on the Pool",
     "robinhood": {
-      "tvl": { owner: '0xf2B967494BbdD37cDfbE585E3b84B85461C7Da37', fetchBlockscoutTokens: true, blacklistedTokens: [ADDRESSES.null] }
+      "tvl": { owner: '0xf2B967494BbdD37cDfbE585E3b84B85461C7Da37', fetchCoValentTokens: true, blacklistedTokens: [ADDRESSES.null] }
     }
   },
   "xo-bridge": {
