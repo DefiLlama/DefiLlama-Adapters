@@ -32,7 +32,7 @@ const Q128 = 2n ** 128n
 const UINT256 = 2n ** 256n
 const MAX_BPS = 10000n
 const ZERO_SALT = `0x${'00'.repeat(32)}`
-const NO_FEES = { venture: 0n, money: 0n }
+const NONE = { venture: 0n, money: 0n }
 
 const isSet = a => a && a !== nullAddress
 
@@ -56,8 +56,8 @@ async function resolveVenture(api, id) {
 /**
  * Launch currency held by the venture's launch contract and its clearing auction:
  * the escrowed bids while the auction runs, then whatever change is still owed to
- * bidders who have not exited. Tokens on sale are the venture's own and are not
- * counted.
+ * bidders who have not exited. Tokens held by the auction are unsold inventory
+ * and unclaimed fills mixed together, so they are not counted.
  */
 async function addLaunchEscrow(api, v) {
   const lbp = await api.call({ target: v.treasury, abi: 'address:lbp', permitFailure: true })
@@ -96,7 +96,7 @@ async function uncollectedFees(api, v) {
     api.call({ target: v.vault, abi: 'int24:tickLower', permitFailure: true }),
     api.call({ target: v.vault, abi: 'int24:tickUpper', permitFailure: true }),
   ])
-  if (!poolKey || tickLower === null || tickUpper === null) return NO_FEES
+  if (!poolKey || tickLower === null || tickUpper === null) return NONE
 
   // PoolIdLibrary.toId() hashes the five 32-byte PoolKey slots; the vault caches
   // the result in an immutable with no getter.
@@ -117,10 +117,10 @@ async function uncollectedFees(api, v) {
     api.call({ target: STATE_VIEW, abi: ABI.getFeeGrowthInside, params: [poolId, tickLower, tickUpper], permitFailure: true }),
     api.call({ target: HUB, abi: ABI.spotProtocolFeeCutBps, permitFailure: true }),
   ])
-  if (!position || !growth || cutBps === null) return NO_FEES
+  if (!position || !growth || cutBps === null) return NONE
 
   const liquidity = BigInt(position.liquidity)
-  if (!liquidity) return NO_FEES
+  if (!liquidity) return NONE
 
   // v4 accumulates fee growth with wrapping arithmetic, so the delta is mod 2^256
   const lpShare = (last, now) =>
@@ -132,24 +132,23 @@ async function uncollectedFees(api, v) {
 }
 
 /**
- * Real money users have escrowed in the venture's live decision market through
- * `split`. `realMoney` also carries the seed the market pulled from the vault at
- * creation, which `totalAssets()` still counts as on loan, so only the part above
- * `moneyRemoved` is new money; `merge` can draw against the seed, so the
+ * Real tokens users have escrowed in the venture's live decision market through
+ * `split`. The real balances also carry the seed the market pulled from the vault
+ * at creation, which `totalAssets()` still counts as on loan, so only the part
+ * above the removed amounts is new; `merge` can draw against the seed, so the
  * difference is clamped at zero. A settled market stays the venture's newest until
  * the next one opens and its balances never decrement, so it is skipped.
  */
 async function marketEscrow(api, v) {
   const marketId = await api.call({ target: MARKET_CORE, abi: ABI.activeMarketByVenture, params: [v.id] })
-  if (!marketId || marketId === '0') return 0n
-  if (await api.call({ target: MARKET_CORE, abi: ABI.marketSettled, params: [marketId] })) return 0n
-  const { realMoney, moneyRemoved } = await api.call({
-    target: MARKET_CORE,
-    abi: ABI.marketSettlementState,
-    params: [marketId],
-  })
-  const escrow = BigInt(realMoney) - BigInt(moneyRemoved)
-  return escrow > 0n ? escrow : 0n
+  if (!marketId || marketId === '0') return NONE
+  if (await api.call({ target: MARKET_CORE, abi: ABI.marketSettled, params: [marketId] })) return NONE
+  const s = await api.call({ target: MARKET_CORE, abi: ABI.marketSettlementState, params: [marketId] })
+  const above = (real, removed) => {
+    const d = BigInt(real) - BigInt(removed)
+    return d > 0n ? d : 0n
+  }
+  return { venture: above(s.realVenture, s.ventureRemoved), money: above(s.realMoney, s.moneyRemoved) }
 }
 
 function ventureTvl(id) {
@@ -158,9 +157,10 @@ function ventureTvl(id) {
     if (!v || !isSet(v.moneyToken)) return api.getBalances()
     await addLaunchEscrow(api, v)
     if (v.vault) {
-      const { money } = await vaultAssets(api, v)
-      api.add(v.moneyToken, money.toString())
-      api.add(v.moneyToken, (await marketEscrow(api, v)).toString())
+      const assets = await vaultAssets(api, v)
+      const escrow = await marketEscrow(api, v)
+      api.add(v.moneyToken, (assets.money + escrow.money).toString())
+      if (isSet(v.token)) api.add(v.token, (assets.venture + escrow.venture).toString())
     }
     return api.getBalances()
   }
@@ -168,12 +168,12 @@ function ventureTvl(id) {
 
 /** The treasury's pro-rata slice of the vault's position, by share balance. */
 async function treasuryVaultSlice(api, v) {
-  if (!v.vault) return NO_FEES
+  if (!v.vault) return NONE
   const [shares, totalShares] = await Promise.all([
     api.call({ target: v.vault, abi: ABI.shareBalance, params: [v.treasury] }),
     api.call({ target: v.vault, abi: 'uint256:totalShares' }),
   ])
-  if (!BigInt(shares) || !BigInt(totalShares)) return NO_FEES
+  if (!BigInt(shares) || !BigInt(totalShares)) return NONE
   const assets = await vaultAssets(api, v)
   return {
     venture: (assets.venture * BigInt(shares)) / BigInt(totalShares),
@@ -208,7 +208,7 @@ function treasuryOwnTokens(id) {
 function venture(id, { start, hallmarks } = {}) {
   return {
     methodology:
-      "Money locked in one venture launched on Umia, counted in the venture's money token only. While the launch runs, the bids escrowed in its launch contract and Uniswap Continuous Clearing Auction. Once it settles into a spot pool, the venture's SpotLiquidityVault through totalAssets() -- Uniswap v4 pool reserves, idle balance and any amount on loan to a live decision market -- plus the vault's LP share of swap fees the pool has not paid out yet, plus the real money users have escrowed in the venture's live decision market. The venture token's side of the pool is not counted, in line with other launchpads on DefiLlama, and appears in the venture's treasury as own tokens instead. The vault is the pool's only permitted liquidity operator by design, so it holds all canonical liquidity.",
+      "Value of the tokens locked in one venture launched on Umia. While the launch runs, the bids escrowed in its launch contract and Uniswap Continuous Clearing Auction, in the launch currency. Once it settles into a spot pool, both sides of the venture's SpotLiquidityVault position through totalAssets() -- Uniswap v4 pool reserves, idle balance and any amount on loan to a live decision market -- plus the vault's LP share of swap fees the pool has not paid out yet, plus the real tokens users have escrowed in the venture's live decision market. Tokens held by the auction itself are not counted. The vault is the pool's only permitted liquidity operator by design, so it holds all canonical liquidity.",
     start,
     hallmarks,
     base: { tvl: ventureTvl(id) },
