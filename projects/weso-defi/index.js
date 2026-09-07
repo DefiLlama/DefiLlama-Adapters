@@ -8,12 +8,6 @@ const WESO = 'terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms'
 // Counting them would double-count the same assets already sitting in AMM pools.
 const EXCLUDED_PAIR_TYPES = new Set(['token_bonding', 'converter'])
 
-// 1:1 CW20 wraps. Price as the native denom so AMM balances count in TVL.
-const PRICE_AS_NATIVE = {
-  terra10fusc7487y4ju2v5uavkauf3jdpxx9h8sc7wsqdqg4rne8t4qyrq8385q6: 'uluna', // CWLUNC
-  terra1uncwzdhxdktqpx4rj6mkuhl0ekv0raua0058rr7zgnapm9najyyqgtpf6h: 'uusd',  // CWUSTC
-}
-
 function pairTypeKey(pairType) {
   if (!pairType) return ''
   if (typeof pairType === 'string') return pairType.toLowerCase()
@@ -36,7 +30,7 @@ function addAsset(api, info, amount) {
   }
   if (info.token) {
     const addr = info.token.contract_addr
-    api.add(PRICE_AS_NATIVE[addr] || addr, amount)
+    api.add(addr, amount)
   }
 }
 
@@ -46,7 +40,9 @@ async function getAllPairs() {
   do {
     const query = { pairs: { limit: 30 } }
     if (allPairs.length) query.pairs.start_after = allPairs[allPairs.length - 1].asset_infos
-    currentPairs = (await queryContract({ contract: FACTORY, chain: 'terra', data: query })).pairs ?? []
+    const { pairs } = await queryContract({ contract: FACTORY, chain: 'terra', data: query })
+    if (!Array.isArray(pairs)) throw new Error('WESO factory returned a malformed pairs response')
+    currentPairs = pairs
     allPairs.push(...currentPairs)
   } while (currentPairs.length > 0)
   return allPairs
@@ -56,21 +52,19 @@ async function tvl(api) {
   const pairs = (await getAllPairs()).filter(isAmmPair)
   const poolContracts = pairs.map(p => p.contract_addr).filter(Boolean)
 
-  const { errors } = await PromisePool
+  await PromisePool
     .withConcurrency(10)
     .for(poolContracts)
+    .handleError((error) => { throw error })
     .process(async (pool) => {
       const result = await queryContractWithRetries({ contract: pool, chain: 'terra', data: { pool: {} } })
-      for (const asset of result?.assets ?? []) {
+      if (!Array.isArray(result?.assets)) throw new Error(`WESO pool ${pool} returned a malformed assets response`)
+      for (const asset of result.assets) {
         const { info, amount } = asset
         if (!amount || amount === '0') continue
         addAsset(api, info, amount)
       }
     })
-
-  if (errors.length > poolContracts.length / 2) {
-    throw new Error(`Too many pool query failures: ${errors.length}/${poolContracts.length}`)
-  }
 
   // $WESO is a cw20_bonding curve vs native LUNC, not a factory AMM pair.
   // TVL is the LUNC reserve locked in the curve. CWLUNC/CWUSTC wraps stay excluded.
@@ -82,6 +76,6 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is AMM pool reserves on the WESO DeFi factory plus the native LUNC locked in the $WESO bonding curve (terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms). Wrap/unwrap (token_bonding and converter) contracts for CWLUNC and CWUSTC are excluded to avoid double-counting. CWLUNC and CWUSTC balances inside AMM pools are priced as native LUNC and USTC (1:1 wraps).',
+  methodology: 'TVL is AMM pool reserves on the WESO DeFi factory plus the native LUNC locked in the $WESO bonding curve (terra13ryrrlcskwa05cd94h54c8rnztff9l82pp0zqnfvlwt77za8wjjsld36ms). Wrap/unwrap (token_bonding and converter) contracts for CWLUNC and CWUSTC are excluded to avoid double-counting.',
   terra: { tvl },
 }
