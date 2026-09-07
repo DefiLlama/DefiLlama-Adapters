@@ -33,7 +33,7 @@ const V1_ASSETS = [
     'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token',
     'SP2VCQJGH7PHP2DJK7Z0V48AGBHQAW3R3ZW1QF4N.wstx',
     ADDRESSES.stacks.stSTX,
-    'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststxbtc-token-v2::ststxbtc',
+    ADDRESSES.stacks.stSTXbtc,
     ADDRESSES.stacks.aeUSDC + '::aeUSDC',
     ADDRESSES.stacks.USDh + '::usdh',
     ADDRESSES.stacks.USDT + '::bridged-usdt',
