@@ -499,6 +499,16 @@ const configs = {
       },
     },
   },
+  "dacm": {
+    config: {
+      methodology: 'Count settled USDC NAV of the DACM LIT Strategy Lagoon vault.',
+      blockchains: {
+        arbitrum: {
+          erc4626: ['0x018282d5b510f00dcacb8f4a81c3901d2fc9da51'],
+        },
+      },
+    },
+  },
   "edge-capital": {
     config: {
       methodology: 'Counts all assets deposited in vaults curated by Edge-Capital.',
