@@ -1077,6 +1077,7 @@ const configs = {
           morphoVaultOwners: [
             '0x46057881E0B9d190920FB823F840B837f65745d5',
           ],
+          upshiftV2: ['0x73B04B604DF15A6d920Ee62E228548cD88DD3549'], // SingularV USDC Max Yield
         },
       }
     },
