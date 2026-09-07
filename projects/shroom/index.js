@@ -17,7 +17,6 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 //
 // All of it is Uniswap V4 -- there is no v3 position, no v2 pair and no other DEX.
 const SHROOM = '0xab093def657f15df31b33922a95e047add645b29'
-const POOL_MANAGER = '0x8366a39CC670B4001A1121B8F6A443A643e40951'
 // Uniswap V4 PositionManager on this chain; same address unwrapLPs.js already defaults to.
 const POSITION_MANAGER = '0x58daec3116aae6d93017baaea7749052e8a04fa7'
 
@@ -28,10 +27,12 @@ const POSITION_MANAGER = '0x58daec3116aae6d93017baaea7749052e8a04fa7'
 // it is not POL -- but it is unwithdrawable and backs the token, so it counts as protocol TVL. It is
 // also the single largest line in TVL, most of the MU.
 //
-// The locker is SHARED by every Pons launch: it holds 5k+ position NFTs and 5k+ ERC20s belonging to
-// other tokens. So it may only ever be read pool-scoped, as below -- never by enumerating what it
-// owns, and never for loose token balances, either of which would import other projects' assets.
+// The position is pinned by id rather than discovered. The locker is SHARED by every Pons launch and
+// holds thousands of positions, so "locker-held positions in a SHROOM pool" is not a safe filter: a
+// Pons token launched *against* SHROOM would put its own locked genesis LP in a SHROOM pool, and that
+// liquidity belongs to the other token, not to Shroom.
 const PONS_LAUNCH_LOCKER = '0x267444D099b10fB5Ed7c3Cc7B7c767AdcA574952'
+const GENESIS_POSITION_ID = '1526917'
 
 // Team-owned wallets, confirmed by the team -- the POL of category 1, and the only addresses whose
 // loose reserves are counted. Deliberately NOT included: 0x36f4E1803f6fF34562dB567f347dea00DeC87246,
@@ -42,79 +43,77 @@ const PROTOCOL_WALLETS = [
   '0xFca196eAcf630F67b505023C4f2cf7Eb36da2f9F',
 ]
 
-// Whose SHROOM-pool positions count toward TVL: the team's own (POL) plus the Pons-locked launch
-// liquidity, which is not POL but is permanently committed to backing the token.
-const POSITION_OWNERS = [...PROTOCOL_WALLETS, PONS_LAUNCH_LOCKER].map(i => i.toLowerCase())
-
-// Initialize of the genesis SHROOM/MU pool; nothing to scan before it.
+// Initialize of the genesis SHROOM/MU pool; no SHROOM position can predate it.
 const FROM_BLOCK = 52657452
 
-const INITIALIZE = 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)'
-const MODIFY_LIQUIDITY = 'event ModifyLiquidity(bytes32 indexed id, address indexed sender, int24 tickLower, int24 tickUpper, int256 liquidityDelta, bytes32 salt)'
 const TRANSFER = 'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
 const OWNER_OF = 'function ownerOf(uint256) view returns (address)'
+const POOL_AND_POSITION_INFO = 'function getPoolAndPositionInfo(uint256 tokenId) view returns ((address token0, address token1, uint24 fee, int24 tickSpacing, address hook), uint256 info)'
 
 const topicHash = (eventAbi) => new ethers.Interface([eventAbi]).fragments[0].topicHash
 const addressTopic = (address) => ethers.zeroPadValue(address.toLowerCase(), 32)
 
-// Every pool SHROOM is a currency in -- 224 of them today. V4 orders currencies by address, so both
-// slots have to be scanned: SHROOM is currency0 in 41 pools and currency1 in the other 183.
-async function getPoolIds(api) {
-  const topic0 = topicHash(INITIALIZE)
-  const shroom = addressTopic(SHROOM)
-  const [asCurrency0, asCurrency1] = await Promise.all([
-    getLogs2({ api, target: POOL_MANAGER, eventAbi: INITIALIZE, fromBlock: FROM_BLOCK, extraKey: 'init-currency0', topics: [topic0, null, shroom] }),
-    getLogs2({ api, target: POOL_MANAGER, eventAbi: INITIALIZE, fromBlock: FROM_BLOCK, extraKey: 'init-currency1', topics: [topic0, null, null, shroom] }),
-  ])
-  return [...new Set([...asCurrency0, ...asCurrency1].map(i => i.id))]
-}
-
-// Position ids in SHROOM's pools that count toward TVL -- the team's own plus the Pons-locked one.
-//
-// Discovery has to be pool-scoped rather than owner-scoped, because of the shared Pons locker above.
-// One query covers every pool by passing the pool list as the indexed-topic filter. The cache key
-// carries a fingerprint of that list: when a pool is added the key changes and the history is
-// refetched from scratch, instead of the new pool's pre-cache logs being silently skipped.
-async function getOwnedPositionIds(api) {
-  const poolIds = await getPoolIds(api)
-  if (!poolIds.length) return []
-
-  const sorted = [...poolIds].sort()
-  const fingerprint = ethers.id(sorted.join(',')).slice(2, 12)
-  const logs = await getLogs2({
-    api, target: POOL_MANAGER, eventAbi: MODIFY_LIQUIDITY, fromBlock: FROM_BLOCK,
-    extraKey: `modify-liquidity-${sorted.length}-${fingerprint}`,
-    topics: [topicHash(MODIFY_LIQUIDITY), sorted],
-  })
-
-  // For liquidity added through the PositionManager, salt is the position's tokenId. Positions opened
-  // directly against the PoolManager by a hook or custom manager carry an unrelated salt and have no
-  // NFT, so they cannot be attributed by ownerOf and are skipped (see methodology).
-  const inShroomPools = new Set(logs
-    .filter((i) => i.sender.toLowerCase() === POSITION_MANAGER)
-    .map((i) => BigInt(i.salt).toString()))
-  if (!inShroomPools.size) return []
-
-  // Intersect with the positions our owners have ever been sent, rather than calling ownerOf on every
-  // position in every SHROOM pool -- that is >10k calls per refresh, of which ~99% are other people's.
-  // Both log sets are cached, so the recurring cost is one ownerOf call per candidate we actually hold.
+/**
+ * The team's own Uniswap V4 positions in pools that contain SHROOM.
+ *
+ * Discovery is owner-first: the PositionManager's Transfer logs are filtered to the team wallets,
+ * which keeps the log scan to the handful of positions they have ever been sent. Each candidate is
+ * then checked against the chain -- still owned by a team wallet, and in a pool with SHROOM on one
+ * side. Enumerating SHROOM's ~225 pools and their positions instead would mean scanning tens of
+ * thousands of PoolManager logs, which the public Robinhood RPCs will not serve reliably.
+ *
+ * @param {object} api defillama-sdk ChainApi, pinned to the block being valued
+ * @returns {Promise<string[]>} PositionManager token ids
+ */
+async function getTeamPositionIds(api) {
   const transfers = await getLogs2({
-    api, target: POSITION_MANAGER, eventAbi: TRANSFER, fromBlock: FROM_BLOCK, extraKey: 'transfers-in',
-    topics: [topicHash(TRANSFER), null, POSITION_OWNERS.map(addressTopic)],
+    api, target: POSITION_MANAGER, eventAbi: TRANSFER, fromBlock: FROM_BLOCK, extraKey: 'positions-in',
+    topics: [topicHash(TRANSFER), null, PROTOCOL_WALLETS.map(addressTopic)],
   })
-  const ids = [...new Set(transfers.map((i) => i.tokenId.toString()))].filter((id) => inShroomPools.has(id))
+  const ids = [...new Set(transfers.map((i) => i.tokenId.toString()))]
   if (!ids.length) return []
 
-  // Ownership can have moved on since the transfer in. Resolved at api.block, so historical queries
-  // get historical ownership.
-  const owners = await api.multiCall({ abi: OWNER_OF, target: POSITION_MANAGER, calls: ids, permitFailure: true })
-  return ids.filter((_, i) => owners[i] && POSITION_OWNERS.includes(owners[i].toLowerCase()))
+  // ownerOf resolves at api.block, so historical queries get historical ownership.
+  const [owners, pools] = await Promise.all([
+    api.multiCall({ abi: OWNER_OF, target: POSITION_MANAGER, calls: ids, permitFailure: true }),
+    api.multiCall({ abi: POOL_AND_POSITION_INFO, target: POSITION_MANAGER, calls: ids, permitFailure: true }),
+  ])
+  const wallets = PROTOCOL_WALLETS.map((i) => i.toLowerCase())
+
+  return ids.filter((_, i) => {
+    if (!owners[i] || !wallets.includes(owners[i].toLowerCase())) return false
+    const poolKey = pools[i]?.[0]
+    if (!poolKey) return false
+    return [poolKey.token0, poolKey.token1].some((token) => token.toLowerCase() === SHROOM)
+  })
 }
 
-// Both sides of everything counted, before the SHROOM/non-SHROOM split.
+/**
+ * The Pons-locked genesis SHROOM/MU position, if the locker still holds it.
+ *
+ * Checked rather than assumed: if the position is ever moved out of the locker it stops being locked
+ * launch liquidity, and should stop counting.
+ *
+ * @param {object} api defillama-sdk ChainApi, pinned to the block being valued
+ * @returns {Promise<string[]>} the genesis token id, or an empty array
+ */
+async function getLockedPositionIds(api) {
+  const [owner] = await api.multiCall({
+    abi: OWNER_OF, target: POSITION_MANAGER, calls: [GENESIS_POSITION_ID], permitFailure: true,
+  })
+  return owner && owner.toLowerCase() === PONS_LAUNCH_LOCKER.toLowerCase() ? [GENESIS_POSITION_ID] : []
+}
+
+/**
+ * Both sides of everything counted, before the SHROOM/non-SHROOM split.
+ *
+ * @param {object} api defillama-sdk ChainApi, pinned to the block being valued
+ * @returns {Promise<object>} balance map keyed `robinhood:<token>`, lowercased
+ */
 async function collect(api) {
   const balances = {}
-  const positionIds = await getOwnedPositionIds(api)
+  const [team, locked] = await Promise.all([getTeamPositionIds(api), getLockedPositionIds(api)])
+  const positionIds = [...team, ...locked]
 
   if (positionIds.length)
     await sumTokens2({ api, balances, resolveUniV4: true, uniV4ExtraConfig: { positionIds } })
@@ -132,9 +131,16 @@ async function collect(api) {
 }
 
 // tvl and ownTokens are two views of one balance map, and are called concurrently. Without this the
-// position discovery -- and its log queries -- would run twice per refresh, which the public
-// Robinhood RPCs answer with 429s.
+// position discovery -- and its log query -- would run twice per refresh, which the public Robinhood
+// RPCs answer with 429s.
 const collectCache = {}
+
+/**
+ * Memoised {@link collect}, keyed by chain and block.
+ *
+ * @param {object} api defillama-sdk ChainApi, pinned to the block being valued
+ * @returns {Promise<object>} the shared balance map for that block
+ */
 function getBalances(api) {
   const key = `${api.chain}-${api.block}`
   if (!collectCache[key]) collectCache[key] = collect(api)
@@ -145,6 +151,12 @@ function getBalances(api) {
 // whichever resolver a SHROOM balance arrived through.
 const isSHROOM = (key) => key.toLowerCase().endsWith(SHROOM.slice(2).toLowerCase())
 
+/**
+ * Builds a tvl function returning only the balances whose token key passes `keep`.
+ *
+ * @param {(key: string) => boolean} keep predicate over `robinhood:<token>` keys
+ * @returns {(api: object) => Promise<object>} a defillama tvl function
+ */
 const split = (keep) => async (api) => {
   await api.getBlock()
   const balances = { ...await getBalances(api) }
@@ -156,7 +168,7 @@ const split = (keep) => async (api) => {
 }
 
 module.exports = {
-  methodology: "TVL is the liquidity permanently backing SHROOM on Uniswap V4 on Robinhood Chain, in two forms. First, protocol owned liquidity: positions the Shroom team owns and manages, pairing SHROOM against MU, tokenized equities and other assets, whose fees are recycled into deepening the pools, buybacks and burns. Second, the locked launch liquidity in the canonical SHROOM/MU pool, which Pons locked at launch -- the team does not own it, so it is not protocol owned liquidity, but nobody can withdraw it and it is committed to backing the token, so it is counted as protocol TVL. It is the largest single line in TVL. Only the non-SHROOM side of each position is counted, together with the loose reserves held in the team's own wallets. Positions are found by listing every pool SHROOM is a currency in from the PoolManager's Initialize logs, then taking the positions in those pools whose NFT is held by a team wallet or by the Pons launch locker. Discovery is scoped to SHROOM's own pools because the Pons locker is shared by every Pons launch, so only its SHROOM liquidity is ever counted and none of its other holdings are. Liquidity owned by third parties is excluded, so this measures the liquidity backing SHROOM rather than total pool depth. Own tokens count the SHROOM side of those positions plus SHROOM held in the team wallets; SHROOM has no DefiLlama price today, so that bucket reports the token amount but values at zero. Uncollected LP fees are not counted, so TVL lags slightly between fees accruing and being redeployed. Burned SHROOM is excluded, as are positions opened directly against the PoolManager without an NFT, which cannot be attributed to an owner.",
+  methodology: "TVL is the liquidity permanently backing SHROOM on Uniswap V4 on Robinhood Chain, in two forms. First, protocol owned liquidity: positions the Shroom team owns and manages, pairing SHROOM against MU, tokenized equities and other assets, whose fees are recycled into deepening the pools, buybacks and burns. Second, the locked launch liquidity in the canonical SHROOM/MU pool, which Pons locked at launch -- the team does not own it, so it is not protocol owned liquidity, but nobody can withdraw it and it is committed to backing the token, so it is counted as protocol TVL. It is the largest single line in TVL. Only the non-SHROOM side of each position is counted, together with the loose reserves held in the team's own wallets. The team's positions are discovered from the PositionManager's Transfer logs and kept only while a team wallet still owns them and the pool has SHROOM on one side. The locked genesis position is pinned by id and counted only while the Pons launch locker still holds it, because that locker is shared by every Pons launch and a token launched against SHROOM would otherwise have its own locked liquidity counted here. Liquidity owned by third parties is excluded, so this measures the liquidity backing SHROOM rather than total pool depth. Own tokens count the SHROOM side of those positions plus SHROOM held in the team wallets; SHROOM has no DefiLlama price today, so that bucket reports the token amount but values at zero. Uncollected LP fees are not counted, so TVL lags slightly between fees accruing and being redeployed. Burned SHROOM is excluded, as are positions opened directly against the PoolManager without an NFT, which cannot be attributed to an owner.",
   start: '2026-09-02',
   // The same liquidity is counted by the uniswap-v4 adapter, which reads PoolManager balances here.
   doublecounted: true,
