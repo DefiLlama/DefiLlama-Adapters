@@ -21,6 +21,8 @@ module.exports = {
   ],
   ethereum: {
     tvl: async (api) => {
+      // Every minted thUSD is issued to users: none is held in treasury or escrow, and staked
+      // thUSD sits in the sthUSD vault while remaining user-owned, so totalSupply is circulating supply.
       const supply = await api.call({ abi: 'erc20:totalSupply', target: thUSD })
 
       // 1. Stablecoins held in the reserve wallet
@@ -39,10 +41,11 @@ module.exports = {
       })
       api.add(ADDRESSES.ethereum.USDC, thbillUsdc)
 
-      // 3. Off-chain gold reserves = supply not covered by on-chain reserves
+      // 3. Off-chain gold reserves = the remainder of supply not covered by on-chain reserves.
+      //    Added unconditionally, as in projects/ethena, so the total is always exactly thUSD supply:
+      //    were on-chain reserves ever to exceed supply, this residual goes negative and nets it back down.
       const onchainUsd = await api.getBalancesV2().getUSDValue()
-      const offchain = supply - onchainUsd * 1e6
-      if (offchain > 0) api.add(thUSD, offchain)
+      api.add(thUSD, supply - onchainUsd * 1e6)
     },
   },
 }
