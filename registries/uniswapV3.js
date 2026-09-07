@@ -55,7 +55,7 @@ const uniV3Configs = {
     vechain: { factory: '0xf9f1722f95d036efbd1352d84e3a3755f8027b39', fromBlock: 25403238 },
   },
   'mute-cl': {
-    era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523 },
+    era: { factory: '0x488A92576DA475f7429BC9dec9247045156144D3', fromBlock: 32830523, permitFailure: true },
   },
   'solidly-v3': {
     hallmarks: [['2023-09-03', 'Solidly V3 launch']],
@@ -441,6 +441,7 @@ const uniV3Configs = {
     era: {
       factory: '0x52a1865eb6903bc777a02ae93159105015ca1517',
       fromBlock: 7790768,
+      permitFailure: true,
     },
     base: {
       factory: '0xeddef4273518b137cdbcb3a7fa1c6a688303dfe2',
@@ -689,6 +690,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0x2dC0Ec0F0db8bAF250eCccF268D7dFbF59346E5E',
       fromBlock: 6523521,
+      permitFailure: true,
     },
   },
   'hydrex': {
