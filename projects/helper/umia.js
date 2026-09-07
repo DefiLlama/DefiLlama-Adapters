@@ -54,24 +54,6 @@ async function resolveVenture(api, id) {
 }
 
 /**
- * Launch currency held by the venture's launch contract and its clearing auction:
- * the escrowed bids while the auction runs, then whatever change is still owed to
- * bidders who have not exited. Tokens held by the auction are unsold inventory
- * and unclaimed fills mixed together, so they are not counted.
- */
-async function addLaunchEscrow(api, v) {
-  const lbp = await api.call({ target: v.treasury, abi: 'address:lbp', permitFailure: true })
-  if (!isSet(lbp)) return
-  const [currency, auction] = await Promise.all([
-    api.call({ target: lbp, abi: 'address:currency', permitFailure: true }),
-    api.call({ target: lbp, abi: 'address:initializer', permitFailure: true }),
-  ])
-  if (!isSet(currency)) return
-  const owners = isSet(auction) ? [lbp, auction] : [lbp]
-  await sumTokens2({ api, tokens: [currency], owners })
-}
-
-/**
  * Both legs of the vault's position: `totalAssets()`, which covers the Uniswap v4
  * pool reserves, idle balance and any amount on loan to a live decision market,
  * plus the vault's LP share of swap fees the pool has not paid out yet.
@@ -155,7 +137,6 @@ function ventureTvl(id) {
   return async api => {
     const v = await resolveVenture(api, id)
     if (!v || !isSet(v.moneyToken)) return api.getBalances()
-    await addLaunchEscrow(api, v)
     if (v.vault) {
       const assets = await vaultAssets(api, v)
       const escrow = await marketEscrow(api, v)
@@ -203,12 +184,12 @@ function treasuryOwnTokens(id) {
 
 /**
  * A venture's whole TVL module, so a new venture is one line naming its id and
- * the date its auction opened.
+ * the day its spot pool went live.
  */
 function venture(id, { start, hallmarks } = {}) {
   return {
     methodology:
-      "Value of the tokens locked in one venture launched on Umia. While the launch runs, the bids escrowed in its launch contract and Uniswap Continuous Clearing Auction, in the launch currency. Once it settles into a spot pool, both sides of the venture's SpotLiquidityVault position through totalAssets() -- Uniswap v4 pool reserves, idle balance and any amount on loan to a live decision market -- plus the vault's LP share of swap fees the pool has not paid out yet, plus the real tokens users have escrowed in the venture's live decision market. Tokens held by the auction itself are not counted. The vault is the pool's only permitted liquidity operator by design, so it holds all canonical liquidity.",
+      "Value of the tokens locked in one venture launched on Umia, from the day its spot pool goes live: both sides of the venture's SpotLiquidityVault position through totalAssets() -- Uniswap v4 pool reserves, idle balance and any amount on loan to a live decision market -- plus the vault's LP share of swap fees the pool has not paid out yet, plus the real tokens users have escrowed in the venture's live decision market. Bids escrowed during the launch auction are not counted: they are a raise in progress rather than liquidity, and they become pool liquidity or treasury once it settles. The vault is the pool's only permitted liquidity operator by design, so it holds all canonical liquidity.",
     start,
     hallmarks,
     base: { tvl: ventureTvl(id) },
