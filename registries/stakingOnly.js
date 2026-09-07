@@ -1400,6 +1400,12 @@ const configs = {
       staking: ['0xB078cc304A0B264C5F3680DC0488954ACcd02E87', '0xCA9c78Dd337A67F6e0077F65F5E9218719d30eDf'],
     },
   },
+  "nukes-fun": {
+    "methodology": "NUKE staked in the NUKES.FUN staking contract",
+    "robinhood": {
+      staking: ['0x9c648D57E929F59B483b2903390725449F990Cb8', '0x0000000005aCa17e8bd5779Fc87E13cb433aEd24'],
+    },
+  },
 }
 
 module.exports = buildProtocolExports(configs, stakingOnlyExportFn)
