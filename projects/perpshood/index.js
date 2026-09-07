@@ -1,4 +1,4 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 // Perpshood (perpshood.fun) is a launchpad on Robinhood Chain where every coin's trading fees
@@ -12,7 +12,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const FEED = 'https://perpshood.fun/api/llama.json'
 
 async function tvl(api) {
-  const { curves } = await get(FEED)
+  const { curves } = await getConfig('perpshood', FEED)
   return api.sumTokens({
     ownerTokens: curves.map(({ curve, pair }) => [[pair, ADDRESSES.null], curve]),
   })
@@ -21,5 +21,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     'TVL is the quote-asset reserves (native ETH or approved pair tokens such as tokenized stocks) held by the Pons v2 bonding curve of every live perpshood-launched coin; balances are read on-chain. The curve list comes from perpshood.fun/api/llama.json because the launch factory is shared infrastructure and perpshood launches are not distinguishable on-chain. Graduated coins (liquidity in Uniswap V4) are excluded, as is the leveraged perp margin backing each coin, which sits on the Lighter venue.',
+  doublecounted: true,
   robinhood: { tvl },
 }
