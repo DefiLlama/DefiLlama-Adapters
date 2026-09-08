@@ -443,7 +443,27 @@ async function call({ target, abi, inputArgs = [], block }) {
   }
 }
 
+async function getJson(url) {
+  const response = await apiFetch(url)
+  if (!response.ok) {
+    const msg = await response.text().catch(() => '')
+    throw new Error(`Failed to get ${url}: ${response.status} ${msg}`)
+  }
+  return response.json()
+}
+
+// STX balance of any principal (standard or contract), optionally at a given block
+async function getStxBalance(principal, block) {
+  const tip = await resolveTip(block)
+  let url = `${BASE_URL}/v2/accounts/${principal}?proof=0`
+  if (tip) url += `&tip=${tip}`
+  const { balance } = await getJson(url)
+  return BigInt(balance).toString()
+}
+
 module.exports = {
   call,
   getBlockAtTimestamp,
+  getJson,
+  getStxBalance,
 }

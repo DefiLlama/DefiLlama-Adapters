@@ -1,15 +1,11 @@
-const { get, } = require('../http')
 const { nullAddress } = require('../tokenMapping')
 const { getFixBalances } = require('../portedTokens')
+const { getJson } = require('./stacks-api')
 const sdk = require('@defillama/sdk')
 const chain = 'stacks'
 
-// const STACKS_API = 'https://stacks-node-api.mainnet.stacks.co/extended/v1/address'
-const STACKS_API = 'https://api.hiro.so/extended/v1/address/'
-
 async function getStacksBalances(address) {
-  const url = `${STACKS_API}/${address}/balances`
-  return get(url)
+  return getJson(`https://api.mainnet.hiro.so/extended/v1/address/${address}/balances`)
 }
 
 async function addStacks(address, balances = {}) {
