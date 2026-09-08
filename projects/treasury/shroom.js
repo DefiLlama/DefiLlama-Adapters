@@ -41,7 +41,7 @@ async function getPositionIds(api) {
 
 async function tvl(api) {
   const positionIds = await getPositionIds(api)
-  await sumTokens2({ api, owners: OWNERS, fetchBlockscoutTokens: true })
+  await sumTokens2({ api, owners: OWNERS, fetchBlockscoutTokens: true, blacklistedTokens: [SHROOM] })
   if (positionIds.length)
     await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: { positionIds, blacklistedTokens: [SHROOM] } })
   return api.getBalances()
