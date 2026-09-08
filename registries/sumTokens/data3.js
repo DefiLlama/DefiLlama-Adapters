@@ -905,5 +905,21 @@ module.exports = {
     "solana": {
       "tvl": { "tokenAccounts": ["A5GTSUyjFSfsQWwRESSa1UtxciFY6g6guBvM12Tee1ag"], "tokens": [ADDRESSES.solana.USDC]}
     }
+  },
+  "vortexo": {
+    "methodology": "TVL is the native token (ETH/BNB) held by the VortexoFunZK privacy pool contract on each chain, i.e. deposits that have not yet been withdrawn.",
+    "start": "2026-09-06",
+    "ethereum": {
+      "tvl": { "owners": ["0xcf75982da77A13d85919A00aEf290343cada5111"], "tokens": [ADDRESSES.null] }
+    },
+    "bsc": {
+      "tvl": { "owners": ["0x871F2479cFFddD0210bD2d7AcC21b44D6f9e4ca6"], "tokens": [ADDRESSES.null] }
+    },
+    "arbitrum": {
+      "tvl": { "owners": ["0x833Be2DC319b80365eB53C19932ad2f347c39cD9"], "tokens": [ADDRESSES.null] }
+    },
+    "base": {
+      "tvl": { "owners": ["0x833Be2DC319b80365eB53C19932ad2f347c39cD9"], "tokens": [ADDRESSES.null] }
+    }
   }
 }
