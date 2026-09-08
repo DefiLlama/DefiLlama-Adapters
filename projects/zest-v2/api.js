@@ -22,8 +22,8 @@ function toBI(v) {
 async function tvl(api) {
     const block = api.block ?? (api.timestamp ? await getBlockAtTimestamp(api.timestamp) : undefined)
     await Promise.all(V2_VAULTS.map(async ({ vault, tokenId }) => {
-        const assets = await call({ target: vault, abi: 'get-assets', block })
-        api.add(tokenId, toBI(assets).toString())
+        const available = await call({ target: vault, abi: 'get-available-assets', block })
+        api.add(tokenId, toBI(available).toString())
     }))
     const bal = await call({
         target: SBTC,
