@@ -1,4 +1,5 @@
 const chainContracts = {
+  ethereum: "0x8f6B56ec5DdF1f2691a1059f1D3cd97AC9EAB0Bd",
   optimism: "0x5F94073E3f51c1FFf92ffc6b4B06b7Af193B3640",
 }
 
@@ -34,4 +35,5 @@ module.exports = Object.keys(chainContracts).reduce((all, chain) => ({
 module.exports.methodology = 'TVL is the sum of collateral and borrowed tokens held in LLAMMA AMMs and market controllers. Borrowed is total debt across all v2 markets.'
 module.exports.hallmarks = [
   ['2026-06-10', 'Llamalend v2 launch on Optimism'],
+  ['2026-07-14', 'Llamalend v2 launch on Ethereum'],
 ]
