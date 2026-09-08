@@ -1,7 +1,9 @@
 const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getUniqueAddresses } = require('../helper/tokenMapping')
+const { Interface } = require('ethers')
 
 const activeTokensAbi = 'function getActiveTokens() view returns ((address[] activeTokens, address baseToken))'
 const tokenIdsAbi = 'function getUniV4TokenIds() view returns (uint256[])'
@@ -40,8 +42,48 @@ async function addGmxPositions(api, gmxPools, blacklistedTokens = []) {
   }
 }
 
+// HyperCore balances are read from the HyperEVM read precompiles, which take raw abi-encoded args (no function selector),
+// so the selector is stripped from a canonical function encoding.
+// ref: https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm/interacting-with-hypercore
+const SPOT_BALANCE_PRECOMPILE = '0x0000000000000000000000000000000000000801'
+const ACCOUNT_MARGIN_SUMMARY_PRECOMPILE = '0x000000000000000000000000000000000000080F'
+const getSpotBalanceAbi = 'function getSpotBalance(address user, uint64 token) view returns (uint64 total, uint64 hold, uint64 entryNtl)'
+const getAccountMarginSummaryAbi = 'function getAccountMarginSummary(uint32 perpDexIndex, address user) view returns (int64 accountValue, uint64 marginUsed, uint64 ntlPos, int64 rawUsd)'
+const getSpotBalanceIface = new Interface([getSpotBalanceAbi])
+const getAccountMarginSummaryIface = new Interface([getAccountMarginSummaryAbi])
+
+async function callPrecompile(api, precompile, iface, name, params) {
+  try {
+    // precompiles only respond to top-level staticcalls, so a direct provider call is used instead of Multicall3
+    const data = iface.encodeFunctionData(name, params).slice(10) // strip the 4-byte selector
+    const result = await sdk.getProvider(api.chain).call({ to: precompile, data, blockTag: api.block ?? undefined })
+    return iface.decodeFunctionResult(name, result)
+  } catch (e) {
+    sdk.log('hyperliquid precompile call failed:', precompile, e.message)
+    return null
+  }
+}
+
+async function addHyperCoreBalances(api, pools) {
+  if (api.chain !== 'hyperliquid' || !pools.length) return
+  const usdc = ADDRESSES.hyperliquid.USDC
+  const [spotBalances, marginSummaries] = await Promise.all([
+    Promise.all(pools.map(pool => callPrecompile(api, SPOT_BALANCE_PRECOMPILE, getSpotBalanceIface, 'getSpotBalance', [pool, 0]))), // USDC is token 0 on HyperCore spot
+    Promise.all(pools.map(pool => callPrecompile(api, ACCOUNT_MARGIN_SUMMARY_PRECOMPILE, getAccountMarginSummaryIface, 'getAccountMarginSummary', [0, pool]))),
+  ])
+  spotBalances.forEach(balance => {
+    if (!balance) return
+    const amount = BigInt(balance.total) / 100n // HyperCore spot USDC has 8 decimals vs 6 on the HyperEVM token
+    if (amount > 0n) api.add(usdc, amount.toString())
+  })
+  marginSummaries.forEach(summary => {
+    // accountValue is USD in 1e6 units == USDC base units (6 decimals)
+    if (summary && summary.accountValue > 0n) api.add(usdc, summary.accountValue.toString())
+  })
+}
+
 module.exports = {
-  methodology: `RigoBlock TVL on Ethereum, Arbitrum, Optimism, BSC, Base, and Unichain pulled from onchain data, including Uniswap V4 liquidity position balances and collateral held in GMX v2 positions, excluding GRG balances. Staking TVL includes staked GRG, plus GRG balances in Uniswap V4 liquidity positions, and GRG balances held by smart pool contracts.`,
+  methodology: `RigoBlock TVL on Ethereum, Arbitrum, Optimism, BSC, Base, Unichain and HyperEvm pulled from onchain data, including Uniswap V4 liquidity position balances, HyperCore spot and HyperCore perps account values, excluding GRG balances. Staking TVL includes staked GRG, plus GRG balances in Uniswap V4 liquidity positions, and GRG balances held by smart pool contracts.`,
 }
 
 const config = {
@@ -81,26 +123,33 @@ const config = {
     GRG_TOKEN_ADDRESSES: '0x03C2868c6D7fD27575426f395EE081498B1120dd',
     UNISWAP_V4_POSM: '0x4529A01c7A0410167c5740C487A8DE60232617bf',
   },
+  hyperliquid: {
+    fromBlock: 44742512, // registry deployment block on HyperEVM, smart pools were created later
+  },
 }
 
 Object.keys(config).forEach(chain => {
   const { fromBlock, GRG_TOKEN_ADDRESSES, GRG_VAULT_ADDRESSES, UNISWAP_V4_POSM } = config[chain]
+  const blacklistedTokens = GRG_TOKEN_ADDRESSES ? [GRG_TOKEN_ADDRESSES] : []
   module.exports[chain] = {
     tvl: async (api) => {
       const { pools, tokens, uniV4Ids, gmxPools } = await getPoolInfo(api)
-      await sumTokens2({ owner: UNISWAP_V4_POSM, tokens, api, blacklistedTokens: [GRG_TOKEN_ADDRESSES], resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids } })
-      await addGmxPositions(api, gmxPools, [GRG_TOKEN_ADDRESSES])
-      return sumTokens2({ owners: pools, tokens, api, blacklistedTokens: [GRG_TOKEN_ADDRESSES] })
+      if (UNISWAP_V4_POSM)
+        await sumTokens2({ owner: UNISWAP_V4_POSM, tokens, api, blacklistedTokens, resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids } })
+      await addGmxPositions(api, gmxPools, blacklistedTokens)
+      await addHyperCoreBalances(api, pools)
+      return sumTokens2({ owners: pools, tokens, api, blacklistedTokens })
     },
-    staking: async (api) => {
-      const { pools, uniV4Ids } = await getPoolInfo(api)
-      // Add GRG balances from vaults
-      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools, target: GRG_VAULT_ADDRESSES })
-      bals.forEach(i => api.add(GRG_TOKEN_ADDRESSES, i))
-      // Aggregate GRG from vaults, ERC20 pool balances, and Uniswap V4 positions in a single call
-      await sumTokens2({ owner: UNISWAP_V4_POSM, tokens: [GRG_TOKEN_ADDRESSES], api, uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES], resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids } })
-      return sumTokens2({ owners: pools, tokens: [GRG_TOKEN_ADDRESSES], api, uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES] })
-    },
+  }
+
+  if (GRG_VAULT_ADDRESSES) module.exports[chain].staking = async (api) => {
+    const { pools, uniV4Ids } = await getPoolInfo(api)
+    // Add GRG balances from vaults
+    const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools, target: GRG_VAULT_ADDRESSES })
+    bals.forEach(i => api.add(GRG_TOKEN_ADDRESSES, i))
+    // Aggregate GRG from vaults, ERC20 pool balances, and Uniswap V4 positions in a single call
+    await sumTokens2({ owner: UNISWAP_V4_POSM, tokens: [GRG_TOKEN_ADDRESSES], api, uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES], resolveUniV4: true, uniV4ExtraConfig: { positionIds: uniV4Ids } })
+    return sumTokens2({ owners: pools, tokens: [GRG_TOKEN_ADDRESSES], api, uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES] })
   }
 
   async function getPoolInfo(api) {
