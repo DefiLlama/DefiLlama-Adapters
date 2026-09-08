@@ -525,40 +525,6 @@ module.exports = {
       "tvl": { "tokensAndOwners": [[ADDRESSES.somnia.USDC,"0x47fD2f18426f67106DBaC82F6d21D446c5F2120b"],[ADDRESSES.somnia.USDC,"0xD53E3F3b73513F2147377ef8f573f649cF60100c"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd"],[ADDRESSES.somnia.WETH,"0xa936da11B57b50A344e1293AAaE5232885ea2bDE"],[ADDRESSES.somnia.WETH,"0x9653a7355849B7691802A6AA49fDe18eF5ba633d"]], "owners": ["0x035De7403eac6872787779CCA7CCF1b4CDb61379","0x68c8f6fb1EA19A28F25358Ff00b8Ed8E1216df30","0x47fD2f18426f67106DBaC82F6d21D446c5F2120b","0xD53E3F3b73513F2147377ef8f573f649cF60100c","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd","0xa936da11B57b50A344e1293AAaE5232885ea2bDE","0x9653a7355849B7691802A6AA49fDe18eF5ba633d"], "tokens": ["0x00000022dA000002656c64D9eA6011ea952D008A",ADDRESSES.null] },
     },
   },
-  "infinit": {
-    "methodology": "INFINIT helps user execute transactions and earn yields and rewards on protocols. INFINIT does not hold custody of user's assets thus, it does not have any TVL. See the yield dashboard for a list of INFINIT strategies.",
-    "bsc": {
-      "tvl": { "__empty": true },
-      "staking": { "owners": ["0xc8e6c14ccebed218a64df570025c5a1eeb0cdadc"], "tokens": ["0x61fac5f038515572d6f42d4bcb6b581642753d50"] },
-    },
-    "ethereum": {
-      "tvl": { "__empty": true },
-    },
-    "arbitrum": {
-      "tvl": { "__empty": true },
-    },
-    "base": {
-      "tvl": { "__empty": true },
-    },
-    "optimism": {
-      "tvl": { "__empty": true },
-    },
-    "sonic": {
-      "tvl": { "__empty": true },
-    },
-    "hyperliquid": {
-      "tvl": { "__empty": true },
-    },
-    "mantle": {
-      "tvl": { "__empty": true },
-    },
-    "plasma": {
-      "tvl": { "__empty": true },
-    },
-    "berachain": {
-      "tvl": { "__empty": true },
-    },
-  },
   "instrumental": {
     "methodology": "Instrumental can be LP'ed and LP can be staked or locked (pool2s). Plus STRM itself can be locked against veSTRM (staking). Vaults coming soon.",
     "ethereum": {
