@@ -1,6 +1,8 @@
+const axios = require('axios')
 const { getConfig } = require('../helper/cache')
 
 const TVL_ENDPOINT = 'https://api.cheomayield.xyz/api/tvl'
+const REQUEST_TIMEOUT_MS = 15000
 
 // Fallback registry — mirrors `TVL_VAULTS` in the CheomaYield points-server.
 // Used only if the /api/tvl endpoint is unreachable or returns no vaults.
@@ -23,7 +25,9 @@ async function tvl(api) {
   // Single source of truth: CheomaYield's own aggregated TVL endpoint enumerates every live
   // mainnet vault (chain + address + deposit asset). TVL is still measured on-chain below.
   try {
-    const data = await getConfig('cheomayield/tvl', TVL_ENDPOINT)
+    const data = await getConfig('cheomayield/tvl', undefined, {
+      fetcher: () => axios.get(TVL_ENDPOINT, { timeout: REQUEST_TIMEOUT_MS }).then(r => r.data),
+    })
     if (data && Array.isArray(data.vaults)) {
       vaults = data.vaults.filter(v => v.chain === chain)
     }
@@ -36,12 +40,12 @@ async function tvl(api) {
   }
 
   for (const v of vaults) {
-    // Resolve the deposit-asset token address: prefer the on-chain `asset()`/`token()` getter,
-    // fall back to the coreAssets address keyed by the vault's declared token symbol.
-    let token = v._token || (v.token && TOKEN_BY_CHAIN[chain]?.[v.token])
+    // Resolve the deposit-asset token address: prefer the on-chain `asset()` getter,
+    // fall back to the configured address keyed by the vault's declared token symbol.
+    let token = await api.call({ abi: 'address:asset', target: v.address }).catch(() => null)
 
     if (!token) {
-      token = await api.call({ abi: 'address:asset', target: v.address }).catch(() => null)
+      token = v._token || (v.token && TOKEN_BY_CHAIN[chain]?.[v.token])
     }
 
     if (!token) continue
