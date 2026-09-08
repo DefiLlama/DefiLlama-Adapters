@@ -7,6 +7,19 @@ const LENDING_POOL     = '0x0000000000000000000000000000000000001005'
 const SAFETY_MODULE    = '0x0000000000000000000000000000000000001015'
 const SAVE_USDST_VAULT = '0x22550671fcad04a213697ac7ae4f4366e96446ed'
 const VAULT            = '0x34bc729f66106a146b0864e673a3571b28fa23e1'
+const STRATO_STAKING   = '0xf30a022ce83bed7adeafc286c719388dcc3b3988'
+const POOL_V3_FACTORY  = '0x5d630126d908b46bcf8d00bc15e591a459375809'
+// DirectMintPSM: mints USDST 1:1 against stablecoin reserves it holds.
+const DIRECT_MINT_PSM  = '0xb1efdc86eecfbedf83d0295671214fee451786f3'
+// ERC-4626 YieldVaults. There is no on-chain factory/registry to enumerate
+// them, so initialized vaults are listed explicitly. `asset()` is read on-chain.
+const YIELD_VAULTS = [
+  '0xafcfc4d847d59fbc402856fd6934aff6796812b1', // yieldUSDC
+  '0xa94905d8bd117e9bfbe57aadffd7abbea760e028', // carryETH
+  '0x0b5831edcab6f06256a790340426236c31bb463f', // carryWBTC
+  '0xddf7c27f27ac43b25043e100c2076e515526b9ae', // yieldGOLDST
+  '0xf8884c44d7cfbfb7c6326c515f375f8572f03e2b', // yieldSILVST
+]
 
 if (!process.env.STRATO_RPC) process.env.STRATO_RPC = RPC_URL
 
@@ -32,15 +45,44 @@ async function discoverPools(api) {
   )
   const pools = []
   for (const pool of poolAddrs) {
-    const tokenA = (await api.call({ target: pool, abi: 'function tokenA() view returns (address)' })).toLowerCase()
-    const tokenB = (await api.call({ target: pool, abi: 'function tokenB() view returns (address)' })).toLowerCase()
-    pools.push({ pool, tokens: [tokenA, tokenB] })
+    let tokens
+    // StablePool can hold more than two coins (e.g. USDT-USDC-USDST). tokenA/tokenB
+    // only expose the first two, so enumerate the full `coins` array instead.
+    let isStable = false
+    try { isStable = await api.call({ target: pool, abi: 'function isStable() view returns (bool)' }) } catch { /* legacy pool */ }
+    if (isStable) {
+      const n = Number(await api.call({ target: pool, abi: 'function getNumCoins() view returns (uint256)' }))
+      tokens = []
+      for (let i = 0; i < n; i++) {
+        tokens.push((await api.call({ target: pool, abi: 'function coins(uint256) view returns (address)', params: i })).toLowerCase())
+      }
+    } else {
+      const tokenA = (await api.call({ target: pool, abi: 'function tokenA() view returns (address)' })).toLowerCase()
+      const tokenB = (await api.call({ target: pool, abi: 'function tokenB() view returns (address)' })).toLowerCase()
+      tokens = [tokenA, tokenB]
+    }
+    pools.push({ pool, tokens: [...new Set(tokens)] })
+  }
+  return pools
+}
+
+// Concentrated-liquidity (Uniswap-v3 style) pools. Token balances held by the
+// pool contract are the TVL; positions are accounted inside the pool.
+async function discoverV3Pools(api) {
+  const poolAddrs = await enumerateArray(
+    api, POOL_V3_FACTORY, 'function allPools(uint256) view returns (address)'
+  )
+  const pools = []
+  for (const pool of poolAddrs) {
+    const token0 = (await api.call({ target: pool, abi: 'function token0() view returns (address)' })).toLowerCase()
+    const token1 = (await api.call({ target: pool, abi: 'function token1() view returns (address)' })).toLowerCase()
+    pools.push({ pool, tokens: [token0, token1] })
   }
   return pools
 }
 
 async function tvl(api) {
-  const pools = await discoverPools(api)
+  const pools = [...await discoverPools(api), ...await discoverV3Pools(api)]
 
   const cdpVault         = (await api.call({ target: CDP_REGISTRY,     abi: 'function cdpVault() view returns (address)' })).toLowerCase()
   const collateralVault  = (await api.call({ target: LENDING_REGISTRY, abi: 'function collateralVault() view returns (address)' })).toLowerCase()
@@ -74,6 +116,18 @@ async function tvl(api) {
   pairs.push({ holder: liquidityPool, token: borrowableAsset })
   for (const token of vaultAssets) pairs.push({ holder: vaultBotExecutor, token })
 
+  // PSM reserves. Accepted tokens live in a non-enumerable mapping, so check
+  // every token the adapter already knows about.
+  for (const token of allTokens) pairs.push({ holder: DIRECT_MINT_PSM, token })
+
+  // YieldVaults: count only assets idle in the vault contract. `deployedAssets`
+  // is capital handed to strategy wallets that redeploy it into CDPs / pools on
+  // STRATO, where it is already counted above. Counting it here would double count.
+  for (const vault of YIELD_VAULTS) {
+    const asset = (await api.call({ target: vault, abi: 'function asset() view returns (address)' })).toLowerCase()
+    pairs.push({ holder: vault, token: asset })
+  }
+
   for (const { token, holder } of pairs) {
     const balance = await api.call({ target: token, abi: 'erc20:balanceOf', params: holder })
     if (BigInt(balance) > 0n) api.add(token, balance.toString())
@@ -102,11 +156,22 @@ async function borrowed(api) {
   if (lendingDebt > 0n) api.add(borrowableAsset, lendingDebt.toString())
 }
 
+// Phase 1 $STRATO staking. There is no receipt token; stake is tracked as
+// internal accounting on StratoStaking. Principal = delegated user stake +
+// operator self-bond. Unbonding stake and the reward reserve are excluded.
+async function staking(api) {
+  const stratoToken    = await api.call({ target: STRATO_STAKING, abi: 'function stratoToken() view returns (address)' })
+  const totalUserStake = await api.call({ target: STRATO_STAKING, abi: 'function totalUserStake() view returns (uint256)' })
+  const totalSelfBond  = await api.call({ target: STRATO_STAKING, abi: 'function totalSelfBond() view returns (uint256)' })
+  const staked = BigInt(totalUserStake) + BigInt(totalSelfBond)
+  if (staked > 0n) api.add(stratoToken, staked.toString())
+}
+
 module.exports = {
   methodology:
-    'All values verified on-chain via sequential eth_call (no Multicall3). Swap pools enumerated from PoolFactory.allPools. CDP collateral read from CDPVault, lending deposits (idle liquidity + collateral) from LiquidityPool + CollateralVault, savings from SaveUSDSTVault, staked assets from SafetyModule, and vault holdings from the Vault botExecutor. Holder addresses resolved from on-chain registries (CDPRegistry, LendingRegistry). Outstanding LiquidityPool debt is reported separately under `borrowed` (totalScaledDebt × borrowIndex / RAY against the LiquidityPool borrowableAsset) and is excluded from TVL. CDP debt is not yet included because STRATO CDPEngine state mappings are not exposed via standard ABI auto-getters over eth_call; this will be added once an explicit on-chain view function is available. Prices resolved server-side by DefiLlama for the `strato` chain.',
+    'All values verified on-chain via sequential eth_call (no Multicall3). Swap pools enumerated from PoolFactory.allPools and PoolV3Factory.allPools (concentrated liquidity); StablePool coins enumerated via getNumCoins/coins so multi-coin pools are fully counted. CDP collateral read from CDPVault, lending deposits (idle liquidity + collateral) from LiquidityPool + CollateralVault, savings from SaveUSDSTVault, staked assets from SafetyModule, vault holdings from the Vault botExecutor, stablecoin reserves held by the DirectMintPSM, and idle assets held by each ERC-4626 YieldVault (capital deployed to strategies is excluded because it is redeployed into CDPs/pools already counted). Holder addresses resolved from on-chain registries (CDPRegistry, LendingRegistry). Outstanding LiquidityPool debt is reported separately under `borrowed` (totalScaledDebt × borrowIndex / RAY against the LiquidityPool borrowableAsset) and is excluded from TVL. Staked $STRATO (StratoStaking totalUserStake + totalSelfBond) is reported under `staking`. CDP debt is not yet included because STRATO CDPEngine state mappings are not exposed via standard ABI auto-getters over eth_call; this will be added once an explicit on-chain view function is available. Prices resolved server-side by DefiLlama for the `strato` chain.',
   misrepresentedTokens: true,
   timetravel: false,
   start: 1775151906,
-  strato: { tvl, borrowed },
+  strato: { tvl, borrowed, staking },
 }
