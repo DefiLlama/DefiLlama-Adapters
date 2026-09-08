@@ -24,9 +24,15 @@ const KAMINO_RESERVES = [
   'DzgYbR8HFQKf8YLCJ6M3E6ricB1xWAiNGZ2TB7X2KDHz',
   // Raiku market
   'J7idSfhvLqdkSmbMvhHMXBAhZMJVxEtzqXo45JB9HZrP',
-  '7272BNf9uoivyX5h8B7799yoxSfF4WDuzcP7HDwSPLqN', // PT-rkuSOL, no price feed: counted as zero
+  '7272BNf9uoivyX5h8B7799yoxSfF4WDuzcP7HDwSPLqN',
   'EMyn5A2HhvYhojiibR3znk5QyafRVnK4oZ725XYzzf2s',
 ];
+
+// Exponent principal tokens have no price feed, count them as the token they redeem into.
+// A PT trades below its underlying until maturity, so this slightly overstates the position.
+const TOKEN_SUBSTITUTES = {
+  '58XmRhDKVsCEt6dD3zxqHth8uzMY8BHhEyeAiUa5UPw9': 'rkubjTrZYioRSeXwDnhwGQzvW3qkcin72JSxUt3WMVp', // PT-rkuSOL-31OCT26 -> rkuSOL
+};
 
 const EMBER_VAULTS = {
   ethereum: [
@@ -178,7 +184,8 @@ async function kaminoReserveTvl(api) {
     const cTokenSupply = BigInt(reserve.collateral.mintTotalSupply.toString());
     const own = ownCTokens[KAMINO_RESERVES[i]] ?? 0n;
     const externalShare = cTokenSupply > 0n ? available - (available * own) / cTokenSupply : available;
-    if (externalShare > 0n) api.add(reserve.liquidity.mintPubkey.toString(), externalShare.toString());
+    const mint = reserve.liquidity.mintPubkey.toString();
+    if (externalShare > 0n) api.add(TOKEN_SUBSTITUTES[mint] ?? mint, externalShare.toString());
   });
 }
 
