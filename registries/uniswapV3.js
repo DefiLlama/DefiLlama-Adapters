@@ -1506,14 +1506,6 @@ const uniV3Configs = {
       fromBlock: 197972,
     },
   },
-  'thena-integral': {
-    bsc: {
-      factory: '0x30055F87716d3DFD0E5198C27024481099fB4A98',
-      fromBlock: 44121855,
-      isAlgebra: true,
-      blacklistedTokens: ['0x39e3ca118ddfea3edc426b306b87f43da3251b4a'],
-    },
-  },
   'thena-v3': {
     bsc: {
       factory: '0x306F06C147f064A010530292A1EB6737c3e378e4',
