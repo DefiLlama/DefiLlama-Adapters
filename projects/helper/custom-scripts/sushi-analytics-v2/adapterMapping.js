@@ -99,8 +99,8 @@ module.exports = {
       // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
       blum: '/blum/api',
-      'yodeswap': '/yodeswap/api',
-      'dogeswap-org': '/dogeswap-org/api',
+      // 'yodeswap': '/yodeswap/api',  // dogechain is dead
+      // 'dogeswap-org': '/dogeswap-org/api',  // dogechain is dead
       'o2': '/o2/api',
 
       // breaks often
