@@ -60,17 +60,14 @@ async function tvl(api) {
     const block = api.block ?? (api.timestamp ? await getBlockAtTimestamp(api.timestamp) : undefined)
     await Promise.all(VAULT_OWNERS.flatMap(owner =>
         V1_ASSETS.map(async (asset) => {
-            try {
-                const bal = await call({
-                    target: getContract(asset),
-                    abi: 'get-balance',
-                    inputArgs: [{ type: 'principal', value: owner }],
-                    block,
-                })
-                api.add(getTokenId(asset), bal?.value ?? bal)
-            } catch (e) {
-                if (e.message?.includes('429')) throw e
-            }
+            const bal = await call({
+                target: getContract(asset),
+                abi: 'get-balance',
+                inputArgs: [{ type: 'principal', value: owner }],
+                block,
+                allowMissing: true,
+            })
+            if (bal !== undefined) api.add(getTokenId(asset), bal?.value ?? bal)
         })
     ))
     return api.getBalances()
