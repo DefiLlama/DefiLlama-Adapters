@@ -70,7 +70,6 @@ const configs = {
         '0xD6d4b804014EF27836dBe9f8f6Bf6c71251548Ec'
       ],
       upshiftV2: [
-        '0xc87DBBB8C67e4F19fCD2E297c05937567b2572Ce', // Upshift Earn ctUSD
         '0xcd69123b3FBBfC666E1f6a501da27B564C00De54', // Upshift Tori
       ],
       midasTokens: [
@@ -80,6 +79,11 @@ const configs = {
       ],
       erc4626: [
         '0x6f576e5192a14f259f7fe7347ecf63b255d7f7d1', // Term Finance - RockawayX Tori USDC (tsvRockXToriUSDC)
+      ],
+    },
+    citrea: {
+      upshiftV2: [
+        '0x68499eAEf8c4994593C56a1257BD151D17950BA2', // Upshift Earn ctUSD
       ],
     },
     base: {
