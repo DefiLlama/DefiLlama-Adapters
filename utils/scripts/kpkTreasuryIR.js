@@ -1601,6 +1601,12 @@ function writeOut(file, records) {
   console.error(`wrote ${records.length} record(s) to ${target}`)
 }
 
+const EARLY_CHAIN_FLOOR = { until: "2022-03-31", chains: ["ethereum", "xdai"] }
+const EARLY_CHAIN_FLOOR_TS = Date.parse(`${EARLY_CHAIN_FLOOR.until}T00:00:00Z`) / 1000
+
+const earlyChainFloor = (timestamp) =>
+  timestamp < EARLY_CHAIN_FLOOR_TS ? new Set(EARLY_CHAIN_FLOOR.chains) : null
+
 async function replay() {
   let timestamps = positional.map(toTimestamp)
   if (flags.from) {
@@ -1636,7 +1642,18 @@ async function replay() {
 
   const records = []
   for (const timestamp of timestamps) {
-    const record = await runAt(adapter, tasks, chains, timestamp)
+    const floor = earlyChainFloor(timestamp)
+    // never narrow to nothing: if the adapter stops exporting these, sweep everything
+    const only = floor && chains.some((chain) => floor.has(chain)) ? floor : null
+    const dateTasks = only ? tasks.filter((task) => only.has(task.chain)) : tasks
+    const dateChains = only ? chains.filter((chain) => only.has(chain)) : chains
+    const skipped = only ? chains.filter((chain) => !only.has(chain)) : []
+    if (skipped.length)
+      console.error(`  early history: ${dateChains.join(" + ")} only, skipping ${skipped.join(", ")} (0 before ${EARLY_CHAIN_FLOOR.until})`)
+
+    const record = await runAt(adapter, dateTasks, dateChains, timestamp)
+    // stored alongside noBlock so a reader can tell "not swept" from "swept and zero"
+    if (skipped.length) record.chainFloor = skipped
     records.push(record)
     // stream per-date records as they land, unless stdout is reserved for the series doc
     if (flags.shape !== "series") process.stdout.write(JSON.stringify(record) + "\n")

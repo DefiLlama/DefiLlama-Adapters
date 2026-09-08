@@ -3166,7 +3166,10 @@ const uniV2Configs = {
         token1: 'address:tokenY',
       },
     },
-    robinhood: '0x3Bf76F2E41Ac7996c822455f4c78fa2026465C4D',
+    robinhood: {
+      factory: '0x3Bf76F2E41Ac7996c822455f4c78fa2026465C4D',
+      staking: ['0x868ae20E6c1EA3b6Fdab5042Ea721eB51b237183', '0xD6af4536baB5EA74bCF872CA181619Cc3157683E'],
+    },
   },
 }
 

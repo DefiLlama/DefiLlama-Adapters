@@ -140,7 +140,7 @@ function v3Tvl(
   };
 }
 
-  function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
+  function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [], permitFailure = false } = {}) {
     return async (api) => {
       let poolLogs = await getLogs({
         target: bPoolFactory,
@@ -162,6 +162,7 @@ function v3Tvl(
         api,
         ownerTokens,
         blacklistedTokens: [...blacklistedTokens, ...pools],
+        permitFailure,
       });
     };
   }

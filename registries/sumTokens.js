@@ -17417,7 +17417,7 @@ const configs = {
     //   "owners": [
     //     "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
     //   ],
-    //   "fetchBlockscoutTokens": true
+    //   "fetchCoValentTokens": true
     // },
   },
   "lighter-rh": {
@@ -17426,7 +17426,7 @@ const configs = {
       "owners": [
         "0x94bAB9693Ba2f6358507eFfcbd372b0660AFfF9d"
       ],
-      "fetchBlockscoutTokens": true
+      "fetchCoValentTokens": true
     },
   },
   "linqai": {

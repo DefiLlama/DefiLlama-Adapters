@@ -103,7 +103,7 @@ function fetchChain(chain) {
       }
     })
 
-    return api.sumTokens({ tokensAndOwners, blacklistedTokens })
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens, permitFailure: true })
   }
 }
 

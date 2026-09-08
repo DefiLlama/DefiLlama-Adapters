@@ -525,40 +525,6 @@ module.exports = {
       "tvl": { "tokensAndOwners": [[ADDRESSES.somnia.USDC,"0x47fD2f18426f67106DBaC82F6d21D446c5F2120b"],[ADDRESSES.somnia.USDC,"0xD53E3F3b73513F2147377ef8f573f649cF60100c"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA"],["0xC5098b3cA516784323872F17235fa074E167D3D2","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd"],[ADDRESSES.somnia.WETH,"0xa936da11B57b50A344e1293AAaE5232885ea2bDE"],[ADDRESSES.somnia.WETH,"0x9653a7355849B7691802A6AA49fDe18eF5ba633d"]], "owners": ["0x035De7403eac6872787779CCA7CCF1b4CDb61379","0x68c8f6fb1EA19A28F25358Ff00b8Ed8E1216df30","0x47fD2f18426f67106DBaC82F6d21D446c5F2120b","0xD53E3F3b73513F2147377ef8f573f649cF60100c","0x25bfF6B7B5E2243424F38E75de7ab03C0522a5EA","0xed32F048D6a47923D38eCeD868d6f8b0eB4852bd","0xa936da11B57b50A344e1293AAaE5232885ea2bDE","0x9653a7355849B7691802A6AA49fDe18eF5ba633d"], "tokens": ["0x00000022dA000002656c64D9eA6011ea952D008A",ADDRESSES.null] },
     },
   },
-  "infinit": {
-    "methodology": "INFINIT helps user execute transactions and earn yields and rewards on protocols. INFINIT does not hold custody of user's assets thus, it does not have any TVL. See the yield dashboard for a list of INFINIT strategies.",
-    "bsc": {
-      "tvl": { "__empty": true },
-      "staking": { "owners": ["0xc8e6c14ccebed218a64df570025c5a1eeb0cdadc"], "tokens": ["0x61fac5f038515572d6f42d4bcb6b581642753d50"] },
-    },
-    "ethereum": {
-      "tvl": { "__empty": true },
-    },
-    "arbitrum": {
-      "tvl": { "__empty": true },
-    },
-    "base": {
-      "tvl": { "__empty": true },
-    },
-    "optimism": {
-      "tvl": { "__empty": true },
-    },
-    "sonic": {
-      "tvl": { "__empty": true },
-    },
-    "hyperliquid": {
-      "tvl": { "__empty": true },
-    },
-    "mantle": {
-      "tvl": { "__empty": true },
-    },
-    "plasma": {
-      "tvl": { "__empty": true },
-    },
-    "berachain": {
-      "tvl": { "__empty": true },
-    },
-  },
   "instrumental": {
     "methodology": "Instrumental can be LP'ed and LP can be staked or locked (pool2s). Plus STRM itself can be locked against veSTRM (staking). Vaults coming soon.",
     "ethereum": {
@@ -925,6 +891,19 @@ module.exports = {
     "methodology": "Sums the settlement-stablecoin (USDT0) balance held directly by each OpenStock pre-IPO vault contract on Mantle.",
     "mantle": {
       "tvl": { "owners": ["0x41D4C067b82DA8357Dfc38e3f24F6033368aF4bb"], "tokens": ["0x779Ded0c9e1022225f8E0630b35a9b54bE713736"]}
+    }
+  },
+  "jetbit": {
+    "methodology": "USDT locked in the Jetbit Vault (trader collateral), Pool (LP capital) and Reserve (insured slice of LP deposits) on BNB Smart Chain.",
+    "start": "2026-04-30",
+    "bsc": {
+      "tvl": { "owners": ["0x991e3e0A16D729a0872CA7A3B58EF31A19A64C7E", "0x075A553CC4E1F3EE70B21E1472E1c85c73d53B2C", "0x0bE292625D6d3b073BeBC40bd6F234095a2bb548"], "tokens": [ADDRESSES.bsc.USDT] },
+    }
+  },
+  "true-dex": {
+    "methodology": 'USDC deposited as perpetuals trading collateral, read from the verifier custody token account on Solana.',
+    "solana": {
+      "tvl": { "tokenAccounts": ["A5GTSUyjFSfsQWwRESSa1UtxciFY6g6guBvM12Tee1ag"], "tokens": [ADDRESSES.solana.USDC]}
     }
   },
   "vortexo": {

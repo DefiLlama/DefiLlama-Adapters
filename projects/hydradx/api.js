@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { ApiPromise, WsProvider } = require("@polkadot/api")
-const { postURL } = require('../helper/utils')
 
 // Omnipool constants
 const omnipoolAccountId = "7L53bUTBbfuj14UpdCNPwmgzzHSsrsTWBHX5pys32mVWM3C1"
@@ -60,47 +59,44 @@ const cgMapping = {
   // GDOT: 'gigadot' // skip for doublecount 
 };
 
-const INDEXER_URL = 'https://orca-main-aggr-indx.indexer.hydration.cloud/graphql';
+// Everything is read from chain state - the Hydration indexer
+// (orca-main-aggr-indx.indexer.hydration.cloud) has extended outages.
 
-// Fetch all stableswap pool account IDs from the indexer.
-async function fetchStablepoolAccounts() {
-  const query = `{ stableswaps(first: 1000) { nodes { accountId } } }`;
-  const res = await postURL(INDEXER_URL, { query });
-  return res.data.data.stableswaps.nodes.map(n => n.accountId);
+// Fetch all stableswap pool account IDs from chain state.
+// Pool account = blake2_256("sts" ++ u32_le(pool_id)) - see StableswapAccountIdConstructor
+// and POOL_IDENTIFIER in galacticcouncil/hydration-node.
+async function fetchStablepoolAccounts(polkadotApi) {
+  const { blake2AsU8a } = require('@polkadot/util-crypto');
+  const { u8aConcat, stringToU8a } = require('@polkadot/util');
+  const pools = await polkadotApi.query.stableswap.pools.entries();
+  return pools.map(([key]) => {
+    const buf = new Uint8Array(4);
+    new DataView(buf.buffer).setUint32(0, key.args[0].toNumber(), true);
+    return blake2AsU8a(u8aConcat(stringToU8a('sts'), buf), 256);
+  });
 }
 
-// Fetch all XYK pool account IDs and their asset pairs from the indexer.
-async function fetchXykPools() {
-  const query = `{ xykpools(first: 1000) { nodes { accountId assetAId assetBId } } }`;
-  const res = await postURL(INDEXER_URL, { query });
-  return res.data.data.xykpools.nodes.map(n => ({
-    poolAccountId: n.accountId,
-    assetIdA: parseInt(n.assetAId),
-    assetIdB: parseInt(n.assetBId),
-  }));
+// Fetch all XYK pool account IDs and their asset pairs from chain state.
+async function fetchXykPools(polkadotApi) {
+  const pools = await polkadotApi.query.xyk.poolAssets.entries();
+  return pools.map(([key, assets]) => {
+    const [assetIdA, assetIdB] = assets.unwrap();
+    return {
+      poolAccountId: key.args[0].toString(),
+      assetIdA: assetIdA.toNumber(),
+      assetIdB: assetIdB.toNumber(),
+    };
+  });
 }
 
-// Fetch aToken asset IDs and map them to the underlying asset's CoinGecko ID.
-// Each node with a symbol like 'aUSDT' maps assetRegistryId -> cgMapping['USDT'].
-// Uses cursor-based pagination to exhaust all pages.
-async function fetchATokenMapping() {
+// Map aToken asset IDs to the underlying asset's CoinGecko ID using the on-chain
+// asset registry metadata (symbols like 'aUSDT' map assetId -> cgMapping['USDT']).
+function buildATokenMapping(processedAssetMetadata) {
   const mapping = new Map();
-  let after = null;
-  while (true) {
-    const cursor = after ? `, after: "${after}"` : '';
-    const query = `{ assets(first: 500${cursor}) { nodes { assetRegistryId symbol } pageInfo { hasNextPage endCursor } } }`;
-    const res = await postURL(INDEXER_URL, { query });
-    const { nodes, pageInfo } = res.data.data.assets;
-    for (const { assetRegistryId, symbol } of nodes) {
-      if (!symbol || !/^a[A-Za-z]/.test(symbol)) continue;
-      const underlyingSymbol = symbol.slice(1); // strip leading 'a'
-      const cgId = cgMapping[underlyingSymbol];
-      if (cgId) {
-        mapping.set(parseInt(assetRegistryId), cgId);
-      }
-    }
-    if (!pageInfo.hasNextPage) break;
-    after = pageInfo.endCursor;
+  for (const { assetId, symbol } of processedAssetMetadata) {
+    if (!symbol || !/^a[A-Z]/.test(symbol)) continue;
+    const cgId = cgMapping[symbol.slice(1)];
+    if (cgId) mapping.set(assetId, cgId);
   }
   return mapping;
 }
@@ -112,7 +108,7 @@ async function omnipoolTvl(api) {
   await polkadotApi.isReady;
 
   try {
-  const stablepoolAccounts = await fetchStablepoolAccounts();
+  const stablepoolAccounts = await fetchStablepoolAccounts(polkadotApi);
 
   const processedAssetMetadata = [];
   // Use assets.entries() to fetch all registered assets robustly
@@ -155,9 +151,7 @@ async function omnipoolTvl(api) {
   }
 
   // Dynamically query aToken balances across all stablepool accounts.
-  // The indexer maps each aToken symbol (e.g. 'aUSDT') to its assetRegistryId;
-  // we strip the 'a' prefix to resolve the underlying CoinGecko ID via cgMapping.
-  const aTokenMapping = await fetchATokenMapping();
+  const aTokenMapping = buildATokenMapping(processedAssetMetadata);
 
   for (const [aTokenAssetId, underlyingCgId] of aTokenMapping) {
     const meta = processedAssetMetadata.find(m => m.assetId === aTokenAssetId);
@@ -172,8 +166,8 @@ async function omnipoolTvl(api) {
     }
   }
 
-  // Add XYK Pool TVL fetched dynamically from the indexer
-  const xykPools = await fetchXykPools();
+  // Add XYK Pool TVL fetched dynamically from chain state
+  const xykPools = await fetchXykPools(polkadotApi);
 
   for (const { poolAccountId, assetIdA, assetIdB } of xykPools) {
     try {

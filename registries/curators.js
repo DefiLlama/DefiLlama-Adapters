@@ -324,6 +324,19 @@ const configs = {
       // deadFrom: 'xxx', // https://github.com/DefiLlama/DefiLlama-Adapters/pull/18409 - shifting focus to tradfi rails
     },
   },
+  "capital-1212": {
+    config: {
+      methodology: 'Sum settled underlying assets in the 1212 Stable and Alpha funds on Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0xbb30c3b6046debcbe941281218d18dec8ecebeb5', // 1212.Stable
+            '0xc35ce0c1acfc448d18ddacbf641b09f2a18e1958', // 1212.Alpha
+          ],
+        },
+      },
+    },
+  },
   "cassa": {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Cassa.',
@@ -486,6 +499,16 @@ const configs = {
       },
     },
   },
+  "dacm": {
+    config: {
+      methodology: 'Count settled USDC NAV of the DACM LIT Strategy Lagoon vault.',
+      blockchains: {
+        arbitrum: {
+          erc4626: ['0x018282d5b510f00dcacb8f4a81c3901d2fc9da51'],
+        },
+      },
+    },
+  },
   "edge-capital": {
     config: {
       methodology: 'Counts all assets deposited in vaults curated by Edge-Capital.',
@@ -574,6 +597,9 @@ const configs = {
       blockchains: {
         ethereum: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
+          morpho: [
+            '0xd95fE7adF5075fad9D6Bf853E0f9Fe53369E8D96', // Galaxy USDC Enhanced; deployed by a different initial owner
+          ],
         },
         base: {
           morphoVaultOwners: ["0x42D510eDeb9257f8D920d5B9f5109D95cB22419d"],
@@ -716,6 +742,11 @@ const configs = {
     config: {
       methodology: 'Count all assets are deposited in all vaults curated by Keyring Network.',
       blockchains: {
+        ethereum: {
+          eulerVaultOwners: [
+            '0x0B50beaE6aac0425e31d5a29080F2A7Dec22754a',
+          ],
+        },
         avax: {
           eulerVaultOwners: [
             '0x0B50beaE6aac0425e31d5a29080F2A7Dec22754a',
@@ -755,6 +786,30 @@ const configs = {
         robinhood: {
           accountableVaults: [
             '0x24b84023c8e4Da635be228C380C09bfE5271BF9d', // Meridian LP vault
+          ],
+        },
+      },
+    },
+  },
+  "monarq": {
+    config: {
+      methodology: 'Count FXRP managed by the Monarq XRP Yield Vault through its on-chain getTotalAssets value.',
+      blockchains: {
+        flare: {
+          upshiftV2: ['0x2439D4bb753A0f3777d4C9011AFacc475ba6B951'],
+        },
+      },
+    },
+  },
+  "mt-pelerin": {
+    config: {
+      methodology: 'Sum settled underlying assets in the Mt Pelerin USD, ETH and BTC strategy pools on Lagoon.',
+      blockchains: {
+        ethereum: {
+          erc4626: [
+            '0x28663161f9fa2963eb6102b88a741e195e974df6', // USD
+            '0xb118de4917f4bac5c3a453ea8de915a7cd84891c', // ETH
+            '0xbc6a48b30405cc1660627d8dfb3872505f14bca0', // BTC
           ],
         },
       },
@@ -1022,6 +1077,7 @@ const configs = {
           morphoVaultOwners: [
             '0x46057881E0B9d190920FB823F840B837f65745d5',
           ],
+          upshiftV2: ['0x73B04B604DF15A6d920Ee62E228548cD88DD3549'], // SingularV USDC Max Yield
         },
       }
     },
@@ -1090,6 +1146,7 @@ const configs = {
             '0xec0Caa2CbAe100CEAaC91A665157377603a6B766', // v2 USDT/ETH/AUSD
           ],
           morpho: [
+            '0xbEEF00A59B577423653A1526c7009bdE103F542B', // Steakhouse Confidential Prime USDC
             '0x6cbF3Eed95976D226FFB0bEb09550A9407f47b60', // Steakhouse High Yield ETH
             '0xbeef003E31546C7210687f1A7b40d096BE83ec58', // Steakhouse Prime EURC
             '0xbeef009FF4FB1727297BF2526806F4A73E4b99aD', // Steakhouse Prime frxUSD

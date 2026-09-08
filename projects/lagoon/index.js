@@ -152,6 +152,12 @@ const config = {
       fromBlock: 960000
     },
   },
+  robinhood: {
+    optinProxyFactory: {
+      address: "0x1e17e7848b2f56f75b16550471f455071a9f955f",
+      fromBlock: 54200817
+    },
+  },
   sonic: {
     optinProxyFactory: {
       address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",

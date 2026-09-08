@@ -1,47 +1,31 @@
-const { call } = require('../helper/chain/stacks-api')
+const { call, getBlockAtTimestamp } = require('../helper/chain/stacks-api')
+const { nullAddress } = require('../helper/tokenMapping')
 
 const D = 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG'
-
-// PoX-5 migration cutover: stx-reserve-v2 deployed at block 8712010
-const STX_V2_CUTOVER = 8712010
-// stBTC reserve deployed at block 8666589 (2026-07-30)
-const STBTC_START = 8666589
+const SBTC = 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token'
 
 module.exports = {
   timetravel: true,
   stacks: { tvl },
 }
 
+function toAmount(v) {
+  return String(typeof v === 'object' && v !== null ? v.value : v)
+}
+
+const RESERVES = [
+  { target: `${D}.reserve-v1`, abi: 'get-total-stx', token: nullAddress },
+  { target: `${D}.stx-reserve-v2`, abi: 'get-total-stx', token: nullAddress },
+  { target: `${D}.stbtc-reserve`, abi: 'get-total-sbtc', token: SBTC },
+]
+
 async function tvl(api) {
-  const block = api.block
+  const block = api.block ?? (api.timestamp ? await getBlockAtTimestamp(api.timestamp) : undefined)
 
-  // STX backing: use stx-reserve-v2 after the PoX-5 cutover, reserve-v1 before
-  const stxTarget = block >= STX_V2_CUTOVER
-    ? `${D}.stx-reserve-v2`
-    : `${D}.reserve-v1`
-
-  try {
-    const stxReserve = await call({
-      target: stxTarget,
-      abi: 'get-total-stx',
-      block,
-    })
-    api.add('blockstack', stxReserve.value)
-  } catch (e) {
-    console.error('stackingdao: stx reserve read failed:', e.message)
+  for (const { target, abi, token } of RESERVES) {
+    const value = await call({ target, abi, block, allowMissing: true })
+    if (value !== undefined) api.add(token, toAmount(value))
   }
 
-  // sBTC backing: stbtc-reserve deployed at block 8666589
-  if (block >= STBTC_START) {
-    try {
-      const sbtcReserve = await call({
-        target: `${D}.stbtc-reserve`,
-        abi: 'get-total-sbtc',
-        block,
-      })
-      api.add('sBTC', sbtcReserve.value)
-    } catch (e) {
-      console.error('stackingdao: stbtc reserve read failed:', e.message)
-    }
-  }
+  return api.getBalances()
 }

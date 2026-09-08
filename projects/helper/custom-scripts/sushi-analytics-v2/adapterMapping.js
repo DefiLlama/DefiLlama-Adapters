@@ -2,16 +2,16 @@ module.exports = {
   hourlyRun: [
     [
       {
-        'fxdao': '/fxdao/api.js',
+        // 'fxdao': '/fxdao/api.js',
         'harvest': '/harvest.js',
         'astar-dapps-staking': '/astar-dapps-staking/api',
         'injective-orderbook': '/injective-orderbook/api',
-        'lisa': '/lisa/api',
-        'zest': '/zest/api',
-        'hermetica-hbtc': '/hermetica-hbtc/api',
+        // 'lisa': '/lisa/api',
+        // 'zest': '/zest/api',
+        // 'hermetica-hbtc': '/hermetica-hbtc/api',
       },
       {
-        'hermetica': '/hermetica/api',
+        // 'hermetica': '/hermetica/api',
         'bifrost-staking': '/bifrost-staking/api',
         'sora': '/sora/api',
         'bifrost-dex': '/bifrost-dex/api',
@@ -42,7 +42,7 @@ module.exports = {
       },
       {
         'hydradx': '/hydradx/api.js',
-        'zest-v2': '/zest-v2/api.js',
+        // 'zest-v2': '/zest-v2/api.js',
       },
       {
         'manta-atlantic-stake': '/manta-atlantic-stake/api',
@@ -63,15 +63,15 @@ module.exports = {
       },
       {
         'kintsugi': '/kintsugi/api',
-        'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
-        'jewelswap-nft': '/jewelswap-nft/index',
+        // 'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
+        // 'jewelswap-nft': '/jewelswap-nft/index',
 
       },
       {
         // 'newbitcoin': '/newbitcoin/index', // is dead
         'nemoswap': '/nemoswap/index',
-        'stackingdao': '/stackingdao/api',
-        'stacks': '/stacks/api',
+        // 'stackingdao': '/stackingdao/api',
+        // 'stacks': '/stacks/api',
       },
     ],
   ],
@@ -80,10 +80,10 @@ module.exports = {
       // 'quantumx-network': '/quantumx-network/index',
       'polkadot': '/treasury/polkadot-api',
       'pcs-v2': '/pancake-swap/pcs-v2-onchain',
-      'stackswap': '/stackswap/api',
-      'velar-amm': '/velar-amm/api',
-      'alexlab': '/alexlab/api',
-      'satoshi-dex': '/satoshi-dex/api',
+      // 'stackswap': '/stackswap/api',
+      // 'velar-amm': '/velar-amm/api',
+      // 'alexlab': '/alexlab/api',
+      // 'satoshi-dex': '/satoshi-dex/api',
       'raydium': '/raydium/index',
       // 'vitcswap': '/vitcswap/api',
       'defichain-loans': '/defichain-loans',
@@ -99,8 +99,8 @@ module.exports = {
       // synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
       blum: '/blum/api',
-      'yodeswap': '/yodeswap/api',
-      'dogeswap-org': '/dogeswap-org/api',
+      // 'yodeswap': '/yodeswap/api',  // dogechain is dead
+      // 'dogeswap-org': '/dogeswap-org/api',  // dogechain is dead
       'o2': '/o2/api',
 
       // breaks often

@@ -35,7 +35,7 @@ module.exports = {
     tvl: sumTokensExport({ 
     owners: ['0x00000000000014aA86C5d3c41765bb24e11bd701'],
     blacklistedTokens: [],
-    fetchBlockscoutTokens: true,
+    fetchCoValentTokens: true,
   })
   },
   isHeavyProtocol: true,
