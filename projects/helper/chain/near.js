@@ -20,7 +20,6 @@ const endpoints = [
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
   'meta-pool.near': { name: 'staked-near', decimals: 24, },
-  [ADDRESSES.near.LINA]: { name: 'linear-protocol', decimals: 24, },
   "storage.herewallet.near": { name: 'here-staking', decimals: 24, },
   'usn': { name: 'usn', decimals: 18, },
   'aurora': { name: 'ethereum', decimals: 18, },

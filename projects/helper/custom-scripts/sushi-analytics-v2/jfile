@@ -27,7 +27,7 @@ pipeline {
                         pnpm --version
                         
                         echo "=== Installing root dependencies ==="
-                        pnpm install --frozen-lockfile --ignore-scripts --ignore-workspace
+                        pnpm install --frozen-lockfile --ignore-scripts --ignore-workspace --config.minimum-release-age=0
                     '''
                 }
             }

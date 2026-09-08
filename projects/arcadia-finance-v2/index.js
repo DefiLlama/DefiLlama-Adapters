@@ -47,6 +47,20 @@ const config = {
     resolveSlipstreamV2: false,
     resolveSlipstreamV3: true,
   },
+  robinhood: {
+    chainId: 4663,
+    factory: "0xDa14Fdd72345c4d2511357214c5B89A919768e59",
+    uniNFT: "0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3",
+    uniV4NFT: "0x58daec3116aae6D93017bAAea7749052E8a04fA7",
+    // Neither Slipstream nor Aerodrome is deployed on Robinhood, so Arcadia
+    // registers only the Uniswap V3 and V4 asset modules there.
+    pools: [
+      "0x803ea69c7e87D1d6C86adeB40CB636cC0E6B98E2", // wethPool
+      "0xf37c0C5996503Fdd2b5CCCE36E659cD30393AE59", // usdgPool
+    ],
+    resolveSlipstreamV2: false,
+    resolveSlipstreamV3: false,
+  },
   unichain: {
     chainId: 130,
     factory: "0xDa14Fdd72345c4d2511357214c5B89A919768e59",
@@ -107,12 +121,18 @@ async function unwrapArcadiaAeroLP({ api, ownerIds, chainConfig }) {
     }
   }
 
-  const wrappedData = await api.multiCall({ abi: abi.positionState, calls: wAERONFTIds, target: wAeroNFT });
-  const stakedData = await api.multiCall({ abi: abi.stakedAeroPositionState, calls: sAERONFTIds, target: sAeroNFT });
-  wrappedData.forEach((data) => api.add(data.pool, data.amountWrapped));
-  stakedData.forEach((data) => api.add(data.pool, data.amountStaked));
+  if (wAeroNFT && wAERONFTIds.length) {
+    const wrappedData = await api.multiCall({ abi: abi.positionState, calls: wAERONFTIds, target: wAeroNFT });
+    wrappedData.forEach((data) => api.add(data.pool, data.amountWrapped));
+  }
+  if (sAeroNFT && sAERONFTIds.length) {
+    const stakedData = await api.multiCall({ abi: abi.stakedAeroPositionState, calls: sAERONFTIds, target: sAeroNFT });
+    stakedData.forEach((data) => api.add(data.pool, data.amountStaked));
+  }
 
-  await uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft: slipNFT });
+  if (slipNFT) {
+    await uwrapStakedSlipstreamLP({ api, sSlipNftIds, nft: slipNFT });
+  }
   if (slipV2NFT) {
     await uwrapStakedSlipstreamLP({ api, sSlipNftIds: sSlipV2NftIds, nft: slipV2NFT });
   }
@@ -231,7 +251,7 @@ async function tvl (api) {
   if (uniV4Ids.length > 0) {
     await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: {"positionIds":uniV4Ids}})
   }
-  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true, resolveSlipstreamV2: !!resolveSlipstreamV2, resolveSlipstreamV3: !!resolveSlipstreamV3 })
+  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: !!slipNFT, resolveSlipstreamV2: !!resolveSlipstreamV2, resolveSlipstreamV3: !!resolveSlipstreamV3 })
 }
 
 module.exports = {

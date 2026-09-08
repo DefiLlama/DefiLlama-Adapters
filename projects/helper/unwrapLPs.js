@@ -10,7 +10,7 @@ const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray, slee
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const uniV3ABI = require('./abis/uniV3.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
-const { covalentGetTokens, blockscoutGetTokens, } = require("./token");
+const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
 const { tickToPrice } = require('./utils/tick');
 const { queryAllium } = require('./allium');
@@ -328,6 +328,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], api, own
         case 'flare': nftAddress = '0xD9770b1C7A6ccd33C75b5bcB1c0078f46bE46657'; break;
         case 'hyperliquid': nftAddress = '0x6eDA206207c09e5428F281761DdC0D300851fBC8'; break;
         case 'unichain': nftAddress = '0x943e6e07a7E8E791dAFC44083e54041D743C46E9'; break;
+        case 'robinhood': nftAddress = '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3'; break;
         case 'stable': nftAddress = '0x3BdC3437405f7D801b6036532713fc1F179136a6'; break; // stableswap
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
@@ -967,7 +968,6 @@ async function sumTokens2({
   resolveVlCVX = false,
   permitFailure = false,
   fetchCoValentTokens = false,
-  fetchBlockscoutTokens = false,
   tokenConfig = {
     // onlyWhitelisted
     // onlyUseExistingCache
@@ -1053,11 +1053,6 @@ group by
   if (fetchCoValentTokens && useCurrentBalances) {
     const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, tokenConfig))))
     cTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
-  }
-
-  if (fetchBlockscoutTokens) {
-    const bTokens = await Promise.all(owners.map(i => blockscoutGetTokens(i, api, tokenConfig)))
-    bTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
   }
 
   if (resolveNFTs) {

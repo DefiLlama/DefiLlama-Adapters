@@ -467,7 +467,11 @@ const aaveConfigs = {
     },
   },
   'lore': {
-    scroll: '0xBc6DE4458b7D6fbf82240ce8cC0CA6a2f4986eb5',
+    scroll: {
+      addressesProviderRegistry: '0xBc6DE4458b7D6fbf82240ce8cC0CA6a2f4986eb5',
+      isInsolvent: true,
+      deadFrom: "2025-03-24"
+    },
   },
   'iolend': {
     methodology,

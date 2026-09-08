@@ -37,7 +37,8 @@ const DEFAULTS = {
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
-  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
+  // dwellir throttles queryStorageAt bursts across both bifrost endpoints (same key) which stalled bifrost-dex; polkadot side moved to liebi
+  BIFROST_P_RPC: "wss://eu.bifrost-polkadot-rpc.liebi.com/ws",
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
   BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
   FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
@@ -79,6 +80,7 @@ const ENV_KEYS = [
   'TATUM_PUBLIC_API_KEY',
   'TATUM_API_KEY',
   'TEAM_WEBHOOK',
+  'HIRO_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

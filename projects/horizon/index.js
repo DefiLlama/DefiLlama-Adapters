@@ -57,7 +57,8 @@ const lpStaking = [
 ]
 
 module.exports = {
-            methodology: 'Counts liquidty on the token staking and lp staking contracts',
+    deadFrom: '2026-01-28', // horizonprotocol.com no longer resolves and the collateral subgraph has no allocations
+    methodology: 'Counts liquidty on the token staking and lp staking contracts',
     bsc: {
         tvl: collateral,
         staking: staking(tokenStaking.map(i => i.stakingContract), tokenStaking.map(i => i.stakingToken)),

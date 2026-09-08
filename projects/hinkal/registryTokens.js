@@ -984,6 +984,12 @@ const TRON_REGISTRY_TOKENS = [
   ADDRESSES.tron.USDC, // USDC
 ];
 
+const TEMPO_REGISTRY_TOKENS = [
+  "0x20c0000000000000000000000000000000000000", // pathUSD
+  "0x20c000000000000000000000b9537d11c60e8b50", // USDC.e
+  "0x20c00000000000000000000014f22ca97301eb73", // USDT0
+];
+
 const registryTokensByChain = {
   ethereum: ETHEREUM_REGISTRY_TOKENS,
   arbitrum: ARBITRUM_REGISTRY_TOKENS,
@@ -994,6 +1000,7 @@ const registryTokensByChain = {
   base: BASE_REGISTRY_TOKENS,
   blast: BLAST_REGISTRY_TOKENS,
   tron: TRON_REGISTRY_TOKENS,
+  tempo: TEMPO_REGISTRY_TOKENS,
 };
 
 module.exports = registryTokensByChain;

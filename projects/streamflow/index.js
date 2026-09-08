@@ -6,6 +6,12 @@ const { getConnection, sumTokens2: sumSolanaTokens } = require('../helper/solana
 const STAKE_PROGRAM = new PublicKey('STAKEvGqQTtzJZH6BWDcbpzXXn2BBerPAgQ3EGLN2GH')
 const STREAM = 'STREAMribRwybYpMmSYoCsQUdr6MZNXEqHgm7p1gu9M'
 
+// Tokens excluded from every bucket (locked, vested and staked) because their price is unreliable.
+const BLACKLISTED_TOKENS = new Set([
+  'GT9SetU8UWKJeCQsmMcNHH4pGPVSKrxgQsgu2wtYmZHW',
+  '5JkQBPrYdRK7JsC39KPPbZi7r6uLx3ZuL7jjMf4zN4c', // UCF
+])
+
 // shared between tvl and staking
 let stakePoolsPromise
 async function getStakePools() {
@@ -24,7 +30,7 @@ async function getStakePools() {
 
 async function stakeVaults(api, ownToken) {
   const pools = await getStakePools()
-  const vaults = pools.filter(p => (p.mint === STREAM) === ownToken).map(p => p.vault)
+  const vaults = pools.filter(p => (p.mint === STREAM) === ownToken && !BLACKLISTED_TOKENS.has(p.mint)).map(p => p.vault)
   if (vaults.length) await sumSolanaTokens({ api, tokenAccounts: [...new Set(vaults)] })
 }
 
@@ -70,7 +76,7 @@ async function fetchData(api, key, isVesting) {
     if (key === "amount_locked_core" && !whitelistedTokens.has(tokenHolding.mint)) {
       continue;
     }
-    if (tokenHolding.mint == 'GT9SetU8UWKJeCQsmMcNHH4pGPVSKrxgQsgu2wtYmZHW') continue;
+    if (BLACKLISTED_TOKENS.has(tokenHolding.mint)) continue;
     api.add(tokenHolding.mint, tokenHolding[key]);
   }
 }
@@ -82,8 +88,6 @@ async function tvl(api) {
 async function vesting(api) {
   await fetchData(api, "amount_locked_core", true);
   await fetchData(api, "amount_locked_vested");
-  // bad data from UCF 
-  delete api._balances['solana:5JkQBPrYdRK7JsC39KPPbZi7r6uLx3ZuL7jjMf4zN4c']
 }
 
 module.exports = {

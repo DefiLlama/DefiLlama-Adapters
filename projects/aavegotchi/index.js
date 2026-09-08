@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
-const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/http')
 
 const vaultContractETH = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 const tokensETH = [
@@ -24,39 +22,14 @@ const GHST_pools2 = [
 
 const ethTvl = async (api) =>  api.sumTokens({ owner: vaultContractETH, tokens: tokensETH })
 
-const graphUrl = 'https://api.goldsky.com/api/public/project_cmh3flagm0001r4p25foufjtt/subgraphs/aavegotchi-core-matic/prod/gn'
-const graphQuery = gql`
-query GET_SUMMONED_GOTCHIS ($minGotchiId: Int, $block: Int) {
-  aavegotchis(
-    first: 1000
-    skip: 0
-    block: { number: $block }
-    where: { status: "3" gotchiId_gt: $minGotchiId }
-    orderBy: gotchiId
-    orderDirection: asc
-  ) { gotchiId collateral stakedAmount }
-}`
-async function getGotchisCollateral(timestamp, block, api) {
-  const allGotchis = [];
-  let minGotchiId = 0;
-  while (minGotchiId !== -1) {
-    const { aavegotchis } = await request( graphUrl, graphQuery, { minGotchiId, block });
-    if (aavegotchis && aavegotchis.length > 0) {
-      minGotchiId = parseInt(aavegotchis[aavegotchis.length - 1].gotchiId);
-      allGotchis.push(...aavegotchis);
-    } else minGotchiId = -1;
-  }
-  allGotchis.map(i => api.add(i.collateral, i.stakedAmount));
-}
-
+// gotchi collateral is no longer counted: the protocol migrated to base, the aavegotchi-core-matic
+// subgraph was deleted, and the polygon diamond no longer holds any collateral aTokens onchain
 const polygonTvl = async (api) => {
-  const block = await getBlock(api.timestamp, 'polygon', { polygon: api.block }) - 500
-
   await api.sumTokens({ owners: vaultContractsPolygon, tokens: [GHST_Polygon] })
-  await getGotchisCollateral(api.timestamp, block, api);
 };
 
 module.exports = {
+  timetravel: false,
   ethereum: {
     tvl: ethTvl,
   },

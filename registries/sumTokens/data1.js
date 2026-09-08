@@ -31,7 +31,7 @@ module.exports = {
   },
   "bulk-trade": {
     "timetravel": false,
-    "methodology": "Counts USDC deposited into the Bulk Trade Season 1 pre-deposits.",
+    "methodology": "Counts USDC held in BULK's Solana mainnet custody vault, which backs collateral deposited for trading and margin.",
     "solana": { "tokenAccounts": ["HwdwwKH1tMXo7ggTKcA5cdQrpcgqSoVib2eQh3BiyEQL"] }
   },
   "stakenova": {
@@ -731,5 +731,11 @@ module.exports = {
     "timetravel": false,
     "methodology": "Counts BTC (cbBTC) received from mining held in the Sats Vault.",
     "solana": { "tokenAccounts": ["2zpcctvd7sCdtWe4bAYcNmfVFzaiFVtH81tfMAWCtMh9"] }
+  },
+  "tessera-v": {
+    "methodology": "TVL is the value of SPL and Token-2022 balances held in Tessera V vaults controlled by its Solana authority account.",
+    "solana": {
+      "owner": "8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF"
+    }
   },
 }

@@ -7,6 +7,21 @@ const configs = getCuratorExport({
   blockchains: {
     base: {
       eulerVaultOwners: ["0x44102929B2248b1cefe2E65e9D580893B6D6823A"],
+      // AlphaGrowth Base AI: creator differs from the owner discovered above.
+      // https://github.com/euler-xyz/euler-labels/blob/master/8453/products.json
+      euler: [
+        "0x9F876520F1937D4B4f6F4DefE29fa5EA6d4526d0", // AERO
+        "0xC64FD6138f980a5587412dAC75E04363046aE32E", // WETH
+        "0xEef57677c2FC1a930eed234E3545e750C88f6743", // USDC
+      ],
+    },
+    ethereum: {
+      // Additional Mainnet RWA collateral vaults, absent from the sunset list.
+      // https://github.com/euler-xyz/euler-labels/blob/master/1/products.json
+      euler: [
+        "0x05E09415398659B19C5aeF202289270B37F1Fb31", // PAXG
+        "0xF81b08Cb4669049049B9C2A38c7D27d480655Bb3", // reUSDe
+      ],
     },
     unichain: {
       eulerVaultOwners: ["0x8d9fF30f8ecBA197fE9492A0fD92310D75d352B9"],
