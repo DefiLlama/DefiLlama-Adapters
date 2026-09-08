@@ -1026,7 +1026,8 @@ module.exports = {
         "0x944644Ea989Ec64c2Ab9eF341D383cEf586A5777",
         "0x674bdf20A0F284D710BC40872100128e2d66Bd3f"
       ],
-      "fetchCoValentTokens": true
+      "fetchCoValentTokens": true,
+      "permitFailure": true
     },
     "taiko": {
       "owners": ["0x3e71a41325e1d6B450307b6535EC48627ac4DaCC"],

@@ -717,6 +717,7 @@ const uniV3Configs = {
     hyperliquid: {
       factory: '0x1Cd8363DfAdA19911f745BA984fce02b42c943bF',
       fromBlock: 20255136,
+      permitFailure: true, // pools with hyperliquid pseudo-token addresses (0x333..., 0xccc...) revert balanceOf
     },
   },
   'icecreamswap-v3': {
@@ -1770,7 +1771,7 @@ const uniV3Configs = {
     rsk: { factory: '0x82dF0a279767021734EcE752979B34b3959C25D8', fromBlock: 8275250 }
   },
   'hyperlynx-v3': {
-    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735 }
+    hyperliquid: { factory: '0x418CB4e449869e97DB45586EBD9350E1d0424f95', fromBlock: 38231735, permitFailure: true }
   },
   'machima': {
     base: { factory: '0xADd30837a707cCE4567eEa2C27d0617270d54C75', fromBlock: 47460733 }
