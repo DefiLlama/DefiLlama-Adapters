@@ -1,31 +1,21 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const sui = require('../helper/chain/sui')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const config = {
-  arbitrum: { factory: '0x503A14768e23456620fB3Cb61e37A36A2736Cbd0', fromBlock: 107875529, }
+// Surge's V6 vault: principal is held 1:1 in the vault (no-loss design — the
+// vault's total_principal field IS the TVL). Unlike LST protocols (see
+// haedal/index.js) there's no rewards/fees/unstaked math needed here: the
+// contract enforces that total_principal always equals the sum of active
+// stakers' deposits, denominated directly in SUI mist.
+const V6_VAULT = '0xcc6a5e55e3099b2b9d777b9f51b6a5807a03888c613be0b401468a94cc3f1ba5'
+
+async function tvl(api) {
+  const { fields: vault } = await sui.getObject(V6_VAULT)
+  api.add(ADDRESSES.sui.SUI, vault.total_principal)
 }
 
-Object.keys(config).forEach(chain => {
-  const { factory, fromBlock, } = config[chain]
-  const _getLogs = (api) => getLogs({
-    api,
-    target: factory,
-    topics: ['0xfd4f84c703fbc9ed47d26b2769a6133a02ea690b88125c716c7321699d0115fa'],
-    eventAbi: 'event PoolDeployed(uint256 poolId, address pool, address indexed collateralToken, address indexed loanToken, uint256 indexed maxCollateralRatioMantissa, uint256 surgeMantissa, uint256 collateralRatioFallDuration, uint256 collateralRatioRecoveryDuration, uint256 minRateMantissa, uint256 surgeRateMantissa, uint256 maxRateMantissa)',
-    onlyArgs: true,
-    fromBlock,
-  })
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const logs = await _getLogs(api)
-      const ownerTokens = logs.map(l => [[l.collateralToken, l.loanToken], l.pool])
-      return sumTokens2({ api, ownerTokens, })
-    },
-    borrowed: async (api) => {
-      const logs = await _getLogs(api)
-      const borrowed = await api.multiCall({  abi: 'uint256:lastTotalDebt', calls: logs.map(i => i.pool) })
-      api.addTokens(logs.map(i => i.loanToken), borrowed)
-      return api.getBalances()
-    },
-  }
-})
+module.exports = {
+  methodology: 'TVL is the total SUI principal staked in the Surge prize-linked staking vault (V6). Principal is held 1:1 and never used for anything other than covering staker withdrawals — enforced on-chain, verifiable via the V6_VAULT object.',
+  sui: {
+    tvl,
+  },
+}
