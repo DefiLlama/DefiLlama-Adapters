@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { post } = require('../helper/http')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getUniqueAddresses } = require('../helper/tokenMapping')
@@ -52,6 +53,22 @@ const getAccountMarginSummaryAbi = 'function getAccountMarginSummary(uint32 perp
 const getSpotBalanceIface = new Interface([getSpotBalanceAbi])
 const getAccountMarginSummaryIface = new Interface([getAccountMarginSummaryAbi])
 
+// The account abstraction mode (standard/unified account/portfolio margin) is a HyperCore-side flag with no read
+// precompile, so it is read from the info API and used strictly as a validity gate: HyperCore balances are only
+// counted for standard accounts, so TVL can be understated but never overstated if pools were to enable other modes.
+const HYPERLIQUID_INFO_API = 'https://api.hyperliquid.xyz/info'
+const STANDARD_ABSTRACTION_MODES = new Set(['default', 'disabled'])
+
+async function isStandardAccount(pool) {
+  try {
+    const mode = await post(HYPERLIQUID_INFO_API, { type: 'userAbstraction', user: pool })
+    return STANDARD_ABSTRACTION_MODES.has(mode)
+  } catch (e) {
+    sdk.log('hyperliquid userAbstraction call failed for', pool, '- skipping HyperCore balances')
+    return false
+  }
+}
+
 async function callPrecompile(api, precompile, iface, name, params) {
   try {
     // precompiles only respond to top-level staticcalls, so a direct provider call is used instead of Multicall3
@@ -67,6 +84,9 @@ async function callPrecompile(api, precompile, iface, name, params) {
 async function addHyperCoreBalances(api, pools) {
   if (api.chain !== 'hyperliquid' || !pools.length) return
   const usdc = ADDRESSES.hyperliquid.USDC
+  const modes = await Promise.all(pools.map(isStandardAccount))
+  pools = pools.filter((_, i) => modes[i])
+  if (!pools.length) return
   const [spotBalances, marginSummaries] = await Promise.all([
     Promise.all(pools.map(pool => callPrecompile(api, SPOT_BALANCE_PRECOMPILE, getSpotBalanceIface, 'getSpotBalance', [pool, 0]))), // USDC is token 0 on HyperCore spot
     Promise.all(pools.map(pool => callPrecompile(api, ACCOUNT_MARGIN_SUMMARY_PRECOMPILE, getAccountMarginSummaryIface, 'getAccountMarginSummary', [0, pool]))),
