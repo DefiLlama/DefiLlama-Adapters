@@ -1,23 +1,28 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sui = require("../helper/chain/sui");
+const { post } = require('../helper/http')
 
-// Example type: 0x9e20798d97c110f6b36b7b3d8543aa9246322ef2fd8d83ad79ef3325d473bc2f::vault::Vault<
-//  0x08b18262b85423f64b60f279f0f1d935bb03b7cc9eebd8018e20bb1575f9d39a::af_lp::AF_LP,
-//  0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC>
-// >
-const AFLP_VAULT_ID =
-    "0x1f75030f3e687f824cce9354d96701cd72ab0e6f86a495fcca1ba70cabc13aea";
+// Production afLP vault after the relaunch.
+const AFLP_VAULT_ID = '0x294d0b728cb56759a6686ea0ca672a8f7e66f84f0a426a490377ed939f0ef604'
 
 async function tvl(api) {
-    const vault = await sui.getObject(AFLP_VAULT_ID);
-    const types = vault.type.replace(">", "").split("<")[1];
-    const collateralCoinType = types.split(", ")[1];
-    const balance = vault.fields.total_deposited_collateral;
-    api.add(collateralCoinType, balance);
+    const { vaults } = await post('https://aftermath.finance/api/perpetuals/vaults', {
+        vaultIds: [AFLP_VAULT_ID],
+    }, { timeout: 30000 })
+
+    if (!Array.isArray(vaults) || vaults.length !== 1 || vaults[0]?.objectId !== AFLP_VAULT_ID)
+        throw new Error('Expected the production Aftermath afLP vault in the API response')
+
+    const vault = vaults[0]
+    if (vault.collateralCoinType !== ADDRESSES.sui.USDC_CIRCLE)
+        throw new Error('Unexpected collateral coin type for the Aftermath afLP vault')
+    if (!Number.isFinite(vault.tvlUsd) || vault.tvlUsd < 0)
+        throw new Error('Invalid TVL for the Aftermath afLP vault')
+
+    api.addUSDValue(vault.tvlUsd)
 }
 
 module.exports = {
-    methodology: "Tracks USDC collateral deposited into the Aftermath afLP vault on Sui",
+    methodology: "Tracks the USD value of idle USDC collateral and deployed positions, including unrealized PnL and funding, in Aftermath's production afLP vault using the Aftermath API.",
     timetravel: false,
     sui: {
         tvl,
