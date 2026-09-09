@@ -12,6 +12,7 @@ const { getTvl: getDriftVaultTvl } = require("./utils/drift");
 const { getTvl: getKaminoVaultTvl } = require("./utils/kamino");
 const { getTvl: getHyperliquidVaultTvl } = require("./utils/hyperliquid");
 const { getTvl: getNtVaultTvl } = require("./utils/ntVaults");
+const { addTvl: addVoltrTvl } = require("./utils/voltr");
 
 async function getDriftAndBundleVaults() {
   const vaults = await getConfig("neutral-trade/vaults", VAULTS_REGISTRY_URL);
@@ -65,11 +66,16 @@ async function nt_vaults_tvl(api) {
   }
 }
 
+async function voltr_vaults_tvl(api) {
+  await addVoltrTvl(api);
+}
+
 async function tvl(api) {
   // await drift_vaults_tvl(api);
   await kamino_vaults_tvl(api);
   await hyperliquid_vaults_tvl(api);
   await nt_vaults_tvl(api);
+  await voltr_vaults_tvl(api);
 }
 
 
