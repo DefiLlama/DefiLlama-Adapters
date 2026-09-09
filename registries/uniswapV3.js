@@ -68,6 +68,8 @@ const uniV3Configs = {
   },
   'prism-dex': {
     start: 7845865,
+    deadFrom: '2026-09-09',
+    hallmarks: [['2026-09-09', 'Prism DEX shut down']],
     megaeth: { factory: '0x1adb8f973373505bb206e0e5d87af8fb1f5514ef', fromBlock: 7845865 },
   },
   'superswap-v3': {
