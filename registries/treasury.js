@@ -4351,6 +4351,22 @@ const configs = {
       ],
     },
   },
+  'treasury/plus-mainnet': {
+    ethereum: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.ethereum.USDT,
+      ],
+      owners: ['0x5CfEa22674e2E7d251dEB693c0490b6389334F0f'],
+    },
+    bsc: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.bsc.USDT,
+      ],
+      owners: ['0x5CfEa22674e2E7d251dEB693c0490b6389334F0f'],
+    },
+  },
   'treasury/p-network': {
     ethereum: {
       tokens: [nullAddress],
