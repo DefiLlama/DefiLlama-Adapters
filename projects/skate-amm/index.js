@@ -36,6 +36,8 @@ const evm_config = {
   ],
   robinhood: [
     { pool: '0x84e35a36da4C0185fe6BB07940b1e58f66441B79', token0: ADDRESSES.robinhood.WETH, token1: ADDRESSES.robinhood.USDG }, // WETH/USDG
+    { pool: '0x066138b687F7dacd31937276a6E13E37339B5690', token0: '0xC9a981FEE1F9DEc688bb123ccDeCc63D0deBFC4e', token1: ADDRESSES.robinhood.USDG }, // GLD/USDG
+    { pool: '0x5D8aF540801103DeAdA9890F92615dfdB1F7811e', token0: '0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC', token1: ADDRESSES.robinhood.USDG }, // NVDA/USDG
   ],
 }
 
