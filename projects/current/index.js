@@ -10,8 +10,18 @@ const MARKET_OBJECT_IDS = [
   '0xeeef7e9abe201e16c3ca6417b91fa49bec28edcb077eb2fd4a1f126c251e6899', // EthenaMarket
 ]
 
+const PRICE_PROXIES = {
+  '0x7a479e7a6e75323ac9125656a9ca795e11ea42165ac4206af44d1b66e9563be9::svbtc::SVBTC': { coingeckoId: 'bitcoin', decimals: 8 },
+}
+
 function coinTypeFromName(name) {
   return name.startsWith('0x') ? name : `0x${name}`
+}
+
+function addReserveAmount(api, coinType, amount) {
+  const proxy = PRICE_PROXIES[coinType]
+  if (!proxy) return api.add(coinType, amount)
+  api.addCGToken(proxy.coingeckoId, Number(amount) / 10 ** proxy.decimals)
 }
 
 let _reserveRowsPromise
@@ -37,13 +47,13 @@ async function getReserveRows() {
 
 async function tvl(api) {
   for (const { coinType, reserve } of await getReserveRows()) {
-    api.add(coinType, reserve.cash)
+    addReserveAmount(api, coinType, reserve.cash)
   }
 }
 
 async function borrowed(api) {
   for (const { coinType, reserve } of await getReserveRows()) {
-    api.add(coinType, BigInt(reserve.debt.fields.value) / WAD)
+    addReserveAmount(api, coinType, BigInt(reserve.debt.fields.value) / WAD)
   }
 }
 
