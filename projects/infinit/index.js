@@ -68,5 +68,5 @@ module.exports = {
   bsc: {
     staking: sumTokensExport({ "owners": ["0xc8e6c14ccebed218a64df570025c5a1eeb0cdadc"], "tokens": ["0x61fac5f038515572d6f42d4bcb6b581642753d50"] }),
   },
-  methodology: "TVL is calculated per vault based on its lifecycle stage. Before the withdrawal period opens, it equals the share token totalSupply. Shares are minted 1:1 with asset-token deposits, so the supply represents committed capital (during trading, assets sit in Hyperliquid/DEX trading wallets). Once the withdrawal period opens, it equals the actual asset-token balance held by the vault contract, including trading PnL."
+  methodology: "TVL is the sum of all vaults, each valued based on its lifecycle stage. Before the withdrawal period opens, it equals the share token total supply. Shares are minted 1:1 with asset-token deposits, so the supply represents committed capital (during trading, assets sit in Hyperliquid/ DEX trading wallets). Once the withdrawal period opens, it equals the actual asset token balance held by the vault contract, including trading PnL."
 };
