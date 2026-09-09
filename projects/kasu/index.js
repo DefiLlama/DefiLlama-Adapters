@@ -71,7 +71,7 @@ async function borrowed(api) {
     if (externalContract) {
       const calls = pools.map(pool => ({ target: externalContract, params: [pool] }))
       const externalLoans = await api.multiCall({ abi: 'function externalTVLOfPool(address) view returns (uint256)', calls, permitFailure: true })
-      api.add(asset, externalLoans)
+      externalLoans.forEach(amount => { if (amount) api.add(asset, amount) })
     }
   }
 }
