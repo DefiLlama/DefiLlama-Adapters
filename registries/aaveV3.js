@@ -16,7 +16,10 @@ const configs = {
     fuse: ['0x87cB512CFB0f18F4Dd9652a186922cf6A4e63213'],
   },
   'unilend-protocol': {
-    unit0: ['0x99118c1Ca7D0DC824719E740d4b4721009a267d6'],
+    unit0: {
+      poolDatas: ['0x99118c1Ca7D0DC824719E740d4b4721009a267d6'],
+      isInsolvent: true,
+    },
   },
   'purrlend': {
     hyperliquid: { poolDatas: ['0xa8Ca6a4A485485910aA4023b9963Dfd2f3A5aeb0'], isInsolvent: true },

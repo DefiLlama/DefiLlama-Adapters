@@ -65,8 +65,8 @@ const fixMapping = {
     // 103: { geckoId: 'acala-dollar', decimals: 12, },
     102: { geckoId: 'tether', decimals: 6, },
     107: { geckoId: 'karura', decimals: 12, },
-    119: { geckoId: 'kintsugi', decimals: 12, },
-    121: { geckoId: 'kintsugi-btc', decimals: 8, },
+    // 119: { geckoId: 'kintsugi', decimals: 12, },
+    // 121: { geckoId: 'kintsugi-btc', decimals: 8, },
     123: { geckoId: 'genshiro', decimals: 9, },
 
   }

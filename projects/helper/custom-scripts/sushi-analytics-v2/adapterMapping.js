@@ -33,13 +33,13 @@ module.exports = {
         // 'parallel-stream': '/parallel-stream/api',
         // 'polkadex': '/polkadex/api', // dead/paused ??
       // },
-      {
-        'interlay-btc': '/interlay-btc/api',
-        'interlay-staking': '/interlay-staking/api',
-        'interlay-collateral': '/interlay-collateral/api',
-        'interlay-dex': '/interlay-dex/api',
-        'interlay-lending': '/interlay-lending/api',
-      },
+      // {  // interlay chain is shutdown
+      //   'interlay-btc': '/interlay-btc/api',
+      //   'interlay-staking': '/interlay-staking/api',
+      //   'interlay-collateral': '/interlay-collateral/api',
+      //   'interlay-dex': '/interlay-dex/api',
+      //   'interlay-lending': '/interlay-lending/api',
+      // },
       {
         'hydradx': '/hydradx/api.js',
         // 'zest-v2': '/zest-v2/api.js',
@@ -62,7 +62,7 @@ module.exports = {
         'karura-dex': '/karura-dex/api',
       },
       {
-        'kintsugi': '/kintsugi/api',
+        // 'kintsugi': '/kintsugi/api',   // kintsugi chain is shutdown
         // 'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
         // 'jewelswap-nft': '/jewelswap-nft/index',
 
