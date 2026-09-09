@@ -1,6 +1,5 @@
 const axios = require('axios')
 const { hash } = require('starknet')
-const BigNumber = require('bignumber.js')
 
 const CONFIGURED_STARKNET_RPC = process.env.STARKNET_RPC
 const STARKNET_RPC = !CONFIGURED_STARKNET_RPC || CONFIGURED_STARKNET_RPC.includes('rpc.starknet.lava.build')
@@ -8,8 +7,6 @@ const STARKNET_RPC = !CONFIGURED_STARKNET_RPC || CONFIGURED_STARKNET_RPC.include
   : CONFIGURED_STARKNET_RPC
 const REGISTRY = '0x37ad81bcfa789e849216f5ea973c6ac22b5c9cdb05c29e9d5667252440d8300'
 const REGISTRY_DEPLOYMENT_BLOCK = 10474202
-const START = 1780637758 // 2026-06-05 05:35:58 UTC, first non-zero ArcX TVL
-// Source chains identify prices only; all balance reads and TVL attribution are Starknet.
 const PRICE_CHAIN_BY_LZ_EID = { 30101: 'ethereum' }
 
 const VTOKEN_ADDED = hash.getSelectorFromName('VTokenAdded')
@@ -114,67 +111,60 @@ async function fetchRegistryEvents() {
       type: 'omnichain',
       block: event.block_number,
       vToken: normalizeFelt(event.keys[1]),
+      gateway: normalizeEvmAddress(event.data[0]),
       asset: normalizeEvmAddress(event.keys[3]),
       lzEid: Number(BigInt(event.data[2])),
     }
   })
 }
 
-async function starknetTvl(api) {
-  const block = api.block ?? await getBlockAtOrBefore(api.timestamp)
-  if (block === null) return
-
-  // Refresh for each execution so a reused process discovers newly registered vaults.
+async function getRegisteredVaults(timestamp) {
+  const block = timestamp ? await getBlockAtOrBefore(timestamp) : await rpc('starknet_blockNumber', [])
+  if (block === null) return { block: null, vaults: [] }
   const events = await fetchRegistryEvents()
   const vaults = events.filter(({ block: eventBlock }) => eventBlock <= block)
-  const omnichainVaults = vaults.filter(({ type }) => type === 'omnichain')
-  const priceTokens = omnichainVaults.map(({ lzEid, asset }) => {
-    const chain = PRICE_CHAIN_BY_LZ_EID[lzEid]
-    if (!chain) throw new Error(`Missing price-chain mapping for LayerZero endpoint ${lzEid}`)
-    return `${chain}:${asset}`
-  })
-
-  // Price-service metadata converts Starknet units to source-token units without EVM calls.
-  // USD prices themselves are applied by DefiLlama at the requested timestamp.
-  const tokenMetadata = {}
-  for (let i = 0; i < priceTokens.length; i += 20) {
-    const { data } = await axios.get(`https://coins.llama.fi/prices/current/${priceTokens.slice(i, i + 20).join(',')}`)
-    Object.assign(tokenMetadata, data.coins)
+  for (const vault of vaults) {
+    if (vault.type === 'omnichain' && !PRICE_CHAIN_BY_LZ_EID[vault.lzEid])
+      throw new Error(`Missing price-chain mapping for LayerZero endpoint ${vault.lzEid}`)
   }
+  return { block, vaults }
+}
 
-  const balances = await Promise.all(vaults.map(async ({ type, vToken, lzEid, asset }) => {
-    if (type === 'omnichain') {
-      const priceToken = `${PRICE_CHAIN_BY_LZ_EID[lzEid]}:${asset}`
-      const sourceDecimals = tokenMetadata[priceToken]?.decimals
-      if (!Number.isInteger(sourceDecimals)) throw new Error(`Missing token decimals for ${priceToken}`)
+// Starknet: legacy vaults hold their underlying on Starknet - counted at total_assets() in the vault's asset().
+async function starknetTvl(api) {
+  const { block, vaults } = await getRegisteredVaults(api.timestamp)
+  if (block === null) return
+  const legacyVaults = vaults.filter(({ type }) => type === 'legacy')
 
-      const [supplyResult, decimalsResult] = await Promise.all([
-        starknetCall(vToken, 'total_supply', block),
-        starknetCall(vToken, 'decimals', block),
-      ])
-      const decimals = Number(BigInt(decimalsResult[0]))
-      const amount = BigNumber(parseUint256(supplyResult).toString()).shiftedBy(sourceDecimals - decimals).toFixed()
-      return { asset: priceToken, amount, skipChain: true }
-    }
-
+  const balances = await Promise.all(legacyVaults.map(async ({ vToken }) => {
     const [assetResult, totalAssetsResult] = await Promise.all([
       starknetCall(vToken, 'asset', block),
       starknetCall(vToken, 'total_assets', block),
     ])
-
-    return {
-      asset: normalizeFelt(assetResult[0]),
-      amount: parseUint256(totalAssetsResult),
-    }
+    return { asset: normalizeFelt(assetResult[0]), amount: parseUint256(totalAssetsResult) }
   }))
 
-  balances.forEach(({ asset, amount, skipChain = false }) => api.add(asset, amount, { skipChain }))
+  balances.forEach(({ asset, amount }) => api.add(asset, amount))
+}
+
+async function tvl(api) {
+  const { block, vaults } = await getRegisteredVaults(api.timestamp)
+  if (block === null) return
+  const chainVaults = vaults.filter(({ type, lzEid }) => type === 'omnichain' && PRICE_CHAIN_BY_LZ_EID[lzEid] === api.chain)
+  if (!chainVaults.length) return
+
+  const custodyWallets = await api.multiCall({ abi: 'address:mpcWallet', calls: chainVaults.map(({ gateway }) => gateway) })
+  const collateral = await api.multiCall({ abi: 'erc20:balanceOf', calls: chainVaults.map(({ asset }, i) => ({ target: asset, params: [custodyWallets[i]] })) })
+  chainVaults.forEach(({ asset }, i) => api.add(asset, collateral[i]))
 }
 
 module.exports = {
-  start: START,
+  start: '2026-06-05',
   timetravel: true,
   doublecounted: true,
-  methodology: 'Discovers vaults from the ArcX Registry on Starknet. Legacy vaults contribute total_assets in their underlying token. Omnichain vaults contribute their Starknet total_supply, normalized by token decimals and valued as 1:1 claims on the registered source asset using DefiLlama prices. All TVL is attributed to Starknet. Source-chain backing and transfers in flight are not measured; ST and EPT are excluded to avoid counting the same capital twice. Legacy capital is deployed through Wildcat, so the adapter is marked doublecounted.',
+  methodology: 'Discovers vaults from the ArcX Registry on Starknet. Legacy vaults contribute total_assets in their underlying Starknet token. Omnichain vault collateral is custodied in a per-vault MPC wallet, counted as that wallet\'s balance and attributed to the source chain. ST and EPT are excluded to avoid counting the same capital twice. Legacy capital is deployed through Wildcat, so the adapter is marked doublecounted.',
   starknet: { tvl: starknetTvl },
 }
+
+for (const chain of new Set(Object.values(PRICE_CHAIN_BY_LZ_EID)))
+  module.exports[chain] = { tvl }
