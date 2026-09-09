@@ -1,9 +1,13 @@
-const sdk = require('@defillama/sdk')
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const BigNumber = require("bignumber.js");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 
+// Pareto credit vaults are Idle CDOs whose strategy lends the whole deposit to a single
+// borrower (Fasanara, Bastion, FalconX, ...). getContractValue() is the vault's accounting
+// value: deposits plus accrued interest, wherever the money sits. pendingWithdraws is
+// principal that redeeming lenders are owed and the borrower has not yet returned. The
+// only part still held by the protocol is the underlying sitting in the CDO or its strategy
+// between epochs, so that is tvl and the rest is borrowed.
 const contracts = {
   ethereum: {
     usp: '0x97cCC1C046d067ab945d3CF3CC6920D3b1E54c88', // USP
@@ -13,7 +17,7 @@ const contracts = {
     },
     credits: [
       "0xf6223C567F21E33e859ED7A045773526E9E3c2D5", // Fasanara Yield vault,
-      "0x4462eD748B8F7985A4aC6b538Dfc105Fce2dD165", // Bastion 
+      "0x4462eD748B8F7985A4aC6b538Dfc105Fce2dD165", // Bastion
       "0x14B8E918848349D1e71e806a52c13D4e0d3246E0", // Adaptive Frontier
       "0x433D5B175148dA32Ffe1e1A37a939E1b7e79be4d", // FalconX
     ],
@@ -38,11 +42,11 @@ const contracts = {
   }
 }
 
-async function getUspTvl(api, usp, credits){
-  const [
-    queueAddress,
-    uspTotalSupply,
-  ] = await Promise.all([
+// USP is minted against USDC that the queue deploys into yield sources. The share deployed
+// into Pareto's own credit vaults is already covered by the credit vault figures below, so
+// only the remainder is counted here.
+async function getUspResidual(api, usp, credits) {
+  const [queueAddress, uspTotalSupply] = await Promise.all([
     'address:queue',
     'uint256:totalSupply',
   ].map(abi => api.call({ abi, target: usp })))
@@ -50,35 +54,23 @@ async function getUspTvl(api, usp, credits){
   const yieldSources = await api.call({
     abi: 'function getAllYieldSources() view returns (tuple(address token, address source, address vaultToken, uint256 maxCap, tuple(bytes4 method, uint8 methodType)[] allowedMethods, uint8 vaultType)[] yieldSources)',
     target: queueAddress,
-    chain: api.chain
   })
 
-  // Exclude amount deposited in credit vaults to avoid double-counting
-  const creditsSources = yieldSources.filter( s => credits.map( addr => addr.toLowerCase() ).includes(s.source.toLowerCase()) )
-  const yieldSourcesAmounts = await Promise.all(creditsSources.map( s => api.call({ abi: 'function getCollateralsYieldSourceScaled(address) returns (uint256)', target: queueAddress, params: [s.source] }) ))
-  const uspTvl = yieldSourcesAmounts.reduce( (acc, amount) => {
-    return BigNumber(acc).minus(amount)
-  }, uspTotalSupply)
-
-  return uspTvl/1e12
-  
+  const creditSet = new Set(credits.map(addr => addr.toLowerCase()))
+  const creditSources = yieldSources.filter(s => creditSet.has(s.source.toLowerCase()))
+  const creditAmounts = await api.multiCall({
+    abi: 'function getCollateralsYieldSourceScaled(address) returns (uint256)',
+    target: queueAddress,
+    calls: creditSources.map(s => s.source),
+  })
+  const residual = creditAmounts.reduce((acc, amount) => acc.minus(amount), BigNumber(uspTotalSupply))
+  return residual.div(1e12).toFixed(0) // USP has 18 decimals, USDC has 6
 }
 
-async function tvl(api) {
-  const { usp = undefined, credits = [], excludeVaultsAfterTimestamp = [], factory } = contracts[api.chain]
-  const balances = {}
-  const ownerTokens = {}
-  const blacklistedTokens = []
-  const trancheTokensMapping = {}
+async function getCreditVaults(api) {
+  const { credits = [], excludeVaultsAfterTimestamp = {}, factory } = contracts[api.chain]
+  const vaults = [...credits]
 
-  // Add USP Total Supply
-  if (usp){
-    const uspUnderlying = ADDRESSES[api.chain].USDC
-    const scaledUSPTvl = await getUspTvl(api, usp, credits)
-    sdk.util.sumSingleBalance(balances, uspUnderlying, scaledUSPTvl, api.chain)
-  }
-
-  // Add credit vaults from factory
   if (factory) {
     const logs = await getLogs({
       api,
@@ -88,102 +80,66 @@ async function tvl(api) {
       onlyArgs: true,
       fromBlock: factory.block,
     })
-
-    logs.forEach( l => {
-      if (!credits.find( addr => addr.toLowerCase() === l.proxy.toLowerCase())){
-        credits.push(l.proxy)
-      }
+    const known = new Set(vaults.map(addr => addr.toLowerCase()))
+    logs.forEach(l => {
+      if (!known.has(l.proxy.toLowerCase())) vaults.push(l.proxy)
     })
   }
-  
-  // Exclude credit vaults by block
-  const creditsFiltered = credits.filter( addr => {
-    const foundTimestamp = excludeVaultsAfterTimestamp[addr]
-    return !foundTimestamp || !api.timestamp || Number(foundTimestamp)>Number(api.timestamp)
-  } )
 
-  const [
-    cdoToken,
-    aatrances,
-    bbtrances,
-    aaprices,
-    bbprices,
-  ] = await Promise.all([
-    "address:token",
-    "address:AATranche",
-    "address:BBTranche",
-    "uint256:priceAA",
-    "uint256:priceBB"
-  ].map(abi => api.multiCall({ abi, calls: creditsFiltered })))
+  return vaults.filter(addr => {
+    const cutoff = excludeVaultsAfterTimestamp[addr]
+    return !cutoff || !api.timestamp || Number(cutoff) > Number(api.timestamp)
+  })
+}
 
-  blacklistedTokens.push(...creditsFiltered)
-  blacklistedTokens.push(...aatrances)
-  blacklistedTokens.push(...bbtrances)
+async function getCreditVaultData(api) {
+  const vaults = await getCreditVaults(api)
+  const [tokens, strategies, contractValue] = await Promise.all([
+    'address:token',
+    'address:strategy',
+    'uint256:getContractValue',
+  ].map(abi => api.multiCall({ abi, calls: vaults })))
 
-  // Load tokens decimals
-  const callsDecimals = [...cdoToken].map( t => ({ target: t, params: [] }) )
-  const decimalsResults = await api.multiCall({abi: 'erc20:decimals', calls: callsDecimals})
-  const tokensDecimals = decimalsResults.reduce( (tokensDecimals, decimals, i) => {
-    const call = callsDecimals[i]
-    tokensDecimals[call.target] = decimals
-    return tokensDecimals
-  }, {})
-
-  const [creditsStrategies, creditsTokens] = await Promise.all(['address:strategy', 'address:token'].map( abi => api.multiCall({ abi, calls: creditsFiltered })))
-
-  // Get CDOs contract values
-  const [
-    contractValue,
-    pendingWithdraws,
-    pendingInstantWithdraws
-  ] = await Promise.all([
-    api.multiCall({ abi: 'uint256:getContractValue', calls: creditsFiltered }),
-    api.multiCall({ abi: 'uint256:pendingWithdraws', calls: creditsStrategies }),
-    api.multiCall({ abi: 'uint256:pendingInstantWithdraws', calls: creditsStrategies }),
+  const [pendingWithdraws, pendingInstantWithdraws, heldByVault, heldByStrategy] = await Promise.all([
+    api.multiCall({ abi: 'uint256:pendingWithdraws', calls: strategies }),
+    api.multiCall({ abi: 'uint256:pendingInstantWithdraws', calls: strategies }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: tokens[i], params: [vault] })) }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: strategies.map((strategy, i) => ({ target: tokens[i], params: [strategy] })) }),
   ])
 
-  // Count pending withdraws
-  pendingWithdraws.map( (amount, i) => sdk.util.sumSingleBalance(balances, creditsTokens[i], amount, api.chain))
-  pendingInstantWithdraws.map( (amount, i) => sdk.util.sumSingleBalance(balances, creditsTokens[i], amount, api.chain))
+  return vaults.map((vault, i) => ({
+    vault,
+    token: tokens[i],
+    held: BigInt(heldByVault[i]) + BigInt(heldByStrategy[i]),
+    receivable: BigInt(contractValue[i]) + BigInt(pendingWithdraws[i]) + BigInt(pendingInstantWithdraws[i]),
+  }))
+}
 
-  cdoToken.forEach((token, i) => {
-    const tokenDecimals = tokensDecimals[token] || 18
-    trancheTokensMapping[aatrances[i]] = {
-      token,
-      decimals: tokenDecimals,
-      price: BigNumber(aaprices[i]).div(`1e${tokenDecimals}`).toFixed()
-    }
-    trancheTokensMapping[bbtrances[i]] = {
-      token,
-      decimals: tokenDecimals,
-      price: BigNumber(bbprices[i]).div(`1e${tokenDecimals}`).toFixed()
-    }
+async function tvl(api) {
+  const { usp, credits = [] } = contracts[api.chain]
 
-    // Get CDOs underlying tokens balances
-    sdk.util.sumSingleBalance(balances, token, contractValue[i], api.chain)
-  })
-
-  const trancheTokensBalancesCalls = []
-
-  // Process tranche tokens BY balances
-  if (trancheTokensBalancesCalls.length){
-    const trancheTokensBalancesResults = await api.multiCall({ abi: 'erc20:balanceOf', calls: trancheTokensBalancesCalls })
-    trancheTokensBalancesResults.forEach( (trancheTokenBalance, i) => {
-      const trancheToken = trancheTokensBalancesCalls[i].target
-      const decimals = trancheTokensMapping[trancheToken].decimals
-      const trancheTokenPrice = trancheTokensMapping[trancheToken].price || 1
-      const underlyingToken = trancheTokensMapping[trancheToken].token
-      const underlyingTokenBalance = BigNumber(trancheTokenBalance || 0).times(trancheTokenPrice).div(`1e18`).times(`1e${decimals}`).toFixed(0)
-      balances[underlyingToken] = BigNumber(balances[underlyingToken] || 0).plus(underlyingTokenBalance)
-    })
+  if (usp) {
+    const residual = await getUspResidual(api, usp, credits)
+    api.add(ADDRESSES[api.chain].USDC, residual)
   }
-  return sumTokens2({ api, balances, ownerTokens, blacklistedTokens, })
+
+  const vaultData = await getCreditVaultData(api)
+  vaultData.forEach(({ token, held }) => api.add(token, held))
+}
+
+async function borrowed(api) {
+  const vaultData = await getCreditVaultData(api)
+  vaultData.forEach(({ token, held, receivable }) => {
+    const lent = receivable - held
+    if (lent > 0n) api.add(token, lent)
+  })
 }
 
 module.exports = {
   hallmarks: [],
+  methodology: 'TVL is the underlying held by Pareto credit vaults and their strategies between epochs, plus USP collateral not deployed into credit vaults. Capital lent to credit vault borrowers, including accrued interest and principal owed to redeeming lenders, is reported separately as borrowed.',
 };
 
 Object.keys(contracts).forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl, borrowed }
 })
