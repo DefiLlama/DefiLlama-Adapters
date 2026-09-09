@@ -404,7 +404,8 @@ const configs = {
     ],
   },
   'aihedge': {
-    ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400']
+    ethereum: ['0x469201fA49DB171C0F95371533C2D3Ad5aE60400'],
+    base: ['0x100F0aC3be2c93c76b2ee1B8cA98d8928cDC0871'],
   },
   'secured-finance-vaults': {
     ethereum: ['0x7a6E3635694952dC00F6bA4d4AD1a7B892028789']
