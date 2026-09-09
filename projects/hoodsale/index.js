@@ -13,19 +13,6 @@ const abi = {
   locks: 'function locks(uint256) view returns (address token, address owner, uint256 amount, uint64 unlockTime, bool withdrawn)',
 }
 
-/**
- * TVL of HoodSale on Robinhood Chain.
- *
- * Adds the native ETH every presale contract holds, which is what a running sale escrows for its
- * contributors, and the LP held by each liquidity locker, unwrapped to the underlying tokens.
- * Every address is resolved from the factory, so a locker that is replaced with
- * `PresaleFactory.setLocker` keeps being counted: a sale stores the locker it was created with as
- * an immutable, so reading `locker()` off the sales themselves yields every locker in use, past
- * or present, and the factory's current one covers a locker no sale has reached yet.
- *
- * @param {object} api the chain api DefiLlama injects
- * @returns {Promise<object>} balances keyed by token
- */
 async function tvl(api) {
   const presales = await api.fetchList({
     lengthAbi: abi.allPresalesLength,
@@ -35,7 +22,7 @@ async function tvl(api) {
 
   const [currentLocker, saleLockers] = await Promise.all([
     api.call({ abi: abi.locker, target: PRESALE_FACTORY }),
-    api.multiCall({ abi: abi.locker, calls: presales, permitFailure: true }),
+    api.multiCall({ abi: abi.locker, calls: presales }),
   ])
   const lockers = [...new Set([currentLocker, ...saleLockers].filter(i => i && i !== ADDRESSES.null))]
 
@@ -56,12 +43,17 @@ async function tvl(api) {
     if (tokens.length) ownerTokens.push([tokens, lockers[i]])
   })
 
-  return sumTokens2({ api, ownerTokens, resolveLP: true })
+  await sumTokens2({ api, ownerTokens, resolveLP: true })
+
+  const quoteAssets = new Set([ADDRESSES.null, ADDRESSES.robinhood.WETH].map(a => a.toLowerCase()))
+  for (const key of Object.keys(api.getBalances())) {
+    const token = key.split(':').pop()
+    if (!quoteAssets.has(token.toLowerCase())) api.removeTokenBalance(token)
+  }
 }
 
 module.exports = {
-  methodology:
-    'ETH escrowed in HoodSale presale contracts while a sale is running (contributions are held by the sale until it launches or refunds), plus the liquidity locked in the HoodSale LiquidityLocker by sales that chose to lock their LP instead of burning it, unwrapped to its underlying tokens. Lockers are read from the factory and from the sales themselves, so a locker replaced through setLocker stays counted. Locked LP also sits in the DEX pools tracked separately, so it is marked as double counted. Platform revenue held by the Treasury is not counted.',
+  methodology: 'ETH escrowed in HoodSale presale contracts while a sale is running (contributions are held by the sale until it launches or refunds), plus the liquidity locked in the HoodSale LiquidityLocker by sales that chose to lock their LP instead of burning it, unwrapped to its underlying tokens. Lockers are read from the factory and from the sales themselves, so a locker replaced through setLocker stays counted. Locked LP also sits in the DEX pools tracked separately, so it is marked as double counted. Platform revenue held by the Treasury is not counted.',
   doublecounted: true,
   start: '2026-09-04',
   robinhood: { tvl },
