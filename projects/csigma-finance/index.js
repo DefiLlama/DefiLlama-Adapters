@@ -141,11 +141,11 @@ async function edgeTvl(api) {
   await api.sumTokens({ owners: pools, tokens: [...new Set(tokens)] });
 }
 
-// Edge pools: pool token drawn into the fund manager's wallet
+// Edge pools: pool token drawn into the fund manager's wallet. One manager can run several
+// pools in the same token, so sumTokens dedupes the (token, manager) pairs before reading.
 async function edgeBorrowed(api) {
   const { fundManagers, tokens } = await getEdgePools(api)
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: fundManagers.map((fm, i) => ({ target: tokens[i], params: [fm] })) });
-  balances.forEach((balance, i) => api.add(tokens[i], balance));
+  await api.sumTokens({ tokensAndOwners: fundManagers.map((fm, i) => [tokens[i], fm]) });
 }
 
 // csUSD / csLYD: underlying still held by the vaults

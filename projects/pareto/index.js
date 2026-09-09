@@ -64,6 +64,7 @@ async function getUspResidual(api, usp, credits) {
     calls: creditSources.map(s => s.source),
   })
   const residual = creditAmounts.reduce((acc, amount) => acc.minus(amount), BigNumber(uspTotalSupply))
+  if (residual.lte(0)) return '0'
   return residual.div(1e12).toFixed(0) // USP has 18 decimals, USDC has 6
 }
 
@@ -100,9 +101,11 @@ async function getCreditVaultData(api) {
     'uint256:getContractValue',
   ].map(abi => api.multiCall({ abi, calls: vaults })))
 
+  // A strategy without the pending-withdraw methods has nothing pending, so a failed call
+  // counts as zero rather than taking down tvl, which only needs the held balances.
   const [pendingWithdraws, pendingInstantWithdraws, heldByVault, heldByStrategy] = await Promise.all([
-    api.multiCall({ abi: 'uint256:pendingWithdraws', calls: strategies }),
-    api.multiCall({ abi: 'uint256:pendingInstantWithdraws', calls: strategies }),
+    api.multiCall({ abi: 'uint256:pendingWithdraws', calls: strategies, permitFailure: true }),
+    api.multiCall({ abi: 'uint256:pendingInstantWithdraws', calls: strategies, permitFailure: true }),
     api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map((vault, i) => ({ target: tokens[i], params: [vault] })) }),
     api.multiCall({ abi: 'erc20:balanceOf', calls: strategies.map((strategy, i) => ({ target: tokens[i], params: [strategy] })) }),
   ])
@@ -111,7 +114,7 @@ async function getCreditVaultData(api) {
     vault,
     token: tokens[i],
     held: BigInt(heldByVault[i]) + BigInt(heldByStrategy[i]),
-    receivable: BigInt(contractValue[i]) + BigInt(pendingWithdraws[i]) + BigInt(pendingInstantWithdraws[i]),
+    receivable: BigInt(contractValue[i]) + BigInt(pendingWithdraws[i] ?? 0) + BigInt(pendingInstantWithdraws[i] ?? 0),
   }))
 }
 
