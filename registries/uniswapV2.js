@@ -3171,6 +3171,10 @@ const uniV2Configs = {
       staking: ['0x868ae20E6c1EA3b6Fdab5042Ea721eB51b237183', '0xD6af4536baB5EA74bCF872CA181619Cc3157683E'],
     },
   },
+  'dropswap': {
+    arbitrum: '0xDCed5445409398dc609C2f87849B44bc9479664A',
+    robinhood: '0xDCed5445409398dc609C2f87849B44bc9479664A'
+  }
 }
 
 module.exports = buildProtocolExports(uniV2Configs, uniV2ExportFn)

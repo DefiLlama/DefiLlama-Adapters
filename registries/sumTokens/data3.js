@@ -921,5 +921,12 @@ module.exports = {
     "base": {
       "tvl": { "owners": ["0x833Be2DC319b80365eB53C19932ad2f347c39cD9"], "tokens": [ADDRESSES.null] }
     }
+  },
+  "lotoworld": {
+    "methodology": "TVL is the USDT balance held in the Lotoworld lottery contract, representing the current prize pool awaiting the next draw.",
+    "start": "2026-09-08",
+    "arbitrum": {
+      "tvl": { "owners": ["0xdefcC8E8dB82D1D722045f704f8af29F94207439"], "tokens": [ADDRESSES.arbitrum.USDT] }
+    }
   }
 }
