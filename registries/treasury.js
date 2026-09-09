@@ -4353,6 +4353,7 @@ const configs = {
   },
   'treasury/plus-mainnet': {
     ethereum: {
+      fetchCoValentTokens: false,
       tokens: [
         nullAddress,
         ADDRESSES.ethereum.USDT,
@@ -4360,6 +4361,7 @@ const configs = {
       owners: ['0x5CfEa22674e2E7d251dEB693c0490b6389334F0f'],
     },
     bsc: {
+      fetchCoValentTokens: false,
       tokens: [
         nullAddress,
         ADDRESSES.bsc.USDT,
