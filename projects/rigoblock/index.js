@@ -60,25 +60,15 @@ const HYPERLIQUID_INFO_API = 'https://api.hyperliquid.xyz/info'
 const STANDARD_ABSTRACTION_MODES = new Set(['default', 'disabled'])
 
 async function isStandardAccount(pool) {
-  try {
-    const mode = await post(HYPERLIQUID_INFO_API, { type: 'userAbstraction', user: pool })
-    return STANDARD_ABSTRACTION_MODES.has(mode)
-  } catch (e) {
-    sdk.log('hyperliquid userAbstraction call failed for', pool, '- skipping HyperCore balances')
-    return false
-  }
+  const mode = await post(HYPERLIQUID_INFO_API, { type: 'userAbstraction', user: pool })
+  return STANDARD_ABSTRACTION_MODES.has(mode)
 }
 
 async function callPrecompile(api, precompile, iface, name, params) {
-  try {
-    // precompiles only respond to top-level staticcalls, so a direct provider call is used instead of Multicall3
-    const data = iface.encodeFunctionData(name, params).slice(10) // strip the 4-byte selector
-    const result = await sdk.getProvider(api.chain).call({ to: precompile, data, blockTag: api.block ?? undefined })
-    return iface.decodeFunctionResult(name, result)
-  } catch (e) {
-    sdk.log('hyperliquid precompile call failed:', precompile, e.message)
-    return null
-  }
+  // precompiles only respond to top-level staticcalls, so a direct provider call is used instead of Multicall3
+  const data = iface.encodeFunctionData(name, params).slice(10) // strip the 4-byte selector
+  const result = await sdk.getProvider(api.chain).call({ to: precompile, data, blockTag: api.block ?? undefined })
+  return iface.decodeFunctionResult(name, result)
 }
 
 async function addHyperCoreBalances(api, pools) {
