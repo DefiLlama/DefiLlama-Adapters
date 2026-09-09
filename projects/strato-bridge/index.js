@@ -11,11 +11,15 @@ const CUSTODY = '0x8c458f866e603335ef179a63a2528f357732f5d5'
 // custody vault when they leave the chain. Vault resolved on-chain from the bridge.
 const STRATO_NATIVE_BRIDGE = '0x4d9e9c39180a75091b9c35bbb9064d67c7fdde5a'
 const STRATO_NATIVE_TOKENS = [
-  '0x2ca3e170e6714282da77815f7864b17f612f5f83', // STRATO
   '0x937efa7e3a77e20bbdbd7c0d32b6514f368c1010', // USDST
   '0xcdc93d30182125e05eec985b631c7c61b3f63ff0', // GOLDST
   '0x2c59ef92d08efde71fe1a1cb5b45f4f6d48fcc94', // SILVST
 ]
+// $STRATO locked in the vault is exactly what circulates as the Ethereum STRATO
+// ERC-20, which is where CoinGecko tracks it (`ethereum-strato`, 18 decimals).
+// It has no price feed on the STRATO chain, so it is counted against that address.
+const STRATO_ON_STRATO   = '0x2ca3e170e6714282da77815f7864b17f612f5f83'
+const STRATO_ON_ETHEREUM = 'ethereum:0x4c93b9fbf7fd1777ccbcbc538b1d0a8b58fb1ad6'
 
 const tokens = {
   ethereum: [
@@ -54,12 +58,14 @@ const tokens = {
 
 module.exports = {
   methodology:
-    'Inbound: assets escrowed in the Mercata bridge custody address on each source chain (Ethereum, Base, Linea, Robinhood Chain), each backing a 1:1 wrapped *ST token minted on STRATO; token list mirrors the enabled entries in the on-chain MercataBridge assets registry. Outbound: STRATO-native assets (STRATO, USDST, GOLDST, SILVST) locked in the StratoNativeBridge custody vault while represented on other chains.',
+    'Inbound: assets escrowed in the Mercata bridge custody address on each source chain (Ethereum, Base, Linea, Robinhood Chain), each backing a 1:1 wrapped *ST token minted on STRATO; token list mirrors the enabled entries in the on-chain MercataBridge assets registry. Outbound: STRATO-native assets (STRATO, USDST, GOLDST, SILVST) locked in the StratoNativeBridge custody vault while represented on other chains; locked $STRATO is priced against the Ethereum STRATO ERC-20 because it has no price feed on the STRATO chain.',
   start: 1775151906,
   strato: {
     tvl: async (api) => {
       const vault = await api.call({ target: STRATO_NATIVE_BRIDGE, abi: 'function custodyVault() view returns (address)' })
-      return api.sumTokens({ owner: vault, tokens: STRATO_NATIVE_TOKENS })
+      await api.sumTokens({ owner: vault, tokens: STRATO_NATIVE_TOKENS })
+      const stratoLocked = await api.call({ target: STRATO_ON_STRATO, abi: 'erc20:balanceOf', params: vault })
+      if (BigInt(stratoLocked) > 0n) api.add(STRATO_ON_ETHEREUM, stratoLocked.toString(), { skipChain: true })
     },
   },
 }
