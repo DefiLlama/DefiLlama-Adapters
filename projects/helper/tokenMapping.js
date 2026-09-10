@@ -42,9 +42,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  ggchain: {
-    '0xe77f05c01dac30901de8346c23242c4284dcb4ab': { coingeckoId: 'tether', decimals: 18 }, // bUSDT bridged 1:1 from BSC USDT
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
