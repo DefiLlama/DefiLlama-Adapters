@@ -1964,6 +1964,9 @@
   "genesys": {
     "WGSYS": "0xAa7aE83eb30DDdd14A017D4222121776317EA8Ba"
   },
+  "ggchain": {
+    "bUSDT": "0xe77F05c01DaC30901de8346c23242C4284DCb4AB"
+  },
   "zora": {
     "USDzC": "0xcccccccc7021b32ebb4e8c08314bd62f7c653ec4"
   },
