@@ -1130,7 +1130,10 @@ module.exports = {
     "14yyRRiEMJ5q5LmDCH4Nf6Emx7UKhoRfxR",
     "16pP3Pm2PEVZiMREQ6FJXieTWKE5ZMPfpU",
   ],
-  sodex: ["bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju"],
+  sodex: [
+    "bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju",
+    "bc1qj7nf62drtxgtssgslvyp6dyqrq7a3yfjj84zv4",
+  ],
   weex: [
     "bc1p3rynzzrpldcwmpqv5k7n98zxazrqm86arzsdzmmgkv4xvnjru3rqc2rs2g",
     "1KKXSMqYsuZPpmnEz2cx8tQAQ2ukFmyeBb",

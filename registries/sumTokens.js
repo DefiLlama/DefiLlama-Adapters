@@ -25550,112 +25550,201 @@ const configs = {
     "timetravel": false,
     "bitcoin": {
       "owners": [
-        "bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju"
+        "bc1p6hclvynsavpzggt7qdadq3dcrlzhcregpys8r3tx5p03jvx0ve9qvc8tju",
+        "bc1qj7nf62drtxgtssgslvyp6dyqrq7a3yfjj84zv4"
       ]
     },
     "ethereum": {
       "tvl": {
         "owners": [
-          "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+          "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+          "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
         ],
         "tokens": [
           ADDRESSES.null,
           ADDRESSES.ethereum.USDC,
+          ADDRESSES.ethereum.USDT,
           ADDRESSES.ethereum.LINK,
           ADDRESSES.ethereum.AAVE,
           ADDRESSES.ethereum.UNI,
-          "0x68749665FF8D2d112Fa859AA293F07A622782F38"
+          // XAUt
+          "0x68749665FF8D2d112Fa859AA293F07A622782F38",
+          // PEPE
+          "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+          // SHIB
+          "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
         ]
       },
       "staking": {
         "owners": [
-          "0xCC7322A2f9f82251dA51584B1a89915dBc02185B"
+          "0xCC7322A2f9f82251dA51584B1a89915dBc02185B",
+          "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+          "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
         ],
         "tokens": [
+          // SOSO
           "0x76a0e27618462bdac7a29104bdcfff4e6bfcea2d"
         ]
       }
     },
     "bsc": {
       "owners": [
-        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+        "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
       ],
       "tokens": [
         ADDRESSES.null,
-        ADDRESSES.bsc.USDC
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.USDT
       ]
     },
     "solana": {
+      "owners": [
+        "9RausimD22rJxJbYi56tbtxCSQw3hh5nXzYoxzZA5JrU",
+        "88dQL5ZkiLnz2UYk6cf2pvxmfSMfjaKbm8YPe8khVeDV"
+      ],
+      "tokens": [
+        ADDRESSES.solana.USDC,
+        ADDRESSES.solana.USDT
+      ],
       "solOwners": [
-        "9RausimD22rJxJbYi56tbtxCSQw3hh5nXzYoxzZA5JrU"
+        "9RausimD22rJxJbYi56tbtxCSQw3hh5nXzYoxzZA5JrU",
+        "88dQL5ZkiLnz2UYk6cf2pvxmfSMfjaKbm8YPe8khVeDV"
       ]
     },
     "ripple": {
       "owners": [
-        "rpZYyFtPPrqQetwRKAPtcSXLC8F5Tzx7FQ"
+        "rpZYyFtPPrqQetwRKAPtcSXLC8F5Tzx7FQ",
+        "rNzZZtSyc9FctpUhCdq43S6hMKBF5VNb3r"
       ]
     },
     "doge": {
       "owners": [
-        "D8Ptn3CJmNYzh9We5oP3wk1inAngPPZ7zC"
+        "D8Ptn3CJmNYzh9We5oP3wk1inAngPPZ7zC",
+        "DEGMeafpaL7GrLAEso8yPsmvFLrueJsWJb"
       ]
     },
     "cardano": {
       "owners": [
-        "Ae2tdPwUPEYxbppqSJw4y9X8hSZ4eJwBYaYKm8ZH3HnVKLRvAGtEbTyWbYQ"
+        "Ae2tdPwUPEYxbppqSJw4y9X8hSZ4eJwBYaYKm8ZH3HnVKLRvAGtEbTyWbYQ",
+        "addr1qx3zj4jz6uc852fwpr4a2f8c9enxfn0f8s76uvjf8wpg60nukdfcw0sur89uqhq6wrapj7dxujeuuu8vuh86j28v6vzsk6cm9s"
       ]
     },
     "litecoin": {
       "owners": [
-        "LbrYhw79HFCkmArrUiAjTrczmYqB8VDHop"
+        "LbrYhw79HFCkmArrUiAjTrczmYqB8VDHop",
+        "ltc1q5k9l4tk99z95fuhmgqjgqd6wulzv22hvl7wkkc"
       ]
     },
     "base": {
       "tvl": {
+        "owners": [
+          "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+          "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
+        ],
+        "tokens": [
+          ADDRESSES.null,
+          ADDRESSES.base.USDC
+        ],
         "ownerTokens": [
           [
             [
-              ADDRESSES.null,
-              ADDRESSES.base.USDC
-            ],
-            "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
-          ],
-          [
-            [
+              // sMAG7.ssi
               "0x9e6a46f294bb67c20f1d1e7afb0bbef614403b55",
-              "0x3d8f0ddb4bb9332Cb89dEC22d273d9be1a91530b"
+              // MAG7.ssi
+              "0x3d8f0ddb4bb9332Cb89dEC22d273d9be1a91530b",
+              // DEFI.ssi
+              "0x164ffdaE2fe3891714bc2968f1875ca4fA1079D0",
+              // MEME.ssi
+              "0xdd3acDBDc7b358Df453a6CB6bCA56C92aA5743aA"
+
             ],
+            // bridge
             "0xCC7322A2f9f82251dA51584B1a89915dBc02185B"
           ]
         ]
       },
       "staking": {
         "owners": [
-          "0xCC7322A2f9f82251dA51584B1a89915dBc02185B"
+          "0xCC7322A2f9f82251dA51584B1a89915dBc02185B",
+          "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+          "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
         ],
         "tokens": [
-          "0x624e2e7fdc8903165f64891672267ab0fcb98831"
+          // SOSO
+          "0x624e2e7fdc8903165f64891672267ab0fcb98831",
+          // sSOSO
+          "0xCE89AC7fD59808106B4E346175bCB8D8b273db90"
         ]
       }
     },
     "arbitrum": {
       "owners": [
-        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+        "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
       ],
       "tokens": [
         ADDRESSES.null,
-        ADDRESSES.arbitrum.USDC_CIRCLE
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+        ADDRESSES.arbitrum.USDT,
+        ADDRESSES.arbitrum.ARB
       ]
     },
     "hyperliquid": {
       "owners": [
-        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287"
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+        "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
       ],
       "tokens": [
-        ADDRESSES.null,
-        ADDRESSES.hyperliquid.WHYPE
+        ADDRESSES.null
       ]
     },
+    "polygon": {
+      "owners": [
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+        "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
+      ],
+      "tokens": [
+        ADDRESSES.polygon.USDC_CIRCLE,
+        ADDRESSES.polygon.USDT
+      ]
+    },
+    "avax": {
+      "owners": [
+        "0x72b2f19f05c8d78ea7bb9fb9fe551f06f31ba287",
+        "0x00b7aF089770a1ED44648213Cd56d6E4d80411f5"
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "ton": {
+      "owners": [
+        "UQCuse06M6Nkw1u3UD2JeQf9sjIKYDYDtO0EIxcf_h6cOaJn",
+        "UQBsWeBxPRY5vmtYoSQ6k7Ws7jA41RJqcRJTskkzEk3LRiIO"
+      ],
+      "tokens": [
+        ADDRESSES.null
+      ]
+    },
+    "sui": {
+      "owners": [
+        "0xde57050e2dbf53ef05ff625d7a0be8565280c05d552a1f16f9a6b3ee18d2d469",
+        "0x66bde0ec945e843702c6877d711f97e77272ff5b54993e2ccfb696fac44607f1"
+      ],
+      "tokens": [
+        ADDRESSES.sui.SUI
+      ]
+    },
+    "stellar": {
+      "owners": [
+        "GA3KBDBUCONVBEBOE6SKBTWFZPPFE2M4RNJSPCI7GCSRANCHVRKMXF2X",
+        "GBS47GDI7KSMIYHHFNLSQYMU6PIOFLWIRZIPMIJZBR4M2VZ5VDXPBNSK"
+      ],
+      "tokens": [
+        ADDRESSES.stellar.XLM
+      ]
+    }
   },
   "solayer-susd": {
     "timetravel": false,
