@@ -42,11 +42,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  injective: {
-    // ERC20-module pairs on Injective EVM: the coins server prices the token under
-    // its bank denom's coingecko listing, not under the paired 0x address.
-    '0x7a1c36f34e43014efd5e08ead6f99118bc1aca20': { coingeckoId: "motion-6", decimals: 18 }, // MOTION, factory/inj13j2rpnlwl30c02d4pzukykwfeyyhelvry9cqte/shroom_0_3b4d31d5571b97db
-  },
   provenance: {
     'ueurc.figure.se': { coingeckoId: 'euro-coin', decimals: 6 },
     'pm.pool.asset.3hjz8rcr3pejdc3msntlvy': { coingeckoId: 'usd-coin', decimals: 0 },
