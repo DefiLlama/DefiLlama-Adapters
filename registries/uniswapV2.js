@@ -809,6 +809,9 @@ const uniV2Configs = {
     ],
     era: '0x065c8703132F2A38Be3d2dbF7Be6BE455930560c',
   },
+  'ggswap': {
+    ggchain: '0x82b163784b0d0371417B0eDbDF71A5B15c47B444',
+  },
   'ghost-ex': {
     blast: '0xbf246e99a848d9bf592c216118973204162d9650',
   },
