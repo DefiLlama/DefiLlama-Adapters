@@ -694,9 +694,61 @@ const configs = {
   },
   'treasury/arbitrum-dao': {
     arbitrum: {
-      tokens: [nullAddress],
-      owners: ['0xf3fc178157fb3c87548baa86f9d24ba38e649b58', '0x2E041280627800801E90E9Ac83532fadb6cAd99A', '0x32e7AF5A8151934F3787d0cD59EB6EDd0a736b1d', '0xbF5041Fc07E1c866D15c749156657B8eEd0fb649', '0xbFc1FECa8B09A5c5D3EFfE7429eBE24b9c09EF58'],
+      fetchCoValentTokens: false,
+      tokens: [
+        nullAddress, ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.WSTETH,
+        ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.USDT,
+        '0x940098b108fb7d0a7e374f6eded7760787464609', // sUSDC
+        '0x021289588cd81dc1ac87ea91e91607eef68303f5', // USTBL
+        '0x0a1a1a107e45b7ced86833863f482bc5f4ed82ef', // USDai
+        '0xb9e4765bce2609bc1949592059b17ea72fee6c6a', // BENJI
+        '0xfeb26f0943c3885b2cb85a9f933975356c81c33d', // WTGXX
+        '0xa6525ae43edcd03dc08e775774dcabd3bb925872', // BUIDL
+        '0x35751007a407ca6feffe80b3cb397736d2cf4dbe', // weETH
+      ],
+      owners: [
+        '0xf3fc178157fb3c87548baa86f9d24ba38e649b58',
+        '0x2e041280627800801e90e9ac83532fadb6cad99a',
+        '0x32e7af5a8151934f3787d0cd59eb6edd0a736b1d',
+        '0xbf5041fc07e1c866d15c749156657b8eed0fb649',
+        '0xbfc1feca8b09a5c5d3effe7429ebe24b9c09ef58',
+        '0xac20cd734c65baf48a1476447af7d3e3165dc739',
+        '0x7c599660c84ed5b92d1878518ab1fafe006bd311',
+        '0x54fe3425f09854e15081fa5b3276afcb4c46fca2',
+        '0xe5134c688a5b505b2de239a6a3ef4afbb665e422',
+        '0x9e49cefab0e640dd767bef40cd3f8722229b968e',
+        '0x120861b67b8a8e2f737d58922e04440f51e53c84',
+        '0x46658a4395fa8847b97aa0db19a65e1f36bfb23f',
+        '0x08cc5726b84863ab502541e39e3255bab0413441',
+        '0xa02cbbb00c17882f19d53fc5db35e5f5f2d039b5',
+        '0x4d06cef7fa8e0f386bc97492e4ce1f663fb6cdca',
+        '0x38429f9e67559cda82eed04a5895c5c11e779e05',
+        '0x0cb87fde334cd0334ce85dc787c24a76efcda44d',
+        '0xce05db9821c753439fbad2a1ed99fd7f26b3a423',
+        '0x85c34d6121934e329ca91bfe34007dbc61688f9f',
+        '0x30786e59d5210b5e9c4f7707c70c9356b10148a6',
+        '0xef297424bbc64b21fb405532b58fe77299f1e1f4',
+        '0xe435a0bcda6134ce9a9e8d2dc2b1beb10c0059a7',
+        '0x5fcb496a31b7ae91e7c9078ec662bd7a55cd3079',
+        '0xcdc8a164272de1e6ba118228c2a71bbe3684cfa4',
+        '0x0045c0d4223376968f17b4792ed38b2bfc86711f',
+        '0xd6c8a4e72584f24bd5517afed6c01d21477c17f6',
+        '0x140e4d8d4229d5437efd6fc1beeb86cb2bcf9d98',
+        '0xf67db74dec758fe7c3fb521ab0db77e8df9c8178',
+        '0x07e7ef4b87bb4115f7f507c89c2bac5f3342cc3c',
+        '0x272bbebf956d65178f184b0f8d859fdc7ea3f5b4',
+        '0x4074ffbed76e82fd350871e75a14790c742a7cd4',
+      ],
       ownTokens: [ADDRESSES.arbitrum.ARB],
+    },
+    ethereum: {
+      tokens: [nullAddress, ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT],
+      owners: [
+        '0x1afa41c006da1605846271e7bdae942f2787f941',
+        '0x569bcbcf747a2b67355c242137a0b903c9f72a2b',
+        '0x54fe3425f09854e15081fa5b3276afcb4c46fca2',
+        '0x40cd7d713d7ae463f95ce5d342ea6e7f5cf7c999',
+      ],
     },
     arbitrum_nova: {
       tokens: [nullAddress],
