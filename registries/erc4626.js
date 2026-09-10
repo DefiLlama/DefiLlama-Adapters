@@ -508,6 +508,12 @@ const configs = {
   'southpole': {
     methodology: "TVL counts the USDC deposited into the SouthPole USDC vault (a standard ERC-4626 vault) on Arbitrum.",
     arbitrum: ['0xeA59d9343FF0d70470DD6709cfCD5Bc735d9aDBC']
+  },
+  'otomate': {
+    start: '2026-03-12',
+    doublecounted: true,
+    methodology: "Underlying assets in Otomate ERC-4626 vaults on Ink, measured with totalAssets net of accrued protocol fees. Assets are supplied to Tydro and already included in Tydro TVL.",
+    ink: ['0x919C57BF59484798Ff2f90018640fd0A08242aC2', '0x2baA4C3f66Fa6f0c2d56242BaAE446a4De878B98', '0xcc7DcF43b17D8EdC437a6e33a6A325C57eba1ED7', '0x59046e5a0cbb5b64981b4668a31ab3a5ed0e7dd0']
   }
 }
 
