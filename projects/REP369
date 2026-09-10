@@ -1,0 +1,33 @@
+// REP369 on PulseChain
+// Main liquidity pool referenced by the project's public configuration:
+// REP369 / WPLS on PulseX V2
+
+const REP369 = '0x0EE7adC2BAb46BaD56B91D9641A8cDEd09f82369'
+const WPLS = '0xA1077a294dDE1B09bB078844df40758a5D0f9a27'
+const MAIN_PAIR = '0x240e7A47fE5F91806c6D6056Fe4f62622303E1A5'
+
+const balanceOfAbi = 'erc20:balanceOf(address)'
+
+module.exports = {
+  methodology: `Counts the REP369/WPLS PulseX V2 liquidity pool. TVL is computed from the pool's on-chain ERC20 balances for REP369 and WPLS; DefiLlama prices the returned assets. No TVL value is hard-coded.`,
+  pulsechain: {
+    tvl: async (api) => {
+      const rep369Balance = await api.call({
+        abi: balanceOfAbi,
+        target: REP369,
+        params: [MAIN_PAIR],
+      })
+
+      const wplsBalance = await api.call({
+        abi: balanceOfAbi,
+        target: WPLS,
+        params: [MAIN_PAIR],
+      })
+
+      return {
+        [REP369]: rep369Balance,
+        [WPLS]: wplsBalance,
+      }
+    },
+  },
+}
