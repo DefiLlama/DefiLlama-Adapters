@@ -9,6 +9,7 @@ module.exports = compoundV3Exports({
       '0x3D0bb1ccaB520A66e607822fC55BC921738fAFE3', // wstETH Market
       '0x5D409e56D886231aDAf00c8775665AD0f9897b56', // USDS Market
       '0xe85Dc543813B8c2CFEaAc371517b925a166a9293', // WBTC Market
+      '0x207158a267CBD2598BB3d611D8CBdEE2709F2F8C', // Institutional USDC Market
     ],
   },
   arbitrum: {
