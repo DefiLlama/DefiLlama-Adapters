@@ -1811,6 +1811,12 @@ const uniV3Configs = {
     start: '2026-05-31',
     rise: { factory: '0xbF30bD8567628Dc4E120b7536d051EaFaA3fD0fa', fromBlock: 12557099 },
   },
+  'phera-dex': {
+    start: '2026-08-25',
+    methodology: 'Value of the tokens locked in PheraDEX concentrated liquidity pools.',
+    // Generation-2 PheraCLFactory. The retired generation-1 factory (0xA7e3cBf3A9F12da335531e1dd986B616b6d6ed7c) never created a pool.
+    robinhood: { factory: '0x185f43b9E3e956798b7b9CF0a4FE00463aEe064B', fromBlock: 45979598 },
+  },
 }
 
 module.exports = buildProtocolExports(uniV3Configs, uniV3Export)
