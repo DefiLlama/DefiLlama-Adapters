@@ -597,9 +597,9 @@ module.exports = {
     },
   },
   "openoracle": {
-    "methodology": "TVL is the native ETH and USDC held by the openOracle contract on Base.",
+    "methodology": "TVL is the native ETH and USDC held by the openOracle contracts on Base.",
     "base": {
-      "tvl": { "owner": "0xa731450131bE0120420e211a35704A19382489fb", "tokens": [ADDRESSES.null,ADDRESSES.base.USDC] },
+      "tvl": { "owners": ["0xa731450131bE0120420e211a35704A19382489fb", "0x0cf849531f77E4bfE2d869db5b3F9Bca83d68626"], "tokens": [ADDRESSES.null,ADDRESSES.base.USDC] },
     },
   },
   "linehub-perps": {
