@@ -36,12 +36,14 @@ const poolsDataQuery = `{
 const endpoint = 'https://cache-service.chainflip.io/graphql'
 
 async function tvl(api) {
-  // Call GraphQL and get tokens, add each to balance
-  const { 
-    allPools: { nodes }, 
-    allBoostPools: { nodes: bNodes }, 
-    allDepositBalances: { groupedAggregates: uNodes } 
-  } = (await post(endpoint, { query: poolsDataQuery })).data; // plain POST: endpoint replies with content-type application/graphql-response+json, which graphql-request 4.x rejects
+  // Plain POST instead of graphQuery: endpoint replies with content-type application/graphql-response+json, which graphql-request 4.x rejects
+  const { data, errors } = await post(endpoint, { query: poolsDataQuery })
+  if (errors?.length || !data) throw new Error('Chainflip GraphQL error: ' + JSON.stringify(errors))
+  const {
+    allPools: { nodes },
+    allBoostPools: { nodes: bNodes },
+    allDepositBalances: { groupedAggregates: uNodes }
+  } = data
 
   nodes.forEach(i => {
     api.add(i.baseAsset, i.baseLiquidityAmount)
