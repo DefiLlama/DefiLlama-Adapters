@@ -694,6 +694,10 @@ const uniV3Configs = {
       fromBlock: 6523521,
       permitFailure: true,
     },
+    robinhood: {
+      factory: '0xCeFc5Da47d766Fb6b48Da92D75d66b3264593d0f', 
+      fromBlock: 58245132
+    },
   },
   'hydrex': {
     base: {
