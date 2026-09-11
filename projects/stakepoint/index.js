@@ -81,16 +81,14 @@ async function buildBalances(vaults, lpTokens) {
   
   for (const { mint, balance } of vaults.token2022) {
     const mintKey = `solana:${mint}`;
-    if (!balances[mintKey]) balances[mintKey] = 0;
-    balances[mintKey] += balance;
+    balances[mintKey] = Number(balances[mintKey] || 0) + balance;
   }
 
   if (lpTokens) {
     for (const lp of lpTokens) {
       for (const [mint, amount] of Object.entries(lp)) {
         const key = `solana:${mint}`;
-        if (!balances[key]) balances[key] = 0;
-        balances[key] += amount;
+        balances[key] = Number(balances[key] || 0) + amount;
       }
     }
   }
