@@ -1,5 +1,5 @@
 const { staking } = require('../helper/staking')
-const { graphQuery } = require('../helper/http');
+const { post } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const STATE_CHAIN_GATEWAY_CONTRACT = '0x826180541412D574cf1336d22c0C0a287822678A';
@@ -36,12 +36,14 @@ const poolsDataQuery = `{
 const endpoint = 'https://cache-service.chainflip.io/graphql'
 
 async function tvl(api) {
-  // Call GraphQL and get tokens, add each to balance
-  const { 
-    allPools: { nodes }, 
-    allBoostPools: { nodes: bNodes }, 
-    allDepositBalances: { groupedAggregates: uNodes } 
-  } = await graphQuery(endpoint, poolsDataQuery);
+  // Plain POST instead of graphQuery: endpoint replies with content-type application/graphql-response+json, which graphql-request 4.x rejects
+  const { data, errors } = await post(endpoint, { query: poolsDataQuery })
+  if (errors?.length || !data) throw new Error('Chainflip GraphQL error: ' + JSON.stringify(errors))
+  const {
+    allPools: { nodes },
+    allBoostPools: { nodes: bNodes },
+    allDepositBalances: { groupedAggregates: uNodes }
+  } = data
 
   nodes.forEach(i => {
     api.add(i.baseAsset, i.baseLiquidityAmount)
