@@ -71,8 +71,8 @@ Object.keys(config).forEach(chain => {
     }),
 
     hallmarks: [
-      [1707400800, "TGE"],
-      [1707955200, "Epoch 1"]
+      ['2024-02-08', "TGE"],
+      ['2024-02-15', "Epoch 1"]
     ]
 
   }

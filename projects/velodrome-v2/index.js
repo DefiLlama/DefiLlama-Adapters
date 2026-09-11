@@ -22,6 +22,6 @@ module.exports = {
   swellchain: { tvl },
   celo: { tvl },
   hallmarks: [
-    [1687465883, "v2 Migration on OP Mainnet"], // https://twitter.com/VelodromeFi/status/1671979216039202816
+    ['2023-06-22', "v2 Migration on OP Mainnet"], // https://twitter.com/VelodromeFi/status/1671979216039202816
   ]
 }

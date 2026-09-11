@@ -1,37 +1,25 @@
-const utils = require('../helper/utils');
-const { getApiTvl } = require('../helper/historicalApi');
+const { getConfig } = require('../helper/cache')
 
-const TVL_URL = "https://storage.googleapis.com/defillama-stellar-tvl/stellar-tvl.json";
+const TVL_URL = 'https://storage.googleapis.com/defillama-stellar-tvl/stellar-tvl-raw.json'
 
-async function fetchTvlData() {
-  const response = await utils.fetchURL(TVL_URL, { responseType: 'text' });
-  const lines = response.data.trim().split('\n');
-  return lines.map(line => JSON.parse(line));
+async function fetchBalances() {
+  const data = await getConfig('stellar-dex/tvl_raw', TVL_URL)
+  const rows = Array.isArray(data) ? data : String(data).trim().split('\n').map(l => JSON.parse(l))
+  const latestDay = rows.reduce((max, r) => r.day > max ? r.day : max, '')
+  return rows.filter(r => r.day === latestDay)
 }
 
-async function current() {
-  const parsed = await fetchTvlData()
-  
-  const latest = parsed.reduce((a, b) => (a.day > b.day ? a : b));
-  if (latest.total_tvl_usd > 1e8) throw new Error('Value too high: '+ latest.total_tvl_usd)
-  return latest.total_tvl_usd;
-}
-
-function tvl(timestamp) {
-  return getApiTvl(timestamp, current, async () => {
-    const parsed = await fetchTvlData()
-    
-    return parsed.map(entry => ({
-      date: Math.round(new Date(entry.day).getTime() / 1e3),
-      totalLiquidityUSD: entry.total_tvl_usd,
-    }));
-  });
+async function tvl(api) {
+  const rows = await fetchBalances()
+  for (const row of rows) {
+    const balance = Number(row.total_tvl) - Number(row.liquidity_pools_tvl)
+    if (!balance || !row.contract_id) continue
+    api.add(row.contract_id, Math.round(balance * 1e7))
+  }
 }
 
 module.exports = {
-  methodology: 'Total value of all sell offers in the built-in Stellar Decentralized exchange. This includes XLM and assets issued on the network, converting to USD.',
+  methodology: 'Total value of all sell offers in the built-in Stellar Decentralized exchange.',
+  timetravel: false,
   stellar: { tvl },
-  timetravel: true,
-  misrepresentedTokens: true,
-  start: 1659916800, // 2022-08-08 UTC
-};
+}

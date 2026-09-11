@@ -3,6 +3,7 @@ const { cachedGraphQuery, getConfig } = require('../helper/cache')
 const sdk = require('@defillama/sdk')
 
 const graphUrl = sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/YC6LMdHjtWZ2cCq7YKFmDcDt2eCcBvSNSiWi56bnqoW')
+const graphUrlBase = sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/B2yrwHavBLPWtn5jMbttVWnvznibtKXbhuP4n89JU7DZ')
 const graphQuery = `
 {
   yakMilkVaults(first: 1000) {
@@ -70,6 +71,18 @@ async function mantleTvl(api) {
   });
 }
 
+async function baseTvl(api) {
+  // Same Milk-vault logic as Avalanche, pointed at the Base subgraph.
+  const excludedSymbol = 'YAK';
+
+  const { yakMilkVaults } = await cachedGraphQuery('yieldyak/milk-vaults-base', graphUrlBase, graphQuery)
+
+  yakMilkVaults.forEach((vault, i) => {
+    if (vault.accountant.base.symbol === excludedSymbol) return;
+    api.add(vault.accountant.base.id, vault.totalSupply * vault.accountant.exchangeRate / 10 ** vault.decimals);
+  });
+}
+
 const masterYak = "0x0cf605484A512d3F3435fed77AB5ddC0525Daf5f"
 const yakToken = "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
 const arbiYyStaking = "0xbb82b43Bf2057B804253D5Db8c18A647fC1f3403"
@@ -88,5 +101,8 @@ module.exports = {
   mantle: {
     tvl: mantleTvl,
     staking: staking(mantleYyStaking, bridgedYakToken),
+  },
+  base: {
+    tvl: baseTvl,
   }
 }

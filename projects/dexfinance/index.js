@@ -1,8 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const { ETF_ABI, } = require('./abi');
-const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
+const ETF_ABI = {
+  'getCurrentTokens': "address[]:getCurrentTokens"
+};
+const { sumTokensExport, } = require('../helper/unwrapLPs')
 
 const REGULATION_STAKING_POOL = '0xd69db827939e26511068aa2bf742e7463b292190'
 const REWARD_POOL = '0x4c7371a351a465c38dc129e4d084b9b8aef14041'
@@ -21,53 +22,45 @@ const TOKENS = {
   BNB: ADDRESSES.bsc.WBNB,
 };
 
-const chain = 'bsc'
-async function tvl(_, _b, { bsc: block }) {
-  const { output: tokens } = await sdk.api.abi.call({
-    target: ETF_INDEX_POOL,
-    abi: ETF_ABI['getCurrentTokens'],
-    chain: 'bsc',
-    params: []
-  })
-  const balances = await sumTokens2({ chain, block, tokens, owner: ETF_INDEX_POOL, })
-  return balances
+async function tvl(api) {
+  const tokens = await api.call({  abi: ETF_ABI.getCurrentTokens, target:ETF_INDEX_POOL })
+  return api.sumTokens({ owner: ETF_INDEX_POOL, tokens, })
 }
 
-async function farmWDEX_DEXSHARE(_, _b, { bsc: block }) {
+async function farmWDEX_DEXSHARE(api) {
   const [
-    { output: bal },
-    { output: iraBal },
-    { output: shareBal },
-    { output: totalSupply },
+    bal,
+    iraBal,
+    shareBal,
+    totalSupply,
   ] = await Promise.all([
-    sdk.api.abi.call({ chain, block, abi: 'erc20:balanceOf', target: TOKENS.WDEX_DEXSHARE, params: FARM }),
-    sdk.api.abi.call({ chain, block, abi: 'erc20:balanceOf', target: TOKENS.DEXIRA, params: TOKENS.WDEX_DEXSHARE }),
-    sdk.api.abi.call({ chain, block, abi: 'erc20:balanceOf', target: TOKENS.DEXSHARE, params: TOKENS.WDEX_DEXSHARE }),
-    sdk.api.abi.call({ chain, block, abi: 'erc20:totalSupply', target: TOKENS.WDEX_DEXSHARE, }),
+    api.call({ abi: 'erc20:balanceOf', target: TOKENS.WDEX_DEXSHARE, params: FARM }),
+    api.call({ abi: 'erc20:balanceOf', target: TOKENS.DEXIRA, params: TOKENS.WDEX_DEXSHARE }),
+    api.call({ abi: 'erc20:balanceOf', target: TOKENS.DEXSHARE, params: TOKENS.WDEX_DEXSHARE }),
+    api.call({ abi: 'erc20:totalSupply', target: TOKENS.WDEX_DEXSHARE, }),
   ])
   const ratio = bal / totalSupply
-  const balances = {}
-  sdk.util.sumSingleBalance(balances, 'bsc:' + TOKENS.DEXIRA, BigNumber(iraBal * ratio).toFixed(0))
-  sdk.util.sumSingleBalance(balances, 'bsc:' + TOKENS.DEXSHARE, BigNumber(shareBal * ratio).toFixed(0))
-  return balances
+  api.add(TOKENS.DEXIRA, iraBal * ratio)
+  api.add(TOKENS.DEXSHARE, shareBal * ratio)
+  return api.getBalances()
 }
 
 module.exports = {
   bsc: {
     tvl,
     pool2: sdk.util.sumChainTvls([
-      sumTokensExport({ chain, tokens: [TOKENS.USDEX_USDC_LP, TOKENS.DEXSHARE_BNB_LP,], owner: FARM, }),
+      sumTokensExport({ tokens: [TOKENS.USDEX_USDC_LP, TOKENS.DEXSHARE_BNB_LP,], owner: FARM, }),
       farmWDEX_DEXSHARE
     ]),
     staking: sumTokensExport({
-      chain, tokensAndOwners: [
+      tokensAndOwners: [
         [TOKENS.DEXSHARE, REGULATION_STAKING_POOL,],
         [TOKENS.DEXSHARE, REWARD_POOL,],
       ],
     }),
   },
   hallmarks: [
-    [1671483600, "DexEtf Launch"],
-    [1671656400, "DexVaults Launch"],
+    ['2022-12-19', "DexEtf Launch"],
+    ['2022-12-21', "DexVaults Launch"],
   ],
 };

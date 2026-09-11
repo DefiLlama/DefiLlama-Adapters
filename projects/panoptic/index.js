@@ -71,7 +71,13 @@ async function tvl(api) {
   await api.sumTokens({ ownerTokens })
 
   const block = api.block ?? 0
-  const chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks@${block}`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  let chunks = []
+  try {
+    chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks@${block}`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  } catch (e) {
+    api.log(`Panoptic: subgraph unavailable on ${chain}, skipping SFPM positions`)
+  }
+  if (!Array.isArray(chunks)) chunks = []
   chunks.forEach(chunk => {
     const { token0, token1, tick, } = poolData[chunk.pool.id.toLowerCase()] ?? {}
     if (!tick) return;

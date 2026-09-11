@@ -20,5 +20,3 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
-
-module.exports.plume.tvl = () => ({})

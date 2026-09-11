@@ -33,7 +33,7 @@ async function yieldTVL(api) {
   return sumTokens2({ api, resolveLP: true })
 }
 
-const cExports = compoundExports(COMPTROLLER, cBNB, wBNB,)
+const cExports = compoundExports(COMPTROLLER, cBNB, wBNB,  { isInsolvent: true })
 
 const dexTVL = getUniTVL({
   factory: BDEX_FACTORY,

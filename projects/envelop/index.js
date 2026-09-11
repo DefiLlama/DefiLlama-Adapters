@@ -6,8 +6,8 @@ const { staking } = require('../helper/staking')
 module.exports = {
 	methodology: 'TVL is the collateral coins, tokens, NFTs wrapped in Envelop vaults.',
 	hallmarks: [
-		[1709667755, "Blast Mainnet deployment"],
-		[1634745600, "Envelop(NIFTSY) TGE"],
+		['2024-03-05', "Blast Mainnet deployment"],
+		['2021-10-20', "Envelop(NIFTSY) TGE"],
 	],
 }
 const config = {

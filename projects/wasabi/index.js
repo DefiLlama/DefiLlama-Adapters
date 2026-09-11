@@ -1,6 +1,35 @@
 const { getLogs2 } = require('../helper/cache/getLogs');
-const idl = require('./wasabi_solana.json');
-const { getProvider } = require('../helper/solana');
+const idl = {
+  "address": "spicyTHtbmarmUxwFSHYpA8G4uP2nRNq38RReMpoZ9c",
+  "metadata": {"name": "wasabi_solana", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [{"name": "LpVault", "discriminator": [189, 45, 167, 23, 91, 118, 105, 190]}],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "LpVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "bump", "docs": ["Bump seed for the LpVault's PDA"], "type": "u8"},
+          {"name": "asset", "docs": ["The SPL Mint address of the token that sits in this vault"], "type": "pubkey"},
+          {"name": "vault", "docs": ["The SPL Token account that stores the unborrowed tokens"], "type": "pubkey"},
+          {"name": "shares_mint", "docs": ["The SPL Mint address that represents shares in the vault"], "type": "pubkey"},
+          {
+            "name": "total_assets",
+            "docs": ["Count of the total assets owned by the vault, including tokens that are currently borrowed"],
+            "type": "u64"
+          },
+          {"name": "max_borrow", "docs": ["Maximum amount that can be borrowed by admin"], "type": "u64"},
+          {"name": "total_borrowed", "docs": ["Total amount currently borrowed from the vault that is to be paid back by the admin"], "type": "u64"}
+        ]
+      }
+    }
+  ],
+  "constants": [{"name": "SEED", "type": "string", "value": "\"anchor\""}]
+};
+const { getProvider, sumTokens2: sumTokensSOL } = require('../helper/solana');
 const { Program } = require("@coral-xyz/anchor");
 
 const config = {
@@ -34,14 +63,14 @@ const solanaTvl = async (api) => {
   const provider = getProvider()
   const program = new Program(idl, provider)
   const vaults = await program.account.lpVault.all()
-  vaults.forEach((data, i) => {
-    const lpAsset = data.account.asset.toString()
-    api.add(lpAsset, data.account.totalAssets)
-  })
+  const tokenAccounts = vaults.map(v => v.account.vault.toString()) 
+  tokenAccounts.push("7JcsyK2AcJMx1V733R1As51DudggH7D38AHvbxapAhXd") 
+
+  return sumTokensSOL({ api, tokenAccounts, })
 }
 
 const tvl = async (api) => {
-  const { pools, fromBlock, tokens = [], toBlock = await api.getBlock() - 100 } = config[api.chain]
+  const { pools, fromBlock, toBlock = await api.getBlock() - 100 } = config[api.chain]
 
   const logs = await Promise.all(
     Object.values(pools).map((pool) =>
@@ -54,12 +83,14 @@ const tvl = async (api) => {
         onlyArgs: true,
         fromBlock,
         toBlock,
+        onlyUseExistingCache: true,
       })
     )
   );
 
   const vaults = [...new Set(logs.flat().map((log) => log[2]))];
-  return api.erc4626Sum({ calls: vaults, isOG4626: true });
+  const tokens  = await api.multiCall({  abi: 'address:asset', calls: vaults })
+  return api.sumTokens({ tokensAndOwners2: [tokens, vaults]})
 }
 
 Object.keys(config).forEach((chain) => {
@@ -70,9 +101,9 @@ module.exports.solana = {
   tvl: solanaTvl
 }
 module.exports.hallmarks=[
-  [1709181259, "Deployed on Blast"],
-  // [1733011200, "Deployed on Solana"], // has no impact on the TVL
-  // [1737365147, "Deployed on Base"],
-  // [1741758248, "Deployed on Berachain"]
+  ['2024-02-29', "Deployed on Blast"],
+  // ['2024-12-01', "Deployed on Solana"], // has no impact on the TVL
+  // ['2025-01-20', "Deployed on Base"],
+  // ['2025-03-12', "Deployed on Berachain"]
 ]
 module.exports.methodology="Counts the total value deposited in the vaults of the Wasabi protocol, including assets that have been loaned out to open long and short positions."

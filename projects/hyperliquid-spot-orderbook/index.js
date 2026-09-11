@@ -9,19 +9,14 @@ const assetsInfos = async () => {
   const payload = { "type": "spotMetaAndAssetCtxs" }
   const { data } = await axios.post(API_URL, payload)
 
-  return data[0].tokens.map((token) => {
-    const ctxToken = data[1].find((item) => item.coin.replace("@", "") == token.index);
-    return { ...token, ...ctxToken };
-  });
+  const ctxByCoin = Object.fromEntries(data[1].map((ctx) => [ctx.coin, ctx]))
+  return data[0].universe.map((pair) => ({ ...pair, ...ctxByCoin[pair.name] }))
 }
-let ws = null
-
 const nSigFigs = 2
 const getOrderbooks = async () => {
   const assets = await assetsInfos()
   return new Promise((resolve, reject) => {
-    if (!ws)
-      ws = new WebSocket('wss://api-ui.hyperliquid.xyz/ws');
+    const ws = new WebSocket('wss://api-ui.hyperliquid.xyz/ws');
     let coins = []
     let spotCoins = assets.map(asset => asset.coin).filter(Boolean)
     const receivedMessages = new Map(); // Track messages received per coin
@@ -90,8 +85,6 @@ const tvl = async (api) => {
     const totalFromCoin =  buySide + sellSide
     totalBalance += totalFromCoin
   })
-
-  if (ws) ws.close()
 
   return api.add(USDC, totalBalance * 1e6, { skipChain: true })
 }

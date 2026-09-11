@@ -6,7 +6,7 @@ module.exports = {
   methodology: methodologies.lendingMarket,
   waves: { tvl, borrowed },
   hallmarks: [
-    [1659092400, "Bad debt settlement in USDN"],
+    ['2022-07-29', "Bad debt settlement in USDN"],
   ],
 }
 const aTokens = [

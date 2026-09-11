@@ -12,5 +12,7 @@
   "isHeavyProtocol",
   "deadFrom",
   "ownTokens",
+  "meta",
+  "moduleFilePath",
   "vesting"
 ]

@@ -1,6 +1,0 @@
-{
-  "pendingMlpCount": "uint256:pendingMlpCount",
-  "allMlp": "function allMlp(uint256) view returns (address)",
-  "uniswapPair": "address:uniswapPair",
-  "getMlp": "function getMlp(uint256) view returns (address uniswapPair, address submitter, uint256 liquidity, uint256 endDate, uint8 status, uint256 bonusToken0, uint256 bonusToken1)"
-}

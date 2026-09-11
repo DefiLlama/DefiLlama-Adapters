@@ -14,12 +14,12 @@ const LPs = [
   '0xb6a0ad0f714352830467725e619ea23e2c488f37',
 ]
 
-async function tvl(_, _b, {[chain]: block }) {
+async function tvl(api) {
   const toa = []
   LPs.map(i => toa.push([i, TREASURY])) // Protocol owned liquidity
   toa.push([WETH,TREASURY])
   toa.push([WETH,WETH_POOL])
-  return sumUnknownTokens({ chain, block, tokensAndOwners: toa, useDefaultCoreAssets: true, })
+  return sumUnknownTokens({ api, tokensAndOwners: toa, useDefaultCoreAssets: true, })
 }
 
 module.exports = {

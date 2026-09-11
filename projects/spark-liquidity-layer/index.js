@@ -1,5 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const morphoAbi = require("../helper/abis/morpho.json");
+const morphoAbi = require('../helper/abis/morpho.json')
+const { getExports } = require('../helper/heroku-api')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const almProxy = {
   ethereum: '0x1601843c5E9bC251A3272907010AFa41Fa18347E',
@@ -8,6 +10,8 @@ const almProxy = {
   optimism: '0x876664f0c9Ff24D1aa355Ce9f1680AE1A5bf36fB',
   unichain: '0x345E368fcCd62266B3f5F37C9a131FD1c39f5869',
   avax: '0xecE6B0E8a54c2f44e066fBb9234e7157B15b7FeC',
+  robinhood: '0xfD2fD4B046136B540A56C11c75ac679AE7d1dB24',
+  xlayer: '0x83A914C361bB729EB6BEBC8C7bA993667A0E6Df8',
 }
 
 const mainnetAllocatorToTokens = {
@@ -22,6 +26,7 @@ const mainnetAllocatorToTokens = {
     ADDRESSES.ethereum.USDe,
     ADDRESSES.ethereum.USDT,
     ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDG,
     '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
     '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // aEthUSDS
@@ -29,13 +34,18 @@ const mainnetAllocatorToTokens = {
     '0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e', // USTB
     '0x8c213ee79581Ff4984583C6a801e5263418C4b86', // JTSRY
     '0x80ac24aA929eaF5013f6436cdA2a7ba190f5Cc0b', // syrupUSDC
+    '0x356B8d89c1e1239Cbbb9dE4815c39A1474d5BA7D', // syrupUSDT
     '0x779224df1c756b4EDD899854F32a53E8c2B2ce5d', // spPYUSD
     '0xe7dF13b8e3d6740fe17CBE928C7334243d86c92f', // spUSDT
     '0x377C3bd93f2a2984E1E7bE6A5C22c525eD4A4815', // spUSDC
-    '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho blue chip sparkUSDC
+    '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho Spark Blue Chip USDC Vault
+    '0xc7CDcFDEfC64631ED6799C95e3b110cd42F2bD22', // morpho Spark Blue Chip USDT Vault v1
+    '0xb0c424116172B55CbB6dD3136F5989F7959e5B91', // morpho Spark Blue Chip USDT Vault v2
     '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
     '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8', // pyUSD
-  ]
+    '0x8292bb45bf1ee4d140127049757c2e0ff06317ed', // rlUSD
+    '0x23878914efe38d27c4d67ab83ed1b93a74d4086a', // aaveCoreUsdt
+  ],
 }
 
 const baseAllocatorToTokens = {
@@ -45,43 +55,37 @@ const baseAllocatorToTokens = {
     '0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB', // aBasUSDC
     ADDRESSES.base.USDC, // idle USDC
   ],
-  '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [
-    ADDRESSES.base.USDC,
-  ]
+  '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [ADDRESSES.base.USDC],
 }
 
 const arbitrumAllocatorToTokens = {
-  [almProxy.arbitrum]: [
-    ADDRESSES.arbitrum.USDC_CIRCLE
-  ],
-  '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [
-    ADDRESSES.arbitrum.USDC_CIRCLE
-  ]
+  [almProxy.arbitrum]: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDT],
+  '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [ADDRESSES.arbitrum.USDC_CIRCLE],
 }
 
 const optimismAllocatorToTokens = {
-  [almProxy.optimism]: [
-    ADDRESSES.optimism.USDC_CIRCLE,
-  ],
-  '0xe0F9978b907853F354d79188A3dEfbD41978af62': [
-    ADDRESSES.optimism.USDC_CIRCLE
-  ]
+  [almProxy.optimism]: [ADDRESSES.optimism.USDC_CIRCLE],
+  '0xe0F9978b907853F354d79188A3dEfbD41978af62': [ADDRESSES.optimism.USDC_CIRCLE],
 }
 
 const unichainAllocatorToTokens = {
-  [almProxy.unichain]: [
-    ADDRESSES.unichain.USDC,
-  ],
-  '0x7b42Ed932f26509465F7cE3FAF76FfCe1275312f': [
-    ADDRESSES.unichain.USDC
-  ]
+  [almProxy.unichain]: [ADDRESSES.unichain.USDC],
+  '0x7b42Ed932f26509465F7cE3FAF76FfCe1275312f': [ADDRESSES.unichain.USDC],
 }
 
 const avaxAllocatorToTokens = {
   [almProxy.avax]: [
     ADDRESSES.avax.USDC,
     '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aave aUSDC
-  ]
+  ],
+}
+
+const robinhoodAllocatorToTokens = {
+  [almProxy.robinhood]: [ADDRESSES.robinhood.USDG],
+}
+
+const xlayerAllocatorToTokens = {
+  [almProxy.xlayer]: [ADDRESSES.xlayer.USDT],
 }
 
 const CONFIG = {
@@ -91,6 +95,8 @@ const CONFIG = {
   optimism: optimismAllocatorToTokens,
   unichain: unichainAllocatorToTokens,
   avax: avaxAllocatorToTokens,
+  robinhood: robinhoodAllocatorToTokens,
+  xlayer: xlayerAllocatorToTokens,
 }
 
 async function tvl(api) {
@@ -103,9 +109,18 @@ async function tvl(api) {
   await addMorphoBalances(api)
   await addEthenaUnstakeBalance(api)
   await addCurveBalances(api)
+  await addUniswapV4Balances(api)
+  await addVaultBalances(api)
 
   const allTokens = Object.values(tokenRecords).flat()
   api.add(allTokens, balances)
+
+  if (api.chain === 'ethereum') {
+    // track anchorage allocation
+    const tvl = getExports('spark-anchorage', ['ethereum']).ethereum.tvl
+    const anchorageBalance = await tvl(api)
+    api.addBalances(anchorageBalance)
+  }
 }
 
 Object.keys(CONFIG).forEach((chain) => {
@@ -122,7 +137,7 @@ const vaultConfigs = {
     {
       allocator: almProxy.ethereum,
       vaultToken: '0xC02aB1A5eaA8d1B114EF786D9bde108cD4364359', //spUSDS
-      underlyingToken: '0xdC035D45d973E3EC169d2276DDab16f1e407384F',
+      underlyingToken: ADDRESSES.ethereum.USDS,
     },
   ],
   base: [],
@@ -130,6 +145,8 @@ const vaultConfigs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 // discards idle supply on aave like markets for USDS and DAI
@@ -186,8 +203,8 @@ const morphoVaultConfigs = {
         allocator: almProxy.ethereum,
         address: '0xe41a0583334f0dc4E023Acd0bFef3667F6FE0597',
         idleMarketId: '0x02e723fdfc0c26779c2c06bbf783e2f4d6aebd03cedc1806981b742f1a644105',
-      }
-    ]
+      },
+    ],
   },
 }
 
@@ -277,6 +294,8 @@ const curveConfigs = {
   optimism: [],
   unichain: [],
   avax: [],
+  robinhood: [],
+  xlayer: [],
 }
 
 async function addCurveBalances(api) {
@@ -321,4 +340,39 @@ async function addCurveBalances(api) {
   )
 
   api.add(tokens, balances)
+}
+
+async function addUniswapV4Balances(api) {
+  if (api.chain !== 'ethereum') {
+    return
+  }
+
+  await sumTokens2({
+    api,
+    owner: almProxy.ethereum,
+    resolveUniV4: true,
+  })
+}
+
+const erc4626Configs = {
+  ethereum: [
+    '0x38464507E02c983F20428a6E8566693fE9e422a9', // Arkis sparkPrimeUSDC1
+  ],
+  base: [],
+  arbitrum: [],
+  optimism: [],
+  unichain: [],
+  avax: [],
+  robinhood: [],
+  xlayer: [],
+}
+
+async function addVaultBalances(api) {
+  const vaults = erc4626Configs[api.chain]
+  if (vaults.length === 0) {
+    return
+  }
+
+  const balances = await api.erc4626Sum2({ calls: vaults })
+  api.addBalances(balances)
 }

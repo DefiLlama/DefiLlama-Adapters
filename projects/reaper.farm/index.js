@@ -4,7 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 module.exports = {
   hallmarks: [
-    [1659441956, "$1.7m Exploit"],
+    ['2022-08-02', "$1.7m Exploit"],
   ]
 }
 

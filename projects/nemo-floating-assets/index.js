@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
 const {COIN_CONFIG, MMT_TYPE_CONFIG} = require("../nemo/coinConfig.js");
-const {desU64} = require("../nemo/bytes");
+const {fromU64: desU64} = require("../helper/chain/sui");
 const {getExchangeRate} = require("../nemo/price");
 const {getVaultTvlByAmountB, getDynamicFieldObject} = require("../nemo/util");
 
@@ -43,12 +43,7 @@ const watchCoinTypeNotConvert = [
 ];
 
 async function tvl(api) {
-  const marketIds = await sui.queryEvents({
-    eventType: `${nemoPackageId}::market_factory::MarketCreatedEvent`,
-    transform: i => i.market_id
-  });
-
-  const markets = await sui.getObjects(marketIds);
+  const markets = await sui.getObjectsByType(`${nemoPackageId}::market::MarketState`);
 
   for (const market of markets) {
     if (!market) continue;
@@ -77,18 +72,17 @@ async function getTvl(type, fields, api) {
 
   const txBlockBytes = await getExchangeRate(coinConfig);
 
-  const inspectionResult = await sui.call(
-    'sui_devInspectTransactionBlock',
-    ['0x0000000000000000000000000000000000000000000000000000000000000000',
-      Buffer.from(txBlockBytes).toString('base64')],
-    {withMetadata: true}
-  );
-
-  if (inspectionResult?.effects?.status?.status !== 'success') {
+  let inspectionResult;
+  try {
+    inspectionResult = await sui.devInspectTransactionBlock(txBlockBytes);
+  } catch (e) {
     return null;
   }
 
-  const returnValues = inspectionResult.results[inspectionResult.results?.length - 1].returnValues;
+  const results = inspectionResult?.results;
+  if (!results?.length) return null;
+  const returnValues = results[results.length - 1].returnValues;
+  if (!returnValues || returnValues.length < 2) return null;
   const res1 = returnValues[0][0];
   const res2 = returnValues[1][0];
   const priceVoucher1 = desU64(Uint8Array.from(res1));
@@ -101,7 +95,6 @@ async function getTvl(type, fields, api) {
   if (coinConfig.provider === 'Nemo') {
     const pt2SyAmount = floatingPt.div(priceVoucher1).times(priceVoucher2);
 
-    console.log(`floatingPt: ${floatingPt.toString()}, ptSupply: ${ptSupply}, pt2SyAmount: ${pt2SyAmount.toString()}, marketId: ${fields.id.id}`);
 
     const vault = await sui.getObject(MMT_TYPE_CONFIG[coinConfig.coinType].VAULT_ID);
     const amountB = await getVaultTvlByAmountB(vault);
@@ -109,8 +102,6 @@ async function getTvl(type, fields, api) {
     const totalSupply = vault.fields.treasury_cap.fields.total_supply.fields.value;
 
     const lpTokenPrice = BigNumber(amountB).div(BigNumber(totalSupply));
-
-    console.log(`lpTokenPrice: ${lpTokenPrice.toString()}, amountB: ${amountB}, totalSupply: ${totalSupply}`);
 
     api.add(coinConfig.underlyingCoinType, pt2SyAmount.times(lpTokenPrice).toFixed(0));
   }

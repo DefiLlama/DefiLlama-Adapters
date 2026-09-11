@@ -70,7 +70,7 @@ const getTvl = async (api, isStaking) => {
 
 module.exports = {
   methodology: "Aggregates TVL in all Arbera indexes created",
-  hallmarks: [[1743091200, "Berachain launch"], [1748383200, "Dens V1.1 + arBERO Launch"]],
+  hallmarks: [['2025-03-27', "Berachain launch"], ['2025-05-27', "Dens V1.1 + arBERO Launch"]],
 };
 
 Object.keys(config).forEach(chain => {

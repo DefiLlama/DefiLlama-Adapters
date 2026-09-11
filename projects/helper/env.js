@@ -10,9 +10,9 @@ const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
 
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
-  CRONOS_MULTICALL_CHUNK_SIZE: "10", // cronos reduced gas limit, this is a workaround to make multicall work
-  KATANA_MULTICALL_CHUNK_SIZE: "50",
+  SEI_BLOCK_LOW: "150023881",
   STARKNET_RPC: 'https://rpc.starknet.lava.build/',
+  STARKNET_MULTICALL: '0x01a33330996310a1e3fa1df5b16c1e07f0491fdd20c441126e02613b948f0225',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
@@ -22,34 +22,41 @@ const DEFAULTS = {
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://sui-rpc.publicnode.com',
-  SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
+  // SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
+  SUI_GRAPH_RPC: 'https://graphql.mainnet.sui.io/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FOGO_RPC: 'https://mainnet.fogo.io',
+  COOKIECHAIN_RPC: 'https://rpc.cookiescan.io',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
-  INJECTIVE_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
-  OCC_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   IOTA_RPC: "https://api.mainnet.iota.cafe",
-  KASPLEX_RPC: "https://evmrpc.kasplex.org",
   MEGAETH_ARCHIVAL_RPC: 'https://megaeth.blockscout.com/api/eth-rpc',
+  SHIDO_RPC: 'https://shidoscan.net/api/eth-rpc',
+  BITKUB_RPC: 'https://www.kubscan.com/api/eth-rpc',
+  REI_RPC: 'https://scan.rei.network/api/eth-rpc',
   PEPU_RPC: 'https://pepuscan.com/api/eth-rpc',
-  PEPU_RPC_MULTICALL: '0xBB6bf9447031408804af92aE6fBeDc002Dcb20aB',  // need to change it to one that works
-  SAGA_RPC: "https://sagaevm.jsonrpc.sagarpc.io",
-  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/" + _yek,
+  // dwellir throttles queryStorageAt bursts across both bifrost endpoints (same key) which stalled bifrost-dex; polkadot side moved to liebi
+  BIFROST_P_RPC: "wss://eu.bifrost-polkadot-rpc.liebi.com/ws",
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/" + _yek,
   BLOCKFROST_PROJECT_ID: 'mai'+'nnetBfkdsCOvb4BS'+'VA6pb1D43ptQ7t3cLt06',
-  VIRBICOIN_RPC: "https://rpc.digitalregion.jp",
-  TATUM_PUBLIC_API_KEY: "t-6956724efd74cfe6b231bee6-cd40df69ad2d423588e36fc6",
+  FUEL_CUSTOM_RPC: 'https://mainnet.fuel.network/v1/graphql',
+  TATUM_PUBLIC_API_KEY: "t-" + "698992414f6f4e3435d62161" + "-3d94ca2d70024efdaf3ca6fd",
+  KEETA_RPC: "https://rep1.main.network.api.keeta.com/api",
+  CRYPTOAPIS_API_KEY: "35c1b8a" + "cd1119" + "b98dbe59e821ab734b87dfe6f84",
+  PROPTECH_RPC: "https://mainnet.ptekcoin.com",
+  FLARE_ARCHIVAL_RPC: 'https://flare-explorer.flare.network/api/eth-rpc',
+  RISE_ARCHIVAL_RPC: 'https://explorer.risechain.com/api/eth-rpc', // public rpc.risechain.com caps eth_getLogs at 5000 blocks
 }
 
 const ENV_KEYS = [
   ...BOOL_KEYS,
   ...Object.keys(DEFAULTS),
+  'ELASTICSEARCH_CONFIG',
   'GETBLOCK_KEY',
   'LOFTY_API',
   'SOLANA_RPC_CLIENT',
@@ -66,10 +73,17 @@ const ENV_KEYS = [
   'DEBANK_API_KEY',
   'SMARDEX_SUBGRAPH_API_KEY',
   'ALLIUM_API_KEY',
+  'DUNE_API_KEYS',
   'TON_API_KEY',
   'FLOW_NON_EVM_RPC',
   'PROXY_AUTH',
   'UI_TOOL_MODE',
+  'P0_API_KEY',
+  'CRYPTOAPIS_API_KEY',
+  'TATUM_PUBLIC_API_KEY',
+  'TATUM_API_KEY',
+  'TEAM_WEBHOOK',
+  'HIRO_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

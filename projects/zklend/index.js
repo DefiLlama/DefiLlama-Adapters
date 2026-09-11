@@ -1,6 +1,56 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { multiCall, sumTokens, call } = require('../helper/chain/starknet')
-const { marketAbi, stakingAbi, } = require('./abi');
+const market_ = [
+    {
+      "name": "get_total_debt_for_token",
+      "type": "function",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "felt"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "debt",
+          "type": "felt"
+        }
+      ],
+      "stateMutability": "view",
+      "customInput": "address"
+    },
+]
+const marketAbi = {}
+market_.forEach(i => marketAbi[i.name] = i)
+const staking_ = [
+    {
+      name: "core::integer::u256",
+      type: "struct",
+      members: [
+        {
+          name: "low",
+          type: "core::integer::u128",
+        },
+        {
+          name: "high",
+          type: "core::integer::u128",
+        },
+      ],
+    },
+    {
+      "type": "function",
+      "name": "get_total_staked_amount",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "core::integer::u256"
+        }
+      ],
+      "state_mutability": "view"
+    },
+]
+const stakingAbi = {}
+staking_.forEach(i => stakingAbi[i.name] = i)
 
 const market = '0x4c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
 const stakingContract = '0x0212c219a68c8fe38f37951123d1ec877570dfa891de270aa4f8634c5e60bc23'
@@ -35,7 +85,7 @@ async function staking(api) {
 module.exports = {
   methodology: 'Value of user supplied asset on zkLend is considered as TVL',
   // hallmarks: [
-  //   [1739232000, "Empty Market Exploit"]
+  //   ['2025-02-11', "Empty Market Exploit"]
   // ],
   starknet: {
     tvl,

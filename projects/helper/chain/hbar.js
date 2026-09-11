@@ -11,7 +11,7 @@ async function getHBARBalance(address, timestamp) {
 }
 
 async function getCurrentBlock() {
-  const { blocks: [{ number }]} = await http.get(HBAR_API_V1+'/blocks?limit=1&order=desc')
+  const { blocks: [{ number }] } = await http.get(HBAR_API_V1 + '/blocks?limit=1&order=desc')
   return number
 }
 
@@ -22,10 +22,28 @@ async function addHBarBalance({ balances = {}, address, timestamp }) {
   return balances
 }
 
-async function sumTokens({ balances = {}, owners = [], timestamp }) {
+async function addTokenBalances({ balances, address, tokens }) {
+  const tokenSet = new Set(tokens)
+  let next = `/accounts/${address}/tokens?limit=100`
+  while (next) {
+    const res = await http.get(HBAR_API_V1 + next.replace('/api/v1', ''))
+    res.tokens.forEach(({ token_id, balance }) => {
+      if (!tokenSet.has(token_id)) return
+      sdk.util.sumSingleBalance(balances, token_id, balance, 'hedera')
+    })
+    next = res.links?.next
+  }
+  return balances
+}
+
+async function sumTokens({ balances = {}, owners = [], tokens = [], timestamp }) {
   if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
-  const promises = owners.map(address => addHBarBalance({ timestamp, balances, address}))
+  const promises = owners.map(address => addHBarBalance({ timestamp, balances, address }))
   await Promise.all(promises)
+  // 0.0.x token ids only - the nullAddress placeholder (native HBAR) is always counted above
+  tokens = tokens.filter(t => typeof t === 'string' && t.startsWith('0.0.'))
+  if (tokens.length)
+    await Promise.all(owners.map(address => addTokenBalances({ balances, address, tokens })))
   return balances
 }
 

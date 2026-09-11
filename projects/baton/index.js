@@ -16,9 +16,9 @@ async function tvl(api) {
   });
 
   // filter any farms where the reward token is not fractional nfts or the underlying pair is not paired with eth
-  let filteredLogs = logs.filter(i => i.farmType === 2)
+  let filteredLogs = logs.filter(i => Number(i.farmType || i[6]) === 2)
   const baseTokens = await api.multiCall({ abi: 'address:baseToken', calls: filteredLogs.map(i => i.pairAddress) })
-  const filteredFarms = filteredLogs.filter((i, idx) => baseTokens[idx] = nullAddress)
+  const filteredFarms = filteredLogs.filter((i, idx) => baseTokens[idx] === nullAddress)
 
   const farms = filteredFarms.map(i => i.farmAddress)
   const pairs = filteredFarms.map(i => i.pairAddress)

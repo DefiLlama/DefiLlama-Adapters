@@ -1,0 +1,79 @@
+{
+  "version": "1.0.0",
+  "name": "kamino_vault",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "VaultState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "vaultAdminAuthority", "type": "publicKey"},
+          {"name": "baseVaultAuthority", "type": "publicKey"},
+          {"name": "baseVaultAuthorityBump", "type": "u64"},
+          {"name": "tokenMint", "type": "publicKey"},
+          {"name": "tokenMintDecimals", "type": "u64"},
+          {"name": "tokenVault", "type": "publicKey"},
+          {"name": "tokenProgram", "type": "publicKey"},
+          {"name": "sharesMint", "type": "publicKey"},
+          {"name": "sharesMintDecimals", "type": "u64"},
+          {"name": "tokenAvailable", "type": "u64"},
+          {"name": "sharesIssued", "type": "u64"},
+          {"name": "availableCrankFunds", "type": "u64"},
+          {"name": "unallocatedWeight", "type": "u64"},
+          {"name": "performanceFeeBps", "type": "u64"},
+          {"name": "managementFeeBps", "type": "u64"},
+          {"name": "lastFeeChargeTimestamp", "type": "u64"},
+          {"name": "prevAumSf", "type": "u128"},
+          {"name": "pendingFeesSf", "type": "u128"},
+          {"name": "vaultAllocationStrategy", "type": {"array": [{"defined": "VaultAllocation"}, 25]}},
+          {"name": "padding1", "type": {"array": ["u128", 256]}},
+          {"name": "minDepositAmount", "type": "u64"},
+          {"name": "minWithdrawAmount", "type": "u64"},
+          {"name": "minInvestAmount", "type": "u64"},
+          {"name": "minInvestDelaySlots", "type": "u64"},
+          {"name": "crankFundFeePerReserve", "type": "u64"},
+          {"name": "pendingAdmin", "type": "publicKey"},
+          {"name": "cumulativeEarnedInterestSf", "type": "u128"},
+          {"name": "cumulativeMgmtFeesSf", "type": "u128"},
+          {"name": "cumulativePerfFeesSf", "type": "u128"},
+          {"name": "name", "type": {"array": ["u8", 40]}},
+          {"name": "vaultLookupTable", "type": "publicKey"},
+          {"name": "vaultFarm", "type": "publicKey"},
+          {"name": "creationTimestamp", "type": "u64"},
+          {"name": "unallocatedTokensCap", "type": "u64"},
+          {"name": "allocationAdmin", "type": "publicKey"},
+          {"name": "withdrawalPenaltyLamports", "type": "u64"},
+          {"name": "withdrawalPenaltyBps", "type": "u64"},
+          {"name": "firstLossCapitalFarm", "type": "publicKey"},
+          {"name": "allowAllocationsInWhitelistedReservesOnly", "type": "u8"},
+          {"name": "allowInvestInWhitelistedReservesOnly", "type": "u8"},
+          {"name": "padding4", "type": {"array": ["u8", 14]}},
+          {"name": "padding3", "type": {"array": ["u128", 238]}}
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "VaultAllocation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "reserve", "type": "publicKey"},
+          {"name": "ctokenVault", "type": "publicKey"},
+          {"name": "targetAllocationWeight", "type": "u64"},
+          {"name": "tokenAllocationCap", "docs": ["Maximum token invested in this reserve"], "type": "u64"},
+          {"name": "ctokenVaultBump", "type": "u64"},
+          {"name": "configPadding", "type": {"array": ["u64", 127]}},
+          {"name": "ctokenAllocation", "type": "u64"},
+          {"name": "lastInvestSlot", "type": "u64"},
+          {"name": "tokenTargetAllocationSf", "type": "u128"},
+          {"name": "statePadding", "type": {"array": ["u64", 128]}}
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}

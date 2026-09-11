@@ -26,7 +26,7 @@ async function staking(api) {
 
 module.exports = {
   hallmarks: [
-    [1706745600, "Rug Pull"]
+    ['2024-02-01', "Rug Pull"]
   ],
   base: {
     tvl, staking,

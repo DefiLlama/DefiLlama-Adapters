@@ -7,8 +7,8 @@ const magicPPConfig = {
 		'0x74b23882a30290451A17c44f4F05243b6b58C76d', // WETH
 		ADDRESSES.fantom.WBTC, // WBTC
 		'0x6626c47c00F1D87902fc13EECfaC3ed06D5E8D8a', // magic
-		ADDRESSES.fantom.USDC, // USDC
-		ADDRESSES.fantom.fUSDT, // fUSDT
+		"0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
+		"0x049d68029688eabf473097a2fc38ef61633a3c7a", // fUSDT
 	],
 	bsc: [
 		ADDRESSES.bsc.WBNB, // WBNB

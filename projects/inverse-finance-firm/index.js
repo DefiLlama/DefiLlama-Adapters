@@ -159,8 +159,8 @@ async function tvl(api) {
 module.exports = {
   methodology: "Get collateral balances from users personal escrows",
   hallmarks: [
-    [1707177600, "Launch of sDOLA"],
-    [1718236800, "CRV liquidation"]
+    ['2024-02-06', "Launch of sDOLA"],
+    ['2024-06-13', "CRV liquidation"]
   ],
   start: '2022-12-10', // Dec 10 2022
   ethereum: {

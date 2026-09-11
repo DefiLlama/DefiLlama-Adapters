@@ -1,6 +1,6 @@
 const { addUSDCBalance } = require("../helper/chain/stellar");
 const solana = require("../helper/solana");
-const suiTx = require("./suiTx");
+const sui = require("../helper/chain/sui");
 
 const data = require("./contracts");
 
@@ -10,10 +10,23 @@ const solanaTvl = async (api) => {
 }
 
 const suiTvl = async (api) => {
-  const suiData = data['sui'];
-  for (const token of suiData.tokens) {
-    const balance = await suiTx.getPoolTokenBalance(token.tokenAddress, suiData.bridgeAddress, suiData.bridgeId);
-    api.add(token.tokenAddress, balance);
+  const { bridgeAddress, bridgeId, tokens } = data['sui'];
+  const initialSharedVersion = await sui.getInitialSharedVersion(bridgeId);
+
+  for (const { tokenAddress } of tokens) {
+    const txBytes = sui.buildProgrammableMoveCallBytes({
+      packageId: bridgeAddress,
+      module: 'bridge_interface',
+      functionName: 'pool_balance',
+      typeArguments: [tokenAddress],
+      sharedObjects: [{ objectId: bridgeId, initialSharedVersion, mutable: false }],
+    });
+    const inspection = await sui.devInspectTransactionBlock(txBytes);
+    const balanceBytes = inspection?.results?.[0]?.returnValues?.[0]?.[0];
+    if (!Array.isArray(balanceBytes) || balanceBytes.length !== 8) {
+      throw new Error(`Unexpected pool_balance return for ${tokenAddress}: ${JSON.stringify(inspection?.results)}`);
+    }
+    api.add(tokenAddress, sui.fromU64(balanceBytes).toString());
   }
 }
 
@@ -30,6 +43,7 @@ function getTVLFunction(chain) {
 
 module.exports = {
   methodology: "All tokens locked in Allbridge Core pool contracts.",
+  deadFrom: "2026-08-31", // deprecated in favor of ccip, x-reserves, and lz
   timetravel: false,
   stellar: { tvl: stellarTvl },
 }

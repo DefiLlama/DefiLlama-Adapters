@@ -1,8 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
-const http = require('../helper/http');
 const { getConfig } = require('../helper/cache')
-const { unwrapUniswapLPs, nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
+const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
 const getPairFactory = 'function getPair(address, address) view returns (address)'
 
 const RESERVES = [
@@ -88,7 +86,7 @@ const chainConfig = {
       }, // RISE-FTM
     ],
     reserveTokens: [
-      ADDRESSES.fantom.USDC, // USDC
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
       // TOKEN,
     ],
   },
@@ -137,30 +135,10 @@ Object.keys(chainConfig).forEach(chain => {
     }
   }
 
-  async function pool2(ts, _block, chainBlocks) {
-    let balances = {}
-    const block = chainBlocks[chain]
+  async function pool2(api) {
     const { LPs } = chainConfig[chain]
-
-    let lpPositions = [];
-    let lpBalances = (
-      await sdk.api.abi.multiCall({
-        calls: LPs.map((p) => ({
-          target: p.pool,
-          params: p.owner,
-        })),
-        abi: "erc20:balanceOf",
-        block, chain,
-      })
-    ).output;
-    lpBalances.forEach((i) => {
-      lpPositions.push({
-        balance: i.output,
-        token: i.input.target,
-      });
-    });
-    await unwrapUniswapLPs(balances, lpPositions, block, chain);
-    return balances
+    const tokensAndOwners = LPs.map((p) => [p.pool, p.owner])
+    return sumTokens2({ api, tokensAndOwners, resolveLP: true })
   }
 
   async function staking() {

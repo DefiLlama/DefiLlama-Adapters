@@ -1,5 +1,5 @@
 module.exports = {
-  "version": "0.1.0",
+  "version": "0.1.7",
   "name": "marginfi",
   "instructions": [],
   "accounts": [
@@ -63,13 +63,20 @@ module.exports = {
           {"name": "liabilityWeightMaint", "type": {"defined": "WrappedI80F48"}},
           {"name": "depositLimit", "type": "u64"},
           {"name": "interestRateConfig", "type": {"defined": "InterestRateConfig"}},
-          {"name": "operationalState", "type": {"defined": "BankOperationalState"}},
+          // unit enum on-chain (1-byte discriminant); decoded as u8 so unknown new variants don't break decoding
+          {"name": "operationalState", "type": "u8"},
           {"name": "oracleSetup", "type": "u8"},
           {"name": "oracleKeys", "type": {"array": ["publicKey", 5]}},
           {"name": "ignore1", "type": {"array": ["u8", 6]}},
           {"name": "borrowLimit", "type": "u64"},
-          {"name": "riskTier", "type": {"defined": "RiskTier"}},
-          {"name": "padding", "type": {"array": ["u8", 55]}}
+          // unit enum on-chain (1-byte discriminant); decoded as u8 so unknown new variants don't break decoding
+          {"name": "riskTier", "type": "u8"},
+          // New fields mapped from on-chain layout: asset_tag and config_flags
+          // These reuse bytes that were previously part of padding.
+          {"name": "assetTag", "type": "u8"},
+          {"name": "configFlags", "type": "u8"},
+          // Remaining padding bytes after carving out assetTag + configFlags
+          {"name": "padding", "type": {"array": ["u8", 53]}}
         ]
       }
     },
@@ -89,8 +96,7 @@ module.exports = {
         ]
       }
     },
-    {"name": "BankOperationalState", "type": {"kind": "enum", "variants": [{"name": "Paused"}, {"name": "Operational"}, {"name": "ReduceOnly"}]}},
-    {"name": "RiskTier", "type": {"kind": "enum", "variants": [{"name": "Collateral"}, {"name": "Isolated"}]}}
+    // BankOperationalState and RiskTier removed: decoded as u8 in BankConfig (see above)
   ],
   "events": [],
   "errors": []

@@ -10,7 +10,7 @@ const {
   AFTERMATH,
   ALPAHFI
 } = require("./constants");
-const {hexToBytes, toU64, textToBytes} = require("./bytes");
+const {hexToBytes, toU64, textToBytes} = require("../helper/chain/sui");
 const {MMT_TYPE_CONFIG, VAULT_CONFIG, MMT, PYTH_ORACLE_MAP} = require("./coinConfig");
 const sui = require("../helper/chain/sui");
 const {getObjects} = require("./util");

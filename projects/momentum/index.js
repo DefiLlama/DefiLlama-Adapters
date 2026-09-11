@@ -1,7 +1,7 @@
 const sui = require("../helper/chain/sui");
 
-const EVENT_FILTER =
-    "0x70285592c97965e811e0c6f98dccc3a9c2b4ad854b3594faab9597ada267b860::create_pool::PoolCreatedEvent";
+const POOL_TYPE =
+    "0x70285592c97965e811e0c6f98dccc3a9c2b4ad854b3594faab9597ada267b860::pool::Pool";
 
 const blacklistPools = [
   '0x584e68589d2ce655c47fa88d75090258c0d8b5b16c3d643e0ddc2b71e81e6546',
@@ -10,11 +10,7 @@ const blacklistPools = [
 ]
 
 async function momentumTVL(api) {
-    const poolIds = await sui.queryEvents({
-        eventType: EVENT_FILTER,
-        transform: (i) => i.pool_id,
-    });
-    const pools = await sui.getObjects(poolIds.filter(p => !blacklistPools.includes(p)));
+    const pools = (await sui.getObjectsByType(POOL_TYPE)).filter(p => !blacklistPools.includes(p.fields.id.id));
     pools.forEach((i) => {
         const [token0, token1] = i.type.split("<")[1].replace(">", "").split(", ");
         api.add(token0, i.fields.reserve_x);

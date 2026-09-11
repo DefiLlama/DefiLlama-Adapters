@@ -13,7 +13,7 @@ function customCacheFunction({ cache, logs }) {
 module.exports = {
   methodology: 'TVL is the sum of deposits minus the sum of withdrawals. Since there is no liquid staking token (yet) and deposited ETH greater than 32 is automatically staked in the beacon chain, the contract balance itself is not the TVL.',
   hallmarks: [
-    [1732231247, "Privately staked funds deposited to contract."],
+    ['2024-11-21', "Privately staked funds deposited to contract."],
   ],
   timetravel: false,
   ethereum: {

@@ -1,29 +1,42 @@
 const sdk = require("@defillama/sdk");
+const ADDRESSES = require("../helper/coreAssets.json");
+const { chainTvl } = require("../helper/boringVault");
 
-const { boringVaultsV0Ethereum } = require("./ethereumConstants");
-const { boringVaultsV0Arbitrum } = require("./arbitrumConstants");
-const { boringVaultsV0Base } = require("./baseConstants");
-const { sumLegacyTvl, sumBoringTvl } = require("./helperMethods");
+const boringVaultsV0Ethereum = [
+    {
+        name: "Stable Yield USD",
+        vault: "0x279CAD277447965AF3d24a78197aad1B02a2c589",
+        accountant: "0x03D9a9cE13D16C7cFCE564f41bd7E85E5cde8Da6",
+        teller: "0xaefc11908fF97c335D16bdf9F2Bf720817423825",
+        lens: "0x074F543E7DaA7C67F77bfD8C41C79127c4dd80d9",
+        startBlock: 22555405,
+        baseAsset: ADDRESSES.ethereum.USDC,
+    },
+];
 
-// Returns list of vault addresses that are deployed based on their start block
-function filterActiveLegacyVaults(vaults, blockHeight) {
-    return vaults
-        .filter((vault) => vault.startBlock <= blockHeight)
-        .map((vault) => vault.id)
-        .filter(Boolean);
-}
+const boringVaultsV0Arbitrum = [
+    {
+        name: "Stable Yield USD",
+        vault: "0x279CAD277447965AF3d24a78197aad1B02a2c589",
+        accountant: "0x03D9a9cE13D16C7cFCE564f41bd7E85E5cde8Da6",
+        teller: "0xaefc11908fF97c335D16bdf9F2Bf720817423825",
+        lens: "0x074F543E7DaA7C67F77bfD8C41C79127c4dd80d9",
+        startBlock: 335361063,
+        baseAsset: ADDRESSES.arbitrum.USDC,
+    },
+];
 
-// Returns a list of active boring vault objects
-function filterActiveBoringVaults(vaults, blockHeight) {
-    return vaults
-        .filter((vault) => vault.startBlock <= blockHeight && vault.vault)
-        .map((vault) => ({
-            id: vault.vault,
-            lens: vault.lens,
-            accountant: vault.accountant,
-            teller: vault.teller
-        }));
-}
+const boringVaultsV0Base = [
+    {
+        name: "Stable Yield USD",
+        vault: "0x279CAD277447965AF3d24a78197aad1B02a2c589",
+        accountant: "0x03D9a9cE13D16C7cFCE564f41bd7E85E5cde8Da6",
+        teller: "0xaefc11908fF97c335D16bdf9F2Bf720817423825",
+        lens: "0x074F543E7DaA7C67F77bfD8C41C79127c4dd80d9",
+        startBlock: 30004947,
+        baseAsset: ADDRESSES.base.USDC,
+    },
+];
 
 async function legacyTvl(api) {
     const registryAddress = '0x3C2A24c9296eC8B1fdb8039C937DaC7CBca3976c';
@@ -40,35 +53,6 @@ async function legacyTvl(api) {
         numericBalances[token] = Number(amount);
     }
     return numericBalances;
-}
-
-async function chainTvl(api, boringVaults, legacyVaults = []) {
-    const block = await api.getBlock()
-
-    const activeBoringVaults = filterActiveBoringVaults(boringVaults, block);
-    const activeLegacyVaultAddresses = legacyVaults.length > 0
-        ? filterActiveLegacyVaults(legacyVaults, block)
-        : [];
-
-    const allVaults = [...(legacyVaults || []), ...activeBoringVaults].filter(v => v.id);
-
-    if (activeLegacyVaultAddresses.length > 0) {
-        await sumLegacyTvl({
-            api,
-            vaults: activeLegacyVaultAddresses,
-            ownersToDedupe: allVaults,
-        });
-    }
-
-    if (activeBoringVaults.length > 0) {
-        await sumBoringTvl({
-            api,
-            vaults: activeBoringVaults,
-            ownersToDedupe: allVaults,
-        });
-    }
-
-    return api.getBalances();
 }
 
 module.exports = {

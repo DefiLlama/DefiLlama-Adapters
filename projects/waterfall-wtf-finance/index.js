@@ -13,6 +13,7 @@ const pancakeLPs = [
 ]
 
 module.exports = {
+    deadFrom: '2024-09-16',
     bsc: {
         tvl: async () => ({}),
         staking: staking(masonry, shares),

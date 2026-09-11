@@ -4,7 +4,7 @@ const http = require('../http')
 const { getEnv } = require('../env')
 const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
-const { log, getUniqueAddresses } = require('../utils')
+const { log, getUniqueAddresses, sliceIntoChunks } = require('../utils')
 const { GraphQLClient } = require("graphql-request");
 
 
@@ -122,10 +122,32 @@ async function getBalance(account, token, chain = 'aptos') {
   return await http.get(url)
 }
 
+const FA_BALANCES_QUERY = `query SumTokensFaBalances($addresses: [String!]!) {
+  current_fungible_asset_balances(where: { owner_address: { _in: $addresses } }) {
+    amount
+    asset_type
+  }
+}`
+
 async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos' }) {
   if (api) chain = api.chain
   const uniqueOwners = getUniqueAddresses(owners, true)
   const validTokens = tokens.filter(token => !blacklistedTokens.includes(token));
+
+  // On aptos the indexer's `current_fungible_asset_balances` view returns balances for many owners in
+  // a single query (asset_type is the coin type for coin-standard assets, matching the REST /balance result),
+  // so we avoid the O(owners * tokens) per-call REST loop. Other chains (e.g. movement) have no such indexer.
+  if (chain === 'aptos') {
+    const tokenSet = new Set(validTokens)
+    for (const ownerChunk of sliceIntoChunks(uniqueOwners, 50)) {
+      const { current_fungible_asset_balances: rows } = await graphQLClient.request(FA_BALANCES_QUERY, { addresses: ownerChunk })
+      rows.forEach(({ amount, asset_type }) => {
+        if (!tokenSet.has(asset_type)) return;
+        sdk.util.sumSingleBalance(balances, asset_type, amount);
+      })
+    }
+    return transformBalances(chain, balances)
+  }
 
   for (const owner of uniqueOwners) {
     const balancesPerToken = await Promise.all(
@@ -228,16 +250,6 @@ const timestampToVersion = async (timestamp, minBlock = 0, chain = 'aptos') => {
   return mappedBlocks[0].version;
 }
 
-async function functionViewWithApiKey({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined, apiKey = undefined, chain = 'aptos' }) {
-  let path = `${endpointMap[chain]()}/v1/view`
-  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
-  const headers = {
-    "Authorization": "Bearer " + apiKey
-  }
-  const response = await http.post(path, { "function": functionStr, "type_arguments": type_arguments, arguments: args }, {headers: headers})
-  return response.length === 1 ? response[0] : response
-}
-
 module.exports = {
   endpoint: endpoint(),
   endpointMap,
@@ -251,6 +263,5 @@ module.exports = {
   getTableData,
   function_view,
   hexToString,
-  timestampToVersion,
-  functionViewWithApiKey
+  timestampToVersion
 };

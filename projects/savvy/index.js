@@ -51,6 +51,6 @@ module.exports = {
     tvl
   },
   hallmarks: [
-    [1691473498, "LBP Launch"]
+    ['2023-08-08', "LBP Launch"]
   ]
 }

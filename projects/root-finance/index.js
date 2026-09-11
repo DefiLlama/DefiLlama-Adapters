@@ -94,7 +94,9 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  radixdlt: { tvl, borrowed },
+  radixdlt: { tvl,
+     borrowed: () => ({}),  // unlikely to be repaid
+     },
   timetravel: false,
   misrepresentedTokens: true,
 };

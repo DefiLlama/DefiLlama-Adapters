@@ -45,62 +45,30 @@ const abis = {
 
 const cacheData = {};
 
-const fetchTokens = async (api, owner, tokensIds) => {
-  if (!owner || !tokensIds.length) return [];
-  const batchSize = 200;
-
-  const batches = [];
-  for (let i = 0; i < tokensIds.length; i += batchSize) {
-    batches.push(tokensIds.slice(i, i + batchSize));
-  }
-
-  const batchResults = await Promise.all(
-    batches.map(batch =>
-      api.multiCall({
-        calls: batch.map(id => ({ target: owner, params: [id] })),
-        abi: abis.plans,
-        permitFailure: true
-      })
-    )
-  );
-
-  const tokens = batchResults.flat().map((batchData, index) => batchData?.token).filter(Boolean);
-  return tokens;
-};
-
-
 const fetchVestingData = async (api) => {
   const config = CONFIG[api.chain];
   if (!config) return;
 
-  const contractKeys = Object.keys(config);
-  
-  const tokenIdsByContract = await Promise.all(
-    contractKeys.map((contractKey) =>
-      api.fetchList({
-        itemAbi: abis.tokenByIndex,
-        lengthAbi: abis.totalSupply,
-        target: config[contractKey],
-        permitFailure: true,
-        excludeFailed: true,
-      })
-    )
-  );
+  const targets = Object.values(config);
 
-  const tokensByContract = await Promise.all(
-    contractKeys.map((contractKey, index) =>
-      fetchTokens(api, config[contractKey], tokenIdsByContract[index])
-    )
-  );
+  // Single fetchList across all contracts: tokenByIndex -> plans(tokenId).token
+  const plans = await api.fetchList({
+    targets,
+    lengthAbi: abis.totalSupply,
+    itemAbi: abis.tokenByIndex,
+    itemAbi2: abis.plans,
+    field2: 'token',
+    permitFailure: true,
+  });
 
-  const rawTokens = [...new Set(tokensByContract.flat().map(t => t.toLowerCase()))]
+  const rawTokens = [...new Set(plans.filter(Boolean).map(t => t.toLowerCase()))]
   const symbols = await api.multiCall({ calls: rawTokens, abi: 'erc20:symbol', permitFailure: true })
   const tokens = rawTokens.map((token, index) => {
     if (!symbols[index]) return null;
     return { token, symbol: symbols[index] }
   }).filter(Boolean)
 
-  cacheData[api.chain] = { owners: Object.values(config), tokens }
+  cacheData[api.chain] = { owners: targets, tokens }
   return cacheData[api.chain]
 };
 

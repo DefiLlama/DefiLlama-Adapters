@@ -15,6 +15,8 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: () => ({}),
     staking: async (api) => {
+      // enuls has no tvl and broken rpc urls
+      if(chain === 'enuls') return {};
       const logs = await getLogs({
         api,
         target: factory,

@@ -1,7 +1,19 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const CakepieReaderAbi = require("./abis/CakepieReader.json");
 const MasterCakepieAbi = require("./abis/MasterCakepie.json");
-const config = require("./config")
+const config = {
+    bsc: {
+        MasterCakepieAddress: "0x74165b89fd8E9b91A109a4e71662f27EeBA61E98",
+        // VlMGPAddress: "0x9B69b06272980FA6BAd9D88680a71e3c3BeB32c6",
+        MCakeSVAddress: "0x1d7928452009e03aF2E3a2B5931d5d5876Cb0C21",
+        CKPAddress: "0x2B5D9ADea07B590b638FFc165792b2C610EdA649",
+        CakeAddress: "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+        MCakeAddress: "0x581FA684D0Ec11ccb46B1d92F1F24C8A3F95C0CA",
+        PancakeStaking: "0xb47b790076050423888cde9EBB2D5Cb86544F327",
+        CakepieReader: "0xc1cc256846224e8c0bA530692c338a99FbC27cB5",
+        vlCKPAddress: "0x232594e7F0096ba7DDAbcD8689cB0D994694eb26"
+    },
+  };
 const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking');
 
@@ -41,28 +53,28 @@ async function tvl(api) {
     }
   }
   //adding tvl for stable swap pools
+  const ssPoolInfo = await api.multiCall({ abi: 'function tokenToPoolInfo(address) view returns (address stakingToken, address receiptToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accCakepiePerShare, uint256 totalStaked, address rewarder, bool isActive)', target: MasterCakepieAddress, calls: sspools })
+  const ssMinters = await api.multiCall({ abi: 'address:minter', calls: sstokens })
+  const ssTotalSupply = await api.multiCall({ abi: 'uint256:totalSupply', calls: sstokens })
+  const ssToken0 = await api.multiCall({ abi: 'function coins(uint256) view returns(address)', calls: ssMinters.map(target => ({ target, params: [0] })) })
+  const ssToken1 = await api.multiCall({ abi: 'function coins(uint256) view returns(address)', calls: ssMinters.map(target => ({ target, params: [1] })) })
+  const ssBalance0 = await api.multiCall({ abi: 'function balances(uint256) view returns(uint256)', calls: ssMinters.map(target => ({ target, params: [0] })) })
+  const ssBalance1 = await api.multiCall({ abi: 'function balances(uint256) view returns(uint256)', calls: ssMinters.map(target => ({ target, params: [1] })) })
   for (let i = 0; i < sspools.length; i++) {
-    const balance = await api.call({ abi: 'function tokenToPoolInfo(address) view returns (address stakingToken, address receiptToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accCakepiePerShare, uint256 totalStaked, address rewarder, bool isActive)', target: MasterCakepieAddress, params: sspools[i] })
-    let minter = await api.call({ abi: 'address:minter', target: sstokens[i], })
-    let totalsupply = await api.call({ abi: 'uint256:totalSupply', target: sstokens[i], })
-    let token = await api.multiCall({ abi: 'function coins(uint256) view returns(address)', calls: [0, 1], target: minter })
-    let token_balances = await api.multiCall({ abi: 'function balances(uint256) view returns(uint256)', calls: [0, 1], target: minter })
-    let lp = balance.totalStaked / totalsupply
-
-    api.add(transformToken(token[0]), lp * token_balances[0])
-    api.add(transformToken(token[1]), lp * token_balances[1])
+    let lp = ssPoolInfo[i].totalStaked / ssTotalSupply[i]
+    api.add(transformToken(ssToken0[i]), lp * ssBalance0[i])
+    api.add(transformToken(ssToken1[i]), lp * ssBalance1[i])
   }
   //adding tvl for v2pools of pancakeswap
-  for (let i = 0; i < sspools.length; i++) {
-    const balance = await api.call({ abi: 'function tokenToPoolInfo(address) view returns (address stakingToken, address receiptToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accCakepiePerShare, uint256 totalStaked, address rewarder, bool isActive)', target: MasterCakepieAddress, params: v2pools[i] })
-    const totalsupply = await api.call({ abi: 'uint256:totalSupply', target: v2tokens[i], })
-    let token0 = await api.call({ abi: 'address:token0', target: v2tokens[i], })
-    let token1 = await api.call({ abi: 'address:token1', target: v2tokens[i], })
-    const balances = await api.call({ abi: 'function getReserves() view returns(uint112 _reserve0 ,uint112 _reserve1,uint32 _blockTimestampLast)', target: v2tokens[i], })
-    let lp = balance.totalStaked / totalsupply
-
-    api.add(transformToken(token0), lp * balances._reserve0)
-    api.add(transformToken(token1), lp * balances._reserve1)
+  const v2PoolInfo = await api.multiCall({ abi: 'function tokenToPoolInfo(address) view returns (address stakingToken, address receiptToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accCakepiePerShare, uint256 totalStaked, address rewarder, bool isActive)', target: MasterCakepieAddress, calls: v2pools })
+  const v2TotalSupply = await api.multiCall({ abi: 'uint256:totalSupply', calls: v2tokens })
+  const v2Token0 = await api.multiCall({ abi: 'address:token0', calls: v2tokens })
+  const v2Token1 = await api.multiCall({ abi: 'address:token1', calls: v2tokens })
+  const v2Reserves = await api.multiCall({ abi: 'function getReserves() view returns(uint112 _reserve0 ,uint112 _reserve1,uint32 _blockTimestampLast)', calls: v2tokens })
+  for (let i = 0; i < v2pools.length; i++) {
+    let lp = v2PoolInfo[i].totalStaked / v2TotalSupply[i]
+    api.add(transformToken(v2Token0[i]), lp * v2Reserves[i]._reserve0)
+    api.add(transformToken(v2Token1[i]), lp * v2Reserves[i]._reserve1)
   }
 
   api.add(CakeAddress, mCakePool.totalStaked)

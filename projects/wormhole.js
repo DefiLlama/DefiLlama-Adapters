@@ -35,7 +35,7 @@ module.exports = {
   methodology:
     "USD value of native assets currently held by Portal contracts. Token prices sourced from CoinGecko.",
   hallmarks: [
-    [1652008803, "UST depeg"],
+    ['2022-05-08', "UST depeg"],
     // ["2022-02-02", "Hacked: Signature Exploit"],
   ],
 };

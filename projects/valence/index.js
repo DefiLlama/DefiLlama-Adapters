@@ -100,7 +100,7 @@ async function getLpTvl(api, chain, dexNames=[]) {
 
     const possibleLpTokens = Object.keys(balances).filter((address) => address.match(dexConfig.regex));
 
-    possibleLpTokens.forEach(async(lpToken)=>{
+    await Promise.all(possibleLpTokens.map(async (lpToken) => {
          // regex method does not guarantee an LP token is valid, so handle the error gracefully and ignore the asset in the valuation if this is the case
          try {
           const lpBalance = balances[lpToken];
@@ -118,7 +118,7 @@ async function getLpTvl(api, chain, dexNames=[]) {
         } catch (e){
           console.log('Warning: Could not query LP share value for',lpToken)
         }
-    })
+    }))
   
 
    
@@ -191,10 +191,10 @@ module.exports = {
     tvl: (api) => getValenceAccountTvl(api, "CosmosCosmwasm", "terra2"), 
   },
   hallmarks: [
-    [1717545600, "Nolus<>Neutron liquidity lending"],
-    [1718064000, "Stargaze<>Neutron liquidity lending"],
-    [1719360000, "Shade<>Neutron liquidity lending"],
-    [1723507200, "Mars<>Neutron liquidity lending"],
-    [1743379200, "Neutron dICS deployment"]
+    ['2024-06-05', "Nolus<>Neutron liquidity lending"],
+    ['2024-06-11', "Stargaze<>Neutron liquidity lending"],
+    ['2024-06-26', "Shade<>Neutron liquidity lending"],
+    ['2024-08-13', "Mars<>Neutron liquidity lending"],
+    ['2025-03-31', "Neutron dICS deployment"]
   ]
 };

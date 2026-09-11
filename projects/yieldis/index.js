@@ -1,6 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { eulerTokens } = require('../helper/tokenMapping')
 
 const config = {
   arbitrum: {
@@ -35,7 +34,6 @@ const config = {
     ].map(i => i.toLowerCase())),
     blacklistedTokens: [
       '0x1344A36A1B56144C3Bc62E7757377D288fDE0369',
-      ...eulerTokens
     ],
   },
 }
@@ -74,7 +72,7 @@ Object.keys(config).forEach(chain => {
       const tokensAndOwners = sharesTokens.map((v, i) => [v, newPools[i]])
       tokens.forEach((v, i) => tokensAndOwners.push([v, pools[i]]))
       assets.forEach((v, i) => tokensAndOwners.push([v, joins[i]]))
-      return sumTokens2({ api, tokensAndOwners, blacklistedTokens })
+      return sumTokens2({ api, tokensAndOwners, blacklistedTokens, permitFailure: true }) // protocol wound down, several joins/tokens revert
     }
   }
 })

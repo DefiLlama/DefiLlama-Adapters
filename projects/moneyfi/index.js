@@ -115,13 +115,11 @@ Object.keys(config).forEach((chain) => {
         ownerTokens: [[tokens, chainConfig.dexBridgeVault]],
       });
 
-      for (const strategy of chainConfig.strategies) {
-        const total = await api.call({
-          target: strategy,
-          abi: "function totalAssets() view returns (uint256)",
-        });
-        api.add(tokens[0], total);
-      }
+      const totals = await api.multiCall({
+        abi: "function totalAssets() view returns (uint256)",
+        calls: chainConfig.strategies,
+      });
+      totals.forEach((total) => api.add(tokens[0], total));
     },
   };
 });

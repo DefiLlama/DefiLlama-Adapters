@@ -38,4 +38,7 @@ module.exports = {
   fantom: { tvl, },
   optimism: { tvl, },
   arbitrum: { tvl },
+  hallmarks: [
+    ['2026-04-02', "Migration to v3 started"],
+  ]
 }

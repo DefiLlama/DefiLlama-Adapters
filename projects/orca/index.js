@@ -24,13 +24,50 @@ async function eclipseTvl (api) {
   return sumTokens2({ tokenAccounts, api })
 }
 
+const WHIRLPOOL_PROGRAM_ID = new PublicKey('whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc')
+
+// Whirlpool account (dataSize=653), we slice bytes 133-245 to get the vaults
+const VAULT_A_OFFSET = 133
+const SLICE_LEN = 112
+// original_offset - VAULT_A_OFFSET
+const VAULT_A_IN_SLICE = 0
+const VAULT_B_IN_SLICE = 80
+// circumvent RPC scan-limit on getProgramAccounts
+const PREFIX_BUCKETS = 256
+const SWEEP_CONCURRENCY = 3
+
+async function fetchPrefix(conn, prefix) {
+  const accounts = await conn.getProgramAccounts(WHIRLPOOL_PROGRAM_ID, {
+    filters: [
+      { dataSize: 653 },
+      { memcmp: { offset: VAULT_A_OFFSET, bytes: Buffer.from([prefix]).toString('base64'), encoding: 'base64' } },
+    ],
+    dataSlice: { offset: VAULT_A_OFFSET, length: SLICE_LEN },
+  })
+
+  const vaults = []
+  for (const { account } of accounts) {
+    const d = account.data
+    vaults.push(new PublicKey(d.slice(VAULT_A_IN_SLICE, VAULT_A_IN_SLICE + 32)).toBase58())
+    vaults.push(new PublicKey(d.slice(VAULT_B_IN_SLICE, VAULT_B_IN_SLICE + 32)).toBase58())
+  }
+  return { vaults }
+}
+
 async function tvl(api) {
-  const provider = getProvider(api.chain)
-  const programId = 'whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc'
-  const program = new Program(whirpoolIDL, programId, provider)
-  const whirlpools = await program.account.whirlpool.all()
-  const tokenAccounts = whirlpools.map(({ account }) => [account.tokenVaultA, account.tokenVaultB]).flat()
-  return sumTokens2({ tokenAccounts, api, })
+  const conn = getProvider(api.chain).connection
+  const allVaults = []
+
+  await sdk.util.runInPromisePool({
+    concurrency: SWEEP_CONCURRENCY,
+    items: Array.from({ length: PREFIX_BUCKETS }, (_, i) => i),
+    processor: async (prefix) => {
+      const r = await fetchPrefix(conn, prefix)
+      allVaults.push(...r.vaults)
+    },
+  })
+
+  return sumTokens2({ api, tokenAccounts: allVaults, allowError: true })
 }
 
 /* async function orcaPoolTvlViaConfig() {
@@ -51,9 +88,10 @@ module.exports = {
   timetravel: false,
   solana: { tvl: sdk.util.sumChainTvls([orcaV1Tvl, orcaV2Tvl, tvl]) },
   eclipse: { tvl: eclipseTvl },
+  isHeavyProtocol: true,
   hallmarks: [
-    [1628565707, "Token+LM launch"],
-    [1667865600, "FTX collapse"]
+    ['2021-08-10', "Token+LM launch"],
+    ['2022-11-08', "FTX collapse"]
   ]
 };
 

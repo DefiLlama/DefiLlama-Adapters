@@ -20,6 +20,6 @@ module.exports = {
     "TVL is equal to the amount staked in the Portals V1 and Portals V2 contracts.",
   arbitrum: { tvl },
   hallmarks: [
-    [1715776637, "Portals V2 Launch"],
+    ['2024-05-15', "Portals V2 Launch"],
   ],
 };

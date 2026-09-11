@@ -169,7 +169,7 @@ module.exports = {
     tvl: ethereumTvl,
   },
   hallmarks: [
-    [1651881600, "UST depeg"],
+    ['2022-05-07', "UST depeg"],
   ],
   methodology:
     "Counts liquidty as the Collateral USDC on all AMOs, USDC POOLs, FRAX3CRV and FEI3CRVs through their Contracts",
