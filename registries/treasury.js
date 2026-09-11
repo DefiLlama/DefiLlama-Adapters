@@ -4862,6 +4862,15 @@ const configs = {
       owners: ['0x64769c53ff91b83fe9830776a4b85a1f4e1edaad'],
     },
   },
+  'treasury/ref-market': {
+    base: {
+      tokens: [
+        nullAddress,
+        ADDRESSES.base.USDC,
+      ],
+      owners: ['0x25EE18cBCe05Bd7Ef42A53154058796D4e425b00'],
+    }
+  },
   'treasury/relay': {
     arbitrum: {
       tokens: [
