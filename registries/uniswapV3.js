@@ -604,6 +604,8 @@ const uniV3Configs = {
     },
   },
   'glyph-v4': {
+    deadFrom: '2026-09-11',
+    hallmarks: [['2026-09-11', 'Glyph Core DEX no longer maintained']],
     core: {
       factory: '0x74EfE55beA4988e7D92D03EFd8ddB8BF8b7bD597',
       fromBlock: 15770796,
