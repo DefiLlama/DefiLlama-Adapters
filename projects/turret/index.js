@@ -1,14 +1,16 @@
-const config = require('./config.json')
+const config = require('./config')
 
 const nftOfferAbi = 'function getOffer(uint256) view returns ((address lender, (address borrower, address collection, uint256 tokenId, uint256 principal, uint256 interest, uint256 duration, uint256 expiresAt) terms, address vault, uint256 dueAt, uint8 status, uint256 usdgCredit, address nftBeneficiary))'
+
+const getPools = (api) => api.multiCall({ abi: 'address:pool', calls: config.engines.map(e => e.engine) })
 
 async function tvl(api) {
   // Pool totalAssets includes loans and accrued interest. Only cash belongs in TVL;
   // availableCash also removes protocol fees already owed to the treasury/router.
-  const cash = await api.multiCall({ abi: 'uint256:availableCash', calls: config.pools.map(p => p.pool) })
+  const cash = await api.multiCall({ abi: 'uint256:availableCash', calls: await getPools(api) })
   cash.forEach(balance => api.add(config.usdg, balance))
 
-  const tokensAndOwners = config.pools.map(p => [p.collateral, p.engine])
+  const tokensAndOwners = config.engines.map(e => [e.collateral, e.engine])
   const legacyCollateral = await api.fetchList({
     target: config.legacyVault,
     lengthAbi: 'uint256:collateralCount',
@@ -17,13 +19,13 @@ async function tvl(api) {
   ;[config.usdg, ...legacyCollateral].forEach(token => tokensAndOwners.push([token, config.legacyVault]))
 
   // V1/V2 hold both open-offer cash and collateral at the market contract.
-  config.p2p.filter(m => m.version < 3).forEach(m => {
+  config.p2pMarkets.forEach(m => {
     tokensAndOwners.push([config.usdg, m.address], [m.collateral, m.address])
   })
 
   // V3 custody is in per-offer vaults. Include settled vaults because withdrawal
   // credits can remain there. nextOfferId is exclusive, not a one-based count.
-  const markets = config.p2p.filter(m => m.version === 3)
+  const markets = config.p2pV3Markets
   const vaults = await api.fetchList({
     targets: markets.map(m => m.address),
     lengthAbi: 'uint256:nextOfferId',
@@ -48,11 +50,11 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  const principal = await api.multiCall({ abi: 'uint256:outstandingPrincipal', calls: config.pools.map(p => p.pool) })
+  const principal = await api.multiCall({ abi: 'uint256:outstandingPrincipal', calls: await getPools(api) })
   principal.forEach(balance => api.add(config.usdg, balance))
   api.add(config.usdg, await api.call({ target: config.legacyVault, abi: 'uint256:totalDebt' }))
 
-  const calls = config.p2p.map(m => m.address)
+  const calls = [...config.p2pMarkets, ...config.p2pV3Markets].map(m => m.address)
   const committed = await api.multiCall({ abi: 'uint256:committedPrincipal', calls })
   const reserved = await api.multiCall({ abi: 'uint256:reservedPrincipal', calls })
   committed.forEach((balance, i) => {
